@@ -141,20 +141,21 @@ function showBoardContents($boardID,$boardName,$page){
 		$articles = bbs_getthreads($boardName, $start, $num,1);
 		$articleNum=count($articles);
 		for($i=0;$i<$articleNum;$i++){
-			unset($threads);
-			$threads=bbs_get_thread_articles($boardName, intval($articles[$i]['ID']), 0,1);
-			$threadNum=bbs_get_thread_article_num($boardName,intval($articles[$i]['ID']));
+			$origin=$articles[$i]['origin'];
+			$lastreply=$articles[$i]['lastreply'];
+			$threadNum=$articles[$i]['articlenum']-1;
+
 ?>
 <TR align=middle><TD class=tablebody2 width=32 height=27>
 <?php
 //print_r($articles[$i]);
-	if (strtoupper($articles[$i]['FLAGS'][0])=='D') {
+	if (strtoupper($origin['FLAGS'][0])=='D') {
 		echo "<img src=\"pic/istop.gif\" alt=固顶的主题>";
 	} elseif( $threadNum > 10 ) {
 		echo "<img src=\"pic/blue/hotfolder.gif\" alt=回复超过10贴>";
-	} elseif( ';' == strtoupper($articles[$i]['FLAGS'][0]) ) {
+	} elseif( ';' == strtoupper($origin['FLAGS'][0]) ) {
 		echo "<img src=\"pic/blue/lockfolder.gif\" alt=锁定的主题>";
-	} elseif( 'M' == strtoupper($articles[$i]['FLAGS'][0]) ) {
+	} elseif( 'M' == strtoupper($origin['FLAGS'][0]) ) {
 		echo "<img src=\"pic/isbest.gif\" alt=精华帖>";
 	} else {
 		echo "<img src=\"pic/blue/folder.gif\" alt=开放主题>";
@@ -164,44 +165,36 @@ function showBoardContents($boardID,$boardName,$page){
 	if ($threadNum==0) {
 		echo '<img src="pic/nofollow.gif" id="followImg'.($i+$start).'">';
 	} else {
-		echo '<img loaded="no" src="pic/plus.gif" id="followImg'.($articles[$i]['ID']).'" style="cursor:hand;" onclick="loadThreadFollow(\''.($articles[$i]['ID'])."','".$boardName."')\" title=展开贴子列表>";
+		echo '<img loaded="no" src="pic/plus.gif" id="followImg'.($origin['ID']).'" style="cursor:hand;" onclick="loadThreadFollow(\''.($origin['ID'])."','".$boardName."')\" title=展开贴子列表>";
 	}
-?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $articles[$i]['ID'];?>" title="<?php echo htmlspecialchars($articles[$i]['TITLE'],ENT_QUOTES) ;?> <br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo htmlspecialchars($articles[$i]['TITLE']) ;?> </a> 
+?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>" title="<?php echo htmlspecialchars($origin['TITLE'],ENT_QUOTES) ;?> <br>作者：<?php echo $origin['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $origin['POSTTIME']); ?>"><?php echo htmlspecialchars($origin['TITLE']) ;?> </a> 
 <?php
 	$threadPages=ceil(($threadNum+1)/THREADSPERPAGE);
 	if ($threadPages>1) {
 		echo "<b>[<img src=\"pic/multipage.gif\"> ";
 		for ($t=1; ($t<7) && ($t<=$threadPages) ;$t++) {
-			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".$articles[$i]['ID']. "&start=".($t-1)*THREADSPERPAGE."\">".$t."</a> ";
+			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".$origin['ID']. "&start=".($t-1)*THREADSPERPAGE."\">".$t."</a> ";
 		}
 		if ($threadPages>7) {
 			if ($threadPages>8) {
 				echo "...";
 			}
-			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".$articles[$i]['ID']. "&start=".($threadPages-1)*THREADSPERPAGE."\">".$threadPages."</a> ";
+			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".$origin['ID']. "&start=".($threadPages-1)*THREADSPERPAGE."\">".$threadPages."</a> ";
 		}
 		echo " ]</b>";
 	}
 ?>
-</TD><TD class=tablebody2 width=80><a href="dispuser.php?id=<?php echo $articles[$i]['OWNER'] ;?>" target=_blank><?php echo $articles[$i]['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $articles[$i]['ID'];?>&start=<?php echo $total; ?>">
+</TD><TD class=tablebody2 width=80><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD><TD class=tablebody1 width=64><?php echo $threadNum; ?></TD><TD align=left class=tablebody2 width=195>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $total; ?>">
 <?php
-			if ($threadNum==0) {
-				echo strftime("%Y-%m-%d %H:%M", $articles[$i]['POSTTIME']);
-			} else {
-				echo strftime("%Y-%m-%d %H:%M", $threads[0]['POSTTIME']);
-			}
-?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=<?php echo $threads[0]['OWNER']; ?>  target=_blank>
+			echo strftime("%Y-%m-%d %H:%M", $lastreply['POSTTIME']);
+?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=<?php echo $lastreply['OWNER']; ?>  target=_blank>
 <?php 
-			if ($threadNum==0) {
-				echo $articles[$i]['OWNER'];
-			} else {
-				echo $threads[0]['OWNER'];
-			}
+			echo $lastreply['OWNER'];
 ?></a></TD></TR>
 <?php
 			if ($threadNum>0) {
 ?>
-<tr style="display:none" id="follow<?php echo $articles[$i]['ID']; ?>"><td colspan=5 id="followTd<?php echo $articles[$i]['ID'];?>" style="padding:0px"><div style="width:240px;margin-left:18px;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadThreadFollow('<?php echo ($articles[$i]['ID']);?>','<?php echo $boardName; ?>')">正在读取关于本主题的跟贴，请稍侯……</div></td></tr>
+<tr style="display:none" id="follow<?php echo $origin['ID']; ?>"><td colspan=5 id="followTd<?php echo $origin['ID'];?>" style="padding:0px"><div style="width:240px;margin-left:18px;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadThreadFollow('<?php echo ($origin['ID']);?>','<?php echo $boardName; ?>')">正在读取关于本主题的跟贴，请稍侯……</div></td></tr>
 <?php
 			}
 		}
