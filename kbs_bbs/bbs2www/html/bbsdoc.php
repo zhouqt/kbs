@@ -98,6 +98,7 @@
 ?>
 <a href="/cgi-bin/bbs/bbsclear?board=<?php echo $brd_encode; ?>&start=<?php echo $start; ?>">清除未读</a>
 <a href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>">本版投票</a>
+<a href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">本版发文摸板</a>
 <?php
 		}
 		$sec_index = get_secname_index($brdarr["SECNUM"]);
