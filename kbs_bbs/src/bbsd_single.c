@@ -564,10 +564,11 @@ char *argv[];
           fork();
         for (;;)
         {
+/*
             value = 1;
             if (select(1, (fd_set *) & value, NULL, NULL, NULL) < 0)
                 continue;
-
+*/
             value = sizeof(sin);
             csock = accept(0, (struct sockaddr *)&sin, &value);
             if (csock < 0)
@@ -579,8 +580,10 @@ char *argv[];
             if (fork())
             {
                 close(csock);
+#ifdef LOAD_LIMIT
                 if (heavy_load)
                     sleep(5);
+#endif
                 continue;
             }
 

@@ -58,7 +58,7 @@ typedef struct _logconfig{
 
 static logconfig logconf[]= {
     { 1,  3, NULL,          "error.log", 0 , 1},   /* 错误记录 */
-    { 1,  0, "connect",     "connect.log", 4096 , 0},      /* 连接记录 */
+    { 1,  0, "connect",     "connect.log", 0, 0},      /* 连接记录 */
     { 1,  0, "user",        "user.log", 4096, 0},  /* 所有用户的使用记录，使用缓冲 */
     { 1,  0, "usermsg",     "msg.log",  0 , 0},    /* 所有用户的message记录 */
     { 1,  0, "boardusage",  "boardusage.log",0,0}, /* 版面使用记录 */
