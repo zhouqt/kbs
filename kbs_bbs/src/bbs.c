@@ -642,7 +642,15 @@ int add_author_friend(int ent , struct fileheader *fileinfo,char *direct )
     }
     return FULLUPDATE;
 }
-
+extern int bbs_zsendfile(char *fn,char*remote);
+int zsend_post( int ent , struct fileheader *fileinfo , char *direct )
+{
+	char buf[512];
+	if (strcmp(currboard,"sys_discuss") != 0) return FULLUPDATE;
+	snprintf(buf,512,"SMTH-%s-%s.TXT",currboard,fileinfo->filename);
+	bbs_zsendfile(fileinfo->filename,buf);
+	return FULLUPDATE;
+}
 int read_post( int ent , struct fileheader *fileinfo , char *direct )
 {
     char *t ;
@@ -2339,6 +2347,7 @@ struct one_key  read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
                                    {'t',        set_delete_mark}, /*KCN 2001 */
                                    {'v',	i_read_mail}, /* period 2000-11-12 read mail in article list */
                                    /*{'!',	Goodbye},Haohmaru 98.09.21*/
+					{Ctrl('Y'),zsend_post}, /* COMMAN 2002 */
                                    {'\0',       NULL},
                                } ;
 
