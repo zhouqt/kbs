@@ -228,7 +228,10 @@ void refresh()
             s = bp[j].mode[k];
             s=s&(~SCREEN_MODIFIED);
             bp[j].mode[k]=s;
-            if((~s)&tc_mode!=0) {
+            if(!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0||
+                !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
+                !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0||
+                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK) {
                 tc_mode = 0;
                 tc_color = 7;
                 stack[stackt++]=0;
