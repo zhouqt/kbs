@@ -400,3 +400,49 @@ int msg_can_sendmsg(char *userid, int utmpnum)
     return 1;
 }
 
+int new_store_msgfile(char *uident, char *msgbuf)
+{
+    char fname[STRLEN], fname2[STRLEN];
+    int fd, fd2, i, j, count, size;
+    struct flock ldata, ldata2;
+    struct stat buf;
+
+    sethomefile(fname, uident, "msgindex");
+    sethomefile(fname2, uident, "msgcontent");
+
+    if ((fd = open(fname, O_WRONLY | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        return -1;              /* 创建文件发生错误*/
+    }
+    if ((fd2 = open(fname2, O_WRONLY | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        close(fd);
+        return -1;              /* 创建文件发生错误*/
+    }
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "msglock err");
+        close(fd2);
+        close(fd);
+        return -1;              /* lock error*/
+    }
+    fstat(fd2, &buf);
+    size = buf.st_size;
+    fstat(fd, &buf);
+    count = buf.st_size/4;
+    lseek(fd, count*4, SEEK_SET);
+    write(fd, &size, 4);
+    lseek(fd2, size, SEEK_SET);
+    write(fd, msgbuf, strlen(msgbuf)+1);
+
+    close(fd2);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
+    return 0;
+}
+
+
