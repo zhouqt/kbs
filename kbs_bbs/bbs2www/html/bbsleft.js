@@ -170,20 +170,20 @@ function submenu( isfav , favselect , group , group2 , yank )
 		submenuname = "submenu_brd_" + group + "_" + group2 ;
 		imgname = "submenuimg_brd_" + group + "_" + group2 ;
 	}
-	submenustatus = document.all(submenuname).style.display;
-	if (submenustatus == "block")
+	submenustatus = document.getElementById(submenuname).style.display;
+	if (submenustatus == "")
 	{
-		document.all(imgname).src="/images/close.gif";
-		document.all(submenuname).style.display="none";
+		document.getElementById(imgname).src="/images/close.gif";
+		document.getElementById(submenuname).style.display="none";
 	}
 	if (submenustatus=="none")
 	{
-		document.all(imgname).src="images/open.gif";
-		document.all(submenuname).style.display="block";
-		if (document.all(submenuname + "_td").innerHTML.substr(0,5)=="<DIV>")
+		document.getElementById(imgname).src="images/open.gif";
+		document.getElementById(submenuname).style.display="";
+		//if (document.getElementById(submenuname + "_td").innerHTML.substr(0,5)=="<DIV>")
 		{
-			document.all(submenuname + "_td").innerHTML="<DIV class=b1>载入中……</DIV>";
-			document.frames("hiddenframe").location = linkurl ;
+			document.getElementById(submenuname + "_td").innerHTML="<DIV class=b1>载入中……</DIV>";
+			window.frames["hiddenframe"].document.location.href = linkurl ;
 		}
 	}
 }

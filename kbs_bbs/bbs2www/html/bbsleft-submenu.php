@@ -84,6 +84,6 @@ if(!$boards || !$brd_num) $innerHtml = "<font color=#eeeeee>-©уд©б╪-</font>";
 <script src="/bbsleft.js"></script>
 <body>
 <script language="javascript">
-parent.document.all('<?php echo $subMenu; ?>_td').innerHTML = "<?php echo $innerHtml; ?>" ; 
+parent.document.getElementById('<?php echo $subMenu; ?>_td').innerHTML = "<?php echo $innerHtml; ?>" ; 
 </script>
 </body></html>
