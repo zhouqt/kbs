@@ -56,9 +56,9 @@ function showmailBox($boxName, $path, $desc, $startNum){
   else
     echo "发件人";?>
 </th>
-<th valign=middle width=380>主题</th>
-<th valign=middle width=120>日期</th>
-<th valign=middle width=50>大小</th>
+<th valign=middle width=*>主题</th>
+<th valign=middle width=150>日期</th>
+<th valign=middle width=70>大小</th>
 <th valign=middle width=30>删除</th>
 </tr>
 <?php
@@ -131,7 +131,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 	if ($roy) echo ($roy);
 	else echo "N/A Byte";
 ?></td>
-<td align=center valign=middle width=30 class=TableBody1><input type=checkbox name=num id="num" value=<?php echo $i+$startNum; ?>></td>
+<td align=center valign=middle class=TableBody1><input type=checkbox name=num id="num" value=<?php echo $i+$startNum; ?>></td>
 </tr>
 <?php
 	}
