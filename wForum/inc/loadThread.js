@@ -253,12 +253,12 @@ function writepost(pos, html_title, threadNum, origin, lastreply, origin_exists,
 	document.write("<TR align=middle><TD class=TableBody2 width=32 height=27 align=\"center\">");
 	if (article_is_zhiding(origin.FLAGS)) {
 		document.write("<img src=\"pic/istop.gif\" title=\"固顶的主题\">");
+	} else if(article_is_digest(origin.FLAGS)) {
+		document.write("<img src=\"pic/isbest.gif\" title=\"精华帖\">");
 	} else if( threadNum > 10 ) {
 		document.write("<img src=\"pic/blue/hotfolder.gif\" title=\"回复超过10贴\">");
 	} else if(article_is_noreply(origin.FLAGS)) {
 		document.write("<img src=\"pic/blue/lockfolder.gif\" title=\"锁定的主题\">");
-	} else if(article_is_digest(origin.FLAGS)) {
-		document.write("<img src=\"pic/isbest.gif\" title=\"精华帖\">");
 	} else {
 		document.write("<img src=\"pic/blue/folder.gif\" title=\"开放主题\">");
 	}
