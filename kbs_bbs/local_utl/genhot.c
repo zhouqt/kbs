@@ -20,6 +20,7 @@ int gen_commend_xml()
 	int numrecords;
 	int i;
 	char *c;
+	struct boardheader *bh;
 
 	setbfile(dirpath, COMMEND_ARTICLE, DIGEST_DIR);
     if (stat(dirpath, &st) < 0)
@@ -56,7 +57,8 @@ int gen_commend_xml()
 			fprintf(fp, "<time>%d</time>\n", get_posttime(&dirfh));
 			fprintf(fp, "<board>%s</board>\n", COMMEND_ARTICLE);
 			fprintf(fp, "<id>%d</id>\n", dirfh.id);
-			fprintf(fp, "<o_board>%s</o_board>\n", getboard(dirfh.o_bid)->filename);
+			bh = getboard(dirfh.o_bid);
+			fprintf(fp, "<o_board>%s</o_board>\n", bh ? bh->filename : "");
 			fprintf(fp, "<o_id>%d</o_id>\n", dirfh.o_id);
 			if( fgets(buf, 255, fp1) ){
 				if( ! strncmp(buf, "∑¢–≈»À: ", 8) ){
@@ -100,6 +102,7 @@ int main(int argc, char **argv)
     chdir(BBSHOME);
 
 #ifdef COMMEND_ARTICLE
+	resolve_boards();
 	gen_commend_xml();
 #endif
 
