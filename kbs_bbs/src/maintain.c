@@ -639,7 +639,7 @@ enterbname:
                     }
                 }
             }
-            substitute_record(BOARDS, &newfh, sizeof(newfh), pos);
+			set_board(pos, &newfh);
             if (noidboard == 1 && !seek_in_file("etc/anonymous", newfh.filename))
                 addtofile("etc/anonymous", newfh.filename);
             else

@@ -297,7 +297,9 @@ int add_board(struct boardheader* newboard)
 
 int set_board(int bid,struct boardheader* board)
 {
+	bcache_setreadonly(0);
     memcpy(&bcache[bid-1], board, sizeof(struct boardheader));
+	bcache_setreadonly(1);
     return 0;
 }
 
