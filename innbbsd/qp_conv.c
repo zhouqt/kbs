@@ -1,3 +1,6 @@
+#include <iconv.h>
+#include <errno.h>
+
 /* ----------------------------------------------------- */
 /* QP code : "0123456789ABCDEF"                          */
 /* ----------------------------------------------------- */
@@ -50,6 +53,73 @@ char *str;
 /* ----------------------------------------------------- */
 /* judge & decode QP / BASE64                            */
 /* ----------------------------------------------------- */
+/* 这个函式会将一个字串 (src) 从 charset=fromcode 转成 charset=tocode,
+ * srclen 是 src 的长度, dst 是输出的buffer, dstlen 则指定了
+ * dst 的大小, 最后会补 '\0', 所以要留一个byte给'\0'.
+ * 如果遇到 src 中有非字集的字, 或是 src 中有未完整的 byte,
+ * 都会砍掉.
+ * */
+
+int str_iconv(fromcode, tocode, src, srclen, dst, dstlen)
+char *fromcode;                 /* charset of source string */
+char *tocode;                   /* charset of destination string */
+char *src;                      /* source string */
+int srclen;                     /* source string length */
+char *dst;                      /* destination string */
+int dstlen;                     /* destination string length */
+{
+    iconv_t iconv_descriptor;
+    int iconv_ret, dstlen_old;
+
+    dstlen--;                   /* keep space for '\0' */
+    dstlen_old = dstlen;
+
+/* Open a descriptor for iconv */
+    iconv_descriptor = iconv_open(tocode, fromcode);
+
+    if (iconv_descriptor == ((iconv_t) (-1))) { /* if open fail */
+        strncpy(dst, src, dstlen);
+        return dstlen;
+    }
+
+/* Start translation */
+    while (srclen > 0 && dstlen > 0) {
+        iconv_ret = iconv(iconv_descriptor, (void *) &src, &srclen, &dst, &dstlen);
+        if (iconv_ret != 0) {
+            switch (errno) {
+/* invalid multibyte happened */
+            case EILSEQ:
+/* delete that byte */
+                *dst = *src;
+                src++;
+                srclen--;
+                dst++;
+                dstlen--;
+                break;
+/* incomplete multibyte happened */
+            case EINVAL:
+/* delete that byte (maybe wrong) */
+                *dst = *src;
+                src++;
+                srclen--;
+                dst++;
+                dstlen--;
+                break;
+/* dst no rooms */
+            case E2BIG:
+/* break out the while loop */
+                srclen = 0;
+                break;
+            }
+        }
+    }
+    *dst = '\0';
+/* close descriptor of iconv */
+
+    iconv_close(iconv_descriptor);
+    return (dstlen_old - dstlen);
+}
+
 void str_decode(dst, src)
 register unsigned char *dst, *src;
 {
