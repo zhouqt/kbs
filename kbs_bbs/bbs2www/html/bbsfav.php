@@ -177,7 +177,6 @@
 
 
 <?php
-                bbs_release_favboard();
                 html_normal_quit();
         }
 ?>
