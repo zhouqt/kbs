@@ -77,4 +77,8 @@ extern sigjmp_buf bus_jump;
 extern struct WWW_GUEST_TABLE *wwwguest_shm;
 #endif
 
+#ifdef SMS_SUPPORT
+extern int smsresult;
+extern void* smsbuf;
+#endif
 extern const char secname[SECNUM][2][20];

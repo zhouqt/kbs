@@ -60,6 +60,10 @@
 #include <sys/wait.h>
 #include <stdarg.h>
 
+#ifdef HAVE_TERMIOS_H
+#include <termios.h>
+#endif
+
 #ifndef _cplusplus
 
 #ifndef HAVE_BOOL

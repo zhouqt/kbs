@@ -8,10 +8,14 @@ AC_ARG_WITH(icc,
     if test -d $withval; then
         CC=icc
         CXX=icc
-        if test -z "$CFLAGS"; then
+	FOUND=
+	for i in $LDFLAGS; do
+          if test "$i"="-ipo"; then
+	    FOUND="true"
+          fi
+        done
+	if test -z "$FOUND"; then
             CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
-        fi
-        if test -z "$LDFLAGS"; then
             LDFLAGS="$LDFLAGS -ipo"
         fi
         CONFIG_AR=xiar

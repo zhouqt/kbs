@@ -32,6 +32,10 @@
 #include <netinet/in.h>
 #include <netdb.h>
 
+#ifdef HAVE_SYS_IOCTL_H
+#include <sys/ioctl.h>
+#endif
+
 #ifdef SOLARIS
 #include <sys/filio.h>
 #endif
