@@ -1,15 +1,44 @@
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<title>Web BBS system</title>
-</head>
-  <frameset frameborder="0" border="0" cols="144,*">
-    <frame name="f2" framespacing="2" src="/cgi-bin/bbs/bbsleft">
-    <frameset rows="18, *, 20">
-      <frame scrolling="no" marginwidth="4" marginheight="0" framespacing="0" name="fmsg" src="/cgi-bin/bbs/bbsgetmsg">
-      <frame framespacing="2" name="f3" src="/cgi-bin/bbs/bbssec">
-      <frame scrolling="no" marginwidth="4" marginheight="1" framespacing="1" name="f4" src="/cgi-bin/bbs/bbsfoot">
-    </frameset>
-  </frameset>
-</html>
+<html><head> 
+<style type="text/css">
+<!--
+.unnamed1 {  font-size: 9pt}
+-->
+</style>
 
+<title>BBS 水木清华站</title>
+</head>
+<body leftmargin="0" topmargin="0" marginwidth="1" marginheight="1">
+<div align="left">
+  <table width="760" border="0" cellspacing="0" cellpadding="0">
+    <tr>
+      <td valign="middle" align="left"><img src="images/smth.jpg" width="760" height="500" border="0"> 
+        <form action=bbslogin.jsp method=post name=form1 >
+        <div id="Layer2" style="position:absolute; width:279px; height:46px; z-index:2; left: 89px; top: 185px; background-image: url(images/back1.gif); layer-background-image: url(images/back1.gif); border: 1px none #000000"> 
+            <table align=center bgcolor=#ffffff border=0 bordercolordark=#ffffff bordercolorlight=#000000 cellpadding=0 cellspacing=0 width="100%" height="49%" background="images/back1.gif">
+              <tr align="center" valign="middle"> 
+                <td width="180" valign="bottom" height="27"><font style="font-size: 14px">帐号 
+                  <input type="text" name="id" onMouseOver="this.focus()" onFocus="this.select()" size="16" maxlength="12">
+                  </font> </td>
+                <td width="71" height="27"> 
+                  <input type="submit" value="登　录" style="font-size: 14px; background-color:rgb(246,167,133); color: #F000000" name="submit">
+                </td>
+              </tr>
+              <tr align="center" valign="middle"> 
+                <td width="180" height="22"> <font style="font-size: 14px">密码 
+                  <input type="password" name="passwd" size="16" maxlength="39">
+                  </font> </td>
+<!--
+                <td width="71">
+                  <input type="submit" name="guest" value="匿名登陆" style="font-size: 14px; background-color:rgb(246,167,133); color: #F000000">
+                </td>
+--->
+              </tr>
+            </table>
+        </div>
+      </form>
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>
