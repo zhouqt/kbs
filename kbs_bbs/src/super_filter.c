@@ -370,11 +370,11 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
 #endif
         if(load_content) {
-            set_vars(fvars+fget_var("contentx"), ptr->filename);
+            set_vars(fvars+fget_var("contentx"), ptr1->filename);
             fd3 = open(ptr1->filename, O_RDONLY, 0664);
             if(fd3!=-1) {
                 int j;
-                j = safe_mmapfile_handle(fd3, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize)
+                j = safe_mmapfile_handle(fd3, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize);
                 if(j==2) {
                     end_mmapfile((void*)p, fsize, -1);
                     close(fd3);
