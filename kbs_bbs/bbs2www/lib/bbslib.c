@@ -3179,8 +3179,10 @@ int web_send_sms(char *dest,char *msgstr){
 			strcpy(uident, destud.mobilenumber);
 	}
 
-	if(!cansend)
+	if(!cansend){
+		shmdt(head);
 		return -2;
+	}
 
 	ret = DoSendSMS(ud.mobilenumber, uident, msgstr);
 
@@ -3194,6 +3196,7 @@ int web_send_sms(char *dest,char *msgstr){
 	}
 
 	if( ret ){
+		shmdt(head);
 		return 1;
 	}else{
 		struct msghead h;
@@ -3218,6 +3221,7 @@ int web_send_sms(char *dest,char *msgstr){
 		}
 	}
 
+	shmdt(head);
 	return 0;
 
 }
