@@ -2002,6 +2002,7 @@ static int check_newpost(struct newpostdata *ptr, bool no_brc)
     if (bptr == NULL)
         return 0;
     ptr->total = bptr->total;
+    ptr->currentusers = bptr->currentusers;
 
     if (!strcmp(getCurrentUser()->userid, "guest")) {
         ptr->unread = 1;
@@ -2022,7 +2023,7 @@ static int check_newpost(struct newpostdata *ptr, bool no_brc)
     return 1;
 }
 
-#define BOARD_COLUMNS 11
+#define BOARD_COLUMNS 12
 
 char *brd_col_names[BOARD_COLUMNS] = {
     "NAME",
@@ -2035,7 +2036,8 @@ char *brd_col_names[BOARD_COLUMNS] = {
     "BID",
     "POSITION",                  /* added by caltary */
     "FLAG" ,          /* is group ?*/
-	"NPOS"
+	"NPOS" ,
+	"CURRENTUSERS"      /* added by atppp */
 };
 
 /* added by caltary */
@@ -2078,6 +2080,8 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
         ZVAL_LONG(value, brd->pos+1);/*added end */
     } else if (strncmp(col_name, "NPOS", len) == 0){
         ZVAL_LONG(value, brd->pos);/*added end */
+    } else if (strncmp(col_name, "CURRENTUSERS", len) == 0){
+        ZVAL_LONG(value, brd->currentusers);
     } else {
         ZVAL_EMPTY_STRING(value);
     }
