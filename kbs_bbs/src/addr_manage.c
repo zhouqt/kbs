@@ -2,7 +2,7 @@
 #if HAVE_MYSQL == 1
 #include "mysql.h"
 
-#define MAX_ADDRLIST 300
+#define MAX_ADDRLIST 400
 
 /**********************************************************
  * mysql½á¹¹:
