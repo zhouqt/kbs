@@ -9,7 +9,7 @@ MYSQL_ROW row;
 
 int topn;
 char topid[100][14];
-int topscore[100][14];
+int topscore[100];
 int score;
 
 void load_board()
@@ -93,7 +93,7 @@ int init_quiz()
         move(4,13);
         setfcolor(WHITE,1);
         prints("===排行榜(%d--%d)===", k*10+1, k*10+10);
-        move(5,15);
+        move(6,15);
         setfcolor(RED,1);
         prints("╭───────╮");
         for(i=0;i<10;i++){
@@ -110,12 +110,17 @@ int init_quiz()
                 move(7+i, 17);
                 setfcolor(GREEN,1);
                 sprintf(p, "%d %-12s %d", i+1+k*10, topid[i+k*10], topscore[i+k*10]);
-                prints(users[i].userid);
+                prints(p);
             }
-            move(4+i, 31);
+            move(7+i, 31);
             setfcolor(RED,1);
             prints("│");
         }
+        move(17,15);
+        setfcolor(RED,1);
+        prints("╰───────╯");
+
+        resetcolor();
         getdata(19, 22, "开始游戏(Y-开始,N-退出)", ans, 3, 1, NULL, 1);
         if(toupper(ans[0])=='Y')
             return 1;
@@ -140,6 +145,8 @@ int quiz_test()
             res = mysql_store_result(&s);
             row = mysql_fetch_row(&res);
         }while(row==NULL);
+        prints(row[1]);
+        refresh(); sleep(1);
         level = atoi(row[1]);
         style = atoi(row[2]);
         strcpy(question, row[3]);
@@ -164,7 +171,7 @@ int quiz_test()
             for(j=0;j<anscount;j++) {
                 move(4+j,0);
                 clrtoeol();
-                prints("%c. %s  %s", 'A'+j, ans[j], (now[j]=='1'):"*":"");
+                prints("%c. %s  %s", 'A'+j, ans[j], (now[j]=='1')?"*":"");
             }
             getdata(anscount+6, 0, "请选择(多选题按回车结束):", input, 3, 1, NULL, 1);
             input[0] = toupper(input[0]);
