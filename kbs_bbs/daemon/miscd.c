@@ -160,11 +160,14 @@ int ismonday()
 }
 
 static char* username;
+static char* cmd;
+static int num;
 int getrequest(int m_socket)
 {
         int len;
         struct sockaddr_in sin;
         int s;
+	char* pnum;
         len = sizeof(sin);
 
         for (s = accept(m_socket,&sin,&len);;s = accept(m_socket,&sin,&len)) {
@@ -177,9 +180,13 @@ int getrequest(int m_socket)
                 len = read(s,tmpbuf,255);
                 if (len<=0) {close (s) ;continue;}
                 strtok(tmpbuf," ");
+		cmd=tmpbuf;
                 username = strtok(NULL," ");
+                pnum = strtok(NULL," ");
+		num = atoi(pnum);
                 if (strcmp(tmpbuf,"QUIT")==0) exit(0);
                 if (strcmp(tmpbuf,"NEW") == 0) break;
+                if (strcmp(tmpbuf,"SET") == 0) break;
                 close(s);
         }
         return s;
@@ -203,6 +210,7 @@ void userd()
     	exit(-1);
     }
     setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,&opt,4);
+    memset(&sin,0,sinlen);
     sin.sin_family = AF_INET;
     sin.sin_port = htons(60001);
     inet_aton("127.0.0.1",&sin.sin_addr);
@@ -218,7 +226,12 @@ void userd()
         int sock,id;
      
         sock = getrequest(m_socket);
-        id = getnewuserid(username);
+	if (!strcmp(cmd,"NEW"))
+		id = getnewuserid(username);
+	if (!strcmp(cmd,"SET")) {
+		setuserid2(num,username);
+		id = 0;
+        }
         putrequest(sock,id);
     }
     return;

@@ -388,7 +388,6 @@ int getuserid(char * userid, int uid)
 void
 setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user id*/
 {
-    ucache_setreadonly(0);
     if( num > 0 && num <= MAXUSERS ) {
     	int oldkey,newkey,find;
         if( num > uidshm->number )
@@ -423,15 +422,50 @@ setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user
 /*        }	        */
         strncpy( passwd[ num - 1 ].userid, userid, IDLEN+1 );
     }
-    ucache_setreadonly(1);
 }
 
-void setuserid( int num,const char * userid)
+void setuserid2( int num,const char * userid)
 {
     int lockfd;
     lockfd=ucache_lock();
     setuserid_internal(num,userid);
     ucache_unlock(lockfd);
+}
+
+void setuserid(int num,const char * userid)
+{
+
+        int m_socket;
+        char cmdbuf[255];
+        struct sockaddr_in sin;
+        fd_set rfds;
+        int result;
+        struct  timeval tv;
+        m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+        if (m_socket<0) return -1;
+        sin.sin_family=AF_INET;
+        sin.sin_port=htons(60001);
+        inet_aton("127.0.0.1",&sin.sin_addr);
+        if (connect(m_socket,(struct sockaddr*)&sin,sizeof(sin))!=0) {
+                close(m_socket);
+                return -1;
+        }
+        sprintf(cmdbuf,"SET %s %d",userid,num);
+        write(m_socket,cmdbuf,strlen(cmdbuf));
+        FD_ZERO(&rfds);
+        FD_SET(m_socket,&rfds);
+        tv.tv_sec=5;
+        tv.tv_usec=0;
+        result = select(m_socket+1,&rfds,NULL,NULL,&tv);
+        if (result)
+        {
+                int len=read(m_socket,&result,sizeof(result));
+                close(m_socket);
+                if (len!=sizeof(result)) return -1;
+                return result;
+        }
+        close(m_socket);
+        return -1;
 }
 
 int
