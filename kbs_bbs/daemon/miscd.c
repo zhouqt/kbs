@@ -66,7 +66,6 @@ int killdir(char *basedir, char *filename)
             strcat(genbuf1, "/");
             strcat(genbuf1, afile->filename);
             unlink(genbuf1);
-	    printf("unlink %s\n",genbuf1);
             deleted++;
         } else {
             write(fd, afile, sizeof(struct fileheader));
