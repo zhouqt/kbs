@@ -93,7 +93,7 @@
 		exit();
 	}
 	
-	if($pur != 3 && $node[nodetype]==0)
+	if(!($pur == 3 && !pc_is_groupwork($pc)) &&  $node[nodetype]==0)
 	{
 		pc_counter($link);
 		pc_ncounter($link,$comment[nid]);

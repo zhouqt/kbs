@@ -284,7 +284,7 @@
             $author = $rows[username];
 	}
 	
-	if($pur != 3 && $rows[nodetype] == 0)
+	if(!($pur == 3 && !pc_is_groupwork($pc)) && $rows[nodetype] == 0)
 	{
 		pc_counter($link);
 		pc_ncounter($link,$nid);

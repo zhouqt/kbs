@@ -775,7 +775,7 @@ Blog名
 	if(!$tags[$tag]) $tag = 0;
 	
 	/*visit count start*/
-	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
+	if(!($pur == 3 && !pc_is_groupwork($pc)))//Blog所有者的访问不进行计数  windinsn dec 10,2003
 		pc_counter($link);
 	/*visit count end*/
 	
