@@ -1,9 +1,12 @@
 #!/bin/sh
+# $Id$
 
+# 修改这里的参数定制您的站点
 BBSHOME=/usr/local/bbs
 BBSSITE=devel
 WWWROOT=/var/www
 
+# 以下的代码请不要修改，除非您能确定自己在干什么
 if [ -f Makefile ]; then
 	make distclean
 fi
