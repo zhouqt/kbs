@@ -700,22 +700,31 @@ function show_footer()
 ?>
 <p>
 <TABLE cellSpacing=0 cellPadding=0 border=0 align=center>
-<tr><td align=center>
-<?php   echo $Forum_ads[1]; ?>
-</td></tr>
-<tr><td align=center nowrap>
-<?php   echo $Version; ?><br>
-<?php   echo $Copyright; ?>
- , 页面执行时间：<?php  printf(number_format(($endtime-$StartTime)*1000,3)); ?>毫秒
-</td></tr>
-</table>
-<br>
-<TABLE cellSpacing=0 cellPadding=0 border=0 align=center>
 <tr>
-<td width="100" align="center" ><a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="images/wforum.gif"></a></td>
-<td></td>
+	<td align=center>
+		<a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="/images/wforum.gif"></a><br>
+		<nobr><?php   echo $Version; ?></nobr>
+	</td>
+	<td>
+		<TABLE cellSpacing=0 cellPadding=0 border=0 align=center>
+		<tr>
+			<td align=center>
+				<?php   echo $Forum_ads[1]; ?>
+			</td>
+		</tr>
+		<tr>
+		</tr>
+		<tr>
+			<td align=center nowrap>
+				<?php   echo $Copyright; ?>
+ 				, 页面执行时间：<?php  printf(number_format(($endtime-$StartTime)*1000,3)); ?>毫秒
+			</td>
+		</tr>
+		</table>
+	</td>
 </tr>
-</table>
+</TABLE>
+<br>
 <br>
 <br>
 </body>
