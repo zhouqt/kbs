@@ -580,6 +580,10 @@ void join_room(struct room_struct * r)
                                     for(j=0;j<myroom->people;j++)
                                         send_msg(inrooms.peoples+j, buf);
                                 }
+                                start_change_inroom(myroom);
+                                for(j=0;j<myroom->people;j++)
+                                    inrooms.peoples[j].vote=0;
+                                end_change_inroom();
                             }
                             else {
                                 int a=0,b=0;
