@@ -98,7 +98,7 @@ function doPostAritcles($boardID,$boardName,$boardArr,$reID,$reArticles){
 			foundErr("找不到文件!");
 	}
 ?>
-<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr align=center><th width="100%">文章编辑成功</td>
 </tr><tr><td width="100%" class=TableBody1>
 本页面将在3秒后自动返回版面文章列表<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=board.php?name=<?php echo $boardName; ?>' >，<b>您可以选择以下操作：</b><br><ul>

@@ -286,7 +286,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	if ($loginok && $is_online) {
 		echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border=0 alt="'.$c.'，在线，有人找我吗？"/></a>';
 	} else {
-		echo '<img src="'.$img.'" border=0 alt="'.$c.'，离线"/>';
+		echo '<img src="'.$img.'" border=0 alt="'.$c.'，'.($is_online?'在线':'离线').'"/>';
 	}
 ?>
 </td>

@@ -1,5 +1,7 @@
 <?php
 
+$setboard=1;
+
 require("inc/funcs.php");
 require("inc/board.inc.php");
 require("inc/user.inc.php");
