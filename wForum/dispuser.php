@@ -61,11 +61,6 @@ require("inc/userdatadefine.inc.php");
 <a href="sendmail.php?receiver=<?php echo $user['userid']; ?>" title="给该用户发信">发信问候</a> | 
 <a href="friendlist.php?addfriend=<?php echo $user['userid']; ?>" title="将该用户添加到好友列表">加为好友</a>
 </b>
-<!-- 先注释掉 atppp
-当前位置：[测试帖子列表]<img src=pic/zhuangtai.gif width=16 height=16 align=absmiddle> 
-      状态：
-正常  [在线：0Mins]
--->
   </td>
   </tr>
 </table>
@@ -261,34 +256,11 @@ if (SHOW_REGISTER_TIME && ($user['userdefine0'] & BBS_DEF_SHOWREALUSERDATA)) {
   <tr>
     <th align=left colspan=6 height=25> 论坛属性</th>
   </tr>
-  <tr>
-    <td class=TableBody1 width=15% align=right>积分：</td>
-
-    <td  width=35%  class=TableBody1><b><?php echo $user['score']; ?> </b></td>
-    <td width=15% align=right class=TableBody1>精华帖子：</td>
-    <td width=35%  class=TableBody1> <b>N/A</b>篇</td>
-  </tr>
   <tr> 
-    <td class=TableBody1 width=15% align=right>魅力值：</td>
-    <td  width=35%  class=TableBody1><b>N/A </b></td>
+    <td class=TableBody1 width=15% align=right>论坛职务：</td>
+    <td  width=35%  class=TableBody1><b><?php echo bbs_getuserlevel($user['userid']); ?> </b></td>
     <td width=15% align=right class=TableBody1>帖子总数：</td>
     <td width=35%  class=TableBody1><b><?php echo $user['numposts']; ?></b> 篇</td>
-  </tr>
-  <tr> 
-    <td class=TableBody1 width=15% align=right>论坛等级：</td>
-    <td  width=35%  class=TableBody1><b><?php echo bbs_getuserlevel($user['userid']); ?> </b></td>
-    <td width=15% align=right class=TableBody1>被删主题：</td>
-    <td width=35%  class=TableBody1><b><font color=#FF0000>N/A</font></b> 
-      篇</td>
-  </tr>
-  <tr> 
-    <td class=TableBody1 width=15% align=right>威望值：</td>
-    <td  width=35%  class=TableBody1><b><font color=#FF0000>N/A</font> </b></td>
-    <td width=15% align=right class=TableBody1>被删除率：</td>
-<td width=35%  class=TableBody1><b></b> <font color=#FF0000><b>
-N/A
-</b></font> 
-    </td>
   </tr>
   <tr> 
     <td class=TableBody1 width=15% align=right>门  派：</td>
@@ -305,53 +277,16 @@ N/A
     <td width=15% align=right class=TableBody1>上次登录：</td>
     <td width=35%  class=TableBody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['lastlogin']); ?></b></td>
   </tr>
-</table>
-<br>
-<table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
   <tr> 
-    <th align=left colspan=4>
-      资产情况</th>
-  </tr>
-  <tr> 
-    <td class=TableBody1 width=15% align=right>现金货币：</td>
-    <td width=35%  class=TableBody1><b><?php echo $user['money']; ?></b></td>
-    <td colspan=2 valign=top rowspan=4 class=TableBody1>论坛职务：
-      <hr size=1 width=100 align=left>
-<?php echo bbs_getuserlevel($user['userid']); ?><br>
-      </td>
-  </tr>
-  <tr> 
-    <td class=TableBody1 width=15% align=right>股票市值：</td>
-    <td  width=35%  class=TableBody1><b>N/A</b></td>
-  </tr>
-
-  <tr> 
-    <td class=TableBody1 width=15% align=right>银行存款：</td>
-    <td width=35%  class=TableBody1><b>N/A</b></td>
-  </tr>
-  <tr> 
-    <td class=TableBody1 width=15% align=right>总 资 产：</td>
-    <td width=35%  class=TableBody1><b>N/A</b></td>
+    <td  width="50%"  class="TableBody1" colspan="2" align="center"><b><?php 
+    	$usermodestr = bbs_getusermode($user["userid"]);
+    	if( $usermodestr!="" && $usermodestr{1} != "") echo substr($usermodestr, 1);
+    	else echo "目前不在站上"; ?></b></td>
+    <td width=15% align=right class=TableBody1>最后来访IP：</td>
+    <td width=35%  class=TableBody1><b><?php echo $user['lasthost']; ?></b></td>
   </tr>
 </table>
 <br>
-
-<table class=TableBorder1 cellspacing=1 cellpadding=3 align=center>
-<tr><th height="25" align=left colspan=2>快捷管理选项</th></tr>
-
-<!-- 暂时禁止 - atppp
-<tr><td class=TableBody1 height=25 colspan=2>
-<B>用户管理选项</B>：   『 <a href=# onclick="alert('该功能尚在开发中。');" title=锁定该用户不允许登录和发言>锁定</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=屏蔽该用户在论坛的发言>屏蔽</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=解除该用户在论坛的锁定和屏蔽>解除</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=对用户进行分值奖励>奖励</a> | <a href=# onclick="alert('该功能尚在开发中。');">编辑该用户论坛权限</a> 』
-</td></tr>
--->
-
-<tr><td class=TableBody1 valign=middle height=25 colspan=2>
-<B>用户最后来访IP</B>：   <a href=# onclick="alert('该功能尚在开发中。');"><?php echo $user['lasthost']; ?></a>&nbsp;&nbsp;点击IP查看用户来源及操作
-</td></tr>
-
-</table>
-
 <?php
 }
-
 ?>
