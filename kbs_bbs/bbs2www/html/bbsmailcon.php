@@ -147,6 +147,16 @@ function get_mimetype($name)
 				}
 ?>
 [<a href="/bbspstmail.php?userid=<?php echo $articles[0]["OWNER"]; ?>&file=<?php echo $articles[0]["FILENAME"]; ?>&title=<?php if(strncmp($articles[0]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[0]["TITLE"]); ?>">回信</a>]
+</center><br>
+<center>
+[<form action="/bbsmailfwd.php" method="post">
+<input type="hidden" name="dir" value="<?php echo $dirname;?>">
+<input type="hidden" name="id" value="<?php echo $num;?>">
+把信件转寄给 <input type="text" name="target" size="40" maxlength="69" value="<?php echo $currentuser["email"];?>"> (请输入对方的id或email地址). 
+(<input type="checkbox" name="big5" value="1">使用BIG5码)&nbsp;
+(<input type="checkbox" name="noansi" value="1" checked>过滤ANSI控制符)
+<input type="submit" name="submit" value="确定转寄">
+</form>]
 </center>
 <?php
 			}

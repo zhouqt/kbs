@@ -2162,7 +2162,8 @@ static PHP_FUNCTION(bbs_delete_friend)
 
 static PHP_FUNCTION(bbs_domailforward)
 {
-    char *fname, *tit, *target;
+    char *fname, *tit, *target1;
+	char target[128];
     long filename_len,tit_len,target_len;
     bcache_t bh;
 	long big5,noansi;
@@ -2170,12 +2171,18 @@ static PHP_FUNCTION(bbs_domailforward)
 	char title[512];
 	struct userec *u;
     
-	if (ZEND_NUM_ARGS() != 5 || zend_parse_parameters(5 TSRMLS_CC, "sssll", &fname, &filename_len, &tit, &tit_len, &target, &target_len, &big5, &noansi) != SUCCESS) {
+	if (ZEND_NUM_ARGS() != 5 || zend_parse_parameters(5 TSRMLS_CC, "sssll", &fname, &filename_len, &tit, &tit_len, &target1, &target_len, &big5, &noansi) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
 
+	strncpy(target, target1, 128);
+	target[127]=0;
+
     if( target[0] == 0 )
         RETURN_LONG(-3);
+
+	if( strstr(target, "@" MAIL_BBSDOMAIN) )
+		strcpy(target, currentuser->userid);
     if( !strchr(target, '@') ){
         if( HAS_PERM(currentuser, PERM_DENYMAIL) )
             RETURN_LONG(-5);

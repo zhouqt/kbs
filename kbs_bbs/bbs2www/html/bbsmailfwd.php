@@ -39,6 +39,7 @@
 			html_error_quit("ÐÅ¼ã²»´æÔÚ1");
 		}
 
+		$articles = array ();
 		if( bbs_get_records_from_num($dir, $num, $articles) ) {
 			$file = $articles[0]["FILENAME"];
 		}else{
