@@ -136,7 +136,7 @@ static int set_smsg_prekey(struct _select_def *conf, int *key)
 static int set_smsg_refresh(struct _select_def *conf)
 {
 	clear();
-	docmdtitle("[¶ÌĞÅ¹ÜÀí]","ÍË³ö[[1;32mq[m] É¾³ı[[1;32md[m] ³¬¼¶Ñ¡Ôñ[[1;32ms[m] ÏÔÊ¾ËùÓĞ¶ÌĞÅ[[1;32ma[m] »Ø¸´¶ÌĞÅ[[1;32mS[m] µ¹ĞòÅÅÁĞ[[1;32mr[m]");
+	docmdtitle("[¶ÌĞÅ¹ÜÀí]","°ïÖú[[1;32mh[m] É¾³ı[[1;32md[m] Ñ¡Ôñ[[1;32ms[m] »Ø¸´¶ÌĞÅ[[1;32mS[m] ¸ü¸Ä¶ÌÏûÏ¢Ç°/ºó×º[[1;32mz[m]");
 	move(2,0);
 	prints("[0;1;37;44m  %-4s %-13s %-14s %-2s %-40s[m","ĞòºÅ","¶ÔÏó","Ê±¼ä", "Àà", "ÄÚÈİ");
 	update_endline();
@@ -281,6 +281,61 @@ static int set_smsg_key(struct _select_def *conf, int key)
 	{
 		sm_desc = ! sm_desc;
 		return SHOW_DIRCHANGE;
+	}
+	case 'z':
+	{
+		char ans[42];
+
+		clear();
+		prints("ĞŞ¸Ä¶ÌÏûÏ¢Ç°×º/ºó×º,ÕâĞ©»áÔÚ·¢ËÍµÄ¶ÌÏûÏ¢ÄÚÈİÇ°/ºóÏÔÊ¾,Õ¼¶ÌÏûÏ¢×Ö½Ú");
+
+		if(currentmemo->ud.smsprefix[0])
+			strcpy(ans, currentmemo->ud.smsprefix);
+		else
+			ans[0]=0;
+		move(2,0);
+		prints("ÇëÊäÈëĞÂµÄÇ°×º:");
+		multi_getdata(3, 0, 79, NULL, ans, 41, 6, false, 0);
+		if(ans[0]){
+			strncpy(currentmemo->ud.smsprefix, ans, 20);
+			currentmemo->ud.smsprefix[40]=0;
+		}else
+			currentmemo->ud.smsprefix[0]=0;
+
+		if(currentmemo->ud.smsend[0])
+			strcpy(ans, currentmemo->ud.smsend);
+		else
+			ans[0]=0;
+		move(10,0);
+		prints("ÇëÊäÈëĞÂµÄºó×º:");
+		multi_getdata(11, 0, 79, NULL, ans, 41, 6, false, 0);
+		if(ans[0]){
+			strncpy(currentmemo->ud.smsend, ans, 20);
+			currentmemo->ud.smsend[40]=0;
+		}else
+			currentmemo->ud.smsend[0]=0;
+
+		write_userdata( currentuser->userid, &(currentmemo->ud) );
+
+		move(18,0);
+		prints("ĞŞ¸Ä³É¹¦");
+		pressreturn();
+
+		return SHOW_REFRESH;
+	}
+	case 'h':
+	{
+		clear();
+		prints("           ¶ÌĞÅ¹ÜÀíÆ÷°ïÖú\n\n");
+		prints("   d   É¾³ı¶ÌĞÅ\n");
+		prints("   s   ³¬¼¶Ñ¡Ôñ\n");
+		prints("   a   ÏÔÊ¾ËùÓĞ¶ÌĞÅ\n");
+		prints("   S   »Ø¸´¶ÌĞÅ\n");
+		prints("   r   µ¹ĞòÅÅÁĞ\n");
+		prints("   z   ¸ü¸Ä¶ÌĞÅÇ°/ºó×º\n");
+		pressreturn();
+
+		return SHOW_REFRESH;
 	}
 	default:
 		break;

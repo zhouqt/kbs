@@ -847,6 +847,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     struct user_info *uin;
     struct userdata udata;
     char buf[MAX_MSG_SIZE], ans[4];
+	char buf1[MAX_MSG_SIZE];
     int oldmode;
     int result, ret;
     bool cansend=true;
@@ -942,6 +943,20 @@ checksmsagain:
     }
     else
         strcpy(buf, msgstr);
+
+	if( strlen(buf) + strlen(currentmemo->ud.smsprefix) + strlen(currentmemo->ud.smsend) < MAX_MSG_SIZE ){
+		int i,i1,j;
+
+		i=strlen(buf);
+		i1=strlen(currentmemo->ud.smsprefix);
+		for(j= i+i1; j>=i1; j--){
+			buf[j] = buf[j-i1];
+		}
+		for(j=0;j<i1;j++)
+			buf[j] = currentmemo->ud.smsprefix[j];
+		strcat(buf, currentmemo->ud.smsend);
+
+	}
 
 //    ret = DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
     ret = DoSendSMS(currentmemo->ud.mobilenumber, udata.mobilenumber, buf);
