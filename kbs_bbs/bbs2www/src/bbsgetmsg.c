@@ -17,7 +17,7 @@ int main()
 	}
 	if (receive_webmsg(get_utmpent_num(getcurruinfo()), getcurruserid(), &srcutmp, srcid, buf) == 0)
 	{
-		printf("<bgsound src=\"sound/msg.wav\">\n");
+		printf("<bgsound src=\"/sound/msg.wav\">\n");
 		printf("<body onkeypress=\"checkrmsg(event.keyCode)\" style=\"BACKGROUND-COLOR: #f0ffd0\">");
 		printf("<table width=\"100%%\">\n");
 		printf("<tr><td>");
