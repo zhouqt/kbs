@@ -249,7 +249,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     }
 	if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
 	{
-        strcpy(msgerr, "对方正在穿梭银河，请稍候再发或给他(她)写信...\n");
+        strcpy(msgerr, "对方正在系统维护，请稍候再发或给他(她)写信...\n");
         return -1;
 	}
     if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
