@@ -44,6 +44,16 @@ void makesize(struct var_struct * a, int h, int w)
     a->width = w;
 }
 
+void del(struct var_struct * a)
+{
+    int i;
+    if(a->p) {
+        for(i=0;i<a->height;i++)
+            free(a->p[i]);
+        free(a->p);
+    }
+}
+
 int is_single_var(struct var_struct * a)
 {
     return (a->height==1&&a->width==1);
@@ -78,6 +88,19 @@ void sub_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             c->p[i][j]=a->p[i][j]-b->p[i][j];
+}
+
+void mul_var(struct var_struct * a, struct var_struct * b, struct var_struct * c)
+{
+    int i,j,k;
+    makesure(a->width==b->height);
+    makesize(c, a->height, b->width);
+    for(i=0;i<a->height;i++)
+        for(j=0;j<b->width;j++) {
+            c->p[i][j]=0;
+            for(k=0;k<a->width;k++)
+                c->p[i][j]+=a->p[i][k]*b->p[k][j];
+        }
 }
 
 void setzero(struct var_struct * a)
@@ -159,6 +182,103 @@ void multcol(struct var_struct * s, int a, double r)
     for(i=0;i<s->height;i++) {
         s->p[i][a] *= r;
     }
+}
+
+void reverse(struct var_struct * s, struct var_struct * t)
+{
+    int i,j;
+    makesize(t, s->width, s->height);
+    for(i=0;i<s->width;i++)
+        for(j=0;j<s->height;j++)
+            t->p[i][j]=s->p[j][i];
+}
+
+double envalue(struct var_struct * s)
+{
+    int i,j,flag;
+    double result,ration;
+    struct var_struct temp;
+    if(s->height!=s->width) {
+        err=1;
+        return 0;
+    }
+    temp.p = 0;  
+    copy_var(s, &temp);
+    result=1;
+    for (i=0;i<temp.height;i++) {
+        if (temp.p[i][i]==0) {
+            flag=0;
+            for (j=i+1;j<temp.height;j++) {
+                if (temp.p[j][i]!=0) {
+                    swaprow(temp,i,j);
+                    result*=-1;
+                    flag=1;
+                    break;
+                }
+            }
+        }
+        if (flag==0) {
+            del(&temp);
+            return 0;
+        }
+        //保证对角线元素不为零
+        for (j=i+1;j<temp.height;j++) {
+            ration=-temp.p[j][i]/temp.p[i][i];
+            plusrow(temp,i,j,ration);
+        }
+        result*=temp.p[i][i];
+    }
+    del(&temp);
+    return result;
+}
+
+void inverse(struct var_struct * s, struct var_struct * A)
+{
+    int i,j;
+    double ration;
+    struct var_struct temp,tempA;
+    makesure(A->height==A->width);
+    temp.p = 0; tempA.p = 0;
+    makesize(&temp, A->height, A->height);
+    setunit(&temp);
+    copy_var(A, &tempA);
+    for (i=0;i<temp.height;i++) {
+        if (tempA.p[i][i]==0) {
+            for (j=i+1;j<temp.height;j++) {
+                if (tempA.p[j][i]!=0) {
+                    swaprow(&tempA,i,j);
+                    swaprow(&temp,i,j);
+                    break;
+                }
+            }
+        }
+        if(fabs(tempA.p[i][i])<MINIMUM) {
+            del(&temp);
+            del(&tempA);
+            err=1;
+            return;
+        }
+        //保证对角线元素不为零
+        ration=1/tempA.p[i][i];
+        multrow(&tempA,i,ration);
+        multrow(&temp,i,ration);
+        for (j=i+1;j<temp.height;j++) {
+            ration=-tempA.p[j][i];
+            plusrow(&tempA,i,j,ration);
+            plusrow(&temp,i,j,ration);
+        }
+    }
+    //现已变成对角线元素为1的上三角阵
+    for (i=0;i<temp.height;i++) {
+        for (j=0;j<i;j++) {
+            ration=-tempA.p[j][i];
+            plusrow(&tempA,i,j,ration);
+            plusrow(&temp,i,j,ration);
+        }
+    }
+    copy_var(s, &temp);
+    del(&temp);
+    del(&tempA);
 }
 
 int get_var(char * name)
@@ -256,6 +376,72 @@ int get_rl2(char * s, int r, int l)
     else return -1;
 }
 
+double factorial( double f )
+{
+    double x, fp=f, ff, prod=0.24197072451914334979783;
+    while (fp<20.0) {
+        fp += 1.0;
+        prod *= fp;
+    }
+
+    ff = fp*fp;
+    x = exp( (fp + 0.5) * (log(fp)-1)
+      +(1.0/12.0 - (1.0/360.0 - (1.0/1260.0 - (1.0/1680.0
+      -1.0/(ff*1188.0))/ff)/ff)/ff)/fp ) / prod;
+    return(x);
+}
+
+char funcname[][8]=
+{"sin","cos","tan","asin","acos","atan",
+"log","exp","ln","fact",
+"sinh","cosh","tanh","asinh","acosh","atanh",
+"abs","sign","sqr","sqrt","round","floor","ceil",
+"det","inv",
+""};
+
+void take_func(struct var_struct * p, struct var_struct * q, int kind)
+{
+    int i,j;
+    makesure(1);
+    if(kind<23) {
+        makesize(p, q->height, q->width);
+        for(i=0;i<q->height;i++)
+            for(j=0;j<q->width;j++) {
+                switch(kind) {
+                    case 0: p->p[i][j]=sin(q->p[i][j]); break;
+                    case 1: p->p[i][j]=cos(q->p[i][j]); break;
+                    case 2: p->p[i][j]=tan(q->p[i][j]); break;
+                    case 3: p->p[i][j]=asin(q->p[i][j]); break;
+                    case 4: p->p[i][j]=acos(q->p[i][j]); break;
+                    case 5: p->p[i][j]=atan(q->p[i][j]); break;
+                    case 6: p->p[i][j]=log10(q->p[i][j]); break;
+                    case 7: p->p[i][j]=exp(q->p[i][j]); break;
+                    case 8: p->p[i][j]=log(q->p[i][j]); break;
+                    case 9: p->p[i][j]=factorial(q->p[i][j]); break;
+                    case 10: p->p[i][j]=sinh(q->p[i][j]); break;
+                    case 11: p->p[i][j]=cosh(q->p[i][j]); break;
+                    case 12: p->p[i][j]=tanh(q->p[i][j]); break;
+                    case 13: p->p[i][j]=asinh(q->p[i][j]); break;
+                    case 14: p->p[i][j]=acosh(q->p[i][j]); break;
+                    case 15: p->p[i][j]=atanh(q->p[i][j]); break;
+                    case 16: p->p[i][j]=fabs(q->p[i][j]); break;
+                    case 17: p->p[i][j]=(q->p[i][j]>0)?1:((q->p[i][j]<0)?-1:0); break;
+                    case 18: p->p[i][j]=(q->p[i][j])*(q->p[i][j]); break;
+                    case 19: p->p[i][j]=sqrt(q->p[i][j]); break;
+                    case 20: p->p[i][j]=rint(q->p[i][j]); break;
+                    case 21: p->p[i][j]=floor(q->p[i][j]); break;
+                    case 22: p->p[i][j]=ceil(q->p[i][j]); break;
+                }
+            }
+    }
+    else {
+        switch(kind) {
+            23: set_var(p, envalue(q)); break;
+            24: inverse(p, q); break;
+        }
+    }
+}
+
 void eval(struct var_struct * p, char * s, int l, int r)
 {
     int i,j,n;
@@ -294,12 +480,23 @@ void eval(struct var_struct * p, char * s, int l, int r)
     i=l;
     while(isalpha(s[i])&&i<=r) i++;
     if(i>l&&s[i]=='('&&s[r]==')'&&get_rl(s,r,l)==i) {
+        struct var_struct u;
         strcpy(buf, s+l);
         buf[i-l]=0;
-        struct var_struct u;
-        u.p = 0;
-        eval(&u, s, i+1, r-1);
-        set_var(p, 0);
+        j=0;
+        while(funcname[j][0]) {
+            if(!strcasecmp(funcname[j],buf)) break;
+            j++;
+        }
+        if(funcname[j][0]) {
+            u.p = 0;
+            eval(&u, s, i+1, r-1);
+            makesure(1);
+            take_func(p, &u, j);
+            del(&u);
+        }
+        else
+            err=1;
         return ;
     }
     for(j=0;j<5;j++) {
@@ -309,7 +506,9 @@ void eval(struct var_struct * p, char * s, int l, int r)
                 struct var_struct m1,m2;
                 m1.p=0; m2.p=0;
                 eval(&m1,s,l,n-1);
+                makesure(1);
                 eval(&m2,s,n+1,r);
+                makesure(1);
                 switch(j) {
                     case 0:
                         add_var(&m1, &m2, p);
@@ -318,6 +517,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
                         add_var(&m1, &m2, p);
                         break;
                     case 2:
+                        mul_var(&m1, &m2, p);
                         break;
                     case 3:
                         makesure(is_single_var(&m1)&&is_single_var(&m2));
@@ -330,12 +530,23 @@ void eval(struct var_struct * p, char * s, int l, int r)
                         set_var(p, exp(log(**(m1.p))*(**(m2.p))));
                         break;
                 }
+                del(&m1);
+                del(&m2);
                 return;
             }
             if(s[n]==')') n=get_rl(s,r,l);
             if(s[n]==']') n=get_rl2(s,r,l);
             n--;
         }while(n>=l);
+    }
+    if(s[r]=='\'') {
+        struct var_struct m;
+        m.p = 0;
+        eval(&m, s, l, r-1);
+        makesure(1);
+        reverse(p, &m);
+        del(&m);
+        return;
     }
     err=1;
 }
@@ -344,7 +555,11 @@ void print_var(struct var_struct * p)
 {
     int i,j;
     printf("%s =\n", p->name);
-    if(is_single_var(p)) {
+    if(!p->p) {
+        printf("null\n");
+        return;
+    }
+    else if(is_single_var(p)) {
         printf("%lf\n", **(p->p));
         return;
     }
@@ -371,7 +586,8 @@ int main()
         printf("> ");
 //        getyx(&y, &x);
 //        getdata(y, x, 0, cmd, 300, 1, 0, 1);
-        scanf("%s", cmd);
+        gets(cmd);
+//        scanf("%s", cmd);
         if(!strcasecmp(cmd, "exit")) break;
         if(!strcasecmp(cmd, "quit")) break;
         if(strchr(cmd, '=')) {
