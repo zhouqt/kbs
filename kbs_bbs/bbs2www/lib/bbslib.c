@@ -2563,7 +2563,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     for (i = 0; i < article_len; i++) {
         if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
             STATE_CLR(ansi_state, STATE_NEW_LINE);
-            if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
+            if (i < (buflen - 1) && !is_tex && (buf[i] == ':' && buf[i + 1] == ' ')) {
                 STATE_SET(ansi_state, STATE_QUOTE_LINE);
                 if (STATE_ISSET(ansi_state, STATE_FONT_SET))
                     BUFFERED_OUTPUT(output, "</font>", 7);
@@ -2662,7 +2662,7 @@ atppp_never_use_goto:
         } else if (is_tex && (buf[i] == ']') && (i > 0) && (buf[i-1] == '\\')) {
             STATE_CLR(ansi_state, STATE_TEX_SET);
         }
-        if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i + 1] == '[')) {
+        if (i < (buflen - 1) && !is_tex && (buf[i] == 0x1b && buf[i + 1] == '[')) {
             if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 /*
                  *[*[ or *[13;24*[ */
