@@ -546,7 +546,7 @@ int countexp(struct userec *udata)
 
     if(!strcmp(udata->userid,"guest"))
         return -9999;
-    exp=udata->numposts+post_in_tin( udata->userid )+udata->numlogins/5+(time(0)-udata->firstlogin)/86400+udata->stay/3600;
+    exp=udata->numposts +/*post_in_tin( udata->userid )*/+udata->numlogins/5+(time(0)-udata->firstlogin)/86400+udata->stay/3600;
     return exp>0?exp:0;
 }
 
@@ -558,7 +558,7 @@ int countperf(struct userec *udata)
     if(!strcmp(udata->userid,"guest"))
         return -9999;
     reg_days=(time(0)-udata->firstlogin)/86400+1;
-    perf=((float)(udata->numposts+post_in_tin( udata->userid ))/(float)udata->numlogins+
+    perf=((float)(udata->numposts/*+post_in_tin( udata->userid )*/)/(float)udata->numlogins+
           (float)udata->numlogins/(float)reg_days)*10;
     return perf>0?perf:0;
 }

@@ -142,7 +142,7 @@ char    buf[256];
 	if (currentuser) 
 		douser=*currentuser;
 	else
-		bzero(douser,sizeof(struct userec));
+		bzero(&douser,sizeof(struct userec));
     stuffstr[ST_USERID]=douser.userid;
 	stuffstr[ST_USERNAME]=douser.username;
 	stuffstr[ST_REALNAME]=douser.realname;
