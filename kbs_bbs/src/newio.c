@@ -414,13 +414,14 @@ int igetch()
                         return KEY_TALK;
                 }
                 if (!inremsg) {
+		    int saveerrno=errno;
                     while (msg_count) {
                         inremsg = true;
                         msg_count--;
                         r_msg();
                         inremsg = false;
                     }
-                    continue;
+                    if (sr<0&&saveerrno==EINTR)continue;
                 }
                 if (sr == 0 && alarm_timeout) {
                     i_timeout = 0;
