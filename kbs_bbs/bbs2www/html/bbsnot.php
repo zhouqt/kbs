@@ -31,7 +31,7 @@
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $brdarr["NAME"]; ?>]
+<center><?php echo BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $brdarr["NAME"]; ?>]
 <hr class="default">
 <table border=1 width=610><tr><td>
 <?php

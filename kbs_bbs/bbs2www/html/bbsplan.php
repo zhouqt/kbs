@@ -15,7 +15,7 @@
 		}
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?> -- 设置说明档 [使用者: <?php echo $currentuser["userid"]; ?>]</center><hr />
+<center><?php echo BBS_FULL_NAME; ?> -- 设置说明档 [使用者: <?php echo $currentuser["userid"]; ?>]</center><hr />
 <form method="post" action="bbsplan.php?type=1">
 <table width="610" border="1"><tr><td><textarea name="text" rows="20" cols="100" wrap="physical">
 <?php

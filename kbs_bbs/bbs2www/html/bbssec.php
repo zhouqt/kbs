@@ -10,7 +10,7 @@
 		html_init("gb2312");
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?> -- 分类讨论区
+<center><?php echo BBS_FULL_NAME; ?> -- 分类讨论区
 <hr class="default">
 <table>
 <tr><td>区号</td><td>类别</td><td>描述</td></tr>

@@ -88,7 +88,7 @@
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <body>
-<center><p><?php echo $BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a></p>
+<center><p><?php echo BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a></p>
 <a href="bbspst.php?board=<?php echo $brd_encode; ?>">发表文章</a>
 <a href="javascript:location=location">刷新</a>
 <?php

@@ -63,7 +63,7 @@
 ?>
 <body>
 <nobr/>
-<center><?php echo $BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a>
+<center><?php echo BBS_FULL_NAME; ?> -- [讨论区: <?php echo $brdarr["NAME"]; ?>] 版主[<?php echo $bm_url; ?>] 文章数[<?php echo $total; ?>] <a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a>
 <hr class="default"/>
 <table width="613">
 <tr><td>序号</td><td>标记</td><td>作者</td><td>日期</td><td>标题</td></tr>
@@ -104,7 +104,6 @@
 			}
 			else
 				echo $flags[0];
-			echo $flags[3];
 ?>
 </td>
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>

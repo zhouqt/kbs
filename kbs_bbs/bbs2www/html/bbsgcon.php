@@ -149,7 +149,7 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 				html_init("gb2312");
 ?>
 <body>
-<center><p><?php echo $BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
+<center><p><?php echo BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
 <?php
 				display_navigation_bar($brdarr, $short_filename, $num);
 ?>

@@ -18,7 +18,7 @@
 		html_init("gb2312");
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?> -- ¡Ù—‘∞Â
+<center><?php echo BBS_FULL_NAME; ?> -- ¡Ù—‘∞Â
 <hr>
 <pre>
 <?php 

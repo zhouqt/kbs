@@ -19,7 +19,7 @@
 	html_init("gb2312");
 ?>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?> -- 今日十大热门话题
+<center><?php echo BBS_FULL_NAME; ?> -- 今日十大热门话题
 <hr>
 <table border="1" width="610">
 <tr><td>名次</td><td>讨论区</td><td>标题</td><td>作者</td><td>人数</td></tr>
