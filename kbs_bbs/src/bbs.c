@@ -3050,10 +3050,6 @@ char *direct ;
     getdata(2,0,"首篇文章编号(输入0则仅清除标记为删除的文章): ",num1,10,DOECHO,NULL,YEA) ;
     inum1 = atoi(num1) ;
     if(inum1==0) {
-       if (!idel_mode) {
-            prints("标记删除时不要输入0!真不乖\n") ; /* KCN: 97.12.15 */
-            return FULLUPDATE;
-       }
        inum2=-1;
        goto THERE;
     }

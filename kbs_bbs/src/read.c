@@ -690,7 +690,7 @@ struct fileheader *fileinfo ;
 char *direct ;
 {
     int i;
-    char buf[STRLEN],ch[4],BMch;
+    char buf[256],ch[4],BMch;
     char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除"};
     char linebuffer[256];
 
@@ -761,7 +761,7 @@ struct fileheader *fileinfo ;
 char *direct ;
 {
     int i;
-    char buf[STRLEN],ch[4],BMch;
+    char buf[256],ch[4],BMch;
     char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除"};
     char linebuffer[256];
 

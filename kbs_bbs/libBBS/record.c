@@ -661,6 +661,7 @@ int id1,id2,del_mode ;
     else
         pos_read=pos_end;
         
+    if (id2==-1) id2=totalcount;
     if (id1!=0) {
         pos_write=sizeof(struct fileheader)*(id1-1);
         count = id1;
@@ -673,9 +674,9 @@ int id1,id2,del_mode ;
     else {
         pos_write=0;
         count = 1;
+        id2=totalcount;
     }
     
-    if (id2==-1) id2=totalcount;
     if (id2>totalcount) {
 	char buf[3];
         getdata(6,0,"文章编号大于文章总数，确认删除 (Y/N)? [N]: ",buf,2,DOECHO,NULL,YEA) ;
@@ -687,7 +688,7 @@ int id1,id2,del_mode ;
         id2=totalcount;
     }
     
-    if ((idi!=0)&&(del_mode==0)) { /*rangle mark del*/
+    if ((id1!=0)&&(del_mode==0)) { /*rangle mark del*/
         while (count<=id2) {
             int i,j;
 	    int readcount;
@@ -712,6 +713,7 @@ int id1,id2,del_mode ;
     digestmode=4;
     while (count<=id2) {
         int readcount;
+        lseek(fdr,(count-1)*sizeof(struct fileheader),SEEK_SET);
         readcount=read(fdr,savefhdr,DEL_RANGE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
 /*        if (readcount==0) break; */
         for (i=0;i<readcount;i++,count++) {
@@ -725,7 +727,6 @@ int id1,id2,del_mode ;
                 if (keepcount>=DEL_RANGE_BUF) {
                     lseek(fdr,pos_write,SEEK_SET);
                     write(fdr,readfhdr,DEL_RANGE_BUF*sizeof(struct fileheader));
-                    lseek(fdr,count*sizeof(struct fileheader),SEEK_SET);
 		    pos_write+=keepcount*sizeof(struct fileheader);
                     keepcount=0;
                 }
