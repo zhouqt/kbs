@@ -72,7 +72,7 @@
 		$rows = sizeof($brd_name);
 		for ($i = 0; $i < $rows; $i++)	
 		{
-		if ($brd_isgroup[i]&BBS_BOARD_GROUP)
+		if ($brd_flag[i]&BBS_BOARD_GROUP)
 		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $group2;
 		else
 		  $brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$i]);
@@ -81,7 +81,7 @@
 <td><?php echo $i+1; ?></td>
 <td>
 <?php
-			if (!$brd_isgroup) {
+			if (!($brd_flag[i]&BBS_BOARD_GROUP)) {
 			if ($brd_unread[$i] == 1)
 				echo "¡ô";
 			else
@@ -120,7 +120,7 @@
 ?>
 </td>
 <td><?php 
-if (!$brd_isgroup)
+if (!($brd_flag[i]&BBS_BOARD_GROUP))
 	echo $brd_artcnt[$i]; 
 else echo "Ä¿Â¼";	
 ?></td>
