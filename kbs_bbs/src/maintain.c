@@ -1995,13 +1995,11 @@ int set_BM()
                         mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
 						/* add by stiger,斑竹上任记录 */
 						if(normal_board(newfh.filename)){
-							FILE *fp;
-							char bmat[256];
-							if((fp=fopen("etc/bmat","a"))!=NULL){
-								sprintf(bmat,"%s %s %u %s\n",lookupuser->userid, newfh.filename, (unsigned int)time(0), currentuser->userid);
-								fputs(bmat, fp);
-								fclose(fp);
-							}
+#if HAVE_MYSQL_SMTH == 1
+#ifdef BMSLOG
+							bms_add(lookupuser->userid, newfh.filename, time(0), 3 , NULL );
+#endif
+#endif
 						}
 
                     } else if (flag == 2) {
@@ -2020,9 +2018,11 @@ int set_BM()
                         }
 						/* stiger,斑竹免记录 */
 						if(normal_board(newfh.filename)){
-							char bmtest[256];
-							sprintf(bmtest,"%s %s",lookupuser->userid, newfh.filename);
-							del_from_file("etc/bmat",bmtest);
+#if HAVE_MYSQL_SMTH == 1
+#ifdef BMSLOG
+							bms_del(lookupuser->userid, newfh.filename);
+#endif
+#endif
 						}
                         /*
                          * 如果增加版主数目请修改这里 

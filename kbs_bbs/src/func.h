@@ -195,9 +195,13 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     unsigned int update_mailbox_prop(char *userid, unsigned int prop);
     int gen_title(const char *boardname );
     off_t read_user_memo( char *userid, struct usermemo ** ppum );
-//	int bms_add(char *userid, char *boardname, time_t in, time_t out, char *memo );
-//	int bms_update(char *userid, char *boardname, time_t in, time_t out, char *memo );
-//	int bms_del(char *userid, char *boardname);
+#if HAVE_MYSQL_SMTH == 1
+#ifdef BMSLOG
+	int bms_add(char *userid, char *boardname, time_t in, int out, char *memo );
+	int bms_update(char *userid, char *boardname, time_t in, int out, char *memo );
+	int bms_del(char *userid, char *boardname);
+#endif
+#endif
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)

@@ -2254,13 +2254,12 @@ void unlock_sem_check(int lockid)
 #if HAVE_MYSQL_SMTH == 1
 #ifdef BMSLOG
 
-int bms_add(char *userid, char *boardname, time_t in, time_t out, char *memo )
+int bms_add(char *userid, char *boardname, time_t in, int out, char *memo )
 {
 	MYSQL s;
 	char sql[700];
 	char newmemo[512];
 	char newts[20];
-	char newtsout[20];
 
 	newmemo[0]=0;
 
@@ -2278,7 +2277,7 @@ int bms_add(char *userid, char *boardname, time_t in, time_t out, char *memo )
 	if(memo && memo[0])
 		mysql_escape_string(newmemo, memo, strlen(memo));
 
-	sprintf(sql,"INSERT INTO bms VALUES ( '%s', '%s', '%s','%s' ,'%s', '%s');",userid, boardname, tt2timestamp(in,newts), tt2timestamp(out,newtsout) , currentuser->userid, newmemo);
+	sprintf(sql,"INSERT INTO bms VALUES ( '%s', '%s', '%s','%d' ,'%s', '%s');",userid, boardname, tt2timestamp(in,newts), out, currentuser->userid, newmemo);
 //		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 	
 
@@ -2297,13 +2296,12 @@ int bms_add(char *userid, char *boardname, time_t in, time_t out, char *memo )
 	return 1;
 }
 
-int bms_update(char *userid, char *boardname, time_t in, time_t out, char *memo )
+int bms_update(char *userid, char *boardname, time_t in, int out, char *memo )
 {
 	MYSQL s;
 	char sql[700];
 	char newmemo[512];
 	char newts[20];
-	char newtsout[20];
 
 	newmemo[0]=0;
 
@@ -2321,7 +2319,7 @@ int bms_update(char *userid, char *boardname, time_t in, time_t out, char *memo 
 	if(memo[0])
 		mysql_escape_string(newmemo, memo, strlen(memo));
 
-	sprintf(sql,"UPDATE bms SET in='%s', out='%s', memo='%s' WHERE userid='%s' AND board='%s' ;", tt2timestamp(in,newts), tt2timestamp(out,newtsout) , newmemo, userid, boardname);
+	sprintf(sql,"UPDATE bms SET in='%s', out='%d', memo='%s' WHERE userid='%s' AND board='%s' ;", tt2timestamp(in,newts), out , newmemo, userid, boardname);
 	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
 #ifdef BBSMAIN
