@@ -26,7 +26,7 @@
 
 struct smsmsg * s_m;
 int sm_num=0;
-int sm_start=0;
+//int sm_start=0;
 char sm_dest[13];
 int sm_type=-1;
 char sm_msgtxt[30];
@@ -36,13 +36,13 @@ static int set_smsg_select(struct _select_def *conf)
 {
 	clear();
 	move(0,0);
-	prints("%sÐÅÈË:%s   Ê±¼ä:%s", s_m[conf->pos-1].type?"·¢":"ÊÕ", s_m[conf->pos-1].dest, s_m[conf->pos-1].time);
-	prints("\nÄÚÈÝ:\n%s", s_m[conf->pos-1].context);
+	prints("%sÐÅÈË:%s   Ê±¼ä:%s", s_m[conf->pos-conf->page_pos].type?"·¢":"ÊÕ", s_m[conf->pos-conf->page_pos].dest, s_m[conf->pos-conf->page_pos].time);
+	prints("\nÄÚÈÝ:\n%s", s_m[conf->pos-conf->page_pos].context);
 	pressanykey();
 
-	if( ! s_m[conf->pos-1].readed ){
-		if( sign_smsmsg_read( s_m[conf->pos-1].id )){
-			s_m[conf->pos-1].readed = 1;
+	if( ! s_m[conf->pos-conf->page_pos].readed ){
+		if( sign_smsmsg_read( s_m[conf->pos-conf->page_pos].id )){
+			s_m[conf->pos-conf->page_pos].readed = 1;
 		}
 	}
 
@@ -54,26 +54,27 @@ static int set_smsg_show(struct _select_def *conf, int i)
 	char title[41];
 	char *c;
 
-	if(strlen(s_m[i-1].context) > 40){
-		strncpy(title, s_m[i-1].context, 37);
+	if(strlen(s_m[i-conf->page_pos].context) > 40){
+		strncpy(title, s_m[i-conf->page_pos].context, 37);
 		title[37]='.';
 		title[38]='.';
 		title[39]='.';
 	}else{
-		strcpy(title, s_m[i-1].context);
+		strcpy(title, s_m[i-conf->page_pos].context);
 	}
 	title[40]=0;
 
 	if((c = strchr(title, '\n') )!= NULL) *c=0;
 	if((c = strchr(title, '\r') )!= NULL) *c=0;
 
-	prints(" %s%-3d %-13s %-14s %s %-40s%s",s_m[i-1].readed?"":"[1m",sm_start + i, s_m[i-1].dest, s_m[i-1].time, s_m[i-1].type?"[1;32m·¢[m":"[1;33mÊÕ[m", title, s_m[i-1].readed?"":"[m");
+	prints(" %s%-3d %-13s %-14s %s %-40s%s",s_m[i-conf->page_pos].readed?"":"[1m", i , s_m[i-conf->page_pos].dest, s_m[i-conf->page_pos].time, s_m[i-conf->page_pos].type?"[1;32m·¢[m":"[1;33mÊÕ[m", title, s_m[i-conf->page_pos].readed?"":"[m");
 	return SHOW_CONTINUE;
 }
 
 static int set_smsg_prekey(struct _select_def *conf, int *key)
 {
 	switch (*key) {
+			/*
 	case KEY_PGDN:
 	case KEY_DOWN:
 	{
@@ -112,7 +113,7 @@ static int set_smsg_prekey(struct _select_def *conf, int *key)
 			return SHOW_SELCHANGE;
 		}
 		break;
-	}
+	}*/
 	case 'q':
 		*key = KEY_LEFT;
 		break;
@@ -150,22 +151,22 @@ static int set_smsg_getdata(struct _select_def *conf,int pos,int len)
 		if( s_m[i].context ) free(s_m[i].context);
 	}
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
-	sm_num = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_start, BBS_PAGESIZE,sm_msgtxt,sm_desc);
 
-	conf->item_count = sm_num;
+	if( conf->item_count - conf->page_pos < BBS_PAGESIZE-1 )
+		conf->item_count = count_sql_smsmsg( currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_msgtxt);
 
-	if( sm_num <= 0){
+	i = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, conf->page_pos-1, BBS_PAGESIZE,sm_msgtxt,sm_desc);
 
-		sm_start = 0;
+	if( i <= 0){
+
+		conf->page_pos = 0;
 		sm_dest[0]=0;
 		sm_type = -1;
 		sm_msgtxt[0]=0;
 		
-		sm_num = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_start, BBS_PAGESIZE,sm_msgtxt,sm_desc);
+		i = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, conf->page_pos-1, BBS_PAGESIZE,sm_msgtxt,sm_desc);
 
-		conf->item_count = sm_num;
-
-		if(sm_num <= 0)
+		if(i <= 0)
 			return SHOW_QUIT;
 	}
 
@@ -198,7 +199,7 @@ static int set_smsg_key(struct _select_def *conf, int key)
 			return SHOW_REFRESH;
 		}
 
-		sprintf(sql,"DELETE FROM smsmsg WHERE id=%d;",s_m[conf->pos-1].id);
+		sprintf(sql,"DELETE FROM smsmsg WHERE id=%d;",s_m[conf->pos-conf->page_pos].id);
 
 		if( mysql_real_query( &s, sql, strlen(sql) ) ){
 			clear();
@@ -223,7 +224,7 @@ static int set_smsg_key(struct _select_def *conf, int key)
 		prints("[1;31m------------------------------------------------------------------------[m\n");
         getdata(2, 0, "Ñ¡ÔñÈ«²¿¶ÌÐÅÇë°´[1;32m1[m,ÊäÈëÌõ¼þÑ¡ÔñÇë°´[1;32m2[m,È¡ÏûÖ±½Ó»Ø³µ(1/2/0) [0]: ", ans, 3, DOECHO, NULL, true);
 		if( ans[0] == '1' ){
-			sm_start = 0;
+			conf->page_pos = 0;
 			sm_dest[0]=0;
 			sm_type = -1;
 			sm_msgtxt[0]=0;
@@ -244,7 +245,9 @@ static int set_smsg_key(struct _select_def *conf, int key)
 
 			move(5,0);
 			getdata(5,0,"ÇëÊäÈë¿ªÊ¼ÏÔÊ¾µÄ¶ÌÐÅÐòºÅ [0]:",ans,5, DOECHO,NULL,true);
-			sm_start = atoi(ans);
+			conf->page_pos = atoi(ans);
+			if(conf->page_pos <= 0) conf->page_pos=1;
+			conf->pos=conf->page_pos;
 
 			move(6,0);
 			getdata(6,0,"ÇëÊäÈëÒª¶ÌÐÅÄÚÈÝ°üº¬ÎÄ×Ö(»Ø³µÑ¡ÔñËùÓÐ):",ans,21, DOECHO,NULL,true);
@@ -259,7 +262,7 @@ static int set_smsg_key(struct _select_def *conf, int key)
 	}
 	case 'a':
 	{
-		sm_start = 0;
+		conf->page_pos = 0;
 		sm_dest[0]=0;
 		sm_type = -1;
 		sm_msgtxt[0]=0;
@@ -268,7 +271,7 @@ static int set_smsg_key(struct _select_def *conf, int key)
 	case 'S':
 	{
 		clear();
-		do_send_sms_func(s_m[conf->pos-1].dest, NULL);
+		do_send_sms_func(s_m[conf->pos-conf->page_pos].dest, NULL);
 		pressanykey();
 		return SHOW_REFRESH;
 	}
@@ -304,7 +307,7 @@ int smsmsg_read()
         pts[i].y = i + 3;
     }
 	group_conf.item_per_page = BBS_PAGESIZE;
-    group_conf.flag = LF_VSCROLL | LF_BELL;
+    group_conf.flag = LF_VSCROLL | LF_BELL | LF_MULTIPAGE | LF_LOOP;
     group_conf.prompt = "¡ô";
     group_conf.item_pos = pts;
 	group_conf.title_pos.x = 0;
@@ -321,15 +324,14 @@ int smsmsg_read()
 
 
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
-	sm_num = get_sql_smsmsg(s_m, currentuser->userid, NULL, 0, 0, -1, 0, sm_start, BBS_PAGESIZE, NULL,sm_desc);
+	group_conf.item_count = count_sql_smsmsg( currentuser->userid, NULL, 0, 0, -1, 0, NULL);
+	i = get_sql_smsmsg(s_m, currentuser->userid, NULL, 0, 0, -1, 0, 0, BBS_PAGESIZE, NULL,sm_desc);
 	
-	if(sm_num <= 0){
+	if(i <= 0){
 		free(s_m);
 		return -1;
 	}
 
-	group_conf.item_count = sm_num;
-		
 	clear();
 	list_select_loop(&group_conf);
 
@@ -340,7 +342,6 @@ int smsmsg_read()
 	free(pts);
 	free(s_m);
 	s_m = NULL;
-	sm_num = 0;
 
 	chk_smsmsg(1);
 

@@ -257,7 +257,7 @@ int msg_can_sendmsg(char *userid, int utmpnum)
 }
 
 #if HAVE_MYSQL == 1
-int my_connect_mysql(MYSQL *s){
+MYSQL * my_connect_mysql(MYSQL *s){
 	
     return mysql_real_connect(s, 
                             sysconf_str("MYSQLHOST"),
@@ -281,7 +281,6 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 		prints("%s\n",mysql_error(&s));
 		pressanykey();
 #endif
-		mysql_close(&s);
 		return -1;
 	}
 
@@ -1004,6 +1003,86 @@ int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
 }
 
 #if HAVE_MYSQL == 1
+int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_time, int type, int level, char *msgtxt )
+{
+
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[600];
+	char qtmp[100];
+	int i;
+
+	if(userid == NULL || *userid == 0 )
+		return -1;
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return -1;
+	}
+
+	sprintf(sql,"SELECT COUNT(*) FROM smsmsg WHERE userid=\"%s\"", userid );
+
+	if(dest && *dest){
+		snprintf(qtmp, 99, " AND dest=\"%s\"", dest);
+		strcat(sql, qtmp);
+	}
+
+	if(start_time){
+		snprintf(qtmp, 99, " AND timestamp>FROM_UNIXTIME(%lu)+0", start_time);
+		strcat(sql, qtmp);
+	}
+
+	if(end_time){
+		snprintf(qtmp, 99, " AND timestamp<FROM_UNIXTIME(%lu)+0", end_time);
+		strcat(sql, qtmp);
+	}
+
+	if(type != -1){
+		snprintf(qtmp, 99, " AND type=\"%d\"", type);
+		strcat(sql, qtmp);
+	}
+
+	if(msgtxt && msgtxt[0]){
+		char newmsgtxt[60];
+		int ii,jj;
+		for(ii=0,jj=0; msgtxt[ii] && jj<60; ii++){
+			if(msgtxt[ii] == '\'' || msgtxt[ii]=='\"')
+				newmsgtxt[jj++]='\\';
+			newmsgtxt[jj++]=msgtxt[ii];
+		}
+		snprintf(qtmp, 99, " AND context LIKE \"%%%s%%\"", newmsgtxt);
+		strcat(sql, qtmp);
+	}
+
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+	res = mysql_store_result(&s);
+	row = mysql_fetch_row(res);
+
+	i=0;
+	if(row != NULL){
+		i = atoi(row[0]);
+	}
+	mysql_free_result(res);
+
+	mysql_close(&s);
+	return i;
+}
+
 int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc)
 {
 
@@ -1025,7 +1104,6 @@ int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t sta
 		prints("%s\n",mysql_error(&s));
 		pressanykey();
 #endif
-		mysql_close(&s);
 		return -1;
 	}
 
@@ -1119,7 +1197,6 @@ int chk_smsmsg(int force ){
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-		mysql_close(&s);
 		return 0;
 	}
 
@@ -1149,7 +1226,6 @@ int sign_smsmsg_read(int id ){
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-		mysql_close(&s);
 		return 0;
 	}
 
@@ -1201,7 +1277,6 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 		prints("%s\n",mysql_error(&s));
 		pressanykey();
 #endif
-		mysql_close(&s);
 		return -1;
 	}
 
@@ -1334,6 +1409,20 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 	char newmsgbuf[200];
 	char newgroup[20];
 
+	newname[0]=0;
+	newbbsid[0]=0;
+	newschool[0]=0;
+	newzipcode[0]=0;
+	newhomeaddr[0]=0;
+	newcompanyaddr[0]=0;
+	newtel_o[0]=0;
+	newtel_h[0]=0;
+	newmobile[0]=0;
+	newemail[0]=0;
+	newqq[0]=0;
+	newmsgbuf[0]=0;
+	newgroup[0]=0;
+
 	mysql_init(&s);
 	if (! my_connect_mysql(&s) ){
 #ifdef BBSMAIN
@@ -1341,7 +1430,6 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 		prints("%s\n",mysql_error(&s));
 		pressanykey();
 #endif
-		mysql_close(&s);
 		return 0;
 	}
 
