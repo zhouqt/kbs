@@ -719,6 +719,38 @@ void readtitle(struct _select_def* conf)
     resetcolor();
 }
 
+#ifdef COLOR_ONLINE
+
+int count_login(struct user_info *uentp, int *arg, int pos)
+{
+     if (uentp->invisible == 1) {
+         return COUNT;
+     }
+     (*arg)++;
+     UNUSED_ARG(pos);
+     return COUNT;
+}
+
+int isonline(char *s){
+
+	int tuid;
+	int logincount=0,seecount=0;
+    struct userec *lookupuser;
+
+	if( ! (tuid=getuser(s,&lookupuser)) ){
+		return 7;
+	}
+	logincount = apply_utmp((APPLY_UTMP_FUNC) count_login, 0, lookupuser->userid, &seecount);
+	if( logincount == 0 )
+		return 7;
+	if( seecount != 0 )
+		return 2;
+    if (HAS_PERM(currentuser, PERM_SEECLOAK))
+		return 6;
+	return 7;
+}
+#endif
+
 char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* readfh,struct _select_def* conf)
 {                               /* 在文章列表中 显示 一篇文章标题 */
     time_t filetime;
@@ -791,38 +823,86 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
             if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {      /*Re的文章 */
                 if ((readfh&&readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
                     if (DEFINE(currentuser, DEF_HIGHCOLOR))
+#ifdef COLOR_ONLINE
+                        sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[1;36m%4d\033[m %s%c%s %-12.12s %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
                     else
+#ifdef COLOR_ONLINE
+                        sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[36m%4d\033[m %s%c%s %-12.12s %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
                 else
+#ifdef COLOR_ONLINE
+                    sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-44.44s", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
             } else {
                 if (readfh&&(readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
                     if (DEFINE(currentuser, DEF_HIGHCOLOR))
+#ifdef COLOR_ONLINE
+                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
                     else
+#ifdef COLOR_ONLINE
+                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
                 else
+#ifdef COLOR_ONLINE
+                    sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " %4d %s%c%s %-12.12s %s %c● %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
             }
 
     } else                     /* 允许 相同主题标识 */
         if (!strncmp("Re:", ent->title, 3)) {   /*Re的文章 */
             if (readfh&&isThreadTitle(readfh->title, ent->title)) /* 当前阅读主题 标识 */
                 if (DEFINE(currentuser, DEF_HIGHCOLOR))
+#ifdef COLOR_ONLINE
+                    sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[1;36m%4d\033[m %s%c%s %-12.12s %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
                 else
+#ifdef COLOR_ONLINE
+                    sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[36m%4d\033[m %s%c%s %-12.12s %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
             else
+#ifdef COLOR_ONLINE
+                sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                 sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-44.44s", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
         } else {
             if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))      /* 当前阅读主题 标识 */
                 if (DEFINE(currentuser, DEF_HIGHCOLOR))
+#ifdef COLOR_ONLINE
+                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
                 else
+#ifdef COLOR_ONLINE
+                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
             else
+#ifdef COLOR_ONLINE
+                sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                 sprintf(buf, " %4d %s%c%s %-12.12s %s %c● %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
         }
     return buf;
 }
