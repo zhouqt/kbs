@@ -2424,9 +2424,13 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         Anony = 0;
 
 #ifdef FREE
+#define RAND_SIG_KEY 'X'
+#define RAND_SIG_KEYS "X"
 #define ANONY_KEY 'L'
 #define ANONY_KEYS "L"
 #else
+#define RAND_SIG_KEY 'L'
+#define RAND_SIG_KEYS "L"
 #define ANONY_KEY 'M'
 #define ANONY_KEYS "M"
 #endif
@@ -2464,7 +2468,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         /*
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
-        sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/L\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，%s\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
+        sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/" RAND_SIG_KEYS "\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，%s\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
                 (replymode) ? "，\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "，\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "");
         if(replymode&&anonyboard) buf2[strlen(buf2)-10]=0;
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
@@ -2493,8 +2497,12 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 				mailback = mailback ? 0 : 1;
         } else if (ans[0] == ANONY_KEY) {
             Anony = (Anony == 1) ? 0 : 1;
-        } else if (ans[0] == 'L') {
+        } else if (ans[0] == RAND_SIG_KEY) {
             getCurrentUser()->signature = -1;
+#ifdef POST_QUIT
+		} else if (ans[0] == 'Q') {
+        	return FULLUPDATE;
+#endif
         } else if (ans[0] == 'V') {     /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2, getCurrentUser()->userid, "signatures");
             move(t_lines - 1, 0);
