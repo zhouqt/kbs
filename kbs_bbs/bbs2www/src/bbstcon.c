@@ -94,7 +94,7 @@ static int buffered_output(char *buf, size_t buflen, void *arg)
 	return 0;
 }
 
-int show_article(char *filename)
+int show_article(char *filename,char *www_url)
 {
 	int fd;
 
@@ -127,7 +127,7 @@ int show_article(char *filename)
 			out.buflen = outbuf_len;
 			out.output = buffered_output;
 			out.flush = flush_buffer;
-			output_ansi_html(ptr, filesize, &out,NULL);
+			output_ansi_html(ptr, filesize, &out,www_url);
 			free(out.buf);
 		}
 		BBS_CATCH
@@ -142,6 +142,7 @@ int show_article(char *filename)
 int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, char* brdencode)
 {
     char path[80], buf[512], board_url[80];
+	char www_url[200];
     char* title;
 
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
@@ -150,6 +151,7 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
     encode_url(board_url, board, sizeof(board_url));
     printf("<table width=\"90%%\" class=\"BODY\">\n");
 	printf("<tr><td class=\"default\">\n");
+	sprintf(www_url,"/bbscon.php?board=%s&id=%d",board_url,x->id);
     printf("[<a href=\"/bbscon.php?board=%s&id=%d\">本篇全文</a>]", board_url, x->id);
     if (strncmp(x->title,"Re:",3))
 	    title=x->title;
@@ -160,7 +162,7 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
 	printf("[<a href=\"/bbspstmail.php?board=%s&file=%s&userid=%s&title=Re: %s\">回信给作者</a>]",
 		   brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)));
     printf("[本篇作者: %s]<br />\n", userid_str(x->owner));
-	show_article(path);
+	show_article(path,www_url);
     /*printf("[本篇人气: %d]\n", *(int*)(x->title+73)); */
 	printf("</td></tr></table>\n");
 }
