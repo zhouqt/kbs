@@ -538,3 +538,73 @@ void check_register_info()
         ansimore(newregfile, true);
     }ÏÈ×¢ÊÍµô*/
 }
+
+/* ×ªÈÃID     by binxun  ... 2003.5 */
+void ConveyID()
+{
+    FILE* fn = NULL;
+	long now;
+	char buf[STRLEN],filename[STRLEN];
+
+    //¼ì²éÈ¨ÏŞ
+        if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
+        || HAS_PERM(currentuser, PERM_ANNOUNCE)
+        || HAS_PERM(currentuser, PERM_JURY) || HAS_PERM(currentuser, PERM_SUICIDE) || HAS_PERM(currentuser, PERM_CHATOP) || (!HAS_PERM(currentuser, PERM_POST))
+        || HAS_PERM(currentuser, PERM_DENYMAIL)
+        || HAS_PERM(currentuser, PERM_DENYRELAX)) {
+        clear();
+        move(11, 28);
+		prints("\033[1;33mÄãÓĞÖØÈÎÔÚÉí,²»ÄÜ×ªÈÃID!\033[m");
+        pressanykey();
+        return;
+    }
+
+	//¸ø³öÌáÊ¾ĞÅÏ¢
+
+    /*
+    clear();
+    move(1, 0);
+    prints("Ñ¡Ôñ×ªÈÃIDºó,½«Ê¹¸ÃIDÄúµÄÉúÃüÁ¦¼õÉÙµ½14Ìì£¬14ÌìºóÄúµÄÕÊºÅ×Ô¶¯ÏûÊ§¡£");
+    move(3, 0);
+    prints("ÔÚÕâ14ÌìÄÚÈô¸Ä±äÖ÷ÒâµÄ»°£¬Ôò¿ÉÒÔÍ¨¹ıµÇÂ¼±¾Õ¾Ò»´Î»Ö¸´Ô­ÉúÃüÁ¦");
+    move(5, 0);
+    prints("×ÔÉ±ÓÃ»§½«¶ªÊ§ËùÓĞ[33mÌØÊâÈ¨ÏŞ[m£¡£¡£¡");
+    move(7, 0);
+    */
+
+    if (askyn("ÄãÈ·¶¨Òª×ªÈÃÕâ¸ö ID Âğ£¿", 0) == 1) {
+        clear();
+        getdata(0, 0, "ÇëÊäÈëÔ­ÃÜÂë(ÊäÈëÕıÈ·µÄ»°»áÁ¢¿Ì¶ÏÏß): ", buf, 39, NOECHO, NULL, true);   /*Haohmaru,98.10.12,check the passwds */
+        if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
+            prints("\n\nºÜ±§Ç¸, ÄúÊäÈëµÄÃÜÂë²»ÕıÈ·¡£\n");
+            pressanykey();
+            return;
+        }
+
+        currentuser->userlevel &= ~PERM_BASIC;
+
+		//¼ÇÂ¼±¸·İĞÅÏ¢
+        now = time(0);
+        sprintf(filename, "etc/%s.tmp", currentuser->userid);
+        fn = fopen(filename, "w");
+		if(fn){
+			fprintf(fn,"\033[1m %s \033[m ÔÚ \033[1m%24.24s\033[m ×ªÈÃIDÁË,ÒÔÏÂÊÇËûµÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid,ctime(&now));
+			getuinfo(fn, currentuser);
+			fprintf(fn, "\n                     \033[1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô\033[m\n");
+			fclose(fn);
+			sprintf(buf, "%s ×ªÈÃID", currentuser->userid);
+			post_file(currentuser, "", filename, "Registry", buf, 0, 1);
+			unlink(filename);
+		}
+		else{
+		    //error info
+		}
+
+		//Çå¿Õ¸öÈËĞÅÏ¢
+
+		//¶ÏÏß
+        abort_bbs(0);
+    }
+
+    return;
+}
