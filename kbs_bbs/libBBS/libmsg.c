@@ -1185,13 +1185,6 @@ int chk_smsmsg(int force ){
 
 #endif  //HAVE_MYSQL_SMTH
 
-#else	//SMS_SUPPORT
-
-int chk_smsmsg(int force ){
-
-		return 0;
-}
-
 #endif
 
 #if HAVE_MYSQL_SMTH == 1

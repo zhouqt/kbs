@@ -1104,7 +1104,9 @@ void main_bbs(int convit, char *argv)
     if (HAS_PERM(currentuser, PERM_SYSOP) && dashf("new_register"))
         prints("有新使用者正在等您通过注册资料。\n");
 
+#ifdef SMS_SUPPORT
 	chk_smsmsg(1);
+#endif
 
     /*chk_friend_book(); */
     /* Leeward 98.12.03 */
@@ -1293,7 +1295,9 @@ void docmdtitle(char *title, char *prompt)
          strcpy(bmstr," ");
 */
     chkmailflag = chkmail();
+#ifdef SMS_SUPPORT
 	chksmsmsg = chk_smsmsg(0);
+#endif
 
     if (chkmailflag == 2)       /*Haohmaru.99.4.4.对收信也加限制 */
         strcpy(middoc, "[信箱超容]");
