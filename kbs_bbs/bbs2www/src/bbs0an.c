@@ -3,6 +3,8 @@
  */
 #include "bbslib.h"
 
+int ret=0;
+
 void ann_show_item(MENU * pm, ITEM * it)
 {
     char title[STRLEN];
@@ -101,8 +103,11 @@ void ann_show_directory(char *path,char * pathbuf)
         board[0] = '\0';
         ann_get_board(pathbuf, board, sizeof(board));
         buf[0] = '\0';
-        if (board[0] != '\0')
+        if (board[0] != '\0'){
             sprintf(buf, "%s°æ", board);
+			if(ret > 0) bmlog(currentuser->userid,board,13,1);
+		}
+
 		else
 			buf[0]='\0';
         printf("<center>\n");
@@ -223,7 +228,6 @@ int main()
 	char dpath[PATHLEN];
 	char title[STRLEN];
     char pathbuf[256];
-	int ret;
 
     init_all();
     strsncpy(path, getparm("path"), 511);
