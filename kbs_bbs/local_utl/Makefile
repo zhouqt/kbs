@@ -3,8 +3,15 @@
 # The macro "LEEWARD_X_RECORD" need defining for *.c under local_utl */
 #CC       = cc -DAIX -DSYSV -DLEEWARD_X_RECORD
 CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
+CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 
-BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann
+BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann printboards
+
+.SUFFIXES: .o .c .cpp .ln
+
+.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $*.c
+.c.ln:  ;   lint -abhi $*.c
+
 
 all:  $(BINFILE)
 
@@ -51,3 +58,12 @@ listonline:listonline.o bcache.o
 
 syncann:syncann.cpp
 	gcc -o syncann syncann.cpp
+
+PrintBoards.o:PrintBoards.cpp
+	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c PrintBoards.cpp
+
+RecordFile.o:RecordFile.cpp
+	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c RecordFile.cpp
+
+printboards:PrintBoards.o RecordFile.o
+	gcc -o printboards PrintBoards.o RecordFile.o
