@@ -590,7 +590,9 @@ function show_nav()
   if ($loginok==1) {
 ?>
 <script language="Javascript">
-	var manage= '<a style=font-size:9pt;line-height:14pt; href=\"usermailbox.php?boxname=inbox">我的邮箱</a><br><a style=font-size:9pt;line-height:14pt; href=\"JavaScript:openScript(\'messanger.asp?action=new\',500,400)\">发短信</a><br>';
+	var manage= '<a style=font-size:9pt;line-height:14pt; href="usermailbox.php?boxname=inbox">我的邮箱</a><br><a style=font-size:9pt;line-height:14pt; href="showmsgs.php">察看在线短信</a><br><a style=font-size:9pt;line-height:14pt; href="javascript:openScript(\'sendmsg.php?destid=<?php 
+echo $srcid; ?>&destutmp=<?php 
+echo $srcutmpnum; ?>\',500,400)">发短信</a>';	
 </script>
 <?php 
   }
@@ -727,9 +729,9 @@ function getMsg(){
     <td height=110 align="left" valign="top" class=tablebody1><?php echo htmlspecialchars($msgbuf); ?></td>
   </tr>
   <tr>
-    <td height=20 align="right" valign="top" nowrap="nowrap" class=tablebody2><a target="f3" href="/bbssendmsg.php?destid=<?php 
+    <td height=20 align="right" valign="top" nowrap="nowrap" class=tablebody2><a  href="javascript:openScript('sendmsg.php?destid=<?php 
 echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>" target="_blank">[回讯息]</a> <a href="#" onclick="document.all.floater.style.visibility='hidden';">[忽略]</a></td>
+echo $srcutmpnum; ?>',500,400)" >[回讯息]</a> <a href="#" onclick="document.all.floater.style.visibility='hidden';">[忽略]</a></td>
   </tr>
  </tbody>
 </table>

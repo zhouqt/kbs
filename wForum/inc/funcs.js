@@ -11,7 +11,7 @@ tempobj.disabled=true
 }
 }
 function openScript(url, width, height){
-	var Win = window.open(url,"openScript",'width=' + width + ',height=' + height + ',resizable=1,scrollbars=yes,menubar=no,status=yes' );
+	var Win = window.open(url,"openScript",'width=' + width + ',height=' + height + ',resizable=0,scrollbars=no,menubar=no,status=no' );
 }
 
 //***********默认设置定义.*********************
