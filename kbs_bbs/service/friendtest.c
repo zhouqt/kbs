@@ -1,3 +1,4 @@
+#define BBSMAIN
 #include "bbs.h"
 
 #define BLACK 0
