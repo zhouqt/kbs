@@ -2482,7 +2482,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
 int del_post(int ent, struct fileheader *fileinfo, char *direct)
 {
     char usrid[STRLEN];
-    int owned, keep;
+    int owned, keep, olddigestmode=0;
     extern int SR_BMDELFLAG;
 
     if (!strcmp(currboard, "syssecurity")
@@ -2490,7 +2490,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
         || !strcmp(currboard, "deleted"))       /* Leeward : 98.01.22 */
         return DONOTHING;
 
-    if (digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5 || digestmode == 6 || digestmode == 7)
+    if (digestmode == 4 || digestmode == 5 || digestmode == 6 || digestmode==7)
         return DONOTHING;
     keep = sysconf_eval("KEEP_DELETED_HEADER"); /*是否保持被删除的POST的 title */
     if (fileinfo->owner[0] == '-' && keep > 0 && !SR_BMDELFLAG) {
@@ -2522,12 +2522,35 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
         }
     }
 
+    if (digestmode!=0&&digestmode!=1) {
+    	olddigestmode = digestmode;
+    	digestmode = 0;
+    	setbdir(digestmode, direct, currboard);
+    	ent = search_record(direct, &mkpost, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename);
+    }
+
     if (do_del_post(currentuser, ent, fileinfo, direct, currboard, digestmode, !B_to_b) != 0) {
         move(2, 0);
         prints("删除失败\n");
         pressreturn();
         clear();
+        if (olddigestmode) {
+	    digestmode = olddigestmode;
+       	    setbdir(digestmode, direct, currboard);
+        }
         return FULLUPDATE;
+    }
+    if (olddigestmode) {
+        digestmode = olddigestmode;
+   	setbdir(digestmode, direct, currboard);
+	switch(olddigestmode) {
+	    case 2:
+	    	title_mode();
+	    	break;
+	    case 3:
+	    	marked_mode();
+	    	break;
+	}
     }
     return DIRCHANGED;
 }
