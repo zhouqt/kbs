@@ -95,3 +95,80 @@ c. query.phpÀïÃæÉèÖÃÁËwindow.onload£¬ÒòÎªÈç¹û<select size²»ÊÇ1µÄ»°£¬IEºÍfirefoxÓ
 d. queryresult.php Ê¹ÓÃ javascript À´Ğ´Ò³Ãæ¡£Èç¹ûËÑË÷½á¹û¹ı¶à£¬¿ÉÄÜ»áÌáÊ¾ÊÇ·ñÈ¡Ïû
    javascript ÔËĞĞ¡£ÁíÍâËÑË÷½á¹ûÈ«¶¼·ÅÔÚÒ»¸ö table ÀïÃæ£¬Èç¹ûÒ³ÃæÃ»ÓĞÏÂÍê£¬¾ÍÊ²Ã´¶¼²»
    »áÏÔÊ¾¡£ÕâĞ©ÔİÊ±²»¹ÜÁË°É£¬ÒÔºóËÑË÷×ö³É·ÖÒ³µÄ¾ÍºÃÁË¡£
+
+
+
+
+5. browscap.ini get_browser() º¯Êı¡£Ä¬ÈÏ¹Ø±ÕÕâ¸ö¹¦ÄÜ¡£²Î¿¼£º
+
+http://www.php.net/manual/en/function.get-browser.php
+
+verx at implix dot com
+09-Dec-2002 02:57 
+Please keep in mind that you should somehow (for example in session) cache the required results of get_browser() because it really slows thinks down. 
+
+We have experienced that without querying for browser data our scripts would run 120-130% faster. the explanation is that over 200kb long file (browscap.ini) has to be loaded and parsed everytime someone access any page (we need browser results on all pages).
+
+So keep results in session and expect a performance boost. 
+
+
+
+
+
+6. inc/funcs.php ´úÂë·ÖÎö
+×öÒ»Ğ©¼ÇÂ¼Ï£ÍûÓĞÓÃ¡£Õâ¸öÎÄ¼şÊÇËùÓĞÒ³Ãæ¶¼Òª include µÄ
+
+6a. ¿ÉÒıÓÃµÄÈ«¾Ö±äÁ¿¡£ÕâĞ©±äÁ¿ÔÚ include Ö®ºóÉúĞ§
+$loginok       ÊÇ·ñÒÔÕıÊ½ÓÃ»§µÇÂ¼ÁË£¬guest µÇÂ¼µÄ»°Îª 0
+$guestloginok
+$currentuser
+$currentuinfo
+
+6b. ¿ÉÉèÖÃµÄÈ«¾Ö±äÁ¿¡£±ØĞëÔÚ include Ö®Ç°ÉèÖÃ
+$setboard
+needlogin       ±¾Ò³ÃæÊÇ·ñĞèÒªÉèÖÃ cookie µÈµÇÂ¼±äÁ¿£¬Ä¬ÈÏĞèÒª
+
+6c. ÓĞÓÃµÄº¯ÊıËµÃ÷
+cache_header($scope,$modifytime=0,$expiretime=300)
+	¼ì²é/ÉèÖÃÒ³Ãæ cache
+
+html_init($charset="",$title="",$otherheader="")
+	³õÊ¼»¯ html Ò³Ãæ£¬Ò»°ã²»ĞèÒªµ÷ÓÃ£¬³ı·ÇÊÇĞ¡Ò³Ãæ
+
+show_nav($boardName='')
+	µ÷ÓÃ html_init() ²¢ÏÔÊ¾Ò³ÃæÍ·¡£Èç¹û $boardName ²»Îª¿Õ£¬ËÑË÷µÄÁ´½Ó½«»á×Ô¶¯Ñ¡ÖĞ´Ë°æÃæ¡£
+
+setStat($stat)
+	ÉèÖÃÒ³Ãæ±êÌâ
+
+head_var($Title='', $URL='',$showWelcome=0)
+	ÏÔÊ¾µ¼º½Ìõ
+
+setSucMsg($msg)
+	Ìí¼Ó³É¹¦²Ù×÷ĞÅÏ¢ $msg
+
+html_success_quit($Desc='',$URL='')
+	ÏÔÊ¾³É¹¦²Ù×÷ĞÅÏ¢
+
+requireLoginok($msg = false, $directexit = true)
+	ÉùÃ÷±¾Ò³Ãæ±ØĞëÕıÊ½×¢²áÓÃ»§²ÅÄÜ·ÃÎÊ¡£Èç¹ûµ±Ç°ÓÃ»§ÊÇÕıÊ½ÓÃ»§£¬º¯ÊıÖ±½Ó·µ»Ø¡£
+	·ñÔòÖ±½Óµ÷ÓÃ foundErr(´íÎóĞÅÏ¢, $directexit, false)£¬ÆäÖĞ´íÎóĞÅÏ¢ÓÉ $msg ¿ØÖÆ£º
+	$msg        ´íÎóĞÅÏ¢¡£Èç¹ûÎª false ¾ÍÊÇÓÃÄ¬ÈÏµÄ´íÎóĞÅÏ¢
+
+foundErr($msg, $directexit = true, $showmsg = true)
+	Ìí¼Ó²Ù×÷´íÎóĞÅÏ¢ $msg
+	$directexit Îª true Ê±£¬¼ì²éÊÇ·ñµ÷ÓÃ¹ı show_nav()£¬Èç¹ûÃ»ÓĞ¾Íµ÷ÓÃ show_nav() ÏÔÊ¾Ò³ÃæÍ·¡£È»ºóµ÷ÓÃ show_footer($showmsg, true)£¬½áÊøÒ³Ãæ¡£
+
+	×¢Òâ£ºµ± $directexit Îª true (Ä¬ÈÏ) µÄÊ±ºò£¬requireLoginok() ºÍ foundErr() Á½¸öº¯ÊıÈç¹ûÅöµ½´íÎó»á½áÊøÒ³Ãæ£¡
+
+isErrFounded()
+	ÊÇ·ñÓĞ´íÎó·¢Éú
+
+html_error_quit()
+	ÏÔÊ¾´íÎóĞÅÏ¢¡£Èç¹ûÔø¾­µ÷ÓÃ¹ı requireLoginok() ¶øµ±Ç°ÓÃ»§ÓÖÊÇ guest£¬½«»áÏÔÊ¾µÇÂ¼¿ò¡£Õâ¸öº¯ÊıÒ»°ã²»ĞèÒªÖ±½Óµ÷ÓÃ¡£
+
+show_footer($showmsg = true, $showerr = true)
+	ÏÔÊ¾Ò³Ãæ×îºóµÄ°æÈ¨ĞÅÏ¢µÈ¡£
+	$showmsg    ±¾Ò³ÃæÊÇ·ñÓĞ×Ô¶¯Ë¢ĞÂÏûÏ¢½ÓÊÜÒ³ÃæµÄ¹¦ÄÜ¡£³ı·ÇÊÇĞ¡Ò³Ãæ£¬Ò»°ã¶¼ÉèÖÃ³É true
+	$showerr    Èç¹ûÒ³ÃæÓĞ´íÎó£¬ÊÇ·ñµ÷ÓÃ html_error_quit() Êä³ö´íÎóĞÅÏ¢¡£
+
