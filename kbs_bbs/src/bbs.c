@@ -82,7 +82,6 @@ void    RemoveAppendedSpace(); /* Leeward 98.02.13 */
 int set_delete_mark(int ent,struct fileheader *fileinfo,char *direct ); /* KCN */
 
 extern time_t   login_start_time;
-extern char     BoardName[];
 extern int      cmpbnames();
 extern int 	B_to_b;
 
@@ -2785,7 +2784,7 @@ Goodbye()    /*ÀëÕ¾ Ñ¡µ¥*/
     move(1,0);
     clear() ;
     move(0,0);
-    prints("Äã¾ÍÒªÀë¿ª %s £¬¸ø %s Ò»Ð©½¨ÒéÂð£¿\n",BoardName, BoardName);
+    prints("Äã¾ÍÒªÀë¿ª %s £¬¸ø %s Ò»Ð©½¨ÒéÂð£¿\n",BBS_FULL_NAME, BBS_FULL_NAME);
     if(strcmp(currentuser->userid,"guest")!=0)
         prints("[[33m1[m] ¼ÄÐÅ¸ø"NAME_BBS_CHINESE"\n");
     prints("[[33m2[m] ·µ»Ø[32m*"NAME_BBS_CHINESE" BBS*[m\n");

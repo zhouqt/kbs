@@ -42,7 +42,6 @@
 
 
 extern char MsgDesUid[14]; /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
-extern char BoardName[];
 
 extern char page_requestor[];
 extern int talkrequest;
@@ -1105,7 +1104,7 @@ void chat_date(chatcontext *pthis, const char *arg)
     time_t thetime;
 
     time(&thetime);
-    sprintf(genbuf, " %s±ê×¼Ê±¼ä: [32m%s[m", BoardName, Cdate(thetime));
+    sprintf(genbuf, " %s±ê×¼Ê±¼ä: [32m%s[m", BBS_FULL_NAME, Cdate(thetime));
     printchatline(pthis,genbuf);
 }
 

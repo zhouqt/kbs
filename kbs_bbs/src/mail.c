@@ -881,8 +881,6 @@ m_new()
     return -1 ;
 }
 
-extern char BoardName[];
-
 void
 mailtitle()
 {
@@ -890,7 +888,7 @@ mailtitle()
     int MailSpace = ((HAS_PERM(currentuser,PERM_SYSOP)||!strcmp(currentuser->userid, "Arbitrator") )  ? 9999 : (HAS_PERM(currentuser,PERM_CHATCLOAK) ? 2000: (HAS_PERM(currentuser,PERM_MANAGER) ? 300 : (HAS_PERM(currentuser,PERM_LOGINOK) ? 120 : 15) ) ) ) ;
     int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
 
-    showtitle( "ÓÊ¼þÑ¡µ¥    ", BoardName );
+    showtitle( "ÓÊ¼þÑ¡µ¥    ", BBS_FULL_NAME );
     prints( "Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ý]  ÔÄ¶ÁÐÅ¼þ[¡ú,r]  »ØÐÅ[R]  ¿³ÐÅ£¯Çå³ý¾ÉÐÅ[d,D]  ÇóÖú[h][m\n" );
     /*prints("[44m±àºÅ    %-20s %-49s[m\n","·¢ÐÅÕß","±ê  Ìâ") ;*/
     if (0 != get_mailnum() && 0 == UsedSpace)
@@ -1296,8 +1294,6 @@ m_read()
 #include <pwd.h>
 #include <time.h>
 #define BBSMAILDIR "/usr/spool/mqueue"
-extern char BoardName[];
-
 int
 invalidaddr(addr)
 char *addr;

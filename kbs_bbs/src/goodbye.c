@@ -1,6 +1,5 @@
 #include "bbs.h"
 
-extern char BoardName[];
 int
 countlogouts(filename)
 char filename[STRLEN];
@@ -156,7 +155,7 @@ char    buf[256];
 	stuffstr[ST_LASTTIME]=lasttime;
 	stuffstr[ST_LASTHOST]=douser.lasthost;
 	stuffstr[ST_THISTIME]=thistime;
-	stuffstr[ST_BOARDNAME]=BoardName;
+	stuffstr[ST_BOARDNAME]=BBS_FULL_NAME;
 	stuffstr[ST_STAY]=stay;
 	stuffstr[ST_ALLTIME]=alltime;
 #ifdef _DETAIL_UEXP_

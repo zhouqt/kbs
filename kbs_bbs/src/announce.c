@@ -40,7 +40,6 @@ char    Importname[STRLEN];
 void    a_menu();
 void	a_report();/*Haohmaru.99.12.06.板主精华区操作记录，作为考查工作的依据*/
 
-extern char     BoardName[];
 extern void     a_prompt();  /* added by netty */
 char		r_genbuf[256];
 
@@ -1377,7 +1376,7 @@ char group[STRLEN],bname[STRLEN],title[STRLEN],gname[STRLEN];
         if( (fn = fopen( "0Announce/.Names", "w" )) == NULL )
             return -1; 
         fprintf( fn, "#\n" );
-        fprintf( fn, "# Title=%s 精华区公布栏\n", BoardName );
+        fprintf( fn, "# Title=%s 精华区公布栏\n", BBS_FULL_NAME );
         fprintf( fn, "#\n" );
         fclose(fn);
     }
@@ -1498,7 +1497,7 @@ char bname[STRLEN],grp[STRLEN],title[STRLEN],newtitle[100];
 void
 Announce()
 {
-    sprintf( genbuf, "%s 精华区公布栏", BoardName );
+    sprintf( genbuf, "%s 精华区公布栏", BBS_FULL_NAME );
     a_menu( genbuf, "0Announce", HAS_PERM(currentuser,PERM_ANNOUNCE) ? PERM_BOARDS : 0 ,0);
     clear();
 }

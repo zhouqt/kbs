@@ -40,6 +40,7 @@
 #define NAME_BBS_ENGLISH	"bbs.zixia.net" //smth.org
 #define	NAME_BBS_CHINESE	"大话西游" //水木清华
 #define NAME_BBS_NICK		"斧头帮" // BBS 站
+#define BBS_FULL_NAME		"BBS 大话西游站"
 
 #define FOOTER_MOVIE		"  斧  头  帮  " // 欢  迎  投  稿
 #define ISSUE_LOGIN		"本站使用一台X86服务器" //本站使用曙光公司曙光天演服务器

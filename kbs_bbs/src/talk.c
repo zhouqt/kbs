@@ -30,7 +30,6 @@
 
 #define M_INT 8         /* monitor mode update interval */
 #define P_INT 20        /* interval to check for page req. in talk/chat */
-extern char BoardName[];
 extern int iscolor;
 extern int numf,friendmode;
 
@@ -1354,7 +1353,7 @@ char *modestr;
         else if(chkmailflag)
             showtitle(modestr,"[您有信件]");
         else
-            showtitle(modestr,BoardName);
+            showtitle(modestr,BBS_FULL_NAME);
     }
     move(2,0);
     clrtoeol();
@@ -1736,7 +1735,7 @@ friend_title()
     else if ( chkmailflag )
         strcpy( genbuf, "[您有信件]" );
     else
-        strcpy( genbuf, BoardName );
+        strcpy( genbuf, BBS_FULL_NAME );
     showtitle("[编辑好友名单]",genbuf);
 
     prints(" [←,e] 离开 [h] 求助 [→,r] 好友说明档 [↑,↓] 选择 [a] 增加好友 [d] 删除好友\n");

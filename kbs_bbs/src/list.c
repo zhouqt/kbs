@@ -2,7 +2,6 @@
 
 #define refreshtime     (30)
 extern time_t   login_start_time;
-extern char     BoardName[];
 
 int   (*func_list_show)();
 time_t update_time=0;

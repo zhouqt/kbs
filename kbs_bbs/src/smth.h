@@ -39,6 +39,8 @@
 #define	NAME_BBS_CHINESE	"水木清华"
 #define NAME_BBS_NICK		"BBS 站"
 
+#define BBS_FULL_NAME "BBS 水木清华站"
+
 #define FOOTER_MOVIE		"欢  迎  投  稿"
 /*#define ISSUE_LOGIN		"本站使用曙光公司曙光天演服务器"*/
 #define ISSUE_LOGIN		"曙光PC  第21届大运会指定服务器"

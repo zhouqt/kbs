@@ -308,7 +308,6 @@ typedef size_t socklen_t;
 #define MAXPATH 255
 #endif
 
-#define BBS_FULL_NAME NAME_BBS_CHINESE NAME_BBS_NICK
 #ifdef NJU_WWWBBS
 #define MAXREJECTS (32)
 #define BBSNAME NAME_BBS_CHINESE

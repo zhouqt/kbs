@@ -17,9 +17,6 @@ struct textline *currline = NULL ;
 int first_mark_line;
 int currpnt = 0 ;
 extern int local_article;
-#ifndef VEDITOR
-extern char BoardName[];
-#endif
 char searchtext[80];
 int        editansi = 0;
 int        scrollen=2;
@@ -981,7 +978,7 @@ struct textline *text;
         return 0;
     if(!text)
         return 0;
-    sprintf(tmp,"※ 来源:·%s %s·[FROM:",BoardName,email_domain());
+    sprintf(tmp,"※ 来源:·%s %s·[FROM:",BBS_FULL_NAME,email_domain());
     if(strstr(text->data,tmp)&&*text->data!=':')
         return 1;
     else
@@ -998,7 +995,7 @@ char text[256];
 {
     char tmp[STRLEN];
 
-    sprintf(tmp,"※ 来源:·%s %s·[FROM:",BoardName,email_domain());
+    sprintf(tmp,"※ 来源:·%s %s·[FROM:",BBS_FULL_NAME,email_domain());
     if(strstr(text,tmp))
         return 1;
     else

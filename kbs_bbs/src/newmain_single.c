@@ -74,7 +74,6 @@ struct user_info uinfo ;
 
 /* char netty_path[ 60 ]; FAINT!!! ÔõÃ´»á²»³ö´íÄØ!!! Leeward: 1997.12.10 */
 char netty_path[ 256 ];
-char BoardName[STRLEN] ;
 int utmpent = -1 ;
 time_t  login_start_time;
 int     showansi=1;
@@ -568,9 +567,9 @@ login_query()
     curr_http_num = 0;
 /*disable by KCN     curr_http_num = num_active_http_users(); *//* Leeward 99.03.06 */
 
+/* Ä¿Ç°Ã»ÓÐÊ¹ÓÃÕâ¸ö¶«Î÷,sigh*/
     ptr = sysconf_str( "BBSNAME" );
     if( ptr == NULL )  ptr = "ÉÐÎ´ÃüÃû²âÊÔÕ¾";
-    strcpy( BoardName, ptr );
 /* add by KCN for input bbs */
 
 #ifdef DOTIMEOUT
@@ -613,12 +612,7 @@ login_query()
     }*/
     /*ansimore(fname,NA); Leeward: disable the old code */
 
-    prints( "\033[1m»¶Ó­¹âÁÙ [31m%s[37m ¡ô"ISSUE_LOGIN"¡ô [36mÄ¿Ç°ÉÏÏßÈËÊý \033[1m%d[m", BoardName, curr_login_num);
-/*{
-char ii[16];
-sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
-    prints( "\033[1m»¶Ó­¹âÁÙ [31m%s[37m ¡ô±¾Õ¾Ê¹ÓÃÊï¹â¹«Ë¾Êï¹âÌìÑÝ·þÎñÆ÷¡ô [36mÄ¿Ç°ÉÏÏßÈËÊý \033[1m%s%%[m", BoardName, ii);
-}*/
+    prints( "\033[1m»¶Ó­¹âÁÙ [31m%s[37m ¡ô"ISSUE_LOGIN"¡ô [36mÄ¿Ç°ÉÏÏßÈËÊý \033[1m%d[m", BBS_FULL_NAME, curr_login_num);
 
     if ((curr_http_num != -1) && (curr_http_num != 0)) /* dong 2000.4.18 */ 
       prints("[1m[36m+%d[m", curr_http_num); /* Leeward 99.03.06 */
@@ -1262,7 +1256,7 @@ char    *title, *mid;
     move(0,0);
     clrtoeol();
     sprintf( buf, "%*s", spc1, "" );
-    if(!strcmp(mid,BoardName))
+    if(!strcmp(mid,BBS_FULL_NAME))
     {
         sprintf(stitle, "[4%dm[33m%s%s[37m%s[4%dm",colour, title, buf,mid,colour);
         prints("%s",stitle);
@@ -1307,7 +1301,7 @@ char    *title, *prompt;
 /*    else if ( vote_flag( DEFAULTBOARD, '\0' ,0) == 0&&(bp->flag&VOTE_FLAG))
         strcpy(middoc,"[ÏµÍ³Í¶Æ±ÖÐ]");*/
     else
-        strcpy(middoc,BoardName);
+        strcpy(middoc,BBS_FULL_NAME);
         
 
     showtitle( title, middoc);

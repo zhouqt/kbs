@@ -28,7 +28,7 @@ char *argv[];
 
         if(argc<2)
         {
-                printf("Usage: %s <BoardName>\n",argv[0]);
+                printf("Usage: %s <BBS_FULL_NAME>\n",argv[0]);
                 exit(1);
         }
         sprintf(dir,"%s/boards/%s",BBSHOME,argv[1]);
