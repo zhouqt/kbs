@@ -504,7 +504,7 @@ int Xdeljunk()
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
-        prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
+        prints("抱歉, 只有SYSOP权限的管理员才能删除版面垃圾箱");
         pressreturn();
         return 0;
     }
