@@ -419,7 +419,7 @@ void start_game()
         do{
             j=rand()%MAX_PEOPLE;
         }while(inrooms[myroom].peoples[j].style==-1 || inrooms[myroom].peoples[j].flag&PEOPLE_KILLER);
-        inrooms[myroom].peoples[j].flag = PEOPLE_KILLER;
+        inrooms[myroom].peoples[j].flag |= PEOPLE_KILLER;
         send_msg(j, "你做了一个无耻的坏人");
         send_msg(j, "用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
     }
