@@ -360,7 +360,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("attach"), ptr1->attachment);
         set_vars(fvars+fget_var("title"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner);
-        set_vars(fvars+fget_var("unread"), brc_unread(ptr1->id));
+        set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
         if(load_content) {
         }
         ferr=0;
