@@ -1650,6 +1650,10 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
             if (op == 'A') {    /* 除第一行外，全部引用 */
                 while (skip_attach_fgets(buf, 256, inf) != NULL) {
                     fprintf(outf, ": %s", buf);
+                    if(buf[strlen(buf)-1]!='\n') {
+                        while((ch=fgetc(inf))!=EOF)
+                            if(ch=='\n') break;
+                    }
                 }
             } else if (op == 'R') {
                 while (skip_attach_fgets(buf, 256, inf) != NULL)
@@ -1668,6 +1672,10 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                 while (skip_attach_fgets(buf, 256, inf) != NULL) {
                     if (strcmp(buf, "--\n") == 0)       /* 引用 到签名档为止 */
                         break;
+                    if(buf[strlen(buf)-1]!='\n') {
+                        while((ch=fgetc(inf))!=EOF)
+                            if(ch=='\n') break;
+                    }
                     if (buf[250] != '\0')
                         strcpy(buf + 250, "\n");
                     if (!garbage_line(buf)) {   /* 判断是否是无用行 */
