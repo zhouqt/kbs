@@ -12,13 +12,13 @@ define("ANNOUNCENUMBER",5);
 
 define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 
-define("THREADSPERPAGE",15); //文章阅读时每页显示的文章数
+define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
-$SiteName="大话西游论坛";
+$SiteName="大话西游";
 
 $SiteURL="http://wforum.zixia.net";
 
-$HTMLTitle="大话西游论坛";
+$HTMLTitle="大话西游";
 
 $HTMLCharset="GB2312";
 
