@@ -6,51 +6,49 @@ int main() {
 	int i;
 
   	init_all();
-	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 14px;}</style><br>\n
-	<script>
-	function closebut(x, y) {
-		if(document.img0) document.img0.src='/folder.gif';
-		if(document.img1) document.img1.src='/folder.gif';
-		if(document.img2) document.img2.src='/folder.gif';
-		if(document.img3) document.img3.src='/folder.gif';
-		if(document.img4) document.img4.src='/folder.gif';
-		if(document.img5) document.img5.src='/folder.gif';
-		if(document.all.div0) document.all.div0.style.display='none';
-		if(document.all.div1) document.all.div1.style.display='none';
-		if(document.all.div2) document.all.div2.style.display='none';
-		if(document.all.div3) document.all.div3.style.display='none';
-		if(document.all.div4) document.all.div4.style.display='none';
-		if(document.all.div5) document.all.div5.style.display='none';
-		x.style.display='block';
-		y.src='/folder2.gif';
-	}
-	function t(x, y) {
-		if(x.style.display!='none') {
-			x.style.display='none';
-			y.src='/folder.gif';
-		}
-		else
-			closebut(x, y);
-	}
-	function openchat() {
-		url='bbschat';
-		chatWidth=screen.availWidth;
-		chatHeight=screen.availHeight;
-		winPara='toolbar=no,location=no,status=no,menubar=no,scrollbars=auto,resizable=yes,left=0,top=0,'+'width='+(chatWidth-10)+',height='+(chatHeight-27);
-		window.open(url,'_blank',winPara);
-	}
-	</script>
-	");
+	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 14px;}</style><br>\n"
+	"<script>"
+"	function closebut(x, y) {"
+"		if(document.img0) document.img0.src='/folder.gif';"
+"		if(document.img1) document.img1.src='/folder.gif';"
+"		if(document.img2) document.img2.src='/folder.gif';"
+"		if(document.img3) document.img3.src='/folder.gif';"
+"		if(document.img4) document.img4.src='/folder.gif';"
+"		if(document.img5) document.img5.src='/folder.gif';"
+"		if(document.all.div0) document.all.div0.style.display='none';"
+"		if(document.all.div1) document.all.div1.style.display='none';"
+"		if(document.all.div2) document.all.div2.style.display='none';"
+"		if(document.all.div3) document.all.div3.style.display='none';"
+"		if(document.all.div4) document.all.div4.style.display='none';"
+"		if(document.all.div5) document.all.div5.style.display='none';"
+"		x.style.display='block';"
+"		y.src='/folder2.gif';"
+"	}"
+"	function t(x, y) {"
+"		if(x.style.display!='none') {"
+"			x.style.display='none';"
+"			y.src='/folder.gif';"
+"		}"
+"		else"
+"			closebut(x, y);"
+"	}"
+"	function openchat() {"
+"		url='bbschat';"
+"		chatWidth=screen.availWidth;"
+"		chatHeight=screen.availHeight;"
+"		winPara='toolbar=no,location=no,status=no,menubar=no,scrollbars=auto,resizable=yes,left=0,top=0,'+'width='+(chatWidth-10)+',height='+(chatHeight-27);"
+"		window.open(url,'_blank',winPara);"
+"	}"
+"	</script>");
 	printf("<nobr>\n");
 	if(!loginok) {
-                printf("<center>
-               	<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>
-		bbs用户登录<br>
-               	帐号 <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>
-               	密码 <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"password\" name=\"pw\" maxlength=\"12\" size=\"8\"><br>
-               	<input style=\"width:72px; height:22px; BACKGROUND-COLOR:b0e0b0\" type=\"submit\" value=\"登录进站\">
-		</center>
-		");
+                printf("<center>"
+"               	<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>"
+"		bbs用户登录<br>"
+"               	帐号 <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"text\" name=\"id\" maxlength=\"12\" size=\"8\"><br>"
+"               	密码 <input style=\"height:20px;BACKGROUND-COLOR:e0f0e0\" type=\"password\" name=\"pw\" maxlength=\"12\" size=\"8\"><br>"
+"               	<input style=\"width:72px; height:22px; BACKGROUND-COLOR:b0e0b0\" type=\"submit\" value=\"登录进站\">"
+"		</center>");
 	}
 	else
 	{
@@ -93,9 +91,8 @@ int main() {
 				" 预定管理</a><br>\n");
 		printf("</div>\n");
 	}
-  	printf("
-		<img src=\"/folder.gif\" name=\"img1\"><a href=\"javascript: t(document.all.div1, document.img1)\">分类讨论区</a><br>
-		<div id=\"div1\" style=\"display:none\">\n");
+  	printf(" <img src=\"/folder.gif\" name=\"img1\"><a href=\"javascript: t(document.all.div1, document.img1)\">分类讨论区</a><br>"
+"		<div id=\"div1\" style=\"display:none\">\n");
 	for (i = 0; i < SECNUM; i++)
 		printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsboa?%d\"> %s</a><br>",
 				i, secname[i][0]);
@@ -115,26 +112,24 @@ int main() {
 	if(loginok&&currentuser->userlevel & PERM_CLOAK)
 		ptr="<img src<img src=\"/link.gif\"><a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\"> 切换隐身</a><br>\n";
 	if(loginok)
-                printf("
-			<img src=\"/folder.gif\" name=\"img3\"><a href=\"javascript: t(document.all.div3, document.img3)\">个人工具箱</a><br>
-			<div id=\"div3\" style=\"display:none\">
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsinfo\"> 个人资料</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsplan\"> 改说明档<a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbssig\"> 改签名档<a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbspwd\"> 修改密码</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsparm\"> 修改个人参数</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmywww\"> WWW个人定制</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsnick\"> 临时改昵称</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsfall\"> 设定好友</a><br>
-			%s</div>
-			<img src=\"/folder.gif\" name=\"img5\"><a href=\"javascript: t(document.all.div5, document.img5)\">处理信件区</a><br>
-			<div id=\"div5\" style=\"display:none\">
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsnewmail\"> 阅览新邮件</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmail\"> 所有邮件</a><br>
-			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbspstmail\"> 发送邮件</a><br>
-			</div>
-		", ptr);
+                printf("<img src=\"/folder.gif\" name=\"img3\"><a href=\"javascript: t(document.all.div3, document.img3)\">个人工具箱</a><br>"
+"			<div id=\"div3\" style=\"display:none\">"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsinfo\"> 个人资料</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsplan\"> 改说明档<a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbssig\"> 改签名档<a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbspwd\"> 修改密码</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsparm\"> 修改个人参数</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmywww\"> WWW个人定制</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsnick\"> 临时改昵称</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsfall\"> 设定好友</a><br>"
+"			%s</div>"
+"			<img src=\"/folder.gif\" name=\"img5\"><a href=\"javascript: t(document.all.div5, document.img5)\">处理信件区</a><br>"
+"			<div id=\"div5\" style=\"display:none\">"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsnewmail\"> 阅览新邮件</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmail\"> 所有邮件</a><br>"
+"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbspstmail\"> 发送邮件</a><br>"
+"			</div>", ptr);
 	printf("<img src=\"/folder.gif\" name=\"img4\">");
 	printf("<a href=\"javascript: t(document.all.div4, document.img4)\">特别服务区</a><br>\n");
 	printf("<div id=\"div4\" style=\"display:none\">\n");

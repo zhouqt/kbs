@@ -193,7 +193,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct,
 	{
 		http_fatal("\n\n                很抱歉，你在该版被其版主停止了 POST 的权力...\n");
 	}
-	else if (YEA == check_readonly(board2)) /* Leeward 98.03.28 */
+	else if (YEA == checkreadonly(board2)) /* Leeward 98.03.28 */
 	{
 		return FULLUPDATE;
 	}

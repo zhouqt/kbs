@@ -776,7 +776,7 @@ int Rename(char* srcPath,char* destPath)
    return -1;
 }
 
-int seek_in_file(char filename[STRLEN],seekstr[STRLEN])
+int seek_in_file(char filename[STRLEN],char seekstr[STRLEN])
 {
     FILE *fp;
     char buf[STRLEN];

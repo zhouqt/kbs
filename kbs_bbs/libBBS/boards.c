@@ -480,12 +480,12 @@ deny_me(char* user,char* board)   /* 判断用户 是否被禁止在当前版发文章 */
     char buf[STRLEN];
 
     setbfile(buf,board,"deny_users");
-    return seek_in_file(buf,user->userid);
+    return seek_in_file(buf,user);
 }
 
 
 
-int haspostperm(char* user,char *bname) /* 判断在 bname版 是否有post权 */
+int haspostperm(struct userec* user,char *bname) /* 判断在 bname版 是否有post权 */
 {
     register int i;
 

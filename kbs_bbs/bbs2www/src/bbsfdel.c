@@ -11,7 +11,7 @@ int deleteoverride2(char *uident)
     struct friends fh;
 	char buf[STRLEN];
 
-    setuserfile( buf, currentuser->userid,"friends" );
+    sethomefile( buf, currentuser->userid,"friends" );
     deleted = search_record( buf, &fh, sizeof(fh), cmpfnames2, uident );
     if(deleted > 0)
     {

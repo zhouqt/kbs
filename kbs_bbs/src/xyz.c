@@ -457,7 +457,7 @@ XCheckLevel() /* Leeward 98.06.05 */
 }
 
 int
-x_userDEFINE(currentuser,)
+x_userdefine()
 {
     int id ;
     unsigned int newlevel;

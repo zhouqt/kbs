@@ -14,7 +14,7 @@ int main()
 	//fnum = get_friends_num();
 	//fi = get_finfo_addr();
 	//loadfriend(currentuser.userid);
-	setuserfile(filename,currentuser->userid, "friends");
+	sethomefile(filename,currentuser->userid, "friends");
 	fnum = get_num_records(filename, sizeof(friends_t));
 	if (fnum <= 0)
 		http_fatal("您尚未设定好友名单");

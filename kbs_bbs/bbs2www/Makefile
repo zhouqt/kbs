@@ -3,13 +3,15 @@ BBSINCLUDE2 = ../../
 BBSLIBRARY = ../lib
 BBSLIBRARY2 = ../../
 
+all:allthing
+
 #ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	../Makefile.spec
 #endif
 
 MAKE = make
-CC 	= gcc
-CFLAGS = -g -I$(BBSINCLUDE) -I$(BBSINCLUDE2) -W
+#CC 	= gcc
+CFLAGS += -I$(BBSINCLUDE2)
 LDFLAGS = -L$(BBSLIBRARY) -L$(BBSLIBRARY2) -lbbslib -lBBS
 OS_DEF = -DLINUX
 SITE_DEF = -DINVISIBLE -DSMTH -DNJU_WWWBBS -DBBS2WWW
@@ -22,7 +24,7 @@ DIRS = lib src
 
 MAKEFLAG = MAKE=$(MAKE) CC=$(CC) BBSHOME=$(BBSHOME) BBSSITE=$(BBSSITE) CFLAGS="$(CFLAGS)" LDFLAGS="$(LDFLAGS)" OS_DEF="$(OS_DEF)" SITE_DEF="$(SITE_DEF)"
 
-all:
+allthing:
 	@echo "== Making main program and relatve src =="
 	@for x in $(DIRS); \
 	do \

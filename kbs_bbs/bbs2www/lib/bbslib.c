@@ -573,7 +573,7 @@ void add_loginfo2(char *filepath, char *board, struct userec *user, int anony)
 
     //noidboard=(seek_in_file("etc/anonymous",board)&&anony);
     color=(user->numlogins%7)+31; /* 颜色随机变化 */
-    setuserfile( fname, currentuser->userid,"signatures" );
+    sethomefile( fname, currentuser->userid,"signatures" );
     fp=fopen(filepath,"a");
     if ((fp2=fopen(fname, "r"))== NULL|| /* 判断是否已经 存在 签名档 */
             user->signature==0 || anony==1)
@@ -611,7 +611,7 @@ void addsignature2(FILE *fp, struct userec *user, int sig)
 
 	if (sig == 0)
 		return;
-    setuserfile( fname, currentuser->userid,"signatures" );
+    sethomefile( fname, currentuser->userid,"signatures" );
     if ((sigfile = fopen(fname, "r"))== NULL)
     	return;
     fputs("--\n", fp);
@@ -1515,11 +1515,6 @@ unsigned int getcurrulevel()
 	return currentuser->userlevel;
 }
 
-int HAS_PERM(currentuser,unsigned int x)
-{
-	return x ? currentuser->userlevel&x : 1;
-}
-
 int define(unsigned int x)
 {
 	return x ? currentuser->userdefine&x : 1;
@@ -1684,7 +1679,7 @@ getfriendstr()
 
     if(topfriend!=NULL)
         free(topfriend);
-    setuserfile( filename, currentuser->userid,"friends" );
+    sethomefile( filename, currentuser->userid,"friends" );
     nf=get_num_records(filename,sizeof(struct friends));
     if(nf<=0)
         return 0;
@@ -2026,15 +2021,6 @@ int chk_currBM1(char *BMstr)   /* Bigman:2001.2.19 根据输入的版主名单 判断当前us
             return YEA;
         ptr=strtok(NULL,",: ;|&()\0\n");
     }
-}
-
-char * setmailpath( char *buf, char *userid )  /* 取 某用户 的mail */
-{
-    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
-        sprintf( buf, "mail/%c/%s", toupper(userid[0]), userid );
-    else
-        sprintf( buf, "mail/wrong/%s", userid);
-    return buf;
 }
 
 /*

@@ -8,7 +8,7 @@ int main() {
 	/*sethomefile(path, currentuser->userid, "msgfile.me");*/
 	setmsgfile(path, currentuser->userid);
 	unlink(path);
-	setuserfile(path, currentuser->userid,"msgcount");
+	sethomefile(path, currentuser->userid,"msgcount");
 	unlink(path);
 	printf("已删除所有讯息备份");
 }

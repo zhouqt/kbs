@@ -16,14 +16,12 @@ int main()
 		strcpy(buf3, "<body onload=\"document.form0.msg.focus()\">");
 		if(destid[0]==0) strcpy(buf3, "<body onload=\"document.form0.destid.focus()\">");
 		printf("%s\n", buf3);
-		printf("
-			<form name=\"form0\" action=\"bbssendmsg\" method=\"post\">
-				  <input type=\"hidden\" name=\"destpid\" value=\"%d\">
-			送讯息给: <input name=\"destid\" maxlength=\"12\" value=\"%s\" size=\"12\"><br>
-			讯息内容: <input name=\"msg\" maxlength=\"50\" size=\"50\" value=\"%s\"><br>
-				  <input type=\"submit\" value=\"确认\" width=\"6\">
-			</form>
-		", destpid, destid, msg);
+		printf("	<form name=\"form0\" action=\"bbssendmsg\" method=\"post\">"
+		"		  <input type=\"hidden\" name=\"destpid\" value=\"%d\">"
+		"	送讯息给: <input name=\"destid\" maxlength=\"12\" value=\"%s\" size=\"12\"><br>"
+		"	讯息内容: <input name=\"msg\" maxlength=\"50\" size=\"50\" value=\"%s\"><br>"
+		"		  <input type=\"submit\" value=\"确认\" width=\"6\">"
+		"	</form> ", destpid, destid, msg);
 		http_quit();
 	}
 	if(getusernum(destid)<0) http_fatal("查无此人");

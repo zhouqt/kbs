@@ -200,217 +200,201 @@ int reg() {
 }
 
 int show_frm(int pid) {
-	printf("
-	<frameset rows=\"0,0,*,48,16\" frameborder=\"0\">
-	<frame name=\"hide\" src=\"\">
-	<frame name=\"hide2\" src=\"\">
-	<frame name=\"main\" src=\"\">
-	<frame scrolling=\"auto\" marginheight=\"1\" framespacing=\"1\" name=\"input\" src=\"bbschat?t=frame_input&pid=%d\">
-	<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"1\" framespacing=\"1\" name=\"foot\" src=\"bbsfoot\">
-	</frameset>
-	</html>
-	", pid);
+	printf("<frameset rows=\"0,0,*,48,16\" frameborder=\"0\">"
+"	<frame name=\"hide\" src=\"\">"
+"	<frame name=\"hide2\" src=\"\">"
+"	<frame name=\"main\" src=\"\">"
+"	<frame scrolling=\"auto\" marginheight=\"1\" framespacing=\"1\" name=\"input\" src=\"bbschat?t=frame_input&pid=%d\">"
+"	<frame scrolling=\"no\" marginwidth=\"4\" marginheight=\"1\" framespacing=\"1\" name=\"foot\" src=\"bbsfoot\">"
+"	</frameset>"
+"	</html>"
+	, pid);
 	http_quit();
 }
 
 int frame_input(int pid) {
-	printf("
-	<script>
-		function r1() {
-			top.hide2.location='bbschat?t=chatrefresh&pid=%d';
-			setTimeout('r1()', 10000);
-		}
-		setTimeout('r1()', 500);
-	</script>
-	<body onload=\"document.form1.in1.focus()\">
-	<nobr>
-	<form onsubmit=\"add_cc()\" name=\"form1\" action=\"bbschat?pid=%d&t=chatsnd\" method=\"post\" target=\"hide\">
-	Input: <input name=\"in1\" maxlength=\"60\" size=\"56\">
-	<input type=\"submit\" value=\"发送\">
-	<script>
-		var cc, cc2;
-		cc='';
-		function add_cc0(x1, x) {
-			cc2=x1;
-			cc=x;
-		}
-		function do_quit() {
-			if(confirm('您真的要退出了吗？')) {
-				form1.in1.value='/b';
-				form1.submit();
-			}
-		}
-		function do_help() {
-			open('/chathelp.html', '_blank', 
-			'toolbar=yes,location=no,status=no,menubar=no,scrollbar=auto,resizable=yes,width=620,height=400');
-		}
-		function do_alias(x) {
-			form1.in1.value=x;
-			form1.submit();
-		}
-		function do_room() {
-			xx=prompt('请输入包厢名称','');
-			if(xx=='' || xx==null) return;
-			form1.in1.value='/j '+ xx;
-			form1.submit();
-		}
-		function do_user() {
-			form1.in1.value='/l';
-			form1.submit();
-		}
-		function do_r() {
-			form1.in1.value='/r';
-			form1.submit();
-		}
-		function do_w() {
-			form1.in1.value='/w';
-			form1.submit();
-		}
-		function do_msg() {
-			xx=prompt('给谁丢小纸条','');
-			if(xx=='' || xx==null) return;
-			yy=prompt('什么内容','');
-			if(yy=='' || xx==null) return;
-			form1.in1.value='/m '+xx+' '+yy;
-			form1.submit();
-		}
-		function do_n() {
-			xx=prompt('你想改成什么名字?','');
-			if(xx=='' || xx==null) return;
-			form1.in1.value='/n '+xx;
-			form1.submit();
-		}
-		function do_pic() {
-			xx=prompt('请输入图片的URL地址:','http://');
-			if(xx=='http://' || xx=='' || xx==null) return;
-			form1.in1.value='<img src='+xx+'>';
-			form1.submit();
-		}
-	</script>
-	<select onChange='do_alias(this.options[this.selectedIndex].value);this.selectedIndex=0;'>
-        <option value=' ' selected>聊天动作</option>
-        <option value='//hehe'>呵呵的傻笑</option>
-	<option value='//faint'>要晕倒了</option>
-	<option value='//sleep'>要睡着了</option>
-	<option value='//:D'>乐滋滋的</option>
-	<option value='//so'>就这样</option>
-	<option value='//shake'>摇摇头</option>
-	<option value='//luck'>真幸运啊</option>
-	<option value='//tongue'>吐吐舌头</option>
-	<option value='//blush'>脸红了</option>
-	<option value='//applaud'>热烈鼓掌</option>
-	<option value='//cough'>咳嗽一下</option>
-	<option value='//happy'>好高兴啊</option>
-	<option value='//hungry'>肚子饿了</option>
-	<option value='//strut>大摇大摆</option>
-	<option value='//think'>想一想</option>
-	<option value='//?'>疑惑不已</option>
-	<option value='//bearbug'>热情拥抱</option>
-	<option value='//bless'>祝福</option>
-	<option value='//bow'>鞠躬</option>
-        <option value='//caress'>抚摸</option>
-        <option value='//cringe'>企求宽恕</option>
-        <option value='//cry'>放声大哭</option>
-        <option value='//comfort'>安慰一下</option>
-	<option value='//clap'>热烈鼓掌</option>
-        <option value='//dance'>翩翩起舞</option>
-    	<option value='//drivel'>流口水</option>
-    	<option value='//farewell'>再见</option>
-  	<option value='//giggle'>呆笑</option>
-    	<option value='//grin'>咧嘴笑</option>
-      	<option value='//growl'>大声咆哮</option>
-/*
-hand      heng      hug       haha      heihei    joycup    kick
-kiss      koko      laugh     mm        nod       nudge     oh        pad
-pat       papaya    pinch     punch     pure      puke      report    shrug
-sigh      slap      smooch    snicker   sniff     spank     squeeze   thank
-tickle    wave      welcome   wink      xixi      zap
-
-【 Verb + Message：动词 + 要说的话 】   例：//sing 天天天蓝
-ask       chant     cheer     chuckle   curse     demand    frown     groan
-grumble   hum       moan      notice    order     ponder    pout      pray
-request   shout     sing      smile     smirk     swear     tease     whimper
-yawn      yell
-*/
-        </select>
-	<select name=ccc onChange='add_cc0(this, this.options[this.selectedIndex].value)'>
-	<option value='' selected>白色</option>
-	<option value='%s'><font color=green>红色</font></option>
-	<option value='%s'><font color=red>绿色</font></option>
-        <option value='%s'><font color=blue>蓝色</font></option>
-        <option value='%s'><font color=blue>天蓝</font></option>
-        <option value='%s'><font color=yellow>黄色</font></option>
-        <option value='%s'><font color=red>品红</font></option>
-	<option value='%s'>大字</option>
-	</select>
-	<select onChange='do_func(this.selectedIndex);this.selectedIndex=0;'>
- 	<option selected>聊天室功能</option>
-	<option>进入包厢</option>
-	<option>查看包厢名</option>
-	<option>本包厢有谁</option>
-	<option>看有谁在线</option>
-	<option>丢小纸条</option>
-	<option>改聊天代号</option>
-	<option>贴图片</option>
-	<option>清除屏幕</option>
-	<option>背景反色</option>
-	<option>离开聊天室</option>
-        </select>
-	<br>
-	<a href='javascript:do_quit()'>[离开bbs茶馆] </a>
-	<a href='/chathelp.html' target=_blank>[聊天室帮助] </a>
-	<script>
-	function do_func(n) {
-		if(n==0) return;
-		if(n==1) return do_room();
-		if(n==2) return do_r();
-		if(n==3) return do_w();
-		if(n==4) return do_user();
-		if(n==5) return do_msg();
-		if(n==6) return do_n();
-		if(n==7) return do_pic();
-		if(n==8) return do_c();
-		if(n==9) return do_css2();
-		if(n==10) return do_quit();
-	}
-	var css1;
-	css1='http://bbs.nju.edu.cn/bbschat.css';
-	function do_c() {
-		top.main.document.close();
-                top.main.document.writeln('<link rel=stylesheet type=text/css href='+css1+'><body><pre><font class=c37>');
-	}
-	function do_css2() {
-		if(css1=='http://bbs.nju.edu.cn/bbschat.css')
-			css1='http://bbs.nju.edu.cn/bbschat2.css';
-		else
-			css1='http://bbs.nju.edu.cn/bbschat.css';
-		top.main.document.writeln('<link rel=stylesheet type=text/css href='+css1+'><body><pre><font class=c37>');
-	}
-	function add_cc() {
-	 	xxx=form1.in1.value;
-		if(xxx=='/h') {
-			do_help();
-			form1.in1.value='';
-			return; 
-		}
-		if(xxx=='/c') {
-			do_c();
-			form1.in1.value='';
-			return;
-		}
-		if(xxx=='') return;
- 		if(xxx.indexOf('/')<0) {
- 			form1.in1.value=cc+xxx;
- 		}
- 		if(cc=='/I') {
- 			cc='';
- 			cc2.selectedIndex=0;
- 		}
- 	}
-	</script>
-	</form></body>
-	
-	", pid, pid, "%R", "%G", "%B", "%C", "%Y", "%M", "%I");
+	printf(" <script>"
+"		function r1() {"
+"			top.hide2.location='bbschat?t=chatrefresh&pid=%d';"
+"			setTimeout('r1()', 10000);"
+"		}"
+"		setTimeout('r1()', 500);"
+"	</script>"
+"	<body onload=\"document.form1.in1.focus()\">"
+"	<nobr>"
+"	<form onsubmit=\"add_cc()\" name=\"form1\" action=\"bbschat?pid=%d&t=chatsnd\" method=\"post\" target=\"hide\">"
+"	Input: <input name=\"in1\" maxlength=\"60\" size=\"56\">"
+"	<input type=\"submit\" value=\"发送\">"
+"	<script>"
+"		var cc, cc2;"
+"		cc='';"
+"		function add_cc0(x1, x) {"
+"			cc2=x1;"
+"			cc=x;"
+"		}"
+"		function do_quit() {"
+"			if(confirm('您真的要退出了吗？')) {"
+"				form1.in1.value='/b';"
+"				form1.submit();"
+"			}"
+"		}"
+"		function do_help() {"
+"			open('/chathelp.html', '_blank', "
+"			'toolbar=yes,location=no,status=no,menubar=no,scrollbar=auto,resizable=yes,width=620,height=400');"
+"		}"
+"		function do_alias(x) {"
+"			form1.in1.value=x;"
+"			form1.submit();"
+"		}"
+"		function do_room() {"
+"			xx=prompt('请输入包厢名称','');"
+"			if(xx=='' || xx==null) return;"
+"			form1.in1.value='/j '+ xx;"
+"			form1.submit();"
+"		}"
+"		function do_user() {"
+"			form1.in1.value='/l';"
+"			form1.submit();"
+"		}"
+"		function do_r() {"
+"			form1.in1.value='/r';"
+"			form1.submit();"
+"		}"
+"		function do_w() {"
+"			form1.in1.value='/w';"
+"			form1.submit();"
+"		}"
+"		function do_msg() {"
+"			xx=prompt('给谁丢小纸条','');"
+"			if(xx=='' || xx==null) return;"
+"			yy=prompt('什么内容','');"
+"			if(yy=='' || xx==null) return;"
+"			form1.in1.value='/m '+xx+' '+yy;"
+"			form1.submit();"
+"		}"
+"		function do_n() {"
+"			xx=prompt('你想改成什么名字?','');"
+"			if(xx=='' || xx==null) return;"
+"			form1.in1.value='/n '+xx;"
+"			form1.submit();"
+"		}"
+"		function do_pic() {"
+"			xx=prompt('请输入图片的URL地址:','http://');"
+"			if(xx=='http://' || xx=='' || xx==null) return;"
+"			form1.in1.value='<img src='+xx+'>';"
+"			form1.submit();"
+"		}"
+"	</script>"
+"	<select onChange='do_alias(this.options[this.selectedIndex].value);this.selectedIndex=0;'>"
+"        <option value=' ' selected>聊天动作</option>"
+"        <option value='//hehe'>呵呵的傻笑</option>"
+"	<option value='//faint'>要晕倒了</option>"
+"	<option value='//sleep'>要睡着了</option>"
+"	<option value='//:D'>乐滋滋的</option>"
+"	<option value='//so'>就这样</option>"
+"	<option value='//shake'>摇摇头</option>"
+"	<option value='//luck'>真幸运啊</option>"
+"	<option value='//tongue'>吐吐舌头</option>"
+"	<option value='//blush'>脸红了</option>"
+"	<option value='//applaud'>热烈鼓掌</option>"
+"	<option value='//cough'>咳嗽一下</option>"
+"	<option value='//happy'>好高兴啊</option>"
+"	<option value='//hungry'>肚子饿了</option>"
+"	<option value='//strut>大摇大摆</option>"
+"	<option value='//think'>想一想</option>"
+"	<option value='//?'>疑惑不已</option>"
+"	<option value='//bearbug'>热情拥抱</option>"
+"	<option value='//bless'>祝福</option>"
+"	<option value='//bow'>鞠躬</option>"
+"        <option value='//caress'>抚摸</option>"
+"        <option value='//cringe'>企求宽恕</option>"
+"        <option value='//cry'>放声大哭</option>"
+"        <option value='//comfort'>安慰一下</option>"
+"	<option value='//clap'>热烈鼓掌</option>"
+"        <option value='//dance'>翩翩起舞</option>"
+"    	<option value='//drivel'>流口水</option>"
+"    	<option value='//farewell'>再见</option>"
+"  	<option value='//giggle'>呆笑</option>"
+"    	<option value='//grin'>咧嘴笑</option>"
+"      	<option value='//growl'>大声咆哮</option>"
+"        </select>"
+"	<select name=ccc onChange='add_cc0(this, this.options[this.selectedIndex].value)'>"
+"	<option value='' selected>白色</option>"
+"	<option value='%s'><font color=green>红色</font></option>"
+"	<option value='%s'><font color=red>绿色</font></option>"
+"        <option value='%s'><font color=blue>蓝色</font></option>"
+"        <option value='%s'><font color=blue>天蓝</font></option>"
+"        <option value='%s'><font color=yellow>黄色</font></option>"
+"        <option value='%s'><font color=red>品红</font></option>"
+"	<option value='%s'>大字</option>"
+"	</select>"
+"	<select onChange='do_func(this.selectedIndex);this.selectedIndex=0;'>"
+" 	<option selected>聊天室功能</option>"
+"	<option>进入包厢</option>"
+"	<option>查看包厢名</option>"
+"	<option>本包厢有谁</option>"
+"	<option>看有谁在线</option>"
+"	<option>丢小纸条</option>"
+"	<option>改聊天代号</option>"
+"	<option>贴图片</option>"
+"	<option>清除屏幕</option>"
+"	<option>背景反色</option>"
+"	<option>离开聊天室</option>"
+"        </select>"
+"	<br>"
+"	<a href='javascript:do_quit()'>[离开bbs茶馆] </a>"
+"	<a href='/chathelp.html' target=_blank>[聊天室帮助] </a>"
+"	<script>"
+"	function do_func(n) {"
+"		if(n==0) return;"
+"		if(n==1) return do_room();"
+"		if(n==2) return do_r();"
+"		if(n==3) return do_w();"
+"		if(n==4) return do_user();"
+"		if(n==5) return do_msg();"
+"		if(n==6) return do_n();"
+"		if(n==7) return do_pic();"
+"		if(n==8) return do_c();"
+"		if(n==9) return do_css2();"
+"		if(n==10) return do_quit();"
+"	}"
+"	var css1;"
+"	css1='http://bbs.nju.edu.cn/bbschat.css';"
+"	function do_c() {"
+"		top.main.document.close();"
+"                top.main.document.writeln('<link rel=stylesheet type=text/css href='+css1+'><body><pre><font class=c37>');"
+"	}"
+"	function do_css2() {"
+"		if(css1=='http://bbs.nju.edu.cn/bbschat.css')"
+"			css1='http://bbs.nju.edu.cn/bbschat2.css';"
+"		else"
+"			css1='http://bbs.nju.edu.cn/bbschat.css';"
+"		top.main.document.writeln('<link rel=stylesheet type=text/css href='+css1+'><body><pre><font class=c37>');"
+"	}"
+"	function add_cc() {"
+"	 	xxx=form1.in1.value;"
+"		if(xxx=='/h') {"
+"			do_help();"
+"			form1.in1.value='';"
+"			return; "
+"		}"
+"		if(xxx=='/c') {"
+"			do_c();"
+"			form1.in1.value='';"
+"			return;"
+"		}"
+"		if(xxx=='') return;"
+" 		if(xxx.indexOf('/')<0) {"
+" 			form1.in1.value=cc+xxx;"
+" 		}"
+" 		if(cc=='/I') {"
+" 			cc='';"
+" 			cc2.selectedIndex=0;"
+" 		}"
+" 	}"
+"	</script>"
+"	</form></body>",
+	 pid, pid, "%R", "%G", "%B", "%C", "%Y", "%M", "%I");
 	http_quit();
 }
 
