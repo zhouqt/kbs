@@ -53,7 +53,7 @@ int nnline = 0, xxxline = 0;
 int more_size, more_num;
 int displayflag = 0, shownflag = 1;
 
-static int mem_more(char *ptr, int size, int quit, char *keystr, char *fn);
+static int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char* title);
 
 int NNread_init()
 {
@@ -922,7 +922,7 @@ int mmap_show(char *fn, int row, int numlines)
     return retv;
 }
 
-int mmap_more(char *fn, int quit, char *keystr)
+int mmap_more(char *fn, int quit, char *keystr,char* title)
 {
     char *ptr;
     int size, retv;
@@ -931,7 +931,7 @@ int mmap_more(char *fn, int quit, char *keystr)
     case 0:                    //mmap error
         return -1;
     case 1:
-        retv = mem_more(ptr, size, quit, keystr, fn);
+        retv = mem_more(ptr, size, quit, keystr, fn,title);
     }
     end_mmapfile((void *) ptr, size, -1);
     return retv;
@@ -1009,7 +1009,7 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
     prints("[44m[32mÏÂÃæ»¹ÓÐà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ý/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
 }
 
-int mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
+int mem_more(char *ptr, int size, int quit, char *keystr, char *fn,char* title)
 {
     extern int t_lines;
     struct MemMoreLines l;
@@ -1140,6 +1140,13 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
                 curr_line += t_lines - 1;
                 change = 1 - t_lines;
                 break;
+	    case Ctrl('Y'):
+		if (title) {
+		    zsend_file(fn,title);
+                    curr_line += t_lines - 1;
+                    change = 1 - t_lines;
+		}
+		break;
             default:
                 if (keystr != NULL && strchr(keystr, ch) != NULL)
                     return ch;
@@ -1185,14 +1192,12 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
     }
 }
 
-int ansimore(filename, promptend)
-    char *filename;
-    int promptend;
+int ansimore( char *filename, int promptend)
 {
     int ch;
 
     clear();
-    ch = mmap_more(filename, 1, "RrEexp");
+    ch = mmap_more(filename, 1, "RrEexp",NULL);
     if (promptend)
         pressanykey();
     move(t_lines - 1, 0);
@@ -1211,9 +1216,22 @@ int ansimore2(filename, promptend, row, numlines)
     if (numlines)
         ch = mmap_show(filename, row, numlines);
     else
-        ch = mmap_more(filename, 1, NULL);
+        ch = mmap_more(filename, 1, NULL,NULL);
     if (promptend)
         pressanykey();
     refresh();
+    return ch;
+}
+
+int ansimore_withzmodem( char *filename, int promptend,char* title)
+{
+    int ch;
+
+    clear();
+    ch = mmap_more(filename, 1, "RrEexp",title);
+    if (promptend)
+        pressanykey();
+    move(t_lines - 1, 0);
+    prints("^[[0m^[[m");
     return ch;
 }

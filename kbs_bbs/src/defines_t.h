@@ -53,6 +53,7 @@ int modify_user_mode(int mode);
 /* more.c */
 int ansimore(char *filename, int promptend);
 int ansimore2(char *filename, int promptend, int row, int numlines);
+int ansimore_withzmodem( char *filename, int promptend,char* title);
 int NNread_init();
 void m_init();
 int countln(char *fname);

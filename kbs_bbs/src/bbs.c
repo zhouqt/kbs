@@ -699,9 +699,9 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     quote_user[IDLEN] = 0;
 
 #ifndef NOREPLY
-    ch = ansimore(genbuf, false);       /* 显示文章内容 */
+    ch = ansimore_withzmodem(genbuf, false, fileinfo->title);       /* 显示文章内容 */
 #else
-    ch = ansimore(genbuf, true);        /* 显示文章内容 */
+    ch = ansimore_withzmodem(genbuf, true, fileinfo->title );        /* 显示文章内容 */
 #endif
     brc_add_read(fileinfo->filename);
 #ifndef NOREPLY
@@ -740,6 +740,9 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     switch (ch) {
     case Ctrl('Z'):
         r_lastmsg();            /* Leeward 98.07.30 support msgX */
+        break;
+    case Ctrl('Y'):
+        zsend_post(ent, fileinfo, direct);
         break;
     case 'N':
     case 'Q':

@@ -1242,7 +1242,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                     /*ansimore( fname, true ); */
                     /* Leeward 98.09.13 ĞÂÌí¹¦ÄÜ¡Ã
                        £¬ÓÃÉÏ£¯ÏÂ¼ıÍ·Ö±½ÓÌø×ªµ½Ç°£¯ºóÒ»Ïî */
-                    ansimore(fname, false);
+                    ansimore_withzmodem(fname, false, me.item[me.now]->title);
                     prints("[1m[44m[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  [33m½áÊø Q,¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı [m");
                     switch (ch = igetkey()) {
                     case KEY_DOWN:
@@ -1257,6 +1257,9 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                             me.now = me.num - 1;
                         ch = KEY_RIGHT;
                         goto EXPRESS;
+                    case Ctrl('Y'):
+			zsend_file(fname, me.item[me.now]->title);
+                        break;
                     case Ctrl('Z'):
                     case 'h':
                         goto EXPRESS;
