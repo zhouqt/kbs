@@ -406,8 +406,8 @@ void outc(unsigned char c)
         slp->mode[cur_col]=SCREEN_MODIFIED|cur_mode;
         slp->color[cur_col]=cur_color;
         slp->data[cur_col]=c;
-        cur_col++;
     }
+    cur_col++;
 }
 
 int savey=-1, savex=-1;
