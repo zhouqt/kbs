@@ -26,13 +26,13 @@ int main()
     printf("用户: <a href=\"bbsqry?userid=%s\" target=\"f3\">%s</a><br>", getcurruserid(), getcurruserid());
     uleveltochar(buf, getcurrusr());
     printf("身份: %s<br>\n", buf);
-    printf("<a href=\"/bbslogout.jsp\" target=\"_top\">注销本次登录</a><br>\n");
+    printf("<a href=\"/bbslogout.php\" target=\"_top\">注销本次登录</a><br>\n");
     printf("</td></tr><tr><td>\n");
     printf("<hr style=\"color:#2020f0; height:1px\" width=\"84px\" align=\"center\">\n");
     printf("</td></tr></table>");
-    printf("<img src=\"/images/home.gif\"><a href=\"/bbssec.jsp\" target=\"f3\">讨论区首页</a><br>\n");
+    printf("<img src=\"/images/home.gif\"><a href=\"/bbssec.php\" target=\"f3\">讨论区首页</a><br>\n");
     printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
-    printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"/bbstop10.jsp\">今日十大</a><br>\n");
+    printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"/bbstop10.php\">今日十大</a><br>\n");
     /*printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbstopb10\">热门讨论区</a><br>\n"); */
     if (loginok) {
         int i, mybrdnum = 0;
@@ -64,7 +64,7 @@ int main()
     }
     printdiv(2, "分类讨论区", "/images/folder.gif");
     for (i = 0; i < SECNUM; i++)
-        printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsboa?group=%d\">%s</a><br>\n", i, secname[i][0]);
+        printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsboa.php?group=%d\">%s</a><br>\n", i, secname[i][0]);
     printf("</div>\n");
 
     printdiv(3, "谈天说地区", "/images/folder.gif");
