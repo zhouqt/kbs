@@ -552,6 +552,7 @@ void r_msg()
 
 
 outhere:
+    saveline(0, 1, savebuffer[i]);
     showansi = tmpansi;
     good_move(y,x);
     if(oldi)
