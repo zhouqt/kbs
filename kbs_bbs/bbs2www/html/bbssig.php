@@ -9,7 +9,7 @@
 		if ($_GET["type"]=="1") {
 		    $fp=@fopen($filename,"w+");
                     if ($fp!=false) {
-		    fwrite($fp,$_POST["text"]);
+		    fwrite($fp,str_replace("\r\n", "\n", $_POST["text"]));
 		    fclose($fp);
                     }
 		}
