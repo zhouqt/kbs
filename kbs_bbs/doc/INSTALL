@@ -79,7 +79,7 @@ htdocs/ 必须是 web 服务器的虚拟 /, 后面的 html, php 脚本等文件将放在这个
 时则加上 --with-apxs=/home/apache/bin/apxs. apache 进程必须用 bbs 用户跑.
 
 php的配置文件（一般是/usr/local/lib/php.ini）中设置
-shortopen_tag=Off
+short_open_tag=Off
 
 重新配置水木源码, ./configure --prefix=$(BBSHOME) --enable-site=devel
 --with-www=/home/apache --with-php=/home/flyriver/download/php-4.2.1
