@@ -42,8 +42,8 @@ struct UCACHE {
 	int	number;
 };
 
-static struct userec* passwd;
-static struct UCACHE   *uidshm;
+static struct userec* passwd=NULL;
+static struct UCACHE   *uidshm=NULL;
 
 static inline int ucache_lock()
 {
@@ -269,12 +269,14 @@ resolve_ucache()
     int iscreate;
     int passwdfd;
 
+    iscreate = 0;
     if( uidshm == NULL ) {
         uidshm = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate); /*attach to user shm */
     }
 
 /*  This need to do by using other way 
 	if (!iscreate) {
+	    log("3system","create ucache");
 	    if( stat( FLUSH,&st ) == 0 ) {
 		    ftime = st.st_mtime;
 		    if( uidshm->uptime < ftime )  {
@@ -283,6 +285,7 @@ resolve_ucache()
 		    }
 	    }
 	}*/
+        if (passwd==NULL) {
 	if ((passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
 		log("3system","Can't open " PASSFILE "file %s",strerror(errno));
        	exit(-1);
@@ -295,6 +298,7 @@ resolve_ucache()
 		close(passwdfd);
        	exit(-1);
    	}
+        }
 	if (iscreate) {
     	int lockfd = ucache_lock();
 		int     usernumber,i;
