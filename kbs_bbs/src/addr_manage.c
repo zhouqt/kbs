@@ -1,5 +1,5 @@
 #include "bbs.h"
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 #include "mysql.h"
 
 /**********************************************************

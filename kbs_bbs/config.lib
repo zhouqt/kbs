@@ -71,7 +71,7 @@ if test "$MYSQL_DIR" != "no"; then
     SAVE_LIBS=$LIBS
     LIBS="$LIBS -L$MYSQL_DIR/lib"
     AC_CHECK_LIB(mysqlclient, mysql_real_connect, [
-      AC_DEFINE(HAVE_MYSQL,1,[Enable MySQL support])
+      AC_DEFINE(HAVE_MYSQL_SMTH,1,[Enable MySQL support])
     ],[
   	AC_MSG_ERROR(The MYSQL library not found)
     ],[ -L$MYSQL_DIR/lib/mysql ])

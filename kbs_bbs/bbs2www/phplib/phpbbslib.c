@@ -149,7 +149,7 @@ static PHP_FUNCTION(bbs_register_sms_sendcheck);
 static PHP_FUNCTION(bbs_register_sms_docheck);
 static PHP_FUNCTION(bbs_unregister_sms);
 #endif
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 static PHP_FUNCTION(bbs_csv_to_al);
 #endif
 static PHP_FUNCTION(bbs_printoriginfile);
@@ -298,7 +298,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_unregister_sms,NULL)
 		PHP_FE(bbs_register_sms_docheck,NULL)
 #endif
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 		PHP_FE(bbs_csv_to_al, NULL)
 #endif
 		PHP_FE(bbs_ext_initialized, NULL)
@@ -7412,7 +7412,7 @@ static PHP_FUNCTION(bbs_unregister_sms)
 
 #endif
 
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 static PHP_FUNCTION(bbs_csv_to_al)
 {
 	int ac = ZEND_NUM_ARGS();

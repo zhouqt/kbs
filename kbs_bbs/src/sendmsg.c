@@ -1022,14 +1022,14 @@ checksmsagain:
         h.time = time(0);
         strcpy(h.id, uident);
         save_msgtext(currentuser->userid, &h, buf);
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
         save_smsmsg(currentuser->userid, &h, buf, 1);
 #endif
         if(!isdigit(uident[0])) {
             h.sent = 0;
             strcpy(h.id, currentuser->userid);
             save_msgtext(uident, &h, buf);
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
         	save_smsmsg(uident, &h, buf, 1);
 #endif
             if(uin) kill(uin->pid, SIGUSR2);
