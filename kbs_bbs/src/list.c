@@ -690,8 +690,12 @@ int printuent(struct userec *uentp, char *arg)
         i = 0;
         return 0;
     }
+    /*
     if (uentp->numlogins == 0 || uleveltochar(permstr, uentp) == 0)
         return 0;
+	*/
+    if (uentp->userid[0]==0)
+	return 0;
     if (i < page || i >= page + BBS_PAGESIZE || i >= range) {
         i++;
         if (i >= page + BBS_PAGESIZE || i >= range)
@@ -733,7 +737,8 @@ int countusers(struct userec *uentp, char *arg)
 {
     char permstr[10];
 
-    if (uentp->numlogins != 0 && uleveltochar(permstr, uentp) != 0)
+//    if (uentp->numlogins != 0 && uleveltochar(permstr, uentp) != 0)
+    if (uentp->userid[0]!=0)
         return COUNT;
     return 0;
 }
