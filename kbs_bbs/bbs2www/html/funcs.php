@@ -98,6 +98,7 @@ global $loginok;
 global $currentuser_num;
 global $currentuinfo_num;
 global $currentuser;
+global $utmpnum;
 
 @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
