@@ -34,6 +34,16 @@
 #define SCREEN_NOTMOD 30
 #define SCREEN_ALL 31
 
+#define BLACK 0
+#define RED 1
+#define GREEN 2
+#define YELLOW 3
+#define BLUE 4
+#define PINK 5
+#define CYAN 6
+#define WHITE 7
+
+
 struct screenline {
     unsigned char data[LINELEN];
     unsigned char mode[LINELEN];

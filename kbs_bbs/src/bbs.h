@@ -425,4 +425,15 @@ enum BBSPOST_MODE
 #define SYS_MSGFILE         "msgfile"
 #define SYS_MSGFILELOG      "msgfile.log"       /* "msgfile.me" */
 #endif
+
+#define BLACK 0
+#define RED 1
+#define GREEN 2
+#define YELLOW 3
+#define BLUE 4
+#define PINK 5
+#define CYAN 6
+#define WHITE 7
+
+
 #endif                          /* of _BBS_H_ */

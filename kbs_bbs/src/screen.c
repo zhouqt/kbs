@@ -43,27 +43,17 @@ struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
 static /*struct screenline old_line; */ char tmpbuffer[256*3];
 
-#define BLACK 0
-#define RED 1
-#define GREEN 2
-#define YELLOW 3
-#define BLUE 4
-#define PINK 5
-#define CYAN 6
-#define WHITE 7
-
 void setfcolor(int i,int j)
 {
-    char buf[30];
-    sprintf(buf, "\033[%d;%dm",i+30,j);
-    prints(buf);
+    cur_color = i+cur_color/16*16;
+    if(j) cur_mode|=SCREEN_BRIGHT;
+    else cur_mode&=~SCREEN_BRIGHT;
 }
 
 void setbcolor(int i)
 {
-    char buf[30];
-    sprintf(buf, "\033[%d;%dm",i+40);
-    prints(buf);
+    if(i==0) i=8;
+    cur_color = cur_color%16+i*16;
 }
 
 void resetcolor()
