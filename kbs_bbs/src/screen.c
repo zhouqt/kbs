@@ -430,22 +430,10 @@ register unsigned char c ;
         inansi=1;
         return;
     }
-    if(dumb_term) {
-        if( !isprint2(c)) {
-            if(c == '\n') {
-                ochar('\r') ;
-            } else if( c != KEY_ESC || !showansi ) {
-                c = '*';
-            }
-        }
-        ochar(c) ;
-        return ;
-    }
-    if( 1 ) {
+    {
         register int    reg_line  = cur_ln+roll;
-        register int    reg_scrln = scr_lns;
 
-        while( reg_line >= reg_scrln )  reg_line -= reg_scrln;
+        while( reg_line >= scr_lns )  reg_line -= scr_lns;
         slp = &big_picture[ reg_line ] ;
     }
     reg_col = cur_col;
@@ -478,15 +466,16 @@ register unsigned char c ;
         slp->len = reg_col+1 ;
     }
     if(slp->data[reg_col] != c) {
-        if((slp->mode & MODIFIED) != MODIFIED)
+        if(!(slp->mode & MODIFIED)) {
             slp->smod = (slp->emod = reg_col) ;
+	        slp->mode |= MODIFIED ;
+        }
         else {
             if(reg_col > slp->emod)
                 slp->emod = reg_col ;
-            if(reg_col < slp->smod)
+            else if(reg_col < slp->smod)
                 slp->smod = reg_col ;
         }
-        slp->mode |= MODIFIED ;
     }
     slp->data[ reg_col ] = c ;
     reg_col++;
@@ -506,14 +495,7 @@ void
 outs(str)
 register char *str ;
 {
-    while(*str != '\0'){
-#ifndef VEDITOR
-        if(*str==''&&!iscolor){
-            while(*str!='m'){
-                str++;}
-            str++;}else
-#endif
-            outc(*str++) ;}
+    outns(str,MAXLONG);
 }
 
 void
@@ -521,14 +503,58 @@ outns(str,n)
 register char *str ;
 register int n ;
 {
-    for(;n>0;n--){
-#ifndef VEDITOR
-        if(*str==''&&!iscolor){
-            while(*str!='m'){
-                str++;n--;}
-            str++;n--;}else
-#endif
-            outc(*str++) ;}
+    register int reg_col;
+    register struct screenline *slp ;
+    register len=0;
+    char* begin_str=str;
+    int begincol;
+#define DO_CRLF { if (slp->smod > begincol) slp->smod=begincol; \
+                        if (slp->emod < reg_col) slp->emod=reg_col; \
+                        if(standing && slp->mode&STANDOUT) { \
+                            standing = NA ; \
+                            slp->eso = Max(slp->eso,reg_col) ; \
+                        slp->len=reg_col; \
+                        cur_col = 0 ; \
+                        if(cur_ln < scr_lns) \
+                            cur_ln++ ; \
+                      }
+
+    while ((str-begin_str<n)&&(*str != '\0')) {
+        if(cur_col > slp->len) {
+            register int i ;
+            for(i=slp->len;i<=cur_col;i++)
+                slp->data[i] = ' ' ;
+        }
+        reg_col=cur_col;
+        begincol=cur_col;
+        {
+            register int    reg_line  = cur_ln+roll;
+            while( reg_line >= scr_lns )  reg_line -= scr_lns;
+            slp = &big_picture[ reg_line ] ;
+        }
+            
+        while(((str-begin_str<n)&&(*str != '\0')){
+            if(*str==''&&!iscolor){
+                while(*str!='m')
+                    str++;
+                str++;
+                continue;
+            }
+            else if (!isprint2(*str)) {
+                if (*(str-1)=='\n'||*(str-1)=='\r') {
+                    DO_CRLF;
+                    break;
+                } else
+                    slp[reg_col++]='*';
+            }
+            else 
+                slp[reg_col++]=*(str++);
+            if(reg_col >= scr_cols) {
+                DO_CRLF;
+                break;
+            }
+        } /* while (*str) */
+    } /* while (1) */
 }
 
 
@@ -542,23 +568,24 @@ va_dcl
     register char *fmt ;
     char *bp ;
     register int i, count, hd, indx ;
+    char* begin;
 
     va_start(ap) ;
     fmt = va_arg(ap, char *) ;
+    begin = fmt;
     while(*fmt != '\0')
     {
-#ifndef VEDITOR
-    if(*fmt==''&&!iscolor){
-            while(*fmt!='m')
-                fmt++;
-            fmt++;continue;}
-#endif
+        if(*fmt==''&&!iscolor){
+                while(*fmt!='m')
+                    fmt++;
+                fmt++;continue;}
         if(*fmt == '%')
         {
             int sgn = 1 ;
             int val = 0 ;
             int len,negi ;
 
+            outns(begin,fmt-begin);
             fmt++ ;
             while(*fmt == '-') {
                 sgn *= -1 ;
@@ -649,12 +676,13 @@ va_dcl
                 break ;
             }
             fmt++ ;
+            begin=fmt;
             continue ;
         }
 
-        outc(*fmt) ;
         fmt++ ;
     }
+    outs(begin);
     endprint:
     return ;
 }
