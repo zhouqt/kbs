@@ -104,12 +104,12 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
     user->noteline = olduser->noteline;
     user->notemode = -1;
     user->exittime = olduser->lastlogout;
-#ifdef HAVE_BIRTHDAY
-    user->gender = olduser->gender;
-    user->birthyear = olduser->birthyear;
-    user->birthmonth = olduser->birthmonth;
-    user->birthday = olduser->birthday;
-#endif
+//#ifdef HAVE_BIRTHDAY
+//    user->gender = olduser->gender;
+//    user->birthyear = olduser->birthyear;
+//    user->birthmonth = olduser->birthmonth;
+//    user->birthday = olduser->birthday;
+//#endif
     user->usedspace = 0; 
     create_userdata(olduser);
 }
