@@ -77,8 +77,8 @@ const char *user_definestr[] = {
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
     "对汉字进行整字处理",  /* DEF_CHCHAR 2002.9.1 */
-		    "显示详细用户数据",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-	    "显示真实用户数据", /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "显示详细用户数据(wForum)",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
+	"显示真实用户数据(wForum)", /*DEF_SHOWREALUSERDATA 2003.7.31 */
 	"",
     "隐藏ip"                    /* DEF_SHOWALLIP */
 };
