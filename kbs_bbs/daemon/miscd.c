@@ -3,6 +3,16 @@
 
 #include "bbs.h"
 
+int do_exit()
+{
+   flush_ucache();
+}
+
+int do_exit_sig(int sig)
+{
+    return do_exit();
+}
+
 static char genbuf1[255];
 int killdir(char *basedir,char *filename)
 {
@@ -153,6 +163,8 @@ reaper()
 int dodaemon()
 {
     struct sigaction act;
+    
+    if (load_ucache()!=0) printf("ft,load ucache error!");
 
      switch (fork()) {
          case -1: printf("faint, i can't fork.\n"); exit(0); break;
@@ -171,6 +183,13 @@ int dodaemon()
     sigaction(SIGCHLD, &act, NULL);
 #endif
 
+    atexit(do_exit);
+    bzero(&act,sizeof(act));
+    act.sa_handler = do_exit_sig;
+    sigaction(SIGTERM,&act,NULL);
+    sigaction(SIGHUP,&act,NULL);
+    sigaction(SIGABRT,&act,NULL);
+
      while (1) {
      	sleep(getnextday4am() - time( 0 ));
     	 switch(fork()) {
@@ -179,6 +198,7 @@ int dodaemon()
        	        break;
        	     case 0 : 
        	        dokilluser();
+       	        flush_ucache();
                 exit(0);
        	        break;
        	     default:

@@ -259,69 +259,73 @@ fillucache(struct userec *uentp ,int* number)
     return 0 ;
 }
 
+int flush_ucache()
+{
+    return substitute_record(PASSFILE,passwd,MAXUSERS*sizeof(struct userrec),1);
+}
+
+int load_ucache()
+{
+    int iscreate;
+    struct stat st ;
+    int         ftime;
+    time_t      now;
+    int     usernumber,i;
+    
+    uidshm = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate); /*attach to user shm */
+        
+    if (!iscreate) {
+        log("4system","load a exitist ucache shm!");
+        return -1;
+    }
+    
+    passwd = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate); /*attach to user shm */
+    if (!iscreate) { /* shouldn't load passwd file in this place */
+        log("4system","load a exitist ucache shm!");
+        return -1;
+    }
+        
+    ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));
+    if (get_records(PASSFILE,passwd,sizeof(struct userec),1,MAXUSERS)!=MAXUSERS) {
+        log("4system","PASS file!");
+        return -1;
+    }
+
+    bzero(uidshm->hashhead,UCACHE_HASHSIZE*sizeof(int));
+    usernumber = 0;
+
+    ucache_hashinit();
+
+    for (i=0;i<MAXUSERS;i++)
+        fillucache(&passwd[i],&usernumber);
+
+    log("1system", "CACHE:reload ucache for %d users", usernumber);
+    uidshm->number = usernumber;
+    
+    return 0;
+}
 
 void
 resolve_ucache()
 {
-    struct stat st ;
-    int         ftime;
-    time_t      now;
     int iscreate;
-    int passwdfd;
 
     iscreate = 0;
     if( uidshm == NULL ) {
         uidshm = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate); /*attach to user shm */
-    }
-
-/*  This need to do by using other way 
-	if (!iscreate) {
-	    log("3system","create ucache");
-	    if( stat( FLUSH,&st ) == 0 ) {
-		    ftime = st.st_mtime;
-		    if( uidshm->uptime < ftime )  {
-		    	iscreate=1;
-		        uidshm->uptime = ftime;
-		    }
-	    }
-	}*/
-        if (passwd==NULL) {
-	if ((passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
-		log("3system","Can't open " PASSFILE "file %s",strerror(errno));
-       	exit(-1);
-	}
-   	passwd = (struct userec*) mmap(NULL,
-   			MAXUSERS*sizeof(struct userec),
-   			PROT_READ|PROT_WRITE,MAP_SHARED,passwdfd,0);
-   	if (passwd==(struct userec*)-1) {
-		log("4system","Can't map " PASSFILE "file %s",strerror(errno));
-		close(passwdfd);
-       	exit(-1);
-   	}
+        if (iscreate) { /* shouldn't load passwd file in this place */
+        	log("4system","passwd daemon havn't startup");
+        	exit(-1);
         }
-	if (iscreate) {
-    	int lockfd = ucache_lock();
-		int     usernumber,i;
-		ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));
-    	if (lockfd==-1) {
-    		log("3system","UCACHE:can't lock ucache");
-    		exit(0);
-    	}
-    	bzero(uidshm->hashhead,UCACHE_HASHSIZE*sizeof(int));
-        usernumber = 0;
-
-    	ucache_hashinit();
-
-/*
-        apply_record( PASSFILE, fillucache, sizeof(struct userec),&usernumber ); Ë¢ÐÂuser cache */
-        for (i=0;i<MAXUSERS;i++)
-        	fillucache(&passwd[i],&usernumber);
-
-        log("1system", "CACHE:reload ucache for %d users", usernumber);
-        uidshm->number = usernumber;
-        ucache_unlock(lockfd);
     }
-   	close(passwdfd);
+
+    if (passwd==NULL) { 
+        passwd = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate); /*attach to user shm */
+        if (iscreate) { /* shouldn't load passwd file in this place */
+        	log("4system","passwd daemon havn't startup");
+        	exit(-1);
+        }
+    }        
 }
 
 /*---	period	2000-10-20	---*/
