@@ -1866,6 +1866,7 @@ int www_user_init(int useridx,char* userid,int key,struct userec **x, struct use
 		if (*x == NULL)
 			return -1;
 	}
+	set_idle_time(*y, time(0));
 	return 0;
 }
 
