@@ -280,7 +280,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
 
     switch (unlink) {
     case 2:
-    	f_ln(tmpfile,filepath);
+    	symlink(tmpfile,filepath);
     	break;
     case 1:
         f_mv(tmpfile, filepath);
