@@ -384,7 +384,7 @@ void refresh()
                     o_cleol();
                     break;
                 }
-                if(chc==1&&(k==scr_cols-1||(bp[j].data[k+1]<=32)))
+                if(chc==1&&(k==scr_cols-1||(bp[j].data[k+1]<0x40)))
                     ochar('?');
                 else
                     ochar(bp[j].data[k]);
