@@ -4924,7 +4924,7 @@ static PHP_FUNCTION(bbs_sendwebmsg)
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
-    if (!msg_can_sendmsg(destid, destutmp, getSession())) {
+    if (!msg_can_sendmsg(getSession()->currentuser, destid, destutmp)) {
         ZVAL_STRING(z_errmsg, "无法发送讯息", 1);
         RETURN_FALSE;
     }
