@@ -652,7 +652,7 @@ static long insert_from_fp(FILE *fp)
             long not;
             data=ptr;
             for (not=0;not<size;not++,data++) {
-                if (*ch==*attachpad) {
+                if (*data==*attachpad) {
                     matched++;
                     if (matched==sizeof(ATTACHMMENT_PAD)-1) {
                         BBS_RETURN(not-(sizeof(ATTACHMMENT_PAD)-1)+1);
@@ -1019,7 +1019,7 @@ fsdfa
             int fsrc;
             struct stat st;
             snprintf(buf,MAXPATH,"%s.attach",filename);
-            fstat(fileno(fp,&st));
+            fstat(fileno(fp),&st));
             *pattachpos=st.st_size+1;
             if ((fsrc = open(buf, O_RDONLY)) >= 0) {
                 char* src=(char*)malloc(10240);
