@@ -34,9 +34,9 @@ function get_astro($birthmonth, $birthday)
 		break;
 	case 2:
 		if ($birthday>=20)	{
-			$function_ret="<img src=\"\"star/z12.gif\" alt=\"Ë«Óã×ù".$birth."\"/> Ë«Óã×ù";
+			$function_ret="<img src=\"star/z12.gif\" alt=\"Ë«Óã×ù".$birth."\"/> Ë«Óã×ù";
 		}else{
-			$function_ret="<img src=\"\"star/z11.gif\" alt=\"Ë®Æ¿×ù".$birth."\"/> Ë®Æ¿×ù";
+			$function_ret="<img src=\"star/z11.gif\" alt=\"Ë®Æ¿×ù".$birth."\"/> Ë®Æ¿×ù";
 		} 
 		break;
 	case 3:
