@@ -261,7 +261,7 @@ int save_msgtext(char *uident, char *msgbuf)
         close(fd);
         return -1;              /* 创建文件发生错误*/
     }
-    ldata.l_type = F_RDLCK;
+    ldata.l_type = F_WRLCK;
     ldata.l_whence = 0;
     ldata.l_len = 0;
     ldata.l_start = 0;
@@ -285,7 +285,7 @@ int save_msgtext(char *uident, char *msgbuf)
     lseek(fd2, size, SEEK_SET);
     i = strlen(msgbuf)+1;
     if (i>=MAX_MSG_SIZE+100) i=MAX_MSG_SIZE+100-1;
-    write(fd, msgbuf, i);
+    write(fd2, msgbuf, i);
 
     close(fd2);
     ldata.l_type = F_UNLCK;
@@ -303,9 +303,9 @@ int get_msgcount(char *uident)
 
     sethomefile(fname, uident, "msgindex");
 
-    if ((fd = open(fname, O_RDONLY | O_CREAT, 0664)) == -1) {
+    if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
-        return -1;              /* 创建文件发生错误*/
+        return 0;              /* 创建文件发生错误*/
     }
     ldata.l_type = F_RDLCK;
     ldata.l_whence = 0;
@@ -389,8 +389,7 @@ int get_unreadcount(char *uident)
 
     sethomefile(fname, uident, "msgindex");
 
-    if ((fd = open(fname, O_RDWR | O_CREAT, 0664)) == -1) {
-        bbslog("user", "%s", "msgopen err");
+    if ((fd = open(fname, O_RDONLY, 0664)) == -1) {
         return 0;              /* 创建文件发生错误*/
     }
     ldata.l_type = F_RDLCK;
