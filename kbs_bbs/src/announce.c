@@ -1110,7 +1110,7 @@ void a_copypaste(pm, paste)
     FILE *fn;                   /* Leeward 98.02.19 */
 
     move(t_lines - 1, 0);
-    if (!paste) {
+    if (paste==0) {
         item = pm->item[pm->now];
         strncpy(title, item->title, STRLEN);
         strncpy(filename, item->fname, FILENAME_LEN);
@@ -1123,6 +1123,7 @@ void a_copypaste(pm, paste)
         sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
         fn = fopen(genbuf, "wt");
         if (fn) {
+            fputs("0\n", fn);
             fputs(title, fn);
             fputs("\n", fn);
             fputs(filename, fn);
@@ -1134,11 +1135,41 @@ void a_copypaste(pm, paste)
             prints("File open ERROR -- please report SYSOP");
             pressanykey();
         }
-    } else {
+    } 
+    else if (paste==1) {  // cut and paste, modified by bad, 03-2-10
+        item = pm->item[pm->now];
+        strncpy(title, item->title, STRLEN);
+        strncpy(filename, item->fname, FILENAME_LEN);
+        sprintf(genbuf, "%s/%s", pm->path, filename);
+        strncpy(fpath, genbuf, PATHLEN);
+        pressanykey();
+
         /* Leeward: 98.02.19: 对版主的多个窗口同步 C/P 操作 */
+        sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
+        fn = fopen(genbuf, "wt");
+        if (fn) {
+            fputs("1\n", fn);
+            fputs(title, fn);
+            fputs("\n", fn);
+            fputs(filename, fn);
+            fputs("\n", fn);
+            fputs(fpath, fn);
+            fputs("\n", fn);
+            fclose(fn);
+        } else {
+            prints("File open ERROR -- please report SYSOP");
+            pressanykey();
+        }
+    } else if (paste==2) {
+        /* Leeward: 98.02.19: 对版主的多个窗口同步 C/P 操作 */
+        int iscut;
         sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
         fn = fopen(genbuf, "rt");
         if (fn) {
+            fgets(title, STRLEN, fn);
+            if ('\n' == title[strlen(title) - 1])
+                title[strlen(title) - 1] = 0;
+            iscut = (title[0]=='1');
             fgets(title, STRLEN, fn);
             if ('\n' == title[strlen(title) - 1])
                 title[strlen(title) - 1] = 0;
@@ -1153,7 +1184,7 @@ void a_copypaste(pm, paste)
 
         sprintf(newpath, "%s/%s", pm->path, filename);
         if (*title == '\0' || *filename == '\0') {
-            prints("请先使用 copy 命令再使用 paste 命令. ");
+            prints("请先使用 copy/cut 命令再使用 paste 命令. ");
             pressanykey();
         } else if (dashf(newpath) || dashd(newpath)) {
             prints("%s %s 已经存在. ", (dashd(newpath) ? "目录" : "文件"), filename);
@@ -1163,9 +1194,12 @@ void a_copypaste(pm, paste)
             pressanykey();
         } else {
             /* modified by cityhunter to simplify annouce c/p */
-            sprintf(genbuf, "您确定要粘贴%s %s 吗? (C/L/N)C为复制方式 L为链接方式 [N]: ", (dashd(fpath) ? "目录" : "文件"), filename);
+            if(!iscut)
+            	sprintf(genbuf, "您确定要粘贴%s %s 吗? (C/L/N)C为复制方式 L为链接方式 [N]: ", (dashd(fpath) ? "目录" : "文件"), filename);
+            else
+            	sprintf(genbuf, "您确定要剪切%s %s 吗? (Y/N) [N]: ", (dashd(fpath) ? "目录" : "文件"), filename);
             a_prompt(-2, genbuf, ans);
-            if (ans[0] == 'C' || ans[0] == 'c') {
+            if ((ans[0]=='C'||ans[0]=='c')&&(iscut==0) || (ans[0]=='Y'||ans[0]=='y')&&(iscut==1) ) {
                 char buf[256];
 
                 if (dashd(fpath)) {     /* 是目录 */
@@ -1175,6 +1209,50 @@ void a_copypaste(pm, paste)
                                    sprintf( genbuf, "/bin/cp -p %s %s", fpath, newpath ); */
                     f_cp(fpath, newpath, 0);
                 }
+                if(iscut) {
+				    ITEM *item;
+				    char uppath[PATHLEN],oldpath[PATHLEN],*pnt;
+				    int n,k;
+				    
+				    strncpy(oldpath,pm->path,PATHLEN);
+				    
+				    strncpy(uppath,fpath,PATHLEN);
+				    pnt=uppath+strlen(uppath)-1;
+				    while(*pnt!='/') pnt--;
+				    *pnt=0;
+				    pnt++;
+
+				    if (dashf(fpath)) {
+				        unlink(fpath);
+				    } else if (dashd(fpath)) {
+				        f_rm(fpath);
+				    }
+				    
+				    strncpy(pm->path,uppath,PATHLEN);
+				    a_loadnames(pm);
+				    
+				    for(k=0;k<pm->num;k++)
+				    if(!strncmp(pm->fname,filename)) break;
+				    item = pm->item[k];
+				    free(item);
+				    (pm->num)--;
+				    for (n = pm->now; n < pm->num; n++)
+				        pm->item[n] = pm->item[n + 1];
+				    if (a_savenames(pm)==0) {
+					    sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
+					    bmlog(currentuser->userid, currboard, 13, 1);
+					    a_report(genbuf);
+				    } else {
+				       char buf[80],ans[40];
+				       sprintf(buf, " 删除失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
+				       a_prompt(-1, buf, ans);
+				       a_loadnames(pm);
+				   }
+
+                	strncpy(pm->path,oldpath,PATHLEN);
+                	a_loadnames(pm);
+                	
+            	}
                 a_additem(pm, title, filename, NULL, 0);
                 if (a_savenames(pm)==0) {
 	                sprintf(buf, "复制精华区文件或目录: %s", genbuf);
@@ -1189,7 +1267,7 @@ void a_copypaste(pm, paste)
 		       }
 		       a_loadnames(pm);
 		   }
-            } else if (ans[0] == 'L' || ans[0] == 'l') {
+            } else if ((ans[0] == 'L' || ans[0] == 'l')&&(iscut==0)) {
                 char buf[256];
 
                 if (dashd(fpath)) {     /* 是目录 */
@@ -1348,7 +1426,7 @@ void a_manager(pm, ch)
         break;
         /*case 'G':  a_newitem( pm, ADDGOPHER );    break; */
     case 'p':
-        a_copypaste(pm, 1);
+        a_copypaste(pm, 2);
         break;
     case 'f': {
     	    int i;
