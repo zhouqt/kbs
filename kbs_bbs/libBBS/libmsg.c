@@ -308,6 +308,35 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 	return 0;
 }
 
+int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, char *msgbuf, int readed)
+{
+	char newmsgbuf[2048];
+	char sql[2600];
+	int i,j;
+
+	for(i=0,j=0; msgbuf[i] && j < 2047 ; i++){
+		if(msgbuf[i] == '\'' || msgbuf[i]=='\"'){
+			newmsgbuf[j++]='\\';
+			newmsgbuf[j++]=msgbuf[i];
+		}else
+			newmsgbuf[j++]=msgbuf[i];
+	}
+	newmsgbuf[j] = 0;
+
+	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
+
+	if( mysql_real_query( s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		return -1;
+	}
+
+	return 0;
+}
+
 int save_msgtext(char *uident, struct msghead * head, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
