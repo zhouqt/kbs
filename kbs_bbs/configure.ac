@@ -224,6 +224,7 @@ AC_CONFIG_FILES([Makefile
                  service/Makefile
                  service/pip/Makefile
                  service/worker/Makefile
+                 service/personaldns/Makefile
                  src/bbsconfig.h
                  src/Makefile])
 AC_OUTPUT

@@ -82,12 +82,13 @@
 <td><?php echo $i+1; ?></td>
 <td>
 <?php
-			if (!($brd_flag[$i]&BBS_BOARD_GROUP)) {
+			if ($brd_flag[$i]&BBS_BOARD_GROUP)
+				echo "£«";
+			else
 			if ($brd_unread[$i] == 1)
 				echo "¡ô";
 			else
 				echo "¡ó";
-			}
 ?>
 </td>
 <td>
