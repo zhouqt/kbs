@@ -12,13 +12,11 @@ httpd-xxx              必须
 httpd-devel-xxx        必须
 php-xxx                必须
 php-devel-xxx          必须
-libxml2                必须
-libiconv               必须
-zlib                   必须
-openssl	               必须
-libesmtp > 0.8         必须
-gmp-4.1.2              必须
-mysql                  必须
+zlib-devel             必须
+openssl-devel          必须
+libesmtp-devel         必须
+gmp-devel              必须
+mysql-devel            必须
      (以上软件可直接用 RedHat 光盘里的安装)
 
 
