@@ -2,21 +2,17 @@
 
 define('BOARDLISTSTYLE','simplest');
 
-define("ANNOUNCENUMBER",5);
-
-define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
-
-define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
-
 $SiteName="大话西游";
 
 $SiteURL="http://wforum.zixia.net";
 
 $Banner="bar/bar.jpg";
 
-define('SMS_SUPPORT', 1);
+define('OLD_REPLY_STYLE', true); //是否使用传统 telnet re 文方式
 
-define('AUDIO_CHAT', 1);
+define('SMS_SUPPORT', true);
+
+define('AUDIO_CHAT', true);
 
 define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
 
@@ -38,6 +34,6 @@ $section_names = array(
     array("大圣取经", "[专业/申请]") 
 );
 
-
+require "dbconn.php";
 require "default.php";
 ?>
