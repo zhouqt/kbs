@@ -156,6 +156,9 @@
 /* Define to 1 if your <sys/time.h> declares `struct tm'. */
 #undef TM_IN_SYS_TIME
 
+/* Define to use openssl library */
+#undef USE_SSL
+
 /* Version number of package */
 #undef VERSION
 

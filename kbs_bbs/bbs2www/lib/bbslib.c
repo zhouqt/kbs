@@ -2939,25 +2939,6 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 
 }
 
-unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsigned int key){
-	int low, high ,mid, found;
-	int comp;
-	low = 0;
-	high = total - 1;
-	found=-1;
-	while (low <= high) {
-		mid = (high + low) / 2;
-		if (key == start[mid].id) {
-			found=mid;
-			break;
-		} else if (key < start[mid].id)
-			high = mid - 1;
-		else
-			low = mid + 1;
-	}
-	return found;
-}
-
 //以后改成更有效率的算法吧……
 typedef struct _wwwthreadheader_list{
 	struct wwwthreadheader content;
@@ -3118,7 +3099,7 @@ int www_generateOriginIndex(char* board)
 	for (i=total-1;i>=0;i--) {
 		temp=foundInWWWThreadList(ptr1[i].groupid,tail);
 		if (temp==NULL)	{
-			if ((found=binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))==-1) continue;
+			if ((found=Search_Bin(ptr,ptr1[i].groupid,0,total-1))<0) continue;
 			temp=CreateNewWWWThreadListNode(tail);
 			if (temp==NULL) {
 				clearWWWThreadList(tail);

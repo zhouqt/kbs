@@ -1208,7 +1208,6 @@ static PHP_FUNCTION(bbs_searchtitle)
         close(fd);
         RETURN_LONG(-4);
     }
-    ptr1 = (struct fileheader *) ptr;
     /*
      * fetching articles 
      */
@@ -1232,11 +1231,12 @@ static PHP_FUNCTION(bbs_searchtitle)
 	}
 	threadsFounded=0;
 	threads=0;
+    ptr1 = (struct fileheader *) ptr;
 
 	for (i=total-1;i>=0;i--) {
 		if (foundInArray(ptr1[i].groupid,IDList2,threads)==-1)	{
-			found=binarySearchInFileHeader(ptr1,total,ptr1[i].groupid);
-			if (found!=-1) {
+			found=Search_Bin(ptr,ptr1[i].groupid,0,total-1);
+			if (found>=0) {
 				IDList2[threads]=ptr1[i].groupid;
 				index[threads]=found;
 				threads++;
@@ -2268,7 +2268,7 @@ static PHP_FUNCTION(bbs_get_article)
 
 	articlesFounded=0;
 
-	if ( (found=binarySearchInFileHeader(ptr1,total,groupid))!=-1) {
+	if ( (found=Search_Bin(ptr,groupid,0,total-1))>=0) {
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 		flags[0] = get_article_flag(ptr1+found, currentuser, bp->filename, is_bm);
