@@ -1,5 +1,5 @@
 #!/bin/sh
-DAY=`date date +%Y-%m-%d`
+DAY=`date +%Y-%m-%d`
 BACKUPHOME=/backup/bbs/Announce/$DAY
 BBSHOME=/home/bbs
 
