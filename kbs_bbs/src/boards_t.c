@@ -1033,6 +1033,7 @@ static void fav_refresh(struct _select_def *conf)
         move(2, 81);
         prints("ÔÚÏß");
     }
+    resetcolor();
     if (!arg->loop_mode)
         update_endline();
     else {
