@@ -188,7 +188,6 @@ if ($user['userdefine'] & $flag) {
 			$plans .= $v_plans[$i];
 			$plans .= "<br />";
 		}
-
 		echo dvbcode($plans,0);
 	} else {
 		echo "<font color=gray>这个家伙很懒，什么也没有留下^_^</font>";

@@ -24,9 +24,11 @@ $HTMLCharset="GB2312";
 
 $DEFAULTStyle="defaultstyle";
 
-$Banner="";
+$Banner="bar/bar.jpg";
 
 $BannerURL="http://wforum.zixia.net/";
+
+define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
 
 define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");

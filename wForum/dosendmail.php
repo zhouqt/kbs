@@ -32,8 +32,6 @@ if (isErrFounded()) {
 show_footer();
 
 //showBoardSampleIcons();
-show_footer();
-
 function preprocess(){
 	global $currentuser;
 	global $loginok;
