@@ -2458,7 +2458,7 @@ static int maillist_onselect(struct _select_def *conf)
 #ifdef NEW_HELP
 		helpmode = HELP_MAIL;
 #endif
-        new_i_read(RMAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+        new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_ENT_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
 #ifdef NEW_HELP
 		helpmode = oldhelpmode;
 #endif
