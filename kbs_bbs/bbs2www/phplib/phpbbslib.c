@@ -3590,8 +3590,12 @@ static PHP_FUNCTION(bbs_start_vote)
 
 		ball.totalitems = ball_totalitems;
 		for(i=0; i<ball.totalitems; i++){
+			/*
 			strncpy(ball.items[i], items[i], STRLEN);
-			ball.items[i][STRLEN-1]='\0';
+			ball.items[i][STRLEN-1]='\0';*/
+			/*overflow.      modified by binxun . */
+			strncpy(ball.items[i], items[i], 38);
+			ball.items[i][37]='\0';*/
 		}
 	}else if(type == 4){
 		ball.maxtkt = ball_maxtkt;
