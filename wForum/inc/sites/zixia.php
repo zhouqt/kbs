@@ -42,7 +42,7 @@ $section_names = array(
     array("吟风弄月", "[感性/文化]"),
     array("西游之路", "[出国/聚会]"),
     array("豆腐西施", "[店面/培训]"),
-    array("月光宝盒", "[转信/列表]"),
+    array("东城西就", "[省份/城市]"),
     array("大圣取经", "[专业/申请]") 
 );
 $sectionCount=count($section_names);
