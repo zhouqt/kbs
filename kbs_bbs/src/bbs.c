@@ -1713,6 +1713,8 @@ post_article()                         /*用户 POST 文章 */
 
     do_quote( filepath ,include_mode);  /*引用原文章 */
 
+    strcpy(quote_title,save_title);
+    strcpy(quote_board,currboard);
     aborted = vedit(filepath,YEA) ;  /* 进入编辑状态 */
 
     add_loginfo(filepath,currentuser,currboard,Anony); /*添加最后一行*/
