@@ -338,13 +338,6 @@ void resolve_ucache()
         /*attach to user shm,readonly */
         if (iscreate) {         /* shouldn't load passwd file in this place */
             bbslog("4system", "passwd daemon havn't startup");
-            shmdt(uidshm);
-            remove_shm("UCACHE_SHMKEY", 3696);
-#ifdef BBSMAIN
-            prints("Miscd not startup?");
-#else
-            printf("Miscd not startup?");
-#endif
             exit(-1);
         }
     }

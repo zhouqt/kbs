@@ -12,8 +12,23 @@
 #include <sys/socket.h>
 #endif
 
+struct UTMPHEAD {
+    int next[USHM_SIZE];
+    int hashhead[UTMP_HASHSIZE + 1];    /* use UCACHE_HASHSIZE/32 */
+    int number;
+    int listhead;
+    int list_prev[USHM_SIZE];   /* sorted list prev ptr */
+    int list_next[USHM_SIZE];   /* sorted list next ptr */
+    time_t uptime;
+};
+
 static int rebuild_list(struct user_info *up, char *arg, int p);
-struct UTMPHEAD *utmphead;
+static struct UTMPHEAD *utmphead;
+
+struct UTMPFILE *get_utmpshm_addr()
+{
+    return utmpshm;
+}
 
 static void longlock(int signo)
 {
@@ -44,21 +59,33 @@ static void utmp_unlock(int fd)
     close(fd);
 }
 
+static void utmp_setreadonly(int readonly)
+{
+    int iscreate;
+
+    shmdt(utmphead);
+    utmphead = (struct UTMPHEAD *) attach_shm1(NULL, 3698, sizeof(struct UTMPHEAD), &iscreate, readonly, utmphead);     /*attach user tmp head */
+}
+
 void detach_utmp()
 {
     shmdt(utmphead);
+    shmdt(utmpshm);
     utmphead = NULL;
+    utmpshm = NULL;
 }
 
 void resolve_utmp()
 {
     int iscreate;
 
-    if (utmphead == NULL) {
-        utmphead = (struct UTMPHEAD *) attach_shm("UTMPHEAD_SHMKEY", 3698, sizeof(struct UTMPHEAD), &iscreate);   /*attach user tmp head */
+    if (utmpshm == NULL) {
+        utmpshm = (struct UTMPFILE *) attach_shm("UTMP_SHMKEY", 3699, sizeof(*utmpshm), &iscreate);     /*attach user tmp cache */
         if (iscreate) {
             int i, utmpfd;
+            utmphead = (struct UTMPHEAD *) attach_shm("UTMPHEAD_SHMKEY", 3698, sizeof(struct UTMPHEAD), &iscreate);     /*attach user tmp cache */
             utmpfd = utmp_lock();
+            bzero(utmpshm, sizeof(struct UTMPFILE));
             bzero(utmphead, sizeof(struct UTMPHEAD));
             utmphead->number = 0;
             utmphead->hashhead[0] = 1;
@@ -69,7 +96,8 @@ void resolve_utmp()
         	utmphead->listhead=0;
 */
             utmp_unlock(utmpfd);
-        }
+        } else
+            utmphead = (struct UTMPHEAD *) attach_shm1("UTMPHEAD_SHMKEY", 3698, sizeof(struct UTMPHEAD), &iscreate, 1, NULL);   /*attach user tmp head */
     }
 }
 
@@ -182,8 +210,10 @@ int getnewutmpent(struct user_info *up)
     int utmpfd, hashkey;
 
     utmpfd = utmp_lock();
+    utmp_setreadonly(0);
     pos = utmphead->hashhead[0] - 1;
     if (pos == -1) {
+        utmp_setreadonly(1);
         utmp_unlock(utmpfd);
         return -1;
     }
@@ -197,7 +227,7 @@ int getnewutmpent(struct user_info *up)
         int i;
 
         i = utmphead->listhead;
-        if (strcasecmp(utmphead->uinfo[i - 1].userid, up->userid) >= 0) {
+        if (strcasecmp(utmpshm->uinfo[i - 1].userid, up->userid) >= 0) {
             /* add to head */
             utmphead->list_prev[pos] = utmphead->list_prev[i - 1];
             utmphead->list_next[pos] = i;
@@ -212,13 +242,14 @@ int getnewutmpent(struct user_info *up)
 
             count = 0;
             i = utmphead->list_next[i - 1];
-            while ((strcasecmp(utmphead->uinfo[i - 1].userid, up->userid) < 0) && (i != utmphead->listhead)) {
+            while ((strcasecmp(utmpshm->uinfo[i - 1].userid, up->userid) < 0) && (i != utmphead->listhead)) {
                 i = utmphead->list_next[i - 1];
                 count++;
                 if (count > USHM_SIZE) {
                     utmphead->listhead = 0;
                     bbslog("3system", "UTMP:maybe loop rebuild!");
                     apply_ulist((APPLY_UTMP_FUNC) rebuild_list, NULL);
+                    utmp_setreadonly(1);
                     utmp_unlock(utmpfd);
                     exit(-1);
                 }
@@ -236,12 +267,12 @@ int getnewutmpent(struct user_info *up)
 
     utmphead->hashhead[0] = utmphead->next[pos];
 
-    if (utmphead->uinfo[pos].active)
-        if (utmphead->uinfo[pos].pid) {
-            bbslog("3system", "utmp: alloc a active utmp! old:%s new:%s", utmphead->uinfo[pos].userid, up->userid);
-            kill(utmphead->uinfo[pos].pid, SIGHUP);
+    if (utmpshm->uinfo[pos].active)
+        if (utmpshm->uinfo[pos].pid) {
+            bbslog("3system", "utmp: alloc a active utmp! old:%s new:%s", utmpshm->uinfo[pos].userid, up->userid);
+            kill(utmpshm->uinfo[pos].pid, SIGHUP);
         }
-    utmphead->uinfo[pos] = *up;
+    utmpshm->uinfo[pos] = *up;
     hashkey = utmp_hash(up->userid);
 
     i = utmphead->hashhead[hashkey];
@@ -256,7 +287,7 @@ int getnewutmpent(struct user_info *up)
         newbbslog(BBSLOG_USIES, "UTMP:Clean user utmp cache");
         for (n = 0; n < USHM_SIZE; n++) {
             utmphead->uptime = now;
-            uentp = &(utmphead->uinfo[n]);
+            uentp = &(utmpshm->uinfo[n]);
             if ((uentp->mode == WEBEXPLORE)
                 && ((now - uentp->freshtime) < 360)) {
                 continue;
@@ -272,11 +303,12 @@ int getnewutmpent(struct user_info *up)
             }
         }
     }
+    utmp_setreadonly(1);
     utmp_unlock(utmpfd);
     return pos + 1;
 }
 
-/* same as getnewutmpent() except no updating of utmphead 
+/* same as getnewutmpent() except no updating of utmpshm 
  * only called in www
  */
 int getnewutmpent2(struct user_info *up)
@@ -285,8 +317,10 @@ int getnewutmpent2(struct user_info *up)
     int utmpfd, hashkey;
 
     utmpfd = utmp_lock();
+    utmp_setreadonly(0);
     pos = utmphead->hashhead[0] - 1;
     if (pos == -1) {
+        utmp_setreadonly(1);
         utmp_unlock(utmpfd);
         return -1;
     }
@@ -300,7 +334,7 @@ int getnewutmpent2(struct user_info *up)
         int i;
 
         i = utmphead->listhead;
-        if (strcasecmp(utmphead->uinfo[i - 1].userid, up->userid) >= 0) {
+        if (strcasecmp(utmpshm->uinfo[i - 1].userid, up->userid) >= 0) {
             /* add to head */
             utmphead->list_prev[pos] = utmphead->list_prev[i - 1];
             utmphead->list_next[pos] = i;
@@ -315,13 +349,14 @@ int getnewutmpent2(struct user_info *up)
 
             count = 0;
             i = utmphead->list_next[i - 1];
-            while ((strcasecmp(utmphead->uinfo[i - 1].userid, up->userid) < 0) && (i != utmphead->listhead)) {
+            while ((strcasecmp(utmpshm->uinfo[i - 1].userid, up->userid) < 0) && (i != utmphead->listhead)) {
                 i = utmphead->list_next[i - 1];
                 count++;
                 if (count > USHM_SIZE) {
                     utmphead->listhead = 0;
                     bbslog("3system", "UTMP:maybe loop rebuild..!");
                     apply_ulist((APPLY_UTMP_FUNC) rebuild_list, NULL);
+                    utmp_setreadonly(1);
                     utmp_unlock(utmpfd);
                     return -1;
                 }
@@ -338,12 +373,12 @@ int getnewutmpent2(struct user_info *up)
 
     utmphead->hashhead[0] = utmphead->next[pos];
 
-    if (utmphead->uinfo[pos].active)
-        if (utmphead->uinfo[pos].pid) {
-            bbslog("3system", "utmp: alloc a active utmp! old:%s new:%s", utmphead->uinfo[pos].userid, up->userid);
-            kill(utmphead->uinfo[pos].pid, SIGHUP);
+    if (utmpshm->uinfo[pos].active)
+        if (utmpshm->uinfo[pos].pid) {
+            bbslog("3system", "utmp: alloc a active utmp! old:%s new:%s", utmpshm->uinfo[pos].userid, up->userid);
+            kill(utmpshm->uinfo[pos].pid, SIGHUP);
         }
-    utmphead->uinfo[pos] = *up;
+    utmpshm->uinfo[pos] = *up;
     hashkey = utmp_hash(up->userid);
 
     i = utmphead->hashhead[hashkey];
@@ -352,6 +387,7 @@ int getnewutmpent2(struct user_info *up)
     utmphead->hashhead[hashkey] = pos + 1;
 
     utmphead->number++;
+    utmp_setreadonly(1);
     utmp_unlock(utmpfd);
     return pos + 1;
 }
@@ -372,7 +408,7 @@ static int rebuild_list(struct user_info *up, char *arg, int p)
         int i;
 
         i = utmphead->listhead;
-        if (strcasecmp(utmphead->uinfo[i - 1].userid, up->userid) >= 0) {
+        if (strcasecmp(utmpshm->uinfo[i - 1].userid, up->userid) >= 0) {
             /* add to head */
             utmphead->list_prev[pos] = utmphead->list_prev[i - 1];
             utmphead->list_next[pos] = i;
@@ -387,7 +423,7 @@ static int rebuild_list(struct user_info *up, char *arg, int p)
 
             count = 0;
             i = utmphead->list_next[i - 1];
-            while ((strcasecmp(utmphead->uinfo[i - 1].userid, up->userid) < 0) && (i != utmphead->listhead)) {
+            while ((strcasecmp(utmpshm->uinfo[i - 1].userid, up->userid) < 0) && (i != utmphead->listhead)) {
                 i = utmphead->list_next[i - 1];
                 count++;
                 if (count > USHM_SIZE) {
@@ -415,10 +451,10 @@ int apply_ulist(APPLY_UTMP_FUNC fptr, void *arg)
     int i, max;
 
     max = USHM_SIZE - 1;
-    while (max > 0 && utmphead->uinfo[max].active == 0)  /*跳过后段 非active的user */
+    while (max > 0 && utmpshm->uinfo[max].active == 0)  /*跳过后段 非active的user */
         max--;
     for (i = 0; i <= max; i++) {
-        uentp = &(utmphead->uinfo[i]);
+        uentp = &(utmpshm->uinfo[i]);
         utmp = *uentp;
         if ((*fptr) (&utmp, arg, i + 1) == QUIT)
             return QUIT;
@@ -435,11 +471,11 @@ int apply_ulist_addr(APPLY_UTMP_FUNC fptr, void *arg)
     if (!i)
         return 0;
     num = 0;
-    if (utmphead->uinfo[i - 1].active) {
+    if (utmpshm->uinfo[i - 1].active) {
         if (fptr) {
             int ret;
 
-            ret = (*fptr) (&utmphead->uinfo[i - 1], arg, num);
+            ret = (*fptr) (&utmpshm->uinfo[i - 1], arg, num);
             if (ret == QUIT)
                 return num;
             if (ret == COUNT)
@@ -449,11 +485,11 @@ int apply_ulist_addr(APPLY_UTMP_FUNC fptr, void *arg)
     }
     i = utmphead->list_next[i - 1];
     while (i != utmphead->listhead) {
-        if (utmphead->uinfo[i - 1].active) {
+        if (utmpshm->uinfo[i - 1].active) {
             if (fptr) {
                 int ret;
 
-                ret = (*fptr) (&utmphead->uinfo[i - 1], arg, num);
+                ret = (*fptr) (&utmpshm->uinfo[i - 1], arg, num);
                 if (ret == QUIT)
                     return num;
                 if (ret == COUNT)
@@ -495,11 +531,11 @@ int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount, char *userid, void *arg)
     hashkey = utmp_hash(userid);
     i = utmphead->hashhead[hashkey];
     while (i) {
-        if ((utmphead->uinfo[i - 1].active) && (!strcasecmp(utmphead->uinfo[i - 1].userid, userid))) {
+        if ((utmpshm->uinfo[i - 1].active) && (!strcasecmp(utmpshm->uinfo[i - 1].userid, userid))) {
             int ret;
 
             if (fptr) {
-                ret = (*fptr) (&utmphead->uinfo[i - 1], arg, i);
+                ret = (*fptr) (&utmpshm->uinfo[i - 1], arg, i);
                 if (ret == QUIT)
                     break;
                 if (ret == COUNT)
@@ -520,7 +556,7 @@ int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *),
     int i;
 
     for (i = 0; i < USHM_SIZE; i++) {
-        *uentp = utmphead->uinfo[i];
+        *uentp = utmpshm->uinfo[i];
         if ((*fptr) (farg, uentp))
             return i + 1;
     }
@@ -549,7 +585,7 @@ void clear_utmp2(int uent)
         uent = utmpent;
     }
 #endif
-    hashkey = utmp_hash(utmphead->uinfo[uent - 1].userid);
+    hashkey = utmp_hash(utmpshm->uinfo[uent - 1].userid);
     find = utmphead->hashhead[hashkey];
 
     if (find == uent)
@@ -558,7 +594,7 @@ void clear_utmp2(int uent)
         while (utmphead->next[find - 1] && utmphead->next[find - 1] != uent)
             find = utmphead->next[find - 1];
         if (!utmphead->next[find - 1])
-            bbslog("3system", "UTMP:Can't find %s [%d]", utmphead->uinfo[uent - 1].userid, uent);
+            bbslog("3system", "UTMP:Can't find %s [%d]", utmpshm->uinfo[uent - 1].userid, uent);
         else
             utmphead->next[find - 1] = utmphead->next[uent - 1];
     }
@@ -574,13 +610,13 @@ void clear_utmp2(int uent)
     utmphead->list_prev[utmphead->list_next[uent - 1] - 1] = utmphead->list_prev[uent - 1];
 /*	*/
 
-    newbbslog(BBSLOG_USIES,"UTMP:clean %s(%d)", utmphead->uinfo[uent - 1].userid, uent);
+    newbbslog(BBSLOG_USIES,"UTMP:clean %s(%d)", utmpshm->uinfo[uent - 1].userid, uent);
     utmphead->next[uent - 1] = utmphead->hashhead[0];
     utmphead->hashhead[0] = uent;
     /* Delete the user's msglist entry from webmsgd,
      * if the user is login from web. */
-    if (utmphead->uinfo[uent - 1].mode == WEBEXPLORE)
-        delfrom_msglist(uent, utmphead->uinfo[uent - 1].userid);
+    if (utmpshm->uinfo[uent - 1].mode == WEBEXPLORE)
+        delfrom_msglist(uent, utmpshm->uinfo[uent - 1].userid);
     zeroinfo.active = false;
     zeroinfo.pid = 0;
     zeroinfo.invisible = true;
@@ -588,9 +624,9 @@ void clear_utmp2(int uent)
     zeroinfo.sockaddr = 0;
     zeroinfo.destuid = 0;
 
-    if (utmphead->uinfo[uent - 1].active != false)
+    if (utmpshm->uinfo[uent - 1].active != false)
         utmphead->number--;
-    utmphead->uinfo[uent - 1] = zeroinfo;
+    utmpshm->uinfo[uent - 1] = zeroinfo;
 }
 
 void clear_utmp(int uent, int useridx, int pid)
@@ -598,10 +634,12 @@ void clear_utmp(int uent, int useridx, int pid)
     int lockfd;
 
     lockfd = utmp_lock();
+    utmp_setreadonly(0);
 
-    if (((useridx == 0) || (utmphead->uinfo[uent - 1].uid == useridx)) && pid == utmphead->uinfo[uent - 1].pid)
+    if (((useridx == 0) || (utmpshm->uinfo[uent - 1].uid == useridx)) && pid == utmpshm->uinfo[uent - 1].pid)
         clear_utmp2(uent);
 
+    utmp_setreadonly(1);
     utmp_unlock(lockfd);
 }
 
@@ -614,14 +652,14 @@ struct user_info *get_utmpent(int utmpnum)
 {
     if (utmpnum <= 0)
         return NULL;
-    return utmphead->uinfo + (utmpnum - 1);
+    return utmpshm->uinfo + (utmpnum - 1);
 }
 
 int get_utmpent_num(struct user_info *uent)
 {
     if (uent == NULL)
         return -1;
-    return uent - utmphead->uinfo + 1;
+    return uent - utmpshm->uinfo + 1;
 }
 
 static int cmpfuid(struct friends *a, struct friends *b)

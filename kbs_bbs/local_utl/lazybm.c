@@ -81,9 +81,9 @@ int isUserOnline(int uid)
     int i;
 
     for (i = 0; i < USHM_SIZE; i++) {
-        if (!(utmphead->uinfo[i].active))
+        if (!(utmpshm->uinfo[i].active))
             continue;
-        if (uid == utmphead->uinfo[i].uid)
+        if (uid == utmpshm->uinfo[i].uid)
             return (i + 1);
     }
     return 0;

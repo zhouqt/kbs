@@ -101,7 +101,9 @@ struct one_key {                /* Used to pass commands to the readmenu */
 #define USHM_SIZE       (MAXACTIVE + 10)        /*modified by dong, 10->20, 1999.9.15 */
 /* modified back by KCN,20->10, because not reboot */
 #define UTMP_HASHSIZE  (USHM_SIZE*4)
-
+struct UTMPFILE {
+    struct user_info uinfo[USHM_SIZE];
+};
 struct BoardStatus {            /* use this to speed up board list */
     int total;
     int lastpost;
@@ -142,17 +144,6 @@ struct bbs_msgbuf {
 	pid_t pid;
 	char userid[IDLEN];
 	char mtext[1];
-};
-
-struct UTMPHEAD {
-    int next[USHM_SIZE];
-    int hashhead[UTMP_HASHSIZE + 1];    /* use UCACHE_HASHSIZE/32 */
-    int number;
-    int listhead;
-    int list_prev[USHM_SIZE];   /* sorted list prev ptr */
-    int list_next[USHM_SIZE];   /* sorted list next ptr */
-    time_t uptime;
-    struct user_info uinfo[USHM_SIZE];
 };
 
 #endif

@@ -61,11 +61,11 @@ extern "C" {
     int getnewutmpent(struct user_info *up);
     int real_getnewutmpent(struct user_info *up);
 #define CHECK_UENT(uident) ((utmpent > 0 && utmpent <= USHM_SIZE ) && \
-			(utmphead->uinfo[ utmpent - 1 ].uid==(uident)))
+			(utmpshm->uinfo[ utmpent - 1 ].uid==(uident)))
 #define UPDATE_UTMP(field,entp) { if (CHECK_UENT((entp).uid)) \
-			utmphead->uinfo[ utmpent- 1 ].field=(entp).field; }
+			utmpshm->uinfo[ utmpent- 1 ].field=(entp).field; }
 #define UPDATE_UTMP_STR(field,entp) { if (CHECK_UENT((entp).uid)) \
-			strcpy(utmphead->uinfo[ utmpent- 1 ].field,(entp).field); }
+			strcpy(utmpshm->uinfo[ utmpent- 1 ].field,(entp).field); }
     int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg); /* ulist 中 search 符合fptr函数的 user */
 #if 0
     void clear_utmp2(struct user_info *uentp);
@@ -101,7 +101,6 @@ extern "C" {
     int countexp(struct userec *udata);
     int countperf(struct userec *udata);
     int compute_user_value(struct userec *urec);
-    void remove_shm(char *shmstr, int defaultkey);
     void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate);
     void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr);
     void attach_err(int shmkey, char *name);

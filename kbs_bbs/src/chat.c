@@ -36,6 +36,7 @@
 extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 extern char page_requestor[];
 extern char *modestring();
+extern struct UTMPFILE *utmpshm;
 extern void t_pager();
 
 #define s_lines         (t_lines-2)
