@@ -27,7 +27,7 @@
 		if($wrap) echo "</ul>";		
 	}
 	
-	function get_calendar_array($link,$pc,$pur)
+	function get_calendar_array($link,$pc,$pur,&$totalnodes)
 	{
 ?>
 <script language="javascript">
@@ -43,6 +43,7 @@ var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
 			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
 		$query .= " ORDER BY `nid` DESC;";
 		$result = mysql_query($query,$link);
+		$totalnodes = mysql_num_rows($result); //所有日志数
 		$bc = array();
 		while($rows = mysql_fetch_array($result))
 		{
@@ -68,8 +69,9 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		if($pc[INFOR]) echo $pc[INFOR];	
 	}
 	
-	function pc_load_nodes($link,$pc,$pur=0)
+	function pc_load_nodes($link,$pc,$pur=0,$pno)
 	{
+		$start = $pc["INDEX"]["nodeNum"] * ( $pno - 1 );
 		$query = "SELECT * FROM `nodes` WHERE `uid` = '".$pc["UID"]."' AND type = 0 ";
 		if($pur == 0)
 			$query .= " AND `access` = 0 ";
@@ -77,7 +79,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
 		elseif($pur == 3)
 			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
-		$query .= " ORDER BY `nid` DESC LIMIT 0 , 10 ;";
+		$query .= " ORDER BY `nid` DESC LIMIT ".$start." , 10 ;";
 		$result = mysql_query($query,$link);
 		$nodes = array();
 		$i = 0;
@@ -90,7 +92,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		return $nodes;
 	}
 	
-	function display_nodes($link,$pc,$nodes,$tablewidth="100%",$tablestyle=0)
+	function display_nodes($link,$pc,$nodes,$tablewidth="100%",$tablestyle=0,$totalnodes,$pno)
 	{
 		for($i=0;$i<min($pc["INDEX"]["nodeNum"],count($nodes));$i++)
 		{
@@ -144,6 +146,10 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i][subject])."' , 460, 480)\">引用[".$nodes[$i][trackbackcount]."]</a>";
 			echo "</font></td></tr>\n</table></center>\n";
 		}
+		echo "<center><table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
+		     "<tr><td class=\"".$cellclass[2]."\" align=\"center\">";
+		display_blog_page_tool($pc,$totalnodes,$pno);
+		echo "</td></tr></table></center>";
 	}
 	
 	function display_newnodes_list($link,$pc,$nodes)
@@ -216,6 +222,21 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 <?php		
 	}
 	
+	function display_blog_page_tool($pc,$totalnodes,$pno)
+	{
+		if(!$pc["INDEX"]["nodeNum"])
+			return;
+		$totalpages =( ( $totalnodes - 1 ) / $pc["INDEX"]["nodeNum"] ) + 1 ;
+		$totalpages = intval($totalpages);
+		echo "[\n";
+		for($i = 1 ; $i < $pno ; $i ++)
+			echo "<a href=\"".$_SERVER["PHP_SELF"]."?id=".$pc["USER"]."&pno=".$i."\">".$i."</a>\n";
+		echo "<strong>".$pno."</strong>\n";
+		for($i = $pno + 1 ; $i < $totalpages + 1 ; $i ++)
+			echo "<a href=\"".$_SERVER["PHP_SELF"]."?id=".$pc["USER"]."&pno=".$i."\">".$i."</a>\n";
+		echo "]\n";
+	}
+		
 	function display_blog_tools($pc,$pur)
 	{
 		global $loginok,$currentuser,$pcconfig;
@@ -383,7 +404,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	}
 	
 	
-	function display_blog_earthsong($link,$pc,$sec,$nodes,$blogs,$pur,$tags)
+	function display_blog_earthsong($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes)
 	{
 		global $pcconfig;
 ?>
@@ -446,7 +467,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 </table>
 </center>
 <?php		
-		display_nodes($link,$pc,$nodes,780);
+		display_nodes($link,$pc,$nodes,780,0,$totalnodes,$pno);
 ?>
 <center>
 <center>
@@ -526,7 +547,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		
 	}
 	
-	function display_blog_smth($link,$pc,$sec,$nodes,$blogs,$pur,$tags)
+	function display_blog_smth($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes)
 	{
 		global $pcconfig;
 ?>	
@@ -625,7 +646,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			</table>
 		</td>
 		<td width="80%" align="right" valign="top">
-		<?php display_nodes($link,$pc,$nodes,"99%",1); ?>
+		<?php display_nodes($link,$pc,$nodes,"99%",1,$totalnodes,$pno); ?>
 		<p align=center class=f1>
 		更新时间: <?php echo time_format($pc["MODIFY"]); ?>
 		<br />
@@ -639,7 +660,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 <?php		
 	}
 		
-	function display_blog_default($link,$pc,$sec,$nodes,$blogs,$pur,$tags)
+	function display_blog_default($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes)
 	{
 		global $loginok,$currentuser,$pcconfig;
 		
@@ -702,7 +723,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	</tr>
 </table></center>
 <?php		
-		display_nodes($link,$pc,$nodes,700);
+		display_nodes($link,$pc,$nodes,700,0,$totalnodes,$pno);
 ?>
 <center><table cellpadding=10 cellspacing=0 width=700 border=0 class=t15>
 <tr>
@@ -763,7 +784,9 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	}
 
 	$userid = addslashes($_GET["id"]);
-	$uid = (int)($_GET["id"]);
+	$uid = intval($_GET["id"]);
+	$pno = intval($_GET["pno"]);
+	if($pno < 1) $pno = 1;
 	
 	$link = pc_db_connect();
 	$pc = pc_load_infor($link,$userid,$uid);
@@ -782,7 +805,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	$pur = $userPermission["pur"];
 	$tags = $userPermission["tags"];
 	
-	$nodes = pc_load_nodes($link,$pc,$pur);
+	$nodes = pc_load_nodes($link,$pc,$pur,$pno);
 	$blogs = pc_blog_menu($link,$pc["UID"],0);
 	
 	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
@@ -791,10 +814,11 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	//if( pc_cache( $pc["MODIFY"] ) )
 	//	return;
 	pc_html_init("gb2312",$pc["NAME"],"",$pc["STYLE"]["CSSFILE"],$pc["BKIMG"]);
-	get_calendar_array($link,$pc,$pur);
+	$totalnodes = 0;
+	get_calendar_array($link,$pc,$pur,$totalnodes);
 ?>
 <script src="bc.js"></script>
 <?php
-	$pc["STYLE"]["INDEXFUNC"]($link,$pc,$sec,$nodes,$blogs,$pur,$tags);
+	$pc["STYLE"]["INDEXFUNC"]($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes);
 	pc_db_close($link);
 ?>

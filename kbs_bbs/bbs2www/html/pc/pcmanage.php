@@ -400,7 +400,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8">Ö÷Ìâ
-	<input type="text" size="100" class="f1" name="subject" value="<?php echo htmlspecialchars(stripslashes($rows[subject])); ?>">
+	<input type="text" size="100" class="f1" name="subject" value="<?php echo htmlspecialchars($rows[subject]); ?>">
 	</td>
 </tr>
 <tr>
@@ -440,7 +440,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t8">
-	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"]; ?><?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?></textarea>
+	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical"><?php echo $pcconfig["EDITORALERT"]; ?><?php echo htmlspecialchars($rows[body]); ?></textarea>
 	</td>
 </tr>
 <tr>

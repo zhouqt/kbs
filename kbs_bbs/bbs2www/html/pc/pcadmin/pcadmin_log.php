@@ -23,6 +23,7 @@ if( $_GET["act"] == "logout" && $blogadmin)
 }
 
 pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog¹ÜÀíÔ±µÇÂ¼");
+pc_admin_navigation_bar();
 ?>
 <br/><br/><br/><br/>
 <?php

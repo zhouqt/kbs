@@ -17,10 +17,14 @@ $link = pc_db_connect();
 **        3 : 以后不得申请
 **
 */
-function pc_apply_users($link,$type,$start,$pagesize)
+function pc_apply_users($link,$type,$start,$pagesize,$userid="",$appname="")
 {
 	$type = intval($type);
-	$query = "SELECT * FROM newapply WHERE management = ".$type." ORDER BY naid LIMIT ".$start." , ".$pagesize." ;";
+	$order = ($type == 1)?"ASC":"DESC";
+	if( $userid || $appname )
+		$query = "SELECT * FROM newapply WHERE ( username = '".addslashes($userid)."' OR appname = '".addslashes($appname)."' ) AND management = ".$type." ORDER BY naid ".$order." LIMIT ".$start." , ".$pagesize." ;";
+	else
+		$query = "SELECT * FROM newapply WHERE management = ".$type." ORDER BY naid ".$order." LIMIT ".$start." , ".$pagesize." ;";
 	$result = mysql_query($query,$link);
 	$newApp = array();
 	while($rows = mysql_fetch_array($result))
@@ -64,7 +68,7 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 	//更新申请表
 	if($manual)
 		$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
-	 		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , NULL , '1');";
+	 		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes($currentuser["userid"])."' , '0');";
 	else
 		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($lookupuser["userid"])."' LIMIT 1 ;";
 	if(!mysql_query($query,$link))
@@ -129,10 +133,13 @@ if(!isset($_GET["type"]) || ($type != 0 && $type != 2 && $type != 3))
 $pagesize = 20;
 $start = ($pno - 1) * $pagesize;
 
-
-$newApps = pc_apply_users($link,$type,$start,$pagesize);
+if($_GET["act"] == "q")
+	$newApps = pc_apply_users($link,$type,$start,$pagesize,$_GET["userid"],$_GET["pcname"]);
+else
+	$newApps = pc_apply_users($link,$type,$start,$pagesize);
 
 pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog新申请用户管理");
+pc_admin_navigation_bar();
 ?>
 <script language="javascript">
 <!--
@@ -201,18 +208,28 @@ function bbsconfirm(url,infor){
 ?>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
 <b>[手动添加]</b>
-<input type="hidden" name="act" value="add">
+<input type="hidden" name="act" value="y">
 <input type="hidden" name="type" value="1">
 <input type="hidden" name="manual" value="1">
 用户名：
 <input type="text" class="f1" size="20" name="userid">
 BLOG名：
-<input type="text" class="f1" size="20" name="appname">
+<input type="text" class="f1" size="20" name="pcname">
 <input type="submit" class="f1" value="添加">
 </form>
 <?php
 	}
-?>
+?>	
+<form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
+<b>[用户查询]</b>
+<input type="hidden" name="act" value="q">
+<input type="hidden" name="type" value="<?php echo $type; ?>">
+用户名：
+<input type="text" class="f1" size="20" name="userid">
+BLOG名：
+<input type="text" class="f1" size="20" name="pcname">
+<input type="submit" class="f1" value="查询">
+</form>	
 </center>
 <br />
 <p align="center">

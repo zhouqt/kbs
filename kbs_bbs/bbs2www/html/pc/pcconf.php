@@ -41,7 +41,11 @@ $pcconfig["SECTION"] = array(
 			"community" => "社会信息" ,
 			"game" => "游戏乐园" ,
 			"sports" => "体育竞技" ,
-			"publish" => "新闻出版" ,
+			"publish" => "媒体新闻" ,
+			"business" => "商业经济",
+			"life" => "生活资讯",
+			"picture" => "图片美术",
+			"collection" => "经典收藏",
 			"others" => "其他类别"
 			);
 

@@ -1,7 +1,8 @@
 <?php
 /*
 **  为水木清华blog申请定制的申请表
-**  满足条件的申请表将被提交至$pcconfig["BOARD"]等候处理
+**  满足条件的申请表将被提交至$pcconfig["BOARD"]
+**  并在数据表newapply中保留申请资料
 **  @windinsn Mar 12 , 2004
 */
 require("pcfuncs.php");
@@ -85,8 +86,11 @@ else
 		    "        ".$_POST["appself"]."\n\n\n".
 		    "(3) 经营方向：(您对您个人Blog的初步规划)\n        ".$_POST["appdirect"]."\n\n";
 	
+	$appself =  "ID：".$currentuser["userid"]."\n".
+		    "注册时间：".date("Y年m月d日",$currentuser["firstlogin"])."\n".
+		    "自我介绍：\n".$_POST["appself"];
 	$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
-	 	 "VALUES ('', '".$currentuser["userid"]."', '".addslashes($_POST["appname"])."', '".addslashes($_POST["appself"])."', '".addslashes($_POST["appdirect"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , NULL , '1');";
+	 	 "VALUES ('', '".$currentuser["userid"]."', '".addslashes($_POST["appname"])."', '".addslashes($appself)."', '".addslashes($_POST["appdirect"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , NULL , '1');";
 	mysql_query($query,$link);
 	pc_db_close($link);
 	

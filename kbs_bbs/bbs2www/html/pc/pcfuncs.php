@@ -133,13 +133,13 @@ function html_format($str,$multi=FALSE,$useHtmlTag = FALSE,$defaultfg = "#000000
 	if($multi)
 	{
 		if(strstr($str,$pcconfig["NOWRAPSTR"]) || $useHtmlTag )
-			$str = str_replace("<?","&lt;?",stripslashes($str));
+			$str = str_replace("<?","&lt;?",$str);
 		else
-			$str = nl2br(str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str))));
+			$str = nl2br(str_replace(" ","&nbsp;",htmlspecialchars($str)));
 			//$str = nl2br(ansi_convert(stripslashes($str) , $defaultfg, $defaultbg));	
 	}
 	else
-		$str = str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
+		$str = str_replace(" ","&nbsp;",htmlspecialchars($str));	
 	return $str;	
 }
 
@@ -788,4 +788,14 @@ function pc_load_stylesheet($link,$pc)
 		return FALSE;
 	return intval($rows[stylesheet]);
 }
+
+function html_format_fix_length($str,$length)
+{
+	if(strlen($str) <= $length )
+		return $str;
+	$str = substr($str,0,$length);
+	$str .= "...";
+	return $str;	
+}
+
 ?>

@@ -72,7 +72,7 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 ?>
 <br><br>
 <p align="center" class="f2">
-Blog文章搜索
+Blog日志搜索
 </p>
 <?php
 
@@ -162,7 +162,7 @@ Blog文章搜索
 <form action="pcnsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 <p align="center" class="f1">
 请输入关键字：
-<input type="text" name="keyword" id="keyword" class="f1" value="<?php echo $keyword; ?>">
+<input type="text" name="keyword" size="60" id="keyword" class="f1" value="<?php echo $keyword; ?>">
 <?php
 	if($userid || ( $area && $area != "_all"))
 	{

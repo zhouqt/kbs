@@ -34,8 +34,9 @@ if( $_GET["act"] == "del" && $buserid )
 $query = "SELECT * FROM blacklist WHERE uid = 0;";
 $result = mysql_query($query,$link);
 $num = mysql_num_rows($result);
+pc_admin_navigation_bar();
 ?>
-<br/>
+<br />
 <p align="center">BlogºÚÃûµ¥</p>
 <center>
 <table cellspacing=0 cellpadding=5 width=90% class=t1 border=0>

@@ -73,13 +73,13 @@
 	{
 ?>
 	<tr>
-		<td class=t2 width=90>用户名</td>
-		<td class=t2 width=180>Blog名称</td>
-		<td class=t2 width=80>Blog主题</td>
-		<td class=t2 width=60>访问量</td>
-		<td class=t2 width=60>文章数</td>
+		<td class=t2 width=70>用户名</td>
+		<td class=t2 width=120>Blog名称</td>
+		<td class=t2 width=70>Blog主题</td>
+		<td class=t2 width=40>访问量</td>
+		<td class=t2 width=40>文章数</td>
 		<td class=t2>文章主题</td>
-		<td class=t2 width=130>更新时间</td>
+		<td class=t2 width=120>更新时间</td>
 	</tr>
 <?php
 		for($i=0;$i < $newNum;$i++)
@@ -98,13 +98,12 @@
 	{
 ?>
 	<tr>
-		<td class=t2 width=90>发布者</td>
+		<td class=t2 width=70>发布者</td>
 		<td class=t2>评论主题</td>
-		<td class=t2 width=130>评论发布时间</td>
+		<td class=t2 width=125>评论发布时间</td>
 		<td class=t2 width=200>原文主题</td>
-		<td class=t2 width=130>原文发布时间</td>
-		<td class=t2 width=50>访</td>
-		<td class=t2 width=50>评</td>
+		<td class=t2 width=20>访</td>
+		<td class=t2 width=20>评</td>
 	</tr>
 <?php
 		for($i=0;$i < $newNum;$i++)
@@ -112,10 +111,9 @@
 			echo "<tr>\n<td class=t4><a href='/bbsqry.php?userid=".$newComments[$i][POSTER]."'>".$newComments[$i][POSTER]."</a></td>\n".
 				"<td class=t8><a href=\"pcshowcom.php?cid=".$newComments[$i][CID]."\">".$newComments[$i][CSUBJECT]."</a>&nbsp;</td>\n".
 				"<td class=t4>".$newComments[$i][CCREATED]."&nbsp;</td>\n".
-				"<td class=t8><span title=\"".$newComments[$i][NSUBJECT]."\"><a href=\"pccon.php?id=".$newComments[$i][UID]."&nid=".$newComments[$i][NID]."&s=all\">".substr($newComments[$i][NSUBJECT],0,20)." \n ";
-			if(strlen($newComments[$i][NSUBJECT]) > 20) echo " ...";
-			echo "</a>&nbsp;</span></td>\n".
-				"<td class=t4>".$newComments[$i][NCREATED]."</td>\n".
+				"<td class=t8><span title=\"".$newComments[$i][NSUBJECT]."\"><a href=\"pccon.php?id=".$newComments[$i][UID]."&nid=".$newComments[$i][NID]."&s=all\">".substr($newComments[$i][NSUBJECT],0,30)." \n ";
+			if(strlen($newComments[$i][NSUBJECT]) > 30) echo " ...";
+				echo "</a>&nbsp;</span></td>\n".
 				"<td class=t3>".$newComments[$i][VISITCOUNT]."</td>\n".
 				"<td class=t4>".$newComments[$i][COMMENTCOUNT]."</td>\n</tr>\n";
 		}

@@ -78,6 +78,7 @@ switch($type)
 $result = mysql_query( $query , $link );
 $num = mysql_num_rows( $result );
 pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog推荐文章管理");
+pc_admin_navigation_bar();
 ?><br/>
 <p align="center">
 <strong><?php echo $pcconfig["BBSNAME"]."Blog推荐文章管理"; ?></strong>

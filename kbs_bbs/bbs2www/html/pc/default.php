@@ -1,87 +1,109 @@
 <?php
 require("pcfuncs.php");
 require("pcstat.php");
+require("pcmainfuncs.php");
 
 function pcmain_blog_statistics_list()
 {
-	global $pcconfig;
-	$query = "SELECT COUNT(*) FROM users;";
-	$result = mysql_query($query);
-	$rows = mysql_fetch_row($result);
-	mysql_free_result($result);
-	$totaluser = $rows[0];
-	
-	$query = "SELECT COUNT(*) FROM nodes WHERE type != 1;";
-	$result = mysql_query($query);
-	$rows = mysql_fetch_row($result);
-	mysql_free_result($result);
-	$totalnode = $rows[0];
-	
-	$query = "SELECT COUNT(*) FROM comments;";
-	$result = mysql_query($query);
-	$rows = mysql_fetch_row($result);
-	mysql_free_result($result);
-	$totalcomment = $rows[0];
+	global $link;
 ?>
-用户：<strong><?php echo $totaluser; ?></strong> 人<br />
-日志：<strong><?php echo $totalnode; ?></strong> 个<br />
-评论：<strong><?php echo $totalcomment; ?></strong> 篇<br />
+用户：<strong><?php echo getUsersCnt($link); ?></strong> 人<br />
+日志：<strong><?php echo getNodesCnt($link); ?></strong> 个<br />
+评论：<strong><?php echo getCommentsCnt($link); ?></strong> 篇<br />
 <?php
 }
 
 function pcmain_blog_new_user()
 {
 	global $pcconfig,$link;
-	$newUsers = getNewUsers($link,20);
+	$newUsers = getNewUsers($link,30);
 ?>
-<ul>
+
 <?php
 	foreach($newUsers as $newUser)
 	{
 		echo "<li><a href=\"index.php?id=".$newUser[username]."\"><span title=\"".html_format($newUser[description])."\">".html_format($newUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$newUser[username]."\"><font class=\"low\">".$newUser[username]."</font></a></li>";	
 	}
 ?>				
-</ul>
+
 <?php
 }
 
 function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
-	$mostVstUsers = getMostVstUsers($link,20);
+	$mostVstUsers = getMostVstUsers($link,30);
 ?>
-		<ul>
+		
 <?php
 	foreach($mostVstUsers as $mostVstUser)
 	{
 		echo "<li><a href=\"index.php?id=".$mostVstUser[username]."\"><span title=\"".html_format($mostVstUser[description])."\">".html_format($mostVstUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$mostVstUser[username]."\"><font class=\"low\">".$mostVstUser[username]."</font></a></li>";	
 	}
 ?>				
-		</ul>
+		
 <?php
 }
 
 function pcmain_blog_last_update()
 {
 	global $pcconfig,$link;
-	$lastUpdates = getLastUpdates($link,20);
+	$lastUpdates = getLastUpdates($link,30);
 ?>
-				<ul>
+				
 <?php
 	foreach($lastUpdates as $lastUpdate)
 	{
 		echo "<li><a href=\"index.php?id=".$lastUpdate[username]."\"><span title=\"".html_format($lastUpdate[description])."\">".html_format($lastUpdate[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$lastUpdate[username]."\"><font class=\"low\">".$lastUpdate[username]."</font></a></li>";	
 	}
 ?>				
-				</ul>
+				
 <?php
 }
 
+function pcmain_annouce()
+{
+	global $pcconfig,$link;
+	$query = "SELECT users.uid , subject , nid FROM nodes,users WHERE access = 0 AND nodes.uid = users.uid AND username = '".$pcconfig["ADMIN"]."' ORDER BY nid DESC LIMIT 0 , 5;";
+	$result = mysql_query($query,$link);
+?>
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
+	<tr><td class="channelback"><font class="channel">水木动态</font></td></tr>
+	<tr><td align="left" valign="top" class="td">
+<?php
+	while($rows = mysql_fetch_array($result))
+		echo "<li><a href=\"/pc/pccon.php?id=".$rows[0]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a></li>";
+?>	
+	</td></tr>
+</table>
+<?php	
+	mysql_free_result($result);
+}
+
+function pcmain_recommend_blogger()
+{
+	global $link;
+	$pos = rand(0,50);//排名前50的博客随机抽取一个
+	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT ".$pos.",1;";
+	$result = mysql_query($query,$link);
+	$pc = mysql_fetch_array($result);
+?>
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
+	<tr><td class="channelback" align="right"><font class="channel">博客推荐</font></td></tr>
+	<tr><td align="left" valign="top" bgcolor="#ECF5FF" class="td">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
+	
+	</table>
+	</td></tr>
+</table>
+<?php
+	mysql_free_result($result);	
+}
 
 function  pcmain_blog_most_hot()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." ORDER BY commentcount DESC , nid DESC LIMIT 0 , 20;";
+	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." ORDER BY commentcount DESC , nid DESC LIMIT 0 , 30;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -122,7 +144,7 @@ function  pcmain_blog_most_hot()
 function  pcmain_blog_most_trackback()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-1209600)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 20;";
+	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-1209600)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 30;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -154,7 +176,7 @@ function  pcmain_blog_most_trackback()
 function  pcmain_blog_most_view()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid  FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 20;";
+	$query = "SELECT nid , subject , uid  FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 40;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -332,159 +354,14 @@ function pcmain_section_top_view()
 <?php
 }
 
-if(pc_update_cache_header())
-	return;
+//if(pc_update_cache_header())
+//	return;
 
 $link = pc_db_connect();
+pcmain_html_init();
 ?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-<title><?php echo $pcconfig["BBSNAME"]; ?>BLOG</title>
-<style type="text/css">
-<!--
-.table {
-	border-top-width: 1px;
-	border-left-width: 1px;
-	border-top-style: solid;
-	border-left-style: solid;
-	border-top-color: #999999;
-	border-left-color: #999999;
-}
-.channel {
-	font-size: 12px;
-	font-weight: bold;
-	color: #FFFFFF;
-	text-align: left;
-	text-indent: 3pt;
-}
-.more {
-	font-size: 11px;
-	color: #ffffff;
-}
-.channelback {
-	background-color: #1F66A7;
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	font-size: 12px;
-	font-weight: bold;
-	color: #FFFFFF;
-	text-align: left;
-	text-indent: 3pt;
-}
-.td {
-	border-right-width: 1px;
-	border-bottom-width: 1px;
-	border-right-style: solid;
-	border-bottom-style: solid;
-	border-right-color: #999999;
-	border-bottom-color: #999999;
-	line-height: 16px;
-	word-wrap:break-word;
-	word-break:break-all;
-}
-body {
-	font-size: 12px;
-}
-a:link {
-	color: #000000;
-	text-decoration: none;
-}
-a:visited {
-	color: #003333;
-	text-decoration: none;
-}
-a:hover {
-	color: #003366;
-	text-decoration: underline;
-}
-.topic {
-	color: #666666;
-	background-color: #D2E9FF;
-	text-align: left;
-	text-indent: 5pt;
-	font-size: 12px;
-	font-weight: bold;
-	border: 1px solid #999999;
-}
-input {
-	font-size: 12px;
-	font-weight: lighter;
-}
-.textinput {
-	background-color: #F6F6F6;
-	border: 1px solid #999999;
-}
-.low {
-	font-size: 12px;
-	color: #666666;
-}
-.td1 {
-	border-bottom-width: 1px;
-	border-bottom-style: dashed;
-	border-bottom-color: #999999;
-	text-align:left;
-	line-height: 16px;
-	background-color: #FCFCFC;
-	word-wrap:break-word;
-	word-break:break-all;
-}
-.td2 {
-	border-bottom-width: 1px;
-	border-bottom-style: dashed;
-	border-bottom-color: #999999;
-	text-align:left;
-	background-color: #F0F0F0;
-	line-height: 16px;
-	word-wrap:break-word;
-	word-break:break-all;
-}
-.low2 {
-	color: #3399CC;
-}
--->
-</style>
-</head>
-
-<body topmargin="0" leftmargin="0"><center>
-<table width="750"  border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td colspan="3" align="left" background="images/bg.gif">
-	<?php
-	    echo $pcconfig["BBSNAME"];
-	?>
-	BLOG
-	<a href="/pc/pcapp0.html"><font color="red">立即申请BLOG</font></a>
-	</td>
-    </tr>
-  <tr>
-    <td colspan="3"><table width="100%" border="0" cellspacing="0" cellpadding="5">
-      <tr>
-        <td width="180"><img src="/images/logo.gif" width="180" height="77" /></td>
-        
-        <td>
-      	&nbsp;
-        </td>
-        <td width="80" align="center" valign="middle" style="line-height:25px ">
-		<a href="/mainpage.html">本站首页</a>
-		<br/>
-		<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a>
-		<br />
-		<a href="/pc/index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a>
-		</td>
-      </tr>
-    </table></td>
-    </tr>
-  <tr>
-    <td colspan="3" height="1" bgcolor="#06337D"> </td>
-  </tr>
-  <tr>
-    <td colspan="3"><table width="100%" border="0" cellspacing="0" cellpadding="3">
+    <td><table width="100%" border="0" cellspacing="0" cellpadding="3">
       <tr>
         <td width="200" align="center" valign="top"><table width="100%"  border="0" cellpadding="5" cellspacing="0" class="table">
           <tr>
@@ -584,8 +461,8 @@ input {
 				<br />
                   最新日志
 				  <a href="/pc/rssnew.php"><img src="/pc/images/xml.gif" border="0" alt="最新日志" /></a>
-				<br /><br />
-		  OPML频道群组<br />
+				<br /><br /><br />
+		  <b>OPML频道群组</b><br /><br />
 		  <a href="opml.php">最近更新用户组</a><br />
 		  <a href="opml.php?t=1">访问最多用户组</a><br />
 		  <a href="opml.php?t=2">最新申请用户组</a>  
@@ -594,7 +471,18 @@ input {
             </tr>
           </table></td><td align="center" valign="top"><table width="100%"  border="0" cellspacing="0" cellpadding="3">
           <tr>
-            <td align="center" bgcolor="#F6F6F6"><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a> | <a href="/pc/pc.php">用户列表</a> | <a href="/pc/pcreclist.php">水木推荐</a> | <a href="/pc/pcnew.php">最新日志</a> | <a href="/pc/pcnew.php?t=c">最新评论</a> | <a href="/pc/pcsec.php">分类列表</a> | <a href="/pc/pcnsearch.php">日志搜索</a> | <a href="/pc/pcmain_o.php">老版本</a></td>
+            <td>
+               <table cellspacing=0 cellpadding=0 width=100% border=0>
+                 <tr>
+                   <td width="100%">
+                   <?php pcmain_annouce(); ?>
+                   </td>
+                   <td>
+                   <?php /* pcmain_recommend_blogger(); */ ?>
+                   </td>
+                 </tr>
+               </table>
+            </td>
           </tr>
           <tr>
             <td><table width="100%"  border="0" cellpadding="3" cellspacing="0">
@@ -673,21 +561,7 @@ input {
       </tr>
     </table></td>
     </tr>
-          <tr>
-    <td colspan="3" height="1" bgcolor="#06337D"> </td>
-  </tr>
-  <tr><td height="5"> </td></tr>
-         <tr>
-            <td align="center" bgcolor="#F6F6F6"><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a> | <a href="/pc/pc.php">用户列表</a> | <a href="/pc/pcreclist.php">水木推荐</a> | <a href="/pc/pcnew.php">最新日志</a> | <a href="/pc/pcnew.php?t=c">最新评论</a> | <a href="/pc/pcsec.php">分类列表</a> | <a href="/pc/pcnsearch.php">日志搜索</a> | <a href="/pc/pcmain_o.php">老版本</a> | <a href="/pc/pcapp0.html"><font color="red">申请BLOG</font></a></td>
-          </tr>
-          <tr><td height="5"> </td></tr>
-  <tr>
-    <td colspan="3" align="center">版权所有
-	&copy;<?php echo $pcconfig["BBSNAME"]; ?></td>
-    </tr>
-</table>
-</center>
 <?php
 pc_db_close($link);
-html_normal_quit();
+pcmain_html_quit()
 ?>

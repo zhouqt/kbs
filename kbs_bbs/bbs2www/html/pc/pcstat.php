@@ -53,7 +53,7 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blogµÿ÷∑£∫http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."</a>";
 		$newBlogs[useretems][$j] = array(
 					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
-					"subject" => htmlspecialchars(stripslashes($rows[subject])),
+					"subject" => htmlspecialchars($rows[subject]),
 					"desc" => $body,
 					"tid" => $rows[tid],
 					"nid" => $rows[nid],
@@ -152,7 +152,7 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows[username]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blogµÿ÷∑£∫http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows[user]."</a>";
 		$recommendBlogs[useretems][$i] = array(
 					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[0]."&amp;nid=".$rows[nid],
-					"subject" => htmlspecialchars(stripslashes($rows[subject])),
+					"subject" => htmlspecialchars($rows[subject]),
 					"desc" => $body,
 					"tid" => 0,
 					"nid" => $rows[nid],
@@ -201,6 +201,88 @@ function getLastUpdates($link,$userNum=0)
 		$lastUpdates[] = $rows;
 	mysql_free_result($result);
 	return $lastUpdates;
-}	
+}
 
+function getUsersCnt($link)
+{
+	$query = "SELECT COUNT(*) FROM users;";
+	$result = mysql_query($query);
+	$rows = mysql_fetch_row($result);
+	mysql_free_result($result);
+	return $rows[0];
+}
+	
+function getNodesCnt($link)
+{
+	$query = "SELECT COUNT(*) FROM nodes WHERE type != 1;";
+	$result = mysql_query($query);
+	$rows = mysql_fetch_row($result);
+	mysql_free_result($result);
+	return $rows[0];
+}
+
+function getCommentsCnt($link)
+{
+	$query = "SELECT COUNT(*) FROM comments;";
+	$result = mysql_query($query);
+	$rows = mysql_fetch_row($result);
+	mysql_free_result($result);
+	return $rows[0];
+}
+
+function getHotUsersByPeriod($link,$period="",$num=10)
+{
+	if($period=="day")
+		$startTime = intval(date("Ymd")."000000");
+	elseif($period=="month")
+		$startTime = intval(date("Ym")."00000000");
+	else
+		$startTime = 0;
+	
+	$query = "SELECT COUNT(pri_id) , uid , users.username , corpusname , description ".
+	         "FROM logs , users ".
+	         "WHERE ACTION LIKE '%\'s Blog(www)' ".
+	         "      AND pri_id = users.username ";
+	if($startTime)
+	$query.= "      AND logtime > ".$startTime." ";
+	$query.= "GROUP BY pri_id ".
+	         "ORDER BY 1 DESC ".
+	         "LIMIT 0 , ".$num." ;";
+	$result = mysql_query($query,$link);
+	$users = array();
+	while($rows = mysql_fetch_array($result))
+		$users[] = $rows;	
+	mysql_free_result($result);
+	return $users;	
+}
+
+function getHotNodesByPeriod($link,$period="",$num=10)
+{
+	if($period=="day")
+		$startTime = intval(date("Ymd")."000000");
+	elseif($period=="month")
+		$startTime = intval(date("Ym")."00000000");
+	else
+		$startTime = 0;
+		
+	$query = "SELECT uid , nid , subject ".
+		 "FROM nodes ".
+		 "WHERE access = 0 ";
+	if($startTime)
+	$query.= " AND created > ".$startTime . " ";
+	//$query.= "GROUP BY uid ";
+	$query.= "ORDER BY visitcount DESC ".
+		 "LIMIT 0 , ".$num." ;";
+	$result = mysql_query($query,$link);
+	$nodes = array();
+	while($rows = mysql_fetch_array($result))
+		$nodes[] = $rows;	
+	mysql_free_result($result);
+	return $nodes;	
+}
+
+function getHotTopicsByPeriod($link,$period,$num=10)
+{
+	
+}
 ?>

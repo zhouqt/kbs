@@ -1,5 +1,7 @@
 <?php
 	require("pcfuncs.php");
+	if(pc_update_cache_header(60))
+		return;
 	
 	pc_html_init("gb2312","Blog搜索");
 ?>
@@ -7,8 +9,8 @@
 <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 <p align="center" class="f2">Blog搜索:<p>
 <p align="center" class="f1">
-<input type="text" name="keyword" size="20" class="b2">
-(进行模糊搜索时,请用空格隔开多个关键字)
+<input type="text" name="keyword" size="60" class="b2">
+<br /><br />(进行模糊搜索时,请用空格隔开多个关键字)
 </p><p align="center" class="f1">
 方式:
 <input type="radio" name="exact" value="1" class="b2" checked>精确
