@@ -647,7 +647,7 @@ static long insert_from_fp(FILE *fp)
     attachpad=ATTACHMMENT_PAD;
     matched=0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 0) {
+        if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
             char* data;
             long not;
             data=ptr;
