@@ -154,6 +154,7 @@ int modes[200][2], modest;
 
 static int set_modes_show(struct _select_def *conf, int i)
 {
+    i--;
     prints("%s%s\x1b[m", modes[i][1]?"*":" ", modes[i][0]?ModeType(modes[i][0]):"È«²¿");
     return SHOW_CONTINUE;
 }
@@ -223,12 +224,14 @@ int set_modes(int *res)
         if(s[0]&&!strchr(s,'?')) {
             modes[n][0]=i;
             modes[n][1]=0;
-            for(j=0;j<10;j++)
+            for(j=0;j<10;j++) {
+                if(!res[j]) break;
                 if(res[j]==i) {
                     modes[n][1]=1;
                     modest++;
                     break;
                 }
+            }
             n++;
         }
     }
