@@ -727,7 +727,7 @@ void readtitle(struct _select_def* conf)
     setfcolor(WHITE, DEFINE(getCurrentUser(), DEF_HIGHCOLOR));
     setbcolor(BLUE);
     clrtoeol();
-    prints(" 编号   %-12s %6s %s", "刊 登 者", "日  期", " 文章标题");
+    prints("  编号   %-12s %6s %s", "刊 登 者", "日  期", " 文章标题");
     sprintf(title, "在线:%4d [%4s模式]", bs->currentusers, readmode);
     move(2, -strlen(title)-1);
     prints("%s", title);
