@@ -30,7 +30,7 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 		monthDay = Array(31,29,31,30,31,30,31,31,30,31,30,31);
 	else
 		monthDay = Array(31,28,31,30,31,30,31,31,30,31,30,31);
-	var monthName = new Array("Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec");
+	var monthName = new Array("一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月");
 	
 	if( thisMonth < 1 )
 	{
@@ -67,11 +67,11 @@ function blogCalendar(thisYear,thisMonth,thisDay)
 	cStr += "<tr>";
 	cStr += "<td class=t2><span class=hand title='上一年' onclick='blogCalendar(" + parseInt( thisYear - 1 ) + " , " + parseInt( thisMonth + 1 ) + " , " + thisDay + " )'>&lt;&lt;</span></td>";
 	cStr += "<td class=t2><span class=hand title='上一月' onclick='blogCalendar(" + thisYear + " , " + thisMonth + " , " + thisDay + " );'>&lt;</span></td>";
-	cStr += "<td class=t2 colspan=3 align=center>" + monthName[thisMonth] + " " + thisYear + "</td>";
+	cStr += "<td class=t2 colspan=3 align=center>" +  thisYear + "年" + monthName[thisMonth] + "</td>";
 	cStr += "<td class=t2><span class=hand title='下一月' onclick='blogCalendar(" + thisYear + " , " + parseInt( thisMonth + 2 ) + " , " + thisDay + " );'>&gt;</span></td>";
 	cStr += "<td class=t2><span class=hand title='下一年' onclick='blogCalendar(" + parseInt( thisYear + 1 ) + " , " + parseInt( thisMonth + 1 ) + " , " + thisDay + " )'>&gt;&gt;</span></td>";
 	cStr += "</tr>";
-	cStr += "<tr><td class=t3>SUN</td><td class=t3>MON</td><td class=t3>TUE</td><td class=t3>WED</td><td class=t3>THU</td><td class=t3>FRI</td><td class=t3>SAT</td></tr>";
+	cStr += "<tr><td class=t3>日</td><td class=t3>一</td><td class=t3>二</td><td class=t3>三</td><td class=t3>四</td><td class=t3>五</td><td class=t3>六</td></tr>";
 	
 	j = 0 ;
 	for( i = 0 ; i < totalMonthDay ; i ++ )

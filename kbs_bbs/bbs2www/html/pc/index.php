@@ -104,7 +104,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 </ul>
 <p class="f1" align="right">
 <a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>">
-More Articles
+更多
 </a>&nbsp;&nbsp;&nbsp;&nbsp;
 </p>
 <?php
@@ -143,7 +143,7 @@ More Articles
 ?>	
 <table cellpadding=5 cellspacing=0 width="100%" border=0 class=t1>
 			<tr><td align="left" class="t2">
-			.: Introduction :.
+			.: 欢迎访问<?php echo $pc["NAME"]; ?> :.
 			</td></tr>
 			<tr><td class="t8">
 			<?php 
@@ -164,7 +164,7 @@ More Articles
 			<form action="pcnsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 			<input type="hidden" name="area" value="<?php echo $pc["USER"]; ?>">
 			<tr><td align="left" class="t3">
-			:: Blog Search ::
+			:: Blog搜索 ::
 			</td></tr>
 			<tr><td class="t4">
 			<input type="text" name="keyword" id="keyword" class="f1">
@@ -172,7 +172,7 @@ More Articles
 			</td></tr>
 			</form>
 			<tr><td align="left" class="t3">
-			:: Login ::
+			:: 登录 ::
 			</td></tr>
 			<?php
 				if($loginok==1 && strcmp($currentuser["userid"],"guest"))
@@ -181,7 +181,7 @@ More Articles
 <tr><td class="t4">
 <strong><?php echo $currentuser["userid"]; ?></strong>
 &nbsp;
-[<a href="/bbslogout.php" target="_top" class="f1">Logout</a>]
+[<a href="/bbslogout.php" target="_top" class="f1">注销</a>]
 </td></tr>
 <?php
 				}
@@ -254,7 +254,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
 			{
 				if($wrap) echo "<li>";
-				echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["LINK"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
+				echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["URL"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
 				if($wrap) echo "</li>";
 			}
 			if($wrap) echo "</ul>";
@@ -266,6 +266,25 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 <a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">
 <img src="images/xml.gif" align="absmiddle" alt="XML" border="0">
 </a>
+<?php
+	}
+	
+	function display_trackback_links($link,$pc)
+	{
+?>
+<ul>
+<?php
+		$query = "SELECT * FROM trackback WHERE uid = '".$pc["UID"]."' ORDER BY tbid DESC LIMIT 0 , 10;";	
+		$result = mysql_query($query,$link);
+		while($rows = mysql_fetch_array($result))
+		{
+			echo "<li><a href=\"".htmlspecialchars(stripslashes($rows[url]))."\">".html_format($rows[title])."</a>";
+			if($rows[blogname]) echo "[".html_format($rows[blogname])."]";
+			echo "</li>";
+		}
+		mysql_free_result($result);
+?>
+</ul>
 <?php
 	}
 	
@@ -290,14 +309,14 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 			<table width="98%" cellpadding=5 cellspacing=0 border=0>
 				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::Calendar::
+				::日历::
 				</td></tr>
 				<tr>
 					<td align=middle class=t14><?php display_blog_calendar(); ?></td>
 				</tr>
 				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::Blog List::
+				::栏目分类::
 				</td></tr>
 				<tr>
 					<td align=middle class=t14>
@@ -308,7 +327,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				</tr>
 				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::New Articles::
+				::最近更新文章::
 				</td></tr>
 				<tr>
 					<td align=middle class=t14>
@@ -323,7 +342,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				</tr></tr>
 				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::Links::
+				::友情链接::
 				</td></tr>
 				<tr>
 					<td class=t14><font class=f1>
@@ -332,7 +351,16 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				</tr>
 				<tr><td height=10> </td></tr>
 				<tr><td class=t17>
-				::Visit Count::
+				::最近收到的引用通告::
+				</td></tr>
+				<tr>
+					<td class=t14><font class=f1>
+					<?php display_trackback_links($link,$pc); ?>
+					</font></td>
+				</tr>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
+				::访问人数::
 				</td></tr>
 				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
 				<?php echo $pc["VISIT"]; ?>
@@ -346,7 +374,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<td width="80%" align="right" valign="top">
 		<?php display_nodes($link,$pc,$nodes,"99%",1); ?>
 		<p align=center class=f1>
-		Update: <?php echo time_format($pc["MODIFY"]); ?>
+		更新时间: <?php echo time_format($pc["MODIFY"]); ?>
 		<br />
 		&copy;All Rights Reserved
 		&nbsp;&nbsp;
@@ -391,7 +419,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<td align="center" class="t14" width="400" valign="TOP">
 		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
 <tr><td align="left" class="t2">
-.: What's New :.
+.: 最近更新文章 :.
 </td></tr>
 <tr><td class="t8">
 		<?php display_newnodes_list($link,$pc,$nodes); ?>
@@ -405,7 +433,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<td align="center" class="t10" valign="top">
 		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
 			<tr><td class=t2>
-			.:Blog List:.
+			.: 栏目分类 :.
 			</td></tr>
 			<tr><td class=t5 align=left>
 		<?php display_blog_list($pc,$blogs); ?>
@@ -415,7 +443,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<?php display_blog_calendar(); ?>
 		</td>
 	</tr>
-</table>		
+</table>
 <?php		
 		display_nodes($link,$pc,$nodes,700);
 ?>
@@ -423,11 +451,20 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 <tr><td align="center" class="t11">
 <table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
 		<tr><td class="t2">
-		.: Links :. 
+		.: 最近收到的引用通告 :. 
+		</td></tr>
+		<tr><td class="t8">
+<?php display_trackback_links($link,$pc); ?>
+</td></tr></table>
+</td></tr>
+<tr><td align="center" class="t11">
+<table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
+		<tr><td class="t2">
+		.: 友情链接 :. 
 		</td></tr>
 		<tr><td class="t4">
 	<?php display_blog_friend_links($pc); ?>
-	<br />
+	<br /><br />
 	<?php display_blog_out_rss($pc); ?>
 		</td></tr></table>
 </td></tr>
