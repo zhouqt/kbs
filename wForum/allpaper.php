@@ -1,5 +1,7 @@
 <?php
 
+//ToDo: 这个还不能运行。- atppp
+
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
@@ -10,7 +12,7 @@ global $boardID;
 global $boardName;
 global $page;
 
-preprocess();
+//preprocess();
 
 setStat("小字报列表");
 
@@ -19,12 +21,10 @@ show_nav($boardName);
 if (isErrFounded()) {
 	html_error_quit() ;
 } else {
-	?>
-	<br>
-	<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-	<?php
-
 	if ($loginok==1) {
+?>
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
+<?php
 		showUserMailbox();
 ?>
 </table>
@@ -100,7 +100,7 @@ function boardeven($boardID,$boardName){
 	} 
 
 	echo "</table>";
-	$Pcount=;
+	$Pcount=1;
 	print "<table border=0 cellpadding=0 cellspacing=3 width=\"97%\" align=center>".
 	"<tr><td valign=middle nowrap>".
 	"页次：<b>".$currentpage."</b>/<b>".$Pcount."</b>页".

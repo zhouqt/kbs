@@ -11,12 +11,14 @@ show_nav();
 
 if ($loginok==1) {
 ?>
-<table border="0" width="97%">
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
 	showUserMailbox();
 ?>
 </table>
 <?php
+} else {
+	echo "<br>";
 }
 
 head_var("谈天说地","usermanagemenu.php",0);
@@ -46,7 +48,7 @@ function main() {
 <th valign=middle width=280>用户昵称</th>
 <th valign=middle width=120>用户上线地址</th>
 <th valign=middle width=50>发呆</th>
-<th valign=middle width=130>操作</th>
+<th valign=middle width=220>操作</th>
 </tr>
 <?php
     if( isset( $_GET["start"] ) ){
@@ -74,7 +76,7 @@ function main() {
 <td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $friend['userid'] ; ?>" > <?php echo htmlspecialchars($friend['username'],ENT_QUOTES); ?></a>	</td>
 <td class=TableBody1 style="font-weight:normal"><?php echo $friend['userfrom']; ?></td>
 <td class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($friend['idle']/60), ($friend['idle']%60)); ?></td>
-<td align=center valign=middle width=130 class=TableBody1>
+<td align=center valign=middle width=220 class=TableBody1>
 <a target="_blank" href="friendlist.php?addfriend=<?php echo $friend['userid']; ?>">添加好友</a> <a target="_blank" href="friendlist.php?delfriend=<?php echo $friend['userid']; ?>">删除好友</a> <a href="javascript:replyMsg('<?php echo $friend['userid'] ; ?>')">发送消息</a> <a href="#">发送短信</a>
 </td>
 </tr>

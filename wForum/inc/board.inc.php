@@ -94,7 +94,7 @@ function showBoardStaticsTop($boardArr){
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
 <td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
-<td width="110"><a href=vote.php?board=2><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
+<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
 <td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
 </tr></table></td>
 <td align=right><img src=pic/team2.gif align=absmiddle>
@@ -225,7 +225,7 @@ function showBoardContents($boardID,$boardName,$page){
 <?php
     $lastTenPages=(floor(($page-1)/ 10))*10;
 	if ($page==1) {
-		echo "<font face=webdings color=\"#FF0000\">9</font>   ";
+		echo "<font face=webdings color=\"#FF0000\">9</font>   "; //ToDo: XHTML 不建议使用 webdings 字体。
 	}   else {
 		echo "<a href=\"board.php?name=".$boardName."&page=1\" title=首页><font face=webdings>9</font></a>   ";
 	} 
@@ -276,8 +276,10 @@ function showBroadcast($boardID,$boardName){
   /* ToDo: 注意：精华 link 暂时是搜索本版所有精华贴，待改。注意搜索好像没有分页。- atppp */
 ?>
 	</marquee><td align=right width=240><a href="queryresult.php?boardName=<?php echo $boardName; ?>&title=&title2=&title3=&userid=&dt=0&mg=on" title=查看本版精华贴><font color=#FF0000><B>精华</B></font></a>
-	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a> | <a href=bbseven.asp?boardid=1 title=查看本版事件>事件</a> | <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
-| <a href=# onclick="alert('本功能尚在开发中！')">管理</a></td></tr></table>
+	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版在线详细情况>在线</a>
+	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版事件>事件</a>
+	| <a href=# onclick="alert('本功能尚在开发中！')" title=查看本版用户组权限>权限</a>
+    | <a href=# onclick="alert('本功能尚在开发中！')">管理</a></td></tr></table>
 </td></tr>
 <?php
 }

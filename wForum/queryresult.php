@@ -16,14 +16,14 @@ preprocess();
 
 if ($loginok==1) {
 ?>
-<table border="0" width="97%">
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
 	showUserMailbox();
 ?>
 </table>
 <?php
 } else {
-	echo "<br><br>";
+	echo "<br>";
 }
 
 if ($boardName!='') 

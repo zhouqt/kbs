@@ -11,7 +11,7 @@ show_nav();
 
 if ($loginok==1) {
 ?>
-<table border="0" width="97%">
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
 	showUserMailbox();
 ?>
@@ -19,11 +19,14 @@ if ($loginok==1) {
 <?php
 }
 
-head_var($userid."的控制面板","usermanagemenu.php",0);
-
 if ($loginok==1) {
-	preProcess();
-	main();
+	head_var($userid."的控制面板","usermanagemenu.php",0);
+	if (preProcess()) {
+		html_success_quit("查看所有好友列表", "friendlist.php");
+	} else if (!isErrFounded()) {
+		showUserManageMenu();
+		main();
+	}
 }else {
 	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
 }
@@ -36,57 +39,43 @@ show_footer();
 
 function preProcess() {
 	global $_GET, $currentuser;
-	$error = 0; //0: nothing happened; 1: OK; 2: error
-	$msg = "";
 	
 	if (isset($_GET["addfriend"])) {
 		$friend = $_GET["addfriend"];
 		$ret = bbs_add_friend( $friend ,"" );
-		$error = 2;
 		if($ret == -1) {
-			$msg = "您没有权限设定好友或者好友个数超出限制";
+			foundErr("您没有权限设定好友或者好友个数超出限制");
+			return false;
 		} else if($ret == -2) {
-			$msg = "$friend 本来就在你的好友名单中";
+			foundErr("$friend 本来就在你的好友名单中");
+			return false;
 		} else if($ret == -3) {
-			$msg = "系统出错";
+			foundErr("系统出错");
+			return false;
 		} else if($ret == -4) {
-			$msg = "$friend 用户不存在";
+			foundErr("$friend 用户不存在");
+			return false;
 		} else{
-			$msg = "$friend 已增加到您的好友名单中";
-			$error = 1;
+			setSucMsg("$friend 已增加到您的好友名单中");
+			return true;
 		}
 	} else if (isset($_GET["delfriend"])) {
 		$friend = $_GET["delfriend"];
 		$ret = bbs_delete_friend( $friend );
 		$error = 2;
 		if ($ret == 1) {
-			$msg = "您没有设定任何好友";
+			foundErr("您没有设定任何好友");
+			return false;
 		} else if($ret == 2) {
-			$msg = "$friend 本来就不在你的好友名单中";
+			foundErr("$friend 本来就不在你的好友名单中");
+			return false;
 		} else if($ret == 3) {
-			$msg = "删除失败";
+			foundErr("删除失败");
+			return false;
 		} else {
-			$msg = "$friend 已从您的好友名单中删除";
-			$error = 1;			
+			setSucMsg("$friend 已从您的好友名单中删除");
+			return true;		
 		}
-	}
-	if ($error > 0) { //ToDo: 这里可以用 html_success_quit html_error_quit foundErr setSucMsg 等标准函数来做。- atppp
-?>
-<table cellpadding=3 cellspacing=1 align=center class=tableborder1 style="width:75%">
-<tr align=center>
-<th width="100%">论坛<?php echo $error==1?"成功":"错误"; ?>信息
-</td>
-</tr>
-<tr>
-<td width="100%" class=tablebody1>
-<b><?php echo $error==1?"操作成功":"操作出现错误"; ?>:</b><br><br>
-<li><?php echo $msg; ?>
-</td></tr>
-<tr align=center><td width="100%" class=tablebody2>
-<a href="javascript:window.close()">关闭窗口</a> 
-</td></tr>
-</table>
-<?php
 	}
 }
 

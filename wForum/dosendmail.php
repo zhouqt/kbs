@@ -11,7 +11,7 @@ preprocess();
 
 show_nav();
 
-echo "<br><br>";
+echo "<br>";
 
 if (!isErrFounded()) {
 	head_var($userid."µÄ·¢¼þÏä","usermailbox.php?boxname=sendbox",0);

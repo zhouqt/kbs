@@ -11,7 +11,7 @@ show_nav();
 
 if ($loginok==1) {
 ?>
-<table border="0" width="97%">
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
 	showUserMailbox();
 ?>
@@ -36,6 +36,7 @@ show_footer();
 
 function main() {
 ?>
+<br>
 <form action="dochangepasswd.php" method=POST name="theForm">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <tr> 

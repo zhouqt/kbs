@@ -15,15 +15,12 @@ setStat("发布小字报");
 show_nav($boardName);
 
 if (isErrFounded()) {
-		echo"<br><br>";
 	html_error_quit() ;
 } else {
-	?>
-	<br>
-	<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
-	<?php
-
 	if ($loginok==1) {
+?>
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
+<?php
 		showUserMailbox();
 ?>
 </table>

@@ -11,16 +11,20 @@ preprocess();
 show_nav();
 
 ?>
-<br>
-<TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
 
 if ($loginok==1) {
 	showUserMailbox();
+} else {
+	echo "<br>";
 }
+?>
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
+<?php
 showAnnounce(); 
 ?>
-<td align=center width=100% valign=middle colspan=2>
+<tr><td align=center width=100% valign=middle colspan=2>
 <hr>
 </td></tr>
 <?php

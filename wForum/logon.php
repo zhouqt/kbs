@@ -10,11 +10,13 @@ if ($_POST['action']=="doLogon") {
 	doLogon();
 	if (isErrFounded()){
 		show_nav();
+		echo "<br>";
 		head_var("用户登陆");
 		html_error_quit(); 
 	} 
 } else {
 	show_nav();
+	echo "<br>";
 	head_var("用户登陆");
 	showLogon();
 }
@@ -30,10 +32,10 @@ function showLogon(){
     <th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登陆</td></tr>
     <tr>
     <td valign=middle class=TableBody1>请输入您的用户名</td>
-    <td valign=middle class=TableBody1><INPUT name=id type=text> &nbsp; <a href="register.php">没有注册？</a></td></tr>
+    <td valign=middle class=TableBody1><INPUT name=id type=text tabindex="1"> &nbsp; <a href="register.php">没有注册？</a></td></tr>
     <tr>
     <td valign=middle class=TableBody1>请输入您的密码</font></td>
-    <td valign=middle class=TableBody1><INPUT name=password type=password> &nbsp; <a href="foundlostpass.php">忘记密码？</a></td></tr>
+    <td valign=middle class=TableBody1><INPUT name=password type=password tabindex="2"> &nbsp; <a href="foundlostpass.php">忘记密码？</a></td></tr>
     <tr>
     <td class=TableBody1 valign=top width=30% ><b>Cookie 选项</b><BR> 请选择你的 Cookie 保存时间，下次访问可以方便输入。</td>
     <td valign=middle class=TableBody1>
@@ -44,7 +46,7 @@ function showLogon(){
 	</td></tr>
 	<input type=hidden name=comeurl value="<?php echo $_SERVER['HTTP_REFERER']; ?>">
     <tr>
-    <td class=TableBody2 valign=middle colspan=2 align=center><input type=submit name=submit value="登 陆"></td></tr></table>
+    <td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 陆"></td></tr></table>
 </form>
 <?php
 }
@@ -111,6 +113,7 @@ function doLogon(){
 		$comeurlname="<li><a href=".$_POST['comeurl'].">".$_POST['comeurl']."</a></li>";
 	} 
 	show_nav();
+	echo "<br>";
 	head_var("用户登陆");
 ?>
 <meta HTTP-EQUIV=REFRESH CONTENT='2; URL=<?php   echo $comeurl; ?>' >

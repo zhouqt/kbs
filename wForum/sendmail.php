@@ -15,7 +15,15 @@ setStat("×«Ð´ÐÂÓÊ¼þ");
 
 show_nav();
 
-echo "<br><br>";
+if ($loginok==1) {
+?>
+<table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
+<?php
+	showUserMailbox();
+?>
+</table>
+<?php
+}
 
 preprocess();
 
