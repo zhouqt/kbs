@@ -1,5 +1,5 @@
 #
-# configure.in
+# configure.ac
 #
 # Author: Tatu Ylonen <ylo@cs.hut.fi>
 #

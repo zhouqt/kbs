@@ -39,7 +39,7 @@ EXTRA_SRCS = memmove.c snprintf.c strerror.c remove.c random.c \
 EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 	README.CIPHERS README.DEATTACK INSTALL TODO libdes-README \
 	libdes-COPYING libdes-ARTISTIC gnu-COPYING-GPL OVERVIEW \
-	configure configure.in config.guess config.sub Makefile.in \
+	configure configure.ac config.guess config.sub Makefile.in \
 	config.sample acconfig.h config.h.in install-sh ChangeLog \
 	idea.c
 
