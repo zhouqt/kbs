@@ -43,6 +43,8 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_checkreadperm, NULL)
 	ZEND_FE(bbs_brcaddread, NULL)
 	ZEND_FE(bbs_getboard, NULL)
+	ZEND_FE(bbs_ann_traverse_check, NULL)
+	ZEND_FE(bbs_ann_get_board, NULL)
 	{NULL,NULL,NULL}
 };
 
@@ -687,7 +689,7 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 #endif
 	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);
 	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_NOZAP", PERM_NOZAP, CONST_CS | CONST_PERSISTENT);
-	REGISTER_MAIN_LONG_CONSTANT("BBS_HOME", BBSHOME, CONST_CS | CONST_PERSISTENT);
+	REGISTER_MAIN_STRING_CONSTANT("BBS_HOME", BBSHOME, CONST_CS | CONST_PERSISTENT);
 	chdir(old_pwd);
 #ifdef DEBUG
 	zend_error(E_WARNING,"module init");
