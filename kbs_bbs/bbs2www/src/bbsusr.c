@@ -66,7 +66,9 @@ int main()
 		my_t_lines = 20;
 	display_online_users(start, total, my_t_lines);
 	printf("<hr>");
+	/*
 	printf("[<a href=\"bbsufind?search=*\">È«²¿</a>] ");
+	*/
 	for(i='A'; i<='Z'; i++)
 		printf("[<a href=\"bbsufind?search=%c\">%c</a>]", i, i);
 	printf("<br>\n");
