@@ -193,8 +193,7 @@ int confirm_delete_id()
     move(8, 0);
     prints("\n");
     clrtoeol();
-    move(9, 0);
-    usercomplete("请输入要确认清除的用户ID: ", genbuf);
+    getdata(9,0,"请输入要确认清除的用户ID: ", genbuf, IDLEN+1,1,NULL,true);
     if (genbuf[0] == '\0') {
         clear();
         return 1;
