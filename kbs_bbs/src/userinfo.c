@@ -428,7 +428,7 @@ x_fillform()
     }
     /* added by KCN 1999.10.25 */
     ansimore("etc/register.note",NA);
-    getdata(t_lines-1,8,"您确定要填写注册单吗 (Y/N)? [N]: ",ans,3,DOECHO,NULL,YEA);
+    getdata(t_lines-1,0,"您确定要填写注册单吗 (Y/N)? [N]: ",ans,3,DOECHO,NULL,YEA);
     if( ans[0] != 'Y' && ans[0] != 'y' )
         return;
     strncpy( rname, currentuser->realname, NAMELEN );
