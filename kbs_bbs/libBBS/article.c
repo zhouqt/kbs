@@ -1051,6 +1051,26 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
             write_posts(user->userid, boardname, fh->groupid);
 #endif
 
+#ifdef DENYANONY
+		if (user && !poststat){
+			char anonybuf[256];
+			struct fileheader tmpf;
+
+			setbfile(anonybuf, boardname, ".ANONYDIR");
+			memcpy(&tmpf, fh, sizeof(tmpf));
+
+			strcpy(tmpf.owner, getCurrentUser()->userid);
+
+		    if ((fd = open(anonybuf, O_WRONLY | O_CREAT, 0664)) != -1) {
+		        flock(fd, LOCK_EX);
+		        lseek(fd, 0, SEEK_END);
+		        safewrite(fd, &tmpf, sizeof(fileheader));
+		        flock(fd, LOCK_UN);
+		        close(fd);
+		    }
+		}
+#endif
+
 #ifdef FILTER
     }
 #endif

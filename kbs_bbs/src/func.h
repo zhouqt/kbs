@@ -50,6 +50,9 @@ extern "C" {
     int load_ucache(ARG_VOID);
     int get_giveupinfo(char *userid, int *basicperm, int s[10][2]);
     void save_giveupinfo(struct userec *lookupuser, int lcount, int s[10][2]);
+#ifdef DENYANONY
+	int giveup_addpost(char *userid);
+#endif
     int do_after_login(struct userec* user,int unum,int mode);
     int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode,int locked);
 

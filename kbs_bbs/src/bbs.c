@@ -2684,7 +2684,6 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         post_file.innflag[0] = 'S';
         outgo_post(&post_file, currboard->filename, save_title,getSession());
     }
-    Anony = 0;                  /*Inital For ShowOut Signature */
 
     if (aborted == -1) {        /* 取消POST */
         my_unlink(filepath);
@@ -2704,6 +2703,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     returnvalue =
 #endif
         after_post(getCurrentUser(), &post_file, currboard->filename, re_file, !(Anony && anonyboard),getSession());
+    Anony = 0;                  /*Inital For ShowOut Signature */
 
     if(upload) {
         char sbuf[PATHLEN];
@@ -3166,6 +3166,58 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     return FULLUPDATE;
 }
 
+#ifdef DENYANONY
+int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
+{
+	char anonybuf[256];
+	struct fileheader tmpfh;
+	int ret=0;
+	int fd;
+
+    if(!anonymousboard(currboard->filename) || strcmp(currboard->filename, fileinfo->owner))
+		return DONOTHING;
+	if(!HAS_PERM(getCurrentUser(), PERM_SYSOP))
+		return DONOTHING;
+	setbfile(anonybuf, currboard->filename, ".ANONYDIR");
+	if ((fd = open(anonybuf, O_RDWR, 0644)) >= 0){
+		ret = get_records_from_id(fd, fileinfo->id, &tmpfh, 1, NULL);
+		close(fd);
+
+		if(ret != 0){
+			ret = giveup_addpost(tmpfh.owner);
+			if(ret){
+				char title[80];
+				char buff[256];
+				FILE *fp;
+				sprintf(buff,"tmp/%s.%d.ad", getCurrentUser()->userid, getpid());
+				if((fp=fopen(buff,"w"))==NULL){
+					ret = 0;
+				}else{
+					fprintf(fp,"%s :\n\n",tmpfh.owner);
+					fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\033[1;31m%s\033[m,%s决定取消您的全站post权限1天\n",currboard->filename,fileinfo->title,getCurrentUser()->userid);
+					fprintf(fp,"\n匿名封禁对于您看来您将是被强制戒发文权限1天，请您放心，没有人知道被封禁的人具体是你，站长和斑竹也都不知道\n");
+					fclose(fp);
+
+					sprintf(title,"%s取消%s版匿名作者原id发文权限1天", getCurrentUser()->userid, currboard->filename);
+					mail_file("SYSOP", buff, tmpfh.owner, title, BBSPOST_COPY, NULL);
+					unlink(buff);
+					securityreport(title, NULL,NULL);
+				}
+			}
+		}
+	}
+
+	clear();
+	if(ret)
+		prints("成功\n");
+	else
+		prints("失败\n");
+	pressanykey();
+
+	return FULLUPDATE;
+}
+#endif
+
 int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char usrid[STRLEN],direct[MAXPATH];
@@ -3398,6 +3450,8 @@ int into_announce(struct _select_def* conf,struct fileheader *fileinfo,void* ext
 }
 
 #ifdef FB2KPC
+void a_menu();
+
 int Personal(char *userid)
 {
    char    found[256], lookid[IDLEN];
@@ -5626,8 +5680,11 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {Ctrl('Q'), (READ_KEY_FUNC)read_showauthorinfo,NULL},     
     {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
     {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
-
+#ifdef DENYANONY
+    {Ctrl('Y'), (READ_KEY_FUNC)deny_anony,NULL},
+#else
     {Ctrl('Y'), (READ_KEY_FUNC)read_zsend,NULL},
+#endif
 #ifdef PERSONAL_CORP
     {'y', (READ_KEY_FUNC)read_importpc,NULL},
 #endif

@@ -884,6 +884,48 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
         lookupuser->flags &= ~GIVEUP_FLAG;
 }
 
+#ifdef DENYANONY
+/* stiger,增加封禁某人的发文权限1天 */
+int giveup_addpost(char *userid)
+{
+
+	int s[10][2];
+	int gcount,i;
+	int basicperm;
+    struct userec *lookupuser;
+	FILE* fn;
+	char buf[255];
+
+    if (!(getuser(userid, &lookupuser)))
+		return 0;
+
+	gcount = get_giveupinfo(userid,& basicperm,s);
+	for(i=0;i<gcount;i++){
+		if(s[i][0] == 2)
+			break;
+	}
+	if(i<gcount)
+		s[i][1] ++;
+	else{
+		s[i][0] = 2;
+		s[i][1] = time(0) / 86400 + 1;
+		gcount++;
+	}
+    lookupuser->userlevel &= ~PERM_POST;
+
+    sethomefile(buf, lookupuser->userid, "giveup");
+    fn = fopen(buf, "wt");
+	if(fn!=NULL){
+        for (i = 0; i < gcount; i++)
+            if (s[i][1] > 0)
+                fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
+        fclose(fn);
+		return 1;
+	}
+	return 0;
+}
+#endif
+
 #if USE_TMPFS==1
 
 void setcachehomefile(char* path,const char* user,int unum,char* file)
