@@ -1,6 +1,7 @@
 cvs服务器: cvs.smth.org
 用户：     bbsdev
 密码：     bbsdev
+CVSROOT:   :pserver:bbsdev@cvs.smth.org:/home/cvs
 
 相关的module:
 smth_bbs: 主程序代码
