@@ -92,7 +92,7 @@ int add_room(struct room_struct * r)
     for(i=0;i<*roomst;i++) {
         if(!strcmp(rooms[i].name, r->name))
             return -1;
-        if(!strcmp(rooms[i].creator, currentuser->userid))
+        if(!strcmp(rooms[i].creator, currentuser->userid)&&rooms[i].style==1)
             return -1;
     }
     for(i=0;i<*roomst;i++)
@@ -1021,6 +1021,11 @@ static int room_list_key(struct _select_def *conf, int key)
             return SHOW_REFRESH;
         }
         join_room(find_room(name));
+        return SHOW_DIRCHANGE;
+    case 'K':
+        if(!HAS_PERM(currentuser, PERM_SYSOP)) return SHOW_CONTINUE;
+        r2 = room_get(conf->pos-1);
+        r2->style = -1;
         return SHOW_DIRCHANGE;
     }
     return SHOW_CONTINUE;
