@@ -7,6 +7,7 @@ crontab:  10 0 * * * /home/bbs/bin/post_brdlog
 
 ******/
 
+#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
 
 #include <time.h>
 #include <stdio.h>
@@ -38,11 +39,11 @@ int putout(char *path)
 
 	fprintf(fp,"    %-15.15s %-30.30s %4s %6s\n","英文版面名", "中文","平均在线","文章数");
 	for(i=0;i<n;i++){
-		fprintf(fp,"%3d %-15.15s %-30.30s %4d %6d\n",i+1,x[i].filename,x[i].title,x[i].online/24,x[i].nowid-x[i].yesid);
+		fprintf(fp,"%3d %-15.15s %-30.30s %4d %6d\n",i+1,x[i].filename,x[i].title,x[i].online,x[i].nowid-x[i].yesid);
 		totalonline += x[i].online;
 		totalid+=x[i].nowid-x[i].yesid;
 	}
-	fprintf(fp,"    %-15.15s %-30.30s %4d %6d\n","总计","",totalonline/24,totalid);
+	fprintf(fp,"    %-15.15s %-30.30s %4d %6d\n","总计","",totalonline,totalid);
 	fclose(fp);
 	return 1;
 }
@@ -65,6 +66,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     struct BoardStatus * bs;
     struct userec normaluser;
 	char sql[256];
+	FILE *fp;
     MYSQL_RES *res;
     MYSQL_ROW row;
 
@@ -77,7 +79,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 	strcpy(x[n].filename, fptr->filename);
 	strcpy(x[n].title, fptr->title+13);
 
-	sprintf(sql, "SELECT MIN(nowid),MAX(nowid),SUM(users) FROM bonline WHERE bdate=\"%d-%d-%d\" AND bname LIKE '%s' ;", t.tm_year+1900, t.tm_mon+1, t.tm_mday, fptr->filename);
+	sprintf(sql, "SELECT MIN(nowid),MAX(nowid),AVG(users) FROM bonline WHERE bdate=\"%d-%d-%d\" AND bname LIKE '%s' ;", t.tm_year+1900, t.tm_mon+1, t.tm_mday, fptr->filename);
     if( mysql_real_query( &s, sql, strlen(sql) ))
         printf("%s\n",mysql_error(&s));
 	else{
@@ -92,6 +94,12 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 		mysql_free_result(res);
 	}
 	n++;
+
+	sprintf(sql,"%s/boards/%s.all",BONLINE_LOGDIR, fptr->filename);
+	if((fp=fopen(sql,"a"))!=NULL){
+		fprintf(fp,"%d_%d_%d\t%d\n", t.tm_year+1900, t.tm_mon+1, t.tm_mday, x[n-1].online);
+		fclose(fp);
+	}
     return 0;
 }
 
