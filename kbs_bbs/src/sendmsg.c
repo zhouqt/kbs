@@ -9,12 +9,16 @@
 #include "screen.h"
 #define MAXMESSAGE 5
 
+struct user_info *getuinfopid(void)
+{
+   return uinfo.pid;
+}
 int  RMSG=NA;
 extern int RUNSH;
 char buf2[STRLEN];
 struct user_info *t_search();
 extern struct screenline *big_picture;
-char MsgDesUid[14]; /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
+extern char MsgDesUid[14]; /* ±£´æËù·¢msgµÄÄ¿µÄuid 1998.7.5 by dong */
 
 int
 get_msg(uid,msg,line)
@@ -82,32 +86,9 @@ s_msg()
 {
     do_sendmsg(NULL,NULL,0);
 }
-
+extern char msgerr[255];
 int
-show_allmsgs()
-{
-    char fname[STRLEN];
-    int  oldmode;
-
-    setuserfile(fname,"msgfile");
-    clear();
-    oldmode = uinfo.mode;
-    modify_user_mode( LOOKMSGS);
-    if(dashf(fname))
-    {
-        ansimore(fname,YEA);
-        clear();
-    }
-    else
-    {
-        move(5,30);
-        prints("Ã»ÓÐÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
-        pressanykey();
-        clear();
-    }
-    uinfo.mode = oldmode;
-}
-
+sendmsgfunc(struct user_info *uentp,char msgstr[256],int mode);
 
 int
 do_sendmsg(uentp,msgstr,mode)
@@ -122,7 +103,7 @@ int mode;
     char buf[80],msgbuf[256] ,*timestr,msgbak[256];
     int msg_count=0;
     int Gmode = 0;
-
+    int result;
     *msgbak = 0;	/* period 2000-11-20 may be used without init */
     if((mode==0)||(mode==3))
     {
@@ -184,144 +165,88 @@ int mode;
         strcpy(uident,uin->userid);
         /*   strcpy(MsgDesUid, uin->userid); change by KCN,is wrong*/
     }
-    if(!HAS_PERM(PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid,currentuser->userid) && mode!=4)
-        return -2;
-
-
-    if((mode!=3)&&(LOCKSCREEN == uin->mode)) /* Leeward 98.02.28 */
-    {
-        move(2,0) ;
-        prints("¶Ô·½ÒÑ¾­Ëø¶¨ÆÁÄ»£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëý)Ð´ÐÅ...\n");
-        pressreturn() ;
-        move(2,0) ;
-        clrtoeol() ;
-        return -1 ;
-    }
-
-    if ((mode!=3)&&(NA==canIsend2(uin->userid)))/*Haohmaru.06.06.99.¼ì²é×Ô¼ºÊÇ·ñ±»ignore*/
-    {
-        move(2,0) ;
-        prints("¶Ô·½¾Ü¾ø½ÓÊÜÄãµÄÑ¶Ï¢...\n");
-        pressreturn() ;
-        move(2,0) ;
-        clrtoeol() ;
-        return -1;
-    }
-
-
-    if (mode!=3) {
-    sethomefile(buf,uident,"msgcount");
-    fp=fopen(buf, "rb");
-    if (fp!=NULL)
-    {
-        fread(&msg_count,sizeof(int),1,fp);
-        fclose(fp);
-
-        if(msg_count>MAXMESSAGE)
-        {
-            move(2,0) ;
-            prints("¶Ô·½ÉÐÓÐÒ»Ð©Ñ¶Ï¢Î´´¦Àí£¬ÇëÉÔºòÔÙ·¢»ò¸øËû(Ëý)Ð´ÐÅ...\n");
-            pressreturn() ;
-            move(2,0) ;
-            clrtoeol() ;
-            return -1 ;
-        }
-    }
-    }
-    if(msgstr==NULL)
-    {
-        Gmode=get_msg(uident,buf,1);
-        if (!Gmode){
-            move(1,0); clrtoeol();
-            move(2,0); clrtoeol();
-            return 0;
-        }
-    }
-
-    now=time(0);
-    timestr=ctime(&now)+11;
-    *(timestr+8)='\0';
-    strcpy(ret_str,"R »ØÑ¶Ï¢");
-    if(msgstr==NULL||mode==2||mode==4)
-    {
-        sprintf(msgbuf,"[44m[36m%-12.12s[33m(%-5.5s):[37m%-59.59s[m[%dm\033[%dm\n", currentuser->userid,
-                timestr, (msgstr==NULL)?buf:msgstr,uinfo.pid+100,uin->pid+100);
-        sprintf(msgbak,"[44m[0;1;32m=>[37m%-10.10s[33m(%-5.5s):[36m%-59.59s[m[%dm\033[%dm\n", uident,timestr, (msgstr==NULL)?buf:msgstr,uinfo.pid+100,uin->pid+100);
-    }else
-    {
-        if(mode==3) {
-            sprintf(msgbuf,"[44m[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º"
-                    "[37m%-55.55s[m\033[%dm\n",
-                    /*				"[37m%-59.59s[m\033[%dm\n",*/
-                    timestr,msgstr,uin->pid+100);
-        }
-        else if(mode==1)
-        {
-            sprintf(msgbuf,"[44m[36m%-12.12s(%-5.5s) ÑûÇëÄã[37m%-43.43s(%s)[m[%dm\033[%dm\n",
-                    currentuser->userid, timestr, msgstr,ret_str,uinfo.pid+100,uin->pid+100);
-            sprintf(msgbak,"[44m[37mÄã(%-5.5s) ÑûÇë%-12.12s[36m%-43.43s(%s)[m[%dm\033[%dm\n", timestr,uident,msgstr,ret_str,uinfo.pid+100,uin->pid+100);
-        }else if(mode==3)
-        {
-            sprintf(msgbuf,"[44m[32mBBS ÏµÍ³Í¨¸æ(%-5.5s):[37m%-59.59s[31m(%s)[m\033[%dm\n",
-                    timestr, (msgstr==NULL)?buf:msgstr,ret_str,uin->pid+100);
-        }
-    }
-    if (Gmode == 2)
-        sprintf(msgbuf,"[44m[33mÕ¾³¤ì¶ %8.8s Ê±¹ã²¥£º[37m%-59.59s[m\033[%dm\n",timestr,buf,uin->pid+100);
-    /* ¼ì²éËù·¢msgµÄÄ¿µÄuidÊÇ·ñÒÑ¾­¸Ä±ä  1998.7.5 by dong*/
-    uin=t_search(MsgDesUid,uin->pid);
-
-    if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || (kill(uin->pid, 0) !=0))
-    { /*
-        uin=t_search(MsgDesUid, NA);
-            if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || (kill(uin->pid, 0) !=0)){ */
-        if (mode == 0)
-            return -2;
-        move(2,0) ;
-        prints("¶Ô·½ÒÑ¾­ÀëÏß....\n");
-        pressreturn() ;
-        move(2,0) ;
-        clrtoeol() ;
-
-        return -2; /* ¶Ô·½ÒÑ¾­ÀëÏß */
-        /*} */
-    }
-
-    sethomefile(buf,uident,"msgfile");
-    if((fp=fopen(buf,"a"))==NULL)
-        return -1;
-    fputs(msgbuf,fp);
-    fclose(fp);
-
-    /*Haohmaru.99.6.03.»ØµÄmsgÒ²¼ÇÂ¼*/
-    if(strcmp(currentuser->userid,uident)){
-        sethomefile(buf,currentuser->userid,"msgfile");
-        if((fp=fopen(buf,"a"))==NULL)
-            return -1;
-        fputs(msgbak,fp);
-        fclose(fp);
-    }
-    if(kill(uin->pid,SIGUSR2)==-1&&msgstr==NULL)
-    {
-        prints("\n¶Ô·½ÒÑ¾­ÀëÏß.....\n") ; pressreturn();
-        clear();
-        return -1;
-    }
-    if(msgstr==NULL)
-    {
-        prints("\nÒÑËÍ³öÑ¶Ï¢....\n") ; pressreturn();
-        clear() ;
-    }
-    sethomefile(buf,uident,"msgcount");
-    fp=fopen(buf, "wb");
-    if (fp!=NULL)
-    {
-        msg_count++;
-        fwrite(&msg_count,sizeof(int),1,fp);
-        fclose(fp);
-    }
+    
+    // try to send the msg
+    result = sendmsgfunc(uentp,msgstr,mode);
+ 
+    switch (result) {
+    	 case 1: // success
+           prints("\nÒÑËÍ³öÑ¶Ï¢....\n") ; pressreturn();
+           clear() ;
+           return 1;     	 
+    	 break;
+    	 case -1: // failed, reason in msgerr
+    	    move(2,0) ;
+    	    prints(msgerr);
+    	    pressreturn() ;
+    	    move(2,0) ;
+    	    clrtoeol() ;
+    	    return -1;
+    	 break;
+    	 case 0: // message presending test ok, get the message and resend
+    	     if (mode == 4) return 0;
+            Gmode=get_msg(uident,buf,1);
+            if (!Gmode){
+               move(1,0); clrtoeol();
+               move(2,0); clrtoeol();
+               return 0;
+            }
+    	 break;
+    	 default: // unknown reason
+   	   return result;
+    	 break;
+    }	   
+    // resend the message
+    result = sendmsgfunc(uentp,buf,mode);
+ 
+    switch (result) {
+    	 case 1: // success
+           prints("\nÒÑËÍ³öÑ¶Ï¢....\n") ; pressreturn();
+           clear() ;
+           return 1;     	 
+    	 break;
+    	 case -1: // failed, reason in msgerr
+    	    move(2,0) ;
+    	    prints(msgerr);
+    	    pressreturn() ;
+    	    move(2,0) ;
+    	    clrtoeol() ;
+    	    return -1;
+    	 break;
+    	 default: // unknown reason
+   	   return result;
+    	 break;
+    }	   
     return 1 ;
 }
+
+
+
+int
+show_allmsgs()
+{
+    char fname[STRLEN];
+    int  oldmode;
+
+    setuserfile(fname,"msgfile");
+    clear();
+    oldmode = uinfo.mode;
+    modify_user_mode( LOOKMSGS);
+    if(dashf(fname))
+    {
+        ansimore(fname,YEA);
+        clear();
+    }
+    else
+    {
+        move(5,30);
+        prints("Ã»ÓÐÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
+        pressanykey();
+        clear();
+    }
+    uinfo.mode = oldmode;
+}
+
 
 int
 dowall(struct user_info *uin,char* arg)

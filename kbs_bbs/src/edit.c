@@ -669,7 +669,7 @@ write_posts()
         int number;
     } postlog, pl;
 
-    if(junkboard()||normal_board(currboard)!=1||!strcmp(currboard,"blame"))
+    if(junkboard(currboard)||normal_board(currboard)!=1||!strcmp(currboard,"blame"))
         return ;
     now = time(0) ;
     strcpy(postlog.author, currentuser->userid);

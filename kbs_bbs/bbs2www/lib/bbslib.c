@@ -1002,7 +1002,7 @@ char *userid;
     else
         return YEA;
 }
-
+#if 0
 int do_sendmsg2(uentp,msgstr)
 struct user_info *uentp;
 char msgstr[256];
@@ -1087,7 +1087,13 @@ char msgstr[256];
     }
     return 0 ;
 }
+#endif
 
+int getuinfopid(void)
+{
+   return 1;
+}
+extern char MsgDesUid[14];
 int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256])
 {
 	int i;
@@ -1096,9 +1102,9 @@ int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]
 	/* 滤掉特殊字符，应该写成一个函数 */
 	for(i=0; i<(int)strlen(msg); i++)
 		if((0<msg[i] && msg[i]<=27 )|| msg[i]==-1) msg[i]=32;
-
+	strcpy(MsgDesUid,touserid);
 	uin = t_search(touserid, topid);
-	return do_sendmsg2(uin, msg);
+	return sendmsgfunc(uin, msg,2);
 }
 
 int count_life_value(struct userec *urec) {

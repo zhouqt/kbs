@@ -423,7 +423,7 @@ int brc_clear() {
 	}
 }
 
-int junkboard()  /* 判断当前版是否为 junkboards */
+int junkboard(char* currboard)  /* 判断当前版是否为 junkboards */
 {
     return seek_in_file("etc/junkboards",currboard);
 }

@@ -2494,7 +2494,7 @@ post_article()                         /*用户 POST 文章 */
 
     log("1user","posted '%s' on '%s'", post_file.title, currboard) ;
     /*      postreport(post_file.title, 1, currboard);*/ /*added by alex, 96.9.12*/
-    if ( !junkboard() )
+    if ( !junkboard(currboard) )
     {
         currentuser->numposts++;
     }
@@ -3123,14 +3123,14 @@ char *direct ;
         { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
             if (owned)
             {
-                if ((int)currentuser->numposts > 0 && !junkboard())
+                if ((int)currentuser->numposts > 0 && !junkboard(currboard))
                 {
                     currentuser->numposts--;/*自己删除的文章，减少post数*/
                 }
             } else if ( !strstr(usrid,".")&&BMDEL_DECREASE&&!B_to_b/*版主删除,减少POST数*/){
                 struct userec* lookupuser;
                 int id = getuser(usrid,&lookupuser);
-                if(id && (int)lookupuser->numposts > 0 && !junkboard() && strcmp(currboard, "sysmail") ) /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12*/
+                if(id && (int)lookupuser->numposts > 0 && !junkboard(currboard) && strcmp(currboard, "sysmail") ) /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12*/
                 { /* Leeward 98.06.21 adds above later 2 conditions */
                     lookupuser->numposts--;
                 }
