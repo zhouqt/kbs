@@ -101,5 +101,11 @@ function bbs_is_readonly_board($board)
 	return bbs_check_board_flag($board, $BOARD_FLAGS["READONLY"]);
 }
 
+function bbs_is_noreply_board($board)
+{
+	global $BOARD_FLAGS;
+	return bbs_check_board_flag($board, $BOARD_FLAGS["NOREPLY"]);
+}
+
 } // !define ('_BBS_BOARDS_PHP_')
 ?>

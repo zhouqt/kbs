@@ -59,7 +59,8 @@ $BOARD_FLAGS = array(
 	"CLUBREAD" => 0x40,
 	"CLUBWRITE" => 0x80,
 	"CLUBHIDE" => 0x100,
-	"ATTACH" => 0x200
+	"ATTACH" => 0x200,
+	"NOREPLY" => 0x2000
 	);
 $filename_trans = array(" " => "_", 
 	";" => "_", 

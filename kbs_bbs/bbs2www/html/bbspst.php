@@ -34,7 +34,7 @@
 		if (isset($_GET["reid"]))
 		{
 			$reid = $_GET["reid"];
-			if(!strcmp($board,"News") || !strcmp($board,"Original") || !strcmp($board,"AD_Agent"))
+			if(bbs_is_noreply_board($brdarr))
 				html_error_quit("本版只可发表文章,不可回复文章!");
 		}
 		else {
