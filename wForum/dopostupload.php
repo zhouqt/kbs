@@ -149,7 +149,7 @@ default:
 </script>
 <?php
 	if($filecount < ATTACHMAXCOUNT)
-		print $filecount."个文件上传成功 [ <a href=# onclick=history.go(-1)>继续上传</a> ]";
+		print $filecount."个文件上传成功 [ <a href=\"postupload.php?board=". $boardName. "\">继续上传</a> ]";
 	else
 		print $filecount."个文件上传成功!本次已达到上传数上限。";
 ?>
