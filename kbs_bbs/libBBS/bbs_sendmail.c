@@ -280,7 +280,9 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
 
     switch (unlink) {
     case 2:
-    	symlink(tmpfile,filepath);
+	unlink(filepath);
+    	if (symlink(tmpfile,filepath)==-1)
+		bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror(errno));
     	break;
     case 1:
         f_mv(tmpfile, filepath);
