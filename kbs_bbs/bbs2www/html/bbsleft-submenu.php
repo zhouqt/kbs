@@ -44,7 +44,7 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 		}
 		elseif( $brd_bid[$j] == -1) { //空收藏目录
 			continue;
-		} elseif ($brd_flag[$i] ==-1) { //收藏目录
+		} elseif ($brd_flag[$j] ==-1) { //收藏目录
 			$innerHtml .= "<div class='fi'>".
 				"<a href='javascript:submenu(1,".$brd_bid[$j].",0,0,0)' target='_self'>".
 				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='/images/close.gif' class='pm' alt='+'>".
