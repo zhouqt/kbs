@@ -345,6 +345,8 @@ attach define
 
 #define SMS_SUPPORT
 
+#define PERSONAL_CORP
+
 #define NOT_USE_DEFAULT_SMS_FUNCTIONS
 
 #endif
