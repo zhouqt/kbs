@@ -149,12 +149,15 @@ extern void ktimeout(void * data);
 
 int quiz_test()
 {
-    int i=0,j,k;
+    int i=0,j,k,stat_fast=0;
+    time_t t1,t2,t3;
     char sql[100];
     score = 0;
+    t1 = time(0);
     while(1) {
         int level, style, anscount, order[100], order2[100], tout=0;
         char question[200], ans[6][200], answer[100], now[100], input[6];
+        t2 = time(0);
         set_alarm(30, 0, ktimeout, NULL);
         do{
             j=rand()%10000+1;
@@ -232,7 +235,10 @@ int quiz_test()
         if(kicked) tout=1;
         set_alarm(0, 0, NULL, NULL);
         kicked = 0;
-        if(strcmp(now, answer)) {
+        t3 = time(0);
+        if(t3-t2<=10) stat_fast++;
+        else stat_fast=0;
+        if(strcmp(now, answer)||stat_fast>=10||t3-t1>=7200) {
             move(anscount+8, 0);
             setfcolor(RED, 1);
             if(tout)
