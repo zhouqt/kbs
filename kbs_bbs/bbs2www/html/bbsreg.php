@@ -28,7 +28,7 @@
 	else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
        	html_error_quit("密码长度太短或者和用户名相同!");
 
-	$ret=bbs_createnewid($userid,$pass1,$username);
+	$ret=bbs_createnewid($userid,$pass1,$nickname);
 	switch($ret)
 	{
 	case 0:
