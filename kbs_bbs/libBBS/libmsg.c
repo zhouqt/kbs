@@ -133,14 +133,16 @@ int delfrom_msglist(int utmpnum, char *userid)
     close(msgbuf.sockfd);
     return -1;
 }
-int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
+int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, 
+				time_t sndtime, char *msg)
 {
     bbsmsg_t msgbuf;
 
     if ((msgbuf.sockfd = get_sockfd()) < 0)
         return -1;
     msgbuf.type = MSGD_SND;
-    snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "SND %s %d %s %d\n", destid, destutmp, srcid, srcutmp);
+    snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "SND %s %d %s %d %d\n", 
+			 destid, destutmp, srcid, srcutmp, sndtime);
     write_peer(&msgbuf);
     if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
         goto send_failed;
@@ -159,7 +161,8 @@ int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, char *msg)
     close(msgbuf.sockfd);
     return -1;
 }
-int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid, char *msg)
+int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid, 
+				   time_t *sndtime, char *msg)
 {
     bbsmsg_t msgbuf;
     char *ptr;
@@ -174,6 +177,7 @@ int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid, char *
         goto receive_failed;
     if (msgbuf.type != MSGD_FRM)
         goto receive_failed;
+	/* rawdata must be "FRM srcid srcutmp sndtime" */
     if ((ptr = strchr(msgbuf.rawdata, ' ')) == NULL)
         goto receive_failed;
     *ptr++ = '\0';
@@ -183,10 +187,16 @@ int receive_webmsg(int destutmp, char *destid, int *srcutmp, char *srcid, char *
     strncpy(srcid, ptr, IDLEN);
     srcid[IDLEN] = '\0';
     *srcutmp = atoi(ptr2);
+	if ((ptr = strchr(ptr2, ' ')) == NULL)
+		goto receive_failed;
+	*ptr++ = '\0';
+	*sndtime = atoi(ptr);
     msgbuf.type = MSGD_OK;
-    snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), "OK Ready to receive my message\n");
+    snprintf(msgbuf.rawdata, sizeof(msgbuf.rawdata), 
+			 "OK Ready to receive my message\n");
     write_peer(&msgbuf);
-    if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
+    
+	if (read_peer(msgbuf.sockfd, &msgbuf) < 0)
         goto receive_failed;
     if (msgbuf.type != MSGD_MSG)
         goto receive_failed;
@@ -551,7 +561,8 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 //    *(timestr + 8) = '\0';
 #ifdef BBSMAIN
     if (uin->mode == WEBEXPLORE) {
-        if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgstr) < 0) {
+        if (send_webmsg(get_utmpent_num(uin), uident, utmpent, 
+						currentuser->userid, head.time, msgstr) < 0) {
             strcpy(msgerr, "无法发送Web消息...\n");
             return -1;
         }
