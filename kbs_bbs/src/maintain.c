@@ -1290,7 +1290,8 @@ char *logfile, *regfile;
 			read_userdata(lookupuser->userid, &ud);
 
 /* 添加查询IP, Bigman: 2002.8.20 */
-            move(8, 20);
+            /*move(8, 20);*/
+	     move(8,30); /* 再往后挪挪地  binxun . 2003.5.30 */
             strncpy(ip, uinfo.lasthost, 17);
             find_ip(ip, 2, result);
             prints("\033[33m%s\033[m", result);
