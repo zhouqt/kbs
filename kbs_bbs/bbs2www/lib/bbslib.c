@@ -3167,8 +3167,13 @@ int www_generateOriginIndex(const char* board)
 	}
 	while (tail!=NULL) {
 		temp=tail->previous;
-        if (tail->content.origin.groupid == tail->content.lastreply.groupid) //original post does not exist, skip
-       		write(fd,&(tail->content),size);
+        if (tail->content.origin.groupid != tail->content.lastreply.groupid) {
+            //original post does not exist, do something
+            tail->content.origin = tail->content.lastreply;
+            tail->content.origin.id = tail->content.origin.groupid;
+            tail->content.origin.groupid++; //indication that this thread has no original post.
+        }
+        write(fd,&(tail->content),size);
 		free(tail);
 		tail=temp;
 	}
