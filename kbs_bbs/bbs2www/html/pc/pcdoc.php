@@ -155,7 +155,7 @@
 					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\"></td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>";
-				echo ($rows[htmltag])?"&nbsp;":"#";
+				echo ($rows[htmltag]==1)?"&nbsp;":"#";
 				echo "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t3'>\n".time_format($rows[created])."\n|\n".time_format($rows[changed])."\n</td>\n".
 					"<td class='t4'>".$rows[visitcount]."</td>\n".
@@ -314,7 +314,7 @@
 				echo	"</td>\n<td class='t3'>".$type."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
 					"<td class='t8'>";
-				echo   ($rows[htmltag])?"&nbsp;":"#";	
+				echo   ($rows[htmltag]==1)?"&nbsp;":"#";	
 				echo    "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t4'>".time_format($rows[created])."|".time_format($rows[changed])."</td>\n".
 					"<td class='t3'>".$rows[visitcount]."</td>\n".
