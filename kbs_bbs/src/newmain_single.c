@@ -835,7 +835,7 @@ void user_login()
             if (lastnote > currentuser->notedate)
                 currentuser->noteline = 0;
             noteln = countln("etc/notepad");
-            if (lastnote > currentuser->notedate || currentuser->noteline == 0) {
+            if ((noteln > 0) && (lastnote > currentuser->notedate || currentuser->noteline == 0)) {
                 shownotepad();
                 currentuser->noteline = noteln;
                 write_defnotepad();
