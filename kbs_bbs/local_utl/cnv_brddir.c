@@ -129,6 +129,7 @@ Node * search(char * filename)
 static int build_dir(const char *boardname)
 {
 	char buff[256];
+	int i;
 	
 	snprintf(buff, sizeof(buff), "%s/boards/%s", BBS_HOME, boardname);
 	chdir(buff);
@@ -365,7 +366,7 @@ static int remove_files(const char *boardname)
 	return 0;
 }
 
-static int cnv_board_dir_callback(struct boardheader *bh)
+static int cnv_board_dir(struct boardheader *bh)
 {
 	printf("=======================================\n");
 	printf("Boardname: %s\n", bh->filename);
@@ -390,12 +391,12 @@ int main(int argc, char ** argv)
 	}
 	if (all == 1)
 	{
-		apply_boards(cnv_board_dir_callback);
+		apply_boards(cnv_board_dir);
 	}
 	else
 	{
 		if ((bp = getbcache(argv[1])) != NULL)
-			convert(bp->filename);
+			cnv_board_dir(bp);
 	}
 
 	return 0;
