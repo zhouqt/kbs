@@ -33,7 +33,7 @@ session_set_cookie_params(3600);
 session_start();
 $_SESSION['num_auth'] = str_replace(" ", "", $rand_str);
 
-header("Content-Type: image/jpeg");
+header("Content-Type: image/png");
 ImagePng($im);
 ImageDestroy($im);
 exit();
