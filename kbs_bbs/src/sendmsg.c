@@ -428,7 +428,7 @@ void r_msg()
         saveline(i, 0, savebuffer[i]);
 
     hasnewmsg=get_unreadcount(currentuser->userid);
-    if ((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.发文章时不回msg */
+    if ((savemode == POSTING || savemode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.发文章时不回msg */
         good_move(0, 0);
         clrtoeol();
         if (hasnewmsg) {
