@@ -124,10 +124,11 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <a href="dispuser.php?id=<?php echo $maildata[$i]['OWNER'] ; ?>" target=_blank><?php echo $maildata[$i]['OWNER'] ; ?></a>
 </td>
 <td class=TableBody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($maildata[$i]['TITLE'],ENT_QUOTES); ?> </a>	</td>
-<td class=TableBody1 style="font-weight:normal"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
-<td class=TableBody1 style="font-weight:normal"><?php
+<td class=TableBody1 style="font-weight:normal;text-align:center;"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
+<td class=TableBody1 style="font-weight:normal;text-align:right;padding-right:10pt;"><?php
+	if ($maildata[$i]["ATTACHPOS"]>0) echo "<img src=\"pic/havefolder.gif\" align=\"absmiddle\" title=\"ÓÐ¸½¼þ\">";
 	$roy = $maildata[$i]['EFFSIZE'];
-	if ($roy) echo sizestring($roy);
+	if ($roy) echo ($roy);
 	else echo "N/A Byte";
 ?></td>
 <td align=center valign=middle width=30 class=TableBody1><input type=checkbox name=num id="num" value=<?php echo $i+$startNum; ?>></td>
