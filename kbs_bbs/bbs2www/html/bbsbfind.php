@@ -131,7 +131,8 @@ login_init();
 <br>
 共找到<?php echo $i;?>篇文章符合条件<?php if($i>=999) echo "(匹配结果过多, 省略第1000以后的查询结果)";?>
 <br>
-[<a href="/bbsdoc.php?board=<?php echo $brdarr["NAME"];?>">返回本讨论区</a>] [<a href="javascript:history.go(-1)">返回上一页]</a>
+[<a href="/bbsdoc.php?board=<?php echo $brdarr["NAME"];?>">返回本讨论区</a>] [<a href="javascript:history.go(-1)">返回上一页</a>]
+[<?php bbs_add_super_fav ('[查询结果] '.$title); ?>]
 <?php
 
 		html_normal_quit();

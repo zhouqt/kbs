@@ -47,6 +47,7 @@ login_init();
 <?php
 	}
 ?> 
+[<?php bbs_add_super_fav ('[±¸ÍüÂ¼] '.$brdarr['DESC'], '/bbsnot.php?board='.$brd_encode); ?>]
 </center>
 <?php
 		html_normal_quit();

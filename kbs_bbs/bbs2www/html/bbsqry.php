@@ -66,8 +66,9 @@ else
 <a href="/bbspstmail.php?userid=<?php echo $lookupuser["userid"];?>&title=没主题">[写信问候]</a>
 <a href="/bbssendmsg.php?destid=<?php echo $lookupuser["userid"];?>">[发送讯息]</a>
 <a href="/bbsfadd.php?userid=<?php echo $lookupuser["userid"];?>">[加入好友]</a>
+<?php bbs_add_super_fav ('[用户] '.$lookupuser['userid'], '/bbsqry.php?userid='.$lookupuser['userid']); ?>
 <a href="/bbsfdel.php?userid=<?php echo $lookupuser["userid"];?>">[删除好友]</a>
-<a href="/pc/index.php?id=<?php echo $lookupuser["userid"];?>">[个人文集]</a>
+<a href="/pc/index.php?id=<?php echo $lookupuser["userid"];?>">[BLOG]</a>
 <br>
 </center>
 <?php

@@ -91,6 +91,8 @@ function bbs_board_header($brdarr,$articles=0)
 	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>
 	    |
 	    <a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=0" class="b2"><font class="b2">添加到收藏夹</font></a>
+	    |
+	    <?php bbs_add_super_fav ($brdarr['DESC'], '/bbsdoc.php?board='.$brdarr['NAME']); ?>
 <?php
 	if( defined("HAVE_BRDENV") ){
 		if( bbs_board_have_envelop($brdarr["NAME"]) ){
@@ -327,6 +329,7 @@ function bbs_ann_xsearch($board) {
 function bbs_ann_foot($parent) {
 ?>   
 <p align="center">
+[<?php bbs_add_super_fav ('精华区'); ?>]
 [<a href="/<?php echo MAINPAGE_FILE; ?>">返回首页</a>]
 <?php   
     if ($parent){

@@ -121,6 +121,7 @@ login_init();
 </table>
 <hr class="default"/>
 <a href="bbspst.php?board=<?php echo $brd_encode; ?>">发表文章</a>
+<?php bbs_add_super_fav ('[同主题] '.$brdarr['DESC'], '/bbstdoc.php?board='.$brd_encode); ?>
 <a href="javascript:location=location">刷新</a>
 <?php
 		if ($start > 0)

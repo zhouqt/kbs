@@ -157,6 +157,7 @@ login_init();
 </p>
 <hr size=1>
 <p align=center>
+<?php bbs_add_super_fav ('[同主题] '.$articles[0]['TITLE'], '/bbstcon.php?board='.$board.'&gid='.$gid); ?>
 <a href="javascript:history.go(-1)">后退</a>
 <a href="/bbsdoc.php?board=<?php echo $board; ?>">进入<strong><?php echo $board_desc; ?></strong>讨论区</a>
 <a href="#top">返回顶部</a>
