@@ -805,14 +805,28 @@ int mode;
     char ans[STRLEN];
     char buf[255];
     long attachpos=0;
+#ifdef ANN_AUTONAME
+	char head;
+#endif
 
     pm->page = 9999;
+#ifdef ANN_AUTONAME
+	head='X';
+#endif
     switch (mode) {
     case ADDITEM:
+#ifdef ANN_AUTONAME
+		head='A';
+#else
         mesg = "请输入新文件之英文名称(可含数字)：";
+#endif
         break;
     case ADDGROUP:
+#ifdef ANN_AUTONAME
+		head='D';
+#else
         mesg = "请输入新目录之英文名称(可含数字)：";
+#endif
         break;
     case ADDMAIL:
         sprintf(board, "tmp/bm.%s", getCurrentUser()->userid);
@@ -826,11 +840,19 @@ int mode;
     default:
 	return;
     }
+#ifdef ANN_AUTONAME
+	sprintf(fname,"%c%X",head,time(0)+rand());
+#else
     a_prompt(-2, mesg, fname);
+#endif
     if (*fname == '\0')
         return;
     sprintf(fpath, "%s/%s", pm->path, fname);
+#ifdef ANN_AUTONAME
+	if (0){
+#else
     if (!valid_fname(fname)) {
+#endif
         sprintf(buf, "哎呀!! 名称只能包含英文及数字! << ");
         a_prompt(-1, buf, ans);
     } else if (dashf(fpath) || dashd(fpath)) {
