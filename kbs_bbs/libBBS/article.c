@@ -361,7 +361,7 @@ void cancelpost(const char *board,const char *userid,struct fileheader *fh, int 
         set_posttime2(&postfile, fh);
     };
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
-    strncpy(ph->title, oldpath, ARTICLE_TITLE_LEN);
+    strncpy(ph->title, oldpath, ARTICLE_TITLE_LEN - 1);
     ph->title[ARTICLE_TITLE_LEN - 1] = 0;
     ph->accessed[11] = now / (3600 * 24) % 100; /*localtime(&now)->tm_mday; */
     if (autoappend) {
@@ -792,7 +792,10 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
                 postfile.title[i] = save_title[i];
         postfile.title[i] = 0;
     } else
-        strncpy(postfile.title, save_title, ARTICLE_TITLE_LEN);
+	{
+        strncpy(postfile.title, save_title, ARTICLE_TITLE_LEN - 1);
+		postfile.title[ARTICLE_TITLE_LEN - 1] = '\0';
+	}
     if (local_article == 1) {   /* local save */
         postfile.innflag[1] = 'L';
         postfile.innflag[0] = 'L';
@@ -2213,8 +2216,8 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
     if (flag&FILE_NOREPLY_FLAG) {
         if (!strcmp(board->filename, SYSMAIL_BOARD)) {
             char ans[STRLEN];
-            sprintf(ans, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
-            strncpy(originFh->title, ans, ARTICLE_TITLE_LEN);
+            snprintf(ans, STRLEN, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
+            strncpy(originFh->title, ans, ARTICLE_TITLE_LEN - 1);
             originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
         }
         if (data->accessed[1] & FILE_READ) {

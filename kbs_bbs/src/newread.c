@@ -817,7 +817,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                 if (aflag == 0) {
                     char *ptr2;
                     strncpy(ptr, pFh1->title, ARTICLE_TITLE_LEN - 1);
-                    ptr[STRLEN - 1] = 0;
+                    ptr[ARTICLE_TITLE_LEN - 1] = 0;
                     ptr2 = ptr;
 
                     if ((*ptr == 'R' || *ptr == 'r')

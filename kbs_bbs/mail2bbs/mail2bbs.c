@@ -81,7 +81,7 @@ int my_after_post(struct fileheader *fh, char *boardname)
     char *p;
 
     if (!strncmp(fh->title, "Re:", 3)) {
-        strncpy(fh->title, fh->title + 4, STRLEN);
+        strncpy(fh->title, fh->title + 4, ARTICLE_TITLE_LEN);
     }
     setbfile(buf, boardname, DOT_DIR);
 

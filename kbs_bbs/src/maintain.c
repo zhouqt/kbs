@@ -401,12 +401,14 @@ int m_newbrd()
         newboard.ann_path[127]=0;
     }
     if (add_board(&newboard) == -1) {
+		currboard = bcache;
         move(t_lines - 1, 0);
         outs("加入讨论区失败!\n");
         pressreturn();
         clear();
         return -1;
     }
+	currboard = bcache;
     prints("\n新讨论区成立\n");
     sprintf(genbuf, "add brd %s", newboard.filename);
     bbslog("user", "%s", genbuf);

@@ -499,17 +499,17 @@ int do_send(char *userid, char *title, char *q_file)
             chdir("..");
          }
         else {
-            strncpy(newmessage.title, title, ARTICLE_TITLE_LEN);
+            strncpy(newmessage.title, title, ARTICLE_TITLE_LEN - 1);
             newmessage.title[ARTICLE_TITLE_LEN -1] = 0;
-            strncpy(save_title, newmessage.title, ARTICLE_TITLE_LEN);
+            strncpy(save_title, newmessage.title, ARTICLE_TITLE_LEN - 1);
             save_title[ARTICLE_TITLE_LEN-1] = 0;
             break;
         }
     }
 
     do_quote(filepath, include_mode, q_file, quote_user);
-    strncpy(quote_title, newmessage.title, ARTICLE_TITLE_LEN);
-    quote_title[STRLEN-1] = 0;
+    strncpy(quote_title, newmessage.title, ARTICLE_TITLE_LEN - 1);
+    quote_title[ARTICLE_TITLE_LEN - 1] = 0;
 
 #ifdef INTERNET_PRIVATE_EMAIL
     if (internet_mail) {

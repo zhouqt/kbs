@@ -714,8 +714,10 @@ int mode;
     bzero(&fhdr,sizeof(struct fileheader));/* clear,or have attachment. binxun */
     sprintf(fname, "%s/%s", path, pitem->fname);
     if (dashf(fname)) {
-        strncpy(fhdr.title, pitem->title, ARTICLE_TITLE_LEN);
-        strncpy(fhdr.filename, pitem->fname, FILENAME_LEN);
+        strncpy(fhdr.title, pitem->title, ARTICLE_TITLE_LEN - 1);
+		fhdr.title[ARTICLE_TITLE_LEN - 1] = '\0';
+        strncpy(fhdr.filename, pitem->fname, FILENAME_LEN - 1);
+		fhdr.filename[FILENAME_LEN - 1] = '\0';
         switch (doforward(path, &fhdr, mode)) {
         case 0:
             mesg = "文章转寄完成!\n";

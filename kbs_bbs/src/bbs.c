@@ -177,7 +177,8 @@ int UndeleteArticle(struct _select_def* conf,struct fileheader *fileinfo,void* e
 
     bzero(&UFile, sizeof(UFile));
     strcpy(UFile.owner, fileinfo->owner);
-    strcpy(UFile.title, UTitle);
+    strncpy(UFile.title, UTitle, ARTICLE_TITLE_LEN - 1);
+	UFile.title[ARTICLE_TITLE_LEN - 1] = '\0';
     strcpy(UFile.filename, fileinfo->filename);
     UFile.attachment=fileinfo->attachment;
     UFile.accessed[0]=fileinfo->accessed[0];
@@ -2421,7 +2422,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 							snprintf(save_title, ARTICLE_TITLE_LEN , "%s", title_prefix );
 
 						save_title[ARTICLE_TITLE_LEN-1]='\0';
-            			strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN);
+            			strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN - 1);
+						post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
 					}
 
 					write_header(fp, currentuser, 0, currboard->filename, post_file.title, Anony, 0);
@@ -2461,7 +2463,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 
     add_loginfo(filepath, currentuser, currboard->filename, Anony);       /*添加最后一行 */
 
-    strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN);
+    strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN - 1);
+	post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */
         post_file.innflag[1] = 'L';
         post_file.innflag[0] = 'L';

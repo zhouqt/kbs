@@ -105,7 +105,8 @@ int post_cross2(char islocal, char *board)
 	setbfile(filepath, board, postfile.filename);
 	local_article = islocal;
 	getcross2(filepath, board, getcurrusr()); /*根据fname完成 文件复制 */
-	strncpy(postfile.title, save_title, STRLEN);
+	strncpy(postfile.title, save_title, ARTICLE_TITLE_LEN - 1);
+	postfile.title[ARTICLE_TITLE_LEN - 1] = '\0';
 	if(local_article == 1)	  /* local save */
 	{
 		postfile.innflag[1] = 'L';

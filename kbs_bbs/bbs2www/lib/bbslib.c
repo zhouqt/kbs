@@ -641,7 +641,8 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
         return -3;
     }
     sprintf(header.filename, "M.%d.A", t);
-    strsncpy(header.title, title, ARTICLE_TITLE_LEN);
+    strncpy(header.title, title, ARTICLE_TITLE_LEN - 1);
+	header.title[ARTICLE_TITLE_LEN - 1] = '\0';
     fp = fopen(buf3, "w");
     if (fp == NULL)
         return -4;
@@ -787,7 +788,8 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     add_loginfo2(fp, board, user, anony);       /*添加最后一行 */
 #endif
 
-    strncpy(post_file.title, title, ARTICLE_TITLE_LEN);
+    strncpy(post_file.title, title, ARTICLE_TITLE_LEN - 1);
+	post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
     if (local_save == 1) {      /* local save */
         post_file.innflag[1] = 'L';
         post_file.innflag[0] = 'L';
