@@ -1158,6 +1158,7 @@ int do_post()
     char title[STRLEN];
     char *t;
     FILE *fp;
+    char q_file[STRLEN];
 
 
     if (!HAS_PERM(currentuser, PERM_LOGINOK) || !strcmp(currentuser->userid, "guest"))  /* guest 无权 */
@@ -1177,7 +1178,7 @@ int do_post()
     modify_user_mode(SMAIL);
 
     /* indicate the quote file/user */
-    setbfile(quote_file, currboard, fileinfo->filename);
+    setbfile(q_file, currboard, fileinfo->filename);
     strncpy(quote_user, fileinfo->owner, IDLEN);
     quote_user[IDLEN] = 0;
 
@@ -1211,7 +1212,7 @@ int do_post()
     clear();
 
     /* edit, then send the mail */
-    switch (do_send(uid, title,"")) {
+    switch (do_send(uid, title,q_file)) {
     case -1:
         prints("系统无法送信\n");
         break;

@@ -59,58 +59,6 @@ static int mail_reply(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_del(int ent, struct fileheader *fileinfo, char *direct);
 static int do_gsend(char *userid[], char *title, int num);
 
-static int chkusermail(struct userec* user)
-{
-    char recmaildir[STRLEN];
-    int sum, sumlimit, numlimit;
-/*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
-    if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
-        if (user->userlevel & PERM_CHATCLOAK) {
-            sumlimit = 2000;
-            numlimit = 2000;
-        } else
-            /*  if (lookupuser->userlevel & PERM_BOARDS)
-               set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 */
-        if (user->userlevel & PERM_MANAGER) {
-            sumlimit = 300;
-            numlimit = 300;
-        } else if (user->userlevel & PERM_LOGINOK) {
-            sumlimit = 120;
-            numlimit = 150;
-        } else {
-            sumlimit = 15;
-            numlimit = 15;
-        }
-        setmailfile(recmaildir, user->userid, DOT_DIR);
-        if (getmailnum(user->userid) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
-            return 1;
-    }
-    return 0;
-}
-
-int chkreceiver(struct userec* fromuser,struct userec *touser)
-/*Haohmaru.99.4.4.检查收信者信箱是否满,改动下面的数字时请同时改动do_send do_gsend doforward doforward函数*/
-{
-    /* Bigman 2000.9.8 : 修正没有用户的话,返回0 */
-    /* 修正PERM_SYSOP给自杀用户发信后的错误 */
-    if (fromuser)
-        if ((HAS_PERM(fromuser, PERM_SYSOP)) || (!strcmp(fromuser->userid, "Arbitrator")))
-        /* Leeward 99.07.28 , Bigman 2002.6.5: Arbitrator can send any mail to user */
-            return 0;
-
-    if (touser->userlevel & PERM_SUICIDE)
-        return 1;
-
-    if (!(touser->userlevel & PERM_READMAIL))
-    	return 1;
-    if (fromuser)
-		if (chkusermail(fromuser))
-			return 2;
-	if (chkusermail(touser))
-		return 3;
-    return 0;
-}
-
 int chkmail()
 {
     static time_t lasttime = 0;
