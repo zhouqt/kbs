@@ -622,7 +622,7 @@ static void reaper(int signo)
 void Noop()
 {
     outs("+OK");
-    return 0;
+    return;
 }
 
 int
@@ -1051,8 +1051,7 @@ void Dele()
     outs(genbuf);
 }
 
-int
-do_delete()
+void do_delete()
 {
     int i, fdr, fdw, count;
     char fpath[80], fnew[80];
