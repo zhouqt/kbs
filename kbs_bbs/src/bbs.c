@@ -3565,3 +3565,225 @@ int set_be_title(int ent, struct fileheader *fileinfo, char *direct)
      */
     return change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_TITLE_FLAG, 0);
 }
+
+#define ACL_MAX 10
+
+struct acl_struct {
+    unsigned int ip;
+    char len;
+    char deny;
+} * acl;
+
+int get_acl_len()
+{
+    int i;
+    for(i=0;i<ACL_MAX;i++)
+        if(acl[i].ip==0) return i;
+    return ACL_MAX;
+}
+
+static int set_acl_list_show(struct _select_def *conf, int i)
+{
+    char buf[80];
+    unsigned int ip,ip2;
+    ip = acl[i-1].ip;
+    if(ip>0) {
+        ip2=ip+(1<<(32-acl[i-1].len)-1);
+        sprintf(buf, "%d.%d.%d.%d--%d.%d.%d.%d", ip>>24, (ip>>16)%0x100, (ip>>8)%0x100, ip%0x100, ip2>>24, (ip2>>16)%0x100, (ip2>>8)%0x100, ip2%0x100);
+        prints("  %2d  %-40s  %4s", i, buf, acl[i-1].deny?"æ‹æ¯":"‘ –Ì");
+    }
+    return SHOW_CONTINUE;
+}
+
+static int set_acl_list_prekey(struct _select_def *conf, int *key)
+{
+    switch (*key) {
+    case 'e':
+    case 'q':
+        *key = KEY_LEFT;
+        break;
+    case 'p':
+    case 'k':
+        *key = KEY_UP;
+        break;
+    case ' ':
+    case 'N':
+        *key = KEY_PGDN;
+        break;
+    case 'n':
+    case 'j':
+        *key = KEY_DOWN;
+        break;
+    }
+    return SHOW_CONTINUE;
+}
+
+static int set_acl_list_key(struct _select_def *conf, int key)
+{
+    int oldmode;
+
+    switch (key) {
+    case 'a':
+        if (get_acl_len()<ACL_MAX) {
+            char buf[20];
+            int ip[4], i, k=0, err=0, len=get_acl_len();
+            getdata(0, 0, "«Î ‰»ÎIPµÿ÷∑: ", buf, 18, 1, 0, 1);
+            for(i=0;i<strlen(buf);i++) if(buf[i]=='.') k++;
+            if(k!=3) err=1;
+            else {
+                if(sscanf(buf, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3])!=4) err=1;
+                else {
+                    if(ip[0]==0) err=1;
+                    for(i=0;i<4;i++) if(ip[i]<0||ip[i]>=256) err=1;
+                }
+            }
+            if(err) {
+                move(0, 0);
+                prints("IP ‰»Î¥ÌŒÛ!");
+                clrtoeol();
+                refresh(); sleep(1);
+            }
+            else {
+                getdata(0, 0, "«Î ‰»Î≥§∂»(µ•Œª:bit): ", buf, 4, 1, 0, 1);
+                acl[len].len = atoi(buf);
+                if(acl[len].len<0 || acl[len].len>32) err=1;
+                if(err) {
+                    move(0, 0);
+                    prints("≥§∂» ‰»Î¥ÌŒÛ!");
+                    clrtoeol();
+                    refresh(); sleep(1);
+                }
+                else {
+                    getdata(0, 0, "‘ –Ì/æ‹æ¯(0-‘ –Ì,1-æ‹æ¯): ", buf, 4, 1, 0, 1);
+                    if(buf[0]=='0') acl[len].deny=0;
+                    else acl[len].deny=1;
+                    acl[len].ip = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
+                    acl[len].ip = acl[len].ip&(((1<acl[len].len)-1)<<(32-acl[len].len));
+                }
+            }
+            return SHOW_REFRESH;
+        }
+        break;
+    case 'd':                  /* delete existed mailgroup */
+        if (get_acl_len() > 0) {
+            char ans[3];
+
+            getdata(0, 0, "»∑ µ“™…æ≥˝¬(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
+            if (ans[0] == 'Y' || ans[0] == 'y') {
+                int len=get_acl_len()-1, i;
+                for(i=conf->pos-1;i<len;i++)
+                    memcpy(acl+i, acl+i+1, sizeof(struct acl_struct));
+                bzero(acl+len, sizeof(struct acl_struct));
+            }
+            return SHOW_DIRCHANGE;
+        }
+        break;
+    case 'L':
+    case 'l':
+        oldmode = uinfo.mode;
+        show_allmsgs();
+        modify_user_mode(oldmode);
+        return SHOW_REFRESH;
+    case 'W':
+    case 'w':
+        oldmode = uinfo.mode;
+        if (!HAS_PERM(currentuser, PERM_PAGE))
+            break;
+        s_msg();
+        modify_user_mode(oldmode);
+        return SHOW_REFRESH;
+    case 'u':
+        oldmode = uinfo.mode;
+        clear();
+        modify_user_mode(QUERY);
+        t_query(NULL);
+        modify_user_mode(oldmode);
+        clear();
+        return SHOW_REFRESH;
+    }
+
+    return SHOW_CONTINUE;
+}
+
+static int set_acl_list_refresh(struct _select_def *conf)
+{
+    clear();
+    docmdtitle("[◊‘∂®“Â‘ –Ìµ«¬ΩIP¡–±Ì]",
+               "ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m] ÃÌº”[\x1b[1;32ma\x1b[0;37m] …æ≥˝[\x1b[1;32md\x1b[0;37m]\x1b[m");
+    move(2, 0);
+    prints("[0;1;37;44m  %4s  %-40s %-31s[m", "±‡∫≈", "IPµÿ÷∑∑∂Œß", "‘ –Ì/æ‹æ¯");
+    update_endline();
+    return SHOW_CONTINUE;
+}
+
+static int set_acl_list_getdata(struct _select_def *conf, int pos, int len)
+{
+    conf->item_count = get_acl_len();
+
+    return SHOW_CONTINUE;
+}
+
+int set_ip_acl()
+{
+    struct _select_def grouplist_conf;
+    POINT *pts;
+    int i,rip[4];
+    int oldmode;
+    FILE* fp;
+    char fn[80];
+
+    acl = (struct acl_struct *) malloc(sizeof(struct acl_struct)*ACL_MAX);
+    bzero(acl, sizeof(struct acl_struct)*ACL_MAX);
+    sethomefile(fn, currentuser->userid, "ipacl");
+    fp=fopen(fn, "r");
+    if(fp){
+        i=0;
+        while(!feof(fp)) {
+            if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &(acl[i].len), &(acl[i].deny))<=0) break;
+            acl[i].ip = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
+            i++;
+            if(i>=ACL_MAX) break;
+        }
+        fclose(fp);
+    }
+    clear();
+    oldmode = uinfo.mode;
+    modify_user_mode(SETACL);
+    pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
+    for (i = 0; i < BBS_PAGESIZE; i++) {
+        pts[i].x = 2;
+        pts[i].y = i + 3;
+    }
+    bzero(&grouplist_conf, sizeof(struct _select_def));
+    grouplist_conf.item_count = get_acl_len();
+    grouplist_conf.item_per_page = BBS_PAGESIZE;
+    /*
+     * º”…œ LF_VSCROLL ≤≈ƒ‹”√ LEFT º¸ÕÀ≥ˆ 
+     */
+    grouplist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+    grouplist_conf.prompt = "°Ù";
+    grouplist_conf.item_pos = pts;
+    grouplist_conf.title_pos.x = 0;
+    grouplist_conf.title_pos.y = 0;
+    grouplist_conf.pos = 1;     /* initialize cursor on the first mailgroup */
+    grouplist_conf.page_pos = 1;        /* initialize page to the first one */
+
+    grouplist_conf.show_data = set_acl_list_show;
+    grouplist_conf.pre_key_command = set_acl_list_prekey;
+    grouplist_conf.key_command = set_acl_list_key;
+    grouplist_conf.show_title = set_acl_list_refresh;
+    grouplist_conf.get_data = set_acl_list_getdata;
+
+    list_select_loop(&grouplist_conf);
+    free(pts);
+    modify_user_mode(oldmode);
+    fp=fopen(fn, "w");
+    if(fp){
+        for(i=0;i<get_acl_len();i++)
+            fprintf(fp, "%d.%d.%d.%d %d %d\n", acl[i].ip>>24, (acl[i].ip>>16)%0x100, (acl[i].ip>>8)%0x100, acl[i].ip%0x100, acl[i].len, acl[i].deny);
+        fclose(fp);
+    }
+
+    return 0;
+
+}

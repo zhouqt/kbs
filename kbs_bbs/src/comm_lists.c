@@ -109,6 +109,7 @@ int clear_all_board_read_flag();        /* kcn 2002.07.18 */
 int friend_wall();
 int define_key();
 int set_clock();
+int set_ip_acl();
 
 int exec_mbem(char *s);
 
@@ -225,6 +226,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"InnStop", inn_stop},      /* czz 2002.01.15 */
     {"SearchIP",search_ip},
     {"DefineKeys",define_key},
+    {"SetACL",set_ip_acl},
     {NULL, NULL},
 };
 
