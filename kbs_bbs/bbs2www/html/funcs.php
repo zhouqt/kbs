@@ -146,7 +146,6 @@ function html_init($charset,$title="")
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<link rel="stylesheet" type="text/css" href="/ansi.css"/>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 <?php
         if ( func_num_args() > 1) {
@@ -168,6 +167,7 @@ function html_init($charset,$title="")
 <?php
 	}
 ?>
+<link rel="stylesheet" type="text/css" href="/ansi.css"/>
 </head>
 <?php
 }
