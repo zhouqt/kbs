@@ -412,6 +412,8 @@ void r_msg_sig(int signo)
     signal(SIGUSR2, r_msg_sig);
 }
 
+extern int i_timeout;
+
 void r_msg()
 {
     int y, x, ch, i, ox, oy, tmpansi, pid, oldi;
