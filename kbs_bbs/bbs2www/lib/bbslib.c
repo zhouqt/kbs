@@ -1664,7 +1664,7 @@ struct WWW_GUEST_S {
 #define MAX_WWW_GUEST_IDLE_TIME 3600 /* www guest发呆时间设为1小时*/
 
 struct WWW_GUEST_TABLE {
-	int use_map[MAX_WWW_MAP_ITEM];
+	int use_map[MAX_WWW_MAP_ITEM+1];
 	time_t uptime;
 	struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
 };
@@ -1715,10 +1715,11 @@ static int www_new_guest_entry()
 
     	now = time( NULL );
     	if(( now > wwwguest_shm->uptime + 240 )||(now < wwwguest_shm->uptime-240)) {
+        	bbslog( "1system", "WWW guest:Clean guest table:%d",wwwguest_shm->uptime);
         	wwwguest_shm->uptime = now;
-        	bbslog( "1system", "WWW guest:Clean guest table");
         	for (i=0;i<MAX_WWW_GUEST;i++) {
-        		if (now-wwwguest_shm->guest_entry[i].freshtime<MAX_WWW_GUEST_IDLE_TIME)
+        		if (!(wwwguest_shm->use_map[i/32]&(1<<(i%32)))||
+						(now-wwwguest_shm->guest_entry[i].freshtime<MAX_WWW_GUEST_IDLE_TIME))
         			continue;
         		/*清除use_map*/
         		wwwguest_shm->use_map[i/32]&=~(1<<(i%32));
