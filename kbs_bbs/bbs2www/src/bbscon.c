@@ -100,6 +100,8 @@ int main()
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s&attach=%d\">回文章</a>]",
                buf2, records[1].filename, records[1].owner, encode_url(buf, void1(ptr), sizeof(buf)), records[1].filename,bp->flag&BOARD_ATTACH?1:0);
     }
+	printf("[<a href=\"bbspstmail?board=%s&file=%s&userid=%s&title=Re: %s\">回信给作者</a>]",
+		   buf2, records[1].filename, records[1].owner, encode_url(buf, void1(ptr), sizeof(buf)));
     printf("[<a href=\"bbstfind?board=%s&title=%s\">同主题阅读</a>]", buf2, encode_url(buf, void1(ptr), sizeof(buf)));
     printf("[<a href=\"javascript:history.go(-1)\">快速返回</a>]\n");
     printf("</center>\n");
