@@ -2554,8 +2554,6 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 					while(fgets(buff,255,fp1))
 						fprintf(fp,"%s",buff);
 
-					bbsmain_add_loginfo(fp, currentuser, currboard->filename, Anony);
-
 					fclose(fp);
 					fclose(fp1);
 
@@ -2583,6 +2581,9 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 			eff_size = st.st_size;
 		else
 			eff_size = 0;
+
+		add_loginfo(filepath, currentuser, currboard->filename, Anony);
+
 	}
 
     post_file.eff_size = eff_size;
