@@ -51,11 +51,17 @@ if ($id!="") {
             $wwwparameters = "";
             bbs_getwwwparameters($wwwparameters);
             setcookie("WWWPARAMS",$wwwparameters,0,""); 	
-       
-            if ($mainurl!="")
-       	       header("Location: /frames.html?mainurl=" . $mainurl);
+            $currentuser_num=bbs_getcurrentuser($currentuser);
+            
+            if($currentuser["userlevel"]&BBS_PERM_LOGINOK )
+            {
+                    if ($mainurl!="")
+	       	       header("Location: /frames.html?mainurl=" . $mainurl);
+	            else
+		       header("Location: /frames.html");
+            }
             else
-	       header("Location: /frames.html");
+            	header("Location: /frames.html?mainurl=/bbsnew.php");
         }
 	return;
       }

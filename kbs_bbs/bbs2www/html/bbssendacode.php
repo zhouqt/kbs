@@ -14,6 +14,13 @@ else
 		html_error_quit("请先登录!");
 		exit();
 	}
+	if($currentuser["userlevel"]&BBS_PERM_LOGINOK)
+	{
+		html_error_quit("您已通过注册");
+		exit();
+	}
+	
+	
 	//检查激活码
 	$activation = "";
 	$userid = $currentuser["userid"];
@@ -24,7 +31,7 @@ else
 		
 	if($ret == 0)
 	{
-		if(bbs_reg_haveactivated($activation && !isset($_GET["react"]))
+		if(bbs_reg_haveactivated($activation && !isset($_GET["react"])))
 			html_error_quit("您的帐户已激活");	
 		$reg_email = bbs_reg_getactivationemail($activation);
 	}
@@ -39,8 +46,19 @@ else
 		{
 			$new_activation = bbs_create_activation();
 			$ret = bbs_setactivation($userid,bbs_reg_newactivation($new_activation,$new_reg_mail));
-			if($ret != 0)
-				html_error_quit("系统错误");
+			switch ($ret)
+			{
+				case -1:
+					html_error_quit("用户不存在");
+					break;
+				case -2:
+					html_error_quit("您已经通过注册了");
+					break;
+				case -10:
+					html_error_quit("系统错误");
+					break;
+				default:
+			}
 			
 			$mailbody="
 <?xml version=\"1.0\" encoding=\"gb2312\">

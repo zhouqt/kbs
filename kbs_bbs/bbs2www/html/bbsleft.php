@@ -517,9 +517,22 @@
 			<td> </td>
 			<td>
 				<DIV class="s" id="divtool">
+<?php
+	if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK) )
+	{
+?>					
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/bbsnew.php" target="f3">新用户须知</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/bbssendacode.php" target="f3">发送激活码</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsfillform.html" target="f3">填写注册单</a><br>
+<?php
+	}
+?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsinfo.php" target="f3">个人资料</a><br>
