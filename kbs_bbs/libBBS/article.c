@@ -548,7 +548,7 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
     else
         fprintf(fp, "发信站: %s (%24.24s), 转信\n", BBS_FULL_NAME, ctime(&now));
     if (in_mail)
-        fprintf(fp, "来  源: %s \n", SHOW_USERIP(currentuser, fromhost));
+        fprintf(fp, "来  源: %s \n",  fromhost);
     fprintf(fp, "\n");
 
 }
