@@ -20,6 +20,12 @@
 	<?php } ?>
 	</td>
 </tr>
+<?php
+		if($alert){
+			echo '</table><br/><br/>';
+			return;
+		}
+?>
 <form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="return submitwithcopy();">
 <tr>
 	<td class="t8">
