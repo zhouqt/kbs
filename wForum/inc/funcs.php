@@ -710,7 +710,7 @@ function getMsg(){
 	if ($ret==0) 
 		return false;
 ?>
-<div >
+<div id="floater" style="position:absolute; width:310px; height:102px; z-index:2; left: 30px; top: 12px; visibility: visible; background-color: #FFFFFF; layer-background-color: #FFFFFF; border: 1px none #000000; "> 
 <bgsound src="/sound/msg.wav">
 <body style="BACKGROUND-COLOR: #f0ffd0">
 <table width="97%">
@@ -719,10 +719,11 @@ function getMsg(){
     <td align="left" valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
     <td align="right" valign="top" nowrap="nowrap"><a target="f3" href="/bbssendmsg.php?destid=<?php 
 echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>" target="_blank">[回讯息]</a> <a href="bbsgetmsg.php">[忽略]</a></td>
+echo $srcutmpnum; ?>" target="_blank">[回讯息]</a> <span onclick="document.all.floater.style.visibility='hidden';">[忽略]</a></td>
   </tr>
 </table>
 </div>
+<script src="inc/floater.js"  language="javascript"></script>
 <?php
 }
 

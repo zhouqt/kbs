@@ -49,6 +49,10 @@ function get_mimetype($name)
 	return "application/octet-stream";
 }
 
+	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
+	if ($attachpos==0) {
+		exit(0);
+	}
 	$brdarr = array();
 	if( isset( $_GET["bid"] ) ){
 		$brdnum = $_GET["bid"] ;
@@ -102,29 +106,26 @@ function get_mimetype($name)
 			exit(0);
         }
 //		Header("Cache-control: nocache");
-		@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
-		if ($attachpos!=0) {
-			$file = fopen($filename, "rb");
-			fseek($file,$attachpos);
-			$attachname='';
-			while (1) {
-				$char=fgetc($file);
-				if (ord($char)==0) break;
-				$attachname=$attachname . $char;
-			}
-			$str=fread($file,4);
-			$array=unpack('Nsize',$str);
-			$attachsize=$array["size"];
-			Header("Content-type: " . get_mimetype($attachname));
-			Header("Accept-Ranges: bytes");
-			Header("Accept-Length: " . $attachsize);
-			Header("Content-Disposition: filename=" . $attachname);
-			echo fread($file,$attachsize);
-			fclose($file);
-			exit;
-		} else {
-			exit(0);
+
+		$file = fopen($filename, "rb");
+		fseek($file,$attachpos);
+		$attachname='';
+		while (1) {
+			$char=fgetc($file);
+			if (ord($char)==0) break;
+			$attachname=$attachname . $char;
 		}
+		$str=fread($file,4);
+		$array=unpack('Nsize',$str);
+		$attachsize=$array["size"];
+		Header("Content-type: " . get_mimetype($attachname));
+		Header("Accept-Ranges: bytes");
+		Header("Accept-Length: " . $attachsize);
+		Header("Content-Disposition: filename=" . $attachname);
+		echo fread($file,$attachsize);
+		fclose($file);
+		exit;
+
 	}
 	if ($loginok==1)
 		bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
