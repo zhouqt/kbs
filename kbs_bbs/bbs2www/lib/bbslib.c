@@ -2322,3 +2322,26 @@ char *http_encode_string(char *str, size_t len)
 	return str;
 }
 
+/* Convert string to Unix format */
+char *unix_string(char *str)
+{
+	char *ptr1, *ptr2;
+
+	ptr1 = ptr2 = str;
+	while (*ptr1 != '\0')
+	{
+		if (*ptr1 == '\r' && *(ptr1+1) == '\n')
+		{
+			ptr1++;
+			continue;
+		}
+		if (ptr1 != ptr2)
+			*ptr2 = *ptr1;
+		ptr1++;
+		ptr2++;
+	}
+	*ptr2 = '\0';
+
+	return str;
+}
+

@@ -344,6 +344,7 @@ int can_edit_post(struct boardheader *board, struct fileheader *fh,
 int can_reply_post(char *board, char *filename);
 int get_seccode_index(char prefix);
 char *http_encode_string(char *str, size_t len);
+char *unix_string(char *str);
 
 
 #endif /* BBSLIB_H */
