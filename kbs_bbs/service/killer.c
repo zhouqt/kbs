@@ -25,6 +25,7 @@ struct room_struct {
 #define PEOPLE_KILLER 02
 #define PEOPLE_ALIVE 04
 #define PEOPLE_ROOMOP 010
+#define PEOPLE_POLICE 020
 
 struct people_struct {
     int style;
@@ -104,6 +105,7 @@ void send_msg(int u, char* msg)
             j=(i+inrooms[myroom].msgi)%MAX_MSG;
             break;
         }
+    msg[60]=0;
     if(j==MAX_MSG) {
         strcpy(inrooms[myroom].msgs[inrooms[myroom].msgi], msg);
         inrooms[myroom].msgpid[inrooms[myroom].msgi] = inrooms[myroom].peoples[u].pid;
@@ -328,7 +330,8 @@ void refreshit()
         if(inrooms[myroom].status!=INROOM_STOP)
         if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER && (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
             inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR ||
-            !(inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE))) {
+            !(inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE) ||
+            inrooms[myroom].peoples[me].flag&PEOPLE_POLICE)) {
             resetcolor();
             move(i,2);
             setfcolor(RED, 1);
@@ -387,15 +390,17 @@ void room_refresh(int signo)
 
 void start_game()
 {
-    int i,j,totalk=0,total=0, me;
+    int i,j,totalk=0,total=0,totalc=0, me;
     char buf[80];
     me=mypos;
     for(i=0;i<MAX_PEOPLE;i++) 
     if(inrooms[myroom].peoples[i].style!=-1)
     {
         inrooms[myroom].peoples[i].flag &= ~PEOPLE_KILLER;
+        inrooms[myroom].peoples[i].flag &= ~PEOPLE_POLICE;
     }
     totalk=inrooms[myroom].killernum;
+    totalc=inrooms[myroom].policenum;
     for(i=0;i<MAX_PEOPLE;i++)
         if(inrooms[myroom].peoples[i].style!=-1)
         if(!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR)) 
@@ -407,21 +412,33 @@ void start_game()
         return;
     }
     if(totalk==0) totalk=((double)total/6+0.5);
+    if(totalk>=total/4) totalk=total/4;
+    if(totalc>=total/6) totalc=total/6;
     if(totalk>total) {
         send_msg(me, "\x1b[31;1m总人数少于要求的坏人人数,无法开始游戏\x1b[m");
         end_change_inroom();
         refreshit();
         return;
     }
-    sprintf(buf, "\x1b[31;1m游戏开始啦! 人群中出现了%d个坏人\x1b[m", totalk);
+    if(totalc==0)
+        sprintf(buf, "\x1b[31;1m游戏开始啦! 人群中出现了%d个坏人\x1b[m", totalk);
+    else
+        sprintf(buf, "\x1b[31;1m游戏开始啦! 人群中出现了%d个坏人, %d个警察\x1b[m", totalk, totalc);
     send_msg(-1, buf);
     for(i=0;i<totalk;i++) {
         do{
             j=rand()%MAX_PEOPLE;
-        }while(inrooms[myroom].peoples[j].style==-1 || inrooms[myroom].peoples[j].flag&PEOPLE_KILLER);
+        }while(inrooms[myroom].peoples[j].style==-1 || inrooms[myroom].peoples[j].flag&PEOPLE_KILLER || inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR);
         inrooms[myroom].peoples[j].flag |= PEOPLE_KILLER;
         send_msg(j, "你做了一个无耻的坏人");
         send_msg(j, "用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
+    }
+    for(i=0;i<totalc;i++) {
+        do{
+            j=rand()%MAX_PEOPLE;
+        }while(inrooms[myroom].peoples[j].style==-1 || inrooms[myroom].peoples[j].flag&PEOPLE_KILLER || inrooms[myroom].peoples[j].flag&PEOPLE_POLICE || inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR);
+        inrooms[myroom].peoples[j].flag |= PEOPLE_POLICE;
+        send_msg(j, "你做了一位光荣的人民警察");
     }
     for(i=0;i<MAX_PEOPLE;i++) 
     if(inrooms[myroom].peoples[i].style!=-1)
@@ -564,8 +581,11 @@ int do_com_menu()
                     if(kicked) return 0;
                     if(buf[0]) {
                         i=atoi(buf);
-                        if(i>0&&i<=100)
+                        if(i>0&&i<=100) {
                             rooms[myroom].maxpeople = i;
+                            sprintf(buf, "屋主设置房间最大人数为%d", i);
+                            send_msg(-1, buf);
+                        }
                     }
                     move(t_lines-1, 0);
                     clrtoeol();
@@ -575,6 +595,8 @@ int do_com_menu()
                     if(buf[0]=='Y'||buf[0]=='N') {
                         if(buf[0]=='Y') rooms[myroom].flag|=ROOM_SECRET;
                         else rooms[myroom].flag&=~ROOM_SECRET;
+                        sprintf(buf, "屋主设置房间为%s", (buf[0]=='Y')?"隐藏":"不隐藏");
+                        send_msg(-1, buf);
                     }
                     move(t_lines-1, 0);
                     clrtoeol();
@@ -584,6 +606,8 @@ int do_com_menu()
                     if(buf[0]=='Y'||buf[0]=='N') {
                         if(buf[0]=='Y') rooms[myroom].flag|=ROOM_LOCKED;
                         else rooms[myroom].flag&=~ROOM_LOCKED;
+                        sprintf(buf, "屋主设置房间为%s", (buf[0]=='Y')?"锁定":"不锁定");
+                        send_msg(-1, buf);
                     }
                     move(t_lines-1, 0);
                     clrtoeol();
@@ -593,6 +617,32 @@ int do_com_menu()
                     if(buf[0]=='Y'||buf[0]=='N') {
                         if(buf[0]=='Y') rooms[myroom].flag|=ROOM_DENYSPEC;
                         else rooms[myroom].flag&=~ROOM_DENYSPEC;
+                        sprintf(buf, "屋主设置房间为%s", (buf[0]=='Y')?"拒绝旁观":"不拒绝旁观");
+                        send_msg(-1, buf);
+                    }
+                    move(t_lines-1, 0);
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "设置坏人的数目:", buf, 30, 1, 0, 1);
+                    if(kicked) return 0;
+                    if(buf[0]) {
+                        i=atoi(buf);
+                        if(i>=0&&i<=10) {
+                            inrooms[myroom].killernum = i;
+                            sprintf(buf, "屋主设置房间坏人数为%d", i);
+                            send_msg(-1, buf);
+                        }
+                    }
+                    move(t_lines-1, 0);
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "设置警察的数目:", buf, 30, 1, 0, 1);
+                    if(kicked) return 0;
+                    if(buf[0]) {
+                        i=atoi(buf);
+                        if(i>=0&&i<=2) {
+                            inrooms[myroom].policenum = i;
+                            sprintf(buf, "屋主设置房间警察数为%d", i);
+                            send_msg(-1, buf);
+                        }
                     }
                     kill_msg(-1);
                     return 0;
@@ -721,7 +771,8 @@ void join_room(int w, int spec)
                             for(i=0;i<MAX_PEOPLE;i++)
                                 if(inrooms[myroom].peoples[i].style!=-1)
                                 if(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||
-                                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR)
+                                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR||
+                                    inrooms[myroom].peoples[i].flag&PEOPLE_POLICE)
                                     send_msg(i, buf);
                         }
                         else {
@@ -781,7 +832,8 @@ checkvote:
                                 for(j=0;j<MAX_PEOPLE;j++)
                                     if(inrooms[myroom].peoples[j].style!=-1)
                                     if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER||
-                                        inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR)
+                                        inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR||
+                                        inrooms[myroom].peoples[j].flag&PEOPLE_POLICE)
                                         send_msg(j, buf);
                             }
                             else {
@@ -806,7 +858,8 @@ checkvote:
                                     for(j=0;j<MAX_PEOPLE;j++)
                                         if(inrooms[myroom].peoples[j].style!=-1)
                                         if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER||
-                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR)
+                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR||
+                                            inrooms[myroom].peoples[j].flag&PEOPLE_POLICE)
                                             send_msg(j, buf);
                                 }
                                 else {
@@ -819,7 +872,8 @@ checkvote:
                                     for(j=0;j<MAX_PEOPLE;j++)
                                         if(inrooms[myroom].peoples[j].style!=-1)
                                         if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER||
-                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR)
+                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR||
+                                            inrooms[myroom].peoples[j].flag&PEOPLE_POLICE)
                                             send_msg(j, buf);
                                 }
                                 else
@@ -930,7 +984,8 @@ checkvote:
             if(inrooms[myroom].peoples[i].style!=-1)
             {
                 if(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||
-                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) {
+                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR||
+                    inrooms[myroom].peoples[i].flag&PEOPLE_POLICE) {
                     send_msg(i, buf);
                 }
             }
