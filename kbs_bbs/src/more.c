@@ -1035,11 +1035,17 @@ int ansimore_withzmodem(char *filename, int promptend, char *title)
 
     clear();
     ch = mmap_more(filename, 1, "RrEexp", title);
-    if (promptend)
-        pressanykey();
-    if (scrint)
-    good_move(t_lines - 1, 0);
-    prints("\x1b[m\x1b[m");
+    if (promptend) {
+        move(t_lines - 1, 0);
+        prints("\x1b[m");
+        clrtoeol();
+        prints("                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
+        if(igetkey()==Ctrl('Y')) {
+            zsend_file(filename, title);
+        }
+        move(t_lines - 1, 0);
+        clrtoeol();
+    }
     return ch;
 }
 

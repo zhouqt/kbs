@@ -91,4 +91,5 @@
 #define KILLER 64
 #define CALENDAR 65
 #define CALENEDIT 66
+#define DICT 67
 

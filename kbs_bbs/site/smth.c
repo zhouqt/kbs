@@ -389,6 +389,7 @@ char *ModeType(mode)
     case KILLER:        return "杀人游戏";
     case CALENDAR:  return "万年历";
     case CALENEDIT: return "日记本";
+    case DICT: return "查字典";
     default:
         return "去了那里!?";
     }
