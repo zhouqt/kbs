@@ -4,7 +4,7 @@
 #include "bbs.h"
 #include "oldstruct30k.h"
 
-#define MY_BBSHOME "/home/smth"
+#define MY_BBSHOME "/bbs"
 #define PASSWDS_FILE ".PASSWDS"
 #undef printf
 #undef perror

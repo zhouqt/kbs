@@ -5,7 +5,7 @@
 #include "bbs.h"
 #include "oldstruct30k.h"
 
-#define MY_BBSHOME "/home/smth"
+#define MY_BBSHOME "/bbs"
 #define PASSWDS_FILE ".PASSWDS.OLD"
 #undef printf
 #undef perror
@@ -83,8 +83,8 @@ convert_userdefine(struct olduserec *olduser, struct userec *user)
 		udef &= ~DEF_ENDLINE;
 	if (!(oldudef & MY_DEF_EDITMSG))
 		udef &= ~DEF_EDITMSG;
-	if (!(oldudef & MY_DEF_NOTMSGFRIEND))
-		udef &= ~DEF_NOTMSGFRIEND;
+	if (oldudef & MY_DEF_NOTMSGFRIEND)
+		udef &= ~DEF_NOTMSGFRIEND;	/* Ä¬ÈÏ¸ÄÎª OFF */
 	if (!(oldudef & MY_DEF_NORMALSCR))
 		udef &= ~DEF_NORMALSCR;
 	if (!(oldudef & MY_DEF_NEWPOST))
