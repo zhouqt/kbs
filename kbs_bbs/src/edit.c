@@ -1843,7 +1843,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size)
                 firstline->prev = st_tmp;
                 firstline = st_tmp2;
             }
-            foo = write_file(filename, saveheader, &eff_size);
+            foo = write_file(filename, saveheader, eff_size);
             if (foo != KEEP_EDITING)
                 return foo;
             if (headlines) {
@@ -1895,7 +1895,7 @@ int vedit(char *filename,int saveheader,long* eff_size)
     sprintf(bkfname, "%s~", filename);
     sprintf(currfname, "%s", filename);
 #endif
-    ans = raw_vedit(filename, saveheader, 0,&eff_size);
+    ans = raw_vedit(filename, saveheader, 0,eff_size);
     showansi = t;
     return ans;
 }
@@ -1908,7 +1908,7 @@ int vedit_post(char *filename,int saveheader,long* eff_size)
     showansi = 0;
     ismsgline = (DEFINE(currentuser, DEF_EDITMSG)) ? 1 : 0;
     domsg();
-    ans = raw_vedit(filename, saveheader, 4, &eff_size);   /*Haohmaru.99.5.5.应该保留一个空行 */
+    ans = raw_vedit(filename, saveheader, 4, eff_size);   /*Haohmaru.99.5.5.应该保留一个空行 */
     showansi = t;
     return ans;
 }
