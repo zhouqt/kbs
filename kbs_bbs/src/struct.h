@@ -102,7 +102,7 @@ struct one_key {                  /* Used to pass commands to the readmenu */
 #include "uhashgen.h"
 
 #define USHM_SIZE       (MAXACTIVE + 10) /*modified by dong, 10->20, 1999.9.15*/
-#define UTMP_HASHSIZE  ((UCACHE_HASHSIZE>>5)+2)
+#define UTMP_HASHSIZE  (26*36*20+2)
 /* modified back by KCN,20->10, because not reboot */
 struct UTMPFILE {
     struct user_info    uinfo[ USHM_SIZE ];
