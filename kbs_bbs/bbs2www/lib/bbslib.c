@@ -30,8 +30,6 @@ extern int favnow;
 
 friends_t fff[200];
 
-int friendnum = 0;
-
 int f_append(char *file, char *buf)
 {
     FILE *fp;

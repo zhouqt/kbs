@@ -52,7 +52,6 @@ extern struct UTMPFILE *shm_utmp;
 extern struct UCACHE *shm_ucache;
 extern char fromhost[IPLEN + 1];
 extern friends_t fff[200];
-extern int friendnum;
 extern char parm_name[256][80], *parm_val[256];
 extern int parm_num;
 extern friends_t bbb[MAXREJECTS];

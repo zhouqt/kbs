@@ -2370,6 +2370,7 @@ static PHP_FUNCTION(bbs_delete_friend)
 
     if (deleted > 0) {
         if (delete_record(buf, sizeof(fh), deleted, NULL, NULL) != -1){
+			getfriendstr(getCurrentUser(),getcurrentuinfo(),getSession());
 			RETURN_LONG(0);
 		} else {
 			RETURN_LONG(3);
@@ -2520,7 +2521,7 @@ static PHP_FUNCTION(bbs_add_friend)
     strsncpy(fh.exp, exp, sizeof(fh.exp));
 
     n = append_record(buf, &fh, sizeof(friends_t));
-
+    getfriendstr(getCurrentUser(),getcurrentuinfo(),getSession());
     if (n != -1)
 		RETURN_LONG(0);
 
