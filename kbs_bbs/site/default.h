@@ -38,7 +38,7 @@
 #endif
 
 #ifndef HAVE_REVERSE_DNS  /*反向dns解析 */
-#define HAVE_REVERSE_DNS
+#undef HAVE_REVERSE_DNS
 #endif
 
 #ifndef CHINESE_CHARACTER /*汉字整字处理*/
