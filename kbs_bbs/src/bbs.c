@@ -869,10 +869,8 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     }
     memcpy(&ReadPostHeader, fileinfo, sizeof(struct fileheader));
 
-/* sleep(1); *//*
- * * * * * * * * * * * ????? 
- */
-    if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP))
+    if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP
+        || ch == KEY_DOWN) && (ch <= 0 || strchr("RrEexp", ch) == NULL))
         ch = igetkey();
 
     switch (ch) {
@@ -885,9 +883,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     case Ctrl('D'):
         zsend_attach(ent, fileinfo, direct);
         break;
-    case 'N':
     case 'Q':
-    case 'n':
     case 'q':
     case KEY_LEFT:
         break;
@@ -895,11 +891,13 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case ' ':
     case 'j':
+    case 'n':
     case KEY_DOWN:
     case KEY_PGDN:
         return READ_NEXT;
     case KEY_UP:
     case KEY_PGUP:
+    case 'l':
         return READ_PREV;
     case 'Y':
     case 'R':
@@ -981,7 +979,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         return READ_NEXT;
         break;
     case 'L':
-    case 'l':                  /* Luzi 1997.11.1 */
         if (uinfo.mode != LOOKMSGS) {
             show_allmsgs();
             break;
