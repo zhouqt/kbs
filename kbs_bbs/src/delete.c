@@ -319,7 +319,7 @@ char cid[IDLEN];
         close(fd) ;
     }
     else{
-        printf("错误，请报告耗子");
+        printf("错误，请报告SYSOP");
         pressanykey();}
     setmailpath(tmpbuf, lookupuser->userid);
     sprintf(genbuf,"/bin/rm -fr %s", tmpbuf) ;
@@ -329,12 +329,12 @@ char cid[IDLEN];
     system(genbuf) ;
     sprintf(genbuf,"/bin/rm -fr tmp/email_%s", lookupuser->userid) ;
     system(genbuf) ;
+    setuserid( id, "" );
     lookupuser->userlevel = 0;
     strcpy(lookupuser->address, "");
     strcpy(lookupuser->username, "");
     strcpy(lookupuser->realname, "");
-    lookupuser->userid[0] = '\0' ;
-    setuserid( id, lookupuser->userid );
+/*    lookupuser->userid[0] = '\0' ;
     move(2,0) ;
     prints("%s 已经已经和本家庭失去联络....\n",lookupuser->userid) ;
     pressreturn() ;

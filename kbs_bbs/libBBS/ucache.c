@@ -217,8 +217,22 @@ fillucache(struct userec *uentp ,int* number)
 		log("3system","UCACHE:hash(%s) %d error",uentp->userid, hashkey);
 		exit(0);
 	}
+	if (hashkey==0) { /* empty user add in recurise sort */
+		int i=uidshm->hashhead[0];
+        uidshm->next[*number] = 0;
+		if (i==0) uidshm->hashhead[0]=++(*number);
+		else {
+			int prev;
+			while (i) {
+				prev=i;
+				i=uidshm->next[i-1];
+			};
+			uidshm->next[prev-1]=++(*number);
+		}
+	} else {
         uidshm->next[*number] = uidshm->hashhead[hashkey];
         uidshm->hashhead[hashkey] = ++(*number);
+	}
     }
     return 0 ;
 }
