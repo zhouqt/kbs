@@ -584,9 +584,14 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
         }
 		/* ¼ÓÉÏ±£´æµ½·¢¼þÏäµÄÈ·ÈÏ£¬by flyriver, 2002.9.23 */
+		/*
+		 * Disabled by flyriver, 2003.1.5
+		 * Using the newly introduced mailbox properties.
 		buf2[0] = '\0';
 		getdata(1, 0, "±£´æÐÅ¼þµ½·¢¼þÏä? [N]: ", buf2, 2, DOECHO, 0, 0);
 		if (buf2[0] == 'y' || buf2[0] == 'Y')
+		*/
+		if (HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL))
 		{
 			/* backup mail to sent folder */
 			mail_file_sent(userid, filepath, currentuser->userid, save_title, 0);
@@ -678,7 +683,9 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
     char *t;
     struct stat st;
 
-    if (strstr(direct, ".DELETED")) {
+    if (strstr(direct, ".DELETED")
+		|| HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL))
+	{
         strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
@@ -691,7 +698,8 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         *t = '\0';
     if (!delete_record(direct, sizeof(*fh), ent, (RECORD_FUNC_ARG) cmpname, fh->filename)) {
         sprintf(genbuf, "%s/%s", buf, fh->filename);
-        if (strstr(direct, ".DELETED"))
+        if (strstr(direct, ".DELETED")
+			|| HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL))
             unlink(genbuf);
         else {
             strcpy(buf, direct);
@@ -2074,6 +2082,7 @@ const static struct command_def mail_cmds[] = {
     {"F)©¸¼ÄÐÅ¸øºÃÓÑÃûµ¥", PERM_LOGINOK, ov_send, NULL},
     {"C) Çå¿Õ±¸·ÝµÄÓÊÏä", 0, m_clean, NULL},
     {"M) ¼ÄÐÅ¸øËùÓÐÈË", PERM_SYSOP, mailall, NULL},
+    {"X) ÉèÖÃÓÊÏäÑ¡Ïî", PERM_SYSOP, set_mailbox_prop, NULL},
 };
 
 struct mail_proc_arg {
@@ -2407,7 +2416,7 @@ int MailProc()
         pts[i].y = y + i - arg.cmdnum;
     }
     /*
-     * ¼ÆËãÏµÍ³ÓÊÏäµØÎ»ÖÃ
+     * ¼ÆËã×Ô¶¨ÒåÓÊÏäµØÎ»ÖÃ
      */
 
     y = 3 + (20 - user_mail_list.mail_list_t) / 2;
@@ -2434,4 +2443,114 @@ int MailProc()
 
     list_select_loop(&maillist_conf);
     free(pts);
+}
+
+typedef struct
+{
+	unsigned int prop;
+	unsigned int oldprop;
+}mailbox_prop_arg;
+
+static int 
+set_mailbox_prop_select(struct _select_def *conf)
+{
+    mailbox_prop_arg *arg = (mailbox_prop_arg *) conf->arg;
+
+    if (conf->pos == conf->item_count)
+        return SHOW_QUIT;
+    arg->prop ^= (1 << (conf->pos - 1));
+    return SHOW_REFRESHSELECT;
+}
+
+static int 
+set_mailbox_prop_show(struct _select_def *conf, int i)
+{
+    mailbox_prop_arg *arg = (mailbox_prop_arg *) conf->arg;
+
+    i = i - 1;
+    if (i == conf->item_count - 1)
+	{
+        prints("%c. ÍË³ö ", 'A' + i);
+    }
+	else
+	{
+        if ((arg->prop & (1 << i)) != (arg->oldprop & (1 << i)))
+            prints("%c. %-50s [31;1m%3s[m", 'A' + i, mailbox_prop_str[i],
+					((arg->prop >> i) & 1 ? "ON" : "OFF"));
+        else
+            prints("%c. %-50s [37;0m%3s[m", 'A' + i, mailbox_prop_str[i], 
+					((arg->prop >> i) & 1 ? "ON" : "OFF"));
+    }
+    return SHOW_CONTINUE;
+}
+
+static int 
+set_mailbox_prop_key(struct _select_def *conf, int key)
+{
+    int sel;
+
+    if (key == Ctrl('Q'))
+        return SHOW_QUIT;
+    if (key == Ctrl('A'))
+	{
+    	mailbox_prop_arg *arg = (mailbox_prop_arg *) conf->arg;
+
+        arg->prop = arg->oldprop;
+        return SHOW_QUIT;
+    }
+    if (key <= 'z' && key >= 'a')
+        sel = key - 'a';
+    else
+        sel = key - 'A';
+    if (sel >= 0 && sel < (conf->item_count)) {
+        conf->new_pos = sel + 1;
+        return SHOW_SELCHANGE;
+    }
+    return SHOW_CONTINUE;
+}
+
+/**
+ * Setting currentuser's mailbox properties.
+ *
+ * @authur flyriver
+ */
+int set_mailbox_prop()
+{
+    struct _select_def proplist_conf;
+    mailbox_prop_arg arg;
+    POINT *pts;
+    int i;
+
+    clear();
+    move(0, 0);
+	prints("Éè¶¨ÓÊÏäÊôÐÔ£¬[1;32mCtrl+Q[mÍË³ö£¬[1;32mCtrl+A[m·ÅÆúÐÞ¸ÄÍË³ö.\n");
+    arg.prop = load_mailbox_prop(currentuser->userid);
+    arg.oldprop = arg.prop;
+	pts = (POINT *)malloc(sizeof(POINT) * (MBP_NUMS + 1));
+	for (i = 0; i < MBP_NUMS + 1; i++)
+	{
+		pts[i].x = 2;
+		pts[i].y = i + 2;
+	}
+	bzero(&proplist_conf, sizeof(struct _select_def));
+	proplist_conf.item_count = MBP_NUMS + 1;
+	proplist_conf.item_per_page = MBP_NUMS + 1;
+	proplist_conf.flag = LF_BELL | LF_LOOP;
+	proplist_conf.prompt = "¡ô";
+	proplist_conf.item_pos = pts;
+	proplist_conf.arg = &arg;
+	proplist_conf.title_pos.x = 1;
+	proplist_conf.title_pos.y = 2;
+	proplist_conf.pos = MBP_NUMS + 1;
+	
+	proplist_conf.on_select = set_mailbox_prop_select;
+	proplist_conf.show_data = set_mailbox_prop_show;
+	proplist_conf.key_command = set_mailbox_prop_key;
+
+	list_select_loop(&proplist_conf);
+	free(pts);
+	uinfo.mailbox_prop = update_mailbox_prop(currentuser->userid, arg.prop);
+	store_mailbox_prop(currentuser->userid);
+
+	return 0;
 }

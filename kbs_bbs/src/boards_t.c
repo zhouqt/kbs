@@ -850,7 +850,10 @@ static int fav_key(struct _select_def *conf, int command)
         break;
     case 'v':                  /*Haohmaru.2000.4.26 */
         clear();
-        m_read();
+		if (HAS_MAILBOX_PROP(&uinfo, MBP_MAILBOXSHORTCUT))
+			MailProc();
+		else
+        	m_read();
         return SHOW_REFRESH;
     }
     return SHOW_CONTINUE;

@@ -142,6 +142,11 @@ extern "C" {
     int check_ban_IP(char *IP, char *buf);
 	int is_valid_date(int year, int month, int day);
 	int valid_filename(char *file, int use_subdir);
+	int cmpuids2(unum, urec);
+	unsigned int load_mailbox_prop(char *userid);
+	unsigned int store_mailbox_prop(char *userid);
+	unsigned int get_mailbox_prop(char *userid);
+	unsigned int update_mailbox_prop(char *userid, unsigned int prop);
 
 #define time(x) bbstime(x)
 

@@ -278,13 +278,6 @@ void abort_bbs(int signo)
     exit(0);
 }
 
-int cmpuids2(unum, urec)
-    int unum;
-    struct user_info *urec;
-{
-    return (unum == urec->uid);
-}
-
 /* to be Continue to fix kick problem */
 void multi_user_check()
 {
@@ -714,6 +707,8 @@ void user_login()
     clrtoeol();
     prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌÐø...[33m[m ");
     igetkey();
+	/* Load currentuser's mailbox properties, added by flyriver, 2003.1.5 */
+	uinfo.mailbox_prop = load_mailbox_prop(currentuser->userid);
     move(t_lines - 1, 0);
     sethomefile(fname, currentuser->userid, BADLOGINFILE);
     if (ansimore(fname, false) != -1) {

@@ -127,6 +127,7 @@ int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
 int invalidaddr(char *addr);
 int doforward(char *direct, struct fileheader *fh, int isuu);
+int set_mailbox_prop();
 
 /* maintain.c */
 int check_systempasswd();

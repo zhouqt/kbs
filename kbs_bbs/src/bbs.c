@@ -3454,15 +3454,17 @@ int i_read_mail()
      * should set digestmode to false while read mail. or i_read may cause error 
      */
     int savemode;
-    int mode;
 
     strcpy(savedir, currdirect);
     savemode = digestmode;
     digestmode = false;
-    mode = m_read();
+	if (HAS_MAILBOX_PROP(&uinfo, MBP_MAILBOXSHORTCUT))
+		MailProc();
+	else
+    	m_read();
     digestmode = savemode;
     strcpy(currdirect, savedir);
-    return mode;
+    return FULLUPDATE;
 }
 
 int set_delete_mark(int ent, struct fileheader *fileinfo, char *direct)
