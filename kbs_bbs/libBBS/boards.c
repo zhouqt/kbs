@@ -650,9 +650,9 @@ void brc_add_read(unsigned int fid)
      * 应该用如下
      */
     if (n == 0) {
-        for (n = 0; n < BRC_MAXNUM - 1; n++)
-            brc_cache_entry[brc_currcache].list[n] = fid;
-        brc_cache_entry[brc_currcache].list[n] = 1;
+        brc_cache_entry[brc_currcache].list[0] = fid;
+        brc_cache_entry[brc_currcache].list[1] = 1;
+        brc_cache_entry[brc_currcache].list[2] = 0;
         brc_cache_entry[brc_currcache].changed = 1;
     }
 }
