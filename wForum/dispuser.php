@@ -18,7 +18,10 @@ if (isErrFounded()) {
 } else {
 	showUserMailBoxOrBR();
 	head_var();
-	showUserData($user,$user_num);
+	if ($user !== false) {
+		showUserData($user,$user_num);
+	}
+	showQueryForm();
 }
 
 //showBoardSampleIcons();
@@ -26,6 +29,10 @@ show_footer();
 
 function preprocess() {
 	global $user,$user_num;
+	if (!isset($_GET['id']) || $_GET['id'] == "") {
+		$user = false;
+		return;
+	}
 	$userarray=array();
 	if (($user_num=bbs_getuser($_GET['id'],$userarray))==0) {
 		foundErr("查找用户数据失败！");
@@ -34,6 +41,16 @@ function preprocess() {
 	$user=$userarray;
 	return true;
 
+}
+
+function showQueryForm() {
+?>
+<form method="GET" action="dispuser.php">
+<table align=center><tr><td>
+请输入用户名: <input type="text" name="id">&nbsp;<input type="submit" name="submit" value="查询用户">
+</td></tr></table>
+</form>
+<?php
 }
 
 function showUserData($user, $user_num) {

@@ -203,8 +203,49 @@ function makeRectangularDropShadow(el, color, size)
 	}
 }
 
-var stylelist = '<a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=defaultstyle\">默认模板</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=crystalpurplestyle\">水晶紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=dotgreenstyle\">ｅ点小镇</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=emotiongraystyle\">心情灰色</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=autumnstyle\">秋意盎然</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=bluegrandstyle\">蓝色庄重</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=greenqieutlyelegantstyle\">绿色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=bluegreenelegantstyle\">蓝雅绿</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=purpleqieutlyelegantstyle\">紫色淡雅</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=lightpurplestyle\">淡紫色</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=orangeredstyle\">橘子红了</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=rednightstyle\">红红夜思</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=pinkmemorystyle\">粉色回忆</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=greengrassstyle\">青青河草</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=thickgreenstyle\">浓浓绿意</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=brownredstyle\">棕红预览</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=littlecoffeestyle\">淡咖啡</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=seaskystyle\">碧海晴天</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=bluecrystalstyle\">蓝色水晶</a><br><a style=font-size:9pt;line-height:12pt; href=\"changestyle.php?style=snowstyle\">雪花飘飘</a><br>';
-var manage= '<a style=font-size:9pt;line-height:14pt; href="usermailbox.php?boxname=inbox">我的邮箱</a><br><a style=font-size:9pt;line-height:14pt; href="showmsgs.php">察看在线短信</a><br><a style=font-size:9pt;line-height:14pt; href="javascript:sendMsg()">发短信</a><br><a style=font-size:9pt;line-height:14pt; href="javascript:sendSMSMsg()">发送手机短信</a><br><a style=font-size:9pt;line-height:14pt; href="usermanagemenu.php">用户控制面板</a><br><a style=font-size:9pt;line-height:14pt; href="modifyuserdata.php">修改用户数据</a><br><a style=font-size:9pt;line-height:14pt; href="userparam.php">设定用户参数</a><br><a style=font-size:9pt;line-height:14pt; href="bbssig.php">用户签名档</a><br><a style=font-size:9pt;line-height:14pt; href="changepasswd.php">修改密码</a><br><a style=font-size:9pt;line-height:14pt; href="alteryank.php">切换版面列表方式</a><br><a style=font-size:9pt;line-height:14pt; href="favboard.php">用户收藏版面</a>'; 
+var stylelist = ' \
+<a class=\"SMItem\" href=\"changestyle.php?style=defaultstyle\">默认模板</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=crystalpurplestyle\">水晶紫色</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=dotgreenstyle\">ｅ点小镇</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=emotiongraystyle\">心情灰色</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=autumnstyle\">秋意盎然</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=bluegrandstyle\">蓝色庄重</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=greenqieutlyelegantstyle\">绿色淡雅</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=bluegreenelegantstyle\">蓝雅绿</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=purpleqieutlyelegantstyle\">紫色淡雅</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=lightpurplestyle\">淡紫色</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=orangeredstyle\">橘子红了</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=rednightstyle\">红红夜思</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=pinkmemorystyle\">粉色回忆</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=greengrassstyle\">青青河草</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=thickgreenstyle\">浓浓绿意</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=brownredstyle\">棕红预览</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=littlecoffeestyle\">淡咖啡</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=seaskystyle\">碧海晴天</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=bluecrystalstyle\">蓝色水晶</a><br> \
+<a class=\"SMItem\" href=\"changestyle.php?style=snowstyle\">雪花飘飘</a><br> \
+';
+
+var manage= ' \
+<a class=\"MItem\" href="usermailbox.php?boxname=inbox">我的邮箱</a><br> \
+<a class=\"MItem\" href="favboard.php">用户收藏版面</a><br> \
+<a class=\"MItem\" href="usermanagemenu.php">用户控制面板</a><br> \
+<a class=\"MItem\" href="modifyuserdata.php">修改用户数据</a><br> \
+<a class=\"MItem\" href="userparam.php">设定用户参数</a><br> \
+<a class=\"MItem\" href="bbssig.php">用户签名档</a><br> \
+<a class=\"MItem\" href="changepasswd.php">修改密码</a><br> \
+<a class=\"MItem\" href="alteryank.php">切换版面列表方式</a> \
+';
+
+var talk = ' \
+<a class=\"MItem\" href="showmsgs.php">察看在线短信</a><br> \
+<a class=\"MItem\" href="javascript:sendMsg()">发短信</a><br> \
+<a class=\"MItem\" href="javascript:sendSMSMsg()">发送手机短信</a><br> \
+<a class=\"MItem\" href="friendlist.php">编辑好友列表</a><br> \
+<a class=\"MItem\" href="showonlinefriend.php">在线好友</a><br> \
+<a class=\"MItem\" href="showonlineuser.php">在线用户</a><br> \
+<a class=\"MItem\" href="dispuser.php">查询用户</a> \
+'; 
 
 var timerID=0;
 function dosendmsg(){

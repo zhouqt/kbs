@@ -313,6 +313,7 @@ function html_init($charset="",$title="",$otherheader="")
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 <title><?php echo $title; ?></title>
 <link rel="stylesheet" type="text/css" href="css/ansi.css"/>
+<link rel="stylesheet" type="text/css" href="css/common.css"/>
 <link rel="stylesheet" type="text/css" href="css/<?php echo $css_style; ?>.css"/>
 <?php echo($otherheader); ?>
 </head>
@@ -626,7 +627,7 @@ function show_nav($boardName='')
 <?php echo MAINTITLE; ?>
 </td>
 <td align=right style="line-height: 15pt" width="10%">
-<nobr><a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</span></a></nobr><br>
+<nobr><a href="#" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</a></nobr><br>
 <nobr><a href="">联系我们</a></nobr><br>
 <nobr><a href="">论坛帮助</a></nobr>
 </td>
@@ -651,9 +652,9 @@ function show_nav($boardName='')
 <?php
 		}
 ?>
-<img src=pic/navspacer.gif align=absmiddle>
-<a href="logon.php">重登陆</a> 
-<img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(manage,100,event)'>用户功能菜单</a>
+<img src=pic/navspacer.gif align=absmiddle> <a href="logon.php">重登陆</a> 
+<img src=pic/navspacer.gif align=absmiddle> <a href="#" onMouseOver='ShowMenu(manage,100,event)'>用户功能菜单</a>
+<img src=pic/navspacer.gif align=absmiddle> <a href="#" onMouseOver='ShowMenu(talk,100,event)'>谈天说地菜单</a>
 <?php
  }
 ?>
