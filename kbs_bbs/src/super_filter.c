@@ -491,7 +491,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         refresh();
         sleep(1);
     }
-    else if (chk_currBM(currBM, currentuser)) {
+/*    else if (chk_currBM(currBM, currentuser)) {
         char ans[4];
         int i,j,k;
         int fflag;
@@ -510,7 +510,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
             for(i=0;i<count;i++)
                 change_post_flag(currBM, currentuser, digestmode, currboard, i+1, &f, currdirect, fflag, 0);
         }
-    }
+    }*/
     return NEWDIRECT;
 }
 
