@@ -391,12 +391,14 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
             write_posts(user->userid, board, title);
         }
 
-        if (!strcmp(board, "Announce"))
+#ifdef SMTH
+        if (!strcmp(board, "Announce")&&Anony)
             /*
              * added By Bigman 
              */
             fprintf(fp, "发信人: %s (%s), 信区: %s       \n", "SYSOP", NAME_SYSOP, board);
         else
+#endif
             fprintf(fp, "发信人: %s (%s), 信区: %s       \n", (noname && Anony) ? board : uid, (noname && Anony) ? NAME_ANONYMOUS : uname, board);
     }
 
