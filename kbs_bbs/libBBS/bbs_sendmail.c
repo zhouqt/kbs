@@ -217,6 +217,6 @@ int isuu, isbig5, noansi;
     fclose (fin);
     if (isuu)
     	unlink(uname);
-    return (status->code==250);
+    return (status->code!=250);
 }
 
