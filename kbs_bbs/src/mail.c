@@ -1239,7 +1239,7 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     clear();
     move(5, 3);
     prints("请选择移动到哪个邮箱");
-    sel = (struct _select_item*)malloc(sizeof(struct _select_item)*(mail_list_t+1));
+    sel = (struct _select_item*)malloc(sizeof(struct _select_item)*(mail_list_t+4));
     sel[0].x = 3; sel[0].y = 6; sel[0].hotkey = -1; sel[0].type = SIT_SELECT; sel[0].data = menu_char[0];
     sel[1].x = 3; sel[1].y = 7; sel[1].hotkey = -1; sel[1].type = SIT_SELECT; sel[1].data = menu_char[1];
     for(i=0;i<mail_list_t;i++) {
