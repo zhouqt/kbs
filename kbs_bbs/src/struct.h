@@ -6,8 +6,8 @@
 */
 struct userec {                 /* Structure used to hold information in */
     char userid[IDLEN + 2];     /* PASSFILE */
-    unsigned short int flags; /*一些标志，戒网，版面排序之类的*/
-    unsigned short int title; /*用户级别*/
+    char flags; /*一些标志，戒网，版面排序之类的*/
+    unsigned char title; /*用户级别*/
     time_t firstlogin;
     char lasthost[16];
     unsigned int numlogins;
