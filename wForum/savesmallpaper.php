@@ -107,7 +107,7 @@ function main($boardID,$boardName) {
 	global $title;
 	global $Content;
 
-    $sql="insert into smallpaper_tb (boardID,Owner,Title,Content,Addtime) values (".$boardID.",'". $currentuser['userid']."','". htmlentities($title)."','". htmlentities($Content)."',now())";
+    $sql="insert into smallpaper_tb (boardID,Owner,Title,Content,Addtime) values (".$boardID.",'". $currentuser['userid']."','". htmlspecialchars($title, ENT_QUOTES)."','". htmlspecialchars($Content,ENT_QUOTES)."',now())";
 	$conn->query($sql);
 	setSucMsg("您成功的发布了小字报。");
   	return html_success_quit('返回版面', 'board.php?name='.$boardName);

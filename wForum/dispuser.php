@@ -6,6 +6,7 @@ $needlogin=1;
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/userdatadefine.inc.php");
+require("inc/ubbcode.php");
 
 preprocess();
 
@@ -47,6 +48,7 @@ function preprocess() {
 }
 
 function showUserData($user, $user_num) {
+	extract($GLOBALS);
 	print_r($user);
 ?>
 <table width=97% border=0 cellspacing=0 cellpadding=3 align=center>
@@ -95,41 +97,51 @@ function showUserData($user, $user_num) {
     <td class=tablebody1 width=20% align=right>星 座：</td>
     <td class=tablebody1>
 <?php
-	if ( ($user['birthmonth']!=0) && ($user['birthday']!=0)) {
-		echo $user['birthyear'].'年'.$user['birthmonth'].'月'.$user['birthday'].'日';
-	} else {
-		echo "<font color=gray>未知</font>";
-	}?>
+	echo get_astro($user['birthmonth'],$user['birthday']);
 ?></td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>Ｅｍａｉｌ：</td>
     <td class=tablebody2>
-<a href=mailto:eway@aspsky.net>eway@aspsky.net</a>
+	<?php 
+	$reg_email=htmlspecialchars(trim($user['reg_email']),ENT_QUOTES);
+	if ($reg_email!='') {
+		echo '<a href=mailto:'.$reg_email.'>'.$reg_email.'</a>'; 
+	} else {
+		echo "<font color=gray>未知</font>";
+	}
+	?>
 </td>
   </tr>
   <tr> 
     <td class=tablebody1 width=20% align=right>Ｑ Ｑ：</td>
     <td class=tablebody1>
-<font color=gray>未填</font>
+	<?php echo showIt($user['OICQ']); ?>
 </td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>ＩＣＱ：</td>
     <td class=tablebody2>
-<font color=gray>未填</font>
+	<?php echo showIt($user['ICQ']); ?>
 </td>
   </tr>
   <tr> 
     <td class=tablebody1 width=20% align=right>ＭＳＮ：</td>
     <td class=tablebody1>
-<font color=gray>未填</font>
+	<?php echo showIt($user['MSN']); ?>
  </td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>主 页：</td>
     <td class=tablebody2>
-<font color=gray>未填</font>
+	<?php 
+	$homepage=htmlspecialchars(trim($user['homepage']),ENT_QUOTES);
+	if ($homepage!='') {
+		echo '<a href="'.$homepage.'" target="_blank">'.$homepage.'</a>'; 
+	} else {
+		echo "<font color=gray>未知</font>";
+	}
+	?>
 </td>
   </tr>
   <tr> 
@@ -141,6 +153,82 @@ function showUserData($user, $user_num) {
 </table>
 <br>
 
+<table cellspacing=1 cellpadding=3 align=center class=tableborder1 style="table-layout:fixed;word-break:break-all">
+  <col width=20% ><col width=*><col width=40% > 
+  <tr> 
+    <th colspan=2 align=left>
+      用户详细资料</th>
+    <td rowspan=14 class=tablebody1 width=40% valign=top>
+<b>性格：</b>
+<br>
+<?php   echo $character[$user['character']]; ?>
+<br><br><br>
+<b>个人简介：</b><br>
+<?php   
+	$filename=bbs_sethomefile($user["userid"],"plans");
+	if (is_file($filename)) {
+		echo dvbcode(bbs_printansifile($filename),0);
+	} else {
+		echo "<font color=gray>这个家伙很懒，什么也没有留下^_^</font>";
+	}
+?>
+<br>
+</td>
+  </tr>   
+  <tr> 
+    <td class=tablebody1 width=20% align=right>真实姓名：</td>
+    <td class=tablebody1><?php echo showIt($user['username']);	?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody2 width=20% align=right>国　　家：</td>
+    <td class=tablebody2><?php echo showIt($user['country']); ?> </td>
+  </tr>
+  <tr> 
+    <td class=tablebody1 width=20% align=right>省　　份：</td>
+    <td class=tablebody1><?php echo showIt($user['province']); ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody2 width=20% align=right>城　　市：</td>
+    <td class=tablebody2><?php  echo showIt($user['city']); ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody1 width=20% align=right>联系电话：</td>
+    <td class=tablebody1>	<?php echo showIt(substr($user['realemail'],strpos($user['realemail'],'$')+1,strpos($user['realemail'],'@')-strpos($user['realemail'],'$')-1)); ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody2 width=20% align=right>通信地址：</td>
+    <td class=tablebody2><?php   echo showIt($user['address']); ?></td>
+  </tr>
+
+  <tr> 
+    <td class=tablebody1 width=20% align=right>生　　肖：</td>
+    <td class=tablebody1><?php echo $shengxiao[$user['shengxiao']]; ?> </td>
+  </tr>
+  <tr> 
+    <td class=tablebody2 width=20% align=right>血　　型：</td>
+    <td class=tablebody2><?php   echo $blood; ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody1 width=20% align=right>信　　仰：</td>
+    <td class=tablebody1><?php   echo $belief; ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody2 width=20% align=right>职　　业：</td>
+    <td class=tablebody2><?php   echo $occupation; ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody1 width=20% align=right>婚姻状况：</td>
+    <td class=tablebody1><?php   echo $marital; ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody2 width=20% align=right>最高学历：</td>
+    <td class=tablebody2><?php   echo $education; ?></td>
+  </tr>
+  <tr> 
+    <td class=tablebody1 width=20% align=right>毕业院校：</td>
+    <td class=tablebody1><?php   echo $college; ?></td>
+  </tr></table>
+<br>
 
 <table cellspacing=1 cellpadding=3 align=center class=tableborder1>
   <tr>
@@ -313,6 +401,15 @@ function showUserData($user, $user_num) {
 </table>
 
 <?php
+}
+
+function showIt($str){
+	$str1=htmlspecialchars(trim($str),ENT_QUOTES);
+	if ($str1!='') {
+		echo $str1; 
+	} else {
+		return  "<font color=gray>未知</font>";
+	}
 }
 
 ?>

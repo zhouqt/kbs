@@ -243,7 +243,7 @@ function showBroadcast($boardID,$boardName){
 <?php
 	$sth = $conn->query("SELECT ID,Owner,Title FROM smallpaper_tb where Addtime>=subdate(Now(),interval 1 day) and boardID=" . $boardID . " ORDER BY Addtime desc limit 5");
 	while($rs = $sth->fetchRow(DB_FETCHMODE_ASSOC)) {
-		print "£ £ <font color=#ff0000>".$rs['Owner']."</font>Ëµ£º<a href=javascript:openScript('viewpaper.php?id=".$rs['ID']."&boardname=".$boardName."',500,400)>".htmlentities($rs['Title'])."</a>";
+		print "£ £ <font color=#ff0000>".$rs['Owner']."</font>Ëµ£º<a href=javascript:openScript('viewpaper.php?id=".$rs['ID']."&boardname=".$boardName."',500,400)>".htmlspecialchars($rs['Title'],ENT_QUOTES)."</a>";
   } 
   unset($rs);
   $sth->free();

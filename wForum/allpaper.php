@@ -81,7 +81,7 @@ function boardeven($boardID,$boardName){
 			echo '<a href=dispuser.php?name='.$rs['Owner'].' target=_blank>'.$rs['Owner'].'</a>';
 			echo '</td>';
 			echo '<td class=tablebody1>';
-			echo "<a href=javascript:openScript('viewpaper.php?id=".$rs["ID"]."&boardname=".$boardName."',500,400)>".htmlentities($rs['Title']).'</a>';
+			echo "<a href=javascript:openScript('viewpaper.php?id=".$rs["ID"]."&boardname=".$boardName."',500,400)>".htmlspecialchars($rs['Title'],ENT_QUOTES).'</a>';
 			echo '</td>';
 			echo '<td class=tablebody1>'.$rs['Addtime'].'</td>';
 			echo '<td align=center class=tablebody1>';

@@ -72,11 +72,11 @@ function showpaper($boardID,$boardName){
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
 <TBODY> 
 <TR> 
-<Th height=24><?php echo htmlentities($rs["Title"]); ?></Th>
+<Th height=24><?php echo htmlspecialchars($rs["Title"],ENT_QUOTES); ?></Th>
 </TR>
 <TR> 
 <TD class=tablebody1>
-<p align=center><a href=dispuser.php?name=<?php echo htmlentities($rs["Owner"]); ?> target=_blank><?php echo htmlentities($rs["Owner"]); ?></a> 发布于 <?php  echo $rs["Addtime"]; ?></p>
+<p align=center><a href=dispuser.php?name=<?php echo htmlspecialchars($rs["Owner"],ENT_QUOTES); ?> target=_blank><?php echo htmlspecialchars($rs["Owner"],ENT_QUOTES); ?></a> 发布于 <?php  echo $rs["Addtime"]; ?></p>
     <blockquote>   
       <br>   
 <?php     echo dvbcode($rs["Content"],1); ?>  
