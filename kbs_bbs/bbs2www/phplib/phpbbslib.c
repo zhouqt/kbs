@@ -89,6 +89,7 @@ static PHP_FUNCTION(bbs_countfriends);
 static PHP_FUNCTION(bbs_delete_friend);
 static PHP_FUNCTION(bbs_add_friend);
 static PHP_FUNCTION(bbs_doforward);
+static PHP_FUNCTION(bbs_domailforward);
 static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
@@ -237,6 +238,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_delete_friend, NULL)
         PHP_FE(bbs_add_friend, NULL)
         PHP_FE(bbs_doforward, NULL)
+        PHP_FE(bbs_domailforward, NULL)
         PHP_FE(bbs_get_records_from_id, NULL)
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
@@ -2155,6 +2157,49 @@ static PHP_FUNCTION(bbs_delete_friend)
         }
     } else{
 		RETURN_LONG(2);
+	}
+}
+
+static PHP_FUNCTION(bbs_domailforward)
+{
+    char *fname, *tit, *target;
+    long filename_len,tit_len,target_len;
+    bcache_t bh;
+	long big5,noansi;
+    struct boardheader *bp;
+	char title[512];
+	struct userec *u;
+    
+	if (ZEND_NUM_ARGS() != 5 || zend_parse_parameters(5 TSRMLS_CC, "sssll", &fname, &filename_len, &tit, &tit_len, &target, &target_len, &big5, &noansi) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+    }
+
+    if( target[0] == 0 )
+        RETURN_LONG(-3);
+    if( !strchr(target, '@') ){
+        if( HAS_PERM(currentuser, PERM_DENYMAIL) )
+            RETURN_LONG(-5);
+        if( getuser(target,&u) == 0)
+            RETURN_LONG(-6);
+        big5=0;
+        noansi=0;
+    }
+
+    if( !file_exist(fname) )
+        RETURN_LONG(-7);
+
+    snprintf(title, 511, "%.50s(×ª¼Ä)", tit);
+
+    if( !strchr(target, '@') ){
+        mail_file(currentuser->userid, fname, u->userid, title,0, NULL);
+		RETURN_LONG(1);
+	}else{
+		if( big5 == 1)
+			conv_init();
+		if( bbs_sendmail(fname, title, target, 0, big5, noansi) == 0){
+			RETURN_LONG(1);
+		}else
+			RETURN_LONG(-10);
 	}
 }
 
