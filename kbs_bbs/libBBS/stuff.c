@@ -1253,10 +1253,12 @@ int check_ban_IP(char *IP, char *buf)
     int IPX = -1;
     char *ptr;
 
+#ifdef SMTH==1
     if (check_IP_lists(IP)) {
         strcpy(buf, "太多来自该IP的访问。请过一会儿再访问本站");
-        return -1;
+        return 1;
     }
+#endif
     Ban = fopen(".badIP", "r");
     if (!Ban)
         return IPX;
