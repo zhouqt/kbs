@@ -31,7 +31,6 @@ int generate_board_title(struct boardheader *bh)
     
 	gen_threadid = 1;
     if ((fd2 = open(olddirect, O_RDWR, 0664)) == -1) {
-        report("recopen err");
         return 0;
     }
 
