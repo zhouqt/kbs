@@ -89,7 +89,7 @@
 <td><?php if( $row[4]==1 ) echo "发"; else echo "收";?></td>
 <td><?php echo $row[3];?></td>
 <td><pre><?php echo $row[5];?></pre></td>
-<td><a href="/bbsrsmsmsg.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&desc=<?php echo $desc;?>">删除</a></td>
+<td><a onclick="return confirm('你真的要删除这条记录吗?')" href="/bbsrsmsmsg.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&desc=<?php echo $desc;?>">删除</a></td>
 </tr>
 <?php
 				$i++;
