@@ -175,7 +175,7 @@ function bbs_board_foot($brdarr,$listmode='')
   <tr> 
     <td colspan="2" align="center" class="b1">
     	[<a href="#listtop">返回顶部</a>]
-    	[<a href="javascript:location=location">刷新</a>]
+    	[<a href="javascript:location.reload()">刷新</a>]
 <?php
 	if ($listmode != "ORIGIN") {
 ?>
@@ -342,7 +342,7 @@ function bbs_ann_foot($parent) {
 [<a href="/bbs0an.php">根目录</a>]
 [<a href="/bbsxsearch.php">令狐冲精华区搜索</a>]
 [<a href="#listtop">返回顶部</a>]
-[<a href="javascript:location=location">刷新</a>] 
+[<a href="javascript:location.reload()">刷新</a>] 
 [<a href="javascript:history.go(-1)">返回</a>] 
 
 </p>

@@ -123,7 +123,7 @@ function al_print_form($al){
 ?>
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录条目显示 [用户: <?php echo $currentuser["userid"]; ?>]</p>
-<a href="javascript:location=location">刷新</a>
+<a href="javascript:location.reload()">刷新</a>
 </center>
 <hr class=default>
 <table border="1" width="613" align="center" cellpadding="0" cellspacing="0">
@@ -373,7 +373,7 @@ function al_print_form($al){
 ?>
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录管理 [用户: <?php echo $currentuser["userid"]; ?>]</p>
-<a href="javascript:location=location">刷新</a>
+<a href="javascript:location.reload()">刷新</a>
 </center>
 <hr class=default>
 <table border="1" width="613" align="center" cellpadding="0" cellspacing="0">
@@ -402,7 +402,7 @@ function al_print_form($al){
 </table>
 <center>
 <hr class=default>
-<a href="javascript:location=location">刷新</a>
+<a href="javascript:location.reload()">刷新</a>
 <?php
 		if( $startnum > 0 ){
 ?>

@@ -217,7 +217,7 @@ background-color:#ffffff;
 
   <tr> 
     <td colspan="2" align="center" class="b1">
-    	[<a href="javascript:location=location">Ë¢ÐÂ</a>]
+    	[<a href="javascript:location.reload()">Ë¢ÐÂ</a>]
     </td>
   </tr>
 </table>

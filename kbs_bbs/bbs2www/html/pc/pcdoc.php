@@ -942,7 +942,7 @@ Blog名
 <tr>
 	<td align="center" class="tt3" valign="middle" height="25">
 	[<a href="#top" class=f1>返回顶部</a>]
-	[<a href='javascript:location=location' class=f1>刷新</a>]
+	[<a href='javascript:location.reload()' class=f1>刷新</a>]
 	[<?php 
 		echo "<a href=\"";
 		if($pc["EMAIL"])
