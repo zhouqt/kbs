@@ -211,6 +211,9 @@ void userd()
     struct sockaddr_in sin;
     int sinlen = sizeof(sin);
     int opt=1;
+#ifdef FREEBSD
+	bzero(&sin, sizeof(sin));
+#endif
     if (( m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
     	log("3system","userd:socket %s",strerror(errno));
     	exit(-1);
@@ -299,6 +302,8 @@ int dodaemon(char* argv1,char* daemon)
      setsid();
 #ifdef AIX
      setpgrp();
+#elif defined FREEBSD
+	setpgid(0,0);
 #else
      // by zixia setpgrp(0, 0);
      setpgrp();
