@@ -1,7 +1,9 @@
 #include "bbs.h"
 
 #define MAXBIRTHFILE 12
+#ifndef BIRTHFILEPATH
 #define BIRTHFILEPATH "0Announce/groups/system.faq/SYSOP/birthfile/"
+#endif
 
 char filename[MAXBIRTHFILE][256];
 int birthfilenum=0;

@@ -47,14 +47,15 @@ int putout(char *path)
 	return 1;
 }
 
-int online_cmp(const struct _brdlog *b, const struct _brdlog *a)
+int online_cmp(const void *b, const void *a)
 {
-    return (a->online - b->online);
+    return (((struct _brdlog *)a)->online - ((struct _brdlog *)b)->online);
 }
 
-int id_cmp(struct _brdlog *b, struct _brdlog *a)
+int id_cmp(const void *b, const void *a)
 {
-    return ( (a->nowid - a->yesid) - (b->nowid - b->yesid) );
+    return ( (((struct _brdlog *)a)->nowid - ((struct _brdlog *)a)->yesid)
+           - (((struct _brdlog *)b)->nowid - ((struct _brdlog *)b)->yesid) );
 }
 
 int fillbcache(struct boardheader *fptr,int idx,void* arg)
