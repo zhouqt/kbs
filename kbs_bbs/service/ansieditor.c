@@ -3862,7 +3862,7 @@ int editor_main()
 
     strncpy(user_id, currentuser->userid, 20); 
 
-	modify_user_mode(BBSNET);
+	modify_user_mode(EDITOR);
 
 	strcpy(dir_prefix, DEFAULT_DIR_PREFIX);
 	init();

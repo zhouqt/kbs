@@ -94,4 +94,4 @@
 #define DICT 67
 #define CALC 68
 #define SETACL 69
-
+#define EDITOR 70
