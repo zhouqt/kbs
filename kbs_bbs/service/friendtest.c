@@ -1026,6 +1026,7 @@ int friend_main()
     int i;
     init();
 
+	modify_user_mode(FRIENDTEST);
     while(i=usermenu()) {
         switch(i){
             case 1:

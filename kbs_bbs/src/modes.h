@@ -85,3 +85,4 @@
 #define EDITPLAN        58
 #define GIVEUPNET	59
 #define SERVICES	60
+#define FRIENDTEST  61
