@@ -727,7 +727,6 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
     prints("\033[m");
     curr_line = l.curr_line;
     for (i = 0; i < t_lines - 1 - row && i < numlines; i++) {
-        good_move(row+i, 0);
         mem_printline(&l, fn, ptr);
         if (next_MemMoreLines(&l) < 0)
             break;
