@@ -934,7 +934,7 @@ static PHP_FUNCTION(bbs_checkpasswd)
     int pw_len;
     long ret;
     int unum;
-    int ismd5 = 0;
+    long ismd5 = 0;
     struct userec *user;
     int ac = ZEND_NUM_ARGS();
 
@@ -1015,7 +1015,7 @@ static PHP_FUNCTION(bbs_getuserparam){//这个函数总有一天要被我杀掉！！ - atppp
 }
 
 static PHP_FUNCTION(bbs_setuserparam){
-	int userparam0, userparam1, mailboxprop;
+	long userparam0, userparam1, mailboxprop;
 	if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(3 TSRMLS_CC, "lll", &userparam0, &userparam1, &mailboxprop) != SUCCESS) {
 		WRONG_PARAM_COUNT;
 	}
@@ -1114,7 +1114,8 @@ static PHP_FUNCTION(bbs_getusermoney){
 static PHP_FUNCTION(bbs_setusermoney){
     struct userec* u;
 	char* user;
-	int uLen,money;
+	int uLen;
+    long money;
     if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &money) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
@@ -1130,7 +1131,8 @@ static PHP_FUNCTION(bbs_setusermoney){
 static PHP_FUNCTION(bbs_addusermoney){
     struct userec* u;
 	char* user;
-	int uLen,money;
+	int uLen;
+    long money;
     if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &money) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
@@ -1159,7 +1161,8 @@ static PHP_FUNCTION(bbs_getuserscore){
 static PHP_FUNCTION(bbs_setuserscore){
     struct userec* u;
 	char* user;
-	int uLen,score;
+	int uLen;
+    long score;
     if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &score) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
@@ -1174,7 +1177,8 @@ static PHP_FUNCTION(bbs_setuserscore){
 static PHP_FUNCTION(bbs_adduserscore){
     struct userec* u;
 	char* user;
-	int uLen,score;
+	int uLen;
+    long score;
     if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &score) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
@@ -1352,7 +1356,7 @@ static int new_write(const char *buf, size_t buflen)
 static PHP_FUNCTION(bbs_printansifile)
 {
     char *filename;
-    long filename_len;
+    int filename_len;
     long linkmode,is_tex,is_preview;
     char *ptr;
     long ptrlen;
@@ -1361,7 +1365,7 @@ static PHP_FUNCTION(bbs_printansifile)
     const int outbuf_len = 4096;
     buffered_output_t *out;
     char* attachlink;
-    long attachlink_len;
+    int attachlink_len;
     sigjmp_buf bus_jump;
     char attachdir[MAXPATH];
 
@@ -1447,7 +1451,7 @@ static PHP_FUNCTION(bbs_printansifile)
 static PHP_FUNCTION(bbs_print_article)
 {
     char *filename;
-    long filename_len;
+    int filename_len;
     long linkmode;
     char *ptr;
     int fd;
@@ -1455,7 +1459,7 @@ static PHP_FUNCTION(bbs_print_article)
     const int outbuf_len = 4096;
     buffered_output_t *out;
     char* attachlink;
-    long attachlink_len;
+    int attachlink_len;
     sigjmp_buf bus_jump;
 
     getcwd(old_pwd, 1023);
@@ -1522,7 +1526,7 @@ static PHP_FUNCTION(bbs_print_article)
 static PHP_FUNCTION(bbs_print_article_js)
 {
     char *filename;
-    long filename_len;
+    int filename_len;
     long linkmode;
     char *ptr;
     int fd;
@@ -1530,7 +1534,7 @@ static PHP_FUNCTION(bbs_print_article_js)
     const int outbuf_len = 4096;
     buffered_output_t *out;
     char* attachlink;
-    long attachlink_len;
+    int attachlink_len;
     sigjmp_buf bus_jump;
 
     getcwd(old_pwd, 1023);
@@ -1620,7 +1624,7 @@ static void bbs_make_article_array(zval * array, struct fileheader *fh, char *fl
 static PHP_FUNCTION(bbs_search_articles)
 {
     char *board,*title, *title2, *title3,*author;
-    long bLen,tLen,tLen2,tLen3,aLen;
+    int bLen,tLen,tLen2,tLen3,aLen;
     long date,mmode,origin,attach;
     bcache_t bh;
 	char dirpath[STRLEN];
@@ -1796,7 +1800,7 @@ static int cmp_original_date(const void *a, const void *b) {
 static PHP_FUNCTION(bbs_searchtitle)
 {
     char *board,*title, *title2, *title3,*author;
-    long bLen,tLen,tLen2,tLen3,aLen;
+    int bLen,tLen,tLen2,tLen3,aLen;
     long date,mmode,attach,maxreturn; /* date < 0 search for threads whose original post time is within (-date) days. - atppp 20040727 */
     bcache_t bh;
     char dirpath[STRLEN];
@@ -1970,7 +1974,7 @@ static PHP_FUNCTION(bbs_searchtitle)
  static PHP_FUNCTION(bbs_caneditfile)
 {
     char *board,*filename;
-    long boardLen,filenameLen;
+    int boardLen,filenameLen;
 	char path[512];
     struct fileheader x;
     bcache_t *brd;
@@ -2022,7 +2026,7 @@ static PHP_FUNCTION(bbs_searchtitle)
 static PHP_FUNCTION(bbs_printoriginfile)
 {
     char *board,*filename;
-    long boardLen,filenameLen;
+    int boardLen,filenameLen;
     FILE* fp;
     const int outbuf_len = 4096;
 	char buf[512],path[512];
@@ -2275,7 +2279,7 @@ static PHP_FUNCTION(bbs_getboards)
      */
     char *prefix;
     int plen;
-    int flag;
+    long flag, group;
     int rows = 0;
     struct newpostdata newpost_buffer;
     struct newpostdata *ptr;
@@ -2285,7 +2289,6 @@ static PHP_FUNCTION(bbs_getboards)
     int j;
     int ac = ZEND_NUM_ARGS();
     int brdnum, yank, no_brc, all_boards;
-    int group;
     int total;   
 
     getcwd(old_pwd, 1023);
@@ -2485,7 +2488,7 @@ static PHP_FUNCTION(bbs_domailforward)
 {
     char *fname, *tit, *target1;
 	char target[128];
-    long filename_len,tit_len,target_len;
+    int filename_len,tit_len,target_len;
     bcache_t bh;
 	long big5,noansi;
     struct boardheader *bp;
@@ -2534,7 +2537,7 @@ static PHP_FUNCTION(bbs_domailforward)
 static PHP_FUNCTION(bbs_doforward)
 {
     char *board,*filename, *tit, *target;
-    long board_len,filename_len,tit_len,target_len;
+    int board_len,filename_len,tit_len,target_len;
     bcache_t bh;
 	char fname[STRLEN];
 	long big5,noansi;
@@ -2690,9 +2693,9 @@ static PHP_FUNCTION(bbs_getarticles)
 {
     char *board;
     int blen;
-    int start;
-    int num;
-    int mode;
+    long start;
+    long num;
+    long mode;
     char dirpath[STRLEN];
     char dirpath1[STRLEN];	/* add by stiger */
     int total;
@@ -2839,7 +2842,7 @@ static PHP_FUNCTION(bbs_getthreads)
 {
     char *board;
     int blen;
-    int start,num;
+    long start,num;
     int total;
     struct boardheader *bp=NULL;
 	char dirpath[STRLEN];
@@ -2857,7 +2860,7 @@ static PHP_FUNCTION(bbs_getthreads)
 	struct wwwthreadheader *ptr1=NULL;
 	char* ptr;
 	unsigned int long found;
-	int includeTop;
+	long includeTop;
 	int skip;
     int ac = ZEND_NUM_ARGS();
 	int begin,end;
@@ -3002,7 +3005,7 @@ static PHP_FUNCTION(bbs_get_article)
 {
     char *board;
     int blen;
-    int groupid;
+    long groupid;
     int total;
     struct fileheader *articles;
     struct boardheader *bp;
@@ -3126,7 +3129,7 @@ static PHP_FUNCTION(bbs_get_thread_articles)
 {
     char *board;
     int blen;
-    int start,num,groupid;
+    long start,num,groupid;
     int total;
     struct fileheader *articles;
     struct boardheader *bp;
@@ -3352,7 +3355,7 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
 {
     char *board;
     int blen;
-    unsigned int groupid;
+    long groupid;
     int total;
     struct boardheader *bp;
 	char dirpath[STRLEN];
@@ -3459,8 +3462,8 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
  */
 static PHP_FUNCTION(bbs_countarticles)
 {
-    int brdnum;
-    int mode;
+    long brdnum;
+    long mode;
     const struct boardheader *bp = NULL;
     char dirpath[STRLEN];
     int total;
@@ -3502,7 +3505,7 @@ static PHP_FUNCTION(bbs_countarticles)
  */
 static PHP_FUNCTION(bbs_getthreadnum)
 {
-    int brdnum;
+    long brdnum;
     int mode;
     const struct boardheader *bp = NULL;
     char dirpath[STRLEN];
@@ -3556,8 +3559,8 @@ static PHP_FUNCTION(bbs_get_filename_from_num)
 
 	char *board;
 	int blen;
-	int num;
-	int mode;
+	long num;
+	long mode;
 	struct boardheader *bp;
 	char dirpath[STRLEN];
 	fileheader_t fh;
@@ -3606,7 +3609,7 @@ static PHP_FUNCTION(bbs_get_filename_from_num)
  */
 static PHP_FUNCTION(bbs_get_records_from_num)
 {
-	int num;
+	long num;
 	FILE *fp;
 	char *dirpath;
 	int dlen;
@@ -3672,9 +3675,9 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 {
 	char *board;
 	int blen;
-	int id;
+	long id;
 	int num;
-	int mode;
+	long mode;
 	int fd;
 	char dirpath[STRLEN];
 #define record_cnt 3
@@ -3779,10 +3782,10 @@ static PHP_FUNCTION(bbs_get_records_from_id)
  */
 static PHP_FUNCTION(bbs_get_threads_from_id)
 {
-	int bid;
-	int id;
-	int num;
-	int mode;
+	long bid;
+	long id;
+	long num;
+	long mode;
 	char dirpath[STRLEN];
 	fileheader_t *articles;
 	const struct boardheader *bp;
@@ -3863,8 +3866,8 @@ threads_error:
  */
 static PHP_FUNCTION(bbs_is_bm)
 {
-    int brdnum;
-    int usernum;
+    long brdnum;
+    long usernum;
     const struct boardheader *bp = NULL;
     const struct userec *up = NULL;
     int ac = ZEND_NUM_ARGS();
@@ -3902,7 +3905,7 @@ static PHP_FUNCTION(bbs_getbdes)
 
 static PHP_FUNCTION(bbs_getbname)
 {
-	int brdnum;
+	long brdnum;
 	const struct boardheader *bp=NULL;
     int ac = ZEND_NUM_ARGS();
 
@@ -3975,11 +3978,12 @@ static PHP_FUNCTION(bbs_postarticle)
 	char *boardName, *title, *content;
     char filename[80], dir[80], buf[MAXPATH], buf2[80],path[80],board[80];
 	int blen, tlen, clen;
-    int r, i, sig, mailback, is_tex;
-	int reid;
+    int r, i;
+    long sig, mailback, is_tex;
+	long reid;
     struct fileheader x, *oldx;
     bcache_t *brd;
-    int local, anony;
+    long local, anony;
     sigjmp_buf bus_jump;
     /*int filtered = 0;*/
 
@@ -4153,7 +4157,7 @@ static PHP_FUNCTION(bbs_edittitle)
 {
 	char *board,*title;
 	int  board_len,title_len;
-	int  id , mode;
+	long  id , mode;
 	char path[STRLEN];
 	char dirpath[STRLEN];
 	struct userec *u = NULL;
@@ -4873,7 +4877,7 @@ static PHP_FUNCTION(bbs_changemaillist)
     char *userid;
     int userid_len;
     zend_bool bAdd;
-    int index;
+    long index;
 
     struct _mail_list maillist;
     char buf[10], path[PATHLEN];
@@ -5025,7 +5029,7 @@ static PHP_FUNCTION(bbs_sendwebmsg)
     int destid_len;
     char *msg;
     int msg_len;
-    int destutmp;
+    long destutmp;
     zval *z_errmsg;
     int result;
     int i;
@@ -5148,7 +5152,7 @@ static PHP_FUNCTION(bbs_mail_file)
     int destid_len;
     char *title;
     int title_len;
-    int is_move;
+    long is_move;
     int ac = ZEND_NUM_ARGS();
 
     if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ssssl", &srcid, &srcid_len, &filename, &filename_len, &destid, &destid_len, &title, &title_len, &is_move) == FAILURE) {
@@ -5413,7 +5417,8 @@ PHP_MINFO_FUNCTION(smth_bbs)
  
 static PHP_FUNCTION(bbs_postmail){
 	char* targetID, *title, *content;
-	int  idLen, tLen,cLen, backup,sig;
+	int  idLen, tLen,cLen;
+    long backup,sig;
 	int ac = ZEND_NUM_ARGS();
 	char filename[STRLEN+1];
 	char title2[80],title3[80];
@@ -5715,7 +5720,8 @@ static PHP_FUNCTION(bbs_modify_nick)
     char* username;
     int username_len;
     int ac = ZEND_NUM_ARGS();
-    int m, bTmp = 1;
+    int m;
+    long bTmp = 1;
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &username, &username_len) == FAILURE)
         if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &username, &username_len, &bTmp) == FAILURE)
@@ -5954,8 +5960,8 @@ static PHP_FUNCTION(bbs_saveuserdata)
 			country_len,
 			province_len,
 			city_len,
-			graduate_school_len,
-			gender,
+			graduate_school_len;
+	long	gender,
 	        year,
 	        month,
 			day,
@@ -6125,9 +6131,9 @@ static PHP_FUNCTION(bbs_createregform)
 			address_len,
 			email_len,
 			phone_len,
-			mobile_phone_len,
+			mobile_phone_len;
 #ifdef HAVE_WFORUM
-			OICQ_len,
+    int     OICQ_len,
 			ICQ_len,
 			MSN_len,
 			homepage_len,
@@ -6135,8 +6141,8 @@ static PHP_FUNCTION(bbs_createregform)
 			country_len,
 			province_len,
 			city_len,
-			graduate_school_len,
-			userface_img,
+			graduate_school_len;
+    long	userface_img,
 			userface_width,
 			userface_height, 
 			group,
@@ -6146,9 +6152,9 @@ static PHP_FUNCTION(bbs_createregform)
 			profession, 
 			married, 
 			education,
-			character,
+			character;
 #endif
-			gender,
+	long	gender,
 			year,
 	        month,
 			day;
@@ -6689,7 +6695,8 @@ static PHP_FUNCTION(bbs_denyadd)
 {
     char *board,*userid,*exp;
     int  board_len,userid_len,exp_len;
-    int  denyday,manual_deny,autofree;
+    long  denyday,manual_deny;
+    int autofree;
     struct boardheader brd;
     struct userec *lookupuser;
     char buf[256];
@@ -6869,7 +6876,7 @@ static PHP_FUNCTION(bbs_searchboard)
 {
     char *keyword;
     int keyword_len;
-    int exact;
+    long exact;
     zval *element,*boards;
     bcache_t *bc;
     int i;
@@ -6944,7 +6951,8 @@ static PHP_FUNCTION(bbs_useronboard)
     char *board;
     int   board_len;
     zval *element,*users;
-    int bid,i,j,seecloak=0;
+    int bid,i,j;
+    long seecloak=0;
     
     int ac = ZEND_NUM_ARGS();
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sz", &board, &board_len, &users) == FAILURE) {
@@ -7031,7 +7039,7 @@ static PHP_FUNCTION(bbs_can_send_mail)
 static PHP_FUNCTION(bbs_setmailreaded)
 {
 	int ac = ZEND_NUM_ARGS();
-	int num;
+	long num;
 	char * dirname;
 	int dirname_len;
 	int total;
@@ -7083,7 +7091,7 @@ static PHP_FUNCTION(bbs_add_import_path)
 	int path_len;
 	char * title;
 	int title_len;
-	int num;
+	long num;
 	char *im_path[ANNPATH_NUM];
 	char *im_title[ANNPATH_NUM];
 	time_t im_time=0;
@@ -7323,15 +7331,15 @@ static PHP_FUNCTION(bbs_new_board)
 	int section_len;
 	char *desp;
 	int desp_len;
-	int blevel;
-	int banony;
-	int bjunk;
-	int bout;
-	int battach;
-	int oldbnum;
-	int bclubread;
-	int bclubwrite;
-	int bclubhide;
+	long blevel;
+	long banony;
+	long bjunk;
+	long bout;
+	long battach;
+	long oldbnum;
+	long bclubread;
+	long bclubwrite;
+	long bclubhide;
 
 	char* bgroup;
 	int bgroup_len;
@@ -7341,7 +7349,9 @@ static PHP_FUNCTION(bbs_new_board)
 	struct boardheader newboard;
 	char vbuf[100];
 
-    if (ac != 15 || zend_parse_parameters(15 TSRMLS_CC, "lsssssllllsllll", &oldbnum, &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach, &bclubread, &bclubwrite, &bclubhide) == FAILURE) {
+    if (ac != 15 || zend_parse_parameters(15 TSRMLS_CC, "lsssssllllsllll", &oldbnum, &bname, &bname_len, &section, &section_len, 
+        &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach,
+        &bclubread, &bclubwrite, &bclubhide) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -7688,7 +7698,7 @@ static PHP_FUNCTION(bbs_get_vote_from_num)
 	FILE *fp;
 	int vnum;
 	zval *element,*retarray,*uservotearray;
-	int ent;
+	long ent;
 	int pos;
 
     if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sala", &bname, &bname_len, &retarray, &ent, &uservotearray) == FAILURE) {
@@ -7768,8 +7778,8 @@ static PHP_FUNCTION(bbs_vote_num)
 	int bname_len;
 	char *msg;
 	int msg_len;
-	int ent;
-	unsigned int votevalue;
+	long ent;
+	long votevalue;
 	struct votebal vbal;
 	struct ballot uservote;
 	struct ballot tmpball;
@@ -7900,11 +7910,11 @@ static PHP_FUNCTION(bbs_start_vote)
 	int title_len;
 	char *desp;
 	int desp_len;
-	int type,ball_maxdays;
-	int ball_maxtkt;
-	int ball_totalitems;
+	long type,ball_maxdays;
+	long ball_maxtkt;
+	long ball_totalitems;
 	int i,pos;
-	int numlogin,numpost,numstay,numday;
+	long numlogin,numpost,numstay,numday;
 	struct boardheader *bp;
 	struct boardheader fh;
 	struct votebal ball;
@@ -7913,7 +7923,11 @@ static PHP_FUNCTION(bbs_start_vote)
 	char buff[PATHLEN];
 	FILE *fp;
 
-    if (ac != 21 || zend_parse_parameters(21 TSRMLS_CC, "slllllsslllssssssssss", &board, &board_len, &type, &numlogin, &numpost, &numstay, &numday, &title, &title_len, &desp, &desp_len, &ball_maxdays, &ball_maxtkt, &ball_totalitems, &items[0], &items_len[0], &items[1], &items_len[1], &items[2], &items_len[2], &items[3], &items_len[3], &items[4], &items_len[4], &items[5], &items_len[5], &items[6], &items_len[6], &items[7], &items_len[7], &items[8], &items_len[8], &items[9], &items_len[9]) == FAILURE) {
+    if (ac != 21 || zend_parse_parameters(21 TSRMLS_CC, "slllllsslllssssssssss", &board, &board_len, &type, &numlogin, &numpost,
+        &numstay, &numday, &title, &title_len, &desp, &desp_len, &ball_maxdays, &ball_maxtkt, &ball_totalitems, &items[0],
+        &items_len[0], &items[1], &items_len[1], &items[2], &items_len[2], &items[3], &items_len[3], &items[4], &items_len[4],
+        &items[5], &items_len[5], &items[6], &items_len[6], &items[7], &items_len[7], &items[8], &items_len[8], &items[9],
+        &items_len[9]) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -8036,7 +8050,7 @@ static PHP_FUNCTION(bbs_start_vote)
 static PHP_FUNCTION(bbs_load_favboard)
 {
         int ac = ZEND_NUM_ARGS();
-        int select;
+        long select;
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
                 WRONG_PARAM_COUNT;
         }
@@ -8053,7 +8067,7 @@ static PHP_FUNCTION(bbs_load_favboard)
 static PHP_FUNCTION(bbs_is_favboard)
 {
         int ac = ZEND_NUM_ARGS();
-        int position;
+        long position;
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
@@ -8063,8 +8077,8 @@ static PHP_FUNCTION(bbs_is_favboard)
 static PHP_FUNCTION(bbs_del_favboarddir)
 {
         int ac = ZEND_NUM_ARGS();
-		int select;
-        int position;
+		long select;
+        long position;
         if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
@@ -8083,7 +8097,7 @@ static PHP_FUNCTION(bbs_del_favboarddir)
 static PHP_FUNCTION(bbs_get_dirname)
 {
         int ac = ZEND_NUM_ARGS();
-		int select;
+		long select;
 		char title[256];
 
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
@@ -8101,7 +8115,7 @@ static PHP_FUNCTION(bbs_get_dirname)
 static PHP_FUNCTION(bbs_get_father)
 {
         int ac = ZEND_NUM_ARGS();
-		int select;
+		long select;
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
@@ -8112,8 +8126,8 @@ static PHP_FUNCTION(bbs_get_father)
 static PHP_FUNCTION(bbs_del_favboard)
 {
         int ac = ZEND_NUM_ARGS();
-		int select;
-        int position;
+		long select;
+        long position;
         if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
@@ -8168,8 +8182,8 @@ static PHP_FUNCTION(bbs_add_favboard)
 
 static PHP_FUNCTION(bbs_fav_boards)
 {
-    int select;
-    int mode;
+    long select;
+    long mode;
     int rows = 0;
     struct newpostdata newpost_buffer[FAVBOARDNUM];
     struct newpostdata *ptr;
@@ -8372,7 +8386,8 @@ static PHP_FUNCTION(bbs_get_tmpl_from_num)
 	struct boardheader *bp=NULL;
 	struct a_template * ptemp = NULL;
 	zval *element,*retarray;
-	int ent,tmpl_num,i,mode;
+	long ent;
+    int tmpl_num,i,mode;
 
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sla", &bname, &bname_len, &ent, &retarray) == FAILURE) {
 		WRONG_PARAM_COUNT;
@@ -8439,13 +8454,18 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 	struct a_template * ptemp = NULL;
 	FILE *fp,*fpsrc;
 	int write_ok=0;
-	int ent,tmpl_num,i,mode;
+	long ent;
+    int tmpl_num,i,mode;
 	char newtitle[STRLEN];
 
 	char *text[21];
 	int t_len[21];
 
-    if (ac != 23 || zend_parse_parameters(23 TSRMLS_CC, "slsssssssssssssssssssss", &bname, &bname_len, &ent, &text[0],&t_len[0],&text[1],&t_len[1],&text[2],&t_len[2],&text[3],&t_len[3],&text[4],&t_len[4],&text[5],&t_len[5],&text[6],&t_len[6],&text[7],&t_len[7],&text[8],&t_len[8],&text[9],&t_len[9],&text[10],&t_len[10],&text[11],&t_len[11],&text[12],&t_len[12],&text[13],&t_len[13],&text[14],&t_len[14],&text[15],&t_len[15],&text[16],&t_len[16],&text[17],&t_len[17],&text[18],&t_len[18],&text[19],&t_len[19],&text[20],&t_len[20]) == FAILURE) {
+    if (ac != 23 || zend_parse_parameters(23 TSRMLS_CC, "slsssssssssssssssssssss", &bname, &bname_len, &ent, &text[0],&t_len[0],
+        &text[1],&t_len[1],&text[2],&t_len[2],&text[3],&t_len[3],&text[4],&t_len[4],&text[5],&t_len[5],&text[6],&t_len[6],&text[7],
+        &t_len[7],&text[8],&t_len[8],&text[9],&t_len[9],&text[10],&t_len[10],&text[11],&t_len[11],&text[12],&t_len[12],&text[13],
+        &t_len[13],&text[14],&t_len[14],&text[15],&t_len[15],&text[16],&t_len[16],&text[17],&t_len[17],&text[18],&t_len[18],&text[19],
+        &t_len[19],&text[20],&t_len[20]) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -8608,7 +8628,7 @@ static PHP_FUNCTION(bbs_docross)
 {
     char *board,*target;
     int  board_len,target_len;
-    int  id,out_go;
+    long  id,out_go;
     struct boardheader *src_bp;
 	struct boardheader *dst_bp;
 	struct fileheader f;
@@ -8695,7 +8715,7 @@ static PHP_FUNCTION(bbs_bmmanage)
 {
     char *board;
     int  board_len;
-    int  id,mode,zhiding;
+    long  id,mode,zhiding;
     struct boardheader* bh;
     int ret;
     char dir[STRLEN];
@@ -8910,8 +8930,8 @@ int get_pos(char * s)
 }
 
 struct fulluserlistarg{
-    int start;
-    int num;
+    long start;
+    long num;
     zval* return_value;
 };
 
@@ -8980,7 +9000,7 @@ static PHP_FUNCTION(bbs_x_search)
     int toomany, res_total;
     int ac = ZEND_NUM_ARGS();
     int char_len;   
-    int pos;
+    long pos;
     char *qn;
     zval* element;
     zval *total_records;
@@ -9402,9 +9422,9 @@ static PHP_FUNCTION(bbs_read_ann_dir)
 static PHP_FUNCTION(bbs_get_threads_from_gid)
 {
 #define MAX_THREADS_NUM 512
-	int bid;
-	int gid;
-	int start;
+	long bid;
+	long gid;
+	long start;
     zval *z_threads;
     zval *retprev;
     int i;
