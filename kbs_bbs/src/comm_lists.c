@@ -276,6 +276,7 @@ int exec_mbem(char *s)
     int (*func)();   
     char *c;   
     char buf[1024];   
+    int oldmode;
     
     if (HAS_PERM(currentuser,PERM_DENYRELAX)) {
 	clear();
@@ -284,6 +285,7 @@ int exec_mbem(char *s)
 	pressanykey();
 	return 0;
     }
+    oldmode = uinfo.mode;
     modify_user_mode(SERVICES);
     strcpy(buf,s);   
     s=strstr(buf,"@mod:");   
@@ -317,6 +319,7 @@ int exec_mbem(char *s)
             pressanykey();
         }   
     }
+    modify_user_mode(oldmode);
 }
 
 static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
