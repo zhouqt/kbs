@@ -266,11 +266,11 @@ static int choose_file_show(struct _select_def *conf, int ii)
             if(buf[i]==0x1b) {
                 j=i;
                 while(!(buf[j]>='a'&&buf[j]<='z'||buf[j]>='A'&&buf[j]<='Z')&&j<fsize) {
-                    buf[j] = ' ';
+                    buf[j] = 0;
                     j++;
                 }
                 if(j<fsize)
-                    buf[j] = ' ';
+                    buf[j] = 0;
             }
         }
         i=0;
@@ -359,7 +359,7 @@ static int choose_file_show(struct _select_def *conf, int ii)
             else
                 resetcolor();
             if(buf[i]=='\n') prints(" ");
-            else prints("%c",buf[i]);
+            else if(buf[i]) prints("%c",buf[i]);
             if(p) p=0;
             else if(buf[i]<0) p=1;
             j++;
