@@ -53,6 +53,9 @@ int main()
     		free(oldx);
     		oldx = NULL;
     	}
+    	else
+       if (oldx->accessed[1] & FILE_READ)
+           http_fatal("本文不能回复");
     }
     else {
     	oldx = NULL;
