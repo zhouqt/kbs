@@ -1,4 +1,3 @@
-
 #include "bbs.h"
 
 int

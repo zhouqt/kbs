@@ -1,4 +1,3 @@
-
 #define VOTE_YN         (1)
 #define VOTE_SINGLE     (2)
 #define VOTE_MULTI      (3)
