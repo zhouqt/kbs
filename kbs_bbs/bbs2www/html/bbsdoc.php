@@ -183,20 +183,20 @@
 				if ($flags[0] == ' ')
 				{
 ?>
-<font face="Webdings" color="#008000">&lt;</font>
+<font class="f208">&nbsp;</font>
 <?php
 				}
 				else
 				{
 ?>
-<font color="#008000"><?php echo $flags[0]; ?></font>
+<font class="f002"><?php echo $flags[0]; ?></font>
 <?php
 				}
 			}
 			elseif ($flags[0] == 'N' || $flags[0] == '*')
 			{
 ?>
-<font color="#909090"><?php echo $flags[0]; ?></font>
+<font class="f008"><?php echo $flags[0]; ?></font>
 <?php
 			}
 			else
