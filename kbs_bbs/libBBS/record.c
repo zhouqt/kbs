@@ -123,7 +123,7 @@ long get_sum_records(char *fpath, int size)
     char buf[200], *p;
 
     if (!(fp = fopen(fpath, "r")))
-        return -1;
+        return 0;
     strcpy(buf, fpath);
     p = strrchr(buf, '/') + 1;
     while (fread(&fhdr, size, 1, fp) == 1) {
