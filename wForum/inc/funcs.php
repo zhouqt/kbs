@@ -586,10 +586,15 @@ function show_nav()
 	global $StartTime;
 	global $loginok;
 
-
   html_init();
+  if ($loginok==1) {
 ?>
-
+<script language="Javascript">
+	var manage= '<a style=font-size:9pt;line-height:14pt; href=\"usermailbox.php?boxname=inbox">我的邮箱</a><br><a style=font-size:9pt;line-height:14pt; href=\"JavaScript:openScript(\'messanger.asp?action=new\',500,400)\">发短信</a><br>';
+</script>
+<?php 
+  }
+?>
 <body topmargin=0 leftmargin=0 onmouseover="HideMenu();">
 <div id=menuDiv class="navclass1"></div>
 <table cellspacing=0 cellpadding=0 align=center class="navclass2">
@@ -624,6 +629,7 @@ function show_nav()
 	}  else  {
 ?>
 <a href="logon.php">重登陆</a> 
+<img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(manage,100)'>用户功能菜单</a>
 <?php
  }
 ?>
@@ -710,17 +716,22 @@ function getMsg(){
 	if ($ret==0) 
 		return false;
 ?>
-<div id="floater" style="position:absolute; width:310px; height:102px; z-index:2; left: 30px; top: 12px; visibility: visible; background-color: #FFFFFF; layer-background-color: #FFFFFF; border: 1px none #000000; "> 
+<div id="floater" style="position:absolute; width:502px; height:152px; z-index:2; left: 200px; top: 250px; visibility: visible; background-color: transparent; layer-background-color: #FFFFFF; "> 
 <bgsound src="/sound/msg.wav">
-<body style="BACKGROUND-COLOR: #f0ffd0">
-<table width="97%">
+<table cellspacing=1 cellpadding=0 align=center width="100%" class=tableBorder1 >
+<thead>
+<TR><Th height=20 align=left id=TableTitleLink align="center"><a href="dispuser.php?name=><?php echo $srcid; ?>" target=_blank><?php echo $srcid; ?></a>于(<?php echo strftime("%b %e %H:%M", $sndtime); ?>)发送给您的短信：
+</th></tr></thead>
+<tbody>
   <tr>
-    <td valign="top" nowrap="nowrap"><font color="green"><?php echo $srcid; ?></font> (<?php echo strftime("%b %e %H:%M", $sndtime); ?>): </td>
-    <td align="left" valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
-    <td align="right" valign="top" nowrap="nowrap"><a target="f3" href="/bbssendmsg.php?destid=<?php 
-echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>" target="_blank">[回讯息]</a> <span onclick="document.all.floater.style.visibility='hidden';">[忽略]</a></td>
+    <td height=110 align="left" valign="top" class=tablebody1><?php echo htmlspecialchars($msgbuf); ?></td>
   </tr>
+  <tr>
+    <td height=20 align="right" valign="top" nowrap="nowrap" class=tablebody2><a target="f3" href="/bbssendmsg.php?destid=<?php 
+echo $srcid; ?>&destutmp=<?php 
+echo $srcutmpnum; ?>" target="_blank">[回讯息]</a> <a href="#" onclick="document.all.floater.style.visibility='hidden';">[忽略]</a></td>
+  </tr>
+ </tbody>
 </table>
 </div>
 <script src="inc/floater.js"  language="javascript"></script>
