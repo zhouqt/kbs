@@ -328,7 +328,7 @@ menuDivStyle.visible="hidden";</programlisting>
 							<glossdef><para>赋值成 1 的时候将设置当前用户不在任何版面上。web 由于用户可以开多个窗口，所以如果任何和版面无关的页面都将这个设置成 1 反而会导致统计更不准确并且加重系统负担。目前只有首页和讨论区列表将其设置为 1。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>$needlogin</glossterm>
-							<glossdef><para>这个变量不建议设置。当设置为 0 时，如果当前用户没有登录（注意 guest 登录也算作用户登录），则不主动登录为 guest，同时也不设置登录信息的 cookie。这样做如果用户没有登录 (!$loginok &amp;&amp; !$guestloginok) 必须特别注意，该脚本内后续的操作必须和登录用户完全没有关系，而且绝不能假设当前登录用户是 guest，包括 php 库函数内，因为这种情况下 getCurrentUser() 可能是 NULL，也可能是上一次脚本运行时候的用户！例如，rss.php 设置 $needlogin = 0，这样直接调用 bbs_getarticles() 函数就是有问题的，因为这个函数内部要根据当前登录用户来产生帖子标记。现在 rss.php 采用的办法是如果当前没有用户登录就调用一下 bbs_setguest_nologin() 虚设当前用户为非登录状态的 guest。注意，即使调用了 bbs_setguest_nologin() 函数，PHP 变量 $currentuser 仍旧是无效的！一句话，除非你完全确定你在干什么（特别安全方面已经考虑周全），否则不要将 $needlogin 设置为 0，也不要去调用 bbs_setguest_nologin()。</para></glossdef>
+							<glossdef><para>这个变量不建议设置。当设置为 0 时，如果当前用户没有登录（注意 guest 登录也算作用户登录），则不主动登录为 guest，同时也不设置登录信息的 cookie。这样做如果用户没有登录 (!$loginok &amp;&amp; !$guestloginok) 必须特别注意，该脚本内后续的操作必须和登录用户完全没有关系，而且绝不能假设当前登录用户是 guest，包括 php 库函数内，因为这种情况下 getCurrentUser() 可能是 NULL！例如，rss.php 设置 $needlogin = 0，这样直接调用 bbs_getarticles() 函数就是有问题的，因为这个函数内部要根据当前登录用户来产生帖子标记。现在 rss.php 采用的办法是如果当前没有用户登录就调用一下 bbs_setguest_nologin() 虚设当前用户为非登录状态的 guest。注意，即使调用了 bbs_setguest_nologin() 函数，PHP 变量 $currentuser 仍旧是无效的！一句话，除非你完全确定你在干什么（特别安全方面已经考虑周全），否则不要将 $needlogin 设置为 0，也不要去调用 bbs_setguest_nologin()。</para></glossdef>
 						</glossentry>
 					</glosslist>
 				</para></listitem>
