@@ -379,6 +379,9 @@ int m_newbrd()
     getdata(10, 0, "是否可向外转信(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y')
         newboard.flag |= BOARD_OUTFLAG;
+    getdata(11, 0, "是否不可re文章(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
+    if (ans[0] == 'Y' || ans[0] == 'y')
+        newboard.flag |= BOARD_NOREPLY;
     build_board_structure(newboard.filename);
     group = chgrp();
     if (group != NULL) {
@@ -466,10 +469,11 @@ int m_editbrd()
         if (bh) groupname=bh->filename;
     }
     prints("所属目录：%s\n",bh?groupname:"无");
-    prints("可向外转信:   %s    可粘贴附件: %s    允许 Email 发文: %s\n", 
+    prints("可向外转信: %s  可粘贴附件: %s 允许Email发文: %s 不可re文: %s\n", 
 			(fh.flag & BOARD_OUTFLAG) ? "Yes" : "No",
 			(fh.flag & BOARD_ATTACH) ? "Yes" : "No",
-			(fh.flag & BOARD_EMAILPOST) ? "Yes" : "No");
+			(fh.flag & BOARD_EMAILPOST) ? "Yes" : "No",
+			(fh.flag & BOARD_NOREPLY) ? "Yes" : "No");
     if (fh.flag & BOARD_CLUB_READ || fh.flag & BOARD_CLUB_WRITE)
         prints("俱乐部:   %s %s %s  序号: %d\n", fh.flag & BOARD_CLUB_READ ? "阅读限制" : "", fh.flag & BOARD_CLUB_WRITE ? "发表限制" : "", fh.flag & BOARD_CLUB_HIDE ? "隐藏" : "", fh.clubnum);
     else
@@ -562,6 +566,14 @@ int m_editbrd()
                 newfh.flag |= BOARD_EMAILPOST;
             else
                 newfh.flag &= ~BOARD_EMAILPOST;
+        };
+        sprintf(buf, "不可re文 (Y/N)? [%c]: ", (newfh.flag & BOARD_NOREPLY) ? 'Y' : 'N');
+        getdata(line++, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        if (*genbuf == 'y' || *genbuf == 'Y' || *genbuf == 'N' || *genbuf == 'n') {
+            if (*genbuf == 'y' || *genbuf == 'Y')
+                newfh.flag |= BOARD_NOREPLY;
+            else
+                newfh.flag &= ~BOARD_NOREPLY;
         };
         getdata(line++, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y')

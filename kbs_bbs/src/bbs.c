@@ -922,9 +922,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     case 'R':
     case 'y':
     case 'r':
-#ifdef SMTH
-	/* 该三版不许Re文,add AD_Agent board   by   binxun  */
-        if ((!strcmp(currboard->filename,"AD_Agent"))||(!strcmp(currboard->filename, "News")) || (!strcmp(currboard->filename, "Original"))) 
+        if ( currboard->flag & BOARD_NOREPLY ) 
         {
             clear();
             move(3, 0);
@@ -933,7 +931,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
             pressreturn();
             break;              /*Haohmaru.98.12.19,不能回文章的版 */
         }
-#endif
         if (fileinfo->accessed[1] & FILE_READ) {        /*Haohmaru.99.01.01.文章不可re */
             clear();
             move(3, 0);
