@@ -263,10 +263,10 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 {
 	global $cachemode;
 	global $currentuser;
-	/*if ($cachemode=="") {
+	if ($cachemode=="") {
 		cache_header("no-cache");
 		Header("Cache-Control: no-cache");
-    	}*/
+    	}
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
