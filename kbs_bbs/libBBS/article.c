@@ -363,7 +363,7 @@ void cancelpost(const char *board,const char *userid,struct fileheader *fh, int 
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
     strncpy(ph->title, oldpath, ARTICLE_TITLE_LEN - 1);
     ph->title[ARTICLE_TITLE_LEN - 1] = 0;
-    ph->accessed[11] = now / (3600 * 24) % 100; /*localtime(&now)->tm_mday; */
+    ph->accessed[sizeof(ph->accessed) - 1] = now / (3600 * 24) % 100;
     if (autoappend) {
         setbdir((owned) ? 5 : 4, oldpath, board);
         append_record(oldpath, &postfile, sizeof(postfile));

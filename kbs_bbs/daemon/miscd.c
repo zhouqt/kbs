@@ -59,7 +59,7 @@ int killdir(char *basedir, char *filename)
     lseek(fd, 0, 0);
     for (i = 0, afile = files; i < st.st_size / sizeof(struct fileheader); i++, afile++) {
 	int delta;
-	delta=now-afile->accessed[11];
+	delta=now-afile->accessed[sizeof(afile->accessed) - 1];
 	if (delta<0) delta+=100;
         if (delta > DAY_DELETED_CLEAN) {
             strcpy(genbuf1, basedir);
