@@ -301,7 +301,7 @@ int t_query(char* q_id)
 #ifdef NINE_BUILD
     prints("\n上次在  [%s] 从 [%s] 到本站一游。", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') ? "(不详)" : SHOW_USERIP(lookupuser->lasthost)));
 #else
-    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : (HAS_PERM(currentuser, PERM_SYSOP) ? lookupuser->lasthost: SHOW_USERIP(lookupuser->lasthost)) ),    /*Haohmaru.99.12.18. hide ip */
+    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : ( (!strcmp(lookupuser->userid , currentuser->userid) || HAS_PERM(currentuser, PERM_SYSOP) ) ? lookupuser->lasthost: SHOW_USERIP(lookupuser->lasthost)) ),    /*Haohmaru.99.12.18. hide ip */
            exittime);
 #endif
 #ifdef NINE_BUILD
