@@ -3967,8 +3967,10 @@ Goodbye()    /*离站 选单*/
         unlink(tmpfile);
     }
     /* stephen on 2001.11.1: 上站不足5分钟不计算上站次数 */
-    if (stay<=300){
+    if (stay<=300 && currentuser->numlogins > 5){
 	currentuser->numlogins --;
+        if (currentuser->stay>stay) 
+            currentuser->stay-=stay;
     }
     if(started) {
         record_exit_time(); /* 记录用户的退出时间 Luzi 1998.10.23*/
