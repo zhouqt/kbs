@@ -367,4 +367,8 @@ attach define
 #define SHOW_USERIP(user,x) showuserip(user,x)
 
 #define AUTO_CHECK_REGISTER_FORM //自动通过注册单
+
+#define QUOTED_LINES 3
+#define QUOTELEV 0
+
 #endif

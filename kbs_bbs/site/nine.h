@@ -326,4 +326,6 @@ attach define
 #define ID_CONNECT_CON_THRESHOLD 200.0/60/60
 #define ID_CONNECT_CON_THRESHOLD2 300.0
 
+#define QUOTELEV 1
+
 #endif

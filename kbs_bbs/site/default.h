@@ -793,4 +793,12 @@ attach define
 #endif
 #endif
 
+#ifndef QUOTED_LINES
+#define QUOTED_LINES 10
+#endif
+
+#ifndef QUOTELEV
+#define QUOTELEV 0
+#endif
+
 #endif

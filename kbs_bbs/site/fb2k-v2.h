@@ -359,4 +359,7 @@ attach define
 #define HAVE_OWN_USERIP
 #define SHOW_USERIP(user,x) showuserip(user,x)
 
+#define QUOTED_LINES 3
+#define QUOTELEV 0
+
 #endif
