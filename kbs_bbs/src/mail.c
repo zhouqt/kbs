@@ -2033,7 +2033,9 @@ static int m_clean()
 {
     char buf[40];
     int num;
+    int savemode=uinfo.mode;
     move(0,0);
+    uinfo.mode = RMAIL;
     setmailfile(buf,currentuser->userid,mail_sysbox[1]);
     num = get_num_records(buf, sizeof(struct fileheader));
     if (num&&askyn("清除发件箱么?",0)) 
@@ -2059,6 +2061,7 @@ static int m_clean()
     	    }
     	}
     }
+    uinfo.mode = savemode;
 }
 
 const static struct command_def mail_cmds[] = {
