@@ -659,6 +659,15 @@ setTimeout('bbs_auto_reload()',540000);
 			<td width="16"><img src="/images/open.gif" border="0"></td>
 			<td><a href="telnet:smth.org"><img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="telnetµÇÂ¼" align="absmiddle"> TelnetµÇÂ¼</a>
 		</tr>
+<?php
+    if (defined("SITE_SMTH")) {
+        if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
+?>
+<script src="/bbsleftmenu.js"></script>
+<?php
+        }
+    }
+?>
 <!--
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
