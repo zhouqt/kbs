@@ -17,7 +17,7 @@ int main()
 	{
 		printf("%s -- 修改密码 [用户: %s]<hr color=\"green\">\n", 
 			BBSNAME, currentuser->userid);
-		printf("<!-- document.write(\"<form action='https://\"+windows.location.hostname+\"bbspwd?type=1' method='post'>\"); -->\n");
+		printf("<!-- document.write(\"<form action='https://\"+windows.location.hostname+\"/cgi-bin/bbs/bbspwd?type=1' method='post'>\"); -->\n");
 		printf("你的旧密码: <input maxlength=\"39\" size=\"12\" type=\"password\" name=\"pw1\"><br>\n");
 		printf("你的新密码: <input maxlength=\"39\" size=\"12\" type=\"password\" name=\"pw2\"><br>\n");
 		printf("再输入一次: <input maxlength=\"39\" size=\"12\" type=\"password\" name=\"pw3\"><br><br>\n");
