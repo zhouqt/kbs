@@ -40,19 +40,15 @@ if (!bbs_get_hot_threads($board,BOARD_HOT_THREADS,$threads,$err))
 
 Header('Content-type: application/octet-stream');
 Header('Content-Disposition: inline;filename=bbshot.js');
+
 ?>
-document.write('<center><table cellspacing="0" cellpadding="3" border="0" class="t1" width="98%">');
+document.write('<center><table cellspacing="0" cellpadding="5" border="0" width="98%"><tr><td width="100" align="center">[<font color="red">热门话题</font>]</td><td><marquee onmouseover="this.stop()" onmouseout="this.start()">');
 <?php
     foreach ($threads as $thread) {
 ?>
-document.write('<tbody><tr>');
-document.write('<td class="t4" width="20"><font color="red">HOT</font></td>');
-document.write('<td class="t4" width="80"><a href="/bbsqry.php?userid=<?php echo $thread['userid']; ?>"><?php echo $thread['userid']; ?></a></td>');
-document.write('<td class="t4" width="80"><?php echo date('M d'); ?></td>');
-document.write('<td class="t5"><a href="/bbscon.php?board=<?php echo urlencode($board); ?>&id=<?php echo $thread['gid']; ?>"><?php echo htmlspecialchars($thread['title']); ?></a>&nbsp;&nbsp;[<a href="/bbstcon.php?board=<?php echo urlencode($board); ?>&gid=<?php echo $thread['gid']; ?>">同主题</a>]</td>');
-document.write('<td class="t4" width="120">[讨论人数: <?php echo $thread['count']; ?>]</td>');
-document.write('</tr></tbody>');
+document.write('<a href="/bbscon.php?board=<?php echo urlencode($board); ?>&id=<?php echo $thread['gid']; ?>"><?php echo htmlspecialchars($thread['title']); ?></a>&nbsp;[<a href="/bbstcon.php?board=<?php echo urlencode($board); ?>&gid=<?php echo $thread['gid']; ?>">同主题</a>](<?php echo $thread['count']; ?>)&nbsp;&nbsp;&nbsp;&nbsp;');
 <?php
     }
 ?>
-document.write('</table></center>');
+document.write('</marquee></td></tr></table></center>');
+

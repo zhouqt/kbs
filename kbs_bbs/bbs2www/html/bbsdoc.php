@@ -335,14 +335,12 @@ login_init();
 	if($board_list_error==FALSE)
 	{		
 		bbs_board_header($brdarr,$total);
-		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
     if (defined('BBS_NEWPOSTSTAT')) {
-        if (!isset($_GET['start']) && !isset($_GET['page'])) {
 ?>
 <script src="/bbshot.php?board=<?php echo $brd_encode; ?>"></script>
 <?php        
-        }    
     }
+		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
 		display_articles($brdarr, $articles, $start, $order_articles );
 		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);
 		bbs_board_foot($brdarr,"NORMAL");
