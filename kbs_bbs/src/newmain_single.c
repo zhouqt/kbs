@@ -898,7 +898,7 @@ char *boardmargin()
     static char buf[STRLEN];
 
     if (selboard)
-        sprintf(buf, "讨论区 [%s]", currboard);
+	    sprintf(buf, "讨论区 [%s]", currboard);
     else {
         brc_initial(currentuser->userid, DEFAULTBOARD);
         if (getbnum(currboard)) {
@@ -988,8 +988,19 @@ void showtitle(title, mid)
             colour = 1;
     }
     note = boardmargin();
+
+   if (strstr(title,"版主")!=NULL)
+	/*为了多版主修改 Bigman:2002.9.7 */
+	{
+    note = note + 7 ;
+    spc1 = 78 - strlen(title) - strlen(mid) - strlen(note);
+    spc2 = 2;
+
+	}
+    else {
     spc1 = 39 - num_noans_chr(title) - strlen(mid) / 2;
     spc2 = 40 - strlen(note) - strlen(mid) / 2;
+	}
 /* Modified by Leeward 97/11/23 -- modification starts */
 /* If title is too long (BM names too long), spc1 < 2 (even < 0)
    Then we should decrease spc2 to avoid the line length exceed default(80)
