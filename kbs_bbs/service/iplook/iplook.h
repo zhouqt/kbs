@@ -18,6 +18,18 @@ extern "C" {
 	
 int LookIP(const char *ipstr, char **area, char **location);
 
+/*
+ *  IP 信息日期，从 QQWry.Dat 中取得
+ */  
+
+char *GetIPInfoVersion();
+
+/*
+ *  IP 信息数量，由 convert 生成
+ */
+
+int GetIPInfoCount();
+
 #ifdef __cplusplus
 };
 #endif

@@ -12,6 +12,7 @@ void dolook(char *str)
 int main(int argc, char *argv[])
 {
 	char buf[255];
+	printf("IP 信息查询，%s，共有 IP 数据 %d 条\n", GetIPInfoVersion(), GetIPInfoCount()); 
 	if (argc>1) {
 		dolook(argv[1]);
 	} else {
