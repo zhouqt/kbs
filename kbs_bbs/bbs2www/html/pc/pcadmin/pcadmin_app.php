@@ -32,21 +32,36 @@ function pc_apply_users($link,$type,$start,$pagesize,$userid="",$appname="")
 	return $newApp;
 }
 
-function pc_add_users($link,$userid,$corpusname,$manual)
+function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="normal",$groupmanager="")
 {
 	global $pcconfig , $currentuser , $bbsman_modes;
 	if(!$userid || !$corpusname)
 		return FALSE;
-	$lookupuser=array ();
-	if(bbs_getuser($userid, $lookupuser) == 0 )
-		return FALSE;
+	
+	if ($blogtype=="normal") {
+    	$lookupuser=array ();
+    	if(bbs_getuser($userid, $lookupuser) == 0 )
+    		return FALSE;
+	    $userid = $lookupuser["userid"];
+	}
+	else {
+	    if (!$pcconfig["TYPES"][$blogtype])
+	        return FALSE;
+	    $userid = $pcconfig["TYPES"][$blogtype] . '.' . $userid;
+	    if (!$groupmanager)
+	        return FALSE;
+	    $lookupuser=array ();
+    	if(bbs_getuser($groupmanager, $lookupuser) == 0 )
+    		return FALSE;
+	    $groupmanager = $lookupuser["userid"];
+	}
 	
 	if(pc_load_infor($link,$userid))
 		return FALSE;
 	
 	if($manual)
 	{
-		$query = "SELECT username FROM newapply WHERE management != 1 AND management != 3  AND management != 0 AND username = '".addslashes($lookupuser["userid"])."' LIMIT 0 , 1;";	
+		$query = "SELECT username FROM newapply WHERE management != 1 AND management != 3  AND management != 0 AND username = '".addslashes($userid)."' LIMIT 0 , 1;";	
 		$result = mysql_query($query,$link);
 		if($rows = mysql_fetch_array($result))
 			return FALSE;
@@ -63,7 +78,7 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 	
 	//添加用户
 	$query = "INSERT INTO `users` ( `uid` , `username` , `corpusname` , `description` , `theme` , `nodelimit` , `dirlimit` , `createtime` , `style` , `backimage` , `visitcount` , `nodescount` , `logoimage` , `modifytime` , `links` , `htmleditor` , `indexnodechars` , `indexnodes` , `useremail` , `favmode` , `updatetime` , `userinfor` , `pctype` ,`defaulttopic`,`userfile`,`filelimit`) ".
-		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '".addslashes($corpusname)."' , 'others', '300', '300', NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '1', '600', '5', '', '0', NOW( ) , '' , '0' , '其他类别' , '".$userfile_limit."','".$userfile_num_limit."');";
+		 "VALUES ('', '".addslashes($userid)."', '".addslashes($corpusname)."', '".addslashes($corpusname)."' , 'others', '300', '300', NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '1', '600', '5', '', '0', NOW( ) , '' , '0' , '其他类别' , '".$userfile_limit."','".$userfile_num_limit."');";
 	if(!mysql_query($query,$link))
 	{
 		pc_db_close($link);
@@ -71,15 +86,19 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 	}
 	
 	//log一下
-	$action = $currentuser["userid"]. " 通过 " . $lookupuser["userid"] . " 的BLOG申请(www)";
-	pc_logs($link , $action , "" , $lookupuser["userid"] );
-	
+	if ($blogtype!="normal") {
+	    $action = $groupmanager. " 申请建立群体Blog：" . $userid . "(www)";
+	    pc_logs($link , $action , "" , $userid );
+	}
+	$action = $currentuser["userid"]. " 通过 " . $userid . " 的BLOG申请(www)";
+	pc_logs($link , $action , "" , $userid );
+		
 	//更新申请表
 	if($manual)
 		$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
-	 		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes($currentuser["userid"])."' , '0');";
+	 		 "VALUES ('', '".addslashes($userid)."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes($currentuser["userid"])."' , '0');";
 	else
-		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($lookupuser["userid"])."' ORDER BY naid DESC LIMIT 1 ;";
+		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($userid)."' ORDER BY naid DESC LIMIT 1 ;";
 	if(!mysql_query($query,$link))
 	{
 		pc_db_close($link);
@@ -87,21 +106,35 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 	}
 	
 	//发布公告
-	$annTitle = "[公告] 批准 ".$lookupuser["userid"]." 的 Blog 申请";
-	$annBody =  "\n\n        根据用户 ".$lookupuser["userid"]." 申请，经审核、讨论后决定开通该用户\n".
-		    "    Blog ，Blog 名称“".$corpusname."”。\n\n".
+	if ($blogtype=="normal") {
+    	$annTitle = "[公告] 批准 ".$userid." 的 Blog 申请";
+    	$annBody =  "\n\n        根据用户 ".$userid." 申请，经审核、讨论后决定开通该用户\n".
+    		    "    Blog ，Blog 名称“".$corpusname."”。\n\n".
+    		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、\n".
+    		    "    分类等属性请用户在web 登录后自行修改。\n\n";
+	}
+	else {
+	    $annTitle = "[公告] 开设 ".$userid." 群体Blog";
+	    $annBody =  "\n\n        根据用户 ".$groupmanager." 申请，经审核、讨论后决定开设 ".$userid." 群体Blog，\n".
+		    "    Blog 名称“".$corpusname."”。\n\n".
 		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、\n".
-		    "    分类等属性请用户在web 登录后自行修改。\n\n";
+		    "    分类等属性请群体Blog管理员在web 登录后自行修改。\n\n";
+	}
+	
 	$ret = bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody), 0 , 0 , 0 , 0);
 	if($ret != 0)
 		return FALSE;
 	//发信件给用户
-	$ret = bbs_postmail($lookupuser["userid"],preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody),0,0);
-	if($ret < 0)
-		return FALSE;
+  	$ret = bbs_postmail(($blogtype=="normal")?$userid:$groupmanager,preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody),0,0);
+    if($ret < 0)
+	    return FALSE;
 	//标记公告
-	bbs_bmmanage($pcconfig["APPBOARD"],$ret,$bbsman_modes["MARK"],0);
-	
+	//bbs_bmmanage($pcconfig["APPBOARD"],$ret,$bbsman_modes["MARK"],0);
+	if($manual && $blogtype!="normal") {
+	    $pcc = pc_load_infor($link,$userid);
+	    pc_convertto_group($link,$pcc);
+	    pc_add_member($link,$pcc,$groupmanager);
+	}
 	return TRUE;
 }
 
@@ -129,7 +162,7 @@ function pc_reject_apply($link,$userid,$applyAgain)
 if($_GET["userid"])
 {
 	if($_GET["act"] == "y")
-		pc_add_users($link,$_GET["userid"],$_GET["pcname"],$_GET["manual"]);
+		pc_add_users($link,$_GET["userid"],$_GET["pcname"],$_GET["manual"],$_GET["blogtype"],$_GET["groupmanager"]);
 	elseif($_GET["act"] == "r")
 		pc_reject_apply($link,$_GET["userid"],2);
 	elseif($_GET["act"] == "d")
@@ -228,9 +261,24 @@ function bbsconfirm(url,infor){
 <input type="hidden" name="type" value="1">
 <input type="hidden" name="manual" value="1">
 用户名：
+<select name="blogtype" class="f1">
+<?php
+    $types = array_keys ($pcconfig["TYPES"]);
+    foreach ($types as $type) {
+        if ($type=="normal")
+            echo '<option value="normal" selected>(NORMAL)<option>';
+        else
+            echo '<option value="'.$type.'">'.$pcconfig["TYPES"][$type].'.<option>';      
+    }
+?>
+</select>
 <input type="text" class="f1" size="20" name="userid">
 BLOG名：
 <input type="text" class="f1" size="20" name="pcname">
+(
+群体Blog管理员：
+<input type="text" class="f1" size="20" name="groupmanager">
+)
 <input type="submit" class="f1" value="添加">
 </form>
 <?php
