@@ -696,7 +696,7 @@ char *direct ;
 {
     int i;
     char buf[256],ch[4],BMch;
-    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除"};
+    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除","设为不可回复"};
     char linebuffer[256];
 
     if(!chk_currBM(currBM))
@@ -710,7 +710,7 @@ char *direct ;
     move(t_lines-3, 0);
     clrtoeol();
     strcpy(buf,"相同主题 (0)取消  ");
-    for(i=0;i<6;i++)
+    for(i=0;i<7;i++)
         sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
     if (strlen(buf)>76) {
@@ -723,7 +723,7 @@ char *direct ;
     } else
         getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
     BMch=atoi(ch);
-    if(BMch<=0||BMch>6)
+    if(BMch<=0||BMch>7)
     {
         saveline(t_lines-2, 1, NULL);
         saveline(t_lines-3, 1, linebuffer);
@@ -767,7 +767,7 @@ char *direct ;
 {
     int i;
     char buf[256],ch[4],BMch;
-    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除"};
+    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除","设为不可回复"};
     char linebuffer[256];
 
 
@@ -783,7 +783,7 @@ char *direct ;
     move(t_lines-3, 0);
     clrtoeol();
     strcpy(buf,"相同主题 (0)取消  ");
-    for(i=0;i<6;i++)
+    for(i=0;i<7;i++)
         sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
     if (strlen(buf)>76) {
@@ -797,7 +797,7 @@ char *direct ;
         getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
 
     BMch=atoi(ch);
-    if(BMch<=0||BMch>6)
+    if (BMch<=0||BMch>7)
     {
         saveline(t_lines-2, 1, NULL);
         saveline(t_lines-2, 1, linebuffer);
@@ -1180,6 +1180,15 @@ case 0: case 1: case 2:
                 set_delete_mark(locmem->crs_line,&SR_fptr,currdirect);
             }
             break;
+        case SR_BMNOREPLY:
+            if(digestmode)
+                return;
+            if (!( SR_fptr.accessed[ 1 ] & FILE_SIGN))
+                /* Bigman 2000.8.20: 修改同主题删除错误.... Leeward这个增加的不对呀,以后的内容没有读呀 */
+            {
+                noreply_post_noprompt(locmem->crs_line,&SR_fptr,currdirect);
+            }
+            break;	
         case SR_BMMARK:
             if(digestmode==2)
                 return;

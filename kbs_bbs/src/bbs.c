@@ -2984,6 +2984,42 @@ char *direct;
 }
 
 int
+noreply_post_noprompt(ent,fileinfo,direct)  /*Haohmaru.99.01.01设定文章不可re */
+int ent;
+struct fileheader *fileinfo;
+char *direct;
+{
+    char ans[256];
+
+    if( !HAS_PERM(PERM_OBOARDS) )
+    {
+        if (!chk_currBM(currBM))
+            return DONOTHING;
+    }
+
+    /*Haohmaru.98.10.12.主题模式下不允许设定不可re文章*/
+    if (strstr(direct, "/.THREAD")) return DONOTHING;
+    if (fileinfo->accessed[1] & FILE_READ)
+    {
+        fileinfo->accessed[1] &= ~FILE_READ;
+    }
+    else
+    {
+        fileinfo->accessed[1] |= FILE_READ;
+        /* Bigman:2000.8.29 sysmail版处理添加版务姓名 */
+        if (!strcmp(currboard,"sysmail"))
+        {
+            sprintf(ans,"〖%s〗 处理: %s",currentuser.userid,fileinfo->title);
+            strncpy(fileinfo->title, ans, STRLEN);
+            fileinfo->title[STRLEN-1] = 0;
+        }
+    }
+
+    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+    return PARTUPDATE;
+}
+
+int
 sign_post(ent,fileinfo,direct)  /*Bigman:2000.8.12 设定文章标志 */
 int ent;
 struct fileheader *fileinfo;

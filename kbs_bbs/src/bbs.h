@@ -245,7 +245,8 @@ extern int showansi;
 #define SR_BMDIGEST     (13)
 #define SR_BMIMPORT     (14)
 #define SR_BMTMP        (15)
-#define SR_BMMARKDEL    (16)
+#define SR_BMMARKDEL   (16)
+#define SR_BMNOREPLY    (17)
 /*SREAD Define*/
 
 #ifndef EXTEND_KEY
