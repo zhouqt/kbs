@@ -7,12 +7,12 @@ static int simple_digest(char *str, int maxlen)
     bzero(x, sizeof(int));
     for (p = str; *p && ((p - str) < maxlen); p++)
         x[(p - str) % sizeof(int)] += *p;
-    return (int) x;
+    return (*(int*)&x[0]);
 }
 
 int generate_board_title(struct boardheader *bh)
 {
-    int fd2, size = sizeof(fileheader), total, i, count = 0;
+    int fd2, size = sizeof(fileheader), total, i;
     struct boardheader btmp;
     char olddirect[PATHLEN];
     char *ptr, *t, *t2;
@@ -27,21 +27,21 @@ int generate_board_title(struct boardheader *bh)
     struct stat buf;
     int gen_threadid;
 
-    setbdir(0, olddirect, board,bh->filename);
+    setbdir(0, olddirect, bh->filename);
     
 	gen_threadid = 0;
     if ((fd2 = open(olddirect, O_RDWR, 0664)) == -1) {
         report("recopen err");
-        continue;
+        return 0;
     }
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size) == 0) {
+        if (safe_mmapfile_handle(fd2, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size) == 0) {
             close(fd2);
-            continue;
+            return 0;
         }
         total = buf.st_size / size;
-        index = (int *) malloc(sizeof(*index) * total);
+        index = (struct search_temp *) malloc(sizeof(*index) * total);
         ptr1 = (struct fileheader *) ptr;
         for (i = 0; i < total; i++, ptr1++) {
             int j;
@@ -52,7 +52,7 @@ int generate_board_title(struct boardheader *bh)
                 t2 += 4;
             } else
                 index[i].has_pre = false;
-            index[i].thread_id = ptr1->thread_id;
+            index[i].thread_id = 0;
             index[i].digest = simple_digest(t2, STRLEN);
             for (j = i - 1; j >= 0; j--) {
                 struct fileheader *tmppost;
@@ -71,7 +71,7 @@ int generate_board_title(struct boardheader *bh)
                 }
             }
             if (index[i].thread_id == 0) {
-                index[i].thread_id = getnextid(board);
+                index[i].thread_id = gen_threadid;
                 index[i].id = gen_threadid;
                 index[i].next = 0;
                 gen_threadid++;
@@ -94,7 +94,8 @@ int generate_board_title(struct boardheader *bh)
     close(fd2);
     memcpy(&btmp,getbcache(bh->filename),sizeof(btmp));
     btmp.nowid = gen_threadid + 1;
-    set_board(getbnum(bh->filename, &btmp));
+    set_board(getbnum(bh->filename), &btmp);
+    return 0;
 }
 
 int generate_all_title()
@@ -107,6 +108,7 @@ int main(int argc,char** argv)
 {
 	int allflag;
 	struct boardheader bh;
+	char* name;
     while (1) {
     	int c;
     	c = getopt(argc, argv, "a");
@@ -125,7 +127,6 @@ int main(int argc,char** argv)
         }
     }
     if (optind < argc) {
-    	struct stat st;
     	name = argv[optind++];
     	if (optind < argc) {
             printf("%s:Too many arguments.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
@@ -137,4 +138,5 @@ int main(int argc,char** argv)
     if (allflag) {
     	generate_all_title();
     }
+    return 0;
 }
