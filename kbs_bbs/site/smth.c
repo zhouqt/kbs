@@ -329,7 +329,7 @@ char *ModeType(mode)
     case VOTING:
         return "投票";
     case BBSNET:
-        return "系统维护"; //ft
+        return "穿梭银河"; //why ft?
 	/*
         return "穿梭银河";
 	*/
