@@ -8,7 +8,6 @@
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-extern char *userid;
 
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
@@ -81,7 +80,7 @@ pip_system_freepip()
 #endif				// END MAPLE
 	if (buf[0] != 'y' && buf[0] != 'Y')
 		return 0;
-	sprintf(buf, "%s ±»ºİĞÄµÄ %s ¶ªµôÁË~", d.name, userid);
+	sprintf(buf, "%s ±»ºİĞÄµÄ %s ¶ªµôÁË~", d.name, cuser->userid);
 	pressanykey(buf);
 	d.death = 2;
 	pipdie("[1;31m±»ºİĞÄ¶ªÆú:~~[0m", 2);
@@ -102,7 +101,7 @@ pip_system_service()
 	move(b_lines, 0);
 	prints
 	    ("[1;44m  ·şÎñÏîÄ¿  [46m[1]ÃüÃû´óÊ¦ [2]±äĞÔÊÖÊõ [3]½á¾ÖÉè¾Ö                                [0m");
-	pipkey = egetch();
+	pipkey = igetkey();
 
 	switch (pipkey) {
 	case '1':
@@ -127,7 +126,7 @@ pip_system_service()
 			now = time(0);
 			sprintf(buf,
 				"[1;37m%s %-11s°ÑĞ¡¼¦ [%s] ¸ÄÃû³É [%s] [0m\n",
-				Cdate(&now), userid, oldname, d.name);
+				Cdate(&now), cuser->userid, oldname, d.name);
 			pip_log_record(buf);
 			pressanykey("àÅàÅ  »»Ò»¸öĞÂµÄÃû×Öà¸...");
 		}
@@ -153,7 +152,7 @@ pip_system_service()
 		move(b_lines, 0);
 		prints
 		    ("[1;44m  ·şÎñÏîÄ¿  [46m[1]ÃüÃû´óÊ¦ [2]±äĞÔÊÖÊõ [3]½á¾ÖÉè¾Ö                                [0m");
-		pipkey = egetch();
+		pipkey = igetkey();
 		if (pipkey == 'Y' || pipkey == 'y') {
 			/*
 			 * ¸ÄÃû¼ÇÂ¼
@@ -162,11 +161,11 @@ pip_system_service()
 			if (d.sex == 1)
 				sprintf(buf,
 					"[1;37m%s %-11s°ÑĞ¡¼¦ [%s] ÓÉ¡á±äĞÔ³É¡âÁË[0m\n",
-					Cdate(&now), userid, d.name);
+					Cdate(&now), cuser->userid, d.name);
 			else
 				sprintf(buf,
 					"[1;37m%s %-11s°ÑĞ¡¼¦ [%s] ÓÉ¡â±äĞÔ³É¡áÁË[0m\n",
-					Cdate(&now), userid, d.name);
+					Cdate(&now), cuser->userid, d.name);
 			pip_log_record(buf);
 			pressanykey("±äĞÔÊÖÊõÍê±Ï...");
 			d.sex = oldchoice;
@@ -196,7 +195,7 @@ pip_system_service()
 		move(b_lines, 0);
 		prints
 		    ("[1;44m  ·şÎñÏîÄ¿  [46m[1]ÃüÃû´óÊ¦ [2]±äĞÔÊÖÊõ [3]½á¾ÖÉè¾Ö                                [0m");
-		pipkey = egetch();
+		pipkey = igetkey();
 		if (pipkey == 'Y' || pipkey == 'y') {
 			d.wantend = oldchoice;
 			pressanykey(buf);
@@ -383,7 +382,7 @@ pip_data_list()
 		sprintf(buf,
 			"[1;44;37m  ×ÊÁÏÑ¡µ¥  [46m  [¡ü/PAGE UP]ÍùÉÏÒ»Ò³ [¡ı/PAGE DOWN]ÍùÏÂÒ»Ò³ [Q]Àë¿ª:            [m");
 		prints(buf);
-		pipkey = egetch();
+		pipkey = igetkey();
 		switch (pipkey) {
 		case KEY_UP:
 		case KEY_PGUP:

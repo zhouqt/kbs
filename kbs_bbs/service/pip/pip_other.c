@@ -8,7 +8,6 @@
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-extern char   *userid;
 
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
@@ -81,7 +80,7 @@ pip_marriage_offer()
 		now = time(0);
 		sprintf(buf,
 			"[1;37m%s %-11sµÄÐ¡¼¦ [%s] ½ÓÊÜÁË %s µÄÇó»é[0m\n",
-			Cdate(&now), userid, d.name,
+			Cdate(&now), cuser->userid, d.name,
 			name[who][d.sex - 1]);
 		pip_log_record(buf);
 	} else {
@@ -118,7 +117,7 @@ pip_results_show()
 	move(b_lines, 0);
 	prints(buf);
 	do {
-		pipkey = egetch();
+		pipkey = igetkey();
 	}
 	while (pipkey != 'q' && pipkey != 'Q' && pipkey != 'A' && pipkey != 'a'
 	       && pipkey != 'B' && pipkey != 'b' && pipkey != 'C'

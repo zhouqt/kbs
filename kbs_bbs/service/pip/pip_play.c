@@ -326,7 +326,7 @@ pip_play_guess()
 		    ("[1;44;37m  ²ÂÈ­Ñ¡µ¥  [46m[1]ÎÒ³ö¼ôµ¶ [2]ÎÒ³öÊ¯Í· [3]ÎÒ³ö²¼À² [4]²ÂÈ­¼ÇÂ¼ [Q]Ìø³ö£º         [m");
 		move(b_lines - 1, 0);
 		clrtoeol();
-		pipkey = egetch();
+		pipkey = igetkey();
 		switch (pipkey) {
 #ifdef MAPLE
 		case Ctrl('R'):

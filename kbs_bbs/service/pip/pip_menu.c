@@ -4,15 +4,15 @@
 #include <time.h>
 #include "bbs.h"
 #include "pip.h"
+#include "site.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-extern char   *userid;
 
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 #ifndef MAPLE
-extern char BoardName[];
+//extern char BBS_FULL_NAME[];
 #endif				// END MAPLE
 
 char *menuname[8][2] = {
@@ -236,7 +236,7 @@ struct pipcommands cmdtable[];
 
 		now = time(0);
 		pip_time_change(now);
-		pipkey = egetch();
+		pipkey = igetkey();
 		now = time(0);
 		pip_time_change(now);
 
@@ -430,13 +430,13 @@ int mode;
 		 */
 		now = time(0);
 		sprintf(genbuf, "[1;37m%s %-11sµÄĞ¡¼¦ [%s] Âú %d ËêÁË [0m\n",
-			Cdate(&now), userid, d.name, m + 1);
+			Cdate(&now), cuser->userid, d.name, m + 1);
 		pip_log_record(genbuf);
 		/*
 		 * ¼ÇÂ¼ÖÕÖ¹
 		 */
 		clear();
-		showtitle("µç×ÓÑøĞ¡¼¦", BoardName);
+		showtitle("µç×ÓÑøĞ¡¼¦", BBS_FULL_NAME);
 		show_basic_pic(20);	/*ÉúÈÕ¿ìÀÖ */
 		pressanykey("Ğ¡¼¦³¤´óÒ»ËêÁË..");
 		/*
@@ -494,7 +494,7 @@ int mode;
 		age = 11;
 	clear();
 	/*
-	 * showtitle("µç×ÓÑøĞ¡¼¦", BoardName);
+	 * showtitle("µç×ÓÑøĞ¡¼¦", BBS_FULL_NAME);
 	 */
 	move(0, 0);
 	if (d.sex == 1)

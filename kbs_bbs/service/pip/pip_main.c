@@ -10,13 +10,13 @@
 #include "bbs.h"
 #include <time.h>
 #include "pip.h"
+#include "site.h"
 struct chicken d;
 time_t start_time;
 time_t lasttime;
-extern char *userid;
 
 #ifndef MAPLE
-extern char BoardName[];
+//extern char BBS_FULL_NAME[];
 #endif				// END MAPLE
 void
 temppress(char *s)
@@ -24,7 +24,7 @@ temppress(char *s)
 	move(23, 0);
 	clrtoeol();
 	prints(s);
-	egetch();
+	igetkey();
 }
 
 /*ÓÎÏ·Ö÷³ÌÊ½*/
@@ -49,15 +49,15 @@ mod_default()
 	clrtobot();
 	//rawmore("game/pipgame/pip.welcome",true,0,0,MM_FILE); 
 //ansimore("game/pipgame/pip.welcome", false);
-//egetch();
+//igetkey();
 #endif				// END MAPLE
-	showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+	showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 	srandom(time(0));
 #ifdef MAPLE
-	sprintf(genbuf, "home/%s/new_chicken", userid);
+	sprintf(genbuf, "home/%s/new_chicken", cuser->userid);
 #else
-	sprintf(genbuf, "home/%c/%s/new_chicken", toupper(userid[0]),
-		userid);
+	sprintf(genbuf, "home/%c/%s/new_chicken", toupper(cuser->userid[0]),
+		cuser->userid);
 #endif				// END MAPLE
 
 	pip_read_file();
@@ -65,7 +65,7 @@ mod_default()
 //   show_system_pic(11); /* ÔÝÊ±ÓÃ½øÓÎÏ·µÄ»­ÃæÀ´´úÌæ */
 		//  move(b_lines,0);
 		ansimore("game/pipgame/pip.welcome", false);
-		pipkey = egetch();
+		pipkey = igetkey();
 		if (pipkey == 'Q' || pipkey == 'q')
 			return 0;
 		if (d.death != 0 || !d.name[0]) {
@@ -76,7 +76,7 @@ mod_default()
 //   show_system_pic(12);
 		//  move(b_lines,0);
 		ansimore("game/pipgame/pip.welcome", false);
-		pipkey = egetch();
+		pipkey = igetkey();
 		if (pipkey == 'R' || pipkey == 'r')
 			pip_read_backup();
 		else if (pipkey == 'Q' || pipkey == 'q')
@@ -124,7 +124,7 @@ pip_new_game()
 
 	if (d.death == 1 && !(!d.name[0])) {
 		clear();
-		showtitle("ÍâÐÇÕ½¶·¼¦", BoardName);
+		showtitle("ÍâÐÇÕ½¶·¼¦", BBS_FULL_NAME);
 		move(4, 6);
 		prints("»¶Ó­À´µ½ [1;5;33mÐÇ¿ÕÉúÎï¿Æ¼¼ÑÐ¾¿Ôº[0m");
 		move(6, 6);
@@ -151,7 +151,7 @@ pip_new_game()
 	}
 	if (d.death != 0 || !d.name[0]) {
 		clear();
-		showtitle("ÍâÐÇÕ½¶·¼¦", BoardName);
+		showtitle("ÍâÐÇÕ½¶·¼¦", BBS_FULL_NAME);
 		/*
 		 * Ð¡¼¦ÃüÃû
 		 */
@@ -319,7 +319,7 @@ pip_new_game()
 		 */
 		now = time(0);
 		sprintf(buf, "[1;36m%s %-11sÑøÁËÒ»Ö»½Ð [%s] µÄ %s Ð¡¼¦ [0m\n",
-			Cdate(&now), userid, d.name, pipsex[d.sex]);
+			Cdate(&now), cuser->userid, d.name, pipsex[d.sex]);
 		pip_log_record(buf);
 	}
 	pip_write_file();
@@ -336,12 +336,12 @@ int mode;
 	time_t now;
 
 	clear();
-	showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+	showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 	if (mode == 1) {
 		show_die_pic(1);
 		pressanykey("ËÀÉñÀ´´ø×ßÐ¡¼¦ÁË");
 		clear();
-		showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+		showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 		show_die_pic(2);
 		move(14, 20);
 		prints("¿ÉÁ¯µÄÐ¡¼¦[1;31m%s[m", msg);
@@ -356,7 +356,7 @@ int mode;
 
 	now = time(0);
 	sprintf(genbuf, "[1;31m%s %-11sµÄÐ¡¼¦ [%s] %s[m\n", Cdate(&now),
-		userid, d.name, msg);
+		cuser->userid, d.name, msg);
 	pip_log_record(genbuf);
 	pip_write_file();
 }

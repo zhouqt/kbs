@@ -5,6 +5,7 @@
 #include <time.h>
 #include "bbs.h"
 #include "pip.h"
+#include "site.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
@@ -12,7 +13,7 @@ extern time_t lasttime;
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 #ifndef MAPLE
-extern char BoardName[];
+//extern char BBS_FULL_NAME[];
 #endif				// END MAPLE
 
 struct playrule badmanlist[] = {
@@ -357,7 +358,7 @@ int mode;
 		}
 		clear();
 		/*
-		 * showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+		 * showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 		 */
 		move(0, 0);
 		if (d.sex == 1)
@@ -439,7 +440,7 @@ int mode;
 		if (m.death == 0 && d.death == 0) {
 			dresistmore = 0;
 			d.nodone = 0;
-			pipkey = egetch();
+			pipkey = igetkey();
 			switch (pipkey) {
 			case '1':
 				if (rand() % 9 == 0) {
@@ -689,7 +690,7 @@ int mode;
 				if (d.brave < 0)
 					d.brave = 0;
 				clear();
-				showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+				showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 				move(10, 0);
 				prints
 				    ("            [1;31m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´[m");
@@ -1012,7 +1013,7 @@ int mode;
 
 		if (m.death == 1) {
 			clear();
-			showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+			showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 			if (mode == 1) {
 				move(10, 0);
 				prints
@@ -1062,7 +1063,7 @@ int mode;
 		}
 		if (d.death == 1 && mode == 1) {
 			clear();
-			showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+			showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 			move(10, 0);
 			prints
 			    ("            [1;31m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´[m");
@@ -1084,7 +1085,7 @@ int mode;
 			pipdie("[1;31mÕ½¶·ÖÐ±»´òËÀÁË...[m  ", 1);
 		} else if (d.death == 1 && mode == 2) {
 			clear();
-			showtitle("µç×ÓÑøÐ¡¼¦", BoardName);
+			showtitle("µç×ÓÑøÐ¡¼¦", BBS_FULL_NAME);
 			move(10, 0);
 			prints
 			    ("            [1;31m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´[m");
@@ -1132,7 +1133,7 @@ pip_magic_menu()
 			"[1;44;37m  Ä§·¨Ñ¡µ¥  [46m  [1]ÖÎÁÆ [2]À×Ïµ [3]±ùÏµ [4]»ðÏµ [5]ÍÁÏµ [6]·çÏµ [Q]·ÅÆú: [m");
 		move(b_lines, 0);
 		prints(buf);
-		pipkey = egetch();
+		pipkey = igetkey();
 		switch (pipkey) {
 		case '1':	/*ÖÎÁÆ·¨Êõ */
 			d.magicmode = 1;

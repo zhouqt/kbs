@@ -5,12 +5,13 @@
 #include <time.h>
 #include "bbs.h"
 #include "pip.h"
+#include "site.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
 
 #ifndef MAPLE
-extern char BoardName[];
+//extern char BBS_FULL_NAME[];
 #endif				// END MAPLE
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
@@ -268,7 +269,7 @@ struct goodsofpip *p;
 			"[1;44;37m  %8sÑ¡µ¥  [46m  [B]ÂòÈëÎïÆ·  [S]Âô³öÎïÆ·  [Q]Ìø³ö£º                         [m",
 			shopname[mode]);
 		prints(inbuf);
-		pipkey = egetch();
+		pipkey = igetkey();
 		switch (pipkey) {
 		case 'B':
 		case 'b':
@@ -491,7 +492,7 @@ struct weapon *p;
 
 	do {
 		clear();
-		showtitle(menutitle[type], BoardName);
+		showtitle(menutitle[type], BBS_FULL_NAME);
 		show_weapon_pic(0);
 /*   move(10,2); 
    sprintf(buf,"[1;37mÏÖ½ñÄÜÁ¦:ÌåÁ¦Max:[36m%-5d[37m  ·¨Á¦Max:[36m%-5d[37m  ¹¥»÷:[36m%-5d[37m  ·ÀÓù:[36m%-5d[37m  ËÙ¶È:[36m%-5d [m",
@@ -549,7 +550,7 @@ struct weapon *p;
 		prints(buf);
 		now = time(0);
 		pip_time_change(now);
-		pipkey = egetch();
+		pipkey = igetkey();
 		pip_time_change(now);
 
 		switch (pipkey) {

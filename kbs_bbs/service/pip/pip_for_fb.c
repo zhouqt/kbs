@@ -1,6 +1,7 @@
 #include "bbs.h"
 
 //#define       cuser   currentuser
+void clrnlines(int n);
 
 enum { STRIP_ALL, ONLY_COLOR, NO_RELOAD };
 
@@ -56,7 +57,7 @@ Ptt_prints(char *str, int mode)
   while (po = strstr(str, "\033*s"))
     {
       po[0] = 0;
-      sprintf(strbuf,"%s%s%s",str,cuser.userid,po+3);
+      sprintf(strbuf,"%s%s%s",str,cuser->userid,po+3);
       strcpy(str,strbuf);
     }
   while (po = strstr(str, "\033*t"))

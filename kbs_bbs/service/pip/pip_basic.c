@@ -104,7 +104,7 @@ pip_basic_feed()
 		prints
 		    ("[1;44;37m  ÒûÊ³Ñ¡µ¥  [46m[1]³Ô·¹ [2]ÁãÊ³ [3]²¹Íè [4]ÁéÖ¥ [5]ÈË²Î [6]Ñ©Á« [Q]Ìø³ö£º         [m");
 		pip_time_change(now);
-		pipkey = egetch();
+		pipkey = igetkey();
 		pip_time_change(now);
 
 		switch (pipkey) {

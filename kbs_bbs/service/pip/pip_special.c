@@ -340,7 +340,7 @@ struct royalset *p;
 		move(b_lines, 0);
 		prints
 		    ("[1;37;46m  ²Î¼ûÑ¡µ¥  [44m [×ÖÄ¸]Ñ¡ÔñÓû°İ·ÃµÄÈËÎï  [Q]Àë¿ªĞÇ¿Õ×ÜË¾Áî²¿£º                    [0m");
-		pipkey = egetch();
+		pipkey = igetkey();
 		choice = pipkey - 64;
 		if (choice < 1 || choice > 10)
 			choice = pipkey - 96;

@@ -5,15 +5,15 @@
 #include <time.h>
 #include "bbs.h"
 #include "pip.h"
+#include "site.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-extern char   *userid;
 
 //#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 #ifndef MAPLE
-extern char BoardName[];
+//extern char BBS_FULL_NAME[];
 #endif				// END MAPLE
 
 /*ÓÎÏ·Ð´×ÊÁÏÈëµµ°¸*/
@@ -23,10 +23,10 @@ pip_write_file()
 	char buf[200];
 
 #ifdef MAPLE
-	sprintf(buf, "home/%s/new_chicken", userid);
+	sprintf(buf, "home/%s/new_chicken", cuser->userid);
 #else
-	sprintf(buf, "home/%c/%s/new_chicken", toupper(userid[0]),
-		userid);
+	sprintf(buf, "home/%c/%s/new_chicken", tnupper(cuser->userid[0]),
+		cuser->userid);
 #endif				// END MAPLE
 
 	if (ff = fopen(buf, "w")) {
@@ -68,10 +68,10 @@ pip_read_file()
 	char buf[200];
 
 #ifdef MAPLE
-	sprintf(buf, "home/%s/new_chicken", userid);
+	sprintf(buf, "home/%s/new_chicken", cuser->userid);
 #else
-	sprintf(buf, "home/%c/%s/new_chicken", toupper(userid[0]),
-		userid);
+	sprintf(buf, "home/%c/%s/new_chicken", toupper(cuser->userid[0]),
+		cuser->userid);
 #endif				// END MAPLE
 	if (fs = fopen(buf, "r")) {
 		fread(&d, sizeof (d), 1, fs);
@@ -141,7 +141,7 @@ pip_write_backup()
 		move(b_lines - 1, 1);
 		prints
 		    ("´¢´æ [1]½ø¶ÈÒ» [2]½ø¶È¶þ [3]½ø¶ÈÈþ [Q]·ÅÆú [1/2/3/Q]£º");
-		pipkey = egetch();
+		pipkey = igetkey();
 
 		if (pipkey == '1')
 			num = 1;
@@ -179,12 +179,12 @@ pip_write_backup()
 	pressanykey(buf1);
 #ifdef MAPLE
 	sprintf(buf, "/bin/cp home/%s/new_chicken home/%s/new_chicken.bak%d",
-		userid, userid, num);
+		cuser->userid, cuser->userid, num);
 #else
 	sprintf(buf,
 		"/bin/cp home/%c/%s/new_chicken home/%c/%s/new_chicken.bak%d",
-		toupper(userid[0]), userid,
-		toupper(userid[0]), userid, num);
+		toupper(cuser->userid[0]), cuser->userid,
+		toupper(cuser->userid[0]), cuser->userid, num);
 #endif				// END MAPLE
 	system(buf);
 	return 0;
@@ -210,7 +210,7 @@ pip_read_backup()
 		move(b_lines - 1, 1);
 		prints
 		    ("¶ÁÈ¡ [1]½ø¶ÈÒ» [2]½ø¶È¶þ [3]½ø¶ÈÈþ [Q]·ÅÆú [1/2/3/Q]£º");
-		pipkey = egetch();
+		pipkey = igetkey();
 
 		if (pipkey == '1')
 			num = 1;
@@ -223,11 +223,11 @@ pip_read_backup()
 
 		if (num > 0) {
 #ifdef MAPLE
-			sprintf(buf, "home/%s/new_chicken.bak%d", userid,
+			sprintf(buf, "home/%s/new_chicken.bak%d", cuser->userid,
 				num);
 #else
 			sprintf(buf, "home/%c/%s/new_chicken.bak%d",
-				toupper(userid[0]), userid, num);
+				toupper(cuser->userid[0]), cuser->userid, num);
 #endif				// END MAPLE
 			if ((fs = fopen(buf, "r")) == NULL) {
 				sprintf(buf, "µµ°¸ [%s] ²»´æÔÚ", files[num]);
@@ -266,17 +266,17 @@ pip_read_backup()
 	pressanykey(buf);
 
 #ifdef MAPLE
-	sprintf(buf1, "/bin/touch home/%s/new_chicken.bak%d", userid,
+	sprintf(buf1, "/bin/touch home/%s/new_chicken.bak%d", cuser->userid,
 		num);
 	sprintf(buf2, "/bin/cp home/%s/new_chicken.bak%d home/%s/new_chicken",
-		userid, num, userid);
+		cuser->userid, num, cuser->userid);
 #else
 	sprintf(buf1, "/bin/touch home/%c/%s/new_chicken.bak%d",
-		toupper(userid[0]), userid, num);
+		toupper(cuser->userid[0]), cuser->userid, num);
 	sprintf(buf2,
 		"/bin/cp home/%c/%s/new_chicken.bak%d home/%c/%s/new_chicken",
-		toupper(userid[0]), userid, num,
-		toupper(userid[0]), userid);
+		toupper(cuser->userid[0]), cuser->userid, num,
+		toupper(cuser->userid[0]), cuser->userid);
 #endif				// END MAPLE
 	system(buf1);
 	system(buf2);
@@ -294,11 +294,11 @@ pip_live_again()
 	tm = (d.bbtime) / 60 / 30;
 
 	clear();
-	showtitle("Ð¡¼¦¸´»îÊÖÊõÖÐ", BoardName);
+	showtitle("Ð¡¼¦¸´»îÊÖÊõÖÐ", BBS_FULL_NAME);
 
 	now = time(0);
 	sprintf(genbuf, "[1;33m%s %-11sµÄÐ¡¼¦ [%s¶þ´ú] ¸´»îÁË£¡[m\n",
-		Cdate(&now), userid, d.name);
+		Cdate(&now), cuser->userid, d.name);
 	pip_log_record(genbuf);
 
 	/*
