@@ -398,7 +398,7 @@ int allnum, pagenum;
 #ifdef HAVE_TEMPORARY_NICK
     case UL_CHANGE_NICK_LOWER:
     case UL_CHANGE_NICK_UPPER:
-       buf[0] = '\0';
+       strncpy(buf,uinfo.username,NAMELEN);
        enableESC = true;
        getdata( BBS_PAGESIZE+3, 0, "±‰ªªÍ«≥∆: ",buf,NAMELEN,DOECHO,NULL,false);
        enableESC = false;
