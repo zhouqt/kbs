@@ -102,7 +102,7 @@ int get_rl2(char * s, int r, int l)
 void feval(struct fvar_struct * p, char * s, int l, int r)
 {
     int i,j,n;
-    char op[12][4]={"&&","||","==","!=",">=","<=",">","<","+","-","*","/"};
+    char op[13][4]={"&&","||","==","!=",">=","<=",">","<","+","-","*","/","%"};
     struct fvar_struct * t,q;
     char buf[1000];
     while(s[l]==' '&&l<=r) l++;
@@ -142,8 +142,8 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
     i=l;
     while(isalpha(s[i])&&i<=r) i++;
     if(i>l&&s[i]=='('&&s[r]==')'&&get_rl(s,r,l)==i) {
-        struct fvar_struct u,v;
-        u.p=0; v.p=0;
+        struct fvar_struct u,v,w;
+        u.p=0; v.p=0; w.p=0;
         strncpy(buf, s+l, 1000);
         buf[i-l]=0;
         if(!strcmp("sub",buf)) {
@@ -168,10 +168,60 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
             p->s = strlen(u.p);
             return;
         }
+        else if(!strcmp("date",buf)){
+            int j=strchr(s+i+1, ',')-s, k;
+            struct tm t;
+            char * res;
+            fmakesure(strchr(s+i+1, ',')!=NULL, 4);
+            fmakesure(strchr(s+i+1, ',')<=s+r, 4);
+            fmakesure(strchr(s+j+1, ',')!=NULL, 4);
+            fmakesure(strchr(s+j+1, ',')<=s+r, 4);
+            k=strchr(s+j+1, ',')-s;
+            feval(&u, s, i+1, j-1);
+            makesure(u.num, 4);
+            feval(&v, s, j+1, k-1);
+            makesure(v.num, 4);
+            feval(&w, s, k+1, r-1);
+            makesure(w.num, 4);
+            p->num=true;
+            t.tm_sec=0;
+            t.tm_min=0;
+            t.tm_hour=0;
+            t.tm_mday=w.s;
+            t.tm_mon=v.s-1;
+            t.tm_year=u.s-1900;
+            p->s = mktime(&t);
+            return;
+        }
+        else if(!strcmp("time",buf)){
+            int j=strchr(s+i+1, ',')-s, k;
+            struct tm t;
+            char * res;
+            fmakesure(strchr(s+i+1, ',')!=NULL, 4);
+            fmakesure(strchr(s+i+1, ',')<=s+r, 4);
+            fmakesure(strchr(s+j+1, ',')!=NULL, 4);
+            fmakesure(strchr(s+j+1, ',')<=s+r, 4);
+            k=strchr(s+j+1, ',')-s;
+            feval(&u, s, i+1, j-1);
+            makesure(u.num, 4);
+            feval(&v, s, j+1, k-1);
+            makesure(v.num, 4);
+            feval(&w, s, k+1, r-1);
+            makesure(w.num, 4);
+            p->num=true;
+            t.tm_sec=w.s-1;
+            t.tm_min=v.s-1;
+            t.tm_hour=u.s-1;
+            t.tm_mday=1;
+            t.tm_mon=0;
+            t.tm_year=0;
+            p->s = mktime(&t);
+            return;
+        }
         ferr=18;
         return ;
     }
-    for(j=0;j<12;j++) {
+    for(j=0;j<13;j++) {
         n=r;
         do{
             if(toupper(s[n])==op[j][0]&&(!op[j][1]||toupper(s[n+1])==op[j][1])) {
@@ -224,6 +274,10 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
                     case 11:
                         fmakesure(m2.s!=0, 6);
                         p->s=m1.s/m2.s;
+                        break;
+                    case 12:
+                        fmakesure(m2.s!=0, 6);
+                        p->s=m1.s%m2.s;
                         break;
                 }
                 return;
@@ -340,9 +394,11 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     ptr1 = (struct fileheader *) ptr;
     libs = (char*)malloc(LIBLEN);
     for (i = 0; i < total; i++) {
+        struct stat st;
         int fd3;
         int j;
         char* p;
+        char ffn[80];
         size_t fsize;
         libptr = libs;
         ferr = 0;
@@ -370,9 +426,13 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
 #ifdef HAVE_BRC_CONTROL
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
 #endif
+        setbfile(ffn, currboard, ptr1->filename);
+        if(stat(ffn, &st)!=-1)
+            set_vard(fvars+fget_var("size"), st.st_size);
+        else
+            set_vard(fvars+fget_var("size"), 0);
+        set_vard(fvars+fget_var("ftime"), st.st_mtime);
         if(load_content) {
-            char ffn[80];
-            setbfile(ffn, currboard, ptr1->filename);
             set_vars(fvars+fget_var("content"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
             if(j) set_vars(fvars+fget_var("content"), p);
