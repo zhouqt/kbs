@@ -702,6 +702,8 @@ list:		move(5,0) ;
                 close(sock) ;
                 uinfo.sockactive = NA ;
                 uinfo.destuid = 0 ;
+                UPDATE_UTMP(sockactive,uinfo);
+                UPDATE_UTMP(destuid,uinfo);
                 clear() ;
                 return 0 ;
             }
@@ -715,6 +717,9 @@ list:		move(5,0) ;
         add_io(0,0) ;
         close(sock) ;
         uinfo.sockactive = NA ;
+        uinfo.destuid = 0 ;
+        UPDATE_UTMP(sockactive,uinfo);
+        UPDATE_UTMP(destuid,uinfo);
         /*      uinfo.destuid = 0 ;*/
         read(msgsock,&c,sizeof c) ;
 
@@ -764,7 +769,6 @@ list:		move(5,0) ;
         close(msgsock) ;
         clear() ;
         refresh();
-        uinfo.destuid = 0;
     }
     return 0 ;
 }
@@ -833,8 +837,7 @@ char    *mesg;
                 printdash( mesg );
                 break;
             default: /* a chat mode */
-                sprintf(buf, "** %s 眒礿砦網請.", page_requestor);
-                printchatline(buf);
+                sprintf(mesg, "** %s 眒礿砦網請.", page_requestor);
             }
             memset(page_requestor, 0, STRLEN);
             last_check = 0;
@@ -853,8 +856,7 @@ char    *mesg;
                     printdash( buf );
                     break;
                 default: /* chat */
-                    sprintf(buf, "** %s 淏婓網請斕", page_requestor);
-                    printchatline(buf);
+                    sprintf(mesg, "** %s 淏婓網請斕", page_requestor);
                 }
         }
     }
@@ -1256,8 +1258,7 @@ int fd ;
 
     while(YEA) {
         int ch ;
-        if (talkrequest) page_pending = YEA;
-        if (page_pending)
+        if (talkrequest) 
             page_pending = servicepage( (t_lines-1) / 2, mid_line );
         ch = igetkey();
         talkidletime=0;

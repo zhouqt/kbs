@@ -82,7 +82,7 @@ int chat_waitkey(chatcontext *pthis)
     return strchr(" \r\n",ch)!=NULL;
 }
 
-void printchatline(chatcontext * pthis, const char *str) /*显示一行，并下移指示符*/
+static void printchatline(chatcontext * pthis, const char *str) /*显示一行，并下移指示符*/
 {
     char tmpstr[256];
     const char *p;
@@ -503,8 +503,13 @@ int ent_chat(int chatnum)  /* 进入聊天室*/
         pthis->outputcount=0;
         ch = igetkey();
 
-        if (talkrequest) page_pending = YEA;
-        if (page_pending) page_pending = servicepage(0, NULL);
+        if (talkrequest) {
+        	int talkpage = servicepage(0, pthis->buf);
+        	if (talkpage!=page_pending) {
+	        	printchatline(pthis,pthis->buf);
+	        	page_pending=talkpage;
+        	}
+        }
 
         if(!chat_checkparse(pthis))break;
         if( ch == I_OTHERDATA ) continue;
