@@ -74,7 +74,7 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
           make install
           
           cd ../php-4.3.X
-          ./configure --with-apxs=/home/www/bin/apxs --disable-debug \
+          ./configure --with-apxs=/usr/local/www/bin/apxs --disable-debug \
              --enable-pic --disable-rpath --enable-inline-optimization \
              --with-dom --with-gd --with-freetype-dir=/usr/lib \
              --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
@@ -104,7 +104,7 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
 
 2.7[可选] 再次编译安装 php
     重复 2.4 节中的步骤即可，但 php 的 configure 命令应改为：
-          ./configure --with-apxs=/home/www/bin/apxs --disable-debug \
+          ./configure --with-apxs=/usr/local/www/bin/apxs --disable-debug \
              --enable-pic --disable-rpath --enable-inline-optimization \
              --with-dom --with-gd --with-freetype-dir=/usr/lib \
              --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
