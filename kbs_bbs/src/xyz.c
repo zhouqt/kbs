@@ -4,7 +4,6 @@
 */
 
 #include "bbs.h"
-extern int iscolor;
 extern int switch_code();       /* KCN,99.09.05 */
 extern int convcode;            /* KCN,99.09.05 */
 int modify_user_mode(mode)
@@ -476,7 +475,6 @@ int x_userdefine()
             nettyNN = NNread_init();
         prints("新的参数设定完成...\n\n");
     }
-    iscolor = (DEFINE(currentuser, DEF_COLOR)) ? 1 : 0;
     pressreturn();
     clear();
     return 0;

@@ -28,7 +28,6 @@
 /*#include <varargs.h>*/
 #include <stdarg.h>
 
-extern int iscolor;
 extern int editansi;
 
 extern int automargins;
@@ -494,7 +493,7 @@ outc(unsigned char c)
 			return;
 		} else if (c != KEY_ESC || !showansi) {
 			c = '*';	/* else substitute a '*' for non-printable */
-		} if ((c==KEY_ESC)&&(!iscolor)) {
+		} if ((c==KEY_ESC)) {
 		    inansi=true;
 		    return;
 		}
@@ -662,7 +661,7 @@ int n;
                                 }
                                 continue;
                              }
-                             else {
+                             else if(isalpha(*(str+i))) {
                                 register int j;
                                 for(j=slp->len-1;j>=reg_col;j--)
                                     slp->data[j+i+1]=slp->data[j];
@@ -693,10 +692,7 @@ int n;
                         }
                      }
 			if (*str == '') {
-			    if (iscolor) 
         		        slp->data[reg_col++] = (unsigned char) '';
-			    else
-        		        inansi=true;
     			} else if (!isprint2(*str))
     				slp->data[reg_col++] = (unsigned char) '*';
 			else

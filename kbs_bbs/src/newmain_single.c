@@ -48,7 +48,6 @@ extern struct userec *user_data;
 int temp_numposts;              /*Haohmaru.99.4.02.ÈÃ°®¹àË®µÄÈË¿ŞÈ¥°É//grin */
 int nettyNN = 0;
 int count_friends, count_users; /*Add by SmallPig for count users and Friends */
-int iscolor = 1;
 char *getenv();
 char *sysconf_str();
 char *Ctime();
@@ -166,7 +165,6 @@ void u_enter()
 #ifdef SHOW_IDLE_TIME
     uinfo.freshtime = time(0);
 #endif
-    iscolor = (DEFINE(currentuser, DEF_COLOR)) ? 1 : 0;
     strncpy(uinfo.userid, currentuser->userid, 20);
 	{
 		struct userdata ud;
