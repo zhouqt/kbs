@@ -3,7 +3,6 @@
 	 * This file displays article to user.
 	 * $Id$
 	 */
-	$needlogin=0;
 	require("funcs.php");
 function get_mimetype($name)
 {
