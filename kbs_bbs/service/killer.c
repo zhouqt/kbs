@@ -582,8 +582,7 @@ void refreshit()
         if(inrooms[myroom].status!=INROOM_STOP)
         if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER && (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
             inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR ||
-            !(inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE) ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_POLICE)) {
+            !(inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE))) {
             resetcolor();
             move(i,2);
             setfcolor(RED, 1);
@@ -605,8 +604,7 @@ void refreshit()
         else if(inrooms[myroom].status == INROOM_DAY ||
             inrooms[myroom].status == INROOM_NIGHT &&
             (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR||
-            inrooms[myroom].peoples[me].flag&PEOPLE_POLICE))
+            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR))
             if((inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE)&&
             (inrooms[myroom].peoples[j].vote != 0)) {
             resetcolor();
@@ -624,8 +622,7 @@ void refreshit()
         if(inrooms[myroom].status == INROOM_DAY ||
             inrooms[myroom].status == INROOM_NIGHT &&
             (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR||
-            inrooms[myroom].peoples[me].flag&PEOPLE_POLICE)) {
+            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR)) {
             k=0;
             for(i0=0;i0<MAX_PEOPLE;i0++)
                 if(inrooms[myroom].peoples[i0].style!=-1 && inrooms[myroom].peoples[i0].vote==
@@ -728,6 +725,7 @@ void start_game()
         }while(inrooms[myroom].peoples[j].style==-1 || inrooms[myroom].peoples[j].flag&PEOPLE_KILLER || inrooms[myroom].peoples[j].flag&PEOPLE_POLICE || inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR);
         inrooms[myroom].peoples[j].flag |= PEOPLE_POLICE;
         send_msg(j, "你做了一位光荣的人民警察");
+        send_msg(j, "白天请用你的警棒(\x1b[31;1mCtrl+T\x1b[m)选择你怀疑的人...");
     }
     for(i=0;i<MAX_PEOPLE;i++) 
     if(inrooms[myroom].peoples[i].style!=-1)
@@ -976,7 +974,7 @@ int do_com_menu()
 void join_room(int w, int spec)
 {
     char buf[200],buf2[200],buf3[200],msg[200],roomname[80];
-    int i,j,k,killer,me;
+    int i,j,k,killer,me,tested=0;
     clear();
     myroom = w;
     start_change_inroom();
@@ -1037,10 +1035,32 @@ void join_room(int w, int spec)
                 if(jpage<=0) jpage=0;
                 refreshit();
             }
+            else if(ch==Ctrl('T')&&!tested&&inrooms[myroom].status == INROOM_DAY) {
+                int pid;
+                int sel;
+                sel = getpeople(selected);
+                if(sel==-1) continue;
+                me = mypos;
+                pid = inrooms[myroom].peoples[me].pid;
+                if(inrooms[myroom].peoples[sel].flag&PEOPLE_SPECTATOR)
+                    send_msg(pid, "\x1b[31;1m此人是旁观者\x1b[m");
+                else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_ALIVE))
+                    send_msg(pid, "\x1b[31;1m此人已死\x1b[m");
+                else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_KILLER)) {
+                    tested = 1;
+                    send_msg(pid, "\x1b[31;1m经过你的侦测, 发现此人是坏人!!!\x1b[m");
+                }
+                else {
+                    tested = 1;
+                    send_msg(pid, "\x1b[31;1m经过你的侦测, 发现此人是好人\x1b[m");
+                }
+                refreshit();
+            }
             else if(ch==Ctrl('S')) {
                 int pid;
                 int sel;
                 sel = getpeople(selected);
+                if(sel==-1) continue;
                 me=mypos;
                 pid=inrooms[myroom].peoples[sel].pid;
                 if(inrooms[myroom].peoples[me].vote==0)
@@ -1060,8 +1080,7 @@ void join_room(int w, int spec)
                             for(i=0;i<MAX_PEOPLE;i++)
                                 if(inrooms[myroom].peoples[i].style!=-1)
                                 if(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||
-                                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR||
-                                    inrooms[myroom].peoples[i].flag&PEOPLE_POLICE)
+                                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR)
                                     send_msg(i, buf);
                         }
                         else {
@@ -1121,8 +1140,7 @@ checkvote:
                                 for(j=0;j<MAX_PEOPLE;j++)
                                     if(inrooms[myroom].peoples[j].style!=-1)
                                     if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER||
-                                        inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR||
-                                        inrooms[myroom].peoples[j].flag&PEOPLE_POLICE)
+                                        inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR)
                                         send_msg(j, buf);
                             }
                             else {
@@ -1147,8 +1165,7 @@ checkvote:
                                     for(j=0;j<MAX_PEOPLE;j++)
                                         if(inrooms[myroom].peoples[j].style!=-1)
                                         if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER||
-                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR||
-                                            inrooms[myroom].peoples[j].flag&PEOPLE_POLICE)
+                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR)
                                             send_msg(j, buf);
                                 }
                                 else {
@@ -1161,8 +1178,7 @@ checkvote:
                                     for(j=0;j<MAX_PEOPLE;j++)
                                         if(inrooms[myroom].peoples[j].style!=-1)
                                         if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER||
-                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR||
-                                            inrooms[myroom].peoples[j].flag&PEOPLE_POLICE)
+                                            inrooms[myroom].peoples[j].flag&PEOPLE_SPECTATOR)
                                             send_msg(j, buf);
                                 }
                                 else
@@ -1232,6 +1248,7 @@ checkvote:
                                             send_msg(i, "请抓紧你的宝贵时间用\x1b[31;1mCtrl+S\x1b[m杀人...");
                                 }
                                 else {
+                                    tested = 0;
                                     inrooms[myroom].status = INROOM_DAY;
                                     send_msg(-1, "天亮了...");
                                 }
@@ -1329,8 +1346,7 @@ checkvote:
             if(inrooms[myroom].peoples[i].style!=-1)
             {
                 if(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||
-                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR||
-                    inrooms[myroom].peoples[i].flag&PEOPLE_POLICE) {
+                    inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) {
                     send_msg(i, buf);
                 }
             }
