@@ -45,20 +45,24 @@ function get_mimetype($name)
 	return "application/octet-stream";
 }
 
-function output_attachment($filename, $attachpos) {
+function output_attachment($filename, $attachpos, $attachname = "") {
 	if (!file_exists($filename)) return;
 	
 	$file = fopen($filename, "rb");
-	fseek($file,$attachpos);
-	$attachname='';
-	while (1) {
-		$char=fgetc($file);
-		if (ord($char)==0) break;
-		$attachname=$attachname . $char;
+	if ($attachpos != 0) {
+		fseek($file,$attachpos);
+		$attachname='';
+		while (1) {
+			$char=fgetc($file);
+			if (ord($char)==0) break;
+			$attachname=$attachname . $char;
+		}
+		$str=fread($file,4);
+		$array=unpack('Nsize',$str);
+		$attachsize=$array["size"];
+	} else {
+		$attachsize = filesize($filename);
 	}
-	$str=fread($file,4);
-	$array=unpack('Nsize',$str);
-	$attachsize=$array["size"];
 	Header("Content-Type: " . get_mimetype($attachname));
 	
 	Header("Accept-Ranges: bytes");
