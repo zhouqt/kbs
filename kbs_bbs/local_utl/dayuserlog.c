@@ -3,12 +3,8 @@
 stiger: 增加到 BONLINE_LOGDIR/year/mon/day_useronline 文件
 给 gnuplot 用的
 一般1小时运行10次吧，关系不是太大
-每天第一次运行时会把昨天的 day_useronline 文件拷贝到
-BBSHOME/dayonline
-然后每天0:20会有专门的程序根据BBSHOME/dayonline生成dayonline.png
-
-如果当天的BONLINE_LOGDIR/year/mon/day_useronlie文件不存在
-则表示是今天第一次运行.
+然后每天快结束时会有专门的程序根据来生成dayonline.png
+mkonlinepng.sh
 
 *******************************************/
 
@@ -96,16 +92,6 @@ main()
 	}
 
 	sprintf(path, "%s/%d/%d/%d_useronline", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
-
-	if( stat(path, &st) < 0 ){
-		/*表示今天第一次运行，需要把昨天的数据拷贝出去 */
-		time_t yesterd = now - 86400;
-		struct tm ty;
-
-		localtime_r( &yesterd, &ty);
-		sprintf(path1, "%s/%d/%d/%d_useronline", BONLINE_LOGDIR, ty.tm_year+1900, ty.tm_mon+1, ty.tm_mday, ty.tm_hour);
-		f_cp( path1, BBSHOME"/dayonline", 0644);
-	}
 
 	if((fp=fopen(path, "a"))==NULL){
 		printf("cannot open log file\n");
