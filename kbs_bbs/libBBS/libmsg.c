@@ -3,7 +3,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <assert.h>
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
 #endif
 #define MAXMESSAGE 5
@@ -226,7 +226,7 @@ int msg_can_sendmsg(char *userid, int utmppid)
     return 1;
 }
 
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 MYSQL * my_connect_mysql(MYSQL *s){
 	
     return mysql_real_connect(s, 
@@ -973,7 +973,7 @@ int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
     return wait_for_result();
 }
 
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_time, int type, int level, char *msgtxt )
 {
 
@@ -1215,7 +1215,7 @@ int chk_smsmsg(int force ){
 		return 0;
 }
 
-#endif  //HAVE_MYSQL
+#endif  //HAVE_MYSQL_SMTH
 
 #else	//SMS_SUPPORT
 
@@ -1226,7 +1226,7 @@ int chk_smsmsg(int force ){
 
 #endif
 
-#if HAVE_MYSQL == 1
+#if HAVE_MYSQL_SMTH == 1
 int count_sql_al( char *userid, char *dest, char *group, char *msgtxt)
 {
 
