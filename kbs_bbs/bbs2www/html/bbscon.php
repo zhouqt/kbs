@@ -57,7 +57,7 @@ function display_navigation_bar_in($brdarr, $articles, $num, $brdnum )
 	$PAGE_SIZE = 20;
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="b7">
-<tr><td>
+<tr><td align="left">
 <a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $articles[1]["ID"];?>"><img src="images/reply.gif" border="0" alt="回复帖子" align="absmiddle"></a>
 <a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" border="0" alt="发表话题" align="absmiddle"></a>
 </td><td align="right">

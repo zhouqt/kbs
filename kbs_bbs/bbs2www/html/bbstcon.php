@@ -8,7 +8,7 @@ login_init();
 &nbsp;<table width="90%" cellspacing=0 cellpadding=0 class="t1">
 <tr><td class="t2">
 <table width="100%" cellspacing=0 cellpadding=5 class=b7>
-<tr><td>
+<tr><td align="left">
 [<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>"><font class="b7">本篇全文</font></a>]
 [<a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $article["ID"]; ?>"><font class="b7">回复文章</font></a>]
 [<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>&userid=<?php echo $article["OWNER"]; ?>&title=<?php if(strncmp($article["TITLE"],"Re:",3)) echo "Re: ";  echo urlencode($article["TITLE"]); ?>"><font class="b7">回信给作者</font></a>]
