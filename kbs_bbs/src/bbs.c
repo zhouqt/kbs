@@ -1500,7 +1500,7 @@ int read_hot_info(int ent, struct fileheader *fileinfo, char *direct)
     char ans[4];
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, "选择阅读: 1)本日十大新闻 2)本日十大祝福 3)近期热点 4)系统热点 5)日历日记[1]: ", ans, 3, DOECHO, NULL, true);
+    getdata(t_lines - 1, 0, "选择阅读: 1)本日十大新闻 2)祝福·校内 3)近期热点 4)系统热点 5)日历日记[1]: ", ans, 3, DOECHO, NULL, true);
     switch (ans[0])
 	{
     case '2':
