@@ -200,6 +200,21 @@ void refresh()
         do_move(0, t_lines - 2, ochar);
         tc_col = 0; tc_line = t_lines-2;
     }
+    for (i=0; i < scr_lns; i++)
+        for(j=0;j<scr_cols;j++)
+            if((bp[i].data[j]==0||bp[i].data[j]==32)&&bp[i].mode[j]&SCREEN_MODIFIED&&
+                bp[i].mode[j]&(SCREEN_BACK|SCREEN_LINE)==0&&bp[i].color[j]/16==0)
+                count++;
+    if(count>scr_lns*scr_cols) {
+        o_clear();
+        for (i=0; i < scr_lns; i++)
+            for(j=0;j<scr_cols;j++)
+                if((bp[i].data[j]==0||bp[i].data[j]==32)&&bp[i].mode[j]&SCREEN_MODIFIED&&
+                    bp[i].mode[j]&(SCREEN_BACK|SCREEN_LINE)==0&&bp[i].color[j]/16==0)
+                    bp[i].mode[j]&=~SCREEN_MODIFIED;
+                else
+                    bp[i].mode[j]|=SCREEN_MODIFIED;
+    }
 
     for (i = 0; i < scr_lns; i++) {
         int p;
@@ -244,7 +259,7 @@ void refresh()
                 push(40+bp[j].color[k]/16);
             }
             outstack();
-            if(k>=p&&p>=scr_cols-5) {
+            if(k>=p&&p<=scr_cols-5) {
                 for(ii=k;ii<scr_cols;ii++)
                     bp[j].mode[ii]&=~SCREEN_MODIFIED;
                 o_cleol();
