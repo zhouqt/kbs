@@ -1413,7 +1413,9 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     sprintf(fname, "tmp/%s.msg", currentuser->userid);
     fp = fopen(fname, "w");
     count = get_msgcount(0, currentuser->userid);
-    for(i=0;i<count;i++) {
+    for(i=0;i<count;i++) 
+    if(i>=count-line)
+    {
         load_msghead(0, currentuser->userid, i, &head);
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, showmsg);
