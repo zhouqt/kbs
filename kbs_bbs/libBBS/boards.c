@@ -1141,6 +1141,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             if (!check_see_perm(session->currentuser,bptr))
                 continue;
         }else{
+			if (favnow<0) continue;
 			if (!HAS_PERM(session->currentuser,session->favbrd_list[0-session->favbrd_list[favnow].bid[n]].level))
 				continue;
 		}
