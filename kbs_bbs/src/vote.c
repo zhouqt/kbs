@@ -974,6 +974,7 @@ int num;
     userlimit.day = 0;
     sprintf(limitfile,"vote/%s/limit.%d",currboard,currvote.opendate);
     get_record(limitfile,&userlimit,sizeof(struct votelimit),1);
+    if ((currvote.type<=0)||(currvote.type>4)) currvote.type=1;
     if( (currentuser->numposts < userlimit.numposts || currentuser->numlogins < userlimit.numlogins
             || currentuser->stay < userlimit.stay*60*60 || (time(NULL) - currentuser->firstlogin) < userlimit.day*24*60*60) )
     {
@@ -1038,7 +1039,7 @@ printvote(struct  votebal *ent,char* arg)
 {
     static int i ;
     struct ballot uservote;
-    char buf[STRLEN+10],*date;
+    char buf[STRLEN+80],*date;
     char flagname[STRLEN];
     int  num_voted;
 
@@ -1065,8 +1066,13 @@ printvote(struct  votebal *ent,char* arg)
         voted_flag=YEA;
     num_voted=get_num_records(flagname,sizeof(struct ballot));
     date=ctime(&ent->opendate)+4;
+    if ((ent->type<=0)||(ent->type>4)) ent->type=1;
+    sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d %4d[m\n",(voted_flag==NA)?"[1m":"",i,ent->userid,
+            date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
+/*
     sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d[m\n",(voted_flag==NA)?"[1m":"",i,ent->userid,
             date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
+*/
     prints("%s",buf);
     return 0;
 }
