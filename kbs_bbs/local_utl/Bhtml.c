@@ -39,7 +39,7 @@
 /* Leeward 98.08.28: Do not process those boards not public */
 #define XBOARDNUM 6
 char Xboard[XBOARDNUM][24] = { "deleted", "junk", "syssecurity", "Registry",
-                               "sys_discuss", "Filter"};
+                               "Filter",""};
 typedef struct fileheader {             /* This structure is used to hold data in */
         char filename[STRLEN];     /* the DIR files */
         char owner[STRLEN-4];
@@ -63,6 +63,7 @@ main(int argc, char **argv)
 
   printf("Initializing...\n");      
   getcwd(szBuf, MAXSTRLEN);
+  /*
   for (i = 0; i < XBOARDNUM; i ++)
   {
     ptr = strrchr(szBuf, '/');
@@ -72,7 +73,7 @@ main(int argc, char **argv)
       printf("Board \"%s\" forbidden\n", ptr);
       exit(-4);
     }
-  }
+  }*/
   for (i = 1; i < argc; i ++)
   {
     if (!strncasecmp(argv[i], "-d", 2))
