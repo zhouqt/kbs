@@ -263,8 +263,8 @@ int set_modes(int *res)
 
     list_select_loop(&group_conf);
     free(pts);
-    if(modest==0) res[0]=-1;
-    else if(modes[0][1]) res[0]=0;
+    if(modes[0][1]) res[0]=0;
+    else if(modest==0) res[0]=-1;
     else {
         j=0;
         for(i=1;i<n;i++) 
