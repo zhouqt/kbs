@@ -225,6 +225,11 @@ main(argc, argv)
 	chdir(BBSHOME);
 	resolve_ucache();
 
+	if (argv[1] == NULL || strlen(argv[1]) == 0)
+	{
+		fprintf(stderr, "Error: Unknown sender\n");
+		return -2;
+	}
 	if (strchr(argv[1], '@')) {
 		strcpy(sender, argv[1]);
 		/* added by netty  */
