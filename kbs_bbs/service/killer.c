@@ -1645,6 +1645,7 @@ int killer_main()
         for(i=0;i<MAX_ROOM;i++) {
             rooms[i].style=-1;
             rooms[i].w = 0;
+            rooms[i].level = 0;
         }
     }
     shm2=attach_shm("KILLER_SHMKEY", 9578, sizeof(struct inroom_struct)*MAX_ROOM, &i);
