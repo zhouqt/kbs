@@ -39,8 +39,6 @@ void    a_menu();
 void	a_report();/*Haohmaru.99.12.06.板主精华区操作记录，作为考查工作的依据*/
 
 extern void     a_prompt();  /* added by netty */
-char		r_genbuf[256];
-
 int     a_fmode=1;
 int     t_search_down();
 int     t_search_up();
@@ -534,9 +532,9 @@ int ent;
 		f_cp(genbuf,bname,0);
 
                 /* Leeward 98.04.15 */
+                sprintf(genbuf,"将 boards/%s/%s 收入目录 %s",key,fileinfo->filename,pm.path+17);
+                a_report(genbuf);
                 sprintf(genbuf, " 收入精华区目录 %s, 请按 Enter 继续 << " , /*fileinfo->title,*/ pm.path);
-                sprintf(r_genbuf,"将 boards/%s/%s 收入目录 %s",key,fileinfo->filename,pm.path+17);
-                a_report(r_genbuf);
                 if(!nomsg)
                     a_prompt( -1, genbuf, ans );
 
@@ -779,8 +777,8 @@ MENU    *pm;
     pm->item[ num ] = tmp;
     pm->now = num;
     a_savenames( pm );
-    sprintf(r_genbuf,"改变 %s 下第 %d 项的次序到第 %d 项",pm->path+17,temp ,pm->now+1);
-    a_report(r_genbuf);
+    sprintf(genbuf,"改变 %s 下第 %d 项的次序到第 %d 项",pm->path+17,temp ,pm->now+1);
+    a_report(genbuf);
 }
 
 void
@@ -855,6 +853,7 @@ int     paste;
             sprintf( genbuf, "您确定要粘贴%s %s 吗? (C/L/N)C为复制方式 L为链接方式 [N]: ", (dashd(fpath) ? "目录" : "文件"), filename);
             a_prompt( -2, genbuf, ans );
             if( ans[0] == 'C' || ans[0] == 'c' ) {
+            	char buf[256];
                 if (dashd(fpath))
                 { /* 是目录 */
                     sprintf( genbuf, "/bin/cp -rp %s %s", fpath, newpath );
@@ -863,14 +862,15 @@ int     paste;
                 else
                 { /* 是文件 
                     sprintf( genbuf, "/bin/cp -p %s %s", fpath, newpath );*/
-		    f_cp(fpath,newpath,0);
+		    		f_cp(fpath,newpath,0);
                 }
                 a_additem( pm, title, filename  ,NULL,0);
                 a_savenames( pm );
-                sprintf(r_genbuf,"复制精华区文件或目录: %s",genbuf);
-                a_report(r_genbuf);
+                sprintf(buf,"复制精华区文件或目录: %s",genbuf);
+                a_report(buf);
             }
             else if( ans[0] == 'L' || ans[0] == 'l' ) {
+            	char buf[256];
                 if (dashd(fpath))
                 { /* 是目录 */
                     sprintf( genbuf, "/bin/cp -rp %s %s", fpath, newpath );
@@ -883,8 +883,8 @@ int     paste;
                 }
                 a_additem( pm, title, filename  ,NULL,0);
                 a_savenames( pm );
-                sprintf(r_genbuf,"复制精华区文件或目录: %s",genbuf);
-                a_report(r_genbuf);
+                sprintf(buf,"复制精华区文件或目录: %s",genbuf);
+                a_report(buf);
             }
         }
         /*            sprintf( genbuf, "您确定要粘贴%s %s 吗? (Y/N) [N]: ", (dashd(fpath) ? "目录" : "文件"), filename);
@@ -906,8 +906,8 @@ int     paste;
                         system( genbuf );
                         a_additem( pm, title, filename  ,NULL,0);
                         a_savenames( pm );
-        		sprintf(r_genbuf,"复制精华区文件或目录: %s",genbuf);
-         	        a_report(r_genbuf);
+        		sprintf(genbuf,"复制精华区文件或目录: %s",genbuf);
+         	        a_report(genbuf);
                     }
                 }
         */
@@ -946,8 +946,8 @@ MENU    *pm;
     for( n = pm->now; n < pm->num; n++ )
         pm->item[n] = pm->item[n+1];
     a_savenames( pm );
-    sprintf(r_genbuf,"删除文件或目录: %s",fpath+17);
-    a_report(r_genbuf);
+    sprintf(genbuf,"删除文件或目录: %s",fpath+17);
+    a_report(genbuf);
 }
 
 void
@@ -970,9 +970,10 @@ MENU    *pm;
     } else {
         sprintf( genbuf, "%s/%s", pm->path, item->fname );
         if( f_mv( genbuf, fpath ) == 0 ) {
+        	char r_buf[256];
             strcpy( item->fname, fname );
-            sprintf(r_genbuf,"更改文件名: %s -> %s",genbuf+17,fpath+17);
-            a_report(r_genbuf);
+            sprintf(r_buf,"更改文件名: %s -> %s",genbuf+17,fpath+17);
+            a_report(r_buf);
             a_savenames( pm );
             return;
         }
@@ -1061,8 +1062,8 @@ int     ch;
                 if( dashf( fpath ) ) {
                     sprintf( genbuf, "%-38.38s %s ", changed_T , currentuser->userid );
                     strcpy( item->title, genbuf );
-                    sprintf(r_genbuf,"改变文件 %s 的标题",fpath+17);
-                    a_report(r_genbuf);
+                    sprintf(genbuf,"改变文件 %s 的标题",fpath+17);
+                    a_report(genbuf);
                 } else if( dashd( fpath ) ) {
                     if( HAS_PERM(currentuser, PERM_SYSOP ||HAS_PERM(currentuser, PERM_ANNOUNCE )) ){
                         move(1,0) ;
@@ -1079,8 +1080,8 @@ int     ch;
                         sprintf( genbuf, "%-38.38s",changed_T );
 
                     strcpy( item->title, genbuf );
-                    sprintf(r_genbuf,"改变目录 %s 的标题",fpath+17);
-                    a_report(r_genbuf);
+                    sprintf(genbuf,"改变目录 %s 的标题",fpath+17);
+                    a_report(genbuf);
                 }
                 a_savenames( pm );
             }
@@ -1089,8 +1090,8 @@ int     ch;
                 modify_user_mode( EDITANN );
                 vedit( fpath, 0 );
                 modify_user_mode( CSIE_ANNOUNCE );
-                sprintf(r_genbuf,"修改文章 %s 的内容",pm->path+17);
-                a_report(r_genbuf);
+                sprintf(genbuf,"修改文章 %s 的内容",pm->path+17);
+                a_report(genbuf);
             }
             pm->page = 9999;
             break;
