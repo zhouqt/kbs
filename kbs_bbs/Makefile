@@ -32,7 +32,7 @@ CFLAGS   = -W -g -Ilibesmtp -static
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
 #LIBS     = -L. -L/usr/local/lib -lesmtp
 	#-lcrypt -lpthread -lltdl -ldl -lbsd
-LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
+LIBS     = -static -lbsd -lesmtp -Llibesmtp/.libs
 
 #CFLAGS   = -O3
 #LIBS     = -ltermcap -lbsd -lcrypt
