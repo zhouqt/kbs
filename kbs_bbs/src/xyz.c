@@ -687,8 +687,16 @@ void x_edits()
     int aborted;
     char ans[7], buf[STRLEN];
     int ch, num;
-    char *e_file[] = { "plans", "signatures", "notes", "logout", NULL };
-    char *explain_file[] = { "个人说明档", "签名档", "自己的备忘录", "离站的画面", NULL };
+    char *e_file[] = { "plans", "signatures", "notes", "logout", 
+#ifdef AUTOREMAIL
+			"autoremail",
+#endif
+			NULL };
+    char *explain_file[] = { "个人说明档", "签名档", "自己的备忘录", "离站的画面",
+#ifdef AUTOREMAIL
+			"站内信件自动回复",
+#endif
+		   	NULL };
 
     modify_user_mode(GMENU);
     clear();

@@ -632,6 +632,15 @@ int do_send(char *userid, char *title, char *q_file)
         if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
             return -1;
 
+#ifdef AUTOREMAIL
+		sethomefile(genbuf, userid, "autoremail");
+		if(dashf(genbuf)){
+			sprintf(buf2, "[自动回复]%s的信件自动回复",userid);
+            mail_file(userid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
+		}
+		setmailcheck(getCurrentUser()->userid);
+#endif
+
 		setmailcheck(userid);
         if (stat(filepath, &st) != -1) {
             user->usedspace += st.st_size;
@@ -1986,6 +1995,14 @@ static int do_gsend(char *userid[], char *title, int num)
             strcpy(save_title, save_title_bak);
         } else {
             mail_file(getCurrentUser()->userid, tmpfile, uid, save_title, 0, NULL);
+#ifdef AUTOREMAIL
+		sethomefile(genbuf, uid, "autoremail");
+		if(dashf(genbuf)){
+			sprintf(buf2, "[自动回复]%s的信件自动回复",uid);
+            mail_file(userid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
+		}
+		setmailcheck(getCurrentUser()->userid);
+#endif
         }
     }
     mail_file_sent(".group", tmpfile, getCurrentUser()->userid, save_title, 0, getSession());
@@ -2207,6 +2224,15 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
                 return -4;
             }
             return_no = mail_file(getCurrentUser()->userid, fname, lookupuser->userid, title, 0, fh);
+#ifdef AUTOREMAIL
+		sethomefile(genbuf, lookupuser->userid, "autoremail");
+		if(dashf(genbuf)){
+			char buf2[256];
+			sprintf(buf2, "[自动回复]%s的信件自动回复",lookupuser->userid);
+            mail_file(lookupuser->userid, genbuf, getCurrentUser()->userid, buf2, BBSPOST_COPY, NULL);
+		}
+		setmailcheck(getCurrentUser()->userid);
+#endif
         }
     } else {
         /*
