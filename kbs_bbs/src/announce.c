@@ -190,11 +190,15 @@ int a_loadnames(pm)             /* 装入 .Names */
     ITEM litem;
     char buf[PATHLEN], *ptr;
     char hostname[STRLEN];
+    struct stat st;
 
     pm->num = 0;
     sprintf(buf, "%s/.Names", pm->path);        /*.Names记录菜单信息 */
     if ((fn = fopen(buf, "r")) == NULL)
         return 0;
+    if (fstat(fileno(fn),&st)==-1)
+    	return 0;
+    pm->modified_time=st.st_mtime;
     hostname[0] = '\0';
     while (fgets(buf, sizeof(buf), fn) != NULL) {
         if ((ptr = strchr(buf, '\n')) != NULL)
@@ -235,17 +239,22 @@ int a_loadnames(pm)             /* 装入 .Names */
     return 1;
 }
 
-void a_savenames(pm)            /*保存当前MENU到 .Names */
+int a_savenames(pm)            /*保存当前MENU到 .Names */
     MENU *pm;
 {
     FILE *fn;
     ITEM *item;
     char fpath[PATHLEN];
     int n;
+    struct stat st;
 
     sprintf(fpath, "%s/.Names", pm->path);
     if ((fn = fopen(fpath, "w")) == NULL)
-        return;
+        return -1;
+    if (fstat(fileno(fn),&st)==-1)
+    	return -2;
+    if (st.st_mtime!=pm->modified_time)
+    	return -3;
     fprintf(fn, "#\n");
     if (!strncmp(pm->mtitle, "[目录] ", 7) || !strncmp(pm->mtitle, "[文件] ", 7)
         || !strncmp(pm->mtitle, "[连线] ", 7)) {
@@ -273,6 +282,7 @@ void a_savenames(pm)            /*保存当前MENU到 .Names */
     }
     fclose(fn);
     chmod(fpath, 0644);
+    return 0;
 }
 
 void a_prompt(bot, pmt, buf)    /* 精华区状态下 输入 */
@@ -464,24 +474,26 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 		sprintf(bname, "%s/%s", pm.path, fname);
 		sprintf(buf, "%-38.38s %s ", fileinfo->title, currentuser->userid);
 		a_additem(&pm, buf, fname, NULL, 0);
-		a_savenames(&pm);
-		/*
-		   sprintf( buf, "/bin/cp -r boards/%s/%s %s", key , fileinfo->filename , bname );
-		 */
-		sprintf(buf, "boards/%s/%s", key, fileinfo->filename);
-		f_cp(buf, bname, 0);
+		if (a_savenames(&pm)==0) {
+			sprintf(buf, "boards/%s/%s", key, fileinfo->filename);
+			f_cp(buf, bname, 0);
 
-		/* Leeward 98.04.15 */
-		sprintf(buf, "将 boards/%s/%s 收入目录 %s", key, fileinfo->filename, pm.path + 17);
-		a_report(buf);
-		sprintf(buf, " 收入精华区目录 %s, 请按 Enter 继续 << ", /*fileinfo->title, */ pm.path);
-		if (!nomsg)
-			a_prompt(-1, buf, ans);
+			/* Leeward 98.04.15 */
+			sprintf(buf, "将 boards/%s/%s 收入目录 %s", key, fileinfo->filename, pm.path + 17);
+			a_report(buf);
+			sprintf(buf, " 收入精华区目录 %s, 请按 Enter 继续 << ", /*fileinfo->title, */ pm.path);
+			if (!nomsg)
+				a_prompt(-1, buf, ans);
 
-		/* Leeward 98.04.15 add below FILE_IMPORTED */
-		change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
-		bmlog(currentuser->userid, currboard, 12, 1);
-
+			/* Leeward 98.04.15 add below FILE_IMPORTED */
+			change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
+			bmlog(currentuser->userid, currboard, 12, 1);
+		} else {
+			sprintf(buf, " 收入精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+			if (!nomsg)
+				a_prompt(-1, buf, ans);
+                     a_loadnames(&pm);
+		}
 		for (ch = 0; ch < pm.num; ch++)
 			free(pm.item[ch]);
 		return 1;
@@ -656,21 +668,26 @@ void a_newitem(pm, mode)        /* 用户创建新的 ITEM */
                 sprintf(buf, "%-38.38s", title);
         }
         a_additem(pm, buf, fname, NULL, 0);
-        a_savenames(pm);
-        if (mode == ADDGROUP) {
-            sprintf(fpath2, "%s/%s/.Names", pm->path, fname);
-            if ((pn = fopen(fpath2, "w")) != NULL) {
-                fprintf(pn, "#\n");
-                fprintf(pn, "# Title=%s\n", buf);
-                fprintf(pn, "#\n");
-                fclose(pn);
-            }
-        }
-        if(mode == ADDMAIL)
-            bmlog(currentuser->userid, currboard, 12, 1);
-        else
-            bmlog(currentuser->userid, currboard, 13, 1);
-    }
+        if (a_savenames(pm)==0) {
+	        if (mode == ADDGROUP) {
+	            sprintf(fpath2, "%s/%s/.Names", pm->path, fname);
+	            if ((pn = fopen(fpath2, "w")) != NULL) {
+	                fprintf(pn, "#\n");
+	                fprintf(pn, "# Title=%s\n", buf);
+	                fprintf(pn, "#\n");
+	                fclose(pn);
+	            }
+	        }
+	        if(mode == ADDMAIL)
+	            bmlog(currentuser->userid, currboard, 12, 1);
+	        else
+	            bmlog(currentuser->userid, currboard, 13, 1);
+	} else {
+	    sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+           a_prompt(-1, buf, ans);
+           a_loadnames(pm);
+       }
+  }
 }
 
 void a_moveitem(pm)             /*改变 ITEM 次序 */
@@ -698,10 +715,16 @@ void a_moveitem(pm)             /*改变 ITEM 次序 */
     }
     pm->item[num] = tmp;
     pm->now = num;
-    a_savenames(pm);
-    sprintf(genbuf, "改变 %s 下第 %d 项的次序到第 %d 项", pm->path + 17, temp, pm->now + 1);
-    bmlog(currentuser->userid, currboard, 13, 1);
-    a_report(genbuf);
+    if (a_savenames(pm)==0) {
+	    sprintf(genbuf, "改变 %s 下第 %d 项的次序到第 %d 项", pm->path + 17, temp, pm->now + 1);
+	    bmlog(currentuser->userid, currboard, 13, 1);
+	    a_report(genbuf);
+    } else {
+     	char buf[80],ans[40];
+       sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+       a_prompt(-1, buf, ans);
+       a_loadnames(pm);
+   }
 }
 
 void a_copypaste(pm, paste)
@@ -781,9 +804,14 @@ void a_copypaste(pm, paste)
                     f_cp(fpath, newpath, 0);
                 }
                 a_additem(pm, title, filename, NULL, 0);
-                a_savenames(pm);
-                sprintf(buf, "复制精华区文件或目录: %s", genbuf);
-                a_report(buf);
+                if (a_savenames(pm)==0) {
+	                sprintf(buf, "复制精华区文件或目录: %s", genbuf);
+	                a_report(buf);
+		   } else {
+		       sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+		       a_prompt(-1, buf, ans);
+		       a_loadnames(pm);
+		   }
             } else if (ans[0] == 'L' || ans[0] == 'l') {
                 char buf[256];
 
@@ -795,9 +823,14 @@ void a_copypaste(pm, paste)
                     f_ln(fpath, newpath);
                 }
                 a_additem(pm, title, filename, NULL, 0);
-                a_savenames(pm);
-                sprintf(buf, "复制精华区文件或目录: %s", genbuf);
-                a_report(buf);
+    		  if (a_savenames(pm)==0) {
+                	sprintf(buf, "复制精华区文件或目录: %s", genbuf);
+                	a_report(buf);
+    		  } else {
+       		sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+       		a_prompt(-1, buf, ans);
+       		a_loadnames(pm);
+   		  }
             }
         }
         /*            sprintf( genbuf, "您确定要粘贴%s %s 吗? (Y/N) [N]: ", (dashd(fpath) ? "目录" : "文件"), filename);
@@ -857,10 +890,16 @@ void a_delete(pm)
     (pm->num)--;
     for (n = pm->now; n < pm->num; n++)
         pm->item[n] = pm->item[n + 1];
-    a_savenames(pm);
-    sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
-    bmlog(currentuser->userid, currboard, 13, 1);
-    a_report(genbuf);
+    if (a_savenames(pm)==0) {
+	    sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
+	    bmlog(currentuser->userid, currboard, 13, 1);
+	    a_report(genbuf);
+    } else {
+       char buf[80],ans[40];
+       sprintf(buf, " 删除失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+       a_prompt(-1, buf, ans);
+       a_loadnames(pm);
+   }
 }
 
 void a_newname(pm)
@@ -886,9 +925,15 @@ void a_newname(pm)
             char r_buf[256];
 
             strcpy(item->fname, fname);
-            sprintf(r_buf, "更改文件名: %s -> %s", genbuf + 17, fpath + 17);
-            a_report(r_buf);
-            a_savenames(pm);
+    	      if (a_savenames(pm)==0) {
+                sprintf(r_buf, "更改文件名: %s -> %s", genbuf + 17, fpath + 17);
+                a_report(r_buf);
+             } else {
+                char buf[80],ans[40];
+                sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+                a_prompt(-1, buf, ans);
+                a_loadnames(pm);
+            }
             return;
         }
         mesg = "文件名更改失败 !!";
@@ -1015,7 +1060,12 @@ void a_manager(pm, ch)
                     sprintf(genbuf, "改变目录 %s 的标题", fpath + 17);
                     a_report(genbuf);
                 }
-                a_savenames(pm);
+    		  if (a_savenames(pm)!=0) {
+	                char buf[80],ans[40];
+	                sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+	                a_prompt(-1, buf, ans);
+	                a_loadnames(pm);
+	            }
             }
             pm->page = 9999;
             break;
@@ -1321,7 +1371,12 @@ int linkto(char *path, char *fname, char *title)
     strcpy(pm.mtitle, title);
     a_loadnames(&pm);
     a_additem(&pm, title, fname, NULL, 0);
-    a_savenames(&pm);
+    if (a_savenames(pm)==0) {
+        char buf[80],ans[40];
+        sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+        a_prompt(-1, buf, ans);
+        a_loadnames(pm);
+    }
     return 0;
 }
 
@@ -1417,7 +1472,12 @@ int del_grp(bname, title)
             (pm.num)--;
             for (n = i; n < pm.num; n++)
                 pm.item[n] = pm.item[n + 1];
-            a_savenames(&pm);
+            if (a_savenames(&pm)==0) {
+        	  char buf[80],ans[40];
+                sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+                a_prompt(-1, buf, ans);
+                a_loadnames(&pm);
+            }
             break;
         }
     }
@@ -1454,11 +1514,21 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
             break;
         }
     }
-    a_savenames(&pm);
+    if (a_savenames(&pm)==0) {
+	  char buf[80],ans[40];
+        sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+        a_prompt(-1, buf, ans);
+        a_loadnames(&pm);
+    }
     pm.path = bpath;
     a_loadnames(&pm);
     strcpy(pm.mtitle, newtitle);
-    a_savenames(&pm);
+    if (a_savenames(&pm)==0) {
+	  char buf[80],ans[40];
+        sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ", /*fileinfo->title, */ pm.path);
+        a_prompt(-1, buf, ans);
+        a_loadnames(&pm);
+    }
 
     return 0;  /* FIXME: return value */
 }

@@ -18,6 +18,7 @@ typedef struct {
     char *path;
     int num, page, now;
     int level;
+    time_t modified_time;
 } MENU;
 
 #endif
