@@ -1021,7 +1021,6 @@ void getuinfo(FILE * fn, struct userec *ptr_urec)
     fprintf(fn, "居住住址     : %s\n", ptr_urec->address);
     fprintf(fn, "电子邮件信箱 : %s\n", ptr_urec->email);
     fprintf(fn, "真实 E-mail  : %s\n", ptr_urec->realemail);
-    fprintf(fn, "Ident 资料   : %s\n", ptr_urec->ident);
     fprintf(fn, "注册日期     : %s", ctime(&ptr_urec->firstlogin));
     fprintf(fn, "最近光临日期 : %s", ctime(&ptr_urec->lastlogin));
     fprintf(fn, "最近光临机器 : %s\n", ptr_urec->lasthost);

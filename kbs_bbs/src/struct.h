@@ -16,7 +16,7 @@ struct userec {                 /* Structure used to hold information in */
     char passwd[OLDPASSLEN];
 #endif
     char username[NAMELEN];
-    char ident[NAMELEN];
+    char unused[NAMELEN];
     unsigned char md5passwd[MD5PASSLEN];
     char realemail[STRLEN - 16];
     unsigned userlevel;

@@ -101,7 +101,6 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "flag1", user->flags[0]);
     add_assoc_long(array, "flag2", user->flags[1]);
     add_assoc_string(array, "username", user->username, 1);
-    add_assoc_string(array, "ident", user->ident, 1);
     add_assoc_stringl(array, "md5passwd", (char *) user->md5passwd, 16, 1);
     add_assoc_string(array, "realemail", user->realemail, 1);
     add_assoc_long(array, "userlevel", user->userlevel);

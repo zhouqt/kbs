@@ -49,7 +49,6 @@ main()
 	newuser.numposts=user.numposts;
 	memcpy(newuser.flags,user.flags,2);
 	memcpy(newuser.username,user.username,NAMELEN);
-	memcpy(newuser.ident,user.ident,NAMELEN);
 	memcpy(newuser.md5passwd,user.md5passwd,MD5PASSLEN);
 	memcpy(newuser.realemail,user.realemail,STRLEN-16);
 	newuser.userlevel=user.userlevel;

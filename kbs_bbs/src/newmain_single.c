@@ -637,17 +637,7 @@ void user_login()
         currentuser->userlevel &= (~0); /* SYSOP gets all permission bits */
     }
     /* ?????后面还有check_register_info */
-    ruser = getenv("REMOTEUSERNAME");
-    newbbslog(BBSLOG_USIES,"ENTER %s@%s", ruser ? ruser : "?", fromhost);
-    if (ruser) {
-        sprintf(genbuf, "%s@%s", ruser, fromhost);
-        if (valid_ident(genbuf)) {
-            strncpy(currentuser->ident, genbuf, NAMELEN);
-        }
-        if (!valid_ident(currentuser->ident)) {
-            currentuser->ident[0] = '\0';
-        }
-    }
+    newbbslog(BBSLOG_USIES,"ENTER @%s", fromhost);
     u_enter();
     sprintf(genbuf, "Enter from %-16s", fromhost);      /* Leeward: 97.12.02 */
 
