@@ -339,7 +339,7 @@ char q_id[IDLEN];
         prints("\n");
     }
     show_user_plan(planid);
-    if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU) {
+    if (oldmode != LUSERS && oldmode != LAUSERS && oldmode != FRIEND && oldmode != GMENU) {
         int ch, tuid, ucount, unum;
         char buf[STRLEN];
         struct user_info *uin;
