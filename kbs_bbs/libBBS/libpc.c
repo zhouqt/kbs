@@ -138,7 +138,7 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 
 	mysql_init (&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -224,7 +224,7 @@ int get_pc_users( struct pc_users * pu, char * userid )
 
 	mysql_init (&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -284,7 +284,7 @@ int get_pc_a_node( struct pc_nodes * pn, unsigned long nid)
 
 	mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -360,7 +360,7 @@ int count_pc_nodes( int uid, unsigned long pid, int type, int access )
 
 	mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -417,7 +417,7 @@ int get_pc_nodes( struct pc_nodes * pn, int uid, unsigned long pid, int type, in
 
 	mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -511,7 +511,7 @@ int get_pc_a_com( struct pc_comments * pn, unsigned long cid )
 
 	mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -572,7 +572,7 @@ int count_pc_comments( unsigned long nid)
 
 	mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -617,7 +617,7 @@ int get_pc_comments( struct pc_comments * pn, unsigned long nid, int start, int 
 
 	mysql_init(&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -691,7 +691,7 @@ int add_pc_users(struct pc_users *pn)
 	newcorp[0]=0;
 
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -768,7 +768,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 	bzero(ql, pn->body?(strlen(pn->body)*2):0 + 800);
 
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -833,7 +833,7 @@ int pc_in_blacklist(char * userid , unsigned long pcuid)
 
 	mysql_init (&s);
 
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -899,7 +899,7 @@ int add_pc_comments(struct pc_comments *pn)
 	}
 
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -956,7 +956,7 @@ int del_pc_users(struct pc_users *pn)
 		return 0;
 
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -1075,7 +1075,7 @@ int del_pc_nodes( unsigned long nid , int access , int uid )
 #endif
 
 		mysql_init(&s);
-		if (! my_connect_mysql(&s) ){
+		if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 			clear();
 			prints("%s\n",mysql_error(&s));
@@ -1112,7 +1112,7 @@ int pc_del_junk(int uid)
 	char ql[200];
 
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -1156,7 +1156,7 @@ int del_pc_node_junk(unsigned int nid , int access , int uid )
 #endif
 
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -1208,7 +1208,7 @@ int del_pc_comments( unsigned long nid, unsigned long cid )
 #endif
 
 		mysql_init(&s);
-		if (! my_connect_mysql(&s) ){
+		if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 			clear();
 			prints("%s\n",mysql_error(&s));
@@ -1278,7 +1278,7 @@ int pc_add_visitcount(unsigned long nid)
 	char ql[100];
 
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));
@@ -1319,7 +1319,7 @@ int pc_logs(struct pc_logs *pn)
 	newts[0] = 0;
 	
 	mysql_init(&s);
-	if (! my_connect_mysql(&s) ){
+	if (! my_connect_mysql_blog(&s) ){
 #ifdef BBSMAIN
 		clear();
 		prints("%s\n",mysql_error(&s));

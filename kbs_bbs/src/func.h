@@ -561,6 +561,8 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 int add_sql_al(char *userid, struct addresslist *al, char *msgbuf);
 int count_sql_al( char *userid, char *dest, char *group, char *msgtxt);
 MYSQL * my_connect_mysql(MYSQL *s);
+MYSQL * my_connect_mysql_blog(MYSQL *s);
+MYSQL * my_connect_mysql_dict(MYSQL *s);
 #endif
 
 char * tt2timestamp( time_t tt, char *c);
