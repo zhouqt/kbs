@@ -5,14 +5,52 @@ int main() {
 	char *id="guest";
 
 	init_all();
-	printf("<style type=text/css>\nA {color: #0000FF}\n</style>\n");
-  	printf("<body bgcolor=#c0c0f0>\n");
         if(loginok) {
 		id=currentuser->userid;
 		dt=abs(time(0) - *(int*)(u_info->from+32))/60;
                 set_idle_time(u_info, time(0));
         }
-  	printf("时间[%16.16s </a>] ", wwwCTime(time(0)));
+	printf("<script language=\"JavaScript\">\n\
+<!--\n\
+function Init() {\n\
+  servertime=new Date()\n\
+  servertime.setTime(%d*1000)\n\
+  staytime=%d*1000\n\
+  localtime=new Date()\n\
+  Time()\n\
+}\n\
+function Time(){\n\
+ if (!document.layers&&!document.all)\n\
+ return\n\
+ var now=new Date()\n\
+ var Timer=new Date()\n\
+ Timer.setTime(servertime.getTime()+now.getTime()-localtime.getTime());\n\
+ var hours=Timer.getHours()\n\
+ var minutes=Timer.getMinutes()\n\
+ if (hours==0)\n\
+ hours=12\n\
+ if (minutes<=9)\n\
+ minutes=\"0\"+minutes\n\
+ myclock=Timer.getYear()+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDay()+\"日\"+hours+\":\"+minutes\n\
+ var staysec=((now.getTime()-localtime.getTime())/1000+staytime)/60;\n\
+ stayclock=parseInt(staysec/60)+\"小时\"+parseInt(staysec%60)+\"分钟\"\n\
+if (document.layers){\n\
+document.layers.position.document.write(myclock)\n\
+document.layers.position.document.close()\n\
+document.layers.stay.document.write(stayclock)\n\
+document.layers.stay.document.close()\n\
+}\n\
+else if (document.all)\n\
+position.innerHTML=myclock\n\
+stay.innerHTML=stayclock\n\
+setTimeout(\"Time()\",58000)\n\
+ }\n\
+//JavaScript End-->
+</script>\
+",time(0)+20,loginok?*(int*)(u_info->from+32):0);
+	printf("<style type=text/css>\nA {color: #0000FF}\n</style>\n");
+  	printf("<body bgcolor=#c0c0f0 onload=\"Init()\">\n");
+  	printf("时间[<span id=\"position\"></span>] ");
 	printf("在线[<a href=bbsusr target=f3>%d</a>] ", count_online());
 	printf("帐号[<a href=bbsqry?userid=%s target=f3>%s</a>] ", id, id);
 	if(loginok) {
@@ -25,7 +63,7 @@ int main() {
 				mail_total, mail_unread);
 		}
 	}
-	printf("停留[%d小时%d分]", dt/60, dt%60);
+	printf("停留[<span id=\"stay\"></span>]");
   	printf("<script>setTimeout('self.location=self.location', 240000);</script>");
   	printf("</body>");
 }
