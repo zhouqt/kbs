@@ -1,3 +1,4 @@
+EXTRA_DIST = funcs.php
 libdir=@PHPBBSLIBPATH@
 lib_LTLIBRARIES = libphpbbslib.la
 phpdir=@PHPBBSLIBPATH@
