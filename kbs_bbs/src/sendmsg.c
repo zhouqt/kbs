@@ -325,7 +325,7 @@ reenter:
                 break;
             case 'm':
             case 'M':
-                mail_msg(currentuser);
+                if(count!=0)mail_msg(currentuser);
                 goto outofhere;
             default:
                 goto reenter;
