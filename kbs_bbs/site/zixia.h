@@ -44,6 +44,8 @@
 
 #define MYUNLINK_BACKUPDIR "0Announce/backup"
 
+#define ALLOW_PUBLIC_USERONBOARD 1
+
 #undef SITE_HIGHCOLOR
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
