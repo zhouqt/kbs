@@ -278,6 +278,7 @@ O MaxMessageSize=32000
 #define SR_BMTMP        (15)
 #define SR_BMMARKDEL   (16)
 #define SR_BMNOREPLY    (17)
+#define SR_BMTOTAL      (18)
 /*SREAD Define*/
 
 #ifndef EXTEND_KEY
