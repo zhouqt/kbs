@@ -114,6 +114,7 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
         AddType application/x-httpd-php .php
 
     修改 Port 参数为 80，把 User 和 Group 参数都修改为 bbs。
+    请把 KeepAlive 参数设为 Off.
 
     将 smthbbs 源代码目录 bbs2www/xml 下的文件复制到 /usr/local/www/htdocs。
 
