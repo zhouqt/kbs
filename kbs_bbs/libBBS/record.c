@@ -632,10 +632,8 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
     }
     BBS_END end_mmapfile(ptr, filesize, -1);
 	if (ret == 0)
-	{
 		ftruncate(fdr, filesize - size);
-		close(fdr);
-	}
+	close(fdr);
 
     return ret;
 }
