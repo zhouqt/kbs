@@ -2688,7 +2688,9 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {Ctrl('C'), do_cross},
     {'Y', UndeleteArticle},     /* Leeward 98.05.18 */
     {Ctrl('P'), do_post},
-#ifndef NINE_BUILD
+#ifdef NINE_BUILD
+	{'c', t_friends},
+#else
     {'c', clear_new_flag},
 #endif
     {'f', clear_all_new_flag},  /* added by dong, 1999.1.25 */
