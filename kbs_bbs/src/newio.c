@@ -1065,12 +1065,38 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 i++;
                 if(!buf[i]) break;
                 j=now;
-                while(j<i0-2&&buf[j]!='\n'&&buf[j]!='\r') j++;
+                while(j<i0-1&&buf[j]!='\n'&&buf[j]!='\r') j++;
                 if(j>=i0-1) j=i0-1;
                 j=j-i+1;
                 if(j<0) j=0;
                 for(k=0;k<i0-i-j+1;k++)
                     buf[i+k]=buf[i+j+k];
+
+                y = starty; x = startx;
+                chk = 0;
+                if(y==cursory&&x<=cursorx)
+                    now=0;
+                for(i=0; i<strlen(buf); i++) {
+                    if(chk) chk=0;
+                    else if(buf[i]<0) chk=1;
+                    if(chk&&x>=maxcol) x++;
+                    if(buf[i]!=13&&buf[i]!=10) {
+                        if(x>maxcol) {
+                            x = col;
+                            y++;
+                        }
+                        x++;
+                    }
+                    else {
+                        x = col;
+                        y++;
+                    }
+#ifdef CHINESE_CHARACTER
+                    if (!DEFINE(currentuser, DEF_CHCHAR)||!chk)
+#endif
+                    if(y==cursory&&x<=cursorx)
+                        now=i+1;
+                }
                 if(now>strlen(buf)) now=strlen(buf);
                 break;
             default:
