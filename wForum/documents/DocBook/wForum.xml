@@ -127,6 +127,16 @@ short_open_tag = off</programlisting>
 				</listitem>
 			</orderedlist>
 		</section>
+		<section id="install_syncmailsize">
+			<title>wForum 支持每封信件大小的附加说明</title>
+			<para>现在的 wForum 系统会自动显示每封新的信件的大小，但是以前旧的信件的大小需要用一个程序（local_utl/sync_mailsize.c）同步一下。这里提供一个简单的编译运行这个程序的方法。</para>
+			<orderedlist>
+				<listitem><para>首先确信现在的系统已经可以正常编译通过并且使用。</para></listitem>
+				<listitem><para>到源代码 local_utl/ 目录下面修改 Makefile.am 文件，在 bin_PROGRAMS 那一堆程序列表中加入：sync_mailsize，然后保存。</para></listitem>
+				<listitem><para>在源代码 local_utl/ 目录下面执行 make，这时会自动更新 Makefile 并且编译 sync_mailsize 程序。</para></listitem>
+				<listitem><para>在源代码 local_utl/ 目录下面执行 ./sync_mailsize -a。</para></listitem>
+			</orderedlist>
+		</section>
 	</section>
 	<section id="tech_details">
 		<title>技术细节</title>

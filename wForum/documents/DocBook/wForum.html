@@ -38,6 +38,8 @@
 </dt>
 <dt>2.6. <a href="#upgrade_smthbbs">smthbbs 系统升级安装 wForum 说明</a>
 </dt>
+<dt>2.7. <a href="#install_syncmailsize">wForum 支持每封信件大小的附加说明</a>
+</dt>
 </dl></dd>
 <dt>3. <a href="#tech_details">技术细节</a>
 </dt>
@@ -240,6 +242,17 @@ short_open_tag = off</pre>
 					然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序实质上只是设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</p>
 <p>全部转换工作就此完成。</p>
 </li>
+</ol></div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="install_syncmailsize"></a>2.7. wForum 支持每封信件大小的附加说明</h3></div></div>
+<p>现在的 wForum 系统会自动显示每封新的信件的大小，但是以前旧的信件的大小需要用一个程序（local_utl/sync_mailsize.c）同步一下。这里提供一个简单的编译运行这个程序的方法。</p>
+<div class="orderedlist"><ol type="1">
+<li><p>首先确信现在的系统已经可以正常编译通过并且使用。</p></li>
+<li><p>到源代码 local_utl/ 目录下面修改 Makefile.am 文件，在 bin_PROGRAMS 那一堆程序列表中加入：sync_mailsize，然后保存。</p></li>
+<li><p>在源代码 local_utl/ 目录下面执行 make，这时会自动更新 Makefile 并且编译 sync_mailsize 程序。</p></li>
+<li><p>在源代码 local_utl/ 目录下面执行 ./sync_mailsize -a。</p></li>
 </ol></div>
 </div>
 </div>
