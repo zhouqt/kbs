@@ -8,7 +8,7 @@ input.default { background-color: #F0F0FF; border: #000000 solid 1px }
 input.readonly { background-color: #F0F0FF; border: 0px }
 input.button { background-color: #CCCCFF }
 hr.default { COLOR: #999999; border-style:dashed }
-input {font-size: 16px;}
+input {font-size: 14px;}
 
 FONT.c30 {COLOR: #000000;}
 FONT.c31 {COLOR: #e00000;}

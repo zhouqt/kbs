@@ -124,11 +124,13 @@ function get_mimetype($name)
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- 阅读信件 - <?php echo $title; ?> [使用者: <?php echo $currentuser["userid"]; ?>]</p>
 <hr class="default" />
-<table width="610" border="1">
-<tr><td>
+<table width="610" border="0" cellpadding="5" cellspacing="0" class="t1" >
+<tr><td class="t5" height="200" valign="top" align="left"><font class="content">
 <?php
 				bbs_print_article($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
 ?>
+&nbsp;
+</font>
 </td></tr></table>
 <hr>
 [<a onclick='return confirm("你真的要删除这封信吗？")' href="/bbsmailact.php?act=del&dir=<?php echo $dirname;?>&file=<?php echo $file;?>&title=<?php echo $title_encode;?>">删除</a>]

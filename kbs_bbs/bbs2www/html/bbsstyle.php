@@ -1,39 +1,16 @@
 <?php
-	// $Id$
-	if (isset($_GET["s"]))
-	{
-		$style = $_GET["s"];
-		settype($style, "integer");
-		switch ($style)
-		{
-		case 0:
-			setcookie("STYLE",0);
-			//$colwidth="170,*";
-			break;
-		case 1:
-		default:
-			setcookie("STYLE",1);
-			//$colwidth="144,*";
-		}
-		$charset = "gb2312";
+// $Id$
+require_once("funcs.php");
+require_once("style.inc.php");
+
+$style = intval($_GET["style"]);
+$new_wwwparams = $style . substr($wwwparams,1,strlen($wwwparams)-1);
+setcookie("WWWPARAMS",$new_wwwparams,0,"");
+if(strcmp($currentuser["userid"],"guest"))
+	bbs_setwwwparameters($new_wwwparams);
+//header("Location: mainpage.html");
 ?>
-<?xml version="1.0" encoding="<?php echo $charset; ?>"?>
-<!DOCTYPE html
-     PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
-<meta http-equiv="Refresh" content="0; url=/bbsleft.php" />
-</head>
-<body>
 <script language="javascript">
-top.mainframe.cols = 180";
-top.f3.navigate(top.f3.location);
-top.f4.navigate(top.f4.location);
+history.go(-2)
 </script>
-</body>
-</html>
-<?php
-	}
-?>
+

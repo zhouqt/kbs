@@ -19,6 +19,7 @@
     setcookie("UTMPNUM","",time()-3600,"/");
     setcookie("UTMPUSERID","",time()-3600,"/");
     setcookie("LOGINTIME","",time()-3600,"/");
+    setcookie("WWWPARAMS","",time()-3600,"/");
 
 	header("Location: /index.html");
    }

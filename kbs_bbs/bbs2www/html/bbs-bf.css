@@ -1,9 +1,9 @@
 a {TEXT-DECORATION: none;}
 a:hover {color: #FF4400;background-color:#ffffff; text-decoration: none; }
 TABLE.BODY {BORDER: 1px solid; BORDER-COLOR: #CCCCCC}
-BODY {BACKGROUND-COLOR: #FFFFFF; FONT-SIZE: 14px; }
+BODY {BACKGROUND-COLOR: #FFFFFF; FONT-SIZE: 12px; }
 body.dark {BACKGROUND-COLOR: #BBD0BB}
-TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 14px;}
+TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 12px;}
 TABLE.dark {BACKGROUND-COLOR: #BBD0BB}
 TD.default {BACKGROUND-COLOR: #F6F6F6}
 input.default { background-color: #F0F0FF; border: #000000 solid 1px }

@@ -493,6 +493,10 @@
 				</DIV>
 			</td>
 		</tr>
+		<tr>
+			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><a href="/bbsstyle0.php" target="f3"><img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="界面方案" align="absmiddle"> 界面方案</a>
+		</tr>
 <?php
 	if($currentuser["userid"]!="guest")
 	{
@@ -549,29 +553,6 @@
 <?php
 	}
 ?>
-<!--
-		<tr>
-			<td width="16">
-				<DIV class="r" id="divstylea">
-				<a href='javascript:changemn("style");'><img id="imgstyle" src="/images/close.gif" border="0"></a>
-				</DIV>
-			</td>
-			<td><img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="界面风格" align="absmiddle"> 界面风格</td>
-		</tr>
-		<tr>
-			<td> </td>
-			<td>
-				<DIV class="s" id="divstyle">
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsstyle.php?s=0">大字体</a><br>
-					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="/bbsstyle.php?s=1">小字体</a><br>
-				</DIV>
-			</td>
-		</tr>
--->
 		<tr>
 			<td width="16">
 				<DIV class="r" id="divexpa">

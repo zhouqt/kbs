@@ -79,6 +79,8 @@ require("site.php");
 
 define("ENCODESTRING","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 define("ACTIVATIONLEN",15); //激活码长度
+define("WWW_DEFAULT_PARAMS","0"); //默认的WWW参数
+
 function decodesessionchar($ch)
 {
 	return strpos(ENCODESTRING,$ch);
@@ -140,6 +142,7 @@ if (($utmpkey == "")&&(!isset($needlogin) || ($needlogin!=0))){
         setcookie("UTMPNUM",$num,time()+360000,"");
         setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
         setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
+        setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,time()+360000,""); 
 		@$utmpkey = $data["utmpkey"];
 		@$utmpnum = $num;
 		@$userid = $data["userid"];
@@ -226,6 +229,7 @@ function error_nologin()
         setcookie("UTMPNUM","",time() - 3600,"");
         setcookie("UTMPUSERID","",time() - 3600,"");
         setcookie("LOGINTIME","",time() - 3600,"");
+        setcookie("WWWPARAMS","",time() - 3600,"");
 ?>
 <SCRIPT language="javascript">
 window.location="/nologin.html";
@@ -257,15 +261,12 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 
 function html_init($charset,$title="",$otherheader="",$new_style=0)
 {
-	global $_COOKIE;
 	global $cachemode;
 	global $currentuser;
-	if ($cachemode=="") {
+	/*if ($cachemode=="") {
 		cache_header("no-cache");
 		Header("Cache-Control: no-cache");
-    }
-	@$css_style = $_COOKIE["STYLE"];
-	settype($css_style, "integer");
+    	}*/
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
@@ -274,6 +275,7 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
+<script src="bbs.js"></script>
 <?php
         if ( func_num_args() > 1) {
 ?>
@@ -284,35 +286,20 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 ?>
 <link rel="stylesheet" type="text/css" href="/bbsleft.css"/>
 <?php		
-		}
-	elseif($new_style!=0 && $css_style==1){
-?>
-<link rel="stylesheet" type="text/css" href="/default.css"/>
-<?php			
-		}
-	elseif($new_style!=0 && $css_style==0){
-?>
-<link rel="stylesheet" type="text/css" href="/default-bf.css"/>
-<?php
-			}
+	}
 	else{
-		switch ($css_style)
-		{
-		case 0:
 ?>
-<link rel="stylesheet" type="text/css" href="/bbs-bf.css"/>
-<?php
-			break;
-		case 1:
-		default:
-?>
-<link rel="stylesheet" type="text/css" href="/bbs.css"/>
-<?php
-		}
+<script language="javascript">
+var cssFile = getBbsStyleFile();
+document.write('<link rel="stylesheet" type="text/css" href="/' + cssFile + '"/>');
+</script>
+<?php			
+	}
+/*
 ?>
 <link rel="stylesheet" type="text/css" href="/ansi.css"/>
-<?php	
-	}
+<?php
+*/	
 	echo($otherheader); 
 ?>
 </head>
@@ -345,6 +332,7 @@ function html_nologin()
         setcookie("UTMPNUM","",time() - 3600,"");
         setcookie("UTMPUSERID","",time() - 3600,"");
         setcookie("LOGINTIME","",time() - 3600,"");
+        setcookie("WWWPARAMS","",time() - 3600,"");
 ?>
 <html>
 <head></head>
@@ -360,17 +348,18 @@ top.window.location='/nologin.html';
 function html_error_quit($err_msg)
 {
 ?>
+<link rel="stylesheet" type="text/css" href="/default.css"/>
 <body>
-<br /><br /><br /><br /><br />
+<br /><br /><br /><br /><br /><br /><br /><br /><br /><br />
 <center>
 <table cellspacing="0" cellpadding="10" border="0" class="t1">
 <tr><td class="t3">
-<font color=red><b>发生错误</b></font>
+<font style="color: #FF0000"><b>发生错误</b></font>
 </td></tr>
 <tr><td class="t4">
 <?php echo $err_msg; ?>
 </td></tr>
-</table>
+</table><br /><br />
 [<a href="javascript:history.go(-1)">快速返回</a>]
 </center>
 </body>

@@ -28,10 +28,12 @@ if ($id!="") {
       else {
         $loginok=0;
         $num=bbs_getcurrentuinfo($data);
+        
         setcookie("UTMPKEY",$data["utmpkey"],0,"");
         setcookie("UTMPNUM",$num,0,"");
         setcookie("UTMPUSERID",$data["userid"],0,"");
         setcookie("LOGINTIME",$data["logintime"],0,"");
+        
 /*
         setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
         setcookie("UTMPNUM",$num,time()+360000,"");
@@ -39,12 +41,17 @@ if ($id!="") {
         setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
 */
         if ($data["userid"]=="guest") {
+            setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,0,""); 	
             if ($mainurl!="")
 	    header("Location: /guest-frames.html" . $mainurl);
             else
 	    header("Location: /guest-frames.html");
         }
         else  {
+            $wwwparameters = "";
+            bbs_getwwwparameters($wwwparameters);
+            setcookie("WWWPARAMS",$wwwparameters,0,""); 	
+       
             if ($mainurl!="")
        	       header("Location: /frames.html?mainurl=" . $mainurl);
             else
