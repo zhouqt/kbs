@@ -931,7 +931,7 @@ int has_BM_perm(struct userec *user, char *board)
     x = getbcache(board);
     if (x == 0)
         return 0;
-    if (user_perm(user, PERM_BLEVELS))
+    if (user_perm(user, PERM_BLEVELS) || user_perm(user,PERM_SYSOP))
         return 1;
     if (!user_perm(user, PERM_BOARDS))
         return 0;
