@@ -90,7 +90,7 @@
 				$pcconfig["SECTION"][$newBlogs[useretems][$i][theme][0]]."</a></span></td>\n".
 				"<td class=t3>".$newBlogs[useretems][$i][pcvisit]."</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][pcnodes]."</td>\n".
-				"<td class=t8><a href='pccon.php?id=".$newBlogs[useretems][$i][pc]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>".$newBlogs[useretems][$i][subject]."</a>&nbsp;</td>\n".
+				"<td class=t8><a href='pccon.php?id=".$newBlogs[useretems][$i][pc]."&nid=".$newBlogs[useretems][$i][nid]."&s=all&tid=".$newBlogs[useretems][$i][tid]."'>".$newBlogs[useretems][$i][subject]."</a>&nbsp;</td>\n".
 				"<td class=t4>".$newBlogs[useretems][$i][created]."</td>\n</tr>\n";
 		}
 	}

@@ -225,7 +225,7 @@ function pcmain_blog_new_nodes()
 		}
 		echo "<td class=".$tdclass." width=\"33%\">[<span title=\"".$newBlogs[useretems][$i][pcdesc]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][creator]."\"><font class=low2>".$newBlogs[useretems][$i][pcname]."</font></a></span>]".
 			"&nbsp;<a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][creator]."'><font class=low>".$newBlogs[useretems][$i][creator]."</font></a><br />".
-			"<a href='pccon.php?id=".$newBlogs[useretems][$i][pc]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>".
+			"<a href='pccon.php?id=".$newBlogs[useretems][$i][pc]."&nid=".$newBlogs[useretems][$i][nid]."&s=all&tid=".$newBlogs[useretems][$i][tid]."'>".
 			"<span title=\"".$newBlogs[useretems][$i][subject]."\">";
 		echo substr($newBlogs[useretems][$i][subject],0,36);
 		if(strlen($newBlogs[useretems][$i][subject])>36) echo "...";

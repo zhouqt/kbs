@@ -121,7 +121,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				echo "/bbspstmail.php?userid=".$pc["USER"]."&title=问候";
 			echo "\">写信问候</a>]</td></tr>\n".
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
-			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
+			"<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td align=right class=\"".$cellclass[1]."\">&nbsp;</td>".
 			"</tr>";
 			if($pc["INDEX"]["nodeChars"]==0)
@@ -134,12 +134,12 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 				     html_format(substr($nodes[$i][body],0,$pc["INDEX"]["nodeChars"])." ",TRUE,$nodes[$i][htmltag]); 
                         	if (strlen($nodes[$i][body])>$pc["INDEX"]["nodeChars"]) 
                         		echo " <br class=\"\" /> ......<br class=\"\" /><br class=\"\" />".
-                        		     "<strong><A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">>> 阅读全文</A></strong>".
+                        		     "<strong><A href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\">>> 阅读全文</A></strong>".
                         		     "</font></td></tr>\n";; 
                         }
                         echo "<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> 发布于 ".time_format($nodes[$i][created]).
 			"\n|\n浏览[".$nodes[$i][visitcount]."]".
-			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">评论[".$nodes[$i][commentcount]."]</a>";
+			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\">评论[".$nodes[$i][commentcount]."]</a>";
 			if($nodes[$i][trackback])
 				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i][subject])."' , 460, 480)\">引用[".$nodes[$i][trackbackcount]."]</a>";
 			echo "</font></td></tr>\n</table></center>\n";
@@ -154,7 +154,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	{
 		for($i=0;$i< count($nodes);$i++)
 		{
-			echo "<li><a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&tid=".$nodes[$i][tid]."\">".html_format($nodes[$i][subject])."</a>(".time_format($nodes[$i][created]).")</li>\n";
+			echo "<li><a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."\">".html_format($nodes[$i][subject])."</a>(".time_format($nodes[$i][created]).")</li>\n";
 		}
 		
 ?>

@@ -200,7 +200,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 		<smthBlog:month><?php echo $bcdatestr[4].$bcdatestr[5]; ?></smthBlog:month>
 		<smthBlog:day><?php echo $bcdatestr[6].$bcdatestr[7]; ?></smthBlog:day>
 		<smthBlog:id><?php echo $bc[$bcdate]; ?></smthBlog:id>
-		<smthBlog:link><?php echo "pccon.php?nid=".$bc[$bcdate]."&amp;id=".$pc["UID"]."&amp;s=all"; ?></smthBlog:link>
+		<smthBlog:link><?php echo "pccon.php?id=".$pc["UID"]."&amp;nid=".$bc[$bcdate]."&amp;s=all"; ?></smthBlog:link>
 	</smthBlog:calendar>
 <?php
 	}
@@ -330,9 +330,9 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	for($i = 0 ; $i < min(count($nodes),$pc["INDEX"]["nodeNum"]) ; $i ++ )
 	{
 ?>
-<item rdf:about="pccon.php?nid=<?php echo $nodes[$i][nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all">
+<item rdf:about="pccon.php?id=<?php echo $pc["UID"]; ?>&amp;nid=<?php echo $nodes[$i][nid]; ?>&amp;s=all">
 	<title><?php echo htmlspecialchars(stripslashes($nodes[$i][subject])); ?></title>
-	<link>pccon.php?nid=<?php echo $nodes[$i][nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all</link>
+	<link>pccon.php?id=<?php echo $pc["UID"]; ?>&amp;nid=<?php echo $nodes[$i][nid]; ?>&amp;s=all</link>
 	<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
 	<dc:date><?php echo time_format($nodes[$i][created]); ?></dc:date>
 	<description><![CDATA[
