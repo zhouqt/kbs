@@ -345,7 +345,7 @@ setTimeout('bbs_auto_reload()',540000);
 			<form action="/bbssel.php" method="get" target="f3">
 			<td><nobr>
 			<img src="<?php echo $img_subdir; ?>m5.gif" border="0" alt="搜索讨论区" align="absmiddle">
-			<input name="board" type="text" class="f2" value="搜索讨论区" size="12" onclick="this.value=''" /> 
+			<input name="board" type="text" class="f2" value="搜索讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
 <input name="submit" type="submit" value="GO" style="width:25px;height:20px;font-size: 12px;color: #ffffff;border-style: none;background-color: #718BD6;" />
 			</nobr></td>
 			</form>
