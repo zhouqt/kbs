@@ -173,6 +173,7 @@ int telnetopt(int fd, char* buf, int max)
 		{
 			d=buf[pp++];
 			e=buf[pp++];
+			oflush();
 			if((d==253)&&(e==3||e==24))
 			{
 				tmp[0]=255;
