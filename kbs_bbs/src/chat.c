@@ -670,6 +670,7 @@ static int ent_chat(int chatnum)
         }
     }
     /* chat end */
+    if(pthis->rec)set_rec(pthis,NULL);
     close(pthis->cfd);
     add_io(0, 0);
     uinfo.in_chat = false;
