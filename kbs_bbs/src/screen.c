@@ -132,6 +132,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 {
     int i;
     struct screenline *bp = big_picture;
+    if(new_col==t_columns) new_col--;
     if (new_ln >= t_lines || new_col >= t_columns)
         return;
     if(was_col==new_col&&was_ln==new_ln) return;
