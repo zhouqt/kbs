@@ -560,7 +560,7 @@ int do_send(char *userid, char *title, char *q_file)
                 else
                     isbig5 = 0;
 
-                getdata(8, 0, "过滤ANSI控制符�? [N]: ", data, 2, DOECHO, 0, 0);
+                getdata(8, 0, "过滤ANSI控制符? [N]: ", data, 2, DOECHO, 0, 0);
                 if (data[0] == 'y' || data[0] == 'Y')
                     noansi = 1;
                 else
