@@ -328,12 +328,14 @@ int chat_parse(chatcontext * pthis)
 int chat_checkparse(chatcontext * pthis)
 {
     long cnt;
+    int result=0;
     cnt=0;
-    if( pthis->bufptr || (ioctl(pthis->cfd,FIONREAD,&cnt)== 0 && cnt)){
+    if( pthis->bufptr || ((result = ioctl(pthis->cfd,FIONREAD,&cnt))== 0 && cnt)){
         do {
             if (chat_parse(pthis) == -1) return 0; 
         } while(pthis->bufptr); /* read all data from server*/
     }
+    if (result!=0) return 0;
     return 1;
 }
 
