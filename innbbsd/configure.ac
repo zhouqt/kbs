@@ -59,5 +59,5 @@ AC_FUNC_WAIT3
 AC_CHECK_FUNCS([alarm bzero dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime])
 
 AC_CONFIG_FILES([Makefile
-                 convert/hztty-2.0/Makefile])
+                 convert/Makefile])
 AC_OUTPUT
