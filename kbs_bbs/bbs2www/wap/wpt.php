@@ -8,7 +8,7 @@ if(loginok())
     }
   else
     {
-      $argv = decarg("writepost",(key ($_GET)));
+      $argv = decarg("writepost",$_GET['x']);
       $brdnum = intval($argv["board"]);
       $reid = intval($argv["reid"]);
       @$origmsg = $_GET['m'];

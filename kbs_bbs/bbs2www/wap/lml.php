@@ -8,7 +8,7 @@ if(loginok())
     }
   else
     {
-      $argv = decarg("listmail",$_SERVER['argv'][0]);
+      $argv = decarg("listmail",$_GET['x']);
       $mboxnum = intval($argv["mbox"]);
       $page = intval($argv["page"]);
       $mailboxes = loadmboxes($userid);

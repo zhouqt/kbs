@@ -348,14 +348,14 @@ function urlstr($url, $args=array(), $extarg="")
   if(count ($args) == 0)
     {
       return $retstr.(empty($extarg) && empty($args) ? "":"?")
-	.(empty($extarg) ? "" : $extarg)
+	.(empty($extarg) ? "" : "x=".$extarg)
 	.($havetoget ? "&amp;sid=".$sessionid : "");
     }
   else
     {
       reset ($args);
       list ($key, $val) = each ($args);
-      $retstr = $retstr."?".$extarg.(empty($extarg)?"":"&amp;")
+      $retstr = $retstr."?".(empty($extarg)?"":"x=".$extarg."&amp;")
 	.$key."=".$val;
       while (list ($key, $val) = each ($args))
 	{

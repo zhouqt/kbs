@@ -8,7 +8,7 @@ if(loginok())
     }
   else
     {
-      $argv = decarg("favboard", $_SERVER["argv"][0]);
+      $argv = decarg("favboard", $_GET['x']);
       if(!isset($argv["select"])) $select = -1;
       else $select = intval($argv["select"]);
       if($select > 818) $select = 0;

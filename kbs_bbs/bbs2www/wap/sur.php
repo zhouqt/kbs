@@ -2,7 +2,7 @@
 require("wapfuncs.php");
 if(loginok())
 {
-  $id = $_SERVER["argv"][0];
+  $id = $_GET["n"];
   $lookupuser = array ();
   waphead(0);
   echo "<card id=\"main\" title=\"".BBS_WAP_NAME."\">";

@@ -6,7 +6,7 @@ if(loginok())
     authpanic("guest没有在线好友");
   }
   else {
-    $page = decodesession($_SERVER["argv"][0]);
+    $page = decodesession($_GET['x']);
     $pagesize = 12; //assume 50bytes/entry,so 50*12=600bytes~1kbytes
     $friends = bbs_getonlinefriends();
     waphead(0);
@@ -36,7 +36,7 @@ function showonlinefriend($friends, $page, $pagesize)
   for($i = $startnum; $i < $endnum; $i++)
     {
       //echo ($i+1).".";
-      showlink(urlstr("showuser",array(),$friends[$i]["userid"]),
+      showlink(urlstr("showuser",array('n'=>$friends[$i]["userid"])),
 	       $friends[$i]["userid"]);
       echo "<br/>";
     }

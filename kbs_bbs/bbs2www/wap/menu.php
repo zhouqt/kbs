@@ -19,7 +19,7 @@ if(loginok())
       showlink(urlstr('sendmsg'),"发送讯息");echo "<br/>";
     }
   echo "<input emptyok=\"true\" type=\"text\" name=\"a\" size=\"10\"/><br/>";
-  showlink(urlstr('showuser',array(),'$(a)'),"查询网友");echo "<br/>";
+  showlink(urlstr('showuser',array('n'=>'$(a)')),"查询网友");echo "<br/>";
   showlink(urlstr('searchboard',array('n'=>'$(a)')),"查询版面");echo "<br/>";
   showlink(urlstr('sysinfo'), "系统信息"); echo "<br/>";
   showlink(urlstr('logout'),"退出");echo "<br/>";

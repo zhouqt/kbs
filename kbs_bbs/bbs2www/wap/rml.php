@@ -8,7 +8,7 @@ if(loginok())
     }
   else
     {
-      $argv = decarg("readmail",$_SERVER['argv'][0]);
+      $argv = decarg("readmail",$_GET['x']);
       $mboxnum = intval($argv["mbox"]);
       $mailid = intval($argv["mailid"]);
       $page = intval($argv["page"]);

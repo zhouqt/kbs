@@ -2,7 +2,7 @@
 require("wapfuncs.php");
 if(loginok())
 {
-  $argv = decarg("readpost",$_SERVER['argv'][0]);
+  $argv = decarg("readpost",$_GET['x']);
   $brdnum = intval($argv["board"]);
   $postid = intval($argv["id"]);
   $way = intval($argv["way"]);
