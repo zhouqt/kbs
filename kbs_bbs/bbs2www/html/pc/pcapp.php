@@ -143,6 +143,22 @@ else
 <li><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">返回Blog论坛</a></li>
 <li><a href="/bbsdoc.php?board=<?php echo $pcconfig["APPBOARD"]; ?>">返回Blog申请版面</a></li>
 </ul></td></tr></table>
+<p align="center">
+<?php
+    /**
+     *    水木的web代码bbslib和cgi部分是修改于NJUWWWBBS-0.9，此部分
+     * 代码遵循原有的nju www bbs的版权声明（GPL）。php部分的代码（
+     * phplib以及php页面）不再遵循GPL，正在考虑使用其他开放源码的版
+     * 权声明（BSD或者MPL之类）。
+     *
+     *   希望使用水木代码的Web站点加上powered by smth的图标.该图标
+     * 位于html/images/poweredby.gif目录,链接指向http://dev.smth.org
+     * 使用水木代码的站点可以通过dev.smth.org获得代码的最新信息.
+     *
+     */
+    powered_by_smth();
+?>
+</p>
 <?php	
 	html_normal_quit();
 }

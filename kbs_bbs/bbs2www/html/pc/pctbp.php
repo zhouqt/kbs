@@ -2,6 +2,9 @@
 	/*
 	** @id:windinsn dec 18,2003
 	*/
+	if (!defined('_IN_SYSTEM_'))
+    header('Location: http://www.smth.org');
+    
 	function pc_tbp_check_url($url)
 	{
 		$arr = array();
@@ -39,7 +42,7 @@
 			$encoded .= rawurlencode($k)."=".rawurlencode($v);
 		}
 		
-		$fp = fsockopen($url['host'], $url['port'] ? $url['port'] : 80);
+		$fp = fsockopen($url['host'], $url['port'] ? $url['port'] : 80 , $errno , $errstr , 30);
 		if (!$fp) return -2;
 		
 		fputs($fp, sprintf("POST %s%s%s HTTP/1.0\n", $url['path'], $url['query'] ? "?" : "", $url['query']));
