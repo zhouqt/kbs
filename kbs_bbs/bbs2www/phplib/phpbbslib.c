@@ -81,6 +81,7 @@ static PHP_FUNCTION(bbs_ann_get_board);
 static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_getfriends);
+static PHP_FUNCTION(bbs_getonlinefriends);
 static PHP_FUNCTION(bbs_countfriends);
 static PHP_FUNCTION(bbs_delete_friend);
 static PHP_FUNCTION(bbs_add_friend);
@@ -256,6 +257,7 @@ static function_entry smth_bbs_functions[] = {
 	PHP_FE(bbs_createregform,NULL)
 	PHP_FE(bbs_findpwd_check,NULL)
         PHP_FE(bbs_fillidinfo,NULL)
+	PHP_FE(bbs_getonlinefriends,NULL)
         PHP_FE(bbs_modify_info,NULL)
         PHP_FE(bbs_modify_nick,NULL)
         PHP_FE(bbs_delfile,NULL)
@@ -5585,6 +5587,74 @@ static PHP_FUNCTION(bbs_findpwd_check)
     RETURN_STRING(pwd,1);
 }
 
+
+static int cmpuser(a, b)
+    uinfo_t *a, *b;
+{
+    char id1[80], id2[80];
+
+    sprintf(id1, "%d%s", !isfriend(a->userid), a->userid);
+    sprintf(id2, "%d%s", !isfriend(b->userid), b->userid);
+    return strcasecmp(id1, id2);
+}
+/**
+ *  Function: 返回当前在线好友名单
+ *   user_info bbs_getonlinefriends();
+ *
+ *  Return: user_info 结构数组 
+ *  by binxun
+ */
+static PHP_FUNCTION(bbs_getonlinefriends)
+{
+    int i = 0,total = 0;
+    uinfo_t** usr;
+    uinfo_t* x;
+    uinfo_t user[MAXFRIENDS];
+    zval* element;
+    
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 0) {
+	WRONG_PARAM_COUNT;
+	}
+
+    set_friendmode(1);
+    utmpent = get_curr_utmpent();    //I hate the global variable!!
+    fill_userlist();
+    usr = get_ulist_addr();
+    
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+    //if(!usr) RETURN_LONG(0);
+    
+    for (i = 0; i < USHM_SIZE; i++) {
+        x = usr[i];
+	if (x == NULL)continue;
+	if (x->active == 0) continue;
+        if (x->invisible && !HAS_PERM(currentuser, PERM_SEECLOAK)) continue;
+	
+        memcpy(&user[total], x , sizeof(uinfo_t));
+	total++;
+	if(total >= MAXFRIENDS) break;
+    }
+    if(total == 0) RETURN_LONG(0);
+    
+    qsort(user, total, sizeof(uinfo_t), cmpuser);	
+	
+    for (i = 0; i < total; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+	add_assoc_bool ( element, "invisible", user[i].invisible );
+	add_assoc_bool ( element, "isfriend", isfriend(user[i].userid) );
+	add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&user[i]))/60 );
+	add_assoc_string ( element, "userid", user[i].userid, 1 );       
+	add_assoc_string ( element, "username", user[i].username, 1 );   
+	add_assoc_string ( element, "userfrom", user[i].from, 1 );
+	add_assoc_string ( element, "mode", ModeType(user[i].mode), 1 );
+	zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+	}
+}		
 /**
  * del board article
  * prototype:
