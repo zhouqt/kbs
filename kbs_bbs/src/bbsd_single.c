@@ -1,5 +1,4 @@
 #include "bbs.h"
-//try it
 #include <sys/wait.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -35,6 +34,7 @@ void
 cat(filename,msg)
 char *filename,*msg;
 {
+	/* 将msg放到以filename为名的文件中*/
     FILE*fp;
 
     if( (fp = fopen( filename, "a" )) != NULL ) {
@@ -45,6 +45,9 @@ char *filename,*msg;
 
 int local_Net_Sleep(time)
 {
+	/*
+	time秒内 如果 端口csock 有数据就读入然后丢弃。 
+	*/
     struct timeval tv ;
     int     sr;
     fd_set fd,efd;
@@ -57,6 +60,9 @@ int local_Net_Sleep(time)
     FD_SET(csock,&efd);
 
     while((sr=select(csock+1,&fd,NULL,&efd,&tv))>0) {
+		/* Select() returns the total number of ready        
+		   descriptors in all the sets.    
+		*/
         char buf[256];
         if (FD_ISSET(csock,&efd))
             break;
@@ -236,20 +242,25 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 
     close(1);
     close(2);
-    chdir(BBSHOME);
+		/*
+		close file descriptor 1 and 2
+		*/
+    chdir(BBSHOME);	//将当前目录转换到BBSHOME
     umask(07);
 
     if(inetd) /* Thor.981206: inetd -i */
     {
         /* Give up root privileges: no way back from here	 */
         server_pid=0;
-        setgid(BBSGID);
-        setuid(BBSUID);
-        setreuid(BBSUID,BBSUID);
-        setregid(BBSGID,BBSGID);
+        setgid(BBSGID);	// setgid sets the effective group ID of the current process.
+        setuid(BBSUID);	// sets the effective user ID of the current process.
+        setreuid(BBSUID,BBSUID);	/* setreuid  sets real and effective user ID's 
+									of the current process. */
+        setregid(BBSGID,BBSGID);	/* setregid sets real and effective group ID's 
+									of the current process. */		
         mport = port;
         if (port) strcpy(code,"e");
-        else strcpy(code,"d");
+        else strcpy(code,"d");		//没有参数的话将code置'd'
         /*    sprintf(data, "%d\tinetd -i\n", getpid() );
             cat(PID_FILE, data);
         */
