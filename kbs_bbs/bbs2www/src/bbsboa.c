@@ -62,7 +62,7 @@ static int check_newpost( struct newpostdata *ptr)
  *     board number loaded for success
  *     -1                  for error
 */
-int brd_show_boards(int sec, char *cgi)
+int brd_show_boards(int sec, char *cgi, int yank)
 {
 	char        buf[ 256 ];
 	struct newpostdata newpost_buffer[ MAXBOARD ];
@@ -72,8 +72,10 @@ int brd_show_boards(int sec, char *cgi)
 
 	sprintf( buf, "EGROUP%d", sec);
 	boardprefix = sysconf_str( buf );
-	yank_flag = 0;
+	yank_flag = yank;
 	if ( !strcmp( currentuser->userid, "guest" ) )
+		yank_flag = 1;
+	if(yank != 0)
 		yank_flag = 1;
 	nbrd = newpost_buffer;
 	brdnum = 0;
@@ -83,7 +85,15 @@ int brd_show_boards(int sec, char *cgi)
 		   (int (*)(const void *, const void *))cmpboard );
 	printf("<style type=\"text/css\">A {color: #0000f0}</style>");
 	printf("<center>\n");
-	printf("%s -- 分类讨论区 [%s]<hr color=\"green\">", BBSNAME, secname[sec]);
+	printf("%s -- 分类讨论区 [%s]", BBSNAME, secname[sec]);
+	if (yank_flag == 0)
+	{
+		printf("[<a href=\"bbsboa?group=%d&yank=1\">所有讨论区</a>]\n",
+			   sec, yank_flag);
+	}
+	else
+		printf("[<a href=\"bbsboa?group=%d\">已订阅讨论区</a>]\n", sec);
+	printf("<hr color=\"green\">\n");
 	printf("<table width=\"610\">\n");
 	printf("<tr><td>序号</td><td>未</td><td>讨论区名称</td><td>类别</td><td>中文描述</td><td>版主</td><td>文章数</td></tr>\n");
 	for (i=0; i<brdnum; i++)
@@ -91,7 +101,8 @@ int brd_show_boards(int sec, char *cgi)
 		ptr = &nbrd[i];
 		check_newpost( ptr );
 		printf("<tr><td>%d</td><td>%s</td>", i+1, ptr->unread ? "◆" : "◇");
-		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, ptr->name, ptr->name);
+		printf("<td>%c<a href=\"%s?board=%s\">%s</a></td>",
+			   ptr->zap ? '*' : ' ', cgi, ptr->name, ptr->name);
 		printf("<td>%6.6s</td>", ptr->title+1);
 		printf("<td><a href=\"%s?board=%s\">%s</a></td>", cgi, ptr->name, ptr->title+7);
 		strncpy(buf, ptr->BM, sizeof(buf)-1);
@@ -119,15 +130,17 @@ int brd_show_boards(int sec, char *cgi)
 int main()
 {
 	int sec1;
+	int yank;
 	char *cgi="bbstdoc";
 
 	init_all();
-	sec1 = atoi(getsenv("QUERY_STRING"));
+	sec1 = atoi(getparm("group"));
+	yank = atoi(getparm("yank"));
 	if (sec1<0 || sec1>=SECNUM)
 		http_fatal("错误的参数");
 	if (atoi(getparm("my_def_mode"))!=0)
 		cgi="bbsdoc";
-	brd_show_boards(sec1, cgi);
+	brd_show_boards(sec1, cgi, yank);
 	http_quit();
 }
 
