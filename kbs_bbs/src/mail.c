@@ -90,14 +90,12 @@ int chkmail()
         close(fd);
         return (ismail = 0);
     }
+	/* 只判断最后一篇 */
     lseek(fd, (st.st_size - (sizeof(fh) - offset)), SEEK_SET);
-    for (i = 0; i < numfiles; i++) {
-        read(fd, &ch, 1);
-        if (!(ch & FILE_READ)) {
-            close(fd);
-            return (ismail = 1);
-        }
-        lseek(fd, -sizeof(fh) - 1, SEEK_CUR);
+    read(fd, &ch, 1);
+    if (!(ch & FILE_READ)) {
+        close(fd);
+        return (ismail = 1);
     }
     close(fd);
     return (ismail = 0);
