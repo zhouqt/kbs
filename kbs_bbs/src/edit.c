@@ -1506,7 +1506,7 @@ void vedit_key(ch)
 				int i,j=0;
 				for(i=0;i<currpnt;i++)
 					if(j) j=0;
-					else if(currline->data[i]>127) j=1;
+					else if(currline->data[i]<0) j=1;
 				if(j)
 		            if (currpnt > 0)
 		                currpnt--;
@@ -1548,7 +1548,7 @@ void vedit_key(ch)
 				int i,j=0;
 				for(i=0;i<currpnt;i++)
 					if(j) j=0;
-					else if(currline->data[i]>127) j=1;
+					else if(currline->data[i]<0) j=1;
 				if(j)
 		            if (currline->len != currpnt)
 		                currpnt++;
@@ -1568,7 +1568,7 @@ void vedit_key(ch)
 				int i,j=0;
 				for(i=0;i<currpnt;i++)
 					if(j) j=0;
-					else if(currline->data[i]>127) j=1;
+					else if(currline->data[i]<0) j=1;
 				if(j)
 		            if (currpnt > 0)
 		                currpnt--;
@@ -1593,7 +1593,7 @@ void vedit_key(ch)
 				int i,j=0;
 				for(i=0;i<currpnt;i++)
 					if(j) j=0;
-					else if(currline->data[i]>127) j=1;
+					else if(currline->data[i]<0) j=1;
 				if(j)
 		            if (currpnt > 0)
 		                currpnt--;
@@ -1713,7 +1713,7 @@ void vedit_key(ch)
 				int i,j=0;
 				for(i=0;i<currpnt;i++)
 					if(j) j=0;
-					else if(currline->data[i]>127) j=1;
+					else if(currline->data[i]<0) j=1;
 				if(j) {
 					currpnt--;
 		            delete_char();
@@ -1746,7 +1746,7 @@ void vedit_key(ch)
 				int i,j=0;
 				for(i=0;i<currpnt+1;i++)
 					if(j) j=0;
-					else if(currline->data[i]>127) j=1;
+					else if(currline->data[i]<0) j=1;
 				if(j)
 		            delete_char();
 			}

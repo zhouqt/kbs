@@ -692,7 +692,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 				int i,j=0;
 				for(i=0;i<curr;i++)
 					if(j) j=0;
-					else if(buf[i]>127) j=1;
+					else if(buf[i]<0) j=1;
 				if(j) {
 					buf[--curr] = '\0';
 					clen--;
@@ -718,7 +718,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 				int i,j=0;
 				for(i=0;i<curr+1;i++)
 					if(j) j=0;
-					else if(buf[i]>127) j=1;
+					else if(buf[i]<0) j=1;
 				if(j) {
 		            strcpy(tmp, &buf[curr + 2]);
 					clen--;
@@ -744,7 +744,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 				int i,j=0;
 				for(i=0;i<curr;i++)
 					if(j) j=0;
-					else if(buf[i]>127) j=1;
+					else if(buf[i]<0) j=1;
 				if(j) {
 					curr--;
 				}
@@ -774,7 +774,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 				int i,j=0;
 				for(i=0;i<curr;i++)
 					if(j) j=0;
-					else if(buf[i]>127) j=1;
+					else if(buf[i]<0) j=1;
 				if(j) {
 					curr++;
 				}
