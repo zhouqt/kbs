@@ -22,19 +22,6 @@
 /*#include <varargs.h>*/
 #include <arpa/telnet.h>
 
-int clearbuflen=6;
-char clearbuf[6];
-
-int cleolbuflen=3 ;
-char cleolbuf[3];
-
-
-int strtstandoutlen=4;
-char strtstandout[4];
-
-int endstandoutlen=3;
-char endstandout[3];
-
 int t_lines  = 24;
 int t_columns = 80 ;
 
@@ -46,10 +33,6 @@ void term_init()
     obufsize=0;
     ibufsize=0;
     icurrchar = 0;
-    strncpy(clearbuf,"\033[H\033[J",clearbuflen);
-    strncpy(cleolbuf,"\033[K",cleolbuflen);
-    strncpy(strtstandout,"\033[7m",strtstandoutlen);
-    strncpy(endstandout,"\033[m",endstandoutlen);
 }
 
 void do_move(int destcol,int destline,void (*outc)(char))

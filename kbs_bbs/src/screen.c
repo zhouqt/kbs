@@ -28,23 +28,15 @@
 /*#include <varargs.h>*/
 #include <stdarg.h>
 
-extern char clearbuf[] ;
-extern char cleolbuf[] ;
-extern char strtstandout[] ;
-extern char endstandout[] ;
 extern int iscolor ;
-extern int clearbuflen ;
-extern int cleolbuflen ;
-extern int strtstandoutlen ;
-extern int endstandoutlen ;
 extern int editansi;
 
 extern int automargins ;
 
-#define o_clear()     output(clearbuf,clearbuflen)
-#define o_cleol()     output(cleolbuf,cleolbuflen) 
-#define o_standup()   output(strtstandout,strtstandoutlen)
-#define o_standdown() output(endstandout,endstandoutlen)
+#define o_clear() output("\x1b[H\x1b[J",6)
+#define o_cleol() output("\x1b[K",3)
+#define o_standup() output("\x1b[7m",3)
+#define o_standdown() output("\x1b[m",3)
 
 unsigned char   scr_lns, scr_cols ;
 unsigned char   cur_ln = 0, cur_col = 0 ;
