@@ -6,6 +6,8 @@ SMTH.Blog 的安装、功能、使用等。欢迎到 BBS水木清华站的BBSMan_Dev 版参与
 SMTH.Blog 的讨论。
 
 0. ChangeLog
+2004.5.26
+  windinsn V1.2  更新本文档
 2004.4.13
   windinsn V1.1  更新WWW部分功能
 2004.1.6
@@ -34,18 +36,22 @@ www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
     6) 友情链接管理。
     7) 支持Trackback Ping。
     8) 按月归档，并提供下载。
-    9) 对全站Blog进行按主题分类。
+    9) 对全站Blog和日志进行按主题分类。
     10) 统计全站最新文章(提供标准的RSS输出)和最新评论；
     11) 全站Blog搜索，Blog用户搜索；
     12) 自定义模板功能,支持XML/XSL；
-    13) 支持公共BLOG功能，并内含成员管理系统；
+    13) 支持群体BLOG功能，并内含成员管理系统；
     14) BLOG黑名单功能，含单个BLOG黑名单和全站BLOG黑名单；
-    15) BLOG推荐；
+    15) BLOG分类推荐；
     16) BLOG用户、日志、分类的按时间统计；
     17) SMTH.Blog类日志的引用通告自动挖掘；
     18) BLOG用户屏蔽功能；
     19) 支持OPML频道群组；
-    20) BLOG用户的申请、审批系统。
+    20) BLOG用户的申请、审批系统；
+    21) 单个日志的屏蔽功能；
+    22) 过滤器；
+    23) 引用通告采用UTF-8编码发送，能正常接收UTF-8和GB2312编码方式的引用通告；
+    24) 支持个人空间服务，并可支持个人空间文件的权限管理。
     2.3 Telnet部分
     1) Blog管理员功能：开启、修改、关闭某个Blog；
     2) Blog管理员功能：设定某用户Blog文章数/目录数限制；
@@ -56,22 +62,27 @@ www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
     
 3. 使用时的配置。
     SMTH.Blog的WWW部分要求进行配置，请按照需要更改 pcconf.php 文件：
-	$pcconfig["LIST"] :Blog首页上每页显示的用户数;
-	$pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
-	$pcconfig["BBSNAME"] :站点名称,默认为BBS_FULL_NAME;
-	$pcconfig["ETEMS"] :RSS输出的条目数;
-	$pcconfig["NEWS"] :统计全站最新文章/评论时显示的条目数;
-	$pcconfig["THEMLIST"] :按主题分类时每个主题显示的Blog数;
-	$pcconfig["SITE"] :站点的域名,在blog显示,RSS输出中均要用到;
-	$pcconfig["BOARD"] :Blog对应的版面名称,该版版主将默认为Blog管理员;
-	$pcconfig["APPBOARD"] :Blog申请公告版面;
-	$pcconfig["SEARCHFILTER"] :进行文章搜索时过滤掉的文字;
-	$pcconfig["SEARCHNUMBER"] :返回文章搜索结果时每页显示的条目数;
-	$pcconfig["SECTION"] :Blog分类方式;
-	$pcconfig["MINREGTIME"] :申请时要求的最短注册时间;
-	$pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
-	$pcconfig["MINREGTIME"] ;申请Blog的最短注册时间，单位是月
-	pc_personal_domainname($userid)函数 :用户Blog的域名;
+    $pcconfig["LIST"] :Blog首页上每页显示的用户数;
+    $pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
+    $pcconfig["BBSNAME"] :站点名称,默认为BBS_FULL_NAME;
+    $pcconfig["ETEMS"] :RSS输出的条目数;
+    $pcconfig["NEWS"] :统计全站最新文章/评论时显示的条目数;
+    $pcconfig["THEMLIST"] :按主题分类时每个主题显示的Blog数;
+    $pcconfig["SITE"] :站点的域名,在blog显示,RSS输出中均要用到;
+    $pcconfig["BOARD"] :Blog对应的版面名称,该版版主将默认为Blog管理员;
+    $pcconfig["SEARCHFILTER"] :进行文章搜索时过滤掉的文字;
+    $pcconfig["SEARCHNUMBER"] :返回文章搜索结果时每页显示的条目数;
+    $pcconfig["SECTION"] :Blog分类方式;
+    $pcconfig["MINREGTIME"] :申请时要求的最短注册时间;
+    $pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
+    $pcconfig["TMPSAVETIME"] :开启发文暂存功能时，保存的时间间隔， 单位为秒
+    $pcconfig["USERFILES"] :支持用户个人空间,若支持需要定义 _USER_FILE_ROOT_
+    $pcconfig["USERFILESLIMIT"]:用户个人空间的默认大小,单位是b
+    $pcconfig["USERFILESNUMLIMIT"]:用户个人空间的默认容量
+    $pcconfig["USERFILEPERM"]:用户个人空间是否支持权限控制
+    $pcconfig["USERFILEREF"] :用户个人空间是否检查HTTP_REFERER以防止盗链,开启此功能时请编辑 $accept_hosts 的预定值
+    $pcconfig["ENCODINGTBP"] :对 trackback ping 的字符串进行编码处理,包括送出编码和接收编码.开启此功能请确定你的PHP支持 mbstring 和 iconv
+    pc_personal_domainname($userid)函数 :用户Blog的域名;
 	
 4. 功能建议和BugReport
     欢迎到BBS水木清华站 BBSMan_Dev 版或 SMTH_Blog 版提交、讨论。
