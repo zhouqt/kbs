@@ -243,7 +243,7 @@ struct room_struct * find_room(char * s)
 }
 
 struct room_struct * myroom;
-int selected = 0, ipage=0, kicked=0;
+int selected = 0, ipage=0, kicked=0, jpage=0;
 
 void refreshit()
 {
@@ -301,10 +301,10 @@ void refreshit()
     }
     resetcolor();
     for(i=2;i<=t_lines-3;i++) 
-    if(msgst-1-(t_lines-3-i)>=0)
+    if(msgst-1-(t_lines-3-i)-jpage>=0)
     {
         move(i,20);
-        prints(msgs[msgst-1-(t_lines-3-i)]);
+        prints(msgs[msgst-1-(t_lines-3-i)-jpage]);
     }
 }
 
@@ -487,20 +487,22 @@ void join_room(struct room_struct * r)
             if(ch==KEY_UP) {
                 selected--;
                 if(selected<0) selected = myroom->people-1;
+                if(ipage>selected) ipage=selected;
                 refreshit();
             }
             else if(ch==KEY_DOWN) {
                 selected++;
                 if(selected>=myroom->people) selected=0;
+                if(selected>ipage+t_lines-5) ipage=selected-(t_lines-5);
                 refreshit();
             }
             else if(ch==KEY_PGUP) {
-                ipage+=t_lines/2;
+                jpage+=t_lines/2;
                 refreshit();
             }
             else if(ch==KEY_PGDN) {
-                ipage-=t_lines/2;
-                if(ipage>=0) ipage=0;
+                jpage-=t_lines/2;
+                if(jpage>=0) jpage=0;
                 refreshit();
             }
             else if(ch==Ctrl('S')) {
@@ -715,14 +717,16 @@ void join_room(struct room_struct * r)
     }
 
 quitgame:
-    if(!kicked) {
-        killer=0;
-        start_change_inroom(r);
+    killer=0;
+    start_change_inroom(r);
+    if(change_fd!=-1) {
         for(me=0;me<myroom->people;me++)
             if(inrooms.peoples[me].pid == uinfo.pid) break;
         if(inrooms.peoples[me].flag&PEOPLE_ROOMOP) {
             end_change_inroom();
             clear_inroom(myroom);
+            myroom->people = 0;
+            myroom->style = -1;
             goto quitgame2;
         }
         for(i=0;i<myroom->people;i++)
@@ -736,16 +740,16 @@ quitgame:
                 break;
             }
         r->people--;
-        end_change_inroom();
+    }
+    end_change_inroom();
 
-        if(killer)
-            sprintf(buf, "杀手%s潜逃了", buf2);
-        else
-            sprintf(buf, "%s离开房间", buf2);
-        for(i=0;i<myroom->people;i++) {
-            send_msg(inrooms.peoples+i, buf);
-            kill(inrooms.peoples[i].pid, SIGUSR1);
-        }
+    if(killer)
+        sprintf(buf, "杀手%s潜逃了", buf2);
+    else
+        sprintf(buf, "%s离开房间", buf2);
+    for(i=0;i<myroom->people;i++) {
+        send_msg(inrooms.peoples+i, buf);
+        kill(inrooms.peoples[i].pid, SIGUSR1);
     }
 quitgame2:
     
