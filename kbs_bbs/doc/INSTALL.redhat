@@ -14,9 +14,9 @@ php-xxx                必须
 php-devel-xxx          必须
 zlib-devel             必须
 openssl-devel          必须
-libesmtp-devel         必须
 gmp-devel              必须
 mysql-devel            必须
+libesmtp-devel         可选
      (以上软件可直接用 RedHat 光盘里的安装)
 
 
@@ -30,9 +30,11 @@ libtool-1.4.X          必须
 日更新的 smthbbs-snapshot 代码包。用 cvs 方式下载源代码请参考 doc/README.cvs
 文件。
 
-    注意在 site/ 子目录里面有名字为 devel.c 和 devel.h 的文件，这两个文件是站
-点定制文件，本文以这两个文件为例子进行讲解。注意验证 devel.h 文件中 BBSUID 和 
-BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
+    注意在 site/ 子目录里面有名字为 fb2k-v2.c 和 fb2k-v2.h 的文件，这两个文件
+是站点定制文件，本文以这两个文件为例子进行讲解。注意验证 fb2k-v2.h 文件中 
+BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
+一致。
+
 
     然后进入 smthbbs 的源代码目录，执行下列命令完成编译。
         contrib/build-RH9.sh
