@@ -2412,31 +2412,31 @@ static PHP_FUNCTION(bbs_get_thread_articles)
 
 	articlesFounded=0;
 
-	if ( (found=binarySearchInFileHeader(ptr1,total,ptr1[i].groupid))!=-1) {
-		for (i=total-1;i>=found;i--) {
-			if (ptr1[i].groupid==groupid)	{
-				articlesFounded++;
-				if ((articlesFounded-1)>=start){
-					MAKE_STD_ZVAL(element);
-					array_init(element);
-					flags[0] = get_article_flag(ptr1+i, currentuser, bp->filename, is_bm);
-					if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
-						flags[1] = 'y';
-					else
-						flags[1] = 'n';
-					if (ptr1[i].accessed[1] & FILE_READ)
-						flags[2] = 'y';
-					else
-						flags[2] = 'n';
-					if (ptr1[i].attachment)
-						flags[3] = '@';
-					else
-						flags[3] = ' ';
-					bbs_make_article_array(element, ptr1+i, flags, sizeof(flags));
-					zend_hash_index_update(Z_ARRVAL_P(return_value), articlesFounded-1-start, (void *) &element, sizeof(zval *), NULL);
-					if (articlesFounded>=num+start){
-						break;
-					}
+	for (i=total-1;i>=0;i--) {
+		if (ptr1[i].id<=groupid)
+			break;
+		if (ptr1[i].groupid==groupid)	{
+			articlesFounded++;
+			if ((articlesFounded-1)>=start){
+				MAKE_STD_ZVAL(element);
+				array_init(element);
+				flags[0] = get_article_flag(ptr1+i, currentuser, bp->filename, is_bm);
+				if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
+					flags[1] = 'y';
+				else
+					flags[1] = 'n';
+				if (ptr1[i].accessed[1] & FILE_READ)
+					flags[2] = 'y';
+				else
+					flags[2] = 'n';
+				if (ptr1[i].attachment)
+					flags[3] = '@';
+				else
+					flags[3] = ' ';
+				bbs_make_article_array(element, ptr1+i, flags, sizeof(flags));
+				zend_hash_index_update(Z_ARRVAL_P(return_value), articlesFounded-1-start, (void *) &element, sizeof(zval *), NULL);
+				if (articlesFounded>=num+start){
+					break;
 				}
 			}
 		}
@@ -2637,11 +2637,11 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
 
 	articleNums=0;
 
-	if ( (found=binarySearchInFileHeader(ptr1,total,groupid))!=-1) {
-		for (i=found+1;i<total;i++) {
-			if (ptr1[i].groupid==groupid)
-				articleNums++;
-		}
+	for (i=total-1;i>=0;i--) {
+		if (ptr1[i].id<=groupid)
+			break;
+		if (ptr1[i].groupid==groupid)
+			articleNums++;
 	}
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata.l_type = F_UNLCK;
