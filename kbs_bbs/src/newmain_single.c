@@ -373,38 +373,6 @@ void system_abort()
     return;
 }
 
-#ifdef AIX                      /* Leeward 99.03.06 */
-int num_active_http_users()
-{
-    int a, b;
-    struct hostent *h;
-    char buf[2048];
-    char hostname[STRLEN];
-    struct sockaddr_in sin;
-    char *ptr;
-
-    gethostname(hostname, STRLEN);
-    if (!(h = gethostbyname(hostname))) /*perror("gethostbyname") ; */
-        return -1;
-    memset(&sin, 0, sizeof sin);
-    sin.sin_family = h->h_addrtype;
-    memcpy(&sin.sin_addr, h->h_addr, h->h_length);
-    sin.sin_port = 80;
-    a = socket(sin.sin_family, SOCK_STREAM, 0);
-    if ((connect(a, (struct sockaddr *) &sin, sizeof sin)))     /*perror("connect err") ; */
-        return -1;
-    write(a, "GET /server-status\r\n", 20);
-    read(a, buf, 2048);
-    close(a);
-    ptr = strstr(buf, " requests currently being processed,");
-    if (NULL == ptr)
-        return -1;
-    for (; '\n' != *ptr; ptr--);
-    sscanf(ptr + 1, "%d requests currently being processed, %d idle servers", &a, &b);
-    return (a + b);
-}
-#endif
-
 void login_query()
 {
     char uid[STRLEN], passbuf[40], *ptr;
@@ -437,47 +405,7 @@ void login_query()
     signal(SIGALRM, SIG_IGN);
 #endif
 
-    /*
-       output("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",22);
-       attempts=5;
-       while(attempts) {
-       getdata(0, 0, "Please input(login as) bbs or bb5 here ==>",passbuf,6, DOECHO, NULL,true);
-       if (!strcmp(passbuf,"bbs")) break;
-       if (!strcmp(passbuf,"bbsbm")) break;
-       if (!strcmp(passbuf,"bbsop")) break;
-       if (!strcmp(passbuf,"bb5")) {convcode=1;break;}
-       prints("You entered an invalid login name or password.\n");
-       attempts--;
-       if (attempts==0)  {
-       prints("login invalid.\n");
-       oflush();
-       exit(-1);
-       }
-       }
-     */
-
-    /* Leeward 98.09.24 Use SHARE MEM and disable the old code */
-    /*
-       if(fill_shmfile(1,"etc/issue","ISSUE_SHMKEY"))
-       {
-       show_issue();
-       }                
-     */
     ansimore("etc/issue", false);
-    /*strcpy(fname,"etc/issue"); Leeward: disable the old code */
-/*    if(dashf(fname,"r")) This block is disabled for long, not for SHARE MEM
-    {
-        issues=countlogouts(fname);
-        if(issues>=1)
-        {
-                user_display(fname,(issues==1)?1:
-                                   ((time(0)/24*60*60)%(issues))+1,false);
-        }
-    }*/
-    /*ansimore(fname,false); Leeward: disable the old code */
-
-/*    prints( "\033[1mª∂”≠π‚¡Ÿ[31m%s[37m°Ù"ISSUE_LOGIN"°Ù [36m…œœﬂ»À ˝ \033[1m%d(%dWWW GUEST)[m", BBS_FULL_NAME, curr_login_num+getwwwguestcount(),getwwwguestcount());
- *    */
     prints("  \033[1mª∂”≠π‚¡Ÿ °Ù[31m%s[37m°Ù [36m…œœﬂ»À ˝ \033[1m%d(%d WWW GUEST)[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), getwwwguestcount());
 
 #ifndef SSHBBS
@@ -892,16 +820,6 @@ void main_bbs(int convit, char *argv)
 #endif
     initscr();
 
-#if 0
-    if (argc < 2 || ((*argv[1] != 'h') && (*argv[1] != 'd') && (*argv[1] != 'e'))) {
-        /* KCN add 'd' mode for bbsd 1999.9.1 */
-        prints("You cannot execute this program directly.\n");
-        oflush();
-        exit(-1);
-    }
-    if (*argv[1] == 'e')
-        convcode = 1;
-#endif
     convcode = convit;
     conv_init();                /* KCN,99.09.05 */
 
