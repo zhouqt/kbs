@@ -18,6 +18,7 @@ global $listType;
 global $isbm;
 global $total; /* 主题一共几篇 */
 global $num; /* 一共显示几篇 */
+global $pos; /*本主题在 .WEBTHREAD 中的位置，0-based，-1 表示没有这个信息 */
 global $is_tex;
 
 setStat("文章阅读");
@@ -30,9 +31,30 @@ show_nav($boardName,$is_tex,getBoardRSS($boardName));
 
 showUserMailBoxOrBR();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType,$total,$num);
+showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType,$total,$num,$pos);
 
 show_footer();
+
+function generate_thread_jump($boardID, $boardName, $isNext, $pos, $groupID) {
+	$total = bbs_getThreadNum($boardID);
+	if ($pos <= 0 && !$isNext) return;
+	if (($pos >= $total - 1) && $isNext) return;
+	$min = $pos;
+	if (!$isNext) $min--;
+	$articles = bbs_getthreads($boardName, $min, 2, 1);
+	if ($articles === false || count($articles) != 2) {
+		foundErr("读取索引失败");
+	}
+	$now = $articles[$isNext ? 0 : 1];
+	if ($now['lastreply']['GROUPID'] != $groupID) {
+		foundErr("版面索引发生变化，可能是有新发文。<a href=\"board.php?name=".$boardName."\">点这里返回版面</a>");
+	}
+	$mt = $articles[$isNext ? 1 : 0];
+	$pos = $pos + ($isNext ? 1 : -1);
+	$groupID = $mt['lastreply']['GROUPID'];
+	header("Location: disparticle.php?boardName=".$boardName."&ID=".$groupID."&pos=".$pos);
+	exit;
+}
 
 function preprocess(){
 	global $boardID;
@@ -47,6 +69,7 @@ function preprocess(){
 	global $isbm;
 	global $total;
 	global $num;
+	global $pos;
 	global $is_tex;
 	if (!isset($_GET['boardName'])) {
 		foundErr("未指定版面。");
@@ -68,13 +91,27 @@ function preprocess(){
 	} else {
 		$groupID=intval($_GET['ID']);
 	}
+
+	$pos = -1;
+	if (isset($_GET['pos'])) {
+		$pos = @intval($_GET['pos']);
+	}
+	if (($pos != -1) && isset($_GET['mt'])) { //原则上，$pos == -1 的话可以从 .WEBTHREAD 中线形查找，但，算了...
+		$mt = @intval($_GET['mt']);
+		generate_thread_jump($boardID, $boardName, ($mt == 1), $pos, $groupID);
+	}
+
 	$listType=0;
 	if(isset($_GET['listType'])) {
 		if ($_GET['listType']=='1')
 			$listType=1;
 	}
-	if (isset($_GET['page'])) {
-		$start = THREADSPERPAGE * (intval($_GET['page']) - 1);
+	if ($listType == 0) {
+		if (isset($_GET['page'])) {
+			$start = THREADSPERPAGE * (intval($_GET['page']) - 1);
+		} else {
+			$start = 0;
+		}
 	} else {
 		if (!isset($_GET['start'])) {
 			$start=0;
@@ -87,6 +124,7 @@ function preprocess(){
 	
 	bbs_set_onboard($boardID,1);
 	
+	$articles = array();
 	$num = bbs_get_threads_from_gid($boardID, $groupID, $groupID, $articles, $haveprev );
 	if ($num==0) {
 		foundErr("您指定的文章不存在！");
@@ -122,7 +160,7 @@ function preprocess(){
 	return true;
 }
 
-function article_bar($boardName,$boardID,$groupID,$article,$startNum,$listType){
+function article_bar($boardName,$boardID,$groupID,$article,$startNum,$listType,$pos){
 	global $dir_modes;
 ?>
 <table cellpadding="2" cellspacing="0" border="0" width="97%" align="center">
@@ -134,24 +172,30 @@ function article_bar($boardName,$boardID,$groupID,$article,$startNum,$listType){
 	</tr></table>
 	</td>
 	<td align="right" valign="middle">
-<!--
-	<a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $groupID>1?$groupID-1:1; ?>"><img src="pic/prethread.gif" border="0" title="浏览上一篇主题" width="52" height="12"/></a>&nbsp;
--->
+<?php
+	if ($pos != -1 && $pos != 0) {
+?>
+	<a href="disparticle.php?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;pos=<?php echo $pos; ?>&amp;mt=-1"><img src="pic/prethread.gif" border="0" title="浏览上一篇主题" width="52" height="12"/></a>&nbsp;
+<?php
+	}
+?>
 	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border="0" title="刷新本主题" width="40" height="12"/></a> &nbsp;
 <?php
 	if ($listType==1) {
 ?>
-	<a href="?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;start=<?php echo (ceil(($startNum+1)/THREADSPERPAGE)-1)*THREADSPERPAGE;; ?>&amp;listType=0"><img src="pic/flatview.gif" width="40" height="12" border="0" title="平板显示贴子"/></a>
+	<a href="disparticle.php?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;page=<?php echo ceil(($startNum+1)/THREADSPERPAGE); ?>&amp;pos=<?php echo $pos; ?>&amp;listType=0"><img src="pic/flatview.gif" width="40" height="12" border="0" title="平板显示贴子"/></a>
 <?php
 	} else {
 ?>
-	<a href="?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;start=<?php echo $startNum; ?>&amp;listType=1"><img src="pic/treeview.gif" width="40" height="12" border="0" title="树形显示贴子"/></a>
+	<a href="disparticle.php?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;start=<?php echo $startNum; ?>&amp;pos=<?php echo $pos; ?>&amp;listType=1"><img src="pic/treeview.gif" width="40" height="12" border="0" title="树形显示贴子"/></a>
+<?php
+	}
+	if ($pos != -1) { //最后一篇仍旧显示
+?>
+	　<a href="disparticle.php?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;pos=<?php echo $pos; ?>&amp;mt=1"><img src="pic/nextthread.gif" border="0" title="浏览下一篇主题" width="52" height="12"/></a>
 <?php
 	}
 ?>
-<!--
-	　<a href="disparticle.php?boardName=<?php 	echo $boardName; ?>&ID=<?php echo $groupID<bbs_getThreadNum($boardID)?$groupID+1:$groupID; ?>"><img src="pic/nextthread.gif" border="0" title="浏览下一篇主题" width="52" height="12"/></a>
--->
 	</td>
 	</tr>
 </table>
@@ -203,11 +247,11 @@ function dispArticleTitle($boardName,$boardID,$groupID,$article, $startNum){
 <?php
 }
 
-function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType,$total,$num) {
+function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType,$total,$num,$pos) {
 	global $dir_modes;
 	$totalPages=ceil(($total)/THREADSPERPAGE);
 	$page=ceil(($start+1)/THREADSPERPAGE);
-	article_bar($boardName,$boardID,$groupID, $articles[0], $start, $listType);
+	article_bar($boardName,$boardID,$groupID, $articles[0], $start, $listType,$pos);
 	dispArticleTitle($boardName,$boardID,$groupID,$articles[0],$start);
 ?>
 <table cellPadding="5" cellSpacing="1" align="center" class="TableBorder1" style=" table-layout:fixed;word-break:break-all">
@@ -217,13 +261,13 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 	}
 ?>
 </table>
-<table cellpadding="0" cellspacing="3" border="0" width="97%" align="center"><tr><td valign="middle" nowrap="nowarp">本主题贴数<b><?php echo $total; ?></b>，
+<table cellpadding="0" cellspacing="3" border="0" width="97%" align="center"><tr><td valign="middle" nowrap="nowarp">本主题贴数<b><?php echo $total; ?></b>
 <?php
 	if ($listType!=1) {
 ?>
-分页： 
+&nbsp;&nbsp;分页：
 <?php
-		showPageJumpers($page, $totalPages, "disparticle.php?boardName=".$boardName."&amp;ID=".$groupID."&amp;page=");
+		showPageJumpers($page, $totalPages, "disparticle.php?boardName=".$boardName."&amp;ID=".$groupID."&amp;pos=".$pos."&amp;page=");
 	}
 ?></td><td valign="middle" nowrap="nowrap" align="right">
 <?php 
@@ -408,6 +452,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 
 function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
 	global $start; //不好意思，搞个全局变量 - atppp
+	global $pos;
 	echo '<tr><td class="TableBody'.($start==$startNum?1:2).'" width="100%" height="22" colspan="2">';
 	for ($i=0;$i<$level;$i++) {
 		if ($lastflag[$i]) {
@@ -419,9 +464,9 @@ function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
 		}
 	}
 	if ($article == null) {
-		echo ' ... <a href="disparticle.php?boardName='.$boardName.'&amp;ID='.$groupID.'&amp;start='.$startNum.'&amp;listType=1"><span style="color:red">还有更多</span></a> ...';
+		echo ' ... <a href="disparticle.php?boardName='.$boardName.'&amp;ID='.$groupID.'&amp;start='.$startNum.'&amp;pos='.$pos.'&amp;listType=1"><span style="color:red">还有更多</span></a> ...';
 	} else {
-		echo '<img src="face/face1.gif" height="16" width="16"/>  <a href="disparticle.php?boardName='.$boardName.'&amp;ID='.$groupID.'&amp;start='.$startNum.'&amp;listType=1">';
+		echo '<img src="face/face1.gif" height="16" width="16"/>  <a href="disparticle.php?boardName='.$boardName.'&amp;ID='.$groupID.'&amp;start='.$startNum.'&amp;pos='.$pos.'&amp;listType=1">';
 		if ($start==$startNum) echo "<font color=\"red\">";
 		echo htmlspecialchars($article['TITLE'],ENT_QUOTES);
 		if ($start==$startNum) echo "</font>";

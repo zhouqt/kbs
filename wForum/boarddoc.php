@@ -88,6 +88,7 @@ function preprocess(){
 
 
 function showBoardContents($boardID,$boardName,$page,$ftype,$sorted){
+	global $dir_modes;
 	$total = bbs_countarticles($boardID, $ftype);
 	if ($total<=0) {
 ?>
@@ -138,12 +139,18 @@ function showBoardContents($boardID,$boardName,$page,$ftype,$sorted){
 		}
 ?>
 </table>
-<form method=get action="board.php">
+<form method=get action="boarddoc.php">
 <input type="hidden" name="name" value="<?php echo $boardName ; ?>">
+<input type="hidden" name="ftype" value="<?php echo $ftype ; ?>">
 <table border=0 cellpadding=0 cellspacing=3 width=97% align=center >
-<tr><td valign=middle>页次：<b><?php echo $page; ?></b>/<b><?php echo $totalPages; ?></b>页 每页<b><?php echo ARTICLESPERPAGE; ?></b> 主题数<b><?php echo $total ?></b></td><td valign=middle ><div align=right >分页：
+<tr><td valign=middle>页次：<b><?php echo $page; ?></b>/<b><?php echo $totalPages; ?></b>页 每页<b><?php echo ARTICLESPERPAGE; ?></b> 主题数<b><?php echo $total ?></b> &nbsp; &nbsp; <b>传统模式切换</b>：
+<a href="boarddoc.php?name=<?php echo $boardName; ?>&amp;ftype=<?php echo $dir_modes["DIGEST"]; ?>">文摘区</a> |
+<a href="boarddoc.php?name=<?php echo $boardName; ?>&amp;ftype=<?php echo $dir_modes["NORMAL"]; ?>">全部贴子</a> |
+<a href="boarddoc.php?name=<?php echo $boardName; ?>&amp;ftype=<?php echo $dir_modes["ORIGIN"]; ?>">原作</a>
+</td>
+<td valign=middle ><div align=right >分页：
 <?php
-	showPageJumpers($page, $totalPages, "boarddoc.php?name=".$boardName."&amp;ftype=$ftype&amp;page=");
+	showPageJumpers($page, $totalPages, "boarddoc.php?name=$boardName&amp;ftype=$ftype&amp;page=");
 ?>
 转到:<input type=text name="page" size=3 maxlength=10  value=1><input type=submit value=Go ></div></td></tr>
 </table></form>
