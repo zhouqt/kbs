@@ -47,12 +47,12 @@ AC_ARG_ENABLE(ssh,
 	fi
 ])
 
-enable_www=yes
+enable-www=yes
 AC_ARG_ENABLE(www,
 [  --enable-www
         enable web support(need bbs2www package)],
 [
-    if test -d sshbbsd; then
+    if test -d bbs2www; then
         AC_CONFIG_SUBDIRS(bbs2www)
     else
         AC_MSG_ERROR([can't find bbs2www package,please get it first!])
