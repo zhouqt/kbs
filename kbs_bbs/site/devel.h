@@ -39,6 +39,6 @@
 
 #define CHECK_CONNECT 0
 
+#define COMMEND_ARTICLE "Recommend"
+
 #endif
-
-
