@@ -614,7 +614,7 @@ int do_send(char *userid, char *title, char *q_file)
     }
 }
 
-int m_send(char userid[])
+int m_send(char* userid)
 {
     char uident[STRLEN];
 
@@ -624,7 +624,7 @@ int m_send(char userid[])
     if (HAS_PERM(currentuser, PERM_DENYMAIL))
         return DONOTHING;
 
-    if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU) {
+    if (userid==NULL||(uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU)) {
         move(1, 0);
         clrtoeol();
         modify_user_mode(SMAIL);
@@ -2055,10 +2055,15 @@ static int m_clean()
     uinfo.mode = savemode;
 }
 
+int m_sendnull()
+{
+    m_send(NULL);
+}
+
 const static struct command_def mail_cmds[] = {
     {"N) 览阅新信件", 0, m_new, NULL},
     {"R) 览阅全部信件", 0, m_read, NULL},
-    {"S) 寄信", PERM_LOGINOK, m_send, NULL},
+    {"S) 寄信", PERM_LOGINOK, m_sendnull, NULL},
     {"G) 寄给 / 设定寄信名单", PERM_LOGINOK, g_send, NULL},
     {"O)┌设定好友名单", 0, t_override, NULL},
     {"F)└寄信给好友名单", PERM_LOGINOK, ov_send, NULL},

@@ -148,7 +148,8 @@ int friend_add(int ent, struct friends *fh, char *direct);
 void talk_request();
 int num_user_logins(char *uid);
 int listfilecontent(char *fname);
-int m_send(char userid[]);
+int m_send(char* userid);
+int m_sendnull(); /* m_send的一个封装*/
 
 /* delete.c */
 int kick_user(struct user_info *userinfo);

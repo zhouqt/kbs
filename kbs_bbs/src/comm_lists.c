@@ -65,7 +65,7 @@ int x_userdefine();
 int confirm_delete_id();        /* Added by Bigman 2001.7.14 */
 
 /*Add by SmallPig*/
-int m_new(), m_read(), m_send(), g_send();
+int m_new(), m_read(), m_sendnull(), g_send();
 int ov_send(), m_internet(), mailall(), suicide();
 
 
@@ -142,7 +142,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"OffLine", suicide},
     {"ReadNewMail", m_new},
     {"ReadMail", m_read},
-    {"SendMail", m_send},
+    {"SendMail", m_sendnull},
     {"GroupSend", g_send},
     {"OverrideSend", ov_send},
     {"SendNetMail", m_internet},
