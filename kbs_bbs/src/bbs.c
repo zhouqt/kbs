@@ -2787,7 +2787,7 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         malloc_write_dir_arg(&dirarg);
         dirarg.fd=arg->fd;
         dirarg.filename=arg->direct;
-        result = delete_range(&dirarg, inum1, inum2, idel_mode,arg->mode);
+        result = delete_range(&dirarg, inum1, inum2, idel_mode,arg->mode,currboard);
         /* todo ĞŞÕıconfµÄpos
         if (inum1 != 0)
             fixkeep(arg->direct, inum1, inum2);

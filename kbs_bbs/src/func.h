@@ -288,7 +288,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 	 * 功能：依据key, 对ptr传入的.DIR索引进行二分查找
 	 */
 	int Search_Bin(struct fileheader*ptr, int key, int start, int end);
-    int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int curmode);
+    int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int curmode,const struct boardheader* board);
 
     /*
      * mmap_search_dir_apply

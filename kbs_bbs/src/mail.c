@@ -2263,7 +2263,7 @@ static int m_clean()
         struct write_dir_arg dirarg;
         malloc_write_dir_arg(&dirarg);
         dirarg.filename=buf;
-        delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL);
+        delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL,NULL);
     }
     move(0, 0);
     setmailfile(buf, currentuser->userid, mail_sysbox[2]);
@@ -2272,7 +2272,7 @@ static int m_clean()
         struct write_dir_arg dirarg;
         malloc_write_dir_arg(&dirarg);
         dirarg.filename=buf;
-        delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL);
+        delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL,NULL);
     }
 	/*
     if (user_mail_list.mail_list_t) {

@@ -220,7 +220,7 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
     if (prepare_write_dir(dirarg,fileinfo,currmode)!=0)
         return-1;
     BBS_TRY {
-		fh=*(dirarg->fileptr + (dirarg->ent - 1));
+        fh=*(dirarg->fileptr + (dirarg->ent - 1));
         memcpy(dirarg->fileptr + (dirarg->ent - 1), 
             dirarg->fileptr + dirarg->ent, 
             dirarg->size - sizeof(struct fileheader) * dirarg->ent);
@@ -237,7 +237,7 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
     BBS_CATCH {
     }
     BBS_END;
-	if (dirarg->needlock)
+    if (dirarg->needlock)
         flock(dirarg->fd,LOCK_UN); /*这个是需要赶紧做的*/
     if (fh.id == fh.groupid)
         setboardorigin(board, 1);
@@ -245,19 +245,19 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
 
     
     owned = isowner(user, &fh);
-        cancelpost(board, user->userid, &fh, owned, 1);
-        updatelastpost(board);
-        if (fh.accessed[0] & FILE_MARKED)
-            setboardmark(board, 1);
-        if ((DIR_MODE_NORMAL == currmode)        /* 不可以用 “NA ==” 判断：digestmode 三值 */
-            &&!((fh.accessed[0] & FILE_MARKED)
-                && (fh.accessed[1] & FILE_READ)
-                && (fh.accessed[0] & FILE_FORWARDED))) { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
-            if (owned) {
-                if ((int) user->numposts > 0 && !junkboard(board)) {
+    cancelpost(board, user->userid, &fh, owned, 1);
+    updatelastpost(board);
+    if (fh.accessed[0] & FILE_MARKED)
+        setboardmark(board, 1);
+    if ((DIR_MODE_NORMAL == currmode)        /* 不可以用 “NA ==” 判断：digestmode 三值 */
+        &&!((fh.accessed[0] & FILE_MARKED)
+        && (fh.accessed[1] & FILE_READ)
+        && (fh.accessed[0] & FILE_FORWARDED))) { /* Leeward 98.06.17 在文摘区删文不减文章数目 */
+        if (owned) {
+            if ((int) user->numposts > 0 && !junkboard(board)) {
                     user->numposts--;   /*自己删除的文章，减少post数 */
-                }
-            } else if (!strstr(fh.owner, ".") && BMDEL_DECREASE && decpost /*版主删除,减少POST数 */ ) {
+            }
+        } else if (!strstr(fh.owner, ".") && BMDEL_DECREASE && decpost /*版主删除,减少POST数 */ ) {
                 struct userec *lookupuser;
                 int id = getuser(fh.owner, &lookupuser);
 
@@ -266,10 +266,10 @@ int do_del_post(struct userec *user, struct write_dir_arg*dirarg,struct filehead
                 }
             }
         }
-        if (user != NULL)
+    if (user != NULL)
             bmlog(user->userid, board, 8, 1);
-        newbbslog(BBSLOG_USER, "Del '%s' on '%s'", fh.title, board);     /* bbslog */
-        return 0;
+    newbbslog(BBSLOG_USER, "Del '%s' on '%s'", fh.title, board);     /* bbslog */
+    return 0;
 }
 
 /* by ylsdd 
@@ -1727,7 +1727,7 @@ long calc_effsize(char *fname)
   删除模式 [del_mode = 0]标记删除 [1]普通删除 [2]强制删除
   TODO: use mmap
 */
-int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int curmode)
+int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int curmode,const struct boardheader* board)
 {
 #define DEL_RANGE_BUF 2048
     struct fileheader *savefhdr;
@@ -1736,10 +1736,9 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
     int count, totalcount, delcount, remaincount, keepcount;
     int pos_read, pos_write, pos_end;
     int i;
+    char genbuf[1024];
 
 #ifdef BBSMAIN
-    int savedigestmode;
-
     /*
      * curmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
      * 调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
@@ -1747,7 +1746,7 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
      * 尝试了一下打开操作; tmpfile是否对每种模式独立, 这个还是值得
      * 商榷的.  -- ylsdd 
      */
-    if ((curmode != DIR_MODE_NORMAL)&& (curmode != DIR_MODE_MAIL)) {   /* KCN:暂不允许 */
+    if ((curmode != DIR_MODE_NORMAL)&&(curmode!=DIR_MODE_DIGEST)&& (curmode != DIR_MODE_MAIL)) {   /* KCN:暂不允许 */
         return 0;
     }
 #endif                          /* 
@@ -1855,47 +1854,45 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
                     keepcount = 0;
                 }
             }
-#ifdef BBSMAIN
-            else if (curmode != DIR_MODE_MAIL) {
+            else if (curmode == DIR_MODE_NORMAL) {
                 int j;
                 memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
                 delcount++;
                 if (delcount >= DEL_RANGE_BUF) {
                     for (j = 0; j < DEL_RANGE_BUF; j++)
-                        cancelpost(currboard->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+                        cancelpost(board->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
                     delcount = 0;
-                    setbdir(DIR_MODE_DELETED, genbuf, currboard->filename);
+                    setbdir(DIR_MODE_DELETED, genbuf, board->filename);
                     append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
                 }
                 /*
                  * need clear delcount 
                  */
             }
-            else if (!strstr(dirarg->filename, ".DELETED")) {
-                int j;
-                memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
-                delcount++;
-                if (delcount >= DEL_RANGE_BUF) {
-                    delcount = 0;
-                    setmailfile(genbuf, currentuser->userid, ".DELETED");
-                    append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
-                }
-            }
-            else {
-               int j;
-	        struct stat st;
-               memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
-               delcount++;
-               if (delcount >= DEL_RANGE_BUF) {
-               	delcount = 0;
-	        	for (j = 0; j < DEL_RANGE_BUF; j++){
+            else if (curmode == DIR_MODE_MAIL) {
+                if (!strstr(dirarg->filename, ".DELETED")) { //add to 垃圾箱,todo:检查邮件标记
+                    int j;
+                    memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
+                    delcount++;
+                    if (delcount >= DEL_RANGE_BUF) {
+                        delcount = 0;
+                        setmailfile(genbuf, currentuser->userid, ".DELETED");
+                        append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
+                    }
+                } else {
+                   int j;
+	           struct stat st;
+                   memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
+                   delcount++;
+                   if (delcount >= DEL_RANGE_BUF) {
+               	       delcount = 0;
+                       for (j = 0; j < DEL_RANGE_BUF; j++){
 	            		setmailfile(genbuf, currentuser->userid, delfhdr[j].filename);
 	            		if (stat(genbuf, &st) !=-1) currentuser->usedspace-=st.st_size;
 	        	}
-               }
-            }
-#endif                          /* 
-                                 */
+                   }
+                }
+           } //in mail mode
         }                       /*for readcount */
     }
     if (keepcount) {
@@ -1917,18 +1914,17 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
 #ifdef DEBUG
 #ifdef BBSMAIN
             newbbslog(BBSLOG_DEBUG,"%s range ftruncate %d",
-                dirarg->filename?dirarg->filename:currboard->filename,
+                dirarg->filename?dirarg->filename:board->filename,
                 remaincount * sizeof(struct fileheader));
 #endif
 #endif      
     ftruncate(dirarg->fd, remaincount * sizeof(struct fileheader));
-#ifdef BBSMAIN
-    if ((curmode != DIR_MODE_MAIL) && delcount) {
+    if ((curmode == DIR_MODE_NORMAL) && delcount) {
         int j;
 
         for (j = 0; j < delcount; j++)
-            cancelpost(currboard->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
-        setbdir(DIR_MODE_DELETED, genbuf, currboard->filename);
+            cancelpost(board->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+        setbdir(DIR_MODE_DELETED, genbuf, board->filename);
         append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
     }
     else if (curmode==DIR_MODE_MAIL&&!strstr(dirarg->filename, ".DELETED")) {
@@ -1943,7 +1939,6 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
             if (stat(genbuf, &st) !=-1) currentuser->usedspace-=st.st_size;
         }
     }
-#endif
     if (dirarg->needlock)
         flock(dirarg->fd,LOCK_UN);
     free(savefhdr);
