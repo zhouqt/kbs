@@ -13,6 +13,8 @@ define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 
 define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
+define('SERVERTIMEZONE','北京时间');
+
 $SiteURL="http://172.16.50.79";
 
 $SiteName="大运村BBS";

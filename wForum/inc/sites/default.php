@@ -39,5 +39,8 @@ if (!defined('ATTACHMAXCOUNT')) { //一篇文章中最多可上载的附件数量
 	define('ATTACHMAXCOUNT','5');
 }
 
+if (!defined('SERVERTIMEZONE')) { //服务器时区 - 暂时这样搞吧 - atppp
+	define('SERVERTIMEZONE','北京时间');
+}
 
 ?>
