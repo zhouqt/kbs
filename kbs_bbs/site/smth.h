@@ -292,7 +292,15 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     unsigned int o_reid;
     char unused1[14];
 #else
+#ifdef COMMEND_ARTICLE
+    char o_board[STRLEN - BM_LEN];
+    unsigned int o_id;
+    unsigned int o_groupid;
+    unsigned int o_reid;
+    char unused1[14];
+#else
     char unused1[46];
+#endif
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
@@ -355,6 +363,8 @@ attach define
 
 #define NEW_HELP
 #define HAVE_DEFAULT_HELPMODE
+
+#define COMMEND_ARTICLE "commend"
 
 #define NOT_USE_DEFAULT_SMS_FUNCTIONS
 
