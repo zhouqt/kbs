@@ -741,8 +741,10 @@ void notepad_init()
     if (lastnote == 0) {
         lastnote = time(NULL) - (time(NULL) % maxsec);
         check = fopen("etc/checknotepad", "w");
-        fprintf(check, "%lu", lastnote);
-        fclose(check);
+        if (check) {
+            fprintf(check, "%lu", lastnote);
+            fclose(check);
+        }
         sprintf(tmp, "留言板在 %s Login 开启，内定开启时间时间为 %s", getCurrentUser()->userid, Ctime(lastnote));
         bbslog("user","%s",tmp);
     }
@@ -750,10 +752,12 @@ void notepad_init()
         move(t_lines - 1, 0);
         prints("对不起，系统自动发信，请稍候.....");
         now = time(0);
+        if (check) {
         check = fopen("etc/checknotepad", "w");
         lastnote = time(NULL) - (time(NULL) % maxsec);
         fprintf(check, "%lu", lastnote);
         fclose(check);
+        } else lastnote=0;
         if ((check = fopen("etc/autopost", "r")) != NULL) {
             while (fgets(tmp, STRLEN, check) != NULL) {
                 fname = strtok(tmp, " \n\t:@");
