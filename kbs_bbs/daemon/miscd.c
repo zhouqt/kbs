@@ -588,8 +588,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
                     break;
                 }
             }
-            if (ismonday()) {
-                switch (fork()) {
+            switch (fork()) {
                 case -1:
                     bbslog("3error", "fork failed\n");
                     break;
@@ -599,7 +598,6 @@ static int miscd_dodaemon(char *argv1, char *daemon)
                     break;
                 default:
                     break;
-                }
             }
             ft = time(0);
             do {
