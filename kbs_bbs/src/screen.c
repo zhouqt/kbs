@@ -792,40 +792,6 @@ char *buffer;
 } ;
 
 
-#ifdef CANCELLED_BY_LEEWARD /* Õâ¸ö´úÂë¿ªÏú¸Ð¾õÌ«´óÁË£¬·Ï³ýÖ® */
-void
-lock_monitor() /* Leeward 98.03.01 */
-{
-    static int xx = - 1, yy = - 1; /* Leeward:  for animated text:-) */
-    static int dx = 2, dy = 1;
-    int /*x,y,*/c;
-    int cy,cx;
-    time_t tm;
-
-    getyx(&cy,&cx);
-    move(yy, xx);
-    clrtoeol(yy, xx);
-    alarm(0);
-    tm=time(0);
-    if (- 1 == xx && - 1 == yy)  xx = tm % 60 + 4, yy = tm % 20 + 1;
-    if (xx >= 64 || xx <= 1) dx = - dx; /* Careful: -1, 60, 4, 20, 1, 64, 0 */
-    if (yy >= 20 || yy <= 0) dy = - dy; /* 21: top prompt line for password */
-    xx += dx;
-    yy += dy;
-    c=tm%7+1;
-    move(yy, xx);
-    /*if(tm%2==0)
-      prints("[3%dmÎÒÊÇ %12s[m",c,currentuser->userid);
-    else
-      prints("[3%dmÎÒÊÇ %12s[m",c,currentuser->username);*/
-    prints("[1m[3%dmBBS Ë®Ä¾Çå»ªÕ¾[0m[0m", c);
-    signal(SIGALRM,lock_monitor);
-    alarm(1);
-    move(cy,cx);
-    refresh();
-}
-#endif
-
 int
 lock_scr() /* Leeward 98.02.22 */
 {

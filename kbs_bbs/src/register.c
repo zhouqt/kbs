@@ -34,7 +34,6 @@
 char    *sysconf_str();
 char    *Ctime();
 
-extern char     fromhost[ 60 ];
 extern time_t   login_start_time;
 time_t          system_time;
 extern int convcode;  /* KCN,99.09.05 */

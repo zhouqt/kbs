@@ -3742,7 +3742,6 @@ Goodbye()    /*离站 选单*/
     }
     num_sysop=i;
     move(1,0);
-    alarm(0);
     clear() ;
     move(0,0);
     prints("你就要离开 %s ，给站长一些建议吗？\n",BoardName);

@@ -55,11 +55,12 @@ print_title2()
 }
 
 void
-update_data()
+update_data(void* data)
 {
     if(readplan==YEA)
         return;
-    if(time(0)>=update_time+refreshtime-1)
+   	idle_count++;
+    if(time(0)>=update_time+refreshtime*idle_count-1)
     {
         freshmode=1;
         /*Take out by SmallPig*/
@@ -69,8 +70,8 @@ update_data()
                         move( 3+num-page,0 ); prints( ">");
                         refresh();*/
     }
-    signal(SIGALRM, update_data);
-    alarm(refreshtime);
+    set_alarm(refreshtime*idle_count,update_data,NULL);
+    UNUSED_ARG(data);
     return;
 }
 
@@ -200,7 +201,7 @@ do_userlist()
     char  user_info_str[256/*STRLEN*2*/],pagec;
     int   override;
     char fexp[30];
-    struct user_info *uentp;
+    struct user_info uentp;
     /*  _SHOW_ONLINE_USER */
     /* to print on line user to a file */
     /* char online_users[STRLEN+10];
@@ -229,8 +230,8 @@ do_userlist()
 
     for(i=0;i<BBS_PAGESIZE&&i+page<range;i++)
     {
-        uentp=user_record[i+page];
-        if (!uentp->active||!uentp->pid)
+        uentp=*(user_record[i+page]);
+        if (!uentp.active||!uentp.pid)
 		{
 			prints(" %4d ∞°,Œ“∏’◊ﬂ\n",i+1+page);
 			continue;
@@ -240,7 +241,7 @@ do_userlist()
         else
         {
             if((i+page<numf)||friendmode)
-                override=myfriend(uentp->uid,fexp);
+                override=myfriend(uentp.uid,fexp);
             else
                 override=NA;
         }
@@ -248,25 +249,25 @@ do_userlist()
         {
             return 0;
         }
-        pagec=pagerchar( can_override(uentp->userid,currentuser->userid), uentp->pager);
+        pagec=pagerchar( can_override(uentp.userid,currentuser->userid), uentp.pager);
         sprintf( user_info_str,
                  /*---	modified by period	2000-10-21	‘⁄œﬂ”√ªß ˝ø…“‘¥Û”⁄1000µƒ
                          " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s[m%5.5s\n",
                  ---*/
                  " %4d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-16.16s[m%5.5s\n",
-                 i+1+page,(override)?(uentp->invisible?"££":"£Æ"):(uentp->invisible?"£™":""),
-                         (override)? "[1;32m":"",uentp->userid
+                 i+1+page,(override)?(uentp.invisible?"££":"£Æ"):(uentp.invisible?"£™":""),
+                         (override)? "[1;32m":"",uentp.userid
                          ,(override)? "[m":"",(override&&showexplain)?"[1;31m":"",
-                         (real_user_names) ? uentp->realname:
-                         (showexplain&&override)? fexp:uentp->username,(override&&showexplain)?"[m":"",
-                         ((/* !DEFINE(DEF_HIDEIP) &&*/ (pagec==' ' || pagec=='O') ) || HAS_PERM(PERM_SYSOP)) ? uentp->from : "*",/*Haohmaru.99.12.18*/
+                         (real_user_names) ? uentp.realname:
+                         (showexplain&&override)? fexp:uentp.username,(override&&showexplain)?"[m":"",
+                         ((/* !DEFINE(DEF_HIDEIP) &&*/ (pagec==' ' || pagec=='O') ) || HAS_PERM(PERM_SYSOP)) ? uentp.from : "*",/*Haohmaru.99.12.18*/
                          pagec,
-                         /*(uentp->invisible ? '#' : ' ')*/msgchar(uentp),(uentp->invisible==YEA)
+                         /*(uentp.invisible ? '#' : ' ')*/msgchar(&uentp),(uentp.invisible==YEA)
                          ?"[34m":"",
-                         modestring(uentp->mode, uentp->destuid, 0,/* 1->0 ≤ªœ‘ æ¡ƒÃÏ∂‘œÛµ» modified by dong 1996.10.26 */
-                                    (uentp->in_chat ? uentp->chatid : NULL)),
+                         modestring(uentp.mode, uentp.destuid, 0,/* 1->0 ≤ªœ‘ æ¡ƒÃÏ∂‘œÛµ» modified by dong 1996.10.26 */
+                                    (uentp.in_chat ? uentp.chatid : NULL)),
 #ifdef SHOW_IDLE_TIME
-                         idle_str( uentp ) );
+                         idle_str( &uentp ) );
 #else
                          "" );
 #endif
@@ -799,7 +800,7 @@ int (*read)();
     func_list_show=list_show;
     signal(SIGALRM, SIG_IGN);
     if(update==1)
-        update_data();
+        update_data(NULL);
     page=-1;
     number=0;
     num=defaultn;

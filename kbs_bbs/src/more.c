@@ -345,24 +345,18 @@ printacbar()
     refresh();
 }
 
-void
-R_monitor()
+void R_monitor(void* data)
 {
-
-
-    if(!DEFINE(DEF_ACBOARD)&&!DEFINE(DEF_ENDLINE))
+    if(!DEFINE(DEF_ACBOARD))
         return;
 
     if (uinfo.mode != MMENU)
         return;
-    alarm(0);
-    signal(SIGALRM,R_monitor );
     netty_more();
     printacbar();
-    if(!DEFINE(DEF_ACBOARD))
-        alarm(60);
-    else
-        alarm(10);
+	idle_count++;
+    set_alarm(10*idle_count,R_monitor,NULL);
+    UNUSED_ARG(data); 
 }
 
 

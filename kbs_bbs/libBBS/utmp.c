@@ -199,7 +199,7 @@ apply_ulist( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
     for( i = 0; i <= max; i++ ) {
         uentp = &(utmpshm->uinfo[ i ]);
         utmp = *uentp;
-        if( (*fptr)( &utmp,arg,i ) == QUIT )
+        if( (*fptr)( &utmp,arg,i+1 ) == QUIT )
             return QUIT;
     }
     return 0;

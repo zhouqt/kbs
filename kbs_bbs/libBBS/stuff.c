@@ -334,7 +334,6 @@ char *com, *wd ;
     else
         strncat(path,arglist[0],MAXPATHLEN) ;
     reset_tty() ;
-    alarm(0) ;
 #ifdef IRIX
     if((pid = fork()) == 0) {
 #else
@@ -376,9 +375,6 @@ if((pid = vfork()) == 0) {
     signal(SIGINT, isig) ;
     signal(SIGQUIT, qsig) ;
     restore_tty() ;
-#ifdef DOTIMEOUT
-    alarm(IDLE_TIMEOUT) ;
-#endif
     return((w == -1)? w: status) ;
 }
 #endif

@@ -62,8 +62,7 @@ restore_tty()
 }
 
 int
-term_init(term)
-char* term;
+term_init()
 {
     extern char* BC;
     extern int obufsize,ibufsize,icurrchar;

@@ -31,7 +31,7 @@ char            *crypt();
 char            *homepath;
 int             visitflag;
 char emailad[STRLEN];
-char fromhost[60]; /* Leeward: 97.12.20: 让 3W 发文影响生命力 */
+char fromhost[17]; /* Leeward: 97.12.20: 让 3W 发文影响生命力 */
 char EMode = ' '; /* Leeward: 97.12.23: for 3W modify article */
 int 		sign;/*Haohmaru.第sign个签名档*/
 

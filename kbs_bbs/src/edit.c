@@ -106,10 +106,8 @@ void domsg()
     getyx(&x,&y);
     msgline();
 
-    signal(SIGALRM, domsg);
     move(x,y);
     refresh();
-    alarm(60);
     showansi=tmpansi;
     return;
 }
@@ -1976,7 +1974,6 @@ int saveheader ;
 
     t = showansi;
     showansi=0;
-    init_alarm();
 #ifndef VEDITOR
     ismsgline=(DEFINE(DEF_EDITMSG))?1:0;
 #else
@@ -1989,7 +1986,6 @@ int saveheader ;
 #endif
     ans = raw_vedit(filename, saveheader, 0);
     showansi = t;
-    signal(SIGALRM, SIG_IGN);
     return ans;
 }
 
@@ -2002,7 +1998,6 @@ int saveheader ;
 
     t = showansi;
     showansi=0;
-    init_alarm();
 #ifndef VEDITOR
     ismsgline=(DEFINE(DEF_EDITMSG))?1:0;
 #else
@@ -2015,7 +2010,6 @@ int saveheader ;
 #endif
     ans = raw_vedit(filename, saveheader, 4);/*Haohmaru.99.5.5.应该保留一个空行*/
     showansi = t;
-    signal(SIGALRM, SIG_IGN);
     return ans;
 }
 

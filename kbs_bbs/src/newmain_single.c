@@ -73,8 +73,7 @@ struct user_info uinfo ;
 
 /* char netty_path[ 60 ]; FAINT!!! 怎么会不出错呢!!! Leeward: 1997.12.10 */
 char netty_path[ 256 ];
-char fromhost[ 60 ] ;
-char tty_name[ 20 ] ;
+char fromhost[ 17 ] ;
 
 char BoardName[STRLEN] ;
 int utmpent = -1 ;
@@ -102,7 +101,7 @@ wait_alarm_clock()/*Haohmaru.98.11.3*/
 {
     if(i_domode == INPUT_IDLE) {
         clear();
-        kill(getpid(),SIGHUP) ;
+        exit(0);
     }
     i_domode = INPUT_IDLE ;
     alarm(WAITTIME) ;
@@ -436,41 +435,19 @@ system_init(char *sourceip)
     }
 #endif
 
-/*    if( argc >= 3 ) {
-*/        strncpy( fromhost, sourceip, 60 );
-/*    } else {
-        fromhost[0] = '\0';
-    }
-*/    if( (rhost = getenv( "REMOTEHOSTNAME" )) != NULL )
-        strncpy( fromhost, rhost, 60 );
-#ifdef SHOW_IDLE_TIME
-/*    if(argc >= 4) { 
-        strncpy( tty_name, argv[3], 20 ) ;
-    } else {
-*/        tty_name[0] = '\0' ;
-/*    }
-*/
-#endif
+    strncpy( fromhost, sourceip, 60 );
 
     signal(SIGHUP,abort_bbs) ;
     signal(SIGPIPE,abort_bbs) ;
     signal(SIGTERM,abort_bbs) ;
     signal(SIGQUIT,abort_bbs) ;
-#ifndef lint
     signal(SIGINT,SIG_IGN) ;
-#ifdef DOTIMEOUT
-    init_alarm();
-#else
-    signal(eIGALRM,SIG_SIG) ;
-#endif
+	signal(SIGALRM,SIG_IGN);
     signal(SIGURG,SIG_IGN) ;
     signal(SIGTSTP,SIG_IGN) ;
     signal(SIGTTIN,SIG_IGN) ;
     signal(SIGUSR1,talk_request) ;
     signal(SIGUSR2,r_msg) ;
-/*    signal(SIGUSR2,ntalk_request) ;
-    signal(SIGTTOU,r_msg) ;*/
-#endif
 }
 
 void
@@ -602,11 +579,13 @@ login_query()
     if( ptr == NULL )  ptr = "尚未命名测试站";
     strcpy( BoardName, ptr );
 /* add by KCN for input bbs */
+
 #ifdef DOTIMEOUT
         initalarm();
 #else
         signal(SIGALRM, SIG_IGN);
 #endif
+
     output("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",22);
     attempts=5;
     while(attempts) {
@@ -740,18 +719,16 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
             }
         }
     }
-#ifdef 0
     if (!HAS_PERM(PERM_SYSOP)) {
-	prints("本端口仅供测试用，请连接本站的其他开放端口。\n");
-	oflush();
-	Net_Sleep(3);
-	system_abort();
+		prints("本端口仅供测试用，请连接本站的其他开放端口。\n");
+		oflush();
+		Net_Sleep(3);
+		system_abort();
     }
-#endif
     multi_user_check();
+    alarm(0);
     signal(SIGALRM, SIG_IGN);/*Haohmaru.98.11.12*/
-    alarm(IDLE_TIMEOUT);
-    term_init("vt100");
+    term_init();
     scrint = 1 ;
     sethomepath(tmpstr, currentuser->userid);
     sprintf(fname,"%s/%s.deadve", tmpstr, currentuser->userid);

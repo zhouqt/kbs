@@ -485,11 +485,6 @@ t_talk()
 {
     int  netty_talk ;
 
-#ifdef DOTIMEOUT
-    init_alarm();
-#else
-    signal(SIGALRM, SIG_IGN);
-#endif
     refresh();
     netty_talk = ttt_talk();
     clear() ;
@@ -672,6 +667,9 @@ list:		move(5,0) ;
         uinfo.sockactive = YEA ;
         uinfo.sockaddr = server.sin_port ;
         uinfo.destuid = tuid ;
+        UPDATE_UTMP(sockactive,uinfo);
+        UPDATE_UTMP(sockaddr,uinfo);
+        UPDATE_UTMP(destuid,uinfo);
         modify_user_mode( PAGE );
         kill(uin.pid,SIGUSR1) ;
         clear() ;
@@ -912,11 +910,7 @@ ntalkreply()
 
     if (setnpagerequest()) return 0;
 
-#ifdef DOTIMEOUT
-    init_alarm();
-#else
     signal(SIGALRM, SIG_IGN);
-#endif
     clear() ;
     move(1,0);
     prints("(N)【抱歉，我现在很忙，不能跟你聊。】(B)【我现在很烦，不想跟别人聊天。 】\n");
@@ -961,11 +955,7 @@ talkreply()
 #endif
     if (setpagerequest(0/*For Talk*/)) return 0;
     /*  added by netty  */
-#ifdef DOTIMEOUT
-    init_alarm();
-#else
     signal(SIGALRM, SIG_IGN);
-#endif
     clear() ;
 
     /* to show plan -cuteyu */
@@ -1206,7 +1196,7 @@ struct talk_win *twin;
 }
 
 void
-endmsg()
+endmsg(void* data)
 {
     int x,y;
     int tmpansi;
@@ -1219,11 +1209,11 @@ endmsg()
         return;
     getyx(&x,&y);
     update_endline();
-    signal(SIGALRM, endmsg);
     move(x,y);
     refresh();
-    alarm(60);
+    set_alarm(60,endmsg,NULL);
     showansi=tmpansi;
+    UNUSED_ARG(data);
     return;
 }
 
@@ -1242,8 +1232,7 @@ int fd ;
     time_t  now;
     mywords[0] = itswords[0] = '\0';
 #endif
-    signal(SIGALRM, SIG_IGN);
-    endmsg();
+    endmsg(NULL);
     refresh() ;
     previous_mode=uinfo.mode;
     modify_user_mode( TALK );
@@ -1522,32 +1511,17 @@ t_list()
 
 
 void
-sig_catcher()
+sig_catcher(void* data)
 {
     ulistpage++;
     if (uinfo.mode != MONITOR) {
-#ifdef DOTIMEOUT
-        init_alarm();
-#else
-signal(SIGALRM, SIG_IGN);
-#endif
+		set_alarm(0,NULL,NULL);
         return;
     }
-    if (signal(SIGALRM, sig_catcher)==SIG_ERR) {
-        perror("signal");
-        exit(1);
-    }
-    /*#ifdef DOTIMEOUT
-        idle_monitor_time += M_INT;
-        if (idle_monitor_time > MONITOR_TIMEOUT) {
-            clear();
-    	prints("timeout ...\n");
-    	oflush();
-            kill(getpid(), SIGHUP);
-        }
-    #endif*/
     do_list("探视民情");
-    alarm(M_INT);
+    idle_count++;
+    set_alarm(M_INT*idle_count,sig_catcher,NULL);
+    UNUSED_ARG(data);
 }
 
 int
@@ -1556,14 +1530,13 @@ t_monitor()
     int i;
 
 
-    alarm(0);
-    signal(SIGALRM, sig_catcher);
+    set_alarm(0,NULL,NULL);
     /*    idle_monitor_time = 0;*/
     report("monitor");
     modify_user_mode( MONITOR );
     ulistpage=0;
     do_list("探视民情");
-    alarm(M_INT);
+    set_alarm(M_INT*idle_count,sig_catcher,NULL);
     while (YEA) {
         i=egetch();
         if (Ctrl('Z') == i) r_lastmsg(); /* Leeward 98.07.30 support msgX */
@@ -2352,8 +2325,7 @@ int badlist()
 
 void
 do_log(char *msg, int who)
-{
-    time_t  now;
+{    time_t  now;
     char    buf[100];
     now = time(0);
     if (msg[strlen(msg)] == '\n')

@@ -38,7 +38,7 @@ INSTALL  = /usr/bin/install -c
 
 BBSLIB = libBBS.a
 
-CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=502 -D_DETAIL_UINFO_ 
+CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
 #CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
 #-DTALK_LOG
 ifeq (Makefile.spec ,$(wildcard Makefile.spec))
@@ -74,7 +74,7 @@ GARBAGE  = a.out core installchatd adminbbs chatd
 # The -DINVISIBLE makes bbs users invisible to 'finger' and 'who'.
 # Simply remove it if you don't want this feature.
 
-SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSUID=$(BBSUID) -DINVISIBLE
+SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DINVISIBLE
 
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 

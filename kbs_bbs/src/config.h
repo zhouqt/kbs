@@ -189,3 +189,6 @@ Define this for Query to show real names.
 
 /*#define LEEWARD_X_FILTER  Leeward: define this macro to disable filters */
 #define LEEWARD_X_FILTER
+
+#define BBSUID  9999
+#define BBSGID    99

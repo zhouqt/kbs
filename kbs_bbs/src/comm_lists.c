@@ -636,7 +636,7 @@ char    *menu_name;
     }
     modify_user_mode( MMENU );
     /* added by netty  */
-if (nettyNN ==1) { R_monitor();}
+if (nettyNN ==1) { R_monitor(NULL);}
     while( 1 ) {
         printacbar();
         while( pm[now].level < 0 || !HAS_PERM( pm[now].level ) ) {

@@ -50,8 +50,7 @@ int ibufsize = 0 ;
 int icurrchar = 0 ;
 int KEY_ESC_arg;
 
-static int i_mode = INPUT_ACTIVE;
-
+int idle_count=0;
 extern int convcode;
 extern char* big2gb(char*,int*,int);
 extern char* gb2big(char*,int*,int);
@@ -71,31 +70,6 @@ oflush()
                 abort_bbs() ;
     }
     obufsize = 0 ;
-}
-
-void
-hit_alarm_clock()
-{
-    if (HAS_PERM(PERM_NOTIMEOUT))
-        return;
-    if(i_mode == INPUT_IDLE) {
-        clear();
-        /*  change by KCN 1999.09.08
-                fprintf(stderr,"Idle timeout exceeded! Booting...\n") ;
-        */
-        prints("Idle timeout exceeded! Booting...\n") ;
-        oflush();
-        kill(getpid(),SIGHUP) ;
-    }
-    i_mode = INPUT_IDLE ;
-    alarm(IDLE_TIMEOUT) ;
-}
-
-void
-init_alarm()
-{
-    signal(SIGALRM,hit_alarm_clock) ;
-    alarm(IDLE_TIMEOUT) ;
 }
 
 void
@@ -134,8 +108,13 @@ int     len;
 
 
 int i_newfd  = 0 ;
-struct timeval i_to, *i_top = NULL ;
 int (*flushf)() = NULL ;
+
+static int i_timeout=0;
+static time_t i_begintimeout;
+static void (*i_timeout_func)(void*);
+static struct timeval i_to, *i_top = NULL ;
+static void *timeout_data;
 
 void
 add_io(fd,timeout)
@@ -155,6 +134,14 @@ add_flush(flushfunc)
 int (*flushfunc)() ;
 {
     flushf = flushfunc ;
+}
+
+void set_alarm(int set_timeout,void (*timeout_func)(void*),void* data)
+{
+	i_timeout=set_timeout;
+	i_begintimeout=time(0);
+	i_timeout_func=timeout_func;
+	timeout_data=data;
 }
 
 int
@@ -265,11 +252,12 @@ igetagain:
         }
         sr = select(hifd,&readfds,NULL,NULL,&to);
         if( sr<0 && errno!=EINTR ) abort_bbs();
-        if( sr==0 ){
+		if( sr==0 ){
             if(flushf) (*flushf)() ;
             refresh() ;
 
             while(1){
+            	int alarm_timeout;
                 hifd=1;
                 FD_ZERO(&xds);
                 FD_SET(0,&xds);
@@ -279,11 +267,29 @@ igetagain:
                     FD_SET(i_newfd,&readfds) ;
                     if(hifd<=i_newfd)hifd=i_newfd+1;
                 }
-                to.tv_sec=1800;
-                if(i_top)
-                    sr = select(hifd,&readfds, NULL,&xds, i_top);
-                else
-                    sr = select(hifd,&readfds, NULL,&xds, &to);
+            	alarm_timeout=0;
+                if(i_top) 
+                	to=*i_top;
+                else {
+                	while (i_timeout!=0) {
+                		to.tv_sec=i_timeout-(time(0)-i_begintimeout);
+                		if (to.tv_sec<=0) {
+                			i_timeout=0;
+                			(*i_timeout_func)(timeout_data);
+                			continue;
+                		};
+                		alarm_timeout=1;
+                		break;
+                	};
+                	if (!alarm_timeout)
+                		to.tv_sec=IDLE_TIMEOUT;
+                }
+                sr = select(hifd,&readfds, NULL,&xds, &to);
+                if (sr==0&&alarm_timeout) {
+                	i_timeout=0;
+                	(*i_timeout_func)(timeout_data);
+                	continue;
+                }
                 if( sr>=0 )break;
                 if(errno == EINTR) continue ;
                 else abort_bbs();
@@ -347,7 +353,7 @@ igetagain:
     }
     else     lastch=inbuf[icurrchar];
 
-    i_mode = INPUT_ACTIVE;
+    idle_count=0;
     c=inbuf[icurrchar];
     switch(c) {
     case Ctrl('L'):
