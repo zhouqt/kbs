@@ -561,8 +561,8 @@ document.frmAnnounce.Content.focus();
 }
 function gopreview()
 {
-document.forms[1].title.value=document.forms[0].subject.value;
-document.forms[1].body.value=document.forms[0].Content.value;
-var popupWin = window.open('preview.asp', 'preview_page', 'scrollbars=yes,width=750,height=450');
-document.forms[1].submit()
+document.frmPreview.title.value=document.frmAnnounce.subject.value;
+document.frmPreview.body.value=document.frmAnnounce.Content.value;
+var popupWin = window.open('preview.php', 'preview_page', 'scrollbars=yes,width=750,height=450');
+document.frmPreview.submit()
 }
