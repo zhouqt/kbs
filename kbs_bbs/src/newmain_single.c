@@ -506,6 +506,7 @@ void login_query()
     getdata(0, 0, "\n°´ [RETURN] ¼ÌÐø", genbuf, 10, NOECHO, NULL, true);
 #endif
     clear();
+    oflush();
     if (strcasecmp(currentuser->userid, "guest") && !HAS_PERM(currentuser, PERM_BASIC)) {
         sethomefile(genbuf, currentuser->userid, "giveup");
         fn = fopen(genbuf, "rt");
