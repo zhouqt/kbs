@@ -935,13 +935,12 @@ void update_endline()
     allstay = (now - login_start_time) / 60;
     sprintf(buf, "[[36m%.12s[33m]", currentuser->userid);
     if (DEFINE(currentuser, DEF_NOTMSGFRIEND)) {
-#ifdef SITE_HIGHCOLOR
-        sprintf(stitle, "[1;4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
+		if (DEFINE(currentuser,DEF_HIGHCOLOR))
+        	sprintf(stitle, "[1;4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
                 (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
-#else
-        sprintf(stitle, "[4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
+		else
+        	sprintf(stitle, "[4%dm[33m ±º‰[[36m%12.12s[33m] ∫ÙΩ–∆˜[∫√”—:%3s£∫“ª∞„:%3s]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m", colour, ctime(&now) + 4,
                 (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf, (allstay / 60) % 1000, allstay % 60);
-#endif
     } else {
 #ifdef NINE_BUILD
             num_alcounter();
@@ -1009,25 +1008,22 @@ void showtitle(title, mid)
     clrtoeol();
     sprintf(buf, "%*s", spc1, "");
     if (!strcmp(mid, BBS_FULL_NAME)) {
-#ifdef SITE_HIGHCOLOR
-        sprintf(stitle, "[1;4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
-#else
-        sprintf(stitle, "[4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
-#endif
+		if (DEFINE(currentuser,DEF_HIGHCOLOR))
+        	sprintf(stitle, "[1;4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
+		else
+        	sprintf(stitle, "[4%dm[33m%s%s[37m%s[4%dm", colour, title, buf, mid, colour);
         prints("%s", stitle);
     } else if (mid[0] == '[') {
-#ifdef SITE_HIGHCOLOR
-        sprintf(stitle, "[1;4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
-#else
-        sprintf(stitle, "[4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
-#endif
+		if (DEFINE(currentuser,DEF_HIGHCOLOR))
+        	sprintf(stitle, "[1;4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
+		else
+        	sprintf(stitle, "[4%dm[33m%s%s[37m[5m%s[m[4%dm", colour, title, buf, mid, colour);
         prints("%s", stitle);
     } else {
-#ifdef SITE_HIGHCOLOR
-        sprintf(stitle, "[1;4%dm[33m%s%s[36m%s", colour, title, buf, mid);
-#else
-        sprintf(stitle, "[4%dm[33m%s%s[36m%s", colour, title, buf, mid);
-#endif
+		if (DEFINE(currentuser,DEF_HIGHCOLOR))
+        	sprintf(stitle, "[1;4%dm[33m%s%s[36m%s", colour, title, buf, mid);
+		else
+        	sprintf(stitle, "[4%dm[33m%s%s[36m%s", colour, title, buf, mid);
         prints("%s", stitle);
     }
     sprintf(buf, "%*s", spc2, "");

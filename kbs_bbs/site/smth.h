@@ -2,7 +2,6 @@
 #define __SYSNAME_H_
 
 #undef NINE_BUILD
-#undef SITE_HIGHCOLOR
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in

@@ -94,11 +94,10 @@ void msgline()
         display_buffer();
         showansi = 1;
     }
-#ifdef SITE_HIGHCOLOR 
-    strcpy(buf, "[1;33m[44m");
-#else
-    strcpy(buf, "[33m[44m");
-#endif
+	if (DEFINE(currentuser,DEF_HIGHCOLOR))
+    	strcpy(buf, "[1;33m[44m");
+    else
+    	strcpy(buf, "[33m[44m");
     if (chkmail())
         strcat(buf, "°æ[32m–≈[33m°ø");
     else

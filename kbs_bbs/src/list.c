@@ -40,22 +40,22 @@ int myfriend(int uid, char *fexp)
 
 int print_title()
 {
-#ifdef  SITE_HIGHCOLOR
-    docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]", " ÁÄÌì[\x1b[1;32mt\x1b[m] ¼ÄĞÅ[\x1b[1;32mm\x1b[m] ËÍÑ¶Ï¢[\x1b[1;32ms\x1b[m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[m,\x1b[1;32md\x1b[m] ¿´ËµÃ÷µµ[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ÇĞ»»Ä£Ê½ [\x1b[1;32mf\x1b[m] Çó¾È[\x1b[1;32mh\x1b[m]");
-#else
-    docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]", " ÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] ÇĞ»»Ä£Ê½ [f] Çó¾È[h]");
-#endif
+    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+        docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]",
+                   " ÁÄÌì[\x1b[1;32mt\x1b[m] ¼ÄĞÅ[\x1b[1;32mm\x1b[m] ËÍÑ¶Ï¢[\x1b[1;32ms\x1b[m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[m,\x1b[1;32md\x1b[m] ¿´ËµÃ÷µµ[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ÇĞ»»Ä£Ê½ [\x1b[1;32mf\x1b[m] Çó¾È[\x1b[1;32mh\x1b[m]");
+    else
+        docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]", " ÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] ÇĞ»»Ä£Ê½ [f] Çó¾È[h]");
     update_endline();
     return 0;
 }
 
 int print_title2()
 {
-#ifdef  SITE_HIGHCOLOR
-    docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]", "          ¼ÄĞÅ[\x1b[1;32mm\x1b[m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[m,\x1b[1;32md\x1b[m] ¿´ËµÃ÷µµ[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Çó¾È[\x1b[1;32mh\x1b[m]");
-#else
-    docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]", "          ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]");
-#endif
+    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+        docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]",
+                   "          ¼ÄĞÅ[\x1b[1;32mm\x1b[m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[m,\x1b[1;32md\x1b[m] ¿´ËµÃ÷µµ[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Çó¾È[\x1b[1;32mh\x1b[m]");
+    else
+        docmdtitle((friendmode) ? "[ºÃÅóÓÑÁĞ±í]" : "[Ê¹ÓÃÕßÁĞ±í]", "          ¼ÄĞÅ[m] ¼Ó,¼õÅóÓÑ[o,d] ¿´ËµÃ÷µµ[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Çó¾È[h]");
     update_endline();
     return 0;
 }
@@ -124,15 +124,14 @@ void show_message(char *msg)
 
 void swap_user_record(a, b)
 int a, b;
-
-
 {
     struct user_info *c;
 
     c = user_record[a];
     user_record[a] = user_record[b];
     user_record[b] = c;
-} int full_utmp(struct user_info *uentp, int *count)
+}
+int full_utmp(struct user_info *uentp, int *count)
 {
     if (!uentp->active || !uentp->pid) {
         return 0;
@@ -149,23 +148,21 @@ int a, b;
 }
 
 #ifdef NINE_BUILD
-void
-sort_user_record(left, right)
+void sort_user_record(left, right)
 int left, right;
 {
-	int i, last;
-	if (left >= right)
-		return;
-	swap_user_record(left, (left + right) / 2);
-	last = left;
-	for (i = left + 1; i <= right; i++)
-			if (strcasecmp
-			    (user_record[i]->userid,
-			     user_record[left]->userid) < 0)
-				swap_user_record(++last, i);
-	swap_user_record(left, last);
-	sort_user_record(left, last - 1);
-	sort_user_record(last + 1, right);
+    int i, last;
+
+    if (left >= right)
+        return;
+    swap_user_record(left, (left + right) / 2);
+    last = left;
+    for (i = left + 1; i <= right; i++)
+        if (strcasecmp(user_record[i]->userid, user_record[left]->userid) < 0)
+            swap_user_record(++last, i);
+    swap_user_record(left, last);
+    sort_user_record(left, last - 1);
+    sort_user_record(last + 1, right);
 }
 #endif
 int fill_userlist()
@@ -180,13 +177,13 @@ int fill_userlist()
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
 #ifdef NINE_BUILD
-        numf=0;
-	for (i = 0; i < i2; i++) {
-	    if (myfriend(user_record[i]->uid,NULL)) {
-		swap_user_record(numf++, i);
-	    }
-	}
-	sort_user_record(numf, i2 - 1);
+        numf = 0;
+        for (i = 0; i < i2; i++) {
+            if (myfriend(user_record[i]->uid, NULL)) {
+                swap_user_record(numf++, i);
+            }
+        }
+        sort_user_record(numf, i2 - 1);
 #endif
     } else {
         for (i = 0; i < nf; i++) {
@@ -372,11 +369,12 @@ void t_rusers()
     real_user_names = 1;
     t_users();
     real_user_names = 0;
-} int deal_key(ch, allnum, pagenum)
+}
+
+
+int deal_key(ch, allnum, pagenum)
 char ch;
 int allnum, pagenum;
-
-
 {
     char buf[STRLEN], genbuf[5];
     static int msgflag;
@@ -698,7 +696,8 @@ int Show_Users()
 void setlistrange(int i)
 {
     range = i;
-} int do_query(int star, int curr)
+}
+int do_query(int star, int curr)
 {
     clear();
     if (!user_record[curr]->active) {
@@ -707,12 +706,11 @@ void setlistrange(int i)
     } else {
         t_query(user_record[curr]->userid);
         move(t_lines - 1, 0);
-#ifdef  SITE_HIGHCOLOR
-        prints
-            ("[44mÁÄÌì[\x1b[1;32mt\x1b[0m] ¼ÄĞÅ[\x1b[1;32mm\x1b[0m] ËÍÑ¶Ï¢[\x1b[1;32ms\x1b[0m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[0m,\x1b[1;32md\x1b[0m] Ñ¡ÔñÊ¹ÓÃÕß[\x1b[1;32m¡ü\x1b[0m,\x1b[1;32m¡ı\x1b[0m] ÇĞ»»Ä£Ê½ [\x1b[1;32mf\x1b[0m] Çó¾È[\x1b[1;32mh\x1b[0m][m");
-#else
-        prints("\x1b[44mÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] Ñ¡ÔñÊ¹ÓÃÕß[¡ü,¡ı] ÇĞ»»Ä£Ê½ [f] Çó¾È[h]\x1b[m");
-#endif
+        if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            prints
+                ("[44mÁÄÌì[\x1b[1;32mt\x1b[0m] ¼ÄĞÅ[\x1b[1;32mm\x1b[0m] ËÍÑ¶Ï¢[\x1b[1;32ms\x1b[0m] ¼Ó,¼õÅóÓÑ[\x1b[1;32mo\x1b[0m,\x1b[1;32md\x1b[0m] Ñ¡ÔñÊ¹ÓÃÕß[\x1b[1;32m¡ü\x1b[0m,\x1b[1;32m¡ı\x1b[0m] ÇĞ»»Ä£Ê½ [\x1b[1;32mf\x1b[0m] Çó¾È[\x1b[1;32mh\x1b[0m][m");
+        else
+            prints("\x1b[44mÁÄÌì[t] ¼ÄĞÅ[m] ËÍÑ¶Ï¢[s] ¼Ó,¼õÅóÓÑ[o,d] Ñ¡ÔñÊ¹ÓÃÕß[¡ü,¡ı] ÇĞ»»Ä£Ê½ [f] Çó¾È[h]\x1b[m");
     }
     return 0;
 }
