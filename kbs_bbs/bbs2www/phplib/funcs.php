@@ -13,6 +13,8 @@ global $currentuuser_num;
 $currentuinfo=array ();
 $currentuser=array ();
 $loginok=0;
+header("Cache-Control: no-cache");
+
 if (SQUID_ACCL) {
   $fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
