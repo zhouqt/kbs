@@ -9,7 +9,7 @@ extern int     *zapbuf;
 extern int	zapbuf_changed;
 extern int     brdnum;
 extern int yank_flag;
-static int choose_board(int  newflag ); /* 选择 版， readnew或readboard */
+static int choose_board(int  newflag ,char* boardprefix); /* 选择 版， readnew或readboard */
 static int check_newpost( struct newpostdata *ptr);
 
 void
