@@ -7058,7 +7058,7 @@ static PHP_FUNCTION(bbs_setmailreaded)
 		RETURN_LONG(0);
 
 	if( currentuinfo )
-		currentuinfo->mailcheck &= ~CHECK_MAIL;
+		setmailcheck(currentuinfo->userid);
 
 	if(num >=0 && num < total){
 		if((fp=fopen(dirname,"r+"))==NULL)
