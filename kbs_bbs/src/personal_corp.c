@@ -26,7 +26,7 @@ int pc_choose_user()
 	return 0;
 }
 
-int pc_sel_user()
+static int pc_sel_user()
 {
 	char ans[20];
 
@@ -41,7 +41,7 @@ int pc_sel_user()
 
 }
 
-int pc_add_user()
+static int pc_add_user()
 {
 	char ans[201];
 	char sql[100];
@@ -195,7 +195,7 @@ int pc_add_user()
 	}
 }
 
-int pc_add_friend(char *uident, char *fpath)
+static int pc_add_friend(char *uident, char *fpath)
 {
     int seek;
     int id;
@@ -224,7 +224,7 @@ int pc_add_friend(char *uident, char *fpath)
 	return 1;
 }
 
-int pc_del_friend(char *uident, char *fpath)
+static int pc_del_friend(char *uident, char *fpath)
 {
     struct userec *lookupuser;
     int id;
@@ -244,7 +244,7 @@ int pc_del_friend(char *uident, char *fpath)
 	return 1;
 }
 
-int pc_change_friend()
+static int pc_change_friend()
 {
 	char buf[STRLEN];
 	int count;
@@ -367,7 +367,7 @@ static int pc_sec_select(struct _select_def *conf)
 
 }
 
-int pc_sec()
+static int pc_sec()
 {
 	struct _select_def group_conf;
 	POINT *pts;
@@ -465,7 +465,7 @@ static int pc_selusr_select(struct _select_def *conf)
 	return SHOW_REFRESH;
 }
 
-int pc_selusr( char prefix)
+static int pc_selusr( char prefix)
 {
 	struct _select_def group_conf;
 	POINT *pts;
@@ -533,7 +533,7 @@ int pc_selusr( char prefix)
  */
 char pc_select_user[IDLEN+2];
 
-int pc_is_admin(char *userid){
+static int pc_is_admin(char *userid){
 
 	if( HAS_PERM(currentuser, PERM_ADMIN) || !strcasecmp(userid, currentuser->userid) )
 		return 1;
@@ -541,7 +541,7 @@ int pc_is_admin(char *userid){
 	return 0;
 }
 
-int pc_is_friend(char *userid){
+static int pc_is_friend(char *userid){
 	char fpath[STRLEN];
 
 	sethomefile(fpath, userid, "pc_friend");
@@ -551,7 +551,7 @@ int pc_is_friend(char *userid){
 	return 0;
 }
 
-int pc_perm(char *userid){
+static int pc_perm(char *userid){
 
 	struct user_info *uin;
 
@@ -611,7 +611,7 @@ static int pc_seldir_select(struct _select_def *conf)
 	return SHOW_REFRESH;
 }
 
-int pc_read(char *userid)
+static int pc_read(char *userid)
 {
 	struct userec *lookupuser;
 	struct _select_def group_conf;
@@ -1347,7 +1347,7 @@ static int pc_dir_prekey(struct _select_def *conf,int *key)
 	return SHOW_CONTINUE;
 }
 	
-int pc_read_dir(int first)
+static int pc_read_dir(int first)
 {
 	struct _select_def group_conf;
 	POINT *pts;
@@ -1479,7 +1479,7 @@ int pc_read_dir(int first)
 struct pc_comments *pc_c=NULL;
 //int pc_com_start=0;
 
-int pc_can_com(int comlevel)
+static int pc_can_com(int comlevel)
 {
 	if(comlevel == 0)
 		return 0;
@@ -1493,7 +1493,7 @@ int pc_can_com(int comlevel)
  * nid > 0: ÐÞ¸Ä
  *          nidÎªÐòºÅ
  */
-int pc_add_a_com(unsigned long nid)
+static int pc_add_a_com(unsigned long nid)
 {
 	struct pc_comments pn;
 	char ans[201];
@@ -1720,7 +1720,7 @@ static int pc_com_select(struct _select_def *conf)
 	return SHOW_REFRESH;
 }
 
-int pc_read_comment()
+static int pc_read_comment()
 {
 	struct _select_def group_conf;
 	POINT *pts;
@@ -1804,7 +1804,7 @@ int pc_read_comment()
 	return 0;
 }
 
-int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
+static int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
 {
 	struct pc_users pu;
 	struct pc_nodes pn;
