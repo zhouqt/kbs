@@ -265,7 +265,7 @@ void send_msg(int u, char* msg)
             send_msg(u, buf);
             strcpy(buf, buf2+i);
         }
-        else break;
+        else return;
     }
     for(i=0;i<=6;i++) {
         buf3[0]='%'; buf3[1]=i+48; buf3[2]=0;
@@ -273,7 +273,7 @@ void send_msg(int u, char* msg)
             strcpy(buf2, buf);
             k=strstr(buf, buf3)-buf;
             buf2[k]=0; k+=2;
-            sprintf(buf, "%s\x1b[3%dm%s", buf2, i?i:7, buf2+k);
+            sprintf(buf, "%s\x1b[3%dm%s", buf2, (i>0)?i:7, buf2+k);
         }
     }
     j=MAX_MSG;
