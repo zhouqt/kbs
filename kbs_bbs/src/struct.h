@@ -81,6 +81,9 @@ struct user_info {              /* Structure used in UTMP file */
     unsigned int friends_p[MAXFRIENDS];
 #endif
     int currentboard;
+	int mailcheck;				/* if have new mail, stiger */
+								/* 0: need recheck
+								 * 1: not check  */
 };
 struct friends {
     char id[13];

@@ -1681,3 +1681,14 @@ int gettmpfilename(char *retchar, char *fmt, ...){
 	strcat(retchar, fname);
 	return 1;
 }
+
+int setutmpmailcheck(struct user_info *uentp, char *arg, int count)
+{
+	uentp->mailcheck = 0;
+    return 0;
+}
+
+int setmailcheck(char *userid)
+{
+	return apply_utmp( (APPLY_UTMP_FUNC) setutmpmailcheck, 0, userid, 0 );
+}

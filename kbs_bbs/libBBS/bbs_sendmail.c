@@ -240,6 +240,8 @@ int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title)
 
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
+	setmailcheck( userid );
+
     newbbslog(BBSLOG_USER, "%s mailed %s ", fromuser->userid,userid);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost(SYSMAIL_BOARD);
@@ -304,6 +306,9 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
 
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
+
+	setmailcheck( userid );
+
     newbbslog(BBSLOG_USER, "%s mailed %s ", fromid,userid);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost(SYSMAIL_BOARD);

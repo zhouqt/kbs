@@ -71,6 +71,17 @@ int chkmail()
     unsigned char ch;
     char curmaildir[STRLEN];
 
+	if( CHECK_UENT(uinfo.uid) ){
+		uinfo.mailcheck = utmpshm->uinfo[ utmpent - 1 ].mailcheck;
+	}else
+		uinfo.mailcheck = 0;
+
+	if( uinfo.mailcheck == 1 ){
+		return ismail;
+	}
+
+	uinfo.mailcheck = 1;
+
     setmailfile(curmaildir, currentuser->userid, DOT_DIR);
 
     if (!HAS_PERM(currentuser, PERM_BASIC)) {
@@ -722,6 +733,7 @@ int read_mail(struct fileheader *fptr)
     setmailfile(genbuf, currentuser->userid, fptr->filename);
     ansimore_withzmodem(genbuf, false, fptr->title);
     fptr->accessed[0] |= FILE_READ;
+	setmailcheck( currentuser->userid );
     return 0;
 }
 
@@ -845,6 +857,7 @@ int m_new()
     mrd = 0;
     modify_user_mode(RMAIL);
     setmailfile(currdirect, currentuser->userid, ".DIR");
+	setmailcheck(currentuser->userid);
     if (apply_record(currdirect, (APPLY_FUNC_ARG) read_new_mail, sizeof(struct fileheader), NULL, 1, false) == -1) {
         clear();
         move(0, 0);
@@ -1465,6 +1478,7 @@ int m_read()
     in_mail = true;
     i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
     in_mail = false;
+	setmailcheck(currentuser->userid);
     return FULLUPDATE /* 0 */ ;
 }
 
@@ -2206,6 +2220,7 @@ static int m_clean()
             }
         }
     }
+	setmailcheck(currentuser->userid);
     uinfo.mode = savemode;
 }
 

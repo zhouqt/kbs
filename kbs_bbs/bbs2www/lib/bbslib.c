@@ -684,6 +684,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
         return -5;
     fwrite(&header, sizeof(header), 1, fp);
     fclose(fp);
+	setmailcheck(userid);
     
    /* Ìí¼ÓLog Bigman: 2003.4.7 */
     newbbslog(BBSLOG_USER, "mailed(www) %s %s", userid,title);
