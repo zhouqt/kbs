@@ -632,7 +632,7 @@ static void insertch_from_fp(int ch)
         do {
             insert_char(' ');
         } while (currpnt & 0x7);
-    } else if (ch == '\n')
+    } else if (ch == '\n') {
         split(currline, currpnt);
     }
 }

@@ -1668,8 +1668,8 @@ void a_manager(MENU *pm,int ch)
                         /* retry */
                         a_loadnames(pm);
                         for (i=0;i<pm->num;i++) {
-                            if (!strcmp(pm->item[i].fname,saveitem.fname)) {
-                                pm->item[i].attachpos=attachpos;
+                            if (!strcmp(pm->item[i]->fname,saveitem.fname)) {
+                                pm->item[i]->attachpos=attachpos;
                                 a_savenames(pm);
                                 break;
                             }

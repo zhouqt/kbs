@@ -556,7 +556,7 @@ void x_edits()
         return;
     }
     modify_user_mode(EDITUFILE);
-    aborted = vedit(genbuf, false, NULL);
+    aborted = vedit(genbuf, false, NULL, NULL);
     clear();
     if (!aborted) {
         prints("%s 更新过\n", explain_file[ch]);
@@ -665,7 +665,7 @@ void a_edits()
         return;
     }
     modify_user_mode(EDITSFILE);
-    aborted = vedit(genbuf, false, NULL);
+    aborted = vedit(genbuf, false, NULL, NULL);
     clear();
     if (aborted != -1) {
         prints("%s 更新过", explain_file[ch]);
@@ -773,7 +773,7 @@ int my_inet_aton(const char * ip, struct in_addr* queryip)
 	unsigned int i1,i2,i3,i4;
 	unsigned char i[4];
 
-	p1=ip;
+	p1=(char*)ip;
 	i1=atoi(p1);
 	if (i1>255) return 0;
 	i[0]=i1;
