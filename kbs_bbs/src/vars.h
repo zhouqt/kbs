@@ -58,3 +58,13 @@ extern struct BCACHE *brdshm;
 #ifdef BBSMAIN
 extern int idle_count;
 #endif
+
+struct newpostdata {
+    char        *name, *title, *BM;
+    char        flag;
+    int         pos, total;
+    char        unread, zap;
+};
+
+extern struct newpostdata *nbrd; /*每个版的信息*/
+

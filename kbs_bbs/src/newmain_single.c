@@ -1175,7 +1175,7 @@ boardmargin()
     if(selboard)
         sprintf(buf,"讨论区 [%s]",currboard) ;
     else {
-        brc_initial( DEFAULTBOARD );
+        brc_initial( currentuser->userid,DEFAULTBOARD );
         if (getbnum(currboard)) {
             selboard = 1 ;
             sprintf(buf,"讨论区 [%s]",currboard) ;

@@ -25,6 +25,12 @@
 #include "bbs.h"
 
 extern time_t   login_start_time;
+extern int     *zapbuf;
+extern int     brdnum;
+extern int yank_flag;
+extern char    *boardprefix;
+extern int     favbrd_list[FAVBOARDNUM+1];
+extern int     brc_list[ BRC_MAXNUM ], brc_num;
 
 void
 EGroup( cmd )
@@ -50,6 +56,64 @@ New()
     boardprefix = NULL;
     choose_board( 1 );
 }
+
+int
+cmpboard( brd, tmp ) /*排序用*/
+struct newpostdata      *brd, *tmp;
+{
+    register int        type = 0;
+
+    if( !(currentuser->flags[0] & BRDSORT_FLAG) )
+    {
+        type = brd->title[0] - tmp->title[0];
+        if(type==0)
+            type=strncasecmp( brd->title+1, tmp->title+1,6);
+
+    }
+    if( type == 0 )
+        type = strcasecmp( brd->name, tmp->name );
+    return type;
+}
+
+
+int
+unread_position( dirfile, ptr )
+char    *dirfile;
+struct newpostdata *ptr;
+{
+    struct fileheader fh ;
+    char        filename[ STRLEN ];
+    int         fd, offset, step, num;
+
+    num = ptr->total + 1;
+    if( ptr->unread && (fd = open( dirfile, O_RDWR )) > 0 ) {
+        if( !brc_initial(currentuser->userid, ptr->name ) ) {
+            num = 1;
+        } else {
+            offset = (int)((char *)&(fh.filename[0]) - (char *)&(fh));
+            num = ptr->total - 1;
+            step = 4;
+            while( num > 0 ) {
+                lseek( fd, offset + num * sizeof(fh), SEEK_SET );
+                if( read( fd, filename, STRLEN ) <= 0 ||
+                        !brc_unread( filename ) )  break;
+                num -= step;
+                if( step < 32 )  step += step / 2;
+            }
+            if( num < 0 )  num = 0;
+            while( num < ptr->total ) {
+                lseek( fd, offset + num * sizeof(fh), SEEK_SET );
+                if( read( fd, filename, STRLEN ) <= 0 ||
+                        brc_unread( filename ) )  break;
+                num ++;
+            }
+        }
+        close( fd );
+    }
+    if( num < 0 )  num = 0;
+    return num;
+}
+
 
 int
 search_board( num )
@@ -594,7 +658,7 @@ case 'n': case 'j': case KEY_DOWN:
                 char    buf[ STRLEN ];
 
                 ptr = &nbrd[num];
-                brc_initial( ptr->name );
+                brc_initial( currentuser->userid,ptr->name );
                 memcpy( currBM, ptr->BM, BM_LEN -1);
                 if( DEFINE(DEF_FIRSTNEW) ) {
                     setbdir( buf, currboard );
@@ -635,4 +699,52 @@ case 'n': case 'j': case KEY_DOWN:
     return -1 ;
 }
 
+int
+check_newpost( ptr )
+struct newpostdata *ptr;
+{
+    struct fileheader fh ;
+    struct stat st;
+    char        filename[ STRLEN ];
+    int         fd, offset, total;
+
+    ptr->total = ptr->unread = 0;
+    setbdir( genbuf, ptr->name );
+    if( (fd = open( genbuf, O_RDWR )) < 0 ) /* 读board目录时间文件*/
+        return 0;
+    fstat( fd, &st );
+    total = st.st_size / sizeof( fh );
+    if( total <= 0 ) {
+        close( fd );
+        return 0;
+    }
+    ptr->total = total;
+    if( !brc_initial( currentuser->userid,ptr->name ) ) {/*装入本版brc list */
+        ptr->unread = 1;
+    } else {
+        offset = (int)((char *)&(fh.filename[0]) - (char *)&(fh));/*fh无用，仅仅是获取各种size和offset用*/
+        lseek( fd, offset + (total-1) * sizeof(fh), SEEK_SET );/*最后一个文件名*/
+        if( read( fd, filename, STRLEN ) > 0 && brc_unread( filename ) ) {
+            ptr->unread = 1;
+        }
+    }
+    close( fd );
+    return 1;
+}
+
+/*---   Added by period 2000-09-11      Favorate Board List     ---*
+ *---   use yank_flag=2 to reflect status                       ---*
+ *---   corresponding code added: comm_lists.c                  ---*
+ *---           add entry in array sysconf_cmdlist[]            ---*/
+void FavBoard()
+{
+    int ifnew = 1, yanksav;
+    /*    if(heavyload()) ifnew = 0; */ /* no heavyload() in FB2.6x */
+    yanksav = yank_flag;
+    yank_flag = 2;
+    boardprefix = NULL;
+    if(!*favbrd_list) load_favboard(1);
+    choose_board(ifnew);
+    yank_flag = yanksav;
+}
 

@@ -1,8 +1,7 @@
 #include "bbslib.h"
 #include "boardrc.h"
 
-int cmpboard(b1, b2)
-struct boardheader *b1, *b2;
+static int cmp_board(struct boardheader *b1, struct boardheader *b2)
 {
 	return strcasecmp(b1->filename, b2->filename);
 }
@@ -28,7 +27,7 @@ int main()
 		memcpy(&data[total], x, sizeof(struct boardheader));
 		total++;
 	}
-	qsort(data, total, sizeof(struct boardheader), cmpboard);
+	qsort(data, total, sizeof(struct boardheader), cmp_board);
 	printf("<center>\n");
 	printf("%s -- 分类讨论区 [%s]<hr color=\"green\">", BBSNAME, secname[sec1]);
 	printf("<table width=\"610\">\n");
@@ -71,6 +70,6 @@ int board_read(char *board) {
 	fseek(fp, (total-1)*sizeof(struct fileheader), SEEK_SET);
 	fread(&x, sizeof(x), 1, fp);
 	fclose(fp);
-	brc_init(currentuser->userid, board);
+	brc_initial(currentuser->userid, board);
 	return brc_has_read(x.filename);
 }

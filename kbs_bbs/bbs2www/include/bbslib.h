@@ -167,7 +167,7 @@ int get_shmkey(char *s);
 
 int shm_init();
 
-int user_init(struct userec *x, struct user_info **y);
+int user_init(struct userec **x, struct user_info **y);
 
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 

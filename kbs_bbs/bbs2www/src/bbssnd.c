@@ -107,7 +107,7 @@ int main()
 	if(r<=0)
 		http_fatal("内部错误，无法发文");
 	sprintf(buf, "M.%d.A", r);
-	brc_init(currentuser->userid, board);
+	brc_initial(currentuser->userid, board);
 	brc_add_read(buf);
 	brc_update(currentuser->userid, board);
 	unlink(filename);

@@ -60,20 +60,21 @@ endif
 CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            xyz.c talk.c read.c comm_lists.c namecomplete.c chat.c \
            maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
-           screen.c userinfo.c vote.c announce.c sendmsg.c\
-	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
+           screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
+	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c lvars.c\
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c lvars.c ${BBSSITE}.c 
+	   ucache.c utmp.c log.c md5.c ${BBSSITE}.c 
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
            maintain.o edit.o more.o pass.o help.o bcache.o boards.o \
-           screen.o userinfo.o vote.o announce.o sendmsg.o\
-           bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o \
+           screen.o userinfo.o vote.o announce.o sendmsg.o boards_t.o\
+           bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o lvars.o\
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
-	   ucache.o utmp.o log.o md5.o lvars.o $(BBSSITE).o 
+	   ucache.o utmp.o log.o md5.o $(BBSSITE).o
 
-BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o liblvars.o $(BBSSITE).o
+#BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o liblvars.o $(BBSSITE).o libboards.o liblvars.o
+BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o lvars.o $(BBSSITE).o boards.o lvars.o
 
 OTHERS   = bbs.h edit.h
 
@@ -133,7 +134,7 @@ thread: thread.c record.c
 lib%.o: %.c
 	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -UBBSMAIN -c $^ -o $@
 	
-$(BBSLIB) : $(BBSLIBOBJS)
+$(BBSLIB) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
 	ar cru $@ $^
 	ranlib $@
 	

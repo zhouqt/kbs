@@ -31,7 +31,7 @@ int main() {
 	if(my_t_lines<10 || my_t_lines>40) my_t_lines=20;
         if(strlen(getparm("start"))==0 || start>total-my_t_lines) start=total-my_t_lines;
   	if(start<0) start=0;
-	brc_init(currentuser->userid, board);
+	brc_initial(currentuser->userid, board);
 	printf("<nobr><center>\n");
 	printf("%s -- [讨论区: %s] 版主[%s] 文章数[%d] <a href=\"bbsbrdadd?board=%s\">预定本版</a><hr color=\"green\">\n", 
 		BBSNAME, board, userid_str(x1->BM), total, board);

@@ -1,6 +1,6 @@
 #include "bbslib.h"
 
-int cmpboard(b1, b2)
+int cmp_board(b1, b2)
 struct boardheader *b1, *b2;
 {
 	return strcasecmp(b1->filename, b2->filename);
@@ -23,7 +23,7 @@ int main()
 		memcpy(&data[total], x, sizeof(struct boardheader));
 		total++;
 	}
-	qsort(data, total, sizeof(struct boardheader), cmpboard);
+	qsort(data, total, sizeof(struct boardheader), cmp_board);
 	printf("<center>\n");
 	printf("%s -- 全部讨论区 [讨论区数: %d]<hr color=green>", BBSNAME, total);
 	printf("<table width=610>\n");

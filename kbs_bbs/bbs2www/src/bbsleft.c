@@ -106,13 +106,13 @@ int main() {
 	}
   	printf("<img src=\"/link.gif\"><a href=\"bbsusr\" target=\"f3\"> 环顾四方</a><br>\n");
   	printf("<img src=\"/link.gif\"><a href=\"bbsqry\" target=\"f3\"> 查询网友</a><br>\n");
-        if(currentuser->userlevel & PERM_PAGE) {
+        if(loginok&&currentuser->userlevel & PERM_PAGE) {
                 printf("<img src=\"/link.gif\"><a href=\"bbssendmsg\" target=\"f3\"> 发送讯息</a><br>\n");
                 printf("<img src=\"/link.gif\"><a href=\"bbsmsg\" target=\"f3\"> 查看所有讯息</a><br>\n");
 	}
 	printf("</div>\n");
 	ptr="";
-	if(currentuser->userlevel & PERM_CLOAK)
+	if(loginok&&currentuser->userlevel & PERM_CLOAK)
 		ptr="<img src<img src=\"/link.gif\"><a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"bbscloak\"> 切换隐身</a><br>\n";
 	if(loginok)
                 printf("
@@ -163,7 +163,7 @@ int count_new_mails() {
         int n, unread=0;
 	char buf[1024];
         FILE *fp;
-        if(currentuser->userid[0]==0) return 0;
+        if(!loginok&&currentuser->userid[0]==0) return 0;
         sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(currentuser->userid[0]), currentuser->userid);
         fp=fopen(buf, "r");
         if(fp==0) return;

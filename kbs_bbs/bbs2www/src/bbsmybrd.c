@@ -4,7 +4,7 @@ struct shortfile data[MAXBOARD];
 //char mybrd[32][80];
 int mybrdnum=0;
 
-int cmpboard(b1, b2)
+int cmp_board(b1, b2)
 struct boardheader *b1, *b2;
 {
         return strcasecmp(b1->filename, b2->filename);
@@ -51,7 +51,7 @@ int main()
 			total++;
 		}
 	}
-	qsort(data, total, sizeof(struct shortfile), cmpboard);
+	qsort(data, total, sizeof(struct shortfile), cmp_board);
 	for(i=0; i<total; i++)
 	{
 		char *buf3="";

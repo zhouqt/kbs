@@ -15,7 +15,7 @@ int main() {
 	printf("<center>\n");
 	if(!has_read_perm(&currentuser, board)) http_fatal("错误的讨论区");
 	strcpy(board, getbcache(board)->filename);
-	if(loginok) brc_init(currentuser->userid, board);
+	if(loginok) brc_initial(currentuser->userid, board);
 	printf("%s -- 主题文章阅读 [讨论区: %s]<hr color=green>", BBSNAME, board);
 	if(strncmp(file, "M.", 2) && strncmp(file, "G.", 2)) http_fatal("错误的参数1");
 	if(strstr(file, "..") || strstr(file, "/")) http_fatal("错误的参数2");

@@ -2,11 +2,6 @@
 #include "bbslib.h"
 #include "boardrc.h"
 
-char    brc_buf[BRC_MAXSIZE];
-int     brc_size;
-char    brc_name[BRC_STRLEN];
-int     brc_list[BRC_MAXNUM], brc_num;
-
 static const struct _shmkey shmkeys[]= {
 { "BCACHE_SHMKEY",  3693 },
 { "UCACHE_SHMKEY",  3696 },
@@ -17,7 +12,7 @@ static const struct _shmkey shmkeys[]= {
 { "PASSWDCACHE_SHMKEY", 3697 },
 { "STAT_SHMKEY",    5100 },
 { "CONVTABLE_SHMKEY",    5101 },
-{    0,   0 }
+{    "",   0 }
 };
 
 time_t update_time=0;
@@ -355,7 +350,7 @@ int hhprintf(char *fmt, ...) {
 				if(strstr(tmp, ".gif") || strstr(tmp, ".jpg") || strstr(tmp, ".bmp")) {
 					printf("<IMG SRC='%s'>", nohtml(tmp));
 					tmp=strtok(0, "");
-					if(tmp==0) return;
+					if(tmp==0) return -1;
 					return hhprintf(tmp);
 				}
 			}
@@ -369,6 +364,7 @@ int hhprintf(char *fmt, ...) {
 			s++;
 		}
 	}
+	return 0;
 }
 
 int parm_add(char *name, char *val) {
@@ -486,9 +482,8 @@ int shm_init()
 	resolve_boards(); 
 }
 
-int user_init(struct userec *x, struct user_info **y)
+int user_init(struct userec **x, struct user_info **y)
 {
-	struct userec *x2 = NULL;
 	char id[20], num[20];
 	int i, uid, key;
 	struct UTMPFILE *utmpshm_ptr;
@@ -535,18 +530,17 @@ int user_init(struct userec *x, struct user_info **y)
 	}
 	if(!strcasecmp((*y)->userid, "new") || !strcasecmp((*y)->userid, "guest"))
 		return 0;
-	getuser((*y)->userid, &x2);
-	if(x2==0)
+	getuser((*y)->userid, x);
+	if(*x==0)
 	{
 		//printf("getuser error!\n");
 		return 0;
 	}
-	if(strcmp(x2->userid, id))
+	if(strcmp((*x)->userid, id))
 	{
 		//printf("userid not equal!\n");
 		return 0;
 	}
-	memcpy(x, x2, sizeof(*x));
 	return 1;
 }
 
@@ -576,7 +570,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
 	fprintf(fp, "来  源: %s\n\n", ip);
 	if(fp2) {
 		while(1) {
-			if(fgets(buf3, 256, fp2)<=0) break;
+			if((int)fgets(buf3, 256, fp2)<=0) break;
 			fprintf2(fp, buf3);
 		}
 		fclose(fp2);
@@ -590,6 +584,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
 	if(fp==0) return -1;
         fwrite(&header, sizeof(header), 1, fp);
         fclose(fp);
+	return 0;
 }
 
 int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig) {
@@ -614,6 +609,7 @@ int post_imail(char *userid, char *title, char *file, char *id, char *nickname, 
         fprintf(fp2, ".\n");
         fclose(fp1);
         pclose(fp2);
+	return 0;
 }
 
 int check_readonly(checked) /* Leeward 98.03.28 */
@@ -938,12 +934,13 @@ int count_mails(char *id, int *total, int *unread) {
 		}
         sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(id[0]), id);
         fp=fopen(buf, "r");
-        if(fp==0) return;
+        if(fp==0) return -1;
         while(fread(&x1, sizeof(x1), 1, fp)>0) {
                 (*total)++;
                 if(!(x1.accessed[0] & FILE_READ)) (*unread)++;
         }
         fclose(fp);
+	return 0;
 }
 
 int findnextutmp(char *id, int from) {
@@ -1153,7 +1150,7 @@ int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]
 	uinfo_t *uin;
 
 	/* 滤掉特殊字符，应该写成一个函数 */
-	for(i=0; i<strlen(msg); i++)
+	for(i=0; i<(int)strlen(msg); i++)
 		if((0<msg[i] && msg[i]<=27 )|| msg[i]==-1) msg[i]=32;
 
 	uin = t_search(touserid, topid);
@@ -1278,7 +1275,7 @@ int init_all() {
 	/*seteuid(BBSUID);*/
 	/*if(geteuid()!=BBSUID) http_fatal("uid error.");*/
 	shm_init();
-	loginok=user_init(currentuser, &u_info);
+	loginok=user_init(&currentuser, &u_info);
 }
 
 int init_no_http() {
@@ -1574,143 +1571,6 @@ int valid_filename(char *file)
 	return 0;
 }
 
-/* merge boardrc.c into bbslib.c 
-char *brc_getrecord(char *ptr, char *name, int *pnum, int *list) {
-        int     num;
-        char   *tmp;
-        strncpy(name, ptr, BRC_STRLEN);
-        ptr += BRC_STRLEN;
-        num = (*ptr++) & 0xff;
-        tmp = ptr + num * sizeof(int);
-        if (num > BRC_MAXNUM) num = BRC_MAXNUM;
-        *pnum = num;
-        memcpy(list, ptr, num * sizeof(int));
-        return tmp;
-}
-
-char *brc_putrecord(char *ptr, char *name, int num, int *list) {
-        if (num > 0 ) {
-                if (num > BRC_MAXNUM) {
-                        num = BRC_MAXNUM;
-                }
-                strncpy(ptr, name, BRC_STRLEN);
-                ptr += BRC_STRLEN;
-                *ptr++ = num;
-                memcpy(ptr, list, num * sizeof(int));
-                ptr += num * sizeof(int);
-        }
-        return ptr;
-}
-
-void brc_update(char *userid, char *board) {
-        char    dirfile[STRLEN], *ptr;
-        char    tmp_buf[BRC_MAXSIZE - BRC_ITEMSIZE], *tmp;
-        char    tmp_name[BRC_STRLEN];
-        int     tmp_list[BRC_MAXNUM], tmp_num;
-        int     fd, tmp_size;
-        ptr = brc_buf;
-        if (brc_num > 0) {
-                ptr = brc_putrecord(ptr, brc_name, brc_num, brc_list);
-        }
-        if (1) {
-                sethomefile(dirfile, userid, ".boardrc");
-                if ((fd = open(dirfile, O_RDONLY)) != -1) {
-                        tmp_size = read(fd, tmp_buf, sizeof(tmp_buf));
-                        close(fd);
-                } else {
-                        tmp_size = 0;
-                }
-        }
-        tmp = tmp_buf;
-        while (tmp < &tmp_buf[tmp_size] && (*tmp >= ' ' && *tmp <= 'z')) {
-                tmp = brc_getrecord(tmp, tmp_name, &tmp_num, tmp_list);
-                if (strncmp(tmp_name, board, BRC_STRLEN) != 0) {
-                        ptr = brc_putrecord(ptr, tmp_name, tmp_num, tmp_list);
-                }
-        }
-        brc_size = (int) (ptr - brc_buf);
-        if ((fd = open(dirfile, O_WRONLY | O_CREAT, 0644)) != -1) {
-                ftruncate(fd, 0);
-                write(fd, brc_buf, brc_size);
-                close(fd);
-        }
-}
-
-int brc_init(char *userid, char *boardname) {
-	FILE *fp;
-        char dirfile[STRLEN], *ptr;
-	int tmpno=0;
-        sethomefile(dirfile, userid, ".boardrc");
-        if(fp=fopen(dirfile, "r")) {
-                brc_size=fread(brc_buf, 1, BRC_MAXSIZE, fp);
-                fclose(fp);
-        } else {
-                brc_size = 0;
-        }
-        ptr=brc_buf;
-        while(ptr< &brc_buf[brc_size] && (*ptr >= ' ' && *ptr <= 'z')) {
-                ptr=brc_getrecord(ptr, brc_name, &brc_num, brc_list);
-                if (!strncasecmp(brc_name, boardname, BRC_STRLEN)) return brc_num;
-        }
-        strncpy(brc_name, boardname, BRC_STRLEN);
-        brc_list[0] = 1;
-        brc_num=1;
-        return 0;
-}
-
-int brc_add_read(char *filename) {
-        int     ftime, n, i;
-        if(!loginok) return;
-        ftime=atoi(&filename[2]);
-        if(filename[0]!='M' && filename[0]!='G')  return;
-        if(brc_num<=0) {
-                brc_list[brc_num++] = ftime;
-                return;
-        }
-        for (n = 0; n < brc_num; n++) {
-                if (ftime == brc_list[n]) {
-                        return;
-                } else if (ftime > brc_list[n]) {
-                        if (brc_num < BRC_MAXNUM)
-                                brc_num++;
-                        for (i = brc_num - 1; i > n; i--) {
-                                brc_list[i] = brc_list[i - 1];
-                        }
-                        brc_list[n] = ftime;
-                        return;
-                }
-        }
-        if(brc_num<BRC_MAXNUM) brc_list[brc_num++] = ftime;
-}
-
-int brc_un_read(char *file) {
-        int ftime, n;
-        if(file[0]!='M' && file[0]!='G') return 0;
-	ftime=atoi(file+2);
-        if (brc_num <= 0)
-                return 1;
-        for (n=0; n<brc_num; n++) {
-                if(ftime>brc_list[n]) return 1;
-                if(ftime==brc_list[n]) return 0;
-        }
-        return 0;
-}
-
-int brc_clear() {
-	int i;
-	char filename[20];
-	if(!loginok) return;
-	for(i=0; i<60; i++) {
-		sprintf(filename, "M.%d.A", time(0)-i);
-		brc_add_read(filename);
-	}
-}
-
-int brc_has_read(char *file) {
-	return !brc_un_read(file);
-}
- End */
-
 /* added by flyriver, 2001.12.17
  * using getcurrusr() instead of using currentuser directly
  */
@@ -1841,7 +1701,7 @@ int count_online() /* ugly */
 {
 	struct UTMPFILE *u;
 
-	u = get_utmpshm_addr();
+	u = (struct UTMPFILE*)get_utmpshm_addr();
 	return u == NULL ? 0 : u->number;
 }
 
@@ -1861,7 +1721,7 @@ uinfo_t *get_user_info(int utmpnum)
 
 	if (utmpnum < 1 || utmpnum > USHM_SIZE)
 		return NULL;
-	utmpshm_ptr = get_utmpshm_addr();
+	utmpshm_ptr = (struct UTMPFILE*)get_utmpshm_addr();
 	return &(utmpshm_ptr->uinfo[utmpnum-1]);
 }
 
@@ -2038,98 +1898,6 @@ allusers()
         return 0;
     }
     return count;
-}
-
-/* from board.c */
-void save_userfile(char * fname, int numblk, char * buf)
-{
-    char        fbuf[ 256 ];
-    int         fd, size;
-
-    setuserfile( fbuf, fname );
-    if( (fd = open( fbuf, O_WRONLY | O_CREAT, 0600 )) != -1 ) {
-        size = numblk * sizeof( int );
-        write( fd, buf, size );
-        close( fd );
-    }
-}
-
-void save_favboard()
-{
-    save_userfile("favboard", (FAVBOARDNUM+1), (char *)favbrd_list);
-}
-
-int DelFavBoard(int i)
-{
-    int lnum;
-    if(i > *favbrd_list)
-		return *favbrd_list;
-    lnum = --(*favbrd_list);
-    for(;i<=lnum;i++)
-		favbrd_list[i] = favbrd_list[i+1];
-    if(!lnum)
-	{
-        *favbrd_list = 1;       /*  favorate board count    */
-        *(favbrd_list+1) = 0;   /*  default sysop board     */
-    }
-    return 0;
-}
-
-void load_favboard(int dohelp)
-{
-    char fname[STRLEN];
-    int  fd, size, idx;
-    setuserfile(fname, "favboard");
-    if( (fd = open( fname, O_RDONLY, 0600 )) != -1 ) {
-        size = (FAVBOARDNUM+1) * sizeof( int );
-        read( fd, favbrd_list, size );
-        close( fd );
-    } /*
-    else if(dohelp) {
-        int savmode;
-        savmode = uinfo.mode;
-        modify_user_mode(CSIE_ANNOUNCE);	// 没合适的mode.就先用"汲取精华"吧. 
-        show_help("help/favboardhelp");
-        modify_user_mode(savmode);
-    }
-	*/
-    if(*favbrd_list<= 0) {
-        *favbrd_list = 1;       /*  favorate board count    */
-        *(favbrd_list+1) = 0;   /*  default sysop board     */
-    }
-    else {
-        int num = *favbrd_list;
-        if(*favbrd_list > FAVBOARDNUM)	/*	maybe file corrupted	*/
-            *favbrd_list = FAVBOARDNUM;
-        idx = 0;
-        while(++idx <= *favbrd_list) {
-        	struct boardheader* bh;
-            fd = favbrd_list[idx];
-            bh = (struct boardheader*) getboard(fd+1);
-            if(fd >= 0 && fd <= get_boardcount() && (
-            			bh &&
-                        bh->filename[0]
-                        && ( (bh->level & PERM_POSTMASK)
-                             || HAS_PERM(bh->level)
-                             || (bh->level&PERM_NOZAP) )
-                    )
-              )
-                continue;
-            DelFavBoard(idx);   /*  error correction    */
-        }
-        if(num != *favbrd_list) save_favboard();
-    }
-}
-
-int IsFavBoard(int idx)
-{
-    int i;
-    for(i=1;i<=*favbrd_list;i++)
-	{
-		if(idx == favbrd_list[i])
-			return i;
-	}
-    return 0;
 }
 
 int get_favboard(int num)

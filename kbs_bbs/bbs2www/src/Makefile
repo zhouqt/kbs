@@ -1,5 +1,5 @@
 #BBSHOME = /home/bbstest
-CGIPATH = /home/www/cgi-bin
+CGIPATH = /home/www/cgi-bin/bbs
 #HTMPATH = /home/httpd/html/bbs
 
 #ifeq (Makefile.spec ,$(wildcard Makefile.spec))

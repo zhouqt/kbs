@@ -42,7 +42,7 @@ multi_user_check()
     }
 }
 
-int main()
+int main(int argc,char** argv)
 {
 	int pid, n, t;
 	char buf[256], id[20], pw[20];
@@ -52,8 +52,10 @@ int main()
 	init_all();
 	strsncpy(id, getparm("id"), 13);
     strsncpy(pw, getparm("pw"), 13);
-	//strsncpy(id, argv[1], 13);
-    //strsncpy(pw, argv[2], 13);
+/*
+	strsncpy(id, argv[1], 13);
+    strsncpy(pw, argv[2], 13);
+*/
 	if(loginok && strcasecmp(id, currentuser->userid)) {
 		http_fatal("系统检测到目前你的计算机上已经登录有一个帐号 %s，请先退出.(%s)", 
 			currentuser->userid, "选择正常logout, 或者关闭所有浏览器窗口");

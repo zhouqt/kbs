@@ -23,7 +23,7 @@ int main()
 		http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
    	printf("<center>\n");
 	printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
-   	printf("<form method=\"post\" action=\"bbssnd?board=%s\">\n<table border=\"1\">\n");
+   	printf("<form method=\"post\" action=\"bbssnd?board=%s\">\n<table border=\"1\">\n",board);
 	printf("<tr><td>");
 	printf("<font color=\"green\">发文注意事项: <br>\n");
 	printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>\n");

@@ -354,7 +354,7 @@ resolve_ucache()
     }
 
     if (passwd==NULL) { 
-        passwd = (struct userec*)attach_shm1( "PASSWDCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate, 1, NULL); /*attach to user shm */
+        passwd = (struct userec*)attach_shm1( "PASSWDCACHE_SHMKEY", 3697, MAXUSERS*sizeof(struct userec) ,&iscreate, 0, NULL); /*attach to user shm */
         if (iscreate) { /* shouldn't load passwd file in this place */
         	log("4system","passwd daemon havn't startup");
         	exit(-1);
