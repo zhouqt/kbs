@@ -595,6 +595,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     time_t filetime;
     char date[20];
     char *TITLE;
+//	char TITLE[256];
     int type;
     int manager;
     char *typeprefix;
@@ -649,6 +650,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     else
         attachch=' ';
     TITLE = ent->title;         /*文章标题TITLE */
+//	sprintf(TITLE,"%s(%d)",ent->title,ent->eff_size);
     if ((type=='d')||(type=='D')) { //置顶文章
         sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %c● %-44.44s ", ent->owner, date, attachch, TITLE);
         return buf;
@@ -2274,7 +2276,12 @@ int post_article(char *q_file, struct fileheader *re_file)
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
 	attachpos = fileinfo->attachment;
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
-        fileinfo->eff_size = eff_size;
+		if( fileinfo->eff_size != eff_size ){
+        	fileinfo->eff_size = eff_size;
+			//fileinfo->eff_size = calc_effsize(genbuf);
+            //change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, 
+                fileinfo, direct, FILE_EFFSIZE_FLAG, 0);
+		}
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 0, /*NULL*/ fileinfo->title);
         if (attachpos!=fileinfo->attachment) {
@@ -3560,6 +3567,9 @@ int Goodbye()
     output("\x1b[m",3);
     output("\x1b[H\x1b[J",6);
     oflush();
+
+    end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+
     shutdown(0, 2);
     close(0);
     exit(0);

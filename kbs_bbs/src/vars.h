@@ -3,7 +3,8 @@
 extern struct UTMPFILE *utmpshm;
 /*extern struct UCACHE *uidshm;*/
 extern struct userec *currentuser;
-extern struct userdata curruserdata;
+//extern struct userdata curruserdata;
+extern struct usermemo *currentmemo;
 
 extern struct friends_info *topfriend;
 

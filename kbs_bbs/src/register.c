@@ -255,7 +255,8 @@ void check_register_info()
     /*urec->userlevel |= PERM_DEFAULT; */
     perm = PERM_DEFAULT & sysconf_eval("AUTOSET_PERM",PERM_DEFAULT);
 
-    invalid_realmail(currentuser->userid,curruserdata.realemail,STRLEN - 16);
+//    invalid_realmail(currentuser->userid,curruserdata.realemail,STRLEN - 16);
+    invalid_realmail(currentuser->userid,currentmemo->ud.realemail,STRLEN - 16);
 
     do_after_login(currentuser,utmpent,0);
 
@@ -266,17 +267,22 @@ void check_register_info()
         strcpy(uinfo.username, buf);
         UPDATE_UTMP_STR(username, uinfo);
     }
-    if (strlen(curruserdata.realname) < 2) {
+//    if (strlen(curruserdata.realname) < 2) {
+    if (strlen(currentmemo->ud.realname) < 2) {
         move(3, 0);
         prints("ÇëÊäÈëÄúµÄÕæÊµĞÕÃû: (Õ¾³¤»á°ïÄú±£ÃÜµÄ !)\n");
         getdata(4, 0, "> ", buf, NAMELEN, DOECHO, NULL, true);
-        strcpy(curruserdata.realname, buf);
+//        strcpy(curruserdata.realname, buf);
+        strcpy(currentmemo->ud.realname, buf);
     }
-    if (strlen(curruserdata.address) < 6) {
+//    if (strlen(curruserdata.address) < 6) {
+    if (strlen(currentmemo->ud.address) < 6) {
         move(5, 0);
-        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", curruserdata.address[0] ? curruserdata.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
+//        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", curruserdata.address[0] ? curruserdata.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
+        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", currentmemo->ud.address[0] ? currentmemo->ud.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
         getdata(6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN, DOECHO, NULL, true);
-        strcpy(curruserdata.address, buf);
+//        strcpy(curruserdata.address, buf);
+        strcpy(currentmemo->ud.address, buf);
     }
 
 	/* ¼ÓÈë×ªÈÃIDºóµÄ´úÂë   by binxun 2003-5-23 */
@@ -296,14 +302,18 @@ void check_register_info()
              unlink(buf);   
         sprintf(buf,"%s$%s@SYSOP", career,phone);
 		if(strlen(buf) >= STRLEN - 16)sprintf(buf,"%s@SYSOP",phone);
-		strncpy(curruserdata.realemail,buf,STRLEN-16);
-		curruserdata.realemail[STRLEN-16-1]='\0';
-		write_userdata(currentuser->userid,&curruserdata);
+//		strncpy(curruserdata.realemail,buf,STRLEN-16);
+		strncpy(currentmemo->ud.realemail,buf,STRLEN-16);
+//		curruserdata.realemail[STRLEN-16-1]='\0';
+		currentmemo->ud.realemail[STRLEN-16-1]='\0';
+//		write_userdata(currentuser->userid,&curruserdata);
+		write_userdata(currentuser->userid,&(currentmemo->ud));
 		
 	}
 
 
-    if (strchr(curruserdata.email, '@') == NULL) {
+//    if (strchr(curruserdata.email, '@') == NULL) {
+    if (strchr(currentmemo->ud.email, '@') == NULL) {
         clear();
         move(3, 0);
         prints("Ö»ÓĞ±¾Õ¾µÄºÏ·¨¹«Ãñ²ÅÄÜ¹»ÍêÈ«ÏíÓĞ¸÷ÖÖ¹¦ÄÜ£¬");
@@ -336,8 +346,10 @@ void check_register_info()
         pressreturn();
     }
 #ifdef HAVE_BIRTHDAY
-	if (!is_valid_date(curruserdata.birthyear+1900, curruserdata.birthmonth,
-				curruserdata.birthday))
+//	if (!is_valid_date(curruserdata.birthyear+1900, curruserdata.birthmonth,
+//				curruserdata.birthday))
+	if (!is_valid_date(currentmemo->ud.birthyear+1900, currentmemo->ud.birthmonth,
+				currentmemo->ud.birthday))
 	{
 		time_t now;
 		struct tm *tmnow;
@@ -358,38 +370,50 @@ void check_register_info()
 		switch (buf[0])
 		{
 		case '1':
-			curruserdata.gender = 'M';
+//			curruserdata.gender = 'M';
+			currentmemo->ud.gender = 'M';
 			break;
 		case '2':
-			curruserdata.gender = 'F';
+//			curruserdata.gender = 'F';
+			currentmemo->ud.gender = 'F';
 			break;
 		}
 		move(4, 0);
 		prints("ÇëÊäÈëÄúµÄ³öÉúÈÕÆÚ");
-		while (curruserdata.birthyear < tmnow->tm_year - 98
-			   || curruserdata.birthyear > tmnow->tm_year - 3)
+//		while (curruserdata.birthyear < tmnow->tm_year - 98
+//			   || curruserdata.birthyear > tmnow->tm_year - 3)
+		while (currentmemo->ud.birthyear < tmnow->tm_year - 98
+			   || currentmemo->ud.birthyear > tmnow->tm_year - 3)
 		{
 			buf[0] = '\0';
 			getdata(5, 0, "ËÄÎ»Êı¹«ÔªÄê: ", buf, 5, DOECHO, NULL, true);
 			if (atoi(buf) < 1900)
 				continue;
-			curruserdata.birthyear = atoi(buf) - 1900;
+//			curruserdata.birthyear = atoi(buf) - 1900;
+			currentmemo->ud.birthyear = atoi(buf) - 1900;
 		}
-		while (curruserdata.birthmonth < 1 || curruserdata.birthmonth > 12)
+//		while (curruserdata.birthmonth < 1 || curruserdata.birthmonth > 12)
+		while (currentmemo->ud.birthmonth < 1 || currentmemo->ud.birthmonth > 12)
 		{
 			buf[0] = '\0';
 			getdata(6, 0, "³öÉúÔÂ: (1-12) ", buf, 3, DOECHO, NULL, true);
-			curruserdata.birthmonth = atoi(buf);
+//			curruserdata.birthmonth = atoi(buf);
+			currentmemo->ud.birthmonth = atoi(buf);
 		}
 		do
 		{
 			buf[0] = '\0';
 			getdata(7, 0, "³öÉúÈÕ: (1-31) ", buf, 3, DOECHO, NULL, true);
-			curruserdata.birthday = atoi(buf);
-		} while (!is_valid_date(curruserdata.birthyear + 1900,
-					curruserdata.birthmonth,
-					curruserdata.birthday));
-		write_userdata(currentuser->userid, &curruserdata);
+//			curruserdata.birthday = atoi(buf);
+			currentmemo->ud.birthday = atoi(buf);
+//		} while (!is_valid_date(curruserdata.birthyear + 1900,
+//					curruserdata.birthmonth,
+//					curruserdata.birthday));
+		} while (!is_valid_date(currentmemo->ud.birthyear + 1900,
+					currentmemo->ud.birthmonth,
+					currentmemo->ud.birthday));
+//		write_userdata(currentuser->userid, &curruserdata);
+		write_userdata(currentuser->userid, &(currentmemo->ud));
 	}
 #endif
 #ifdef NEW_COMERS
@@ -407,7 +431,8 @@ void check_register_info()
 					currentuser->username, fromhost);
 			fprintf(fout, "½ñÌì%s³õÀ´´ËÕ¾±¨µ½, Çë´ó¼Ò¶à¶àÖ¸½Ì¡£\n",
 #ifdef HAVE_BIRTHDAY
-					(curruserdata.gender == 'M') ? "Ğ¡µÜ" : "Ğ¡Å®×Ó");
+//					(curruserdata.gender == 'M') ? "Ğ¡µÜ" : "Ğ¡Å®×Ó");
+					(currentmemo->ud.gender == 'M') ? "Ğ¡µÜ" : "Ğ¡Å®×Ó");
 #else
                                         "Ğ¡µÜ");
 #endif
@@ -447,7 +472,8 @@ void check_register_info()
     if (!(currentuser->userlevel & PERM_LOGINOK)) {
         if (HAS_PERM(currentuser, PERM_SYSOP))
             return;
-        if (!invalid_realmail(currentuser->userid, curruserdata.realemail, STRLEN - 16)) {
+//        if (!invalid_realmail(currentuser->userid, curruserdata.realemail, STRLEN - 16)) {
+        if (!invalid_realmail(currentuser->userid, currentmemo->ud.realemail, STRLEN - 16)) {
             currentuser->userlevel |= PERM_DEFAULT;
             /*
             if (HAS_PERM(currentuser, PERM_DENYPOST) && !HAS_PERM(currentuser, PERM_SYSOP))
@@ -530,8 +556,11 @@ void check_register_info()
         /* end of check if local email-addr */
         /*  above lines added by netty...  */
     }
-    	curruserdata.realemail[STRLEN -16 - 1] = '\0';  //¾À´í´úÂë
-	write_userdata(currentuser->userid, &curruserdata);
+//    	curruserdata.realemail[STRLEN -16 - 1] = '\0';  //¾À´í´úÂë
+	{char cmd[256];sprintf(cmd,"echo _4%s__ >> /home/bbs/stiger.test",currentmemo->ud.realemail);system(cmd);}
+    	currentmemo->ud.realemail[STRLEN -16 - 1] = '\0';  //¾À´í´úÂë
+//	write_userdata(currentuser->userid, &curruserdata);
+	write_userdata(currentuser->userid, &(currentmemo->ud));
     newregfile = sysconf_str("NEWREGFILE");
     /*if (currentuser->lastlogin - currentuser->firstlogin < REGISTER_WAIT_TIME && !HAS_PERM(currentuser, PERM_SYSOP) && newregfile != NULL) {
         currentuser->userlevel &= ~(perm);
@@ -646,9 +675,12 @@ void ConveyID()
 		currentuser->usedspace = 0;
 
 		//clear ÓÃ»§ĞÅÏ¢
-		bzero(&curruserdata,sizeof(struct userdata));
-		strcpy(curruserdata.userid,currentuser->userid);
-		write_userdata(currentuser->userid,&curruserdata);
+//		bzero(&curruserdata,sizeof(struct userdata));
+		bzero(&(currentmemo->ud),sizeof(struct userdata));
+//		strcpy(curruserdata.userid,currentuser->userid);
+		strcpy(currentmemo->ud.userid,currentuser->userid);
+//		write_userdata(currentuser->userid,&curruserdata);
+		write_userdata(currentuser->userid,&(currentmemo->ud));
 
         move(12,0);
 		prints("×ªÈÃID³É¹¦,ÂíÉÏ¶ÏÏßÁË,¸æ±ğÕâ¸öID°É.");

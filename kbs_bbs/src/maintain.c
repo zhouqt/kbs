@@ -1383,6 +1383,11 @@ char *logfile, *regfile;
                 break;
             case 'Y':
             case 'y':
+			{
+				struct usermemo *um;
+
+				read_user_memo(uinfo.userid, &um);
+
                 prints("以下使用者资料已经更新:\n");
                 n = strlen(fdata[5]);
                 if (n + strlen(fdata[3]) > 60) {
@@ -1405,6 +1410,9 @@ char *logfile, *regfile;
 
                 update_user(&uinfo, unum, 0);
                 write_userdata(uinfo.userid, &ud);
+				memcpy(&(um->ud), &ud, sizeof(ud));
+				end_mmapfile(um, sizeof(struct usermemo), -1);
+
                 mail_file(currentuser->userid, "etc/s_fill", uinfo.userid, "恭禧你，你已经完成注册。", 0, NULL);
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
                 securityreport(genbuf, lookupuser, fdata);
@@ -1443,6 +1451,7 @@ char *logfile, *regfile;
                 }
 
                 break;
+			}
             case 'Q':
             case 'q':
                 if ((freg = fopen(regfile, "a")) != NULL) {

@@ -84,7 +84,8 @@ char buf[256];
 
     if (currentuser) {
         douser = *currentuser;
-        memcpy(&ud,&curruserdata,sizeof(curruserdata));
+//        memcpy(&ud,&curruserdata,sizeof(curruserdata));
+		memcpy(&ud, &(currentmemo->ud), sizeof(ud) );
     }
     else {
         bzero(&douser, sizeof(struct userec));

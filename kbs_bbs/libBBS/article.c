@@ -1331,6 +1331,8 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         return DIRCHANGED;
     }
     switch (flag) {
+	case FILE_EFFSIZE_FLAG:
+		break;
     case FILE_MARK_FLAG:
         if (fileinfo->accessed[0] & FILE_MARKED) {      /*added by bad 2002.8.7 mark file mode added */
             fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
@@ -1869,4 +1871,116 @@ int get_effsize(char * ffn)
     }
     end_mmapfile((void*)op, fsize, -1);
     return abssize;
+}
+
+long calc_effsize(char *fname)
+{
+    int ch;
+    FILE *fp;
+    int matched;
+    char* ptr;
+    long size;
+	long effsize = 0;
+	int insign=0;
+	long signsize=0;
+
+    if ((fp = fopen(fname, "r+b")) == NULL) {
+		return 0;
+	}
+
+    matched=0;
+
+    BBS_TRY {
+        if (safe_mmapfile_handle(fileno(fp), O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 1) {
+            char* data;
+            long not;
+            data=ptr;
+
+			not = 0;
+
+			if(! strncmp(data, "发信人:", 7) ){
+				for( ;not < size; not++, data ++){
+					if( *data == '\r' || *data == '\n' ){
+						not++;
+						data ++;
+						if( *data == '\r' || *data == '\n' ){
+							not++;
+							data ++;
+						}
+						break;
+					}
+				}
+			}
+
+			if(! strncmp(data, "标  题:", 7) ){
+				for( ;not < size; not++, data ++){
+					if( *data == '\r' || *data == '\n' ){
+						not++;
+						data ++;
+						if( *data == '\r' || *data == '\n' ){
+							not++;
+							data ++;
+						}
+						break;
+					}
+				}
+			}
+
+			if(! strncmp(data, "发信站:", 7) ){
+				for( ;not < size; not++, data ++){
+					if( *data == '\r' || *data == '\n' ){
+						not++;
+						data ++;
+						if( *data == '\r' || *data == '\n' ){
+							not++;
+							data ++;
+						}
+						break;
+					}
+				}
+			}
+
+            for (;not<size;not++,data++) {
+                if (*data==0) {
+                    matched++;
+                    if (matched==ATTACHMENT_SIZE) {
+                        int d, size;
+						char *sstart = data;
+                        data++; not++;
+                        while(*data){
+							data++;
+							not++;
+						}
+                        data++;
+                        not++;
+                        memcpy(&d, data, 4);
+                        size = htonl(d);
+                        data+=4+size-1;
+                        not+=4+size-1;
+                        matched = 0;
+						effsize += size;
+                    }
+                    continue;
+                }
+				else{
+					if( *data != '\r' && *data != '\n' ){
+						if(insign == 0)
+							effsize ++;
+						else
+							signsize ++;
+					}
+				}
+            }
+        }
+	else
+	{
+		BBS_RETURN(-1);
+	}
+    }
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, size, -1);
+
+    fclose(fp);
+    return effsize;
 }

@@ -2003,8 +2003,10 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 
     clear();
     if (address[0] == '\0') {
-        strncpy(address, curruserdata.email, STRLEN);
-        if (strstr(curruserdata.email, "@" MAIL_BBSDOMAIN) || strlen(curruserdata.email) == 0) {
+//        strncpy(address, curruserdata.email, STRLEN);
+        strncpy(address, currentmemo->ud.email, STRLEN);
+//        if (strstr(curruserdata.email, "@" MAIL_BBSDOMAIN) || strlen(curruserdata.email) == 0) {
+        if (strstr(currentmemo->ud.email, "@" MAIL_BBSDOMAIN) || strlen(currentmemo->ud.email) == 0) {
             strcpy(address, currentuser->userid);
         }
     }

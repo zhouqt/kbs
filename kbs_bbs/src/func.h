@@ -147,7 +147,7 @@ int clean_cachedata(char* userid,int unum);
     int Isspace(char ch);
     char *idle_str(struct user_info *uent);
     int read_userdata(const char *userid, struct userdata *ud);
-    int write_userdata(const char *userid, const struct userdata *ud);
+    int write_userdata(const char *userid, struct userdata *ud);
     void getuinfo(FILE * fn, struct userec *ptr_urec);
     int simplepasswd(char *str);
     void logattempt(char *uid, char *frm);
@@ -160,6 +160,7 @@ int clean_cachedata(char* userid,int unum);
     unsigned int get_mailbox_prop(char *userid);
     unsigned int update_mailbox_prop(char *userid, unsigned int prop);
 	int gen_title(char *boardname );
+	size_t read_user_memo( char *userid, struct usermemo ** ppum );
 
 #define time(x) bbstime(x)
 

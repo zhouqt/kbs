@@ -48,6 +48,7 @@
 extern char seccode[SECNUM][5];
 extern int loginok;
 extern struct userec *currentuser;
+extern struct usermemo *currentmemo;
 extern struct user_info *u_info;
 extern struct UTMPFILE *shm_utmp;
 extern struct UCACHE *shm_ucache;

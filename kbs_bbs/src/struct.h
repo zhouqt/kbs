@@ -119,6 +119,11 @@ struct user_info {              /* Structure used in UTMP file */
 								/* 0: need recheck
 								 * 1: not check  */
 };
+
+struct usermemo {
+	struct userdata ud;
+};
+
 struct friends {
     char id[13];
     char exp[15];

@@ -583,13 +583,17 @@ void r_msg()
                                     i = DoReplyCheck(uid, head.frompid, toupper(buf[0])=='Y');
                                     if(!i) {
                                         if(reg==1) {
-                                            curruserdata.mobileregistered = 0;
-                                            strcpy(curruserdata.mobilenumber, uid);
+//                                            curruserdata.mobileregistered = 0;
+//                                            strcpy(curruserdata.mobilenumber, uid);
+                                            currentmemo->ud.mobileregistered = 0;
+                                            strcpy(currentmemo->ud.mobilenumber, uid);
                                         }
                                         else {
-                                            curruserdata.mobileregistered = 0;
+//                                            curruserdata.mobileregistered = 0;
+                                            currentmemo->ud.mobileregistered = 0;
                                         }
-                                        write_userdata(currentuser->userid, &curruserdata);
+//                                        write_userdata(currentuser->userid, &curruserdata);
+                                        write_userdata(currentuser->userid, &(currentmemo->ud));
                                         sprintf("%s 成功", (reg==1)?"注册":"取消注册");
                                     }
                                     else sprintf("%s 失败", (reg==1)?"注册":"取消注册");
@@ -715,21 +719,28 @@ int register_sms()
     clear();
     prints("注册手机号\n\n注册你的手机号之后，你可在bbs上发送和接收手机短信\n");
     move(4,0);
-    if(curruserdata.mobileregistered) {
+//    if(curruserdata.mobileregistered) {
+    if(currentmemo->ud.mobileregistered) {
         prints("你已经注册手机号了。每一个账号只能注册一个手机号。\n");
         pressreturn();
         shmdt(head);
         smsbuf=NULL;
         return -1;
     }
-    if(curruserdata.mobilenumber[0]&&strlen(curruserdata.mobilenumber)==11) {
-        sprintf(buf2, "你输入的手机号是%s，是否重新发送注册码？[Y/n]", curruserdata.mobilenumber);
+//    if(curruserdata.mobilenumber[0]&&strlen(curruserdata.mobilenumber)==11) {
+    if(currentmemo->ud.mobilenumber[0]&&strlen(currentmemo->ud.mobilenumber)==11) {
+//        sprintf(buf2, "你输入的手机号是%s，是否重新发送注册码？[Y/n]", curruserdata.mobilenumber);
+        sprintf(buf2, "你输入的手机号是%s，是否重新发送注册码？[Y/n]", currentmemo->ud.mobilenumber);
         getdata(3, 0, buf2, ans, 3, 1, 0, 1);
-        if(toupper(ans[0])!='N') curruserdata.mobilenumber[0]=0;
+//        if(toupper(ans[0])!='N') curruserdata.mobilenumber[0]=0;
+        if(toupper(ans[0])!='N') currentmemo->ud.mobilenumber[0]=0;
     }
-    if(!curruserdata.mobilenumber[0]||strlen(curruserdata.mobilenumber)!=11) {
-        getdata(4, 0, "请输入手机号: ", curruserdata.mobilenumber, 17, 1, 0, 1);
-        if(!curruserdata.mobilenumber[0]||strlen(curruserdata.mobilenumber)!=11) {
+//    if(!curruserdata.mobilenumber[0]||strlen(curruserdata.mobilenumber)!=11) {
+    if(!currentmemo->ud.mobilenumber[0]||strlen(currentmemo->ud.mobilenumber)!=11) {
+//        getdata(4, 0, "请输入手机号: ", curruserdata.mobilenumber, 17, 1, 0, 1);
+        getdata(4, 0, "请输入手机号: ", currentmemo->ud.mobilenumber, 17, 1, 0, 1);
+//        if(!curruserdata.mobilenumber[0]||strlen(curruserdata.mobilenumber)!=11) {
+        if(!currentmemo->ud.mobilenumber[0]||strlen(currentmemo->ud.mobilenumber)!=11) {
             move(5, 0);
             prints("错误的手机号");
             pressreturn();
@@ -737,7 +748,8 @@ int register_sms()
             smsbuf=NULL;
             return -1;
         }
-        if(DoReg(curruserdata.mobilenumber)) {
+//        if(DoReg(curruserdata.mobilenumber)) {
+        if(DoReg(currentmemo->ud.mobilenumber)) {
             signal(SIGUSR1, talk_request);
             move(5, 0);
             prints("发送注册码失败");
@@ -752,7 +764,8 @@ int register_sms()
     }
     getdata(6, 0, "请输入你的注册码: ", valid, 11, 1, 0, 1);
     if(!valid[0]) return -1;
-    if(DoCheck(curruserdata.mobilenumber, valid)) {
+//    if(DoCheck(curruserdata.mobilenumber, valid)) {
+    if(DoCheck(currentmemo->ud.mobilenumber, valid)) {
         signal(SIGUSR1, talk_request);
         move(7, 0);
         prints("注册码检查失败");
@@ -762,8 +775,10 @@ int register_sms()
         return -1;
     }
     signal(SIGUSR1, talk_request);
-    curruserdata.mobileregistered = 1;
-    write_userdata(currentuser->userid, &curruserdata);
+//    curruserdata.mobileregistered = 1;
+    currentmemo->ud.mobileregistered = 1;
+//    write_userdata(currentuser->userid, &curruserdata);
+    write_userdata(currentuser->userid, &(currentmemo->ud));
     move(7, 0);
     prints("手机注册成功！ 你可以在bbs上发送短信啦！");
     pressreturn();
@@ -783,34 +798,42 @@ int unregister_sms()
     clear();
     prints("取消注册手机号");
     move(4,0);
-    if(!curruserdata.mobileregistered) {
+//    if(!curruserdata.mobileregistered) {
+    if(!currentmemo->ud.mobileregistered) {
         prints("你尚未注册手机号");
         pressreturn();
         shmdt(head);
         smsbuf=NULL;
         return -1;
     }
-    sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", curruserdata.mobilenumber);
+//    sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", curruserdata.mobilenumber);
+    sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", currentmemo->ud.mobilenumber);
     getdata(3, 0, buf2, ans, 3, 1, 0, 1);
     if(toupper(ans[0])=='Y') {
-        rr = DoUnReg(curruserdata.mobilenumber);
+//        rr = DoUnReg(curruserdata.mobilenumber);
+        rr = DoUnReg(currentmemo->ud.mobilenumber);
         if(rr&&rr!=CMD_ERR_NO_SUCHMOBILE) {
             signal(SIGUSR1, talk_request);
             move(5, 0);
             prints("取消注册失败");
             pressreturn();
             shmdt(head);
-	    curruserdata.mobileregistered = 0;
-	    write_userdata(currentuser->userid, &curruserdata);
+//	    curruserdata.mobileregistered = 0;
+	    currentmemo->ud.mobileregistered = 0;
+//	    write_userdata(currentuser->userid, &curruserdata);
+	    write_userdata(currentuser->userid, &(currentmemo->ud));
             smsbuf=NULL;
             return -1;
         }
         signal(SIGUSR1, talk_request);
         move(5, 0);
         prints("取消注册成功");
-        curruserdata.mobilenumber[0]=0;
-        curruserdata.mobileregistered = 0;
-        write_userdata(currentuser->userid, &curruserdata);
+//        curruserdata.mobilenumber[0]=0;
+        currentmemo->ud.mobilenumber[0]=0;
+//        curruserdata.mobileregistered = 0;
+        currentmemo->ud.mobileregistered = 0;
+//        write_userdata(currentuser->userid, &curruserdata);
+        write_userdata(currentuser->userid, &(currentmemo->ud));
     }
     shmdt(head);
     smsbuf=NULL;
@@ -829,7 +852,8 @@ int do_send_sms_func(char * dest, char * msgstr)
     struct userec * ur;
 
 checksmsagain:
-    if(!curruserdata.mobileregistered) {
+//    if(!curruserdata.mobileregistered) {
+    if(!currentmemo->ud.mobileregistered) {
         move(1, 0);
         clrtoeol();
         prints("你尚未注册手机号，无法给别人发送短信");
@@ -908,12 +932,16 @@ checksmsagain:
     else
         strcpy(buf, msgstr);
 
-    ret = DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
+//    ret = DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
+    ret = DoSendSMS(currentmemo->ud.mobilenumber, udata.mobilenumber, buf);
     signal(SIGUSR1, talk_request);
     if(ret==CMD_ERR_SMS_VALIDATE_FAILED) {
-        curruserdata.mobilenumber[0]=0;
-        curruserdata.mobileregistered = 0;
-        write_userdata(currentuser->userid, &curruserdata);
+//        curruserdata.mobilenumber[0]=0;
+        currentmemo->ud.mobilenumber[0]=0;
+//        curruserdata.mobileregistered = 0;
+        currentmemo->ud.mobileregistered = 0;
+//        write_userdata(currentuser->userid, &curruserdata);
+        write_userdata(currentuser->userid, &(currentmemo->ud));
     }
     if(ret) {
         clrtoeol();

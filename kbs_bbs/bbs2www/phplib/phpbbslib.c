@@ -4357,6 +4357,8 @@ static PHP_FUNCTION(bbs_fillidinfo)
        RETURN_LONG(-1);
 
     memset(&ud,0,sizeof(ud));
+	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
+
     if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
 
     strncpy(ud.realname, realname, NAMELEN);
@@ -4365,6 +4367,9 @@ static PHP_FUNCTION(bbs_fillidinfo)
     if(strlen(genbuf) >= STRLEN - 16) //too long
 		sprintf(genbuf,"%s#%s#TH",realname,number);//must < STRLEN - 16
     strncpy(ud.realemail,genbuf,STRLEN-16);
+
+	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
 
     if(write_userdata(userid,&ud) < 0)RETURN_LONG(-2);
 
@@ -4461,6 +4466,7 @@ static PHP_FUNCTION(bbs_saveuserdata)
 		userface_img=-1;
 	}
 
+	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
 	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
@@ -4511,6 +4517,8 @@ static PHP_FUNCTION(bbs_saveuserdata)
 	ud.married=married;
 	ud.education=education;
 	ud.character=character;
+	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
 	write_userdata(userid, &ud);
     RETURN_LONG(0);
 
@@ -4645,6 +4653,7 @@ static PHP_FUNCTION(bbs_createregform)
 			fclose(fn);
 		}
     }
+	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
 	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
@@ -4701,6 +4710,8 @@ static PHP_FUNCTION(bbs_createregform)
 	ud.married=married;
 	ud.education=education;
 	ud.character=character;
+	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
 	write_userdata(userid, &ud);
 
 #ifdef NEW_COMERS
@@ -4835,6 +4846,7 @@ static PHP_FUNCTION(bbs_createregform)
 			fclose(fn);
 		}
     }
+	if( read_user_memo(userid, &currentmemo) < 0) RETURN_LONG(-2);
 	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
@@ -4860,6 +4872,8 @@ static PHP_FUNCTION(bbs_createregform)
 	else
 	    ud.gender='F';
 #endif
+	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
 	write_userdata(userid, &ud);
 
 #ifdef NEW_COMERS

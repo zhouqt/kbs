@@ -1071,7 +1071,7 @@ int read_userdata(const char *userid, struct userdata *ud)
     return 0;                   /* success */
 }
 
-int write_userdata(const char *userid, const struct userdata *ud)
+int write_userdata(const char *userid, struct userdata *ud)
 {
     char datafile[STRLEN];
     int fd;
@@ -1084,6 +1084,49 @@ int write_userdata(const char *userid, const struct userdata *ud)
     write(fd, ud, sizeof(struct userdata));
     close(fd);
     return 0;
+}
+
+size_t read_user_memo( char *userid, struct usermemo ** ppum )
+{
+	struct usermemo um;
+	int logincount;
+	size_t size;
+	char fn[STRLEN];
+	FILE *fp;
+    struct stat st;
+
+#if USE_TMPFS==1
+	setcachehomefile(fn, userid, -1, "usermemo");
+#else
+	sethomefile(fn, userid, "usermemo");
+#endif
+
+    logincount = apply_utmp(NULL, 0, userid, 0);
+
+	if( logincount <= 0 || stat(fn, &st) == -1) { 
+		struct userdata ud;
+
+		if((fp=fopen(fn,"w"))==NULL)
+			return -1;
+
+    	read_userdata(userid, &ud);
+		memcpy(&(um.ud), & ud, sizeof(struct userdata));
+		fwrite(&um, sizeof(um), 1, fp);
+		fclose(fp);
+	}
+
+    if ((fp = fopen(fn, "r+b")) == NULL) {
+		return -1;
+	}
+
+	if (safe_mmapfile_handle(fileno(fp), O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **)ppum , (size_t *) & size) == 1) {
+		fclose(fp);
+		return size;
+	}
+
+	fclose(fp);
+	return -1;
+
 }
 
 void getuinfo(FILE * fn, struct userec *ptr_urec)

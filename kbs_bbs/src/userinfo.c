@@ -32,28 +32,28 @@ void disply_userinfo(u, real)
 {
     struct stat st;
     int num, diff, exp;
-	struct userdata ud;
+	//struct userdata ud;
 
-	read_userdata(u->userid, &ud);
+	//read_userdata(u->userid, &ud);
     move(real == 1 ? 2 : 3, 0);
     clrtobot();
     prints("您的代号     : %s\n", u->userid);
     prints("您的昵称     : %s\n", u->username);
-    prints("真实姓名     : %s\n", ud.realname);
-    prints("居住住址     : %s\n", ud.address);
+    prints("真实姓名     : %s\n", currentmemo->ud.realname);
+    prints("居住住址     : %s\n", currentmemo->ud.address);
     if(real)
-	prints("注册E-mail   : %s\n",ud.reg_email);
+	prints("注册E-mail   : %s\n",currentmemo->ud.reg_email);
     else
-    	prints("电子邮件信箱 : %s\n", ud.email);
+    	prints("电子邮件信箱 : %s\n", currentmemo->ud.email);
 
 	/*加入生日等显示 added by binxun 2003.5.20*/
 #ifdef HAVE_BIRTHDAY
-    prints("您的性别     : %s\n",(ud.gender=='M')?"男":"女");
-	prints("您的生日     : %d-%d-%d\n",ud.birthyear+1900,ud.birthmonth,ud.birthday);
+    prints("您的性别     : %s\n",(currentmemo->ud.gender=='M')?"男":"女");
+	prints("您的生日     : %d-%d-%d\n",currentmemo->ud.birthyear+1900,currentmemo->ud.birthmonth,currentmemo->ud.birthday);
 #endif
 
     if (real) {
-        prints("真实 E-mail  : %s\n", ud.realemail);
+        prints("真实 E-mail  : %s\n", currentmemo->ud.realemail);
     }
     prints("注册日期     : %s", ctime(&u->firstlogin));
     prints("最近光临日期 : %s", ctime(&u->lastlogin));
@@ -123,7 +123,8 @@ int uinfo_query(struct userec *u, int real, int unum)
 	tmnow = localtime(&now);
 
     memcpy(&newinfo, u, sizeof(struct userec));
-	read_userdata(u->userid, &ud);
+	//read_userdata(u->userid, &ud);
+	memcpy(&ud, &(currentmemo->ud), sizeof(ud));
     getdata(t_lines - 1, 0, real ? "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" : "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]", ans, 2, DOECHO, NULL, true);
     clear();
     i = 3;
@@ -400,7 +401,8 @@ int uinfo_query(struct userec *u, int real, int unum)
                     }
                 }
             update_user(&newinfo, unum, 1);
-			write_userdata(newinfo.userid, &ud);
+			memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+			write_userdata(newinfo.userid, &(currentmemo->ud));
             if (real)
                  {
                 char secu[STRLEN];
@@ -499,7 +501,8 @@ void x_fillform()
     getdata(t_lines - 1, 0, "您确定要填写注册单吗 (Y/N)? [N]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] != 'Y' && ans[0] != 'y')
         return;
-    memcpy(&ud,&curruserdata,sizeof(ud));
+//    memcpy(&ud,&curruserdata,sizeof(ud));
+    memcpy(&ud,&(currentmemo->ud),sizeof(ud));
     strncpy(rname, ud.realname, NAMELEN);
     strncpy(addr, ud.address, STRLEN);
     career[0] = phone[0] = birth[0] = '\0';
@@ -537,7 +540,8 @@ void x_fillform()
     strncpy(ud.realname, rname, NAMELEN);
     strncpy(ud.address, addr, STRLEN);
 	write_userdata(currentuser->userid, &ud);
-	memcpy(&curruserdata,&ud,sizeof(ud));
+//	memcpy(&curruserdata,&ud,sizeof(ud));
+	memcpy(&(currentmemo->ud),&ud,sizeof(ud));
     if ((fn = fopen("new_register", "a")) != NULL) {
         now = time(NULL);
         fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));

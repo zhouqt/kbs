@@ -172,7 +172,8 @@ void u_enter()
 #endif
     strncpy(uinfo.userid, currentuser->userid, 20);
 
-    strncpy(uinfo.realname, curruserdata.realname, 20);
+//    strncpy(uinfo.realname, curruserdata.realname, 20);
+    strncpy(uinfo.realname, currentmemo->ud.realname, 20);
     strncpy(uinfo.username, currentuser->username, 40);
     utmpent = getnewutmpent(&uinfo);
     if (utmpent == -1) {
@@ -647,7 +648,7 @@ void login_query()
     sethomepath(genbuf, currentuser->userid);
     mkdir(genbuf, 0755);
 /* init user data */
-    read_userdata(currentuser->userid, &curruserdata);
+//    read_userdata(currentuser->userid, &curruserdata);
 
     clear();
     oflush();
@@ -683,6 +684,9 @@ void login_query()
     }
 #endif
     multi_user_check();
+
+	if( read_user_memo( currentuser->userid, & currentmemo ) < 0 ) exit(1);
+
     alarm(0);
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
     term_init();

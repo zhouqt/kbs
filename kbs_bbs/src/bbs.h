@@ -407,6 +407,7 @@ typedef size_t socklen_t;
 #endif
 #define FILE_ATTACHPOS_FLAG 8
 #define FILE_DING_FLAG 9	/* stiger,÷√∂• */
+#define FILE_EFFSIZE_FLAG 10
 
 /**
  * Enumeration values for the so-called board .DIR file.
