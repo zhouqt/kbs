@@ -45,11 +45,8 @@ if ($id!="") {
         setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
 */
         if ($data["userid"]=="guest") {
-            setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,0,""); 	
-            if ($mainurl!="")
-	    header("Location: /guest-frames.html?mainurl=" . $mainurl);
-            else
-	    header("Location: /guest-frames.html");
+            setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,0,"");
+            $target = "guest-frames.html";
         }
         else  {
             $wwwparameters = "";
@@ -57,17 +54,17 @@ if ($id!="") {
             setcookie("WWWPARAMS",$wwwparameters,0,""); 	
             $currentuser_num=bbs_getcurrentuser($currentuser);
             
-            if($currentuser["userlevel"]&BBS_PERM_LOGINOK )
-            {
-                    if ($mainurl!="")
-	       	       header("Location: /frames.html?mainurl=" . $mainurl);
-	            else
-		       header("Location: /frames.html");
+            if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK )) {
+                $mainurl = "/bbsnew.php";
             }
-            else
-            	header("Location: /frames.html?mainurl=/bbsnew.php");
+            $target = "frames.html";
         }
-	return;
+        if (!defined("STATIC_FRAME")) $target = "frames.php";
+        if ($mainurl!="")
+            header("Location: /$target?mainurl=" . $mainurl);
+        else
+            header("Location: /$target");
+        return;
       }
     }
 } else {
