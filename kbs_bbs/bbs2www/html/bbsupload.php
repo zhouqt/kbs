@@ -114,7 +114,7 @@ a:hover {  color: #FF0000; text-decoration: none}
 .title01 { font-family: "ºÚÌå"; font-size: 16px; color: #770260 ; letter-spacing: 5px}
 </style>
 
-<body bgcolor="#FFFFFF"  background="/images/rback.gif">
+<body bgcolor="#FFFFFF">
 <?php
                 if ($action=="add") {
                 	if ($_FILES['attachfile']['size']+$totalsize>ATTACHMAXSIZE) {
