@@ -1,4 +1,12 @@
-#include <php.h>
+#ifdef HAVE_CONFIG_H
+#include "config.h"
+#endif
+    
+#include "php.h"
+#include "php_ini.h"
+#include "ext/standard/info.h"  
+#include "php_smth_bbs.h"  
+
 #include "bbs.h"
 #include "bbslib.h"
 
@@ -6,125 +14,125 @@ static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE,
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 
-static ZEND_FUNCTION(bbs_getuser);
-static ZEND_FUNCTION(bbs_getonlineuser);
-static ZEND_FUNCTION(bbs_getonlinenumber);
-static ZEND_FUNCTION(bbs_countuser);
-static ZEND_FUNCTION(bbs_setfromhost);
-static ZEND_FUNCTION(bbs_checkpasswd);
-static ZEND_FUNCTION(bbs_getcurrentuser);
-static ZEND_FUNCTION(bbs_setonlineuser);
-static ZEND_FUNCTION(bbs_getcurrentuinfo);
-static ZEND_FUNCTION(bbs_wwwlogin);
-static ZEND_FUNCTION(bbs_wwwlogoff);
-static ZEND_FUNCTION(bbs_printansifile);
-static ZEND_FUNCTION(bbs_getboard);
-static ZEND_FUNCTION(bbs_checkreadperm);
-static ZEND_FUNCTION(bbs_checkpostperm);
-static ZEND_FUNCTION(bbs_brcaddread);
-static ZEND_FUNCTION(bbs_ann_traverse_check);
-static ZEND_FUNCTION(bbs_ann_get_board);
-static ZEND_FUNCTION(bbs_getboards);
-static ZEND_FUNCTION(bbs_getarticles);
-static ZEND_FUNCTION(bbs_get_records_from_id);
-static ZEND_FUNCTION(bbs_get_filename_from_num);
-static ZEND_FUNCTION(bbs_countarticles);
-static ZEND_FUNCTION(bbs_is_bm);
-static ZEND_FUNCTION(bbs_getannpath);
-static ZEND_FUNCTION(bbs_getmailnum);
-static ZEND_FUNCTION(bbs_getmailnum2);
-static ZEND_FUNCTION(bbs_getmails);
-static ZEND_FUNCTION(bbs_loadmaillist);
-static ZEND_FUNCTION(bbs_changemaillist);
-static ZEND_FUNCTION(bbs_getwebmsg);
-static ZEND_FUNCTION(bbs_sendwebmsg);
-static ZEND_FUNCTION(bbs_sethomefile);
-static ZEND_FUNCTION(bbs_setmailfile);
-static ZEND_FUNCTION(bbs_mail_file);
-static ZEND_FUNCTION(bbs_update_uinfo);
-static ZEND_FUNCTION(bbs_createnewid);
-static ZEND_FUNCTION(bbs_fillidinfo);
-static ZEND_FUNCTION(bbs_delfile);
-static ZEND_FUNCTION(bbs_delmail);
-static ZEND_FUNCTION(bbs_normalboard);
+static PHP_FUNCTION(bbs_getuser);
+static PHP_FUNCTION(bbs_getonlineuser);
+static PHP_FUNCTION(bbs_getonlinenumber);
+static PHP_FUNCTION(bbs_countuser);
+static PHP_FUNCTION(bbs_setfromhost);
+static PHP_FUNCTION(bbs_checkpasswd);
+static PHP_FUNCTION(bbs_getcurrentuser);
+static PHP_FUNCTION(bbs_setonlineuser);
+static PHP_FUNCTION(bbs_getcurrentuinfo);
+static PHP_FUNCTION(bbs_wwwlogin);
+static PHP_FUNCTION(bbs_wwwlogoff);
+static PHP_FUNCTION(bbs_printansifile);
+static PHP_FUNCTION(bbs_getboard);
+static PHP_FUNCTION(bbs_checkreadperm);
+static PHP_FUNCTION(bbs_checkpostperm);
+static PHP_FUNCTION(bbs_brcaddread);
+static PHP_FUNCTION(bbs_ann_traverse_check);
+static PHP_FUNCTION(bbs_ann_get_board);
+static PHP_FUNCTION(bbs_getboards);
+static PHP_FUNCTION(bbs_getarticles);
+static PHP_FUNCTION(bbs_get_records_from_id);
+static PHP_FUNCTION(bbs_get_filename_from_num);
+static PHP_FUNCTION(bbs_countarticles);
+static PHP_FUNCTION(bbs_is_bm);
+static PHP_FUNCTION(bbs_getannpath);
+static PHP_FUNCTION(bbs_getmailnum);
+static PHP_FUNCTION(bbs_getmailnum2);
+static PHP_FUNCTION(bbs_getmails);
+static PHP_FUNCTION(bbs_loadmaillist);
+static PHP_FUNCTION(bbs_changemaillist);
+static PHP_FUNCTION(bbs_getwebmsg);
+static PHP_FUNCTION(bbs_sendwebmsg);
+static PHP_FUNCTION(bbs_sethomefile);
+static PHP_FUNCTION(bbs_setmailfile);
+static PHP_FUNCTION(bbs_mail_file);
+static PHP_FUNCTION(bbs_update_uinfo);
+static PHP_FUNCTION(bbs_createnewid);
+static PHP_FUNCTION(bbs_fillidinfo);
+static PHP_FUNCTION(bbs_delfile);
+static PHP_FUNCTION(bbs_delmail);
+static PHP_FUNCTION(bbs_normalboard);
 
-static ZEND_MINIT_FUNCTION(bbs_module_init);
-static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
-static ZEND_RINIT_FUNCTION(bbs_request_init);
-static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
 
 /*
  * define what functions can be used in the PHP embedded script
  */
-static function_entry bbs_php_functions[] = {
-        ZEND_FE(bbs_getuser, NULL)
-        ZEND_FE(bbs_getonlineuser, NULL)
-        ZEND_FE(bbs_getonlinenumber, NULL)
-        ZEND_FE(bbs_countuser, NULL)
-        ZEND_FE(bbs_setfromhost, NULL)
-        ZEND_FE(bbs_checkpasswd, NULL)
-        ZEND_FE(bbs_getcurrentuser, NULL)
-        ZEND_FE(bbs_setonlineuser, NULL)
-        ZEND_FE(bbs_getcurrentuinfo, NULL)
-        ZEND_FE(bbs_wwwlogin, NULL)
-        ZEND_FE(bbs_wwwlogoff, NULL)
-        ZEND_FE(bbs_printansifile, NULL)
-        ZEND_FE(bbs_checkreadperm, NULL)
-        ZEND_FE(bbs_checkpostperm, NULL)
-        ZEND_FE(bbs_brcaddread, NULL)
-        ZEND_FE(bbs_getboard, NULL)
-        ZEND_FE(bbs_ann_traverse_check, NULL)
-        ZEND_FE(bbs_ann_get_board, NULL)
-        ZEND_FE(bbs_getboards, NULL)
-        ZEND_FE(bbs_getarticles, NULL)
-        ZEND_FE(bbs_get_records_from_id, NULL)
-        ZEND_FE(bbs_get_filename_from_num, NULL)
-        ZEND_FE(bbs_countarticles, NULL)
-        ZEND_FE(bbs_is_bm, NULL)
-        ZEND_FE(bbs_getannpath, NULL)
-        ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
-        ZEND_FE(bbs_getmailnum2, NULL)
-        ZEND_FE(bbs_getmails, NULL)
-        ZEND_FE(bbs_loadmaillist, NULL)
-        ZEND_FE(bbs_changemaillist, NULL)
-        ZEND_FE(bbs_getwebmsg, third_arg_force_ref_1111)
-        ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
-        ZEND_FE(bbs_sethomefile, NULL)
-        ZEND_FE(bbs_setmailfile, NULL)
-        ZEND_FE(bbs_mail_file, NULL)
-        ZEND_FE(bbs_update_uinfo, NULL)
-        ZEND_FE(bbs_createnewid,NULL)
-        ZEND_FE(bbs_fillidinfo,NULL)
-        ZEND_FE(bbs_delfile,NULL)
-        ZEND_FE(bbs_delmail,NULL)
-        ZEND_FE(bbs_normalboard,NULL)
+static function_entry smth_bbs_functions[] = {
+        PHP_FE(bbs_getuser, NULL)
+        PHP_FE(bbs_getonlineuser, NULL)
+        PHP_FE(bbs_getonlinenumber, NULL)
+        PHP_FE(bbs_countuser, NULL)
+        PHP_FE(bbs_setfromhost, NULL)
+        PHP_FE(bbs_checkpasswd, NULL)
+        PHP_FE(bbs_getcurrentuser, NULL)
+        PHP_FE(bbs_setonlineuser, NULL)
+        PHP_FE(bbs_getcurrentuinfo, NULL)
+        PHP_FE(bbs_wwwlogin, NULL)
+        PHP_FE(bbs_wwwlogoff, NULL)
+        PHP_FE(bbs_printansifile, NULL)
+        PHP_FE(bbs_checkreadperm, NULL)
+        PHP_FE(bbs_checkpostperm, NULL)
+        PHP_FE(bbs_brcaddread, NULL)
+        PHP_FE(bbs_getboard, NULL)
+        PHP_FE(bbs_ann_traverse_check, NULL)
+        PHP_FE(bbs_ann_get_board, NULL)
+        PHP_FE(bbs_getboards, NULL)
+        PHP_FE(bbs_getarticles, NULL)
+        PHP_FE(bbs_get_records_from_id, NULL)
+        PHP_FE(bbs_get_filename_from_num, NULL)
+        PHP_FE(bbs_countarticles, NULL)
+        PHP_FE(bbs_is_bm, NULL)
+        PHP_FE(bbs_getannpath, NULL)
+        PHP_FE(bbs_getmailnum, third_arg_force_ref_011)
+        PHP_FE(bbs_getmailnum2, NULL)
+        PHP_FE(bbs_getmails, NULL)
+        PHP_FE(bbs_loadmaillist, NULL)
+        PHP_FE(bbs_changemaillist, NULL)
+        PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
+        PHP_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
+        PHP_FE(bbs_sethomefile, NULL)
+        PHP_FE(bbs_setmailfile, NULL)
+        PHP_FE(bbs_mail_file, NULL)
+        PHP_FE(bbs_update_uinfo, NULL)
+        PHP_FE(bbs_createnewid,NULL)
+        PHP_FE(bbs_fillidinfo,NULL)
+        PHP_FE(bbs_delfile,NULL)
+        PHP_FE(bbs_delmail,NULL)
+        PHP_FE(bbs_normalboard,NULL)
         {NULL, NULL, NULL}
 };
 
 /*
  * This is the module entry structure, and some properties
  */
-
-static zend_module_entry bbs_php_module_entry = {
+zend_module_entry smth_bbs_module_entry = {
     STANDARD_MODULE_HEADER,
-    "bbs module",               /* extension name */
-    bbs_php_functions,          /* extension function list */
-    ZEND_MINIT(bbs_module_init),        /* extension-wide startup function */
-    ZEND_MSHUTDOWN(bbs_module_shutdown),        /* extension-wide shutdown function */
-    ZEND_RINIT(bbs_request_init),       /* per-request startup function */
-    ZEND_RSHUTDOWN(bbs_request_shutdown),       /* per-request shutdown function */
-    NULL,                       /* information function */
-    "1.0",
+    "smth_bbs",
+    smth_bbs_functions,
+    PHP_MINIT(smth_bbs),
+    PHP_MSHUTDOWN(smth_bbs),
+    PHP_RINIT(smth_bbs),        /* Replace with NULL if there's nothing to do at request start */
+    PHP_RSHUTDOWN(smth_bbs),    /* Replace with NULL if there's nothing to do at request end */
+    PHP_MINFO(smth_bbs),
+    "1.0", /* Replace with version number for your extension */
     STANDARD_MODULE_PROPERTIES
 };
+/* }}} */
+
+#ifdef COMPILE_DL_SMTH_BBS
+PHP_GET_MODULE(smth_bbs)
+#endif
 
 /*
  * Here is the function require when the module loaded
- */
 DLEXPORT zend_module_entry *get_module()
 {
-    return &bbs_php_module_entry;
+    return &smth_bbs_module_entry;
 };
+ */
 
 
 static void setstrlen(pval * arg)
@@ -250,7 +258,7 @@ static inline int getcurrentuinfo_num()
 
 /* arguments: userid, username, ipaddr, operation */
 static char old_pwd[1024];
-static ZEND_FUNCTION(bbs_setfromhost)
+static PHP_FUNCTION(bbs_setfromhost)
 {
     char *s;
     int s_len;
@@ -270,7 +278,7 @@ static ZEND_FUNCTION(bbs_setfromhost)
     RETURN_NULL();
 }
 
-static ZEND_FUNCTION(bbs_getuser)
+static PHP_FUNCTION(bbs_getuser)
 {
     long v1;
     struct userec *lookupuser;
@@ -301,7 +309,7 @@ static ZEND_FUNCTION(bbs_getuser)
     RETURN_LONG(v1);
 }
 
-static ZEND_FUNCTION(bbs_getonlineuser)
+static PHP_FUNCTION(bbs_getonlineuser)
 {
     long idx, ret;
     struct user_info *uinfo;
@@ -328,13 +336,13 @@ static ZEND_FUNCTION(bbs_getonlineuser)
     RETURN_LONG(ret);
 }
 
-static ZEND_FUNCTION(bbs_getonlinenumber)
+static PHP_FUNCTION(bbs_getonlinenumber)
 {
     RETURN_LONG(get_utmp_number() + getwwwguestcount());
 }
 
 
-static ZEND_FUNCTION(bbs_countuser)
+static PHP_FUNCTION(bbs_countuser)
 {
     long idx;
 
@@ -347,7 +355,7 @@ static ZEND_FUNCTION(bbs_countuser)
     RETURN_LONG(apply_utmpuid(NULL, idx, 0));
 }
 
-static ZEND_FUNCTION(bbs_checkpasswd)
+static PHP_FUNCTION(bbs_checkpasswd)
 {
     char *s;
     int s_len;
@@ -384,7 +392,7 @@ static ZEND_FUNCTION(bbs_checkpasswd)
     RETURN_LONG(ret);
 }
 
-static ZEND_FUNCTION(bbs_wwwlogin)
+static PHP_FUNCTION(bbs_wwwlogin)
 {
     long ret;
     long kick_multi = 0;
@@ -418,7 +426,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
     RETURN_LONG(ret);
 }
 
-static ZEND_FUNCTION(bbs_getcurrentuinfo)
+static PHP_FUNCTION(bbs_getcurrentuinfo)
 {
     zval *user_array;
     long ret = 1;
@@ -447,7 +455,7 @@ static ZEND_FUNCTION(bbs_getcurrentuinfo)
     RETURN_LONG(ret);
 }
 
-static ZEND_FUNCTION(bbs_getcurrentuser)
+static PHP_FUNCTION(bbs_getcurrentuser)
 {
     zval *user_array;
     long ret;
@@ -472,7 +480,7 @@ static ZEND_FUNCTION(bbs_getcurrentuser)
     RETURN_LONG(ret);
 }
 
-static ZEND_FUNCTION(bbs_setonlineuser)
+static PHP_FUNCTION(bbs_setonlineuser)
 {
     zval *user_array;
     char *userid;
@@ -543,7 +551,7 @@ static int buffered_output(char *buf, size_t buflen, void *arg)
 	return 0;
 }
 
-static ZEND_FUNCTION(bbs_printansifile)
+static PHP_FUNCTION(bbs_printansifile)
 {
     char *filename;
     long filename_len;
@@ -617,7 +625,7 @@ static ZEND_FUNCTION(bbs_printansifile)
     RETURN_LONG(0);
 }
 
-static ZEND_FUNCTION(bbs_getboard)
+static PHP_FUNCTION(bbs_getboard)
 {
     zval *array;
     char *boardname;
@@ -746,7 +754,7 @@ extern int brdnum;
  *         FALSE on failure.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_getboards)
+static PHP_FUNCTION(bbs_getboards)
 {
     /*
      * TODO: The name of "yank" must be changed, this name is totally
@@ -860,7 +868,7 @@ static void bbs_make_article_array(zval * array, struct fileheader *fh, char *fl
  *         FALSE on failure.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_getarticles)
+static PHP_FUNCTION(bbs_getarticles)
 {
     char *board;
     int blen;
@@ -957,7 +965,7 @@ static ZEND_FUNCTION(bbs_getarticles)
  *         negative value on failure.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_countarticles)
+static PHP_FUNCTION(bbs_countarticles)
 {
     int brdnum;
     int mode;
@@ -994,7 +1002,7 @@ static ZEND_FUNCTION(bbs_countarticles)
  * 		   success: s: filename
  * @author: stiger
  */
-static ZEND_FUNCTION(bbs_get_filename_from_num)
+static PHP_FUNCTION(bbs_get_filename_from_num)
 {
 
 	char *board;
@@ -1047,7 +1055,7 @@ static ZEND_FUNCTION(bbs_get_filename_from_num)
  *       0 on failure.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_get_records_from_id)
+static PHP_FUNCTION(bbs_get_records_from_id)
 {
 	char *board;
 	int blen;
@@ -1147,7 +1155,7 @@ static ZEND_FUNCTION(bbs_get_records_from_id)
  *         zero if not.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_is_bm)
+static PHP_FUNCTION(bbs_is_bm)
 {
     int brdnum;
     int usernum;
@@ -1170,7 +1178,7 @@ static ZEND_FUNCTION(bbs_is_bm)
     RETURN_LONG(is_BM(bp, up));
 }
 
-static ZEND_FUNCTION(bbs_checkreadperm)
+static PHP_FUNCTION(bbs_checkreadperm)
 {
     long user_num, boardnum;
     struct userec *user;
@@ -1186,7 +1194,7 @@ static ZEND_FUNCTION(bbs_checkreadperm)
     RETURN_LONG(check_read_perm(user, getboard(boardnum)));
 }
 
-static ZEND_FUNCTION(bbs_checkpostperm)
+static PHP_FUNCTION(bbs_checkpostperm)
 {
     long user_num, boardnum;
     struct userec *user;
@@ -1202,7 +1210,7 @@ static ZEND_FUNCTION(bbs_checkpostperm)
     RETURN_LONG(haspostperm(user, getboard(boardnum)));
 }
 
-static ZEND_FUNCTION(bbs_wwwlogoff)
+static PHP_FUNCTION(bbs_wwwlogoff)
 {
     if (getcurrentuser()) {
         int ret = (www_user_logoff(getcurrentuser(), getcurrentuser_num(),
@@ -1213,7 +1221,7 @@ static ZEND_FUNCTION(bbs_wwwlogoff)
         RETURN_LONG(-1);
 }
 
-static ZEND_FUNCTION(bbs_brcaddread)
+static PHP_FUNCTION(bbs_brcaddread)
 {
 	char *board;
 	int blen;
@@ -1232,7 +1240,7 @@ static ZEND_FUNCTION(bbs_brcaddread)
     RETURN_NULL();
 }
 
-static ZEND_FUNCTION(bbs_ann_traverse_check)
+static PHP_FUNCTION(bbs_ann_traverse_check)
 {
     char *path;
     int path_len;
@@ -1245,7 +1253,7 @@ static ZEND_FUNCTION(bbs_ann_traverse_check)
     RETURN_LONG(ann_traverse_check(path, getcurrentuser()));
 }
 
-static ZEND_FUNCTION(bbs_ann_get_board)
+static PHP_FUNCTION(bbs_ann_get_board)
 {
     char *path, *board;
     int path_len, board_len;
@@ -1264,7 +1272,7 @@ static ZEND_FUNCTION(bbs_ann_get_board)
  *         FALSE on failure.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_getannpath)
+static PHP_FUNCTION(bbs_getannpath)
 {
     char *board;
     int board_len;
@@ -1293,7 +1301,7 @@ static ZEND_FUNCTION(bbs_getannpath)
  *       and return total and unread in argument
  * @author KCN
  */
-static ZEND_FUNCTION(bbs_getmailnum)
+static PHP_FUNCTION(bbs_getmailnum)
 {
     zval *total, *unread;
     char *userid;
@@ -1344,7 +1352,7 @@ static ZEND_FUNCTION(bbs_getmailnum)
  * @return the number
  * @author binxun
  */
-static ZEND_FUNCTION(bbs_getmailnum2)
+static PHP_FUNCTION(bbs_getmailnum2)
 {
     char *path;
     int path_len;
@@ -1368,7 +1376,7 @@ static ZEND_FUNCTION(bbs_getmailnum2)
  *         FALSE on failure.
  * @author binxun
  */
-static ZEND_FUNCTION(bbs_getmails)
+static PHP_FUNCTION(bbs_getmails)
 {
     char *mailpath;
     int mailpath_len;
@@ -1446,7 +1454,7 @@ static ZEND_FUNCTION(bbs_getmails)
  *         FALSE on failure.
  * @author binxun
  */
-static ZEND_FUNCTION(bbs_loadmaillist)
+static PHP_FUNCTION(bbs_loadmaillist)
 {
     char *userid;
     int userid_len;
@@ -1507,7 +1515,7 @@ static ZEND_FUNCTION(bbs_loadmaillist)
  *         >0 --- reach to max number!
  * @author binxun
  */
-static ZEND_FUNCTION(bbs_changemaillist)
+static PHP_FUNCTION(bbs_changemaillist)
 {
     char *boxname;
     int boxname_len;
@@ -1589,7 +1597,7 @@ static ZEND_FUNCTION(bbs_changemaillist)
  *       and return total and unread in argument
  * @author KCN
  */
-static ZEND_FUNCTION(bbs_getwebmsg)
+static PHP_FUNCTION(bbs_getwebmsg)
 {
     zval *retsrcid, *msgbuf, *srcutmpent, *z_sndtime;
     int ac = ZEND_NUM_ARGS();
@@ -1636,7 +1644,7 @@ extern char msgerr[255];
  *       FALSE on failure.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_sendwebmsg)
+static PHP_FUNCTION(bbs_sendwebmsg)
 {
     char *destid;
     int destid_len;
@@ -1692,7 +1700,7 @@ static ZEND_FUNCTION(bbs_sendwebmsg)
  *       and return total and unread in argument
  * @author KCN
  */
-static ZEND_FUNCTION(bbs_sethomefile)
+static PHP_FUNCTION(bbs_sethomefile)
 {
     char *userid, *file;
     int userid_len, file_len = 0;
@@ -1722,7 +1730,7 @@ static ZEND_FUNCTION(bbs_sethomefile)
  * @return path string
  * @author binxun
  */
-static ZEND_FUNCTION(bbs_setmailfile)
+static PHP_FUNCTION(bbs_setmailfile)
 {
     char *userid, *file;
     int userid_len, file_len = 0;
@@ -1755,7 +1763,7 @@ static ZEND_FUNCTION(bbs_setmailfile)
  *       FALSE on failure.
  * @author flyriver
  */
-static ZEND_FUNCTION(bbs_mail_file)
+static PHP_FUNCTION(bbs_mail_file)
 {
     char *srcid;
     int srcid_len;
@@ -1784,7 +1792,7 @@ static ZEND_FUNCTION(bbs_mail_file)
  *       FALSE on failure.
  * @author kcn
  */
-static ZEND_FUNCTION(bbs_update_uinfo)
+static PHP_FUNCTION(bbs_update_uinfo)
 {
     zval *value;
     char *field;
@@ -1812,7 +1820,7 @@ static ZEND_FUNCTION(bbs_update_uinfo)
  *       FALSE on failure.
  * @author kcn
  */
-static ZEND_FUNCTION(bbs_setpassword)
+static PHP_FUNCTION(bbs_setpassword)
 {
     char *userid;
     int userid_len;
@@ -1834,8 +1842,9 @@ static ZEND_FUNCTION(bbs_setpassword)
     RETURN_TRUE;
 }
 
-static ZEND_MINIT_FUNCTION(bbs_module_init)
+PHP_MINIT_FUNCTION(smth_bbs)
 {
+    /*
     zval *bbs_home;
     zval *bbs_full_name;
 
@@ -1843,11 +1852,15 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
     ZVAL_STRING(bbs_home, BBSHOME, 1);
     MAKE_STD_ZVAL(bbs_full_name);
     ZVAL_STRING(bbs_full_name, BBS_FULL_NAME, 1);
-    ZEND_SET_SYMBOL(&EG(symbol_table), "BBS_HOME", bbs_home);
-    ZEND_SET_SYMBOL(&EG(symbol_table), "BBS_FULL_NAME", bbs_full_name);
+    PHP_SET_SYMBOL(&EG(symbol_table), "BBS_HOME", bbs_home);
+    PHP_SET_SYMBOL(&EG(symbol_table), "BBS_FULL_NAME", bbs_full_name);
+    */
+    REGISTER_STRINGL_CONSTANT("BBS_HOME",BBSHOME,strlen(BBSHOME),CONST_CS | CONST_PERSISTENT);
+    REGISTER_STRINGL_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,strlen(BBS_FULL_NAME),CONST_CS | CONST_PERSISTENT);
     getcwd(old_pwd, 1023);
     old_pwd[1023] = 0;
     chdir(BBSHOME);
+    sleep(10);
     resolve_ucache();
     resolve_utmp();
     resolve_boards();
@@ -1869,7 +1882,7 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
     return SUCCESS;
 }
 
-static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown)
+PHP_MSHUTDOWN_FUNCTION(smth_bbs)
 {
     www_data_detach();
     detach_utmp();
@@ -1883,7 +1896,7 @@ static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown)
     return SUCCESS;
 }
 
-static ZEND_RINIT_FUNCTION(bbs_request_init)
+PHP_RINIT_FUNCTION(smth_bbs)
 {
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -1895,7 +1908,7 @@ static ZEND_RINIT_FUNCTION(bbs_request_init)
     return SUCCESS;
 }
 
-static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown)
+PHP_RSHUTDOWN_FUNCTION(smth_bbs)
 {
 #ifdef DEBUG
     zend_error(E_WARNING, "request shutdown");
@@ -1903,6 +1916,15 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown)
     chdir(old_pwd);
     currentuser = NULL;
     return SUCCESS;
+}
+
+/* {{{ PHP_MINFO_FUNCTION
+ *  */
+PHP_MINFO_FUNCTION(smth_bbs)
+{
+    php_info_print_table_start();
+    php_info_print_table_header(2, "smth_bbs support", "enabled");
+    php_info_print_table_end();
 }
 
 /**
@@ -1919,7 +1941,7 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown)
  *  	10 -- system error
  *  @author binxun
  */
-static ZEND_FUNCTION(bbs_createnewid)
+static PHP_FUNCTION(bbs_createnewid)
 {
 	char* userid;
 	int userid_len;
@@ -2008,7 +2030,7 @@ static ZEND_FUNCTION(bbs_createnewid)
  *  	-2 -- error
  *  @author binxun
  */
-static ZEND_FUNCTION(bbs_fillidinfo)
+static PHP_FUNCTION(bbs_fillidinfo)
 {
     char* userid;
     int userid_len;
@@ -2059,7 +2081,7 @@ static ZEND_FUNCTION(bbs_fillidinfo)
  *  	-2 -- wrong parameter
  *  @author binxun
  */
-static ZEND_FUNCTION(bbs_delfile)
+static PHP_FUNCTION(bbs_delfile)
 {
 	FILE *fp;
     bcache_t *brd;
@@ -2124,7 +2146,7 @@ static ZEND_FUNCTION(bbs_delfile)
  *  	-2 -- wrong parameter
  *  @author binxun
  */
-static ZEND_FUNCTION(bbs_delmail)
+static PHP_FUNCTION(bbs_delmail)
 {
 	FILE *fp;
     struct fileheader f;
@@ -2176,7 +2198,7 @@ static ZEND_FUNCTION(bbs_delmail)
  *  	0 -- no
  *  @author kcn
  */
-static ZEND_FUNCTION(bbs_normalboard)
+static PHP_FUNCTION(bbs_normalboard)
 {
     int ac = ZEND_NUM_ARGS();
     char* boardname;
