@@ -152,8 +152,6 @@ int update_form(char *board, char *file)
     else {
 #endif
 		if( get_file_attach( infile, &attach_pt, &attach_size) ){
-				{char cmd[256];sprintf(cmd,"echo %d %d >> /home/bbs/stiger.test",attach_pt, attach_size);system(cmd);}
-				{char cmd[256];sprintf(cmd,"cp %s %s.bak",infile, infile);system(cmd);}
 			int fsrc,fdst;
 			if( (fsrc = open(infile, O_RDONLY) ) >= 0){
 				if((fdst = open( outfile, O_WRONLY| O_CREAT | O_APPEND ,0644) ) >=0){
@@ -167,12 +165,10 @@ int update_form(char *board, char *file)
 							ndread = 10240;
 						else
 							ndread = lsize;
-				{char cmd[256];sprintf(cmd,"echo i%d %d >> /home/bbs/stiger.test",ndread, lsize);system(cmd);}
 						ret = read(fsrc, src,ndread);
 						if(ret <= 0)
 							break;
 						lsize -= ret;
-				{char cmd[256];sprintf(cmd,"echo ii%d %d >> /home/bbs/stiger.test",ret, lsize);system(cmd);}
 					}while( write(fdst, src, ret) > 0 && lsize > 0);
 					close(fdst);
 					free(src);
