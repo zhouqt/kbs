@@ -1265,12 +1265,12 @@ int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extr
 
 
 #ifdef INTERNET_EMAIL
-int mail_forward_internal(struct _select_def* conf, struct fileheader *fileinfo, int isuu)
+int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct,int isuu)
 {
     char buf[STRLEN];
     char *p;
-    int ent=conf->pos;
-    struct read_arg* arg=conf->arg;
+//    int ent=conf->pos;
+//    struct read_arg* arg=conf->arg;
     
 
     if (strcmp("guest", currentuser->userid) == 0) {
@@ -1295,7 +1295,7 @@ int mail_forward_internal(struct _select_def* conf, struct fileheader *fileinfo,
     if (!HAS_PERM(currentuser, PERM_FORWARD) || !HAS_PERM(currentuser,PERM_LOGINOK)) {
         return DONOTHING;
     }
-    strncpy(buf, arg->direct, sizeof(buf));
+    strncpy(buf, direct, sizeof(buf));
     if ((p = strrchr(buf, '/')) != NULL)
         *p = '\0';
     clear();
@@ -1323,14 +1323,24 @@ int mail_forward_internal(struct _select_def* conf, struct fileheader *fileinfo,
     return FULLUPDATE;
 }
 
+int mail_uforward_old(int ent, struct fileheader *fileinfo,void* extraarg)
+{
+	    return mail_forward_internal(ent,fileinfo,extraarg,1);
+}
+
+int mail_forward_old(int ent, struct fileheader *fileinfo,void* extraarg)
+{
+	    return mail_forward_internal(ent, fileinfo, extraarg,0);
+}
+
 int mail_uforward(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
-    return mail_forward_internal(conf,fileinfo,1);
+    return mail_forward_internal(conf->pos,fileinfo,((struct read_arg*)conf->arg)->direct,1);
 }
 
 int mail_forward(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
-    return mail_forward_internal(conf, fileinfo, 0);
+    return mail_forward_internal(conf->pos, fileinfo, ((struct read_arg*)conf->arg)->direct,0);
 }
 
 #endif

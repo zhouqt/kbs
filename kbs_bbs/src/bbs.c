@@ -3016,6 +3016,8 @@ int b_note_edit_new()
 	return FULLUPDATE;
 }
 
+int mail_forward_old(int ent,struct fileheader* data,void* extradata);
+int mail_uforward_old(int ent,struct fileheader* data,void* extradata);
 struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'r', read_post},
     {'K', skip_post},
@@ -3052,8 +3054,8 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'S', sequential_read},
 #ifdef INTERNET_EMAIL
 //TODO: change interface
-    {'F', mail_forward},
-    {'U', mail_uforward},
+    {'F', mail_forward_old},
+    {'U', mail_uforward_old},
     {Ctrl('R'), post_reply},
 #endif
     {'J', Semi_save},
