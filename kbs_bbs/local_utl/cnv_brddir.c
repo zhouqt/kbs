@@ -366,7 +366,7 @@ static int remove_files(const char *boardname)
 	return 0;
 }
 
-static int cnv_board_dir(struct boardheader *bh, void *arg)
+int cnv_board_dir(struct boardheader *bh, void *arg)
 {
 	printf("=======================================\n");
 	printf("Boardname: %s\n", bh->filename);
@@ -382,9 +382,10 @@ int main(int argc, char ** argv)
 	int all = 0;
 	struct boardheader *bp;
 
-	resolve_boards();
+	chdir(BBSHOME);
 	resolve_ucache();
 	resolve_utmp();
+	resolve_boards();
 	getuser("SYSOP", &currentuser);
 	if (argc == 1)
 		all = 1;
