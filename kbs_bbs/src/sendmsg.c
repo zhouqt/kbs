@@ -520,7 +520,7 @@ MSGX2:
             fclose(fp);
         }
     }
-    if (count_user()<2) unlink(fname2);
+    if (apply_utmpuid( NULL , usernum,0)<2) unlink(fname2);
     showansi=tmpansi;
     saveline(line, 1, savebuffer); /* restore line */
     move(y,x);
