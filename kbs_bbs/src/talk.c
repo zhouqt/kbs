@@ -354,6 +354,8 @@ char q_id[IDLEN];
         switch(toupper(ch)) {
             case 'T':
                 if (!((genbuf[0]) && seecount)) break;
+                if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+                    break;
                 uin = t_search(uident, false);
                 if(uin==NULL) break;
                 ttt_talk(uin);

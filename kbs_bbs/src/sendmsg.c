@@ -199,7 +199,7 @@ int show_allmsgs()
     char fname[STRLEN];
     FILE* fn;
 
-
+    if(!strcmp(currentuser->userid, "guest")||!HAS_PERM(currentuser,PERM_PAGE)) return -1;
     oldmode = uinfo.mode;
     modify_user_mode(LOOKMSGS);
 //    set_alarm(0, 0, NULL, NULL);
