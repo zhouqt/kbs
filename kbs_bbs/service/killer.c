@@ -876,8 +876,10 @@ quitgame:
             myroom->people = 0;
             myroom->style = -1;
             for(i=0;i<myroom->people;i++)
-                if(i!=me)
+                if(i!=me) {
+                send_msg(inrooms.peoples+i, "Äã±»ÌßÁË");
                 kill(inrooms.peoples[i].pid, SIGUSR1);
+                }
             goto quitgame2;
         }
         for(i=0;i<myroom->people;i++)
