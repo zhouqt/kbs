@@ -203,7 +203,7 @@
 <A href="/pc/pcdoc.php?userid=<?php echo $userid; ?>&tag=7" target="f3">参数设定</A><BR>
 &nbsp;
 <img src="images/line.gif" width="11" height="16" align="absmiddle">
-<A href="/pc/pcmanage.php?act=post&tag=0&pid=0" target="f3">添加文章</A><BR>
+<A href="/pc/pcmanage.php?userid=<?php echo $userid; ?>&act=post&tag=0&pid=0" target="f3">添加文章</A><BR>
 <?php		
 		}	
 	}
@@ -378,6 +378,12 @@
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pc.php" target="f3">用户列表</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pcrec.php" target="f3">推荐文章</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pclist.php" target="f3">热门排行</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcsec.php" target="f3">分类目录</a><br>
