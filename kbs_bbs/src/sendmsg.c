@@ -554,7 +554,8 @@ outhere:
     showansi = tmpansi;
     good_move(y,x);
     refresh();
-    R_monitor(NULL);
+    if(nettyNN)
+        R_monitor(NULL);
     RMSGCount--;
     if (0 == RMSGCount)
         RMSG = false;

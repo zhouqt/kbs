@@ -599,31 +599,31 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         case 4:
             if(!head->sent) {
                 sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-12.12s):[37m", head->id, time);
-                strcpy(attstr, "[44m[37m");
+                sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
                 sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", head->id, time);
-                strcpy(attstr, "[36;1m");
+                sprintf(attstr, "[36;1m");
             }
             break;
         case 3:
             sprintf(dest, "[44m\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", time);
-            strcpy(attstr, "[44m[37m");
+            sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             break;
         case 1:
             if(!head->sent) {
                 sprintf(dest, "[44m\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m", head->id, time);
-                strcpy(attstr, "[44m[37m");
+                sprintf(attstr, "[44m%s[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
                 sprintf(dest, "[44m\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m", time, head->id);
-                strcpy(attstr, "[44m[36m");
+                sprintf(attstr, "[44%sm[36m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             space=33;
             break;
         case 5:
             sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m", head->id, time);
-            strcpy(attstr, "[45m[37m");
+            sprintf(attstr, "[45%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             space=29;
             break;
     }
@@ -639,12 +639,6 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             dest[len++]='[';
             dest[len++]='m';
             dest[len++]='\n';
-            if (DEFINE(currentuser, DEF_HIGHCOLOR)) {
-                dest[len++]='';
-                dest[len++]='[';
-                dest[len++]='1';
-                dest[len++]='m';
-            }
             ret++;
             for(pos=0;pos<strlen(attstr);pos++)
                 dest[len++]=attstr[pos];
