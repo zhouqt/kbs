@@ -40,6 +40,10 @@
 		$email = bbs_reg_getactivationemail($activation);
 	}
 	
+	//48小时后才让注册
+	if ( time() - $currentuser["firstlogin"] < MIN_REG_TIME * 3600 )
+		html_error_quit("请于第一次登录 ".MIN_REG_TIME." 后再填写注册单，先熟悉一下这里的环境吧。");
+	
 	//用户已经通过注册
 	//未满等待时间(先放到phplib里面做了)
 	if(!strcmp($gender,"男"))$gender=1;
@@ -49,9 +53,9 @@
 	settype($month,"integer");
 	settype($day,"integer");
     if (BBS_WFORUM==0)  {
-        $ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone,TRUE);//自动生成注册单
+        $ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone,FALSE);//自动生成注册单
     } else {
-        $ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), TRUE);//自动生成注册单
+        $ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
     }
 //	$ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,"",FALSE); //手工填写注册单
 

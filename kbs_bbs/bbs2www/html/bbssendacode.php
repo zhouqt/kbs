@@ -74,7 +74,7 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 <P class=MsoNormal><FONT size=2><SPAN lang=EN-US>Email: </SPAN><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">" . $new_reg_mail . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><A 
-href=\"http://".$_SERVER["HTTP_HOST"]."/bbsact.php?userid=".$userid."&acode=".$new_activation."\"><SPAN 
+href=\"http://".BBS_DOMAIN_NAME."/bbsact.php?userid=".$userid."&acode=".$new_activation."\"><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN>
 <br /><br />
 <P class=MsoNormal><FONT size=2><SPAN 
@@ -87,7 +87,7 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 			$headers .= "Content-type: text/html; charset=gb2312\n";
 			
 			/* additional headers */
-			$headers .= "From: ".BBS_FULL_NAME." <http://".$_SERVER["HTTP_HOST"].">\n";
+			$headers .= "From: ".BBS_FULL_NAME." <http://".BBS_DOMAIN_NAME.">\n";
 			
 			if(!mail($new_reg_mail, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
 			{		
