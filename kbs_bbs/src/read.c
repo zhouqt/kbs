@@ -50,43 +50,37 @@ int             screen_len;
 int             last_line;
 extern int	m_read();
 
+/* COMMAN : use mmap to speed up searching */
+#include <unistd.h>
+#include <sys/mman.h>
 int
 search_file(char *filename) /* Leeward 98.10.02 */
 {
     char p_name[256];
-    int  fd, i = 0, sizeread, n, j;
-    struct fileheader *buf;
-
-    if((buf=malloc(sizeof(struct fileheader)*NUMBUFFER))==NULL)
-        return -1;
+    int  fd, i = 0;
+    struct fileheader *rptr,*rptr1;
+	struct stat st;
 
     if (uinfo.mode!=RMAIL) setbdir( p_name, currboard);
     else setmailfile(p_name, currentuser.userid, DOT_DIR);
 
-    if ((fd = open(p_name,O_RDONLY,0)) == -1) {
-        free(buf);
-        return 0;
-    }
-
-    while((sizeread=read(fd,buf,sizeof(struct fileheader)*NUMBUFFER)) > 0) {
-        n=sizeread/sizeof(struct fileheader);
-        for(j=0;j<n;j++) {
-            i++;
-            if (!strcmp(filename, buf[j].filename)) {
-                close(fd);
-                free(buf);
-                return i;
-            }
-        }
-        if(sizeread%sizeof(struct fileheader)!=0) break;
-    }
+    if ((fd = open(p_name,O_RDONLY,0)) == -1) return 0;
+	if (fstat(fd,&st)<0) {close(fd); return -1;}
+	rptr = (struct fileheader *) mmap (NULL, st.st_size, PROT_READ, MAP_SHARED,fd,0);
+	if (rptr == (struct fileheader * )-1) {close(fd);return -1;}
+	for (i = 0, rptr1 = rptr; i<st.st_size/sizeof(struct fileheader); i++, rptr1++)
+		if (!strcmp(filename,rptr1->filename)) {
+			munmap(rptr,st.st_size);
+			close(fd);
+			return i;
+			}
+		
+    munmap(rptr,st.st_size);  
     close(fd);
-    free(buf);
     return - 1;
 }
-
 struct keeploc *
-            getkeep(s,def_topline,def_cursline)
+getkeep(s,def_topline,def_cursline)
             char    *s;
 int     def_topline;
 int     def_cursline;
@@ -1357,7 +1351,7 @@ char *query;
     return NA;
 }
 
-
+#if 0
 int
 search_articles( locmem, query, offset, aflag )
 struct keeploc  *locmem;
@@ -1449,7 +1443,111 @@ int             offset, aflag;
     get_record(currdirect,&SR_fptr,sizeof(SR_fptr),locmem->crs_line);
     return match;
 }
+#endif
 
+/* COMMAN : use mmap to speed up searching */
+int
+search_articles( locmem, query, offset, aflag )
+struct keeploc  *locmem;
+char            *query;
+int             offset, aflag;
+{
+    char        *ptr;
+    int         now, match = 0;
+    int         complete_search;
+    int         ssize = sizeof(struct fileheader);
+    int 		fd;
+    char upper_ptr[STRLEN],upper_query[STRLEN];
+//	int mmap_offset,mmap_length;
+	struct fileheader *pFh,*pFh1;
+	struct stat st;
+	get_upper_str(upper_query,query); 
+
+    if(aflag>=2)
+    {
+        complete_search=1;
+        aflag-=2;
+    }else
+    {
+        complete_search=0;
+    }
+
+    if( *query == '\0' ) {
+        return 0;
+    }
+    move(t_lines-1,0);
+    clrtoeol();
+    prints("[44m[33mËÑÑ°ÖÐ£¬ÇëÉÔºò....                                                             [m");
+    now = locmem->crs_line;
+    refresh();
+    if ((fd = open(currdirect,O_RDONLY)) < 0) {return 0; }
+    if (fstat(fd,&st) < 0) {close(fd); return 0;}
+    pFh = mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
+    if (pFh == (char *) -1) {close(fd); return 0;}
+	pFh1 = pFh + now -1;
+	while (1)
+		{
+    	    if( offset > 0 ) {
+        	    if( ++now > last_line )  break;
+            	pFh1++;
+	        } else {
+    	        if( --now < 1 )  break;
+        	    pFh1-- ;
+        	}
+        	if( now == locmem->crs_line )
+            	break;
+        if(aflag==-1)
+        {
+            char p_name[256];
+            if(uinfo.mode!=RMAIL)
+                setbfile( p_name, currboard, pFh1->filename );
+            else
+                setmailfile(p_name, currentuser.userid, pFh1->filename);
+            if(searchpattern(p_name,query))
+            {
+                match = cursor_pos( locmem, now, 10 );
+                break;
+            }else
+                continue;
+        }
+        ptr = aflag ? pFh1->owner : pFh1->title;
+        if(complete_search==1)
+        {
+            if((*ptr=='R'||*ptr=='r')&&(*(ptr+1)=='E'||*(ptr+1)=='e')
+                    &&(*(ptr+2)==':')&&(*(ptr+3)==' '))
+            {
+                ptr=ptr+4;
+            }
+            if( !strcmp( ptr, query )) {
+                match = cursor_pos( locmem, now, 10 );
+                break;
+            }
+        }else
+        {
+            /*  COMMAN : move upper_query out of loop  */
+             get_upper_str(upper_ptr,ptr);
+            /* Í¬×÷Õß²éÑ¯¸Ä³ÉÍêÈ«Æ¥Åä by dong, 1998.9.12 */
+            if (aflag == 1) /* ½øÐÐÍ¬×÷Õß²éÑ¯ */
+            {
+                if( !strcasecmp( upper_ptr, upper_query )) {
+                    match = cursor_pos( locmem, now, 10 );
+                    break;
+                }
+            }
+            else if( strstr( upper_ptr, upper_query ) != NULL ) {
+                match = cursor_pos( locmem, now, 10 );
+                break;
+            }
+        }
+	}
+	memcpy(&SR_fptr,pFh1,sizeof(struct fileheader));
+	munmap(pFh,st.st_size);
+close_fd:
+	close(fd);
+    move( t_lines-1, 0 );
+    clrtoeol();
+	return match;	
+}
 /* calc cursor pos and show cursor correctly -cuteyu */
 int cursor_pos( locmem, val, from_top )
 struct keeploc *locmem;

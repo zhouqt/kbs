@@ -24,6 +24,10 @@
 #include "bbs.h"
 
 #define BUFSIZE (MAXUSERS + 244)
+#define NUMBUFFER 20
+#include <unistd.h>
+#include <sys/mman.h>
+#include <sys/stat.h>
 
 #ifdef SYSV
 int
@@ -201,35 +205,31 @@ toobigmesg()
 }
 #ifdef DEBUG
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
+/* COMMAN : use mmap to speed up searching */
 int
 apply_record(filename,fptr,size)
 char *filename ;
 int (*fptr)() ;
 int size ;
 {
-    char *buf;
+    char *buf,*buf1,*buf2;
     int fd, sizeread, n, i;
-
-    if((buf=malloc(size*NUMBUFFER))==NULL) {
-        toobigmesg();
-        return -1;
-    }
-    if((fd = open(filename,O_RDONLY,0)) == -1) {
-        free(buf);
+    struct stat stat;
+    buf2=alloca(size);
+    if((fd = open(filename,O_RDONLY,0)) == -1)
         return -1 ;
+    if (fstat(fd,&stat) <0 ) { close(fd); return 0; }
+    buf = (char *) mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
+    if (buf ==(char *) -1) { close(fd);return 0;}
+    for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
+    	memcpy(buf2,buf1,size);
+    	if ((*fptr)(buf2) == QUIT) {
+    		munmap(buf,stat.st_size);
+    		close(fd);
+    		return QUIT;
+    	}
     }
-    while((sizeread=read(fd, buf, size*NUMBUFFER))>0) {
-        n=sizeread/size;
-        for(i=0;i<n;i++) {
-            if((*fptr)(buf+i*size) == QUIT) {
-                free(buf);
-                close(fd);
-                return QUIT;
-            }
-        }
-        if(sizeread%size!=0) break;
-    }
-    free(buf);
+    munmap(buf,stat.st_size);
     close(fd) ;
     return 0 ;
 }
@@ -240,20 +240,24 @@ char *filename ;
 int (*fptr)() ;
 int size ;
 {
-    char abuf[BUFSIZE] ;
-    int fd ;
-
-    if( size > BUFSIZE ) {
-        toobigmesg();
-        return -1;
-    }
+    char *buf,*buf1,*buf2;
+    int fd, sizeread, n, i;
+    struct stat stat;
+    buf2=alloca(size);
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return -1 ;
-    while(read(fd,abuf,size) == size)
-        if((*fptr)(abuf) == QUIT) {
-            close(fd) ;
-            return QUIT ;
-        }
+    if (fstat(fd,&stat) <0 ) { close(fd); return 0; }
+    buf = (char *) mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
+    if (buf ==(char *) -1) { close(fd);return 0;}
+    for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
+    	memcpy(buf2,buf1,size);
+    	if ((*fptr)(buf2) == QUIT) {
+    		munmap(buf,stat.st_size);
+    		close(fd);
+    		return QUIT;
+    	}
+    }
+    munmap(buf,stat.st_size);
     close(fd) ;
     return 0 ;
 }
@@ -274,6 +278,7 @@ int size ;
 #  endif
 #endif
 
+/* COMMAN : use mmap to speed up searching */ 
 int
 search_record_back(filename, size, start, fptr, farg, rptr, sorted)
 char *filename ; /* idx file name */
@@ -284,83 +289,33 @@ char *farg ;	/* additional param to call fptr() / original record */
 char *rptr ;	/* record data buffer to be used for reading idx file */
 int sorted ; /* if records in file are sorted */
 {
-    const int CheckStep = 40;
-    int fd ;
-    int id = 1 , npos, nold=0, nres, ncnt = 0;
-#ifdef _FREE_MEMORY_
-    int nblk;
-    char * rbuf;
-    ncnt = CheckStep - 1;
-#endif
-
-    npos  = get_num_records(filename, size);
-    if(start > npos) start = npos;  /* if not enough,begin at end of file */
-    start --;   /* convert from list index to file index */
-    npos = (start>CheckStep) ? (start - CheckStep) : 0;
-
+	char *buf,*buf1;
+	int fd,i;
+	struct stat stat;
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return 0 ;
-    if(-1 == lseek(fd, npos*size, SEEK_SET)) {
-        close(fd);
-        return 0;
-    }
-#ifdef _FREE_MEMORY_
-    id = start - 1;
-    nblk = size * CheckStep;
-    if( (NULL == (rbuf = malloc(nblk)))
-            || (read(fd, rbuf, nblk) <= 0) ) {
-        if(NULL != rbuf) free(rbuf);
-        close(fd);
-        return 0;
-    }
-    while(1) {
-        nres = (*fptr)(farg, rbuf+ncnt*size);
-        if(!nres) {
-            memcpy(rptr, rbuf+ncnt*size, size);   /* rptr needed as return value !!! */
-            free(rbuf);
-            close(fd) ;
-            return (id + 1);    /* convert from file index to list index */
-        }
-        if(nres > 0 && sorted)    /* farg is newer than rptr */
-            if(++nold > CheckStep) break; /* 多于CheckStep篇旧记录则认为未找到 */
-        if(--ncnt < 0) {
-            ncnt = CheckStep - 1;   /* 每次CheckStep篇向前查找 */
-            npos -= ((npos>CheckStep) ? CheckStep : npos);
-            if(-1 == lseek(fd, npos*size, SEEK_SET))
-                break;/* return 0 */
-            if(read(fd, rbuf, nblk) <= 0)
-                break;
-        }
-        id-- ;
-    }
-    free(rbuf);
-#else
-id = npos;
-    while(read(fd,rptr,size) == size) {
-        nres = (*fptr)(farg, rptr);
-        if(!nres) {
-            close(fd) ;
-            return (id + 1); /* convert from file index to list index */
-        }
-        if(nres > 0 && sorted)    /* farg is newer than rptr */
-            if(++nold > CheckStep) break; /* 多于CheckStep篇旧记录则认为未找到 */
-        if(++ncnt >= CheckStep) {
-            ncnt = 0; /* 每次CheckStep篇向前查找 */
-            npos = (npos>CheckStep) ? (npos - CheckStep) : 0;
-            id = npos;
-            if(-1 == lseek(fd, npos*size, SEEK_SET))
-                break;/* return 0 */
-        } else id++ ;
-    }
-#endif /* _FREE_MEMORY_ */
-    close(fd) ;
-    return 0 ;
+	if (fstat(fd,&stat)<0) { close(fd);return 0;}
+	if (start > stat.st_size/size) start = stat.st_size/size;
+	buf = (char *) mmap(NULL,start * size,PROT_READ,MAP_SHARED,fd,0);
+	if (buf == (char *)-1) { close(fd); return 0;}
+	for (i = start, buf1 = buf; i>=0; i--, buf1-=size) {
+    	if ((*fptr)(farg,buf1)) {
+    		memcpy(rptr,buf1,size);
+    		munmap(buf,start * size);
+    		close(fd);
+    		return i;
+    		}
+		}
+	munmap(buf,start * size);
+	close(fd);
+	return 0;
 }
-/*#endif*/ /*_DEBUG_*/
+
 /*---   End of Addition     ---*/
 
 #ifdef DEBUG
 /* search_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd, 2001.4.24 */
+/* COMMAN : use mmap to improve search speed */
 int
 search_record(filename,rptr,size,fptr,farg)
 char *filename ;
@@ -371,34 +326,25 @@ char *farg ;
 {
     int fd, sizeread, n, i;
     int id = 1 ;
-    char *buf;
-
+    char *buf,*buf1;
+	struct stat stat;
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return 0 ;
-    if((buf=malloc(size*NUMBUFFER))==NULL) {
-        while(read(fd,rptr,size) == size) {
-            if((*fptr)(farg,rptr)) {
-                close(fd) ;
-                return id ;
-            }
-            id++ ;
-        }
-    } else {
-        while((sizeread=read(fd,buf,size*NUMBUFFER))>0) {
-            n=sizeread/size;
-            for(i=0;i<n;i++) {
-                if((*fptr)(farg,buf+i*size)) {
-                    memcpy(rptr,buf+i*size,size);
-                    free(buf);
-                    close(fd);
-                    return id;
-                }
-                id++;
-            }
-            if(sizeread%size!=0) break;
-        }
-        free(buf);
-    } 
+    if (fstat(fd,&stat)<0) {close(fd); return 0;}
+    
+    buf = (char *)mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
+    
+    if (buf == (char *)-1) { close (fd); return 0;}
+    for (i =0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
+    	if ((*fptr)(farg,buf1)) {
+    		memcpy(rptr,buf1,size);
+    		munmap(buf,stat.st_size);
+    		close(fd);
+    		return i+1;
+    		}
+    	}	
+    	
+    munmap(buf,stat.st_size);
     close(fd) ;
     return 0 ;
 }
@@ -411,18 +357,27 @@ int size ;
 int (*fptr)() ;
 char *farg ;
 {
-    int fd ;
+    int fd, sizeread, n, i;
     int id = 1 ;
-
+    char *buf,*buf1;
+	struct stat stat;
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return 0 ;
-    while(read(fd,rptr,size) == size) {
-        if((*fptr)(farg,rptr)) {
-            close(fd) ;
-            return id ;
-        }
-        id++ ;
-    }
+    if (fstat(fd,&stat)<0) {close(fd); return 0;}
+    
+    buf = (char *)mmap(NULL,stat.st_size,PROT_READ,MAP_SHARED,fd,0);
+    
+    if (buf == (char *)-1) { close (fd); return 0;}
+    for (i =0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
+    	if ((*fptr)(farg,buf1)) {
+    		memcpy(rptr,buf1,size);
+    		munmap(buf,stat.st_size);
+    		close(fd);
+    		return i+1;
+    		}
+    	}	
+    	
+    munmap(buf,stat.st_size);
     close(fd) ;
     return 0 ;
 }
