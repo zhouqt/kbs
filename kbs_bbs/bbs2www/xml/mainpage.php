@@ -232,6 +232,54 @@ include($vote_file);
 <?php
 }
 
+function gen_new_boards_html()
+{
+# load xml doc
+$newboard_file = BBS_HOME . "/xml/newboards.xml";
+$doc = domxml_open_file($newboard_file);
+	if (!$doc)
+		return;
+
+
+$root = $doc->document_element();
+$boards = $root->child_nodes();
+?>
+      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+        <tr> 
+          <td width="16" background="images/lt.gif">&nbsp;</td>
+          <td width="66" bgcolor="#0066CC">新开版面</td>
+          <td width="16" background="images/rt.gif"></td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
+              <tr> 
+                <td width="100%" class="MainContentText">
+<ul style="margin-top: 5px; margin-left: 20px">
+<?php
+	$brdarr = array();
+	# shift through the array
+	while($board = array_shift($boards))
+	{
+		if ($board->node_type() == XML_TEXT_NODE)
+			continue;
+
+		$ename = find_content($board, "filename"); // EnglishName
+		$brdnum = bbs_getboard($ename, $brdarr);
+		if ($brdnum == 0)
+			continue;
+		$brd_encode = urlencode($brdarr["NAME"]);
+?>
+<li class="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<?php
+	}
+?>
+</ul></td></tr>
+      </table>
+      <br>
+<?php
+}
+
 function gen_recommend_boards_html()
 {
 # load xml doc
@@ -514,6 +562,7 @@ while($board = array_shift($boards))
 系统公告结束   -->
 <?php
 	gen_system_vote_html();
+	gen_new_boards_html();
 	gen_recommend_boards_html();
 	gen_board_rank_html();
 	gen_blessing_list_html();
