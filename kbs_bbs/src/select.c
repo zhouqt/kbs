@@ -174,7 +174,7 @@ static int do_select_internal(struct _select_def *conf, int key)
             (*conf->on_size)(conf);
         }
         if (conf->get_data)
-            if ((*conf->get_data)(conf,conf->pos,conf->item_per_page)==SHOW_QUIT)
+            if ((*conf->get_data)(conf,conf->page_pos,conf->item_per_page)==SHOW_QUIT)
                 return SHOW_QUIT;;
         if ((ret=check_valid(conf)) == SHOW_QUIT)
             return SHOW_QUIT;
@@ -436,7 +436,7 @@ int list_select_loop(struct _select_def *conf)
 }
 
 struct _simple_select_arg{
-	struct _select_item* items;
+	const struct _select_item* items;
 	int flag;
 };
 
@@ -452,7 +452,7 @@ static int simple_onselect(struct _select_def *conf)
 static int simple_show(struct _select_def *conf, int i)
 {
     struct _simple_select_arg *arg = (struct _simple_select_arg *) conf->arg;
-    struct _select_item * item;
+    const struct _select_item * item;
 
 	i=i-1;
 	item=&arg->items[i];
