@@ -496,8 +496,7 @@ extern const char *mailbox_prop_str[];
 #define OWNER_LEN 30
 #endif
 
-#ifndef HAVE_FILEHEADER_DEFINE
-#define HAVE_FILEHEADER_DEFINE
+#ifdef HAVE_FILEHEADER_DEFINE
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     unsigned int id, groupid, reid;

@@ -4,6 +4,8 @@
 #define BBSUID 			501
 #define BBSGID 			501
 
+/** 使用缺省的FILEHeader结构*/
+#define HAVE_FILEHEADER_DEFINE
 /** 定义使用缺省的函数 */
 #define USE_DEFAULT_SECODE
 #define USE_DEFAULT_ALPHABET
