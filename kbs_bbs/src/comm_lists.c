@@ -269,6 +269,11 @@ int exec_mbem(char *s)
     char *c;   
     char buf[1024];   
     
+    if (HAS_PERM(currentuser,PERM_DENYRELAX)) {
+        move(4,0);
+	prints("你被封禁了休闲娱乐权限或者自己戒了休闲娱乐功能！");
+	return 0;
+    }
     modify_user_mode(SERVICES);
     strcpy(buf,s);   
     s=strstr(buf,"@mod:");   
