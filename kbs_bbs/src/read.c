@@ -307,7 +307,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     
     recbase = locmem->top_line;
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    entries = read_get_records(currdirect, ding_direct,pnt, ssize, recbase, screen_len);
     else
     /* add end */
@@ -420,7 +421,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 } else if (reload) {
                     recbase = locmem->top_line;
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    entries = read_get_records(currdirect,ding_direct, pnt, ssize, recbase, screen_len);
     else
     /* add end */
@@ -448,7 +450,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         if (mode == NEWSCREEN) {
             last_line = get_num_records(currdirect, ssize);
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    last_line += get_num_records(ding_direct,ssize);
     /* add end */
             num = last_line - screen_len + 2;
@@ -459,7 +462,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     
             recbase = locmem->top_line;
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    entries = read_get_records(currdirect,ding_direct, pnt, ssize, recbase, screen_len);
     else
     /* add end */
@@ -474,7 +478,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             recbase = -1;
             last_line = get_num_records(currdirect, ssize);
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    last_line += get_num_records(ding_direct,ssize);
     /* add end */
             if (last_line == 0 && digestmode > 0) {
@@ -506,7 +511,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             if (last_line < locmem->top_line + screen_len) {
                 num = get_num_records(currdirect, ssize);
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    num += get_num_records(ding_direct,ssize);
     /* add end */
                 if (last_line != num) {
@@ -526,7 +532,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                     locmem->top_line = recbase;
                 }
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    entries = read_get_records(currdirect,ding_direct, pnt, ssize, recbase, screen_len);
     else
     /* add end */
