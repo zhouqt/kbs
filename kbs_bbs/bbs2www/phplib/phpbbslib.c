@@ -90,6 +90,7 @@ static PHP_FUNCTION(bbs_modify_nick);
 static PHP_FUNCTION(bbs_createregform);
 static PHP_FUNCTION(bbs_findpwd_check);
 static PHP_FUNCTION(bbs_update_uinfo);
+static PHP_FUNCTION(bbs_setpassword);
 static PHP_FUNCTION(bbs_is_bm);
 
 //////////////////////// Board/Article operation functions  ////////////////////
@@ -324,6 +325,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_setmailfile, NULL)
         PHP_FE(bbs_mail_file, NULL)
         PHP_FE(bbs_update_uinfo, NULL)
+        PHP_FE(bbs_setpassword,NULL)
         PHP_FE(bbs_createnewid,NULL)
         PHP_FE(bbs_setactivation,NULL)
         PHP_FE(bbs_getactivation,two_arg_force_ref_01)
