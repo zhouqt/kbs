@@ -17,7 +17,7 @@ struct olduserec {                 /* Structure used to hold information in */
     char lasthost[16];
     unsigned int numlogins;
     unsigned int numposts;
-  #ifdef CONV_PASS
+#ifdef CONV_PASS
     char passwd[OLDPASSLEN];
 	char unused_padding[2];
 #endif
@@ -37,6 +37,10 @@ struct olduserec {                 /* Structure used to hold information in */
 	/* 生日数据转移到 userdata 结构中 */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */
 #ifdef HAVE_USERMONEY
+/*
+ * 请一定注意原来的系统是否定义了 HAVE_USERMONEY，如果没有应该去掉这最后三个字段。
+ * - atppp
+ */
     int money;
     int score;
     char unused[20];
@@ -66,10 +70,6 @@ int main()
     int i;
     int allocid;
 
-	if (sizeof(struct olduserec) != sizeof(struct userec)) {
-		fprintf(stderr, "atppp says sizeof(struct olduserec) must equal to sizeof(struct userec)\n");
-		return -1;
-	}
     chdir(BBSHOME);
 
     if ((fd = open(OLD_PASSWDS_FILE, O_RDONLY, 0644)) < 0) {
