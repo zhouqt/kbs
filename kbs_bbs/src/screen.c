@@ -87,11 +87,8 @@ void init_screen(int slns, int scols)
     scr_lns = slns;
     scr_cols = Min(scols, LINELEN);
     
-    if (big_picture) {
+    if (big_picture)
         free(big_picture);
-        big_picture = (struct screenline *) calloc(scr_lns, sizeof (struct screenline));
-        return;
-    }
     big_picture = (struct screenline *) calloc(scr_lns, sizeof (struct screenline));
     for (slns = 0; slns < scr_lns; slns++) {
         slp = &big_picture[slns];
