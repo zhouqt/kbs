@@ -36,7 +36,7 @@ BINFILE=utmpd miscd
 all:  $(BINFILE)
 
 $(BINFILE): % : %.o ../libBBS.a
-	$(CC) $^
+	$(CC) $^ -o $*
 
 install: all
 	cp -f $(BINFILE) $(BBSHOME)/bin
