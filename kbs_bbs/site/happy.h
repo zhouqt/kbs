@@ -287,6 +287,8 @@ typedef struct fileheader fileheader_t;
 #define GET_POSTFILENAME(x,y) get_postfilename(x,y,1)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
 #define VALID_FILENAME(x) valid_filename(x,1)
+#define POSTFILE_BASENAME(x) (((char *)(x))+2)
+#define MAILFILE_BASENAME(x) (x)
 
 /**
  * Mailbox properties.

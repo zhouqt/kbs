@@ -295,6 +295,8 @@ typedef struct fileheader fileheader_t;
 #define GET_POSTFILENAME(x,y) get_postfilename(x,y,0)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
 #define VALID_FILENAME(x) valid_filename(x,0)
+#define POSTFILE_BASENAME(x) (x)
+#define MAILFILE_BASENAME(x) (x)
 
 // WWW²¿·Ö
 

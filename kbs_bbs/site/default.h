@@ -565,6 +565,14 @@ typedef struct fileheader fileheader_t;
 #define VALID_FILENAME(x) valid_filename(x,0)
 #endif
 
+#ifndef POSTFILE_BASENAME
+#define POSTFILE_BASENAME(x) (x)
+#endif
+
+#ifndef MAILFILE_BASENAME
+#define MAILFILE_BASENAME(x) (x)
+#endif
+
 // WWW部分
 
 //修改密码之类的页面使用https
