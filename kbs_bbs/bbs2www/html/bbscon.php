@@ -40,6 +40,9 @@
 		}
 		else
 		{
+?>
+<body>
+<?php
 			bbs_printansifile("boards/" . $brdarr["NAME"] . "/" . $articles[1]["FILENAME"]);
 		}
 		html_normal_quit();
