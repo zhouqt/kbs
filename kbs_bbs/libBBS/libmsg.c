@@ -288,7 +288,7 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 
 	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
 
-	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
+	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d,0);",uident, head->id, head->sent, newmsgbuf, readed );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
 #ifdef BBSMAIN
