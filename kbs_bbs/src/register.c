@@ -401,6 +401,7 @@ void check_register_info()
 		post_file(currentuser, "", buf, "newcomers", buf2, 0, 2);
 		unlink(buf);
     }
+    	}
 #endif
     if (!strcmp(currentuser->userid, "SYSOP")) {
         currentuser->userlevel = ~0;
