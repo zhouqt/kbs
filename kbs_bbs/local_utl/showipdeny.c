@@ -7,7 +7,7 @@ int main(int argc, char **argv)
     FILE *fp, *fp2;
     char fn[80],fn2[80];
     char * p;
-    int i,j,ip[4],t,k;
+    int i,j,ip[4],t,k,count=0;
     time_t tt;
     chdir(BBSHOME);
     resolve_boards();
@@ -19,6 +19,8 @@ int main(int argc, char **argv)
         fp2=fopen(fn2, "w");
         while(!feof(fp)) {
             if(fscanf(fp, "%d %ld %d.%d.%d.%d %d", &i, &j, &ip[0], &ip[1], &ip[2], &ip[3], &t)<=0) break;
+            if(t<=10) continue;
+            count++;
             tt=(time_t) j;
             p = ctime(&tt);
             p[19]=0; p+=4;
@@ -30,6 +32,9 @@ int main(int argc, char **argv)
         fclose(fp);
         fclose(fp2);
         unlink(fn);
+        if(count==0) {
+            unlink(fn2);
+        }
         bzero(&deliveruser, sizeof(struct userec));
         strcpy(deliveruser.userid, "deliver");
         deliveruser.userlevel = -1;
@@ -41,6 +46,7 @@ int main(int argc, char **argv)
         p[19]=0; p+=4;
         sprintf(fn, "%sµÄ·¸×ï¼ÇÂ¼", p);
         post_file(&deliveruser, NULL, fn2, "system_dev", fn, 0, 1);
+        unlink(fn2);
     }
     return 0;
 }
