@@ -528,8 +528,8 @@ int getnewuserid(char* userid)
     memset( &utmp, 0, sizeof( utmp ) );
     strcpy( utmp.userid, userid );
     utmp.lastlogin = time( NULL );
-    update_user(&utmp,i,1);
     setuserid( i, userid ); /* added by dong, 1998.12.2 */
+    update_user(&utmp,i,0);
     flock( fd, LOCK_UN );
     close( fd );
     return i;
