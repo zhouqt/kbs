@@ -413,7 +413,7 @@
 				<a href='javascript:changemn("fav");'><img id="imgfav" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><a href="cgi-bin/bbs/bbsfav?select=-1" target="f3"><img src="/images/folder3.gif" border="0" alt="个人定制区" align="absmiddle"> 个人定制区</a></td>
+			<td><a href="bbsfav.php?select=-1" target="f3"><img src="/images/folder3.gif" border="0" alt="个人定制区" align="absmiddle"> 个人定制区</a></td>
 		</tr>
 		<tr>
 			<td> </td>
