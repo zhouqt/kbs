@@ -6843,7 +6843,11 @@ static PHP_FUNCTION(bbs_denyadd)
     now = time(0);
     undenytime = now + denyday * 24 * 60 * 60;
     tmtime = gmtime(&undenytime);
-    sprintf(buf, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%lum", userid, exp, getCurrentUser()->userid, tmtime->tm_mon + 1, tmtime->tm_mday, undenytime);
+    
+    if (autofree)
+        sprintf(buf, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%lum", userid, exp, getCurrentUser()->userid, tmtime->tm_mon + 1, tmtime->tm_mday, undenytime);
+    else
+        sprintf(buf, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%lum", userid, exp, getCurrentUser()->userid, tmtime->tm_mon + 1, tmtime->tm_mday, undenytime);
     
     setbfile(path, board, "deny_users");
     if (addtofile(path, buf) == 1) {
