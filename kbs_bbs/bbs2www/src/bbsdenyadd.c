@@ -209,8 +209,9 @@ int main()
     if (getuser(userid, &u) == 0)
         http_fatal("错误的使用者帐号");
     strcpy(userid, u->userid);
-    if (dt < 1 || dt > 70)
-        http_fatal("请输入被封天数(1-70)");
+    if (dt < 1 || dt > (HAS_PERM(currentuser, PERM_SYSOP)?70:14))
+        http_fatal("请输入被封天数(1-14)");
+    
     if (exp[0] == 0)
         http_fatal("请输入说明");
     for (i = 0; i < denynum; i++) {
