@@ -6,7 +6,8 @@ bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend listonline \
 	cnv_bh statguy cnv_bh2 autoclear ch_brdflag statkiller showipdeny \
 	convpass356 scanIP scanMODE listMODE cnv_register calc_effsize usage smth_usage change_tmpl \
 	mailall settoptitle genhot bonlinelog uonlinelog dayuserlog alluserlog \
-	cnv_passwd strip_fh recalc_signum
+	cnv_passwd strip_fh gennewboard recalc_signum
+	
 EXTRA_PROGRAMS = 
 LDADD=-lBBS -lsystem -L../libBBS -L../libsystem
 AM_CFLAGS=-DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)/src
