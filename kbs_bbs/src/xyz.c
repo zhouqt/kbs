@@ -66,7 +66,7 @@ int showperminfoX(unsigned int pbits,int i,int flag )
 
     if ( 16 == i || 11 == i || 20==i || 10 == i || 14 == i || 17 == i || 21 == i || 29==i || 28==i || 26==i || 24==i)
     {
-        sprintf( buf, "%c. %-30s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i], ((pbits >> i) & 1 ? "ON" : "OFF"));
+        sprintf( buf, "%c. %-27s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i], ((pbits >> i) & 1 ? "ON" : "OFF"));
         move(6 + (i >= 16) + (i >= 10) + (i >=11) + (i >= 14) + (i >= 17) + (i >=20) + (i >= 21) + (i>=29) + (i>=28) + (i>=26), 0);
         prints( buf );
         refresh();
@@ -84,7 +84,7 @@ showperminfo( unsigned int pbits,int i,int flag)
 {
     char        buf[ STRLEN ];
 
-    sprintf( buf, "%c. %-30s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+    sprintf( buf, "%c. %-27s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
              ((pbits >> i) & 1 ? "ON" : "OFF"));
     move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 40:0) );
     prints( buf );
@@ -107,7 +107,7 @@ int showperminfo(struct _select_def* conf,int i)
 	}
 	else
 	{
-    	prints("%c. %-30s %3s", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+    	prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
              ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 	}
 	return SHOW_CONTINUE;
@@ -163,16 +163,16 @@ int setperm_show(struct _select_def* conf,int i)
 	else
 	{
 		if ((arg->pbits&(1<<i))!=(arg->oldbits&(1<<i))) {
-	        prints( "%c. %-30s [31;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	        prints( "%c. %-27s [31;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
 	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 		} else
 	    if((1<<i==PERM_BASIC||1<<i==PERM_POST||1<<i==PERM_CHAT
 	    	||1<<i==PERM_PAGE||1<<i==PERM_DENYMAIL)&&
 	    	(arg->basic&(1<<i)))
-	        prints( "%c. %-30s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	        prints( "%c. %-27s [32;1m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
 	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 	    else
-	        prints( "%c. %-30s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
+	        prints( "%c. %-27s [37;0m%3s[m", 'A' + i, (use_define)?user_definestr[i]:permstrings[i],
 	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
 	}
 	return SHOW_CONTINUE;
@@ -203,9 +203,11 @@ unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int num
 
     move(4,0);
     prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s.\n",prompt);
+    move(6,0);
+    clrtobot();
     
 	for (i=0;i<numbers+1;i++) {
-		pts[i].x=0+(( i>15)? 50:1) ;
+		pts[i].x=0+(( i>15)? 47:2) ;
 		pts[i].y=i+6-(( i>15)? 16:0);
 	}
 	arg.pbits=pbits;

@@ -455,6 +455,9 @@ outc(unsigned char c )
                 register int i ;
                 for(i=slp->len;i<=reg_col;i++)
                     slp->data[i] = ' ' ;
+	        if (slp->smod>slp->len)
+			slp->smod=slp->len;
+		slp->mode |= MODIFIED;
             }
             slp->len = reg_col ;
             cur_col = 0 ;       /* reset cur_col */
@@ -469,6 +472,9 @@ outc(unsigned char c )
         register int i ;
         for(i=slp->len;i<reg_col;i++)
             slp->data[i] = ' ';
+	if (slp->smod>slp->len)
+		slp->smod=slp->len;
+	slp->mode |= MODIFIED;
         slp->data[reg_col] = '\0' ;
         slp->len = reg_col+1 ;
     }
@@ -543,6 +549,9 @@ int n ;
             register int i ;
             for(i=slp->len;i<=cur_col;i++)
                 slp->data[i] = ' ' ;
+	    if (slp->smod>slp->len)
+		slp->smod=slp->len;
+	    slp->mode |= MODIFIED;
         }
         while((str-begin_str<n)&&*str){
 			if (*str=='\n'||*str=='\r') {
