@@ -41,7 +41,7 @@ int main()
             if (strcasestr(board1, board) || strcasestr(title, board) || strcasestr(bc[i].des, board)) {
                 total++;
                 printf("<tr><td>%d", total);
-                printf("<td><a href=/bbsdoc.php?board=%s>%s</a><td>%s<br>\n", board1, board1, title + 7);
+                printf("<td><a href=/bbsdoc.php?board=%s>%s</a><td>%s<br>\n", board1, board1, title);
 				if (total == 1) {
 					sprintf(buf, "/bbsdoc.php?board=%s", board1);
 				}
