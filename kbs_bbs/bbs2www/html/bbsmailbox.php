@@ -28,7 +28,7 @@ login_init();
 		$mail_fullpath = bbs_setmailfile($currentuser["userid"],$mail_path);
 		$mail_num = bbs_getmailnum2($mail_fullpath);
 		if($mail_num < 0 || $mail_num > 30000)
-			http_error_quit("Too many mails!");
+			html_error_quit("Too many mails!");
 		$num = 19;
 		if ($start > $mail_num - 19)
 			$start = $mail_num - 19;
