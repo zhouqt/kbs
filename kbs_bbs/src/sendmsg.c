@@ -32,6 +32,7 @@ int line;
         i = multi_getdata(line+1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false);
         if (msg[0] == '\0')
             return false;
+        clrtobot();
         getdata(line + i + 1, 0, "确定要送出吗(Y)是的 (N)不要 (E)再编辑? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
         if (genbuf[0] == 'e' || genbuf[0] == 'E')
             continue;
