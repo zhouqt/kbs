@@ -124,7 +124,7 @@ int get_mailnum(char* direct)
 static int mailto(struct userec *uentp, char *arg)
 {
     char filename[STRLEN];
-    int mailmode = (int) arg;
+    int mailmode = (POINTDIFF) arg;
 
     sprintf(filename, "etc/%s.mailtoall", currentuser->userid);
     if ((uentp->userlevel == PERM_BASIC && mailmode == 1) ||
@@ -134,7 +134,7 @@ static int mailto(struct userec *uentp, char *arg)
     return 1;
 }
 
-static int mailtoall(int mode)
+static int mailtoall(POINTDIFF mode)
 {
 
     return apply_users(mailto, (char *) mode);

@@ -39,7 +39,7 @@ int get_msg(char * uid, char * msg, int line, int sms)
 
 		if(sms){
 			char tmp[100];
-			sprintf(tmp,"确定要送出吗(共%d字节,不包括前后缀)(Y)是的 (N)不要 (E)再编辑? [Y]: ", strlen(msg));
+			sprintf(tmp,"确定要送出吗(共%d字节,不包括前后缀)(Y)是的 (N)不要 (E)再编辑? [Y]: ", (int)strlen(msg));
         	getdata(line + i + 1, 0, tmp, genbuf, 2, DOECHO, NULL, 1);
 		}else
         	getdata(line + i + 1, 0, "确定要送出吗(Y)是的 (N)不要 (E)再编辑? [Y]: ", genbuf, 2, DOECHO, NULL, 1);

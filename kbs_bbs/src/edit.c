@@ -386,7 +386,7 @@ void searchline(text)
             else
                 tt = 0;
             if (strstr(p->data + tt, text)) {
-                addr = (int) strstr(p->data + tt, text) - (int) p->data + strlen(text);
+                addr = (POINTDIFF) strstr(p->data + tt, text) - (POINTDIFF) p->data + strlen(text);
                 currpnt = addr;
                 break;
             }

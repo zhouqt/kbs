@@ -2933,7 +2933,7 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     int owned;
     struct read_arg* arg=conf->arg;
     int ent,ret;
-    int flag=(int)extraarg;
+    int flag=(POINTDIFF)extraarg;
     struct write_dir_arg delarg;
 
     if (fileinfo==NULL)

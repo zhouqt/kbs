@@ -129,7 +129,7 @@ int find_nextnew(struct _select_def* conf,int begin)
 int fileheader_thread_read(struct _select_def* conf, struct fileheader* fh,int ent, void* extraarg)
 {
     struct read_arg *read_arg = (struct read_arg *) conf->arg;
-    int mode=(int)extraarg;
+    POINTDIFF mode=(POINTDIFF)extraarg;
     switch (mode) {
         case SR_FIRSTNEWDOWNSEARCH:
         case SR_FIRSTNEW:
@@ -1016,7 +1016,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
 
 int thread_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    int mode=(int)extraarg;
+    POINTDIFF mode=(POINTDIFF)extraarg;
     struct read_arg *read_arg = (struct read_arg *) conf->arg;
     conf->new_pos=0;
     read_arg->oldpos=0;
@@ -1054,7 +1054,7 @@ int thread_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 
 int author_read(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    int mode=(int)extraarg;
+    POINTDIFF mode=(POINTDIFF)extraarg;
     struct read_arg *read_arg = (struct read_arg *) conf->arg;
     conf->new_pos=0;
     read_arg->oldpos=0;

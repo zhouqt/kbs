@@ -36,6 +36,7 @@ AC_PREFIX_DEFAULT(/home/bbs)
 
 m4_include(config.icc)
 
+
 AC_ARG_ENABLE(innbbsd,
 [  --enable-innbbsd
                 enable innbbsd  support(need innbbsd package)],
@@ -101,6 +102,13 @@ AC_TYPE_SIZE_T
 AC_HEADER_TIME
 AC_STRUCT_TM
 AC_CHECK_TYPES([struct utimbuf],[],[],[#include <utime.h>])
+
+AC_CHECK_SIZEOF(int *)
+AC_CHECK_SIZEOF(long long int)
+AC_CHECK_SIZEOF(long int)
+AC_CHECK_SIZEOF(int)
+AC_CHECK_SIZEOF(int64)
+AC_CHECK_SIZEOF(int32)
 
 # Checks for library functions.
 AC_CONFIG_LIBOBJ_DIR(lib)

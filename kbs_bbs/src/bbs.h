@@ -91,6 +91,19 @@ extern int isblank(int c);
 typedef void (* sig_t)(int);
 #endif
 
+#if SIZEOF_INT_P == SIZEOF_INT
+typedef int POINTDIFF;
+#elif SIZEOF_INT_P == SIZEOF_LONG_INT
+typedef long int POINTDIFF;
+#elif SIZEOF_INT_P == SIZEOF_LONG_LONG_INT
+typedef long long int POINTDIFF;
+#elif SIZEOF_INT_P == SIZEOF_INT64
+typedef int64 POINTDIFF;
+#elif SIZEOF_INT_P == SIZEOF_INT32
+typedef int32 POINTDIFF;
+#endif
+
+
 #ifndef _cplusplus
 
 #ifndef byte

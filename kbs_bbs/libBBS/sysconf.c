@@ -20,7 +20,7 @@ struct sysheader {
 };
 static char *sysconf_buf;
 static int sysconf_key, sysconf_len;
-static int sysconf_diff;
+static POINTDIFF sysconf_diff;
 
 static char *sysconf_ptr = NULL;
 static int sysconf_size;
@@ -314,7 +314,7 @@ void build_sysconf(char *configfile, char *imgfile)
     }
 }
 
-static int load_sysconf_image(char *imgfile)
+int load_sysconf_image(char *imgfile)
 {
     struct public_data *p;
     char buf[255];
@@ -324,9 +324,7 @@ static int load_sysconf_image(char *imgfile)
     struct stat st;
 
     p = get_publicshm();
-    sysconf_version = p->sysconfimg_version;
-    sprintf(buf, "sysconf.img.%d", sysconf_version);
-    if ((fd = open(buf, O_RDONLY, 0)) == -1)
+    if ((fd = open(imgfile, O_RDONLY, 0)) == -1)
         return -1;
     if (fstat(fd, &st) < 0) {
         close(fd);
@@ -382,7 +380,7 @@ void load_sysconf()
     if (dashf("etc/rebuild.sysconf") || !dashf(buf)) {
         /*注   ：这里其实有一个竞争生成img文件的问题,但是....
            先不管 KCN */
-        newbbslog(BBSLOG_USIES, "build sysconf.img");
+        bbslog("3error", "build sysconf.img");
         build_sysconf("etc/sysconf.ini", buf);
     }
     /*    bbslog("user","%s", "load sysconf.img" ); */
