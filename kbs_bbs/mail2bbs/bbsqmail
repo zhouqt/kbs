@@ -24,18 +24,18 @@ print LOG "Mail to $normaluser \n";
 for ($n=0; $n < $MAILBODY; $n++) {
         print LOG $MAIL[$n];
 }
-print LOG "\'$Header{'From'}\' \'$normaluser\'  \'$Header{'Subject'}\' \'$Header{'Received'}\' \'$Header{'boundary'}\'\n";
+print LOG "\'$Header{'From'}\' \'$normaluser\'  \'$Header{'Subject'}\' \'$Header{'Received'}\' \'$Header{'Content-Transfer-Encoding'}\' \'$Header{'boundary'}\'\n";
 $ENV{'TITLE'} = $Header{'Subject'};
 $ENV{'MSGID'} = $Header{'Received'};
 if (substr($normaluser, 0, 1) eq "_")
 {
 	$normaluser2 = substr($normaluser, 1);
-	#open(BBSGATE,"| $mailpost \'$Header{'From'}\' \'$normaluser2\'  \'$Header{'Subject'}\' \'$Header{'Received'}\'");
+	#open(BBSGATE,"| $mailpost \'$Header{'From'}\' \'$normaluser2\' \'$Header{'Subject'}\' \'$Header{'Received'}\'");
 	open(BBSGATE,"| $mailpost \'$Header{'From'}\' \'$normaluser2\'");
 }
 else
 {
-	open(BBSGATE,"| $mail2bbs \'$Header{'From'}\' \'$normaluser\' \'$Header{'boundary'}\'");
+	open(BBSGATE,"| $mail2bbs \'$Header{'From'}\' \'$normaluser\' \'$Header{'Content-Transfer-Encoding'}\' \'$Header{'boundary'}\'");
 }
 for ($n= $MAILBODY; $n <= $#MAIL; $n++) {
 	print BBSGATE $MAIL[$n];

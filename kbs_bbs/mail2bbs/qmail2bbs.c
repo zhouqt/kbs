@@ -5,6 +5,7 @@
  */
 
 #include "bbs.h"
+#include "mime_dec.c"
 
 #define BLOCKFILE ".blockmail"
 
@@ -90,17 +91,17 @@ void eat_forward(char *source)
 }
 
 int 
-append_mail(fin, sender1, sender, userid, title, received)
+append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 	FILE           *fin;
-	char           *userid, *sender1, *sender, *title, *received;
+	char           *userid, *sender1, *sender, *title, *received, *encoding, *boundary;
 {
 	struct fileheader newmessage;
 	char            fname[512], buf[256];
 	char            maildir[256];
 	struct stat     st;
-	FILE           *fout;
+	FILE		*fout;
 	char            conv_buf[256];
-	char			*ptr;
+	char		*ptr, *ptr2;
 	struct userec   *user;
 
 	/* check if the userid is in our bbs now */
@@ -131,12 +132,23 @@ append_mail(fin, sender1, sender, userid, title, received)
 	strcpy(fname, buf);
 	strncpy(newmessage.title, conv_buf, sizeof(newmessage.title)-1);
 	newmessage.title[sizeof(newmessage.title)-1] = '\0';
-    ptr = strchr(sender, '@');
+	ptr = strchr(sender, '@');
 	if (ptr == NULL || ptr == sender)
 	    return -1;
-	strncpy(newmessage.owner, sender, sizeof(newmessage.owner)-1);
-	newmessage.owner[sizeof(newmessage.owner)-1] = '\0';
-
+	
+	strncpy(buf, sender, 255);
+	buf[255]='\0';
+	fputs(sender, fout);
+	fputs(buf, fout);
+	if (ptr=strrchr(buf, '<'))
+		if(ptr2=strrchr(ptr, '>'))
+			if (ptr<ptr2-1) {
+				memmove(buf, ptr+1, ptr2-ptr-1);
+				buf[ptr2-ptr-1]='\0';
+			}
+	strncpy(newmessage.owner, buf, OWNER_LEN-1);
+	newmessage.owner[OWNER_LEN-1] = '\0';
+	fputs(newmessage.owner, fout);
 	/* copy the stdin to the specified file */
 	if ((fout = fopen(fname, "w")) == NULL)
 	{
@@ -153,8 +165,176 @@ append_mail(fin, sender1, sender, userid, title, received)
 		if (received != NULL && received[0] != '\0')
 			fprintf(fout, "来  源: %-.70s\n", received);
 		fprintf(fout, "日  期: %s\n", ctime(&tmp_time));
-		while (fgets(buf, 255, fin) != NULL)
-			fputs(buf, fout);
+		if ((!boundary)||(!boundary[0])) {
+			int t;
+			char data[256];
+			if (strstr(encoding, "8bit")) t = 1;
+			else if (strstr(encoding, "quoted-printable")) t = 2;
+			else if (strstr(encoding, "base64")) t = 3;
+			else t = 0;
+			while (fgets(buf, 255, fin) != NULL)
+				switch (t) {
+						case 1:
+								fputs(buf, fout);
+								break;
+						case 2:
+								qpdec(buf, data);
+								fputs(data, fout);
+								break;
+						case 3:
+								data[b64dec(buf, data)]=0;
+								fputs(data, fout);
+								break;
+						default:
+								fputs(buf, fout);
+				}
+		}
+		else {
+			#define READ  if (!fgets(buf, 255, fin)) { err=1; break;}
+			#define WRITE(data, size)  FileSize += fwrite(data, 1, size, fout); totalsize += size;
+			#define CHECK  if ((totalsize>MAXMAILSIZE)||(number-firstText>MAXATTACHMENTCOUNT)) err=2; if (err) break;
+			int err;
+			int ContentType,  ContentEncoding;
+			int number;
+			int block;
+			char FileName[256];
+			char Boundary[256];
+			int FileSize;
+			char data[256];
+			int totalsize;
+			int firstText;
+			err = 0;
+			buf[0] = 0;
+			totalsize = 0;
+			firstText = 0;
+			do {
+				READ
+			} while (!strstr(buf, boundary));
+			number = 0;
+			do {
+				READ
+			} while (0);
+			do {
+				ContentType = 0;
+				ContentEncoding = 0;
+				number++;
+				FileName[0]=0;
+				do {
+					char* tag;
+					if (tag=strstr(buf, ": ")) {
+						tag[0]=0; tag+=2;
+						if (!strcasecmp(buf, "Content-Type")) {
+							char* t;
+							if (t=strchr(tag, ';')) *t=0;
+							if (!strcasecmp(tag, "text/plain")) ContentType = 1;
+							else if (!strcasecmp(tag, "text/html")) ContentType = 2;
+							else if (!strcasecmp(tag, "multipart/related")) ContentType = 3;
+						} else if (!strcasecmp(buf, "Content-Transfer-Encoding")) {
+							if (strstr(tag, "8bit")) ContentEncoding = 1;
+							else if (strstr(tag, "quoted-printable")) ContentEncoding = 2;
+							else if (strstr(tag, "base64")) ContentEncoding = 3;
+						}
+					} else if (tag=strstr(buf, "filename=\"")) {
+						char* t;
+						tag+=10;
+						if (t=strchr(tag, '"')) *t=0;
+						strcpy(FileName, tag);
+					} else if ((ContentType==3) && (tag=strstr(buf, "boundary=\""))) {
+						char* t;
+						tag+=10;
+						if (t=strchr(tag, '\"')) *t=0;
+						while (tag[strlen(tag)-1]<27) tag[strlen(tag)-1]=0;
+						strcpy(Boundary, tag);
+					}
+					READ
+				} while (strlen(buf)>2); /*(strcspn(buf, " \r\n")<strlen(buf));*/
+				CHECK
+				do {
+					READ
+				} while (strlen(buf)<2); 
+				CHECK
+				if (!FileName[0])
+					switch (ContentType) {
+						case 1: 
+							strcpy(FileName, "noname.txt");
+							break;
+						case 2:
+							strcpy(FileName, "noname.htm");
+							break;
+/*						case 3:
+							strcpy(FileName, "noname.mht");
+							break;
+*/						default:
+							strcpy(FileName, "noname");
+					}			
+				block = 0;
+				FileSize = 0;
+				do {
+					if ((ContentType==1)&&(number==1)) {
+						firstText = 1;
+						switch (ContentEncoding) { 
+							case 1:
+								fputs(buf, fout);
+								break;
+							case 2:
+								qpdec(buf, data);
+								fputs(data, fout);
+								break;
+							case 3:
+								data[b64dec(buf, data)]=0;
+								fputs(data, fout);
+								break;
+							default:
+								fputs(buf, fout);
+						}
+									
+					} else {
+						if (!newmessage.attachment) newmessage.attachment=ftell(fout);
+						if (!FileSize) {
+							fwrite(ATTACHMENT_PAD, 1, ATTACHMENT_SIZE, fout);
+							fwrite(FileName, 1, strlen(FileName)+1, fout);
+							fwrite(&FileSize, 1, 4, fout);
+							totalsize += 12+strlen(FileName)+1;
+						}
+						switch (ContentEncoding) {
+							case 1:
+								WRITE(buf, strlen(buf));
+								break;
+							case 2:
+								qpdec(buf, data);
+								WRITE(data, strlen(data));
+								break;
+							case 3:
+								WRITE(data, b64dec(buf, data));
+								break;
+							default:
+/*								if ((!FileSize)&&(ContentType==3)) {
+									WRITE("Content-Type: multipart/related;\n", 33);
+									WRITE("      boundary=\"", 16);
+									WRITE(Boundary, strlen(Boundary));
+									WRITE("\";\n",3);
+									WRITE("      type=\"multipart/alternative\"\n\n", 36);
+								}
+*/								WRITE(buf, strlen(buf));
+						}
+					}
+					CHECK
+					READ
+				} while (!strstr(buf, boundary));
+				if ((ContentType!=1)||(number!=1)) {
+						fseek(fout, -FileSize-4, SEEK_CUR);
+						FileSize = htonl(FileSize);
+						fwrite(&FileSize, 1, 4, fout);
+						fseek(fout, 0, SEEK_END);
+				}
+				CHECK
+				READ
+			} while (!feof(fin));
+			/*if (err==2) fputs("Mail too long or too many attachments!", fout);*/
+			#undef READ
+			#undef WRITE
+			#undef CHECK
+		}
 		fclose(fout);
 	}
 
@@ -211,7 +391,7 @@ main(argc, argv)
 	/* argv[ 2 ] is userid in bbs   */
 	/* argv[ 3 ] is the mail title  */
 	/* argv[ 4 ] is the message-id  */
-	if (argc != 3)
+	if (argc < 3)
 	{
 		char           *p = (char *) rindex(argv[0], '/');
 
@@ -256,5 +436,7 @@ main(argc, argv)
 		return -2;
 
 	strcpy(receiver, argv[2]);
-	return append_mail(stdin, nettyp, sender, receiver, getenv("TITLE"), getenv("MSGID"));
+	return append_mail(stdin, nettyp, sender, receiver, getenv("TITLE"), getenv("MSGID"), argv[3], argv[4]);
 }
+
+

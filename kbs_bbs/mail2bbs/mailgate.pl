@@ -46,7 +46,7 @@ sub parse_header {
         $_ = $MAIL[$index];
         last if ( $_ eq "\n" );
         chop;
-        if (/^(\S+): (.*)$/) {
+        if (/^(?:(\S+): ([^;]*))?;?\s*(?:(\S+)="(.*)")?(?:(\S+)=(.*))?$/) {
             $hhh = $Header{$1};
             if ( $1 eq "Received" && $hhh ) {
                 $tmp = "$2";
@@ -58,7 +58,10 @@ sub parse_header {
                 }
             }
             else {
-                $Header{$1} = $2;
+	    	print "$1 $2 $3 $4 $5 $6 ";
+                if ($1) $Header{$1} = $2;
+		if ($3) $Header{$3} = $4;
+		if ($5) $Header{$5} = $6;
             }
         }
     }
