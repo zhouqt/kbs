@@ -785,7 +785,7 @@ static int fav_key(struct _select_def *conf, int command)
                     clear();
                     move(5, 3);
                     prints("请选择加入到定制区哪个目录");
-                    sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (total+1));
+                    sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (total+2));
                     sel[0].x = 3;
                     sel[0].y = 6;
                     sel[0].hotkey = '0';
@@ -801,6 +801,11 @@ static int fav_key(struct _select_def *conf, int command)
                             sel[k].data = favbrd_list[j].title;
                             k++;
                         }
+                    sel[k].x = -1;
+                    sel[k].y = -1;
+                    sel[k].hotkey = -1;
+                    sel[k].type = 0;
+                    sel[k].data = NULL;
                     clear();
                     k = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
                     free(sel);
