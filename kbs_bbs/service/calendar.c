@@ -196,38 +196,38 @@ void draw_main()
         saveline(i, 1, save_scr[i]);
     resetcolor();
     for(i=0;i<14;i++) {
-        move(i, 48);
+        move(i, scr_cols-32);
         clrtoeol();
     }
-    move(0, 52);
+    move(0, scr_cols-28);
     prints("\x1b[31;1m日  \x1b[33m一  二  三  四  五  \x1b[31m六");
     for(i=0;i<6;i++) {
-        move(1+i*2, 52);
+        move(1+i*2, scr_cols-28);
         prints("\x1b[0;36m━━━━━━━━━━━━━━");
     }
     prints("\x1b[32;1m");
-    move(1, 49);
+    move(1, scr_cols-31);
     prints("%s", nums[year/1000]);
-    move(2, 49);
+    move(2, scr_cols-31);
     prints("%s", nums[year/100%10]);
-    move(3, 49);
+    move(3, scr_cols-31);
     prints("%s", nums[year/10%10]);
-    move(4, 49);
+    move(4, scr_cols-31);
     prints("%s", nums[year%10]);
-    move(5, 49);
+    move(5, scr_cols-31);
     prints("年");
     if(month>10) {
-        move(7, 49);
+        move(7, scr_cols-31);
         prints("%s", nums[10]);
-        move(8, 49);
+        move(8, scr_cols-31);
         prints("%s", nums[month%10]);
-        move(9, 49);
+        move(9, scr_cols-31);
         prints("月");
     }
     else {
-        move(7, 49);
+        move(7, scr_cols-31);
         prints("%s", nums[month]);
-        move(8, 49);
+        move(8, scr_cols-31);
         prints("月");
     }
     k=0;
@@ -235,7 +235,7 @@ void draw_main()
         j=get_week(year,month,i);
         Lunar(i, &lmonth, &lday);
         y=k*2+2;
-        x=j*4+52;
+        x=j*4+scr_cols-28;
         resetcolor();
         if(j==0||j==6) setfcolor(RED, 1);
         else setfcolor(YELLOW, 1);
@@ -260,7 +260,6 @@ void draw_main()
         if(j==6) k++;
     }
 
-    move(12, 56);
     resetcolor();
     Lunar(day, &lmonth, &lday);
     if(lday<=10) sprintf(buf2, "初%s", nums[lday]);
