@@ -466,6 +466,7 @@ int allnum, pagenum;
         break;
     case UL_SWITCH_FRIEND_LOWER:
     case UL_SWITCH_FRIEND_UPPER:
+        if(!strcmp(currentuser->userid,"guest")) break;
         if (friendmode)
             friendmode = false;
 
