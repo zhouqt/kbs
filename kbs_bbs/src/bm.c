@@ -265,7 +265,7 @@ char *direct ;
     /*   static page=0;*//*Haohmaru.12.18*/
     now=time(0);
     if(!HAS_PERM(currentuser,PERM_SYSOP))
-        if(!chk_currBM(currBM))
+        if(!chk_currBM(currBM,currentuser))
         {
             return DONOTHING;
         }
@@ -317,7 +317,7 @@ Here:
                     currentuser = &saveuser;
                     sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
 
-                    if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_currBM1(currBM))
+                    if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_BM_instr(currBM,currentuser->userid))
                     {	   my_flag=0;
                         fprintf(fn,"寄信人: SYSOP (System Operator) \n") ;
                         fprintf(fn,"标  题: %s\n",buffer) ;

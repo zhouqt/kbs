@@ -1149,7 +1149,7 @@ int     lastlevel,lastbmonly;
     bmstr=strstr(buf,"(BM:");
     if(bmstr!=NULL)
     {
-        if(chk_currBM(bmstr+4)||HAS_PERM(currentuser,PERM_SYSOP))
+        if(chk_currBM(bmstr+4,currentuser)||HAS_PERM(currentuser,PERM_SYSOP))
             me.level |= PERM_BOARDS;
         else if(bmonly==1&&!(me.level & PERM_BOARDS))
             return;

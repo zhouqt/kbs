@@ -106,7 +106,7 @@ int inform(bcache_t *bp, char *user, char *exp, int dt)
 	fn = fopen(buf,"w+");
 	sprintf(title, "%s被取消在%s版的发文权限", user, board);
 
-	if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_currBM1(bp->BM))
+	if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_BM_instr(bp->BM,currentuser->userid))
 	{
 		my_flag = 0;
 		fprintf(fn,"寄信人: SYSOP (System Operator) \n") ;

@@ -48,7 +48,7 @@ CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
 
 PROGNAME = bbsd_single
 
-all: $(PROGNAME) chatd $(BBSLIB) newpop3d
+all: $(PROGNAME) chatd $(BBSLIB) newpop3d libsystem.a
 
 ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	Makefile.spec
@@ -101,7 +101,10 @@ ifeq (.depend,$(wildcard .depend))
 include .depend
 endif
 
-$(PROGNAME): $(COBJS) $(OTHERS)
+libsystem.a:
+	cd lib; make
+	
+$(PROGNAME): $(COBJS) $(OTHERS) libsystem.a
 	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
 
 lint: $(LNFILES)

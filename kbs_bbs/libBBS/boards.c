@@ -508,3 +508,37 @@ int haspostperm(struct userec* user,char *bname) /* 判断在 bname版 是否有post权 
 }
 
 
+int chk_BM_instr(char BMstr[STRLEN-1],char    bmname[IDLEN+2])
+{
+    char *ptr;
+    char BMstrbuf[STRLEN-1];
+
+    strcpy(BMstrbuf,BMstr);
+    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
+    while(1)
+    {
+        if(ptr==NULL)
+            return NA;
+        if(!strcmp(ptr,bmname/*,strlen(currentuser->userid)*/))
+            return YEA;
+        ptr=strtok(NULL,",: ;|&()\0\n");
+    }
+}
+
+
+int chk_currBM(char BMstr[STRLEN-1],struct userec* user)   
+	/* 根据输入的版主名单 判断user是否有版主 权限*/
+{
+    char *ptr;
+    char BMstrbuf[STRLEN-1];
+
+    if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
+        return YEA;
+
+    if(!HAS_PERM(currentuser,PERM_BOARDS))
+        return NA;
+
+    return chk_BM_instr(BMstr, currentuser->userid);
+}
+
+

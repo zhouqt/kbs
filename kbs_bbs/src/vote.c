@@ -101,7 +101,7 @@ b_notes_edit()
     char ans[4];
     int         aborted;
 
-    if( !chk_currBM(currBM))
+    if( !chk_currBM(currBM,currentuser))
     {
         return 0 ;
     }
@@ -574,7 +574,7 @@ char    *bname;
     setcontrolfile();
     if( !HAS_PERM(currentuser, PERM_SYSOP ))
         if (!HAS_PERM(currentuser,PERM_OVOTE))
-            if( !chk_currBM(currBM))
+            if( !chk_currBM(currBM,currentuser))
             {
                 return 0 ;
             }
@@ -1157,13 +1157,13 @@ case 'H': case 'h':
         deal=1;
         break;
 case 'A': case 'a':
-        if(!chk_currBM(currBM))
+        if(!chk_currBM(currBM,currentuser))
             return YEA;
         vote_maintain(currboard);
         deal=1;
         break;
 case 'O': case 'o':
-        if(!chk_currBM(currBM))
+        if(!chk_currBM(currBM,currentuser))
             return YEA;
         if (!strcmp(currboard,"Birthday"))/*Haohmaru.99.3.29.应生日板前板主的要求而设,结束于Dec 28 20:52:29 2000*/
             break;
@@ -1197,7 +1197,7 @@ case 'O': case 'o':
         break;
 
 case 'D': case 'd':
-        if (!chk_currBM(currBM))
+        if (!chk_currBM(currBM,currentuser))
         {
             return 1;
         }

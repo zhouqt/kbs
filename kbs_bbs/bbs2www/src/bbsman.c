@@ -103,7 +103,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
     strcpy(usrid,fileinfo->owner);
     if( !(owned) && !HAS_PERM(currentuser,PERM_SYSOP) )
-        if( !chk_currBM(bm_str))
+        if( !chk_currBM(bm_str,currentuser))
         {
             return DONOTHING ;
         }

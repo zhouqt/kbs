@@ -1588,28 +1588,6 @@ int isowner(struct userec *user, struct fileheader *fileinfo)
     return 1;
 }
 
-int chk_currBM(char *BMstr)   /* 根据输入的版主名单 判断当前user是否是版主 */
-{
-    char *ptr;
-    char BMstrbuf[STRLEN-1];
-
-    if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
-        return YEA;
-
-    if(!HAS_PERM(currentuser,PERM_BOARDS))
-        return NA;
-    strcpy(BMstrbuf,BMstr);
-    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
-    while(1)
-    {
-        if(ptr==NULL)
-            return NA;
-        if(!strcmp(ptr,getcurruserid()/*,strlen(currentuser->userid)*/))
-            return YEA;
-        ptr=strtok(NULL,",: ;|&()\0\n");
-    }
-}
-
 int count_online() /* ugly */
 {
 	/*struct UTMPFILE *u;
@@ -2004,23 +1982,6 @@ int post_file(char *filename, postinfo_t *pi)
 	report(buf);
 
 	return 0;
-}
-
-int chk_currBM1(char *BMstr)   /* Bigman:2001.2.19 根据输入的版主名单 判断当前user是否是版主 */
-{
-    char *ptr;
-    char BMstrbuf[STRLEN-1];
-
-    strcpy(BMstrbuf,BMstr);
-    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
-    while(1)
-    {
-        if(ptr == NULL)
-            return NA;
-        if(!strcmp(ptr,getcurruserid()/*,strlen(currentuser->userid)*/))
-            return YEA;
-        ptr=strtok(NULL,",: ;|&()\0\n");
-    }
 }
 
 /*

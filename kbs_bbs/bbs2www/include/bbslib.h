@@ -318,8 +318,6 @@ struct boardheader const* getboard(int num);
 
 int isowner(struct userec *user, struct fileheader *fileinfo);
 
-int chk_currBM(char *BMstr);
-
 void write_header2(FILE *fp, char *board, char *title, 
 					char *userid, char *username, int anony);
 
@@ -329,8 +327,6 @@ int outgo_post2(struct fileheader *fh, char *board,
 int mail_file(char *tmpfile, char *userid, char *title);
 
 int post_file(char *filename, postinfo_t *pi);
-
-int chk_currBM1(char *BMstr);
 
 char * setmailpath( char *buf, char *userid );
 

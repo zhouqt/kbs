@@ -349,7 +349,7 @@ char *direct;
     FILE *fp;
 
     if(digestmode!=4&&digestmode!=5) return DONOTHING;
-    if(!chk_currBM(currBM)) return DONOTHING;
+    if(!chk_currBM(currBM,currentuser)) return DONOTHING;
 
     sprintf(buf, "boards/%s/%s", currboard, fileinfo->filename);
     if(!dashf(buf)) {
@@ -456,69 +456,6 @@ char *stitle;
     {
         strcpy(ReplyPost,stitle);
         strcpy(ReadPost,ReplyPost+4);
-    }
-}
-/*inserted by cityhunter to queryBM */
-int
-chk_BM_instr(BMstr,bmname)
-char BMstr[STRLEN-1];
-char    bmname[IDLEN+2];
-{
-    char *ptr;
-    char BMstrbuf[STRLEN-1];
-
-    strcpy(BMstrbuf,BMstr);
-    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
-    while(1)
-    {
-        if(ptr==NULL)
-            return NA;
-        if(!strcmp(ptr,bmname/*,strlen(currentuser->userid)*/))
-            return YEA;
-        ptr=strtok(NULL,",: ;|&()\0\n");
-    }
-}
-/* end of insertion */
-
-int
-chk_currBM(BMstr)   /* 根据输入的版主名单 判断当前user是否是版主 */
-char BMstr[STRLEN-1];
-{
-    char *ptr;
-    char BMstrbuf[STRLEN-1];
-
-    if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
-        return YEA;
-
-    if(!HAS_PERM(currentuser,PERM_BOARDS))
-        return NA;
-    strcpy(BMstrbuf,BMstr);
-    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
-    while(1)
-    {
-        if(ptr==NULL)
-            return NA;
-        if(!strcmp(ptr,currentuser->userid/*,strlen(currentuser->userid)*/))
-            return YEA;
-        ptr=strtok(NULL,",: ;|&()\0\n");
-    }
-}
-int
-chk_currBM1(BMstr)   /* Bigman:2001.2.19 根据输入的版主名单 判断当前user是否是版主 */
-char BMstr[STRLEN-1];
-{
-    char *ptr;
-    char BMstrbuf[STRLEN-1];
-
-    strcpy(BMstrbuf,BMstr);
-    ptr=strtok(BMstrbuf,",: ;|&()\0\n");
-    while(1)
-    {
-        if(ptr==NULL)
-            return NA;
-        if(!strcmp(ptr,currentuser->userid/*,strlen(currentuser->userid)*/))
-            return YEA;
-        ptr=strtok(NULL,",: ;|&()\0\n");
     }
 }
 
@@ -912,7 +849,7 @@ struct fileheader *ent ;
     char* typesufix;
     typesufix = typeprefix = "";
 
-	manager = (HAS_PERM(currentuser,PERM_OBOARDS)||(chk_currBM(currBM))) ;
+	manager = (HAS_PERM(currentuser,PERM_OBOARDS)||(chk_currBM(currBM,currentuser))) ;
 
     type = brc_unread( ent->filename ) ? cUnreadMark : ' ';
     if ((ent->accessed[0] & FILE_DIGEST) /*&& HAS_PERM(currentuser,PERM_MARKPOST)*/)
@@ -1414,7 +1351,7 @@ deleted_mode()
 {
     extern  char  currdirect[ STRLEN ];
 /* Allow user in file "jury" to see deleted area. stephen 2001.11.1 */
-  if (!chk_currBM(currBM) && !isJury()) {
+  if (!chk_currBM(currBM,currentuser) && !isJury()) {
     return DONOTHING;
   }
   if(digestmode==4)
@@ -1578,7 +1515,7 @@ struct fileheader *fhdr;
 char *direct;
 {
 
-    if(!chk_currBM(currBM))       /* 权力检查 */
+    if(!chk_currBM(currBM,currentuser))       /* 权力检查 */
     {
         return DONOTHING ;
     }
@@ -2433,7 +2370,7 @@ char *direct ;
     modify_user_mode( EDIT );
 
     if (!HAS_PERM(currentuser,PERM_SYSOP))      /* SYSOP、当前版主、原发信人 可以编辑 */
-        if ( !chk_currBM( currBM) )
+        if ( !chk_currBM( currBM,currentuser) )
             /* change by KCN 1999.10.26
                     if(strcmp( fileinfo->owner, currentuser->userid))
             */
@@ -2511,7 +2448,7 @@ char *direct;
         return FULLUPDATE;
 
     if(!HAS_PERM(currentuser,PERM_SYSOP)) /* 权限检查 */
-        if( !chk_currBM(currBM))
+        if( !chk_currBM(currBM,currentuser))
             /* change by KCN 1999.10.26
               if(strcmp( fileinfo->owner, currentuser->userid))
             */
@@ -2595,7 +2532,7 @@ char *direct;
     /*---	---*/
 
     if( !HAS_PERM(currentuser,PERM_SYSOP) )
-        if( !chk_currBM(currBM) )
+        if( !chk_currBM(currBM,currentuser) )
         {
             return DONOTHING;
         }
@@ -2658,7 +2595,7 @@ char *direct;
 
     if( !HAS_PERM(currentuser,PERM_OBOARDS) )
     {
-        if (!chk_currBM(currBM))
+        if (!chk_currBM(currBM,currentuser))
             return DONOTHING;
     }
 
@@ -2697,7 +2634,7 @@ char *direct;
 
     if( !HAS_PERM(currentuser,PERM_OBOARDS) )
     {
-        if (!chk_currBM(currBM))
+        if (!chk_currBM(currBM,currentuser))
             return DONOTHING;
     }
 
@@ -2770,7 +2707,7 @@ int mailmode;
         return DONOTHING ;
 
     if(uinfo.mode == READING && !HAS_PERM(currentuser,PERM_SYSOP ) )
-        if(!chk_currBM(currBM))
+        if(!chk_currBM(currBM,currentuser))
         {
             return DONOTHING ;
         }
@@ -2909,7 +2846,7 @@ char *direct ;
     /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
     strcpy(usrid,fileinfo->owner);
     if( !(owned) && !HAS_PERM(currentuser,PERM_SYSOP) )
-        if( !chk_currBM(currBM))
+        if( !chk_currBM(currBM,currentuser))
         {
             return DONOTHING ;
         }
@@ -2983,7 +2920,7 @@ char *direct ;
 int Save_post(int ent,struct fileheader *fileinfo,char *direct)
 {
     if(!HAS_PERM(currentuser,PERM_SYSOP))
-        if(!chk_currBM(currBM))
+        if(!chk_currBM(currBM,currentuser))
             return DONOTHING ;
     return(a_Save( "0Announce", currboard, fileinfo ,NA,direct,ent));
 }
@@ -2996,7 +2933,7 @@ struct fileheader *fileinfo;
 char *direct;
 {
     if(!HAS_PERM(currentuser,PERM_SYSOP))
-        if(!chk_currBM(currBM))
+        if(!chk_currBM(currBM,currentuser))
             return DONOTHING ;
     return(a_SeSave( "0Announce", currboard, fileinfo ,NA));
 }
@@ -3011,7 +2948,7 @@ char *direct;
     char szBuf[STRLEN];
 
     if(!HAS_PERM(currentuser,PERM_SYSOP))
-        if(!chk_currBM(currBM) )
+        if(!chk_currBM(currBM,currentuser) )
             return DONOTHING ;
 
     if (fileinfo->accessed[0] & FILE_IMPORTED) /* Leeward 98.04.15 */
@@ -3984,7 +3921,7 @@ char *direct ;
     if(digestmode!=NA&&digestmode!=YEA)
         return DONOTHING;
     if( !HAS_PERM(currentuser,PERM_SYSOP) )
-        if( !chk_currBM(currBM) )
+        if( !chk_currBM(currBM,currentuser) )
         {
             return DONOTHING;
         }

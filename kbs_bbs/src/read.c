@@ -711,7 +711,7 @@ char *direct ;
     char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除","设为不可回复"};
     char linebuffer[256];
 
-    if(!chk_currBM(currBM))
+    if(!chk_currBM(currBM,currentuser))
     {
         return DONOTHING;
     }
@@ -783,7 +783,7 @@ char *direct ;
     char linebuffer[256];
 
 
-    if(!chk_currBM(currBM))
+    if(!chk_currBM(currBM,currentuser))
     {
         return DONOTHING;
     }
