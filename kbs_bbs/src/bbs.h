@@ -122,9 +122,9 @@ extern long ti;
 #define MAXFRIENDS (400)
 #endif
 
-#ifdef SMS_SUPPORT
+/*#ifdef SMS_SUPPORT*/
 #define MOBILENUMBERLEN 17
-#endif
+/*#endif*/
 /*#define NUMPERMS (31)*/
 
 #define MAX_SIGNATURES 20       /* 最大签名档个数 by flyriver, 2002.11.10 */
