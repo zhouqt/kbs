@@ -103,12 +103,17 @@ int update_form(char *board, char *file)
     fclose(fin);
     fclose(fout);
 #ifdef FILTER
-	if (check_badword(outfile) !=0)
+	if (check_badword(outfile) !=0) {
 		unlink(outfile);
-	else
+        printf("修改文章失败，文章可能含有不恰当内容.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
+	}
+	else {
 #endif
     	f_mv(outfile, infile);
-    printf("修改文章成功.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
+        printf("修改文章成功.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
+#ifdef FILTER
+	}
+#endif
     return 0;
 }
 
