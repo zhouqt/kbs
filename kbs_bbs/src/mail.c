@@ -572,7 +572,7 @@ int do_send(char *userid, char *title, char *q_file)
                  */
                 res = bbs_sendmail(tmp_fname, title, userid, isuu, isbig5, noansi);
 
-                newbbslog(LOG_USER, "mailed %s", userid);
+                newbbslog(BBSLOG_USER, "mailed %s", userid);
                 break;
             }
         }
@@ -616,7 +616,7 @@ int do_send(char *userid, char *title, char *q_file)
        	currentuser->usedspace+=st.st_size;
        }
 
-        newbbslog(LOG_USER, "mailed %s", userid);
+        newbbslog(BBSLOG_USER, "mailed %s", userid);
         if (!strcasecmp(userid, "SYSOP"))
             updatelastpost("sysmail");
         return 0;
@@ -1165,7 +1165,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
         /*
          * comment out by jjyang for direct mail delivery 
          */
-        newbbslog(LOG_USER, "forwarded file to %s", currentuser->email);
+        newbbslog(BBSLOG_USER, "forwarded file to %s", currentuser->email);
         /*
          * comment out by jjyang for direct mail delivery 
          */
@@ -1898,7 +1898,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     if (askyn("是否修改文章内容", 0) == 1) {
         vedit(fname, false);
         y = 2;
-        newbbslog(LOG_USER, "修改被转贴的文章或信件: %s", title);   /*Haohmaru.00.05.01 */
+        newbbslog(BBSLOG_USER, "修改被转贴的文章或信件: %s", title);   /*Haohmaru.00.05.01 */
         /*
          * clear(); 
          */

@@ -360,11 +360,11 @@ enum BBS_DIR_MODE
 	DIR_MODE_TITLE   = 8  /** .TITLE.userid */
 };
 
-enum LOG_TYPE
+enum BBSLOG_TYPE
 {
-    LOG_USIES =1,
-    LOG_USER  =2,
-    LOG_BOARDUSAGE =3
+    BBSLOG_USIES =1,
+    BBSLOG_USER  =2,
+    BBSLOG_BOARDUSAGE =3
 };
 
 #include "system.h"

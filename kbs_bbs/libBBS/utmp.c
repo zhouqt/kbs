@@ -284,7 +284,7 @@ int getnewutmpent(struct user_info *up)
     now = time(NULL);
     if ((now > utmphead->uptime + 120) || (now < utmphead->uptime - 120)) {
         utmphead->uptime = now;
-        newbbslog(LOG_USIES, "UTMP:Clean user utmp cache");
+        newbbslog(BBSLOG_USIES, "UTMP:Clean user utmp cache");
         for (n = 0; n < USHM_SIZE; n++) {
             utmphead->uptime = now;
             uentp = &(utmpshm->uinfo[n]);
@@ -608,7 +608,7 @@ void clear_utmp2(int uent)
     utmphead->list_prev[utmphead->list_next[uent - 1] - 1] = utmphead->list_prev[uent - 1];
 /*	*/
 
-    newbbslog(LOG_USIES,"UTMP:clean %s(%d)", utmpshm->uinfo[uent - 1].userid, uent);
+    newbbslog(BBSLOG_USIES,"UTMP:clean %s(%d)", utmpshm->uinfo[uent - 1].userid, uent);
     utmphead->next[uent - 1] = utmphead->hashhead[0];
     utmphead->hashhead[0] = uent;
     /* Delete the user's msglist entry from webmsgd,

@@ -250,7 +250,7 @@ int init_bbslog()
     int msqid;
     struct msqid_ds buf;
 
-    msqid = msgget(sysconf_eval("BBSLOG_MSG", 0x888), IPC_CREAT | 0664);
+    msqid = msgget(sysconf_eval("BBSBBSLOG_MSG", 0x888), IPC_CREAT | 0664);
     if (msqid < 0)
         return -1;
     msgctl(msqid, IPC_STAT, &buf);

@@ -113,7 +113,7 @@ static void flushlog(int signo)
     exit(0);
 }
 
-static void flushlog_exit()
+static void flushBBSlog_exit()
 {
     flushlog(-1);
 }
@@ -144,7 +144,7 @@ static void trunclog(int signo)
     trunc=true;
 }
 
-static void flushlog_time(int signo)
+static void flushBBSlog_time(int signo)
 {
     flushlog(-1);
 }
@@ -170,13 +170,13 @@ int main()
     setregid(BBSGID, BBSGID);
     dodaemon("bbslogd", true, true);
 
-    atexit(flushlog_exit);
+    atexit(flushBBSlog_exit);
     bzero(&act, sizeof(act));
     act.sa_handler = flushlog;
     sigaction(SIGTERM, &act, NULL);
     sigaction(SIGABRT, &act, NULL);
     sigaction(SIGHUP, &act, NULL);
-    act.sa_handler = flushlog_time;
+    act.sa_handler = flushBBSlog_time;
     sigaction(SIGALRM, &act, NULL);
     act.sa_handler = trunclog;
     sigaction(SIGUSR1, &act, NULL);

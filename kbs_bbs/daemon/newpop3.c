@@ -101,7 +101,7 @@ struct fileheader *fcache;
 int totalnum, totalbyte, markdel, idletime;
 int *postlen;
 
-void log_usies();
+void BBSlog_usies();
 void Quit();
 void User();
 void Pass();
@@ -206,7 +206,7 @@ static void logattempt(uid, frm)        /* Leeward 98.07.25 */
 
 static void abort_server(int signo)
 {
-    log_usies("ABORT SERVER");
+    BBSlog_usies("ABORT SERVER");
     close(msock);
     close(sock);
     exit(1);
@@ -545,7 +545,7 @@ void pop3_timeout(int signo)
 {
     idletime++;
     if (idletime > 5) {
-        log_usies("ABORT - TIMEOUT");
+        BBSlog_usies("ABORT - TIMEOUT");
         fclose(cfp);
         close(sock);
         exit(1);
@@ -670,7 +670,7 @@ int main(int argc, char **argv)
 #endif
             outs(genbuf);
 
-            log_usies("CONNECT");
+            BBSlog_usies("CONNECT");
             alarm(0);
             signal(SIGALRM, pop3_timeout);
             alarm(POP3_TIMEOUT);
@@ -708,7 +708,7 @@ int main(int argc, char **argv)
                 free(fcache);
                 free(postlen);
             }
-            log_usies("ABORT");
+            BBSlog_usies("ABORT");
             fclose(cfp);
             close(sock);
             exit(0);
@@ -821,7 +821,7 @@ void User()
     return;
 }
 
-void log_usies(char *buf)
+void BBSlog_usies(char *buf)
 {
     FILE *fp;
 
@@ -1105,13 +1105,13 @@ void Pass()
         sprintf(genbuf, "-ERR Password supplied for \"%s\" is incorrect.", LowUserid);
         outs(genbuf);
         LowUserid[0] = '\0';
-        log_usies("ERROR PASSWD");
+        BBSlog_usies("ERROR PASSWD");
         logattempt(currentuser->userid, remote_userid); /* Leeward 98.07.25 */
         return;
     }
 
     if (State == S_CONNECT) {
-        log_usies("ENTER");
+        BBSlog_usies("ENTER");
         State = S_LOGIN;
     }
 
@@ -1211,7 +1211,7 @@ void Quit()
             get_mailusedspace(currentuser,1);
         }
     }
-    log_usies("EXIT");
+    BBSlog_usies("EXIT");
     sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", strchr(BBSNAME, '@') + 1);
     outs(genbuf);
     fclose(cfp);

@@ -382,7 +382,7 @@ void load_sysconf()
     if (dashf("etc/rebuild.sysconf") || !dashf(buf)) {
         /*注   ：这里其实有一个竞争生成img文件的问题,但是....
            先不管 KCN */
-        newbbslog(LOG_USIES, "build sysconf.img");
+        newbbslog(BBSLOG_USIES, "build sysconf.img");
         build_sysconf("etc/sysconf.ini", buf);
     }
     /*    bbslog("user","%s", "load sysconf.img" ); */

@@ -4,7 +4,7 @@
 
 #define	QLEN		50
 #define	PID_FILE	"reclog/bbs.pid"
-#define	LOG_FILE	"reclog/bbs.log"
+#define	BBSLOG_FILE	"reclog/bbs.log"
 
 static int mport;
 int csock;                      /* socket for Master and Child */

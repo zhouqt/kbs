@@ -97,7 +97,7 @@ int main()
     allocid = getnewuserid2(x.userid);
     if (allocid > MAXUSERS || allocid <= 0)
         http_fatal("抱歉, 由于某些系统原因, 无法注册新的帐号.");
-    newbbslog(LOG_USIES, "APPLY: uid %d from %s", allocid, fromhost);
+    newbbslog(BBSLOG_USIES, "APPLY: uid %d from %s", allocid, fromhost);
     update_user(&x, allocid, 1);
     if (!searchuser(x.userid))
         http_fatal("创建用户失败");

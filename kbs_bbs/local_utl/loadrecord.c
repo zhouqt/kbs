@@ -33,10 +33,10 @@ main()
     pclose(fp);
 
     sprintf(load_buf, "%s (R:%d T:%d A:%d M:%d)", load_buf, b1, b2, b3, b4);
-    log_string(load_buf);
+    BBSlog_string(load_buf);
 }
 
-void log_string(const char *str)
+void BBSlog_string(const char *str)
 {
     char *strtime;
     FILE *fp;

@@ -148,7 +148,7 @@ void new_register()
         sleep(2);
         exit(1);
     }
-    newbbslog(LOG_USIES, "APPLY: uid %d from %s", allocid, fromhost);
+    newbbslog(BBSLOG_USIES, "APPLY: uid %d from %s", allocid, fromhost);
 
     update_user(&newuser, allocid, 1);
 

@@ -1874,12 +1874,12 @@ static int www_new_guest_entry()
         return NULL;
     now = time(NULL);
     if ((now > wwwguest_shm->uptime + 240) || (now < wwwguest_shm->uptime - 240)) {
-        newbbslog(LOG_USIES, "WWW guest:Clean guest table:%d", wwwguest_shm->uptime);
+        newbbslog(BBSLOG_USIES, "WWW guest:Clean guest table:%d", wwwguest_shm->uptime);
         wwwguest_shm->uptime = now;
         for (i = 0; i < MAX_WWW_GUEST; i++) {
             if (!(wwwguest_shm->use_map[i / 32] & (1 << (i % 32))) || (now - wwwguest_shm->guest_entry[i].freshtime < MAX_WWW_GUEST_IDLE_TIME))
                 continue;
-            newbbslog(LOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", now - wwwguest_shm->guest_entry[i].freshtime, wwwguest_shm->guest_entry[i].key);
+            newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", now - wwwguest_shm->guest_entry[i].freshtime, wwwguest_shm->guest_entry[i].key);
             /*Çå³ýuse_map */
             wwwguest_shm->use_map[i / 32] &= ~(1 << (i % 32));
             if (pub->www_guest_count > 0) {
@@ -2186,7 +2186,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 
     if ((ret == 0) || (ret == 2)) {
         snprintf(buf, sizeof(buf), "ENTER ?@%s (ALLOC %d) [www]", fullfrom, *putmpent);
-        newbbslog(LOG_USIES, "%s", buf);
+        newbbslog(BBSLOG_USIES, "%s", buf);
     }
     return ret;
 }
@@ -2212,7 +2212,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
     user->stay += stay;
     record_exit_time(user->userid);
     if (strcasecmp(user->userid, "guest")) {
-        newbbslog(LOG_USIES,"EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, get_curr_utmpent(), useridx);
+        newbbslog(BBSLOG_USIES,"EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, get_curr_utmpent(), useridx);
         if (!puinfo->active)
             return 0;
         setflags(user, PAGER_FLAG, (puinfo->pager & ALL_PAGER));
@@ -2221,7 +2221,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
             setflags(user, CLOAK_FLAG, puinfo->invisible);
         clear_utmp(userinfoidx, useridx, 1);
     } else {
-        newbbslog(LOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", stay / 60, puinfo->destuid, useridx);
+        newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", stay / 60, puinfo->destuid, useridx);
         www_free_guest_entry(puinfo->destuid);
     }
     return 0;

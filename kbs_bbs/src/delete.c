@@ -555,7 +555,7 @@ int kick_user(struct user_info *userinfo)
     if (kill(uin.pid, SIGHUP) == -1) {
         clear_utmp((userinfo - utmpshm->uinfo) + 1, uin.uid, uin.pid);
     }
-    newbbslog(LOG_USER, "kicked %s", userid);
+    newbbslog(BBSLOG_USER, "kicked %s", userid);
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
     /*bbslog( "1system", "KICK %s (%s)", uin.userid, uin.username ); */
     /*    uin.active = false;

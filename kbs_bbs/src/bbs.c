@@ -2285,7 +2285,7 @@ int add_edit_mark(char *fname, int mode, char *title)
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
     }
-    newbbslog(LOG_USER, "edited post '%s' on %s", fileinfo->title, currboard);
+    newbbslog(BBSLOG_USER, "edited post '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE;
 }
 
@@ -2955,7 +2955,7 @@ int Read()
     }
     usetime = time(0);
     i_read(READING, buf, readtitle, (READ_FUNC) readdoent, &read_comms[0], sizeof(struct fileheader));  /*½øÈë±¾°æ */
-    newbbslog(LOG_BOARDUSAGE, "%-20s Stay: %5ld", currboard, time(0) - usetime);
+    newbbslog(BBSLOG_BOARDUSAGE, "%-20s Stay: %5ld", currboard, time(0) - usetime);
     bmlog(currentuser->userid, currboard, 0, time(0) - usetime);
     bmlog(currentuser->userid, currboard, 1, 1);
 
@@ -3294,7 +3294,7 @@ int Goodbye()
         /*
          * sprintf( genbuf, "Stay:%3ld (%s)", stay / 60, currentuser->username ); 
          */
-        newbbslog(LOG_USIES,"EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
+        newbbslog(BBSLOG_USIES,"EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
         u_exit();
         started = 0;
     }
