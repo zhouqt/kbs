@@ -816,6 +816,7 @@ int auto_register(char* userid,char* email,int msize)
 	return 0;
 }
 
+#ifdef SMS_SUPPORT
 int smsnumber2uid(byte number[4])
 {
     int uid;
@@ -834,4 +835,4 @@ void uid2smsnumber(struct user_info* uin,char* number)
   sprintf(number,"1%d",uin->uid);
 }
 
-
+#endif
