@@ -374,6 +374,11 @@ extern "C" {
     int zsend_file(char *filename, char *title);
 #define FILENAME2POSTTIME(x) (atoi(((char*)x)+2))
 
+/* filter */
+int check_badword(char *checkfile);
+int check_filter(char *patternfile, char *checkfile,int defaultval);
+
+
 #ifdef __cplusplus
 }
 #endif
