@@ -96,17 +96,174 @@ void end_change_inroom()
     inrooms[myroom].w = 0;
 }
 
+struct action {
+    char *verb;                 /* ¶¯´Ê */
+    char *part1_msg;            /* ½é´Ê */
+    char *part2_msg;            /* ¶¯×÷ */
+};
+
+struct action party_data[] = {
+    {"?", "ºÜÒÉ»óµÄ¿´×Å", ""},
+    {"admire", "¶Ô", "µÄ¾°ÑöÖ®ÇéÓÌÈçÌÏÌÏ½­Ë®Á¬Ãà²»¾ø"},
+    {"agree", "ÍêÈ«Í¬Òâ", "µÄ¿´·¨"},
+    {"bearhug", "ÈÈÇéµÄÓµ±§", ""},
+    {"bless", "×£¸£", "ÐÄÏëÊÂ³É"},
+    {"bow", "±Ï¹ª±Ï¾´µÄÏò", "¾Ï¹ª"},
+    {"bye", "¿´×Å", "µÄ±³Ó°£¬ÆàÈ»ÀáÏÂ¡£ÉíºóµÄÊÕÒô»ú´«À´µËÀö¾ýµÄ¸èÉù:\\n\"[31mºÎÈÕ¾ýÔÙÀ´.....[m\""},
+    {"caress", "ÇáÇáµÄ¸§Ãþ", ""},
+    {"cat", "ÏñÖ»Ð¡Ã¨°ãµØÒÀÙËÔÚ", "µÄ»³ÀïÈö½¿¡£"},
+    {"cringe", "Ïò", "±°¹ªÇüÏ¥£¬Ò¡Î²ÆòÁ¯"},
+    {"cry", "Ïò", "º¿ßû´ó¿Þ"},
+    {"comfort", "ÎÂÑÔ°²Î¿", ""},
+    {"clap", "Ïò", "ÈÈÁÒ¹ÄÕÆ"},
+    {"dance", "À­×Å", "µÄÊÖôæôæÆðÎè"},
+    {"dogleg", "¶Ô", "¹·ÍÈ"},
+    {"drivel", "¶ÔÖø", "Á÷¿ÚË®"},
+    {"dunno", "µÉ´óÑÛ¾¦£¬ÌìÕæµØÎÊ£º", "£¬ÄãËµÊ²÷áÎÒ²»¶®Ò®... :("},
+    {"faint", "ÔÎµ¹ÔÚ", "µÄ»³Àï"},
+    {"fear", "¶Ô", "Â¶³öÅÂÅÂµÄ±íÇé"},
+    {"fool", "Çë´ó¼Ò×¢Òâ", "Õâ¸ö´ó°×³Õ....\\nÕæÊÇÌìÉÏÉÙÓÐ....ÈË¼ä½ö´æµÄ»î±¦....\\n²»¿´Ì«¿ÉÏ§ÁË£¡"},
+    {"forgive", "´ó¶ÈµÄ¶Ô", "Ëµ£ºËãÁË£¬Ô­ÁÂÄãÁË"},
+    {"giggle", "¶ÔÖø", "ÉµÉµµÄ´ôÐ¦"},
+    {"grin", "¶Ô", "Â¶³öÐ°¶ñµÄÐ¦ÈÝ"},
+    {"growl", "¶Ô", "ÅØÏø²»ÒÑ"},
+    {"hand", "¸ú", "ÎÕÊÖ"},
+    {"hammer", "¾ÙÆðºÃ´óºÃ´óµÄÌú´¸£¡£¡ÍÛ£¡Íù",
+     "Í·ÉÏÓÃÁ¦Ò»ÇÃ£¡\\n***************\\n*  5000000 Pt *\\n***************\\n      | |      %1¡ï%2¡î%3¡ï%4¡î%5¡ï%6¡î%0\\n      | |         ºÃ¶àµÄÐÇÐÇÓ´\\n      |_|"},
+    {"heng", "¿´¶¼²»¿´", "Ò»ÑÛ£¬ ºßÁËÒ»Éù£¬¸ß¸ßµÄ°ÑÍ·ÑïÆðÀ´ÁË,²»Ð¼Ò»¹ËµÄÑù×Ó..."},
+    {"hug", "ÇáÇáµØÓµ±§", ""},
+    {"idiot", "ÎÞÇéµØ³ÜÐ¦", "µÄ³Õ´ô¡£"},
+    {"kick", "°Ñ", "ÌßµÄËÀÈ¥»îÀ´"},
+    {"kiss", "ÇáÎÇ", "µÄÁ³¼Õ"},
+    {"laugh", "´óÉù³°Ð¦", ""},
+    {"lovelook", "À­×Å", "µÄÊÖ£¬ÎÂÈáµØÄ¬Ä¬¶ÔÊÓ¡£Ä¿¹âÖÐÔÐº¬×ÅÇ§ÖÖÈáÇé£¬Íò°ãÃÛÒâ"},
+    {"nod", "Ïò", "µãÍ·³ÆÊÇ"},
+    {"nudge", "ÓÃÊÖÖâ¶¥", "µÄ·Ê¶Ç×Ó"},
+    {"oh", "¶Ô", "Ëµ£º¡°Å¶£¬½´×Ó°¡£¡¡±"},
+    {"pad", "ÇáÅÄ", "µÄ¼ç°ò"},
+    {"papaya", "ÇÃÁËÇÃ", "µÄÄ¾¹ÏÄÔ´ü"},
+    {"pat", "ÇáÇáÅÄÅÄ", "µÄÍ·"},
+    {"pinch", "ÓÃÁ¦µÄ°Ñ", "Å¡µÄºÚÇà"},
+    {"puke", "¶Ô×Å", "ÍÂ°¡ÍÂ°¡£¬¾ÝËµÍÂ¶à¼¸´Î¾ÍÏ°¹ßÁË"},
+    {"punch", "ºÝºÝ×áÁË", "Ò»¶Ù"},
+    {"pure", "¶Ô", "Â¶³ö´¿ÕæµÄÐ¦ÈÝ"},
+    {"qmarry", "Ïò", "ÓÂ¸ÒµÄ¹òÁËÏÂÀ´:\\n\"ÄãÔ¸Òâ¼Þ¸øÎÒÂð£¿\"\\n---ÕæÊÇÓÂÆø¿É¼Î°¡"},
+    {"report", "ÍµÍµµØ¶Ô", "Ëµ£º¡°±¨¸æÎÒºÃÂð£¿¡±"},
+    {"shrug", "ÎÞÄÎµØÏò", "ËÊÁËËÊ¼ç°ò"},
+    {"sigh", "¶Ô", "Ì¾ÁËÒ»¿ÚÆø"},
+    {"slap", "Å¾Å¾µÄ°ÍÁË", "Ò»¶Ù¶ú¹â"},
+    {"smooch", "ÓµÎÇÖø", ""},
+    {"snicker", "ºÙºÙºÙ..µÄ¶Ô", "ÇÔÐ¦"},
+    {"sniff", "¶Ô", "àÍÖ®ÒÔ±Ç"},
+    {"sorry", "Í´¿ÞÁ÷ÌéµÄÇëÇó", "Ô­ÁÂ"},
+    {"spank", "ÓÃ°ÍÕÆ´ò", "µÄÍÎ²¿"},
+    {"squeeze", "½ô½ôµØÓµ±§Öø", ""},
+    {"thank", "Ïò", "µÀÐ»"},
+    {"tickle", "¹¾ß´!¹¾ß´!É¦", "µÄÑ÷"},
+    {"waiting", "ÉîÇéµØ¶Ô", "Ëµ£ºÃ¿ÄêÃ¿ÔÂµÄÃ¿Ò»Ìì£¬Ã¿·ÖÃ¿ÃëÎÒ¶¼ÔÚÕâÀïµÈ×ÅÄã"},
+    {"wake", "Å¬Á¦µÄÒ¡Ò¡", "£¬ÔÚÆä¶ú±ß´ó½Ð£º¡°¿ìÐÑÐÑ£¬»á×ÅÁ¹µÄ£¡¡±"},
+    {"wave", "¶ÔÖø", "Æ´ÃüµÄÒ¡ÊÖ"},
+    {"welcome", "ÈÈÁÒ»¶Ó­", "µÄµ½À´"},
+    {"wink", "¶Ô", "ÉñÃØµÄÕ£Õ£ÑÛ¾¦"},
+    {"xixi", "ÎûÎûµØ¶Ô", "Ð¦ÁË¼¸Éù"},
+    {"zap", "¶Ô", "·è¿ñµÄ¹¥»÷"},
+    {"inn", "Ë«ÑÛ±¥º¬×ÅÀáË®£¬ÎÞ¹¼µÄÍû×Å", ""},
+    {"mm", "É«ÃÐÃÐµÄ¶Ô", "ÎÊºÃ£º¡°ÃÀÃ¼ºÃ¡«¡«¡«¡«¡±¡£´óÉ«ÀÇ°¡£¡£¡£¡"},
+    {"disapp", "ÕâÏÂÃ»¸ãÍ·À²£¬ÎªÊ²Ã´", "¹ÃÄï¶ÔÎÒÕâ¸öÔìÐÍÍêÈ«Ã»·´Ó¦£¿Ã»°ì·¨£¡"},
+    {"miss", "Õæ³ÏµÄÍû×Å", "£ºÎÒÏëÄîÄãÎÒÕæµÄÏëÄîÄãÎÒÌ«--ÏëÄîÄãÁË!ÄãÏà²»ÏàÐÅ?"},
+    {"buypig", "Ö¸×Å", "£º¡°Õâ¸öÖíÍ·¸øÎÒÇÐÒ»°ë£¬Ð»Ð»£¡¡±"},
+    {"rascal", "¶Ô", "´ó½Ð£º¡°ÄãÕâ¸ö³ôÁ÷Ã¥£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡¡±"},
+    {"qifu", "Ð¡×ìÒ»±â£¬¶Ô", "¿ÞµÀ£º¡°ÄãÆÛ¸ºÎÒ£¬ÄãÆÛ¸ºÎÒ£¡£¡£¡¡±"},
+    {"wa", "¶Ô", "´ó½ÐÒ»Éù£º¡°ÍÛÍÛÍÛÍÛÍÛÍÛ¿á±×ÁËÒ®£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡£¡¡±"},
+    {"feibang", "à¸£­£­£¡Êì¹éÊì£¬", "ÄãÕâÑùÂÒ½²»°£¬ÎÒÒ»Ñù¿ÉÒÔ¸æÄã»Ù°ù£¬¹þ£¡"},
+    {NULL, NULL, NULL}
+};
+
+struct action speak_data[] = {
+    {"ask", "Ñ¯ÎÊ", NULL},
+    {"chant", "¸èËÌ", NULL},
+    {"cheer", "ºÈ²É", NULL},
+    {"chuckle", "ÇáÐ¦", NULL},
+    {"curse", "ÖäÂî", NULL},
+    {"demand", "ÒªÇó", NULL},
+    {"frown", "õ¾Ã¼", NULL},
+    {"groan", "ÉëÒ÷", NULL},
+    {"grumble", "·¢ÀÎÉ§", NULL},
+    {"hum", "à«à«×ÔÓï", NULL},
+    {"moan", "±¯Ì¾", NULL},
+    {"notice", "×¢Òâ", NULL},
+    {"order", "ÃüÁî", NULL},
+    {"ponder", "ÉòË¼", NULL},
+    {"pout", "àÙÖø×ìËµ", NULL},
+    {"pray", "Æíµ»", NULL},
+    {"request", "¿ÒÇó", NULL},
+    {"shout", "´ó½Ð", NULL},
+    {"sing", "³ª¸è", NULL},
+    {"smile", "Î¢Ð¦", NULL},
+    {"smirk", "¼ÙÐ¦", NULL},
+    {"swear", "·¢ÊÄ", NULL},
+    {"tease", "³°Ð¦", NULL},
+    {"whimper", "ÎØÑÊµÄËµ", NULL},
+    {"yawn", "¹þÇ·Á¬Ìì", NULL},
+    {"yell", "´óº°", NULL},
+    {NULL, NULL, NULL}
+};
+
+struct action condition_data[] = {
+    {":D", "ÀÖµÄºÏ²»Â£×ì", NULL},
+    {":)", "ÀÖµÄºÏ²»Â£×ì", NULL},
+    {":P", "ÀÖµÄºÏ²»Â£×ì", NULL},
+    {":(", "ÀÖµÄºÏ²»Â£×ì", NULL},
+    {"applaud", "Å¾Å¾Å¾Å¾Å¾Å¾Å¾....", NULL},
+    {"blush", "Á³¶¼ºìÁË", NULL},
+    {"cough", "¿ÈÁË¼¸Éù", NULL},
+    {"faint", "ßÛµ±Ò»Éù£¬ÔÎµ¹ÔÚµØ", NULL},
+    {"happy", "µÄÁ³ÉÏÂ¶³öÁËÐÒ¸£µÄ±íÇé£¬²¢Ñ§³Ô±¥ÁËµÄÖíºßºßÁËÆðÀ´", NULL},
+    {"lonely", "Ò»¸öÈË×øÔÚ·¿¼äÀï£¬°ÙÎÞÁÄÀµ£¬Ï£ÍûË­À´ÅãÅã¡£¡£¡£¡£", NULL},
+    {"luck", "ÍÛ£¡¸£ÆøÀ²£¡", NULL},
+    {"puke", "Õæ¶ñÐÄ£¬ÎÒÌýÁË¶¼ÏëÍÂ", NULL},
+    {"shake", "Ò¡ÁËÒ¡Í·", NULL},
+    {"sleep", "Zzzzzzzzzz£¬ÕæÎÞÁÄ£¬¶¼¿ìË¯ÖøÁË", NULL},
+    {"so", "¾Í½´×Ó!!", NULL},
+    {"strut", "´óÒ¡´ó°ÚµØ×ß", NULL},
+    {"tongue", "ÍÂÁËÍÂÉàÍ·", NULL},
+    {"think", "ÍáÖøÍ·ÏëÁËÒ»ÏÂ", NULL},
+    {"wawl", "¾ªÌì¶¯µØµÄ¿Þ", NULL},
+    {NULL, NULL, NULL}
+};
+
 void send_msg(int u, char* msg)
 {
-    int i, j;
-    char buf[80];
+    int i, j, k;
+    char buf[200], buf2[200], buf3[200];
     j=MAX_MSG;
+    if(inrooms[myroom].msgs[(MAX_MSG-1+inrooms[myroom].msgi)%MAX_MSG][0]==0)
     for(i=0;i<MAX_MSG;i++)
         if(inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG][0]==0) {
             j=(i+inrooms[myroom].msgi)%MAX_MSG;
             break;
         }
     strcpy(buf, msg);
+
+    while(strchr('\n', buf)!=NULL) {
+        i = strchr('\n', buf)-buf;
+        buf[i]=0;
+        send_msg(u, buf);
+        strcpy(buf2, buf+i+1);
+        strcpy(buf, buf2);
+    }
+    while(strlen(buf)>=54) {
+        k=0;
+        for(i=0;i<strlen(buf);i++) {
+            if(k==0&&i<=53) break;
+            if(k) k=0;
+            else if(buf[i]<0) k=1;
+        }
+        strcpy(buf2, buf);
+        buf[i]=0;
+        send_msg(u, buf);
+        strcpy(buf, buf2+i);
+    }
     buf[54]=0;
     if(j==MAX_MSG) {
         strcpy(inrooms[myroom].msgs[inrooms[myroom].msgi], buf);
@@ -134,7 +291,7 @@ void kill_msg(int u)
     if(u==-1||i==u) {
         j=kill(inrooms[myroom].peoples[i].pid, SIGUSR1);
         if(j==-1) {
-            sprintf(buf, "%sµôÏßÁË", inrooms[myroom].peoples[i].nick[0]?inrooms[myroom].peoples[i].nick:inrooms[myroom].peoples[i].id);
+            sprintf(buf, "%sµôÏßÁË", inrooms[myroom].peoples[i].nick);
             send_msg(-1, buf);
             start_change_inroom();
             inrooms[myroom].peoples[i].style=-1;
@@ -144,7 +301,7 @@ void kill_msg(int u)
                 if(inrooms[myroom].peoples[k].style!=-1&&!(inrooms[myroom].peoples[k].flag&PEOPLE_SPECTATOR))
                 {
                     inrooms[myroom].peoples[k].flag|=PEOPLE_ROOMOP;
-                    sprintf(buf, "%s³ÉÎªÐÂ·¿Ö÷", inrooms[myroom].peoples[k].nick[0]?inrooms[myroom].peoples[k].nick:inrooms[myroom].peoples[k].id);
+                    sprintf(buf, "%s³ÉÎªÐÂ·¿Ö÷", inrooms[myroom].peoples[k].nick);
                     send_msg(-1, buf);
                     break;
                 }
@@ -692,8 +849,8 @@ int do_com_menu()
 
 void join_room(int w, int spec)
 {
-    char buf[80],buf2[80],buf3[80],roomname[80];
-    int i,j,killer,me;
+    char buf[200],buf2[200],buf3[200],msg[80],roomname[80];
+    int i,j,k,killer,me;
     clear();
     myroom = w;
     start_change_inroom();
@@ -770,8 +927,8 @@ void join_room(int w, int spec)
                         !(inrooms[myroom].peoples[sel].flag&PEOPLE_SPECTATOR) &&
                         sel!=me) {
                         int i,j,t1,t2,t3;
-                        sprintf(buf, "\x1b[32;1m%sÍ¶ÁË%sÒ»Æ±\x1b[m", inrooms[myroom].peoples[me].nick[0]?inrooms[myroom].peoples[me].nick:inrooms[myroom].peoples[me].id,
-                            inrooms[myroom].peoples[sel].nick[0]?inrooms[myroom].peoples[sel].nick:inrooms[myroom].peoples[sel].id);
+                        sprintf(buf, "\x1b[32;1m%sÍ¶ÁË%sÒ»Æ±\x1b[m", inrooms[myroom].peoples[me].nick,
+                            inrooms[myroom].peoples[sel].nick);
                         start_change_inroom();
                         inrooms[myroom].peoples[me].vote = pid;
                         end_change_inroom();
@@ -852,7 +1009,7 @@ checkvote:
                             if(!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) &&
                                 inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE) {
                                 sprintf(buf, "%sµÄÍ¶Æ±Êý: %d Æ±", 
-                                    inrooms[myroom].peoples[i].nick[0]?inrooms[myroom].peoples[i].nick:inrooms[myroom].peoples[i].id,
+                                    inrooms[myroom].peoples[i].nick,
                                     inrooms[myroom].peoples[i].vnum);
                                 if(inrooms[myroom].peoples[i].vnum==max)
                                     ok=0;
@@ -901,14 +1058,14 @@ checkvote:
                                 if(inrooms[myroom].status == INROOM_DAY) {
                                     if(inrooms[myroom].peoples[maxi].flag&PEOPLE_KILLER)
                                         sprintf(buf, "»µÈË%s±»´¦¾öÁË!",
-                                            inrooms[myroom].peoples[maxi].nick[0]?inrooms[myroom].peoples[maxi].nick:inrooms[myroom].peoples[maxi].id);
+                                            inrooms[myroom].peoples[maxi].nick);
                                     else
                                         sprintf(buf, "ºÃÈË%s±»´¦¾öÁË!",
-                                            inrooms[myroom].peoples[maxi].nick[0]?inrooms[myroom].peoples[maxi].nick:inrooms[myroom].peoples[maxi].id);
+                                            inrooms[myroom].peoples[maxi].nick);
                                 }
                                 else
                                     sprintf(buf, "%s±»É±µôÁË!",
-                                        inrooms[myroom].peoples[maxi].nick[0]?inrooms[myroom].peoples[maxi].nick:inrooms[myroom].peoples[maxi].id);
+                                        inrooms[myroom].peoples[maxi].nick);
                                 for(j=0;j<MAX_PEOPLE;j++)
                                     if(inrooms[myroom].peoples[j].style!=-1)
                                     if(j!=maxi)
@@ -932,7 +1089,7 @@ checkvote:
                                     if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER &&
                                         inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE) {
                                         sprintf(buf, "Ô­À´%sÊÇ»µÈË!",
-                                            inrooms[myroom].peoples[j].nick[0]?inrooms[myroom].peoples[j].nick:inrooms[myroom].peoples[j].id);
+                                            inrooms[myroom].peoples[j].nick);
                                         send_msg(-1, buf);
                                     }
                                 }
@@ -982,10 +1139,61 @@ checkvote:
         }while(1);
         start_change_inroom();
         me=mypos;
+        strcpy(msg, buf);
+        if(msg[0]=='/'&&msg[1]=='/') {
+            i=2;
+            while(msg[i]!=' '&&i<strlen(msg)) i++;
+            strcpy(buf, msg+2);
+            buf[i-2]=0;
+            while(msg[i]==' '&&i<strlen(msg)) i++;
+            buf2[0]=0; buf3[0]=0;
+            if(msg[i-1]==' '&&i<strlen(msg)) {
+                k=i;
+                while(msg[k]!=' '&&k<strlen(msg)) k++;
+                strcpy(buf2, msg+i);
+                buf2[k-i]=0;
+                i=k;
+                while(msg[i]==' '&&i<strlen(msg)) i++;
+                if(msg[i-1]==' '&&i<strlen(msg)) {
+                    k=i;
+                    while(msg[k]!=' '&&k<strlen(msg)) k++;
+                    strcpy(buf3, msg+i);
+                    buf3[k-i]=0;
+                }
+            }
+            k=1;
+            for(i=0;;i++) {
+                if(!party_data[i].verb) break;
+                if(!strcmp(party_data[i].verb, buf)) {
+                    k=0;
+                    sprintf(buf, "%s %s %s", party_data[i].part1_msg, buf2, party_data[i].part2_msg);
+                    break;
+                }
+            }
+            if(k)
+            for(i=0;;i++) {
+                if(!speak_data[i].verb) break;
+                if(!strcmp(speak_data[i].verb, buf)) {
+                    k=0;
+                    sprintf(buf, "%s %s: %s", party_data[i].part1_msg, buf2, buf3);
+                    break;
+                }
+            }
+            if(k)
+            for(i=0;;i++) {
+                if(!condition_data[i].verb) break;
+                if(!strcmp(condition_data[i].verb, buf)) {
+                    k=0;
+                    sprintf(buf, "%s", condition_data[i].part1_msg);
+                    break;
+                }
+            }
+
+            if(k) continue;
+        }
+
         strcpy(buf2, buf);
-        sprintf(buf, "%s: %s", 
-            inrooms[myroom].peoples[me].nick[0]?inrooms[myroom].peoples[me].nick:inrooms[myroom].peoples[me].id, 
-            buf2);
+        sprintf(buf, "%s: %s", inrooms[myroom].peoples[me].nick, buf2);
         if(inrooms[myroom].status==INROOM_NIGHT) {
             if(inrooms[myroom].peoples[me].flag&PEOPLE_KILLER)
             for(i=0;i<MAX_PEOPLE;i++) 
