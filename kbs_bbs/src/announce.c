@@ -191,7 +191,10 @@ int a_loadnames(pm)             /* 装入 .Names */
     char buf[PATHLEN], *ptr;
     char hostname[STRLEN];
     struct stat st;
+    int i;
 
+    for (i=0;i<pm->num;i++)
+    	free(pm->item[i]);
     pm->num = 0;
     sprintf(buf, "%s/.Names", pm->path);        /*.Names记录菜单信息 */
     if ((fn = fopen(buf, "r")) == NULL)
@@ -682,9 +685,14 @@ void a_newitem(pm, mode)        /* 用户创建新的 ITEM */
 	        else
 	            bmlog(currentuser->userid, currboard, 13, 1);
 	} else {
-	    sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-           a_prompt(-1, buf, ans);
+	//retry
            a_loadnames(pm);
+	    a_additem(pm,buf,fname,NULL,0);
+        if (a_savenames(pm)!=0) {
+	        sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
+               a_prompt(-1, buf, ans);
+        }
+        a_loadnames(pm);
        }
   }
 }
@@ -807,8 +815,13 @@ void a_copypaste(pm, paste)
 	                sprintf(buf, "复制精华区文件或目录: %s", genbuf);
 	                a_report(buf);
 		   } else {
-		       sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-		       a_prompt(-1, buf, ans);
+		       //retry
+		       a_loadnames(pm);
+                     a_additem(pm, title, filename, NULL, 0);
+		       if (a_savenames(pm)!=0) {
+		           sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
+		           a_prompt(-1, buf, ans);
+		       }
 		       a_loadnames(pm);
 		   }
             } else if (ans[0] == 'L' || ans[0] == 'l') {
@@ -826,8 +839,13 @@ void a_copypaste(pm, paste)
                 	sprintf(buf, "复制精华区文件或目录: %s", genbuf);
                 	a_report(buf);
     		  } else {
-       		sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-       		a_prompt(-1, buf, ans);
+		       //retry
+		       a_loadnames(pm);
+                     a_additem(pm, title, filename, NULL, 0);
+		       if (a_savenames(pm)!=0) {
+	       		sprintf(buf, " 整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
+       			a_prompt(-1, buf, ans);
+		       }
        		a_loadnames(pm);
    		  }
             }
@@ -920,20 +938,20 @@ void a_newname(pm)
         mesg = "系统中已有此文件存在了.";
     } else {
         sprintf(genbuf, "%s/%s", pm->path, item->fname);
-        if (f_mv(genbuf, fpath) == 0) {
-            char r_buf[256];
+        strcpy(item->fname, fname);
+         if (a_savenames(pm)==0) {
+            if (f_mv(genbuf, fpath) == 0) {
+                char r_buf[256];
 
-            strcpy(item->fname, fname);
-    	      if (a_savenames(pm)==0) {
                 sprintf(r_buf, "更改文件名: %s -> %s", genbuf + 17, fpath + 17);
                 a_report(r_buf);
-             } else {
-                char buf[80],ans[40];
-                sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-                a_prompt(-1, buf, ans);
-                a_loadnames(pm);
-            }
-            return;
+                return;
+           }
+         } else {
+            char buf[80],ans[40];
+            sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
+            a_prompt(-1, buf, ans);
+            a_loadnames(pm);
         }
         mesg = "文件名更改失败 !!";
     }
@@ -1370,7 +1388,7 @@ int linkto(char *path, char *fname, char *title)
     strcpy(pm.mtitle, title);
     a_loadnames(&pm);
     a_additem(&pm, title, fname, NULL, 0);
-    if (a_savenames(&pm)==0) {
+    if (a_savenames(&pm)!=0) {
         char buf[80],ans[40];
         sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
         a_prompt(-1, buf, ans);
@@ -1471,7 +1489,7 @@ int del_grp(bname, title)
             (pm.num)--;
             for (n = i; n < pm.num; n++)
                 pm.item[n] = pm.item[n + 1];
-            if (a_savenames(&pm)==0) {
+            if (a_savenames(&pm)!=0) {
         	  char buf[80],ans[40];
                 sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
                 a_prompt(-1, buf, ans);
@@ -1513,7 +1531,7 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
             break;
         }
     }
-    if (a_savenames(&pm)==0) {
+    if (a_savenames(&pm)!=0) {
 	  char buf[80],ans[40];
         sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
         a_prompt(-1, buf, ans);
@@ -1522,7 +1540,7 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
     pm.path = bpath;
     a_loadnames(&pm);
     strcpy(pm.mtitle, newtitle);
-    if (a_savenames(&pm)==0) {
+    if (a_savenames(&pm)!=0) {
 	  char buf[80],ans[40];
         sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
         a_prompt(-1, buf, ans);
