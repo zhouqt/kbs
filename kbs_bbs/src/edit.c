@@ -78,8 +78,10 @@ void display_buffer()
                         outii = ii; outjj = i;
                         break;
                     }
-                    if (i>shift||i==shift&&(p->data[i]>=0||ch)) {
-                        if (p->data[i]==27) {
+                    if (i>=shift) {
+                        if (i==shift&&p->data[i]<0&&!ch)
+                            outc(' ');
+                        else if (p->data[i]==27) {
                             setfcolor(YELLOW, 0);
                             outc('*');
                             resetcolor();
