@@ -204,7 +204,6 @@ static int a_select_path_onselect(struct _select_def *conf)
     		a_prompt(-2, "Òª¸²¸ÇÒÑÓÐµÄË¿Â·Ã´£¿(Y/N) [N]", ans);
     		if (toupper(ans[0])!='Y')
     		    return SHOW_CONTINUE;
-		return SHOW_REFRESH;
     	}
     }
     return SHOW_SELECT;
@@ -216,7 +215,7 @@ a_select_path_show(struct _select_def *conf, int i)
     if (import_title[i-1][0]!=0)
         prints(" %2d   %s", i, import_title[i-1]);
     else
-        prints(" %2d   ÉÐÎ´Éè¶¨", i);
+        prints(" %2d   \x1b[32m<ÉÐÎ´Éè¶¨>\x1b[m", i);
     return SHOW_CONTINUE;
 }
 
@@ -274,7 +273,7 @@ a_select_path_key(struct _select_def *conf, int key)
             if (import_path[conf->pos-1][0]!=0) {
                     char new_title[STRLEN];
                     strcpy(new_title,import_title[conf->pos-1]);
-                    a_prompt2(-2, "ÐÂ±êÌâ: ", new_title);
+                    a_prompt2(-2, "ÐÂÃû³Æ: ", new_title);
                     if (new_title[0]!=0) {
                         free(import_title[conf->pos-1]);
                         new_title[80]=0;
@@ -361,7 +360,7 @@ a_select_path_refresh(struct _select_def *conf)
     docmdtitle("[Ë¿Â·Ñ¡Ôñ²Ëµ¥]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÒÆ¶¯[\x1b[1;32mm\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m %4s  %-64s[m", "±àºÅ", "Ë¿Â·Ãû");
+    prints("[0;1;37;44m %4s   %-64s[m", "±àºÅ", "Ë¿Â·Ãû");
     update_endline();
     return SHOW_CONTINUE;
 }
@@ -1314,7 +1313,7 @@ void a_manager(pm, ch)
         break;
     case 'f': {
     	    int i;
-           pm->page = 9999;
+            pm->page = 9999;
 	    i=a_select_path(false);
 	    if (i==0)
 	        break;
@@ -1324,8 +1323,12 @@ void a_manager(pm, ch)
 	    import_path[i]=malloc(strlen(pm->path)+1);
 	    strcpy(import_path[i],pm->path);
 	    free(import_title[i]);
-	    import_title[i]=malloc(strlen(pm->mtitle)+1);
-	    strcpy(import_title[i],pm->mtitle);
+	    strcpy(ans,pm->mtitle);
+	    move(t_lines - 2, 0);
+            clrtoeol();
+	    getdata(t_lines -2, 0, "Éè¶¨Ë¿Â·Ãû:", ans, STRLEN-1, DOECHO, NULL, false);
+	    import_title[i]=malloc(strlen(ans)+1);
+	    strcpy(import_title[i],ans);
 	    save_import_path();
 	 }
         break;
