@@ -110,10 +110,6 @@ char *nohtml(char *s);
 
 char *strright(char *s, int len);
 
-#if HAVE_STRCASESTR != 1
-char *strcasestr(char *s1, char *s2);
-#endif
-
 int strsncpy(char *s1, char *s2, int n);
 
 char *ltrim(char *s);
