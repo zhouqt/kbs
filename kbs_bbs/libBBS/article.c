@@ -321,7 +321,7 @@ void write_header(FILE *fp,struct userec* user,int in_mail,char* board,char* tit
 
 }
 
-void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,char* board,char* title,int Anony,int mode)      /* 把quote_file复制到filepath (转贴或自动发信)*/
+void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,char* board,char* title,int Anony,int mode,char* sourceboard)      /* 把quote_file复制到filepath (转贴或自动发信)*/
 {
     FILE        *inf, *of;
     char        buf[256];
@@ -348,7 +348,7 @@ void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,ch
         int header_count;        
         normal_file=1;           
 
-        write_header(of,user,in_mail,currboard,title,Anony,1/*不写入 .posts*/);
+        write_header(of,user,in_mail,sourceboard,title,Anony,1/*不写入 .posts*/);
         if(fgets( buf, 256, inf ) != NULL)
             { for(count=8;buf[count]!=' ';count++)
                 owner[count-8]=buf[count];}

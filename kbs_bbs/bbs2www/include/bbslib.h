@@ -102,8 +102,6 @@ struct stat *f_stat(char *file);
 
 #ifndef SMTH
 int get_record(void *buf, int size, int num, char *file);
-#else
-int get_record(char *filename, char *rptr, int size, int id);
 #endif
 
 int put_record(void *buf, int size, int num, char *file);

@@ -812,26 +812,6 @@ int setmsgfilelog(char *buf, char *id)
 	return 0;
 }
 
-int
-cmpfnames(userid, uv)
-char    *userid;
-struct friends *uv;
-{
-    return !strcasecmp(userid, uv->id);
-}
-
-int
-can_override( userid, whoasks )
-char *userid;
-char *whoasks;
-{
-    struct friends fh;
-	char buf[STRLEN];
-
-    sethomefile( buf, userid, "friends" );
-    return (search_record( buf, &fh, sizeof(fh), cmpfnames, whoasks )>0)?YEA:NA;
-}
-
 extern char MsgDesUid[14];
 int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
 {
