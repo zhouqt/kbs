@@ -80,8 +80,7 @@ function doPostAritcles($boardID,$boardName,$boardArr,$reID){
 	global $_POST;
 	if (bbs_is_outgo_board($boardArr)) $outgo = intval($_POST["outgo"]);
 	else $outgo = 0;
-	$ret=bbs_postarticle($boardName,preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST['subject'])),
-	                     preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['Content']),
+	$ret=bbs_postarticle($boardName,trim($_POST['subject']),$_POST['Content'],
 	                     intval($_POST['signature']), $reID,$outgo,intval($_POST['anonymous']),
 	                     ($reID>0)?0:intval($_POST['emailflag']),SUPPORT_TEX?intval($_POST['texflag']):0);
 	switch ($ret) {
