@@ -700,7 +700,8 @@ int find_thread(struct fileheader *fh,char* board,char* title)
     setbfile(direct,board, DOT_DIR);
     if ((fd = open(direct, O_RDONLY , 0644)) == -1)
        return 0;
-    if (!strncmp(title,"Re:",3)) p=title+4;
+    if (!strncasecmp(title,"Re:",3)) p=title+4;
+    else if (!strncasecmp(title,"»Ø¸´:",5)) p=title+6;
     else p=title;
     ret=search_record_back(fd, sizeof(struct fileheader), 0X7FFFF, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
     close(fd);

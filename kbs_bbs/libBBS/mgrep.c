@@ -36,7 +36,7 @@ struct pattern_image {
 	unsigned char SHIFT1[MAXMEMBER1];
 	unsigned char tr[MAXSYM];
 	unsigned char tr1[MAXSYM];
-        unsigned int HASH[MAXHASH];
+        unsigned int HASH[MAXHASH+1];
 	unsigned char buf[MAXPATFILE + BLOCKSIZE];
 	unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];
 	unsigned long patt[max_num]; /*用于指向pat_spool的偏移*/
