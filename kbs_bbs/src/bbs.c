@@ -2041,7 +2041,7 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
     if (newmode==0) {
         move(t_lines - 2, 0);
         clrtoeol();
-        prints("切换模式到: 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
+        prints("切换模式到: 0)取消 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
         move(t_lines - 1, 0);
         clrtoeol();
         getdata(t_lines - 1, 12, "7)超级文章选择 8)本版精华区搜索 [1]: ", ans, 3, DOECHO, NULL, true);
@@ -2050,6 +2050,9 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
             ans[1] = 0;
         }
         switch (ans[0]) {
+        case '0':
+            return FULLUPDATE;
+            break;
         case '1':
             newmode=DIR_MODE_DIGEST;
             break;
