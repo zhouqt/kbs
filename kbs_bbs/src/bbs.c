@@ -2020,7 +2020,7 @@ char *direct;
             || strcmp(mkpost.filename, fileinfo->filename)) {
         if(newent) /* newent = 0 说明文件已被删除,不用再search了   */
             newent = search_record_back(direct, sizeof(struct fileheader),
-                                        ent, strcmp, fileinfo, &mkpost, 1);
+                                        ent, (RECORD_FUNC_ARG)strcmp, fileinfo, &mkpost, 1);
         if(newent <= 0) {
             move(2,0) ;
             prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title) ;

@@ -1832,7 +1832,7 @@ int cnt;
 }
 
 int
-doforward(char *direct,struct boardheader*fh,int isuu)
+doforward(char *direct,struct fileheader*fh,int isuu)
 {
     static char address[ STRLEN ];
     char        fname[STRLEN];

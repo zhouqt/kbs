@@ -629,7 +629,7 @@ char    *path;
 ITEM    *pitem;
 int     mode;
 {
-    struct boardheader fhdr;
+    struct fileheader fhdr;
     char        fname[ PATHLEN ], *mesg;
 
     sprintf( fname, "%s/%s", path, pitem->fname );

@@ -325,7 +325,7 @@ netty_more()
     move (y,x);
 }
 
-printacbar()
+void printacbar()
 {
     int x,y;
     getyx(&y,&x);

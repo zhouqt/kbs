@@ -745,10 +745,7 @@ int mode;
     return 0;
 }
 
-int
-servicepage( line, mesg )
-int     line;
-char    *mesg;
+int servicepage(int     line,char    *mesg)
 {
     static time_t last_check;
     time_t now;
@@ -1868,7 +1865,7 @@ int
 cmpfuid( a,b )
 struct friends   *a,*b;
 {
-    return strcasecmp(a->id,b->id);
+    return strncasecmp(a->id,b->id,IDLEN);
 }
 
 int

@@ -367,14 +367,13 @@ usercomplete(prompt,data)
 char *prompt, *data ;
 {
     if( scrint ) {
-        char    *u_namearray();
         char    *cwbuf, *cwlist, *temp;
         int     cwnum, x, y, origx, origy;
         int     clearbot = NA, count = 0, morenum = 0;
         char    ch;
         struct userec* lookupuser;
 
-/* 大量内存临时占用 KCN*/
+/* 大量内存临时占用 KCN,TODO*/
         cwbuf = malloc( MAXUSERS* (IDLEN+1) );
         if( prompt != NULL ) {
             prints( "%s", prompt );

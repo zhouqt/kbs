@@ -51,7 +51,8 @@ int ansimore2(char* filename,int promptend,int row,int numlines);
 int NNread_init();
 void m_init();
 int countln(char* fname);
-
+void R_monitor(void* data);
+void printacbar();
 /* namecomplete.c */
 void AddNameList(char* name);
 void CreateNameList();
@@ -90,6 +91,9 @@ int sequential_read2(int ent);
 void setquotefile(char filepath[]);
 void do_quote(char *filepath,char quote_mode);
 void setqtitle(char* stitle);
+int set_delete_mark(int ent,struct fileheader *fileinfo,char *direct );
+int noreply_post_noprompt(int ent,struct fileheader *fileinfo,char *direct );
+
 /*vote.c*/
 void makevdir(char* bname);
 void setvfile(char* buf,char* bname,char* filename);
@@ -101,7 +105,7 @@ int chkmail();
 int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
 int invalidaddr(char*addr);
-int doforward(char *direct,struct boardheader*fh,int isuu);
+int doforward(char *direct,struct fileheader*fh,int isuu);
 /* maintain.c */
 int check_systempasswd();
 void stand_title(char* title);
@@ -110,6 +114,7 @@ int del_grp(char grp[STRLEN],char bname[STRLEN],char title[STRLEN]);
 int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 
 /* talk.c */
+int servicepage(int     line,char    *mesg);
 int del_from_file(char filename[STRLEN],char str[STRLEN]);
 int addtooverride(char* uident);
 int t_query(char q_id[IDLEN]);
@@ -129,7 +134,8 @@ void getuinfo(FILE *fn,struct userec *ptr_urec);
 /* read.c */
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
 void fixkeep(char* s,int first,int last);
-void i_read( int cmdmode,char *direct ,int (*dotitle)() ,char *(*doentry)(char*,int,char*),struct one_key *rcmdlist,int ssize);
+typedef char *(*READ_FUNC)(void*,int,void*);
+void i_read( int cmdmode,char *direct ,int (*dotitle)() ,READ_FUNC doentry,struct one_key *rcmdlist,int ssize);
 void u_exit();
 
 /* sendmsg.c */

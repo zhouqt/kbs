@@ -180,9 +180,7 @@ int             mode;
     return reload;
 }
 
-void
-draw_title( dotitle )
-int (*dotitle)() ;
+static void draw_title(void (*dotitle)() )
 {
     move( 0, 0 );
     clear();
@@ -244,8 +242,8 @@ char            *powner;
 }
 
 
-void i_read( int     cmdmode,char    *direct ,int (*dotitle)() ,
-	char *(*doentry)(char*,int,char*),struct one_key *rcmdlist,int ssize)
+void i_read( int     cmdmode,char    *direct ,void (*dotitle)() ,
+	READ_FUNC doentry,struct one_key *rcmdlist,int ssize)
 {
     extern int  talkrequest;
     struct keeploc      *locmem;
