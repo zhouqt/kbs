@@ -391,7 +391,10 @@ void r_msg(int signo)
             ptr = strrchr(buf, '[');
             *ptr = '\0';
             ptr = strrchr(buf, '[');
-            send_pid = atoi(ptr + 1);
+            if (ptr)
+            	send_pid = atoi(ptr + 1);
+           	else
+            	send_pid = 0;
             if (send_pid > 100)
                 send_pid -= 100;
             ptr = strtok(msg + 10, " [");      /* ºÍmsgÖĞ useridµÄÎ»ÖÃ¹ØÏµÃÜÇĞ */
