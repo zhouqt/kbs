@@ -4,30 +4,34 @@
 */
 require_once("pcfuncs.php");
 
-function getNewBlogs($link,$pno=1)
+function getNewBlogs($link,$pno=1,$etemnum=0)
 {
 	global $pcconfig;
 	if($pno < 1)
 		$pno = 1;
-		
+	
+	$etemnum = intval( $etemnum );
+	if($etemnum <= 0 )
+		$etemnum = $pcconfig["NEWS"];
+	
 	$newBlogs = array();
 	$newBlogs[channel] = array(
 			"siteaddr" => "http://".$pcconfig["SITE"],
 			"title" => $pcconfig["BBSNAME"]."即时Blog文章列表" ,
 			"pcaddr" => "http://".$pcconfig["SITE"],
-			"desc" => $pcconfig["BBSNAME"]."最新".$pcconfig["NEWS"]."篇文章",
+			"desc" => $pcconfig["BBSNAME"]."最新".$etemnum."篇文章",
 			"email" => $pcconfig["BBSNAME"],
 			"publisher" => $pcconfig["BBSNAME"],
 			"creator" => $pcconfig["BBSNAME"],
 			"rights" => $pcconfig["BBSNAME"],
 			"date" => date("Y-m-d"),
 			"updatePeriod" => "即时更新",
-			"updateFrequency" => "最新的".$pcconfig["NEWS"]."篇Blog文章",
+			"updateFrequency" => "最新的".$etemnum."篇Blog文章",
 			"updateBase" => date("Y-m-d H:i:s"),
 			
 			);
 	
-	$query = "SELECT * FROM nodes WHERE `access` = 0 ORDER BY `nid` DESC LIMIT ".(($pno - 1) * $pcconfig["NEWS"])." , ".$pcconfig["NEWS"]." ;";
+	$query = "SELECT * FROM nodes WHERE `access` = 0 ORDER BY `nid` DESC LIMIT ".(($pno - 1) * $etemnum)." , ".$etemnum." ;";
 	$result = mysql_query($query,$link);
 	$j = 0;
 	$bloguser = array();
@@ -67,12 +71,16 @@ function getNewBlogs($link,$pno=1)
 	return $newBlogs;
 }
 
-function getNewComments($link,$pno=1)
+function getNewComments($link,$pno=1,$etemnum=0)
 {
 	global $pcconfig;
 	if($pno < 1)	$pno = 1;
+	$etemnum = intval( $etemnum );
+	if($etemnum <= 0 )
+		$etemnum = $pcconfig["NEWS"];
+	
 	$newComments = array();
-	$query = "SELECT cid , comments.uid , comments.subject , comments.created , comments.username , nodes.subject , nodes.created , visitcount , commentcount , nodes.nid FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0  AND comment = 1 ORDER BY cid DESC LIMIT ".(($pno - 1) * $pcconfig["NEWS"])." , ".$pcconfig["NEWS"]." ;";
+	$query = "SELECT cid , comments.uid , comments.subject , comments.created , comments.username , nodes.subject , nodes.created , visitcount , commentcount , nodes.nid FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0  AND comment = 1 ORDER BY cid DESC LIMIT ".(($pno - 1) * $etemnum)." , ".$etemnum." ;";
 	$result = mysql_query($query,$link);
 	for($i = 0; $i < mysql_num_rows($result) ; $i ++ )
 	{

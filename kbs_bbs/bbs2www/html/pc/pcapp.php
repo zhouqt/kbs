@@ -1,12 +1,25 @@
 <?php
 /*
 **  为水木清华blog申请定制的申请表
-**  满足条件的申请表将被提交至BBSBLOGBOARD等候处理
+**  满足条件的申请表将被提交至$pcconfig["BOARD"]等候处理
 **  @windinsn Mar 12 , 2004
 */
 require("pcfuncs.php");
-define(BBSBLOGBOARD , "SMTH_blog"); //blog版面
-define(BBSBLOGMINREGTIME , 6); //最短注册时间
+
+/*
+** management字段：0通过；1待处理；2不通过；3以后不得申请
+*/
+function pc_app_have_applied($link , $currentuser)
+{
+	$query = "SELECT management FROM newapply WHERE username = '".$currentuser["userid"]."' AND management != 2 LIMIT 0 , 1;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
+	if( $rows) 
+		return $rows[management];
+	else
+		return FALSE;
+}
 
 if ($loginok != 1)
 	html_nologin();
@@ -18,20 +31,10 @@ elseif(!strcmp($currentuser["userid"],"guest"))
 }
 else
 {
-	$link = pc_db_connect();
-	if( pc_load_infor($link,$currentuser["userid"]) )
-	{
-		pc_db_close($link);
-		html_init("gb2312");
-		html_error_quit("对不起，您已经拥有Blog了");
-		exit();	
-	}
-	pc_db_close($link);
-	
-	if( time() - $currentuser["firstlogin"] < intval( BBSBLOGMINREGTIME * 2592000 ) )
+	if( time() - $currentuser["firstlogin"] < intval( $pcconfig["MINREGTIME"] * 2592000 ) )
 	{
 		html_init("gb2312");
-		html_error_quit("对不起，您的注册时间尚不足".BBSBLOGMINREGTIME."个月");
+		html_error_quit("对不起，您的注册时间尚不足".$pcconfig["MINREGTIME"]."个月");
 		exit();	
 	}
 	if( !$_POST["appname"] || !$_POST["appself"] || !$_POST["appdirect"] )
@@ -41,6 +44,39 @@ else
 		exit();	
 	}
 	
+	$link = pc_db_connect();
+	if( pc_load_infor($link,$currentuser["userid"]) )
+	{
+		pc_db_close($link);
+		html_init("gb2312");
+		html_error_quit("对不起，您已经拥有Blog了");
+		exit();	
+	}
+	
+	$appstate = pc_app_have_applied($link , $currentuser);
+	if($appstate === 0 )
+	{
+		pc_db_close($link);
+		html_init("gb2312");
+		html_error_quit("对不起，您的Blog申请已通过");
+		exit();	
+	}
+	elseif($appstate == 1 )
+	{
+		pc_db_close($link);
+		html_init("gb2312");
+		html_error_quit("对不起，您的Blog申请还在处理中，请耐心等候");
+		exit();	
+	}
+	elseif($appstate == 3 )
+	{
+		pc_db_close($link);
+		html_init("gb2312");
+		html_error_quit("对不起，您不能进行Blog申请，请联系管理员");
+		exit();	
+	}
+	
+	
 	$apptitle = "[申请] ".$currentuser["userid"]." 申请建立水木BLOG";
 	$appbody  = "(1) BLOG名称：".$_POST["appname"]."\n\n\n".
 		    "(2) 申请人 ID 及简要自我介绍\n".
@@ -49,7 +85,12 @@ else
 		    "        ".$_POST["appself"]."\n\n\n".
 		    "(3) 经营方向：(您对您个人Blog的初步规划)\n        ".$_POST["appdirect"]."\n\n";
 	
-	$ret = bbs_postarticle(BBSBLOGBOARD, preg_replace("/\\\(['|\"|\\\])/","$1",$apptitle), preg_replace("/\\\(['|\"|\\\])/","$1",$appbody), 0 , 0 , 0 , 0);
+	$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
+	 	 "VALUES ('', '".$currentuser["userid"]."', '".addslashes($_POST["appname"])."', '".addslashes($_POST["appself"])."', '".addslashes($_POST["appdirect"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , NULL , '1');";
+	mysql_query($query,$link);
+	pc_db_close($link);
+	
+	$ret = bbs_postarticle($pcconfig["BOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$apptitle), preg_replace("/\\\(['|\"|\\\])/","$1",$appbody), 0 , 0 , 0 , 0);
 	switch ($ret) {
 			case -1:
 				html_error_quit("错误的讨论区名称!");
@@ -85,10 +126,10 @@ else
 <tr align=center><th width="100%">申请提交成功！</td>
 </tr><tr><td width="100%" class=TableBody1>
 您的BLOG申请已经提交成功，管理员会在两天内处理您的申请。<br/><br/>
-本页面将在3秒后自动切换自Blog论坛<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=/bbsdoc.php?board=<?php echo BBSBLOGBOARD; ?>' >，<b>您可以选择以下操作：</b><br><ul>
+本页面将在3秒后自动切换自Blog论坛<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>' >，<b>您可以选择以下操作：</b><br><ul>
 <li><a href="/mainpage.php">返回首页</a></li>
 <li><a href="/pc/pcmain.php">返回Blog首页</a></li>
-<li><a href="/bbsdoc.php?board=<?php echo BBSBLOGBOARD; ?>">返回Blog论坛</a></li>
+<li><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">返回Blog论坛</a></li>
 </ul></td></tr></table>
 <?php	
 	html_normal_quit();

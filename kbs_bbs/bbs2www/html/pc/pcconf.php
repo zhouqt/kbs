@@ -12,19 +12,22 @@ $pcconfig["BOARD"] :Blog对应的版面名称,该版版主将默认为Blog管理员;
 $pcconfig["SEARCHFILTER"] :进行文章搜索时过滤掉的文字;
 $pcconfig["SEARCHNUMBER"] :返回文章搜索结果时每页显示的条目数;
 $pcconfig["SECTION"] :Blog分类方式;
+$pcconfig["MINREGTIME"] :申请时要求的最短注册时间;
+$pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
 pc_personal_domainname($userid)函数 :用户Blog的域名;
 */
-$pcconfig["LIST"] = 20;
+$pcconfig["LIST"] = 50;
 $pcconfig["HOME"] = BBS_HOME;
 $pcconfig["BBSNAME"] = BBS_FULL_NAME;
 $pcconfig["ETEMS"] = 20;
-$pcconfig["NEWS"] = 20;
+$pcconfig["NEWS"] = 50;
 $pcconfig["THEMLIST"] = 50;
 $pcconfig["SITE"] = "www.smth.edu.cn";
 $pcconfig["BOARD"] = "SMTH_blog";
 $pcconfig["SEARCHFILTER"] = " 的";
 $pcconfig["SEARCHNUMBER"] = 10;
 $pcconfig["ADMIN"] = "SYSOP";
+$pcconfig["MINREGTIME"] = 6;
 $pcconfig["SECTION"] = array(
 			"personal" => "个人空间" ,
 			"literature" => "原创文学" ,

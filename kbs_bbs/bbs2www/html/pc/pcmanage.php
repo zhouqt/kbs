@@ -187,7 +187,7 @@
 				}
 				
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`) ".
-					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($blogbody)."', '".$tag."', '0' , '".$useHtmlTag."' ,'".$trackback."','0');";
+					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($blogbody)."', '".$tag."', '0' , '".$useHtmlTag."' ,'".$trackback."','0');";
 				mysql_query($query,$link);
 				//管理员管理时的log
 				if( pc_is_manager($currentuser) && $blogadmin )

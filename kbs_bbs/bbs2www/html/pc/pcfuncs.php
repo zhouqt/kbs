@@ -678,29 +678,29 @@ function pc_update_cache_header($updatetime = 20)
 	return FALSE;
 }
 
-function pc_logs($link , $action , $comment = "" , $pri_id = 0 , $sec_id = 0)
+function pc_logs($link , $action , $comment = "" , $pri_id = "" , $sec_id = "")
 {
 	global $currentuser;
-	if( !pc_is_manager($currentuser) )
-		return FALSE;
 	if( !$action ) 
 		return FALSE;
 	
 	$query = "INSERT INTO `logs` ( `lid` , `username` , `hostname` , `ACTION` , `pri_id` , `sec_id` , `COMMENT` , `logtime` )".
-		"VALUES ('', '".addslashes($currentuser[userid])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', '".addslashes($action)."', '".intval($pre_id)."', '".intval($sec_id)."', '".addslashes($comment)."', NOW( ) );";
+		"VALUES ('', '".addslashes($currentuser[userid])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', '".addslashes($action)."', '".addslashes($pre_id)."', '".addslashes($sec_id)."', '".addslashes($comment)."', NOW( ) );";
 	mysql_query($query,$link);
 	return TRUE;
 }
 
 function pc_counter($link)
 {
-	global $pc;
+	global $pc,$currentuser;
 	if(!$pc || !is_array($pc))
 		return FALSE;
 	$visitcount = $_COOKIE["BLOGVISITCOUNT"];
+	$action = $currentuser["userid"]." 访问 ".$pc["USER"]."的Blog";
 	if(!$visitcount)
 	{
 		pc_visit_counter($link,$pc["UID"]);//计数器加1
+		pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志
 		$pc["VISIT"] ++;
 		$visitcount = ",".$pc["UID"].",";
 		setcookie("BLOGVISITCOUNT",$visitcount);
@@ -708,6 +708,7 @@ function pc_counter($link)
 	elseif(!stristr($visitcount,",".$pc["UID"].","))
 	{
 		pc_visit_counter($link,$pc["UID"]);//计数器加1
+		pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志
 		$pc["VISIT"] ++;
 		$visitcount .= $pc["UID"].",";
 		setcookie("BLOGVISITCOUNT",$visitcount);

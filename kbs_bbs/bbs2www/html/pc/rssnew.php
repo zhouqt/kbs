@@ -10,7 +10,7 @@
 		return;
 	
 	$link = pc_db_connect();
-	$rss = getNewBlogs($link);
+	$rss = getNewBlogs($link,1,$pcconfig["ETEMS"]);
 	pc_db_close($link);
 	header("Content-Type: text/xml");
 	header("Content-Disposition: inline;filename=userrss.xml");
