@@ -1716,96 +1716,25 @@ int junk_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 }
 
 static char search_data[STRLEN];
+
 int search_mode(struct _select_def* conf,struct fileheader *fileinfo,int mode, char *index)
 /* added by bad 2002.8.8 search mode*/
 {
-    struct fileheader *ptr1;
-    struct flock ldata, ldata2;
-    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
-    char olddirect[PATHLEN];
-    char *ptr;
-    struct stat buf;
-    bool init;
-    size_t bm_search[256];
+    int count = 0;
     struct read_arg* arg=(struct read_arg*)conf->arg;
 
     strncpy(search_data, index, STRLEN);
-    setbdir(DIR_MODE_NORMAL, olddirect, currboard->filename);
     arg->newmode=mode;
     setbdir(mode,arg->direct, currboard->filename);
     if (mode == DIR_MODE_ORIGIN && !setboardorigin(currboard->filename, -1)) {
         return NEWDIRECT;
     }
-    if ((fd = open(arg->direct, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("3user", "%s", "recopen err");
-        return FULLUPDATE;      /* 创建文件发生错误*/
-    }
-    ldata.l_type = F_WRLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("3user", "%s", "reclock err");
-        close(fd);
-        return FULLUPDATE;      /* lock error*/
-    }
-    /* 开始互斥过程*/
-    if (mode == DIR_MODE_ORIGIN && !setboardorigin(currboard->filename, -1)) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        return FULLUPDATE;
-    }
 
-    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
-        bbslog("3user", "%s", "recopen err");
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        return FULLUPDATE;
-    }
-    fstat(fd2, &buf);
-    ldata2.l_type = F_RDLCK;
-    ldata2.l_whence = 0;
-    ldata2.l_len = 0;
-    ldata2.l_start = 0;
-    fcntl(fd2, F_SETLKW, &ldata2);
-    total = buf.st_size / size;
+    count = board_regenspecial(currboard->filename, mode, index);
 
-    init = false;
-    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata2.l_type = F_UNLCK;
-        fcntl(fd2, F_SETLKW, &ldata2);
-        close(fd2);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        return FULLUPDATE;
-    }
-    ptr1 = (struct fileheader *) ptr;
-    for (i = 0; i < total; i++) {
-        if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid ))
-            || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index) )
-            || ((mode == DIR_MODE_TITLE)  && bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
-            write(fd, ptr1, size);
-            count++;
-        }
-        ptr1++;
-    }
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata2.l_type = F_UNLCK;
-    fcntl(fd2, F_SETLKW, &ldata2);
-    close(fd2);
-    ftruncate(fd, count * size);
+    if (count<0)
+	return FULLUPDATE;
 
-    if (mode == DIR_MODE_ORIGIN)
-        setboardorigin(currboard->filename, 0);   /* 标记flag*/
-
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
     if (count==0) {
         clear();
         move(t_lines-2,0);
@@ -2880,8 +2809,24 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
          * Leeward 99.07.12 added above to fix a big bug
          */
 
-
-        setboardorigin(currboard->filename, 1);
+		if(arg->mode != DIR_MODE_ORIGIN && fileinfo->id == fileinfo->groupid){
+			if( setboardorigin(currboard->filename, -1) ){
+				board_regenspecial(currboard->filename,DIR_MODE_ORIGIN,NULL);
+			}else{
+				char olddirect[PATHLEN];
+	    		setbdir(DIR_MODE_ORIGIN, olddirect, currboard->filename);
+				if ((fd = open(olddirect, O_RDWR, 0644)) >= 0){
+					struct fileheader tmpfh;
+					if (get_records_from_id(fd, fileinfo->id, &tmpfh, 1, &ent) == 0){
+						close(fd);
+					}else{
+						close(fd);
+   	                	substitute_record(olddirect, fileinfo, sizeof(*fileinfo), ent);
+					}
+				}
+   	     //setboardorigin(currboard->filename, 1);
+			}
+		}
         setboardtitle(currboard->filename, 1);
     }
     return PARTUPDATE;

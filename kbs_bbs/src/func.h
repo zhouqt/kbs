@@ -311,6 +311,7 @@ void unlock_sem_check(int lockid);
     int is_outgo_board(const char *board);
     int poststatboard(const char *board);
     int is_emailpost_board(const char *board);
+	int board_regenspecial(char *board, int mode, char *index);
 
 /* define in article.c */
 

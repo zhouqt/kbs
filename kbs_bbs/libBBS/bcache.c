@@ -478,3 +478,93 @@ void board_update_toptitle(struct boardheader* bh,int increment)
       bh->toptitle+=increment;
     bcache_unlock(fd);
 }
+
+/* add by stiger, 2004,0322 */
+int board_regenspecial(char *board, int mode, char *index)
+{
+    struct fileheader *ptr1;
+    struct flock ldata, ldata2;
+    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
+    char olddirect[PATHLEN];
+    char newdirect[PATHLEN];
+    char *ptr;
+    struct stat buf;
+    bool init;
+    size_t bm_search[256];
+
+    setbdir(DIR_MODE_NORMAL, olddirect, board);
+    setbdir(mode,newdirect, board);
+
+    if ((fd = open(newdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
+        bbslog("3user", "%s", "recopen err");
+        return -1;      /* 创建文件发生错误*/
+    }
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("3user", "%s", "reclock err");
+        close(fd);
+        return -1;      /* lock error*/
+    }
+    /* 开始互斥过程*/
+    if (mode == DIR_MODE_ORIGIN && !setboardorigin(board, -1)) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+
+    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
+        bbslog("3user", "%s", "recopen err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+    fstat(fd2, &buf);
+    ldata2.l_type = F_RDLCK;
+    ldata2.l_whence = 0;
+    ldata2.l_len = 0;
+    ldata2.l_start = 0;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    total = buf.st_size / size;
+
+    init = false;
+    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+    ptr1 = (struct fileheader *) ptr;
+    for (i = 0; i < total; i++) {
+        if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid ))
+            || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index) )
+            || ((mode == DIR_MODE_TITLE)  && bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
+            write(fd, ptr1, size);
+            count++;
+        }
+        ptr1++;
+    }
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata2.l_type = F_UNLCK;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    close(fd2);
+    ftruncate(fd, count * size);
+
+    if (mode == DIR_MODE_ORIGIN)
+        setboardorigin(board, 0);   /* 标记flag*/
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
+    close(fd);
+
+    return count;
+}

@@ -1527,15 +1527,7 @@ static PHP_FUNCTION(bbs_checkorigin)
 	char *board;
     int board_len;
     int ac = ZEND_NUM_ARGS();
-
-    struct fileheader *ptr1;
-    struct flock ldata, ldata2;
-    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
-    char olddirect[PATHLEN];
-	char newdirect[PATHLEN];
-    char *ptr;
-    struct stat buf;
-    bool init;
+	int total;
 
     /*
      * getting arguments 
@@ -1544,79 +1536,12 @@ static PHP_FUNCTION(bbs_checkorigin)
         WRONG_PARAM_COUNT;
     }
 
-    setbdir(DIR_MODE_NORMAL, olddirect, board);
-    setbdir(DIR_MODE_ORIGIN, newdirect, board);
     if (!setboardorigin(board, -1)) {
     	RETURN_LONG(0);
     }
-    if ((fd = open(newdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("3user", "%s", "recopen err");
-    	RETURN_LONG(-1);
-    }
-    ldata.l_type = F_WRLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("3user", "%s", "reclock err");
-        close(fd);
-    	RETURN_LONG(-2);
-    }
-    if ( !setboardorigin(board, -1)) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-    	RETURN_LONG(1);
-    }
+	total = board_regenspecial(board,DIR_MODE_ORIGIN,NULL);
 
-    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
-        bbslog("3user", "%s", "recopen err");
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-    	RETURN_LONG(-3);
-    }
-    fstat(fd2, &buf);
-    ldata2.l_type = F_RDLCK;
-    ldata2.l_whence = 0;
-    ldata2.l_len = 0;
-    ldata2.l_start = 0;
-    fcntl(fd2, F_SETLKW, &ldata2);
-    total = buf.st_size / size;
-
-    init = false;
-    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata2.l_type = F_UNLCK;
-        fcntl(fd2, F_SETLKW, &ldata2);
-        close(fd2);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-    	RETURN_LONG(-4);
-    }
-    ptr1 = (struct fileheader *) ptr;
-    for (i = 0; i < total; i++) {
-        if ( ptr1->id == ptr1->groupid ){
-            write(fd, ptr1, size);
-            count++;
-        }
-        ptr1++;
-    }
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata2.l_type = F_UNLCK;
-    fcntl(fd2, F_SETLKW, &ldata2);
-    close(fd2);
-    ftruncate(fd, count * size);
-
-    setboardorigin(board, 0);
-
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);
-    close(fd);
-
-   	RETURN_LONG(3);
+   	RETURN_LONG(total);
 }
 
 static PHP_FUNCTION(bbs_searchtitle)
