@@ -32,7 +32,7 @@ int check_systempasswd()
 {
     FILE *pass;
     char passbuf[40], prepass[STRLEN];
-    
+
 #ifdef NINE_BUILD
     return true;
 #endif
@@ -425,7 +425,7 @@ int m_newbrd()
     }
     prints("\n新讨论区成立\n");
     sprintf(genbuf, "add brd %s", newboard.filename);
-    bbslog("user","%s",genbuf);
+    bbslog("user", "%s", genbuf);
     {
         char secu[STRLEN];
 
@@ -620,7 +620,7 @@ int m_editbrd()
             }
             set_board(pos, &newfh);
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
-            bbslog("user","%s",genbuf);
+            bbslog("user", "%s", genbuf);
         }
     }
     clear();
@@ -632,7 +632,7 @@ int searchtrace()
     int id;
     char tmp_command[80], tmp_id[20];
     char buf[8192];
-    struct userec* lookupuser;
+    struct userec *lookupuser;
 
     if (check_systempasswd() == false)
         return -1;
@@ -662,9 +662,9 @@ int searchtrace()
     mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", 1);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
-    securityreport(buf, lookupuser, NULL);    /*写入syssecurity版, stephen 2000.12.21 */
+    securityreport(buf, lookupuser, NULL);      /*写入syssecurity版, stephen 2000.12.21 */
     sprintf(buf, "Search the posts by %s in the trace", tmp_id);
-    bbslog("user","%s",buf);                /*写入trace, stephen 2000.12.21 */
+    bbslog("user", "%s", buf);  /*写入trace, stephen 2000.12.21 */
 
     move(3, 0);
     prints("查询结果已经寄到您的信箱！ \n");
@@ -843,7 +843,7 @@ int m_trace()
         move(t_lines - 2, 0);
         if (msg) {
             prints("%s\n", msg);
-            bbslog("user","%s",msg);
+            bbslog("user", "%s", msg);
         }
     }
     clear();
@@ -1137,7 +1137,7 @@ char *logfile, *regfile;
     char ans[5], *ptr, *uid;
     int n, unum, fd;
     int count, sum, total_num;  /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
-    char result[256],ip[17];    /* Added for IP query by Bigman: 2002.8.20 */
+    char result[256], ip[17];   /* Added for IP query by Bigman: 2002.8.20 */
     long pid;                   /* Added by Bigman: 2002.5.31 */
 
     uid = currentuser->userid;
@@ -1230,10 +1230,10 @@ char *logfile, *regfile;
             disply_userinfo(&uinfo, 1);
 
 /* 添加查询IP, Bigman: 2002.8.20 */
-	    move(8,20);
-	    strncpy(ip,uinfo.lasthost,17);
-	    find_ip(ip,2,result);
-	    prints("\033[33m%s\033[0m",result);
+            move(8, 20);
+            strncpy(ip, uinfo.lasthost, 17);
+            find_ip(ip, 2, result);
+            prints("\033[33m%s\033[0m", result);
 
             move(15, 0);
             printdash(NULL);
@@ -1595,7 +1595,7 @@ int x_deny()
         move(1, 0);
 
         usercomplete("请输入使用者帐号:", genbuf);
-        strncpy(userid, genbuf, IDLEN+1);
+        strncpy(userid, genbuf, IDLEN + 1);
         if (userid[0] == '\0') {
             clear();
             return 0;
@@ -1648,7 +1648,7 @@ int x_deny()
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel - 1];
                     securityreport(reportbuf, lookupuser, NULL);
-            		save_giveupinfo(lookupuser, lcount, s);
+                    save_giveupinfo(lookupuser, lcount, s);
                     break;
                 }
             }

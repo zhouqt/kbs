@@ -505,9 +505,9 @@ void readtitle()
         strcpy(title, bp->title + 13);
 
     showtitle(header, title);   /* ÏÔÊ¾ µÚÒ»ĞĞ */
-	if (DEFINE(currentuser,DEF_HIGHCOLOR))
+    if (DEFINE(currentuser,DEF_HIGHCOLOR))
     	prints("Àë¿ª[\x1b[1;32m¡û\x1b[0m,\x1b[1;32me\x1b[0m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0m,\x1b[1;32m¡ı\x1b[0m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[0m,\x1b[1;32mr\x1b[0m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[0m] ¿³ĞÅ[\x1b[1;32md\x1b[0m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[0m] ÇóÖú[\x1b[1;32mh\x1b[0m][m\n");
-	else
+    else
     	prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h]\x1b[m\n");
     if (digestmode == 0)        /* ÔÄ¶ÁÄ£Ê½ */
         strcpy(readmode, "Ò»°ã");
@@ -565,6 +565,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
         char* datestr = ctime( &filetime ) + 4;
 #else
         strncpy(date, ctime(&filetime) + 4, 6);
+	date[6]=0;
 #endif
         
 #ifdef NINE_BUILD

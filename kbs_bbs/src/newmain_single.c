@@ -947,6 +947,10 @@ void update_endline()
             sprintf(stitle,"[1;4%dm[33m ±º‰[[36m%12.12s[33m] ◊‹»À ˝/∫√”—[%3d/%3d][%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d][m",colour,
                     ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf,(allstay/60)%1000,allstay%60);
 #else
+	if (DEFINE(currentuser,DEF_HIGHCOLOR))
+        sprintf(stitle, "\x1b[1;4%dm\x1b[33m ±º‰[\x1b[36m%12.12s\x1b[33m] ◊‹»À ˝ [ %3d ] [%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d]\x1b[m", colour,
+                ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf, (allstay / 60) % 1000, allstay % 60);
+	else
         sprintf(stitle, "\x1b[4%dm\x1b[33m ±º‰[\x1b[36m%12.12s\x1b[33m] ◊‹»À ˝ [ %3d ] [%c£∫%c]  π”√’ﬂ%-24s Õ£¡Ù[%3d:%2d]\x1b[m", colour,
                 ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf, (allstay / 60) % 1000, allstay % 60);
 #endif

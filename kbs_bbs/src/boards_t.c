@@ -13,7 +13,7 @@ static int choose_board(int newflag, char *boardprefix);        /* —°‘Ò ∞Ê£¨ rea
 static int check_newpost(struct newpostdata *ptr);
 
 void EGroup(cmd)
-    char *cmd;
+char *cmd;
 {
     char buf[STRLEN];
     char *boardprefix;
@@ -56,7 +56,7 @@ void New()
 }
 
 int cmpboard(brd, tmp)          /*≈≈–Ú”√ */
-    struct newpostdata *brd, *tmp;
+struct newpostdata *brd, *tmp;
 {
     register int type = 0;
 
@@ -73,8 +73,8 @@ int cmpboard(brd, tmp)          /*≈≈–Ú”√ */
 
 
 int unread_position(dirfile, ptr)
-    char *dirfile;
-    struct newpostdata *ptr;
+char *dirfile;
+struct newpostdata *ptr;
 {
     struct fileheader fh;
     int id;
@@ -128,8 +128,8 @@ int search_board(int *num, int *i, int *find, char *bname)
         prints("«Î ‰»Î“™’“—∞µƒ board √˚≥∆£∫%s", bname);
         ch = igetkey();
 
-    	if (ch==KEY_REFRESH)
-    		break;
+        if (ch == KEY_REFRESH)
+            break;
         if (isprint2(ch)) {
             bname[(*i)++] = ch;
             for (n = 0; n < brdnum; n++) {
@@ -176,9 +176,9 @@ int search_board(int *num, int *i, int *find, char *bname)
 }
 
 int show_authorBM(ent, fileinfo, direct)
-    int ent;
-    struct fileheader *fileinfo;
-    char *direct;
+int ent;
+struct fileheader *fileinfo;
+char *direct;
 {
     struct boardheader *bptr;
     int tuid = 0;
@@ -289,7 +289,7 @@ int query_bm()
 /* end of insertion */
 
 void show_brdlist(page, clsflag, newflag)       /* show board list */
-    int page, clsflag, newflag;
+int page, clsflag, newflag;
 {
     struct newpostdata *ptr;
     int n;
@@ -298,18 +298,21 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
 
     if (clsflag) {
         clear();
-	if (DEFINE(currentuser,DEF_HIGHCOLOR)) {
-        if(yank_flag==2)
-	        docmdtitle("[∏ˆ»À∂®÷∆«¯]", "  [m÷˜—°µ•[\x1b[1;32m°˚\x1b[m,\x1b[1;32me\x1b[m] ‘ƒ∂¡[\x1b[1;32m°˙\x1b[m,\x1b[1;32mr\x1b[m] —°‘Ò[\x1b[1;32m°¸\x1b[m,\x1b[1;32m°˝\x1b[m] ÃÌº”[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] “∆∂Ø[\x1b[1;32mm\x1b[m] …æ≥˝[\x1b[1;32md\x1b[m] ≈≈–Ú[\x1b[1;32mS\x1b[m] «Û÷˙[\x1b[1;32mh\x1b[m]\n");
-		else
-       		docmdtitle("[Ã÷¬€«¯¡–±Ì]", "  [m÷˜—°µ•[\x1b[1;32m°˚\x1b[m,\x1b[1;32me\x1b[m] ‘ƒ∂¡[\x1b[1;32m°˙\x1b[m,\x1b[1;32mr\x1b[m] —°‘Ò[\x1b[1;32m°¸\x1b[m,\x1b[1;32m°˝\x1b[m] ¡–≥ˆ[\x1b[1;32my\x1b[m] ≈≈–Ú[\x1b[1;32mS\x1b[m] À——∞[\x1b[1;32m/\x1b[m] «–ªª[\x1b[1;32mc\x1b[m] «Û÷˙[\x1b[1;32mh\x1b[m]\n");
-        	prints("[1;44m[37m %s Ã÷¬€«¯√˚≥∆       V  ¿‡± ◊™–≈  %-24s ∞Ê  ÷˜   %s   [m\n", newflag ? "»´≤ø Œ¥∂¡" : "±‡∫≈  ", "÷–  Œƒ  –   ˆ", newflag ? "" : "   ");
-	} else {
-        if(yank_flag==2)
-	        docmdtitle("[∏ˆ»À∂®÷∆«¯]", "  [m÷˜—°µ•[°˚,e] ‘ƒ∂¡[°˙,r] —°‘Ò[°¸,°˝] ÃÌº”[a,A] “∆∂Ø[m] …æ≥˝[d] ≈≈–Ú[S] «Û÷˙[h]\n");
-		else
-       	 	docmdtitle("[Ã÷¬€«¯¡–±Ì]", "  [m÷˜—°µ•[°˚,e] ‘ƒ∂¡[°˙,r] —°‘Ò[°¸,°˝] ¡–≥ˆ[y] ≈≈–Ú[S] À——∞[/] «–ªª[c] «Û÷˙[h]\n");
-        prints("[44m[37m %s Ã÷¬€«¯√˚≥∆       V  ¿‡± ◊™–≈  %-24s ∞Ê  ÷˜   %s   [m\n", newflag ? "»´≤ø Œ¥∂¡" : "±‡∫≈  ", "÷–  Œƒ  –   ˆ", newflag ? "" : "   ");
+        if (DEFINE(currentuser, DEF_HIGHCOLOR)) {
+            if (yank_flag == 2)
+                docmdtitle("[∏ˆ»À∂®÷∆«¯]",
+                           "  [m÷˜—°µ•[\x1b[1;32m°˚\x1b[m,\x1b[1;32me\x1b[m] ‘ƒ∂¡[\x1b[1;32m°˙\x1b[m,\x1b[1;32mr\x1b[m] —°‘Ò[\x1b[1;32m°¸\x1b[m,\x1b[1;32m°˝\x1b[m] ÃÌº”[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] “∆∂Ø[\x1b[1;32mm\x1b[m] …æ≥˝[\x1b[1;32md\x1b[m] ≈≈–Ú[\x1b[1;32mS\x1b[m] «Û÷˙[\x1b[1;32mh\x1b[m]\n");
+            else
+                docmdtitle("[Ã÷¬€«¯¡–±Ì]",
+                           "  [m÷˜—°µ•[\x1b[1;32m°˚\x1b[m,\x1b[1;32me\x1b[m] ‘ƒ∂¡[\x1b[1;32m°˙\x1b[m,\x1b[1;32mr\x1b[m] —°‘Ò[\x1b[1;32m°¸\x1b[m,\x1b[1;32m°˝\x1b[m] ¡–≥ˆ[\x1b[1;32my\x1b[m] ≈≈–Ú[\x1b[1;32mS\x1b[m] À——∞[\x1b[1;32m/\x1b[m] «–ªª[\x1b[1;32mc\x1b[m] «Û÷˙[\x1b[1;32mh\x1b[m]\n");
+            prints("[1;44m[37m %s Ã÷¬€«¯√˚≥∆       V  ¿‡± ◊™–≈  %-24s ∞Ê  ÷˜   %s   [m\n", newflag ? "»´≤ø Œ¥∂¡" : "±‡∫≈  ", "÷–  Œƒ  –   ˆ", newflag ? "" : "   ");
+        } else {
+            if (yank_flag == 2)
+                docmdtitle("[∏ˆ»À∂®÷∆«¯]", "  [m÷˜—°µ•[°˚,e] ‘ƒ∂¡[°˙,r] —°‘Ò[°¸,°˝] ÃÌº”[a,A] “∆∂Ø[m] …æ≥˝[d] ≈≈–Ú[S] «Û÷˙[h]\n");
+            else
+                docmdtitle("[Ã÷¬€«¯¡–±Ì]", "  [m÷˜—°µ•[°˚,e] ‘ƒ∂¡[°˙,r] —°‘Ò[°¸,°˝] ¡–≥ˆ[y] ≈≈–Ú[S] À——∞[/] «–ªª[c] «Û÷˙[h]\n");
+            prints("[44m[37m %s Ã÷¬€«¯√˚≥∆       V  ¿‡± ◊™–≈  %-24s ∞Ê  ÷˜   %s   [m\n", newflag ? "»´≤ø Œ¥∂¡" : "±‡∫≈  ", "÷–  Œƒ  –   ˆ", newflag ? "" : "   ");
+        }
     }
 
     move(3, 0);
@@ -329,9 +332,13 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
         } else if (!newflag)
             prints(" %4d %c", n + 1, ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG) ? '-' : ' ');   /*zap±Í÷æ */
         else if (ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) {
-            /*ptr->total = ptr->unread = 0;
-               prints( "    -    -" ); */
-            /* Leeward: 97.12.15: extended display */
+            /*
+             * ptr->total = ptr->unread = 0;
+             * prints( "    -    -" ); 
+             */
+            /*
+             * Leeward: 97.12.15: extended display 
+             */
             check_newpost(ptr);
             prints(" %4d%s%s ", ptr->total, ptr->total > 9999 ? " " : "  ", ptr->unread ? "°Ù" : "°Û"); /* «∑ÒŒ¥∂¡ */
         } else {
@@ -341,7 +348,9 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
             }
             prints(" %4d%s%s ", ptr->total, ptr->total > 9999 ? " " : "  ", ptr->unread ? "°Ù" : "°Û"); /* «∑ÒŒ¥∂¡ */
         }
-        /* Leeward 98.03.28 Displaying whether a board is READONLY or not */
+        /*
+         * Leeward 98.03.28 Displaying whether a board is READONLY or not 
+         */
         if (ptr->flag == -1)
             sprintf(buf, "%s", ptr->title);     // added by bad 2002.8.3
         else if (true == checkreadonly(ptr->name))
@@ -352,7 +361,7 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
         if (ptr->flag == -1)    // added by bad 2002.8.3
             prints("%-20s\n", buf);
         else {
-        	strncpy(tmpBM, ptr->BM,BM_LEN);
+            strncpy(tmpBM, ptr->BM, BM_LEN);
             prints("%c%-16s %s%-36s %-12s\n", ((newflag && ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31mV[m" : " ", buf, ptr->BM[0] <= ' ' ? "≥œ’˜∞Ê÷˜÷–" : strtok(tmpBM, " "));  /*µ⁄“ª∏ˆ∞Ê÷˜ */
         }
     }
@@ -375,12 +384,14 @@ static int choose_board(int newflag, char *boardprefix)
     nbrd = newpost_buffer;
     modify_user_mode(newflag ? READNEW : READBRD);
     brdnum = number = 0;
-/* show_brdlist( 0, 1, newflag ); *//*board listœ‘ æ µƒ 2¥Œœ‘ æŒ Ã‚Ω‚æˆ! 96.9.5 alex */
+/* show_brdlist( 0, 1, newflag ); *//*
+ * board listœ‘ æ µƒ 2¥Œœ‘ æŒ Ã‚Ω‚æˆ! 96.9.5 alex 
+ */
     while (1) {
         if (brdnum <= 0) {      /*≥ı ºªØ */
             if (load_boards(boardprefix) == -1)
                 continue;
-            if((yank_flag!=2)||(currentuser->flags[0]& BRDSORT_FLAG))
+            if ((yank_flag != 2) || (currentuser->flags[0] & BRDSORT_FLAG))
                 qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
             page = -1;
             if (brdnum <= 0)
@@ -395,7 +406,7 @@ static int choose_board(int newflag, char *boardprefix)
                 tmp = num;
                 while (num < brdnum) {
                     ptr = &nbrd[num];
-                    if ((ptr->total == -1)&&(ptr->flag != -1))
+                    if ((ptr->total == -1) && (ptr->flag != -1))
                         check_newpost(ptr);
                     if (ptr->unread)
                         break;
@@ -417,9 +428,9 @@ static int choose_board(int newflag, char *boardprefix)
         prints(">", number);    /*œ‘ æµ±«∞board±Í÷æ */
         if (loop_mode == 0) {
             ch = igetkey();
-            if (ch==KEY_REFRESH) {
-            	show_brdlist(page, 1, newflag);
-            	update_endline();
+            if (ch == KEY_REFRESH) {
+                show_brdlist(page, 1, newflag);
+                update_endline();
             }
         }
         move(3 + num - page, 0);
@@ -431,34 +442,34 @@ static int choose_board(int newflag, char *boardprefix)
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
             break;
             /*
-               case 'R':   Leeward 98.04.24 
-               {
-               char fname[STRLEN], restore[256];
-
-               if(!strcmp(currentuser->userid,"guest")) 
-               break;
-
-               saveline(t_lines-2, 0, NULL);
-               move(t_lines-2, 0);
-               clrtoeol();
-               getdata(t_lines-2, 0,"[1m[5m[31m¡¢º¥∂œœﬂ[m°√[1m[33m“‘±„ª÷∏¥…œ¥Œ’˝≥£¿Îø™±æ’æ ±µƒŒ¥∂¡±Íº« (Y/N)£ø [N][m: ", restore,4,DOECHO,NULL,true);
-               if ('y' == restore[0] || 'Y' == restore[0])
-               {
-               sethomefile(fname, currentuser->userid,".boardrc" );
-               sprintf(restore, "%s.bak", fname);
-               f_cp(restore,fname,0);
-
-               move(t_lines-2, 0);
-               clrtoeol();
-               prints("[1m[33m“—ª÷∏¥…œ¥Œ’˝≥£¿Îø™±æ’æ ±µƒŒ¥∂¡±Íº«[m");
-               move(t_lines-1, 0);
-               clrtoeol();
-               getdata(t_lines-1, 0,"[1m[32m«Î∞¥ Enter ∂œœﬂ£¨»ª∫Û÷ÿ–¬µ«¬º 8-) [m", restore,1,DOECHO,NULL,true);
-               abort_bbs(0);
-               }
-               saveline(t_lines-2, 1, NULL);
-               break;
-               }
+             * case 'R':   Leeward 98.04.24 
+             * {
+             * char fname[STRLEN], restore[256];
+             * 
+             * if(!strcmp(currentuser->userid,"guest")) 
+             * break;
+             * 
+             * saveline(t_lines-2, 0, NULL);
+             * move(t_lines-2, 0);
+             * clrtoeol();
+             * getdata(t_lines-2, 0,"[1m[5m[31m¡¢º¥∂œœﬂ[m°√[1m[33m“‘±„ª÷∏¥…œ¥Œ’˝≥£¿Îø™±æ’æ ±µƒŒ¥∂¡±Íº« (Y/N)£ø [N][m: ", restore,4,DOECHO,NULL,true);
+             * if ('y' == restore[0] || 'Y' == restore[0])
+             * {
+             * sethomefile(fname, currentuser->userid,".boardrc" );
+             * sprintf(restore, "%s.bak", fname);
+             * f_cp(restore,fname,0);
+             * 
+             * move(t_lines-2, 0);
+             * clrtoeol();
+             * prints("[1m[33m“—ª÷∏¥…œ¥Œ’˝≥£¿Îø™±æ’æ ±µƒŒ¥∂¡±Íº«[m");
+             * move(t_lines-1, 0);
+             * clrtoeol();
+             * getdata(t_lines-1, 0,"[1m[32m«Î∞¥ Enter ∂œœﬂ£¨»ª∫Û÷ÿ–¬µ«¬º 8-) [m", restore,1,DOECHO,NULL,true);
+             * abort_bbs(0);
+             * }
+             * saveline(t_lines-2, 1, NULL);
+             * break;
+             * }
              */
         case 'X':              /* Leeward 98.03.28 Set a board READONLY */
             {
@@ -475,11 +486,13 @@ static int choose_board(int newflag, char *boardprefix)
                 if (strlen(nbrd[num].name)) {
                     board_setreadonly(nbrd[num].name, 1);
 
-                    /* Bigman 2000.12.11:œµÕ≥º«¬º */
+                    /*
+                     * Bigman 2000.12.11:œµÕ≥º«¬º 
+                     */
                     sprintf(genbuf, "÷ª∂¡Ã÷¬€«¯ %s ", nbrd[num].name);
                     securityreport(genbuf, NULL, NULL);
                     sprintf(genbuf, " readonly board %s", nbrd[num].name);
-                    bbslog("user","%s",genbuf);
+                    bbslog("user", "%s", genbuf);
 
                     show_brdlist(page, 0, newflag);
                 }
@@ -494,11 +507,13 @@ static int choose_board(int newflag, char *boardprefix)
 
                 board_setreadonly(nbrd[num].name, 0);
 
-                /* Bigman 2000.12.11:œµÕ≥º«¬º */
+                /*
+                 * Bigman 2000.12.11:œµÕ≥º«¬º 
+                 */
                 sprintf(genbuf, "Ω‚ø™÷ª∂¡Ã÷¬€«¯ %s ", nbrd[num].name);
                 securityreport(genbuf, NULL, NULL);
                 sprintf(genbuf, " readable board %s", nbrd[num].name);
-                bbslog("user","%s",genbuf);
+                bbslog("user", "%s", genbuf);
 
                 show_brdlist(page, 0, newflag);
                 break;
@@ -539,8 +554,8 @@ static int choose_board(int newflag, char *boardprefix)
         case 'O':
         case 'o':              /* Luzi 1997.10.31 */
 #ifdef NINE_BUILD
-		case 'C':
-		case 'c':
+        case 'C':
+        case 'c':
 #endif
             {                   /* Leeward 98.10.26 fix a bug by saving old mode */
                 int savemode = uinfo.mode;
@@ -550,7 +565,9 @@ static int choose_board(int newflag, char *boardprefix)
                 t_friends();
                 page = -1;
                 modify_user_mode(savemode);
-                /* return FULLUPDATE; */
+                /*
+                 * return FULLUPDATE; 
+                 */
                 break;
             }
         case 'P':
@@ -619,40 +636,39 @@ static int choose_board(int newflag, char *boardprefix)
                 update_endline();
             }
             break;
-	case 'S':
+        case 'S':
             currentuser->flags[0] ^= BRDSORT_FLAG;      /*≈≈–Ú∑Ω Ω */
-            if(yank_flag!=2){
-                    qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*≈≈–Ú */
-                    page = 999;
+            if (yank_flag != 2) {
+                qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);   /*≈≈–Ú */
+                page = 999;
             } else {
-                    if (currentuser->flags[0]& BRDSORT_FLAG) {      /*≈≈–Ú∑Ω Ω */
-                    	qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*≈≈–Ú */
-		    }
-            	    else if (load_boards(boardprefix) == -1)
-			continue;
-                    page = 999;
-	    }
-	    break;
+                if (currentuser->flags[0] & BRDSORT_FLAG) {     /*≈≈–Ú∑Ω Ω */
+                    qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*≈≈–Ú */
+                } else if (load_boards(boardprefix) == -1)
+                    continue;
+                page = 999;
+            }
+            break;
         case 's':              /* sort/unsort -mfchen */
-	    /*
-            if(yank_flag!=2){
-	            currentuser->flags[0] ^= BRDSORT_FLAG;   
-	            qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);     
-	            page = 999;
-            }
-            else {
-	    */
-            	modify_user_mode(SELECT);
-		if(do_select(0, NULL, genbuf)==NEWDIRECT)
-            	Read();
-		if (nbrd!=newpost_buffer)
-			nbrd=newpost_buffer;
-              show_brdlist(page, 1, newflag);     /*  refresh screen */
-	      brdnum = -1;
-              modify_user_mode(newflag ? READNEW : READBRD);
-	      /*
-            }
-	    */
+            /*
+             * if(yank_flag!=2){
+             * currentuser->flags[0] ^= BRDSORT_FLAG;   
+             * qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);     
+             * page = 999;
+             * }
+             * else {
+             */
+            modify_user_mode(SELECT);
+            if (do_select(0, NULL, genbuf) == NEWDIRECT)
+                Read();
+            if (nbrd != newpost_buffer)
+                nbrd = newpost_buffer;
+            show_brdlist(page, 1, newflag);     /*  refresh screen */
+            brdnum = -1;
+            modify_user_mode(newflag ? READNEW : READBRD);
+            /*
+             * }
+             */
             break;
             /*---	added period 2000-09-11	4 FavBoard	---*/
         case 'a':
@@ -736,44 +752,46 @@ static int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'm':
-                if(yank_flag==2) {
-		  if (currentuser->flags[0]& BRDSORT_FLAG) {
-			  move(0,0);
-			  prints("≈≈–Úƒ£ Ωœ¬≤ªƒ‹“∆∂Ø£¨«Î”√'S'º¸«–ªª!");
-			  pressreturn();
-		  } else {
-        	if (nbrd[num].flag != -1 || nbrd[num].pos != -1){
-        		int p,q;
-        		char ans[5];
-                     if (nbrd[num].flag == -1)
-                         p = nbrd[num].pos;
-                     else
-                         p = IsFavBoard(nbrd[num].pos) - 1;
+            if (yank_flag == 2) {
+                if (currentuser->flags[0] & BRDSORT_FLAG) {
                     move(0, 0);
-                    clrtoeol();
-                    getdata(0, 0, "«Î ‰»Î“∆∂ØµΩµƒŒª÷√:", ans, 4, DOECHO, NULL, true);
-                    q=atoi(ans)-1;
-                    if (q<0||q>=brdnum) {
-	                    move(2, 0);
-	                    clrtoeol();
-	                    prints("∑«∑®µƒ“∆∂ØŒª÷√£°");
-	                    pressreturn();
-	                    show_brdlist(page, 1, newflag);     /*  refresh screen */
+                    prints("≈≈–Úƒ£ Ωœ¬≤ªƒ‹“∆∂Ø£¨«Î”√'S'º¸«–ªª!");
+                    pressreturn();
+                } else {
+                    if (nbrd[num].flag != -1 || nbrd[num].pos != -1) {
+                        int p, q;
+                        char ans[5];
+
+                        if (nbrd[num].flag == -1)
+                            p = nbrd[num].pos;
+                        else
+                            p = IsFavBoard(nbrd[num].pos) - 1;
+                        move(0, 0);
+                        clrtoeol();
+                        getdata(0, 0, "«Î ‰»Î“∆∂ØµΩµƒŒª÷√:", ans, 4, DOECHO, NULL, true);
+                        q = atoi(ans) - 1;
+                        if (q < 0 || q >= brdnum) {
+                            move(2, 0);
+                            clrtoeol();
+                            prints("∑«∑®µƒ“∆∂ØŒª÷√£°");
+                            pressreturn();
+                            show_brdlist(page, 1, newflag);     /*  refresh screen */
+                        } else {
+                            if (q == 0)
+                                q = 0;
+                            else if (nbrd[q].flag == -1)
+                                q = nbrd[q].pos;
+                            else
+                                q = IsFavBoard(nbrd[q].pos) - 1;
+                            MoveFavBoard(p, q);
+                            save_favboard();
+                            brdnum = -1;
+                        }
                     }
-                    else {
-                          if (q==0) q=0;
-                          else 
-                          	if (nbrd[q].flag == -1) q=nbrd[q].pos;
-                          	else q=IsFavBoard(nbrd[q].pos)-1;
-                          MoveFavBoard(p,q);
-                          save_favboard();
-                          brdnum = -1;
-                    }
-		}
-		}
-                    show_brdlist(page, 1, newflag);     /*  refresh screen */
-        	}
-        	break;
+                }
+                show_brdlist(page, 1, newflag); /*  refresh screen */
+            }
+            break;
         case 'd':
             if (2 == yank_flag) {
                 int p = 1;
@@ -832,7 +850,9 @@ static int choose_board(int newflag, char *boardprefix)
                 num = number - 1;
                 break;
             }
-            /* fall through */
+            /*
+             * fall through 
+             */
         case 'r':
         case KEY_RIGHT:        /*Ω¯»Î board */
             {
@@ -865,17 +885,22 @@ static int choose_board(int newflag, char *boardprefix)
                     }
                     Read();
 
-                    /* Leeward 98.05.17: updating unread flag on exiting Read() */
-                    /* if (-1 != load_boards())
-                       qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard ); */
-
-                    /* À˚œÎ∞—zap∞Ê√Êµƒ ±º‰∂®“ÂŒ™…œ¥Œ‘ƒ∂¡µƒ ±º‰£¨µ´ «√ª”– π”√
-                       if( zapbuf[ ptr->pos ] > 0 ) 
-                       zapbuf[ ptr->pos ] = brc_list[0];
+                    /*
+                     * Leeward 98.05.17: updating unread flag on exiting Read() 
                      */
-		    if(nbrd != newpost_buffer)
-			nbrd = newpost_buffer;
-                    brdnum  = -1;
+                    /*
+                     * if (-1 != load_boards())
+                     * qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard ); 
+                     */
+
+                    /*
+                     * À˚œÎ∞—zap∞Ê√Êµƒ ±º‰∂®“ÂŒ™…œ¥Œ‘ƒ∂¡µƒ ±º‰£¨µ´ «√ª”– π”√
+                     * if( zapbuf[ ptr->pos ] > 0 ) 
+                     * zapbuf[ ptr->pos ] = brc_list[0];
+                     */
+                    if (nbrd != newpost_buffer)
+                        nbrd = newpost_buffer;
+                    brdnum = -1;
                     modify_user_mode(newflag ? READNEW : READBRD);
                 }
                 break;
@@ -929,7 +954,9 @@ void FavBoard()
 {
     int ifnew = 1, yanksav;
 
-/*    if(heavyload()) ifnew = 0; *//* no heavyload() in FB2.6x */
+/*    if(heavyload()) ifnew = 0; *//*
+ * no heavyload() in FB2.6x 
+ */
     yanksav = yank_flag;
     yank_flag = 2;
     if (!getfavnum())
