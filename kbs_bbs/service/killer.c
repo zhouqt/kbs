@@ -616,7 +616,7 @@ int do_com_menu()
 
 void join_room(struct room_struct * r)
 {
-    char buf[80],buf2[80],buf3[80];
+    char buf[80],buf2[80],buf3[80],roomname[80];
     int i,j,killer,me;
     clear();
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
@@ -627,6 +627,7 @@ void join_room(struct room_struct * r)
         return;
     }
     myroom = r;
+    strcpy(roomname, myroom->name);
     signal(SIGUSR1, room_refresh);
     i=r->people;
     inrooms.peoples[i].flag = 0;
@@ -892,6 +893,7 @@ checkvote:
                 break;
             }
         }while(1);
+        start_change_inroom(myroom);
         for(me=0;me<myroom->people;me++)
             if(inrooms.peoples[me].pid == uinfo.pid) break;
         strcpy(buf2, buf);
@@ -906,7 +908,6 @@ checkvote:
                 if(inrooms.peoples[i].flag&PEOPLE_KILLER||
                     inrooms.peoples[i].flag&PEOPLE_SPECTATOR) {
                     send_msg(inrooms.peoples+i, buf);
-                    kill(inrooms.peoples[i].pid, SIGUSR1);
                 }
             }
         }
@@ -916,9 +917,11 @@ checkvote:
             if(!(inrooms.peoples[me].flag&PEOPLE_SPECTATOR))
             for(i=0;i<myroom->people;i++) {
                 send_msg(inrooms.peoples+i, buf);
-                kill(inrooms.peoples[i].pid, SIGUSR1);
             }
         }
+        end_change_inroom();
+        for(i=0;i<myroom->people;i++)
+            kill(inrooms.peoples[i].pid, SIGUSR1);
     }
 
 quitgame:
@@ -966,7 +969,7 @@ quitgame2:
     getdata(t_lines-1, 0, "寄回本次全部信息吗?[y/N]", buf3, 3, 1, 0, 1);
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
     if(toupper(buf3[0])=='Y') {
-        sprintf(buf2, "\"%s\"的杀人记录", myroom->name);
+        sprintf(buf2, "\"%s\"的杀人记录", roomname);
         mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_COPY, NULL);
     }
     unlink(buf);
