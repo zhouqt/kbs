@@ -569,7 +569,7 @@ int user_init(struct userec **x, struct user_info **y)
     if (id[0] == '\0')
         return -1;
 
-    if (www_user_init(i, id, key, x, y) == 0 && strcasecmp("guest", currentuser->userid))
+    if (www_user_init(utmpent, id, key, x, y) == 0 && strcasecmp("guest", currentuser->userid))
         return 1;
     return 0;
 }
