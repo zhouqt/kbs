@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+	require("board.inc.php");
 login_init();
 
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$order=FALSE)
@@ -218,63 +219,9 @@ login_init();
 	
 		$brd_encode = urlencode($brdarr["NAME"]);
 		$order_articles = false;
+        bbs_board_header($brdarr,$total);
 ?>
-<body topmargin="0">
-<a name="listtop"></a>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
-  <tr> 
-    <td colspan="2" class="b2">
-	    <a href="<?php echo MAINPAGE_FILE; ?>" class="b2"><?php echo BBS_FULL_NAME; ?></a>
-	    -
-	    <?php
-	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
-		if ($sec_index >= 0)
-		{
-	    ?>
-		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><?php echo $section_names[$sec_index][0]; ?></a>
-	    <?php
-		}
-	    ?>
-	    -
-	    <a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>" class="b2"><?php echo $brdarr["NAME"]; ?>版</a>(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2">进版画面</a>|<a href="/bbsfav.php?bname=<?php echo $brd_encode; ?>&select=0" class="b2">预定本版</a>)
-	    -
-	    文摘区
-    </td>
-  </tr>
-  <tr> 
-    <td colspan="2" align="center" class="b4"><?php echo $brdarr["NAME"]."(".$brdarr["DESC"].")"; ?> 版</td>
-  </tr>
-  <tr><td class="b1">
-  <img src="images/bm.gif" alt="版主" align="absmiddle">版主 <?php echo $bm_url; ?>
-  </td>
-    <td align="right" class="b1">
-	    <img src="images/gmode.gif" align="absmiddle" alt="一般模式"><a class="b1" href="bbsdoc.php?board=<?php echo $brdarr["NAME"]; ?>">一般模式</a> 
-	    <?php
-                    if ($ann_path = bbs_getannpath($brdarr["NAME"])){
-	    ?>
-	    | 
-  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
-	    <?php
-		}
-	    ?>
-	    | 
-  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>
-	    <?php
-    		if (strcmp($currentuser["userid"], "guest") != 0)
-		{
-    	    ?>
-	    | 
-  	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a class="b1" href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>">本版投票</a>
-	    | 
-  	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a class="b1" href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文模板</a>
-    	    <?php
-    		}
-    	    ?>	
-    </td>
-  </tr>
-  <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
   <tr><td colspan="2" align="right" class="b1">
   <?php
   	display_navigation_bar($brdarr, $brdnum, $start, $total, $order_articles );

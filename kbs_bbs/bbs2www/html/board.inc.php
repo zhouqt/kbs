@@ -8,7 +8,7 @@ function bbs_boards_navigation_bar()
 [<a href="/bbsnewbrd.php">新开讨论区</a>]
 [<a href="/bbsrecbrd.php">推荐讨论区</a>]
 [<a href="/bbsbrdran.php">讨论区人气排名</a>]
-[<a href="/cgi-bin/bbs/bbs0an">精华公布栏</a>]
+[<a href="/bbs0an.php">精华公布栏</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <br />
 </p>
@@ -131,7 +131,7 @@ function bbs_board_header($brdarr,$articles=0)
 			$ann_path=substr($ann_path,9);
 ?>
 	    | 
-  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>"><font class="b1">精华区</font></a>
+  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/bbs0an.php?path=<?php echo urlencode($ann_path); ?>"><font class="b1">精华区</font></a>
 	    <?php
 	}
 ?>
@@ -236,6 +236,14 @@ display_active_boards();
 </script>
 <?php	
 }
+
+function htmlformat($str,$multi=false) {
+    $str = str_replace(' ','&nbsp;',htmlspecialchars($str));
+    if ($multi)
+        $str = nl2br($str);
+    return $str;    
+}
+
 
 
 ?>

@@ -320,7 +320,7 @@ setTimeout('bbs_auto_reload()',540000);
 		</tr>
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
-			<td><a href="/cgi-bin/bbs/bbs0an" target="f3"><img src="<?php echo $img_subdir; ?>m2.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
+			<td><a href="/bbs0an.php" target="f3"><img src="<?php echo $img_subdir; ?>m2.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
 		</tr>
 		<tr>
 			<td width="16">

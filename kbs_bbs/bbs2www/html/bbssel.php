@@ -61,8 +61,8 @@ window.location.href="/bbsdoc.php?board=<?php echo urlencode($boards[0]['NAME'])
     $i = 1;
     foreach ($boards as $board) {
         echo '<tr><td class="t3">'.$i.'</td><td class="t4"><a href="/bbsdoc.php?board='.urlencode($board['NAME']).'">'.htmlspecialchars($board['NAME']).'</a></td>'.
-             '<td class="t8">'.htmlspecialchars($board['TITLE']).'</td>'.
-             '<td class="t7">'.str_replace(' ','&nbsp;',htmlspecialchars($board['DESC'])).'&nbsp;</td></tr>';    
+             '<td class="t8">'.htmlformat($board['TITLE']).'</td>'.
+             '<td class="t7">'.htmlformat($board['DESC']).'&nbsp;</td></tr>';    
         $i ++;
     }
 ?>

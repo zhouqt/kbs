@@ -167,6 +167,7 @@ static PHP_FUNCTION(bbs_getannpath);
 static PHP_FUNCTION(bbs_add_import_path);
 static PHP_FUNCTION(bbs_get_import_path);
 static PHP_FUNCTION(bbs_x_search);
+static PHP_FUNCTION(bbs_read_ann_dir);
 
 
 ////////////////////////  Mail operation functions  ///////////////////////////
@@ -393,6 +394,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_ext_initialized, NULL)
 		PHP_FE(bbs_init_ext, NULL)
 	PHP_FE(bbs_x_search,third_arg_force_ref_001)
+	PHP_FE(bbs_read_ann_dir,fourth_arg_force_ref_0111)
         {NULL, NULL, NULL}
 };
 
@@ -8995,6 +8997,143 @@ static PHP_FUNCTION(bbs_x_search)
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
     ZVAL_LONG(total_records, toomany);
+}
+
+/**
+ * int bbs_read_ann_dir(string path,string board,string path2,array articles)
+ * $articles is the articles/sub-directories in this directory except BMS/SYSOPS.
+ * $articles = array(
+ *               int 'FLAG',  // 0: error;1: dir;2: file;3: file with attach
+ *               string 'TITLE',
+ *               string 'PATH',
+ *               string 'BM',
+ *               int 'TIME'
+ *               );
+ * return 0 :seccess;
+ *        -1:dir NOT exist
+ *        -2:can NOT find .Names file
+ *        -3:No article here
+ *        -9:system error;
+ */
+static PHP_FUNCTION(bbs_read_ann_dir)
+{
+    char  *path;
+    int   path_len;
+    zval *board,*path2,*element,*articles;
+    
+    struct userec *u;
+    char pathbuf[256];
+    int len;
+    MENU me;
+    ITEM *its;
+    int i,j;
+    char *id,*ptr;
+    char buf[256];
+    char r_title[STRLEN],r_path[256],r_bm[IDLEN + 2];
+    int  r_flag,r_time;
+    
+    int ac = ZEND_NUM_ARGS();
+    if(ac != 4 || zend_parse_parameters(4 TSRMLS_CC,"szza",&path,&path_len,&board,&path2,&articles) ==FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    
+    if (!PZVAL_IS_REF(board) || !PZVAL_IS_REF(path2)) {
+       	zend_error(E_WARNING, "Parameter wasn't passed by reference");
+       	RETURN_FALSE;
+    }
+    
+    if(array_init(articles) != SUCCESS)
+        RETURN_LONG(-9);
+    
+    u = getCurrentUser();
+    if (!u)
+        RETURN_LONG(-9);
+    
+    if (strstr(path, "..") || strstr(path, "SYSHome"))  
+		RETURN_LONG(-1);
+    if (path[0] != '\0') {
+        len = strlen(path);
+        if (path[len - 1] == '/')
+            path[len - 1] = '\0';
+        if (path[0] == '/')
+            snprintf(pathbuf, 255, "0Announce%s", path);
+        else
+            snprintf(pathbuf, 255, "0Announce/%s", path);
+        if (ann_traverse_check(pathbuf, u) < 0)
+			RETURN_LONG(-1);
+    } else
+        strcpy(pathbuf, "0Announce");
+    
+    if ((its = ann_alloc_items(MAXITEMS)) == NULL)
+        RETURN_LONG(-9);
+    
+    ZVAL_STRING(path2,pathbuf,1);
+    ann_set_items(&me, its, MAXITEMS);
+    me.path = pathbuf;
+    if (ann_load_directory(&me, getSession()) == 0) {
+        buf[0] = '\0';
+        ann_get_board(pathbuf, buf, sizeof(buf));
+        ZVAL_STRING(board,buf,1);
+        if (me.num <= 0) 
+            RETURN_LONG(-3);
+        me.now = 0;
+        j = 0;
+        for (i = 0; i < me.num; i++) {
+            trim(me.item[i]->title);
+            strncpy(r_title, me.item[i]->title, sizeof(r_title) - 1);
+            r_title[sizeof(r_title) - 1] = '\0';
+            if (strlen(r_title) <= 39) {
+                id = "";
+            } else {
+                if ((ptr = strchr(r_title + 38, '(')) != NULL) {
+                    *ptr = '\0';
+                    id = ptr + 1;
+                    if (strncmp(id, "BM: ", 4) == 0)
+                        id += 4;
+                    if ((ptr = strchr(id, ')')) != NULL)
+                        *ptr = '\0';
+                } else if ((ptr = strchr(r_title + 38, ' ')) != NULL) {
+                    *ptr = '\0';
+                    id = ptr + 1;
+                    trim(id);
+                } else
+                    id = "";
+                rtrim(r_title);
+            }
+            sprintf(buf, "%s/%s", me.path,me.item[i]->fname);
+            ptr = strchr(me.path, '/');
+            
+            if (!file_exist(buf)) 
+                r_flag = 0;
+            else if (file_isdir(buf))
+                r_flag = 1;
+            else 
+                r_flag = me.item[i]->attachpos?3:2;
+
+            snprintf(r_path, sizeof(r_path), "%s/%s", ptr == NULL ? "" : ptr, me.item[i]->fname);
+            strcpy(r_bm,id[0]?id:"");
+            r_time = file_time(buf);
+            if (strcmp(r_bm,"BMS") && strcmp(r_bm,"SYSOPS")) { // only display common articles
+                MAKE_STD_ZVAL(element);
+                array_init(element);
+                add_assoc_string(element,"TITLE",r_title,1);
+                add_assoc_string(element,"PATH",r_path,1);
+                trim(r_bm);
+                add_assoc_string(element,"BM",r_bm,1);
+                add_assoc_long(element,"FLAG",r_flag);
+                add_assoc_long(element,"TIME",r_time);
+                zend_hash_index_update(Z_ARRVAL_P(articles),j,(void*) &element, sizeof(zval*), NULL);
+                j ++;
+            }
+            me.now++;
+        }
+        ann_free_items(its, MAXITEMS);
+        RETURN_LONG(0);
+    }
+    else
+        ann_free_items(its, MAXITEMS);
+    
+    RETURN_LONG(-2);
 }
 
 /**
