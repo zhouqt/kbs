@@ -192,6 +192,21 @@ static int set_modes_key(struct _select_def *conf, int key)
     return SHOW_CONTINUE;
 }
 
+static int set_modes_refresh(struct _select_def *conf)
+{
+    clear();
+    docmdtitle("[设置自定义键模式]",
+               "退出[\x1b[1;32mq\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 移动[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 选择[\x1b[1;32m回车\x1b[0;37m]\x1b[m");
+    update_endline();
+    return SHOW_CONTINUE;
+}
+
+static int set_modes_getdata(struct _select_def *conf, int pos, int len)
+{
+    return SHOW_CONTINUE;
+}
+
+
 int set_modes(int *res)
 {
     struct _select_def group_conf;
@@ -241,6 +256,8 @@ int set_modes(int *res)
     group_conf.show_data = set_modes_show;
     group_conf.pre_key_command = set_modes_prekey;
     group_conf.key_command = set_modes_key;
+    group_conf.show_title = set_modes_refresh;
+    group_conf.get_data = set_modes_getdata;
 
     list_select_loop(&group_conf);
     free(pts);
@@ -343,6 +360,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
                 j++;
                 if(j>=10) break;
             }while(1);
+            if(j<10) k.mapped[j]=0;
             if(j==0) return SHOW_DIRCHANGE;
 
             k.status[0] = -1;
@@ -383,6 +401,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
                 j++;
                 if(j>=10) break;
             }while(1);
+            if(j<10) k.mapped[j]=0;
             if(j==0) return SHOW_DIRCHANGE;
 
             k.status[0] = -1;
