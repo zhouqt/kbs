@@ -300,6 +300,13 @@
 		
 <?php
 	if($currentuser["userid"]!="guest"){
+		if (bbs_getmailnum($currentuser["userid"],$total,$unread, 0, 0)) {
+			if( $unread != 0 ){
+?>
+<script>alert('您有新信件!')</script>
+<?php
+			}
+		}
 ?>
 		<tr>
 			<td width="16">
