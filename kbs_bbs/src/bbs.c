@@ -4081,8 +4081,9 @@ int set_ip_acl()
 
 #define TEMPLATE_DIR ".templ"
 #define MAX_TEMPLATE 10
-#define MAX_CONTENT 10
+#define MAX_CONTENT 20
 #define TMPL_BM_FLAG 0x1
+#define MAX_CONTENT_LENGTH 555
 
 struct s_content{
 	char text[50];
@@ -4242,7 +4243,7 @@ int content_add(){
 	buf[0]='\0';
 	getdata(t_lines - 1, 0, "Ñ¡Ïî³¤¶È: ", buf, 5, DOECHO, NULL, false);
 	ct.length = atoi(buf);
-	if(ct.length <= 0 || ct.length > 555)
+	if(ct.length <= 0 || ct.length > MAX_CONTENT_LENGTH )
 		return -1;
 
 	ptemplate[t_now].cont = (struct s_content *) realloc( ptemplate[t_now].cont, sizeof(struct s_content) * (ptemplate[t_now].tmpl->content_num+1));
@@ -4309,7 +4310,7 @@ static int content_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[°æÃæÄ£°åÑ¡ÏîÉèÖÃ]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÐÞ¸Ä±êÌâ[[1;32mt[0;37m]");
+               "Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÐÞ¸Ä±êÌâ[[1;32mt[0;37m] ÐÞ¸Ä³¤¶È[[1;32ml[0;37m]");
     move(2, 0);
     prints("[0;1;37;44m  %4s    %-50s  %4s", "ÐòºÅ", "Ãû³Æ","³¤¶È");
     clrtoeol();
@@ -4391,6 +4392,26 @@ static int content_key(struct _select_def *conf, int key)
 
 			strncpy(ptemplate[t_now].cont[conf->pos-1].text, newtitle, 50);
 			ptemplate[t_now].cont[conf->pos-1].text[49]='\0';
+
+			tmpl_save();
+
+			return SHOW_REFRESH;
+		}
+		break;
+	case 'l' :
+		{
+			char newlen[10];
+			int nl;
+
+			sprintf(newlen,"%-3d",ptemplate[t_now].cont[conf->pos-1].length);
+			getdata(t_lines-1, 0, "ÐÂ³¤¶È: ", newlen, 5, DOECHO, NULL, false);
+
+			nl = atoi(newlen);
+
+			if( nl <= 0 || nl > MAX_CONTENT_LENGTH || nl == ptemplate[t_now].cont[conf->pos-1].length )
+				return SHOW_REFRESH;
+
+			ptemplate[t_now].cont[conf->pos-1].length = nl;
 
 			tmpl_save();
 
