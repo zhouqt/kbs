@@ -1886,7 +1886,7 @@ static ZEND_FUNCTION(bbs_createNewID)
 
 	update_user(&newuser,allocid,1);
 
-	if (!dosearchuser(newuser.userid))RETURN_LONG(10);
+	if (!getuser(newuser.userid,&currentuser))RETURN_LONG(10);
 
 	bbslog("user","%s","new account from tsinghua www");
 	
