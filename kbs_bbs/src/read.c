@@ -653,7 +653,8 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
                 locmem->top_line = 1;
 	/*modified by stiger */
 /*            locmem->crs_line = last_line; */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
             locmem->crs_line = last_line - get_num_records(ding_direct,ssize);
 	else
             locmem->crs_line = last_line;
@@ -662,7 +663,8 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
         }
         RMVCURS(locmem);
 	/*modified by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if (cmdmode != RMAIL && cmdmode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
         locmem->crs_line = last_line - get_num_records(ding_direct,ssize);
 	else
         locmem->crs_line = last_line;
