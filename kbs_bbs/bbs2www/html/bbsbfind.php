@@ -24,7 +24,7 @@
 		}
 ?>
 <center>
-水母清华 -- 版内文章搜索 [使用者: <?php echo $currentuser["userid"];?>]
+水木清华 -- 版内文章搜索 [使用者: <?php echo $currentuser["userid"];?>]
 <hr color="green"><br>
 <?php
 		if( !isset($_GET["submit"]) && !isset($_POST["submit"]) ){
