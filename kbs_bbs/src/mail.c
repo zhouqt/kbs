@@ -80,10 +80,7 @@ int chkreceiver(char* userid,struct userec* lookupuser)
 
 
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
-	if (!strcmp(lookupuser->userid, "Arbitrator")) 
-		return 1;
-
-    if (!( lookupuser->userlevel & PERM_SYSOP ))
+    if ((!( lookupuser->userlevel & PERM_SYSOP )) && strcmp(lookupuser->userid, "Arbitrator"))
     {
         if ( lookupuser->userlevel & PERM_CHATCLOAK)
         {
@@ -141,7 +138,7 @@ chkmail()
         return ismail ;
     
 
-    if ( !HAS_PERM(currentuser,PERM_SYSOP)|| !strcmp(currentuser->userid, "Arbitrator") )
+    if ( !HAS_PERM(currentuser,PERM_SYSOP) && strcmp(currentuser->userid, "Arbitrator") )
     /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
     {/*Haohmaru.99.4.4.对收信也加限制,改动下面的数字时请同时改动chkreceiver函数*/
         if (HAS_PERM(currentuser,PERM_CHATCLOAK))
@@ -451,7 +448,7 @@ char *userid, *title ;
         return -5;
     /* SYSOP也能给自杀的人发信 */
 
-    if ( !HAS_PERM(currentuser,PERM_SYSOP) || !strcmp(currentuser->userid, "Arbitrator")){
+    if ( !HAS_PERM(currentuser,PERM_SYSOP) && strcmp(currentuser->userid, "Arbitrator")){
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */ 
         if ( HAS_PERM(currentuser,PERM_CHATCLOAK))
             /* Bigman: 2000.8.17, 智囊团信箱*/
