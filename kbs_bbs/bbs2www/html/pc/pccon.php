@@ -130,6 +130,8 @@
 	pc_html_init("gb2312",stripslashes($rows[corpusname]));
 	
 	if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
+		$pur = 3;
+	elseif(bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 		$pur = 2;
 	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]))
 		$pur = 1;

@@ -10,10 +10,10 @@
 	function display_user_list($link,$listorder="username",$listorder1="ASC",$char=FALSE,$startno=0,$pagesize=10)
 	{
 		if($char)
-			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`".
+			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
 				" FROM users WHERE `username` LIKE '".$char."%' ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize." ; ";
 		else
-			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`".
+			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
 				" FROM users ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize." ; ";
 		$result = mysql_query($query,$link);
 		$list_user_num = mysql_num_rows($result);
@@ -26,28 +26,44 @@
 		<a href="pc.php?order=username&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按用户名递增排序"></a>
 		<a href="pc.php?order=username&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按用户名递减排序"></a>
 	</td>
-	<td class="t2" width="150">文集名称</td>
+	<td class="t2" width="130">文集名称</td>
+	<!--
 	<td class="t2">描述</td>
-	<td class="t2" width="200">主题</td>
+	-->
+	<td class="t2">主题</td>
+	<td class="t2" width="70">
+		文章数
+		<a href="pc.php?order=nodescount&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按用户名递增排序"></a>
+		<a href="pc.php?order=nodescount&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按用户名递减排序"></a>
+	</td>
+	<td class="t2" width="70">访问量
+		<a href="pc.php?order=visitcount&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按用户名递增排序"></a>
+		<a href="pc.php?order=visitcount&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按用户名递减排序"></a>
+	</td>
 	<td class="t2" width="120">
 		创建时间
 		<a href="pc.php?order=createtime&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按创建时间递增排序"></a>
 		<a href="pc.php?order=createtime&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按创建时间递减排序"></a>
+	<td class="t2" width="120">
+		更新时间
+		<a href="pc.php?order=modifytime&order1=ASC&char=<?php echo $char; ?>"><img src="images/desc_order.png" border="0" align="absmiddle" alt="按更新时间递增排序"></a>
+		<a href="pc.php?order=modifytime&order1=DESC&char=<?php echo $char; ?>"><img src="images/asc_order.png" border="0" align="absmiddle" alt="按更新时间递减排序"></a>
 	</td>
 </tr>
 <?php
 		for($i=0 ; $i < $list_user_num ; $i++)
 		{
 			$rows = mysql_fetch_array($result);
-			$t = $rows[createtime];
-			$t = time_format($t);
 			$themekey = urlencode(stripslashes($rows[theme]));
 			echo "<tr>\n<td class=\"t3\">".($startno + $i + 1)."</td>\n".
 				"<td class=\"t4\"><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
 				"<td class=\"t3\"><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[corpusname])."</a>&nbsp;</td>\n".
-				"<td class=\"t5\"><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[description])."</a>&nbsp;</td>\n".
+				//"<td class=\"t5\"><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[description])."</a>&nbsp;</td>\n".
 				"<td class=\"t3\"><a href=\"pcsearch.php?exact=0&key=t&keyword=".$themekey."\">".html_format($rows[theme])."</a>&nbsp;</td>\n".
-				"<td class=\"t4\">".$t."</td>\n</tr>\n";
+				"<td class=\"t4\">".$rows[nodescount]."</a>".
+				"<td class=\"t3\">".$rows[visitcount]."</a>".
+				"<td class=\"t4\">".time_format($rows[createtime])."</a>".
+				"<td class=\"t3\">".time_format($rows[modifytime])."</td>\n</tr>\n";
 		}
 ?>
 </table>	
@@ -103,8 +119,24 @@
 	else
 		$char = FALSE;
 		
-	if($listorder != "createtime")
-		$listorder = "username";
+	switch($_GET["order"])
+	{
+		case "createtime":
+			$listorder = "createtime";
+			break;
+		case "modifytime":
+			$listorder = "modifytime";
+			break;
+		case "nodescount":
+			$listorder = "nodescount";
+			break;
+		case "visitcount":
+			$listorder = "visitcount";
+			break;
+		default:
+			$listorder = "username";	
+	}
+	
 	if($listorder1 != "DESC")
 		$listorder1 = "ASC";
 		

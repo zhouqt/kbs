@@ -26,7 +26,7 @@
 			$keyname = "个人文集所有者";
 	}
 	
-	$query = "SELECT `uid` , `username` , `corpusname` , `description` , `theme` , `createtime` ".
+	$query = "SELECT `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
 		" FROM users WHERE ";
 		
 	if($_GET["exact"]==0)
@@ -71,26 +71,30 @@
 <center><br><br><br>
 <table cellspacing="0" cellpadding="3" width="95%" class="t1">
 <tr>
-	<td class="t2">编号</td>
-	<td class="t2">用户名</td>
-	<td class="t2">文集名称</td>
+	<td class="t2" width="30">编号</td>
+	<td class="t2" width="70">用户名</td>
+	<td class="t2" width="130">文集名称</td>
 	<td class="t2">描述</td>
-	<td class="t2">主题</td>
-	<td class="t2">创建时间</td>
+	<td class="t2" width="120">主题</td>
+	<td class="t2" width="50">文章数</td>
+	<td class="t2" width="50">访问量</td>
+	<td class="t2" width="120">创建时间</td>
+	<td class="t2" width="120">更新时间</td>
 </tr>
 <?php
 		for($i=0 ; $i < $num_rows ; $i++)
 		{
 			$rows = mysql_fetch_array($result);
-			$t = $rows[createtime];
-			$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]." ".$t[8].$t[9].":".$t[10].$t[11].":".$t[12].$t[13];
 			$themekey = urlencode(stripslashes($rows[theme]));
 			echo "<tr>\n<td class=t3>".($startno + $i + 1)."</td>\n".
 				"<td class=t4><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
 				"<td class=t3><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[corpusname])."</a></td>\n".
 				"<td class=t5><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[description])."</a></td>\n".
 				"<td class=t3><a href=\"pcsearch.php?exact=0&key=t&keyword=".$themekey."\">".html_format($rows[theme])."</a></td>\n".
-				"<td class=t4>".$t."</td>\n</tr>\n";
+				"<td class=\"t4\">".$rows[nodescount]."</a>".
+				"<td class=\"t3\">".$rows[visitcount]."</a>".
+				"<td class=\"t4\">".time_format($rows[createtime])."</a>".
+				"<td class=\"t3\">".time_format($rows[modifytime])."</td>\n</tr>\n";
 		}
 ?>
 </table>

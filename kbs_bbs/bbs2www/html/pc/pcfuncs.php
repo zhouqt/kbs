@@ -10,10 +10,23 @@ $db["USER"]=bbs_sysconf_str("MYSQLUSER");
 $db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
 $db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
 
+/*
+** personal corp. configure start
+** LIST: user number in pc.php
+** HOME: bbs home directory
+** ETEMS: etems in xml file
+** SITE: site address,used in xml file
+** BOARD: whose manager can manage anyone's personal corp.
+*/
 $pcconfig["LIST"] = 20;
 $pcconfig["HOME"] = BBS_HOME;
 $pcconfig["ETEMS"] = 20;
 $pcconfig["SITE"] = "smth.org";
+$pcconfig["BOARD"] = "SYSOP";
+/* personal corp. configure end */
+
+$brdarr = array();
+$pcconfig["BRDNUM"] = bbs_getboard($pcconfig["BOARD"], $brdarr);
 
 if(!$currentuser["userid"])
 		$currentuser["userid"] = "guest";
@@ -204,6 +217,15 @@ function pc_init_fav($link,$uid)
 		" VALUES ('', '0', '0', '1', '', '".$_SERVER["REMOTE_ADDR"]."', '".date("YmdHis")."' , '".date("YmdHis")."', '".$uid."', '0', '0', '', NULL , '3', '0');";
 	$r = mysql_query($query,$link);
 	return $r;
+}
+
+function pc_update_record($link,$uid,$addstr="+0",$addvisit=FALSE)
+{
+	if($addvisit)
+		$query = "UPDATE users SET `visitcount` = `visitcount` + 1  WHERE `uid` = '".$uid."' ; ";
+	else
+		$query = "UPDATE users SET `modifytime` = '".date("YmdHis")."' , `nodescount` = `nodescount` ".$addstr." WHERE `uid` = '".$uid."' ";
+	mysql_query($query,$link);
 }
 
 function pc_used_space($link,$uid,$access,$pid=0)

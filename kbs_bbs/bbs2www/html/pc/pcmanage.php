@@ -3,7 +3,6 @@
 	**manage personal corp.
 	**@id: windinsn Nov 19,2003	
 	*/
-	@session_name();
 	@session_start();
 	/*
 	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
@@ -45,6 +44,7 @@
 		if($act == "cut" || $act == "copy")
 		{
 			$target = (int)($_POST["target"]);
+			$access = (int)($_POST["access"]);
 			if($target < 0 || $target > 4 )
 				$target = 2;//如果参数错误先移入私人区
 			if($target == 3)
@@ -68,7 +68,7 @@
 			elseif($act == "cut")
 				$query = "UPDATE nodes SET `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '0' , `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
 			else
-				$query = "SELECT `source`,`hostname`,`created`,`comment`,`commentcount`,`subject`,`body`,`visitcount` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
+				$query = "SELECT `source`,`hostname`,`created`,`comment`,`commentcount`,`subject`,`body`,`visitcount`,`access` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
 			
 			$j = 0;
 			for($i = 1 ;$i < $pc["NLIM"]+1 ; $i ++)
@@ -88,12 +88,14 @@
 					exit();
 				}
 				else
+				{
 					mysql_query($query,$link);
+				}
 			}
 			else
 			{
 				$result = mysql_query($query,$link);
-				$num_rows = mysql_num_rows($result);
+				$j = $num_rows = mysql_num_rows($result);
 				if(pc_used_space($link,$pc["UID"],$target)+$num_rows > $pc["NLIM"])
 				{
 					html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
@@ -109,6 +111,10 @@
 				}
 				
 			}
+			if($access == 0)
+				pc_update_record($link,$pc["UID"]," - ".$j);
+			if($target == 0)
+				pc_update_record($link,$pc["UID"]," + ".$j);
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -162,6 +168,8 @@
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ) ".
 					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["body"])."', '".$tag."', '0');";
 				mysql_query($query,$link);
+				if($tag == 0)
+					pc_update_record($link,$pc["UID"]," + 1");
 ?>
 <script language="javascript">
 window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo $tag; ?>&tid=<?php echo $_POST["tid"]; ?>&pid=<?php echo $pid; ?>";
@@ -245,6 +253,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				$emote = (int)($_POST["emote"]);
 				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["body"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
 				mysql_query($query,$link);
+				pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
 <a href="javascript:history.go(-2);">操作成功,点击返回</a>
@@ -379,8 +388,11 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				{
 					$query = "UPDATE nodes SET `access` = '4' , `changed` = '".date("YmdHis")."' , `tid` = '0' WHERE `nid` = '".$nid."' ;";
 					mysql_query($query,$link);
+					if($_GET["tag"]==0)
+						pc_update_record($link,$pc["UID"]," - 1");
 				}
 			}
+			pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -399,6 +411,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			mysql_query($query,$link);
 			$query = "DELETE FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = '4' ; ";
 			mysql_query($query,$link);
+			pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -428,6 +441,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				//$query = "UPDATE topics SET `topicname` = '".$_POST["topicname"]."' , `access` = '".$_POST["access"]."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
 				$query = "UPDATE topics SET `topicname` = '".addslashes($_POST["topicname"])."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
 				mysql_query($query,$link);
+				pc_update_record($link,$pc["UID"]);
 				
 ?>
 <p align="center">
@@ -498,6 +512,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			{
 				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ; ";
 				mysql_query($query,$link);
+				pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -513,6 +528,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			$query = "INSERT INTO `topics` (`uid` , `access` , `topicname` , `sequen` ) ".
 					"VALUES ( '".$pc["UID"]."', '".$access."', '".addslashes($_POST["topicname"])."', '0');";
 			mysql_query($query,$link);
+			pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -523,6 +539,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		{
 			$query = "UPDATE `users` SET `corpusname` = '".addslashes($_POST["pcname"])."',`description` = '".addslashes($_POST["pcdesc"])."',`theme` = '".addslashes($_POST["pcthem"])."' WHERE `uid` = '".$pc["UID"]."' LIMIT 1 ;";	
 			mysql_query($query,$link);
+			pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -540,6 +557,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ) ".
 				"VALUES ('', '".$pid."', '1', '', '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."', '".date("YmdHis")."', '".$pc["UID"]."', '0', '0', '".addslashes($_POST["dir"])."', NULL , '3', '0', '0', '0');";
 			mysql_query($query,$link);
+			pc_update_record($link,$pc["UID"]);
 ?>
 <script language="javascript">
 window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";
@@ -549,7 +567,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 		elseif($act == "favcut" || $act == "favcopy")
 		{
 			//目前不支持目录的剪切和复制
-			$query = "SELECT `nid`,`type`,`pid`,`subject` FROM nodes WHERE `nid` = '".(int)($_GET["nid"])."' AND `uid` = '".$pc["UID"]."' AND `access` = 3  AND `type` = 0 LIMIT 0 , 1;";
+			$query = "SELECT `nid`,`type`,`pid`,`subject`,`tid` FROM nodes WHERE `nid` = '".(int)($_GET["nid"])."' AND `uid` = '".$pc["UID"]."' AND `access` = 3  AND `type` = 0 LIMIT 0 , 1;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			if(!$rows)
@@ -566,8 +584,9 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			mysql_free_result($result);
 			session_register("favaction");
 ?>
+<br>
 <p align="center">
-<a href="javascript:history.go(-1);">操作成功,已将 <font class=f2><?php echo $rows[subject]; ?></font> 放入剪贴板，点击返回</a>
+<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&tid=<?php echo $rows[tid]; ?>&pid=<?php echo $rows[pid]; ?>">操作成功,已将 <font class=f2><?php echo $rows[subject]; ?></font> 放入剪贴板，点击返回</a>
 </p>
 <?php			
 		}
@@ -612,6 +631,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			mysql_query($query,$link);
 			unset($favaction);
 			session_unregister("favaction");
+			pc_update_record($link,$pc["UID"]);
 ?>
 <script language="javascript">
 window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";

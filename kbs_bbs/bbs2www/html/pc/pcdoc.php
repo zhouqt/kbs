@@ -3,10 +3,9 @@
 	** this file display article list in personal corp.
 	** @id:windinsn  Nov 19,2003
 	*/
-	@session_name();
 	@session_start();
 	/*
-	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
+	**	对收藏夹的剪切、复制操作,计数器需要 session 支持 windinsn nov 25,2003
 	*/
 	$needlogin=0;
 	require("pcfuncs.php");
@@ -70,6 +69,7 @@
 </a>
 </td>
 <td align="right">
+<input type="hidden" name="access" value="<?php echo $tag; ?>">
 <input onclick="checkall(this.form)" type="checkbox" value="on" name="chkall" align="absmiddle" class="b2">
 选中本目录下所有文章
 &nbsp;&nbsp;&nbsp;&nbsp;
@@ -131,7 +131,7 @@
 <form action="pcmanage.php" method="post">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">
 <?php
-		if($pur > 1)
+		if($pur > 2)
 		{
 ?>
 <tr>
@@ -172,7 +172,7 @@
 				$c = "<img src='images/lock.gif' alt='被锁定的主题' border='0'>";
 			else
 				$c = "<img src='images/open.gif' alt='开放的主题' border='0'>";
-			if($pur > 1)
+			if($pur > 2)
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
 					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\"></td>\n".
 					"<td class='t3'>".$c."</td>\n".
@@ -195,7 +195,7 @@
 ?>
 </table>
 <?php
-		if($pur > 1)
+		if($pur > 2)
 			display_action_bar($tag);
 ?>
 </form>
@@ -267,7 +267,7 @@
 <form action="pcmanage.php" method="post">	
 <table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1">
 <?php
-		if($pur > 1)
+		if($pur > 2)
 		{
 ?>
 <tr>
@@ -276,7 +276,7 @@
 	<td class="t2" width="30">类型</td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=co"; ?>" class="f3">状态</a></td>
 	<td class="t2">主题</td>
-	<td class="t2" width="260">
+	<td class="t2" width="250">
 	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=c"; ?>" class="f3">创建时间</a>
 	|
 	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=u"; ?>" class="f3">更新时间</a>
@@ -323,7 +323,7 @@
 				$type = "<img src='images/art.gif' alt='文章' border='0'>";
 				$url = "pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order;
 			}
-			if( $pur > 1)
+			if( $pur > 2)
 			{
 				echo "<tr>\n<td class='t3'>".$i."</td>\n<td align=\"center\" class='t4'>";
 				if($rows[type]==0)
@@ -339,16 +339,16 @@
 					"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">修改</a></td>\n".
 					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n";
 				if($rows[type]==0)
-					echo "<td class='t3'><a href=\"pcmanage.php?act=favcut&nid=".$rows[nid]."\">剪</a></td>".
-					      "<td class='t3'><a href=\"pcmanage.php?act=favcopy&nid=".$rows[nid]."\">复</a></td>";
+					echo "<td class='t3' width=20><a href=\"pcmanage.php?act=favcut&nid=".$rows[nid]."\">剪</a></td>".
+					      "<td class='t3' width=20><a href=\"pcmanage.php?act=favcopy&nid=".$rows[nid]."\">复</a></td>";
 				else
-					echo "<td class='t3'>-</td>\n<td class='t3'>-</td>\n";
+					echo "<td class='t3' width=20>-</td>\n<td class='t3'>-</td>\n";
 				if(session_is_registered("favaction"))
 				{
 					if($rows[type]==1)
-						echo 	"<td class='t3'><a href=\"pcmanage.php?act=favpaste&pid=".$rows[nid]."\">贴</a></td>";
+						echo 	"<td class='t3' width=20><a href=\"pcmanage.php?act=favpaste&pid=".$rows[nid]."\">贴</a></td>";
 					else
-						echo "<td class='t3'>-</td>";
+						echo "<td class='t3' width=20>-</td>";
 				}
 				echo 	"</tr>\n";
 			}
@@ -380,7 +380,7 @@
 </p>
 <?php		
 		}
-		if( $pur > 1 )
+		if( $pur > 2 )
 		{
 			display_action_bar(3,$pid);			
 ?>
@@ -442,7 +442,7 @@
 		{
 			echo "<tr>\n<td class='t3'>".($i+1)."</td>\n".
 				"<td class='t4'><a href=\"/bbsqry.php?userid=".$friendlist[$i]."\">".$friendlist[$i]."</a></td>\n".
-				"<td class='t3'><a href=\"pcdoc.php?userid=".$friendlist[$i]."\">".$friendlist[$i]."</a></td>\n".
+				"<td class='t3'><a href=\"pcsearch.php?exact=1&key=u&keyword=".$friendlist[$i]."\">".$friendlist[$i]."</a></td>\n".
 				"<td class='t4'><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=5&act=delfriend&id=".urlencode($friendlist[$i])."\">删除</a></td>\n</tr>\n";
 			
 		}
@@ -551,6 +551,7 @@
 	$userid = addslashes($_GET["userid"]);
 	$pid = (int)($_GET["pid"]);
 	$tag = (int)($_GET["tag"]);
+	$visitcount = $_SESSION["visitcount"];
 	
 	$link = pc_db_connect();
 	$query = "SELECT * FROM users WHERE `username` = '".$userid."' LIMIT 0 , 1 ;";
@@ -571,18 +572,45 @@
 			"UID" => $rows[uid],
 			"DESC" => html_format($rows[description]),
 			"THEM" => html_format($rows[theme]),
-			"TIME" => $rows[createtime]
+			"TIME" => $rows[createtime],
+			"VISIT" => $rows[visitcount],
+			"MODIFY" => $rows[modifytime]
 			);
 	mysql_free_result($result);
+	
+	/*visit count start*/
+	if(!session_is_registered("visitcount"))
+	{
+		pc_update_record($link,$pc["UID"],"+0",TRUE);//计数器加1
+		$pc["VISIT"] ++;
+		$visitcount = ",".$pc["UID"].",";
+		session_register("visitcount");
+	}
+	
+	if(!stristr($visitcount,",".$pc["UID"].","))
+	{
+		pc_update_record($link,$pc["UID"],"+0",TRUE);//计数器加1
+		$pc["VISIT"] ++;
+		session_unregister("visitcount");
+		$visitcount .= $pc["UID"].",";
+		session_register("visitcount");
+	}
+	/*visit count end*/
+	
 	$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
 	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]))
 	{
 		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","文集管理","参数设定");
-		$pur = 2;
+		$pur = 3;
 		if($_GET["act"] == "addfriend")
 			$f_err = add_friend($pc);
 		if($_GET["act"] == "delfriend")
 			del_friend($pc);
+	}
+	elseif( bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
+	{
+		$sec = array("公开区","好友区","私人区","收藏区","删除区");
+		$pur = 2;
 	}
 	elseif($isfriend)
 	{
@@ -695,6 +723,17 @@
 </tr>
 </table>
 </td></tr>
+<tr>
+	<td align="center" valign="middle" class="f1">
+	Visit Count: 
+	<font class="f4">
+	<?php echo $pc["VISIT"]; ?>
+	</font>
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	Update Time:
+	<?php echo time_format($pc["MODIFY"]); ?>
+	</td>
+</tr>
 <tr>
 	<td align="center" class="tt3" valign="middle" height="25">
 	[<a href="#top" class=f1>返回顶部</a>]
