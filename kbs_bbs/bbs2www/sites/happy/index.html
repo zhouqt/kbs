@@ -1,0 +1,77 @@
+<html>
+<head>
+<title>Welcome to HAPPY BBS</title>
+<script language="JavaScript">
+<!--
+function guestlogin()
+{
+	document.form1.id.value="guest";
+	document.form1.submit();
+}
+-->
+</script>
+<script language="JavaScript" type="text/JavaScript">
+<!--
+function MM_reloadPage(init) {  //reloads the window if Nav4 resized
+  if (init==true) with (navigator) {if ((appName=="Netscape")&&(parseInt(appVersion)==4)) {
+    document.MM_pgW=innerWidth; document.MM_pgH=innerHeight; onresize=MM_reloadPage; }}
+  else if (innerWidth!=document.MM_pgW || innerHeight!=document.MM_pgH) location.reload();
+}
+MM_reloadPage(true);
+//-->
+</script>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+</head>
+<body bgcolor="#ffcc00">
+<div align="center">
+  <table width="640" height="480" background="happy.gif">
+    <tr> 
+      <td align="center" valign="middle"><table width="640" height="480">
+          <tr> 
+            <td width="101">&nbsp;</td>
+            <td align="left"> 
+              <form name="form1" method="post" action="/bbslogin.php">
+                <table border="1" cellpadding="0" cellspacing="0" bordercolor="#000000">
+                  <tr> 
+                    <td width="50" valign="middle" nowrap>&nbsp;</td>
+                    <td align="center" valign="middle" nowrap bgcolor="#000000"><font style="font-size:14px; font-weight:bold" color="#FFFFFF">HAPPY 
+                      BBS 登录</font></td>
+                    <td align="center">&nbsp;</td>
+                  </tr>
+                  <tr> 
+                    <td width="50" align="center" valign="middle" nowrap bgcolor="#FFFF00"><font style="font-size: 14px">帐号</font></td>
+                    <td rowspan="2" valign="middle" nowrap> <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td><input name="id" onMouseOver="this.focus()" onFocus="this.select()" type="text" id="id4" size="16"></td>
+                        </tr>
+                        <tr>
+                          <td><input name="passwd" type="password" id="passwd" size="16"></td>
+                        </tr>
+                      </table>
+                      
+                    </td>
+                    <td rowspan="2" align="center"> <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                        <tr>
+                          <td><input type="submit" name="Submit" value="登录" style="width:80px; font-size: 14px"></td>
+                        </tr>
+                        <tr>
+                          <td><input type="submit" name="Submit2" value="匿名登录" style="width:80px; font-size: 14px" onClick=guestlogin()></td>
+                        </tr>
+                      </table>
+                      
+                    </td>
+                  </tr>
+                  <tr> 
+                    <td width="50" align="center" valign="middle" bgcolor="#FFFF00"><font style="font-size: 14px">密码</font></td>
+                  </tr>
+                </table>
+              </form></td>
+          </tr>
+        </table>
+        
+      </td>
+    </tr>
+  </table>
+</div>
+</body>
+</html>

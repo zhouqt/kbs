@@ -5,4 +5,5 @@ CLEANFILES=@EXTRA_CLEAN@
 
 install-data-local:
 	cp -r html/* @HTMPATH@
-	rm -rf @HTMPATH@/CVS
+	cp -r sites/@BBSSITE@/* @HTMLPATH@
+	find @HTMPATH@ -name CVS -exec rm -rf {} \;
