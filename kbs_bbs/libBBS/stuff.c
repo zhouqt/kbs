@@ -19,33 +19,38 @@
     You should have received a copy of the GNU General Public License
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-*/  
-    
+*/
+
 #define EXTERN
-    
+
 #include "bbs.h"
 #include <sys/param.h>
 #include <sys/ipc.h>
 #include <sys/shm.h>
 extern char *getenv();
-static const char *invalid[] = { "unknown@", "root@", "gopher@", "bbs@", "guest@", NULL
+static const char *invalid[] = {
+    "unknown@",
+    "root@",
+    "gopher@",
+    "bbs@",
+    "guest@",
+    NULL
 };
 static char modestr[STRLEN];
 static char hh_mm_ss[8];
-int my_system(const char *cmdstring) 
+int my_system(const char *cmdstring)
 {
     pid_t pid;
     int status;
 
     if (!cmdstring)
         return 1;
-    switch (pid = fork())
-         {
+    switch (pid = fork()) {
     case -1:
         status = -1;
         break;
     case 0:
-         {
+        {
             int fd = open("/dev/zero", O_RDWR);
 
             dup2(fd, 2);
@@ -62,80 +67,78 @@ int my_system(const char *cmdstring)
                 break;
             }
         break;
-        }
+    }
     return status;
 }
-char *idle_str(struct user_info *uent) 
+char *idle_str(struct user_info *uent)
 {
     time_t now, diff;
     int hh, mm;
 
     now = time(0);
     diff = now - uent->freshtime;
-    if (diff == now)           /* @#$#!@$#@! */
+    if (diff == now)            /* @#$#!@$#@! */
         diff = 0;
-    
+
 #ifdef DOTIMEOUT
-        /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
-           kicking out all users */ 
-        if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5))
+    /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
+       kicking out all users */
+    if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5))
         kill(uent->pid, SIGHUP);
-    
+
 #endif                          /*  */
-        hh = diff / 3600;
+    hh = diff / 3600;
     mm = (diff / 60) % 60;
     if (hh > 0)
         snprintf(hh_mm_ss, sizeof(hh_mm_ss), "%2d:%02d", hh, mm);
-    
+
     else if (mm > 0)
         sprintf(hh_mm_ss, "%d", mm);
-    
+
     else
         sprintf(hh_mm_ss, "   ");
     return hh_mm_ss;
 }
-char *modestring(int mode, int towho, int complete, char *chatid) 
+char *modestring(int mode, int towho, int complete, char *chatid)
 {
     struct userec urec;
 
-    
-        /* Leeward: 97.12.18: Below removing ' characters for more display width */ 
-        if (chatid) {
+
+    /* Leeward: 97.12.18: Below removing ' characters for more display width */
+    if (chatid) {
         if (complete)
             sprintf(modestr, "%s %s", ModeType(mode), chatid);
-        
+
         else
             return ((char *) ModeType(mode));
         return (modestr);
     }
     if (mode != TALK && mode != PAGE && mode != QUERY)
         return ((char *) ModeType(mode));
-    
+
     /*---	modified by period	2000-10-20	---*
         if (get_record(PASSFILE, &urec, sizeof(urec), towho) == -1)
             return (ModeType(mode));
-    ---*/ 
-        if (complete) {
+    ---*/
+    if (complete) {
         if (getuserid(urec.userid, towho) != towho)
             return (char *) ModeType(mode);
         sprintf(modestr, "%s %s", ModeType(mode), urec.userid);
     }
-    
+
     else
         return ((char *) ModeType(mode));
     return (modestr);
 }
-    int dashf(fname)  char *fname;
 
-
+int dashf(char *fname)
 {
     struct stat st;
 
     return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));
 }
-    int dashd(fname)  char *fname;
 
-
+int dashd(char *fname)
 {
     struct stat st;
 
@@ -143,8 +146,10 @@ char *modestring(int mode, int towho, int complete, char *chatid)
 }
 
 
-/* rrr - Snagged from pbbs 1.8 */ 
-    
+/* rrr - Snagged from pbbs 1.8 */
+
+#ifdef BBSMAIN
+#ifdef CAN_EXEC
 #define LOOKFIRST  (0)
 #define LOOKLAST   (1)
 #define QUOTEMODE  (2)
@@ -154,13 +159,11 @@ char *modestring(int mode, int towho, int complete, char *chatid)
 #define BINDIR "/bin/"
 char *bbsenv[MAXENVS];
 int numbbsenvs = 0;
+#endif
+#endif
 
-
-/* Case Independent strncmp */ 
-    int ci_strncmp(s1, s2, n)  register char *s1, *s2;
-    register int n;
-
-
+/* Case Independent strncmp */
+int ci_strncmp(register char *s1,register char  *s2,register int n)
 {
     char c1, c2;
 
@@ -178,9 +181,8 @@ int numbbsenvs = 0;
     }
     return 0;
 }
-    int ci_strcmp(s1, s2)  register char *s1, *s2;
 
-
+int ci_strcmp(register char *s1,register char  *s2)
 {
     char c1, c2;
 
@@ -197,9 +199,9 @@ int numbbsenvs = 0;
             return 0;
     }
 }
-    int bbssetenv(env, val)  char *env, *val;
-
-
+#ifdef BBSMAIN
+#ifdef CAN_EXEC
+int bbssetenv(char *env,char *val)
 {
     register int i, len;
 
@@ -213,7 +215,7 @@ int numbbsenvs = 0;
         return -1;
     if (bbsenv[i])
         free(bbsenv[i]);
-    
+
     else
         bbsenv[++numbbsenvs] = NULL;
     bbsenv[i] = malloc(strlen(env) + strlen(val) + 2);
@@ -224,10 +226,7 @@ int numbbsenvs = 0;
 }
 
 
-#ifdef BBSMAIN
-    int do_exec(com, wd)  char *com, *wd;
-
-
+int do_exec(char *com, *wd)
 {
     char path[MAXPATHLEN];
     char pcom[MAXCOMSZ];
@@ -280,24 +279,22 @@ int numbbsenvs = 0;
         return -1;
     if (*arglist[0] == '/')
         strncpy(path, arglist[0], MAXPATHLEN);
-    
+
     else
         strncat(path, arglist[0], MAXPATHLEN);
-    
+
 #ifdef IRIX
-        if ((pid = fork()) == 0) {
-        
+    if ((pid = fork()) == 0) {
 #else                           /*  */
-        if ((pid = vfork()) == 0) {
-        
+    if ((pid = vfork()) == 0) {
 #endif                          /*  */
-            if (wd)
+        if (wd)
             if (chdir(wd)) {
-                
-                    /* change by KCN 1999.09.08
-                       fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
-                     */ 
-                    prints("Unable to chdir to '%s'\n", wd);
+
+                /* change by KCN 1999.09.08
+                   fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
+                 */
+                prints("Unable to chdir to '%s'\n", wd);
                 oflush();
                 exit(-1);
             }
@@ -305,59 +302,61 @@ int numbbsenvs = 0;
         bbssetenv("TERM", "vt100");
         bbssetenv("USER", currentuser->userid);
         bbssetenv("USERNAME", currentuser->username);
-        
-            /* added for tin's reply to */ 
-            bbssetenv("REPLYTO", currentuser->email);
+
+        /* added for tin's reply to */
+        bbssetenv("REPLYTO", currentuser->email);
         bbssetenv("FROMHOST", fromhost);
-        
-            /* end of insertion */ 
-            if ((tz = getenv("TZ")) != NULL)
+
+        /* end of insertion */
+        if ((tz = getenv("TZ")) != NULL)
             bbssetenv("TZ", tz);
         if (numbbsenvs == 0)
             bbsenv[0] = NULL;
         execve(path, arglist, bbsenv);
-        
-            /* change by KCN 1999.09.08
-               fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
-             */ 
-            prints("EXECV FAILED... path = '%s'\n", path);
+
+        /* change by KCN 1999.09.08
+           fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
+         */
+        prints("EXECV FAILED... path = '%s'\n", path);
         oflush();
         exit(-1);
     }
     isig = signal(SIGINT, SIG_IGN);
     qsig = signal(SIGQUIT, SIG_IGN);
     while ((w = wait(&status)) != pid && w != 1)
-        
-            /* NULL STATEMENT */ ;
+
+        /* NULL STATEMENT */ ;
     signal(SIGINT, isig);
     signal(SIGQUIT, qsig);
     return ((w == -1) ? w : status);
 }
 
-
+#endif /* CAN _EXEC */
 #endif                          /*  */
-    
+
 #ifdef kill
 #undef kill
 #endif                          /*  */
-int safe_kill(int x, int y) 
+int safe_kill(int x, int y)
 {
     if (x <= 0)
         return -1;
     return kill(x, y);
 }
-char *Cdate(time_t clock) /* 时间 --> 英文 */ 
-{
-    
-        /* Leeward 2000.01.01 Adjust year display for 20** */ 
+
+char *Cdate(time_t clock)
+{                               /* 时间 --> 英文 */
+
+    /* Leeward 2000.01.01 Adjust year display for 20** */
     static char foo[24 /*22 */ ];
     struct tm *mytm = localtime(&clock);
 
     strftime(foo, 24 /*22 */ , "%Y-%m-%d %T %a" /*"%D %T %a" */ , mytm);
     return (foo);
 }
-char *Ctime(time_t clock) /* 时间 转换 成 英文 */ 
-{
+
+char *Ctime(time_t clock)
+{                               /* 时间 转换 成 英文 */
     char *foo;
     char *ptr = ctime(&clock);
 
@@ -365,11 +364,11 @@ char *Ctime(time_t clock) /* 时间 转换 成 英文 */
         *foo = '\0';
     return (ptr);
 }
-int Isspace(char ch) 
+int Isspace(char ch)
 {
     return (ch == ' ' || ch == '\t' || ch == 10 || ch == 13);
 }
-char *nextword(const char **str, char *buf, int sz) 
+char *nextword(const char **str, char *buf, int sz)
 {
     while (Isspace(**str))
         (*str)++;
@@ -389,18 +388,16 @@ char *nextword(const char **str, char *buf, int sz)
 
 
 #ifndef BBSMAIN
-    void attach_err(shmkey, name)  int shmkey;
-    char *name;
-
-
+void attach_err(int shmkey, char *name)
 {
     bbslog("3system", "Attach:Error! %s error! key = %x.msg:%s\n", name, shmkey, strerror(errno));
     exit(1);
-} void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate) 
+}
+void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate)
 {
     return attach_shm1(shmstr, defaultkey, shmsize, iscreate, 0, NULL);
 }
-void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr) 
+void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr)
 {
     void *shmptr;
     int shmkey = 0, shmid;
@@ -418,14 +415,14 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
         shmptr = (void *) shmat(shmid, shmaddr, 0);
         if (shmptr == (void *) -1)
             attach_err(shmkey, "shmat");
-        
+
         else
             memset(shmptr, 0, shmsize);
         *iscreate = 1;
     } else {
         if (readonly)
             shmptr = (void *) shmat(shmid, shmaddr, SHM_RDONLY);
-        
+
         else
             shmptr = (void *) shmat(shmid, shmaddr, 0);
         if (shmptr == (void *) -1)
@@ -436,23 +433,25 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
 
 
 #else                           /*  */
-void attach_err(int shmkey, char *name) 
+void attach_err(int shmkey, char *name)
 {
     prints("Error! %s error! key = %x.\n", name, shmkey);
     oflush();
     exit(1);
-} void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate) 
+}
+
+void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate)
 {
     return attach_shm1(shmstr, defaultkey, shmsize, iscreate, 0, NULL);
 }
-void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr) 
+void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr)
 {
     void *shmptr;
     int shmkey, shmid;
 
     if (shmstr)
         shmkey = sysconf_eval(shmstr);
-    
+
     else
         shmkey = 0;
     if (shmkey < 1024)
@@ -463,7 +462,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
             attach_err(shmkey, "shmget:readonly");
             return 0;
         }
-        shmid = shmget(shmkey, shmsize, IPC_CREAT | 0660);     /* modified by dong , for web application , 1998.12.1 */
+        shmid = shmget(shmkey, shmsize, IPC_CREAT | 0660);      /* modified by dong , for web application , 1998.12.1 */
         *iscreate = true;
         if (shmid < 0) {
             attach_err(shmkey, "shmget");
@@ -479,7 +478,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
         *iscreate = 0;
         if (readonly)
             shmptr = (void *) shmat(shmid, shmaddr, SHM_RDONLY);
-        
+
         else
             shmptr = (void *) shmat(shmid, shmaddr, 0);
         if (shmptr == (void *) -1) {
@@ -491,7 +490,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
 
 
 #endif                          /*  */
-    
+
 /*
 char *
 cexp(exp)
@@ -545,8 +544,8 @@ int perf;
                 return "神～～";
 
 }
-*/ 
-int countexp(struct userec *udata) 
+*/
+int countexp(struct userec *udata)
 {
     int exp;
 
@@ -555,7 +554,7 @@ int countexp(struct userec *udata)
     exp = udata->numposts + /*post_in_tin( udata->userid ) */ +udata->numlogins / 5 + (time(0) - udata->firstlogin) / 86400 + udata->stay / 3600;
     return exp > 0 ? exp : 0;
 }
-int countperf(struct userec *udata) 
+int countperf(struct userec *udata)
 {
     int perf;
     int reg_days;
@@ -563,17 +562,16 @@ int countperf(struct userec *udata)
     if (!strcmp(udata->userid, "guest"))
         return -9999;
     reg_days = (time(0) - udata->firstlogin) / 86400 + 1;
-    perf = ((float) (udata->numposts /*+post_in_tin( udata->userid ) */ ) / (float) udata->numlogins + 
-             (float) udata->numlogins / (float) reg_days) * 10;
+    perf = ((float) (udata->numposts /*+post_in_tin( udata->userid ) */ ) / (float) udata->numlogins +
+            (float) udata->numlogins / (float) reg_days) * 10;
     return perf > 0 ? perf : 0;
 }
-char *setbdir(int digestmode, char *buf, char *boardname) 
-  /* 根据阅读模式 取某版 目录路径 */ 
+char *setbdir(int digestmode, char *buf, char *boardname)
+  /* 根据阅读模式 取某版 目录路径 */
 {
     char dir[STRLEN];
 
-    switch (digestmode)
-         {
+    switch (digestmode) {
     case false:
         strcpy(dir, DOT_DIR);
         break;
@@ -589,64 +587,64 @@ char *setbdir(int digestmode, char *buf, char *boardname)
     case 5:
         strcpy(dir, ".JUNK");
         break;
-        }
+    }
     sprintf(buf, "boards/%s/%s", boardname, dir);
     return buf;
 }
-char *sethomefile(char *buf, char *userid, char *filename) /*取某用户文件 路径 */ 
-{
-    if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+char *sethomefile(char *buf, char *userid, char *filename)
+{                               /*取某用户文件 路径 */
+    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "home/%c/%s/%s", toupper(userid[0]), userid, filename);
-    
+
     else
         sprintf(buf, "home/wrong/%s/%s", userid, filename);
     return buf;
 }
-char *sethomepath(char *buf, char *userid) /* 取 某用户 的home */ 
-{
-    if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+char *sethomepath(char *buf, char *userid)
+{                               /* 取 某用户 的home */
+    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "home/%c/%s", toupper(userid[0]), userid);
-    
+
     else
         sprintf(buf, "home/wrong/%s", userid);
     return buf;
 }
-char *setmailfile(char *buf, char *userid, char *filename) /* 取某用户mail文件 路径 */ 
-{
-    if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+char *setmailfile(char *buf, char *userid, char *filename)
+{                               /* 取某用户mail文件 路径 */
+    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "mail/%c/%s/%s", toupper(userid[0]), userid, filename);
-    
+
     else
         sprintf(buf, "mail/wrong/%s/%s", userid, filename);
     return buf;
 }
-char *setmailpath(char *buf, char *userid) /* 取 某用户 的mail */ 
-{
-    if (isalpha(userid[0]))    /* 加入错误判断,提高容错性, alex 1997.1.6 */
+char *setmailpath(char *buf, char *userid)
+{                               /* 取 某用户 的mail */
+    if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "mail/%c/%s", toupper(userid[0]), userid);
-    
+
     else
         sprintf(buf, "mail/wrong/%s", userid);
     return buf;
 }
-char *setbpath(char *buf, char *boardname) /* 取某版 路径 */ 
-{
+char *setbpath(char *buf, char *boardname)
+{                               /* 取某版 路径 */
     strcpy(buf, "boards/");
     strcat(buf, boardname);
     return buf;
 }
-char *setbfile(char *buf, char *boardname, char *filename) /* 取某版下文件 */ 
-{
+char *setbfile(char *buf, char *boardname, char *filename)
+{                               /* 取某版下文件 */
     sprintf(buf, "boards/%s/%s", boardname, filename);
     return buf;
 }
-void RemoveMsgCountFile(char *userID) 
+void RemoveMsgCountFile(char *userID)
 {
     char fname[STRLEN];
 
     sethomefile(fname, userID, "msgcount");
     unlink(fname);
-} int id_invalid(char *userid) 
+} int id_invalid(char *userid)
 {
     char *s;
 
@@ -659,32 +657,32 @@ void RemoveMsgCountFile(char *userID)
     }
     return 0;
 }
-int seek_in_file(char filename[STRLEN], char seekstr[STRLEN]) 
+int seek_in_file(char filename[STRLEN], char seekstr[STRLEN])
 {
-    FILE * fp;
+    FILE *fp;
     char buf[STRLEN];
     char *namep;
 
     if ((fp = fopen(filename, "r")) == NULL)
         return 0;
-    while (fgets(buf, STRLEN, fp) != NULL)
-         {
+    while (fgets(buf, STRLEN, fp) != NULL) {
         namep = (char *) strtok(buf, ": \n\r\t");
         if (namep != NULL && strcasecmp(namep, seekstr) == 0) {
             fclose(fp);
             return 1;
         }
-        }
+    }
     fclose(fp);
     return 0;
 }
+
 static struct public_data *publicshm;
-struct public_data *get_publicshm() 
+struct public_data *get_publicshm()
 {
     int iscreate;
 
     if (publicshm == NULL) {
-        publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);  /* attach public share memory readonly */
+        publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);   /* attach public share memory readonly */
         if (iscreate) {
             bbslog("4bbstime", "time daemon not start");
             exit(1);
@@ -692,46 +690,49 @@ struct public_data *get_publicshm()
     }
     return publicshm;
 }
-int getwwwguestcount() 
+
+int getwwwguestcount()
 {
     return publicshm->www_guest_count;
 }
-void bbssettime(time_t now) 
+
+void bbssettime(time_t now)
 {
     int iscreate;
 
     if (publicshm == NULL) {
-        publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, NULL);   /* attach public share memory */
+        publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, NULL);    /* attach public share memory */
         if (iscreate) {
-            
-                /* 初始化public共享内存区 */ 
-                /* 开始的sysconf.img版本号为0 */ 
-                unlink("sysconf.img.0");
+
+            /* 初始化public共享内存区 */
+            /* 开始的sysconf.img版本号为0 */
+            unlink("sysconf.img.0");
             publicshm->sysconfimg_version = 0;
         }
     }
     publicshm->nowtime = now;
     return;
 }
-int setpublicshmreadonly(int readonly) 
+
+int setpublicshmreadonly(int readonly)
 {
     int iscreate;
 
     shmdt(publicshm);
     if (readonly)
         publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, publicshm);
-    
+
     else
         publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, publicshm);
     return (publicshm == NULL);
 }
 
-time_t bbstime(time_t * t) 
+time_t bbstime(time_t * t)
 {
     int iscreate;
 
     if (publicshm == NULL) {
-        publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);  /* attach public share memory readonly */
+        publicshm = attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, NULL);   /* attach public share memory readonly */
         if (iscreate) {
             bbslog("4bbstime", "time daemon not start");
             exit(1);
@@ -741,9 +742,10 @@ time_t bbstime(time_t * t)
         *t = publicshm->nowtime;
     return publicshm->nowtime;
 }
-int bad_user_id(char *userid) 
+
+int bad_user_id(char *userid)
 {
-    FILE * fp;
+    FILE *fp;
     char buf[STRLEN];
     char *ptr, ch;
     int i;
@@ -762,14 +764,13 @@ int bad_user_id(char *userid)
     if ((fp = fopen(".badname", "r")) != NULL) {
         while (fgets(buf, STRLEN, fp) != NULL) {
             ptr = strtok(buf, " \n\t\r");
-            if (ptr != NULL && *ptr != '#')
-                 {
+            if (ptr != NULL && *ptr != '#') {
                 if (strcasecmp(ptr, userid) == 0) {
-                    if (ptr[13] > 47 && ptr[13] < 58)  /*Haohmaru.99.12.24 */
-                         {
+                    if (ptr[13] > 47 && ptr[13] < 58) { /*Haohmaru.99.12.24 */
                         char timebuf[50];
 
                         time_t t, now;
+
                         strncpy(timebuf, ptr + 13, 49);
                         timebuf[49] = 0;
                         ptr = timebuf;
@@ -778,23 +779,22 @@ int bad_user_id(char *userid)
                         *ptr = 0;
                         t = atol(timebuf);
                         now = time(0);
-                        if (now - t > 24 * 30 * 3600)
-                             {
+                        if (now - t > 24 * 30 * 3600) {
                             fclose(fp);
                             return 0;
-                            }
                         }
+                    }
                     fclose(fp);
                     return 1;
                 }
-                }
+            }
             bzero(buf, STRLEN);
         }
         fclose(fp);
     }
     return 0;
 }
-int valid_ident(char *ident) 
+int valid_ident(char *ident)
 {
     int i;
 
@@ -807,7 +807,7 @@ struct _tag_t_search {
     struct user_info *result;
     int pid;
 };
-int _t_search(struct user_info *uentp, struct _tag_t_search *data, int pos) 
+int _t_search(struct user_info *uentp, struct _tag_t_search *data, int pos)
 {
     if (data->pid == 0) {
         data->result = uentp;
@@ -819,7 +819,7 @@ int _t_search(struct user_info *uentp, struct _tag_t_search *data, int pos)
     UNUSED_ARG(pos);
     return 0;
 }
-struct user_info *t_search(char *sid, int pid) 
+struct user_info *t_search(char *sid, int pid)
 {
     struct _tag_t_search data;
 
@@ -828,31 +828,33 @@ struct user_info *t_search(char *sid, int pid)
     apply_utmp((APPLY_UTMP_FUNC) _t_search, 20, sid, &data);
     return data.result;
 }
-int getuinfopid() 
+
+int getuinfopid()
 {
-    
+
 #ifdef BBSMAIN
-        return uinfo.pid;
-    
+    return uinfo.pid;
+
 #else                           /*  */
-        return 1;
-    
+    return 1;
+
 #endif                          /*  */
 }
-int cmpinames(const char *userid, const char *uv) /* added by Luzi 1997.11.28 */ 
-{
+int cmpinames(const char *userid, const char *uv)
+{                               /* added by Luzi 1997.11.28 */
     return !strcasecmp(userid, uv);
 }
-int cmpfnames(char *userid, struct friends *uv) 
+int cmpfnames(char *userid, struct friends *uv)
 {
     return !strcasecmp(userid, uv->id);
 }
-int cmpfileinfoname(char *filename, struct fileheader *fi) 
+int cmpfileinfoname(char *filename, struct fileheader *fi)
 {
     return !strncmp(filename, fi->filename, STRLEN);
 }
-int canIsend2(userid) /* Leeward 98.04.10 */ 
-    char *userid;
+
+int canIsend2(userid)           /* Leeward 98.04.10 */
+char *userid;
 
 
 {
@@ -867,17 +869,17 @@ int canIsend2(userid) /* Leeward 98.04.10 */
     sethomefile(path, userid, "/bads");
     if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
         return false;
-    
+
     else
         return true;
 }
 
 sigjmp_buf bus_jump;
-void sigbus(int signo) 
+void sigbus(int signo)
 {
     siglongjmp(bus_jump, 1);
 };
-int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_ptr, int *size) 
+int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_ptr, int *size)
 {
     struct stat st;
 
@@ -900,15 +902,15 @@ int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_pt
         return 0;
     if (!sigsetjmp(bus_jump, 1)) {
         signal(SIGBUS, sigbus);
-        
-            /*
-               signal(SIGSEGV,sigbus);
-             */ 
-            *size = st.st_size;
+
+        /*
+           signal(SIGSEGV,sigbus);
+         */
+        *size = st.st_size;
         return 1;
     }
 }
-int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, int *size, int *ret_fd) 
+int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, int *size, int *ret_fd)
 {
     int fd;
     struct stat st;
@@ -931,7 +933,7 @@ int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_p
     *ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
     if (!ret_fd)
         close(fd);
-    
+
     else {
         *ret_fd = fd;
         flock(fd, LOCK_EX);
@@ -939,25 +941,25 @@ int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_p
     if (*ret_ptr == NULL)
         return 0;
     if (!sigsetjmp(bus_jump, 1)) {
-          signal(SIGBUS, sigbus);
-          signal(SIGSEGV,sigbus);
-          *size = st.st_size;
+        signal(SIGBUS, sigbus);
+        signal(SIGSEGV, sigbus);
+        *size = st.st_size;
         return 1;
     }
     return 2;
 }
-void end_mmapfile(void *ptr, int size, int fd) 
+void end_mmapfile(void *ptr, int size, int fd)
 {
     munmap(ptr, size);
     signal(SIGBUS, SIG_IGN);
-    
-        /*
-           signal(SIGSEGV,SIG_IGN);
-         */ 
-        if (fd != -1)
+
+    /*
+       signal(SIGSEGV,SIG_IGN);
+     */
+    if (fd != -1)
         close(fd);
 }
-void encodestr(register char *str) 
+void encodestr(register char *str)
 {
     register char ch, *buf;
     int n;
@@ -979,11 +981,13 @@ void encodestr(register char *str)
     }
     *buf = '\0';
 }
-    int addtofile(filename, str)  char filename[STRLEN], str[STRLEN];
+
+int addtofile(filename, str)
+char filename[STRLEN], str[STRLEN];
 
 
 {
-    FILE * fp;
+    FILE *fp;
     int rc;
 
     if ((fp = fopen(filename, "a")) == NULL)
@@ -995,35 +999,35 @@ void encodestr(register char *str)
     return (rc == EOF ? -1 : 1);
 }
 
-time_t get_exit_time(char *id, char *exittime)        /* 获取离线时间，id:用户ID,
-                                                           exittime:保存返回的时间，结束符为\n
-                                                           建议定义为 char exittime[40]
-                                                           Luzi 1998/10/23 */ 
-/* Leeward 98.10.26 add return value: time_t */ 
-{
+time_t get_exit_time(char *id, char *exittime)
+{                               /* 获取离线时间，id:用户ID,
+                                   exittime:保存返回的时间，结束符为\n
+                                   建议定义为 char exittime[40]
+                                   Luzi 1998/10/23 */
+    /* Leeward 98.10.26 add return value: time_t */
     char path[80];
 
-    FILE * fp;
-    time_t now = 1;            /* if fopen failed return 1 -- Leeward */
+    FILE *fp;
+    time_t now = 1;             /* if fopen failed return 1 -- Leeward */
     struct userec *lookupuser;
 
     exittime[0] = '\n';
     if ((getuser(id, &lookupuser) == 0) || (lookupuser->exittime == -1)) {
         sethomefile(path, id, "exit");
         fp = fopen(path, "rb");
-        if (fp != NULL)
-             {
+        if (fp != NULL) {
             fread(&now, sizeof(time_t), 1, fp);
             fclose(fp);
             strcpy(exittime, ctime(&now));
-            }
+        }
     } else {
         strcpy(exittime, ctime(&lookupuser->exittime));
         now = lookupuser->exittime;
     }
     return now;
 }
-void getuinfo(FILE * fn, struct userec *ptr_urec) 
+
+void getuinfo(FILE * fn, struct userec *ptr_urec)
 {
     fprintf(fn, "\n\n您的代号     : %s\n", ptr_urec->userid);
     fprintf(fn, "您的昵称     : %s\n", ptr_urec->username);
@@ -1037,9 +1041,11 @@ void getuinfo(FILE * fn, struct userec *ptr_urec)
     fprintf(fn, "最近光临机器 : %s\n", ptr_urec->lasthost);
     fprintf(fn, "上站次数     : %d 次\n", ptr_urec->numlogins);
     fprintf(fn, "文章数目     : %d (Board)\n", ptr_urec->numposts);
-} int del_from_file(char filename[STRLEN], char str[STRLEN]) 
+}
+
+int del_from_file(char filename[STRLEN], char str[STRLEN])
 {
-    FILE * fp, *nfp;
+    FILE *fp, *nfp;
     int deleted = false;
     char fnnew[256 /*STRLEN*/];
     char buf[256 /*STRLEN*/];
@@ -1052,7 +1058,7 @@ void getuinfo(FILE * fn, struct userec *ptr_urec)
     while (fgets(buf, 256 /*STRLEN*/, fp) != NULL) {
         if (strncasecmp(buf, str, strlen(str)) == 0 && buf[strlen(str)] <= 32)
             deleted = true;
-        
+
         else if (*buf > ' ')
             fputs(buf, nfp);
     }
@@ -1062,9 +1068,8 @@ void getuinfo(FILE * fn, struct userec *ptr_urec)
         return -1;
     return (f_mv(fnnew, filename));
 }
-    int simplepasswd(str)  char *str;
 
-
+int simplepasswd(char *str)
 {
     char ch;
 
@@ -1074,7 +1079,9 @@ void getuinfo(FILE * fn, struct userec *ptr_urec)
     }
     return 1;
 }
-    void logattempt(uid, frm)  char *uid, *frm;
+
+void logattempt(uid, frm)
+char *uid, *frm;
 
 
 {
@@ -1094,40 +1101,36 @@ void getuinfo(FILE * fn, struct userec *ptr_urec)
         close(fd);
     }
 }
-int check_ban_IP(char *IP, char *buf) 
+int check_ban_IP(char *IP, char *buf)
 {                               /* Leeward 98.07.31
                                    RETURN:
                                    - 1: No any banned IP is defined now
                                    0: The checked IP is not banned
                                    other value over 0: The checked IP is banned, the reason is put in buf
                                  */
-    FILE * Ban = fopen(".badIP", "r");
+    FILE *Ban = fopen(".badIP", "r");
     char IPBan[64];
     int IPX = -1;
     char *ptr;
 
     if (!Ban)
         return IPX;
-    
+
     else
         IPX++;
-    while (fgets(IPBan, 64, Ban))
-         {
+    while (fgets(IPBan, 64, Ban)) {
         if ((ptr = strchr(IPBan, '\n')) != NULL)
             *ptr = 0;
-        if ((ptr = strchr(IPBan, ' ')) != NULL)
-             {
+        if ((ptr = strchr(IPBan, ' ')) != NULL) {
             *ptr++ = 0;
             strcpy(buf, ptr);
-            }
+        }
         IPX = strlen(IPBan);
         if (*IPBan == '+')
             if (!strncmp(IP, IPBan + 1, IPX - 1))
                 break;
         IPX = 0;
-        }
+    }
     fclose(Ban);
     return IPX;
 }
-
-
