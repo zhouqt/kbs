@@ -657,15 +657,6 @@ static int bbs_standalone_main(char* argv)
     }
     /* COMMAN :do not fork in debugging mode */
     proxy_getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
-#ifdef SMTH
-    if (sin.sin_addr.s_addr==0xea086fa6) { //166.111.8.234
-        int buf;
-        read(csock,&buf,4);
-        if (buf==0x330123) {
-            read(csock,&sin.sin_addr.s_addr,4);
-        }
-    }
-#endif
 
 #ifdef CHECK_IP_LINK
     if (check_IP_lists(sin.sin_addr.s_addr)) {
