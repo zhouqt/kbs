@@ -136,6 +136,7 @@ static PHP_FUNCTION(bbs_delete_friend);
 static PHP_FUNCTION(bbs_add_friend);
 
 static PHP_FUNCTION(bbs_createnewid);
+static PHP_FUNCTION(bbs_is_invalid_id);
 static PHP_FUNCTION(bbs_setactivation);
 static PHP_FUNCTION(bbs_getactivation);
 static PHP_FUNCTION(bbs_fillidinfo);
@@ -409,6 +410,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_update_uinfo, NULL)
         PHP_FE(bbs_setpassword,NULL)
         PHP_FE(bbs_createnewid,NULL)
+        PHP_FE(bbs_is_invalid_id,NULL)
         PHP_FE(bbs_setactivation,NULL)
         PHP_FE(bbs_getactivation,two_arg_force_ref_01)
 	PHP_FE(bbs_createregform,NULL)
@@ -5467,6 +5469,42 @@ static PHP_FUNCTION(bbs_postmail){
     unlink(filename);
 	RETURN_LONG(0);
 }
+
+/**
+ * Function: check if the id is invalid
+ *  rototype:
+ * int bbs_is_invalid_id(string smthid);
+ *
+ *  @return the result
+ *  	0 -- valid ID
+ *      1 -- specail char or first char not alpha
+ *  	2 -- at least two chars
+ *      3 -- system name or bad name
+ *  	4 -- have been used
+ *      5 -- length > IDLEN
+ *  @author atppp
+ */
+static PHP_FUNCTION(bbs_is_invalid_id)
+{
+	char* userid;
+	int userid_len;
+	int ac = ZEND_NUM_ARGS();
+
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (userid_len > IDLEN)RETURN_LONG(5);
+
+	if (id_invalid(userid) == 1) RETURN_LONG(1);
+	if (strlen(userid) < 2) RETURN_LONG(2);
+	if (bad_user_id(userid)) RETURN_LONG(3);
+	if (searchuser(userid)) RETURN_LONG(4);
+    RETURN_LONG(0);
+}
+
 
 /**
  * Function: Create a new user id
