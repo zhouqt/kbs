@@ -28,15 +28,18 @@ typedef struct __buffered_output
 
 #define BUFFERED_OUTPUT(o,p,l) \
 { \
-	if ((o)->buflen < (l)) \
+	if ((o)->buflen < l) \
 	{ \
 		BUFFERED_FLUSH(o); \
-		(o)->write((p), (l)); \
+		(o)->write(p, l); \
 	} \
-	if ((o)->buflen - ((o)->outp - (o)->buf) < (l)) \
-		BUFFERED_FLUSH(o); \
-	memcpy((o)->outp, (p), (l)); \
-	(o)->outp += (l); \
+	else \
+	{ \
+		if ((o)->buflen - ((o)->outp - (o)->buf) < l) \
+			BUFFERED_FLUSH(o); \
+		memcpy((o)->outp, p, l); \
+		(o)->outp += l; \
+	} \
 }
 
 #endif /* __OUTPUT_H__ */

@@ -37,8 +37,8 @@ int show_user_plan(userid)
 				close(fd);
 				BBS_RETURN(0);
 			}
-			alloc_output(outbuf_len);
-			output_ansi_html(ptr, filesize, &out,NULL);
+			out = alloc_output(outbuf_len);
+			output_ansi_html(ptr, filesize, out, NULL);
 			free_output(out);
 		}
 		BBS_CATCH
