@@ -70,7 +70,6 @@ function FastLogin()
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
 <form action="logon.php" method=post>
-<input type="hidden" name="action" value="doLogon">
 <tr>
 <th align=left id=TableTitleLink height=25 style="font-weight:normal">
 <b>-=&gt; 快速登录入口</b>

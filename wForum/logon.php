@@ -7,7 +7,7 @@ setStat("ÓÃ»§µÇÂ¼");
 
 global $comeurl;
 	
-if ($_POST['action']=="doLogon") {
+if (isset($_POST["id"])) {
 	doLogon();
 } else {
 	show_nav();
@@ -138,7 +138,6 @@ function promptKick($id, $passwd, $comeurl, $cookieDate) {
 	head_var();
 ?>
 <form name="infoform" action="logon.php" method="post">
-<input type="hidden" name="action" value="doLogon">
 <input type="hidden" name="id" value="<?php echo htmlspecialchars($id); ?>">
 <input type="hidden" name="password" value="<?php echo htmlspecialchars($passwd); ?>">
 <input type="hidden" name="comeurl" value="<?php echo htmlspecialchars($comeurl); ?>">
