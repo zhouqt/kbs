@@ -1322,8 +1322,6 @@ char           *logfile, *regfile;
                     fclose(freg);
                 }
 
-                check_reg(1);	/* Bigman:2002.5.31 */
-
                 break;
             case 'N':
             case 'n':
@@ -1399,6 +1397,9 @@ char           *logfile, *regfile;
             memset(fdata, 0, sizeof(fdata));
         }
     }
+
+    check_reg(1);   /* Bigman:2002.5.31 */
+
     fclose(fn);
     unlink(fname);
     return (0);
