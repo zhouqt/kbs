@@ -58,12 +58,15 @@ int killdir(char *basedir, char *filename)
     }
     lseek(fd, 0, 0);
     for (i = 0, afile = files; i < st.st_size / sizeof(struct fileheader); i++, afile++) {
-        if (((now - afile->accessed[11]) > DAY_DELETED_CLEAN)
-            || ((now < afile->accessed[11]) && ((now + 100 - afile->accessed[11]) > DAY_DELETED_CLEAN))) {
+	int delta;
+	delta=now-afile->accessed[11];
+	if (delta<0) delta+=100;
+        if (delta > DAY_DELETED_CLEAN) {
             strcpy(genbuf1, basedir);
             strcat(genbuf1, "/");
             strcat(genbuf1, afile->filename);
             unlink(genbuf1);
+	    printf("unlink %s\n",genbuf1);
             deleted++;
         } else {
             write(fd, afile, sizeof(struct fileheader));
@@ -103,6 +106,7 @@ int dokillalldir()
 {
     resolve_boards();
     apply_boards(doaboard);
+    return 0;
 }
 static char tmpbuf[255];
 static char genbuf1[255];
@@ -162,11 +166,12 @@ int dokilluser()
     newbbslog(BBSLOG_USIES, "Started kill users\n");
     apply_users(killauser, NULL);
     newbbslog(BBSLOG_USIES, "kill users done\n");
+    return 0;
 }
 int updateauser(struct userec *theuser, char *data)
 {
     FILE *fn;
-    char genbuf[255], buf[255];
+    char genbuf[255];
     int lcount = 0, tcount, s[10][2], i, j;
 
     if ((theuser->userlevel & PERM_BASIC) && (theuser->userlevel & PERM_POST)
@@ -234,6 +239,7 @@ int doupdategiveupuser()
     newbbslog(BBSLOG_USIES, "Started update giveup users\n");
     apply_users(updateauser, NULL);
     newbbslog(BBSLOG_USIES, "update giveup users done\n");
+    return 0;
 }
 
 int getnextday4am()
@@ -610,6 +616,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
         strcpy(commandline, "flushd");
         flushd();
     }
+    return 0;
 }
 int main(int argc, char *argv[])
 {
