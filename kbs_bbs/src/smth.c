@@ -180,7 +180,7 @@ int     mode;
     case EDIT:      return "修改文章";
     case OFFLINE:   return "自杀中..";
     case EDITANN:   return "编修精华";
-    case WEBEXPLORE: return "悠游 WWW";
+    case WEBEXPLORE: return "Web浏览";
     case CCUGOPHER: return "他站精华";
     case LOOKMSGS:  return "察看讯息";
     case WFRIEND:   return "寻人名册";

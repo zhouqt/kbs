@@ -379,6 +379,8 @@ int kick_user(struct user_info *userinfo)
         strcpy(userid,uin.userid);
         ind=YEA;
     }
+	if (uin.mode == WEBEXPLORE)
+		clear_utmp((userinfo-utmpshm->uinfo)+1);
     if (!ind || !uin.active || (kill(uin.pid,0) == -1)) {
         if(uinfo.mode!=LUSERS&&uinfo.mode!=OFFLINE&&uinfo.mode!=FRIEND)
         {
