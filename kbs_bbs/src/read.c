@@ -204,11 +204,14 @@ void draw_entry(READ_FUNC doentry, struct keeploc *locmem, int num, int ssize, c
     move(3, 0);
     for (i = 0; i < num; i++) {
         str = (*doentry) (foroutbuf, base + i, &pnt[i * ssize]);
+	/*
         if (!check_stuffmode())
+	*/
             prints("%s", str);
-
+/*
         else
             showstuff(str);
+	    */
         prints("\n");
     }
     move(t_lines - 1, 0);
