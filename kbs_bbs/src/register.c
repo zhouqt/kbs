@@ -310,8 +310,8 @@ void check_register_info()
 		}while(strlen(phone) < 6);
 
              unlink(buf);   
-        sprintf(buf,"%s$%s@SYSOP", career,phone);
-		if(strlen(buf) >= STRLEN - 16)sprintf(buf,"%s@SYSOP",phone);
+        sprintf(buf,"%s$%s@×ªÈÃ", career,phone);
+		if(strlen(buf) >= STRLEN - 16)sprintf(buf,"%s@×ªÈÃ",phone);
 //		strncpy(curruserdata.realemail,buf,STRLEN-16);
 		strncpy(getSession()->currentmemo->ud.realemail,buf,STRLEN-16);
 //		curruserdata.realemail[STRLEN-16-1]='\0';
