@@ -172,7 +172,7 @@ int post_imail(char *userid, char *title, char *file, char *id, char *nickname, 
 #ifndef SMTH
 int post_article(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 #else
-int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony);
+int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader* oldx);
 #endif
 
 int sig_append(FILE * fp, char *id, int sig);

@@ -69,7 +69,7 @@ char    *brdname;
     int         fd, num, offset, type;
     char        send;
 
-    offset = (int) &(head.filename[ STRLEN - 1 ]) - (int) &head;
+    offset = (int) &(head.filename[ FILENAME_LEN - 1 ]) - (int) &head;
     sprintf( index, "%s/boards/%s/.DIR", homepath, brdname );
     if( (fd = open( index, O_RDWR )) < 0 ) {
         return;
@@ -85,7 +85,7 @@ char    *brdname;
     if( num < 0 )  num = 0;
     lseek( fd, (off_t) (num * sizeof( head )), 0 );
     for( send = '%'; read( fd, &head, sizeof( head )) > 0; num++ ) {
-        type = head.filename[ STRLEN - 1 ];
+        type = head.filename[ FILENAME_LEN - 1 ];
         if( type != send && visitflag ) {
             lseek( fd, (off_t) (num * sizeof( head )) + offset, 0 );
             safewrite( fd, &send, 1 );
@@ -275,9 +275,9 @@ post_article( usermail )
     strncpy( header.owner, userid, IDLEN );
     strncpy( header.title, subject, STRLEN );
     if( ! usermail ) {
-        header.filename[ STRLEN - 1 ] = 'M';
+        header.filename[ FILENAME_LEN - 1 ] = 'M';
     }
-    append_record( index, &header, sizeof( header ) );
+    after_post(NULL, &header, ptr, NULL);
 }
 
 cancel_article( board, file, message )

@@ -765,11 +765,9 @@ char   *pathname, *firstpath;
 	str_decode(conv_buf, SUBJECT);
 	strncpy(header.title, conv_buf, STRLEN);
 	header.title[STRLEN - 1] = '\0';
-	header.filename[STRLEN - 1] = 'M';
+	header.filename[FILENAME_LEN - 1] = 'M';
 	/* if append record record, should return fail message */
-	if (append_record(index, &header, sizeof(header)) < 0) {
-		return NULL;
-	}
+	after_post(NULL, &header, board, NULL);
 	return name;
 }
 cancel_article(homepath, board, file)

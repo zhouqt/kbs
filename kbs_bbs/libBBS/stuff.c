@@ -862,7 +862,7 @@ int cmpfnames(char *userid, struct friends *uv)
 }
 int cmpfileinfoname(char *filename, struct fileheader *fi)
 {
-    return !strncmp(filename, fi->filename, STRLEN);
+    return !strncmp(filename, fi->filename, FILENAME_LEN);
 }
 
 int canIsend2(userid)           /* Leeward 98.04.10 */

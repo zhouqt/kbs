@@ -1065,21 +1065,13 @@ static int simple_digest(char* str,int maxlen)
 
 int generate_title()
 {
-    struct fileheader mkpost, *ptr1;
+    struct fileheader mkpost, *ptr1, *ptr2;
     struct flock ldata, ldata2;
-    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
+    int fd, fd2, size = sizeof(fileheader), total, i, j, count = 0;
     char olddirect[PATHLEN];
-    char *ptr, *t, *t2;
-    struct search_temp{
-    	bool has_pre;
-    	int digest;
-    	int thread_id; /*主题*/
-    	int next; /*下一个主题文章*/
-    }  *index;
+    char *ptr, *index, *t;
     struct stat buf;
-    int gen_threadid;
 
-	gen_threadid=1;
     digestmode = 0;
     setbdir(digestmode, olddirect, currboard);
     digestmode = 2;
@@ -1130,6 +1122,88 @@ int generate_title()
         return -1;
     }
     total = buf.st_size / size;
+    index = (char*)malloc(sizeof(char)*total);
+    memset(index, 0, sizeof(char)*total);
+    ptr1 = (struct fileheader*)ptr;
+    for(i=0;i<total;i++,ptr1++) 
+    if (!index[i]) {
+    	int last;
+    	write(fd, ptr1, size);
+    	count++;
+    	for(last=total-1;last>i;last--){
+	    	ptr2 = (struct fileheader*)(ptr+last*size);
+    		if(!index[last]&&ptr1->groupid==ptr2->groupid) break;
+    	}
+    	if(i<total-1)
+    	ptr2 = (struct fileheader*)(ptr+(i+1)*size);
+    	if(last>i)
+    	for(j=i+1;j<=last;j++,ptr2++)
+    	if(!index[j]&&ptr1->groupid==ptr2->groupid){
+    		index[j]=1;
+    		memcpy(&mkpost, ptr2, sizeof(mkpost));
+    		t = ptr2->title;
+    		if(!strncmp(t, "Re:", 3)) t+=4;
+		if(j==last) sprintf(mkpost.title, "└ %s", t);
+		else sprintf(mkpost.title, "├ %s", t);
+    		write(fd, &mkpost, size);
+    		count++;
+    	}
+    }
+    free(index);
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata2.l_type = F_UNLCK;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    close(fd2);
+    ftruncate(fd, count * size);
+
+    setboardtitle(currboard, 0); // 标记flag
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        // 退出互斥区域
+    close(fd);
+    return 0;
+}
+
+int generate_all_title()
+{
+    struct fileheader mkpost, *ptr1;
+    int fd2, size = sizeof(fileheader), total, i, count = 0;
+    int boardt;
+    struct boardheader btmp;
+    char olddirect[PATHLEN];
+    char *ptr, *t, *t2;
+    struct search_temp{
+    	bool has_pre;
+    	int digest;
+    	int thread_id;
+    	int id;
+    	int next; 
+    }  *index;
+    struct stat buf;
+    int gen_threadid;
+
+    if(!HAS_PERM(currentuser, PERM_SYSOP)) return 0;
+
+
+    for(boardt=1;boardt<=get_boardcount();boardt++){
+    	memcpy(&btmp, &bcache[boardt-1], sizeof(struct boardheader));
+    	strcpy(currboard, btmp.filename);
+    	setbdir(digestmode, currdirect, currboard);
+
+	gen_threadid=1;
+
+    if ((fd2 = open(currdirect, O_RDWR, 0664)) == -1) {
+        report("recopen err");
+        continue;
+    }
+
+    if ((i = safe_mmapfile_handle(fd2, O_RDWR, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        close(fd2);
+        continue;
+    }
+    total = buf.st_size / size;
     index = (int*)malloc(sizeof(*index)*total);
     ptr1 = (struct fileheader*)ptr;
     for (i = 0; i < total; i++, ptr1++) {
@@ -1159,43 +1233,27 @@ int generate_title()
     	}
         if (index[i].thread_id==0) {
         	index[i].thread_id=gen_threadid;
+        	index[i].id = gen_threadid;
         	index[i].next=0;
         	gen_threadid++;
         }
+        else {
+        	index[i].id = gen_threadid;
+        	gen_threadid++;
+        }
     }
-    for(i=0;i<total;i++) {
-    	if (0!=index[i].thread_id) {
-		int j;
-    		write(fd, ptr+i*size, size);
-    		gen_threadid=index[i].thread_id;
-
-		j=index[i].next;
-		while (j) {
-		    index[j].thread_id=0;
-    		    ptr1=((struct fileheader*)ptr)+j;
-    		    memcpy(&mkpost, ptr1, size);
-    		    if (index[j].next)
-	                sprintf(mkpost.title, "├ %s", ptr1->title + (index[j].has_pre?4:0),STRLEN);
-    		    else
-       		        sprintf(mkpost.title, "└ %s", ptr1->title+ (index[j].has_pre?4:0),STRLEN);
-		    write(fd, &mkpost, size);
-		    j=index[j].next;
-		}
-    	}
-		count++;
+    ptr1 = (struct fileheader*)ptr;
+    for(i=0;i<total;i++,ptr1++) {
+    	ptr1->id = index[i].id;
+    	ptr1->groupid = index[i].thread_id;
+    	ptr1->reid = index[i].thread_id;
     }
     free(index);
     end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata2.l_type = F_UNLCK;
-    fcntl(fd2, F_SETLKW, &ldata2);
     close(fd2);
-    ftruncate(fd, count * size);
-
-    setboardtitle(currboard, 0); // 标记flag
-
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        // 退出互斥区域
-    close(fd);
+    btmp.nowid = gen_threadid+1;
+    set_board(boardt, &btmp);
+   }
     return 0;
 }
 
@@ -1548,7 +1606,7 @@ int do_reply(struct fileheader *fileinfo)
     }
     setbfile(buf, currboard, fileinfo->filename);
     strcpy(replytitle, fileinfo->title);
-    post_article(buf);
+    post_article(buf, fileinfo);
     replytitle[0] = '\0';
     return FULLUPDATE;
 }
@@ -1662,7 +1720,7 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
 int do_post()
 {                               /* 用户post */
     *quote_user = '\0';
-    return post_article("");
+    return post_article("", NULL);
 }
 
  /*ARGSUSED*/ int post_reply(int ent, struct fileheader *fileinfo, char *direct)
@@ -1775,7 +1833,7 @@ int show_board_notes(char bname[30])
     return -1;
 }
 
-int post_article(char *q_file)
+int post_article(char *q_file, struct fileheader *re_file)
 {                               /*用户 POST 文章 */
     struct fileheader post_file;
     char filepath[STRLEN];
@@ -1984,11 +2042,11 @@ int post_article(char *q_file)
 
     strncpy(post_file.title, save_title, STRLEN);
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */
-        post_file.filename[STRLEN - 1] = 'L';
-        post_file.filename[STRLEN - 2] = 'L';
+        post_file.filename[FILENAME_LEN - 1] = 'L';
+        post_file.filename[FILENAME_LEN - 2] = 'L';
     } else {
-        post_file.filename[STRLEN - 1] = 'S';
-        post_file.filename[STRLEN - 2] = 'S';
+        post_file.filename[FILENAME_LEN - 1] = 'S';
+        post_file.filename[FILENAME_LEN - 2] = 'S';
         outgo_post(&post_file, currboard, save_title);
     }
     Anony = 0;                  /*Inital For ShowOut Signature */
@@ -2007,21 +2065,8 @@ int post_article(char *q_file)
         post_file.accessed[0] |= FILE_SIGN;
     }
 
-    if (append_record(buf, &post_file, sizeof(post_file)) == -1) {      /* 添加POST信息 到 当前版.DIR */
-        sprintf(buf, "posting '%s' on '%s': append_record failed!", post_file.title, currboard);
-        report(buf);
-        pressreturn();
-        clear();
-        return FULLUPDATE;
-    }
-    updatelastpost(currboard);
-    after_post(currentuser, &post_file, currboard);
-    brc_add_read(post_file.filename);
+    after_post(currentuser, &post_file, currboard, re_file);
 
-    bbslog("1user", "posted '%s' on '%s'", post_file.title, currboard);
-/*      postreport(post_file.title, 1, currboard); *//*
- * * added by alex, 96.9.12 
- */
     if (!junkboard(currboard)) {
         currentuser->numposts++;
     }
@@ -2682,7 +2727,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
     {Ctrl('H'), SR_authorX},    /* Leeward 98.10.03 */
     {'b', SR_BMfunc},
     {'B', SR_BMfuncX},          /* Leeward 98.04.16 */
-    {Ctrl('T'), title_mode},
+    {Ctrl('T'), generate_all_title},
     {'t', set_delete_mark},     /*KCN 2001 */
     {'v', i_read_mail},         /* period 2000-11-12 read mail in article list */
     /*

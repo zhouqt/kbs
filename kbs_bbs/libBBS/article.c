@@ -54,7 +54,7 @@ int cmpname(fhdr, name)         /* Haohmaru.99.3.30.比较 某文件名是否和 当前文件
     struct fileheader *fhdr;
     char name[STRLEN];
 {
-    if (!strncmp(fhdr->filename, name, STRLEN))
+    if (!strncmp(fhdr->filename, name, FILENAME_LEN))
         return 1;
     return 0;
 }
@@ -167,8 +167,8 @@ void cancelpost(board, userid, fh, owned, autoappend)
         setbdir((owned) ? 5 : 4, oldpath, board);
         append_record(oldpath, &postfile, sizeof(postfile));
     }
-    if ((fh->filename[STRLEN - 1] == 'S')
-        && (fh->filename[STRLEN - 2] == 'S')
+    if ((fh->filename[FILENAME_LEN - 1] == 'S')
+        && (fh->filename[FILENAME_LEN - 2] == 'S')
         && (atoi(fh->filename + 2) > now - 14 * 86400)) {
         FILE *fp;
         char buf[256];
@@ -447,7 +447,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 {                               /* (自动生成文件名) 转贴或自动发信 */
     struct fileheader postfile;
     char filepath[STRLEN];
-    char buf[256], buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
+    char buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
     int aborted, local_article;
 
     if (!haspostperm(user, toboard) && !mode) {
@@ -518,15 +518,14 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     } else
         strncpy(postfile.title, save_title, STRLEN);
     if (local_article == 1) {   /* local save */
-        postfile.filename[STRLEN - 1] = 'L';
-        postfile.filename[STRLEN - 2] = 'L';
+        postfile.filename[FILENAME_LEN - 1] = 'L';
+        postfile.filename[FILENAME_LEN - 2] = 'L';
     } else {
-        postfile.filename[STRLEN - 1] = 'S';
-        postfile.filename[STRLEN - 2] = 'S';
+        postfile.filename[FILENAME_LEN - 1] = 'S';
+        postfile.filename[FILENAME_LEN - 2] = 'S';
         outgo_post(&postfile, toboard, save_title);
     }
     /*   setbdir(digestmode, buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式 */
-    setbfile(buf, toboard, DOT_DIR);
     if (!strcmp(toboard, "syssecurity")
         && strstr(title, "修改 ")
         && strstr(title, " 的权限"))
@@ -536,26 +535,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         postfile.accessed[1] |= FILE_READ;
         postfile.accessed[0] |= FILE_FORWARDED;
     }
-    if (append_record(buf, &postfile, sizeof(postfile)) == -1) {        /* 添加POST信息到当前版.DIR */
-        if (!mode) {
-            bbslog("1user", "cross_posting '%s' on '%s': append_record failed!", postfile.title, toboard);
-        } else {
-            bbslog("1user", "Posting '%s' on '%s': append_record failed!", postfile.title, toboard);
-        }
-#ifdef BBSMAIN
-        pressreturn();
-        clear();
-#endif
-        return 1;
-    }
-    /* brc_add_read( postfile.filename ) ; */
-    updatelastpost(toboard);
-    after_post(user, &postfile, toboard);
-    if (!mode)                  /* 用户post还是自动发信 */
-        sprintf(buf, "cross_posted '%s' on '%s'", postfile.title, toboard);
-    else
-        sprintf(buf, "自动发表系统 POST '%s' on '%s'", postfile.title, toboard);
-    bbslog("1user", "%s", buf);
+    after_post(user, &postfile, toboard, NULL);
     return 1;
 }
 
@@ -570,8 +550,57 @@ int post_file(struct userec *user, char *fromboard, char *filename, char *nboard
     return 0;
 }
 
-int after_post(struct userec *user, struct fileheader *fh, char *boardname)
+int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re)
 {
+    char buf[256];
+    struct boardheader * bstr, btmp;
+    int fd, err=0, nowid=0;
+
+    setbfile(buf, boardname, DOT_DIR);
+    bstr = getbcache(boardname);
+    memcpy(&btmp, bstr, sizeof(btmp));
+
+    if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
+        perror(buf);
+        err=1;
+    }
+    if(!err) {
+	    flock(fd, LOCK_EX);
+	    btmp.nowid++;
+	    set_board(getbnum(boardname),&btmp);
+	    nowid = bstr->nowid;
+	    fh->id = nowid;
+	    if(re==NULL){
+		fh->groupid = fh->id;
+		fh->reid = fh->id;
+	    }
+	    else {
+	    	fh->groupid = re->groupid;
+	    	fh->reid = re->id;
+	    }
+	    lseek(fd, 0, SEEK_END);
+	    if (safewrite(fd, fh, sizeof(fileheader)) == -1){
+	        report("apprec write err!");
+	        err=1;
+	    }
+	    flock(fd, LOCK_UN);
+	    close(fd);
+    }
+    if (err) {
+        bbslog("1user", "Posting '%s' on '%s': append_record failed!", fh->title, boardname);
+        setbfile(buf, boardname, fh->filename);
+        unlink(buf);
+#ifdef BBSMAIN
+        pressreturn();
+        clear();
+#endif
+        return 1;
+    }
+    updatelastpost(boardname);
+    brc_add_read(fh->filename);
+    sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
+    bbslog("1user", "%s", buf);
+
 	if (strstr(fh->title, "Re:")!=fh->title) setboardorigin(boardname, 1);
 	setboardtitle(boardname, 1);
 }

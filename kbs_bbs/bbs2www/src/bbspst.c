@@ -7,7 +7,8 @@ int main()
 {
     FILE *fp;
     int i;
-    char userid[80], buf[512], path[512], file[512], board[512], title[80] = "";
+    char userid[80], buf[512], buf2[512], path[512], file[512], board[512], title[80] = "",
+    		oldfilename[80];
     struct boardheader brdhdr;
     struct fileheader DirInfo;
 
@@ -17,6 +18,7 @@ int main()
     strsncpy(board, getparm("board"), 20);
     strsncpy(file, getparm("file"), 20);
     strsncpy(title, getparm("title"), 50);
+    strsncpy(oldfilename, getparm("refilename"), 80);
     if (title[0] && strncmp(title, "Re: ", 4))
         sprintf(title, "Re: %s", getparm("title"));
     strsncpy(userid, getparm("userid"), 40);
@@ -28,7 +30,7 @@ int main()
         http_fatal("您不能回复本文");
     printf("<center>\n");
     printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
-    printf("<form method=\"post\" action=\"bbssnd?board=%s\">\n<table border=\"1\">\n", encode_url(buf, board, sizeof(buf)));
+    printf("<form method=\"post\" action=\"bbssnd?board=%s&refilename=%s\">\n<table border=\"1\">\n", encode_url(buf, board, sizeof(buf)), encode_url(buf2, oldfilename, sizeof(buf2)));
     printf("<tr><td>");
     printf("<font color=\"green\">发文注意事项: <br>\n");
     printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>\n");

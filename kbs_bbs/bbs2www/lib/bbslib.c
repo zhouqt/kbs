@@ -694,7 +694,7 @@ int write_file2(FILE * fp, FILE * fp2)
 /* return value:
 // >0		success
 // -1		write .DIR failed*/
-int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony)
+int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader* oldx)
 {
     struct fileheader post_file;
     char filepath[STRLEN], fname[STRLEN];
@@ -736,11 +736,11 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 
     strncpy(post_file.title, title, STRLEN);
     if (local_save == 1) {      /* local save */
-        post_file.filename[STRLEN - 1] = 'L';
-        post_file.filename[STRLEN - 2] = 'L';
+        post_file.filename[FILENAME_LEN - 1] = 'L';
+        post_file.filename[FILENAME_LEN - 2] = 'L';
     } else {
-        post_file.filename[STRLEN - 1] = 'S';
-        post_file.filename[STRLEN - 2] = 'S';
+        post_file.filename[FILENAME_LEN - 1] = 'S';
+        post_file.filename[FILENAME_LEN - 2] = 'S';
         outgo_post2(&post_file, board, user->userid, user->username, title);
     }
 
@@ -752,18 +752,8 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
         post_file.accessed[0] |= FILE_SIGN;
     }
 
-    if (append_record(buf, &post_file, sizeof(post_file)) == -1) {      /* 添加POST信息 到 当前版.DIR */
-        sprintf(buf, "posting '%s' on '%s': append_record failed!", post_file.title, board);
-        report(buf);
-        /* 必须把刚刚创建的文件删除才行 */
-        unlink(filepath);
-        return -1;
-    }
+    after_post(currentuser, &post_file, board, oldx);
 
-    after_post(currentuser, &post_file, board);
-
-    sprintf(buf, "posted '%s' on '%s'", post_file.title, board);
-    report(buf);                /* bbslog */
 /*      postreport(post_file.title, 1); *//*added by alex, 96.9.12 */
     /*if ( !junkboard(board) )
        //{

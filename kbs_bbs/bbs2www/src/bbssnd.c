@@ -6,9 +6,9 @@
 int main()
 {
     FILE *fp;
-    char filename[80], dir[80], board[80], title[80], buf[80], *content;
+    char filename[80], dir[80], board[80], title[80], buf[80], oldfilename[80], *content;
     int r, i, sig;
-    struct fileheader x;
+    struct fileheader x, *oldx;
     bcache_t *brd;
     int local, anony;
 
@@ -17,6 +17,7 @@ int main()
         http_fatal("匆匆过客不能发表文章，请先登录");
     strsncpy(board, getparm("board"), 18);
     strsncpy(title, getparm("title"), 50);
+    strsncpy(oldfilename, getparm("refilename"), 80);
     brd = getbcache(board);
     if (brd == 0)
         http_fatal("错误的讨论区名称");
@@ -43,12 +44,14 @@ int main()
     *(int *) (u_info->from + 36) = time(0);
     sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
     f_append(filename, unix_string(content));
-    r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony);
+    if(oldfilename[0]){
+    	int pos = search_record(dir, oldx, sizeof(fileheader), (RECORD_FUNC_ARG) cmpname, oldfilename);
+    	if (pos <= 0) oldx = NULL;
+    }
+    brc_initial(currentuser->userid, board);
+    r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx);
     if (r <= 0)
         http_fatal("内部错误，无法发文");
-    sprintf(buf, "M.%d.A", r);
-    brc_initial(currentuser->userid, board);
-    brc_add_read(buf);
     brc_update(currentuser->userid);
     unlink(filename);
     sprintf(buf, "bbsdoc?board=%s", board);

@@ -389,7 +389,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                     digest_mode();
 
                 else if (digestmode == 2)
-                    thread_mode();
+                    change_mode();
 
                 else if (digestmode == 3)
                 	marked_mode();
@@ -465,7 +465,7 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
             return digest_mode();
 
         else if (digestmode == 2)
-            return thread_mode();
+            return change_mode();
 
         else if (digestmode == 3)
             return marked_mode();
@@ -1047,7 +1047,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
 /*    int Xflag = (-1003 != passonly )? 0 : !(passonly = 0);Ææ¹Ö°¡KCN */
     int Xflag = (-1003 != passonly) ? 0 : (passonly = 0, 1);
 
-    strncpy(ori_file, ptitle->filename, STRLEN);
+    strncpy(ori_file, ptitle->filename, FILENAME_LEN);
     B = (passonly < 0 ? -1 : 1);        /* Leeward 98.04.16 */
     passonly *= B;
     RemoveAppendedSpace(ptitle->title); /* Leeward 98.02.13 */
@@ -1195,9 +1195,9 @@ redo:
         	/* TODO: add KEY_REFRESH support */
             switch (lch) {
             case Ctrl('Y'):
-		zsend_post(0,&SR_fptr,currdirect);
-		clear();
-		goto redo;
+                zsend_post(0,&SR_fptr,currdirect);
+                clear();
+                goto redo;
             case Ctrl('Z'):
                 r_lastmsg();    /* Leeward 98.07.30 support msgX */
                 break;

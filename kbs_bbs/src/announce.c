@@ -580,7 +580,7 @@ void a_forward(path, pitem, mode)
     sprintf(fname, "%s/%s", path, pitem->fname);
     if (dashf(fname)) {
         strncpy(fhdr.title, pitem->title, STRLEN);
-        strncpy(fhdr.filename, pitem->fname, STRLEN);
+        strncpy(fhdr.filename, pitem->fname, FILENAME_LEN);
         switch (doforward(path, &fhdr, mode)) {
         case 0:
             mesg = "文章转寄完成!\n";
@@ -746,7 +746,7 @@ void a_copypaste(pm, paste)
     if (!paste) {
         item = pm->item[pm->now];
         strncpy(title, item->title, STRLEN);
-        strncpy(filename, item->fname, STRLEN);
+        strncpy(filename, item->fname, FILENAME_LEN);
         sprintf(genbuf, "%s/%s", pm->path, filename);
         strncpy(fpath, genbuf, PATHLEN);
         prints("拷贝标识完成。注意：粘贴文章後才能用 d 命令将文章删除! -- 请按任意键继续 << ");
@@ -1258,7 +1258,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                         ch = KEY_RIGHT;
                         goto EXPRESS;
                     case Ctrl('Y'):
-			zsend_file(fname, me.item[me.now]->title);
+                        zsend_file(fname, me.item[me.now]->title);
                         break;
                     case Ctrl('Z'):
                     case 'h':
