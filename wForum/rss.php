@@ -5,6 +5,7 @@ $nocookie = 1;
 
 require("inc/funcs.php");
 require("inc/board.inc.php");
+require("inc/rss.inc.php");
 
 global $boardArr;
 global $boardID;
@@ -14,7 +15,7 @@ header("Content-Type: text/xml; charset=$HTMLCharset");
 if (!RSS_SUPPORT) exit;
 
 preprocess();
-main($boardID, $boardName, $boardArr);
+main($boardID, $boardName, $boardArr, $modifytime);
 
 function preprocess(){
 	global $boardID;
@@ -22,6 +23,7 @@ function preprocess(){
 	global $boardArr;
 	global $loginok;
 	global $currentuser;
+	global $modifytime;
 	if (!isset($_GET['board'])) {
 		exit;
 	}
@@ -34,7 +36,7 @@ function preprocess(){
 		exit;
 	}
 	if (!$loginok) bbs_setguest_nologin();
-	if (!bbs_normalboard($boardName)) {
+	if (!($isnormalboard = bbs_normalboard($boardName))) {
 		if($loginok == 1) {
 			$usernum = $currentuser["index"];
 			if (bbs_checkreadperm($usernum, $boardID) == 0) {
@@ -47,80 +49,66 @@ function preprocess(){
 	if ($boardArr['FLAG'] & BBS_BOARD_GROUP ) {
 		exit;
 	}
+	$filename = bbs_get_board_filename($boardName, ".ORIGIN");
+	$modifytime = @filemtime($filename);
+	if ($isnormalboard) {
+		if (cache_header("public",$modifytime,300)) {
+			exit();
+		}
+	}
 	return true;
 }
 
-function main($boardID, $boardName, $boardArr) {
+function main($boardID, $boardName, $boardArr, $modifytime) {
 	$includeDesc = isset($_GET["includeContents"]);
-	$rssfile = 	bbs_get_board_filename($boardName, $includeDesc ? ".RSS_FULL" : ".RSS");
-	$filename = bbs_get_board_filename($boardName, ".ORIGIN");
-	$modifytime = @filemtime($filename);
-	$cmt = @filemtime($rssfile);
-	if ($modifytime < $cmt) {
-		@readfile($rssfile);
-	} else {
-		$fp = @fopen($rssfile, "w");
-		generate_rss_header($boardName, htmlspecialchars($boardArr["DESC"],ENT_QUOTES), $modifytime, $fp);
-		generate_rss_contents($boardID, $boardName, $includeDesc, $fp);
-		generate_rss_footer($fp);
-		if ($fp !== false) {
-			fclose($fp);
-			@readfile($rssfile);
-		}
-	}
+	$channel = generate_rss_header($boardName, htmlspecialchars($boardArr["DESC"], ENT_QUOTES), $modifytime);
+	$items = generate_rss_contents($boardID, $boardName, $includeDesc);
+	echo generate_rss($channel, $items);
 }
 
-function outputs($fp, $str) {
-	if ($fp === false) echo $str;
-	else fwrite($fp, $str);
-}
-
-function generate_rss_header($boardName, $htmlboardDesc, $modifytime, $fp) {
+function generate_rss_header($boardName, $htmlboardDesc, $modifytime) {
 	global $SiteURL;
-	global $HTMLCharset;
-	outputs($fp, "<?xml version=\"1.0\" encoding=\"$HTMLCharset\" ?>\n<rss version=\"2.0\">\n");
-	outputs($fp, "\t<channel>\n");
-	outputs($fp, "\t\t<title>$htmlboardDesc</title>\n");
-	outputs($fp, "\t\t<link>".$SiteURL."board.php?name=".$boardName."</link>\n");
-	outputs($fp, "\t\t<description>$htmlboardDesc 版面主题索引</description>\n");
-	outputs($fp, "\t\t<language>zh-cn</language>\n");
-	outputs($fp, "\t\t<generator>wForum RSS Generator</generator>\n");
+	$re = array();
+	$re["title"] = $htmlboardDesc;
+	$re["link"] = $SiteURL."board.php?name=".$boardName;
+	$re["description"] = "$htmlboardDesc 版面主题索引";
+	$re["language"] = "zh-cn";
+	$re["generator"] = "wForum RSS Generator";
 	if ($modifytime > 0) {
-		outputs($fp, "\t\t<lastBuildDate>".gmdate("D, d M Y H:i:s", $modifytime) . " GMT</lastBuildDate>\n");
+		$re["lastBuildDate"] = gmdate("D, d M Y H:i:s", $modifytime) . " GMT";
 	}
+	return $re;
 }
 
-function generate_rss_footer($fp) {
-	outputs($fp, "\t</channel>\n</rss>\n");
-}
-
-function generate_rss_contents($boardID, $boardName, $includeDesc, $fp) {
+function generate_rss_contents($boardID, $boardName, $includeDesc) {
 	global $SiteURL;
 	global $dir_modes;
 	$contents = "";
 	$maxArticles = 20;
 	$dir_mode = $dir_modes["ORIGIN"];
 	$total = bbs_countarticles($boardID, $dir_mode);
+	$re = array();
 	if ($total > 0) {
 		if ($total < $maxArticles) $maxArticles = $total;
 		$articles = bbs_getarticles($boardName, $total - $maxArticles + 1, $maxArticles, $dir_mode);
 		$cc = count($articles);
 		for ($i = count($articles) - 1; $i >= 0; $i--) {
 			$origin = $articles[$i];
-			outputs($fp, "\t\t<item>\n");
-			outputs($fp, "\t\t\t<title>".htmlspecialchars($origin['TITLE'],ENT_QUOTES)." </title>\n");
-			outputs($fp, "\t\t\t<link>".$SiteURL."disparticle.php?boardName=".$boardName."&amp;ID=".$origin['ID']."</link>\n");
-			outputs($fp, "\t\t\t<author>".$origin['OWNER']."</author>\n");
-			outputs($fp, "\t\t\t<pubDate>".gmdate("D, d M Y H:i:s", $origin['POSTTIME']) . " GMT</pubDate>\n");
-			outputs($fp, "\t\t\t<guid>".$SiteURL."bbscon.php?bid=".$boardID."&amp;id=".$origin['ID']."</guid>\n");
-			outputs($fp, "\t\t\t<comments>".$SiteURL."disparticle.php?boardName=".$boardname."&amp;ID=".$origin['ID']."</comments>\n");
+			$item = array();
+			$item["title"] = htmlspecialchars($origin['TITLE'], ENT_QUOTES);
+			$item["link"] = $SiteURL."disparticle.php?boardName=".$boardName."&amp;ID=".$origin['ID'];
+			$item["author"] = $origin['OWNER'];
+			$item["pubDate"] = gmdate("D, d M Y H:i:s", $origin['POSTTIME']) . " GMT";
+			$item["guid"] = $SiteURL."bbscon.php?bid=".$boardID."&amp;id=".$origin['ID'];
+			$item["comments"] = $SiteURL."disparticle.php?boardName=".$boardname."&amp;ID=".$origin['ID'];
 			if ($includeDesc) {
 				$filename = bbs_get_board_filename($boardName, $origin["FILENAME"]);
 				$contents = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$origin['ID'], 0, 0);
-				outputs($fp, "\t\t\t<description>".htmlspecialchars($contents, ENT_QUOTES)." </description>\n");
+				$item["description"] = htmlspecialchars($contents, ENT_QUOTES);
 			}
-			outputs($fp, "\t\t</item>\n");
+			$re[] = $item;
 		}
 	}
+	return $re;
 }
 ?>

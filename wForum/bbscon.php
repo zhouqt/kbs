@@ -29,7 +29,7 @@
 		echo 5;
 		exit(0);
 	}
-	if (!bbs_normalboard($board)) {
+	if (!($isnormalboard = bbs_normalboard($board))) {
 		if($loginok == 1) {
 			$usernum = $currentuser["index"];
 			if (bbs_checkreadperm($usernum, $brdnum) == 0) {
