@@ -366,7 +366,7 @@ static int remove_files(const char *boardname)
 	return 0;
 }
 
-static int cnv_board_dir(struct boardheader *bh)
+static int cnv_board_dir(struct boardheader *bh, void *arg)
 {
 	printf("=======================================\n");
 	printf("Boardname: %s\n", bh->filename);
@@ -391,7 +391,7 @@ int main(int argc, char ** argv)
 	}
 	if (all == 1)
 	{
-		apply_boards(cnv_board_dir);
+		apply_boards(cnv_board_dir, NULL);
 	}
 	else
 	{
