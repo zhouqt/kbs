@@ -906,6 +906,9 @@ BlogÃû
 	[
 	<a href="index.php?id=<?php echo $pc["USER"]; ?>"><?php echo $pc["NAME"]; ?></a>
 	]
+	[
+	<?php bbs_add_super_fav ($pc['NAME']); ?>
+	]
 	<br>&nbsp;
 	</td>
 </tr>

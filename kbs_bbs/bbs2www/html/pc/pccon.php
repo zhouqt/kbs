@@ -99,6 +99,7 @@
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转载</a>\n".
 			"<a href=\"pcdoc.php?userid=".$pc["USER"]."&pid=".$pid."&tag=".$tag."&order=".$order."&tid=".$tid."\">返回目录</a>\n".
 			"<a href=\"javascript:history.go(-1);\">快速返回</a>\n";
+	    bbs_add_super_fav ('['.$pc['NAME'].'] '.$subject, '/pc/pccon.phpid='.$pc['UID'].'&nid='.$nid.'&s=all');
 	}
 	
 	function display_pc_trackbacks($link,$nid)

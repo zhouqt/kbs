@@ -820,6 +820,7 @@ function pc_main_navigation_bar()
 [<a href="pcnsearch.php">ÈÕÖ¾ËÑË÷</a>]
 [<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">ÂÛÌ³</a>]
 [<a href="pcapp0.html"><font color=red>ÉêÇë</font></a>]
+[<?php bbs_add_super_fav ('BLOG'); ?>]
 <?php
 	if( $pcconfig["ADMIN"] ){
 ?>

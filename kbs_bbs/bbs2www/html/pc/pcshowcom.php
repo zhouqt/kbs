@@ -166,6 +166,7 @@
 	<a href="pccon.php?<?php echo "id=".$node[uid]."&nid=".$comment[nid]."&pid=".$node[pid]."&tid=".$node[tid]."&tag=".$node[access]; ?>">返回原文</a>
 	<a href="pccom.php?act=pst&nid=<?php echo $comment[nid]; ?>">发表评论</a>
 	<a href="/bbspstmail.php?userid=<?php echo $comment[username]; ?>&title=问候">寄信给<?php echo $comment[username]; ?></a>
+	<?php bbs_add_super_fav ($node[subject], '/pc/pcshowcom.php?cid='.$cid); ?>
 	</td>
 </tr>
 </table>

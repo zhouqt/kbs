@@ -119,14 +119,14 @@ function pcmain_navigation_bar()
 {
 	global $pcconfig;
 ?>
-<a href="/pc/pcmain.php">博客首页</a>
+<a href="/pc/pcmain.php">首页</a>
 |
-<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a>
+<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">论坛</a>
 <?php
     if ($pcconfig["BLOGONBLOG"]) {
 ?>
 |
-<a href="/pc/index.php?id=<?php echo urlencode ($pcconfig["BLOGONBLOG"]); ?>">BLOG心得集</a>
+<a href="/pc/index.php?id=<?php echo urlencode ($pcconfig["BLOGONBLOG"]); ?>">心得集</a>
 <?php
     }
 ?>
@@ -144,6 +144,8 @@ function pcmain_navigation_bar()
 <a href="/pc/pclist.php">热门排行</a>
 |
 <a href="/pc/pcnsearch.php">日志搜索</a>
+|
+<?php bbs_add_super_fav ('BLOG'); ?>
 |
 <a href="/pc/pcapp0.html"><font color="red">立即申请</font></a>
 <?php
