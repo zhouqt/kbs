@@ -4,6 +4,7 @@
 #include <dirent.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <utime.h>
 #include "bbs.h"
 extern int errno;
 
@@ -40,7 +41,25 @@ struct fileheader fh;
 */
 }
 
-main(int argc,char** argv)
+extern char *optarg;
+extern int optind, opterr, optopt;
+
+int print_usage(char* prog)
+{
+	printf("\
+Usage: %s [OPTION]... DIR\n\
+	-m fix mail mode\n\
+	-t test mode. generate .tmpfile only\n\
+        -h show this message\n\
+examples:\n\
+	To fix a user's mail directory:\n\
+		%s -m /home/bbs/mail/K/kxn\n\
+notice:\n\
+	In mailmode it will set all the mail readed.\n\
+",prog,prog);
+}
+
+int main(int argc,char** argv)
 {
         DIR* pdir;
         char* name;
@@ -48,23 +67,68 @@ main(int argc,char** argv)
         struct dirent* ent;
 	int i;
 	FILE* art;
-	int file,file1,flag;
+	int file,file1;
 	struct fileheader fh;
+	int mailmode;
+	int flag; /* test mode flag */
+	mode_t old_dir_mode; 
+	char cwd[255];
 
-        if (argc>1) name=argv[1];
-        else name=".";
-	if (argc == 2) flag=0;
-	if (argc == 3) flag=1;
+	mailmode=0;
+	while (1) {
+		int c;
+        	c=getopt(argc,argv, "mth");
+		if (c==-1) break;
+				;
+		switch (c) {
+			case 'm':
+				mailmode=1;
+				break;
+			case 't':
+				flag=0;
+				break;
+			case 'h':
+				print_usage(argv[0]);
+				return 0;
+			case '?':
+				printf("%s:Unknown argument.\nTry `%s -h' for more information.\n",
+					argv[0],argv[0]);
+				return 0;
+			default:
+				printf ("?? getopt returned character code 0%o ??\n", c);
+				return 0;
+		}
+	}
+
+	if (optind < argc) {
+	        struct stat st;
+		name=argv[optind++];
+		if (optind < argc) {
+			printf("%s:Too many arguments.\nTry `%s -h' for more information.\n",
+					argv[0],argv[0]);
+			return 0;
+		}
+		if (stat(name,&st)==-1) {
+			perror("Can't stat directory:");
+			return 0;
+		}
+		if (!S_ISDIR(st.st_mode)) {
+			printf("%s isn't directory:",name);
+			return 0;
+		}
+		old_dir_mode=st.st_mode;
+	} else return print_usage(argv[0]);
+
+	if(!flag)
+	  chmod(name,0744);
         pdir = opendir(name);
+	getcwd(cwd,255);
 	chdir(name);
-	if(!flag){
-	sprintf(buf1,"chmod 744 %s",name);
-	system(buf1);}
 	file=open(".tmpfile",O_CREAT|O_TRUNC|O_WRONLY,0600);
 	if (file==0) {
-	  perror("open .tmpfile error!\n");
-	  closedir(pdir);
-	  return -1;
+	    perror("open .tmpfile error!\n");
+	    closedir(pdir);
+	    return -1;
 	}
 	i=1;
         while (ent=readdir(pdir)) {
@@ -96,6 +160,9 @@ main(int argc,char** argv)
 				*p=0;
 			strcpy(fh.filename,ent->d_name);
 			strncpy(fh.title,buf2+8,STRLEN);
+			if (mailmode) {
+				fh.accessed[0] |= FILE_READ;
+			}
 			if (strncmp(buf1,"发信站",6)&&strncmp(buf1,"寄信人: ",8) && strncmp(buf1,"发信人: ",8))
 					continue;
 			if ((strncmp(buf2,"标  题: ",8))
@@ -113,10 +180,20 @@ main(int argc,char** argv)
 	if (close(file))
 		printf("close error=%d\n",errno);
         closedir(pdir);
-	if(!flag){
-	sprintf(buf1,"chmod 755 %s",name);
-	system(buf1);
-	sprintf(buf1,"%s/.DIR",name);
-	printf("ok=%d\n",f_mv(".tmpfile", buf1));
+	if(!flag) {
+	  struct stat st;
+	  int restore=0;
+	  struct utimbuf ut;
+	  if (stat(".DIR",&st)!=-1)
+		  restore=1;
+	  printf("\nwrite .DIR ok=%d\n",f_mv(".tmpfile", ".DIR"));
+	  chmod(".DIR",st.st_mode);
+	  ut.actime=st.st_atime;
+	  ut.modtime=st.st_mtime;
+	  utime(".DIR",&ut);
 	}
+	chdir(cwd);
+	if(!flag)
+	  chmod(name,old_dir_mode);
+	return 0;
 }
