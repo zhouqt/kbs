@@ -1469,6 +1469,27 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     return FULLUPDATE;
 }
 
+int read_hot_info(int ent, struct fileheader *fileinfo, char *direct)
+{
+    char ans[4];
+    move(t_lines - 1, 0);
+    clrtoeol();
+    getdata(t_lines - 1, 0, "选择阅读: 1)本日十大新闻 2)本日十大祝福 3)近期热点 [1]: ", ans, 3, DOECHO, NULL, true);
+    switch (ans[0])
+	{
+    case '2':
+        show_help("etc/posts/bless");
+        break;
+    case '3':
+		show_help("0Announce/hotinfo");
+        break;
+    case '1':
+	default:
+		show_help("etc/posts/day");
+    }
+    return FULLUPDATE;
+}
+
 int junk_mode()
 {
     if (!HAS_PERM(currentuser, PERM_SYSOP)) {
@@ -2830,6 +2851,7 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
 #endif
     {'E', edit_post},
     {Ctrl('G'), change_mode},   /* bad : 2002.8.8 add marked mode */
+    {'H', read_hot_info},   /* flyriver: 2002.12.21 增加热门信息显示 */
     {'`', digest_mode},
     {'.', deleted_mode},
     {'>', junk_mode},

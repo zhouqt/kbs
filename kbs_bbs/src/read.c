@@ -612,9 +612,6 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
 
         else
             return DONOTHING;
-    case 'H':                  /* Luzi 1997.10.31 */
-        r_lastmsg();
-        break;
     case 'w':                  /* Luzi 1997.10.31 */
         if (!HAS_PERM(currentuser, PERM_PAGE))
             break;
