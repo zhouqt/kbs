@@ -470,6 +470,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         switch (mode) {
         case NEWDIRECT:
         case DIRCHANGED:
+    sprintf(ding_direct,"boards/%s/%s",currboard,DING_DIR);
             recbase = -1;
             last_line = get_num_records(currdirect, ssize);
     /* add by stiger */
