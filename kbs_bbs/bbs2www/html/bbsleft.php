@@ -359,6 +359,9 @@
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcsearch2.php" target="f3">文集搜索</a><br>
 					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pcnsearch.php" target="f3">文章搜索</a><br>
+					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
 					<a href="/bbsdoc.php?board=PersonalCorpus" target="f3">个人文集论坛</a><br>
 				</DIV>

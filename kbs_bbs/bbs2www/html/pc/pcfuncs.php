@@ -24,6 +24,8 @@ $pcconfig["ETEMS"] = 20;
 $pcconfig["NEWS"] = 20;
 $pcconfig["SITE"] = "smth.org";
 $pcconfig["BOARD"] = "PersonalCorpus";
+$pcconfig["SEARCHFILTER"] = " µÄ";
+$pcconfig["SEARCHNUMBER"] = 10;
 /* personal corp. configure end */
 
 $brdarr = array();
@@ -70,7 +72,7 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="")
 ?>
 </head>
 <script src="pc.js"></script>
-<body LEFTMARGIN="2" TOPMARGIN="0"
+<body TOPMARGIN="0"
 <?php
 	if($bkimg)
 		echo " background = \"".$bkimg."\" ";

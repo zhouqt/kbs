@@ -748,13 +748,19 @@
 </td></tr>
 <tr>
 	<td align="center" valign="middle" class="f1">
-	Visit Count: 
+	[访问量 
 	<font class="f4">
 	<?php echo $pc["VISIT"]; ?>
 	</font>
+	]
 	&nbsp;&nbsp;&nbsp;&nbsp;
-	Update Time:
+	[更新时间:
 	<?php echo time_format($pc["MODIFY"]); ?>
+	]
+	&nbsp;&nbsp;&nbsp;&nbsp;
+	[
+	<a href="pcnsearch.php?userid=<?php echo $pc["USER"]; ?>">文章搜索</a>
+	]<br>&nbsp;
 	</td>
 </tr>
 <tr>
