@@ -208,6 +208,7 @@ static ZEND_FUNCTION(bbs_getuser)
 	int s_len;
 	zval* user_array;
 
+	//MAKE_STD_ZVAL(user_array);
 	getcwd(old_pwd,1023);
 	chdir(BBSHOME);
 	old_pwd[1023]=0;
@@ -236,6 +237,7 @@ static ZEND_FUNCTION(bbs_getonlineuser)
 	struct user_info* uinfo;
 	zval* user_array;
 
+	//MAKE_STD_ZVAL(user_array);
 	getcwd(old_pwd,1023);
 	chdir(BBSHOME);
 	old_pwd[1023]=0;
@@ -348,6 +350,7 @@ static ZEND_FUNCTION(bbs_getcurrentuinfo)
         zval* user_array;
         long ret=1;
 
+	//MAKE_STD_ZVAL(user_array);
 	getcwd(old_pwd,1023);
 	chdir(BBSHOME);
 	old_pwd[1023]=0;
@@ -377,6 +380,7 @@ static ZEND_FUNCTION(bbs_getcurrentuser)
 	zval* user_array;
 	long ret;
 
+	//MAKE_STD_ZVAL(user_array);
 	getcwd(old_pwd,1023);
 	chdir(BBSHOME);
 	old_pwd[1023]=0;
@@ -409,6 +413,7 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 	int idx;
 	struct userec* user;
 
+	//MAKE_STD_ZVAL(user_array);
 	getcwd(old_pwd,1023);
 	chdir(BBSHOME);
 	old_pwd[1023]=0;
@@ -580,6 +585,7 @@ static ZEND_FUNCTION(bbs_getboard)
 	const struct boardheader* bh;
 	int b_num;
 
+	//MAKE_STD_ZVAL(array);
 	getcwd(old_pwd,1023);
 	chdir(BBSHOME);
 	old_pwd[1023]=0;
@@ -675,6 +681,15 @@ static ZEND_FUNCTION(bbs_ann_get_board)
 
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
+	zval *bbs_home;
+	zval *bbs_full_name;
+
+	MAKE_STD_ZVAL(bbs_home);
+	ZVAL_STRING(bbs_home, BBSHOME, 1);
+	MAKE_STD_ZVAL(bbs_full_name);
+	ZVAL_STRING(bbs_full_name, BBS_FULL_NAME, 1);
+	ZEND_SET_SYMBOL(&EG(symbol_table), "BBS_HOME", bbs_home);
+	ZEND_SET_SYMBOL(&EG(symbol_table), "BBS_FULL_NAME", bbs_full_name);
 	getcwd(old_pwd,1023);
 	old_pwd[1023]=0;
 	chdir(BBSHOME);
@@ -689,7 +704,6 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 #endif
 	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);
 	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_NOZAP", PERM_NOZAP, CONST_CS | CONST_PERSISTENT);
-	REGISTER_MAIN_STRING_CONSTANT("BBS_HOME", BBSHOME, CONST_CS | CONST_PERSISTENT);
 	chdir(old_pwd);
 #ifdef DEBUG
 	zend_error(E_WARNING,"module init");

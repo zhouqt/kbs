@@ -1,5 +1,5 @@
 <?php
-dl("../libexec/bbs/libphpbbslib.so");
+dl("libphpbbslib.so");
 global $SQUID_ACCL;
 global $BBS_HOME;
 global $BBS_FULL_NAME;
