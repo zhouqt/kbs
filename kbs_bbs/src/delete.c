@@ -23,6 +23,24 @@
 
 #include "bbs.h"
 
+static void mail_info()
+{
+    FILE *fn;
+    time_t now;
+    char filename[STRLEN];
+
+    now=time(0);
+    sprintf(filename,"etc/%s.tmp",currentuser->userid);
+    fn=fopen(filename,"w");
+    fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËû(Ëı)µÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid
+            ,ctime(&now));
+    getuinfo(fn, currentuser);
+    fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
+    fclose(fn);
+    mail_file(currentuser->userid,filename,"acmanager","×ÔÉ±Í¨Öª....",1);
+}
+
+
 int
 d_board()
 {
@@ -196,27 +214,9 @@ struct userec *ptr_urec;
     fprintf(fn,"×î½ü¹âÁÙÈÕÆÚ : %s", ctime( &ptr_urec->lastlogin));
     fprintf(fn,"×î½ü¹âÁÙ»úÆ÷ : %s\n", ptr_urec->lasthost );
     fprintf(fn,"ÉÏÕ¾´ÎÊı     : %d ´Î\n", ptr_urec->numlogins);
-    fprintf(fn,"ÎÄÕÂÊıÄ¿     : %d / %d (Board/1Discuss)\n",
-            ptr_urec->numposts, post_in_tin( ptr_urec->userid ));
+    fprintf(fn,"ÎÄÕÂÊıÄ¿     : %d (Board)\n",
+            ptr_urec->numposts);
 }
-
-mail_info()
-{
-    FILE *fn;
-    time_t now;
-    char filename[STRLEN];
-
-    now=time(0);
-    sprintf(filename,"etc/%s.tmp",currentuser->userid);
-    fn=fopen(filename,"w");
-    fprintf(fn,"[1m%s[m ÒÑ¾­ÔÚ [1m%24.24s[m ×ÔÉ±ÁË£¬ÒÔÏÂÊÇËû(Ëı)µÄ×ÊÁÏ£¬Çë±£Áô...",currentuser->userid
-            ,ctime(&now));
-    getuinfo(fn, currentuser);
-    fprintf(fn,"\n                      [1m ÏµÍ³×Ô¶¯·¢ĞÅÏµÍ³Áô[m\n");
-    fclose(fn);
-    mail_file(currentuser->userid,filename,"acmanager","×ÔÉ±Í¨Öª....",1);
-}
-
 
 int kickuser(struct user_info* uentp,char* arg,int count)
 {

@@ -63,7 +63,7 @@ struct user_info *uin;
     return NA;
 }
 
-s_msg()
+void s_msg()
 {
     do_sendmsg(NULL,NULL,0);
 }

@@ -204,7 +204,7 @@ toobigmesg()
 }
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 /* COMMAN : use mmap to speed up searching */
-int apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg,int applycopy)
+int apply_record(char *filename ,RECORD_FUNC_ARG fptr,int size ,char* arg,int applycopy)
 {
     char *buf,*buf1,*buf2;
     int fd, sizeread, n, i;
@@ -306,12 +306,7 @@ int sorted ; /* if records in file are sorted */
 /* search_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd, 2001.4.24 */
 /* COMMAN : use mmap to improve search speed */
 int
-search_record(filename,rptr,size,fptr,farg)
-char *filename ;
-char *rptr ;
-int size ;
-int (*fptr)() ;
-char *farg ;
+search_record(char *filename,char *rptr,int size,RECORD_FUNC_ARG fptr,char *farg)
 {
     int fd, sizeread, n, i;
     int id = 1 ;
@@ -531,7 +526,7 @@ char    *filename, *tmpfile, *deleted;
 }
 */
 
-int delete_record(char *filename ,int size,int id,int (*filecheck)(void* ,char* ) ,char* arg)
+int delete_record(char *filename ,int size,int id,RECORD_FUNC_ARG filecheck,char* arg)
 {
     int fdr;
     char* ptr;

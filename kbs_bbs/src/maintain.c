@@ -135,7 +135,7 @@ int securityreport(char *str,struct userec* lookupuser,char fdata[ 7 ][ STRLEN ]
 	            fprintf(se,"×î½ü¹âÁÙÈÕÆÚ : %s", ctime( &lookupuser->lastlogin));
 	            fprintf(se,"×î½ü¹âÁÙ»úÆ÷ : %s\n", lookupuser->lasthost );
 	            fprintf(se,"ÉÏÕ¾´ÎÊı     : %d ´Î\n", lookupuser->numlogins);
-	            fprintf(se,"ÎÄÕÂÊıÄ¿     : %d / %d (Board/1Discuss)\n",lookupuser->numposts, post_in_tin( lookupuser->userid ));
+	            fprintf(se,"ÎÄÕÂÊıÄ¿     : %d(Board)\n",lookupuser->numposts);
 	            fprintf(se,"Éú    ÈÕ     : %s\n",fdata[6]);
 	            /*    fprintf(se, "\n[33mÒÔÏÂÊÇÈÏÖ¤Õß¸öÈË×ÊÁÏ[35m");
 	                getuinfo(se, currentuser);rem by Haohmaru.99.4.16*/
@@ -702,33 +702,6 @@ int searchtrace()
     return 0;
 }           /* stephen 2000.12.15 let sysop search in trace */
 
-
-int post_in_tin(username)
-char           *username;
-{
-    char            buf[256];
-    FILE           *fh;
-    int             counter = 0;
-
-    sethomefile(buf, username, ".tin/posted");
-    fh = fopen(buf, "r");
-    if (fh == NULL)
-        return 0;
-    else
-    {
-        while (fgets(buf, 255, fh) != NULL)
-        {
-            if (buf[9] != 'd' && strncmp(&buf[11], "ccu.cs.test", 11)
-                    && strncmp(&buf[11], "tw.bbs.test", 11))
-                counter++;
-            if (buf[9] == 'd')
-                counter--;
-        }
-        fclose(fh);
-        return counter;
-    }
-
-}
 
 char            curruser[IDLEN + 2];
 extern int      delmsgs[];

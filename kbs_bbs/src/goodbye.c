@@ -129,7 +129,6 @@ char    buf[256];
             "stay",    
             "alltime",  
 #ifdef _DETAIL_UEXP_
-            "tin",     
             "exp",    
             "cexp",   
             "perf",    
@@ -159,7 +158,6 @@ char    buf[256];
 	stuffstr[ST_STAY]=stay;
 	stuffstr[ST_ALLTIME]=alltime;
 #ifdef _DETAIL_UEXP_
-	stuffstr[ST_TIN]=tin;
 	stuffstr[ST_EXP]=exp;
 	stuffstr[ST_CEXP]=ccexp;
 	stuffstr[ST_PERF]=perf;
@@ -175,7 +173,6 @@ char    buf[256];
     tmpnum=countperf(currentuser);
     sprintf(perf,"%d",tmpnum);
     strcpy(ccperf,cperf(tmpnum));
-    sprintf(tin, "%d", post_in_tin(douser.userid));
 #endif
     sprintf(alltime,"%d–° ±%d∑÷÷”",douser.stay/3600,(douser.stay/60)%60);
     sprintf(rgtday, "%24.24s",ctime(&douser.firstlogin));

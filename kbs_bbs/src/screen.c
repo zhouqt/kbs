@@ -762,7 +762,7 @@ standend()
     }
 }
 
-saveline(line, mode, buffer)  /* 0 : save, 1 : restore */
+void saveline(line, mode, buffer)  /* 0 : save, 1 : restore */
 int line, mode;
 char *buffer;
 {
@@ -868,7 +868,7 @@ pressreturn()
                return 0 ;
            }
 
-askyn(str,defa)
+int askyn(str,defa)
 char str[STRLEN];
 int defa;
 {
