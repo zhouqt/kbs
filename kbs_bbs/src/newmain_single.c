@@ -531,8 +531,8 @@ void login_query()
     prints("\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest^[[37m)[m");
 #else
     prints("\n\033[1m\033[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔİÍ£×¢²áĞÂÕÊºÅ,add \033[36m'.'\33[37m after your ID for BIG5\033[m");
-#endif
-#endif
+#endif //NINE_BUILD
+#endif //LOGINASNEW
     while (1) {
         if (attempts++ >= LOGINATTEMPTS) {
             ansimore("etc/goodbye", false);
@@ -630,7 +630,7 @@ void login_query()
     }
 #else
     getdata(0, 0, "\n°´ [RETURN] ¼ÌĞø", genbuf, 10, NOECHO, NULL, true);
-#endif
+#endif //SSHBBS
 
     if(check_ID_lists(currentuser->userid)) {
         prints("ÄãµÄÁ¬½ÓÆµÂÊ¹ı¸ß£¬byebye!");
