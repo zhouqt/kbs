@@ -1161,11 +1161,11 @@ void update_endline()
 		if (allstay & 1) {	//显示系统浮动信息
 			struct public_data *publicshm = get_publicshm();
 			if (publicshm->bannercount) 
-				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, publicshm->banners[time(0)%publicshm->bannercount]);
+				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, publicshm->banners[(time(0)>>1)%publicshm->bannercount]);
 			else allstay=0;
 		} else {	//显示版面浮动信息
 			if ((currboard)&&(currboard->bannercount))
-				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, currboard->banners[time(0)%currboard->bannercount]);
+				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, currboard->banners[(time(0)>>1)%currboard->bannercount]);
 			else allstay=0;
 		}
 	}

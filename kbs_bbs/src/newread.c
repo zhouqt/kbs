@@ -497,11 +497,11 @@ static int read_endline(struct _select_def *conf)
 		if (allstay & 1) {	//显示系统浮动信息
 			struct public_data *publicshm = get_publicshm();
 			if (publicshm->bannercount) 
-				snprintf(pntbuf, 256, "\033[33;44m%s\033[m", publicshm->banners[time(0)%publicshm->bannercount]);
+				snprintf(pntbuf, 256, "\033[33;44m%s\033[m", publicshm->banners[(time(0)>>1)%publicshm->bannercount]);
 			else allstay=0;
 		} else {	//显示版面浮动信息
 			if (currboard->bannercount) 
-				snprintf(pntbuf, 256, "\033[33;44m%s\033[m", currboard->banners[time(0)%currboard->bannercount]);
+				snprintf(pntbuf, 256, "\033[33;44m%s\033[m", currboard->banners[(time(0)>>1)%currboard->bannercount]);
 			else allstay=0;
 		}
 	}
