@@ -771,6 +771,7 @@ int calc_main()
             outline("      abs,sign,sqr,sqrt,round,floor,ceil\n");
             outline("      det,inv\n");
             outline("²Ù×÷: + - * / ^ '(×ªÖÃ) \n");
+            continue;
         }
         if(strchr(cmd, '=')) {
             i=strchr(cmd, '=')-cmd;
