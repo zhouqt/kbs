@@ -1,5 +1,13 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+AC_CANONICAL_SYSTEM
+case "${host}" in
+  i*86-*-freebsd4*)
+	CFLAGS="$CFLAGS -DFREEBSD"
+	;;
+  *)
+	;;
+esac
 AM_INIT_AUTOMAKE([smthwwwbbs],1.0)
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER(config.h)
@@ -98,12 +106,10 @@ AC_SUBST(CONFIG_AR)
 AC_SUBST(EXTRA_CLEAN)
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-ldl':
-AC_CHECK_LIB([dl], [main])
-# FIXME: Replace `main' with a function in `-lesmtp':
-AC_CHECK_LIB([esmtp], [main])
-# FIXME: Replace `main' with a function in `-lltdl':
-AC_CHECK_LIB([ltdl], [main])
+AC_CHECK_LIB([bsd], [vfork], [LIBS="$LIBS -lbsd"])
+AC_CHECK_LIB([dl], [dlopen], [LIBS="$LIBS -ldl"])
+AC_CHECK_LIB([esmtp], [smtp_create_session], [LIBS="$LIBS -lesmtp"])
+AC_CHECK_LIB([ltdl], [lt_dlopen], [LIBS="$LIBS -lltdl"])
 
 # Checks for header files.
 AC_HEADER_STDC
