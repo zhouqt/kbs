@@ -990,13 +990,18 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
 bool UPDOWN=false;
 
-int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel)
+int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode)
 {
     int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
     char savebuffer[25][LINELEN*3];
     bool init=true;
     char tmp[1024];
     extern int RMSG;
+
+	/*************stiger************
+	 * textmode 0 :  ctrl+q换行，enter发表
+	 * textmode 1 :  enter换行，ctrl+w发送
+	 *********************************/
 
     if(uinfo.mode!=MSG)
         ingetdata = true;
@@ -1063,8 +1068,13 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         clrtoeol();
         move(cursory, cursorx);
         ch = igetkey();
-        if ((ch == '\n' || ch == '\r'))
-            break;
+		if(textmode == 0){
+        	if ((ch == '\n' || ch == '\r'))
+            	break;
+		}else{
+			if (ch == Ctrl('W'))
+				break;
+		}
         for(i=starty;i<=y;i++)
             saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0])) {
@@ -1095,6 +1105,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 buf[Min(len,1024-1)]=0;
                 now=strlen(buf);
                 break;
+			case Ctrl('W'):
             case Ctrl('Q'):
             case '\n':
             case '\r':

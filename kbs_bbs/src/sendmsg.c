@@ -29,7 +29,7 @@ int line;
     prints("送音信给:%-12s    请输入音信内容，Ctrl+Q 换行:", uid);
     memset(msg, 0, sizeof(msg));
     while (1) {
-        i = multi_getdata(line+1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false);
+        i = multi_getdata(line+1, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false,0);
         if (msg[0] == '\0')
             return false;
         getdata(line + i + 1, 0, "确定要送出吗(Y)是的 (N)不要 (E)再编辑? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
@@ -515,7 +515,7 @@ void r_msg()
         getyx(&oy, &ox);
         
         if(canreply) {
-            ch = -multi_getdata(oy, ox, 79, NULL, buf, 1024, 11, true);
+            ch = -multi_getdata(oy, ox, 79, NULL, buf, 1024, 11, true, 0);
             if(ch<0) oy-=ch+1;
         }
         else {

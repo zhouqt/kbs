@@ -344,7 +344,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
            "              sub('hehe',title)==len(title)-3\n"
            "      我要查询......自己动手查吧,hehe"
 );
-    multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0);
+    multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0, 0);
     if(!index[0]) 
         return FULLUPDATE;
     load_content = (strstr(index, "content")!=NULL);
