@@ -416,7 +416,7 @@ int check_IP_lists(unsigned int IP2)
             if((double)(now-ips[i].last)<=CON_THRESHOLD2) {
                 fp=fopen(".IPdenys", "a");
                 if(fp){
-                    fprintf(fp, "0 %ld %d.%d.%d.%d %d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
+                    fprintf(fp, "0 %ld %d.%d.%d.%d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
                     fclose(fp);
                 }
                 ret = 1;
@@ -424,10 +424,11 @@ int check_IP_lists(unsigned int IP2)
             found=1;
             ips[i].last = now;
             ips[i].t++;
-            if(ips[i].t/(double)(ips[i].last-ips[i].first)>=CON_THRESHOLD) {
+            if(ret==0)
+            if(ips[i]>=10&&(ips[i].t/(double)(ips[i].last-ips[i].first)>=CON_THRESHOLD)) {
                 fp=fopen(".IPdenys", "a");
                 if(fp){
-                    fprintf(fp, "1 %ld %d.%d.%d.%d %d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
+                    fprintf(fp, "1 %ld %d.%d.%d.%d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
                     fclose(fp);
                 }
                 ret = 1;
