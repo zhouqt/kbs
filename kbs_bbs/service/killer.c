@@ -1587,7 +1587,9 @@ void show_top_board()
             y=(i-1)%3*8+j; x=(i-1)/3*40;
             if(fgets(buf, 80, fp)==NULL) break;
             move(y, x);
-            prints(buf);
+            resetcolor();
+            if(j==2) setfcolor(RED, 1);
+            prints("%s", buf);
         }
         fclose(fp);
     }

@@ -111,12 +111,12 @@ void main()
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
     fp=fopen("service/killer.1", "w");
-    fprintf(fp, "===============江湖杀手榜===============\n");
-    fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "杀手名", "命中次数", "出手次数", "绝杀率");
+    fprintf(fp, "=============江湖杀手榜=============\n");
+    fprintf(fp, "%4s %-12s %4s %4s %6s\n", "名次", "杀手名", "命中", "出手", "绝杀率");
     j=0;
     for(i=0;i<statt;i++) {
         if(statlib[i].btime<MINB) continue;
-        fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, (statlib[i].btime==0)?0.0:(double)statlib[i].bwtime/statlib[i].btime*100);
+        fprintf(fp, "%3d  %-12s %3d  %3d  %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, (statlib[i].btime==0)?0.0:(double)statlib[i].bwtime/statlib[i].btime*100);
         j++;
         if(j>=MAXK) break;
     }
@@ -131,12 +131,12 @@ void main()
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
     fp=fopen("service/killer.2", "w");
-    fprintf(fp, "===============江湖捕快榜===============\n");
-    fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "捕快名", "命中次数", "出手次数", "神捕率");
+    fprintf(fp, "=============江湖捕快榜=============\n");
+    fprintf(fp, "%4s %-12s %4s %4s %6s\n", "名次", "捕快名", "命中", "出手", "神捕率");
     j=0;
     for(i=0;i<statt;i++) {
         if(statlib[i].gtime<MINB*6) continue;
-        fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].gwtime, statlib[i].gtime, (statlib[i].gtime==0)?0.0:(double)statlib[i].gwtime/statlib[i].gtime*100);
+        fprintf(fp, "%3d  %-12s %3d  %3d  %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].gwtime, statlib[i].gtime, (statlib[i].gtime==0)?0.0:(double)statlib[i].gwtime/statlib[i].gtime*100);
         j++;
         if(j>=MAXK) break;
     }
@@ -229,12 +229,12 @@ void main()
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
     fp=fopen("service/killer.4", "w");
-    fprintf(fp, "=============今日江湖杀手榜=============\n");
-    fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "杀手名", "命中次数", "出手次数", "绝杀率");
+    fprintf(fp, "===========今日江湖杀手榜===========\n");
+    fprintf(fp, "%4s %-12s %4s %4s %6s\n", "名次", "杀手名", "命中", "出手", "绝杀率");
     j=0;
     for(i=0;i<statt;i++) {
         if(statlib[i].btime<MINB/6) continue;
-        fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, (statlib[i].btime==0)?0.0:(double)statlib[i].bwtime/statlib[i].btime*100);
+        fprintf(fp, "%3d  %-12s %3d  %3d  %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].bwtime, statlib[i].btime, (statlib[i].btime==0)?0.0:(double)statlib[i].bwtime/statlib[i].btime*100);
         j++;
         if(j>=MAXK) break;
     }
@@ -249,12 +249,12 @@ void main()
                 memcpy(statlib+j, &temp, sizeof(struct statf));
             }
     fp=fopen("service/killer.5", "w");
-    fprintf(fp, "=============今日江湖捕快榜=============\n");
-    fprintf(fp, "%4s %-12s  %8s  %8s %6s\n", "名次", "捕快名", "命中次数", "出手次数", "神捕率");
+    fprintf(fp, "===========今日江湖捕快榜===========\n");
+    fprintf(fp, "%4s %-12s %4s %4s %6s\n", "名次", "捕快名", "命中", "出手", "神捕率");
     j=0;
     for(i=0;i<statt;i++) {
         if(statlib[i].gtime<MINB) continue;
-        fprintf(fp, "%3d  %-12s  %6d    %6d   %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].gwtime, statlib[i].gtime, (statlib[i].gtime==0)?0.0:(double)statlib[i].gwtime/statlib[i].gtime*100);
+        fprintf(fp, "%3d  %-12s %3d  %3d  %4.2lf%%  \n", j+1, statlib[i].id, statlib[i].gwtime, statlib[i].gtime, (statlib[i].gtime==0)?0.0:(double)statlib[i].gwtime/statlib[i].gtime*100);
         j++;
         if(j>=MAXK) break;
     }
