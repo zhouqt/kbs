@@ -61,6 +61,8 @@ static PHP_FUNCTION(bbs_delfile);
 static PHP_FUNCTION(bbs_delmail);
 static PHP_FUNCTION(bbs_normalboard);
 static PHP_FUNCTION(bbs_setmailreaded);
+static PHP_FUNCTION(bbs_add_import_path);
+static PHP_FUNCTION(bbs_get_import_path);
 
 
 /*
@@ -114,6 +116,8 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_delmail,NULL)
         PHP_FE(bbs_normalboard,NULL)
         PHP_FE(bbs_setmailreaded,NULL)
+		PHP_FE(bbs_add_import_path,NULL)
+		PHP_FE(bbs_get_import_path,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -2380,3 +2384,48 @@ static PHP_FUNCTION(bbs_setmailreaded)
 	RETURN_LONG(0);
 }
 
+/*
+ * add import path,     annnounce.c
+ * @author stiger
+ */
+static PHP_FUNCTION(bbs_add_import_path)
+{
+    int ac = ZEND_NUM_ARGS();
+	char * path;
+	int path_len;
+	int num;
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &path, &path_len, &num) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	RETURN_LONG(0);
+}
+
+static PHP_FUNCTION(bbs_get_import_path)
+{
+    zval *element,*ret_path;
+	char buf[MAXPATH];
+	char *im_path[ANNPATH_NUM];
+	char *im_title[ANNPATH_NUM];
+	int im_time=0;
+	int im_select=0;
+	FILE *fp;
+	int i;
+
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+	load_import_path(im_path,im_title,&im_time,&im_select);
+
+	for(i=0;i<ANNPATH_NUM;i++){
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+    	add_assoc_string(element, "PATH", im_path[i], 1);
+    	add_assoc_string(element, "TITLE", im_title[i], 1);
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+    }
+
+	free_import_path(im_path,im_title,&im_time);
+
+}
