@@ -396,10 +396,10 @@ void r_msg()
 
 againmsg:
     now = get_unreadmsg(currentuser->userid);
-    if(now==-1) now = get_msgcount(currentuser->userid)-1;
+    if(now==-1) now = count-1;
     while(1){
         load_msghead(1, currentuser->userid, now, &head);
-        if (head.topid!=getuinfopid()) goto againmsg;
+        if (head.topid!=getuinfopid()&&now<count-1) goto againmsg;
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
         strncpy(uid, head.id, IDLEN);
@@ -411,7 +411,6 @@ againmsg:
         if (DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         good_move(0,0);
-        clrtoeol();
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
             prints("\x1b[1m%s", outmsg);
         else
