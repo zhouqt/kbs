@@ -2060,7 +2060,9 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         int utmpent;
         time_t t;
         int multi_ret = 1;
-
+		char genbuf[STRLEN];
+		struct userec* uc;
+ 
         while (multi_ret != 0) {
             int lres;
             int num;
