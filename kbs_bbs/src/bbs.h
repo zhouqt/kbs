@@ -121,6 +121,8 @@ extern long ti ;
 #define IPLEN   16    /* Length of most string data */
 #define NAMELEN  40    /* Length of username/realname */
 #define IDLEN    12    /* Length of userids */
+#define PASSLEN 39
+#define MD5PASSLEN 16
 #define OLDPASSLEN  14    /* Length of encrypted passwd field */
 #define MAXGOPHERITEMS 9999 /*max of gopher items*/
 #define PASSFILE   ".PASSWDS"      /* Name of file User records stored in */

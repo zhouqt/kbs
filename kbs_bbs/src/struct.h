@@ -16,7 +16,7 @@ struct userec {                  /* Structure used to hold information in */
         char            passwd[OLDPASSLEN];
         char            username[NAMELEN];
         char            ident[NAMELEN];
-        unsigned char   md5passwd[16];
+        unsigned char   md5passwd[MD5PASSLEN];
         char			realemail[STRLEN-16];
         unsigned        userlevel;
         time_t          lastlogin;
@@ -45,7 +45,9 @@ struct user_info {              /* Structure used in UTMP file */
         int     pager;          /* pager toggle, YEA, or NA */
         int     in_chat;        /* for in_chat commands   */
         char    chatid[ 16 ];   /* chat id, if in chat mode */
-        char    from[ 60 ];     /* machine name the user called in from */
+        char    from[ IPLEN+4 ];     /* machine name the user called in from */
+        time_t	logintime;
+        char	fill[36];
         time_t	freshtime;
 	int utmpkey;
         char    userid[ 20 ];
