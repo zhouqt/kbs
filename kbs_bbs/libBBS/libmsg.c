@@ -619,7 +619,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         case 1:
             if(!head->sent) {
                 sprintf(dest, "[44%sm\x1b[36m%-12.12s(%-16.16s) ÑûÇëÄã[37m                                           [m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
-                sprintf(attstr, "[44m%s[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+                sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
                 sprintf(dest, "[44%sm\x1b[37mÄã(%-16.16s) ÑûÇë%-12.12s[36m                                           [m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time, head->id);
