@@ -44,7 +44,9 @@ $dir_modes = array(
 	"ORIGIN" => 6,
 	"AUTHOR" => 7,
 	"TITLE" => 8,
-	"ZHIDING" => 9
+	"SUPERFILTER" => 9,
+	"WEB_THREAD" => 10,
+	"ZHIDING" => 11
 );
 /**
  * Constants of board flags, packed in an array.
