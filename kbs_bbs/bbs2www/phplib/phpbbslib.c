@@ -6808,6 +6808,10 @@ static PHP_FUNCTION(bbs_denyadd)
     struct boardheader brd;
     struct userec *lookupuser;
     char buf[256];
+	int i;
+    struct tm *tmtime;
+    time_t now,undenytime;
+    char path[STRLEN];
     
     int ac = ZEND_NUM_ARGS();
     if (ac != 5 || zend_parse_parameters(5 TSRMLS_CC, "sssll", &board, &board_len, &userid ,&userid_len ,&exp ,&exp_len ,&denyday ,&manual_deny) == FAILURE) 
@@ -6826,7 +6830,6 @@ static PHP_FUNCTION(bbs_denyadd)
     if (deny_me(userid, board))
 	    RETURN_LONG(-4);  
 	
-	int i;
 	for (i = 0; (i < exp_len)&&(i < 28); i++) {
 		if (exp[i] <= 27 && exp[i] >= -1)
 			exp[i] = ' ';
@@ -6844,9 +6847,6 @@ static PHP_FUNCTION(bbs_denyadd)
 #else
     autofree = true;
 #endif
-    struct tm *tmtime;
-    time_t now,undenytime;
-    char path[STRLEN];
     
     now = time(0);
     undenytime = now + denyday * 24 * 60 * 60;
