@@ -1800,12 +1800,38 @@ int get_curr_utmpent()
 /* 以下的代码是cgi和php都使用的*/
 static struct user_info www_guest_uinfo;
 
-static int www_new_guest_entry()
+static int www_guest_calc_hashkey(struct in_addr *fromhostn)
+{
+	int i=ntohl(fromhostn->s_addr);
+	int j;
+			        
+    j =  i & 0x0000FFFF;
+    j |= (((i&0xFF000000)>>8) + (i&0x00FF0000)) & 0x000F0000;
+
+    return j;
+}
+
+static int www_guest_start_map(int key)
+{
+	return ( key % MAX_WWW_MAP_ITEM + 1 );
+}
+
+#define WWW_GUEST_HASHTAB(key) wwwguest_shm->hashtab[key>>16][(key&0x0000FF00)>>8][key&0x000000FF]
+
+/*   stiger:  1 guest entry per IP
+return:
+	<0: error
+	0: 正常登录,idx
+	1: 有重复,使用idx的entry
+**************/
+static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
 {
     struct public_data *pub;
-    int fd, i, j;
+    int oldidx, num, fd, i, j;
     time_t now;
     struct userec *user;
+	int hashkey;
+	int startkey;
 
     fd = www_guest_lock();
     if (fd == -1)
@@ -1813,14 +1839,18 @@ static int www_new_guest_entry()
     setpublicshmreadonly(0);
     pub = get_publicshm();
     if (pub->www_guest_count >= MAX_WWW_GUEST) {
+    	www_guest_unlock(fd);
         setpublicshmreadonly(1);
         return -1;
     }
     user = currentuser;
     getuser("guest", &currentuser);
 
-    if (currentuser == NULL)
-        return NULL;
+    if (currentuser == NULL){
+    	www_guest_unlock(fd);
+    	setpublicshmreadonly(1);
+        return -1;
+	}
     now = time(NULL);
     if ((now > wwwguest_shm->uptime + 240) || (now < wwwguest_shm->uptime - 240)) {
         newbbslog(BBSLOG_USIES, "WWW guest:Clean guest table:%d", wwwguest_shm->uptime);
@@ -1837,6 +1867,8 @@ static int www_new_guest_entry()
 	    do_after_logout(currentuser, &guestinfo, i, 1);
 
             wwwguest_shm->use_map[i / 32] &= ~(1 << (i % 32));
+			/* 清除hashtab */
+			WWW_GUEST_HASHTAB(www_guest_calc_hashkey(& wwwguest_shm->guest_entry[i].fromip)) = 0;
             if (pub->www_guest_count > 0) {
                 pub->www_guest_count--;
                 /*
@@ -1846,34 +1878,83 @@ static int www_new_guest_entry()
             }
         }
     }
-    for (i = 0; i < MAX_WWW_MAP_ITEM; i++)
-        if (wwwguest_shm->use_map[i] != 0xFFFFFFFF) {
-            int map = wwwguest_shm->use_map[i];
 
-            for (j = 0; j < 32; j++)
-                if ((map & 1) == 0) {
-                    wwwguest_shm->use_map[i] |= 1 << j;
-                    wwwguest_shm->guest_entry[i * 32 + j].freshtime = time(0);
-                    /*
-                     * 避免被kick下去 
-                     */
-                    break;
-                } else
-                    map = map >> 1;
-            break;
-        }
-    if (i != MAX_WWW_MAP_ITEM) {
-        pub->www_guest_count++;
-        if (get_utmp_number() + getwwwguestcount() > get_publicshm()->max_user) {
-            save_maxuser();
-        }
-    }
+	hashkey = www_guest_calc_hashkey(fromhostn);
+	oldidx = WWW_GUEST_HASHTAB(hashkey);
+
+/* 如果已经有相同的登陆 */
+if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip.s_addr ){
+
+	*idx = oldidx;
+	num=-1;
+}else{
+
+	startkey = www_guest_start_map(hashkey);
+
+/* 如果hashtab有值但是IP不同，遍历 */
+	if( oldidx != 0 ){
+		for ( num = 0, i = startkey; num < MAX_WWW_MAP_ITEM; num++, i++){
+			if( i>= MAX_WWW_MAP_ITEM)
+				i=1;
+        	if (wwwguest_shm->use_map[i] != 0) {
+            	int map = wwwguest_shm->use_map[i];
+            	for (j = 0; j < 32; j++){
+                	if ((map & 1) != 0) {
+						/* 找到相同的IP了 */
+						if( wwwguest_shm->guest_entry[i*32+j].fromip.s_addr == fromhostn->s_addr ){
+							num = -1;
+							*idx = i*32+j;
+                    		break;
+						}
+                	}
+				}
+        	}
+			if( num == -1 )
+				break;
+		}
+	}
+
+/* 如果遍历发现没有相同IP的 */
+	if( num != -1 ){
+		/* 找一个新的空位 */
+	    for (num=0, i = startkey; num < MAX_WWW_MAP_ITEM; num++, i++){
+			if( i>= MAX_WWW_MAP_ITEM)
+				i=1;
+        	if (wwwguest_shm->use_map[i] != 0xFFFFFFFF) {
+            	int map = wwwguest_shm->use_map[i];
+
+            	for (j = 0; j < 32; j++)
+                	if ((map & 1) == 0) {
+                    	wwwguest_shm->use_map[i] |= 1 << j;
+                    	wwwguest_shm->guest_entry[i * 32 + j].freshtime = time(0);
+						/* 设置hashtab */
+						WWW_GUEST_HASHTAB(hashkey) = i*32+j;
+                    	/*
+                     	* 避免被kick下去 
+                     	*/
+                    	break;
+                	} else
+                    	map = map >> 1;
+            	break;
+        	}
+		}
+    	if (num != MAX_WWW_MAP_ITEM) {
+        	pub->www_guest_count++;
+        	if (get_utmp_number() + getwwwguestcount() > get_publicshm()->max_user) {
+            	save_maxuser();
+        	}
+    	}
+		*idx = i*32+j;
+	}
+}
     currentuser = user;
     setpublicshmreadonly(1);
     www_guest_unlock(fd);
-    if (i == MAX_WWW_MAP_ITEM)
+    if (num == MAX_WWW_MAP_ITEM)
         return -1;
-    return i * 32 + j;
+	if (num == -1)
+		return 1;
+    return 0;
 }
 
 struct WWW_GUEST_S* www_get_guest_entry(int idx)
@@ -1896,6 +1977,8 @@ static int www_free_guest_entry(int idx)
     fd = www_guest_lock();
     if (wwwguest_shm->use_map[idx / 32] & (1 << (idx % 32))) {
         wwwguest_shm->use_map[idx / 32] &= ~(1 << (idx % 32));
+		WWW_GUEST_HASHTAB(www_guest_calc_hashkey(&wwwguest_shm->guest_entry[idx].fromip))=0;
+    	bzero(&wwwguest_shm->guest_entry[idx], sizeof(struct WWW_GUEST_S));
         if (pub->www_guest_count > 0)
             pub->www_guest_count--;
     }
@@ -2163,22 +2246,41 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         /*
          * TODO:alloc guest table 
          */
-        int idx = www_new_guest_entry();
+		int idx;
+		int exist;
+		struct in_addr fromhostn;
 
-        if (idx < 0)
+#ifdef HAVE_INET_ATON
+    inet_aton(fromhost, &fromhostn);
+#elif defined HAVE_INET_PTON
+	inet_pton(AF_INET, fromhost, &fromhostn);
+#else
+    my_inet_aton(fromhost, &fromhostn);
+#endif
+
+		exist = www_new_guest_entry(&fromhostn, &idx);
+		/* exist:
+<0: error
+0: 正常登录,idx
+1: 有重复,使用idx的entry
+		*/
+
+        if (exist < 0)
             ret = 5;
         else {
-            int tmp = rand() % 100000000;
 
-            wwwguest_shm->guest_entry[idx].key = tmp;
-            wwwguest_shm->guest_entry[idx].logintime = time(0);
-            www_guest_uinfo.logintime = wwwguest_shm->guest_entry[idx].logintime;
+			if( ! exist ){
+            	int tmp = rand() % 100000000;
+            	wwwguest_shm->guest_entry[idx].key = tmp;
+				wwwguest_shm->guest_entry[idx].fromip.s_addr = fromhostn.s_addr;
+            	wwwguest_shm->guest_entry[idx].logintime = time(0);
+			}
 
             wwwguest_shm->guest_entry[idx].freshtime = time(0);
             www_guest_uinfo.freshtime = wwwguest_shm->guest_entry[idx].freshtime;
-
+            www_guest_uinfo.logintime = wwwguest_shm->guest_entry[idx].logintime;
             www_guest_uinfo.destuid = idx;
-            www_guest_uinfo.utmpkey = tmp;
+            www_guest_uinfo.utmpkey = wwwguest_shm->guest_entry[idx].key;
             *ppuinfo = &www_guest_uinfo;
             *putmpent = idx;
             getuser("guest", &currentuser);

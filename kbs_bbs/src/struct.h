@@ -407,9 +407,11 @@ struct WWW_GUEST_S {
     time_t freshtime;
     time_t logintime;
     int currentboard;
+	struct in_addr fromip;
 };
 
 struct WWW_GUEST_TABLE {
+	int hashtab[16][256][256];
     int use_map[MAX_WWW_MAP_ITEM + 1];
     time_t uptime;
     struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
