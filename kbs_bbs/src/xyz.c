@@ -558,6 +558,12 @@ int get_favread()
 		pressanykey();
 		return 0;
 	}
+    if (!strcmp(destuser->userid,getCurrentUser()->userid)) {
+		move(7,0);
+		prints("不要自己拷贝自己，不好玩的说\n");
+		pressanykey();
+		return 0;
+	}
     getdata(6, 0, "请输入对方密码:", passwd, PASSLEN, NOECHO, NULL, true);
     if (passwd[0] == '\0' || !checkpasswd2(passwd, destuser)) {
         logattempt(destuser->userid, getSession()->fromhost);
