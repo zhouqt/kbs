@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
+	require("boards.php");
 	if ($loginok != 1)
 		html_nologin();
 	else
@@ -22,6 +23,8 @@
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
 		// TODO: Added bbs_check_post_perm();
+		if (bbs_is_readonly_board($brdarr))
+			html_error_quit("不能在只读讨论区发表文章");
 		if (isset($_GET["reid"]))
 			$reid = $_GET["reid"];
 		else {
@@ -116,15 +119,21 @@
 ?>
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>] 
-<input type="checkbox" name="outgo" value="1" />转信
-<br />
+<input type="checkbox" name="outgo" value="1" />转信<br />
 <textarea name="text" rows="20" cols="80" wrap="physical">
 
 </textarea></td></tr>
 <tr><td class="post" align="center">
 <input type="submit" value="发表" /> 
 <input type="reset" value="清除" />
+<?php
+		if (bbs_is_attach_board($brdarr))
+		{
+?>
 <input type="button" name="attach22" value="附件" onclick="return GoAttachWindow()" />
+<?php
+		}
+?>
 <script language="JavaScript">
 <!--
    function GoAttachWindow(){     
