@@ -2542,8 +2542,6 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
         return FULLUPDATE;
     }
     if (olddigestmode) {
-        digestmode = olddigestmode;
-   	setbdir(digestmode, direct, currboard);
 	switch(olddigestmode) {
 	    case 2:
 	    	title_mode();
