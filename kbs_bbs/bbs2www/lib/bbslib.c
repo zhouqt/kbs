@@ -684,7 +684,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     fclose(fp);
     
    /* Ìí¼ÓLog Bigman: 2003.4.7 */
-    newbbslog(BBSLOG_USER, "%s mailed %s %s (www)", id, userid,title);
+    newbbslog(BBSLOG_USER, "mailed(www) %s %s", userid,title);
 
     return 0;
 }
