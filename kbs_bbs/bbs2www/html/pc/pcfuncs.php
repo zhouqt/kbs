@@ -463,7 +463,8 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"UPDATE" => (int)($rows[updatetime]),
 			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor])),
 			"TYPE" => $rows[pctype],
-			"DEFAULTTOPIC" => $rows[defaulttopic]
+			"DEFAULTTOPIC" => $rows[defaulttopic],
+			"TMPSAVE" => $rows[tempsave]
 			);
 	if($pc["CSSFILE"])
 		$cssFile = $pc["CSSFILE"];
@@ -1039,7 +1040,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	$body = addslashes($body);
 	
 	//ÈÕÖ¾Èë¿â
-	$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
+	$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
 	   	 "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
 	if(!mysql_query($query,$link))
 		return -5;
@@ -1407,6 +1408,46 @@ function pc_can_comment($link , $uid)
 	}
 	else
 		return FALSE;
+}
+
+function pc_tmpsave_check($link,$pc)
+{
+	$query = "SELECT COUNT(*) FROM tmpsaves WHERE uid = ".intval($pc["UID"]);
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_row($result);
+	mysql_free_result($result);
+	return $rows[0];
+}
+
+function pc_tmpsave_import($link,$pc,$subject,$comment,$tid,$emote,$htmltag,$body,$trackback,$autodetecttbps,$trackbackname,$trackbackurl)
+{
+	if (pc_tmpsave_check($link,$pc))
+		$query = "UPDATE tmpsaves SET ".
+		         " subject = '".addslashes($subject)."' ".
+		         " comment = '".intval($comment)    ."' ".
+		         " tid     = '".intval($tid)        ."' ".
+		         " emote   = '".intval($emote)      ."' ".
+		         " htmltag = '".intval($htmltag)    ."' ".
+		         " body    = '".addslashes($body)   ."' ".
+		         " trackback='".intval($trackback)  ."' ".
+		         " autodetecttbps='".intval($autodetecttbps)."' ".
+		         " trackbackname='".addslashes($trackbackname)."' ".
+		         " trackbackurl = '".addslashes($trackbackurl)."' ".
+		         "WHERE uid = '".intval($pc["UID"])."' ".
+		         "LIMIT 1;";
+	else
+		$query = "INSERT INTO `tmpsaves` ( `uid` , `subject` , `comment` , `tid` , `emote` , `htmltag` , `body` , `trackback` , `autodetecttbps` , `trackbackname` , `trackbackurl` , `hostname` , `modifytime` ) ".
+		         "VALUES ( '".intval($pc["UID"])."', '".addslashes($subject)."', '".intval($comment)."', '".intval($tid)."', '".intval($emote)."', '".intval($htmltag)."', '".addslashes($body)."', '".intval($trackback)."', '".intval($autodetecttbps)."', '".addslashes($trackbackname)."', '".addslashes($trackbackurl)."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) );";
+	mysql_query($query,$link);
+}
+
+function pc_tmpsave_export($link,$pc)
+{
+	$query = "SELECT * FROM tmpsaves WHERE uid = '".intval($pc["UID"])."' LIMIT 1;";
+	$result = mysql_query($query,$link);
+	$rows   = mysql_fetch_array($result);
+	mysql_free_result($result);
+	return $rows;
 }
 
 ?>
