@@ -15,12 +15,18 @@ int main()
     char brdencode[STRLEN];
     struct fileheader *fh;
     int i, num;
+	int start,shownum,haveshow;
+	int haveprev=0, havenext=0;
     struct boardheader bh;
 	int gid; /* group id */
 
     init_all();
     strsncpy(board, getparm("board"), 32);
 	gid = atoi(getparm("gid"));
+	start = atoi(getparm("start"));
+	if( start <= 0 ) start = 0;
+	shownum = atoi(getparm("num"));
+	if( shownum <= 0 ) shownum = 20;
 	/*
     strsncpy(file, getparm("file"), 32);
 	*/
@@ -45,11 +51,28 @@ int main()
         brc_initial(currentuser->userid, board);
 #endif
     printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\" />", BBSNAME, board);
-	for (i = 0; i < num; i++)
+	for (i = 0, haveshow = 0; i < num && haveshow < shownum ; i++){
+			if( fh[i].id < start ){
+					if( i>= shownum )
+						haveprev = fh[i-shownum].id;
+					else
+						haveprev = fh[0].id;
+					continue;
+			}
+			haveshow ++;
             show_file(board, &bh, fh + i, brdencode);
+	}
+	if( i<num )
+			havenext = fh[i].id;
 	free(fh);
     printf("<hr class=\"default\" />");
     printf("[<a href=\"javascript:history.go(-1)\">返回上一页</a>]");
+	if( haveprev ){
+    	printf("[<a href=\"/cgi-bin/bbs/bbstcon?board=%s&gid=%d&start=%d&num=%d\">上一页</a>]", brdencode, gid, haveprev, shownum);
+	}
+	if( havenext ){
+    	printf("[<a href=\"/cgi-bin/bbs/bbstcon?board=%s&gid=%d&start=%d&num=%d\">下一页</a>]", brdencode, gid, havenext, shownum);
+	}
     printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", brdencode);
 #ifdef HAVE_BRC_CONTROL
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
