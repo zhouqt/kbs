@@ -1843,6 +1843,7 @@ int linkto(char *path, char *fname, char *title)
 {
     MENU pm;
 
+    bzero(&pm,sizeof(pm));
     pm.path = path;
 
     strcpy(pm.mtitle, title);
