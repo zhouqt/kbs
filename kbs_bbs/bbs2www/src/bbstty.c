@@ -24,7 +24,7 @@ int main()
         http_quit();
     }
     if (!strcasecmp(s1, "/m")) {
-        sprintf(buf, "/cgi-bin/bbs/bbspstmail?userid=%s&title=%s", s2, s3);
+        sprintf(buf, "/bbspstmail.php?userid=%s&title=%s", s2, s3);
         redirect(buf);
         http_quit();
     }

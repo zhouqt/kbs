@@ -157,7 +157,7 @@ int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, ch
 	    title=x->title+4;
     if ((x->accessed[1] & FILE_READ) == 0)
         printf("[<a href=\"/bbspst.php?board=%s&reid=%d\">回文章</a>]", brdencode, x->id);
-	printf("[<a href=\"bbspstmail?board=%s&file=%s&userid=%s&title=Re: %s\">回信给作者</a>]",
+	printf("[<a href=\"/bbspstmail.php?board=%s&file=%s&userid=%s&title=Re: %s\">回信给作者</a>]",
 		   brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)));
     printf("[本篇作者: %s]<br />\n", userid_str(x->owner));
 	show_article(path);

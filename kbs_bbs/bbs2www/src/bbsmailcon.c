@@ -78,7 +78,7 @@ int main()
             if (strncmp(x.title, "Re:", 3))
                 sprintf(title2, "Re: %s", x.title);
             title2[60] = 0;
-            printf("[<a href='bbspstmail?userid=%s&file=%s&title=%s'>回信</a>]", ptr, x.filename, title2);
+            printf("[<a href='/bbspstmail.php?userid=%s&file=%s&title=%s'>回信</a>]", ptr, x.filename, title2);
         }
     }
     fclose(fp);

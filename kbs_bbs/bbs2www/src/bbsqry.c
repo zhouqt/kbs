@@ -168,7 +168,7 @@ void display_user(char *userid)
         printf("\n");
     }
     show_user_plan(planid);
-    printf("<br><br><a href=\"bbspstmail?userid=%s&title=没主题\">[写信问候]</a> ", lookupuser->userid);
+    printf("<br><br><a href=\"/bbspstmail.php?userid=%s&title=没主题\">[写信问候]</a> ", lookupuser->userid);
     printf("<a href=\"/bbssendmsg.php?destid=%s\">[发送讯息]</a> ", lookupuser->userid);
     printf("<a href=\"bbsfadd?userid=%s\">[加入好友]</a> ", lookupuser->userid);
     printf("<a href=\"bbsfdel?userid=%s\">[删除好友]</a>", lookupuser->userid);

@@ -63,7 +63,7 @@ int main()
     free(data);
     printf("</table><hr>\n");
     printf("[信件总数: %d]", total);
-    printf("[<a href=bbspstmail>发送信件</a>]");
+    printf("[<a href=/bbspstmail.php>发送信件</a>]");
     if (start > 0) {
         i = start - 19;
         if (i < 0)

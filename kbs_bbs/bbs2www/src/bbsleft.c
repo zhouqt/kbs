@@ -124,7 +124,7 @@ int main()
          	   "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsmailbox_system.php\">系统预定义邮箱</a><br>\n"
 		   "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsmailbox_custom.php\">自定义邮箱</a><br>\n");
         if (can_send_mail())
-            printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>\n");
+            printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbspstmail.php\">发送邮件</a><br>\n");
         printf("			</div>\n");
         printmenuend();
     }
