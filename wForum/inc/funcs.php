@@ -388,7 +388,7 @@ function showLogon($showBack = 0, $comeurl = "") {
 <?php
 	if ($showBack) {
 ?>
-	&nbsp;&nbsp;<input type=button name="back" value="·µ »Ø" onclick="location.href='<?php  echo $comeurl; ?>'">
+	&nbsp;&nbsp;<input type=button name="back" value="·µ »Ø" onclick="location.href='<?php echo htmlspecialchars($comeurl, ENT_QUOTES); ?>'">
 <?php
 	}
 ?>

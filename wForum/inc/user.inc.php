@@ -16,7 +16,7 @@ function showUserMailbox(){ //这个函数直接调用必须保证 $loginok==1
 <tr><td width=65% >
 </td><td width=35% align=right>
 <?php   
-	bbs_getmailnum($currentuser["userid"],$total,$unread);
+	bbs_getmailnum($currentuser["userid"],$total,$unread,0,0);
 	if ($unread>0)  {
 ?>
 <bgsound src="sound/newmail.wav" border=0>
