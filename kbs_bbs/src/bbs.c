@@ -2879,6 +2879,9 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
     if (fileinfo==NULL)
         return DONOTHING;
+    if (!haspostperm(getCurrentUser(), currboard->filename)) { /* POSTÈ¨ÏÞ¼ì²é */
+        return DONOTHING;
+	}
     if (!strcmp(currboard->filename, "syssecurity")
         || !strcmp(currboard->filename, "junk")
         || !strcmp(currboard->filename, "deleted"))       /* Leeward : 98.01.22 */
