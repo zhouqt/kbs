@@ -1361,7 +1361,11 @@ void showtitle( char *title, char*mid)
 /* rewrite by bad */
     move(0, 0);
     resetcolor();
+#ifdef FREE
+    setfcolor(YELLOW,1);
+#else
     setfcolor(YELLOW,DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
+#endif
     setbcolor(colour);
     clrtoeol();
     prints("%s", title);
@@ -1369,16 +1373,28 @@ void showtitle( char *title, char*mid)
     move(0, spc1);
     resetcolor();
     if(strcmp(mid, BBS_FULL_NAME)&&mid[0]!='[')
+#ifdef FREE
+	    setfcolor(CYAN,1);
+#else
         setfcolor(CYAN, DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
+#endif
     else
+#ifdef FREE
+	    setfcolor(WHITE,1);
+#else
         setfcolor(WHITE, DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
+#endif
     setbcolor(colour);
     if(mid[0]=='[') prints("\033[5m");
     prints("%s", mid);
 
     move(0, -strlen(note));
     resetcolor();
+#ifdef FREE
+    setfcolor(YELLOW,1);
+#else
     setfcolor(YELLOW,DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
+#endif
     setbcolor(colour);
     prints("%s", note);
     resetcolor();

@@ -646,7 +646,11 @@ void readtitle(struct _select_def* conf)
         strcpy(header, "³ÏÕ÷°æÖ÷ÖÐ");
     } else {
         //if (HAS_PERM(getCurrentUser(), PERM_OBOARDS)) {
+#ifdef OPEN_BMONLINE
+		if (1) {
+#else
 		if ( chk_currBM(currBM, getCurrentUser()) ) {
+#endif
             char *p1, *p2;
 
             strcpy(header, "°æÖ÷: ");
