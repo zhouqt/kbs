@@ -1,237 +1,335 @@
-/* This code has been heavily hacked by Tatu Ylonen <ylo@cs.hut.fi> to
-   make it compile on machines like Cray that don't have a 32 bit integer
-   type. */
-/*
- * This code implements the MD5 message-digest algorithm.
- * The algorithm is due to Ron Rivest.  This code was
- * written by Colin Plumb in 1993, no copyright is claimed.
- * This code is in the public domain; do with it what you wish.
+/* crypto/md/md5_dgst.c */
+/* Copyright (C) 1995-1997 Eric Young (eay@cryptsoft.com)
+ * All rights reserved.
  *
- * Equivalent code is available from RSA Data Security, Inc.
- * This code has been tested against that, and is equivalent,
- * except that you don't need to include two pages of legalese
- * with every copy.
- *
- * To compute the message digest of a chunk of bytes, declare an
- * MD5Context structure, pass it to MD5Init, call MD5Update as
- * needed on buffers full of bytes, and then call MD5Final, which
- * will fill a supplied 16-byte array with the digest.
+ * This package is an SSL implementation written
+ * by Eric Young (eay@cryptsoft.com).
+ * The implementation was written so as to conform with Netscapes SSL.
+ * 
+ * This library is free for commercial and non-commercial use as long as
+ * the following conditions are aheared to.  The following conditions
+ * apply to all code found in this distribution, be it the RC4, RSA,
+ * lhash, DES, etc., code; not just the SSL code.  The SSL documentation
+ * included with this distribution is covered by the same copyright terms
+ * except that the holder is Tim Hudson (tjh@cryptsoft.com).
+ * 
+ * Copyright remains Eric Young's, and as such any Copyright notices in
+ * the code are not to be removed.
+ * If this package is used in a product, Eric Young should be given attribution
+ * as the author of the parts of the library used.
+ * This can be in the form of a textual message at program startup or
+ * in documentation (online or textual) provided with the package.
+ * 
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ * 1. Redistributions of source code must retain the copyright
+ *    notice, this list of conditions and the following disclaimer.
+ * 2. Redistributions in binary form must reproduce the above copyright
+ *    notice, this list of conditions and the following disclaimer in the
+ *    documentation and/or other materials provided with the distribution.
+ * 3. All advertising materials mentioning features or use of this software
+ *    must display the following acknowledgement:
+ *    "This product includes cryptographic software written by
+ *     Eric Young (eay@cryptsoft.com)"
+ *    The word 'cryptographic' can be left out if the rouines from the library
+ *    being used are not cryptographic related :-).
+ * 4. If you include any Windows specific code (or a derivative thereof) from 
+ *    the apps directory (application code) you must include an acknowledgement:
+ *    "This product includes software written by Tim Hudson (tjh@cryptsoft.com)"
+ * 
+ * THIS SOFTWARE IS PROVIDED BY ERIC YOUNG ``AS IS'' AND
+ * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+ * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+ * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+ * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+ * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+ * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+ * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+ * SUCH DAMAGE.
+ * 
+ * The licence and distribution terms for any publically available version or
+ * derivative of this code cannot be changed.  i.e. this code cannot simply be
+ * copied and put under another distribution licence
+ * [including the GNU Public Licence.]
  */
-
-#include "includes.h"
+#include "bbs.h"
 #include "md5.h"
-#include "getput.h"
 
-/*
- * Start MD5 accumulation.  Set bit count to 0 and buffer to mysterious
- * initialization constants.
+
+/* Implemented from RFC1321 The MD5 Message-Digest Algorithm
  */
-void MD5Init(struct MD5Context *ctx)
-{
-    ctx->buf[0] = 0x67452301;
-    ctx->buf[1] = 0xefcdab89;
-    ctx->buf[2] = 0x98badcfe;
-    ctx->buf[3] = 0x10325476;
 
-    ctx->bits[0] = 0;
-    ctx->bits[1] = 0;
-}
+#define INIT_DATA_A (unsigned long)0x67452301L
+#define INIT_DATA_B (unsigned long)0xefcdab89L
+#define INIT_DATA_C (unsigned long)0x98badcfeL
+#define INIT_DATA_D (unsigned long)0x10325476L
 
-/*
- * Update context to reflect the concatenation of another buffer full
- * of bytes.
- */
-void MD5Update(struct MD5Context *ctx, unsigned char const *buf, unsigned len)
-{
-    md5_uint32 t;
-
-    /* Update bitcount */
-
-    t = ctx->bits[0];
-    if ((ctx->bits[0] = (t + ((md5_uint32)len << 3)) & 0xffffffff) < t)
-	ctx->bits[1]++;		/* Carry from low to high */
-    ctx->bits[1] += len >> 29;
-
-    t = (t >> 3) & 0x3f;	/* Bytes already in shsInfo->data */
-
-    /* Handle any leading odd-sized chunks */
-
-    if (t) {
-	unsigned char *p = ctx->in + t;
-
-	t = 64 - t;
-	if (len < t) {
-	    memcpy(p, buf, len);
-	    return;
-	}
-	memcpy(p, buf, t);
-	MD5Transform(ctx->buf, ctx->in);
-	buf += t;
-	len -= t;
-    }
-    /* Process data in 64-byte chunks */
-
-    while (len >= 64) {
-	memcpy(ctx->in, buf, 64);
-	MD5Transform(ctx->buf, ctx->in);
-	buf += 64;
-	len -= 64;
-    }
-
-    /* Handle any remaining bytes of data. */
-
-    memcpy(ctx->in, buf, len);
-}
-
-/*
- * Final wrapup - pad to 64-byte boundary with the bit pattern 
- * 1 0* (64-bit count of bits processed, MSB-first)
- */
-void MD5Final(unsigned char digest[16], struct MD5Context *ctx)
-{
-    unsigned count;
-    unsigned char *p;
-
-    /* Compute number of bytes mod 64 */
-    count = (ctx->bits[0] >> 3) & 0x3F;
-
-    /* Set the first char of padding to 0x80.  This is safe since there is
-       always at least one byte free */
-    p = ctx->in + count;
-    *p++ = 0x80;
-
-    /* Bytes of padding needed to make 64 bytes */
-    count = 64 - 1 - count;
-
-    /* Pad out to 56 mod 64 */
-    if (count < 8) {
-	/* Two lots of padding:  Pad the first block to 64 bytes */
-	memset(p, 0, count);
-	MD5Transform(ctx->buf, ctx->in);
-
-	/* Now fill the next block with 56 bytes */
-	memset(ctx->in, 0, 56);
-    } else {
-	/* Pad block to 56 bytes */
-	memset(p, 0, count - 8);
-    }
-
-    /* Append length in bits and transform */
-    PUT_32BIT_LSB_FIRST(ctx->in + 56, ctx->bits[0]);
-    PUT_32BIT_LSB_FIRST(ctx->in + 60, ctx->bits[1]);
-
-    MD5Transform(ctx->buf, ctx->in);
-    PUT_32BIT_LSB_FIRST(digest, ctx->buf[0]);
-    PUT_32BIT_LSB_FIRST(digest + 4, ctx->buf[1]);
-    PUT_32BIT_LSB_FIRST(digest + 8, ctx->buf[2]);
-    PUT_32BIT_LSB_FIRST(digest + 12, ctx->buf[3]);
-    memset(ctx, 0, sizeof(ctx));	/* In case it's sensitive */
-}
-
-#ifndef ASM_MD5
-
-/* The four core functions - F1 is optimized somewhat */
-
-/* #define F1(x, y, z) (x & y | ~x & z) */
-#define F1(x, y, z) (z ^ (x & (y ^ z)))
-#define F2(x, y, z) F1(z, x, y)
-#define F3(x, y, z) (x ^ y ^ z)
-#define F4(x, y, z) (y ^ (x | ~z))
-
-/* This is the central step in the MD5 algorithm. */
-#define MD5STEP(f, w, x, y, z, data, s) \
-	( w += f(x, y, z) + data,  w = w<<s | w>>(32-s),  w += x )
-
-/*
- * The core of the MD5 algorithm, this alters an existing MD5 hash to
- * reflect the addition of 16 longwords of new data.  MD5Update blocks
- * the data and converts bytes into longwords for this routine.
- */
-void MD5Transform(md5_uint32 buf[4], const unsigned char inext[64])
-{
-    register word32 a, b, c, d, i;
-    word32 in[16];
-    
-    for (i = 0; i < 16; i++)
-      in[i] = GET_32BIT_LSB_FIRST(inext + 4 * i);
-
-    a = buf[0];
-    b = buf[1];
-    c = buf[2];
-    d = buf[3];
-
-    MD5STEP(F1, a, b, c, d, in[0] + 0xd76aa478, 7);
-    MD5STEP(F1, d, a, b, c, in[1] + 0xe8c7b756, 12);
-    MD5STEP(F1, c, d, a, b, in[2] + 0x242070db, 17);
-    MD5STEP(F1, b, c, d, a, in[3] + 0xc1bdceee, 22);
-    MD5STEP(F1, a, b, c, d, in[4] + 0xf57c0faf, 7);
-    MD5STEP(F1, d, a, b, c, in[5] + 0x4787c62a, 12);
-    MD5STEP(F1, c, d, a, b, in[6] + 0xa8304613, 17);
-    MD5STEP(F1, b, c, d, a, in[7] + 0xfd469501, 22);
-    MD5STEP(F1, a, b, c, d, in[8] + 0x698098d8, 7);
-    MD5STEP(F1, d, a, b, c, in[9] + 0x8b44f7af, 12);
-    MD5STEP(F1, c, d, a, b, in[10] + 0xffff5bb1, 17);
-    MD5STEP(F1, b, c, d, a, in[11] + 0x895cd7be, 22);
-    MD5STEP(F1, a, b, c, d, in[12] + 0x6b901122, 7);
-    MD5STEP(F1, d, a, b, c, in[13] + 0xfd987193, 12);
-    MD5STEP(F1, c, d, a, b, in[14] + 0xa679438e, 17);
-    MD5STEP(F1, b, c, d, a, in[15] + 0x49b40821, 22);
-
-    MD5STEP(F2, a, b, c, d, in[1] + 0xf61e2562, 5);
-    MD5STEP(F2, d, a, b, c, in[6] + 0xc040b340, 9);
-    MD5STEP(F2, c, d, a, b, in[11] + 0x265e5a51, 14);
-    MD5STEP(F2, b, c, d, a, in[0] + 0xe9b6c7aa, 20);
-    MD5STEP(F2, a, b, c, d, in[5] + 0xd62f105d, 5);
-    MD5STEP(F2, d, a, b, c, in[10] + 0x02441453, 9);
-    MD5STEP(F2, c, d, a, b, in[15] + 0xd8a1e681, 14);
-    MD5STEP(F2, b, c, d, a, in[4] + 0xe7d3fbc8, 20);
-    MD5STEP(F2, a, b, c, d, in[9] + 0x21e1cde6, 5);
-    MD5STEP(F2, d, a, b, c, in[14] + 0xc33707d6, 9);
-    MD5STEP(F2, c, d, a, b, in[3] + 0xf4d50d87, 14);
-    MD5STEP(F2, b, c, d, a, in[8] + 0x455a14ed, 20);
-    MD5STEP(F2, a, b, c, d, in[13] + 0xa9e3e905, 5);
-    MD5STEP(F2, d, a, b, c, in[2] + 0xfcefa3f8, 9);
-    MD5STEP(F2, c, d, a, b, in[7] + 0x676f02d9, 14);
-    MD5STEP(F2, b, c, d, a, in[12] + 0x8d2a4c8a, 20);
-
-    MD5STEP(F3, a, b, c, d, in[5] + 0xfffa3942, 4);
-    MD5STEP(F3, d, a, b, c, in[8] + 0x8771f681, 11);
-    MD5STEP(F3, c, d, a, b, in[11] + 0x6d9d6122, 16);
-    MD5STEP(F3, b, c, d, a, in[14] + 0xfde5380c, 23);
-    MD5STEP(F3, a, b, c, d, in[1] + 0xa4beea44, 4);
-    MD5STEP(F3, d, a, b, c, in[4] + 0x4bdecfa9, 11);
-    MD5STEP(F3, c, d, a, b, in[7] + 0xf6bb4b60, 16);
-    MD5STEP(F3, b, c, d, a, in[10] + 0xbebfbc70, 23);
-    MD5STEP(F3, a, b, c, d, in[13] + 0x289b7ec6, 4);
-    MD5STEP(F3, d, a, b, c, in[0] + 0xeaa127fa, 11);
-    MD5STEP(F3, c, d, a, b, in[3] + 0xd4ef3085, 16);
-    MD5STEP(F3, b, c, d, a, in[6] + 0x04881d05, 23);
-    MD5STEP(F3, a, b, c, d, in[9] + 0xd9d4d039, 4);
-    MD5STEP(F3, d, a, b, c, in[12] + 0xe6db99e5, 11);
-    MD5STEP(F3, c, d, a, b, in[15] + 0x1fa27cf8, 16);
-    MD5STEP(F3, b, c, d, a, in[2] + 0xc4ac5665, 23);
-
-    MD5STEP(F4, a, b, c, d, in[0] + 0xf4292244, 6);
-    MD5STEP(F4, d, a, b, c, in[7] + 0x432aff97, 10);
-    MD5STEP(F4, c, d, a, b, in[14] + 0xab9423a7, 15);
-    MD5STEP(F4, b, c, d, a, in[5] + 0xfc93a039, 21);
-    MD5STEP(F4, a, b, c, d, in[12] + 0x655b59c3, 6);
-    MD5STEP(F4, d, a, b, c, in[3] + 0x8f0ccc92, 10);
-    MD5STEP(F4, c, d, a, b, in[10] + 0xffeff47d, 15);
-    MD5STEP(F4, b, c, d, a, in[1] + 0x85845dd1, 21);
-    MD5STEP(F4, a, b, c, d, in[8] + 0x6fa87e4f, 6);
-    MD5STEP(F4, d, a, b, c, in[15] + 0xfe2ce6e0, 10);
-    MD5STEP(F4, c, d, a, b, in[6] + 0xa3014314, 15);
-    MD5STEP(F4, b, c, d, a, in[13] + 0x4e0811a1, 21);
-    MD5STEP(F4, a, b, c, d, in[4] + 0xf7537e82, 6);
-    MD5STEP(F4, d, a, b, c, in[11] + 0xbd3af235, 10);
-    MD5STEP(F4, c, d, a, b, in[2] + 0x2ad7d2bb, 15);
-    MD5STEP(F4, b, c, d, a, in[9] + 0xeb86d391, 21);
-
-    buf[0] += a;
-    buf[1] += b;
-    buf[2] += c;
-    buf[3] += d;
-}
-
+#ifndef NOPROTO
+static void md5_block(MD5_CTX *c, unsigned long *p);
+#else
+static void md5_block();
 #endif
+
+void MD5Init(MD5_CTX * c)
+{
+	c->A=INIT_DATA_A;
+	c->B=INIT_DATA_B;
+	c->C=INIT_DATA_C;
+	c->D=INIT_DATA_D;
+	c->Nl=0;
+	c->Nh=0;
+	c->num=0;
+}
+
+void MD5Update(MD5_CTX *c, const unsigned char *data, unsigned int len)
+{
+	register ULONG *p;
+	int sw,sc;
+	ULONG l;
+
+	if (len == 0) return;
+
+	l=(c->Nl+(len<<3))&0xffffffffL;
+	/* 95-05-24 eay Fixed a bug with the overflow handling, thanks to
+	 * Wei Dai <weidai@eskimo.com> for pointing it out. */
+	if (l < c->Nl) /* overflow */
+		c->Nh++;
+	c->Nh+=(len>>29);
+	c->Nl=l;
+
+	if (c->num != 0){
+		p=c->data;
+		sw=c->num>>2;
+		sc=c->num&0x03;
+
+		if ((c->num+len) >= MD5_CBLOCK)
+			{
+			l= p[sw];
+			p_c2l(data,l,sc);
+			p[sw++]=l;
+			for (; sw<MD5_LBLOCK; sw++)
+				{
+				c2l(data,l);
+				p[sw]=l;
+				}
+			len-=(MD5_CBLOCK-c->num);
+
+			md5_block(c,p);
+			c->num=0;
+			/* drop through and do the rest */
+			}
+		else
+			{
+			int ew,ec;
+
+			c->num+=(int)len;
+			if ((sc+len) < 4) /* ugly, add char's to a word */
+				{
+				l= p[sw];
+				p_c2l_p(data,l,sc,len);
+				p[sw]=l;
+				}
+			else
+				{
+				ew=(c->num>>2);
+				ec=(c->num&0x03);
+				l= p[sw];
+				p_c2l(data,l,sc);
+				p[sw++]=l;
+				for (; sw < ew; sw++)
+					{ c2l(data,l); p[sw]=l; }
+				if (ec)
+					{
+					c2l_p(data,l,ec);
+					p[sw]=l;
+					}
+				}
+			return;
+			}
+		}
+	/* we now can process the input data in blocks of MD5_CBLOCK
+	 * chars and save the leftovers to c->data. */
+	p=c->data;
+	while (len >= MD5_CBLOCK)
+		{
+#if defined(L_ENDIAN) || defined(B_ENDIAN)
+		memcpy(p,data,MD5_CBLOCK);
+		data+=MD5_CBLOCK;
+#ifdef B_ENDIAN
+		for (sw=(MD5_LBLOCK/4); sw; sw--)
+			{
+			Endian_Reverse32(p[0]);
+			Endian_Reverse32(p[1]);
+			Endian_Reverse32(p[2]);
+			Endian_Reverse32(p[3]);
+			p+=4;
+			}
+#endif
+#else
+		for (sw=(MD5_LBLOCK/4); sw; sw--)
+			{
+			c2l(data,l); *(p++)=l;
+			c2l(data,l); *(p++)=l;
+			c2l(data,l); *(p++)=l;
+			c2l(data,l); *(p++)=l; 
+			} 
+#endif
+		p=c->data;
+		md5_block(c,p);
+		len-=MD5_CBLOCK;
+		}
+	sc=(int)len;
+	c->num=sc;
+	if (sc)
+		{
+		sw=sc>>2;	/* words to copy */
+#ifdef L_ENDIAN
+		p[sw]=0;
+		memcpy(p,data,sc);
+#else
+		sc&=0x03;
+		for ( ; sw; sw--)
+			{ c2l(data,l); *(p++)=l; }
+		c2l_p(data,l,sc);
+		*p=l;
+#endif
+		}
+}
+
+static void md5_block(MD5_CTX *c, register ULONG *X)
+{
+	register ULONG A,B,C,D;
+
+	A=c->A;
+	B=c->B;
+	C=c->C;
+	D=c->D;
+
+	/* Round 0 */
+	R0(A,B,C,D,X[ 0], 7,0xd76aa478L);
+	R0(D,A,B,C,X[ 1],12,0xe8c7b756L);
+	R0(C,D,A,B,X[ 2],17,0x242070dbL);
+	R0(B,C,D,A,X[ 3],22,0xc1bdceeeL);
+	R0(A,B,C,D,X[ 4], 7,0xf57c0fafL);
+	R0(D,A,B,C,X[ 5],12,0x4787c62aL);
+	R0(C,D,A,B,X[ 6],17,0xa8304613L);
+	R0(B,C,D,A,X[ 7],22,0xfd469501L);
+	R0(A,B,C,D,X[ 8], 7,0x698098d8L);
+	R0(D,A,B,C,X[ 9],12,0x8b44f7afL);
+	R0(C,D,A,B,X[10],17,0xffff5bb1L);
+	R0(B,C,D,A,X[11],22,0x895cd7beL);
+	R0(A,B,C,D,X[12], 7,0x6b901122L);
+	R0(D,A,B,C,X[13],12,0xfd987193L);
+	R0(C,D,A,B,X[14],17,0xa679438eL);
+	R0(B,C,D,A,X[15],22,0x49b40821L);
+	/* Round 1 */
+	R1(A,B,C,D,X[ 1], 5,0xf61e2562L);
+	R1(D,A,B,C,X[ 6], 9,0xc040b340L);
+	R1(C,D,A,B,X[11],14,0x265e5a51L);
+	R1(B,C,D,A,X[ 0],20,0xe9b6c7aaL);
+	R1(A,B,C,D,X[ 5], 5,0xd62f105dL);
+	R1(D,A,B,C,X[10], 9,0x02441453L);
+	R1(C,D,A,B,X[15],14,0xd8a1e681L);
+	R1(B,C,D,A,X[ 4],20,0xe7d3fbc8L);
+	R1(A,B,C,D,X[ 9], 5,0x21e1cde6L);
+	R1(D,A,B,C,X[14], 9,0xc33707d6L);
+	R1(C,D,A,B,X[ 3],14,0xf4d50d87L);
+	R1(B,C,D,A,X[ 8],20,0x455a14edL);
+	R1(A,B,C,D,X[13], 5,0xa9e3e905L);
+	R1(D,A,B,C,X[ 2], 9,0xfcefa3f8L);
+	R1(C,D,A,B,X[ 7],14,0x676f02d9L);
+	R1(B,C,D,A,X[12],20,0x8d2a4c8aL);
+	/* Round 2 */
+	R2(A,B,C,D,X[ 5], 4,0xfffa3942L);
+	R2(D,A,B,C,X[ 8],11,0x8771f681L);
+	R2(C,D,A,B,X[11],16,0x6d9d6122L);
+	R2(B,C,D,A,X[14],23,0xfde5380cL);
+	R2(A,B,C,D,X[ 1], 4,0xa4beea44L);
+	R2(D,A,B,C,X[ 4],11,0x4bdecfa9L);
+	R2(C,D,A,B,X[ 7],16,0xf6bb4b60L);
+	R2(B,C,D,A,X[10],23,0xbebfbc70L);
+	R2(A,B,C,D,X[13], 4,0x289b7ec6L);
+	R2(D,A,B,C,X[ 0],11,0xeaa127faL);
+	R2(C,D,A,B,X[ 3],16,0xd4ef3085L);
+	R2(B,C,D,A,X[ 6],23,0x04881d05L);
+	R2(A,B,C,D,X[ 9], 4,0xd9d4d039L);
+	R2(D,A,B,C,X[12],11,0xe6db99e5L);
+	R2(C,D,A,B,X[15],16,0x1fa27cf8L);
+	R2(B,C,D,A,X[ 2],23,0xc4ac5665L);
+	/* Round 3 */
+	R3(A,B,C,D,X[ 0], 6,0xf4292244L);
+	R3(D,A,B,C,X[ 7],10,0x432aff97L);
+	R3(C,D,A,B,X[14],15,0xab9423a7L);
+	R3(B,C,D,A,X[ 5],21,0xfc93a039L);
+	R3(A,B,C,D,X[12], 6,0x655b59c3L);
+	R3(D,A,B,C,X[ 3],10,0x8f0ccc92L);
+	R3(C,D,A,B,X[10],15,0xffeff47dL);
+	R3(B,C,D,A,X[ 1],21,0x85845dd1L);
+	R3(A,B,C,D,X[ 8], 6,0x6fa87e4fL);
+	R3(D,A,B,C,X[15],10,0xfe2ce6e0L);
+	R3(C,D,A,B,X[ 6],15,0xa3014314L);
+	R3(B,C,D,A,X[13],21,0x4e0811a1L);
+	R3(A,B,C,D,X[ 4], 6,0xf7537e82L);
+	R3(D,A,B,C,X[11],10,0xbd3af235L);
+	R3(C,D,A,B,X[ 2],15,0x2ad7d2bbL);
+	R3(B,C,D,A,X[ 9],21,0xeb86d391L);
+
+	c->A+=A&0xffffffffL;
+	c->B+=B&0xffffffffL;
+	c->C+=C&0xffffffffL;
+	c->D+=D&0xffffffffL;
+}
+
+void MD5Final(unsigned char* md,MD5_CTX *c)
+{
+	register int i,j;
+	register ULONG l;
+	register ULONG *p;
+	static unsigned char end[4]={0x80,0x00,0x00,0x00};
+	unsigned char *cp=end;
+
+	/* c->num should definitly have room for at least one more byte. */
+	p=c->data;
+	j=c->num;
+	i=j>>2;
+
+	/* purify often complains about the following line as an
+	 * Uninitialized Memory Read.  While this can be true, the
+	 * following p_c2l macro will reset l when that case is true.
+	 * This is because j&0x03 contains the number of 'valid' bytes
+	 * already in p[i].  If and only if j&0x03 == 0, the UMR will
+	 * occur but this is also the only time p_c2l will do
+	 * l= *(cp++) instead of l|= *(cp++)
+	 * Many thanks to Alex Tang <altitude@cic.net> for pickup this
+	 * 'potential bug' */
+	if ((j&0x03) == 0) p[i]=0;
+	l=p[i];
+	p_c2l(cp,l,j&0x03);
+	p[i]=l;
+	i++;
+	/* i is the next 'undefined word' */
+	if (c->num >= MD5_LAST_BLOCK){
+		for (; i<MD5_LBLOCK; i++)
+			p[i]=0;
+		md5_block(c,p);
+		i=0;
+	}
+	for (; i<(MD5_LBLOCK-2); i++)	p[i]=0;
+	p[MD5_LBLOCK-2]=c->Nl;
+	p[MD5_LBLOCK-1]=c->Nh;
+	md5_block(c,p);
+	cp=md;
+	l=c->A; l2c(l,cp);
+	l=c->B; l2c(l,cp);
+	l=c->C; l2c(l,cp);
+	l=c->D; l2c(l,cp);
+
+	/* clear stuff, md5_block may be leaving some stuff on the stack
+	 * but I'm not worried :-) */
+	c->num=0;
+	/*	memset((char *)&c,0,sizeof(c));*/
+}
+
