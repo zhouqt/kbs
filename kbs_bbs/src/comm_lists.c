@@ -22,6 +22,7 @@
 */
 
 #include "bbs.h"
+#include <dlfcn.h>
 
 extern int nettyNN;
 
@@ -106,6 +107,8 @@ int inn_stop();                 /* czz 2002.01.15 */
 int clear_all_board_read_flag();        /* kcn 2002.07.18 */
 int friend_wall();
 
+int exec_mbem(char *s);
+
 /*Add By Excellent */
 struct scommandlist {
     char *name;
@@ -134,6 +137,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
      * {"ExecCHESS",    x_excechess},
      * {"WWW",          t_www},        
      */
+    {"RunMBEM",exec_mbem},
     {"MailProc", MailProc},
     {"OffLine", suicide},
     {"ReadNewMail", m_new},
@@ -257,6 +261,40 @@ struct _menupos {
 
 extern struct smenuitem *menuitem;
 static struct _menupos *menupos = NULL;
+
+int exec_mbem(char *s)
+{
+    void *hdll;   
+    int (*func)();   
+    char *c;   
+    char buf[1024];   
+    
+    strcpy(buf,s);   
+    s=strstr(buf,"@mod:");   
+    if(s)   
+    {      
+        c=strstr(s+5,"#");      
+        if(c)      
+        { 
+            *c=0;        
+            c++; 
+        }      
+        hdll=dlopen(s+5,RTLD_LAZY);      
+        if(hdll)      
+        {         
+            if(func=dlsym(hdll,c ? c : "mod_main"))             
+            func();         
+            dlclose(hdll);      
+        }      
+        else 
+        {      
+            clear();      
+            prints("，模块 [%s] 载入失败!!\n\n",s+5);      
+            prints("失败原因:%s",dlerror());      
+            pressanykey();
+        }   
+    }
+}
 
 static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
 {
