@@ -1303,6 +1303,21 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
                             }
                             break;
             */
+          case Ctrl('Y'):
+             if( me.now < me.num ) {          	
+                if(me.item[ me.now ]->host!=NULL)
+                {
+                    /* gopher(me.item[ me.now ]->host,me.item[ me.now ]->fname,
+                             me.item[ me.now ]->port,me.item[ me.now ]->title);*/
+                    me.page = 9999;
+                    break;
+                }else
+                    sprintf( fname, "%s/%s", path, me.item[ me.now ]->fname );
+                if( dashf( fname ) ) {
+                	    zsend_file(fname,me.item[ me.now ].title);
+                	}    
+             	}	
+          	break;
         }
         if( ch >= '0' && ch <= '9' ) {
             number = number * 10 + (ch - '0');
