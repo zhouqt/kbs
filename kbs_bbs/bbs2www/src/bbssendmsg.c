@@ -69,6 +69,11 @@ int main()
 
 		if(getuser(destid, &x) > 0)
 			strsncpy(destid, x->userid, sizeof(destid));*/
+		for(i=0; i<strlen(msg); i++)
+		{
+			if(msg[i]<=27 && msg[i]>=-1)
+				msg[i]=' ';
+		}
 		if((result = send_msg(getcurruserid(), get_utmpent_num(u_info), destid, destutmp, msg))==1) 
 			printf("已经帮你送出消息");
 		else if (result == -1 )
