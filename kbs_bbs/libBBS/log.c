@@ -1,34 +1,14 @@
 /*
-    Pirate Bulletin Board System
-    Copyright (C) 1990, Edward Luke, lush@Athena.EE.MsState.EDU
-    Eagles Bulletin Board System
-    Copyright (C) 1992, Raymond Rocker, rocker@rock.b11.ingr.com
-                        Guy Vega, gtvega@seabass.st.usm.edu
-                        Dominic Tynes, dbtynes@seabass.st.usm.edu
-
-    This program is free software; you can redistribute it and/or modify
-    it under the terms of the GNU General Public License as published by
-    the Free Software Foundation; either version 1, or (at your option)
-    any later version.
-
-    This program is distributed in the hope that it will be useful,
-    but WITHOUT ANY WARRANTY; without even the implied warranty of
-    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-    GNU General Public License for more details.
-
-    You should have received a copy of the GNU General Public License
-    along with this program; if not, write to the Free Software
-    Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
-    
-    
-    
     bbslog.c
     Copyright (C) 2001, wwj@j32.org
+                  2002, kcn@j32.org
 */
 
 
 #include "bbs.h"
 #include <stdarg.h>
+#include <sys/ipc.h>
+#include <sys/msg.h>
 
 
 /*
@@ -50,7 +30,9 @@ typedef struct _logconfig {
     int bufsize;                /* 缓存大小，如果是 0，不缓存 */
     int searchnext;             /* 如果这个匹配了，还查找后面的config吗？ */
 
-    /* 运行时参数 */
+    /*
+     * 运行时参数 
+     */
     int bufptr;                 /* 使用缓存位置 */
     char *buf;                  /* 缓存 */
     int fd;                     /* 文件句柄 */
@@ -204,7 +186,7 @@ int bbslog(const char *from, const char *fmt, ...)
 
 #define DATALEN 100
 
-int bmlog(char* id, char* boardname, int type, int value)
+int bmlog(char *id, char *boardname, int type, int value)
 {
 /*
 type - meaning
@@ -224,38 +206,90 @@ type - meaning
   13        整理精华
   14        相同主题
 */
-	int fd, data[DATALEN];
-    	struct flock ldata;
-	struct stat buf;
-	struct boardheader * btemp;
-	char direct[PATHLEN], BM[PATHLEN];
-	btemp = getbcache(boardname);
-	if (btemp==NULL) return 0;
-	strncpy(BM, btemp->BM, sizeof(BM)-1);
-	BM[sizeof(BM)-1] = '\0';
-	if(!chk_BM_instr(BM, id)) return 0;
-	sprintf(direct, "boards/%s/.bm.%s", boardname, id);
-       if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1) return 0;
-       ldata.l_type = F_RDLCK;
-       ldata.l_whence = 0;
-       ldata.l_len = 0;
-       ldata.l_start = 0;
-       if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-            close(fd);
-            return 0;
-       }
-       fstat(fd, &buf);
-       if(buf.st_size<DATALEN*sizeof(int)){
-       	memset(data, 0, sizeof(int)*DATALEN);
-       }
-       else
-       	read(fd, data, sizeof(int)*DATALEN);
-       if(type>=0&&type<DATALEN)
-       	data[type]+=value;
-       lseek(fd, 0, SEEK_SET);
-       write(fd, data, sizeof(int)*DATALEN);
-   	ldata.l_type = F_UNLCK;
-   	fcntl(fd, F_SETLKW, &ldata);
-   	close(fd);
+    int fd, data[DATALEN];
+    struct flock ldata;
+    struct stat buf;
+    struct boardheader *btemp;
+    char direct[PATHLEN], BM[PATHLEN];
+
+    btemp = getbcache(boardname);
+    if (btemp == NULL)
+        return 0;
+    strncpy(BM, btemp->BM, sizeof(BM) - 1);
+    BM[sizeof(BM) - 1] = '\0';
+    if (!chk_BM_instr(BM, id))
+        return 0;
+    sprintf(direct, "boards/%s/.bm.%s", boardname, id);
+    if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
+        return 0;
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        close(fd);
+        return 0;
+    }
+    fstat(fd, &buf);
+    if (buf.st_size < DATALEN * sizeof(int)) {
+        memset(data, 0, sizeof(int) * DATALEN);
+    } else
+        read(fd, data, sizeof(int) * DATALEN);
+    if (type >= 0 && type < DATALEN)
+        data[type] += value;
+    lseek(fd, 0, SEEK_SET);
+    write(fd, data, sizeof(int) * DATALEN);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
+    return 0;
 }
 
+int init_bbslog()
+{
+    int msqid;
+    struct msqid_ds buf;
+
+    msqid = msgget(sysconf_eval("BBSLOG_MSG", 0x888), IPC_CREAT | 0664);
+    if (msqid < 0)
+        return -1;
+    msgctl(msqid, IPC_STAT, &buf);
+    buf.msg_qbytes = 50 * 1024;
+    msgctl(msqid, IPC_SET, &buf);
+    return msqid;
+}
+
+void newbbslog(int type, const char *fmt, ...)
+{
+    static int disable = 0;
+    static int msqid = -1;
+    char buf[512];
+    struct bbs_msgbuf *msg = (struct bbs_msgbuf *) buf;
+
+    va_list v;
+
+    if (!fmt || !*fmt)
+        return;
+    if (disable)
+        return;
+    if (msqid < 0) {
+        msqid = init_bbslog();
+        if (msqid < 0) {
+            disable = 1;
+            return;
+        }
+    }
+    va_start(v, fmt);
+
+
+    msg->mtype = type;
+    msg->pid = getpid();
+    msg->msgtime = time(0);
+    if (currentuser)
+        strncpy(msg->userid, currentuser->userid, IDLEN);
+    else
+        strncpy(msg->userid, "null", IDLEN);
+
+    vsnprintf(msg->mtext, sizeof(buf) - ((char *) msg->mtext - (char *) msg), fmt, v);
+    msgsnd(msqid, msg, strlen(msg->mtext) + ((char *) msg->mtext - (char *) msg) - sizeof(msg->mtype), IPC_NOWAIT | MSG_NOERROR);
+}

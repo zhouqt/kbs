@@ -1,6 +1,7 @@
-bin_PROGRAMS = miscd newpop3d chatd webmsgd
+bin_PROGRAMS = miscd newpop3d chatd webmsgd bbslogd
 EXTRA_PROGRAMS = 
 miscd_SOURCES = miscd.c
+bbslogd_SOURCES = bbslogd.c
 newpop3d_SOURCES = newpop3.c
 chatd_SOURCES = station.c
 webmsgd_SOURCES = webmsgd.c

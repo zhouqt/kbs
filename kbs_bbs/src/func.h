@@ -50,6 +50,8 @@ extern "C" {
 */
     int bbslog(const char *from, const char *fmt, ...);
     int bmlog(char* id, char* boardname, int type, int value);
+    int init_bbslog();
+    void newbbslog(int type, const char *fmt, ...);
 
 /* defined in utmp.c */
     typedef int (*APPLY_UTMP_FUNC) (struct user_info *, void *, int pos);

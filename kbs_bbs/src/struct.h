@@ -129,4 +129,14 @@ struct smenuitem {
      * 导致执行的程序不一样的情况 
      */
 };
+
+struct bbs_msgbuf {
+	long int mtype;
+	time_t msgtime;
+	pid_t pid;
+	char userid[IDLEN];
+	char mtext[1];
+};
+
 #endif
+

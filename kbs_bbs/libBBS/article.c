@@ -118,7 +118,7 @@ postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 *
         utime(fileinfo->filename, 0);
         if (user != NULL)
             bmlog(user->userid, board, 8, 1);
-        bbslog("1bbs", "Del '%s' on '%s'", fileinfo->title, board);     /* bbslog */
+        bbslog("1user", "Del '%s' on '%s'", fileinfo->title, board);     /* bbslog */
         return 0;
     }
     return -1;
