@@ -93,9 +93,10 @@ int chkreceiver(struct userec* fromuser,struct userec *touser)
 {
     /* Bigman 2000.9.8 : 修正没有用户的话,返回0 */
     /* 修正PERM_SYSOP给自杀用户发信后的错误 */
-    if ((HAS_PERM(fromuser, PERM_SYSOP)) || (!strcmp(fromuser->userid, "Arbitrator")))
+    if (fromuser)
+        if ((HAS_PERM(fromuser, PERM_SYSOP)) || (!strcmp(fromuser->userid, "Arbitrator")))
         /* Leeward 99.07.28 , Bigman 2002.6.5: Arbitrator can send any mail to user */
-        return 0;
+            return 0;
 
     if (touser->userlevel & PERM_SUICIDE)
         return 1;
@@ -1636,7 +1637,7 @@ static int do_gsend(char *userid[], char *title, int num)
             prints("%s 没有收信的权力，不能收信，请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
-        } else if (chkreceiver(NULL, user)) { /*Haohamru.99.4.05 */
+        } else if (chkusermail(user)) { /*Haohamru.99.4.05 */
             prints("%s 信箱已满,无法收信,请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
@@ -1832,8 +1833,13 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
                 prints("%s 自杀中，不能收信\n", receiver);
                 return -5;
             }
+	    if (!(lookupuser->userlevel & PERM_READMAIL)) {
+                prints("%s 没有收信的权力，不能收信\n", receiver);
+                return -5;
+            }
 
-            if (!chkreceiver(NULL, lookupuser)) {   /*Haohamru.99.4.05 */
+
+            if (!chkusermail(lookupuser)) {   /*Haohamru.99.4.05 */
                 prints("%s 信箱已满,无法收信\n", receiver);
                 return -4;
             }
