@@ -21,23 +21,15 @@ typedef struct __HTElement
 	Node * head;
 } HTElement;
 
-static HTElement htable[10000];
+#define HASH_SIZE 65536
+
+static HTElement htable[HASH_SIZE];
 
 int hash_function(char * filename)
 {
 	int val;
-	int len;
 
-	len = strlen(filename);
-	val = (filename[len-10] - '0') * 1000;
-	val += (filename[len-9] - '0') * 100;
-	val += (filename[len-8] - '0') * 10;
-	val += filename[len-7] - '0';
-	val += (filename[len-6] - '0') * 1000;
-	val += (filename[len-5] - '0') * 100;
-	val += (filename[len-4] - '0') * 10;
-	val += filename[len-3] - '0';
-	val %= 10000;
+	val = atoi(filename+2) % HASH_SIZE;
 
 	return val;
 }
@@ -102,7 +94,7 @@ void destroy_list()
 	Node * ptr;
 	Node * oldptr;
 
-	for (i = 0; i < 10000; i++)
+	for (i = 0; i < HASH_SIZE; i++)
 	{
 		if (htable[i].head == NULL)
 			continue;
@@ -134,20 +126,10 @@ Node * search(char * filename)
 	return NULL;
 }
 
-static int convert(const char *boardname)
+static int build_dir(const char *boardname)
 {
 	char buff[256];
-	int fd;
-	struct fileheader fh;
-	int rc;
-	int i, j, k, rn;
-	Node * ptr;
-#ifdef HAPPY_BBS
-	char num_str[20];
-#endif // HAPPY_BBS
-
-	///////////// Initialization ///////////// 
-
+	
 	snprintf(buff, sizeof(buff), "%s/boards/%s", BBS_HOME, boardname);
 	chdir(buff);
     for (i = 0; i < 52; i++)
@@ -155,7 +137,21 @@ static int convert(const char *boardname)
         snprintf(buff, sizeof(buff), "%c", alphabet[i]);
         mkdir(buff, 0755);
     }
+}
 
+static int convert_normal(const char *boardname)
+{
+	char buff[256];
+	int fd;
+	struct fileheader *fh;
+	struct fileheader *fhptr;
+	struct stat fs;
+	int records;
+	int i, j, k, rn;
+	Node * ptr;
+
+	snprintf(buff, sizeof(buff), "%s/boards/%s", BBS_HOME, boardname);
+	chdir(buff);
 	///////////// Convert .DIR file ///////////// 
 
 	if ((fd = open(".DIR", O_RDWR)) == -1)
@@ -167,12 +163,24 @@ static int convert(const char *boardname)
 	printf("Converting .DIR file ...");
 	fflush(stdout);
 
+	fstat(fd, &fs);
+	records = fs.st_size / sizeof(struct fileheader);
+	fh = mmap(NULL, fs.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (fh == MAP_FAILED)
+	{
+		perror("mmap");
+		close(fd);
+		return -1;
+	}
 	k = 0;
 	// read every record in sequence
-	while ((rc = read(fd, &fh, sizeof(fh))) == sizeof(fh))
+	for (i = 0; i < records; i++)
 	{
+		fhptr = fh + i;
         rn = 0 + (int) (52.0 * rand() / (RAND_MAX + 1.0));
-		if (fh.accessed[0] & FILE_DIGEST)
+		if (!(fhptr->filename[0] != '\0' && fhptr->filename[1] == '.'))
+			continue;
+		if (fhptr->accessed[0] & FILE_DIGEST)
 		{
 			ptr = (Node *)malloc(sizeof(Node));
 			if (ptr == NULL)
@@ -180,31 +188,27 @@ static int convert(const char *boardname)
 				perror("malloc");
 				destroy_list();
 				printf(" Failed.\n");
+				close(fd);
+				munmap(fh, fs.st_size);
 				return -2;
 			}
-			strncpy(ptr->filename, fh.filename, sizeof(ptr->filename));
+			strncpy(ptr->filename, fhptr->filename, sizeof(ptr->filename));
 			ptr->directory = alphabet[rn];
 			ptr->next = NULL;
 			insert_node(ptr);
 		}
 
-#ifdef HAPPY_BBS
-		strncpy(num_str, fh.filename + 2, sizeof(num_str));
-		num_str[strlen(num_str) - 2] = '\0';
-		fh.posttime = atoi(num_str);
-#endif // HAPPY_BBS
-        snprintf(buff, sizeof(buff), "%c/%s", alphabet[rn], fh.filename);
-        rename(fh.filename, buff);
-        strncpy(fh.filename, buff, sizeof(fh.filename));
-        lseek(fd, 0-rc, SEEK_CUR);
-        write(fd, &fh, sizeof(fh));
+		fhptr->posttime = atoi(fhptr->filename + 2);
+        snprintf(buff, sizeof(buff), "%c/%s", alphabet[rn], fhptr->filename);
+        rename(fhptr->filename, buff);
+        strncpy(fhptr->filename, buff, sizeof(fhptr->filename));
 		k++;
 	}
-	printf(" Done.\n");
 	close(fd);
-
+	munmap(fh, fs.st_size);
+	printf(" Done.\n");
+	
 	///////////// Convert .DIGEST file ///////////// 
-
 	if ((fd = open(".DIGEST", O_RDWR)) == -1)
 	{
 		printf("No .DIGEST file.\n");
@@ -214,34 +218,40 @@ static int convert(const char *boardname)
 	printf("Converting .DIGEST file ...");
 	fflush(stdout);
 
-	while ((rc = read(fd, &fh, sizeof(fh))) == sizeof(fh))
+	fstat(fd, &fs);
+	records = fs.st_size / sizeof(struct fileheader);
+	fh = mmap(NULL, fs.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (fh == MAP_FAILED)
 	{
-		if ((ptr = search(fh.filename)) == NULL)
+		perror("mmap");
+		close(fd);
+		return -1;
+	}
+	for (i = 0; i < records; i++)
+	{
+		fhptr = fh + i;
+		if (!(fhptr->filename[0] != '\0' && fhptr->filename[1] == '.'))
+			continue;
+		if ((ptr = search(fhptr->filename)) == NULL)
 		{
         	rn = 0 + (int) (52.0 * rand() / (RAND_MAX + 1.0));
-        	snprintf(buff, sizeof(buff), "%c/%s", alphabet[rn], fh.filename);
+        	snprintf(buff, sizeof(buff), "%c/%s", alphabet[rn], fhptr->filename);
 		}
 		else
-			snprintf(buff, sizeof(buff), "%c/%s", ptr->directory, fh.filename);
+			snprintf(buff, sizeof(buff), "%c/%s", ptr->directory, fhptr->filename);
 
-#ifdef HAPPY_BBS
-		strncpy(num_str, fh.filename + 2, sizeof(num_str));
-		num_str[strlen(num_str) - 2] = '\0';
-		fh.posttime = atoi(num_str);
-#endif // HAPPY_BBS
-        rename(fh.filename, buff);
-        strncpy(fh.filename, buff, sizeof(fh.filename));
-        lseek(fd, 0-rc, SEEK_CUR);
-        write(fd, &fh, sizeof(fh));
+		fhptr->posttime = atoi(fhptr->filename + 2);
+        rename(fhptr->filename, buff);
+        strncpy(fhptr->filename, buff, sizeof(fhptr->filename));
 	}
-
-	printf(" Done.\n");
 	close(fd);
+	munmap(fh, fs.st_size);
+	printf(" Done.\n");
 
 	///////////// Collision Summary ///////////// 
 
 	j = 0;
-	for (i = 0; i < 10000; i++)
+	for (i = 0; i < HASH_SIZE; i++)
 	{
 		if (htable[i].count > 1)
 			j++;
@@ -254,17 +264,122 @@ static int convert(const char *boardname)
 	return 0;
 }
 
+static int convert_delete(const char *boardname)
+{
+	char buff[256];
+	int fd;
+	struct fileheader *fh;
+	struct fileheader *fhptr;
+	struct stat fs;
+	int records;
+	int i, j, k, rn;
+	Node * ptr;
+
+	snprintf(buff, sizeof(buff), "%s/boards/%s", BBS_HOME, boardname);
+	chdir(buff);
+	///////////// Convert .DELETED file ///////////// 
+
+	if ((fd = open(".DELETED", O_RDWR)) == -1)
+	{
+		perror("open .DELETED");
+		return -1;
+	}
+
+	printf("Converting .DELETED file ...");
+	fflush(stdout);
+
+	fstat(fd, &fs);
+	records = fs.st_size / sizeof(struct fileheader);
+	fh = mmap(NULL, fs.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (fh == MAP_FAILED)
+	{
+		perror("mmap");
+		close(fd);
+		return -1;
+	}
+	k = 0;
+	// read every record in sequence
+	for (i = 0; i < records; i++)
+	{
+		fhptr = fh + i;
+        rn = 0 + (int) (52.0 * rand() / (RAND_MAX + 1.0));
+		if (fhptr->filename[0] != '\0' && fhptr->filename[1] == '.')
+		{
+			fhptr->posttime = atoi(fhptr->filename + 2);
+			snprintf(buff, sizeof(buff), "%c/%s", alphabet[rn], fhptr->filename);
+			rename(fhptr->filename, buff);
+			strncpy(fhptr->filename, buff, sizeof(fhptr->filename));
+		}
+	}
+	close(fd);
+	munmap(fh, fs.st_size);
+	printf(" Done.\n");
+
+	///////////// Convert .DIGEST file ///////////// 
+	if ((fd = open(".JUNK", O_RDWR)) == -1)
+	{
+		printf("No .JUNK file.\n");
+		return 1;
+	}
+
+	printf("Converting .JUNK file ...");
+	fflush(stdout);
+
+	fstat(fd, &fs);
+	records = fs.st_size / sizeof(struct fileheader);
+	fh = mmap(NULL, fs.st_size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+	if (fh == MAP_FAILED)
+	{
+		perror("mmap");
+		close(fd);
+		return -1;
+	}
+	for (i = 0; i < records; i++)
+	{
+        rn = 0 + (int) (52.0 * rand() / (RAND_MAX + 1.0));
+		if (fhptr->filename[0] != '\0' && fhptr->filename[1] == '.')
+		{
+			fhptr->posttime = atoi(fhptr->filename + 2);
+			snprintf(buff, sizeof(buff), "%c/%s", alphabet[rn], fhptr->filename);
+			rename(fhptr->filename, buff);
+			strncpy(fhptr->filename, buff, sizeof(fhptr->filename));
+		}
+	}
+	close(fd);
+	munmap(fh, fs.st_size);
+	printf(" Done.\n");
+
+	return 0;
+}
+
+static int remove_files(const char *boardname)
+{
+	char buff[256];
+	
+	snprintf(buff, sizeof(buff), "%s/boards/%s", BBS_HOME, boardname);
+	chdir(buff);
+	unlink(".MARK");
+	unlink(".ORIGIN");
+	unlink(".THREAD");
+
+	return 0;
+}
+
 static int cnv_board_dir_callback(struct boardheader *bh)
 {
+	printf("=======================================\n");
+	printf("Boardname: %s\n", bh->filename);
+	build_dir(bh->filename);
+	convert_normal(bh->filename);
+	convert_delete(bh->filename);
+	remove_files(bh->filename);
 	return 0;
 }
 
 int main(int argc, char ** argv)
 {
-	struct boardheader board;
-	int fd;
-	int rc;
 	int all = 0;
+	struct boardheader *bp;
 
 	if (argc == 1)
 		all = 1;
@@ -273,25 +388,15 @@ int main(int argc, char ** argv)
 		printf("Usage: %s [boardid]\n", argv[0]);
 		return -1;
 	}
-	if ((fd = open(BOARDSFILE, O_RDONLY)) < 0)
+	if (all == 1)
 	{
-		perror("open");
-		exit(-1);
+		apply_boards(cnv_board_dir_callback);
 	}
-	while ((rc = read(fd, &board, sizeof(board))) == sizeof(board))
+	else
 	{
-		if (all == 1)
-		{
-			printf("Boardname: %s\n", board.filename);
-			convert(board.filename);
-		}
-		else if (!strcasecmp(board.filename, argv[1]))
-		{
-			convert(board.filename);
-			break;
-		}
+		if ((bp = getbcache(argv[1])) != NULL)
+			convert(bp->filename);
 	}
-	close(fd);
 
 	return 0;
 }
