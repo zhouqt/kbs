@@ -401,6 +401,13 @@ int DelFavBoard(int i)
 	return 0;
 }
 
+int FavGetFather(int select)
+{
+	if(select < 0 || select >= favbrd_list_t)
+		return 0;
+	return favbrd_list[select].father;
+}
+
 /* É¾³ý favbrd_list[father].bid[i] */
 int DelFavBoardDir(int i,int fath)
 {

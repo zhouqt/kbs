@@ -13,11 +13,6 @@
                 else
                         $select = 0;
                 settype($select, "integer");
-                if (isset($_GET["up"]))
-                        $list_father=$_GET["up"];
-                else
-                        $list_father=0;
-                settype($list_father,"integer");
 
                 if (!strcmp($currentuser["userid"],"guest"))
                     html_error_quit("请先注册帐号");
@@ -49,6 +44,7 @@
                         $sssss=bbs_add_favboard($add_bname);
                 }
                 $boards = bbs_fav_boards($select, 1);
+				$list_father = bbs_get_father($select);
                 if ($boards == FALSE)
                         html_error_quit("读取版列表失败");
 ?>
@@ -116,7 +112,7 @@
                         if ($brd_flag[$i] ==-1 )
                         {
 ?>
-        <td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20"  alt="＋" title="版面组"></td><td class="kt3 c3"><a class="kts1" href="bbsfav.php?select=<?php echo $brd_bid[$i];?>&up=<?php echo $select; ?>">
+        <td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20"  alt="＋" title="版面组"></td><td class="kt3 c3"><a class="kts1" href="bbsfav.php?select=<?php echo $brd_bid[$i];?>">
         <?php echo $brd_desc[$i];?>
         </a></td>
         <td class="kt3 c2">[目录]</td>

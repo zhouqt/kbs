@@ -132,6 +132,7 @@ static PHP_FUNCTION(bbs_is_favboard);
 static PHP_FUNCTION(bbs_add_favboarddir);
 static PHP_FUNCTION(bbs_add_favboard);
 static PHP_FUNCTION(bbs_del_favboard);
+static PHP_FUNCTION(bbs_get_father);
 static PHP_FUNCTION(bbs_del_favboarddir);
 
 
@@ -356,6 +357,7 @@ static function_entry smth_bbs_functions[] = {
 	PHP_FE(bbs_add_favboarddir,NULL)
 	PHP_FE(bbs_add_favboard,NULL)
 	PHP_FE(bbs_del_favboard,NULL)
+	PHP_FE(bbs_get_father,NULL)
 	PHP_FE(bbs_del_favboarddir,NULL)
        PHP_FE(bbs_sysconf_str,NULL)
 		PHP_FE(bbs_get_tmpls,NULL)
@@ -1968,7 +1970,7 @@ char *brd_col_names[BOARD_COLUMNS] = {
 };
 
 /* added by caltary */
-extern struct favbrd_struct *favbrd_list;
+extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
 extern int *favbrd_list_count;
 #define favbrd_list_t (*favbrd_list_count)
 extern int favnow;
@@ -7390,6 +7392,17 @@ static PHP_FUNCTION(bbs_del_favboarddir)
 
 }
 
+static PHP_FUNCTION(bbs_get_father)
+{
+        int ac = ZEND_NUM_ARGS();
+		int select;
+        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+
+		RETURN_LONG( FavGetFather(select) );
+}
+
 static PHP_FUNCTION(bbs_del_favboard)
 {
         int ac = ZEND_NUM_ARGS();
@@ -7450,7 +7463,7 @@ static PHP_FUNCTION(bbs_add_favboard)
 static PHP_FUNCTION(bbs_fav_boards)
 {
     int select;
-    int yank;
+    int mode;
     int rows = 0;
     struct newpostdata newpost_buffer[FAVBOARDNUM];
     struct newpostdata *ptr;
@@ -7459,11 +7472,11 @@ static PHP_FUNCTION(bbs_fav_boards)
     int i;
     int j;
     int ac = ZEND_NUM_ARGS();
-    int brdnum, yank_flag;
+    int brdnum;
     /*
      * getting arguments 
      */
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &select, &yank) == FAILURE) {
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &select, &mode) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
@@ -7479,14 +7492,21 @@ static PHP_FUNCTION(bbs_fav_boards)
      * NOTE: currentuser SHOULD had been set in funcs.php, 
      * * but we still check it. 
      */
-    if (currentuser == NULL) {
+
+	if (mode==2){
+        load_favboard(0,2);
+        if(select<favbrd_list_t)
+            SetFav(select);
+	}
+	else if(mode==3){
+        load_favboard(0,3);
+        if(select<favbrd_list_t)
+            SetFav(select);
+	}
+
+	if (currentuser == NULL) {
         RETURN_FALSE;
     }
-    yank_flag = yank;
-    if (strcmp(currentuser->userid, "guest") == 0)
-        yank_flag = 1;          /* see all boards including zapped boards. */
-    if (yank_flag != 0)
-        yank_flag = 1;
     brdnum = 0;
     
     if ((brdnum = fav_loaddata(newpost_buffer, select, 1, FAVBOARDNUM, 1, NULL)) <= -1) {

@@ -288,6 +288,7 @@ void unlock_sem_check(int lockid);
     int ExistFavBoard(int idx);
     void load_favboard(int dohelp,int mode);
     void save_favboard(int mode);
+    int FavGetFather(int select);
     void save_userfile(char *fname, int blknum, char *buf);
     int IsFavBoard(int idx);
     int MoveFavBoard(int p, int q);
