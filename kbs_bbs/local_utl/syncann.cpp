@@ -152,7 +152,7 @@ int CSendApp::UpdateFile(char* filepath,time_t modtime)
 	pos=0;
 	
 	sprintf(buf,"%s/%s",SYNC_ROOT,filepath);
-	fout = open(buf,O_CREAT|O_TRUNC|O_WRONLY);
+	fout = open(buf,O_CREAT|O_TRUNC|O_WRONLY,0640);
 	if (fout==-1) {
 		printf("Can't Open File %s:%s",buf,strerror(errno));
 		return -1;
@@ -172,7 +172,7 @@ int CSendApp::UpdateFile(char* filepath,time_t modtime)
 	close(fout);
 	sprintf(buf,"%s/%s",SYNC_ROOT,filepath);
 	utime(buf,&utm);
-	printf("Update File %s\n",filepath);
+//	printf("Update File %s\n",filepath);
 	return 0;
 }
 
@@ -331,7 +331,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 	FILE* indexfile,*logfile;
 	char filepath[1024],logfilepath[1024];
 
-	printf("Do Directory:%s\n",dir);
+//	printf("Do Directory:%s\n",dir);
 	
 	sprintf(filepath,"%s/.Names",dir);
 	sprintf(logfilepath,"%s/%s/.Names",SYNC_ROOT,dir);
@@ -352,7 +352,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 	count = LoadNames(indexfile,dir,pEntry);
 	if (logfile) {
 		logcount = LoadNames(logfile,dir,pLogEntry);
-		printf("load save log:\n");
+/*		printf("load save log:\n");
 		for (i=0;i<logcount;i++)
 			printf("%d:path:%s title:%s owner:%s issysop:%d isbm:%d udpatetime:%d\n",
 			i,
@@ -362,9 +362,10 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 			pLogEntry[i].issysop,
 			pLogEntry[i].isbm,
 			pLogEntry[i].updatetime);
+*/
 	}
 	else {
-		printf("Not log file\n");
+//		printf("Not log file\n");
 		logcount = 0;
 	};
 	
@@ -382,7 +383,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 	for (i=0;i<count;i++) {
 		int found;
 		found = 0;
-		printf("%d:path:%s title:%s owner:%s issysop:%d isbm:%d udpatetime:%d\n",
+/*		printf("%d:path:%s title:%s owner:%s issysop:%d isbm:%d udpatetime:%d\n",
 			i,
 			pEntry[i].filepath,
 			pEntry[i].title,
@@ -390,6 +391,7 @@ int CSendApp::DoDirectory(char* dir,int ignoreold)
 			pEntry[i].issysop,
 			pEntry[i].isbm,
 			pEntry[i].updatetime);
+*/
 		for (j=0;j<logcount;j++)
 			if (!strcmp(pEntry[i].filepath,pLogEntry[j].filepath)) {
 				found = 1;
