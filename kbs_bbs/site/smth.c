@@ -1,5 +1,9 @@
 #include "bbs.h"
 
+#ifndef REGISTER_TSINGHUA_WAIT_TIME
+#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
+#endif
+ 
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 const char seccode[SECNUM][5] = {
