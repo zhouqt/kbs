@@ -460,7 +460,7 @@
 			</td>
 			<td>
 			<a href='javascript:changemn("pc");'>
-			<img src="/images/t15.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>" align="absmiddle"> ˮľBlog
+			<img src="/images/t15.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>Blog" align="absmiddle"> ˮľBlog
 			</a>
 			</td>
 		</tr>
