@@ -71,6 +71,7 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_ann_get_board, NULL)
         ZEND_FE(bbs_getboards, NULL)
         ZEND_FE(bbs_getarticles, NULL)
+        ZEND_FE(bbs_get_records_from_id, NULL)
         ZEND_FE(bbs_countarticles, NULL)
         ZEND_FE(bbs_is_bm, NULL)
         ZEND_FE(bbs_getannpath, NULL)

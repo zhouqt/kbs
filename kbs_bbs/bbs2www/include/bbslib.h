@@ -332,6 +332,6 @@ int can_reply_post(char *board, char *filename);
 int get_seccode_index(char prefix);
 char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
-
+void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output);
 
 #endif                          /* BBSLIB_H */
