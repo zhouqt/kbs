@@ -38,6 +38,9 @@ $err = '';
 if (!bbs_get_hot_threads($board,BOARD_HOT_THREADS,$threads,$err))
     exit ();
 
+if (sizeof($threads)==0)
+    exit ();
+    
 Header('Content-type: application/octet-stream');
 Header('Content-Disposition: inline;filename=bbshot.js');
 
