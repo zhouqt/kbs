@@ -366,7 +366,7 @@ void system_abort()
 
 #define MAXLIST 1000
 #define CON_THRESHOLD 20.0/60/60
-#define CON_THRESHOLD2 10.0
+#define CON_THRESHOLD2 30.0
 
 int check_ID_lists(char * id)
 {
@@ -418,7 +418,8 @@ int check_ID_lists(char * id)
                     fprintf(fp, "0 %ld %s %d\n", (unsigned int)now, id, ids[i].t);
                     fclose(fp);
                 }
-                ret = 1;
+                if((double)(now-ids[i].last)<=5.0)
+                    ret = 1;
             }
             found=1;
             ids[i].last = now;
@@ -430,7 +431,8 @@ int check_ID_lists(char * id)
                     fprintf(fp, "1 %ld %s %d\n", (unsigned int)now, id, ids[i].t);
                     fclose(fp);
                 }
-                ret = 1;
+                if(ids[i].t/(double)(ids[i].last-ids[i].first)>=100.0/60/60)
+                    ret = 1;
             }
             break;
         }

@@ -448,7 +448,7 @@ int check_IP_lists(unsigned int IP2)
     for(i=0;i<MAXLIST;i++) {
         if(proxys[i].ip[0]==0) break;
         if(ip[0]==proxys[i].ip[0]&&ip[1]==proxys[i].ip[1]&&ip[2]==proxys[i].ip[2]&&ip[3]==proxys[i].ip[3])
-            return 1;
+            return 0;
     }
     for(i=0;i<MAXLIST;i++) {
         if((double)(now-ips[i].last)>60*60) {
