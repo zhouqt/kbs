@@ -57,4 +57,6 @@ extern int daemon ARG((int));
 #endif
 extern ClientType *Channel;
 
+daemoncmd_t *searchcmd(char *cmd);
+
 #endif

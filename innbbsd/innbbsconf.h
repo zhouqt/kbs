@@ -9,6 +9,8 @@
 #include <sys/un.h>
 #include <sys/param.h>
 #include <sys/wait.h>
+#include <arpa/inet.h>
+
 
 #include <unistd.h>
 #include <signal.h>

@@ -77,4 +77,6 @@ typedef unsigned char BOOL;
 # define ICD_SYNC_COUNT 1
 #endif
 
+char *HISfilesfor(datum *key, datum *output);
+
 #endif

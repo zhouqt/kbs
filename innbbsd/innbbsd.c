@@ -52,6 +52,8 @@ static int CMDgetrusage ARG((ClientType *));
 static int CMDmallocmap ARG((ClientType *));
 #endif
 
+char *DBfetch(char *key);
+
 static daemoncmd_t cmds[] =
 /*  cmd-name, cmd-usage, min-argc, max-argc, errorcode, normalcode, cmd-func */
 { {"help", "help [cmd]", 1, 2, 99, 100, CMDhelp},

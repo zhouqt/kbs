@@ -150,9 +150,6 @@ extern FILE *popen();
  * so we put it here just in case. */
 extern int strncasecmp();
 
-/* =()<extern @<ABORTVAL>@	abort();>()= */
-extern int abort();
-
 /* =()<extern @<ALARMVAL>@	alarm();>()= */
 extern int alarm();
 
@@ -170,6 +167,3 @@ extern int qsort();
 
 /* =()<extern @<SLEEPVAL>@	sleep();>()= */
 extern int sleep();
-
-/* =()<extern @<_EXITVAL>@	_exit();>()= */
-extern int _exit();

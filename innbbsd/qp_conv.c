@@ -129,7 +129,7 @@ register unsigned char *dst, *src;
     char *dsttmp;
     char *srctmp;
     char srcbuf[256];
-    int pos;
+    long pos;
 
     if (ignorestr(src)) {
         strcpy(dst, src);
@@ -138,10 +138,10 @@ register unsigned char *dst, *src;
     memcpy(srcbuf, src, 256);
     dsttmp = dst;
     srctmp = src;
-    pos = (int) src - (int) srctmp;
+    pos = (long) src - (long) srctmp;
 
     for (is_done = is_qp = is_base64 = 0; c1 = *src; src++) {
-        pos = (int) src - (int) srctmp;
+        pos = (long) src - (long) srctmp;
         if (pos > 254) {
             memcpy(dsttmp, srcbuf, 256);
             return;
@@ -154,14 +154,14 @@ register unsigned char *dst, *src;
             is_done = is_qp = is_base64 = 0;
             continue;
         } else if (is_qp && c1 == '=') {
-            pos = (int) src - (int) srctmp;
+            pos = (long) src - (long) srctmp;
             if (pos > 254) {
                 memcpy(dsttmp, srcbuf, 256);
                 return;
             }
             c1 = *++src;
 
-            pos = (int) src - (int) srctmp;
+            pos = (long) src - (long) srctmp;
             if (pos > 254) {
                 memcpy(dsttmp, srcbuf, 256);
                 return;
@@ -170,7 +170,7 @@ register unsigned char *dst, *src;
             *dst++ = (qp_code(c1) << 4) | qp_code(c2);
         } else if (is_base64 && !is_done) {
             while (isspace(c1)) {
-                pos = (int) src - (int) srctmp;
+                pos = (long) src - (long) srctmp;
                 if (pos > 254) {
                     memcpy(dsttmp, srcbuf, 256);
                     return;
@@ -180,7 +180,7 @@ register unsigned char *dst, *src;
             if (!c1)
                 break;
             do {
-                pos = (int) src - (int) srctmp;
+                pos = (long) src - (long) srctmp;
                 if (pos > 254) {
                     memcpy(dsttmp, srcbuf, 256);
                     return;
@@ -190,7 +190,7 @@ register unsigned char *dst, *src;
             if (!c2)
                 break;
             do {
-                pos = (int) src - (int) srctmp;
+                pos = (long) src - (long) srctmp;
                 if (pos > 254) {
                     memcpy(dsttmp, srcbuf, 256);
                     return;
@@ -200,7 +200,7 @@ register unsigned char *dst, *src;
             if (!c3)
                 break;
             do {
-                pos = (int) src - (int) srctmp;
+                pos = (long) src - (long) srctmp;
                 if (pos > 254) {
                     memcpy(dsttmp, srcbuf, 256);
                     return;
@@ -234,7 +234,7 @@ register unsigned char *dst, *src;
             c2 = c3 = 0;
 
             for (;;) {
-                pos = (int) src - (int) srctmp;
+                pos = (long) src - (long) srctmp;
                 if (pos > 254) {
                     memcpy(dsttmp, srcbuf, 256);
                     return;

@@ -102,7 +102,7 @@ char *filename;
     return 1;
 }
 
-int isdirv(char fmt,...)
+int isdirv(char *fmt,...)
 {
     va_list ap;
     struct stat st;
@@ -130,7 +130,7 @@ char *filename;
     return st.st_mtime;
 }
 
-unsigned long mtimev(char fmt,...)
+unsigned long mtimev(char *fmt,...)
 {
     va_list ap;
     struct stat st;

@@ -124,8 +124,6 @@ static int FD, FD_SIZE;
 static char *FD_BUF = NULL, *FD_BUF_FILTER = NULL;
 static char *FD_END;
 
-char *fileglue();
-
 bbslink_un_lock(file)
 char *file;
 {

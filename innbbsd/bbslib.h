@@ -68,9 +68,31 @@ int initial_bbs ARG((char *));
 char *restrdup ARG((char *, char *));
 nodelist_t *search_nodelist ARG((char *, char *));
 newsfeeds_t *search_group ARG((char *));
-int innbbsdlog(char* fmt,...);
 void *mymalloc ARG((int));
 void *myrealloc ARG((void *, int));
+
+char **BNGsplit(char *line);
+
+char *fileglue(char* fmt,...);
+int isdirv(char *fmt,...);
+unsigned long mtimev(char *fmt,...);
+
+char *DBfetch(char *key);
+
+nodelist_t *search_nodelist_bynode(char *node);
+FuncPtr search_filtercmd(char *cmd);
+newsfeeds_t *search_board(char *board);
+filter_t *search_filter(char *group);
+char *filterdata(newsfeeds_t *arp, int direction, char *indata, char **filterdata);
+char *parselocaltime(char *date_buf);
+
+char *my_rfc931_name(int herefd, struct sockaddr_in *there);
+
+#ifdef PalmBBS
+void xbbslog(char* fmt,...);
+#else
+void innbbsdlog(char* fmt,...);
+#endif
 
 #ifdef PalmBBS
 #define innbbsdlog xbbslog
