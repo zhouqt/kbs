@@ -2111,7 +2111,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     else
         local_article = 1;
     if (!strcmp(post_file.title, buf) && q_file[0] != '\0')
-        if (q_file[119] == 'L')
+        if (q_file[119] == 'L') /* FIXME */
             local_article = 1;
 
     modify_user_mode(POSTING);

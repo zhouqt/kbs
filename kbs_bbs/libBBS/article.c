@@ -400,8 +400,10 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
     /*
      * 增加转信标记 czz 020819 
      */
-    if (mode != 2)
-        fprintf(fp, "发信站: %s (%24.24s), 站内信件\n", BBS_FULL_NAME, ctime(&now));
+	if (in_mail)
+		fprintf(fp, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
+	else if (mode != 2)
+        fprintf(fp, "发信站: %s (%24.24s), 站内\n", BBS_FULL_NAME, ctime(&now));
     else
         fprintf(fp, "发信站: %s (%24.24s), 转信\n", BBS_FULL_NAME, ctime(&now));
     if (in_mail)
