@@ -188,9 +188,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         for(i=was_col;i<new_col;i++)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
-            for (i = was_col; i < new_col; i++)
-                ochar(bp[q].data[i]);
-//            output(bp[q].data+was_col, new_col-was_col);
+            output(bp[q].data+was_col, new_col-was_col);
             return;
         }
     }
@@ -214,7 +212,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if ((new_col == was_col || new_col==0) && new_ln>=was_ln+1) {
         char ss[20];
-        if(tc_color%16!=7)
+        if(tc_color&0x0f!=7)
             tc_color = tc_color&0xf0+8;
         if(new_ln==was_ln+1)
             sprintf(ss, "\x1b[B");
@@ -227,7 +225,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if ((new_col == was_col || new_col==0) && new_ln<=was_ln-1) {
         char ss[20];
-        if(tc_color%16!=7)
+        if(tc_color&0x0f!=7)
             tc_color = tc_color&0xf0+8;
         if(new_ln==was_ln-1)
             sprintf(ss, "\x1b[A");
@@ -244,11 +242,11 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
             ochar('\n');
-            if(tc_color%16!=7)
+            if(tc_color&0x0f!=7)
                 tc_color = tc_color&0xf0+8;
             if (was_col != 0)
                 ochar('\r');
-            ochar(bp[q].data, new_col);
+            output(bp[q].data, new_col);
             return;
         }
     }
@@ -342,10 +340,10 @@ void refresh()
                 tc_mode|=SCREEN_BACK;
                 stack[stackt++]=7;
             }
-            if(tc_color%16!=bp[j].color[k]%16&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
+            if(tc_color&0x0f!=bp[j].color[k]&0x0f&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
                 tc_color=tc_color&0xf0+bp[j].color[k]&0x0f;
                 if(DEFINE(currentuser, DEF_COLOR))
-                    stack[stackt++]=30+bp[j].color[k]%16;
+                    stack[stackt++]=30+bp[j].color[k]&0x0f;
             }
             if(tc_color>>4!=bp[j].color[k]>>4) {
                 tc_color=bp[j].color[k]&0xf0+tc_color&0x0f;
