@@ -324,11 +324,11 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 	                if ( !(num=search_ulist( &uin, cmpuids2, getcurrentuser_num()) ))
 	                        continue;  /* user isn't logged in */
 			if (uin.pid==1) {
-				clear_utmp(num);
+				clear_utmp(num,getcurrentuser_num());
 				continue;
 			}
 	                if (!uin.active || (kill(uin.pid,0) == -1)) {
-				clear_utmp(num);
+				clear_utmp(num,getcurrentuser_num());
 	                        continue;  /* stale entry in utmp file */
 			}
 	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
@@ -337,7 +337,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 			if(lres)
 	/*---	---*/
 	                  kill(uin.pid,9);
-			clear_utmp(num);
+			clear_utmp(num,getcurrentuser_num());
 		}
 
 		if(!HAS_PERM(getcurrentuser(), PERM_BASIC))
