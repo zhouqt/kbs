@@ -57,7 +57,7 @@ int check_systempasswd()
         }
         if (!passbuf[0]) {
             move(2, 0);
-            prints(MSG_ERR_USERID);
+            prints("系统密码输入错误...");
             securityreport("系统密码输入错误...", NULL, NULL);
             pressanykey();
             return false;
@@ -1555,12 +1555,12 @@ int x_deny()
     };
 
     const struct _select_item level_conf[] = {
-        {3, 6, -1, SIT_SELECT, (void *) "1)登陆"},
-        {3, 7, -1, SIT_SELECT, (void *) "2)发文"},
-        {3, 8, -1, SIT_SELECT, (void *) "3)信件"},
-        {3, 9, -1, SIT_SELECT, (void *) "4)聊天室"},
-        {3, 10, -1, SIT_SELECT, (void *) "5)Message & talk"},
-        {3, 11, -1, SIT_SELECT, (void *) "6)重新输入"},
+        {3, 6, -1, SIT_SELECT, (void *) "1)登录权限"},
+        {3, 7, -1, SIT_SELECT, (void *) "2)发表文章权限"},
+        {3, 8, -1, SIT_SELECT, (void *) "3)发信权限"},
+        {3, 9, -1, SIT_SELECT, (void *) "4)进入聊天室权限"},
+        {3, 10, -1, SIT_SELECT, (void *) "5)呼叫聊天权限"},
+        {3, 11, -1, SIT_SELECT, (void *) "6)换一个ID"},
         {3, 12, -1, SIT_SELECT, (void *) "7)退出"},
         {-1, -1, -1, 0, NULL}
     };
@@ -1612,17 +1612,28 @@ int x_deny()
             break;
         if (sel > 0 && sel <= i) {
             char buf[40];
+            char reportbuf[120];
 
             move(40, 0);
             if ((lookupuser->userlevel & level[sel-1]) == normal_level[sel-1]) {
-                sprintf(buf, "真的要封禁%s的%s权限", lookupuser->userid, (char *) level_conf[sel-1].data);
+                sprintf(buf, "真的要封禁%s的%s", lookupuser->userid, (char *) level_conf[sel-1].data+2);
                 if (askyn(buf, 0) != 0) {
+                	sprintf(reportbuf, "封禁%s的%s ", lookupuser->userid, (char *) level_conf[sel-1].data+2);
                     lookupuser->userlevel ^= level[sel-1];
+                    securityreport(reportbuf);
                 }
             } else {
-                sprintf(buf, "真的要解开%s的%s 封禁(戒网)", lookupuser->userid, (char *) level_conf[sel-1].data);
+            	if ((basicperm&level[sel-1]) == normal_level[sel-1])  {
+                	sprintf(buf, "真的要解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel-1].data+2);
+                	sprintf(reportbuf, "解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel-1].data+2);
+            	}
+                else {
+                	sprintf(buf, "真的要解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel-1].data+2);
+                	sprintf(reportbuf, "解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel-1].data+2);
+                }
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel-1];
+                    securityreport(reportbuf);
                 }
             }
 	    save_giveupinfo(lookupuser,lcount,s);
