@@ -110,7 +110,10 @@ void send_msg(int u, char* msg)
     buf[54]=0;
     if(j==MAX_MSG) {
         strcpy(inrooms[myroom].msgs[inrooms[myroom].msgi], buf);
-        inrooms[myroom].msgpid[inrooms[myroom].msgi] = inrooms[myroom].peoples[u].pid;
+        if(u==-1)
+            inrooms[myroom].msgpid[inrooms[myroom].msgi] = -1;
+        else
+            inrooms[myroom].msgpid[inrooms[myroom].msgi] = inrooms[myroom].peoples[u].pid;
         inrooms[myroom].msgi = (inrooms[myroom].msgi+1)%MAX_MSG;
     }
     else {
