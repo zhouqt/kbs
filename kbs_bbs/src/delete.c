@@ -443,7 +443,7 @@ int d_user(cid)
         if (uinfo.mode != OFFLINE)
             prints("取消删除使用者...\n");
         else
-            prints("你终於回心转意了，好高兴喔...");
+            prints("你终于回心转意了，好高兴喔...");
         pressreturn();
         clear();
         return 0;

@@ -498,7 +498,7 @@ void login_query()
                     exit(1);
                 }
                 if (simplepasswd(passbuf)) {
-                    prints("[33m* ÃÜÂë¹ıì¶¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.[m\n");
+                    prints("[33m* ÃÜÂë¹ıÓÚ¼òµ¥, ÇëÑ¡ÔñÒ»¸öÒÔÉÏµÄÌØÊâ×ÖÔª.[m\n");
                     getdata(0, 0, "°´ [RETURN] ¼ÌĞø", genbuf, 10, NOECHO, NULL, true);
                 }
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */

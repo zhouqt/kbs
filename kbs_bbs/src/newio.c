@@ -508,6 +508,14 @@ int igetch()
     case Ctrl('L'):
         redoscr();
         icurrchar++;
+#ifdef NINE_BUILD
+	now = time(0);
+	uinfo.freshtime = now;
+	if (now - old > 60) {
+	   UPDATE_UTMP(freshtime, uinfo);
+	   old = now;
+	}   
+#endif
         goto igetagain;
     default:
         break;
@@ -517,8 +525,10 @@ int igetch()
         icurrchar++;
     now = time(0);
     /*---	Ctrl-T disabled as anti-idle key	period	2000-12-05	---*/
+#ifndef NINE_BUILD
     if (Ctrl('T') != c)
         uinfo.freshtime = now;
+#endif
     /*
      * add by KCN , decrease temp_numposts 
      */

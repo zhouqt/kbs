@@ -323,7 +323,7 @@ int get_result_title()
     }
     if (currvote.type < 1 || currvote.type > 5)
         currvote.type = 1;
-    fprintf(sug, "¡Ñ Í¶Æ±¿ªÆôì¶£º%.24s  Àà±ğ£º%s\n",
+    fprintf(sug, "¡Ñ Í¶Æ±¿ªÆôÓÚ£º%.24s  Àà±ğ£º%s\n",
             ctime(&currvote.opendate)
             , vote_type[currvote.type - 1]);
     fprintf(sug, "¡Ñ Ö÷Ìâ£º%s\n", currvote.title);
@@ -823,7 +823,7 @@ void show_voteing_title()
     else
         buf[0] = '\0';
     closedate = currvote.opendate + currvote.maxdays * 86400;
-    prints("Í¶Æ±½«½áÊøì¶: %24s  %s  %s\n",
+    prints("Í¶Æ±½«½áÊøÓÚ: %24s  %s  %s\n",
            ctime(&closedate), buf, (voted_flag) ? "(ĞŞ¸ÄÇ°´ÎÍ¶Æ±)" : "");
     prints("Í¶Æ±Ö÷ÌâÊÇ: [1m%-50s[mÀàĞÍ: [1m%s[m \n", currvote.title,
            vote_type[currvote.type - 1]);
