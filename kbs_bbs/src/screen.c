@@ -304,6 +304,36 @@ int     y,x;
     cur_ln = y ;
 }
 
+void good_move(int y,int x)
+{
+    register struct screenline *slp ;
+    register int        ln;
+    int i,j=0;
+    int inansi=0;
+
+    standing = false ;
+    ln = cur_ln + roll;
+    while( ln >= scr_lns )  ln -= scr_lns;
+    slp = &big_picture[ ln ];
+    for (i=0;i<slp->len;i++) {
+        if (inansi) {
+          if ((slp->data[i]==KEY_ESC)||(isalpha(slp->data[i])))
+                inansi=0;
+        } else
+          if (j>=x) {
+               cur_col = i/*+c_shift(y,x)*/ ;
+               break;
+          }
+          if (slp->data[i]==KEY_ESC)
+                inansi=1;
+          else
+                j++;
+    }
+    if (j<x)
+      cur_col = slp->len+(x-j);
+    cur_ln = y ;
+}
+
 void getyx(int *y,int *x)
 {
     *y = cur_ln ;

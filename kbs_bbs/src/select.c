@@ -36,18 +36,18 @@ static int show_item(struct _select_def* conf,int item,bool clear)
 		if (conf->prompt) {
 			pre_len=strlen(conf->prompt);
 			if (conf->item_pos[idx].x>pre_len)
-				move(conf->item_pos[idx].y,conf->item_pos[idx].x-pre_len);
+				good_move(conf->item_pos[idx].y,conf->item_pos[idx].x-pre_len);
 			else
-				move(conf->item_pos[idx].y,0);
+				good_move(conf->item_pos[idx].y,0);
 			outns(conf->prompt,pre_len);
 		}
 		else
-			move(conf->item_pos[idx].y,conf->item_pos[idx].x);
+			good_move(conf->item_pos[idx].y,conf->item_pos[idx].x);
 		if (conf->flag&LF_HILIGHTSEL)
 			outns("\x1b[1;45m",7);
 	}
 	else {
-		move(conf->item_pos[idx].y,conf->item_pos[idx].x);
+		good_move(conf->item_pos[idx].y,conf->item_pos[idx].x);
 	}
 	if (clear) {
 		if (conf->flag&LF_VSCROLL)
@@ -68,13 +68,13 @@ static int refresh_select(struct _select_def* conf)
 
 	//TODO:
 	//目前应该清除的区域尚未定义，所以先清全部
-	move(conf->title_pos.y,conf->title_pos.x);
+	good_move(conf->title_pos.y,conf->title_pos.x);
 	clrtobot();
 	if (conf->show_title) {
 		(*conf->show_title)(conf);
 	}
 	if (conf->show_endline) {
-		move(conf->endline_pos.y,conf->endline_pos.x);
+		good_move(conf->endline_pos.y,conf->endline_pos.x);
 		(*conf->show_endline)(conf);
 	}
 	for (i=conf->page_pos;(i<conf->page_pos+conf->item_per_page)
@@ -113,22 +113,24 @@ static int select_change(struct _select_def* conf,int new_pos)
 			int idx=conf->pos-conf->page_pos;
 			int newidx=new_pos-conf->page_pos;
 			if (pre_len) {
-				move(conf->item_pos[idx].y,conf->item_pos[idx].x-pre_len);
+				good_move(conf->item_pos[idx].y,conf->item_pos[idx].x-pre_len);
 				outns("                                                               ",pre_len);
 				if (conf->item_pos[newidx].x>pre_len)
-					move(conf->item_pos[newidx].y,
+					good_move(conf->item_pos[newidx].y,
 						conf->item_pos[newidx].x-pre_len);
 				else
-					move(conf->item_pos[newidx].y,0);
+					good_move(conf->item_pos[newidx].y,0);
 				outns(conf->prompt,pre_len);
 			}
 		}
 		// 如果是高亮的选择方式，需要清除原来的行
 		// 和重绘新行
 
+		conf->new_pos = conf->pos;
+		conf->pos = new_pos;
 		if (conf->flag&LF_HILIGHTSEL) {
 			show_item(conf,conf->pos,true);
-			show_item(conf,new_pos,true);
+			show_item(conf,conf->new_pos,true);
 		}
 		refresh();
 	}
