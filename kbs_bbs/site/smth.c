@@ -585,7 +585,7 @@ int compute_user_value(struct userec *urec)
      */
 
     if (urec->lastlogin < 1022036050)
-        return old_compute_user_value(urec);
+        return old_compute_user_value(urec) + 15;
     /*
      * 这个是死人的id,sigh 
      */
@@ -618,12 +618,12 @@ int compute_user_value(struct userec *urec)
      * 自杀功能,Luzi 1998.10.10 
      */
     if (urec->userlevel & PERM_SUICIDE)
-        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24) + 15;
     /**********************/
     if (urec->numlogins <= 3)
-        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24) + 15;
     if (!(urec->userlevel & PERM_LOGINOK))
-        return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24);
+        return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24) + 15;
     /*
      * if (urec->userlevel & PERM_LONGID)
      * return (667 * 24 * 60 - value)/(60*24); 
@@ -635,7 +635,7 @@ int compute_user_value(struct userec *urec)
         basiclife = LIFE_DAY_LONG + 1;
     else
         basiclife = LIFE_DAY_YEAR + 1;
-    return (basiclife * 24 * 60 - value) / (60 * 24);
+    return (basiclife * 24 * 60 - value) / (60 * 24) + 15;
 }
 
 /**
