@@ -91,7 +91,7 @@ int get_key_name(int key, char* s)
         case KEY_UP:
             strcpy(s, "Up");
             break;
-        case KEY_Down:
+        case KEY_DOWN:
             strcpy(s, "Down");
             break;
         case KEY_HOME:
