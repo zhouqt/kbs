@@ -27,13 +27,26 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 }
 ?>
 <body topmargin=0 leftmargin=0>
-<form name="form" method="post" action="dopostupload.php?board=<?php echo $_GET['board']; ?>" enctype="multipart/form-data">
+<script src="inc/browers.js"  language="javascript"></script>
+<script language="javascript">
+function disableEdit(){
+	if (isIE4) {
+		parent.frmAnnounce.Submit.disabled=true;
+		parent.frmAnnounce.Submit2.disabled=true;
+	} else if (isW3C) {
+		oSubmit=parent.document.getElementById("oSubmit");
+		oSubmit2=parent.document.getElementById("oSubmit2");
+		oSubmit.disabled=true;
+		oSubmit2.disabled=true;		
+	}
+}
+</script>
+<form name="form" method="post" action="dopostupload.php?board=<?php echo $_GET['board']; ?>" enctype="multipart/form-data" onSubmit="disableEdit();" id="oForm">
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
 <tr><td class=TableBody2 valign=top height=30>
 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ATTACHMAXSIZE; ?>">
 <input type="file" name="upfile">
-<input type="submit" name="Submit" value="上传" onclick="parent.document.forms[0].Submit.disabled=true,
-parent.document.forms[0].Submit2.disabled=true;">
+<input type="submit" name="Submit" value="上传">
 <font color=#FF0000 >本文还可上传<?php   echo ATTACHMAXCOUNT-getAttachmentCount(); ?>个，总大小<?php   echo intval((ATTACHMAXTOTALSIZE-$totalsize)/1024) ;?>K</font>；
   论坛限制：一篇文章<?php   echo ATTACHMAXCOUNT; ?>个，<!--一天<?php   echo $GroupSetting[50]; ?>个,-->每个<?php   echo intval(ATTACHMAXSIZE/1024); ?>K，附件总大小<?php   echo intval(ATTACHMAXTOTALSIZE/1024); ?>K
 </td></tr>

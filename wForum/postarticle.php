@@ -223,7 +223,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	  </td>
           <td width=80% class=TableBody1>
 <?php require_once("inc/ubbmenu.php"); ?>
-<textarea class=smallarea cols=95 name=Content rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
+<textarea class=smallarea cols=95 name=Content id="oArticleContent" rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
     if (($reID > 0) && ($_GET['quote']==1)){
 		$filename = $reArticles[1]["FILENAME"];
@@ -329,8 +329,8 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <BR><BR></td>
 	</tr><tr>
 	<td valign=middle colspan=2 align=center class=TableBody2>
-	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview() disabled>&nbsp;
-<input type=reset name=Submit2 value='清 除'>
+	<input type=Submit value='发 表' name=Submit id="oSubmit"> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview() disabled>&nbsp;
+<input type=reset name=Submit2 value='清 除' id="oSubmit2">
                 </td></form></tr>
       </table>
 </form>

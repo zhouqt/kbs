@@ -4,14 +4,20 @@ require("inc/funcs.php");
 require("inc/board.inc.php");
 html_init();
 ?>
-<script>
-parent.document.forms[0].Submit.disabled=false;
-parent.document.forms[0].Submit2.disabled=false;
-</script>
-<?php
-
-?>
 <body topmargin=0 leftmargin=0>
+<script src="inc/browers.js"  language="javascript"></script>
+<script language="javascript">
+	if (isIE4) {
+		parent.frmAnnounce.Submit.disabled=false;
+		parent.frmAnnounce.Submit2.disabled=false;
+	} else if (isW3C) {
+		oSubmit=parent.document.getElementById("oSubmit");
+		oSubmit2=parent.document.getElementById("oSubmit2");
+		oSubmit.disabled=false;
+		oSubmit2.disabled=false;		
+	}
+
+</script>
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
 <tr><td class=TableBody2 valign=top height=40>
 <?php 
@@ -132,7 +138,15 @@ default:
 	break;
 }
 ?>
-<script>parent.frmAnnounce.Content.value+='[upload=<?php echo $filecount; ?>][/upload]'</script>
+<script language="javascript">
+	
+	if (isIE4) {
+		parent.frmAnnounce.Content.value+='[upload=<?php echo $filecount; ?>][/upload]';
+	} else if (isW3C) {
+		oCon=parent.document.getElementById("oArticleContent");
+		oCon.value+='[upload=<?php echo $filecount; ?>][/upload]';
+	}
+</script>
 <?php
 	if($filecount < ATTACHMAXCOUNT)
 		print $filecount."个文件上传成功 [ <a href=# onclick=history.go(-1)>继续上传</a> ]";
