@@ -354,8 +354,12 @@ int     ssize;
             {
                 if(digestmode==YEA)
                     digest_mode();
-                else
+                else if(digestmode==2)
                     thread_mode();
+		else if(digestmode==4)
+		    deleted_mode();
+		else if(digestmode==5)
+		    junk_mode();
             }
             if( mode == NEWDIRECT ) {
                 num = last_line - screen_len + 1;
@@ -443,6 +447,10 @@ case 'q': case 'e': case KEY_LEFT:
             return digest_mode();
         else if(digestmode==2)
             return thread_mode();
+        else if(digestmode==4)
+	    return deleted_mode();
+        else if(digestmode==5)
+            return junk_mode();
         else
             return DOQUIT;
     case Ctrl('L'):
@@ -1110,15 +1118,7 @@ case 0: case 1: case 2:
             if (!( SR_fptr.accessed[ 0 ] & FILE_MARKED ))
                 /* Bigman 2000.8.20: 修改同主题删除错误.... Leeward这个增加的不对呀,以后的内容没有读呀 */
             {
-                SR_BMDELFLAG=YEA;
-                del_post(locmem->crs_line,&SR_fptr,currdirect);
-                SR_BMDELFLAG=NA;
-                if(sysconf_eval( "KEEP_DELETED_HEADER" )<=0)
-                {
-                    last_line--;
-                    locmem->crs_line--;
-                    previous=locmem->crs_line;
-                }
+                set_delete_mark(locmem->crs_line,&SR_fptr,currdirect);
             }
             break;
         case SR_BMMARK:
@@ -1127,7 +1127,7 @@ case 0: case 1: case 2:
             mark_post(locmem->crs_line,&SR_fptr,currdirect);
             break;
         case SR_BMDIGEST:
-            if(digestmode==YEA)
+            if(digestmode==YEA||digestmode==4||digestmode==5)
                 return;
             digest_post(locmem->crs_line,&SR_fptr,currdirect);
             break;

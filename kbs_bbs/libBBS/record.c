@@ -568,55 +568,61 @@ int id1,id2,del_mode ;
     int         count;
 
     tmpfilename( filename, tmpfile, deleted );
-    if((fd = open(".dellock",O_RDWR|O_CREAT|O_APPEND, 0644)) == -1)
-        return -1;
-    flock(fd,LOCK_EX);
+    /*digestmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
+    调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
+    但是为了修理任何缘故造成的临时文件故障(比如自动删除机), 还是
+    尝试了一下打开操作; tmpfile是否对每种模式独立, 这个还是值得
+    商榷的.  -- ylsdd*/
+    if(digestmode==4||digestmode==5) {
+       tmpfile[strlen(tmpfile)-1]=(digestmode==4)?'D':'J';
+       deleted[strlen(deleted)-1]=(digestmode==4)?'D':'J';
+    }
 
     if((fdr = open(filename,O_RDONLY,0)) == -1) {
-        flock(fd,LOCK_UN);
-        close(fd);
         return -2;
     }
 
-    if((fdw = open(tmpfile,O_WRONLY|O_CREAT|O_EXCL,0644)) == -1) {
-        /* add by KCN for debug
-        #undef perror
-        	dup2(0,1);
-        	dup2(0,2);
-        	perror(tmpfile);
-        	pressanykey();
-        */
+    if((fdw = open(tmpfile,O_WRONLY|O_CREAT|O_EXCL,0660)) == -1) {
         close(fdr);
-        flock(fd,LOCK_UN);
-        close(fd);
         return -3;
     }
+    if(digestmode==4||digestmode==5) {
+       close(fdr);
+       unlink(tmpfile);
+       close(fdw);
+       return 0;
+    }
+
+    flock(fdw,LOCK_EX);
+
     count = 1;
     while(read(fdr,&fhdr,sizeof fhdr) == sizeof fhdr) {
-        if(count < id1 || count > id2 || ((del_mode!=1) && strcmp(fhdr.owner,"deliver") && (fhdr.accessed[0] & FILE_MARKED)))/*Haohmaru.99.4.20.强制删除mark文章*/ {
+        if( !(fhdr.accessed[1]&FILE_DEL) 
+           && ( count < id1 || count > id2
+              || ((del_mode!=1) && strcmp(fhdr.owner,"deliver") && (fhdr.accessed[0] & FILE_MARKED))))/*Haohmaru.99.4.20.强制删除mark文章*/ {
             if((safewrite(fdw,&fhdr,sizeof fhdr) == -1)) {
+                flock(fdw,LOCK_UN);
                 unlink(tmpfile);
                 close(fdw);
                 close(fdr);
-                flock(fd,LOCK_UN);
-                close(fd);
                 return -4;
             }
         } else {
+#ifndef LEEWARD_X_RECORD /* This macro need defining for *.c under directories
+            of both local_utl and innd */
+/* Leeward: 98.01.22 adds below for logs in deleted/junk */
+/* rewrited by ylsdd */
+            cancelpost(currboard, currentuser.userid,
+                       &fhdr, !strcmp(fhdr.owner, currentuser.userid));
+#else
             char *t;
             char fullpath[STRLEN];
-
             strcpy(buf,filename);
             if( (t = strrchr(buf,'/')) != NULL )
                 *t = '\0';
             sprintf(fullpath,"%s/%s",buf,fhdr.filename);
-#ifndef LEEWARD_X_RECORD /* This macro need defining for *.c under directories
-            of both local_utl and innd */
-            /* Leeward: 98.01.22 adds below for logs in deleted/junk */
-            cancelpost(currboard, currentuser.userid,
-                       &fhdr, !strcmp(fhdr.owner, currentuser.userid));
-#endif
             unlink(fullpath);
+#endif
         }
         count++;
     }

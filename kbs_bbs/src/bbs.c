@@ -383,7 +383,7 @@ char *direct;
     return del_post(ent,fileinfo,direct);
 }
 
-UndeleteArticle(ent,fileinfo,direct)  /* undelete Ò»ÆªÎÄÕÂ Leeward 98.05.18 */
+UndeleteArticle_old(ent,fileinfo,direct)  /* undelete Ò»ÆªÎÄÕÂ Leeward 98.05.18 */
 int ent;
 struct fileheader *fileinfo;
 char *direct;
@@ -473,6 +473,86 @@ char *direct;
     return FULLUPDATE;
 }
 
+/* undelete Ò»ÆªÎÄÕÂ Leeward 98.05.18 */
+/* modified by ylsdd */
+UndeleteArticle(ent,fileinfo,direct)
+int ent;
+struct fileheader *fileinfo;
+char *direct;
+{
+    char *p, buf[1024];
+    char UTitle[128];
+    struct fileheader UFile;
+    int i;
+    FILE *fp;
+
+    if(digestmode!=4&&digestmode!=5) return DONOTHING;
+    if(!chk_currBM(currBM)) return DONOTHING;
+
+    sprintf(buf, "boards/%s/%s", currboard, fileinfo->filename);
+    if(!dashf(buf)) {
+       clear();
+       move(2,0);
+       prints("¸ÃÎÄÕÂ²»´æÔÚ£¬ÒÑ±»»Ö¸´, É¾³ı»òÁĞ±í³ö´í");
+       pressreturn();
+       return FULLUPDATE;
+    }
+    fp = fopen(buf, "r");
+    if (!fp) return DONOTHING;
+
+
+    strcpy(UTitle, fileinfo->title);
+    if (p = strrchr(UTitle, '-'))
+    { /* create default article title */
+      *p = 0;
+      for (i = strlen(UTitle) - 1; i >= 0; i --)
+      {
+        if (UTitle[i] != ' ')
+          break;
+        else
+          UTitle[i] = 0;
+      }
+    }
+
+    i = 0;
+    while (!feof(fp) && i < 2)
+    {
+      fgets(buf, 1024, fp);
+      if (feof(fp))  break;
+      if (strstr(buf, "·¢ĞÅÈË: ") && strstr(buf, "), ĞÅÇø: "))
+      {
+        i ++;
+      }
+      else if (strstr(buf, "±ê  Ìâ: "))
+      {
+        i ++;
+        strcpy(UTitle, buf + 8);
+        if (p = strchr(UTitle, '\n'))
+          *p = 0;
+      }
+    }
+    fclose(fp);
+
+    bzero(&UFile, sizeof(UFile));
+    strcpy(UFile.owner, fileinfo->owner);
+    strcpy(UFile.title, UTitle);
+    strcpy(UFile.filename, fileinfo->filename);
+
+    sprintf(buf, "boards/%s/.DIR", currboard);
+    append_record(buf, &UFile, sizeof(UFile));
+    fileinfo->filename[0]='\0';
+    substitute_record(direct, fileinfo, sizeof(*fileinfo),ent) ;
+    sprintf(buf,"undeleted %s's ¡°%s¡± on %s", UFile.owner, UFile.title, currboard);
+    report(buf);
+
+    clear();
+    move(2,0);
+    prints("'%s' ÒÑ»Ö¸´µ½°åÃæ \n", UFile.title);
+    pressreturn();
+
+    return FULLUPDATE;
+}
+
 XArticle(ent,fileinfo,direct)  /* ¹ØÓÚÎÄÕÂµÄÌØÊâ¹¦ÄÜ Leeward 98.05.18 */
 int ent;
 struct fileheader *fileinfo;
@@ -480,7 +560,7 @@ char *direct;
 {
     if (!strcmp(currboard, "Filter"))
         return PassFilter(ent,fileinfo,direct);
-    else if (!strcmp(currboard, "deleted") || !strcmp(currboard, "xdeleted") || !strcmp(currboard, "junk") )
+    else if (digestmode==4||digestmode==5||!strcmp(currboard, "deleted") || !strcmp(currboard, "xdeleted") || !strcmp(currboard, "junk") )
         return UndeleteArticle(ent,fileinfo,direct);
     else
         return DONOTHING;
@@ -688,7 +768,12 @@ char *buf, *boardname;
     case 2:
         strcpy(dir,THREAD_DIR);
         break;
-
+    case 4:
+	strcpy(dir,".DELETED");
+	break;
+    case 5:
+	strcpy(dir,".JUNK");
+	break;
     }
     sprintf( buf, "boards/%s/%s", boardname, dir);
     return buf;
@@ -1094,6 +1179,11 @@ readtitle()  /* °æÄÚ ÏÔÊ¾ÎÄÕÂÁĞ±í µÄ title */
         strcpy(readmode,"ÎÄÕª");
     else if(digestmode==2)
         strcpy(readmode,"Ö÷Ìâ");
+    else if(digestmode==4)
+	strcpy(readmode,"»ØÊÕ");
+    else if(digestmode==5)
+	strcpy(readmode,"Ö½Â¦");
+
     prints("[37m[44m ±àºÅ   %-12s %6s %-40s[%4sÄ£Ê½] [m\n", "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ",readmode) ;
     clrtobot();
 }
@@ -1585,6 +1675,8 @@ char *direct ;
     clrtoeol();
     move(1,0);
     clrtoeol();
+    if(digestmode!=NA&&digestmode!=YEA)
+	digestmode=NA;
     setbdir( direct, currboard ); /* direct Éè¶¨ Îª µ±Ç°boardÄ¿Â¼ */
     return NEWDIRECT ;
 }
@@ -1612,6 +1704,61 @@ digest_mode()  /* ÎÄÕªÄ£Ê½ ÇĞ»» */
     }
     return NEWDIRECT ;
 }
+
+int
+deleted_mode()
+{
+    extern  char  currdirect[ STRLEN ];
+
+  if (!chk_currBM(currBM)) {
+      return DONOTHING;
+  }
+  if(digestmode==4)
+  {
+    digestmode=NA;
+    setbdir(currdirect,currboard);
+  }   
+  else
+  {
+    digestmode=4;
+    setbdir(currdirect,currboard);
+    if(!dashf(currdirect))
+    {
+            digestmode=NA;
+            setbdir(currdirect,currboard);
+            return DONOTHING;
+    }
+  }
+    return NEWDIRECT ;
+}
+
+int
+junk_mode()
+{
+   extern  char  currdirect[ STRLEN ];
+
+  if (!HAS_PERM(PERM_SYSOP)) {
+      return DONOTHING;
+  }
+
+  if(digestmode==5)
+  {
+    digestmode=NA;
+    setbdir(currdirect,currboard);
+  }   
+  else
+  {
+    digestmode=5;
+    setbdir(currdirect,currboard);
+    if(!dashf(currdirect))
+    {
+            digestmode=NA;
+            setbdir(currdirect,currboard);
+            return DONOTHING;
+    }
+  }
+    return NEWDIRECT ;
+}  
 
 int
 do_thread()
@@ -1659,7 +1806,7 @@ thread_mode()
         move(t_lines-2, 0);
         clrtoeol();
         strcpy(buf,"È·¶¨Í¬Ö÷ÌâÔÄ¶Á? (Y/N) [N]:");
-        getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,0);
+        getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
 
         if(ch[0]=='y' || ch[0]=='Y')
         {
@@ -1731,7 +1878,7 @@ char *direct;
     {
         return DONOTHING ;
     }
-    if (digestmode==YEA)      /* ÎÄÕªÄ£Ê½ÄÚ ²»ÄÜ Ìí¼ÓÎÄÕª */
+    if (digestmode==YEA||digestmode==4||digestmode==5)      /* ÎÄÕªÄ£Ê½ÄÚ ²»ÄÜ Ìí¼ÓÎÄÕª, »ØÊÕºÍÖ½Â¨Ä£Ê½Ò²²»ÄÜ */
         return DONOTHING;
 
     if (fhdr->accessed[0] & FILE_DIGEST)  /* Èç¹ûÒÑ¾­ÊÇÎÄÕªµÄ»°£¬Ôò´ÓÎÄÕªÖĞÉ¾³ı¸Ãpost */
@@ -2884,8 +3031,17 @@ char *direct ;
         {
             return DONOTHING ;
         }
+
     if(digestmode==2)
         return DONOTHING;
+    if(digestmode==4||digestmode==5) {
+       if(!HAS_PERM(PERM_SYSOP))
+          return DONOTHING;
+       else {
+          result=1; 
+          goto DO_REPAIR;          /*ËãÀ²,goto°Ñ, hehe.  ylsdd */
+       }
+    }
     clear() ;
     prints("ÇøÓòÉ¾³ı\n") ;
     /*Haohmaru.99.4.20.Ôö¼Ó¿ÉÒÔÇ¿ÖÆÉ¾³ı±»markÎÄÕÂµÄ¹¦ÄÜ*/
@@ -2895,8 +3051,12 @@ char *direct ;
        {
     return FULLUPDATE ;
        }*/
-    getdata(2,0,"Ê×ÆªÎÄÕÂ±àºÅ: ",num1,10,DOECHO,NULL,YEA) ;
+    getdata(2,0,"Ê×ÆªÎÄÕÂ±àºÅ(ÊäÈë0Ôò½öÇå³ı±ê¼ÇÎªÉ¾³ıµÄÎÄÕÂ): ",num1,10,DOECHO,NULL,YEA) ;
     inum1 = atoi(num1) ;
+    if(inum1==0) {
+       inum2=-1;
+       goto THERE;
+    }
     if(inum1 <= 0) {
         prints("´íÎó±àºÅ\n") ;
         pressreturn() ;
@@ -2909,13 +3069,18 @@ char *direct ;
         pressreturn() ;
         return FULLUPDATE ;
     }
+THERE:
     getdata(4,0,"È·¶¨É¾³ı (Y/N)? [N]: ",num1,10,DOECHO,NULL,YEA) ;
     if(*num1 == 'Y' || *num1 == 'y') {
         result = delete_range(direct,inum1,inum2,idel_mode) ;
-        fixkeep(direct, inum1, inum2);
-        sprintf(genbuf, "del %d-%d on %s", inum1, inum2, currboard);
-        report(genbuf); /*log*/
+        if(inum1!=0) fixkeep(direct, inum1, inum2);
+        else fixkeep(direct, 1, 1);
+        if(uinfo.mode!=RMAIL) {
+            sprintf(genbuf, "del %d-%d on %s", inum1, inum2, currboard);
+            report(genbuf); /*log*/
+        }
         prints("É¾³ı%s\n", result ? "Ê§°Ü£¡" : "Íê³É") ; /* Leeward: 97.12.15 */
+DO_REPAIR:
         if (result)/* prints("´íÎó´úÂë: %d;%s Çë±¨¸æÕ¾³¤£¬Ğ»Ğ»£¡", result,direct);
             added by Haohmaru,ĞŞ¸´Çø¶ÎÉ¾³ı´íÎó,98.9.12 */	{
             prints("´íÎó´úÂë: %d;%s",result,direct);
@@ -2941,6 +3106,10 @@ char *direct ;
                         sprintf(fullpath,"boards/%s/.tmpfile",currboard);
                         unlink(fullpath);
                         sprintf(fullpath,"boards/%s/.deleted",currboard);
+                        unlink(fullpath);
+                        sprintf(fullpath,"boards/%s/.tmpfilD",currboard);
+                        unlink(fullpath);
+                        sprintf(fullpath,"boards/%s/.tmpfilJ",currboard);
                         unlink(fullpath);
                     }
                 }
@@ -2987,7 +3156,7 @@ char *direct ;
             ||!strcmp(currboard, "deleted"))    /* Leeward : 98.01.22 */
         return DONOTHING ;
 
-    if(digestmode==2)
+    if(digestmode==2||digestmode==4||digestmode==5)
         return DONOTHING;
     keep = sysconf_eval( "KEEP_DELETED_HEADER" ); /*ÊÇ·ñ±£³Ö±»É¾³ıµÄPOSTµÄ title */
     if( fileinfo->owner[0] == '-' && keep > 0 &&!SR_BMDELFLAG) {
@@ -3034,9 +3203,7 @@ char *direct ;
     if( !fail ) {
         cancelpost( currboard, currentuser.userid, fileinfo, owned );
         sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
-        if( keep <= 0/*²»±£Áôtitle*/ ) {
-            unlink(genbuf) ;
-        } else if/*±£Áôtitle*/( (fn = fopen( genbuf, "w" )) != NULL ) {
+        if(keep >0)  if/*±£Áôtitle*/( (fn = fopen( genbuf, "w" )) != NULL ) {
             fprintf( fn, "\n\n\t\t±¾ÎÄÕÂÒÑ±» %s É¾³ı.\n",
                      currentuser.userid );
             fclose( fn );
@@ -3357,8 +3524,10 @@ struct one_key  read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
                                    'E',        edit_post,
                                    Ctrl('G'),  digest_mode,
                                    '`',        digest_mode,
+                                   '.',        deleted_mode,
+                                   '>',        junk_mode,
                                    'g',        digest_post,
-                                   'T',        edit_title,
+				   'T',        edit_title,
                                    's',        do_select,
                                    Ctrl('C'),  do_cross,
                                    'Y',        XArticle, /* Leeward 98.05.18 */
@@ -4025,7 +4194,7 @@ struct fileheader *brec;
 }
 
 void
-cancelpost( board, userid, fh, owned ) /* É¾³ıÎÄÕÂ ×ªÒÆµ½junk»òdeleted°æ */
+cancelpost_old( board, userid, fh, owned ) /* É¾³ıÎÄÕÂ ×ªÒÆµ½junk»òdeleted°æ */
 char    *board, *userid;
 struct fileheader *fh;
 int     owned;
@@ -4106,6 +4275,50 @@ int     owned;
     }
 }
 
+/* by ylsdd 
+   unlink action is taked within cancelpost if in mail mode,
+   otherwise this item is added to the file '.DELETED' under
+   the board's directory, the filename is not changed. 
+   Unlike the fb code which moves the file to the deleted
+   board.
+*/
+void
+cancelpost( board, userid, fh, owned )
+char    *board, *userid;
+struct fileheader *fh;
+int     owned;
+{
+    struct fileheader   postfile;
+    char oldpath[sizeof(genbuf)];
+    int         tmpdigestmode;
+    time_t now;
+    if(uinfo.mode==RMAIL)  {
+       sprintf(oldpath,"mail/%c/%s/%s",toupper(currentuser.userid[0]),
+                currentuser.userid,fh->filename);
+       unlink(oldpath);
+       return;
+    }
+
+    sprintf(genbuf, "/board/%s/%s.html", board, fh->filename);
+    ca_expire(genbuf);
+
+    bzero(&postfile,sizeof(postfile));
+    now=time(NULL);
+    postfile.accessed[11]=now/(3600*24)%100; //localtime(&now)->tm_mday;
+    sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
+    strcpy( postfile.filename, fh->filename );
+    strncpy( postfile.owner, fh->owner, IDLEN+2 );
+    postfile.owner[IDLEN+1]=0;
+    strncpy( postfile.title, genbuf, STRLEN );
+    postfile.title[STRLEN-1]=0;
+    tmpdigestmode=digestmode;
+    digestmode=(owned)?5:4;
+    setbdir( genbuf, board );
+    append_record( genbuf, &postfile, sizeof(postfile) );
+    digestmode=tmpdigestmode;
+}
+
+
 void
 RemoveAppendedSpace(ptr) /* Leeward 98.02.13 */
 char *ptr;
@@ -4151,6 +4364,8 @@ char *direct ;
     struct fileheader mkpost;
     /*---	---*/
 
+    if(digestmode!=NA&&digestmode!=YEA)
+        return DONOTHING;
     if( !HAS_PERM(PERM_SYSOP) )
         if( !chk_currBM(currBM) )
         {
