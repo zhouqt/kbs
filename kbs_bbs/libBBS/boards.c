@@ -151,7 +151,7 @@ void load_favboard(int dohelp,int mode)
 			}
 			for(i=0;i<k;i++){
 				int newfather;
-				if( favbrd_list_tmp[i].father == -1 )
+				if( favbrd_list_tmp[i].father <= -1 )
 					newfather=0;
 				else
 					newfather = 0-favbrd_list_tmp[favbrd_list_tmp[i].father].flag;
