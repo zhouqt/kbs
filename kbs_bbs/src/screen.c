@@ -604,8 +604,7 @@ int n;
                         if(cur_col < slp->sso) \
                              slp->mode&=~STANDOUT; \
                         cur_col = 0 ; \
-                        if(cur_ln < scr_lns) \
-                            cur_ln++ ; \
+                        cur_ln = (cur_ln+1)%scr_lns;\
 			reg_col=begincol; \
                   }
 	if (!scrint) {
@@ -839,6 +838,17 @@ rscroll()
 		roll = scr_lns - 1;
 	move(0, 0);
 	clrtoeol();
+}
+
+void noscroll()
+{
+    int i;
+    struct screenline bp[30];
+    for(i=0;i<scr_lns;i++)
+        memcpy(bp+i,big_picture+(i+roll)%scr_lns,sizeof(struct screenline));
+    for(i=0;i<scr_lns;i++)
+        memcpy(big_picture+i,bp+i,sizeof(struct screenline));
+    roll = 0;
 }
 
 void

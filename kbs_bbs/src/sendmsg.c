@@ -404,8 +404,6 @@ void r_msg_sig(int signo)
     signal(SIGUSR2, r_msg_sig);
 }
 
-extern int roll;
-
 void r_msg()
 {
     int y, x, ch, i, ox, oy, tmpansi, pid, oldi;
@@ -415,11 +413,11 @@ void r_msg()
     struct msghead head;
     int now, count, canreply, first=1;
     int hasnewmsg;
-    int savemode, oldroll;
+    int savemode;
 
+    noscroll();
     savemode=uinfo.mode;
     modify_user_mode(MSG);
-    oldroll = roll;
     good_getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
@@ -565,7 +563,6 @@ outhere:
     if (0 == RMSGCount)
         RMSG = false;
     modify_user_mode(savemode);
-    roll = oldroll;
     return;
 }
 
