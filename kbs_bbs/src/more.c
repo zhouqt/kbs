@@ -1149,9 +1149,12 @@ mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
 			case 'l':
 				return KEY_UP;
 			case 'L' :
-				 show_allmsgs();
-				curr_line += t_lines - 1;
-				change = 1 - t_lines;
+                    		if(uinfo.mode!=LOOKMSGS)
+                    		{
+					show_allmsgs();
+					curr_line += t_lines - 1;
+					change = 1 - t_lines;
+				}
 				break;
 			case 'M':
 				r_lastmsg();
