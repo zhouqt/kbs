@@ -1498,10 +1498,19 @@ struct key_command mail_comms[] = {
 int m_read()
 {
     char curmaildir[STRLEN];
+#ifdef NEW_HELP
+	int oldhelpmode = helpmode;
+#endif
 
     setmailfile(curmaildir, currentuser->userid, DOT_DIR);
     in_mail = true;
+#ifdef NEW_HELP
+	helpmode = HELP_MAIL;
+#endif
     new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+#ifdef NEW_HELP
+	helpmode = oldhelpmode;
+#endif
     in_mail = false;
     return FULLUPDATE /* 0 */ ;
 }
@@ -2365,6 +2374,9 @@ static int maillist_onselect(struct _select_def *conf)
     struct mail_proc_arg *arg = (struct mail_proc_arg *) conf->arg;
     char buf[20];
     char curmaildir[STRLEN];
+#ifdef NEW_HELP
+	int oldhelpmode = helpmode;
+#endif
 
     if (conf->pos <= arg->cmdnum) {
         /*
@@ -2377,7 +2389,13 @@ static int maillist_onselect(struct _select_def *conf)
         sel = conf->pos - arg->cmdnum - 1;
         setmailfile(curmaildir,currentuser->userid, mail_sysbox[sel]);
         in_mail = true;
+#ifdef NEW_HELP
+		helpmode = HELP_MAIL;
+#endif
         new_i_read(DIR_MODE_MAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+#ifdef NEW_HELP
+		helpmode = oldhelpmode;
+#endif
         in_mail = false;
         /*
          * ÏµÍ³ÓÊÏä
@@ -2392,7 +2410,13 @@ static int maillist_onselect(struct _select_def *conf)
         sprintf(buf, ".%s", user_mail_list.mail_list[sel] + 30);
         setmailfile(curmaildir, currentuser->userid, buf);
         in_mail = true;
+#ifdef NEW_HELP
+		helpmode = HELP_MAIL;
+#endif
         new_i_read(RMAIL, curmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+#ifdef NEW_HELP
+		helpmode = oldhelpmode;
+#endif
         in_mail = false;
     }
     modify_user_mode(MAIL);

@@ -697,7 +697,7 @@ typedef struct fileheader fileheader_t;
 
 #ifndef NUMHELPMODE
 
-#define NUMHELPMODE 13
+#define NUMHELPMODE 14
 #define HELP_BOARD 1
 #define HELP_GOODBOARD 2
 #define HELP_ARTICLE 3
@@ -711,6 +711,7 @@ typedef struct fileheader fileheader_t;
 #define HELP_FRIENDTEST 11
 #define HELP_CHICKEN 12
 #define HELP_KILLER 13
+#define HELP_MAIL 14
 
 #endif //NUMHELPMODE
 #endif //NEW_HELP

@@ -113,6 +113,7 @@ const char *helpmodestr[] = {
 	"友谊测试",
 	"星空战斗鸡",
 	"杀人",
+	"信件",
 	NULL
 };
 #endif
