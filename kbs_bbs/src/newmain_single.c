@@ -255,11 +255,14 @@ void talk_request(int signo)
     return;
 }
 
+extern int icurrchar, ibufsize;
 
 void abort_bbs(int signo)
 {
     time_t stay;
 
+    move(t_lines-1, 0);
+    icurrchar = 0; ibufsize = 0;
     refresh();
     if (uinfo.mode == POSTING || uinfo.mode == SMAIL || uinfo.mode == EDIT || uinfo.mode == EDITUFILE || uinfo.mode == EDITSFILE || uinfo.mode == EDITANN)
         keep_fail_post();
