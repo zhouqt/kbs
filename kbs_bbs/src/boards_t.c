@@ -543,7 +543,7 @@ static int fav_onselect(struct _select_def *conf)
 
     if (arg->select_group) return SHOW_SELECT; //select a group
     arg->select_group=0;
-	if (ptr->dir==1 && ptr->pos==-1 && ptr->flag==-1 && ptr->tag==-1)
+	if (ptr->dir==1 && ptr->pos==-1 && ptr->flag==0xffffffff && ptr->tag==-1)
 		return SHOW_CONTINUE;
     if ((ptr->dir == 1)||((arg->favmode)&&(ptr->flag&BOARD_GROUP))) {        /* added by bad 2002.8.3*/
         return SHOW_SELECT;
@@ -1295,7 +1295,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 			//原来在favboard
             if (favmode) {
 				//进入版面目录
-                if (arg.select_group > 0 || (arg.select_group==0 && (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) ) ) {
+                if (arg.select_group > 0 || (arg.select_group==0 && (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=0xffffffff) ) ) {
                     //s进入版面目录
                     if (arg.select_group > 0 ) //select进入的 
                         favlist[favlevel] = currboardent;

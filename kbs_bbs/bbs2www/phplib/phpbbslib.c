@@ -8263,7 +8263,7 @@ static PHP_FUNCTION(bbs_fav_boards)
         check_newpost(ptr, false);
         for (j = 0; j < BOARD_COLUMNS; j++) {
             MAKE_STD_ZVAL(element);
-			if (ptr->flag == -1) /* the item is a directory */
+			if (ptr->flag == 0xffffffff) /* the item is a directory */
             	bbs_make_favdir_zval(element, brd_col_names[j], ptr);
 			else
             	bbs_make_board_zval(element, brd_col_names[j], ptr);

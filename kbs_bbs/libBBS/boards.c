@@ -1124,7 +1124,7 @@ int normal_board(const char *bname)
 
 int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,const char** input_namelist,session_t* session)
 {
-//注意，如果是目录，nbrd的flag应该为-1
+//注意，如果是目录，nbrd的flag应该为0xffffffff
     int n;
     struct boardheader *bptr=NULL;
     int brdnum;
@@ -1178,7 +1178,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->dir = 1;
                     //ptr->BM = NullChar;
                     ptr->BM = session->favbrd_list[0-session->favbrd_list[favnow].bid[n]].ename;
-                    ptr->flag = -1;
+                    ptr->flag = 0xffffffff;
                     ptr->tag = 0-session->favbrd_list[favnow].bid[n];
                     ptr->pos = n;
                     ptr->total = session->favbrd_list[0-session->favbrd_list[favnow].bid[n]].bnum;
@@ -1230,7 +1230,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
         ptr->title = EmptyChar;
         ptr->BM = NullChar;
         ptr->tag = -1;
-        ptr->flag = -1;
+        ptr->flag = 0xffffffff;
         ptr->pos = -1;
         ptr->total = 0;
         ptr->unread = 0;
@@ -1261,7 +1261,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->dir = 1;
                     //ptr->BM = NullChar;
                     ptr->BM = session->favbrd_list[0-session->favbrd_list[favnow].bid[indexlist[n]]].ename;
-                    ptr->flag = -1;
+                    ptr->flag = 0xffffffff;
                     ptr->tag = 0-session->favbrd_list[favnow].bid[indexlist[n]];
                     ptr->pos = indexlist[n];
                     ptr->total = session->favbrd_list[0-session->favbrd_list[favnow].bid[indexlist[n]]].bnum;
