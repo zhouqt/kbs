@@ -273,7 +273,7 @@ int main()
     memset(&addr, 0, sizeof(addr));
     addr.sin_family=AF_INET;
     addr.sin_addr.s_addr=inet_addr(sysconf_str("SMS_ADDRESS"));
-    addr.sin_port=htons(4002);
+    addr.sin_port=htons(sysconf_eval("SMS_PORT", 4002));
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) {
         close(sockfd);
         printf("Unable to connect.\n");
