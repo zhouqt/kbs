@@ -26,6 +26,7 @@ FONT.c37 {COLOR: #000000;}
 .t6 {background-color: #FFFFFF;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-right-style: solid;border-bottom-style: solid;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;border-top-style: none;border-left-style: none;text-align: center;font-size: 14px;font-weight: bold;color: #FF0000;}
 .t7 {background-color: #FFFFFF;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-top-style: none;border-right-style: solid;border-bottom-style: solid;border-left-style: none;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;}
 .t8 {background-color: #FFFFFF;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-top-style: none;border-right-style: solid;border-bottom-style: solid;border-left-style: none;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;}
+.t9 {border-width: 1px;border-left-style: solid;border-right-style: none;border-bottom-style: none;border-top-style: none;border-top-color: #CCCCCC;border-color: #CCCCCC;}
 .b1 {font-size: 14px;color: #333333;text-decoration: none;}
 .b2 {font-size: 14px;color: #000000;background-color: #F6F6F6;text-decoration: none;}
 .b3 {font-weight: bolder;color: #CC3300;text-decoration: none;}

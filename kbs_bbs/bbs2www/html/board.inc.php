@@ -46,4 +46,177 @@ function find_content($parent,$name)
     return "";
 }
 
+function bbs_board_header($brdarr,$articles=0)
+{
+	global $section_names;
+	$brd_encode = urlencode($brdarr["NAME"]);
+	$ann_path = bbs_getannpath($brdarr["NAME"]);
+	
+	$bms = explode(" ", trim($brdarr["BM"]));
+	$bm_url = "";
+	if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
+		$bm_url = "诚征版主中";
+	else
+	{
+		if (!ctype_alpha($bms[0][0]))
+			$bm_url = $bms[0];
+		else
+		{
+			foreach ($bms as $bm)
+			{
+				$bm_url .= sprintf("<a class=\"b3\" href=\"/bbsqry.php?userid=%s\"><font class=\"b3\">%s</font></a> ", $bm, $bm);
+			}
+			$bm_url = trim($bm_url);
+		}
+	}
+	
+?>
+<body topmargin="0" leftmargin="0">
+<a name="listtop"></a>
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+  <tr> 
+    <td colspan="2" class="b2">
+	    <a href="mainpage.html" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
+	    -
+	    <?php
+	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
+		if ($sec_index >= 0)
+		{
+	    ?>
+		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><font class="b2"><?php echo $section_names[$sec_index][0]; ?></font></a>
+	    <?php
+		}
+	    ?>
+	    -
+	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>
+	    |
+	    <a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=0" class="b2"><font class="b2">添加到收藏夹</font></a>
+<?php
+	if( defined("HAVE_BRDENV") ){
+		if( bbs_board_have_envelop($brdarr["NAME"]) ){
+?>
+	    |
+	    <a href="/bbsenv.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">版面导读</font></a>
+<?php
+		}
+	}
+?>
+	    )
+    </td>
+  </tr>
+  <tr> 
+    <td colspan="2" align="center" class="b4"><?php echo $brdarr["NAME"]."(".$brdarr["DESC"].")"; ?> 版</td>
+  </tr>
+  <tr><td class="b1">
+  <img src="images/bm.gif" alt="版主" align="absmiddle">版主 <?php echo $bm_url; ?>
+  </td></tr>
+  <tr> 
+    <td class="b1">
+    <img src="images/online.gif" alt="本版在线人数" align="absmiddle">在线 <font class="b3"><?php echo $brdarr["CURRENTUSERS"]+1; ?></font> 人
+<?php
+	if($articles)
+	{
+?>
+    <img src="images/postno.gif" alt="本版文章数" align="absmiddle">文章 <font class="b3"><?php echo $articles; ?></font> 篇
+<?php
+	}
+?>
+    </td>
+    <td align="right" class="b1">
+	    <img src="images/gmode.gif" align="absmiddle" alt="文摘区"><a class="b1" href="bbsgdoc.php?board=<?php echo $brd_encode; ?>"><font class="b1">文摘区</font></a> 
+<?php
+    	if ($ann_path != FALSE)
+	{
+        	if (!strncmp($ann_path,"0Announce/",10))
+			$ann_path=substr($ann_path,9);
+?>
+	    | 
+  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>"><font class="b1">精华区</font></a>
+	    <?php
+	}
+?>
+	    | 
+  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/bbsbfind.php?board=<?php echo $brd_encode; ?>"><font class="b1">版内查询</font></a>
+<?php
+	if (strcmp($currentuser["userid"], "guest") != 0)
+	{
+?>
+	    | 
+  	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a class="b1" href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>"><font class="b1">本版投票</font></a>
+	    | 
+  	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a class="b1" href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>"><font class="b1">发文模板</font></a>
+<?php
+	}
+?>
+    	        </td>
+  </tr>
+  <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
+  </tr>
+</table>
+<?php	
+}
+
+function bbs_board_foot($brdarr,$listmode)
+{
+	global $currentuser;
+	$brd_encode = urlencode($brdarr["NAME"]);
+	$usernum = $currentuser["index"];
+	$brdnum  = $brdarr["NUM"];
+?>
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+  <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
+  </tr>
+  <tr> 
+    <td colspan="2" align="center" class="b1">
+    	[<a href="#listtop">返回顶部</a>]
+    	[<a href="javascript:location=location">刷新</a>]
+<?php
+	switch($listmode)
+	{
+		case "NORMAL":
+?>
+[<a href="bbsodoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]
+<?php		
+			break;
+		case "ORIGIN":
+?>
+[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>]
+<?php
+	}
+?>
+[<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>]
+<?php
+if (bbs_is_bm($brdnum, $usernum))
+{
+?>
+[<a href="bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>]
+<?php
+}
+?>
+    </td>
+  </tr>
+<?php
+	$relatefile = $_SERVER["DOCUMENT_ROOT"]."/brelated/".$brdarr["NAME"].".html";
+	if( file_exists( $relatefile ) )
+	{
+?>
+<tr>
+<td colspan="2" align="center" class="b1">
+来这个版的人常去的其他版面：
+<?php
+	include($relatefile);
+?>
+</td>
+</tr>
+<?php
+	}
+?>
+</table>
+<?php	
+}
+
+
+
 ?>
