@@ -600,7 +600,7 @@ int skip_key=0;
 int igetkey()
 {
     int mode;
-    int ch, last;
+    int ch, last, llast;
     int ret=0;
 
     if(keybuffer_count) {
@@ -609,7 +609,7 @@ int igetkey()
         keybuffer_count--;
         return ret;
     }
-    mode = last = 0;
+    mode = last = llast = 0;
 //    if (ibufsize == icurrchar)
 //        refresh();
     while (1) {
@@ -677,11 +677,25 @@ int igetkey()
                 ret = KEY_HOME + (last - '1');
                 break;
             }
+            else if (ch >= '0' && ch <= '9')
+                mode = 4;
+            else {
+                ret = ch;
+                break;
+            }
+        } else if (mode == 4) {
+            if (ch == '~') {
+                int k=(llast-'1')*10+(last-'1');
+                if(k<=3) ret = KEY_F1+k;
+                else ret = KEY_F1+k-1;
+                break;
+            }
             else {
                 ret = ch;
                 break;
             }
         }
+        llast = last;
         last = ch;
     }
 
