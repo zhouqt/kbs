@@ -49,18 +49,33 @@ function get_mimetype($name)
 	return "application/octet-stream";
 }
 
-function display_navigation_bar($brdarr, $articles, $num, $brdnum)
+function display_navigation_bar_in($brdarr, $articles, $num, $brdnum)
 {
 	global $currentuser;
 
 	$brd_encode = urlencode($brdarr["NAME"]);
 	$PAGE_SIZE = 20;
 ?>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<tr><td>
+[<a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $articles[1]["ID"];?>">回文章</a>]
+[<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=<?php if(strncmp($articles[1]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[1]["TITLE"]); ?>">回信给作者</a>]
+</td><td align="right">
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tp">同主题上篇</a>]
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tn">同主题下篇</a>]
+</td></tr></table>
 <?php
+}
+
+function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
+{
+	global $currentuser;
+
+	$brd_encode = urlencode($brdarr["NAME"]);
+	$PAGE_SIZE = 20;
+
 	if( $articles[1]["ATTACHPOS"] == 0)
 	{
 ?>
@@ -69,16 +84,13 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 <?php
 	}
 ?>
-[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
 [<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
-[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">本讨论区</a>]
-[<a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $articles[1]["ID"];?>">回文章</a>]
-[<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=<?php if(strncmp($articles[1]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[1]["TITLE"]); ?>">回信给作者</a>]
+[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
 [<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>&groupid=<?php echo $articles[1]["GROUPID"];?>">同主题阅读</a>]
+[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">返回版面</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <?php
 }
-
 	$brdarr = array();
 	if( isset( $_GET["bid"] ) ){
 		$brdnum = $_GET["bid"] ;
@@ -237,7 +249,7 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 <body>
 <center><p><?php echo BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
 <?php
-				display_navigation_bar($brdarr, $articles, $num, $brdnum);
+			display_navigation_bar_in($brdarr, $articles, $num, $brdnum);
 ?>
 <hr class="default" />
 <table width="610" border="0">
@@ -248,7 +260,14 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 </td></tr></table>
 <hr class="default" />
 <?php
-			display_navigation_bar($brdarr, $articles, $num, $brdnum);
+			display_navigation_bar_in($brdarr, $articles, $num, $brdnum);
+?>
+<p align="center">
+<?php
+			display_navigation_bar_out($brdarr, $articles, $num, $brdnum);
+?>
+</p>
+<?php
 		}
 	}
 	if ($loginok==1&&($currentuser["userid"] != "guest"))
