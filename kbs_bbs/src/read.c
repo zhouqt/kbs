@@ -712,16 +712,21 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
     default:
         for (i = 0; rcmdlist[i].fptr != NULL; i++) {
             if (rcmdlist[i].key == ch) {
+                if (cmdmode != RMAIL && cmdmode != GMENU
+                     && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD)) {
 		    /* add by stiger */
-		if( POSTFILE_BASENAME(((fileheader *)(pnt+(locmem->crs_line-locmem->top_line)*ssize))->filename)[0]=='Z' ){
-		    if(ch=='D' || ch=='b' || ch=='B') return DONOTHING;
-		    else if(ch=='s')
-                    mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect );
-		    else
-                    mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], ding_direct );
-		}
-		else
-                    mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
+        		if( POSTFILE_BASENAME(((fileheader *)(pnt+(locmem->crs_line-locmem->top_line)*ssize))->filename)[0]=='Z' ){
+        		    if(ch=='D' || ch=='b' || ch=='B') return DONOTHING;
+        		    else if(ch=='s')
+                            mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect );
+        		    else
+                            mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], ding_direct );
+        		}
+        		else
+                            mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
+                }
+                else
+                      mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
                 break;
             }
         }
