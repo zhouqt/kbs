@@ -43,6 +43,7 @@ static ZEND_FUNCTION(bbs_update_uinfo);
 static ZEND_FUNCTION(bbs_createnewid);
 static ZEND_FUNCTION(bbs_fillidinfo);
 static ZEND_FUNCTION(bbs_delfile);
+static ZEND_FUNCTION(bbs_delmail);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -89,7 +90,8 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_update_uinfo, NULL)
         ZEND_FE(bbs_createnewid,NULL)
         ZEND_FE(bbs_fillidinfo,NULL)
-		ZEND_FE(bbs_delfile,NULL)
+        ZEND_FE(bbs_delfile,NULL)
+        ZEND_FE(bbs_delmail,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -1955,6 +1957,7 @@ static ZEND_FUNCTION(bbs_delfile)
 		WRONG_PARAM_COUNT;
 	}
 
+	u = getcurrentuser();
 	brd = getbcache(board);
     if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
         RETURN_LONG(-2);
@@ -1962,7 +1965,7 @@ static ZEND_FUNCTION(bbs_delfile)
         RETURN_LONG(-2);
     if (brd == 0)
         RETURN_LONG(-2);
-    if (!haspostperm(currentuser, board))
+    if (!haspostperm(u, board))
         RETURN_LONG(-2);
 
     sprintf(dir, "boards/%s/.DIR", board);
@@ -1979,6 +1982,58 @@ static ZEND_FUNCTION(bbs_delfile)
 				result = -1;
 			else
 				result = 0;
+			break;
+		}
+		num++;
+    }
+    fclose(fp);
+
+	RETURN_LONG(result);
+}
+
+/**
+ * del mail
+ * prototype:
+ * int bbs_delmail(char* path,char* filename);
+ *
+ *  @return the result
+ *  	0 -- success, -1 -- mail don't exist
+ *  	-2 -- wrong parameter
+ *  @author binxun
+ */
+static ZEND_FUNCTION(bbs_delmail)
+{
+	FILE *fp;
+    struct fileheader f;
+    struct userec *u = NULL;
+    char dir[80];
+	long result = 0;
+
+	char* path;
+	char* filename;
+	int path_len,filename_len;
+    int num = 0;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len,&filename,&filename_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+    if (strncmp(filename, "M.", 2) || strstr(filename, ".."))
+        RETURN_LONG(-2);
+
+	u = getcurrentuser();
+
+    sprintf(dir, "mail/%c/%s/%s", toupper(u->userid[0]),u->userid,path);
+    fp = fopen(dir, "r");
+    if (fp == 0)
+        RETURN_LONG(-2);
+
+	while (1) {
+		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
+			break;
+		if (!strcmp(f.filename, filename)) {
+			del_mail(num + 1, &f, dir);
 			break;
 		}
 		num++;
