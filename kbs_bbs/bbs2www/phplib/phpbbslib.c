@@ -4116,6 +4116,10 @@ PHP_RINIT_FUNCTION(smth_bbs)
 	output_buffer=NULL;
 	output_buffer_size=0;
 	output_buffer_len=0;
+#ifdef SMS_SUPPORT
+	smsbuf=NULL;
+	smsresult=0;
+#endif
     return SUCCESS;
 }
 
