@@ -329,6 +329,8 @@ extern "C" {
  * ÎÄ¼þÎ²·µ»Ø-1
  */
     int attach_fgets(char* s,int size,FILE* stream);
+    int skip_attach_fgets(char* s,int size,FILE* stream);
+    int put_attach(FILE* in, FILE* out, int size);
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);
     typedef int (*RECORD_FUNC_ARG) (void *, void *);

@@ -170,7 +170,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 
     i = 0;
     while (!feof(fp) && i < 2) {
-        attach_fgets(buf, 1024, fp);
+        skip_attach_fgets(buf, 1024, fp);
         if (feof(fp))
             break;
         if (strstr(buf, "发信人: ") && strstr(buf, "), 信区: ")) {
@@ -1790,7 +1790,7 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
     if (*qfile != '\0' && (inf = fopen(qfile, "rb")) != NULL) {  /* 打开被引用文件 */
         op = quote_mode;
         if (op != 'N') {        /* 引用模式为 N 表示 不引用 */
-            attach_fgets(buf, 256, inf);
+            skip_attach_fgets(buf, 256, inf);
             /* 取出第一行中 被引用文章的 作者信息 */
             if ((ptr = strrchr(buf, ')')) != NULL) {    /* 第一个':'到最后一个 ')' 中的字符串 */
                 ptr[1] = '\0';
@@ -1807,24 +1807,24 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
                 fprintf(outf, "\n【 在 %s 的来信中提到: 】\n", quser);
 
             if (op == 'A') {    /* 除第一行外，全部引用 */
-                while (attach_fgets(buf, 256, inf) != NULL) {
+                while (skip_attach_fgets(buf, 256, inf) != NULL) {
                     fprintf(outf, ": %s", buf);
                 }
             } else if (op == 'R') {
-                while (attach_fgets(buf, 256, inf) != NULL)
+                while (skip_attach_fgets(buf, 256, inf) != NULL)
                     if (buf[0] == '\n')
                         break;
-                while (attach_fgets(buf, 256, inf) != NULL) {
+                while (skip_attach_fgets(buf, 256, inf) != NULL) {
                     if (Origin2(buf))   /* 判断是否 多次引用 */
                         continue;
                     fprintf(outf, "%s", buf);
 
                 }
             } else {
-                while (attach_fgets(buf, 256, inf) != NULL)
+                while (skip_attach_fgets(buf, 256, inf) != NULL)
                     if (buf[0] == '\n')
                         break;
-                while (attach_fgets(buf, 256, inf) != NULL) {
+                while (skip_attach_fgets(buf, 256, inf) != NULL) {
                     if (strcmp(buf, "--\n") == 0)       /* 引用 到签名档为止 */
                         break;
                     if (buf[250] != '\0')
@@ -1914,7 +1914,7 @@ int do_post()
         genbuf[0] = '\0';
         fp = fopen(q_file, "rb");
         if (fp != NULL) {
-            attach_fgets(genbuf, 255, fp);
+            skip_attach_fgets(genbuf, 255, fp);
             fclose(fp);
         }
 

@@ -181,7 +181,7 @@ int autoappend;
         setbfile(buf, board, fh->filename);
         if ((fp = fopen(buf, "rb")) == NULL)
             return;
-        while (attach_fgets(buf, sizeof(buf), fp) != NULL) {
+        while (skip_attach_fgets(buf, sizeof(buf), fp) != NULL) {
             /*
              * 首先滤掉换行符 
              */
@@ -447,11 +447,12 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     if (mode == 0 /*转贴 */ ) {
         int normal_file;
         int header_count;
+        int asize;
 
         normal_file = 1;
 
         write_header(of, user, in_mail, sourceboard, title, Anony, 1 /*不写入 .posts */ );
-        if (attach_fgets(buf, 256, inf) != NULL) {
+        if (skip_attach_fgets(buf, 256, inf) != NULL) {
             for (count = 8; buf[count] != ' ' && count < 256; count++)
                 owner[count - 8] = buf[count];
         }
@@ -464,7 +465,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
             normal_file = 0;
         if (normal_file) {
             for (header_count = 0; header_count < 3; header_count++) {
-                if (attach_fgets(buf, 256, inf) == NULL)
+                if (skip_attach_fgets(buf, 256, inf) == NULL)
                     break;      /*Clear Post header */
             }
             if ((header_count != 2) || (buf[0] != '\n'))
@@ -483,11 +484,13 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
     } else if (mode == 2) {
         write_header(of, user, in_mail, sourceboard, title, Anony, 0 /*写入 .posts */ );
     }
-    while (attach_fgets(buf, 256, inf) != NULL) {
+    int asize;
+    while ((asize=-attach_fgets(buf, 256, inf)) != 0) {
         if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
             continue;           /* 避免引用重复 */
         else
             fprintf(of, "%s", buf);
+        put_attach(inf, of, asize);
     }
     fclose(inf);
     fclose(of);
@@ -1541,7 +1544,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     char outname[STRLEN];
     int step = 0;
     int added = 0;
-    bool findattach=false;
+    int asize;
 
     if ((fp = fopen(fname, "rb")) == NULL)
         return 0;
@@ -1551,11 +1554,7 @@ int add_edit_mark(char *fname, int mode, char *title)
         return 0;
     }
 
-    while ((attach_fgets(buf, 256, fp)) != NULL) {
-        if (!memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
-            findattach=true;
-            break;
-        }
+    while ((asize=-attach_fgets(buf, 256, fp)) != 0) {
         if (mode & 2) {
             if (step != 3 && !strncmp(buf, "标  题: ", 8)) {
                 step = 3;
@@ -1576,6 +1575,7 @@ int add_edit_mark(char *fname, int mode, char *title)
             added = 1;
         }
         fputs(buf, out);
+        put_attach(fp, out, asize);
     }
     if (!added)
     {
@@ -1642,7 +1642,7 @@ char* checkattach(char *buf, long size,long *len,char** attachptr)
  * 发现attach返回1
  * 文件尾返回-1
  */
-int attach_fgets(char* s,int size,FILE* stream)
+int skip_attach_fgets(char* s,int size,FILE* stream)
 {
   int matchpos=0;
   int ch;
@@ -1677,3 +1677,48 @@ int attach_fgets(char* s,int size,FILE* stream)
   else return 0;
 }
 
+int attach_fgets(char* s,int size,FILE* stream)
+{
+  int matchpos=0;
+  int ch;
+  char* ptr;
+  ptr=s;
+  while ((ch=fgetc(stream))!=EOF) {
+     if (ch==ATTACHMENT_PAD[matchpos]) {
+        matchpos++;
+        if (matchpos==ATTACHMENT_SIZE) {
+            int size, d, count=8+4+1;
+            while(ch=fgetc(stream))count++;
+            fread(&d, 1, 4, stream);
+            size = htonl(d);
+            fseek(stream,-count,SEEK_CUR);
+            *ptr=0;
+            return -(count+size);
+        }
+     }
+     *ptr=ch;
+     ptr++;
+     if ((ptr-s)==size-1) {
+	     *(ptr-1)=0;
+	     return 1;
+     }
+     if (ch=='\n') {
+        *ptr=0;
+        return 1;
+     }
+  }
+  if(ptr!=s) return 1;
+  else return 0;
+}
+
+int put_attach(FILE* in, FILE* out, int size)
+{
+    char buf[1024*16];
+    int i,o;
+    if(size<=0) return -1;
+    while(o=fread(buf, 1, 1024*16, in)) {
+        size-=o;
+        fwrite(buf, 1, o, out);
+    }
+    return 0;
+}
