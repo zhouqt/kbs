@@ -341,7 +341,7 @@ int kick_user(struct user_info *userinfo)
     struct user_info uin;
     struct userec kuinfo;
     char buffer [40];
-   	char userid[40];
+    char userid[40];
 
     if(uinfo.mode!=LUSERS&&uinfo.mode!=OFFLINE&&uinfo.mode!=FRIEND)
     {
@@ -396,8 +396,7 @@ int kick_user(struct user_info *userinfo)
     {
     	clear_utmp((userinfo-utmpshm->uinfo)+1);
     }
-    sprintf(buffer, "kicked %s", userid);
-    report(buffer);
+    bbslog("1user","kicked %s",userid);
     /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
     /*bbslog( "1system", "KICK %s (%s)", uin.userid, uin.username );*/
     /*    uin.active = NA;

@@ -44,6 +44,7 @@ struct UTMPHEAD {
     time_t              uptime;
 };
 
+static int rebuild_list(struct user_info* up,char* arg,int p);
 static struct UTMPHEAD * utmphead;
 
 struct UTMPFILE *get_utmpshm_addr()
@@ -83,7 +84,7 @@ static void utmp_setreadonly(int readonly)
 {
 	int iscreate;
 	shmdt(utmphead);
-   	utmphead = (struct UTMPHEAD*)attach_shm1( "UTMPHEAD_SHMKEY", 3698, sizeof(struct UTMPHEAD),&iscreate ,readonly, utmphead);/*attach user tmp head */
+   	utmphead = (struct UTMPHEAD*)attach_shm1( NULL, 3698, sizeof(struct UTMPHEAD),&iscreate ,readonly, utmphead);/*attach user tmp head */
 }
 
 void resolve_utmp()
@@ -248,12 +249,12 @@ int getnewutmpent(struct user_info *up)
 				    i=utmphead->list_next[i-1];
 				    count++;
 				    if (count>USHM_SIZE) {
-                        bbslog( "3system", "UTMP:maybe loop???");
-						f_cat("NOLOGIN","系统故障，请稍后再来");
-						logloop();
-						utmp_setreadonly(1);
+			utmphead->listhead=0;
+                        bbslog( "3system", "UTMP:maybe loop rebuild!");
+			apply_ulist(rebuild_list,NULL);
+			utmp_setreadonly(1);
                         utmp_unlock(utmpfd);
-                        return -1;
+                        exit(-1);
                 }
             }
 					        
@@ -357,9 +358,9 @@ getnewutmpent2(struct user_info *up)
 				    i=utmphead->list_next[i-1];
 				    count++;
 				    if (count>USHM_SIZE) {
-                        bbslog( "3system", "UTMP:maybe loop???");
-						utmp_setreadonly(1);
-						logloop();
+					bbslog( "3system", "UTMP:maybe loop rebuild..!");
+					apply_ulist(rebuild_list,NULL);
+					utmp_setreadonly(1);
                         utmp_unlock(utmpfd);
                         return -1;
                 }
@@ -395,6 +396,55 @@ getnewutmpent2(struct user_info *up)
 	utmp_setreadonly(1);
     utmp_unlock(utmpfd);
     return pos+1 ;
+}
+
+static int rebuild_list(struct user_info* up,char* arg,int p)
+{
+    int pos=p-1;
+    /* add to sorted list  */
+
+	if (!utmphead->listhead) { /* init the list head  */
+		utmphead->list_prev[pos]=pos+1;
+		utmphead->list_next[pos]=pos+1;
+		utmphead->listhead=pos+1;
+	} else {
+		int i;
+		i=utmphead->listhead;
+		if (strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)>=0) {
+			/* add to head */
+    		utmphead->list_prev[pos]=utmphead->list_prev[i-1];
+	    	utmphead->list_next[pos]=i;
+
+		    utmphead->list_prev[i-1]=pos+1;
+
+    		utmphead->list_next[utmphead->list_prev[pos]-1]=pos+1;
+    		
+			utmphead->listhead = pos+1;
+		} else {
+		    int count;
+		    count=0;
+			i=utmphead->list_next[i-1];
+			while ((strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)<0)&&
+				(i!=utmphead->listhead)) {
+				    i=utmphead->list_next[i-1];
+				    count++;
+				    if (count>USHM_SIZE) {
+                        bbslog( "3system", "UTMP:rebuild maybe loop???");
+				f_cat("NOLOGIN","系统故障，请稍后再来");
+				logloop();
+                        exit(-1);
+                }
+            }
+					        
+    		utmphead->list_prev[pos]=utmphead->list_prev[i-1];
+	    	utmphead->list_next[pos]=i;
+
+		    utmphead->list_prev[i-1]=pos+1;
+
+    		utmphead->list_next[utmphead->list_prev[pos]-1]=pos+1;
+		}
+	}
+    return COUNT;
 }
 
 int
@@ -444,9 +494,9 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
 				num++;
 		i=utmphead->list_next[i-1];
 		if (num>=USHM_SIZE) {
-			bbslog("5system","utmp loop!!!!");
-			f_cat("NOLOGIN","系统故障，请稍后再来");
-			logloop();
+		        bbslog( "3system", "UTMP:maybe loop rebuild!!");
+			apply_ulist(rebuild_list,NULL);
+
 			exit(0);
 		};
 	}
