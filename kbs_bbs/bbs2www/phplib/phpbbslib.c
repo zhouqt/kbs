@@ -32,6 +32,7 @@ static ZEND_FUNCTION(bbs_getmailnum);
 static ZEND_FUNCTION(bbs_getwebmsg);
 static ZEND_FUNCTION(bbs_sendwebmsg);
 static ZEND_FUNCTION(bbs_sethomefile);
+static ZEND_FUNCTION(bbs_mail_file);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -68,6 +69,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
     ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
 	ZEND_FE(bbs_sethomefile, NULL)
+    ZEND_FE(bbs_mail_file, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -1302,6 +1304,39 @@ static ZEND_FUNCTION(bbs_sethomefile)
     RETURN_STRING(buf,1);
 }
 
+/**
+ * mail a file from a user to another user.
+ * prototype:
+ * string bbs_mail_file(string srcid, string filename, string destid,
+ *                        string title, int is_move)
+ *
+ * @return TRUE on success,
+ *       FALSE on failure.
+ * @author flyriver
+ */
+static ZEND_FUNCTION(bbs_mail_file)
+{
+	char *srcid;
+	int srcid_len;
+	char *filename;
+	int filename_len;
+	char *destid;
+	int destid_len;
+	char *title;
+	int title_len;
+	int is_move;
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 5
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssssl", &srcid, &srcid_len, &filename, &filename_len, &destid, &destid_len, &title, &title_len, &is_move) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+	if (mail_file(srcid, filename, destid, title, is_move) < 0)
+		RETURN_FALSE;
+	RETURN_TRUE;
+}
+	
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
     zval *bbs_home;
