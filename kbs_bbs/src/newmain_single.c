@@ -399,9 +399,9 @@ void login_query()
 
     ansimore("etc/issue", false);
 #ifndef NINE_BUILD
-    prints("  \033[1m»¶Ó­¹âÁÙ ¡ô\033[31m%s[37m¡ô [36mÉÏÏßÈËÊý \033[1m%d(%d WWW GUEST)[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), getwwwguestcount());
+    prints("\033[1m»¶Ó­¹âÁÙ ¡ô\033[31m%s[37m¡ô [36mÉÏÏßÈËÊý \033[1m%d[×î¸ß: %d](%d WWW GUEST)[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(), get_publicshm()->max_user,getwwwguestcount());
 #else
-    prints("  \033[1m»¶Ó­¹âÁÙ ¡ô\033[31m%s\033[37m¡ô \033[36mÉÏÏßÈËÊý \033[1m%d\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount());
+    prints("\033[1m»¶Ó­¹âÁÙ ¡ô\033[31m%s\033[37m¡ô \033[36mÉÏÏßÈËÊý \033[1m%d[×î¸ß: %d]\033[m", BBS_FULL_NAME, curr_login_num + getwwwguestcount(),get_publicshm()->max_user);
 #endif
 
 #ifndef SSHBBS
