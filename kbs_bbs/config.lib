@@ -53,6 +53,9 @@ if test "$MYSQL_DIR" != "no"; then
       elif test -f $i/include/mysql.h; then
         MYSQL_DIR=$i
         MYSQL_INC=$i/include
+      elif test -f $i/mysql/include/mysql.h; then
+        MYSQL_DIR=$i
+        MYSQL_INC=$i/include
       fi
     done
   fi
