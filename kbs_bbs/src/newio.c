@@ -690,7 +690,7 @@ int igetkey()
                 if(k<=3) ret = KEY_F1+k;
                 else ret = KEY_F1+k-1;
         	if (scrint&&ret==KEY_F10) {
-        	      mode==0;
+        	      mode=0;
                     if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX))
                     exec_mbem("@mod:service/libcalendar.so#calendar_main");
                     continue;
