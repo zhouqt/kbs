@@ -19,6 +19,7 @@ int gen_commend_xml()
 	struct stat st;
 	int numrecords;
 	int i;
+	char *c;
 
 	setbfile(dirpath, COMMEND_ARTICLE, DIGEST_DIR);
     if (stat(dirpath, &st) < 0)
@@ -56,6 +57,8 @@ int gen_commend_xml()
 			for(i=0;i<4;i++){
 				if(fgets(buf, 255, fp1) ){
 					buf[255]=0;
+					while( (c=strchr(buf, '\x1b')) != NULL )
+						*c='*';
 					fprintf(fp, "%s", encode_xml(xml_buf, buf, sizeof(xml_buf)) );
 				}else
 					break;
