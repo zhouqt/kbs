@@ -1,0 +1,41 @@
+1.wbbs对文章列表部分的处理
+
+现在的wbbs文章列表是基于同主题的，列表时只列出
+同主题首篇文章；列表按照同主题最后一篇文章的发文
+时间降序排序，有分页功能；如果某主题的首篇文章不
+存在（已被删除），则不将其加入列表中。
+
+这部分处理主要由phpbbslib中的下面几个函数来完成：
+
+bbs_getthreadnum(string boardName)，该函数求某版面下的主题数量
+这个函数首先比较.DIR和.ORIGIN文件的时间戳，如果
+.ORIGIN旧于.DIR则调用bbslib中的www_generateOriginIndex
+函数重新生成.ORIGIN文件（似乎不需要这个比较？）
+然后直接由.ORIGIN的文件长度求记录数目。（由于
+原来的.ORIGIN生成算法是将首篇文章不存在的
+主题也记入列表的，所以这个函数算出来的主题数量
+和后面的几个函数可能不一致:((，这个需要以后修改）
+
+bbs_getthreads(string boardName, int start, int num)，该函数按
+同主题最后一篇文章的发文时间降序排列，取从start开始的num篇主题信息
+
+其主要算法是：
+首先建立一标志数组，在其中存放已找到的主题ID
+倒序遍历.DIR中的记录，如果其主题ID不在标志数组中，则找该主题ID
+所对应的主题首篇文章是否存在，如果存在，则将其加入标志数组中，同时
+主题计数器加一。如果主题计数器介于start和start+num之间，则保存找到
+的主题首篇文章的信息；当主题计数器大于等于start+num，则结束遍历。
+最后将保存的结果返回。
+
+bbs_get_thread_articles(char *board, int groupID, int start, int num)
+该函数按发文时间降序排列，取某一从start开始的num篇文章
+
+其算法为：
+首先找倒序遍历.DIR从中找主题ID与groupID相同的
+start+num篇文章；
+
+bbs_get_thread_articles(char *board, int groupID)
+该函数求某主题的文章数
+
+其算法与bbs_get_thread_articles也类似，首先找到该主题的首篇文章，然后从
+此处开始遍历.DIR找主题ID与groupID相同文章并计数；
