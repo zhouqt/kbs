@@ -904,7 +904,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             break;
         for(i=starty;i<=y;i++)
             norefresh_saveline(i, 1, savebuffer[i]);
-        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
+        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (cursory == y))
             return -ch;
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
@@ -920,8 +920,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     buf[now++]='\n';
                 }
                 break;
-            case Ctrl('W'):
-            case KEY_PGUP:
+            case KEY_UP:
                 if(cursory>starty) {
                     y = starty; x = startx;
                     chk = 0;
@@ -950,8 +949,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     }
                 }
                 break;
-            case Ctrl('S'):
-            case KEY_PGDN:
+            case KEY_DOWN:
                 if(cursory<y) {
                     y = starty; x = startx;
                     chk = 0;
@@ -1052,10 +1050,17 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             case KEY_HOME:
             case Ctrl('A'):
-                now=0;
+                while(now>=0&&buf[now]!='\n'&&buf[now]!='\r') now--;
+                now++;
                 break;
             case KEY_END:
             case Ctrl('E'):
+                while(now<strlen(buf)&&buf[now]!='\n'&&buf[now]!='\r') now++;
+                break;
+            case KEY_PGUP:
+                now=0;
+                break;
+            case KEY_PGDN:
                 now = strlen(buf);
                 break;
             case Ctrl('Y'):
@@ -1097,6 +1102,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     if(y==cursory&&x<=cursorx)
                         now=i+1;
                 }
+
                 if(now>strlen(buf)) now=strlen(buf);
                 break;
             default:
