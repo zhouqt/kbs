@@ -234,7 +234,7 @@ int     protocol;
 
 static int readstr(int sock,char *s,int size)
 {
-	int retlen = 0;;
+	int retlen = 0;
 	char c;
 	static char myinbuf[1024];
 	static int bufsize = 0;
