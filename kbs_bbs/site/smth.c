@@ -84,7 +84,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     else if (lvl & (PERM_LOGINOK)) {
         if (lookupuser->flags[0] & GIVEUP_FLAG)
             strcpy(buf, "戒网");
-        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) || (lvl & (PERM_DENYMAIL)) || (lvl & (PERM_DENYPOST)))
+        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) || (lvl & (PERM_DENYMAIL))))
             strcpy(buf, "受限");
         else
             strcpy(buf, "用户");
@@ -99,7 +99,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
         buf[0] = (lvl & (PERM_SYSOP)) ? 'C' : ' ';
         buf[1] = (lvl & (PERM_XEMPT)) ? 'L' : ' ';
         buf[2] = (lvl & (PERM_BOARDS)) ? 'B' : ' ';
-        buf[3] = (lvl & (PERM_DENYPOST)) ? 'p' : ' ';
+        buf[3] = !(lvl & (PERM_POST)) ? 'p' : ' ';
         if( lvl & PERM_ACCOUNTS ) buf[3] = 'A';
         if( lvl & PERM_SYSOP ) buf[3] = 'S'; 
         buf[4] = '\0';

@@ -62,8 +62,6 @@ int main(int argc, char **argv)
             if (strchr(currentuser->realemail, '@')
                 && valid_ident(currentuser->realemail)) {
                 currentuser->userlevel |= PERM_DEFAULT;
-                if (HAS_PERM(currentuser, PERM_DENYPOST) /* && !HAS_PERM(currentuser,PERM_SYSOP) */ )
-                    currentuser->userlevel &= ~PERM_POST;
             }
         }
     }

@@ -90,7 +90,7 @@ const char *permstrings[] = {
     "呼叫他人聊天",             /* PERM_PAGE */
     "发表文章",                 /* PERM_POST */
     "使用者资料正确",           /* PERM_LOGINOK */
-    "禁止发表文章",             /* PERM_DENYPOST */
+    "未使用",             /* PERM_UNUSE */
     "可隐身",                   /* PERM_CLOAK */
     "可见隐身",                 /* PERM_SEECLOAK */
     "长期帐号",                 /* PERM_XEMPT */

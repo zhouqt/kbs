@@ -792,7 +792,7 @@ int haspostperm(struct userec *user, char *bname)
      */
     if ((i = getbnum(bname)) == 0)
         return 0;
-    if (HAS_PERM(user, PERM_DENYPOST))
+    if (!HAS_PERM(user, PERM_POST))
         /*
          * if(!strcmp(bname, "sysop"))
          * return 1; 
@@ -809,9 +809,8 @@ int haspostperm(struct userec *user, char *bname)
             return 1;
         else if (!strcmp(bname, "Arbitration"))
             return 1;
-    }                           /* stephen 2000.10.27 */
-    if (!HAS_PERM(user, PERM_POST))
         return 0;
+    }                           /* stephen 2000.10.27 */
     return (HAS_PERM(user, (bcache[i - 1].level & ~PERM_NOZAP) & ~PERM_POSTMASK));
 }
 

@@ -280,8 +280,10 @@ void check_register_info()
             return;
         if (!invalid_realmail(currentuser->userid, currentuser->realemail, STRLEN - 16)) {
             currentuser->userlevel |= PERM_DEFAULT;
+            /*
             if (HAS_PERM(currentuser, PERM_DENYPOST) && !HAS_PERM(currentuser, PERM_SYSOP))
                 currentuser->userlevel &= ~PERM_POST;
+            */
         } else {
             /* added by netty to automatically send a mail to new user. */
             /* begin of check if local email-addr  */
@@ -364,8 +366,5 @@ void check_register_info()
     if (currentuser->lastlogin - currentuser->firstlogin < REGISTER_WAIT_TIME && !HAS_PERM(currentuser, PERM_SYSOP) && newregfile != NULL) {
         currentuser->userlevel &= ~(perm);
         ansimore(newregfile, true);
-    }
-    if (HAS_PERM(currentuser, PERM_DENYPOST) && !HAS_PERM(currentuser, PERM_SYSOP)) {
-        currentuser->userlevel &= ~PERM_POST;
     }
 }

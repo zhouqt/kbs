@@ -13,7 +13,7 @@
 #define PERM_PAGE       000004
 #define PERM_POST       000010
 #define PERM_LOGINOK    000020
-#define PERM_DENYPOST   000040
+#define PERM_UNUSE  000040
 #define PERM_CLOAK      000100
 #define PERM_SEECLOAK   000200
 #define PERM_XEMPT      000400

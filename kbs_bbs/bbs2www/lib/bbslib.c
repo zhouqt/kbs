@@ -2073,8 +2073,10 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
             if (strchr(user->realemail, '@')
                 && valid_ident(user->realemail)) {
                 user->userlevel |= PERM_DEFAULT;
-                if (HAS_PERM(user, PERM_DENYPOST) /* && !HAS_PERM(currentuser,PERM_SYSOP) */ )
+                /*
+                if (HAS_PERM(user, PERM_DENYPOST)  )
                     user->userlevel &= ~PERM_POST;
+				*/
             }
         }
 
