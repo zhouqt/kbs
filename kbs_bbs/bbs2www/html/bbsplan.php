@@ -7,6 +7,8 @@
 		html_init("gb2312");
 		$filename=bbs_sethomefile($currentuser["userid"],"plans");
 		if ($_GET["type"]=="1") {
+			if(!strcmp($currentuser["userid"],"guest"))
+				html_error_quit("不能给guest设置个人说明档!");
 		    $fp=@fopen($filename,"w+");
                     if ($fp!=false) {
 	    	        fwrite($fp,str_replace("\r\n", "\n", $_POST["text"]));
