@@ -506,13 +506,14 @@ int delete_record(char *filename ,int size,int id,RECORD_FUNC_ARG filecheck,void
 			       		ret=-2;
 				}
 			}
-		    if (ret==0)
+		    if (ret==0) {
 				memcpy(ptr+(id-1)*size,ptr+id*size,filesize-size*id);
+    			ftruncate(fdr,filesize-size);
+			}
 		    break;
 		case 2:
 		    	ret=-3;
 	}
-    ftruncate(fdr,filesize-size);
     end_mmapfile(ptr, filesize, fdr);
     return ret;
 }

@@ -452,6 +452,7 @@ login_query()
         signal(SIGALRM, SIG_IGN);
 #endif
 
+		/*
     output("\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n",22);
     attempts=5;
     while(attempts) {
@@ -468,6 +469,7 @@ login_query()
 	exit(-1);
     }
     }
+	*/
 
     /* Leeward 98.09.24 Use SHARE MEM and disable the old code */
     if(fill_shmfile(1,"etc/issue","ISSUE_SHMKEY"))
@@ -492,6 +494,11 @@ login_query()
       prints("[1m[36m+%d[m", curr_http_num); /* Leeward 99.03.06 */
 #ifndef SSHBBS
     attempts = 0;
+#ifdef LOGINASNEW
+	prints( "\n\033[1m[37m ‘”√«Î ‰»Î `\033[36mguest\033[37m', ◊¢≤·«Î ‰»Î`\033[36mnew\033[37m',add \033[36m'.'\33[37m after your ID for BIG5[m");
+#else
+	prints( "\n\033[1m[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ‘›Õ£◊¢≤·–¬’ ∫≈,add \033[36m'.'\33[37m after your ID for BIG5^[[m[m");
+#endif
     while( 1 ) {
         if( attempts++ >= LOGINATTEMPTS ) {
             ansimore( "etc/goodbye", NA );
@@ -506,12 +513,10 @@ login_query()
         signal(SIGALRM, SIG_IGN);
 #endif
 
-#ifdef LOGINASNEW
-        getdata( 0, 0, "\n\033[1m[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ◊¢≤·«Î ‰»Î`\033[36mnew\033[37m'): [m",
-#else
-        getdata( 0, 0, "\n\033[1m[37m«Î ‰»Î¥˙∫≈( ‘”√«Î ‰»Î `\033[36mguest\033[37m', ‘›Õ£◊¢≤·–¬’ ∫≈): [m",
-#endif
-                uid, STRLEN-1, DOECHO, NULL ,YEA);
+        getdata( 0,0, "\n«Î ‰»Î¥˙∫≈£∫", uid, STRLEN-1, DOECHO, NULL ,YEA);
+		uid[STRLEN-1]=0;
+		if (uid[strlen(uid)-1]=='.')
+			convcode=1;
         if( strcmp( uid, "new" ) == 0 ) {
 #ifdef LOGINASNEW
             if (check_ban_IP(fromhost,buf)<=0)
