@@ -494,7 +494,6 @@ int load_msgtext(char *uident, struct msghead *head, char *msgbuf)
 
     if ((fd2 = open(fname2, O_RDONLY, 0664)) == -1) {
         bbslog("user", "%s", "msgopen err");
-        close(fd);
         return -1;              /* 创建文件发生错误*/
     }
     lseek(fd2, head->pos, SEEK_SET);
