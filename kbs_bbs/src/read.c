@@ -1215,7 +1215,7 @@ case 0: case 1: case 2:
             break;
         case SR_BMTMP: /* Leeward 98.04.16 */
             if (-1 == B) a_SeSave("0Announce", currboard, &SR_fptr ,YEA);
-            else           a_Save("0Announce", currboard, &SR_fptr ,YEA);
+            else           a_Save("0Announce", currboard, &SR_fptr ,YEA, currdirect, pnum);
             break;
         }
         if(!isstart)
