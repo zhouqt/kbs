@@ -912,7 +912,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
             char buf[MAXPATH];
             int fsrc,fdst;
             snprintf(buf,MAXPATH,"%s.attach",filename);
-            if ((fsrc = open(filename, O_RDONLY)) != NULL) {
+            if ((fsrc = open(filename, O_RDONLY)) >=0) {
                 if ((fdst = open(buf, O_WRONLY|O_CREAT , 0600)) >= 0) {
                     char* src=(char*)malloc(10240);
                     long ret;
