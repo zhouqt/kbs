@@ -568,7 +568,8 @@
 			<form action="cgi-bin/bbs/bbssel" target="f3">
 			<td>
 			<img src="/images/t8.gif" border="0" alt="选择讨论区" align="absmiddle">
-			<input name="board" type="text" class="f2" value="选择讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()"> 
+			<input name="board" type="text" class="f2" value="选择讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
+<input name="submit" type="submit" value="GO" />
 			</td>
 			</form>
 		</tr>
