@@ -104,7 +104,6 @@ void suicide()
     time_t now;
     char filename[STRLEN];
 
-#define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
     char XPERM[48];
     int oldXPERM;
     int num;

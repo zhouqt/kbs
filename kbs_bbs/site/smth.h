@@ -1,6 +1,22 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
+#undef NINE_BUILD
+#undef SITE_HIGHCOLOR
+/* 
+ *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
+ *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
+ *          seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
+ *             other modes. 
+ *             */
+#define DOTIMEOUT 1
+
+/* 
+ *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
+ *    */
+#define IDLE_TIMEOUT    (60*20) 
+#define MONITOR_TIMEOUT (60*20) 
+
 #define BBSUID 			9999
 #define BBSGID 			99
 
