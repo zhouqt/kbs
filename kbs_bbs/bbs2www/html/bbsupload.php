@@ -119,7 +119,7 @@ a:hover {  color: #FF0000; text-decoration: none}
                 if ($action=="add") {
                 	if ($_FILES['attachfile']['size']+$totalsize>ATTACHMAXSIZE) {
                 		@unlink($attachdir . "/" . $act_attachname);
-                		unset($filenames,$act_attachname);
+                		//unset($filenames,$act_attachname);
                 		$errno=UPLOAD_ERR_FORM_SIZE;
                 	}
                 	if ($filecount>ATTACHMAXCOUNT) {
