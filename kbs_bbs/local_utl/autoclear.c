@@ -13,8 +13,6 @@
 #include <stdlib.h>
 #include <strings.h>
 #include "bbs.h"
-//#include "site.h"
-//#include "record.c"
 
 #define DEF_DAYS        365*10
 #define DEF_MAXP        999999
@@ -23,10 +21,6 @@
 #define EXPIRE_CONF     BBSHOME"/etc/autoclear"
 
 char *bpath = BBSHOME "/boards";
-
-//report()
-//{
-//}
 
 struct life {
     char bname[16];             /* board ID */
@@ -81,7 +75,7 @@ life *brd;
                 ftime = atoi(head.filename + 2);
                 if (head.owner[0] == '-')
                     keep = 0;
-                else if (head.accessed[0] & FILE_MARKED || total <= brd->minp)
+                else if (head.accessed[0] & FILE_DIGEST || head.accessed[0] & FILE_MARKED || total <= brd->minp)
                     keep = 1;
                 else if (ftime < duetime || total > brd->maxp)
                     keep = 0;
@@ -95,7 +89,8 @@ life *brd;
                     }
                 } else {
                     strcpy(fname, head.filename);
-                    unlink(fpath);
+//                    unlink(fpath);
+                    cancelpost(brd->bname, "-", &head, 0, 1);
                     printf("\t%s\n", fname);
                     total--;
                 }
@@ -111,6 +106,7 @@ life *brd;
     }
     flock(fd, LOCK_UN);
     close(fd);
+    updatelastpost(brd->bname);
 }
 
 main(argc, argv)
@@ -172,6 +168,7 @@ char *argv[];
     /* visit all boards */
     /* ---------------- */
 
+    resolve_boards();
     if (!(dirp = opendir(bpath))) {
         printf(":Err: unable to open %s\n", bpath);
         return -1;
@@ -184,8 +181,8 @@ char *argv[];
             else
                 key = NULL;
             if (!key)
-//                key = &db;
-		continue;
+                key = &db;
+//              continue;
             strcpy(key->bname, ptr);
             expire(key);
         }
