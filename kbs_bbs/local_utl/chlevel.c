@@ -17,10 +17,10 @@ main()
         if (user.numlogins <= 0)
             continue;
         printf("%d %s\t\n", i, user.userid);
-        user.userdefine |= DEF_ALLMSG;
-        user.userdefine |= DEF_FRIENDMSG;
-        user.userdefine |= DEF_SOUNDMSG;
-        user.userdefine &= ~DEF_MAILMSG;
+        user.userdefine[0] |= DEF_ALLMSG;
+        user.userdefine[0] |= DEF_FRIENDMSG;
+        user.userdefine[0] |= DEF_SOUNDMSG;
+        user.userdefine[0] &= ~DEF_MAILMSG;
         substitute_record("/home/bbs/.PASSWDS", &user, sizeof(user), i);
     }
     printf("\n\033[1m%d \033[32mFriends Records Tranfered...\033[m\n", i);

@@ -274,7 +274,7 @@ int addtodeny(char *uident)
             fprintf(fn, "寄信人: %s \n", currentuser->userid);
             fprintf(fn, "标  题: %s\n", buffer);
             fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
-            fprintf(fn, "来  源: %s \n", SHOW_USERIP(fromhost));
+            fprintf(fn, "来  源: %s \n", SHOW_USERIP(currentuser, fromhost));
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard->filename, denymsg);
             if (denyday)

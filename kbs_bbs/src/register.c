@@ -134,15 +134,16 @@ void new_register()
     }
 
     newuser.userlevel = PERM_BASIC;
-    newuser.userdefine = -1;
+    newuser.userdefine[0] = -1;
+    newuser.userdefine[1] = -1;
 /*   newuser.userdefine&=~DEF_MAILMSG;
     newuser.userdefine&=~DEF_EDITMSG; */
-    newuser.userdefine &= ~DEF_NOTMSGFRIEND;
+    SET_UNDEFINE(&newuser, DEF_NOTMSGFRIEND);
     if (convcode)
-        newuser.userdefine &= ~DEF_USEGB;
+        SET_UNDEFINE(&newuser, DEF_USEGB);
 
 #ifdef HAVE_WFORUM
-	newuser.userdefine &= ~DEF_SHOWREALUSERDATA;
+	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
 #endif
 
     newuser.notemode = -1;
@@ -437,7 +438,7 @@ void check_register_info()
 		{
 			fprintf(fout, "大家好,\n\n");
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", currentuser->userid,
-					currentuser->username, SHOW_USERIP(fromhost));
+					currentuser->username, SHOW_USERIP(currentuser, fromhost));
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
 //					(curruserdata.gender == 'M') ? "小弟" : "小女子");
@@ -663,12 +664,12 @@ void ConveyID()
 		if(currentuser->numlogins > 10)currentuser->numlogins = 10;
 		currentuser->stay = 0;
 		strncpy(currentuser->username,currentuser->userid,IDLEN);
-		currentuser->userdefine &= ~DEF_NOTMSGFRIEND;
+		SET_UNDEFINE(currentuser,DEF_NOTMSGFRIEND);
 #ifdef HAVE_WFORUM
-		currentuser->userdefine &= ~DEF_SHOWREALUSERDATA;
+		SET_UNDEFINE(currentuser,DEF_SHOWREALUSERDATA);
 #endif
         if (convcode)
-            currentuser->userdefine &= ~DEF_USEGB;
+            SET_UNDEFINE(currentuser,DEF_USEGB);
 
         currentuser->notemode = -1;
 

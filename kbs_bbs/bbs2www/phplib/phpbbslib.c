@@ -368,7 +368,8 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_string(array, "address", ud.address, 1);
     add_assoc_string(array, "email", ud.email, 1);
     add_assoc_long(array, "signature", user->signature);
-    add_assoc_long(array, "userdefine", user->userdefine);
+    add_assoc_long(array, "userdefine0", user->userdefine[0]);
+    add_assoc_long(array, "userdefine1", user->userdefine[1]);
     add_assoc_long(array, "notedate", user->notedate);
     add_assoc_long(array, "noteline", user->noteline);
     add_assoc_long(array, "notemode", user->notemode);
@@ -829,7 +830,7 @@ static PHP_FUNCTION(bbs_getuserparam){
 	if (currentuser==NULL) {
 		RETURN_FALSE;
 	}
-	RETURN_LONG(currentuser->userdefine);
+	RETURN_LONG(currentuser->userdefine[0]);
 }
 
 static PHP_FUNCTION(bbs_setuserparam){
@@ -840,7 +841,7 @@ static PHP_FUNCTION(bbs_setuserparam){
 	if (currentuser==NULL) {
 		RETURN_LONG(-1);
 	}
-	currentuser->userdefine=userparam;
+	currentuser->userdefine[0]=userparam;
 	RETURN_LONG(0);
 }
 
@@ -3835,7 +3836,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     fprintf(fout, "%s", unix_string(content));
 #ifndef RAW_ARTICLE
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(fromhost));
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(currentuser, fromhost));
     while (fgets(buf2, sizeof(buf2), fin) != NULL) {
         if (Origin2(buf2)) {
             fprintf(fout, "%s", buf2);
@@ -4877,10 +4878,11 @@ static PHP_FUNCTION(bbs_createnewid)
 	setpasswd(passbuf,&newuser);
 
 	newuser.userlevel = PERM_AUTOSET;
-	newuser.userdefine = -1;
-	newuser.userdefine &= ~DEF_NOTMSGFRIEND;
+	newuser.userdefine[0] = -1;
+	newuser.userdefine[1] = -1;
+	SET_UNDEFINE(&newuser,DEF_NOTMSGFRIEND);
 #ifdef HAVE_WFORUM
-	newuser.userdefine &= ~DEF_SHOWREALUSERDATA;
+	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
 #endif
 	newuser.notemode = -1;
 	newuser.exittime = time(NULL) - 100;
@@ -5420,7 +5422,7 @@ static PHP_FUNCTION(bbs_createregform)
 		{
 			fprintf(fout, "大家好,\n\n");
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", uc->userid,
-					uc->username, SHOW_USERIP(fromhost));
+					uc->username, SHOW_USERIP(currentuser, fromhost));
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
 					(ud.gender == 'M') ? "小弟" : "小女子");
@@ -5582,7 +5584,7 @@ static PHP_FUNCTION(bbs_createregform)
 		{
 			fprintf(fout, "大家好,\n\n");
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", uc->userid,
-					uc->username, SHOW_USERIP(fromhost));
+					uc->username, SHOW_USERIP(currentuser, fromhost));
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
 					(ud.gender == 'M') ? "小弟" : "小女子");
@@ -5735,7 +5737,7 @@ static PHP_FUNCTION(bbs_getonlinefriends)
 	add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&user[i]))/60 );
 	add_assoc_string ( element, "userid", user[i].userid, 1 );       
 	add_assoc_string ( element, "username", user[i].username, 1 );   
-	add_assoc_string ( element, "userfrom", HAS_PERM(currentuser, PERM_SYSOP)?user[i].from:SHOW_USERIP(user[i].from), 1 );
+	add_assoc_string ( element, "userfrom", HAS_PERM(currentuser, PERM_SYSOP)?user[i].from:SHOW_USERIP(NULL, user[i].from), 1 );
 	add_assoc_string ( element, "mode", ModeType(user[i].mode), 1 );
 	zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 	}
@@ -7558,7 +7560,7 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     add_assoc_bool ( element, "isfriend", isfriend(userinfo.userid) );
     add_assoc_string ( element, "userid", userinfo.userid, 1 );
     add_assoc_string ( element, "username", userinfo.username, 1 );
-    add_assoc_string ( element, "userfrom", HAS_PERM(currentuser, PERM_SYSOP)? userinfo.from: SHOW_USERIP(userinfo.from), 1 );
+    add_assoc_string ( element, "userfrom", HAS_PERM(currentuser, PERM_SYSOP)? userinfo.from: SHOW_USERIP(NULL, userinfo.from), 1 );
     add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
     add_assoc_long ( element, "idle", (time(0) - get_idle_time(&userinfo)) );
     

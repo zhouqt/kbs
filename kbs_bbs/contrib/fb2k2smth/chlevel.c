@@ -63,9 +63,10 @@ main()
             user.userlevel |= PERM_NOZAP;
 	if (perm & PERM_JURY)
 	    user.userlevel &=~PERM_JURY;
-	user.userdefine = -1;
+	user.userdefine[0] = -1;
+	user.userdefine[1] = -1;
 #ifdef HAVE_WFORUM
-	user.userdefine &= ~DEF_SHOWREALUSERDATA;
+	SET_UNDEFINE(&user,DEF_SHOWREALUSERDATA);
 #endif
         user.flags = CURSOR_FLAG;
         user.flags |= PAGER_FLAG;

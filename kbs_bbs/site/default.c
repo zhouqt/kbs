@@ -162,7 +162,9 @@ const char *user_definestr[] = {
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
     "对汉字进行整字处理",  /* DEF_SPLITSCREEN 2002.9.1 */
     "显示详细用户数据",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-    "显示真实用户数据" /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "显示真实用户数据", /*DEF_REALDETAILUSERDATA 2003.7.31 */
+	"",
+    "隐藏ip"                 /* DEF_HIDEIP */
 };
 #endif
 
@@ -658,3 +660,9 @@ char * showuserip(char *ip)
 		return ip;
 }
 #endif
+
+int def_list(long long XX){
+	if (XX < DEF_HIDEIP)
+		return 0;
+	return 1;
+}

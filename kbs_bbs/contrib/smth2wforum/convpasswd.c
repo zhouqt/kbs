@@ -47,7 +47,7 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
 {
     bzero(user, sizeof(struct userec));
     memcpy(user,olduser,sizeof(struct olduserec));
-    user->userdefine &= ~DEF_SHOWREALUSERDATA;
+    SET_UNDEFINE(user, DEF_SHOWREALUSERDATA);
 }
 #endif /* HAVE_WFORUM */
 

@@ -844,7 +844,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             break;
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
-            currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+            SET_CHANGEDEFINE(currentuser, DEF_CHCHAR);
             init=false;
             continue;
         }
@@ -1106,7 +1106,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
             init=false;
-            currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+            SET_CHANGEDEFINE(currentuser, DEF_CHCHAR);
             continue;
         }
 #endif        	

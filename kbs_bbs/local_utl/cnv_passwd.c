@@ -57,7 +57,7 @@ struct userec2 {                 /* Structure used to hold information in */
     time_t lastlogin;
     time_t stay;
     int signature;
-    unsigned int userdefine;
+    unsigned int userdefine[2];
     time_t notedate;
     int noteline;
     int notemode;
@@ -69,7 +69,6 @@ struct userec2 {                 /* Structure used to hold information in */
     int score;
     char unused[20];
 #endif
-    unsigned int userdefine1;
 };
 
 int main(int argc , char* argv[])
@@ -105,6 +104,17 @@ int main(int argc , char* argv[])
         while( fread(&bh,sizeof(struct userec1),1,fp) ){
         	memset(&bhnew,0,sizeof(struct userec2));
 			memcpy(&bhnew, &bh, sizeof(struct userec1));
+			bhnew.userdefine[1]=-1;
+			bhnew.notedate = bh.notedate;
+			bhnew.noteline = bh.noteline;
+			bhnew.notemode = bh.notemode;
+			bhnew.exittime = bh.exittime;
+			bhnew.usedspace = bh.usedspace;
+#ifdef HAVE_USERMONEY
+			bhnew.money = bh.money;
+			bhnew.score = bh.score;
+			memcpy(bhnew.unused, bh.unused, 20);
+#endif
         	fwrite(&bhnew,sizeof(struct userec2),1,fp2);
 		}
 

@@ -66,6 +66,7 @@ int a_edits();
 int x_edits();
 int x_date();
 int x_userdefine();
+int x_userdefine1();
 int confirm_delete_id();        /* Added by Bigman 2001.7.14 */
 
 /*Add by SmallPig*/
@@ -177,6 +178,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"OverrideSend", ov_send},
     {"SendNetMail", m_internet},
     {"UserDefine", x_userdefine},
+    {"UDefine", x_userdefine1},
     {"ShowFriends", t_friends},
     {"ShowLogins", t_users},
     {"QueryUser", t_query_null},

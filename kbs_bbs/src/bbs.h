@@ -293,6 +293,7 @@ O MaxMessageSize=32000
 #define CLRFILEMODE(array,usernum,mode) (array[usernum%MAXUSERS] &= ((usernum<MAXUSERS)?~mode:~(mode<<4)))
 
 #define CHECKFILEMODE(array,usernum,mode) (array[usernum%MAXUSERS] & ((usernum<MAXUSERS)?mode:mode<<4))
+
 #define USERIDSIZE (16)
 #define USERNAMESZ (24)
 #define TERMTYPESZ (10)

@@ -508,7 +508,7 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /* Don't mess with this. */
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
+#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
 
 #endif //permission define NUMPERMS
 
@@ -552,12 +552,16 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_CHCHAR				02000000000
 #define DEF_SHOWDETAILUSERDATA	04000000000
 #define DEF_SHOWREALUSERDATA	010000000000
-
+#define DEF_HIDEIP			040000000001
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 31
+#define NUMDEFINES 33
+
+#define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
+#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
+#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
 
 #define TDEF_SPLITSCREEN 000001
 #endif
@@ -567,6 +571,7 @@ extern const char *permstrings[];
 extern const char    *groups[];
 extern const char    *explain[];
 extern const char *user_definestr[];
+extern const char *user_definestr1[];
 #ifdef NEW_HELP
 extern const char *helpmodestr[];
 #endif

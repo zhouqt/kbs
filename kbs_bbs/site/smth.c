@@ -77,7 +77,9 @@ const char *user_definestr[] = {
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
     "对汉字进行整字处理",       /* DEF_SPLITSCREEN 2002.9.1 */
     "显示详细用户数据",         /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-    "显示真实用户数据"          /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "显示真实用户数据",          /*DEF_REALDETAILUSERDATA 2003.7.31 */
+	"",
+    "不隐藏ip"                 /* DEF_SHOWALLIP */
 };
 
 const char *explain[] = {
@@ -900,16 +902,16 @@ int auto_register(char *userid, char *email, int msize)
     return 0;
 }
 
-char * showuserip(char *ip)
+char * showuserip(struct userec *user, char *ip)
 {
 	static char sip[25];
 	char *c;
 
+	if( user!=NULL && (!DEFINE(user, DEF_HIDEIP)) )
+		return ip;
 	strncpy(sip, ip, 24);
 	sip[24]=0;
 	if( (c=strrchr(sip, '.')) != NULL){
-		*(++c)='*';
-		*(++c)='*';
 		*(++c)='*';
 		*(++c)='\0';
 	}

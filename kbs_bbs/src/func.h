@@ -9,7 +9,8 @@
 extern "C" {
 #endif
 
-	char *showuserip(char *ip);
+	char *showuserip(struct userec *user, char *ip);
+	int def_list(long long XX);
 
 /* defined in pass.c */
     int checkpasswd(const char *passwd, const char *test);

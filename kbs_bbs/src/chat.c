@@ -511,7 +511,7 @@ static int ent_chat(int chatnum)
             continue;
 #ifdef CHINESE_CHARACTER
         case Ctrl('R'):
-			currentuser->userdefine = currentuser->userdefine ^ DEF_CHCHAR;
+			SET_CHANGEDEFINE(currentuser, DEF_CHCHAR);
         	continue;
 #endif        	
         case KEY_LEFT:
@@ -1005,13 +1005,13 @@ static void query_user(chatcontext * pthis, const char *userid)
 
 	lookupuser->lasthost[IPLEN-1] = '\0';
         sprintf(buf, "目前正在线上: 来自 %s 上线时间 %s" /*\n" */ ,
-                (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser->lasthost)), inbuf);    /*Haohmaru.99.12.18 */
+                (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /*Haohmaru.99.12.18 */
         printchatline(pthis, buf);
         printchatline(pthis, genbuf);
     } else {
         lookupuser->lasthost[IPLEN-1] = '\0';  
         sprintf(genbuf, "上次上线来自  %s 时间为 %s " /*\n" */ ,
-                (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser->lasthost)), inbuf);    /* Haohmaru.99.12.18 */
+                (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /* Haohmaru.99.12.18 */
         printchatline(pthis, genbuf);
         /* 获得离线时间 Luzi 1998/10/23 */
         exit_time = get_exit_time(lookupuser->userid, genbuf);

@@ -884,7 +884,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
         fprintf(fn1, "寄信人: %s \n", user->userid);
         fprintf(fn1, "标  题: %s\n", buffer);
         fprintf(fn1, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
-        fprintf(fn1, "来  源: %s \n", SHOW_USERIP(fromhost));
+        fprintf(fn1, "来  源: %s \n", SHOW_USERIP(NULL, fromhost));
         fprintf(fn1, "\n");
         if (!strcmp(user->userid, "deliver"))
             fprintf(fn1, "您被自动解封系统解除在 %s 版的封禁\n", board);
@@ -895,7 +895,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
         fprintf(fn1, "寄信人: %s \n", user->userid);
         fprintf(fn1, "标  题: %s\n", buffer);
         fprintf(fn1, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
-        fprintf(fn1, "来  源: %s \n", SHOW_USERIP(fromhost));
+        fprintf(fn1, "来  源: %s \n", SHOW_USERIP(NULL, fromhost));
         fprintf(fn1, "\n");
         fprintf(fn1, "您被 %s 版版主 %s 解除封禁\n", board, user->userid);
     }

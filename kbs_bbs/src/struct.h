@@ -24,7 +24,7 @@ struct userec {                 /* Structure used to hold information in */
     time_t lastlogin;
     time_t stay;
     int signature;
-    unsigned int userdefine;
+    unsigned int userdefine[2];
     time_t notedate;
     int noteline;
     int notemode;

@@ -594,7 +594,7 @@ void login_query()
             break;
         } else {
             if (!convcode)
-                convcode = !(currentuser->userdefine & DEF_USEGB);      /* KCN,99.09.05 */
+                convcode = !(DEFINE(currentuser, DEF_USEGB));      /* KCN,99.09.05 */
 
             if(check_ip_acl(currentuser->userid, fromhost)) {
                 prints("该 ID 不欢迎来自 %s 的用户，byebye!", fromhost);

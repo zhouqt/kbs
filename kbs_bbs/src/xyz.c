@@ -79,6 +79,21 @@ int showsmsdef(struct _select_def *conf, int i)
 }
 #endif
 
+int showuserdefine1(struct _select_def *conf, int i)
+{
+    struct _setperm_select *arg = (struct _setperm_select *) conf->arg;
+
+    i = i - 1;
+    if (i == conf->item_count - 1) {
+        prints("%c. 退出 ", 'A' + i);
+    } else if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
+        prints("%c. %-27s \033[31;1m%3s\033[m", 'A' + i, user_definestr[i+32], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+    } else {
+        prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, user_definestr[i+32], ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+    }
+    return SHOW_CONTINUE;
+}
+
 int showuserdefine(struct _select_def *conf, int i)
 {
     struct _setperm_select *arg = (struct _setperm_select *) conf->arg;
@@ -549,6 +564,40 @@ int x_usersmsdef()
 }
 #endif
 
+int x_userdefine1()
+{
+    int id;
+    unsigned int newlevel;
+    struct userec *lookupuser;
+
+    modify_user_mode(USERDEF);
+    if (!(id = getuser(currentuser->userid, &lookupuser))) {
+        move(3, 0);
+        prints("错误的 " NAME_USER_SHORT " ID...");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    if (!strcmp(currentuser->userid, "guest"))
+        return 0;
+    move(1, 0);
+    clrtobot();
+    move(2, 0);
+    newlevel = setperms(lookupuser->userdefine[1], 0, "参数", 1, showuserdefine1, NULL);
+    move(2, 0);
+    if (newlevel == lookupuser->userdefine[1])
+        prints("参数没有修改...\n");
+    else {
+        lookupuser->userdefine[1] = newlevel;
+        currentuser->userdefine[1] = newlevel;
+        prints("新的参数设定完成...\n\n");
+    }
+    pressreturn();
+    clear();
+    return 0;
+}
+
 int x_userdefine()
 {
     int id;
@@ -570,13 +619,13 @@ int x_userdefine()
     move(1, 0);
     clrtobot();
     move(2, 0);
-    newlevel = setperms(lookupuser->userdefine, 0, "参数", NUMDEFINES, showuserdefine, NULL);
+    newlevel = setperms(lookupuser->userdefine[0], 0, "参数", 31, showuserdefine, NULL);
     move(2, 0);
-    if (newlevel == lookupuser->userdefine)
+    if (newlevel == lookupuser->userdefine[0])
         prints("参数没有修改...\n");
     else {
-        lookupuser->userdefine = newlevel;
-        currentuser->userdefine = newlevel;
+        lookupuser->userdefine[0] = newlevel;
+        currentuser->userdefine[0] = newlevel;
         if (((convcode) && (newlevel & DEF_USEGB))      /* KCN,99.09.05 */
             ||((!convcode) && !(newlevel & DEF_USEGB)))
             switch_code();

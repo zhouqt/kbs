@@ -105,7 +105,7 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
     user->lastlogin = olduser->lastlogin;
     user->stay = olduser->stay;
     user->signature = olduser->signature;
-    user->userdefine = olduser->userdefine;
+    user->userdefine[0] = olduser->userdefine;
     user->notedate = olduser->notedate;
     user->noteline = olduser->noteline;
     user->notemode = -1;

@@ -56,13 +56,13 @@ int main()
         char *ptr = "";
 
         printf("<tr>\n");
-        if (currentuser->userdefine & perm)
+        if (currentuser->userdefine[0] & perm)
             ptr = " checked";
         printf("<td><input type=\"checkbox\" name=\"perm%d\"%s></td><td>%s</td>\n", i, ptr, user_definestr[i]);
         ptr = "";
-        if (currentuser->userdefine & (perm << 16))
+        if (currentuser->userdefine[0] & (perm << 16))
             ptr = " checked";
-        if (i + 16 < NUMDEFINES)
+        if (i + 16 < 31)
             printf("<td><input type=\"checkbox\" name=\"perm%d\"%s></td><td>%s</td>\n", i + 16, ptr, user_definestr[i + 16]);
         else
             printf("<td>&nbsp;</td><td>&nbsp;</td>\n");
@@ -86,6 +86,6 @@ int read_form()
             def += perm;
         perm = perm * 2;
     }
-    currentuser->userdefine = def;
+    currentuser->userdefine[0] = def;
     printf("个人参数设置成功.<br><a href=\"bbsparm\">返回个人参数设置选单</a>");
 }

@@ -235,6 +235,7 @@ int do_userlist()
     extern bool disable_color;
     char fexp[30];
     struct user_info uentp;
+	struct userec *lookupuser;
 #ifdef NINE_BUILD
   #define FRIENDSIG "□"
     char *p;
@@ -295,6 +296,10 @@ int do_userlist()
             prints(" %4d 啊,我刚走\n", i + 1 + page);
             continue;
         }
+		if( getuser(uentp.userid, &lookupuser) == 0 ){
+			prints(" error");
+			continue;
+		}
         if (!showexplain)
             override = (i + page < numf) || friendmode;
 
@@ -340,7 +345,7 @@ int do_userlist()
         resetcolor();
         move(y, 36);
         sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s\033[m%5.5s\n",  
-                (HAS_PERM(currentuser, PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(uentp.from) : FROMSTR ),
+                (HAS_PERM(currentuser, PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(lookupuser, uentp.from) : FROMSTR ),
                 pagec, msgchar(&uentp, &isfriend), 
                 (uentp.invisible == true)? "\033[34m" : "", modestring(uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                            (uentp.in_chat ? uentp.chatid : NULL)),            
