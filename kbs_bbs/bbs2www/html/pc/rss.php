@@ -48,6 +48,7 @@
 					"etemdesc" => html_format($rows[body],TRUE,$rows[htmltag]),
 					"etemauth" => $pc["USER"],
 					"etemtime" => rss_time_format($rows[created]),
+					"gmttime" => gmt_date_format(strtotime(time_format($rows[created])." +0800")),
 					"etemnid" => $rows[nid]
 					);
 		$i ++ ;

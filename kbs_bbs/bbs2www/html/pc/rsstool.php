@@ -160,7 +160,7 @@
 			<link><?php echo $etem[addr]; ?></link>
 			<author><?php echo $etem[etemauth]; ?></author>
 			<guid><?php echo $etem[addr]; ?></guid>
-			<pubDate><?php echo $etem[etemtime]; ?></pubDate>
+			<pubDate><?php echo $etem[gmttime]; ?></pubDate>
 			<description>
 				<![CDATA[
 					<?php echo $etembody; ?>
