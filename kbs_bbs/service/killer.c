@@ -636,10 +636,10 @@ void join_room(struct room_struct * r)
                         for(i=0;i<myroom->people;i++)
                         if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR) &&
                             inrooms.peoples[i].flag&PEOPLE_ALIVE) {
-                            if(inrooms.peoples[i].vnum>t1) {
+                            if(inrooms.peoples[i].vnum>=t1) {
                                 t2=t1; t1=inrooms.peoples[i].vnum;
                             }
-                            else if(inrooms.peoples[i].vnum>t2) {
+                            else if(inrooms.peoples[i].vnum>=t2) {
                                 t2=inrooms.peoples[i].vnum;
                             }
                         }
