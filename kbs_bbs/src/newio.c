@@ -699,3 +699,117 @@ removed by wwj, just use oflush , 2001/5/8
     return clen;
 }
 
+int lock_scr() /* Leeward 98.02.22 */
+{
+    char passbuf[STRLEN];
+
+
+    if (!strcmp(currentuser->userid, "guest"))
+        return 1;
+
+    modify_user_mode(LOCKSCREEN);
+    clear();
+    /*lock_monitor();*/
+    while(1)
+    {
+        move(19,32);
+        clrtobot();
+        prints("[1m[32mBBS "NAME_BBS_CHINESE"Õ¾[m");
+        move(21,0);
+        clrtobot();
+        getdata(21, 0, "ÆÁÄ»ÏÖÔÚÒÑ¾­Ëø¶¨£¬Òª½â³ýËø¶¨£¬ÇëÊäÈëÃÜÂë£º", passbuf, 39, NOECHO, NULL ,YEA);
+        move(22,32);
+        if( !checkpasswd2( passbuf,currentuser)) {
+            prints( "[1m[31mÃÜÂëÊäÈë´íÎó...[m\n" );
+            pressanykey();
+        }
+        else
+        {
+            prints( "[1m[31mÆÁÄ»ÏÖÔÚÒÑ¾­½â³ýËø¶¨[m\n" );
+            /*pressanykey();*/
+            break;
+        }
+    }
+    return 0;
+}
+
+void printdash( char    *mesg)
+{
+    char        buf[ 80 ], *ptr;
+    int         len;
+    
+    memset( buf, '=', 79 );
+    buf[ 79 ] = '\0';
+    if( mesg != NULL ) {
+        len = strlen( mesg ); 
+        if( len > 76 )  len = 76;
+        ptr = &buf[ 40 - len / 2 ];
+        ptr[ -1  ] = ' ';
+        ptr[ len ] = ' ';
+        strncpy( ptr, mesg, len );
+    }
+    prints( "%s\n", buf );
+}
+
+void
+bell()
+{
+    /* change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;*/
+    char sound;
+
+    sound= Ctrl('G');
+    output( &sound, 1);
+
+}   
+
+int
+pressreturn()
+           {
+               extern int showansi;
+               char buf[3] ;
+
+               showansi=1;
+               move(t_lines-1,0);
+               clrtoeol();
+               getdata(t_lines-1,0,"                              \x1b[33mÇë°´ ¡ô\x1b[36mEnter\x1b[33m¡ô ¼ÌÐø\x1b[m",buf,2,NOECHO,NULL,YEA);
+               move(t_lines-1,0) ;
+               clrtoeol() ;
+               refresh() ;
+               return 0 ;
+           }
+
+int askyn(str,defa)
+char str[STRLEN];
+int defa;
+{
+    int x,y;
+    char realstr[STRLEN*2];
+    char ans[6];
+
+    sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
+    getyx(&x,&y);
+    getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
+    if(ans[0]=='Y' || ans[0]=='y')
+        return 1;
+    else if(ans[0]=='N' || ans[0]=='n')
+        return 0;
+    return defa;
+}
+
+int
+pressanykey()
+{
+    extern int showansi;
+
+    showansi=1;
+    move( t_lines-1,0);
+    clrtoeol();
+    prints( "\x1b[m                                \x1b[5;1;33m°´ÈÎºÎ¼ü¼ÌÐø ..\x1b[m" );
+    egetch();
+    move( t_lines-1, 0 );
+    clrtoeol();
+    return 0;
+}
+
+
+
