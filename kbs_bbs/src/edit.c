@@ -651,18 +651,14 @@ void insert_to_fp(FILE * fp)
 
 void insertch_from_fp(int ch)
 {
-    if (isprint2(ch) || ch == 27) {
-        if (currpnt < 254)
-            insert_char(ch);
-        else if (ch < 255)
-            insert_char('.');
-    } else if (ch == Ctrl('I')) {
+    if (isprint2(ch) || ch == 27)
+        insert_char(ch);
+    else if (ch == Ctrl('I'))
         do {
             insert_char(' ');
         } while (currpnt & 0x7);
-    } else if (ch == '\n') {
+    else if (ch == '\n')
         split(currline, currpnt);
-    }
 }
 long insert_from_fp(FILE *fp, long * attach_length)
 {
