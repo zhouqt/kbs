@@ -53,6 +53,7 @@ int s_msg()
 }
 
 extern char msgerr[255];
+extern bool inremsg;
 
 int do_sendmsg(uentp, msgstr, mode)
 struct user_info *uentp;
