@@ -334,7 +334,7 @@ void r_msg()
             if(buf[1]=='3'||uin==NULL) canreply = 0;
             else canreply = 1;
             
-            move(0,0);
+            good_move(0,0);
             if (DEFINE(currentuser, DEF_SOUNDMSG))
                 bell();
             if (DEFINE(currentuser, DEF_HIGHCOLOR))
