@@ -1,8 +1,10 @@
 #include "innbbsconf.h"
 #include "daemon.h"
 #include "bbslib.h"
-#include "version.h"
 #include "site.h"
+#include "bbs.h"
+#undef VERSION
+#include "version.h"
 
 #ifndef MAXCLIENT
 #define MAXCLIENT 10
@@ -616,6 +618,7 @@ char **argv;
 #endif
 
     chdir(BBSHOME);
+	init_sessiondata(getSession());
 
     port = DefaultINNBBSPort;
     path = LOCALDAEMON;
