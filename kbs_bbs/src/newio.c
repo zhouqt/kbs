@@ -687,6 +687,18 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             }
             strcpy(tmp, &buf[curr]);
             buf[--curr] = '\0';
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<curr;i++)
+					if(j) j=0;
+					else if(buf[i]>127) j=1;
+				if(j) {
+					buf[--curr] = '\0';
+					clen--;
+				}
+			}
+#endif
             (void) strcat(buf, tmp);
             clen--;
             good_move(y, x);
@@ -701,6 +713,18 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 continue;
             }
             strcpy(tmp, &buf[curr + 1]);
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<curr+1;i++)
+					if(j) j=0;
+					else if(buf[i]>127) j=1;
+				if(j) {
+		            strcpy(tmp, &buf[curr + 2]);
+					clen--;
+				}
+			}
+#endif
             buf[curr] = '\0';
             (void) strcat(buf, tmp);
             clen--;
@@ -715,6 +739,17 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 continue;
             }
             curr--;
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<curr;i++)
+					if(j) j=0;
+					else if(buf[i]>127) j=1;
+				if(j) {
+					curr--;
+				}
+			}
+#endif
             good_move(y, x + curr);
             continue;
         }
@@ -734,6 +769,17 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 continue;
             }
             curr++;
+#ifdef CHINESE_CHARACTER
+			if (DEFINE(currentuser, DEF_CHCHAR)) {
+				int i,j=0;
+				for(i=0;i<curr;i++)
+					if(j) j=0;
+					else if(buf[i]>127) j=1;
+				if(j) {
+					curr++;
+				}
+			}
+#endif
             good_move(y, x + curr);
             continue;
         }
