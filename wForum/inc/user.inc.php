@@ -84,10 +84,14 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 ?>
 &nbsp;[<a href="favboard.php?select=<?php echo $list_father; ?>">回到上一级</a>]
 <?php
-			}
+		} else {
+?>
+&nbsp;[<a href="modifyfavboards.php">管理收藏夹</a>]
+<?php
+		}
 	}
 ?>
-&nbsp;[<a href="modifyfavboards.php">管理收藏夹</a>]</th></tr>
+</th></tr>
 <?php
 	if (! $isFold && (BOARDLISTSTYLE=='simplest')) {
 ?>
