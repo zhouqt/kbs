@@ -1,5 +1,5 @@
 bindir=@CGIPATH@
-bin_PROGRAMS = bbsbrdadd bbsall bbsanc bbs0an \
+bin_PROGRAMS = bbsbrdadd bbsall bbs0an \
 	  bbspwd \
 	  bbsmybrd \
 	  bbssnd \
