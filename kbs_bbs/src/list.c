@@ -94,8 +94,12 @@ void show_message(char *msg)
 {
     move(BBS_PAGESIZE + 3, 0);
     clrtoeol();
-    if (msg != NULL)
+    if (msg != NULL) {
         prints("[1m%s[m", msg);
+        refresh();
+        sleep(1);
+    }
+    update_endline();
 }
 
 void swap_user_record(a, b)
@@ -308,9 +312,9 @@ int do_userlist()
         pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
         strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, 80);
 //êÇ³ÆÔÚÁĞ±íÖĞ×îºóÒ»×ÖÏû³ıÂÒÂë£¬shiyao  2003.6.1
-	j = 15;
-	while (j>=0 && tbuf[j]<0) j--;
-	if ((15-j)%2)  tbuf[15] = 0;
+//	j = 15;
+//	while (j>=0 && tbuf[j]<0) j--;
+//	if ((15-j)%2)  tbuf[15] = 0;
         tbuf[80]=0;
         resetcolor();
         clrtoeol();
@@ -407,14 +411,9 @@ char ch;
 int allnum, pagenum;
 {
     char buf[STRLEN], genbuf[5];
-    static int msgflag;
     extern bool enableESC;
     int i, buflen;
 
-    if (msgflag == true) {
-        show_message(NULL);
-        msgflag = false;
-    }
     switch (ch) {
 #ifdef HAVE_TEMPORARY_NICK
     case UL_CHANGE_NICK_LOWER:
@@ -459,7 +458,7 @@ int allnum, pagenum;
         else {
             sprintf(buf, "%s ÎŞ·¨Ìß³öÕ¾Íâ", user_record[allnum]->userid);
         }
-        msgflag = true;
+        show_message(buf);
         break;
     case 'h':
     case 'H':
@@ -506,7 +505,7 @@ int allnum, pagenum;
             return 1;
         if (!canmsg(currentuser, user_record[allnum])) {
             sprintf(buf, "%s ÒÑ¾­¹Ø±ÕÑ¶Ï¢ºô½ĞÆ÷", user_record[allnum]->userid);
-            msgflag = true;
+            show_message(buf);
             break;
         }
 
@@ -527,7 +526,7 @@ int allnum, pagenum;
         else {
             sprintf(buf, "%s ÁĞÈëÅóÓÑÃûµ¥", user_record[allnum]->userid);
         }
-        msgflag = true;
+        show_message(buf);
         break;
     case 'd':
     case 'D':
@@ -552,7 +551,7 @@ int allnum, pagenum;
         else {
             sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ı", user_record[allnum]->userid);
         }
-        msgflag = true;
+        show_message(buf);
         break;
     case '/':
         strcpy(buf, "ÊäÈëËùÒª²éÕÒµÄID: ");
@@ -575,7 +574,6 @@ int allnum, pagenum;
     }
     if (friendmode)
         modify_user_mode(FRIEND);
-
     else
         modify_user_mode(LUSERS);
     if (readplan == false) {
@@ -583,9 +581,6 @@ int allnum, pagenum;
         clrtobot();
         if (show_userlist() == -1)
             return -1;
-        if (msgflag) {
-            show_message(buf);
-        }
         update_endline();
     }
     return 1;
@@ -598,12 +593,7 @@ int allnum, pagenum;
 
 {
     char buf[STRLEN];
-    static int msgflag;
 
-    if (msgflag == true) {
-        show_message(NULL);
-        msgflag = false;
-    }
     switch (ch) {
     case 'h':
     case 'H':
@@ -628,7 +618,6 @@ int allnum, pagenum;
             sprintf(buf, "%s ÁĞÈëÅóÓÑÃûµ¥", user_data[allnum - pagenum].userid);
             show_message(buf);
         }
-        msgflag = true;
         if (!friendmode)
             return 1;
         break;
@@ -665,7 +654,6 @@ int allnum, pagenum;
             sprintf(buf, "%s ÒÑ´ÓÅóÓÑÃûµ¥ÒÆ³ı", user_data[allnum - pagenum].userid);
             show_message(buf);
         }
-        msgflag = true;
         if (!friendmode)
             return 1;
         break;
