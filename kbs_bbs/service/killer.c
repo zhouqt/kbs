@@ -123,6 +123,9 @@ void clear_room()
         if(!strcmp(rooms[i].creator, currentuser->userid))
             rooms[i].style=-1;
     for(i=0;i<*roomst;i++)
+        if(rooms[i].people==0)
+            rooms[i].style=-1;
+    for(i=0;i<*roomst;i++)
         if(rooms[i].style==-1) del_room(rooms+i);
 }
 
@@ -575,9 +578,13 @@ void join_room(struct room_struct * r)
     clear();
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
     unlink(buf);
+    start_change_inroom(r);
+    if(r->style!=1) {
+        end_change_inroom();
+        return;
+    }
     myroom = r;
     signal(SIGUSR1, room_refresh);
-    start_change_inroom(r);
     i=r->people;
     inrooms.peoples[i].flag = 0;
     strcpy(inrooms.peoples[i].id, currentuser->userid);
@@ -872,10 +879,10 @@ quitgame:
         for(me=0;me<myroom->people;me++)
             if(inrooms.peoples[me].pid == uinfo.pid) break;
         if(inrooms.peoples[me].flag&PEOPLE_ROOMOP) {
-            end_change_inroom();
-            clear_inroom(myroom);
             myroom->people = 0;
             myroom->style = -1;
+            end_change_inroom();
+            clear_inroom(myroom);
             for(i=0;i<myroom->people;i++)
                 if(i!=me) {
                 send_msg(inrooms.peoples+i, "Äã±»ÌßÁË");
