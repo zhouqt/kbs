@@ -1590,6 +1590,7 @@ static void bbs_make_article_array(zval * array, struct fileheader *fh, char *fl
     add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
     add_assoc_long(array, "ATTACHPOS", fh->attachment);
     add_assoc_long(array, "EFFSIZE", fh->eff_size);
+    add_assoc_long(array, "IS_TEX", fh->accessed[1] & FILE_TEX);
 }
 
 static PHP_FUNCTION(bbs_search_articles)
@@ -9410,7 +9411,6 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 		flags[2]=0;
 	  }
 		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
-                add_assoc_long(element, "IS_TEX", articles[i].accessed[1] & FILE_TEX);
 		zend_hash_index_update(Z_ARRVAL_P(z_threads), i,
 				(void*) &element, sizeof(zval*), NULL);
 	}
