@@ -364,6 +364,8 @@ char *ModeType(mode)
     case SERVICES:
         return "休闲娱乐..";
 	case FRIENDTEST:  return "心有灵犀";
+    case CHICKEN:
+	return "心有灵犀";
     default:
         return "去了那里!?";
     }
