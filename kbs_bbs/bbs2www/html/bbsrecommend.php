@@ -106,7 +106,7 @@
 <td class="t4"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t3"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td class="t5">&nbsp;
-<a class="ts2" href="/bbsgcon.php?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
+<a class="ts2" href="/bbsrecon.php?file=<?php echo $article["FILENAME"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
 </td>
 <td class="t4"><a href="/bbscon.php?board=<?php echo $article["O_BOARD"];?>&id=<?php echo $article["O_ID"];?>">查看原讨论区原文</a></td>
 </tr>
