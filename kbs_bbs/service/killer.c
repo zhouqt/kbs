@@ -270,6 +270,7 @@ void refreshit()
     for(i=2;i<=t_lines-3;i++) 
     if(ipage+i-2>=0&&ipage+i-2<myroom->people) {
         j=ipage+i-2;
+        if(inrooms.status!=INROOM_STOP)
         if(inrooms.peoples[j].flag&PEOPLE_KILLER && (inrooms.peoples[me].flag&PEOPLE_KILLER ||
             inrooms.peoples[me].flag&PEOPLE_SPECTATOR ||
             !(inrooms.peoples[j].flag&PEOPLE_ALIVE))) {
@@ -278,7 +279,8 @@ void refreshit()
             setfcolor(RED, 1);
             prints("*");
         }
-        if(!inrooms.peoples[j].flag&PEOPLE_ALIVE) {
+        if(inrooms.status!=INROOM_STOP)
+        if(!(inrooms.peoples[j].flag&PEOPLE_ALIVE)) {
             resetcolor();
             move(i,3);
             setfcolor(BLUE, 1);
@@ -333,7 +335,7 @@ void start_game()
         end_change_inroom();
         return;
     }
-    if(totalk==0) totalk=total*3/10+0.5;
+    if(totalk==0) totalk=((double)total*3/10+0.5);
     if(totalk>total) {
         send_msg(inrooms.peoples+me, "\x1b[31;1m总人数少于要求的坏人人数,无法开始游戏\x1b[m");
         kill(inrooms.peoples[me].pid, SIGUSR1);
@@ -341,7 +343,7 @@ void start_game()
         return;
     }
     inrooms.status = INROOM_NIGHT;
-    sprintf(buf, "\x1b[31;1m游戏开始啦!\x1b[m\n");
+    sprintf(buf, "\x1b[31;1m游戏开始啦!\x1b[m");
     for(i=0;i<myroom->people;i++)
         send_msg(inrooms.peoples+i, buf);
     for(i=0;i<totalk;i++) {
@@ -351,10 +353,12 @@ void start_game()
         inrooms.peoples[j].flag = PEOPLE_KILLER;
         send_msg(inrooms.peoples+j, "你做了一个无耻的坏人\n用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
     }
-    for(i=0;i<totalk;i++) {
-        inrooms.peoples[j].flag |= PEOPLE_ALIVE;
-        if(!(inrooms.peoples[j].flag&PEOPLE_KILLER))
-            send_msg(inrooms.peoples+j, "现在是晚上...");
+    for(i=0;i<totalk;i++) 
+    if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR))
+    {
+        inrooms.peoples[i].flag |= PEOPLE_ALIVE;
+        if(!(inrooms.peoples[i].flag&PEOPLE_KILLER))
+            send_msg(inrooms.peoples+i, "现在是晚上...");
     }
     for(i=0;i<myroom->people;i++)
         kill(inrooms.peoples[i].pid, SIGUSR1);
