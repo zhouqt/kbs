@@ -134,7 +134,7 @@ function doAction(desc) {
 </script>
 <tr><td class=TableBody2 colspan=5 align=right>请选择要删除的小字报
 <input type=checkbox name=chkall id=chkall value=on onclick="CheckAll(this.form)"><label style="cursor:hand;" for="chkall">全选</label>
-<input type=submit name=Submit value=删除  onclick="doAction('您确定删除这些信件吗?')">
+<input type=submit name=Submit value=删除  onclick="doAction('您确定删除这些小字报吗?')">
 </td></tr>
 <?php
 		$rs=null;
