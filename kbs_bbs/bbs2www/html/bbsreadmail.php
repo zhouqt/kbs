@@ -25,7 +25,7 @@
 		$mail_num = bbs_getmailnum2($mail_fullpath);
 		if($mail_num < 0 || $mail_num > 30000)http_error_quit("Too many mails!");
 
-		if($mail_num == 0)html_error_quit("目前该信箱没有任何信件!");
+
 		$maildata = bbs_getmails($mail_fullpath);
 		if ($maildata == FALSE)
 			html_error_quit("读取邮件数据失败!");
@@ -33,14 +33,22 @@
     		if ($start < 0)$start = 0;
 ?>
 <center>信件列表 - 邮箱 - <?php echo $mail_title;?>[使用者: <? echo $currentuser["userid"] ?>]<hr color=green>
+<?php
+	if($mail_num == 0)
+	{
+		echo "该信箱没有任何信件!";
+	}
+	else
+	{
+?>
 <table width="610">
 <tr><td>序号<td>状态<td>发信人<td>日期<td>信件标题</tr></td>
 <?php
-	for ($i = $start; $i < $start + 19 && $i < $mail_num; $i++)
-	{
-		/*$ptr = strtok($maildata[$i]["OWNER"]," (");
-		if($ptr == 0)$ptr = " ";
-		$ptr = nohtml($*/
+		for ($i = $start; $i < $start + 19 && $i < $mail_num; $i++)
+		{
+			/*$ptr = strtok($maildata[$i]["OWNER"]," (");
+			if($ptr == 0)$ptr = " ";
+			$ptr = nohtml($*/
 
 ?>
 <tr><td><?php echo $i+1;?><td><?php echo $maildata[$i]["FLAGS"];?><td>
@@ -49,6 +57,7 @@
 <td><a href=/cgi-bin/bbs/bbsmailcon?file=<?php echo $maildata[$i]["FILENAME"];?>&num=<?php echo $i;?>><?php echo htmlspecialchars($maildata[$i]["TITLE"]);?></a>
 </tr>
 <?php
+		}
 	}
 ?>
 </table>
@@ -56,20 +65,20 @@
 [信件总数: <?php echo $mail_num;?>]
 [<a href=/cgi-bin/bbs/bbspstmail>发送信件</a>]
 <?php
-	if ($start > 0)
-	{
-		$i = $start - 19;
-		if ($i < 0)$i = 0;
-		echo "[<a href=bbsreadmail.php?path=$mail_path&start=0&title=$mail_title>第一页</a>] ";
-		echo "[<a href=bbsreadmail.php?path=$mail_path&start=$i&title=$mail_title>上一页</a>] ";
-	}
-	if ($start < $mail_num - 19)
-	{
-		$i = $start + 19;
-		if ($i > $mail_num -1)$i = $mail_num -1;
-		echo "<a href=bbsreadmail.php?path=$mail_path&start=$i&title=$mail_title>下一页</a> ";
-		echo "<a href=bbsreadmail.php?path=$mail_path&title=$mail_title>最后一页</a> ";
-	}
+		if ($start > 0)
+		{
+			$i = $start - 19;
+			if ($i < 0)$i = 0;
+			echo "[<a href=bbsreadmail.php?path=$mail_path&start=0&title=$mail_title>第一页</a>] ";
+			echo "[<a href=bbsreadmail.php?path=$mail_path&start=$i&title=$mail_title>上一页</a>] ";
+		}
+		if ($start < $mail_num - 19)
+		{
+			$i = $start + 19;
+			if ($i > $mail_num -1)$i = $mail_num -1;
+			echo "<a href=bbsreadmail.php?path=$mail_path&start=$i&title=$mail_title>下一页</a> ";
+			echo "<a href=bbsreadmail.php?path=$mail_path&title=$mail_title>最后一页</a> ";
+		}
 ?>
 <form><input type=submit value=跳转到><input type=hidden name=path value=<?php echo $mail_path;?>>
 <input type=hidden name=title value=<?php echo $mail_title;?>>
