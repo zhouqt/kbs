@@ -281,6 +281,10 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     num = last_line - screen_len + 2;
     locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
     modify_locmem(locmem, last_line);
+
+    if(locmem->crs_line-locmem->top_line>=screen_len-1) //added by bad 2002.9.2
+        locmem->crs_line = locmem->top_line;
+    
     recbase = locmem->top_line;
     entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
 
