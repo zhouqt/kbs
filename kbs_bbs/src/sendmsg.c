@@ -287,7 +287,7 @@ reenter:
                     sethomefile(fname2, currentuser->userid, "msgindex3");
                     fd = open(fname, O_RDONLY, 0644);
                     fd2 = open(fname, O_WRONLY, 0644);
-                    lseek(fd, 4);
+                    lseek(fd, 4, SEEK_SET);
                     for(i=0;i<count;i++) {
                         read(fd, &head, sizeof(struct msghead));
                         if(toupper(ch)=='S') load_msgtext(currentuser->userid, &head, buf);
