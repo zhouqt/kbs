@@ -841,6 +841,7 @@ void main_bbs(int convit, char *argv)
     user_login();
     m_init();
     clear();
+    load_key();
 
 #ifndef DEBUG
 #ifdef SSHBBS

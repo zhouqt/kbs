@@ -134,16 +134,129 @@ int get_modes_name(struct key_struct* key, char* buf)
 {
     int i=0;
     buf[0]=0;
+    if(key->status[0]==-1) {
+        strcpy(buf, "无模式");
+        return;
+    }
     if(!key->status[0]) {
         strcpy(buf, "全部模式");
         return;
     }
     while(i<10&&key->status[i]) {
         strcat(buf, ModeType(key->status[i]));
-        strcat(buf, " ");
+        strcat(buf, "\x1b[m ");
         i++;
     }
     buf[strlen(buf)-1] = 0;
+}
+
+int modes[200][2], modest;
+
+static int set_modes_show(struct _select_def *conf, int i)
+{
+    prints("%s%s\x1b[m", modes[i][1]?"*":' ', modes[i][0]?ModeType(modes[i][0]):"全部");
+    return SHOW_CONTINUE;
+}
+
+static int set_modes_prekey(struct _select_def *conf, int *key)
+{
+    switch (*key) {
+    case 'e':
+    case 'q':
+    case 'Q':
+        return SHOW_QUIT;
+    }
+    return SHOW_CONTINUE;
+}
+
+static int set_modes_key(struct _select_def *conf, int key)
+{
+    int i;
+    switch (key) {
+        case ' ':
+        case '\r':
+        case '\n':
+            i=conf->pos-1;
+            if(modes[i][1]) {
+                modes[i][1]=0;
+                if(modes[i][0]>0)
+                    modest--;
+            }
+            else if(modest<10||modes[i][0]==0) {
+                modes[i][1]=1;
+                if(modes[i][0]>0)
+                    modest++;
+            }
+            return DIRCHANGED;
+    }
+    return SHOW_CONTINUE;
+}
+
+int set_modes(int *res)
+{
+    struct _select_def group_conf;
+    struct key_struct key;
+    POINT *pts;
+    char *s;
+    int i,j,n;
+
+    n=1; modest=0;
+    modes[0][0]=0;
+    modes[0][1]=res[0]==0;
+    for(i=0;i<200;i++) {
+        s=ModeType(i);
+        if(s[0]&&!strchr(s,'?')) {
+            modes[n][0]=i;
+            modes[n][1]=0;
+            for(j=0;j<10;j++)
+                if(res[j]==i) {
+                    modes[n][1]=1;
+                    modest++;
+                    break;
+                }
+            n++;
+        }
+    }
+    bzero(&group_conf, sizeof(struct _select_def));
+    group_conf.item_count = n;
+
+    pts = (POINT *) malloc(sizeof(POINT) * n);
+    for (i = 0; i < n; i++) {
+        pts[i].x = 2+20*(i/BBS_PAGESIZE);
+        pts[i].y = i%BBS_PAGESIZE + 3;
+    }
+    group_conf.item_per_page = n;
+    /*
+     * 加上 LF_VSCROLL 才能用 LEFT 键退出 
+     */
+    group_conf.flag = LF_BELL | LF_LOOP;
+    group_conf.prompt = "◆";
+    group_conf.item_pos = pts;
+//    group_conf.arg = &arg;
+    group_conf.title_pos.x = 0;
+    group_conf.title_pos.y = 0;
+    group_conf.pos = 1;         /* initialize cursor on the first mailgroup */
+    group_conf.page_pos = 1;    /* initialize page to the first one */
+
+    group_conf.show_data = set_modes_show;
+    group_conf.pre_key_command = set_modes_prekey;
+    group_conf.key_command = set_modes_key;
+
+    list_select_loop(&group_conf);
+    free(pts);
+    if(modest==0) res[0]=-1;
+    else if(modes[0][1]) res[0]=0;
+    else {
+        j=0;
+        for(i=1;i<n;i++) 
+        if(modes[i][1]) {
+            res[j]=i;
+            j++;
+        }
+        if(j<10) res[j]=0;
+    }
+
+    return 0;
 }
 
 static int set_keydefine_show(struct _select_def *conf, int i)
@@ -152,7 +265,10 @@ static int set_keydefine_show(struct _select_def *conf, int i)
     get_key_name(keymem[i-1].key, buf2);
     get_keys_name(keymem+i-1, buf);
     get_modes_name(keymem+i-1, buf3);
-    prints(" %-6s  %-36s  %-32s", buf2, buf, buf3);
+    buf2[6]=0;
+    buf[36]=0;
+    buf3[32]=0;
+    prints("%-6s  %-36s  %-32s", buf2, buf, buf3);
     return SHOW_CONTINUE;
 }
 
@@ -205,7 +321,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
 
             clear();
             move(1, 0);
-            prints("请键入要增加的自定义键: ");
+            prints("请键入自定义键: ");
             do {
                 i = igetkey();
                 get_key_name(i, buf);
@@ -229,8 +345,48 @@ static int set_keydefine_key(struct _select_def *conf, int key)
             }while(1);
             if(j==0) return SHOW_DIRCHANGE;
 
-            k.status[0] = 0;
+            k.status[0] = -1;
             add_key(&k);
+            
+            return SHOW_DIRCHANGE;
+        }
+        break;
+    case 'e':
+        set_modes(keymem[conf->pos-1]);
+        break;
+    case 's':
+        {
+            int i,j;
+            struct key_struct k;
+            char buf[120];
+            clear();
+            move(1, 0);
+            prints("请键入自定义键: ");
+            do {
+                i = igetkey();
+                get_key_name(i, buf);
+            }while(!buf[0]&&i!=KEY_ESC);
+            if(i==KEY_ESC) return SHOW_DIRCHANGE;
+            prints("%s\n", buf);
+            k.key = i;
+            move(2, 0);
+            prints("请输入替换序列(最多10个)，按两次ESC结束: ");
+            j=0;
+            do{
+                do {
+                    i = igetkey();
+                    get_key_name(i, buf);
+                }while(!buf[0]&&i!=KEY_ESC);
+                if(i==KEY_ESC) break;
+                prints("%s ", buf);
+                k.mapped[j] = i;
+                j++;
+                if(j>=10) break;
+            }while(1);
+            if(j==0) return SHOW_DIRCHANGE;
+
+            k.status[0] = -1;
+            memcpy(keymem+conf->pos-1, &k, sizeof(struct key_struct));
             
             return SHOW_DIRCHANGE;
         }
@@ -299,6 +455,21 @@ static int set_keydefine_getdata(struct _select_def *conf, int pos, int len)
     return SHOW_CONTINUE;
 }
 
+static int set_mailgroup_select(struct _select_def *conf)
+{
+    char buf[20],buf2[120],buf3[240];
+    clear();
+    get_key_name(keymem[conf->pos-1].key,buf);
+    get_keys_name(keymem+conf->pos-1,buf2);
+    get_modes_name(keymem+conf->pos-1,buf3);
+    good_move(1,0);
+    prints("自定义键: %s\n\n", buf);
+    prints("替换序列: %s\n\n", buf2);
+    prints("允许模式: %s\n\n", buf3);
+    pressanykey();
+
+    return SHOW_REFRESH;
+}
 
 int define_key()
 {
@@ -336,6 +507,7 @@ int define_key()
     group_conf.pos = 1;         /* initialize cursor on the first mailgroup */
     group_conf.page_pos = 1;    /* initialize page to the first one */
 
+    group_conf.on_select = set_keydefine_select;
     group_conf.show_data = set_keydefine_show;
     group_conf.pre_key_command = set_keydefine_prekey;
     group_conf.key_command = set_keydefine_key;

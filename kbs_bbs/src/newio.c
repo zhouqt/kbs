@@ -656,6 +656,7 @@ int igetkey()
         int i,j,k,p;
         for(i=0;i<keymem_total;i++) {
             p=!keymem[i].status[0];
+            if(keymem[i].status[0]==-1) continue;
             j=0;
             while(keymem[i].status[j]&&j<10) {
                 if(keymem[i].status[j]==uinfo.mode) p=1;
