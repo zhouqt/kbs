@@ -54,7 +54,7 @@ int gen_commend_xml()
 			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, dirfh.title, sizeof(xml_buf)));
 			fprintf(fp, "<author>%s</author>\n", dirfh.owner);
 			fprintf(fp, "<board>%s</board>\n", COMMEND_ARTICLE);
-			fprintf(fp, "<num>%d</num>\n", numrecords);
+			fprintf(fp, "<id>%d</id>\n", dirfh.id);
 			fprintf(fp, "<o_board>%s</o_board>\n", dirfh.o_board);
 			fprintf(fp, "<o_id>%d</o_id>\n", dirfh.o_id);
 			fprintf(fp, "<o_groupid>%d</o_groupid>\n<brief>", dirfh.o_groupid);

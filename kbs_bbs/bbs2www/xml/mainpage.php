@@ -310,7 +310,7 @@ while($board = array_shift($boards))
     $commend_author = find_content($board, "author");
     $commend_o_board = find_content($board, "o_board");
     $commend_o_id = find_content($board, "o_id");
-    $commend_num = find_content($board, "num");
+    $commend_id = find_content($board, "id");
     $commend_o_groupid = find_content($board, "o_groupid");
     $commend_brief = find_content($board, "brief");
 
@@ -321,9 +321,9 @@ while($board = array_shift($boards))
 
 ?>
 <tr>
-<td valign="top" class="MainContentText"><LI class=default><a href="/bbsrecon.php?num=<?php echo $commend_num;?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $commend_title));?></a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
+<td valign="top" class="MainContentText"><LI class=default><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $commend_title));?></a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
 <dl style="MARGIN-TOP: 5px;MARGIN-BOTTOM: 5px; MARGIN-LEFT: 25px;"><dt>
-<?php echo htmlspecialchars(iconv("UTF-8","GBK",$commend_brief));?>&nbsp;&nbsp;<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原文</a></dl>
+<?php echo htmlspecialchars(iconv("UTF-8","GBK",$commend_brief));?>&nbsp;&nbsp;<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原版原文</a></dl>
 </td>
 </tr>
 <?php

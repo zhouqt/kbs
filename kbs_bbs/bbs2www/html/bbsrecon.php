@@ -76,28 +76,28 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 			html_error_quit("目前没有文章");
 		}
 
-#		if (isset($_GET["file"]))
-#			$short_filename = $_GET["file"];
-#		else {
-			if(! isset($_GET["num"]) ){
+			if(! isset($_GET["id"]) ){
 				html_init("gb2312");
 				html_error_quit("错误的文章号");
 			}
-			$num = $_GET["num"];
-			settype($num, "integer");
-			if ($num == 0)
+			$id = $_GET["id"];
+			settype($id, "integer");
+			if ($id == 0)
 			{
 				html_init("gb2312");
 				html_error_quit("错误的文章号.");
 			}
-			$short_filename = bbs_get_filename_from_num( $brdarr["NAME"], $num, $dir_modes["DIGEST"] );
-			if(! $short_filename ){
-				html_init("gb2312");
-				html_error_quit("错误的文章号.....");
-			}
-#		}
+	$articles = array ();
+	$ftype = $dir_modes["NORMAL"];
+	$num = bbs_get_records_from_id($brdarr["NAME"], $id, 
+			$ftype, $articles);
+	if ($num == 0)
+	{
+		html_init("gb2312","","",1);
+		html_error_quit("错误的文章号.");
+	}
+		$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
 
-		$filename=bbs_get_board_filename($brdarr["NAME"], $short_filename);
 		$test_file = @fopen($filename,"r");
 		if(! $test_file ){
 			html_init("gb2312");
@@ -105,8 +105,8 @@ function display_navigation_bar($brdarr, $short_filename, $num)
 		}
 		fclose($test_file);
 
-            			if (cache_header("public",filemtime($filename),300))
-                			return;
+#       			if (cache_header("public",filemtime($filename),300))
+#               			return;
 //			Header("Cache-control: nocache");
 			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 			if ($attachpos!=0) {
