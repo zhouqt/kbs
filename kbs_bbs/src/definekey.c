@@ -44,7 +44,7 @@ void ask_define()
     char fname[4][30]={"service/definekey.ytht", "service/definekey.pku", "service/definekey.nju", "service/definekey.smth"};
     char root[18]="定制区主目录";
     clear();
-    move(5, 3);
+    move(3, 3);
     prints("请选择你习惯的按键模式:");
     sel = (struct _select_item *) malloc(sizeof(struct _select_item) * 5);
     for(j=0;j<4;j++) {

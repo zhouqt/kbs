@@ -784,7 +784,7 @@ static int fav_key(struct _select_def *conf, int command)
                     struct _select_item *sel;
                     char root[18]="定制区主目录";
                     clear();
-                    move(5, 3);
+                    move(3, 3);
                     prints("请选择加入到定制区哪个目录");
                     sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (total+2));
                     sel[0].x = 3;
