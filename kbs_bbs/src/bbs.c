@@ -2656,15 +2656,15 @@ int noreply_post(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 	/* add by stiger ,20030414, ÖÃ¶¥Ñ¡Ôñ*/
     char ans[4];
     int mode=0; /* 0x1°ßÖñ, 0x2:ÍÆ¼ö°æ°ßÖñ */
+    int ret=FULLUPDATE;
+    struct read_arg* arg=(struct read_arg*)conf->arg;
 
 #ifdef COMMEND_ARTICLE
     int bnum;
     struct boardheader bp;
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-    int ret=FULLUPDATE;
 
     bnum = getboardnum(COMMEND_ARTICLE,&bp);
-	if( bnum && chk_currBM(bp.BM, currentuser) )
+    if( bnum && chk_currBM(bp.BM, currentuser) )
 		mode |= 0x2 ;
 #endif
     if (fileinfo==NULL)
