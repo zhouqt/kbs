@@ -201,6 +201,8 @@ char msgchar(struct user_info *uin, int *isfriend)
     return '*';
 }
 
+static bool showcolor=true;
+
 int do_userlist()
 {
     int i,y,x;
@@ -208,6 +210,7 @@ int do_userlist()
     char tbuf[80];
     int override;
     extern bool disable_move;
+    extern bool disable_color;
     char fexp[30];
     struct user_info uentp;
 #ifdef NINE_BUILD
@@ -293,9 +296,13 @@ int do_userlist()
         clrtoeol();
         getyx(&y, &x);
         move(y, 20);
+        if(showcolor)
+            disable_color = true;
         disable_move = true;
         prints(tbuf);
         disable_move = false;
+        if(showcolor)
+            disable_color = false;
         resetcolor();
         move(y, x);
         sprintf(user_info_str,
@@ -400,7 +407,10 @@ int allnum, pagenum;
 	    strncpy(uinfo.username,buf,NAMELEN);
 	    UPDATE_UTMP_STR(username,uinfo);
        }	    
-		break;	    
+        break;	    
+    case Ctrl('T'):
+        showcolor = !showcolor;
+        break;
 #endif
     case 'k':
     case 'K':

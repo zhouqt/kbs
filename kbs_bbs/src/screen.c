@@ -501,6 +501,7 @@ void outc(unsigned char c)
 
 int savey=-1, savex=-1;
 bool disable_move = false;
+bool disable_color = false;
 
 void outns(const char*str, int n)
 {
@@ -604,7 +605,7 @@ void outns(const char*str, int n)
              }
              else if(*(str+i)=='m') {
                 j=2;
-                if(DEFINE(currentuser, DEF_COLOR))
+                if(DEFINE(currentuser, DEF_COLOR)&&!disable_color)
                 while(*(str+j)!='m') {
                     int m;
                     char s[100];
