@@ -1516,7 +1516,7 @@ int add_edit_mark(char *fname, int mode, char *title)
         
         if (!strncmp(buf, "\033[36m※ 修改:·", 15))
             continue;
-        if (Origin2(buf)) {
+        if (Origin2(buf) && (!added)) {
             now = time(0);
             if(mode & 1)
                 fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %15.15s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
@@ -2292,7 +2292,7 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
     
 #ifdef COMMEND_ARTICLE
     if (flag&FILE_COMMEND_FLAG) {
-        if (data->accessed[1] & FILE_SIGN)
+        if (data->accessed[1] & FILE_COMMEND)
             originFh->accessed[1] |= FILE_COMMEND;
         else
             originFh->accessed[1] &= ~FILE_COMMEND;
