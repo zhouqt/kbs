@@ -759,6 +759,8 @@ static int fav_key(struct _select_def *conf, int command)
             } else {
                 struct boardheader bh;
                 int total=0,j,k;
+                if (favbrd_list_t == -1)
+                    load_favboard(0);
                 i=getboardnum(ptr->name, &bh);
                 if (i<=0)
                     return SHOW_REFRESH;
