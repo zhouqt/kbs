@@ -57,7 +57,10 @@ void ann_show_item(MENU * pm, ITEM * it)
     } else {
         printf("<td>&nbsp;</td>");
     }
-    printf("<td>%6.6s %s</td></tr>\n", wwwCTime(file_time(buf)) + 4, wwwCTime(file_time(buf)) + 20);
+    printf("<td>%6.6s %s</td>\n", wwwCTime(file_time(buf)) + 4, wwwCTime(file_time(buf)) + 20);
+    snprintf(pathbuf, sizeof(pathbuf), "%s", ptr == NULL ? "" : ptr);
+	printf("<td><a href=\"bbs0an?path=%s&action=del&dpath=%s\">删除</a></tr>",
+				http_encode_string(pathbuf, sizeof(pathbuf)),it->fname);
 }
 
 void ann_show_toolbar(char * path, char * board)
@@ -118,7 +121,7 @@ void ann_show_directory(char *path,char * pathbuf)
             http_quit();
         }
         printf("<table class=\"default\" border=\"1\" width=\"610\">\n");
-        printf("<tr><td>编号</td><td>类别</td><td>标题</td><td>整理</td><td>日期</td></tr>\n");
+        printf("<tr><td>编号</td><td>类别</td><td>标题</td><td>整理</td><td>日期</td><td></td></tr>\n");
         me.now = 0;
         for (i = 0; i < me.num; i++) {
             trim(me.item[i]->title);
@@ -160,13 +163,9 @@ int ann_check_bm(char *buf)
 	char board[STRLEN];
 	char *c;
 
-
-	if(strncmp(buf,"0Announce/groups/",17))
-		return 0;
-	if((c=strchr(buf+17,'/'))==NULL) return 0;
-	strncpy(board,c+1,STRLEN-1);
-	board[STRLEN-1]='\0';
-	if((c=strchr(board,'/'))!=NULL) *c='\0';
+	board[0]='\0';
+    ann_get_board(buf, board, sizeof(board));
+	if(board[0]=='\0') return 0;
 
 	if(!has_BM_perm(currentuser, board))
 		return 0;
@@ -174,6 +173,57 @@ int ann_check_bm(char *buf)
 	return 1;
 }
 
+int ann_del_dir(char *path,char *pathbuf,char *fname)
+{
+	char fpath[PATHLEN];
+	char fpath2[PATHLEN];
+	char buf[STRLEN];
+	MENU pm;
+	FILE *fp;
+	int n,m;
+
+	if(ann_check_bm(pathbuf) == 0)
+		return -1;
+
+	sprintf(fpath, "%s/%s", pathbuf, fname);
+
+	if(dashf(fpath)){
+		unlink(fpath);
+	}else if(dashd(fpath)){
+		f_rm(fpath);
+	}else{
+		return -3;
+	}
+
+	bzero(&pm,sizeof(pm));
+	pm.path=pathbuf;
+	a_loadnames(&pm);
+
+	for(n=0; n<pm.num; n++){
+		if(! strcmp(pm.item[n]->fname,fname) )
+			break;
+	}
+	if(n < pm.num){
+		free(pm.item[n]);
+		pm.num--;
+		for(m=n; m<pm.num; m++)
+			pm.item[m] = pm.item[m+1];
+
+		if(a_savenames(&pm)){
+			a_freenames(&pm);
+			return -4;
+		}
+
+		a_freenames(&pm);
+		return 1;
+	}
+	else{
+		a_freenames(&pm);
+		return -5;
+	}
+
+}
+	
 int ann_add_dir(char *path,char *pathbuf,char *fname,char *title)
 {
 	char fpath[PATHLEN];
@@ -204,8 +254,12 @@ int ann_add_dir(char *path,char *pathbuf,char *fname,char *title)
 
 	a_additem(&pm,buf,fname,NULL,0,0);
 
-	if(a_savenames(&pm))
+	if(a_savenames(&pm)){
+		a_freenames(&pm);
 		return -4;
+	}
+
+	a_freenames(&pm);
 
 	sprintf(fpath, "%s/%s/.Names", pathbuf, fname);
 	if((fp=fopen(fpath,"w"))==NULL)
@@ -264,6 +318,31 @@ int main()
 					break;
 				case -3:
 					http_fatal("目录已经存在");
+					break;
+				default:
+					http_fatal("系统错误");
+					break;
+				}
+			}
+		}
+		else if(! strcmp(action,"del") ){
+			c = getparm("dpath");
+			if(!c || ! *c)
+				http_fatal("目录路径错误");
+			strncpy(dpath,c,PATHLEN-1);
+			dpath[PATHLEN-1]='\0';
+
+			ret = ann_del_dir(path,pathbuf,dpath);
+			if(ret < 0){
+				switch(ret){
+				case -1:
+					http_fatal("您没有这个权限");
+					break;
+				case -5:
+					http_fatal("没有这个文件或者目录");
+					break;
+				case -3:
+					http_fatal("目录不存在");
 					break;
 				default:
 					http_fatal("系统错误");
