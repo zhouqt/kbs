@@ -2,16 +2,25 @@
 BBSHOME=/home/system/bbs
 BBSSITE=zixia
 
-#OS_DEF   = -DAIX -DSYSV 
-OS_DEF   = -DLINUX -DSYSV 
+CGIPATH = /home/system/web/zixia.net/bbs/cgi-bin
+HTMPATH = /home/system/web
+BBSINCLUDE = /home/system/bbs/src/zixia_bbs
+BBSLIBRARY = ../lib
+PHPBBSLIBDIR = /home/system/web
+# The uid for the user 'bbs'
+
+OS_DEF   = -DLINUX -DSYSV
 
 CC       = gcc
-#CC       = cc
-CFLAGS   = -W -g -Ilibesmtp
-#CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc -Ilibesmtp
-#LIBS     = -lbsd -lcrypt
-#CFLAGS   = -O3
-#LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
+LD = gcc
+CFLAGS   = -Wall -g -Ilibesmtp
 
+OS_DEF   = -DLINUX -DSYSV
+
+CC       = gcc
+LD = gcc
+CFLAGS   = -Wall -g -Ilibesmtp
+LDFLAGS =
+EXECLDFLAGS = -lc
 CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_
-#CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
+
