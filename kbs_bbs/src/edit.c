@@ -42,7 +42,8 @@ inline static void CLEAR_MARK() {
     mark_begin = mark_end = NULL;
 }
 
-int myy, myx, outii, outjj;
+int myy=-1, myx, outii, outjj;
+bool show_eof=false;
 
 void display_buffer()
 {
@@ -74,7 +75,7 @@ void display_buffer()
                         break;
                     }
                     if (p->data[i]==27) {
-                        setfcolor(YELLOW);
+                        setfcolor(YELLOW, 0);
                         outc('*');
                         resetcolor();
                     }
@@ -84,9 +85,17 @@ void display_buffer()
                 if (p == currline && i == currpnt) {
                     myy = y; myx = j;
                 }
-                if (p->attr & M_MARK) prints("%s", ANSI_RESET);
+                if (show_eof) {
+                    setfcolor(YELLOW, 0);
+                    outc('~');
+                }
+                resetcolor();
             }
             p = p->next;
+            if (show_eof&&!p) {
+                setfcolor(GREEN, 0);
+                outc('~');
+            }
         } else
             prints("%s~", ANSI_RESET);
         outc('\n');
@@ -1339,6 +1348,9 @@ static int process_ESC_action(int action, int arg)
 
     msg[0] = '\0';
     switch (action) {
+    case 'A':
+        show_eof = !show_eof;
+        break;
     case 'L':
         if (ismsgline >= 1) {
             ismsgline = 0;
@@ -1519,8 +1531,6 @@ void input_tools()
                 insert_char(*ptr);
                 ptr++;
             }
-            break;
-        } else {
             break;
         }
         buf[0] = '\0';
