@@ -3,16 +3,17 @@
 #undef perror
 #undef printf
 
+static msglist_t *msgshm = NULL;
+static msglist_t *ml = NULL;
+
 int main()
 {
 	int iscreate;
-	msglist_t *msgshm;
-	msglist_t *ml;
 	struct user_info *ui;
 	int i;
 
 	iscreate = 0;
-	msgshm = attach_shm("MSG_SHMKEY", 5200, sizeof(msglist_t)*WWW_MAX_LOGIN,
+	msgshm = (msglist_t *)attach_shm("MSG_SHMKEY", 5200, sizeof(msglist_t)*WWW_MAX_LOGIN,
 			&iscreate);
 	if (iscreate)
 	{
@@ -25,8 +26,14 @@ int main()
 	for (i = 0; i < WWW_MAX_LOGIN; i++)
 	{
 		ml = msgshm + i;
+		if (ml->utmpnum <=0 || ml->utmpnum > USHM_SIZE)
+		{
+			fprintf(stdout, "faint! %d:%s:%d\n",
+					i, ml->userid, ml->utmpnum);
+			continue;
+		}
 		ui = get_utmpent(ml->utmpnum);
-		if (ui == NULL || strcasecmp(ml->userid, ui->userid))
+		if (strcasecmp(ml->userid, ui->userid))
 		{
 			ml->utmpnum = 0;
 			ml->userid[0] = '\0';
