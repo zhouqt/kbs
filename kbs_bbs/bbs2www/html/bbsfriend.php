@@ -2,7 +2,7 @@
 	/**
 	 * This file list all friends online.
 	 * by binxun
-	 * $Id
+	 * $Id$
 	 */
 	 
 	require("funcs.php");
