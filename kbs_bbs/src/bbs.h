@@ -380,6 +380,13 @@ enum BBSLOG_TYPE
     BBSLOG_BOARDUSAGE =3
 };
 
+enum BBSPOST_MODE
+{
+    BBSPOST_COPY=0,
+    BBSPOST_MOVE=1,
+    BBSPOST_LINK=2
+};
+
 #include "system.h"
 #include "vars.h"
 #include "func.h"

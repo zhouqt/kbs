@@ -492,7 +492,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     char buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
     int aborted, local_article;
 
-    if (!haspostperm(user, toboard) && !mode) {
+    if (!mode&&!haspostperm(user, toboard)) {
 #ifdef BBSMAIN
         move(1, 0);
         prints("您尚无权限在 %s 发表文章.\n", toboard);

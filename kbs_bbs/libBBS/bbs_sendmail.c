@@ -278,14 +278,21 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     strcpy(newmessage.filename, fname);
     setmailfile(filepath, userid, fname);
 
-    if (unlink)
+    switch (unlink) {
+    case 2:
+    	f_ln(tmpfile,filepath);
+    	break;
+    case 1:
         f_mv(tmpfile, filepath);
-    else
+    	break;
+    case  0:
         f_cp(tmpfile, filepath, 0);
+    	break;
+    }
     /*
      * peregrine update used space
      */
-    if (stat(filepath, &st) != -1)
+    if (unlink!=BBSPOST_LINK&&stat(filepath, &st) != -1)
         touser->usedspace += st.st_size;
 
     setmailfile(buf, userid, DOT_DIR);

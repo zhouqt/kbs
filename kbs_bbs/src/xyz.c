@@ -304,14 +304,14 @@ int x_level()
          * Haohmaru.98.10.03.给新任版主自动发信 
          */
         if ((lookupuser->userlevel & PERM_BOARDS) && flag == 0)
-            mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", 0);
+            mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK);
         /*
          * Bigman 2000.1.5 修改权限自动发信 
          */
         if ((lookupuser->userlevel & PERM_CLOAK) && flag1 == 0)
-            mail_file(currentuser->userid, "etc/forcloak", lookupuser->userid, NAME_SYSOP_GROUP "授予您隐身权限", 0);
+            mail_file(currentuser->userid, "etc/forcloak", lookupuser->userid, NAME_SYSOP_GROUP "授予您隐身权限", BBSPOST_LINK);
         if ((lookupuser->userlevel & PERM_XEMPT) && flag2 == 0)
-            mail_file(currentuser->userid, "etc/forlongid", lookupuser->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", 0);
+            mail_file(currentuser->userid, "etc/forlongid", lookupuser->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", BBSPOST_LINK);
 		save_giveupinfo(lookupuser,lcount,s);
     }
     pressreturn();

@@ -141,7 +141,7 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
     }
     fclose(fn);
 
-    mail_file(getcurruserid(), buf, user, title, 1);
+    mail_file(getcurruserid(), buf, user, title, BBSPOST_MOVE);
 
     fn = fopen(buf, "w+");
     fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", user, board, exp);

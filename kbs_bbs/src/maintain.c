@@ -722,7 +722,7 @@ int searchtrace()
     sprintf(tmp_command, "grep -a -w %s user.log | grep posted > tmp/searchresult.%d", tmp_id, getpid());
     system(tmp_command);
     sprintf(tmp_command, "tmp/searchresult.%d", getpid());
-    mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", 1);
+    mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", BBSPOST_MOVE);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf, lookupuser, NULL);      /*写入syssecurity版, stephen 2000.12.21 */
@@ -1434,31 +1434,31 @@ char *logfile, *regfile;
                      */
                     switch (buff) {
                     case '0':
-                        mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     case '1':
-                        mail_file(currentuser->userid, "etc/f_fill.unit", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.unit", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     case '2':
-                        mail_file(currentuser->userid, "etc/f_fill.address", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.address", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     case '3':
-                        mail_file(currentuser->userid, "etc/f_fill.telephone", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.telephone", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     case '4':
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     case '5':
-                        mail_file(currentuser->userid, "etc/f_fill.chinese", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.chinese", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     case '6':
-                        mail_file(currentuser->userid, "etc/f_fill.proxy", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.proxy", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     case '7':
-                        mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     default:
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK);
                         break;
                     }
                     /*
@@ -1851,7 +1851,7 @@ int set_BM()
     		 		if (newfh.BM[0]!='\0') strcat(newfh.BM," ");
     		 		strcat(newfh.BM,lookupuser->userid);
     		 		newlevel |= PERM_BOARDS;
-    		 		mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", 0);	
+    		 		mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK);	
     		 	}
     		 	else if (flag == 2) {
     		 		m=0;

@@ -495,7 +495,7 @@ int check_result(int num)
     fclose(sug);
     sug = NULL;
     sprintf(title, "[检查] %s 版的投票结果", currboard);
-    mail_file(currentuser->userid, nname, currentuser->userid, title, 1);
+    mail_file(currentuser->userid, nname, currentuser->userid, title, BBSPOST_MOVE);
     return 0;
 }
 

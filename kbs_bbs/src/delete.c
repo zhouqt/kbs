@@ -38,7 +38,7 @@ static void mail_info()
     getuinfo(fn, currentuser);
     fprintf(fn, "\n                      [1m о╣мЁвт╤╞╥╒пео╣мЁаТ[m\n");
     fclose(fn);
-    mail_file(currentuser->userid, filename, "acmanager", "вти╠м╗ж╙....", 1);
+    mail_file(currentuser->userid, filename, "acmanager", "вти╠м╗ж╙....", BBSPOST_MOVE);
 }
 
 

@@ -242,6 +242,7 @@ int mailall()
                     currentuser->signature = -1;
                 } else {
                     strncpy(save_title, title, STRLEN);
+                    strncpy(quote_title,title,STRLEN);
                     break;
                 }
             }
@@ -583,7 +584,7 @@ int do_send(char *userid, char *title, char *q_file)
         if (false == canIsend2(currentuser,userid)) {       /* Leeward 98.04.10 */
             prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎŞ·¨·¢³ö´ËĞÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®[m[m\n\n", userid);
             sprintf(save_title, "ÍËĞÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®", userid);
-            mail_file(currentuser->userid, filepath, currentuser->userid, save_title, 1);
+            mail_file(currentuser->userid, filepath, currentuser->userid, save_title, BBSPOST_MOVE);
             return -2;
         }
 		/* ¼ÓÉÏ±£´æµ½·¢¼şÏäµÄÈ·ÈÏ£¬by flyriver, 2002.9.23 */

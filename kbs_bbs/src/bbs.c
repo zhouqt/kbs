@@ -3280,7 +3280,7 @@ int Goodbye()
         if (fp) {
             fputs(lbuf, fp);
             fclose(fp);
-            mail_file(currentuser->userid, tmpfile, "surr", "自首", 1);
+            mail_file(currentuser->userid, tmpfile, "surr", "自首", BBSPOST_MOVE);
         }
     }
     /*
@@ -3329,7 +3329,7 @@ int Goodbye()
 
                 now = time(0);
                 sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
-                mail_file(currentuser->userid, fname, currentuser->userid, title, 1);
+                mail_file(currentuser->userid, fname, currentuser->userid, title, BBSPOST_MOVE);
 #ifdef NINE_BUILD
             }
 #endif
