@@ -1239,7 +1239,7 @@ int marked_mode()
         setbdir(digestmode, currdirect, currboard->filename);
     } else {
         digestmode = 3;
-        if (setboardmark(currboard, -1)) {
+        if (setboardmark(currboard->filename, -1)) {
             if (generate_mark() == -1) {
                 digestmode = false;
                 return FULLUPDATE;
@@ -1382,7 +1382,8 @@ int search_mode(int mode, char *index)
 int search_x(char * b, char * s)
 {
     void *hdll;
-    int (*func)(char * b, char * s);
+	typedef int (*iquery_board_func)(char *b, char *s);
+	iquery_board_func iquery_board;
     char *c;
     char buf[1024];
     int oldmode;
@@ -1393,8 +1394,8 @@ int search_x(char * b, char * s)
     if(hdll)
     {
         char* error;
-        if(func=dlsym(hdll,"iquery_board"))
-            func(b, s);
+        if(iquery_board = (iquery_board_func)dlsym(hdll,"iquery_board"))
+            iquery_board(b, s);
         else
         if ((error = dlerror()) != NULL)  {
             clear();
@@ -2985,7 +2986,7 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
     for(i=inum1;i<=inum2;i++) 
     if(i>=1&&i<=total) {
         f.filename[0]=0;
-        change_post_flag(currBM, currentuser, digestmode, currboard, i, &f, direct, fflag, 0);
+        change_post_flag(currBM, currentuser, digestmode, currboard->filename, i, &f, direct, fflag, 0);
     }
     prints("\n完成标记\n");
     pressreturn();
@@ -3330,12 +3331,20 @@ int Goodbye()
     int left = (80 - 36) / 2;
     int top = (scr_lns - 11) / 2;
     struct _select_item level_conf[] = {
-        {left + 7, top + 2, -1, SIT_SELECT, (void *) ""},
-        {left + 7, top + 3, -1, SIT_SELECT, (void *) ""},
-        {left + 7, top + 4, -1, SIT_SELECT, (void *) ""},
-        {left + 7, top + 5, -1, SIT_SELECT, (void *) ""},
+        {-1, -1, -1, SIT_SELECT, (void *) ""},
+        {-1, -1, -1, SIT_SELECT, (void *) ""},
+        {-1, -1, -1, SIT_SELECT, (void *) ""},
+        {-1, -1, -1, SIT_SELECT, (void *) ""},
         {-1, -1, -1, 0, NULL}
     };
+    level_conf[0].x = left + 7;
+    level_conf[1].x = left + 7;
+    level_conf[2].x = left + 7;
+    level_conf[3].x = left + 7;
+    level_conf[0].y = top + 2;
+    level_conf[1].y = top + 3;
+    level_conf[2].y = top + 4;
+    level_conf[3].y = top + 5;
 
 /*---	显示备忘录的关掉该死的活动看板	2001-07-01	---*/
     modify_user_mode(READING);

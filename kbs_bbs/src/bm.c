@@ -564,10 +564,15 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
         int left = (80 - 24) / 2;
         int top = (scr_lns - 11) / 2;
         struct _select_item menu_conf[] = {
-            {left, top + 2, 'R', SIT_SELECT, (void *) "[R] 设定可读取用户名单"},
-            {left, top + 3, 'P', SIT_SELECT, (void *) "[P] 设定可发表用户名单"},
+            {-1, -1, 'R', SIT_SELECT, (void *) "[R] 设定可读取用户名单"},
+            {-1, -1, 'P', SIT_SELECT, (void *) "[P] 设定可发表用户名单"},
             {-1, -1, -1, 0, NULL}
         };
+		menu_conf[0].x = left;
+		menu_conf[1].x = left;
+		menu_conf[0].y = top + 2;
+		menu_conf[1].y = top + 3;
+
 
         clear();
         choose = simple_select_loop(menu_conf, SIF_SINGLE | SIF_NUMBERKEY, t_columns, t_lines, NULL);

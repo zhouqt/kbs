@@ -37,6 +37,8 @@ static int insert_character = 1;
 static struct textline *mark_begin, *mark_end;
 static int mark_on;
 
+void msgline();
+
 inline static void CLEAR_MARK() {
     mark_on = 0;
     mark_begin = mark_end = NULL;

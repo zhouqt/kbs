@@ -29,7 +29,7 @@ struct read_arg {
     */
     int readmode; 
 
-    void* data; //readed data
+    char* data; //readed data
     int fd; //filehandle,open always
 
     int filecount; //the item count of file
