@@ -750,7 +750,7 @@ void domailclean(struct fileheader *fhdrp,char* arg)
         {
             setmailfile(buf, curruser, DOT_DIR);
             while (delcnt--)
-                delete_record(buf, sizeof(struct fileheader), delmsgs[delcnt]);
+                delete_record(buf, sizeof(struct fileheader), delmsgs[delcnt],NULL,NULL);
         }
         delcnt = 0;
         return;

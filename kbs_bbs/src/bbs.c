@@ -1428,7 +1428,7 @@ char *direc;
     {
         return;
     }
-    delete_file(new_dir,sizeof(struct fileheader),pos,cmpname,digest_name);
+    delete_record(new_dir,sizeof(struct fileheader),pos,cmpname,digest_name);
     *ptr='\0';
     sprintf(buf,"%s%s",new_dir,digest_name);
     unlink(buf);

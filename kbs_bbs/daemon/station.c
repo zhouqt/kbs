@@ -808,7 +808,7 @@ void call_alias(int unum,char *msg)             /* added by Luzi 1998.01.25,chan
                 send_to_unum(unum,"*** 该emote已经被定义过了 ***");
                 return;
             }
-            if (delete_record( path, 128, nIdx+1)==0)
+            if (delete_record( path, 128, nIdx+1,NULL,NULL)==0)
             {
                 send_to_unum(unum,"*** 该自定义emote已经被删除了 ***");
 		users[unum].lpEmote[nIdx][0]=0;

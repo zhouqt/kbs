@@ -524,10 +524,7 @@ char    *filename, *tmpfile, *deleted;
 }
 */
 
-int
-delete_record(filename,size,id)
-char *filename ;
-int size, id ;
+int delete_record(char *filename ,int size,int id,int (*filecheck)(void* ,char* ) ,char* arg)
 {
     int fdr;
     char* ptr;
@@ -553,8 +550,18 @@ int size, id ;
     if (!sigsetjmp(bus_jump,1)) {
 	signal(SIGBUS,sigbus);
 	signal(SIGSEGV,sigbus);
-	memcpy(ptr+(id-1)*size,ptr+id*size,st.st_size-size*id);
-	ret=0;
+	ret = 0;
+	if (filecheck) {
+            if(!(*filecheck)(ptr+(id-1)*size,arg)) {
+       	    for (id=0;id*size<st.st_size;id++)
+       		if((*filecheck)(ptr+(id-1)*size,arg))
+       			break;
+       	    if (id*size>=st.st_size)
+       		ret=-2;
+           }
+       }
+       if (ret==0)
+		memcpy(ptr+(id-1)*size,ptr+id*size,st.st_size-size*id);
     } else
     	ret=-3;
     munmap(ptr,st.st_size);  
@@ -564,6 +571,7 @@ int size, id ;
     signal(SIGBUS,SIG_IGN);
     signal(SIGSEGV,SIG_IGN);
     return ret;
+}
 /*
     char        tmpfile[ STRLEN ], deleted[ STRLEN ], lockfile[256];
     char        abuf[BUFSIZE] ;
@@ -616,7 +624,6 @@ int size, id ;
     close(fd) ;
     return 0 ;
 */
-}
 
 int
 delete_range(filename,id1,id2,del_mode)
@@ -799,128 +806,3 @@ int id1,id2,del_mode ;
     free(delfhdr);
     return 0;
 }
-
-int
-update_file(dirname,size,ent,filecheck,fileupdate)
-char *dirname ;
-int size,ent ;
-int (*filecheck)() ;
-void (*fileupdate)() ;
-{
-    char abuf[BUFSIZE] ;
-    int fd ;
-
-    if( size > BUFSIZE) {
-        toobigmesg();
-        return -1 ;
-    }
-    if((fd = open(dirname,O_RDWR)) == -1)
-        return -1 ;
-    flock(fd,LOCK_EX) ;
-    if(lseek(fd,size*(ent-1),SEEK_SET) != -1) {
-        if(read(fd,abuf,size) == size)
-            if((*filecheck)(abuf)) {
-                lseek(fd,-size,SEEK_CUR) ;
-                (*fileupdate)(abuf) ;
-                if(safewrite(fd,abuf,size) != size) {
-                    report("update err");
-                    flock(fd,LOCK_UN) ;
-                    close(fd) ;
-                    return -1 ;
-                }
-                flock(fd,LOCK_UN) ;
-                close(fd) ;
-                return 0 ;
-            }
-    }
-    lseek(fd,0,SEEK_SET) ;
-    while(read(fd,abuf,size) == size) {
-        if((*filecheck)(abuf)) {
-            lseek(fd,-size,SEEK_CUR) ;
-            (*fileupdate)(abuf) ;
-            if(safewrite(fd,abuf,size) != size) {
-                report("update err");
-                flock(fd,LOCK_UN) ;
-                close(fd) ;
-                return -1 ;
-            }
-            flock(fd,LOCK_UN) ;
-            close(fd) ;
-            return 0 ;
-        }
-    }
-    flock(fd,LOCK_UN) ;
-    close(fd) ;
-    return -1 ;
-}
-
-int
-delete_file(char *dirname ,int size,int ent ,int (*filecheck)(void* ,char* ) ,char* arg)
-{
-    char abuf[BUFSIZE] ;
-    int fd ;
-    struct stat st ;
-    long numents ;
-
-    if( size > BUFSIZE) {
-        toobigmesg();
-        return -1 ;
-    }
-    if((fd = open(dirname,O_RDWR)) == -1)
-        return -1 ;
-    flock(fd,LOCK_EX) ;
-    /*---	modified by period	2000-09.21	4 debug	---*/
-    numents = fstat(fd,&st);
-    if(0 != numents) {
-        char buf[256];
-        sprintf(buf, "%s stat error - delf", dirname);
-        report(buf);
-    }
-    /*    fstat(fd,&st) ;  */
-    numents = ((long)st.st_size)/size ;
-    if(((long)st.st_size) % size != 0)
-        /* change by KCN 1999.09.08
-                fprintf(stderr,"align err\n") ;
-        */
-        if(lseek(fd,size*(ent-1),SEEK_SET) != -1) {
-            if(read(fd,abuf,size) == size)
-                if((*filecheck)(abuf,arg)) {
-                    int i ;
-                    for(i = ent; i < numents; i++) {
-                        if(lseek(fd,(i)*size,SEEK_SET) == -1)       break ;
-                        if(read(fd,abuf,size) != size)              break ;
-                        if(lseek(fd,(i-1)*size,SEEK_SET) == -1)     break ;
-                        if(safewrite(fd,abuf,size) != size)         break ;
-                    }
-                    ftruncate(fd,(off_t)size*(numents-1)) ;
-                    flock(fd,LOCK_UN) ;
-                    close(fd) ;
-                    return 0 ;
-                }
-        }
-    lseek(fd,0,SEEK_SET) ;
-
-    /* Leeward 99.07.13 revised below '1' to '0' to fix a big bug */
-    /* ent = 1 ; */
-    ent = 0 ;
-    while(read(fd,abuf,size) == size) {
-        if((*filecheck)(abuf,arg)) {
-            int i ;
-            for(i = ent; i < numents; i++) {
-                if(lseek(fd,(i+1)*size,SEEK_SET) == -1) break ;
-                if(read(fd,abuf,size) != size) break ;
-                if(lseek(fd,(i)*size,SEEK_SET) == -1) break ;
-                if(safewrite(fd,abuf,size) != size) break ;
-            }
-            ftruncate(fd,(off_t)size*(numents-1)) ;
-            flock(fd,LOCK_UN) ;
-            close(fd) ;
-            return 0 ;
-        }
-        ent++ ;
-    }
-    flock(fd,LOCK_UN) ;
-    close(fd) ;
-    return -1 ;
-}
-

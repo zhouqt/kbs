@@ -1716,7 +1716,7 @@ char *uident;
     deleted = search_record( genbuf, &fh, sizeof(fh), cmpfnames, uident );
     if(deleted>0)
     {
-        if(delete_record(genbuf,sizeof(fh),deleted)==0)
+        if(delete_record(genbuf,sizeof(fh),deleted,NULL,NULL)==0)
             getfriendstr();
         else
         {
@@ -2046,7 +2046,7 @@ int badlist()
     char ignoreuser[IDLEN+1],path[40];
 
     int cmpinames();
-    int search_record(),append_record(),delete_record();
+    int search_record(),append_record();
     int usercomplete(),namecomplete();
 
     modify_user_mode( EDITUFILE);
@@ -2127,7 +2127,7 @@ int badlist()
                     }
                     else
                     {
-                        if (delete_record( path, IDLEN+1, nIdx)==0)
+                        if (delete_record( path, IDLEN+1, nIdx,NULL,NULL)==0)
                         {
                             ;
 			    /*		prints("已经成功从黑名单中删除"); */

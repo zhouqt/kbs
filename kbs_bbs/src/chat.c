@@ -1248,7 +1248,7 @@ void call_listen(chatcontext *pthis,const char *arg) /* added by Luzi 1997.11.28
                 nIdx=search_record( path,ignoreuser, IDLEN+1, cmpinames, uident );
                 if (nIdx <= 0)
                     printchatline(pthis,"*** 该用户的聊天讯息没有被忽略啊 ***");
-                else if (delete_record( path, IDLEN+1, nIdx)==0)
+                else if (delete_record( path, IDLEN+1, nIdx,NULL,NULL)==0)
                 {
                     bbslog("user","listen %s", uident);
                     printchatline(pthis,"*** 已恢复对该用户聊天讯息的接收 ***");
@@ -1390,7 +1390,7 @@ void call_alias(chatcontext *pthis,const char *arg)             /* added by Luzi
                 printchatline(pthis,"*** 该emote已经被定义过了 ***");
                 return;
             }
-            if (delete_record( path, 128, nIdx)==0)
+            if (delete_record( path, 128, nIdx,NULL,NULL)==0)
             {
                 printchatline(pthis,"*** 该自定义emote已经被删除了 ***");
                 

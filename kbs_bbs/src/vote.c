@@ -1087,7 +1087,7 @@ int num;
     unlink(buf);
     sprintf(buf,"vote/%s/limit.%d",currboard,currvote.opendate);/*Haohmaru.99.11.18*/
     unlink(buf);
-    if(delete_record(controlfile,sizeof(currvote),num)==-1)
+    if(delete_record(controlfile,sizeof(currvote),num,NULL,NULL)==-1)
     {
         prints("发生错误，请通知站长....");
         pressanykey();

@@ -870,7 +870,7 @@ m_new()
     }
     if(delcnt) {
         while(delcnt--)
-            delete_record(currmaildir,sizeof(struct fileheader),delmsgs[delcnt]) ;
+            delete_record(currmaildir,sizeof(struct fileheader),delmsgs[delcnt],NULL,NULL) ;
     }
     clear() ;
     move(0,0) ;
@@ -1089,7 +1089,7 @@ char *direct ;
     strcpy(buf,direct) ;
     if( (t = strrchr(buf,'/')) != NULL )
         *t = '\0' ;
-    if(!delete_file(direct,sizeof(*fileinfo),ent,cmpname,fileinfo->filename)) {
+    if(!delete_record(direct,sizeof(*fileinfo),ent,cmpname,fileinfo->filename)) {
         sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
         unlink(genbuf) ;
         return DIRCHANGED ;

@@ -58,7 +58,7 @@ int do_del_post(struct userec* user,int ent ,struct fileheader *fileinfo ,char *
 /* .post.X not use???! KCN
 postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
 /*    if( keep <= 0 ) {*/
-        fail = delete_file(direct,sizeof(struct fileheader),ent,cmpname,fileinfo->filename);
+        fail = delete_record(direct,sizeof(struct fileheader),ent,cmpname,fileinfo->filename);
 /*
     } else {
         fail = update_file(direct,sizeof(struct fileheader),ent,cmpfilename,
