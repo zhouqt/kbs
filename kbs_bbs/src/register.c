@@ -532,8 +532,8 @@ void check_register_info()
     	ud.realemail[STRLEN -16 - 1] = '\0';  //¾À´í´úÂë
 	write_userdata(currentuser->userid, &ud);
     newregfile = sysconf_str("NEWREGFILE");
-    if (currentuser->lastlogin - currentuser->firstlogin < REGISTER_WAIT_TIME && !HAS_PERM(currentuser, PERM_SYSOP) && newregfile != NULL) {
+    /*if (currentuser->lastlogin - currentuser->firstlogin < REGISTER_WAIT_TIME && !HAS_PERM(currentuser, PERM_SYSOP) && newregfile != NULL) {
         currentuser->userlevel &= ~(perm);
         ansimore(newregfile, true);
-    }
+    }ÏÈ×¢ÊÍµô*/
 }
