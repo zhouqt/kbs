@@ -2499,7 +2499,7 @@ int mark_post(int ent, struct fileheader *fileinfo, char *direct)
 /* stiger, ÖÃ¶¥ */
 int zhiding_post(int ent, struct fileheader *fileinfo, char *direct)
 {
-	if(fileinfo->filename[0]=='Z')
+	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
 		return del_post(ent,fileinfo,direct);
     return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_DING_FLAG, 0);
 }

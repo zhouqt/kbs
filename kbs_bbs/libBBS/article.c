@@ -1108,7 +1108,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         return DONOTHING;
 #endif
     /* add by stiger */
-    if ( fileinfo->filename[0]=='Z' && (flag==FILE_MARK_FLAG || flag==FILE_DIGEST_FLAG || flag==FILE_DELETE_FLAG || flag==FILE_NOREPLY_FLAG) ) return DONOTHING;
+    if ( POSTFILE_BASENAME(fileinfo->filename)[0]=='Z' && (flag==FILE_MARK_FLAG || flag==FILE_DIGEST_FLAG || flag==FILE_DELETE_FLAG || flag==FILE_NOREPLY_FLAG) ) return DONOTHING;
 /* modified by stiger */
     if ((flag == FILE_DIGEST_FLAG || flag==FILE_DING_FLAG) && (digestmode == 1 || digestmode == 4 || digestmode == 5))
         return DONOTHING;
@@ -1322,7 +1322,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
             memcpy(&digest, fileinfo, sizeof(digest));
             if (digestmode)
                 strncpy(digest.title, mkpost2.title, STRLEN);
-            digest.filename[0] = 'G';
+            POSTFILE_BASENAME(digest.filename)[0] = 'G';
             strcpy(buf, direct);
             ptr = strrchr(buf, '/') + 1;
             ptr[0] = '\0';
@@ -1368,7 +1368,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         break;
 	/* add by stiger */
     case FILE_DING_FLAG:
-        if (fileinfo->filename[0] == 'Z') {
+        if (POSTFILE_BASENAME(fileinfo->filename)[0] == 'Z') {
 	    newent=1;
         } else {
             struct fileheader digest;
@@ -1377,7 +1377,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
             memcpy(&digest, fileinfo, sizeof(digest));
             if (digestmode)
                 strncpy(digest.title, mkpost2.title, STRLEN);
-            digest.filename[0] = 'Z';
+            POSTFILE_BASENAME(digest.filename)[0] = 'Z';
             strcpy(buf, direct);
             ptr = strrchr(buf, '/') + 1;
             ptr[0] = '\0';
@@ -1433,12 +1433,13 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
     else
         type = ' ';
     /* add by stiger */
-    if( ent->filename[0]=='Z'){
-	if(type==' ')
-	    type='D';
-        else
-	    type='d';
-        return type;
+    if(POSTFILE_BASENAME(ent->filename)[0] == 'Z')
+	{
+		if(type==' ')
+			type='D';
+		else
+			type='d';
+		return type;
     }
     /* add end */
     if ((ent->accessed[0] & FILE_DIGEST)) {
