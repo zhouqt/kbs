@@ -605,7 +605,7 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
        	             comment[STRLEN-1] = 0;
                     	}
                     sprintf(tempbuf,"附加说明:%s",comment);
-                    sprintf(genbuf, "%s由%s授予%s俱乐部权力", uident, currentuser->userid, currboard->filename);
+                    sprintf(genbuf, "%s 由 %s 授予 %s 俱乐部权力", uident, currentuser->userid, currboard->filename);
                     /*securityreport(genbuf, NULL, NULL);*/
                     mail_buf(currentuser, tempbuf, uident, genbuf);
                     deliverreport(genbuf, tempbuf);
@@ -629,7 +629,7 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
 	   	          	}
 	              	sprintf(tempbuf,"附加说明:%s",comment);
 
-	                     sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力", uident, currentuser->userid, currboard->filename);
+	                     sprintf(genbuf, " %s 被 %s 取消 %s 俱乐部权力", uident, currentuser->userid, currboard->filename);
 	                     /*securityreport(genbuf, NULL, NULL);*/
 	                    	mail_buf(currentuser, tempbuf, uident, genbuf);
 	                    	deliverreport(genbuf, tempbuf);
