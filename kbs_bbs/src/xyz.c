@@ -531,12 +531,6 @@ void x_edits()
         return;
 
     ch = ans[0] - '0' - 1;
-    switch (ch) {
-    case 0:
-        modify_user_mode(EDITPLAN);
-    case 1:
-        modify_user_mode(EDITSIG);
-    }
 
     sethomefile(genbuf, currentuser->userid, e_file[ch]);
     move(3, 0);
