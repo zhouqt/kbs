@@ -100,13 +100,16 @@ AC_ARG_ENABLE(wap,
               select the path for wap files ],
 
 [
-    CONFIG_HAVE_WAP=1
+    CONFIG_HAVE_WAP="yes"
     if test -d $enableval; then
-        WAPPATH=$enableval
+       if test '!' -d $enableval; then
+       AC_MSG_ERROR("can't find wap in $enableval")
+       fi
+       WAPPATH=$enableval
     else
-        WAPPATH=$HTMPATH/wap
+       WAPPATH=$HTMPATH/wap
     fi
-],[CONFIG_HAVE_WAP=0])
+],[CONFIG_HAVE_WAP="no"])
 
 AC_SUBST(WWWBASE)
 AC_SUBST(CGIPATH)
