@@ -45,11 +45,11 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 		elseif( $brd_bid[$j] == -1) { //空收藏目录
 			continue;
 		} elseif ($brd_flag[$i] ==-1) { //收藏目录
-			$innerHtml .= "".
+			$innerHtml .= "<div class='fi'>".
 				"<a href='javascript:submenu(1,".$brd_bid[$j].",0,0,0)' target='_self'>".
 				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='/images/close.gif' class='pm' alt='+'>".
 				"</a><a href='/bbsfav.php?select=".$brd_bid[$j]."&up=".$select."'>".
-				"<img src='/images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a><br/>".
+				"<img src='/images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
 				"<div id='submenu_fav_".$brd_bid[$j]."' class='lineback'></div>";
 			continue;
 	    } else {

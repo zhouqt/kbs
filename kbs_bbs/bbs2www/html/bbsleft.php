@@ -54,9 +54,10 @@
 				if ($brd_flag[$j]==-1)
 				{
 ?>
+<div class="fi">
 <a href="javascript:submenu(1,<?php echo $brd_bid[$j]; ?>,0,0,0)" target="_self">
 <img id="submenuimg_fav_<?php echo $brd_bid[$j]; ?>" src="/images/close.gif" class="pm" alt="+"
-></a><a href="/bbsfav.php?select=<?php echo $brd_bid[$j]; ?>&up=-1"><img src="/images/kfolder1.gif" class="s16x16"><?php echo $brd_desc[$j]; ?></a><br/>
+></a><a href="/bbsfav.php?select=<?php echo $brd_bid[$j]; ?>&up=-1"><img src="/images/kfolder1.gif" class="s16x16"><?php echo $brd_desc[$j]; ?></a></div>
 <div id="submenu_fav_<?php echo $brd_bid[$j]; ?>" class="lineback"></div>
 <?php
 				}
@@ -64,10 +65,10 @@
 				{
 			  		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
 
-					$class = ( $j != $rows-1 ) ? "mi" : "lmi";
-?>
-<div class="<?php echo $class; ?>"><a href="<?php echo $brd_link; ?>"><?php echo $brd_desc[$j]; ?></a></div>
-<?php
+					if( $j != $rows - 1 )
+						echo "<div class='lb'><div class='mi'><a href='".$brd_link."'>".$brd_desc[$j]."</a></div></div>";
+					else
+						echo "<div class='lmi'><a href='".$brd_link."'>".$brd_desc[$j]."</a></div>";
 				}
 			}
 		}
@@ -217,12 +218,12 @@ setTimeout('bbs_auto_reload()',540000);
 ?>
 	</div>
 
-	<form action="/bbssel.php" method="get" class="m0"><nobr
+	<div><form action="/bbssel.php" method="get" class="m0"><nobr
 		><img src="/images/open.gif" class="pm" alt="-"><img src="<?php echo $img_subdir; ?>m5.gif" class="sfolder"
 		><input name="board" type="text" class="f2" value="ËÑË÷ÌÖÂÛÇø" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
 		<input name="submit" type="submit" value="GO" class="sgo" />
 		</nobr>
-	</form>
+	</form></div>
 <?php
 	if($currentuser["userid"]!="guest"){
 ?>
@@ -245,7 +246,7 @@ setTimeout('bbs_auto_reload()',540000);
 ?>
 	<a href='javascript:changemn("pc");' target="_self"><img id="imgpc" src="/images/close.gif" class="pm" alt="+"
 	></a><a href='/pc/<?php echo $blog_index; ?>'><img src="<?php echo $img_subdir; ?>m3.gif" class="sfolder"
-	><?php echo BBS_FULL_NAME; ?>Blog</a><br/>
+	>Ë®Ä¾Blog</a><br/>
 
 	<div class="pp" id="divpc">
 <?php
