@@ -41,9 +41,11 @@ function doLogon(){
 		foundErr("请勿频繁登录!");
 	case 1:
 		foundErr("系统在线人数已达上限，请稍后再访问本站。");
+	case 7:
+		foundErr("对不起,当前位置不允许登录该ID。");
 	}
 	$data=array();
-    $num=bbs_getcurrentuinfo($data);
+	$num=bbs_getcurrentuinfo($data);
 	$time=0;
 	switch (intval($_POST['CookieDate'])) {
 	case 1;
