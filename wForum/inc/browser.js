@@ -24,19 +24,18 @@ if (document.images) {
 			true : false;
 	}
 	
-	/* this is modified by atppp: use W3C standard instead of IE function if possible */
+	/* use W3C standard instead of IE function if possible - atppp */
 	isW3C = (isCSS && document.getElementById) ? true : false;
-	if (isW3C) isIE4 = false;
 }
 // Convert other frame object name string or object reference
 // into a valid element object reference 
 function getRawObjectFrom(obj, oFrame) {
     var theObj;
     if (typeof obj == "string") {
-        if (isIE4) {
-            theObj = oFrame.document.all(obj);
-        } else if (isW3C) {
+        if (isW3C) {
             theObj = oFrame.document.getElementById(obj);
+        } else if (isIE4) {
+            theObj = oFrame.document.all(obj);
         } 
     } else {
         // pass through object reference
@@ -56,10 +55,10 @@ function getParentRawObject(obj) {
 function getRawObject(obj) {
     var theObj;
     if (typeof obj == "string") {
-        if (isIE4) {
-            theObj = document.all(obj);
-        } else if (isW3C) {
+        if (isW3C) {
             theObj = document.getElementById(obj);
+        } else if (isIE4) {
+            theObj = document.all(obj);
         } 
     } else {
         // pass through object reference
@@ -75,10 +74,10 @@ function getRawObject(obj) {
 function getObjectCollection(obj) {
     var theObj;
     if (typeof obj == "string") {
-		if (isIE4) {
-			theObj=document.all.item(obj);
-		} else if (isW3C) {
+		if (isW3C) {
 			theObj=document.getElementsByName(obj);
+		} else if (isIE4) {
+			theObj=document.all.item(obj);
 		}
     } else {
         // pass through object reference
@@ -92,10 +91,10 @@ function getObjectCollection(obj) {
 function getObjectCollectionFrom(obj,oFrame) {
     var theObj;
     if (typeof obj == "string") {
-		if (isIE4) {
-			theObj=oFrame.document.all.item(obj);
-		} else if (isW3C) {
+		if (isW3C) {
 			theObj=oFrame.document.getElementsByName(obj);
+		} else if (isIE4) {
+			theObj=oFrame.document.all.item(obj);
 		}
     } else {
         // pass through object reference
