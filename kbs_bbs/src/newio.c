@@ -1067,7 +1067,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 while(j<strlen(buf)-1&&buf[j]!='\n'&&buf[j]!='\r') j++;
                 j=j-i+1;
                 if(j<0) j=0;
-                for(k=0;k<j+1;k++)
+                for(k=0;k<strlen(buf)-i-j+1;k++)
                     buf[i+k]=buf[i+j+k];
                 if(now>strlen(buf)) now=strlen(buf);
                 break;
