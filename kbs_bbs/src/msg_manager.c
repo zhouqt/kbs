@@ -241,6 +241,13 @@ static int set_smsg_key(struct _select_def *conf, int key)
 		sm_msgtxt[0]=0;
 		return SHOW_DIRCHANGE;
 	}
+	case 'S':
+	{
+		clear();
+		do_send_sms_func(s_m[conf->pos-1].dest, NULL);
+		pressanykey();
+		return SHOW_REFRESH;
+	}
 	default:
 		break;
 	}
