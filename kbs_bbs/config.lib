@@ -29,12 +29,51 @@ if test "$ZLIB_DIR" != "no"; then
   ])
   
   ZLIB_LIBS="-L$ZLIB_DIR/lib -lz"
-  ZLIB_INC="-I$ZLIB_DIR"
+  ZLIB_INC="-I$ZLIB_INC"
 else
   AC_MSG_ERROR(Need zlib support)
 fi
+
 LIBS="$LIBS $ZLIB_LIBS"
 CFLAGS="$CFLAGS $ZLIB_INC"
+
+AC_ARG_WITH(mysql,
+[  --with-mysql[=DIR]
+       Include MySQL support.],
+MYSQL_DIR="$withval", MYSQL_DIR="yes")
+
+if test "$MYSQL_DIR" != "no"; then
+  if test -f $MYSQL_DIR/include/mysql/mysql.h; then
+      MYSQL_INC=$MYSQL_DIR/include/mysql
+  else
+    for i in /usr/local /usr ; do
+      if test -f $i/include/mysql/mysql.h; then
+        MYSQL_DIR=$i
+        MYSQL_INC=$i/include/mysql
+      elif test -f $i/include/mysql.h; then
+        MYSQL_DIR=$i
+        MYSQL_INC=$i/include
+      fi
+    done
+  fi
+  
+  if test -z "$MYSQL_DIR"; then
+    AC_MSG_ERROR(Cannot find MySQL library.)
+  fi
+
+  AC_CHECK_LIB(mysqlclient, mysql_real_connect, [
+    AC_DEFINE(HAVE_MYSQL,1,[ ])
+  ],[
+	AC_MSG_ERROR(MYSQL extension required)
+  ],[ -L$MYSQL_DIR/lib/mysql ])
+  MYSQL_LIBS="-L$MYSQL_DIR/lib -L$MYSQL_DIR/lib/mysql -lmysqlclient"
+  MYSQL_INC="-I$MYSQL_INC"
+else
+  AC_MSG_ERROR(Need MySQL support)
+fi
+
+LIBS="$LIBS $MYSQL_LIBS"
+CFLAGS="$CFLAGS $MYSQL_INC"
 
 AC_CHECK_LIB([bsd], [vfork], [LIBS="$LIBS -lbsd"])
 AC_CHECK_LIB([dl], [dlopen], [LIBS="$LIBS -ldl"])
