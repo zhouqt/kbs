@@ -61,10 +61,11 @@ void display_buffer()
                 for (i = 0; i < p->len; i++) {
                     if (ch) ch = 0;
                     else if (p->data[i]<0) ch = 1;
-                    if (p == currline && i == currpnt)
-                        getyx(&myy, &myx);
+                    if (p == currline && i == currpnt) {
+                        myy = y; myx = j;
+                    }
                     if (j >= scr_cols || j >= scr_cols-1 && ch) {
-                        prints("\n");
+                        outc('\n');
                         y++;
                         j = 0;
                     }
@@ -80,17 +81,18 @@ void display_buffer()
                     else outc(p->data[i]);
                     j++;
                 }
-                if (p == currline && i == currpnt)
-                    getyx(&myy, &myx);
+                if (p == currline && i == currpnt) {
+                    myy = y; myx = j;
+                }
                 if (p->attr & M_MARK) prints("%s", ANSI_RESET);
             }
             p = p->next;
         } else
             prints("%s~", ANSI_RESET);
-        prints("\n");
+        outc('\n');
         y++;
         if (y >= scr_lns-1) {
-            if (outii!=-1) {
+            if (outii==-1) {
                 outii = i+1;
                 outjj = 0;
             }

@@ -504,7 +504,6 @@ void outc(unsigned char c)
     if (!isprint2(c)) {
         if (c == '\r') return;
         if (c == '\n') {	/* do the newline thing */
-            clrtoeol();
             cur_col=0; 
             if(cur_ln<scr_lns-1) cur_ln++;
         }
