@@ -74,6 +74,7 @@ int show_file(char *board,struct fileheader *x, int n, char* brdencode)
 {
     FILE *fp;
     char path[80], buf[512], board_url[80];
+    char* title;
 
     if (loginok)
         brc_add_read(x->id);
@@ -84,8 +85,12 @@ int show_file(char *board,struct fileheader *x, int n, char* brdencode)
     encode_url(board_url, board, sizeof(board_url));
     printf("<table width=\"610\"><pre>\n");
     printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">本篇全文</a>] ", board_url, x->filename, n);
+    if (strncmp(x->title,"Re:",3))
+	    title=x->title;
+    else
+	    title=x->title+4;
     if ((x->accessed[1] & FILE_READ) == 0)
-    	printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", brdencode, x->filename, x->owner, encode_url(buf, x->title, sizeof(buf)), x->filename);
+    	printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", brdencode, x->filename, x->owner, encode_url(buf, title, sizeof(buf)), x->filename);
 //    printf("[<a href=\"bbspst?board=%s&file=%s&title=%s&userid=%s\">回复本文</a>] ", board_url, x->filename, encode_url(buf, x->title, sizeof(buf)), x->owner);
     printf("[本篇作者: %s]\n", userid_str(x->owner));
     /*printf("[本篇人气: %d]\n", *(int*)(x->title+73)); */

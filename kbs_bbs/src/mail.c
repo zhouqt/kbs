@@ -788,8 +788,8 @@ void mailtitle()
      */
     int MailSpace = ((HAS_PERM(currentuser, PERM_SYSOP)
                       || !strcmp(currentuser->userid, "Arbitrator")) ? 9999 : (HAS_PERM(currentuser,
-                                                                                        PERM_CHATCLOAK) ? 2000 : (HAS_PERM(currentuser, PERM_MANAGER) ? 300
-                                                                                                                  : (HAS_PERM(currentuser, PERM_LOGINOK) ? 120 : 15))));
+                                                                                        PERM_CHATCLOAK) ? 4000 : (HAS_PERM(currentuser, PERM_MANAGER) ? 600
+                                                                                                                  : (HAS_PERM(currentuser, PERM_LOGINOK) ? 240 : 15))));
     int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
 
     showtitle("ÓÊ¼þÑ¡µ¥    ", BBS_FULL_NAME);

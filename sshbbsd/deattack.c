@@ -33,7 +33,7 @@
 void crc_update(word32 * a, word32 b)
 {
     b ^= *a;
-    *a = crc32((unsigned char *) &b, sizeof(b));
+    *a = ssh_crc32((unsigned char *) &b, sizeof(b));
 }
 
 /*

@@ -1,6 +1,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2002/08/22 15:42:52  kcn
+ * fix bug
+ *
  * Revision 1.3  2002/08/04 11:39:41  kcn
  * format c
  *
@@ -125,7 +128,7 @@ static unsigned long crc32_tab[] = {
 
 /* Return a 32-bit CRC of the contents of the buffer. */
 
-unsigned long crc32(const unsigned char *s, unsigned int len)
+unsigned long ssh_crc32(const unsigned char *s, unsigned int len)
 {
     unsigned int i;
     unsigned long crc32val;

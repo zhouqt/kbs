@@ -16,6 +16,9 @@ Functions for computing 32-bit CRC.
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2002/08/22 15:42:52  kcn
+ * fix bug
+ *
  * Revision 1.3  2002/08/04 11:39:41  kcn
  * format c
  *
@@ -43,6 +46,6 @@ Functions for computing 32-bit CRC.
 
 /* This computes a 32 bit CRC of the data in the buffer, and returns the
    CRC.  The polynomial used is 0xedb88320. */
-unsigned long crc32(const unsigned char *buf, unsigned int len);
+unsigned long ssh_crc32(const unsigned char *buf, unsigned int len);
 
 #endif                          /* CRC32_H */

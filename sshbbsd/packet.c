@@ -17,6 +17,9 @@ with the other side.  This same code is used both on client and server side.
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2002/08/22 15:42:52  kcn
+ * fix bug
+ *
  * Revision 1.3  2002/08/04 11:39:42  kcn
  * format c
  *
@@ -419,7 +422,7 @@ void packet_send(void)
     buffer_consume(&outgoing_packet, 8 - padding);
 
     /* Add check bytes. */
-    checksum = crc32((unsigned char *) buffer_ptr(&outgoing_packet), buffer_len(&outgoing_packet));
+    checksum = ssh_crc32((unsigned char *) buffer_ptr(&outgoing_packet), buffer_len(&outgoing_packet));
     PUT_32BIT(buf, checksum);
     buffer_append(&outgoing_packet, buf, 4);
 
@@ -550,7 +553,7 @@ int packet_read_poll(void)
 #endif
 
     /* Compute packet checksum. */
-    checksum = crc32((unsigned char *) buffer_ptr(&incoming_packet), buffer_len(&incoming_packet) - 4);
+    checksum = ssh_crc32((unsigned char *) buffer_ptr(&incoming_packet), buffer_len(&incoming_packet) - 4);
 
     /* Skip padding. */
     buffer_consume(&incoming_packet, 8 - len % 8);
