@@ -659,10 +659,10 @@ sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
 	    {
 		new_register();
 		sethomepath(tmpstr, currentuser->userid);
-		sprintf( buf, "/bin/mv -f %s /home0/bbs/homeback/%s", tmpstr,currentuser->userid);
+		sprintf( buf, "/bin/mv -f %s "BBSHOME"/homeback/%s", tmpstr,currentuser->userid);
 		system( buf );
 		setmailpath(tmpstr, currentuser->userid);/*Haohmaru.00.04.23,免得能看前人的信*/
-		sprintf( buf, "/bin/mv -f %s /home0/bbs/mailback/%s", tmpstr,currentuser->userid);
+		sprintf( buf, "/bin/mv -f %s "BBSHOME"/mailback/%s", tmpstr,currentuser->userid);
 		system( buf );
 		break;
 	    }
