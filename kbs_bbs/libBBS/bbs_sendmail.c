@@ -61,9 +61,9 @@ char *email_domain()
 {
     char        *domain;
 
-    /*domain = sysconf_str( "BBSDOMAIN" );
-    if( domain == NULL )  domain = "unknown.BBSDOMAIN";*/
-	domain = MAIL_BBSDOMAIN;
+    domain = sysconf_str( "BBSDOMAIN" );
+    if( domain == NULL )  domain = "unknown.BBSDOMAIN";
+	/*domain = MAIL_BBSDOMAIN;*/
     return domain;
 }
 
@@ -237,8 +237,8 @@ int isuu, isbig5, noansi;
     smtp_set_monitorcb (session, monitor_cb, fout, 1);
 */
     
-    /*server = sysconf_str( "MAILSERVER" );*/
-	server = MAIL_MAILSERVER;
+    server = sysconf_str( "MAILSERVER" );
+	/*server = MAIL_MAILSERVER;*/
     if(( server == NULL )||!strcmp(server,"(null ptr)"))  server = "127.0.0.1:25";
 
     smtp_set_server (session, server);
