@@ -1,7 +1,8 @@
 #include "bbs.h"
 
 char *curuserid;
-int type=-1, flag=0, timed=0, sorttype=0, groupid=-1;
+int type=-1, flag=0, timed=0, sorttype=0;
+char groupid=0;
 
 #define DATALEN 100
 
@@ -77,7 +78,7 @@ int check_BM(struct boardheader *bptr,void* arg)
 //    if ((bptr->level != 0) && !(bptr->level & PERM_POSTMASK))
 //        return 0;
     if (!chk_BM_instr(bptr->BM, curuserid)) return 0;
-    if (groupid!=-1&&bptr->title[0]-48!=groupid) return 0;
+    if (groupid!=0&&bptr->title[0]!=groupid) return 0;
     sprintf(direct, "boards/%s/.bm.%s%s", bptr->filename, curuserid, suffix[timed]);
     if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1) return 0;
     ldata.l_type = F_RDLCK;
@@ -145,16 +146,7 @@ main(int argc, char ** argv)
 		printf("usage: statBM group day|week|month|year|update|clear\n");
 		return;
 	}
-	if (!strcmp(argv[1], "0")) groupid = 0;
-	if (!strcmp(argv[1], "1")) groupid = 1;
-	if (!strcmp(argv[1], "2")) groupid = 2;
-	if (!strcmp(argv[1], "3")) groupid = 3;
-	if (!strcmp(argv[1], "4")) groupid = 4;
-	if (!strcmp(argv[1], "5")) groupid = 5;
-	if (!strcmp(argv[1], "6")) groupid = 6;
-	if (!strcmp(argv[1], "7")) groupid = 7;
-	if (!strcmp(argv[1], "8")) groupid = 8;
-	if (!strcmp(argv[1], "9")) groupid = 9;
+        if(argv[1][1]==0) groupid = argv[1][0];
 	if (!strcasecmp(argv[2],"clear")) type=0;
 	if (!strcasecmp(argv[2],"day")) type=1;
 	if (!strcasecmp(argv[2],"week")) type=2;
