@@ -55,4 +55,12 @@ if (!defined('SHOWTELNETPARAM')) { //是否允许配置 telnet 下专用的个人参数 - atpp
 	define('SHOWTELNETPARAM',1); //默认 ON，保持和以前的兼容性
 }
 
+if (!defined('MYFACEDIR')) { //自定义头像上传保存位置
+	define('MYFACEDIR','uploadFace/');
+}
+
+if (!defined('MYFACEMAXSIZE')) { //自定义头像最大文件大小, 单位byte
+	define('MYFACEMAXSIZE','524288');
+}
+
 ?>
