@@ -1826,7 +1826,7 @@ int inn_start()
 
     getdata(t_lines - 1, 0, "启动转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
-        sprintf(tmp_command, "~bbs/innd/innbbsd");
+        sprintf(tmp_command, BBSHOME "/innd/innbbsd");
         system(tmp_command);
     }
     return 0;
@@ -1838,7 +1838,7 @@ int inn_reload()
 
     getdata(t_lines - 1, 0, "重读配置吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
-        sprintf(tmp_command, "~bbs/innd/ctlinnbbsd reload");
+        sprintf(tmp_command, BBSHOME "/innd/ctlinnbbsd reload");
         system(tmp_command);
     }
     return 0;
@@ -1850,7 +1850,7 @@ int inn_stop()
 
     getdata(t_lines - 1, 0, "停止转信吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
-        sprintf(tmp_command, "~bbs/innd/ctlinnbbsd shutdown");
+        sprintf(tmp_command, BBSHOME "/innd/ctlinnbbsd shutdown");
         system(tmp_command);
     }
     return 0;
