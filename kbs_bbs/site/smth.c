@@ -12,7 +12,7 @@ const char *permstrings[] = {
         "呼叫他人聊天",         /* PERM_PAGE */
         "发表文章",             /* PERM_POST */
         "使用者资料正确",       /* PERM_LOGINOK */
-        "监理帐号",         /* PERM_BMMANAGER */
+        "实习站务",         /* PERM_BMMANAGER */
         "可隐身",               /* PERM_CLOAK */
         "可见隐身",             /* PERM_SEECLOAK */
         "长期帐号",         /* PERM_XEMPT */
@@ -189,7 +189,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     else if (lvl & PERM_JURY)
         strcpy(buf, "仲裁");    /* stephen :增加中文查询"仲裁" 2001.10.31 */
     else if (lvl & PERM_BMAMANGER)
-        strcpy(buf, "监理");
+        strcpy(buf, "实习站务");
     else if (lvl & PERM_COLLECTIVE)
         strcpy(buf, "专用");
     else if (lvl & PERM_CHATCLOAK)
