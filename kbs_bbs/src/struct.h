@@ -82,14 +82,14 @@ struct friends_info {
 
 struct boardheader {            /* This structure is used to hold data in */
     char filename[STRLEN];      /* the BOARDS files */
-    char unused1[STRLEN - BM_LEN];
-    char BM[BM_LEN - 1];
-    char unused_flag;
+    char BM[BM_LEN];
     char title[STRLEN];
     unsigned level;
     unsigned int nowid;
     unsigned int clubnum; /*如果是俱乐部，这个是俱乐部序号*/
     unsigned int flag;
+    unsigned int adv_club; /* 用于指定club对应关系,0表示没有,1表示序号*/
+    char des[200]; /*版面描述,用于www的版面说明和search */
 };
 
 /* XXX: struct fileheader moved to site.h */

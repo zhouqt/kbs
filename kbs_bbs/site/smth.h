@@ -25,11 +25,11 @@
 #define IDLE_TIMEOUT    (60*20) 
 #define MONITOR_TIMEOUT (60*20) 
 
-#define BBSUID 			9999
-#define BBSGID 			99
+#define BBSUID 			501
+#define BBSGID 			501
 
 /* for bbs2www, by flyriver, 2001.3.9 */
-#define SECNUM 9
+#define SECNUM 13
 
 #define SQUID_ACCL
 
@@ -38,7 +38,7 @@
 #define SYSMAIL_BOARD       "sysmail"
 #define BLESS_BOARD "Blessing"
 
-#define MAXUSERS  		200000
+#define MAXUSERS  		20000
 #define MAXCLUB			128
 #define MAXBOARD  		600
 #define MAXACTIVE 		8000

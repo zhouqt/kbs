@@ -41,8 +41,8 @@ int main()
 	for (i = 0; i < records; i++)
 	{
 		ptr = brd + i;
-		ptr->flag = ptr->unused_flag;
-		ptr->unused_flag = 0;
+/*		ptr->flag = ptr->unused_flag;
+		ptr->unused_flag = 0;*/       /*---disable by binxun */
 	}
 	munmap(brd, fs.st_size);
 
