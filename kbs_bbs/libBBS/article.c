@@ -162,7 +162,7 @@ void add_loginfo(char* filepath,struct userec* user,char* currboard,int Anony)  
     color=(user->numlogins%7)+31; /* 颜色随机变化 */
     sethomefile( fname, user->userid,"signatures" );
     fp=fopen(filepath,"a");
-    if (dashf(fname)||          /* 判断是否已经 存在 签名档 */
+    if (!dashf(fname)||          /* 判断是否已经 存在 签名档 */
             user->signature==0||noidboard)
     {       fputs("\n--\n", fp);
     }else{ /*Bigman 2000.8.10修改,减少代码 */
