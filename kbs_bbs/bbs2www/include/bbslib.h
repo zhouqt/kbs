@@ -270,31 +270,22 @@ struct userec *getcurrusr();
 struct userec *setcurrusr(struct userec *user);
 
 uinfo_t *getcurruinfo();
-
+//favboard operation
 void save_favboard();
-
 void release_favboard();
-
 int DelFavBoard(int i);
-
 int SetFav(int i);
-
 int getfavnum();
-
 void load_favboard(int dohelp);
-
 int IsFavBoard(int idx);
-
 char *get_favboard(int k);
-
 int get_favboard_id(int k);
-
 int get_favboard_type(int k);
-
-
 int add_favboard(char *brdname);
 
 struct boardheader const *getboard(int num);
+//board manage
+int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board);
 
 int isowner(struct userec *user, struct fileheader *fileinfo);
 
