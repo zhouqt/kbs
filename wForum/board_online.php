@@ -28,26 +28,27 @@ function board_online_js($board) {
     foreach($users as $user) {
     	if ($user["USERID"] == "_wwwguest") break;
     	if ($id == 0) {
-?>
-document.write("&nbsp;&nbsp;[ 版内在线用户：");
-<?php
+    		$str = "&nbsp;&nbsp;[ 版内在线用户：";
 		}
 		$id++;
 		if ($id > 10) {
 ?>
-document.write("<a href=\"javascript:openScript('board_online.php?board=<?php echo $board; ?>',500,400)\">更多在线...</a> ");
+	function oo() {
+		openScript('board_online.php?board=<?php echo $board; ?>',500,400);
+	}
 <?php
+			$str .= "<a href='javascript:oo();'>更多在线...</a> ";
 			break;
 		}
-?>
-document.write("<?php echo $user["USERID"]; ?> ");
-<?php
+		$str .= $user["USERID"]." ";
     }
     if ($id > 0) {
-?>
-document.write("]");
-<?php
+    	$str .= "]";
     }
+?>
+	var o = getRawObject("onboard_users");
+	o.innerHTML = "<?php echo $str; ?>";
+<?php
 }
 
 function board_online($board) {

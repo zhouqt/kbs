@@ -109,13 +109,8 @@ function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
 &nbsp;[<a href="doclear.php?boardName=<?php echo $boardArr["NAME"]; ?>" title="将本版所有文章标记成已读">清除未读</a>]
 <?php
 	}
-	if (ONBOARD_USERS) {
 ?>
-<script language="JavaScript" src="board_online.php?board=<?php echo $boardArr["NAME"]; ?>&amp;js=1"></script> 
-<?php
-	}
-?>
-</Th></TR></TABLE>
+<span id="onboard_users"></span></Th></TR></TABLE>
 <BR>
 <table cellpadding=2 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
@@ -176,7 +171,7 @@ function showBroadcast($boardID,$boardName){
 	if ($conn === false) return;
 ?>
 <tr><td class=TableBody1 colspan=5 height=20>
-	<table width=100% ><tr><td valign=middle height=20 width=50><a href=allpaper.php?board=<?php echo $boardName; ?> title=点击查看本论坛所有小字报><b>广播</b></a>：</td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}">
+	<table width=100% ><tr><td valign=middle height=20 width=50><a href=allpaper.php?board=<?php echo $boardName; ?> title=点击查看本论坛所有小字报><b>广播</b></a>：</td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="{this.start()}" onmouseover="{this.stop()}">
 <?php
 	$sth = $conn->query("SELECT ID,Owner,Title FROM smallpaper_tb where Addtime>=subdate(Now(),interval 1 day) and boardID=" . $boardID . " ORDER BY Addtime desc limit 5");
 	while($rs = $sth->fetchRow(DB_FETCHMODE_ASSOC)) {
@@ -292,10 +287,10 @@ function isSelfMultiQueryAllowed() {
     return (ALLOW_SELF_MULTIQUERY);
 }
 
-function getBoardRSS($boardName, $boardDesc) {
+function getBoardRSS($boardName) {
 	global $SiteURL;
 	if (RSS_SUPPORT) {
-		return "<link id=\"RSSLink\" title=\"".htmlspecialchars($boardDesc, ENT_QUOTES)."\" type=\"application/rss+xml\" rel=\"alternate\" href=\"".$SiteURL."rss.php?board=".$boardName."\"></link>";
+		return "<link id=\"RSSLink\" title=\"RSS\" type=\"application/rss+xml\" rel=\"alternate\" href=\"".$SiteURL."rss.php?board=".$boardName."\"></link>";
 	} else return "";
 }
 ?>

@@ -17,7 +17,7 @@ preprocess();
 
 setStat($isGroup ? "版面列表" : "文章列表");
 
-show_nav($boardName, false, $isGroup ? "" : getBoardRSS($boardName, $boardArr['DESC']));
+show_nav($boardName, false, $isGroup ? "" : getBoardRSS($boardName));
 
 showUserMailBoxOrBR();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
@@ -44,7 +44,11 @@ board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 </table>
 <?php
 	}
-
+	if (ONBOARD_USERS) {
+?>
+<script language="JavaScript" src="board_online.php?board=<?php echo $boardArr["NAME"]; ?>&amp;js=1"></script> 
+<?php
+	}
 show_footer();
 
 function preprocess(){

@@ -44,7 +44,7 @@ height=24 align="center">
 	</TD></TR>
 	<TR><TD class=TableBody2 
 height=24 align="center">
-		¼ì²â±ðµÄ ID: <input type="text" name="id">&nbsp;<input type="submit" name="submit" value="¼ì²â ID">
+		¼ì²â±ðµÄ ID: <input type="text" name="id">&nbsp;<input type="submit" value="¼ì²â ID">
 	</td></tr>
 </TABLE></form>
 <br>

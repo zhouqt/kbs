@@ -52,7 +52,7 @@ function main() {
 <a href="dispuser.php?id=<?php echo $friend['userid'] ; ?>" target=_blank>
 <?php echo $friend['userid'] ?></a>
 </td>
-<td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $friend['userid'] ; ?>" > <?php echo htmlspecialchars($friend['username'],ENT_QUOTES); ?></a>	</td>
+<td class=TableBody1 align="left" style="padding-left: 10pt; font-weight:normal"><a href="dispuser.php?id=<?php echo $friend['userid'] ; ?>" > <?php echo htmlspecialchars($friend['username'],ENT_QUOTES); ?></a>	</td>
 <td align=center class=TableBody1 style="font-weight:normal"><?php echo $friend['userfrom']; ?></td>
 <td align=center class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($friend['idle']/60), ($friend['idle']%60)); ?></td>
 <td align=center valign=middle width=220 class=TableBody1><nobr>

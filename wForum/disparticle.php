@@ -26,7 +26,7 @@ preprocess();
 
 setStat(htmlspecialchars($articles[0]['TITLE'] ,ENT_QUOTES) . " " );
 
-show_nav($boardName,$is_tex,getBoardRSS($boardName, $boardArr['DESC']));
+show_nav($boardName,$is_tex,getBoardRSS($boardName));
 
 showUserMailBoxOrBR();
 board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);

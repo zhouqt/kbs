@@ -123,7 +123,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <td class=TableBody1 align=center valign=middle style="font-weight:normal">
 <a href="dispuser.php?id=<?php echo $maildata[$i]['OWNER'] ; ?>" target=_blank><?php echo $maildata[$i]['OWNER'] ; ?></a>
 </td>
-<td class=TableBody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($maildata[$i]['TITLE'],ENT_QUOTES); ?> </a>	</td>
+<td class=TableBody1 align=left style="padding-left: 10pt; font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($maildata[$i]['TITLE'],ENT_QUOTES); ?> </a>	</td>
 <td class=TableBody1 style="font-weight:normal;text-align:center;"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
 <td class=TableBody1 style="font-weight:normal;text-align:right;padding-right:10pt;"><?php
 	if ($maildata[$i]["ATTACHPOS"]>0) echo "<img src=\"pic/havefolder.gif\" align=\"absmiddle\" title=\"ÓÐ¸½¼þ\">";

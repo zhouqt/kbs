@@ -11,7 +11,6 @@ global $boardArr;
 global $boardID;
 global $boardName;
 
-header("Content-Type: text/xml; charset=$HTMLCharset");
 if (!RSS_SUPPORT) exit;
 
 preprocess();
@@ -60,10 +59,13 @@ function preprocess(){
 }
 
 function main($boardID, $boardName, $boardArr, $modifytime) {
+	global $HTMLCharset;
 	$includeDesc = isset($_GET["includeContents"]);
 	$lw = isset($_GET["lw"]);
 	$channel = generate_rss_header($boardName, htmlspecialchars($boardArr["DESC"], ENT_QUOTES), $modifytime);
 	$items = generate_rss_contents($boardID, $boardName, $includeDesc, $lw);
+	header("Content-Type: text/xml; charset=$HTMLCharset");
+	header("Content-Disposition: inline;filename=rss.xml");
 	echo generate_rss($channel, $items);
 }
 
