@@ -28,7 +28,7 @@ OS_DEF   = -DAIX -DSYSV
 
 CC       = gcc
 AR	 = ar
-LD	 = ld
+LD	 = gcc 
 #CC       = cc
 CFLAGS   = -g -Ilibesmtp
 LDFLAGS  = -lc
@@ -73,11 +73,11 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
            maintain.o edit.o more.o pass.o help.o bcache.o boards.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o boards_t.o\
-           bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o lvars.o\
+           bm.o list.o goodbye.o fileshm.o bbsd_single.o lvars.o\
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o libmsg.o article.o sysconf.o $(BBSSITE).o
 
-BBSLIBOBJS = cache.o record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o \
+BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o \
 	lvars.o $(BBSSITE).o boards.o lvars.o bbs_sendmail.o libmsg.o article.o convcode.o \
 	sysconf.o
 
