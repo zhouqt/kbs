@@ -3,7 +3,7 @@
 
 static ZEND_FUNCTION(bbs_getuser);
 static ZEND_FUNCTION(bbs_getonlineuser);
-static ZEND_FUNCTION(bbs_getonelinenumber);
+static ZEND_FUNCTION(bbs_getonlinenumber);
 static ZEND_FUNCTION(bbs_countuser);
 static ZEND_FUNCTION(bbs_setfromhost);
 static ZEND_FUNCTION(bbs_checkpasswd);
@@ -238,7 +238,7 @@ static ZEND_FUNCTION(bbs_checkpasswd)
 	int s_len;
 	char* pw;
 	int pw_len;
-	long ret,;
+	long ret;
 	int unum;
 	struct userec* user;
 
@@ -275,11 +275,11 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 	snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
 #endif
 	bbslog("1system", buf);
-	if(strcasecmp(id, "guest")) {
-		uinfo_t ui;
+	if(strcasecmp(getcurrentuser()->userid, "guest")) {
+		struct user_info ui;
 		int utmpent;
 
-		memset( &ui, 0, sizeof( uinfo_t ) );
+		memset( &ui, 0, sizeof( struct user_info ) );
     		ui.active = YEA ;
 		/* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒşÉí */
 		if( (HAS_PERM(getcurrentuser(),PERM_CHATCLOAK)
