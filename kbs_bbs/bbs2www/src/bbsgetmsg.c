@@ -2,6 +2,14 @@
  * $Id$
  */
 #include "bbslib.h"
+void set_height(int h)
+{
+    printf("<script language=javascript>\
+parent.viewfrm.rows = \"%d,*,20\";\
+</script>",h);
+}
+
+
 
 int main()
 {
@@ -15,10 +23,12 @@ int main()
     printf("A {color: #0000FF}\n");
     printf("</style>\n");
     if (loginok == 0) {
+    	set_height(0);
         printf("<body style=\"BACKGROUND-COLOR: #f8f0f0\">");
         http_quit();
     }
     if (receive_webmsg(get_utmpent_num(getcurruinfo()), getcurruserid(), &srcutmp, srcid, buf) == 0) {
+    	set_height(18);
         printf("<bgsound src=\"/sound/msg.wav\">\n");
         printf("<body onkeypress=\"checkrmsg(event.keyCode)\" style=\"BACKGROUND-COLOR: #f0ffd0\">");
         printf("<table width=\"100%%\">\n");
@@ -27,7 +37,8 @@ int main()
         printf("</td>\n");
         printf("<td align=\"right\"><a target=\"f3\" href=\"bbssendmsg?destid=%s&destutmp=%d\">[»ØÑ¶Ï¢]</a> <a href=\"bbsgetmsg\">[ºöÂÔ]</a></td></tr></table>\n", srcid, srcutmp);
         http_quit();
-    }
+    } else
+    	set_height(0);
 #if 0
     sethomefile(buf, getcurruserid(), "wwwmsg");
     sethomefile(fname, getcurruserid(), ".wwwmsg.lock");
