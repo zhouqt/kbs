@@ -136,7 +136,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     tc_line = new_ln;
     if ((new_col == 0) && (new_ln == was_ln + 1)) {
         ochar('\n');
-        tc_color = 8;
+        tc_color = tc_color/16*16+8;
         if (was_col != 0)
             ochar('\r');
         return;
@@ -167,7 +167,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
             ochar('\n');
-            tc_color = 8;
+            tc_color = tc_color/16*16+8;
             if (was_col != 0)
                 ochar('\r');
             for(i=0;i<new_col;i++)
