@@ -30,9 +30,9 @@
 </dt>
 <dt>2.2. <a href="#install_wforum">安装 wForum</a>
 </dt>
-<dt>2.3. <a href="#install_uploadface">自定义头像功能</a>
+<dt>2.3. <a href="#feature_notes">default.php 内部分参数的附加说明</a>
 </dt>
-<dt>2.4. <a href="#install_upgrade">升级 wForum 的操作</a>
+<dt>2.4. <a href="#install_uploadface">自定义头像功能</a>
 </dt>
 <dt>2.5. <a href="#install_tex2mathml">加入 itex2mathml 支持</a>
 </dt>
@@ -75,7 +75,7 @@
 <div class="itemizedlist"><ul type="disc">
 <li>wForum 是基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统；</li>
 <li>主页：<a href="http://wforum.aka.cn/" target="_blank">http://wforum.aka.cn/</a>；</li>
-<li>推荐使用 linux 系统（redhat)。</li>
+<li>推荐使用 linux 系统 (redhat)。</li>
 </ul></div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
@@ -124,7 +124,25 @@ create table smallpaper_tb(
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="install_uploadface"></a>2.3. 自定义头像功能</h3></div></div>
+<a name="feature_notes"></a>2.3. default.php 内部分参数的附加说明</h3></div></div>
+<p>inc/sites/default.php 列举了可以在 inc/site.php 里定义的参数。大多数参数说明已经足够明确，下面对个别参数作附加说明。
+					</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>$SiteURL: 这个变量用于一些需要输出绝对路径的地方，应该定义为 wForum 安装的根的 URL，最后一个字符必须是 '/'。</p></li>
+<li><p>MAINTITLE: 站点标题可以包含 html，打开 mathml 支持的站点千万注意 html 必须符合 xhtml 标准。</p></li>
+<li><p>RSS_SUPPORT: wForum 可以动态产生十大热门话题和每个版面最近 20 帖的 RSS，目前不在页面内显示 XML 图标提示用户订阅，需要充分利用这个功能的站点可以参考 bbs.zixia.net 站 wForum 版的一些 RSS 功能使用举例。</p></li>
+<li>
+<p>ONBOARD_USERS: 光打开这个参数只能让有 SYSOP 权限的用户看到版面在线名单，如果想让普通用户也看到，还需要在 src/site.h 内定义：</p>
+<pre class="programlisting">#define ALLOW_PUBLIC_USERONBOARD 1</pre>
+<p>对于访问量大但没有安装 squid 的站点，不建议开启这个功能。</p>
+</li>
+</ul></div>
+<p>
+				</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="install_uploadface"></a>2.4. 自定义头像功能</h3></div></div>
 <p>如果开启自定义头像功能，确认一下 wForum 主目录下面有 uploadFace/ 目录，如果没有的话就建立一下。</p>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">自定义头像的更多细节</h3>
@@ -157,16 +175,6 @@ create table smallpaper_tb(
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="install_upgrade"></a>2.4. 升级 wForum 的操作</h3></div></div>
-<p>如果是升级 wForum，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
-				</p>
-<pre class="programlisting">ls -d1 * | awk '{system(sprintf(&quot;rm %s/.WEBTHREAD&quot;, $1));}'</pre>
-<p>
-			另外现在的 wForum 系统会自动显示每封新的信件的大小，但是以前旧的信件的大小需要用 local_utl/sync_mailsize 程序同步一下。这个程序加 -a 参数就会同步所有的信件大小。
-			</p>
-</div>
-<div class="section" lang="zh_cn">
-<div class="titlepage"><div><h3 class="title">
 <a name="install_tex2mathml"></a>2.5. 加入 itex2mathml 支持</h3></div></div>
 <p>现在 wForum 支持 itex（数学公式排版语言 tex 的一种衍生形式） 到 mathml （浏览器显示数学公式的推荐标准）的自动转化。这部分功能参考 ythtbbs 系统完成，部分使用 ythtbbs 代码的站点有这个功能的介绍可以参考，比如 <a href="http://bbs.qxntc.edu.cn/" target="_blank">笔山书院 BBS</a> web 下的用户帮助里面就有。</p>
 <p>wForum 支持 itex2mathml 对客户端和服务器端都有要求。客户端的要求是最新版的 Mozilla Firefox，Netscape 等使用 Mozilla 内核的浏览器。如果是 MSIE 浏览器的话，必须是 5.5 版以上，而且需要预装 <a href="http://www.dessci.com/en/products/mathplayer/download.htm" target="_blank">MathPlayer 2.0</a> 插件，wForum 不会提示用户安装。服务器端要求 <a href="http://pear.math.pitt.edu/mathzilla/itex2mml.html" target="_blank">itex2mml</a> 转换程序，请下载后将 itex2MML 可执行文件放在 ~bbs/bin/ 目录下面，并且在 site.php 里面加入：</p>
@@ -191,6 +199,9 @@ create table smallpaper_tb(
 magic_quotes_gpc = off
 short_open_tag = off</pre>
 <p>
+					对于服务器前端没有 squid 加速的站点，建议在 php.ini 内设置：</p>
+<pre class="programlisting">output_buffering = 65536</pre>
+<p>这个设置的作用是强制让 PHP 缓存页面输出，对于慢网速，大页面的输出，脚本执行可能会有很大一部分时间用于网络 I/O 的等待上，打开 output_buffering 可以有效地提高页面执行的效率，加强服务器的响应能力，但可能会稍稍增加一些服务器的负荷。
 				</p>
 </li>
 <li>
@@ -207,8 +218,9 @@ short_open_tag = off</pre>
 <p>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。如果你是自己编译 PHP，首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
 					</p>
 <pre class="programlisting">
-./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
---with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</pre>
+./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd
+ --with-jpeg-dir --with-png-dir --with-config-file-path=/bbs/www/conf
+ --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</pre>
 <p>
 				</p>
 </li>
@@ -219,6 +231,14 @@ short_open_tag = off</pre>
 <li><p>php configure 命令中 --with-apxs 改成 --with-apxs2</p></li>
 <li><p>httpd.conf 建议加入 AddDefaultCharset gb2312</p></li>
 </ul></div>
+<p>
+				</p>
+</li>
+<li><p>wForum 系统会自动显示每封信件的大小，但是如果是从 2004 年 8 月以前的系统升级，以前旧的信件的大小需要用 local_utl/sync_mailsize 程序同步一下。这个程序加 -a 参数就会同步所有的信件大小。</p></li>
+<li>
+<p>如果 wForum 是从 2004 年 6 月以前的代码升级的，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
+				</p>
+<pre class="programlisting">ls -d1 * | awk '{system(sprintf(&quot;rm %s/.WEBTHREAD&quot;, $1));}'</pre>
 <p>
 				</p>
 </li>
@@ -274,13 +294,6 @@ define('COOKIE_PATH', '/');
 <p>设置 html 对象的 id 时应同时设定 name 属性，且两个属性的值应完全相同。如：
 					</p>
 <pre class="programlisting">&lt;div id=&quot;menuDiv&quot; name=&quot;menuDiv&quot;&gt;....&lt;/div&gt;</pre>
-<p>
-				</p>
-</li>
-<li>
-<p>在网页 &lt;body&gt; 标签之后 include browers.js 文件:
-					</p>
-<pre class="programlisting">&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot; src=&quot;inc/browser.js&quot;&gt;&lt;/script&gt;</pre>
 <p>
 				</p>
 </li>
@@ -366,10 +379,6 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 <dd><p>隐藏/显示ID为obj的对象。</p></dd>
 <dt>函数: getObjectLeft(obj) getObjectTop(obj) getObjectWidth(obj) getObjectHeight(obj)</dt>
 <dd><p>获取ID为obj的对象的坐标和长宽等。</p></dd>
-<dt>函数: getInsideWindowWidth() getInsideWindowHeight()</dt>
-<dd><p>
-							获取当前窗口的长和宽。
-							</p></dd>
 </dl></div>
 <p>
 				</p>
@@ -452,11 +461,11 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 <dt>$loginok</dt>
 <dd><p>是否以正式用户登录了，guest 登录的话为 0。</p></dd>
 <dt>$guestloginok</dt>
-<dd><p>FIXME。</p></dd>
+<dd><p>当前是否以 guest 身份登录了。</p></dd>
 <dt>$currentuser</dt>
-<dd><p>FIXME。</p></dd>
+<dd><p>当前用户信息的数组，请注意 (!$loginok &amp;&amp; !$guestloginok) 情况下该变量无效。该数组的元素请参考 phpbbslib.c 内 assign_user() 函数。</p></dd>
 <dt>$currentuinfo</dt>
-<dd><p>FIXME。</p></dd>
+<dd><p>当前用户附加信息的数组，请注意 (!$loginok &amp;&amp; !$guestloginok) 情况下该变量无效。该数组的元素请参考 phpbbslib.c 内 assign_userinfo() 函数。</p></dd>
 </dl></div>
 <p>
 				</p>
@@ -466,9 +475,9 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 					</p>
 <div class="glosslist"><dl>
 <dt>$setboard</dt>
-<dd><p>FIXME。</p></dd>
+<dd><p>赋值成 1 的时候将设置当前用户不在任何版面上。web 由于用户可以开多个窗口，所以如果任何和版面无关的页面都将这个设置成 1 反而会导致统计更不准确并且加重系统负担。目前只有首页和讨论区列表将其设置为 1。</p></dd>
 <dt>$needlogin</dt>
-<dd><p>本页面是否需要设置 cookie 等登录变量，默认需要。</p></dd>
+<dd><p>这个变量不建议设置。当设置为 0 时，如果当前用户没有登录（注意 guest 登录也算作用户登录），则不主动登录为 guest，同时也不设置登录信息的 cookie。这样做如果用户没有登录 (!$loginok &amp;&amp; !$guestloginok) 必须特别注意，该脚本内后续的操作必须和登录用户完全没有关系，而且绝不能假设当前登录用户是 guest，包括 php 库函数内，因为这种情况下 getCurrentUser() 可能是 NULL，也可能是上一次脚本运行时候的用户！例如，rss.php 设置 $needlogin = 0，这样直接调用 bbs_getarticles() 函数就是有问题的，因为这个函数内部要根据当前登录用户来产生帖子标记。现在 rss.php 采用的办法是如果当前没有用户登录就调用一下 bbs_setguest_nologin() 虚设当前用户为非登录状态的 guest。注意，即使调用了 bbs_setguest_nologin() 函数，PHP 变量 $currentuser 仍旧是无效的！一句话，除非你完全确定你在干什么（特别安全方面已经考虑周全），否则不要将 $needlogin 设置为 0，也不要去调用 bbs_setguest_nologin()。</p></dd>
 </dl></div>
 <p>
 				</p>
@@ -477,13 +486,34 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 <p>有用的函数说明</p>
 <div class="glosslist"><dl>
 <dt>cache_header($scope,$modifytime=0,$expiretime=300)</dt>
-<dd><p>检查/设置页面 cache。</p></dd>
-<dt>html_init($charset=&quot;&quot;,$title=&quot;&quot;,$otherheader=&quot;&quot;)</dt>
-<dd><p>初始化 html 页面，一般不需要直接调用，除非是小页面。</p></dd>
-<dt>show_nav($boardName='')</dt>
-<dd><p>调用 html_init() 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。如果 $boardName 为 false，不显示菜单条。所有POST递交生成的页面原则上都应该设置 $boardName=false，否则用户重新登录，调整页面风格等可能会造成返回后的 URL 不正确。</p></dd>
+<dd><p>检查/设置页面 cache。$scope 一般设置成 &quot;public&quot; 以让客户端缓存。如果客户端 cache 内本文件修改时间不早于 $modifytime，则输出 Not Modified HTTP-状态码，并返回 TRUE；否则输出 cache 控制头，并返回 FALSE。这里 $modifytime 一般取相应文件的修改时间，比如附件输出的页面调用这个函数，$modifytime 就是附件所属文件的修改时间。</p></dd>
+<dt>update_cache_header($updatetime = 10,$expiretime = 300)</dt>
+<dd>
+<p>检查/设置页面 cache。如果客户端 cache 内文件修改时间是 $updatetime 分钟内的，则输出 Not Modified HTTP-状态码，并返回 TRUE；否则输出 cache 控制头，并返回 FALSE。这个函数一般用于强制客户端缓存一些系统状态信息，以免过多刷新加重服务器负担。</p>
+<div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">注</h3>
+<p>这两个 cache 函数对于调试页面是不方便的。在调试阶段可以在 cache_process() 函数的开头写上 return FALSE; 直接返回。</p>
+</div>
+</dd>
 <dt>setStat($stat)</dt>
-<dd><p>设置页面标题。</p></dd>
+<dd><p>设置页面标题，应该先于 html_init() 或 show_nav() 调用。</p></dd>
+<dt>html_init($charset=&quot;&quot;,$otherheader=&quot;&quot;,$is_mathml=false)</dt>
+<dd>
+<p>初始化 html 页面，一般不需要直接调用，除非是小页面。</p>
+<div class="itemizedlist">
+<div class="glosslist"><dl>
+<dt>$charset</dt>
+<dd><p>页面编码，默认 gb2312。</p></dd>
+<dt>$otherheader</dt>
+<dd><p>附加放入 &lt;head&gt; 段的内容。</p></dd>
+<dt>$is_mathml</dt>
+<dd><p>本页面是否采用 xhtml+mathml 发送。</p></dd>
+</dl></div>
+<ul type="disc"></ul>
+</div>
+</dd>
+<dt>show_nav($boardName='',$is_mathml=false,$other_headers=&quot;&quot;)</dt>
+<dd><p>调用 html_init(&quot;&quot;,$other_headers,$is_mathml) 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。如果 $boardName 为 false，不显示菜单条。所有 POST 递交生成的页面原则上都应该设置 $boardName=false，否则用户重新登录，调整页面风格等可能会造成返回后的 URL 不正确。</p></dd>
 <dt>head_var($Title='', $URL='',$showWelcome=0)</dt>
 <dd><p>显示导航条。</p></dd>
 <dt>setSucMsg($msg)</dt>
@@ -527,7 +557,7 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 <dt>jumpReferer()</dt>
 <dd><p>如果 Referer 有设置，跳到 Referer，否则跳到首页。</p></dd>
 <dt>get_secname_index($secnum)</dt>
-<dd><p>这里要搞清楚一些事情。在 inc/site.php 里面用 $section_nums 定义了分类讨论区代号。这个函数中，$secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</p></dd>
+<dd><p>在 inc/site.php 里面用 $section_nums 数组定义了分类讨论区代号。这个函数中的 $secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</p></dd>
 </dl></div>
 </li>
 </ol></div>

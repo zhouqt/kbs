@@ -1,13 +1,17 @@
 body {
 	font-family: Verdana,ËÎÌו;
 	background-color: white;
+	font-size: small;
 }
 h2.title {
-	
 }
 pre.programlisting {
 	background-color: bisque ;
 	border: 1px dashed #006600 ;
 	padding: 4px 10px;
 	font-family: 'Courier New',Courier;
+}
+div.warning,div.note {
+	border: 1px dotted #006600 ;
+	padding: 0px 10px;
 }

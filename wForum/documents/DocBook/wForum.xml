@@ -8,7 +8,7 @@
 		<itemizedlist>
 			<listitem>wForum 是基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统；</listitem>
 			<listitem>主页：<ulink url="http://wforum.aka.cn/">http://wforum.aka.cn/</ulink>；</listitem>
-			<listitem>推荐使用 linux 系统（redhat)。</listitem>
+			<listitem>推荐使用 linux 系统 (redhat)。</listitem>
 		</itemizedlist>
 		<section id="intro_copyright">
 			<title>版权声明</title>
@@ -47,6 +47,17 @@ create table smallpaper_tb(
 				inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
 			</para>
 		</section>
+		<section id="feature_notes">
+			<title>default.php 内部分参数的附加说明</title>
+				<para>inc/sites/default.php 列举了可以在 inc/site.php 里定义的参数。大多数参数说明已经足够明确，下面对个别参数作附加说明。
+					<itemizedlist>
+						<listitem><para>$SiteURL: 这个变量用于一些需要输出绝对路径的地方，应该定义为 wForum 安装的根的 URL，最后一个字符必须是 '/'。</para></listitem>
+						<listitem><para>MAINTITLE: 站点标题可以包含 html，打开 mathml 支持的站点千万注意 html 必须符合 xhtml 标准。</para></listitem>
+						<listitem><para>RSS_SUPPORT: wForum 可以动态产生十大热门话题和每个版面最近 20 帖的 RSS，目前不在页面内显示 XML 图标提示用户订阅，需要充分利用这个功能的站点可以参考 bbs.zixia.net 站 wForum 版的一些 RSS 功能使用举例。</para></listitem>
+						<listitem><para>ONBOARD_USERS: 光打开这个参数只能让有 SYSOP 权限的用户看到版面在线名单，如果想让普通用户也看到，还需要在 src/site.h 内定义：<programlisting>#define ALLOW_PUBLIC_USERONBOARD 1</programlisting>对于访问量大但没有安装 squid 的站点，不建议开启这个功能。</para></listitem>
+					</itemizedlist>
+				</para>
+		</section>
 		<section id="install_uploadface">
 			<title>自定义头像功能</title>
 			<para>如果开启自定义头像功能，确认一下 wForum 主目录下面有 uploadFace/ 目录，如果没有的话就建立一下。</para>
@@ -69,13 +80,6 @@ create table smallpaper_tb(
 				</para>
 			</note>
 		</section>
-		<section id="install_upgrade">
-			<title>升级 wForum 的操作</title>
-			<para>如果是升级 wForum，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
-				<programlisting>ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'</programlisting>
-			另外现在的 wForum 系统会自动显示每封新的信件的大小，但是以前旧的信件的大小需要用 local_utl/sync_mailsize 程序同步一下。这个程序加 -a 参数就会同步所有的信件大小。
-			</para>
-		</section>
 		<section id="install_tex2mathml">
 			<title>加入 itex2mathml 支持</title>
 			<para>现在 wForum 支持 itex（数学公式排版语言 tex 的一种衍生形式） 到 mathml （浏览器显示数学公式的推荐标准）的自动转化。这部分功能参考 ythtbbs 系统完成，部分使用 ythtbbs 代码的站点有这个功能的介绍可以参考，比如 <ulink url="http://bbs.qxntc.edu.cn/">笔山书院 BBS</ulink> web 下的用户帮助里面就有。</para>
@@ -91,6 +95,7 @@ create table smallpaper_tb(
 					<programlisting>
 magic_quotes_gpc = off
 short_open_tag = off</programlisting>
+					对于服务器前端没有 squid 加速的站点，建议在 php.ini 内设置：<programlisting>output_buffering = 65536</programlisting>这个设置的作用是强制让 PHP 缓存页面输出，对于慢网速，大页面的输出，脚本执行可能会有很大一部分时间用于网络 I/O 的等待上，打开 output_buffering 可以有效地提高页面执行的效率，加强服务器的响应能力，但可能会稍稍增加一些服务器的负荷。
 				</para></listitem>
 				<listitem><para>要保证 wForum 下的未读记录正常工作，你的 site.h 必须设置
 					<programlisting>
@@ -100,14 +105,19 @@ short_open_tag = off</programlisting>
 				</para></listitem>
 				<listitem><para>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。如果你是自己编译 PHP，首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
 					<programlisting>
-./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
---with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</programlisting>
+./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd
+ --with-jpeg-dir --with-png-dir --with-config-file-path=/bbs/www/conf
+ --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</programlisting>
 				</para></listitem>
 				<listitem><para>如果使用 apache2 需要注意的地方：
 					<itemizedlist>
 						<listitem><para>php configure 命令中 --with-apxs 改成 --with-apxs2</para></listitem>
 						<listitem><para>httpd.conf 建议加入 AddDefaultCharset gb2312</para></listitem>
 					</itemizedlist>
+				</para></listitem>
+				<listitem><para>wForum 系统会自动显示每封信件的大小，但是如果是从 2004 年 8 月以前的系统升级，以前旧的信件的大小需要用 local_utl/sync_mailsize 程序同步一下。这个程序加 -a 参数就会同步所有的信件大小。</para></listitem>
+				<listitem><para>如果 wForum 是从 2004 年 6 月以前的代码升级的，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
+				<programlisting>ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'</programlisting>
 				</para></listitem>
 			</orderedlist>
 		</section>
@@ -144,9 +154,6 @@ define('COOKIE_PATH', '/');
 				<listitem><para>mozilla 对 class、ID 等属性是大小写敏感的；而 IE 是大小写不敏感的。在设置和应用样式单时要注意 class 的大小写。</para></listitem>
 				<listitem><para>设置 html 对象的 id 时应同时设定 name 属性，且两个属性的值应完全相同。如：
 					<programlisting>&lt;div id="menuDiv" name="menuDiv"&gt;....&lt;/div&gt;</programlisting>
-				</para></listitem>
-				<listitem><para>在网页 &lt;body&gt; 标签之后 include browers.js 文件:
-					<programlisting>&lt;script language="javascript" type="text/javascript" src="inc/browser.js"&gt;&lt;/script&gt;</programlisting>
 				</para></listitem>
 				<listitem><para>browser.js 文件主要函数、变量及功能:
 					<glosslist>
@@ -226,11 +233,6 @@ menuDivStyle.visible="hidden";</programlisting>
 						<glossentry><glossterm>函数: getObjectLeft(obj) getObjectTop(obj) getObjectWidth(obj) getObjectHeight(obj)</glossterm>
 							<glossdef><para>获取ID为obj的对象的坐标和长宽等。</para></glossdef>
 						</glossentry>
-						<glossentry><glossterm>函数: getInsideWindowWidth() getInsideWindowHeight()</glossterm>
-							<glossdef><para>
-							获取当前窗口的长和宽。
-							</para></glossdef>
-						</glossentry>
 					</glosslist>
 				</para></listitem>
 			</orderedlist>
@@ -297,39 +299,58 @@ menuDivStyle.visible="hidden";</programlisting>
 							<glossdef><para>是否以正式用户登录了，guest 登录的话为 0。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>$guestloginok</glossterm>
-							<glossdef><para>FIXME。</para></glossdef>
+							<glossdef><para>当前是否以 guest 身份登录了。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>$currentuser</glossterm>
-							<glossdef><para>FIXME。</para></glossdef>
+							<glossdef><para>当前用户信息的数组，请注意 (!$loginok &amp;&amp; !$guestloginok) 情况下该变量无效。该数组的元素请参考 phpbbslib.c 内 assign_user() 函数。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>$currentuinfo</glossterm>
-							<glossdef><para>FIXME。</para></glossdef>
+							<glossdef><para>当前用户附加信息的数组，请注意 (!$loginok &amp;&amp; !$guestloginok) 情况下该变量无效。该数组的元素请参考 phpbbslib.c 内 assign_userinfo() 函数。</para></glossdef>
 						</glossentry>
 					</glosslist>
 				</para></listitem>
 				<listitem><para>可设置的全局变量。必须在 include 之前设置
 					<glosslist>
 						<glossentry><glossterm>$setboard</glossterm>
-							<glossdef><para>FIXME。</para></glossdef>
+							<glossdef><para>赋值成 1 的时候将设置当前用户不在任何版面上。web 由于用户可以开多个窗口，所以如果任何和版面无关的页面都将这个设置成 1 反而会导致统计更不准确并且加重系统负担。目前只有首页和讨论区列表将其设置为 1。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>$needlogin</glossterm>
-							<glossdef><para>本页面是否需要设置 cookie 等登录变量，默认需要。</para></glossdef>
+							<glossdef><para>这个变量不建议设置。当设置为 0 时，如果当前用户没有登录（注意 guest 登录也算作用户登录），则不主动登录为 guest，同时也不设置登录信息的 cookie。这样做如果用户没有登录 (!$loginok &amp;&amp; !$guestloginok) 必须特别注意，该脚本内后续的操作必须和登录用户完全没有关系，而且绝不能假设当前登录用户是 guest，包括 php 库函数内，因为这种情况下 getCurrentUser() 可能是 NULL，也可能是上一次脚本运行时候的用户！例如，rss.php 设置 $needlogin = 0，这样直接调用 bbs_getarticles() 函数就是有问题的，因为这个函数内部要根据当前登录用户来产生帖子标记。现在 rss.php 采用的办法是如果当前没有用户登录就调用一下 bbs_setguest_nologin() 虚设当前用户为非登录状态的 guest。注意，即使调用了 bbs_setguest_nologin() 函数，PHP 变量 $currentuser 仍旧是无效的！一句话，除非你完全确定你在干什么（特别安全方面已经考虑周全），否则不要将 $needlogin 设置为 0，也不要去调用 bbs_setguest_nologin()。</para></glossdef>
 						</glossentry>
 					</glosslist>
 				</para></listitem>
 				<listitem><para>有用的函数说明</para>
 					<glosslist>
 						<glossentry><glossterm>cache_header($scope,$modifytime=0,$expiretime=300)</glossterm>
-							<glossdef><para>检查/设置页面 cache。</para></glossdef>
+							<glossdef><para>检查/设置页面 cache。$scope 一般设置成 "public" 以让客户端缓存。如果客户端 cache 内本文件修改时间不早于 $modifytime，则输出 Not Modified HTTP-状态码，并返回 TRUE；否则输出 cache 控制头，并返回 FALSE。这里 $modifytime 一般取相应文件的修改时间，比如附件输出的页面调用这个函数，$modifytime 就是附件所属文件的修改时间。</para></glossdef>
 						</glossentry>
-						<glossentry><glossterm>html_init($charset="",$title="",$otherheader="")</glossterm>
-							<glossdef><para>初始化 html 页面，一般不需要直接调用，除非是小页面。</para></glossdef>
-						</glossentry>
-						<glossentry><glossterm>show_nav($boardName='')</glossterm>
-							<glossdef><para>调用 html_init() 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。如果 $boardName 为 false，不显示菜单条。所有POST递交生成的页面原则上都应该设置 $boardName=false，否则用户重新登录，调整页面风格等可能会造成返回后的 URL 不正确。</para></glossdef>
+						<glossentry><glossterm>update_cache_header($updatetime = 10,$expiretime = 300)</glossterm>
+							<glossdef><para>检查/设置页面 cache。如果客户端 cache 内文件修改时间是 $updatetime 分钟内的，则输出 Not Modified HTTP-状态码，并返回 TRUE；否则输出 cache 控制头，并返回 FALSE。这个函数一般用于强制客户端缓存一些系统状态信息，以免过多刷新加重服务器负担。</para>
+							<note><para>这两个 cache 函数对于调试页面是不方便的。在调试阶段可以在 cache_process() 函数的开头写上 return FALSE; 直接返回。</para></note>
+							</glossdef>
 						</glossentry>
 						<glossentry><glossterm>setStat($stat)</glossterm>
-							<glossdef><para>设置页面标题。</para></glossdef>
+							<glossdef><para>设置页面标题，应该先于 html_init() 或 show_nav() 调用。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>html_init($charset="",$otherheader="",$is_mathml=false)</glossterm>
+							<glossdef><para>初始化 html 页面，一般不需要直接调用，除非是小页面。</para>
+								<itemizedlist>
+									<glosslist>
+										<glossentry><glossterm>$charset</glossterm>
+											<glossdef><para>页面编码，默认 gb2312。</para></glossdef>
+										</glossentry>
+										<glossentry><glossterm>$otherheader</glossterm>
+											<glossdef><para>附加放入 &lt;head&gt; 段的内容。</para></glossdef>
+										</glossentry>
+										<glossentry><glossterm>$is_mathml</glossterm>
+											<glossdef><para>本页面是否采用 xhtml+mathml 发送。</para></glossdef>
+										</glossentry>
+									</glosslist>
+								</itemizedlist>
+							</glossdef>
+						</glossentry>
+						<glossentry><glossterm>show_nav($boardName='',$is_mathml=false,$other_headers="")</glossterm>
+							<glossdef><para>调用 html_init("",$other_headers,$is_mathml) 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。如果 $boardName 为 false，不显示菜单条。所有 POST 递交生成的页面原则上都应该设置 $boardName=false，否则用户重新登录，调整页面风格等可能会造成返回后的 URL 不正确。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>head_var($Title='', $URL='',$showWelcome=0)</glossterm>
 							<glossdef><para>显示导航条。</para></glossdef>
@@ -378,7 +399,7 @@ menuDivStyle.visible="hidden";</programlisting>
 							<glossdef><para>如果 Referer 有设置，跳到 Referer，否则跳到首页。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>get_secname_index($secnum)</glossterm>
-							<glossdef><para>这里要搞清楚一些事情。在 inc/site.php 里面用 $section_nums 定义了分类讨论区代号。这个函数中，$secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</para></glossdef>
+							<glossdef><para>在 inc/site.php 里面用 $section_nums 数组定义了分类讨论区代号。这个函数中的 $secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</para></glossdef>
 						</glossentry>
 					</glosslist>
 				</listitem>
