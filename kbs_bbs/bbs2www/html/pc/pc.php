@@ -133,12 +133,15 @@
 		case "visitcount":
 			$listorder = "visitcount";
 			break;
+		case "username":
+			$listorder = "username";
+			break;
 		default:
-			$listorder = "username";	
+			$listorder = "modifytime";	
 	}
 	
-	if($listorder1 != "DESC")
-		$listorder1 = "ASC";
+	if($listorder1 != "ASC")
+		$listorder1 = "DESC";
 		
 	$link = pc_db_connect();
 	if($char)
