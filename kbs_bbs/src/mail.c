@@ -823,6 +823,7 @@ void mailtitle()
     get_mail_limit(currentuser,&MailSpace,&numlimit);
     showtitle("ÓÊ¼şÑ¡µ¥    ", BBS_FULL_NAME);
     update_endline();
+    move(1,0);
     prints("Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ı]  ÔÄ¶ÁĞÅ¼ş[¡ú,r]  »ØĞÅ[R]  ¿³ĞÅ£¯Çå³ı¾ÉĞÅ[d,D]  ÇóÖú[h][m\n");
     /*
      * prints("[44m±àºÅ    %-20s %-49s[m\n","·¢ĞÅÕß","±ê  Ìâ") ; 
