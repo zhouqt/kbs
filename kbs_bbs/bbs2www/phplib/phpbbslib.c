@@ -2636,12 +2636,14 @@ static PHP_FUNCTION(bbs_new_board)
 	}
 
 	bzero(&newboard,sizeof(newboard));
-
 	if(bname_len >= 18)
 		RETURN_LONG(-1);
 
 	strncpy(newboard.filename,bname,18);
 	newboard.filename[17]='\0';
+
+	strncpy(newboard.title,btitle,60);
+	newboard.filename[59]='\0';
 
 	if( ! valid_brdname(newboard.filename) )
 		RETURN_LONG(-2);
