@@ -73,6 +73,7 @@ int usercomplete(char *prompt, char *data);
 
 /* newmain_single.c */
 extern int talkrequest;
+extern int numofsig;
 int count_user();
 int dosearchuser(char *userid);
 void showtitle(char *title, char *mid);
