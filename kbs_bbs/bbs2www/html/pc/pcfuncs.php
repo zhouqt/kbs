@@ -644,16 +644,17 @@ function pc_main_navigation_bar()
 	global $pcconfig;
 ?>
 <p align="center">
-[<a href="pcmain.php">Blog首页</a>]
-[<a href="pc.php">用户列表</a>]
-[<a href="pcsec.php">分类目录</a>]
+[<a href="pcmain.php">首页</a>]
+[<a href="pc.php">用户</a>]
+[<a href="pclist.php">热门排行</a>]
+[<a href="pcsec.php">分类</a>]
 [<a href="pcreclist.php">推荐文章</a>]
-[<a href="pcnew.php">最新文章</a>]
+[<a href="pcnew.php">最新日志</a>]
 [<a href="pcnew.php?t=c">最新评论</a>]
-[<a href="pcsearch2.php">Blog搜索</a>]
-[<a href="pcnsearch.php">文章搜索</a>]
-[<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a>]
-[<a href="pcapp0.html">Blog申请</a>]
+[<a href="pcsearch2.php">博客搜索</a>]
+[<a href="pcnsearch.php">日志搜索</a>]
+[<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">论坛</a>]
+[<a href="pcapp0.html"><font color=red>申请</font></a>]
 <?php
 	if( $pcconfig["ADMIN"] ){
 ?>
