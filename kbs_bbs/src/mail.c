@@ -59,7 +59,7 @@ static int mail_reply(int ent, struct fileheader *fileinfo, char *direct);
 static int mail_del(int ent, struct fileheader *fileinfo, char *direct);
 static int do_gsend(char *userid[], char *title, int num);
 
-static int chkusermail(struct * user)
+static int chkusermail(struct userec* user)
 {
     char recmaildir[STRLEN];
     int sum, sumlimit, numlimit;
@@ -407,7 +407,7 @@ int do_send(userid, title)
 
     if (getuser(userid,&user)==0)
     	return -4;
-	ret = chkreceiver(userid, user);
+	ret = chkreceiver(currentuser, user);
 	if (ret==1)
 		return -3;
     /* SYSOP也能给自杀的人发信 */
