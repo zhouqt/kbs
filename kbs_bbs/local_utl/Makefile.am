@@ -9,6 +9,7 @@ bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend listonline \
 	cnv_passwd strip_fh gennewboard recalc_signum find_lost_user outdaybm \
 	cnv_brddir
 	
+EXTRA_DIST = urlencode.c
 EXTRA_PROGRAMS = 
 LDADD=-lBBS -lsystem -L../libBBS -L../libsystem
 AM_CFLAGS=-DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)/src
