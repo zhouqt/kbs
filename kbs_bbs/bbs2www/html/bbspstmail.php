@@ -209,4 +209,3 @@ login_init();
 <?php
 	html_normal_quit();
 ?>
-
