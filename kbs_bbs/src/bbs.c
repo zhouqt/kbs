@@ -646,7 +646,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
         attachch=' ';
     TITLE = ent->title;         /*文章标题TITLE */
     if ((type=='d')||(type=='D')) { //置顶文章
-        sprintf(buf, " \x1b[1;31m[置顶]\x1b[m %-12.12s %s %c● %-44.44s ", ent->owner, date, attachch, TITLE);
+        sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %c● %-44.44s ", ent->owner, date, attachch, TITLE);
         return buf;
     }
 
@@ -2541,7 +2541,15 @@ int noreply_post(int ent, struct fileheader *fileinfo, char *direct)
 
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, "切换: 1)不可re标记 2)置顶标记 [1]: ", ans, 3, DOECHO, NULL, true);
+#ifdef SMTH
+    if (HAS_PERM(currentuser,PERM_SYSOP))
+#else
+    if (1)
+#endif
+    getdata(t_lines - 1, 0, "切换: 0)取消 1)不可re标记 2)置顶标记 [1]: ", ans, 3, DOECHO, NULL, true);
+    else
+	    ans[0]='1';
+    if (ans[0]=='0') return FULLUPDATE;
     if (ans[0] == ' ') {
         ans[0] = ans[1];
         ans[1] = 0;
