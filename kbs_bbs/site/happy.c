@@ -6,6 +6,109 @@ const char seccode[SECNUM][5]={
 	"0", "1", "3", "4", "5", "6", "7", "8", "9"
 };
 
+const char *permstrings[] = {
+        "基本权力",             /* PERM_BASIC */
+        "进入聊天室",           /* PERM_CHAT */
+        "呼叫他人聊天",         /* PERM_PAGE */
+        "发表文章",             /* PERM_POST */
+        "使用者资料正确",       /* PERM_LOGINOK */
+        "禁止发表文章",         /* PERM_DENYPOST */
+        "可隐身",               /* PERM_CLOAK */
+        "可见隐身",             /* PERM_SEECLOAK */
+        "永久帐号",         /* PERM_XEMPT */
+        "编辑系统档案",         /* PERM_WELCOME */
+        "板主",                 /* PERM_BOARDS */
+        "帐号管理员",           /* PERM_ACCOUNTS */
+        "HAPPY 智囊团",       /* PERM_CHATCLOAK */
+        "封禁娱乐权限",           /* PERM_DENYRELAX */
+        "系统维护管理员",       /* PERM_SYSOP */
+        "Read/Post 限制",       /* PERM_POSTMASK */
+        "精华区总管",           /* PERM_ANNOUNCE*/
+        "讨论区总管",           /* PERM_OBOARDS*/
+        "活动看版总管",         /* PERM_ACBOARD*/
+        "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
+        "聊天室OP(元老院专用)", /* PERM_CHATOP */
+        "系统总管理员",         /* PERM_ADMIN */
+        "荣誉帐号",           /* PERM_HONOR*/
+        "特殊权限 5",           /* PERM_UNUSE?*/
+        "仲裁委员",           /* PERM_JURY*/
+        "特殊权限 7",           /* PERM_UNUSE?*/
+        "自杀进行中",        /*PERM_SUICIDE*/
+        "特殊权限 9",           /* PERM_UNUSE?*/
+        "看系统讨论版",           /* PERM_UNUSE?*/
+        "封禁Mail",           /* PERM_DENYMAIL*/
+
+};
+
+/* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
+   depending on how/if you use them. */
+const char *user_definestr[] = {
+    "活动看版",                 /* DEF_ACBOARD */
+    "使用彩色",                 /* DEF_COLOR */
+    "编辑时显示状态栏",         /* DEF_EDITMSG */
+    "分类讨论区以 New 显示",    /* DEF_NEWPOST */
+    "选单的讯息栏",             /* DEF_ENDLINE */
+    "上站时显示好友名单",       /* DEF_LOGFRIEND */
+    "让好友呼叫",               /* DEF_FRIENDCALL */
+    "使用自己的离站画面",       /* DEF_LOGOUT */
+    "进站时显示备忘录",         /* DEF_INNOTE */
+    "离站时显示备忘录",         /* DEF_OUTNOTE */
+    "讯息栏模式：呼叫器/人数",  /* DEF_NOTMSGFRIEND */
+    "菜单模式选择：一般/精简",  /* DEF_NORMALSCR */
+    "阅读文章是否使用绕卷选择", /* DEF_CIRCLE */
+    "阅读文章游标停於第一篇未读",       /* DEF_FIRSTNEW */
+    "屏幕标题色彩：一般/变换",  /* DEF_TITLECOLOR */
+    "接受所有人的讯息",         /* DEF_ALLMSG */
+    "接受好友的讯息",           /* DEF_FRIENDMSG */
+    "收到讯息发出声音",         /* DEF_SOUNDMSG */
+    "离站後寄回所有讯息",       /* DEF_MAILMSG */
+    "发文章时实时显示讯息",     /*"所有好友上站均通知",    DEF_LOGININFORM */
+    "菜单上显示帮助信息",       /* DEF_SHOWSCREEN */
+    "进站时显示十大新闻",       /* DEF_SHOWHOT */
+    "进站时观看留言版",         /* DEF_NOTEPAD */
+    "忽略讯息功能键: Enter/Esc",        /* DEF_IGNOREMSG */
+    "使用高亮界面",                   /* DEF_HIGHCOLOR */
+    "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
+    "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
+    "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
+	"显示自己的星座",           /* DEF_SHOWHOROSCOPE */
+    "使用随机签名档",           /* DEF_RANDSIGN */
+    "对汉字进行整字处理"  /* DEF_SPLITSCREEN 2002.9.1 */
+};
+
+const char    *explain[] = {
+    "本站系统",
+    "快乐聚会",
+    "电脑技术",
+    "电脑游戏",
+    "艺术文化",
+    "转信专区",
+    "体育休闲",
+    "知性感性",
+    "新闻时事",
+    NULL
+};
+
+const char    *groups[] = {
+    "system.faq", /* GROUP_0 */
+    "assoc.faq",  /* GROUP_1 */
+    "comp.faq",   /* GROUP_2 */
+    "game.faq",   /* GROUP_3 */
+    "literal.faq",/* GROUP_4 */
+    "inn.faq",    /* GROUP_5 */
+    "sport.faq",  /* GROUP_6 */
+    "talk.faq",   /* GROUP_7 */
+    "news.faq",   /* GROUP_8 */
+    NULL
+};
+
+const char *mailbox_prop_str[] =
+{
+	"发信时保存信件到发件箱",
+	"删除信件时不保存到垃圾箱",
+	"版面按 'v' 时进入: 收件箱(OFF) / 信箱主界面(ON)",
+};
+
 const char secname[SECNUM][2][20]={
 	{"BBS 系统", "[本站]"},
 	{"快乐聚会", "[院系][协会][团体]"},
