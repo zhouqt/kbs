@@ -90,7 +90,7 @@
 <?php
 	if( $yesterd == 0 ){
 ?>
-<a href="/bbsonline.php">昨日数据</a>
+<a href="/bbsonline.php">最新数据</a>
 <?php
 	}
 ?>
