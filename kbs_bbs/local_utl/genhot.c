@@ -59,7 +59,7 @@ int gen_commend_xml()
 			fprintf(fp, "<time>%d</time>\n", get_posttime(&dirfh));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,COMMEND_ARTICLE,sizeof(url_buf)));
 			fprintf(fp, "<id>%d</id>\n", dirfh.id);
-			bh = getboard(dirfh.o_bid);
+			bh = (struct boardheader *) getboard(dirfh.o_bid);
 			fprintf(fp, "<o_board>%s</o_board>\n", encode_url(url_buf,(bh ? bh->filename : ""),sizeof(url_buf)));
 			fprintf(fp, "<o_id>%d</o_id>\n",dirfh.o_id);
 			if( fgets(buf, 255, fp1) ){

@@ -1,24 +1,18 @@
 #include "bbs.h"
 
-
-#define DEBUG_NEW_READ
-int settop(struct boardheader* bh,void* arg)
-{
-#ifdef DEBUG_NEW_READ
-  char buf[MAXPATH];
-  int i;
-  setbdir(DIR_MODE_ZHIDING,buf,bh->filename);
-   i=get_num_records(buf, sizeof(struct fileheader));
-   board_update_toptitle(bh,0);
-   board_update_toptitle(bh,i);
-#endif
-//   printf("%s %d\n",bh->filename,i);
-}
-
 main()
 {
-  chdir(BBSHOME);
-  resolve_boards();
-  apply_boards(settop,NULL);
+    int n;
+    struct boardheader * bptr;
+    chdir(BBSHOME);
+    resolve_boards();
+    for (n = 0; n < get_boardcount(); n++) {
+        bptr = (struct boardheader *) getboard(n + 1);
+        if (!bptr)
+            continue;
+        if (*bptr->filename==0)
+            continue;
+        board_update_toptitle(n + 1, 1);
+    }
 }
 
