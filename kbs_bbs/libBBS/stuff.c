@@ -506,7 +506,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
 
 #endif                          /*  */
 
-/*
+
 char *
 cexp(exp)
 int exp;
@@ -559,7 +559,7 @@ int perf;
                 return "Éñ¡«¡«";
 
 }
-*/
+
 int countexp(struct userec *udata)
 {
     int exp;
