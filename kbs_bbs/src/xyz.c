@@ -233,7 +233,7 @@ int x_level()
     int flag1 = 0, flag2 = 0;   /* bigman 2000.1.5 */
     struct userec *lookupuser;
     char genbuf2[255];
-    int lcount = 0, tcount = 0, i, j, kcount = 0, basicperm;
+    int lcount = 0, i, j, kcount = 0, basicperm;
     int s[10][2];
     FILE *fn;
 
@@ -312,58 +312,7 @@ int x_level()
             mail_file(currentuser->userid, "etc/forcloak", lookupuser->userid, NAME_SYSOP_GROUP "授予您隐身权限", 0);
         if ((lookupuser->userlevel & PERM_XEMPT) && flag2 == 0)
             mail_file(currentuser->userid, "etc/forlongid", lookupuser->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", 0);
-/*Bad 2002.7.6 受限与戒网问题*/
-        kcount = lcount;
-        for (i = 0; i < lcount; i++) {
-            j = 0;
-            switch (s[i][0]) {
-            case 1:
-                j = lookupuser->userlevel & PERM_BASIC;
-                break;
-            case 2:
-                j = lookupuser->userlevel & PERM_POST;
-                break;
-            case 3:
-                j = lookupuser->userlevel & PERM_CHAT;
-                break;
-            case 4:
-                j = lookupuser->userlevel & PERM_PAGE;
-                break;
-            case 5:
-                j = !(lookupuser->userlevel & PERM_DENYMAIL);
-                break;
-            }
-            if (j) {
-                kcount--;
-                s[i][1] = 0;
-            }
-        }
-        if (kcount != lcount) {
-            if (kcount == 0)
-                unlink(genbuf2);
-            else {
-                fn = fopen(genbuf2, "wt");
-                for (i = 0; i < lcount; i++)
-                    if (s[i][1] > 0)
-                        fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
-                fclose(fn);
-            }
-        }
-        if (lookupuser->userlevel & PERM_BASIC)
-            tcount++;
-        if (lookupuser->userlevel & PERM_POST)
-            tcount++;
-        if (lookupuser->userlevel & PERM_CHAT)
-            tcount++;
-        if (lookupuser->userlevel & PERM_PAGE)
-            tcount++;
-        if (!(lookupuser->userlevel & PERM_DENYMAIL))
-            tcount++;
-
-        if (kcount + tcount == 5 && kcount > 0)
-            lookupuser->flags[0] |= GIVEUP_FLAG;
-        else
-            lookupuser->flags[0] &= ~GIVEUP_FLAG;
+		save_giveupinfo(lookupuser,lcount,s);
     }
     pressreturn();
     clear();

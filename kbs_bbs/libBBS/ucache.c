@@ -762,4 +762,62 @@ int get_giveupinfo(char* userid,int* basicperm,int s[10][2])
     return lcount;
 }
 
+void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
+{
+/*Bad 2002.7.6 受限与戒网问题*/
+	int kcount,tcount,i,j;
+    kcount = lcount;
+    for (i = 0; i < lcount; i++) {
+        j = 0;
+        switch (s[i][0]) {
+        case 1:
+            j = lookupuser->userlevel & PERM_BASIC;
+            break;
+        case 2:
+            j = lookupuser->userlevel & PERM_POST;
+            break;
+        case 3:
+            j = lookupuser->userlevel & PERM_CHAT;
+            break;
+        case 4:
+            j = lookupuser->userlevel & PERM_PAGE;
+            break;
+        case 5:
+            j = !(lookupuser->userlevel & PERM_DENYMAIL);
+            break;
+        }
+        if (j) {
+            kcount--;
+            s[i][1] = 0;
+        }
+    }
+    if (kcount != lcount) {
+        if (kcount == 0)
+            unlink(genbuf2);
+        else {
+            fn = fopen(genbuf2, "wt");
+            for (i = 0; i < lcount; i++)
+                if (s[i][1] > 0)
+                    fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
+            fclose(fn);
+        }
+    }
+	tcount = 0;
+    if (lookupuser->userlevel & PERM_BASIC)
+        tcount++;
+    if (lookupuser->userlevel & PERM_POST)
+        tcount++;
+    if (lookupuser->userlevel & PERM_CHAT)
+        tcount++;
+    if (lookupuser->userlevel & PERM_PAGE)
+        tcount++;
+    if (!(lookupuser->userlevel & PERM_DENYMAIL))
+        tcount++;
+
+    if (kcount + tcount == 5 && kcount > 0)
+        lookupuser->flags[0] |= GIVEUP_FLAG;
+    else
+        lookupuser->flags[0] &= ~GIVEUP_FLAG;
+}
+
 

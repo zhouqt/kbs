@@ -38,6 +38,7 @@ extern "C" {
     int flush_ucache();
     int load_ucache();
     int get_giveupinfo(char* userid,int* basicperm,int s[10][2]);
+	void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2]);
 /* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/
 
 
