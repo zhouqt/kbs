@@ -1391,7 +1391,7 @@ checkvote:
             strcpy(buf2, buf);
             sprintf(buf, "%d %s: %s", me+1, inrooms[myroom].peoples[me].nick, buf2);
         }
-        if(inrooms[myroom].peoples[me].flags&PEOPLE_DENYSPEAK) {
+        if(inrooms[myroom].peoples[me].flag&PEOPLE_DENYSPEAK) {
             send_msg(i, "你现在没有发言权");
         }
         else
