@@ -22,6 +22,8 @@
 #include <assert.h>
 #include "bbs.h"
 
+extern int scr_lns, scr_cols;
+
 #define EDITOR_NAME "Belle AnsiEditor"
 #define NUM_COLS LINELEN
 #define NUM_ROWS LINEHEIGHT
@@ -1772,7 +1774,7 @@ void _data()
 	struct charinfo *ci, *ci1;
 	struct ansiattr a;
 	static struct charinfo s_row[NUM_COLS]; 
-	static struct charinfo s_col[scr_lns-2][2];
+	static struct charinfo s_col[NUM_ROWS-2][2];
 	int i;
 
 	if (linemode == HINS) {
@@ -3004,8 +3006,8 @@ void _del()
 	int i;
 	struct charinfo *ci, *ci1;
 	struct ansiattr a;
-	static struct charinfo s_row[scr_cols]; 
-	static struct charinfo s_col[scr_lns-2][2];
+	static struct charinfo s_row[NUM_COLS]; 
+	static struct charinfo s_col[NUM_ROWS-2][2];
 	int off;
 
 	ci = &graph[cur_y][cur_x];
