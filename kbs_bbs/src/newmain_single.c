@@ -297,88 +297,48 @@ struct user_info *urec;
     return (unum == urec->uid);
 }
 
-int
-count_user()
-{
-    return apply_utmpuid( NULL , usernum,0);
-}
-
 /* to be Continue to fix kick problem */
-void
-multi_user_check()
+void multi_user_check()
 {
     struct user_info    uin;
-    int         curr_login_num;
     char        buffer[40];
+    int ret=1;
 
-    if (count_user()<1) RemoveMsgCountFile(currentuser->userid);
+	while (ret!=0) {
+		ret = multilogin_user(currentuser);
+		if (ret==2) {
+	            prints( "^[[33m±§Ç¸, Ä¿Ç°ÒÑÓĞÌ«¶à ^[[36mguest, ÇëÉÔºòÔÙÊÔ¡£^[[m\n");
+	            pressreturn();
+	            oflush();
+	            sleep(5);
+	            exit(1);
+		}
+	    if (ret==1) {
+	    	getdata(0, 0, "ÄãÍ¬Ê±ÉÏÏßµÄ´°¿ÚÊı¹ı¶à£¬ÊÇ·ñÌß³ö±¾IDÆäËü´°¿Ú(Y/N)? [N]", 
+	                buffer, 4, DOECHO, NULL, YEA);
+	        if(buffer[0] == 'Y' || buffer[0] == 'y') 
+	        {
+				int lres;
+				int num;
+	            if ( !(num=search_ulist( &uin, cmpuids2, usernum) ))
+	                        return;  /* user isn't logged in */
+	            if (!uin.active || (kill(uin.pid,0) == -1))
+	                        return;  /* stale entry in utmp file */
+	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
+			    lres = kill(uin.pid, SIGHUP);
+			    sleep(1);
+			    if(lres)
+	/*---	---*/
+	                kill(uin.pid,9);
+	            sprintf(buffer, "kicked (multi-login)" );
+	            report(buffer);
 
-    if (HAS_PERM(currentuser,PERM_MULTILOG)) 
-        return;  /* don't check sysops */
-    curr_login_num = get_utmp_number();
-    /* Leeward: 97.12.22 BMs may open 2 windows at any time */
-    /* Bigman: 2000.8.17 ÖÇÄÒÍÅÄÜ¹»¿ª2¸ö´°¿Ú */
-    /* stephen: 2001.10.30 ÖÙ²Ã¿ÉÒÔ¿ªÁ½¸ö´°¿Ú */
-    if ((HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_CHATOP)|| HAS_PERM(currentuser,PERM_JURY) || HAS_PERM(currentuser,PERM_CHATCLOAK)) && count_user() < 2)
-        return;
-    /* allow multiple guest user */
-    if (!strcmp("guest", currentuser->userid)) {
-        if ( count_user() > MAX_GUEST_NUM ) {
-            prints( "[33m±§Ç¸, Ä¿Ç°ÒÑÓĞÌ«¶à [36mguest, ÇëÉÔºòÔÙÊÔ¡£[m\n");
-            pressreturn();
-            oflush();
-            exit(1);
-        }
-        return;
-    }
-    else if ( ((curr_login_num<700)&&(count_user()>=2) )
-           || ((curr_login_num>=700)&& (count_user()>=1)) ) /*user login limit*/
-    {  
-        getdata(0, 0, "ÄãÍ¬Ê±ÉÏÏßµÄ´°¿ÚÊı¹ı¶à£¬ÊÇ·ñÌß³ö±¾IDÆäËü´°¿Ú(Y/N)? [N]", 
-                genbuf, 4, DOECHO, NULL, YEA);
-        if(genbuf[0] == 'Y' || genbuf[0] == 'y') 
-        {
-			int lres;
-            if ( !search_ulist( &uin, cmpuids2, usernum) )
-                        return;  /* user isn't logged in */
-            if (!uin.active || (kill(uin.pid,0) == -1))
-                        return;  /* stale entry in utmp file */
-/*---	modified by period	first try SIGHUP	2000-11-08	---*/
-		    lres = kill(uin.pid, SIGHUP);
-		    sleep(1);
-		    if(lres)
-/*---	---*/
-                kill(uin.pid,9);
-            sprintf(buffer, "kicked (multi-login)" );
-            report(buffer);
-
-			return ; /* ²»¼ÌĞø¼ì²é£¬·µ»Ø, ²»Ìß×Ô¼º´°¿Ú, added by dong, 1999.1.25 */
-        } 
-        oflush();
-        exit(1);       /* ¶à´°¿ÚÊ±ÌßµôÒ»¸ö£¬×Ô¼ºÒ²¶ÏÏß */
-    }
-    if ( !search_ulist( &uin, cmpuids2, usernum) )
-        return;  /* user isn't logged in */
-    if (!uin.active || (kill(uin.pid,0) == -1))
-        return;  /* stale entry in utmp file */
-
-    getdata(0, 0, "ÄúÏëÉ¾³ıÖØ¸´µÄ login Âğ (Y/N)? [N]", genbuf, 4, 
-            DOECHO, NULL,YEA);
-
-    if(genbuf[0] == 'Y' || genbuf[0] == 'y') {
-       RemoveMsgCountFile(currentuser->userid);
-       kill(uin.pid,9);
-        sprintf(buffer, "kicked (multi-login)" );
-        report(buffer);
-    }
-    else if ( ((curr_login_num<700)&&(count_user()>=2))
-              || ((curr_login_num>=700)&& (count_user()>=1)) )
-        {
-           oflush();
-                exit(1);
-        }          /* ÔÙÅĞ¶ÏÒ»´ÎÈËÊı Luzi 99.1.23 */
-
-
+				clear_utmp(num);
+	        } 
+	        oflush();
+	        exit(1);       /* ¶à´°¿ÚÊ±ÌßµôÒ»¸ö£¬×Ô¼ºÒ²¶ÏÏß */
+	    }
+	}
 }
 
 void

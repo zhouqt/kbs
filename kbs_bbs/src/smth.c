@@ -190,3 +190,35 @@ int     mode;
     }
 }
 
+int multilogin_user(struct userec* user)
+{
+	int unum,logincount;
+	int curr_login_num;
+
+	unum = searchuser(user->userid);
+	logincount=apply_utmpuid( NULL , usernum,0);
+
+    if (logincount<1) RemoveMsgCountFile(currentuser->userid);
+
+    if (HAS_PERM(user,PERM_MULTILOG)) 
+        return;  /* don't check sysops */
+    curr_login_num = get_utmp_number();
+    /* Leeward: 97.12.22 BMs may open 2 windows at any time */
+    /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
+    /* stephen: 2001.10.30 仲裁可以开两个窗口 */
+    if ((HAS_PERM(user,PERM_BOARDS) || HAS_PERM(user,PERM_CHATOP)|| 
+    	HAS_PERM(user,PERM_JURY) || HAS_PERM(user,PERM_CHATCLOAK)) 
+    	&& logincount< 2)
+        return 0;
+    /* allow multiple guest user */
+    if (!strcmp("guest", user->userid)) {
+        if ( logincount > MAX_GUEST_NUM ) {
+        	return 2;
+        }
+        return 0;
+    }
+    else if ( ((curr_login_num<700)&&(logincount>=2) )
+           || ((curr_login_num>=700)&& (logincount>=1)) ) /*user login limit*/
+           return 1;
+    return 0;
+}

@@ -80,7 +80,7 @@ postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
     owned = isowner(user,fileinfo);
     if( !fail ) {
         cancelpost( board, user->userid, fileinfo, owned ,1);
-	 updatelastpost(board);
+	    updatelastpost(board);
 /*
         sprintf(buf,"%s/%s",buf,fileinfo->filename) ;
         if(keep >0)  if ( (fn = fopen( buf, "w" )) != NULL ) {
@@ -109,7 +109,7 @@ postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
                 }
             }
         }
-    	 bbslog("1bbs","Del '%s' on '%s'",fileinfo->title,board) ; /* bbslog*/
+    	bbslog("1bbs","Del '%s' on '%s'",fileinfo->title,board) ; /* bbslog*/
         return 0;
     }
     return -1;

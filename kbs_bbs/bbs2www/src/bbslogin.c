@@ -3,39 +3,14 @@
  */
 #include "bbslib.h"
 
-int
-count_user()
-{
-	int num;
-
-	num = searchuser(getcurruserid());
-    return apply_utmpuid( NULL, num, 0);
-}
-
 /* to be Continue to fix kick problem */
 void
 multi_user_check()
 {
-    struct user_info    uin;
-    int         curr_login_num;
-    char        buffer[40];
-
-    if (count_user()<1)
-		RemoveMsgCountFile(currentuser->userid);
-
-    if (HAS_PERM(currentuser,PERM_MULTILOG)) 
-        return;  /* don't check sysops */
-    curr_login_num = get_utmp_number();
-    /* Leeward: 97.12.22 BMs may open 2 windows at any time */
-    /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
-    /* stephen: 2001.10.30 仲裁可以开两个窗口 */
-    if ((HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_CHATOP)|| HAS_PERM(currentuser,PERM_JURY) || HAS_PERM(currentuser,PERM_CHATCLOAK)) && count_user() < 2)
-        return;
-    if ( (curr_login_num<700)&&(count_user()>=2) 
-           || (curr_login_num>=700)&& (count_user()>=1) ) /*user login limit*/
-    {  
+	int ret;
+	ret = multilogin_user(currentuser);
+	if (ret!=0)
 		http_fatal("您同时上线的窗口数过多。为了保证他人利益，此次连线将被取消。");
-    }
 }
 
 int main(int argc,char** argv)
