@@ -212,14 +212,14 @@ int show_allmsgs()
         else {
             y = 0;
             i = page;
-            load_msghead(0, currentuser->userid, &head);
+            load_msghead(0, currentuser->userid, i, &head);
             load_msgtext(currentuser->userid, &head, buf);
             j = translate_msg(buf, &head, showmsg);
             while(y+j<=23) {
                 y+=j; i++;
                 prints("%s", showmsg);
                 if(i>=count) break;
-                load_msghead(0, currentuser->userid, &head);
+                load_msghead(0, currentuser->userid, i, &head);
                 load_msgtext(currentuser->userid, &head, buf);
                 j = translate_msg(buf, &head, showmsg);
             }
@@ -394,12 +394,17 @@ void r_msg()
         goto outhere;
     }
 
-againmsg:
     now = get_unreadmsg(currentuser->userid);
     if(now==-1) now = count-1;
+    else {
+        load_msghead(1, currentuser->userid, now, &head);
+        while(head.topid!=getuinfopid()&&now<count-1){
+            now = get_unreadmsg(currentuser->userid);
+            load_msghead(1, currentuser->userid, now, &head);
+        };
+    }
     while(1){
         load_msghead(1, currentuser->userid, now, &head);
-        if (head.topid!=getuinfopid()&&now<count-1) goto againmsg;
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
         strncpy(uid, head.id, IDLEN);
