@@ -107,19 +107,15 @@ convert_userec(userec_r341 *olduser, struct userec *user)
 	memcpy(user->club_write_rights, olduser->club_write_rights,
 			sizeof(user->club_write_rights));
 	memcpy(user->md5passwd, olduser->md5passwd, sizeof(user->md5passwd));
-	/*memcpy(user->realemail, olduser->realemail, sizeof(user->realemail));*/
 	user->userlevel = olduser->userlevel;
 	user->lastlogin = olduser->lastlogin;
 	user->stay = olduser->stay;
-	/*memcpy(user->realname, olduser->realname, NAMELEN);*/
-	/*memcpy(user->address, olduser->address, STRLEN);*/
-	/*memcpy(user->email, olduser->email, STRLEN - 12);*/
 	user->signature = olduser->signature;
 	user->userdefine = olduser->userdefine;
 	user->notedate = olduser->notedate;
 	user->noteline = olduser->noteline;
 	user->notemode = -1;
-	user->exittime = 0;
+	user->exittime = olduser->exittime;
 #ifdef HAVE_BIRTHDAY
 	user->gender = olduser->gender;
 	user->birthyear = olduser->birthyear;
