@@ -296,7 +296,7 @@ static int add_new_clock()
 		return SHOW_CONTINUE;
 
 	clear();
-	good_move(1,0);
+	move(1,0);
 	prints("1. 普通闹铃 (设置系统几分钟后提醒您,不在线忽略)\n");
 	prints("2. 定时闹铃 (某年某月某日某分提醒您,不在线忽略)\n");
 	prints("3. 每日闹铃\n");
@@ -688,7 +688,7 @@ static int set_clock_select(struct _select_def *conf)
 	get_clock_string(clock_data+conf->pos-1,clocktypestring,clocktimestring);
 
 	clear();
-	good_move(1,0);
+	move(1,0);
 
 	prints("%s\n\n",clocktypestring);
 	prints("%s\n\n",clocktimestring);

@@ -891,9 +891,13 @@ void do_naws(int ln, int col)
 {
     t_lines = ln;
     t_columns = col;
-    if(t_lines<24||t_lines>LINEHEIGHT)
+    if(t_lines<24)
         t_lines=24;
-    if(t_columns<80||t_columns>LINELEN)
+    if(t_lines>LINEHEIGHT)
+        t_lines=LINEHEIGHT;
+    if(t_columns<80)
         t_columns = 80;
+    if(t_columns>LINELEN)
+        t_columns = LINELEN;
     initscr();
 }
