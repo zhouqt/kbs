@@ -72,11 +72,9 @@ char *path;                     /* path of that Message */
 		FALSE:	Failed (maybe duplicate)
 */
 {
-    char line[4096];
-
     if (dbz_connect) {
-        sprintf(line, "ADDHIST %s %s\r\n", mid, path);
-        fprintf(innbbsout, line);
+        /*sprintf(line, "ADDHIST %s %s\r\n", mid, path);*/
+        fprintf(innbbsout, "ADDHIST %s %s\r\n", mid, path);
         fflush(innbbsout);
         fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
 
@@ -109,7 +107,7 @@ char *path;                     /* If MID found, path will be put here, NULL
 
     if (dbz_connect) {
         sprintf(line, "GREPHIST %s\r\n", mid);
-        fprintf(innbbsout, line);
+        fprintf(innbbsout, "%s", line);
         fflush(innbbsout);
         fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
 

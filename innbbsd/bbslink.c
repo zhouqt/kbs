@@ -1595,9 +1595,9 @@ char *argv;
      * fprintf(stderr, "newsfeeds.bbs 设定网路信件的 newsgroup board nodelist ...\n"); 
      */
     fprintf(stderr, bbslinkUsage1, BBSHOME);
-    fprintf(stderr, bbslinkUsage2);
-    fprintf(stderr, bbslinkUsage3);
-    fprintf(stderr, bbslinkUsage4);
+    fprintf(stderr, "%s", bbslinkUsage2);
+    fprintf(stderr, "%s", bbslinkUsage3);
+    fprintf(stderr, "%s", bbslinkUsage4);
 }
 
 bntplink(argc, argv)
