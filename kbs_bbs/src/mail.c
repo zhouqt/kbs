@@ -2133,7 +2133,7 @@ static int maillist_onselect(struct _select_def *conf)
         int sel;
 
         sel = conf->pos - arg->sysboxnum - arg->cmdnum - 1;
-        sprintf(buf, ".%s", mail_list[sel]);
+        sprintf(buf, ".%s", mail_list[sel]+30);
         setmailfile(currmaildir, currentuser->userid, buf);
         in_mail = true;
         i_read(RMAIL, currmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
