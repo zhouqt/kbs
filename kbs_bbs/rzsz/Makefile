@@ -2,7 +2,7 @@
 #   ripped from original automake file
 #
 HEADERS = zglobal.h zmodem.h
-LIBZMODEM = libzmodem.a
+LIBZMODEM = ../libzmodem.a
 
 all: $(LIBZMODEM)
 	
@@ -26,11 +26,10 @@ RANLIB = ranlib
 	$(COMPILE) -c $<
 
 
-libzmodem.a: $(OBJS)
-	-rm -f libzmodem.a
-	$(AR) cru libzmodem.a $(OBJS)
-	$(RANLIB) libzmodem.a
-	cp -f libzmodem.a ..
+../libzmodem.a: $(OBJS)
+	-rm -f ../libzmodem.a
+	$(AR) cru ../libzmodem.a $(OBJS)
+	$(RANLIB) ../libzmodem.a
 
 clean:
 	rm -rf *.a *.o
