@@ -127,7 +127,7 @@ struct userec *urec;
 }
 
 int
-getnewuserid()
+getnewuserid(char* userid)
 {
     struct userec utmp, zerorec;
     struct stat st;
@@ -199,7 +199,7 @@ getnewuserid()
         exit( 1 );
     }
     memset( &utmp, 0, sizeof( utmp ) );
-    strcpy( utmp.userid, "new" );
+    strcpy( utmp.userid, userid );
     utmp.lastlogin = time( NULL );
     if( lseek( fd, sizeof(utmp) * (i-1), SEEK_SET ) == -1 ) {
         flock( fd, LOCK_UN );
@@ -207,7 +207,7 @@ getnewuserid()
         return -1;
     }
     write( fd, &utmp, sizeof(utmp) );
-    setuserid( i, utmp.userid );
+    setuserid( i, userid ); /* added by dong, 1998.12.2 */
     flock( fd, LOCK_UN );
     close( fd );
     return i;
@@ -235,17 +235,6 @@ new_register()
     int         allocid, do_try,flag,lockfd;
 
 
-    if( 1 ) {
-        time_t  now;
-
-        now = time( 0 );
-        sprintf( genbuf, "etc/no_register_%3.3s", ctime( &now ) );
-        if( dashf( genbuf ) ) {
-            ansimore( genbuf, NA );
-            pressreturn();
-            exit( 1 );
-        }
-    }
     getdata(0, 0, "Ê¹ÓÃGB±àÂëÔÄ¶Á?(\xa8\xcf\xa5\xce BIG5\xbd\x58\xbe\x5c\xc5\xaa\xbd\xd0\xbf\xefN)(Y/N)? [Y]: ", passbuf, 4, DOECHO, NULL, YEA);
     if (*passbuf == 'n' || *passbuf == 'N')
         if (!convcode)
@@ -301,7 +290,7 @@ new_register()
     flock(lockfd,LOCK_EX);
     
     memset( &newuser, 0, sizeof(newuser) );
-    allocid = getnewuserid()  ;
+    allocid = getnewuserid(newuser.userid)  ;
     if(allocid > MAXUSERS || allocid <= 0) {
         printf("No space for new users on the system!\n\r") ;
         flock(lockfd,LOCK_UN);
@@ -309,7 +298,6 @@ new_register()
 	    exit(1) ;
     }
 
-    setuserid( allocid, newuser.userid ); /* added by dong, 1998.12.2 */
     flock(lockfd,LOCK_UN);
     close(lockfd);
 
