@@ -1,5 +1,6 @@
 OBJ =	f_cat.o f_cp.o f_rm.o f_mv.o f_touch.o f_ln.o
 RANLIB=ranlib
+AR=AR
 
 all:allthing
 
@@ -20,7 +21,7 @@ include .depend
 endif
 
 ../libsystem.a:	$(OBJ)
-	ar rv $@ $?
+	$(AR) rv $@ $?
 	$(RANLIB) $@
 
 clean:

@@ -27,8 +27,11 @@ OS_DEF   = -DAIX -DSYSV
 
 
 CC       = gcc
+AR	 = ar
+LD	 = ld
 #CC       = cc
-CFLAGS   = -W -g -Ilibesmtp -static 
+CFLAGS   = -W -g -Ilibesmtp
+LDFLAGS  = -lc
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
 #LIBS     = -L. -L/usr/local/lib -lesmtp
 	#-lcrypt -lltdl -ldl -lbsd
@@ -108,13 +111,13 @@ libsystem.a:
 	cd lib; make
 	
 $(PROGNAME): $(COBJS) $(OTHERS) libsystem.a
-	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) libsystem.a -g
+	$(LD) -o bbsd_single $(LDFLAGS) $(COBJS) $(LIBS) libsystem.a
 
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
 
 newpop3.o: newpop3.c
-	$(CC) -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
+	$(CC) -g $(SITE_DEF) $(CFLAGS) $(DEFINES)  -c newpop3.c
 	
 newpop3d: newpop3.o $(BBSLIB) libsystem.a
 	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB) $(LIBS) libsystem.a
@@ -129,7 +132,7 @@ lib%.o: %.c
 	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -UBBSMAIN -c $^ -o $@
 	
 $(BBSLIB) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
-	ar cru $@ $^
+	$(AR) cru $@ $^
 	ranlib $@
 	
 chatd: station.c libBBS.a libsystem.a
