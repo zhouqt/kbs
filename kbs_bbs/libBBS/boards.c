@@ -337,8 +337,8 @@ int changeFavBoardDir(int i, char *s)
 {
     if (i >= favbrd_list_t)
         return -1;
-    strncpy(favbrd_list[i].title, s, 80);
-	favbrd_list[i].title[80]=0;
+    strncpy(favbrd_list[i].title, s, 60);
+	favbrd_list[i].title[60]=0;
     return 0;
 }
 
