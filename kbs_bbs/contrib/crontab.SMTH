@@ -12,6 +12,8 @@ MAILTO=bbs
 0,10,20,30,40,50 * * * * /home/bbs/bin/genhot
 # 更新版主统计
 1 0 * * * /home/bbs/bin/statBM update
+# 每小时记录每版在线人数
+2 0 * * * /home/bbs/bin/bonlinelog
 # 每小时 59 分更新版主统计排行
 59 * * * * /home/bbs/bin/stat.day
 10 0 * * * /home/bbs/bin/stat.other
