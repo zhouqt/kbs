@@ -15,6 +15,7 @@ global $articles;
 global $groupID;
 global $start;
 global $listType;
+global $isbm;
 
 setStat("文章阅读");
 
@@ -40,6 +41,7 @@ function preprocess(){
 	global $dir_modes;
 	global $listType;
 	global $start;
+	global $isbm;
 	if (!isset($_GET['boardName'])) {
 		foundErr("未指定版面。");
 	}
@@ -71,6 +73,8 @@ function preprocess(){
 		$start=intval($_GET['start']);
 	}
 
+	$isbm = bbs_is_bm($boardID, $usernum);
+	
 	bbs_set_onboard($boardID,1);
 	
 	$num = bbs_get_threads_from_gid($boardID, $groupID, $groupID, $articles, $haveprev );
@@ -247,6 +251,7 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 
 function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	global $loginok;
+	global $isbm;
 	$user=array();
 	$user_num=bbs_getuser($thread['OWNER'],$user);
 	if ($user_num == 0) {
@@ -357,10 +362,20 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	}
 ?>
 <a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border=0 alt=回复这个贴子></a>
-</td><td width=50><b><?php echo $num==0?'楼主':'第<font color=#ff0000>'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
+</td>
+<td width=50>
+<b><?php echo $num==0?'楼主':'第<font color=#ff0000>'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
 </table>
 
-<blockquote><table class=TableBody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> <b></b><br><?php 
+<blockquote><table class=TableBody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> 
+<?php
+	if ($isbm) {
+?>
+&nbsp;[<a href="bmdeny.php?board=<?php echo $boardName; ?>&userid=<?php echo $thread['OWNER']; ?>" title=封禁本文作者><font color=red>封禁</font></a>]
+<?php
+	}
+?>
+<br><?php 
 	 $isnormalboard=bbs_normalboard($boardName);
 	 $filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
 	 if ($loginok) {
