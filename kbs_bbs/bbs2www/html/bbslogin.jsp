@@ -21,10 +21,10 @@ if ($id!="") {
       else {
         $loginok=0;
         $num=bbs_getcurrentuinfo($data);
-        setcookie("UTMPKEY",$data["utmpkey"]);
-        setcookie("UTMPNUM",$num);
-        setcookie("UTMPUSERID",$data["userid"]);
-        setcookie("LOGINTIME",$data["logintime"]);
+        setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"/");
+        setcookie("UTMPNUM",$num,time()+360000,"/");
+        setcookie("UTMPUSERID",$data["userid"],time()+360000,"/");
+        setcookie("LOGINTIME",$data["logintime"],time()+360000,"/");
 	    header("Location: /frames.html");
 	    return;
       }

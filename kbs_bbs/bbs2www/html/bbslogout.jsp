@@ -10,10 +10,10 @@
 </html>
 <? } else {
 	bbs_wwwlogoff();
-    setcookie("UTMPKEY","");
-    setcookie("UTMPNUM","");
-    setcookie("UTMPUSERID","");
-    setcookie("LOGINTIME","");
+    setcookie("UTMPKEY","",time()-360,"/");
+    setcookie("UTMPNUM","",time()-360,"/");
+    setcookie("UTMPUSERID","",time()-360,"/");
+    setcookie("LOGINTIME","",time()-360,"/");
 
 	header("Location: /index.html");
    }
