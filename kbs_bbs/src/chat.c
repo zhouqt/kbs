@@ -250,7 +250,9 @@ int chat_parse(chatcontext * pthis)
     int  len;
     char *bptr;
 
-    if(!pthis->bufptr || pthis->buf[pthis->bufptr-1]!=0)chat_recv(pthis,NULL,0);
+    if(!pthis->bufptr || pthis->buf[pthis->bufptr-1]!=0){
+        if(chat_recv(pthis,NULL,0)<0)return -1;
+    }
     
     len=0;
 
