@@ -904,11 +904,11 @@ char *buffer;
 		tmp[bp[line].len] = '\0';
 		break;
 	case 1:
-		getyx(&x, &y);
+		good_getyx(&x, &y);
 		move(line, 0);
 		clrtoeol();
 		prints("%s", tmp);
-		move(x, y);
+		good_move(x, y);
 		refresh();
 	}
 };
