@@ -44,6 +44,7 @@ LIBS     = -lbsd -lesmtp -Llibesmtp/.libs -lltdl -ldl
 INSTALL  = ./install.sh 
 
 BBSLIB = libBBS.a
+BBSLIB-SHARE = libBBS.so
 
 #CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
 CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
@@ -51,7 +52,7 @@ CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
 
 PROGNAME = bbsd_single
 
-all: $(PROGNAME) chatd $(BBSLIB) newpop3d libsystem.a
+all: $(PROGNAME) chatd $(BBSLIB) newpop3d libsystem.a $(BBSLIB-SHARE)
 
 ifeq (Makefile.spec ,$(wildcard Makefile.spec))
 include	Makefile.spec
@@ -111,7 +112,7 @@ libsystem.a:
 	cd lib; make
 	
 $(PROGNAME): $(COBJS) $(OTHERS) libsystem.a
-	$(LD) -o bbsd_single $(LDFLAGS) $(COBJS) $(LIBS) libsystem.a
+	$(LD) -o bbsd_single $(EXECLDFLAGS) $(LDFLAGS) $(COBJS) $(LIBS) libsystem.a
 
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
@@ -135,12 +136,11 @@ $(BBSLIB) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
 	$(AR) cru $@ $^
 	ranlib $@
 	
+$(BBSLIB-SHARE) : $(patsubst %.o,lib%.o,$(BBSLIBOBJS))
+	$(LD) -shared $(LDFLAGS) -o $@ $^
+
 chatd: station.c libBBS.a libsystem.a
 	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS) libBBS.a libsystem.a
-
-
-ve: edit.o term.o screen.o io.o editor.c
-	$(CC) -o ve -g edit.o term.o screen.o io.o editor.c
 
 install: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
 	$(INSTALL) newpop3d $(BBSHOME)/bin
