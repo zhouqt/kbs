@@ -102,7 +102,7 @@ int get_rl2(char * s, int r, int l)
 void feval(struct fvar_struct * p, char * s, int l, int r)
 {
     int i,j,n;
-    char op[12][4]={"&&","||","==","!=",">","<",">=","<=","+","-","*","/"};
+    char op[12][4]={"&&","||","==","!=",">=","<=",">","<","+","-","*","/"};
     struct fvar_struct * t,q;
     char buf[1000];
     while(s[l]==' '&&l<=r) l++;
@@ -201,16 +201,16 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
                         else p->s=strcasecmp(m1.p,m2.p);
                         break;
                     case 4:
-                        p->s=m1.s>m2.s;
-                        break;
-                    case 5:
-                        p->s=m1.s<m2.s;
-                        break;
-                    case 6:
                         p->s=m1.s>=m2.s;
                         break;
-                    case 7:
+                    case 5:
                         p->s=m1.s<=m2.s;
+                        break;
+                    case 6:
+                        p->s=m1.s>m2.s;
+                        break;
+                    case 7:
+                        p->s=m1.s<m2.s;
                         break;
                     case 8:
                         p->s=m1.s+m2.s;
@@ -342,6 +342,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     libs = (char*)malloc(LIBLEN);
     for (i = 0; i < total; i++) {
         libptr = libs;
+        ferr = 0;
         set_vard(fvars+fget_var("no"), i+1);
         set_vard(fvars+fget_var("id"), ptr1->id);
         set_vard(fvars+fget_var("reid"), ptr1->reid);
