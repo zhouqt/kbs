@@ -570,7 +570,6 @@ void do_test()
                 if(j>=20&&i<userst-1) {
                     getdata(22,0,"按\033[32;1mq\033[m退出:",ans,2,true,NULL,true);
                     if(toupper(ans[0])=='Q') break;
-                    pressreturn();
                     do_test_reset();
                     move(1,0);
                     prints("详细测试结果\n");
