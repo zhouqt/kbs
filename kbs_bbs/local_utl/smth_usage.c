@@ -135,7 +135,14 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 
 int fillboard()
 {
+    int i = 0;
     apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
+    for(i = 0;i < 5; i++) 	{
+    	if(0 == sec_board_num[i] ){
+    		printf(" 该分区中没有版面! 分区 %d",i);
+    		exit(0);
+    		}
+    	}
 }
 
 char *timetostr(i)
