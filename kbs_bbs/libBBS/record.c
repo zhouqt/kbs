@@ -131,7 +131,45 @@ long get_sum_records(char *fpath, int size)
             ans += st.st_size;
     }
     fclose(fp);
-    return ans / 1024;
+    return ans;
+}
+
+long get_mail_sum_records(char *fpath, int size)
+{                               
+    struct stat st;
+    long ans = 0;
+    FILE *fp;
+    fileheader fhdr;
+    char buf[200], *p;
+
+    if (!(fp = fopen(fpath, "r")))
+        return 0;
+    strcpy(buf, fpath);
+    p = strrchr(buf, '/') + 1;
+    while (fread(&fhdr, size, 1, fp) == 1) {
+        strcpy(p, fhdr.filename);
+        if (stat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
+            ans += st.st_size;
+    }
+    fclose(fp);
+    return ans ;
+}
+
+long get_mailusedspace(struct userec *user,int force)
+{
+	char recmaildir[200];
+	int sum=0;
+	if(user->usedspace<0||force!=0)
+	{
+		setmailfile(recmaildir, user->userid, DOT_DIR);
+		sum=get_mail_sum_records(recmaildir, sizeof(fileheader));
+		setmailfile(recmaildir, user->userid, ".SENT");
+		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
+		setmailfile(recmaildir, user->userid, ".DELETED");
+		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
+		return sum;
+	}
+	else return user->usedspace;
 }
 
 int append_record(filename, record, size)
@@ -639,9 +677,16 @@ int id1, id2, del_mode;
                  * need clear delcount 
                  */
             }
-            /*
-             * if !Reading mail 
-             */
+            else if (!strstr(filename, ".DELETED")) {
+                int j;
+                memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
+                delcount++;
+                if (delcount >= DEL_RANGE_BUF) {
+                    delcount = 0;
+                    setmailfile(genbuf, currentuser->userid, ".DELETED");
+                    append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
+                }
+            }
 #endif                          /* 
                                  */
         }                       /*for readcount */
@@ -673,7 +718,19 @@ int id1, id2, del_mode;
         setbdir(digestmode, genbuf, currboard);
         append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
     }
-    digestmode = savedigestmode;
+    else if (uinfo.mode==RMAIL&&!strstr(filename, ".DELETED")) {
+        setmailfile(genbuf, currentuser->userid, ".DELETED");
+        append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
+    }
+    else if (uinfo.mode==RMAIL) {
+        struct stat st;
+        int j;
+        for (j = 0; j < delcount; j++){
+            setmailfile(genbuf, currentuser->userid, delfhdr[j].filename);
+            if (stat(genbuf, &st) !=-1) currentuser->usedspace-=st.st_size;
+        }
+    }
+	digestmode = savedigestmode;
 #endif                          /* 
                                  */
     free(savefhdr);

@@ -331,6 +331,7 @@ typedef size_t socklen_t;
 
 /* added by bad 2002-08-2	FavBoardDir */
 #define FAVBOARDNUM     100
+#define MAILBOARDNUM	20
 
 /* added by bad 2002.8.1 */
 #define FILE_MARK_FLAG 0

@@ -3,7 +3,8 @@ extern char *gb2big(char *, int *, int);
 extern char *sysconf_str();
 
 #include <libesmtp.h>
-static int getmailnum(char* recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
+
+int getmailnum(char* recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
 {   
     struct fileheader fh;
     struct stat st;
@@ -22,15 +23,12 @@ static int getmailnum(char* recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
 int chkusermail(struct userec *user)
 {
     char recmaildir[STRLEN];
-    int sum, sumlimit, numlimit;
+    int num,sum, sumlimit, numlimit;
 
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
 #ifdef NINE_BUILD
     sumlimit = 10000;
     numlimit = 10000;
-    setmailfile(recmaildir, user->userid, DOT_DIR);
-    if (getmailnum(recmaildir) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
-            return 1;
 #else
     if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
         if (user->userlevel & PERM_CHATCLOAK) {
@@ -51,11 +49,20 @@ int chkusermail(struct userec *user)
             sumlimit = 15;
             numlimit = 15;
         }
-        setmailfile(recmaildir, user->userid, DOT_DIR);
-        if (getmailnum(recmaildir) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
-            return 1;
     }
 #endif
+        /*peregrine*/
+        setmailfile(recmaildir, user->userid, DOT_DIR);
+        num=getmailnum(recmaildir);
+        setmailfile(recmaildir, user->userid, ".SENT");
+        num+=getmailnum(recmaildir) ;
+        setmailfile(recmaildir, user->userid, ".DELETED");
+        num+=getmailnum(recmaildir) ;
+        sum=get_mailusedspace(user,0)/1024;
+        /*if(user==currentuser)sum=user->usedspace/1024;
+        else sum = get_sum_records(recmaildir, sizeof(fileheader)); 
+        if(user!=currentuser)sum += get_sum_records(recmaildir, sizeof(fileheader));*/
+        if(num>numlimit||sum> sumlimit)return 1;
     return 0;
 }
 int chkreceiver(struct userec *fromuser, struct userec *touser)
@@ -129,6 +136,59 @@ int check_query_mail(char qry_mail_dir[STRLEN])
     close(fd);
     return false;
 }
+
+int update_user_usedspace(int delta,struct userec *user)
+{
+	user->usedspace+=delta;
+}
+
+int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int unlink)
+{
+    struct fileheader newmessage;
+    struct stat st;
+    char fname[STRLEN], filepath[STRLEN];
+    char buf[255];
+    int now;                    /* added for mail to SYSOP: Bigman 2000.8.11 */
+
+    memset(&newmessage, 0, sizeof(newmessage));
+    strcpy(buf, fromid);        /* Leeward 98.04.14 */
+    strncpy(newmessage.owner, buf, STRLEN);
+    strncpy(newmessage.title, title, STRLEN);
+    setmailpath(filepath, userid);
+    if (stat(filepath, &st) == -1) {
+        if (mkdir(filepath, 0755) == -1)
+            return -1;
+    } else {
+        if (!(st.st_mode & S_IFDIR))
+            return -1;
+    }
+    now = time(NULL);
+    /*
+     * setmailpath(filepath, userid, fname); 
+     */
+    setmailpath(filepath, userid);
+    GET_MAILFILENAME(fname, filepath);
+    strcpy(newmessage.filename, fname);
+    setmailfile(filepath, userid, fname);
+    /*
+     * sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
+     */
+    if (unlink)
+        f_mv(tmpfile, filepath);
+    else
+        f_cp(tmpfile, filepath, 0);
+    if (stat(filepath, &st) != -1)currentuser->usedspace+=st.st_size;
+    setmailfile(buf, userid, ".SENT");
+    newmessage.accessed[0] |= FILE_READ;
+    if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
+        return -1;
+    bbslog("1user", "mailed %s ", userid);
+    if (!strcasecmp(userid, "SYSOP"))
+        updatelastpost("sysmail");
+    return 0;
+    
+}
+/*peregrine*/
 int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink)
 {
     struct fileheader newmessage;
@@ -136,6 +196,9 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     char fname[STRLEN], filepath[STRLEN];
     char buf[255];
     int now;                    /* added for mail to SYSOP: Bigman 2000.8.11 */
+    struct userec *touser;/*peregrine for updating used space*/
+    int unum;
+    
 
     memset(&newmessage, 0, sizeof(newmessage));
     strcpy(buf, fromid);        /* Leeward 98.04.14 */
@@ -161,11 +224,17 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     /*
      * sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
      */
+	
     if (unlink)
         f_mv(tmpfile, filepath);
     else
         f_cp(tmpfile, filepath, 0);
+    /*peregrine update used space*/
+    unum=getuser(userid,&touser);
+    if (stat(filepath, &st) != -1)touser->usedspace+=st.st_size;
+    
     setmailfile(buf, userid, DOT_DIR);
+    
     if (append_record(buf, &newmessage, sizeof(newmessage)) == -1)
         return -1;
     newbbslog(LOG_USER, "mailed %s ", userid);

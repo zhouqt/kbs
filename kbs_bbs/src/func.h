@@ -234,6 +234,9 @@ extern "C" {
 
     int get_postfilename(char *filename, char *direct, int use_subdir);
     int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink);
+    int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int unlink);/*peregrine*/
+    int update_user_usedspace(int delta,struct userec *user);
+    int getmailnum(char* recmaildir);
     int isowner(struct userec *user, struct fileheader *fileinfo);
     int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char *direct, char *board, int digestmode, int decpost);
     /*
@@ -289,6 +292,7 @@ extern "C" {
     int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, void *farg);
     long get_num_records(char *filename, int size);
     long get_sum_records(char *fpath, int size);        /*获得.DIR里面文件大小总数 */
+    long get_mailusedspace(struct userec *user,int force); /*peregrine*/
     int get_record_handle(int fd, void *rptr, int size, int id);
     int get_record(char *filename, void *rptr, int size, int id);
     int delete_range(char *filename, int id1, int id2, int del_mode);

@@ -65,6 +65,7 @@ struct newpostdata {
     char flag;
     int pos, total, tag;
     char unread, zap;
+    int (*fptr) ();
 };
 
 extern sigjmp_buf bus_jump;

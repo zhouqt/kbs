@@ -422,6 +422,7 @@ int load_boards(char *boardprefix)
         /*---	period	2000-09-11	4 FavBoard	---*/
             if ((1 == yank_flag || (!yank_flag && (zapbuf[n] != 0 || (bptr->level & PERM_NOZAP))))) {
                 ptr = &nbrd[brdnum++];
+                ptr->dir = 0;
                 ptr->name = bptr->filename;
                 ptr->title = bptr->title;
                 ptr->BM = bptr->BM;

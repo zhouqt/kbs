@@ -52,6 +52,8 @@ extern int numofsig;
 extern char quote_user[];
 char *sysconf_str();
 char currmaildir[STRLEN];
+char mail_list[MAILBOARDNUM][40];
+int mail_list_t;
 
 #define maxrecp 300
 
@@ -585,8 +587,8 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
         }
         clear();
-        if (askyn("ÊÇ·ñ±¸·Ý¸ø×Ô¼º", false) == true)
-            mail_file(currentuser->userid, filepath, currentuser->userid, save_title, 0);
+//        if (askyn("ÊÇ·ñ±¸·Ý¸ø×Ô¼º", false) == true)
+//            mail_file(currentuser->userid, filepath, currentuser->userid, save_title, 0);
         /*
          * if(!chkreceiver(userid))
          * {
@@ -604,9 +606,15 @@ int do_send(char *userid, char *title, char *q_file)
         if (askyn("È·¶¨¼Ä³ö£¿", true) == false)
             return -2;
 
+        mail_file_sent(userid, filepath, currentuser->userid, save_title, 0);
         setmailfile(genbuf, userid, DOT_DIR);
         if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
             return -1;
+        
+       if(stat(filepath, &st)!= -1) {
+       	user->usedspace+=st.st_size;
+       	currentuser->usedspace+=st.st_size;
+       }
 
         newbbslog(LOG_USER, "mailed %s", userid);
         if (!strcasecmp(userid, "SYSOP"))
@@ -676,11 +684,42 @@ struct fileheader *fptr;
     return 0;
 }
 
+int del_mail(int ent, struct fileheader* fh, char* direct)
+{
+    char buf[PATHLEN];
+    char* t;
+    struct stat st;
+
+    if(strstr(direct, ".DELETED")) {
+        strcpy(buf, direct);    
+        t = strrchr(buf, '/') + 1;
+        strcpy(t, fh->filename);
+        if (stat(buf, &st) !=-1) currentuser->usedspace-=st.st_size;
+    }
+     
+    strcpy(buf, direct);
+    if ((t = strrchr(buf, '/')) != NULL)
+        *t = '\0';
+    if (!delete_record(direct, sizeof(*fh), ent, (RECORD_FUNC_ARG) cmpname, fh->filename)) {
+        sprintf(genbuf, "%s/%s", buf, fh->filename);
+        if(strstr(direct, ".DELETED"))
+            unlink(genbuf);
+        else {
+            strcpy(buf, direct);    
+            t = strrchr(buf, '/') + 1;
+            strcpy(t, ".DELETED");
+            append_record(buf, fh, sizeof(*fh));
+        }
+        return 0;
+    }
+    return 1;
+}
+
 int mrd;
 int delete_new_mail(struct fileheader *fptr, int idc, void *arg)
 {
     if (fptr->accessed[1] & FILE_DEL) {
-        delete_record(currmaildir, sizeof(struct fileheader), idc, NULL, NULL);
+        del_mail(idc, fptr, currmaildir);
         return 1;
     }
     return 0;
@@ -744,10 +783,8 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
         prints("Delete Message '%s' ", fptr->title);
         getdata(1, 0, "(Yes, or No) [N]: ", genbuf, 3, DOECHO, NULL, true);
         if (genbuf[0] == 'Y' || genbuf[0] == 'y') {     /* if not yes quit */
-            setmailfile(genbuf, currentuser->userid, fptr->filename);
-            unlink(genbuf);
+            fptr->accessed[1] |= FILE_DEL;
         }
-        fptr->accessed[1] |= FILE_DEL;
     }
     if (substitute_record(currmaildir, fptr, sizeof(*fptr), idc))
         return -1;
@@ -760,6 +797,7 @@ int m_new()
     clear();
     mrd = 0;
     modify_user_mode(RMAIL);
+    setmailfile(currmaildir, currentuser->userid, ".DIR"); 
     if (apply_record(currmaildir, (APPLY_FUNC_ARG) read_new_mail, sizeof(struct fileheader), NULL, 1, false) == -1) {
         clear();
         move(0, 0);
@@ -795,7 +833,7 @@ void mailtitle()
                                                                                         PERM_CHATCLOAK) ? 4000 : (HAS_PERM(currentuser, PERM_MANAGER) ? 600
                                                                                                                   : (HAS_PERM(currentuser, PERM_LOGINOK) ? 240 : 15))));
 #endif
-    int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
+    int UsedSpace =get_mailusedspace(currentuser, 0)/1024;
 
     showtitle("ÓÊ¼þÑ¡µ¥    ", BBS_FULL_NAME);
     prints("Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ý]  ÔÄ¶ÁÐÅ¼þ[¡ú,r]  »ØÐÅ[R]  ¿³ÐÅ£¯Çå³ý¾ÉÐÅ[d,D]  ÇóÖú[h][m\n");
@@ -806,7 +844,7 @@ void mailtitle()
         UsedSpace = 1;
     else if (UsedSpace < 0)
         UsedSpace = 0;
-    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK [m\n", "·¢ÐÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);        /* modified by dong , 1998.9.19 */
+    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK [m\n", (strstr(currmaildir, ".SENT"))?"ÊÕÐÅÕß":"·¢ÐÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);        /* modified by dong , 1998.9.19 */
 //    clrtobot();
 }
 
@@ -1028,12 +1066,8 @@ static int mail_del(int ent, struct fileheader *fileinfo, char *direct)
         clear();
         return FULLUPDATE;
     }
-    strcpy(buf, direct);
-    if ((t = strrchr(buf, '/')) != NULL)
-        *t = '\0';
-    if (!delete_record(direct, sizeof(*fileinfo), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename)) {
-        sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
-        unlink(genbuf);
+
+    if (del_mail(ent, fileinfo, direct)==0) {
         return DIRCHANGED;
     }
     move(2, 0);
@@ -1190,6 +1224,48 @@ char *direct;
     return (PARTUPDATE);
 }
 
+void load_mail_list();
+
+int mail_move(int ent, struct fileheader* fileinfo, char* direct)
+{
+    struct _select_item* sel;
+    int i,j;
+    char buf[PATHLEN];
+    char* t;
+    clear();
+    load_mail_list();
+    move(4, 4);
+    prints("ÇëÑ¡ÔñÒÆ¶¯µ½ÄÄ¸öÓÊÏä");
+    sel = (struct _select_item*)malloc(sizeof(struct _select_item)*(mail_list_t+1));
+    for(i=0;i<mail_list_t;i++) {
+    	sel[i].x=3;
+    	sel[i].y=i+5;
+    	sel[i].hotkey=-1;
+    	sel[i].type=SIT_SELECT;
+    	sel[i].data=(void*) mail_list[i];
+    }
+    sel[mail_list_t].x = -1; sel[mail_list_t].y = -1;
+    sel[mail_list_t].hotkey = -1; sel[mail_list_t].type = 0;
+    sel[mail_list_t].data = NULL;
+    i = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE, 0, 6, NULL)-1;
+    if(i>=0&&i<mail_list_t){
+        strcpy(buf, direct);
+        if ((t = strrchr(buf, '/')) != NULL)
+            *t = '\0';
+        if (!delete_record(direct, sizeof(*fileinfo), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename)) {
+            sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
+            strcpy(buf, direct);    
+            t = strrchr(buf, '/') + 1;
+            *t = '.';
+            t++;
+            strcpy(t, mail_list[i]+30);
+            append_record(buf, fileinfo, sizeof(*fileinfo));
+        }
+    }
+    free(sel);
+    return (FULLUPDATE);
+}
+
 extern int mailreadhelp();
 
 struct one_key mail_comms[] = {
@@ -1198,6 +1274,7 @@ struct one_key mail_comms[] = {
     {'r', mail_read},
     {'R', mail_reply},
     {'m', mail_mark},
+    {'M', mail_move},
     {'i', mail_to_tmp},
 #ifdef INTERNET_EMAIL
     {'F', mail_forward},
@@ -1908,3 +1985,132 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 }
 
 #endif
+
+extern int brdnum, yank_flag;
+extern struct newpostdata *nbrd;       /*Ã¿¸ö°æµÄÐÅÏ¢ */
+
+char* NullChar = "";
+
+void add_list(char* s, int (*fptr) ())
+{
+	struct newpostdata *ptr;
+	ptr = &nbrd[brdnum++];
+	ptr->name = NullChar;
+	ptr->title = s;
+	ptr->dir = 3;
+	ptr->BM = NullChar;
+	ptr->flag = -1;
+	ptr->tag = -1;
+	ptr->pos = 0;
+	ptr->total = 0;
+	ptr->unread = 1;
+	ptr->fptr = fptr;
+	ptr->zap = 0;
+}
+
+void add_mlist(char* s, char* t, int k)
+{
+	struct newpostdata *ptr;
+	char buf[PATHLEN], tt[PATHLEN];
+	ptr = &nbrd[brdnum++];
+	ptr->name = t;
+	ptr->title = s;
+	ptr->dir = 2;
+	ptr->BM = NullChar;
+	ptr->flag = -1;
+	ptr->tag = k;
+	ptr->pos = 0;
+	ptr->total = 0;
+	ptr->unread = 1;
+	ptr->zap = 0;
+	sprintf(tt, ".%s", t);
+       setmailfile(buf, currentuser->userid, tt);
+       ptr->total=getmailnum(buf);
+}
+
+char mail_title[9][30]=
+{
+"ÀÀÔÄÐÂÐÅ¼ã",
+"¼ÄÐÅ¸øÕ¾ÉÏÆäËüÊ¹ÓÃÕß",
+"ÊÕ¼þÏä",
+"ÒÑ·¢ËÍÓÊ¼þ",
+"ÒÑÉ¾³ýÓÊ¼þ",
+"¼Ä¸ø / Éè¶¨¼ÄÐÅÃûµ¥",
+"©°Éè¶¨ºÃÓÑÃûµ¥",
+"©¸¼ÄÐÅ¸øºÃÓÑÃûµ¥",
+"¼ÄÐÅ¸øËùÓÐÈË"
+};
+
+char mail_mtitle[3][10]=
+{
+"DIR",
+"SENT",
+"DELETED"
+};
+
+void load_mail_list()
+{
+    char fname[STRLEN];
+    int fd;
+
+    sethomefile(fname, currentuser->userid, "maillist");
+    mail_list_t=0;
+    if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
+        read(fd, &mail_list_t, sizeof(int));
+        read(fd, mail_list, sizeof(mail_list));
+        close(fd);
+    }
+}
+
+void save_mail_list()
+{
+    char fname[STRLEN];
+    int fd;
+
+    sethomefile(fname, currentuser->userid, "maillist");
+    if ((fd = open(fname, O_WRONLY|O_CREAT, 0600)) != -1) {
+        write(fd, &mail_list_t, sizeof(int));
+        write(fd, mail_list, sizeof(mail_list));
+        close(fd);
+    }
+}
+
+extern int t_override();
+
+int load_mboards()
+{
+    struct boardheader *bptr;
+    struct newpostdata *ptr;
+    int n, k;
+
+    brdnum = 0;
+    add_list(mail_title[0], m_new);
+    add_list(mail_title[1], m_send);
+    add_mlist(mail_title[2], mail_mtitle[0], -1);
+    add_mlist(mail_title[3], mail_mtitle[1], -1);
+    add_mlist(mail_title[4], mail_mtitle[2], -1);
+    for(n=0;n<mail_list_t;n++)
+    	add_mlist(mail_list[n], mail_list[n]+30, n);
+    add_list(mail_title[5], g_send);
+    add_list(mail_title[6], t_override);
+    add_list(mail_title[7], ov_send);
+    if(HAS_PERM(currentuser, PERM_SYSOP))
+    	add_list(mail_title[8], mailall);
+    
+    return 0;
+}
+
+int MailProc()
+{
+    int ifnew = 1, yanksav;
+
+/*    if(heavyload()) ifnew = 0; *//*
+ * * no heavyload() in FB2.6x 
+ */
+    yanksav = yank_flag;
+    yank_flag = 3;
+    if (!mail_list_t)
+        load_mail_list();
+    choose_board(ifnew, NULL);
+    yank_flag = yanksav;
+}

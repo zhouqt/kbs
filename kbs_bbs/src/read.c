@@ -259,7 +259,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     last_line = get_num_records(currdirect, ssize);
     if (last_line == 0) {
         if (cmdmode == RMAIL) {
-            prints("没有任何新信件...");
+            prints("没有任何信件...");
             pressreturn();
             clear();
         }

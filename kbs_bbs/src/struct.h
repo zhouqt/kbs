@@ -37,8 +37,8 @@ struct userec {                 /* Structure used to hold information in */
 	unsigned char   birthmonth;
 	unsigned char   birthday;
 #else
-    int unuse2;                 /* no use */
 #endif
+    unsigned int usedspace;                 /* no use */
 };
 struct user_info {              /* Structure used in UTMP file */
     int active;                 /* When allocated this field is true */

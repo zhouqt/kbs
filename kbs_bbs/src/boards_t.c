@@ -9,7 +9,7 @@ extern int *zapbuf;
 extern int zapbuf_changed;
 extern int brdnum;
 extern int yank_flag;
-static int choose_board(int newflag, char *boardprefix);        /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
+int choose_board(int newflag, char *boardprefix);        /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
 static int check_newpost(struct newpostdata *ptr);
 
 void EGroup(cmd)
@@ -288,6 +288,15 @@ int query_bm()
 
 /* end of insertion */
 
+extern int load_mboards();
+extern void save_mail_list();
+extern char mail_list[MAILBOARDNUM][40];
+extern int mail_list_t;
+extern void mailtitle();
+extern char *maildoent(char *buf, int num, struct fileheader *ent);
+extern struct one_key mail_comms[];
+extern char currmaildir[STRLEN];
+
 void show_brdlist(page, clsflag, newflag)       /* show board list */
 int page, clsflag, newflag;
 {
@@ -302,6 +311,9 @@ int page, clsflag, newflag;
             if (yank_flag == 2)
                 docmdtitle("[¸öÈË¶¨ÖÆÇø]",
                            "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] ÒÆ¶¯[\x1b[1;32mm\x1b[m] É¾³ı[\x1b[1;32md\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
+            else if (yank_flag == 3)
+                docmdtitle("[´¦ÀíĞÅ¼ãÑ¡µ¥]",
+                           "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] ÒÆ¶¯[\x1b[1;32mm\x1b[m] É¾³ı[\x1b[1;32md\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
             else
                 docmdtitle("[ÌÖÂÛÇøÁĞ±í]",
                            "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÁĞ³ö[\x1b[1;32my\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ËÑÑ°[\x1b[1;32m/\x1b[m] ÇĞ»»[\x1b[1;32mc\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
@@ -309,6 +321,8 @@ int page, clsflag, newflag;
         } else {
             if (yank_flag == 2)
                 docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
+            else if (yank_flag == 3)
+                docmdtitle("[´¦ÀíĞÅ¼ãÑ¡µ¥]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
             else
                 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] ÁĞ³ö[y] ÅÅĞò[S] ËÑÑ°[/] ÇĞ»»[c] ÇóÖú[h]\n");
             prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
@@ -329,7 +343,20 @@ int page, clsflag, newflag;
                 prints(" %4d  £«  <Ä¿Â¼>  ", n + 1);
             else
                 prints(" %4d  £«  <Ä¿Â¼>  ", ptr->total);
-        } else if (!newflag)
+        } 
+        else if (ptr->dir == 2){
+            if (!newflag)
+                prints(" %4d  £«  <ĞÅÏä>  ", n + 1);
+            else
+                prints(" %4d  £«  <ĞÅÏä>  ", ptr->total);
+        }
+        else if (ptr->dir == 3){
+            if (!newflag)
+                prints(" %4d      <¹¦ÄÜ>  ", n+1);
+            else
+                prints("           <¹¦ÄÜ>  ");
+        }
+        else if (!newflag)
             prints(" %4d %c", n + 1, ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG) ? '-' : ' ');   /*zap±êÖ¾ */
         else if (ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) {
             /*
@@ -351,14 +378,14 @@ int page, clsflag, newflag;
         /*
          * Leeward 98.03.28 Displaying whether a board is READONLY or not 
          */
-        if (ptr->dir == 1)
+        if (ptr->dir >= 1)
             sprintf(buf, "%s", ptr->title);     // added by bad 2002.8.3
         else if (true == checkreadonly(ptr->name))
             sprintf(buf, "¡ôÖ»¶Á¡ô%s", ptr->title + 8);
         else
             sprintf(buf, " %s", ptr->title + 1);
 
-        if (ptr->flag == -1)    // added by bad 2002.8.3
+        if (ptr->dir >= 1)    // added by bad 2002.8.3
             prints("%-20s\n", buf);
         else {
             strncpy(tmpBM, ptr->BM, BM_LEN);
@@ -369,7 +396,7 @@ int page, clsflag, newflag;
 }
 
 
-static int choose_board(int newflag, char *boardprefix)
+int choose_board(int newflag, char *boardprefix)
 {                               /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
     static int num;
     struct newpostdata newpost_buffer[MAXBOARD];
@@ -389,8 +416,13 @@ static int choose_board(int newflag, char *boardprefix)
  */
     while (1) {
         if (brdnum <= 0) {      /*³õÊ¼»¯ */
-            if (load_boards(boardprefix) == -1)
+            if (yank_flag==3){
+                if (load_mboards(boardprefix) == -1)
+                    continue;
+            }
+            else if (load_boards(boardprefix) == -1)
                 continue;
+            if (yank_flag<=2)
             if ((yank_flag != 2) || (currentuser->flags[0] & BRDSORT_FLAG))
                 qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
             page = -1;
@@ -609,6 +641,7 @@ static int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'S':
+            if (yank_flag==3) break;
             currentuser->flags[0] ^= BRDSORT_FLAG;      /*ÅÅĞò·½Ê½ */
             if (yank_flag != 2) {
                 qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);   /*ÅÅĞò */
@@ -630,6 +663,7 @@ static int choose_board(int newflag, char *boardprefix)
              * }
              * else {
              */
+            if (yank_flag==3) break;
             modify_user_mode(SELECT);
             if (do_select(0, NULL, genbuf) == NEWDIRECT)
                 Read();
@@ -681,6 +715,42 @@ static int choose_board(int newflag, char *boardprefix)
                     pressreturn();
                     show_brdlist(page, 1, newflag);     /*  refresh screen */
                 }
+            }
+            else if (3 == yank_flag) {
+                char bname[STRLEN], buf[PATHLEN];
+                int i = 0;
+
+                if (getfavnum() >= MAILBOARDNUM) {
+                    move(2, 0);
+                    clrtoeol();
+                    prints("ÓÊÏäÊıÒÑ¾­´ïÉÏÏŞ(%d)£¡", MAILBOARDNUM);
+                    pressreturn();
+                    show_brdlist(page, 1, newflag);     /*  refresh screen */
+                    break;
+                }
+                move(0, 0);
+                clrtoeol();
+                getdata(0, 0, "ÊäÈëÓÊÏäÓ¢ÎÄÃû: ", bname, 10, DOECHO, NULL, true);
+                sprintf(buf, ".%s", bname);
+                if (!valid_fname(bname)) {
+                    move(2, 0);
+                    clrtoeol();
+                    prints("°¥Ñ½!! Ãû³ÆÖ»ÄÜ°üº¬Ó¢ÎÄ¼°Êı×Ö! ");
+                    pressreturn();
+                    show_brdlist(page, 1, newflag);     /*  refresh screen */
+                    break;
+                }
+                else{
+                	move(0, 0);
+                	clrtoeol();
+                	getdata(0, 0, "ÊäÈëÓÊÏäÏÔÊ¾ÖĞÎÄÃû: ", buf, 30, DOECHO, NULL, true);
+                	strncpy(mail_list[mail_list_t], buf, 29);
+                	strncpy(mail_list[mail_list_t]+30, bname, 9);
+                	mail_list_t++;
+                     save_mail_list();
+                     brdnum = -1;
+                }
+            	
             }
             break;
         case 'A':              // added by bad 2002.8.3
@@ -780,6 +850,25 @@ static int choose_board(int newflag, char *boardprefix)
                 } else
                     show_brdlist(page, 1, newflag);     /*  refresh screen */
             }
+            else if (3 == yank_flag) {
+                if (nbrd[num].dir == 2 && nbrd[num].tag >= 0){
+                	int p=1,i,j;
+                     char ans[2];
+
+                     move(0, 0);
+                     clrtoeol();
+                     getdata(0, 0, "È·ÈÏÉ¾³ıÕû¸öÄ¿Â¼£¿(y/N)", ans, 2, DOECHO, NULL, true);
+                     p = ans[0] == 'Y' || ans[0] == 'y';
+                     if (p) {
+                     	p=nbrd[num].tag;
+                     	for(j=p; j<mail_list_t-1; j++)
+                     		memcpy(mail_list[j], mail_list[j+1], sizeof(mail_list[j]));
+                     	mail_list_t--;
+                     	save_mail_list();
+                     	brdnum = -1;
+                     }
+                }
+            }
             break;
             /*---	End of Addition	---*/
         case 'y':
@@ -824,7 +913,23 @@ static int choose_board(int newflag, char *boardprefix)
 
                 ptr = &nbrd[num];
 
-                if (ptr->flag == -1) {  // added by bad 2002.8.3
+                if (ptr->dir == 2){
+                	sprintf(buf, ".%s", ptr->name);
+                	setmailfile(currmaildir, currentuser->userid, buf); 
+			in_mail = true;
+       		i_read(RMAIL, currmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
+       		in_mail = false;
+                     page = -1;
+                     brdnum = -1;
+                     modify_user_mode(newflag ? READNEW : READBRD);
+                }
+                else if (ptr->dir == 3) {
+                        ptr->fptr();
+                        page = -1;
+                        brdnum = -1;
+                        modify_user_mode(newflag ? READNEW : READBRD);
+                }
+                else if (ptr->dir == 1) {  // added by bad 2002.8.3
                     int oldnum, oldfavnow;
 
                     oldnum = num;
@@ -879,6 +984,8 @@ static int choose_board(int newflag, char *boardprefix)
 static int check_newpost(struct newpostdata *ptr)
 {
     struct BoardStatus *bptr;
+
+    if (ptr->dir) return 0;
 
     ptr->total = ptr->unread = 0;
 
