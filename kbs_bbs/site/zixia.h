@@ -40,6 +40,8 @@
 #define SMTH			1		/* SMTH专有代码 */
 #define FILTER			1		/* 使用文章内容过滤 */
 
+#define MYUNLINK_BACKUPDIR "0Announce/backup"
+
 #undef SITE_HIGHCOLOR
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
