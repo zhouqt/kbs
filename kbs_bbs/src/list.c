@@ -1459,14 +1459,14 @@ move(3 + num - page, 0);
             prints(">", number);
         }
         
-ch = egetch();
+ch = igetkey();
         
 if (readplan == false)
             
 move(3 + num - page, 0);
         prints(" ");
         
-if (ch == 'q' || ch == 'e' || ch == KEY_LEFT || ch == EOF)
+if (ch == 'q' || ch == 'e' || ch == KEY_LEFT || ch == EOF || ch == KEY_REFRESH)
             
  {
             

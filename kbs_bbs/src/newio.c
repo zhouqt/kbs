@@ -520,6 +520,15 @@ int igetkey()
            else 
          */
         ch = igetch();
+
+	    if (talkrequest) {
+        	if(uinfo.mode!=CHAT1&&uinfo.mode!=CHAT2&&uinfo.mode!=CHAT3&&uinfo.mode!=CHAT4
+        		&&uinfo.mode!=TALK&&uinfo.mode!=PAGE) {
+		        talkreply();
+		        return KEY_REFRESH;
+		    } else
+		    	return KEY_TALK;
+    	}
         if (mode == 0) {
             if (ch == KEY_ESC)
                 mode = 1;
@@ -600,6 +609,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
     if (!scrint || (echo == false)) {
         while ((ch = igetkey()) != '\r') {
+        	/* TODO: add KEY_REFRESH support */
             if (ch == '\n')
                 break;
             if (ch == '\177' || ch == Ctrl('H')) {
@@ -647,6 +657,7 @@ removed by wwj, just use oflush , 2001/5/8
             refresh();
         }
         ch = igetkey();
+        /* TODO: add KEY_REFRESH support ???*/
 
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;         /* Leeward 98.07.30 supporting msgX */
@@ -856,7 +867,7 @@ int pressanykey()
     move(t_lines - 1, 0);
     clrtoeol();
     prints("\x1b[m                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
-    egetch();
+    igetkey();
     move(t_lines - 1, 0);
     clrtoeol();
     return 0;

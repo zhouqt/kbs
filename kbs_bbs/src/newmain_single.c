@@ -254,13 +254,7 @@ void talk_request(int signo)
     signal(SIGUSR1, talk_request);
     talkrequest = true;
     bell();
-    bell();
-    bell();
     sleep(1);
-    bell();
-    bell();
-    bell();
-    bell();
     bell();
     return;
 }
@@ -962,43 +956,6 @@ void main_bbs(int convit, char *argv)
             domenu("TOPMENU2");
         Goodbye();
     }
-}
-
-int refscreen = false;
-
-int egetch()
-{
-    int rval;
-
-    check_calltime();
-    if (talkrequest) {
-        talkreply();
-        refscreen = true;
-        return -1;
-    }
-/*    if (ntalkrequest) {
-        ntalkreply() ;
-        refscreen = true ;
-        return -1 ;
-    }*/
-    while (1) {
-        rval = igetkey();
-        if (talkrequest) {
-            talkreply();
-            refscreen = true;
-            return -1;
-        }                       /*
-                                   if(ntalkrequest) {
-                                   ntalkreply() ;
-                                   refscreen = true ;
-                                   return -1 ;
-                                   } */
-        if (rval != Ctrl('L'))
-            break;
-        redoscr();
-    }
-    refscreen = false;
-    return rval;
 }
 
 char *boardmargin()

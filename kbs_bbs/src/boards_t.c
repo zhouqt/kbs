@@ -126,8 +126,10 @@ int search_board(int *num, int *i, int *find, char *bname)
         move(t_lines - 1, 0);
         clrtoeol();
         prints("请输入要找寻的 board 名称：%s", bname);
-        ch = egetch();
+        ch = igetkey();
 
+    	if (ch==KEY_REFRESH)
+    		break;
         if (isprint2(ch)) {
             bname[(*i)++] = ch;
             for (n = 0; n < brdnum; n++) {
@@ -407,7 +409,11 @@ static int choose_board(int newflag, char *boardprefix)
         move(3 + num - page, 0);
         prints(">", number);    /*显示当前board标志 */
         if (loop_mode == 0) {
-            ch = egetch();
+            ch = igetkey();
+            if (ch==KEY_REFRESH) {
+            	show_brdlist(page, 0, newflag);
+            	update_endline();
+            }
         }
         move(3 + num - page, 0);
         prints(" ");

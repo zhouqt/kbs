@@ -140,7 +140,7 @@ void check_calltime()
         move(line, 0);
         clrtoeol();
         prints("[44m[32mBBS ÏµÍ³Í¨¸æ: [37m%-65s[m", "ÏµÍ³ÄÖÖÓ Áå¡«¡«¡«¡«¡«¡«");
-        igetkey();
+        pressanykey();
         move(line, 0);
         clrtoeol();
         saveline(line, 1, NULL);
@@ -210,7 +210,7 @@ int readln(int fd, char *buf, char *more_buf)
 int morekey()
 {
     while (1) {
-        switch (egetch()) {
+        switch (igetkey()) {
         case Ctrl('Z'):
             return 'M';         /* Leeward 98.07.30 support msgX */
         case '!':
@@ -253,6 +253,8 @@ int morekey()
             return 'X';
         case 'u':              /*Haohmaru 99.11.29 */
             return 'u';
+        case KEY_REFRESH:
+        	return KEY_REFRESH;
         default:;
         }
     }
@@ -1044,7 +1046,6 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
         change = 0;
         while (change == 0) {
             mem_printbotline(curr_line + 1, last_line + 1, l.total, l.line[last_line % 100] - ptr + l.s[last_line % 100], size);
-            //ch = egetch();
             ch = morekey();
             move(t_lines - 1, 0);
             clrtoeol();
@@ -1098,6 +1099,10 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
                 return KEY_DOWN;
             case 'l':
                 return KEY_UP;
+            case KEY_REFRESH:
+                curr_line += t_lines - 1;
+                change = 1 - t_lines;
+                break;
             case 'L':
                 if (uinfo.mode != LOOKMSGS) {
                     show_allmsgs();

@@ -290,13 +290,13 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     PUTCURS(locmem);
     lbc = 0;
     mode = DONOTHING;
-    while ((ch = egetch()) != EOF) {
-        if (talkrequest) {
-            talkreply();
+    while ((ch = igetkey()) != EOF) {
+        if (ch==KEY_REFRESH) {
             mode = FULLUPDATE;
 
             /*        } else if( ch >= '0' && ch <= '9' ) {
                if( lbc < 9 )
+            	talkreply();
                lbuf[ lbc++ ] = ch;
                                                                                                                                 *//*---	Modified by period	2000-09-11	---*/
         } else if ((ch >= '0' && ch <= '9')
@@ -1050,7 +1050,8 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             move(t_lines - 1, 0);
             clrtoeol();
             prints("[1m[44m[31m[%8s] [33mÏÂÒ»·â ' ',<Enter>,¡ı©¦ÉÏÒ»·â ¡ü,U                                  [m", auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á");
-            switch (egetch()) {
+            switch (igetkey()) {
+        	/* TODO: add KEY_REFRESH support */
             case ' ':
             case '\n':
             case KEY_DOWN:
@@ -1179,10 +1180,10 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             prints("[1m[44m[31m[%8s] [33m»ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÏÂÒ»·â ¡ı,Enter©¦ÉÏÒ»·â ¡ü,U ©¦ ^R »Ø¸ø×÷Õß   \033[m", auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á");
             /*  period 2000-09-11       Ô­ÒòÍ¬ÉÏ */
             if (KEY_UP != lch && 'U' != lch)
-                lch = egetch();
+                lch = igetkey();
+        	/* TODO: add KEY_REFRESH support */
             switch (lch) {
 
-                /*    switch( egetch() ) { */
             case Ctrl('Z'):
                 r_lastmsg();    /* Leeward 98.07.30 support msgX */
                 break;

@@ -453,10 +453,12 @@ static int ent_chat(int chatnum)
         move(b_lines, currchar + 10);
         pthis->outputcount = 0;
         ch = igetkey();
-        if (talkrequest) {
+        if (ch==KEY_TALK) {
             int talkpage = servicepage(0, pthis->buf);
 
             if (talkpage != page_pending) {
+            	bell();
+            	oflush();
                 printchatline(pthis, pthis->buf);
                 page_pending = talkpage;
             }

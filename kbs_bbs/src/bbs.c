@@ -670,7 +670,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     refresh();
 /* sleep(1); *//* ????? */
     if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP))
-        ch = egetch();
+        ch = igetkey();
 
     switch (ch) {
     case Ctrl('Z'):
@@ -682,6 +682,8 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     case 'q':
     case KEY_LEFT:
         break;
+    case KEY_REFRESH:
+    	break;
     case ' ':
     case 'j':
     case KEY_RIGHT:
@@ -1955,7 +1957,7 @@ int sequent_messages(struct fileheader *fptr,int idc, int *continue_flag)
         clrtoeol();
         prints("\033[1;44;31m[连续读信]  \033[33m回信 R │ 结束 Q,← │下一封 ' ',↓ │^R 回信给作者                \033[m");
         *continue_flag = 0;
-        switch (egetch()) {
+        switch (igetkey()) {
         case Ctrl('Z'):
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
             break;
@@ -1965,6 +1967,8 @@ int sequent_messages(struct fileheader *fptr,int idc, int *continue_flag)
         case 'q':
         case KEY_LEFT:
             break;
+    	case KEY_REFRESH:
+    		break;
         case 'Y':
         case 'R':
         case 'y':

@@ -605,31 +605,6 @@ void a_forward(path, pitem, mode)
     pressanykey();
 }
 
-/*
-void
-a_download( fname )
-char    *fname;
-{
-    char        ans[ STRLEN ], *ptr;
-
-    move( t_lines-1, 0 );
-    if( dashf( fname ) ) {
-        ptr = fname;
-        if( (ptr = strrchr( fname, '/' )) != NULL )
-            ptr++;
-        sprintf( genbuf, "Ê¹ÓÃ Z-Modem ´«ËÍ %s µµ°¸Âğ? (Y/N) [N]: ", ptr );
-        a_prompt( -2, genbuf, ans );
-        if( *ans == 'y' || *ans == 'Y' ) {
-            sprintf( genbuf, "bin/sz -ve %s", fname );
-            system( genbuf );
-        }
-    } else {
-        prints( "ÎŞ·¨´«ËÍ´ËÏîÄ¿.\n" );
-        egetch();
-    }
-}
-*/
-
 void a_newitem(pm, mode)        /* ÓÃ»§´´½¨ĞÂµÄ ITEM */
     MENU *pm;
     int mode;
@@ -773,7 +748,7 @@ void a_copypaste(pm, paste)
         sprintf(genbuf, "%s/%s", pm->path, filename);
         strncpy(fpath, genbuf, PATHLEN);
         prints("¿½±´±êÊ¶Íê³É¡£×¢Òâ£ºÕ³ÌùÎÄÕÂáá²ÅÄÜÓÃ d ÃüÁî½«ÎÄÕÂÉ¾³ı! -- Çë°´ÈÎÒâ¼ü¼ÌĞø << ");
-        egetch();
+        pressanykey();
 
         /* Leeward: 98.02.19: ¶Ô°æÖ÷µÄ¶à¸ö´°¿ÚÍ¬²½ C/P ²Ù×÷ */
         sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
@@ -787,8 +762,8 @@ void a_copypaste(pm, paste)
             fputs("\n", fn);
             fclose(fn);
         } else {
-            prints("File open ERROR -- please report Leeward ");
-            egetch();
+            prints("File open ERROR -- please report SYSOP");
+            pressanykey();
         }
     } else {
         /* Leeward: 98.02.19: ¶Ô°æÖ÷µÄ¶à¸ö´°¿ÚÍ¬²½ C/P ²Ù×÷ */
@@ -810,13 +785,13 @@ void a_copypaste(pm, paste)
         sprintf(newpath, "%s/%s", pm->path, filename);
         if (*title == '\0' || *filename == '\0') {
             prints("ÇëÏÈÊ¹ÓÃ copy ÃüÁîÔÙÊ¹ÓÃ paste ÃüÁî. ");
-            egetch();
+            pressanykey();
         } else if (dashf(newpath) || dashd(newpath)) {
             prints("%s %s ÒÑ¾­´æÔÚ. ", (dashd(newpath) ? "Ä¿Â¼" : "ÎÄ¼ş"), filename);
-            egetch();
+            pressanykey();
         } else if (strstr(newpath, fpath) != NULL) {
             prints("ÎŞ·¨½«Ò»¸öÄ¿Â¼°á½ø×Ô¼ºµÄ×ÓÄ¿Â¼ÖĞ, »áÔì³ÉËÀÑ­»·. ");
-            egetch();
+            pressanykey();
         } else {
             /* modified by cityhunter to simplify annouce c/p */
             sprintf(genbuf, "ÄúÈ·¶¨ÒªÕ³Ìù%s %s Âğ? (C/L/N)CÎª¸´ÖÆ·½Ê½ LÎªÁ´½Ó·½Ê½ [N]: ", (dashd(fpath) ? "Ä¿Â¼" : "ÎÄ¼ş"), filename);
@@ -944,7 +919,7 @@ void a_newname(pm)
         mesg = "ÎÄ¼şÃû¸ü¸ÄÊ§°Ü !!";
     }
     prints(mesg);
-    egetch();
+    pressanykey();
 }
 
 void a_manager(pm, ch)
@@ -1138,13 +1113,16 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
         }
         move(3 + me.now - me.page, 0);
         prints("->");
-        ch = egetch();
+        ch = igetkey();
         move(3 + me.now - me.page, 0);
         prints("  ");
         if (ch == 'Q' || ch == 'q' || ch == KEY_LEFT || ch == EOF)
             break;
       EXPRESS:                 /* Leeward 98.09.13 */
         switch (ch) {
+        case KEY_REFRESH:
+            a_showmenu(&me);
+            break;
         case Ctrl('Z'):
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
             break;
@@ -1262,7 +1240,7 @@ void a_menu(maintitle, path, lastlevel, lastbmonly)
                        £¬ÓÃÉÏ£¯ÏÂ¼ıÍ·Ö±½ÓÌø×ªµ½Ç°£¯ºóÒ»Ïî */
                     ansimore(fname, false);
                     prints("[1m[44m[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  [33m½áÊø Q,¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı [m");
-                    switch (ch = egetch()) {
+                    switch (ch = igetkey()) {
                     case KEY_DOWN:
                     case ' ':
                     case '\n':

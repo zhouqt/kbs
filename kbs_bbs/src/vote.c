@@ -516,7 +516,7 @@ char *bname;
     }
     ball->opendate = time(NULL);
     prints("按任何开始编辑此次 [投票的描述]: \n");
-    igetch();
+    pressanykey();
     setvfile(genbuf, bname, "desc");
     sprintf(buf, "%s.%lu", genbuf, ball->opendate);
     aborted = vedit(buf, false);

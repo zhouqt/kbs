@@ -332,7 +332,6 @@ static void copymenupos()
 int domenu(menu_name)
 char *menu_name;
 {
-    extern int refscreen;
     struct smenuitem *pm;
     char *cmdprompt = "Ä¿Ç°Ñ¡Ôñ£º";
     int size, now;
@@ -398,7 +397,7 @@ char *menu_name;
         standend();
         prints("]");
         clrtoeol();
-        cmd = egetch();
+        cmd = igetkey();
         if (currentuser->flags[0] & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
             prints("  ");
@@ -408,9 +407,9 @@ char *menu_name;
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
             break;
         case EOF:
-            if (!refscreen) {
                 abort_bbs(0);
-            }
+                break;
+		case KEY_REFRESH:
             domenu_screen(pm, cmdprompt);
             modify_user_mode(MMENU);
             /*

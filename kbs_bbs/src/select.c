@@ -532,7 +532,7 @@ list_select(conf, KEY_INIT);
     
 while (1) {
         
-ch = egetch();
+ch = igetkey();
         
 if (list_select(conf, ch) == SHOW_QUIT)
             

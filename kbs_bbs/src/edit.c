@@ -1344,7 +1344,7 @@ static int process_ESC_action(int action, int arg)
             move(t_lines - 2, 0);
             clrtoeol();
             prints("[1m%s%s%s[m", msg, ", «Î∞¥»Œ“‚º¸∑µªÿ±‡º≠ª≠√Ê...", ANSI_RESET);
-            igetkey();
+            pressanykey();
             newch = '\0';
             editansi = showansi = 0;
             clear();
@@ -1377,9 +1377,7 @@ void show_helpmenu(helptext)
             prints("%s\n", str);
         }
     }
-    move(t_lines - 1, 0);
-    prints("Press any key to continue...");
-    igetkey();
+    pressanykey();
     clear();
 }
 
@@ -1843,6 +1841,9 @@ int raw_vedit(filename, saveheader, headlines)
             }
             redraw_everything = true;
             break;
+        case KEY_REFRESH:
+        	redraw_everything = true;
+        	break;
         default:
             vedit_key(ch);
         }

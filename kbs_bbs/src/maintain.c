@@ -1221,7 +1221,7 @@ int scan_register_form(logfile, regfile)
             if ((uinfo.userlevel & PERM_LOGINOK) || valid_userid(uinfo.realemail)) {
                 move(t_lines - 1, 0);
                 prints("此帐号不需再填写注册单.\n");
-                igetkey();
+                pressanykey();
                 ans[0] = 'D';
             } else {
                 getdata(t_lines - 1, 0, "是否接受此资料 (Y/N/Q/Del/Skip)? [S]: ", ans, 3, DOECHO, NULL, true);

@@ -70,7 +70,6 @@ int count_user();
 int dosearchuser(char *userid);
 void showtitle(char *title, char *mid);
 void abort_bbs(int);
-int egetch();
 void update_endline();
 void set_numofsig();
 void docmdtitle(char *title, char *prompt);

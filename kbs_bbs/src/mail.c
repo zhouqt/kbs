@@ -494,12 +494,16 @@ int do_send(char *userid,char *title,char* q_file)
             return -2;
         }
         clear();
+redo:
         prints("信件即将寄给 %s \n", userid);
         prints("标题为： %s \n", title);
         prints("确定要寄出吗? (Y/N) [Y]");
         refresh();
-        ch = egetch();
+        ch = igetkey();
         switch (ch) {
+        case KEY_REFRESH:
+        	move(3,0);
+        	goto redo;
         case 'N':
         case 'n':
             prints("%c\n", 'N');
@@ -680,7 +684,7 @@ int read_new_mail(struct fileheader *fptr, int idc, void* arg)
     while (!done) {
         move(t_lines - 1, 0);
         prints("(R)回信, (D)删除, (G)继续 ? [G]: ");
-        switch (egetch()) {
+        switch (igetkey()) {
         case 'R':
         case 'r':
 
@@ -860,7 +864,7 @@ int mail_read(ent, fileinfo, direct)
         ansimore(notgenbuf, false);
         move(t_lines - 1, 0);
         prints("(R)回信, (D)删除, (G)继续? [G]: ");
-        switch (egetch()) {
+        switch (igetkey()) {
         case 'R':
         case 'r':
 
@@ -1319,6 +1323,7 @@ int g_send()
                 n++;
                 if (!fmode) {
                     prints("(A)剩下的全部加入 (Y)加入 (N)不加入 (Q)结束? [Y]:");
+					//TODO: add KEY_REFRESH support
                     key = igetkey();
                 } else
                     key = 'Y';

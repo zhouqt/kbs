@@ -25,11 +25,11 @@
 #define KEY_DEACTIVE 	0x1002
 #define KEY_SELECT		0x1003
 #define KEY_INIT		0x1004
-    
+#define KEY_TALK		0x1005
+
 typedef struct tagPOINT {
     
 int x, y;
-
 } POINT;
 
 
