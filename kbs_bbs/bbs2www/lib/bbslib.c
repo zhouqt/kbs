@@ -685,9 +685,9 @@ void add_loginfo2(char *filepath, char *board, struct userec *user, int anony)
     }
     /* ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ */
     if (!strcmp(board, "Announce"))
-        fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, "BBS " NAME_BBS_CHINESE "Õ¾", NAME_BBS_ENGLISH, NAME_BBS_CHINESE " BBSÕ¾");
+        fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, BBS_FULL_NAME);
     else
-        fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, "BBS " NAME_BBS_CHINESE "Õ¾", NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : user->lasthost);
+        fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : user->lasthost);
 
     if (fp2)
         fclose(fp2);
@@ -1453,30 +1453,6 @@ int get_friendmode()
 {
     return friendmode;
 }
-
-int myfriend(int uid, char *fexp)
-{
-    int i, found = false;
-    int cmp;
-    struct user_info *u;
-
-    /*char buf[IDLEN+3]; */
-
-    u = get_utmpent(utmpent);
-    if (u->friendsnum <= 0) {
-        return false;
-    }
-    for (i = 0; i < u->friendsnum; i++) {
-        if (u->friends_uid[i] == uid) {
-            found = true;
-            break;
-        }
-    }
-    if ((found) && fexp)
-        strcpy(fexp, topfriend[i].exp);
-    return found;
-}
-
 
 int full_utmp(struct user_info *uentp, int *count)
 {
