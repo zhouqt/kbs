@@ -192,6 +192,7 @@ int main()
 	printf("<img id=\"img7\" src=\"/images/folder.gif\"><A href=\"javascript:changemn('7');\">水木特刊web版</A></div>");
 	printf("<div id=\"div7\" style=\"display: none\">");
     printf("<img src=\"/images/link.gif\"> <a href=\"/express/0603/smth_express.htm\" target=\"_blank\">2003年6月号</a><br>\n");
+    printf("<img src=\"/images/link.gif\"> <a href=\"/express/0703/smth_express.htm\" target=\"_blank\">2003年7月号</a><br>\n");
     printf("</div>\n");
     printmenuend();
 #endif
