@@ -2589,7 +2589,9 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,int fl
             {FILE_DIGEST_FLAG,0,FILE_DIGEST,"文摘"},
             {FILE_TITLE_FLAG,0,0,"原文"},
             {FILE_IMPORT_FLAG,0,FILE_IMPORTED,"收入精华区"},
+#ifdef FILTER
             {FILE_CENSOR_FLAG,0,0,"审核通过"},
+#endif
 #ifdef COMMEND_ARTICLE
             {FILE_COMMEND_FLAG,1,FILE_COMMEND,"审核通过"},
 #endif
