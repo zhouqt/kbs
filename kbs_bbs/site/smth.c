@@ -373,6 +373,8 @@ char *ModeType(mode)
         return "寻人名册";
     case LOCKSCREEN:
         return "屏幕锁定";
+    case IMAIL:
+	return "寄站外信中";
     case GIVEUPNET:
         return "戒网中..";
     case SERVICES:

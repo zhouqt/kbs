@@ -142,7 +142,7 @@ char *bname, *sender1, *sender, *title, *received;
 /* copy from flyriver qmailpost.c */
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
-        strcpy(conv_buf, "无标题");
+        strcpy(conv_buf, "没主题");
     eat_forward(conv_buf);
 
 /* allocate a record for the new mail */
@@ -249,7 +249,7 @@ char *userid, *sender1, *sender, *title, *received;
 /* copy from flyriver qmail2bbs.c */
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
-        strcpy(conv_buf, "无标题");
+        strcpy(conv_buf, "没主题");
 
 /* check for mail register */
     if (!strcmp(userid, "SYSOP") && strstr(conv_buf, " mail check.")) {

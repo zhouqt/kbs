@@ -15,6 +15,7 @@
 #undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
 #define CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #undef MAIL2BOARD		/* 是否允许直接 mail to any board */
+#undef MAILOUT			/* 是否允许向站外主动发信 */
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.

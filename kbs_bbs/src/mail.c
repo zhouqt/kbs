@@ -2137,6 +2137,9 @@ const static struct command_def mail_cmds[] = {
     {"N) 览阅新信件", 0, m_new, NULL},
     {"R) 览阅全部信件", 0, m_read, NULL},
     {"S) 寄信", PERM_LOGINOK, m_sendnull, NULL},
+#ifdef MAILOUT
+    {"I) 发送站外信件", PERM_LOGINOK, m_internet, NULL},
+#endif
     {"G) 群体信件选单", PERM_LOGINOK, set_mailgroup_list, NULL},
     /*
      * {"O)┌设定好友名单", 0, t_override, NULL},
