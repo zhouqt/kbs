@@ -369,43 +369,6 @@ int count_loginnum(int usernum){
 
 int multilogin_user(struct userec *user, int usernum,int mode)
 {
-    int logincount;
-    int curr_login_num;
-    struct count_arg arg;
-
-    bzero(&arg,sizeof(arg));
-    logincount = apply_utmpuid((APPLY_UTMP_FUNC)countuser, usernum, &arg);
-
-    if (logincount < 1)
-        RemoveMsgCountFile(user->userid);
-
-#ifdef FILTER
-    if (!strcmp(user->userid,"menss")&&logincount<2)
-        return 0;
-#endif
-    if (HAS_PERM(user, PERM_MULTILOG))
-        return 0;               /* don't check sysops */
-    curr_login_num = get_utmp_number();
-    /* binxun 2003.5 仲裁，版主，Chatop，等都可以三登*/
-    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
-    	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
-    	|| HAS_PERM(user, PERM_BMAMANGER) )
-        && logincount < 3)
-        return 0;
-
-    if (!strcmp("guest", user->userid)) {
-        if (logincount > MAX_GUEST_NUM) return 2;
-        return 0;
-    }
-
-    /* 未通过注册的用户不能双登 added by bixnun 2003.5.30 */
-    if((!HAS_PERM(user,PERM_LOGINOK)) && logincount >0)return 1; 
-    
-    if (((curr_login_num < 700) && (logincount >= 3)) /*小于700可以三登*/
-               || ((curr_login_num >= 700) && (logincount >= 2)  /*700人以上*/
-                     && !(((arg.telnet_count==0)&&(mode==0))  /* telnet个数为零可以再登一个telnet */
-                            || (((arg.www_count==0)&&(mode==1)) ))))       /*user login limit */
-        return 1;
     return 0;
 }
 
