@@ -10,29 +10,6 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 	
-	/*
-	function display_calendar($link,$pc)
-	{
-		$monthday = array(31,31,28,31,30,31,30,31,31,30,31,30,31);
-		if( date("Y")%4 == 0 )
-			$monthday[2] = 29;
-		
-		$month[1]["STAMP"] = time() - $monthday(date("m")-1);
-		$month[2]["STAMP"] = $month[1]["STAMP"] - $monthday(date("m",$month[1]["STAMP"]) -1 );
-		$month[0] = array("Y" => date("Y"),"M" => date("m"), "YM" => date("Ym"));
-		$month[1] = array("Y" => date("Y",$month[1]["STAMP"]),"M" => date("m",$month[1]["STAMP"]), "YM" => date("Ym",$month[1]["STAMP"]));
-		$month[2] = array("Y" => date("Y",$month[2]["STAMP"]),"M" => date("m",$month[2]["STAMP"]), "YM" => date("Ym",$month[2]["STAMP"]));
-		
-		$isrecord = array();
-		
-?>
-<table cellspacing="0" cellpadding="3" border="0" width="400" class="t1">
-
-</table>
-<?php
-	}
-	*/
-	
 	function display_blog_menu($link,$pc,$tag,$tid=0)
 	{
 		$blogs = pc_blog_menu($link,$pc["UID"],$tag);
@@ -105,10 +82,10 @@
 		switch($order)
 		{
 			case "c":
-				$query.=" ORDER BY `created` ASC , ";
+				$query.=" ORDER BY `created` DESC , ";
 				break;
 			case "u":
-				$query.=" ORDER BY `changed` ASC , ";
+				$query.=" ORDER BY `changed` DESC , ";
 				break;
 			case "v":
 				$query.=" ORDER BY `visitcount`  DESC , ";
@@ -123,7 +100,7 @@
 				$query.=" ORDER BY ";
 				
 		}	
-		$query .= "  `created` ASC ;";
+		$query .= "  `created` DESC ;";
 		
 		$result = mysql_query($query,$link);
 		$i = 0;
@@ -241,10 +218,10 @@
 		switch($order)
 		{
 			case "c":
-				$query.=" ORDER BY `created` ASC , ";
+				$query.=" ORDER BY `created` DESC , ";
 				break;
 			case "u":
-				$query.=" ORDER BY `changed` ASC  ,";
+				$query.=" ORDER BY `changed` DESC  ,";
 				break;
 			case "v":
 				$query.=" ORDER BY `visitcount`  DESC  ,";
@@ -593,13 +570,6 @@
 		if($_GET["act"] == "delfriend")
 			del_friend($pc);
 	}
-	/*
-	elseif( bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
-	{
-		$sec = array("公开区","好友区","私人区","收藏区","删除区");
-		$pur = 2;
-	}
-	*/
 	elseif($isfriend || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 	{
 		$sec = array("公开区","好友区");
