@@ -100,6 +100,9 @@ AC_ARG_ENABLE(site,
     if test -f $srcdir/site/$enableval.c; then
         BBSSITE=$enableval
     else
+    if test -f $srcdir/sites/$enableval.c; then
+        BBSSITE=$enableval
+    else
         AC_MSG_ERROR([ERROR! Unknown site $enableval, see site/])
     fi
 ],[BBSSITE="smth"])
