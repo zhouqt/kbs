@@ -113,7 +113,7 @@ int undenyboard(struct boardheader *bh,void* arg)
                                         *p = 0;
                                         break;
                                     }
-                                printf("%s %s\n", bh->filename, uid);
+                                //printf("%s %s\n", bh->filename, uid);
                                 deldeny(&deliveruser, bh->filename, uid, 1, getSession());
                             }
                         }
