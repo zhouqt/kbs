@@ -114,7 +114,7 @@ void init_memory()
     int iscreate;
 
     iscreate = 0;
-    p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(sms_shm_head), &iscreate);
+    p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(struct sms_shm_head), &iscreate);
     head = (struct sms_shm_head *) p;
     buf = p+sizeof(struct sms_shm_head);
     if (iscreate == 0)
@@ -174,8 +174,10 @@ void processremote()
     char fn[80];
     char buf[1024*10];
     FILE* fp;
-    long2byte(reth.SerialNo, byte2long(h.SerialNo));
-    long2byte(reth.BodyLength, 0);
+    struct RequireBindPacket h1;
+    struct GWSendSMS h2;
+    long2byte(byte2long(h.SerialNo), reth.SerialNo);
+    long2byte(0, reth.BodyLength);
     pid=byte2long(h.pid);
     sprintf(fn, "tmp/%d.res", pid);
     switch(h.Type) {
@@ -196,14 +198,12 @@ void processremote()
             }
             break;
         case CMD_REQUIRE:
-            struct RequireBindPacket h1;
             read(sockfd, &h1, sizeof(h1));
             break;
         case CMD_GWSEND:
-            struct GWSendSMS h2;
             read(sockfd, &h2, sizeof(h2));
             read(sockfd, buf, byte2long(h2.MsgTxtLen));
-            if(sendtouser(&h2), buf) reth.Type = CMD_ERR;
+            if(sendtouser(&h2, buf)) reth.Type = CMD_ERR;
             else reth.Type = CMD_OK;
             write(sockfd, &reth, sizeof(reth));
             break;
@@ -222,6 +222,10 @@ void getbuf(void * h, int s)
 void processbbs()
 {
     struct header h;
+    struct RegMobileNoPacket h1;
+    struct CheckMobileNoPacket h2;
+    struct UnRegPacket h3;
+    struct BBSSendSMS h4;
     if(head->sem) return;
     if(!head->total) return;
     head->sem=1;
@@ -231,25 +235,21 @@ void processbbs()
         long2byte(sn++, h.SerialNo);
         switch(h.Type) {
             case CMD_REG:
-                struct RegMobileNoPacket h1;
                 getbuf(&h1, sizeof(h1));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h1, sizeof(h1));
                 break;
             case CMD_CHECK:
-                struct CheckMobileNoPacket h2;
                 getbuf(&h2, sizeof(h2));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h2, sizeof(h2));
                 break;
             case CMD_UNREG:
-                struct UnRegPacket h3;
                 getbuf(&h3, sizeof(h3));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h3, sizeof(h3));
                 break;
             case CMD_BBSSEND:
-                struct BBSSendSMS h4;
                 getbuf(&h4, sizeof(h4));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h4, sizeof(h4));
@@ -276,7 +276,7 @@ int main()
     addr.sin_family=AF_INET;
     addr.sin_addr.s_addr=inet_addr("127.0.0.1");
     addr.sin_port=htons(12345);
-    if(connect(sockfd, (struct sockaddr*)&servaddr, sizeof(servaddr))<0) {
+    if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) {
         close(sockfd);
         printf("Unable to connect.\n");
         return -1;
