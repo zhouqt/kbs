@@ -95,14 +95,31 @@ AC_ARG_ENABLE(site,
     BBSSITE=$enableval
 ],[BBSSITE="smth"])
 
+AC_ARG_ENABLE(wap,
+[  --enable-wap=wappath
+              select the path for wap files ],
+
+[
+    CONFIG_HAVE_WAP=1
+    if test -d $enableval; then
+        WAPPATH=$enableval
+    else
+        WAPPATH=$HTMPATH/wap
+    fi
+],[CONFIG_HAVE_WAP=0])
+
 AC_SUBST(WWWBASE)
 AC_SUBST(CGIPATH)
 AC_SUBST(HTMPATH)
+AC_SUBST(CONFIG_HAVE_WAP)
+AC_SUBST(WAPPATH)
 AC_SUBST(PHPBBSLIBPATH)
 AC_SUBST(BBSSITE)
 
 HTML_FILES=`find html -path '*/CVS/*' -prune -o -type f -print | xargs`
 AC_SUBST(HTML_FILES)
+WAP_FILES=`find wap -path  '*/CVS/*' -prune -o -type f -print | xargs`
+AC_SUBST(WAP_FILES)
 
 OLDCFLAGS="$CFLAGS"
 CFLAGS="$OLDCFLAGS  -DINVISIBLE -DNJU_WWWBBS -DBBS2WWW"
