@@ -505,6 +505,11 @@ function pc_style_array($i)
 				"CSSFILE" => "style/earthsong/earthsong.css"
 				);
 			break;
+		case 9:
+			$style = array(
+				"SID" => 9,
+				);
+			break;
 		default:		
 			$style = array(
 				"SID" => 0,
@@ -703,7 +708,16 @@ function pc_counter($link)
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		mysql_free_result($result);
-		if( !$rows || date("YmdHis") - $rows[logtime] > 3600 )//1个小时log一次
+		if( !$rows )
+		{
+			pc_visit_counter($link,$pc["UID"]);//计数器加1
+			pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志
+			$pc["VISIT"] ++;
+			$visitcount = ",".$pc["UID"].",";
+			setcookie("BLOGVISITCOUNT",$visitcount);
+			return;
+		}
+		elseif( date("YmdHis") - $rows[logtime] > 10000 )//1个小时log一次 
 		{
 			pc_visit_counter($link,$pc["UID"]);//计数器加1
 			pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志

@@ -191,18 +191,12 @@
 	$tags = $userPermission["tags"];
 		
 		
-	$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' LIMIT 0 , 1 ;";
+	$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' AND type = 0 LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
 	
 	if(!$rows)
-	{
-		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
-		html_error_quit("对不起，您要查看的文章不存在");
-		exit();
-	}
-	if($rows[type]!= 0)
 	{
 		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 		html_error_quit("对不起，您要查看的文章不存在");

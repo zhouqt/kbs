@@ -774,7 +774,8 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
-	
+	if($pc["STYLE"]["SID"] == 9)
+		header("Location: indexxml.php?id=".$pc["USER"]);//自定义模板
 	
 	$userPermission = pc_get_user_permission($currentuser,$pc);
 	$sec = $userPermission["sec"];

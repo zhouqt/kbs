@@ -3,7 +3,6 @@
 	**manage personal corp.
 	**@id: windinsn Nov 19,2003	
 	*/
-	@session_start();
 	/*
 	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
 	*/
