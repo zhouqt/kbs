@@ -20,9 +20,14 @@ struct userec {                 /* Structure used to hold information in */
     unsigned int club_read_rights[MAXCLUB>>5];
     unsigned int club_write_rights[MAXCLUB>>5];
     unsigned char md5passwd[MD5PASSLEN];
-    unsigned userlevel;
+#ifndef OS_64BIT
+    unsigned int userlevel;
+#endif
     time_t lastlogin;
     time_t stay;
+#ifdef OS_64BIT /*  align 8 bytes... */
+    unsigned int userlevel;
+#endif
     int signature;
     unsigned int userdefine[2];
     time_t notedate;

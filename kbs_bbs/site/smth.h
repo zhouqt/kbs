@@ -53,10 +53,10 @@
 #define SYSMAIL_BOARD       "sysmail"
 #define BLESS_BOARD "Blessing"
 
-#define MAXUSERS  		350000
+#define MAXUSERS  		400000
 #define MAXCLUB			128
 #define MAXBOARD  		1024
-#define MAXACTIVE 		15000
+#define MAXACTIVE 		20000
 /* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
     make the number of session char from 3 to 4
     */
@@ -351,6 +351,7 @@ attach define
 #define SHOW_USERIP(user,x) showuserip(user,x)
 
 #define AUTO_CHECK_REGISTER_FORM        //自动通过注册单
+#define OS_64BIT /* 64bit 机上对齐优化，目前只涉及 userec 结构 */
 
 #define QUOTED_LINES 3
 #define QUOTELEV 0

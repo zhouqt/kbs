@@ -43,6 +43,7 @@
 #undef LOGINASNEW 
 */
 
+
 extern struct screenline *big_picture;
 extern struct userec *user_data;
 
@@ -115,20 +116,20 @@ void Net_Sleep(int times)
 
     tv.tv_sec = times;
     tv.tv_usec = 0;
-    FD_ZERO(&fd);
+//    FD_ZERO(&fd);
     FD_ZERO(&efd);
-    FD_SET(csock, &fd);
+//    FD_SET(csock, &fd);
     FD_SET(csock, &efd);
     old = time(0);
 
-    while ((sr = select(csock + 1, &fd, NULL, &efd, &tv)) > 0) {
+    while ((sr = select(csock + 1, NULL, NULL, &efd, &tv)) > 0) {
         if (FD_ISSET(csock, &efd))
             abort_bbs(0);
         tv.tv_sec = times - (time(0) - old);
         tv.tv_usec = 0;
-        FD_ZERO(&fd);
+//        FD_ZERO(&fd);
         FD_ZERO(&efd);
-        FD_SET(csock, &fd);
+//        FD_SET(csock, &fd);
         FD_SET(csock, &efd);
     };
 
