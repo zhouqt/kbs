@@ -563,6 +563,10 @@ void login_query()
                 setmailpath(tmpstr, currentuser->userid);       /*Haohmaru.00.04.23,免得能看前人的信 */
                 sprintf(buf, "/bin/mv -f %s " BBSHOME "/mailback/%s", tmpstr, currentuser->userid);
                 system(buf);
+                /*给新注册的用户一封信 added by binxun .2003-6-24*/
+                #ifdef SMTH
+                mail_file("deliver","etc/tonewuser",currentuser->userid,"致新注册用户的信",0,NULL);
+                #endif
                 break;
             }
             prints("本系统因为 %s 的原因禁止您所在网段注册新用户\n", buf);
