@@ -229,7 +229,7 @@ void refresh()
         o_clear();
         for (i=0; i < scr_lns; i++)
             for(j=0;j<scr_cols;j++) {
-                bp[i].ldata[j] = 0;
+                bp[i].ldata[j] = 32;
                 bp[i].lmode[j] = 0;
                 bp[i].lcolor[j] = 7;
             }
