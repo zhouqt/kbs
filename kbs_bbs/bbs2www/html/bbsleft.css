@@ -108,8 +108,8 @@ div.mi { /* menu item */
 	background-repeat: no-repeat;
 	background-position: 4px 0px;
 	font-size: 12px;
-	padding-left: 20px;
-	padding-top: 1px;
+	padding-left: 17px;
+	padding-top: 0px;
 	padding-bottom: 1px;
 }
 div.lmi { /* last menu item */
@@ -117,8 +117,8 @@ div.lmi { /* last menu item */
 	background-repeat: no-repeat;
 	background-position: 4px 0px;
 	font-size: 12px;
-	padding-left: 20px;
-	padding-top: 1px;
+	padding-left: 17px;
+	padding-top: 0px;
 	padding-bottom: 3px;
 }
 div.fi { /* folder item */
@@ -127,7 +127,7 @@ div.fi { /* folder item */
 	background-position: 4px 0px;
 	font-size: 12px;
 	padding-left: 33px;
-	padding-top: 1px;
+	padding-top: 0px;
 	padding-bottom: 1px;
 	text-indent: -33px;
 }
