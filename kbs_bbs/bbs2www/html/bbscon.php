@@ -54,30 +54,10 @@ function display_navigation_bar($brdarr, $articles, $num)
 
 	$brd_encode = urlencode($brdarr["NAME"]);
 	$PAGE_SIZE = 20;
-	if ($articles[0]["ID"] != 0)
-	{
 ?>
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
-<?php
-	}
-	else
-	{
-?>
-[上一篇]
-<?php
-	}
-	if ($articles[2]["ID"] != 0)
-	{
-?>
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
 <?php
-	}
-	else
-	{
-?>
-[下一篇]
-<?php
-	}
 	if( $articles[1]["ATTACHPOS"] == 0)
 	{
 ?>
