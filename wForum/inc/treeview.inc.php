@@ -63,8 +63,10 @@ function showTree($boardName,$groupID,$articles,$displayFN) {
 	$lastflag = array();
 	showTreeRecursively($boardName, $groupID, $treenodes, 0, 0, $lastflag, $displayFN);
 	for($i=0; $i < $threadNum; $i++) { // 可怜的孩子，没有爹的帖子
-		if (!$treenodes[$i]->showed)
-			$displayFN($boardName, $groupID, $treenodes[$i]->data, $i, 0, $lastflag);
+		if (!$treenodes[$i]->showed) {
+			//$displayFN($boardName, $groupID, $treenodes[$i]->data, $i, 0, $lastflag);
+			showTreeRecursively($boardName, $groupID, $treenodes, $i, 0, $lastflag, $displayFN);
+		}
 	}	
 	if ($more) echo '<tr><td class=TableBody1 width="100%" height=25 style="color:red"> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;... 还有更多 ...</td></tr>';
 }

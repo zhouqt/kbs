@@ -152,7 +152,7 @@ function showBoardContents($boardID,$boardName,$page){
 		$start=($page-1)* ARTICLESPERPAGE;
 		$num=ARTICLESPERPAGE;
 
-		$articles = bbs_getthreads($boardName, $start, $num,1);
+		$articles = bbs_getthreads($boardName, $start, $num, 1);
 		$articleNum=count($articles);
 ?>
 <script language="JavaScript">
@@ -167,7 +167,10 @@ function showBoardContents($boardID,$boardName,$page){
 		this.FLAGS = flags;
 	}
 	
-	function writepost(id, html_title, threadNum, origin, lastreply) {
+	function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_exists) {
+		/* note: when origin post does not exists, origin is actually the same as lastreply except
+		 * groupID is different. See also www_generateOriginIndex() */
+		//if (!origin_exists) return;
 		document.write("<TR align=middle><TD class=TableBody2 width=32 height=27 align=\"center\">");
 		if (article_is_zhiding(origin.FLAGS)) {
 			document.write("<img src=\"pic/istop.gif\" alt=固顶的主题>");
@@ -182,11 +185,16 @@ function showBoardContents($boardID,$boardName,$page){
 		}
 		document.write("</TD><TD align=left class=TableBody1 width=* >");
 		if (threadNum==0) {
-			document.write('<img src="pic/nofollow.gif" id="followImg' + id + '">');
+			document.write('<img src="pic/nofollow.gif" id="followImg' + unused_id + '">');
 		} else {
 			document.write('<img loaded="no" src="pic/plus.gif" id="followImg' + origin.ID + '" style="cursor:hand;" onclick="loadThreadFollow(\'' + origin.ID + "','" + boardName + "')\" title=展开贴子列表>");
 		}
-		document.write('<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '" title="' + html_title + ' <br>作者：' + origin.OWNER + '<br>发表于' + origin.POSTTIME + '">' + html_title + ' </a>');
+		if (origin_exists) {
+			href_title = html_title + ' <br>作者：' + origin.OWNER + '<br>发表于' + origin.POSTTIME;
+		} else {
+			href_title = "原贴已删除";
+		}
+		document.write('<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '" title="' + href_title + '">' + html_title + ' </a>');
 		threadPages = Math.ceil((threadNum+1)/THREADSPERPAGE);
 		if (threadPages>1) {
 			document.write("<b>[<img src=\"pic/multipage.gif\"> ");
@@ -206,7 +214,13 @@ function showBoardContents($boardID,$boardName,$page){
 			document.write("<img src=\"pic/topnew2.gif\" alt=\"未读\">");
 		}
 		document.write("</TD>");
-		document.write('<TD class=TableBody2 width=80 align="center"><a href="dispuser.php?id=' + origin.OWNER + '" target=_blank>' + origin.OWNER + '</a></TD>');
+		document.write('<TD class=TableBody2 width=80 align="center">');
+		if (origin_exists) {
+			document.write('<a href="dispuser.php?id=' + origin.OWNER + '" target=_blank>' + origin.OWNER + '</a>');
+		} else {
+			document.write('原贴已删除');
+		}
+		document.write('</TD>');
 		document.write('<TD class=TableBody1 width=64 align="center">' + threadNum + '</TD>');
 		document.write('<TD align=left class=TableBody2 width=200><nobr>&nbsp;<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&start=' + threadNum + '">');
 		document.write(lastreply.POSTTIME + '</a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=' + lastreply.OWNER + ' target=_blank>');
@@ -223,7 +237,7 @@ function showBoardContents($boardID,$boardName,$page){
 ?>
 	origin = new Post(<?php echo $origin['ID']; ?>, '<?php echo $origin['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $origin['POSTTIME']); ?>', '<?php echo $origin['FLAGS'][0]; ?>');
 	lastreply = new Post(<?php echo $lastreply['ID']; ?>, '<?php echo $lastreply['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $lastreply['POSTTIME']); ?>', '<?php echo $lastreply['FLAGS'][0]; ?>');
-	writepost(<?php echo $i+$start; ?>, '<?php echo addslashes(htmlspecialchars($origin['TITLE'],ENT_QUOTES)); ?> ', <?php echo $threadNum; ?>, origin, lastreply);
+	writepost(<?php echo $i+$start; ?>, '<?php echo addslashes(htmlspecialchars($origin['TITLE'],ENT_QUOTES)); ?> ', <?php echo $threadNum; ?>, origin, lastreply, <?php echo ($origin['GROUPID'] == $lastreply['GROUPID'])?"true":"false"; ?>);
 <?php
 		}
 ?>
@@ -314,7 +328,7 @@ function board_head_var($boardDesc,$boardName,$secNum)
 <br>
 <?php 
 } 
-function boardJump(){
+function boardJump(){ /* 这里占了很多运行时间和网络传输，用cache或者js优化是可能的，但是要小心权限问题。 - atppp */
 	global $section_names;
 	global $sectionCount;
 	global $section_nums;
