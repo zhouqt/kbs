@@ -353,7 +353,7 @@ void start_game()
         inrooms.peoples[j].flag = PEOPLE_KILLER;
         send_msg(inrooms.peoples+j, "你做了一个无耻的坏人\n用你的尖刀(\x1b[31;1mCtrl+S\x1b[m)选择你要残害的人吧...");
     }
-    for(i=0;i<totalk;i++) 
+    for(i=0;i<myroom->people;i++) 
     if(!(inrooms.peoples[i].flag&PEOPLE_SPECTATOR))
     {
         inrooms.peoples[i].flag |= PEOPLE_ALIVE;
