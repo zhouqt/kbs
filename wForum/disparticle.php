@@ -347,7 +347,7 @@ function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
 		else {
 			printf("%.1f",$article["EFFSIZE"]/1000.0); echo "k";
 		}
-		echo '字) － <a href=dispuser.php?id='.$article['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$article['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$article['POSTTIME']);
+		echo '字) － <a href=dispuser.php?id='.$article['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$article['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日 %T",$article['POSTTIME']);
 		if ($start==$startNum) {
 			echo "</font>";
 		}

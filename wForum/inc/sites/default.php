@@ -63,4 +63,8 @@ if (!defined('MYFACEMAXSIZE')) { //自定义头像最大文件大小, 单位byte
 	define('MYFACEMAXSIZE','524288');
 }
 
+if (!defined('SHOWREPLYTREE')) { //是否用树图显示回复结构
+	define('SHOWREPLYTREE', 1);  //默认用树图显示
+}
+
 ?>

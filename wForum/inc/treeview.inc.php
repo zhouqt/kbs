@@ -1,7 +1,7 @@
 <?php
 
 /*
- * 树形回复结构入口函数 showTree(boardName, groupID, articles, displayFN, maxThread=100, startNum=0)
+ * 树形回复结构入口函数 showTree(boardName, groupID, articles, displayFN, maxThread=51, startNum=0)
  *
  * @param boardName    版面英文名称
  * @param groupID      本主题的 groupID
@@ -13,9 +13,10 @@
  *        @param startNum             这篇文章在这个主题中的序号
  *        @param level                深入第几层。原贴 level = 0
  *        @param lastflag             $lastflag[$l] 表示第 $l 层是否还有更多回复
- * @param maxThread    最多显示多少个帖子，最好是奇数。默认 101。
+ * @param maxThread    最多显示多少个帖子，最好是奇数。默认 51。
  * @param startNum     如果本主题帖子数目超过maxThread，就平级显示startNum附近的maxThread个主题以及本主题第一个帖子
  *
+ * 注意这个功能受全局常数 SHOWREPLYTREE 影响。如果 SHOWREPLYTREE 定义为 0，则永远都只平级显示所有回复。
  * @author atppp
  */
 
@@ -43,29 +44,32 @@ class TreeNode {
 	}
 }
 
-function showTree($boardName, $groupID, $articles, $displayFN, $maxthread = 101, $startNum = 0) {
+function showTree($boardName, $groupID, $articles, $displayFN, $maxthread = 51, $startNum = 0) {
 	$threadNum = count($articles);
 	$more = ($threadNum > $maxthread);
 	$lastflag = array();
-	if ($more) {
+	if ($more || !SHOWREPLYTREE) {
 		$start = $startNum - (int)($maxthread / 2);
-		if ($start < 0) $start = 1;
+		if ($start <= 0) $start = 1;
 		$end = $start + $maxthread;
 		if ($end > $threadNum) {
 			$end = $threadNum;
 			$start = $threadNum - $maxthread;
+			if ($start <= 0) $start = 1;
 		}
 
 		$displayFN($boardName, $groupID, $articles[0], 0, 0, $lastflag);
-		$lastflag[0] = true;
-		if ($start > 1) $displayFN($boardName, $groupID, null, $start - 1, 1, $lastflag);
-		for($i = $start; $i < $end; $i++) {
-			$lastflag[0] = ($i != $threadNum - 1);
-			$displayFN($boardName, $groupID, $articles[$i], $i, 1, $lastflag);
-		}
-		if ($lastflag[0]) { //嘿嘿，这个有点诡异 :p
-			$lastflag[0] = false;
-			$displayFN($boardName, $groupID, null, $end, 1, $lastflag);
+		if ($threadNum > 1) {
+			$lastflag[0] = true;
+			if ($start > 1) $displayFN($boardName, $groupID, null, $start - 1, 1, $lastflag);
+			for($i = $start; $i < $end; $i++) {
+				$lastflag[0] = ($i != $threadNum - 1);
+				$displayFN($boardName, $groupID, $articles[$i], $i, 1, $lastflag);
+			}
+			if ($lastflag[0]) { //嘿嘿，这个有点诡异 :p
+				$lastflag[0] = false;
+				$displayFN($boardName, $groupID, null, $end, 1, $lastflag);
+			}
 		}
 	} else {
 		/* 产生回复树结构 */

@@ -19,6 +19,14 @@ wForum部分安装
 6.确认一下wForum主目录下面有uploadFace/目录，如果没有的话就建立一下，否则自定义头像
 的功能将不能正常工作
 
+7.如果是升级wForum，推荐升级之后删除~bbs/boards/目录下所有的.WEBTHREAD强制让系统
+重新生成索引。可以在~bbs/boards/下执行这样一个命令：
+
+    ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'
+
+
+
+
 附1：php编译说明
 wForum需要php支持gd及mysql。
 首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype
