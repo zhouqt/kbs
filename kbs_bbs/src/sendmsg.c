@@ -469,7 +469,7 @@ void r_msg()
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
         
-        if (hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG))
+        if (first&&hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         good_move(0,0);
         clrtoeol();
