@@ -415,6 +415,9 @@
 					<a href="/pc/pc.php" target="f3">个人文集</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/pc/pcnew.php" target="f3">最新文章</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcsearch2.php" target="f3">文集搜索</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
