@@ -12,6 +12,9 @@ static ZEND_FUNCTION(bbs_setonlineuser);
 static ZEND_FUNCTION(bbs_getcurrentuinfo);
 static ZEND_FUNCTION(bbs_wwwlogin);
 static ZEND_FUNCTION(bbs_printansifile);
+static ZEND_FUNCTION(bbs_getboard);
+static ZEND_FUNCTION(bbs_checkreadperm);
+static ZEND_FUNCTION(bbs_brcaddread);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -110,6 +113,16 @@ static void assign_userinfo(zval* array,struct user_info* uinfo)
 	add_assoc_string(array,"userid",uinfo->userid,1);
 	add_assoc_string(array,"realname",uinfo->realname,1);
 	add_assoc_string(array,"username",uinfo->username,1);
+}
+
+static void assign_board(zval* array,struct boardheader* board)
+{
+	add_assoc_string(array,"filename",board->filename,1);
+	add_assoc_string(array,"owner",board->owner,1);
+	add_assoc_string(array,"BM",board->BM,1);
+	add_assoc_long(array,"flag",board->flag);
+	add_assoc_string(array,"title",board->title,1);
+	add_assoc_long(array,"level",board->level);
 }
 
 static int currentusernum;
@@ -555,7 +568,7 @@ static ZEND_FUNCTION(bbs_printansifile)
 		signal(SIGBUS,sigbus);
 		signal(SIGSEGV,sigbus);
 		{
-		char* p=ptr;
+		char* p;
 		int mode=0;
 		char outbuf[4096];
 		char* outp=outbuf;
@@ -563,7 +576,7 @@ static ZEND_FUNCTION(bbs_printansifile)
 		outbuf[sizeof(outbuf)-1]=0;
 #define FLUSHBUF { *outp=0;zend_printf("%s",outbuf); outp=outbuf; }
 #define OUTPUT(buf,len) { if ((outbuf-outp)<len) FLUSHBUF; strncpy(outp,buf,len); outp+=len; }
-		while ((*p)&&(p-ptr<st.st_size)) {
+		for (p=ptr;(*p)&&(p-ptr<st.st_size);p++) {
 			// TODO: need detect link
 			switch (mode)
 			{
@@ -623,23 +636,22 @@ static ZEND_FUNCTION(bbs_printansifile)
 					if (!isalpha(*p)) continue;
 					mode=0;
 					continue;
+				}
+				*outp=*p;
+				outp++;
+				if (outp-outbuf>=sizeof(outbuf)-1)
+					FLUSHBUF;
 			}
-			*outp=*p;
-			outp++;
-			p++;
-			if (outp-outbuf>=sizeof(outbuf)-1)
-				FLUSHBUF;
-		}
-		if (outp!=outbuf) {
+			if (outp!=outbuf) {
 				*outp=0;
 				zend_printf("%s",outbuf);
-		}
+			}
 		}
         } else {
 	}
  	munmap(ptr, st.st_size);
-        signal(SIGBUS,SIG_IGN);
-        signal(SIGSEGV,SIG_IGN);
+    signal(SIGBUS,SIG_IGN);
+    signal(SIGSEGV,SIG_IGN);
 	RETURN_LONG(0);
 }
 

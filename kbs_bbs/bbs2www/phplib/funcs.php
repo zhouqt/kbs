@@ -43,4 +43,11 @@ if ($utmpkey!="") {
     $currentuser_num=bbs_getcurrentuser($currentuser);
   }
 } 
+
+function valid_filename($fn)
+{
+	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")))
+		return 0;
+	return 1;
+}
 ?>
