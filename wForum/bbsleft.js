@@ -3,38 +3,38 @@ var isIE3 = false;
 var isGood = false;
 var isOP = false;
 var wmn='-1';
-var mouseIsOver = 0;
+var mouseIsOver = false;
 var autoHide = false;
+var colsDefine = "";
 
 function switchAutoHide()
 {
-	if(autoHide==false)
-		autoHide=true;
-	else autoHide=false;
-	if(autoHide == false)
-		 top.document.getElementById('fs0').cols='128,*';
-	return autoHide;
+	autoHide = !autoHide;
+	document.getElementById('autoHideDiv').innerHTML = autoHide ? "停止自动隐藏" : "激活自动隐藏";
 }
 
 function doMouseOver()
 {
-	mouseIsOver = 1;
-	if(autoHide == true)
-		top.document.getElementById('fs0').cols='128,*';
+	mouseIsOver = true;
+	if (autoHide) doShowLeft();
 }
 
 function doMouseOut()
 {
-	mouseIsOver = 0;
-	if(autoHide == false)
-		return;
-	setTimeout("doHideLeft()", 2000);
+	mouseIsOver = false;
+	if (autoHide) setTimeout("doHideLeft()", 2000);
 }
 
 function doHideLeft()
 {
-	if(mouseIsOver==0 && autoHide == true) 
-		top.document.getElementById('fs0').cols='14,*';
+	if (!mouseIsOver && autoHide) {
+		top.document.getElementById('mainframe').cols = '14,*';
+	}
+}
+
+function doShowLeft()
+{
+	top.document.getElementById('mainframe').cols = colsDefine;
 }
 
 function Is() {
@@ -105,7 +105,7 @@ var o=null;
 		o.visibility = "hide";
 		o=eval("document.div"+mn+"a.document.images[0]");
 	}
-	if(o!=null) o.src='images/close.gif';
+	if(o!=null) o.src='pic/plus.gif';
 }
 
 function openmn(mn) {
@@ -126,7 +126,7 @@ var o=null;
 		o.visibility = "show";
 		o=eval("document.div"+mn+"a.document.images[0]");
 	}
-	if(o!=null) o.src='images/open.gif';
+	if(o!=null) o.src='pic/nofollow.gif';
 }
 
 function changemn(mn) {
@@ -134,7 +134,7 @@ function changemn(mn) {
 		closemn(mn);
 		wmn='-1';
 	}else{
-		//if(wmn!='-1') closemn(wmn);
+		if(wmn!='-1') closemn(wmn);
 		openmn(mn);
 		wmn=mn;
 	}
@@ -142,6 +142,7 @@ function changemn(mn) {
 	if(isOP) arrangeO();
 }
 
+/* no use, disabled by atppp
 function openchat()
 {
 	url='bbschat';
@@ -155,34 +156,35 @@ function openreg()
 {
 	open('bbsreg', '', 'width=600,height=460,resizable=yes,scrollbars=yes');
 }
+*/
 
 function submenu( isfav , favselect , group , group2 , yank )
 {
 	if( isfav == 1 )
 	{
-		linkurl = "/bbsleft-submenu.php?select=" + favselect + "&fav";
+		linkurl = "bbsleft-submenu.php?select=" + favselect + "&fav";
 		submenuname = "submenu_fav_" + favselect ;
 		imgname = "submenuimg_fav_" + favselect ;
 	}
 	else
 	{
-		linkurl = "/bbsleft-submenu.php?group=" + group + "&group2=" + group2 + "&yank=" + yank;
+		linkurl = "bbsleft-submenu.php?group=" + group + "&group2=" + group2 + "&yank=" + yank;
 		submenuname = "submenu_brd_" + group + "_" + group2 ;
 		imgname = "submenuimg_brd_" + group + "_" + group2 ;
 	}
 	submenustatus = document.getElementById(submenuname).style.display;
 	if (submenustatus == "")
 	{
-		document.getElementById(imgname).src="/images/close.gif";
+		document.getElementById(imgname).src="pic/plus.gif";
 		document.getElementById(submenuname).style.display="none";
 	}
 	if (submenustatus=="none")
 	{
-		document.getElementById(imgname).src="images/open.gif";
+		document.getElementById(imgname).src="pic/nofollow.gif";
 		document.getElementById(submenuname).style.display="";
 		//if (document.getElementById(submenuname + "_td").innerHTML.substr(0,5)=="<DIV>")
 		{
-			document.getElementById(submenuname + "_td").innerHTML="<DIV class=b1>载入中……</DIV>";
+			document.getElementById(submenuname + "_td").innerHTML="<div>载入中……</div>";
 			window.frames["hiddenframe"].document.location.href = linkurl ;
 		}
 	}
@@ -191,7 +193,7 @@ function submenu( isfav , favselect , group , group2 , yank )
 Is();
 
 with (document) {
-	write("<STYLE TYPE='text/css'>");
+	write("<style type='text/css'>");
 	if (isOP) {
 		write(".s {position:absolute; visibility:hidden}");
 		write(".r {position:absolute; visibility:visible}")
@@ -201,7 +203,7 @@ with (document) {
 	}else {
 		write(".s {display:none}")
 	}
-	write("</STYLE>");
+	write("</style>");
 }
 
 if(isNS4) onload=arrange;

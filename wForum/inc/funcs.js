@@ -384,6 +384,7 @@ function resizeImg(obj) {
 
 function refreshLeft() {
     if (top != self) {
+        top.menu.doShowLeft();
         top.menu.location.href = "bbsleft.php";
     }
 }

@@ -23,7 +23,7 @@ function doLogon(){
 	global $SiteName;
 	global $comeurl;
 	
-	if ((strpos(strtolower($_POST['comeurl']),'register.php')!==false) || (strpos(strtolower($_POST['comeurl']),'logon.php') !==false) || trim($_POST['comeurl'])=='')  {
+	if ((strpos(strtolower($_POST['comeurl']),'register.php')!==false) || (strpos(strtolower($_POST['comeurl']),'bbsleft.php')!==false) || (strpos(strtolower($_POST['comeurl']),'logon.php') !==false) || trim($_POST['comeurl'])=='')  {
 		$comeurlname="";
 		$comeurl="index.php";
 	} else {

@@ -1,6 +1,5 @@
 <?php
-require_once("funcs.php");
-login_init();
+require_once("inc/funcs.php");
 if(isset($_GET["fav"]))
 {
 	$boardList = FALSE;
@@ -14,8 +13,8 @@ else
 	$boardList = TRUE;
 	$group = intval($_GET["group"]);
 	$group2 = intval($_GET["group2"]);
-	$yank = intval($_GET["yank"]);
 	if ($yank) $yank = 1;
+	else $yank = 0;
 	$subMenu = "submenu_brd_".$group."_".$group2;
 	if($group < 0 || $group > sizeof($section_nums) )
 		exit();
@@ -28,37 +27,35 @@ $brd_flag = $boards["FLAG"]; //flag
 $brd_bid = $boards["BID"]; //flag
 $brd_num = sizeof($brd_name);
 
-$innerHtml = "<table width=100% border=0 cellpadding=0 cellspacing=0>";
+$innerHtml = "<table width='100%' border='0' cellspacing='0' cellpadding='1'><col width='16px'/><col align='left'/>";
 for($j = 0 ; $j < $brd_num ; $j ++ )
 {
 	if ($brd_flag[$j]&BBS_BOARD_GROUP)
 	{
 		if($boardList)
 		{
-			$innerHtml .= "<tr><td align='right' width='16'>".
+			$innerHtml .= "<tr><td>".
 				"<a href='javascript:submenu(0,0,".$group.",".$brd_bid[$j].",0)'>".
-				"<img id='submenuimg_brd_".$group."_".$brd_bid[$j]."' src='/images/close.gif' border='0'>".
-				"</a></td><td align='left'>".
-				"<a href='/bbsboa.php?group=".$group."&group2=".$brd_bid[$j]."' target='f3'>".
-				"<img src='/images/kfolder1.gif' border='0'>".$brd_desc[$j]."</a>".
+				"<img id='submenuimg_brd_".$group."_".$brd_bid[$j]."' src='pic/plus.gif' border='0'>".
+				"</a></td><td>".
+				"<a href='board.php?name=".$brd_name[$j]."' target='main'><nobr>".$brd_desc[$j]."</nobr></a>".
 				"</td></tr>".
 				"<tr id='submenu_brd_".$group."_".$brd_bid[$j]."' style='display:none'>".
-				"<td background='/images/line3.gif'> </td>".
+				"<td> </td>".
 				"<td id='submenu_brd_".$group."_".$brd_bid[$j]."_td'><DIV></DIV>".
 				"</td></tr>";
 		}
 		elseif( bbs_load_favboard($brd_bid[$j])!=-1 && bbs_fav_boards($brd_bid[$j], 1) && $brd_bid[$j]!= -1)
 		{
-			$innerHtml .= "<tr><td align='right' width='16'>".
+			$innerHtml .= "<tr><td>".
 				"<a href='javascript:submenu(1,".$brd_bid[$j].",0,0,0)'>".
-				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='/images/close.gif' border='0'>".
-				"</a></td><td align='left'>".
-				"<a href='/bbsfav.php?select=".$brd_bid[$j]."&up=".$select."' target='f3'>".
-				"<img src='/images/kfolder1.gif' border='0'>".$brd_desc[$j]."</a>".
+				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='pic/plus.gif' border='0'>".
+				"</a></td><td>".
+				"<a href='favboard.php?select=".$brd_bid[$j]."&up=".$select."' target='main'><nobr>".$brd_desc[$j]."</nobr></a>".
 				"</td></tr>".
 				"<tr id='submenu_fav_".$brd_bid[$j]."' style='display:none'>".
-				"<td background='/images/line3.gif'> </td>".
-				"<td id='submenu_fav_".$brd_bid[$j]."_td'><DIV></DIV>".
+				"<td> </td>".
+				"<td id='submenu_fav_".$brd_bid[$j]."_td'><div></div>".
 				"</td></tr>";
 	        }
 		else
@@ -68,23 +65,15 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 	}
 	else
 	{
-		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
-		$innerHtml .= "<tr><td width='16' align='right'>";
-		if( $j != $brd_num - 1 )
-			$innerHtml .= "<img src='/images/line.gif' align='absmiddle'>";
-		else
-			$innerHtml .= "<img src='/images/line1.gif' align='absmiddle'>";
-
-		$innerHtml .= "</td><td><A href='".$brd_link."' target='f3'>".$brd_desc[$j]."</A></td></tr>";
+		$brd_link="board.php?name=" . urlencode($brd_name[$j]);
+		$innerHtml .= "<tr><td>¡¤</td>";
+		$innerHtml .= "<td><a href='".$brd_link."' target='main'><nobr>".$brd_desc[$j]."</nobr></a></td></tr>";
 	}
 }
 $innerHtml .= "</table>";
 if(!$boards || !$brd_num) $innerHtml = "<font color=#eeeeee>-¿ÕÄ¿Â¼-</font>"; 
+html_init();
 ?>
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-</head>
 <script src="/bbsleft.js"></script>
 <body>
 <script language="javascript">

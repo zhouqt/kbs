@@ -659,7 +659,8 @@ function jumpReferer($forcehome = false) {
 		$target = "index.php";
 	} else {
 		$target = $_SERVER["HTTP_REFERER"];
-	} 
+		if ((strpos(strtolower($target),'bbsleft.php')!==false)) $target = "index.php";
+	}
 	//header("Location: $target");
 ?>
 <script language="JavaScript">
