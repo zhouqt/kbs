@@ -3,6 +3,10 @@ cvs服务器: cvs.smth.org
 密码：     bbsdev
 CVSROOT:   :pserver:bbsdev@cvs.smth.org:/home/cvs
 
+目前水木代码主要有两个分支：
+v1_2：1.2发布的代码，主要是对发布的1.2版本的补充和bug fix
+main：主分支，smthbbs-2.0 的开发版本。水木清华BBS使用的代码。
+
 相关的module:
 smth_bbs: 主程序代码
 sshbbsd:  ssh接口的代码
