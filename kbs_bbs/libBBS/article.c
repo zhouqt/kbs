@@ -791,6 +791,102 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     return ret;
 }
 
+int mmap_dir_search(int fd, const fileheader_t *key, search_handler_t func, void *arg)
+{
+    struct fileheader *data;
+    size_t filesize;
+    int total;
+    int low, high;
+	int mid, comp;
+    int ret;
+
+    if (flock(fd, LOCK_EX) == -1)
+        return 0;
+    BBS_TRY 
+	{
+        if (safe_mmapfile_handle(fd, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0)
+		{
+            flock(fd, LOCK_UN);
+            BBS_RETURN(0);
+        }
+        total = filesize / sizeof(fileheader_t);
+        low = 0;
+        high = total - 1;
+        while (low <= high)
+		{
+            mid = (high + low) / 2;
+            comp = (key->id) - ((data + mid)->id);
+            if (comp == 0)
+			{
+                ret = (*func) (fd, data, mid + 1, total, true, arg);
+                end_mmapfile((void *) data, filesize, -1);
+                flock(fd, LOCK_UN);
+                BBS_RETURN(ret);
+            }
+			else if (comp < 0)
+                high = mid - 1;
+            else
+                low = mid + 1;
+        }
+        ret = (*func) (fd, data, low + 1, total, false, arg);
+    }
+    BBS_CATCH 
+	{
+    }
+    BBS_END end_mmapfile((void *) data, filesize, -1);
+    flock(fd, LOCK_UN);
+
+	return ret;
+}
+
+struct dir_record_set
+{
+	fileheader_t *records;
+	int num;
+};
+
+static int 
+get_dir_records(int fd, fileheader_t *base, int ent, int total, bool match, void *arg)
+{
+	if (match)
+	{
+		struct dir_record_set *rs = (struct dir_record_set *)arg;
+		int i;
+		int off;
+		int count = 0;
+		
+		off = ent - rs->num / 2;
+		for (i = 0; i < rs->num; i++)
+		{
+			if (off < 1 || off > total)
+				bzero(rs->records + i, sizeof(fileheader_t));
+			else
+			{
+				memcpy(rs->records + i, base + off - 1, sizeof(fileheader_t));
+				count++;
+			}
+			off++;
+		}
+		return count;
+	}
+
+	return 0;
+}
+
+int 
+get_records_from_id(int fd, int id, fileheader_t *buf, int num)
+{
+	struct dir_record_set rs;
+	fileheader_t key;
+
+	rs.records = buf;
+	rs.num = num;
+	bzero(&key, sizeof(key));
+	key.id = id;
+	
+	return mmap_dir_search(fd, &key, get_dir_records, &rs);
+}
+
 int change_dir_post_flag(struct userec *currentuser, char *currboard, int ent, struct fileheader *fileinfo, int flag)
 {
     /*---	---*/
