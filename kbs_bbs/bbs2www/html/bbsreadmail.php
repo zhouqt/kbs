@@ -9,6 +9,9 @@
 	else
 	{
 		html_init("gb2312");
+		if(!strcmp($currentuser["userid"],"guest"))
+			html_error_quit("guest 没有自己的邮箱!");
+		
 		if (isset($_GET["path"])){
 			$mail_path = $_GET["path"];
 			$mail_title = $_GET["title"];
