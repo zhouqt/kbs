@@ -13,6 +13,6 @@ int main() {
 int count_www() {
 	int i, total=0;
 	for(i=0; i<MAXACTIVE; i++)
-		if(shm_utmp->uinfo[i].mode==10001) total++;
+		if(shm_utmp->uinfo[i].mode==WEBEXPLORE) total++;
 	return total;
 }

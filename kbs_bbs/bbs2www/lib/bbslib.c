@@ -451,29 +451,25 @@ int user_init(struct userec **x, struct user_info **y)
 		//printf("from is ->%s<-, len = %d\n", (*y)->from, strlen((*y)->from));
 		//printf("fromhost is ->%s<-, len = %d\n", fromhost, strlen(fromhost));
 		//printf("fromhost error!\n");
-		//return 0;
 		goto forguest;
 	}
 	if((*y)->utmpkey != key)
 	{
 		//printf("utmpkey error!\n");
-		//return 0;
 		goto forguest;
 	}
 	
 	if((*y)->active == 0)
 	{
 		//printf("user not active!\n");
-		//return 0;
 		goto forguest;
 	}
 	if((*y)->userid[0] == 0)
 	{
 		//printf("userid error!\n");
-		//return 0;
 		goto forguest;
 	}
-	if((*y)->mode!=10001)
+	if((*y)->mode!=WEBEXPLORE)
 	{
 		//printf("mode error!\n");
 		//return 0; /* faint, what does 10001 mean? */
