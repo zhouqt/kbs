@@ -430,7 +430,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
             set_vard(fvars+fget_var("ftime"), st.st_mtime);
         }
         if(load_content) {
-            int k,abssize=0;
+            int k,abssize=0,entercount=0;
             set_vars(fvars+fget_var("content"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
             if(j) {
@@ -440,9 +440,11 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
                     while(k) {
                         if(k>=2&&*p=='\xa1'&&*(p+1)=='\xbe'&&*(p+2)==' ') break;
                         if(k>=2&&*p=='-'&&*(p+1)=='-'&&*(p+2)=='\n') break;
+                        if(*p=='\n') entercount++;
                         k--;
                         p++;
-                        abssize++;
+                        if(entercount>=4)
+                            abssize++;
                     }
                     set_vard(fvars+fget_var("abssize"), abssize);
                 }
