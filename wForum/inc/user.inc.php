@@ -107,7 +107,7 @@ function showSecs($secNum=0,$isFold) {
 				<B>本版尚无文章</B>
 		<?php
 					} else {
-						$articles = bbs_getthreads($brd_name[$i], 0, 1 ); //$brd_artcnt[$i], 1, $default_dir_mode);
+						$articles = bbs_getthreads($brd_name[$i], 0, 1,0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
 						if ($articles == FALSE) {
 		?>
 				<B>本版尚无文章</B>
@@ -182,7 +182,7 @@ arNews = [<?php
 			if ($total <= 0) {
 				echo '"当前没有公告","",';
 			} else {
-				$articles = bbs_getthreads($brdarr['NAME'], 0, ANNOUNCENUMBER); 
+				$articles = bbs_getthreads($brdarr['NAME'], 0, ANNOUNCENUMBER,1); 
 				if ($articles == FALSE) {
 					echo '"当前没有公告2","",';
 				} else {

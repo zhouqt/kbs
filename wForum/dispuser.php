@@ -48,6 +48,8 @@ function preprocess() {
 
 function showUserData($user, $user_num) {
 require("inc/userdatadefine.inc.php");
+$flag=1<<29;
+if ($user['userdefine'] & $flag) {
 ?>
 <table width=97% border=0 cellspacing=0 cellpadding=3 align=center>
   <tr> 
@@ -150,7 +152,11 @@ require("inc/userdatadefine.inc.php");
   </tr>
 </table>
 <br>
-
+<?php
+}
+$flag=1<<30;
+if ($user['userdefine'] & $flag) {
+?>
 <table cellspacing=1 cellpadding=3 align=center class=tableborder1 style="table-layout:fixed;word-break:break-all">
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
@@ -227,7 +233,9 @@ require("inc/userdatadefine.inc.php");
     <td class=tablebody1><?php    echo showIt($user['graduateschool']); ?></td>
   </tr></table>
 <br>
-
+<?php
+}
+?>
 <table cellspacing=1 cellpadding=3 align=center class=tableborder1>
   <tr>
     <th align=left colspan=6> ÂÛÌ³ÊôĞÔ</th>

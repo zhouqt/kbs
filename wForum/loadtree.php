@@ -21,7 +21,7 @@ if (bbs_checkreadperm($usernum, $boardID) == 0) {
 	return false;
 }
 bbs_set_onboard($boardID,1);
-$articles = bbs_getthreads($boardName, $articleID, 1);
+$articles = bbs_getthreads($boardName, $articleID, 1,1);
 @$article=$articles[0];
 if ($article==NULL) {
 	exit(0);

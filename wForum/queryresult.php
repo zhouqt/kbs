@@ -50,11 +50,11 @@ function preprocess(){
 	global $currentuser;
 	global $boardArr;
 	global $title,$title2,$title3,$author;
-	if (!isset($_POST['boardName'])) {
+	if (!isset($_REQUEST['boardName'])) {
 		foundErr("未指定版面。");
 		return false;
 	}
-	$boardName=$_POST['boardName'];
+	$boardName=$_REQUEST['boardName'];
 	$brdArr=array();
 	$boardID= bbs_getboard($boardName,$brdArr);
 	$boardArr=$brdArr;
@@ -67,17 +67,17 @@ function preprocess(){
 		foundErr("您无权阅读本版");
 		return false;
 	}
-	$title=trim($_POST['title']);
-	$title2=trim($_POST['title2']);
-	$title3=trim($_POST['title3']);
-	$author=trim($_POST['author']);
+	$title=trim($_REQUEST['title']);
+	$title2=trim($_REQUEST['title2']);
+	$title3=trim($_REQUEST['title3']);
+	$author=trim($_REQUEST['author']);
 	
 	return true;
 }
 
 function doSearch($boardID,$boardName){
 	global $title,$title2,$title3,$author;
-	$result=bbs_searchTitle($boardName,$title,$title2,$title3,$author,intval($_POST['dt']),isset($_POST['mg']),isset($_POST['ag']),isset($_POST['og']));
+	$result=bbs_searchTitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),isset($_REQUEST['og']));
 	$num=count($result);
 	if ($num==0) {
 		foundErr("<font color=#ff0000>没有找到您要的结果</font>");

@@ -138,14 +138,28 @@ function showBoardContents($boardID,$boardName,$page){
 		$start=($page-1)* ARTICLESPERPAGE;
 		$num=ARTICLESPERPAGE;
 
-		$articles = bbs_getthreads($boardName, $start, $num);
+		$articles = bbs_getthreads($boardName, $start, $num,1);
 		$articleNum=count($articles);
 		for($i=0;$i<$articleNum;$i++){
 			unset($threads);
 			$threads=bbs_get_thread_articles($boardName, intval($articles[$i]['ID']), 0,1);
 			$threadNum=bbs_get_thread_article_num($boardName,intval($articles[$i]['ID']));
 ?>
-<TR align=middle><TD class=tablebody2 width=32 height=27><img src="pic/blue/folder.gif" alt=开放主题></TD><TD align=left class=tablebody1 width=* >
+<TR align=middle><TD class=tablebody2 width=32 height=27>
+<?php
+//print_r($articles[$i]);
+	if (strtoupper($articles[$i]['FLAGS'][0])=='D') {
+		echo "<img src=\"pic/istop.gif\" alt=固顶的主题>";
+	} elseif( $threadNum > 10 ) {
+		echo "<img src=\"pic/blue/hotfolder.gif\" alt=回复超过10贴>";
+	} elseif( ';' == strtoupper($articles[$i]['FLAGS'][0]) ) {
+		echo "<img src=\"pic/blue/lockfolder.gif\" alt=锁定的主题>";
+	} elseif( 'M' == strtoupper($articles[$i]['FLAGS'][0]) ) {
+		echo "<img src=\"pic/isbest.gif\" alt=精华帖>";
+	} else {
+		echo "<img src=\"pic/blue/folder.gif\" alt=开放主题>";
+	}
+?></TD><TD align=left class=tablebody1 width=* >
 <?php 
 	if ($threadNum==0) {
 		echo '<img src="pic/nofollow.gif" id="followImg'.($i+$start).'">';

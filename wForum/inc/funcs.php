@@ -165,10 +165,10 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	$userid='';
   	$compat_telnet=1;
 } else {
-	@$utmpkey = $_COOKIE["UTMPKEY"];
-	@$utmpnum = $_COOKIE["UTMPNUM"];
-	@$userid = $_COOKIE["UTMPUSERID"];
-	@$userpassword=$_COOKIE["PASSWORD"];
+	@$utmpkey = $_COOKIE["W_UTMPKEY"];
+	@$utmpnum = $_COOKIE["W_UTMPNUM"];
+	@$userid = $_COOKIE["W_UTMPUSERID"];
+	@$userpassword=$_COOKIE["W_PASSWORD"];
 	if ($userid=='') {
 		$userid='guest';
 	}
@@ -182,10 +182,10 @@ if ($nologin==0) {
 		if($error == 2 || $error == 0){
 			$data = array();
 			$num = bbs_getcurrentuinfo($data);
-			setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
-			setcookie("UTMPNUM",$num,time()+360000,"");
-			setcookie("UTMPUSERID",$data["userid"],0,"");
-			setcookie("LOGINTIME",$data["logintime"],0,"");
+			setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,"");
+			setcookie("W_UTMPNUM",$num,time()+360000,"");
+			setcookie("W_UTMPUSERID",$data["userid"],0,"");
+			setcookie("W_LOGINTIME",$data["logintime"],0,"");
 			@$utmpkey = $data["utmpkey"];
 			@$utmpnum = $num;
 			@$userid = $data["userid"];
@@ -220,9 +220,9 @@ if ($nologin==0) {
 					$currentuinfo_num=bbs_getcurrentuinfo($data);
 					$currentuser_num=bbs_getcurrentuser($currentuser);
 					$path='';
-					setcookie("UTMPKEY",$data["utmpkey"],time()+360000,$path);
-					setcookie("UTMPNUM",$currentuinfo_num,time()+360000,$path);
-					setcookie("LOGINTIME",$data["logintime"],0,$path);
+					setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
+					setcookie("W_UTMPNUM",$currentuinfo_num,time()+360000,$path);
+					setcookie("W_LOGINTIME",$data["logintime"],0,$path);
 
 				}else if ($ret==5) {
 					foundErr("ÇëÎðÆµ·±µÇÂ½£¡");
@@ -232,10 +232,10 @@ if ($nologin==0) {
 				if($error == 2 || $error == 0){
 					$data = array();
 					$num = bbs_getcurrentuinfo($data);
-					setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
-					setcookie("UTMPNUM",$num,time()+360000,"");
-					setcookie("UTMPUSERID",$data["userid"],0,"");
-					setcookie("LOGINTIME",$data["logintime"],0,"");
+					setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,"");
+					setcookie("W_UTMPNUM",$num,time()+360000,"");
+					setcookie("W_UTMPUSERID",$data["userid"],0,"");
+					setcookie("W_LOGINTIME",$data["logintime"],0,"");
 					@$utmpkey = $data["utmpkey"];
 					@$utmpnum = $num;
 					@$userid = $data["userid"];

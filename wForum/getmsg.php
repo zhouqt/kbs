@@ -9,9 +9,13 @@ html_init();
 <?php
 	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 	if ($ret!=0)  {
+		$param=bbs_getuserparam();
+		$flag=1<<17;
+		if ($param & $flag) {
+			echo '<bgsound src="/sound/msg.wav">';
+		}
 ?> 
-	<bgsound src="/sound/msg.wav">
-		<div id="msgcontent">
+	<div id="msgcontent">
 	<table cellspacing=1 cellpadding=0 align=center width="100%" class=tableBorder1 >
 	<thead>
 	<TR><Th height=20 align=left id=TableTitleLink align="center"><a href="dispuser.php?id=><?php echo $srcid; ?>" target=_blank><?php echo $srcid; ?></a>于(<?php echo strftime("%b %e %H:%M", $sndtime); ?>)发送给您的短信：

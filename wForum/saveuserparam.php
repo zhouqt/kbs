@@ -37,7 +37,6 @@ show_footer();
 function main(){
 	global $currentuser;
 	global $user_define_num;
-	print_r($_POST);
 	$flags=0;
 	for ($i=0;$i<$user_define_num;$i++) {
 		if ($_POST['param'.$i]==1) {

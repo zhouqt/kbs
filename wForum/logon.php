@@ -50,7 +50,7 @@ function showLogon(){
 }
 
 function doLogon(){
-	GLOBAL $_POST;
+	GLOBAL $loginok, $guestloginok;
 	@$id = $_POST["id"];
 	@$passwd = $_POST["password"];
 	if ($id=='') {
@@ -97,11 +97,11 @@ function doLogon(){
 		break;
 	}
 	$path='';
-	setcookie("UTMPKEY",$data["utmpkey"],time()+360000,$path);
-	setcookie("UTMPNUM",$num,time()+360000,$path);
-	setcookie("UTMPUSERID",$data["userid"],$time,$path);
-	setcookie("LOGINTIME",$data["logintime"],0,$path);
-	setcookie("PASSWORD",$passwd,$time,$path);
+	setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
+	setcookie("W_UTMPNUM",$num,time()+360000,$path);
+	setcookie("W_UTMPUSERID",$data["userid"],$time,$path);
+	setcookie("W_LOGINTIME",$data["logintime"],0,$path);
+	setcookie("W_PASSWORD",$passwd,$time,$path);
 
 	if ((strpos(strtolower($_POST['comeurl']),'register.php')!==false) || (strpos(strtolower($_POST['comeurl']),'logon.php') !==false) || trim($_POST['comeurl'])=='')  {
 		$comeurlname="";
