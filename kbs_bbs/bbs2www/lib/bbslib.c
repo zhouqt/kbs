@@ -730,9 +730,9 @@ void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
 void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony)
 {
     if (!strcmp(board, "Announce"))
-        fprintf(fp, "发信人: %s (%s), 信区: %s       \n", "SYSOP", NAME_SYSOP, board);
+        fprintf(fp, "发信人: %s (%s), 信区: %s\n", "SYSOP", NAME_SYSOP, board);
     else
-        fprintf(fp, "发信人: %s (%s), 信区: %s       \n", anony ? board : userid, anony ? NAME_ANONYMOUS : username, board);
+        fprintf(fp, "发信人: %s (%s), 信区: %s\n", anony ? board : userid, anony ? NAME_ANONYMOUS : username, board);
     fprintf(fp, "标  题: %s\n发信站: %s (%24.24s)\n\n", title, "BBS " NAME_BBS_CHINESE "站", Ctime(time(0)));
 }
 
