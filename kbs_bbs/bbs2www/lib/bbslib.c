@@ -523,8 +523,12 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
-		if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
-            getCurrentUser()->usedspace -= st.st_size;
+        if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
+            if (getCurrentUser()->usedspace > st.st_size)
+                getCurrentUser()->usedspace -= st.st_size;
+            else
+                getCurrentUser()->usedspace = 0;
+        }
     }
 
     strcpy(buf, direct);

@@ -752,8 +752,12 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
-	if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
-            getCurrentUser()->usedspace -= st.st_size;
+        if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
+            if (getCurrentUser()->usedspace > st.st_size)
+                getCurrentUser()->usedspace -= st.st_size;
+            else
+                getCurrentUser()->usedspace = 0;
+        }
     }
 
     strcpy(buf, direct);
@@ -1254,7 +1258,11 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title,getSession());
 
         if(stat(genbuf,&st) != -1) {
-            getCurrentUser()->usedspace -= (before - st.st_size);
+            int diff = before - st.st_size;
+            if (getCurrentUser()->usedspace > diff)
+                getCurrentUser()->usedspace -= diff;
+            else
+                getCurrentUser()->usedspace = 0;
             fileinfo->eff_size = st.st_size;
         } else {
             fileinfo->eff_size = 0;
