@@ -11,15 +11,27 @@ int dict_main()
 
     clear();
     mysql_init(&s);
-    if (!mysql_real_connect(&s, "166.111.8.235", "smth", "3s4m5t9h", "ciba2k", 9527, 0, 0)) {
+    if (!mysql_real_connect(&s, "166.111.8.235", "smth", "3s4m5t9h", "dict", 9527, 0, 0)) {
         prints("%s\n", mysql_error(&s));
         pressanykey();
         return;
     }
     while (1) {
+    char* table;
     getdata(2, 0, "«Î ‰»Îµ•¥ :  ", word, 70, true, NULL, true);
+    clear();
+    move(3,0);
     if (word[0]==0) break;
-    sprintf(sql, "SELECT * FROM ecdict WHERE word='%s'", word);
+    if (word[0]&0x80)
+        table="cedict";
+    else
+        table="ecdict";
+#ifdef SMTH
+    if (!HAS_PERM(currentuser,PERM_SYSOP))
+        sprintf(sql, "SELECT * FROM %s WHERE word='%s' and dictid=0", table, word);
+    else
+#endif
+    sprintf(sql, "SELECT * FROM %s WHERE word='%s'", table, word);
     if (mysql_real_query(&s, sql, strlen(sql))) {
         prints("%s\n", mysql_error(&s));
         return;
