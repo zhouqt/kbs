@@ -801,8 +801,10 @@ void user_login()
     if (DEFINE(getCurrentUser(), DEF_SHOWSTATISTIC)) {
         /*ansimore("0Announce/bbslists/countlogins", true); 去掉显示上站人数 */
 #ifdef BLESS_BOARD
+#ifndef ZIXIA
         if (dashf("etc/posts/bless"))
             ansimore("etc/posts/bless", true);
+#endif
 #endif
     }
     if (vote_flag(NULL, '\0', 2 /*检查读过新的Welcome 没 */ ) == 0) {
