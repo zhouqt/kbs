@@ -13,24 +13,18 @@ struct olduserec {               /* Structure used to hold information in */
         char            passwd[MYPASSLEN];
         char            username[NAMELEN];
         char            ident[NAMELEN];
-        char            termtype[16];
-        char            reginfo[STRLEN-16];
+        char            termtype[80];
         unsigned int    userlevel;
         time_t          lastlogin;
         time_t          stay;
         char            realname[NAMELEN];
         char            address[STRLEN];
-        char            email[STRLEN-12];
-        unsigned int    nummails;
-        time_t          lastjustify;
-        char            gender;
-        unsigned char   birthyear;
-        unsigned char   birthmonth;
-        unsigned char   birthday;
+        char            email[STRLEN];
         int             signature;
         unsigned int    userdefine;
         time_t          notedate;
         int             noteline;
+        int             notemode;
 };
 
 #define MY_PERM_BASIC      000001
@@ -56,7 +50,7 @@ struct olduserec {               /* Structure used to hold information in */
 #define MY_PERM_FORCEPAGE 04000000
 #define MY_PERM_EXT_IDLE  010000000
 #define MY_PERM_SPECIAL1  020000000
-#define MY_PERM_CHATOP    040000000
+#define MY_PERM_SPECIAL2  040000000
 #define MY_PERM_SPECIAL3  0100000000
 #define MY_PERM_SPECIAL4  0200000000
 #define MY_PERM_SPECIAL5  0400000000
@@ -82,19 +76,17 @@ struct olduserec {               /* Structure used to hold information in */
 #define MY_DEF_OUTNOTE			 0100000
 #define MY_DEF_MAILMSG			 0200000
 #define MY_DEF_LOGOUT			 0400000
-#define MY_DEF_LOGINFROM		 01000000
-#define MY_DEF_NOTEPAD			 02000000
-#define MY_DEF_NOLOGINSEND		 04000000
-#define MY_DEF_THESIS			 010000000
-#define MY_DEF_MSGGETKEY		 020000000
-#define MY_DEF_GRAPH			 040000000
-#define MY_DEF_TOP10			 0100000000
-#define MY_DEF_RANDSIGN			 0200000000
-#define MY_DEF_COLOREDSEX		 0400000000
-#define MY_DEF_SHOWHOROSCOPE	 01000000000
-#define MY_DEF_NEWSTOP10		 02000000000
+#define MY_DEF_SEEWELC1			01000000
+#define MY_DEF_LOGINFROM		02000000
+#define MY_DEF_NOTEPAD			04000000
+#define MY_DEF_NOLOGINSEND		010000000
+#define MY_DEF_THESIS			020000000      /* youzi */
+#define MY_DEF_MSGGETKEY		040000000
+#define MY_DEF_DELDBLCHAR		0100000000     /*  KCN */
+#define MY_DEF_USEGB			0200000000     /*  KCN  */
+#define MY_DEF_NEWSTOP10		0400000000     /*  全国十大定制 Czz  */
 
-#define MY_NUMDEFINES 30
+#define MY_NUMDEFINES 27
 
 #define MY_VOTE_FLAG    0x1
 #define MY_NOZAP_FLAG   0x2
@@ -106,15 +98,7 @@ struct olduserec {               /* Structure used to hold information in */
 #define MY_FILE_VISIT 0x4
 #define MY_FILE_MARKED 0x8
 #define MY_FILE_DIGEST 0x10
-#define MY_FILE_NOREPLY 0x20
-#define MY_FILE_NODELETE 0x40
-
-#define MY_MAIL_READ       0x1
-#define MY_MAIL_OWND       0x2
-#define MY_MAIL_VISIT      0x4
-#define MY_MAIL_MARKED     0x8
-#define MY_MAIL_REPLIED    0x10
-#define MY_MAIL_FORWARD    0x20
+#define MY_FILE_FORWARDED 0x20
 
 struct oldboardheader {          /* This structure is used to hold data in */
         char filename[STRLEN];   /* the BOARDS files */
