@@ -2220,6 +2220,7 @@ struct mail_proc_arg {
     int sysboxnum;
     int numbers;
     int tmpnum;
+    int flag;
 
     int cmdptr[sizeof(mail_cmds) / sizeof(struct command_def)];
 };
@@ -2261,7 +2262,10 @@ static int maillist_show(struct _select_def *conf, int pos)
         int sel;
 
         sel = pos - arg->cmdnum - 1;
-        outs(mail_sysboxtitle[sel]);
+	if (arg->flag)
+            outs(mail_sysbox[sel]+1);
+	else
+            outs(mail_sysboxtitle[sel]);
 
         setmailfile(buf, currentuser->userid, mail_sysbox[sel]);
         prints("(%d)", getmailnum(buf));
@@ -2275,8 +2279,11 @@ static int maillist_show(struct _select_def *conf, int pos)
         sel = pos - arg->cmdnum - arg->sysboxnum;
         if (sel < 10)
             outc(' ');
-        prints("%d) %s", sel, user_mail_list.mail_list[sel - 1]);
         sprintf(dirbstr, ".%s", user_mail_list.mail_list[sel - 1] + 30);
+	if (arg->flag)
+            prints("%d) %s", sel, user_mail_list.mail_list[sel - 1] + 30);
+	else
+            prints("%d) %s", sel, user_mail_list.mail_list[sel - 1]);
         setmailfile(buf, currentuser->userid, dirbstr);
         prints("(%d)", getmailnum(buf));
     }
@@ -2375,6 +2382,10 @@ static int maillist_key(struct _select_def *conf, int command)
         return SHOW_REFRESH;
     }
 
+    if (toupper(command) == 'Z') {
+	arg->flag=!arg->flag;
+        return SHOW_REFRESH;
+    }
     if (toupper(command) == 'A') {
         char bname[STRLEN], buf[PATHLEN];
         int i = 0, y, x;
@@ -2516,6 +2527,7 @@ int MailProc()
     int y;
 
     clear();
+    bzero(&arg,sizeof(arg));
     arg.tmpnum = -1;
     arg.cmdnum = 0;
     for (i = 0; i < sizeof(mail_cmds) / sizeof(struct command_def); i++) {
