@@ -1057,7 +1057,7 @@ void join_room(int w, int spec)
                     send_msg(me, "\x1b[31;1m此人是旁观者\x1b[m");
                 else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_ALIVE))
                     send_msg(me, "\x1b[31;1m此人已死\x1b[m");
-                else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_KILLER)) {
+                else if((inrooms[myroom].peoples[sel].flag&PEOPLE_KILLER)) {
                     inrooms[myroom].peoples[me].flag|=PEOPLE_TESTED;
                     send_msg(me, "\x1b[31;1m经过你的侦测, 发现此人是坏人!!!\x1b[m");
                 }
