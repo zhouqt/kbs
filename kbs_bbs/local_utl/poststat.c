@@ -12,41 +12,43 @@
 #include "bbs.h"
 #define	DELETE
 
-char *myfile[] = { "day", "week", "month", "year","bless" };
+char *myfile[] = { "day", "week", "month", "year", "bless" };
 int mycount[4] = { 7, 4, 12 };
-int mytop[] = { 10, 50, 100, 100,10 };
-char *mytitle[] = { "»’ Æ¥Û»»√≈ª∞Ã‚", 
-	"÷‹ŒÂ Æ¥Û»»√≈ª∞Ã‚", 
-	"‘¬∞Ÿ¥Û»»√≈ª∞Ã‚", 
-	"ƒÍ∂»∞Ÿ¥Û»»√≈ª∞Ã‚" ,
-	"»’ Æ¥Û÷‘–ƒ◊£∏£"};
+int mytop[] = { 10, 50, 100, 100, 10 };
+char *mytitle[] = { "»’ Æ¥Û»»√≈ª∞Ã‚",
+    "÷‹ŒÂ Æ¥Û»»√≈ª∞Ã‚",
+    "‘¬∞Ÿ¥Û»»√≈ª∞Ã‚",
+    "ƒÍ∂»∞Ÿ¥Û»»√≈ª∞Ã‚",
+    "»’ Æ¥Û÷‘–ƒ◊£∏£"
+};
 
 
 #define HASHSIZE 1024
 #define TOPCOUNT 200
 #ifdef BLESS_BOARD
-const char* surfix_bless[21]={
-"  \x1b[1;34m°Ù  ",
-"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
-"\x1b[32m©»\x1b[1m…Ó\x1b[0;32m©¿",
-"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
-"  \x1b[32m©¶  ",
-"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
-"\x1b[32m©»\x1b[1m«È\x1b[0;32m©¿",
-"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
-"  \x1b[32m©¶  ",
-"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
-"\x1b[32m©»\x1b[1mµƒ\x1b[0;32m©¿",
-"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
-"  \x1b[32m©¶  ",
-"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
-"\x1b[32m©»\x1b[1m◊£\x1b[0;32m©¿",
-"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
-"  \x1b[32m©¶  ",
-"\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
-"\x1b[32m©»\x1b[1m∏£\x1b[0;32m©¿",
-"\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
-"  \x1b[1;34m°Ù  "};
+const char *surfix_bless[21] = {
+    "  \x1b[1;34m°Ù  ",
+    "\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+    "\x1b[32m©»\x1b[1m…Ó\x1b[0;32m©¿",
+    "\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+    "  \x1b[32m©¶  ",
+    "\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+    "\x1b[32m©»\x1b[1m«È\x1b[0;32m©¿",
+    "\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+    "  \x1b[32m©¶  ",
+    "\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+    "\x1b[32m©»\x1b[1mµƒ\x1b[0;32m©¿",
+    "\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+    "  \x1b[32m©¶  ",
+    "\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+    "\x1b[32m©»\x1b[1m◊£\x1b[0;32m©¿",
+    "\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+    "  \x1b[32m©¶  ",
+    "\x1b[1;32m©≥\x1b[0;32m©ÿ\x1b[1m©∑",
+    "\x1b[32m©»\x1b[1m∏£\x1b[0;32m©¿",
+    "\x1b[1;32m©ª\x1b[0;32m©–\x1b[1m©ø",
+    "  \x1b[1;34m°Ù  "
+};
 #endif
 
 struct fileheader               /* This structure is used to hold data in */
@@ -59,7 +61,7 @@ struct postrec {
     time_t date;                /* last post's date */
     int number;                 /* post number */
     struct postrec *next;       /* next rec */
-} *bucket[HASHSIZE],*blessbucket[HASHSIZE];
+} *bucket[HASHSIZE], *blessbucket[HASHSIZE];
 
 
 /* 100 bytes */
@@ -67,7 +69,7 @@ struct posttop top[TOPCOUNT], postlog;
 
 
 int hash(key)
-    char *key;
+char *key;
 {
     int i, value = 0;
 
@@ -92,7 +94,7 @@ void search(struct posttop *t)
     i = hash(t->title);
     q = NULL;
 #ifdef BLESS_BOARD
-    if (!strcasecmp(t->board,BLESS_BOARD)) 
+    if (!strcasecmp(t->board, BLESS_BOARD))
         p = blessbucket[i];
     else
 #endif
@@ -116,11 +118,11 @@ void search(struct posttop *t)
         s->next = NULL;
         if (q == NULL)
 #ifdef BLESS_BOARD
-        if (!strcasecmp(t->board,BLESS_BOARD)) 
-            blessbucket[i]=s;
-        else
+            if (!strcasecmp(t->board, BLESS_BOARD))
+                blessbucket[i] = s;
+            else
 #endif
-            bucket[i] = s;
+                bucket[i] = s;
         else
             q->next = s;
     }
@@ -128,7 +130,7 @@ void search(struct posttop *t)
 
 
 int sort(pp, count)
-    struct postrec *pp;
+struct postrec *pp;
 {
     int i, j;
 
@@ -148,11 +150,11 @@ int sort(pp, count)
 
 
 void load_stat(fname)
-    char *fname;
+char *fname;
 {
     FILE *fp;
 
-    if ((fp = fopen(fname, "r"))!=NULL) {
+    if ((fp = fopen(fname, "r")) != NULL) {
         int count = fread(top, sizeof(struct posttop), TOPCOUNT, fp);
 
         fclose(fp);
@@ -161,25 +163,34 @@ void load_stat(fname)
     }
 }
 
-void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
+void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
 {
     struct postrec *pp;
     FILE *fp;
     int i, j;
-    char* p,curfile[40];
+    char *p, curfile[40];
 
-    /*Haohmaru.99.11.20.ºÏ≤È «∑Ò“—±ª…æ */
+    /*
+     * Haohmaru.99.11.20.ºÏ≤È «∑Ò“—±ª…æ 
+     */
     FILE *fp1;
     char dirfile[80];
     int exist, real;
 
-    /*Bigman.2000.8.28: –ﬁ∏ƒÕ≥º∆∑Ω Ω */
+    /*
+     * Bigman.2000.8.28: –ﬁ∏ƒÕ≥º∆∑Ω Ω 
+     */
     int m, n;
     char BoardName[10][13];
     char buf[40];
+
 /* ---------------------------------------------- */
-    /* sort top 100 issue and save results            */
-    /* ---------------------------------------------- */
+    /*
+     * sort top 100 issue and save results            
+     */
+    /*
+     * ---------------------------------------------- 
+     */
 
     memset(top, 0, sizeof(top));
     for (i = j = 0; i < HASHSIZE; i++) {
@@ -189,19 +200,19 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
 
     p = myfile[mytype];
     sprintf(curfile, "etc/posts/%s.0", p);
-    if ((fp = fopen(curfile, "w"))!=NULL) {
+    if ((fp = fopen(curfile, "w")) != NULL) {
         fwrite(top, sizeof(struct posttop), j, fp);
         fclose(fp);
     }
 
     sprintf(curfile, "etc/posts/%s", p);
-    if ((fp = fopen(curfile, "w"))!=NULL) {
+    if ((fp = fopen(curfile, "w")) != NULL) {
 #ifdef BLESS_BOARD
-        if (mytype==4)
-        fprintf(fp,"              \x1b[1;33m©§©§ \x1b[31m°Ó\x1b[33m°Ó\x1b[32m°Ó \x1b[41;32m  \x1b[33m±æ»’ Æ¥Û÷‘–ƒ◊£∏£  \x1b[40m \x1b[32m°Ó\x1b[31m°Ó\x1b[33m°Ó ©§©§\x1b[m\n\n");
+        if (mytype == 4)
+            fprintf(fp, "              \x1b[1;33m©§©§ \x1b[31m°Ó\x1b[33m°Ó\x1b[32m°Ó \x1b[41;32m  \x1b[33m±æ»’ Æ¥Û÷‘–ƒ◊£∏£  \x1b[40m \x1b[32m°Ó\x1b[31m°Ó\x1b[33m°Ó ©§©§\x1b[m\n\n");
         else
 #endif
-        fprintf(fp, "                [34m-----[37m=====[41m ±æ%s [40m=====[34m-----[m\n\n", mytitle[mytype]);
+            fprintf(fp, "                [34m-----[37m=====[41m ±æ%s [40m=====[34m-----[m\n\n", mytitle[mytype]);
 
         i = mytop[mytype];
 //        if (j > i)
@@ -210,22 +221,28 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
         printf("i : %d, j: %d \n", i, j);
 #endif
         real = 0;
-        for (i = 0; i < j&&real<mytop[mytype]; i++) {
+        for (i = 0; i < j && real < mytop[mytype]; i++) {
             strcpy(buf, ctime(&top[i].date));
             buf[20] = NULL;
             p = buf + 4;
 #ifdef	DELETE
-            /*Haohmaru.99.11.20.ºÏ≤È «∑Ò“—±ª…æ */
+            /*
+             * Haohmaru.99.11.20.ºÏ≤È «∑Ò“—±ª…æ 
+             */
             if (mytype == 0) {  /*÷ª”–µ±»’ Æ¥Û≤≈◊ˆœ¬√ÊµƒºÏ≤È */
                 sprintf(dirfile, "boards/%s/.DIR", top[i].board);
                 exist = 0;
                 if ((fp1 = fopen(dirfile, "r")) != NULL) {
                     exist = 1;
                     while (fread(fh, sizeof(struct fileheader), 1, fp1)) {
-                        char *p1,*p2;
-                        p1=fh->title; p2=top[i].title;
-                        if(p1[0]=='R'&&p1[1]=='e'&&p1[2]==':'&&p1[3]==' ') p1+=4;
-                        if(p2[0]=='R'&&p2[1]=='e'&&p2[2]==':'&&p2[3]==' ') p2+=4;
+                        char *p1, *p2;
+
+                        p1 = fh->title;
+                        p2 = top[i].title;
+                        if (p1[0] == 'R' && p1[1] == 'e' && p1[2] == ':' && p1[3] == ' ')
+                            p1 += 4;
+                        if (p2[0] == 'R' && p2[1] == 'e' && p2[2] == ':' && p2[3] == ' ')
+                            p2 += 4;
                         if (!strcmp(p1, p2) /* || strstr(top[i].title,fh->title) */ ) {
                             exist = 0;
                             break;
@@ -236,7 +253,9 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
                 if (exist)
                     continue;
 
-                /* Bigman 2000.8.28 –ﬁ∏ƒÕ≥º∆∑Ω Ω */
+                /*
+                 * Bigman 2000.8.28 –ﬁ∏ƒÕ≥º∆∑Ω Ω 
+                 */
 #ifndef NINE_BUILD
                 m = 0;
                 for (n = 0; n < real; n++) {
@@ -247,7 +266,8 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
                 if (m >= 3)
                     continue;
 #else
-                if(!strcmp(top[i].board,"test")) continue;
+                if (!strcmp(top[i].board, "test"))
+                    continue;
 #endif
 
                 strcpy(BoardName[real], top[i].board);
@@ -255,40 +275,45 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
             real++;
 #endif
 #ifdef BLESS_BOARD
-	     if (mytype==4)
-            fprintf(fp,
-                    "                                            %s \x1b[1;31m%4d\x1b[0;37m»À      %s\x1b[m\n"
-                    "\x1b[1mµ⁄\x1b[31m%2d \x1b[37m√˚ \x1b[4%dm %-51.51s\x1b[40m \x1b[33m%-12s%s\x1b[m\n", 
-                    p , top[i].number, surfix_bless[(real-1)*2], real,  (real-1)/2+1, top[i].title, top[i].author,surfix_bless[(real-1)*2+1]);
+            if (mytype == 4)
+                fprintf(fp,
+                        "                                            %s \x1b[1;31m%4d\x1b[0;37m»À      %s\x1b[m\n"
+                        "\x1b[1mµ⁄\x1b[31m%2d \x1b[37m√˚ \x1b[4%dm %-51.51s\x1b[40m \x1b[33m%-12s%s\x1b[m\n",
+                        p, top[i].number, surfix_bless[(real - 1) * 2], real, (real - 1) / 2 + 1, top[i].title, top[i].author, surfix_bless[(real - 1) * 2 + 1]);
             else
 #endif
-            fprintf(fp,
-                    "[37mµ⁄[31m%3d[37m √˚ [37m–≈«¯ : [33m%-16s[37m°æ[32m%s[37m°ø[36m%4d [37m»À[35m%16s\n"
-                    "     [37m±ÍÃ‚ : [44m[37m%-60.60s[40m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, top[i].author, top[i].title);
+                fprintf(fp,
+                        "[37mµ⁄[31m%3d[37m √˚ [37m–≈«¯ : [33m%-16s[37m°æ[32m%s[37m°ø[36m%4d [37m»À[35m%16s\n"
+                        "     [37m±ÍÃ‚ : [44m[37m%-60.60s[40m\n", !mytype ? real : (i + 1), top[i].board, p, top[i].number, top[i].author, top[i].title);
         }
 #ifdef BLESS_BOARD
-	if (mytype==4)
-	    fprintf(fp,"                                                                         %s\x1b[m",surfix_bless[20]);
+        if (mytype == 4)
+            fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[20]);
 #endif
         fclose(fp);
     }
 }
 
-void poststat(int mytype,time_t now,  struct tm *ptime)
-
+void poststat(int mytype, time_t now, struct tm *ptime)
 {
     static char *logfile = ".post";
     static char *oldfile = ".post.old";
 
     char buf[40], curfile[40] = "etc/posts/day.0";
     struct postrec *pp;
-    FILE* fp;
+    FILE *fp;
     int i;
 
     if (mytype < 0) {
-        /* --------------------------------------- */
-        /* load .post and statictic processing     */
-        /* --------------------------------------- */
+        /*
+         * --------------------------------------- 
+         */
+        /*
+         * load .post and statictic processing     
+         */
+        /*
+         * --------------------------------------- 
+         */
 
         remove(oldfile);
         rename(logfile, oldfile);
@@ -304,16 +329,23 @@ void poststat(int mytype,time_t now,  struct tm *ptime)
             search(top);
         fclose(fp);
     } else {
-        /* ---------------------------------------------- */
-        /* load previous results and statictic processing */
-        /* ---------------------------------------------- */
+        /*
+         * ---------------------------------------------- 
+         */
+        /*
+         * load previous results and statictic processing 
+         */
+        /*
+         * ---------------------------------------------- 
+         */
 
         char *p;
+
 #ifdef BLESS_BOARD
-        if (mytype==0) {
+        if (mytype == 0) {
             unlink("etc/posts/bless.0");
             post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, " Æ¥Û◊£∏£", 0, 1);
-        }                
+        }
 #endif
         i = mycount[mytype];
         p = myfile[mytype];
@@ -327,12 +359,14 @@ void poststat(int mytype,time_t now,  struct tm *ptime)
     }
 
 
-    /* free statistics */
+    /*
+     * free statistics 
+     */
 
-    writestat(mytype,bucket);
+    writestat(mytype, bucket);
 #ifdef BLESS_BOARD
-    if (mytype==0)
-        writestat(4,blessbucket);
+    if (mytype == 0)
+        writestat(4, blessbucket);
 #endif
     for (i = 0; i < HASHSIZE; i++) {
         for (pp = bucket[i]; pp; pp = pp->next)
@@ -349,7 +383,7 @@ void poststat(int mytype,time_t now,  struct tm *ptime)
 }
 
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
     time_t now;
     struct tm ptime;
@@ -360,32 +394,30 @@ int main(int argc, char** argv)
     time(&now);
     ptime = *localtime(&now);
     if (argc == 2) {
-        i=atoi(argv[1]);
-        if (i!=0) {
-        	poststat(i,now,&ptime);
-        	return 0;
+        i = atoi(argv[1]);
+        if (i != 0) {
+            poststat(i, now, &ptime);
+            return 0;
         }
     }
 
     resolve_boards();
     if (ptime.tm_hour == 0) {
         if (ptime.tm_mday == 1)
-            poststat(2,now,&ptime);
+            poststat(2, now, &ptime);
         if (ptime.tm_wday == 0)
-            poststat(1,now,&ptime);
-        poststat(0,now,&ptime);
+            poststat(1, now, &ptime);
+        poststat(0, now, &ptime);
     }
-    poststat(-1,now,&ptime);
-    if (ptime.tm_hour==23) {
+    poststat(-1, now, &ptime);
+    if (ptime.tm_hour == 23) {
         char fname[STRLEN];
 
-		sprintf(fname,"%dƒÍ%2d‘¬%2d»’ Æ¥ÛÕ≥º∆",
-			ptime.tm_year+1900,ptime.tm_mon+1,ptime.tm_mday);
-        post_file(NULL, "", "etc/posts/day", "BBSLists", fname ,0, 1);
-        if (ptime.tm_wday==6) {
-			sprintf(fname,"%dƒÍ%2d‘¬%2d»’±æ÷‹ŒÂ Æ¥ÛÕ≥º∆",
-				ptime.tm_year+1900,ptime.tm_mon+1,ptime.tm_mday);
-	        post_file(NULL, "", "etc/posts/week", "BBSLists", fname ,0, 1);
+        sprintf(fname, "%dƒÍ%2d‘¬%2d»’ Æ¥Û»»√≈Õ≥º∆", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
+        post_file(NULL, "", "etc/posts/day", "BBSLists", fname, 0, 1);
+        if (ptime.tm_wday == 6) {
+            sprintf(fname, "%dƒÍ%2d‘¬%2d»’±æ÷‹ŒÂ Æ¥Û»»√≈ª∞Ã‚", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
+            post_file(NULL, "", "etc/posts/week", "BBSLists", fname, 0, 1);
         }
     }
     return 0;
