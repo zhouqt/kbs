@@ -110,6 +110,12 @@ BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
              --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
              --enable-track-vars --enable-smth_bbs
 
+2.8 如果使用 apache2，步骤 2.4 - 2.7 中需要修改的地方是：
+        apache 的 configure 命令改成：
+                ./configure --prefix=/usr/local/www --enable-so
+        php 的 configure 命令里面的 --with-apxs=/usr/local/www/bin/apxs 改成：
+                --with-apxs2=/usr/local/www/bin/apxs
+
 
     如果一切顺利，至此 smthbbs、apache 和 php 都已经安装完毕。
 
