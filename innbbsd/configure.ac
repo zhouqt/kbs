@@ -67,6 +67,5 @@ AC_FUNC_WAIT3
 AC_CHECK_FUNCS([bzero bcopy dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime killpg])
 
 AC_CONFIG_FILES([Makefile
-                 libhztty/Makefile
                  linkinnd.sh])
 AC_OUTPUT
