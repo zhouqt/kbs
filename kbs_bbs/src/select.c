@@ -285,6 +285,8 @@ int list_select(struct _select_def *conf, int key)
 	        show_item(conf, conf->pos, true);
 	        ret=SHOW_CONTINUE;
 	        break;
+	    case SHOW_CONTINUE:
+		return SHOW_CONTINUE;
 	    case SHOW_SELECT:
 	        ret = do_select_internal(conf, KEY_SELECT);
 	        if (ret!=SHOW_SELECT) {
