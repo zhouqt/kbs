@@ -645,9 +645,6 @@ int compute_user_value( struct userec *urec)
     * 在 smth.h/zixia.h 中定义 
     * */
     
-    if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
-        return LIFE_DAY_NODIE;
-
     if ( urec->userlevel & PERM_SYSOP) 
 	return LIFE_DAY_SYSOP;
 	/* 站务人员生命力不变 Bigman 2001.6.23 */
@@ -656,6 +653,9 @@ int compute_user_value( struct userec *urec)
     if( urec->userlevel & PERM_MM )
 	return LIFE_DAY_SYSOP;
 #endif
+
+    if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
+        return LIFE_DAY_NODIE;
 
 
     value = (time(0) - urec->lastlogin) / 60;    /* min */
