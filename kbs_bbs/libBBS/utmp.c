@@ -32,23 +32,6 @@
 
 struct UTMPFILE *utmpshm;
 
-void resolve_utmp()
-{
-	int iscreate;
-    if( utmpshm == NULL ) {
-        utmpshm = (struct UTMPFILE*)attach_shm( "UTMP_SHMKEY", 3699, sizeof( *utmpshm ),&iscreate );/*attach user tmp cache */
-        if (iscreate) {
-        	int i;
-        	bzero(utmpshm,sizeof(struct UTMPFILE));
-			utmpshm->number=0;
-        	utmpshm->hashhead[0]=1;
-        	for (i=0;i<USHM_SIZE-1;i++) 
-        		utmpshm->next[i]=i+2;
-        	utmpshm->next[USHM_SIZE-1]=0;
-        }
-    }
-}
-
 static int utmp_lock()
 {
     int          utmpfd=0;
@@ -66,6 +49,26 @@ static void utmp_unlock(int fd)
 {
 	flock(fd,LOCK_UN);
 	close(fd);
+}
+
+void resolve_utmp()
+{
+	int iscreate;
+    if( utmpshm == NULL ) {
+        utmpshm = (struct UTMPFILE*)attach_shm( "UTMP_SHMKEY", 3699, sizeof( *utmpshm ),&iscreate );/*attach user tmp cache */
+        if (iscreate) {
+        	int i,utmpfd;
+			utmpfd = utmp_lock();
+        	bzero(utmpshm,sizeof(struct UTMPFILE));
+			utmpshm->number=0;
+        	utmpshm->hashhead[0]=1;
+        	for (i=0;i<USHM_SIZE-1;i++) 
+        		utmpshm->next[i]=i+2;
+        	utmpshm->next[USHM_SIZE-1]=0;
+        	utmpshm->listhead=0;
+        	utmp_unlock(utmpfd);
+        }
+    }
 }
 
 static int utmp_hash(const char* userid)
@@ -98,19 +101,40 @@ int getnewutmpent(struct user_info *up)
     hashkey=utmp_hash(up->userid);
 
     i = utmpshm->hashhead[hashkey];
-    if ((!i)||(strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)>=0)) {
-    	utmpshm->next[pos]=i;
-	    utmpshm->hashhead[hashkey]=pos+1;
-    } else {
-    	prev = i;
-    	i=utmpshm->next[i-1];
-        while (i && strcasecmp(utmpshm->uinfo[i-1].userid,up->userid) <0) {
-        	prev=i;
-    	    i = utmpshm->next[i-1];
-        }
-        utmpshm->next[pos]=utmpshm->next[prev-1];
-        utmpshm->next[prev-1]=pos+1;
-    }
+    /* not need sort */
+  	utmpshm->next[pos]=i;
+    utmpshm->hashhead[hashkey]=pos+1;
+
+    /* add to sorted list */
+	if (!utmpshm->listhead) { /* init the list head */
+		utmpshm->list_prev[pos]=pos+1;
+		utmpshm->list_next[pos]=pos+1;
+		utmpshm->listhead=pos+1;
+	} else {
+		int i;
+		i=utmpshm->listhead;
+		if (strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)>=0) {
+			/* add to head */
+    		utmpshm->list_prev[pos]=utmpshm->list_prev[i-1];
+	    	utmpshm->list_next[pos]=i;
+
+		    utmpshm->list_prev[i-1]=pos+1;
+
+    		utmpshm->list_next[utmpshm->list_prev[pos]-1]=pos+1;
+    		
+			utmpshm->listhead = pos+1;
+		} else {
+			i=utmpshm->list_next[i-1];
+			while ((strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)<0)&&
+					(i!=utmpshm->listhead)) i=utmpshm->list_next[i-1];
+    		utmpshm->list_prev[pos]=utmpshm->list_prev[i-1];
+	    	utmpshm->list_next[pos]=i;
+
+		    utmpshm->list_prev[i-1]=pos+1;
+
+    		utmpshm->list_next[utmpshm->list_prev[pos]-1]=pos+1;
+		}
+	}
 	utmpshm->number++;
     now = time( NULL );
     if(( now > utmpshm->uptime + 120 )||(now < utmpshm->uptime-120)) {
@@ -150,29 +174,36 @@ apply_ulist( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
     return 0;
 }
 
-int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg,struct UTMP_POS *pos) /* apply func on user list */
+int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
 {
-    struct user_info    *uentp, utmp;
-    int         i, max;
+    struct user_info    *uentp;
+    int         i;
     int			num;
 
+	i=utmpshm->listhead; 
+	if (!i) return 0;
 	num = 0;
-	if (pos->key==0) {
-		pos->key=1;
-		pos->curpos=utmpshm->hashhead[1];
+	if (utmpshm->uinfo[i-1].active)
+		if (fptr) {
+			int ret;
+			ret=(*fptr)(&utmpshm->uinfo[i-1],arg,num);
+			if (ret==QUIT) return num;
+			if (ret==COUNT) num++;
+		} else 
+			num++;
+	i=utmpshm->list_next[i-1];
+	while (i!=utmpshm->listhead) {
+		if (utmpshm->uinfo[i-1].active)
+			if (fptr) {
+				int ret;
+				ret=(*fptr)(&utmpshm->uinfo[i-1],arg,num);
+				if (ret==QUIT) return num;
+				if (ret==COUNT) num++;
+			} else 
+				num++;
+		i=utmpshm->list_next[i-1];
 	}
 
-	for (;pos->key<UTMP_HASHSIZE;pos->key++) {
-		while (pos->curpos) {
-			int ret;
-	        ret = (*fptr)( &utmpshm->uinfo[ pos->curpos-1 ],arg,pos->curpos ) ;
-	        if (ret == QUIT )
-	            return QUIT;
-	        if (ret ==COUNT) num++;
-			pos->curpos=utmpshm->next[pos->curpos-1];
-		}
-		pos->curpos=utmpshm->hashhead[pos->key+1];
-	}
     return num;
 }
 
@@ -259,6 +290,15 @@ void clear_utmp(int uent)
 		else
 			utmpshm->next[find-1]=utmpshm->next[uent-1];
 	}
+
+	/* remove from sorted list */
+	if (utmpshm->listhead==uent) {
+		utmpshm->listhead=utmpshm->list_next[uent-1];
+		if (utmpshm->listhead==uent) utmpshm->listhead=0;
+	}
+	
+	utmpshm->list_next[utmpshm->list_prev[uent-1]-1]=utmpshm->list_next[uent-1];
+	utmpshm->list_prev[utmpshm->list_next[uent-1]-1]=utmpshm->list_prev[uent-1];
 
   	log("1system","UTMP:clean %s",utmpshm->uinfo[ uent - 1 ].userid);
 	utmpshm->next[uent-1]=utmpshm->hashhead[0];

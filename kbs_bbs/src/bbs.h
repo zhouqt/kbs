@@ -101,8 +101,7 @@ extern long ti ;
 #define OLDPASSLEN  14    /* Length of encrypted passwd field */
 #define MAXGOPHERITEMS 9999 /*max of gopher items*/
 #define PASSFILE   ".PASSWDS"      /* Name of file User records stored in */
-#define ULIST_BASE ".UTMP"         /* Names of users currently on line */
-extern  char ULIST[];
+#define ULIST "UTMP"         /* Names of users currently on line */
 
 #ifndef BBSIRC 
 

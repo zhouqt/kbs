@@ -77,7 +77,6 @@ char fromhost[ 60 ] ;
 char tty_name[ 20 ] ;
 
 char BoardName[STRLEN] ;
-char ULIST[STRLEN] ;
 int utmpent = -1 ;
 time_t  login_start_time;
 int     showansi=1;
@@ -444,7 +443,6 @@ system_init(char *sourceip)
         exit(-1) ;
     }
 #endif
-    sprintf( ULIST, "%s.%s", ULIST_BASE, genbuf );
 
 /*    if( argc >= 3 ) {
 */        strncpy( fromhost, sourceip, 60 );

@@ -184,7 +184,7 @@ void
 creat_list()
 {
     listcuent(NULL,0,0) ;
-    apply_ulist( listcuent ,0);
+    apply_ulist_addr( listcuent ,0);
 }
 
 int
@@ -503,7 +503,7 @@ int
 num_visible_users()
 {
     count_visible_active(NULL,0,0) ;
-    apply_ulist( count_visible_active,0 ) ;
+    apply_ulist_addr( count_visible_active,0 ) ;
     return count_visible_active(NULL,0,0) ;
 }
 
@@ -1195,7 +1195,7 @@ struct talk_win *twin;
     do_talk_string( twin, "\n*** 上线网友 ***\n" );
     savecolumns = (t_columns > STRLEN ? t_columns : 0);
     talk_uent_buf = bigbuf;
-    if( apply_ulist( dotalkuent,0 ) == -1 ) {
+    if( apply_ulist_addr( dotalkuent,0 ) == -1 ) {
         strcpy( bigbuf, "没有任何使用者上线\n" );
     }
     strcpy( talk_uent_buf, "\n" );

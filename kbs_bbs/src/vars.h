@@ -7,11 +7,6 @@ extern struct userec* currentuser;
 
 extern struct friends_info *topfriend;
 
-struct UTMP_POS {
-	int key;
-	int curpos;
-};
-
 extern int     nf;
 
 extern int scrint ;               /* Set when screen has been initialized */

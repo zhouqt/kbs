@@ -30,7 +30,7 @@
 
 struct userec lookupuser;
 struct userec* currentuser;
-static int passwdfd=-1;
+/*static int passwdfd=-1;*/
 static struct userec* passwd;
 static struct UCACHE   *uidshm;
 
@@ -245,6 +245,7 @@ resolve_ucache()
     int         ftime;
     time_t      now;
     int iscreate;
+    int passwdfd;
 
     if( uidshm == NULL ) {
         uidshm = (struct UCACHE*)attach_shm( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate); /*attach to user shm */
@@ -260,23 +261,23 @@ resolve_ucache()
 		    }
 	    }
 	}*/
-	if (passwdfd==-1) {
-		if ((passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
-			log("4system","Can't open " PASSFILE "file %s",strerror(errno));
-        	exit(-1);
-		}
-		/*ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));*/
-    	passwd = (struct userec*) mmap(NULL,
-    			MAXUSERS*sizeof(struct userec),
-    			PROT_READ|PROT_WRITE,MAP_SHARED,passwdfd,0);
-    	if (passwd==(struct userec*)-1) {
-			log("4system","Can't map " PASSFILE "file %s",strerror(errno));
-        	exit(-1);
-    	}
+	if ((passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
+		log("4system","Can't open " PASSFILE "file %s",strerror(errno));
+       	exit(-1);
 	}
+	/*ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));*/
+   	passwd = (struct userec*) mmap(NULL,
+   			MAXUSERS*sizeof(struct userec),
+   			PROT_READ|PROT_WRITE,MAP_SHARED,passwdfd,0);
+   	if (passwd==(struct userec*)-1) {
+		log("4system","Can't map " PASSFILE "file %s",strerror(errno));
+		close(passwdfd);
+       	exit(-1);
+   	}
+   	close(passwdfd);
 	if (iscreate) {
     	int lockfd = ucache_lock();
-		int     usernumber;
+		int     usernumber,i;
     	if (lockfd==-1) {
     		log("3system","UCACHE:can't lock ucache");
     		exit(0);
@@ -286,7 +287,10 @@ resolve_ucache()
 
     	ucache_hashinit();
 
-        apply_record( PASSFILE, fillucache, sizeof(struct userec),&usernumber ); /*Ë¢ÐÂuser cache */
+/*
+        apply_record( PASSFILE, fillucache, sizeof(struct userec),&usernumber ); Ë¢ÐÂuser cache */
+        for (i=0;i<MAXUSERS;i++)
+        	fillucache(&passwd[i],&usernumber);
 
         log("1system", "CACHE:reload ucache for %d users", usernumber);
         uidshm->number = usernumber;

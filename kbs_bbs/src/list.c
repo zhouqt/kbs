@@ -162,11 +162,8 @@ int
 fill_userlist()
 {
     static int i,i2;
-    extern      struct UTMPFILE *utmpshm;
-    struct UTMP_POS pos;
     /*    struct      user_info *not_good; */
 
-    bzero((char*)&pos,sizeof(pos));
     i2=0;
     if(!friendmode)
     {
@@ -183,7 +180,7 @@ fill_userlist()
         }
         sort_user_record(0,numf-1);
         sort_user_record(numf,i2-1);*/
-	    apply_ulist_addr((APPLY_UTMP_FUNC)full_utmp,(char*)&i2,&pos);
+	    apply_ulist_addr((APPLY_UTMP_FUNC)full_utmp,(char*)&i2);
     }else {
     	for (i=0;i<nf;i++) {
 /*        sort_user_record(0,i2-1);*/
