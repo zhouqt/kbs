@@ -6930,8 +6930,10 @@ static PHP_FUNCTION(bbs_useronboard)
     bid = getbnum(board);
     if (bid == 0)
         RETURN_LONG(-1);
+#ifndef ALLOW_PUBLIC_USERONBOARD
     if(! HAS_PERM(getCurrentUser(), PERM_SYSOP))
 		RETURN_LONG(-1);
+#endif
     if (array_init(users) != SUCCESS)
         RETURN_LONG(-1);
     
