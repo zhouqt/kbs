@@ -678,7 +678,7 @@ typedef struct fileheader fileheader_t;
 #endif
 
 #ifndef SHOW_USERIP
-#define SHOW_USERIP(x) x
+#define SHOW_USERIP(y,x) x
 #endif
 
 // WWW²¿·Ö
