@@ -2962,6 +2962,19 @@ int Goodbye()
     int i, num_sysop, choose, logouts, mylogout = false;
     FILE *sysops;
     long Time = 10;             /*Haohmaru */
+    int left=(80-36)/2;
+    int top=(scr_lns-11)/2;
+    struct _select_item level_conf[]={
+        { left+16,top+2,-1,SIT_SELECT,(void*)""},
+        { left+16,top+3,-1,SIT_SELECT,(void*)""},
+        { left+16,top+4,-1,SIT_SELECT,(void*)""},
+        { left+16,top+5,-1,SIT_SELECT,(void*)""},
+        { -1,-1,-1,0 ,NULL}
+    };
+    if (!iscolor) {
+	for (i=0;i<4;i++)
+		level_conf[i].x=left+4;
+    }
 
 /*---	ÏÔÊ¾±¸ÍüÂ¼µÄ¹Øµô¸ÃËÀµÄ»î¶¯¿´°å	2001-07-01	---*/
     modify_user_mode(READING);
@@ -2978,20 +2991,32 @@ int Goodbye()
     num_sysop = i;
     move(1, 0);
     clear();
-    move(0, 0);
-    prints("Äã¾ÍÒªÀë¿ª %s £¬¸ø %s Ò»Ð©½¨ÒéÂð£¿\n", BBS_FULL_NAME, BBS_FULL_NAME);
-    if (strcmp(currentuser->userid, "guest") != 0)
-        prints("[[33m1[m] ¼ÄÐÅ¸ø" NAME_BBS_CHINESE "\n");
-    prints("[[33m2[m] ·µ»Ø[32m*" NAME_BBS_CHINESE " BBS*[m\n");
-    if (strcmp(currentuser->userid, "guest") != 0) {
-        if (USE_NOTEPAD == 1)
-            prints("[[33m3[m] Ð´Ð´*ÁôÑÔ°å*[m\n");
-    }
-    prints("[[33m4[m] Àë¿ª±¾BBSÕ¾\n");
-    sprintf(spbuf, "ÄãµÄÑ¡ÔñÊÇ [4]£º");
-    getdata(7, 0, spbuf, genbuf, 4, DOECHO, NULL, true);
+    move(top,left);
+    outs("\x1b[1;47;37m¨X¨T[*]¨T¨T¨T Message ¨T¨T¨T¨T¨T¨T¨[\x1b[m");
+    move(top+1,left);
+    outs("\x1b[1;47;37m¨U\x1b[44;37m                                \x1b[47;37m¨U\x1b[m");
+    move(top+2,left);
+    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m1\x1b[37m] ¼ÄÐÅ¸ø%10s       \x1b[47;37m¨U\x1b[m",NAME_BBS_CHINESE);
+    move(top+3,left);
+    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m2\x1b[37m] ·µ»Ø\x1b[32m*%10s BBS*\x1b[37m   \x1b[47;37m¨U\x1b[m",NAME_BBS_CHINESE);
+    move(top+4,left);
+    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m3\x1b[37m] Ð´Ð´*ÁôÑÔ°å*           \x1b[47;37m¨U\x1b[m");
+    move(top+5,left);
+    prints("\x1b[1;47;37m¨U\x1b[44;37m     [\x1b[33m4\x1b[37m] Àë¿ª±¾BBSÕ¾            \x1b[47;37m¨U\x1b[m");
+    move(top+6,left);
+    prints("\x1b[1;47;37m¨U\x1b[0;44;34m________________________________\x1b[1;47;37m¨U\x1b[m");
+    move(top+7,left);
+    prints("\x1b[1;47;37m¨U                                ¨U\x1b[m");
+    move(top+8,left);
+    prints("\x1b[1;47;37m¨U        \x1b[42;37m\x1b[33mÈ¡Ïû(Á½ÏÂESC)\x1b[37m\x1b[0;47;30m¨z\x1b[1;37m         ¨U\x1b[m");
+    move(top+9,left);
+    prints("\x1b[1;47;37m¨U           \x1b[0;40;37m¨z¨z¨z¨z¨z¨z\x1b[1;47;37m         ¨U\x1b[m");
+    move(top+10,left);
+    prints("\x1b[1;47;37m¨^¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨T¨a\x1b[m");
+
+    choose=simple_select_loop(level_conf,SIF_SINGLE|SIF_ESCQUIT,t_columns,t_lines,NULL);
+    if (choose==0) choose=2;
     clear();
-    choose = genbuf[0] - '0';
     if (strcmp(currentuser->userid, "guest") && choose == 1) {  /* Ð´ÐÅ¸øÕ¾³¤ */
         if (PERM_LOGINOK & currentuser->userlevel) {    /*Haohmaru.98.10.05.Ã»Í¨¹ý×¢²áµÄÖ»ÄÜ¸ø×¢²áÕ¾³¤·¢ÐÅ */
             prints("        ID        ¸ºÔðµÄÖ°Îñ\n");

@@ -348,6 +348,8 @@ static int simple_key(struct _select_def *conf, int key)
     struct _simple_select_arg *arg = (struct _simple_select_arg *) conf->arg;
     int sel;
 
+	if ((arg->flag&SIF_ESCQUIT)&&(key==KEY_ESC))
+		return SHOW_QUIT;
 	if (arg->flag&SIF_NUMBERKEY) {
 	    if (key <= '0'+conf->item_count && key >= '0') {
 	        conf->new_pos = key-'0' +1;

@@ -10,6 +10,8 @@ int mail_forward(int ent, struct fileheader *fileinfo, char *direct);
 #endif
 
 /*screen.c*/
+extern unsigned char scr_cols,scr_lns;
+extern int iscolor;
 void clear_whole_line(int i);
 void move(int y, int x);
 void clrtobot();
