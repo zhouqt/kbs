@@ -49,4 +49,6 @@ struct votelimit {              /*Haohmaru.99.11.17.根据版主设的限制条件判断是否
     unsigned int numposts;
 };
 
+char *vote_type[] = { "是非", "单选", "复选", "数字", "问答" };
+
 #endif
