@@ -175,8 +175,6 @@ static int set_modes_key(struct _select_def *conf, int key)
     int i;
     switch (key) {
         case ' ':
-        case '\r':
-        case '\n':
             i=conf->pos-1;
             if(modes[i][1]) {
                 modes[i][1]=0;
@@ -197,7 +195,7 @@ static int set_modes_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[设置自定义键模式]",
-               "退出[\x1b[1;32mq\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 移动[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 选择[\x1b[1;32m回车\x1b[0;37m]\x1b[m");
+               "退出[\x1b[1;32mq\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 移动[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 选择[\x1b[1;32m空格\x1b[0;37m]\x1b[m");
     update_endline();
     return SHOW_CONTINUE;
 }
@@ -270,7 +268,7 @@ int set_modes(int *res)
         j=0;
         for(i=1;i<n;i++) 
         if(modes[i][1]) {
-            res[j]=i;
+            res[j]=modes[i][0];
             j++;
         }
         if(j<10) res[j]=0;
@@ -373,7 +371,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
         break;
     case 'e':
         set_modes(keymem[conf->pos-1].status);
-        break;
+        return SHOW_DIRCHANGE;
     case 's':
         {
             int i,j;
