@@ -896,7 +896,7 @@ static void fav_refresh(struct _select_def *conf)
         else
             docmdtitle("[ÌÖÂÛÇøÁĞ±í]",
                        "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÁĞ³ö[\x1b[1;32my\x1b[m] ÅÅĞò[\x1b[1;32mS\x1b[m] ËÑÑ°[\x1b[1;32m/\x1b[m] ÇĞ»»[\x1b[1;32mc\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
-        prints("[1;44m[37m  %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷   %s  [m\n", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ Î´¶Á", "ÖĞ  ÎÄ  Ğğ  Êö", arg->newflag ? "" : "   ",0);
+        prints("[1;44m[37m  %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °æ  Ö÷     [m\n", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ Î´¶Á", "ÖĞ  ÎÄ  Ğğ  Êö");
     } else {
         if (arg->yank_flag == BOARD_FAV)
             docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
