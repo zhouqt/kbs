@@ -1516,7 +1516,7 @@ static ZEND_FUNCTION(bbs_getwebmsg)
      * check for parameter being passed by reference 
      */
     if (!PZVAL_IS_REF(retsrcid) || !PZVAL_IS_REF(msgbuf) || !PZVAL_IS_REF(srcutmpent)
-		|| !PZVAL_IF_REF(z_sndtime)) {
+		|| !PZVAL_IS_REF(z_sndtime)) {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
