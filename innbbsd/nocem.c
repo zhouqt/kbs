@@ -304,9 +304,10 @@ int run_pgp(char *cmd, FILE ** in, FILE ** out)
 
     //Ê¹ÓÃgnupg´úÌæpgp5 modified by Czz 020419
 //      sprintf(PGPPATH, "%s/.pgp", BBSHOME);
-    sprintf(PGPPATH, "%s/.gnupg", BBSHOME);
+    sprintf(PGPPATH, "GUNPGHOME=%s/.gnupg", BBSHOME);
 //      setenv("PGPPATH", PGPPATH, 1);
-    setenv("GNUPGHOME", PGPPATH, 1);
+    //setenv("GNUPGHOME", PGPPATH, 1);
+	putenv(PGPPATH);
     //modified end
 
     *in = *out = NULL;

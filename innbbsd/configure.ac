@@ -6,6 +6,14 @@ case "${host}" in
         CFLAGS="$CFLAGS -DFREEBSD -I/usr/local/include"
 	    LIBS="$LIBS -L/usr/local/lib -liconv"
 	;;
+  *-*-solaris*) 
+        CFLAGS="$CFLAGS -DSOLARIS"
+	LIBS="$LIBS -lnsl -lsocket"
+        ;;  
+  *-*-sunos*)
+        CFLAGS="$CFLAGS -DSUNOS"
+	LIBS="$LIBS -lnsl -lsocket"
+        ;;  
   *-*-linux*)        
         CFLAGS="$CFLAGS -DLINUX -DPOSIX -DSYSV -DUSE_SYSV_UTMP"
         ;;  
@@ -65,7 +73,7 @@ AC_FUNC_STRFTIME
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_FUNC_WAIT3
-AC_CHECK_FUNCS([bzero bcopy dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime killpg])
+AC_CHECK_FUNCS([bzero bcopy dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_aton inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime killpg])
 
 if test -f "../wrapper.sh"; then
 abssrcdir=`cd $srcdir && pwd`

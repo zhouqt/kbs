@@ -688,7 +688,7 @@ char *identuser;
     char client[512], server[512];
     int i;
 
-#ifndef SYSV
+#ifdef HAVE_INET_ATON
     if (inet_aton(site, (struct in_addr *) &addr))
         strcpy(client, site);
     else {
@@ -702,7 +702,7 @@ char *identuser;
 
     for (i = 0; i < NLCOUNT; i++) {
         find = &NODELIST[i];
-#ifndef SYSV
+#ifdef HAVE_INET_ATON
         if (inet_aton(NODELIST[i].host, (struct in_addr *) &addr)) {
             hpn = gethostbyaddr((char *) &addr, 4, 2);
             strcpy(server, hpn ? hpn->h_name : NODELIST[i].host);

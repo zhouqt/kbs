@@ -1,4 +1,4 @@
-#if defined( LINUX )
+#if defined( LINUX ) || defined(SOLARIS)
 #include "innbbsconf.h"
 #include <stdarg.h>
 #else

@@ -51,6 +51,7 @@ case "$host" in
     # NIS+ is forced so that we don't have to recompile
     # if we move to NIS+. appro@fy.chalmers.se
     AC_DEFINE(NIS_PLUS)
+	CFLAGS="$CFLAGS -DSOLARIS"
     ;;
   *-*-sunos*)
     os_sunos=yes
