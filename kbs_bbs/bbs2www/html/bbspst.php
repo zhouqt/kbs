@@ -138,7 +138,7 @@
 ?>
 <option value="0">不使用签名档</option>
 <?php
-			for ($i = 1; $i < 6; $i++)
+			for ($i = 1; $i <= $currentuser["signum"]; $i++)
 			{
 				if ($currentuser["signature"] == $i)
 				{
