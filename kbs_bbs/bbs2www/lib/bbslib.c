@@ -2285,7 +2285,8 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
             *putmpent = idx;
             getuser("guest", &currentuser);
             ret = 0;
-            do_after_login(currentuser,idx,1);
+			if( ! exist )
+            	do_after_login(currentuser,idx,1);
         }
     }
 
