@@ -389,8 +389,8 @@ void r_msg()
                                 sleep(1);
                                 saveline(0, 1, savebuffer[0]);
                             }
-                            ch = '\n';
                         }
+                        ch = '\n';
                     }
                     break;
             }
