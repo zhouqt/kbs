@@ -9,6 +9,8 @@
 	else
 	{
 		html_init("gb2312");
+		if (! bbs_can_send_mail() )
+			html_error_quit("您不能发送信件");
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
 		if (isset($_GET["file"]))
@@ -29,7 +31,7 @@
 			if (isset($file) && bbs_valid_filename($file) < 0)
 				html_error_quit("错误的文章");
 		}else{
-			if (isset($file) && $file[0]!='M')
+			if (isset($file) && ( $file[0]!='M' || strstr($file,"..") ) )
 				html_error_quit("错误的文章..");
 		}
 		$brd_encode = urlencode($brdarr["NAME"]);
@@ -86,8 +88,7 @@
     		$filename = "boards/" . $board . "/" . $file;
             echo "\n【 在 " . $destuserid . " 的大作中提到: 】\n";
 		}else{
-			$upcaseuserid=strtoupper($destuserid);
-			$filename = "mail/".$upcaseuserid[0]."/".$destuserid."/".$file;
+			$filename = "mail/".strtoupper($destuserid{0})."/".$destuserid."/".$file;
             echo "\n【 在 " . $destuserid . " 的来信中提到: 】\n";
 		}
 		if(file_exists($filename))
