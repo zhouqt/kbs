@@ -76,7 +76,7 @@ else
 <hr class="default"/>
 [信件总数: <?php echo $mail_num;?>]
 [已用空间: <?php echo bbs_getmailusedspace();?>K]
-[<a href=/cgi-bin/bbs/bbspstmail>发送信件</a>]
+[<a href=/bbspstmail.php>发送信件</a>]
 <?php
 		if ($start > 0)
 		{
