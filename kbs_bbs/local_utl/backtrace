@@ -11,9 +11,6 @@ gzip -S "$filename.gz" $dirname/trace
 mv -f /home/bbs/user.log $dirname
 gzip -S "$filename.gz" $dirname/user.log
 
-mv -f /home/bbs/boardusage.log $dirname
-gzip -S "$filename.gz" $dirname/boardusage.log
-
 #mv -f /home/bbs/connect.log /home/back/connect.log
 #mv -f /home/bbs/ValidIP /backup/bbs/ValidIP
 #gzip -S "$filename.gz" /backup/bbs/ValidIP
