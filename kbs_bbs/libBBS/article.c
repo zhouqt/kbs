@@ -637,13 +637,13 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     bh = getbcache(boardname);
     if (strcmp(fh->owner, "deliver")) {
         if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)
-#ifdef 0
+#if 0
             &&strcmp(boardname,"NewsClub") 
 #endif
 	  )
         {
 #ifdef SMTH
-#ifdef 0
+#if 0
             int isnews;
             isnews=!strcmp(boardname,"News");
             if (isnews||check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
@@ -658,7 +658,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                  * FIXME: There is a potential bug here. 
                  */
 #ifdef SMTH
-#ifdef 0
+#if  0
                 if (isnews)
                     setbfile(newpath, "NewsClub", fh->filename);
                 else
@@ -677,7 +677,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                     fh->o_reid = re->id;
                 }
 #ifdef SMTH
-#ifdef 0
+#if  0
                 if (isnews)
                     boardname = "NewsClub";
                 else
