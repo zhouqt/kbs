@@ -222,6 +222,34 @@ while($board = array_shift($boards))
       </table>
 <?php
 }
+function gen_system_vote_html()
+{
+$vote_file = BBS_HOME."/vote/sysvote.html";
+if(!file_exists($vote_file)) return;
+?>
+      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+        <tr> 
+          <td width="16" background="images/lt.gif">&nbsp;</td>
+          <td width="66" bgcolor="#0066CC">系统投票</td>
+          <td width="16" background="images/rt.gif"></td>
+          <td>&nbsp;</td>
+        </tr>
+      </table>
+      <table width="100%" border="0" cellpadding="5" cellspacing="0" class="helper">
+              <form action="/bbssysvote.php" method="post">
+              <tr> 
+                <td width="100%" class="MainContentText">
+                <?php require($vote_file); ?>
+                <p align=center>
+                <input type=submit class=button value="投票">
+                <input type=button class=button value="查看" onclick="window.location.href='/bbssysvote.php';">
+                </p>
+                </td>
+              </tr>
+              </form>
+      </table><br />	
+<?php
+}
 
 function gen_recommend_boards_html()
 {
@@ -503,6 +531,7 @@ while($board = array_shift($boards))
       <br>
 系统公告结束   -->
 <?php
+	gen_system_vote_html();
 	gen_recommend_boards_html();
 	gen_board_rank_html();
 	gen_blessing_list_html();

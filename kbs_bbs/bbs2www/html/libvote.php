@@ -3,9 +3,10 @@
 ** @id:windinsn dec 21, 2003
 ** System Vote
 */
-require_once("funcs.php");
 ////////////////////////////////////////////
 // System Vote Configure Start
+if(function_exists("bbs_sysconf_str"))
+{
 $sysVoteConfig["DBHOST"]=bbs_sysconf_str("MYSQLHOST");
 $sysVoteConfig["DBUSER"]=bbs_sysconf_str("MYSQLUSER");
 $sysVoteConfig["DBPASS"]=bbs_sysconf_str("MYSQLPASSWORD");
@@ -17,6 +18,7 @@ $sysVoteConfig["PAGESIZE"]=20;
 ///////////////////////////////////////////
 $sysVoteConfig["BRDARR"] = array();
 $sysVoteConfig["BRDNUM"] = bbs_getboard($sysVoteConfig["BOARD"], $sysVoteConfig["BRDARR"]);
+}
 
 function sysvote_db_connect()
 {
@@ -587,7 +589,11 @@ class sysVoteAdmin
 		if($svInfor[annouce] == 1)
 			svPostAnnouce("vote",$svInfor);
 			
-		
+		//生成html文档供mainpage使用
+		$htmlFile = sysvote_display_probs(sysvote_get_probs($svInfor[etems]));
+		$fp = fopen(BBS_HOME . "/vote/sysvote.html" , "w");
+		fputs($fp,$htmlFile,strlen($htmlFile));
+		fclose($fp);
 ?>
 <br /><br /><br />
 <p align=center><strong>系统投票创建成功！</strong></p>
@@ -627,32 +633,33 @@ function sysvote_display_probs($probs)
 {
 	for($i = 0 ; $i < count($probs) ; $i ++)
 	{
-		echo "【".html_format($probs[$i][prob],TRUE,FALSE)."】\n<br />";	
+		$output = html_format($probs[$i][prob],TRUE,FALSE)."\n<br />";	
 		switch($probs[$i][type])
 		{
 			case 0:
 				for($j = 0 ; $j < count($probs[$i][etems]) ; $j ++ )
-					echo "<input type=\"radio\" name=\"ans".$i."\" value=\"".($j + 1)."\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>: ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
+					$output .=  "<input type=\"radio\" name=\"ans".$i."\" value=\"".($j + 1)."\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>. ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
 				break;	
 			case 1:
 				for($j = 0 ; $j < count($probs[$i][etems]) ; $j ++ )
-					echo "<input type=\"checkbox\" name=\"ans".$i."e".$j."\" value=\"1\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>: ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
+					$output .=  "<input type=\"checkbox\" name=\"ans".$i."e".$j."\" value=\"1\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>. ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
 				break;	
 			case 2:
 				for($j = 0 ; $j < count($probs[$i][etems]) ; $j ++ )
-					echo "<input type=\"radio\" name=\"ans".$i."\" value=\"".($j + 1)."\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>: ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
-				echo "<textarea class=b9 cols=50 rows=5 name=\"ans".$i."p\"></textarea>\n<br />";
+					$output .=  "<input type=\"radio\" name=\"ans".$i."\" value=\"".($j + 1)."\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>. ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
+				$output .= "<textarea class=b9 cols=50 rows=5 name=\"ans".$i."p\"></textarea>\n<br />";
 				break;	
 			case 3:
 				for($j = 0 ; $j < count($probs[$i][etems]) ; $j ++ )
-					echo "<input type=\"checkbox\" name=\"ans".$i."e".$j."\" value=\"1\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>: ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
-				echo "<textarea class=b9 cols=50 rows=5 name=\"ans".$i."p\"></textarea>\n<br />";
+					$output .=  "<input type=\"checkbox\" name=\"ans".$i."e".$j."\" value=\"1\">\n<font color=#FF0000><strong>".($j+1)."</strong></font>. ".html_format($probs[$i][etems][$j],TRUE,FALSE)."\n<br />";
+				$output .= "<textarea class=b9 cols=50 rows=5 name=\"ans".$i."p\"></textarea>\n<br />";
 				break;	
 			case 4:
-				echo html_format($probs[$i][etems][0],TRUE,FALSE)."<br /><textarea class=b9 cols=50 rows=5 name=\"ans".$i."\"></textarea>\n<br />";
+				$output .= html_format($probs[$i][etems][0],TRUE,FALSE)."<br /><textarea class=b9 cols=50 rows=5 name=\"ans".$i."\"></textarea>\n<br />";
 			default:	
 		}
-		echo "<br /><br />";
+		$output .=  "<br />";
+		return $output;
 	}
 }
 

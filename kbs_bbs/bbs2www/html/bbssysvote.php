@@ -2,6 +2,7 @@
 	/*
 	** ID:windinsn dec 29,2003
 	**/
+	require("funcs.php");
 	require("libvote.php");
 	
 	if ($loginok != 1 || !isset($currentuser) )
@@ -69,7 +70,7 @@
 <table cellspacing=0 cellpadding=5 width=700 class=t1>
 	<tr><td class=t2>[Í¶Æ±] <?php echo $vote[subject]; ?></td></tr>
 	<tr><td class=t5><?php echo $vote[desc]; ?></td></tr>
-	<tr><td class=t7><?php sysvote_display_probs($vote[probs]); ?></td></tr>
+	<tr><td class=t7><?php echo sysvote_display_probs($vote[probs]); ?></td></tr>
 	<tr><td class=t2>
 		<input type=submit value="Í¶Æ±" class=b9>
 		<input type=button value="·µ»Ø" class=b9 onclick="window.location.href='/mainpage.html';">	
