@@ -154,73 +154,82 @@ function showBoardContents($boardID,$boardName,$page){
 
 		$articles = bbs_getthreads($boardName, $start, $num,1);
 		$articleNum=count($articles);
-		for($i=0;$i<$articleNum;$i++){ // 这个地方可以考虑全部换成javascript输出，把显示/判断的load交给客户端，同时减少大量重复字符的网络传输 - atppp
+?>
+<script language="JavaScript">
+<!--
+	boardName = '<?php echo $boardName; ?>';
+	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
+	
+	function Post(id, owner, posttime, flags) {
+		this.ID = id;
+		this.OWNER = owner;
+		this.POSTTIME = posttime;
+		this.FLAGS = flags;
+	}
+	
+	function writepost(id, html_title, threadNum, origin, lastreply) {
+		document.write("<TR align=middle><TD class=TableBody2 width=32 height=27 align=\"center\">");
+		upperflag = origin.FLAGS.toUpperCase();
+		if (upperflag == 'D') {
+			document.write("<img src=\"pic/istop.gif\" alt=固顶的主题>");
+		} else if( threadNum > 10 ) {
+			document.write("<img src=\"pic/blue/hotfolder.gif\" alt=回复超过10贴>");
+		} else if( ';' == upperflag ) {
+			document.write("<img src=\"pic/blue/lockfolder.gif\" alt=锁定的主题>");
+		} else if( 'M' == upperflag || 'B' == upperflag || 'G' == upperflag) { //暂时这样吧，原来只判断是否是 'M' - atppp
+			document.write("<img src=\"pic/isbest.gif\" alt=精华帖>");
+		} else {
+			document.write("<img src=\"pic/blue/folder.gif\" alt=开放主题>");
+		}
+		document.write("</TD><TD align=left class=TableBody1 width=* >");
+		if (threadNum==0) {
+			document.write('<img src="pic/nofollow.gif" id="followImg' + id + '">');
+		} else {
+			document.write('<img loaded="no" src="pic/plus.gif" id="followImg' + origin.ID + '" style="cursor:hand;" onclick="loadThreadFollow(\'' + origin.ID + "','" + boardName + "')\" title=展开贴子列表>");
+		}
+		document.write('<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '" title="' + html_title + ' <br>作者：' + origin.OWNER + '<br>发表于' + origin.POSTTIME + '">' + html_title + ' </a>');
+		threadPages = Math.ceil((threadNum+1)/THREADSPERPAGE);
+		if (threadPages>1) {
+			document.write("<b>[<img src=\"pic/multipage.gif\"> ");
+			for (t=1; (t<7) && (t<=threadPages); t++) {
+				document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((t-1)*THREADSPERPAGE) + "\">" + t + "</a> ");
+			}
+			if (threadPages>7) {
+				if (threadPages>8) {
+					document.write("...");
+				}
+				document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((threadPages-1)*THREADSPERPAGE) + "\">" + threadPages + "</a> ");
+			}
+			document.write(" ]</b>");
+		}
+		if (((lastreply.FLAGS >= 'A') && (lastreply.FLAGS <= 'Z')) || (lastreply.FLAGS == '*')) {
+			 //最后回复未读那这个 thread 就未读
+			document.write("<img src=\"pic/topnew2.gif\" alt=\"未读\">");
+		}
+		document.write("</TD>");
+		document.write('<TD class=TableBody2 width=80 align="center"><a href="dispuser.php?id=' + origin.OWNER + '" target=_blank>' + origin.OWNER + '</a></TD>');
+		document.write('<TD class=TableBody1 width=64 align="center">' + threadNum + '</TD>');
+		document.write('<TD align=left class=TableBody2 width=200><nobr>&nbsp;<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '&start=' + threadNum + '">');
+		document.write(lastreply.POSTTIME + '</a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=' + lastreply.OWNER + ' target=_blank>');
+		document.write(lastreply.OWNER + '</nobr></a></TD></TR>');
+		if (threadNum>0) {
+			document.write('<tr style="display:none" id="follow' + origin.ID + '"><td colspan=5 id="followTd' + origin.ID + '" style="padding:0px"><div style="width:240px;margin-left:18px;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadThreadFollow(\'' + origin.ID + '\', \'' + boardName + '\')">正在读取关于本主题的跟贴，请稍侯……</div></td></tr>');
+		}
+	}
+<?php
+		for($i=0;$i<$articleNum;$i++){
 			$origin=$articles[$i]['origin'];
 			$lastreply=$articles[$i]['lastreply'];
 			$threadNum=$articles[$i]['articlenum']-1;
-
 ?>
-<TR align=middle><TD class=TableBody2 width=32 height=27 align="center">
+	origin = new Post(<?php echo $origin['ID']; ?>, '<?php echo $origin['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $origin['POSTTIME']); ?>', '<?php echo $origin['FLAGS'][0]; ?>');
+	lastreply = new Post(<?php echo $lastreply['ID']; ?>, '<?php echo $lastreply['OWNER']; ?>', '<?php echo strftime("%Y-%m-%d %H:%M:%S", $lastreply['POSTTIME']); ?>', '<?php echo $lastreply['FLAGS'][0]; ?>');
+	writepost(<?php echo $i+$start; ?>, '<?php echo htmlspecialchars($origin['TITLE'],ENT_QUOTES); ?> ', <?php echo $threadNum; ?>, origin, lastreply);
 <?php
-//print_r($articles[$i]);
-	$upperflag = strtoupper($origin['FLAGS'][0]);
-	if ($upperflag=='D') {
-		echo "<img src=\"pic/istop.gif\" alt=固顶的主题>";
-	} elseif( $threadNum > 10 ) {
-		echo "<img src=\"pic/blue/hotfolder.gif\" alt=回复超过10贴>";
-	} elseif( ';' == $upperflag ) {
-		echo "<img src=\"pic/blue/lockfolder.gif\" alt=锁定的主题>";
-	} elseif( 'M' == $upperflag || 'B' == $upperflag || 'G' == $upperflag) { //暂时这样吧，原来只判断是否是 'M' - atppp
-		echo "<img src=\"pic/isbest.gif\" alt=精华帖>";
-	} else {
-		echo "<img src=\"pic/blue/folder.gif\" alt=开放主题>";
-	}
-?></TD><TD align=left class=TableBody1 width=* >
-<?php 
-	if ($threadNum==0) {
-		echo '<img src="pic/nofollow.gif" id="followImg'.($i+$start).'">';
-	} else {
-		echo '<img loaded="no" src="pic/plus.gif" id="followImg'.($origin['ID']).'" style="cursor:hand;" onclick="loadThreadFollow(\''.($origin['ID'])."','".$boardName."')\" title=展开贴子列表>";
-	}
-?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>" title="<?php echo htmlspecialchars($origin['TITLE'],ENT_QUOTES) ;?> <br>作者：<?php echo $origin['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $origin['POSTTIME']); ?>"><?php echo htmlspecialchars($origin['TITLE']) ;?> </a> 
-<?php
-	$threadPages=ceil(($threadNum+1)/THREADSPERPAGE);
-	if ($threadPages>1) {
-		echo "<b>[<img src=\"pic/multipage.gif\"> ";
-		for ($t=1; ($t<7) && ($t<=$threadPages) ;$t++) {
-			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".$origin['ID']. "&start=".($t-1)*THREADSPERPAGE."\">".$t."</a> ";
-		}
-		if ($threadPages>7) {
-			if ($threadPages>8) {
-				echo "...";
-			}
-			echo "<a href=\"disparticle.php?boardName=".$boardName."&ID=".$origin['ID']. "&start=".($threadPages-1)*THREADSPERPAGE."\">".$threadPages."</a> ";
-		}
-		echo " ]</b>";
-	}
-	if ((($lastreply['FLAGS'][0] >= 'A') && ($lastreply['FLAGS'][0] <= 'Z')) || ($lastreply['FLAGS'][0] == '*')) {
-		 //最后回复未读那这个 thread 就未读
-		echo "<img src=\"pic/topnew2.gif\" alt=\"未读\">";
-	}
-?>
-</TD>
-<TD class=TableBody2 width=80 align="center"><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD>
-<TD class=TableBody1 width=64 align="center"><?php echo $threadNum; ?></TD>
-<TD align=left class=TableBody2 width=200>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $threadNum; ?>">
-<?php
-			echo strftime("%Y-%m-%d %H:%M", $lastreply['POSTTIME']);
-?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=<?php echo $lastreply['OWNER']; ?>  target=_blank>
-<?php 
-			echo $lastreply['OWNER'];
-?></a></TD></TR>
-<?php
-			if ($threadNum>0) {
-?>
-<tr style="display:none" id="follow<?php echo $origin['ID']; ?>"><td colspan=5 id="followTd<?php echo $origin['ID'];?>" style="padding:0px"><div style="width:240px;margin-left:18px;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadThreadFollow('<?php echo ($origin['ID']);?>','<?php echo $boardName; ?>')">正在读取关于本主题的跟贴，请稍侯……</div></td></tr>
-<?php
-			}
 		}
 ?>
+//-->
+</script>
 </form></table><table border=0 cellpadding=0 cellspacing=3 width=97% align=center >
 <form method=get action="board.php">
 <input type="hidden" name="name" value="<?php echo $boardName ; ?>">
