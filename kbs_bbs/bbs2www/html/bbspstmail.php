@@ -78,7 +78,7 @@ login_init();
 	</tr>
 	<tr>
 		<td background="/images/m3.gif" style="background-repeat:repeat-y; background-color: #CEE3F8;"><img src="/images/empty.gif"></td>
-		<td colspan="<?php echo $mailboxnum + 1;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif"></td>
+		<td colspan="<?php echo $mailboxnum + 1;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif" align="top"></td>
 	</tr>
 	<tr>
 		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">

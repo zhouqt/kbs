@@ -114,9 +114,9 @@ function bbsconfirm(url,infor){
 		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="/images/empty.gif"></td>
 	</tr>
 	<tr>
-		<td colspan="<?php echo $current_i + 1;	?>" align="left" background="/images/m10.gif"><img src="/images/m11.gif"></td>
+		<td colspan="<?php echo $current_i + 1;	?>" align="left" background="/images/m10.gif"><img src="/images/m11.gif" align="top"></td>
 		<td background="/images/m6.gif"><img src="/images/empty.gif"></td>
-		<td colspan="<?php echo $mailboxnum - $current_i ;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif"></td>
+		<td colspan="<?php echo $mailboxnum - $current_i ;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif" align="top"></td>
 	</tr>
 	<tr>
 		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">
