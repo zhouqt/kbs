@@ -1381,12 +1381,7 @@ strncpy(regform.career,fdata[3],99);
 strncpy(regform.addr,fdata[4],99);
 strncpy(regform.phone,fdata[5],99);
 strncpy(regform.birth,fdata[6],99);
-if (useproxy > 0) { //穿梭用户全部改为手动认证 windinsn May 14,2004
-    ret = -2;
-    sprintf(errorstr,"\x1b[1;33m用户可能通过穿梭注册：%s (%s)\x1b[m", uinfo.lasthost ,buf);
-}
-else
-    ret=checkreg(regform, errorstr);
+ret=checkreg(regform, errorstr, useproxy);
 if (ret==-2) {
 #endif
 
