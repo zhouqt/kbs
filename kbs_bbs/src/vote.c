@@ -89,6 +89,7 @@ int b_notes_edit()
     char buf[STRLEN];
     char ans[4];
     int aborted;
+    int oldmode;
 
     if (!chk_currBM(currBM, currentuser)) {
         return 0;
@@ -108,8 +109,12 @@ int b_notes_edit()
             aborted = 1;
         } else
             aborted = -1;
-    } else
+    } else {
+        oldmode = uinfo.mode;
+        modify_user_mode(EDITUFILE);
         aborted = vedit(buf, false,NULL, NULL);
+        modify_user_mode(oldmode);
+    }
     if (aborted == -1) {
         pressreturn();
     } else {

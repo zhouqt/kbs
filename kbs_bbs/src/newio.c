@@ -641,7 +641,7 @@ int igetkey()
                 if(ibufsize==icurrchar) {
                     if(uinfo.mode!=POSTING&&uinfo.mode!=SMAIL&&uinfo.mode!=EDITUFILE&&uinfo.mode!=EDITSFILE&&
                         uinfo.mode!=NOTEPAD&&uinfo.mode!=EDIT&&uinfo.mode!=EDITANN&&uinfo.mode!=RMAIL&&
-                        uinfo.mode!=CALENEDIT)
+                        uinfo.mode!=CALENEDIT&&uinfo.mode!=CSIE_ANNOUNCE)
                         return ch;
                 }
                 mode = 1;
