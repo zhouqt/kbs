@@ -1996,7 +1996,7 @@ int set_BM()
                         newlevel |= PERM_BOARDS;
                         mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
 						/* add by stiger,斑竹上任记录 */
-						{
+						if(normal_board(newfh.filename)){
 							FILE *fp;
 							char bmat[256];
 							if((fp=fopen("etc/bmat","a"))!=NULL){
@@ -2021,7 +2021,7 @@ int set_BM()
                             }
                         }
 						/* stiger,斑竹免记录 */
-						{
+						if(normal_board(newfh.filename)){
 							char bmtest[256];
 							sprintf(bmtest,"%s %s",lookupuser->userid, newfh.filename);
 							del_from_file("etc/bmat",bmtest);
