@@ -285,11 +285,10 @@ void r_msg()
         saveline(i, 0, savebuffer[i]);
 
     if ((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.·¢ÎÄÕÂÊ±²»»Ømsg */
-        msgcount = get_unreadcount(currentuser->userid);
         move(0, 0);
         clrtoeol();
         refresh();
-        if (msg_count) {
+        if (get_unreadcount(currentuser->userid)) {
             prints("[1m[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[m");
             move(y, x);
             refresh();
