@@ -327,6 +327,8 @@ checkret:
 	        }
 	    case SHOW_REFRESHSELECT:
 	        show_item(conf, conf->pos, true);
+                good_move(conf->item_pos[conf->pos-conf->page_pos].y,
+    	            conf->item_pos[conf->pos-conf->page_pos].x);
 	        ret=SHOW_CONTINUE;
 	        break;
 	    case SHOW_CONTINUE:

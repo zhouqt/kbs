@@ -1028,10 +1028,10 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
         if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
             continue;
         if (yank_flag || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
-            brdnum++;
-            //都要排序
             int i;
             int j;
+            brdnum++;
+            //都要排序
             for (i=0;i<curcount;i++) {
                     int ret;
 		    int type;
