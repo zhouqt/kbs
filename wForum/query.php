@@ -7,7 +7,7 @@ require("inc/board.inc.php");
 global $boardName;
 global $boardArr;
 
-setStat("°æÃæËÑË÷");
+setStat("ÎÄÕÂËÑË÷");
 
 show_nav();
 
@@ -18,7 +18,7 @@ showUserMailBoxOrBR();
 if ($boardName!='') 
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 else {
-	head_var("ÂÛÌ³ËÑË÷",'',0);
+	head_var();
 }
 
 showSearchMenu();
