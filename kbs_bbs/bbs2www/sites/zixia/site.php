@@ -2,8 +2,8 @@
 
 define("ATTACHMAXSIZE","1048576");
 define("ATTACHMAXCOUNT","20");
-define("MAINPAGE_FILE", "bbssec.php");
-define("QUOTED_LINES","10");
+define("MAINPAGE_FILE","mainpage.php"); //首页导读的 URL
+define("QUOTED_LINES", BBS_QUOTED_LINES);        //web 回文保留的引文行数
 define("SITE_ZIXIA",1); //目前主要涉及新注册用户认证的相关代码 - atppp
 define("PWD_HTTP", 1); //修改密码使用 http - atppp
 
