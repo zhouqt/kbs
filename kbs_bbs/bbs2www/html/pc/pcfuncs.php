@@ -806,7 +806,7 @@ function pc_main_navigation_bar()
 <?php
     if ($pcconfig["BLOGONBLOG"]) {
 ?>
-<a href="/pc/index.php?id=<?php echo urlencode ($pcconfig["BLOGONBLOG"]); ?>">BLOG心得集</a>        
+[<a href="/pc/index.php?id=<?php echo urlencode ($pcconfig["BLOGONBLOG"]); ?>">BLOG心得集</a>]    
 <?php
     }
 ?>
