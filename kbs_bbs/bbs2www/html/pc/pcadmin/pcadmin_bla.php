@@ -11,10 +11,10 @@ pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog黑名单管理");
 $buserid = $_GET["userid"];
 if( $_GET["act"] == "add" && $buserid )
 {
-	$lookupuser=array ();
+	$lookupuser=array();
 	if(bbs_getuser($buserid, $lookupuser) == 0)
 	{
-		echo "<script language=\"javascript\">用户".$buserid."不存在！</script>";	
+		echo "<script language=\"javascript\">alert('用户".$buserid."不存在！');</script>";	
 	}
 	else
 	{
@@ -51,19 +51,20 @@ $num = mysql_num_rows($result);
 		{
 			$rows = mysql_fetch_array($result);
 			echo "<tr>\n".
-				"<td class=t3>".($i + 1)."</td>\n"
-				"<td class=t4><a href=\"/bbsqry.php?userid=".$rows[userid]."\">".$rows[userid]."</a></td>\n"
-				"<td class=t3><a href=\"/bbsqry.php?userid=".$rows[manager]."\">".$rows[manager]."</a></td>\n"
-				"<td class=t4>".time_format($rows[addtime])."</td>\n"
-				"<td class=t3><a href=\"pcblist.php?act=del&userid=".$rows[userid]."\">删除</a></td>\n"
+				"<td class=t3>".($i + 1)."</td>\n".
+				"<td class=t4><a href=\"/bbsqry.php?userid=".$rows[userid]."\">".$rows[userid]."</a></td>\n".
+				"<td class=t3><a href=\"/bbsqry.php?userid=".$rows[manager]."\">".$rows[manager]."</a></td>\n".
+				"<td class=t4>".time_format($rows[addtime])."</td>\n".
+				"<td class=t3><a href=\"pcadmin_bla.php?act=del&userid=".$rows[userid]."\">删除</a></td>\n".
 				"</tr>\n";
 		}
 ?>
 </table>
 </center>
 <p align="center">
-<form action="pcblist.php?act=add" method="get">
+<form action="pcadmin_bla.php" method="get">
 添加黑名单：
+<input type="hidden" name="act" id="act" value="add">
 <input type="text" name="userid" id="userid" class="f1">
 <input type="submit" value="添加" class="f1">
 </form>
@@ -73,5 +74,4 @@ mysql_free_result($result);
 pc_db_close($link);
 pc_admin_navigation_bar();
 html_normal_quit();
-}
 ?>
