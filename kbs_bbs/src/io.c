@@ -69,7 +69,7 @@ void
 oflush()
 {
     if(obufsize)
-      write(1,outbuf,obufsize) ;
+        write(1,outbuf,obufsize) ;
     obufsize = 0 ;
 }
 
@@ -126,8 +126,8 @@ int (*flushfunc)() ;
 int
 num_in_buf()
 {
-/*---	Modified accoding to zhch's article	period	2000-11-21	---*/
-/*    return icurrchar - ibufsize ;*/
+    /*---	Modified accoding to zhch's article	period	2000-11-21	---*/
+    /*    return icurrchar - ibufsize ;*/
     int n;
     if((n = icurrchar - ibufsize) < 0) n = 0;
     return n;
@@ -136,7 +136,7 @@ num_in_buf()
 int
 igetch()
 {
-  igetagain:
+igetagain:
     if(ibufsize == icurrchar) {
         fd_set readfds ;
         struct timeval to ;
@@ -147,21 +147,21 @@ igetch()
         FD_ZERO(&readfds) ;
         FD_SET(0,&readfds) ;
         if(i_newfd)
-          FD_SET(i_newfd,&readfds) ;
+            FD_SET(i_newfd,&readfds) ;
         if((sr = select(FD_SETSIZE,&readfds, NULL, NULL, &to)) <= 0) {
             if(flushf)
-              (*flushf)() ;
+                (*flushf)() ;
             if(dumb_term)
-              oflush() ;
+                oflush() ;
             else
-              refresh() ;
+                refresh() ;
             FD_ZERO(&readfds) ;
             FD_SET(0,&readfds) ;
             if(i_newfd)
-              FD_SET(i_newfd,&readfds) ;
+                FD_SET(i_newfd,&readfds) ;
             while((sr = select(FD_SETSIZE,&readfds, NULL, NULL, i_top)) <0) {
                 if(errno == EINTR)
-                  continue ;
+                    continue ;
                 else {
                     perror("select") ;
                     fprintf(stderr,"abnormal select conditions\n") ;
@@ -169,25 +169,25 @@ igetch()
                 }
             }
             if(sr == 0)
-              return I_TIMEOUT ;
+                return I_TIMEOUT ;
         }
         if(i_newfd && FD_ISSET(i_newfd,&readfds))
-          return I_OTHERDATA ;
+            return I_OTHERDATA ;
         while((ibufsize = read(0,inbuf,IBUFSIZE)) <= 0) {
             if(ibufsize == 0)
-              longjmp(byebye,-1) ;
+                longjmp(byebye,-1) ;
             if(ibufsize < 0 && errno != EINTR)
-              longjmp(byebye,-1) ;
+                longjmp(byebye,-1) ;
         }
         icurrchar = 0 ;
     }
     i_mode = INPUT_ACTIVE;
     switch(inbuf[icurrchar]) {
-      case Ctrl('L'):
-        redoscr() ;
+    case Ctrl('L'):
+                    redoscr() ;
         icurrchar++ ;
         goto igetagain ;
-      default:
+    default:
         break ;
     }
     return inbuf[icurrchar++] ;
@@ -204,20 +204,20 @@ igetkey()
     while( 1 ) {
         if((uinfo.mode==CHAT1||uinfo.mode==TALK||uinfo.mode==PAGE) && RMSG==YEA)
         {
-                char a;
+            char a;
 
-                read(0,&a,1);
-                ch=(int) a;
+            read(0,&a,1);
+            ch=(int) a;
         }
         else
-                ch = igetch();
+            ch = igetch();
         if( mode == 0 ) {
             if( ch == KEY_ESC ) mode = 1;
             else  return ch;    /* Normal Key */
         } else if( mode == 1 ) {  /* Escape sequence */
             if( ch == '[' || ch == 'O' )  mode = 2;
             else if( ch == '1' || ch == '4' )  mode = 3;
-            else { KEY_ESC_arg=ch; return KEY_ESC; }
+        else { KEY_ESC_arg=ch; return KEY_ESC; }
         } else if( mode == 2 ) {  /* Cursor key */
             if( ch >= 'A' && ch <= 'D' )
                 return KEY_UP + (ch - 'A');
@@ -232,7 +232,7 @@ igetkey()
     }
 }
 
-void 
+void
 top_show( prompt )
 char    *prompt;
 {
@@ -263,181 +263,181 @@ int     line,   col,    len,    echo, clearlabel;
 int     nouse;
 char    *prompt,        *buf;
 {
-        int     ch,clen = 0,curr = 0,x,y;
-        char    tmp[STRLEN];
-        extern unsigned char scr_cols ;
-        extern int RMSG;
+    int     ch,clen = 0,curr = 0,x,y;
+    char    tmp[STRLEN];
+    extern unsigned char scr_cols ;
+    extern int RMSG;
 
-        if (clearlabel==YEA)
+    if (clearlabel==YEA)
+    {
+        memset(buf,0, sizeof(buf));
+    }
+    move(line, col);
+    if (prompt)
+        prints("%s", prompt);
+    y = line;
+    col+= (prompt == NULL) ? 0 : strlen(prompt);
+    x = col;
+    clen = strlen(buf);
+    curr = (clen >= len) ? len-1: clen;
+    buf[curr]='\0';
+    prints("%s", buf);
+
+    if (dumb_term||echo==NA)
+    {
+        while ((ch = igetkey()) != '\r')
         {
-                memset(buf,0, sizeof(buf));
-        }
-        move(line, col);
-        if (prompt)
-                prints("%s", prompt);
-        y = line;
-        col+= (prompt == NULL) ? 0 : strlen(prompt);
-        x = col;
-        clen = strlen(buf);
-        curr = (clen >= len) ? len-1: clen;
-        buf[curr]='\0';
-        prints("%s", buf);
-
-        if (dumb_term||echo==NA)
-        {
-                while ((ch = igetkey()) != '\r')
+            if (ch == '\n')
+                break;
+            if (ch == '\177' || ch == Ctrl('H'))
+            {
+                if (clen == 0)
                 {
-                        if (ch == '\n')
-                                break;
-                        if (ch == '\177' || ch == Ctrl('H'))
-                        {
-                                if (clen == 0)
-                                {
-                                        continue;
-                                }
-                                clen--;
-                                ochar(Ctrl('H'));
-                                ochar(' ');
-                                ochar(Ctrl('H'));
-                                move(line, col + clen); /* Leeward 98.02.23 */
-                                refresh();
-                                continue;
-                        }
-                        if (!isprint2(ch))
-                        {
-                                continue;
-                        }
-                        if (clen >= len-1)
-                        {
-                                continue;
-                        }
-                        buf[clen++] = ch;
-                        move(line, col + clen); /* Leeward 98.02.23 */
-                        if (echo)
-                                ochar(ch);
-                        else
-                                ochar('*');
+                    continue;
                 }
-                buf[clen] = '\0';
-                prints("\n");
-                oflush();
-                return clen;
-        }
-        clrtoeol();
-        while (1)
-        {
-                if((uinfo.mode==CHAT1||uinfo.mode==TALK )&& RMSG==YEA)
-                {
-                        refresh();
-                }
-                ch = igetkey();
-
-                if (YEA == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
-                  return - ch; /* Leeward 98.07.30 supporting msgX */
-
-                if (ch == '\n'||ch == '\r')
-                        break;
-                if (ch == '\177' || ch == Ctrl('H'))
-                {
-                        if (curr == 0)
-                        {
-                                continue;
-                        }
-                        strcpy(tmp, &buf[curr]);
-                        buf[--curr] = '\0';
-                        (void)strcat(buf, tmp);
-                        clen--;
-                        move(y, x);
-                        prints("%s", buf);
-                        clrtoeol();
-                        move(y, x + curr);
-                        continue;
-                }
-                if (ch == KEY_DEL)
-                {
-                        if (curr >= clen)
-                        {
-                                curr = clen;
-                                continue;
-                        }
-                        strcpy(tmp, &buf[curr+1]);
-                        buf[curr] = '\0';
-                        (void)strcat(buf, tmp);
-                        clen--;
-                        move(y, x);
-                        prints("%s", buf);
-                        clrtoeol();
-                        move(y, x + curr);
-                        continue;
-                }
-                if (ch == KEY_LEFT)
-                {
-                        if (curr == 0)
-                        {
-                                continue;
-                        }
-                        curr--;
-                        move(y, x + curr);
-                        continue;
-                }
-                if(ch==Ctrl('E') || ch==KEY_END)
-                {
-                        curr = clen;
-                        move(y, x + curr);
-                        continue;
-                }
-                if(ch==Ctrl('A') || ch== KEY_HOME)
-                {
-                        curr = 0;
-                        move(y, x + curr);
-                        continue;
-                }
-                if (ch == KEY_RIGHT)
-                {
-                        if (curr >= clen)
-                        {
-                                curr = clen;
-                                continue;
-                        }
-                        curr++;
-                        move(y, x + curr);
-                        continue;
-                }
-                if (!isprint2(ch))
-                {
-                        continue;
-                }
-
-                if (x+clen >= scr_cols || clen >= len-1)
-                {
-                        continue;
-                }
-
-                if (!buf[curr])
-                {
-                        buf[curr + 1] = '\0';
-                        buf[curr] = ch;
-                }
-                else
-                {
-                        strncpy(tmp, &buf[curr], len);
-                        buf[curr] = ch;
-                        buf[curr + 1] = '\0';
-                        strncat(buf, tmp, len - curr);
-                }
-                curr++;
-                clen++;
-                move(y, x);
-                prints("%s", buf);
-                move(y, x + curr);
+                clen--;
+                ochar(Ctrl('H'));
+                ochar(' ');
+                ochar(Ctrl('H'));
+                move(line, col + clen); /* Leeward 98.02.23 */
+                refresh();
+                continue;
+            }
+            if (!isprint2(ch))
+            {
+                continue;
+            }
+            if (clen >= len-1)
+            {
+                continue;
+            }
+            buf[clen++] = ch;
+            move(line, col + clen); /* Leeward 98.02.23 */
+            if (echo)
+                ochar(ch);
+            else
+                ochar('*');
         }
         buf[clen] = '\0';
-        if(echo)
-        {
-                move(y, x);
-                prints("%s", buf);
-        }
         prints("\n");
-        refresh();
+        oflush();
         return clen;
+    }
+    clrtoeol();
+    while (1)
+    {
+        if((uinfo.mode==CHAT1||uinfo.mode==TALK )&& RMSG==YEA)
+        {
+            refresh();
+        }
+        ch = igetkey();
+
+        if (YEA == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
+            return - ch; /* Leeward 98.07.30 supporting msgX */
+
+        if (ch == '\n'||ch == '\r')
+            break;
+        if (ch == '\177' || ch == Ctrl('H'))
+        {
+            if (curr == 0)
+            {
+                continue;
+            }
+            strcpy(tmp, &buf[curr]);
+            buf[--curr] = '\0';
+            (void)strcat(buf, tmp);
+            clen--;
+            move(y, x);
+            prints("%s", buf);
+            clrtoeol();
+            move(y, x + curr);
+            continue;
+        }
+        if (ch == KEY_DEL)
+        {
+            if (curr >= clen)
+            {
+                curr = clen;
+                continue;
+            }
+            strcpy(tmp, &buf[curr+1]);
+            buf[curr] = '\0';
+            (void)strcat(buf, tmp);
+            clen--;
+            move(y, x);
+            prints("%s", buf);
+            clrtoeol();
+            move(y, x + curr);
+            continue;
+        }
+        if (ch == KEY_LEFT)
+        {
+            if (curr == 0)
+            {
+                continue;
+            }
+            curr--;
+            move(y, x + curr);
+            continue;
+        }
+        if(ch==Ctrl('E') || ch==KEY_END)
+        {
+            curr = clen;
+            move(y, x + curr);
+            continue;
+        }
+        if(ch==Ctrl('A') || ch== KEY_HOME)
+        {
+            curr = 0;
+            move(y, x + curr);
+            continue;
+        }
+        if (ch == KEY_RIGHT)
+        {
+            if (curr >= clen)
+            {
+                curr = clen;
+                continue;
+            }
+            curr++;
+            move(y, x + curr);
+            continue;
+        }
+        if (!isprint2(ch))
+        {
+            continue;
+        }
+
+        if (x+clen >= scr_cols || clen >= len-1)
+        {
+            continue;
+        }
+
+        if (!buf[curr])
+        {
+            buf[curr + 1] = '\0';
+            buf[curr] = ch;
+        }
+        else
+        {
+            strncpy(tmp, &buf[curr], len);
+            buf[curr] = ch;
+            buf[curr + 1] = '\0';
+            strncat(buf, tmp, len - curr);
+        }
+        curr++;
+        clen++;
+        move(y, x);
+        prints("%s", buf);
+        move(y, x + curr);
+    }
+    buf[clen] = '\0';
+    if(echo)
+    {
+        move(y, x);
+        prints("%s", buf);
+    }
+    prints("\n");
+    refresh();
+    return clen;
 }

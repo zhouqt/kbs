@@ -51,7 +51,7 @@
 #ifdef BBSMAIN
 #define perror(x) prints(x)
 #endif
- 
+
 #define VERSION_ID "Firebird BBS 2.5GB"
 #define ADD_EDITMARK 1
 
@@ -188,12 +188,12 @@ O MaxMessageSize=32000
 #define SCREEN_SIZE (23)         /* Used by read menu  */
 
 extern int scrint ;               /* Set when screen has been initialized */
-                                  /* Used by namecomplete *only* */
+/* Used by namecomplete *only* */
 
 extern int digestmode;            /*To control Digestmode*/
 extern struct userec currentuser ;  /*  user structure is loaded from passwd */
-                                  /*  file at logon, and remains for the   */
-                                  /*  entire session */
+/*  file at logon, and remains for the   */
+/*  entire session */
 
 extern struct user_info uinfo ;   /* Ditto above...utmp entry is stored here
                                      and written back to the utmp file when

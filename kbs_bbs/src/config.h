@@ -23,14 +23,14 @@
 
 /* Firebird BBS 2.0 CONFIGURATION VARIABLES */
 
-/* 
+/*
    Define this to enable wide character support for Chinese or other 
    languages not using the ANSI character set. Comment out if this isn't
    needed. 
 */
 #define BIT8 
 
-/* 
+/*
    You may define a default board here, already selected when a user logs in.
    If this is set to the empty string, the bbs will require users to (S)elect
    a board before reading or posting. Don't comment this out. 
@@ -38,34 +38,34 @@
 /*#define DEFAULTBOARD    "sysop"*/ /* Leeward 98.05.16 */
 #define DEFAULTBOARD    "test"
 
-/* 
+/*
    You get this many chances to give a valid userid/password combination
    before the bbs squawks at you and closes the connection. 
    Don't comment out. 
 */
 #define LOGINATTEMPTS 3
 
-/* 
+/*
    Turn this on to allow users to create their own accounts by typing 'new'
    at the "Enter userid:" prompt. Comment out to restrict access to accounts
    created by the Sysop (see important note in README.install). 
 */
 #define LOGINASNEW 1 
 
-/* 
+/*
    Defined means user may log as as many times as they wish, simultaneously.
    On a larger bbs with many window-users you probably want this off.
    Comment out to disable.
 #define MULTI_LOGINS 1
 */
 
-/* 
+/*
 Comment this out to disable the Voting stuff. Dunno why, it's not a resource
 hog or anything, but if you don't want it...
 */
 #define VOTE    1
 
-/* 
+/*
    Define this if you want the Internet Post/Mail Forwarding features
    enabled. You MUST have the sendmail(8) program on your system and
    a cron job to run the bbs mail queue every so often. The bbs does not
@@ -82,7 +82,7 @@ hog or anything, but if you don't want it...
 #define ERRORS_TO "root"
 #endif
 
-/* 
+/*
    Define DOTIMEOUT to set a timer to log out users who sit idle on the system.
    Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
    seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
@@ -90,13 +90,13 @@ hog or anything, but if you don't want it...
 */
 #define DOTIMEOUT 1
 
-/* 
+/*
    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
 */
 #define IDLE_TIMEOUT    (60*20) 
 #define MONITOR_TIMEOUT (60*20) 
 
-/* 
+/*
    This defines the set of characters disallowed in chat id's. These
    characters get translated to underscores (_) when someone tries to use
    them. At the very least you should disallow spaces and '*'.
@@ -104,7 +104,7 @@ hog or anything, but if you don't want it...
 
 #define BADCIDCHARS " *"
 
-/* 
+/*
    By default, users with post permission can reply to a post right after
    they read it. This can lead to lots of silly replies, hence the reply
    feature is a little controversial. Uncomment this to disable Reply. 
@@ -112,7 +112,7 @@ hog or anything, but if you don't want it...
 /*
 #define NOREPLY 1 
 */
-/* 
+/*
    The Eagle's Nest has problems with apparently random corruption of the
    board and mail directories. Other boards don't have this problem. Anyway,
    this ifdef enables some code that decreases this problem. you probably 
@@ -120,7 +120,7 @@ hog or anything, but if you don't want it...
 */
 /* #define POSTBUG      1 */
 
-/* 
+/*
    Define this if you are going to install an Internet Relay Chat client
    and/or server. Either the one with this distribution or a newer one. 
 */
@@ -146,12 +146,12 @@ these two options by hand. Instructions are in README.install.
 
 #define MAXUSERS  100000 /* Maximum number of users,780 aliament 1k*/
 #define MAXBOARD  400  /* Leeward: 256->400 due to new system:) */  
-                       /* Maximum number of boards */
-/*#define MAXACTIVE 666   Leeward: 350->666 due to new system:) */  
+/* Maximum number of boards */
+/*#define MAXACTIVE 666   Leeward: 350->666 due to new system:) */
 #define MAXACTIVE 3000
-                       /* Max users allowed on the system at once. Set this
-                          to a reasonable value based on the resources of
-                          your system. */
+/* Max users allowed on the system at once. Set this
+   to a reasonable value based on the resources of
+   your system. */
 
 #define MAXSIGLINES    6 /* max. # of lines appended for post signature */
 #define MAXQUERYLINES 16 /* max. # of lines shown by the Query function */
@@ -161,22 +161,22 @@ these two options by hand. Instructions are in README.install.
    If commented out, no real name/address info can be kept in the passwd
    file. Pretty useless to have this if LOGINASNEW is defined. */
 
-/* 
+/*
 Define this to show real names in the Main Menu user list. 
 */
 /* #define ACTS_REALNAMES       1 */
 
-/* 
+/*
 Define this to show real names in post headers. 
 */
 /* #define POSTS_REALNAMES      1 */
 
-/* 
+/*
 Define this to show real names in mail messages. 
 */
 /* #define MAIL_REALNAMES       1 */
 
-/* 
+/*
 Define this for Query to show real names. 
 */
 /* #define QUERY_REALNAMES      1 */

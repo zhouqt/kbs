@@ -82,86 +82,86 @@ struct scommandlist {
     char        *name;
     int         (*fptr)();
 } sysconf_cmdlist[] = {
-        "domenu",       domenu,
-        "EGroups",      EGroup,
-        "BoardsAll",    Boards,
-        "BoardsNew",    New,
-        "LeaveBBS",     Goodbye,
-        "Announce",     Announce,
-/*        "ExecTin",      t_tin,
-        "ExecGopher",   t_gopher,*/
-        "SelectBoard",  Select,
-        "ReadBoard",    Read,
-        "PostArticle",  Post,
-        "SetHelp",      Help,
-        "SetAlarm",     setcalltime,
-        "MailAll",     mailall,
-        /*"ExecMJ",       x_excemj,
-        "ExecBIG2",     x_excebig2,
-        "ExecCHESS",    x_excechess,
-        "WWW",          t_www,        */
-        "OffLine",      suicide,
-        "ReadNewMail",  m_new,
-        "ReadMail",     m_read,
-        "SendMail",     m_send,
-        "GroupSend",    g_send,
-        "OverrideSend", ov_send,
-        "SendNetMail",  m_internet,
-        "UserDefine",   x_userdefine,
-        "ShowFriends",  t_friends,
-        "ShowLogins",   t_users,
-        "QueryUser",    t_query,
-        "WaitFriend",   wait_friend,
-        "Talk",         t_talk,
-        "SetPager",     t_pager,
-        "SetCloak",     x_cloak,
-        "SendMsg",      s_msg,
-        "ShowMsg",      show_allmsgs,
-        "SetFriends",   t_override,
-        "EnterChat",    ent_chat1,
-        "EnterChat2",    ent_chat2,
-        "ExecIrc",      t_irc,
-        "ListLogins",   t_list,
-        "Monitor",      t_monitor,
-        "RealLogins",   t_rusers,
-        "FillForm",     x_fillform,
-        "SetInfo",      x_info,
-        "EditUFiles",   x_edits,
-        "ShowLicense",  Conditions,
-        "ShowVersion",  Info,
-        "Notepad",      shownotepad,
-        "ShowDate",     x_date,
-        "DoVote",       x_vote,
-        "VoteResult",   x_results,
-        "ExecBBSNet",   ent_bnet,
-        "ShowWelcome",  Welcome,
-        "SpecialUser",  Users,
-        /*"ExecViewer",   t_announce,*/
-        "LockScreen",   lock_scr, /* Leeward 98.02.22 */
-	"ConvCode",     switch_code, /* KCN 99.09.03 */
-	"FavBoard",	FavBoard,	/* added period 2000-09-11 */
-	"BadList",	badlist,	/* added Bigman 2000.12.26 */
-        "CheckForm",    m_register,
-        "ModifyInfo",   m_info,
-        "ModifyLevel",  x_level,
-	/*added by cityhunter */
-	"ModifypLevel", p_level,
-	"QueryBUser",   query_bm,
-	/* end of addin */
-        "XCheckLevel",  XCheckLevel,
-        "KickUser",     kick_user,
-        "DelUser",      d_user,
-        "OpenVote",     m_vote,
-        "NewBoard",     m_newbrd,
-        "EditBoard",    m_editbrd,
-        "DelBoard",     d_board,
-        "SetTrace",     m_trace,
-        "CleanMail",    m_mclean,
-        "EditSFiles",   a_edits,
-        "Announceall",  wall,
-        "Setsyspass",   setsystempasswd,
- 	"SearchTrace",	searchtrace,	/*stephen 2000.12.15*/
-       NULL,           NULL
+    "domenu",       domenu,
+    "EGroups",      EGroup,
+    "BoardsAll",    Boards,
+    "BoardsNew",    New,
+    "LeaveBBS",     Goodbye,
+    "Announce",     Announce,
+    /*        "ExecTin",      t_tin,
+            "ExecGopher",   t_gopher,*/
+    "SelectBoard",  Select,
+    "ReadBoard",    Read,
+    "PostArticle",  Post,
+    "SetHelp",      Help,
+    "SetAlarm",     setcalltime,
+    "MailAll",     mailall,
+    /*"ExecMJ",       x_excemj,
+    "ExecBIG2",     x_excebig2,
+    "ExecCHESS",    x_excechess,
+    "WWW",          t_www,        */
+    "OffLine",      suicide,
+    "ReadNewMail",  m_new,
+    "ReadMail",     m_read,
+    "SendMail",     m_send,
+    "GroupSend",    g_send,
+    "OverrideSend", ov_send,
+    "SendNetMail",  m_internet,
+    "UserDefine",   x_userdefine,
+    "ShowFriends",  t_friends,
+    "ShowLogins",   t_users,
+    "QueryUser",    t_query,
+    "WaitFriend",   wait_friend,
+    "Talk",         t_talk,
+    "SetPager",     t_pager,
+    "SetCloak",     x_cloak,
+    "SendMsg",      s_msg,
+    "ShowMsg",      show_allmsgs,
+    "SetFriends",   t_override,
+    "EnterChat",    ent_chat1,
+    "EnterChat2",    ent_chat2,
+    "ExecIrc",      t_irc,
+    "ListLogins",   t_list,
+    "Monitor",      t_monitor,
+    "RealLogins",   t_rusers,
+    "FillForm",     x_fillform,
+    "SetInfo",      x_info,
+    "EditUFiles",   x_edits,
+    "ShowLicense",  Conditions,
+    "ShowVersion",  Info,
+    "Notepad",      shownotepad,
+    "ShowDate",     x_date,
+    "DoVote",       x_vote,
+    "VoteResult",   x_results,
+    "ExecBBSNet",   ent_bnet,
+    "ShowWelcome",  Welcome,
+    "SpecialUser",  Users,
+    /*"ExecViewer",   t_announce,*/
+    "LockScreen",   lock_scr, /* Leeward 98.02.22 */
+    "ConvCode",     switch_code, /* KCN 99.09.03 */
+    "FavBoard",	FavBoard,	/* added period 2000-09-11 */
+    "BadList",	badlist,	/* added Bigman 2000.12.26 */
+    "CheckForm",    m_register,
+    "ModifyInfo",   m_info,
+    "ModifyLevel",  x_level,
+    /*added by cityhunter */
+    "ModifypLevel", p_level,
+    "QueryBUser",   query_bm,
+    /* end of addin */
+    "XCheckLevel",  XCheckLevel,
+    "KickUser",     kick_user,
+    "DelUser",      d_user,
+    "OpenVote",     m_vote,
+    "NewBoard",     m_newbrd,
+    "EditBoard",    m_editbrd,
+    "DelBoard",     d_board,
+    "SetTrace",     m_trace,
+    "CleanMail",    m_mclean,
+    "EditSFiles",   a_edits,
+    "Announceall",  wall,
+    "Setsyspass",   setsystempasswd,
+    "SearchTrace",	searchtrace,	/*stephen 2000.12.15*/
+    NULL,           NULL
 };
 
 void
@@ -195,7 +195,7 @@ register char *str;
 {
     register char       ch;
     int         n;
-    
+
     while( (ch = *str++) != '\0' )
         if( ch != '\01' )
             outc( ch );
@@ -257,9 +257,9 @@ char    *key;
         if( strcmp( key, sysvar[n].key ) == 0 )
             return( sysvar[n].val );
     if( *key < '0' || *key > '9' ) {
-/*        sprintf( genbuf, "sysconf: unknown key: %s.", key );
-        report( genbuf );
- */   }
+        /*        sprintf( genbuf, "sysconf: unknown key: %s.", key );
+                report( genbuf );
+         */   }
     return( strtol( key, NULL, 0 ) );
 }
 
@@ -277,10 +277,10 @@ int     val;
         sysvar[ num ].key = sysconf_addstr( key );
         sysvar[ num ].str = str;
         sysvar[ num ].val = val;
-/*
-        sprintf( genbuf, "%s = %s (%x).", key, str, val );
-        report( genbuf );
-*/
+        /*
+                sprintf( genbuf, "%s = %s (%x).", key, str, val );
+                report( genbuf );
+        */
     }
 }
 
@@ -294,9 +294,9 @@ char    *key;
     char        *cmd, *arg[5], *ptr;
     int         n;
 
-/*
-    report( key );
-*/
+    /*
+        report( key );
+    */
     sysconf_addkey( key, "menu", sysconf_menu );
     while( fgets( buf, sizeof( buf ), fp ) != NULL && buf[0] != '%' ) {
         cmd = strtok( buf, " \t\n" );
@@ -342,11 +342,11 @@ char    *key;
             pm->fptr  = (void *)sysconf_buf;
             pm->arg   = sysconf_buf;
         }
-/*
-        sprintf( genbuf, "%s( %s, %s, %s, %s, %s )",
-                cmd, arg[0], arg[1], arg[2], arg[3], arg[4] );
-        report( genbuf );
-*/
+        /*
+                sprintf( genbuf, "%s( %s, %s, %s, %s, %s )",
+                        cmd, arg[0], arg[1], arg[2], arg[3], arg[4] );
+                report( genbuf );
+        */
     }
     pm = &menuitem[ sysconf_menu++ ];
     pm->name = pm->desc = pm->arg = sysconf_buf;
@@ -396,7 +396,7 @@ char *fname;
     while( fgets( buf, sizeof( buf ), fp ) != NULL ) {
         ptr = buf;
         while( *ptr == ' ' || *ptr == '\t' )  ptr++;
-        
+
         if( *ptr == '%' ) {
             strtok( ptr, " \t\n" );
             if( strcmp( ptr, "%menu"/*菜单*/ ) == 0 ) {
@@ -410,7 +410,7 @@ char *fname;
             key = strtok( ptr, " \t\"\n" );
             str = strtok( NULL, " \t\"\n" );
             if( key != NULL && str != NULL &&
-                strcmp( key, "#include" ) == 0 ) { /* 用#include filename 来包含其它ini */
+                    strcmp( key, "#include" ) == 0 ) { /* 用#include filename 来包含其它ini */
                 parse_sysconf( str );
             }
         } else if( *ptr != '\n' ) { /*系统参量 定义 */
@@ -514,13 +514,13 @@ char *imgfile;
         sysconf_menu = shead.menu;
         sysconf_key  = shead.key;
         sysconf_len  = shead.len;
-/*
-        sprintf( genbuf, "buf = %d, %d, %d", menuitem, sysvar, sysconf_buf );
-        report( genbuf );
-        sprintf( genbuf, "%d, %d, %d, %d, %s", shead.buf, shead.len,
-                shead.menu, shead.key, sysconf_buf );
-        report( genbuf );
-*/
+        /*
+                sprintf( genbuf, "buf = %d, %d, %d", menuitem, sysvar, sysconf_buf );
+                report( genbuf );
+                sprintf( genbuf, "%d, %d, %d, %d, %s", shead.buf, shead.len,
+                        shead.menu, shead.key, sysconf_buf );
+                report( genbuf );
+        */
         diff = sysconf_buf - shead.buf;
         for( n = 0; n < sysconf_menu; n++ ) {
             menuitem[n].name += diff;
@@ -543,7 +543,7 @@ load_sysconf()
         report( "build sysconf.img" );
         build_sysconf( "etc/sysconf.ini", "sysconf.img" );
     }
-/*    report( "load sysconf.img" );*/
+    /*    report( "load sysconf.img" );*/
     load_sysconf_image( "sysconf.img" );
 }
 
@@ -554,55 +554,55 @@ int     cmdprompt;
 {
     char        *str;
     int         help, line, col, num;
-    
+
     if(!DEFINE(DEF_NORMALSCR))
-            clear();
+        clear();
     help = (currentuser.flags[0] & CURSOR_FLAG);
     line = 3;
     col  = 0;
     num  = 0;
     while( 1 ) {
         switch( pm->level ) {
-            case -1:
-                return( num );
-            case -2:
-                if( strcmp( pm->name, "title" ) == 0 ) {
-                    docmdtitle( pm->desc, cmdprompt ); 
-                } else if( strcmp( pm->name, "screen" ) == 0 ) {
-					if (DEFINE(DEF_SHOWSCREEN)) 
-					{
-	                    if( help && (str = sysconf_str( pm->desc )) != NULL ) {
-    	                    move( pm->line, pm->col );
-        	                decodestr( str );
-            	        }
-					}
-					else
-					{
-	                    if( help && (str = sysconf_str( "S_BLANK" )) != NULL ) {
-    	                    move( pm->line, pm->col );
-        	                decodestr( str );
-            	        }
-					}
+        case -1:
+            return( num );
+        case -2:
+            if( strcmp( pm->name, "title" ) == 0 ) {
+                docmdtitle( pm->desc, cmdprompt );
+            } else if( strcmp( pm->name, "screen" ) == 0 ) {
+                if (DEFINE(DEF_SHOWSCREEN))
+                {
+                    if( help && (str = sysconf_str( pm->desc )) != NULL ) {
+                        move( pm->line, pm->col );
+                        decodestr( str );
+                    }
                 }
-                break;
-            default:
-                if( pm->line >= 0 && HAS_PERM( pm->level ) ) {
-                    if( pm->line == 0 ) {
-                        pm->line = line;  pm->col = col;
-                    } else {
-                        line = pm->line;  col = pm->col;
+                else
+                {
+                    if( help && (str = sysconf_str( "S_BLANK" )) != NULL ) {
+                        move( pm->line, pm->col );
+                        decodestr( str );
                     }
-                    if( help ) {
-                        move( line, col );
-                        prints( "  %s", pm->desc );
-                    }
-                    line++;
+                }
+            }
+            break;
+        default:
+            if( pm->line >= 0 && HAS_PERM( pm->level ) ) {
+                if( pm->line == 0 ) {
+                    pm->line = line;  pm->col = col;
                 } else {
-                    if( pm->line > 0 ) {
-                        line = pm->line;  col = pm->col;
-                    }
-                    pm->line = -1;
+                    line = pm->line;  col = pm->col;
                 }
+                if( help ) {
+                    move( line, col );
+                    prints( "  %s", pm->desc );
+                }
+                line++;
+            } else {
+                if( pm->line > 0 ) {
+                    line = pm->line;  col = pm->col;
+                }
+                pm->line = -1;
+            }
         }
         num++;
         pm++;
@@ -618,7 +618,7 @@ char    *menu_name;
     char        *cmdprompt = "目前选择：";
     int         size, now;
     int         cmdplen, cmd, i;
-       
+
     if( sysconf_menu <= 0 ) {
         return -1;
     }
@@ -634,7 +634,7 @@ char    *menu_name;
     }
     modify_user_mode( MMENU );
     /* added by netty  */
-    if (nettyNN ==1) { R_monitor();}
+if (nettyNN ==1) { R_monitor();}
     while( 1 ) {
         printacbar();
         while( pm[now].level < 0 || !HAS_PERM( pm[now].level ) ) {
@@ -652,97 +652,97 @@ char    *menu_name;
         prints( "%-12s", pm[now].name );
         standend();
         prints("]");
-        clrtoeol();  
+        clrtoeol();
         cmd = egetch();
         if( currentuser.flags[0] & CURSOR_FLAG ) {
             move( pm[now].line, pm[now].col );
             prints( "  " );
         }
         switch( cmd ) {
-            case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
+        case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
+            break;
+        case EOF:
+            if( ! refscreen ) {
+                abort_bbs();
+            }
+            domenu_screen( pm, cmdprompt );
+            modify_user_mode( MMENU );
+            /*Modify to showout ActiveBoard After talking*/
+            if (nettyNN ==1) { R_monitor();}
+            break;
+        case KEY_RIGHT:
+            for( i = 0; i < size; i++ ) {
+                if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
+                        pm[i].col > pm[now].col && HAS_PERM( pm[i].level ) )
+                    break;
+            }
+            if( i < size ) {
+                now = i;
                 break;
-            case EOF:
-                if( ! refscreen ) {
-                    abort_bbs();
+            }
+    case '\n': case '\r':
+            if( strcmp( pm[now].arg, ".." ) == 0 ) {
+                return 0;
+            }
+            if( pm[now].fptr != NULL ) {
+                move( 1, cmdplen );
+                clrtoeol();
+                (*pm[now].fptr)( pm[now].arg );
+                if( pm[now].fptr == Select ) {
+                    now++;
                 }
                 domenu_screen( pm, cmdprompt );
                 modify_user_mode( MMENU );
-/*Modify to showout ActiveBoard After talking*/          
-    if (nettyNN ==1) { R_monitor();}
-                break;
-            case KEY_RIGHT:
-                for( i = 0; i < size; i++ ) {
-                    if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
-                        pm[i].col > pm[now].col && HAS_PERM( pm[i].level ) )
-                        break;
-                }
-                if( i < size ) {
-                    now = i;
-                    break;
-                }
-            case '\n': case '\r':
-                if( strcmp( pm[now].arg, ".." ) == 0 ) {
-                    return 0;
-                }
-                if( pm[now].fptr != NULL ) {
-                    move( 1, cmdplen );
-                    clrtoeol();
-                    (*pm[now].fptr)( pm[now].arg );
-                    if( pm[now].fptr == Select ) {
-                        now++;
-                    }
-                    domenu_screen( pm, cmdprompt );
-                    modify_user_mode( MMENU );
                 if (nettyNN ) { R_monitor();}
-                }
-                    break;
-            case KEY_LEFT:
-                for( i = 0; i < size; i++ ) {
-                    if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
+            }
+            break;
+        case KEY_LEFT:
+            for( i = 0; i < size; i++ ) {
+                if( pm[i].line == pm[now].line && pm[i].level >= 0 &&
                         pm[i].col < pm[now].col && HAS_PERM( pm[i].level ) )
-                        break;
-                    if( pm[i].fptr == Goodbye )
-                        break;
-                }
-                if( i < size ) {
+                    break;
+                if( pm[i].fptr == Goodbye )
+                    break;
+            }
+            if( i < size ) {
+                now = i;
+                break;
+            }
+            return 0;
+        case KEY_DOWN:
+            now++;
+            break;
+        case KEY_UP:
+            now--;
+            while( pm[now].level < 0 || !HAS_PERM( pm[now].level ) ) {
+                if( now > 0 )  now--;
+                else  now = size - 1;
+            }
+            break;
+        case '~':
+            if(!HAS_PERM(PERM_SYSOP)) {
+                break;
+            }
+            free( menuitem );
+            report( "rebuild sysconf.img" );
+            build_sysconf( "etc/sysconf.ini", "sysconf.img" );
+            report( "reload sysconf.img" );
+            load_sysconf_image( "sysconf.img" );
+            pm = &menuitem[ sysconf_eval( menu_name ) ];
+            size = domenu_screen( pm, cmdprompt );
+            now = 0;
+            break;
+        default:
+            if( cmd >= 'a' && cmd <= 'z' )
+                cmd = cmd - 'a' + 'A';
+            for( i = 0; i < size; i++ ) {
+                if( pm[i].line > 0 && cmd == pm[i].name[0] &&
+                        HAS_PERM( pm[i].level ) ) {
                     now = i;
                     break;
                 }
-                return 0;
-            case KEY_DOWN:
-                now++;
-                break;
-            case KEY_UP:
-                now--;
-                while( pm[now].level < 0 || !HAS_PERM( pm[now].level ) ) {
-                    if( now > 0 )  now--;
-                    else  now = size - 1;
-                }
-                break;
-            case '~':
-                if(!HAS_PERM(PERM_SYSOP)) {
-                    break;
-                }
-                free( menuitem );
-                report( "rebuild sysconf.img" );
-                build_sysconf( "etc/sysconf.ini", "sysconf.img" );
-                report( "reload sysconf.img" );
-                load_sysconf_image( "sysconf.img" );
-                pm = &menuitem[ sysconf_eval( menu_name ) ];
-                size = domenu_screen( pm, cmdprompt );
-                now = 0;
-                break;
-            default:
-                if( cmd >= 'a' && cmd <= 'z' )
-                    cmd = cmd - 'a' + 'A';
-                for( i = 0; i < size; i++ ) {
-                    if( pm[i].line > 0 && cmd == pm[i].name[0] &&
-                        HAS_PERM( pm[i].level ) ) {
-                        now = i;
-                        break;
-                    }
-        
-                }
+
+            }
         }
     }
 }
