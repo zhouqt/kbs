@@ -223,7 +223,9 @@ int size;
      * if((fd = open(filename,O_WRONLY|O_CREAT,0644)) == -1) { 
      */
     if ((fd = open(filename, O_WRONLY | O_CREAT, 0664)) == -1) {        /* Leeward 98.04.27: 0664->Enable write access of WWW-POST programe */
+#ifdef BBS_MAIN
         perror(filename);
+#endif
         return -1;
     }
     flock(fd, LOCK_EX);
