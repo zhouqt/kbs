@@ -25,8 +25,6 @@
 
 #include "bbs.h"
 
-#define MAXITEMS        1024
-#define PATHLEN         256
 #define A_PAGESIZE      (t_lines - 5)
 
 #define ADDITEM         0
@@ -43,24 +41,9 @@ void	a_report();/*Haohmaru.99.12.06.板主精华区操作记录，作为考查工作的依据*/
 extern void     a_prompt();  /* added by netty */
 char		r_genbuf[256];
 
-typedef struct { /* changed by period from 72 to 84 2000-10-17 (%38s + "(BM:   )" + 12*3) */
-    char        title[ 84/*72*/ ];
-    char        fname[ 80 ];
-    char        *host;
-    int         port;
-} ITEM;
-
 int     a_fmode=1;
 int     t_search_down();
 int     t_search_up();
-
-typedef struct {
-    ITEM        *item[ MAXITEMS ];
-    char        mtitle[ STRLEN];
-    char        *path;
-    int         num, page, now;
-    int         level;
-} MENU;
 
 void
 a_report(s)/* Haohmaru.99.12.06 */

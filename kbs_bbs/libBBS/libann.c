@@ -21,7 +21,7 @@ void ann_add_item(MENU *pm, ITEM *it)
 	}
 }
 
-int ann_load_names(MENU *pm)
+int ann_load_directory(MENU *pm)
 {
 	FILE        *fn;
 	ITEM        litem;
@@ -30,9 +30,9 @@ int ann_load_names(MENU *pm)
 	char        hostname[STRLEN];
 
 	pm->num = 0;
-	snprintf(buf, sizeof(buf), "%s/.Names", pm->path);
+	snprintf(buf, sizeof(buf), "%s/.Names", pm->path); /*.Names记录菜单信息*/
 	if ( (fn = fopen( buf, "r" )) == NULL )
-		return 0;
+		return -1;
 	hostname[0]='\0';
 	while ( fgets( buf, sizeof(buf), fn ) != NULL )
 	{
@@ -54,7 +54,7 @@ int ann_load_names(MENU *pm)
 				(!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
 				(!strstr(litem.title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
 			{
-				if (strstr(litem.fname,"!@#$%")) /*? host & port */
+				if (strstr(litem.fname,"!@#$%")) /*取 host & port */
 				{
 					char *ptr1,*ptr2,gtmp[STRLEN];
 					strncpy(gtmp, litem.fname, STRLEN-1);
@@ -89,14 +89,14 @@ int ann_load_names(MENU *pm)
 		}
 	}
 	fclose( fn );
-	return 1;
+	return 0;
 }
 
 ITEM *ann_alloc_items(size_t num)
 {
 	ITEM *it;
 
-	it = (ITEM *)calloc(sizeof(ITEM)*num);
+	it = (ITEM *)calloc(num, sizeof(ITEM));
 	return it;
 }
 
@@ -197,7 +197,7 @@ int ann_get_path(char *board, char* path, size_t len)
 int ann_traverse_check(char *path)
 {
 	char *ptr;
-	int i = 0;
+	size_t i = 0;
 	char filename[256];
 	char buf[256];
 	char pathbuf[256];
@@ -212,10 +212,8 @@ int ann_traverse_check(char *path)
 	ptr = path;
 	while(*ptr != '\0')
 	{
-		if(pathbuf[0] == '\0')
-			snprintf(filename, sizeof(filename), "0Announce/.Names");
-		else if(*ptr == '/')
-			snprintf(filename, sizeof(filename), "0Announce/%s/.Names", pathbuf);
+		if(*ptr == '/')
+			snprintf(filename, sizeof(filename), "%s/.Names", pathbuf);
 		else
 		{
 			if (i < sizeof(pathbuf))
