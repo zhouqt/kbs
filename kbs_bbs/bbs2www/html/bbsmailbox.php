@@ -35,7 +35,7 @@ login_init();
        		 if ($start < 0)
 		{
 			$start = 0;
-			$num = $mail_num;
+			//$num = $mail_num; //这个不太好吧... - atppp
 		}
 		$maildata = bbs_getmails($mail_fullpath,$start,$num);
 		if ($maildata == FALSE)
