@@ -453,6 +453,25 @@ int check_ID_lists(char * id)
     return ret;
 }
 
+int check_ip_acl(char * id, char * sip)
+{
+    char fn[80];
+    int ip[4],rip[4],l,a;
+    unsigned int ips, rips;
+    FILE* fp;
+    sethomefile(fn, id, "ipacl");
+    sscanf(sip, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
+    ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
+    fp = fopen(fn, "r");
+    if(fp) {
+        fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a);
+        rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
+        if(((ips>>l)<<l)==((rips>>l)<<l))
+            return a;
+    }
+    return 0;
+}
+
 void login_query()
 {
     char uid[STRLEN], passbuf[40], *ptr;
@@ -643,6 +662,9 @@ void login_query()
     }
 #endif
     multi_user_check();
+    if(check_ip_acl(currentuser->userid, fromhost)) {
+        prints("该 ID 不欢迎来自 %s 的用户，byebye!", fromhost);
+    }
     alarm(0);
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
     term_init();
