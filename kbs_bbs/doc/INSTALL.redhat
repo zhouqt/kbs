@@ -1,0 +1,106 @@
+$Id$
+              smthbbs 在 RedHat Linux 8/9 上的安装指南
+
+    本文介绍如何在 RedHat Linux 8/9 系统上安装 smthbbs 系统。与以往
+安装方法不同的是，本文的方法尽可能使用 RedHat 自带的软件，例如 apache
+和 php 等。此外，本文的方法可使 smthbbs 的 www 模块同时适合 apache 和 
+apache2。
+
+1. 需要的软件
+httpd-xxx              必须
+httpd-devel-xxx        必须
+php-xxx                必须
+php-devel-xxx          必须
+libxml2                必须
+libiconv               必须
+zlib                   必须
+openssl		       必须
+gmp-4.1.2              必须
+mysql                  必须
+     (以上软件可直接用 RedHat 光盘里的安装)
+
+
+autoconf-2.57          必须
+automake-1.6.X         必须
+libtool-1.4.3          必须
+libesmtp > 0.8         必须      编译时必须加上 --disable-pthreads 选项
+     (以上 4 个可以从 dev.smth.org 下载 rpm 包安装或者下载源代码自己编译安装)
+
+2. 编译安装 smthbbs
+    下载 smthbbs 的源代码有两种方法，一种是通过 cvs 方式获取，另一种是下载每
+日更新的 smthbbs-snapshot 代码包。用 cvs 方式下载源代码请参考 doc/README.cvs
+文件。
+
+    注意在 site/ 子目录里面有名字为 devel.c 和 devel.h 的文件，这两个文件是站
+点定制文件，本文以这两个文件为例子进行讲解。注意验证 devel.h 文件中 BBSUID 和 
+BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到一致。
+
+    然后进入 smthbbs 的源代码目录，执行下列命令完成编译。
+        contrib/build-RH9.sh
+
+    编译成功后，用下列命令进行安装。
+        make install
+        make install-home
+
+3. 运行 smthbbs
+    下面这些步骤有些需要 root 权限，为方便起见，直接切换到 root 用户。
+        cd /usr/local
+        chown -R bbs:bbs bbs
+        cd bbs/bin
+        ./miscd daemon
+        ./bbslogd
+        ./bbsd -p 23  (可以使用其他端口，如果用 23 的话，
+                       需要把系统的 telnet 服务关闭)
+        ./newpop3d (提供 POP3/POP3S 方式取信)
+    
+    如果还想提供 ssh 方式的连接，请阅读 doc/sshbbsd-howto 文件。
+
+4. 初始化 smthbbs
+    首先登录到 bbs 上，用 telnet 127.0.0.1 命令，如果 bbsd 不是运行在 23
+端口，则还需在命令行上提供端口参数。
+
+    连上 bbs 之后，首先输入 new 新建 SYSOP 帐号，一定要用全部大写的 SYSOP。
+然后再新建一个 guest 帐号(smthbbs 的 www 模块要求系统中必须有 guest 用户)。
+
+    其他的管理功能比如开版操作可以用 SYSOP 帐号进行，可以参考 smthbbs 中
+doc/ 目录的文件及 BBS 水木清华站 (http://www.smth.org) BBSMan_Dev 版的文章。
+
+5. 配置 apache 和 php
+    下面这些步骤同样用 root 用户进行。
+        cd /usr/lib/php4 (或者是 /usr/lib/php)
+        ln -s /var/www/libexec/bbs/libphpbbslib.so
+
+    编辑 /etc/php.ini 文件，修改
+      short_open_tag = Off
+    在 Dynamic Extension 之下添加
+      extension=libphpbbslib.so
+
+    cd /etc/httpd/conf
+    编辑 httpd.conf 文件，修改
+      User bbs
+      Group bbs
+    修改默认 Charset 头，在文件适当位置加入
+      AddLanguage zh-cn .cn
+      AddLanguage cn .cn
+      AddCharset gb2312         .Gb2312    .gb2312
+      AddDefaultCharset gb2312
+
+    最后使用 /etc/rc.d/init.d/httpd start 来启动 httpd 服务，如果原来已经
+启动了 httpd 服务，则可通过 /etc/rc.d/init.d/httpd restart 来重启 httpd 服务。
+
+6. 出现故障
+    下面的方法可用来检查 smthbbs 的 phpbbslib extension 是否起作用。
+
+    编写 info.php 文件，置于 /var/www/html 目录中，内容如下：
+<?php
+        phpinfo();
+?>
+
+    然后在浏览器中输入地址 http://server_address/info.php，查看输出页面，
+如果页面中没有 smth_bbs support enabled 这一行，说明 smthbbs 的 phpbbslib
+extension 没有起作用。
+
+    最后要把 info.php 文件删除。
+
+    其他问题请到 BBS 水木清华站 (http://www.smth.org) BBSMan_Dev 版参与讨论。
+
