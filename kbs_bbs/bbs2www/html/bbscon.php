@@ -47,22 +47,28 @@
 		else
 		{
 			$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
-                	if (cache_header("public",filemtime($filename),300))
-                		return;
+/*TODO: check 公开版面和私下版面
+            if (cache_header("public",filemtime($filename),300))
+                return;
+*/
+			Header("Cache-control: nocache");
 			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 			if ($attachpos!=0) {
-				$file = fopen($filename, "r");
+				$file = fopen($filename, "rb");
 				fseek($file,$attachpos);
-				fread($file,$attachsize,4);
 				$attachname='';
-				while (($char=fgetc($file,1)!='\0') {
+				while (($char=fgetc($file))!=FALSE) {
+					if (ord($char)==0) break;
 					$attachname=$attachname . $char;
 				}
+				$str=fread($file,4);
+				$array=unpack('Nsize',$str);
+				$attachsize=$array["size"];
 				@$mimetype=mime_content_type($attachname);
 				if ($mimetype!='')
 					Header("Content-type: " . $mimetype);
 				Header("Accept-Ranges: bytes");
-				Header("Accept-Length: " . filesize($filename));
+				Header("Accept-Length: " . $attachsize);
 				Header("Content-Disposition: attachment; filename=" . $attachname);
 				echo fread($file,$attachsize);
 				fclose($file);

@@ -418,6 +418,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 
     if (size == 0)
         return -1;
+    if (oldty!=100) {
     for (i = 0, w = 0; i < size; i++, p++) {
         if (*p == '\n') {
             *l = i;
@@ -494,20 +495,29 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
     }
     if (*s == size)
         return 0;
-    if ( size > ATTACHMENT_SIZE
-        && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE)) {
+    }
+    if ( oldty==100 || (size > ATTACHMENT_SIZE
+        && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE))) {
         long attach_len;
 
         *ty = 100;
         p = p0;
+	if (oldty==100) p--;
         p += ATTACHMENT_SIZE;
         if ((p = (char *) memchr(p, '\0', size - (ATTACHMENT_SIZE))) == NULL) {
             return 0;
         }
         p++;
         *s = ntohl(*(unsigned long *) p) + p - p0 + sizeof(unsigned long);
-        if (*s>size)
-            *s=size;
+	if (oldty==100) {
+          *ty=101;
+          *s--;
+	}
+	else {
+          if (*s>size)
+              *s=size;
+	  *s=1;
+	}
     } else {
         if (p0[*s-1]=='\0')
 		*s++;
@@ -679,21 +689,22 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         return;
     } else if (ty == 100) {
         char attachname[41], *p;
-        long attachsize;
-        char link[256];
-
         strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
-        attachsize=ntohl(*(unsigned long *)( ptr+ATTACHMENT_SIZE+strlen(attachname)+1));
-        if (current_attach_link)
-            (*current_attach_link)(link,255,l->curr-begin+ATTACHMENT_SIZE,current_attach_link_arg);
-        else
-            strcpy(link,"(用www方式阅读本文可以下载此附件)");
         p = strrchr(attachname, '.');
         if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
                           || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))
-            prints("\033[m附图: %s \033[5m%s\033[0m\n", attachname,link);
+            prints("\033[m附图: %s 链接:\n", attachname,link);
         else
-            prints("\033[m附件: %s \033[5m%s\033[0m\n", attachname,link);
+            prints("\033[m附件: %s 链接:\n", attachname,link);
+	return;
+    } else if (ty == 101) {
+        char link[256];
+
+        if (current_attach_link)
+            (*current_attach_link)(link,255,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
+        else
+            strcpy(link,"(用www方式阅读本文可以下载此附件)");
+	prints("\033[5m%s\033[m\n",link);
         return;
     } else if (ty >= 2) {
         outns("\033[36m", 5);

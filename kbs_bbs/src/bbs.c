@@ -722,7 +722,7 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     char* server=sysconf_str("BBS_WEBDOMAIN");
     if (server==NULL)
         server=sysconf_str("BBSDOMAIN");
-    snprintf(buf,buf_len-SESSIONLEN,"%s/bbscon.php?board=%s&id=%d&ap=%d&sid=",
+    snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?board=%s&id=%d&ap=%d&sid=",
         server,currboard,fh->id,attachpos);
     get_telnet_sessionid(buf+strlen(buf), utmpent);
 }

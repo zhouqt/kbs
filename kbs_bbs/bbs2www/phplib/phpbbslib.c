@@ -476,9 +476,6 @@ static ZEND_FUNCTION(bbs_setonlineuser)
     long compat_telnet;
 
     MAKE_STD_ZVAL(user_array);
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 4) {
         if (zend_parse_parameters(4 TSRMLS_CC, "slla", &userid, &userid_len, &utmpnum, &utmpkey, &user_array) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -495,6 +492,8 @@ static ZEND_FUNCTION(bbs_setonlineuser)
         RETURN_LONG(2);
 
     if (userid_len=0)
+        userid=NULL;
+    if (userid_len=1)
         userid=NULL;
     if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui, compat_telnet)) == 0) {
         setcurrentuinfo(pui, utmpnum);

@@ -1978,10 +1978,10 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
     /*
      * printf("utmpnum = %s\n", num); 
      */
-    if (!strcasecmp(userid, "new"))
+    if (userid&&!strcasecmp(userid, "new"))
         return -1;
 
-    if (strcasecmp(userid, "guest")) {
+    if ((userid==NULL)||strcasecmp(userid, "guest")) {
         /*
          * 非guest在线用户处理 
          */
