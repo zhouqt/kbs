@@ -85,11 +85,11 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 	}
 ?>
 [<?php bbs_add_super_fav ($articles[1]['TITLE'], "/bbscon.php?bid=" . $brdnum . "&id=" . $articles[1]["ID"]); ?>]
-[<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=<?php if(strncmp($articles[1]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[1]["TITLE"]); ?>">回信给作者</a>]
-[<a href="/bbsedit.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">修改文章</a>]
+[<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=<?php if(strncmp($articles[1]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[1]["TITLE"]); ?>">回信</a>]
+[<a href="/bbsedit.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">修改</a>]
 [<a href="/bbsedittitle.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">修改标题</a>]
-[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
-[<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"]; ?>">同主题阅读</a>]
+[<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除</a>]
+[<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"]; ?>">同主题</a>]
 [<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["GROUPID"]; ?>">同主题第一篇</a>]
 [<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"]; ?>&start=<?php echo $articles[1]["ID"]; ?>">从此处展开</a>]
 [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">返回版面</a>]
