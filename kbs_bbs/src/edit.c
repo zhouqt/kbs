@@ -1140,6 +1140,9 @@ void display_buffer()
 
     temp_showansi = showansi;
 
+    for (i=0; i<t_lines-1; i++) {
+        move(i, 0); clrtoeol();
+    }
     for (p = top_of_win, i = 0; i < t_lines - 1; i++) {
         move(i, 0);
         if (p) {
@@ -1161,7 +1164,6 @@ void display_buffer()
             p = p->next;
         } else
             prints("%s~", editansi ? ANSI_RESET : "");
-        clrtoeol();
     }
 
     showansi = temp_showansi;

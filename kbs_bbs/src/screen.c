@@ -31,8 +31,8 @@
 #define o_clear() {if(tc_color!=7||tc_mode!=0) output("\x1b[m",3);output("\x1b[H\x1b[J",6); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
 #define o_cleol() output("\x1b[K",3)
 
-unsigned char scr_lns, scr_cols;
-unsigned char cur_ln = 0, cur_col = 0;
+char scr_lns, scr_cols;
+char cur_ln = 0, cur_col = 0;
 int can_clrscr = 0;
 int roll, scrollcnt;
 int tc_col=0, tc_line=0;
@@ -185,6 +185,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if ((new_col == was_col || new_col==0) && new_ln>=was_ln+1) {
         char ss[20];
+        if(tc_color%16!=7)
+            tc_color = tc_color/16*16+8;
         if(new_ln==was_ln+1)
             sprintf(ss, "\x1b[B");
         else
@@ -196,6 +198,8 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     }
     if ((new_col == was_col || new_col==0) && new_ln<=was_ln-1) {
         char ss[20];
+        if(tc_color%16!=7)
+            tc_color = tc_color/16*16+8;
         if(new_ln==was_ln-1)
             sprintf(ss, "\x1b[A");
         else
@@ -532,7 +536,7 @@ void outns(const char*str, int n)
                     continue;
                 }
              }
-             else if((*(str+i)=='A'||*(str+i)=='B'||*(str+i)=='C'||*(str+i)=='D')&&i<=4) {
+             else if((*(str+i)=='A'||*(str+i)=='B'||*(str+i)=='C'||*(str+i)=='D')&&i<=5) {
                 char s1[5];
                 s1[i-2]=0;
                 memcpy(s1,str+2,i-2);
