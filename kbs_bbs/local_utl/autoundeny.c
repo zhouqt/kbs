@@ -70,11 +70,9 @@ int undenyboardy(struct boardheader* bh)
 
 	nowtime=time(NULL);
 	if (bh->filename[0]) {
-//			if (strcmp(bh.filename,"test")) continue;
 		sprintf(denyfile,"boards/%s/deny_users",bh->filename);
 		if (stat(denyfile,&st)==0) {
 			if (st.st_size!=0) {
-				//printf("process %s ...\n",bh.filename);
 				if (bufsize<st.st_size+1) {
 					if (buf) free(buf);
 					buf=malloc(st.st_size+1);
@@ -86,7 +84,6 @@ int undenyboardy(struct boardheader* bh)
 						idx1=0;idx2=0;
 						while (idx2<st.st_size) {
 							int len=sgetline(buf,linebuf,&idx2,255);
-							puts(linebuf);
 							if (!canundeny(linebuf,nowtime)) {
 								if (idx1!=0) {
 									buf[idx1]=0x0a;
@@ -105,8 +102,7 @@ int undenyboardy(struct boardheader* bh)
 										*p=0;
 										break;
 									}
-//							    deldeny(&deliveruser,bh->filename,uid);
-							printf("%s %s",bh->filename,uid);
+							        deldeny(&deliveruser,bh->filename,uid,0);
 							}
 						}
 						buf[idx1]=0x0a;
@@ -125,12 +121,13 @@ int undenyboardy(struct boardheader* bh)
 
 main()
 {
+	chdir(BBSHOME);
 	resolve_boards();
 	resolve_ucache();
 	bzero(&deliveruser,sizeof(struct userec));
 	strcpy(deliveruser.userid,"deliver");
 	strcpy(deliveruser.username,"自动发信系统");
-	strcpy(fromhost,"127.0.0.1");
+	strcpy(fromhost,"天堂");
 	apply_boards(undenyboardy);
 }
 

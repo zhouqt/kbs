@@ -535,7 +535,7 @@ int chk_currBM(char BMstr[STRLEN-1],struct userec* user)
     return chk_BM_instr(BMstr, currentuser->userid);
 }
 
-int deldeny(struct userec* user,char* board,char* uident)  /* É¾³ı ½ûÖ¹POSTÓÃ»§ */
+int deldeny(struct userec* user,char* board,char* uident,int notice_only)  /* É¾³ı ½ûÖ¹POSTÓÃ»§ */
 {
     char fn[STRLEN];
     FILE* fn1;
@@ -583,6 +583,9 @@ int deldeny(struct userec* user,char* board,char* uident)  /* É¾³ı ½ûÖ¹POSTÓÃ»§ 
     }
     post_file(user,"",filename,"undenypost",buffer,0,1);
     unlink(filename);
-    return del_from_file(fn,lookupuser?lookupuser->userid:uident);
+    if (notice_only)
+	return 1;
+    else
+    	return del_from_file(fn,lookupuser?lookupuser->userid:uident);
 }
 
