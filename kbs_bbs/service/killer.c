@@ -1331,7 +1331,7 @@ static int room_list_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[ÓÎÏ·ÊÒÑ¡µ¥]",
-              "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¼ÓÈë[\x1b[1;32mJ\x1b[0;37m] \x1b[m      ×÷Õß: \x1b[31mbad@smth.org\x1b[m");
+              "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¼ÓÈë[\x1b[1;32mJ\x1b[0;37m] \x1b[m      ×÷Õß: \x1b[31;1mbad@smth.org\x1b[m");
     move(2, 0);
     prints("[0;1;37;44m    %4s %-14s %-12s %4s %4s %6s %-20s", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÈËÊı", "×î¶à", "ËøÒşÅÔ", "»°Ìâ");
     clrtoeol();
