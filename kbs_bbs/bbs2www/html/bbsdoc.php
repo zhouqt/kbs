@@ -203,20 +203,9 @@
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td>
-<?php if ($brdarr["NAME"]=='testclub' || $brdarr["NAME"] == 'Water' || $brdarr["NAME"] == 'Advice') 
-{
-//for debug
-?>
-<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
-<?php
-}
-else
-{
-?>
-<a href="/cgi-bin/bbs/bbscon?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
-<?php
-}
-?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>"><?php echo htmlspecialchars($title); ?>
+
+</a>
 </td>
 </tr>
 <?php
