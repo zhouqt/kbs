@@ -553,19 +553,20 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
         default:
             RMVCURS(locmem);
             PUTCURS(locmem);
-            if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) /*added by bad 2002.9.2*/
+            if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) /*added by bad 2002.9.2*/ {
 #ifdef NINE_BUILD
-            char buf[256], *t;
-            struct fileheader* h;
-            strcpy(buf, currdirect);
-            if ((t = strrchr(buf, '/')) != NULL)
-                *t = '\0';
-            h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
-            sprintf(genbuf, "%s/%s", buf, h->filename);
-            draw_content(genbuf,h);
+                char buf[256], *t;
+                struct fileheader* h;
+                strcpy(buf, currdirect);
+                if ((t = strrchr(buf, '/')) != NULL)
+                    *t = '\0';
+                h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+                sprintf(genbuf, "%s/%s", buf, h->filename);
+                draw_content(genbuf,h);
 #else
                 set_alarm(0,300*1000,NULL,NULL);
 #endif
+            }
             break;
         }
         mode = DONOTHING;
