@@ -118,6 +118,7 @@ char *msg;
 
 	//fs=fopen("log/pip.log","a+");
 	fs = fopen("game/pipgame/pip.log", "a+");
+	if (fs == NULL) return;
 	fprintf(fs, "%s", msg);
 	fclose(fs);
 }
