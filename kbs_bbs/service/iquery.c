@@ -20,7 +20,7 @@
 #define MAX_KEEP 100
 
 char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200];
-int res_total=0,toomany=0,wh=0,res_flag[MAX_KEEP];
+int res_total=0,toomany=0,wh=0,res_flag[MAX_KEEP],show_mode=0;
 
 char qn[60];
 
@@ -247,6 +247,108 @@ static int choose_file_show(struct _select_def *conf, int i)
 {
     struct room_struct * r;
     prints("  %3d  %-35s %s", i+wh*MAX_KEEP, res_title[i-1], res_path[i-1]);
+    clrtoeol();
+    if(show_mode) {
+        char buf[10*1024],out[10*1024],out2[10*1024];
+        FILE* fp;
+        int i,j,k,l,fsize=0,t=0;
+        fp = fopen(res_filename[i-1], "rb");
+        if(!fp) {
+            prints("\n"); clrtoeol();
+            prints("\n"); clrtoeol();
+            prints("\n"); clrtoeol();
+            return SHOW_CONTINUE;
+        }
+        fsize = fread(buf, 1, 10*1024, fp);
+        fclose(fp);
+        memset(out, 0, sizeof(out));
+        i=0;
+        if(qn[i]=='=') {
+            while(i<strlen(qn)&&qn[i]!=' ') i++;
+            if(i>=strlen(qn)) i=0;
+        }
+        while(i<strlen(qn)) {
+            if(qn[i]>='a'&&qn[i]<='z'||qn[i]>='A'&&qn[i]<='Z') {
+                j=i;
+                while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
+                for(k=0;k<fsize-(j-i);k++)
+                    if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='a'&&buf[k-1]<='z'||buf[k-1]>='A'&&buf[k-1]<='Z'))&&
+                        (k==fsize-1||!(buf[k+j-i]>='a'&&buf[k+j-i]<='z'||buf[k+j-i]>='A'&&buf[k+j-i]<='Z')))
+                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                i=j-1;
+            }
+            if(qn[i]>='0'&&qn[i]<='9') {
+                j=i;
+                while(qn[j]>='0'&&qn[j]<='9') j++;
+                for(k=0;k<fsize-(j-i);k++)
+                    if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='0'&&buf[k-1]<='9'))&&
+                        (k==fsize-1||!(buf[k+j-i]>='0'&&buf[k+j-i]<='9')))
+                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                i=j-1;
+            }
+            if(qn[i]<0&&qn[i+1]<0) {
+                j=i+2;
+                for(k=0;k<fsize-(j-i);k++)
+                    if(!strncmp(qn+i,buf+k,j-i))
+                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                i=j-1;
+            }
+            i++;
+        }
+        if(t>=20) {
+            for(k=0;k<fsize-4;k++) {
+                if(out[k]==0&&out[k+1]==1&&out[k+2]==0) {
+                    out[k+1]=0;
+                    t--;
+                }
+                if(out[k]==0&&out[k+1]==1&&out[k+2]==1&&out[k+3]==0) {
+                    out[k+1]=0;
+                    out[k+2]=0;
+                    t-=2;
+                }
+                if(t<10) break;
+            }
+        }
+        if(t==0) {
+            prints("\n"); clrtoeol();
+            prints("\n"); clrtoeol();
+            prints("\n"); clrtoeol();
+            return SHOW_CONTINUE;
+        }
+        while(t<180) {
+            t=0;
+            for(k=0;k<fsize;k++) {
+                out2[k]=0;
+                if(out[k]||k>0&&out[k-1]||k<fsize-1&&out[k+1]) {
+                    if(out[k]==1)
+                        out2[k]=1;
+                    else
+                        out2[k]=2;
+                    t++;
+                }
+            }
+            memcpy(out,out2,fsize);
+        }
+        prints("\n          ");
+        j=0;
+        for(i=0;i<fsize;i++)
+        if(out[i]) {
+            if(i>0&&out[i-1]==0) {
+                prints("..."); j+=3;
+            }
+            if(out[i]==1)
+                setfcolor(RED,1);
+            else
+                resetcolor();
+            prints("%c",buf[i]);
+            j++;
+            if(j>=69) {
+                prints("\n          ");
+                j=0;
+            }
+        }
+        resetcolor();
+    }
     return SHOW_CONTINUE;
 }
 
@@ -316,6 +418,7 @@ static int choose_file_key(struct _select_def *conf, int key)
     struct fileheader fh;
     char buf[240],buf2[80];
     int i;
+    POINT *pts;
     switch (key) {
     case ']':
         if((wh+1)*MAX_KEEP+1<=toomany) {
@@ -359,6 +462,28 @@ static int choose_file_key(struct _select_def *conf, int key)
 	else prints("ÎÄÕÂ×ª¼ÄÊ§°Ü");
 	pressanykey();
 	return SHOW_REFRESH;
+    case '+':
+        free(conf->item_pos);
+        show_mode = 1;
+        pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
+        for (i = 0; i < BBS_PAGESIZE; i++) {
+            pts[i].x = 2;
+            pts[i].y = i*4+3;
+        }
+        grouplist_conf.item_per_page = BBS_PAGESIZE/4;
+        grouplist_conf.item_pos = pts;
+        return SHOW_DIRCHANGE;
+    case '-':
+        free(conf->item_pos);
+        show_mode = 0;
+        pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
+        for (i = 0; i < BBS_PAGESIZE; i++) {
+            pts[i].x = 2;
+            pts[i].y = i + 3;
+        }
+        grouplist_conf.item_per_page = BBS_PAGESIZE;
+        grouplist_conf.item_pos = pts;
+        return SHOW_DIRCHANGE;
     }
     return SHOW_CONTINUE;
 }
@@ -374,12 +499,16 @@ int choose_file()
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
     for (i = 0; i < BBS_PAGESIZE; i++) {
         pts[i].x = 2;
-        pts[i].y = i + 3;
+        if(show_mode) pts[i].y = i*4+3;
+        else pts[i].y = i + 3;
     }
-    grouplist_conf.item_per_page = BBS_PAGESIZE;
+    if(show_mode)
+        grouplist_conf.item_per_page = BBS_PAGESIZE/4;
+    else
+        grouplist_conf.item_per_page = BBS_PAGESIZE;
+    grouplist_conf.item_pos = pts;
     grouplist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     grouplist_conf.prompt = "¡ô";
-    grouplist_conf.item_pos = pts;
     grouplist_conf.arg = NULL;
     grouplist_conf.title_pos.x = 0;
     grouplist_conf.title_pos.y = 0;
