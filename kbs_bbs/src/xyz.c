@@ -278,37 +278,7 @@ int x_level()
         flag2 = 1;
 
 /*Bad 2002.7.6 受限与戒网问题*/
-    basicperm = 0;
-    sethomefile(genbuf2, lookupuser->userid, "giveup");
-    fn = fopen(genbuf2, "rt");
-    if (fn) {
-        while (!feof(fn)) {
-            if (fscanf(fn, "%d %d", &i, &j) <= 0)
-                break;
-            s[lcount][0] = i;
-            s[lcount][1] = j;
-            switch (i) {
-            case 1:
-                basicperm |= PERM_BASIC;
-                break;
-            case 2:
-                basicperm |= PERM_POST;
-                break;
-            case 3:
-                basicperm |= PERM_CHAT;
-                break;
-            case 4:
-                basicperm |= PERM_PAGE;
-                break;
-            case 5:
-                basicperm |= PERM_DENYMAIL;
-                break;
-            }
-            lcount++;
-        }
-        fclose(fn);
-    }
-
+	lcount=get_giveupinfo(lookupuser->userid,&basicperm,s);
     move(1, 0);
     clrtobot();
     move(2, 0);

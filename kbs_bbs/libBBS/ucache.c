@@ -723,3 +723,43 @@ int apply_users(int (*fptr) (struct userec *, char *), char *arg)
             count++;
     return count;
 }
+
+int get_giveupinfo(char* userid,int* basicperm,int s[10][2])
+{
+	int lcount;
+	FILE* fn;
+	char buf[255];
+    basicperm = 0;
+    sethomefile(buf, userid, "giveup");
+    fn = fopen(buf, "rt");
+    if (fn) {
+        while (!feof(fn)) {
+            if (fscanf(fn, "%d %d", &i, &j) <= 0)
+                break;
+            s[lcount][0] = i;
+            s[lcount][1] = j;
+            switch (i) {
+            case 1:
+                basicperm |= PERM_BASIC;
+                break;
+            case 2:
+                basicperm |= PERM_POST;
+                break;
+            case 3:
+                basicperm |= PERM_CHAT;
+                break;
+            case 4:
+                basicperm |= PERM_PAGE;
+                break;
+            case 5:
+                basicperm |= PERM_DENYMAIL;
+                break;
+            }
+            lcount++;
+        }
+        fclose(fn);
+    }
+    return lcount;
+}
+
+
