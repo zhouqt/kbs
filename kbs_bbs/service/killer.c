@@ -709,7 +709,9 @@ void join_room(int w, int spec)
     inrooms[myroom].peoples[i].style = 0;
     inrooms[myroom].peoples[i].flag = 0;
     strcpy(inrooms[myroom].peoples[i].id, currentuser->userid);
-    inrooms[myroom].peoples[i].nick[0]=0;
+    sprintf(buf, "%d %s", i+1, currentuser->userid);
+    buf[12]=0;
+    strcpy(inrooms[myroom].peoples[i].nick, buf);
     inrooms[myroom].peoples[i].pid = uinfo.pid;
     if(rooms[myroom].people==0 && !strcmp(rooms[myroom].creator, currentuser->userid))
         inrooms[myroom].peoples[i].flag = PEOPLE_ROOMOP;
