@@ -748,14 +748,14 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
         tmp = buffer;
     switch (mode) {
         case 0:
-            strncpy(tmp, bp[line].data, LINELEN);
-            strncpy(tmp+LINELEN, bp[line].mode, LINELEN);
-            strncpy(tmp+LINELEN*2, bp[line].color, LINELEN);
+            memcpy(tmp, bp[line].data, LINELEN);
+            memcpy(tmp+LINELEN, bp[line].mode, LINELEN);
+            memcpy(tmp+LINELEN*2, bp[line].color, LINELEN);
             break;
         case 1:
-            strncpy(bp[line].data, tmp, LINELEN);
-            strncpy(bp[line].mode, tmp+LINELEN, LINELEN);
-            strncpy(bp[line].color, tmp+LINELEN*2, LINELEN);
+            memcpy(bp[line].data, tmp, LINELEN);
+            memcpy(bp[line].mode, tmp+LINELEN, LINELEN);
+            memcpy(bp[line].color, tmp+LINELEN*2, LINELEN);
             for(i=0;i<scr_cols;i++)
                 bp[line].mode[i]|=SCREEN_MODIFIED;
             break;
@@ -772,14 +772,14 @@ void norefresh_saveline(int line, int mode, char*buffer)	/* 0 : save, 1 : restor
         tmp = buffer;
     switch (mode) {
         case 0:
-            strncpy(tmp, bp[line].data, LINELEN);
-            strncpy(tmp+LINELEN, bp[line].mode, LINELEN);
-            strncpy(tmp+LINELEN*2, bp[line].color, LINELEN);
+            memcpy(tmp, bp[line].data, LINELEN);
+            memcpy(tmp+LINELEN, bp[line].mode, LINELEN);
+            memcpy(tmp+LINELEN*2, bp[line].color, LINELEN);
             break;
         case 1:
-            strncpy(bp[line].data, tmp, LINELEN);
-            strncpy(bp[line].mode, tmp+LINELEN, LINELEN);
-            strncpy(bp[line].color, tmp+LINELEN*2, LINELEN);
+            memcpy(bp[line].data, tmp, LINELEN);
+            memcpy(bp[line].mode, tmp+LINELEN, LINELEN);
+            memcpy(bp[line].color, tmp+LINELEN*2, LINELEN);
             for(i=0;i<scr_cols;i++)
                 bp[line].mode[i]|=SCREEN_MODIFIED;
             break;
