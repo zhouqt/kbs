@@ -1241,7 +1241,7 @@ case 0: case 1: case 2:
                 break;
         case 'Y' : case 'R':
         case 'y' : case 'r':
-                do_reply(SR_fptr.title);
+                do_reply(&SR_fptr);
         case ' ': case '\n':
             case KEY_DOWN:
                 isnext=1;

@@ -81,7 +81,7 @@ int check_readonly(char *checked);/* Leeward 98.03.28 */
 void record_exit_time();   /* 记录离线时间  Luzi 1998/10/23 */
 int shownotepad();
 int check_stuffmode();
-int do_reply(char* title);
+int do_reply(struct fileheader * fileinfo);
 int do_select(int ent,struct fileheader* fileinfo,char* direct );  /* 输入讨论区名 选择讨论区 */
 int do_post();
 void make_blist();

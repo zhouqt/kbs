@@ -748,7 +748,7 @@ case 'y' : case 'r':
             pressreturn();
             break;
         }
-        do_reply(fileinfo->title);
+        do_reply(fileinfo);
         break;
     case Ctrl('R'):
                     post_reply( ent, fileinfo, direct ); /* 回文章 */
@@ -1128,9 +1128,17 @@ digest_post(int ent,struct fileheader *fhdr,char *direct)
 }
 
 #ifndef NOREPLY
-int do_reply(char* title)         /* reply POST */
+int do_reply(struct fileheader *fileinfo)         /* reply POST */
 {
-    strcpy(replytitle, title);
+    if(fileinfo->accessed[1] & FILE_READ)/*Haohmaru.99.01.01.文章不可re*/
+    {
+            clear();
+            move( 3, 0 );
+            prints("\n\n            很抱歉，本文已经设置为不可re模式,请不要试图讨论本文...\n");
+            pressreturn();
+            return FULLUPDATE;
+    }
+    strcpy(replytitle, fileinfo->title);
     post_article();
     replytitle[0] = '\0';
     return FULLUPDATE;
@@ -2228,7 +2236,7 @@ sequent_messages(struct fileheader *fptr,int* continue_flag)
             break;
     case 'Y' : case 'R':
     case 'y' : case 'r':
-            do_reply(fptr->title); /*回信*/
+            do_reply(fptr); /*回信*/
     case ' ': case '\n':
         case KEY_DOWN:
             *continue_flag = 1; break;
