@@ -551,8 +551,6 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
             break;
 
         default:
-            RMVCURS(locmem);
-            PUTCURS(locmem);
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) /*added by bad 2002.9.2*/ {
 #ifdef NINE_BUILD
                 char buf[256], *t;
@@ -567,6 +565,8 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
                 set_alarm(0,300*1000,NULL,NULL);
 #endif
             }
+            RMVCURS(locmem);
+            PUTCURS(locmem);
             break;
         }
         mode = DONOTHING;

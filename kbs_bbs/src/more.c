@@ -1077,7 +1077,7 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
     sprintf(buf, "\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s\033[1;32m标  题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m", fh->owner, fh->title, fh->innflag[1] == 'S' ? "[转]" : "");
     outs(buf);
     prints("\n\033[m");
-    for(i=t_lines/2+1;i<=t_lines-1;i++) {
+    for(i=t_lines/2+1;i<t_lines-1;i++) {
         move(i,0);
         clrtoeol();
     }
