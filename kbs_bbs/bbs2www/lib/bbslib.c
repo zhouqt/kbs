@@ -558,7 +558,7 @@ int shm_init()
 int user_init(struct userec **x, struct user_info **y)
 {
     char id[20], num[20];
-    int uid, key;
+    int key;
 
     strsncpy(id, getparm("UTMPUSERID"), 13);
     strsncpy(num, getparm("UTMPNUM"), 12);
@@ -751,7 +751,7 @@ int write_file2(FILE * fp, FILE * fp2)
 int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader *oldx, char *attach_dir)
 {
     struct fileheader post_file;
-    char filepath[MAXPATH], fname[STRLEN];
+    char filepath[MAXPATH];
     char buf[256];
     int fd, anonyboard;
 	int retvalue;
@@ -967,7 +967,6 @@ int count_mails(char *id, int *total, int *unread)
 {
     struct fileheader x1;
     char buf[256];
-    int n;
     FILE *fp;
 
     *total = 0;
@@ -1322,7 +1321,7 @@ int has_fill_form()
 {
     FILE *fp;
     int r;
-    char userid[256], tmp[256], buf[256], *ptr;
+    char userid[256], tmp[256], buf[256];
 
     fp = fopen("new_register", "r");
     if (fp == 0)
@@ -2055,15 +2054,12 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
     int ret;
     char buf[255];
     struct userdata ud;
-    char genbuf[STRLEN];
-    struct userec* uc;
 
     if (user != NULL && strcasecmp(user->userid, "guest")) {
         struct user_info ui;
         int utmpent;
         time_t t;
         int multi_ret = 1;
-        int tmp;
 
         while (multi_ret != 0) {
             int lres;
@@ -2261,7 +2257,6 @@ static void setflags(struct userec *u, int mask, int value)
 int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, int userinfoidx)
 {
     int stay = 0;
-    struct userec *x = NULL;
 
     stay = abs(time(0) - puinfo->logintime);
     /*
@@ -3373,11 +3368,8 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 /* ent ÊÇ 1-based µÄ*/
 int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
 {
-    FILE *fn;
-    char buf[512];
     char usrid[STRLEN];
-    char *t;
-    int owned, fail;
+    int owned;
     struct userec *user;
     char bm_str[BM_LEN - 1];
     struct boardheader *bp;
@@ -3454,14 +3446,13 @@ int www_generateOriginIndex(const char* board)
 {
     struct fileheader *ptr1,*ptrtemp;
     struct flock ldata, ldata2 , ldata3;
-    int fd, fd2, fd3,  size , total3, total, i, count = 0;
+    int fd, fd2, fd3,  size , total3, total, i;
     char olddirect[PATHLEN];
 	char currdirect[PATHLEN];
 	char dingdir[PATHLEN];
     char *ptr,*ptr3;
     struct stat buf,buf3;
 	pwwwthreadheader_list tail,temp;
-    size_t bm_search[256];
 	int found;
 
     setbdir(DIR_MODE_NORMAL, olddirect, board);
