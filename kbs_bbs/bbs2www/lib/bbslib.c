@@ -944,22 +944,6 @@ int checkuser(char *id, char *pw) {
 	return checkpasswd2(pw, x);
 }
 
-/*
-int count_id_num(char *id) {
-	int i, total=0;
-	for(i=0; i<MAXACTIVE; i++)
-		if(shm_utmp->uinfo[i].active && !strcasecmp(shm_utmp->uinfo[i].userid, id)) total++;
-	return total;
-}
-*/
-
-/*int count_online2() {
-	int i, total=0;
-	for(i=0; i<MAXACTIVE; i++)
-		if(shm_utmp->uinfo[i].active && shm_utmp->uinfo[i].invisible==0) total++;
-	return total;
-}*/
-
 int loadfriend(char *id) {
         FILE *fp;
         char file[256];
@@ -1287,13 +1271,8 @@ int eat_file_content(int fd, off_t start, off_t len)
 	return 0;
 }
 
-int count_online() /* ugly */
+int count_online()
 {
-	/*struct UTMPFILE *u;
-
-	u = (struct UTMPFILE*)get_utmpshm_addr();
-	return u == NULL ? 0 : u->number;*/
-	/*return (utmpshm == NULL) ? 0 : utmpshm->number;*/
 	return get_utmp_number();
 }
 
@@ -1665,3 +1644,14 @@ int get_unifile(char *filename, char *key, int mode)
 	return 0;
 }
 
+/* 获得一个用户的在线用户数目 */
+int count_user_online(char *uid)
+{
+    return apply_utmp(NULL,0,uid,0) ;
+}
+
+/* 获得当前用户的 utmp 号 */
+int get_curr_utmpent()
+{
+	return get_utmpent_num(u_info);
+}
