@@ -155,7 +155,7 @@
 ?>
 <td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5">&nbsp;
+<td class="t5">&nbsp;<strong>
 <?php
 	switch ($default_dir_mode)
 	{
@@ -163,7 +163,7 @@
 		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1))
 		{
 ?>
-<a class="ts2" href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=9"><?php echo htmlspecialchars($title); ?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=9"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -171,7 +171,7 @@
 		else
 		{
 ?>
-<a class="ts2" href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -180,13 +180,13 @@
 	case $dir_modes["NORMAL"]:
 	default:
 ?>
-<a class="ts2" href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=9"; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=9"; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
 	}
 ?>
-</td>
+</strong></td>
 </tr>
 <?php
 			if ($order)
