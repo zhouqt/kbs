@@ -56,6 +56,8 @@ extern int errno;
 #endif
 #endif
 
+unsigned Baudrate = 2400;
+
 FILE *fout;
 
 
@@ -63,6 +65,7 @@ int Lastrx;
 int Crcflg;
 int Firstsec;
 int errors;
+int Restricted = 1;             /* restricted; no /.. or ../ in filenames */
 int Readnum = HOWMANY;          /* Number of bytes to ask for in read() from modem */
 int skip_if_not_found;
 
@@ -70,6 +73,7 @@ char *Pathname;
 const char *program_name;       /* the name by which we were called */
 
 int MakeLCPathname = TRUE;      /* make received pathname lower case */
+int Quiet = 0;                  /* overrides logic that would otherwise set verbose */
 int Nflag = 0;                  /* Don't really transfer files */
 int Rxclob = FALSE;             /* Clobber existing file */
 int Rxbinary = FALSE;           /* receive all files in bin mode */
@@ -77,6 +81,7 @@ int Rxascii = FALSE;            /* receive files in ascii (translate) mode */
 int Thisbinary;                 /* current file is to be received in bin mode */
 int try_resume = FALSE;
 int junk_path = FALSE;
+int no_timeout = FALSE;
 enum zm_type_enum protocol;
 int zmodem_requested = FALSE;
 
@@ -120,42 +125,48 @@ char zconv;                     /* ZMODEM file conversion request */
 char zmanag;                    /* ZMODEM file management request */
 char ztrans;                    /* ZMODEM file transport request */
 int Zctlesc;                    /* Encode control characters */
+int Zrwindow = 1400;            /* RX window size (controls garbage count) */
 
 int tryzhdrtype = ZRINIT;       /* Header type to send corresponding to Last rx close */
 time_t stop_time;
 
 
+/* called by signal interrupt or terminate to clean things up */
+void bibi(int n)
+{
+    if (zmodem_requested)
+        zmputs(Attn);
+    canit(0);
+    io_mode(0, 0);
+    zmodem_error(128 + n, 0, "caught signal %d; exiting", n);
+}
 
-/*int main(int argc, char *argv[])
+
+int bbs_zrecvfile()
 {
     register char *cp;
-    register int npats;
-    char **patts = NULL;
+    register int npats = 0;
+    char **patts = NULL;        /* keep compiler quiet */
     int exitcode = 0;
     int c;
+    char paths[100]="upload";
     unsigned int startup_delay = 0;
 
     Rxtimeout = 100;
     setbuf(stderr, NULL);
     Restricted = 2;
 
+    /* make temporary and unfinished files */
     umask(0077);
 
     protocol = ZM_ZMODEM;
 
 
+    /* initialize zsendline tab */
     zsendline_init();
 #ifdef HAVE_SIGINTERRUPT
     siginterrupt(SIGALRM, 1);
 #endif
-
-    npats = argc - 1;
-    patts = &argv[1];
-
-    if (npats > 1)
-        usage(2, "garbage on commandline");
-    if (protocol != ZM_XMODEM && npats)
-        usage(2, "garbage on commandline");
 
     io_mode(0, 1);
     readline_setup(0, HOWMANY, MAX_BLOCK * 2);
@@ -165,15 +176,16 @@ time_t stop_time;
         signal(SIGINT, bibi);
     signal(SIGTERM, bibi);
     signal(SIGPIPE, bibi);
+    patts = &paths;
     if (wcreceive(npats, patts) == ERROR) {
         exitcode = 0200;
         canit(0);
     }
     io_mode(0, 0);
-    if (exitcode && !zmodem_requested)  
+    if (exitcode && !zmodem_requested)  /* bellow again with all thy might. */
         canit(0);
-    exit(exitcode);
-}*/
+    return 0;
+}
 
 static void usage(int exitcode, const char *what)
 {
@@ -184,11 +196,10 @@ static void usage(int exitcode, const char *what)
  * Let's receive something already.
  */
 
-int bbs_zrecvfile()
+static int wcreceive(int argc, char **argp)
 {
     int c;
     struct zm_fileinfo zi;
-    FILE* fp=fopen("flist","w");
 
     zi.fname = NULL;
     zi.modtime = 0;
@@ -199,27 +210,54 @@ int bbs_zrecvfile()
     zi.bytes_skipped = 0;
     zi.eof_seen = 0;
 
-    Crcflg = 1;
-    if ((c = tryz()) != 0) {
-        if (c == ZCOMPL)
-            return OK;
-        if (c == ERROR)
-            goto fubar;
-        c = rzfiles(&zi);
-
-        if (c)
-            goto fubar;
-    } else {
-        for (;;) {
-            if (wcrxpn(&zi, secbuf) == ERROR)
-                goto fubar;
-            if (secbuf[0] == 0)
+    if (protocol != ZM_XMODEM || argc == 0) {
+        Crcflg = 1;
+        if ((c = tryz()) != 0) {
+            if (c == ZCOMPL)
                 return OK;
-            if (procheader(secbuf, &zi) == ERROR)
+            if (c == ERROR)
                 goto fubar;
-            if (wcrx(&zi) == ERROR)
+            c = rzfiles(&zi);
+
+            if (c)
                 goto fubar;
-            fprintf(fp, "%s\n", zi.fname);
+        } else {
+            for (;;) {
+                if (wcrxpn(&zi, secbuf) == ERROR)
+                    goto fubar;
+                if (secbuf[0] == 0)
+                    return OK;
+                if (procheader(secbuf, &zi) == ERROR)
+                    goto fubar;
+                if (wcrx(&zi) == ERROR)
+                    goto fubar;
+
+            }
+        }
+    } else {
+        char dummy[128];
+
+        dummy[0] = '\0';        /* pre-ANSI HPUX cc demands this */
+        dummy[1] = '\0';        /* procheader uses name + 1 + strlen(name) */
+        zi.bytes_total = DEFBYTL;
+
+        procheader(dummy, &zi);
+
+        if (Pathname)
+            free(Pathname);
+        errno = 0;
+        Pathname = malloc(PATH_MAX + 1);
+        if (!Pathname)
+            zmodem_error(1, 0, "out of memory");
+
+        strcpy(Pathname, *argp);
+        checkpath(Pathname);
+
+        if ((fout = fopen(Pathname, "w")) == NULL) {
+            return ERROR;
+        }
+        if (wcrx(&zi) == ERROR) {
+            goto fubar;
         }
     }
     return OK;
@@ -231,7 +269,6 @@ int bbs_zrecvfile()
     if (Restricted && Pathname) {
         unlink(Pathname);
     }
-    fclose(fp);
     return ERROR;
 }
 
