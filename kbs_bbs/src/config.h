@@ -36,7 +36,7 @@
    a board before reading or posting. Don't comment this out. 
 */
 /*#define DEFAULTBOARD    "sysop"*/ /* Leeward 98.05.16 */
-#define DEFAULTBOARD    "test"
+//#define DEFAULTBOARD    "test"
 
 /* 
    You get this many chances to give a valid userid/password combination
@@ -144,11 +144,11 @@ these two options by hand. Instructions are in README.install.
 
 /****************************************************************************/
 
-#define MAXUSERS  150000 /* Maximum number of users,780 aliament 1k*/
-#define MAXBOARD  400  /* Leeward: 256->400 due to new system:) */  
+//#define MAXUSERS  150000 /* Maximum number of users,780 aliament 1k*/
+//#define MAXBOARD  400  /* Leeward: 256->400 due to new system:) */  
                        /* Maximum number of boards */
 /*#define MAXACTIVE 666   Leeward: 350->666 due to new system:) */  
-#define MAXACTIVE 3000
+//#define MAXACTIVE 3000
                        /* Max users allowed on the system at once. Set this
                           to a reasonable value based on the resources of
                           your system. */
@@ -190,5 +190,6 @@ Define this for Query to show real names.
 /*#define LEEWARD_X_FILTER  Leeward: define this macro to disable filters */
 #define LEEWARD_X_FILTER
 
-#define BBSUID  9999
-#define BBSGID    99
+//#define BBSUID  9999
+//#define BBSGID    99
+// remove to sysname.h

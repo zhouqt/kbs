@@ -327,7 +327,7 @@ char q_id[IDLEN];
                   cperf(perf),compute_user_value(lookupuser),
                (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖĞ)":" ");
     */
-    uleveltochar(&permstr,lookupuser->userlevel);
+    uleveltochar(&permstr,lookupuser);
     prints("ĞÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] Éí·İ: [%s]%s\n",
            (check_query_mail(qry_mail_dir)==1)? "ĞÅ":"  ",
            compute_user_value(lookupuser),

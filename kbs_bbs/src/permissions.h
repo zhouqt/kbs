@@ -31,12 +31,16 @@
 #define PERM_CHATOP    04000000
 #define PERM_ADMIN     010000000
 #define PERM_HORNOR   	020000000
-#define UNUSE5         040000000
-#define UNUSE6         0100000000
-#define UNUSE7         0200000000
+//#define UNUSE5         040000000
+#define PERM_SECANC    040000000
+//#define UNUSE6         0100000000
+#define PERM_GIRL      0100000000
+#define PERM_SEXY      0200000000
 #define PERM_SUICIDE   0400000000
-#define UNUSE9	  	01000000000
-#define UNUSE10        02000000000
+//#define UNUSE9	  	01000000000
+#define PERM_MM	 	01000000000
+//#define UNUSE10        02000000000
+#define PERM_DISS        02000000000
 #define PERM_DENYMAIL   	04000000000
 
 
@@ -95,7 +99,7 @@ char *permstrings[] = {
         "编辑系统档案",         /* PERM_WELCOME */
         "板主",                 /* PERM_BOARDS */
         "帐号管理员",           /* PERM_ACCOUNTS */
-        "水木清华智囊团",       /* PERM_CHATCLOAK */
+        NAME_BBS_CHINESE "智囊团",       /* PERM_CHATCLOAK */
         "投票管理员",           /* PERM_OVOTE */
         "系统维护管理员",       /* PERM_SYSOP */
         "Read/Post 限制",       /* PERM_POSTMASK */
@@ -106,12 +110,12 @@ char *permstrings[] = {
         "聊天室OP(元老院专用)", /* PERM_CHATOP */
         "系统总管理员",         /* PERM_ADMIN */
         "荣誉帐号",          	/* PERM_HORNOR*/
-        "特殊权限 5",           /* PERM_UNUSE?*/
-        "特殊权限 6",           /* PERM_UNUSE?*/
-        "特殊权限 7",           /* PERM_UNUSE?*/
-        "自杀进行中",           /* PERM_UNUSE?*/
-        "特殊权限 9",           /* PERM_UNUSE?*/
-        "看系统讨论版",           /* PERM_UNUSE?*/
+        "看秘密精华区",         /* PERM_SECANC*/
+        "看Girl版",           /* PERM_GIRL*/
+        "看Sexy版",           /* PERM_SEXY*/
+        "自杀进行中",           /* PERM_SUICIDE?*/
+        "观音姐姐",           /* PERM_MM*/
+        "看系统讨论版",           /* PERM_DISS*/
         "封禁Mail",           /* PERM_DENYMAIL*/
 
 };

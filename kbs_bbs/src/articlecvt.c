@@ -33,8 +33,8 @@
 #define INDEXHTML "AIXindex.htm"
 #define FRAMENAME "SMTHBAIX"
 
-#define HEADER "BBS水木清华站∶讨论区"
-#define FOOTER "BBS水木清华站∶讨论区"  
+#define HEADER "BBS"NAME_BBS_CHINESE"站∶讨论区"
+#define FOOTER "BBS"NAME_BBS_CHINESE"站∶讨论区"  
 
 
 struct fileheader { /* This structure is used to hold data in */

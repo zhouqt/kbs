@@ -317,6 +317,7 @@ chgrp()
     int             i, ch;
     char            buf[STRLEN], ans[6];
 
+    /*
     static char    *explain[] = {
         "±¾Õ¾ÏµÍ³",
         "ĞİÏĞÓéÀÖ",
@@ -350,6 +351,7 @@ chgrp()
         "other.faq",
         NULL
     };
+*/
 
     clear();
     move(2, 0);
@@ -360,23 +362,23 @@ chgrp()
     {
         if (explain[i] == NULL || groups[i] == NULL)
             break;
-        prints("[32m%2d[m. %-20s%-20s\n", i + 1, explain[i], groups[i]);
+        prints("[32m%2d[m. %-20s%-20s\n", i, explain[i], groups[i]);
     }
-    sprintf(buf, "ÇëÊäÈëÄãµÄÑ¡Ôñ(1~%d): ", i);
+    sprintf(buf, "ÇëÊäÈëÄãµÄÑ¡Ôñ(0~%d): ", i-1);
     while (1)
     {
         getdata(i + 3, 0, buf, ans, 4, DOECHO, NULL, YEA);
         if (!isdigit(ans[0]))
             continue;
         ch = atoi(ans);
-        if (ch <= 0 || ch > i || ans[0] == '\r' || ans[0] == '\0')
+        if (ch < 0 || ch >= i || ans[0] == '\r' || ans[0] == '\0')
             continue;
         else
             break;
     }
-    sprintf(cexplain, "%s", explain[ch - 1]);
+    sprintf(cexplain, "%s", explain[ch]);
 
-    return groups[ch - 1];
+    return groups[ch];
 }
 
 
@@ -934,7 +936,7 @@ char           *logfile, *regfile;
     static char    *finfo[] = {"ÕÊºÅÎ»ÖÃ", "ÉêÇë´úºÅ", "ÕæÊµĞÕÃû", "·şÎñµ¥Î»",
                                "Ä¿Ç°×¡Ö·", "Á¬Âçµç»°", "Éú    ÈÕ", NULL};
     static char    *reason[] = {
-        "ÇëÊäÈëÕæÊµĞÕÃû(¿ÉÓÃÆ´Òô).", "ÇëÏêÌîÑ§Ğ£¿ÆÏµ»ò¹¤×÷µ¥Î».",
+        "ÇëÊäÈëÕæÊµĞÕÃû(¹úÍâ¿ÉÓÃÆ´Òô).", "ÇëÏêÌîÑ§Ğ£¿ÆÏµ»ò¹¤×÷µ¥Î».",
         "ÇëÌîĞ´ÍêÕûµÄ×¡Ö·×ÊÁÏ.", "ÇëÏêÌîÁ¬Âçµç»°(ÈôÎŞ¿ÉÓÃºô»ú»òEmailµØÖ·´úÌæ).",
         "ÇëÈ·Êµ¶øÏêÏ¸µÄÌîĞ´×¢²áÉêÇë±í.", "ÇëÓÃÖĞÎÄÌîĞ´ÉêÇëµ¥.",
         "ÇëÓÃ Mail Reply ·½Ê½×¢²á", "Í¬Ò»¸öÓÃ»§×¢²áÁË¹ı¶àID",
@@ -1050,7 +1052,7 @@ char           *logfile, *regfile;
                 strncpy(uinfo.address, fdata[4], NAMELEN);
                 sprintf(genbuf, "%s$%s@%s", fdata[3], fdata[5], uid);
                 strncpy(uinfo.realemail, genbuf, STRLEN - 16);
-                sprintf(buf, "tmp/email_%s", uinfo.userid);
+                sprintf(buf, "tmp/email/%s", uinfo.userid);
                 if ((fout = fopen(buf, "w")) != NULL)
                 {
                     fprintf(fout, "%s\n", genbuf);

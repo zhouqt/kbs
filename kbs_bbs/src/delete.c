@@ -309,7 +309,7 @@ char cid[IDLEN];
     sethomepath(tmpbuf, lookupuser->userid);
     sprintf(genbuf,"/bin/rm -fr %s", tmpbuf) ;
     system(genbuf) ;
-    sprintf(genbuf,"/bin/rm -fr tmp/email_%s", lookupuser->userid) ;
+    sprintf(genbuf,"/bin/rm -fr tmp/email/%s", lookupuser->userid) ;
     system(genbuf) ;
     apply_utmp(kickuser,0,userid,0);
     setuserid( id, "" );

@@ -45,6 +45,7 @@ int     SR_author();
 int     SR_authorX(); /* Leeward 98.10.03 */
 int     G_SENDMODE=NA;
 extern int     add_author_friend();
+void 	m_init();
 
 int cmpinames(); /* added by Leeward 98.04.10 */
 
@@ -471,7 +472,7 @@ char *userid, *title ;
 
     int now;	/* added by Bigman: for SYSOP mail */
 
-    if (!chkreceiver(userid,&user))
+    if ( !strchr(userid,'@') && !chkreceiver(userid,&user))
         return -4;
 
     if ((user.userlevel & PERM_SUICIDE) && ( !HAS_PERM(PERM_SYSOP) ) )
@@ -527,8 +528,9 @@ char *userid, *title ;
                 else
                         strcat(userid,".edu.tw");}*/
         internet_mail = 1;
+	modify_user_mode( IMAIL );
         buf4[0]=' ';
-        sprintf( tmp_fname, "/tmp/bbs-internet-gw-%05d", getpid() );
+        sprintf( tmp_fname, "tmp/bbs-internet-gw/%05d", getpid() );
         strcpy( filepath, tmp_fname);
         goto edit_mail_file;
     }
@@ -565,13 +567,6 @@ char *userid, *title ;
     strcpy(newmessage.filename,fname) ;
 
 
-    if(!title){
-        replymode=0;
-        title="没主题";
-        buf4[0]='\0';
-    }
-    else
-        buf4[0]=' ';
     /*strncpy(newmessage.title,title,STRLEN) ;*/
     in_mail = YEA ;
 #if defined(MAIL_REALNAMES)
@@ -587,6 +582,13 @@ char *userid, *title ;
 #ifdef INTERNET_PRIVATE_EMAIL
 edit_mail_file:
 #endif
+    if(!title){
+        replymode=0;
+        title="没主题";
+        buf4[0]='\0';
+    }
+    else
+        buf4[0]=' ';
 
     if(currentuser->signature>numofsig||currentuser->signature<0)
         currentuser->signature=1;
@@ -1614,7 +1616,7 @@ int num ;
     else
         buf4[0]=' ';
 
-    sprintf( tmpfile, "tmp/bbs-gsend-%05d", getpid() );
+    sprintf( tmpfile, "tmp/bbs-gsend/%05d", getpid() );
     /* Leeward 98.01.17 Prompt whom you are writing to 
     if (1 == G_SENDMODE)
         strcpy(lookupuser->userid, "好友名单");
@@ -1924,7 +1926,7 @@ int isuu;
     clear();
     if( address[0] == '\0' ) {
         strncpy( address, currentuser->email, STRLEN );
-        if(strstr(currentuser->email,"bbs@bbs.net.tsinghua.edu.cn") || strstr(currentuser->email,"bbs@smth.org") || strlen(currentuser->email)==0)
+        if(strstr(currentuser->email,"@bbs.zixia.net") || strstr(currentuser->email,"bbs@smth.org") || strlen(currentuser->email)==0)
         {
             strcpy(address,currentuser->userid);
         }
@@ -1998,7 +2000,7 @@ int isuu;
             return -22;
         }
 
-    sprintf(fname,"/tmp/.forward.%s.%05d",currentuser->userid,currentuser->userid,getpid());
+    sprintf(fname,"tmp/forward/%s.%05d",currentuser->userid,currentuser->userid,getpid());
     sprintf( tmp_buf, "cp %s/%s %s",
              direct, fh->filename, fname);
     system( tmp_buf );
@@ -2012,13 +2014,16 @@ int isuu;
         /* clear(); */
     }
 
+
     { /* Leeward 98.04.27: better:-) */
+
         char *ptrX;
+        //ptrX = strstr(receiver, ".bbs@smth.org");
+	// @smth.org @zixia.net 取到前面的用户即可
+        ptrX = strstr(receiver, email_domain() );
 
-        ptrX = strstr(receiver, ".bbs@smth.org");
         /*disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@"); */
-
-        if (ptrX)  *ptrX = 0;
+        if ( ptrX && '@'==*(ptrX-1) )  *(ptrX-1) = 0;
     }
 
     if(!strstr(receiver,"@")&&!strstr(receiver,"."))
@@ -2037,7 +2042,9 @@ int isuu;
             strncpy(receiver, lookupuser->userid, IDLEN+1);
             receiver[IDLEN] = 0;
 
-            if(!chkreceiver(receiver,NULL))/*Haohamru.99.4.05*/
+            //if(!chkreceiver(receiver,NULL))/*Haohamru.99.4.05*/
+	    // FIXME NULL -> lookupuser，在 zixia.net 上是这么改的... 有没有问题？
+            if(!chkreceiver(receiver,lookupuser))/*Haohamru.99.4.05*/
             {
                 prints("%s 信箱已满,无法收信\n",receiver);
                 return -4;

@@ -1,4 +1,8 @@
+#include <sys/types.h>
+#include <sys/wait.h>
+
 #include "bbs.h"
+
 static char genbuf1[255];
 int killdir(char *basedir,char *filename)
 {
@@ -25,14 +29,13 @@ int killdir(char *basedir,char *filename)
     }
     lseek(fd,0,0);
     for (i=0,afile = files;i<st.st_size/sizeof(struct fileheader);i++,afile++) {
-        if (now - afile->accessed[11] > 21 ||(now<afile->accessed[11] && now+100 - afile->accessed[11] > 21) ) {
+        if (now - afile->accessed[11] > DAY_DELETED_CLEAN ||(now<afile->accessed[11] && now+100 - afile->accessed[11] > DAY_DELETED_CLEAN ) ) {
                 strcpy(genbuf1,basedir);
                 strcat(genbuf1,"/");
                 strcat(genbuf1,afile->filename);
                 unlink(genbuf1);
                 deleted++;
-        }
-        else {
+        }else{
                 write(fd,afile,sizeof(struct fileheader));
                 count += sizeof(struct fileheader);
         }               
@@ -99,12 +102,12 @@ int killauser(struct userec *theuser,char *data)
        log("0miscdaemon","kill user %s",theuser->userid); 
        a = getuser(theuser->userid,&ft);
        setmailpath(tmpbuf,theuser->userid);
-       sprintf(genbuf1,"/bin/mv %s /home0/bbs/mail/mailbak",tmpbuf);
+       sprintf(genbuf1,"/bin/mv %s mail/mailbak",tmpbuf);
        system(genbuf1) ;
        sethomepath(tmpbuf, theuser->userid);
-       sprintf(genbuf1,"/bin/mv %s /home0/bbs/home/homebak",tmpbuf);
+       sprintf(genbuf1,"/bin/mv %s home/homebak",tmpbuf);
        system(genbuf1) ;
-       sprintf(genbuf1,"/bin/rm -fr tmp/email_%s", theuser->userid) ;
+       sprintf(genbuf1,"/bin/rm -fr tmp/email/%s", theuser->userid) ;
        system(genbuf1) ; 
        setuserid(a,"");
        theuser->userlevel=0;
@@ -198,7 +201,7 @@ int dodaemon()
 }
 int main (int argc,char *argv[])
 {
-     chdir("/home0/bbs");
+     chdir(BBSHOME);
      if (argc>1) {
          if (strcasecmp(argv[1],"killuser") == 0)  return dokilluser();
          if (strcasecmp(argv[1],"allboards") == 0) return dokillalldir();

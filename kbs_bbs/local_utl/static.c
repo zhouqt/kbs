@@ -39,7 +39,7 @@ main(argc, argv)
       "¡õ", "¡õ", "¡õ", "¡õ", "¡õ",
   };
 
-  if ((fp = fopen("/home0/bbs/usies", "r")) == NULL)
+  if ((fp = fopen(BBSHOME"/usies", "r")) == NULL)
   {
     printf("cann't open usies\n");
     return 1;
@@ -82,7 +82,7 @@ main(argc, argv)
 
   item = max / MAX_LINE + 1;
 
-  if ((fp = fopen("/home0/bbs/0Announce/bbslists/countlogins", "w")) == NULL)
+  if ((fp = fopen(BBSHOME"/0Announce/bbslists/countlogins", "w")) == NULL)
   {
     printf("Cann't open countlogins\n");
     return 1;
@@ -115,7 +115,7 @@ main(argc, argv)
     fprintf(fp, "[36m©¦\n");
   }
   fprintf(fp, "   [36m"
-    " ©¸¡ª¡ª¡ª[37m   BBS Ë®Ä¾Çå»ªÕ¾  ÉÏÕ¾ÈË´Î±í   [36m¡ª¡ª¡ª[37m%s[36m¡ª¡ª©¼\n"
+    " ©¸¡ª¡ª¡ª[37m   "NAME_BBS_CHINESE NAME_BBS_NICK"  ÉÏÕ¾ÈË´Î±í   [36m¡ª¡ª¡ª[37m%s[36m¡ª¡ª©¼\n"
     /*"    [34m  0  1  2  3  4  5  6  7  8  9  10 11 [31m12 13 14 15 16 17 18 19 20 21 22 23 \n\n"*/ /* Leeward 98.02.27 */
     "    [34m  1  2  3  4  5  6  7  8  9  10 11 12 [31m13 14 15 16 17 18 19 20 21 22 23 24\n\n"
     "               [36m 1 [33m¡õ[36m = [37m%-5d [36m×Ü¹²ÉÏÕ¾ÈË´Î£º[37m%-9d[36mÆ½¾ùÊ¹ÓÃÊ±¼ä£º[37m%d[m \n\n", Ctime(&now),item,total, totaltime / total + 1); /* Leeward 98.09.24 add the 2nd \n for SHARE MEM in ../main.c */

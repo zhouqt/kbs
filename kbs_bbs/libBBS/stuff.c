@@ -594,40 +594,38 @@ int compute_user_value( struct userec *urec)
     /* if (urec) has CHATCLOAK permission, don't kick it */
 	/* 元老和荣誉帐号 在不自杀的情况下， 生命力999 Bigman 2001.6.23 */
     if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
-        return 999;
+        return LIFE_DAY_NODIE;
 
     if ( urec->userlevel & PERM_SYSOP) 
-	return 119;
+	return LIFE_DAY_SYSOP;
 	/* 站务人员生命力不变 Bigman 2001.6.23 */
 	
-
-
     value = (time(0) - urec->lastlogin) / 60;    /* min */
     if (0 == value) value = 1; /* Leeward 98.03.30 */
 
     /* 修改: 将永久帐号转为长期帐号, Bigman 2000.8.11 */
     if ((urec->userlevel & PERM_XEMPT) && (!(urec->userlevel & PERM_SUICIDE)) )
     {	if (urec->lastlogin < 988610030)
-        return 666; /* 如果没有登录过的 */
+        return LIFE_DAY_LONG; /* 如果没有登录过的 */
         else
-            return (667 * 24 * 60 - value)/(60*24);
+            return (LIFE_DAY_LONG * 24 * 60 - value)/(60*24);
     }
     /* new user should register in 30 mins */
     if( strcmp( urec->userid, "new" ) == 0 ) {
-        return (30 - value) / 60; /* *->/ modified by dong, 1998.12.3 */
+        return (LIFE_DAY_NEW - value) / 60; /* *->/ modified by dong, 1998.12.3 */
     }
 
     /* 自杀功能,Luzi 1998.10.10 */
     if (urec->userlevel & PERM_SUICIDE)
-        return (15 * 24 * 60 - value)/(60*24);
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value)/(60*24);
     /**********************/
     if(urec->numlogins <= 3)
-        return (15 * 24 * 60 - value)/(60*24);
+        return (LIFE_DAY_SUICIDE * 24 * 60 - value)/(60*24);
     if( !(urec->userlevel & PERM_LOGINOK) )
-        return (30 * 24 * 60 - value)/(60*24);
+        return (LIFE_DAY_NEW * 24 * 60 - value)/(60*24);
     /* if (urec->userlevel & PERM_LONGID)
          return (667 * 24 * 60 - value)/(60*24); */
-    return (120 * 24 * 60 - value)/(60*24);
+    return (LIFE_DAY_USER * 24 * 60 - value)/(60*24);
 }
 
 

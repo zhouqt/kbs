@@ -127,18 +127,19 @@ char *argv[];
       "¡õ","¡õ", "¡õ", "¡õ", "¡õ",
   };
 
+  if(argc<=1) exit(0);
   mode=atoi(argv[1]);
   if(mode==1)
   {
-        strcpy(buf,"/home0/bbs/0Announce/bbslists/board2");
-	strcpy(buf1,"/home0/bbs/0Announce/bbslists/totaltime");
-	strcpy(buf2,"/home0/bbs/0Announce/bbslists/averagetime");
+        strcpy(buf,BBSHOME"/0Announce/bbslists/board2");
+	strcpy(buf1,BBSHOME"/0Announce/bbslists/totaltime");
+	strcpy(buf2,BBSHOME"/0Announce/bbslists/averagetime");
   }
   else
   {
-        strcpy(buf,"/home0/bbs/0Announce/bbslists/board1");
+        strcpy(buf,BBSHOME"/0Announce/bbslists/board1");
   }
-  if ((fp = fopen("/home0/bbs/boardusage.log", "r")) == NULL)
+  if ((fp = fopen(BBSHOME"/boardusage.log", "r")) == NULL)
   {
     printf("cann't open boardusage.log\n");
     return 1;

@@ -238,10 +238,10 @@ x_level()
     }
     clear();
     move(0,0) ;
-    prints("更改使用者的权限\n") ;
+    prints("更改"NAME_USER_SHORT"的权限\n") ;
     clrtoeol() ;
     move(1,0) ;
-    usercomplete("请输入用户 ID: ",genbuf) ;
+    usercomplete("请输入"NAME_USER_SHORT" ID: ",genbuf) ;
     if(genbuf[0] == '\0') {
         clear() ;
         return 0 ;
@@ -264,11 +264,11 @@ x_level()
     move(1,0);
     clrtobot();
     move(2,0);
-    prints("请设定使用者 '%s' 的权限\n", genbuf);
+    prints("请设定"NAME_USER_SHORT" '%s' 的权限\n", genbuf);
     newlevel = setperms(lookupuser->userlevel,"权限",NUMPERMS,showperminfo);
     move(2,0);
     if (newlevel == lookupuser->userlevel)
-        prints("使用者 '%s' 的权限没有更改\n", lookupuser->userid);
+        prints(NAME_USER_SHORT" '%s' 的权限没有更改\n", lookupuser->userid);
     else { /* Leeward: 1997.12.02 : Modification starts */
         char        secu[STRLEN];
 
@@ -278,17 +278,17 @@ x_level()
         lookupuser->userlevel = newlevel;
         /* Leeward: 1997.12.02 : Modification stops */
 
-        prints("使用者 '%s' 的权限已更改\n",lookupuser->userid) ;
+        prints(NAME_USER_SHORT" '%s' 的权限已更改\n",lookupuser->userid) ;
         sprintf(genbuf, "changed permissions for %s", lookupuser->userid);
         report(genbuf);
         /*Haohmaru.98.10.03.给新任板主自动发信*/
         if ((lookupuser->userlevel & PERM_BOARDS ) && flag==0 )
-            mail_file("etc/forbm",lookupuser->userid,"新任板主必读");
+            mail_file("etc/forbm",lookupuser->userid,"新任"NAME_BM"必读");
         /* Bigman 2000.1.5 修改权限自动发信 */
         if ((lookupuser->userlevel & PERM_CLOAK ) && flag1==0 )
-            mail_file("etc/forcloak",lookupuser->userid,"批准您的隐身申请");
+            mail_file("etc/forcloak",lookupuser->userid,NAME_SYSOP_GROUP"授予您隐身权限");
         if ((lookupuser->userlevel & PERM_XEMPT ) && flag2==0 )
-            mail_file("etc/forlongid",lookupuser->userid,"批准您的长期帐号");
+            mail_file("etc/forlongid",lookupuser->userid,NAME_SYSOP_GROUP"授予您长期帐号权限");
     }
     pressreturn() ;
     clear() ;
@@ -317,7 +317,7 @@ XCheckLevel() /* Leeward 98.06.05 */
     }
     clear();
     move(0,0) ;
-    prints("列示具有特定权限的用户的资料\n") ;
+    prints("列示具有特定权限的"NAME_USER_SHORT"的资料\n") ;
     clrtoeol() ;
     move(2,0);
     prints("请设定需要检查的权限\n");
@@ -418,12 +418,14 @@ x_userdefine()
     modify_user_mode( USERDEF );
     if(!(id = getuser(currentuser->userid,&lookupuser))) {
         move(3,0) ;
-        prints("错误的 使用者 ID...") ;
+        prints("错误的 "NAME_USER_SHORT" ID...") ;
         clrtoeol() ;
         pressreturn() ;
         clear() ;
         return 0 ;
     }
+    if( !strcmp(currentuser->userid,"guest") )
+	return 0;
     move(1,0);
     clrtobot();
     move(2,0);
@@ -527,6 +529,13 @@ x_edits()
         return;
 
     ch=ans[0]-'0'-1;
+    switch( ch ){
+    	case 0:
+        	modify_user_mode( EDITPLAN );
+	case 1:
+	    	modify_user_mode( EDITSIG );
+    }
+
     setuserfile(genbuf,e_file[ch]);
     move(3,0);
     clrtobot();

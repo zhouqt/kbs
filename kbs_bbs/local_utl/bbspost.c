@@ -31,7 +31,7 @@ char            *crypt();
 char            *homepath;
 int             visitflag;
 char emailad[STRLEN];
-char fromhost[17]; /* Leeward: 97.12.20: ÈÃ 3W ·¢ÎÄÓ°ÏìÉúÃüÁ¦ */
+char fromhost[IPLEN]; /* Leeward: 97.12.20: ÈÃ 3W ·¢ÎÄÓ°ÏìÉúÃüÁ¦ */
 char EMode = ' '; /* Leeward: 97.12.23: for 3W modify article */
 int 		sign;/*Haohmaru.µÚsign¸öÇ©Ãûµµ*/
 
@@ -69,7 +69,8 @@ AddSignature(FILE *fp, char *username, int fh) /* Leeward: 98.05.17 */
     char szSig[128];
     int  i;
 
-    sprintf(szSig, "%shome/%c/%s/signatures", BBSHOME, toupper(username[0]), username);
+    // by zixia: ÓÃÏà¶ÔÂ·¾­ sprintf(szSig, "%shome/%c/%s/signatures", BBSHOME, toupper(username[0]), username);
+    sprintf(szSig, "home/%c/%s/signatures", toupper(username[0]), username);
     sig = fopen(szSig, "rt");
     /*Haohmaru.99.11.24.below 9 lines*/
     if (!sign)
@@ -441,7 +442,7 @@ post_article( usermail )
             return;
         }
 
-        fprintf(fpMail, "¼ÄÐÅÈË: %s (%s) [WWW MAIL]\n±ê  Ìâ: %s\n·¢ÐÅÕ¾: BBS Ë®Ä¾Çå»ªÕ¾ (%24.24s)\nÀ´  Ô´: %s\n\n", userid, currentuser->username, subject, ctime(&now), fromhost);
+        fprintf(fpMail, "¼ÄÐÅÈË: %s (%s) [WWW MAIL]\n±ê  Ìâ: %s\n·¢ÐÅÕ¾: BBS " NAME_BBS_CHINESE "Õ¾ (%24.24s)\nÀ´  Ô´: %s\n\n", userid, currentuser->username, subject, ctime(&now), fromhost);
         while(fgets(buf, MAXLEN, stdin) != NULL )
             fputs(buf, fpMail);
         AddSignature(fpMail, userid, 0); /* Leeward: 98.05.17 */
@@ -581,7 +582,7 @@ post_article( usermail )
         }
         else
         { /*now+=28800;Haohmaru.99.4.21.²»ÖªµÀÎªÊ²Ã´WWWµÄÊ±ÖÓ±ÈÏµÍ³Ê±ÖÓÂý8Ð¡Ê±*/
-            sprintf( buf, "·¢ÐÅÈË: %s (%s), ÐÅÇø: %s\n±ê  Ìâ: %s\n·¢ÐÅÕ¾: BBS Ë®Ä¾Çå»ªÕ¾ (%24.24s) \033[1m\033[32mWWW-POST\033[0m\033[0m\n\n", userid, currentuser->username, ptr, subject, ctime( &now ) );
+            sprintf( buf, "·¢ÐÅÈË: %s (%s), ÐÅÇø: %s\n±ê  Ìâ: %s\n·¢ÐÅÕ¾: BBS "NAME_BBS_CHINESE"Õ¾ (%24.24s) \033[1m\033[32mWWW-POST\033[0m\033[0m\n\n", userid, currentuser->username, ptr, subject, ctime( &now ) );
         }
         write( fh, buf, strlen( buf ) );
     }
@@ -633,7 +634,7 @@ post_article( usermail )
             write( fh, buf, strlen( buf ) );
         }
 
-        sprintf(buf,"\n[1m¡ù À´Ô´:¡¤BBS Ë®Ä¾Çå»ªÕ¾ smth.org¡¤[FROM: %.22s] [m\n", emailad);
+        sprintf(buf,"\n[1m¡ù À´Ô´:¡¤BBS Ë®Ä¾Çå»ªÕ¾ "NAME_BBS_ENGLISH"¡¤[FROM: %.22s] [m\n", emailad);
         if (!Xpost) write( fh, buf, strlen( buf ) );
     }
     close(fh);
@@ -652,7 +653,7 @@ post_article( usermail )
         struct
         {
             char author[IDLEN + 1];
-            char board[IDLEN + 1];
+            char board[IDLEN + 6];
             char title[66];
             time_t date;
             int number;

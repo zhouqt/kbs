@@ -23,7 +23,8 @@
 
 
 /* Maximum Screen width in chars */
-#define LINELEN (220)
+//#define LINELEN (220)
+#define LINELEN LENGTH_SCREEN_LINE
 
 /* Line buffer modes             */
 #define MODIFIED (1)   /* if line has been modifed, output to screen   */

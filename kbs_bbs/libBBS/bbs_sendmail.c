@@ -179,11 +179,11 @@ int isuu, isbig5, noansi;
 */
     
     server = sysconf_str( "MAILSERVER" );
-    if(( server == NULL )||!strcmp(server,"(null ptr)"))  server = "166.111.8.18:25";
+    if(( server == NULL )||!strcmp(server,"(null ptr)"))  server = "127.0.0.1:25";
 
     smtp_set_server (session, server);
 
-    sprintf( newbuf, "%s.bbs@%s", currentuser->userid, email_domain() );
+    sprintf( newbuf, "%s@%s", currentuser->userid, email_domain() );
     smtp_set_reverse_path (message, newbuf);
     smtp_set_header (message, "Message-Id", NULL);
     

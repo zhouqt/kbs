@@ -662,7 +662,8 @@ write_posts()
     struct
     {
         char author[IDLEN + 1];
-        char board[IDLEN + 1];
+        //char board[IDLEN + 1];
+        char board[IDLEN + 6];
         char title[66];
         time_t date;
         int number;
@@ -760,10 +761,10 @@ strncpy(uname,currentuser->username,NAMELEN) ;
         if (!strcmp(currboard,"Announce"))
             /* added By Bigman */
             fprintf(fp,"发信人: %s (%s), 信区: %s       \n","SYSOP",
-                    "System Operator",currboard) ;
+                    NAME_SYSOP,currboard) ;
         else
-            fprintf(fp,"发信人: %s (%s), 信区: %s       \n",(noname&&Anony)?"Anonymous":uid,
-                    (noname&&Anony)?"我是匿名天使":uname,currboard) ;
+            fprintf(fp,"发信人: %s (%s), 信区: %s       \n",(noname&&Anony)?currboard:uid,
+                    (noname&&Anony)?NAME_ANONYMOUS:uname,currboard) ;
     } /***** 该语句增加阅读次数计数项 Add by Luzi 1998/1/8 ****/
 
     fprintf(fp,"标  题: %s\n",save_title) ;
@@ -910,6 +911,8 @@ int saveheader ;
         }
         else if ( uinfo.mode == SMAIL )
             strcpy(p_buf,"(S)寄出, (A)取消, or (E)再编辑? [S]: " );
+        else if ( uinfo.mode == IMAIL )
+            strcpy(p_buf, NAME_BBS_NICK" Internet 信笺：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: " ); /* Leeward 98.01.17 Prompt whom you are writing to */
         /*    sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser->userid ); 
          Leeward 98.01.17 Prompt whom you are writing to */
         else
@@ -1392,7 +1395,7 @@ int     action, arg;
     case 'M':
         process_MARK_action(arg, msg); break;
     case 'I':
-        sprintf( filename, "/tmp/%s_clip_%c", currentuser->userid, arg);
+        sprintf( filename, "/tmp/clip/%s.%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "r" )) != NULL ) {
             insert_from_fp( fp ); fclose( fp );
             sprintf( msg, "已取出剪贴簿第 %c 页", arg );
@@ -1403,7 +1406,7 @@ int     action, arg;
         redraw_everything = YEA;
         break;
     case 'E':
-        sprintf( filename, "/tmp/%s_clip_%c", currentuser->userid, arg);
+        sprintf( filename, "/tmp/clip/%s.%c", currentuser->userid, arg);
         if( (fp = fopen( filename, "w" )) != NULL ) {
             if ( mark_on ) {
                 struct textline *p;

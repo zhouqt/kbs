@@ -17,11 +17,10 @@
 #############################################################
 
 # The home directory for the user 'bbs'
-BBSHOME=/home/bbs
-
+#BBSHOME=/home/system/bbs
 # The uid for the user 'bbs'
-BBSUID=9999
-#BBSUID=502
+#BBSUID=9999
+# by zixia: remove to sysname.h
 
 #OS_DEF   = -DAIX -DSYSV 
 OS_DEF   = -DLINUX -DSYSV 
@@ -55,7 +54,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c\
 	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c
+	   ucache.c utmp.c log.c md5.c ${BBSSITE}.c
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
@@ -63,7 +62,7 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o\
            bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
-	   ucache.o utmp.o log.o md5.o
+	   ucache.o utmp.o log.o md5.o ${BBSSITE}.o
 
 BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o
 
@@ -74,7 +73,7 @@ GARBAGE  = a.out core installchatd adminbbs chatd
 # The -DINVISIBLE makes bbs users invisible to 'finger' and 'who'.
 # Simply remove it if you don't want this feature.
 
-SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DINVISIBLE
+SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 
@@ -105,8 +104,8 @@ bbstest: $(COBJS) $(OTHERS) newmain.o newio.o newterm.o convcode.o
 
 bbspost: bbspost.o $(BBSLIB)
 	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) -DLEEWARD_X_RECORD -o bbspost bbspost.o $(BBSLIB)
-	cp -f bbspost ../bin
-	chmod 6755 ../bin/bbspost
+	cp -f bbspost $(BBSHOME)/bin
+	chmod 6755 $(BBSHOME)/bin/bbspost
 
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
@@ -115,7 +114,7 @@ newpop3.o: newpop3.c
 	gcc -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
 newpop3d: newpop3.o $(BBSLIB)
 	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB)
-	cp -f newpop3d ../bin
+	cp -f newpop3d $(BBSHOME)/bin
 #	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 
 thread: thread.c record.c
@@ -130,15 +129,15 @@ $(BBSLIB) : $(patsubst %.o,%_use.o,$(BBSLIBOBJS))
 	ranlib $@
 	
 chatd: station.c 
-	$(CC) -g $(CFLAGS) -o chatd $(OS_DEF) station.c $(LIBS)
-#	cp -f chatd ../bin
+	$(CC) -g $(CFLAGS) $(SITE_DEF) -o chatd $(OS_DEF) station.c $(LIBS)
+#	cp -f chatd $(BBSHOME)/bin
 
 
 ve: edit.o term.o screen.o io.o editor.c
 	$(CC) -o ve -g edit.o term.o screen.o io.o editor.c
 
-install: all
-	./Install.sh
+#install: all
+#	./Install.sh
 
 installbbs: $(PROGNAME) $(BBSHOME)/bin/bbsd_single
 

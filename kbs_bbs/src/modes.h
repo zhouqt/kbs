@@ -52,8 +52,6 @@
 #define ZAP             26
 #define EDITUFILE       27
 #define EDITSFILE       28
-/*#define EDITSIG         27
-#define EDITPLAN        28*/
 #define QUERY           29
 #define CNTBRDS         30
 #define VOTING          31
@@ -81,3 +79,6 @@
 #define LOOKMSGS        53
 #define WFRIEND         54
 #define LOCKSCREEN      55
+#define IMAIL		56
+#define EDITSIG         57
+#define EDITPLAN        58

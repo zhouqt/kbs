@@ -31,7 +31,7 @@ struct fileheader {             /* This structure is used to hold data in */
 struct postrec
 {
   char author[13];              /* author name */
-  char board[13];               /* board name */
+  char board[IDLEN+6];               /* board name */
   char title[66];               /* title name */
   time_t date;                  /* last post's date */
   int number;                   /* post number */
@@ -43,7 +43,7 @@ struct postrec
 struct posttop
 {
   char author[13];              /* author name */
-  char board[13];               /* board name */
+  char board[IDLEN+6];               /* board name */
   char title[66];               /* title name */
   time_t date;                  /* last post's date */
   int number;                   /* post number */

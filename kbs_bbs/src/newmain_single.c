@@ -73,7 +73,7 @@ struct user_info uinfo ;
 
 /* char netty_path[ 60 ]; FAINT!!! ÔõÃ´»á²»³ö´íÄØ!!! Leeward: 1997.12.10 */
 char netty_path[ 256 ];
-char fromhost[ 17 ] ;
+char fromhost[ IPLEN ] ;
 
 char BoardName[STRLEN] ;
 int utmpent = -1 ;
@@ -182,7 +182,7 @@ u_enter()
         uinfo.pager|=FRIENDMSG_PAGER;
     }
     uinfo.uid = usernum;
-    strncpy( uinfo.from, fromhost, 60 );
+    strncpy( uinfo.from, fromhost, IPLEN );
 #ifdef SHOW_IDLE_TIME
     uinfo.freshtime=time(0);
 #endif
@@ -435,7 +435,7 @@ system_init(char *sourceip)
     }
 #endif
 
-    strncpy( fromhost, sourceip, 60 );
+    strncpy( fromhost, sourceip, IPLEN );
 
     signal(SIGHUP,abort_bbs) ;
     signal(SIGPIPE,abort_bbs) ;
@@ -620,7 +620,7 @@ login_query()
     }*/
     /*ansimore(fname,NA); Leeward: disable the old code */
 
-    prints( "\033[1m»¶Ó­¹âÁÙ [31m%s[37m ¡ô±¾Õ¾Ê¹ÓÃÊï¹â¹«Ë¾Êï¹âÌìÑÝ·þÎñÆ÷¡ô [36mÄ¿Ç°ÉÏÏßÈËÊý \033[1m%d[m", BoardName, curr_login_num);
+    prints( "\033[1m»¶Ó­¹âÁÙ [31m%s[37m ¡ô"ISSUE_LOGIN"¡ô [36mÄ¿Ç°ÉÏÏßÈËÊý \033[1m%d[m", BoardName, curr_login_num);
 /*{
 char ii[16];
 sprintf(ii, "%.2f", (double)curr_login_num / (double)MAXACTIVE * 100.0);
@@ -942,7 +942,7 @@ user_login()
             unlink( fname );
     }
 
-    strncpy(currentuser->lasthost, fromhost, 16);
+    strncpy(currentuser->lasthost, fromhost, IPLEN);
     currentuser->lasthost[15] = '\0';   /* dumb mistake on my part */
         currentuser->lastlogin = time(NULL) ;
     currentuser->numlogins++;

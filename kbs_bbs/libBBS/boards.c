@@ -710,16 +710,18 @@ int     newflag;
                         ||!strcmp(nbrd[num].name, "deleted"))
                     break; /* Leeward 98.04.01 */
 
-                sprintf(buf, "chmod 555 boards/%s", nbrd[num].name);
-                system(buf);
+	 	if( strlen(nbrd[num].name) ){
+	               	sprintf(buf, "chmod 555 boards/%s", nbrd[num].name);
+                	system(buf);
 
-                /* Bigman 2000.12.11:系统记录 */
-                sprintf(genbuf,"只读讨论区 %s ",nbrd[num].name);
-                securityreport(genbuf,NULL);
-                sprintf(genbuf, " readonly board %s",nbrd[num].name);
-                report(genbuf);
+                	/* Bigman 2000.12.11:系统记录 */
+                	sprintf(genbuf,"只读讨论区 %s ",nbrd[num].name);
+                	securityreport(genbuf,NULL);
+                	sprintf(genbuf, " readonly board %s",nbrd[num].name);
+                	report(genbuf);
 
-                show_brdlist(page, 0, newflag);
+                	show_brdlist(page, 0, newflag);
+		}
                 break;
             }
         case 'Y': /* Leeward 98.03.28 Set a board READABLE */

@@ -80,6 +80,8 @@ int     SR_BMfuncX(); /* Leeward 98.04.16 */
 int	Goodbye();
 int i_read_mail(); /* period 2000.11.12 */
 
+int uleveltochar();
+
 void    RemoveAppendedSpace(); /* Leeward 98.02.13 */
 int set_delete_mark(int ent,struct fileheader *fileinfo,char *direct ); /* KCN */
 
@@ -714,52 +716,6 @@ shownotepad()   /* œ‘ æ notepad */
     return;
 }
 
-int
-uleveltochar( buf, lvl ) /* »°”√ªß»®œﬁ÷–ŒƒÀµ√˜ Bigman 2001.6.24 */
-char    *buf;
-unsigned lvl;
-{
-    if( !(lvl &  PERM_BASIC) ) {
-    /*    strcpy( buf, "----" ); */
-	strcpy( buf, "–¬»À");
-        return 0;
-    }
-/*    if( lvl < PERM_DEFAULT )
-    {
-        strcpy( buf, "- --" );
-        return 1;
-    }
-*/
-
-    /* Bigman: ‘ˆº”÷–Œƒ≤È—Øœ‘ æ 2000.8.10 */
-    /*if( lvl & PERM_ZHANWU ) strcpy(buf,"’æŒÒ");*/
-    if( (lvl & PERM_ANNOUNCE) && (lvl & PERM_OBOARDS) ) strcpy(buf,"’æŒÒ");
-    else  if( lvl & PERM_CHATCLOAK ) strcpy(buf,"‘™¿œ");
-    else if (lvl & PERM_CHATOP) strcpy(buf,"ChatOP");
-    else if  ( lvl & PERM_BOARDS ) strcpy(buf,"∞Ê÷˜");
-    else  if( lvl & PERM_HORNOR ) strcpy(buf,"»Ÿ”˛");
-	/* Bigman: –ﬁ∏ƒœ‘ æ 2001.6.24 */
-	else if (lvl & (PERM_LOGINOK))
-	{
-		if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) ||(lvl & (PERM_DENYMAIL)) ||(lvl &(PERM_DENYPOST))) strcpy(buf," ‹œﬁ");	
-		else strcpy(buf,"”√ªß");
-	}
-	else if (!(lvl & (PERM_CHAT)) && !(lvl & (PERM_PAGE))  && !(lvl & (PERM_POST))) strcpy(buf,"–¬»À");
-	else strcpy(buf," ‹œﬁ");
-
-/*    else {
-        buf[0] = (lvl & (PERM_SYSOP)) ? 'C' : ' ';
-        buf[1] = (lvl & (PERM_XEMPT)) ? 'L' : ' ';
-        buf[2] = (lvl & (PERM_BOARDS)) ? 'B' : ' ';
-        buf[3] = (lvl & (PERM_DENYPOST)) ? 'p' : ' ';
-        if( lvl & PERM_ACCOUNTS ) buf[3] = 'A';
-        if( lvl & PERM_SYSOP ) buf[3] = 'S'; 
-        buf[4] = '\0';
-    }
-*/
-
-    return 1;
-}
 /*  ±º‰◊™ªª≥… ÷–Œƒ */
 /*
 char *
@@ -1317,6 +1273,9 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
+    if(!strcmp("guest",currentuser->userid))
+        return DONOTHING;;
+
     if(!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver"))
         return DONOTHING;
     else
@@ -2259,10 +2218,10 @@ char *filepath;
     if (!strcmp(currboard,"Announce"))
         fprintf(fp, "[m[%2dm°˘ ¿¥‘¥:°§%s %s°§[FROM: %s][m\n"
                 ,color,BoardName,email_domain(),
-                "ÀÆƒæ«Âª™BBS’æ");
+                NAME_BBS_CHINESE" BBS’æ");
     else
         fprintf(fp, "\n[m[%2dm°˘ ¿¥‘¥:°§%s %s°§[FROM: %s][m\n"
-                ,color,BoardName,email_domain(),(noidboard)?"ƒ‰√˚ÃÏ πµƒº“":currentuser->lasthost);
+                ,color,BoardName,email_domain(),(noidboard)?NAME_ANONYMOUS_FROM:currentuser->lasthost);
 
     if (fp2) fclose(fp2);
     fclose(fp);
@@ -2372,10 +2331,13 @@ post_article()                         /*”√ªß POST Œƒ’¬ */
     if(currentuser->signature>numofsig||currentuser->signature<0) /*«©√˚µµNo.ºÏ≤È*/
         currentuser->signature=1;
     anonyboard=seek_in_file("etc/anonymous",currboard); /*  «∑ÒŒ™ƒ‰√˚∞Ê */
+    /*
     if(anonyboard==1)
         Anony=1;
     else
         Anony=0;
+	*/
+    Anony = 0;
     while(1) /* ∑¢±Ì«∞–ﬁ∏ƒ≤Œ ˝£¨ ø…“‘øº¬«ÃÌº”'œ‘ æ«©√˚µµ' */
     {
         sprintf(buf3,"“˝—‘ƒ£ Ω [%c]",include_mode);
@@ -2407,7 +2369,7 @@ post_article()                         /*”√ªß POST Œƒ’¬ */
         move(t_lines-1,0);
         clrtoeol();
         /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-        sprintf(buf2,"«Î∞¥ [1;32m0[m~[1;32m%d V[m —°/ø¥«©√˚µµ%s£¨[1;32mT[m ∏ƒ±ÍÃ‚£¨%s[1;32mEnter[m Ω” ‹À˘”–…Ë∂®: ",numofsig,(replymode) ? "£¨[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ∏ƒ“˝—‘ƒ£ Ω" : "",(anonyboard)?"[1;32mS[m ƒ‰√˚£¨":"");
+        sprintf(buf2,"«Î∞¥ [1;32m0[m~[1;32m%d V[m —°/ø¥«©√˚µµ%s£¨[1;32mT[m ∏ƒ±ÍÃ‚£¨%s[1;32mEnter[m Ω” ‹À˘”–…Ë∂®: ",numofsig,(replymode) ? "£¨[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ∏ƒ“˝—‘ƒ£ Ω" : "",(anonyboard)?"[1;32mM[m ƒ‰√˚£¨":"");
         getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
         ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
         if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
@@ -2420,7 +2382,7 @@ post_article()                         /*”√ªß POST Œƒ’¬ */
         }else if(ans[0]=='T')
         {
             buf4[0]='\0';
-        }else if(ans[0]=='S')
+        }else if(ans[0]=='M')
         {
             Anony=(Anony==1)?0:1;
         }else if(ans[0]=='V')
@@ -2434,8 +2396,7 @@ post_article()                         /*”√ªß POST Œƒ’¬ */
                 clear();
                 ansimore2(buf2,NA,0,18);
             }
-        }else
-        {
+        }else{
             /* Changed by KCN,disable color title */
             {
                 int i;
@@ -2467,11 +2428,20 @@ post_article()                         /*”√ªß POST Œƒ’¬ */
 
     in_mail = NA ;
 
+    /*
     strncpy(post_file.owner,(anonyboard&&Anony)?
             "Anonymous":currentuser->userid,STRLEN) ;
+	    */
+    strncpy(post_file.owner,(anonyboard&&Anony)?
+            currboard:currentuser->userid,STRLEN) ;
 
+    /*
     if ((!strcmp(currboard,"Announce"))&&(!strcmp(post_file.owner,"Anonymous")))
         strcpy(post_file.owner,"SYSOP");
+	*/
+
+    if ((!strcmp(currboard,"Announce"))&&(!strcmp(post_file.owner,currboard)))
+    strcpy(post_file.owner,"SYSOP");
 
     setbfile( filepath, currboard, post_file.filename );
 
@@ -3398,7 +3368,7 @@ void postreport(const char * posttitle, int post_num)
     struct posttop
     {
         char author[13];              /* author name */
-        char board[13];               /* board name */
+        char board[IDLEN+6];               /* board name */
         char title[66];               /* title name */
         time_t date;                  /* last post's date */
         int number;                   /* post number */
@@ -3453,7 +3423,13 @@ struct fileheader *fileinfo;
 char *direct;
 {
     if( strcmp( "guest", currentuser->userid) == 0 )
-        return DONOTHING;
+    {
+        clear();
+        move(3,10);
+        prints("∫‹±ß«∏,œÎ◊™ºƒŒƒ’¬«Î…Í«Î’˝ ΩID!");
+        pressreturn();
+        return FULLUPDATE;
+    }
 
     /* ∑‚Ω˚Mail Bigman:2000.8.22 */
     if (HAS_PERM(PERM_DENYMAIL))
@@ -3743,6 +3719,10 @@ Goodbye()    /*¿Î’æ —°µ•*/
     /* Add by SmallPig */
     brc_update();
     strcpy(quote_file,"");
+
+/*---	œ‘ æ±∏Õ¸¬ºµƒπÿµÙ∏√À¿µƒªÓ∂Øø¥∞Â	2001-07-01	---*/
+    modify_user_mode(READING);
+
     i=0;
     if((sysops=fopen("etc/sysops","r"))!=NULL)
     {
@@ -3758,10 +3738,10 @@ Goodbye()    /*¿Î’æ —°µ•*/
     move(1,0);
     clear() ;
     move(0,0);
-    prints("ƒ„æÕ“™¿Îø™ %s £¨∏¯’æ≥§“ª–©Ω®“È¬£ø\n",BoardName);
+    prints("ƒ„æÕ“™¿Îø™ %s £¨∏¯"NAME_SYSOP_GROUP"“ª–©Ω®“È¬£ø\n",BoardName);
     if(strcmp(currentuser->userid,"guest")!=0)
-        prints("[[33m1[m] ºƒ–≈∏¯’æ≥§√«\n");
-    prints("[[33m2[m] ∑µªÿ[32m*ÀÆƒæ«Âª™BBS*[m\n");
+        prints("[[33m1[m] ºƒ–≈∏¯"NAME_SYSOP_GROUP"\n");
+    prints("[[33m2[m] ∑µªÿ[32m*"NAME_BBS_CHINESE" BBS*[m\n");
     if(strcmp(currentuser->userid,"guest")!=0){
         if( USE_NOTEPAD == 1)
             prints("[[33m3[m] –¥–¥*¡Ù—‘∞Ê*[m\n");

@@ -808,7 +808,7 @@ lock_scr() /* Leeward 98.02.22 */
     {
         move(19,32);
         clrtobot();
-        prints("[1m[32mBBSË®Ä¾Çå»ªÕ¾[m");
+        prints("[1m[32mBBS "NAME_BBS_CHINESE"Õ¾[m");
         move(21,0);
         clrtobot();
         getdata(21, 0, "ÆÁÄ»ÏÖÔÚÒÑ¾­Ëø¶¨£¬Òª½â³ıËø¶¨£¬ÇëÊäÈëÃÜÂë£º", passbuf, 39, NOECHO, NULL ,YEA);

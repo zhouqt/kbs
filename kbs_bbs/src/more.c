@@ -340,7 +340,7 @@ printacbar()
     move(2,0);
     prints("[35m©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[37m»î  ¶¯  ¿´  °æ[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´ [m\n");
     move(3+MAXnettyLN,0);
-    prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m»¶  Ó­  Í¶  ¸å[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
+    prints("[35m©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©È[36m"FOOTER_MOVIE"[35m©À¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼ [m\n");
     move (y,x);
     refresh();
 }
@@ -599,9 +599,9 @@ int     numlines;
                             fp = fopen(filepath, "w");
                             if (fp)
                             {
-                                fprintf(fp, "¼ÄÐÅÈË: BBSË®Ä¾Çå»ªÕ¾Õ¾Îñ¹ÜÀíÏµÍ³\n");
+                                fprintf(fp, "¼ÄÐÅÈË: BBS "NAME_BBS_CHINESE"Õ¾"NAME_MATTER"¹ÜÀíÏµÍ³\n");
                                 fprintf(fp, "±ê  Ìâ: ÄúµÄ¸öÈË×ÊÁÏ²»¹»ÏêÊµ£¬Çëµ½¸öÈË¹¤¾ßÏäÄÚ²¹³äÉè¶¨\n");
-                                fprintf(fp, "·¢ÐÅÕ¾: BBSË®Ä¾Çå»ªÕ¾ (%24.24s)\n",ctime(&now)) ;
+                                fprintf(fp, "·¢ÐÅÕ¾: BBS "NAME_BBS_CHINESE"Õ¾ (%24.24s)\n",ctime(&now)) ;
                                 fprintf(fp,"À´  Ô´: %s \n\n",currentuser->lasthost) ;
                                 fprintf(fp, "[1m[33mÄúµÄ¸öÈË×ÊÁÏ²»¹»ÏêÊµ£¬ÇëÂíÉÏµ½¸öÈË¹¤¾ßÏäÄÚ²¹³äÉè¶¨¡£[0m[0m\n\n");
                                 fprintf(fp, "Éè¶¨Ê±Çë×¢Òâ£º\n\n"

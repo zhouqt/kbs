@@ -95,7 +95,11 @@ int apply_boards(int (*func)()) /* 对所有版 应用 func函数*/
     register int i ;
 
     for(i=0;i<brdshm->numboards;i++)
-        if( bcache[i].level & PERM_POSTMASK || HAS_PERM( bcache[i].level ) || (bcache[i].level&PERM_NOZAP))
+        if( bcache[i].level & PERM_POSTMASK || 
+#ifdef BBSMAIN 
+             HAS_PERM( bcache[i].level ) || 
+#endif
+             (bcache[i].level&PERM_NOZAP))
             if (bcache[i].filename[0])
             if((*func)(&bcache[i]) == QUIT)
                 return QUIT;

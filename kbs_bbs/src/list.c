@@ -207,7 +207,7 @@ do_userlist()
     /* char online_users[STRLEN+10];
 
      if(!strcmp(currentuser->userid,"guest")){
-     fd=open("/home0/bbs/onlineulist",O_RDWR|O_TRUNC, 0600);
+     fd=open("onlineulist",O_RDWR|O_TRUNC, 0600);
      if(fd!=-1)
      {
     flock(fd,LOCK_EX);
@@ -398,7 +398,8 @@ case 'f': case 'F':
         update_time=0;
         break;
 case 's': case 'S':
-        if(!HAS_PERM(PERM_PAGE))
+        if( strcmp(user_record[allnum]->userid,"guest") && 
+		!HAS_PERM(PERM_PAGE))
             return 1;
         if(!canmsg(user_record[allnum]))
         {
@@ -584,7 +585,7 @@ printuent(struct userec *uentp ,char* arg)
         return 0;
     }
     if( uentp->numlogins == 0 ||
-            uleveltochar( permstr, uentp->userlevel ) == 0 )
+            uleveltochar( permstr, uentp ) == 0 )
         return 0;
     if(i<page||i>=page+BBS_PAGESIZE||i>=range)
     {
@@ -594,7 +595,7 @@ printuent(struct userec *uentp ,char* arg)
         else
             return 0;
     }
-    uleveltochar(&permstr,uentp->userlevel);
+    uleveltochar(&permstr,uentp);
     user_data[i-page]=*uentp;
     override=myfriend(searchuser(uentp->userid),fexp);
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
@@ -631,7 +632,7 @@ countusers(struct userec *uentp ,char* arg)
 {
     char permstr[10];
 
-    if(uentp->numlogins != 0&&uleveltochar( permstr, uentp->userlevel ) != 0)
+    if(uentp->numlogins != 0&&uleveltochar( permstr, uentp ) != 0)
 		return COUNT;
     return 0;
 }
@@ -734,7 +735,7 @@ t_friends()
     if ((fp = fopen(genbuf, "r")) == NULL) {
         move( 1, 0 );
         clrtobot();
-        prints("你尚未利用 Info -> Override 设定好友名单，所以...\n");
+        prints("你尚未利用 Talk -> Override 设定好友名单，所以...\n");
         pressanykey();
         return 0;
     }

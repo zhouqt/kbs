@@ -50,7 +50,7 @@ extern int in_mail ;
 extern int dumb_term ;
 extern int showansi;
 
-extern char fromhost[17];
+extern char fromhost[IPLEN];
 extern time_t   login_start_time;
 
 #ifdef BBSMAIN

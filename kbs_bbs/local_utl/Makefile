@@ -9,7 +9,7 @@ BBSUID=9999
 
 # The macro "LEEWARD_X_RECORD" need defining for *.c under local_utl */
 #CC       = cc -DAIX -DSYSV -DLEEWARD_X_RECORD
-#CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
+CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 #CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 OS_DEF   = -DLINUX -DSYSV 
 CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
@@ -18,7 +18,7 @@ include ../Makefile.spec
 
 CPP=$(CC)
 
-SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DINVISIBLE
+SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 CFLAGS += -I..
 

@@ -165,9 +165,9 @@ int     real, unum;
             }
             /*            if( atoi( buf ) > 0 ) newinfo.numposts = atoi( buf );*/
 
-            sprintf( genbuf, "将注册日期提前三天 [Y/N]");
+            sprintf( genbuf, "将注册日期提前"REGISTER_WAIT_TIME_NAME" [Y/N]");
             getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL, YEA);
-            if(buf[0]=='y'||buf[0]=='Y') newinfo.firstlogin-=3*86400;
+            if(buf[0]=='y'||buf[0]=='Y') newinfo.firstlogin-=REGISTER_WAIT_TIME;
 
             sprintf( genbuf, "将最近光临日期设置为今天吗？[Y/N]");
             getdata( i++, 0, genbuf, buf, 16, DOECHO, NULL, YEA);
@@ -220,7 +220,7 @@ int     real, unum;
         /*	Added by cityhunter to deny others to modify SYSOP's passwd */
         if( real && (strcmp(u->userid,"SYSOP") ==0) )
         {
-            prints("\n\n错误!系统禁止修改SYSOP的密码,警察正在来的路上 :)");
+            prints("\n\n错误!系统禁止修改SYSOP的密码,"NAME_POLICE"正在来的路上 :)");
             pressreturn();
             clear();
             return 0;
@@ -271,7 +271,7 @@ int     real, unum;
                 sprintf(genbuf,"mv %s %s",src ,dst);
                 system(genbuf);/*
                        Rename( src, dst );*/
-                sprintf(src,"tmp/email_%s",u->userid);
+                sprintf(src,"tmp/email/%s",u->userid);
                 unlink(src);
                 setuserid( unum, newinfo.userid );
             }
@@ -295,13 +295,13 @@ int     real, unum;
                         }
                         fprintf(dp,"%9.9d\n",code);
                         fclose(dp);
-                        sprintf( genbuf, "/usr/lib/sendmail -f SYSOP.bbs@%s %s ",
+                        sprintf( genbuf, "/usr/lib/sendmail -f SYSOP@%s %s ",
                                  email_domain(), newinfo.email );
                         fout = popen( genbuf, "w" );
                         fin  = fopen( emailfile, "r" );
                         if (fin == NULL || fout == NULL) return -1;
-                        fprintf( fout, "Reply-To: SYSOP.bbs@%s\n", email_domain());
-                        fprintf( fout, "From: SYSOP.bbs@%s\n",  email_domain() );
+                        fprintf( fout, "Reply-To: SYSOP@%s\n", email_domain());
+                        fprintf( fout, "From: SYSOP@%s\n",  email_domain() );
                         fprintf( fout, "To: %s\n", newinfo.email);
                         fprintf( fout, "Subject: @%s@[-%9.9d-]firebird mail check.\n", u->userid,code );
                         fprintf( fout, "X-Forwarded-By: SYSOP \n" );
@@ -398,10 +398,10 @@ x_fillform()
         pressreturn();
         return;
     }
-    if ((time(0)-currentuser->firstlogin) < 3*86400)
+    if ((time(0)-currentuser->firstlogin) < REGISTER_WAIT_TIME)
     {
-        prints( "您首次登入本站未满3天(72个小时)..." );
-        prints( "请先四处熟悉一下，在满3天以后再填写注册单。");
+        prints( "您首次登入本站未满"REGISTER_WAIT_TIME_NAME"..." );
+        prints( "请先四处熟悉一下，在满"REGISTER_WAIT_TIME_NAME"以后再填写注册单。");
         pressreturn();
         return;
     }
@@ -450,7 +450,7 @@ x_fillform()
         genbuf[0] = '\0';
         while ( strlen( genbuf ) < 2 ) {
             getfield( 12, "包括可连络时间,若无可用呼机或Email地址代替",     "连络电话", phone, STRLEN ); }
-        getfield( 14, "年.月.日(公元)(选择填写)",     "出生年月", birth, STRLEN );
+        getfield( 14, "年.月.日(公元)",     "出生年月", birth, STRLEN );
         mesg = "以上资料是否正确, 按 Q 放弃注册 (Y/N/Quit)? [N]: ";
         getdata(t_lines-1,0,mesg,ans,3,DOECHO,NULL,YEA);
         if( ans[0] == 'Q' || ans[0] == 'q' )

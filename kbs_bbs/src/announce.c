@@ -242,7 +242,8 @@ MENU    *pm;
             else
                 strncpy( litem.fname, buf + 5, sizeof(litem.fname) );
             if((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(PERM_BOARDS))&&
-                    (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(PERM_SYSOP)))
+                 (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(PERM_SYSOP))&&
+ 	        (!strstr(litem.title,"(BM: ZIXIAs)")||HAS_PERM(PERM_SECANC)))
             {
                 if(strstr(litem.fname,"!@#$%")) /*取 host & port */
                 {
@@ -469,7 +470,9 @@ int ent;
                 fclose( fn );
 
                 /* Leeward: 97.12.17: 对版主的多个窗口同步丝路 */
-                sprintf(genbuf, "%s/%s", BBSHOME, Importname);
+
+                // by zixia: 相对路经 sprintf(genbuf, "%s/%s", BBSHOME, Importname);
+		sprintf(genbuf, "%s", Importname);
                 ptr = strstr(genbuf, ".faq/");
                 if (ptr)
                 {
@@ -1013,7 +1016,8 @@ int     ch;
                 FILE *sl;
                 char *ptr;
 
-                sprintf(genbuf, "%s/%s", BBSHOME,netty_path);
+                // by zixia: 用相对路经 sprintf(genbuf, "%s/%s", BBSHOME,netty_path);
+		sprintf(genbuf, "%s", netty_path);
                 ptr = strstr(genbuf, ".faq/");
                 if (ptr)
                 {
@@ -1178,8 +1182,10 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
             else                            me.now = 0;
             break;
         case Ctrl('P'):
-                        if(!HAS_PERM( PERM_POST ))
-                            break;
+                if(!HAS_PERM( PERM_POST ))
+                        break;
+ 		if( !me.item[ me.now ] )
+ 			break;
             sprintf( fname, "%s/%s", path, me.item[ me.now ]->fname );
             if(!dashf(fname))
                 break;
