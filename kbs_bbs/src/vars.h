@@ -60,9 +60,10 @@ extern int idle_count;
 #endif
 
 struct newpostdata {
+    char dir;    /* added by bad  0-board 1-board directory 2-mail 3-function */
     char *name, *title, *BM;
     char flag;
-    int pos, total;
+    int pos, total, tag;
     char unread, zap;
 };
 

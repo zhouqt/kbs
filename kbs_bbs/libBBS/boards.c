@@ -24,7 +24,7 @@ struct favbrd_struct {
     int father;
 };
 
-static const char DirChar[] = "[DIR]";
+static const char NullChar[] = "";
 static const char EmptyChar[] = "Пе";
 
 /* added by bad 2002-08-3	FavBoardDir */
@@ -355,11 +355,13 @@ int load_boards(char *boardprefix)
         for (n = 0; n < favbrd_list_t; n++)
             if (favbrd_list[n].flag == -1 && favbrd_list[n].father == favnow) {
                 ptr = &nbrd[brdnum++];
-                ptr->name = DirChar;
+                ptr->name = NullChar;
                 ptr->title = favbrd_list[n].title;
-                ptr->BM = DirChar;
+                ptr->dir = 1;
+                ptr->BM = NullChar;
                 ptr->flag = -1;
-                ptr->pos = n;
+                ptr->tag = n;
+                ptr->pos = 0;
                 ptr->total = 0;
                 ptr->unread = 1;
                 for (k = 0; k < favbrd_list_t; k++)
@@ -387,9 +389,11 @@ int load_boards(char *boardprefix)
 
                 ptr = &nbrd[brdnum++];
                 ptr->name = bptr->filename;
+                ptr->dir = 0;
                 ptr->title = bptr->title;
                 ptr->BM = bptr->BM;
                 ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+                ptr->tag = n;
                 ptr->pos = favbrd_list[n].flag;
                 ptr->total = -1;
                 ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
@@ -429,9 +433,11 @@ int load_boards(char *boardprefix)
         }
     if (yank_flag == 2 && brdnum == 0) {
         ptr = &nbrd[brdnum++];
-        ptr->name = DirChar;
+        ptr->name = NullChar;
+        ptr->dir = 1;
         ptr->title = EmptyChar;
-        ptr->BM = DirChar;
+        ptr->BM = NullChar;
+        ptr->tag = -1;
         ptr->flag = -1;
         ptr->pos = -1;
         ptr->total = 0;

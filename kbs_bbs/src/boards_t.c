@@ -322,8 +322,8 @@ int page, clsflag, newflag;
             continue;
         }
         ptr = &nbrd[n];
-        if (ptr->flag == -1) {  // added by bad 2002.8.3
-            if (ptr->pos == -1)
+        if (ptr->dir == 1) {  // added by bad 2002.8.3
+            if (ptr->tag < 0)
                 prints("       ");
             else if (!newflag)
                 prints(" %4d  £´  <ƒø¬º>  ", n + 1);
@@ -351,7 +351,7 @@ int page, clsflag, newflag;
         /*
          * Leeward 98.03.28 Displaying whether a board is READONLY or not 
          */
-        if (ptr->flag == -1)
+        if (ptr->dir == 1)
             sprintf(buf, "%s", ptr->title);     // added by bad 2002.8.3
         else if (true == checkreadonly(ptr->name))
             sprintf(buf, "°Ù÷ª∂¡°Ù%s", ptr->title + 8);
@@ -406,7 +406,7 @@ static int choose_board(int newflag, char *boardprefix)
                 tmp = num;
                 while (num < brdnum) {
                     ptr = &nbrd[num];
-                    if ((ptr->total == -1) && (ptr->flag != -1))
+                    if ((ptr->total == -1) && (ptr->dir == 0))
                         check_newpost(ptr);
                     if (ptr->unread)
                         break;
@@ -441,36 +441,6 @@ static int choose_board(int newflag, char *boardprefix)
         case Ctrl('Z'):
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
             break;
-            /*
-             * case 'R':   Leeward 98.04.24 
-             * {
-             * char fname[STRLEN], restore[256];
-             * 
-             * if(!strcmp(currentuser->userid,"guest")) 
-             * break;
-             * 
-             * saveline(t_lines-2, 0, NULL);
-             * move(t_lines-2, 0);
-             * clrtoeol();
-             * getdata(t_lines-2, 0,"[1m[5m[31m¡¢º¥∂œœﬂ[m°√[1m[33m“‘±„ª÷∏¥…œ¥Œ’˝≥£¿Îø™±æ’æ ±µƒŒ¥∂¡±Íº« (Y/N)£ø [N][m: ", restore,4,DOECHO,NULL,true);
-             * if ('y' == restore[0] || 'Y' == restore[0])
-             * {
-             * sethomefile(fname, currentuser->userid,".boardrc" );
-             * sprintf(restore, "%s.bak", fname);
-             * f_cp(restore,fname,0);
-             * 
-             * move(t_lines-2, 0);
-             * clrtoeol();
-             * prints("[1m[33m“—ª÷∏¥…œ¥Œ’˝≥£¿Îø™±æ’æ ±µƒŒ¥∂¡±Íº«[m");
-             * move(t_lines-1, 0);
-             * clrtoeol();
-             * getdata(t_lines-1, 0,"[1m[32m«Î∞¥ Enter ∂œœﬂ£¨»ª∫Û÷ÿ–¬µ«¬º 8-) [m", restore,1,DOECHO,NULL,true);
-             * abort_bbs(0);
-             * }
-             * saveline(t_lines-2, 1, NULL);
-             * break;
-             * }
-             */
         case 'X':              /* Leeward 98.03.28 Set a board READONLY */
             {
                 char buf[STRLEN];
@@ -482,6 +452,7 @@ static int choose_board(int newflag, char *boardprefix)
                     || !strcmp(nbrd[num].name, "junk")
                     || !strcmp(nbrd[num].name, "deleted"))
                     break;      /* Leeward 98.04.01 */
+                if (nbrd[num].dir) break;
 
                 if (strlen(nbrd[num].name)) {
                     board_setreadonly(nbrd[num].name, 1);
@@ -504,6 +475,7 @@ static int choose_board(int newflag, char *boardprefix)
 
                 if (!HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS))
                     break;
+                if (nbrd[num].dir) break;
 
                 board_setreadonly(nbrd[num].name, 0);
 
@@ -739,12 +711,12 @@ static int choose_board(int newflag, char *boardprefix)
                 char bname[STRLEN];
                 int i = 0;
 
-                if (nbrd[num].flag == -1 && nbrd[num].pos >= 0) {
+                if (nbrd[num].dir == 1 && nbrd[num].tag >= 0) {
                     move(0, 0);
                     clrtoeol();
                     getdata(0, 0, " ‰»ÎÃ÷¬€«¯ƒø¬º√˚: ", bname, 22, DOECHO, NULL, true);
                     if (bname[0]) {
-                        changeFavBoardDir(nbrd[num].pos, bname);
+                        changeFavBoardDir(nbrd[num].tag, bname);
                         save_favboard();
                         brdnum = -1;    /*  force refresh board list */
                     }
@@ -758,14 +730,11 @@ static int choose_board(int newflag, char *boardprefix)
                     prints("≈≈–Úƒ£ Ωœ¬≤ªƒ‹“∆∂Ø£¨«Î”√'S'º¸«–ªª!");
                     pressreturn();
                 } else {
-                    if (nbrd[num].flag != -1 || nbrd[num].pos != -1) {
+                    if (nbrd[num].tag >= 0) {
                         int p, q;
                         char ans[5];
 
-                        if (nbrd[num].flag == -1)
-                            p = nbrd[num].pos;
-                        else
-                            p = IsFavBoard(nbrd[num].pos) - 1;
+                        p = nbrd[num].tag;
                         move(0, 0);
                         clrtoeol();
                         getdata(0, 0, "«Î ‰»Î“∆∂ØµΩµƒŒª÷√:", ans, 4, DOECHO, NULL, true);
@@ -779,10 +748,8 @@ static int choose_board(int newflag, char *boardprefix)
                         } else {
                             if (q == 0)
                                 q = 0;
-                            else if (nbrd[q].flag == -1)
-                                q = nbrd[q].pos;
                             else
-                                q = IsFavBoard(nbrd[q].pos) - 1;
+                                q = nbrd[q].tag;
                             MoveFavBoard(p, q);
                             save_favboard();
                             brdnum = -1;
@@ -796,9 +763,9 @@ static int choose_board(int newflag, char *boardprefix)
             if (2 == yank_flag) {
                 int p = 1;
 
-                if (nbrd[num].flag == -1 && nbrd[num].pos == -1)
+                if (nbrd[num].tag < 0)
                     p = 0;
-                if (nbrd[num].flag == -1 && nbrd[num].total > 0) {
+                if (nbrd[num].dir == 1 && p) {
                     char ans[2];
 
                     move(0, 0);
@@ -807,10 +774,7 @@ static int choose_board(int newflag, char *boardprefix)
                     p = ans[0] == 'Y' || ans[0] == 'y';
                 }
                 if (p) {
-                    if (nbrd[num].flag == -1)
-                        DelFavBoard(nbrd[num].pos);
-                    else
-                        DelFavBoard(IsFavBoard(nbrd[num].pos) - 1);
+                    DelFavBoard(nbrd[num].tag);
                     save_favboard();
                     brdnum = -1;        /*  force refresh board list. */
                 } else
@@ -865,8 +829,8 @@ static int choose_board(int newflag, char *boardprefix)
 
                     oldnum = num;
                     num = 0;
-                    if (ptr->pos != -1) {
-                        oldfavnow = SetFav(ptr->pos);
+                    if (ptr->dir == 1) {
+                        oldfavnow = SetFav(ptr->tag);
                         choose_board(newflag, boardprefix);
                         SetFav(oldfavnow);
                         num = oldnum;
@@ -885,19 +849,6 @@ static int choose_board(int newflag, char *boardprefix)
                     }
                     Read();
 
-                    /*
-                     * Leeward 98.05.17: updating unread flag on exiting Read() 
-                     */
-                    /*
-                     * if (-1 != load_boards())
-                     * qsort( nbrd, brdnum, sizeof( nbrd[0] ), cmpboard ); 
-                     */
-
-                    /*
-                     * À˚œÎ∞—zap∞Ê√Êµƒ ±º‰∂®“ÂŒ™…œ¥Œ‘ƒ∂¡µƒ ±º‰£¨µ´ «√ª”– π”√
-                     * if( zapbuf[ ptr->pos ] > 0 ) 
-                     * zapbuf[ ptr->pos ] = brc_list[0];
-                     */
                     if (nbrd != newpost_buffer)
                         nbrd = newpost_buffer;
                     brdnum = -1;
