@@ -168,21 +168,6 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
     do_move(new_col, new_ln, ochar);
 }
 
-#define push(x) stack[stackt++]=x
-#define outstack() if(stackt>0) {\
-    char buf[200],*p;\
-    sprintf(buf, "\x1b[");\
-    p=buf+2;\
-    if(stackt!=1||stack[0]!=0)\
-    for(ii=0;ii<stackt;ii++) {\
-        if(ii==0) sprintf(p, "%d", stack[ii]); \
-        else sprintf(p, ";%d", stack[ii]); \
-        p+=strlen(p);\
-    }\
-    sprintf(p, "m");\
-    output(buf, strlen(buf)); \
-    stackt=0; }
-    
 void refresh()
 {
     int i, j, k, ii, p;
@@ -244,33 +229,46 @@ void refresh()
             if((~bp[j].mode[k])&tc_mode!=0) {
                 tc_mode = 0;
                 tc_color = 7;
-                push(0);
+                stack[stackt++]=0;
             }
             if(!(tc_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_mode|=SCREEN_BRIGHT;
-                push(1);
+                stack[stackt++]=1;
             }
             if(!(tc_mode&SCREEN_LINE)&&bp[j].mode[k]&SCREEN_LINE) {
                 tc_mode|=SCREEN_LINE;
-                push(4);
+                stack[stackt++]=4;
             }
             if(!(tc_mode&SCREEN_BLINK)&&bp[j].mode[k]&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_mode|=SCREEN_BLINK;
-                push(5);
+                stack[stackt++]=5;
             }
             if(!(tc_mode&SCREEN_BACK)&&bp[j].mode[k]&SCREEN_BACK) {
                 tc_mode|=SCREEN_BACK;
-                push(7);
+                stack[stackt++]=7;
             }
             if(tc_color%16!=bp[j].color[k]%16&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
                 tc_color=tc_color/16*16+bp[j].color[k]%16;
-                push(30+bp[j].color[k]%16);
+                stack[stackt++]=30+bp[j].color[k]%16;
             }
             if(tc_color/16!=bp[j].color[k]/16) {
                 tc_color=bp[j].color[k]/16*16+tc_color%16;
-                push(40+bp[j].color[k]/16);
+                stack[stackt++]=40+bp[j].color[k]/16;
             }
-            outstack();
+            if(stackt>0) {
+                char buf[200],*p;
+                sprintf(buf, "\x1b[");
+                p=buf+2;
+                if(stackt!=1||stack[0]!=0)
+                for(ii=0;ii<stackt;ii++) {
+                    if(ii==0) sprintf(p, "%d", stack[ii]);
+                    else sprintf(p, ";%d", stack[ii]);
+                    p+=strlen(p);
+                }
+                sprintf(p, "m");
+                output(buf, strlen(buf));
+                stackt=0; 
+            }
             if(k>=p&&p<=scr_cols-5) {
                 for(ii=k;ii<scr_cols;ii++)
                     bp[j].mode[ii]&=~SCREEN_MODIFIED;
