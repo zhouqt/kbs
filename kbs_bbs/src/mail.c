@@ -1111,8 +1111,37 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
     }
     if(stat(genbuf,&st) != -1) currentuser->usedspace -= (before - st.st_size);
 
-    newbbslog(BBSLOG_USER, "edited mail '%s' on %s", fileinfo->title, currboard);
+    newbbslog(BBSLOG_USER, "edited mail '%s' ", fileinfo->title);
     return FULLUPDATE;
+}
+
+static int mail_edit_title(int ent, struct fileheader *fileinfo, char *direct)
+{
+	char buf[STRLEN];
+	char tmp[STRLEN*2];
+	char genbuf[1024];
+	char * t = NULL;
+	unsigned int i;
+
+	strcpy(buf,fileinfo->title);
+	getdata(t_lines-1,0,"新信件标题:",buf,50,DOECHO,NULL,false);
+
+	if(strcmp(buf,fileinfo->title))
+	{
+		for(i = 0; (i < strlen(buf)) && (i < STRLEN -1); i++)  /* disable color title */
+			if(buf[i] == 0x1b)
+				fileinfo->title[i]=' ';
+			else
+				fileinfo->title[i] = buf[i];
+		fileinfo->title[i] = 0;
+
+		strcpy(tmp,direct);
+		if((t = strrchr(tmp,'/')) != NULL)*t='\0';
+		sprintf(genbuf,"%s/%s",tmp,fileinfo->filename);
+		add_edit_mark(genbuf,3,buf); /* 3 means edit mail and title */
+	    newbbslog(BBSLOG_USER, "edited mail '%s' ", fileinfo->title);
+	}
+	return FULLUPDATE;
 }
 
 /** Added by netty to handle mail to 0Announce */
@@ -1340,6 +1369,7 @@ struct one_key mail_comms[] = {
     {'D', mail_del_range},
 //added by bad 03-2-10
     {'E', mail_edit},
+	{'T', mail_edit_title},
     {'r', mail_read},
     {'R', mail_reply},
     {'m', mail_mark},
@@ -1350,7 +1380,7 @@ struct one_key mail_comms[] = {
     {'U', mail_uforward},
 #endif
     /*
-     * Added by ming, 96.10.9 
+     * Added by ming, 96.10.9
      */
     {'a', auth_search_down},
     {'A', auth_search_up},
