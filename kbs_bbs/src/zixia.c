@@ -39,3 +39,4 @@ uleveltochar( char* buf, struct userec *lookupuser )
 
     	return 1;
 }
+modetype.c

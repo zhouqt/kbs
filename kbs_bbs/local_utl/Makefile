@@ -47,7 +47,7 @@ poststat: poststat.o
 static: static.o
 	$(CC) -o $@ $^
 
-usage:  usage.o ../libBBS.a
+usage:  usage.o ../libBBS.a 
 	$(CC) -o $@ $^
 
 clean:
@@ -82,10 +82,10 @@ Mutex.o:Mutex.cpp
 	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c Mutex.cpp
 
 MakeTar.o:MakeTar.cpp
-	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $^
+	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $^ 
 
 printboards:PrintBoards.o RecordFile.o
 	$(CC) -o $@ $^ -lbsd
 
 MakeTar:MakeTar.o Mutex.o
-	$(CPP) -o MakeTar MakeTar.o Mutex.o -lpthread
+	$(CPP) -o MakeTar MakeTar.o Mutex.o ../libBBS.a -lpthread

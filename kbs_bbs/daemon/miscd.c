@@ -102,10 +102,10 @@ int killauser(struct userec *theuser,char *data)
        log("0miscdaemon","kill user %s",theuser->userid); 
        a = getuser(theuser->userid,&ft);
        setmailpath(tmpbuf,theuser->userid);
-       sprintf(genbuf1,"/bin/mv %s mail/mailbak",tmpbuf);
+       sprintf(genbuf1,"/bin/rm -rf %s",tmpbuf);
        system(genbuf1) ;
        sethomepath(tmpbuf, theuser->userid);
-       sprintf(genbuf1,"/bin/mv %s home/homebak",tmpbuf);
+       sprintf(genbuf1,"/bin/rm -rf %s",tmpbuf);
        system(genbuf1) ;
        sprintf(genbuf1,"/bin/rm -fr tmp/email/%s", theuser->userid) ;
        system(genbuf1) ; 

@@ -6,7 +6,7 @@
 #include "Mutex.h"
 #include "bbs.h"
 #define FTPSCRIPT BBSHOME "/etc/saveanno"
-
+extern "C" int my_system(const char *cmdstring);
 typedef	void	Sigfunc(int);	/* for signal handlers */
 
 CThreadMutex	g_mutex;

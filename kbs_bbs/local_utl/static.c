@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #define MAX_LINE        15
-
+#include "../bbs.h"
 struct
 {
   int no[24];                   /* ´ÎÊý */
@@ -59,7 +59,7 @@ main(argc, argv)
     }
     if(strncmp(buf+1,date,5))
         continue;
-    if ( strstr(buf, "ENTER", 5))
+    if ( strstr(buf, "ENTER"))
     {
       st.no[hour]++;
       continue;

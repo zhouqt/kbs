@@ -64,7 +64,7 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o smth.o
 
-BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o
+BBSLIBOBJS = record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o $(BBSSITE).o
 
 OTHERS   = bbs.h edit.h
 
@@ -98,8 +98,8 @@ $(PROGNAME): $(COBJS) $(OTHERS)
 	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
 #	cp -f bbsnew ../bin/bbsnew
 
-bbstest: $(COBJS) $(OTHERS) newmain.o newio.o newterm.o convcode.o
-	$(CC) -o bbstest $(CFLAGS) $(COBJS) $(LIBS) newmain.o newio.o newterm.o convcode.o
+bbstest: $(COBJS) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
+	$(CC) -o bbstest $(CFLAGS) $(COBJS) $(LIBS) newmain_single.o newio.o newterm.o convcode.o
 	cp -f bbstest ../bin/bbstest
 
 bbspost: bbspost.o $(BBSLIB)

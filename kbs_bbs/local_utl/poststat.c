@@ -6,9 +6,10 @@
 /* update : 95/12/15                                     */
 /*-------------------------------------------------------
 #define DEBUG*/
-
+#include "../bbs.h"
 #include <stdio.h>
 #include <time.h>
+
 #define	DELETE
 
 char *myfile[] = {"day", "week", "month", "year"};
@@ -19,7 +20,7 @@ char *mytitle[] = {"日十", "周五十", "月百", "年度百"};
 
 #define HASHSIZE 1024
 #define TOPCOUNT 200
-
+#if 0
 struct fileheader {             /* This structure is used to hold data in */
         char filename[80];     /* the DIR files */
         char owner[80];
@@ -27,7 +28,8 @@ struct fileheader {             /* This structure is used to hold data in */
         unsigned level;
         unsigned char accessed[ 12 ];   /* struct size = 256 bytes */
 } fh[1];
-
+#endif
+struct fileheader fh[1];
 struct postrec
 {
   char author[13];              /* author name */

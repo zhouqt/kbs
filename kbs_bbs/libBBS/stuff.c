@@ -145,9 +145,6 @@ pressanykey()
 
 #endif
 
-
-#include "modetype.c"
-
 char *idle_str( struct user_info *uent )
 {
     static char hh_mm_ss[ 32 ];

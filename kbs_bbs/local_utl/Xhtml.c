@@ -52,8 +52,8 @@ int DealParameters(int argc,char** argv)
   extern int optind, opterr, optopt;
 
   char c;
+  int flag=1;
   chmcontentFile=NULL;
-  int flag =1;
   while (flag) {
     int this_option_optind = optind ? optind : 1;
     int option_index;
