@@ -979,6 +979,7 @@ char *direct;
 
     clear();
     readnext = false;
+    readprev = false;
     setqtitle(fileinfo->title);
     strcpy(buf, direct);
     if ((t = strrchr(buf, '/')) != NULL)
