@@ -492,7 +492,7 @@ void r_msg()
         
         clrtoeol();
         if(canreply)
-            prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s    ÇëÊäÈëÒôĞÅÄÚÈİ£¬Ctrl+Q »»ĞĞ:\n", now+1, count, uid);
+            prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s\n", now+1, count, uid);
         else
             if(uin)
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
