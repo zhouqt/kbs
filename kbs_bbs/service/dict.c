@@ -4,6 +4,9 @@
 #if HAVE_MYSQL == 1
 #include <mysql.h>
 
+char save_scr[LINEHEIGHT][LINELEN*3];
+int save_y, save_x;
+
 void print_res(char * r)
 {
     char * p;
@@ -96,8 +99,12 @@ int dict_main()
     FILE* fp;
     char fn[80];
 
+    noscroll();
     oldmode = uinfo.mode;
     modify_user_mode(DICT);
+    getyx(&save_y, &save_x);
+    for(i=0;i<t_lines;i++)
+        saveline(i, 0, save_scr[i]);
     clear();
     mysql_init(&s);
     if (!mysql_real_connect(&s, 
@@ -108,8 +115,7 @@ int dict_main()
 			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0)) {
         prints("%s\n", mysql_error(&s));
         pressanykey();
-        modify_user_mode(oldmode);
-        return;
+        goto exit_dict;
     }
     while (1) {
         char table[8];
@@ -141,11 +147,11 @@ int dict_main()
                     strcpy(table, "cedict");
                 else
                     strcpy(table, "ecdict");
-                sprintf(sql, "SELECT * FROM %s WHERE word like '%s*' and dictid=0", table, word);
+                sprintf(sql, "SELECT * FROM %s WHERE word like '%s%%' and dictid=0", table, word);
                 if (mysql_real_query(&s, sql, strlen(sql))) {
                     prints("%s\n", mysql_error(&s));
                     pressanykey();
-                    return;
+                    goto exit_dict;
                 }
                 res = mysql_store_result(&s);
                 row = mysql_fetch_row(res);
@@ -174,7 +180,7 @@ int dict_main()
         if (mysql_real_query(&s, sql, strlen(sql))) {
             prints("%s\n", mysql_error(&s));
             pressanykey();
-            return;
+            goto exit_dict;
         }
         res = mysql_store_result(&s);
         row = mysql_fetch_row(res);
@@ -200,11 +206,16 @@ int dict_main()
             }
            fclose(fp);
            ansimore_withzmodem(fn, true, title);
+           clear();
         }
     //i = igetkey();
     }
+exit_dict:
     mysql_close(&s);
     modify_user_mode(oldmode);
+    for(i=0;i<t_lines;i++)
+        saveline(i, 1, save_scr[i]);
+    move(save_y, save_x);
 }
 #endif /* HAVE_MSYQL == 1*/
 #endif
