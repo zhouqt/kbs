@@ -2107,7 +2107,6 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
     }
 }
 
-#ifdef HAVE_WFORUM
 
 unsigned int * zapbuf;
 /**
@@ -2121,6 +2120,8 @@ unsigned int * zapbuf;
  * @return array of loaded boards on success,
  *         FALSE on failure.
  * @author roy 
+ *
+ * original version by flyriver - removed by atppp
  */
 static PHP_FUNCTION(bbs_getboards)
 {
@@ -2277,117 +2278,6 @@ static PHP_FUNCTION(bbs_getboards)
     efree(columns);
 }
 
-#else 
-
-extern int brdnum;
-
-/**
- * Fetch all boards which have given prefix into an array.
- * prototype:
- * array bbs_getboards(char *prefix, int yank);
- *
- * @return array of loaded boards on success,
- *         FALSE on failure.
- * @author flyriver
- */
-static PHP_FUNCTION(bbs_getboards)
-{
-    /*
-     * TODO: The name of "yank" must be changed, this name is totally
-     * shit, but I don't know which name is better this time.
-     */
-    char *prefix;
-    int plen;
-    int yank;
-    int rows = 0;
-    struct newpostdata newpost_buffer[MAXBOARD];
-    struct newpostdata *ptr;
-    zval **columns;
-    zval *element;
-    int i;
-    int j;
-    int ac = ZEND_NUM_ARGS();
-    int brdnum, yank_flag;
-    int group;
-
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &prefix, &plen, &group,&yank) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-    /*
-     * loading boards 
-     */
-    /*
-     * handle some global variables: getCurrentUser(), yank, brdnum, 
-     * * nbrd.
-     */
-    /*
-     * NOTE: getCurrentUser() SHOULD had been set in funcs.php, 
-     * * but we still check it. 
-     */
-    if (getCurrentUser() == NULL) {
-        RETURN_FALSE;
-    }
-    yank_flag = yank;
-    if (strcmp(getCurrentUser()->userid, "guest") == 0)
-        yank_flag = 1;          /* see all boards including zapped boards. */
-    if (yank_flag != 0)
-        yank_flag = 1;
-    brdnum = 0;
-
-    /*
-     * TODO: replace load_board() with a new one, without accessing
-     * * global variables. 
-     */
-    if ((brdnum = load_boards(newpost_buffer, prefix, group, 1, MAXBOARD, 1, yank_flag, NULL, getSession())) <= 0) {
-        RETURN_FALSE;
-    }
-    /*
-     * qsort( nbrd, brdnum, sizeof( nbrd[0] ), 
-     * (int (*)(const void *, const void *))bbs_cmpboard );
-     */
-    rows = brdnum;              /* number of loaded boards */
-
-    /*
-     * fill data in output array. 
-     */
-    /*
-     * setup column names 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
-    }
-    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
-	if (columns==NULL) {
-		RETURN_FALSE;
-	}
-    for (i = 0; i < BOARD_COLUMNS; i++) {
-        MAKE_STD_ZVAL(element);
-        array_init(element);
-        columns[i] = element;
-        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
-    }
-    /*
-     * fill data for each column 
-     */
-    for (i = 0; i < rows; i++) {
-        ptr = &newpost_buffer[i];
-        check_newpost(ptr, false);
-        for (j = 0; j < BOARD_COLUMNS; j++) {
-            MAKE_STD_ZVAL(element);
-            bbs_make_board_zval(element, brd_col_names[j], ptr);
-            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
-        }
-    }
-    efree(columns);
-}
-#endif
  
 /*
  * stiger: countfriends
@@ -5329,9 +5219,7 @@ PHP_RINIT_FUNCTION(smth_bbs)
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getcurrentuinfo);
 #endif
-#ifdef HAVE_WFORUM
 	zapbuf=NULL;
-#endif
 	output_buffer=NULL;
 	output_buffer_size=0;
 	output_buffer_len=0;
