@@ -161,7 +161,7 @@ int was_col, was_ln, new_col, new_ln;
 	do_move(new_col, new_ln, ochar);
 }
 
-void
+static void
 standoutput(buf, ds, de, sso, eso)
 char *buf;
 int ds, de, sso, eso;
@@ -189,6 +189,10 @@ redoscr()
 	register int i, j;
 	register struct screenline *bp = big_picture;
 
+	if (!scrint) {
+		oflush();
+		return;
+	}
 	o_clear();
 	tc_col = 0;
 	tc_line = 0;
@@ -321,6 +325,11 @@ void
 move(y, x)
 int y, x;
 {
+	if (!scrint) {
+	    rel_move(-1, -1, y, x);
+	    return;
+	
+	}
 	cur_col = x /*+c_shift(y,x) */ ;
 	cur_ln = y;
 }
@@ -333,6 +342,11 @@ good_move(int y, int x)
 	int i, j = 0;
 	int inansi = 0;
 
+	if (!scrint) {
+	    rel_move(-1, -1, y, x);
+	    return;
+	
+	}
 	cur_ln = y;
 	standing = false;
 	ln = cur_ln + roll;
@@ -397,6 +411,10 @@ clear()
 	register int i;
 	register struct screenline *slp;
 
+        if (!scrint) {
+            o_clear();
+            return;
+        }
 	roll = 0;
 	docls = true;
 	downfrom = 0;
@@ -424,6 +442,10 @@ clrtoeol()
 	register struct screenline *slp;
 	register int ln;
 
+        if (!scrint) {
+            o_cleol();'
+            return;
+        }
 	standing = false;
 	ln = cur_ln + roll;
 	while (ln >= scr_lns)
@@ -826,6 +848,12 @@ standout()
 	register struct screenline *slp;
 	register int ln;
 
+	if (!scrint) {
+	    if (!standing)
+		o_standup();
+	    return;
+	
+	}
 	if (!standing) {
 		ln = cur_ln + roll;
 		while (ln >= scr_lns)
@@ -844,6 +872,12 @@ standend()
 	register struct screenline *slp;
 	register int ln;
 
+	if (!scrint) {
+	    if (standing)
+		o_standdown();
+	    return;
+	
+	}
 	if (standing) {
 		ln = cur_ln + roll;
 		while (ln >= scr_lns)
