@@ -3168,6 +3168,7 @@ int web_send_sms(char *dest,char *msgstr){
 			strcpy(uident,dest);
 	}else{
 		struct userdata destud;
+		return -2;
 		getuser(dest, &ur);
 		if(ur)
 			strcpy(destid, ur->userid);

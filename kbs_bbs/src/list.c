@@ -516,9 +516,11 @@ int allnum, pagenum;
          */
         strcpy(MsgDesUid, user_record[allnum]->userid);
 #ifdef SMS_SUPPORT
+	/*
 	if(ch=='S')
 	    do_send_sms_func(user_record[allnum]->userid, NULL);
 	else
+	*/
 #endif
         do_sendmsg(user_record[allnum], NULL, 0);
         break;

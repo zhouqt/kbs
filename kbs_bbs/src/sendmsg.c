@@ -899,6 +899,16 @@ checksmsagain:
             strcpy(udata.mobilenumber, uident);
     }
     else {
+	if (dest==NULL) {
+        move(2,0);
+        prints("´íÎóµÄÊÖ»úºÅ!");
+        pressreturn();
+        move(2, 0);
+        clrtoeol();
+        modify_user_mode(oldmode);
+        inremsg = false;
+        return -1;
+        }
         getuser(uident, &ur);
         if(ur)
             strcpy(uident, ur->userid);
