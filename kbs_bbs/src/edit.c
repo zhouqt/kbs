@@ -717,6 +717,8 @@ int saveheader ;
     int         aborted = 0;
     char buf[256];
     int temp;
+    extern char* quote_title,*quote_board;
+    extern int Anony;
 
 #ifndef VEDITOR
     char p_buf[100];
@@ -814,7 +816,7 @@ int saveheader ;
         }
 #ifndef VEDITOR
         if(saveheader)
-            write_header(fp,0) ;
+            write_header(fp,currentuser,in_mail,quote_board,quote_title,Anony,0) ;
 #endif
     }
     while(p != NULL) {
