@@ -2801,6 +2801,7 @@ static PHP_FUNCTION(bbs_get_import_path)
 
 /*
  * new a board
+ * 修改版面不允许重新修改精华区路径
  */
 static PHP_FUNCTION(bbs_new_board)
 {
@@ -2821,6 +2822,8 @@ static PHP_FUNCTION(bbs_new_board)
 	int bjunk;
 	int bout;
 	int battach;
+	int oldbnum;
+
 	char* bgroup;
 	int bgroup_len;
 	char explainn[100];
@@ -2829,7 +2832,7 @@ static PHP_FUNCTION(bbs_new_board)
 	struct boardheader newboard;
 	char vbuf[100];
 
-    if (ac != 11 || zend_parse_parameters(11 TSRMLS_CC, "sssssllllsl", &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach) == FAILURE) {
+    if (ac != 12 || zend_parse_parameters(12 TSRMLS_CC, "lsssssllllsl", &oldbnum, &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -2853,21 +2856,24 @@ static PHP_FUNCTION(bbs_new_board)
 	if(desp[0]=='\0')
 		RETURN_LONG(-11);
 
-	strncpy(newboard.title+2,desp,10);
-	newboard.title[1]='[';
-	if(desp_len < 10){
-		newboard.title[2+desp_len]=']';
-		for(i=2+desp_len+1; i<13; i++)
+	if(desp[0]=='['){
+		strncpy(newboard.title+1,desp,11);
+		for(i=desp_len+1; i<13; i++)
 			newboard.title[i]=' ';
+	}else{
+		newboard.title[1]='[';
+		strncpy(newboard.title+2,desp,10);
+		if(desp_len < 10){
+			newboard.title[2+desp_len]=']';
+			for(i=2+desp_len+1; i<13; i++)
+				newboard.title[i]=' ';
+		}
+		else
+			newboard.title[12]=']';
 	}
-	else
-		newboard.title[12]=']';
 
 	if( ! valid_brdname(newboard.filename) )
 		RETURN_LONG(-2);
-
-	if( getbnum(newboard.filename) > 0)
-		RETURN_LONG(-3);
 
 	strncpy(newboard.BM, bbm, BM_LEN - 1);
 	newboard.BM[BM_LEN-1] = '\0';
@@ -2886,33 +2892,102 @@ static PHP_FUNCTION(bbs_new_board)
 	if( battach )
 		newboard.flag |= BOARD_ATTACH;
 
-	sprintf(vbuf,"vote/%s",newboard.filename);
-	if( mkdir(vbuf,0755) == -1 )
-		RETURN_LONG( -4);
+	if(oldbnum < 0)
+		RETURN_LONG(-14);
 
-	sprintf(vbuf,"boards/%s",newboard.filename);
-	if( mkdir(vbuf,0755) == -1 )
-		RETURN_LONG( -5);
+	if(oldbnum > 0)
+		if( getboard(oldbnum) == 0)
+			RETURN_LONG(-21);
 
-	if(bgroup && bgroup_len > 0){
-		for(i=0; groups[i] && secname[i][0]; i++){
-			if( ! strncmp(groups[i], bgroup, strlen(groups[i])) )
-				break;
+	if( (oldbnum==0 && getbnum(newboard.filename) > 0))
+		RETURN_LONG(-3);
+	if( oldbnum && getbnum(newboard.filename)!=oldbnum && getbnum(newboard.filename)>0 )
+		RETURN_LONG(-23);
+
+	if( oldbnum ){	//更改版面属性
+		struct boardheader oldboard;
+
+		memcpy(&oldboard, getboard(oldbnum), sizeof(oldboard) );
+		if(oldboard.filename[0]=='\0')
+			RETURN_LONG(-22);
+
+		if(strcmp(oldboard.filename,newboard.filename)){
+			char old[256],tar[256];
+			
+			setbpath(old, oldboard.filename);
+			setbpath(tar, newboard.filename);
+			f_mv(old,tar);
+			sprintf(old, "vote/%s", oldboard.filename);
+			sprintf(tar, "vote/%s", newboard.filename);
+			f_mv(old,tar);
 		}
 
-		if( groups[i]==NULL || secname[i][0]==NULL )
-			RETURN_LONG( -13);
+		if(newboard.BM[0]!='\0' && strcpy(oldboard.BM, newboard.BM)){
+			if(newboard.BM[0] != '\0'){
+				if(strlen(newboard.BM) <= 30)
+					sprintf(vbuf,"%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
+				else
+					snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newboard.title + 13, newboard.BM);
+			}else
+				sprintf(vbuf,"%-38.38s", newboard.title+13);
 
-		sprintf(vbuf,"%-38.38s", newboard.title+13);
-		if(add_grp(bgroup, newboard.filename, vbuf, secname[i][0]) == -1)
-			RETURN_LONG( -12);
+			//edit_grp(oldboard.filename, oldboard.title + 13, vbuf);
+			//精华区更改
+		}
 
-		snprintf(newboard.ann_path,127,"%s/%s",bgroup, newboard.filename);
-		newboard.ann_path[127]=0;
+		strncpy(newboard.ann_path, oldboard.ann_path, 128);
+		newboard.ann_path[127]='\0';
+		//精华区移动
+		
+		if(oldboard.flag | BOARD_ANNONY)
+			del_from_file("etc/anonymous",oldboard.filename);
+		if(newboard.flag | BOARD_ANNONY)
+			addtofile("etc/anonymous",newboard.filename);
+		
+		set_board(oldbnum, &newboard, &oldboard);
+		sprintf(vbuf, "更改讨论区 %s 的资料 --> %s", oldboard.filename, newboard.filename);
+		bbslog("user","%s",vbuf);
+
+	}else{	//增加版面
+
+		if(newboard.flag | BOARD_ANNONY)
+			addtofile("etc/anonymous",newboard.filename);
+
+		sprintf(vbuf,"vote/%s",newboard.filename);
+		if( mkdir(vbuf,0755) == -1 )
+			RETURN_LONG( -4);
+
+		sprintf(vbuf,"boards/%s",newboard.filename);
+		if( mkdir(vbuf,0755) == -1 )
+			RETURN_LONG( -5);
+
+		if(bgroup && bgroup_len > 0){
+			for(i=0; groups[i] && explain[i]; i++){
+				if( ! strncmp(groups[i], bgroup, strlen(groups[i])) )
+					break;
+			}
+
+			if( groups[i]==NULL || explain[i]==NULL )
+				RETURN_LONG( -13);
+
+			if(newboard.BM[0] != '\0'){
+				if(strlen(newboard.BM) <= 30)
+					sprintf(vbuf,"%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
+				else
+					snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newboard.title + 13, newboard.BM);
+			}else
+				sprintf(vbuf,"%-38.38s", newboard.title+13);
+
+			if(add_grp(bgroup, newboard.filename, vbuf, explain[i]) == -1)
+				RETURN_LONG( -12);
+
+			snprintf(newboard.ann_path,127,"%s/%s",bgroup, newboard.filename);
+			newboard.ann_path[127]=0;
+		}
+
+		if( add_board( &newboard ) == -1 )
+			RETURN_LONG( -6);
 	}
-
-	if( add_board( &newboard ) == -1 )
-		RETURN_LONG( -6);
 
 	RETURN_LONG(1);
 }
