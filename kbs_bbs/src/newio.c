@@ -1041,8 +1041,14 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             if(buf[i]!=13&&buf[i]!=10) {
                 if(x>maxcol) {
                     clrtoeol();
-                    x = col;
+                    x = 0;
                     y++;
+                    if(y>=scr_lns) {
+                        scroll();
+                        starty--;
+                        cursory--;
+                        y--;
+                    }
                     move(y, x);
                 }
                 prints("%c", buf[i]);

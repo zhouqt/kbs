@@ -344,7 +344,7 @@ int get_var(char * name)
         return 0;
     }
     for(i=0;i<vart;i++)
-        if(!strcasecmp(vars[i].name, name)) {
+        if(!strncasecmp(vars[i].name, name, 8)) {
             return i;
         }
     if(vart>=MAX_VAR) {
@@ -587,7 +587,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
         buf[i-l]=0;
         j=0;
         while(funcname[j][0]) {
-            if(!strcasecmp(funcname[j],buf)) break;
+            if(!strncasecmp(funcname[j],buf,10)) break;
             j++;
         }
         if(funcname[j][0]) {
@@ -745,12 +745,12 @@ int calc_main()
     while(1) {
         getyx(&y, &x);
 //        getdata(y, x, 0, cmd, 300, 1, 0, 1);
-        move(y+multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1), 0);
+        move(y-1+multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1), 0);
         outline("\n");
         if(!cmd[0]) continue;
 //        scanf("%s", cmd);
-        if(!strcasecmp(cmd, "exit")) break;
-        if(!strcasecmp(cmd, "quit")) break;
+        if(!strncasecmp(cmd, "exit", 5)) break;
+        if(!strncasecmp(cmd, "quit", 5)) break;
         if(strchr(cmd, '=')) {
             i=strchr(cmd, '=')-cmd;
             if(i<=0||!check_var_name(cmd, i)) {
