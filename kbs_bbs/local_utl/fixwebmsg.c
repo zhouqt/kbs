@@ -26,19 +26,23 @@ int main()
 	for (i = 0; i < WWW_MAX_LOGIN; i++)
 	{
 		ml = msgshm + i;
-		if (ml->utmpnum <=0 || ml->utmpnum > USHM_SIZE)
+		if (ml->utmpnum == 0)
+			continue;
+		if (ml->utmpnum < 0 || ml->utmpnum > USHM_SIZE)
 		{
 			fprintf(stdout, "faint! %d:%s:%d\n",
 					i, ml->userid, ml->utmpnum);
 			continue;
+			ml->utmpnum = 0;
+			ml->userid[0] = '\0';
 		}
 		ui = get_utmpent(ml->utmpnum);
 		if (strcasecmp(ml->userid, ui->userid))
 		{
-			ml->utmpnum = 0;
-			ml->userid[0] = '\0';
 			fprintf(stdout, "Free %d:%s:%d\n",
 					i, ml->userid, ml->utmpnum);
+			ml->utmpnum = 0;
+			ml->userid[0] = '\0';
 		}
 	}
 
