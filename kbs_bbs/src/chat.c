@@ -1400,9 +1400,10 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
 {
     char fname[STRLEN];
     FILE *fp;
-    char buf[400];
+    char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE*2];
     int line, cnt, i, count;
     long pos;
+    struct msghead head;
 
     line = atoi(arg);
     if (line < screen_lines - 1)
