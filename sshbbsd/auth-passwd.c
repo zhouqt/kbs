@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.8  2003/12/26 13:20:10  stiger
+ * 除了config.h中的部分redefined外没有其他warning了
+ *
  * Revision 1.7  2003/06/20 07:07:05  bad
  * 这样对了
  *
@@ -191,7 +194,7 @@ int auth_password(const char *server_user, const char *password)
     	return 0;
     }
     if (!checkpasswd2(password, currentuser)) {
-        logattempt(server_user, get_canonical_hostname());
+        logattempt((char *)server_user, (char *)get_canonical_hostname());
         return 0;
     }
     strcpy(useridbuf, server_user);

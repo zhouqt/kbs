@@ -2478,7 +2478,7 @@ int is_BM(const struct boardheader *board,const struct userec *user)
 
     strncpy(BM, board->BM, sizeof(BM) - 1);
     BM[sizeof(BM) - 1] = '\0';
-    return chk_currBM(BM, user);
+    return chk_currBM(BM, (struct userec *)user);
 }
 
 int is_owner(struct fileheader *fh, struct userec *user)
@@ -3205,7 +3205,7 @@ int www_generateOriginIndex(const char* board)
 	for (i=total-1;i>=0;i--) {
 		temp=foundInWWWThreadList(ptr1[i].groupid,tail);
 		if (temp==NULL)	{
-			if ((found=Search_Bin(ptr,ptr1[i].groupid,0,total-1))<0) continue;
+			if ((found=Search_Bin((struct fileheader *)ptr,ptr1[i].groupid,0,total-1))<0) continue;
 			temp=CreateNewWWWThreadListNode(tail);
 			if (temp==NULL) {
 				clearWWWThreadList(tail);

@@ -113,7 +113,7 @@ int show_article(char *filename,char *www_url)
 		BBS_TRY
 		{
 			if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED,
-						(void **)&ptr, &filesize) == 0)
+						(void **)&ptr, (off_t *)&filesize) == 0)
 			{
 				flock(fd, LOCK_UN);
 				free_output(out);

@@ -16,6 +16,9 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
+ * Revision 1.7  2003/12/26 13:20:10  stiger
+ * 除了config.h中的部分redefined外没有其他warning了
+ *
  * Revision 1.6  2003/04/18 13:59:15  bad
  * ssh多行
  *
@@ -113,7 +116,7 @@ Server main loop for handling the interactive session.
 int ssh_write(int fd, const void *buf, size_t count)
 {
     int len;
-    char *data = buf;
+    const char *data = buf;
     int result = count;
 
     while (count > 0) {
@@ -234,6 +237,7 @@ void ProcessOnePacket(int wait)
             packet_disconnect("Protocol error during session: type %d", type);
         }
     }
-  read_done:
+read_done:
+	return;
 
 }

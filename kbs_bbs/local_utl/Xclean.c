@@ -7,7 +7,7 @@
 
 #include "bbs.h"
 
-void main(int argc, char **argv)
+int main(int argc, char **argv)
 {
     char fn[256], dn[256];
     char *p;

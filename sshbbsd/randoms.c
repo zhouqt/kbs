@@ -16,6 +16,9 @@ Cryptographically strong random number generation.
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2003/12/26 13:20:10  stiger
+ * 除了config.h中的部分redefined外没有其他warning了
+ *
  * Revision 1.3  2002/08/04 11:39:43  kcn
  * format c
  *
@@ -312,7 +315,7 @@ void random_stir(RandomState * state)
 
     /* First CFB pass. */
     for (i = 0; i < RANDOM_STATE_BYTES; i += 16) {
-        MD5Transform(iv, state->stir_key);
+        MD5Transform((md5_uint32 *)iv, state->stir_key);
         iv[0] ^= GET_32BIT(state->state + i);
         PUT_32BIT(state->state + i, iv[0]);
         iv[1] ^= GET_32BIT(state->state + i + 4);
@@ -328,7 +331,7 @@ void random_stir(RandomState * state)
 
     /* Second CFB pass. */
     for (i = 0; i < RANDOM_STATE_BYTES; i += 16) {
-        MD5Transform(iv, state->stir_key);
+        MD5Transform((md5_uint32 *)iv, state->stir_key);
         iv[0] ^= GET_32BIT(state->state + i);
         PUT_32BIT(state->state + i, iv[0]);
         iv[1] ^= GET_32BIT(state->state + i + 4);

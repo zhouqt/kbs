@@ -1782,13 +1782,13 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     } else if (strncmp(col_name, "ZAPPED", len) == 0) {
         ZVAL_LONG(value, brd->zap);
     } else if (strncmp(col_name, "CLASS", len) == 0) {
-        ZVAL_STRINGL(value, brd->title + 1, 6, 1);
+        ZVAL_STRINGL(value, (char *)brd->title + 1, 6, 1);
     } else if (strncmp(col_name, "DESC", len) == 0) {
-        ZVAL_STRING(value, brd->title + 13, 1);
+        ZVAL_STRING(value, (char *)brd->title + 13, 1);
     } else if (strncmp(col_name, "NAME", len) == 0) {
-        ZVAL_STRING(value, brd->name, 1);
+        ZVAL_STRING(value, (char *)brd->name, 1);
     } else if (strncmp(col_name, "BM", len) == 0) {
-        ZVAL_STRING(value, brd->BM, 1);
+        ZVAL_STRING(value, (char *)brd->BM, 1);
     /* added by caltary */
     } else if (strncmp(col_name, "POSITION", len) == 0){
         ZVAL_LONG(value, brd->pos);/*added end */
@@ -1806,9 +1806,9 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
     int len = strlen(col_name);
 
     if (strncmp(col_name, "DESC", len) == 0) {
-        ZVAL_STRING(value, brd->title, 1);
+        ZVAL_STRING(value, (char *)brd->title, 1);
     } else if (strncmp(col_name, "NAME", len) == 0) {
-        ZVAL_STRING(value, brd->name, 1);
+        ZVAL_STRING(value, (char *)brd->name, 1);
     } else if (strncmp(col_name, "POSITION", len) == 0){
 		/* 保存目录的上一级的索引值 */
         ZVAL_LONG(value, favbrd_list[brd->tag].father);
