@@ -109,6 +109,7 @@ static PHP_FUNCTION(bbs_update_uinfo);
 static PHP_FUNCTION(bbs_createnewid);
 static PHP_FUNCTION(bbs_fillidinfo);
 static PHP_FUNCTION(bbs_modify_info);
+static PHP_FUNCTION(bbs_modify_nick);
 static PHP_FUNCTION(bbs_createregform);
 static PHP_FUNCTION(bbs_findpwd_check);
 static PHP_FUNCTION(bbs_delfile);
@@ -256,6 +257,7 @@ static function_entry smth_bbs_functions[] = {
 	PHP_FE(bbs_findpwd_check,NULL)
         PHP_FE(bbs_fillidinfo,NULL)
         PHP_FE(bbs_modify_info,NULL)
+        PHP_FE(bbs_modify_nick,NULL)
         PHP_FE(bbs_delfile,NULL)
         PHP_FE(bbs_delmail,NULL)
         PHP_FE(bbs_normalboard,NULL)
@@ -4828,6 +4830,30 @@ static PHP_FUNCTION(bbs_createnewid)
 	RETURN_LONG(0);
 }
 
+static PHP_FUNCTION(bbs_modify_nick)
+{
+    char* username;
+    int username_len;
+    int ac = ZEND_NUM_ARGS();
+	int m;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &username, &username_len) == FAILURE)
+    {
+            WRONG_PARAM_COUNT;
+    }
+	for( m=0; username[m]; m++){
+		if( username[m] < 32 || username[m]==-1)
+			username[m]=' ';
+	}
+	if( strlen(username) >= NAMELEN)
+       RETURN_LONG(-1);
+
+	strcpy(currentuinfo->username, username);
+    UPDATE_UTMP_STR(username, (*currentuinfo));
+
+	RETURN_LONG(0);
+}
+
 /* bbsinfo.php, stiger */
 static PHP_FUNCTION(bbs_modify_info)
 {
@@ -4856,19 +4882,19 @@ static PHP_FUNCTION(bbs_modify_info)
 
 	for( m=0; m<strlen(username); m++){
 		if( username[m] < 32 && username[m] > 0 || username[m]==-1)
-			username[m]=0;
+			username[m]=' ';
 	}
 	for( m=0; m<strlen(realname); m++){
 		if( realname[m] < 32 && realname[m] > 0 || realname[m]==-1)
-			realname[m]=0;
+			realname[m]=' ';
 	}
 	for( m=0; m<strlen(address); m++){
 		if( address[m] < 32 && address[m] > 0 || address[m]==-1)
-			address[m]=0;
+			address[m]=' ';
 	}
 	for( m=0; m<strlen(email); m++){
 		if( email[m] < 32 && email[m] > 0 || email[m]==-1)
-			email[m]=0;
+			email[m]=' ';
 	}
 
     if(strlen(username) >= NAMELEN || strlen(realname) >= NAMELEN || strlen(address) >= STRLEN || strlen(email)>= STRLEN)

@@ -346,7 +346,7 @@
 					<a href="/bbsrsmsmsg.php" target="f3">短信管理器</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="cgi-bin/bbs/bbsnick" target="f3">临时改昵称</a><br>
+					<a href="/bbsnick.php" target="f3">临时改昵称</a><br>
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
 					<a href="/bbsfall.php" target="f3">设定好友</a><br>
