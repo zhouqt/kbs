@@ -321,7 +321,7 @@ int calendar_main()
                 modify_user_mode(CALENEDIT);
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
                 if(stat(buf, &st)!=-1)
-                    encode_file(buf);
+                    decode_file(buf);
                 else
                     cc = newfile(buf);
                 if(vedit(buf, 0, &eff_size, 0)&&cc) unlink(buf);
@@ -332,7 +332,7 @@ int calendar_main()
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
                 sprintf(title, "%d/%02d/%02d", year, month, day);
                 if(stat(buf, &st)!=-1) {
-                    encode_file(buf);
+                    decode_file(buf);
                     ansimore_withzmodem(buf, true, title);
                     encode_file(buf);
                 }
