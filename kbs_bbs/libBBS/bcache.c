@@ -145,6 +145,7 @@ void resolve_boards()
             bbslog("3system", "Can't open " BOARDS "file %s", strerror(errno));
             exit(-1);
         }
+		ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
         bcache = (struct boardheader *) mmap(NULL, MAXBOARD * sizeof(struct boardheader), PROT_READ , MAP_SHARED, boardfd, 0);
         if (bcache == (struct boardheader *) -1) {
             bbslog("4system", "Can't map " BOARDS "file %s", strerror(errno));
@@ -160,7 +161,6 @@ void resolve_boards()
 
             bbslog("3system", "reload bcache!");
             fd = bcache_lock();
-            ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
             for (i = 0; i < MAXBOARD; i++)
                 if (bcache[i].filename[0]) {
                     getlastpost(bcache[i].filename, &brdshm->bstatus[i].lastpost, &brdshm->bstatus[i].total);
