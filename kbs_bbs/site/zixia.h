@@ -32,6 +32,8 @@
 
 #define HAVE_WFORUM 1
 
+#define TELNET_WORD_WRAP 1 //Telnet下长行自动词间换行
+
 #define SMTH			1		/* SMTH专有代码 */
 #define FILTER			1		/* 使用文章内容过滤 */
 
