@@ -62,7 +62,7 @@ int search(char *id, char *pat, char *pat2, char *pat3, int dt)
             n++;
             if (fread(&x, sizeof(x), 1, fp) <= 0)
                 break;
-            t = atoi(x.filename + 2);
+            t = get_posttime(&x);
             if (id[0] != 0 && strcasecmp(x.owner, id))
                 continue;
             if (pat[0] && !strcasestr(x.title, pat))
@@ -74,7 +74,7 @@ int search(char *id, char *pat, char *pat2, char *pat3, int dt)
             if (pat3[0] && strcasestr(x.title, pat3))
                 continue;
             printf("<tr><td>%d<td><a href=bbsqry?userid=%s>%s</a>", n, x.owner, x.owner);
-            printf("<td>%6.6s", wwwCTime(atoi(x.filename + 2)) + 4);
+            printf("<td>%6.6s", wwwCTime(get_posttime(&x)) + 4);
             printf("<td><a href=bbscon?board=%s&id=%d&num=%d>%s</a>\n", board, x.id, n - 1, nohtml(x.title));
             total++;
             sum++;
