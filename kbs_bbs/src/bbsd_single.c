@@ -150,6 +150,8 @@ static void telnet_init()
     int n, len;
     char *cmd;
     char svr[] = {
+        IAC, DO, TELOPT_TTYPE,   
+        IAC, SB, TELOPT_TTYPE, TELQUAL_SEND, IAC, SE, 
         IAC, WILL, TELOPT_ECHO,
         IAC, WILL, TELOPT_SGA,
         IAC, WILL, TELOPT_BINARY,
@@ -164,8 +166,8 @@ static void telnet_init()
 
     cmd = svr;
 
-    for (n = 0; n < 5; n++) {
-        len = 3; //(n == 1 ? 6 : 3);
+    for (n = 0; n < 7; n++) {
+        len = (n == 1 ? 6 : 3);
         send(0, cmd, len, 0);
         cmd += len;
         /* KCN !!!!!!!!!! wrong telnet
