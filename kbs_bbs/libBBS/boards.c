@@ -5,26 +5,10 @@
 #include "bbs.h"
 #include <zlib.h>
 
-#define BRC_MAXNUM      50
-#define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( unsigned int ))
-#define BRC_FILESIZE BRC_ITEMSIZE*MAXBOARD
-
-#if USE_TMPFS==0
-#define BRC_CACHE_NUM 20        /* 未读标记cache 20个版 */
-#else
-#define BRC_CACHE_NUM 20        /* 未读标记被cache在tmpfs中了 */
-#endif
-
-#define BRCFILE ".boardrc.gz"
-static struct _brc_cache_entry {
-    int bid;
-    unsigned int list[BRC_MAXNUM];
-    int changed;
-} 
 #if USE_TMPFS==1
-* brc_cache_entry;
+struct _brc_cache_entry* brc_cache_entry;
 #else
-brc_cache_entry[BRC_CACHE_NUM];
+struct _brc_cache_entry brc_cache_entry[BRC_CACHE_NUM];
 #endif;
 static int brc_currcache=-1;
 

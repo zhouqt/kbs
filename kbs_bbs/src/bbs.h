@@ -446,5 +446,22 @@ enum BBSPOST_MODE
 #define CYAN 6
 #define WHITE 7
 
+#define BRC_MAXNUM      50
+#define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( unsigned int ))
+#define BRC_FILESIZE BRC_ITEMSIZE*MAXBOARD
+
+#if USE_TMPFS==0
+#define BRC_CACHE_NUM 20        /* 未读标记cache 20个版 */
+#else
+#define BRC_CACHE_NUM 20        /* 未读标记被cache在tmpfs中了 */
+#endif
+
+#define BRCFILE ".boardrc.gz"
+struct _brc_cache_entry {
+    int bid;
+    unsigned int list[BRC_MAXNUM];
+    int changed;
+};
+
 
 #endif                          /* of _BBS_H_ */
