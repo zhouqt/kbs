@@ -480,7 +480,10 @@ void r_msg()
             bell();
         good_move(0,0);
         clrtoeol();
-        prints("%s", outmsg);
+        if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            prints("\x1b[1m%s", outmsg);
+        else
+            prints("%s", outmsg);
 
         if(first) {
             refresh();

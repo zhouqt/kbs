@@ -598,31 +598,31 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         case 2:
         case 4:
             if(!head->sent) {
-                sprintf(dest, "%s[44m\x1b[36m%-14.14s[33m(%-12.12s):[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", head->id, time);
+                sprintf(dest, "[44m\x1b[36m%-14.14s[33m(%-12.12s):[37m", head->id, time);
                 strcpy(attstr, "[44m[37m");
             }
             else {
-                sprintf(dest, "%s\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", head->id, time);
+                sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", head->id, time);
                 strcpy(attstr, "[36;1m");
             }
             break;
         case 3:
-            sprintf(dest, "%s[44m\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", time);
+            sprintf(dest, "[44m\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", time);
             strcpy(attstr, "[44m[37m");
             break;
         case 1:
             if(!head->sent) {
-                sprintf(dest, "%s[44m\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", head->id, time);
+                sprintf(dest, "[44m\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m", head->id, time);
                 strcpy(attstr, "[44m[37m");
             }
             else {
-                sprintf(dest, "%s[44m\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", time, head->id);
+                sprintf(dest, "[44m\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m", time, head->id);
                 strcpy(attstr, "[44m[36m");
             }
             space=33;
             break;
         case 5:
-            sprintf(dest, "%s[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?"[1m":"", head->id, time);
+            sprintf(dest, "[45m\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m", head->id, time);
             strcpy(attstr, "[45m[37m");
             space=29;
             break;
@@ -639,10 +639,13 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             dest[len++]='[';
             dest[len++]='m';
             dest[len++]='\n';
-            dest[len++]='';
-            dest[len++]='[';
-            dest[len++]='1';
-            dest[len++]='m';
+            if (DEFINE(currentuser, DEF_HIGHCOLOR)) {
+                dest[len++]='';
+                dest[len++]='[';
+                dest[len++]='1';
+                dest[len++]='m';
+                dest[len++]='\n';
+            }
             ret++;
             for(pos=0;pos<strlen(attstr);pos++)
                 dest[len++]=attstr[pos];
