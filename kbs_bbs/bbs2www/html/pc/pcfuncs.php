@@ -685,7 +685,7 @@ function pc_logs($link , $action , $comment = "" , $pri_id = "" , $sec_id = "")
 		return FALSE;
 	
 	$query = "INSERT INTO `logs` ( `lid` , `username` , `hostname` , `ACTION` , `pri_id` , `sec_id` , `COMMENT` , `logtime` )".
-		"VALUES ('', '".addslashes($currentuser[userid])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', '".addslashes($action)."', '".addslashes($pre_id)."', '".addslashes($sec_id)."', '".addslashes($comment)."', NOW( ) );";
+		"VALUES ('', '".addslashes($currentuser[userid])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', '".addslashes($action)."', '".addslashes($pri_id)."', '".addslashes($sec_id)."', '".addslashes($comment)."', NOW( ) );";
 	mysql_query($query,$link);
 	return TRUE;
 }
@@ -699,11 +699,26 @@ function pc_counter($link)
 	$action = $currentuser["userid"]." visit ".$pc["USER"]."'s Blog(www)";
 	if(!$visitcount)
 	{
-		pc_visit_counter($link,$pc["UID"]);//计数器加1
-		pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志
-		$pc["VISIT"] ++;
-		$visitcount = ",".$pc["UID"].",";
-		setcookie("BLOGVISITCOUNT",$visitcount);
+		$visitcountinsession = $_SESSION["visitcount"];
+		if(!$visitcountinsession)
+		{
+			pc_visit_counter($link,$pc["UID"]);//计数器加1
+			pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志
+			$pc["VISIT"] ++;
+			$visitcount = ",".$pc["UID"].",";
+			setcookie("BLOGVISITCOUNT",$visitcount);
+			session_register("visitcount");
+		}
+		elseif(!stristr($visitcountinsession,",".$pc["UID"].","))
+		{
+			pc_visit_counter($link,$pc["UID"]);//计数器加1
+			pc_logs($link,$action,"",$pc["USER"]);//记一下访问日志
+			$pc["VISIT"] ++;
+			$visitcount .= $pc["UID"].",";
+			session_register("visitcount");
+		}
+		else
+			return;
 	}
 	elseif(!stristr($visitcount,",".$pc["UID"].","))
 	{
