@@ -841,7 +841,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case Ctrl('A'):            /*Add by SmallPig */
         clear();
-        modify_user_mode(QUERY);
         show_author(0, fileinfo, '\0');
         return READ_NEXT;
         break;

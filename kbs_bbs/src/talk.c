@@ -334,85 +334,81 @@ char q_id[IDLEN];
     }
     show_user_plan(planid);
     if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND && uinfo.mode != GMENU) {
-        if(uinfo.mode != QUERY)
-            pressanykey();
+        int ch, tuid, ucount, unum;
+        char buf[STRLEN];
+        struct user_info *uin;
+        move(t_lines - 1, 0);
+        if ((genbuf[0]) && seecount) {
+            if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                prints("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            \x1b[m");
+            else
+                prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 其它键继续                            \x1b[m");
+        }
         else {
-            int ch, tuid, ucount, unum;
-            char buf[STRLEN];
-            struct user_info *uin;
-            move(t_lines - 1, 0);
-            if ((genbuf[0]) && seecount) {
-                if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                    prints("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            \x1b[m");
+            if (DEFINE(currentuser, DEF_HIGHCOLOR))
+                prints("\x1b[m\x1b[44m        寄信[\x1b[1;32mm\x1b[m\x1b[0;44m]           加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            \x1b[m");
+            else
+                prints("\x1b[44m        寄信[m]           加,减朋友[o,d] 其它键继续                            \x1b[m");
+        }
+        ch = igetkey();
+        switch(toupper(ch)) {
+            case 'T':
+                if (!((genbuf[0]) && seecount)) break;
+                uin = t_search(uident, false);
+                if(uin==NULL) break;
+                ttt_talk(uin);
+                break;
+            case 'S':
+                if (!((genbuf[0]) && seecount)) break;
+                if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+                    break;
+                uin = t_search(uident, false);
+                if (!canmsg(currentuser, uin)) {
+                    sprintf(buf, "%s 已经关闭讯息呼叫器", uident);
+                    break;
+                }
+                strcpy(MsgDesUid, uident);
+                do_sendmsg(uin, NULL, 0);
+                break;
+            case 'M':
+                if (HAS_PERM(currentuser, PERM_DENYMAIL)
+                	||!HAS_PERM(currentuser, PERM_LOGINOK))
+                    break;
+                m_send(uident);
+                break;
+            case 'O':
+                if (!strcmp("guest", currentuser->userid))
+                    return 0;
+                if (addtooverride(uident) == -1)
+                    sprintf(buf, "%s 已在朋友名单", uident);
                 else
-                    prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 其它键继续                            \x1b[m");
-            }
-            else {
-                if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                    prints("\x1b[m\x1b[44m        寄信[\x1b[1;32mm\x1b[m\x1b[0;44m]           加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            \x1b[m");
+                    sprintf(buf, "%s 列入朋友名单", uident);
+                move(BBS_PAGESIZE + 3, 0);
+                clrtoeol();
+                prints("%s", buf);
+                refresh();
+                sleep(1);
+                break;
+            case 'D':
+                if (!strcmp("guest", currentuser->userid))
+                    break;
+                sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", uident);
+                move(BBS_PAGESIZE + 3, 0);
+                clrtoeol();
+                getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
+                move(BBS_PAGESIZE + 3, 0);
+                clrtoeol();
+                if (genbuf[0] != 'Y' && genbuf[0] != 'y') break;
+                if (deleteoverride(uident) == -1)
+                    sprintf(buf, "%s 本来就不在朋友名单中", uident);
                 else
-                    prints("\x1b[44m        寄信[m]           加,减朋友[o,d] 其它键继续                            \x1b[m");
-            }
-            ch = igetkey();
-            switch(toupper(ch)) {
-                case 'T':
-                    if (!((genbuf[0]) && seecount)) break;
-                    uin = t_search(uident, false);
-                    if(uin==NULL) break;
-                    ttt_talk(uin);
-                    break;
-                case 'S':
-                    if (!((genbuf[0]) && seecount)) break;
-                    if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
-                        break;
-                    uin = t_search(uident, false);
-                    if (!canmsg(currentuser, uin)) {
-                        sprintf(buf, "%s 已经关闭讯息呼叫器", uident);
-                        break;
-                    }
-                    strcpy(MsgDesUid, uident);
-                    do_sendmsg(uin, NULL, 0);
-                    break;
-                case 'M':
-                    if (HAS_PERM(currentuser, PERM_DENYMAIL)
-                    	||!HAS_PERM(currentuser, PERM_LOGINOK))
-                        break;
-                    m_send(uident);
-                    break;
-                case 'O':
-                    if (!strcmp("guest", currentuser->userid))
-                        return 0;
-                    if (addtooverride(uident) == -1)
-                        sprintf(buf, "%s 已在朋友名单", uident);
-                    else
-                        sprintf(buf, "%s 列入朋友名单", uident);
-                    move(BBS_PAGESIZE + 3, 0);
-                    clrtoeol();
-                    prints("%s", buf);
-                    refresh();
-                    sleep(1);
-                    break;
-                case 'D':
-                    if (!strcmp("guest", currentuser->userid))
-                        break;
-                    sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", uident);
-                    move(BBS_PAGESIZE + 3, 0);
-                    clrtoeol();
-                    getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
-                    move(BBS_PAGESIZE + 3, 0);
-                    clrtoeol();
-                    if (genbuf[0] != 'Y' && genbuf[0] != 'y') break;
-                    if (deleteoverride(uident) == -1)
-                        sprintf(buf, "%s 本来就不在朋友名单中", uident);
-                    else
-                        sprintf(buf, "%s 已从朋友名单移除", uident);
-                    move(BBS_PAGESIZE + 3, 0);
-                    clrtoeol();
-                    prints("%s", buf);
-                    refresh();
-                    sleep(1);
-                    break;
-            }
+                    sprintf(buf, "%s 已从朋友名单移除", uident);
+                move(BBS_PAGESIZE + 3, 0);
+                clrtoeol();
+                prints("%s", buf);
+                refresh();
+                sleep(1);
+                break;
         }
     }
     uinfo.destuid = 0;
