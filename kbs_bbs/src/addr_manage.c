@@ -461,6 +461,13 @@ static int set_al_key(struct _select_def *conf, int key)
 	{
 		char ans[4];
 
+		if( conf->item_count > MAX_ADDRLIST ){
+			clear();
+			prints("您的通讯录已经达到最大容量");
+			pressreturn();
+			return SHOW_REFRESH;
+		}
+
 		clear();
         getdata(3, 0, "确实要导入好友名单? (Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
 		if(ans[0] != 'y' && ans[0] != 'Y'){
