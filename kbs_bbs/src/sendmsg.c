@@ -191,8 +191,12 @@ int show_allmsgs()
 {
     char buf[MAX_MSG_SIZE+100], showmsg[MAX_MSG_SIZE*2];
     int oldmode, count, i, j, page, ch, y;
+    char title[STRLEN];
+    time_t now;
+    char fname[STRLEN];
+    FILE* fn;
 
-    sethomefile(fname, currentuser->userid, "msgfile");
+
     oldmode = uinfo.mode;
     modify_user_mode(LOOKMSGS);
 
@@ -252,11 +256,6 @@ reenter:
                 goto outofhere;
             case 'm':
             case 'M':
-                char title[STRLEN];
-                time_t now;
-                char fname[STRLEN];
-                FILE* fn;
-
                 sprintf(fname, "tmp/%s.msg", currentuser->userid);
                 fn = fopen(fname, "w");
                 for(i=0;i<count;i++) {
