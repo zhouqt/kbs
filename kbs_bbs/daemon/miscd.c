@@ -399,17 +399,24 @@ void timed()
 int dodaemon(char* argv1,char* daemon)
 {
     struct sigaction act;
+	char* commandline;
+	char commbuf[10];
     
     if (load_ucache()!=0) {
            printf("ft,load ucache error!");
            exit(-1);
     }
 
+	if (argv1!=NULL) {
      switch (fork()) {
          case -1: printf("faint, i can't fork.\n"); exit(0); break;
          case 0: break;
          default : exit(0); break;
      }
+	 commandline=argv1;
+	} else {
+	 commandline=commbuf;
+	}
      setsid();
 #ifdef AIX
      setpgrp();
@@ -428,15 +435,18 @@ int dodaemon(char* argv1,char* daemon)
     act.sa_flags = SA_RESTART;
     sigaction(SIGCHLD, &act, NULL);
 #endif
-    if (((daemon==NULL)||(!strcmp(daemon,"timed")))&&fork()) {
-          strcpy(argv1,"timed");
+    if (((daemon==NULL)||(!strcmp(daemon,"timed")))&&((argv1==NULL)||fork())) {
+          strcpy(commandline,"timed");
           timed();
     }
 
-    if (((daemon==NULL)||(!strcmp(daemon,"killd")))&&fork()) {
-     strcpy(argv1,"killd");
+    if (((daemon==NULL)||(!strcmp(daemon,"killd")))&&((argv1==NULL)||fork())) {
+     strcpy(commandline,"killd");
      while (1) {
 	int ft;
+		if (argv1==NULL) {
+		  dokilluser();
+		} else {
     	 switch(fork()) {
        	     case -1: 
        	        bbslog("1miscdaemon","fork failed\n");
@@ -448,6 +458,7 @@ int dodaemon(char* argv1,char* daemon)
        	     default:
        	        break;   
     	 }
+	    }
     	 if (ismonday()) {
 	    switch(fork()) {
        		case -1: 
@@ -467,12 +478,12 @@ int dodaemon(char* argv1,char* daemon)
 	} while (ft+86400 > time(0));
      };
     }
-    if (((daemon==NULL)||(!strcmp(daemon,"userd")))&&fork()) {
-          strcpy(argv1,"userd");
+    if (((daemon==NULL)||(!strcmp(daemon,"userd")))&&((argv1==NULL)||fork())) {
+          strcpy(commandline,"userd");
           userd();
     }
     if ((daemon==NULL)||(!strcmp(daemon,"flushd"))) {
-          strcpy(argv1,"flushd");
+          strcpy(commandline,"flushd");
           flushd();
     }
 }
@@ -494,7 +505,8 @@ int main (int argc,char *argv[])
          if (strcasecmp(argv[1],"killuser") == 0)  return dokilluser();
          if (strcasecmp(argv[1],"allboards") == 0) return dokillalldir();
          if (strcasecmp(argv[1],"daemon") == 0) return dodaemon(argv[1],argv[2]);
-         return dokilldir(argv[1]);
+         if (strcasecmp(argv[1],"killdir") == 0) return dokilldir(argv[2]);
+		return dodaemon(NULL,argv[1]);
      }
      printf("Usage : %s killuser to kill old users\n",argv[0]);
      printf("        %s allboards to delete all old files\n",argv[0]);
