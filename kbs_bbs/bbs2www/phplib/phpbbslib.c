@@ -7041,8 +7041,8 @@ static PHP_FUNCTION(bbs_x_search)
                 j+=3;
             }
             if(out[i]==1&&!inc) {
-                sprintf(pp, "<font class=\"BB0808\">");
-                pp += 21;
+                sprintf(pp, "<font class=\"f000\">");
+                pp += 19;
                 inc = 1;
             }
             else if(out[i]!=1&&inc) {
@@ -7055,7 +7055,7 @@ static PHP_FUNCTION(bbs_x_search)
             if(p) p=0;
             else if(buf[i]<0) p=1;
             j++;
-            if(j>=84&&p==0) {
+            if(j>=86&&p==0) {
                 t++;
                 if(t>=3) break;
                 j=0;
