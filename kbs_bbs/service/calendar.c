@@ -11,6 +11,7 @@
 
 char save_scr[LINEHEIGHT][LINELEN*3];
 int save_y, save_x;
+bool fullscr = false;
 unsigned long lunarInfo[]={
 0x4bd8,0x4ae0,0xa570,0x54d5,0xd260,0xd950,0x5554,0x56af,0x9ad0,0x55d2,
 0x4ae0,0xa5b6,0xa4d0,0xd250,0xd295,0xb54f,0xd6a0,0xada2,0x95b0,0x4977,
@@ -98,7 +99,10 @@ char wFtv[][100] = {
 ""};
 
 char lmonths[14][20] = {
-"","Õý","¶þ","Èý","ËÄ","Îå","Áù","Æß","°Ë","¾Å","Ê®","Ê®Ò»","À°",""};
+"","Õý","¶þ","Èý","ËÄ","Îå","Áù","Æß","°Ë","¾Å","Ê®","¶¬","À°",""};
+
+char emonths[14][20] = {
+"","January","February","March","April","May","June","July","August","September","October","November","December",""};
 
 int sTermInfo[] = {0,21208,42467,63836,85337,107014,128867,150921,173149,195551,218072,240693,263343,285989,308563,331033,353350,375494,397447,419210,440795,462224,483532,504758};
 int day,month,year;
@@ -214,130 +218,206 @@ void draw_main()
     struct stat st;
     for(i=0;i<t_lines;i++)
         saveline(i, 1, save_scr[i]);
-    resetcolor();
-    for(i=0;i<14;i++) {
-        move(i, scr_cols-32);
-        clrtoeol();
-    }
-    move(0, scr_cols-28);
-    prints("\x1b[31;1mÈÕ  \x1b[33mÒ»  ¶þ  Èý  ËÄ  Îå  \x1b[31mÁù");
-    for(i=0;i<6;i++) {
-        move(1+i*2, scr_cols-28);
-        prints("\x1b[0;36m©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥");
-    }
-    prints("\x1b[32;1m");
-    move(1, scr_cols-31);
-    prints("%s", nums[year/1000]);
-    move(2, scr_cols-31);
-    prints("%s", nums[year/100%10]);
-    move(3, scr_cols-31);
-    prints("%s", nums[year/10%10]);
-    move(4, scr_cols-31);
-    prints("%s", nums[year%10]);
-    move(5, scr_cols-31);
-    prints("Äê");
-    if(month>10) {
-        move(7, scr_cols-31);
-        prints("%s", nums[10]);
-        move(8, scr_cols-31);
-        prints("%s", nums[month%10]);
-        move(9, scr_cols-31);
-        prints("ÔÂ");
+    if(fullscr) {
+        clear();
+        move(1, 3);
+        setbcolor(CYAN);
+        setfcolor(YELLOW, 1);
+        for(i=0;i<42;i++) prints(" ");
+        move(1, 5);
+        if(month<=10) {
+            prints("%s  ", nums[month]);
+        }
+        else {
+            prints("%s  %s  ", nums[10], nums[month%10]);
+        }
+        prints("ÔÂ  Àú");
+        setfcolor(RED, 1);
+        strcpy(buf, emonth[month]);
+        move(1, 40-strlen(buf));
+        prints(buf);
+        move(3, 4);
+        prints("[1;41;31mSUN [0;40;37m  [1;43;33mMON [40m  [43;33mTUE [40;37m  [43;33mWED [40;37m  [43;33mTHU [40;37m  [43;33mFRI [40;37m  [42;32mSAT [m");
+        move(4, 4);
+        prints("[41;37m  [1;31mÈÕ[0;40;37m  [43;37m  [1;33mÒ»[40;37m  [43;33m  ¶þ[40m  [43;33m  Èý[40m  [43;33m  ËÄ[40m  [43;33m  Îå[40m  [42;33m  [32mÁù[m");
+        for(i=0;i<6;i++) {
+            move(6+i*3, 3);
+            prints("[36m©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥[m");
+        }
+        k=0;
+        for(i=1;i<=get_day(year,month);i++) {
+            j=get_week(year,month,i);
+            Lunar(i, &lmonth, &lday);
+            y=k*3+7;
+            x=j*6+3;
+            resetcolor();
+            if(j==0) setfcolor(RED, 1);
+            else if(j==6) setfcolor(GREEN, 1);
+            else setfcolor(YELLOW, 1);
+            i0=0;
+            while(sFtv[i0][0]) {
+                if(sFtv[i0][4]=='*'&&getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==i)
+                    setfcolor(RED, 1);
+                i0++;
+            }
+            i0=0;
+            while(lFtv[i0][0]) {
+                if(lFtv[i0][4]=='*'&&getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday)
+                    setfcolor(RED, 1);
+                i0++;
+            }
+            if(i==day) setbcolor(PINK);
+            sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
+            if(stat(buf, &st)!=-1) prints("\x1b[4m");
+            move(y,x);
+            prints("%4d", i);
+
+            if(lday==1) sprintf(buf2, "%sÔÂ", lmonths[lmonth]);
+            else if(lday<=10) sprintf(buf2, "³õ%s", nums[lday]);
+            else if(lday<=19) sprintf(buf2, "Ê®%s", nums[lday-10]);
+            else if(lday==20) sprintf(buf2, "¶þÊ®");
+            else if(lday<=29) sprintf(buf2, "Ø¥%s", nums[lday-20]);
+            else if(lday==30) sprintf(buf2, "ÈýÊ®");
+            else if(lday<=39) sprintf(buf2, "Ø¦%s", nums[lday-30]);
+            else sprintf(buf2, "¡õ");
+            if(sTerm(year, month*2-2, i))
+                strcpy(buf2, solarTerm[month*2-2]);
+            if(sTerm(year, month*2-1, i))
+                strcpy(buf2, solarTerm[month*2-1]);
+            move(y+1, x);
+            prints("%4s", buf2);
+
+            if(j==6) k++;
+        }
+
     }
     else {
-        move(7, scr_cols-31);
-        prints("%s", nums[month]);
-        move(8, scr_cols-31);
-        prints("ÔÂ");
-    }
-    k=0;
-    for(i=1;i<=get_day(year,month);i++) {
-        j=get_week(year,month,i);
-        Lunar(i, &lmonth, &lday);
-        y=k*2+2;
-        x=j*4+scr_cols-28;
         resetcolor();
-        if(j==0||j==6) setfcolor(RED, 1);
-        else setfcolor(YELLOW, 1);
+        for(i=0;i<14;i++) {
+            move(i, scr_cols-32);
+            clrtoeol();
+        }
+        move(0, scr_cols-28);
+        prints("\x1b[31;1mÈÕ  \x1b[33mÒ»  ¶þ  Èý  ËÄ  Îå  \x1b[32mÁù");
+        for(i=0;i<6;i++) {
+            move(1+i*2, scr_cols-28);
+            prints("\x1b[0;36m©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥");
+        }
+        prints("\x1b[32;1m");
+        move(1, scr_cols-31);
+        prints("%s", nums[year/1000]);
+        move(2, scr_cols-31);
+        prints("%s", nums[year/100%10]);
+        move(3, scr_cols-31);
+        prints("%s", nums[year/10%10]);
+        move(4, scr_cols-31);
+        prints("%s", nums[year%10]);
+        move(5, scr_cols-31);
+        prints("Äê");
+        if(month>10) {
+            move(7, scr_cols-31);
+            prints("%s", nums[10]);
+            move(8, scr_cols-31);
+            prints("%s", nums[month%10]);
+            move(9, scr_cols-31);
+            prints("ÔÂ");
+        }
+        else {
+            move(7, scr_cols-31);
+            prints("%s", nums[month]);
+            move(8, scr_cols-31);
+            prints("ÔÂ");
+        }
+        k=0;
+        for(i=1;i<=get_day(year,month);i++) {
+            j=get_week(year,month,i);
+            Lunar(i, &lmonth, &lday);
+            y=k*2+2;
+            x=j*4+scr_cols-28;
+            resetcolor();
+            if(j==0) setfcolor(RED, 1);
+            else if(j==6) setfcolor(GREEN, 1);
+            else setfcolor(YELLOW, 1);
+            i0=0;
+            while(sFtv[i0][0]) {
+                if(sFtv[i0][4]=='*'&&getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==i)
+                    setfcolor(RED, 1);
+                i0++;
+            }
+            i0=0;
+            while(lFtv[i0][0]) {
+                if(lFtv[i0][4]=='*'&&getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday)
+                    setfcolor(RED, 1);
+                i0++;
+            }
+            if(i==day) setbcolor(PINK);
+            sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
+            if(stat(buf, &st)!=-1) prints("\x1b[4m");
+            move(y,x);
+            prints("%2d", i);
+
+            if(j==6) k++;
+        }
+
+        resetcolor();
+        Lunar(day, &lmonth, &lday);
+        if(lday<=10) sprintf(buf2, "³õ%s", nums[lday]);
+        else if(lday<=19) sprintf(buf2, "Ê®%s", nums[lday-10]);
+        else if(lday==20) sprintf(buf2, "¶þÊ®");
+        else if(lday<=29) sprintf(buf2, "Ø¥%s", nums[lday-20]);
+        else if(lday==30) sprintf(buf2, "ÈýÊ®");
+        else if(lday<=39) sprintf(buf2, "Ø¦%s", nums[lday-30]);
+        else sprintf(buf2, "¡õ");
+        sprintf(buf, "Å©Àú %sÔÂ%s", lmonths[lmonth], buf2);
+        move(12, scr_cols-strlen(buf));
+        resetcolor();
+        prints(buf);
+
+        k = scr_cols;
+        resetcolor();
         i0=0;
         while(sFtv[i0][0]) {
-            if(sFtv[i0][4]=='*'&&getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==i)
-                setfcolor(RED, 1);
+            if(getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==day) {
+                strcpy(buf, sFtv[i0]+5);
+                k-=strlen(buf);
+                move(13, k);
+                k--;
+                prints(buf);
+            }
             i0++;
         }
         i0=0;
         while(lFtv[i0][0]) {
-            if(lFtv[i0][4]=='*'&&getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday)
-                setfcolor(RED, 1);
+            if(getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday) {
+                strcpy(buf, lFtv[i0]+5);
+                k-=strlen(buf);
+                move(13, k);
+                k--;
+                prints(buf);
+            }
             i0++;
         }
-        if(i==day) setbcolor(PINK);
-        sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
-        if(stat(buf, &st)!=-1) prints("\x1b[4m");
-        move(y,x);
-        prints("%2d", i);
-
-        if(j==6) k++;
-    }
-
-    resetcolor();
-    Lunar(day, &lmonth, &lday);
-    if(lday<=10) sprintf(buf2, "³õ%s", nums[lday]);
-    else if(lday<=19) sprintf(buf2, "Ê®%s", nums[lday-10]);
-    else if(lday==20) sprintf(buf2, "¶þÊ®");
-    else if(lday<=29) sprintf(buf2, "Ø¥%s", nums[lday-20]);
-    else if(lday==30) sprintf(buf2, "ÈýÊ®");
-    else if(lday<=39) sprintf(buf2, "Ø¦%s", nums[lday-30]);
-    else sprintf(buf2, "¡õ");
-    sprintf(buf, "Å©Àú %sÔÂ%s", lmonths[lmonth], buf2);
-    move(12, scr_cols-strlen(buf));
-    resetcolor();
-    prints(buf);
-
-    k = scr_cols;
-    resetcolor();
-    i0=0;
-    while(sFtv[i0][0]) {
-        if(getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==day) {
-            strcpy(buf, sFtv[i0]+5);
-            k-=strlen(buf);
-            move(13, k);
-            k--;
-            prints(buf);
+        i0=0;
+        while(wFtv[i0][0]) {
+            if(getnum(wFtv[i0])==month&&(wFtv[i0][3]-'0'==get_week(year,month,day))&&
+                ((wFtv[i0][2]-'1'==day/7)||('8'-wFtv[i0][2]==(get_day(year,month)+1-day)/7))) {
+                strcpy(buf, wFtv[i0]+5);
+                k-=strlen(buf);
+                move(13, k);
+                k--;
+                prints(buf);
+            }
+            i0++;
         }
-        i0++;
+        for(i=month*2-2;i<month*2;i++)
+            if(sTerm(year, i, day)) {
+                strcpy(buf, solarTerm[i]);
+                k-=strlen(buf);
+                move(13, k);
+                k--;
+                prints(buf);
+            }
     }
-    i0=0;
-    while(lFtv[i0][0]) {
-        if(getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday) {
-            strcpy(buf, lFtv[i0]+5);
-            k-=strlen(buf);
-            move(13, k);
-            k--;
-            prints(buf);
-        }
-        i0++;
-    }
-    i0=0;
-    while(wFtv[i0][0]) {
-        if(getnum(wFtv[i0])==month&&(wFtv[i0][3]-'0'==get_week(year,month,day))&&
-            ((wFtv[i0][2]-'1'==day/7)||('8'-wFtv[i0][2]==(get_day(year,month)+1-day)/7))) {
-            strcpy(buf, wFtv[i0]+5);
-            k-=strlen(buf);
-            move(13, k);
-            k--;
-            prints(buf);
-        }
-        i0++;
-    }
-    for(i=month*2-2;i<month*2;i++)
-        if(sTerm(year, i, day)) {
-            strcpy(buf, solarTerm[i]);
-            k-=strlen(buf);
-            move(13, k);
-            k--;
-            prints(buf);
-        }
     move(t_lines-1, scr_cols);
 }
 
@@ -582,6 +662,9 @@ int calendar_main()
                     if(toupper(title[0])=='Y')
                         unlink(buf);
                 }
+                break;
+            case KEY_F9:
+                fullscr = !fullscr;
                 break;
         }
     }
