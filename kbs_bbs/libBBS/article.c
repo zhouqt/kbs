@@ -303,9 +303,9 @@ int write_posts(char *id, char *board, char *title)
     time_t now;
     struct posttop postlog, pl;
 #ifdef BLESS_BOARD
-    if (junkboard(board) || normal_board(board) != 1)
-#else
     if (strcasecmp(board,BLESS_BOARD)&&(junkboard(board) || normal_board(board) != 1))
+#else
+    if (junkboard(board) || normal_board(board) != 1)
 #endif
         return 0;
     now = time(0);
