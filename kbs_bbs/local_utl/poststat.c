@@ -516,7 +516,96 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
 
 void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
 {
-	gen_hot_subjects_xml(4, dobucket);
+    struct postrec *pp;
+    FILE *fp;
+    int i, j;
+    char *p, curfile[40];
+
+    /*
+     * Haohmaru.99.11.20.检查是否已被删 
+     */
+	int fd;
+    char dirfile[80];
+    int exist, real;
+	fileheader_t fh;
+
+    /*
+     * Bigman.2000.8.28: 修改统计方式 
+     */
+    int m, n;
+    char BoardName[10][13];
+	char xml_buf[256];
+	int mytype = 4;
+
+	/* ---------------------------------------------- */
+    /*
+     * sort top 100 issue and save results            
+     */
+    /*
+     * ---------------------------------------------- 
+     */
+
+    memset(top, 0, sizeof(top));
+    for (i = j = 0; i < HASHSIZE; i++) {
+        for (pp = dobucket[i]; pp; pp = pp->next)
+            j = sort(pp, j);
+    }
+
+    p = myfile[mytype];
+	/*
+    sprintf(curfile, "etc/posts/%s.0", p);
+    if ((fp = fopen(curfile, "w")) != NULL) {
+        fwrite(top, sizeof(struct posttop), j, fp);
+        fclose(fp);
+    }
+	*/
+
+    sprintf(curfile, "xml/%s.xml", p);
+    if ((fp = fopen(curfile, "w")) != NULL) 
+	{
+		fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
+		fprintf(fp, "<hotsubjects>\n");
+
+        i = mytop[mytype];
+        real = 0;
+        for (i = 0; i < j && real < mytop[mytype]; i++) 
+		{
+			setbdir(DIR_MODE_NORMAL, dirfile, top[i].board);
+			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+				continue;
+
+    		if(get_records_from_id(fd, top[i].groupid, &fh, 1, NULL) == 0 )
+			{
+				close(fd);
+				continue;
+			}
+			close(fd);
+
+			m = 0;
+			for (n = 0; n < real; n++) 
+			{
+				if (!strcmp(top[i].board, BoardName[n]))
+					m++;
+			}
+
+			strcpy(BoardName[real], top[i].board);
+
+            real++;
+
+			fprintf(fp, "<hotsubject>\n");
+			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, fh.title, 
+						sizeof(xml_buf)));
+			fprintf(fp, "<author>%s</author>\n", fh.owner);
+			fprintf(fp, "<board>%s</board>\n", top[i].board);
+			fprintf(fp, "<time>%d</time>\n", top[i].date);
+			fprintf(fp, "<number>%d</number>\n", top[i].number);
+			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
+			fprintf(fp, "</hotsubject>\n");
+        }
+		fprintf(fp, "</hotsubjects>\n");
+
+        fclose(fp);
+    }
 }
 
 void poststat(int mytype, time_t now, struct tm *ptime)
