@@ -118,6 +118,7 @@ function initEditor() {
 		echo " background = \"".$bkimg."\" ";
 ?>
 >
+<textarea id="holdtext" style="display:none;"></textarea>
 <?php
 }
 
@@ -984,7 +985,7 @@ function pc_load_directory($link,$uid,$pid)
 /*
 **  auto-detect trackback pings from a text
 */
-function pc_detect_trackbackpings($body,&$detecttbps)
+function pc_detect_trackbackpings($body,&$detecttbps,$tbpUrl)
 {
 	$text = $body;
 	$text = undo_html_format(trim($text)); 
@@ -1001,8 +1002,11 @@ function pc_detect_trackbackpings($body,&$detecttbps)
 		if($detectnids[intval($matches[3][$i])])
 			continue;
 		$detectnids[intval($matches[3][$i])] = 1;
-		$detecttbps[] = "http://".$matches[1][$i]."/pc/tb.php?id=".intval($matches[3][$i]);
-		$detectnum ++ ;
+		$url = "http://".$matches[1][$i]."/pc/tb.php?id=".intval($matches[3][$i]);
+		if ($url != $tbpUrl) {
+		    $detecttbps[] = ;
+		    $detectnum ++ ;
+		}
 	}
 	return $detectnum;
 }
@@ -1124,7 +1128,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     	if($autodetecttbp) //自动发掘引用通告
     	{
     		$detecttbps = array();
-    		$detectnum  = pc_detect_trackbackpings($body,$detecttbps);
+    		$detectnum  = pc_detect_trackbackpings($body,$detecttbps,$tbpUrl);
     	}
     	if($tbpUrl || $detectnum) //发送引用通告前提取NID
     	{
