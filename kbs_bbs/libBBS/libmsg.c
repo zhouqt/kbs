@@ -528,11 +528,11 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         strcpy(msgerr, "对方已经锁定屏幕，请稍候再发或给他(她)写信...");
         return -1;
     }
-    if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
-    {
-	strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
-       return -1;
-    }
+//    if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
+//    {
+//	strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
+//       return -1;
+//    }
     if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
         strcpy(msgerr, "对方拒绝接受你的讯息...");
         return -1;
