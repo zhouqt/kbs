@@ -2357,7 +2357,7 @@ static PHP_FUNCTION(bbs_fillidinfo)
  * Function: Create a registry form
  *  rototype:
  * int bbs_createregform(string userid ,string realname,string dept,string address,int gender,int year,int month,int day,
-    string email,string phone,bool bAuto)
+    string email,string phone,string mobile_phone,bool bAuto)
  *
  *  bAuto : true -- 自动生成注册单,false -- 手工.
  *  @return the result
@@ -2376,13 +2376,15 @@ static PHP_FUNCTION(bbs_createregform)
         *   dept,
         *   address,
 		*	email,
-		*	phone;
+		*	phone,
+		*   mobile_phone;
     int     userid_len,
 	        realname_len,
 	        dept_len,
 			address_len,
 			email_len,
 			phone_len,
+			mobile_phone_len,
 			gender,
 	        year,
 	        month,
@@ -2398,8 +2400,8 @@ static PHP_FUNCTION(bbs_createregform)
 
     int ac = ZEND_NUM_ARGS();
 
-    if (ac != 11 || zend_parse_parameters(11 TSRMLS_CC, "ssssllllssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
-	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&bAuto) == FAILURE)
+    if (ac != 12 || zend_parse_parameters(12 TSRMLS_CC, "ssssllllsssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
+	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&mobile_phone,&mobile_phone_len,&bAuto) == FAILURE)
     {
 		WRONG_PARAM_COUNT;
 	}
@@ -2433,11 +2435,20 @@ static PHP_FUNCTION(bbs_createregform)
 	read_userdata(userid, &ud);
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
-	strncpy(ud.email,email,STRLEN);
+	strncpy(ud.reg_email,email,STRLEN);
     ud.realname[NAMELEN-1] = '\0';
 	ud.address[STRLEN-1] = '\0';
-	ud.email[STRLEN-1] = '\0';
-	//todo : 填入生日
+	ud.reg_email[STRLEN-1] = '\0';
+
+#ifdef SMS_SUPPORT
+    if(strcmp(mobile_phone,""))
+	{
+	    ud.mobileregistered = false;
+		strncpy(ud.mobilenumber,mobile_phone,MOBILENUMBER);
+		ud.mobilenumber[MOBILENUMBER-1] = '\0';
+	}
+#endif
+
 #ifdef HAVE_BIRTHDAY
     ud.birthyear=(year > 1900 && year < 2050)?(year-1900):0;
 	ud.birthmonth=(month >=1 && month <=12)?month:0;
@@ -2472,11 +2483,11 @@ static PHP_FUNCTION(bbs_createregform)
 }
 
 /**
- *  Function: 根据注册姓名和email生成新的密码.
+ *  Function: 根据注册姓名和email生成新的密码.如果用户名为空,则生成一个密码.
  *   string bbs_findpwd_check(string userid,string realname,string email);
  *
  *   if failed. reaturn NULL string; or return new password.
- *
+ *              by binxun
  */
 static PHP_FUNCTION(bbs_findpwd_check)
 {
@@ -2500,17 +2511,21 @@ static PHP_FUNCTION(bbs_findpwd_check)
 	pwd[0] = 0;
     if(userid_len > IDLEN)RETURN_LONG(1);
 
-    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
-	if(read_userdata(userid,&ud)<0)RETURN_LONG(4);
+	//生成新密码
+	sprintf(pwd,"S%d",rand());
 
-	if(!strncmp(userid,ud.userid,IDLEN) && !strncmp(email,ud.email,STRLEN))
-	{
-        //生成新密码
-		sprintf(pwd,"S%d",rand());
-		setpasswd(pwd,uc);
+	if(userid_len > 0){
+        if(getuser(userid,&uc) == 0)RETURN_LONG(3);
+	    if(read_userdata(userid,&ud)<0)RETURN_LONG(4);
+
+	    if(!strncmp(userid,ud.userid,IDLEN) && !strncmp(email,ud.email,STRLEN))
+	    {
+		    setpasswd(pwd,uc);
+	    }
+	    else
+	        RETURN_LONG(5);
 	}
-	else
-	    RETURN_LONG(5);
+
     RETURN_STRING(pwd,1);
 }
 
