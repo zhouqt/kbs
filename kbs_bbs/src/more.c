@@ -25,6 +25,8 @@
 #include "screen.h" /* Leeward 98.06.05 */
 
 time_t calltime=0;
+static int stuffmode = 0;
+
 static int rawmore(char    *filename, int     promptend, int     row, int     numlines);
 
 
@@ -44,11 +46,16 @@ struct ACSHM
     int  movielines;
     time_t  update;
 };
+extern sigjmp_buf bus_jump;
+extern void sigbus(int signo);
 
 struct  ACSHM   *movieshm;
 
 int     nnline = 0, xxxline = 0;
 int     more_size, more_num;
+int displayflag = 0, shownflag = 1;
+
+static int mem_more(char *ptr, int size, int quit, char *keystr, char *fn);
 
 int
 NNread_init()
@@ -351,7 +358,7 @@ void R_monitor(void* data)
     UNUSED_ARG(data); 
 }
 
-
+#if 0
 /*rawmore2() ansimore2() Add by SmaLLPig*/
 static int rawmore(char    *filename, int     promptend, int     row, int     numlines)
 {
@@ -677,4 +684,593 @@ int     numlines;
     ch = rawmore( filename, promptend, row, numlines );
     refresh();
     return ch;
+}
+#endif
+
+struct MemMoreLines {
+	char *ptr;
+	int size;
+	char *line[100];
+	char ty[100];		/* 0: ÆÕÍ¨, ÓÐ»Ø³µ; 1: ÆÕÍ¨, ÎÞ»Ø³µ; 2: ÒýÎÄ, ÓÐ»Ø³µ; 3: ÒýÎÄ, ÎÞ»Ø³µ */
+	int len[100];
+	int s[100];
+	int start;		/* this->line[start%100]ÊÇ¼ìË÷µÄÐÐºÅ×îÐ¡µÄÐÐ£¬ÐÐºÅÎª start */
+	int num;		/* ¹²¼ìË÷ÁËrowµ½row+num-1ÕâÃ´¶àÐÐ */
+	int curr_line;		/* µ±Ç°ÓÎ±êÎ»ÖÃ */
+	char *curr;		/* µ±Ç°ÓÎ±êµÄÐÐ */
+	char currty;
+	int currlen;
+	int total;
+};
+
+int
+measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
+{
+	int i, w, in_esc = 0, db = 0, lastspace = 0, asciiart = 0;
+	char *p = p0;
+	if (size == 0)
+		return -1;
+	for (i = 0, w = 0; i < size; i++, p++) {
+		if (*p == '\n') {
+			*l = i;
+			*s = i + 1;
+			break;
+		}
+		if (asciiart) {
+			continue;
+		} else if (*p == '\t') {
+			db = 0;
+			w = w / 8 * 8 + ((w + 1) % 8) ? 0 : 8;
+			lastspace = i;
+		} else if (*p == '\033') {
+			db = 0;
+			in_esc = 1;
+			lastspace = i - 1;
+		} else if (in_esc) {
+			if (strchr("suHMfL@PABCDJK", *p) != NULL) {
+				asciiart = 1;
+				continue;
+			}
+			if (strchr("[0123456789;,", *p) == NULL)
+				in_esc = 0;
+		} else if (isprint2(*p)) {
+			if (!db) {
+				if ((unsigned char) *p >= 128)
+					db = 1;
+				else if (isblank(*p))
+					lastspace = i;
+			} else {
+				db = 0;
+				lastspace = i;
+			}
+			w++;
+		}
+	}
+	if (i >= size) {
+		*l = size;
+		*s = size;
+	}
+	if (*s > 0 && p0[*s - 1] == '\n') {
+		switch (oldty) {
+		case 1:
+			*ty = 0;
+			break;
+		case 3:
+			*ty = 2;
+			break;
+		default:
+			if (*l < 2 || strncmp(p0, ": ", 2))
+				*ty = 0;
+			else
+				*ty = 2;
+		}
+	} else {
+		switch (oldty) {
+		case 1:
+			*ty = 1;
+			break;
+		case 3:
+			*ty = 3;
+			break;
+		default:
+			if (*l < 2 || strncmp(p0, ": ", 2))
+				*ty = 1;
+			else
+				*ty = 3;
+		}
+	}
+	if (*s == size)
+		return 0;
+	if (size > 10 && !strncmp(p0, "begin 644 ", 10)) {
+		for (p = p0; p - p0 < size;) {
+			if ((p = memchr(p, '\n', size - (p - p0))) == NULL)
+				break;
+			p++;
+			if (size - (p - p0) > 3 && !strncmp(p, "end", 3)) {
+				p = memchr(p, '\n', size - (p - p0));
+				if (p != NULL)
+					p++;
+				break;
+			}
+		}
+		if (p == NULL)
+			*s = size;
+		else
+			*s = p - p0;
+	}
+	return 0;
+}
+
+int effectiveline;		//ÓÐÐ§ÐÐÊý, Ö»¼ÆËãÇ°ÃæµÄ²¿·Ö, Í·²¿²»º¬, ¿ÕÐÐ²»º¬, Ç©Ãûµµ²»º¬, ÒýÑÔ²»º¬ 
+
+init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
+{
+	int i, s, u;
+	char *p0, *p, oldty = 0;
+	l->ptr = ptr;
+	l->size = size;
+	l->start = 0;
+	l->num = 0;
+	l->total = 0;
+	effectiveline = 0;
+	for (i = 0, p0 = ptr, s = size; i < 50 && s > 0; i++) {
+		u = (l->start + l->num) % 100;
+		l->line[u] = p0;
+		if (measure_line(p0, s, &l->len[u], &l->s[u], oldty, &l->ty[u])
+		    < 0) {
+			break;
+		}
+		oldty = l->ty[u];
+		s -= l->s[u];
+		p0 = l->line[u] + l->s[u];
+		l->num++;
+		if (effectiveline >= 0) {
+			if (l->len[u] >= 2 && strncmp(l->line[u], "--", 2) == 0)
+				effectiveline = -effectiveline;
+			else if (l->num > 3 && l->len[u] >= 2 && l->ty[u] < 2)
+				effectiveline++;
+		}
+	}
+	if (effectiveline < 0)
+		effectiveline = -effectiveline;
+	if (s == 0)
+		l->total = l->num;
+	l->curr_line = 0;
+	l->curr = l->line[0];
+	l->currlen = l->len[0];
+	l->currty = l->ty[0];
+}
+
+int
+next_MemMoreLines(struct MemMoreLines *l)
+{
+	int i, n;
+	char *p0, *p;
+
+	if (l->curr_line + 1 >= l->start + l->num) {
+		char oldty;
+		n = (l->start + l->num - 1) % 100;
+		if (l->ptr + l->size == (l->line[n] + l->s[n])) {
+			return -1;
+		}
+		if (l->num == 100) {
+			l->start++;
+			l->num--;
+		}
+		oldty = l->ty[n];
+		p0 = l->line[n] + l->s[n];
+		n = (l->start + l->num) % 100;
+		l->line[n] = p0;
+		measure_line(p0, l->size - (p0 - l->ptr), &l->len[n], &l->s[n],
+			     oldty, &l->ty[n]);
+		l->num++;
+		if (l->size - (p0 - l->ptr) == l->s[n]) {
+			l->total = l->start + l->num;
+		}
+	}
+	l->curr_line++;
+	l->curr = l->line[l->curr_line % 100];
+	l->currlen = l->len[l->curr_line % 100];
+	l->currty = l->ty[l->curr_line % 100];
+	return l->curr_line;
+}
+
+int
+seek_MemMoreLines(struct MemMoreLines *l, int n)
+{
+	int i;
+	if (n < 0) {
+		seek_MemMoreLines(l, 0);
+		return -1;
+	}
+	if (n < l->start) {
+		i = l->total;
+		init_MemMoreLines(l, l->ptr, l->size);
+		l->total = i;
+	}
+	if (n < l->start + l->num) {
+		l->curr_line = n;
+		l->curr = l->line[l->curr_line % 100];
+		l->currlen = l->len[l->curr_line % 100];
+		l->currty = l->ty[l->curr_line % 100];
+		return l->curr_line;
+	}
+	while (l->curr_line != n)
+		if (next_MemMoreLines(l) < 0)
+			return -1;
+}
+
+#include <sys/mman.h>
+
+int
+mmap_show(char *fn, int row, int numlines)
+{
+	char *ptr;
+	int fd, retv;
+	struct stat st;
+	fd = open(fn, O_RDONLY);
+	if (fd < 0)
+		return 0;
+	if (fstat(fd, &st) < 0) {
+		close(fd);
+		return 0;
+	}
+	if (!S_ISREG(st.st_mode)) {
+		close(fd);
+		return 0;
+	}
+	if (st.st_size <= 0) {
+		close(fd);
+		return 0;
+	}
+	ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
+	if (ptr == NULL)
+		return -1;
+    if (!sigsetjmp(bus_jump,1)) {
+        signal(SIGBUS,sigbus);
+	signal(SIGSEGV,sigbus);
+	
+	retv = mem_show(ptr, st.st_size, row, numlines, fn);
+    	}
+    
+ 	munmap(ptr, st.st_size);
+      signal(SIGBUS,SIG_IGN);
+      signal(SIGSEGV,SIG_IGN);
+
+	return retv;
+}
+
+int
+mmap_more(char *fn, int quit, char *keystr)
+{
+	char *ptr;
+	int fd, retv;
+	struct stat st;
+	fd = open(fn, O_RDONLY);
+	if (fd < 0)
+		return -1;
+	if (fstat(fd, &st) < 0) {
+		close(fd);
+		return -1;
+	}
+	if (!S_ISREG(st.st_mode)) {
+		close(fd);
+		return -1;
+	}
+	if (st.st_size <= 0) {
+		close(fd);
+		return -1;
+	}
+	ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
+	if (ptr == NULL)
+		return -1;
+    if (!sigsetjmp(bus_jump,1)) {
+        signal(SIGBUS,sigbus);
+	signal(SIGSEGV,sigbus);
+
+	retv = mem_more(ptr, st.st_size, quit, keystr, fn);
+    	}
+
+	munmap(ptr, st.st_size);
+       signal(SIGBUS,SIG_IGN);
+       signal(SIGSEGV,SIG_IGN);
+	return retv;
+}
+
+int
+mem_printline(char *ptr, int len, char *fn, char ty)
+{
+	if (stuffmode) {
+		char buf[256];
+		memcpy(buf, ptr, (len >= 256) ? 255 : len);
+		buf[(len >= 256) ? 255 : len] = 0;
+		showstuff(buf);
+		prints("\n");
+		return;
+	}
+	if (!strncmp(ptr, "¡õ ÒýÓÃ", 7) || !strncmp(ptr, "==>", 3)
+	    || !strncmp(ptr, "¡¾ ÔÚ", 5) || !strncmp(ptr, "¡ù ÒýÊö", 7)) {
+		outns("\033[1;33m", 7);
+		outns(ptr, len);
+		outns("\033[m\n", 4);
+		return;
+	} else  if (ty >= 2) {
+		outns("\033[36m", 5);
+		outns(ptr, len);
+		outns("\033[m\n", 4);
+		return;
+	} 
+	//else outns("\033[37m",5);
+	outns(ptr, len);
+	//outns("\033[m\n", 4);
+	outns("\n", 1);
+}
+
+int
+mem_show(char *ptr, int size, int row, int numlines, char *fn)
+{
+	extern int t_lines;
+	struct MemMoreLines l;
+	int i, ch, curr_line, change;
+	init_MemMoreLines(&l, ptr, size);
+	move(row, 0);
+	clrtobot();
+	prints("\033[m");
+	curr_line = l.curr_line;
+	for (i = 0; i < t_lines - 1 - row && i < numlines; i++) {
+		mem_printline(l.curr, l.currlen, fn, l.currty);
+		if (next_MemMoreLines(&l) < 0)
+			break;
+	}
+}
+
+mem_printbotline(int l1, int l2, int total, int read, int size)
+{
+	extern int t_lines;
+/*	static int n = 0;
+	char *(s[4]) = {
+		"½áÊø ¡û q | ¡ü ¡ý PgUp PgDn ÒÆ¶¯",
+		"s ¿ªÍ· | e Ä©Î² | b f ÏòÇ°ºó·­Ò³",
+		"g Ìøµ½Ö¸¶¨ÐÐ | ? / ÏòÉÏÏÂËÑË÷×Ö·û´®",
+		"nÏÂÒ»Æª | lÉÏÒ»Æª | R »ØÎÄ | E ÆÀ¼Û"
+	};
+	n++;
+	if (uinfo.mode == READING)
+		n %= 4;
+	else
+		n %= 3;*/
+	move(t_lines - 1, 0);
+/*	prints
+	    ("\033[1;44;32m%s (%d%%) µÚ(%d-%d)ÐÐ \033[33m| %s | h ¸¨ÖúËµÃ÷\033[m",
+	     (read >= size) ? "¿´µ½Ä©Î²À²" : "ÏÂÃæ»¹ÓÐà¸",
+	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
+	 prints("[44m[32mÏÂÃæ»¹ÓÐà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ý/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));    
+}
+
+int
+mem_more(char *ptr, int size, int quit, char *keystr, char *fn)
+{
+	extern int t_lines;
+	struct MemMoreLines l;
+	static char searchstr[30] = "";
+	char buf[256];
+
+	int i, ch = 0, curr_line, last_line, change, retv;
+
+	displayflag = 0;
+	shownflag = 1;
+	init_MemMoreLines(&l, ptr, size);
+
+	prints("\033[m");
+	while (1) {
+		move(0, 0);
+		clear();
+		curr_line = l.curr_line;
+		for (i = 0;;) {
+			if (shownflag) {
+				displayflag = 0;
+			}
+			mem_printline(l.curr, l.currlen, fn, l.currty);
+			i++;
+			if (i >= t_lines - 1)
+				break;
+			if (next_MemMoreLines(&l) < 0)
+				break;
+		}
+		last_line = l.curr_line;
+		if (l.total && l.total <= t_lines - 1)
+			return 0;
+		if (l.line[last_line % 100] - ptr + l.s[last_line % 100] == size
+		    && (ch == KEY_RIGHT || ch == KEY_PGDN || ch == ' '
+			|| ch == Ctrl('f'))) {
+			move(t_lines - 1, 0);
+			clrtobot();
+			return 0;
+		}
+		change = 0;
+		while (change == 0) {
+			mem_printbotline(curr_line + 1, last_line + 1, l.total,
+					 l.line[last_line % 100] - ptr +
+					 l.s[last_line % 100], size);
+			//ch = egetch();
+			ch = morekey();
+			move(t_lines - 1, 0);
+			clrtoeol();
+			switch (ch) {
+			case KEY_UP:
+				change = -1;
+				break;
+			case KEY_DOWN:
+			case 'd':
+			case 'j':
+			case '\n':
+				change = 1;
+				break;
+			case 'b':
+			case Ctrl('b'):
+			case KEY_PGUP:
+				change = -t_lines + 2;
+				break;
+			case ' ':
+			case 'f':
+			case Ctrl('f'):
+			case KEY_PGDN:
+			case KEY_RIGHT:
+				if (!l.total)
+					seek_MemMoreLines(&l,
+							  last_line + t_lines);
+				change = t_lines - 2;
+				if (l.total && last_line < l.total
+				    && curr_line + change + t_lines - 1 >
+				    l.total) change =
+					    l.total - curr_line - t_lines + 1;
+				break;
+			case 's':
+				change = -curr_line;
+				break;
+			case 'e':
+				if (!l.total) {
+					while (next_MemMoreLines(&l) >= 0) ;
+					curr_line = l.curr_line;
+				} else
+					curr_line = l.total - 1;
+				change = -t_lines + 2;
+				break;
+			case 'g':
+			case KEY_LEFT:
+			case 'q':
+				return 0;
+			case '!': 
+				 Goodbye();
+				curr_line += t_lines - 1;
+				change = 1 - t_lines;
+				 break;
+			case 'n':
+				return KEY_DOWN;
+			case 'l':
+				return KEY_UP;
+			case 'L' :
+				 show_allmsgs();
+				curr_line += t_lines - 1;
+				change = 1 - t_lines;
+				break;
+			case 'M':
+				r_lastmsg();
+				 clear();
+				curr_line += t_lines - 1;
+				change = 1 - t_lines;
+				break;
+			case 'W':
+				if (HAS_PERM(currentuser,PERM_PAGE)) {
+					 s_msg();
+					 curr_line += t_lines - 1;
+					 change = 1 - t_lines;
+					}
+				break;
+			case 'u': {
+				     int oldmode = uinfo.mode;
+				      clear();
+		                    modify_user_mode(QUERY);
+		                    t_query(NULL);
+		                    clear();
+		                    modify_user_mode(oldmode);
+       				curr_line += t_lines - 1;
+					change = 1 - t_lines;
+				}
+				break;
+			case 'H':
+				show_help("help/morehelp");
+				curr_line += t_lines - 1;
+				change = 1 - t_lines;
+				break;
+			default:
+				if (keystr != NULL
+				    && strchr(keystr, ch) != NULL) return ch;
+			}
+			if (change < 0 && curr_line == 0) {
+				if (quit)
+					return KEY_UP;
+				change = 0;
+			}
+			if (change == 1) {
+				if (seek_MemMoreLines
+				    (&l, curr_line + t_lines - 1) >= 0) {
+					curr_line++;
+					last_line++;
+					scroll();
+					move(t_lines - 2, 0);
+					mem_printline(l.curr, l.currlen, fn,
+						      l.currty);
+					if (
+					    (ch == KEY_PGDN || ch == ' '
+					     || ch == Ctrl('f')
+					     || ch == KEY_RIGHT
+					     || ch == KEY_DOWN || ch == 'j'
+					     || ch == '\n')
+					    && l.line[last_line % 100] - ptr +
+					    l.s[last_line % 100] == size) {
+						move(t_lines - 1, 0);
+						clrtoeol();
+						return 0;
+					}
+				} else
+					return 0;
+				change = 0;
+			}
+			if (change == -1) {
+				if (seek_MemMoreLines(&l, curr_line - 1) >= 0) {
+					curr_line--;
+					last_line--;
+					rscroll();
+					move(0, 0);
+					mem_printline(l.curr, l.currlen, fn,
+						      l.currty);
+				}
+				change = 0;
+			}
+			if (!change)
+				mem_printbotline(curr_line + 1, last_line + 1,
+						 l.total,
+						 l.line[last_line % 100] - ptr +
+						 l.s[last_line % 100], size);
+		}
+
+		seek_MemMoreLines(&l, curr_line + change);
+	}
+}
+
+int
+ansimore(filename, promptend)
+char *filename;
+int promptend;
+{
+	int ch;
+
+	clear();
+	ch = mmap_more(filename, 1, "RrEexp");
+	if (promptend)
+		pressanykey();
+	move(t_lines - 1, 0);
+	prints("[0m[m");
+	return ch;
+}
+
+int
+ansimore2(filename, promptend, row, numlines)
+char *filename;
+int promptend;
+int row;
+int numlines;
+{
+	int ch;
+	if (numlines)
+		ch = mmap_show(filename, row, numlines);
+	else
+		ch = mmap_more(filename, 1, NULL);
+	if (promptend)
+		pressanykey();
+	refresh();
+	return ch;
 }
