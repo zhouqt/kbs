@@ -207,6 +207,7 @@ int dict_main()
            fclose(fp);
            ansimore_withzmodem(fn, true, title);
            clear();
+           unlink(fn);
         }
     //i = igetkey();
     }
