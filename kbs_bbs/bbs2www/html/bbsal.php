@@ -162,7 +162,7 @@ function al_print_form($al){
 				if($edit_id < 0)
 					html_error_quit("参数错误7");
 			}else {
-				$sqlstr = "SELECT COUNT(*) FROM addr WHERE userid=\"".$currentuser["userid"];
+				$sqlstr = "SELECT COUNT(*) FROM addr WHERE userid=\"".$currentuser["userid"]."\"";
 
 				$result = mysql_query($sqlstr) or die(mysql_error());
 				if( ! $result ){
@@ -173,7 +173,6 @@ function al_print_form($al){
 						html_error_quit("数据错误1");
 					$allcount = $row[0];
 					settype($allcount, "integer");
-echo $allcount;
 					if( $allcount > 400 )
 						html_error_quit("通讯录满");
 				}
