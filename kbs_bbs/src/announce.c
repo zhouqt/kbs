@@ -38,7 +38,7 @@ int bmonly = 0;
 int a_fmode = 1;
 char *email_domain();
 void a_menu();
-void a_report();                /*Haohmaru.99.12.06.板主精华区操作记录，作为考查工作的依据 */
+void a_report();                /*Haohmaru.99.12.06.版主精华区操作记录，作为考查工作的依据 */
 
 extern void a_prompt();         /* added by netty */
 int t_search_down();
@@ -680,7 +680,7 @@ void a_newitem(pm, mode)        /* 用户创建新的 ITEM */
                 move(1, 0);
                 clrtoeol();
                 /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$ */
-                getdata(1, 0, "板主: ", uident, STRLEN - 1, DOECHO, NULL, true);
+                getdata(1, 0, "版主: ", uident, STRLEN - 1, DOECHO, NULL, true);
                 if (uident[0] != '\0')
                     sprintf(buf, "%-38.38s(BM: %s)", title, uident);
                 else
@@ -1025,9 +1025,9 @@ void a_manager(pm, ch)
                     if (HAS_PERM(currentuser, PERM_SYSOP || HAS_PERM(currentuser, PERM_ANNOUNCE))) {
                         move(1, 0);
                         clrtoeol();
-                        /*usercomplete("板主: ",uident) ; */
+                        /*usercomplete("版主: ",uident) ; */
                         /*$$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$ */
-                        getdata(1, 0, "板主: ", uident, STRLEN - 1, DOECHO, NULL, true);
+                        getdata(1, 0, "版主: ", uident, STRLEN - 1, DOECHO, NULL, true);
                         if (uident[0] != '\0')
                             sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
                         else

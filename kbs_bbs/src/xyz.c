@@ -326,7 +326,7 @@ int x_level()
         prints(NAME_USER_SHORT " '%s' 的权限已更改\n", lookupuser->userid);
         sprintf(genbuf, "changed permissions for %s", lookupuser->userid);
         report(genbuf);
-        /*Haohmaru.98.10.03.给新任板主自动发信 */
+        /*Haohmaru.98.10.03.给新任版主自动发信 */
         if ((lookupuser->userlevel & PERM_BOARDS) && flag == 0)
             mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", 0);
         /* Bigman 2000.1.5 修改权限自动发信 */

@@ -857,7 +857,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
         fprintf(fn1, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
         fprintf(fn1, "来  源: %s \n", fromhost);
         fprintf(fn1, "\n");
-        fprintf(fn1, "您被 %s 板板主 %s 解除封禁\n", board, user->userid);
+        fprintf(fn1, "您被 %s 板版主 %s 解除封禁\n", board, user->userid);
     }
     fclose(fn1);
 
@@ -867,7 +867,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
         sprintf(buffer, "%s 解封死掉的帐号 %s 在 %s ", user->userid, uident, board);
     else {
         if (PERM_BOARDS & lookupuser->userlevel)
-            sprintf(buffer, "%s 解封某板板主 %s 在 %s ", user->userid, lookupuser->userid, board);
+            sprintf(buffer, "%s 解封某板版主 %s 在 %s ", user->userid, lookupuser->userid, board);
         else
             sprintf(buffer, "%s 解封 %s 在 %s", user->userid, lookupuser->userid, board);
         mail_file(user->userid, filename, uident, buffer, 0);

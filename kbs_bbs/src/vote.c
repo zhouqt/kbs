@@ -22,7 +22,7 @@
 extern int page, range;
 char *vote_type[] = { "是非", "单选", "复选", "数字", "问答" };
 struct votebal currvote;
-struct votelimit currlimit;     /*Haohmaru.99.11.17.根据板主设的限制条件判断是否让该使用者投票 */
+struct votelimit currlimit;     /*Haohmaru.99.11.17.根据版主设的限制条件判断是否让该使用者投票 */
 char controlfile[STRLEN], limitfile[STRLEN];
 unsigned int result[33];
 int vnum;
@@ -878,7 +878,7 @@ int user_vote(int num)
     setvfile(buf, currboard, bname);
     ansimore(buf, true);
     move(0, 0);
-    /*Haohmaru.99.11.17.根据板主设的限制条件判断是否让该使用者投票 */
+    /*Haohmaru.99.11.17.根据版主设的限制条件判断是否让该使用者投票 */
     clear();
     userlimit.numlogins = 0;
     userlimit.numposts = 0;
@@ -894,7 +894,7 @@ int user_vote(int num)
          || (time(NULL) - currentuser->firstlogin) <
          userlimit.day * 24 * 60 * 60)) {
         prints
-            ("对不起,你不满足板主规定的此次投票所需条件,无法参加投票,谢谢参与,下次再见! :)");
+            ("对不起,你不满足版主规定的此次投票所需条件,无法参加投票,谢谢参与,下次再见! :)");
         pressanykey();
         return -1;
     }

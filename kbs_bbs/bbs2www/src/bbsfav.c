@@ -118,7 +118,7 @@ int brd_show_boards(int sec, int yank)
             strncpy(buf, ptr->BM, sizeof(buf) - 1);
             buf[sizeof(buf) - 1] = '\0';
             if (buf[0] <= ' ') {
-                printf("<td>诚征板主中</td>");
+                printf("<td>诚征版主中</td>");
             } else {
                 if ((ptr2 = strchr(buf, ' ')) != NULL)
                     *ptr2 = '\0';

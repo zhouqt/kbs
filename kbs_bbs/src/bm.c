@@ -31,7 +31,7 @@
 /*Add by SmallPig*/
 
 int listdeny(int page)
-{                               /* Haohmaru.12.18.98.为那些变态得封人超过一屏的板主而写 */
+{                               /* Haohmaru.12.18.98.为那些变态得封人超过一屏的版主而写 */
     FILE *fp;
     int x = 0, y = 3, cnt = 0, max = 0, len;
     int i;

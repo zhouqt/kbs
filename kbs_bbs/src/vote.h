@@ -39,7 +39,7 @@ struct votebal
 }
 ;
 */
-struct votelimit {              /*Haohmaru.99.11.17.根据板主设的限制条件判断是否让该使用者投票 */
+struct votelimit {              /*Haohmaru.99.11.17.根据版主设的限制条件判断是否让该使用者投票 */
     int stay;
     int day;
     unsigned int numlogins;

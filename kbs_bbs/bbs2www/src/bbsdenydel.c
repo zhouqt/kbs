@@ -126,14 +126,14 @@ int inform(char *board, char *user)
     if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS))
         fprintf(fn1, "您被站务人员 %s 解除在 %s 板的封禁\n", usr->userid, board);
     else
-        fprintf(fn1, "您被 %s 板板主 %s 解除封禁\n", board, usr->userid);
+        fprintf(fn1, "您被 %s 板版主 %s 解除封禁\n", board, usr->userid);
     fclose(fn1);
     mail_file(getcurruserid(), filename, user, buffer, 0);
 
     /*解封同样发文到undenypost版  Bigman:2000.6.30 */
     getuser(user, &lookupuser);
     if (PERM_BOARDS & lookupuser->userlevel)
-        sprintf(buffer, "%s 解封某板板主 %s 在 %s ", usr->userid, user, board);
+        sprintf(buffer, "%s 解封某板版主 %s 在 %s ", usr->userid, user, board);
     else
         sprintf(buffer, "%s 解封 %s 在 %s", usr->userid, user, board);
     /*
