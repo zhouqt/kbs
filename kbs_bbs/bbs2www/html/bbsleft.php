@@ -4,8 +4,7 @@
 	require("funcs.php");
 	
         $img_subdir = "/images/menuspring/";
-        $bbsleft_ad_file = $_SERVER["DOCUMENT_ROOT"] . "/bbsleft.ad.html" ;
-	
+        
 	function display_board_list($section_names,$section_nums)
 	{
 ?>
@@ -653,10 +652,9 @@
 	</td>
 </tr>
 </table>
+<script type="text/javascript" src="/bbsleftad.js"> </script>
 <?php
-		if(file_exists($bbsleft_ad_file))
-			include ($bbsleft_ad_file);
-			
+		
 		html_normal_quit();
 		}
 ?>
