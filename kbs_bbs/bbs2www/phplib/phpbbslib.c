@@ -708,7 +708,7 @@ static PHP_FUNCTION(bbs_setfromhost)
     if (full_len > 80)
         fullfromhostptr[80] = 0;
     strcpy(fullfrom, fullfromhostptr);
-    strcpy(fromhost, s);
+    strcpy(getSession()->fromhost, s);
     strcpy(php_fromhost, s);
     RETURN_NULL();
 }
@@ -4053,7 +4053,7 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
-        	r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,buf,mailback,is_tex);
+        	r = post_article(board, title, filename, getCurrentUser(), getSession()->fromhost, sig, local, anony, oldx,buf,mailback,is_tex);
         } else {
 			RETURN_LONG(-9);
 		}
@@ -4064,7 +4064,7 @@ static PHP_FUNCTION(bbs_postarticle)
         if (!sigsetjmp(bus_jump, 1)) {
             signal(SIGBUS, sigbus);
             signal(SIGSEGV, sigbus);
-        	r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,NULL,mailback,is_tex);
+        	r = post_article(board, title, filename, getCurrentUser(), getSession()->fromhost, sig, local, anony, oldx,NULL,mailback,is_tex);
         } else {
 			RETURN_LONG(-9);
 		}
@@ -4328,7 +4328,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     if (clen>0) fprintf(fout, "%s", unix_string(content));
 #ifndef RAW_ARTICLE
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(getCurrentUser(), fromhost));
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
 #endif
     while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
         if (asize <= 0) {
@@ -5418,7 +5418,7 @@ static PHP_FUNCTION(bbs_postmail){
             sig = 1 + (int) (((double)ud.signum) * rand() / (RAND_MAX + 1.0)); //(rand() % ud.signum) + 1;
         } else sig = 0;
     }
-    if ((ret=post_mail(targetID, title3, filename, getCurrentUser()->userid, getCurrentUser()->username, fromhost, sig, backup))!=0)
+    if ((ret=post_mail(targetID, title3, filename, getCurrentUser()->userid, getCurrentUser()->username, getSession()->fromhost, sig, backup))!=0)
     {
 		RETURN_LONG(ret-1);
 		/*
@@ -5518,7 +5518,7 @@ static PHP_FUNCTION(bbs_createnewid)
 	if (bad_user_id(userid)) RETURN_LONG(3);
 	if (searchuser(userid)) RETURN_LONG(4);
 
-	//if(check_ban_IP(fromhost,buf) < 0)RETURN_LONG(7);
+	//if(check_ban_IP(getSession()->fromhost,buf) < 0)RETURN_LONG(7);
 
 	lnow = time(NULL);
 	sethomepath(buf,userid);
@@ -6242,7 +6242,7 @@ static PHP_FUNCTION(bbs_createregform)
 		{
 			fprintf(fout, "大家好,\n\n");
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", uc->userid,
-					uc->username, SHOW_USERIP(getCurrentUser(), fromhost));
+					uc->username, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
 #ifdef HAVE_BIRTHDAY
 					(ud.gender == 'M') ? "小弟" : "小女子");

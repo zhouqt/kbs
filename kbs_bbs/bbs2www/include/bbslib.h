@@ -47,10 +47,10 @@
 
 extern char seccode[SECNUM][5];
 extern struct user_info *u_info;
-extern char fromhost[IPLEN + 1];
 extern char parm_name[256][80], *parm_val[256];
 extern int parm_num;
 /*
+extern char fromhost[IPLEN + 1];
 extern int badnum;
 extern int loginok;
 extern struct UTMPFILE *shm_utmp;

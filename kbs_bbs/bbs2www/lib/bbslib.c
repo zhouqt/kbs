@@ -17,11 +17,11 @@ time_t set_idle_time(struct user_info * uentp, time_t t);
 
 struct user_info *u_info;
 
-char fromhost[IPLEN + 1];
 char parm_name[256][80], *parm_val[256];
 int parm_num = 0;
 
 /*
+char fromhost[IPLEN + 1];
 int badnum = 0;
 int loginok = 0;
 friends_t bbb[MAXREJECTS];
@@ -428,16 +428,16 @@ int http_init()
             while (!isdigit(*p) && *p)
                 p++;
             if (*p)
-                strncpy(fromhost, p, IPLEN);
+                strncpy(getSession()->fromhost, p, IPLEN);
             else
-                strncpy(fromhost, ptr, IPLEN);
+                strncpy(getSession()->fromhost, ptr, IPLEN);
         } else
-            strncpy(fromhost, ptr, IPLEN);
-        fromhost[IPLEN] = 0;
+            strncpy(getSession()->fromhost, ptr, IPLEN);
+        getSession()->fromhost[IPLEN] = 0;
     }
-    if (fromhost[0] == '\0')
+    if (getSession()->fromhost[0] == '\0')
 /*#endif*/
-        strsncpy(fromhost, getsenv("REMOTE_ADDR"), IPLEN);
+        strsncpy(getSession()->fromhost, getsenv("REMOTE_ADDR"), IPLEN);
 }
 
 int __to16(char c)
@@ -1467,7 +1467,7 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
             return -1;
         }
         (*y) = get_utmpent(useridx);
-        if (                    /*(strncmp((*y)->from, fromhost, IPLEN))|| */
+        if (                    /*(strncmp((*y)->from, getSession()->fromhost, IPLEN))|| */
                ((*y)->utmpkey != key))
             return -2;
 
@@ -1499,7 +1499,7 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
             return -2;
         }
 
-        strncpy(www_guest_uinfo.from, fromhost, IPLEN);
+        strncpy(www_guest_uinfo.from, getSession()->fromhost, IPLEN);
         www_guest_uinfo.freshtime = guest_info->freshtime;
         www_guest_uinfo.utmpkey = key;
         www_guest_uinfo.destuid = useridx;
