@@ -45,7 +45,7 @@ echo "\"/cgi-bin/bbs/bbsqry?userid=" . $currentuser["userid"] . "\""; ?> target=
 echo $currentuser["userid"]; ?></a>] <?php
 		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
-		    if (bbs_getmailnum($currentuser["userid"],&$total,&$unread)) {
+		    if (bbs_getmailnum($currentuser["userid"],$total,$unread)) {
 			  if ($unread!=0) {
 		        echo "ÐÅÏä[<a href=\"/cgi-bin/bbs/bbsmail\" target=\"f3\">" . $total . "·â(ÐÂÐÅ" . $unread . ")</a>] ";
 			  }

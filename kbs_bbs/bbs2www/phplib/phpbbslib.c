@@ -2,6 +2,8 @@
 #include "bbs.h"
 #include "bbslib.h"
 
+static unsigned char third_arg_force_ref[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
+
 static ZEND_FUNCTION(bbs_getuser);
 static ZEND_FUNCTION(bbs_getonlineuser);
 static ZEND_FUNCTION(bbs_getonlinenumber);
@@ -57,7 +59,7 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_countarticles, NULL)
 	ZEND_FE(bbs_is_bm, NULL)
 	ZEND_FE(bbs_getannpath, NULL)
-	ZEND_FE(bbs_getmailnum, NULL)
+	ZEND_FE(bbs_getmailnum, third_arg_force_ref)
 	{NULL, NULL, NULL}
 };
 

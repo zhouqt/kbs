@@ -186,4 +186,5 @@ if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
 	error_nologin();
 	return;
 }
+
 ?>

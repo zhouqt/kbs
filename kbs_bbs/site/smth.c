@@ -178,7 +178,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     else if (lvl & PERM_BMAMANGER)
         strcpy(buf, "监理");
     else if (lvl & PERM_COLLECTIVE)
-        strcpy(buf, "集体");
+        strcpy(buf, "专用");
     else if (lvl & PERM_CHATCLOAK)
         strcpy(buf, "元老");
     else if (lvl & PERM_CHATOP)
