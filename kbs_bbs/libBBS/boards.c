@@ -167,13 +167,15 @@ void load_favboard(int dohelp,int mode,session_t* session)
 			}
 			for(i=0;i<k;i++){
 				int newfather;
-				if( favbrd_list_tmp[i].father <= -1 )
-					newfather=0;
+				if( favbrd_list_tmp[i].father <= -1 || favbrd_list_tmp[i].father >= k)
+					newfather = 0;
 				else
 					newfather = 0-favbrd_list_tmp[favbrd_list_tmp[i].father].flag;
+				if (newfather >= favbrd_list_t) continue;	
 
 				if( favbrd_list_tmp[i].flag < 0 ){
-					if(newfather >= 0 && session->favbrd_list[newfather].bnum < MAXBOARDPERDIR){
+					if(newfather >= 0 && session->favbrd_list[newfather].bnum < MAXBOARDPERDIR
+					   && ( -favbrd_list_tmp[i].flag < favbrd_list_t )){
 						session->favbrd_list[newfather].bid[session->favbrd_list[newfather].bnum]=favbrd_list_tmp[i].flag;
 						session->favbrd_list[newfather].bnum++;
 						session->favbrd_list[0-favbrd_list_tmp[i].flag].father = newfather;
