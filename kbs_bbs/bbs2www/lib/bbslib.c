@@ -871,6 +871,8 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
         }
     }
     fclose(fp);
+    setbfile(filepath, board, post_file.filename);
+    post_file.eff_size = get_effsize(filepath);
     if (after_post(currentuser, &post_file, board, oldx)==0) {
 #ifdef WWW_GENERATE_STATIC
         generate_static(DIR_MODE_NORMAL,&post_file,board,oldx);

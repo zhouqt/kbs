@@ -551,6 +551,8 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     postfile.owner[OWNER_LEN - 1] = 1;
     setbfile(filepath, toboard, postfile.filename);
 
+    postfile.eff_size=get_effsize(filepath);
+
     local_article = 1;          /* default is local article */
     if (islocal != 'l' && islocal != 'L') {
         if (is_outgo_board(toboard))
@@ -1809,4 +1811,40 @@ int put_attach(FILE* in, FILE* out, int size)
         fwrite(buf, 1, o, out);
     }
     return 0;
+}
+
+int get_effsize(char * ffn)
+{
+    char* p,*op, *attach;
+    long attach_len;
+    int j;
+    size_t fsize;
+    int k,abssize=0,entercount=0,ignoreline=0;
+    j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
+    op = p;
+    if(j) {
+        k=fsize;
+        while(k) {
+            if(NULL!=(checkattach(p, k, &attach_len, &attach))) {
+                k-=(attach-p)+attach_len;
+                p=attach+attach_len;
+                continue;
+            }
+            if(k>=3&&*p=='\n'&&*(p+1)=='-'&&*(p+2)=='-'&&*(p+3)=='\n') break;
+            if(*p=='\n') {
+                entercount++;
+                ignoreline=0;
+            }
+            if(k>=5&&*p=='\n'&&*(p+1)=='\xa1'&&*(p+2)=='\xbe'&&*(p+3)==' '&&*(p+4)=='\xd4'&&*(p+5)=='\xda') ignoreline=1;
+            if(k>=2&&*p=='\n'&&*(p+1)==':'&&*(p+2)==' ') ignoreline=2;
+            if(k>=2&&*p==KEY_ESC&&*(p+1)=='['&&*(p+2)=='m') ignoreline=3;
+                
+            k--;
+            p++;
+            if(entercount>=4&&!ignoreline)
+                abssize++;
+        }
+    }
+    end_mmapfile((void*)op, fsize, -1);
+    return abssize;
 }

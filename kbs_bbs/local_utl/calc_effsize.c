@@ -43,11 +43,18 @@ int calcboard(struct boardheader * bh, void * arg)
         setbfile(ffn, bh->filename, ptr1->filename);
         {
             int k,abssize=0,entercount=0,ignoreline=0;
+            char * attach;
+            long attach_len;
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
             op = p;
             if(j) {
                 k=fsize;
                 while(k) {
+                    if(NULL!=(checkattach(p, k, &attach_len, &attach))) {
+                        k-=(attach-p)+attach_len;
+                        p=attach+attach_len;
+                        continue;
+                    }
                     if(k>=3&&*p=='\n'&&*(p+1)=='-'&&*(p+2)=='-'&&*(p+3)=='\n') break;
                     if(*p=='\n') {
                         entercount++;
@@ -55,14 +62,16 @@ int calcboard(struct boardheader * bh, void * arg)
                     }
                     if(k>=5&&*p=='\n'&&*(p+1)=='\xa1'&&*(p+2)=='\xbe'&&*(p+3)==' '&&*(p+4)=='\xd4'&&*(p+5)=='\xda') ignoreline=1;
                     if(k>=2&&*p=='\n'&&*(p+1)==':'&&*(p+2)==' ') ignoreline=2;
+                    if(k>=2&&*p==KEY_ESC&&*(p+1)=='['&&*(p+2)=='m') ignoreline=3;
+
                     k--;
                     p++;
                     if(entercount>=4&&!ignoreline)
                         abssize++;
                 }
                 ptr1->eff_size = abssize;
+                end_mmapfile((void*)op, fsize, -1);
             }
-            end_mmapfile((void*)op, fsize, -1);
         }
         ptr1->posttime = get_posttime(ptr1);
         ptr1++;

@@ -270,6 +270,8 @@ int clean_cachedata(char* userid,int unum);
     typedef int (*DIR_APPLY_FUNC) (int fd, struct fileheader * start, int ent, int total, struct fileheader * data, bool match);
     typedef int (*search_handler_t) (int fd, fileheader_t * base, int ent, int total, bool match, void *arg);
     int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
+    int get_effsize(char * ffn);
+
 /**
  * Get some records from article id. If this function is successfully
  * returned, the article record with the id is put at the center of 
