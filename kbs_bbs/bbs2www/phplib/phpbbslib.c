@@ -514,7 +514,9 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_string(array, "userid", user->userid, 1);
     add_assoc_long(array, "firstlogin", user->firstlogin);
     add_assoc_long(array, "exittime", user->exittime);
-    add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
+//    add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
+    user->lasthost[IPLEN - 1] = '\0'; //这个其实现在已经不需要了 - atppp
+    add_assoc_string(array, "lasthost", SHOW_USERIP(user, user->lasthost), 1);
     add_assoc_long(array, "numlogins", user->numlogins);
     add_assoc_long(array, "numposts", user->numposts);
     add_assoc_long(array, "flag1", user->flags);
