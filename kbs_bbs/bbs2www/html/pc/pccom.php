@@ -10,7 +10,7 @@
 	elseif(!strcmp($currentuser["userid"],"guest"))
 	{
 		html_init("gb2312");
-		html_error_quit("guest 不能发表评论!\n<br>\n<a href=\"/\">现在登录</a>");
+		html_error_quit("guest 不能发表评论!\n<br>\n<a href=\"/\" target=\"_top\">现在登录</a>");
 		exit();
 	}
 	else

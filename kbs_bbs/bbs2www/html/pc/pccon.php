@@ -17,7 +17,7 @@
 	<td class="t5"><strong>发表评论 </strong>
 	<?php if($alert){ ?>
 	<font class=f4>
-	注意：仅有本站登录用户才能发表评论[<a href="/">点击登录</a>]。
+	注意：仅有本站登录用户才能发表评论[<a href="/" target="_top">点击登录</a>]。
 	</font>
 	<?php } ?>
 	</td>
