@@ -3,7 +3,8 @@
 	 * This file registry a new id, work with bbsreg.html
 	 * by binxun 2003.5
 	 */
-	require("funcs.php");
+    $needlogin=false;
+    require("funcs.php");
     html_init("gb2312");
 
 	@$userid=$_POST["userid"];
@@ -48,7 +49,7 @@
 	}
 ?>
 <body>
-申请BBS水木清华ID成功,现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,请两天后到个人工具箱中填写注册单.<br>
+申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,请两天后到个人工具箱中填写注册单.<br>
 注册单通过审核后,你将获得合法用户权限！<br/><a href="http://www.smth.edu.cn">现在登录进站</a>
 </body>
 </html>
