@@ -1128,7 +1128,7 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int
 		if ( group == -2 ){ //ÐÂ°æ
 			if( ( tnow - bptr->createtime ) > 86400*30 || ( bptr->flag & BOARD_GROUP ) )
 				continue;
-		}else if ((bptr->group!=group)&&(boardprefix!=NULL)&&(group!=0))
+		}else if ((bptr->group!=group)&&(boardprefix!=NULL))
             continue;
         if (!check_see_perm(currentuser,bptr)) {
             continue;
