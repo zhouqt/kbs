@@ -8,7 +8,8 @@ function bbs_ann_display_articles($articles) {
 ?>
 <center>
 <table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tbody><tr><td class="t2" width="50">序号</td><td class="t2" width="30">类型</td><td class="t2">标题</td><td class="t2" width="80">整理</td><td class="t2" width="80">编辑日期</td></tr>
+<col width="50px"/><col width="30px"/><col width="*"/><col width="80px"/><col width="80px"/>
+<tbody><tr><td class="t2">序号</td><td class="t2">类型</td><td class="t2">标题</td><td class="t2">整理</td><td class="t2">编辑日期</td></tr>
 </tbody>
 <?php
     $i = 1;

@@ -98,7 +98,8 @@ login_init();
 ?>
 <center>
 <table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tbody><tr><td class="t2" width="50">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
+<col width="50px"/><col width="30px"/><col width="85px"/><col width="50px"/><col width="*"/>
+<tbody><tr><td class="t2">序号</td><td class="t2">标记</td><td class="t2">作者</td><td class="t2">日期</td><td class="t2">标题</td></tr>
 </tbody>
 <?php    
 		$ding_cnt = 0;
@@ -126,14 +127,14 @@ login_init();
 <?php
 			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
 ?>
-<td class="t6" width="50">提示</td>
-<td class="t3" width="30"><img src="images/istop.gif" alt="提示" align="absmiddle"></td>
+<td class="t6">提示</td>
+<td class="t3"><img src="images/istop.gif" alt="提示" align="absmiddle"></td>
 <?php
 
 			} else {
 ?>
-<td class="t3" width="50"><?php echo $start+$i; ?></td>
-<td class="t4" width="30">
+<td class="t3"><?php echo $start+$i; ?></td>
+<td class="t4">
 <?php
 			if ($flags[1] == 'y')
 			{
@@ -160,9 +161,9 @@ login_init();
 <?php
 	}//置顶
 ?>
-<td class="t3" width="85"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
-<td class="t4" width="50"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5"><strong>
+<td class="t3"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
+<td class="t5" align="left"><strong>
 <?php
 	switch ($default_dir_mode)
 	{
