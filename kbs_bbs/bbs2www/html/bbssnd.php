@@ -55,8 +55,8 @@ login_init();
 		
 		//post articles
 		$anony = isset($_POST["anony"])?intval($_POST["anony"]):0;
-		$ret = bbs_postarticle($boardName, preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST["title"])), 
-			preg_replace("/\\\(['|\"|\\\])/","$1",($tmpl ? $contents :$_POST["text"])), intval($_POST["signature"]), $reID, 
+		$ret = bbs_postarticle($boardName, trim($_POST["title"]), 
+			($tmpl ? $contents :$_POST["text"]), intval($_POST["signature"]), $reID, 
 			$outgo, $anony, $reID?0:intval($_POST["mailback"]), 0);
 		switch ($ret) {
 			case -1:

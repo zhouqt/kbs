@@ -107,8 +107,7 @@ function svPostAnnouce($board,$svInfor)
 			   "⊙ 主题：".$svInfor[subject]."\n".
 			   "⊙ 投票说明：\n\n".$svInfor[desc];
 				
-		$ret = bbs_postarticle($board, preg_replace("/\\\(['|\"|\\\])/","$1",$title), 
-			preg_replace("/\\\(['|\"|\\\])/","$1",$content), 0 , 0 , 0, 0 );
+		$ret = bbs_postarticle($board, $title, $content, 0 , 0 , 0, 0 );
 		return $ret;
 }
 		
@@ -242,8 +241,7 @@ class sysVoteAdmin
 		{
 			$title = "[公告] 系统投票结果";
 			$content = "【此篇文章是由自动发信系统所张贴】\n\n".$ann;
-			$ret = bbs_postarticle($annBoard, preg_replace("/\\\(['|\"|\\\])/","$1",$title), 
-			preg_replace("/\\\(['|\"|\\\])/","$1",$content), 0 , 0 , 0, 0 );
+			$ret = bbs_postarticle($annBoard, $title, $content, 0 , 0 , 0, 0 );
 		}
 	}
 	

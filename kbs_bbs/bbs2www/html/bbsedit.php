@@ -98,7 +98,7 @@ function dosubmit() {
   <tr><td align="center">
 <?php
 if (isset($_GET['do'])) {
-    $ret=bbs_updatearticle($board,$articles[1]['FILENAME'],preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['text']));
+    $ret=bbs_updatearticle($board,$articles[1]['FILENAME'],$_POST['text']);
 	switch ($ret) {
 		case -1:
 			html_error_quit("修改文章失败，文章可能含有不恰当内容");

@@ -24,14 +24,14 @@ $incept = $lookupuser['userid'];
 if (!strcasecmp($incept,'guest'))
     html_error_quit("不能发信给guest");
 
-$title = preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST["title"]));
+$title = trim($_POST["title"]);
 if (!$title) $title = '无主题';
 
 
 $sig = intval($_POST['signature']); //签名档
 $backup = isset($_POST['backup'])?strlen($_POST['backup']):0; //备份
 
-$ret = bbs_postmail($incept,$title,preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["text"]),$sig,$backup);
+$ret = bbs_postmail($incept,$title,$_POST["text"],$sig,$backup);
 
 if ($ret < 0)  {
     switch($ret) {
