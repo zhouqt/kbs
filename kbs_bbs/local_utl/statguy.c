@@ -35,7 +35,7 @@ int show()
     printf("==== ======================================================\n");
     for(i=0; i<total; i++) {
         if(flag==2)
-            printf("[%2d] %-15s %-30s %d小时%d分钟\n", i+1, lib[i].id, lib[i].nick, lib[i].data/3600, lib[i].data/60);
+            printf("[%2d] %-15s %-30s %d小时%d分钟\n", i+1, lib[i].id, lib[i].nick, lib[i].data/3600, (lib[i].data/60)%60);
         else
             printf("[%2d] %-15s %-30s %d\n", i+1, lib[i].id, lib[i].nick, lib[i].data);
     }
