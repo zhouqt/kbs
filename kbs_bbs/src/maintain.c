@@ -628,6 +628,7 @@ int searchtrace()
     int id;
     char tmp_command[80], tmp_id[20];
     char buf[8192];
+    struct userec* lookupuser;
 
     if (check_systempasswd() == false)
         return -1;
@@ -642,7 +643,7 @@ int searchtrace()
         return -1;
     }
 
-    if (!(id = getuser(genbuf, NULL))) {
+    if (!(id = getuser(genbuf, &lookupuser))) {
         move(3, 0);
         prints("不正确的使用者代号\n");
         clrtoeol();
@@ -657,7 +658,7 @@ int searchtrace()
     mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", 1);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
-    securityreport(buf, NULL, NULL);    /*写入syssecurity版, stephen 2000.12.21 */
+    securityreport(buf, lookupuser, NULL);    /*写入syssecurity版, stephen 2000.12.21 */
     sprintf(buf, "Search the posts by %s in the trace", tmp_id);
     report(buf);                /*写入trace, stephen 2000.12.21 */
 
@@ -1629,7 +1630,7 @@ int x_deny()
                 if (askyn(buf, 0) != 0) {
                     sprintf(reportbuf, "封禁%s的%s ", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
                     lookupuser->userlevel ^= level[sel - 1];
-                    securityreport(reportbuf, NULL, NULL);
+                    securityreport(reportbuf, lookupuser, NULL);
                     break;
                 }
             } else {
@@ -1642,7 +1643,7 @@ int x_deny()
                 }
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel - 1];
-                    securityreport(reportbuf, NULL, NULL);
+                    securityreport(reportbuf, lookupuser, NULL);
                     break;
                 }
             }
