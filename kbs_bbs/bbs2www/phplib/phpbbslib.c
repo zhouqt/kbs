@@ -2680,6 +2680,9 @@ static PHP_FUNCTION(bbs_new_board)
 	if(bname_len >= 18)
 		RETURN_LONG(-1);
 
+	if(! HAS_PERM(currentuser, PERM_SYSOP) )
+		RETURN_LONG(-7);
+
 	strncpy(newboard.filename,bname,18);
 	newboard.filename[17]='\0';
 
