@@ -2397,6 +2397,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             prints("        如果您尚未注册，请在个人工具箱内详细注册身份\n");
             prints("        未通过身份注册认证的用户，没有发表文章的权限。\n");
             prints("        谢谢合作！ :-) \n");
+        pressreturn();
         clear();
         return FULLUPDATE;
     } else if (deny_me(getCurrentUser()->userid, currboard->filename)) { /* 版主禁止POST 检查 */
