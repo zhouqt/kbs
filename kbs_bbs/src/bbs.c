@@ -1627,6 +1627,7 @@ int read_hot_info(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case '4':
 		showsysinfo("0Announce/systeminfo");
+        pressanykey();
         break;
     case '5':
             if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX))

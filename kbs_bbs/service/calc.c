@@ -278,8 +278,9 @@ double envalue(struct var_struct * s)
                 }
             }
         }
-        if (flag==0) {
+        if (fabs(temp.p[i][i])<MINIMUM) {
             del(&temp);
+            calcerr = 13;
             return 0;
         }
         //保证对角线元素不为零
@@ -385,7 +386,7 @@ int check_var_double(char * s, int l)
 {
     int i,p=1;
     for(i=0;i<l;i++)
-        p=p&&(isdouble(s[i]));
+        p=p&&(isdouble(s[i]))&&(i==0||s[i]!='-');
     return p;
 }
 
@@ -648,7 +649,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
                         add_var(&m1, &m2, p);
                         break;
                     case 3:
-                        add_var(&m1, &m2, p);
+                        sub_var(&m1, &m2, p);
                         break;
                     case 4:
                         if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,4);
@@ -720,9 +721,12 @@ void print_var(struct var_struct * p)
     }
 }
 
+#define HIST 5
+
 int calc_main()
 {
     char cmd[1005];
+    char history[HIST][1005];
     char einfo[20][30]={
 "",
 "",
@@ -744,8 +748,10 @@ int calc_main()
 "单步值不能为0",
 "表达式出错",
 ""};
-    int y,x,res,i,j;
+    int y,x,res,i,j,ch,hi;
     extern int scr_cols, scr_lns;
+    extern bool UPDOWN;
+    for(i=0;i<HIST;i++) history[i][0]=0;
     res = get_var("res");
     set_var(vars+get_var("%pi"), Pi);
     set_var(vars+get_var("%e"), exp(1));
@@ -753,16 +759,33 @@ int calc_main()
     outline("欢迎使用超级计算器1.0        作者:bad@smth.org\n");
     outline("输入exit退出，输入help帮助\n\n");
     while(1) {
+        hi=0;
         getyx(&y, &x);
-//        getdata(y, x, 0, cmd, 300, 1, 0, 1);
-        y = y-1+multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1);
+        cmd[0]=0;
+        do{
+            UPDOWN = true;
+            ch = multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 0);
+            UPDOWN = false;
+            if(ch==-KEY_UP) {
+                if(hi==HIST) cmd[0]=0;
+                else strncpy(cmd, history[hi], 1000);
+                hi++; if(hi>HIST) hi=0;
+            } else if(ch==-KEY_DOWN) {
+                hi--; if(hi<0) hi=HIST;
+                if(hi==HIST) cmd[0]=0;
+                else strncpy(cmd, history[hi], 1000);
+            }
+        } while(ch<0);
+        y = y-1+ch;
         if(y>=scr_lns) y = scr_lns-1;
         move(y, 0);
         outline("\n");
         if(!cmd[0]) continue;
-//        scanf("%s", cmd);
         if(!strncasecmp(cmd, "exit", 5)) break;
         if(!strncasecmp(cmd, "quit", 5)) break;
+        for(i=HIST-1;i>0;i--)
+            strncpy(history[i],history[i-1],1000);
+        strncpy(history[0],cmd,1000);
         if(!strncasecmp(cmd, "help", 5)||!strncasecmp(cmd, "?", 2)) {
             outline("变量: 1到6个字母,例如x=3\n");
             outline("常量: %pi, %e\n");

@@ -1008,6 +1008,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     return clen;
 }
 
+bool UPDOWN=false;
+
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
@@ -1079,6 +1081,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         for(i=starty;i<=y;i++)
             saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0]))
+            return -ch;
+        if (true == UPDOWN && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;
 #ifdef NINE_BUILD
         if (RMSG && (ch == Ctrl('Z')) && (!buf[0]))
