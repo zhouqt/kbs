@@ -30,7 +30,6 @@
 
 #define M_INT 8         /* monitor mode update interval */
 #define P_INT 20        /* interval to check for page req. in talk/chat */
-extern int iscolor;
 extern int numf,friendmode;
 
 int talkidletime=0;
@@ -72,18 +71,12 @@ struct talk_win {
     int         sline, eline;
 };
 
-int     nowmovie;
-int     bind(/*int,struct sockaddr *, int*/) ;
-char    *sysconf_str();
-
-
 extern int t_columns;
 char    *talk_uent_buf;
 
 /* begin - jjyang */
 char save_page_requestor[STRLEN];
 /* end - jjyang */
-char npage_requestor[STRLEN];
 
 /*---	changed to isidhidden by period	2000-10-20	---*
 int
@@ -794,8 +787,8 @@ setnpagerequest()
     getpager = popen(tmp_buf,"r");
     if (getpager == NULL)
         return 1;
-    fgets(npage_requestor, STRLEN, getpager);
-    if ( *npage_requestor == '\0')
+    fgets(tmp_buf, STRLEN, getpager);
+    if ( *tmp_buf == '\0')
         return 1;
     return 0;
 }
