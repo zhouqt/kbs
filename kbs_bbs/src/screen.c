@@ -299,6 +299,7 @@ void good_move(int y, int x)
     int i, j = 0;
     int inansi = 0;
 
+    cur_ln = y;
     standing = false;
     ln = cur_ln + roll;
     while (ln >= scr_lns)
@@ -310,16 +311,15 @@ void good_move(int y, int x)
                 inansi = 0;
         } else if (j >= x) {
             cur_col = i /*+c_shift(y,x) */ ;
-            break;
+            return;
         } else
         if (slp->data[i] == KEY_ESC)
             inansi = 1;
         else
             j++;
     }
-    if (j < x)
+    if (j <= x)
         cur_col = slp->len + (x - j);
-    cur_ln = y;
 }
 
 void getyx(int *y, int *x)
