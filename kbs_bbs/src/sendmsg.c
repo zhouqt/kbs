@@ -479,7 +479,6 @@ void r_msg()
         if (DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         good_move(0,0);
-        clrtoeol();
         if (DEFINE(currentuser, DEF_HIGHCOLOR))
             prints("\x1b[1m%s", outmsg);
         else
