@@ -927,16 +927,27 @@ int normal_board(const char *bname)
 {
     register int i;
     struct boardheader bh;
+    int ret=1;
 
     if (strcmp(bname, DEFAULTBOARD) == 0)
         return 1;
     if ((i = getboardnum(bname,&bh)) == 0)
         return 0;
+
+    while (ret) {
 #ifdef NINE_BUILD
-    return !(bh.level&PERM_SYSOP)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
+    ret=!(bh.level&PERM_SYSOP)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
 #else
-    return (bh.level == 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
+    ret=(bh.level == 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
 #endif
+    if (bh.title_level) ret=0;
+    if (ret&&(bh.group)) {
+        memcpy(&bh,getboard(bh.group),sizeof(struct boardheader));
+        continue;
+    }
+    break;
+    }
+    return ret;
 }
 
 int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,const char** input_namelist)

@@ -859,6 +859,7 @@ int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     char currauth[STRLEN];
     bool up=(bool)extraarg;
     
+    if (fh==NULL) return DONOTHING;
     strncpy(currauth, fh->owner, STRLEN);
     snprintf(pmt, STRLEN, "%s的文章搜寻作者 [%s]: ", up ? "往先前" : "往后来", currauth);
     move(t_lines - 1, 0);
