@@ -111,6 +111,8 @@
 	
 	function display_articles($brdarr,$articles,$start,$order=FALSE)
 	{
+		global $dir_modes;
+		global $default_dir_mode;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <table width="613">
@@ -140,7 +142,7 @@
 <?php
 			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
 ?>
-<TD colspan="2" align="center"><strong>[提示]</strong></TD>
+<td colspan="2" align="center"><strong>[提示]</strong></td>
 <?php
 
 			} else {
@@ -180,9 +182,36 @@
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td>
+<?php
+	switch ($default_dir_mode)
+	{
+	case $dir_modes["ORIGIN"]:
+		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1))
+		{
+?>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=9"><?php echo htmlspecialchars($title); ?>
+
+</a>
+<?php
+		}
+		else
+		{
+?>
+<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>"><?php echo htmlspecialchars($title); ?>
+
+</a>
+<?php
+		}
+		break;
+	case $dir_modes["NORMAL"]:
+	default:
+?>
 <a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=9"; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
+<?php
+	}
+?>
 </td>
 </tr>
 <?php
@@ -213,7 +242,9 @@
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
-		$total = bbs_countarticles($brdnum, $dir_modes["NORMAL"]);
+		if (!isset($default_dir_mode))
+			$default_dir_mode = $dir_modes["NORMAL"];
+		$total = bbs_countarticles($brdnum, $default_dir_mode);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章<br /><a href=\"bbspst.php?board=\"" . $board . ">发表文章</a>");
         	bbs_set_onboard($brdnum,1);
