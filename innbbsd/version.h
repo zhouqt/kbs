@@ -15,8 +15,10 @@ $Id$
 #endif
 
 #ifdef USE_NCM_PATCH
+#undef VERSION
 #  define VERSION       	INNBBSDVERSION"_"NCMVERSION
 #else
+#undef VERSION
 #  define VERSION       	INNBBSDVERSION
 #endif
 

@@ -35,7 +35,7 @@ int LOCALNODELIST = 0, NONENEWSFEEDS = 0;
 #define _PATH_BBSHOME "/u/staff/bbsroot/csie_util/bntpd/home"
 #endif
 
-char BBSHOME[] = _PATH_BBSHOME;
+//char BBSHOME[] = _PATH_BBSHOME;
 static FILE *bbslogfp;
 
 static int

@@ -274,7 +274,11 @@ char *port, *path;
                 >= 0) {
                 time_t now = time((time_t *) 0);
 
+#ifdef USE_IDENT
                 name = (char *) my_rfc931_name(ns, &there);
+#else
+		name="unknown";
+#endif
                 strncpy(client[i].username, name, 20);
                 hp = (struct hostent *) gethostbyaddr((char *)
                                                       &there.sin_addr, sizeof(struct in_addr), there.sin_family);

@@ -1,6 +1,8 @@
 #ifndef BBSLIB_H
 #define BBSLIB_H
 
+#include "bbsconfig.h"
+
 typedef struct nodelist_t {
     char *node;
     char *exclusion;
@@ -38,7 +40,6 @@ typedef struct overview_t {
 } overview_t;
 
 extern char MYBBSID[];
-extern char BBSHOME[];
 extern char ECHOMAIL[];
 extern char BBSFEEDS[];
 extern char LOCALDAEMON[];

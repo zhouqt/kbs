@@ -168,6 +168,9 @@ miniconf.h:
 clean:
 	${RM} *.o ${PROG} miniconf.h core *~
 
+install:
+
+
 # DO NOT DELETE THIS LINE -- make depend depends on it.
 
 main.o: hzconfig.h io.h

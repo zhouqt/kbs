@@ -1614,7 +1614,7 @@ char **argv;
     char *left, *right;
     int nlcount;
 
-    strcpy(BBSHOME, argv[0]);
+//    strcpy(BBSHOME, argv[0]);
     if (initial_bbs("link") == 0) {
         return -1;
     }

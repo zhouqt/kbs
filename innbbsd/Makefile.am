@@ -17,6 +17,9 @@ bbslink_SOURCES = bbslink.c pmain.c inntobbs.c echobbslib.c connectsock.c file.c
 noinst_HEADERS = bbslib.h clibrary.h daemon.h dbz.h externs.h \
 		innbbsconf.h innbbsd.h inntobbs.h lang.h nntp.h \
 		nocem.h version.h
-AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DDBZSERVER -DFirebirdBBS -DDBZDEBUG -DFILTER -DBIG2GB -DGB2BIG -I../src 
+AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DFirebirdBBS -DDBZDEBUG -DFILTER -DBIG2GB -DGB2BIG -I../src 
+innbbsd_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
+bbslink_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
+dbzserver_CFLAGS = -DDBZSERVER $(AM_CFLAGS)
 LDADD = -Lconvert/hztty-2.0 -lhztty -L../libBBS -lBBS  -L../libsystem -lsystem
 CLEANFILES = @EXTRA_CLEAN@
