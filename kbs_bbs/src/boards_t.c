@@ -429,7 +429,7 @@ static int fav_show(struct _select_def *conf, int pos)
 	           sprintf(flag,"\x1b[1;33m%c\x1b[m",f);
           } else sprintf(flag,"%c",f);
           prints("%c%-16s %s%s%-36s %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "[31;1mV[m" : " ", flag, buf, ptr->BM[0] <= ' ' ? "³ÏÕ÷°æÖ÷ÖÐ" : strtok(tmpBM, " ")); /*µÚÒ»¸ö°æÖ÷ */
-#ifdef NINE_BUILD
+#ifdef BOARD_SHOW_ONLINE
         if(scr_cols>=80+5) {
             int x,y;
             getyx(&y, &x);
@@ -1039,10 +1039,12 @@ static void fav_refresh(struct _select_def *conf)
     setbcolor(BLUE);
     clrtoeol();
     prints("  %s ÌÖÂÛÇøÃû³Æ        V Àà±ð ×ªÐÅ  %-24s °æ  Ö÷     ", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ Î´¶Á", "ÖÐ  ÎÄ  Ðð  Êö");
+#ifdef BOARD_SHOW_ONLINE
     if(scr_cols>=80+5) {
         move(2, 81);
         prints("ÔÚÏß");
     }
+#endif
     resetcolor();
     if (!arg->loop_mode)
         update_endline();

@@ -669,4 +669,12 @@ attach define
 #define ID_CONNECT_CON_THRESHOLD2 30.0
 #endif
 
+#ifndef BOARD_SHOW_ONLINE	/* 在版面列表显示在线人数 */
+#define BOARD_SHOW_ONLINE
+#else
+#if BOARD_SHOW_ONLINE == 0
+#undef BOARD_SHOW_ONLINE
+#endif
+#endif
+
 #endif

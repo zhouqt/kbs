@@ -337,4 +337,7 @@ attach define
 #define ATTACHTMPPATH "boards/_attach"
 
 #define CHECK_IP_LINK 1
+
+#define BOARD_SHOW_ONLINE 0
+
 #endif
