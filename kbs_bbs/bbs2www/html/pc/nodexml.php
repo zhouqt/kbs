@@ -83,7 +83,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"]."_".html_for
 <title><?php echo $pc["NAME"]; ?></title>
 <link><?php echo pc_personal_domainname($pc["USER"]); ?></link>
 <description><?php echo $pc["DESC"]; ?></description>
-<image rdf:resource="<?php echo $pc["LOGO"]; ?>"/>
+<image rdf:resource="<?php echo html_format($pc["LOGO"]); ?>"/>
 <dc:language>gb2312</dc:language>
 <dc:creator><?php echo $pc["USER"].".bbs@".$pcconfig["SITE"]; ?></dc:creator>
 <items>
@@ -101,7 +101,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"]."_".html_for
 		if($blog["TAG"] == 9) continue;
 ?>
 	<smthBlog:category>
-		<smthBlog:title><?php echo html_format($blog["NAME"]); ?></smthBlog:title>
+		<smthBlog:title><?php echo htmlspecialchars(stripslashes($blog["NAME"])); ?></smthBlog:title>
 		<smthBlog:link><?php echo "pcdoc.php?userid=".$pc["USER"]."&amp;tag=".$blog["TAG"]."&amp;tid=".$blog["TID"]; ?></smthBlog:link>
 	</smthBlog:category>
 <?php
@@ -144,9 +144,9 @@ if($node[comment])
 ?>
 	<smthBlog:comment>
 		<smthBlog:id><?php echo $comment[cid]; ?></smthBlog:id>
-		<smthBlog:subject><?php echo html_format($comment[subject]); ?></smthBlog:subject>
+		<smthBlog:subject><?php echo htmlspecialchars(stripslashes($comment[subject])); ?></smthBlog:subject>
 		<smthBlog:time><?php echo rss_time_format($comment[created]); ?></smthBlog:time>
-		<smthBlog:user><?php echo html_format($comment[username]); ?></smthBlog:user>
+		<smthBlog:user><?php echo htmlspecialchars(stripslashes($comment[username])); ?></smthBlog:user>
 		<smthBlog:link><?php echo "pcshowcom.php?cid=".$comment[cid]; ?></smthBlog:link>
 		<smthBlog:emote><?php echo $comment[emote]; ?></smthBlog:emote>
 		<smthBlog:address><?php echo $comment[hostname]; ?></smthBlog:address>
@@ -173,9 +173,9 @@ if($node[trackback] && $node[access] == 0)
 	{
 ?>
 	<smthBlog:trackback>
-		<smthBlog:title><?php echo html_format($trackback[title]); ?></smthBlog:title>
-		<smthBlog:name><?php echo html_format($trackback[blogname]); ?></smthBlog:name>
-		<smthBlog:link><?php echo html_format($trackback[url]); ?></smthBlog:link>
+		<smthBlog:title><?php echo htmlspecialchars(stripslashes($trackback[title])); ?></smthBlog:title>
+		<smthBlog:name><?php echo htmlspecialchars(stripslashes($trackback[blogname])); ?></smthBlog:name>
+		<smthBlog:link><?php echo htmlspecialchars(stripslashes($trackback[url])); ?></smthBlog:link>
 		<smthBlog:excerpt>
 			<![CDATA[
 			<?php echo html_format($trackback[excerpt],TRUE); ?>
@@ -192,7 +192,7 @@ if($node[trackback] && $node[access] == 0)
 </channel>
 
 <item rdf:about="nodexml.php?id=<?php echo $node[nid]; ?>">
-	<title><?php echo html_format($node[subject]); ?></title>
+	<title><?php echo htmlspecialchars(stripslashes($node[subject])); ?></title>
 	<link>"pccon.php?nid=<?php echo $node[nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all"</link>
 	<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
 	<dc:date><?php echo rss_time_format($node[created]); ?></dc:date>

@@ -36,8 +36,8 @@ function pc_load_trackbacks($link,$pc)
 	while($rows = mysql_fetch_array($result))
 	{
 		$trackbacks[] = array(
-					"URL" => html_format($rows[url]),
-					"TITLE" => html_format($rows[title]),
+					"URL" => htmlspecialchars(stripslashes($rows[url])),
+					"TITLE" => htmlspecialchars(stripslashes($rows[title],0,0,1)),
 					"TIME" => rss_time_format($rows[time])
 					);
 	}
@@ -63,7 +63,7 @@ function pc_load_comments($link,$pc,$pur=0)
 		$comments[] = array(
 					"USER" => $rows[username],
 					"CID" => $rows[cid],
-					"SUBJECT" => html_format($rows[subject]),
+					"SUBJECT" => htmlspecialchars(stripslashes($rows[subject])),
 					"TIME" => rss_time_format($rows[created])
 					);
 	}
@@ -161,7 +161,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 <title><?php echo $pc["NAME"]; ?></title>
 <link><?php echo pc_personal_domainname($pc["USER"]); ?></link>
 <description><?php echo $pc["DESC"]; ?></description>
-<image rdf:resource="<?php echo $pc["LOGO"]; ?>"/>
+<image rdf:resource="<?php echo html_format($pc["LOGO"]); ?>"/>
 <dc:language>gb2312</dc:language>
 <dc:creator><?php echo $pc["USER"].".bbs@".$pcconfig["SITE"]; ?></dc:creator>
 <items>
@@ -195,7 +195,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 		if($blog["TAG"] == 9) continue;
 ?>
 	<smthBlog:category>
-		<smthBlog:title><?php echo html_format($blog["NAME"]); ?></smthBlog:title>
+		<smthBlog:title><?php echo htmlspecialchars(stripslashes($blog["NAME"])); ?></smthBlog:title>
 		<smthBlog:link><?php echo "pcdoc.php?userid=".$pc["USER"]."&amp;tag=".$blog["TAG"]."&amp;tid=".$blog["TID"]; ?></smthBlog:link>
 	</smthBlog:category>
 <?php
@@ -209,7 +209,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	{
 ?>
 	<smthBlog:newNode>
-		<smthBlog:subject><?php echo html_format($node[subject]); ?></smthBlog:subject>
+		<smthBlog:subject><?php echo htmlspecialchars(stripslashes($node[subject])); ?></smthBlog:subject>
 		<smthBlog:time><?php echo rss_time_format($node[created]); ?></smthBlog:time>
 		<smthBlog:link><?php echo "pccon.php?id=".$pc["UID"]."&amp;nid=".$node[nid]."&amp;s=all"; ?></smthBlog:link>
 	</smthBlog:newNode>
@@ -225,7 +225,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 ?>
 	<smthBlog:newComment>
 		<smthBlog:subject><?php echo $comment["SUBJECT"]; ?></smthBlog:subject>
-		<smthBlog:user><?php echo html_format($comment["USER"]); ?></smthBlog:user>
+		<smthBlog:user><?php echo htmlspecialchars(stripslashes($comment["USER"])); ?></smthBlog:user>
 		<smthBlog:time><?php echo $comment["TIME"]; ?></smthBlog:time>
 		<smthBlog:link><?php echo "pcshowcom.php?cid=".$comment["CID"]; ?></smthBlog:link>
 	</smthBlog:newComment>
@@ -295,7 +295,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	{
 ?>
 <item rdf:about="pccon.php?nid=<?php echo $nodes[$i][nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all">
-	<title><?php echo html_format($nodes[$i][subject]); ?></title>
+	<title><?php echo htmlspecialchars(stripslashes($nodes[$i][subject])); ?></title>
 	<link>"pccon.php?nid=<?php echo $nodes[$i][nid]; ?>&amp;id=<?php echo $pc["UID"]; ?>&amp;s=all"</link>
 	<dc:creator><?php echo $pc["USER"]; ?></dc:creator>
 	<dc:date><?php echo rss_time_format($nodes[$i][created]); ?></dc:date>
