@@ -936,14 +936,6 @@ int getusernum(char *id)
 	return searchuser(id);
 }
 
-int checkuser(char *id, char *pw) {
-	int i;
-	struct userec *x = NULL;
-	getuser(id, &x);
-	if(x == NULL) return 0;
-	return checkpasswd2(pw, x);
-}
-
 int loadfriend(char *id) {
         FILE *fp;
         char file[256];

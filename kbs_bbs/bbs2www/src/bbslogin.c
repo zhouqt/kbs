@@ -9,7 +9,7 @@ multi_user_check()
 {
 	int ret,num;
     num = searchuser(getcurruserid());
-    ret = multilogin_user(num,currentuser);
+    ret = multilogin_user(currentuser,num);
 	if (ret!=0)
 		http_fatal("您同时上线的窗口数过多。为了保证他人利益，此次连线将被取消。");
 }

@@ -12,7 +12,7 @@ endif
 MAKE = make
 #CC 	= gcc
 CFLAGS += -I$(BBSINCLUDE2) -DSQUID_ACCL
-LDFLAGS += -L$(BBSLIBRARY) -L$(BBSLIBRARY2) -lbbslib -lBBS -lsystem -lesmtp -lltdl -ldl
+LDFLAGS += -L$(BBSLIBRARY) -L$(BBSLIBRARY2) -lBBS -lsystem -lesmtp -lltdl -ldl
 OS_DEF = -DLINUX
 SITE_DEF = -DINVISIBLE -DSMTH -DNJU_WWWBBS -DBBS2WWW
 #DEFINES = $(OS_DEF) $(SITE_DEF)
