@@ -221,6 +221,7 @@ void refresh()
             bp[j].mode[k]&=~SCREEN_MODIFIED;
             if(~(bp[j].mode[k])&cur_mode!=0) {
                 cur_mode = 0;
+                cur_color = 0;
                 push(0);
             }
             if(!(cur_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT) {
