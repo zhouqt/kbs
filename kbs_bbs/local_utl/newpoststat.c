@@ -72,7 +72,7 @@ int topnum=0;
 int topnum1=0;
 #endif
 
-#define INTERVAL 20
+#define INTERVAL 200
 
 static char * get_file_title(char *boardname, int threadid, char *title, char *userid)
 {
