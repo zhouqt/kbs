@@ -147,13 +147,13 @@ function showBoardContents($boardID,$boardName,$page){
 <?php
     $lastTenPages=(floor(($page-1)/ 10))*10;
 	if ($page==1) {
-		echo "<font face=webdings color=\"#FF0000\">9</font>   "; //ToDo: XHTML 不建议使用 webdings 字体。
+		echo "<font color=\"#FF0000\">&lt;&lt;</font>   ";
 	}   else {
-		echo "<a href=\"board.php?name=".$boardName."&page=1\" title=首页><font face=webdings>9</font></a>   ";
+		echo "<a href=\"board.php?name=".$boardName."&page=1\" title=\"首页\">&lt;&lt;</a>   ";
 	} 
 
 	if ($lastTenPages>0)  {
-		echo "<a href='?name=". $boardName ."&page=" . $lastTenPages . "' title=上十页><font face=webdings>7</font></a>   ";  
+		echo "<a href='?name=". $boardName ."&page=" . $lastTenPages . "' title=上十页>&lt;</a>   ";  
 	} 
 
 	echo "<b>";
@@ -169,12 +169,12 @@ function showBoardContents($boardID,$boardName,$page){
 	} 
 	echo "</b>";
 	if ($i<$totalPages) {
-		echo "<a href='board.php?name=".$boardName."&page=".$i."' title=下十页><font face=webdings>8</font></a>   ";  
+		echo "<a href='board.php?name=".$boardName."&page=".$i."' title=下十页>&gt;</a>   ";  
 	} 
 	if ($page==$totalPages) {
-		echo "<font face=webdings color=#ff0000>:</font>   ";
+		echo "<font color=#ff0000>&gt;&gt;</font>   ";
 	}  else  {
-		echo "<a href='board.php?name=".$boardName."&page=".$totalPages."' title=尾页><font face=webdings>:</font></a>   ";
+		echo "<a href='board.php?name=".$boardName."&page=".$totalPages."' title=尾页>&gt;&gt;</a>   ";
 	} 
 ?>
 转到:<input type=text name="page" size=3 maxlength=10  value=1><input type=submit value=Go ></div></td></tr>
