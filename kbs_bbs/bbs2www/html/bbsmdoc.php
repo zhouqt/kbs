@@ -116,7 +116,7 @@ else echo "box";
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td>
-<a href="/cgi-bin/bbs/bbscon?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
+<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>"><?php echo htmlspecialchars($title); ?></a>
 </td>
 </tr>
 <?php

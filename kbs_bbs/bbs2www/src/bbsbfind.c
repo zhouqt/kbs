@@ -72,7 +72,7 @@ int main()
         printf("<td>%s</td>", flag_str(x.accessed[0]));
         printf("<td>%s</td>", userid_str(x.owner));
         printf("<td>%12.12s</td>", 4 + wwwCTime(get_posttime(&x)));
-        printf("<td><a href=\"bbscon?board=%s&id=%d&num=%d\">%40.40s </a></td></tr>\n", brdencode, x.id, num, x.title);
+        printf("<td><a href=\"/bbscon.php?board=%s&id=%d\">%40.40s </a></td></tr>\n", brdencode, x.id, x.title);
         if (total >= 999)
             break;
     }
