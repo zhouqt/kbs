@@ -35,7 +35,8 @@ document.write("<div id='dypopLayer' style='position:absolute;z-index:1000' clas
 
 
 function showPopupText(){
-var o=event.srcElement; // ToDo: 这里 firefox 显示 JS 错误：event 没有定义 - atppp
+	if (!isIE4) return; //ToDo: I found only IE fully supports event.srcElement. maybe there're other tricks? - atppp
+var o=event.srcElement;
 	MouseX=event.x;
 	MouseY=event.y;
 	if(o.alt!=null && o.alt!=""){o.dypop=o.alt;o.alt=""};
