@@ -1056,44 +1056,17 @@ struct fileheader *ent ;
 {
     static char buf[512] ;
     time_t      filetime;
-    /* change by KCN
-        char        *date;
-    */
     char        date[20];
     char        *TITLE;
     int         type;
     int         coun;
+    int manager;
     char cUnreadMark=(DEFINE(DEF_UNREADMARK)?'*':'N');
+    char* typeprefix;
+    char* typesufix;
+    typesufix = typeprefix = "";
 
-    /******* ÒÔÏÂÎª×ª»¯Ô­À´ÔÄ¶Á¼ÆÊýµÄ³ÌÐò Luzi 1999/1/13 *****/
-    /**** Ò»ÖÜºó¿ÉÒÔÉ¾³ý :) ****/
-    long        ldReadCount=0;
-    /*ÆÆLuzi...×¢ÊÍµÃ²»ÊÇµØ·½,Haohmaru
-        FILE        *fp;
-        if (ent->ldReadCount<=0 || ent->ldReadCount>500)
-       {
-        setbfile( buf,currboard,ent->filename) ;
-        fp=fopen(buf,"rb"); 
-        if (fp)
-          {
-             char *lpTmp;
-             fread(buf,256,1,fp);
-             fclose(fp);
-             buf[256]=NULL;
-             lpTmp=strstr(buf,"¶ÁÕßÊý");
-             if (lpTmp) 
-                {
-                   lpTmp+=8;
-                   *(lpTmp+9)=NULL;
-                   ldReadCount=atol(lpTmp);
-                  }
-           }
-         ent->ldReadCount=ldReadCount;
-         setbdir(buf,currboard);
-         substitute_record(buf, ent, sizeof(*ent), num); 
-         }
-         else ldReadCount=ent->ldReadCount; */
-    /*************************** ¶ÁÔÄ¶Á¼ÆÊýÍê±Ï ******/
+	manager = (HAS_PERM(PERM_OBOARDS)||(chk_currBM(currBM))) ;
 
     type = brc_unread( ent->filename ) ? cUnreadMark : ' ';
     if ((ent->accessed[0] & FILE_DIGEST) /*&& HAS_PERM(PERM_MARKPOST)*/)
@@ -1123,7 +1096,7 @@ struct fileheader *ent ;
         }
     }
     /*    if(HAS_PERM(PERM_OBOARDS) && ent->accessed[1] & FILE_READ) *//*°åÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7*/
-    if ((HAS_PERM(PERM_OBOARDS)||(chk_currBM(currBM))) && ent->accessed[1] & FILE_READ) /* °æÖ÷ÒÔÉÏÄÜ¿´²»¿Ére±êÖ¾, Bigman.2001.2.27 */
+    if (manager & ent->accessed[1] & FILE_READ) /* °æÖ÷ÒÔÉÏÄÜ¿´²»¿Ére±êÖ¾, Bigman.2001.2.27 */
     {
         switch(type)
         {
@@ -1165,11 +1138,16 @@ struct fileheader *ent ;
         type='#';
     }
 
-    if((HAS_PERM(PERM_OBOARDS)||(chk_currBM(currBM))) && ent->accessed[1] & FILE_DEL) /* Èç¹ûÎÄ¼þ±»mark delete×¡ÁË£¬ÏÔÊ¾X*/
+    if(manager && ent->accessed[1] & FILE_DEL) /* Èç¹ûÎÄ¼þ±»mark delete×¡ÁË£¬ÏÔÊ¾X*/
     {
         type = 'X';
     }
-    
+
+    if (manager&&(ent->accessed[0]&FILE_IMPORTED)) /* ÎÄ¼þÒÑ¾­±»ÊÕÈë¾«»ªÇø */
+   	{
+   		typeprefix="\x1b[37m";
+   		typesufix="\x1b[m";
+   	}
     filetime = atoi( ent->filename + 2 ); /* ÓÉÎÄ¼þÃûÈ¡µÃÊ±¼ä */
     if( filetime > 740000000 ) {
         /* add by KCN
@@ -1198,35 +1176,35 @@ struct fileheader *ent ;
     if(FFLL==0)
     {
         if (!strncmp("Re:",ent->title,3) || !strncmp("RE:",ent->title,3) || !strncmp("©À ",ent->title,3) || !strncmp("©¸ ",ent->title,3)) /*ReµÄÎÄÕÂ*/
-            sprintf(buf," %4d %c %-12.12s %6.6s  %-47.47s ", num, type, ent->owner, date, TITLE);
+            sprintf(buf," %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         else   /* ·ÇReµÄÎÄÕÂ */
-            sprintf(buf," %4d %c %-12.12s %6.6s  ¡ñ %-44.44s ",num,type, ent->owner,date,TITLE);
+            sprintf(buf," %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ",num, typeprefix, type, typesufix, ent->owner,date,TITLE);
     }
     else /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
     {
         if (!strncmp("Re:",ent->title,3) || !strncmp("RE:",ent->title,3))       /*ReµÄÎÄÕÂ*/
         {
             if(!strcmp( ReplyPost+3, ent->title+3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf," [36m%4d[m %c %-12.12s %6.6s[36m£®%-47.47s[m ", num, type, ent->owner, date, TITLE);
+                sprintf(buf," [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, type, ent->owner, date, TITLE);
             else
-                sprintf(buf," %4d %c %-12.12s %6.6s  %-47.47s", num, type, ent->owner, date, TITLE) ;
+                sprintf(buf," %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE) ;
         }
         else if (!strncmp("©À ",ent->title,3) || !strncmp("©¸ ",ent->title,3)) /* Ö÷ÌâÅÅÁÐµÄÎÄÕÂ*/
         {
             if(strcmp( ReplyPost+4, ent->title+3)==0) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf," [36m%4d[m %c %-12.12s %6.6s[36m£®%-47.47s[m", num, type,
+                sprintf(buf," [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m", num, typeprefix, type, typesufix,
                         ent->owner, date, TITLE) ;
             else
-                sprintf(buf," %4d %c %-12.12s %6.6s  %-47.47s", num, type,
+                sprintf(buf," %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix,
                         ent->owner, date, TITLE) ;
         }
         else
         {
             if(strcmp(ReadPost,ent->title)==0)  /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf," [33m%4d[m %c %-12.12s %6.6s[33m£®¡ñ %-44.44s[m ",num,type,
+                sprintf(buf," [33m%4d[m %s%c%s %-12.12s %6.6s[33m£®¡ñ %-44.44s[m ",num,typeprefix, type, typesufix,
                         ent->owner,date,TITLE);
             else
-                sprintf(buf," %4d %c %-12.12s %6.6s  ¡ñ %-44.44s ",num,type,
+                sprintf(buf," %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ",num,typeprefix, type, typesufix,
                         ent->owner,date,TITLE);
         }
     }
