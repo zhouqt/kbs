@@ -212,7 +212,6 @@ fillucache(struct userec *uentp ,int* number)
     if(*number < MAXUSERS) {
     	int hashkey;
         strncpy((char*)passwd[*number].userid,uentp->userid,IDLEN+1) ;
-        uidshm->users[*number][IDLEN] = '\0' ;
         hashkey = ucache_hash(uentp->userid);
 	if (hashkey<0||hashkey>UCACHE_HASHSIZE) {
 		log("3system","UCACHE:hash(%s) %d error",uentp->userid, hashkey);
@@ -248,13 +247,13 @@ resolve_ucache()
 	    }
 	}*/
 	if (passwdfd==-1) {
-		if (passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
+		if ((passwdfd=open(PASSFILE,O_RDWR|O_CREAT,0644)) == -1) {
 			log("4system","Can't open " PASSFILE "file %s",strerror(errno));
         	exit(-1);
 		}
     	passwd = (struct userec*) mmap(NULL,
     			MAXUSERS*sizeof(struct userec),
-    			PROT_READ|PORT_WRITE,MAP_SHARED,passwdfd,0);
+    			PROT_READ|PROT_WRITE,MAP_SHARED,passwdfd,0);
     	if (passwd==(struct userec*)-1) {
 			log("4system","Can't map " PASSFILE "file %s",strerror(errno));
         	exit(-1);
