@@ -417,6 +417,7 @@ int d_user(cid)
     char tmpbuf[30];
     char userid[IDLEN + 2];
     struct userec *lookupuser;
+	/*struct userdata ud;*/
 
     if (uinfo.mode != OFFLINE) {
         modify_user_mode(ADMIN);
@@ -502,9 +503,13 @@ int d_user(cid)
     apply_utmp((APPLY_UTMP_FUNC) kickuser, 0, userid, 0);
     setuserid(id, "");
     lookupuser->userlevel = 0;
-    strcpy(lookupuser->address, "");
+    /*strcpy(lookupuser->address, "");*/
     strcpy(lookupuser->username, "");
-    strcpy(lookupuser->realname, "");
+    /*strcpy(lookupuser->realname, "");*/
+	/*read_userdata(lookupuser->userid, &ud);
+	strcpy(ud.address, "");
+	strcpy(ud.realname, "");
+	write_userdata(lookupuser->userid, &ud);*/
 /*    lookupuser->userid[0] = '\0' ; */
     move(2, 0);
     prints("%s 已经已经和本家庭失去联络....\n", userid);

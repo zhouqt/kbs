@@ -121,7 +121,7 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
         fprintf(fn, "                              %s\n", ctime(&now));
         strcpy(usr->userid, "SYSOP");
         strcpy(usr->username, NAME_SYSOP);
-        strcpy(usr->realname, NAME_SYSOP);
+        /*strcpy(usr->realname, NAME_SYSOP);*/
     } else {
         my_flag = 1;
         fprintf(fn, "寄信人: %s \n", usr->userid);
@@ -198,7 +198,7 @@ int main()
     strsncpy(board, getparm("board"), 30);
     strsncpy(exp, getparm("exp"), 30);
     dt = atoi(getparm("dt"));
-    if (getboard(board,&bh)==0||!check_read_perm(currentuser, &bh))
+    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     if (!has_BM_perm(currentuser, board))
         http_fatal("你无权进行本操作");

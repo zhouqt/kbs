@@ -170,7 +170,12 @@ void u_enter()
 #endif
     iscolor = (DEFINE(currentuser, DEF_COLOR)) ? 1 : 0;
     strncpy(uinfo.userid, currentuser->userid, 20);
-    strncpy(uinfo.realname, currentuser->realname, 20);
+	{
+		struct userdata ud;
+
+		read_userdata(currentuser->userid, &ud);
+		strncpy(uinfo.realname, ud.realname, 20);
+	}
     strncpy(uinfo.username, currentuser->username, 40);
     utmpent = getnewutmpent(&uinfo);
     if (utmpent == -1) {

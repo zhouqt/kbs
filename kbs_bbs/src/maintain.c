@@ -137,6 +137,9 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
     if ((se = fopen(fname, "w")) != NULL) {
         if (lookupuser) {
             if (strstr(str, "ÈÃ") && strstr(str, "Í¨¹ıÉí·İÈ·ÈÏ")) {
+				struct userdata ud;
+
+				read_userdata(lookupuser->userid, &ud);
                 fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
                 fprintf(se, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
                 /*
@@ -148,7 +151,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 fprintf(se, "\n\nÄúµÄ´úºÅ     : %s\n", fdata[1]);
                 fprintf(se, "ÄúµÄêÇ³Æ     : %s\n", lookupuser->username);
                 fprintf(se, "ÕæÊµĞÕÃû     : %s\n", fdata[2]);
-                fprintf(se, "µç×ÓÓÊ¼şĞÅÏä : %s\n", lookupuser->email);
+                fprintf(se, "µç×ÓÓÊ¼şĞÅÏä : %s\n", ud.email);
                 fprintf(se, "ÕæÊµ E-mail  : %s$%s@%s\n", fdata[3], fdata[5], currentuser->userid);
                 fprintf(se, "·şÎñµ¥Î»     : %s\n", fdata[3]);
                 fprintf(se, "Ä¿Ç°×¡Ö·     : %s\n", fdata[4]);
@@ -1284,6 +1287,9 @@ char *logfile, *regfile;
             pressreturn();
             memset(fdata, 0, sizeof(fdata));
         } else {
+			struct userdata ud;
+
+			read_userdata(lookupuser->userid, &ud);
             uinfo = *lookupuser;
             move(1, 0);
             prints("ÕÊºÅÎ»ÖÃ     : %d   ¹²ÓĞ %d ÕÅ×¢²áµ¥£¬µ±Ç°ÎªµÚ %d ÕÅ£¬»¹Ê£ %d ÕÅ\n", unum, total_num, count++, sum - count + 1);    /*Haohmaru.2000.3.9.¼ÆËã»¹ÓĞ¶àÉÙµ¥×ÓÃ»´¦Àí */
@@ -1314,7 +1320,7 @@ char *logfile, *regfile;
             /*
              * if (uinfo.userlevel & PERM_LOGINOK) modified by dong, 1999.4.18 
              */
-            if ((uinfo.userlevel & PERM_LOGINOK) || valid_userid(uinfo.realemail)) {
+            if ((uinfo.userlevel & PERM_LOGINOK) || valid_userid(ud.realemail)) {
                 move(t_lines - 1, 0);
                 prints("´ËÕÊºÅ²»ĞèÔÙÌîĞ´×¢²áµ¥.\n");
                 pressanykey();
@@ -1337,10 +1343,10 @@ char *logfile, *regfile;
                         fdata[5][n = 40] = '\0';
                     fdata[3][60 - n] = '\0';
                 }
-                strncpy(uinfo.realname, fdata[2], NAMELEN);
-                strncpy(uinfo.address, fdata[4], NAMELEN);
+                strncpy(ud.realname, fdata[2], NAMELEN);
+                strncpy(ud.address, fdata[4], NAMELEN);
                 sprintf(genbuf, "%s$%s@%s", fdata[3], fdata[5], uid);
-                strncpy(uinfo.realemail, genbuf, STRLEN - 16);
+                strncpy(ud.realemail, genbuf, STRLEN - 16);
                 sprintf(buf, "tmp/email/%s", uinfo.userid);
                 if ((fout = fopen(buf, "w")) != NULL) {
                     fprintf(fout, "%s\n", genbuf);
@@ -1348,6 +1354,7 @@ char *logfile, *regfile;
                 }
 
                 update_user(&uinfo, unum, 0);
+				write_userdata(uinfo.userid, &ud);
                 mail_file(currentuser->userid, "etc/s_fill", uinfo.userid, "¹§ìûÄã£¬ÄãÒÑ¾­Íê³É×¢²á¡£", 0);
                 sprintf(genbuf, "%s ÈÃ %s Í¨¹ıÉí·İÈ·ÈÏ.", uid, uinfo.userid);
                 securityreport(genbuf, lookupuser, fdata);
@@ -1377,8 +1384,8 @@ char *logfile, *regfile;
                     for (n = 0; field[n] != NULL; n++)
                         fprintf(fout, "%s     : %s\n", finfo[n], fdata[n]);
                     fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uinfo.username);
-                    fprintf(fout, "µç×ÓÓÊ¼şĞÅÏä : %s\n", uinfo.email);
-                    fprintf(fout, "ÕæÊµ E-mail  : %s\n", uinfo.realemail);
+                    fprintf(fout, "µç×ÓÓÊ¼şĞÅÏä : %s\n", ud.email);
+                    fprintf(fout, "ÕæÊµ E-mail  : %s\n", ud.realemail);
                     fprintf(fout, "×¢²áÈÕÆÚ     : %s\n", ctime(&uinfo.firstlogin));
                     fprintf(fout, "×¢²áÊ±µÄ»úÆ÷ : %s\n", uinfo.lasthost);
                     fprintf(fout, "Approved: %s\n", uid);
@@ -1418,7 +1425,8 @@ char *logfile, *regfile;
                         strcpy(buf, reason[buf[0] - '0']);
                     }
                     sprintf(genbuf, "<×¢²áÊ§°Ü> - %s", buf);
-                    strncpy(uinfo.address, genbuf, NAMELEN);
+                    strncpy(ud.address, genbuf, NAMELEN);
+					write_userdata(uinfo.userid, &ud);
                     update_user(&uinfo, unum, 0);
 
                     /*
@@ -1426,31 +1434,31 @@ char *logfile, *regfile;
                      */
                     switch (buff) {
                     case '0':
-                        mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.realname", uinfo.userid, ud.address, 0);
                         break;
                     case '1':
-                        mail_file(currentuser->userid, "etc/f_fill.unit", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.unit", uinfo.userid, ud.address, 0);
                         break;
                     case '2':
-                        mail_file(currentuser->userid, "etc/f_fill.address", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.address", uinfo.userid, ud.address, 0);
                         break;
                     case '3':
-                        mail_file(currentuser->userid, "etc/f_fill.telephone", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.telephone", uinfo.userid, ud.address, 0);
                         break;
                     case '4':
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, 0);
                         break;
                     case '5':
-                        mail_file(currentuser->userid, "etc/f_fill.chinese", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.chinese", uinfo.userid, ud.address, 0);
                         break;
                     case '6':
-                        mail_file(currentuser->userid, "etc/f_fill.proxy", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.proxy", uinfo.userid, ud.address, 0);
                         break;
                     case '7':
-                        mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, ud.address, 0);
                         break;
                     default:
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, uinfo.address, 0);
+                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, 0);
                         break;
                     }
                     /*
@@ -1485,7 +1493,7 @@ char *logfile, *regfile;
             }
             memset(fdata, 0, sizeof(fdata));
         }
-    }
+    } /* while */
 
     check_reg(1);               /* Bigman:2002.5.31 */
 

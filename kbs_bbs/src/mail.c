@@ -1150,7 +1150,12 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
         /*
          * comment out by jjyang for direct mail delivery 
          */
-        newbbslog(BBSLOG_USER, "forwarded file to %s", currentuser->email);
+		{
+			struct userdata ud;
+
+			read_userdata(currentuser->userid, &ud);
+        	newbbslog(BBSLOG_USER, "forwarded file to %s", ud.email);
+		}
         /*
          * comment out by jjyang for direct mail delivery 
          */
@@ -1840,11 +1845,13 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     char tmp_buf[200];
     int y = 5;
     int noansi;
+	struct userdata ud;
 
     clear();
+	read_userdata(currentuser->userid, &ud);
     if (address[0] == '\0') {
-        strncpy(address, currentuser->email, STRLEN);
-        if (strstr(currentuser->email, "@bbs.zixia.net") || strstr(currentuser->email, "bbs@smth.org") || strlen(currentuser->email) == 0) {
+        strncpy(address, ud.email, STRLEN);
+        if (strstr(ud.email, "@" MAIL_BBSDOMAIN) || strlen(ud.email) == 0) {
             strcpy(address, currentuser->userid);
         }
     }

@@ -260,7 +260,7 @@ int addtodeny(char *uident)
             fprintf(fn, "                              %s\n", ctime(&now));
             strcpy(currentuser->userid, "SYSOP");
             strcpy(currentuser->username, NAME_SYSOP);
-            strcpy(currentuser->realname, NAME_SYSOP);
+            /*strcpy(currentuser->realname, NAME_SYSOP);*/
         } else {
             my_flag = 1;
             fprintf(fn, "¼ÄĞÅÈË: %s \n", currentuser->userid);

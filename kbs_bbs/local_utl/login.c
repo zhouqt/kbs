@@ -42,7 +42,12 @@ int login(struct userec *user)
 	ui.freshtime = time(0);
     ui.mode = WEBEXPLORE;
     strncpy(ui.userid, user->userid, 20);
-    strncpy(ui.realname, user->realname, 20);
+	{
+		struct userdata ud;
+
+		read_userdata(user->userid, &ud);
+    	strncpy(ui.realname, ud.realname, 20);
+	}
     strncpy(ui.username, user->username, 40);
     utmpent = getnewutmpent2(&ui);
     if (utmpent == -1)

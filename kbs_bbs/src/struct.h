@@ -6,27 +6,22 @@
 */
 struct userec {                 /* Structure used to hold information in */
     char userid[IDLEN + 2];     /* PASSFILE */
-    /*char fill[30];*/
+    char flags[2];
     time_t firstlogin;
     char lasthost[16];
     unsigned int numlogins;
     unsigned int numposts;
-    char flags[2];
 #ifdef CONV_PASS
     char passwd[OLDPASSLEN];
+	char unused_padding[2];
 #endif
     char username[NAMELEN];
     unsigned int club_read_rights[MAXCLUB>>5];
     unsigned int club_write_rights[MAXCLUB>>5];
-    char unused2[6];
     unsigned char md5passwd[MD5PASSLEN];
-    char realemail[STRLEN - 16];
     unsigned userlevel;
     time_t lastlogin;
     time_t stay;
-    char realname[NAMELEN];
-    char address[STRLEN];
-    char email[STRLEN];
     int signature;
     unsigned int userdefine;
     time_t notedate;
@@ -39,8 +34,20 @@ struct userec {                 /* Structure used to hold information in */
 	unsigned char   birthmonth;
 	unsigned char   birthday;
 #endif
-    unsigned int usedspace;                 /* no use */
+    unsigned int usedspace;     /* used space of user's mailbox, in bytes */
 };
+
+struct userdata
+{
+    char userid[IDLEN + 2];
+	char __reserved[2];
+    /*char username[NAMELEN];*/
+    char realemail[STRLEN - 16];
+    char realname[NAMELEN];
+    char address[STRLEN];
+    char email[STRLEN];
+};
+
 struct user_info {              /* Structure used in UTMP file */
     int active;                 /* When allocated this field is true */
     int uid;                    /* Used to find user name in passwd file */

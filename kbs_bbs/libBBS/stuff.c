@@ -579,7 +579,7 @@ char *setbdir(int digestmode, char *buf, char *boardname)
     return buf;
 }
 
-char *sethomefile(char *buf, char *userid, char *filename)
+char *sethomefile(char *buf, const char *userid, const char *filename)
 {                               /*取某用户文件 路径 */
     if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "home/%c/%s/%s", toupper(userid[0]), userid, filename);
@@ -597,7 +597,7 @@ char *sethomepath(char *buf, char *userid)
         sprintf(buf, "home/wrong/%s", userid);
     return buf;
 }
-char *setmailfile(char *buf, char *userid, char *filename)
+char *setmailfile(char *buf, const char *userid, const char *filename)
 {                               /* 取某用户mail文件 路径 */
     if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "mail/%c/%s/%s", toupper(userid[0]), userid, filename);
@@ -1019,14 +1019,56 @@ time_t get_exit_time(char *id, char *exittime)
     return now;
 }
 
+int read_userdata(const char *userid, struct userdata *ud)
+{
+	char datafile[STRLEN];
+	int fd;
+
+	if ((userid == NULL || userid[0] == '\0') || ud == NULL)
+		return -1;
+	sethomefile(datafile, userid, USERDATA);
+	if ((fd = open(datafile, O_RDONLY, 0644)) < 0)
+	{
+		if ((fd = open(datafile, O_WRONLY | O_CREAT, 0644)) < 0)
+			return -1;
+		bzero(ud, sizeof(struct userdata));
+		strncpy(ud->userid, userid, sizeof(ud->userid)-1);
+		ud->userid[sizeof(ud->userid)-1] = '\0';
+		write(fd, ud, sizeof(struct userdata));
+		close(fd);
+		return 1; /* created new .userdata file */
+	}
+	read(fd, ud, sizeof(struct userdata));
+	close(fd);
+	return 0; /* success */
+}
+
+int write_userdata(const char *userid, const struct userdata *ud)
+{
+	char datafile[STRLEN];
+	int fd;
+
+	if ((userid == NULL || userid[0] == '\0') || ud == NULL)
+		return -1;
+	sethomefile(datafile, userid, USERDATA);
+	if ((fd = open(datafile, O_WRONLY, 0644)) < 0)
+		return -1;
+	write(fd, ud, sizeof(struct userdata));
+	close(fd);
+	return 0;
+}
+
 void getuinfo(FILE * fn, struct userec *ptr_urec)
 {
+	struct userdata ud;
+
+	read_userdata(ptr_urec->userid, &ud);
     fprintf(fn, "\n\n您的代号     : %s\n", ptr_urec->userid);
     fprintf(fn, "您的昵称     : %s\n", ptr_urec->username);
-    fprintf(fn, "真实姓名     : %s\n", ptr_urec->realname);
-    fprintf(fn, "居住住址     : %s\n", ptr_urec->address);
-    fprintf(fn, "电子邮件信箱 : %s\n", ptr_urec->email);
-    fprintf(fn, "真实 E-mail  : %s\n", ptr_urec->realemail);
+    fprintf(fn, "真实姓名     : %s\n", ud.realname);
+    fprintf(fn, "居住住址     : %s\n", ud.address);
+    fprintf(fn, "电子邮件信箱 : %s\n", ud.email);
+    fprintf(fn, "真实 E-mail  : %s\n", ud.realemail);
     fprintf(fn, "注册日期     : %s", ctime(&ptr_urec->firstlogin));
     fprintf(fn, "最近光临日期 : %s", ctime(&ptr_urec->lastlogin));
     fprintf(fn, "最近光临机器 : %s\n", ptr_urec->lasthost);

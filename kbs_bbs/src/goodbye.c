@@ -50,8 +50,6 @@ void user_display(char *filename, int number, int mode)
 
 void showstuff(buf)
 char buf[256];
-
-
 {
     struct userec douser;
     int frg, i, matchfrg, strlength;
@@ -83,18 +81,20 @@ char buf[256];
 #endif                          /*  */
         NULL, NULL,
     };
+	struct userdata ud;
 
     if (currentuser)
         douser = *currentuser;
-
     else
         bzero(&douser, sizeof(struct userec));
+	bzero(&ud, sizeof(ud));
+	read_userdata(douser.userid, &ud);
     stuffstr[ST_USERID] = douser.userid;
     stuffstr[ST_USERNAME] = douser.username;
-    stuffstr[ST_REALNAME] = douser.realname;
-    stuffstr[ST_ADDRESS] = douser.address;
-    stuffstr[ST_EMAIL] = douser.email;
-    stuffstr[ST_REALEMAIL] = douser.realemail;
+    stuffstr[ST_REALNAME] = ud.realname;
+    stuffstr[ST_ADDRESS] = ud.address;
+    stuffstr[ST_EMAIL] = ud.email;
+    stuffstr[ST_REALEMAIL] = ud.realemail;
     stuffstr[ST_IDENT] = "";
     stuffstr[ST_RGTDAY] = rgtday;
     stuffstr[ST_NUMLOGINS] = numlogins;

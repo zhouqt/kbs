@@ -9,6 +9,7 @@ int main()
     struct stat st;
     int num;
     char buf[STRLEN];
+	struct userdata ud;
 
     init_all();
     if (!loginok)
@@ -24,6 +25,7 @@ int main()
         num = st.st_size / (sizeof(struct fileheader));
     else
         num = 0;
+	read_userdata(currentuser->userid, &ud);
     printf("<form action=\"bbsinfo?type=1\" method=\"post\">");
     printf("您的帐号: %s<br>\n", currentuser->userid);
     printf("您的昵称: <input type=\"text\" name=\"nick\" value=\"%s\" size=\"24\" maxlength=\"%d\"><br>\n", currentuser->username, NAMELEN - 1);
@@ -31,12 +33,12 @@ int main()
     printf("信件数量: %d 封<br>\n", num);
     printf("上站次数: %d 次<br>\n", currentuser->numlogins);
     printf("上站时间: %d 分钟<br>\n", currentuser->stay / 60);
-    printf("真实姓名: <input type=\"text\" name=\"realname\" value=\"%s\" size=\"16\" maxlength=\"%d\"><br>\n", currentuser->realname, NAMELEN - 1);
-    printf("居住地址: <input type=\"text\" name=\"address\" value=\"%s\" size=\"40\" maxlength=\"%d\"><br>\n", currentuser->address, STRLEN - 1);
+    printf("真实姓名: <input type=\"text\" name=\"realname\" value=\"%s\" size=\"16\" maxlength=\"%d\"><br>\n", ud.realname, NAMELEN - 1);
+    printf("居住地址: <input type=\"text\" name=\"address\" value=\"%s\" size=\"40\" maxlength=\"%d\"><br>\n", ud.address, STRLEN - 1);
     printf("帐号建立: %s<br>", wwwCTime(currentuser->firstlogin));
     printf("最近光临: %s<br>", wwwCTime(currentuser->lastlogin));
     printf("来源地址: %s<br>", currentuser->lasthost);
-    printf("电子邮件: <input type=\"text\" name=\"email\" value=\"%s\" size=\"32\" maxlength=\"%d\"><br>\n", currentuser->email, STRLEN - 1);
+    printf("电子邮件: <input type=\"text\" name=\"email\" value=\"%s\" size=\"32\" maxlength=\"%d\"><br>\n", ud.email, STRLEN - 1);
     printf("<input type=\"submit\" value=\"确定\"> <input type=\"reset\" value=\"复原\">\n");
     printf("</form>");
     printf("<hr>");
@@ -47,8 +49,10 @@ int check_info()
 {
     int m, n;
     char buf[256];
+	struct userdata ud;
 
     /* 必须对所有的变量滤掉ANSI控制符 */
+	read_userdata(currentuser->userid, &ud);
     strsncpy(buf, getparm("nick"), NAMELEN);
     for (m = 0; m < strlen(buf); m++) {
         if (buf[m] < 32 && buf[m] > 0 || buf[m] == -1)
@@ -60,18 +64,19 @@ int check_info()
         printf("警告: 昵称太短!<br>\n");
     strsncpy(buf, getparm("realname"), NAMELEN);
     if (strlen(buf) > 1)
-        strcpy(currentuser->realname, buf);
+        strcpy(ud.realname, buf);
     else
         printf("警告: 真实姓名太短!<br>\n");
     strsncpy(buf, getparm("address"), STRLEN);
     if (strlen(buf) > 8)
-        strcpy(currentuser->address, buf);
+        strcpy(ud.address, buf);
     else
         printf("警告: 居住地址太短!<br>\n");
     strsncpy(buf, getparm("email"), STRLEN);
     if (strlen(buf) > 8 && strchr(buf, '@'))
-        strcpy(currentuser->email, buf);
+        strcpy(ud.email, buf);
     else
         printf("警告: email地址不合法!<br>\n");
+	write_userdata(currentuser->userid, &ud);
     printf("[%s] 个人资料修改成功.", currentuser->userid);
 }

@@ -16,6 +16,7 @@ int main()
     int big5;
     int noansi;
     struct boardheader bh;
+	struct userdata ud;
 
     init_all();
     strsncpy(board, getparm("board"), 30);
@@ -40,6 +41,7 @@ int main()
         }
         return do_fwd(&x, board, target, big5, noansi);
     }
+	read_userdata(currentuser->userid, &ud);
     printf("<table><tr><td>\n");
     printf("文章标题: %s<br>\n", nohtml(x.title));
     printf("文章作者: %s<br>\n", x.owner);
@@ -47,7 +49,7 @@ int main()
     printf("<form action=\"bbsfwd\" method=\"post\">\n");
     printf("<input type=\"hidden\" name=\"board\" value=\"%s\">", board);
     printf("<input type=\"hidden\" name=\"file\" value=\"%s\">", file);
-    printf("把文章转寄给 <input type=\"text\" name=\"target\" size=\"40\" maxlength=\"69\" value=\"%s\"> (请输入对方的id或email地址). <br>\n", currentuser->email);
+    printf("把文章转寄给 <input type=\"text\" name=\"target\" size=\"40\" maxlength=\"69\" value=\"%s\"> (请输入对方的id或email地址). <br>\n", ud.email);
     printf("<input type=\"checkbox\" name=\"big5\" value=\"1\"> 使用BIG5码<br>\n");
     printf("<input type=\"checkbox\" name=\"noansi\" value=\"1\" checked> 过滤ANSI控制符<br>\n");
     printf("<input type=\"submit\" value=\"确定转寄\"></form>");

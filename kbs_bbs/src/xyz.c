@@ -369,13 +369,16 @@ int XCheckLevel()
             if (askyn("ÄãÈ·¶¨Òª½øĞĞÁĞÊ¾Âğ", 0)) {
                 while (read(fhp, &scanuser, sizeof(struct userec)) > 0) {
                     if ((scanuser.userlevel & newlevel) == newlevel && strcmp("SYSOP", scanuser.userid)) {
+						struct userdata ud;
+
+						read_userdata(scanuser.userid, &ud);
                         count++;
                         fprintf(fpx, "[1m[33mÇë±£³ÖÕâÒ»ĞĞÎ»ÓÚÆÁÄ»µÚÒ»ĞĞ£¬´ËÊ±°´ X ¼ü¿É¸øÏÂÁĞÓÃ»§·¢ĞÅÒªÇóÆä²¹Æë¸öÈË×¢²á×ÊÁÏ[m\n\n");
                         fprintf(fpx, "ÓÃ»§´úºÅ(êÇ³Æ) : %s(%s)\n\n", scanuser.userid, scanuser.username);
-                        fprintf(fpx, "Õæ  Êµ  ĞÕ  Ãû : %s\n\n", scanuser.realname);
-                        fprintf(fpx, "¾Ó  ×¡  ×¡  Ö· : %s\n\n", scanuser.address);
-                        fprintf(fpx, "µç  ×Ó  ÓÊ  ¼ş : %s\n\n", scanuser.email);
-                        fprintf(fpx, "µ¥Î»$µç»°@ÈÏÖ¤ : %s\n\n", scanuser.realemail);
+                        fprintf(fpx, "Õæ  Êµ  ĞÕ  Ãû : %s\n\n", ud.realname);
+                        fprintf(fpx, "¾Ó  ×¡  ×¡  Ö· : %s\n\n", ud.address);
+                        fprintf(fpx, "µç  ×Ó  ÓÊ  ¼ş : %s\n\n", ud.email);
+                        fprintf(fpx, "µ¥Î»$µç»°@ÈÏÖ¤ : %s\n\n", ud.realemail);
                         fprintf(fpx, "×¢  ²á  ÈÕ  ÆÚ : %s\n", ctime(&scanuser.firstlogin));
                         fprintf(fpx, "×îºóµÄµÇÂ¼ÈÕÆÚ : %s\n", ctime(&scanuser.lastlogin));
                         fprintf(fpx, "×îºóµÄµÇÂ¼»úÆ÷ : %s\n\n", scanuser.lasthost);

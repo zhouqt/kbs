@@ -147,9 +147,9 @@ int killauser(struct userec *theuser, char *data)
         system(genbuf1);
         setuserid2(a, "");
         theuser->userlevel = 0;
-        strcpy(theuser->address, "");
+        /*strcpy(theuser->address, "");*/
         strcpy(theuser->username, "");
-        strcpy(theuser->realname, "");
+        /*strcpy(theuser->realname, "");*/
     }
 
     return 0;

@@ -112,10 +112,10 @@ extern "C" {
     int del_from_file(char filename[STRLEN], char str[STRLEN]);
     int setpublicshmreadonly(int readonly);
     struct public_data *get_publicshm();        /*获得public shm指针 */
-    char *sethomefile(char *buf, char *userid, char *filename); /*取某用户文件 路径 */
+    char *sethomefile(char *buf, const char *userid, const char *filename); /*取某用户文件 路径 */
     char *sethomepath(char *buf, char *userid); /* 取 某用户 的home */
 
-    char *setmailfile(char *buf, char *userid, char *filename); /* 取某用户mail文件 路径 */
+    char *setmailfile(char *buf, const char *userid, const char *filename); /* 取某用户mail文件 路径 */
     char *setmailpath(char *buf, char *userid); /* 取 某用户 的mail */
     char *setbpath(char *buf, char *boardname); /* 取某版 路径 */
     char *setbfile(char *buf, char *boardname, char *filename); /* 取某版下文件 */
@@ -134,6 +134,8 @@ extern "C" {
     void encodestr(register char *str);
     int Isspace(char ch);
     char *idle_str(struct user_info *uent);
+	int read_userdata(const char *userid, struct userdata *ud);
+	int write_userdata(const char *userid, const struct userdata *ud);
     void getuinfo(FILE * fn, struct userec *ptr_urec);
     int simplepasswd(char *str);
     void logattempt(char *uid, char *frm);

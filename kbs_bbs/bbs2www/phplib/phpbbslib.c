@@ -106,6 +106,9 @@ static void setstrlen(pval * arg)
 
 static void assign_user(zval * array, struct userec *user, int num)
 {
+	struct userdata ud;
+
+	read_userdata(user->userid, &ud);
     add_assoc_long(array, "index", num);
     add_assoc_string(array, "userid", user->userid, 1);
     add_assoc_long(array, "firstlogin", user->firstlogin);
@@ -116,13 +119,13 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "flag2", user->flags[1]);
     add_assoc_string(array, "username", user->username, 1);
     add_assoc_stringl(array, "md5passwd", (char *) user->md5passwd, 16, 1);
-    add_assoc_string(array, "realemail", user->realemail, 1);
+    add_assoc_string(array, "realemail", ud.realemail, 1);
     add_assoc_long(array, "userlevel", user->userlevel);
     add_assoc_long(array, "lastlogin", user->lastlogin);
     add_assoc_long(array, "stay", user->stay);
-    add_assoc_string(array, "realname", user->realname, 1);
-    add_assoc_string(array, "address", user->address, 1);
-    add_assoc_string(array, "email", user->email, 1);
+    add_assoc_string(array, "realname", ud.realname, 1);
+    add_assoc_string(array, "address", ud.address, 1);
+    add_assoc_string(array, "email", ud.email, 1);
     add_assoc_long(array, "signature", user->signature);
     add_assoc_long(array, "userdefine", user->userdefine);
     add_assoc_long(array, "notedate", user->notedate);
@@ -157,7 +160,7 @@ static void assign_board(zval * array, struct boardheader *board, int num)
 {
     add_assoc_long(array, "NUM", num);
     add_assoc_string(array, "NAME", board->filename, 1);
-    add_assoc_string(array, "OWNER", board->owner, 1);
+    /*add_assoc_string(array, "OWNER", board->owner, 1);*/
     add_assoc_string(array, "BM", board->BM, 1);
     add_assoc_long(array, "FLAG", board->flag);
     add_assoc_string(array, "DESC", board->title+13, 1);

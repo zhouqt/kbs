@@ -191,12 +191,6 @@ int count_mails(char *id, int *total, int *unread);
 
 int findnextutmp(char *id, int from);
 
-#ifndef SMTH
-/*int sethomefile(char *buf, char *id, char *file); define in func.h*/
-#else                           /* SMTH */
-char *sethomefile(char *buf, char *userid, char *filename);
-#endif                          /* SMTH */
-
 int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]);
 
 char *horoscope(int month, int day);

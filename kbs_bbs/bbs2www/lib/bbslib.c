@@ -1896,7 +1896,12 @@ int www_data_init()
     strcpy(www_guest_uinfo.username, guest->username);
     strcpy(www_guest_uinfo.userid, guest->userid);
     www_guest_uinfo.pager = 0;
-    strcpy(www_guest_uinfo.realname, guest->realname);
+	{
+		struct userdata ud;
+
+		read_userdata(guest->userid, &ud);
+    	strcpy(www_guest_uinfo.realname, ud.realname);
+	}
     www_guest_uinfo.utmpkey = 0;
 
     /* destuid 将被用来存放www guest表的入口 */
@@ -1970,6 +1975,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 {
     int ret;
     char buf[255];
+	struct userdata ud;
 
     if (user != NULL && strcasecmp(user->userid, "guest")) {
         struct user_info ui;
@@ -2017,9 +2023,10 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         user->lastlogin = time(0);
         user->numlogins++;
         strncpy(user->lasthost, fromhost, IPLEN);
+		read_userdata(user->userid, &ud);
         if (!HAS_PERM(user, PERM_LOGINOK) && !HAS_PERM(user, PERM_SYSOP)) {
-            if (strchr(user->realemail, '@')
-                && valid_ident(user->realemail)) {
+            if (strchr(ud.realemail, '@')
+                && valid_ident(ud.realemail)) {
                 user->userlevel |= PERM_DEFAULT;
                 /*
                 if (HAS_PERM(user, PERM_DENYPOST)  )
@@ -2059,7 +2066,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         ui.utmpkey = tmp;
         ui.mode = WEBEXPLORE;
         strncpy(ui.userid, user->userid, 20);
-        strncpy(ui.realname, user->realname, 20);
+        strncpy(ui.realname, ud.realname, 20);
         strncpy(ui.username, user->username, 40);
         utmpent = getnewutmpent2(&ui);
         if (utmpent == -1)

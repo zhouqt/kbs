@@ -210,6 +210,7 @@ void check_register_info()
     char *newregfile;
     int perm;
     char buf[STRLEN];
+	struct userdata ud;
 
     clear();
     sprintf(buf, "%s", email_domain());
@@ -219,6 +220,7 @@ void check_register_info()
     }
     /*urec->userlevel |= PERM_DEFAULT; */
     perm = PERM_DEFAULT & sysconf_eval("AUTOSET_PERM",PERM_DEFAULT);
+	read_userdata(currentuser->userid, &ud);
 
     /*    if( sysconf_str( "IDENTFILE" ) != NULL ) {  commented out by netty to save time */
     while (strlen(currentuser->username) < 2) {
@@ -227,19 +229,19 @@ void check_register_info()
         strcpy(uinfo.username, buf);
         UPDATE_UTMP_STR(username, uinfo);
     }
-    if (strlen(currentuser->realname) < 2) {
+    if (strlen(ud.realname) < 2) {
         move(3, 0);
         prints("ÇëÊäÈëÄúµÄÕæÊµĞÕÃû: (Õ¾³¤»á°ïÄú±£ÃÜµÄ !)\n");
         getdata(4, 0, "> ", buf, NAMELEN, DOECHO, NULL, true);
-        strcpy(currentuser->realname, buf);
+        strcpy(ud.realname, buf);
     }
-    if (strlen(currentuser->address) < 6) {
+    if (strlen(ud.address) < 6) {
         move(5, 0);
-        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", currentuser->address[0] ? currentuser->address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
+        prints("ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", ud.address[0] ? ud.address : "¿ÕµØÖ·");  /* Leeward 98.04.26 */
         getdata(6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN, DOECHO, NULL, true);
-        strcpy(currentuser->address, buf);
+        strcpy(ud.address, buf);
     }
-    if (strchr(currentuser->email, '@') == NULL) {
+    if (strchr(ud.email, '@') == NULL) {
         move(3, 0);
         prints("Ö»ÓĞ±¾Õ¾µÄºÏ·¨¹«Ãñ²ÅÄÜ¹»ÍêÈ«ÏíÓĞ¸÷ÖÖ¹¦ÄÜ£¬ \n");
         /* alex           prints( "³ÉÎª±¾Õ¾ºÏ·¨¹«ÃñÓĞÁ½ÖÖ°ì·¨£º\n\n" );
@@ -367,7 +369,7 @@ void check_register_info()
     if (!(currentuser->userlevel & PERM_LOGINOK)) {
         if (HAS_PERM(currentuser, PERM_SYSOP))
             return;
-        if (!invalid_realmail(currentuser->userid, currentuser->realemail, STRLEN - 16)) {
+        if (!invalid_realmail(currentuser->userid, ud.realemail, STRLEN - 16)) {
             currentuser->userlevel |= PERM_DEFAULT;
             /*
             if (HAS_PERM(currentuser, PERM_DENYPOST) && !HAS_PERM(currentuser, PERM_SYSOP))
@@ -451,6 +453,7 @@ void check_register_info()
         /* end of check if local email-addr */
         /*  above lines added by netty...  */
     }
+	write_userdata(currentuser->userid, &ud);
     newregfile = sysconf_str("NEWREGFILE");
     if (currentuser->lastlogin - currentuser->firstlogin < REGISTER_WAIT_TIME && !HAS_PERM(currentuser, PERM_SYSOP) && newregfile != NULL) {
         currentuser->userlevel &= ~(perm);

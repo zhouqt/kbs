@@ -55,13 +55,13 @@ convert_userec(struct olduserec *olduser, struct userec *user)
 	memcpy(user->username, olduser->username, NAMELEN);
 	/*memcpy(user->ident, olduser->ident, NAMELEN);*/
 	memcpy(user->md5passwd, olduser->md5passwd, sizeof(user->md5passwd));
-	memcpy(user->realemail, olduser->realemail, sizeof(user->realemail));
+	/*memcpy(user->realemail, olduser->realemail, sizeof(user->realemail));*/
 	user->userlevel = olduser->userlevel;
 	user->lastlogin = olduser->lastlogin;
 	user->stay = olduser->stay;
-	memcpy(user->realname, olduser->realname, NAMELEN);
+	/*memcpy(user->realname, olduser->realname, NAMELEN);
 	memcpy(user->address, olduser->address, STRLEN);
-	memcpy(user->email, olduser->email, STRLEN - 12);
+	memcpy(user->email, olduser->email, STRLEN - 12);*/
 	user->signature = olduser->signature;
 	user->userdefine = olduser->userdefine;
 	user->notedate = olduser->notedate;
