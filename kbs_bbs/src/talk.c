@@ -206,6 +206,80 @@ int t_cmpuids(int uid, struct user_info *up)
     return (up->active && uid == up->uid);
 }
 
+#ifdef FREE
+static char   * horoscope(month, day)
+unsigned char    month, day;
+{
+	char   *name[12] = {
+		"摩羯", "水瓶", "双鱼", "牡羊", "金牛", "双子",
+		"巨蟹", "狮子", "处女", "天秤", "天蝎", "射手"
+	};
+	switch (month) {
+	case 1:
+		if (day < 21)
+			return (name[0]);
+		else
+			return (name[1]);
+	case 2:
+		if (day < 19)
+			return (name[1]);
+		else
+			return (name[2]);
+	case 3:
+		if (day < 21)
+			return (name[2]);
+		else
+			return (name[3]);
+	case 4:
+		if (day < 21)
+			return (name[3]);
+		else
+			return (name[4]);
+	case 5:
+		if (day < 21)
+			return (name[4]);
+		else
+			return (name[5]);
+	case 6:
+		if (day < 22)
+			return (name[5]);
+		else
+			return (name[6]);
+	case 7:
+		if (day < 23)
+			return (name[6]);
+		else
+			return (name[7]);
+	case 8:
+		if (day < 23)
+			return (name[7]);
+		else
+			return (name[8]);
+	case 9:
+		if (day < 23)
+			return (name[8]);
+		else
+			return (name[9]);
+	case 10:
+		if (day < 24)
+			return (name[9]);
+		else
+			return (name[10]);
+	case 11:
+		if (day < 23)
+			return (name[10]);
+		else
+			return (name[11]);
+	case 12:
+		if (day < 22)
+			return (name[11]);
+		else
+			return (name[0]);
+	}
+	return ("不详");
+}
+#endif
+
 int t_query(char* q_id)
 {
     char uident[STRLEN], *newline;
@@ -263,7 +337,11 @@ int t_query(char* q_id)
     uinfo.destuid = tuid;
 /*    UPDATE_UTMP(destuid,uinfo);  I think it is not very importance.KCN*/
 /*    search_ulist( &uin, t_cmpuids, tuid );*/
+#ifdef FREE
+	move(0, 0);
+#else
     move(1, 0);
+#endif
     clrtobot();
     setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
     exp = countexp(lookupuser);
@@ -275,7 +353,29 @@ int t_query(char* q_id)
     else
 #endif                          /* 
                                  */
+#ifdef FREE
+	{
+		char horobuf[50];
+		char buf1[256];
+		int clr;
+		struct userdata udata;
+
+		if( ! DEFINE(lookupuser, DEF_SHOWDETAILUSERDATA) || read_userdata(uident,&udata) ){
+			clr=2;
+			strcpy(horobuf," ");
+		}else{
+			clr = (udata.gender == 'F') ? 5 : 6 ;
+			sprintf(horobuf, "[\033[1;3%dm%s\033[m]", clr, horoscope(udata.birthmonth, udata.birthday) );
+		}
+
+		sprintf(buf1,"\033[1;37m%s \033[m(\033[1;33m%s\033[m) 共上站 \033[1;32m%d\033[m 次  %s", lookupuser->userid, lookupuser->username, lookupuser->numlogins, horobuf);
+
+		prints(buf1);
+
+	}
+#else
         prints("%s (%s) 共上站 %d 次，发表过 %d 篇文章", lookupuser->userid, lookupuser->username, lookupuser->numlogins, lookupuser->numposts);
+#endif
     strcpy(planid, lookupuser->userid);
     if ((newline = strchr(genbuf, '\n')) != NULL)
         *newline = '\0';
@@ -296,22 +396,34 @@ int t_query(char* q_id)
         } else
             strcpy(exittime, "因在线上或非常断线不详");
     }
-#ifdef NINE_BUILD
+#if defined(NINE_BUILD)
     prints("\n上次在  [%s] 从 [%s] 到本站一游。", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)));
+#elif defined(FREE)
+	prints("\n上 次 在: [\033[1;32m%s\033[m] 从 [\033[1;32m%s\033[m] 到本站一游。\n", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ( (!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP) ) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost)) ) );
+	prints("离站时间: [\033[1;32m%s\033[m] ", exittime);
 #else
     prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ( (!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP) ) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost)) ),    /*Haohmaru.99.12.18. hide ip */
            exittime);
 #endif
-#ifdef NINE_BUILD
+
+#if defined(NINE_BUILD)
      prints("\n信箱：[\033[5m%2s\033[m]，经验值：[%d](%s) 表现值：[%d](%s) 生命力：[%d]%s\n"
        ,(check_query_mail(qry_mail_dir)==1)? "信":"  ",exp,cexp(exp),perf,
        cperf(perf),compute_user_value(lookupuser),
        (lookupuser->userlevel & PERM_SUICIDE)?" (自杀中)":" ");
+#elif defined(FREE)
+	prints("经验值：[\033[1;32m%d\033[m](\033[1;33m%s\033[m) 信箱：[\033[1;5;32m%2s\033[m]\n"
+	      , exp,cexp(exp), (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ");
+	prints("文章数: [\033[1;32m%d\033[m] 银行存款: [\033[1;32m%d元\033[m] 奖章数: [\033[1;32m%d元\033[m] 生命力: [\033[1;32m%d\033[m]\n",
+	      lookupuser->numposts,lookupuser->money, lookupuser->score,
+		  compute_user_value(lookupuser) );
 #else
     uleveltochar(permstr, lookupuser);
     prints("信箱：[\033[5m%2s\033[m] 生命力：[%d] 身份: [%s]%s\n",
            (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #endif
+
+
 #if defined(QUERY_REALNAMES)
     if (HAS_PERM(getCurrentUser(), PERM_BASIC))
         prints("Real Name: %s \n", lookupuser->realname);
