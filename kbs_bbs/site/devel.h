@@ -4,6 +4,8 @@
 #define BBSUID 			501
 #define BBSGID 			501
 
+#define SMTH    1 /*作为SMTH的测试站嘛*/
+
 /** 使用缺省的FILEHeader结构*/
 #define HAVE_FILEHEADER_DEFINE
 /** 定义使用缺省的函数 */
