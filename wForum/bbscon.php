@@ -2,6 +2,7 @@
 	@$attachpos = $_GET["ap"]; //pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
 		$needlogin=0;
+		$nocookie = 1;
 	}
 	require("inc/funcs.php");
 	require("inc/attachment.inc.php");

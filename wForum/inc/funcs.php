@@ -6,7 +6,7 @@ define('_BBS_FUNCS_PHP_', 1);
 $Version="Powered by wForum Version 0.9";
 $Copyright="<a href=\"http://www.aka.cn/\" target=\"_blank\">阿卡信息技术(北京)有限公司</a> &amp; <a href=\"http://www.smth.cn\" target=\"_blank\">水木清华BBS</a> 版权所有 1994 - 2008 <br/><a href=\"http://wforum.zixia.net/\" target=\"_blank\"><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\" color=\"#6000CC\"><b>@zixia.net</b></font></a>";
 
-if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
+if (!isset($nocookie) && ((!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']=='')))
 {
 	setcookie('iscookies','0',time()+3650*24*3600);
 ?>
