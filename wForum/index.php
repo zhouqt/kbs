@@ -76,5 +76,25 @@ function showTitle() {
 <?php
 }
 
-
+function FastLogin()
+{
+?>
+<table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
+<form action="logon.php" method=post>
+<input type="hidden" name="action" value="doLogon">
+<tr>
+<th align=left id=TableTitleLink height=25 style="font-weight:normal">
+<b>-=&gt; 快速登录入口</b>
+[<a href=register.php>注册用户</a>]　<!--[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]-->
+</th>
+</tr>
+<tr>
+<td class=TableBody1 height=40 width="100%">
+&nbsp;用户名：<input maxLength=16 name=id size=12>　　密码：<input maxLength=20 name=password size=12 type=password>　　<select name=CookieDate><option selected value=0>不保存</option><option value=1>保存一天</option><option value=2>保存一月</option><option value=3>保存一年</option></select><input type=hidden name=comeurl value="<?php echo $_SERVER['PHP_SELF']; ?>">&nbsp;<input type=submit name=submit value="登 录">
+</td>
+</tr>
+</form>
+</table><br>
+<?php 
+}
 ?>

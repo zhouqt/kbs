@@ -9,7 +9,7 @@ function showUserMailBoxOrBR() { //用于普通用户就可以访问的页面
 	}
 }
 
-function showUserMailbox(){ //这个函数直接调用必须先判断是否 $loginok==1
+function showUserMailbox(){ //这个函数直接调用必须保证 $loginok==1
 	global $currentuser;
 ?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
@@ -271,7 +271,7 @@ arNews = [<?php
 				}
 			}
 		}
-?>"欢迎光临<?php echo $SiteName; ?>",""
+?>"<b>欢迎光临<?php echo $SiteName; ?></b>",""
 ];
 </SCRIPT>
 <div id="elFader" style="position:relative;visibility:hidden; height:16" ></div>
@@ -279,28 +279,6 @@ arNews = [<?php
 </tr>
 <?php
 }
-
-function FastLogin()
-{
-?>
-<table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
-<form action="logon.php" method=post>
-<input type="hidden" name="action" value="doLogon">
-<tr>
-<th align=left id=TableTitleLink height=25 style="font-weight:normal">
-<b>-=&gt; 快速登录入口</b>
-[<a href=register.php>注册用户</a>]　<!--[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]-->
-</th>
-</tr>
-<tr>
-<td class=TableBody1 height=40 width="100%">
-&nbsp;用户名：<input maxLength=16 name=id size=12>　　密码：<input maxLength=20 name=password size=12 type=password>　　<select name=CookieDate><option selected value=0>不保存</option><option value=1>保存一天</option><option value=2>保存一月</option><option value=3>保存一年</option></select><input type=hidden name=comeurl value="<?php echo $_SERVER['PHP_SELF']; ?>"><input type=submit name=submit value="登 陆">
-</td>
-</tr>
-</form>
-</table><br>
-<?php 
-} 
 
 function usersysinfo($info){
 	if (USEBROWSCAP == 0) { //FireFox, Opera 都判断不对 - atppp

@@ -85,7 +85,7 @@ function doSearch($boardNames){
 <Th width=*>主 题</Th>
 <Th width=80>作 者</Th>
 <Th width=64>回复</Th>
-<Th width=200>最后更新 | 回复人</Th></TR>
+<Th width=200>最后更新 | 回复人</Th>
 </TR>
 <?php
 	$usernum = $currentuser["index"];

@@ -172,13 +172,6 @@ function bbs_ann_updirs($path,&$board,&$up_dirs) {
     return sizeof($up_dirs);
 }
 
-function htmlformat($str,$multi=false) {
-    $str = str_replace(' ','&nbsp;',htmlspecialchars($str));
-    if ($multi)
-        $str = nl2br($str);
-    return $str;    
-}
-
 function ann_display_folder($articles, $parent) {
 ?>
 <table cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>

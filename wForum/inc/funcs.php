@@ -359,9 +359,9 @@ function html_init($charset="",$title="",$otherheader="")
 
 function showLogon($showBack = 0){
 ?>
+	<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 	<form action="logon.php" method=post> 
 	<input type="hidden" name="action" value="doLogon">
-	<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 	<tr>
 	<th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登录</td></tr>
 	<tr>
@@ -378,9 +378,9 @@ function showLogon($showBack = 0){
 				<input type=radio name=CookieDate value=2>保存一月<br>
 				<input type=radio name=CookieDate value=3>保存一年<br>                
 	</td></tr>
-	<input type=hidden name=comeurl value="<?php echo $_SERVER['HTTP_REFERER']; ?>">
+	<input type=hidden name=comeurl value="<?php echo htmlspecialchars($_SERVER['REQUEST_URI']); ?>">
 	<tr>
-	<td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 陆">
+	<td class=TableBody2 valign=middle colspan=2 align=center><input tabindex="3" type=submit name=submit value="登 录">
 <?php
 	if ($showBack) {
 ?>
@@ -388,8 +388,7 @@ function showLogon($showBack = 0){
 <?php
 	}
 ?>
-	</td></tr></table>
-</form>
+	</td></tr></form></table>
 <?php
 }
 
@@ -438,7 +437,7 @@ function html_error_quit()
 <br>
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr align=center>
-<th height=25>论坛错误信息
+<th height=25>论坛错误信息</th>
 </td>
 </tr>
 <tr>
@@ -451,14 +450,14 @@ function html_error_quit()
 </td></tr>
 <?php
 	if (($needloginok!=0)&&($loginok!=1)) {
+		echo "</table>";
   		showLogon(1);
   	} else {
 ?>
 	<tr>
-	<td class=TableBody2 valign=middle align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
-<?php   } ?>
-</table>
-<?php 
+	<td class=TableBody2 valign=middle align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr></table>
+<?php
+	}
 } 
 
 function html_success_quit($Desc='',$URL='')
@@ -468,7 +467,7 @@ function html_success_quit($Desc='',$URL='')
 <br>
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr align=center>
-<th width="100%">论坛成功信息
+<th width="100%">论坛成功信息</th>
 </td>
 </tr>
 <tr>
@@ -578,7 +577,7 @@ function show_nav($boardName='')
 		}
 ?>
 <img src=pic/navspacer.gif align=absmiddle> <a href="logon.php">重登录</a> 
-<img src=pic/navspacer.gif align=absmiddle> <a href="#" onMouseOver='ShowMenu(manage,100,event)'>用户功能菜单</a>
+<img src=pic/navspacer.gif align=absmiddle> <a href="usermanagemenu.php" onMouseOver='ShowMenu(manage,100,event)'>用户功能菜单</a>
 <img src=pic/navspacer.gif align=absmiddle> <a href="#" onMouseOver='ShowMenu(talk,100,event)'>谈天说地菜单</a>
 <?php
  }
@@ -588,7 +587,7 @@ function show_nav($boardName='')
 <?php
  }
 ?>
- <img src=pic/navspacer.gif align=absmiddle>  <a href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>">搜索</a> 
+ <img src=pic/navspacer.gif align=absmiddle>  <a title="搜索当前版面" href="query.php<?php echo $boardName==''?'':'?boardName='.$boardName; ?>" onMouseOver='ShowMenu(query,100,event)'>搜索</a> 
  <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100,event)'>自选风格</a> 
  <?php    if ($loginok)
   {
@@ -706,6 +705,13 @@ function getMsg(){
 </iframe>
 <script src="inc/floater.js"  language="javascript"></script>
 <?php
+}
+
+function htmlformat($str,$multi=false) {
+    $str = str_replace(' ','&nbsp;',htmlspecialchars($str));
+    if ($multi)
+        $str = nl2br($str);
+    return $str;    
 }
 
 } // !define ('_BBS_FUNCS_PHP_')
