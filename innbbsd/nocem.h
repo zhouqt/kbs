@@ -12,14 +12,10 @@ $Id$
 #include "innbbsconf.h"
 #include "bbslib.h"
 #include "inntobbs.h"
-#include "version.h"            /* for FB3 */
+/*#include "version.h"            for FB3 */
 #include "bbs.h"
 
-#ifdef SOLARIS
 #include <stdarg.h>             /* for va_start() problem */
-#else
-#include <varargs.h>
-#endif
 
 typedef struct ncmperm_t {
     char *issuer;
@@ -47,13 +43,21 @@ int NCMCOUNT = 0;
 
 #define STRLEN          80
 #define MAXSPAMMID      10000
+#undef LINELEN
 #define	LINELEN		1024
 
 #define LeeymBBS        BBSHOST
 #define LeeymEMAIL      ADMINUSER
+#ifndef ADMINUSER
+#define ADMINUSER "sysop@##BBSHOST"
+#endif
+#ifndef BBSHOST
+#define BBSHOST "localhost"
+#endif
 #define NCMINNBBSVER    VERSION
 
 #undef	DONT_REGISTER
+#undef COUNT
 
 extern char NCMVER[];
 extern char ISSUER[];

@@ -67,7 +67,7 @@ int initial_bbs ARG((char *));
 char *restrdup ARG((char *, char *));
 nodelist_t *search_nodelist ARG((char *, char *));
 newsfeeds_t *search_group ARG((char *));
-int innbbsdlog ARG(());
+int innbbsdlog(char* fmt,...);
 void *mymalloc ARG((int));
 void *myrealloc ARG((void *, int));
 

@@ -13,7 +13,7 @@ $Id$
 #include "nocem.h"
 #ifdef USE_NCM_PATCH            /* for FB3 */
 
-#define	PGP5
+/*#define	PGP5*/
 #undef  PGP2
 
 int ncmdebug = 0;
@@ -236,15 +236,14 @@ NCMupdate(char *issuer, char *type)
         innbbsdlog("fail to readNCMfile\n");
 }
 
-int tcpcommand(va_alist)
-va_dcl
+int tcpcommand(char *format, ...)
 {
     va_list ap;
     register char *fmt;
     char *ptr;
 
-    va_start(ap);
-    fmt = va_arg(ap, char *);
+    va_start(ap,format);
+    fmt = format;
 
     vfprintf(NNTPwfp, fmt, ap);
     fprintf(NNTPwfp, "\r\n");

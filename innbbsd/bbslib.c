@@ -1,12 +1,6 @@
-#if defined( LINUX )
 #include "innbbsconf.h"
 #include "bbslib.h"
-#include <varargs.h>
-#else
-#include <varargs.h>
-#include "innbbsconf.h"
-#include "bbslib.h"
-#endif
+#include <stdarg.h>
 
 #include <netdb.h>
 
@@ -87,18 +81,16 @@ setverboseoff()
     }
 }
 
-verboselog(va_alist)
-va_dcl
+verboselog(char* fmt,...)
 {
     va_list ap;
-    register char *fmt;
     char datebuf[40];
     time_t now;
 
     if (verboseFlag == 0)
         return;
 
-    va_start(ap);
+    va_start(ap,fmt);
 
     time(&now);
     strftime(datebuf, sizeof(datebuf), "%b %d %X ", localtime(&now));
@@ -113,7 +105,6 @@ va_dcl
         va_end(ap);
         return;
     }
-    fmt = va_arg(ap, char *);
     fprintf(bbslogfp, "%s[%d] ", datebuf, getpid());
     vfprintf(bbslogfp, fmt, ap);
     fflush(bbslogfp);
@@ -121,18 +112,16 @@ va_dcl
 }
 
 #ifdef PalmBBS
-xbbslog(va_alist)
+xbbslog(char* fmt,...)
 #else
-innbbsdlog(va_alist)
+innbbsdlog(char* fmt,...)
 #endif
-va_dcl
 {
     va_list ap;
-    register char *fmt;
     char datebuf[40];
     time_t now;
 
-    va_start(ap);
+    va_start(ap,fmt);
 
     time(&now);
     strftime(datebuf, sizeof(datebuf), "%b %d %X ", localtime(&now));
@@ -144,7 +133,6 @@ va_dcl
         va_end(ap);
         return;
     }
-    fmt = va_arg(ap, char *);
     fprintf(bbslogfp, "%s[%d] ", datebuf, getpid());
     vfprintf(bbslogfp, fmt, ap);
     fflush(bbslogfp);

@@ -1,12 +1,6 @@
-#if defined( LINUX )
 # include "innbbsconf.h"
 # include "bbslib.h"
-# include <varargs.h>
-#else
-# include <varargs.h>
-# include "innbbsconf.h"
-# include "bbslib.h"
-#endif
+# include <stdarg.h>
 
 #include <sys/mman.h>
 
@@ -186,15 +180,12 @@ char *file;
     }
 }
 
-int tcpcommand(va_alist)
-va_dcl
+int tcpcommand(char* fmt,...)
 {
     va_list ap;
-    register char *fmt;
     char *ptr;
 
-    va_start(ap);
-    fmt = va_arg(ap, char *);
+    va_start(ap,fmt);
 
     vfprintf(NNTPwfp, fmt, ap);
     fprintf(NNTPwfp, "\r\n");

@@ -1,6 +1,6 @@
 #if defined( LINUX )
 #include "innbbsconf.h"
-#include <varargs.h>
+#include <stdarg.h>
 #else
 #include <varargs.h>
 #include "innbbsconf.h"

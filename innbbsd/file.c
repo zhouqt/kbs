@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <sys/types.h>
-#include <varargs.h>
+#include <stdarg.h>
 #define MAXARGS     100
 
 /*   isfile is called by
@@ -23,16 +23,13 @@ FILE *fp;
     fileglue("%s/%s",home,".newsrc");
 */
 
-char *fileglue(va_alist)
-va_dcl
+char *fileglue(char* fmt,...)
 {
     va_list ap;
-    register char *fmt;
     static char *newstring;
     static char gluebuffer[8192];
 
-    va_start(ap);
-    fmt = va_arg(ap, char *);
+    va_start(ap,fmt);
 
     vsprintf(gluebuffer, fmt, ap);
     newstring = gluebuffer;
@@ -74,16 +71,16 @@ char *filename;
     return 1;
 }
 
-int isfilev(va_alist)
-va_dcl
+int isfilev(char* fmt,...)
 {
     va_list ap;
     struct stat st;
     char *p;
 
-    va_start(ap);
+    va_start(ap,fmt);
 
     FILEBUF[0] = '\0';
+    strcat(FILEBUF, fmt);
     while ((p = va_arg(ap, char *)) != (char *) 0) {
         strcat(FILEBUF, p);
     }
@@ -105,16 +102,16 @@ char *filename;
     return 1;
 }
 
-int isdirv(va_alist)
-va_dcl
+int isdirv(char fmt,...)
 {
     va_list ap;
     struct stat st;
     char *p;
 
-    va_start(ap);
+    va_start(ap,fmt);
 
     FILEBUF[0] = '\0';
+    strcpy(FILEBUF,fmt);
     while ((p = va_arg(ap, char *)) != (char *) 0) {
         strcat(FILEBUF, p);
     }
@@ -133,16 +130,16 @@ char *filename;
     return st.st_mtime;
 }
 
-unsigned long mtimev(va_alist)
-va_dcl
+unsigned long mtimev(char fmt,...)
 {
     va_list ap;
     struct stat st;
     char *p;
 
-    va_start(ap);
+    va_start(ap,fmt);
 
     FILEBUF[0] = '\0';
+    strcpy(FILEBUF,fmt);
     while ((p = va_arg(ap, char *)) != (char *) 0) {
         strcat(FILEBUF, p);
     }
@@ -161,16 +158,16 @@ char *filename;
     return st.st_atime;
 }
 
-unsigned long atimev(va_alist)
-va_dcl
+unsigned long atimev(char* fmt,...)
 {
     va_list ap;
     struct stat st;
     char *p;
 
-    va_start(ap);
+    va_start(ap,fmt);
 
     FILEBUF[0] = '\0';
+    strcpy(FILEBUF,fmt);
     while ((p = va_arg(ap, char *)) != (char *) 0) {
         strcat(FILEBUF, p);
     }

@@ -43,6 +43,7 @@
 #include "inntobbs.h"
 #include "lang.h"
 
+#define innbbslog(x) bbslog("3rror",x)
 extern int Junkhistory;
 
 char *post_article ARG((char *, char *, char *, int (*)(), char *, char *));
@@ -854,9 +855,9 @@ char *pathname, *firstpath;
     chdir(BBSHOME);
     resolve_boards();
     linkflag = find_thread(&threadfh, board, header.title);
-    ret = after_post(NULL, &header, board, linkflag ? &threadfh : NULL);
+    ret = after_post(NULL, &header, board, linkflag ? &threadfh : NULL, 0);
     if ((ret != 0) && (ret != 2)) {
-        innbbsdlog(":Err:after_post Unable to post in %s.\n", homepath);
+        innbbslog(":Err:after_post Unable to post.\n");
         chdir(old_path);
         return NULL;
     }

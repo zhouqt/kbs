@@ -1,5 +1,6 @@
 #ifndef LANG_H
 #define LANG_H
+#include "innbbsconf.h"
 
 extern char *FromTxt;
 extern char *BoardTxt;
