@@ -1,32 +1,3 @@
-if [ test -z "$with_php" ]; then
-  with_php="yes"
-fi
-
-AC_ARG_WITH(php,
-[  --with-php=path
-                          select php source directory],
-[
-    if test "$withval" = "yes"; then
-      if test -f /home/share/php/Zend/zend.h; then
-              withval=/home/share/php
-      else
-        if test -f /usr/include/php/Zend/zend.h; then
-                withval=/usr/include/php
-        else
-          if test -f /usr/local/include/php/Zend/zend.h; then
-                  withval=/usr/local/include/php
-          fi
-        fi
-      fi
-    fi
-    if test '!' -f $withval/Zend/zend.h; then
-	    AC_MSG_ERROR("can't find php source in $withval")
-    fi
-    PHPBASE=$withval
-],[AC_MSG_ERROR("must have php source to compile php module!")])
-
-AC_SUBST(PHPBASE)
-
 if [ test -z "$with_www" ]; then
   with_www="yes"
 fi
@@ -34,39 +5,78 @@ fi
 AC_ARG_WITH(www,
 [  --with-www=path
                           select the root path of www],
-[
-    if test "$withval" = "yes"; then
-        if test -f /home0/www/bin/apachectl; then
-            withval=/home0/www
+WWW_DIR="$withval", WWW_DIR="yes")
+
+if test $CONFIG_HAVE_WWW -eq 0 ; then
+    WWW_DIR="no"
+fi
+
+if test "$WWW_DIR" != "no"; then
+    if test "$WWW_DIR" = "yes"; then
+      if test -f /home0/www/bin/apachectl; then
+          WWW_DIR=/home0/www
+      else
+        if test -d /usr/local/apache; then
+            WWW_DIR=/usr/local/apache
         else
-          if test -d /usr/local/apache; then
-              withval=/usr/local/apache
-          else
-            if test -d /var/www; then
-                withval=/var/www
-            fi
+          if test -d /var/www; then
+              WWW_DIR=/var/www
           fi
         fi
+      fi
     fi
-    if test '!' -d $withval; then
-            AC_MSG_ERROR("can't find www in $withval")
+    if test '!' -d $WWW_DIR; then
+        AC_MSG_ERROR("can't find www in $WWW_DIR")
     fi
-    WWWBASE=$withval
+    WWWBASE=$WWW_DIR
     CGIPATH=$WWWBASE/cgi-bin/bbs
-    if test -d $withval/html; then
+    if test -d $WWWBASE/html; then
     	HTMPATH=$WWWBASE/html
     else
     	HTMPATH=$WWWBASE/htdocs
     fi
     PHPBBSLIBPATH=$WWWBASE/libexec/bbs
-],[AC_MSG_ERROR("must have www support!")])
+fi
 
-AC_SUBST(WWWBASE)
-AC_SUBST(CGIPATH)
-AC_SUBST(HTMPATH)
-AC_SUBST(PHPBBSLIBPATH)
-AC_SUBST(BBSSITE)
+if [ test -z "$with_php" ]; then
+  with_php="yes"
+fi
 
-HTML_FILES=`find html -path '*/CVS/*' -prune -o -type f -print | xargs`
-AC_SUBST(HTML_FILES)
+AC_ARG_WITH(php,
+[  --with-php=path
+                          select php source directory],
+PHP_DIR="$withval", PHP_DIR="yes")
 
+if test "$WWW_DIR" = "no"; then
+    PHP_DIR="no"
+fi
+
+if test "$PHP_DIR" != "no"; then
+  if test "$PHP_DIR" = "yes"; then
+    if test -f /home/share/php/Zend/zend.h; then
+            PHP_DIR=/home/share/php
+    else
+      if test -f /usr/include/php/Zend/zend.h; then
+              PHP_DIR=/usr/include/php
+      else
+        if test -f /usr/local/include/php/Zend/zend.h; then
+                PHP_DIR=/usr/local/include/php
+        fi
+      fi
+    fi
+  fi
+  if test '!' -f $PHP_DIR/Zend/zend.h; then
+    AC_MSG_ERROR("can't find php source in $PHP_DIR")
+  fi
+
+  PHPBASE=$PHP_DIR
+  AC_SUBST(PHPBASE)
+  AC_SUBST(WWWBASE)
+  AC_SUBST(CGIPATH)
+  AC_SUBST(HTMPATH)
+  AC_SUBST(PHPBBSLIBPATH)
+  AC_SUBST(BBSSITE)
+
+  HTML_FILES=`cd bbs2www; find html -path '*/CVS/*' -prune -o -type f -print | xargs`
+  AC_SUBST(HTML_FILES)
+fi
