@@ -1,7 +1,18 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
-AC_CONFIG_SRCDIR([rfc931.c])
-AC_CONFIG_HEADER([config.h])
+AC_CANONICAL_SYSTEM
+case "${host}" in
+  i*86-*-freebsd4*)
+        CFLAGS="$CFLAGS -DFREEBSD"
+	;;
+  *)
+	;;
+esac
+AM_INIT_AUTOMAKE([innbbsd],1.0)
+AC_CONFIG_SRCDIR([config.h.in])
+AM_CONFIG_HEADER(config.h)
+
+m4_include(../config.icc)
 
 # Checks for programs.
 AC_PROG_AWK
@@ -12,14 +23,7 @@ AC_PROG_INSTALL
 AC_PROG_YACC
 
 # Checks for libraries.
-# FIXME: Replace `main' with a function in `-lBBS':
-AC_CHECK_LIB([BBS], [main])
-# FIXME: Replace `main' with a function in `-lcrypt':
-AC_CHECK_LIB([crypt], [main])
-# FIXME: Replace `main' with a function in `-lsystem':
-AC_CHECK_LIB([system], [main])
-# FIXME: Replace `main' with a function in `-lz':
-AC_CHECK_LIB([z], [main])
+m4_include(../config.lib)
 
 # Checks for header files.
 AC_HEADER_DIRENT
@@ -55,7 +59,5 @@ AC_FUNC_WAIT3
 AC_CHECK_FUNCS([alarm bzero dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime])
 
 AC_CONFIG_FILES([Makefile
-                 convert/big2gb/Makefile
-                 convert/hztty-2.0/Makefile
-                 convert/hztty-2.0/tables/Makefile])
+                 convert/hztty-2.0/Makefile])
 AC_OUTPUT
