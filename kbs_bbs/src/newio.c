@@ -652,7 +652,7 @@ int igetkey()
         last = ch;
     }
 
-    if(keymem_total) {
+    if(scrint&&keymem_total) {
         int i,j,k,p;
         for(i=0;i<keymem_total;i++) {
             p=!keymem[i].status[0];
@@ -664,7 +664,7 @@ int igetkey()
             if(p&&ret==keymem[i].key) {
                 j=0;
                 while(keymem[i].mapped[j]&&j<10) j++;
-                if(j=0) continue;
+                if(j==0) continue;
                 ret = keymem[i].mapped[0];
                 keybuffer_count = j-1;
                 keybuffer = keymem[i].mapped+1;
