@@ -501,6 +501,29 @@ static ZEND_FUNCTION(bbs_setonlineuser)
     RETURN_LONG(ret);
 }
 
+static void flush_buffer(buffered_output_t *output)
+{
+	*(output->outp) = '\0'; 
+	zend_printf("%s", output->buf);
+	output->outp = output->buf;
+}
+
+static int buffered_output(char *buf, size_t buflen, void *arg)
+{
+	buffered_output_t *output = (buffered_output_t *)arg;
+	if (output->buflen < buflen)
+	{
+		zend_printf("%s", buf);
+		return 0;
+	}
+	if ((output->buflen - (output->outp - output->buf)) < buflen) 
+		flush_buffer(output);
+	strncpy(output->outp, buf, buflen); 
+	output->outp += buflen;
+
+	return 0;
+}
+
 static ZEND_FUNCTION(bbs_printansifile)
 {
     char *filename;
@@ -509,6 +532,8 @@ static ZEND_FUNCTION(bbs_printansifile)
     char *ptr;
     int fd;
     struct stat st;
+	const int outbuf_len = 4096;
+	buffered_output_t out;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -543,102 +568,23 @@ static ZEND_FUNCTION(bbs_printansifile)
     close(fd);
     if (ptr == NULL)
         RETURN_LONG(-1);
+	if ((out.buf = (char *)emalloc(outbuf_len)) == NULL)
+	{
+		munmap(ptr, st.st_size);
+        RETURN_LONG(2);
+	}
+	out.outp = out.buf;
+	out.buflen = outbuf_len;
+	out.output = buffered_output;
 
-    if (!sigsetjmp(bus_jump, 1)) {
+    if (!sigsetjmp(bus_jump, 1)) 
+	{
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-        {
-            char *p;
-            int mode = 0;
-            char outbuf[4096];
-            char *outp = outbuf;
-            int ansicolor, cal;
-
-            outbuf[sizeof(outbuf) - 1] = 0;
-#define FLUSHBUF do { *outp=0;zend_printf("%s",outbuf); outp=outbuf; } while (0)
-#define OUTPUT(buf,len) do { if ((outbuf-outp)<len) FLUSHBUF; strncpy(outp,buf,len); outp+=len; } while (0)
-            for (p = ptr; (*p) && (p - ptr < st.st_size); p++) {
-                // TODO: need detect link
-                switch (mode) {
-                case 0:
-                    if (*p == 0x1b) {   //ESC
-                        mode = 1;
-                        continue;
-                    }
-                    if (*p == '&')
-                        OUTPUT("&amp;", 5);
-                    else if (*p == '<')
-                        OUTPUT("&lt;", 4);
-                    else if (*p == '>')
-                        OUTPUT("&gt;", 4);
-                    else if (*p == '\n')
-                        OUTPUT("<br />\n", 7);
-                    else
-                        break;
-                    continue;
-                case 1:
-                    if ((*p) != '[') {
-                        if (!isalpha(*p)) {
-                            mode = 4;
-                            continue;
-                        }
-                        mode = 0;
-                        continue;
-                    }
-                    mode = 2;
-                    cal = 0;
-                    continue;
-                case 2:
-                    // TODO: add more ansi colir support
-                    if (*p == ';') {
-                        if (cal <= 37 && cal >= 30)
-                            ansicolor = cal;
-                        continue;
-                    }
-                    if (*p == 'm') {
-                        char ansibuf[30];
-
-                        if (cal <= 37 && cal >= 30)
-                            ansicolor = cal;
-                        if (ansicolor <= 37 && ansicolor >= 30) {
-                            sprintf(ansibuf, "<font class=\"c%d\">", ansicolor);
-                            OUTPUT(ansibuf, strlen(ansibuf));
-                            mode = 0;
-                            continue;
-                        }
-                    }
-                    if (isdigit(*p)) {
-                        cal = cal * 10 + (*p) - '0';
-                        continue;
-                    }
-                    /*
-                     * strange ansi escape,ignore it 
-                     */
-                    if (!isalpha(*p)) {
-                        mode = 4;
-                        continue;
-                    }
-                    mode = 0;
-                    continue;
-                case 4:
-                    if (!isalpha(*p))
-                        continue;
-                    mode = 0;
-                    continue;
-                }
-                *outp = *p;
-                outp++;
-                if (outp - outbuf >= sizeof(outbuf) - 1)
-                    FLUSHBUF;
-            }
-            if (outp != outbuf) {
-                *outp = 0;
-                zend_printf("%s", outbuf);
-            }
-        }
-    } else {
-    }
+		output_ansi_html(ptr, st.st_size, &out);
+    } 
     munmap(ptr, st.st_size);
+	efree(out.buf);
     signal(SIGBUS, SIG_IGN);
     signal(SIGSEGV, SIG_IGN);
     RETURN_LONG(0);
