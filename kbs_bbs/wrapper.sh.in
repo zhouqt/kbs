@@ -34,7 +34,7 @@ case $optarg in
       -*)
         ;;
       *)
-       if [ "$jump" == "false" ] ; then
+       if [ "$jump" = "false" ] ; then
          srcfile=$i
        fi
        jump=false
@@ -55,7 +55,7 @@ case $optarg in
       -*)
         ;;
       *)
-      if [ "$next" == "true" ] ; then
+      if [ "$next" = "true" ] ; then
         break;
       fi
       next=true
@@ -70,7 +70,7 @@ case $optarg in
     if [ "$next" != "false" ]; then
       break;
     fi
-    if [ "$i" == "-o" ]; then
+    if [ "$i" = "-o" ]; then
       next=true
     fi
   done
