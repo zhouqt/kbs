@@ -1109,9 +1109,12 @@ void set_rec(chatcontext * pthis, const char *arg)
     now = time(0);
     /*        if(!HAS_PERM(currentuser,PERM_SYSOP))
        return; */
-    sprintf(fname, "tmp/%s.chat", currentuser->userid);
+
+    /*sprintf(fname, "tmp/%s.chat", currentuser->userid);*/
+    sethomefile(fname,currentuser->userid,"chatrec");
+
     if (!pthis->rec) {
-        if ((pthis->rec = fopen(fname, "w")) == NULL)
+        if ((pthis->rec = fopen(fname, "a")) == NULL)
             return;
         printchatline(pthis, "[5m[32mRecord Start ...[m");
         move(0, 0);
@@ -1142,6 +1145,7 @@ void set_rec(chatcontext * pthis, const char *arg)
         pthis->rec = NULL;
         mail_file(currentuser->userid, fname, currentuser->userid,
                   "Â¼Òô½á¹û", 1, NULL);
+	unlink(fname);
         bbslog("user", "stop record room %s", pthis->chatroom);
     }
 }
