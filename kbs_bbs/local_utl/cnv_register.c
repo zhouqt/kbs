@@ -10,7 +10,7 @@ int main(int argc, char **argv)
 	int i;
 	struct userec * uc;
 	int now;
-    int exit = 0;
+    int exit = 0,goonsearch = 1;
 	char userid[IDLEN+2];
 
 	chdir(BBSHOME);
@@ -48,21 +48,27 @@ int main(int argc, char **argv)
 			}
 		}
 		if(exit == 1)break;
-		strncpy(userid,genbuf[1]+8,IDLEN);
-		if((ptr=strchr(userid,'\n')) != NULL)*ptr = 0;
-		userid[IDLEN]=0;
-		if(getuser(userid,&uc) == 0)
-		{
-		    printf("genbuf[1] is %s",genbuf[1]);
-		    printf("%s not found\n",userid);
-		    continue;  //get userid's userec
+		if(goonsearch){
+			strncpy(userid,genbuf[1]+8,IDLEN);
+			if((ptr=strchr(userid,'\n')) != NULL)*ptr = 0;
+			userid[IDLEN]=0;
+			if(getuser(userid,&uc) == 0)
+			{
+		    	printf("genbuf[1] is %s",genbuf[1]);
+		    	printf("%s not found\n",userid);
+		    	continue;  //get userid's userec
+			}
+			if((now - uc->firstlogin) > REGISTER_WAIT_TIME)
+			{
+            		for(i = 0; i < 8;i++)fputs(genbuf[i],fout2);
+			}
+			else{
+				goonsearch=0;
+            			for(i = 0; i < 8;i++)fputs(genbuf[i],fout1);
+			}
+		}else{
+			for(i = 0;i< 8; i++)fputs(genbuf[i],fout1);
 		}
-		if((now - uc->firstlogin) > REGISTER_WAIT_TIME)
-		{
-            for(i = 0; i < 8;i++)fputs(genbuf[i],fout2);
-		}
-		else
-            for(i = 0; i < 8;i++)fputs(genbuf[i],fout1);
     }
 //    rewind(fout1);
 //    ftruncate(fileno(fin),0);
