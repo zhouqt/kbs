@@ -98,6 +98,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 	$brdarr = array();
 	if( isset( $_GET["bid"] ) ){
 		$brdnum = $_GET["bid"] ;
+                settype($brdnum,"integer");
 		if( $brdnum == 0 ){
 			html_init("gb2312","","",1);
 			html_error_quit("´íÎóµÄÌÖÂÛÇø!");
