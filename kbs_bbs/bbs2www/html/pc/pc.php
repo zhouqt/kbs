@@ -167,7 +167,7 @@
 <?php
 	if(pc_is_manager($currentuser))
 	{
-		echo "[<a href=\"pcadmin/pcadmin_rec.php\">推荐文章管理</a>]\n";		
+		echo "[<a href=\"pcadmin_rec.php\">推荐文章管理</a>]\n";		
 	}
 ?>
 <a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
