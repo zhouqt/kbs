@@ -438,7 +438,7 @@ void login_query()
         signal(SIGALRM, SIG_IGN);
 #endif
 
-        getdata(0, 0, "\n«Î ‰»Î¥˙∫≈: ", uid, STRLEN - 1, DOECHO, NULL, true);
+        getdata(0, 0, "\n" LOGIN_PROMPT ": ", uid, STRLEN - 1, DOECHO, NULL, true);
         uid[STRLEN - 1] = 0;
         if (uid[strlen(uid) - 1] == '.') {
             convcode = 1;
@@ -477,7 +477,7 @@ void login_query()
             if (!convcode)
                 convcode = !(currentuser->userdefine & DEF_USEGB);      /* KCN,99.09.05 */
 
-            getdata(0, 0, "\033[1m[37m«Î ‰»Î√‹¬Î: [m", passbuf, 39, NOECHO, NULL, true);
+            getdata(0, 0, "\033[1m[37m"PASSWD_PROMPT": [m", passbuf, 39, NOECHO, NULL, true);
 #ifdef NINE_BUILD
             if(!strcmp(fromhost, "10.9.0.1")||!strcmp(fromhost, "10.9.30.133")) {
 		getdata(0, 0, "", buf, 20, NOECHO, NULL, true);

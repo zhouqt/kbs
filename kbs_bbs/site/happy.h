@@ -106,6 +106,8 @@
 #define DEFAULT_NICK		"每天爱你多一些"
 
 #define MSG_ERR_USERID		"错误的使用者代号..."
+#define LOGIN_PROMPT		"请输入代号"
+#define PASSWD_PROMPT		"请输入密码"
 
 /* 权限位定义 */
 /*
