@@ -200,7 +200,7 @@ static void usage(int exitcode, const char *what)
  * Let's receive something already.
  */
 
-static int bbs_zrecvfile()
+int bbs_zrecvfile()
 {
     int c;
     struct zm_fileinfo zi;
