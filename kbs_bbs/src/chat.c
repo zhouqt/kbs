@@ -18,7 +18,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
     
-    
+    2002/08/05 checked global variable.
     2001/5/6 modified by wwj
 */
 #include "bbs.h"
@@ -51,9 +51,9 @@ struct user_info *t_search();
 #define CHAT_LOGIN_EXISTS   "EX"
 #define CHAT_LOGIN_INVALID  "IN"
 #define CHAT_LOGIN_BOGUS    "BG"
-const char *msg_seperator =
+static const char *msg_seperator =
     "¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª";
-const char *msg_shortulist =
+static const char *msg_shortulist =
     "\033[33m\033[44m Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬ \033[m";
 static int ent_chat(int chatnum);       /* ½øÈëÁÄÌìÊÒ */
 int chat_waitkey(chatcontext * pthis)
@@ -634,8 +634,10 @@ static int ent_chat(int chatnum)
     free(pthis);
     return 0;
 }
+
+/*
 int printuserent(chatcontext * pthis, struct user_info *uentp)
-{                               /* print one user & status */
+{
     static char uline[256];
     static int cnt;
     char pline[50];
@@ -654,8 +656,7 @@ int printuserent(chatcontext * pthis, struct user_info *uentp)
 #if 0
     if (kill(uentp->pid, 0) == -1)
         return 0;
-#endif                          /* 
-                                 */
+#endif
     sprintf(pline, " %s%-13s[m%c%-10s",
             myfriend(uentp->uid, NULL) ? "[32m" : "", uentp->userid,
             uentp->invisible ? '#' : ' ', modestring(uentp->mode,
@@ -671,6 +672,7 @@ int printuserent(chatcontext * pthis, struct user_info *uentp)
     }
     return 0;
 }
+*/
 int print_friend_ent(struct user_info *uentp, chatcontext * pthis, int pos)
 {                               /* print one user & status if he is a friend */
     char pline[50];
@@ -1393,7 +1395,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
         printchatline(pthis, "***** Ã»ÓÐÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡*****");
     }
 }
-struct chat_command chat_cmdtbl[] = {
+static const struct chat_command chat_cmdtbl[] = {
     {"pager", setpager, 1},
     {"help", chat_help, 1},
     {"clear", (void (*)(chatcontext *, const char *)) chat_clear, 1},
