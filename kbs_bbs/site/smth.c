@@ -838,6 +838,7 @@ int uid2smsnumber(struct user_info* uin)
 }
 
 int smsid2uid(char* smsid) {
+	long uid;
    if (smsid[0]!='1')
         return -1;
     uid=atoi(smsid+1);  
