@@ -49,7 +49,7 @@ struct userdata
 #endif
     char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
 #ifdef SMS_SUPPORT
-    bool registered;
+    bool mobileregistered;
     char mobilenumber[MOBILENUMBERLEN];
 #endif
 };

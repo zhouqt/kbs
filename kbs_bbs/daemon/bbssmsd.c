@@ -270,6 +270,8 @@ int main()
     init_memory();
     if(sockfd=socket(AF_INET, SOCK_STREAM, 0)==-1) {
         printf("Unable to create socket.\n");
+        shmdt(head);
+        buf=NULL;
         return -1;
     }
     memset(&addr, 0, sizeof(addr));
@@ -279,6 +281,8 @@ int main()
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) {
         close(sockfd);
         printf("Unable to connect.\n");
+        shmdt(head);
+        buf=NULL;
         return -1;
     }
     loginas("12","abc");
@@ -295,5 +299,7 @@ int main()
     }
     
     close(sockfd);
+    shmdt(head);
+    buf=NULL;
     return 0;
 }

@@ -113,6 +113,10 @@ int set_clock();
 int set_ip_acl();
 
 int exec_mbem(char *s);
+#ifdef SMS_SUPPORT
+int register_sms();
+int unregister_sms();
+#endif
 
 /*Add By Excellent */
 struct scommandlist {
@@ -229,6 +233,10 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"SearchIP",search_ip},
     {"DefineKeys",define_key},
     {"SetACL",set_ip_acl},
+#ifdef SMS_SUPPORT
+    {"RegisterSMS",register_sms},
+    {"UnRegisterSMS",unregister_sms},
+#endif
     {NULL, NULL},
 };
 
