@@ -939,7 +939,7 @@ char           *logfile, *regfile;
         "请输入真实姓名(国外可用拼音).", "请详填学校科系或工作单位.",
         "请填写完整的住址资料.", "请详填连络电话(若无可用呼机或Email地址代替).",
         "请确实而详细的填写注册申请表.", "请用中文填写申请单.",
-        "请用 Mail Reply 方式注册", "同一个用户注册了过多ID",
+        "不允许从穿梭注册", "同一个用户注册了过多ID",
         NULL};
     struct userec   uinfo;
     FILE           *fn, *fout, *freg;
@@ -1132,7 +1132,7 @@ char           *logfile, *regfile;
                         mail_file("etc/f_fill.chinese", uinfo.userid, uinfo.address);
                         break;
                     case '6':
-                        mail_file("etc/f_fill.reply", uinfo.userid, uinfo.address);
+                        mail_file("etc/f_fill.proxy", uinfo.userid, uinfo.address);
                         break;
                     case '7':
                         mail_file("etc/f_fill.toomany", uinfo.userid, uinfo.address);

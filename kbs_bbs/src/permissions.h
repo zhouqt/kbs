@@ -34,7 +34,8 @@
 //#define UNUSE5         040000000
 #define PERM_SECANC    040000000
 //#define UNUSE6         0100000000
-#define PERM_GIRL      0100000000
+#define PERM_JURY      0100000000
+//#define PERM_GIRL      0100000000
 #define PERM_SEXY      0200000000
 #define PERM_SUICIDE   0400000000
 //#define UNUSE9	  	01000000000
@@ -61,7 +62,9 @@
 #define PERM_MARKPOST   (PERM_SYSOP | PERM_BOARDS)
 #define PERM_UCLEAN     (PERM_SYSOP | PERM_ACCOUNTS)
 #define PERM_NOTIMEOUT  PERM_SYSOP
-
+/* PERM_MANAGER will be used to allow 2 windows and 
+bigger mailbox. --stephen 2001.10.31*/
+#define PERM_MANAGER    (PERM_CHATOP | PERM_JURY | PERM_BOARDS)
 #define PERM_SENDMAIL   0
 #define PERM_READMAIL   PERM_BASIC
 #define PERM_VOTE       PERM_BASIC

@@ -77,7 +77,7 @@ int chkreceiver(char* userid,struct userec* lookupuser)
         return 1;
 
 
-    if (!( lookupuser->userlevel & PERM_SYSOP ))
+    if (!( lookupuser->userlevel & PERM_SYSOP ) || !strcmp(lookupuser->userid, "Arbitrator") ) /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
     {
         if ( lookupuser->userlevel & PERM_CHATCLOAK)
         {
@@ -85,7 +85,9 @@ int chkreceiver(char* userid,struct userec* lookupuser)
             numlimit = 2000;
         }
         else
-            if (lookupuser->userlevel & PERM_BOARDS)
+          /*  if (lookupuser->userlevel & PERM_BOARDS)
+	set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31*/
+	    if (lookupuser->userlevel & PERM_MANAGER)
             {
                 sumlimit = 300;
                 numlimit = 300;
@@ -168,7 +170,9 @@ chkmail()
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_BOARDS))
+        /* else if (HAS_PERM(PERM_BOARDS)) */
+        /* give Jury a bigger mail box. stephen 2001.10.31 */
+        else if (HAS_PERM(PERM_MANAGER))
         {
             sumlimit = 300;
             numlimit = 300;
@@ -487,7 +491,7 @@ char *userid, *title ;
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_BOARDS))  /* alex于1996.10.20添加，mailbox容量限制 */
+        else if (HAS_PERM(PERM_MANAGER))  /* alex于1996.10.20添加，revised by stephen on 2001.11.1, mailbox容量限制 */
         {
             sumlimit = 300;
             numlimit = 300;
@@ -907,7 +911,7 @@ void
 mailtitle()
 {
     /* Leeward 98.01.19 adds below codes for statistics */
-    int MailSpace = (HAS_PERM(PERM_SYSOP) ? 9999 : (HAS_PERM(PERM_CHATCLOAK) ? 2000: (HAS_PERM(PERM_BOARDS) ? 300 : (HAS_PERM(PERM_LOGINOK) ? 120 : 15) ) ) ) ;
+    int MailSpace = (HAS_PERM(PERM_SYSOP) ? 9999 : (HAS_PERM(PERM_CHATCLOAK) ? 2000: (HAS_PERM(PERM_MANAGER) ? 300 : (HAS_PERM(PERM_LOGINOK) ? 120 : 15) ) ) ) ;
     int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
 
     showtitle( "邮件选单    ", BoardName );
@@ -1567,7 +1571,8 @@ int num ;
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_BOARDS))  /* Leeward 于1997.12.13添加，mailbox 容量限制 */
+        else if (HAS_PERM(PERM_MANAGER))  /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1 , */
+/* mailbox 容量限制 */
         {
             sumlimit = 300;
             numlimit = 300;
@@ -1940,7 +1945,7 @@ int isuu;
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_BOARDS))  /* Leeward 于1997.12.13添加，mailbox 容量限制 */
+        else if (HAS_PERM(PERM_MANAGER))  /* Leeward 于1997.12.13添加，revised by stephen on 2001.11.1, mailbox 容量限制 */
         {
             sumlimit = 300;
             numlimit = 300;

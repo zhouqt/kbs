@@ -37,8 +37,8 @@
 #define INPUT_IDLE 1
 #define WAITTIME  150
 
-/* KCN add 1999.11.07 
-#undef LOGINASNEW */
+/* KCN add 1999.11.07 */
+#undef LOGINASNEW 
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;
@@ -346,7 +346,8 @@ multi_user_check()
     curr_login_num = get_utmp_number();
     /* Leeward: 97.12.22 BMs may open 2 windows at any time */
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
-    if ((HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_CHATOP) || HAS_PERM(PERM_CHATCLOAK)) && count_user() < 2)
+    /* stephen: 2001.10.30 仲裁可以开两个窗口 */
+    if ((HAS_PERM(PERM_BOARDS) || HAS_PERM(PERM_CHATOP)|| HAS_PERM(PERM_JURY) || HAS_PERM(PERM_CHATCLOAK)) && count_user() < 2)
         return;
     /* allow multiple guest user */
     if (!strcmp("guest", currentuser->userid)) {

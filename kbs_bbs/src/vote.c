@@ -390,7 +390,7 @@ int num;
 
     sprintf(title,"[公告] %s 板的投票结果",currboard);
     mail_file(nname,currvote.userid,title);
-    if (strcmp(currboard,"sys_discuss"))/*如果是sys_discuss版,投票结果不进vote版,Haohmaru,98.9.4*/
+    if (strcmp(currboard,"sys_discuss") &&  strcmp(currboard, "Jury"))/*如果是sys_discuss版,投票结果不进vote版,Haohmaru,98.9.4 add Jury by stephen 2001.10.31*/
     {
         postfile(nname,"vote",title,1);
     }
@@ -685,7 +685,7 @@ char    *bname;
             }
             fclose(sug);
             sug = NULL;
-            if(!strcmp(currboard,"sys_discuss"))/*sys_discuss的投票不进vote版,Haohmaru,98.9.4*/
+            if(!strcmp(currboard,"sys_discuss") || !strcmp(currboard, "Jury"))/*sys_discuss的投票不进vote版,Haohmaru,98.9.4, add Jury by stephen 2001.10.31*/
             {
                 postfile(votename,currboard,buf,1);}
             else{

@@ -23,6 +23,7 @@ uleveltochar( char *buf, struct userec *lookupuser ) // 取用户权限中文说明 Bigma
     /* Bigman: 增加中文查询显示 2000.8.10 */
     /*if( lvl & PERM_ZHANWU ) strcpy(buf,"站务");*/
     if( (lvl & PERM_ANNOUNCE) && (lvl & PERM_OBOARDS) ) strcpy(buf,"站务");
+    else if  (lvl & PERM_JURY) strcpy(buf, "仲裁");/* stephen :增加中文查询"仲裁" 2001.10.31 */
     else  if( lvl & PERM_CHATCLOAK ) strcpy(buf,"元老");
     else if (lvl & PERM_CHATOP) strcpy(buf,"ChatOP");
     else if  ( lvl & PERM_BOARDS ) strcpy(buf,"版主");

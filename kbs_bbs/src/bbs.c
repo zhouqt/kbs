@@ -1568,12 +1568,22 @@ digest_mode()  /* ÎÄÕªÄ£Ê½ ÇÐ»» */
     return NEWDIRECT ;
 }
 
+/*stephen : check whether current useris in the list of "jury" 2001.11.1*/
+int
+isJury()
+{
+    char buf[STRLEN];
+
+    setbfile(buf,currboard,"jury");
+    return seek_in_file(buf,currentuser->userid);
+}
+
 int
 deleted_mode()
 {
     extern  char  currdirect[ STRLEN ];
-
-  if (!chk_currBM(currBM)) {
+/* Allow user in file "jury" to see deleted area. Stephen 2001.11.1 */
+  if (!chk_currBM(currBM) && !isJury()) {
       return DONOTHING;
   }
   if(digestmode==4)

@@ -87,11 +87,11 @@ char *permstrings[] = {
         "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
         "聊天室OP(元老院专用)", /* PERM_CHATOP */
         "系统总管理员",         /* PERM_ADMIN */
-        "特殊权限 4",           /* PERM_UNUSE?*/
+        "荣誉帐号",           /* PERM_HONOR*/
         "特殊权限 5",           /* PERM_UNUSE?*/
-        "特殊权限 6",           /* PERM_UNUSE?*/
+        "仲裁委员",           /* PERM_JURY*/
         "特殊权限 7",           /* PERM_UNUSE?*/
-        "自杀进行中",           /* PERM_UNUSE?*/
+        "自杀进行中",        /*PERM_SUICIDE*/
         "特殊权限 9",           /* PERM_UNUSE?*/
         "看系统讨论版",           /* PERM_UNUSE?*/
         "封禁Mail",           /* PERM_DENYMAIL*/
