@@ -66,4 +66,18 @@ history.go(-1);
 </SCRIPT>
 <?
 }
+
+function error_nologin()
+{
+?>
+<SCRIPT language="javascript">
+window.location="/nologin.html";
+</SCRIPT>
+<?
+}
+
+if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.jsp")) {
+	error_nologin();
+	return;
+}
 ?>
