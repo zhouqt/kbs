@@ -3914,6 +3914,8 @@ void notepad()
 
 void record_exit_time()
 {                               /* 记录离线时间  Luzi 1998/10/23 */
+	if(uinfo.invisible == true && HAS_PERM(getCurrentUser(), PERM_SYSOP) && getCurrentUser()->exittime > getCurrentUser()->lastlogin)
+		return;
     getCurrentUser()->exittime = time(NULL);
     /*
      * char path[80];

@@ -400,6 +400,21 @@ int check_ip_acl(char * id, char * sip)
     return 0;
 }
 
+#ifdef FREE
+static int strallalpha(char *uid)
+{
+	char *c;
+
+	for(c=uid; *c; c++){
+		if(!isalpha(*c))
+			return 0;
+	}
+
+	return 1;
+
+}
+#endif
+
 void login_query()
 {
     char uid[STRLEN], passbuf[40], *ptr;
@@ -490,7 +505,7 @@ void login_query()
                 system(buf);
                 /*给新注册的用户一封信 added by binxun .2003-6-24*/
                 #ifdef SMTH
-                mail_file("deliver","etc/tonewuser",getCurrentUser()->userid,"致新注册用户的信",0,NULL);
+                mail_file(DELIVER,"etc/tonewuser",getCurrentUser()->userid,"致新注册用户的信",0,NULL);
                 #endif
                 break;
             }
@@ -498,7 +513,11 @@ void login_query()
 #else
             prints("\033[37m本系统目前无法以 new 注册, 请用 guest 进入.\033[m\n");
 #endif
-        } else if (*uid == '\0' || !dosearchuser(uid)) {
+        } else if (*uid == '\0' || !dosearchuser(uid)
+#ifdef FREE
+		|| ! strallalpha(uid)
+#endif
+						) {
             prints("\033[32m" MSG_ERR_USERID "\033[m\n");
         } else
 /* Add by KCN for let sysop can use extra 10 UTMP */
@@ -838,8 +857,20 @@ void user_login()
 
     strncpy(getCurrentUser()->lasthost, getSession()->fromhost, IPLEN);
     getCurrentUser()->lasthost[15] = '\0';   /* dumb mistake on my part */
+   if(uinfo.invisible == true && HAS_PERM(getCurrentUser(), PERM_SYSOP)){
+		clear();
+		move(3,0);
+		prints("帮助:如果输入n回车,那么这次登陆不会增加登陆次数,不会更改上次上站时间,隐身更彻底\n     如果直接回车,那么跟以前还是一样的\n");
+        getdata(t_lines - 1, 0, "您正隐身中,这次登陆需要增加登陆次数吗 (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
+        if (*ans != 'N' && *ans != 'n'){
+		    getCurrentUser()->lastlogin = time(NULL);
+		    getCurrentUser()->numlogins++;
+		}
+   }else{
     getCurrentUser()->lastlogin = time(NULL);
     getCurrentUser()->numlogins++;
+   }
+
     getCurrentUser()->flags |= CURSOR_FLAG;
 
     /* Leeward 98.06.20 adds below 3 lines */
