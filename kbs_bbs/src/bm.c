@@ -29,10 +29,6 @@
 extern cmpbnames();
 
 /*Add by SmallPig*/
-char filebuf[STRLEN];
-char deadline[STRLEN];/*补充说明*/
-char denymsg[STRLEN];
-int  denyday;
 
 int
 listdeny(int page)  /* Haohmaru.12.18.98.为那些变态得封人超过一屏的板主而写 */
@@ -97,9 +93,7 @@ listdeny(int page)  /* Haohmaru.12.18.98.为那些变态得封人超过一屏的板主而写 */
     return cnt;
 }
 
-int
-addtodeny(uident) /* 添加 禁止POST用户 */
-char *uident;
+int addtodeny(char* uident) /* 添加 禁止POST用户 */
 {
     char buf2[50],strtosave[256],date[STRLEN]="0";
     int maxdeny;
@@ -110,6 +104,10 @@ char *uident;
     FILE *fn;
     char filename[STRLEN];
     int day, autofree = 0;
+    char filebuf[STRLEN];
+    char deadline[STRLEN];/*补充说明*/
+    char denymsg[STRLEN];
+    int  denyday;
 
     now=time(0);
     strncpy(date,ctime(&now)+4,7);
@@ -121,23 +119,14 @@ char *uident;
     else
         maxdeny=14;
 
-/*MUST:*/
     *denymsg = 0;
     while(0 == strlen(denymsg)) {
 	    getdata(2,0,"输入说明(按*取消): ", denymsg,30,DOECHO,NULL,YEA);
     }
-/*	  if (0==strlen(denymsg)) goto MUST;*/
     if (denymsg[0]=='*')
         return 0;
     autofree = askyn("该封禁是否自动解封？", YEA);
-    /*
-#else
-    if (HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS))
-        sprintf(filebuf,"输入天数(0-手动解封，最长%d天)",maxdeny);
-    else
-#endif DEBUG*/
         sprintf(filebuf,"输入天数(最长%d天)",maxdeny);
-/*MUST1:*/
     denyday = 0;
     while(!denyday) {
         getdata(3,0,filebuf, buf2,4,DOECHO,NULL,YEA);
@@ -151,10 +140,6 @@ char *uident;
     }
 
     if(denyday && autofree) {
-	    /*
-#else
-    if (denyday) {
-#endif DEBUG*/
         struct tm* tmtime;
         time_t undenytime=now+denyday*24*60*60;
         tmtime=gmtime(&undenytime);
@@ -169,23 +154,95 @@ char *uident;
         sprintf( strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%um",
                 uident, denymsg, currentuser->userid,
                 tmtime->tm_mon+1,tmtime->tm_mday, undenytime);
-	/*
-        now=time(0);
-        tmtime=gmtime(&now);
-        sprintf( strtosave, "%-12.12s %-30.30s%-12.12s at %2d月%2d日 手动解封",
-                uident, denymsg, currentuser->userid,
-                tmtime->tm_mon+1,tmtime->tm_mday);
-		*/
     }
 
-/*
-MUST2:
-    getdata(4,0,"输入补充说明: ", buf,60,DOECHO,NULL,YEA);
-    if (0==strlen(buf))
-	goto MUST2;
-    sprintf(deadline,"%-60s",buf);
-*/
-    return addtofile(genbuf,strtosave);
+    if(addtofile(genbuf,strtosave)==1)
+    {
+	    	struct userec* lookupuser,*saveptr;
+	        sprintf(repbuf,"%s 取消 %s 在 %s 的 POST 权力",
+	                currentuser->userid,uident,currboard);
+	        report(repbuf);
+
+	        /*Haohmaru.4.1.自动发信通知并发文章于板上*/
+	        sprintf(filename,"etc/%s.deny",currentuser->userid);
+	        fn=fopen(filename,"w+");
+	        memcpy(&saveuser,currentuser,sizeof(struct userec));
+	        saveptr = currentuser;
+	        currentuser = &saveuser;
+	        sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
+
+	        if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_BM_instr(currBM,currentuser->userid))
+	        {	   my_flag=0;
+	            fprintf(fn,"寄信人: SYSOP (System Operator) \n") ;
+	            fprintf(fn,"标  题: %s\n",buffer) ;
+	            fprintf(fn,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
+	            fprintf(fn,"来  源: smth.org\n") ;
+	            fprintf(fn,"\n");
+	            fprintf(fn,"由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n",currboard,denymsg);
+	            if (denyday)
+	                fprintf(fn,"您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天",denyday);
+	            else
+	              fprintf(fn,"您被暂时取消在该版的发文权力");
+	            if (!autofree)
+	            	fprintf(fn,"，到期后请回复\n此信申请恢复权限。\n");
+	            fprintf(fn,"\n");
+	            fprintf(fn,"                            "NAME_BBS_CHINESE NAME_SYSOP_GROUP"值班站务：\x1b[4m%s\x1b[0m\n",currentuser->userid);
+	            fprintf(fn,"                              %s\n",ctime(&now));
+	            strcpy(currentuser->userid,"SYSOP");
+	            strcpy(currentuser->username,NAME_SYSOP);
+	            strcpy(currentuser->realname,NAME_SYSOP);
+	        }
+	        else
+	        {		my_flag=1;
+	            fprintf(fn,"寄信人: %s \n",currentuser->userid) ;
+	            fprintf(fn,"标  题: %s\n",buffer) ;
+	            fprintf(fn,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
+	            fprintf(fn,"来  源: %s \n",fromhost) ;
+	            fprintf(fn,"\n");
+	            fprintf(fn,"由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n",currboard,denymsg);
+	            if (denyday)
+	                fprintf(fn,"您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天",denyday);
+	            else
+	              fprintf(fn,"您被暂时取消在该版的发文权力");
+	            if (!autofree)
+	            	fprintf(fn,"，到期后请回复\n此信申请恢复权限。\n");
+	            fprintf(fn,"\n");
+	            fprintf(fn,"                              "NAME_BM":\x1b[4m%s\x1b[0m\n",currentuser->userid);
+	            fprintf(fn,"                              %s\n",ctime(&now));
+	        }
+	        fclose(fn);
+	        mail_file(currentuser->userid,filename,uident,buffer,0);
+	        fn=fopen(filename,"w+");
+	        fprintf(fn,"由于 \x1b[4m%s\x1b[0m 在 \x1b[4m%s\x1b[0m 版的 \x1b[4m%s\x1b[0m 行为，\n",uident,currboard,denymsg);
+	        if (denyday)
+	            fprintf(fn,"被暂时取消在本版的发文权力 \x1b[4m%d\x1b[0m 天。\n",denyday);
+	        else
+	            fprintf(fn,"您被暂时取消在该版的发文权力，到期后请回复\n");
+
+	        if (my_flag==0)
+	        {
+	            fprintf(fn,"                            "NAME_BBS_CHINESE NAME_SYSOP_GROUP"值班站务：\x1b[4m%s\x1b[0m\n",saveptr->userid);
+	        }
+	        else
+	        {
+	            fprintf(fn,"                              "NAME_BM":\x1b[4m%s\x1b[0m\n",currentuser->userid);
+	        }
+	        fprintf(fn,"                              %s\n",ctime(&now));
+	        fclose(fn);
+	        post_file(currentuser,"",filename,currboard,buffer,0,2);
+	        /*	unlink(filename); */
+	        currentuser = saveptr;
+
+	        sprintf(buffer,"%s 被 %s 封禁本板POST权",uident,currentuser->userid);
+	        getuser(uident,&lookupuser);
+
+	        if(PERM_BOARDS & lookupuser->userlevel)
+	            sprintf(buffer,"%s 封某板"NAME_BM" %s 在 %s",currentuser->userid,uident,currboard);
+	        else
+	            sprintf(buffer,"%s 封 %s 在 %s",currentuser->userid,uident,currboard);
+	        post_file(currentuser,"",filename,"denypost",buffer,0,8);
+	        unlink(filename);
+    }
 }
 
 
@@ -252,92 +309,8 @@ Here:
             uident[IDLEN]=0;
             
             if( *uident != '\0' )
-            {   sprintf(filebuf,"%-12s","违反某条站规");
-                if(addtodeny(uident)==1)
-                {
-                	struct userec* lookupuser,*saveptr;
-                    sprintf(repbuf,"%s 取消 %s 在 %s 的 POST 权力",
-                            currentuser->userid,uident,currboard);
-                    report(repbuf);
-
-                    /*Haohmaru.4.1.自动发信通知并发文章于板上*/
-                    sprintf(filename,"etc/%s.deny",currentuser->userid);
-                    fn=fopen(filename,"w+");
-                    memcpy(&saveuser,currentuser,sizeof(struct userec));
-                    saveptr = currentuser;
-                    currentuser = &saveuser;
-                    sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
-
-                    if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_BM_instr(currBM,currentuser->userid))
-                    {	   my_flag=0;
-                        fprintf(fn,"寄信人: SYSOP (System Operator) \n") ;
-                        fprintf(fn,"标  题: %s\n",buffer) ;
-                        fprintf(fn,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
-                        fprintf(fn,"来  源: smth.org\n") ;
-                        fprintf(fn,"\n");
-                        fprintf(fn,"由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n",currboard,denymsg);
-                        if (denyday)
-                            fprintf(fn,"您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n",denyday);
-                        else
-                            fprintf(fn,"您被暂时取消在该版的发文权力，到期后请回复\n");
-                        fprintf(fn,"此信申请恢复权限。\n");
-                        fprintf(fn,"\n");
-                        fprintf(fn,"                            "NAME_BBS_CHINESE NAME_SYSOP_GROUP"值班站务：\x1b[4m%s\x1b[0m\n",currentuser->userid);
-                        fprintf(fn,"                              %s\n",ctime(&now));
-                        strcpy(currentuser->userid,"SYSOP");
-                        strcpy(currentuser->username,NAME_SYSOP);
-                        strcpy(currentuser->realname,NAME_SYSOP);
-                    }
-                    else
-                    {		my_flag=1;
-                        fprintf(fn,"寄信人: %s \n",currentuser->userid) ;
-                        fprintf(fn,"标  题: %s\n",buffer) ;
-                        fprintf(fn,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
-                        fprintf(fn,"来  源: %s \n",fromhost) ;
-                        fprintf(fn,"\n");
-                        fprintf(fn,"由于您在 \x1b[4m%s\x1b[0m 版 \x1b[4m%s\x1b[0m，我很遗憾地通知您， \n",currboard,denymsg);
-                        if (denyday)
-                            fprintf(fn,"您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[0m 天，到期后请回复\n",denyday);
-                        else
-                            fprintf(fn,"您被暂时取消在该版的发文权力，到期后请回复\n");
-                        fprintf(fn,"此信申请恢复权限。\n");
-                        fprintf(fn,"\n");
-                        fprintf(fn,"                              "NAME_BM":\x1b[4m%s\x1b[0m\n",currentuser->userid);
-                        fprintf(fn,"                              %s\n",ctime(&now));
-                    }
-                    fclose(fn);
-                    mail_file(currentuser->userid,filename,uident,buffer,0);
-                    fn=fopen(filename,"w+");
-                    fprintf(fn,"由于 \x1b[4m%s\x1b[0m 在 \x1b[4m%s\x1b[0m 版的 \x1b[4m%s\x1b[0m 行为，\n",uident,currboard,denymsg);
-                    if (denyday)
-                        fprintf(fn,"被暂时取消在本版的发文权力 \x1b[4m%d\x1b[0m 天。\n",denyday);
-                    else
-                        fprintf(fn,"您被暂时取消在该版的发文权力，到期后请回复\n");
-
-                    if (my_flag==0)
-                    {
-                        fprintf(fn,"                            "NAME_BBS_CHINESE NAME_SYSOP_GROUP"值班站务：\x1b[4m%s\x1b[0m\n",saveptr->userid);
-                    }
-                    else
-                    {
-                        fprintf(fn,"                              "NAME_BM":\x1b[4m%s\x1b[0m\n",currentuser->userid);
-                    }
-                    fprintf(fn,"                              %s\n",ctime(&now));
-                    fclose(fn);
-                    post_file(currentuser,"",filename,currboard,buffer,0,2);
-                    /*	unlink(filename); */
-                    currentuser = saveptr;
-
-                    sprintf(buffer,"%s 被 %s 封禁本板POST权",uident,currentuser->userid);
-                    getuser(uident,&lookupuser);
-
-                    if(PERM_BOARDS & lookupuser->userlevel)
-                        sprintf(buffer,"%s 封某板"NAME_BM" %s 在 %s",currentuser->userid,uident,currboard);
-                    else
-                        sprintf(buffer,"%s 封 %s 在 %s",currentuser->userid,uident,currboard);
-                    post_file(currentuser,"",filename,"denypost",buffer,0,8);
-                    unlink(filename);
-                }
+            {   
+            	addtodeny(uident);
             }
         } else if ((*ans == 'D' ) && count) {
 		int len;
