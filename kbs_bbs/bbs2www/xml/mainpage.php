@@ -258,9 +258,13 @@ $boards = $root->child_nodes();
 <ul style="margin-top: 5px; margin-left: 20px">
 <?php
 	$brdarr = array();
+	$j = 0;
 	# shift through the array
 	while($board = array_shift($boards))
 	{
+		if($j > 10)
+			break;
+		
 		if ($board->node_type() == XML_TEXT_NODE)
 			continue;
 
@@ -269,6 +273,7 @@ $boards = $root->child_nodes();
 		if ($brdnum == 0)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
+		$j ++ ;
 ?>
 <li class="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
