@@ -488,7 +488,7 @@ void r_msg()
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, outmsg);
         
-        if (first&&hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG))
+        if (first&&hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG)&&(head.mode!=6))
             bell();
         move(0,0);
         if(head.mode==6&&(!strcmp(outmsg,"REQUIRE:BIND")||!strcmp(outmsg,"REQUIRE:UNBIND"))) {
