@@ -62,6 +62,6 @@ int main()
     else if (rv == -3)
         http_fatal("添加至好友名单失败");
 
-    printf("[%s]已加入您的好友名单.<br>\n <a href=bbsfall>返回好友名单</a>", userid);
+    printf("[%s]已加入您的好友名单.<br>\n <a href=/bbsfall.php>返回好友名单</a>", userid);
     http_quit();
 }

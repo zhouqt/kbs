@@ -79,6 +79,8 @@ static PHP_FUNCTION(bbs_ann_traverse_check);
 static PHP_FUNCTION(bbs_ann_get_board);
 static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
+static PHP_FUNCTION(bbs_getfriends);
+static PHP_FUNCTION(bbs_countfriends);
 static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
@@ -217,6 +219,8 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_ann_get_board, NULL)
         PHP_FE(bbs_getboards, NULL)
         PHP_FE(bbs_getarticles, NULL)
+        PHP_FE(bbs_getfriends, NULL)
+        PHP_FE(bbs_countfriends, NULL)
         PHP_FE(bbs_get_records_from_id, NULL)
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
@@ -1929,6 +1933,78 @@ static PHP_FUNCTION(bbs_getboards)
 }
 #endif
  
+/*
+ * stiger: countfriends
+ */
+static PHP_FUNCTION(bbs_countfriends)
+{
+    char *userid;
+    int userid_len;
+    int ac = ZEND_NUM_ARGS();
+	char fpath[STRLEN];
+	struct stat st;
+
+    if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s", &userid, &userid_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (userid_len > IDLEN)
+        WRONG_PARAM_COUNT;
+
+	sethomefile(fpath, userid, "friends");
+
+    if (stat(fpath, &st) < 0)
+        RETURN_FALSE;
+
+	RETURN_LONG(st.st_size / sizeof(struct friends));
+}
+
+/*
+ * stiger: getfriends
+ */
+static PHP_FUNCTION(bbs_getfriends)
+{
+    char *userid;
+    int userid_len;
+	struct friends fr;
+    int ac = ZEND_NUM_ARGS();
+	long start;
+	int fd;
+	int i=0;
+	char fpath[STRLEN];
+    zval *element;
+
+    if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sl", &userid, &userid_len, &start) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (userid_len > IDLEN)
+        WRONG_PARAM_COUNT;
+
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+	i=0;
+	sethomefile(fpath, userid, "friends");
+
+	if( (fd=open(fpath, O_RDONLY)) < 0 )
+        RETURN_FALSE;
+	lseek(fd, sizeof(struct friends)*start, SEEK_CUR);
+    while (read(fd, &fr, sizeof(fr)) > 0) {
+
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+
+    	add_assoc_string(element, "ID", fr.id, 1);
+    	add_assoc_string(element, "EXP", fr.exp, 1);
+
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+
+		i++;
+		if( i>=20)
+			break;
+    }
+    close(fd);
+}
 
 /**
  * Fetch a list of articles in a board into an array.

@@ -349,7 +349,7 @@
 					<a href="cgi-bin/bbs/bbsnick" target="f3">临时改昵称</a><br>
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
-					<a href="cgi-bin/bbs/bbsfall" target="f3">设定好友</a><br>
+					<a href="/bbsfall.php" target="f3">设定好友</a><br>
 				</DIV>
 			</td>
 		</tr>

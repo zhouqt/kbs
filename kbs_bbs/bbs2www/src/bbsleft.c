@@ -171,7 +171,7 @@ int main()
 */
                "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsnick\">临时改昵称</a><br>\n"
 /*"		<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"*/
-               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>\n" "			%s</div>", ptr);
+               "			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsfall.php\">设定好友</a><br>\n" "			%s</div>", ptr);
         printmenuend();
         printdiv(5, "处理信件区", "/images/folder.gif");
         printf("			<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsnewmail.php\">阅览新邮件</a><br>\n"

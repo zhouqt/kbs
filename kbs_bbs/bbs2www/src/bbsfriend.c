@@ -62,7 +62,7 @@ int main()
     if (total == 0)
         printf("目前没有好友在线");
     printf("<hr>");
-    printf("[<a href=\"bbsfall\">全部好友名册</a>]");
+    printf("[<a href=\"/bbsfall.php\">全部好友名册</a>]");
     printf("</center>\n");
     http_quit();
 }

@@ -51,6 +51,6 @@ int main()
         http_fatal("此人本来就不在你的好友名单里");
     if (deleteoverride2(userid) == -1)
         http_fatal("从好友名单中删除该用户失败");
-    printf("[%s]已从您的好友名单中删除.<br>\n <a href=\"bbsfall\">返回好友名单</a>", userid);
+    printf("[%s]已从您的好友名单中删除.<br>\n <a href=\"/bbsfall.php\">返回好友名单</a>", userid);
     http_quit();
 }
