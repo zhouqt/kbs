@@ -4721,7 +4721,7 @@ static int choose_tmpl_select(struct _select_def *conf)
 								fputc('[', fp);
 								continue;
 							}
-							fprintf(fp,"[1;32m%s[m",tmp[l-1]);
+							fprintf(fp,"%s",tmp[l-1]);
 							pn = pe;
 							continue;
 						}
