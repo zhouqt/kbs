@@ -323,7 +323,7 @@ void refreshit()
             setfcolor(BLUE, 1);
             prints("X");
         }
-        else if(!(inrooms.peoples[j].flag&PEOPLE_SPECTATOR)) {
+        else if((inrooms.peoples[j].flag&PEOPLE_SPECTATOR)) {
             resetcolor();
             move(i,3);
             setfcolor(GREEN, 0);
@@ -348,11 +348,15 @@ void refreshit()
     }
 }
 
+extern int RMSG;
+
 void room_refresh(int signo)
 {
     int y,x;
     signal(SIGUSR1, room_refresh);
 
+    if(RMSG) return;
+    
     if(load_inroom(myroom)==-1) {
         kicked = 1;
         return;
