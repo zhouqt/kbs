@@ -374,6 +374,10 @@ setTimeout('bbs_auto_reload()',540000);
 				</DIV>
 			</td>
 		</tr>
+		<tr>
+			<td><img src="/images/open.gif" border="0"></td>
+			<td><a href="bbssfav.php?userid=<?php echo $currentuser['userid']; ?>" target="f3"><img src="<?php echo $img_subdir; ?>mfolder3.gif" border="0" alt="<?php echo FAVORITE_NAME; ?>" align="absmiddle"> <?php echo FAVORITE_NAME; ?></a></td>
+		</tr>
 <?php
 		}
 ?>
