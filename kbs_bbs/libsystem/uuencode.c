@@ -16,7 +16,7 @@ static const char uu_conv[64] = {
 void uuencode(char *inbuf, int size, char *filename, OUTC_FUNC fn)
 {
     register int ch, left;
-    register char *p = NULL, ptr;
+    register char *p = NULL, *ptr;
     int n;
     char buf[80];
 
@@ -32,7 +32,7 @@ void uuencode(char *inbuf, int size, char *filename, OUTC_FUNC fn)
             break;
         n = left > 45 ? 45 : left;
         left -= n;
-        if ((*fn) (ENCODE(n), 1) == EOF)
+        if ((*fn) (ENCODE(n)) == EOF)
             break;
         for (p = ptr; n > 2; n -= 3, p += 3) {
             ch = *p >> 2;

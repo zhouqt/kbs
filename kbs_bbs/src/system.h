@@ -1,3 +1,5 @@
+#ifndef BBS_SYSTEM_H_5423523
+#define BBS_SYSTEM_H_5423523
 #include "bbs.h"
 int f_rm(char *fpath);
 int f_mv(char *src, char *dst);
@@ -59,3 +61,4 @@ pid_t lock_test(int fd,int cmd,int type,off_t offset,int whence,off_t len);
 #define is_write_lockable(fd,offset,whence,len)\
 	!lock_test(fd,F_GETLK,F_WRLCK,offset,whence,len)
 
+#endif
