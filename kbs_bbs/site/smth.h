@@ -55,7 +55,7 @@
 #define SYSMAIL_BOARD       "sysmail"
 #define BLESS_BOARD "Blessing"
 
-#define MAXUSERS  		250000
+#define MAXUSERS  		300000
 #define MAXCLUB			128
 #define MAXBOARD  		1024
 #define MAXACTIVE 		12000
