@@ -77,7 +77,7 @@
 	
 	function display_art_list($link,$pc,$tag,$pur,$tid=0,$order="")
 	{
-		$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` ".
+		$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ".
 			" FROM nodes WHERE `access` = '".$tag."' AND `uid` = '".$pc["UID"]."'  AND `tid` = '".$tid."' ";
 		switch($order)
 		{
@@ -150,16 +150,20 @@
 			else
 				$c = "<img src='images/open.gif' alt='开放的主题' border='0'>";
 			if($pur > 2)
+			{
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
 					"<td align=\"center\" class='t4'><input type=\"checkbox\" name=\"art".$i."\" value=\"".$rows[nid]."\" class=\"b2\"></td>\n".
 					"<td class='t3'>".$c."</td>\n".
-					"<td class='t5'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
+					"<td class='t5'>";
+				echo ($rows[htmltag])?"&nbsp;":"#";
+				echo "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
 					"<td class='t3'>\n".time_format($rows[created])."\n|\n".time_format($rows[changed])."\n</td>\n".
 					"<td class='t4'>".$rows[visitcount]."</td>\n".
 					"<td class='t3'>".$rows[commentcount]."</td>\n".
 					"<td class='t4'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">修改</a></td>\n".
 					"<td class='t3'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n".
 					"</tr>\n";
+			}
 			else
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
