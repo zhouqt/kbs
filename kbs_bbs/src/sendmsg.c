@@ -171,6 +171,7 @@ int mode;
  
     switch (result) {
     	 case 1: // success
+          if (mode ==4) return 1;
            prints("\n已送出讯息....\n") ; pressreturn();
            clear() ;
            return 1;     	 
@@ -201,6 +202,7 @@ int mode;
  
     switch (result) {
     	 case 1: // success
+          if (mode==4) return 0;
            prints("\n已送出讯息....\n") ; pressreturn();
            clear() ;
            return 1;     	 
