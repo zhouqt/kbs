@@ -2773,7 +2773,6 @@ int change_post_flag( int ent, struct fileheader *fileinfo, char *direct, int fl
         move(2,0) ;
         prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title) ;
         clrtobot();
-	refresh();
         pressreturn() ;
         return DIRCHANGED;
     }
