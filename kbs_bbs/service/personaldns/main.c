@@ -14,26 +14,33 @@ char dns_server[50];
 char dns_zone[50];
 
 int reread;
+int getconf(char* key,char* value,int len) {
+    char* data;
+    data=sysconf_str(key);
+    if (data==NULL) {
+    	return -1;
+    }
+    strncpy(value,data,len-1);
+    value[len-1]=0;
+    return 0;
+}
+
 int readconfig() {
-    strncpy(dns_zone,sysconf_eval("DNS_UPDATE_ZONE","me.smth.cn"),50);
-    if (dns_zone[0]==0) {
+    if (getconf("DNS_UPDATE_ZONE",dns_zone,50)!=0) {
+    	printf("please configure dns_update_key!\n");
+	return -1;
+    }
+
+    if (getconf("DNS_UPDATE_KEYNAME",update_keyname,20)!=0) {
     	printf("please configure dns_update_key!\n");
     	return -1;
     }
 
-    strncpy(update_keyname,sysconf_eval("DNS_UPDATE_KEYNAME",""),20);
-    if (update_keyname[0]==0) {
-    	printf("please configure dns_update_key!\n");
-    	return -1;
-    }
-
-    strncpy(update_key,sysconf_eval("DNS_UPDATE_KEY",""),99);
-    if (update_key[0]==0) {
+    if (getconf("DNS_UPDATE_KEY",update_key,99)!=0) {
     	printf("please configure dns updat_key!\n");
     	return -1;
     }
-    strncpy(dns_server,sysconf_eval("DNS_UPDATE_SERVER","166.111.8.237"),50);
-    if (dns_server[0]==0) {
+    if (getconf("DNS_UPDATE_SERVER",dns_server,50)!=0) {
     	printf("please configure dns update server!\n");
     	return -1;
     }
@@ -44,13 +51,13 @@ static void reconfig(int signo)
 {
     reread=1;
 }
+
 #endif
 
 int main()
 {
 #ifdef HAVE_PERSONAL_DNS
     int msqid, i;
-    struct bbs_msgbuf *msg;
 
     struct sigaction act;
     struct msqid_ds msqds;
@@ -76,11 +83,20 @@ int main()
     msqds.msg_qbytes = 50 * 1024;
     msgctl(msqid, IPC_SET, &msqds);
     while (1) {
-        if ((msg = rcvlog(msqid)) != NULL) {
-	    update_dns(dns_server, dns_zone,
-			update_keyname, update_key,
-					msg->userid, msg->ip, 60); 	
+        int retv;
+        retv = msgrcv(msqid, &msg, sizeof(msg)-sizeof(msg.mtype), 0, MSG_NOERROR);
+        if (retv < 0) {
+            if (errno==EINTR)
+                continue;
+            else {
+                bbslog("3error","bbsupdated(rcvlog):%s",strerror(errno));
+                exit(0);
+            }
         }
+
+	update_dns(dns_server, dns_zone,
+		update_keyname, update_key,
+		msg.userid, msg.ip, 60); 	
         if (reread) 
             if (readconfig()!=0) {
             	bbslog("3error","bbsupdated config error");
