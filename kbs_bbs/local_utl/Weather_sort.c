@@ -38,8 +38,8 @@ main(argc,argv)
 	{
 		if (i==93) {
 			printf("\n %s \n\n",in_buf);
-			printf("         天 气 现 象      温 度（C）   风 向 风 力\n");
-			printf("   城 市  夜间  白天     最低  最高    夜间白天\n\n");
+			printf("          天气现象    温 度（C）   风向 风力\n");
+			printf("   城 市  夜间 白天   最高  最低   夜间 白天\n\n");
 		}
 
 		if ((i>96)&&(i<165))
@@ -51,8 +51,7 @@ main(argc,argv)
 				buf[strlen(buf)-1]=0;
 			}
 			if (i==120) strcpy(buf,"   拉萨");
-/*	else if (i==128) strcpy(buf,"   太原");
-i*/
+
 			if (j==2)
 			{
 				printf ("%s %s\n",buf,in_buf);
