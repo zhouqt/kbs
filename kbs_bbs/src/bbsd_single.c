@@ -220,37 +220,23 @@ static void start_daemon(inetd, port)
         return;
     }
     else {
-      sprintf(buf, "bbsd start at %s", ctime(&val));
-      cat(PID_FILE, buf);
+//      sprintf(buf, "bbsd start at %s", ctime(&val));
+//      cat(PID_FILE, buf);
 
-      close(0);
-      /* COMMAN: do not fork in debuggind mode */
-      if (fork())
-        exit(0);
-
-      setsid();
-
-      if (fork())
-        exit(0);
+      sprintf(buf, "bbsd.%d", port);
+      switch (dodaemon(buf,true,true)) {
+      	case 0:
+      		break;
+      	case 1:
+      		fprintf(stderr,"A bbsd on %d already running!\n",port);
+      		exit(0);
+      	case 2:
+      		fprintf(stderr,"can't lock pid file:var/%s.pid\n",buf);
+      		exit(0);
+      }
       sin.sin_family = AF_INET;
       sin.sin_addr.s_addr = htonl(INADDR_ANY);
       /*    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);*/
-
-      /*  if (port <= 0)  Thor.981206: port 0 代表没有参数
-	  {
-	  n = MAXPORTS - 1;
-	  while (n)
-	  {
-	  if (fork() == 0)
-	  break;
-
-	  sleep(1);
-	  n--;
-	  }
-	  port = myports[n];
-	  }
-      */
-
       n = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 
       val = 1;
@@ -262,11 +248,6 @@ static void start_daemon(inetd, port)
       setsockopt(n, IPPROTO_TCP, TCP_NODELAY, (char *) &val, sizeof(val));
 #endif
 
-      /* --------------------------------------------------- */
-      /* Give up root privileges: no way back from here    */
-      /* --------------------------------------------------- */
-
-
       mport = port;
       if (port == 6001)
         strcpy(code, "e");
@@ -274,23 +255,12 @@ static void start_daemon(inetd, port)
         strcpy(code, "d");
       sin.sin_port = htons(port);
       if ((bind(n, (struct sockaddr *) &sin, sizeof(sin)) < 0) || (listen(n, QLEN) < 0)) {
-        cat(PID_FILE, strerror(errno));
+//        cat(PID_FILE, strerror(errno));
         exit(1);
       }
 
       setgid(BBSGID);
       setuid(BBSUID);
-
-      sprintf(buf, "reclog/bbsd.pid.%d", port);
-      if ((lock_pid = fopen(buf, "w+")) == NULL) {
-        cat(PID_FILE, strerror(errno));
-        exit(0);
-      }
-      /*
-	flock(lock_pid,LOCK_EX);
-      */
-      fprintf(lock_pid, "%d\n", getpid());
-      fclose(lock_pid);
     }
 }
 
@@ -511,11 +481,6 @@ static int bbs_standalone_main(char* argv)
     fork();
 #endif
   for (;;) {
-    /*
-      value = 1;
-      if (select(1, (fd_set *) & value, NULL, NULL, NULL) < 0)
-      continue;
-    */
     value = sizeof(sin);
     csock = accept(0, (struct sockaddr *) &sin, (socklen_t *) & value);
     if (csock < 0) {
@@ -532,15 +497,13 @@ static int bbs_standalone_main(char* argv)
     bbslog("0connect", "connect from %s(%d) in port %d", inet_ntoa(sin.sin_addr), htons(sin.sin_port), mport);
     setsid();
 
-    close(0);
-
-    dup2(csock, 0);
-    /* COMMAN: 有人说不处理1和2号文件句柄会把stderr and stdout打进文件弄坏PASSWD之类
-       想想挺有道理的说，不过为什么以前税目没有碰上过呢....
-       笨蛋COMMAN:这个当然是因为stderr,stdout都被全部检查过，不会写入，唯一的可能
-       发生的情况是在system调用。 */
-    /* COMMAN end */
-    close(csock);
+    if (csock!=0) {
+        close(0);
+        dup2(csock, 0);
+        close(csock);
+    };
+    for (csock=0;csock<4;csock++)
+    	close(csock);
     break;
   }
 
@@ -561,7 +524,7 @@ static int bbs_inet_main(char* argv)
   FROMHOST(sin);
 
   telnet_init();
-  return bbs_main();
+  return bbs_main(argv);
 }
 
 extern int bbs_prefork_main(char*);
@@ -589,13 +552,6 @@ int main(argc, argv)
      * use getopt instead
      * bbsd [-i] [-d] [-p port]
      */
-    /* start_daemon(argc > 1 ? atoi(argv[1]) : 0); */
-    /* Thor.981206: 取 0 代表 *没有参数* */
-    /* start_daemon(argc > 1 ? atoi(argv[1]) : -1); */
-
-    /* Thor.981207: usage,  bbsd, or bbsd 1234, or bbsd -i 1234 */
-    /*  start_daemon(argc > 2, atoi(argv[argc-1]));
-       KCN change it for not port parm */
     int mode, port;
     int c;
 
