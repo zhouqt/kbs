@@ -168,10 +168,10 @@ function gen_filepath() {
  * filetype: 文件类型
  * access: 权限 0:公开/1:好友/2:私有
  × remark: 备注
- * after_del: 是否删除临时文件 0:不/1:是
+ * upload_file: 是否为上传文件 0:不/1:是
  * auto_add_uid : 是否为自动添加 0:不/1:是
  */
-function add_file($filename ,$type ,$tmp_filepath ,$filetype ,$access ,$remark, $after_del, $auto_add_uid=0) {
+function add_file($filename ,$type ,$tmp_filepath ,$filetype ,$access ,$remark, $upload_file, $auto_add_uid=0) {
     global $currentuser;
     
     $type = ($type==1)?1:0;
@@ -183,9 +183,17 @@ function add_file($filename ,$type ,$tmp_filepath ,$filetype ,$access ,$remark, 
         }
     }
     if  ($type == 0) {
-        if (!file_exists($tmp_filepath)) {
-           $this->err = '临时文件 '.$tmp_filepath.' 不存在';
-           return false;
+        if ($upload_file)  { //上传文件
+             if (!is_uploaded_file($tmp_filepath)) {  
+                 $this->err = '文件上传错误';
+                 return false;
+             }    
+        }
+        else {    
+            if (!file_exists($tmp_filepath)) {
+                $this->err = '源文件 '.$tmp_filepath.' 不存在';
+                return false;
+            }
         }
         $filedir = bbs_userfile_getfiledir($currentuser['userid']);
         if (!file_exists($filedir)) {
@@ -195,12 +203,18 @@ function add_file($filename ,$type ,$tmp_filepath ,$filetype ,$access ,$remark, 
             }
         }
         $filepath = bbs_userfile_getfilepath($currentuser['userid'], $this->gen_filepath());
-        if (!copy($tmp_filepath, $filepath)) {
-            $this->err = '拷贝文件失败';
-            return false;
+        if ($upload_file) {
+            if (!move_uploaded_file($tmp_filepath,$filepath)) {
+                $this->err = '移动文件失败';
+                return false;
+            }
         }
-        if ($after_del)
-            @unlink($tmp_filepath);
+        else {
+            if (!copy($tmp_filepath, $filepath)) {
+                $this->err = '拷贝文件失败';
+                return false;
+            }
+        }
         
         $filetype = trim(ltrim($filetype));
         $filesize = filesize($filepath);
