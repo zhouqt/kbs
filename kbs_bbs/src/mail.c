@@ -1114,14 +1114,22 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
     struct stat st;
     int before = 0;
 
-    clear();
     strcpy(buf, direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
-    if(stat(genbuf,&st) != -1) before = st.st_size;
+    if(stat(genbuf,&st) != -1)
+	{
+		mode_t rwmode = S_IRUSR | S_IWUSR;
+		if ((st.st_mode & rwmode) != rwmode)
+			return DONOTHING;
+		before = st.st_size;
+	}
+	else
+		return DONOTHING;
 
+    clear();
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
