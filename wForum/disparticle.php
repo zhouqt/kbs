@@ -275,7 +275,7 @@ if ( chr($user['gender'])=='M' ){
 		 bbs_brcaddread($boardName, $thread['ID']);
 	 };
 	 echo dvbcode(bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&id='.$thread['ID']),0,$fgstyle);
-
+	
 ?> </blockquote></td></tr></table>
 </td>
 

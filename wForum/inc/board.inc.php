@@ -293,13 +293,14 @@ function boardJump(){
 	global $section_names;
 	global $sectionCount;
 	global $section_nums;
+	global $yank;
 ?>
 <div align=right><select onchange="if(this.options[this.selectedIndex].value!=''){location=this.options[this.selectedIndex].value;}">
 <option selected>跳转论坛至...</option>
 <?php
 	for ($i=0;$i<$sectionCount;$i++){
 		echo "<option value=\"section.php?sec=".$i."\">╋".$section_names[$i][0]."</option>";
-		$boards = bbs_getboards($section_nums[$i], 0, bbs_is_yank()?0:1);
+		$boards = bbs_getboards($section_nums[$i], 0, $yank);
 		if ($boards != FALSE) {
 			$brd_desc = $boards["DESC"]; // 中文描述
 			$brd_name = $boards["NAME"];

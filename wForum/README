@@ -1,0 +1,17 @@
+	wForum: smth_bbs based web forum
+
+1. wForum架设在清华大学水木清华BBS系统底层之上
+
+2. 主页：http://wforum.aka.cn/
+
+3. 推荐使用 linux 系统（redhat)
+
+4. document 目录下有 sql 建表语句
+
+5. 安装请参考 INSTALL 文件
+
+6. 项目开发者列表情参考 CREDITS 文件
+
+7. 最新进展请参考 NEWS 文件
+
+zixia

@@ -48,6 +48,7 @@ global $foundErr;
 global $stats;
 global $gusetloginok;
 global $sucmsg;
+$yank=1;
 $sucmsg='';
 $stats='';
 $errMsg='';
@@ -383,7 +384,7 @@ function html_error_quit()
   {
 ?>
     <tr>
-    <td class=tablebody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"><<返回上一页</a></td></tr>
+    <td class=tablebody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
 <?php   } ?>
 </table>
 <?php 
@@ -754,7 +755,11 @@ if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
 	return;
 }
 
-if (( ($loginok==1) || ($guestloginok==1) )&&($setboard==1)) bbs_set_onboard(0,0);
+if ( ($loginok==1) || ($guestloginok==1) ) {
+	$yank=bbs_is_yank() ? 0 : 1;
+	if ($setboard==1) 
+		bbs_set_onboard(0,0);
+}
 
 } // !define ('_BBS_FUNCS_PHP_')
 ?>

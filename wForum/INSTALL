@@ -1,0 +1,4 @@
+	安装说明
+
+inc 目录下的 site.php 要 ln 到 inc/sites/ 的适当文件上
+
