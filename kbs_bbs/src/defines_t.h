@@ -9,6 +9,7 @@ int mail_forward(int ent,struct fileheader *fileinfo ,char *direct );
 #endif
 
 /*screen.c*/
+void clear_whole_line( int i);
 void move(int y,int x); 
 void clrtobot();
 void prints(char * fmt, ...);
@@ -119,6 +120,8 @@ int del_grp(char grp[STRLEN],char bname[STRLEN],char title[STRLEN]);
 int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 
 /* talk.c */
+int deleteoverride( char *uident);
+int num_visible_users();
 int num_alcounter();
 int ttt_talk( struct user_info *userinfo );
 int servicepage(int     line,char    *mesg);

@@ -338,9 +338,7 @@ clear()
     move(0,0);
 }
 
-void
-clear_whole_line(i)
-int i;
+void clear_whole_line( int i)
 {
     register struct screenline *slp = &big_picture[ i ];
     slp->mode = slp->len = 0;

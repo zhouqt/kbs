@@ -1639,9 +1639,7 @@ char *uident;
     return n;
 }
 
-int
-deleteoverride(uident)
-char *uident;
+int deleteoverride( char *uident)
 {
     int deleted;
     struct friends fh;
