@@ -227,6 +227,7 @@ function clickclose() {
 ?>
           <tr> 
             <td colspan="2" height="25" class="form01">附件个数已满！</td>
+              <input type="hidden" name="attachfile" size="20" value class="form02">
           </tr>
 <?php
 	}
