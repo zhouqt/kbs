@@ -15,6 +15,10 @@ static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE,
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 
+#ifdef HAVE_WFORUM
+static PHP_FUNCTION(bbs_is_yank);
+static PHP_FUNCTION(bbs_alter_yank); 
+#endif
 static PHP_FUNCTION(bbs_getonline_user_list);
 static PHP_FUNCTION(bbs_get_elite_num);
 static PHP_FUNCTION(bbs_get_elite_list);
@@ -131,6 +135,10 @@ static PHP_FUNCTION(bbs_getthreads);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry smth_bbs_functions[] = {
+#ifdef HAVE_WFORUM
+		PHP_FE(bbs_is_yank, NULL)
+		PHP_FE(bbs_alter_yank, NULL)
+#endif
 		PHP_FE(bbs_getonline_user_list, NULL)
 		PHP_FE(bbs_get_elite_num, NULL)
 		PHP_FE(bbs_get_elite_list, NULL)
@@ -435,6 +443,17 @@ static inline int getcurrentuser_num()
     return currentusernum;
 }
 
+#ifdef HAVE_WFORUM
+static PHP_FUNCTION(bbs_is_yank){
+	RETURN_LONG(currentuinfo->yank);
+}
+static PHP_FUNCTION(bbs_alter_yank){
+	currentuinfo->yank=~currentuinfo->yank;
+	
+	RETURN_TRUE:
+	
+};
+#endif
 static inline int getcurrentuinfo_num()
 {
     return currentuinfonum;

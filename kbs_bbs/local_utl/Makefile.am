@@ -2,7 +2,7 @@ bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend chlevel listonl
 	showBM idx0Ann lazybm fixdir autoundeny fixwebmsg login statBM gen_title \
 	resetMailTotal getadmin cnv_brdflag find_rm_lost \
 	cnv_bh statguy cnv_bh2 autoclear ch_brdflag statkiller showipdeny \
-	convpass356 scanIP scanMODE listMODE cnv_register calc_effsize usage smth_usage change_tmpl\
+	convpass356 scanIP scanMODE listMODE cnv_register calc_effsize usage smth_usage change_tmpl \
 	mailall
 EXTRA_PROGRAMS = 
 LDADD=-lBBS -lsystem -L../libBBS -L../libsystem

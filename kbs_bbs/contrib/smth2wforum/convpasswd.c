@@ -46,6 +46,9 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
 
 int main()
 {
+#ifndef HAVE_WFORUM
+#error shit!
+#endif
     struct olduserec *olduser = NULL;
     struct olduserec *ptr = NULL;
     struct userec user;
@@ -66,6 +69,7 @@ int main()
         return -1;
     }
     fstat(fd, &fs);
+	printf("%d %d",sizeof(struct olduserec) ,sizeof(struct userec));
     olduser = mmap(NULL, fs.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     close(fd);
     if (olduser == MAP_FAILED) {

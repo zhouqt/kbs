@@ -2121,6 +2121,9 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         strncpy(ui.userid, user->userid, 20);
         strncpy(ui.realname, ud.realname, 20);
         strncpy(ui.username, user->username, 40);
+#ifdef HAVE_WFORUM
+		ui.yank=1;
+#endif
         utmpent = getnewutmpent2(&ui);
         if (utmpent == -1)
             ret = 1;

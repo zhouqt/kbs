@@ -97,7 +97,12 @@ struct user_info {              /* Structure used in UTMP file */
     char chatid[16];            /* chat id, if in chat mode */
     char from[IPLEN + 4];       /* machine name the user called in from */
     time_t logintime;
+#ifdef HAVE_WFORUM
+	char fill[35];
+	unsigned char yank;
+#else 
     char fill[36];
+#endif
     time_t freshtime;
     int utmpkey;
     unsigned int mailbox_prop;  /* properties of currentuser's mailbox */
