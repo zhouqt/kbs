@@ -133,6 +133,14 @@ short_open_tag = off</programlisting>
 				</listitem>
 			</orderedlist>
 		</section>
+		<section id="bbs2www">
+			<title>wForum 和 smthbbs 的 web 界面配合</title>
+			<para>wForum 和 smthbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/site.php 中定义：<programlisting>
+define('COOKIE_PREFIX', '');
+define('COOKIE_PATH', '/');
+</programlisting>
+			</para>
+		</section>
 	</section>
 	<section id="tech_details">
 		<title>技术细节</title>
@@ -375,6 +383,9 @@ menuDivStyle.visible="hidden";</programlisting>
 						<glossentry><glossterm>jumpReferer()</glossterm>
 							<glossdef><para>如果 Referer 有设置，跳到 Referer，否则跳到首页。</para></glossdef>
 						</glossentry>
+						<glossentry><glossterm>get_secname_index($secnum)</glossterm>
+							<glossdef><para>这里要搞清楚一些事情。在 inc/site.php 里面用 $section_nums 定义了分类讨论区代号。这个函数中，$secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</para></glossdef>
+						</glossentry>
 					</glosslist>
 				</listitem>
 			</orderedlist>
@@ -388,6 +399,10 @@ menuDivStyle.visible="hidden";</programlisting>
 		<section id="browscap">
 			<title>USEBROWSCAP 站点参数</title>
 			<para>开启 USEBROWSCAP 站点参数就会使用 browscap() 函数来更准确地判断浏览器和操作系统类型，需要配置 PHP 的 browscap.ini。默认关闭这个功能。开启这个功能虽然会准确判断出非 IE 浏览器，但是会大大降低出首页的速度，参考：<ulink url="http://www.php.net/manual/en/function.get-browser.php">get_browser() 函数文档</ulink> 中 verx at implix dot com 添加的用户注释。</para>
+		</section>
+		<section id="bbsleft">
+			<title>wForum 框架结构支持</title>
+			<para>wForum 支持类似 smthbbs 系统 web 界面的框架结构，也就是左边有一个树状功能目录。要实现这个只要从 wForum/frames.php 进入即可。目前这个支持只是实现功能，左边的功能目录并不漂亮。另外，有一个 bug 是当用户收藏版面发生变化的时候左边的功能目录不会自动刷新，没有加这个的原因是希望在这种情况下不要刷新整个页面，而只是刷新收藏夹那棵树，这个日后会完善。</para>
 		</section>
 		<section id="misc">
 			<title>一些杂事</title>

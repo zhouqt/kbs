@@ -40,6 +40,8 @@
 </dt>
 <dt>2.7. <a href="#upgrade_smthbbs">smthbbs 系统升级安装 wForum 说明</a>
 </dt>
+<dt>2.8. <a href="#bbs2www">wForum 和 smthbbs 的 web 界面配合</a>
+</dt>
 </dl></dd>
 <dt>3. <a href="#tech_details">技术细节</a>
 </dt>
@@ -60,7 +62,9 @@
 </dt>
 <dt>3.7. <a href="#browscap">USEBROWSCAP 站点参数</a>
 </dt>
-<dt>3.8. <a href="#misc">一些杂事</a>
+<dt>3.8. <a href="#bbsleft">wForum 框架结构支持</a>
+</dt>
+<dt>3.9. <a href="#misc">一些杂事</a>
 </dt>
 </dl></dd>
 </dl>
@@ -254,6 +258,17 @@ short_open_tag = off</pre>
 <p>全部转换工作就此完成。</p>
 </li>
 </ol></div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="bbs2www"></a>2.8. wForum 和 smthbbs 的 web 界面配合</h3></div></div>
+<p>wForum 和 smthbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/site.php 中定义：</p>
+<pre class="programlisting">
+define('COOKIE_PREFIX', '');
+define('COOKIE_PATH', '/');
+</pre>
+<p>
+			</p>
 </div>
 </div>
 <div class="section" lang="zh_cn">
@@ -520,6 +535,8 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 </dd>
 <dt>jumpReferer()</dt>
 <dd><p>如果 Referer 有设置，跳到 Referer，否则跳到首页。</p></dd>
+<dt>get_secname_index($secnum)</dt>
+<dd><p>这里要搞清楚一些事情。在 inc/site.php 里面用 $section_nums 定义了分类讨论区代号。这个函数中，$secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</p></dd>
 </dl></div>
 </li>
 </ol></div>
@@ -538,7 +555,12 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="misc"></a>3.8. 一些杂事</h3></div></div>
+<a name="bbsleft"></a>3.8. wForum 框架结构支持</h3></div></div>
+<p>wForum 支持类似 smthbbs 系统 web 界面的框架结构，也就是左边有一个树状功能目录。要实现这个只要从 wForum/frames.php 进入即可。目前这个支持只是实现功能，左边的功能目录并不漂亮。另外，有一个 bug 是当用户收藏版面发生变化的时候左边的功能目录不会自动刷新，没有加这个的原因是希望在这种情况下不要刷新整个页面，而只是刷新收藏夹那棵树，这个日后会完善。</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="misc"></a>3.9. 一些杂事</h3></div></div>
 <div class="itemizedlist"><ul type="disc">
 <li><p>一个主题，如果最后一个回复是未读的，自动认为这个主题未读。</p></li>
 <li><p>版面搜索功能只搜索楼主，时间范围指定的是最后回复时间范围。</p></li>
