@@ -725,7 +725,7 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
             if (strcmp(buf, "--\n") == 0)
                 break;
             if (fileinfo->attachment&&
-                !memcmp(buf,ATTACHMMENT_PAD,sizeof(ATTACHMMENT_PAD)-1)) {
+                !memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
                 findattach=true;
                 break;
             }

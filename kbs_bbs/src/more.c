@@ -484,14 +484,14 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
     }
     if (*s == size)
         return 0;
-    if ( size > sizeof(ATTACHMMENT_PAD)-1
-        && !memcmp(p0, ATTACHMMENT_PAD, sizeof(ATTACHMMENT_PAD)-1)) {
+    if ( size > ATTACHMENT_SIZE
+        && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE)) {
         long attach_len;
 
         *ty = 100;
         p = p0;
-        p += sizeof(ATTACHMMENT_PAD)-1;
-        if ((p = (char *) memchr(p, '\0', size - (sizeof(ATTACHMMENT_PAD)-1))) == NULL) {
+        p += ATTACHMENT_SIZE;
+        if ((p = (char *) memchr(p, '\0', size - (ATTACHMENT_SIZE))) == NULL) {
             return 0;
         }
         p++;
@@ -665,7 +665,7 @@ void mem_printline(char *ptr, int len, char *fn, char ty)
     } else if (ty == 100) {
         char attachname[41], *p;
 
-        strncpy(attachname, ptr + sizeof(ATTACHMMENT_PAD)-1, 40);
+        strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
         p = strrchr(attachname, '.');
         if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
                           || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))

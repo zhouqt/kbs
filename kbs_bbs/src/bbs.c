@@ -2210,6 +2210,7 @@ int add_edit_mark(char *fname, int mode, char *title)
     char outname[STRLEN];
     int step = 0;
     int added = 0;
+    bool findattach=false;
 
     if ((fp = fopen(fname, "r")) == NULL)
         return 0;
@@ -2220,32 +2221,11 @@ int add_edit_mark(char *fname, int mode, char *title)
     }
 
     while ((fgets(buf, 256, fp)) != NULL) {
-        if (mode == 1) {
-            /*
-             * if(step==1)
-             * step=2;
-             * if(!step && !strncmp(buf,"·¢ÐÅÕ¾: ",8))
-             * {
-             * step=1;
-             * }
-             */
-            if (!strncmp(buf, "[36m¡ù ÐÞ¸Ä:¡¤", 17))
-                continue;
-            /*
-             * if(step!=3&&(!strncmp(buf,"³ö  ´¦: ",8)||!strncmp(buf,"×ªÐÅÕ¾: ",8)))
-             * step=1;
-             */
-            if (Origin2(buf)) {
-                now = time(0);
-                if(uinfo.mode == RMAIL)
-                    fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
-                else
-                    fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
-                step = 3;
-		added = 1;
-            }
-            fputs(buf, out);
-        } else {
+        if (!memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
+            findattach=true;
+            break;
+        }
+        if (mode == 2) {
             if (step != 3 && !strncmp(buf, "±ê  Ìâ: ", 8)) {
                 step = 3;
                 fprintf(out, "±ê  Ìâ: %s\n", title);
@@ -2253,11 +2233,44 @@ int add_edit_mark(char *fname, int mode, char *title)
             }
             fputs(buf, out);
         }
+        
+        if (!strncmp(buf, "[36m¡ù ÐÞ¸Ä:¡¤", 17))
+            continue;
+        if (Origin2(buf)) {
+            now = time(0);
+            if(uinfo.mode == RMAIL)
+                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+            else
+                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+            step = 3;
+            added = 1;
+        }
+        fputs(buf, out);
     }
     if (!added)
     {
-    	now = time(0);
-	fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+        now = time(0);
+        fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÐÅ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+    }
+    if (findattach) {
+        /*»ØÍËÒ»¶¨µÄ×Ö·ûÊý£¬ÕÒµ½Î»ÖÃ*/
+        long pos,ret;
+        char* p;
+        
+        pos=ftell(fp);
+        if (pos>256)
+            fseek(fp,pos-256,SEEK_SET);
+        else
+            fseek(fp,0,SEEK_SET);
+        ret=fread(buf,1,256,fp);
+        p=memmem(buf,256,ATTACHMENT_PAD,ATTACHMENT_SIZE);
+        if (p) {
+            fwrite(p,1,ret-(p-buf),out);
+            while (!feof(fp)) {
+                ret=fread(buf,1,256,fp);
+                fwrite(buf,1,ret,out);
+            }
+        }
     }
     fclose(fp);
     fclose(out);
