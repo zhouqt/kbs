@@ -2637,6 +2637,7 @@ int MailProc()
     list_select_loop(&maillist_conf);
     free(pts);
     modify_user_mode(oldmode);
+	setmailcheck(currentuser->userid);
 }
 
 typedef struct {

@@ -3702,6 +3702,7 @@ int i_read_mail()
     	m_read();
     digestmode = savemode;
     strcpy(currdirect, savedir);
+	setmailcheck(currentuser->userid);
     return FULLUPDATE;
 }
 
