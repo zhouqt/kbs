@@ -37,7 +37,6 @@ if (isErrFounded()) {
 	}
 
 	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	require_once("inc/ubbcode.php");
 	showArticleThreads($boardName,$boardID,$articleID,$article,$start,$listType);
 }
 
