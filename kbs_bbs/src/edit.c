@@ -1092,7 +1092,7 @@ void strnput(str)
 {
     int count = 0;
 
-    while ((*str != '\0') && (++count < STRLEN)) {
+    while ((*str != '\0') && (++count < scr_cols)) {
         if (*str == KEY_ESC) {
             outc('*');
             str++;
@@ -1108,7 +1108,7 @@ void cstrnput(str)
     int count = 0;
 
     prints("%s", ANSI_REVERSE);
-    while ((*str != '\0') && (++count < STRLEN)) {
+    while ((*str != '\0') && (++count < scr_cols)) {
         if (*str == KEY_ESC) {
             outc('*');
             str++;
@@ -1116,7 +1116,7 @@ void cstrnput(str)
         }
         outc(*str++);
     }
-    while (++count < STRLEN)
+    while (++count < scr_cols)
         outc(' ');
     clrtoeol();
     prints("%s", ANSI_RESET);
@@ -1158,7 +1158,7 @@ void display_buffer()
     move(0, 0);
     for (p = top_of_win, i = 0; i < t_lines - 1; i++) {
         if (p) {
-            shift = (currpnt + 2 > STRLEN) ? (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
+            shift = (currpnt + 2 > scr_cols) ? (currpnt / (scr_cols - scrollen)) * (scr_cols - scrollen) : 0;
             if (editansi) {
                 showansi = 1;
                 prints("%s", p->data);
@@ -2011,7 +2011,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
             display_buffer();
         }
         redraw_everything = false;
-        shift = (currpnt + 2 > STRLEN) ? (currpnt / (STRLEN - scrollen)) * (STRLEN - scrollen) : 0;
+        shift = (currpnt + 2 > scr_cols) ? (currpnt / (scr_cols - scrollen)) * (scr_cols - scrollen) : 0;
         move(curr_window_line, currpnt - shift);
 
         ch = (newch != '\0') ? newch : igetkey();
