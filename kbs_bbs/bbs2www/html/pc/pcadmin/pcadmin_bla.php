@@ -21,14 +21,14 @@ if( $_GET["act"] == "add" && $buserid )
 		$buserid = $lookupuser["userid"];
 		pc_add_blacklist($link , $buserid );
 		$action = $currentuser[userid]." 封禁 ".$buserid." 在Blog中的评论权限";
-		pc_logs($link , $action );
+		pc_logs($link , $action , "" , $buserid );
 	}
 }
 if( $_GET["act"] == "del" && $buserid )
 {
 	pc_del_blacklist($link , $buserid );
 	$action = $currentuser[userid]." 恢复 ".$buserid." 在Blog中的评论权限";
-	pc_logs($link , $action );
+	pc_logs($link , $action , "" , $buserid );
 }
 
 $query = "SELECT * FROM blacklist WHERE uid = 0;";
