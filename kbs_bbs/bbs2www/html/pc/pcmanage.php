@@ -7,9 +7,7 @@
 	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
 	*/
 	require("pcfuncs.php");
-	$favaction = $_COOKIE["BLOGFAVACTION"];
-	
-					
+						
 	if ($loginok != 1)
 		html_nologin();
 	elseif(!strcmp($currentuser["userid"],"guest"))
@@ -46,8 +44,10 @@
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",$pc["EDITOR"]);
 		elseif($act == "edit" && !$_POST["subject"] && $pc["EDITOR"] != 0)
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",1);
-		else
+		elseif($act != "favcut" && $act != "favcopy" && $act != "favpaste")
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
+		else
+			;//nth :p
 		
 		if($act == "cut" || $act == "copy")
 		{
@@ -735,17 +735,15 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			$rows = mysql_fetch_array($result);
 			if(!$rows)
 			{
+				pc_html_init("gb2312",stripslashes($pc["NAME"]));
 				html_error_quit("文章不存在!");
 				exit();
 			}
-			$favaction = array(
-					"ACT" => $act,
-					"NID" => $rows[nid],
-					"TYPE" => $rows[type],
-					"PID" => $rows[pid]
-					);
 			mysql_free_result($result);
-			setcookie("BLOGFAVACTION",$favaction);
+			setcookie("BLOGFAVACTION",$act);
+			setcookie("BLOGFAVNID",$rows[nid]);
+			
+			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 ?>
 <br>
 <p align="center">
@@ -755,40 +753,48 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 		}
 		elseif($act == "favpaste")
 		{
-			if(!$favaction || !is_array($favaction))
+			if(!$_COOKIE["BLOGFAVACTION"])
 			{
+				pc_html_init("gb2312",stripslashes($pc["NAME"]));
 				html_error_quit("您的剪贴板是空的，请先剪切或者复制一个文件!");
 				exit();
 			}
 			$pid = intval($_GET["pid"]);
 			if(!pc_load_directory($link,$pc["UID"],$pid))
 			{
+				pc_html_init("gb2312",stripslashes($pc["NAME"]));
 				html_error_quit("目标文件夹不存在!");
 				exit();
 			}
 			
 			if(pc_file_num($link,$pc["UID"],$pid)+1 > $pc["NLIM"])
 			{
+				pc_html_init("gb2312",stripslashes($pc["NAME"]));
 				html_error_quit("目标文件夹中的文件数已达上限 ".$pc["NLIM"]. " 个!");
 				exit();
 			}
 			
-			if($favaction["ACT"] == "favcut")
+			if(intval($_COOKIE["BLOGFAVNID"]))
 			{
-				$query = "UPDATE nodes SET `pid` = '".$pid."' WHERE `nid` = '".$favaction["NID"]."';";
+				if($_COOKIE["BLOGFAVACTION"] == "favcut")
+				{
+					$query = "UPDATE nodes SET `pid` = '".$pid."' WHERE `nid` = '".intval($_COOKIE["BLOGFAVNID"])."';";
+				}
+				elseif($_COOKIE["BLOGFAVACTION"] == "favcopy")
+				{
+					$query = "SELECT * FROM nodes WHERE `nid` = '".intval($_COOKIE["BLOGFAVNID"])."' LIMIT 0 , 1 ;";
+					$result = mysql_query($query,$link);
+					$rows = mysql_fetch_array($result);
+					mysql_free_result($result);
+					$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ,`htmltag`) ".
+						"VALUES ('', '".$pid."', '0', '".addslashes($rows[source])."', '".addslashes($rows[hostname])."', NOW( ) , '".addslashes($rows[created])."', '".$pc["UID"]."', '".intval($rows[comment])."', '".intval($rows[commentcount])."', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '3', '".intval($rows[visitcount])."', '".intval($rows[tid])."', '".intval($rows[emote])."','".intval($rows[htmltag])."');";
+				}
+				mysql_query($query,$link);
 			}
-			else
-			{
-				$query = "SELECT * FROM nodes WHERE `nid` = '".$favaction["NID"]."' LIMIT 0 , 1 ;";
-				$result = mysql_query($query,$link);
-				$rows = mysql_fetch_array($result);
-				mysql_free_result($result);
-				$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ,`htmltag`) ".
-					"VALUES ('', '".$pid."', '0', '".$rows[source]."', '".$rows[hostname]."', '".date("YmdHis")."' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '".$rows[commentcount]."', '".$rows[subject]."', '".$rows[body]."', '3', '".$rows[visitcount]."', '".$rows[tid]."', '".$rows[emote]."','".$rows[htmltag]."');";
-			}
-			mysql_query($query,$link);
-			unset($favaction);
 			setcookie("BLOGFAVACTION");
+			setcookie("BLOGFAVNID");
+			
+			pc_html_init("gb2312",stripslashes($pc["NAME"]));
 			pc_update_record($link,$pc["UID"]);
 			$log_action = "CUT/COPY FAV";
 ?>
