@@ -364,9 +364,9 @@ checkret:
 	            ret=(*conf->get_data) (conf, conf->page_pos, conf->item_per_page);
 	        if (ret==SHOW_QUIT)
 	        	return ret;
+	        if (ret==SHOW_DIRCHANGE) goto checkret; //possible loop.....
 	        if ((ret=check_valid(conf)) == SHOW_QUIT)
 	            return SHOW_QUIT;
-	        if (ret==SHOW_DIRCHANGE) goto checkret; //possible loop.....
 	    case SHOW_REFRESH:
 	        ret=refresh_select(conf);
 	        break;
