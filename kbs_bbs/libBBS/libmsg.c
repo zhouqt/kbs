@@ -556,10 +556,6 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     head2.sent = 1;
     strncpy(head2.id, uident, IDLEN+2);
     
-//    now = time(0);
-//    timestr = ctime(&now) + 11;
-//    *(timestr + 8) = '\0';
-#ifdef BBSMAIN
     if (uin->mode == WEBEXPLORE) {
         if (send_webmsg(get_utmpent_num(uin), uident, utmpent, 
 						currentuser->userid, head.time, msgstr) < 0) {
@@ -574,7 +570,6 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         }
         return 1;
     }
-#endif                      
 
     uin = t_search(MsgDesUid, uentp->pid);
     if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || ((kill(uin->pid, 0) != 0) && (uentp->pid != 1))
