@@ -664,7 +664,8 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     sig_append(fp, id, sig);
     fprintf(fp, "\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
     fclose(fp);
-    if (stat(buf3, &st) != -1)touser->usedspace+=st.st_size;
+    if (stat(buf3, &st) != -1)
+		touser->usedspace+=st.st_size;
     sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
     fp = fopen(dir, "a");
     if (fp == NULL)
@@ -806,33 +807,44 @@ int sig_append(FILE * fp, char *id, int sig)
 {
     FILE *fp2;
     char path[256];
-    char buf[100][256];
-    int i, total;
+    char buf[256];
+    int i = 0, skip_lines = 0;
     struct userec *x = NULL;
 
-    if (sig < 0 || sig > 10)
+    if (sig <= 0 || sig > MAX_SIGNATURES)
         return -1;
     getuser(id, &x);
     if (x == 0)
         return -1;
-    sprintf(path, "home/%c/%s/signatures", toupper(id[0]), id);
+	sethomefile(path, x->userid, "signatures");
     fp2 = fopen(path, "r");
-    if (fp2 == 0)
+    if (fp2 == NULL)
         return -1;
-    for (total = 0; total < 100; total++)
-        if (fgets(buf[total], 255, fp2) == 0)
-            break;
+	/* Ìø¹ýÇ°ÃæµÄ (sig - 1)*6 ÐÐ  */
+	do
+	{
+		if (skip_lines == (sig - 1) * 6)
+			break;
+		skip_lines++;
+	}while ((fgets(buf, sizeof(buf), fp2)) != NULL);
+	/* ¼ì²éÊÇ·ñ¿ÉÒÔ¶ÁÈëµÚ sig ¸öÇ©Ãûµµ */
+	if (skip_lines == (sig - 1) * 6)
+	{
+		/* ¶ÁÈëÇ©Ãûµµ²¢Ð´Èë fp ¶ÔÓ¦µÄÎÄ¼þÖÐ */
+		for (i = skip_lines; i < skip_lines + 6; i++)
+		{
+			if (fgets(buf, sizeof(buf), fp2) == NULL)
+				break;
+			fprintf(fp, "%s", unix_string(buf));
+		}
+		/* ¶ÁÈëÇ©Ãûµµ³É¹¦£¬ÉèÖÃÄ¬ÈÏÇ©ÃûµµÎªµ±Ç°Ê¹ÓÃµÄÇ©Ãûµµ */
+		if (i > skip_lines)
+    		x->signature = sig;
+	}
     fclose(fp2);
-    if (sig * 6 >= total)
-        return 0;
-    for (i = sig * 6; i < sig * 6 + 6; i++) {
-        if (i >= total)
-            break;
-        fprintf(fp, "%s", buf[i]);
-    }
-    x->signature = sig;
-
-    return sig;
+	if (i > skip_lines)
+    	return sig;
+	return 0;
 }
 
 int has_BM_perm(struct userec *user, char *board)
