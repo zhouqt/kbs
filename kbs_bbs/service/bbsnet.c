@@ -147,7 +147,7 @@ int load_section(struct _select_def* conf,int pos,int len)
             strncpy(host1[conf->item_count], t2, 18);
 	    host1[conf->item_count][18]=0;
             strncpy(host2[conf->item_count], t1, 36);
-	    host1[conf->item_count][36]=0;
+	    host2[conf->item_count][36]=0;
             strncpy(ip[conf->item_count], t3, 36);
             port[conf->item_count]= t4? atoi(t4): 23;
             conf->item_count++;
