@@ -838,6 +838,62 @@ int zsend_file(char *filename, char *title)
     return FULLUPDATE;
 }
 
+int my_inet_aton(const char * ip, struct in_addr* queryip)
+{
+	char* p1;
+	unsigned int i1,i2,i3,i4;
+	unsigned char i[4];
+
+	p1=ip;
+	i1=atoi(p1);
+	if (i1>255) return 0;
+	i[0]=i1;
+	while (*p1&&*p1!='.') {
+		if (!isdigit(*p1))
+			return 0;
+		p1++;
+	}
+	if (!*p1) return 0;
+	p1++;
+
+	i2=atoi(p1);
+	i[1]=i2;
+	if (i2>255) return 0;
+	while (*p1&&*p1!='.') {
+		if (!isdigit(*p1))
+			return 0;
+		p1++;
+	}
+	if (!*p1) return 0;
+	p1++;
+
+	i3=atoi(p1);
+	if (i3>255) return 0;
+	i[2]=i3;
+	while (*p1&&*p1!='.') {
+		if (!isdigit(*p1))
+			return 0;
+		p1++;
+	}
+	if (!*p1) return 0;
+	p1++;
+
+	i4=atoi(p1);
+	if (i4>255) return 0;
+	i[3]=i4;
+	while (*p1) {
+		if (!isdigit(*p1))
+			return 0;
+		p1++;
+	}
+	if (!*p1) {
+		memcpy(queryip,i,4);
+		return 1;
+	}
+
+	return 0;
+}
+
 int search_ip()
 {
     char ip[17];
@@ -856,16 +912,23 @@ int search_ip()
 
         linebuf[255] = 0;
         getdata(0, 0, "输入查询的IP(直接回车退出):", ip, 16, DOECHO, NULL, true);
-        if (ip[0] == 0)
-            return;
-        if (inet_aton(ip, &queryip) == -1) {
+        if (ip[0] == 0) {
+	    fclose(fn);
+            return 0;
+	}
+	prints("%s 查询结果:\n",ip);
+	clrtobot();
+        if (my_inet_aton(ip, &queryip) == 0) {
             outs("错误的ip");
             pressanykey();
             continue;
         }
+	queryip.s_addr=ntohl(queryip.s_addr);
+	fseek(fn,0,SEEK_SET);
         while (fgets(linebuf, 254, fn)) {
             char *p1, *p2;
-            struct in_addr host, mask;
+            struct in_addr from, to;
+	    char* tostr;
 
             p2 = p1 = linebuf;
             while ((*p2) && (*p2 != ' ') && *p2 != '\t')
@@ -873,8 +936,9 @@ int search_ip()
             if (!(*p2))
                 continue;
             *p2 = 0;
-            if (inet_aton(p1, &host) == -1)
+            if (my_inet_aton(p1, &from) == 0)
                 continue;
+	    from.s_addr=ntohl(from.s_addr);
             p1 = p2 + 1;
             while ((*p1) && (*p1 == ' ') && *p1 == '\t')
                 p1++;
@@ -887,16 +951,23 @@ int search_ip()
             if (!(*p2))
                 continue;
             *p2 = 0;
-            if (inet_aton(p1, &mask) == -1)
+            if (my_inet_aton(p1, &to) == 0)
                 continue;
+	    to.s_addr=ntohl(to.s_addr);
+	    tostr=p1;
+
             p1 = p2 + 1;
             while ((*p1) && (*p1 == ' ') && *p1 == '\t')
                 p1++;
             if (!(*p1))
                 continue;
 
-            if (queryip.s_addr & mask.s_addr == host.s_addr)
-                prints("%s\n", p1);
+	    if (from.s_addr==0) continue;
+            if (((queryip.s_addr >= from.s_addr) && (queryip.s_addr <= to.s_addr) && (from.s_addr<=to.s_addr)) || 
+                ((queryip.s_addr >= to.s_addr) && (queryip.s_addr <= from.s_addr) && (from.s_addr>=to.s_addr)))
+                prints("%s %s %s", linebuf,tostr,p1);
         }
     }
+    fclose(fn);
+    return 0;
 }
