@@ -48,8 +48,6 @@ int t_search_up();
 void a_report(s)                /* Haohmaru.99.12.06 */
     char *s;
 {
-    int fd;
-
     /* disable it because of none using it , KCN,2002.07.31 */
     return;
 /*	
@@ -437,7 +435,7 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 
     FILE *fn;
     char fname[STRLEN], bname[PATHLEN];
-    char buf[PATHLEN], *ptr;
+    char buf[PATHLEN];
     int ch;
     MENU pm;
     char ans[STRLEN];
@@ -1001,7 +999,6 @@ void a_manager(pm, ch)
                a_prompt( -1, genbuf, ans );Leeward 98.04.15 */
             {                   /* Leeward: 97.12.17: 对版主的多个窗口同步丝路 */
                 FILE *sl;
-                char *ptr;
 
                 /* by zixia: 用相对路经 sprintf(genbuf, "%s/%s", BBSHOME,netty_path); */
                 sethomefile(genbuf,currentuser->userid,"BMpath");
