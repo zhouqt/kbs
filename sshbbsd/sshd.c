@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2003/04/18 14:30:02  bad
+ * ssh∂‡––
+ *
  * Revision 1.4  2002/08/04 11:39:44  kcn
  * format c
  *
@@ -1644,6 +1647,15 @@ void do_authenticated(char *pw)
             debug("command executing disabled in this site.");
             packet_send_debug("command executing disabled in this site.");
             goto fail;
+
+        case SSH_CMSG_WINDOW_SIZE:
+            debug("Window change received.");
+            row = packet_get_int();
+            col = packet_get_int();
+            xpixel = packet_get_int();
+            ypixel = packet_get_int();
+            do_naws(row, col);
+            break;
 
         default:
             /* Any unknown messages in this phase are ignored, and a failure
