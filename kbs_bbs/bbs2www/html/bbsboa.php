@@ -74,7 +74,7 @@
 		for ($i = 0; $i < $rows; $i++)	
 		{
 		if ($brd_flag[$i]&BBS_BOARD_GROUP)
-		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $group2;
+		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $brd_bid[$i];
 		else
 		  $brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$i]);
 ?>

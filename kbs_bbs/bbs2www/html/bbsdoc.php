@@ -242,6 +242,14 @@
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $brdnum) == 0)
 			html_error_quit("错误的讨论区");
+		if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
+			for ($i=0;$i<sizeof($section_nums);$i++)
+				if (!strcmp($section_nums[$i],$brdarr["SECNUM"])) {
+			         Header("Location: bbsboa.php?group=" . $i . "&group2=" . $brdnum);
+			         return;
+                                }
+			html_error_quit("错误的讨论区");
+		}
 		if (!isset($default_dir_mode))
 			$default_dir_mode = $dir_modes["NORMAL"];
 		$total = bbs_countarticles($brdnum, $default_dir_mode);
