@@ -125,7 +125,7 @@
 	<td class="t2" width="260">
 	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">创建时间</a>
 	|
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u"; ?>" class="f3">更新时间</a></td>
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u&tid=".$tid; ?>" class="f3">更新时间</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
 <?php
@@ -150,7 +150,7 @@
 	<td class="t2">主题</td>
 	<td class="t2" width="260"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">创建时间</a>
 	|
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u"; ?>" class="f3">更新时间</a></td>
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u&tid=".$tid; ?>" class="f3">更新时间</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
 <?php
