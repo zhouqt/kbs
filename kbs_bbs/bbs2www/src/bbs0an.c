@@ -120,6 +120,8 @@ void ann_show_directory(char *path,char * pathbuf)
         buf[0] = '\0';
         if (board[0] != '\0')
             sprintf(buf, "%s°æ", board);
+		else
+			buf[0]='\0';
         printf("<center>\n");
         printf("%s -- %s¾«»ªÇø<hr class=\"default\">\n", BBSNAME, buf);
         if (me.num <= 0) {
