@@ -216,7 +216,7 @@ int show_allmsgs()
         clear();
         if(count==0) {
             good_move(5,30);
-            prints("Ã»ÓÐÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
+            prints("[mÃ»ÓÐÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡");
             i = 0;
         }
         else {
