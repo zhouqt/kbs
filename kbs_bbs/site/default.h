@@ -626,39 +626,36 @@ extern const char *mailbox_prop_str[];
 #endif
 
 #ifndef OWNER_LEN
-#define OWNER_LEN 30
+#define OWNER_LEN 14
+#endif
+
+#ifndef ARTICLE_TITLE_LEN
+#define ARTICLE_TITLE_LEN 60
 #endif
 
 #ifdef HAVE_FILEHEADER_DEFINE
+
+/**
+ * 文章相关部分。
+ */
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];        /* the DIR files */
     unsigned int id, groupid, reid;
-#ifdef FILTER
-    char o_board[STRLEN - BM_LEN];
+#if defined(FILTER) || defined(COMMEND_ARTICLE)
+    int o_bid;
     unsigned int o_id;
     unsigned int o_groupid;
     unsigned int o_reid;
-    char unused1[14];
 #else
-#ifdef COMMEND_ARTICLE
-    char o_board[STRLEN - BM_LEN];
-    unsigned int o_id;
-    unsigned int o_groupid;
-    unsigned int o_reid;
-    char unused1[14];
-#else
-    char unused1[46];
-#endif
+    char unused1[16];
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[38];
     unsigned int eff_size;
     time_t posttime;
     long attachment;
-    char title[STRLEN];
-    unsigned level;
-    unsigned char accessed[12]; /* struct size = 256 bytes */
+    char title[ARTICLE_TITLE_LEN];
+    unsigned char accessed[4];
 } fileheader;
 
 typedef struct fileheader fileheader_t;
