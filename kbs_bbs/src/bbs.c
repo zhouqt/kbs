@@ -4685,6 +4685,18 @@ static int choose_tmpl_select(struct _select_def *conf)
         multi_getdata(6, 0, 79, NULL, ans, ptemplate[conf->pos-1].cont[i].length+1, 11, true, 0);
 		tmp[i] = ans;
 	}
+	{
+		char ans[3];
+		clear();
+        getdata(t_lines - 1, 0, "确实要发表吗(Y/N)? [Y]: ", ans, sizeof(ans), DOECHO, NULL, true);
+        if (ans[0] == 'N' || ans[0] == 'n') {
+			for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++)
+				free( tmp[i] );
+			fclose(fp);
+			return SHOW_QUIT;
+		}
+	}
+
 	if( ptemplate[conf->pos-1].tmpl->filename[0] ){
 		setbfile( filepath,currboard->filename, ptemplate[conf->pos-1].tmpl->filename);
 		if( dashf( filepath )){
