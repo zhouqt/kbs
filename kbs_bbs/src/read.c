@@ -762,7 +762,9 @@ char *direct ;
 {
     int i;
     char buf[STRLEN],ch[4],BMch;
-    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档"};
+    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除"};
+    char linebuffer[256];
+
 
     if(!chk_currBM(currBM))
     {
@@ -771,23 +773,34 @@ char *direct ;
     if(digestmode==4||digestmode==5)   /* KCN:不允许 */
         return DONOTHING;
 
+    saveline(t_lines-3, 0, linebuffer);
     saveline(t_lines-2, 0, NULL);
-    move(t_lines-2, 0);
+    move(t_lines-3, 0);
     clrtoeol();
-    strcpy(buf,"相同主题 (0)取消 ");
-    for(i=0;i<5;i++)
-        sprintf(buf,"%s(%d)%s ",buf,i+1,SR_BMitems[i]);
+    strcpy(buf,"相同主题 (0)取消  ");
+    for(i=0;i<6;i++)
+        sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+    if (strlen(buf)>76) {
+        char savech=buf[76];
+        buf[76]=0;
+        prints("%s",buf);
+        buf[76]=savech;
+        strcpy(buf,buf+76);
+        getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+    } else
+        getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
+
     BMch=atoi(ch);
-    if(BMch<=0||BMch>5)
+    if(BMch<=0||BMch>6)
     {
         saveline(t_lines-2, 1, NULL);
+        saveline(t_lines-2, 1, linebuffer);
         return DONOTHING;
     }
     if(digestmode==2&&BMch<=3)
         return;
-    move(t_lines-2, 0);
+    move(t_lines-3, 0);
     clrtoeol();
     /* Leeward 98.04.16 */
     sprintf(buf,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
