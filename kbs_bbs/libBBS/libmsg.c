@@ -400,11 +400,11 @@ int msg_can_sendmsg(char *userid, int utmpnum)
     return 1;
 }
 
-int new_store_msgfile(char *uident, char *msgbuf)
+int save_msg(char *uident, char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
     int fd, fd2, i, j, count, size;
-    struct flock ldata, ldata2;
+    struct flock ldata;
     struct stat buf;
 
     sethomefile(fname, uident, "msgindex");
@@ -432,11 +432,149 @@ int new_store_msgfile(char *uident, char *msgbuf)
     fstat(fd2, &buf);
     size = buf.st_size;
     fstat(fd, &buf);
-    count = buf.st_size/4;
-    lseek(fd, count*4, SEEK_SET);
+    count = buf.st_size/4-1;
+    if(count<0) {
+        i = 0;
+        write(fd, &i, 4);
+        count = 0;
+    }
+    lseek(fd, (count+1)*4, SEEK_SET);
     write(fd, &size, 4);
     lseek(fd2, size, SEEK_SET);
-    write(fd, msgbuf, strlen(msgbuf)+1);
+    i = strlen(msgbuf)+1;
+    if (i>=MAX_MSG_SIZE) i=MAX_MSG_SIZE-1;
+    write(fd, msgbuf, i);
+
+    close(fd2);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
+    return 0;
+}
+
+int get_msgcount(char *uident)
+{
+    char fname[STRLEN];
+    int fd, i, j, count;
+    struct flock ldata;
+    struct stat buf;
+
+    sethomefile(fname, uident, "msgindex");
+
+    if ((fd = open(fname, O_RDONLY | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        return -1;              /* 创建文件发生错误*/
+    }
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "msglock err");
+        close(fd);
+        return -1;              /* lock error*/
+    }
+    fstat(fd, &buf);
+    count = buf.st_size/4-1;
+    if (count<0) count=0;
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
+    return count;
+}
+
+int get_unreadmsg(char *uident)
+{
+    char fname[STRLEN];
+    int fd, i, j, count, ret;
+    struct flock ldata;
+    struct stat buf;
+
+    sethomefile(fname, uident, "msgindex");
+
+    if ((fd = open(fname, O_RDWR | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        return -1;              /* 创建文件发生错误*/
+    }
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "msglock err");
+        close(fd);
+        return -1;              /* lock error*/
+    }
+    fstat(fd, &buf);
+    count = buf.st_size/4-1;
+    if (count<0) ret = -1;
+    else {
+        read(fd, &ret, 4);
+        if(ret >= count) ret = -1;
+        else {
+            i = ret+1;
+            lseek(fd, 0, SEEK_SET);
+            write(fd, &i, 4);
+        }
+    }
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);
+    close(fd);
+    return ret;
+}
+
+int load_msg(char *uident, int index, char *msgbuf)
+{
+    char fname[STRLEN], fname2[STRLEN];
+    int fd, fd2, i, j, count, size, now, next;
+    struct flock ldata;
+    struct stat buf;
+
+    sethomefile(fname, uident, "msgindex");
+    sethomefile(fname2, uident, "msgcontent");
+
+    if ((fd = open(fname, O_RDONLY | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        return -1;              /* 创建文件发生错误*/
+    }
+    if ((fd2 = open(fname2, O_RDONLY | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "msgopen err");
+        close(fd);
+        return -1;              /* 创建文件发生错误*/
+    }
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "msglock err");
+        close(fd2);
+        close(fd);
+        return -1;              /* lock error*/
+    }
+    fstat(fd2, &buf);
+    size = buf.st_size;
+    fstat(fd, &buf);
+    count = buf.st_size/4-1;
+    if(index<0||index>=count) {
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -1;
+    }
+    lseek(fd, (index+1)*4, SEEK_SET);
+    read(fd, &now, 4);
+    if (index<count-1)
+        read(fd, &next, 4);
+    else
+        next = size;
+    lseek(fd2, now, SEEK_SET);
+    if(next-now > MAX_MSG_SIZE) next=now+MAX_MSG_SIZE-1;
+    read(fd, msgbuf, next-now);
+    msgbuf[next-now-1] = 0;
 
     close(fd2);
     ldata.l_type = F_UNLCK;
