@@ -406,7 +406,7 @@ int num;
         fprintf( sug, "** 票选题目描述：\n\n" );
         sprintf( buf, "vote/%s/desc.%d",currboard,currvote.opendate );
         b_suckinfile( sug, buf );*/
-    get_result_title(sug);
+    get_result_title();
 
     fprintf( sug, "** 投票结果:\n\n" );
     if(currvote.type==VOTE_VALUE)
@@ -491,7 +491,7 @@ int num;
         prints("Error: 结束投票错误...\n");
     }
 
-    get_result_title(sug);
+    get_result_title();
 
     fprintf( sug, "** 投票结果:\n\n" );
     if(currvote.type==VOTE_VALUE)
@@ -732,7 +732,7 @@ char    *bname;
         if( (sug=fopen(votename,"w")) !=NULL)
         {
             sprintf(buf,"[通知] %s 举办投票：%s",currboard,ball->title);
-            get_result_title(sug);
+            get_result_title();
             if(ball->type!=VOTE_ASKING&&ball->type!=VOTE_VALUE)
             {
                 fprintf(sug,"\n【选项如下】\n");

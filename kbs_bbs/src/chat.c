@@ -1241,7 +1241,7 @@ void call_listen(chatcontext *pthis,const char *arg) /* added by Luzi 1997.11.28
         else
         {
             strncpy(uident,arg,IDLEN+1);
-            uident[IDLEN+1]=0;
+            uident[IDLEN]=0;
             if(!searchuser(uident)) /* change getuser -> searchuser, by dong, 1999.10.26 */
                 printchatline(pthis,"*** 没有这个ID ***");
             else {
@@ -1301,7 +1301,7 @@ void call_ignore(chatcontext *pthis,const char *arg)             /* added by Luz
         else
         {
             strncpy(uident,arg,IDLEN+1);
-            uident[IDLEN+1]=0;
+            uident[IDLEN]=0;
             if(!searchuser(uident))    /* change getuser -> searchuser, by dong, 1999.10.26 */
                 printchatline(pthis,"*** 没有这个 ID ***");
             else {

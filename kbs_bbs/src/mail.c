@@ -141,7 +141,7 @@ int
 chkmail()
 {
     static time_t lasttime = 0;
-    static ismail = 0 ;
+    static int ismail = 0 ;
     struct fileheader fh ;
     struct stat st ;
     int fd ;

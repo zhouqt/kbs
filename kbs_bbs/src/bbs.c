@@ -1287,7 +1287,7 @@ char *direct ;
     strcpy( quote_file, genbuf );
     strcpy( quote_board, currboard );
     strcpy(quote_title,fileinfo->title);
-    quote_file[255] = fileinfo->filename[STRLEN-2];
+    quote_file[119] = fileinfo->filename[STRLEN-2];
     strcpy( quote_user, fileinfo->owner );
     /****** 如果未读，则计数加1，回写.DIR文件 ******/
     /*if (HAS_PERM(PERM_POST) && brc_unread(fileinfo->filename))
@@ -2415,7 +2415,7 @@ post_article()                         /*用户 POST 文章 */
 
     local_article = 0;
     if ( !strcmp( post_file.title, buf ) && quote_file[0] != '\0' )
-        if ( quote_file[255] == 'L' )
+        if ( quote_file[119] == 'L' )
             local_article = 1;
 
     modify_user_mode( POSTING );

@@ -171,7 +171,7 @@ get_sum_records(char* fpath, int size) /* alexÓÚ1996.10.20Ìí¼Ó */
 int
 append_record(filename,record,size)
 char *filename ;
-char *record ;
+void *record ;
 int size ;
 {
     int fd ;
@@ -735,7 +735,7 @@ int id1,id2,del_mode ;
                                &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid),0);
                     delcount=0;
                     setbdir( genbuf, currboard );
-                    append_record( genbuf, delfhdr, DEL_RANGE_BUF*sizeof(struct fileheader) );
+                    append_record( genbuf, (char*)delfhdr, DEL_RANGE_BUF*sizeof(struct fileheader) );
                 }  /*need clear delcount*/
             } /*if !Reading mail*/
 #endif
@@ -765,7 +765,7 @@ int id1,id2,del_mode ;
             cancelpost(currboard, currentuser->userid,
                    &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid),0);
         setbdir( genbuf, currboard );
-        append_record( genbuf, delfhdr, delcount*sizeof(struct fileheader) );
+        append_record( genbuf, (char*)delfhdr, delcount*sizeof(struct fileheader) );
     }
     digestmode=savedigestmode;
 #endif

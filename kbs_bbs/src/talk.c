@@ -645,7 +645,7 @@ list:		move(5,0) ;
             return -1 ;
         }
         length = sizeof server ;
-        if(getsockname(sock, (struct sockaddr *) &server, &length) < 0) {
+        if(getsockname(sock, (struct sockaddr *) &server, (socklen_t*)&length) < 0) {
             perror("socket name err") ;
             return -1 ;
         }
@@ -694,7 +694,7 @@ list:		move(5,0) ;
             }
         }
 
-        msgsock = accept(sock, (struct sockaddr *)0, (int *) 0) ;
+        msgsock = accept(sock, (struct sockaddr *)0, (socklen_t*) 0) ;
         if(msgsock == -1) {
             perror("accept") ;
             return -1 ;
@@ -1473,7 +1473,7 @@ char *modestr;
             return 0;
         }
         count = shortulist(NULL);*/
-    count = shortulist();
+    count = shortulist(NULL);
     if (uinfo.mode == MONITOR) {
         time_t thetime = time(0);
         move(t_lines-1, 0);
@@ -2050,7 +2050,7 @@ getfriendstr()
     friendsdata=(struct friends *)calloc(sizeof(struct friends),nf);
     get_records(genbuf,friendsdata,sizeof(struct friends),1,nf);
     
-    qsort( friendsdata, nf, sizeof( friendsdata[0] ), cmpfuid );/*For Bi_Search*/
+    qsort( friendsdata, nf, sizeof( friendsdata[0] ), (int (*)(const void *, const void *))cmpfuid );/*For Bi_Search*/
     topfriend=(struct friends_info *)calloc(sizeof(struct friends_info),nf);
     for (i=0;i<nf;i++) {
     	topfriend[i].uid=searchuser(friendsdata[i].id);
