@@ -115,6 +115,7 @@
         
         html_init("gb2312","","",1);
 ?>
+<body topmargin="0" leftmargin="0">
 <a name="top">
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 

@@ -241,6 +241,25 @@
 			html_error_quit("错误的讨论区");
 			$board_list_error=TRUE;
 		}
+		
+		$brd_encode = urlencode($brdarr["NAME"]);
+		$ann_path = bbs_getannpath($brdarr["NAME"]);
+		
+		/* BBS Board Envelop Code START
+		** add by windinsn , Mar 13 ,2004 */
+		if( defined("HAVE_BRDENV") )
+		{
+			if( bbs_board_have_envelop($board))
+			{
+				$visitedboard = $_COOKIE["BBSVISITEDBRD"];
+				if( !stristr($visitedboard,"|".$board."|") )
+				{
+					setcookie("BBSVISITEDBRD" , $visitedboard.$board."|");
+					header("Location: /bbsenv.php?board=".$brd_encode);
+				}
+			}
+		}	
+		/* BBS Board Envelop Code END */
 
 		if (!isset($default_dir_mode))
 			$default_dir_mode = $dir_modes["NORMAL"];
@@ -332,13 +351,10 @@
 			
 
 ?>
-<body>
+<body topmargin="0" leftmargin="0">
 <?php
 	if($board_list_error==FALSE)
-	{
-		
-		$brd_encode = urlencode($brdarr["NAME"]);
-		$ann_path = bbs_getannpath($brdarr["NAME"]);
+	{		
 ?>
 <a name="listtop"></a>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
@@ -356,7 +372,20 @@
 		}
 	    ?>
 	    -
-	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>|<a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=-1" class="b2"><font class="b2">添加到收藏夹</font></a>)
+	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>
+	    |
+	    <a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=-1" class="b2"><font class="b2">添加到收藏夹</font></a>
+<?php
+	if( defined("HAVE_BRDENV") ){
+		if( bbs_board_have_envelop($board) ){
+?>
+	    |
+	    <a href="/bbsenv.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">版面导读</font></a>
+<?php
+		}
+	}
+?>
+	    )
     </td>
   </tr>
   <tr> 

@@ -156,6 +156,38 @@ if ($utmpkey!="") {
 }
 //add end
 
+/* 
+** BBS Board Envelop Code Start
+** add by windinsn Mar 13 , 2004 
+*/
+$defultenvfile = "index.html";
+function board_envelop_dir($board)
+{
+	if( !valid_filename($board) )
+		return FALSE;
+	return $_SERVER["DOCUMENT_ROOT"] . "/boards/" . $board;
+}
+
+function board_envelop_file($board , $filename )
+{
+	if( !valid_filename($board) || !valid_filename($filename))
+		return FALSE;
+	return  board_envelop_dir($board) . "/" . $filename;
+}
+
+function bbs_board_have_envelop($board)
+{
+	global $defultenvfile;
+	$envfile = board_envelop_file( $board , $defultenvfile );
+	if( !$envfile) 
+		return FALSE;
+	if( file_exists( $envfile ) )
+		return TRUE;
+	else
+		return FALSE;	
+}
+/* BBS Board Envelop Code End */
+
 function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")!=FALSE))
