@@ -420,7 +420,26 @@ default.h 和 default.c 文件。
 以上面的例子为例，一共三个分类讨论区，那么讨论区精华的总目录下应该有三个目录，
 我们把它们分别取名为 GROUP_0 GROUP_1 GROUP_2。修改分类讨论区往往会需要修改精华
 区结构，所以修改完分类讨论区之后站务应该进入精华区调整，比如建立目录，修改
-.Names 文件等。
+.Names 文件等。特别是 ~bbs/0Announce/groups/.Names 文件应该是类似这样的内容：
+
+#
+# Title=讨论区精华
+#
+Name=本站系统
+Attach=0
+Path=~/GROUP_0
+Numb=1
+#
+Name=人在美国
+Attach=0
+Path=~/GROUP_1
+Numb=2
+#
+Name=大话西游
+Attach=0
+Path=~/GROUP_2
+Numb=3
+#
 
     源代码的修改首先是 site.h 里面的 SECNUM 常数，它应该定义为分类讨论区数量：
 #define SECNUM 3
