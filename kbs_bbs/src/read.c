@@ -1817,7 +1817,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 		strcpy(dirtmp,currdirect);
 		dirp=strrchr(dirtmp,'/');
 		if(dirp){
-			*dirp='\0';
+			*(dirp+1)='\0';
 			strcat(dirtmp,DING_DIR);
 			last_line += get_num_records(dirtmp,sizeof(struct fileheader));
 		}
@@ -1924,6 +1924,19 @@ static int search_threadid(struct keeploc *locmem, int offset, int groupid, int 
     BBS_END end_mmapfile((void *) pFh, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
+	/*add by stiger,ÖÃ¶¥µÄ´¦Àí */
+    if (uinfo.mode != RMAIL && uinfo.mode != GMENU
+         && (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD)){
+		char dirtmp[256];
+		char *dirp;
+		strcpy(dirtmp,currdirect);
+		dirp=strrchr(dirtmp,'/');
+		if(dirp){
+			*(dirp+1)='\0';
+			strcat(dirtmp,DING_DIR);
+			last_line += get_num_records(dirtmp,sizeof(struct fileheader));
+		}
+	}
     return match;
 }
 
