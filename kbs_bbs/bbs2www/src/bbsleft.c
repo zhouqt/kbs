@@ -35,12 +35,12 @@ int show_fav_all(int f, const char *desc, int d)
     int i=0,j,k,l;
     if(d==1) {
 		printdiv(d, desc, "/images/folder.gif");
-		printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsfav?select=-1\">定制</a><br>\n");
+		printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsfav.php?select=-1\">定制</a><br>\n");
     }
         //printf("<div id=div%d style=\"display: none\">\n", f+100);
     else
 	{
-		printf("<img src=\"/images/folder2.gif\"><a target=\"f3\" href=\"bbsfav?select=%d\">%s</a><br>\n", f, desc);
+		printf("<img src=\"/images/folder2.gif\"><a target=\"f3\" href=\"/bbsfav.php?select=%d\">%s</a><br>\n", f, desc);
         printf("<div>");
 	}
     do{
