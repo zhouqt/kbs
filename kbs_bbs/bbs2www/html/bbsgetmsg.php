@@ -6,21 +6,21 @@
     $setboard=0;
     require("funcs.php");
 login_init();
-    if ($loginok != 1)
-	html_nologin();
-    else
-    {
-        html_init("gb2312");
-        if ($currentuser["userid"]=="guest")
-            $ret=0;
-        else
-            $ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
+	if ($loginok != 1)
+		html_nologin();
+	else
+	{
+		html_init("gb2312");
+		if ($currentuser["userid"]=="guest")
+			$ret=0;
+		else
+			$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 ?>
 <meta http-equiv="pragma" content="no-cache"><style type="text/css">
 A {color: #0000FF}
 </style>
 <?php
-        if ($ret)
+		if ($ret)
 		{
 ?>
 <bgsound src="/sound/msg.wav">
@@ -36,26 +36,27 @@ echo $srcutmpnum; ?>">[»ØÑ¶Ï¢]</a> <a href="bbsgetmsg.php?refresh">[ºöÂÔ]</a></t
   </tr>
 </form>
 </table>
-<script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "54,*,20";
-</script>
 <?php
-    } else {
-		//no msg
-?><script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "0,*,20";
-</script>
-<?php
-    if (isset($_GET["refresh"])) {
+			$frameheight = 54;
+	    } else {
+			//no msg
+			$frameheight = 0;
+			if (isset($_GET["refresh"])) {
 ?>
 <meta http-equiv="Refresh" content="60; url=/bbsgetmsg.php">
 <?php
-    }
-	else {
+			} else {
 ?>
 <meta http-equiv="Refresh" content="600; url=/bbsgetmsg.php">
 <?php	    
-	}
-	
+			}
 		}
+?>
+<script language="javascript">
+if (top.document.getElementsByName("viewfrm").item(0))
+	top.document.getElementsByName("viewfrm").item(0).rows = "<?php echo $frameheight; ?>,*,20";
+</script>
+<?php	
 		html_normal_quit();
-    }
+	}
 ?>
