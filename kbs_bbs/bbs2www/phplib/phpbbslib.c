@@ -1388,7 +1388,10 @@ static PHP_FUNCTION(bbs_print_article_js)
 static void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
 {
     add_assoc_string(array, "FILENAME", fh->filename, 1);
-    add_assoc_string(array, "O_BOARD", getboard(fh->o_bid)->filename, 1); /* for compitible */
+	if (fh->o_bid > 0)
+    	add_assoc_string(array, "O_BOARD", getboard(fh->o_bid)->filename, 1); /* for compitible */
+	else
+    	add_assoc_string(array, "O_BOARD", "", 1); /* for compitible */
     add_assoc_long(array, "O_BID", fh->o_bid);
     add_assoc_long(array, "O_ID", fh->o_id);
     add_assoc_long(array, "ID", fh->id);
