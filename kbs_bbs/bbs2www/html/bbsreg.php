@@ -25,7 +25,7 @@
 	session_start();
 	if(!isset($_SESSION['num_auth']))
   	    html_error_quit("请等待识别的图片显示完毕!");
-	if($_SESSION['num_auth']!=$num_auth)
+	if(strcasecmp($_SESSION['num_auth'],$num_auth))
 	    html_error_quit("图片上的字符串识别错误!难道你是机器人？");
 
 	if(!strchr($reg_email,'@'))
