@@ -266,7 +266,7 @@ int usermenu()
     setfcolor(RED,1);
     prints("FRIENDTEST");
     setfcolor(WHITE,0);
-    prints(")²âÊÔ°æ0.2");
+    prints(")1.0   (Ìâ¿â:%d)", userst);
     move(3,40);
     prints("×÷Õß: ");
     setfcolor(RED,0);
