@@ -17,7 +17,7 @@
 	    $nodes = $parent->child_nodes();
 	    while($node = array_shift($nodes))
 	        if ($node->node_name() == $name)
-	            return get_content($node);
+	            return urldecode(get_content($node));
 	    return "";
 	}
 
