@@ -28,12 +28,14 @@ static void bcache_unlock(int fd)
 static int bcache_lock()
 {
     lock_sem(BCACHE_SEMLOCK);
+    bcache_setreadonly(0);
     return 0;
 }
 
 static void bcache_unlock(int fd)
 {
-	unlock_sem_check(BCACHE_SEMLOCK);
+    unlock_sem_check(BCACHE_SEMLOCK);
+    bcache_setreadonly(1);
 }
 #endif
 static void bcache_setreadonly(int readonly)
