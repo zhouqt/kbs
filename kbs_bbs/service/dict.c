@@ -1,6 +1,7 @@
 #define BBSMAIN
 #include "bbs.h"
-#include "/usr/include/mysql/mysql.h"
+#include <mysql.h>
+
 int dict_main()
 {
     MYSQL s;
