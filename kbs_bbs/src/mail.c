@@ -45,7 +45,6 @@ int     SR_author();
 int     SR_authorX(); /* Leeward 98.10.03 */
 int     G_SENDMODE=NA;
 extern int     add_author_friend();
-
 int cmpinames(); /* added by Leeward 98.04.10 */
 
 extern int nf;
@@ -56,6 +55,7 @@ char    currmaildir[ STRLEN ] ;
 
 #define maxrecp 300
 
+static int mail_reply(int ent ,struct fileheader *fileinfo ,char *direct );
 
 int chkreceiver(char* userid,struct userec* lookupuser)
 /*Haohmaru.99.4.4.检查收信者信箱是否满,改动下面的数字时请同时改动do_send do_gsend doforward doforward函数*/
@@ -223,6 +223,28 @@ get_mailnum()
     return numfiles;
 }
 
+
+static int mailto(struct userec *uentp ,char* arg)
+{
+    char filename[STRLEN];
+    int mailmode=(int)arg;
+
+    sprintf(filename,"etc/%s.mailtoall",currentuser->userid);
+    if((uentp->userlevel==PERM_BASIC&&mailmode==1)||
+            (uentp->userlevel&PERM_POST&&mailmode==2)||
+            (uentp->userlevel&PERM_BOARDS&&mailmode==3)||
+            (uentp->userlevel&PERM_CHATCLOAK&&mailmode==4))
+    {
+        mail_file(currentuser->userid,filename,uentp->userid,save_title,0);
+    }
+    return 1;
+}
+
+static int mailtoall(int mode)
+{
+
+    return apply_users(mailto,(char*)mode);
+}
 
 int
 check_query_mail(qry_mail_dir)
@@ -863,7 +885,7 @@ m_new()
     mrd = 0 ;
     modify_user_mode( RMAIL );
     read_new_mail(NULL,0) ;
-    if(apply_record(currmaildir,read_new_mail,sizeof(struct fileheader),0,1) == -1) {
+    if(apply_record(currmaildir,(RECORD_FUNC_ARG)read_new_mail,sizeof(struct fileheader),0,1) == -1) {
         clear() ;
         move(0,0) ;
         prints("No new messages\n\n\n") ;
@@ -1024,11 +1046,7 @@ case 'j': case KEY_RIGHT: case KEY_DOWN: case KEY_PGDN:
 }
 
 /*ARGSUSED*/
-int
-mail_reply(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+static int mail_reply(int ent ,struct fileheader *fileinfo ,char *direct )
 {
     char        uid[STRLEN] ;
     char        title[STRLEN] ;
@@ -1089,7 +1107,7 @@ char *direct ;
     strcpy(buf,direct) ;
     if( (t = strrchr(buf,'/')) != NULL )
         *t = '\0' ;
-    if(!delete_record(direct,sizeof(*fileinfo),ent,cmpname,fileinfo->filename)) {
+    if(!delete_record(direct,sizeof(*fileinfo),ent,(RECORD_FUNC_ARG)cmpname,fileinfo->filename)) {
         sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
         unlink(genbuf) ;
         return DIRCHANGED ;
@@ -1296,9 +1314,7 @@ m_read()
 #include <pwd.h>
 #include <time.h>
 #define BBSMAILDIR "/usr/spool/mqueue"
-int
-invalidaddr(addr)
-char *addr;
+int invalidaddr(char *addr)
 {
     if (*addr == '\0') return 1;   /* blank */
     while (*addr) {

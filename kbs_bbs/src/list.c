@@ -657,30 +657,6 @@ allusers()
     return count;
 }
 
-int
-mailto(struct userec *uentp ,char* arg)
-{
-    char filename[STRLEN];
-    int mailmode=(int)arg;
-
-    sprintf(filename,"etc/%s.mailtoall",currentuser->userid);
-    if((uentp->userlevel==PERM_BASIC&&mailmode==1)||
-            (uentp->userlevel&PERM_POST&&mailmode==2)||
-            (uentp->userlevel&PERM_BOARDS&&mailmode==3)||
-            (uentp->userlevel&PERM_CHATCLOAK&&mailmode==4))
-    {
-        mail_file(currentuser->userid,filename,uentp->userid,save_title,0);
-    }
-    return 1;
-}
-
-int mailtoall(mode)
-int mode;
-{
-
-    return apply_users(mailto,(char*)mode);
-}
-
 Show_Users()
 {
 

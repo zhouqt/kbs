@@ -188,9 +188,7 @@ print_recipient_status (smtp_recipient_t recipient,
 }
 
 int
-bbs_sendmail(fname, title, receiver, isuu, isbig5, noansi) /* Modified by ming, 96.10.9  KCN,99.12.16*/
-char *fname, *title, *receiver;
-int isuu, isbig5, noansi;
+bbs_sendmail(char *fname,char* title,char* receiver,int isuu,int isbig5,int noansi) /* Modified by ming, 96.10.9  KCN,99.12.16*/
 {
     struct mail_option mo;
     FILE *fin,*fout;

@@ -314,9 +314,7 @@ int     y,x;
     cur_ln = y ;
 }
 
-void
-getyx(y,x)
-int *y,*x ;
+void getyx(int *y,int *x)
 {
     *y = cur_ln ;
     *x = cur_col/*-c_shift(y,x)*/ ;

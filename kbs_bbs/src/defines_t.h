@@ -26,8 +26,10 @@ void initscr() ;
 void bell();
 void outc(register const unsigned char c);
 void outns(const unsigned char *str, int n);
+void getyx(int *y,int *x);
 void outs(register const char *str);
 
+>>>>>>> 3.13
 
 
 /* newio.c */
@@ -83,6 +85,7 @@ int Goodbye();
 int post_reply(int ent,struct fileheader *fileinfo,char *direct );
 int sequential_read2(int ent);
 void setquotefile(char filepath[]);
+void do_quote(char *filepath,char quote_mode);
 
 /*vote.c*/
 void makevdir(char* bname);
@@ -94,6 +97,7 @@ int vote_flag(char* bname,char val,int mode);
 int chkmail();
 int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
+int invalidaddr(char*addr);
 
 /* maintain.c */
 int check_systempasswd();
@@ -110,6 +114,8 @@ int talkreply();
 int friend_add(int ent,struct friends * fh,char* direct);
 void talk_request();
 int getfriendstr();
+int num_user_logins(char* uid);
+
 /* delete.c */
 int kick_user(struct user_info *userinfo);
 int d_user(char cid[IDLEN]);
@@ -145,6 +151,8 @@ int a_Import(char *path,char *key,struct fileheader *fileinfo,int nomsg,char *di
 
 /* goodbye.c */
 void showstuff(char buf[256]);
+int user_display(char* filename,int number,int mode);
+int countlogouts(char filename[STRLEN]);
 
 /* userinfo.c */
 void disply_userinfo(struct userec *u ,int real);
@@ -162,6 +170,8 @@ void show_help(char * fname);
 /* fileshm.c */
 int show_statshm(char *fh,int mode);
 int fill_shmfile(int mode,char* shmkey,char* fname);
+void show_goodbyeshm();
+
 /* newterm.c */
 int term_init();
 

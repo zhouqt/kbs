@@ -1212,9 +1212,7 @@ char *str;
 
 /* When there is an old article that can be included -jjyang */
 void
-do_quote( filepath ,quote_mode)   /* 引用文章， 全局变量quote_file,quote_user, */
-char    *filepath;
-char quote_mode;
+do_quote( char    *filepath,char quote_mode)   /* 引用文章， 全局变量quote_file,quote_user, */
 {
     FILE        *inf, *outf;
     char        *qfile, *quser;

@@ -137,7 +137,7 @@ int     size;
     return (st.st_size/size) ;
 }
 
-get_sum_records(char* fpath, int size) /* alex于1996.10.20添加 */
+long get_sum_records(char* fpath, int size) /* alex于1996.10.20添加 */
 {
     struct stat st;
     long ans = 0;
@@ -390,13 +390,8 @@ int size, id, number ;
 }
 
 int
-substitute_record_comp(filename,rptr,size,id,comptr,fptr,tmpbuf)
-char *filename ;
-char *rptr ;
-int size, id ;
-char* comptr;   /* extra arg for compare func */
-int (*fptr)() ;	/* compare function */
-char* tmpbuf;  /* temp buffer for use*/
+substitute_record_comp(char *filename,void* rptr,int size,int id,void* comptr,
+	RECORD_FUNC_ARG fptr,void tmpbuf)
 {
     int fd;
     int newent;

@@ -104,6 +104,16 @@ char *msg_not_op = CHAT_MSG_NOT_OP;
 char *msg_no_such_id = "*** [1m%s[m ²»ÔÚ±¾"CHAT_ROOM_NAME"Àï ***";
 char *msg_not_here = "*** [1m%s[m ²¢Ã»ÓÐÇ°À´"CHAT_SERVER" ***";
 
+int can_send(int myunum,int unum)            /* added by Luzi 1997.11.30 */
+{
+    int i;
+    for(i=0;i<MAX_IGNORE;i++)
+        if (users[unum].lpIgnoreID[i][0]!='\0')
+            if (!strcasecmp(users[unum].lpIgnoreID[i], users[myunum].userid)
+                    && !SYSOP(myunum)) return 0;
+    return 1;
+}
+
 /* Added by ming, 96.10.12 */
 /* although there is strcasecmp() and strncasecmp()
    in solaris c runtime library, it has bugs when it compare Chinese
@@ -682,17 +692,6 @@ int unum ;
     return;
 }
 
-int can_send(myunum,unum)            /* added by Luzi 1997.11.30 */
-int myunum,unum;
-{
-    int i;
-    for(i=0;i<MAX_IGNORE;i++)
-        if (users[unum].lpIgnoreID[i][0]!='\0')
-            if (!strcasecmp(users[unum].lpIgnoreID[i], users[myunum].userid)
-                    && !SYSOP(myunum)) return 0;
-    return 1;
-}
-
 void
 chat_ignore(unum, msg)   /* add by Luzi 1997.11.28 */
 int unum;
@@ -890,7 +889,8 @@ char *msg;
     get_ignore_list(unum);              /* added by Luzi 1997.11.28 */
     print_user_counts(unum);
     sprintf(chatbuf,"User entry:%d",utent);
-    send_to_room(mainroom,chatbuf , unum);
+/*    send_to_room(mainroom,chatbuf , unum); wrong??? KCN*/
+    send_to_room(0,chatbuf , unum);
     enter_room(unum, mainroom, (char *) NULL);
     return 0;
 }

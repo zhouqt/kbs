@@ -1,8 +1,6 @@
 #include "bbs.h"
 
-int
-countlogouts(filename)
-char filename[STRLEN];
+int countlogouts(char filename[STRLEN])
 {
     FILE    *fp;
     char    buf[256];
@@ -20,9 +18,7 @@ char filename[STRLEN];
 }
 
 
-user_display(filename,number,mode)
-char    *filename;
-int number,mode;
+void user_display(char    *filename,int number,int mode)
 {
     FILE    *fp;
     char    buf[256],buf2[STRLEN];

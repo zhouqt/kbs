@@ -379,8 +379,7 @@ num_alcounter()
 }
 
 int
-num_user_logins(uid)
-char *uid;
+num_user_logins(char *uid)
 {
     strcpy(save_page_requestor,uid);
     return apply_utmp(NULL,0,uid,0) ;
@@ -1694,7 +1693,7 @@ char *uident;
     struct friends fh;
 
     sethomefile( genbuf, currentuser->userid,"friends" );
-    deleted = search_record( genbuf, &fh, sizeof(fh), cmpfnames, uident );
+    deleted = search_record( genbuf, &fh, sizeof(fh),(RECORD_FUNC_ARG) cmpfnames, uident );
     if(deleted>0)
     {
         if(delete_record(genbuf,sizeof(fh),deleted,NULL,NULL)==0)
@@ -1741,7 +1740,7 @@ char *direc;
     char buf[STRLEN/2];
     int pos;
 
-    pos=search_record( direc, &nh, sizeof(nh), cmpfnames, fh->id );
+    pos=search_record( direc, &nh, sizeof(nh), (RECORD_FUNC_ARG)cmpfnames, fh->id );
     move(t_lines-2,0);
     clrtoeol();
     if(pos>0)

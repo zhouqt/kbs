@@ -1244,7 +1244,7 @@ void call_listen(chatcontext *pthis,const char *arg) /* added by Luzi 1997.11.28
                 printchatline(pthis,"*** 没有这个ID ***");
             else {
                 sethomefile( path, currentuser->userid , "/ignores");
-                nIdx=search_record( path,ignoreuser, IDLEN+1, cmpinames, uident );
+                nIdx=search_record( path,ignoreuser, IDLEN+1, (RECORD_FUNC_ARG)cmpinames, uident );
                 if (nIdx <= 0)
                     printchatline(pthis,"*** 该用户的聊天讯息没有被忽略啊 ***");
                 else if (delete_record( path, IDLEN+1, nIdx,NULL,NULL)==0)
@@ -1303,7 +1303,7 @@ void call_ignore(chatcontext *pthis,const char *arg)             /* added by Luz
             if(!searchuser(uident))    /* change getuser -> searchuser, by dong, 1999.10.26 */
                 printchatline(pthis,"*** 没有这个 ID ***");
             else {
-                nIdx=search_record( path,ignoreuser, IDLEN+1, cmpinames, uident );
+                nIdx=search_record( path,ignoreuser, IDLEN+1, (RECORD_FUNC_ARG)cmpinames, uident );
                 if (nIdx > 0)
                     printchatline(pthis,"*** 该ID已经被忽略了 ***");
                 else
