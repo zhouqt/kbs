@@ -28,6 +28,9 @@ openssl		(下面是POP3S需要的)
   4)配置
   ./configure --enable-site=devel --disable-www
      注意在 site/ 字目录里面必须有名字为 devel.c和 devel.h 的文件
+     并注意验证相应的 .h 文件中 BBSUID 和 BBSGID 与安装用户的uid gid
+     是否一致。 
+
      bbs缺省安装在/home/bbs，如果需要指定别的目录，使用--prefix指定。
      后面将使用$(BBSHOME)表示安装的BBS目录，在安装的时候请使用真正路径
 替代。
