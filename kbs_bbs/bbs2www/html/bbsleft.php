@@ -380,6 +380,9 @@
 				<DIV class="s" id="divexp">
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
+					<a href="/express/1103/smth_express.htm" target="f3">2003年11月号</a><br>
+					&nbsp;
+					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/express/0903/smth_express.htm" target="f3">2003年9月号</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
