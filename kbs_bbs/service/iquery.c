@@ -397,13 +397,15 @@ int choose_file()
     free(pts);
 }
 
-int show_res()
+int show_res(int o)
 {
     int i;
     if(res_total<=0) {
-        move(4,0);
+        if(o) move(t_lines-1, 0);
+        else move(4,0);
         if(res_total==-2) prints("负荷太重，请稍后再使用");
         else prints("什么都没搜到！");
+        clrtoeol();
         igetkey();
     }
     else {
@@ -416,7 +418,7 @@ int iquery_board(char * board, char * w)
     sprintf(qn, "=%s %s", board, w);
     wh = 0;
     do_query_all(wh, qn);
-    show_res();
+    show_res(1);
 }
 
 int iquery_main()
@@ -425,6 +427,6 @@ int iquery_main()
     while(get_word()) {
         wh = 0;
         do_query_all(wh, qn);
-        show_res();
+        show_res(0);
     }
 }

@@ -1433,7 +1433,7 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     prints("切换模式到: 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 12, "7)超级文章选择  8)本版精华区搜索 [1]: ", ans, 3, DOECHO, NULL, true);
+    getdata(t_lines - 1, 12, "7)超级文章选择 8)本版精华区搜索 [1]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] == ' ') {
         ans[0] = ans[1];
         ans[1] = 0;
@@ -1441,7 +1441,9 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     if (ans[0] == '8') {
         move(t_lines - 1, 0);
         clrtoeol();
-        sprintf(buf, "您想查找的文章标题关键字[%s]: ", title);
+        move(t_lines - 2, 0);
+        clrtoeol();
+        sprintf(buf, "您想查找的文章内容关键字[%s]: ", title);
         getdata(t_lines - 1, 0, buf, buf2, 70, DOECHO, NULL, true);
         if (buf2[0])
             strcpy(title, buf2);
@@ -1451,6 +1453,8 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     }
     if (ans[0] == '5') {
         move(t_lines - 1, 0);
+        clrtoeol();
+        move(t_lines - 2, 0);
         clrtoeol();
         sprintf(buf, "您想查找哪位网友的文章[%s]: ", fileinfo->owner);
         getdata(t_lines - 1, 0, buf, buf2, 13, DOECHO, NULL, true);
@@ -1462,6 +1466,8 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
             return FULLUPDATE;
     } else if (ans[0] == '6') {
         move(t_lines - 1, 0);
+        clrtoeol();
+        move(t_lines - 2, 0);
         clrtoeol();
         sprintf(buf, "您想查找的文章标题关键字[%s]: ", title);
         getdata(t_lines - 1, 0, buf, buf2, 30, DOECHO, NULL, true);
