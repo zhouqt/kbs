@@ -949,7 +949,6 @@ char *msg;
         occupants = rooms[i].occupants;
         if (occupants > 0)
         {
-            j++;
             if (!SYSOP(unum) && !CHATOP(unum))
                 if ((rooms[i].flags & ROOM_SECRET) && (users[unum].room != i))
                     continue;
@@ -965,8 +964,6 @@ char *msg;
                 strcat(chatbuf, " [\033[30;47m¾øÃÜ\033[m]");
 
             send_to_unum(unum, chatbuf);
-            if (j%18==0)/* KCN add for pause*/
-                send_to_unum(unum,"/p");
         }
     }
 }
@@ -1029,10 +1026,7 @@ int whichroom;
                     users[i].userid, rooms[rnum].name);
             if (ROOMOP(i))
                 strcat(chatbuf, " [Op]");
-            j++;
             send_to_unum(unum, chatbuf);
-            if (j%18==0)
-                send_to_unum(unum,"/p");
         }
     }
     return 0;
@@ -1989,10 +1983,6 @@ char* verb;
                     count++;
 
                     send_to_unum2(unum,chatbuf);
-                    if (count>=20) {
-                        count=0;
-                        send_to_unum(unum,"/p");
-                    }
                     continue;
                 }
             if (verb)

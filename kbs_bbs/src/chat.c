@@ -82,7 +82,7 @@ int chat_waitkey(chatcontext *pthis)
     return strchr(" \r\n",ch)!=NULL;
 }
 
-int printchatline(chatcontext * pthis, const char *str) /*显示一行，并下移指示符, return 0 -> 不要再写了*/
+void printchatline(chatcontext * pthis, const char *str) /*显示一行，并下移指示符*/
 {
     char tmpstr[256];
     const char *p;
@@ -90,7 +90,8 @@ int printchatline(chatcontext * pthis, const char *str) /*显示一行，并下移指示符
     int len; /* add by KCN for disable long line */
     int inesc;
 
-    /* snow add at 10.25 */
+    if(pthis->outputignore)return; /* by wwj 2001/5/9 */
+
     p = str;
     i = 0;
     len=0;
@@ -168,9 +169,8 @@ int printchatline(chatcontext * pthis, const char *str) /*显示一行，并下移指示符
     move(pthis->chatline, 0);
     clrtoeol();
 
-    i=1;
     if(pthis->outputcount++==screen_lines-1){
-        i=chat_waitkey(pthis);
+        if( !chat_waitkey(pthis) )pthis->outputignore=1;
         pthis->outputcount=1;
 
         move(pthis->chatline, 0);
@@ -188,7 +188,6 @@ int printchatline(chatcontext * pthis, const char *str) /*显示一行，并下移指示符
     clrtoeol();
 
     outs("==>");
-    return i;
 }
 
 
@@ -498,9 +497,8 @@ int ent_chat(int chatnum)  /* 进入聊天室*/
 
         move(b_lines, currchar + 10);
         ch = igetkey();
-
         pthis->outputcount=0;
-
+        pthis->outputignore=0;
 
         if (talkrequest) page_pending = YEA;
         if (page_pending) page_pending = servicepage(0, NULL);
