@@ -85,6 +85,14 @@
 #endif
 #endif
 
+#ifndef BBS_SERVICE_QUIZ	/* ´Êµä¹¦ÄÜ */
+#define BBS_SERVICE_QUIZ
+#else
+#if BBS_SERVICE_QUIZ == 0
+#undef BBS_SERVICE_QUIZ
+#endif
+#endif
+
 #ifndef FILTER /*¹ýÂËÆ÷*/
 #define FILTER
 #else
