@@ -122,6 +122,8 @@ char *argv[];
     DIR *dirp;
     char *ptr, *bname, buf[256];
 
+    chdir(BBSHOME);
+
     db.days = ((argc > 1)
                && (number = atoi(argv[1])) > 0) ? number : DEF_DAYS;
     db.maxp = ((argc > 2)
