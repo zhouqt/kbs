@@ -1281,7 +1281,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
         return 1;
 }
 
-void get_upper_str(char *ptr1, char *ptr2)
+void get_upper_str(char *ptr2, char *ptr1)
 {
     int ln, i;
 
