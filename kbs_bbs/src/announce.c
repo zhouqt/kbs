@@ -417,8 +417,7 @@ a_select_path(bool save_mode)
     a_select_path_arg arg;
     
     clear();
-    if (import_path_select==0)
-    	load_import_path();
+    load_import_path();
     arg.save_mode=save_mode;
     arg.show_path=false;
     pts = (POINT *)malloc(sizeof(POINT) * ANNPATH_NUM);
