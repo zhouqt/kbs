@@ -25,6 +25,7 @@ static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE,
 static unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 static unsigned char fourth_arg_force_ref_0001[] = { 4, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BYREF_FORCE };
+static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE , BYREF_FORCE};
 
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_get_article);
@@ -254,7 +255,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
         PHP_FE(bbs_get_threads_from_id, NULL)
-        PHP_FE(bbs_get_threads_from_gid, third_arg_force_ref_001)
+        PHP_FE(bbs_get_threads_from_gid, fifth_arg_force_ref_00011)
         PHP_FE(bbs_countarticles, NULL)
         PHP_FE(bbs_is_bm, NULL)
         PHP_FE(bbs_getannpath, NULL)
@@ -8045,7 +8046,7 @@ static PHP_FUNCTION(bbs_x_search)
 /**
  * get a full threads of articles from a groupid.
  * prototype:
- * int bbs_get_threads_from_gid(int bid, int gid, array &errmsg);
+ * int bbs_get_threads_from_gid(int bid, int gid, int start , array &errmsg , int haveprev);
  *
  * @return Record index on success,
  *       0 on failure.
@@ -8056,7 +8057,9 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 #define MAX_THREADS_NUM 512
 	int bid;
 	int gid;
+	int start;
     zval *z_threads;
+    zval *retprev;
     int i;
 	const struct boardheader *bp;
 	int is_bm;
@@ -8070,24 +8073,28 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
                                  * flags[2]: no reply flag
                                  * flags[3]: attach flag
                                  */
+   if( start < 0 )
+    	start = 0;
+    
     int ac = ZEND_NUM_ARGS();
 
-    if (ac != 3 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "llz", &bid, &gid, &z_threads) == FAILURE) {
+    if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "lllzz", &bid , &gid, &start , &z_threads , &retprev) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
     /*
      * check for parameter being passed by reference 
      */
-    if (!PZVAL_IS_REF(z_threads)) {
+    if (!PZVAL_IS_REF(z_threads) || !PZVAL_IS_REF(retprev)) {
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_LONG(0);
     }
-	if ((bp = getboard(bid)) == NULL)
+    
+        if ((bp = getboard(bid)) == NULL)
 	{
         RETURN_LONG(0);
 	}
-    is_bm = is_BM(bp, currentuser);
+        is_bm = is_BM(bp, currentuser);
 	setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
 
 	articles = (struct fileheader *)emalloc(MAX_THREADS_NUM * sizeof(struct fileheader));
@@ -8095,12 +8102,13 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 	{
         RETURN_LONG(0);
 	}
-	if ((retnum=get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM,0, &haveprev)) == 0)
+	if ((retnum=get_threads_from_gid(dirpath, gid, articles, 20 , start , &haveprev)) == 0)
 	{
 		efree(articles);
         RETURN_LONG(0);
 	}
-
+	
+	ZVAL_LONG(retprev , haveprev);
 	zval_dtor(z_threads);
 	array_init(z_threads);
 	for (i = 0; i < retnum; i++)
