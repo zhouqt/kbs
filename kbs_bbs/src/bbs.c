@@ -1583,7 +1583,7 @@ int search_x(char * b, char * s)
     hdll=dlopen("service/libiquery.so",RTLD_LAZY);
     if(hdll)
     {
-        char* error;
+        __const__ char* error;
         if((iquery_board = (iquery_board_func)dlsym(hdll,"iquery_board"))!=NULL)
             iquery_board(b, s);
         else
