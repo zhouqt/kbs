@@ -710,18 +710,18 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         p = strrchr(attachname, '.');
         if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
                           || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))
-            prints("\033[m附图: %s 链接:\n", attachname,link);
+            prints("\033[m附图: %s 链接:\n", attachname);
         else
-            prints("\033[m附件: %s 链接:\n", attachname,link);
+            prints("\033[m附件: %s 链接:\n", attachname);
 	return;
     } else if (ty == 101) {
-        char link[256];
+        char slink[256];
 
         if (current_attach_link)
-            (*current_attach_link)(link,255,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
+            (*current_attach_link)(slink,255,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
         else
-            strcpy(link,"(用www方式阅读本文可以下载此附件)");
-	prints("\033[4m%s\033[m\n",link);
+            strcpy(slink,"(用www方式阅读本文可以下载此附件)");
+	prints("\033[4m%s\033[m\n",slink);
         return;
     } else if (ty >= 2) {
         outns("\033[36m", 5);
