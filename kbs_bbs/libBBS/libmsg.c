@@ -1128,6 +1128,9 @@ int chk_smsmsg(int force , session_t* session){
 	if( ! force )
 		return session->lastsmsstatus;
 
+	if(session->currentmemo->ud.mobileregistered == false)
+		return 0;
+
 	session->lastsmsstatus=0;
 	mysql_init(&s);
 
