@@ -641,7 +641,7 @@ int n;
                              }
                              else if(*(str+i)=='m') {
                                 register int j;
-                                for(j=scr_cols-i-2;j>=reg_col;j--)
+                                for(j=slp->len-1;j>=reg_col;j--)
                                     slp->data[j+i+1]=slp->data[j];
                                 slp->len+=i+1;
                                 for(j=0;j<=i;j++)
@@ -688,9 +688,9 @@ int n;
                         i=reg_col+1;
                         while(!isalpha(slp->data[reg_col+i])&&i<slp->len) i++;
                         if(isalpha(slp->data[reg_col+i])) {
-                            slp->len-=i+1;
-                            for(j=reg_col;j<scr_cols-i-1;j++)
+                            for(j=reg_col;j<slp->len;j++)
                                 slp->data[j]=slp->data[j+i+1];
+                            slp->len-=i+1;
                         }
                      }
 			if (*str == '') {
