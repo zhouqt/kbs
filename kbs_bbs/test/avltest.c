@@ -86,6 +86,7 @@ treenode *AVL_RotateRight(treenode * p)
         temp->Rchild = p;
         p = temp;
     }
+    return p;
 }
 
 treenode *AVL_RightBalance(treenode * r)

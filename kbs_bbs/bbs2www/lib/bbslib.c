@@ -2882,6 +2882,7 @@ static wwwthread_treenode *AVL_RotateRight(wwwthread_treenode * p)
     p->Lchild = temp->Rchild;
     temp->Rchild = p;
     p = temp;
+    return p;
 }
 
 static wwwthread_treenode *AVL_RightBalance(wwwthread_treenode * r)
