@@ -64,6 +64,7 @@ static PHP_FUNCTION(bbs_normalboard);
 static PHP_FUNCTION(bbs_setmailreaded);
 static PHP_FUNCTION(bbs_add_import_path);
 static PHP_FUNCTION(bbs_get_import_path);
+static PHP_FUNCTION(bbs_new_board);
 static PHP_FUNCTION(bbs_set_onboard);
 
 
@@ -121,6 +122,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_setmailreaded,NULL)
 		PHP_FE(bbs_add_import_path,NULL)
 		PHP_FE(bbs_get_import_path,NULL)
+		PHP_FE(bbs_new_board,NULL)
 		PHP_FE(bbs_set_onboard,NULL)
         {NULL, NULL, NULL}
 };
@@ -479,7 +481,6 @@ static PHP_FUNCTION(bbs_getcurrentuser)
 {
     zval *user_array;
     long ret;
-
     MAKE_STD_ZVAL(user_array);
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -1167,11 +1168,12 @@ static PHP_FUNCTION(bbs_get_records_from_id)
         WRONG_PARAM_COUNT;
     }
 
-    /* check for parameter being passed by reference */
+    /* check for parameter being passed by reference 
 	if (currentuser == NULL)
 	{
 		RETURN_LONG(0);
 	}
+	*/
 	if ((bp = getbcache(board)) == NULL)
 	{
 		RETURN_LONG(0);
@@ -1208,7 +1210,7 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
-	  if(articles[i].id){
+	  if(articles[i].id && currentuser ){
 		flags[0] = get_article_flag(articles + i, currentuser, board, is_bm);
 		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
@@ -2605,6 +2607,78 @@ static PHP_FUNCTION(bbs_get_import_path)
 
 	free_import_path(im_path,im_title,&im_time);
 
+}
+
+/*
+ * new a board
+ */
+static PHP_FUNCTION(bbs_new_board)
+{
+	int ac = ZEND_NUM_ARGS();
+
+	char *bname;
+	int bname_len;
+	char *btitle;
+	int btitle_len;
+	char *bbm;
+	int bbm_len;
+	int blevel;
+	int banony;
+	int bjunk;
+	int bout;
+	int bgroup;
+
+	struct boardheader newboard;
+	char vbuf[100];
+
+    if (ac != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssslllll", &bname, &bname_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	bzero(&newboard,sizeof(newboard));
+
+	if(bname_len >= 18)
+		RETURN_LONG(-1);
+
+	strncpy(newboard.filename,bname,18);
+	newboard.filename[17]='\0';
+
+	if( ! valid_brdname(newboard.filename) )
+		RETURN_LONG(-2);
+
+	if( getbnum(newboard.filename) > 0)
+		RETURN_LONG(-3);
+
+	strncpy(newboard.BM, bbm, BM_LEN - 1);
+	newboard.BM[BM_LEN-1] = '\0';
+
+	newboard.level = blevel;
+
+	if( banony )
+		newboard.flag |= BOARD_ANNONY;
+
+	if( bjunk )
+		newboard.flag |= BOARD_JUNK;
+
+	if( bout )
+		newboard.flag |= BOARD_OUTFLAG;
+
+	sprintf(vbuf,"vote/%s",newboard.filename);
+	if( mkdir(vbuf,0755) == -1 )
+		RETURN_LONG( -4);
+
+	sprintf(vbuf,"boards/%s",newboard.filename);
+	if( mkdir(vbuf,0755) == -1 )
+		RETURN_LONG( -5);
+
+	if( add_board( &newboard ) == -1 )
+		RETURN_LONG( -6);
+
+	if(bgroup){
+
+	}
+
+	RETURN_LONG(1);
 }
 
 static PHP_FUNCTION(bbs_set_onboard)
