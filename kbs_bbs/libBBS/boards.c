@@ -105,9 +105,27 @@ void load_favboard(int dohelp)
     }
 #endif
     if ((favbrd_list_t <= 0)) {
-        favbrd_list_t = 1;      /*  favorate board count    */
-        favbrd_list[0].flag = 0;
-        favbrd_list[0].father = -1;
+        char bn[40];
+        FILE* fp=fopen("etc/initial_favboard", "r");
+        if(!fp) {
+            favbrd_list_t = 1;      /*  favorate board count    */
+            favbrd_list[0].flag = 0;
+            favbrd_list[0].father = -1;
+        } else {
+            favbrd_list_t = 1;      /*  favorate board count    */
+            favbrd_list[0].flag = 0;
+            favbrd_list[0].father = -1;
+            while(!feof(fp)) {
+                int k;
+                if(fscanf(fp, "%s", bn)<=1) break;
+                k=getbnum(bn);
+                if(k) {
+                    favbrd_list[favbrd_list_t].flag = k-1;
+                    favbrd_list[favbrd_list_t].father = -1;
+                }
+            }
+            fclose(fp);
+        }
     } else {
         int num = favbrd_list_t;
 
