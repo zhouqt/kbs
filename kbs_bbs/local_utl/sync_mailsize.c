@@ -48,8 +48,8 @@ int calc_mailsize(char *userid, char *dirname)
         char ffn[256];
 #ifndef FORCE_SYNC
         if (ptr1->eff_size > 0) {
-            ptr1++;
             totalsize += ptr1->eff_size;
+            ptr1++;
             continue;
         }
 #endif
