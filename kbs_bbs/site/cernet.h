@@ -42,12 +42,12 @@
 #define BBSGID 			501
 
 /* for bbs2www, by flyriver, 2001.3.9 */
-#define SECNUM 13
+#define SECNUM 8
 #define BBS_PAGE_SIZE 20
 
 #define SQUID_ACCL
 
-#define DEFAULTBOARD    	"test"
+#define DEFAULTBOARD    	"notice"
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
 #undef BLESS_BOARD
@@ -56,7 +56,7 @@
 #define MAXCLUB			1024
 #define MAXBOARD  		1024
 #define MAXACTIVE 		100000
-#define MAX_WWW_GUEST		80000
+#define MAX_WWW_GUEST		200000
 /* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
     make the number of session char from 3 to 4
     */
@@ -89,18 +89,17 @@
 #ifdef SMTH
 #define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
 #endif
-#define MAIL_BBSDOMAIN      "smth.org"
-#define MAIL_MAILSERVER     "166.111.8.236:25"
+#define MAIL_BBSDOMAIN      "quiz.edu.cn"
+#define MAIL_MAILSERVER     ""
 
-#define NAME_BBS_ENGLISH	"smth.org"
-#define	NAME_BBS_CHINESE	"水木清华"
-#define NAME_BBS_NICK		"BBS 站"
+#define NAME_BBS_ENGLISH	"www.edu.cn"
+#define	NAME_BBS_CHINESE	"高考招生咨询网"
+#define NAME_BBS_NICK		""
 
-#define BBS_FULL_NAME "BBS 水木清华站"
+#define BBS_FULL_NAME "高考招生咨询网"
 
 #define FOOTER_MOVIE		"欢  迎  投  稿"
-/*#define ISSUE_LOGIN		"本站使用曙光公司曙光天演服务器"*/
-#define ISSUE_LOGIN		"曙光PC  第21届大运会指定服务器"
+#define ISSUE_LOGIN		""
 #define ISSUE_LOGOUT		"还是走了罗"
 
 #define NAME_USER_SHORT		"用户"

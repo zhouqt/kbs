@@ -222,7 +222,6 @@ extern char *maildoent(char *buf, int num, struct fileheader *ent);
 
 static int check_newpost(struct newpostdata *ptr)
 {
-#ifdef HAVE_BRC_CONTROL
     struct BoardStatus *bptr;
 
     if (ptr->dir)
@@ -235,6 +234,7 @@ static int check_newpost(struct newpostdata *ptr)
         return 0;
     ptr->total = bptr->total;
 
+#ifdef HAVE_BRC_CONTROL
     if (!brc_initial(currentuser->userid, ptr->name)) {
         ptr->unread = 1;
     } else {

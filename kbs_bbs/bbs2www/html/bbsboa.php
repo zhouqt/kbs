@@ -24,7 +24,7 @@
 		$boards = bbs_getboards($section_nums[$group], $yank);
 		//print_r($boards);
 		if ($boards == FALSE)
-			html_error_quit("读取版列表失败");
+			html_error_quit("该分区尚未有版面");
 ?>
 <style type="text/css">A {color: #0000f0}</style>
 <body>
