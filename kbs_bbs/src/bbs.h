@@ -172,7 +172,7 @@ extern long ti;
 #define QUIT 0x666              /* Return value to abort recursive functions */
 #define COUNT 0x2               /* count record */
 
-#define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
+#define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
 #define FILE_OWND  0x2          /* accessed array */
 #define FILE_VISIT 0x4
 #define FILE_MARKED 0x8
@@ -184,8 +184,9 @@ extern long ti;
 #define FILE_CENSOR 0x20        /* for accessed[1], flyriver, 2002.9.29 */
 #define BADWORD_IMG_FILE "etc/badwordv2.img"
 #endif
-#define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
+#define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
+#define FILE_MAILBACK	0x4		/* reply articles mail to owner's mailbox, accessed[1] */
 
 /* Leeward 98.05.11:
 In /etc/sendmail.cf:
