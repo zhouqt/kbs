@@ -284,7 +284,7 @@ var strDesc = '<?php echo htmlspecialchars($brdarr["DESC"]); ?>';
 <tr><td height="20" class="b1"> </td></tr>
 <tr><td align="center" class="b1">
 <?php
-			display_navigation_bar_out($brdarr, $articles, $num, $brdnum);
+			display_navigation_bar_out($brdarr, $articles, ($ftype == $dir_modes["ZHIDING"]) ? 0 : $num, $brdnum);
 ?>
 </td></tr>
 </table>
