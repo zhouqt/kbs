@@ -480,11 +480,17 @@ char    *prompt,        *buf;
                 ochar(Ctrl('H'));
                 ochar(' ');
                 ochar(Ctrl('H'));
+/*
+removed by wwj, just use oflush , 2001/5/8 
+
 #ifndef DEBUG
-/*--- strange code, maybe should call move() after refresh() ---*/
-                move(line, col + clen); /* Leeward 98.02.23 */
-                refresh();
+--- strange code, maybe should call move() after refresh() 
+                move(line, col + clen);  Leeward 98.02.23 
+                refresh();  
+
 #endif
+*/
+                oflush();
                 continue;
             }
             if (!isprint2(ch))
@@ -496,7 +502,7 @@ char    *prompt,        *buf;
                 continue;
             }
             buf[clen++] = ch;
-            move(line, col + clen); /* Leeward 98.02.23 */
+            /* move(line, col + clen);  Leeward 98.02.23  -- removed by wwj 2001/5/8*/
             if (echo)
                 ochar(ch);
             else
