@@ -843,7 +843,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     return clen;
 }
 
-int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int clearlabel)
+int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, chk, cursorx, cursory;
     char savebuffer[25][256];
@@ -871,22 +871,27 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             cursorx = x;
         }
         for(i=0; i<strlen(buf); i++) {
-#ifdef CHINESE_CHARACTER
-            if (DEFINE(currentuser, DEF_CHCHAR)) {
-                if(chk) chk=0;
-                else if(buf[i]<0) chk=1;
-                if(chk&&x>=maxcol) x++;
+            if(chk) chk=0;
+            else if(buf[i]<0) chk=1;
+            if(chk&&x>=maxcol) x++;
+            if(buf[i]!=13&&buf[i]!=10) {
+                if(x>maxcol) {
+                    x = col;
+                    y++;
+                    good_move(y, 0);
+                    clrtoeol();
+                    good_move(y, x);
+                }
+                prints("%c", buf[i]);
+                x++;
             }
-#endif
-            if(x>maxcol) {
+            else {
                 x = col;
                 y++;
                 good_move(y, 0);
                 clrtoeol();
                 good_move(y, x);
             }
-            prints("%c", buf[i]);
-            x++;
             if(i==now-1) {
                 cursory = y;
                 cursorx = x;
@@ -908,6 +913,13 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         }
 #endif        	
         switch(ch) {
+            case Ctrl('Q'):
+                if(y-starty+1<maxline) {
+                    for(i=strlen(buf)+1;i>now;i--)
+                        buf[i]=buf[i-1];
+                    buf[now++]=ch;
+                }
+                break;
             case '\177':
             case Ctrl('H'):
                 if(now>0) {
@@ -989,6 +1001,29 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                     for(i=strlen(buf)+1;i>now;i--)
                         buf[i]=buf[i-1];
                     buf[now++]=ch;
+                    y = starty; x = startx;
+                    chk = 0;
+                    for(i=0; i<strlen(buf); i++) {
+                        if(chk) chk=0;
+                        else if(buf[i]<0) chk=1;
+                        if(chk&&x>=maxcol) x++;
+                        if(buf[i]!=13&&buf[i]!=10) {
+                            if(x>maxcol) {
+                                x = col;
+                                y++;
+                            }
+                            x++;
+                        }
+                        else {
+                            x = col;
+                            y++;
+                        }
+                    }
+                    if(y-starty+1>maxline) {
+                        for(i=now-1;i<strlen(buf);i++)
+                            buf[i]=buf[i+1];
+                        now--;
+                    }
                 }
                 break;
         }

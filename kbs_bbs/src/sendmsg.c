@@ -25,10 +25,10 @@ int line;
 
     move(line, 0);
     clrtoeol();
-    prints("ÀÕ“Ù–≈∏¯:%-12s  “Ù–≈: ", uid);
+    prints("ÀÕ“Ù–≈∏¯:%-12s    «Î ‰»Î“Ù–≈ƒ⁄»›£¨Ctrl+Q ªª––:", uid);
     memset(msg, 0, sizeof(msg));
     while (1) {
-        i = multi_getdata(line, 29, 77, NULL, msg, MAX_MSG_SIZE, false);
+        i = multi_getdata(line, 0, 79, NULL, msg, MAX_MSG_SIZE, 11, false);
         if (msg[0] == '\0')
             return false;
         getdata(line + i, 0, "»∑∂®“™ÀÕ≥ˆ¬(Y) «µƒ (N)≤ª“™ (E)‘Ÿ±‡º≠? [Y]: ", genbuf, 2, DOECHO, NULL, 1);
@@ -378,7 +378,7 @@ int dowall(struct user_info *uin, char *buf2)
 
 int wall()
 {
-    char buf2[STRLEN];
+    char buf2[MAX_MSG_SIZE];
 
     if (check_systempasswd() == false)
         return 0;
@@ -414,7 +414,7 @@ void r_msg_sig(int signo)
 
 void r_msg()
 {
-    int y, x, ch, i, ox, oy, tmpansi, pid;
+    int y, x, ch, i, ox, oy, tmpansi, pid, oldi;
     char savebuffer[25][256];
     char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN], uid[14];
     struct user_info * uin;
@@ -424,7 +424,8 @@ void r_msg()
     good_getyx(&y, &x);
     tmpansi = showansi;
     showansi = 1;
-//    set_alarm(0, 0, NULL, NULL);
+    oldi = i_timeout;
+    set_alarm(0, 0, NULL, NULL);
     RMSG = true;
     RMSGCount++;
     for(i=0;i<=23;i++)
@@ -488,10 +489,9 @@ void r_msg()
             first = 0;
         }
         
-
         clrtoeol();
         if(canreply)
-            prints("[m %3d/%-3d, ªÿ∏¥ %-12s: ", now+1, count, uid);
+            prints("[m %3d/%-3d, ªÿ∏¥ %-12s : \n", now+1, count, uid);
         else
             if(uin)
                 prints("[m %3d/%-3d,°¸°˝«–ªª,EnterΩ· ¯, ∏√œ˚œ¢Œﬁ∑®ªÿ∏¥", now+1, count);
@@ -500,7 +500,7 @@ void r_msg()
         good_getyx(&oy, &ox);
         
         if(canreply)
-            ch = -multi_getdata(oy, ox, 77, NULL, buf, 1024, true);
+            ch = -multi_getdata(oy, ox, 79, NULL, buf, 1024, 11, true);
         else {
             refresh();
             do {
@@ -551,8 +551,8 @@ outhere:
     showansi = tmpansi;
     good_move(y,x);
     refresh();
-//    if(nettyNN)
-//        R_monitor(NULL);
+    if(oldi)
+        R_monitor(NULL);
     RMSGCount--;
     if (0 == RMSGCount)
         RMSG = false;
@@ -582,7 +582,7 @@ int myfriend_wall(struct user_info *uin, char *buf, int i)
 
 int friend_wall()
 {
-    char buf[80];
+    char buf[MAX_MSG_SIZE];
 
     if (uinfo.invisible) {
         move(2, 0);

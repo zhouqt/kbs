@@ -568,7 +568,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         }
         if (save_msgtext(uident, &head, msgstr) < 0)
             return -2;
-        if (strcmp(currentuser->userid, uident)) {
+        if (strcmp(currentuser->userid, uident)&&mode!=3) {
             if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
                 return -2;
         }
@@ -586,7 +586,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 
     if (save_msgtext(uident, &head, msgstr) < 0)
         return -2;
-    if (strcmp(currentuser->userid, uident)) {
+    if (strcmp(currentuser->userid, uident)&&mode!=3) {
         if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
             return -2;
     }
@@ -600,51 +600,50 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 int translate_msg(char* src, struct msghead *head, char* dest)
 {
     char id[14], *time, attstr[STRLEN];
-    int i,j=0,len,pos,space, ret=0;
+    int i,j=0,len,pos,ret=0;
     time = ctime(&head->time)+4;
     dest[0] = 0;
-    space=29;
     switch(head->mode) {
         case 0:
         case 2:
         case 4:
             if(!head->sent) {
-                sprintf(dest, "[44%sm\x1b[36m%-14.14s[33m(%-12.12s):[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(dest, "[44%sm\x1b[36m%-14.14s[33m(%-12.12s):[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
                 sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
-                sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m", head->id, time);
+                sprintf(dest, "\x1b[0;1;32m=>[37m%-12.12s[33m(%-12.12s):[36m\n", head->id, time);
                 sprintf(attstr, "[36;1m");
             }
             break;
         case 3:
-            sprintf(dest, "[44%sm\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time);
+            sprintf(dest, "[44%sm\x1b[33mÕ¾³¤ÓÚ %13.13s Ê±¹ã²¥£º[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time);
             sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             break;
         case 1:
             if(!head->sent) {
-                sprintf(dest, "[44%sm\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(dest, "[44%sm\x1b[36m%-12.12s(%-12.12s) ÑûÇëÄã[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
                 sprintf(attstr, "[44m%s[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
-                sprintf(dest, "[44%sm\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time, head->id);
+                sprintf(dest, "[44%sm\x1b[37mÄã(%-12.12s) ÑûÇë%-12.12s[36m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time, head->id);
                 sprintf(attstr, "[44%sm[36m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
-            space=33;
+//            space=33;
             break;
         case 5:
-            sprintf(dest, "[45%sm\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+            sprintf(dest, "[45%sm\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-12.12s\x1b[33m):\x1b[37m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
             sprintf(attstr, "[45%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
-            space=29;
+//            space=29;
             break;
     }
     len = strlen(dest);
-    pos = space;
+    pos = 0;
     for(i=0;i<strlen(src);i++){
         if(j) j=0;
         else if(src[i]<0) j=1;
-        if(j==0&&pos>=78||j==1&&pos>=77) {
-            for(;pos<79;pos++)
+        if(j==0&&pos>=80||j==1&&pos>=79) {
+            for(;pos<80;pos++)
                 dest[len++]=' ';
             dest[len++]='';
             dest[len++]='[';
@@ -653,13 +652,11 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             ret++;
             for(pos=0;pos<strlen(attstr);pos++)
                 dest[len++]=attstr[pos];
-            for(pos=0;pos<space;pos++)
-                dest[len++]=' ';
         }
         dest[len++]=src[i];
         pos++;
     }
-    for(;pos<79;pos++)
+    for(;pos<80;pos++)
         dest[len++]=' ';
     dest[len++]='';
     dest[len++]='[';
