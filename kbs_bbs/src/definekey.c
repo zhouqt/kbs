@@ -22,8 +22,8 @@ int load_key()
     char fname[STRLEN];
     struct stat st;
     release_key();
-    stat(fp, &st);
     sethomefile(fname, currentuser->userid, "definekey");
+    stat(fname, &st);
     fp=fopen(fname, "rb");
     if(fp==NULL) return -1;
     keymem_total = st.st_size/sizeof(struct key_struct);
@@ -288,6 +288,7 @@ int define_key()
     struct _select_def group_conf;
     struct key_struct key;
     POINT *pts;
+    int i;
 
     if(keymem_total==0) {
         key.key = 'A';
