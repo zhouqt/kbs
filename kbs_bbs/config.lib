@@ -39,7 +39,7 @@ CFLAGS="$CFLAGS $ZLIB_INC"
 
 AC_ARG_WITH(mysql,
 [  --with-mysql[=DIR]
-       Include MySQL support.],
+       Include MySQL support (online dictionary, quiz game required this).],
 MYSQL_DIR="$withval", MYSQL_DIR="yes")
 
 if test "$MYSQL_DIR" != "no"; then
@@ -61,29 +61,81 @@ if test "$MYSQL_DIR" != "no"; then
   fi
   
   if test -z "$MYSQL_DIR"; then
-    AC_MSG_ERROR(Cannot find MySQL library.)
+    MYSQL_NOTFOUND=yes
+  fi
+
+  if test "$MYSQL_NOTFOUND" != "yes"; then
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS -L$MYSQL_DIR/lib"
+    AC_CHECK_LIB(mysqlclient, mysql_real_connect, [
+      AC_DEFINE(HAVE_MYSQL,1,[Enable MySQL support])
+    ],[
+  	AC_MSG_ERROR(The MYSQL library not found)
+    ],[ -L$MYSQL_DIR/lib/mysql ])
+    LIBS=$SAVE_LIBS
+
+    MYSQL_LIBS="-L$MYSQL_DIR/lib -L$MYSQL_DIR/lib/mysql -lmysqlclient"
+    MYSQL_INC="-I$MYSQL_INC"
+    LIBS="$LIBS $MYSQL_LIBS"
+    CFLAGS="$CFLAGS $MYSQL_INC"
+  fi
+fi
+
+
+AC_ARG_WITH(libesmtp,
+[  --with-libesmtp[=DIR]
+       Specify libesmtp library directory.],
+LIBESMTP_DIR="$withval", LIBESMTP_DIR="no")
+
+if test "$LIBESMTP_DIR" != "no"; then
+  if test -f $LIBESMTP_DIR/include/libesmtp.h; then
+      LIBESMTP_INC=$LIBESMTP_DIR/include
+  fi
+ 
+  if test -z "$LIBESMTP_INC"; then
+    AC_MSG_ERROR(Cannot find libesmtp library.)
   fi
 
   SAVE_LIBS=$LIBS
-  LIBS="$LIBS -L$MYSQL_DIR/lib"
-  AC_CHECK_LIB(mysqlclient, mysql_real_connect, [
-    AC_DEFINE(HAVE_MYSQL,1,[ ])
+  LIBS="$LIBS -L$LIBESMTP_DIR/lib"
+  AC_CHECK_LIB([esmtp], [smtp_create_session], [
+    AC_DEFINE(HAVE_LIBESMTP,1,[ ])
   ],[
-	AC_MSG_ERROR(MYSQL extension required)
-  ],[ -L$MYSQL_DIR/lib/mysql ])
+    AC_MSG_ERROR(The libesmtp library required)])
+
   LIBS=$SAVE_LIBS
 
-  MYSQL_LIBS="-L$MYSQL_DIR/lib -L$MYSQL_DIR/lib/mysql -lmysqlclient"
-  MYSQL_INC="-I$MYSQL_INC"
+  LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
+  LIBESMTP_INC="-I$LIBESMTP_INC"
 else
-  AC_MSG_ERROR(Need MySQL support)
-fi
+  for i in /usr/local /usr ; do
+    if test -f $i/include/libesmtp.h; then
+      LIBESMTP_DIR=$i
+      LIBESMTP_INC=$i/include
+    fi
+  done
+  
+  if test "$LIBESMTP_DIR" = "no"; then
+    AC_MSG_ERROR(Cannot find libesmtp library.)
+  fi
 
-LIBS="$LIBS $MYSQL_LIBS"
-CFLAGS="$CFLAGS $MYSQL_INC"
+  SAVE_LIBS=$LIBS
+  LIBS="$LIBS -L$LIBESMTP_DIR/lib"
+  AC_CHECK_LIB([esmtp], [smtp_create_session], [
+    AC_DEFINE(HAVE_LIBESMTP,1,[ ])
+  ],[
+    AC_MSG_ERROR(The libesmtp library required)])
+
+  LIBS=$SAVE_LIBS
+
+  LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
+  LIBESMTP_INC="-I$LIBESMTP_INC"
+fi
+LIBS="$LIBS $LIBESMTP_LIBS"
+CFLAGS="$CFLAGS $LIBESMTP_INC"
+
 
 AC_CHECK_LIB([bsd], [vfork], [LIBS="$LIBS -lbsd"])
 AC_CHECK_LIB([dl], [dlopen], [LIBS="$LIBS -ldl"])
-AC_CHECK_LIB([esmtp], [smtp_create_session], [LIBS="$LIBS -lesmtp"])
 AC_CHECK_LIB([ltdl], [lt_dlopen], [LIBS="$LIBS -lltdl"])
 
