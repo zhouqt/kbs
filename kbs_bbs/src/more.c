@@ -844,7 +844,7 @@ void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
 int
 next_MemMoreLines(struct MemMoreLines *l)
 {
-	int i, n;
+	int n;
 	char *p0;
 
 	if (l->curr_line + 1 >= l->start + l->num) {
@@ -1026,7 +1026,7 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
 	return 0;
 }
 
-mem_printbotline(int l1, int l2, int total, int read, int size)
+void mem_printbotline(int l1, int l2, int total, int read, int size)
 {
 	extern int t_lines;
 /*	static int n = 0;

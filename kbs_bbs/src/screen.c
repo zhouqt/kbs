@@ -181,7 +181,6 @@ void
 redoscr()
 {
     register int i,j ;
-    int ochar() ;
     register struct screenline *bp = big_picture ;
 
     o_clear() ;

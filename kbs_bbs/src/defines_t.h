@@ -34,6 +34,7 @@ void scroll();
 void rscroll();
 
 /* newio.c */
+void ochar(int     c);
 int ask( char *prompt);
 void oflush();
 int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,void* nouse,int clearlabel);
