@@ -23,10 +23,10 @@
 			$title = "À¬»øÏä";
 		}
 		
-		if(!isset($_POST["mailnum"]) || $mailnum == 0)
+		if(!isset($_POST["mailnum"]) || $_POST["mailnum"] == 0)
 			$mail_num = 19;
 		else
-			$mail_num = $mailnum;
+			$mail_num = $_POST["mailnum"];
 		
 		if (strstr($dirname,'..'))
 		{
