@@ -769,10 +769,8 @@ int m_editbrd()
 int searchtrace()
 {
     int id;
-#ifndef NEWPOSTLOG
     char tmp_command[80];
-#endif
-	char tmp_id[20];
+    char tmp_id[20];
     char buf[8192];
     struct userec *lookupuser;
 	char buffile[256];
