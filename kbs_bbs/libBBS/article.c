@@ -551,8 +551,6 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     postfile.owner[OWNER_LEN - 1] = 1;
     setbfile(filepath, toboard, postfile.filename);
 
-    postfile.eff_size=get_effsize(filepath);
-
     local_article = 1;          /* default is local article */
     if (islocal != 'l' && islocal != 'L') {
         if (is_outgo_board(toboard))
@@ -563,6 +561,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 #endif
     getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, toboard);        /*根据fname完成 文件复制 */
 
+    postfile.eff_size=get_effsize(filepath);
     /*
      * Changed by KCN,disable color title 
      */
