@@ -225,7 +225,7 @@ int show_allmsgs()
             load_msghead(all?2:0, currentuser->userid, i, &head);
             load_msgtext(currentuser->userid, &head, buf);
             j = translate_msg(buf, &head, showmsg);
-            while(y+j<=23) {
+            while(y+j<=t_lines-1) {
                 y+=j; i++;
                 prints("%s", showmsg);
                 if(i>=count) break;
@@ -234,7 +234,7 @@ int show_allmsgs()
                 j = translate_msg(buf, &head, showmsg);
             }
         }
-        good_move(23,0);
+        good_move(t_lines-1,0);
         if(!all)
             prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô<[37mr[32m> Çå³ı<[37mc[32m> ¼Ä»ØĞÅÏä<[37mm[32m> ·¢Ñ¶ÈË<[37mi[32m> Ñ¶Ï¢ÄÚÈİ<[37ms[32m>        Ê£Óà:%4d ", count-i);
         else
@@ -281,9 +281,9 @@ reenter:
                 reload = 1;
                 count = get_msgcount(0, currentuser->userid);
                 if(count==0) break;
-                good_move(23, 0);
+                good_move(t_lines-1, 0);
                 clrtoeol();
-                getdata(23, 0, "ÇëÊäÈë¹Ø¼ü×Ö:", chk, 50, true, NULL, true);
+                getdata(t_lines-1, 0, "ÇëÊäÈë¹Ø¼ü×Ö:", chk, 50, true, NULL, true);
                 if(chk[0]) {
                     int fd, fd2;
                     char fname[STRLEN], fname2[STRLEN];
@@ -502,8 +502,10 @@ void r_msg()
         clrtoeol();
         good_getyx(&oy, &ox);
         
-        if(canreply)
+        if(canreply) {
             ch = -multi_getdata(oy, ox, 79, NULL, buf, 1024, 11, true);
+            if(ch<0) oy-=ch+1;
+        }
         else {
             do {
                 ch = igetkey();
@@ -522,6 +524,7 @@ void r_msg()
                 break;
             default:
                 if(canreply) {
+                    maxy=oy-ch;
                     if(buf[0]) {
                         strcpy(MsgDesUid, uid);
                         i = do_sendmsg(uin, buf, 4);
