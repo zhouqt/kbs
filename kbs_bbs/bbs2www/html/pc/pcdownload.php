@@ -10,23 +10,25 @@
     if (!($f = new UserFile($fid)))
         html_error_quit("文件不存在");
     
-    if ($f->access != 0) {
-        $pc = pc_load_infor($link,'',$f->uid);    
-        if (!$pc)
-            html_error_quit("文件不存在");
-        if ($f->access == 2) {
-            if (!pc_is_admin($currentuser,$pc))
+    if ($pcconfig["USERFILEPERM"])
+        if ($f->access != 0) {
+            $pc = pc_load_infor($link,'',$f->uid);    
+            if (!$pc)
                 html_error_quit("文件不存在");
+            if ($f->access == 2) {
+                if (!pc_is_admin($currentuser,$pc))
+                    html_error_quit("文件不存在");
+            }
+            if ($f->access == 1) {
+               if  (!pc_is_friend($currentuser["userid"],$pc["USER"]))
+                    html_error_quit("文件不存在");
+            }
         }
-        if ($f->access == 1) {
-           if  (!pc_is_friend($currentuser["userid"],$pc["USER"]))
-                html_error_quit("文件不存在");
-        }
-    }
+        
     pc_db_close($link);
 	
-    if ($f->access == 0)
-        if (cache_header("public",$f->filetime,86400))
+    if (!$pcconfig["USERFILEPERM"] || $f->access == 0)
+        if (cache_header("public",$f->filetime,600))
             return;
         
     if (!($file = fopen($f->filepath, "rb")))

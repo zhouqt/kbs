@@ -17,6 +17,7 @@ $pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
 $pcconfig["TMPSAVETIME"] :开启发文暂存功能时，保存的时间间隔， 单位为秒
 $pcconfig["USERFILES"] :支持用户个人空间,若支持需要定义 _USER_FILE_ROOT_
 $pcconfig["USERFILESLIMIT"]:用户个人空间的默认大小,单位是b
+$pcconfig["USERFILEPERM"]:用户个人空间是否支持权限控制
 pc_personal_domainname($userid)函数 :用户Blog的域名;
 */
 $pcconfig["LIST"] = 100;
@@ -36,6 +37,7 @@ $pcconfig["TMPSAVETIME"] = 300;
 $pcconfig["ALLCHARS"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 $pcconfig["USERFILES"] = true;
 $pcconfig["USERFILESLIMIT"] = 2*1024*1024;
+$pcconfig["USERFILEPERM"]= false;
 $pcconfig["SECTION"] = array(
 			"personal" => "个人空间" ,
 			"literature" => "原创文学" ,

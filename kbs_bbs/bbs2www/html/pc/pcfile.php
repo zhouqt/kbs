@@ -115,6 +115,7 @@ function pc_file_showfiles($pc,$c_dir,$root_pid)
 
 function pc_file_uploadform($pc,$pid,$c_dir)
 {
+    global $pcconfig;
 ?>
 <center>
 <br />
@@ -124,11 +125,23 @@ function pc_file_uploadform($pc,$pid,$c_dir)
 <tr><td colspan="2" class="t2">上传新文件</td></tr>
 <tr><td class="t3">文件</td><td class="t5">
 <input type="file" name="pcfile" size="20" class="f1">
-</td><tr><tr><td class="t3">权限</td><td class="t5">
+</td></tr>
+<?php
+    if ($pcconfig["USERFILEPERM"]) {
+?>
+<tr><td class="t3">权限</td><td class="t5">
 <input type="radio" name="fileaccess" class="f1" value="0" <?php if($c_dir->access==0) echo 'checked'; ?> />公开
 <input type="radio" name="fileaccess" class="f1" value="1" <?php if($c_dir->access==1) echo 'checked'; ?>/>好友
 <input type="radio" name="fileaccess" class="f1" value="2" <?php if($c_dir->access==2) echo 'checked'; ?>/>私有
 </td></tr>
+<?php   
+    }
+    else {
+?>
+<input type="hidden" name="fileaccess" value="0" />
+<?php
+    }
+?>
 <tr><td class="t3">备注</td><td class="t5">
 <input type="text" name="fileremark" class="f1" />
 </td></tr>
@@ -144,11 +157,23 @@ function pc_file_uploadform($pc,$pid,$c_dir)
 <tr><td colspan="2" class="t2">新建文件夹</td></tr>
 <tr><td class="t3">名称</td><td class="t5">
 <input type="text" name="dirname" size="20" class="f1">
-</td><tr><tr><td class="t3">权限</td><td class="t5">
+</td></tr>
+<?php
+    if ($pcconfig["USERFILEPERM"]) {
+?>
+<tr><td class="t3">权限</td><td class="t5">
 <input type="radio" name="diraccess" class="f1" value="0" <?php if($c_dir->access==0) echo 'checked'; ?> />公开
 <input type="radio" name="diraccess" class="f1" value="1" <?php if($c_dir->access==1) echo 'checked'; ?>/>好友
 <input type="radio" name="diraccess" class="f1" value="2" <?php if($c_dir->access==2) echo 'checked'; ?>/>私有
 </td></tr>
+<?php   
+    }
+    else {
+?>
+<input type="hidden" name="diraccess" value="0" />
+<?php
+    }
+?>
 <tr><td class="t3">备注</td><td class="t5">
 <input type="text" name="dirremark" class="f1" />
 </td></tr>
@@ -164,6 +189,7 @@ function pc_file_uploadform($pc,$pid,$c_dir)
 }
 
 function pc_file_editform($pc,$pid,$f) {
+    global $pcconfig;
 ?>
 <center>
 <br /><br /><br /><br />
@@ -172,11 +198,23 @@ function pc_file_editform($pc,$pid,$f) {
 <tr><td colspan="2" class="t2">修改文件/目录</td></tr>
 <tr><td class="t3">文件/目录名</td><td class="t5">
 <input type="text" name="newname" size="20" class="f1" value="<?php echo htmlspecialchars($f->filename); ?>">
-</td><tr><tr><td class="t3">权限</td><td class="t5">
+</td></tr>
+<?php
+    if ($pcconfig["USERFILEPERM"]) {
+?>
+<tr><td class="t3">权限</td><td class="t5">
 <input type="radio" name="newaccess" class="f1" value="0" <?php if($f->access==0) echo 'checked'; ?>/>公开
 <input type="radio" name="newaccess" class="f1" value="1" <?php if($f->access==1) echo 'checked'; ?>/>好友
 <input type="radio" name="newaccess" class="f1" value="2" <?php if($f->access==2) echo 'checked'; ?>/>私有
 </td></tr>
+<?php   
+    }
+    else {
+?>
+<input type="hidden" name="newaccess" value="0" />
+<?php
+    }
+?>
 <tr><td class="t3">备注</td><td class="t5">
 <input type="text" name="newremark" class="f1" value="<?php echo $f->remark; ?>" />
 </td></tr>
