@@ -301,7 +301,6 @@ static int set_keydefine_prekey(struct _select_def *conf, int *key)
         tmpnum = 0;
 
     switch (*key) {
-    case 'e':
     case 'q':
         *key = KEY_LEFT;
         break;
