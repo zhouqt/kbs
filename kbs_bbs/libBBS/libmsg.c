@@ -779,8 +779,6 @@ int wait_for_result()
             return -1;
         }
     }
-    signal(SIGUSR1, talk_request);
-    
     move(t_lines-1, 0);
     clrtoeol();
     fp=fopen(fn, "r");

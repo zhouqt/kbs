@@ -686,6 +686,7 @@ int register_sms()
             return -1;
         }
         if(DoReg(curruserdata.mobilenumber)) {
+            signal(SIGUSR1, talk_request);
             move(5, 0);
             prints("·¢ËÍ×¢²áÂëÊ§°Ü");
             pressreturn();
@@ -693,12 +694,14 @@ int register_sms()
             buf=NULL;
             return -1;
         }
+        signal(SIGUSR1, talk_request);
         move(5, 0);
         prints("·¢ËÍ×¢²áÂë³É¹¦");
     }
     getdata(6, 0, "ÇëÊäÈëÄãµÄ×¢²áÂë: ", valid, 11, 1, 0, 1);
     if(!valid[0]) return -1;
     if(DoCheck(curruserdata.mobilenumber, valid)) {
+        signal(SIGUSR1, talk_request);
         move(7, 0);
         prints("×¢²áÂë¼ì²éÊ§°Ü");
         pressreturn();
@@ -706,6 +709,7 @@ int register_sms()
         buf=NULL;
         return -1;
     }
+    signal(SIGUSR1, talk_request);
     curruserdata.mobileregistered = 1;
     write_userdata(currentuser->userid, &curruserdata);
     move(7, 0);
@@ -735,6 +739,7 @@ int unregister_sms()
     getdata(3, 0, buf2, ans, 3, 1, 0, 1);
     if(toupper(ans[0])=='Y') {
         if(DoUnReg(curruserdata.mobilenumber)) {
+            signal(SIGUSR1, talk_request);
             move(5, 0);
             prints("È¡Ïû×¢²áÊ§°Ü");
             pressreturn();
@@ -742,6 +747,7 @@ int unregister_sms()
             buf=NULL;
             return -1;
         }
+        signal(SIGUSR1, talk_request);
         move(5, 0);
         prints("È¡Ïû×¢²á³É¹¦");
         curruserdata.mobilenumber[0]=0;
@@ -834,6 +840,7 @@ int do_send_sms_func(char * dest, char * msgstr)
         strcpy(buf, msgstr);
 
     ret = DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
+    signal(SIGUSR1, talk_request);
     if(ret) {
         clrtoeol();
         prints("·¢ËÍÊ§°Ü....");
