@@ -292,13 +292,15 @@ static int search_board(int *num, struct _select_def *conf, int key)
                     tmpn = true;
                     *num = n;
                 }
-                if (!strcmp(arg->namelist[n], arg->bname))
+                if (!strcmp(arg->namelist[n], arg->bname)) {
         			ingetdata = false;
                     return 1 /*找到类似的版，画面重画 */ ;
+				}
             }
-            if (tmpn)
+            if (tmpn) {
         		ingetdata = false;
                 return 1;
+			}
             if (arg->find == false) {
                 arg->bname[--arg->bname_len] = '\0';
             }
