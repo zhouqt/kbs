@@ -30,7 +30,8 @@ hash(char *postname)
 int
 ispostfilename(char *file)
 {
-	if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
+	if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2)
+	    &&strncmp(file, "D.", 2) && strncmp(file, "J.", 2))
 		return 0;
 	if (!isdigit(file[3]))
 		return 0;
