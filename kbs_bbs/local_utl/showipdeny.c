@@ -34,6 +34,7 @@ int main(int argc, char **argv)
         unlink(fn);
         if(count==0) {
             unlink(fn2);
+            return;
         }
         bzero(&deliveruser, sizeof(struct userec));
         strcpy(deliveruser.userid, "deliver");
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
         p = ctime(&tt);
         p[19]=0; p+=4;
         sprintf(fn, "%sµÄ·¸×ï¼ÇÂ¼", p);
-        post_file(&deliveruser, NULL, fn2, "system_dev", fn, 0, 1);
+        post_file(&deliveruser, NULL, fn2, "surrender", fn, 0, 1);
         unlink(fn2);
     }
     return 0;

@@ -3381,7 +3381,7 @@ int Goodbye()
         char tmpfile[256];
         FILE *fp;
 
-        strcpy(lbuf, "自首-");
+/*        strcpy(lbuf, "自首-");
         strftime(lbuf + 5, 30, "%Y-%m-%d%Y:%H:%M", localtime(&login_start_time));
         sprintf(tmpfile, "tmp/.tmp%d", getpid());
         fp = fopen(tmpfile, "w");
@@ -3389,7 +3389,7 @@ int Goodbye()
             fputs(lbuf, fp);
             fclose(fp);
             mail_file(currentuser->userid, tmpfile, "surr", "自首", BBSPOST_MOVE, NULL);
-        }
+        }*/
     }
     /*
      * stephen on 2001.11.1: 上站不足5分钟不计算上站次数 
