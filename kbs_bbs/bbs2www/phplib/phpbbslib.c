@@ -2007,7 +2007,8 @@ static int bbs_cmpboard(const struct newpostdata *brd, const struct newpostdata 
 }
 
 /* TODO: move this function into bbslib. */
-static int check_newpost(struct newpostdata *ptr)
+/* no_brc added by atppp 20040706 */
+static int check_newpost(struct newpostdata *ptr, bool no_brc)
 {
     struct BoardStatus *bptr;
 
@@ -2023,6 +2024,8 @@ static int check_newpost(struct newpostdata *ptr)
         return 1;
     }
 
+    if (no_brc) return 1;
+
 #ifdef HAVE_BRC_CONTROL
     if (!brc_initial(getCurrentUser()->userid, ptr->name, getSession())) {
         ptr->unread = 1;
@@ -2031,8 +2034,6 @@ static int check_newpost(struct newpostdata *ptr)
             ptr->unread = 1;
         }
     }
-#else
-    ptr->unread = 0;
 #endif
     return 1;
 }
@@ -2128,7 +2129,10 @@ unsigned int * zapbuf;
 /**
  * Fetch all boards which have given prefix into an array.
  * prototype:
- * array bbs_getboards(char *prefix, int group, int yank);
+ * array bbs_getboards(char *prefix, int group, int flag);
+ *
+ * flag: bit 0 (LSB): yank
+ *           1      : no_brc. set to 1 when you don't need BRC info.
  *
  * @return array of loaded boards on success,
  *         FALSE on failure.
@@ -2142,7 +2146,7 @@ static PHP_FUNCTION(bbs_getboards)
      */
     char *prefix;
     int plen;
-    int yank;
+    int flag;
     int rows = 0;
     struct newpostdata newpost_buffer;
     struct newpostdata *ptr;
@@ -2151,7 +2155,7 @@ static PHP_FUNCTION(bbs_getboards)
     int i;
     int j;
     int ac = ZEND_NUM_ARGS();
-    int brdnum, yank_flag;
+    int brdnum, yank, no_brc;
     int group;
 	int total;
 
@@ -2163,7 +2167,7 @@ static PHP_FUNCTION(bbs_getboards)
     /*
      * getting arguments 
      */
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &prefix, &plen, &group,&yank) == FAILURE) {
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &prefix, &plen, &group,&flag) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
@@ -2192,9 +2196,8 @@ static PHP_FUNCTION(bbs_getboards)
 
 	total=get_boardcount();
     
-	yank_flag = yank;
-    if (yank_flag !=1 )
-	yank_flag =0 ;
+	yank = flag & 1;
+    no_brc = flag & 2;
 
     if  (zapbuf==NULL)  {
 		char fname[STRLEN];
@@ -2248,7 +2251,7 @@ static PHP_FUNCTION(bbs_getboards)
 	        }
 	        if ((group==0)&&( strchr(prefix, bptr->title[0]) == NULL && prefix[0] != '*'))
 	            continue;
-	        if (yank_flag || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
+	        if (yank || zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
 	            /*¶¼ÒªÅÅÐò*/
 	            for (i=0;i<brdnum;i++) {
 				    if ( strcasecmp(namelist[i], bptr->filename)>0) 
@@ -2276,7 +2279,7 @@ static PHP_FUNCTION(bbs_getboards)
 			   	ptr->total = bptr->board_data.group_total;
 		   	} else ptr->total=-1;
 		   	ptr->zap = (zapbuf[indexlist[i]] == 0);
-   			check_newpost(ptr);
+   			check_newpost(ptr, no_brc);
 	        for (j = 0; j < BOARD_COLUMNS; j++) {
        		    MAKE_STD_ZVAL(element);
 	            bbs_make_board_zval(element, brd_col_names[j], ptr);
@@ -2391,7 +2394,7 @@ static PHP_FUNCTION(bbs_getboards)
      */
     for (i = 0; i < rows; i++) {
         ptr = &newpost_buffer[i];
-        check_newpost(ptr);
+        check_newpost(ptr, false);
         for (j = 0; j < BOARD_COLUMNS; j++) {
             MAKE_STD_ZVAL(element);
             bbs_make_board_zval(element, brd_col_names[j], ptr);
@@ -8349,7 +8352,7 @@ static PHP_FUNCTION(bbs_fav_boards)
      */
    for (i = 0; i < rows; i++) {
         ptr = &newpost_buffer[i];
-        check_newpost(ptr);
+        check_newpost(ptr, false);
         for (j = 0; j < BOARD_COLUMNS; j++) {
             MAKE_STD_ZVAL(element);
 			if (ptr->flag == -1) /* the item is a directory */
