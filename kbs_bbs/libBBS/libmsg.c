@@ -3,6 +3,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <assert.h>
+#include <mysql.h>
 #define MAXMESSAGE 5
 char MsgDesUid[20];
 char msgerr[255];
@@ -133,6 +134,7 @@ int delfrom_msglist(int utmpnum, char *userid)
     close(msgbuf.sockfd);
     return -1;
 }
+
 int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, 
 				time_t sndtime, char *msg)
 {
@@ -250,6 +252,60 @@ int msg_can_sendmsg(char *userid, int utmpnum)
         return 0;
 
     return 1;
+}
+
+int my_connect_mysql(MYSQL *s){
+	
+    return mysql_real_connect(s, 
+                            sysconf_str("MYSQLHOST"),
+                            sysconf_str("MYSQLUSER"),
+			    sysconf_str("MYSQLPASSWORD"),
+			    sysconf_str("MYSQLDATABASE"),
+			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0);
+}
+
+int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
+{
+	MYSQL s;
+	char newmsgbuf[2048];
+	char sql[2600];
+	int i,j;
+
+	mysql_init(&s);
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+
+	for(i=0,j=0; msgbuf[i] && j < 2047 ; i++){
+		if(msgbuf[i] == '\'' || msgbuf[i]=='\"'){
+			newmsgbuf[j++]='\\';
+			newmsgbuf[j++]=msgbuf[i];
+		}else
+			newmsgbuf[j++]=msgbuf[i];
+	}
+	newmsgbuf[j] = 0;
+
+	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+
+	mysql_close(&s);
+
+	return 0;
 }
 
 int save_msgtext(char *uident, struct msghead * head, char *msgbuf)
@@ -564,9 +620,11 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         }
         if (save_msgtext(uident, &head, msgstr) < 0)
             return -2;
+        //save_smsmsg(uident, &head, msgstr, 1);
         if (strcmp(currentuser->userid, uident)&&mode!=3) {
             if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
                 return -2;
+            //save_smsmsg(currentuser->userid, &head2, msgstr, 1) ;
         }
         return 1;
     }
@@ -582,9 +640,11 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 
     if (save_msgtext(uident, &head, msgstr) < 0)
         return -2;
+    //save_smsmsg(uident, &head, msgstr, 1) ;
     if (strcmp(currentuser->userid, uident)&&mode!=3) {
         if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
             return -2;
+        //save_smsmsg(currentuser->userid, &head2, msgstr, 1) ;
     }
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
         strcpy(msgerr, "对方已经离线.....");
@@ -921,5 +981,357 @@ int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
     return wait_for_result();
 }
 
+int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt)
+{
+
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[600];
+	char qtmp[100];
+	int i;
+
+	if(userid == NULL || *userid == 0 )
+		return -1;
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+
+	sprintf(sql,"SELECT * FROM smsmsg WHERE userid=\"%s\"", userid );
+
+	if(dest && *dest){
+		snprintf(qtmp, 99, " AND dest=\"%s\"", dest);
+		strcat(sql, qtmp);
+	}
+
+	if(start_time){
+		snprintf(qtmp, 99, " AND timestamp>FROM_UNIXTIME(%lu)+0", start_time);
+		strcat(sql, qtmp);
+	}
+
+	if(end_time){
+		snprintf(qtmp, 99, " AND timestamp<FROM_UNIXTIME(%lu)+0", end_time);
+		strcat(sql, qtmp);
+	}
+
+	if(type != -1){
+		snprintf(qtmp, 99, " AND type=\"%d\"", type);
+		strcat(sql, qtmp);
+	}
+
+	if(msgtxt && msgtxt[0]){
+		char newmsgtxt[60];
+		int ii,jj;
+		for(ii=0,jj=0; msgtxt[ii] && jj<60; ii++){
+			if(msgtxt[ii] == '\'' || msgtxt[ii]=='\"')
+				newmsgtxt[jj++]='\\';
+			newmsgtxt[jj++]=msgtxt[ii];
+		}
+		snprintf(qtmp, 99, " AND context LIKE \"%%%s%%\"", newmsgtxt);
+		strcat(sql, qtmp);
+	}
+
+	snprintf(qtmp, 99, " ORDER BY readed, timestamp LIMIT %d,%d", start, num);
+	strcat(sql, qtmp);
+
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+	res = mysql_store_result(&s);
+	row = mysql_fetch_row(res);
+
+	i=0;
+	while(row != NULL){
+		i++;
+		if( i>num )
+			break;
+		smdata[i-1].id = atoi(row[0]);
+		strncpy(smdata[i-1].userid, row[1], 13);
+		smdata[i-1].userid[12]=0;
+		strncpy(smdata[i-1].dest, row[2], 13);
+		smdata[i-1].dest[12]=0;
+		strncpy(smdata[i-1].time, row[3], 15);
+		smdata[i-1].time[14]=0;
+		smdata[i-1].type = atoi(row[4]);
+		smdata[i-1].level = atoi(row[6]);
+		smdata[i-1].readed = atoi(row[7]);
+		smdata[i-1].context = (char *)malloc( strlen(row[5]) + 1 );
+		if( smdata[i-1].context != NULL )
+			strncpy(smdata[i-1].context, row[5], strlen(row[5])+1);
+		row = mysql_fetch_row(res);
+	}
+	mysql_free_result(res);
+
+	mysql_close(&s);
+	return i;
+}
+
+int chk_smsmsg(int force ){
+
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[100];
+	static int i=0;
+
+	if( ! force )
+		return i;
+
+	i=0;
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+		mysql_close(&s);
+		return 0;
+	}
+
+	sprintf(sql, "SELECT * FROM smsmsg WHERE userid='%s' AND readed=0", currentuser->userid);
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+		mysql_close(&s);
+		return 0;
+	}
+	res = mysql_store_result(&s);
+	row = mysql_fetch_row(res);
+
+	while(row != NULL){
+		i++;
+		row = mysql_fetch_row(res);
+	}
+	mysql_free_result(res);
+
+	mysql_close(&s);
+	return i;
+}
+
+int sign_smsmsg_read(int id ){
+
+	MYSQL s;
+	char sql[100];
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+		mysql_close(&s);
+		return 0;
+	}
+
+	sprintf(sql, "UPDATE smsmsg SET readed=1 WHERE id=%d", id);
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+		mysql_close(&s);
+		return 0;
+	}
+	mysql_close(&s);
+	return 1;
+}
+
 #endif
 
+int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group, int start, int num, int order, char *msgtxt)
+{
+
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sql[600];
+	char qtmp[100];
+	int i;
+
+	if(userid == NULL || *userid == 0 )
+		return -1;
+
+	mysql_init(&s);
+
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+
+	sprintf(sql,"SELECT * FROM addr WHERE userid=\"%s\"", userid );
+
+	if(dest && *dest){
+		snprintf(qtmp, 99, " AND name=\"%s\"", dest);
+		strcat(sql, qtmp);
+	}
+
+	if(group && *group){
+		snprintf(qtmp, 99, " AND groupname=\"%s\"", group);
+		strcat(sql, qtmp);
+	}
+/*
+
+	if(start_time){
+		snprintf(qtmp, 99, " AND timestamp>FROM_UNIXTIME(%lu)+0", start_time);
+		strcat(sql, qtmp);
+	}
+
+	if(end_time){
+		snprintf(qtmp, 99, " AND timestamp<FROM_UNIXTIME(%lu)+0", end_time);
+		strcat(sql, qtmp);
+	}
+
+	if(type != -1){
+		snprintf(qtmp, 99, " AND type=\"%d\"", type);
+		strcat(sql, qtmp);
+	}
+*/
+	if(msgtxt && msgtxt[0]){
+		char newmsgtxt[60];
+		int ii,jj;
+		for(ii=0,jj=0; msgtxt[ii] && jj<60; ii++){
+			if(msgtxt[ii] == '\'' || msgtxt[ii]=='\"')
+				newmsgtxt[jj++]='\\';
+			newmsgtxt[jj++]=msgtxt[ii];
+		}
+		newmsgtxt[jj]=0;
+		snprintf(qtmp, 99, " AND memo LIKE \"%%%s%%\"", newmsgtxt);
+		strcat(sql, qtmp);
+	}
+
+	if( order == AL_ORDER_NAME ){
+		snprintf(qtmp, 99, " ORDER BY name");
+		strcat(sql, qtmp);
+	}else if( order == AL_ORDER_BBSID ){
+		snprintf(qtmp, 99, " ORDER BY bbsid");
+		strcat(sql, qtmp);
+	}
+
+	snprintf(qtmp, 99, " LIMIT %d,%d", start, num);
+	strcat(sql, qtmp);
+
+	if( mysql_real_query(&s, sql, strlen(sql)) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return -1;
+	}
+	res = mysql_store_result(&s);
+	row = mysql_fetch_row(res);
+
+	i=0;
+	while(row != NULL){
+		i++;
+		if( i>num )
+			break;
+		smdata[i-1].id = atoi(row[0]);
+		strncpy(smdata[i-1].userid, row[1], 13);
+		smdata[i-1].userid[12]=0;
+		strncpy(smdata[i-1].name, row[2], 15);
+		smdata[i-1].name[14]=0;
+		strncpy(smdata[i-1].bbsid, row[3], 15);
+		smdata[i-1].bbsid[14]=0;
+		strncpy(smdata[i-1].school, row[4], 100);
+		smdata[i-1].school[99]=0;
+		strncpy(smdata[i-1].zipcode, row[5], 6);
+		smdata[i-1].zipcode[6]=0;
+		strncpy(smdata[i-1].homeaddr, row[6], 100);
+		smdata[i-1].homeaddr[99]=0;
+		strncpy(smdata[i-1].companyaddr, row[7], 100);
+		smdata[i-1].companyaddr[99]=0;
+		strncpy(smdata[i-1].tel_o, row[8], 20);
+		smdata[i-1].tel_o[19]=0;
+		strncpy(smdata[i-1].tel_h, row[9], 20);
+		smdata[i-1].tel_h[19]=0;
+		strncpy(smdata[i-1].mobile, row[10], 15);
+		smdata[i-1].mobile[14]=0;
+		strncpy(smdata[i-1].email, row[11], 30);
+		smdata[i-1].email[29]=0;
+		strncpy(smdata[i-1].qq, row[12], 10);
+		smdata[i-1].qq[9]=0;
+		strncpy(smdata[i-1].group, row[15], 10);
+		smdata[i-1].group[9]=0;
+		sscanf(row[13], "%d-%d-%d", &(smdata[i-1].birth_year),&(smdata[i-1].birth_month),&(smdata[i-1].birth_day));
+		smdata[i-1].memo = (char *)malloc( strlen(row[14]) + 1 );
+		if( smdata[i-1].memo != NULL )
+			strncpy(smdata[i-1].memo, row[14], strlen(row[14])+1);
+		row = mysql_fetch_row(res);
+	}
+	mysql_free_result(res);
+
+	mysql_close(&s);
+	return i;
+}
+
+char * deal_sql_string( char *old, char *new){
+	int i,j;
+
+	for(i=0,j=0; old[i]; i++){
+		if(old[i] =='\'' || old[i] =='\"')
+			new[j++]='\\';
+		new[j++]=old[i];
+	}
+	new[j]=0;
+
+	return new;
+}
+
+int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
+{
+	MYSQL s;
+	char sql[1500];
+	char newname[30];
+	char newbbsid[30];
+	char newschool[200];
+	char newzipcode[14];
+	char newhomeaddr[200];
+	char newcompanyaddr[200];
+	char newtel_o[40];
+	char newtel_h[40];
+	char newmobile[30];
+	char newemail[60];
+	char newqq[20];
+	char newmsgbuf[200];
+	char newgroup[20];
+
+	mysql_init(&s);
+	if (! my_connect_mysql(&s) ){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+
+	if( al->id <= 0 )
+		sprintf(sql,"INSERT INTO addr VALUES (NULL, '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', '%s', \"%d-%d-%d\", '%s', '%s' );",userid, deal_sql_string(al->name, newname), deal_sql_string(al->bbsid, newbbsid), deal_sql_string(al->school, newschool), deal_sql_string(al->zipcode, newzipcode), deal_sql_string(al->homeaddr, newhomeaddr), deal_sql_string(al->companyaddr, newcompanyaddr), deal_sql_string(al->tel_o, newtel_o), deal_sql_string(al->tel_h, newtel_h), deal_sql_string(al->mobile,newmobile), deal_sql_string(al->email, newemail), deal_sql_string(al->qq, newqq), al->birth_year, al->birth_month, al->birth_day, deal_sql_string(msgbuf,newmsgbuf), deal_sql_string(al->group, newgroup) );
+	else
+		sprintf(sql,"UPDATE addr SET userid='%s', name='%s', bbsid='%s', school='%s', zipcode='%s', homeaddr='%s', companyaddr='%s', tel_o='%s', tel_h='%s', mobile='%s', email='%s', qq='%s', birthday=\"%d-%d-%d\", memo='%s', groupname='%s' WHERE id=%d ;",userid, deal_sql_string(al->name, newname), deal_sql_string(al->bbsid, newbbsid), deal_sql_string(al->school, newschool), deal_sql_string(al->zipcode, newzipcode), deal_sql_string(al->homeaddr, newhomeaddr), deal_sql_string(al->companyaddr, newcompanyaddr), deal_sql_string(al->tel_o, newtel_o), deal_sql_string(al->tel_h, newtel_h), deal_sql_string(al->mobile,newmobile), deal_sql_string(al->email, newemail), deal_sql_string(al->qq, newqq), al->birth_year, al->birth_month, al->birth_day, deal_sql_string(msgbuf,newmsgbuf), deal_sql_string(al->group, newgroup), al->id );
+
+	if( mysql_real_query( &s, sql, strlen(sql) )){
+#ifdef BBSMAIN
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+		mysql_close(&s);
+		return 0;
+	}
+
+	mysql_close(&s);
+
+	return 1;
+}
