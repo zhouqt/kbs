@@ -1542,6 +1542,9 @@ static PHP_FUNCTION(bbs_getboards)
     int brdnum, yank_flag;
     int group;
 
+	    getcwd(old_pwd, 1023);
+		    chdir(BBSHOME);
+
     /*
      * getting arguments 
      */
@@ -1971,6 +1974,8 @@ static PHP_FUNCTION(bbs_getthreads)
     int ac = ZEND_NUM_ARGS();
 
 
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
     /*
      * getting arguments 
      */
@@ -2003,6 +2008,10 @@ static PHP_FUNCTION(bbs_getthreads)
 #endif
 
 	IDList	= emalloc((num+start)*sizeof(long int));
+
+	if (IDList==NULL) {
+		RETURN_FALSE;
+	}
 
 	threadsFounded=0;
 
@@ -2050,14 +2059,15 @@ static PHP_FUNCTION(bbs_getthreads)
 			
 			}
 		}
+		efree(articles);
 	}
+
 
 	// get normal articles
 
     setbdir(DIR_MODE_NORMAL, dirpath, board);
 
     if ((fd = open(dirpath, O_RDONLY, 0)) == -1) {
-		efree(articles);
 		efree(IDList);
         RETURN_LONG(-1);   
 	}
@@ -2075,7 +2085,6 @@ static PHP_FUNCTION(bbs_getthreads)
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-		efree(articles);
 		efree(IDList);
         RETURN_LONG(-2);
     }
@@ -2083,6 +2092,7 @@ static PHP_FUNCTION(bbs_getthreads)
     /*
      * fetching articles 
      */
+
 
 
 	for (i=total-1;i>=0;i--) {
@@ -2119,7 +2129,6 @@ static PHP_FUNCTION(bbs_getthreads)
     fcntl(fd, F_SETLKW, &ldata);        /* ÍË³ö»¥³âÇøÓò*/
     close(fd);
     efree(IDList);
-	efree(articles);
 }
 
 /**
@@ -2276,6 +2285,9 @@ static PHP_FUNCTION(bbs_get_today_article_num){
 	time_t now;
 	struct tm nowtm;
 
+	    getcwd(old_pwd, 1023);
+		    chdir(BBSHOME);
+
     /*
      * getting arguments 
      */
@@ -2379,7 +2391,8 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
 	char* ptr;
 	unsigned int found;
 
-
+    getcwd(old_pwd, 1023);
+	    chdir(BBSHOME);
     /*
      * getting arguments 
      */
