@@ -120,7 +120,7 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$userid = $_COOKIE["UTMPUSERID"];
 }
 
-if ($utmpkey!="") {
+if (($utmpkey!="") && (!isset($needlogin) || ($needlogin!=0)) ) {
   if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet))==0) {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
