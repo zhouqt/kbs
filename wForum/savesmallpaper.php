@@ -40,19 +40,19 @@ function preprocess(){
 	$Content=trim($_POST["Content"]);
 
 	if ($title=="") {
-	    foundErr("<br><li>主题不应为空。");
+	    foundErr("主题不应为空。");
 		return false;
 	}
 	if (strlen($title)>80) {
-		foundErr("<br><li>主题长度不能超过80");
+		foundErr("主题长度不能超过80");
 		return false;
 	}
 	if ($Content=="") {
-		foundErr("<br><li>没有填写内容。");
+		foundErr("没有填写内容。");
 		return false;
 	}
 	if (strlen($Content)>500) {
-		foundErr("<br><li>发言内容不得大于500");
+		foundErr("发言内容不得大于500");
 		return false;
 	} 
 	if ($loginok!=1) {

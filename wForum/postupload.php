@@ -50,7 +50,6 @@ function disableEdit(){
 </body>
 </html>
 <?php 
-$conn=null;
 
 function getAttachmentCount(){
 	global $currentuser;

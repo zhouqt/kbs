@@ -186,14 +186,13 @@ function showmailBox($boxName, $path, $desc, $startNum){
 ?>
 <br>
 <input type="hidden" name="action" id="Action">
-<input type="hidden" name="nums" id="Nums">
-<input type="hidden" id="Num" name="num">
+<input type="hidden" name="nums" id="nums">
 <script >
 function doAction(desc,action) {
 	var nums,s,first,i;
 	if(confirm(desc))	{
 		objForm=getRawObject("oForm");
-		objNums=getRawObject("Nums");
+		objNums=getRawObject("nums");
 		objAction=getRawObject("Action");
 		objNums.value="";
 		objAction.value=action;

@@ -86,7 +86,7 @@ function showpaper($boardID,$boardName){
     </blockquote>
 </TD>
 </TR>
-<TR align=middle> 
+<TR align=center> 
 <TD height=24 class=TableBody2><a href=# onclick="window.close();">¡º ¹Ø±Õ´°¿Ú ¡»</a></TD>
 </TR>
 </TBODY>

@@ -89,9 +89,11 @@ function main($boardID,$boardName) {
 在本版发布小字报将您将付<font color="<?php   echo $Forum_body[8]; ?>"><b><?php   echo $GroupSetting[46]; ?></b></font>元费用<br>
 -->
 <font color=#ff0000><b>48</b></font>小时内发表的小字报将随机抽取<font color="#ff0000"><b>5</b></font>条滚动显示于论坛上<br>
-<li>HTML标签：不可用
-<li>UBB 标签：允许
-<li>内容不得超过500字
+<ul>
+<li>HTML标签：不可用</li>
+<li>UBB 标签：允许</li>
+<li>内容不得超过500字</li>
+</ul>
 </td>
 <td class=TableBody1 valign=middle>
 <textarea class="smallarea" cols="60" name="Content" rows="8" wrap="VIRTUAL"></textarea>

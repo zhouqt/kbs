@@ -64,6 +64,10 @@ function main(){
 		return false;
 	}
 	if ($action=='delete'){
+		if ($_POST['nums'] == "") {
+			foundErr("您没有指定信件！");
+			return false;			
+		}
 		$nums=split(',',$_POST['nums']);
 		if ($boxName=='inbox') {
 
@@ -83,6 +87,10 @@ function main(){
 		return false;
 	}
 	if ($action=='lock'){
+		if ($_POST['nums'] == "") {
+			foundErr("您没有指定信件！");
+			return false;			
+		}
 		$nums=split(',',$_POST['nums']);
 		if ($boxName=='inbox') {
 
