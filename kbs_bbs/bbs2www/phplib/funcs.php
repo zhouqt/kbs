@@ -1,5 +1,5 @@
 <?
-dl("../libexec/bbs/phpbbslib.so");
+dl("../libexec/bbs/libphpbbslib.so");
 global $SQUID_ACCL;
 global $BBS_HOME;
 //$fromhost=$_SERVER["REMOTE_ADDR"];
