@@ -18,8 +18,8 @@
 #include <time.h>
 #define DOTNAMES ".Names"
 #define INDEXHTML "index.htm"
-#define HEADER "BBS水木清华站∶精华区"
-#define FOOTER "BBS水木清华站∶精华区"
+#define HEADER "BBS 水木清华站∶精华区"
+#define FOOTER "BBS 水木清华站∶精华区"
 #define MAXPATH 512
 #define MAXLINELEN 512
 #ifdef AIX
@@ -148,7 +148,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 		return NULL;
 	}
 	tmstruct = localtime(&st.st_mtime);
-	sprintf(date, "%04d.%02d.%02d", tmstruct->tm_year + 1900, tmstruct->tm_mon, tmstruct->tm_mday);
+	sprintf(date, "%04d.%02d.%02d", tmstruct->tm_year + 1900, tmstruct->tm_mon+1, tmstruct->tm_mday);
 	if (S_ISDIR(st.st_mode))
 	{
 		LP_DIR_DATA data = (LP_DIR_DATA) malloc(sizeof(DIR_DATA));
