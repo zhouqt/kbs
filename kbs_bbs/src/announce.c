@@ -1437,8 +1437,7 @@ void a_manager(MENU *pm,int ch)
             break;
         case 'V':
             if (HAS_PERM(currentuser, PERM_SYSOP)) {
-                if (ch == 'v')
-                    sprintf(fpath, "%s/.Names", pm->path);
+                sprintf(fpath, "%s/.Names", pm->path);
 
                 if (dashf(fpath)) {
                     modify_user_mode(EDITANN);

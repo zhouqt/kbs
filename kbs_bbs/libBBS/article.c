@@ -1409,8 +1409,9 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         type = '#';
 #ifdef FILTER
 #ifdef SMTH
-    } else if ((HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && (!strcmp(boardname, FILTER_BOARD)
-    ||(!strcmp(boardname,"NewsClub")&&is_bm)))) {
+    } else if ((ent->accessed[1] & FILE_CENSOR) 
+        && ((!strcmp(boardname, FILTER_BOARD)&&HAS_PERM(user, PERM_OBOARDS))
+        ||(!strcmp(boardname,"NewsClub")&&haspostperm(user, "NewsClub")))) {
         type = '@';
 #else
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
