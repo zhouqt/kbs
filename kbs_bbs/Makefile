@@ -20,7 +20,7 @@
 BBSHOME=/home/bbs
 
 # The uid for the user 'bbs'
-BBSUID=601
+BBSUID=9999
 #BBSUID=502
 
 #OS_DEF   = -DAIX -DSYSV 
@@ -28,9 +28,9 @@ OS_DEF   = -DLINUX -DSYSV
 
 CC       = gcc
 #CC       = cc
-CFLAGS   = -g
+CFLAGS   = -g -Ilibesmtp
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
-LIBS     = -lbsd -lcrypt
+LIBS     = -lbsd -lcrypt -Llibesmtp -lesmtp
 #CFLAGS   = -O3
 #LIBS     = -ltermcap -lbsd -lcrypt
 
