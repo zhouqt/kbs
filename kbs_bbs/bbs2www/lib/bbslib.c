@@ -3109,4 +3109,89 @@ int web_send_sms(char *dest,char *msgstr){
 
 }
 
+int web_register_sms_sendcheck(char *mnumber)
+{
+    char ans[4];
+    char valid[20];
+    char buf2[80];
+	struct userdata ud;
+	int i;
+
+	read_userdata(currentuser->userid, &ud);
+
+    sms_init_memory();
+    smsuin = u_info;
+
+    if(ud.mobileregistered) {
+		shmdt(head);
+        return -1;
+    }
+
+	if( mnumber == NULL ){
+		shmdt(head);
+		return -2;
+	}
+
+	if( strlen(mnumber) != 11 ){
+		shmdt(head);
+		return -3;
+	}
+
+	for(i=0;i <11; i++){
+		if( ! isdigit( mnumber[i] ) ){
+			shmdt(head);
+			return -4;
+		}
+	}
+
+    if(DoReg(mnumber)) {
+		shmdt(head);
+        return -5;
+    }
+
+	strcpy(ud.mobilenumber, mnumber);
+	write_userdata(currentuser->userid, &ud);
+    
+	shmdt(head);
+	return 0;
+}
+
+int web_register_sms_docheck(char *valid)
+{
+    char ans[4];
+    char buf2[80];
+	struct userdata ud;
+
+	read_userdata(currentuser->userid, &ud);
+
+    sms_init_memory();
+    smsuin = u_info;
+
+    if(ud.mobileregistered) {
+		shmdt(head);
+        return -1;
+    }
+
+    if(! ud.mobilenumber[0] || strlen(ud.mobilenumber)!=11 ) {
+		shmdt(head);
+		return -2;
+    }
+
+    if(valid == NULL || !valid[0]){
+		shmdt(head);
+		return -3;
+	}
+
+    if(DoCheck(ud.mobilenumber, valid)) {
+		shmdt(head);
+        return -4;
+    }
+
+    ud.mobileregistered = 1;
+    write_userdata(currentuser->userid, &ud);
+    
+	shmdt(head);
+	return 0;
+}
+
 #endif
