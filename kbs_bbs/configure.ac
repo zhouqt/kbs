@@ -179,6 +179,10 @@ AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
 		libBBS/site.h:$SITEDIR/$BBSSITE.h
 		src/site.c:$SITEDIR/$BBSSITE.c
 		src/site.h:$SITEDIR/$BBSSITE.h
+		libBBS/default.c:$SITEDIR/default.c
+		libBBS/default.h:$SITEDIR/default.h
+		src/default.c:$SITEDIR/default.c
+		src/default.h:$SITEDIR/default.h
 		)
 
 cd libBBS; for i in *.c ; do 

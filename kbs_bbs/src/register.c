@@ -221,7 +221,7 @@ int invalid_realmail(userid, email, msize)
 		getuser(userid,&uc);
 		// > 3 days
 		now = time(NULL);
-		if(now - uc->firstlogin >= REGISTER_WAIT_TIME)
+		if(now - uc->firstlogin >= REGISTER_TSINGHUA_WAIT_TIME)
 		{
 	 		if(auto_register(userid,email,msize) < 0) // 完成自动注册
 				return 1;

@@ -1,23 +1,75 @@
-#ifndef __SYSNAME_H_
-#define __SYSNAME_H_
+/**
+  缺省的配置文件
+*/
 
+#ifndef __SYS_DEFAULT_H_
+#define __SYS_DEFAULT_H_
+
+#ifndef NINE_BUILD /* 9#,3.0K专有代码*/
 #undef NINE_BUILD
-#undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
-#undef HAVE_BIRTHDAY
-#undef HAPPY_BBS
-#undef HAVE_COLOR_DATE
-#undef HAVE_TEMPORARY_NICK
-#undef HAVE_FRIENDS_NUM
-#undef HAVE_REVERSE_DNS
-#define CHINESE_CHARACTER
-#undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
-#undef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
-#undef MAIL2BOARD		/* 是否允许直接 mail to any board */
-#undef MAILOUT			/* 是否允许向站外主动发信 */
-#define BBS_SERVICE_DICT
+#endif
 
+#ifndef SMTH /*水木清华专有代码*/
 #define SMTH
+#endif
+
+#ifndef HAPPY_BBS /* HAPPY BBS专有代码 */
+#undef HAPPY_BBS
+#endif
+
+#ifndef NEW_COMERS
+#undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
+#endif
+
+#ifndef HAVE_BIRTHDAY
+#undef HAVE_BIRTHDAY
+#endif
+
+#ifndef HAVE_COLOR_DATE
+#undef HAVE_COLOR_DATE
+#endif
+
+#ifndef HAVE_TEMPORARY_NICK
+#undef HAVE_TEMPORARY_NICK
+#endif
+
+#ifndef HAVE_FRIENDS_NUM
+#undef HAVE_FRIENDS_NUM
+#endif
+
+#ifndef HAVE_REVERSE_DNS  /*反向dns解析 */
+#define HAVE_REVERSE_DNS
+#endif
+
+#ifndef CHINESE_CHARACTER /*汉字整字处理*/
+#define CHINESE_CHARACTER
+#endif
+
+#ifndef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
+#undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
+#endif
+
+#ifndef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#undef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#endif
+
+#ifndef MAIL2BOARD		/* 是否允许直接 mail to any board */
+#undef MAIL2BOARD		/* 是否允许直接 mail to any board */
+#endif
+
+#ifndef MAILOUT			/* 是否允许向站外主动发信 */
+#undef MAILOUT			/* 是否允许向站外主动发信 */
+#endif
+
+#ifndef BBS_SERVICE_DICT /* 词典功能 */
+#define BBS_SERVICE_DICT
+#endif
+
+#ifndef FILTER /*过滤器*/
 #define FILTER
+#endif
+
+#ifndef DOTIMEOUT
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
@@ -25,107 +77,255 @@
  *             other modes. 
  *             */
 #define DOTIMEOUT 1
+#endif
 
+
+#ifndef IDLE_TIMEOUT
 /* 
  *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
  *    */
 #define IDLE_TIMEOUT    (60*20) 
+#endif
+
+#ifndef MONITOR_TIMEOUT /*活动看板*/
 #define MONITOR_TIMEOUT (60*20) 
+#endif
 
-#define BBSUID 			9999
-#define BBSGID 			99
+#ifndef BBSUID
+#error You must define BBSUID in site.h for your site!
+#endif
 
+#ifndef BBSGID
+#error You must define BBSGID in site.h for your site!
+#endif
+
+
+#ifndef SECNUM /* 分区个数*/
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 13
-#define BBS_PAGE_SIZE 20
+#endif
 
-#define SQUID_ACCL
+#ifndef SQUID_ACCL /*www前端使用squid加速*/
+#undef SQUID_ACCL
+#endif
 
+#ifndef DEFAULTBOARD
 #define DEFAULTBOARD    	"test"
-#define FILTER_BOARD        "Filter"
-#define SYSMAIL_BOARD       "sysmail"
-#define BLESS_BOARD "Blessing"
+#endif
 
-#define MAXUSERS  		200000
+#ifndef FILTER_BOARD
+#define FILTER_BOARD        "Filter"
+#endif
+
+#ifndef SYSMAIL_BOARD
+#define SYSMAIL_BOARD       "sysmail"
+#endif
+
+#ifndef BLESS_BAORD
+#define BLESS_BOARD "Blessing"
+#endif
+
+#ifndef MAXUSERS
+#define MAXUSERS  		20000
+#endif
+
+#ifndef MAXCLUB
 #define MAXCLUB			128
-#define MAXBOARD  		600
+#endif
+
+#ifndef MAXBOARD
+#define MAXBOARD  		400
+#endif
+
+#ifndef MAXACTIVE
 #define MAXACTIVE 		8000
+#endif
 /* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
     make the number of session char from 3 to 4
     */
+
+#ifndef MAX_GUEST_NUM
 #define MAX_GUEST_NUM		800
-
-#define POP3PORT		110
-#define POP3SPORT		995
-/* ASCIIArt, by czz, 2002.7.5 */
-#define       LENGTH_SCREEN_LINE      255
-#define       LENGTH_FILE_BUFFER      255
-#define       LENGTH_ACBOARD_BUFFER   200
-#define       LENGTH_ACBOARD_LINE     300
-
-#define LIFE_DAY_USER		120
-#define LIFE_DAY_YEAR          365
-#define LIFE_DAY_LONG		666
-#define LIFE_DAY_SYSOP		120
-#define LIFE_DAY_NODIE		999
-#define LIFE_DAY_NEW		15
-#define LIFE_DAY_SUICIDE	15
-
-#define DAY_DELETED_CLEAN	97
-#define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
-
-#define	REGISTER_WAIT_TIME	(72*60*60)
-#define	REGISTER_WAIT_TIME_NAME	"72 小时"
-
-#ifdef SMTH
-#define REGISTER_TSINGHUA_WAIT_TIME (240*60)
 #endif
-#define 
+
+#ifndef POP3PORT
+#define POP3PORT		110
+#endif
+
+#ifndef POP3SPORT
+#define POP3SPORT		995
+#endif
+
+/* ASCIIArt, by czz, 2002.7.5 */
+#ifndef       LENGTH_SCREEN_LINE
+#define       LENGTH_SCREEN_LINE      255
+#endif
+
+#ifndef       LENGTH_FILE_BUFFER
+#define       LENGTH_FILE_BUFFER      255
+#endif
+
+#ifndef       LENGTH_ACBOARD_BUFFER
+#define       LENGTH_ACBOARD_BUFFER   200
+#endif
+
+#ifndef       LENGTH_ACBOARD_LINE
+#define       LENGTH_ACBOARD_LINE     300
+#endif
+
+
+#ifndef DAY_DELETED_CLEAN /*版面垃圾箱和回收站的清除天数*/
+#define DAY_DELETED_CLEAN	97
+#endif
+
+#ifndef SEC_DELETED_OLDHOME
+#define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
+#endif
+
+#ifndef	REGISTER_WAIT_TIME /*填注册单需要等待的时间*/
+#define	REGISTER_WAIT_TIME	0
+#endif
+
+#ifndef REGISTER_WAIT_TIME_NAME	
+#define	REGISTER_WAIT_TIME_NAME	"马上"
+#endif
+
+#ifndef MAIL_BBSDOMAIN
 #define MAIL_BBSDOMAIN      "smth.org"
-#define MAIL_MAILSERVER     "166.111.8.236:25"
+#endif
 
+#ifndef NAME_BBS_ENGLISH
 #define NAME_BBS_ENGLISH	"smth.org"
+#endif
+
+#ifndef	NAME_BBS_CHINESE
 #define	NAME_BBS_CHINESE	"水木清华"
+#endif
+
+#ifndef NAME_BBS_NICK
 #define NAME_BBS_NICK		"BBS 站"
+#endif
 
+#ifndef BBS_FULL_NAME
 #define BBS_FULL_NAME "BBS 水木清华站"
+#endif
 
+#ifndef FOOTER_MOVIE
 #define FOOTER_MOVIE		"欢  迎  投  稿"
+#endif
+
 /*#define ISSUE_LOGIN		"本站使用曙光公司曙光天演服务器"*/
+#ifndef ISSUE_LOGIN
 #define ISSUE_LOGIN		"曙光PC  第21届大运会指定服务器"
+#endif
+
+#ifndef ISSUE_LOGOUT
 #define ISSUE_LOGOUT		"还是走了罗"
+#endif
 
+#ifndef NAME_USER_SHORT
 #define NAME_USER_SHORT		"用户"
-#define NAME_USER_LONG		"水木用户"
+#endif
+
+#ifndef NAME_SYSOP
 #define NAME_SYSOP		"System Operator"
+#endif
+
+#ifndef NAME_BM
 #define NAME_BM			"版主"
+#endif
+
+#ifndef NAME_POLICE
 #define NAME_POLICE		"警察"
+#endif
+
+#ifndef	NAME_SYSOP_GROUP
 #define	NAME_SYSOP_GROUP	"站务组"
+#endif
+
+#ifndef NAME_ANONYMOUS /*匿名发文的昵称*/
 #define NAME_ANONYMOUS		"水母青蛙 Today!"
+#endif
+
+#ifndef NAME_ANONYMOUS_FROM /*缺省匿名的来源*/
 #define NAME_ANONYMOUS_FROM	"匿名天使的家"
+#endif
+
+#ifndef ANONYMOUS_DEFAULT /*缺省不匿名*/
 #define ANONYMOUS_DEFAULT 0
+#endif
 
+
+#ifndef NAME_MATTER
 #define NAME_MATTER		"站务"
+#endif
+
+#ifndef NAME_SYS_MANAGE
 #define NAME_SYS_MANAGE		"系统维护"
+#endif
+
+#ifndef NAME_SEND_MSG
 #define NAME_SEND_MSG		"送讯息"
+#endif
+
+#ifndef NAME_VIEW_MSG
 #define NAME_VIEW_MSG		"送讯息"
+#endif
 
+#ifndef CHAT_MAIN_ROOM
 #define CHAT_MAIN_ROOM		"main"
+#endif
+
+#ifndef CHAT_TOPIC
 #define	CHAT_TOPIC		"大家先随便聊聊吧"
+#endif
+
+#ifndef CHAT_MSG_NOT_OP
 #define CHAT_MSG_NOT_OP		"*** 您不是本聊天室的op ***"
+#endif
+
+#ifndef CHAT_ROOM_NAME
 #define	CHAT_ROOM_NAME		"聊天室"
+#endif
+
+#ifndef CHAT_SERVER
 #define	CHAT_SERVER		"聊天广场"
+#endif
+
+#ifndef CHAT_MSG_QUIT
 #define CHAT_MSG_QUIT		"切离系统"
+#endif
+
+#ifndef CHAT_OP
 #define CHAT_OP			"聊天室 op"
+#endif
+
+#ifndef CHAT_SYSTEM
 #define CHAT_SYSTEM		"系统"
+#endif
+
+#ifndef CHAT_PARTY
 #define	CHAT_PARTY		"大家"
+#endif
 
+#ifndef DEFAULT_NICK
 #define DEFAULT_NICK		"每天爱你多一些"
+#endif
 
+#ifndef MSG_ERR_USERID
 #define MSG_ERR_USERID		"错误的使用者代号..."
-#define LOGIN_PROMPT		"请输入代号"
-#define PASSWD_PROMPT		"请输入密码"
+#endif
 
+#ifndef LOGIN_PROMPT
+#define LOGIN_PROMPT		"请输入代号"
+#endif
+
+#ifndef PASSWD_PROMPT
+#define PASSWD_PROMPT		"请输入密码"
+#endif
+
+
+#ifndef NUMPERMS
 /* 权限位定义 */
 /*
    These are the 16 basic permission bits. 
@@ -206,6 +406,10 @@ bigger mailbox. --stephen 2001.10.31*/
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
 #define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
 
+#endif //permission define NUMPERMS
+
+
+#ifndef TDFINE
 #define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 
 /* 用户自订参数定义 */
@@ -244,8 +448,9 @@ bigger mailbox. --stephen 2001.10.31*/
 
 #define NUMDEFINES 29
 
-
 #define TDEF_SPLITSCREEN 000001
+#endif
+
 
 extern const char *permstrings[];
 extern const char    *groups[];
@@ -256,18 +461,44 @@ extern const char *mailbox_prop_str[];
 /**
  * 看在线用户时的按键处理字符。
  */
+#ifndef UL_CHANGE_NICK_UPPER
 #define UL_CHANGE_NICK_UPPER   'C'
+#endif
+
+#ifndef UL_CHANGE_NICK_LOWER
 #define UL_CHANGE_NICK_LOWER   'c'
+#endif
+
+#ifndef UL_SWITCH_FRIEND_UPPER
 #define UL_SWITCH_FRIEND_UPPER 'F'
+#endif
+
+#ifndef UL_SWITCH_FRIEND_LOWER
 #define UL_SWITCH_FRIEND_LOWER 'f'
+#endif
+
 
 /**
  * 文章相关部分。
  */
+#ifndef STRLEN
 #define STRLEN          80
+#endif
+
+#ifndef BM_LEN
 #define BM_LEN 60
+#endif
+
+#ifndef FILENAME_LEN
 #define FILENAME_LEN 20
+#endif
+
+#ifndef OWNER_LEN
 #define OWNER_LEN 30
+#endif
+
+#ifndef HAVE_FILEHEADER_DEFINE
+#define HAVE_FILEHEADER_DEFINE
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];      /* the DIR files */
     unsigned int id, groupid, reid;
@@ -290,15 +521,26 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 } fileheader;
 
 typedef struct fileheader fileheader_t;
+#endif
 
+#ifndef GET_POSTFILENAME
 #define GET_POSTFILENAME(x,y) get_postfilename(x,y,0)
+#endif
+
+#ifndef GET_MAILFILENAME
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
+#endif
+
+#ifndef VALID_FILENAME
 #define VALID_FILENAME(x) valid_filename(x,0)
+#endif
 
 // WWW部分
 
 //修改密码之类的页面使用https
+#ifndef SECURE_HTTPS
 #define SECURE_HTTPS
+#endif
 
 /**
  * Mailbox properties.
@@ -306,6 +548,7 @@ typedef struct fileheader fileheader_t;
  * @author flyriver
  */
 
+#ifndef MBP_NUMS
 #define MBP_SAVESENTMAIL      0x00000001
 #define MBP_FORCEDELETEMAIL   0x00000002
 #define MBP_MAILBOXSHORTCUT   0x00000004
@@ -313,7 +556,6 @@ typedef struct fileheader fileheader_t;
 #define MBP_NUMS 3
 
 #define HAS_MAILBOX_PROP(u, x) ((u)->mailbox_prop & x)
-
 /**
  * Mailgroup macros.
  *
@@ -322,8 +564,12 @@ typedef struct fileheader fileheader_t;
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
 
+#endif //MBPNUMS
+
 /**
 attach define
 */
+#ifndef ATTACHTMPPATH
 #define ATTACHTMPPATH "boards/_attach"
+#endif
 #endif

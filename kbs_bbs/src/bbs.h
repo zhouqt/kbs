@@ -77,8 +77,8 @@ typedef enum { false = 0, true = 1 } bool;
 #endif
 #endif
 
-/* System names.. by zixia.*/
 #include "site.h"
+#include "default.h"
 
 #include "permissions.h"
 
@@ -351,9 +351,7 @@ extern void Net_Sleep(int);
 typedef size_t socklen_t;
 #endif
 
-#ifndef BBS_PAGESIZE
 #define BBS_PAGESIZE    (t_lines - 4)
-#endif
 
 /* added by bad 2002.8.1 */
 #define FILE_MARK_FLAG 0
