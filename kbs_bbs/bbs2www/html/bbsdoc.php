@@ -335,7 +335,7 @@
 			
 	if($board_list_error==FALSE)
 	{		
-		bbs_board_header($brdarr,$articles);
+		bbs_board_header($brdarr,$total);
 		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
 		display_articles($brdarr, $articles, $start, $order_articles );
 		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);

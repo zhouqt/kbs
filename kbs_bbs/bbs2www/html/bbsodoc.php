@@ -182,7 +182,7 @@
 		else
 		{
 ?>
-<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
+<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?> <font class="<?php if($article["EFFSIZE"] >= 1000) echo "mb2"; else echo "b1";?>">(<?php if($article["EFFSIZE"] < 1000) echo $article["EFFSIZE"]; else { printf("%.1f",$article["EFFSIZE"]/1000.0); echo "k";} ?>)</font>
 
 </a></strong>
 <?php
@@ -336,7 +336,7 @@
 			
 	if($board_list_error==FALSE)
 	{		
-		bbs_board_header($brdarr,$articles);
+		bbs_board_header($brdarr,$total);
 		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
 		display_articles($brdarr, $articles, $start, $order_articles );
 		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);
