@@ -820,3 +820,85 @@ lock_scr() /* Leeward 98.02.22 */
         }
     }
 }
+
+void
+printdash( mesg )       
+char    *mesg;          
+{
+    char        buf[ 80 ], *ptr;
+    int         len;
+    
+    memset( buf, '=', 79 );
+    buf[ 79 ] = '\0';
+    if( mesg != NULL ) {
+        len = strlen( mesg ); 
+        if( len > 76 )  len = 76;
+        ptr = &buf[ 40 - len / 2 ];
+        ptr[ -1  ] = ' ';
+        ptr[ len ] = ' ';
+        strncpy( ptr, mesg, len );
+    }
+    prints( "%s\n", buf );
+}
+
+void
+bell()
+{
+    /* change by KCN 1999.09.08    fprintf(stderr,"%c",Ctrl('G')) ;*/
+    char sound;
+
+    sound= Ctrl('G');
+    output( &sound, 1);
+
+}   
+
+int
+pressreturn()
+           {
+               extern int showansi;
+               char buf[3] ;
+
+               showansi=1;
+               move(t_lines-1,0);
+               clrtoeol();
+               getdata(t_lines-1,0,"                              \x1b[33m请按 ◆\x1b[36mEnter\x1b[33m◆ 继续\x1b[m",buf,2,NOECHO,NULL,YEA);
+               move(t_lines-1,0) ;
+               clrtoeol() ;
+               refresh() ;
+               return 0 ;
+           }
+
+askyn(str,defa)
+char str[STRLEN];
+int defa;
+{
+    int x,y;
+    char realstr[STRLEN*2];
+    char ans[6];
+
+    sprintf(realstr,"%s (Y/N)? [%c]: ",str,(defa)?'Y':'N');
+    getyx(&x,&y);
+    getdata( x, y, realstr, ans,3,DOECHO,NULL,YEA);
+    if(ans[0]=='Y' || ans[0]=='y')
+        return 1;
+    else if(ans[0]=='N' || ans[0]=='n')
+        return 0;
+    return defa;
+}
+
+int
+pressanykey()
+{
+    extern int showansi;
+
+    showansi=1;
+    move( t_lines-1,0);
+    clrtoeol();
+    prints( "\x1b[m                                \x1b[5;1;33m按任何键继续 ..\x1b[m" );
+    egetch();
+    move( t_lines-1, 0 );
+    clrtoeol();
+    return 0;
+}
+
+
