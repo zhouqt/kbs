@@ -943,12 +943,12 @@ int num;
 {
 	FILE		*in_fn,*out_fn,*tmp_fn;
 	char	fname1[STRLEN],fname2[STRLEN];
-	int sum;	
+	int sum,fd;	
 	char *ptr;
 
 	strcpy(fname1,"reg.ctrl");
 	
-    if ((in_fn = fopen(regfile, "r")) == NULL)
+    if ((in_fn = fopen(regfile, "r+")) == NULL)
     {
         move(2, 0);
         prints("系统错误, 无法读取注册资料档: %s\n", regfile);
@@ -956,10 +956,14 @@ int num;
         return -1;
     }
     
-    
+    fd=fileno(in_fn);
+    flock(fd,LOCK_EX);
+ 
     if ((out_fn = fopen(fname, "w")) == NULL)
     {
         move(2, 0);
+	flock(fd,LOCK_UN);
+	fclose(in_fn);
         prints("系统错误, 无法写临时注册资料档: %s\n", fname);
         pressreturn();
         return -1;
@@ -986,6 +990,8 @@ int num;
         	if ((tmp_fn = fopen(fname2, "w")) == NULL)
 		{
      			prints("不能建立临时文件:%s\n",fname2);
+			flock(fd,LOCK_UN);
+			fclose(in_fn);
         		pressreturn();	
         		return -1;
         	}		
@@ -997,6 +1003,8 @@ int num;
             		fputs(genbuf, tmp_fn);
             		
              	}
+
+		flock(fd,LOCK_UN);
 
     		fclose(in_fn);
     		fclose(tmp_fn);
@@ -1020,8 +1028,12 @@ int num;
         pressreturn();
         return -1;
     }
-    
+
+    fd=fileno(out_fn); 
+ 
+    flock(fd,LOCK_UN); 
     fprintf(out_fn,"%ld\n",pid);
+    flock(fd,LOCK_UN);
     fclose(out_fn);
 	
     return(0);
@@ -1036,16 +1048,23 @@ int mod;
 	char	fname1[STRLEN]; 
 	char	fname2[STRLEN];
 	long	myid;
-	int	flag=0;
+	int	flag=0,fd;
 
 	strcpy(fname1,"reg.ctrl");
 	
 	if ((fn1 = fopen(fname1, "r")) != NULL)
-        {	sprintf(fname2,"tmp/reg.c%ld",getpid());
+        {	
+ 
+		fd=fileno(fn1);
+		flock(fd,LOCK_EX);
+
+		sprintf(fname2,"tmp/reg.c%ld",getpid());
         
         	if ((fn2 = fopen(fname2, "w")) == NULL)
 		{
      			prints("不能建立临时文件:%s\n",fname2);
+			flock(fd,LOCK_UN);
+			fclose(fn1);
         		pressreturn();	
         		return -1;
         	}
@@ -1057,12 +1076,13 @@ int mod;
    				myid=atol(genbuf); 
   
 				if (mod ==0) {
-    					if (myid==getpid())
+/*    					if (myid==getpid())
 					{
 					prints("你只能一个进程进行审批帐号");
 					pressreturn();
 					return -1;
 					}
+*/
 	
    					if (kill(myid,0)==-1)	/*注册中间断线了，恢复*/
    					{	flag=1;
@@ -1083,7 +1103,8 @@ int mod;
    				 				
    			}
    		fclose(fn2);
-   		}       
+   		} 
+		flock(fd,LOCK_UN);      
         	fclose(fn1);
         	
         	if (flag ==1) {
@@ -1104,21 +1125,26 @@ long pid;
 {
 	FILE           *fn,*freg;
     	char            *regfile,buf[STRLEN];	
-    	
+	int	fd1,fd2;
+	
     	regfile = "new_register";    	
     	
     	sprintf(buf,"register.%ld",pid);
 
     	if ((fn = fopen(buf, "r")) != NULL)
-    	{
+    	{	fd1=fileno(fn);
+		flock(fd1,LOCK_EX);
+
     		if ((freg = fopen(regfile, "a")) != NULL) 
-    		{
+    		{	fd2=fileno(freg);
+			flock(fd2,LOCK_EX);
         		while (fgets(genbuf, STRLEN, fn) != NULL)
         			fputs(genbuf, freg);
-                    
+                   	flock(fd2,LOCK_UN); 
         		fclose(freg);   
         
         	}
+		flock(fd1,LOCK_UN);
         	fclose(fn);
         	
         	f_rm(buf);
@@ -1146,8 +1172,8 @@ char           *logfile, *regfile;
     char            fname[STRLEN], buf[STRLEN], buff;
     /* ^^^^^ Added by Marco */
     char            ans[5], *ptr, *uid;
-    int             n, unum;
-    int		    count,sum;/*Haohmaru.2000.3.9.计算还有多少单子没处理*/
+    int             n, unum, fd;
+    int		    count,sum,total_num;/*Haohmaru.2000.3.9.计算还有多少单子没处理*/
 
     long	pid;	/* Added by Bigman: 2002.5.31 */
 
@@ -1174,7 +1200,29 @@ char           *logfile, *regfile;
     }
 /*    f_mv(regfile, fname);*/
 /*申请注册单 added by Bigman, 2002.5.31*/
-   apply_reg(regfile,fname,pid,50);
+
+/*统计总的注册单数 Bigman, 2002.6.2 */
+    if ((fn = fopen(regfile, "r")) == NULL)
+    {
+        move(2, 0);
+        prints("系统错误, 无法读取注册资料档: %s\n", fname);
+        pressreturn();
+        return -1;
+    }
+
+    fd=fileno(fn);
+    flock(fd,LOCK_EX);
+
+    total_num=0;
+    while (fgets(genbuf, STRLEN, fn) != NULL)
+    {
+        if ((ptr = (char *) strstr(genbuf, "userid")) != NULL)
+            total_num++;
+    }
+    flock(fd,LOCK_UN);
+    fclose(fn);
+
+    apply_reg(regfile,fname,pid,50);
 
     if ((fn = fopen(fname, "r")) == NULL)
     {
@@ -1223,7 +1271,7 @@ char           *logfile, *regfile;
         {
             uinfo=*lookupuser;
             move(1, 0);
-            prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum,sum,count++,sum-count+1);/*Haohmaru.2000.3.9.计算还有多少单子没处理*/
+            prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum,total_num,count++,sum-count+1);/*Haohmaru.2000.3.9.计算还有多少单子没处理*/
             disply_userinfo(&uinfo, 1);
             move(15, 0);
             printdash(NULL);
@@ -1313,12 +1361,17 @@ char           *logfile, *regfile;
             case 'Q':
             case 'q':
                 if ((freg = fopen(regfile, "a")) != NULL)
-                {
+                {	
+			fd=fileno(freg);
+			flock(fd,LOCK_EX);
+
                     for (n = 0; field[n] != NULL; n++)
                         fprintf(freg, "%s: %s\n", field[n], fdata[n]);
                     fprintf(freg, "----\n");
                     while (fgets(genbuf, STRLEN, fn) != NULL)
                         fputs(genbuf, freg);
+
+			flock(fd,LOCK_UN);
                     fclose(freg);
                 }
 
@@ -1388,10 +1441,15 @@ char           *logfile, *regfile;
             default:
                 if ((freg = fopen(regfile, "a")) != NULL)
                 {
-                    for (n = 0; field[n] != NULL; n++)
+			fd=fileno(freg);
+			flock(fd,LOCK_EX);
+
+			for (n = 0; field[n] != NULL; n++)
                         fprintf(freg, "%s: %s\n", field[n], fdata[n]);
-                    fprintf(freg, "----\n");
-                    fclose(freg);
+			fprintf(freg, "----\n");
+
+			flock(fd,LOCK_UN);
+			fclose(freg);
                 }
             }
             memset(fdata, 0, sizeof(fdata));
