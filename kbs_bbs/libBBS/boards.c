@@ -572,10 +572,13 @@ int brc_initial(char *userid, char *boardname)
     int i;
     char dirfile[MAXPATH];
     int brc_size;
-    int bid = getbnum(boardname);
+    int bid;
     int fd;
     struct boardheader const *bptr;
 
+    if (boardname==NULL)
+	    return 0;
+    bid = getbnum(boardname);
 #ifdef BBSMAIN
     strncpy(currboard, boardname, STRLEN - BM_LEN);     /*很是ft,居然在这里置currboard */
     currboard[STRLEN - BM_LEN] = 0;
