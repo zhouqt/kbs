@@ -4,7 +4,7 @@
 	** @id:windinsn  Nov 19,2003
 	*/
 	@session_start();
-	$needlogin=0;
+	//$needlogin=0;
 	require("pcfuncs.php");
 	
 	function pc_add_new_comment($pc,$nid,$alert)
