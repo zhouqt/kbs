@@ -402,56 +402,16 @@ char *nextword(const char **str, char *buf, int sz)
 }
 
 
-#ifndef BBSMAIN
 void attach_err(int shmkey, char *name)
 {
-    bbslog("3system", "Attach:Error! %s error! key = %x.msg:%s\n", name, shmkey, strerror(errno));
-    exit(1);
-}
-void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate)
-{
-    return attach_shm1(shmstr, defaultkey, shmsize, iscreate, 0, NULL);
-}
-void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr)
-{
-    void *shmptr;
-    int shmkey = 0, shmid;
-
-    shmkey = defaultkey;
-    shmid = shmget(shmkey, shmsize, 0);
-    if (shmid < 0) {
-        if (readonly) {
-            attach_err(shmkey, "shmget:readonly");
-            return 0;
-        }
-        shmid = shmget(shmkey, shmsize, IPC_CREAT | 0600);
-        if (shmid < 0)
-            attach_err(shmkey, "shmget");
-        shmptr = (void *) shmat(shmid, shmaddr, 0);
-        if (shmptr == (void *) -1)
-            attach_err(shmkey, "shmat");
-
-        else
-            memset(shmptr, 0, shmsize);
-        *iscreate = 1;
-    } else {
-        if (readonly)
-            shmptr = (void *) shmat(shmid, shmaddr, SHM_RDONLY);
-
-        else
-            shmptr = (void *) shmat(shmid, shmaddr, 0);
-        if (shmptr == (void *) -1)
-            attach_err(shmkey, "shmat");
-        *iscreate = 0;
-    } return shmptr;
-}
-
-
-#else                           /*  */
-void attach_err(int shmkey, char *name)
-{
+#ifdef BBSMAIN
     prints("Error! %s error! key = %x.\n", name, shmkey);
     oflush();
+#else
+    char buf[256];
+    sprintf(buf,"Error! %s error! key = %x.", name, shmkey);
+    perror(buf);
+#endif
     exit(1);
 }
 
@@ -502,10 +462,6 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
         }
     } return shmptr;
 }
-
-
-#endif                          /*  */
-
 
 char *
 cexp(exp)
