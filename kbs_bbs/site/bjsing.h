@@ -8,6 +8,7 @@
 #define SMTH 1
 #define DQPI 1
 #define	SAVELIVE	1
+#define	FIVEGAME	1
 #define NEW_COMERS		1
 #define HAVE_BIRTHDAY		1
 #define CONV_PASS 		1
