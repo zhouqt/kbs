@@ -669,8 +669,9 @@ int post_commend(struct userec *user, char *fromboard, struct fileheader *filein
 	postfile.o_id = fileinfo->id;
 	postfile.o_groupid = fileinfo->groupid;
 	postfile.o_reid = fileinfo->reid;
-	strncpy(postfile.o_board, fromboard, STRLEN- BM_LEN);
-	postfile.o_board[STRLEN-BM_LEN-1]=0;
+	postfile.o_bid = getboardnum(fromboard, NULL);
+	//strncpy(postfile.o_board, fromboard, STRLEN- BM_LEN);
+	//postfile.o_board[STRLEN-BM_LEN-1]=0;
 
     setbfile(buf, COMMEND_ARTICLE, DOT_DIR);
 
@@ -886,7 +887,8 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #endif
                 setbfile(newpath, FILTER_BOARD, fh->filename);
                 f_mv(oldpath, newpath);
-                strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
+				fh->o_bid = getboardnum(boardname, NULL);
+                //strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
                 nowid = get_nextid(boardname);
                 fh->o_id = nowid;
                 if (re == NULL) {
@@ -957,7 +959,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     updatelastpost(boardname);
 #ifdef FILTER
     if (filtered)
-        sprintf(buf, "posted '%s' on '%s' filtered", fh->title, fh->o_board);
+        sprintf(buf, "posted '%s' on '%s' filtered", fh->title, getboard(fh->o_bid)->filename);
     else {
 #endif
 #ifdef HAVE_BRC_CONTROL
@@ -2085,7 +2087,7 @@ int pass_filter(struct fileheader* fileinfo,struct boardheader* board)
         if (!strcmp(board->filename, FILTER_BOARD)) 
 #endif
         {
-            if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0] == 0) {
+            if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_bid == 0) {
                 return 3;
             } else {
                 char oldpath[MAXPATH],newpath[MAXPATH],dirpath[MAXPATH];
@@ -2095,16 +2097,16 @@ int pass_filter(struct fileheader* fileinfo,struct boardheader* board)
                 
                 fileinfo->accessed[1] |= FILE_CENSOR;
                 setbfile(oldpath, board->filename, fileinfo->filename);
-                setbfile(newpath, fileinfo->o_board, fileinfo->filename);
+                setbfile(newpath, getboard(fileinfo->o_bid)->filename, fileinfo->filename);
                 f_cp(oldpath, newpath, 0);
 
-                setbfile(dirpath, fileinfo->o_board, DOT_DIR);
+                setbfile(dirpath, getboard(fileinfo->o_bid)->filename, DOT_DIR);
                 if ((filedes = open(dirpath, O_WRONLY | O_CREAT, 0664)) == -1) {
                     return -1;
                 }
                 newfh=*fileinfo;
                 flock(filedes, LOCK_EX);
-                nowid = get_nextid(fileinfo->o_board);
+                nowid = get_nextid_bid(fileinfo->o_bid);
                 newfh.id = nowid;
                 if (fileinfo->o_id == fileinfo->o_groupid)
                     newfh.groupid = newfh.reid = newfh.id;
@@ -2119,15 +2121,15 @@ int pass_filter(struct fileheader* fileinfo,struct boardheader* board)
                 flock(filedes, LOCK_UN);
                 close(filedes);
                 
-                updatelastpost(fileinfo->o_board);
+                updatelastpost(getboard(fileinfo->o_bid)->filename);
 #ifdef HAVE_BRC_CONTROL
                 brc_add_read(newfh.id);
 #endif
                 if (newfh.id == newfh.groupid)
-                    setboardorigin(fileinfo->o_board, 1);
-                setboardtitle(fileinfo->o_board, 1);
+                    setboardorigin(getboard(fileinfo->o_bid)->filename, 1);
+                setboardtitle(getboard(fileinfo->o_bid)->filename, 1);
                 if (newfh.accessed[0] & FILE_MARKED)
-                    setboardmark(fileinfo->o_board, 1);
+                    setboardmark(getboard(fileinfo->o_bid)->filename, 1);
             }
         }
     return 0;

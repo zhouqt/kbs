@@ -135,6 +135,21 @@ int get_nextid(char* boardname)
     return ret;
 }
 
+int get_nextid_bid(int bid)
+{
+    int fd,ret;
+
+	ret = bid;
+	if (ret > 0)
+	{
+		fd = bcache_lock();
+		bcache[ret-1].nowid++;
+		ret=bcache[ret-1].nowid;
+		bcache_unlock(fd);
+	}
+    return ret;
+}
+
 void resolve_boards()
 {
     int boardfd=-1;
