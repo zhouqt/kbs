@@ -87,6 +87,8 @@ $loginok=0;
 @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
   if ($fullfromhost=="") {
       @$fullfromhost=$_SERVER["REMOTE_ADDR"];
+      if ($fullfromhost=="")
+          $fullfromhost="166.111.8.238";
       $fromhost=$fullfromhost;
   }
   else {
