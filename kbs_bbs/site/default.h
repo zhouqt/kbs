@@ -11,6 +11,10 @@
 
 #ifndef SMTH /*水木清华专有代码,缺省使能*/
 #define SMTH 1
+#else
+#if SMTH == 0
+#undef SMTH
+#endif
 #endif
 
 #if HAPPY_BBS == 0 /* HAPPY BBS专有代码 */
@@ -43,6 +47,10 @@
 
 #ifndef CHINESE_CHARACTER /*汉字整字处理,缺省使能*/
 #define CHINESE_CHARACTER
+#else
+#if CHINESE_CHARACTER == 0
+#undef CHINESE_CHARACTER
+#endif
 #endif
 
 #if ANTISPAM_MAILADDR == 0	/* 转信后的文章隐藏真实 MAIL */
@@ -71,10 +79,18 @@
 
 #ifndef BBS_SERVICE_DICT	/* 词典功能 */
 #define BBS_SERVICE_DICT
+#else
+#if BBS_SERVICE_DICT == 0
+#undef BBS_SERVICE_DICT
+#endif
 #endif
 
 #ifndef FILTER /*过滤器*/
 #define FILTER
+#else
+#if FILTER == 0
+#undef FILTER
+#endif
 #endif
 
 #ifndef DOTIMEOUT
@@ -85,6 +101,10 @@
  *             other modes. 
  *             */
 #define DOTIMEOUT 1
+#else
+#if DOTIMEOUT == 0
+#undef DOTIMEOUT
+#endif
 #endif
 
 
