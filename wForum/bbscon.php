@@ -66,9 +66,8 @@
 		$boardName = $brdarr["NAME"];
 		$haveprev = 0;
 		$num = bbs_get_threads_from_gid($brdnum, $gid, $gid, $articles, $haveprev );
-		var_dump($articles);
 		if ($num > 0) {
-			for ($i = 0; $i < $num; $i++) {
+			for ($i = 0; $i < $num; $i++) { //可以用二分查找加速，以后再说吧
 				if ($id == $articles[$i]["ID"]) {
 					header("Location: disparticle.php?boardName=$boardName&ID=$gid&start=$i&listType=1");
 					return;
