@@ -1019,17 +1019,11 @@ char *direct;
     }
     if (delete_it)
         return mail_del(ent, fileinfo, direct);
-    else {
+    else if ((fileinfo->accessed[0] & FILE_READ) != FILE_READ)
+	{
         fileinfo->accessed[0] |= FILE_READ;
-#ifdef POSTBUG
-        if (replied)
-            bug_possible = true;
-#endif
         substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
-#ifdef POSTBUG
-        bug_possible = false;
-#endif
-    }
+	}
     if (readnext == true)
         return READ_NEXT;
     return FULLUPDATE;
