@@ -9,6 +9,14 @@
 #include "ext/standard/info.h"  
 #include "php_smth_bbs.h"  
 
+/* 简单粗暴法去掉重复定义 Warning */
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef MYSQL_UNIX_ADDR
+
 #include "bbs.h"
 #include "bbslib.h"
 #include "vote.h"
@@ -460,7 +468,8 @@ static void asssign_maillist(zval * array, char *boxname, char *pathname)
 
 static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
 {
-    add_assoc_long(array, "NUM", num);
+    add_assoc_long(array, "NUM", num); // kept for back compatible
+    add_assoc_long(array, "BID", num);
     add_assoc_string(array, "NAME", (char*)board->filename, 1);
     /*
      * add_assoc_string(array, "OWNER", board->owner, 1);
