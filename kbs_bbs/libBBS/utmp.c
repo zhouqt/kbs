@@ -623,8 +623,9 @@ void clear_utmp2(int uent)
     zeroinfo.sockaddr = 0 ;
     zeroinfo.destuid = 0 ;
 
+	if (utmpshm->uinfo[ uent - 1 ].active!=NA)
+  		utmphead->number--;
     utmpshm->uinfo[ uent - 1 ] = zeroinfo;
-  	utmphead->number--;
 }
 
 void clear_utmp(int uent)
