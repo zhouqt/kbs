@@ -78,6 +78,7 @@ static int refresh_select(struct _select_def *conf)
          && (i <= conf->item_count); i++)
         if (show_item(conf, i, false) == SHOW_QUIT)
             return SHOW_QUIT;
+    good_move(conf->item_pos[conf->pos-1].y, conf->item_pos[conf->pos-1].x);
     refresh();
     return SHOW_CONTINUE;
 }

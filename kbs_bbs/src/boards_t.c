@@ -424,11 +424,7 @@ int choose_board(int newflag, char *boardprefix)
  */
     while (1) {
         if (brdnum <= 0) {      /*³õÊ¼»¯ */
-            if (yank_flag==3){
-                if (load_mboards(boardprefix) == -1)
-                    continue;
-            }
-            else if (load_boards(boardprefix) == -1)
+            if (load_boards(boardprefix) == -1)
                 continue;
             if (yank_flag<=2)
             if ((yank_flag != 2) || (currentuser->flags[0] & BRDSORT_FLAG))
