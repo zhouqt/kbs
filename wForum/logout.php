@@ -11,7 +11,7 @@ require_once("inc/funcs.php");
 	setcookie("UTMPUSERID",'',time()+36000000,$path);
 	setcookie("LOGINTIME",'',time()+36000000,$path);
 	setcookie("PASSWORD",'',time()+36000000,$path);
-	setcookie("style",'',time()+36000000,$path);
+//	setcookie("style",'',time()+36000000,$path);
 
 	header('Location: '.$SiteURL);
 ?>

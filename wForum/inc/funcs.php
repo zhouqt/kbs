@@ -146,6 +146,9 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$utmpnum = $_COOKIE["UTMPNUM"];
 	@$userid = $_COOKIE["UTMPUSERID"];
 	@$userpassword=$_COOKIE["PASSWORD"];
+	if ($userid=='') {
+		$userid='guest';
+	}
 }
 
 // add by stiger, login as "guest" default.....
@@ -166,7 +169,9 @@ if (($utmpkey == "")&&($needlogin!=0)){
 	}
 } else {
 	if ( ($utmpkey!="") ) {
+
 		$ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet);
+
 	  if (($ret)==0) {
 		if ($userid!="guest") {
 			$loginok=1;
@@ -175,8 +180,11 @@ if (($utmpkey == "")&&($needlogin!=0)){
 		}
 		$currentuinfo_num=bbs_getcurrentuinfo();
 		$currentuser_num=bbs_getcurrentuser($currentuser);
+
 	  } else {
+
 		if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
+
 			$ret=bbs_wwwlogin(1);
 			if ( ($ret==2) || ($ret==0) ){
 				if ($userid!="guest") {
@@ -211,6 +219,7 @@ if (($utmpkey == "")&&($needlogin!=0)){
 	  }
 	}
 }
+
 function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")!=FALSE))
@@ -591,20 +600,32 @@ function show_nav()
 
 } 
 
-function head_var($Title)
+function head_var($Title, $URL='',$showWelcome=1)
 {
   GLOBAL $SiteName;
   GLOBAL $SiteURL;
   GLOBAL $stats;
-  $URL=$_SERVER['PHP_SELF'];
+  if ($URL=='') {
+	  $URL=$_SERVER['PHP_SELF'];
+  }
+?>
+<BR>
+<?php
+  if ($showWelcome==1) {
 ?>
 <table cellspacing=1 cellpadding=3 align=center border=0 width="97%">
 <tr>
 <td height=25>
-<BR>
 >> ª∂”≠π‚¡Ÿ <B><?php       echo $SiteName; ?></B>
 </td></tr>
 </table>
+<?php
+  } else {
+?>
+<BR>
+<?php
+	}
+?>
 <table cellspacing=1 cellpadding=3 align=center class=tableBorder2>
 <tr><td height=25 valign=middle>
 <img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> °˙ 
@@ -652,9 +673,8 @@ if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
 	return;
 }
 
+
 if (( ($loginok==1) || ($guestloginok==1) )&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
-
-
 
 } // !define ('_BBS_FUNCS_PHP_')
 ?>

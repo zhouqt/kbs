@@ -6,7 +6,8 @@ function getattachtmppath($userid,$utmpnum)
   $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload"; 
   return $attachdir;
 }
-
+define("ANNOUNCENUMBER",5);
+define("ARTICLESPERPAGE",20);
 $SiteName="大运村BBS";
 
 $HTMLTitle="大运村BBS";

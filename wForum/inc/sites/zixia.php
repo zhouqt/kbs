@@ -8,6 +8,10 @@ function getattachtmppath($userid,$utmpnum)
 //  return ATTACHTMPPATH;
 }
 
+define("ANNOUNCENUMBER",5);
+
+define("ARTICLESPERPAGE",20);
+
 $SiteName="≤‚ ‘BBS";
 
 $SiteURL="http://news.zixia.net:8080/wbbs";
