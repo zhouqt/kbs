@@ -612,22 +612,24 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         strncpy(fh->title, fh->title + 4, STRLEN);
     }
 #ifdef FILTER
-    sprintf(oldpath, "%s/boards/%s/%s", BBSHOME, boardname, fh->filename);
-	    if((boardname != "BMManager") && (boardname != "Managers") && (boardname != "bbsnet") && (boardname != "CheckCD") && (boardname != "deleted") && (boardname != "denypost") && (boardname != "Famehall") && (boardname != "Filter") && (boardname != "junk") && (boardname != "notepad") && (boardname != "syssecurity") && (boardname != "TempMeetingRoom") && (boardname != "undenypost") && (boardname != "vote") && (boardname != "xdeleted") && (boardname != "Original") && (boardname != "advisor") && (boardname != "Announce") && (boardname != "BBShelp") && (boardname != "BM_Discussed") && (boardname != "BMManagerMail") && (boardname != "Board") && (boardname != "BoardManager") && (boardname != "CD_Designer") && (boardname != "ChatOP") && (boardname != "cn.bbs.admin") && (boardname != "Comp_discuss") && (boardname != "Complain") && (boardname != "Goodbye") && (boardname != "Memorial") && (boardname != "New_board") && (boardname != "reg") && (boardname != "Registry") && (boardname != "Rules") && (boardname != "Service") && (boardname != "SMTH2000") && (boardname != "surrender") && (boardname != "sys_discuss") && (boardname != "sysmail") && (boardname != "sysop") && (boardname != "SYSOP_Practice") && (boardname != "system_dev") && (boardname != "test") && (boardname != "Trans_post") && (boardname != "Xsys_dis1") && (boardname != "Xsys_dis2") && (boardname != "Xsys_dis3") && (boardname != "Xsys_dis4") && (boardname != "Arbitration") && (boardname != "PreJury") && (check_badword(oldpath)||(boardname == "News"))) {
-		    sprintf(newpath, "%s/boards/Filter/%s", BBSHOME, fh->filename);
-	            f_mv(oldpath, newpath);
-		    strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
-		    nowid = get_nextid(boardname);
-		    fh->o_id = nowid;
-		    if (re == NULL) {
-			    fh->o_groupid = fh->o_id;
-			    fh->o_reid = fh->o_id;
-		    } else {
-			    fh->o_groupid = re->groupid;
-			    fh->o_reid = re->id;
-		    }
-		    boardname = "Filter";
-	    }
+	setbfile(oldpath, boardname, fh->filename);
+	if (normal_board(boardname) && strcmp(boardname, FILTER_BOARD))
+	{
+		/* FIXME: There is a potential bug here. */
+		setbfile(newpath, FILTER_BOARD, fh->filename);
+		f_mv(oldpath, newpath);
+		strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
+		nowid = get_nextid(boardname);
+		fh->o_id = nowid;
+		if (re == NULL) {
+			fh->o_groupid = fh->o_id;
+			fh->o_reid = fh->o_id;
+		} else {
+			fh->o_groupid = re->groupid;
+			fh->o_reid = re->id;
+		}
+		boardname = FILTER_BOARD;
+	}
 #endif
     setbfile(buf, boardname, DOT_DIR);
 
@@ -683,7 +685,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     if (user != NULL)
         bmlog(user->userid, boardname, 2, 1);
 #ifdef FILTER
-    if (boardname == "Filter")
+    if (strcmp(boardname, FILTER_BOARD) == 0)
 	    return 2;
     else
 #endif
@@ -922,7 +924,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     if (flag == FILE_DELETE_FLAG && (digestmode == 4 || digestmode == 5))
         return DONOTHING;
     if ((flag == FILE_MARK_FLAG || flag == FILE_DELETE_FLAG) && (!strcmp(currboard, "syssecurity")
-                                                                 || !strcmp(currboard, "Filter")))
+		 || !strcmp(currboard, FILTER_BOARD)))
         return DONOTHING;       /* Leeward 98.03.29 */
     /*
      * Haohmaru.98.10.12.主题模式下不允许mark文章 
@@ -1058,7 +1060,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
         break;
 #ifdef FILTER
     case FILE_CENSOR_FLAG:
-	if (!strcmp(currboard, "Filter"))
+	if (!strcmp(currboard, FILTER_BOARD))
 	{
 		if (fileinfo->accessed[1] & FILE_CENSOR) {
 #ifdef BBSMAIN
@@ -1067,8 +1069,8 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #endif
 		} else {
 			fileinfo->accessed[1] |= FILE_CENSOR;
-			sprintf(oldpath, "%s/boards/Filter/%s", BBSHOME, fileinfo->filename);
-			sprintf(newpath, "boards/%s/%s", fileinfo->o_board, fileinfo->filename);
+			setbfile(oldpath, FILTER_BOARD, fileinfo->filename);
+			setbfile(newpath, fileinfo->o_board, fileinfo->filename);
 			f_cp(oldpath, newpath, 0);
 
 			setbfile(buffer, fileinfo->o_board, DOT_DIR);
