@@ -26,6 +26,7 @@ showAnnounce();
 </td></tr>
 <?php
 showTitle();
+exit(0);
 
 ?>
 </TABLE>

@@ -55,7 +55,6 @@ $foundErr=false;
 $loginok=0;
 $guestloginok=0;
 
-
 if (!isset($nologin)) {
 	$nologin=0;
 }
