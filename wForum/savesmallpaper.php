@@ -96,8 +96,6 @@ function preprocess(){
 		return false;
 	}
 
-	$reArticles=$articles;
-
 	return true;
 }
 
