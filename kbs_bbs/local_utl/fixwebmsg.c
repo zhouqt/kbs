@@ -16,7 +16,7 @@ int main()
     msgshm = (msglist_t *) attach_shm("MSG_SHMKEY", 5200, sizeof(msglist_t) * WWW_MAX_LOGIN, &iscreate);
     if (iscreate) {
         fprintf(stderr, "WARNING: Created a new message list shared memory!\n");
-        fprintf(stderr, "         Not necesary to fix message list.\n");
+        fprintf(stderr, "         Not necessary to fix message list.\n");
         fprintf(stderr, "         Exiting...");
         exit(-1);
     }
