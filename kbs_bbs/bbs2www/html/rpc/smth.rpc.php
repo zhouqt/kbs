@@ -3,6 +3,8 @@
 require_once '..'.DIRECTORY_SEPARATOR.'funcs.php';
 require_once 'config.modules.php';
 
+login_init();
+
 $GLOBAL_MODULES = new Modules ();
 
 class Modules {
