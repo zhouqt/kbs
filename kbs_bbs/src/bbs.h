@@ -263,6 +263,7 @@ O MaxMessageSize=32000
 #define GOTO_NEXT       7       /* Move cursor to next */
 #define DIRCHANGED      8       /* Index file was changed */
 #define NEWSCREEN	9	/* split the screen */
+#define CHANGEMODE  10  /* 换版面了或者是换模式了*/
 
 #define I_TIMEOUT   (-2)        /* Used for the getchar routine select call */
 #define I_OTHERDATA (-333)      /* interface, (-3) will conflict with chinese */

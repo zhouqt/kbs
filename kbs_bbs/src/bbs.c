@@ -1094,7 +1094,7 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
     if (digestmode != false && digestmode != true)
         digestmode = false;
     setbdir(digestmode, direct, currboard->filename);     /* direct 设定 为 当前board目录 */
-    return NEWDIRECT;
+    return CHANGEMODE;
 }
 
 int digest_mode()
@@ -3107,10 +3107,17 @@ struct one_key read_comms[] = { /*阅读状态，键定义 */
 
 int ReadBoard()
 {
-    if (Read()==-2) //is directory {
-        if (currboard->flag&BOARD_GROUP) {
-            choose_board(0,NULL,currboardent,0);
-        }
+    int returnmode;
+    while (1) {
+        returnmode=Read();
+        
+        if ((returnmode==-2)||(returnmode==CHANGEMODE)) { //is directory or select another board
+            if (currboard->flag&BOARD_GROUP) {
+                choose_board(0,NULL,currboardent,0);
+                break;
+            }
+        } else break;
+    }
     return 0;
 }
 
@@ -3121,6 +3128,7 @@ int Read()
     time_t usetime;
     struct stat st;
     int bid;
+    int returnmode;
 
     if (!selboard) {
         move(2, 0);
@@ -3170,7 +3178,7 @@ int Read()
         }
     }
     usetime = time(0);
-    i_read(READING, buf, readtitle, (READ_FUNC) readdoent, &read_comms[0], sizeof(struct fileheader));  /*进入本版 */
+    returnmode=i_read(READING, buf, readtitle, (READ_FUNC) readdoent, &read_comms[0], sizeof(struct fileheader));  /*进入本版 */
     newbbslog(BBSLOG_BOARDUSAGE, "%-20s Stay: %5ld", currboard->filename, time(0) - usetime);
     bmlog(currentuser->userid, currboard->filename, 0, time(0) - usetime);
     bmlog(currentuser->userid, currboard->filename, 1, 1);
@@ -3178,7 +3186,7 @@ int Read()
     board_setcurrentuser(uinfo.currentboard, -1);
     uinfo.currentboard = 0;
     UPDATE_UTMP(currentboard,uinfo);
-    return 0;
+    return returnmode;
 }
 
 /*Add by SmallPig*/

@@ -539,6 +539,7 @@ static int fav_onselect(struct _select_def *conf)
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
 
     if ((ptr->dir == 1)||((arg->favmode==1)&&(ptr->flag&BOARD_GROUP))) {        /* added by bad 2002.8.3*/
+        arg->tmpnum=0;
         return SHOW_SELECT;
     } else {
         struct boardheader bh;
@@ -732,6 +733,10 @@ static int fav_key(struct _select_def *conf, int command)
         if (do_select(0, NULL, genbuf) == NEWDIRECT) {
             if (!(currboard->flag&BOARD_GROUP))
                 Read();
+            else {
+                arg->tmpnum=-1;
+                return SHOW_SELECT;
+            }
         }
         modify_user_mode(arg->newflag ? READNEW : READBRD);
         return SHOW_REFRESH;
@@ -1152,6 +1157,8 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
         } else {
             /*选择了一个目录,SHOW_SELECT，注意有个假设，目录的深度
             不会大于FAVBOARDNUM，否则selist会溢出
+            注意，arg->tmpnum被用来表示是select了版面还是用s跳转的。
+            如果是s跳转，tmpnum=-1,否则tmpnum=0;
             TODO: 动态增长sellist
             */
             sellist[favlevel] = favboard_conf.pos;
@@ -1159,13 +1166,19 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
             if (favmode) {
                 if (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) {
                     //进入版面目录
-                    favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
+                    if (arg->tmpnum==-1) //select进入的
+                        favlist[favlevel] = currboardent;
+                    else
+                        favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
                     changelevel=favlevel-1;
                     favmode=0;
                 } else
                     favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
             }
             else {
+                if (arg->tmpnum==-1) //select进入的
+                    favlist[favlevel] = currboardent;
+                else
                 favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
             }
             sellist[favlevel] = 1;

@@ -238,7 +238,7 @@ static int search_author(struct keeploc *locmem, int offset, char *powner)
     return search_articles(locmem, author, offset, 1);
 }
 
-void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct one_key *rcmdlist, int ssize)
+int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, struct one_key *rcmdlist, int ssize)
 {
     char lbuf[11], lastfile[256];
     int num, entries, recbase;
@@ -441,7 +441,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             }
             modify_user_mode(cmdmode);
         }
-        if (mode == DOQUIT)
+        if ((mode == DOQUIT)||(mode == CHANGEMODE))
             break;
         if (mode == GOTO_NEXT) {
             cursor_pos(locmem, locmem->crs_line + 1, 1);
@@ -560,6 +560,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     clear();
     free(pnt);
     pnt = NULL;
+    return mode;
 }
 
 
