@@ -15,6 +15,8 @@ MAILTO=bbs
 # 每小时记录每版在线人数和在线人数
 2 * * * * /home/bbs/bin/bonlinelog
 2 * * * * /home/bbs/bin/uonlinelog
+# 每天记录版面数据
+10 0 * * * /home/bbs/bin/post_brdlog
 # 每小时记录在线人数用来生成图
 1,7,13,19,25,31,37,43,49,55 * * * * /home/bbs/bin/dayuserlog
 # 每天凌晨生成dayonline.png
