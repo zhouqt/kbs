@@ -187,6 +187,7 @@ typedef struct
 {
     bool save_mode; /* in save mode,path need valid*/
     int tmpnum;
+    bool show_path;
 } a_select_path_arg;
 
 static int a_select_path_onselect(struct _select_def *conf)
@@ -212,8 +213,12 @@ static int a_select_path_onselect(struct _select_def *conf)
 static int 
 a_select_path_show(struct _select_def *conf, int i)
 {
+    a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
     if (import_title[i-1][0]!=0)
-        prints(" %2d   %s", i, import_title[i-1]);
+    	if (arg->show_path)
+           prints(" %2d   %s", i, import_path[i-1]);
+    	else
+           prints(" %2d   %s", i, import_title[i-1]);
     else
         prints(" %2d   \x1b[32m<ÉÐÎ´Éè¶¨>\x1b[m", i);
     return SHOW_CONTINUE;
@@ -268,6 +273,18 @@ a_select_path_key(struct _select_def *conf, int key)
     }
 
     switch (key) {
+    	 case 'h':
+    	 case 'H':
+    	       show_help("help/import_announcehelp");
+    	       return SHOW_REFRESH;
+    	 case 'R':
+    	 case 'r':
+    	 	load_import_path();
+    	 	return SHOW_DIRCHANGE;
+    	 case 'a':
+    	 case 'A':
+    	 	arg->show_path=!arg->show_path;
+    	 	return SHOW_DIRCHANGE;
         case 'T':
         case 't':
             if (import_path[conf->pos-1][0]!=0) {
@@ -358,7 +375,7 @@ a_select_path_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[Ë¿Â·Ñ¡Ôñ²Ëµ¥]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÒÆ¶¯[\x1b[1;32mm\x1b[0;37m]\x1b[m");
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÒÆ¶¯[\x1b[1;32mm\x1b[0;37m]°ïÖú[\x1b[1;32mh\x1b[0;37m]\x1b[m");
     move(2, 0);
     prints("[0;1;37;44m %4s   %-64s[m", "±àºÅ", "Ë¿Â·Ãû");
     update_endline();
@@ -382,6 +399,7 @@ a_select_path(bool save_mode)
     if (import_path_select==0)
     	load_import_path();
     arg.save_mode=save_mode;
+    arg.show_path=false;
     pts = (POINT *)malloc(sizeof(POINT) * ANNPATH_NUM);
     for (i = 0; i < ANNPATH_NUM; i++)
     {
