@@ -2674,7 +2674,8 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                     outbuf_len = strlen(outbuf);
                     BUFFERED_OUTPUT(output, outbuf, outbuf_len);
                     attachShowed[num-1]=1;
-                    i = buf_p - buf;
+                    i = buf_p - buf - 1;
+                    continue;
                 }
 atppp_never_use_goto:
                 NULL;
