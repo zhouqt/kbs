@@ -199,7 +199,7 @@ static int a_select_path_key(struct _select_def *conf, int key)
             char new_title[STRLEN];
 
             strncpy(new_title, import_title[conf->pos - 1], STRLEN);
-            new_title[STRLEN]=0;
+            new_title[STRLEN - 1]=0;
             a_prompt2(-2, "新名称: ", new_title);
             if (new_title[0] != 0) {
                 free(import_title[conf->pos - 1]);
@@ -653,7 +653,7 @@ int ent;
                 }
             } else {
                 strncpy(importpath, buf, MAXPATH);
-                importpath[MAXPATH]=0;
+                importpath[MAXPATH - 1]=0;
                 pm.path = importpath;
             }
         } else
@@ -1352,7 +1352,7 @@ void a_manager(MENU *pm,int ch)
             strcpy(import_path[i], pm->path);
             free(import_title[i]);
             strncpy(ans, pm->mtitle, STRLEN);
-            ans[STRLEN]=0;
+            ans[STRLEN-1]=0;
             move(t_lines - 2, 0);
             clrtoeol();
             getdata(t_lines - 2, 0, "设定丝路名:", ans, STRLEN - 1, DOECHO, NULL, false);

@@ -251,8 +251,8 @@ int check_stuffmode()
 void setqtitle(char *stitle)
 {                               /* 取 Reply 文章后新的 文章title */
     if (strncmp(stitle, "Re: ", 4) != 0 && strncmp(stitle, "RE: ", 4) != 0) {
-        snprintf(ReplyPost,STRLEN, "Re: %s", stitle);
-        ReplyPost[STRLEN]=0;
+        snprintf(ReplyPost,STRLEN - 1, "Re: %s", stitle);
+        ReplyPost[STRLEN - 1]=0;
         strncpy(ReadPost, stitle, STRLEN - 1);
         ReadPost[STRLEN - 1] = 0;
     } else {
