@@ -606,11 +606,14 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         clear();
         prints("设定俱乐部名单\n");
         count = listfilecontent(buf);
-        if (count)
-            getdata(1, 0, "(A)增加 (D)删除or (E)离开[E]",
-                    ans, 7, DOECHO, NULL, true);
+        //etnlegend,2005.02.27,清理俱乐部版面人员↓
+        if(count&&HAS_PERM(getCurrentUser(),PERM_OBOARDS))
+            getdata(1,0,"(A)增加 (I)导入 (D)删除 (C)清理 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
+        else if(count)
+            getdata(1,0,"(A)增加 (I)导入 (D)删除 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
         else
-            getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, NULL, true);
+            getdata(1,0,"(A)增加 (I)导入 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
+        //etnlegend↑
         if (*ans == 'A' || *ans == 'a') {
             move(1, 0);
             usercomplete("增加俱乐部成员: ", uident);
@@ -655,6 +658,159 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
                 }
             }
         }
+        //etnlegend,05.02.27,清理俱乐部版面人员↓
+        else if((*ans=='C'||*ans=='c')&&count&&HAS_PERM(getCurrentUser(),PERM_OBOARDS)){//限定权限为讨论区总管(E)
+            sprintf(genbuf,"附加说明:[版面维护操作]\n");
+            getdata(2,0,genbuf,comment,STRLEN,DOECHO,NULL,true);
+            if(!comment[0])
+                sprintf(comment,"版面维护操作");//默认附加说明
+            sprintf(genbuf,"确认清理 \033[1;31m%s\033[m 俱乐部人员",currboard->filename);
+            if(askyn(genbuf,false)){
+                FILE *fp;
+                struct userec *user;
+                if(!(fp=fopen(buf,"r"))||setvbuf(fp,NULL,_IOFBF,0))//以完全缓冲方式打开文件
+                    break;
+                while(fgets(uident,STRLEN,fp)){
+                    uident[strlen(uident)-1]=NULL;
+                    if(!getuser(uident,&user)){//非法(如已改名或已死亡)的ID
+                        del_from_file(buf,uident);
+                        continue;
+                    }
+                    if(!strcmp(getCurrentUser()->userid,uident)) continue; //自己就算了
+                    if(delclubmember(uident, readperm)){
+                        sprintf(genbuf,"%s 被 %s 取消 %s 俱乐部权力",uident,getCurrentUser()->userid,currboard->filename);
+                        sprintf(tempbuf,"附加说明:%s",comment);
+                        mail_buf(getCurrentUser(),tempbuf,uident,genbuf,getSession());
+                        deliverreport(genbuf,tempbuf);
+                    }
+                }
+                fclose(fp);
+            }
+        }
+        else if(*ans=='I'||*ans=='i'){
+            sprintf(genbuf,"附加说明:[导入名单]\n");
+            getdata(2,0,genbuf,comment,STRLEN,DOECHO,NULL,true);
+            if(!comment[0])
+                sprintf(comment,"导入名单");
+            int currline,currpage,count_add,count_skip,count_err;
+            FILE *fp_add,*fp_skip,*fp_err,*fp_mail;
+            struct userec *user;
+            currline=4;currpage=1;count_add=0;count_skip=0;count_err=0;
+            if(!(fp_add=tmpfile())||!(fp_skip=tmpfile())||!(fp_err=tmpfile()))
+                break;
+            clrtobot();
+            sprintf(genbuf,"增加俱乐部成员[ENTER=结束]: ");
+            while(getdata(currline,0,genbuf,uident,STRLEN,DOECHO,NULL,true)){
+                if(currline!=t_lines-1)
+                    clrtoeol();
+                if(getuser(uident,&user)){
+                    rewind(fp_add);
+                    while(fgets(uident,STRLEN,fp_add)){
+                        uident[strlen(uident)-1]=NULL;
+                        if(!strcmp(uident,user->userid)){
+                            uident[0]=NULL;
+                            break;
+                        }
+                    }
+                    fseek(fp_add,0,SEEK_END);
+                    if(!uident[0]||seek_in_file(buf,user->userid)){
+                        count_skip++;
+                        fprintf(fp_skip,"%s\n",user->userid);
+                        move(currline,48);
+                        clrtoeol();
+                        prints("\033[1;33m%s\033[m",user->userid);
+                    }
+                    else{
+                        count_add++;
+                        fprintf(fp_add,"%s\n",user->userid);
+                        move(currline,48);
+                        clrtoeol();
+                        prints("\033[1;32m%s\033[m",user->userid);
+                    }
+                }
+                else{
+                    count_err++;
+                    fprintf(fp_err,"%s\n",uident);
+                    move(currline,48);
+                    clrtoeol();
+                    prints("\033[1;31m非法ID!\033[m");
+                }
+                if(currline==t_lines-1){
+                    currline=4;
+                    currpage++;
+                    move(2,60);
+                    prints("\033[1;36m- %d -\033[m",currpage);
+                }
+                else
+                    currline++;
+                if(currline!=t_lines-1){
+                    move(currline+1,0);
+                    clrtoeol();
+                }
+            }
+            move(4,0);
+            clrtobot();
+            sprintf(genbuf,"确定授予已导入用户 \033[1;31m%s\033[m 俱乐部权力",currboard->filename);
+            if(askyn(genbuf,false)){
+                rewind(fp_add);
+                while(fgets(uident,STRLEN,fp_add)){
+                    uident[strlen(uident)-1]=NULL;
+                    getuser(uident,&user);
+                    if(addtofile(buf,user->userid)==1){
+                        if(readperm)
+                            user->club_read_rights[(currboard->clubnum-1)>>5]|=1<<((currboard->clubnum-1)&0x1f);
+                        else
+                            user->club_write_rights[(currboard->clubnum-1)>>5]|= 1<<((currboard->clubnum-1)&0x1f);
+                    }
+                    sprintf(genbuf,"%s 由 %s 授予 %s 俱乐部权力",uident,getCurrentUser()->userid,currboard->filename);
+                    sprintf(tempbuf,"附加说明:%s",comment);
+                    mail_buf(getCurrentUser(),tempbuf,uident,genbuf,getSession());
+                    deliverreport(genbuf,tempbuf);
+                }
+                if(count_add+count_skip+count_err)
+                    prints("共操作输入ID信息\033[1;36m%d\033[m条,其中──\n",count_add+count_skip+count_err);
+                if(count_add)
+                    prints("\033[1;32m%4d\033[m位用户已成功授权\n",count_add);
+                if(count_skip)
+                    prints("\033[1;33m%4d\033[m位用户因重复或已经具有权限而跳过\n",count_skip);
+                if(count_err)
+                    prints("\033[1;31m%4d\033[m条信息因输入ID非法而取消操作\n",count_err);
+                comment[0]=NULL;
+            }
+            sprintf(genbuf,"是否寄回操作详情");
+            if(askyn(genbuf,true)){
+                gettmpfilename(tempbuf,currboard->filename);
+                if(!(fp_mail=fopen(tempbuf,"w")))
+                    break;
+                fprintf(fp_mail,"共操作输入ID信息\033[1;36m%d\033[m行,",count_add+count_skip+count_err);
+                fprintf(fp_mail,"操作\033[1;31m%s\033[m执行.\n",comment[0]?"未":"已");
+                fprintf(fp_mail,"\033[1;32m%s\033[m用户\033[1;32m%d\033[m名,",comment[0]?"有效":"已授权",count_add);
+                fprintf(fp_mail,"\033[1;33m%s\033[m用户\033[1;33m%d\033[m名,",comment[0]?"重复":"已跳过",count_skip);
+                fprintf(fp_mail,"\033[1;31m%s\033[m用户\033[1;31m%d\033[m名.",comment[0]?"无效":"已取消",count_err);
+                fprintf(fp_mail,"\n\n详细列表----\n");
+                rewind(fp_add);
+                while(fgets(uident,STRLEN,fp_add)){
+                    fputs("\033[1;32m",fp_mail);
+                    fputs(uident,fp_mail);
+                }
+                rewind(fp_skip);
+                while(fgets(uident,STRLEN,fp_skip)){
+                    fputs("\033[1;33m",fp_mail);
+                    fputs(uident,fp_mail);
+                }
+                rewind(fp_err);
+                while(fgets(uident,STRLEN,fp_err)){
+                    fputs("\033[1;31m",fp_mail);
+                    fputs(uident,fp_mail);
+                }
+                fputs("\033[m\n",fp_mail);
+                fclose(fp_mail);
+                sprintf(genbuf,"[操作记录] %s版导入用户列表",currboard->filename);
+                mail_file(getCurrentUser()->userid,tempbuf,getCurrentUser()->userid,genbuf,BBSPOST_MOVE,NULL);
+            }
+            fclose(fp_add);fclose(fp_skip);fclose(fp_err);
+        }
+        //etnlegend↑
         /*
          * else if ((*ans == 'M' || *ans == 'm') && count) {
          * club_send();
