@@ -1933,7 +1933,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
     int newch, ch = 0, foo, shift;
     struct textline *st_tmp, *st_tmp2;
 
-    if (*pattachpos!=0) {
+    if (pattachpos != NULL && *pattachpos!=0) {
         *pattachpos=read_file(filename);
     } else
         // TODO: add zmodem upload
