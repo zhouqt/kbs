@@ -56,9 +56,9 @@ function showTreeItem($boardName,$articleID,$thread,$threadID,&$flags){
 	}
 	echo '<img src="pic/nofollow.gif"><a href="disparticle.php?boardName='.$boardName.'&ID='.$articleID.'&start='.$threadID.'&listType=1">';
 	if (strLen($thread['TITLE'])>22) {
-		echo substr($thread['TITLE'],0,22).'...';
+		echo htmlspecialchars(substr($thread['TITLE'],0,22),ENT_QUOTES).'...';
 	} else {
-		echo $thread['TITLE'];
+		echo htmlspecialchars($thread['TITLE'],ENT_QUOTES);
 	}
 	echo '</a> -- <a href="dispuser.asp?name='.$thread['OWNER'].'">'.$thread['OWNER'].'</a></td></tr>';
 

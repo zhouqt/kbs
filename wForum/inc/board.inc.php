@@ -152,7 +152,7 @@ function showBoardContents($boardID,$boardName,$page){
 	} else {
 		echo '<img loaded="no" src="pic/plus.gif" id="followImg'.($i+$start).'" style="cursor:hand;" onclick="loadThreadFollow('.($start+$i).",'".$boardName."')\" title=展开贴子列表>";
 	}
-?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $i+$start ;?>" title="<?php echo $articles[$i]['TITLE'] ;?><br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo $articles[$i]['TITLE'] ;?></a> 
+?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $i+$start ;?>" title="<?php echo htmlspecialchars($articles[$i]['TITLE'],ENT_QUOTES) ;?><br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo htmlspecialchars($articles[$i]['TITLE']) ;?></a> 
 <?php
 	$threadPages=ceil(($threadNum+1)/THREADSPERPAGE);
 	if ($threadPages>1) {

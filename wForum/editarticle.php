@@ -148,7 +148,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
         <tr>
           <td width=20% class=tablebody2><b>主题标题</b>
           </td>
-          <td width=80% class=tablebody2>&nbsp;<?php echo $reArticles[1]["TITLE"]; ?>&nbsp;&nbsp;
+          <td width=80% class=tablebody2>&nbsp;<?php echo htmlspecialchars($reArticles[1]["TITLE"],ENT_QUOTES); ?>&nbsp;&nbsp;
 	 </td>
         </tr>
         <tr>

@@ -9,7 +9,7 @@ setStat("察看邮件");
 
 show_nav();
 
-echo "<br>";
+echo "<br><br>";
 
 $boxDesc=getMailBoxName($_GET['boxname']);
 
@@ -42,12 +42,10 @@ function main(){
 		$boxName='inbox';
 	}
 	if ($boxName=='inbox') {
-
 		showmail('inbox','.DIR','收件箱', $num);
 		return true;
 	}
 	if ($boxName=='sendbox') {
-
 		showmail('sendbox','.SENT','发件箱',$num );
 		return true;
 	}
@@ -103,10 +101,10 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
 	}
 ?>
     <tr>
-	    <td class=tablebody1 valign=middle align=center colspan=3><a href="deleteusermail.php?file=<?php echo $file; ?>&boxname=<?php echo $boxName; ?>"><img src="pic/m_delete.gif" border=0 alt="删除邮件"></a> &nbsp; <a href="newusermail.php"><img src="pic/m_write.gif" border=0 alt="发送消息"></a> &nbsp;<a href="replyusermail.php?num=<?php echo $num ;?>"><img src="pic/m_reply.gif" border=0 alt="回复消息"></a>&nbsp;<a href="forwardusermail.php?num=<?php echo $num ;?>"><img src=pic/m_fw.gif border=0 alt=转发消息></a></td>
+	    <td class=tablebody1 valign=middle align=center colspan=3><a href="deleteusermail.php?file=<?php echo $file; ?>&boxname=<?php echo $boxName; ?>"><img src="pic/m_delete.gif" border=0 alt="删除邮件"></a> &nbsp; <a href="sendmail.php"><img src="pic/m_write.gif" border=0 alt="发送消息"></a> &nbsp;<a href="replyusermail.php?num=<?php echo $num ;?>"><img src="pic/m_reply.gif" border=0 alt="回复消息"></a>&nbsp;<a href="forwardusermail.php?num=<?php echo $num ;?>"><img src=pic/m_fw.gif border=0 alt=转发消息></a></td>
     </tr>
     <tr><td class=tablebody2 height=25>
-		    <b><?php echo $articles[0]['OWNER'] ;?></b> 在 <b><?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[0]['POSTTIME']); ?></b> 给您发送的信件：<b>[<?php echo $articles[0]['TITLE'] ;?>]</b>
+		    <b><?php echo $articles[0]['OWNER'] ;?></b> 在 <b><?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[0]['POSTTIME']); ?></b> 给您发送的信件：<b>[<?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES) ;?>]</b>
 </td>
                 </tr>
                 <tr>

@@ -602,6 +602,7 @@ function show_nav()
 	global $SiteURL;
 	global $StartTime;
 	global $loginok;
+	global $currentuser;
 
   html_init();
   if ($loginok==1) {
@@ -646,7 +647,9 @@ echo $srcutmpnum; ?>\',500,400)">发短信</a>';
 <a href="logon.php">登陆</a> <img src=pic/navspacer.gif align=absmiddle> <a href="register.php">注册</a>
 <?php  
 	}  else  {
+		echo '欢迎您 <b>'.$currentuser['userid'].'</b> ';
 ?>
+<img src=pic/navspacer.gif align=absmiddle>
 <a href="logon.php">重登陆</a> 
 <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(manage,100)'>用户功能菜单</a>
 <?php

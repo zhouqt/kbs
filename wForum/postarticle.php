@@ -146,7 +146,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 			$nowtitle='';
 		}
 ?>
-		  <input name=subject size=70 maxlength=80 value="<?php echo $nowtitle; ?>">&nbsp;&nbsp;<font color=#ff0000><strong>*</strong></font>不得超过 25 个汉字或50个英文字符
+		  <input name=subject size=70 maxlength=80 value="<?php echo htmlspecialchars($nowtitle,ENT_QUOTES); ?>">&nbsp;&nbsp;<font color=#ff0000><strong>*</strong></font>不得超过 25 个汉字或50个英文字符
 	 </td>
         </tr>
         <tr>
