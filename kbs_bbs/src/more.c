@@ -820,7 +820,6 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 break;
             case KEY_DOWN:
             case 'd':
-            case 'j':
             case '\n':
                 change = 1;
                 break;
