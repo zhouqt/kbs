@@ -3,6 +3,30 @@
  */
 #include "bbslib.h"
 
+int msg_can_sendmsg(char *userid, int utmpnum)
+{
+	struct userec *x;
+	uinfo_t *uin;
+
+	if(getuser(userid, &x) == 0)
+		return 0;
+		/*http_fatal("查无此人");*/
+	if( strcmp(x->userid,"guest") && !HAS_PERM(currentuser, PERM_PAGE))
+		return 0;
+	if (utmpnum == 0)
+		uin = t_search(userid, utmpnum);
+	else
+		uin = get_utmpent(utmpnum);
+	if (uin == NULL)
+		return 0;
+	if (strcmp(uin->userid, userid))
+		return 0;
+	if (!canmsg(currentuser, uin))
+		return 0;
+
+	return 1;
+}
+
 extern char msgerr[255];
 int main()
 {
@@ -20,7 +44,8 @@ int main()
 	{
 		char buf3[256];
 		strcpy(buf3, "<body onload=\"document.form0.msg.focus()\">");
-		if(destid[0]==0) strcpy(buf3, "<body onload=\"document.form0.destid.focus()\">");
+		if(destid[0]==0)
+			strcpy(buf3, "<body onload=\"document.form0.destid.focus()\">");
 		printf("%s\n", buf3);
 		printf("	<form name=\"form0\" action=\"bbssendmsg\" method=\"post\">"
 		"		  <input type=\"hidden\" name=\"destutmp\" value=\"%d\">"
@@ -30,10 +55,10 @@ int main()
 		"	</form> ", destutmp, destid, msg);
 		http_quit();
 	}
-	if(getusernum(destid)<0)
-		http_fatal("查无此人");
 	/*if (destpid > 100)
 		destpid -= 100;*/
+	if (!msg_can_sendmsg(destid, destutmp))
+		http_fatal("无法发送消息");
 	printf("<body onload=\"document.form1.b1.focus()\">\n");
 	if(!strcasecmp(destid, currentuser->userid))
 		printf("你不能给自己发讯息！");
