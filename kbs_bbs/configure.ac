@@ -43,9 +43,9 @@ AC_ARG_ENABLE(innbbsd,
 [
 	if test "$enableval" = "yes" ; then
 	        if test -d innbbsd; then
-        	        AC_CONFIG_FILES(innbbsd/Makefile
-									innbbsd/linkinnd.sh)
-					subdirs="$subdirs innbbsd"
+                    AC_CONFIG_FILES(innbbsd/Makefile
+                                    innbbsd/linkinnd.sh)
+                    BBSSUBDIRS="$BBSSUBDIRS innbbsd"
 	        else
         	        AC_MSG_ERROR([can't find innbbsd package,please get it first!])
 	        fi
@@ -59,6 +59,7 @@ AC_ARG_ENABLE(ssh,
 	if test "$enableval" = "yes" ; then
 		if test -d sshbbsd; then
 			AC_CONFIG_SUBDIRS(sshbbsd)
+            BBSSUBDIRS="$BBSSUBDIRS sshbbsd"
 		else
 			AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
 		fi
@@ -75,7 +76,11 @@ AC_ARG_ENABLE(www,
 [
 	if test "$enableval" = "yes" ; then
 		if test -d bbs2www; then
-			AC_CONFIG_SUBDIRS(bbs2www)
+            AC_CONFIG_FILES([bbs2www/Makefile
+                             bbs2www/lib/Makefile
+                             bbs2www/phplib/Makefile
+                             bbs2www/phplib/config.m4])
+            BBSSUBDIRS="$BBSSUBDIRS bbs2www"
 		else
 			AC_MSG_ERROR([can't find bbs2www package,please get it first!])
 		fi
@@ -85,6 +90,9 @@ AC_ARG_ENABLE(www,
 	fi
 ])
 AC_SUBST(CONFIG_HAVE_WWW)
+AC_SUBST(BBSSUBDIRS)
+
+m4_include(bbs2www.in)
 
 
 # Checks for header files.
