@@ -554,6 +554,11 @@ extern const char *permstrings[];
 extern const char    *groups[];
 extern const char    *explain[];
 extern const char *user_definestr[];
+#ifdef SMS_SUPPORT
+#define NUMSMSDEF 1
+#define SMSDEF_AUTOTOMOBILE      000001
+extern const char *user_smsdefstr[];
+#endif
 extern const char *mailbox_prop_str[];
 
 /**

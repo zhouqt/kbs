@@ -97,6 +97,15 @@ const char *permstrings[] = {
 };
 #endif
 
+#ifdef SMS_SUPPORT
+
+const char *user_smsdefstr[] = {
+	"不在线时转sms到自己手机(自己掏钱)",
+	NULL
+};
+
+#endif
+
 #ifdef USE_DEFAULT_DEFINESTR
 /* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
    depending on how/if you use them. */
