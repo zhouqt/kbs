@@ -16,6 +16,11 @@
 #define TARGET   "\x1b[1;46;32m·"
 #define WORKER   "\x1b[1;46;31m♀"
 
+void _mvaddnstr(int y, int x, char * ptr, int len)
+{
+	move(y,x); prints(ptr); move(y,x);
+}
+
 void target(int x, int y)
 {
 	_mvaddnstr(y, x, TARGET, 2);
@@ -67,7 +72,7 @@ void gcharbox(int x, int y, int wid, int hei)
 	buf[wid] = 0;
 
 	for(i=y;i<y+hei;i++) {
-		_move(i, x);
+		move(i, x);
 		addstr(buf);
 	}
 }
@@ -86,21 +91,21 @@ void gcharrect(int x, int y, int wid, int hei)
 			sprintf(buf+j, "%s", RECTFILL);
 	}
 	buf[wid] = 0;
-	_move(y, x);
+	move(y, x);
 	addstr(buf);
-	_move(y+hei-1, x);
+	move(y+hei-1, x);
 	addstr(buf);
 
 	for(j=2;j<wid-2;j++) buf[j] = ' ';
 	for(i=y+1;i<y+hei-1;i++) {
-		_move(i, x);
+		move(i, x);
 		addstr(buf);
 	}
 }
 
 void FoolWorker(void)
 {
-	_move(10, 5);
+	move(10, 5);
 	addstr("这么久了还没成功！ *(#&$)@(#*&$@(");
 	sleep(1);
 }

@@ -91,11 +91,7 @@ static int load_highrecord(int level,struct high_record* hr,int myrecord)
 static void update_endline(struct high_record* hr,int steps)
 {
    char buf[256];
-#ifdef ENABLE_DL
-    _move(scr_lns+1,0);
-#else
-    _move(23,0);
-#endif
+    move(scr_lns-1,0);
     if (hr->shortest==0)
         sprintf(buf,"步数: \x1b[36m%4d\x1b[33m   尚无成功者，你加油哦     ",
     	    steps);
@@ -110,9 +106,9 @@ static void update_endline(struct high_record* hr,int steps)
     } else
         sprintf(buf,"步数: \x1b[36m%-4d\x1b[33m本站纪录: \x1b[36m%-4d                ",
     	    steps,hr->shortest);
-    _prints("\x1b[1;44;33m");
-    _prints(buf);
-    _prints("  \x1b[33m重绘[\x1b[32mR\x1b[33m] 反悔[\x1b[32mDel\x1b[33m] 退出[\x1b[32m回车\x1b[33m] 重来[\x1b[32mTAB\x1b[33m]\x1b[m");
+    prints("\x1b[1;44;33m");
+    prints(buf);
+    prints("  \x1b[33m重绘[\x1b[32mR\x1b[33m] 反悔[\x1b[32mDel\x1b[33m] 退出[\x1b[32m回车\x1b[33m] 重来[\x1b[32mTAB\x1b[33m]\x1b[m");
 }
 
 #ifdef ENABLE_DL
@@ -165,7 +161,7 @@ int main(int argc, char **argv)
 #endif
         num_step=0;
         load_highrecord(num, &high, -1);
-        initialize();
+//        initialize();
         if (TRUE == InitData(fname)) {
             if (TRUE == InitPad()) {
                 b_play = TRUE;
@@ -177,15 +173,8 @@ int main(int argc, char **argv)
                     if (inch) {
                         showdiff();
                         cleardiff();
-#ifdef ENABLE_DL
-			_move(scr_lns+1,79);
-                        oflush();
-#else
-#ifdef _USE_NCURSE_
-                        move(LINES - 1, COLS - 1);
+                        move(scr_lns-1, scr_cols - 1);
                         refresh();
-#endif
-#endif
                     }
                     if (wingame()) {
                     	   int newrecord;
@@ -194,24 +183,24 @@ int main(int argc, char **argv)
                     	   if (num_step<high.shortest||high.shortest==0) 
                     	   	newrecord=load_highrecord(num, &high, num_step);
                     	   clear();
-                    	   _move(12,15);
-                    	   println("祝贺你，你成功的完成了这一关");
-                    	   _move(13,15);
+                    	   move(12,15);
+                    	   prints("祝贺你，你成功的完成了这一关");
+                    	   move(13,15);
                     	   if (newrecord==1) {
                     	       sprintf(buf,"你也创造了本关使用步数的纪录(%d步)！好厉害～",num_step);
 			   } else
                     	   if (newrecord!=0) {
                     	       sprintf(buf,"你也创造了本关使用步数的纪录(%d步)！",num_step);
-			       println(buf);
-                    	       _move(14,15);
+			       prints(buf);
+                    	       move(14,15);
 			       sprintf(buf,"不过,让点创纪录机会给别人吧~你都有%d个记录了:P\n",newrecord);
                     	   } else {
 			       sprintf(buf,"你用了%d步，纪录是%d步。",num_step,high.shortest);
 			   }
-			   println(buf);
-                        _move(23, 0);
+			   prints(buf);
+                        move(23, 0);
                         cleartoeol();
-                        _prints("\x1b[m                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
+                        prints("\x1b[m                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
                         igetkey();
                         break;
                     }
@@ -226,7 +215,7 @@ int main(int argc, char **argv)
                          DrawPad();
                          num_step=0;
                     	}
-                    inch = getch();
+                    inch = igetkey();
                     if ((' ' == inch)||(inch == '\n')||(inch=='\r'))
                         break;
                     dir = NullDir;
@@ -294,7 +283,7 @@ int main(int argc, char **argv)
             DestroyPad();
         }
         DestroyData();
-        finalize();
+//        finalize();
     }
     return 0;
 }
