@@ -1569,7 +1569,7 @@ char *get_favboard(int k)
                 else {
                     struct boardheader const*bptr;
 
-                    bptr = getboard(favbrd_list[i].flag);
+                    bptr = getboard(favbrd_list[i].flag+1);
                     return (char*)bptr->filename;
                 }
             }
