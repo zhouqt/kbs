@@ -82,7 +82,7 @@ int main()
 #else
 int main()
 {
-	fprintf("MySQL support had been disabled.\n");
+	fprintf(stderr, "MySQL support had been disabled.\n");
 	return -1;
 }
 #endif
