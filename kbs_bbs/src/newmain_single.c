@@ -1209,7 +1209,7 @@ void showtitle( char *title, char*mid)
 
 
     spc1 = scr_cols/2 - 1 - strlen(mid) / 2;
-    if ((strstr(title,"版主")!=NULL)&&(num_noans_chr(title)>36))
+    if ((strstr(title,"版主")!=NULL)&&(spc1-num_noans_chr(title)<4))
 	/*为了多版主修改 Bigman:2002.9.7 */
     {
         strcpy(note , note + 7 );
