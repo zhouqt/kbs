@@ -2045,7 +2045,7 @@ int show_board_notes(char bname[30])
     return -1;
 }
 
-void add_attach(char* file1, char* file2, char* filename)
+int add_attach(char* file1, char* file2, char* filename)
 {
     FILE* fp,*fp2;
     struct stat st;
@@ -2067,6 +2067,7 @@ void add_attach(char* file1, char* file2, char* filename)
     fclose(fp2);
     fclose(fp);
     unlink(file2);
+    return st.st_size;
 }
 
 int post_article(char *q_file, struct fileheader *re_file)
@@ -2316,7 +2317,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         char sbuf[PATHLEN];
         strcpy(sbuf,"tmp/");
         strcpy(sbuf+strlen(sbuf), upload);
-        add_attach(filepath, sbuf, upload);
+        post_file.attachment = add_attach(filepath, sbuf, upload);
     }
 
     strncpy(post_file.title, save_title, STRLEN);
