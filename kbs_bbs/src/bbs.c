@@ -387,6 +387,14 @@ int do_commend(int ent, struct fileheader *fileinfo, char *direct)
         pressreturn();
         return FULLUPDATE;
     }
+	if( ! normal_board(currboard->filename) ){
+        clear();
+        move(1, 0);
+        prints("对不起，请勿推荐内部版面文章");
+        move(2, 0);
+        pressreturn();
+        return FULLUPDATE;
+    }
     if ( deny_me(currentuser->userid, COMMEND_ARTICLE) ) {
         clear();
         move(1, 0);
