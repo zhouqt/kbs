@@ -2261,6 +2261,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 					aborted = -1;
 				}else{
 					if( title_prefix[0] ){
+							/*
 						i = strlen( title_prefix ) + strlen(post_file.title) ;
 						if( i >= STRLEN )
 							i = STRLEN - 1 ;
@@ -2273,8 +2274,14 @@ int post_article(char *q_file, struct fileheader *re_file)
                        			post_file.title[i] = ' ';
                     		else
                         		post_file.title[i] = title_prefix[i];
+								*/
+						if( ! strncmp(post_file.title, "Re: ",4) ){
+							snprintf(save_title, STRLEN, "Re: %s%s", title_prefix, post_file.title+4);
+						}else{
+							snprintf(save_title, STRLEN, "%s%s", title_prefix, post_file.title);
+						}
+            			strncpy(post_file.title, save_title, STRLEN);
 					}
-            		strncpy(save_title, post_file.title, STRLEN);
 
 					write_header(fp, currentuser, 0, currboard->filename, post_file.title, 0, 0);
 					while(fgets(buff,255,fp1))
