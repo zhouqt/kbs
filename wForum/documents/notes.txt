@@ -99,7 +99,8 @@ d. queryresult.php Ê¹ÓÃ javascript À´Ğ´Ò³Ãæ¡£Èç¹ûËÑË÷½á¹û¹ı¶à£¬¿ÉÄÜ»áÌáÊ¾ÊÇ·ñÈ¡Ï
 e. Ä¿Ç°Ê¹ÓÃphp sessionµÄÖ»ÓĞ×¢²áÒ³µÄÍ¼Æ¬Ê¶±ğ¡£register.php ºÍ img_rand/img_rand.php
    ×Ô¼ºµ÷ÓÃ session_start(), inc/funcs.php ²»µ÷ÓÃ session_start()¡£Õâ¸öÒÔºóÓĞ±ØÒªµÄ»°
    ¿ÉÒÔ¸Ä¡£±È·½ä¯ÀÀÆ÷cookie±ê×¼ÊÇÓĞ¸öÊıÉÏÏŞµÄ£¬¿ÉÒÔ¿¼ÂÇ°ÑcookieÈ«¶¼·Åµ½sessionÀïÃæ¡£µ±È»
-   ÄÇÑùµÄ»° php session_tmp ÄÇ¸öÄ¿Â¼ÒªÅª³É tmpfs¡£
+   ÄÇÑùµÄ»° php session_tmp ÄÇ¸öÄ¿Â¼ÒªÅª³É tmpfs¡£ÁíÍâĞèÒª×¢ÒâĞÂµÄ php °æ±¾£¬
+   session_start() ²»ÄÜ±»µ÷ÓÃÁ½´Î¡£
 
 
 
