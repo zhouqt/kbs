@@ -150,13 +150,11 @@ static void telnet_init()
     int n, len;
     char *cmd;
     char svr[] = {
-        IAC, DO, TELOPT_TTYPE,
-        IAC, SB, TELOPT_TTYPE, TELQUAL_SEND, IAC, SE,
         IAC, WILL, TELOPT_ECHO,
         IAC, WILL, TELOPT_SGA,
         IAC, WILL, TELOPT_BINARY,
-        IAC, DO,   TELOPT_BINARY,
-        IAC, DO, TELOPT_NAWS
+        IAC, DO, TELOPT_NAWS,
+        IAC, DO,   TELOPT_BINARY
     };
 
 
