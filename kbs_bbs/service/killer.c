@@ -1011,9 +1011,9 @@ static int room_list_refresh(struct _select_def *conf)
 static int room_list_show(struct _select_def *conf, int i)
 {
     struct room_struct * r = room_get(i-1);
-    int j;
+//    int j;
     if(r) {
-        j=load_inroom(r);
+//        j=load_inroom(r);
         prints("  %3d  %-14s %-12s %4s %3d  %3d   %2s  %-20s", i, r->name, r->creator, "É±ÈË", r->people, r->maxpeople, (r->flag&ROOM_LOCKED)?"ÊÇ":"·ñ", /*(j==-1)?"":inrooms.title*/"");
     }
     return SHOW_CONTINUE;
