@@ -2747,7 +2747,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 						if ( (UBBArg1>0) && (UBBArg1<=attachmatched)) {
 							switch(attachType[UBBArg1-1]) {
 							case ATTACH_IMG:
-								snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
+								snprintf(outbuf, 511, "<br><IMG SRC=\"/images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
 								break;
 							case ATTACH_FLASH:
 				                snprintf(outbuf, 511, "<br>Flash动画: " "<a href='%s&ap=%d'>%s</a> (%d 字节)<br>" "<OBJECT classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 codebase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 > <PARAM NAME='MOVIE' VALUE='%s&ap=%d'>" "<EMBED SRC='%s&ap=%d'></EMBED></OBJECT><br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1], attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
