@@ -35,11 +35,14 @@ void disply_userinfo(u, real)
 	struct userdata ud;
 
 	read_userdata(u->userid, &ud);
-    move(real == 1 ? 2 : 3, 0);
+    move(real >= 1 ? 2 : 3, 0);
     clrtobot();
     prints("您的代号     : %s\n", u->userid);
     prints("您的昵称     : %s\n", u->username);
-    prints("真实姓名     : %s\n", ud.realname);
+    if (real == 2)  //注册单不显示真实姓名
+        prints("\n");
+    else
+        prints("真实姓名     : %s\n", ud.realname);
     prints("居住住址     : %s\n", ud.address);
     if(real)
 	prints("注册E-mail   : %s\n",ud.reg_email);

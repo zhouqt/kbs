@@ -5032,6 +5032,8 @@ static PHP_FUNCTION(bbs_createnewid)
 	}
 
 	memset(&newuser,0,sizeof(newuser));
+	strncpy(newuser.lasthost,php_fromhost,IPLEN);
+	newuser.lasthost[IPLEN]=0;
 	strncpy(newuser.userid ,userid,IDLEN);
 	strncpy(newuser.username,nickname,NAMELEN-1);
 	newuser.username[NAMELEN-1] = '\0';

@@ -504,6 +504,7 @@ int m_editbrd()
 		if( newfh.des[0] ){
         	getdata(21, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         	if (*genbuf == 'Y' || *genbuf == 'y') {
+		newfh.nowid=-1;
             	set_board(pos, &newfh, &fh);
             	sprintf(genbuf, "更改讨论区 %s 的描述 --> %s", fh.filename, newfh.filename);
             	bbslog("user", "%s", genbuf);
@@ -739,6 +740,7 @@ int m_editbrd()
                 newfh.flag &= ~BOARD_ANNONY;
                 del_from_file("etc/anonymous", newfh.filename);
             }
+	    newfh.nowid=-1;
             set_board(pos, &newfh, &fh);
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
             bbslog("user", "%s", genbuf);
@@ -1351,7 +1353,7 @@ char *logfile, *regfile;
             move(1, 0);
             prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
             count++;
-            disply_userinfo(&uinfo, 1);
+            disply_userinfo(&uinfo, 2);
 			
 			read_userdata(lookupuser->userid, &ud);
 
@@ -1983,6 +1985,7 @@ int set_BM()
                     lookupuser->userlevel = newlevel;
 
                     edit_grp(fh.filename, oldtitle + 13, vbuf);
+		    newfh.nowid=-1;
                     set_board(pos, &newfh, NULL);
 
                     sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);

@@ -48,6 +48,7 @@ int setvoteflag(char *bname, int flag)
             fh.flag = fh.flag & ~BOARD_VOTEFLAG;
         else
             fh.flag = fh.flag | BOARD_VOTEFLAG;
+	fh.nowid=-1;
         set_board(pos, &fh,NULL);
     }
     return 0;

@@ -398,6 +398,8 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
                 bcache[board->group-1].board_data.group_total++;
        }
     }
+    if (board->nowid==-1) //±£´ænowid
+	    board->nowid=bcache[bid-1].nowid;
     memcpy(&bcache[bid - 1], board, sizeof(struct boardheader));
     bcache_setreadonly(1);
     return 0;
