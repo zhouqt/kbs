@@ -27,7 +27,11 @@
 		if (bbs_is_readonly_board($brdarr))
 			html_error_quit("不能在只读讨论区发表文章");
 		if (isset($_GET["reid"]))
+		{
 			$reid = $_GET["reid"];
+			if(!strcmp($board,"News") || !strcmp($board,"Original") || !strcmp($board,"AD_Agent"))
+				html_error_quit("本版只可发表文章,不可回复文章!");
+		}
 		else {
 			$reid = 0;
 		}
