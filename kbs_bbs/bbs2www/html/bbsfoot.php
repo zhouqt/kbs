@@ -57,16 +57,17 @@ echo "\"/bbsqry.php?userid=" . $currentuser["userid"] . "\""; ?> target="f3" cla
 echo $currentuser["userid"]; ?></a>] <?php
 		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
+echo "信箱[<a href=\"/bbsmailbox.php?path=.DIR&title=收件箱\" target=\"f3\" class=\"b8\">";
 		    if (bbs_getmailnum($currentuser["userid"],$total,$unread, $oldtotal, $oldunread)) {
 			  if ($unread!=0) {
-		        echo "信箱[<a href=\"bbsreadmail.php\" target=\"f3\" class=\"b8\">" . $total . "封(新信" . $unread . ")</a>] ";
+		        echo $total . "封(新信" . $unread . ")</a>] ";
 			  }
 			  else {
-		        echo "信箱[<a href=\"bbsreadmail.php\" target=\"f3\" class=\"b8\">" . $total . "封</a>] ";
+		        echo $total . "封</a>] ";
 			  }
 			}
 			else
-		      echo "信箱[<a href=\"bbsreadmail.php\" target=\"f3\" class=\"b8\">0封</a>] ";
+		      echo "0封</a>] ";
 		}
 ?>
 停留[<input class="b8" TYPE="text" NAME="stay" size="10" READONLY>]
