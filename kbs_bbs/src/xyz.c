@@ -484,6 +484,41 @@ int Xdelipacl()
     return 0;
 }
 
+int Xdeljunk()
+{
+    char buf[256];
+
+    if (HAS_PERM(currentuser, PERM_SYSOP)) {
+        move(3, 0);
+        clrtobot();
+        prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
+        pressreturn();
+        return 0;
+    }
+
+    modify_user_mode(ADMIN);
+    if (!check_systempasswd()) {
+        return 0;
+    }
+    clear();
+    move(0, 0);
+    prints("删除版面垃圾箱\n");
+    clrtoeol();
+    move(1, 0);
+    make_blist();
+    namecomplete("输入讨论区名称: ", genbuf);
+    if (genbuf[0] == '\0') {
+        clear();
+        return 0;
+    }
+    sprintf(buf, "board/%s/.DELETED", genbuf);
+    unlink(buf);
+    sprintf(buf, "board/%s/.JUNK", genbuf);
+    unlink(buf);
+    clear();
+    return 0;
+}
+
 #ifdef SMS_SUPPORT
 int x_usersmsdef()
 {

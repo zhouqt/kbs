@@ -90,7 +90,7 @@ int ent_chat1(), ent_chat2();
 int switch_code();              /* add by KCN */
 
 
-int x_level(), XCheckLevel(), m_info(), d_user(), m_register(), m_newbrd(), setsystempasswd();
+int x_level(), XCheckLevel(), Xdelipacl(), Xdeljunk(), m_info(), d_user(), m_register(), m_newbrd(), setsystempasswd();
 int d_board(), m_editbrd(), m_trace(), m_vote(), wall();
 /*
 int m_mclean();*/
@@ -235,7 +235,8 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"SetTrace", m_trace},
     {"Xlevel", x_deny},
     {"XBoardManager", set_BM},
-    {"Xdelipacl", xdelipacl}
+    {"Xdelipacl", Xdelipacl}
+    {"Xdeljunk", Xdeljunk},
 /*    
     {"CleanMail", m_mclean},
     */
