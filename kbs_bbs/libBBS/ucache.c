@@ -720,10 +720,11 @@ int getnewuserid(char *userid)
         if (ret <= 0) {
             break;
         }
-        ucache_unlock(fd);
     }
     if (ret==0)
         update_user(&utmp, i, 0);
+    else
+        i=ret;
     ucache_unlock(fd);
     return i;
 }
