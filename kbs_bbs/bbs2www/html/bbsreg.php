@@ -14,12 +14,13 @@
 
 	@$realname=$_POST["realname"];
 	@$dept=$_POST["dept"];
-       @$address=$_POST["address"];
+    @$address=$_POST["address"];
 	@$year=$_POST["year"];
 	@$month=$_POST["month"];
 	@$day=$_POST["day"];
 	@$email=$_POST["email"];
 	@$phone=$_POST["phone"];
+	@$gender=$_POST["gender"];
 
 
 	if(strcmp($pass1,$pass2))
@@ -54,13 +55,25 @@
 			html_error_quit("系统错误,请与系统管理员SYSOP联系.");
 			break;
 	default:
-			html_error_quit("未知的错误!");
+			html_error_quit("注册ID时发生未知的错误!");
 			break;
 	}
-	$ret=bbs_createregform($userid,$realname,$dept,$address,$year,$month,$day,$email,$phone,TRUE);//自动生成注册单
+	if(!strcmp($gender,"男"))$gender=1;
+    else
+        $gender=2;
+    settype($year,"integer");
+	settype($month,"integer");
+	settype($day,"integer");
+	$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,TRUE);//自动生成注册单
 	switch($ret)
 	{
 	case 0:
+		break;
+	case 2:
+		html_error_quit("该用户不存在!");
+		break;
+	case 3:
+		html_error_quit("参数错误");
 		break;
 	default:
 		html_error_quit("未知的错误!");

@@ -18,6 +18,7 @@
 		@$day=$_POST["day"];
 		@$email=$_POST["email"];
 		@$phone=$_POST["phone"];
+		@$gender=$_POST["gender"];
 
 
 	if(!strcmp($currentuser["userid"],"guest"))
@@ -25,13 +26,18 @@
 
 	//用户已经通过注册
 	//未满等待时间(先放到phplib里面做了)
-
-	$ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$year,$month,$day,$email,$phone,FALSE); //手工填写注册单
+	if(!strcmp($gender,"男"))$gender=1;
+    else
+        $gender=2;
+	settype($year,"integer");
+	settype($month,"integer");
+	settype($day,"integer");
+	$ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,FALSE); //手工填写注册单
 
 	switch($ret)
 	{
 	case 0:
-		break;	
+		break;
 	case 1:
 		html_error_quit("您的注册单还没有处理，请耐心等候");
 		break;
