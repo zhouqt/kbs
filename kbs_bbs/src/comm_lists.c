@@ -57,6 +57,7 @@ int x_results();
 int ConveyID();             /* Added by binxun 2003.5.3 */
 
 int search_ip();
+int kick_all_user();
 #ifdef CAN_EXEC
 int ent_bnet();
 #endif
@@ -232,6 +233,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"InnReload", inn_reload},  /* czz 2002.01.15 */
     {"InnStop", inn_stop},      /* czz 2002.01.15 */
     {"SearchIP",search_ip},
+    {"Kickalluser",kick_all_user},	/* stiger, 2003.7.30 */
     {"DefineKeys",define_key},
     {"SetACL",set_ip_acl},
 #ifdef SMS_SUPPORT

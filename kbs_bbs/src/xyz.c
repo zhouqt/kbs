@@ -952,3 +952,48 @@ int search_ip()
 	}
 	return(0);
 }
+
+int kick_all_user()
+{
+    int id, ind;
+    struct user_info *uin;
+	char ans[3];
+	int i;
+
+    if (!check_systempasswd()) {
+        return;
+    }
+	clear();
+	move(3,0);
+	prints("友情提醒:\n");
+	prints("    请先关闭 bbsd, sshbbsd, httpd");
+	getdata(7, 0, "确定要踢掉所有在线用户? (y/N) [N]:", ans, 3, DOECHO, NULL, true);
+	if(ans[0] != 'y' && ans[0] != 'Y')
+		return 0;
+
+	for(i=0; i < USHM_SIZE ; i++){
+		uin = get_utmpent(i);
+		if( !uin || !uin->uid )
+			continue;
+		move(10,0);
+		clrtoeol();
+		prints("正在踢  %s\n",uin->userid);
+		if( uin->pid == uinfo.pid )
+			continue;
+
+	    if (uin->mode == WEBEXPLORE)
+	        clear_utmp(i, uin->uid, uin->pid);
+
+	    if ( !uin->active || (kill(uin->pid, 0) == -1)) {
+	        continue;
+	    }
+	    if (kill(uin->pid, SIGHUP) == -1) {
+	        clear_utmp(i, uin->uid, uin->pid);
+	    }
+	}
+
+	move(13,0);
+	prints("清除完毕\n");
+	pressanykey();
+    return 1;
+}
