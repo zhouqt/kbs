@@ -21,7 +21,7 @@ preprocess();
 
 setStat(htmlspecialchars($article['TITLE'] ,ENT_QUOTES) . " " );
 
-show_nav();
+show_nav($boardName);
 
 if (isErrFounded()) {
 	html_error_quit() ;

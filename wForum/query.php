@@ -68,6 +68,9 @@ function showSearchMenu(){
 	global $section_names;
 	global $sectionCount;
 	global $section_nums;
+	global $_GET;
+	if (isset($_GET["boardName"])) $s_board = $_GET["boardName"];
+	else $s_board = "";
 ?>
 	<form action=queryresult.php method=get>
     <table cellpadding=5 cellspacing=1 align=center class=TableBorder1>
@@ -81,13 +84,13 @@ function showSearchMenu(){
 <select name=boardName size=1>
 <?php
 	for ($i=0;$i<$sectionCount;$i++){
-		$boards = bbs_getboards($section_nums[$i], 0, 0);
+		$boards = bbs_getboards($section_nums[$i], 0, 0); //ToDo: 二级版面没显示出来？ - atppp
 		if ($boards != FALSE) {
 			$brd_desc = $boards["DESC"]; // 中文描述
 			$brd_name = $boards["NAME"];
 			$rows = sizeof($brd_desc);
 			for ($t = 0; $t < $rows; $t++)	{
-				echo "<option value=\"".$brd_name[$t]."\">".$brd_desc[$t]."</option>";
+				echo "<option value=\"".$brd_name[$t]."\"".($s_board==$brd_name[$t] ? " selected=\"selected\"" : "").">".$brd_desc[$t]."</option>";
 			}
 		}
 	}
