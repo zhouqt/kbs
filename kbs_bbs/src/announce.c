@@ -471,8 +471,8 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
                 findattach=true;
                 break;
             }
-            if (buf[250] != '\0')
-                strcpy(buf + 250, "\n");
+            /* if (buf[250] != '\0')
+                strcpy(buf + 250, "\n"); - disabled by atppp */
             fprintf(outf, "%s", buf);
         }
         fprintf(outf, "\n\n");
