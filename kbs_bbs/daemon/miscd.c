@@ -524,7 +524,9 @@ static void reaper()
 
 void timed()
 {
+#ifndef CYGWIN
     setpublicshmreadonly(0);
+#endif
     while (1) {
 #undef time
         bbssettime(time(0));
@@ -662,7 +664,9 @@ int main(int argc, char *argv[])
     sleep(1);
 #define time(x) bbstime(x)
     setpublicshmreadonly(0);
+#ifndef CYGWIN
     setpublicshmreadonly(1);
+#endif
     init_bbslog();
     if (argc > 1) {
         if (strcasecmp(argv[1], "killuser") == 0) {
