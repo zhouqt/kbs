@@ -1338,8 +1338,6 @@ int
 linkto(char *path,char*fname,char *title)
 {
     MENU    pm;
-    char    fpath[STRLEN];
-
 
     pm.path=path;
 

@@ -24,7 +24,6 @@
 #include "bbs.h"
 #include "vote.h"
 
-extern cmpbnames();
 extern int page,range;
 char *vote_type[] = { " «∑«", "µ•—°", "∏¥—°", " ˝◊÷", "Œ ¥"};
 struct votebal currvote;
@@ -60,6 +59,7 @@ setvoteflag(char* bname,int flag)
 	        fh.flag = fh.flag|VOTE_FLAG;
 		set_board(pos,&fh);
 	}
+	return 0;
 }
 
 void
@@ -144,7 +144,7 @@ b_jury_edit()   /* stephen 2001.11.1: ±‡º≠∞Ê√Ê÷Ÿ≤√√˚µ• */
     char ans[4];
     int         aborted;
 
-    if(!(HAS_PERM(currentuser,PERM_JURY) && HAS_PERM(currentuser,PERM_BOARDS) || HAS_PERM(currentuser,PERM_SYSOP)))
+    if(!((HAS_PERM(currentuser,PERM_JURY) && HAS_PERM(currentuser,PERM_BOARDS)) || HAS_PERM(currentuser,PERM_SYSOP)))
     {
         return 0 ;
     }
@@ -220,6 +220,7 @@ vote_close()
     {
         mk_result(vnum);
     }
+    return 0;
 }
 
 int
@@ -236,18 +237,16 @@ struct boardheader *fh;
         get_record(controlfile,&currvote,sizeof(currvote),vnum);
         vote_close();
     }
-    return;
+    return 0;
 }
 
 int
 b_closepolls()
 {
     struct stat st;
-    struct boardheader fh;
     FILE        *cfp;
     char        buf[80];
     time_t      now;
-    int         i,end;
 
     now = time( NULL );
     strcpy( buf, "vote/lastpolling" );
@@ -317,7 +316,7 @@ count_result(struct ballot *ptr,char* arg)
     return 0;
 }
 
-get_result_title()
+int get_result_title()
 {
     char buf[STRLEN];
 
@@ -329,15 +328,16 @@ get_result_title()
         fprintf( sug, "3. …œ’æ◊‹ ± ˝–Ë¥Û”⁄ %d –° ±.\n",currlimit.stay);
         fprintf( sug, "4. …œ’æŒÔ¿Ì ±º‰–Ë¥Û”⁄ %d ÃÏ.\n",currlimit.day);
     }
-    if (currvote.type <1 | currvote.type >5) currvote.type = 1;
+    if (currvote.type <1 || currvote.type >5) currvote.type = 1;
     fprintf( sug, "°— Õ∂∆±ø™∆ÙÏ∂£∫%.24s  ¿‡±£∫%s\n", ctime( &currvote.opendate )
              ,vote_type[currvote.type-1]);
     fprintf( sug, "°— ÷˜Ã‚£∫%s\n",currvote.title);
     if(currvote.type==VOTE_VALUE)
         fprintf( sug, "°— ¥À¥ŒÕ∂∆±µƒ÷µ≤ªø…≥¨π˝£∫%d\n\n" ,currvote.maxtkt);
     fprintf( sug, "°— ∆±—°Ã‚ƒø√Ë ˆ£∫\n\n" );
-    sprintf( buf, "vote/%s/desc.%d",currboard,currvote.opendate );
+    sprintf( buf, "vote/%s/desc.%lu",currboard,currvote.opendate );
     b_suckinfile( sug, buf );
+    return 0;
 }
 
 static int mk_result( int num)
@@ -349,7 +349,7 @@ static int mk_result( int num)
     unsigned int total=0;
 
     setcontrolfile();
-    sprintf(fname,"vote/%s/flag.%d",currboard,currvote.opendate);
+    sprintf(fname,"vote/%s/flag.%lu",currboard,currvote.opendate);
     count_result(NULL,0);
     sprintf(sugname,"vote/%s/tmp.%d",currboard,getpid());
     if((sug=fopen(sugname,"w"))==NULL)
@@ -429,11 +429,10 @@ static int mk_result( int num)
     }
     post_file(currentuser,"",nname,currboard,title,0,1);
     dele_vote(num);
-    return ;
+    return 0;
 }
-int
-check_result(num)
-int num;
+
+int check_result(int num)
 {
     char fname[STRLEN],nname[STRLEN];
     char sugname[STRLEN];
@@ -442,7 +441,7 @@ int num;
     unsigned int total=0;
 
     setcontrolfile();
-    sprintf(fname,"vote/%s/flag.%d",currboard,currvote.opendate);
+    sprintf(fname,"vote/%s/flag.%lu",currboard,currvote.opendate);
     count_result(NULL,0);
     sprintf(sugname,"vote/%s/tmp.%d",currboard,getpid());
     if((sug=fopen(sugname,"w"))==NULL)
@@ -506,7 +505,7 @@ int num;
     sprintf(title,"[ºÏ≤È] %s ∞ÂµƒÕ∂∆±Ω·π˚",currboard);
     mail_file(currentuser->userid,nname,currentuser->userid,title,1);
 
-    return ;
+    return 0;
 }
 
 int
@@ -573,7 +572,7 @@ char    *bname;
     prints("∞¥»Œ∫Œø™ º±‡º≠¥À¥Œ [Õ∂∆±µƒ√Ë ˆ]: \n");
     igetch();
     setvfile( genbuf, bname, "desc" );
-    sprintf( buf ,"%s.%d",genbuf,ball->opendate);
+    sprintf( buf ,"%s.%lu",genbuf,ball->opendate);
     aborted = vedit( buf, NA );
     if ( aborted ) {
         clear();
@@ -670,7 +669,7 @@ char    *bname;
         v_limit->day = 0;
     }
     clear();
-    sprintf(limitfile,"vote/%s/limit.%d",currboard,ball->opendate);
+    sprintf(limitfile,"vote/%s/limit.%lu",currboard,ball->opendate);
     if(append_record(limitfile, v_limit, sizeof(struct votelimit))==-1)
     {
         prints("∑¢…˙—œ÷ÿµƒ¥ÌŒÛ£¨Œﬁ∑®–¥»Îœﬁ÷∆Œƒº˛£¨«ÎÕ®∏Ê’æ≥§");
@@ -908,8 +907,7 @@ struct ballot *uv;
 }
 
 int
-user_vote( num )
-int num;
+user_vote( int num)
 {
     char fname[STRLEN],bname[STRLEN];
     char buf[STRLEN];
@@ -920,7 +918,7 @@ int num;
 
     move(t_lines-2,0);
     get_record(controlfile,&currvote,sizeof(struct votebal),num);
-    sprintf(fname,"vote/%s/flag.%d",currboard,currvote.opendate);
+    sprintf(fname,"vote/%s/flag.%lu",currboard,currvote.opendate);
     if ((pos = search_record(fname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG)cmpvuid,
                              currentuser->userid)) <= 0)
     {
@@ -931,7 +929,7 @@ int num;
         voted_flag=YEA;
     }
     strcpy(uservote.uid,currentuser->userid);
-    sprintf(bname,"desc.%d",currvote.opendate);
+    sprintf(bname,"desc.%lu",currvote.opendate);
     setvfile( buf, currboard, bname );
     ansimore( buf, YEA );
     move( 0, 0 );
@@ -942,7 +940,7 @@ int num;
     userlimit.numposts = 0;
     userlimit.stay = 0;
     userlimit.day = 0;
-    sprintf(limitfile,"vote/%s/limit.%d",currboard,currvote.opendate);
+    sprintf(limitfile,"vote/%s/limit.%lu",currboard,currvote.opendate);
     get_record(limitfile,&userlimit,sizeof(struct votelimit),1);
     if ((currvote.type<=0)||(currvote.type>5)) currvote.type=1;
     if( (currentuser->numposts < userlimit.numposts || currentuser->numlogins < userlimit.numlogins
@@ -950,7 +948,7 @@ int num;
     {
         prints("∂‘≤ª∆,ƒ„≤ª¬˙◊„∞Â÷˜πÊ∂®µƒ¥À¥ŒÕ∂∆±À˘–ËÃıº˛,Œﬁ∑®≤Œº”Õ∂∆±,–ª–ª≤Œ”Î,œ¬¥Œ‘Ÿº˚! :)");
         pressanykey();
-        return ;
+        return -1;
     }
 
     clrtobot();
@@ -995,13 +993,13 @@ case VOTE_SINGLE: case VOTE_MULTI: case VOTE_YN:
         prints("\n“—æ≠∞Ôƒ„(°ı)Õ∂»Î∆±œ‰÷–...\n");
     }
     pressanykey();
-    return ;
+    return 0;
 }
 
-voteexp()
+void voteexp()
 {
     clrtoeol();
-    prints("[44m±‡∫≈ ø™∆ÙÕ∂∆±œ‰’ﬂ ø™∆Ù»’ %-40s¿‡± ÃÏ ˝ »À ˝[m\n","Õ∂∆±÷˜Ã‚");
+    prints("[44m±‡∫≈ ø™∆ÙÕ∂∆±œ‰’ﬂ ø™∆Ù»’ %-40s¿‡± ÃÏ ˝ »À ˝[m\n","Õ∂∆±÷˜Ã‚","");
 }
 
 int
@@ -1024,7 +1022,7 @@ printvote(struct  votebal *ent,int *i)
         return QUIT;
     else if(*i <= page)
         return 0;
-    sprintf(buf,"flag.%d",ent->opendate);
+    sprintf(buf,"flag.%lu",ent->opendate);
     setvfile(flagname,currboard,buf);
     if (search_record(flagname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG)cmpvuid,
                       currentuser->userid)<= 0)
@@ -1050,11 +1048,11 @@ static int dele_vote( int num)
 {
     char    buf[STRLEN];
 
-    sprintf(buf,"vote/%s/flag.%d",currboard,currvote.opendate);
+    sprintf(buf,"vote/%s/flag.%lu",currboard,currvote.opendate);
     unlink(buf);
-    sprintf(buf,"vote/%s/desc.%d",currboard,currvote.opendate);
+    sprintf(buf,"vote/%s/desc.%lu",currboard,currvote.opendate);
     unlink(buf);
-    sprintf(buf,"vote/%s/limit.%d",currboard,currvote.opendate);/*Haohmaru.99.11.18*/
+    sprintf(buf,"vote/%s/limit.%lu",currboard,currvote.opendate);/*Haohmaru.99.11.18*/
     unlink(buf);
     if(delete_record(controlfile,sizeof(currvote),num,NULL,NULL)==-1)
     {
@@ -1066,6 +1064,7 @@ static int dele_vote( int num)
     {
         setvoteflag(currboard,0);
     }
+    return 0;
 }
 
 int
@@ -1260,7 +1259,7 @@ m_vote()
     modify_user_mode( ADMIN );
     vote_maintain( DEFAULTBOARD );
     strcpy(currboard,buf);
-    return ;
+    return 0;
 }
 
 int
@@ -1272,7 +1271,7 @@ x_vote()
     strcpy(currboard,DEFAULTBOARD);
     b_vote();
     strcpy(currboard,buf);
-    return ;
+    return 0;
 }
 
 int
