@@ -28,6 +28,7 @@ static PHP_FUNCTION(bbs_wwwlogoff);
 static PHP_FUNCTION(bbs_printansifile);
 static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
+static PHP_FUNCTION(bbs_getbname);
 static PHP_FUNCTION(bbs_checkpostperm);
 static PHP_FUNCTION(bbs_brcaddread);
 static PHP_FUNCTION(bbs_ann_traverse_check);
@@ -42,6 +43,7 @@ static PHP_FUNCTION(bbs_getannpath);
 static PHP_FUNCTION(bbs_getmailnum);
 static PHP_FUNCTION(bbs_getmailnum2);
 static PHP_FUNCTION(bbs_getmails);
+static PHP_FUNCTION(bbs_getmailusedspace);
 static PHP_FUNCTION(bbs_loadmaillist);
 static PHP_FUNCTION(bbs_changemaillist);
 static PHP_FUNCTION(bbs_getwebmsg);
@@ -74,6 +76,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_wwwlogoff, NULL)
         PHP_FE(bbs_printansifile, NULL)
         PHP_FE(bbs_checkreadperm, NULL)
+        PHP_FE(bbs_getbname, NULL)
         PHP_FE(bbs_checkpostperm, NULL)
         PHP_FE(bbs_brcaddread, NULL)
         PHP_FE(bbs_getboard, NULL)
@@ -89,6 +92,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_getmailnum, third_arg_force_ref_011)
         PHP_FE(bbs_getmailnum2, NULL)
         PHP_FE(bbs_getmails, NULL)
+        PHP_FE(bbs_getmailusedspace, NULL)
         PHP_FE(bbs_loadmaillist, NULL)
         PHP_FE(bbs_changemaillist, NULL)
         PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
@@ -1178,6 +1182,21 @@ static PHP_FUNCTION(bbs_is_bm)
     RETURN_LONG(is_BM(bp, up));
 }
 
+static PHP_FUNCTION(bbs_getbname)
+{
+	int brdnum;
+	struct boardheader *bp=NULL;
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &brdnum) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp = getboard(brdnum)) == NULL) {
+        RETURN_LONG(0);
+    }
+	RETURN_STRING(bp->filename,1);
+}
+
 static PHP_FUNCTION(bbs_checkreadperm)
 {
     long user_num, boardnum;
@@ -1364,6 +1383,15 @@ static PHP_FUNCTION(bbs_getmailnum2)
     }
 
     RETURN_LONG(getmailnum(path));
+}
+
+/**
+ * Get mail used space
+ * @author stiger
+ */
+static PHP_FUNCTION(bbs_getmailusedspace)
+{
+	RETURN_LONG(get_mailusedspace(currentuser,1)/1024);
 }
 
 /**
