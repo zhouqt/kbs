@@ -1989,7 +1989,7 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
     curr_window_line = 0;
     currln = 0;
     currpnt = 0;
-    clear();
+    display_buffer();
     while (ch != EOF) {
         newch = '\0';
         switch (ch) {
@@ -2021,8 +2021,10 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
         default:
             vedit_key(ch);
         }
-        display_buffer();
-        move(myy, myx);
+        if (newch==0&&ibufsize == icurrchar) {
+            display_buffer();
+            move(myy, myx);
+        }
 
         ch = (newch != '\0') ? newch : igetkey();
     }
