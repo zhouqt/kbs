@@ -589,7 +589,7 @@ void a_edits()
         "../0Announce/systeminfo",
         "forbm",
         "forcloak",
-        "forlongid", "../innd/newsfeeds.bbs", "deny_reason", NULL
+        "forlongid", "../innd/newsfeeds.bbs", "deny_reason", "initial_favboard", NULL
     };
 
     /*
@@ -605,7 +605,7 @@ void a_edits()
         "给新任版主的信        ", "给隐身用户的信",
         "给长期用户的信        ",
         "转信版和新闻组对应",
-        "封禁理由列表", NULL
+        "封禁理由列表", "新用户个人定制区", NULL
     };
 
     modify_user_mode(ADMIN);
