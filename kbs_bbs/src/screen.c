@@ -159,28 +159,6 @@ int was_col, was_ln, new_col, new_ln;
 	do_move(new_col, new_ln, ochar);
 }
 
-static void
-standoutput(buf, ds, de, sso, eso)
-char *buf;
-int ds, de, sso, eso;
-{
-	int st_start, st_end;
-
-	if (eso <= ds || sso >= de) {
-		output(buf + ds, de - ds);
-		return;
-	}
-	st_start = Max(sso, ds);
-	st_end = Min(eso, de);
-	if (sso > ds)
-		output(buf + ds, sso - ds);
-	o_standup();
-	output(buf + st_start, st_end - st_start);
-	o_standdown();
-	if (de > eso)
-		output(buf + eso, de - eso);
-}
-
 void
 redoscr()
 {
@@ -663,7 +641,7 @@ int n;
                              }
                              else if(*(str+i)=='m') {
                                 register int j;
-                                for(j=scr_cols-i-1;j>=reg_col;j--)
+                                for(j=scr_cols-i-2;j>=reg_col;j--)
                                     slp->data[j+i+1]=slp->data[j];
                                 slp->len+=i+1;
                                 for(j=0;j<=i;j++)
