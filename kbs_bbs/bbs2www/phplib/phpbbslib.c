@@ -3595,7 +3595,7 @@ static PHP_FUNCTION(bbs_start_vote)
 			ball.items[i][STRLEN-1]='\0';*/
 			/*overflow.      modified by binxun . */
 			strncpy(ball.items[i], items[i], 38);
-			ball.items[i][37]='\0';*/
+			ball.items[i][37]='\0';
 		}
 	}else if(type == 4){
 		ball.maxtkt = ball_maxtkt;
