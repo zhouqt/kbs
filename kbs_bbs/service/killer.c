@@ -1165,7 +1165,7 @@ checkvote:
                 if(!party_data[i].verb) break;
                 if(!strcmp(party_data[i].verb, buf)) {
                     k=0;
-                    sprintf(buf, "%s %s %s", party_data[i].part1_msg, buf2, party_data[i].part2_msg);
+                    sprintf(buf, "%s %s %s", party_data[i].part1_msg, buf2[0]?buf2:"´ó¼Ò", party_data[i].part2_msg);
                     break;
                 }
             }
@@ -1174,7 +1174,7 @@ checkvote:
                 if(!speak_data[i].verb) break;
                 if(!strcmp(speak_data[i].verb, buf)) {
                     k=0;
-                    sprintf(buf, "%s %s: %s", party_data[i].part1_msg, buf2, buf3);
+                    sprintf(buf, "%s %s: %s", speak_data[i].part1_msg, buf2, buf3);
                     break;
                 }
             }
@@ -1189,10 +1189,13 @@ checkvote:
             }
 
             if(k) continue;
+            strcpy(buf2, buf);
+            sprintf(buf, "%s %s", inrooms[myroom].peoples[me].nick, buf2);
         }
-
-        strcpy(buf2, buf);
-        sprintf(buf, "%s: %s", inrooms[myroom].peoples[me].nick, buf2);
+        else {
+            strcpy(buf2, buf);
+            sprintf(buf, "%s: %s", inrooms[myroom].peoples[me].nick, buf2);
+        }
         if(inrooms[myroom].status==INROOM_NIGHT) {
             if(inrooms[myroom].peoples[me].flag&PEOPLE_KILLER)
             for(i=0;i<MAX_PEOPLE;i++) 
