@@ -571,7 +571,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             return 0;
         }
         p++;
-        *s = ntohl(*(unsigned long *) p) + p - p0 + sizeof(unsigned long);
+        *s = ntohl(*(int *) p) + p - p0 + sizeof(int);
 	if (oldty==LINE_ATTACHMENT) { /*上次是附件，下一行是附件连接行*/
           *ty=LINE_ATTACHLINK;
           *s--;

@@ -1617,7 +1617,7 @@ int get_attachment_type(char *attachfilename) {
 char *checkattach(char *buf, long size, long *len, char **attachptr)
 {
     char *ptr;
-    if (size < ATTACHMENT_SIZE + sizeof(long) + 2)
+    if (size < ATTACHMENT_SIZE + sizeof(int) + 2)
         return NULL;
     if (memcmp(buf, ATTACHMENT_PAD, ATTACHMENT_SIZE))
         return NULL;
@@ -1630,12 +1630,12 @@ char *checkattach(char *buf, long size, long *len, char **attachptr)
         return NULL;
     buf++;
     size--;
-    if (size < sizeof(long))
+    if (size < sizeof(int))
         return NULL;
-    *len = ntohl(*(unsigned long *) buf);
+    *len = ntohl(*(int *) buf);
     if (*len > size)
         *len = size;
-    *attachptr = buf + sizeof(long);
+    *attachptr = buf + sizeof(int);
     return ptr;
 }
 
