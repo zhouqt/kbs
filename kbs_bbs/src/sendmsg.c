@@ -287,17 +287,17 @@ void r_msg()
         saveline(i, 0, savebuffer[i]);
 
     if ((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.∑¢Œƒ’¬ ±≤ªªÿmsg */
-        move(0, 0);
+        good_move(0, 0);
         clrtoeol();
         refresh();
         if (get_unreadcount(currentuser->userid)) {
             prints("[1m[33mƒ„”––¬µƒ—∂œ¢£¨«Î∑¢±ÌÕÍŒƒ’¬∫Û∞¥ Ctrl+Z ªÿ—∂œ¢[m");
-            move(y, x);
+            good_move(y, x);
             refresh();
             sleep(1);
         } else {
             prints("[1m√ª”–»Œ∫Œ–¬µƒ—∂œ¢¥Ê‘⁄![m");
-            move(y, x);
+            good_move(y, x);
             refresh();
             sleep(1);
         }
@@ -306,11 +306,11 @@ void r_msg()
     }
     count = get_msgcount(1, currentuser->userid);
     if (!count) {
-        move(0, 0);
+        good_move(0, 0);
         clrtoeol();
         refresh();
         prints("[1m√ª”–»Œ∫Œµƒ—∂œ¢¥Ê‘⁄£°£°[m");
-        move(y, x);
+        good_move(y, x);
         refresh();
         sleep(1);
         saveline(0, 1, savebuffer[0]);  /* restore line */
@@ -382,10 +382,10 @@ void r_msg()
                             if(i==1) strcpy(buf, "[1m∞Ôƒ„ÀÕ≥ˆ—∂œ¢¡À[m");
                             else if(i==-2) strcpy(buf, "[1m∂‘∑Ω“—æ≠¿Îœﬂ¡À...[m");
                             if(buf[0]) {
-                                move(0,0);
+                                good_move(0,0);
                                 clrtoeol();
-                                refresh();
                                 prints("%s", buf);
+                                refresh();
                                 sleep(1);
                                 saveline(0, 1, savebuffer[0]);
                             }
