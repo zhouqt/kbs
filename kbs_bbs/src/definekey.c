@@ -1,6 +1,6 @@
 #include "bbs.h"
 
-extern struct key_struct *keymem=NULL;
+extern struct key_struct *keymem;
 extern int keymem_total;
 
 #define MAX_KEY_DEFINE 100
