@@ -124,7 +124,7 @@ int     len;
 
 
 int i_newfd  = 0 ;
-int (*flushf)() = NULL ;
+static void (*flushf)() = NULL ;
 
 static int i_timeout=0;
 static time_t i_begintimeout;
@@ -142,7 +142,7 @@ void add_io(int fd,int timeout)
     } else i_top = NULL ;
 }
 
-void add_flush(int (*flushfunc)() )
+void add_flush(void (*flushfunc)() )
 {
     flushf = flushfunc ;
 }

@@ -135,7 +135,7 @@ void
 creat_list()
 {
     listcuent(NULL,0,0) ;
-    apply_ulist_addr( listcuent ,0);
+    apply_ulist_addr( (APPLY_UTMP_FUNC)listcuent ,0);
 }
 
 int
@@ -292,7 +292,7 @@ char q_id[IDLEN];
     if( (newline = strchr(genbuf, '\n')) != NULL )
         *newline = '\0';
     seecount=0;
-	logincount=apply_utmp(t_printstatus,10,lookupuser->userid,&seecount);
+	logincount=apply_utmp((APPLY_UTMP_FUNC)t_printstatus,10,lookupuser->userid,&seecount);
     /* »ñµÃÀëÏßÊ±¼ä Luzi 1998/10/23 */
     exit_time = get_exit_time(lookupuser->userid,exittime);
     if( (newline = strchr(exittime, '\n')) != NULL )
@@ -316,7 +316,7 @@ char q_id[IDLEN];
                   cperf(perf),compute_user_value(lookupuser),
                (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":" ");
     */
-    uleveltochar(&permstr,lookupuser);
+    uleveltochar(permstr,lookupuser);
     prints("ÐÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] Éí·Ý: [%s]%s\n",
            (check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",
            compute_user_value(lookupuser),
@@ -1015,7 +1015,7 @@ struct talk_win *twin;
     do_talk_string( twin, "\n*** ÉÏÏßÍøÓÑ ***\n" );
     savecolumns = (t_columns > STRLEN ? t_columns : 0);
     talk_uent_buf = bigbuf;
-    if( apply_ulist_addr( dotalkuent,0 ) == -1 ) {
+    if( apply_ulist_addr( (APPLY_UTMP_FUNC)dotalkuent,0 ) == -1 ) {
         strcpy( bigbuf, "Ã»ÓÐÈÎºÎÊ¹ÓÃÕßÉÏÏß\n" );
     }
     strcpy( talk_uent_buf, "\n" );
@@ -1689,7 +1689,7 @@ char *uident;
     return (deleted>0)?1:-1;
 }
 
-friend_title()
+void friend_title()
 {
     int chkmailflag=0;
     chkmailflag=chkmail();
@@ -1856,7 +1856,7 @@ t_override()
 {
 
     sethomefile( genbuf, currentuser->userid,"friends" );
-    i_read( GMENU, genbuf , friend_title , friend_doentry, friend_list ,sizeof(struct friends));
+    i_read( GMENU, genbuf , friend_title , (READ_FUNC)friend_doentry, friend_list ,sizeof(struct friends));
     clear();
     return;
 }

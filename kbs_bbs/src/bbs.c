@@ -2272,11 +2272,7 @@ DO_REPAIR:
     return FULLUPDATE ;
 }
 
-int
-del_post(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+int del_post(int ent,struct fileheader *fileinfo,char *direct )
 {
     FILE        *fn;
     char        buf[512];
@@ -2635,7 +2631,7 @@ Read()
         }
     }
     usetime=time(0);
-    i_read( READING, buf,readtitle,readdoent,&read_comms[0],sizeof(struct fileheader)) ;/*进入本版*/
+    i_read( READING, buf,readtitle,(READ_FUNC)readdoent,&read_comms[0],sizeof(struct fileheader)) ;/*进入本版*/
     board_usage(currboard,time(0)-usetime);/*board使用时间记录*/
 
     return 0 ;
@@ -3050,9 +3046,7 @@ struct fileheader *brec;
         return 0;
 }
 
-void
-RemoveAppendedSpace(ptr) /* Leeward 98.02.13 */
-char *ptr;
+void RemoveAppendedSpace(char* ptr) /* Leeward 98.02.13 */
 {
     int  Offset;
 

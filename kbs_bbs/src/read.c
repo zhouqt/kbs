@@ -195,7 +195,7 @@ char            *(*doentry)();
 struct keeploc  *locmem;
 int             num,ssize;
 ---*/
-void draw_entry(char *(*doentry)(char*,int,char*), struct keeploc * locmem,
+void draw_entry(READ_FUNC doentry, struct keeploc * locmem,
                 int num, int ssize, char * pnt)
 {
     char        *str;

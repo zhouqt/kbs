@@ -39,11 +39,12 @@ void set_alarm(int set_timeout,void (*timeout_func)(void*),void* data);
 int igetkey();
 void check_calltime();
 void add_io(int fd,int timeout);
-void add_flush(int (*flushfunc)() );
+void add_flush(void (*flushfunc)() );
 int igetch();
 
 /* xyz.c*/
 int modify_user_mode(int mode);
+int showperminfo( unsigned int pbits,int i,int flag);
 
 /* more.c */
 int ansimore(char* filename,int promptend);
@@ -93,6 +94,8 @@ void do_quote(char *filepath,char quote_mode);
 void setqtitle(char* stitle);
 int set_delete_mark(int ent,struct fileheader *fileinfo,char *direct );
 int noreply_post_noprompt(int ent,struct fileheader *fileinfo,char *direct );
+void RemoveAppendedSpace(char* ptr);
+int del_post(int ent,struct fileheader *fileinfo,char *direct );
 
 /*vote.c*/
 void makevdir(char* bname);
@@ -106,6 +109,7 @@ int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
 int invalidaddr(char*addr);
 int doforward(char *direct,struct fileheader*fh,int isuu);
+
 /* maintain.c */
 int check_systempasswd();
 void stand_title(char* title);
@@ -146,6 +150,7 @@ int do_sendmsg(struct user_info *uentp,const char msgstr[256],int mode);
 
 /* list.c */
 int t_friends();
+int fill_userlist();
 
 /* edit.c */
 int Origin2(char text[256]);

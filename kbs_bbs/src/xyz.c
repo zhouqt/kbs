@@ -60,9 +60,7 @@ x_csh()
 }
 */
 
-int
-showperminfoX( pbits, i ) /* Leeward 98.06.05 */
-int     pbits, i;
+int showperminfoX(unsigned int pbits,int i,int flag ) /* Leeward 98.06.05 */
 {
     char        buf[ STRLEN ];
 
@@ -82,8 +80,7 @@ int     pbits, i;
 }
 
 int
-showperminfo( pbits, i )
-int     pbits, i;
+showperminfo( unsigned int pbits,int i,int flag)
 {
     char        buf[ STRLEN ];
 

@@ -39,6 +39,7 @@ int  bkfile=0;
 struct textline *mark_begin, *mark_end;
 int    mark_on;
 /* copy/paste */
+static int Origin(struct textline* text);
 
 void
 msgline()
@@ -967,9 +968,7 @@ char    *str;
 
 
 /*Function Add by SmallPig*/
-int
-Origin(text)
-struct textline *text;
+static int Origin(struct textline *text)
 {
 #ifndef VEDITOR
     char tmp[STRLEN];
