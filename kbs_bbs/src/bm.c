@@ -152,7 +152,11 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
 		prints("%s","0.手动输入封禁理由");
 		    while (1) {
 		    	getdata(2,0,"请从列表选择封禁理由(0为手工输入,*退出):",denymsg,2,DOECHO,NULL,YEA);
-			if (denymsg[0]=='*') return 0;
+			if (denymsg[0]=='*') {
+		    	free(file_buf);
+    			close(reasonfile);
+				return 0;
+			}
 		    	if (isdigit(denymsg[0])) {
 		    		reason=atoi(denymsg);
 		    		if (reason==0) {
