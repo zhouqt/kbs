@@ -942,6 +942,49 @@ void noscroll()
     roll = 0;
 }
 
+int check_ch(int c1, int c2)
+{
+    if(c1>=0xb0&&c1<=0xd8&&c2>=0xa1&&c2<=0xfe)
+        return 5;
+    else if(c1>=0xd9&&c1<=0xf7&&c2>=0xa1&&c2<=0xfe)
+        return 2;
+    else if(c1>0x80&&c2>=0x40)
+        return 1;
+    else
+        return 0;
+}
+
+void auto_chinese()
+{
+    struct screenline *bp = big_picture;
+    int i,j,k,l;
+    int a[LINELEN],b[LINELEN];
+    for(i=0;i<scr_lns;i++) {
+        j = (i + roll)%scr_lns;
+        a[0]=0; b[0]=0;
+        a[1]=check_ch(bp[j].data[0],bp[j].data[1]);
+        if(a[1]) b[1]=1; else b[1]=0;
+        for(k=2;k<scr_cols;k++) {
+            l = check_ch(bp[j].data[k-1],bp[j].data[k]);
+            if(l&&l+a[k-2]>=a[k-1]) {
+                a[k]=l+a[k-2];
+                b[k]=1;
+            }
+            else {
+                a[k]=a[k-1];
+                b[k]=0;
+            }
+        }
+        k=scr_cols-1;
+        while(k) {
+            if(b[k]) k-=2;
+            else k--;
+            if(bp[j].data[k]>=0x80) bp[j].data[k]='?';
+        }
+    }
+    redoscr();
+}
+
 void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
 {
     struct screenline *bp = big_picture;

@@ -705,6 +705,10 @@ int igetkey()
                     exec_mbem("@mod:service/libcalendar.so#calendar_main");
                     continue;
                 }
+        	else if(scrint&&ret==KEY_F6) {
+        	    auto_chinese();
+        	    continue;
+        	}
                 break;
             }
             else {
