@@ -8,8 +8,6 @@ if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
 	exit();
 } 
 
-$needlogin=1;
-
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
