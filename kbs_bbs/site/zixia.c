@@ -214,6 +214,8 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	    strcpy( buf, "持国天王" );
     	else if( !strcmp(lookupuser->userid,"KCN") )
 	    strcpy( buf, "上帝" );
+        else if( !strcmp(lookupuser->userid,"bad") )
+        strcpy( buf, "唐僧" );
     	else if( !strcmp(lookupuser->userid,"cityhunter") 
 		    || !strcmp(lookupuser->userid,"soso")
 		    || !strcmp(lookupuser->userid,"Czz")

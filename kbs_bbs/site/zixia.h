@@ -6,7 +6,7 @@
 #define USE_TMPFS           1   /*使用内存文件系统加速*/
 #define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
 #define NINE_BUILD 		0
-#define NEW_COMERS 		0	/* 注册后在 newcomers 版自动发文 */
+#define NEW_COMERS 		1	/* 注册后在 newcomers 版自动发文 */
 #define HAVE_BIRTHDAY 		1
 #define HAPPY_BBS		0
 #define HAVE_COLOR_DATE		0
@@ -328,6 +328,8 @@ typedef struct fileheader fileheader_t;
  */
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
+
+#define SMS_SUPPORT
 
 /**
 attach define
