@@ -24,7 +24,7 @@
 #define USE_DEFAULT_MAIL_LIMIT /*邮件容量限制*/
 #define USE_DEFAULT_READ_PERM
 #define USE_DEFAULT_SEE_PERM
-
+#define REGISTER_TSINGHUA_WAIT_TIME (240*60)
 
 #endif
 
