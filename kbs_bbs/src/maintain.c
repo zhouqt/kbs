@@ -769,6 +769,7 @@ int searchtrace()
     char tmp_command[80], tmp_id[20];
     char buf[8192];
     struct userec *lookupuser;
+	char buffile[256];
 
     if (check_systempasswd() == false)
         return -1;
@@ -792,10 +793,69 @@ int searchtrace()
         return -1;
     }
 
-    sprintf(tmp_command, "grep -a -w %s user.log | grep posted > tmp/searchresult.%d", tmp_id, getpid());
+    sprintf(buffile, "tmp/searchresult.%d", getpid());
+#ifdef NEWPOSTLOG
+{
+	FILE *fp;
+	MYSQL s;
+	MYSQL_RES *res;
+	MYSQL_ROW row;
+	char sqlbuf[256];
+
+	if((fp=fopen(buffile,"w"))==NULL){
+        move(3, 0);
+        prints("无法打开临时文件\n");
+        clrtoeol();
+        pressreturn();
+        clear();
+		return -1;
+	}
+
+	mysql_init (&s);
+
+	if (! my_connect_mysql(&s) ){
+        move(3, 0);
+        prints("%s\n",mysql_error(&s));
+        clrtoeol();
+        pressreturn();
+        clear();
+		fclose(fp);
+		return -1;
+	}
+
+	sprintf(sqlbuf,"SELECT * FROM postlog WHERE userid='%s' ORDER BY time;",lookupuser->userid);
+
+	if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
+        move(3, 0);
+        prints("%s\n",mysql_error(&s));
+        clrtoeol();
+        pressreturn();
+        clear();
+		mysql_close(&s);
+		fclose(fp);
+		return -1;
+	}
+
+	res = mysql_store_result(&s);
+	while(1){
+		row = mysql_fetch_row(res);
+		if(row==NULL)
+			break;
+
+		fprintf(fp,"%s: %-20s %s\n", row[4], row[2], row[3]);
+	}
+	mysql_free_result(res);
+
+	mysql_close(&s);
+
+	fclose(fp);
+
+}
+#else
+    sprintf(tmp_command, "grep -a -w %s user.log | grep posted > %s", tmp_id, buffile);
     system(tmp_command);
-    sprintf(tmp_command, "tmp/searchresult.%d", getpid());
-    mail_file(getCurrentUser()->userid, tmp_command, getCurrentUser()->userid, "系统查询结果", BBSPOST_MOVE, NULL);
+#endif
+    mail_file(getCurrentUser()->userid, buffile, getCurrentUser()->userid, "系统查询结果", BBSPOST_MOVE, NULL);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf, lookupuser, NULL);      /*写入syssecurity版, stephen 2000.12.21 */
