@@ -31,12 +31,6 @@
 			html_init("gb2312");
 			html_error_quit("本讨论区目前没有文章");
 		}
-		if (isset($_GET["num"]))
-			$num = $_GET["num"];
-		else {
-			html_init("gb2312");
-			html_error_quit("错误的参数");
-		}
 		if (isset($_GET["id"]))
 			$id = $_GET["id"];
 		else {
@@ -55,18 +49,21 @@
 			$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
                 	if (cache_header("public",filemtime($filename),300))
                 		return;
-			@$attachpos=$_GET["attachpos"];
-			@$attachname=$_GET["filename"];
-			@$attachsize=$_GET["size"];
-			@$mimetype=mime_content_type($attachname);
-			if (($attachpos!=0)&&($attachsize!=0)) {
+			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
+			if ($attachpos!=0) {
+				$file = fopen($filename, "r");
+				fseek($file,$attachpos);
+				fread($file,$attachsize,4);
+				$attachname='';
+				while (($char=fgetc($file,1)!='\0') {
+					$attachname=$attachname . $char;
+				}
+				@$mimetype=mime_content_type($attachname);
 				if ($mimetype!='')
 					Header("Content-type: " . $mimetype);
 				Header("Accept-Ranges: bytes");
 				Header("Accept-Length: " . filesize($filename));
 				Header("Content-Disposition: attachment; filename=" . $attachname);
-				$file = fopen($filename, "r");
-				fseek($file,$attachpos);
 				echo fread($file,$attachsize);
 				fclose($file);
 				exit;

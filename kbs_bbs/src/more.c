@@ -29,6 +29,16 @@ static int stuffmode = 0;
 
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
 
+/*typedef (void  generate_attach_link_t)(char* buf,int buf_len,char* attachname,long attachpos,long attachsize);
+*/
+static generate_attach_link_t current_attach_link;
+static void* current_attach_link_arg;
+void register_attach_link(generate_attach_link_t fn,void* arg)
+{
+    current_attach_link=fn;
+    current_attach_link_arg=arg;
+}
+
 /*extern int isblank(int c);*/
 
 
@@ -502,11 +512,13 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         if (p0[*s-1]=='\0')
 		*s++;
     }
+
+    /*
     if ((oldty == 100) && (*ty != 100)) {
         *l = 0;
         *s = 0;
         *ty = 104;
-    }
+    }*/
     return 0;
 }
 
@@ -645,8 +657,11 @@ int mmap_more(char *fn, int quit, char *keystr, char *title)
     return retv;
 }
 
-void mem_printline(char *ptr, int len, char *fn, char ty)
+void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
 {
+    char* ptr=l->curr;
+    int len=l->currlen;
+    int ty=l->currty;
     if (stuffmode) {
         char buf[256];
 
@@ -664,63 +679,21 @@ void mem_printline(char *ptr, int len, char *fn, char ty)
         return;
     } else if (ty == 100) {
         char attachname[41], *p;
+        long attachsize;
+        char link[256];
 
         strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
+        attachsize=ntohl(*(unsigned long *)( ptr+ATTACHMENT_SIZE+strlen(attachname)+1));
+        if (current_attach_link)
+            (*current_attach_link)(link,255,fn,l->curr-begin+ATTACHMENT_SIZE,current_attach_link_arg);
+        else
+            strcpy(link,"(用www方式阅读本文可以下载此附件)");
         p = strrchr(attachname, '.');
         if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
                           || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))
-            prints("\033[m附图: %s \033[5m(用www方式阅读本文可以浏览此图片)\033[0m\n", attachname);
+            prints("\033[m附图: %s \033[5m%s\033[0m\n", attachname,link);
         else
-            prints("\033[m附件: %s \033[5m(用www方式阅读本文可以下载此附件)\033[0m\n", attachname);
-        return;
-    } else if (ty == 104) {
-        char *q;
-        char temp_sessionid[10];
-        int type;
-
-        type = 0;
-        /*
-        if (!strncmp(fn, "boar", 4)) {
-            if (!strncmp(fn + 7, ".1984", 5))
-                type = 4;
-            else if (!strncmp(fn + 7, ".back", 5))
-                type = 5;
-            else
-                type = 1;
-        } else if (!strncmp(fn, "0Ann", 4))
-            type = 2;
-        else if (!strncmp(fn, "mail", 4))
-            type = 3;
-        get_temp_sessionid(temp_sessionid);
-        q = strrchr(fn, '/') + 1;
-        switch (type) {
-        case 1:
-            if (digestmode == YEA)
-                prints("http://%s/" "Ytht.Net" "%s/gcon?B=%s&F=%s", MY_BBS_DOMAIN, temp_sessionid, currboard, q);
-            else
-                prints("http://%s/" "Ytht.Net" "%s/con?B=%s&F=%s", MY_BBS_DOMAIN, temp_sessionid, currboard, q);
-            break;
-        case 2:
-            if (0)
-                prints("http://%s/" "Ytht.Net" "%s/anc?path=%s", MY_BBS_DOMAIN, temp_sessionid, q);
-            break;
-        case 3:
-            prints("http://%s/" "Ytht.Net" "%s/bbsmailcon?file=%s", MY_BBS_DOMAIN, temp_sessionid, q);
-            break;
-        case 4:
-            prints("http://%s/" "Ytht.Net" "%s/c1?T=%d&F=%s", MY_BBS_DOMAIN, temp_sessionid, type, fn + 13);
-            break;
-        case 5:
-            prints("http://%s/" "Ytht.Net" "%s/c1?T=%d&F=%s", MY_BBS_DOMAIN, temp_sessionid, type, fn + 20);
-            break;
-        default:
-            break;
-        }
-        */
-        sprintf(temp_sessionid,"fds");
-        prints("http://%s/" "bbs" "%s/c1?T=%d&F=%s", "SMTH", temp_sessionid, type, fn + 20);
-        // TODO: show the link
-        prints("\n");
+            prints("\033[m附件: %s \033[5m%s\033[0m\n", attachname,link);
         return;
     } else if (ty >= 2) {
         outns("\033[36m", 5);
@@ -744,7 +717,7 @@ static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
     prints("\033[m");
     curr_line = l.curr_line;
     for (i = 0; i < t_lines - 1 - row && i < numlines; i++) {
-        mem_printline(l.curr, l.currlen, fn, l.currty);
+        mem_printline(l, fn, ptr);
         if (next_MemMoreLines(&l) < 0)
             break;
     }
@@ -797,7 +770,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
             if (shownflag) {
                 displayflag = 0;
             }
-            mem_printline(l.curr, l.currlen, fn, l.currty);
+            mem_printline(l, fn, ptr);
             i++;
             if (i >= t_lines - 1)
                 break;

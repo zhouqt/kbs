@@ -411,9 +411,21 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
 #endif
     {                           /* Leeward 98.01.13 检查转贴者在其欲转到的版面是否被禁止了 POST 权 */
         char szTemp[STRLEN];
+        struct boardheader* bh;
 
         strcpy(szTemp, currboard);      /* 保存当前版面 */
         strcpy(currboard, bname);       /* 设置当前版面为要转贴到的版面 */
+
+        bh=getbcache(bname);
+        if ((fileinfo->attachment!=0)&&!(bh->flag&BOARD_ATTACH)) {
+            move(3, 0);
+            clrtobot();
+            prints("\n\n                很抱歉，该版面不能发表带附件的文章...\n");
+            pressreturn();
+            clear();
+            strcpy(currboard, szTemp);  /* 恢复当前版面 */
+            return FULLUPDATE;
+        }
         if (deny_me(currentuser->userid, currboard) && !HAS_PERM(currentuser, PERM_SYSOP)) {    /* 版主禁止POST 检查 */
             move(3, 0);
             clrtobot();
@@ -675,6 +687,46 @@ int zsend_post(int ent, struct fileheader *fileinfo, char *direct)
     snprintf(genbuf, 512, "%s/%s", buf1, fileinfo->filename);
     return zsend_file(genbuf, fileinfo->title);
 }
+
+#define SESSIONLEN 9
+void get_telnet_sessionid(char* buf,int unum)
+{
+    static const char encode[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    struct user_info* pui=get_utmpent(unum);
+    int utmpkey=pui->utmpkey;
+    buf[0]=encode[unum%36];
+    unum/=36;
+    buf[1]=encode[unum%36];
+    unum/=36;
+    buf[2]=encode[unum%36];
+
+    buf[3]=encode[utmpkey%36];
+    utmpkey/=36;
+    buf[4]=encode[utmpkey%36];
+    utmpkey/=36;
+    buf[5]=encode[utmpkey%36];
+    utmpkey/=36;
+    buf[6]=encode[utmpkey%36];
+    utmpkey/=36;
+    buf[7]=encode[utmpkey%36];
+    utmpkey/=36;
+    buf[8]=encode[utmpkey%36];
+    utmpkey/=36;
+
+    buf[9]=0;
+}
+
+void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
+{
+    struct fileheader* fh=(struct fileheader*)arg;
+    char* server=sysconf_str("BBS_WEBDOMAIN");
+    if (server==NULL)
+        server=sysconf_str("BBSDOMAIN");
+    snprintf(buf,buf_len-SESSIONLEN,"%s/bbscon.php?board=%s&id=%d&ap=%d&sid=',
+        server,currboard,fh->id,attachpos);
+    get_telnet_sessionid(buf+strlen(buf), utmpent);
+}
+
 int read_post(int ent, struct fileheader *fileinfo, char *direct)
 {
     char *t;
@@ -701,11 +753,13 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     strncpy(quote_user, fileinfo->owner, OWNER_LEN);
     quote_user[OWNER_LEN - 1] = 0;
 
+    register_attach_link(board_attach_link, fileinfo)
 #ifndef NOREPLY
     ch = ansimore_withzmodem(genbuf, false, fileinfo->title);   /* 显示文章内容 */
 #else
     ch = ansimore_withzmodem(genbuf, true, fileinfo->title);    /* 显示文章内容 */
 #endif
+    register_attach_link(NULL,NULL);
     brc_add_read(fileinfo->id);
 #ifndef NOREPLY
     move(t_lines - 1, 0);
@@ -2701,7 +2755,9 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
         strncpy(quote_user, fptr->owner, OWNER_LEN);
         quote_user[OWNER_LEN - 1] = 0;
         setbfile(genbuf, currboard, fptr->filename);
+        register_attach_link(board_attach_link, fptr)
         ansimore_withzmodem(genbuf, false, fptr->title);
+        register_attach_link(NULL,NULL);
       redo:
         move(t_lines - 1, 0);
         clrtoeol();

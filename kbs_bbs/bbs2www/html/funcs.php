@@ -46,6 +46,12 @@ $filename_trans = array(" " => "_",
 	);
 require("site.php");
 
+define("ENCODESTRING","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+function decodesessionchar($ch)
+{
+	return strchr(ENCODESTRING,$ch);
+}
+
 $loginok=0;
 
 @$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
@@ -63,11 +69,21 @@ $loginok=0;
 
 bbs_setfromhost($fromhost,$fullfromhost);
 
-@$utmpkey = $_COOKIE["UTMPKEY"];
-@$utmpnum = $_COOKIE["UTMPNUM"];
-@$userid = $_COOKIE["UTMPUSERID"];
+$compat_telnet=0;
+@$sessionid = $_GET["sid"];
+if ($sessionid!='') {
+	$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
+	$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
+		decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
+	$userid='';
+  	$compat_telnet=1;
+} else {
+	@$utmpkey = $_COOKIE["UTMPKEY"];
+	@$utmpnum = $_COOKIE["UTMPNUM"];
+	@$userid = $_COOKIE["UTMPUSERID"];
+}
 if ($utmpkey!="") {
-  if (bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo)==0) {
+  if (bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet)==0) {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
     $currentuser_num=bbs_getcurrentuser($currentuser);

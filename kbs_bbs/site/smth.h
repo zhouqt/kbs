@@ -48,6 +48,9 @@
 #define MAXCLUB			128
 #define MAXBOARD  		600
 #define MAXACTIVE 		8000
+/* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
+    make the number of session char from 3 to 4
+    */
 #define MAX_GUEST_NUM		800
 
 #define POP3PORT		110

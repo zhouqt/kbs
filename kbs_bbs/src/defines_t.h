@@ -64,6 +64,9 @@ void m_init();
 int countln(char *fname);
 void R_monitor(void *data);
 void printacbar();
+typedef (void  *generate_attach_link_t)(char* ,int,,long ,void* );
+void register_attach_link(generate_attach_link_t fn,void* arg);
+
 
 /* namecomplete.c */
 void AddNameList(char *name);

@@ -211,6 +211,7 @@ int getnewutmpent(struct user_info *up)
 
     utmpfd = utmp_lock();
     utmp_setreadonly(0);
+    up->utmpkey=rand() % 100000000;
     pos = utmphead->hashhead[0] - 1;
     if (pos == -1) {
         utmp_setreadonly(1);
@@ -323,6 +324,7 @@ int getnewutmpent2(struct user_info *up)
 
     utmpfd = utmp_lock();
     utmp_setreadonly(0);
+    up->utmpkey = rand() % 100000000;
     pos = utmphead->hashhead[0] - 1;
     if (pos == -1) {
         utmp_setreadonly(1);

@@ -473,20 +473,30 @@ static ZEND_FUNCTION(bbs_setonlineuser)
     struct user_info *pui;
     int idx;
     struct userec *user;
+    long compat_telnet;
 
     MAKE_STD_ZVAL(user_array);
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
-    if (zend_parse_parameters(4 TSRMLS_CC, "slla", &userid, &userid_len, &utmpnum, &utmpkey, &user_array) != SUCCESS) {
-        WRONG_PARAM_COUNT;
+    if (ZEND_NUM_ARGS() == 4) {
+        if (zend_parse_parameters(4 TSRMLS_CC, "slla", &userid, &userid_len, &utmpnum, &utmpkey, &user_array) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+        compat_telnet=false;
+    } else {
+        if (zend_parse_parameters(5 TSRMLS_CC, "sllal", &userid, &userid_len, &utmpnum, &utmpkey, &user_array,&compat_telnet) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
     }
     if (userid_len > IDLEN)
         RETURN_LONG(1);
     if (utmpnum < 0 || utmpnum >= MAXACTIVE)
         RETURN_LONG(2);
 
-    if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui)) == 0) {
+    if (userid_len=0)
+        userid=NULL;
+    if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui, compat_telnet)) == 0) {
         setcurrentuinfo(pui, utmpnum);
         idx = getuser(pui->userid, &user);
         setcurrentuser(user, idx);

@@ -587,7 +587,7 @@ int user_init(struct userec **x, struct user_info **y)
     if (id[0] == '\0')
         return -1;
 
-    if (www_user_init(utmpent, id, key, x, y) == 0 && strcasecmp("guest", currentuser->userid))
+    if (www_user_init(utmpent, id, key, x, y, 0) == 0 && strcasecmp("guest", currentuser->userid))
         return 1;
     return 0;
 }
@@ -1970,7 +1970,7 @@ int www_data_init()
     return 0;
 }
 
-int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y)
+int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y,long compat_telnet)
 {
     /*
      * printf("utmpuserid = %s\n", id); 
@@ -1994,10 +1994,10 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
             return -2;
 
         if ((((*y)->active == 0)) || ((*y)->userid[0] == 0)
-            || ((*y)->mode != WEBEXPLORE))
+            || ((compat_telnet==0)&&((*y)->mode != WEBEXPLORE)))
             return -3;
 
-        if (strcmp((*y)->userid, userid))
+        if (userid&&strcmp((*y)->userid, userid))
             return -4;
         getuser((*y)->userid, x);
 
@@ -2128,8 +2128,6 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
          * refer to bbsfoot.c for details 
          */
         ui.freshtime = time(0);
-        tmp = rand() % 100000000;
-        ui.utmpkey = tmp;
         ui.mode = WEBEXPLORE;
         strncpy(ui.userid, user->userid, 20);
         strncpy(ui.realname, ud.realname, 20);
@@ -2590,7 +2588,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             char outbuf[256];
 
             extension = attachfilename + strlen(attachfilename);
-            snprintf(link,255,"%s&amp;attachpos=%d&amp;filename=%s&amp;size=%d",attachlink,i+attachptr-buf-i,attachfilename,attach_len);
+            snprintf(link,255,"%s&amp;ap=%d",attachlink,i+attachptr-buf-i,attachfilename,attach_len);
 	    link[255]=0;
 	    i+=(attachptr-buf-i)+attach_len-1;
 	    if (i>buflen) continue;
