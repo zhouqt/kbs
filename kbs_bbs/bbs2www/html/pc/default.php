@@ -117,8 +117,9 @@ function  pcmain_blog_most_hot()
 		if(strlen($rows[subject]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
-		echo $subject."</a>\n".
-			"&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\"><font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor["USER"]."\"><font class=low2>".$pcinfor["USER"]."</font></a>\n";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor["USER"]."\">";
+		echo "<font class=low2>".$pcinfor["USER"]."</font></a>\n";
 		echo "</td>\n";	
 		if($i % 2 == 1 ) echo "</tr>";
 	}
@@ -147,8 +148,9 @@ function  pcmain_blog_most_trackback()
 		if(strlen($rows[subject]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
-		echo $subject."</a>\n".
-			"&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\"><font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\"><font class=low2>".$pcinfor[USER]."</font></a>";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">";
+		echo "<font class=low2>".$pcinfor[USER]."</font></a>";
 		echo "</li>\n";	
 	}
 ?>				
@@ -178,8 +180,9 @@ function  pcmain_blog_most_view()
 		if(strlen($rows[subject]) > 20 )
 			$subject .= "...";
 		$subject .= "</span>";
-		echo $subject."</a>\n".
-			"&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\"><font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\"><font class=low2>".$pcinfor[USER]."</font></a>\n";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">";
+		echo "<font class=low2>".$pcinfor[USER]."</font></a>\n";
 		echo "</li>\n";	
 	}
 ?>
@@ -208,12 +211,13 @@ function pcmain_blog_new_nodes()
 			echo "<tr>";
 			$tdclass ="td1";
 		}
-		echo "<td class=".$tdclass." width=\"33%\">[<span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\">".$newBlogs[useretems][$i][pc][NAME]."</a></span>]".
-			 "<a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>";
-		echo "<span title=\"".$newBlogs[useretems][$i][subject]."\">";
+		echo "<td class=".$tdclass." width=\"33%\"><b>[<span title=\"".$newBlogs[useretems][$i][pc][DESC]."\"><a href=\"index.php?id=".$newBlogs[useretems][$i][pc][USER]."\">".$newBlogs[useretems][$i][pc][NAME]."</a></span>]</b>".
+			"&nbsp;<a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][pc][USER]."'><font class=low>".$newBlogs[useretems][$i][pc][USER]."</font></a><br />".
+			"<a href='pccon.php?id=".$newBlogs[useretems][$i][pc][UID]."&tid=".$newBlogs[useretems][$i][tid]."&nid=".$newBlogs[useretems][$i][nid]."&s=all'>";
+			"<span title=\"".$newBlogs[useretems][$i][subject]."\">";
 		echo substr($newBlogs[useretems][$i][subject],0,20);
 		if(strlen($newBlogs[useretems][$i][subject])>20) echo "...";
-		echo "</span></a>&nbsp;<a href='/bbsqry.php?userid=".$newBlogs[useretems][$i][pc][USER]."'><font class=low>".$newBlogs[useretems][$i][pc][USER]."</font></a></td>";
+		echo "</span></a></td>";
 		if($i % 2 == 1 ) echo "</tr>";
 	}
 ?>
@@ -237,8 +241,14 @@ function  pcmain_blog_recommend_nodes()
 		if( $i == 10 ) echo "</td><td align=\"left\" style=\"line-height:16px\" width=\"50%\">";
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
-		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
-			"&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\"><font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor["USER"]."\"><font class=low2>".$pcinfor["USER"]."</font></a>";
+		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
+		$subject = "<span title=\"".html_format($rows[subject])."\">".html_format(substr($rows[subject],0,20));
+		if(strlen($rows[subject]) > 20 )
+			$subject .= "...";
+		$subject .= "</span>";
+		echo $subject."</a>\n&nbsp;<a href=\"index.php?id=".$pcinfor[USER]."\">";
+		//echo "<font class=low>".$pcinfor[NAME]."</font></a>&nbsp;<a href=\"/bbsqry.php?userid=".$pcinfor["USER"]."\">";
+		echo "<font class=low2>".$pcinfor["USER"]."</font></a>";
 		echo "</li>\n";	
 	}
 ?>
