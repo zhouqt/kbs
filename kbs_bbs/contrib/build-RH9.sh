@@ -6,7 +6,7 @@
 BBSHOME=/usr/local/bbs
 
 # BBSSITE 表示您采用的站点定制文件
-BBSSITE=fb2k
+BBSSITE=fb2k-v2
 
 # WWWROOT 表示您的 WWW 所在的目录
 # 注意：这个目录不是 httpd.conf 里面的 DocumentRoot 参数。
