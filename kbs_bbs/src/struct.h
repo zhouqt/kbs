@@ -28,12 +28,7 @@ struct userec {                 /* Structure used to hold information in */
     int noteline;
     int notemode;
     time_t exittime;
-#ifdef HAVE_BIRTHDAY
-	char            gender;
-	unsigned char   birthyear;
-	unsigned char   birthmonth;
-	unsigned char   birthday;
-#endif
+	/* 生日数据转移到 userdata 结构中 */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */
 };
 
@@ -46,6 +41,12 @@ struct userdata
     char realname[NAMELEN];
     char address[STRLEN];
     char email[STRLEN];
+#ifdef HAVE_BIRTHDAY
+	char            gender;
+	unsigned char   birthyear;
+	unsigned char   birthmonth;
+	unsigned char   birthday;
+#endif
 };
 
 struct user_info {              /* Structure used in UTMP file */
