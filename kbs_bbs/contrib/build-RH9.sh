@@ -4,17 +4,17 @@ make distclean
 
 cvs up -d
 
-aclocal; automake -a; autoconf
+autoheader; aclocal; automake -a; autoconf
 
 cd bbs2www
 
-aclocal; automake -a; autoconf
+autoheader; aclocal; automake -a; autoconf
 
 cd ..
 
 cd sshbbsd
 
-aclocal; automake -a; autoconf
+autoheader; aclocal; automake -a; autoconf
 
 cd ..
 
