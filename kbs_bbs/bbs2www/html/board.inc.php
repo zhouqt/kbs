@@ -1,5 +1,4 @@
 <?php
-function bbs
 function bbs_boards_navigation_bar()
 {
 ?>
