@@ -1411,7 +1411,7 @@ if (ret==2) {
             } else {
 #ifdef AUTO_CHECK_REGISTER_FORM
                 move(t_lines - 2, 0);
-		prints("自动检查注册单:%s %s\x1b[m",
+		prints("%s自动检查注册单:%s %s\x1b[m",
 	saveret==0?"\x1b[1;32m":(saveret==2?"\x1b[1;33m":"\x1b[1;31m"),
 	saveret==0?"我认为可以通过!":
 	(saveret==2?"还是你来看看吧":(saveret==-1?"这个id不太好吧":"应该退回 理由:")),
