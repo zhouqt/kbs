@@ -5,6 +5,7 @@
 char save_scr[100][240];
 int save_y, save_x;
 char num[11][3]={"零", "一", "二", "三", "四", "五", "六", "七", "八", "九", "十"};
+char week[7][3]={"日", "一", "二", "三", "四", "五", "六"};
 
 int day,month,year;
 
@@ -33,6 +34,8 @@ int get_week(int year, int month, int day)
 void draw_main()
 {
     int i,j,k,x,y;
+    char buf[80];
+    struct stat st;
     for(i=0;i<t_lines-1;i++)
         saveline(i, 1, save_scr[i]);
     resetcolor();
@@ -46,6 +49,31 @@ void draw_main()
         move(1+i*2, 52);
         prints("\x1b[0;36m━━━━━━━━━━━━━━");
     }
+    prints("\x1b[32;1m");
+    move(1, 50);
+    prints("%s", num[year/1000]);
+    move(2, 50);
+    prints("%s", num[year/100%10]);
+    move(3, 50);
+    prints("%s", num[year/10%10]);
+    move(4, 50);
+    prints("%s", num[year%10]);
+    move(5, 50);
+    prints("年");
+    if(month>10) {
+        move(6, 50);
+        prints("%s", num[10]);
+        move(7, 50);
+        prints("%s", num[month%10]);
+        move(8, 50);
+        prints("月");
+    }
+    else {
+        move(6, 50);
+        prints("%s", num[month]);
+        move(7, 50);
+        prints("月");
+    }
     k=0;
     for(i=1;i<=get_day(year,month);i++) {
         j=get_week(year,month,i);
@@ -54,7 +82,9 @@ void draw_main()
         resetcolor();
         if(j==0||j==6) setfcolor(RED, 1);
         else setfcolor(YELLOW, 1);
-        if(i==day) setbcolor(BLUE);
+        if(i==day) setbcolor(PINK);
+        sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
+        if(stat(buf, &st)!=-1) prints("\x1b[4m");
         move(y,x);
         prints("%2d", i);
 
@@ -62,13 +92,27 @@ void draw_main()
     }
 }
 
+void newfile(char * s)
+{
+    struct stat st;
+    FILE* fp;
+    if(stat(s, &st)==-1) {
+        fp=fopen(s, "w");
+        fprintf(fp, "<标题>\n");
+        fprintf(fp, "%d/%02d/%02d                星期%s                天气<晴>\n", year, month, day, week[get_week(year,month,day)]);
+        fclose(fp);
+    }
+}
+
 int calendar_main()
 {
-    int i,j,ch;
+    int i,j,ch,oldmode;
     struct tm nowr;
     char buf[80];
     long eff_size;
     time_t now;
+    oldmode = uinfo.mode;
+    modify_user_mode(CALENDAR);
     getyx(&save_y, &save_x);
     for(i=0;i<t_lines-1;i++)
         saveline(i, 0, save_scr[i]);
@@ -115,8 +159,11 @@ int calendar_main()
                 break;
             case 13:
             case 10:
+                modify_user_mode(CALENEDIT);
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, day);
-                vedit(buf, 0, &eff_size, 0);
+                newfile(buf);
+                if(vedit(buf, 0, &eff_size, 0)) unlink(buf);
+                modify_user_mode(CALENDAR);
                 break;
         }
     }
@@ -124,4 +171,5 @@ int calendar_main()
     for(i=0;i<t_lines-1;i++)
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
+    modify_user_mode(oldmode);
 }
