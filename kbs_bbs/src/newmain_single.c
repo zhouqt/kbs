@@ -295,6 +295,13 @@ void multi_user_check()
 
     while (ret != 0) {
         ret = multilogin_user(currentuser, usernum,0);
+        if (ret == 3) {
+            prints("\x1b[33m抱歉, 该IP有太多 \x1b[36mguest 在线, 请稍候再试。\x1b[m\n");
+            pressreturn();
+            oflush();
+            sleep(5);
+            exit(1);
+        }
         if (ret == 2) {
             prints("\x1b[33m抱歉, 目前已有太多 \x1b[36mguest, 请稍候再试。\x1b[m\n");
             pressreturn();
