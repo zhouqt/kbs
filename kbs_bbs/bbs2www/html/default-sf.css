@@ -9,7 +9,12 @@ input.readonly { background-color: #F0F0FF; border: 0px }
 input.button { background-color: #CCCCFF }
 hr.default { COLOR: #999999; border-style:dashed }
 input {font-size: 12px;}
-
+INPUT.b {
+	BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #ffffff 1px solid; PADDING-LEFT: 3px; BACKGROUND: #cccccc; PADDING-BOTTOM: 2px; BORDER-LEFT: #ffffff 1px solid; PADDING-TOP: 2px; BORDER-BOTTOM: #000000 1px solid; HEIGHT: 20px
+}
+INPUT.a {
+	BORDER-RIGHT: #000000 1px solid; PADDING-RIGHT: 3px; BORDER-TOP: #ffffff 1px solid; PADDING-LEFT: 3px; BACKGROUND: #718BD6; PADDING-BOTTOM: 2px; BORDER-LEFT: #ffffff 1px solid; COLOR: #ffffff; PADDING-TOP: 2px; BORDER-BOTTOM: #000000 1px solid; HEIGHT: 20px
+}
 FONT.c30 {COLOR: #000000;}
 FONT.c31 {COLOR: #e00000;}
 FONT.c32 {COLOR: #008000;}

@@ -138,7 +138,7 @@ switch ($ret) {
     case -3:
         html_error_quit('该目录尚无文章');
         break;
-    case -1:
+    case -9:
         html_error_quit('系统错误');
         break;
     default;

@@ -199,23 +199,6 @@ login_init();
 		$articles = bbs_getarticles($board, $start, $artcnt, $dir_modes["DIGEST"]);
 		if ($articles == FALSE)
 			html_error_quit("读取文章列表失败");
-		$bms = explode(" ", trim($brdarr["BM"]));
-		$bm_url = "";
-		if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
-			$bm_url = "诚征版主中";
-		else
-		{
-			if (!ctype_alpha($bms[0][0]))
-				$bm_url = $bms[0];
-			else
-			{
-				foreach ($bms as $bm)
-				{
-					$bm_url .= sprintf("<a href=\"/bbsqry.php?userid=%s\" class=\"b3\">%s</a> ", $bm, $bm);
-				}
-				$bm_url = trim($bm_url);
-			}
-		}
 	
 		$brd_encode = urlencode($brdarr["NAME"]);
 		$order_articles = false;

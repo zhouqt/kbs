@@ -103,7 +103,8 @@ login_init();
 		global $default_dir_mode;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
+<center>
+<table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
 <tbody><tr><td class="t2" width="50">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
 </tbody>
 <?php
@@ -208,7 +209,7 @@ login_init();
 				$i++;
 		}
 ?>
-</table>
+</table></center>
 <?php
 	}
 

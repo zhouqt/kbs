@@ -157,7 +157,7 @@ function bbs_board_header($brdarr,$articles=0)
 <?php	
 }
 
-function bbs_board_foot($brdarr,$listmode)
+function bbs_board_foot($brdarr,$listmode='')
 {
 	global $currentuser;
 	$brd_encode = urlencode($brdarr["NAME"]);
@@ -184,6 +184,7 @@ function bbs_board_foot($brdarr,$listmode)
 		case "ORIGIN":
 		case "DENYLIST":
 		case "CROSS":
+		case "MANAGE":
 		default:
 ?>
 [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>]
@@ -195,8 +196,15 @@ function bbs_board_foot($brdarr,$listmode)
 if (bbs_is_bm($brdnum, $usernum))
 {
 ?>
-[<a href="bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>]
+[<a href="/bbsdeny.php?board=<?php echo $brd_encode; ?>">封禁名单</a>] 
+[<a href="/bbsmnote.php?board=<?php echo $brd_encode; ?>">进版画面</a>]
+[<a href="/bbsmvote.php?board=<?php echo $brd_encode;?>">管理投票</a>]
 <?php
+    if ($listmode != 'MANAGE') {
+?>
+[<a href="/bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>]
+<?php
+    }
 }
 ?>
     </td>
