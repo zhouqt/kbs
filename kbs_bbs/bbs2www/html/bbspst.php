@@ -49,55 +49,82 @@
 <tr>
 <td>
 <?php
-		$top_file= bbs_get_vote_filename($brdarr["NAME"], "notes");
-		$fp = fopen($top_file, "r");
+		$notes_file = bbs_get_vote_filename($brdarr["NAME"], "notes");
+		$fp = fopen($notes_file, "r");
 		if ($fp == FALSE)
 		{
 			//html_error_quit("现在没有备忘录");
+			$notes_file = "vote/notes";
+			$fp = fopen($notes_file, "r");
+			if ($fp == FALSE)
+			{
+?>
+<font color="green">发文注意事项: <br />
+发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br/></font>
+<?php
+			}
 		}
-		fclose($fp);
+		if ($fp != FALSE)
+		{
+			fclose($fp);
+			bbs_printansifile($notes_file);
+		}
 ?>
 </td>
 </tr>
 <tr><td>
-作者: <script language="JavaScript">document.write(getCookie("UTMPUSERID"));</script><br />
-使用标题: <input type="text" name="title" size="40" maxlength="100" value="">
-讨论区: [<script language="JavaScript">document.write(queryString("board"));</script>]<br />
-<script language="JavaScript">
-<!--
-    if (queryString("attach",0)==1)
-    	document.write("附件：<input type=\"text\" name=\"attachname\" size=\"50\" value=\"\" disabled > ");
--->
-</script>
+作者: <?php echo $currentuser["userid"]; ?><br />
+标题: <input type="text" name="title" size="40" maxlength="100" value="Re: <?php echo $articles[1]["TITLE"]; ?>"><br />
+看版: [<?php echo $brd_encode; ?>]<br />
+<?php
+		if ($brdarr["FLAG"]&BBS_BOARD_ATTACH)
+		{
+?>
+附件: <input type="text" name="attachname" size="50" value="" disabled="disabled" />
+<?php
+		}
+?>
 使用签名档 <select name="signature">
-<script language="JavaScript">
-<!--
-var num=queryString("totalsig",5);
-var sel=queryString("sig",1);
-if (sel>99) sel=1;
-if (sel>num) num=sel;
-if (sel==0)
-    document.write("<option value=\"0\" selected>不使用签名档</option>");
-else
-    document.write("<option value=\"0\">不使用签名档</option>");
-for (i=1;i<=num;i++) {
-  if (i==sel)
-    document.write("<option value=\""+i+"\" selected>第 "+i+" 个</option>");
-  else
-    document.write("<option value=\""+i+"\">第 "+i+" 个</option>");
-}
--->
-</script>
+<?php
+		if ($currentuser["signature"] == 0)
+		{
+?>
+<option value="0" selected="selected">不使用签名档</option>
+<?php
+		}
+		else
+		{
+?>
+<option value="0">不使用签名档</option>
+<?php
+			for ($i = 1; $i < 6; $i++)
+			{
+				if ($currentuser["signature"] == $i)
+				{
+?>
+<option value="<?php echo $i; ?>" selected="selected">第 <?php echo $i; ?> 个</option>
+<?php
+				}
+				else
+				{
+?>
+<option value="<?php echo $i; ?>">第 <?php echo $i; ?> 个</option>
+<?php
+				}
+			}
+		}
+?>
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>] 
-<input type="checkbox" name="outgo" value="1">转信
-<br>
+<input type="checkbox" name="outgo" value="1" />转信
+<br />
 <textarea name="text" rows="20" cols="80" wrap="physical">
 
 </textarea></td></tr>
 <tr><td class="post" align="center">
-<input type="submit" value="发表"> 
-<input type="reset" value="清除">
+<input type="submit" value="发表" /> 
+<input type="reset" value="清除" />
+<input type="button" name="attach22" value="附件" onclick="return GoAttachWindow()" />
 <script language="JavaScript">
 <!--
    function GoAttachWindow(){     
@@ -113,9 +140,6 @@ for (i=1;i<=num;i++) {
    	return false;  
 
    }  
-
-    if (queryString("attach",0)!=0)
-    	document.write("<input type=\"button\" name=\"attach22\" value=\"附件\" onclick=\"return GoAttachWindow()\">");
 -->
 </script>
 </td></tr>
