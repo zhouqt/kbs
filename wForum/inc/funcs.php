@@ -638,7 +638,7 @@ function show_footer($showmsg = true, $showerr = true)
 	</td>
 </tr>
 <tr>
-<td colspan="2"><?php echo $FooterBan ; ?></td>
+<td colspan="2"><?php if (isset($FooterBan)) echo $FooterBan ; ?></td>
 </tr>
 </table></p>
 <?php

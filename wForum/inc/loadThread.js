@@ -136,8 +136,8 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 					str += "<img src=pic/forum_nonews.gif title=无新帖子>";
 				}
 				str += '</TD><TD width=1 bgcolor=#7a437a></TD>';
-				str += '<TD vAlign=top width=* class=TableBody1 style="padding-left:5pt; padding-top: 2pt;">';
-				str += '<TABLE cellSpacing=0 cellPadding=1 width=100% border=0><tr><td class=TableBody1 width=*>';
+				str += '<TD vAlign=top width=* class=TableBody1 style="padding-top: 2pt;">';
+				str += '<TABLE cellSpacing=0 cellPadding=1 width=100% border=0><tr><td class=TableBody1 width=* style="padding-left: 15px;">';
 				if (!boards[i].isFavGroup) {
 					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc + '</font></a>';
 				} else {
@@ -155,7 +155,7 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 				if (!boards[i].isBoardGroup && !boards[i].isFavGroup) {
 					str += '&nbsp;&nbsp;[在线：' + boards[i].currentusers + ']';
 				}
-				str += '</TD></TR><TR><TD class=TableBody2 height=18 width=*>';
+				str += '</TD></TR><TR><TD class=TableBody2 height=18 width=* style="padding-left: 15px;">';
 				if (!boards[i].isFavGroup && !boards[i].isBoardGroup) {
 					str += '版主：' + (boards[i].bm == '' ? '暂无' : boards[i].bm);
 				}
