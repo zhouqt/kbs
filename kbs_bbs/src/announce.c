@@ -1221,7 +1221,7 @@ void a_copypaste(pm, paste)
 				        f_rm(fpath);
 				    }
 				    
-				    strncpy(pm2.path,uppath,PATHLEN);
+				    pm2.path = uppath;
 				    a_loadnames(&pm2);
 				    
 				    for(k=0;k<pm2.num;k++)
