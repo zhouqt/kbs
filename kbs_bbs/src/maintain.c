@@ -784,7 +784,7 @@ int cleanmail(struct userec  *urec,char* arg)
         } else {
             strcpy(curruser, urec->userid);
             delcnt = 0;
-            apply_record(genbuf, domailclean, sizeof(struct fileheader),0);
+            apply_record(genbuf, domailclean, sizeof(struct fileheader),0,1);
             domailclean(NULL,0);
         }
     }

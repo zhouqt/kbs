@@ -385,7 +385,7 @@ int num;
         pressanykey();
     }
     (void)memset(result, 0, sizeof(result));
-    if(apply_record(fname,count_result,sizeof(struct ballot),0)==-1)
+    if(apply_record(fname,count_result,sizeof(struct ballot),0,0)==-1)
     {
         report("Vote apply flag error");
     }
@@ -478,7 +478,7 @@ int num;
         pressanykey();
     }
     (void)memset(result, 0, sizeof(result));
-    if(apply_record(fname,count_result,sizeof(struct ballot),0)==-1)
+    if(apply_record(fname,count_result,sizeof(struct ballot),0,0)==-1)
     {
         report("Vote apply flag error");
     }
@@ -1240,7 +1240,7 @@ Show_Votes()
     clrtobot();
     i=0;
     setcontrolfile();
-    if(apply_record(controlfile,printvote,sizeof(struct votebal),&i) == -1) {
+    if(apply_record(controlfile,printvote,sizeof(struct votebal),&i,0) == -1) {
         prints("错误，没有投票箱开启....") ;
         pressreturn() ;
         return 0;

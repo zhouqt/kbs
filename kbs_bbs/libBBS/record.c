@@ -204,13 +204,13 @@ toobigmesg()
 }
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 /* COMMAN : use mmap to speed up searching */
-int
-apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
+int apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg,int applycopy)
 {
     char *buf,*buf1,*buf2;
     int fd, sizeread, n, i;
     struct stat stat;
-    buf2=malloc(size);
+    if (applycopy)
+    	buf2=malloc(size);
     if((fd = open(filename,O_RDONLY,0)) == -1)
         return -1 ;
     if (fstat(fd,&stat) <0 ) { close(fd); return 0; }
@@ -220,16 +220,21 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
     
     if (!sigsetjmp(bus_jump,1)) {
         signal(SIGBUS,sigbus);
-	signal(SIGSEGV,sigbus);
+		signal(SIGSEGV,sigbus);
     
         for (i=0,buf1=buf;i<stat.st_size/size;i++,buf1+=size) {
-            memcpy(buf2,buf1,size);
+        	if (applycopy)
+            	memcpy(buf2,buf1,size);
+        	else
+        		buf2=buf1;
             if ((*fptr)(buf2,arg) == QUIT) {
-    		munmap(buf,stat.st_size);
-    		close(fd);
-    		signal(SIGBUS,SIG_IGN);
-    		signal(SIGSEGV,SIG_IGN);
-    		return QUIT;
+	    		munmap(buf,stat.st_size);
+	    		close(fd);
+	    		signal(SIGBUS,SIG_IGN);
+	    		signal(SIGSEGV,SIG_IGN);
+	    		if (applycopy)
+	    			free(buf2);
+	    		return QUIT;
             }
     	}
     }
@@ -237,6 +242,8 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
     close(fd) ;
     signal(SIGBUS,SIG_IGN);
     signal(SIGSEGV,SIG_IGN);
+	if (applycopy)
+		free(buf2);
     return 0 ;
 }
 

@@ -862,7 +862,7 @@ m_new()
     mrd = 0 ;
     modify_user_mode( RMAIL );
     read_new_mail(NULL,0) ;
-    if(apply_record(currmaildir,read_new_mail,sizeof(struct fileheader),0) == -1) {
+    if(apply_record(currmaildir,read_new_mail,sizeof(struct fileheader),0,1) == -1) {
         clear() ;
         move(0,0) ;
         prints("No new messages\n\n\n") ;

@@ -3020,7 +3020,7 @@ char *direct ;*/
     sequent_ent = ent ;
     continue_flag = 0;
     setbdir( digestmode,buf, currboard );
-    apply_record( buf,sequent_messages,sizeof(struct fileheader),&continue_flag) ;
+    apply_record( buf,sequent_messages,sizeof(struct fileheader),&continue_flag,1) ;
     return FULLUPDATE ;
 }
 
