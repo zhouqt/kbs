@@ -362,7 +362,6 @@ int igetch()
                 inremsg = true;
                 msg_count--;
                 r_msg();
-                refresh();
                 inremsg = false;
             }
         }
@@ -379,7 +378,6 @@ int igetch()
                     inremsg = true;
                     msg_count--;
                     r_msg();
-                    refresh();
                     inremsg = false;
                 }
                 goto igetagain;
@@ -388,6 +386,7 @@ int igetch()
         if (sr < 0 && errno != EINTR)
             abort_bbs(0);
         if (sr == 0) {
+            refresh();
             if (flushf)
                 (*flushf) ();
 
@@ -432,12 +431,11 @@ int igetch()
                         return KEY_TALK;
                 }
                 if (!inremsg) {
-		            int saveerrno=errno;
+		      int saveerrno=errno;
                     while (msg_count) {
                         inremsg = true;
                         msg_count--;
                         r_msg();
-                        refresh();
                         inremsg = false;
                     }
                     if (sr<0&&saveerrno==EINTR)continue;
@@ -545,7 +543,6 @@ int igetch()
             icurrchar++;
             inremsg = true;
             r_msg();
-            refresh();
             inremsg = false;
             goto igetagain;
         }
@@ -594,8 +591,8 @@ int igetkey()
         return ret;
     }
     mode = last = 0;
-    if (ibufsize == icurrchar)
-        refresh();
+//    if (ibufsize == icurrchar)
+//        refresh();
     while (1) {
         ch = igetch();
 

@@ -238,6 +238,8 @@ void refresh()
         return;
     }
 
+    if (icurrchar!=ibufsize)
+        return;
     if (scrollcnt < 0) {
         char buf[10];
         rel_move(tc_col, tc_line, 0, 0);
