@@ -1,5 +1,5 @@
 #include "bbs.h"
-#define BBS_PAGESIZE    (20) /* 19->20, modified by dong, 1999.1.26 */
+
 #define refreshtime     (30)
 extern time_t   login_start_time;
 extern char     BoardName[];

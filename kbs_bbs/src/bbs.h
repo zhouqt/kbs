@@ -57,7 +57,9 @@
 #include "permissions.h"
 
 #ifdef AIX
+#ifndef OS_LACK_SOCKLEN
 #define OS_LACK_SOCKLEN
+#endif
 #endif
 
 /* add by KCN ,disable perror */
@@ -287,7 +289,9 @@ extern int Net_Sleep(int);
 typedef size_t socklen_t;
 #endif
 
+#ifndef BBS_PAGESIZE
 #define BBS_PAGESIZE    (t_lines - 4)
+#endif
 
 #define BRC_MAXSIZE     32768
 #define BRC_MAXNUM      60

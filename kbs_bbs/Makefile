@@ -93,14 +93,14 @@ DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 .c.ln:  ;   lint -abhi $*.c
 
 #--------------------- Dependency starts here -------------------
+dep:
+	rm -f .depend
+	echo $(CFILE) | xargs $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M -DBBSMAIN >>.depend
+
 
 ifeq (.depend,$(wildcard .depend))
 include .depend
 endif
-
-dep:
-	rm -f .depend
-	echo $(CFILE) | xargs $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M -DBBSMAIN >>.depend
 
 $(PROGNAME): $(COBJS) $(OTHERS)
 	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g

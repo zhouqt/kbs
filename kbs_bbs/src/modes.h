@@ -83,4 +83,3 @@
 #define IMAIL		56
 #define EDITSIG         57
 #define EDITPLAN        58
-#define WEBEXPLORE      10001
