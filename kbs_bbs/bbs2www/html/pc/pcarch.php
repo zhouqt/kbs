@@ -15,7 +15,7 @@
 		$nyy = $nextMonth[0];
 		$nmm = $nextMonth[1];
 		return array( number_format($yy * 10000000000 + $mm * 100000000 + 1000000 , 0 , "" , "") ,
-		       		number_format($nyy*10000000000 + $nmm * 100000000 + 1000000 , 0 , "" , "")
+		       		number_format(min(date("YmdHis"),$nyy*10000000000 + $nmm * 100000000 + 1000000) , 0 , "" , "")
 		       		);
 	}
 	
@@ -38,6 +38,11 @@
 		html_error_quit("对不起，您要查看的Blog不存在");
 		exit();
 	}
+	
+	
+	
+	Header("Content-type: file/html");
+	Header("Content-Disposition: inline;filename=".$pc["USER"]."_blog_".substr($archDate[0],0,8)."_".substr($archDate[1],0,8).".html");
 ?>
 <?xml version="1.0" encoding="gb2312"?>
 <!DOCTYPE html
@@ -54,7 +59,7 @@
 </style>
 <body>
 <?php
-	echo "<a name=\"top\"><p class=date>::Blog信息::<br />名称: ".$pc["NAME"]."<br />作者: <a href=\"".$pcconfig["SITE"]."/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a><br />域名: <a href=\"".pc_personal_domainname($pc["USER"])."\">".pc_personal_domainname($pc["USER"])."</a><br />站点: <a href=\"http://".$pcconfig["SITE"]."\">".$pcconfig["BBSNAME"]."</a><br /></p>";
+	echo "<a name=\"top\"><p class=date>::Blog信息::<br />名称: ".$pc["NAME"]."<br />作者: <a href=\"http://".$pcconfig["SITE"]."/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a><br />域名: <a href=\"".pc_personal_domainname($pc["USER"])."\">".pc_personal_domainname($pc["USER"])."</a><br />站点: <a href=\"http://".$pcconfig["SITE"]."\">".$pcconfig["BBSNAME"]."</a><br /></p>";
 	echo "<p class=date>档案日期：".time_format($archDate[0])." ～ ".time_format($archDate[1])."</p><hr size=1>";
 	
 	$query = "SELECT * FROM nodes WHERE uid = '".$pc["UID"]."' AND type = 0 AND changed >= ".$archDate[0]." AND changed <= ".$archDate[1]." ";
