@@ -183,7 +183,7 @@ int len;
 {
     int i,total_line;
 
-    for (i = 0; i < len; i++)
+    for (i = 0, total_line=0; i < len; i++)
         if (text[i] == '\n')
             total_line++;
 	return total_line;

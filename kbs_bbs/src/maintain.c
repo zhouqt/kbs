@@ -766,7 +766,10 @@ int m_editbrd()
 int searchtrace()
 {
     int id;
-    char tmp_command[80], tmp_id[20];
+#ifndef NEWPOSTLOG
+    char tmp_command[80];
+#endif
+	char tmp_id[20];
     char buf[8192];
     struct userec *lookupuser;
 	char buffile[256];
@@ -1983,7 +1986,11 @@ int set_BM()
     struct userec *lookupuser, uinfo;
     struct boardheader *bptr;
 
+#ifdef FREE
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN) && !HAS_PERM(getCurrentUser(), PERM_SYSOP) && !HAS_PERM(getCurrentUser(),PERM_OBOARDS) ) {
+#else
     if (!HAS_PERM(getCurrentUser(), PERM_ADMIN) || !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+#endif
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有ADMIN权限的管理员才能修改其他用户权限");

@@ -1098,8 +1098,8 @@ char *get_my_webdomain(int force)
 		sethomefile(buf, getCurrentUser()->userid, "myurl");
 		if((fp=fopen(buf,"r"))!=NULL){
 			if(fgets(myurl,80,fp)){
-				if(c=strchr(myurl,'\n')) *c='\0';
-				if(c=strchr(myurl,'\r')) *c='\0';
+				if((c=strchr(myurl,'\n'))!=NULL) *c='\0';
+				if((c=strchr(myurl,'\r'))!=NULL) *c='\0';
 				if(strlen(myurl)>5)
 					urlinit=1;
 			}

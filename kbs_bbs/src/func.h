@@ -103,9 +103,7 @@ int newbmlog(char *userid, char *boardname, int type, int value);
 #define UPDATE_UTMP_STR(field,entp) { if (CHECK_UENT((entp).uid)) \
 			strcpy(utmpshm->uinfo[ getSession()->utmpent- 1 ].field,(entp).field); }
     int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg); /* ulist 中 search 符合fptr函数的 user */
-#if 0
-    void clear_utmp2(struct user_info *uentp);
-#endif
+    void clear_utmp2(int uent);
     void kick_idle_user();
     void clear_utmp(int uentp, int useridx, int pid);   /*先锁住utmp调用clear_utmp2,并校验useridx */
     int apply_ulist(APPLY_UTMP_FUNC fptr, void *arg);
