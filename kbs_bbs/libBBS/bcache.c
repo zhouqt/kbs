@@ -323,6 +323,7 @@ int add_board(struct boardheader *newboard)
         if (brdshm->numboards < MAXBOARD)
             bid = brdshm->numboards + 1;
     if (bid > 0) {
+        newboard->createtime=time(0);
         memcpy(&bcache[bid - 1], newboard, sizeof(struct boardheader));
         if (bid > brdshm->numboards)
             brdshm->numboards = bid;
