@@ -220,7 +220,7 @@ int DelFavBoard(int i)
     if (favbrd_list[i].flag==-1)
     	free(favbrd_list[i].title);
     for(;i<lnum;i++) favbrd_list[i] = favbrd_list[i+1];
-    for (j=0;j<fav_brd_list_t;j++)
+    for (j=0;j<favbrd_list_t;j++)
         if(favbrd_list[j].father >= i)
 		favbrd_list[j].father--;
     if(!lnum) {
