@@ -235,7 +235,7 @@ struct action condition_data[] = {
 void send_msg(int u, char* msg)
 {
     int i, j, k;
-    char buf[200], buf2[200];
+    char buf[200], buf2[200], buf3[80];
 
     strcpy(buf, msg);
 
@@ -257,6 +257,15 @@ void send_msg(int u, char* msg)
         buf[i]=0;
         send_msg(u, buf);
         strcpy(buf, buf2+i);
+    }
+    for(i=0;i<=6;i++) {
+        buf3[0]='%'; buf3[1]=i+48; buf3[2]=0;
+        while(strstr(buf, buf3)!=NULL) {
+            strcpy(buf2, buf);
+            i=strstr(buf, buf3)-buf;
+            buf2[i]=0; i+=2;
+            sprintf(buf, "%s\x1b[3%dm%s", buf2, i?i:7, buf2+i);
+        }
     }
     j=MAX_MSG;
     if(inrooms[myroom].msgs[(MAX_MSG-1+inrooms[myroom].msgi)%MAX_MSG][0]==0)
