@@ -626,7 +626,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     TITLE = ent->title;         /*文章标题TITLE */
 
-    if (uinfo.mode != RMAIL&&digestmode!=1) { // 新方法比较
+    if (uinfo.mode != RMAIL&&digestmode!=1&&digestmode!=4||digestmode!=5) { // 新方法比较
 	if (FFLL == 0) {
         if (ent->groupid!=ent->id)       /*Re的文章 */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
@@ -2284,7 +2284,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
                 return DONOTHING;
             }
     strcpy(buf, fileinfo->title);
-    getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NULL, true);       /*输入标题 */
+    getdata(t_lines - 1, 0, "新文章标题: ", buf, 50, DOECHO, NULL, false);       /*输入标题 */
     if (buf[0] != '\0') {
         char tmp[STRLEN * 2], *t;
         char tmp2[STRLEN];      /* Leeward 98.03.29 */
