@@ -673,7 +673,7 @@ int main(int argc, char **argv)
             strcpy(fromhost, (char *) inet_ntoa(fsin.sin_addr));
             if (check_ban_IP(fromhost, genbuf)>0) {
                 outs("-ERR your ip is baned");
-                close(csock);
+                close(sock);
                 exit(0);
             }
             len = sizeof our;
