@@ -791,8 +791,8 @@ int write_file(filename, saveheader)
 #endif
 
 #ifdef FILTER
-    
-    if ((abort[0] != 'a')||(abort[0] != 'e')) {
+    if (((abort[0] != 'a')||(abort[0] != 'e'))&&
+    	(uinfo.mode==EDIT)) {
 	while (p != NULL) {
 	    if(check_badword_str(p->data, sizeof(p->data))) {
 		    abort[0] = 'e';
@@ -825,7 +825,7 @@ int write_file(filename, saveheader)
 	    if (filter) {
 		    clear();
 		    move (3, 0);
-		    prints ("\n\n            很抱歉，本文含有不适宜内容，请重新编辑...\n");
+		    prints ("\n\n            很抱歉，本文可能含有不适宜内容，请重新编辑...\n");
 		    pressreturn();
 	    }
 #endif

@@ -606,6 +606,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     char* p;
 #ifdef FILTER
     char oldpath[50], newpath[50];
+    int filtered;
 #endif
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
@@ -613,22 +614,26 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     }
 #ifdef FILTER
 	setbfile(oldpath, boardname, fh->filename);
-	if (normal_board(boardname) && strcmp(boardname, FILTER_BOARD))
+    filtered=0;
+	if ((bcache[i].level & PERM_POSTMASK || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD))
 	{
-		/* FIXME: There is a potential bug here. */
-		setbfile(newpath, FILTER_BOARD, fh->filename);
-		f_mv(oldpath, newpath);
-		strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
-		nowid = get_nextid(boardname);
-		fh->o_id = nowid;
-		if (re == NULL) {
-			fh->o_groupid = fh->o_id;
-			fh->o_reid = fh->o_id;
-		} else {
-			fh->o_groupid = re->groupid;
-			fh->o_reid = re->id;
-		}
-		boardname = FILTER_BOARD;
+	    if (check_badword(oldpath)) {
+			/* FIXME: There is a potential bug here. */
+			setbfile(newpath, FILTER_BOARD, fh->filename);
+			f_mv(oldpath, newpath);
+			strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
+			nowid = get_nextid(boardname);
+			fh->o_id = nowid;
+			if (re == NULL) {
+				fh->o_groupid = fh->o_id;
+				fh->o_reid = fh->o_id;
+			} else {
+				fh->o_groupid = re->groupid;
+				fh->o_reid = re->id;
+			}
+			boardname = FILTER_BOARD;
+			filtered=1;
+	    };
 	}
 #endif
     setbfile(buf, boardname, DOT_DIR);
@@ -674,6 +679,11 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     }
     updatelastpost(boardname);
     brc_add_read(fh->id);
+#ifdef FILTER
+    if (filtered)
+    	sprintf(buf, "posted '%s' on '%s'", fh->title, fh->o_board);
+    else
+#endif
     sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
     newbbslog(BBSLOG_USER, "%s", buf);
 
@@ -685,7 +695,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     if (user != NULL)
         bmlog(user->userid, boardname, 2, 1);
 #ifdef FILTER
-    if (strcmp(boardname, FILTER_BOARD) == 0)
+    if (filtered)
 	    return 2;
     else
 #endif

@@ -2166,7 +2166,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     if (returnvalue == 2) {
 	    clear();
 	    move (3, 0);
-	    prints ("\n\n            很抱歉，本文需要站务审核方可发表，请耐心等待...\n");
+	    prints ("\n\n            很抱歉，本文可能含有不适当的内容，需经审核方可发表\n，请耐心等待...\n");
 	    pressreturn();
     }
     switch (olddigestmode) {
