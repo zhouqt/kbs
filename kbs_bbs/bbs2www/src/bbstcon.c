@@ -4,69 +4,53 @@
 #include "bbslib.h"
 
 /*int no_re=0;*/
-/*	bbscon?board=xx&file=xx&start=xx 	*/
 
-int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, char* brdencode);
+int show_file(char *board, struct boardheader* bh, struct fileheader *x, char* brdencode);
+
+#define MAX_THREADS_NUM 512
+
 int main()
 {
-    FILE *fp;
-    char title[256], userid[80], board[80], dir[80], file[80], *ptr;
+    char board[80], dir[STRLEN];
     char brdencode[STRLEN];
-    struct fileheader x,oldx;
-    int i, num = 0, found = 0;
+    struct fileheader *fh;
+    int i, num;
     struct boardheader bh;
+	int gid; /* group id */
 
     init_all();
     strsncpy(board, getparm("board"), 32);
+	gid = atoi(getparm("gid"));
+	/*
     strsncpy(file, getparm("file"), 32);
-    encode_url(brdencode, board, sizeof(brdencode));
+	*/
     if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
+    encode_url(brdencode, board, sizeof(brdencode));
+
+	fh = (struct fileheader *)malloc(MAX_THREADS_NUM * sizeof(struct fileheader));
+	if (fh == NULL)
+        http_fatal("错误的参数");
+	setbdir(DIR_MODE_NORMAL, dir, board);
+	if ((num = get_threads_from_gid(dir, gid, fh, MAX_THREADS_NUM)) == 0)
+	{
+		free(fh);
+        http_fatal("错误的参数");
+		/* the process already terminated */
+	}
+
 #ifdef HAVE_BRC_CONTROL
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_initial(currentuser->userid, board);
 #endif
     printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\" />", BBSNAME, board);
-    if (VALID_FILENAME(file) < 0)
-        http_fatal("错误的参数");
-    sprintf(dir, "boards/%s/.DIR", board);
-    fp = fopen(dir, "r+");
-    if (fp == 0)
-        http_fatal("目录错误");
-    while (1) {
-        if (fread(&oldx, sizeof(x), 1, fp) <= 0)
-            break;
-        num++;
-        if (!strcmp(oldx.filename, file)) {
-            ptr = oldx.title;
-            if (!strncmp(ptr, "Re:", 3))
-                ptr += 4;
-            strsncpy(title, ptr, 40);
-            found = 1;
-            strcpy(userid, oldx.owner);
-            show_file(board, &bh, &oldx, num - 1,brdencode);
-            while (1) {
-                if (fread(&x, sizeof(x), 1, fp) <= 0)
-                    break;
-                num++;
-                if (!strncmp(x.title + 4, title, 39) && !strncmp(x.title, "Re: ", 4))
-                    show_file(board, &bh, &x, num - 1,brdencode);
-            }
-        }
-    }
-    fclose(fp);
+	for (i = 0; i < num; i++)
+            show_file(board, &bh, fh + i, brdencode);
+	free(fh);
     printf("<hr class=\"default\" />");
-    if (found == 0)
-        http_fatal("错误的文件名");
-//    if (!can_reply_post(board, file))
-//        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", brdencode, file, oldx.owner, encode_url(title, void1(ptr), sizeof(title)), oldx.filename);
-//        printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=%s\">回文章</a>] ", brdencode, file, x.owner, http_encode_string(title, sizeof(title)));
     printf("[<a href=\"javascript:history.go(-1)\">返回上一页</a>]");
     printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", brdencode);
-    ptr = x.title;
-    if (!strncmp(ptr, "Re: ", 4))
-        ptr += 4;
 #ifdef HAVE_BRC_CONTROL
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_update(currentuser->userid);
@@ -120,7 +104,8 @@ int show_article(char *filename,char *www_url)
     }
 }
 
-int show_file(char *board,struct boardheader* bh,struct fileheader *x, int n, char* brdencode)
+int show_file(char *board, struct boardheader* bh, struct fileheader *x, 
+		char* brdencode)
 {
     char path[80], buf[512], board_url[80];
 	char www_url[200];
