@@ -516,9 +516,9 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     now = time(0);
     timestr = ctime(&now) + 11;
     *(timestr + 8) = '\0';
-    sprintf(msgbuf, "0%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, currentuser->userid, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
+    sprintf(msgbuf, "0%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, currentuser->userid, timestr, getuinfopid() , uin->pid);
     if(mode!=3&&mode!=5)
-        sprintf(msgbak, "1%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, uident, timestr, msgstr, getuinfopid() + 100, uin->pid + 100);
+        sprintf(msgbak, "1%d%-12.12s%-5.5s%-10.10d%-10.10d%s", mode, uident, timestr, getuinfopid() , uin->pid);
 #ifdef BBSMAIN
     if (uin->mode == WEBEXPLORE) {
         if (send_webmsg(get_utmpent_num(uin), uident, utmpent, currentuser->userid, msgbuf) < 0) {
