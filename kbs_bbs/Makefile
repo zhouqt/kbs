@@ -108,24 +108,13 @@ bbspost: bbspost.o $(BBSLIB)
 	cp -f bbspost ../bin
 	chmod 6755 ../bin/bbspost
 
-unlock_utmp: unlock_utmp.c
-	gcc -DDONT_HAVE_TM_GMTOFF $(OS_DEF) $(LIBS) -o unlock_utmp unlock_utmp.c
-	cp -f unlock_utmp ../bin
-
-
 lint: $(LNFILES)
 	lint -abh $(LNFILES)
 
-bbsd: bbsd.c
-	$(CC) $(CFLAGS) -o bbsd $(SITE_DEF) $(DEFINES) bbsd.c -lrpcsvc
-	cp -f bbsd ../bin
-
-bbsdt: bbsd.c
-	gcc $(CFLAGS) -o bbsdt $(SITE_DEF) $(DEFINES) -DD_TEST bbsd.c -lrpcsvc
-	cp -f bbsdt ../bin
-
-newpop3d: newpop3.c $(BBSLIB)
-	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.c $(BBSLIB)
+newpop3.o: newpop3.c
+	gcc -g $(SITE_DEF) $(DEFINES)  -c newpop3.c
+newpop3d: newpop3.o $(BBSLIB)
+	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.o $(BBSLIB)
 	cp -f newpop3d ../bin
 #	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 

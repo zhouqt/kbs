@@ -476,7 +476,6 @@ char **argv;
 
     if (0 == portnum) portnum = POP3PORT;
 
-
     if(fork())
         exit(0);
     for (n = 0; n<10; n++)
@@ -509,6 +508,10 @@ char **argv;
 
     listen(msock,QLEN);
 
+        setgid(BBSGID);
+        setuid(BBSUID);
+        setreuid(BBSUID,BBSUID);
+        setregid(BBSGID,BBSGID);
 	resolve_ucache();
     while (1) {
 
@@ -619,10 +622,11 @@ char *user;
 {
 	int uid;
 	uid = getuser(user,&currentuser);
-	if (uid) 
+	if (uid) { 
+		alluser=*currentuser;
+		currentuser=&alluser;
 		return 1;
-	alluser=*currentuser;
-	currentuser=&alluser;
+	}
 	return -1;
 /*    FILE *rec;
     int found=0;

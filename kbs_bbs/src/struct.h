@@ -109,9 +109,11 @@ struct UTMPFILE {
     int next[USHM_SIZE];
     int hashhead[UTMP_HASHSIZE+1]; /* use UCACHE_HASHSIZE/32 */
     int number;
+/*
     int listhead;
-    int list_prev[USHM_SIZE];  /* sorted list prev ptr*/
-    int list_next[USHM_SIZE];  /* sorted list next ptr*/
+    int list_prev[USHM_SIZE];  /* sorted list prev ptr
+    int list_next[USHM_SIZE];  /* sorted list next ptr
+*/
     time_t              uptime;
 };
 

@@ -214,7 +214,7 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
     struct rlimit rl;
     char buf[80], data[80];
     time_t val;
-    int lock_pid;
+    FILE* lock_pid;
 
     /*
      * More idiot speed-hacking --- the first time conversion makes the C
@@ -296,17 +296,10 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 
     ld.l_onoff = ld.l_linger = 0;
     setsockopt(n, SOL_SOCKET, SO_LINGER, (char *) &ld, sizeof(ld));
-    sprintf(buf,"reclog/bbsd.pid.%d",port);
-    if ((lock_pid=open(buf,O_CREAT|O_TRUNC),0755)==-1) {
-        cat(PID_FILE,strerror(errno));
-        exit(0);
-    }
-    /*
-      flock(lock_pid,LOCK_EX);
-    */
-    sprintf(buf,"%d\n",getpid());
-    write(lock_pid,buf,strlen(buf));
-    close(lock_pid);
+    /* --------------------------------------------------- */
+    /* Give up root privileges: no way back from here	 */
+    /* --------------------------------------------------- */
+
 
     mport = port;
     if (port==6001) strcpy(code,"e");
@@ -317,12 +310,19 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
         exit(1);
     }
 
-    /* --------------------------------------------------- */
-    /* Give up root privileges: no way back from here	 */
-    /* --------------------------------------------------- */
-
     setgid(BBSGID);
     setuid(BBSUID);
+
+    sprintf(buf,"reclog/bbsd.pid.%d",port);
+    if ((lock_pid=fopen(buf,"w+"))==-1) {
+        cat(PID_FILE,strerror(errno));
+        exit(0);
+    }
+    /*
+      flock(lock_pid,LOCK_EX);
+    */
+    fprintf(lock_pid,"%d\n",getpid());
+    fclose(lock_pid);
 }
 
 
