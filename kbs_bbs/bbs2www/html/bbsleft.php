@@ -669,10 +669,12 @@
 			<td width="16"><img src="/images/open.gif" border="0"></td>
 			<td><a href="telnet:smth.org"><img src="/images/t11.gif" border="0" alt="telnet登录" align="absmiddle"> Telnet登录</a>
 		</tr>
+<!--
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
 			<td><img src="/images/t10.gif" border="0" alt="查看帮助信息" align="absmiddle"> 查看帮助
 		</tr>
+-->
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
 			<td><a href="/bbslogout.php" target="_top"><img src="/images/leave.gif" border="0" alt="离开本站" align="absmiddle"> 离开本站</a>
