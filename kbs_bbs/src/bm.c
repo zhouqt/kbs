@@ -302,6 +302,7 @@ int addtodeny(char *uident)
             sprintf(buffer, "%s ·â %s ÔÚ %s", currentuser->userid, uident, currboard);
         post_file(currentuser, "", filename, "denypost", buffer, 0, 8);
         unlink(filename);
+        bmlog(currentuser->userid, currboard, 10, 1);
     }
     return 0;
 }

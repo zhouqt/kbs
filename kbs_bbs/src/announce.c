@@ -507,6 +507,7 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
                 /* Leeward 98.04.15 add below FILE_IMPORTED */
                 fileinfo->accessed[0] |= FILE_IMPORTED;
                 substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+                bmlog(currentuser->userid, currboard, 12, 1);
 
                 for (ch = 0; ch < pm.num; ch++)
                     free(pm.item[ch]);
@@ -699,6 +700,10 @@ void a_newitem(pm, mode)        /* 用户创建新的 ITEM */
                 fclose(pn);
             }
         }
+        if(mode == ADDMAIL)
+            bmlog(currentuser->userid, currboard, 12, 1);
+        else
+            bmlog(currentuser->userid, currboard, 13, 1);
     }
 }
 
@@ -729,6 +734,7 @@ void a_moveitem(pm)             /*改变 ITEM 次序 */
     pm->now = num;
     a_savenames(pm);
     sprintf(genbuf, "改变 %s 下第 %d 项的次序到第 %d 项", pm->path + 17, temp, pm->now + 1);
+    bmlog(currentuser->userid, currboard, 13, 1);
     a_report(genbuf);
 }
 
@@ -887,6 +893,7 @@ void a_delete(pm)
         pm->item[n] = pm->item[n + 1];
     a_savenames(pm);
     sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
+    bmlog(currentuser->userid, currboard, 13, 1);
     a_report(genbuf);
 }
 

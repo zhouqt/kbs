@@ -113,6 +113,8 @@ postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
             }
         }
         utime(fileinfo->filename, 0);
+        if(user!=NULL)
+            bmlog(user->userid, board, 8, 1);
         bbslog("1bbs", "Del '%s' on '%s'", fileinfo->title, board);     /* bbslog */
         return 0;
     }
@@ -602,6 +604,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 	if (strstr(fh->title, "Re:")!=fh->title) setboardorigin(boardname, 1);
 	setboardtitle(boardname, 1);
 	if (fh->accessed[0]&FILE_MARKED) setboardmark(boardname, 1);
+	if (user!=NULL) bmlog(user->userid, boardname, 2, 1);
 	return 0;
 }
 
@@ -734,10 +737,14 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     }
     switch (flag) {
     case FILE_MARK_FLAG:
-        if (fileinfo->accessed[0] & FILE_MARKED)        //added by bad 2002.8.7 mark file mode added
+        if (fileinfo->accessed[0] & FILE_MARKED) {       //added by bad 2002.8.7 mark file mode added
             fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
-        else
+            bmlog(currentuser->userid, currboard, 7, 1);
+        }    
+        else {
             fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_MARKED;
+            bmlog(currentuser->userid, currboard, 6, 1);
+        }
         setboardmark(currboard, 1);
         break;
     case FILE_NOREPLY_FLAG:
@@ -787,6 +794,7 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     case FILE_DIGEST_FLAG:
         if (fileinfo->accessed[0] & FILE_DIGEST) {      /* 如果已经是文摘的话，则从文摘中删除该post */
             fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_DIGEST);
+            bmlog(currentuser->userid, currboard, 4, 1);
             dele_digest(fileinfo->filename, direct);
         } else {
             struct fileheader digest;
@@ -798,6 +806,7 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
             ptr = strrchr(buf, '/') + 1;
             ptr[0] = '\0';
             sprintf(genbuf, "%s%s", buf, digest.filename);
+            bmlog(currentuser->userid, currboard, 3, 1);
             if (dashf(genbuf)) {
                 fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
             } else {

@@ -728,6 +728,8 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
     }
     if (digestmode == 4 || digestmode == 5)     /* KCN:ÔÝ²»ÔÊÐí */
         return DONOTHING;
+    if (digestmode >= 2) 
+    	return NOTHING;
     saveline(t_lines - 3, 0, linebuffer);
     saveline(t_lines - 2, 0, NULL);
     move(t_lines - 3, 0);
@@ -790,6 +792,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
         saveline(t_lines - 3, 1, linebuffer);
         return DONOTHING;
     }
+    bmlog(currentuser->userid, currboard, 14, 1);
     sread(BMch + SR_BMBASE, 0, ent, 0, fileinfo);
     return DIRCHANGED;
 }
@@ -863,6 +866,9 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
         saveline(t_lines - 2, 1, NULL);
         return DONOTHING;
     }
+
+    bmlog(currentuser->userid, currboard, 14, 1);
+
     if (SR_BMTMP == BMch + SR_BMBASE)   /* Leeward 98.04.16 */
         sread(-(BMch + SR_BMBASE), 0, ent, 0, fileinfo);
 

@@ -184,6 +184,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
     move(2, 0);
     prints("'%s' 已恢复到版面 \n", UFile.title);
     pressreturn();
+    bmlog(currentuser->userid, currboard, 9, 1);
 
     return FULLUPDATE;
 }
@@ -1927,7 +1928,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 #endif
 
     modify_user_mode(POSTING);
-    if (digestmode==2) {
+    if (digestmode==2||digestmode==3) {
     	olddigestmode=digestmode;
     	digestmode=0;
     	setbdir(digestmode, currdirect, currboard);
@@ -2488,6 +2489,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
   THERE:
     getdata(4, 0, "确定删除 (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
     if (*num1 == 'Y' || *num1 == 'y') {
+    	 bmlog(currentuser->userid, currboard, 5, 1);
         result = delete_range(direct, inum1, inum2, idel_mode);
         if (inum1 != 0)
             fixkeep(direct, inum1, inum2);
@@ -2896,6 +2898,8 @@ int Read()
     usetime = time(0);
     i_read(READING, buf, readtitle, (READ_FUNC) readdoent, &read_comms[0], sizeof(struct fileheader));  /*进入本版 */
     board_usage(currboard, time(0) - usetime);  /*board使用时间记录 */
+    bmlog(currentuser->userid, currboard, 0, time(0)-usetime);
+    bmlog(currentuser->userid, currboard, 1, 1);
 
     return 0;
 }

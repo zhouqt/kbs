@@ -803,10 +803,6 @@ int haspostperm(struct userec *user, char *bname)
          * let user denied post right post at Complain 
          */
     {
-        if (!strcmp(user->userid,"guest"))
-	    return 0;
-	if (!HAS_PERM(user,PERM_LOGINOK))
-	    return 0;
         if (!strcmp(bname, "Complain"))
             return 1;           /* added by stephen 2000.10.27 */
         else if (!strcmp(bname, "sysop"))
@@ -902,6 +898,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
     }
     post_file(user, "", filename, "undenypost", buffer, 0, 1);
     unlink(filename);
+    bmlog(user->userid, board, 11, 1);
     if (notice_only)
         return 1;
     else
