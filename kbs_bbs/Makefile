@@ -67,7 +67,6 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o smth.o 
 
-BBSLIBFILES = record.c log.c ucache.c stuff.c md5.c crypt.c pass.c cache.c utmp.c
 BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o
 
 OTHERS   = bbs.h edit.h
