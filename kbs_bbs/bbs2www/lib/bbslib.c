@@ -2456,6 +2456,9 @@ void output_ansi_javascript(char *buf, size_t buflen,
  * purpose. Use output_ansi_text() instead.
  *
  * This function is a core function in wForum, do not modify unless you know what you are doing. - atppp
+ *
+ * 原来的 UBB 处理代码过于 buggy，现在全盘去掉换成只支持解析 [upload=%d][/upload] 一种，如果以后 ubb 替换要放到这里，
+ * 可以参考这个时间点之前的 CVS 代码。- atppp 200408
  */
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char* attachlink, int is_tex, int is_preview)
 {
@@ -2466,22 +2469,21 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     size_t i;
     char *ansi_begin;
     char *ansi_end;
-    char *ubbstart_begin,*ubbmiddle_begin, *ubbfinish_begin;
     int attachmatched;
     long attachPos[MAXATTACHMENTCOUNT];
     long attachLen[MAXATTACHMENTCOUNT];
     char* attachFileName[MAXATTACHMENTCOUNT];
     enum ATTACHMENTTYPE attachType[MAXATTACHMENTCOUNT];
     int attachShowed[MAXATTACHMENTCOUNT];
-    char UBBCode[256];  
-    int UBBCodeLen;
-    enum UBBTYPE UBBCodeType;
-    int isUBBMiddleOutput; 
-    int UBBArg1;
     char outbuf[512];
     int outbuf_len;
     size_t article_len = buflen;
 
+    /* hardcode everything for supporting [upload=%d][/upload], hehe. - atppp */
+    char *UBBUpload1 = "upload=";
+    int UBBUpload1_len = 7;
+    char *UBBUpload2 = "][/upload]";
+    int UBBUpload2_len = 10;
 
     if (buf == NULL)
         return;
@@ -2490,7 +2492,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     bzero(ansi_val, sizeof(ansi_val));
     bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-    if (attachlink != NULL)
+    if (attachlink != NULL && !is_preview)
     {
         long attach_len;
         char *attachptr, *attachfilename;
@@ -2569,93 +2571,81 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             } else
                 STATE_CLR(ansi_state, STATE_QUOTE_LINE);
         }
-        if (buf[i] == '[' && !STATE_ISSET(ansi_state, STATE_ESC_SET))   { //UBB控制代码开始?
-            if (STATE_ISSET(ansi_state, STATE_UBB_START)){
-                size_t len;
-                STATE_CLR(ansi_state, STATE_UBB_START);
-                len=(&(buf[i]))-ubbstart_begin;
-                print_raw_ansi(ubbstart_begin,len,output);
-            }
-            if (STATE_ISSET(ansi_state, STATE_UBB_END))
-            {
-                STATE_CLR(ansi_state, STATE_UBB_END);
-                STATE_SET(ansi_state, STATE_UBB_MIDDLE);
-            }
-
-            if ( (i < (buflen-1) ) && (buf[i + 1] == '/') ) { //UBB代码结束?
-                if (!STATE_ISSET(ansi_state, STATE_UBB_MIDDLE)){
-                    print_raw_ansi(&buf[i], 1, output);
-                    continue;
-                }
-                STATE_CLR(ansi_state,STATE_UBB_MIDDLE);
-                STATE_SET(ansi_state,STATE_UBB_END);
-                ubbfinish_begin=&buf[i];
-                i++;
-            } else {
-                if (STATE_ISSET(ansi_state,STATE_UBB_MIDDLE | STATE_UBB_START | STATE_UBB_END)){
-                    size_t len;
-                    len=(&(buf[i]))-ubbstart_begin;
-                    print_raw_ansi(ubbstart_begin,len,output);
-                    STATE_CLR(ansi_state, STATE_UBB_MIDDLE | STATE_UBB_START | STATE_UBB_END);
-                }
-                ubbstart_begin=&buf[i];
-                STATE_SET(ansi_state,STATE_UBB_START);
-            }
-            UBBCodeLen=0;
-            continue;
-
-        } else if (buf[i] == ']' && !STATE_ISSET(ansi_state, STATE_ESC_SET))    { //UBB控制代码结束?
-            if (STATE_ISSET(ansi_state, STATE_UBB_START))   {
-                int num;
-                num=0;
-                UBBCode[UBBCodeLen]=0;
-                isUBBMiddleOutput=1;
-                sscanf(UBBCode, "upload=%d",&num);
-                if (num>0) {
-                    UBBArg1=num;
-                    UBBCodeType=UBB_TYPE_ATTACH;
-                    isUBBMiddleOutput=0;
+        if (is_tex) {
+            if ((buf[i] == '$') && ((i==0) || (buf[i-1] != '\\'))) {
+                if (STATE_ISSET(ansi_state, STATE_TEX_SET)) {
+                    STATE_CLR(ansi_state, STATE_TEX_SET);
                 } else {
-                    size_t len;
-                    STATE_CLR(ansi_state, STATE_UBB_START);
-                    len=(&(buf[i+1]))-ubbstart_begin;
-                    print_raw_ansi(ubbstart_begin,len,output);
-                    continue;
+                    STATE_SET(ansi_state, STATE_TEX_SET);
                 }
-                STATE_CLR(ansi_state, STATE_UBB_START);
-                STATE_SET(ansi_state, STATE_UBB_MIDDLE);
-                ubbmiddle_begin=&buf[i+1];
-                continue;
-            } else if (STATE_ISSET(ansi_state, STATE_UBB_END))  {
-                UBBCode[UBBCodeLen]=0;      
-                STATE_CLR(ansi_state, STATE_UBB_END);
-                switch (UBBCodeType){
-                case UBB_TYPE_ATTACH:
-                    if (!strcasecmp(UBBCode,"upload")){
-                        if ( (UBBArg1>0) && (UBBArg1<=attachmatched)) {
-                            switch(attachType[UBBArg1-1]) {
-                            case ATTACH_IMG:
-                                snprintf(outbuf, 511, "<a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[UBBArg1-1],attachlink, attachPos[UBBArg1-1]);
-                                break;
-                            case ATTACH_FLASH:
-                                snprintf(outbuf, 511, "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object>", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
-                                break;
-                            case ATTACH_OTHERS:
-                                 snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1]);
-                                 break;
-                            }   
-                            outbuf_len = strlen(outbuf);
-                            BUFFERED_OUTPUT(output, outbuf, outbuf_len);
-                            attachShowed[UBBArg1-1]=1;
-                            continue;                           
-                        }   
-                    } 
-                    break;
-                default:
-                    ;
+            }
+        }
+        /*
+        * is_tex 情况下，\[upload 优先匹配 \[ 而不是 [upload
+        * is_tex 情况下应该还有一个问题是 *[\[ 等，不过暂时不管了 - atppp
+        */
+        if (buf[i] == '[' && !STATE_ISSET(ansi_state, STATE_ESC_SET)) {
+            if (is_tex && (i > 0) && (buf[i-1] == '\\')) {
+                STATE_SET(ansi_state, STATE_TEX_SET);
+            } else if (attachmatched > 0) {
+                /*
+                 * determine if this is correct attachment [upload], if correct, output html, and skip i to the end of [/upload]
+                 * otherwise, do nothing and keep i unchanged
+                 */
+                int num = 0;
+                int k;
+                char *buf_p;
+                char *end_buf_p;
+                char *UBB_p;
+                buf_p = &buf[i];
+                end_buf_p = &buf[buflen];
+                buf_p++;
+                if (buf_p + UBBUpload1_len - 1 >= end_buf_p) {
+                    goto atppp_never_use_goto;
                 }
-                STATE_SET(ansi_state, STATE_UBB_MIDDLE);
-            } 
+                for (UBB_p = UBBUpload1, k = 0; k < UBBUpload1_len; k++, UBB_p++, buf_p++) {
+                    if (*UBB_p != *buf_p) {
+                        goto atppp_never_use_goto;
+                    }
+                }
+                while(buf_p < end_buf_p) {
+                    if ((*buf_p >= '0') && (*buf_p <= '9')) {
+                        num = num * 10 + (*buf_p - '0');
+                    } else {
+                        break;
+                    }
+                    buf_p++;
+                }
+                if (buf_p + UBBUpload2_len - 1 >= end_buf_p) {
+                    goto atppp_never_use_goto;
+                }
+                for (UBB_p = UBBUpload2, k = 0; k < UBBUpload2_len; k++, UBB_p++, buf_p++) {
+                    if (*UBB_p != *buf_p) {
+                        goto atppp_never_use_goto;
+                    }
+                }
+                if ((num > 0) && (num <= attachmatched)) {
+                    switch(attachType[num-1]) {
+                    case ATTACH_IMG:
+                        snprintf(outbuf, 511, "<a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ", attachlink, attachPos[num-1],attachlink, attachPos[num-1]);
+                        break;
+                    case ATTACH_FLASH:
+                        snprintf(outbuf, 511, "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object>", attachlink, attachPos[num-1], attachlink, attachPos[num-1]);
+                        break;
+                    case ATTACH_OTHERS:
+                         snprintf(outbuf, 511, "<br />附件: <a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />", attachlink, attachPos[num-1], attachFileName[num-1], attachLen[num-1]);
+                         break;
+                    }   
+                    outbuf_len = strlen(outbuf);
+                    BUFFERED_OUTPUT(output, outbuf, outbuf_len);
+                    attachShowed[num-1]=1;
+                    i = buf_p - buf;
+                }
+atppp_never_use_goto:
+                NULL;
+            }
+        } else if (is_tex && (buf[i] == ']') && (i > 0) && (buf[i-1] == '\\')) {
+            STATE_CLR(ansi_state, STATE_TEX_SET);
         }
         if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i + 1] == '[')) {
             if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
@@ -2689,34 +2679,13 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 STYLE_CLR(font_style, FONT_STYLE_QUOTE);
                 STATE_CLR(ansi_state, STATE_FONT_SET);
             }
-            if (!STATE_ISSET(ansi_state,STATE_UBB_MIDDLE) || isUBBMiddleOutput) {
+            if (!STATE_ISSET(ansi_state,STATE_TEX_SET)) {
                 BUFFERED_OUTPUT(output, " <br /> ", 8);
             }
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
         } else {
-            if (STATE_ISSET(ansi_state, STATE_UBB_START|STATE_UBB_END)) {
-                if (UBBCodeLen>100) {
-                    if (STATE_ISSET(ansi_state, STATE_UBB_START)){
-                        size_t len;
-                        len=(&(buf[i+1]))-ubbstart_begin;
-                        print_raw_ansi(ubbstart_begin,len,output);
-                    }
-                    if (STATE_ISSET(ansi_state, STATE_UBB_END)){
-                        size_t len;
-                        len=(&(buf[i+1]))-ubbfinish_begin;
-                        print_raw_ansi(ubbfinish_begin,len,output);
-                    }
-                    STATE_CLR(ansi_state, STATE_UBB_START | STATE_UBB_END);
-                    continue;
-                }
-                UBBCode[UBBCodeLen]=buf[i];
-                UBBCodeLen++;
-            } else if (STATE_ISSET(ansi_state, STATE_UBB_MIDDLE)){
-                if (isUBBMiddleOutput)  {
-                            print_raw_ansi(&buf[i], 1, output);
-                }
-            } else if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
+            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 if (buf[i] == 'm') {
                     /*
                      *[0;1;4;31m */
