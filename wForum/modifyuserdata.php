@@ -73,7 +73,7 @@ function main(){
 ?>
 <option value="userface/"></option>
 </select>
-<img id=face src=userface/image<?php echo $currentuser['userface_img']>0?$currentuser['userface_img']:1; ?> .gif>&nbsp;<a href=# onclick="alert('本功能尚未实现');" >查看所有头像</a>
+<img id=face src=userface/image<?php echo $currentuser['userface_img']>0?$currentuser['userface_img']:1; ?>.gif>&nbsp;<a href=# onclick="alert('本功能尚未实现');" >查看所有头像</a>
 </TR>
 
 <TR> 

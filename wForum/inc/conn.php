@@ -1,9 +1,9 @@
 <?php 
 require 'DB.php';
-$host='aka.com.cn';
-$user='aka';
-$passwd='aA3$;G(~cjKK';
-$dbname='AKA';
+$host='localhost';
+$user='wForum';
+$passwd='thisISwForum';
+$dbname='wForum';
 $dsn = "mysql://$user:$passwd@$host/$dbname";
 
 $conn = DB::connect($dsn);

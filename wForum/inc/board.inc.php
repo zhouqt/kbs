@@ -299,7 +299,7 @@ function boardJump(){
 <?php
 	for ($i=0;$i<$sectionCount;$i++){
 		echo "<option value=\"section.php?sec=".$i."\">©ï".$section_names[$i][0]."</option>";
-		$boards = bbs_getboards($section_nums[$i], 0, 0);
+		$boards = bbs_getboards($section_nums[$i], 0, 1);
 		if ($boards != FALSE) {
 			$brd_desc = $boards["DESC"]; // ÖĞÎÄÃèÊö
 			$brd_name = $boards["NAME"];

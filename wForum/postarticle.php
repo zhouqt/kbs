@@ -282,7 +282,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 		if ($i!=1 && (($i-1)%20)==0) {
 			echo "<br>\n";
 		}
-		echo "<img src=\"emot/em".$ii."\" border=0 onclick=\"insertsmilie('[em".$ii."]')\" style=\"CURSOR: hand\">&nbsp;";
+		echo "<img src=\"emot/em".$ii.".gif\" border=0 onclick=\"insertsmilie('[em".$ii."]')\" style=\"CURSOR: hand\">&nbsp;";
 	} 
 ?>
     		</td>

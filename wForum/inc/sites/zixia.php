@@ -16,7 +16,7 @@ define("THREADSPERPAGE",5); //文章阅读时每页显示的文章数
 
 $SiteName="大话西游论坛";
 
-$SiteURL="http://bbs.zixia.net";
+$SiteURL="http://wforum.zixia.net";
 
 $HTMLTitle="大话西游论坛";
 
@@ -26,7 +26,7 @@ $DEFAULTStyle="defaultstyle";
 
 $Banner="pic/ws.jpg";
 
-$BannerURL="http://wforum.aka.cn";
+$BannerURL="http://wforum.zixia.net/";
 
 define("ATTACHMAXSIZE","5242880");
 define ("ATTACHMAXTOTALSIZE","20971520");

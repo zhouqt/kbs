@@ -18,7 +18,6 @@ show_nav();
 if ($loginok==1) {
 	showUserMailbox();
 }
-
 showAnnounce(); 
 ?>
 <td align=center width=100% valign=middle colspan=2>
@@ -26,7 +25,6 @@ showAnnounce();
 </td></tr>
 <?php
 showTitle();
-exit(0);
 
 ?>
 </TABLE>
@@ -38,8 +36,8 @@ if ($loginok!=1) {
 	FastLogin();
 }
 
-
 showAllSecs();
+
 if (isErrFounded()) {
 	html_error_quit();
 } else {
