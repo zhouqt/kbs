@@ -88,6 +88,7 @@
 </select>日
 <input type=submit name="submit" value="Go">
 数据开始于 2002年10月9日
+<a href="/bbsstat/allonline.png">历史图表</a>
 </form>
 <?php
 	if( $yesterd == 0 ){
