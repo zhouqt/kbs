@@ -52,6 +52,10 @@
 		}
 ?>
 </table>
+<hr class="default"/>
+<a href="/bbsdoc.php?board=<?php echo $board;?>">返回本讨论区</a>
+<a href="javascript:history.go(-1)">快速返回</a>
+</center>
 <?php
 		html_normal_quit();
 
