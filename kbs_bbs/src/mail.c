@@ -1101,6 +1101,7 @@ char *direct;
     default:
         prints("信件已寄出\n");
         fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
+        setmailfile(q_file, currentuser->userid, DOT_DIR);
         substitute_record(q_file, fileinfo, sizeof(*fileinfo), ent);
     }
     pressreturn();
