@@ -1,5 +1,29 @@
 #include "bbs.h"
 
+static int ann_can_access(char *title, char *board)
+{
+	struct boardheader *bp;
+	char BM[STRLEN];
+	
+	if (strstr(title, "(BM: BMS)"))
+	{
+		if (board[0] == '\0')
+			return 0;
+		bp = getbcache(board);
+		if (bp == NULL)
+			return 0;
+		strncpy(BM, bp->BM, sizeof(BM)-1);
+		BM[sizeof(BM)-1] = '\0';
+		if (chk_currBM(BM, currentuser) == 0)
+			return 0;
+	}
+	if (strstr(title,"(BM: SYSOPS)") && !HAS_PERM(currentuser, PERM_SYSOP))
+	{
+		return 0;
+	}
+	return 1;
+}
+
 void ann_add_item(MENU *pm, ITEM *it)
 {
 	ITEM        *newitem;
@@ -28,8 +52,13 @@ int ann_load_directory(MENU *pm)
 	char        buf[PATHLEN];
 	char        *ptr;
 	char        hostname[STRLEN];
+	char        board[STRLEN];
 
 	pm->num = 0;
+	if ((ptr = strstr(pm->path, "groups/")) != NULL)
+		ann_get_board(ptr, board, sizeof(board));
+	else
+		board[0] = '\0';
 	snprintf(buf, sizeof(buf), "%s/.Names", pm->path); /*.Names记录菜单信息*/
 	if ( (fn = fopen( buf, "r" )) == NULL )
 		return -1;
@@ -51,8 +80,9 @@ int ann_load_directory(MENU *pm)
 			else
 				strncpy( litem.fname, buf + 5, sizeof(litem.fname)-1 );
 			litem.fname[sizeof(litem.fname)-1] = '\0';
-			if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
-				(!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP)))
+			/*if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
+				(!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP)))*/
+			if (ann_can_access(litem.title, board))
 			{
 				if (strstr(litem.fname,"!@#$%")) /*取 host & port */
 				{
@@ -209,10 +239,15 @@ int ann_traverse_check(char *path)
 	char title[STRLEN];
 	char currpath[256];
 	FILE *fp;
+	char board[STRLEN];
 
 	/* path parameter can not have leading '/' character */
 	if (path[0] == '/')
 		return -1;
+	if ((ptr = strstr(path, "groups/")) != NULL)
+		ann_get_board(ptr, board, sizeof(board));
+	else
+		board[0] = '\0';
 	bzero(pathbuf, sizeof(pathbuf));
 	ptr = path;
 	while(*ptr != '\0')
@@ -249,9 +284,10 @@ int ann_traverse_check(char *path)
 				continue;
 			if(strncmp(currpath, path, strlen(currpath)) != 0)
 				continue;
-			if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
+			/*if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
 				(!strstr(title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
-				(!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))
+				(!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC)))*/
+			if (ann_can_access(title, board))
 			{
 				/* directory can be accessed */
 				break;
