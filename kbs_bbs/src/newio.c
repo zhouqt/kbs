@@ -391,7 +391,6 @@ int igetch()
         if (sr == 0) {
             if (flushf)
                 (*flushf) ();
-            refresh();
 
             while (1) {
                 int alarm_timeout;
@@ -594,6 +593,7 @@ int igetkey()
         return ret;
     }
     mode = last = 0;
+    refresh();
     while (1) {
         ch = igetch();
 

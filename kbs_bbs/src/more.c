@@ -151,7 +151,7 @@ void check_calltime()
         good_move(line, 0);
         clrtoeol();
         prints("[44m[32mBBS ÏµÍ³Í¨¸æ: [37m%-65s[m", "ÏµÍ³ÄÖÖÓ Áå¡«¡«¡«¡«¡«¡«");
-        igetch();
+        igetkey();
         good_move(line, 0);
         clrtoeol();
         saveline(line, 1, NULL);
