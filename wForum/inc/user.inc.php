@@ -285,26 +285,35 @@ extract($GLOBALS);
 } 
 
 function usersysinfo($info){
-   if (strpos($info,';')!==false)  {
-	  $usersys=explode(';',$info);
-	  if (count($usersys)>=2)  {
-		  $usersys[1]=str_replace("MSIE","Internet Explorer",$usersys[1]);
-		  $usersys[2]=str_replace(")","",$usersys[2]);
-		  $usersys[2]=str_replace("NT 5.1","XP",$usersys[2]);
-		  $usersys[2]=str_replace("NT 5.0","2000",$usersys[2]);
-		  $usersys[2]=str_replace("9x","Me",$usersys[2]);
-		  $usersys[1]="浏 览 器：".trim($usersys[1]);
-		  $usersys[2]="操作系统：".trim($usersys[2]);
-		  $function_ret=$usersys[1].'，'.$usersys[2];
-	  }  else  {
-		  	  $function_ret='浏 览 器：未知，操作系统：未知';
-	  }
-  }  else {
-    if ($getinfo==1)  {
-      $function_ret="未知，未知";
-    } 
-  } 
-  return $function_ret;
+	if (USEBROWSCAP == 0) { //FireFox, Opera 都判断不对 - atppp
+		if (strpos($info,';')!==false)  {
+			$usersys=explode(';',$info);
+			if (count($usersys)>=2)  {
+				$usersys[1]=str_replace("MSIE","Internet Explorer",$usersys[1]);
+				$usersys[2]=str_replace(")","",$usersys[2]);
+				$usersys[2]=str_replace("NT 5.1","XP",$usersys[2]);
+				$usersys[2]=str_replace("NT 5.0","2000",$usersys[2]);
+				$usersys[2]=str_replace("9x","Me",$usersys[2]);
+				$usersys[1]="浏 览 器：".trim($usersys[1]);
+				$usersys[2]="操作系统：".trim($usersys[2]);
+				$function_ret=$usersys[1].'，'.$usersys[2];
+			}  else  {
+				$function_ret='浏 览 器：未知，操作系统：未知';
+			}
+		} else {
+			$function_ret="未知，未知";
+		}
+	} else {
+		$browser = get_browser($info);
+		$str1 = $browser->parent;
+		$str1 = str_replace("IE","Internet Explorer",$str1);
+		if ($str1 == "") $str1 = "未知";
+		$str2 = $browser->platform;
+		$str2 = str_replace("Win","Windows ",$str2);
+		if ($str2 == "") $str2 = "未知";
+		$function_ret = "浏 览 器：".$str1."，操作系统：".$str2;
+	}
+	return $function_ret;
 } 
 
 function showUserInfo(){
