@@ -309,7 +309,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 {
 	long ret;
 	long kick_multi=0;
-	struct user_info *pu;
+	struct user_info *pu=NULL;
 	int utmpent;
 	
 	getcwd(old_pwd,1023);
@@ -413,7 +413,7 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 	            WRONG_PARAM_COUNT;
 	}
 	if (userid_len>IDLEN) RETURN_LONG(1);
-	if(utmpnum<1 || utmpnum>=MAXACTIVE)
+	if(utmpnum<0 || utmpnum>=MAXACTIVE)
 		RETURN_LONG(2);
 
 	if ((ret=www_user_init(utmpnum,userid,utmpkey,&user, &pui))==0) {
