@@ -24,9 +24,9 @@ void standout();
 void redoscr();
 void initscr() ;
 void bell();
-void outc(const register unsigned char c);
+void outc(register const unsigned char c);
 void outns(const unsigned char *str, int n);
-void outs( const register char *str);
+void outs(register const char *str);
 
 
 

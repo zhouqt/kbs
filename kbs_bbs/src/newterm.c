@@ -19,7 +19,7 @@
 
 #include "bbs.h"
 
-#include <varargs.h>
+/*#include <varargs.h>*/
 #include <arpa/telnet.h>
 
 int clearbuflen=6;

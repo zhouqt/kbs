@@ -61,7 +61,7 @@ sendmsgfunc(struct user_info *uentp,char msgstr[256],int mode);
 int
 do_sendmsg(uentp,msgstr,mode)
 struct user_info *uentp;
-char msgstr[256];
+const char msgstr[256];
 int mode;
 {
     char uident[STRLEN] ,ret_str[20];

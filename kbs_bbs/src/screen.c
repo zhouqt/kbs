@@ -486,7 +486,7 @@ register unsigned char c ;
 
 void
 outns(str,n)
-unsigned char *str ;
+const unsigned char *str ;
 int n ;
 {
     register int reg_col=0;
@@ -566,7 +566,7 @@ int n ;
 
 void
 outs(str)
-register char *str ;
+register const char *str ;
 {
     outns(str,4096);
 }
