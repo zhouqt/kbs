@@ -228,13 +228,13 @@
 <a href="/bbsnewmail.php" target="f3">阅览新邮件</a><br>
 &nbsp;
 <img src="/images/line.gif" border="0" align="absmiddle">
-<a href="/bbsmailbox.php?path=.DIR&title=收件箱" target="f3">收件箱</a><br>
+<a href="/bbsmailbox.php?path=.DIR&title=<?php echo rawurlencode("收件箱"); ?>" target="f3">收件箱</a><br>
 &nbsp;
 <img src="/images/line.gif" border="0" align="absmiddle">
-<a href="/bbsmailbox.php?path=.SENT&title=发件箱" target="f3">发件箱</a><br>
+<a href="/bbsmailbox.php?path=.SENT&title=<?php echo rawurlencode("发件箱"); ?>" target="f3">发件箱</a><br>
 &nbsp;
 <img src="/images/line.gif" border="0" align="absmiddle">
-<a href="/bbsmailbox.php?path=.DELETED&title=垃圾箱" target="f3">垃圾箱</a><br>
+<a href="/bbsmailbox.php?path=.DELETED&title=<?php echo rawurlencode("垃圾箱"); ?>" target="f3">垃圾箱</a><br>
 <?php
 		//custom mailboxs
 		$mail_cusbox = bbs_loadmaillist($userid);
