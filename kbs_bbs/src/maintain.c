@@ -328,9 +328,9 @@ char *chgrp()
     oflush();
 
     for (i = 0;; i++) {
-        if (explain[i] == NULL || groups[i] == NULL)
+        if (secname[i][0] == NULL || groups[i] == NULL)
             break;
-        prints("[32m%2d[m. %-20s%-20s\n", i, explain[i], groups[i]);
+        prints("[32m%2d[m. %-20s%-20s\n", i, secname[i][0], groups[i]);
     }
     sprintf(buf, "«Î ‰»Îƒ„µƒ—°‘Ò(0~%d): ", i - 1);
     while (1) {
@@ -343,7 +343,7 @@ char *chgrp()
         else
             break;
     }
-    sprintf(cexplain, "%s", explain[ch]);
+    sprintf(cexplain, "%s", secname[ch][0]);
 
     return groups[ch];
 }

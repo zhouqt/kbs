@@ -46,7 +46,6 @@
 
 
 extern char seccode[SECNUM][5];
-extern char secname[SECNUM][2][20];
 extern int loginok;
 extern struct userec *currentuser;
 extern struct user_info *u_info;

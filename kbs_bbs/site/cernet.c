@@ -7,7 +7,7 @@
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 const char seccode[SECNUM][5] = {
-    "0", "1", "2", "3", "4", "5", "6", "7"
+    "0", "1", "2", "3", "4", "5", "6", "7","8","9","A"
 };
 
 const char *permstrings[] = {
@@ -78,37 +78,31 @@ const char *user_definestr[] = {
     "对汉字进行整字处理"  /* DEF_SPLITSCREEN 2002.9.1 */
 };
 
-const char    *explain[] = {
-    "本站系统",
-    "教育机构",
-    "华北地区",
-    "华南地区",
-    "西北地区",
-    "东北地区",
-    "东南地区",
-    "民办学校",
-    NULL
-};
-
 const char    *groups[] = {
     "system.faq",
     "edu.faq",
     "north.faq",
-    "south.faq",
-    "northwest.faq",
     "northeast.faq",
-    "southeast.faq",
+    "hnortheast.faq",
+    "hsoutheast.faq",
+    "center.faq",
+    "south.faq",
+    "southwest.faq",
+    "northwest.faq",
     "private.faq",
     NULL
 };
 const char secname[SECNUM][2][20] = {
     {"系统", "[系统信息]"},
-    {"教育机构", "[教育机构]"},
+    {"省市招办", "[省市招办]"},
     {"华北地区", "[华北地区]"},
-    {"华南地区", "[华南地区]"},
-    {"西北地区", "[西北地区]"},
     {"东北地区", "[东北地区]"},
-    {"东南地区", "[东南地区]"},
+    {"华东北地区", "[华东北地区]"},
+    {"华东南地区", "[华东南地区]"},
+    {"华中地区", "[华中地区]"},
+    {"华南地区", "[华南地区]"},
+    {"西南地区", "[西南地区]"},
+    {"西北地区", "[西北地区]"},
     {"民办学校", "[民办学校]"}
 };
 

@@ -42,7 +42,7 @@
 #define BBSGID 			501
 
 /* for bbs2www, by flyriver, 2001.3.9 */
-#define SECNUM 8
+#define SECNUM 11
 #define BBS_PAGE_SIZE 20
 
 #define SQUID_ACCL

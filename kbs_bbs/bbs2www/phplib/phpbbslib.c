@@ -2767,16 +2767,16 @@ static PHP_FUNCTION(bbs_new_board)
 		RETURN_LONG( -5);
 
 	if(bgroup && bgroup_len > 0){
-		for(i=0; groups[i] && explain[i]; i++){
+		for(i=0; groups[i] && secname[i][0]; i++){
 			if( ! strncmp(groups[i], bgroup, strlen(groups[i])) )
 				break;
 		}
 
-		if( groups[i]==NULL || explain[i]==NULL )
+		if( groups[i]==NULL || secname[i][0]==NULL )
 			RETURN_LONG( -13);
 
 		sprintf(vbuf,"%-38.38s", newboard.title+13);
-		if(add_grp(bgroup, newboard.filename, vbuf, explain[i]) == -1)
+		if(add_grp(bgroup, newboard.filename, vbuf, secname[i][0]) == -1)
 			RETURN_LONG( -12);
 
 		snprintf(newboard.ann_path,127,"%s/%s",bgroup, newboard.filename);
@@ -3147,12 +3147,12 @@ static PHP_FUNCTION(bbs_get_explain)
 		WRONG_PARAM_COUNT;
 	}
 
-	for(i=0; explain[i] && groups[i]; i++){
+	for(i=0; secname[i][0] && groups[i]; i++){
 
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 
-	    add_assoc_string(element, "EXPLAIN", explain[i], 1);
+	    add_assoc_string(element, "EXPLAIN", secname[i][0], 1);
 	    add_assoc_string(element, "GROUPS", groups[i], 1);
 		zend_hash_index_update(Z_ARRVAL_P(retarray), i,
 				(void*) &element, sizeof(zval*), NULL);

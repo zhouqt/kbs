@@ -74,3 +74,5 @@ extern sigjmp_buf bus_jump;
 #if HAVE_WWW==1
 extern struct WWW_GUEST_TABLE *wwwguest_shm;
 #endif
+
+extern const char secname[SECNUM][2][20];
