@@ -286,8 +286,9 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[42];
+    char unused2[38];
     unsigned int eff_size;
+	time_t posttime;
     long attachment;
     char title[STRLEN];
     unsigned level;
@@ -296,10 +297,10 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 
 typedef struct fileheader fileheader_t;
 
-#define GET_POSTFILENAME(x,y) get_postfilename(x,y,0)
+#define GET_POSTFILENAME(x,y) get_postfilename(x,y,1)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
-#define VALID_FILENAME(x) valid_filename(x,0)
-#define POSTFILE_BASENAME(x) (x)
+#define VALID_FILENAME(x) valid_filename(x,1)
+#define POSTFILE_BASENAME(x) (((char *)(x))+2)
 #define MAILFILE_BASENAME(x) (x)
 
 // WWW²¿·Ö

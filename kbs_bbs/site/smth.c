@@ -565,7 +565,10 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
 	char fname[PATHLEN];
 	char *ip;
 
-	strcpy(filename, fileinfo->filename);
+	if (fileinfo->filename[1] == '/')
+		strcpy(filename, fileinfo->filename + 2);
+	else
+		strcpy(filename, fileinfo->filename);
 	sprintf(fname, "%s/%s", pm->path, filename);
 	ip = &filename[strlen(filename) - 1];
 	while (dashf(fname)) {
@@ -582,17 +585,21 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
  */
 time_t get_posttime(const struct fileheader *fileinfo)
 {
-	return atoi(fileinfo->filename + 2);
+	if (fileinfo->filename[1] == '/')
+		return fileinfo->posttime;
+	else
+		return atoi(fileinfo->filename + 2);
 }
 
 void set_posttime(struct fileheader *fileinfo)
 {
-	return;
+	if (fileinfo->filename[1] == '/')
+		fileinfo->posttime = atoi(fileinfo->filename + 4);
 }
 
 void set_posttime2(struct fileheader *dest, struct fileheader *src)
 {
-	return;
+	dest->posttime = src->posttime;
 }
 
 /**
@@ -600,6 +607,16 @@ void set_posttime2(struct fileheader *dest, struct fileheader *src)
  */
 void build_board_structure(const char *board)
 {
+	int i;
+	int len;
+	char buf[STRLEN];
+
+	len = strlen(alphabet);
+    for (i = 0; i < len; i++)
+    {
+		snprintf(buf, sizeof(buf), "boards/%s/%c", board, alphabet[i]);
+		mkdir(buf, 0755);
+    }
 	return;
 }
 
