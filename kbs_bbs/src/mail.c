@@ -2118,10 +2118,13 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     f_cp(tmp_buf, fname, 0);
     sprintf(title, "%.50s(转寄)", fh->title);   /*Haohmaru.00.05.01,moved here */
     if (askyn("是否修改文章内容", 0) == 1) {
+		int oldmode = uinfo.mode;
+		modify_user_mode(SMAIL);
         if (vedit(fname, false, NULL, &fh->attachment) != -1) {
             if (ADD_EDITMARK)
                 add_edit_mark(fname, 1, fh->title);
         }
+		modify_user_mode(oldmode);
         y = 2;
         newbbslog(BBSLOG_USER, "修改被转贴的文章或信件: %s", title);    /*Haohmaru.00.05.01 */
         /*
