@@ -37,8 +37,8 @@ function pcmain_blog_new_user()
 function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
-	$mostVstUsers = getHotUsersByPeriod($link,'day',_PCMAIN_USERS_NUM_); //每日热门
-	//$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
+	//$mostVstUsers = getHotUsersByPeriod($link,'day',_PCMAIN_USERS_NUM_); //每日热门
+	$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
 ?>
 <ul>
 <?php

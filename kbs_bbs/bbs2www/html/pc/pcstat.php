@@ -278,8 +278,8 @@ function getHotUsersByPeriod($link,$period,$num=10)
 	if($queryTime)
 	    $query = "SELECT COUNT(pri_id) , uid , users.username , corpusname , description ".
 	             "FROM logs , users ".
-	             "WHERE ACTION LIKE '%\'s Blog(www)' ".
-	             "      AND pri_id = users.username ".
+	             "WHERE ".//ACTION LIKE '%\'s Blog(www)' ".
+	             "       pri_id = users.username ".
 	             "      AND UNIX_TIMESTAMP(logtime) > ".$queryTime." ".
 	             "      AND pctype < 2 ".
 		     "GROUP BY pri_id ".
