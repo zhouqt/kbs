@@ -132,11 +132,7 @@ void msgline()
     char buf[256], buf2[STRLEN * 2];
     void display_buffer();
 
-#ifndef VEDITOR
     extern int talkrequest;
-#else
-    char ptr[6];
-#endif
     int tmpshow;
     time_t now;
 
@@ -348,7 +344,7 @@ void go()
     int line;
 
     set_alarm(0, 0, NULL, NULL);
-    getdata(23, 0, "请问要跳到第几行: ", tmp, 7, DOECHO, NULL, 1);
+    getdata(t_lines-1, 0, "请问要跳到第几行: ", tmp, 7, DOECHO, NULL, 1);
     domsg();
     if (tmp[0] == '\0')
         return;
@@ -413,7 +409,7 @@ void search()
 
 	tmp[0]='\0';
     set_alarm(0, 0, NULL, NULL);
-    getdata(23, 0, "搜寻字串: ", tmp, 65, DOECHO, NULL, 0);
+    getdata(t_lines-1, 0, "搜寻字串: ", tmp, 65, DOECHO, NULL, 0);
     domsg();
     if (tmp[0] == '\0')
         return;
@@ -518,10 +514,6 @@ int join(struct textline * line)
 
     if (!line->next)
         return true;
-    /*if(*killsp(line->next->data) == '\0')
-       return true ; */
-//    ovfl = line->len + line->next->len - WRAPMARGIN;
-//    if (ovfl < 0) {
     if (line->maxlen<=line->len+line->next->len+5) {
         int ml;
         char *q;
@@ -533,36 +525,10 @@ int join(struct textline * line)
         line->data = q;
         line->maxlen = ml;
     }
-        strcat(line->data, line->next->data);
-        line->len += line->next->len;
-        delete_line(line->next);
-        return true;
-/*    } else {
-        register char *s;
-        register struct textline *p = line->next;
-
-        s = p->data + p->len - ovfl - 1;
-        while (s != p->data && *s == ' ')
-            s--;
-        while (s != p->data && *s != ' ')
-            s--;
-        if (s == p->data)
-            return true;
-        split(p, (s - p->data) + 1);
-        if (line->len + p->len >= WRAPMARGIN) {
-            indigestion(0);
-            return true;
-        }
-        join(line);
-        p = line->next;
-        if (p->len >= 1 && p->len + 1 < WRAPMARGIN) {
-            if (p->data[p->len - 1] != ' ') {
-                strcat(p->data, " ");
-                p->len++;
-            }
-        }
-        return false;
-    }*/
+    strcat(line->data, line->next->data);
+    line->len += line->next->len;
+    delete_line(line->next);
+    return true;
 }
 
 void insert_char(int ch)
@@ -576,6 +542,8 @@ void insert_char(int ch)
         indigestion(1);
         return;
     }
+    if (currpnt > MAX_EDIT_LINE)
+        return;
     if (currpnt < p->len && !insert_character) {
         p->data[currpnt++] = ch;
     } else {
@@ -592,61 +560,9 @@ void insert_char(int ch)
         p->data = q;
         p->maxlen += WRAPMARGIN;
     }
-    return;
-    if (p->len < WRAPMARGIN)
-        return;
-    s = p->data + (p->len - 1);
-    while (s != p->data && *s == ' ')
-        s--;
-    while (s != p->data && *s != ' ')
-        s--;
-    if (s == p->data) {
-        wordwrap = false;
-        s = p->data + (p->len - 2);
-    }
-
-    {                           /* Leeward 98.07.28 */
-        int ich, lln;
-
-        if (((unsigned char) *s) > 127) {       /* 避免在汉字中间折行 */
-            for (ich = 0, lln = s - p->data + 1; lln > 0; lln--)
-                if (((unsigned char) p->data[lln - 1]) < 128)
-                    break;
-                else
-                    ich++;
-            if (ich % 2)
-                s--;
-        }
-    }
-
-    split(p, (s - p->data) + 1);
-    p = p->next;
-    if (wordwrap && p->len >= 1) {
-        i = p->len;
-        if (p->data[i - 1] != ' ') {
-            p->data[i] = ' ';
-            p->data[i + 1] = '\0';
-            p->len++;
-        }
-        {
-        }
-    }
-    /*while(!join(p)) { Leeward 98.07.29 避免折行后覆盖下一行，乱码
-       p = p->next ;
-       if(p == NULL) {
-       indigestion(2) ;
-       break ;
-       }
-       } */
-    if (Origin(currline)) {
-        currline = p->prev;
-        curr_window_line--;
-        currln--;
-    }
 }
 
-void ve_insert_str(str)
-    char *str;
+void ve_insert_str(char * str)
 {
     while (*str)
         insert_char(*(str++));
@@ -797,7 +713,6 @@ int valid_article(pmt, abort)
     int total, lines, len, sig, y;
     int temp;
 
-#ifndef VEDITOR
     if (uinfo.mode == POSTING) {
         total = lines = len = sig = 0;
         while (p != NULL) {
@@ -842,7 +757,6 @@ int valid_article(pmt, abort)
         else
             strcpy(pmt, "(S)转信, (L)站内, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [S]: ");
     }
-#endif
 
     getdata(0, 0, pmt, abort, 3, DOECHO, NULL, true);
     switch (abort[0]) {
@@ -872,7 +786,6 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
     int filter = 0;
 #endif
 
-#ifndef VEDITOR
     char p_buf[100];
 
     set_alarm(0, 0, NULL, NULL);
@@ -917,11 +830,6 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
            abort[0]='s'; */
     } else
         abort[0] = 'a';
-#else                           /* use VEDITOR */
-    valid_article("(S)储存, (A)取消, or (E)再编辑? [S]: ", abort);
-    if (abort[0] != 'A' && abort[0] != 'a' && abort[0] != 'E' && abort[0] != 'e')
-        abort[0] = 's';
-#endif
 
 #ifdef FILTER
     if (((abort[0] != 'a')&&(abort[0] != 'e'))&&
@@ -941,15 +849,11 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
         struct stat stbuf;
 
         clear();
-#ifndef VEDITOR
         if (uinfo.mode != CCUGOPHER) {
-#endif
             prints("取消...\n");
             refresh();
             sleep(1);
-#ifndef VEDITOR
         }
-#endif
         if (stat(filename, &stbuf) || stbuf.st_size == 0)
             unlink(filename);
         aborted = -1;
@@ -1152,7 +1056,6 @@ fsdfa
     currline = NULL;
     lastline = NULL;
     firstline = NULL;
-#ifndef VEDITOR
     if (abort[0] == 'l' || abort[0] == 'L' || local_article == 1) {
         sprintf(genbuf, "local_article = %u", local_article);
         bbslog("user","%s",genbuf);
@@ -1160,7 +1063,6 @@ fsdfa
         if (aborted != -1)
             aborted = 1;        /* aborted = 1 means local save */
     }
-#endif
     if ((uinfo.mode == POSTING) && strcmp(currboard->filename, "test")) { /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
         if (ret)
             temp_numposts++;
@@ -1196,46 +1098,9 @@ void keep_fail_post()
 }
 
 
-void strnput(str)
-    char *str;
-{
-    int count = 0;
-
-    while ((*str != '\0') && (++count < scr_cols)) {
-        if (*str == KEY_ESC) {
-            outc('*');
-            str++;
-            continue;
-        }
-        outc(*str++);
-    }
-}
-
-void cstrnput(str)
-    char *str;
-{
-    int count = 0;
-
-    prints("%s", ANSI_REVERSE);
-    while ((*str != '\0') && (++count < scr_cols)) {
-        if (*str == KEY_ESC) {
-            outc('*');
-            str++;
-            continue;
-        }
-        outc(*str++);
-    }
-    while (++count < scr_cols)
-        outc(' ');
-    clrtoeol();
-    prints("%s", ANSI_RESET);
-}
-
-
 /*Function Add by SmallPig*/
 static int Origin(struct textline *text)
 {
-#ifndef VEDITOR
     char tmp[STRLEN];
 
     if (uinfo.mode != EDIT)
@@ -1247,9 +1112,6 @@ static int Origin(struct textline *text)
         return 1;
     else
         return 0;
-#else
-    return 0;
-#endif
 }
 
 int vedit_process_ESC(arg)
@@ -1555,8 +1417,116 @@ static int process_ESC_action(int action, int arg)
     return newch;
 }
 
-void vedit_key(ch)
-    int ch;
+void input_tools()
+{
+    char *msg =
+        "内码输入工具: 1.加减乘除  2.一二三四  3.ＡＢＣＤ  4.横竖斜弧 ？[Q]";
+    char *ansi1[7][10] = {
+        {"＋", "－", "×", "÷", "±", "∵", "∴", "∈", "≡", "∝"},
+        {"∑", "∏", "∪", "∩", "∫", "∮", "∶", "∧", "∨", "∷"},
+        {"≌", "≈", "∽", "≠", "≮", "≯", "≤", "≥", "∞", "∠"},
+        {"〔", "〕", "（", "）", "〈", "〉", "《", "》", "「", "」"},
+        {"『", "』", "〖", "〗", "【", "】", "［", "］", "｛", "｝"},
+        {"︵", "︶", "︹", "︺", "︿", "﹀", "︽", "︾", "﹁", "﹂"},
+        {"﹃", "﹄", "︻", "︼", "︷", "︸", "‘", "’", "“", "”"}
+    };
+
+    char *ansi2[7][10] = {
+        {"⒈", "⒉", "⒊", "⒋", "⒌", "⒍", "⒎", "⒏", "⒐", "⒑"},
+        {"⒒", "⒓", "⒔", "⒕", "⒖", "⒗", "⒘", "⒙", "⒚", "⒛"},
+        {"⑴", "⑵", "⑶", "⑷", "⑸", "⑹", "⑺", "⑻", "⑼", "⑽"},
+        {"①", "②", "③", "④", "⑤", "⑥", "⑦", "⑧", "⑨", "⑩"},
+        {"㈠", "㈡", "㈢", "㈣", "㈤", "㈥", "㈦", "㈧", "㈨", "㈩"},
+        {"ⅰ", "ⅱ", "ⅲ", "ⅳ", "ⅴ", "ⅵ", "ⅶ", "ⅷ", "ⅸ", "ⅹ"},
+        {"Ⅰ", "Ⅱ", "Ⅲ", "Ⅳ", "Ⅴ", "Ⅵ", "Ⅶ", "Ⅷ", "Ⅸ", "Ⅹ"},
+    };
+
+    char *ansi3[7][10] = {
+        {"Α", "Β", "Γ", "Δ", "Ε", "Ζ", "Η", "Θ", "Ι", "Κ"},
+        {"Λ", "Μ", "Ν", "Ξ", "Ο", "Π", "Ρ", "Σ", "Τ", "Υ"},
+        {"Φ", "Χ", "Ψ", "Ω", "α", "β", "γ", "δ", "ε", "ζ"},
+        {"η", "θ", "ι", "κ", "λ", "μ", "ν", "ξ", "ο", "π"},
+        {"ρ", "σ", "τ", "υ", "φ", "χ", "ψ", "ψ", "ω", "㎎"},
+        {"℡", "㎏", "㎜", "㎝", "㎞", "㎡", "㏄", "〾", "⿰", "⿱"},
+        {"⿲", "⿳", "⿴", "⿵", "⿶", "⿷", "⿸", "⿹", "⿺", "⿻"}
+    };
+
+    char *ansi4[7][10] = {
+        {"▁", "▂", "▃", "▄", "▅", "▆", "▇", "█", "▉", "▊"},
+        {"▋", "▌", "▍", "▎", "▏", "▓", "╱", "╲", "╳", "※"},
+        {"─", "│", "┌", "┐", "└", "┘", "├", "┤", "┬", "┴"},
+        {"┼", "↖", "↗", "↘", "↙", "→", "←", "↑", "↓", "√"},
+        {"▼", "▽", "◢", "◣", "◥", "◤", "╭", "╮", "╯", "╰"},
+        {"♂", "♀", "☉", "⊕", "〇", "◎", "〓", "℉", "℃", "㊣"},
+        {"☆", "★", "◇", "◆", "□", "■", "△", "▲", "○", "●"}
+    };
+
+    char buf[128], tmp[5];
+    char *(*show)[10];
+    int ch, i, page;
+
+    move(t_lines - 1, 0);
+    clrtoeol();
+    prints("%s", msg);
+    ch = igetkey();
+
+    if (ch < '1' || ch > '4')
+        return;
+
+    switch (ch) {
+    case '1':
+        show = ansi1;
+        break;
+    case '2':
+        show = ansi2;
+        break;
+    case '3':
+        show = ansi3;
+        break;
+    case '4':
+    default:
+        show = ansi4;
+        break;
+    }
+
+    page = 0;
+    for (;;) {
+        buf[0] = '\0';
+
+        sprintf(buf, "第%d页:", page + 1);
+        for (i = 0; i < 10; i++) {
+            sprintf(tmp, "%d%s%s ", i, ".", show[page][i]);
+            strcat(buf, tmp);
+        }
+        strcat(buf, "(P:上  N:下)[Q]\0");
+        move(t_lines - 1, 0);
+        clrtoeol();
+        prints("%s", buf);
+        ch = igetkey();
+
+        if (tolower(ch) == 'p'||ch == KEY_UP) {
+            if (page)
+                page -= 1;
+        } else if (tolower(ch) == 'n'||ch == KEY_DOWN) {
+            if (page != 6)
+                page += 1;
+        } else if (ch < '0' || ch > '9') {
+            buf[0] = '\0';
+            break;
+        } else {
+            char *ptr = show[page][ch - '0'];
+            while (*ptr) {
+                insert_char(*ptr);
+                ptr++;
+            }
+            break;
+        } else {
+            break;
+        }
+        buf[0] = '\0';
+    }
+}
+void vedit_key(int ch)
 {
     int i;
 
@@ -1602,11 +1572,7 @@ void vedit_key(ch)
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
         case Ctrl('Q'):        /* call help screen */
-#ifndef VEDITOR
             show_help("help/edithelp");
-#else
-            show_helpmenu(vedithelp);
-#endif
             break;
         case Ctrl('R'):
 #ifdef CHINESE_CHARACTER
@@ -1779,10 +1745,10 @@ void vedit_key(ch)
             }
             break;
         case Ctrl('O'):
+            input_tools();
+            break;
         case KEY_INS:          /* Toggle insert/overwrite */
             insert_character = !insert_character;
-            /*move(0,73);
-               prints( " [%s] ", insert_character ? "Ins" : "Rep" ); */
             break;
         case Ctrl('H'):
         case '\177':           /* backspace */
