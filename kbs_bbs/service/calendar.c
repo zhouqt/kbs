@@ -128,6 +128,8 @@ int newfile(char * s)
     return 0;
 }
 
+extern int incalendar;
+
 int calendar_main()
 {
     int i,j,ch,oldmode,cc;
@@ -136,6 +138,7 @@ int calendar_main()
     char buf[80], title[80];
     long eff_size;
     time_t now;
+    incalendar = 1;
     oldmode = uinfo.mode;
     modify_user_mode(CALENDAR);
     getyx(&save_y, &save_x);
@@ -150,7 +153,7 @@ int calendar_main()
     while(1){
         draw_main();
         ch = igetkey();
-        if(ch==KEY_ESC||toupper(ch)=='Q') break;
+        if(ch==KEY_ESC||toupper(ch)=='Q'||ch==KEY_F10) break;
         switch(ch) {
             case KEY_UP:
                 if(day>7) day-=7;
@@ -210,4 +213,5 @@ int calendar_main()
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
     modify_user_mode(oldmode);
+    incalendar = 0;
 }
