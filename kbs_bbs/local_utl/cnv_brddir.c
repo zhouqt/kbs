@@ -6,7 +6,7 @@
 #define BOARDSFILE "/home/bbs/.BOARDS"
 #define BBS_HOME    "/home/bbs"
 
-char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+extern char alphabet[];
 
 typedef struct __Node
 {
@@ -134,7 +134,7 @@ Node * search(char * filename)
 	return NULL;
 }
 
-int convert(char *boardname)
+static int convert(const char *boardname)
 {
 	char buff[256];
 	int fd;
@@ -251,6 +251,11 @@ int convert(char *boardname)
 
 	destroy_list();
 
+	return 0;
+}
+
+static int cnv_board_dir_callback(struct boardheader *bh)
+{
 	return 0;
 }
 
