@@ -780,6 +780,9 @@ int read_new_mail(struct fileheader *fptr, int idc, void *arg)
         move(t_lines - 1, 0);
         prints("(R)回信, (D)删除, (G)继续 ? [G]: ");
         switch (igetkey()) {
+        case Ctrl('Y'):
+            zsend_post(idc, fptr, currmaildir);
+        break;
         case 'R':
         case 'r':
 
@@ -976,6 +979,8 @@ char *direct;
         move(t_lines - 1, 0);
         prints("(R)回信, (D)删除, (G)继续? [G]: ");
         switch (igetkey()) {
+        case Ctrl('Y'):
+            zsend_post(ent, fileinfo, direct);
         case 'R':
         case 'r':
 
@@ -1432,6 +1437,7 @@ struct one_key mail_comms[] = {
     {'h', mailreadhelp},
     {Ctrl('J'), mailreadhelp},
     {Ctrl('O'), add_author_friend},
+    {Ctrl('Y'), zsend_post},    /* COMMAN 2002 */    
     {'\0', NULL},
 };
 
