@@ -9,24 +9,6 @@ report()
 */
 struct userec checkuser;
 
-cmpuids(uid, up)
-    char *uid;
-    struct userec *up;
-{
-    if (!strncasecmp(uid, up->userid, sizeof(up->userid))) {
-        strncpy(uid, up->userid, sizeof(up->userid));
-        return 1;
-    } else {
-        return 0;
-    }
-}
-
-int dosearchuser(userid)
-    char *userid;
-{
-    return search_record(MYPASSFILE, &checkuser, sizeof(currentuser), cmpuids, userid);
-}
-
 append_mail(fin, sender1, sender, userid, title)
     FILE *fin;
     char *userid, *sender1, *sender, *title;
@@ -41,7 +23,7 @@ append_mail(fin, sender1, sender, userid, title)
     int yyyy, zzzz, passcheck = 0;
 
 /* check if the userid is in our bbs now */
-    if (!dosearchuser(userid))
+    if (!getuser(userid, &currentuser))
         return -1;
 
 /* check for the mail dir for the userid */
@@ -162,8 +144,10 @@ append_mail(fin, sender1, sender, userid, title)
     sprintf(genbuf, "%s/%c/%s/%s", MAILDIR, toupper(userid[0]), userid, DOT_DIR);
     if (append_record(genbuf, &newmessage, sizeof(newmessage)) == -1)
         return 1;
-    else
+    else {
+        get_mailusedspace(currentuser,1);
         return 0;
+    }
 }
 
 
