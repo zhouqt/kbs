@@ -287,7 +287,7 @@ mailall()
             /* Leeward 98.01.17 Prompt whom you are writing to */
             /*strcpy(currentlookupuser->userid, doc[ans4[0]-'0'-1] + 4);*/
 
-            if(currentuser->signature>numofsig||currentuser->signature<0)
+            if(currentuser->signature>numofsig)
                 currentuser->signature=1;
             while(1)
             {
@@ -298,7 +298,10 @@ mailall()
                 clrtoeol();
                 prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕıÔÚÉè¶¨±êÌâ]":title);
                 clrtoeol();
-                prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser->signature
+                if (currentuser->signature<0)
+                	prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s",(replymode)? buf3:"");
+                else
+                	prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser->signature
                        ,(replymode)? buf3:"");
 
                 if(buf4[0]=='\0'||buf4[0]=='\n'){
@@ -316,7 +319,7 @@ mailall()
                 move(t_lines-1,0);
                 clrtoeol();
                 /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-                sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "");
+                sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d/V/L[m Ñ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "");
                 getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
                 ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
                 if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
@@ -340,7 +343,9 @@ mailall()
                         clear();
                         ansimore2(buf2,NA,0,18);
                     }
-                }else
+                } else if (ans[0]=='L') {
+        			currentuser->signature=-1;
+				} else
                 {
                     strncpy(save_title,title,STRLEN) ;
                     break;
@@ -553,7 +558,7 @@ edit_mail_file:
     else
         buf4[0]=' ';
 
-    if(currentuser->signature>numofsig||currentuser->signature<0)
+    if(currentuser->signature>numofsig)
         currentuser->signature=1;
     while(1)
     {
@@ -564,7 +569,10 @@ edit_mail_file:
         clrtoeol();
         prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕıÔÚÉè¶¨±êÌâ]":title);
         clrtoeol();
-        prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser->signature
+        if (currentuser->signature<0)
+        	prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s",(replymode)? buf3:"");
+        else
+        	prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser->signature
                ,(replymode)? buf3:"");
 
         if(buf4[0]=='\0'||buf4[0]=='\n'){
@@ -582,7 +590,7 @@ edit_mail_file:
         move(t_lines-1,0);
         clrtoeol();
         /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "");
+        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d/V/L[m Ñ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "");
         getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
         ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
         if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
@@ -595,6 +603,8 @@ edit_mail_file:
         }else if(ans[0]=='T')
         {
             buf4[0]='\0';
+        }else if (ans[0]=='L') {
+        	currentuser->signature=-1;
         }else if(ans[0]=='V')
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2,currentuser->userid,"signatures");
@@ -1571,7 +1581,7 @@ static int do_gsend(char *userid[],char *title,int num)
         strcpy(lookupuser->userid, "¶àÎ»ÍøÓÑ");
 	*/
 	
-    if(currentuser->signature>numofsig||currentuser->signature<0)
+    if(currentuser->signature>numofsig)
         currentuser->signature=1;
     while(1)
     {
@@ -1580,7 +1590,10 @@ static int do_gsend(char *userid[],char *title,int num)
         clrtoeol();
         prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕıÔÚÉè¶¨±êÌâ]":title);
         clrtoeol();
-        prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser->signature
+        if (currentuser->signature<0)
+        	prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s",(replymode) ? buf3:"");
+        else
+        	prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser->signature
                ,(replymode) ? buf3:"");
 
         if(buf4[0]=='\0'||buf4[0]=='\n'){
@@ -1598,7 +1611,7 @@ static int do_gsend(char *userid[],char *title,int num)
         move(t_lines-1,0);
         clrtoeol();
         /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "");
+        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d/V/L[m Ñ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "");
         getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
         ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
         if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
@@ -1622,7 +1635,9 @@ static int do_gsend(char *userid[],char *title,int num)
                 clear();
                 ansimore2(buf2,NA,0,18);
             }
-        }else
+        }else if (ans[0]=='L') {
+        	currentuser->signature=-1;
+        } else
         {
             strncpy(save_title,title,STRLEN) ;
             break;

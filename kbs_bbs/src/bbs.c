@@ -1231,9 +1231,12 @@ do_quote( char    *filepath,char quote_mode)   /* ÒıÓÃÎÄÕÂ£¬ È«¾Ö±äÁ¿quote_file,
     *quote_file = '\0';
     *quote_user = '\0';
 
-    if(!(currentuser->signature==0||Anony==1))  /* Ç©ÃûµµÎª0Ôò²»Ìí¼Ó */
+    if((numofsig>0)&&!(currentuser->signature==0||Anony==1))  /* Ç©ÃûµµÎª0Ôò²»Ìí¼Ó */
     {
-        addsignature(outf,currentuser,currentuser->signature);
+    	if (currentuser->signature<0)
+        	addsignature(outf,currentuser,(rand()%numofsig)+1);
+    	else
+        	addsignature(outf,currentuser,currentuser->signature);
     }
     fclose(outf);
 }
@@ -1403,7 +1406,7 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
         buf4[0]='\0';
         replymode=0;
     }
-    if(currentuser->signature>numofsig||currentuser->signature<0) /*Ç©ÃûµµNo.¼ì²é*/
+    if(currentuser->signature>numofsig) /*Ç©ÃûµµNo.¼ì²é*/
         currentuser->signature=1;
     anonyboard=seek_in_file("etc/anonymous",currboard); /* ÊÇ·ñÎªÄäÃû°æ */
     /* by zixia: ÄäÃû°æÈ±Ê¡²»Ê¹ÓÃÄäÃû */
@@ -1422,8 +1425,11 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
         clrtoeol();
         prints("Ê¹ÓÃ±êÌâ: %-50s\n", (buf[0]=='\0') ? "[ÕıÔÚÉè¶¨Ö÷Ìâ]":buf);
         clrtoeol();
-        prints("Ê¹ÓÃµÚ %d ¸öÇ©Ãûµµ     %s",currentuser->signature
-               ,(replymode)? buf3: " ");
+        if (currentuser->signature<0)
+        	prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s",(replymode)? buf3: " ");
+        else
+        	prints("Ê¹ÓÃµÚ %d ¸öÇ©Ãûµµ     %s",currentuser->signature
+               	,(replymode)? buf3: " ");
 
         if(buf4[0]=='\0'||buf4[0]=='\n'){
             move(t_lines-1,0);
@@ -1444,7 +1450,8 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
         move(t_lines-1,0);
         clrtoeol();
         /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬%s[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "",(anonyboard)?"[1;32mM[m ÄäÃû£¬":"");
+        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d/V/L[m Ñ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬%s[1;32mEnter[m ½ÓÊÜËùÓĞÉè¶¨: ",numofsig,
+        	(replymode) ? "£¬[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "",(anonyboard)?"[1;32mM[m ÄäÃû£¬":"");
         getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
         ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
         if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
@@ -1460,7 +1467,9 @@ post_article()                         /*ÓÃ»§ POST ÎÄÕÂ */
         }else if(ans[0]=='M')
         {
             Anony=(Anony==1)?0:1;
-        }else if(ans[0]=='V')
+        } else if (ans[0]=='L') {
+        	currentuser->signature=-1;
+    	} else if(ans[0]=='V')
         { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2,currentuser->userid,"signatures");
             move(t_lines-1,0);

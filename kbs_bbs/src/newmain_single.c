@@ -897,13 +897,15 @@ main_bbs(int convit,char* argv)
         int     currmail;
 
 /* Add by KCN for avoid free_mem core dump */
-     topfriend = NULL;
-     big_picture=NULL;
-     user_data = NULL;
+	topfriend = NULL;
+	big_picture=NULL;
+    user_data = NULL;
     load_sysconf();
-     resolve_ucache();
-     resolve_utmp();
+    resolve_ucache();
+    resolve_utmp();
     resolve_boards();
+    srand(time(0)+getpid());
+
      /* commented by period for it changed to local variable 2000.11.12
      pnt = NULL; */
     
