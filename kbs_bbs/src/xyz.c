@@ -759,7 +759,7 @@ int zsend_file(char *filename, char *title)
         return FULLUPDATE;
     buf[78] = '\0';
     escape_filename(buf);
-    sprintf(buf1, "SMTH-%s-", currboard);
+    sprintf(buf1, "SMTH-%s-", currboard->filename);
     strcat(buf1, buf);
     bbs_zsendfile(filename, buf1);
     return FULLUPDATE;

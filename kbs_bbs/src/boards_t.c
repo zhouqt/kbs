@@ -31,16 +31,18 @@ static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
 
 int clear_all_board_read_flag()
 {
-    char save_board[BOARDNAMELEN], ans[4];
+    char ans[4];
+    struct boardheader* save_board;
+    int bid;
 
     getdata(t_lines - 1, 0, "清除所有的未读标记么(Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
 
-        strncpy(save_board, currboard, BOARDNAMELEN);
-        save_board[BOARDNAMELEN - 1] = 0;
-
+        bid=currboardent;
+        save_board=currboard;
         apply_boards(clear_all_board_read_flag_func,NULL);
-        strcpy(currboard, save_board);
+        currboard=save_board;
+        currboardent=bid;
     }
     return 0;
 }
@@ -527,7 +529,7 @@ static int fav_onselect(struct _select_def *conf)
             brc_initial(currentuser->userid, ptr->name);
             memcpy(currBM, ptr->BM, BM_LEN - 1);
             if (DEFINE(currentuser, DEF_FIRSTNEW)) {
-                setbdir(digestmode, buf, currboard);
+                setbdir(digestmode, buf, currboard->filename);
                 tmp = unread_position(buf, ptr);
                 page = tmp - t_lines / 2;
                 getkeep(buf, page > 1 ? page : 1, tmp + 1);

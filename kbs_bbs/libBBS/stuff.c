@@ -570,7 +570,7 @@ char *setbdir(int digestmode, char *buf, char *boardname)
         sprintf(dir, ".TITLE.%s", currentuser->userid);
         break;
 	case DIR_MODE_ZHIDING:
-		strcpy(dir, ".DINGDIR");
+		strcpy(dir, DING_DIR);
 		break;
     case DIR_MODE_NORMAL:
     default:

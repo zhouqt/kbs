@@ -569,10 +569,10 @@ char    *filename, *tmpfile, *deleted;
     char        *ptr, delfname[STRLEN], tmpfname[STRLEN];
     strcpy( tmpfile, filename );
 #ifdef BBSMAIN
-    if (true == checkreadonly(currboard))
+    if (true == checkreadonly(currboard->filename))
     {
-        sprintf(delfname,".%sdeleted",currboard);
-        sprintf(tmpfname,".%stmpfile",currboard);
+        sprintf(delfname,".%sdeleted",currboard->filename);
+        sprintf(tmpfname,".%stmpfile",currboard->filename);
         if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
             strcpy( ptr+1, delfname );
             strcpy( deleted, tmpfile );
@@ -780,9 +780,9 @@ int id1, id2, del_mode;
                 delcount++;
                 if (delcount >= DEL_RANGE_BUF) {
                     for (j = 0; j < DEL_RANGE_BUF; j++)
-                        cancelpost(currboard, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+                        cancelpost(currboard->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
                     delcount = 0;
-                    setbdir(digestmode, genbuf, currboard);
+                    setbdir(digestmode, genbuf, currboard->filename);
                     append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
                 }
                 /*
@@ -839,8 +839,8 @@ int id1, id2, del_mode;
         int j;
 
         for (j = 0; j < delcount; j++)
-            cancelpost(currboard, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
-        setbdir(digestmode, genbuf, currboard);
+            cancelpost(currboard->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+        setbdir(digestmode, genbuf, currboard->filename);
         append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
     }
     else if (uinfo.mode==RMAIL&&!strstr(filename, ".DELETED")) {

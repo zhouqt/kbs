@@ -516,8 +516,8 @@ int brc_initial(char *userid, char *boardname)
     if (bid == 0)
         return 0;
 #ifdef BBSMAIN
-    strncpy(currboard, boardname, STRLEN - BM_LEN);     /*很是ft,居然在这里置currboard */
-    currboard[STRLEN - BM_LEN] = 0;
+    currboardent=bid;
+    currboard=(struct boardheader*)getboard(bid);
 #endif
     /*干脆不搞guest的这个算了*/
     if (!strcmp(userid,"guest")) return 0;

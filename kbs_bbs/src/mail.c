@@ -492,8 +492,7 @@ int do_send(char *userid, char *title, char *q_file)
             }
         } 
         else if (ans[0] == 'U'&&HAS_PERM(currentuser, PERM_SYSOP)) {
-            struct boardheader* b=getbcache(currboard);
-            if(b->flag&BOARD_ATTACH) {
+            if(currboard->flag&BOARD_ATTACH) {
                 chdir("tmp");
                 upload = bbs_zrecvfile();
                 chdir("..");

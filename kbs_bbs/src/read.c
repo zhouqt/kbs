@@ -78,7 +78,7 @@ int search_file(char *filename)
     struct fileheader *rptr, *rptr1;
 
     if (uinfo.mode != RMAIL)
-        setbdir(digestmode, p_name, currboard);
+        setbdir(digestmode, p_name, currboard->filename);
     else
         setmailfile(p_name, currentuser->userid, DOT_DIR);
     BBS_TRY {
@@ -252,7 +252,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     /* add end */
 
     /* add by stiger */
-    sprintf(ding_direct,"boards/%s/%s",currboard,DING_DIR);
+    sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
     /* add end */
 
     /*---	Moved from top of file	period	2000-11-12	---*/
@@ -474,7 +474,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         switch (mode) {
         case NEWDIRECT:
         case DIRCHANGED:
-    sprintf(ding_direct,"boards/%s/%s",currboard,DING_DIR);
+    sprintf(ding_direct,"boards/%s/%s",currboard->filename,DING_DIR);
             recbase = -1;
             last_line = get_num_records(currdirect, ssize);
     /* add by stiger */
@@ -759,7 +759,7 @@ int auth_search_down(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 	int i;
 
-	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	if(strstr(direct,DING_DIR)) locmem=getkeep(currdirect,1,1);
 	else locmem = getkeep(direct, 1, 1);
 
     i = search_author(locmem, 1, fileinfo->owner);
@@ -778,7 +778,7 @@ int auth_search_up(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 	int i;
 
-	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	if(strstr(direct,DING_DIR)) locmem=getkeep(currdirect,1,1);
 	else locmem = getkeep(direct, 1, 1);
 
     i = search_author(locmem, -1, fileinfo->owner);
@@ -796,7 +796,7 @@ int post_search_down(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 	int i;
 
-	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	if(strstr(direct,DING_DIR)) locmem=getkeep(currdirect,1,1);
 	else locmem = getkeep(direct, 1, 1);
     
 	i = search_post(locmem, 1);
@@ -814,7 +814,7 @@ int post_search_up(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 	int i;
 
-	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	if(strstr(direct,DING_DIR)) locmem=getkeep(currdirect,1,1);
 	else locmem = getkeep(direct, 1, 1);
 
 	i = search_post(locmem, -1);
@@ -967,7 +967,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
         saveline(t_lines - 3, 1, linebuffer);
         return DONOTHING;
     }
-    bmlog(currentuser->userid, currboard, 14, 1);
+    bmlog(currentuser->userid, currboard->filename, 14, 1);
 
 	if(SR_BMTOTAL == BMch + SR_BMBASE){
         snprintf(buf, 256, "是否保留引文(Y/N/C)? [Y]: ");
@@ -998,7 +998,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
         if(strlen(buf) >= STRLEN )buf[STRLEN-1] = 0;
 		strcpy(title,buf);
         //post file to the board
-		if(post_file(currentuser,"",filepath,currboard,title,0,2) < 0) {//fail
+		if(post_file(currentuser,"",filepath,currboard->filename,title,0,2) < 0) {//fail
             sprintf(buf,"发表文章到版面出错!请按任意键退出 << ");
 			a_prompt(-1,buf,filepath); //filepath no use
 			saveline(t_lines - 2, 1, NULL);
@@ -1092,7 +1092,7 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
         return DONOTHING;
     }
 
-    bmlog(currentuser->userid, currboard, 14, 1);
+    bmlog(currentuser->userid, currboard->filename, 14, 1);
 
 	if(SR_BMTOTAL == BMch + SR_BMBASE){
         snprintf(buf, 256, "是否保留引文(Y/N/C)? [Y]: ");
@@ -1124,7 +1124,7 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
         if(strlen(buf) >= STRLEN )buf[STRLEN-1] = 0;
 		strcpy(title,buf);
         //post file to the board
-		if(post_file(currentuser,"",filepath,currboard,title,0,2) < 0) {//fail
+		if(post_file(currentuser,"",filepath,currboard->filename,title,0,2) < 0) {//fail
             sprintf(buf,"发表文章到版面出错!请按任意键退出 << ");
 			a_prompt(-1,buf,filepath); //filepath no use
 			saveline(t_lines - 2, 1, NULL);
@@ -1227,7 +1227,7 @@ int t_search_down(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 	int i;
 
-	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	if(strstr(direct,DING_DIR)) locmem=getkeep(currdirect,1,1);
 	else locmem = getkeep(direct, 1, 1);
 
 	i = search_title(locmem, 1);
@@ -1245,7 +1245,7 @@ int t_search_up(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 	int i;
 
-	if(strstr(direct,".DINGDIR")) locmem=getkeep(currdirect,1,1);
+	if(strstr(direct,DING_DIR)) locmem=getkeep(currdirect,1,1);
 	else locmem = getkeep(direct, 1, 1);
     
 	i = search_title(locmem, -1);
@@ -1486,15 +1486,15 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             digest_post(locmem->crs_line, &SR_fptr, currdirect);
             break;
         case SR_BMIMPORT:
-            if (a_Import(path, currboard, &SR_fptr, true, currdirect, locmem->crs_line)!=0);     /* Leeward 98.04.15 */
+            if (a_Import(path, currboard->filename, &SR_fptr, true, currdirect, locmem->crs_line)!=0);     /* Leeward 98.04.15 */
 	        ret++;
             break;
         case SR_BMTMP:         /* Leeward 98.04.16 */
             if (-1 == B)
-                a_SeSave("0Announce", currboard, &SR_fptr, true,currdirect,locmem->crs_line,1);
+                a_SeSave("0Announce", currboard->filename, &SR_fptr, true,currdirect,locmem->crs_line,1);
             else
-                /*a_Save(NULL, currboard, &SR_fptr, true, currdirect, locmem->crs_line);*/
-				a_SeSave("0Announce", currboard, &SR_fptr, true,currdirect,locmem->crs_line,0);
+                /*a_Save(NULL, currboard->filename, &SR_fptr, true, currdirect, locmem->crs_line);*/
+				a_SeSave("0Announce", currboard->filename, &SR_fptr, true,currdirect,locmem->crs_line,0);
             break;
         }
         if (!isstart) {
@@ -1512,7 +1512,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             break;
         }
         if (uinfo.mode != RMAIL)
-            setbfile(genbuf, currboard, SR_fptr.filename);
+            setbfile(genbuf, currboard->filename, SR_fptr.filename);
         else
             setmailfile(genbuf, currentuser->userid, SR_fptr.filename);
         previous = locmem->crs_line;
@@ -1757,7 +1757,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 
                     if (uinfo.mode != RMAIL)
 
-                        setbfile(p_name, currboard, pFh1->filename);
+                        setbfile(p_name, currboard->filename, pFh1->filename);
                     else
                         setmailfile(p_name, currentuser->userid, pFh1->filename);
                     if (searchpattern(p_name, query)) {
@@ -1817,7 +1817,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 		dirp=strrchr(dirtmp,'/');
 		if(dirp){
 			*dirp='\0';
-			strcat(dirtmp,"/.DINGDIR");
+			strcat(dirtmp,DING_DIR);
 			last_line += get_num_records(dirtmp,sizeof(struct fileheader));
 		}
 	}
@@ -1839,7 +1839,7 @@ static int search_threadid(struct keeploc *locmem, int offset, int groupid, int 
 
     now = locmem->crs_line;
 	/* add by stiger */
-	if(strstr(locmem->key,".DINGDIR")) return 0;
+	if(strstr(locmem->key,DING_DIR)) return 0;
 
 /*    refresh();*/
     memset(&SR_fptr, 0, sizeof(struct fileheader));

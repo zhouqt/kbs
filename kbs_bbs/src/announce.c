@@ -651,7 +651,7 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
             a_prompt(-1, buf, ans);
         }
     }
-    change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
+    change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
     return 1;
 }
 
@@ -730,7 +730,7 @@ int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *
     }
     sprintf(buf, "将 boards/%s/%s 存入暂存档", key, fileinfo->filename);
     if (direct!=NULL)
-    change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
+    change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
     a_report(buf);
     if (!nomsg) {
         sprintf(buf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
@@ -798,8 +798,8 @@ int ent;
             /*
              * Leeward 98.04.15 add below FILE_IMPORTED 
              */
-            change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
-            bmlog(currentuser->userid, currboard, 12, 1);
+            change_post_flag(currBM, currentuser, digestmode, currboard->filename, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
+            bmlog(currentuser->userid, currboard->filename, 12, 1);
         } else {
             sprintf(buf, " 收入精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
             if (!nomsg)
@@ -1012,9 +1012,9 @@ int mode;
                 }
             }
             if (mode == ADDMAIL)
-                bmlog(currentuser->userid, currboard, 12, 1);
+                bmlog(currentuser->userid, currboard->filename, 12, 1);
             else
-                bmlog(currentuser->userid, currboard, 13, 1);
+                bmlog(currentuser->userid, currboard->filename, 13, 1);
         } else {
             //retry
             a_loadnames(pm);
@@ -1055,7 +1055,7 @@ MENU *pm;
     pm->now = num;
     if (a_savenames(pm) == 0) {
         sprintf(genbuf, "改变 %s 下第 %d 项的次序到第 %d 项", pm->path + 17, temp, pm->now + 1);
-        bmlog(currentuser->userid, currboard, 13, 1);
+        bmlog(currentuser->userid, currboard->filename, 13, 1);
         a_report(genbuf);
     } else {
         char buf[80], ans[40];
@@ -1231,7 +1231,7 @@ int paste;
                         pm2.item[n] = pm2.item[n + 1];
                     if (a_savenames(&pm2) == 0) {
                         sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
-                        bmlog(currentuser->userid, currboard, 13, 1);
+                        bmlog(currentuser->userid, currboard->filename, 13, 1);
                         a_report(genbuf);
                     } else {
                         char buf[80], ans[40];
@@ -1343,7 +1343,7 @@ MENU *pm;
         pm->item[n] = pm->item[n + 1];
     if (a_savenames(pm) == 0) {
         sprintf(genbuf, "删除文件或目录: %s", fpath + 17);
-        bmlog(currentuser->userid, currboard, 13, 1);
+        bmlog(currentuser->userid, currboard->filename, 13, 1);
         a_report(genbuf);
     } else {
         char buf[80], ans[40];
@@ -1683,32 +1683,26 @@ int lastlevel, lastbmonly;
                 if (get_a_boardname(bname, "请输入要转贴的讨论区名称: ")) {
                     move(1, 0);
                     clrtoeol();
-                    strcpy(tmp, currboard);
-                    strcpy(currboard, bname);
-                    if (deny_me(currentuser->userid, currboard)) {
+                    if (deny_me(currentuser->userid, bname)) {
                         prints("对不起，你在 %s 版被停止发表文章的权力", bname);
                         pressreturn();
-                        strcpy(currboard, tmp);
                         me.page = 9999;
                         break;
                     }
-                    if (!haspostperm(currentuser, currboard)) {
+                    if (!haspostperm(currentuser, bname)) {
                         move(1, 0);
-                        prints("您尚无权限在 %s 发表文章.\n", currboard);
+                        prints("您尚无权限在 %s 发表文章.\n", bname);
                         prints("如果您尚未注册，请在个人工具箱内详细注册身份\n");
                         prints("未通过身份注册认证的用户，没有发表文章的权限。\n");
                         prints("谢谢合作！ :-) \n");
                         pressreturn();
-                        strcpy(currboard, tmp);
                         me.page = 9999;
                         break;
                     }
-                    if (check_readonly(currboard)) {
-                        strcpy(currboard, tmp);
+                    if (check_readonly(bname)) {
                         me.page = 9999;
                         break;
                     }
-                    strcpy(currboard, tmp);
                     sprintf(tmp, "你确定要转贴到 %s 版吗", bname);
                     if (askyn(tmp, 0) == 1) {
                         post_file(currentuser, "", fname, bname, me.item[me.now]->title, 0, 2);

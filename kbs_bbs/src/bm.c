@@ -41,7 +41,7 @@ int listdeny(int page)
     prints("设定无法 Post 的名单\n");
     move(y, x);
     CreateNameList();
-    setbfile(genbuf, currboard, "deny_users");
+    setbfile(genbuf, currboard->filename, "deny_users");
     if ((fp = fopen(genbuf, "r")) == NULL) {
         prints("(none)\n");
         return 0;
@@ -112,8 +112,8 @@ int addtodeny(char *uident)
 
     now = time(0);
     strncpy(date, ctime(&now) + 4, 7);
-    setbfile(genbuf, currboard, "deny_users");
-    if (seek_in_file(genbuf, uident) || !strcmp(currboard, "denypost"))
+    setbfile(genbuf, currboard->filename, "deny_users");
+    if (seek_in_file(genbuf, uident) || !strcmp(currboard->filename, "denypost"))
         return -1;
     if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS))
         maxdeny = 70;
@@ -244,7 +244,7 @@ int addtodeny(char *uident)
         memcpy(&saveuser, currentuser, sizeof(struct userec));
         saveptr = currentuser;
         currentuser = &saveuser;
-        sprintf(buffer, "%s被取消在%s版的发文权限", uident, currboard);
+        sprintf(buffer, "%s被取消在%s版的发文权限", uident, currboard->filename);
 
         if ((HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) && !chk_BM_instr(currBM, currentuser->userid)) {
             my_flag = 0;
@@ -253,7 +253,7 @@ int addtodeny(char *uident)
             fprintf(fn, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
             fprintf(fn, "来  源: %s\n", NAME_BBS_ENGLISH);
             fprintf(fn, "\n");
-            fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard, denymsg);
+            fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard->filename, denymsg);
             if (denyday)
                 fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天", denyday);
             else
@@ -273,7 +273,7 @@ int addtodeny(char *uident)
             fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
             fprintf(fn, "来  源: %s \n", fromhost);
             fprintf(fn, "\n");
-            fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard, denymsg);
+            fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard->filename, denymsg);
             if (denyday)
                 fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天", denyday);
             else
@@ -287,7 +287,7 @@ int addtodeny(char *uident)
         fclose(fn);
         mail_file(currentuser->userid, filename, uident, buffer, 0, NULL);
         fn = fopen(filename, "w+");
-        fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", uident, currboard, denymsg);
+        fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", uident, currboard->filename, denymsg);
         if (denyday)
             fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%d\x1b[m 天。\n", denyday);
         else
@@ -300,7 +300,7 @@ int addtodeny(char *uident)
         }
         fprintf(fn, "                              %s\n", ctime(&now));
         fclose(fn);
-        post_file(currentuser, "", filename, currboard, buffer, 0, 2);
+        post_file(currentuser, "", filename, currboard->filename, buffer, 0, 2);
         /*
          * unlink(filename); 
          */
@@ -310,12 +310,12 @@ int addtodeny(char *uident)
         getuser(uident, &lookupuser);
 
         if (PERM_BOARDS & lookupuser->userlevel)
-            sprintf(buffer, "%s 封某版" NAME_BM " %s 在 %s", currentuser->userid, uident, currboard);
+            sprintf(buffer, "%s 封某版" NAME_BM " %s 在 %s", currentuser->userid, uident, currboard->filename);
         else
-            sprintf(buffer, "%s 封 %s 在 %s", currentuser->userid, uident, currboard);
+            sprintf(buffer, "%s 封 %s 在 %s", currentuser->userid, uident, currboard->filename);
         post_file(currentuser, "", filename, "denypost", buffer, 0, 8);
         unlink(filename);
-        bmlog(currentuser->userid, currboard, 10, 1);
+        bmlog(currentuser->userid, currboard->filename, 10, 1);
     }
     return 0;
 }
@@ -392,7 +392,7 @@ int deny_user(int ent, struct fileheader *fileinfo, char *direct)
             sprintf(genbuf, "删除无法 POST 的使用者: ");
             getdata(1, 0, genbuf, uident, 13, DOECHO, NULL, true);
             find = 0;           /*Haohmaru.99.12.09.原来的代码如果被封者已自杀就删不掉了 */
-            setbfile(genbuf, currboard, "deny_users");
+            setbfile(genbuf, currboard->filename, "deny_users");
             if ((fp = fopen(genbuf, "r")) == NULL) {
                 prints("(none)\n");
                 return 0;
@@ -439,7 +439,7 @@ int deny_user(int ent, struct fileheader *fileinfo, char *direct)
             move(1, 0);
             clrtoeol();
             if (uident[0] != '\0') {
-                if (deldeny(currentuser, currboard, uident, 0)) {
+                if (deldeny(currentuser, currboard->filename, uident, 0)) {
                 }
             }
         } else if (count > 20 && isdigit(ans[0])) {
@@ -466,7 +466,6 @@ int addclubmember(char *uident, int readperm)
     char ans[8];
     int seek;
     struct userec *lookupuser;
-    struct boardheader bh;
 
     if (!(id = getuser(uident, &lookupuser))) {
         move(3, 0);
@@ -478,9 +477,9 @@ int addclubmember(char *uident, int readperm)
     }
     strcpy(uident, lookupuser->userid);
     if (readperm)
-        setbfile(genbuf, currboard, "read_club_users");
+        setbfile(genbuf, currboard->filename, "read_club_users");
     else
-        setbfile(genbuf, currboard, "write_club_users");
+        setbfile(genbuf, currboard->filename, "write_club_users");
 
 	seek = seek_in_file(genbuf, uident);
 	if (seek) {
@@ -494,14 +493,15 @@ int addclubmember(char *uident, int readperm)
 	if ((*ans != 'Y') && (*ans != 'y'))
 		return -1;
 		
-    if ((i = getboardnum(currboard, &bh)) == 0)
-        return DONOTHING;
+//    if ((i = getboardnum(currboard->filename, &bh)) == 0)
+//        return DONOTHING;
+    i=currboardent;
     seek = addtofile(genbuf, uident);;
     if (seek == 1) {
         if (readperm == 1)      /*读权限*/
-            lookupuser->club_read_rights[(bh.clubnum - 1) >> 5] |= 1 << ((bh.clubnum - 1) & 0x1f);
+            lookupuser->club_read_rights[(currboard->clubnum - 1) >> 5] |= 1 << ((currboard->clubnum - 1) & 0x1f);
         else
-            lookupuser->club_write_rights[(bh.clubnum - 1) >> 5] |= 1 << ((bh.clubnum - 1) & 0x1f);
+            lookupuser->club_write_rights[(currboard->clubnum - 1) >> 5] |= 1 << ((currboard->clubnum - 1) & 0x1f);
         return FULLUPDATE;
     }
     return DONOTHING;
@@ -516,7 +516,6 @@ int delclubmember(char *uident, int readperm)
     int i;
     int ret;
     struct userec *lookupuser;
-    struct boardheader bh;
 
     if (!(id = getuser(uident, &lookupuser))) {
         move(3, 0);
@@ -527,18 +526,17 @@ int delclubmember(char *uident, int readperm)
         return 0;
     }
     strcpy(uident, lookupuser->userid);
-    if ((i = getboardnum(currboard, &bh)) == 0)
-        return DONOTHING;
+    i=currboardent;
     if (readperm)
-        setbfile(fn, currboard, "read_club_users");
+        setbfile(fn, currboard->filename, "read_club_users");
     else
-        setbfile(fn, currboard, "write_club_users");
+        setbfile(fn, currboard->filename, "write_club_users");
     ret = del_from_file(fn, uident);
     if (ret == 0) {
         if (readperm == 1)      /*读权限*/
-            lookupuser->club_read_rights[(bh.clubnum - 1) >> 5] &= ~(1 << ((bh.clubnum - 1) & 0x1f));
+            lookupuser->club_read_rights[(currboard->clubnum - 1) >> 5] &= ~(1 << ((currboard->clubnum - 1) & 0x1f));
         else
-            lookupuser->club_write_rights[(bh.clubnum - 1) >> 5] &= ~(1 << ((bh.clubnum - 1) & 0x1f));
+            lookupuser->club_write_rights[(currboard->clubnum - 1) >> 5] &= ~(1 << ((currboard->clubnum - 1) & 0x1f));
         return FULLUPDATE;
     }
     return DONOTHING;
@@ -550,16 +548,14 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
     char ans[8], buf[STRLEN];
     int count, i;
     int readperm;
-    struct boardheader bh;
 
     if (!(chk_currBM(currBM, currentuser))) {
         return DONOTHING;
     }
-    if ((i = getboardnum(currboard, &bh)) == 0)
+    i=currboardent;
+    if ((!(currboard->flag & BOARD_CLUB_READ) && !(currboard->flag & BOARD_CLUB_WRITE)) || currboard->clubnum <= 0 || currboard->clubnum >= MAXCLUB)
         return DONOTHING;
-    if ((!(bh.flag & BOARD_CLUB_READ) && !(bh.flag & BOARD_CLUB_WRITE)) || bh.clubnum <= 0 || bh.clubnum >= MAXCLUB)
-        return DONOTHING;
-    if ((bh.flag & BOARD_CLUB_READ) && (bh.flag & BOARD_CLUB_WRITE)) {
+    if ((currboard->flag & BOARD_CLUB_READ) && (currboard->flag & BOARD_CLUB_WRITE)) {
         int choose;
         int left = (80 - 24) / 2;
         int top = (scr_lns - 11) / 2;
@@ -575,14 +571,14 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
             readperm = 1;
         else
             readperm = 0;
-    } else if (bh.flag & BOARD_CLUB_READ)
+    } else if (currboard->flag & BOARD_CLUB_READ)
         readperm = 1;
     else
         readperm = 0;
     if (readperm)
-        setbfile(buf, currboard, "read_club_users");
+        setbfile(buf, currboard->filename, "read_club_users");
     else
-        setbfile(buf, currboard, "write_club_users");
+        setbfile(buf, currboard->filename, "write_club_users");
     ansimore(buf, true);
     while (1) {
         clear();
@@ -598,7 +594,7 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
             usercomplete("增加俱乐部成员: ", uident);
             if (*uident != '\0') {
                 if (addclubmember(uident, readperm) == 1) {
-                    sprintf(genbuf, "%s由%s授予%s俱乐部权力", uident, currentuser->userid, currboard);
+                    sprintf(genbuf, "%s由%s授予%s俱乐部权力", uident, currentuser->userid, currboard->filename);
                     securityreport(genbuf, NULL, NULL);
                     mail_buf(currentuser, genbuf, uident, genbuf);
                     deliverreport(genbuf, genbuf);
@@ -613,7 +609,7 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
                 sprintf(genbuf, "真的要取消%s的俱乐部权力么？", uident);
                 if (askyn(genbuf, true))
                     if (delclubmember(uident, readperm)) {
-                        sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力", uident, currentuser->userid, currboard);
+                        sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力", uident, currentuser->userid, currboard->filename);
                         securityreport(genbuf, NULL, NULL);
                         mail_buf(currentuser, genbuf, uident, genbuf);
                         deliverreport(genbuf, genbuf);

@@ -58,7 +58,7 @@ char *str;
 {
     char buf[STRLEN];
 
-    sprintf(buf, "%s %s", currboard, str);
+    sprintf(buf, "%s %s", currboard->filename, str);
     bbslog("user","%s",buf);
 }
 
@@ -81,7 +81,7 @@ char *buf, *bname, *filename;
 
 void setcontrolfile()
 {
-    setvfile(controlfile, currboard, "control");
+    setvfile(controlfile, currboard->filename, "control");
 }
 
 int b_notes_edit()
@@ -94,8 +94,8 @@ int b_notes_edit()
         return 0;
     }
     clear();
-    makevdir(currboard);
-    setvfile(buf, currboard, "notes");
+    makevdir(currboard->filename);
+    setvfile(buf, currboard->filename, "notes");
     getdata(1, 0, "(E)±à¼­ (D)É¾³ý ±¾ÌÖÂÛÇøµÄ±¸ÍüÂ¼? [E]: ", ans, 2,
             DOECHO, NULL, true);
     if (ans[0] == 'D' || ans[0] == 'd') {
@@ -113,7 +113,7 @@ int b_notes_edit()
     if (aborted == -1) {
         pressreturn();
     } else {
-        setvfile(buf, currboard, "noterec");
+        setvfile(buf, currboard->filename, "noterec");
         unlink(buf);
     }
     return FULLUPDATE;
@@ -129,8 +129,8 @@ int b_sec_notes_edit()
         return 0;
     }
     clear();
-    makevdir(currboard);
-    setvfile(buf, currboard, "secnotes");
+    makevdir(currboard->filename);
+    setvfile(buf, currboard->filename, "secnotes");
     getdata(1, 0, "(E)±à¼­ (D)É¾³ý ±¾ÌÖÂÛÇøµÄÃØÃÜ±¸ÍüÂ¼? [E]: ", ans, 2,
             DOECHO, NULL, true);
     if (ans[0] == 'D' || ans[0] == 'd') {
@@ -148,7 +148,7 @@ int b_sec_notes_edit()
     if (aborted == -1) {
         pressreturn();
     } else {
-        setvfile(buf, currboard, "noterec");
+        setvfile(buf, currboard->filename, "noterec");
         unlink(buf);
     }
     return FULLUPDATE;
@@ -166,8 +166,8 @@ int b_jury_edit()
         return 0;
     }
     clear();
-    makevdir(currboard);
-    setvfile(buf, currboard, "jury");
+    makevdir(currboard->filename);
+    setvfile(buf, currboard->filename, "jury");
     getdata(1, 0, "(E)±à¼­ (D)É¾³ý ±¾ÌÖÂÛÇøÖÙ²ÃÎ¯Ô±Ãûµ¥? (C)È¡Ïû [C]: ",
             ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'D' || ans[0] == 'd') {
@@ -192,16 +192,16 @@ int b_jury_edit()
         char secu[STRLEN];
 
         if (aborted == 111) {
-            sprintf(secu, "É¾³ý %s °æµÄÖÙ²ÃÎ¯Ô±Ãûµ¥", currboard);
+            sprintf(secu, "É¾³ý %s °æµÄÖÙ²ÃÎ¯Ô±Ãûµ¥", currboard->filename);
             securityreport(secu, NULL, NULL);
             post_file(currentuser, "", buf, "JuryMail", secu, 0, 2);
         } else {
-            sprintf(secu, "ÐÞ¸Ä %s °æµÄÖÙ²ÃÎ¯Ô±Ãûµ¥", currboard);
+            sprintf(secu, "ÐÞ¸Ä %s °æµÄÖÙ²ÃÎ¯Ô±Ãûµ¥", currboard->filename);
             securityreport(secu, NULL, NULL);
             post_file(currentuser, "", buf, "syssecurity", secu, 0, 2);
             post_file(currentuser, "", buf, "JuryMail", secu, 0, 2);
         }
-        setvfile(buf, currboard, "juryrec");
+        setvfile(buf, currboard->filename, "juryrec");
         unlink(buf);
     }
     return FULLUPDATE;
@@ -237,7 +237,8 @@ int b_close(struct boardheader *fh,void* arg)
 {
     int end;
 
-    strcpy(currboard, fh->filename);
+    currboard= fh;
+    currboardent=getbnum(fh->filename);
     setcontrolfile();
     end = get_num_records(controlfile, sizeof(currvote));
     for (vnum = end; vnum >= 1; vnum--) {
@@ -253,6 +254,8 @@ int b_closepolls()
     FILE *cfp;
     char buf[80];
     time_t now;
+    struct boardheader* bh;
+    int bid;
 
     now = time(NULL);
     strcpy(buf, "vote/lastpolling");
@@ -267,10 +270,12 @@ int b_closepolls()
         return 0;
     }
     fprintf(cfp, "%s", ctime(&now));
-    strcpy(buf, currboard);
+    bh=currboard;
+    bid=currboardent;
     fclose(cfp);
     apply_boards(b_close,NULL);
-    strcpy(currboard, buf);
+    currboard=bh;
+    currboardent=bid;
     return 0;
 }
 int count_result(struct ballot *ptr, int idx, char *arg)
@@ -329,7 +334,7 @@ int get_result_title()
     if (currvote.type == VOTE_VALUE)
         fprintf(sug, "¡Ñ ´Ë´ÎÍ¶Æ±µÄÖµ²»¿É³¬¹ý£º%d\n\n", currvote.maxtkt);
     fprintf(sug, "¡Ñ Æ±Ñ¡ÌâÄ¿ÃèÊö£º\n\n");
-    sprintf(buf, "vote/%s/desc.%lu", currboard, currvote.opendate);
+    sprintf(buf, "vote/%s/desc.%lu", currboard->filename, currvote.opendate);
     b_suckinfile(sug, buf);
     return 0;
 }
@@ -342,9 +347,9 @@ static int mk_result(int num)
     unsigned int total = 0;
 
     setcontrolfile();
-    sprintf(fname, "vote/%s/flag.%lu", currboard, currvote.opendate);
+    sprintf(fname, "vote/%s/flag.%lu", currboard->filename, currvote.opendate);
     count_result(NULL, NULL, 0);
-    sprintf(sugname, "vote/%s/tmp.%d", currboard, getpid());
+    sprintf(sugname, "vote/%s/tmp.%d", currboard->filename, getpid());
     if ((sug = fopen(sugname, "w")) == NULL) {
         bbslog("3error","%s","open vote tmp file error");
         prints("Error: ½áÊøÍ¶Æ±´íÎó...\n");
@@ -361,7 +366,7 @@ static int mk_result(int num)
             (currvote.type != VOTE_ASKING) ? "½¨Òé»òÒâ¼û" : "´Ë´ÎµÄ×÷´ð");
     fclose(sug);
     sug = NULL;
-    sprintf(nname, "vote/%s/results", currboard);
+    sprintf(nname, "vote/%s/results", currboard->filename);
     if ((sug = fopen(nname, "w")) == NULL) {
         bbslog("user","%s","open vote newresult file error");
         prints("Error: ½áÊøÍ¶Æ±´íÎó...\n");
@@ -372,7 +377,7 @@ static int mk_result(int num)
        if(currvote.type==VOTE_VALUE)
        fprintf( sug, "** ´Ë´ÎÍ¶Æ±µÄÖµ²»¿É³¬¹ý£º[1m%d[m\n\n" ,currvote.maxtkt);
        fprintf( sug, "** Æ±Ñ¡ÌâÄ¿ÃèÊö£º\n\n" );
-       sprintf( buf, "vote/%s/desc.%d",currboard,currvote.opendate );
+       sprintf( buf, "vote/%s/desc.%d",currboard->filename,currvote.opendate );
        b_suckinfile( sug, buf ); */
     get_result_title();
     fprintf(sug, "** Í¶Æ±½á¹û:\n\n");
@@ -412,17 +417,17 @@ static int mk_result(int num)
     unlink(sugname);
     fclose(sug);
     sug = NULL;
-    sprintf(title, "[¹«¸æ] %s °æµÄÍ¶Æ±½á¹û", currboard);
+    sprintf(title, "[¹«¸æ] %s °æµÄÍ¶Æ±½á¹û", currboard->filename);
     mail_file(currentuser->userid, nname, currvote.userid, title, 0, NULL);
 #ifdef NINE_BUILD
     if (1)
 #else
-    if (normal_board(currboard))
+    if (normal_board(currboard->filename))
 #endif
     {
         post_file(currentuser, "", nname, "vote", title, 0, 1);
     }
-    post_file(currentuser, "", nname, currboard, title, 0, 1);
+    post_file(currentuser, "", nname, currboard->filename, title, 0, 1);
     dele_vote(num);
     return 0;
 }
@@ -435,9 +440,9 @@ int check_result(int num)
     unsigned int total = 0;
 
     setcontrolfile();
-    sprintf(fname, "vote/%s/flag.%lu", currboard, currvote.opendate);
+    sprintf(fname, "vote/%s/flag.%lu", currboard->filename, currvote.opendate);
     count_result(NULL, 0, 0);
-    sprintf(sugname, "vote/%s/tmp.%d", currboard, getpid());
+    sprintf(sugname, "vote/%s/tmp.%d", currboard->filename, getpid());
     if ((sug = fopen(sugname, "w")) == NULL) {
         bbslog("user","%s","open vote tmp file error");
         prints("Error: ¼ì²éÍ¶Æ±´íÎó...\n");
@@ -454,7 +459,7 @@ int check_result(int num)
             (currvote.type != VOTE_ASKING) ? "½¨Òé»òÒâ¼û" : "´Ë´ÎµÄ×÷´ð");
     fclose(sug);
     sug = NULL;
-    sprintf(nname, "vote/%s/results", currboard);
+    sprintf(nname, "vote/%s/results", currboard->filename);
     if ((sug = fopen(nname, "w")) == NULL) {
         bbslog("user","%s","open vote newresult file error");
         prints("Error: ½áÊøÍ¶Æ±´íÎó...\n");
@@ -494,7 +499,7 @@ int check_result(int num)
     unlink(sugname);
     fclose(sug);
     sug = NULL;
-    sprintf(title, "[¼ì²é] %s °æµÄÍ¶Æ±½á¹û", currboard);
+    sprintf(title, "[¼ì²é] %s °æµÄÍ¶Æ±½á¹û", currboard->filename);
     mail_file(currentuser->userid, nname, currentuser->userid, title, BBSPOST_MOVE, NULL);
     return 0;
 }
@@ -621,7 +626,7 @@ char *bname;
         currvote.totalitems = 0;
         break;
     }
-    setvoteflag(currboard, 1);
+    setvoteflag(bname, 1);
     clear();
     /*Haohmaru.99.11.17.¸ù¾ÝÍ¶Æ±¹ÜÀíÔ±ÉèµÄÏÞÖÆÌõ¼þÅÐ¶ÏÊÇ·ñÈÃ¸ÃÊ¹ÓÃÕßÍ¶Æ± */
     if (HAS_PERM(currentuser, PERM_SYSOP)
@@ -658,7 +663,7 @@ char *bname;
         v_limit->day = 0;
     }
     clear();
-    sprintf(limitfile, "vote/%s/limit.%lu", currboard, ball->opendate);
+    sprintf(limitfile, "vote/%s/limit.%lu", bname, ball->opendate);
     if (append_record(limitfile, v_limit, sizeof(struct votelimit)) == -1) {
         prints("·¢ÉúÑÏÖØµÄ´íÎó£¬ÎÞ·¨Ð´ÈëÏÞÖÆÎÄ¼þ£¬ÇëÍ¨¸æÕ¾³¤");
         b_report("Append limit file Error!!");
@@ -685,7 +690,7 @@ char *bname;
         range++;
         sprintf(votename, "tmp/votetmp.%d", getpid());
         if ((sug = fopen(votename, "w")) != NULL) {
-            sprintf(buf, "[Í¨Öª] %s ¾Ù°ìÍ¶Æ±£º%s", currboard, ball->title);
+            sprintf(buf, "[Í¨Öª] %s ¾Ù°ìÍ¶Æ±£º%s", bname, ball->title);
             get_result_title();
             if (ball->type != VOTE_ASKING && ball->type != VOTE_VALUE) {
                 fprintf(sug, "\n¡¾Ñ¡ÏîÈçÏÂ¡¿\n");
@@ -697,11 +702,11 @@ char *bname;
             fclose(sug);
             sug = NULL;
 #ifdef NINE_BUILD
-            post_file(currentuser, "", votename, currboard, buf, 0, 1);
+            post_file(currentuser, "", votename, bname, buf, 0, 1);
             post_file(currentuser, "", votename, "vote", buf, 0, 1);
 #else
-            if (!normal_board(currboard)) {
-                post_file(currentuser, "", votename, currboard, buf, 0, 1);
+            if (!normal_board(bname)) {
+                post_file(currentuser, "", votename, bname, buf, 0, 1);
             } else {
                 post_file(currentuser, "", votename, "vote", buf, 0, 1);
             }
@@ -903,11 +908,11 @@ int user_vote(int num)
     int votevalue;
     int aborted = false, pos;
 
-    if (!haspostperm(currentuser,currboard))
+    if (!haspostperm(currentuser,currboard->filename))
 	    return -1;
     move(t_lines - 2, 0);
     get_record(controlfile, &currvote, sizeof(struct votebal), num);
-    sprintf(fname, "vote/%s/flag.%lu", currboard, currvote.opendate);
+    sprintf(fname, "vote/%s/flag.%lu", currboard->filename, currvote.opendate);
     if ((pos =
          search_record(fname, &uservote, sizeof(uservote),
                        (RECORD_FUNC_ARG) cmpvuid,
@@ -919,7 +924,7 @@ int user_vote(int num)
     }
     strcpy(uservote.uid, currentuser->userid);
     sprintf(bname, "desc.%lu", currvote.opendate);
-    setvfile(buf, currboard, bname);
+    setvfile(buf, currboard->filename, bname);
     ansimore(buf, true);
     move(0, 0);
     /*Haohmaru.99.11.17.¸ù¾Ý°æÖ÷ÉèµÄÏÞÖÆÌõ¼þÅÐ¶ÏÊÇ·ñÈÃ¸ÃÊ¹ÓÃÕßÍ¶Æ± */
@@ -928,7 +933,7 @@ int user_vote(int num)
     userlimit.numposts = 0;
     userlimit.stay = 0;
     userlimit.day = 0;
-    sprintf(limitfile, "vote/%s/limit.%lu", currboard, currvote.opendate);
+    sprintf(limitfile, "vote/%s/limit.%lu", currboard->filename, currvote.opendate);
     get_record(limitfile, &userlimit, sizeof(struct votelimit), 1);
     if ((currvote.type <= 0) || (currvote.type > 5))
         currvote.type = 1;
@@ -1009,7 +1014,7 @@ int printvote(struct votebal *ent, int idx, int *i)
     else if (*i <= page)
         return 0;
     sprintf(buf, "flag.%lu", ent->opendate);
-    setvfile(flagname, currboard, buf);
+    setvfile(flagname, currboard->filename, buf);
     if (search_record
         (flagname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG) cmpvuid,
          currentuser->userid) <= 0) {
@@ -1034,11 +1039,11 @@ static int dele_vote(int num)
 {
     char buf[STRLEN];
 
-    sprintf(buf, "vote/%s/flag.%lu", currboard, currvote.opendate);
+    sprintf(buf, "vote/%s/flag.%lu", currboard->filename, currvote.opendate);
     unlink(buf);
-    sprintf(buf, "vote/%s/desc.%lu", currboard, currvote.opendate);
+    sprintf(buf, "vote/%s/desc.%lu", currboard->filename, currvote.opendate);
     unlink(buf);
-    sprintf(buf, "vote/%s/limit.%lu", currboard, currvote.opendate);    /*Haohmaru.99.11.18 */
+    sprintf(buf, "vote/%s/limit.%lu", currboard->filename, currvote.opendate);    /*Haohmaru.99.11.18 */
     unlink(buf);
     if (delete_record(controlfile, sizeof(currvote), num, NULL, NULL) ==
         -1) {
@@ -1047,7 +1052,7 @@ static int dele_vote(int num)
     }
     range--;
     if (get_num_records(controlfile, sizeof(currvote)) == 0) {
-        setvoteflag(currboard, 0);
+        setvoteflag(currboard->filename, 0);
     }
     return 0;
 }
@@ -1070,7 +1075,7 @@ char *bname;
 
 int b_vote_maintain()
 {
-    return vote_maintain(currboard);
+    return vote_maintain(currboard->filename);
 }
 
 int vote_title()
@@ -1101,7 +1106,7 @@ int allnum, pagenum;
         deal = 1;
         break;
     case 'R':
-        vote_results(currboard);
+        vote_results(currboard->filename);
         deal = 1;
         break;
     case 'H':
@@ -1113,7 +1118,7 @@ int allnum, pagenum;
     case 'a':
         if (!chk_currBM(currBM, currentuser))
             return true;
-        vote_maintain(currboard);
+        vote_maintain(currboard->filename);
         deal = 1;
         break;
     case 'O':
@@ -1215,42 +1220,40 @@ int b_vote()
         clrtobot();
         prints("±§Ç¸, Ä¿Ç°²¢Ã»ÓÐÈÎºÎÍ¶Æ±¾ÙÐÐ¡£\n");
         pressreturn();
-        setvoteflag(currboard, 0);
+        setvoteflag(currboard->filename, 0);
         return FULLUPDATE;
     }
     setlistrange(num_of_vote);
     clear();
     voting = choose(false, 0, vote_title, vote_key, Show_Votes, user_vote);
     clear();
-    return /*user_vote( currboard ) */ FULLUPDATE;
+    return /*user_vote( currboard->filename ) */ FULLUPDATE;
 }
 
 int b_results()
 {
-    return vote_results(currboard);
+    return vote_results(currboard->filename);
 }
 
 int m_vote()
 {
-    char buf[STRLEN];
-
-    strcpy(buf, currboard);
-    strcpy(currboard, DEFAULTBOARD);
     modify_user_mode(ADMIN);
     vote_maintain(DEFAULTBOARD);
-    strcpy(currboard, buf);
     return 0;
 }
 
 int x_vote()
 {
     char buf[STRLEN];
+    struct boardheader* bh;
+    int bid;
 
     modify_user_mode(XMENU);
-    strcpy(buf, currboard);
-    strcpy(currboard, DEFAULTBOARD);
+    bh=currboard;
+    bid=currboardent;
     b_vote();
-    strcpy(currboard, buf);
+    currboard-=bh;
+    currboardent=bid;
     return 0;
 }
 

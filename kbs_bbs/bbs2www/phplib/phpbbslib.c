@@ -912,7 +912,7 @@ static PHP_FUNCTION(bbs_getarticles)
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
 	if(mode == DIR_MODE_NORMAL){
-    	sprintf(dirpath1,"boards/%s/.DINGDIR",board);
+    	sprintf(dirpath1,"boards/%s/" DING_DIR,board);
     	total += get_num_records(dirpath1, sizeof(struct fileheader));
 	}
     /* add end */
@@ -986,7 +986,7 @@ static PHP_FUNCTION(bbs_countarticles)
     setbdir(mode, dirpath, bp->filename);
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
-    sprintf(dirpath,"boards/%s/.DINGDIR",bp->filename);
+    sprintf(dirpath,"boards/%s/" DING_DIR,bp->filename);
     total += get_num_records(dirpath, sizeof(struct fileheader));
     /* add end */
     RETURN_LONG(total);

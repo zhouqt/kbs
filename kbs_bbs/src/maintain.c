@@ -117,7 +117,7 @@ char *str;
     if ((se = fopen(fname, "w")) != NULL) {
         fprintf(se, "%s", str);
         fclose(se);
-        post_file(currentuser, "", fname, currboard, title, 0, 2);
+        post_file(currentuser, "", fname, currboard->filename, title, 0, 2);
         unlink(fname);
         modify_user_mode(savemode);
     }

@@ -97,7 +97,7 @@ int do_del_zd(char *board, int id)
     char dir[256];
     struct fileheader f;
 
-    sprintf(dir, "boards/%s/.DINGDIR", board);
+    sprintf(dir, "boards/%s/" DING_DIR, board);
 
 	fp = fopen(dir, "r+");
     if (fp == 0) 
@@ -161,7 +161,7 @@ int do_set_zd(char *board, int id, int flag)
     int ent=1;
     int ffind=0;
 
-    sprintf(dir,"boards/%s/.DINGDIR",board);
+    sprintf(dir,"boards/%s/" DING_DIR,board);
     
 	fp = fopen(dir, "r+");
     if (fp == 0) 

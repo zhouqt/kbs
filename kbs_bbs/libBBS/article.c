@@ -79,8 +79,6 @@ int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char 
     strcpy(buf, direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
-/* .post.X not use???! KCN
-postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 */
 /*    if( keep <= 0 ) {*/
     if (fileinfo->id == fileinfo->groupid)
         setboardorigin(board, 1);
@@ -584,9 +582,6 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         postfile.innflag[0] = 'S';
         outgo_post(&postfile, toboard, save_title);
     }
-    /*
-     * setbdir(digestmode, buf, currboard );Haohmaru.99.11.26.改成下面一行，因为不管是转贴还是自动发文都不会用到文摘模式 
-     */
     if (!strcmp(toboard, "syssecurity")
         && strstr(title, "修改 ")
         && strstr(title, " 的权限"))

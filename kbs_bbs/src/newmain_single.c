@@ -976,12 +976,12 @@ void showtitle( char *title, char*mid)
     }
 
     if (selboard)
-	    sprintf(note, "讨论区 [%s]", currboard);
+	    sprintf(note, "讨论区 [%s]", currboard->filename);
     else {
         brc_initial(currentuser->userid, DEFAULTBOARD);
-        if (getbnum(currboard)) {
+        if (currboardent) {
             selboard = 1;
-            sprintf(note, "讨论区 [%s]", currboard);
+            sprintf(note, "讨论区 [%s]", currboard->filename);
         } else
             sprintf(note, "目前并没有设定讨论区");
     }

@@ -176,7 +176,9 @@ function addsubmit() {
   var e1,e3;
   var e2;
   var pos=0;
-  if (document.forms[0].elements["attachfile"].value == ""){
+  var obj=document.forms[0].elements["attachfile"];
+  if (!obj) return true;
+  if (obj.value == ""){
 	alert('您还没选择上传的附件');
  	return false;
   } else {

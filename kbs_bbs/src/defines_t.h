@@ -100,7 +100,6 @@ int mark_post(int ent, struct fileheader *fhdr, char *direct);
 int post_article();             /*ÓÃ»§ POST ÎÄÕÂ */
 int do_send(char *userid, char *title,char* q_file);
 int digest_mode();
-int thread_mode();
 int deleted_mode();
 int marked_mode();
 int change_mode();
