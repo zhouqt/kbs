@@ -158,21 +158,21 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
 
     if(addtofile(genbuf,strtosave)==1)
     {
-	    	struct userec* lookupuser,*saveptr;
-	        sprintf(repbuf,"%s 取消 %s 在 %s 的 POST 权力",
-	                currentuser->userid,uident,currboard);
-	        report(repbuf);
+	struct userec* lookupuser,*saveptr;
+    	char repbuf[STRLEN];
+    	int my_flag=0;	/* Bigman. 2001.2.19 */
+        struct userec saveuser;
 
 	        /*Haohmaru.4.1.自动发信通知并发文章于板上*/
-	        sprintf(filename,"etc/%s.deny",currentuser->userid);
-	        fn=fopen(filename,"w+");
-	        memcpy(&saveuser,currentuser,sizeof(struct userec));
-	        saveptr = currentuser;
-	        currentuser = &saveuser;
-	        sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
+	sprintf(filename,"tmp/%s.deny",currentuser->userid);
+	fn=fopen(filename,"w+");
+	memcpy(&saveuser,currentuser,sizeof(struct userec));
+	saveptr = currentuser;
+	currentuser = &saveuser;
+	sprintf(buffer,"%s被取消在%s版的发文权限",uident,currboard);
 
-	        if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_BM_instr(currBM,currentuser->userid))
-	        {	   my_flag=0;
+	if ((HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_OBOARDS)) && !chk_BM_instr(currBM,currentuser->userid))
+	{	   my_flag=0;
 	            fprintf(fn,"寄信人: SYSOP (System Operator) \n") ;
 	            fprintf(fn,"标  题: %s\n",buffer) ;
 	            fprintf(fn,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
@@ -264,7 +264,6 @@ char *direct ;
     char filename[STRLEN];
     int  find;/*Haohmaru.99.12.09*/
     char *idindex;/*Haohmaru.99.12.09*/
-    int my_flag=0;	/* Bigman. 2001.2.19 */
 
     /*   static page=0;*//*Haohmaru.12.18*/
     now=time(0);
@@ -290,7 +289,6 @@ Here:
     *ans=(char)toupper((int)*ans);
     
 	if (*ans == 'A' || *ans == 'O' ) {
-            struct userec saveuser;
             struct userec* denyuser;
             move(1,0);
             if (*ans=='A')
