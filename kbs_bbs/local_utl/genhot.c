@@ -58,8 +58,15 @@ int gen_commend_xml()
 			fprintf(fp, "<id>%d</id>\n", dirfh.id);
 			fprintf(fp, "<o_board>%s</o_board>\n", dirfh.o_board);
 			fprintf(fp, "<o_id>%d</o_id>\n", dirfh.o_id);
+			if( fgets(buf, 255, fp1) ){
+				if( ! strncmp(buf, "∑¢–≈»À: ", 8) ){
+					if( (c=strchr(buf+8, ' ')) != NULL )
+						*c = 0;
+					fprintf(fp, "<owner>%s</owner>\n", buf+8);
+				}
+			}
 			fprintf(fp, "<o_groupid>%d</o_groupid>\n<brief>", dirfh.o_groupid);
-			for(i=0;i<4;i++) fgets(buf, 255, fp1);
+			for(i=0;i<3;i++) fgets(buf, 255, fp1);
 			for(i=0;i<4;){
 				if(fgets(buf, 255, fp1) ){
 					if( buf[0] == '\n' || buf[0] == '\r' || buf[0]=='\0' )
