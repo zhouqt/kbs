@@ -96,9 +96,28 @@ void ochar( char c)
         outbuf[obufsize++] = c ;
     }
 }
-
+#define ZMODEM_RATE 5000
+int ZmodemRateLimit = 1;
 int raw_write(int fd,char *buf,int len)
 {
+    static int lastcounter = 0;
+    int nowcounter;
+    static int bufcounter;
+    if (ZmodemRateLimit)
+   {
+       nowcounter = time(0);
+       if (lastcounter == nowcounter) {
+        	 if (bufcounter>=ZMODEM_RATE) {
+        	 	sleep(1);
+        	 	nowcounter = time(0);
+        	 	bufcounter = len;
+      	 	} else bufcounter += len;
+        } else {
+             /* time clocked, clear bufcounter */
+             bufcounter = len;
+        }
+        lastcounter = nowcounter;
+   }	
 #ifdef SSHBBS
     return ssh_write(fd,buf,len);
 #else
