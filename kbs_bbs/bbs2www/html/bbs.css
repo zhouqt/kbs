@@ -7,7 +7,7 @@ TABLE,TH,TD,P,INPUT,TEXTAREA,SELECT {FONT-SIZE: 12px;}
 input.default { background-color: #F0F0FF; border: #000000 solid 1px }
 input.readonly { background-color: #F0F0FF; border: 0px }
 input.button { background-color: #CCCCFF }
-hr.default { COLOR: #00FF00 }
+hr.default { COLOR: #008000 }
 
 FONT.c30 {COLOR: #000000;}
 FONT.c31 {COLOR: #e00000;}
