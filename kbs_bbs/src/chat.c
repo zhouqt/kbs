@@ -1401,7 +1401,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     char fname[STRLEN];
     FILE *fp;
     char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE*2];
-    int line, cnt, i, count;
+    int line, cnt, i, j=0, count;
     long pos;
     struct msghead head;
 
@@ -1416,6 +1416,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     for(i=0;i<count;i++) 
     if(i>=count-line)
     {
+        j++;
         load_msghead(0, currentuser->userid, i, &head);
         load_msgtext(currentuser->userid, &head, buf);
         translate_msg(buf, &head, showmsg);
@@ -1424,7 +1425,7 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     fclose(fp);
     if (count) {
         fp = fopen(fname, "rb");
-        sprintf(buf, "【最近 %d 条消息】", count);
+        sprintf(buf, "【最近 %d 条消息】", j);
         printchatline(pthis, buf);
         while (!feof(fp)) {
             bzero(buf, sizeof(buf));
