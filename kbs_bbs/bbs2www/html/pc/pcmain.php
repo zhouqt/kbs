@@ -1,7 +1,10 @@
 <?php
-require("pcfuncs.php");
-require("pcstat.php");
-require("pcmainfuncs.php");
+//require_once("pcfuncs.php");
+require_once("pcstat.php");
+require_once("pcmainfuncs.php");
+
+if(pc_update_cache_header())
+	return;
 
 function pcmain_blog_statistics_list()
 {
@@ -79,28 +82,52 @@ function pcmain_annouce()
 <?php	
 }
 
-/*
 function pcmain_recommend_blogger()
 {
 	global $link;
 	mt_srand();
 	$pos = mt_rand(0,50);//排名前50的博客随机抽取一个
-	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT ".$pos.",1;";
+	if(defined("_PCMAIN_RECOMMEND_BLOGGER_"))
+		$query = "SELECT uid , username , corpusname , description FROM users WHERE uid = '".intval(_PCMAIN_RECOMMEND_BLOGGER_)."' LIMIT 1;";
+	else
+		$query = "SELECT uid , username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT ".$pos.",1;";
 	$result = mysql_query($query,$link);
 	$pc = mysql_fetch_array($result);
+	mysql_free_result($result);
+	//提取该用户最热门的5篇文章
+	$query = "SELECT nid,subject FROM nodes WHERE access = 0 AND uid = '".$pc[uid]."' ORDER BY visitcount DESC LIMIT 0 , 5;";
+	$result = mysql_query($query,$link);
+	$nodes = array();
+	while($rows = mysql_fetch_array($result))
+		$nodes[] = $rows;
+	mysql_free_result($result);	
 ?>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
 	<tr><td class="channelback" align="right"><font class="channel">博客推荐</font></td></tr>
-	<tr><td align="left" valign="top" bgcolor="#ECF5FF" class="td">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
-	
+	<tr><td align="left" valign="top" class="td" bgcolor="#E8FFEE">
+	<table width="100%" cellspacing="0" cellpadding="3" border="0">
+	<tr>
+	<td valign="top" align="left">
+	[<b><a href="index.php?id=<?php echo $pc[username]; ?>"><?php echo html_format($pc[corpusname]); ?></a></b>]
+	<a href="/bbsqry.php?userid=<?php echo $pc[username]; ?>"><font class="low2"><?php echo $pc[username]; ?></font></a></td></tr>
+	<tr><td>
+	<?php echo html_format($pc[description]); ?>
+	</td>
+	</tr>
 	</table>
 	</td></tr>
+	<tr>
+	<td align="left" valign="top" class="td">
+<?php
+	foreach($nodes as $node)
+		echo "<li><a href=\"pccon.php?id=".$pc[uid]."&nid=".$node[nid]."&s=all\">".html_format($node[subject])."</a></li>";
+?>
+	</td>
+	</tr>
 </table>
 <?php
-	mysql_free_result($result);	
+	
 }
-*/
 
 function  pcmain_blog_most_hot()
 {
@@ -352,9 +379,6 @@ function pcmain_section_top_view()
 <?php
 }
 
-if(pc_update_cache_header())
-	return;
-
 $link = pc_db_connect();
 pcmain_html_init();
 ?>
@@ -470,14 +494,23 @@ pcmain_html_init();
           </table></td><td align="center" valign="top"><table width="100%"  border="0" cellspacing="0" cellpadding="3">
           <tr>
             <td>
-               <table cellspacing=0 cellpadding=0 width=100% border=0>
+               <table cellspacing=0 cellpadding=1 width=100% border=0>
                  <tr>
-                   <td width="100%">
+                   <td align="center" valign="top">
                    <?php pcmain_annouce(); ?>
                    </td>
-                   <td>
-                   <?php /* pcmain_recommend_blogger(); */ ?>
+<?php
+		if (defined("_PCMAIN_RECOMMEND_")) 
+		{
+?>
+                   <td align="center" valign="top" width="55%">
+                   <?php
+			pcmain_recommend_blogger();  
+                   ?>
                    </td>
+<?php
+		}
+?>	
                  </tr>
                </table>
             </td>

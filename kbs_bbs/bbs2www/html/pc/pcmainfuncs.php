@@ -16,6 +16,7 @@ function pcmain_html_init()
 .channelback {background-color: #1F66A7;border-right-width: 1px;border-bottom-width: 1px;border-right-style: solid;border-bottom-style: solid;border-right-color: #999999;border-bottom-color: #999999;font-size: 12px;font-weight: bold;color: #FFFFFF;text-align: left;text-indent: 3pt;}
 .td {border-right-width: 1px;border-bottom-width: 1px;border-right-style: solid;border-bottom-style: solid;border-right-color: #999999;border-bottom-color: #999999;line-height: 16px;word-wrap:break-word;word-break:break-all;}
 body {font-size: 12px;line-height: 16px;}
+td {word-wrap:break-word;word-break:break-all;}
 a:link {color: #333333;text-decoration: none;}
 a:visited {color: #003333;text-decoration: none;}
 a:hover {color: #003366;text-decoration: underline;}

@@ -14,13 +14,14 @@ $pcconfig["SEARCHNUMBER"] :返回文章搜索结果时每页显示的条目数;
 $pcconfig["SECTION"] :Blog分类方式;
 $pcconfig["MINREGTIME"] :申请时要求的最短注册时间;
 $pcconfig["ADMIN"] :管理员ID，设置后所有管理员都可以维护此Blog
+$pcconfig["TMPSAVETIME"] :开启发文暂存功能时，保存的时间间隔， 单位为秒
 pc_personal_domainname($userid)函数 :用户Blog的域名;
 */
-$pcconfig["LIST"] = 50;
+$pcconfig["LIST"] = 100;
 $pcconfig["HOME"] = BBS_HOME;
 $pcconfig["BBSNAME"] = BBS_FULL_NAME;
 $pcconfig["ETEMS"] = 20;
-$pcconfig["NEWS"] = 50;
+$pcconfig["NEWS"] = 100;
 $pcconfig["THEMLIST"] = 50;
 $pcconfig["SITE"] = "www.smth.edu.cn";
 $pcconfig["BOARD"] = "SMTH_blog";
@@ -29,6 +30,7 @@ $pcconfig["SEARCHFILTER"] = " 的";
 $pcconfig["SEARCHNUMBER"] = 10;
 $pcconfig["ADMIN"] = "SYSOP";
 $pcconfig["MINREGTIME"] = 6;
+$pcconfig["TMPSAVETIME"] = 300;
 $pcconfig["SECTION"] = array(
 			"personal" => "个人空间" ,
 			"literature" => "原创文学" ,
@@ -57,6 +59,8 @@ define("_PCMAIN_USERS_NUM_" , 20 );     //显示的用户数目
 define("_PCMAIN_REC_NODES_" , 40 );     //推荐日志数目
 define("_PCMAIN_NEW_NODES_" , 40 );     //新日志数目
 define("_PCMAIN_ANNS_NUM_"  , 5  );     //公告数目
+define("_PCMAIN_RECOMMEND_" , 1   );  //博客推荐
+define("_PCMAIN_RECOMMEND_BLOGGER_" , 821); //固定推荐
 
 function pc_personal_domainname($userid)
 {
