@@ -29,14 +29,18 @@ void printmenu(char* s)
     printmenuend();
 }
 
-int show_fav_all(int f,int d)
+int show_fav_all(int f, const char *desc, int d)
 {
     char * s;
     int i=0,j,k,l;
     if(d==1)
-        printf("<div id=div%d style=\"display: none\">\n", f+100);
+		printdiv(d, desc, "/images/folder.gif");
+        //printf("<div id=div%d style=\"display: none\">\n", f+100);
     else
+	{
+		printf("<img src=\"/images/folder2.gif\"><a target=\"f3\" href=\"bbsfav?select=%d\">%s</a><br>\n", f, desc);
         printf("<div>");
+	}
     do{
         SetFav(f);
         s = get_favboard(i);
@@ -47,8 +51,7 @@ int show_fav_all(int f,int d)
             if(j==1)
                 printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"/bbsdoc.php?board=%s\">%s</a><br>\n", s, s);
             else {
-            	printf("<img src=\"/images/folder.gif\"><a target=\"f3\" href=\"bbsfav?select=%d\">%s</a><br>\n", k, s);
-                show_fav_all(k, d+1);
+                show_fav_all(k, s, d+1);
             }
         }
         i++;
@@ -88,9 +91,8 @@ int main()
         const struct boardheader *bptr;
         char *name;
 
-        printf("<img src=\"/images/folder.gif\"><A href=\"javascript:changemn('99');\">个人定制区</a><br>\n");
         load_favboard(0);
-        show_fav_all(-1,1);
+        show_fav_all(-1, "个人定制区", 1);
         release_favboard();
 /*		printdiv(1,"个人定制区","/images/folder.gif");
 		load_favboard(0);
