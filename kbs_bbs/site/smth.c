@@ -354,7 +354,7 @@ char *ModeType(mode)
 //    case ULDL:
 //        return "UL/DL";
     case MSG:
-        return "送讯息";
+        return "讯息中";
     case USERDEF:
         return "自订参数";
     case EDIT:

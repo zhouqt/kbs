@@ -189,7 +189,7 @@ int     mode;
     case GMENU:     return "工具箱";
     case FOURM:     return "4m Chat";
     case ULDL:      return "UL/DL" ;
-    case MSG:       return "送讯息";
+    case MSG:       return "讯息中";
     case USERDEF:   return "自订参数";
     case EDIT:      return "修改文章";
     case OFFLINE:   return "自杀中..";
