@@ -946,6 +946,8 @@ int check_ch(int c1, int c2)
 {
     if(c1>=0xb0&&c1<=0xd8&&c2>=0xa1&&c2<=0xfe)
         return 11;
+    else if(c1>=0xa1&&c1<0xb0&&c2>=0xa1&&c2<=0xfe)
+        return 6;
     else if(c1>=0xd9&&c1<=0xf7&&c2>=0xa1&&c2<=0xfe)
         return 5;
     else if(c1>0x80&&c2>=0x80)
@@ -968,7 +970,7 @@ void auto_chinese()
         if(a[1]) b[1]=1; else b[1]=0;
         for(k=2;k<scr_cols;k++) {
             l = check_ch(bp[j].data[k-1],bp[j].data[k]);
-            if(l&&l+a[k-2]>=a[k-1]) {
+            if(l&&l+a[k-2]>a[k-1]) {
                 a[k]=l+a[k-2];
                 b[k]=1;
             }
