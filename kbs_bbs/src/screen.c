@@ -28,7 +28,7 @@
 /*#include <varargs.h>*/
 #include <stdarg.h>
 
-#define o_clear() {output("\x1b[m\x1b[2J",7); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
+#define o_clear() {output("\x1b[H\x1b[J",6); tc_mode=0; tc_color=7;  tc_col=0; tc_line=0; }
 #define o_cleol() output("\x1b[K",3)
 
 unsigned char scr_lns, scr_cols;
