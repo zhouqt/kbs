@@ -18,13 +18,16 @@
 使用标题: <input type="text" name="title" size="40" maxlength="100" value="">
 讨论区: [<script language="JavaScript">document.write(queryString("board"));</script>]<br>
 使用签名档 <select name="signature">
-<option value="0">不使用签名档</option>
 <script language="JavaScript">
 <!--
 var num=queryString("totalsig",5);
 var sel=queryString("sig",1);
 if (sel>99) sel=1;
 if (sel>num) num=sel;
+if (sel==0)
+    document.write("<option value=\"0\" selected>不使用签名档</option>");
+else
+    document.write("<option value=\"0\">不使用签名档</option>");
 for (i=1;i<=num;i++) {
   if (i==sel)
     document.write("<option value=\""+i+"\" selected>第 "+i+" 个</option>");
