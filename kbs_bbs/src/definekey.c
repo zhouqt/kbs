@@ -130,12 +130,29 @@ int get_keys_name(struct key_struct* key, char* buf)
     buf[strlen(buf)-1] = 0;
 }
 
+int get_modes_name(struct key_struct* key, char* buf)
+{
+    int i=0;
+    buf[0]=0;
+    if(!key->status[0]) {
+        strcpy(buf, "全部模式");
+        return;
+    }
+    while(i<10&&key->status[i]) {
+        strcat(buf, ModeType(key->status[i]));
+        strcat(buf, " ");
+        i++;
+    }
+    buf[strlen(buf)-1] = 0;
+}
+
 static int set_keydefine_show(struct _select_def *conf, int i)
 {
-    char buf[120], buf2[20];
+    char buf[120], buf2[20], buf3[200];
     get_key_name(keymem[i-1].key, buf2);
     get_keys_name(keymem+i-1, buf);
-    prints(" %6s  %-36s  %-32s", buf2, buf, "");
+    get_keys_name(keymem+i-1, buf3);
+    prints(" %-6s  %-36s  %-32s", buf2, buf, buf3);
     return SHOW_CONTINUE;
 }
 
@@ -193,13 +210,13 @@ static int set_keydefine_key(struct _select_def *conf, int key)
                 i = igetkey();
                 get_key_name(i, buf);
             }while(!buf[0]&&i!=KEY_ESC);
-            if(i==KEY_ESC) break;
+            if(i==KEY_ESC) return SHOW_DIRCHANGE;
             prints("%s\n", buf);
             k.key = i;
             move(2, 0);
             prints("请输入替换序列(最多10个)，按两次ESC结束: ");
+            j=0;
             do{
-                j=0;
                 do {
                     i = igetkey();
                     get_key_name(i, buf);
@@ -210,7 +227,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
                 j++;
                 if(j>=10) break;
             }while(1);
-            if(j==0) break;
+            if(j==0) return SHOW_DIRCHANGE;
 
             k.status[0] = 0;
             add_key(&k);
