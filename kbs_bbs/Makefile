@@ -30,7 +30,7 @@ CC       = gcc
 #CC       = cc
 CFLAGS   = -g -Ilibesmtp
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
-LIBS     = -lbsd -lcrypt -Llibesmtp -lesmtp
+LIBS     = -lbsd -lcrypt -L. -lesmtp
 #CFLAGS   = -O3
 #LIBS     = -ltermcap -lbsd -lcrypt
 
