@@ -933,6 +933,7 @@ int bad_user_id( char    *userid)
                     return 1;
                 }
             }
+	    bzero(buf,STRLEN);
         }
         fclose(fp);
     }

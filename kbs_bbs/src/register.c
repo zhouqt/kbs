@@ -101,8 +101,14 @@ new_register()
     }
 
     newuser.firstlogin = newuser.lastlogin = time(NULL) - 13 * 60 * 24 ;
+    do_try=0;
     while( 1 ) {
         char  passbuf[ STRLEN ], passbuf2[ STRLEN ];
+        if( ++do_try >= 10 ) {
+            prints("\n掰掰，按太多下  <Enter> 了...\n");
+            refresh();
+            longjmp( byebye, -1 );
+        }
         getdata(0,0,"请设定您的密码: ",passbuf,39,NOECHO,NULL,YEA) ;
         if( strlen( passbuf ) < 4 || !strcmp( passbuf, newuser.userid ) ) {
             prints("密码太短或与使用者代号相同, 请重新输入\n") ;
