@@ -181,10 +181,10 @@
 					$rows = mysql_fetch_array($result);
 					$thisNid = $rows[nid];
 					mysql_free_result($result);
-					if(strlen($_POST["blogbody"]) < 255 ))
+					if(strlen($_POST["blogbody"]) < 255 )
 						$tbbody = $_POST["blogbody"];
 					else
-						$tbbody = substr($_POST["blogbody"],0,251)." ..."
+						$tbbody = substr($_POST["blogbody"],0,251)." ...";
 					$tbarr = array(
 							"title" => $_POST["subject"],
 							"excerpt" => $tbbody,
