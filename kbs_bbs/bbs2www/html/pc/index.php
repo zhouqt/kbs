@@ -294,7 +294,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 ?>
 <ul>
 <?php
-		$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0 AND comments.uid = 1 AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
+		$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0 AND comments.uid = ".$pc["UID"]." AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
 		$result = mysql_query($query,$link);
 		for($i = 0;$i < mysql_num_rows($result) ; $i++)
 		{
