@@ -267,10 +267,8 @@ var strDesc = '<?php echo htmlspecialchars($brdarr["DESC"]); ?>';
 ?>
 </td></tr>
 <tr><td class="t5">
-<font class="content">
-<?php
-			bbs_print_article($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
-?>
+<font class="content"><script language="Javascript" src="jscon.php?bid=<?php echo $brdarr["NUM"]; ?>&id=<?php echo $articles[1]["ID"]; ?>">
+</script>
 </font>
 </td></tr>
 </td></tr>
