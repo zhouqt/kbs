@@ -589,7 +589,7 @@ void pop3_timeout(int signo)
 
 int main(int argc, char **argv)
 {
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     struct sockaddr_in6 fsin, our;
 #else
     struct sockaddr_in fsin, our;
@@ -639,7 +639,7 @@ int main(int argc, char **argv)
         break;
     }
 #endif
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     if ((msock = socket(AF_INET6, SOCK_STREAM, 0)) < 0) {
         exit(1);
     }
@@ -697,7 +697,7 @@ int main(int argc, char **argv)
 
             setgid(BBSGID);
             setuid(BBSUID);
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
 	    inet_ntop(AF_INET6, &fsin.sin6_addr, getSession()->fromhost, IPLEN);
 #else
             strcpy(getSession()->fromhost, (char *) inet_ntoa(fsin.sin_addr));

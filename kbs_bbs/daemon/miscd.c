@@ -378,7 +378,7 @@ void userd()
 {
     int m_socket;
 
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     struct sockaddr_in6 sin;
 #else
     struct sockaddr_in sin;
@@ -387,7 +387,7 @@ void userd()
     int opt = 1;
 
     bzero(&sin, sizeof(sin));
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     if ((m_socket = socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP)) < 0) {
 #else
     if ((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
@@ -397,7 +397,7 @@ void userd()
     }
     setsockopt(m_socket, SOL_SOCKET, SO_REUSEADDR, &opt, 4);
     memset(&sin, 0, sinlen);
-#ifdef HAVE_IPV6
+#ifdef HAVE_IPV6_SMTH
     sin.sin6_family = AF_INET6;
     sin.sin6_port = htons(60001);
     inet_pton(AF_INET6, "::1", &sin.sin6_addr);
