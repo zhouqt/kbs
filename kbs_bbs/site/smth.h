@@ -250,13 +250,14 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_CHCHAR    02000000000
 #define DEF_SHOWDETAILUSERDATA	04000000000
 #define DEF_SHOWREALUSERDATA	010000000000
+#define DEF_HIDEIP			040000000001
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//*
  * means the rest is a post mask 
  */
 
-#define NUMDEFINES 31
+#define NUMDEFINES 33
 
 
 #define TDEF_SPLITSCREEN 000001
