@@ -130,7 +130,7 @@ function get_mimetype($name)
 				$PAGE_SIZE = 20;
 ?>
 <body>
-<center><p><?php echo $BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p>
+<center><p><?php echo $BBS_FULL_NAME; ?> -- 文章阅读 [讨论区: <?php echo $brdarr["NAME"]; ?>]</a></p></center>
 [<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转寄/推荐</a>]
 [<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">转贴</a>]
 <?php
@@ -141,7 +141,7 @@ function get_mimetype($name)
 <?php
 				}
 ?>
-[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGESIZE); ?>">本讨论区</a>]
+[<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">本讨论区</a>]
 <?php
 				if ($articles[2]["ID"] != 0)
 				{
@@ -153,8 +153,14 @@ function get_mimetype($name)
 [<a href="/cgi-bin/bbs/bbspst?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $currentuser["userid"]; ?>&title=Re: <?php echo urlencode($articles[1]["TITLE"]); ?>&refilename=<?php echo $articles[1]["FILENAME"]; ?>&attach=<?php echo $brdarr["FLAG"]&BBS_BOARD_ATTACH ? 1 : 0; ?>">回文章</a>]
 [<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode($articles[1]["TITLE"]); ?>">同主题阅读</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
+<hr class="default" />
+<table width="610" border="0">
+<tr><td>
 <?php
 				bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
+?>
+</td></tr></table>
+<?php
 			}
 		}
 		html_normal_quit();
