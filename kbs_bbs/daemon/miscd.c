@@ -137,7 +137,8 @@ char *sethomepath(buf, userid)  /* 取 某用户 的home */
 
 int kickuser(struct user_info *uentp, char *arg, int count)
 {
-    kill(uentp->pid, SIGHUP);
+    if (uentp->mode != WEBEXPLORE)
+        kill(uentp->pid, SIGKILL);
     clear_utmp((uentp - utmpshm->uinfo) + 1, uentp->uid, uentp->pid);
     return 0;
 }
