@@ -1,3 +1,6 @@
+#ifndef _VOTE_H
+#define _VOTE_H
+
 #define VOTE_YN         (1)
 #define VOTE_SINGLE     (2)
 #define VOTE_MULTI      (3)
@@ -45,3 +48,5 @@ struct votelimit {              /*Haohmaru.99.11.17.根据版主设的限制条件判断是否
     unsigned int numlogins;
     unsigned int numposts;
 };
+
+#endif
