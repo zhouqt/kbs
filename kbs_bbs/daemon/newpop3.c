@@ -72,7 +72,7 @@ static jmp_buf timebuf;
 
 int     State;
 int     msock,sock;    /* master server socket */
-static int reaper();
+static void reaper(int signo);
 static char    inbuf[ BUFSIZE ];
 char    remote_userid[ STRLEN ];
 FILE    *cfp;
@@ -133,8 +133,7 @@ char *uid, *frm;
 }
 
 
-static int
-abort_server()
+static void abort_server(int signo)
 {
     log_usies("ABORT SERVER");
     close(msock);
@@ -142,7 +141,7 @@ abort_server()
     exit(1);
 }
 
-int dokill()
+void dokill(int signo)
 {
     kill(0,SIGKILL);
 }
@@ -408,6 +407,7 @@ Init()
 {
     State = S_CONNECT;
     LowUserid[0] = '\0';
+    remote_userid[0]=0;
     markdel = 0;
     idletime = 0;
 }
@@ -449,8 +449,7 @@ Login_init()
     }
 }
 
-void
-pop3_timeout()
+void pop3_timeout(int signo)
 {
     idletime++;
     if (idletime > 5) {
@@ -463,9 +462,7 @@ pop3_timeout()
 }
 
 
-main(argc,argv)
-int argc;
-char **argv;
+int main( int argc, char **argv)
 {
 
     struct sockaddr_in fsin,our;
@@ -505,10 +502,10 @@ char **argv;
         exit(1);
     }
 
-    signal(SIGHUP, (void *)abort_server) ;
-    signal(SIGCHLD, (void *)reaper);
-    signal(SIGINT,(void *)dokill);
-    signal(SIGTERM,(void *)dokill);
+    signal(SIGHUP, abort_server) ;
+    signal(SIGCHLD, reaper);
+    signal(SIGINT,dokill);
+    signal(SIGTERM,dokill);
 
     listen(msock,QLEN);
 
@@ -522,7 +519,7 @@ char **argv;
     while (1) {
 
         alen=sizeof(fsin);
-        sock = accept(msock,(struct sockaddr *)&fsin,&alen);
+        sock = accept(msock,(struct sockaddr *)&fsin,(socklen_t*)&alen);
         if (sock < 0) {
             if (errno != EINTR)
                 continue;
@@ -543,7 +540,7 @@ char **argv;
 
             strcpy(fromhost, (char *)inet_ntoa(fsin.sin_addr));
             len = sizeof our;
-            getsockname(sock, (struct sockaddr *) &our,&len);
+            getsockname(sock, (struct sockaddr *) &our,(socklen_t*)&len);
 
             Init();
 
@@ -603,14 +600,13 @@ char **argv;
     }
 }
 
-static int
-reaper()
+static void reaper(int signo)
 {
     int state, pid;
 
     signal(SIGCHLD,SIG_IGN);
-    signal(SIGINT,(void *)dokill);
-    signal(SIGTERM,(void *)dokill);
+    signal(SIGINT,dokill);
+    signal(SIGTERM,dokill);
 
     while (( pid = waitpid(-1, &state, WNOHANG|WUNTRACED)) > 0);
 }
@@ -725,7 +721,7 @@ char *buf;
         fprintf(fp, "%02d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
                 p->tm_year, p->tm_mon+1, p->tm_mday, p->tm_hour, p->tm_min,
                 p->tm_sec, currentuser->userid ? currentuser->userid : "",
-                remote_userid ? remote_userid : "", buf);
+                remote_userid, buf);
         fflush(fp);
         fclose(fp);
     }
@@ -996,8 +992,7 @@ Pass()
         outs(genbuf);
         LowUserid[0] = '\0';
         log_usies("ERROR PASSWD");
-        if (remote_userid)
-            logattempt(currentuser->userid, remote_userid); /* Leeward 98.07.25 */
+        logattempt(currentuser->userid, remote_userid); /* Leeward 98.07.25 */
         return;
     }
 
