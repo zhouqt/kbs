@@ -631,7 +631,7 @@ char *argv[];
     bbs_main(hid,argv[0]);
 
 }
-#endif
+#else
 void ssh_exit()
 {
     packet_disconnect("sshd exit");
@@ -656,3 +656,4 @@ int bbs_entry(void)
    } 
    bbs_main(hid,faint);
 }
+#endif

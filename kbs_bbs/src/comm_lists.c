@@ -53,6 +53,7 @@ int     Conditions(), x_cloak(), t_users(), x_info(), x_fillform(), x_vote();
 int	ShowWeather();	/* 2001.6.12 */
 int     x_results(), ent_bnet(), a_edits(), x_edits();
 int     x_date(),shownotepad(),x_userdefine();
+int	confirm_delete_id();	/* Added by Bigman 2001.7.14 */
 /*Add by SmallPig*/
 int     m_new(), m_read(), m_send(), g_send();
 int     ov_send(), m_internet(),s_msg(),mailall(),suicide();
@@ -165,6 +166,7 @@ struct scommandlist {
     "Setsyspass",   setsystempasswd,
     "SearchTrace",	searchtrace,	/*stephen 2000.12.15*/
     "StopLogin",	m_stoplogin,	/*stephen 2000.12.15*/
+    "ConfirmDelete",	confirm_delete_id, /*Bigman 2001.7.14 */
     NULL,           NULL
 };
 

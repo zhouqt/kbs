@@ -133,6 +133,55 @@ int (*showfunc)();
     }
     return( pbits );
 }
+/* 删除过期的帐号 */
+/* 算是给奥运的献礼 */
+/* Bigman 2001.7.14 */
+int confirm_delete_id()
+{	
+   char commd[STRLEN],buff[STRLEN];
+	int num;
+
+   if (!HAS_PERM(PERM_ADMIN) )
+    {
+        move( 3, 0 );
+        clrtobot();
+        prints( "抱歉, 只有总管理员才能修改");
+        pressreturn();
+        return 1;
+    }
+
+    modify_user_mode( ADMIN );
+    clear();
+    move(8,0) ;
+    prints("\n") ;
+    clrtoeol() ;
+    move(9,0) ;
+    usercomplete("请输入要确认清除的用户ID: ",genbuf) ;
+    if(genbuf[0] == '\0') {
+        clear() ;
+        return 1 ;}
+
+    if((usernum = searchuser(genbuf )) != 0)
+	{
+	prints("此帐号有人使用\n") ;
+	pressreturn();
+        return 1;
+	}
+
+    sethomepath( buff,genbuf);
+    sprintf(commd,"rm -rf %s",buff);
+	system(commd);
+    setmailpath( buff,genbuf);
+    sprintf(commd,"rm -rf %s",buff);
+        system(commd);
+
+    report("delete confirmly dead id's directory");
+
+    clrtoeol() ;
+    pressreturn() ;
+    clear() ;
+    return 0 ;
+}
 /* inserted by cityhunter to let OBOARDS to change a users basic level */
 int
 p_level()

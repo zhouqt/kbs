@@ -1389,7 +1389,7 @@ case KEY_UP: case KEY_PGUP:
         return READ_PREV;
 case 'Y' : case 'R':
 case 'y' : case 'r':
-        if(!strcmp(currboard,"News"))
+        if((!strcmp(currboard,"News"))||(!strcmp(currboard,"Original")))
         {
             clear();
             move( 3, 0 );

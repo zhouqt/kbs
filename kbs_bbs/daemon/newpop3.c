@@ -675,6 +675,14 @@ User()
         outs("-ERR Too few arguments for the user command.");
         return;
     }
+    if ((ptr=strstr(cmd, ".bbs")) != NULL) {
+        if (*(ptr+4)!=0) {
+            sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
+            outs(genbuf);
+            return;
+        }
+        *ptr = '\0';
+    }
     /*
     if (strstr(cmd, ".bbs") == NULL) {
         sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);

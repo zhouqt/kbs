@@ -312,7 +312,7 @@ int farg;
 
 void clear_utmp2(struct user_info* uentp)
 {
-	clear_utmp((uentp-utmpshm->uinfo)/sizeof(struct user_info));
+	clear_utmp((uentp-utmpshm->uinfo)/sizeof(struct user_info)+1);
 }
 
 void clear_utmp(int uent)
