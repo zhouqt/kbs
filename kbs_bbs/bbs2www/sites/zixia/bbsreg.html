@@ -1,0 +1,120 @@
+<html>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb2312">
+<link rel=stylesheet type=text/css href='/bbs.css'>
+<nobr><center>BBS水木清华站 -- 新用户注册<hr color=green>
+<font color=green>欢迎加入BBS水木清华站  (有"*"号的必须填写，一个汉字作为两个字符计算)</font><form method=post action="/bbsreg.php">
+<img src="img_rand/img_rand.php">
+<table width=700>
+  <TR>
+    <TD align=right>*上面图片中的字符串:</TD>
+    <TD align=left><INPUT size=5 name=num_auth>(为了防止机器人注册。如果辨认不清，可按F5 键刷新本页面)</TD> 
+  </TR>
+  <TR>
+    <TD align=right>*请输入代号:</TD>
+    <TD align=left><INPUT maxLength=12 size=12 name=userid> (2-12字符, 
+      可用英文字母或数字，首字符必须是字母) </TD>
+  </TR>
+  <TR>
+    <TD align=right>*请输入密码:</TD>
+    <TD align=left><INPUT maxLength=39 size=12 type=password name=pass1> (4-39字符)
+  </TD>
+  </TR>
+  <TR>
+    <TD align=right>*请输入确认密码:</TD>
+    <TD align=left><INPUT maxLength=39 size=12 type=password name=pass2> (4-39字符, 
+      必须和密码一致) </TD>
+  </TR>
+  <TR>
+    <TD align=right>请输入昵称:</TD>
+    <TD align=left><INPUT maxLength=32 name=username> (2-39字符, 中英文不限) </TD>
+  </TR>
+<!--
+  <TR>
+    <TD align=right>*您的真实姓名:</TD>
+    <TD align=left><INPUT name=realname> (请用中文, 至少2个汉字) </TD>
+  </TR>
+  <TR>
+    <TD align=right>*学校系级或工作单位:</TD>
+    <TD align=left><INPUT size=40 name=dept> (至少6个字符) </TD>
+  </TR>
+  <TR>
+	<TD align=right>&nbsp;</TD>
+	<TD align=left><font color=red>(学校请具体到系，工作单位请具体到部门)</font></TD>
+  </TR>
+  <TR>
+    <TD align=right>*您的详细住址:</TD>
+    <TD align=left><INPUT size=40 name=address> (至少6个字符) </TD>
+  </TR>
+  <TR>
+	<TD align=right>&nbsp;</TD>
+	<TD align=left><font color=red>(住址请具体到宿舍或者门牌号码)</font></TD>
+  </TR>
+  <TR>
+    <TD align=right>您的性别:</TD>
+    <TD align=left><SELECT name=gender><OPTION 
+        selected>男</OPTION><OPTION>女</OPTION></SELECT></TD>
+  </TR>
+  <TR>
+    <TD align=right>您的出生年月日: </TD>
+    <TD align=left><INPUT maxLength=4 size=4 name=year>年<INPUT maxLength=2 
+      size=2 name=month>月<INPUT maxLength=2 size=2 name=day>日</TD>
+  </TR>
+-->
+  <TR>
+    <TD align=right>*您的注册Email 地址:</TD>
+    <TD align=left><INPUT size=60 name=reg_email></TD>
+  </TR>
+  <TR>
+    <TD align=right>&nbsp;</TD>
+    <TD align=left><font color=red>(这个请注意认真填写，将用于获得注册的密码及以后取回密码使用)</font></TD>
+  </TR>
+<!--
+  <TR>
+    <TD align=right>*您的联络电话:</TD>
+    <TD align=left><INPUT size=40 name=phone> </TD>
+  </TR>
+  <TR>
+    <TD align=right>&nbsp;</TD>
+    <TD align=left><font color=red>(北京地区用户必须填写电话，外地可用Email代替)</font></TD>
+  </TR>
+  <TR>
+    <TD align=right></TD>
+    <TD align=left><INPUT type=checkbox name=m_register>手机短信支持(暂时无效) </TD>
+  </TR>
+  <TR>
+    <TD align=right>您的手机号码:</TD>
+    <TD align=left><INPUT size=15 name=mobile_phone> </TD>
+  </TR>
+-->
+</table>
+<table width="75%" border="0">
+      <tr>
+        <td width="8%">备注：</td>
+        <td width="92%">1. 请到注册 Email 里面查收本ID 的激活码。如果未收到激活码，请登录后确认您的Email并重新发送激活码.</td>
+      </tr>
+<!--
+      <tr>
+        <td>&nbsp;</td>
+        <td>2. 学校系级或工作单位的填写，学校请具体到系，工作单位请具体到部门。</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td>3. 联络电话，北京地区用户必须填写电话，外地可用Email代替。</td>
+      </tr>
+-->
+      <tr>
+        <td>&nbsp;</td>
+        <td>2. 除代号和昵称会公开以外，其他项站务都会为您严格保密。</td>
+      </tr>
+<!--
+      <tr>
+        <td>&nbsp;</td>
+        <td>5. 两天会自动生成注册单，如果资料按照要求如实填写，站务审查通过，即可获得用户权限。</td>
+      </tr>
+-->
+    </table>
+<hr color=green>
+<input type=submit value=申请> <input type=reset value=重新填写>
+</form></center>
+</html>
+
