@@ -670,11 +670,16 @@ int valid_article(pmt, abort)
     char ch;
     int total, lines, len, sig, y;
     int temp;
+//    int filtered; /* 关键字过滤 added by Czz 020927 */
 
 #ifndef VEDITOR
     if (uinfo.mode == POSTING) {
         total = lines = len = sig = 0;
         while (p != NULL) {
+		/* 关键字过滤 added by Czz 020927 */
+//	   if(strstr(p->data,"法轮功"))
+//		filtered = 1;
+		/* added end */
             if (!sig) {
                 ch = p->data[0];
                 if (strcmp(p->data, "--") == 0)
@@ -688,6 +693,11 @@ int valid_article(pmt, abort)
             p = p->next;
         }
         y = 2;
+//	if (filtered == 1) {
+//		move(y, 0);
+//		prints("本篇文章含有不合适字符.\n");
+//		y +=3;
+//	}
         if (total > 20 + lines * 3) {
             move(y, 0);
             prints("本篇文章的引言与签名档行数远超过本文长度.\n");
@@ -713,6 +723,10 @@ int valid_article(pmt, abort)
 #endif
 
     getdata(0, 0, pmt, abort, 3, DOECHO, NULL, true);
+    /* 关键字过滤 added by Czz 020927 */
+//    if(filtered==1)
+//	    abort[0]='A';
+    /* added end */
     switch (abort[0]) {
     case 'A':
     case 'a':                  /* abort */
