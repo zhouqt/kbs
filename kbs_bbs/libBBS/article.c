@@ -162,6 +162,18 @@ int     autoappend;
         setbdir( (owned)?5:4,oldpath, board );
         append_record( oldpath, &postfile, sizeof(postfile) );
     }
+	if ((fh->filename[STRLEN - 1] == 'S')
+		&& (fh->filename[STRLEN - 2] == 'S')
+		&& (atoi(fh->filename + 2) > now - 14 * 86400))
+	{
+		sprintf(genbuf, "%s\t%s\t%s\t%s\t%s\n",
+				board, fh->filename, fh->owner, from, fh->title);
+		if ((fin = fopen("innd/cancel.bntp", "a")) != NULL)
+		{
+			fputs(genbuf, fin);
+			fclose(fin);
+		}
+	}
 }
 
 
