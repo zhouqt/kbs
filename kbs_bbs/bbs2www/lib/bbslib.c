@@ -386,25 +386,30 @@ int http_init()
 	fread(buf, 1, n, stdin);
 	buf[n]=0;
 	t2=strtok(buf, "&");
-	while(t2) {
+	while(t2)
+	{
 		t3=strchr(t2, '=');
 		if(t3!=0) {
 			t3[0]=0;
 			t3++;
 			__unhcode(t3);
-			parm_add(trim(t2), t3);
+			__unhcode(trim(t2));
+			parm_add(t2, t3);
 		}
 		t2=strtok(0, "&");
 	}
 	strsncpy(buf2, getsenv("QUERY_STRING"), 1024);
 	t2=strtok(buf2, "&");
-	while(t2) {
+	while(t2)
+	{
 		t3=strchr(t2, '=');
-		if(t3!=0) {
+		if(t3!=0)
+		{
 			t3[0]=0;
 			t3++;
 			__unhcode(t3);
-			parm_add(trim(t2), t3);
+			__unhcode(trim(t2));
+			parm_add(t2, t3);
 		}
 		t2=strtok(0, "&");
 	}
@@ -760,23 +765,6 @@ int sig_append(FILE *fp, char *id, int sig)
 	return sig;
 }
 
-char* anno_path_of(char *board) {
-	FILE *fp;
-	static char buf[256], buf1[80], buf2[80];
-	fp=fopen("0Announce/.Search", "r");
-	if(fp==0) return "";
-	while(1) {
-		if(fscanf(fp, "%s %s", buf1, buf2)<=0) break;
-		buf1[strlen(buf1)-1]=0;
-		if(!strcasecmp(buf1, board)) {
-			sprintf(buf, "/%s", buf2);
-			return buf;
-		}
-	}
-	fclose(fp);
-	return "";
-}
-
 int has_BM_perm(struct userec *user, char *board) {
 	bcache_t *x;
 	char buf[256], *bm;
@@ -1121,7 +1109,7 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
 	return search_record(dir, x, sizeof(struct fileheader), cmpname, file);
 }
 
-char *getbfroma(char *path) {
+/*char *getbfroma(char *path) {
         FILE *fp;
 	static char buf1[180], buf2[180];
 	int len;
@@ -1139,7 +1127,7 @@ char *getbfroma(char *path) {
         }
         fclose(fp);
         return "";
-}
+}*/
 
 int set_my_cookie() {
 	FILE *fp;
@@ -2143,5 +2131,186 @@ int can_reply_post(char *board, char *filename)
 		return 0;
 	else
 		return 1;
+}
+
+char bin2hex(int val)
+{
+	int i;
+
+	i = val & 0x0F;
+	if (i >= 0 && i < 10)
+		return '0' + i;
+	else
+		return 'A' + (i - 10);
+}
+
+char *encode_url(char *buf, const char* str, size_t buflen)
+{
+	int i, j;
+	int len;
+	unsigned char c;
+	int buflenm1;
+
+	len = strlen(str);
+	buf[buflen - 1] = '\0';
+	buflenm1 = buflen - 1;
+	for (i = 0, j = 0; i < len && j < buflenm1; i++)
+	{
+		c = (unsigned char)str[i];
+        if (!isalnum(c))
+		{
+			buf[j++] = '%';
+			if (j < buflenm1)
+				buf[j++] = bin2hex((c >> 4) & 0x0F);
+			if (j < buflenm1)
+				buf[j++] = bin2hex(c & 0x0F);
+		}
+		else
+		{
+			buf[j] = str[i];
+			j++;
+		}
+	}
+	buf[j] = '\0';
+
+	return buf;
+}
+
+/*
+ * buflen is a value-result variable. When it is passed to the function,
+ * its value is the buffer length (including the trailing '\0' character).
+ * When the function returned, its value is the number of characters 
+ * actually copied to buf (excluding the trailing '\0' character).
+*/
+char *string_copy(char *buf, const char* str, size_t *buflen)
+{
+	size_t i;
+	size_t len;
+
+	if (*buflen == 0)
+		return buf;
+	len = *buflen - 1;
+	for (i = 0; i < len; i++)
+	{
+		if (str[i] == '\0')
+		{
+			buf[i] = str[i];
+			break;
+		}
+		buf[i] = str[i];
+	}
+	*buflen = i;
+	buf[i] = '\0';
+
+	return buf;
+}
+
+char *encode_html(char *buf, const char* str, size_t buflen)
+{
+    size_t i, j, k;
+    size_t len;
+
+    bzero(buf, buflen);
+    len = strlen(str);
+    for (i = 0, j = 0; i < len && j < buflen; i++)
+    {
+        switch (str[i])
+        {
+        case '\"':
+			k = buflen - j;
+			string_copy(&buf[j], "&quot;", &k);
+            j += k;
+            break;
+        case '&':
+			k = buflen - j;
+			string_copy(&buf[j], "&amp;", &k);
+			j += k;
+            break;
+        /*case ' ':
+            snprintf(&buf[j], buflen-j, "&nbsp;");
+            j = strlen(buf);
+            break;*/
+        case '>':
+			k = buflen - j;
+			string_copy(&buf[j], "&gt;", &k);
+			j += k;
+            break;
+        case '<':
+			k = buflen - j;
+			string_copy(&buf[j], "&lt;", &k);
+			j += k;
+            break;
+        default:
+            buf[j] = str[i];
+            j++;
+        }
+    }
+    buf[buflen - 1] = '\0';
+
+    return buf;
+}
+
+int is_BM(struct boardheader *board, struct userec *user)
+{
+	char BM[STRLEN];
+
+	strncpy(BM, board->BM, sizeof(BM)-1);
+	BM[sizeof(BM)-1] = '\0';
+	return chk_currBM(BM, user);
+}
+
+int is_owner(struct fileheader *fh, struct userec *user)
+{
+	if (!strcmp(fh->owner, user->userid))
+		return 1;
+	else
+		return 0;
+}
+
+int can_delete_post(struct boardheader *board, struct fileheader *fh, 
+		struct userec *user)
+{
+	if (is_BM(board, user) || is_owner(fh, user))
+		return 1;
+	else
+		return 0;
+}
+
+int can_edit_post(struct boardheader *board, struct fileheader *fh, 
+		struct userec *user)
+{
+	if (is_BM(board, user) || is_owner(fh, user))
+		return 1;
+	else
+		return 0;
+}
+
+int get_seccode_index(char prefix)
+{
+	int i;
+
+	for (i = 0; i < SECNUM; i++)
+	{
+		if (strchr(seccode[i], prefix) != NULL)
+			return i;
+	}
+	return -1;
+}
+
+char *http_encode_string(char *str, size_t len)
+{
+	char *buf;
+
+	if (len == 0)
+		return NULL;
+	buf = (char *)malloc(len);
+	if (buf == NULL)
+		return NULL;
+	encode_url(buf, str, len);
+	strncpy(str, buf, len-1);
+	str[len - 1] = '\0';
+	free(buf);
+
+	return str;
 }
 
