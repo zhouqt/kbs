@@ -2166,7 +2166,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     if (returnvalue == 2) {
 	    clear();
 	    move (3, 0);
-	    prints ("\n\n            很抱歉，本文可能含有不适当的内容，需经审核方可发表\n，请耐心等待...\n");
+	    prints ("\n\n            很抱歉，本文可能含有不适当的内容，需经审核方可发\n表，请耐心等待...\n");
 	    pressreturn();
     }
     switch (olddigestmode) {
@@ -2348,6 +2348,13 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
          * ca_expire(genbuf); 
          */
 
+        if (check_badword_str(buf,strlen(buf))) {
+	    clear();
+	    move (3, 0);
+	    outs("     很抱歉，该标题可能含有不恰当的内容，请仔细检查换个标题。");
+	    pressreturn();
+            return PARTUPDATE;
+        }
         strcpy(tmp2, fileinfo->title);  /* Do a backup */
         /*
          * Changed by KCN,disable color title 
