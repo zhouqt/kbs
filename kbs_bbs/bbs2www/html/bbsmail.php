@@ -32,7 +32,7 @@ login_init();
 			$delete =$_GET["delete"];  //1-based
 			unset($mailboxs[$delete -1]);
 			if(!bbs_changemaillist(FALSE,$currentuser["userid"],"",$delete-1))
-				html_error_quit("存储自定义邮箱数据失败!");
+				html_error_quit("存储自定义邮箱数据失败! 有可能是因为该信箱非空。");
 		}	
 			
 		//system mailboxs
@@ -121,11 +121,16 @@ function bbs_confirm(url,infor){
 		<td class="t4">
 <?php
 			if($i>2){
+				if ($mail_boxnums[$i] == 0) {
 ?>
 <a onclick="return confirm('你真的要删除整个目录吗?')" href="bbsmail.php?delete=<?php echo $i-2; ?>">删除</a>
 <?php
+				} else {
+?>
+[信箱非空]
+<?php
 				}
-			else{
+			} else{
 ?>
 -
 <?php
