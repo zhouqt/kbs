@@ -325,7 +325,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 			$str .= "&nbsp;[<a href=\"bmdeny.php?board=".$boardName."&amp;userid=".$thread['OWNER']."\" title=\"封禁本文作者\"><font color=\"red\">封</font></a>]";
 		}
 	}
-	echo $str;
+	echo "<nobr>".$str."</nobr>";
 ?>
 </td>
 <td width="25" valign="middle">
@@ -367,7 +367,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	}
 ?>
 </td>
-<td width="16" valign="middle"></td></tr></table>
+<td width="10" valign="middle"></td></tr></table>
 <?php
 	if ($user !== false) {
 ?>
