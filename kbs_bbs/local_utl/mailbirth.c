@@ -17,7 +17,9 @@ int mailuser(struct userec* user,char* arg)
 	if( read_userdata(user->userid, &ud) != 0)
 		return 0;
 
+#ifdef HAVE_BIRTHDAY
 	if(ud.birthmonth != birthmonth || ud.birthday != birthday)
+#endif
 		return 0;
 
 	i=rand()%birthfilenum;

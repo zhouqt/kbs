@@ -63,6 +63,7 @@ int statit(struct userec *user, char *arg)
 	    break;
     case 4:
         {
+#ifdef HAVE_BIRTHDAY
             struct userdata aman;
             if (read_userdata(user->userid, &aman) == 0) {
                 if (aman.birthmonth == tm_mon && aman.birthday == tm_mday) {
@@ -73,6 +74,7 @@ int statit(struct userec *user, char *arg)
                     }
                 }
             }
+#endif
             return 1;
         }
         break;
