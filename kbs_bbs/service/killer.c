@@ -363,10 +363,7 @@ void refreshit()
         if(ipage+i-2==selected) {
             setfcolor(RED, 1);
         }
-        if(inrooms[myroom].peoples[j].nick[0])
-            prints(inrooms[myroom].peoples[j].nick);
-        else
-            prints(inrooms[myroom].peoples[j].id);
+        prints("%s", inrooms[myroom].peoples[j].nick);
     }
     resetcolor();
     msgst=get_msgt();
@@ -376,8 +373,7 @@ void refreshit()
         char * ss=get_msgs(msgst-1-(t_lines-3-i)-jpage);
         if(!strcmp(ss, "Äã±»ÌßÁË")) kicked = 1;
         move(i,20);
-        if(ss)
-            prints(ss);
+        if(ss) prints("%s", ss);
     }
 }
 
@@ -489,7 +485,7 @@ int do_com_menu()
                 setfcolor(RED,1);
             }
             if(i>=max-1) max=i+1;
-            prints(menus[i]);
+            prints("%s", menus[i]);
         }
         ch=igetkey();
         if(kicked) return 0;
