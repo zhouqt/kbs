@@ -539,7 +539,12 @@ void refreshit()
             setfcolor(GREEN, 0);
             prints("O");
         }
-        else if((inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE)&&
+        else if(inrooms[myroom].status == INROOM_DAY ||
+            inrooms[myroom].status == INROOM_NIGHT &&
+            (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
+            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR||
+            inrooms[myroom].peoples[me].flag&PEOPLE_POLICE))
+            if((inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE)&&
             (inrooms[myroom].peoples[j].vote != 0)) {
             resetcolor();
             move(i,3);
