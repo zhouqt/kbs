@@ -550,8 +550,7 @@ int n;
 		    	slp->mode |= MODIFIED ; \
 	          }
 
-#define DO_CRLF   { if (slp->len < reg_col) \
-                        slp->len=reg_col; \
+#define DO_CRLF   {  slp->len=reg_col; \
                         cur_col = 0 ; \
                         cur_ln = (cur_ln+1)%scr_lns;\
                         reg_col=begincol; \
