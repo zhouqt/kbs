@@ -137,7 +137,7 @@ unsigned int ucache_hash_deep(const char* userid)
     while(n1<0){
         n1=-n1-1;
         if(!*userid){
-            usage->hash[n1][0]++;
+/* disable it            usage->hash[n1][0]++; */
             n1=hash->hash[n1][0];
         } else {
             n2=*userid++;
@@ -178,13 +178,13 @@ unsigned int ucache_hash(const char* userid)
     n1-='A';
     if(n1<0 || n1>=26)return 0;
 
-    usage->hash0[n1]++;
+/* disable it    usage->hash0[n1]++;*/
     n1=hash->hash0[n1];
 
     while(n1<0){
         n1=-n1-1;
         if(!*userid){
-            usage->hash[n1][0]++;
+/* disable it            usage->hash[n1][0]++; */
             n1=hash->hash[n1][0];
         } else {
             n2=*userid++;
@@ -196,7 +196,7 @@ unsigned int ucache_hash(const char* userid)
                n2-='0';
             }
             if(n2<0 || n2>=36)return 0;
-            usage->hash[n1][n2]++;
+/* disable it            usage->hash[n1][n2]++; */
             n1=hash->hash[n1][n2];
         }
     }

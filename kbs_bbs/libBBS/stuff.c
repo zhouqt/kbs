@@ -468,7 +468,7 @@ char    *name;
 
 void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 {
-	return attach_shm(shmstr,defaultkey, shmsize,iscreate,0)
+	return attach_shm1(shmstr,defaultkey, shmsize,iscreate,0);
 }
 
 void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate,int readonly)
@@ -511,6 +511,11 @@ void attach_err( int     shmkey,char    *name)
 
 void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 {
+	return attach_shm1(shmstr,defaultkey, shmsize,iscreate,0);
+}
+
+void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate,int readonly)
+{
     void        *shmptr;
     int         shmkey, shmid;
 
@@ -525,7 +530,10 @@ void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
             attach_err( shmkey, "shmget" );
             exit(0);
         }
-        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if (readonly)
+            shmptr = (void *) shmat( shmid, NULL, SHM_RDONLY);
+        else
+            shmptr = (void *) shmat( shmid, NULL, 0 );
         if( shmptr == (void *)-1 ) {
             attach_err( shmkey, "shmat" );
             exit(0);
@@ -533,7 +541,10 @@ void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
         memset( shmptr, 0, shmsize );
     } else {
     	*iscreate=0;
-        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if (readonly)
+            shmptr = (void *) shmat( shmid, NULL, SHM_RDONLY);
+        else
+            shmptr = (void *) shmat( shmid, NULL, 0 );
         if( shmptr == (void *)-1 ) {
             attach_err( shmkey, "shmat" );
             exit(0);
