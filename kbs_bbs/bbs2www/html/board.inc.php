@@ -182,9 +182,11 @@ function bbs_board_foot($brdarr,$listmode)
 <?php		
 			break;
 		case "ORIGIN":
+		case "DENYLIST";
 ?>
 [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>]
 <?php
+            break;
 	}
 ?>
 [<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>]
