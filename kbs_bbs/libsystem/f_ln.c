@@ -13,7 +13,7 @@ f_ln(src, dst)
 {
   int ret;
 
-  if (ret = symlink(src, dst))
+  if (ret = link(src, dst))
   {
     if (errno != EEXIST)
       ret = f_cp(src, dst, O_EXCL);
