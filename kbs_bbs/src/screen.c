@@ -548,9 +548,13 @@ void outns(const char*str, int n)
                 continue;
              }
              else if(*(str+i)=='M') {
-                refresh();
-                output(str, i+1);
-                oflush();
+                k=1;
+                for(j=2;j<i;j++) k=k&&(*(str+j)>='0'&&*(str+j)<='9');
+                if(k) {
+                    refresh();
+                    output(str, i+1);
+                    oflush();
+                }
                 str+=i+1;
                 continue;
              }
