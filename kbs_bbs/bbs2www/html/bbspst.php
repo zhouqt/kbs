@@ -79,8 +79,18 @@
 作者: <?php echo $currentuser["userid"]; ?><br />
 <?php
 		if ($reid)
+		{
 ?>
 标题: <input type="text" name="title" size="40" maxlength="100" value="Re: <?php echo $articles[1]["TITLE"]; ?>"><br />
+<?php
+		}
+		else
+		{
+?>
+标题: <input type="text" name="title" size="40" maxlength="100" value=""><br />
+<?php
+		}
+?>
 看版: [<?php echo $brd_encode; ?>]<br />
 <?php
 		if (bbs_is_attach_board($brdarr))
