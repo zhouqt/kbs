@@ -188,6 +188,14 @@ PERM_DENYMAIL·¢ÐÅ
     int i,j,k,lcount,tcount;
 
     modify_user_mode( GIVEUPNET );
+    if (!HAS_PERM(currentuser,PERM_LOGINOK)) {
+        clear();
+        move(11,28);
+        prints("[1m[33mÄãÓÐ»¹Ã»ÓÐ×¢²áÍ¨¹ý£¬²»ÄÜ½äÍø£¡[m");
+        pressanykey();
+        return;
+    }
+
     if(HAS_PERM(currentuser,PERM_SYSOP)||HAS_PERM(currentuser,PERM_BOARDS)||HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_ACCOUNTS)||HAS_PERM(currentuser,PERM_ANNOUNCE)||HAS_PERM(currentuser,PERM_JURY) ||HAS_PERM(currentuser,PERM_SUICIDE)||HAS_PERM(currentuser,PERM_CHATOP))
     {
         clear();
