@@ -1576,6 +1576,7 @@ char *fname;
         strtok(genbuf, " \n\r\t");
         strcpy(u_buf, genbuf);
         AddNameList(u_buf);
+	if (showline==0) continue;
         nick = (char *) strtok(NULL, "\n\r\t");
         if (nick != NULL) {
             while (*nick == ' ')
@@ -1599,8 +1600,8 @@ char *fname;
             x += max + 2;
             max = 0;
             if (x > 68)
-//            showline = 0;
-              break;
+                showline = 0;
+   //           break;
         }
         move(y, x);
     }
