@@ -655,7 +655,7 @@ static long insert_from_fp(FILE *fp)
                 if (*data==*attachpad) {
                     matched++;
                     if (matched==sizeof(ATTACHMMENT_PAD)-1) {
-                        BBS_RETURN(not-(sizeof(ATTACHMMENT_PAD)-1)+1);
+                        BBS_RETURN((not+1)-(sizeof(ATTACHMMENT_PAD)-1)+1);
                     } else {
                         attachpad++;
                         continue;
@@ -1014,12 +1014,14 @@ fsdfa
         p = v;
     }
     if (!aborted) {
+        fclose(fp);
         if (*pattachpos) {
             char buf[MAXPATH];
-            int fsrc;
+            int fsrc,fdst;
             struct stat st;
             snprintf(buf,MAXPATH,"%s.attach",filename);
-            fstat(fileno(fp),&st);
+            if ((fdst = open(filename, O_WRONLY | O_APPEND)) >= 0) {
+            fstat(fdst,&st);
             *pattachpos=st.st_size+1;
             if ((fsrc = open(buf, O_RDONLY)) >= 0) {
                 char* src=(char*)malloc(10240);
@@ -1028,13 +1030,14 @@ fsdfa
                     ret = read(fsrc, src, 10240);
                     if (ret <= 0)
                         break;
-                } while (fwrite(src, ret, 1, fp) > 0);
+                } while (write(fdst,src, ret) > 0);
                 close(fsrc);
                 free(src);
             }
+            close(fdst);
+            } else *pattachpos=0;
             f_rm(buf);
         }
-        fclose(fp);
     }
     currline = NULL;
     lastline = NULL;
