@@ -1578,13 +1578,14 @@ void show_top_board()
     FILE* fp;
     char buf[80];
     int i,j,x,y;
+    clear();
     for(i=1;i<=6;i++) {
         sprintf(buf, "service/killer.%d", i);
         fp=fopen(buf, "r");
         for(j=0;j<7;j++) {
             if(feof(fp)) break;
             y=(i-1)%3*8+j; x=(i-1)/3*40;
-            fgets(buf, 80, fp);
+            if(fgets(buf, 80, fp)==NULL) break;
             move(y, x);
             prints(buf);
         }
