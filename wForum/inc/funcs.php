@@ -712,10 +712,7 @@ function show_footer()
 <br>
 <TABLE cellSpacing=0 cellPadding=0 border=0 align=center>
 <tr>
-<td width="100" align="center" ><a href="http://wforum.wforum.zixia.net" target="_blank"><img border="0" src="images/copyright/wforum.gif"></a></td>
-<td width="100" align="center" ><a href="http://www.php.net" target="_blank"><img border="0" src="images/copyright/php-small-trans-light.gif"></a></td>
-<td width="100" align="center" ><a href="http://www.mysql.com" target="_blank"><img border="0" src="images/copyright/mysql-17.gif"></a></td>
-<td width="100" align="center" ><a href="http://www.redhat.com" target="_blank"><img border="0" src="images/copyright/poweredby.png"></a></td>
+<td width="100" align="center" ><a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="images/wforum.gif"></a></td>
 <td></td>
 </tr>
 </table>
