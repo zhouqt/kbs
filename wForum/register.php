@@ -40,7 +40,14 @@ function do_apply(){
 	require "inc/userdatadefine.inc.php";
 
 ?>
-
+<script language="javascript">
+<!--
+	function check_id() {
+		id = document.theForm.userid.value;
+		openScript('checkid.php?id=' + (id),500,300); //这个地方应该要 escape(id)，不过有副作用，最好用一个FORM来GET，先这样吧 - atppp
+	}
+//-->
+</script>
 <form method=post action="<?php echo $_SERVER['PHP_SELF'] ?>" name="theForm">
 <input type="hidden" name="action" value="save">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
@@ -51,7 +58,7 @@ function do_apply(){
 <TR> 
 <TD width=40% class=TableBody1><B>代号</B>：<BR>2-12字符，可用英文字母或数字，首字符必须是字母</TD>
 <TD width=60%  class=TableBody1> 
-<input name=userid size=12 maxlength=12></TD>
+<input name=userid size=12 maxlength=12>&nbsp; <input type=button value='检测帐号' name=checkid onclick="check_id();"> </TD>
 </TR>
 <TR> 
 <TD width=40% class=TableBody1><B>密码</B>：<BR>请输入密码，5-39字符，区分大小写。<BR>
@@ -107,17 +114,11 @@ function do_apply(){
 <TD width=60%  class=TableBody1> 
 <input name=phone size=40> </TD>
 </TR>
-<?php
-	if (SMS_SUPPORT) {
-?>
 <TR> 
 <TD width=40% class=TableBody1><B>手机</B>：<BR>您的手机号码（如果没有可以不填）</TD>
 <TD width=60%  class=TableBody1> 
-<input name=mobile size=40>&nbsp; <input type=button value='检测帐号' name=Button onclick=gopreview() disabled> </TD>
+<input name=mobile size=40></TD>
 </TR>
-<?php
-	}
-?>
 </table>
  <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 id=adv style="DISPLAY: none">
 <TBODY> 
