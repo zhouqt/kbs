@@ -5518,11 +5518,11 @@ static PHP_FUNCTION(bbs_createregform)
 		userface_img=-1;
 	}
 
-	if(!bAuto)
-	{
         //检查用户是否已经通过注册或者还不到时间(先放到这里,最好放到php里面)
 	    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
 		if(HAS_PERM(uc,PERM_LOGINOK))RETURN_LONG(4);
+	if(!bAuto)
+	{
 		/* remed by roy 2003.7.17 
 		if(time(NULL) - uc->firstlogin < REGISTER_WAIT_TIME)RETURN_LONG(5);
 		*/
@@ -5711,11 +5711,11 @@ static PHP_FUNCTION(bbs_createregform)
 	if(0 == usernum)RETURN_LONG(3);
 
 
-	if(!bAuto)
-	{
         //检查用户是否已经通过注册或者还不到时间(先放到这里,最好放到php里面)
 	    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
 		if(HAS_PERM(uc,PERM_LOGINOK))RETURN_LONG(4);
+	if(!bAuto)
+	{
 		/* remed by roy 2003.7.17 
 		if(time(NULL) - uc->firstlogin < REGISTER_WAIT_TIME)RETURN_LONG(5);
 		*/
