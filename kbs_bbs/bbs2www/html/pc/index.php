@@ -315,7 +315,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","文集管理","参数设定");
 		$pur = 3;
 	}
-	elseif($isfriend || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
+	elseif(pc_is_friend($currentuser["userid"],$pc["USER"]) || bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))
 	{
 		$sec = array("公开区","好友区");
 		$pur = 1;
