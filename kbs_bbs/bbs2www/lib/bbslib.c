@@ -2520,7 +2520,7 @@ static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
         if (buf[i] == 0x1b)
             html_output("*", 1, output);
         else if (buf[i]=='\n') {
-			output->output("\n<br />\n", 8, output);
+			output->output(" <br /> ", 8, output);
         } else {
             html_output(&buf[i], 1, output);
 		}
@@ -2729,7 +2729,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 								snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
 								break;
 							case ATTACH_FLASH:
-				                snprintf(outbuf, 511, "<br>Flash动画: " "<a href='%s&ap=%d'>%s</a> (%d 字节)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s&amp;ap=%d'>" "<EMBED SRC='%s&amp;ap=%d'></EMBED></OBJECT><br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1], attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
+				                snprintf(outbuf, 511, "<br>Flash动画: " "<a href='%s&ap=%d'>%s</a> (%d 字节)<br>" "<OBJECT classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 codebase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 > <PARAM NAME='MOVIE' VALUE='%s&ap=%d'>" "<EMBED SRC='%s&ap=%d'></EMBED></OBJECT><br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1], attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
 								break;
 							case ATTACH_OTHERS:
 								 snprintf(outbuf, 511, "<br>附件: <a href='%s&ap=%d'>%s</a> (%d 字节)<br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1]);
@@ -2779,7 +2779,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 STATE_CLR(ansi_state, STATE_FONT_SET);
             }
 		    if (!STATE_ISSET(ansi_state,STATE_UBB_MIDDLE) || isUBBMiddleOutput) {
-				output->output("\n<br />\n", 8, output);
+				output->output(" <br /> ", 8, output);
 			}
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
@@ -2886,7 +2886,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 		 		snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ",attachlink, attachPos[i],attachlink, attachPos[i]);
 				break;
 			case ATTACH_FLASH:
-		        snprintf(outbuf, 511, "<br>Flash动画: " "<a href='%s&ap=%d'>%s</a> (%d 字节)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s&amp;ap=%d'>" "<EMBED SRC='%s&amp;ap=%d'></EMBED></OBJECT><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
+		        snprintf(outbuf, 511, "<br>Flash动画: " "<a href='%s&ap=%d'>%s</a> (%d 字节)<br>" "<OBJECT classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 codebase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 > <PARAM NAME='MOVIE' VALUE='%s&ap=%d'>" "<EMBED SRC='%s&ap=%d'></EMBED></OBJECT><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
 				break;
 			case ATTACH_OTHERS:
 				 snprintf(outbuf, 511, "<br>附件: <a href='%s&ap=%d'>%s</a> (%d 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
