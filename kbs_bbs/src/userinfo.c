@@ -20,7 +20,7 @@
     along with this program; if not, write to the Free Software
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
-
+/* KCN modified 2001.5.10 */
 #include "bbs.h"
 
 extern time_t   login_start_time;
@@ -251,6 +251,12 @@ int     real, unum;
                 if(strcmp(u->userid, newinfo.userid ))
                     sprintf(secu,"%s 的 ID 被 %s 改为 %s",u->userid,currentuser.userid,newinfo.userid);/*Haohmaru.99.5.6*/
                 securityreport(secu);
+            } else {
+                currentuser=newinfo; 
+                if ( strcmp(newinfo.username,uinfo.username)) {
+                    strcpy(uinfo.username,newinfo.username);
+                    UPDATE_UTMP_STR(username,uinfo);
+                }
             }
             if( strcmp( u->userid, newinfo.userid ) ) {
                 char src[ STRLEN ], dst[ STRLEN ];
