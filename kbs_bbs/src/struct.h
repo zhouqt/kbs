@@ -155,6 +155,14 @@ struct boardheader {            /* This structure is used to hold data in */
     char des[196]; /*版面描述,用于www的版面说明和search */
 };
 
+/* add by roy 2003.8.7 struct wwwthreadheader */
+/* used for .WWWTHREAD */
+struct wwwthreadheader{
+	unsigned int groupid,   /* groupid */
+	unsigned int lastid,	/* id for last article */
+	unsigned int articlecount /* number of articles */
+}
+
 /* XXX: struct fileheader moved to site.h */
 
 struct one_key {                /* Used to pass commands to the readmenu */
