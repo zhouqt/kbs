@@ -31,18 +31,20 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			
 			);
 	
-	$query = "SELECT * FROM nodes WHERE `access` = 0 ORDER BY `nid` DESC LIMIT ".(($pno - 1) * $etemnum)." , ".$etemnum." ;";
+	$query = "SELECT users.visitcount,description,corpusname,username,created,subject,body,htmltag,nodes.uid,nid,tid,theme,nodescount ".
+	         "FROM nodes,users ".
+	         "WHERE `access` = 0 ".
+	         "   AND nodes.uid = users.uid ".
+	         "   AND pctype < 6 ".
+	         "ORDER BY `nid` DESC ".
+	         "LIMIT ".(($pno - 1) * $etemnum)." , ".$etemnum." ;";
 	$result = mysql_query($query,$link);
 	$j = 0;
-	$bloguser = array();
 	while($rows=mysql_fetch_array($result))
 	{
-		if(!$bloguser[$rows[uid]])
-			$bloguser[$rows[uid]] = pc_load_infor($link,FALSE,$rows[uid]);
-			
 		$body = "<br>\n".
-			"来自: ".$bloguser[$rows[uid]]["NAME"]."<br>\n".
-			"作者: ".$bloguser[$rows[uid]]["USER"]."<br>\n".
+			"来自: ".html_format($rows[corpusname])."<br>\n".
+			"作者: ".html_format($rows[username])."<br>\n".
 			"发信站: ".$pcconfig["BBSNAME"]."<br>\n".
 			"时间: ".time_format($rows[created])."<br>\n".
 			"<hr size=1>\n".
@@ -50,7 +52,7 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			"<hr size=1>\n".
 			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&tid=".$rows[tid]."&s=all\">浏览全文</a>\n".
 			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=".$rows[nid]."\">发表评论</a>)<br>\n".
-			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."</a>";
+			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".html_format($rows[username])."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".html_format($rows[username])."</a>";
 		$newBlogs[useretems][$j] = array(
 					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
 					"subject" => htmlspecialchars($rows[subject]),
@@ -58,10 +60,15 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 					"tid" => $rows[tid],
 					"nid" => $rows[nid],
 					"publisher" => $pcconfig["BBSNAME"],
-					"creator" => $bloguser[$rows[uid]]["USER"],
-					"pc" => $bloguser[$rows[uid]],
+					"creator" => html_format($rows[username]),
+					"pc" => $rows[uid],
 					"created" => time_format($rows[created]),
-					"rights" => $bloguser[$rows[uid]]["USER"].".bbs@".$pcconfig["SITE"]
+					"rights" => html_format($rows[username]).".bbs@".$pcconfig["SITE"],
+					"theme" => pc_get_theme($rows[theme]),
+					"pcdesc" => $rows[description],
+					"pcname" => $rows[corpusname],
+					"pcvisit" => $rows[0],
+					"pcnodes" => $rows[nodescount]
 					);
 		$j ++;
 	}
@@ -79,7 +86,15 @@ function getNewComments($link,$pno=1,$etemnum=0)
 		$etemnum = $pcconfig["NEWS"];
 	
 	$newComments = array();
-	$query = "SELECT cid , comments.uid , comments.subject , comments.created , comments.username , nodes.subject , nodes.created , visitcount , commentcount , nodes.nid FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0  AND comment = 1 ORDER BY cid DESC LIMIT ".(($pno - 1) * $etemnum)." , ".$etemnum." ;";
+	$query = "SELECT cid , comments.uid , comments.subject , comments.created , comments.username , nodes.subject , nodes.created , nodes.visitcount , commentcount , nodes.nid ".
+	         "FROM comments, nodes , users ".
+	         "WHERE comments.nid = nodes.nid ".
+	         "  AND nodes.uid = users.uid ".
+	         "  AND pctype < 6 ".
+	         "  AND access = 0 ".
+	         "  AND comment = 1 ".
+	         "ORDER BY cid DESC ".
+	         "LIMIT ".(($pno - 1) * $etemnum)." , ".$etemnum." ;";
 	$result = mysql_query($query,$link);
 	for($i = 0; $i < mysql_num_rows($result) ; $i ++ )
 	{
@@ -186,7 +201,7 @@ function getNewUsers($link,$userNum=0)
 {
 	$userNum = intval( $userNum );
 	if(!$userNum) $userNum = 10;
-	$query = "SELECT username,corpusname,description FROM users ORDER BY createtime DESC LIMIT 0,".intval($userNum).";";
+	$query = "SELECT username,corpusname,description FROM users WHERE pctype < 2 ORDER BY createtime DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
 	$newUsers = array();
 	while($rows = mysql_fetch_array($result))
@@ -199,7 +214,7 @@ function getMostVstUsers($link,$userNum=0)
 {
 	$userNum = intval( $userNum );
 	if(!$userNum) $userNum = 10;
-	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT 0,".intval($userNum).";";
+	$query = "SELECT username , corpusname , description FROM users WHERE pctype < 2 ORDER BY visitcount DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
 	$mostVstUsers = array();
 	while($rows = mysql_fetch_array($result))
@@ -212,7 +227,7 @@ function getLastUpdates($link,$userNum=0)
 {
 	$userNum = intval( $userNum );
 	if(!$userNum) $userNum = 10;
-	$query = "SELECT username , corpusname , description FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,".intval($userNum).";";
+	$query = "SELECT username , corpusname , description FROM users WHERE createtime != modifytime AND pctype < 2 ORDER BY modifytime DESC LIMIT 0,".intval($userNum).";";
 	$result = mysql_query($query,$link);
 	$lastUpdates = array();
 	while($rows = mysql_fetch_array($result))
@@ -264,6 +279,7 @@ function getHotUsersByPeriod($link,$period,$num=10)
 	             "WHERE ACTION LIKE '%\'s Blog(www)' ".
 	             "      AND pri_id = users.username ".
 	             "      AND logtime LIKE '".$queryTime."%' ".
+	             "      AND pctype < 2 ".
 		     "GROUP BY pri_id ".
 		     "ORDER BY 1 DESC ".
 		     "LIMIT 0 , ".$num." ;";
@@ -288,13 +304,16 @@ function getHotNodesByPeriod($link,$period,$num=10)
 	else
 		$queryTime = "";
 		
-	$query = "SELECT uid , nid , subject ".
-		 "FROM nodes ".
-		 "WHERE access = 0 ";
+	$query = "SELECT nodes.uid , nid , subject ".
+		 "FROM nodes,users ".
+		 "WHERE access = 0 ".
+		 "   AND nodes.uid = users.uid ".
+		 "   AND pctype < 4 ";
+	
 	if($queryTime)
 	$query.= " AND created LIKE '".$queryTime . "%' ";
 	//$query.= "GROUP BY uid ";
-	$query.= "ORDER BY visitcount DESC ".
+	$query.= "ORDER BY nodes.visitcount DESC ".
 		 "LIMIT 0 , ".$num." ;";
 	$result = mysql_query($query,$link);
 	$nodes = array();
@@ -318,7 +337,8 @@ function getHotTopicsByPeriod($link,$period,$num=10)
 	          "FROM topics , nodes , users ".
 		  "WHERE topics.access = 0 ".
 		  "      AND topics.uid = users.uid ".
-		  "      AND topics.tid = nodes.tid ";
+		  "      AND topics.tid = nodes.tid ".
+		  "      AND pctype < 4 ";
 	if($queryTime)
 	$query.=  "      AND nodes.created LIKE '".$queryTime."%' ";
 	$query.=  "GROUP BY nodes.tid ".
@@ -351,11 +371,11 @@ function getHotNodes($link,$type,$timeLong=259200,$num=20)
 	$num = intval($num);
 	
 	if("comments" == $type)
-		$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." ORDER BY commentcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid FROM nodes WHERE nodes.uid = users.uid AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." ORDER BY commentcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	elseif("trackbacks" == $type)
-		$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid FROM nodes WHERE nodes.uid = users.uid AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-  $timeLong )." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	else
-		$query = "SELECT nid , subject , uid  FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- $timeLong )." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid  FROM nodes WHERE nodes.uid = users.uid AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- $timeLong )." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	
 	$result = mysql_query($query,$link);	
 	$nodes = array();

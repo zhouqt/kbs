@@ -5,9 +5,9 @@
 	*/
 	require("pcfuncs.php");
 	
-	function display_blog_menu($pc,$tid,$blogMenus)
+	function display_blog_menu($pc,$tid,$tag,$blogMenus)
 	{
-		$blogs = $blogMenus
+		$blogs = $blogMenus;
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="95%">
 <tr>
@@ -431,7 +431,7 @@
 			pc_add_friend($id,$pc["USER"]);
 		}
 		
-		if($pc["TYPE"]==1)
+		if(pc_is_groupwork($pc))
 			pc_group_logs($link,$pc,"ADD FRIEND: ".$id);
 	}
 	
@@ -440,7 +440,7 @@
 	{
 		$id = $_GET["id"];	
 		pc_del_friend($id,$pc["USER"]);
-		if($pc["TYPE"]==1)
+		if(pc_is_groupwork($pc))
 			pc_group_logs($link,$pc,"DEL FRIEND: ".$id);
 	}
 		
@@ -498,7 +498,7 @@
 	<td class="t2" width="50">É¾³ý</td>
 </tr>
 <?php
-		for($i = 0; $i < count($blog) - 1; $i ++)
+		for($i = 0; $i < count($blog); $i ++)
 		{
 			echo "<tr>\n<td class='t3'>".($i+1)."</td>\n".
 				"<td class='t5'>&nbsp;<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$blog[$i]["TAG"]."&tid=".$blog[$i]["TID"]."\">¡¶".html_format($blog[$i]["NAME"])."¡·</a></td>\n".
@@ -602,7 +602,7 @@ BlogÃû
 	</td>
 </tr>
 <?php
-	if($pc["TYPE"]==1)
+	if(pc_is_groupwork($pc))
 	{
 ?>
 <tr>
@@ -764,7 +764,7 @@ BlogÃû
 	{
 ?>
 	<td rowspan="2" align="middle" valign="top" width="150">
-	<?php display_blog_menu($pc,$tid,$blogMenus); ?>
+	<?php display_blog_menu($pc,$tid,$tag,$blogMenus); ?>
 	</td>
 <?php
 	}

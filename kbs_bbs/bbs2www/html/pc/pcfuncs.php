@@ -265,7 +265,7 @@ function pc_get_members($link,$pc)
 {
 	if(!$pc || !is_array($pc))
 		return FALSE;
-	if($pc["TYPE"]!=1)
+	if(!pc_is_groupwork($pc))
 		return FALSE;
 	$members = array();
 	$query = "SELECT username FROM members WHERE uid = '".intval($pc["UID"])."';";	
@@ -281,7 +281,7 @@ function pc_add_member($link,$pc,$userid)
 	global $currentuser;
 	if(!$pc || !is_array($pc))
 		return FALSE;
-	if($pc["TYPE"]!=1)
+	if(!pc_is_groupwork($pc))
 		return FALSE;
 	$lookupuser = array();
 	if(bbs_getuser($userid,$lookupuser)==0)
@@ -303,7 +303,7 @@ function pc_del_member($link,$pc,$userid)
 {
 	if(!$pc || !is_array($pc))
 		return FALSE;
-	if($pc["TYPE"]!=1)
+	if(!pc_is_groupwork($pc))
 		return FALSE;
 	$query = "DELETE FROM members WHERE uid = '".$pc["UID"]."' AND username = '".addslashes($userid)."' LIMIT 1;";
 	if(!mysql_query($query,$link))
@@ -318,7 +318,7 @@ function pc_del_member($link,$pc,$userid)
 function pc_is_admin($currentuser,$pc)
 {
 	global $pcconfig;
-	if( $pc["TYPE"] == 1 )
+	if(pc_is_groupwork($pc))
 	{
 		return pc_is_member($currentuser,$pc);
 	}
@@ -1106,11 +1106,34 @@ function pc_fav_rootpid($link,$uid)
 	return $rows[nid];
 }
 
+//一个Blog是否为公有Blog
+/*
+pctype字段:
+
+参数   类型(0:普通;1:公有)  用户统计  文章(含评论)统计  新文章(评论)统计(含RSS)
+ 0             0               1              1                 1
+ 1             1               1              1                 1
+ 2             0               0              1                 1
+ 3             1               0              1                 1
+ 4             0               0              0                 1
+ 5             1               0              0                 1
+ 6             0               0              0                 0
+ 7             1               0              0                 0
+*/
+function pc_is_groupwork($pc)
+{
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	if($pc["TYPE"] == 1 || $pc["TYPE"] == 3 || $pc["TYPE"] == 5  || $pc["TYPE"] == 7)
+		return TRUE;
+	return FALSE;
+}
+
 //公有BLOG的log
 function pc_group_logs($link,$pc,$action,$content="")
 {
 	global $currentuser;
-	if($pc["TYPE"] != 1 || !$pc["LOGTID"])
+	if(!pc_is_groupwork($pc))
 		return FALSE;
 	if(!$action)
 		return FALSE;
@@ -1153,7 +1176,7 @@ function pc_convertto_group($link,$pc)
 {
 	if(!$pc || !is_array($pc))
 		return -1;
-	if($pc["TYPE"] == 1)
+	if(pc_is_groupwork($pc))
 		return -2;
 	
 	if(!pc_add_topic($link,$pc,2,"GROUPWORK LOGs"))

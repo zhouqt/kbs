@@ -300,7 +300,7 @@ function pcmain_section_top_view()
 	{
 		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname  ".
 			 "FROM nodes , users ".
-			 "WHERE nodes.uid = users.uid AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- _PCMAIN_TIME_LONG_ )." AND theme = '".$section."' ".
+			 "WHERE nodes.uid = users.uid AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- _PCMAIN_TIME_LONG_ )." AND theme = '".$section."' ".
 			 "GROUP BY nodes.uid ".
 			 "ORDER BY nodes.visitcount DESC , nid DESC ".
 			 "LIMIT 0 , 12 ;";

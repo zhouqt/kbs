@@ -804,7 +804,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 <?php		
 		}
 	
-		if($pc["TYPE"]==1)
+		if(pc_is_groupwork($pc))
 			pc_group_logs($link,$pc,$log_action,$log_content);
 		
 		html_normal_quit();

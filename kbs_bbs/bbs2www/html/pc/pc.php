@@ -13,10 +13,10 @@
 		global $pcconfig;
 		if($char)
 			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
-				" FROM users WHERE `username` LIKE '".$char."%' ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize.";";
+				" FROM users WHERE `username` LIKE '".$char."%' AND pctype < 2 ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize.";";
 		else
 			$query = "SELECT  `uid` , `username` , `corpusname` , `description` , `theme` , `createtime`,`modifytime`,`nodescount`,`visitcount` ".
-				" FROM users ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize.";";
+				" FROM users WHERE pctype < 2 ORDER BY ".$listorder." ".$listorder1." LIMIT ".$startno." , ".$pagesize.";";
 		$result = mysql_query($query,$link);
 		$list_user_num = mysql_num_rows($result);
 ?>
