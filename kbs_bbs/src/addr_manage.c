@@ -256,7 +256,7 @@ static int set_al_show(struct _select_def *conf, int i)
 	if((c = strchr(title, '\n') )!= NULL) *c=0;
 	if((c = strchr(title, '\r') )!= NULL) *c=0;
 
-	prints(" %-3d %-8s %-10s %-10s %-40s", i, a_l[i-conf->page_pos].name, a_l[i-conf->page_pos].bbsid, a_l[i-conf->page_pos].group, title);
+	prints(" %-3d %-8s %-10s %-10s %-12s %-28s", i, a_l[i-conf->page_pos].name, a_l[i-conf->page_pos].bbsid, a_l[i-conf->page_pos].group, a_l[i-conf->page_pos].mobile, title);
 	return SHOW_CONTINUE;
 }
 
@@ -287,7 +287,7 @@ static int set_al_refresh(struct _select_def *conf)
 	clear();
 	docmdtitle("[Í¨Ñ¶Â¼¹ÜÀí]","ÍË³ö[[1;32mq[m] Ôö¼Ó[[1;32ma[m] ÐÞ¸Ä[[1;32me[m] É¾³ý[[1;32md[m] Ñ¡Ôñ[[1;32ms[m] ÅÅÐò[[1;32mTAB[m] µ¼Èë[[1;32mi[m] ·¢ËÍ¶ÌÐÅ[[1;32mS[m]");
 	move(2,0);
-	prints("[0;1;44m  %-4s %s%-8s %s%-10s%s %-10s%s %-40s              [m","ÐòºÅ",al_order==AL_ORDER_NAME?"[1;32m":"",al_order==AL_ORDER_NAME?"{Ãû×Ö}":"Ãû×Ö",al_order==AL_ORDER_NAME?"[0;1;44m":(al_order==AL_ORDER_BBSID?"[1;32m":""),al_order==AL_ORDER_BBSID?"{id}":"id",al_order==AL_ORDER_BBSID?"[0;1;44m":(al_order==AL_ORDER_GROUPNAME?"[1;32m":""),al_order==AL_ORDER_GROUPNAME?"{·Ö×é}":"·Ö×é",al_order==AL_ORDER_GROUPNAME?"[0;1;44m":"", "±¸×¢");
+	prints("[0;1;44m  %-4s %s%-8s %s%-10s%s %-10s%s %-12s %-28s              [m","ÐòºÅ",al_order==AL_ORDER_NAME?"[1;32m":"",al_order==AL_ORDER_NAME?"{Ãû×Ö}":"Ãû×Ö",al_order==AL_ORDER_NAME?"[0;1;44m":(al_order==AL_ORDER_BBSID?"[1;32m":""),al_order==AL_ORDER_BBSID?"{id}":"id",al_order==AL_ORDER_BBSID?"[0;1;44m":(al_order==AL_ORDER_GROUPNAME?"[1;32m":""),al_order==AL_ORDER_GROUPNAME?"{·Ö×é}":"·Ö×é",al_order==AL_ORDER_GROUPNAME?"[0;1;44m":"", "ÊÖ»ú","±¸×¢");
 	update_endline();
 	return SHOW_CONTINUE;
 }
