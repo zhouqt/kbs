@@ -295,7 +295,8 @@ struct addresslist{
 
 #define AL_ORDER_NAME 1
 #define AL_ORDER_BBSID 2
-#define AL_ORDER_COUNT 2
+#define AL_ORDER_GROUPNAME 3
+#define AL_ORDER_COUNT 3
 
 struct key_struct { // ×Ô¶¨Òå¼ü by bad
     int status[10];
