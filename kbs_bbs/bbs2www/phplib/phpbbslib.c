@@ -5286,6 +5286,7 @@ static PHP_FUNCTION(bbs_postmail){
 	getuser(targetID, &u);
 	if (u==NULL) 
 		RETURN_LONG(-100);//can't find user
+	strcpy(targetID, u->userid);
     for (i = 0; i < strlen(title); i++)
         if (title[i] < 27 && title[i] >= -1)
             title[i] = ' ';

@@ -601,7 +601,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     }
     fprintf(fp, "\n--\n");
     sig_append(fp, id, sig);
-    fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %.20s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, SHOW_USERIP(currentuser, ip));
+    fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, SHOW_USERIP(currentuser, ip));
     fclose(fp);
     
     if (stat(filepath, &st) != -1)
@@ -664,7 +664,7 @@ void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
      * 由Bigman增加:2000.8.10 Announce版匿名发文问题 
      */
     if (!strcmp(board, "Announce"))
-        fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME);
+        fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME, NAME_BBS_CHINESE " BBS站");
     else
         fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(currentuser, user->lasthost));
 
