@@ -2573,7 +2573,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     char *ansi_begin;
     char *ansi_end;
     int attachmatched;
-    char link[STRLEN];
+    char link[256];
 
     if (ptr == NULL)
         return;
@@ -2589,8 +2589,11 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             int type;
             char outbuf[256];
 
-            sprintf(link,"%s&amp;attachpos=%d",attachlink,i);
             extension = attachfilename + strlen(attachfilename);
+            snprintf(link,255,"%s&amp;attachpos=%d&amp;filename=%s&amp;size=%d",attachlink,i+attachptr-buf-i,attachfilename,attach_len);
+	    link[255]=0;
+	    i+=(attachptr-buf-i)+attach_len-1;
+	    if (i>buflen) continue;
             type = 0;
             while ((*extension != '.') && (*extension != NULL))
                 extension--;
@@ -2605,16 +2608,18 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             }
             switch (type) {
             case 1:
-                sprintf(outbuf, "图片:%s(%d)<br><img src='%s'></img>", attachfilename, attach_len, link);
+                snprintf(outbuf, 255, "图片:%s(%d)<br><img src='%s'></img><br />", attachfilename, attach_len, link);
                 break;
             case 2:
-                sprintf(outbuf, "Flash动画: "
-                        "<a href='%s'>%s</a> (%d 字节)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s'>" "<EMBED SRC='%s'></EMBED></OBJECT>", link, attachfilename, attach_len, link, link);
+                snprintf(outbuf, 255, "Flash动画: "
+                        "<a href='%s'>%s</a> (%d 字节)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s'>" "<EMBED SRC='%s'></EMBED></OBJECT><br />", link, attachfilename, attach_len, link, link);
             default:
-                sprintf(outbuf, "附件: <a href='%s'>%s</a> (%d 字节)\n", link, attachfilename);
+                snprintf(outbuf, 255, "附件: <a href='%s'>%s</a> (%d 字节)<br />\n", link, attachfilename, attach_len);
                 break;
             }
+	    outbuf[255]=0;
             output->output(outbuf, strlen(outbuf), output);
+	    continue;
         }
         if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
             STATE_CLR(ansi_state, STATE_NEW_LINE);

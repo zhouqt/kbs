@@ -53,26 +53,33 @@
 		else
 		{
 			$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
+/*
                 	if (cache_header("public",filemtime($filename),300))
                 		return;
+*/
 			@$attachpos=$_GET["attachpos"];
 			@$attachname=$_GET["filename"];
-			if ($attachpos!=0) {
-				Header("Content-type: " . mime_content_type($attachname));
+			@$attachsize=$_GET["size"];
+			@$mimetype=mime_content_type($attachname);
+			if (($attachpos!=0)&&($attachsize!=0)) {
+				if ($mimetype!='')
+					Header("Content-type: " . $mimetype);
 				Header("Accept-Ranges: bytes");
 				Header("Accept-Length: " . filesize($filename));
 				Header("Content-Disposition: attachment; filename=" . $attachname);
 				$file = fopen($filename, "r");
 				fseek($file,$attachpos);
-				echo fread($file,filesize($filename) - $attachpos);
+				echo fread($file,$attachsize);
 				fclose($file);
 				exit;
 			} else
+			{
+				html_init("gb2312");
 ?>
 <body>
 <?php
-			html_init("gb2312");
-			bbs_printansifile($filename,1,$_SERVER['PHP_SELF']);
+				bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
+			}
 		}
 		html_normal_quit();
 	}
