@@ -146,6 +146,8 @@ int t_pager()
 
 /*Add by SmallPig*/
 /*´Ëº¯ÊıÖ»¸ºÔğÁĞÓ¡ËµÃ÷µµ£¬²¢²»¹ÜÇå³ı»ò¶¨Î»µÄÎÊÌâ¡£*/
+extern int minln; //added by bad
+
 int show_user_plan(userid)
 char userid[IDLEN];
 {
@@ -161,7 +163,8 @@ char userid[IDLEN];
  */
         return false;
     } else {
-        prints("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");
+        prints("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");//added by bad
+        getyx(&minln, &i);
         for (i = 1; i <= scr_lns-8/*MAXQUERYLINES*/; i++) {
             if (fgets(pbuf, sizeof(pbuf), pf))
                 prints("%s", pbuf);
@@ -169,6 +172,7 @@ char userid[IDLEN];
                 break;
         }
         fclose(pf);
+        minln=0;
         return true;
     }
 }

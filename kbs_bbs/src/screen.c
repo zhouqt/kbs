@@ -38,7 +38,7 @@ int roll, scrollcnt;
 int tc_col=0, tc_line=0;
 int tc_mode=0, tc_color = 7;
 int cur_mode=0, cur_color=7;
-int offsetln = 0;
+int offsetln = 0, minln=0;
 struct screenline *big_picture = NULL;
 static const char nullstr[] = "(null)";
 static /*struct screenline old_line; */ char tmpbuffer[LINELEN*3];
@@ -552,6 +552,7 @@ void outns(const char*str, int n)
                     if(DEFINE(currentuser, DEF_COLOR))
                     if(y>=0&&y<scr_lns&&x>=0&&x<=scr_cols&&!disable_move) {
                         cur_col=x; cur_ln=y;
+                        if(cur_ln<minln) cur_ln=minln;
                     }
                     str+=i+1;
                     continue;
@@ -592,8 +593,8 @@ void outns(const char*str, int n)
 
                     if(cur_col<0) cur_col=0;
                     if(cur_col>=scr_cols) cur_col=scr_cols;
-                    if(cur_ln<offsetln) cur_ln=offsetln;
                     if(cur_ln>=scr_lns) cur_ln=scr_lns-1;
+                    if(cur_ln<minln) cur_ln=minln;
                 }
 
                 str+=i+1;
@@ -609,6 +610,7 @@ void outns(const char*str, int n)
                 if(DEFINE(currentuser, DEF_COLOR))
                 if(savey!=-1&&savex!=-1&&!disable_move) {
                     cur_ln=savey; cur_col=savex;
+                    if(cur_ln<minln) cur_ln=minln;
                     continue;
                 }
              }
