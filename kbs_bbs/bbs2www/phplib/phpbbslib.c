@@ -1143,14 +1143,19 @@ static ZEND_FUNCTION(bbs_wwwlogoff)
 
 static ZEND_FUNCTION(bbs_brcaddread)
 {
-    long fid, boardnum;
+	char *board;
+	int blen;
+    long fid;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
-    if (zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &fid) != SUCCESS)
+    if (zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &fid) != SUCCESS)
         WRONG_PARAM_COUNT;
-    brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);
+	brc_initial(currentuser->userid, board);
+	brc_add_read(fid);
+	brc_update(currentuser->userid);
+    /*brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);*/
 
     RETURN_NULL();
 }
