@@ -382,6 +382,10 @@ int main(int argc, char ** argv)
 	int all = 0;
 	struct boardheader *bp;
 
+	resolve_boards();
+	resolve_ucache();
+	resolve_utmp();
+	getuser("SYSOP", &currentuser);
 	if (argc == 1)
 		all = 1;
 	else if (argc > 2)
