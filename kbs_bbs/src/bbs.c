@@ -2964,12 +2964,11 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
         pressreturn();
         return FULLUPDATE;
     }
-    getdata(4, 0, "1-保留标记m  2-删除标记t  3-不可回复标记: [0]", ans, 4, DOECHO, NULL, true);
-    if(ans[0]<'1'||ans[0]>'3') return FULLUPDATE;
+    getdata(4, 0, "1-保留标记m  2-删除标记t:  [0]", ans, 4, DOECHO, NULL, true);
+    if(ans[0]<'1'||ans[0]>'2') return FULLUPDATE;
     k=ans[0]-'0';
     if(ans[0]=='1') fflag=FILE_MARK_FLAG;
     else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
-    else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
     for(i=inum1;i<=inum2;i++) {
         f.filename[0]=0;
         change_post_flag(currBM, currentuser, digestmode, currboard, i, &f, direct, fflag, 0);
