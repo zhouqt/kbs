@@ -425,8 +425,7 @@ function getSectionHotNodes($link,$section,$timeLong,$num)
              " ORDER BY nodes.visitcount DESC , nid DESC ".
              " LIMIT 0 , ".intval($num).";";
     $result = mysql_query($query,$link);	
-    exit ('r='.$query);
-	if (mysql_num_rows($result)==0)
+    if (mysql_num_rows($result)==0)
 	    return false;
 	$nodes = array();
 	while($rows = mysql_fetch_array($result))
