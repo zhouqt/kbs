@@ -22,7 +22,7 @@
 	</section>
 	<section id="install">
 		<title>wForum 安装说明</title>
-		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom。</para>
+		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 主分支或者其打包 snapshot 版本使用，比如下载同一天的 smthbbs-snapshot 和 wForum-snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.x 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom。</para>
 		<section id="install_smthbbs">
 			<title>smthbbs 安装</title>
 			<para>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</para>
