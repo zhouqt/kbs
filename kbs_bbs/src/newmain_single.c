@@ -377,30 +377,6 @@ void system_abort()
     return;
 }
 
-int check_ip_acl(char * id, char * sip)
-{
-    char fn[160];
-    int ip[4],rip[4],l,a;
-    unsigned int ips, rips;
-    FILE* fp;
-    sprintf(fn, BBSHOME "/home/%c/%s/ipacl", toupper(id[0]), id);
-    sscanf(sip, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
-    ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
-    fp = fopen(fn, "r");
-    if(fp) {
-        while(!feof(fp)) {
-            if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a)<=0) break;
-            rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
-            if(((ips>>(32-l))<<(32-l))==((rips>>(32-l))<<(32-l))||l==0) {
-                fclose(fp);
-                return a;
-            }
-        }        
-        fclose(fp);
-    }
-    return 0;
-}
-
 #ifdef FREE
 static int strallalpha(char *uid)
 {

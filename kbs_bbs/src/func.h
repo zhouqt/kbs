@@ -222,6 +222,7 @@ typedef int (*read_func)(int fd, void *buf, size_t count);
 	int mail_birth();
 #endif
     int check_ID_lists(char * id);
+    int check_ip_acl(char * id, char * sip);
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)

@@ -3709,7 +3709,7 @@ int clear_new_flag(struct _select_def* conf,struct fileheader *fileinfo,void* ex
 #ifdef HAVE_BRC_CONTROL
     struct read_arg* arg=conf->arg;
     /* add by stiger */
-    if (conf->pos>arg->filecount)
+    if (conf->pos>arg->filecount||!arg->filecount)
         brc_clear(getSession());
     else brc_clear_new_flag(fileinfo->id,getSession());
 #endif
@@ -5711,7 +5711,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
 		    func_arg.setflag=false;
             break;
         case BM_NOREPLY:
-            if ((fh->accessed[1] & FILE_DEL)!=0)
+            if ((fh->accessed[1] & FILE_READ)!=0)
 		    func_arg.setflag=false;
             break;
         default:
