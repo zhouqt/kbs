@@ -56,7 +56,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="3" >
   <tr> 
     <td colspan="2" class="kb2" colspan=2>
-	    <a class="kts1" href="mainpage.php"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbsfav.php">个人定制区</a></td>
+	    <a class="kts1" href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbsfav.php">个人定制区</a></td>
   </tr>
    <tr valign=bottom align=center> 
     <td align="left" class="kb4"><?php if( $select==0 ) echo "[根目录]"; ?></td>

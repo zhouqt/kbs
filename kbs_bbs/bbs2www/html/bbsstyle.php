@@ -8,7 +8,7 @@ $new_wwwparams = $style . substr($wwwparams,1,strlen($wwwparams)-1);
 setcookie("WWWPARAMS",$new_wwwparams,0,"");
 if(strcmp($currentuser["userid"],"guest"))
 	bbs_setwwwparameters($new_wwwparams);
-//header("Location: mainpage.html");
+//header("Location: ".MAINPAGE_FILE);
 ?>
 <script language="javascript">
 history.go(-2)

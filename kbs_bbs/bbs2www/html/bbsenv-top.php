@@ -31,7 +31,7 @@ html_init("gb2312","","",1);
 ?>
 <body topmargin="0" leftmargin="0">
 <p class="b2">
-<a href="mainpage.html" class="b2" target="f3"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
+<a href="<?php echo MAINPAGE_FILE; ?>" class="b2" target="f3"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
 -
 <?php
 $sec_index = get_secname_index($brdarr["SECNUM"]);

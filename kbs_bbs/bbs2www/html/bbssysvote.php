@@ -60,7 +60,7 @@
 				sysvote_user_vote($link,$vote,$currentuser,$ans);
 ?>
 <br /><br /><br />
-<p align=center><a href="/mainpage.html">投票成功，点击返回</a></p>
+<p align=center><a href="/<?php echo MAINPAGE_FILE; ?>">投票成功，点击返回</a></p>
 <?php				
 			}
 			else
@@ -75,7 +75,7 @@
 	<tr><td class=t7><?php echo sysvote_display_probs($vote[probs]); ?></td></tr>
 	<tr><td class=t2>
 		<input type=submit value="投票" class=b9>
-		<input type=button value="返回" class=b9 onclick="window.location.href='/mainpage.html';">	
+		<input type=button value="返回" class=b9 onclick="window.location.href='/<?php echo MAINPAGE_FILE; ?>';">	
 	</td></tr>
 </table></form>
 </center>
@@ -133,7 +133,7 @@
 	}
 ?>
 <hr size=0>
-<p align=center><a href="/mainpage.html"><?php echo BBS_FULL_NAME; ?></a>
+<p align=center><a href="/<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a>
 <?php
 	if(sysvote_is_admin($currentuser)) echo "[<a href=\"bbsmsysvote.php\">系统投票管理界面</a>]";
 ?>

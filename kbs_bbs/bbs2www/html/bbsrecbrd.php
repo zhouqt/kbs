@@ -28,7 +28,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="3" >
   <tr> 
     <td colspan="2" class="kb2" colspan=2>
-	    <a class="kts1"  href="mainpage.php"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbssec.php">分类讨论区</a> - [推荐讨论区]    </td>
+	    <a class="kts1"  href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbssec.php">分类讨论区</a> - [推荐讨论区]    </td>
   </tr>
    <tr valign=bottom align=center> 
     <td align="left" class="kb4">&nbsp;&nbsp;&nbsp;&nbsp; 推荐讨论区</td>

@@ -222,7 +222,7 @@
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
     <td colspan="2" class="b2">
-	    <a href="mainpage.html" class="b2"><?php echo BBS_FULL_NAME; ?></a>
+	    <a href="<?php echo MAINPAGE_FILE; ?>" class="b2"><?php echo BBS_FULL_NAME; ?></a>
 	    -
 	    <?php
 	    	$sec_index = get_secname_index($brdarr["SECNUM"]);

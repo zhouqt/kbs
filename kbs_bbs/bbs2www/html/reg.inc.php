@@ -1,7 +1,7 @@
 <?php
 function bbs_create_activation()
 {
-	$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	$chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
 	mt_srand((double)microtime()*1000000*getmypid());
 	$activation = "";
 	while(strlen($activation) < ACTIVATIONLEN)

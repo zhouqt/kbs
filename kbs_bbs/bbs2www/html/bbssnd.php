@@ -77,7 +77,7 @@
 <tr align=center><th width="100%">发文成功！</td>
 </tr><tr><td width="100%" class=TableBody1>
 本页面将在3秒后自动返回版面文章列表<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=bbsdoc.php?board=<?php echo $boardName; ?>' >，<b>您可以选择以下操作：</b><br><ul>
-<li><a href="mainpage.php">返回首页</a></li>
+<li><a href="<?php echo MAINPAGE_FILE; ?>">返回首页</a></li>
 <li><a href="bbsdoc.php?board=<?php   echo $boardName; ?>">返回<?php   echo $boardArr['DESC']; ?></a></li>
 </ul></td></tr></table>
 

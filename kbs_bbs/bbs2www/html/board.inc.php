@@ -3,7 +3,7 @@ function bbs_boards_navigation_bar()
 {
 ?>
 <p align="center">
-[<a href="/mainpage.html">首页导读</a>]
+[<a href="/<?php echo MAINPAGE_FILE; ?>">首页导读</a>]
 [<a href="/bbssec.php">分类讨论区</a>]
 [<a href="/bbsnewbrd.php">新开讨论区</a>]
 [<a href="/bbsrecbrd.php">推荐讨论区</a>]
@@ -76,7 +76,7 @@ function bbs_board_header($brdarr,$articles=0)
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
     <td colspan="2" class="b2">
-	    <a href="mainpage.html" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
+	    <a href="<?php echo MAINPAGE_FILE; ?>" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
 	    -
 	    <?php
 	    	$sec_index = get_secname_index($brdarr["SECNUM"]);

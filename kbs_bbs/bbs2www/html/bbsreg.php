@@ -125,7 +125,7 @@ if(!mail($reg_email, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
 ?>
 <body>
 申请BBS水木清华ID成功,<font color=red>注册码发送到您的注册Email失败!登录后请确认您的Email地址并重新发送注册码</font><br>
-激活并通过审核后,你才将获得合法用户权限！<br/><a href="https://www.smth.edu.cn">现在登录进站</a>
+激活并通过审核后,你才将获得合法用户权限！<br/><a href="/">现在登录进站</a>
 </body>
 <?php
 }   
@@ -134,7 +134,7 @@ else
 ?>
 <body>
 申请BBS水木清华ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,请查收您收到的注册确认Email，点击里面的激活链接激活您在本站的帐号.<br>
-激活并通过审核后,你将获得合法用户权限！<br/><a href="https://www.smth.edu.cn">现在登录进站</a>
+激活并通过审核后,你将获得合法用户权限！<br/><a href="/">现在登录进站</a>
 </body>
 <?php
 }
