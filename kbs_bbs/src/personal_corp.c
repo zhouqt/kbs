@@ -545,7 +545,7 @@ char pc_select_user[IDLEN+2];
 
 static int pc_is_owner(char *userid){
 	
-	if( !strcasecmp(userid, currentuser->userid) && pc_u->createtime < currentuser->firstlogin)
+	if( !strcasecmp(userid, currentuser->userid) && pc_u->createtime >= currentuser->firstlogin)
 		return 1;
 	return 0;
 }
