@@ -471,7 +471,7 @@ void brc_update(char *userid)
     count=0;
     while (count<BRC_FILESIZE) {
     	int ret;
-    	ret=gzread(fd,&data,BRC_FILESIZE);
+    	ret=gzread(fd,(char*)(&data)+count,BRC_FILESIZE-count);
     	if (ret<=0) break;
     	count+=ret;
     }
@@ -485,7 +485,7 @@ void brc_update(char *userid)
     count=0;
     while (count<BRC_FILESIZE) {
     	int ret;
-	    ret=gzwrite(fd, &data, BRC_FILESIZE);
+	    ret=gzwrite(fd, (char*)(&data)+count, BRC_FILESIZE-count);
     	if (ret==0) break;
     	count+=ret;
     }
