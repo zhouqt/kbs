@@ -189,8 +189,8 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 							break;
 					}
 				}
-				$q_prefix = str_repeat(": ", BBS_QUOTE_LEV);
-				$q_len = 2 + 2 * BBS_QUOTE_LEV;
+				$q_prefix = str_repeat(": ", QUOTE_LEV);
+				$q_len = 2 + 2 * QUOTE_LEV;
 				while (1) {
 					if (($buf = fgets($fp, 500)) == FALSE)
 						break;
@@ -206,7 +206,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 						break;
 					if (strncmp($buf, "\n", 1) == 0)
 						continue;
-					if (++$lines > BBS_QUOTED_LINES) {
+					if (++$lines > QUOTED_LINES) {
 						$buf2 .= ": ...................\n";
 						break;
 					}

@@ -84,6 +84,12 @@ if (!defined('COOKIE_PREFIX')) { //cookieÃû³ÆµÄÇ°×º
 if (!defined('COOKIE_PATH')) {
     define('COOKIE_PATH', "");
 }
+if (!defined('QUOTE_LEV')) {
+	define('QUOTE_LEV', BBS_QUOTE_LEV);
+}
+if (!defined('QUOTED_LINES')) {
+	define('QUOTED_LINES', BBS_QUOTED_LINES);
+}
 
 if (!isset($HTMLTitle)) {
 	$HTMLTitle = $SiteName;
