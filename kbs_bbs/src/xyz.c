@@ -33,6 +33,7 @@ int
 modify_user_mode( mode )
 int     mode;
 {
+    if(uinfo.mode==mode) return 0; /* 必须减少update_ulist的次数. ylsdd 2001.4.27 */
     uinfo.mode = mode;
     update_ulist( &uinfo, utmpent );
     return 0;
