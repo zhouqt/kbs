@@ -81,7 +81,7 @@ _editor_url = "htmlarea/";
 </script>
 <!-- load the main HTMLArea files -->
 <script type="text/javascript" src="htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="htmlarea/lang/en.js"></script>
+<script type="text/javascript" src="htmlarea/lang/gb.js"></script>
 <script type="text/javascript" src="htmlarea/dialog.js"></script>
 <script type="text/javascript" src="htmlarea/popupwin.js"></script>
 <style type="text/css">

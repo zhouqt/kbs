@@ -495,7 +495,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z'){
             struct fileheader xfh;
             int i,fd;
-            if ((fd = open(arg->direct, O_RDONLY, 0)) != -1) {
+            if ((fd = open(arg->dingdirect, O_RDONLY, 0)) != -1) {
                 for (i = conf->pos; i > 0; i--) {
                     if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
                         if (0 == strcmp(xfh.filename, fileinfo->filename)) {
@@ -526,7 +526,10 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         move(2, 0);
         prints("' %s ' 已转贴到 %s 版 \n", quote_title, bname);
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
-        substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
+	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
+            substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->pos);
+        else
+            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
     } else {
         prints("取消");
     }
@@ -2354,10 +2357,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #endif
     switch (arg->mode) {
     case 2:
-        title_mode(NULL,NULL,NULL);
+        title_mode(conf,NULL,NULL);
         break;
     case 3:
-        marked_mode(NULL,NULL,NULL);
+        marked_mode(conf,NULL,NULL);
         break;
     }
     return DIRCHANGED;
@@ -2528,10 +2531,12 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
          * Leeward 99.07.12 added below to fix a big bug
          */
 		/* add by stiger */
-		if (POSTFILE_BASENAME(fileinfo->filename)[0]=='Z')
-			ent = get_num_records(arg->direct,sizeof(struct fileheader));
-		/* add end */
-        if ((fd = open(arg->direct, O_RDONLY, 0)) != -1) {
+	if (POSTFILE_BASENAME(fileinfo->filename)[0]=='Z') {
+            ent = get_num_records(arg->dingdirect,sizeof(struct fileheader));
+            fd = open(arg->dingdirect, O_RDONLY, 0);
+	} else fd=arg->fd;
+	/* add end */
+	if (fd!=-1) {
             for (i = ent; i > 0; i--) {
                 if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
                     if (0 == strcmp(xfh.filename, fileinfo->filename)) {
@@ -2540,7 +2545,13 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
                     }
                 }
             }
-            close(fd);
+	    if (POSTFILE_BASENAME(fileinfo->filename)[0]=='Z') {
+                close(fd);
+                if (i!=0) 
+                    substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), ent);
+            } else
+                if (i!=0) 
+                    substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
         }
         if (0 == i)
             return PARTUPDATE;
@@ -2548,7 +2559,6 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
          * Leeward 99.07.12 added above to fix a big bug
          */
 
-        substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
 
         setboardorigin(currboard->filename, 1);
         setboardtitle(currboard->filename, 1);
@@ -2932,8 +2942,9 @@ int Save_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             fileinfo, 
             FILE_IMPORT_FLAG, &data, true);
         free_write_dir_arg(&dirarg);
+	return DIRCHANGED;
     }
-    return ret;
+    return DONOTHING;
 }
 
 /* Semi_save 用来把文章存到暂存档，同时删除文章的头尾 Life 1997.4.6 */
@@ -4936,7 +4947,7 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
                 arg->direct,
                 ent,
                 !func_arg->saveorigin);
-            fh->accessed[0]=FILE_IMPORTED;
+            fh->accessed[0]|=FILE_IMPORTED;
             break;
     }
     return ret;

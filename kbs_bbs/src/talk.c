@@ -1561,7 +1561,8 @@ char *fname;
 {
     FILE *fp;
     int x = 0, y = 3, cnt = 0, max = 0, showline=1, len;
-    char u_buf[20], line[STRLEN], *nick;
+    char u_buf[STRLEN+1], line[STRLEN+1], *nick;
+    char genbuf[STRLEN+1];
 
     move(y, x);
     CreateNameList();
@@ -1571,6 +1572,7 @@ char *fname;
         return 0;
     }
     while (fgets(genbuf, STRLEN, fp) != NULL) {
+	genbuf[STRLEN]=0;
         strtok(genbuf, " \n\r\t");
         strcpy(u_buf, genbuf);
         AddNameList(u_buf);
@@ -1584,7 +1586,7 @@ char *fname;
         if (nick == NULL) {
             strcpy(line, u_buf);
         } else {
-            sprintf(line, "%-12s%s", u_buf, nick);
+            snprintf(line, STRLEN, "%-12s%s", u_buf, nick);
         }
         if ((len = strlen(line)) > max)
             max = len;
@@ -1596,9 +1598,9 @@ char *fname;
             y = 3;
             x += max + 2;
             max = 0;
-            if (x > 70)
-				showline = 0;
-                //break;
+            if (x > 68)
+//            showline = 0;
+              break;
         }
         move(y, x);
     }

@@ -2106,9 +2106,11 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
         /*置顶的文章不能做操作*/
         return 1;
     
-    if ((flag == FILE_DIGEST_FLAG) && (currmode != DIR_MODE_NORMAL))
         /*在除了普通区不能做文摘操作*/
+    /*
+    if ((flag == FILE_DIGEST_FLAG) && (currmode != DIR_MODE_NORMAL))
         return 1;
+	*/
     
     if (currmode == DIR_MODE_DELETED || currmode == DIR_MODE_JUNK)
         /*在删除区，自删区不能做操作*/
@@ -2151,7 +2153,7 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
         if (!strcmp(board->filename, SYSMAIL_BOARD)) {
             char ans[STRLEN];
             sprintf(ans, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
-            strncpy(fileinfo->title, ans, STRLEN);
+            strncpy(originFh->title, ans, STRLEN);
             originFh->title[STRLEN - 1] = 0;
         }
         if (data->accessed[1] & FILE_READ) {
@@ -2188,14 +2190,18 @@ int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardhead
     /* 收入文摘处理*/
     if (flag&FILE_DIGEST_FLAG) {
         if (data->accessed[0] & FILE_DIGEST)  {     /*设置DIGEST*/ 
-            if (dobmlog)
+            if (dobmlog) {
                 bmlog(currentuser->userid, board->filename, 3, 1);
-            ret=add_digest(originFh,board->filename);
+                ret=add_digest(originFh,board->filename);
+            } else { /*其实这时候只需要改一下标志就够了*/
+                originFh->accessed[0] != FILE_DIGEST;
+            }
         } else {/* 如果已经是文摘的话，则从文摘中删除该post */
             originFh->accessed[0] = (originFh->accessed[0] & ~FILE_DIGEST);
-            if (dobmlog)
+            if (dobmlog) {
                 bmlog(currentuser->userid, board->filename, 4, 1);
-            ret=dele_digest(originFh->filename, board->filename);
+                ret=dele_digest(originFh->filename, board->filename);
+            }
         }
     }
     if (ret==0) {

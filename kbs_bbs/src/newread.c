@@ -82,6 +82,16 @@ void savePos(int mode,char* direct,int pos,struct boardheader* bh)
     ptr->pos=pos;
 }
 
+static int read_setusermode(cmdmode)
+{
+    if (cmdmode==DIR_MODE_MAIL) {
+        modify_user_mode(RMAIL);
+     }
+    else {
+        modify_user_mode(READING);
+    } //todo: other mode 
+}
+
 static int read_search_articles(struct _select_def* conf, char *query, bool up, int aflag);
 /* 寻找下一个未读文章，找到返回位置，否则返回0*/
 int find_nextnew(struct _select_def* conf,int begin)
@@ -216,6 +226,7 @@ static int read_key(struct _select_def *conf, int command)
             break;
         }
     }
+    read_setusermode(arg->mode);
     switch (mode) {
         case CHANGEMODE:
             arg->returnvalue=CHANGEMODE;
@@ -551,13 +562,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
     };
 
 
-    if (cmdmode==DIR_MODE_MAIL) {
-        modify_user_mode(RMAIL);
-     }
-    else {
-        modify_user_mode(READING);
-    } //todo: other mode 
-
+    read_setusermode(cmdmode);
     lastpos=getPos(cmdmode,direct,currboard);
     /* save argument */
     bzero(&arg,sizeof(struct read_arg));
@@ -587,7 +592,9 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
     if ((arg.fd = open(arg.direct, O_RDWR, 0)) != -1) {
         bzero((char *) &read_conf, sizeof(struct _select_def));
         read_conf.item_per_page = TDEFINE(TDEF_SPLITSCREEN)?BBS_PAGESIZE/2:BBS_PAGESIZE;
-        read_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
+        read_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
+        if (DEFINE(currentuser, DEF_CIRCLE))
+            read_conf.flag |= LF_LOOP ;
         read_conf.prompt = ">";
         read_conf.arg = &arg;
         read_conf.title_pos.x = 0;

@@ -1152,6 +1152,7 @@ static PHP_FUNCTION(bbs_printansifile)
     buffered_output_t *out;
     char* attachlink;
     long attachlink_len;
+    sigjmp_buf bus_jump;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -3592,6 +3593,7 @@ static PHP_FUNCTION(bbs_postarticle)
     struct fileheader x, *oldx;
     bcache_t *brd;
     int local, anony;
+    sigjmp_buf bus_jump;
     /*int filtered = 0;*/
 
 	int ac = ZEND_NUM_ARGS();
@@ -3746,6 +3748,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     char buf2[256];
     int i;
     bcache_t *bp;
+    sigjmp_buf bus_jump;
     /*int filtered = 0;*/
 
 	int ac = ZEND_NUM_ARGS();
