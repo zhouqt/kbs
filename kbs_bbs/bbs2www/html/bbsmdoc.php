@@ -81,7 +81,7 @@
 			$flags = $article["FLAGS"];
 ?>
 <tr>
-<td><?php echo $start + $i; ?></td><td><input style="height:18px" name="<?
+<td><?php echo $start + $i; ?></td><td><input style="height:18px" name="<?php 
 if($article["FILENAME"][0]=='Z') echo "boz";
 else echo "box";
 ?><?php echo $article["ID"]; ?>" type="checkbox"></td>
