@@ -2119,30 +2119,30 @@ static PHP_FUNCTION(bbs_getthreads)
 			RETURN_FALSE;
 		}
 
-		DingNum = get_records(dirpath, articles, sizeof(struct fileheader), 1, total);
+		DingNum = get_records(dirpath, articles, sizeof(struct fileheader), 1, DingNum);
 
 		for (i = DingNum-1; i>=0; i--) {
 			if (foundInArray(articles[i].groupid,IDList,threadsFounded)==-1)	{
-				if ((found=binarySearchInFileHeader(articles,DingNum,articles[i].groupid))==-1) continue;
+				if (articles[i].groupid!=articles[i].id) continue;
 				IDList[threadsFounded]=articles[i].groupid;
 				threadsFounded++;
 				if ((threadsFounded-1)>=start){
 					MAKE_STD_ZVAL(element);
 					array_init(element);
-					flags[0] = get_article_flag(articles+found, currentuser, bp->filename, is_bm);
-					if (is_bm && (articles[found].accessed[0] & FILE_IMPORTED))
+					flags[0] = get_article_flag(articles+i, currentuser, bp->filename, is_bm);
+					if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 						flags[1] = 'y';
 					else
 						flags[1] = 'n';
-					if (articles[found].accessed[1] & FILE_READ)
+					if (articles[i].accessed[1] & FILE_READ)
 						flags[2] = 'y';
 					else
 						flags[2] = 'n';
-					if (articles[found].attachment)
+					if (articles[i].attachment)
 						flags[3] = '@';
 					else
 						flags[3] = ' ';
-					bbs_make_article_array(element, articles+found, flags, sizeof(flags));
+					bbs_make_article_array(element, articles+i, flags, sizeof(flags));
 					zend_hash_index_update(Z_ARRVAL_P(return_value), threadsFounded-1-start, (void *) &element, sizeof(zval *), NULL);
 					if ((threadsFounded>=num+start) || (threadsFounded>MAX_DING)){
 						break;
@@ -2759,6 +2759,7 @@ static PHP_FUNCTION(bbs_getthreadnum)
     if ((bp = getboard(brdnum)) == NULL) {
         RETURN_LONG(-1);
     }
+
     setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
 	if (!stat(dirpath,&originStat))	{
 		setbdir(DIR_MODE_NORMAL,dirpath1,bp->filename);
@@ -2772,7 +2773,10 @@ static PHP_FUNCTION(bbs_getthreadnum)
 	} else {
 		www_generateOriginIndex(bp->filename);
 	}
-    total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
+
+   total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
+
+
     RETURN_LONG(total);
 }
 
