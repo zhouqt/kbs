@@ -191,7 +191,14 @@ int quiz_test()
             char bb[100];
             resetcolor();
             move(2,0);
-            prints(question);
+            if(strlen(question)<70)
+                prints(question);
+            else {
+                char q2[100];
+                strcpy(q2,question+70);
+                question[70]=0;
+                prints("%s\n%s", question, q2);
+            }
             for(j=0;j<anscount;j++) {
                 move(4+j,0);
                 clrtoeol();
