@@ -244,12 +244,22 @@ mail_info()
 }
 
 
+int kickuser(struct user_info* uentp,char* arg,int count)
+{
+	kill(uentp->pid,SIGHUP);
+	clear_utmp2(uentp);
+	UNUSED_ARG(arg);
+	UNUSED_ARG(count);
+	return 0;
+}
+
 int
 d_user(cid)
 char cid[IDLEN];
 {
     int id,fd ;
     char tmpbuf [30];
+    char userid[IDLEN+2];
     struct userec* lookupuser;
 
     if(uinfo.mode!=OFFLINE)
@@ -262,14 +272,14 @@ char cid[IDLEN];
         clear();
         stand_title( "删除使用者帐号" );
         move(1,0) ;
-        usercomplete("请输入欲删除的使用者代号: ",genbuf);
-        if(*genbuf == '\0') {
+        usercomplete("请输入欲删除的使用者代号: ",userid);
+        if(userid[0] == '\0') {
             clear() ;
             return 0 ;
         }
     }else
-        strcpy(genbuf,cid);
-    if(!(id = getuser(genbuf,&lookupuser))) {
+        strcpy(userid,cid);
+    if(!(id = getuser(userid,&lookupuser))) {
         move(3,0) ;
         prints("错误的使用者代号...") ;
         clrtoeol() ;
@@ -281,7 +291,7 @@ char cid[IDLEN];
     /* rrr - don't know how...*/
     move(1,0) ;
     if(uinfo.mode!=OFFLINE)
-        prints("删除使用者 '%s'.",genbuf) ;
+        prints("删除使用者 '%s'.",userid) ;
     else
         prints(" %s 将离开这里",cid);
     clrtoeol();
@@ -329,6 +339,7 @@ char cid[IDLEN];
     system(genbuf) ;
     sprintf(genbuf,"/bin/rm -fr tmp/email_%s", lookupuser->userid) ;
     system(genbuf) ;
+    apply_utmp(kickuser,0,userid,0);
     setuserid( id, "" );
     lookupuser->userlevel = 0;
     strcpy(lookupuser->address, "");
@@ -336,7 +347,7 @@ char cid[IDLEN];
     strcpy(lookupuser->realname, "");
 /*    lookupuser->userid[0] = '\0' ; */
     move(2,0) ;
-    prints("%s 已经已经和本家庭失去联络....\n",lookupuser->userid) ;
+    prints("%s 已经已经和本家庭失去联络....\n",userid) ;
     pressreturn() ;
 
     clear() ;

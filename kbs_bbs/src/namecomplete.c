@@ -110,10 +110,7 @@ char *otag, *tag, *name ;
     return 1 ;
 }
 
-struct word *
-            GetSubList(tag,list)
-            register char *tag ;
-register struct word *list ;
+struct word *GetSubList(register char *tag,register struct word *list )
 {
     struct word *wlist,*wcurr ;
     char        tagbuf[ STRLEN ];
@@ -404,7 +401,8 @@ char *prompt, *data ;
                 } else {
                     i=getuser(data,&lookupuser);
                     if (i!=0) memcpy(data,lookupuser->userid,IDLEN);
-		    data[IDLEN]=0;
+                    else if (!id_invalid(data)) data[0]=0;
+		    		data[IDLEN]=0;
                 }
                 break;
             } else if( ch == ' ' ) {
