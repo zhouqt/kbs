@@ -195,6 +195,93 @@ int pc_add_user()
 	}
 }
 
+int pc_add_friend(char *uident, char *fpath)
+{
+    int seek;
+    int id;
+    struct userec *lookupuser;
+
+    if (!(id = getuser(uident, &lookupuser))) {
+        move(3, 0);
+        prints("Invalid User Id");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    strcpy(uident, lookupuser->userid);
+
+	seek = seek_in_file(fpath, uident);
+	if (seek) {
+		move(2, 0);
+		prints("输入的ID 已经存在!");
+		pressreturn();
+		return -1;
+	}
+
+    seek = addtofile(fpath, uident);;
+
+	return 1;
+}
+
+int pc_del_friend(char *uident, char *fpath)
+{
+    struct userec *lookupuser;
+    int id;
+
+    if (!(id = getuser(uident, &lookupuser))) {
+        move(3, 0);
+        prints("Invalid User Id");
+        clrtoeol();
+        pressreturn();
+        clear();
+        return 0;
+    }
+    strcpy(uident, lookupuser->userid);
+
+    del_from_file(fpath, uident);;
+
+	return 1;
+}
+
+int pc_change_friend()
+{
+	char buf[STRLEN];
+	int count;
+	char ans[20];
+    char uident[STRLEN];
+
+	sethomefile(buf, currentuser->userid, "pc_friend");
+
+    while (1) {
+        clear();
+        prints("设定个人文集好友名单\n");
+        count = listfilecontent(buf);
+        if (count)
+            getdata(1, 0, "(A)增加 (D)删除or (E)离开[E]",
+                    ans, 7, DOECHO, NULL, true);
+        else
+            getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, NULL, true);
+        if (*ans == 'A' || *ans == 'a') {
+            move(1, 0);
+            usercomplete("增加个人文集好友成员: ", uident);
+            if (*uident != '\0') {
+                pc_add_friend(uident,buf) ;
+            }
+        } else if ((*ans == 'D' || *ans == 'd') && count) {
+            move(1, 0);
+            namecomplete("删除个人文集好友成员: ", uident);
+            if (uident[0] != '\0') {
+                pc_del_friend(uident,buf) ;
+			}
+		}
+        else
+            break;
+	}
+
+	return 1;
+}
+
 /******************************
  *
  *
@@ -446,18 +533,32 @@ int pc_selusr( char prefix)
  */
 char pc_select_user[IDLEN+2];
 
+int pc_is_admin(char *userid){
+
+	if( HAS_PERM(currentuser, PERM_ADMIN) || !strcasecmp(userid, currentuser->userid) )
+		return 1;
+
+	return 0;
+}
+
+int pc_is_friend(char *userid){
+	char fpath[STRLEN];
+
+	sethomefile(fpath, userid, "pc_friend");
+	if(seek_in_file(fpath, currentuser->userid))
+		return 1;
+
+	return 0;
+}
+
 int pc_perm(char *userid){
 
 	struct user_info *uin;
 
-	if( HAS_PERM(currentuser, PERM_ADMIN) || !strcasecmp(userid, currentuser->userid) )
+	if( pc_is_admin(userid) )
 		return 5;
 
-	uin = t_search(userid, 0);
-	if(uin == NULL)
-		return 1;
-
-	if(hisfriend(searchuser(currentuser->userid), uin) )
+	if( pc_is_friend(userid) )
 		return 2;
 
 	return 1;
@@ -1036,21 +1137,27 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	switch(key)
 	{
 	case 'a':
-		if( pc_perm(pc_u->username) < 5 )
+		if( strcasecmp(pc_u->username, currentuser->userid) )
 			return SHOW_CONTINUE;
 		if( pc_add_a_node(0) )
 			return SHOW_DIRCHANGE;
 		return SHOW_REFRESH;
 		break;
+	case 'o':
+		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 2 )
+			return SHOW_CONTINUE;
+		pc_change_friend();
+		return SHOW_REFRESH;
+		break;
 	case 'g':
-		if( pc_perm(pc_u->username) < 5 || pc_dirmode != 4 || pc_fav_dir==0)
+		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 4 || pc_fav_dir==0)
 			return SHOW_CONTINUE;
 		if( pc_add_a_dir(0) )
 			return SHOW_DIRCHANGE;
 		return SHOW_REFRESH;
 		break;
 	case 'd':
-		if( pc_perm(pc_u->username) < 5 )
+		if( ! pc_is_admin(pc_u->username) )
 			return SHOW_CONTINUE;
 		if( pc_dirmode == 5 ){
 			if( del_pc_nodes( pc_n[conf->pos-conf->page_pos].nid ) ){
@@ -1078,7 +1185,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	{
 		char ans[4];
 
-		if( pc_perm(pc_u->username) < 5 )
+		if( strcasecmp(pc_u->username, currentuser->userid) )
 			return SHOW_CONTINUE;
 		if( pc_dirmode != 5 )
 			return SHOW_CONTINUE;
@@ -1092,7 +1199,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 		return SHOW_DIRCHANGE;
 	}
 	case 'e':
-		if( pc_perm(pc_u->username) < 5 )
+		if( strcasecmp(pc_u->username, currentuser->userid) )
 			return SHOW_CONTINUE;
 		if( pc_dirmode == 4 && pc_n[conf->pos-conf->page_pos].type == 1){
 			if ( pc_add_a_dir( pc_n[conf->pos-conf->page_pos].nid ) )
@@ -1121,7 +1228,7 @@ static int pc_dir_key(struct _select_def *conf, int key)
 		return SHOW_CONTINUE;
 		break;
 	case 'p':
-		if( pc_perm(pc_u->username) < 5 )
+		if( strcasecmp(pc_u->username, currentuser->userid) )
 			return SHOW_CONTINUE;
 		if( pc_pasteboard <= 0 ){
 			move(t_lines -1, 0);
@@ -1304,7 +1411,7 @@ int pc_read_dir(int first)
 		return -1;
 	}
 	if( i == 0 ){
-		if( pc_perm(pc_u->username) < 5 ){
+		if( strcasecmp(pc_u->username, currentuser->userid) ){
 			clear();
 			move(7,0);
 			prints("暂时没有文章");
@@ -1526,7 +1633,7 @@ static int pc_com_key(struct _select_def *conf, int key)
 		return SHOW_REFRESH;
 		break;
 	case 'd':
-		if( pc_perm(pc_u->username) < 5 )
+		if( ! pc_is_admin(pc_u->username) )
 			return SHOW_CONTINUE;
 		if( del_pc_comments( pc_n[pc_now_node_ent].nid, pc_c[conf->pos-conf->page_pos].cid ) ){
 			return SHOW_DIRCHANGE;
