@@ -386,7 +386,7 @@ void cancelpost(const char *board,const char *userid,struct fileheader *fh, int 
                 if ((ptr = strrchr(buf, ')')) == NULL)
                     break;
                 *ptr = '\0';
-                if ((ptr = strrchr(buf, '(')) == NULL)
+                if ((ptr = strchr(buf, '(')) == NULL)
                     break;
                 strncpy(from, ptr + 1, sizeof(from) - 1);
                 from[sizeof(from) - 1] = '\0';
