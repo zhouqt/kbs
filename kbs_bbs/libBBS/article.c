@@ -1046,8 +1046,11 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 
         sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
 
+#ifndef NEWPOSTSTAT
         if (poststat && user)
             write_posts(user->userid, boardname, fh->groupid);
+#endif
+
 #ifdef FILTER
     }
 #endif
