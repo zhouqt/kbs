@@ -1293,26 +1293,6 @@ int has_fill_form()
 }
 
 
-/*
- * Return value:
- *      0       Success
- *     -1       so called "bad arg1"
- *     -2       so called "bad arg2"
- */
-int valid_filename(char *file)
-{
-    /*if (file == NULL)
-       return -1; */
-    assert(file);
-    if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
-        /*http_fatal("错误的参数1"); */
-        return -1;
-    if (strstr(file, "..") || strstr(file, "/"))
-        /*http_fatal("错误的参数2"); */
-        return -2;
-    return 0;
-}
-
 /* added by flyriver, 2001.12.17
  * using getcurrusr() instead of using currentuser directly
  */
