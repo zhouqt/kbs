@@ -40,7 +40,6 @@ int selboard = 0;
 char ReadPost[STRLEN] = "";
 char ReplyPost[STRLEN] = "";
 struct fileheader ReadPostHeader;
-int FFLL = 0;
 int Anony;
 char genbuf[1024];
 unsigned int tmpuser = 0;
@@ -245,7 +244,6 @@ int check_stuffmode()
 /*Add by SmallPig*/
 void setqtitle(char *stitle)
 {                               /* È¡ Reply ÎÄÕÂºóĞÂµÄ ÎÄÕÂtitle */
-    FFLL = 1;
     if (strncmp(stitle, "Re: ", 4) != 0 && strncmp(stitle, "RE: ", 4) != 0) {
         snprintf(ReplyPost,STRLEN, "Re: %s", stitle);
         ReplyPost[STRLEN]=0;
@@ -605,12 +603,6 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     TITLE = ent->title;         /*ÎÄÕÂ±êÌâTITLE */
 
     if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { /* ĞÂ·½·¨±È½Ï*/
-        if (FFLL == 0) {
-            if ((ent->groupid != ent->id)&&(digestmode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"»Ø¸´:",5)))
-                sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-            else                /* ·ÇReµÄÎÄÕÂ */
-                sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-        } else {                /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
             if ((ent->groupid != ent->id)&&(digestmode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"»Ø¸´:",5))) {      /*ReµÄÎÄÕÂ */
                 if (ReadPostHeader.groupid == ent->groupid)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                     if (DEFINE(currentuser, DEF_HIGHCOLOR))
@@ -629,13 +621,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
                     sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             }
 
-        }
-    } else if (FFLL == 0) {     /* ¾É·½·¨±È½Ï*/
-        if (!strncmp("Re:", ent->title, 3))     /*ReµÄÎÄÕÂ */
-            sprintf(buf, " %4d %s%c%s %-12.12s %s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-        else                    /* ·ÇReµÄÎÄÕÂ */
-            sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-    } else {                    /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
+    } else                     /* ÔÊĞí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
         if (!strncmp("Re:", ent->title, 3)) {   /*ReµÄÎÄÕÂ */
             if (!strncmp(ReplyPost + 3, ent->title + 3,STRLEN-3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                 if (DEFINE(currentuser, DEF_HIGHCOLOR))
@@ -653,7 +639,6 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
             else
                 sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         }
-    }
     return buf;
 }
 
@@ -725,7 +710,6 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
             prints("[44m[1;31m[ÔÄ¶ÁÎÄÕÂ]  [33m½áÊø Q,¡û ©¦ÉÏÒ»·â ¡ü©¦ÏÂÒ»·â <Space>,<Enter>,¡ı©¦Ö÷ÌâÔÄ¶Á ^X »ò p [m");
     }
 
-    FFLL = 1;                   /* ReplyPostÖĞÎªReplyºóµÄÎÄÕÂÃû£¬ReadPostÎªÈ¥µôRe:µÄÎÄÕÂÃû */
     if (!strncmp(fileinfo->title, "Re:", 3)) {
         strncpy(ReplyPost, fileinfo->title,STRLEN);
         for (cou = 0; cou < STRLEN; cou++)
