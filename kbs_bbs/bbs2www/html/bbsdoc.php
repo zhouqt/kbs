@@ -153,7 +153,7 @@
 <?php
 	}//ÖÃ¶¥
 ?>
-<td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td class="t3"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td class="t5">&nbsp;<strong>
 <?php
@@ -316,7 +316,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a class=\"b3\" href=\"/cgi-bin/bbs/bbsqry?userid=%s\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a class=\"b3\" href=\"/bbsqry.php?userid=%s\">%s</a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}

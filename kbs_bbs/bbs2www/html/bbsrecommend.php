@@ -105,7 +105,7 @@ for( ; $i < 20; )
 <td width=60% align=left class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
 <?php echo $start +19- $i; ?>.&nbsp;[标题 :<a href="/bbsrecon.php?id=<?php echo $article["ID"]; ?>"><?php echo htmlspecialchars($title); ?></a>]
 </td><td width=15% class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
-[推荐人 :<a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a>]
+[推荐人 :<a href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a>]
 </td><td width=15% class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
 [版面 :<a href="/bbsdoc.php?board=<?php echo $article["O_BOARD"];?>"><?php { $brddarr = array(); if(bbs_getboard($article["O_BOARD"], $brddarr)) echo $brddarr["DESC"]; }?></a>]
 </td><td width=10% class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
