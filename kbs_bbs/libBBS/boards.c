@@ -21,7 +21,7 @@ static struct _brc_cache_entry {
     unsigned int list[BRC_MAXNUM];
     int changed;
 } brc_cache_entry[BRC_CACHE_NUM];
-static int brc_currcache;
+static int brc_currcache=-1;
 
 struct favbrd_struct {
     int flag;
@@ -612,6 +612,8 @@ void brc_add_read(unsigned int fid)
 {
     int n, i;
 
+    if (!currentuser) return;
+    if (brc_currcache==-1) return;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(currentuser->userid,"guest")) return;
     for (n = 0; (n < BRC_MAXNUM) && brc_cache_entry[brc_currcache].list[n]; n++) {
