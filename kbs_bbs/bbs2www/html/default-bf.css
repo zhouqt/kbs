@@ -7,12 +7,23 @@ BODY {background-color: #FFFFFF; font-size: 14px;scrollbar-3dlight-color:#170708
 .t6 {background-color: #FFFFFF;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-right-style: solid;border-bottom-style: solid;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;border-top-style: none;border-left-style: none;text-align: center;font-size: 14px;font-weight: bold;color: #FF0000;}
 .b1 {font-size: 14px;color: #333333;text-decoration: none;}
 .b2 {font-size: 14px;color: #000000;background-color: #F6F6F6;text-decoration: none;}
-.b3 {font-family: "Arial", "Helvetica", "sans-serif";font-size: 14px;font-weight: bolder;color: #CC3300;text-decoration: none;}
+.b3 {font-family: "Arial", "Helvetica", "sans-serif";font-weight: bolder;color: #CC3300;text-decoration: none;}
 .b4 {font-family: "Arial", "Helvetica", "sans-serif";font-size: 24px;font-weight: bolder;color: #000000;line-height: 50px;}
 .b5 {font-size: 14px;color: #333333;text-align: center;vertical-align: middle;}
 .b6 {font-size: 16px;color: #000000;text-decoration: none;background-color: #F6F6F6;}
 .b7 {font-size: 14px;color: #FFFFFF;text-decoration: none;background-color: 718BD6;}
 .b8 {font-family: "Courier New", "Courier", "mono";font-size: 14px;color: #000000;border:none;background-color: #F6F6F6;}
+.b9 {font-size: 12px;color: #000066;text-decoration: none;}
 a:hover {color: #FF0000;text-decoration: underline;}
 .ts1 {color: #333399;text-decoration: none;}
 .ts2 {color: #333399;text-decoration: none;font-weight: bold;}
+.mt1 {font-size: 12px;color: #000000;text-decoration: none;background-color: #FFFFFF;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-top-style: solid;border-right-style: none;border-bottom-style: none;border-left-style: solid;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;}
+.mt2 {font-weight: bold;color: #FFFFFF;text-decoration: none;background-color: #718BD6;text-align: center;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-top-style: none;border-right-style: solid;border-bottom-style: solid;border-left-style: none;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;}
+.mt3 {background-color: #F6F6F6;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-top-style: none;border-right-style: solid;border-bottom-style: solid;border-left-style: none;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;text-align: center;}
+.mt4 {background-color: #FFFFFF;color: #666666;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-right-style: solid;border-bottom-style: solid;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;border-top-style: none;border-left-style: none;text-align: center;}
+.mt5 {background-color: #FFFFFF;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-top-style: none;border-right-style: solid;border-bottom-style: solid;border-left-style: none;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;}
+.mt6 {background-color: #FFFFFF;border-top-width: 1px;border-right-width: 1px;border-bottom-width: 1px;border-left-width: 1px;border-right-style: solid;border-bottom-style: solid;border-top-color: #CCCCCC;border-right-color: #CCCCCC;border-bottom-color: #CCCCCC;border-left-color: #CCCCCC;border-top-style: none;border-left-style: none;text-align: center;font-size: 14px;font-weight: bold;color: #FF0000;}
+.bt1 {BORDER-RIGHT: #104a7b 1px solid; BORDER-TOP: #afc4d5 1px solid; BACKGROUND: #d6e7ef; BORDER-LEFT: #afc4d5 1px solid; CURSOR: hand; COLOR: #000066; BORDER-BOTTOM: #104a7b 1px solid; HEIGHT: 19px; TEXT-DECORATION: none}
+.bt2 {COLOR: #000066; BACKGROUND-COLOR: #d6e7ef; font-size: 12px}
+.mb1 {COLOR: #666666; FONT-SIZE: 12px;TEXT-DECORATION: none;FONT-WEIGHT:bolder; }
+.mb2 {COLOR: #CC3300; FONT-SIZE: 12px;TEXT-DECORATION: none;FONT-WEIGHT:bolder; }
