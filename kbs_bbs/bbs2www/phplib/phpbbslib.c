@@ -327,6 +327,12 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 		fromhost,
 #endif
 		&pu,&utmpent);
+	if (getcurrentuser()==NULL) {
+		struct userec* user;
+		int num;
+		num=getuser("guest",&user);
+		setcurrentuser(user,num);
+	}
 	setcurrentuinfo(pu,utmpent);
 	RETURN_LONG(ret);
 }

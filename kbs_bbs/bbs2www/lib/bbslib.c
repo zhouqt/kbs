@@ -1660,7 +1660,7 @@ struct WWW_GUEST_S {
 	time_t logintime;
 };
 
-#define MAX_WWW_MAP_ITEM MAX_WWW_GUEST>>5  /* 除以32 */
+#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)  /* 除以32 */
 #define MAX_WWW_GUEST_IDLE_TIME 3600 /* www guest发呆时间设为1小时*/
 
 struct WWW_GUEST_TABLE {
@@ -1701,13 +1701,17 @@ static void www_guest_unlock(int fd)
 
 static int www_new_guest_entry()
 {
-	struct public_data* pub=get_publicshm();
+	struct public_data* pub;
 	int fd,i,j;
 	time_t now;
-	if (pub->www_guest_count>=MAX_WWW_GUEST)
-		return -1;
 	fd = www_guest_lock();
 	if (fd==-1) return -1;
+	setpublicshmreadonly(0);
+	pub=get_publicshm();
+	if (pub->www_guest_count>=MAX_WWW_GUEST) {
+		setpublicshmreadonly(1);
+		return -1;
+	}
 
     	now = time( NULL );
     	if(( now > wwwguest_shm->uptime + 240 )||(now < wwwguest_shm->uptime-240)) {
@@ -1717,11 +1721,12 @@ static int www_new_guest_entry()
         		if (now-wwwguest_shm->guest_entry[i].freshtime<MAX_WWW_GUEST_IDLE_TIME)
         			continue;
         		/*清除use_map*/
-        		wwwguest_shm->use_map[i/32]&=1<<(i%32);
-			if ((wwwguest_shm->use_map[i/32])&(1<<(i%32)))
-				pub->www_guest_count--;
+        		wwwguest_shm->use_map[i/32]&=~(1<<(i%32));
+				if (((wwwguest_shm->use_map[i/32])&(1<<(i%32)))&&pub->www_guest_count>0) {
+					pub->www_guest_count--;
         		/* 清除数据 */
-        		bzero(&wwwguest_shm->guest_entry[i],sizeof(struct WWW_GUEST_S));
+        			bzero(&wwwguest_shm->guest_entry[i],sizeof(struct WWW_GUEST_S));
+				}
         	}
     	}
 	for (i=0;i< MAX_WWW_MAP_ITEM;i++)
@@ -1737,8 +1742,10 @@ static int www_new_guest_entry()
 				else map=map>>1;
 			break;
 		}
-	if (i!=MAX_WWW_MAP_ITEM)
+	if (i!=MAX_WWW_MAP_ITEM) {
 		pub->www_guest_count++;
+	}
+	setpublicshmreadonly(1);
 	www_guest_unlock(fd);
 	if (i==MAX_WWW_MAP_ITEM)
 		return -1;
@@ -1748,14 +1755,18 @@ static int www_new_guest_entry()
 static int www_free_guest_entry(int idx)
 {
 	int fd;
-	struct public_data* pub=get_publicshm();
+	struct public_data* pub;
 	if ((idx<0)||(idx>MAX_WWW_GUEST))
 		return -1;
+	setpublicshmreadonly(0);
+	pub=get_publicshm();
 	fd = www_guest_lock();
 	wwwguest_shm->use_map[idx/32]&=1<<(idx%32);
-	if ((wwwguest_shm->use_map[idx/32])&(1<<(idx%32)))
+	if (((wwwguest_shm->use_map[idx/32])&(1<<(idx%32)))&&pub->www_guest_count>0) {
 		pub->www_guest_count--;
+	}
 	www_guest_unlock(fd);
+	setpublicshmreadonly(1);
 	return 0;
 }
 
@@ -1770,8 +1781,7 @@ static int resolve_guest_table()
 			int fd = www_guest_lock();
 			if (fd==-1) return -1;
 			bzero(wwwguest_shm,sizeof(*wwwguest_shm));
-			pub->www_guest_count=0;
-			wwwguest_shm->uptime=time(0);
+				wwwguest_shm->uptime=time(0);
 	        	www_guest_unlock(fd);
 	    	}
     	}
@@ -1835,11 +1845,12 @@ int www_user_init(int useridx,char* userid,int key,struct userec **x, struct use
 	} else {
 	/* guest用户处理 */
 		struct WWW_GUEST_S * guest_info;
-		if(useridx<1 || useridx>=MAX_WWW_GUEST)
+		if((useridx<1) || (useridx>=MAX_WWW_GUEST))
 			return -1;
 		guest_info=&wwwguest_shm->guest_entry[useridx];
-		if (guest_info->key!=key)
+		if (guest_info->key!=key) {
 			return -2;
+		}
 		
 		strncpy(www_guest_uinfo.from,fromhost,IPLEN);
 		www_guest_uinfo.freshtime=guest_info->freshtime;
@@ -1866,7 +1877,7 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 {
 	int ret;
 	char buf[255];
-	if(strcasecmp(user->userid, "guest")) {
+	if(user!=NULL&&strcasecmp(user->userid, "guest")) {
 		struct user_info ui;
 		int utmpent;
               time_t t;
@@ -1993,7 +2004,7 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 			www_guest_uinfo.destuid=idx;
 			www_guest_uinfo.utmpkey=tmp;
 			*ppuinfo=&www_guest_uinfo;
-			*putmpent=-1;
+			*putmpent=idx;
 			ret=0;
 		}
 	}
