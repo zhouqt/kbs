@@ -298,6 +298,8 @@ int     mode;
 	case FRIENDTEST:  return "心有灵犀";
 	case CHICKEN:	return "星空战斗鸡";
 	case KILLER:        return "杀人游戏";
+	case CALENDAR:  return "万年历";
+	case CALENEDIT:  return "日记本";
     default: return "去了那里!?" ;
     }
 }

@@ -89,4 +89,6 @@
 #define	CHICKEN		62
 #define QUIZ 63
 #define KILLER 64
+#define CALENDAR 65
+#define CALENEDIT 66
 

@@ -639,7 +639,8 @@ int igetkey()
             if (ch == KEY_ESC) {
                 if(ibufsize==icurrchar) {
                     if(uinfo.mode!=POSTING&&uinfo.mode!=SMAIL&&uinfo.mode!=EDITUFILE&&uinfo.mode!=EDITSFILE&&
-                        uinfo.mode!=NOTEPAD&&uinfo.mode!=EDIT&&uinfo.mode!=EDITANN&&uinfo.mode!=RMAIL)
+                        uinfo.mode!=NOTEPAD&&uinfo.mode!=EDIT&&uinfo.mode!=EDITANN&&uinfo.mode!=RMAIL&&
+                        uinfo.mode!=CALENEDIT)
                         return ch;
                 }
                 mode = 1;
@@ -688,6 +689,12 @@ int igetkey()
                 int k=(llast-'1')*10+(last-'1');
                 if(k<=3) ret = KEY_F1+k;
                 else ret = KEY_F1+k-1;
+        	if (scrint&&ch==KEY_F10) {
+        	      mode==0;
+                    if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX))
+                    exec_mbem("@mod:service/libcalendar.so#calendar_main");
+                    continue;
+                }
                 break;
             }
             else {
