@@ -28,13 +28,13 @@ int main()
     if (mode <= 0 || mode > 6)
         http_fatal("错误的参数");
 	if( mode == 6 ){
+                char *i_path[ANNPATH_NUM];
+                char *i_title[ANNPATH_NUM];
+                int i_time = 0;
+                int i_select = 0;
 		num = atoi(getparm("num"));
 		if( num < 0 || num >= ANNPATH_NUM )
 			http_fatal("丝路参数错误");
-		char *i_path[ANNPATH_NUM];
-		char *i_title[ANNPATH_NUM];
-		int i_time = 0;
-		int i_select = 0;
 		load_import_path(i_path,i_title,&i_time,&i_select);
 		strcpy(im_path,i_path[num]);
 		free_import_path(i_path,i_title,&i_time);
