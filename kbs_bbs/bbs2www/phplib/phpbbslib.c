@@ -2195,7 +2195,7 @@ static PHP_FUNCTION(bbs_fillidinfo)
  *  	10 -- system error
  *  @author binxun 2003.5
  */
-static PHP_FUNCTION(bbs_creatregform)
+static PHP_FUNCTION(bbs_createregform)
 {
     char*   realname,
         *   dept,
