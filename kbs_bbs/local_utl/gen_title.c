@@ -1,4 +1,5 @@
 #include "bbs.h"
+//#define GEN_ORIGIN //用来自动产生.ORIGIN而不必等到有人整理版务触发 by deem@smth
 
 static int simple_digest(char *str, int maxlen)
 {
@@ -16,6 +17,10 @@ int generate_board_title(struct boardheader *bh,void* arg)
     struct boardheader btmp;
     char olddirect[PATHLEN];
     char *ptr, *t, *t2;
+#ifdef GEN_ORIGIN
+    FILE *fp;
+    char opath[512];
+#endif
     struct fileheader * ptr1;
     struct search_temp {
         bool has_pre;
@@ -27,6 +32,9 @@ int generate_board_title(struct boardheader *bh,void* arg)
     struct stat buf;
     int gen_threadid;
 
+#ifdef GEN_ORIGIN
+    snprintf(opath, 512, "%s/boards/%s/.ORIGIN", BBSHOME, bh->filename);
+#endif
     setbdir(0, olddirect, bh->filename);
     
 //    gen_threadid = bh->nowid+1;
@@ -40,6 +48,9 @@ int generate_board_title(struct boardheader *bh,void* arg)
             close(fd2);
             return 0;
         }
+#ifdef GEN_ORIGIN
+        fp = fopen(opath, "wb");
+#endif
         total = buf.st_size / size;
         index = (struct search_temp *) malloc(sizeof(*index) * total);
         ptr1 = (struct fileheader *) ptr;
@@ -85,6 +96,10 @@ int generate_board_title(struct boardheader *bh,void* arg)
             ptr1->id = index[i].id;
             ptr1->groupid = index[i].thread_id;
             ptr1->reid = index[i].thread_id;
+#ifdef GEN_ORIGIN
+            if (index[i].has_pre == false)
+                fwrite(ptr1, 1, sizeof(struct fileheader), fp);
+#endif
         }
     }
     BBS_CATCH {
@@ -92,6 +107,9 @@ int generate_board_title(struct boardheader *bh,void* arg)
     BBS_END free(index);
     end_mmapfile((void *) ptr, buf.st_size, -1);
     close(fd2);
+#ifdef GEN_ORIGIN
+    fclose(fp);
+#endif
     memcpy(&btmp,getbcache(bh->filename),sizeof(btmp));
 //    btmp.nowid = gen_threadid + 1;
     set_board(getbnum(bh->filename), &btmp,NULL);
