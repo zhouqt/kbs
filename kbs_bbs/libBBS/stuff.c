@@ -445,7 +445,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
         }
         shmptr = (void *) shmat(shmid, shmaddr, 0);
         if (shmptr == (void *) -1) {
-            attach_err(shmkey, "shmat");
+            attach_err(shmkey, "shmat 1");
             exit(0);
         } else
             memset(shmptr, 0, shmsize);
@@ -457,7 +457,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
         else
             shmptr = (void *) shmat(shmid, shmaddr, 0);
         if (shmptr == (void *) -1) {
-            attach_err(shmkey, "shmat");
+            attach_err(shmkey, "shmat 2");
             exit(0);
         }
     } return shmptr;
