@@ -898,6 +898,12 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
         //肯定要计算的版面
         brdnum++;
         if (!sort) {
+	    if (input_namelist) {
+                if (favbrd_list[n].flag == -1) 
+	            input_namelist[brdnum-1]=NullChar;
+		else
+	            input_namelist[brdnum-1]=bptr->filename;
+            }
             if (brdnum<pos||brdnum>=pos+len)
             	continue;
             if (nbrd) {
