@@ -194,17 +194,17 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 			/* 关闭上一个HTML文件 */
 			if (prevprevHtml[0])
 			{
-				fprintf(pdstFile, "<A HREF=\"%s\">上一篇</A>\n", prevprevHtml);
+				fprintf(pdstFile, "<a href=\"%s\">上一篇</a>\n", prevprevHtml);
 			}
-			fputs("<A HREF='javascript:history.go(-1)'>返回上一页</A>\n", pdstFile);
-			fputs("<A HREF=\"index.htm\">回到目录</A>\n", pdstFile);
-			fputs("<A HREF=\"#top\">回到页首</A>\n", pdstFile);
-			fprintf(pdstFile, "<A HREF=\"%08d.htm\">下一篇</A>\n", index);
-			fputs("</H1></CENTER>\n", pdstFile);
-			fputs("<CENTER><H1>", pdstFile);
+			fputs("<a href=\"javascript:history.go(-1)\">返回上一页</a>\n", pdstFile);
+			fputs("<a href=\"index.htm\">回到目录</a>\n", pdstFile);
+			fputs("<a href=\"#top\">回到页首</a>\n", pdstFile);
+			fprintf(pdstFile, "<a href=\"%08d.htm\">下一篇</a>\n", index);
+			fputs("</h1></center>\n", pdstFile);
+			fputs("<center><h1>", pdstFile);
 			fputs(FOOTER, pdstFile);
-			fputs("</H1></CENTER>\n", pdstFile);
-			fputs("</BODY></HTML>", pdstFile);
+			fputs("</h1></center>\n", pdstFile);
+			fputs("</body></html>", pdstFile);
 			fclose(pdstFile);
 			pdstFile = NULL;
 		}
@@ -215,14 +215,17 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 			return NULL;
 		}
 
-		fputs("<HTML>\n<HEAD>\n", pdstFile);
+		fputs("<?xml version=\"1.0\" encoding=\"gb2312\"?>\n", pdstFile);
+		fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n", pdstFile);
+		fputs("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n", 
+				pdstFile);
 		fputs("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\">\n", pdstFile);
-		fputs("<TITLE>", pdstFile);
+		fputs("<title>", pdstFile);
 		fputs(title, pdstFile);
-		fputs("</TITLE>\n</HEAD>\n<BODY>\n<CENTER><H1>", pdstFile);
+		fputs("</title>\n</head>\n<body>\n<center><h1>", pdstFile);
 		fputs(HEADER, pdstFile);
-		fputs("</H1></CENTER>\n", pdstFile);
-		fputs("<A Name=\"top\"></a>\n", pdstFile);
+		fputs("</h1></center>\n", pdstFile);
+		fputs("<a name=\"top\"></a>\n", pdstFile);
 
 		sprintf(filename, "%s/bbs/%s/%s", WorkDir, directory, Link);
 		if (NULL == (pBBSFile = fopen(filename, "wt")))
@@ -312,7 +315,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 						{
 							*ptr = 0;
 							k = strlen(Buf2);
-							sprintf(Buf2 + k, "<A HREF=\"%s\">%s</A>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
+							sprintf(Buf2 + k, "<a href=\"%s\">%s</a>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
 							*ptr = ' ';
 							j += ptr - (srcLine + j) - 1;
 							break;
@@ -327,11 +330,11 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 			}
 
 			if (':' == srcLine[0])
-				sprintf(dstLine, "∶<I>%s</I><BR>\n", Buf2 + 1);
+				sprintf(dstLine, "∶<i>%s</i><br/>\n", Buf2 + 1);
 			else if ('>' == srcLine[0])
-				sprintf(dstLine, "＞<I>%s</I><BR>\n", Buf2 + 4);
+				sprintf(dstLine, "＞<i>%s</i><br/>\n", Buf2 + 4);
 			else
-				sprintf(dstLine, "%s<BR>\n", Buf2);
+				sprintf(dstLine, "%s<br/>\n", Buf2);
 
 			fputs(dstLine, pdstFile);
 		}
@@ -418,17 +421,25 @@ void DealDirectory(char *directory)
 		Buf[strlen(Buf) - 1] = 0;
 		if (ptr = strstr(Buf, "Title="))
 		{
-			fputs("<HTML>\n\n<HEAD>\n  <TITLE>", IndexHtmlFile);
+			fputs("<?xml version=\"1.0\" encoding=\"gb2312\"?>\n", 
+					IndexHtmlFile);
+			fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n", 
+					IndexHtmlFile);
+			fputs("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n", 
+					IndexHtmlFile);
+			fputs("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\">\n", 
+					IndexHtmlFile);
+			fputs("<title>", IndexHtmlFile);
 /*          fputs("<meta http-equiv='Content-Type' content='text/html; charset=gb2312'>");
 		  fputs("<link rel=stylesheet type=text/css href='/bbs.css'>");
 */
 			fputs(ptr + 6, IndexHtmlFile);
-			fputs("</TITLE>\n</HEAD>\n\n<BODY>\n\n<CENTER><H1>", IndexHtmlFile);
+			fputs("</title>\n</head>\n\n<body>\n\n<center><h1>", IndexHtmlFile);
 			fputs(HEADER, IndexHtmlFile);
-			fputs("</H1></CENTER>\n\n", IndexHtmlFile);
-			fputs("<CENTER>\n", IndexHtmlFile);
+			fputs("</h1></center>\n\n", IndexHtmlFile);
+			fputs("<center>\n", IndexHtmlFile);
 			fputs("<table>", IndexHtmlFile);
-			fputs("<tr><th>编号<th>类别<th class=body>标题<th class=body>编辑日期</tr>", IndexHtmlFile);
+			fputs("<tr><th>编号<th>类别<th class=\"body\">标题<th class=\"body\">编辑日期</tr>", IndexHtmlFile);
 		}
 		else if (ptr = strstr(Buf, "Name="))
 		{
@@ -465,7 +476,7 @@ void DealDirectory(char *directory)
 						{
 							index++;
 							fprintf(IndexHtmlFile, "<tr><td>%d</td><td>%s</td>", index, isDir ? "目录" : "文件");
-							fprintf(IndexHtmlFile, "<td><A HREF=\"%s\">%s</A></td>", herfname, anchor);
+							fprintf(IndexHtmlFile, "<td><a href=\"%s\">%s</a></td>", herfname, anchor);
 							fprintf(IndexHtmlFile, "<td>%s</td></tr>\n", datestr);
 						}
 						break;
@@ -483,28 +494,28 @@ void DealDirectory(char *directory)
 /*    fputs("</CENTER>\n",pdstFile);*/
 		if (prevHtml[0])
 		{
-			fprintf(pdstFile, "<A HREF=\"%s\">上一篇</A>\n", prevHtml);
+			fprintf(pdstFile, "<a href=\"%s\">上一篇</a>\n", prevHtml);
 		}
-		fputs("<A HREF='javascript:history.go(-1)'>返回上一页</A>\n", pdstFile);
-		fputs("<A HREF=\"index.htm\">回到目录</A>\n", pdstFile);
-		fputs("<A HREF=\"#top\">回到页首</A>\n", pdstFile);
-		fputs("</CENTER>\n", pdstFile);
-		fputs("<CENTER><H1>", pdstFile);
+		fputs("<a href=\"javascript:history.go(-1)\">返回上一页</a>\n", pdstFile);
+		fputs("<a href=\"index.htm\">回到目录</a>\n", pdstFile);
+		fputs("<a href=\"#top\">回到页首</a>\n", pdstFile);
+		fputs("</center>\n", pdstFile);
+		fputs("<center><h1>", pdstFile);
 		fputs(FOOTER, pdstFile);
-		fputs("</H1></CENTER>\n", pdstFile);
-		fputs("</BODY></HTML>", pdstFile);
+		fputs("</h1></center>\n", pdstFile);
+		fputs("</body></html>", pdstFile);
 		fclose(pdstFile);
 		pdstFile = NULL;
 	}
 	fputs("</table>\n", IndexHtmlFile);
 
-	fputs("<A HREF='javascript:history.go(-1)'>返回上一页</A>\n", IndexHtmlFile);
-	fputs("<A HREF=\"../index.htm\">回到上一级目录</A>\n", IndexHtmlFile);
-	fputs("</CENTER>\n", IndexHtmlFile);
-	fputs("<CENTER><H1>", IndexHtmlFile);
+	fputs("<a href=\"javascript:history.go(-1)\">返回上一页</a>\n", IndexHtmlFile);
+	fputs("<a href=\"../index.htm\">回到上一级目录</a>\n", IndexHtmlFile);
+	fputs("</center>\n", IndexHtmlFile);
+	fputs("<center><h1>", IndexHtmlFile);
 	fputs(FOOTER, IndexHtmlFile);
-	fputs("</H1></CENTER>\n", IndexHtmlFile);
-	fputs("</BODY></HTML>", IndexHtmlFile);
+	fputs("</h1></center>\n", IndexHtmlFile);
+	fputs("</body></html>", IndexHtmlFile);
 
 	fclose(IndexHtmlFile);
 }
