@@ -705,18 +705,20 @@ void user_login()
     show_help("0Announce/bbslist/newsday");
 #endif
     /* added end */
-    if (dashf("0Announce/systeminfo"))
+    if (dashf("0Announce/systeminfo")) {
         ansimore("0Announce/systeminfo", false);
-    move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
-    clrtoeol();
-    prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...[33m[m ");
-    igetkey();
-    if (dashf("0Announce/hotinfo"))    
+        move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
+        clrtoeol();
+        prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...[33m[m ");
+        igetkey();
+    }
+    if (dashf("0Announce/hotinfo")) {
         ansimore("0Announce/hotinfo", false);
-    move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
-    clrtoeol();
-    prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...[33m[m ");
-    igetkey();
+        move(t_lines - 1 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
+        clrtoeol();
+        prints("[1;36m¡î °´ÈÎÒâ¼ü¼ÌĞø...[33m[m ");
+        igetkey();
+    }
 	/* Load currentuser's mailbox properties, added by flyriver, 2003.1.5 */
 	uinfo.mailbox_prop = load_mailbox_prop(currentuser->userid);
     move(t_lines - 1, 0);
