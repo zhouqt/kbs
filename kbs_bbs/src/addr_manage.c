@@ -351,7 +351,7 @@ static int set_al_key(struct _select_def *conf, int key)
 			return SHOW_REFRESH;
 
 		mysql_init(&s);
-		if (! my_connect_mysql(&s, "SMSmsg") ){
+		if (! my_connect_mysql(&s) ){
 			clear();
 			prints("%s\n",mysql_error(&s));
 			pressanykey();

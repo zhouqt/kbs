@@ -419,6 +419,7 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 int add_sql_al(char *userid, struct addresslist *al, char *msgbuf);
 int sign_smsmsg_read(int id );
 int chk_smsmsg(int force );
+int my_connect_mysql(MYSQL *s);
 
 /* site.c */
     char *ModeType(int mode);
