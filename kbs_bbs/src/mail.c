@@ -22,7 +22,7 @@
 */
 
 #include "bbs.h"
-#include "read.h"
+#include "read.h" 
 #define         INTERNET_PRIVATE_EMAIL
 
 int G_SENDMODE = false;
