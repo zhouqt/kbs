@@ -161,7 +161,7 @@ http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]
 ÇëÊäÈë¹Ø¼ü×Ö£º
 <input type="text" name="keyword" id="keyword" class="f1" value="<?php echo $keyword; ?>">
 <?php
-	if($userid || $area)
+	if($userid || ( $area && $area != "_all"))
 	{
 ?>
 </p>
