@@ -1,16 +1,11 @@
 <?php
         
     require("funcs.php");
-/*
-        $hostname=bbs_sysconf_str("MYSQLHOST");
-        $username=bbs_sysconf_str("MYSQLUSER");
-        $password=bbs_sysconf_str("MYSQLPASSWORD");
-        $dbname=bbs_sysconf_str("MYSQLDATABASE");
-*/
-$hostname="localhost";
-$username="root";
-$password="hebiao";
-$dbname="SMSmsg";
+
+    $hostname=bbs_sysconf_str("MYSQLHOST");
+    $username=bbs_sysconf_str("MYSQLUSER");
+    $password=bbs_sysconf_str("MYSQLPASSWORD");
+    $dbname=bbs_sysconf_str("MYSQLDATABASE");
 
     if($loginok !=1)
     	html_nologin(); 
