@@ -230,10 +230,10 @@ int ann_traverse_check(char *path, struct userec *user)
     board[0] = '\0';
     if ((ptr = strstr(path, "groups/")) != NULL)
         ann_get_board(ptr, board, sizeof(board));
+    bzero(pathbuf, sizeof(pathbuf));
 #ifdef ZIXIA
     if (board[0] == '\0') {
 #endif
-        bzero(pathbuf, sizeof(pathbuf));
         ptr = path;
 #ifdef ZIXIA
     } else {
