@@ -7,7 +7,8 @@ require("inc/user.inc.php");
 
 require("inc/board.inc.php");
 
-$action=0;
+$action=0; //0: 新发邮件；1: 指定收件人；2: 回复信件；3: 回复版面文章
+$mail_receiver="";
 $article;
 
 setStat("撰写新邮件");
@@ -37,14 +38,14 @@ if (isErrFounded()) {
 show_footer();
 
 function preprocess() {
-	global $action;
+	global $action, $mail_receiver;
     if (!bbs_can_send_mail()) {
 		foundErr("您没有写信权力!");
 		return false;
 	}
 	if (isset($_GET['boxname'])) {
 		setstat("回复信件");
-		$action=1;
+		$action=2;
 		$num=intval($_GET['num']);
 		if ($_GET['boxname']=='inbox') {
 			return getmail('inbox','.DIR','收件箱', $num);
@@ -58,9 +59,13 @@ function preprocess() {
 	}
 	if (isset($_GET['board'])) {
 		setstat("发信给作者");
-		$action=2;
+		$action=3;
 		$reID=intval($_GET['reID']);
 		return getarticle($_GET['board'],$reID);
+	}
+	if (isset($_GET['receiver'])) {
+		$action = 1;
+		$mail_receiver = $_GET['receiver'];
 	}
 }
 
@@ -129,20 +134,20 @@ function getmail($boxName, $boxPath, $boxDesc, $num){
 function main() {
 	global $currentuser;
 	global $_GET;
-	global $article;
+	global $article, $mail_receiver;
 	global $action;
 ?>
 <br>
 <form action="dosendmail.php" method=post name=messager id="messager" onkeydown="if(event.keyCode==13 && event.ctrlKey){ obj=getRawObject('messager');obj.submit();} ">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
           <tr> 
-            <th colspan=3><?php echo $action==0?"撰写新邮件":"回复邮件"; ?></td>
+            <th colspan=3><?php echo $action<2?"撰写新邮件":"回复邮件"; ?></td>
           </tr>
           <tr> 
             <td class=TableBody1 valign=middle><b>收件人:</b></td>
             <td class=TableBody1 valign=middle>
               <input name="destid" maxlength="12" value="<?php if ($action!=0) 
-			echo $article['OWNER'].'" size="12" readonly />'; 
+			echo ($action==1?$mail_receiver:$article['OWNER']).'" size="12" readonly />'; 
 					else { ?>" size="12" />			 
               <SELECT name=font onchange=DoTitle(this.options[this.selectedIndex].value)>
               <OPTION selected value="">选择</OPTION>
@@ -153,7 +158,7 @@ function main() {
             <td class=TableBody1 valign=top width=15%><b>标题：</b></td>
             <td  class=TableBody1 valign=middle>
 <?php
-		if ($action!=0)	{
+		if ($action>1)	{
 	        if(!strncmp($article["TITLE"],"Re: ",4)) $nowtitle = $article["TITLE"];
 	        else
 	            $nowtitle = "Re: " . $article["TITLE"];
@@ -168,8 +173,8 @@ function main() {
             <td class=TableBody1 valign=top width=15%><b>内容：</b></td>
             <td  class=TableBody1 valign=middle>
               <textarea style="width:500px;height:300px" name="content"><?php
-    if($action!=0){
-		if ($action==2){
+    if($action>1){
+		if ($action==3){
     		$filename = "boards/" . $_GET['board']. "/" . $article['FILENAME'];
             echo "\n【 在 " . $article['OWNER'] . " 的大作中提到: 】\n";
 		}else{

@@ -43,7 +43,7 @@ function main() {
 <th valign=middle width=30 height=25>序号</th>
 <th valign=middle width=100>用户账号</th>
 <th valign=middle width=280>好友说明</th>
-<th valign=middle width=130>操作</th>
+<th valign=middle width=150>操作</th>
 </tr>
 <?php
 	define("USERSPERPAGE", 20); //ToDo: USERSPERPAGE should always be 20 here because of phplib - atppp
@@ -59,19 +59,21 @@ function main() {
     
 	$count = count ( $friends_list );
 
-	for ( $i=0; $i<$count ; $i++ ) {
+	$i = 0;
+	foreach($friends_list as $friend) {
+		$i++;
 ?>
 <tr>
 <td class=TableBody1 align=center valign=middle>
-<?php echo $startNum+$i+1; ?>
+<?php echo $startNum+$i; ?>
 </td>
 <td class=TableBody1 align=center valign=middle style="font-weight:normal">
-<a href="dispuser.php?id=<?php echo $friends_list[$i]['ID'] ; ?>" target=_blank>
-<?php echo $friends_list[$i]['ID'] ?></a>
+<a href="dispuser.php?id=<?php echo $friend['ID'] ; ?>" target=_blank>
+<?php echo $friend['ID'] ?></a>
 </td>
-<td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $friends_list[$i]['ID'] ; ?>" > <?php       echo htmlspecialchars($friends_list[$i]['EXP'],ENT_QUOTES); ?></a>	</td>
-<td align=center valign=middle width=130 class=TableBody1>
-<a href="#">删除好友</a> [ToDo]
+<td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $friend['ID'] ; ?>" > <?php       echo htmlspecialchars($friend['EXP'],ENT_QUOTES); ?></a>	</td>
+<td align=center valign=middle width=150 class=TableBody1>
+<a href="#">删除好友</a> <a href="sendmail.php?receiver=<?php echo $friend['ID']; ?>">发送邮件</a> [ToDo]
 </td>
 </tr>
 <?php
