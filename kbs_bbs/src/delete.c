@@ -218,7 +218,7 @@ mail_info()
 int kickuser(struct user_info* uentp,char* arg,int count)
 {
 	kill(uentp->pid,SIGHUP);
-	clear_utmp2(uentp);
+	clear_utmp((uentp-utmpshm->uinfo)+1);
 	UNUSED_ARG(arg);
 	UNUSED_ARG(count);
 	return 0;
@@ -383,7 +383,7 @@ int kick_user(struct user_info *userinfo)
     }
     if (kill(uin.pid,SIGHUP) == -1)
     {
-    	clear_utmp2(userinfo);
+    	clear_utmp(userinfo-utmpshm->uinfo)+1);
     }
     sprintf(buffer, "kicked %s", userid);
     report(buffer);

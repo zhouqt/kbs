@@ -163,6 +163,44 @@ int ismonday()
 static char* username;
 static char* cmd;
 static int num;
+struct requesthdr {
+	int command;
+	union {
+		struct user_info utmp;
+		int uent;
+	};
+}utmpreq;
+int getutmprequest(int m_socket)
+{
+        int len;
+        struct sockaddr_in sin;
+        int s;
+        char* pnum;
+        char *phdr = (char *)&utmpreq;
+        int totalread;
+        len = sizeof(sin);
+        for (s = accept(m_socket,&sin,&len);;s = accept(m_socket,&sin,&len)) {
+                if ((s<=0)&&errno!=EINTR){
+    	            log("3system","utmpd:accept %s",strerror(errno));
+                    exit(-1);
+                }
+                if (s<=0) continue;
+                memset(&utmpreq,0,sizeof(utmpreq));
+                len = 1;
+                
+                while (totalread<sizeof(utmpreq) && len >0) {
+                   len = read(s,phdr,sizeof(utmpreq)-totalread);
+                   if (len>0) {
+                   	    totalread+=len;
+                   	    phdr+=len;
+                   	}	
+                }
+                if (len<=0) {close (s) ;continue;}
+                close(s);
+        }
+        return s;
+}
+
 int getrequest(int m_socket)
 {
         int len;
@@ -211,9 +249,7 @@ void userd()
     struct sockaddr_in sin;
     int sinlen = sizeof(sin);
     int opt=1;
-#ifdef FREEBSD
 	bzero(&sin, sizeof(sin));
-#endif
     if (( m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
     	log("3system","userd:socket %s",strerror(errno));
     	exit(-1);
@@ -249,6 +285,77 @@ void userd()
     }
     return;
 }
+
+void utmpd()
+{
+    int m_socket;
+
+    struct sockaddr_in sin;
+    int sinlen = sizeof(sin);
+    int opt=1;
+	bzero(&sin, sizeof(sin));
+    if (( m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP))<0) {
+    	log("3system","utmpd:socket %s",strerror(errno));
+    	exit(-1);
+    }
+    setsockopt(m_socket,SOL_SOCKET,SO_REUSEADDR,&opt,4);
+    memset(&sin,0,sinlen);
+    sin.sin_family = AF_INET;
+    sin.sin_port = htons(60002);
+    inet_aton("127.0.0.1",&sin.sin_addr);
+    if  (0!=bind(m_socket,(struct sockaddr *)&sin,sizeof(sin))) {
+    	log("3system","utmpd:bind %s",strerror(errno));
+    	exit(-1);
+    }
+    if (0!=listen(m_socket,5)) {
+    	log("3system","utmpd:listen %s",strerror(errno));
+    	exit(-1);
+    }
+    while (1) {
+        int sock,id;
+        sock = getutmprequest(m_socket);
+		{ /*kill user*/
+		time_t now;
+		struct user_info    *uentp;
+		now = time( NULL );
+			if(( now > utmpshm->uptime + 120 )||(now < utmpshm->uptime-120)) {
+			    int n;
+			    utmpshm->uptime = now;
+			    log( "1system", "UTMP:Clean user utmp cache");
+			    for( n = 0; n < USHM_SIZE; n++ ) {
+			        utmpshm->uptime = now;
+			        uentp = &(utmpshm->uinfo[ n ]);
+			        if( uentp->active && uentp->pid && kill( uentp->pid, 0 ) == -1 ) /*uentp¼ì²é*/
+			        {
+			            char buf[STRLEN];
+			            strncpy(buf, uentp->userid, IDLEN+2);
+			            clear_utmp(n+1);
+			            RemoveMsgCountFile2(buf);
+			        }
+			    }
+			}
+		} 
+		/* utmp */
+		switch (utmpreq.command) {
+		case 1: // getnewutmp
+		       id = getnewutmpent2(&utmpreq.utmp);
+			break;
+		case 2:
+			id = -1;
+			break; // clear, by uentp
+		case 3:    // clear, by id
+		       clear_utmp2(utmpreq.uent);
+		       id = 0;
+			break;
+		default:
+			id = -1;
+			break;
+		}
+        putrequest(sock,id);
+    }
+    return;
+}
+
 
 void flushd()
 {

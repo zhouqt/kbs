@@ -95,7 +95,56 @@ static int utmp_hash(const char* userid)
 	return hash; 
 }
 
-int getnewutmpent(struct user_info *up)
+struct requesthdr {
+	int command;
+	union {
+		struct user_info utmp;
+		int uent;
+	};
+}utmpreq;
+
+int sendutmpreq(struct requesthdr *req)
+{
+
+        int m_socket;
+        struct sockaddr_in sin;
+        fd_set rfds;
+        int result;
+        struct  timeval tv;
+        m_socket = socket(PF_INET,SOCK_STREAM,IPPROTO_TCP);
+        if (m_socket<0) return -1;
+        sin.sin_family=AF_INET;
+        sin.sin_port=htons(60002);
+        inet_aton("127.0.0.1",&sin.sin_addr);
+        if (connect(m_socket,(struct sockaddr*)&sin,sizeof(sin))!=0) {
+                close(m_socket);
+                return -1;
+        }
+        write(m_socket,req,sizeof(*req));
+        FD_ZERO(&rfds);
+        FD_SET(m_socket,&rfds);
+        tv.tv_sec=5;
+        tv.tv_usec=0;
+        result = select(m_socket+1,&rfds,NULL,NULL,&tv);
+        if (result)
+        {
+                int len=read(m_socket,&result,sizeof(result));
+                close(m_socket);
+                if (len!=sizeof(result)) return -1 ;
+                return result ;
+        } 
+        close(m_socket);
+        return -1;
+}
+
+int getnewutmpent(struct user_info *up){
+	utmpreq.command = 1;
+	memcpy(&utmpreq.utmp,up,sizeof(*up));
+	/* connect and send request */
+	return sendutmpreq(&utmpreq);
+}
+#if 0
+int real_getnewutmpent(struct user_info *up)
 {
     struct user_info    *uentp;
     time_t      now;
@@ -189,7 +238,7 @@ int getnewutmpent(struct user_info *up)
     utmp_unlock(utmpfd);
     return pos+1 ;
 }
-
+#endif 
 /* same as getnewutmpent() except no updating of utmpshm 
  * only called in www
  */
@@ -395,13 +444,20 @@ int farg;
     }
     return 0;
 }
-
+/*
 void clear_utmp2(struct user_info* uentp)
 {
 	clear_utmp((uentp-utmpshm->uinfo)+1);
 }
-
+*/
 void clear_utmp(int uent)
+{
+	utmpreq.command = 3;
+	utmpreq.uent = uent;
+	/* connect and clear */
+	sendutmpreq(&utmpreq);
+}
+void clear_utmp2(int uent)
 {
  	int lockfd , hashkey, find;
    	struct user_info zeroinfo;
