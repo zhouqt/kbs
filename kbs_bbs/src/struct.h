@@ -115,4 +115,5 @@ struct BCACHE {
 	int numboards;
 	struct BoardStatus bstatus[MAXBOARD];
 };
+
 #endif

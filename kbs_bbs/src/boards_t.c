@@ -703,16 +703,15 @@ int
 check_newpost( ptr )
 struct newpostdata *ptr;
 {
-	struct BoardStatus bptr;
+	struct BoardStatus* bptr;
 	ptr->total = ptr->unread = 0;
 
-	//getlastpost(ptr->name, &lastpost,&ptr->total);
 	bptr = getbstatus(ptr->pos);
 	if (bptr == NULL)
 		return 0;
 	ptr->total = bptr->total;
 
-	if (!brc_initial(ptr->name)) {
+	if (!brc_initial(currentuser->userid,ptr->name)) {
 		ptr->unread = 1;
 	} else {
 		if (brc_unread_t(bptr->lastpost)) {

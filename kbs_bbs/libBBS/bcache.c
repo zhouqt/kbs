@@ -81,9 +81,9 @@ getlastpost(char *board, int *lastpost, int *total)
 int updatelastpost(char *board)
 {
 	int pos;
-	pos = getbnum( board ) /* board name --> board No. */
-	if (pos>=0) {
-		getlastpost(board, &brdshm->bstatus[pos].lastpost, &brdshm->bstatus[pos].total);
+	pos = getbnum( board ); /* board name --> board No. */
+	if (pos>0) {
+		getlastpost(board, &brdshm->bstatus[pos-1].lastpost, &brdshm->bstatus[pos-1].total);
 		return 0;
 	} else return -1;
 }
@@ -129,7 +129,7 @@ void resolve_boards()
 
 struct BoardStatus* getbstatus(int index)
 {
-	return &brdshm->bstatus[i];
+	return &brdshm->bstatus[index];
 }
 
 int apply_boards(int (*func)()) /* 对所有版 应用 func函数*/

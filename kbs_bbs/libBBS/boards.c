@@ -364,16 +364,10 @@ char    *filename;
     }
 }
 
-int
-brc_unread( filename ) /*如果file比brc list中的都新，则 未读 */
-char    *filename;
+int brc_unread_t( int ftime) 
 {
-    int         ftime, n;
+    int         n;
 
-    ftime = atoi( &filename[2] );
-    if( (filename[0] != 'M'&&filename[0] != 'G') || filename[1] != '.' /*|| ftime <= UNREAD_TIME*/ ) {
-        return 0;
-    }
     if( brc_num <= 0 )
         return 1;
     for( n = 0; n < brc_num; n++ ) {
@@ -386,20 +380,17 @@ char    *filename;
     return 0;
 }
 
-int brc_unread_t( int ftime) 
+int
+brc_unread( filename ) /*如果file比brc list中的都新，则 未读 */
+char    *filename;
 {
     int         ftime, n;
 
-    if( brc_num <= 0 )
-        return 1;
-    for( n = 0; n < brc_num; n++ ) {
-        if( ftime > brc_list[n] ) {
-            return 1;
-        } else if( ftime == brc_list[n] ) {
-            return 0;
-        }
+    ftime = atoi( &filename[2] );
+    if( (filename[0] != 'M'&&filename[0] != 'G') || filename[1] != '.' /*|| ftime <= UNREAD_TIME*/ ) {
+        return 0;
     }
-    return 0;
+    return brc_unread_t(ftime);
 }
 
 int brc_has_read(char *file) {
