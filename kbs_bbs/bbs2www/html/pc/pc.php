@@ -166,10 +166,6 @@
 <p class="f1">
 <?php
 	pc_main_navigation_bar();
-	if(pc_is_manager($currentuser))
-	{
-		echo "[<a href=\"pcadmin_rec.php\">№ЬАн</a>]\n";		
-	}
 ?>
 </p>
 <?php
