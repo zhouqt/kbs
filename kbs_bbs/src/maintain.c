@@ -404,7 +404,7 @@ int m_newbrd()
         prints("设定 %s 权力. 讨论区: '%s'\n",
                (newboard.level & PERM_POSTMASK ? "POST" : "READ"),
                newboard.filename);
-        newboard.level = setperms(newboard.level, 0, "权限", NUMPERMS, showperminfo);
+        newboard.level = setperms(newboard.level, 0, "权限", NUMPERMS, showperminfo,NULL);
         clear();
     }
     else
@@ -577,7 +577,7 @@ enterbname:
             move(2, 0);
             prints("设定 %s '%s' 讨论区的权限\n",
                    newfh.level & PERM_POSTMASK ? "张贴" : "阅读", newfh.filename);
-            newfh.level = setperms(newfh.level, 0, "权限", NUMPERMS, showperminfo);
+            newfh.level = setperms(newfh.level, 0, "权限", NUMPERMS, showperminfo,NULL);
             clear();
             getdata(0, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         } else

@@ -216,7 +216,7 @@ void do_move(int destcol,int destline,void (*outc)(char));
 /* xyz.c */
 int do_exec(char* com,char*wd);
 int showperminfo(struct _select_def* conf,int i);
-unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def*,int));
+unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def*,int),int (*select)(struct _select_def*));
 void  record_exit_time();
 
 /* announce.c */

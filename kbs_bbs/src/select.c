@@ -126,9 +126,9 @@ static int select_change(struct _select_def* conf,int new_pos)
 		// 如果是高亮的选择方式，需要清除原来的行
 		// 和重绘新行
 
-		conf->new_pos = conf->pos;
 		conf->pos = new_pos;
 		if (conf->flag&LF_HILIGHTSEL) {
+			conf->new_pos = conf->pos;
 			show_item(conf,conf->pos,true);
 			show_item(conf,conf->new_pos,true);
 		}

@@ -792,29 +792,44 @@ int     bits;
     return count;
 }
 
-int
-showvoteitems( pbits, i, flag)
-unsigned int  pbits;
-int     i,flag;
-{
-    char        buf[ STRLEN ];
-    int count;
+struct _setperm_select {
+	unsigned int pbits;
+	unsigned int basic;
+	unsigned int oldbits;
+};
 
-    if(flag==true)
-    {
-        count= vote_check(pbits);
-        if(count > currvote.maxtkt)
-            return false;
+int vote_select(struct _select_def* conf)
+{
+    int count;
+	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
+	if (conf->pos==conf->item_count)
+		return SHOW_QUIT;
+	arg->pbits ^= (1 << (conf->pos-1));
+        count= vote_check(arg->pbits);
+        if(count > currvote.maxtkt) {
+	    arg->pbits ^= (1 << (conf->pos-1));
+            return SHOW_CONTINUE;
+	}
         move(2,0);
         clrtoeol();
         prints("你已经投了 %d 票",count);
+	return SHOW_REFRESHSELECT;
+}
+
+int showvoteitems(struct _select_def* conf,int i)
+{
+    char buf[STRLEN];
+    struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
+
+    i=i-1;
+    if (i==conf->item_count-1) {
+       prints("--退出--");
+    } else {
+    sprintf( buf,"%c.%2.2s%-36.36s", 'A' + i,
+             ((arg->pbits >> i) & 1 ? "◎" : "  "),currvote.items[i]);
+    prints("%s",buf);
     }
-    sprintf( buf, "%c.%2.2s%-36.36s", 'A' + i,
-             ((pbits >> i) & 1 ? "◎" : "  "),currvote.items[i]);
-    move( i+6-(( i>15)? 16:0) , 0+(( i>15)? 40:0) );
-    prints( buf );
-    refresh();
-    return true;
+    return SHOW_CONTINUE;
 }
 
 void
@@ -876,7 +891,7 @@ struct ballot *uv;
     i=uv->voted;
     move(0,0);
     show_voteing_title();
-    uv->voted = setperms(uv->voted,0,"选票",currvote.totalitems,showvoteitems);
+    uv->voted = setperms(uv->voted,0,"选票",currvote.totalitems,showvoteitems,vote_select);
     if(uv->voted==i)
         return -1;
     return 1;

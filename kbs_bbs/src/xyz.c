@@ -127,7 +127,7 @@ int setperm_key(struct _select_def *conf,int key)
     return SHOW_CONTINUE;
 }
 
-unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def*,int))
+unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def*,int),int (*select)(struct _select_def*))
 {
 	struct _select_def perm_conf;
 	struct _setperm_select arg;
@@ -152,13 +152,16 @@ unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int num
 	perm_conf.item_count=numbers+1;
 	perm_conf.item_per_page=numbers+1;
 	perm_conf.flag=LF_BELL|LF_LOOP;//|LF_HILIGHTSEL;
-	perm_conf.prompt=NULL;//">";
+	perm_conf.prompt="◆";
 	perm_conf.item_pos = pts;
 	perm_conf.arg=&arg;
 	perm_conf.title_pos.x=1;
 	perm_conf.title_pos.y=6;
 	perm_conf.pos=numbers+1;
 
+	if (select)
+	perm_conf.on_select=select;
+	else
 	perm_conf.on_select=setperm_select;
 	perm_conf.show_data=show;
 	perm_conf.key_command=setperm_key;
@@ -299,7 +302,7 @@ x_level()
     clrtobot();
     move(2,0);
     prints("请设定"NAME_USER_SHORT" '%s' 的权限\n", genbuf);
-    newlevel = setperms(lookupuser->userlevel,basicperm,"权限",NUMPERMS,setperm_show);
+    newlevel = setperms(lookupuser->userlevel,basicperm,"权限",NUMPERMS,setperm_show,NULL);
     move(2,0);
     if (newlevel == lookupuser->userlevel)
         prints(NAME_USER_SHORT" '%s' 的权限没有更改\n", lookupuser->userid);
@@ -390,7 +393,7 @@ XCheckLevel() /* Leeward 98.06.05 */
     prints("请设定需要检查的权限\n");
     scanuser.userlevel = 0;
     /* change showperminfoX to showperminfo*/
-    newlevel = setperms(scanuser.userlevel, 0, "权限",NUMPERMS,showperminfo);
+    newlevel = setperms(scanuser.userlevel, 0, "权限",NUMPERMS,showperminfo,NULL);
     move(2,0);
     if (newlevel == scanuser.userlevel)
         prints("你没有设定任何权限\n");
@@ -497,7 +500,7 @@ x_userdefine()
     move(1,0);
     clrtobot();
     move(2,0);
-    newlevel = setperms(lookupuser->userdefine,0 , "参数",NUMDEFINES,showuserdefine);
+    newlevel = setperms(lookupuser->userdefine,0 , "参数",NUMDEFINES,showuserdefine,NULL);
     move(2,0);
     if (newlevel == lookupuser->userdefine)
         prints("参数没有修改...\n");
