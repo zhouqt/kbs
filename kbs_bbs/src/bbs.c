@@ -2590,7 +2590,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */
         post_file.innflag[1] = 'L';
         post_file.innflag[0] = 'L';
-    } else {
+    } else if (aborted == 0) {
         post_file.innflag[1] = 'S';
         post_file.innflag[0] = 'S';
         outgo_post(&post_file, currboard->filename, save_title);
