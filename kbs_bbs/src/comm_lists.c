@@ -38,7 +38,7 @@ int Goodbye();
 int Help();
 int New();
 int Post();
-int Read();
+int ReadBoard();
 int Select();
 int Users();
 int Welcome();
@@ -130,7 +130,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
      * {"ExecGopher",   t_gopher}, 
      */
     {"SelectBoard", Select},
-    {"ReadBoard", Read},
+    {"ReadBoard", ReadBoard},
     {"PostArticle", Post},
     {"SetHelp", Help},
     {"SetAlarm", set_clock},

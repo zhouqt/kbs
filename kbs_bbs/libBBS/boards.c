@@ -396,7 +396,7 @@ void brc_update(char *userid)
     int i;
     gzFile fd = NULL;
     char dirfile[MAXPATH];
-    unsigned int data[MAXBOARD][BRC_MAXNUM];
+    unsigned int* data;
     size_t count;
 
     if (brc_cache_entry==NULL) return;
@@ -410,6 +410,7 @@ void brc_update(char *userid)
     }
     if (i == BRC_CACHE_NUM)
         return;
+    data=(unsigned int*)malloc(BRC_FILESIZE);
     bzero(data, BRC_FILESIZE);
     if ((fd = gzopen(dirfile, "rb6")) == NULL) {
         const char *errstr;
@@ -461,6 +462,7 @@ void brc_update(char *userid)
         count += ret;
     }
     gzclose(fd);
+    free(data);
     return;
 }
 
@@ -926,6 +928,7 @@ int normal_board(char *bname)
 
 int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,char** input_namelist)
 {
+//注意，如果是目录，nbrd的flag应该为-1
     int n, k;
     struct boardheader *bptr;
     int brdnum;
@@ -981,6 +984,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->pos = 0;
                     ptr->total = 0;
                     ptr->unread = 1;
+                    ptr->group=0;
                     for (k = 0; k < favbrd_list_t; k++)
                         if (favbrd_list[k].father == n)
                             ptr->total++;
@@ -994,6 +998,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->tag = n;
                     ptr->pos = favbrd_list[n].flag;
                     ptr->total = -1;
+                    ptr->group=0;
                     ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
                 }
             	}
@@ -1076,7 +1081,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     return brdnum;
 }
 
-int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool sort,bool yank_flag,char** input_namelist)
+int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,char** input_namelist)
 {
     int n, k;
     struct boardheader *bptr;
@@ -1102,7 +1107,9 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
         bptr = (struct boardheader *) getboard(n + 1);
         if (!bptr)
             continue;
-        if (!*bptr->filename)
+        if (*bptr->filename==0)
+            continue;
+        if (bptr->group!=group)
             continue;
         if (!check_see_perm(currentuser,bptr)) {
             continue;
@@ -1146,13 +1153,15 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
         for (n=pos-1;n<curcount;n++) {
             ptr=&nbrd[n-(pos-1)];
             bptr = getboard(indexlist[n]+1);
-            ptr->dir = 0;
+            ptr->dir = bptr->flag&BOARD_GROUP?1:0;
             ptr->name = bptr->filename;
             ptr->title = bptr->title;
             ptr->BM = bptr->BM;
             ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
             ptr->pos = indexlist[n];
-            ptr->total = -1;
+            if (bptr->flag&BOARD_GROUP) {
+                ptr->total = bptr->board_data.group_total;
+            }
             ptr->zap = (zapbuf[indexlist[n]] == 0);
         }
     }

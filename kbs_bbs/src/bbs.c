@@ -3105,6 +3105,16 @@ struct one_key read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'\0', NULL},
 };
 
+int ReadBoard()
+{
+    if (Read()==-2) //is directory {
+        if (currboard->flag&BOARD_GROUP) {
+            choose_board(0,NULL,currboardent,yank_flag);
+        }
+    }
+    return 0;
+}
+
 int Read()
 {
     char buf[2 * STRLEN];
@@ -3127,6 +3137,7 @@ int Read()
     currboardent=bid;
     currboard=(struct boardheader*)getboard(bid);
 
+    if (currboard->flag&BOARD_GROUP) return -2;
 #ifdef HAVE_BRC_CONTROL
     brc_initial(currentuser->userid, currboard->filename);
 #endif

@@ -19,12 +19,17 @@
 		else
 			$yank = 0;
 		settype($yank, "integer");
+		if (isset($_GET["group2"]))
+			$group2 = $_GET["group2"];
+		else
+			$group2 = 0;
+		settype($group, "integer");
 		if ($group < 0 || $group > sizeof($section_nums))
 			html_error_quit("错误的参数");
-		$boards = bbs_getboards($section_nums[$group], $yank);
+		$boards = bbs_getboards($section_nums[$group], $group2, $yank);
 		//print_r($boards);
 		if ($boards == FALSE)
-			html_error_quit("该分区尚未有版面");
+			html_error_quit("该目录尚未有版面");
 ?>
 <style type="text/css">A {color: #0000f0}</style>
 <body>
@@ -63,6 +68,11 @@
 		$brd_artcnt = $boards["ARTCNT"]; // 文章数
 		$brd_unread = $boards["UNREAD"]; // 未读标记
 		$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
+		$brd_isgroup = $boards["flag"]&BBS_BOARD_GROUP; //是否是目录
+		if ($brd_isgroup)
+		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $group2;
+		else
+		  $brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$i]);
 		$rows = sizeof($brd_name);
 		for ($i = 0; $i < $rows; $i++)	
 		{
@@ -71,10 +81,12 @@
 <td><?php echo $i+1; ?></td>
 <td>
 <?php
+			if (!$brd_isgroup) {
 			if ($brd_unread[$i] == 1)
 				echo "◆";
 			else
 				echo "◇";
+			}
 ?>
 </td>
 <td>
@@ -83,7 +95,7 @@
 				echo "*";
 			else
 				echo "&nbsp;";
-?><a href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
+?><a href="><?php echo $brd_name[$i]; ?></a>
 </td>
 <td><?php echo $brd_class[$i]; ?></td>
 <td>
@@ -107,10 +119,14 @@
 			}
 ?>
 </td>
-<td><?php echo $brd_artcnt[$i]; ?></td>
+<td><?php 
+if (!$brd_isgroup)
+	echo $brd_artcnt[$i]; 
+else echo "目录";	
+?></td>
 </tr>
 <?php
-		}
+		} //		for ($i = 0; $i < $rows; $i++)
 ?>
 </table>
 <hr class="default"/>

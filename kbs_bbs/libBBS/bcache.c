@@ -386,6 +386,20 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
     	    } else board->clubnum=i+1;
        }
        board->nowid=bcache[bid-1].nowid;
+       /*重新计算目录的版面数*/
+       if (board->flag&BOARD_GROUP) {
+           int i;
+           board->board_data.group_total=0;
+    	    for (i=0;i<MAXBOARD;i++)
+    	        if (bcache[i].group==bid) 
+                    board->board_data.group_total++;
+       } else if ((board->group)&&(bcache[bid-1].group!=board->group)) {
+       //修正版面目录的版面数
+            if (bcache[bid-1].group)
+                bcache[bcache[bid-1].group-1].board_data.group_total--;
+            if (board->group)
+                bcache[board->group-1].board_data.group_total++;
+       }
     }
     memcpy(&bcache[bid - 1], board, sizeof(struct boardheader));
     bcache_setreadonly(1);

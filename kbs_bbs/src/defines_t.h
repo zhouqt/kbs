@@ -237,6 +237,8 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100]);
 
 /* boards_t.c */
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);
+int choose_board(int newflag, char *boardprefix,int group,int yank_flag);
+/* 选择 版， readnew或readboard */
 
 /* bm.c*/
 int deny_user(int ent,struct fileheader* fileinfo,char* direct);    /* 禁止POST用户名单 维护主函数 */

@@ -763,8 +763,7 @@ static int check_newpost(struct newpostdata *ptr)
     return 1;
 }
 
-/* 7 -> 8 , by caltary  */
-#define BOARD_COLUMNS 8
+#define BOARD_COLUMNS 9
 
 char *brd_col_names[BOARD_COLUMNS] = {
     "NAME",
@@ -774,7 +773,9 @@ char *brd_col_names[BOARD_COLUMNS] = {
     "ARTCNT",                   /* article count */
     "UNREAD",
     "ZAPPED",
-    "POSITION"                  /* added by caltary */
+    "BID",
+    "POSITION",                  /* added by caltary */
+    "ISGROUP"           /* is group ?*/
 };
 
 /* added by caltary */
@@ -819,6 +820,10 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     /* added by caltary */
     } else if (strncmp(col_name, "POSITION", len) == 0){
         ZVAL_LONG(value, brd->pos);/*added end */
+    } else if (strncmp(col_name, "FLAG", len) == 0){
+        ZVAL_LONG(value, brd->flag);/*added end */
+    } else if (strncmp(col_name, "BID", len) == 0){
+        ZVAL_LONG(value, brd->bid);/*added end */
     } else {
         ZVAL_EMPTY_STRING(value);
     }
@@ -853,11 +858,12 @@ static PHP_FUNCTION(bbs_getboards)
     int j;
     int ac = ZEND_NUM_ARGS();
     int brdnum, yank_flag;
+    int group;
 
     /*
      * getting arguments 
      */
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &prefix, &plen, &yank) == FAILURE) {
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &prefix, &plen, &group,&yank) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
 
@@ -885,7 +891,7 @@ static PHP_FUNCTION(bbs_getboards)
      * TODO: replace load_board() with a new one, without accessing
      * * global variables. 
      */
-    if ((brdnum = load_boards(newpost_buffer, prefix, 1, MAXBOARD, 1, yank_flag, NULL)) <= 0) {
+    if ((brdnum = load_boards(newpost_buffer, prefix, group, 1, MAXBOARD, 1, yank_flag, NULL)) <= 0) {
         RETURN_FALSE;
     }
     /*
@@ -2142,6 +2148,7 @@ PHP_MINIT_FUNCTION(smth_bbs)
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_READ", BOARD_CLUB_READ, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_WRITE", BOARD_CLUB_WRITE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_HIDE", BOARD_CLUB_HIDE, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_BOARD_GROUP", BOARD_GROUP, CONST_CS | CONST_PERSISTENT);
     chdir(old_pwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");

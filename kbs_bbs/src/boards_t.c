@@ -15,7 +15,6 @@ struct favbrd_struct {
 };
 extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
 extern int favbrd_list_t, favnow;
-int choose_board(int newflag, char *boardprefix,int yank_flag);       /* 选择 版， readnew或readboard */
 static int check_newpost(struct newpostdata *ptr);
 
 void EGroup(cmd)
@@ -26,7 +25,7 @@ char *cmd;
 
     sprintf(buf, "EGROUP%c", *cmd);
     boardprefix = sysconf_str(buf);
-    choose_board(DEFINE(currentuser, DEF_NEWPOST) ? 1 : 0, boardprefix,0);
+    choose_board(DEFINE(currentuser, DEF_NEWPOST) ? 1 : 0, boardprefix,0,0);
 }
 
 static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
@@ -57,12 +56,12 @@ int clear_all_board_read_flag()
 
 void Boards()
 {
-    choose_board(0, NULL,0);
+    choose_board(0, NULL,0,0);
 }
 
 void New()
 {
-    choose_board(1, NULL,0);
+    choose_board(1, NULL,0,0);
 }
 
 int unread_position(dirfile, ptr)
@@ -264,7 +263,8 @@ struct favboard_proc_arg {
     int newflag;
     int tmpnum;
     enum board_mode yank_flag;
-    int fav_father;
+    int father; /*保存父结点，如果是收藏夹，是fav_father,
+    如果是版面目录，是group编号*/
     bool reloaddata;
 
     char* boardprefix;
@@ -725,7 +725,8 @@ static int fav_key(struct _select_def *conf, int command)
         return SHOW_DIRCHANGE;
     case 's':                  /* sort/unsort -mfchen */
         if (do_select(0, NULL, genbuf) == NEWDIRECT) {
-            Read();
+            if (!(currboard->flag&BOARD_GROUP))
+                Read();
         }
         modify_user_mode(arg->newflag ? READNEW : READBRD);
         return SHOW_REFRESH;
@@ -911,7 +912,7 @@ static int fav_key(struct _select_def *conf, int command)
                         prints("非法的移动位置！");
                         pressreturn();
                     } else {
-                        arg->fav_father=MoveFavBoard(p, q, arg->fav_father);
+                        arg->father=MoveFavBoard(p, q, arg->father);
                         save_favboard();
                         arg->reloaddata=true;
                         return SHOW_DIRCHANGE;
@@ -937,7 +938,7 @@ static int fav_key(struct _select_def *conf, int command)
             if (p) {
                 DelFavBoard(ptr->tag);
                 save_favboard();
-                arg->fav_father=favnow;
+                arg->father=favnow;
                 arg->reloaddata=true;
                 return SHOW_DIRCHANGE;
             }
@@ -1019,7 +1020,7 @@ static int fav_getdata(struct _select_def *conf, int pos, int len)
     	}
     }
     if (pos==-1) 
-        fav_loaddata(NULL, arg->fav_father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->namelist);
+        fav_loaddata(NULL, arg->father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->namelist);
     else
         conf->item_count = fav_loaddata(arg->nbrd, arg->fav_father,pos, len,currentuser->flags[0] & BRDSORT_FLAG,NULL);
     return SHOW_CONTINUE;
@@ -1037,12 +1038,12 @@ static int boards_getdata(struct _select_def *conf, int pos, int len)
     	}
     }
     if (pos==-1) 
-         load_boards(NULL, arg->boardprefix,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,arg->namelist);
+         load_boards(NULL, arg->boardprefix,arg->father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,arg->namelist);
     else
-         conf->item_count = load_boards(arg->nbrd, arg->boardprefix,pos, len,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,NULL);
+         conf->item_count = load_boards(arg->nbrd, arg->boardprefix,arg->father,pos, len,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,NULL);
     return SHOW_CONTINUE;
 }
-int choose_board(int newflag, char *boardprefix,int favmode)
+int choose_board(int newflag, char *boardprefix,int group,int favmode)
 {
 /* 选择 版， readnew或readboard */
     struct _select_def favboard_conf;
@@ -1052,11 +1053,13 @@ int choose_board(int newflag, char *boardprefix,int favmode)
     int y;
     struct newpostdata *nbrd;
     int favlevel = 0;           /*当前层数 */
-    int favlist[FAVBOARDNUM];
+    int favlist[FAVBOARDNUM];   /* 保存当前的group 信息和收藏夹信息*/
     int sellist[FAVBOARDNUM];   /*保存目录递归信息 */
     int oldmode;
+    int changelevel=-1; /*保存在那一级的目录转换了mode,就是从收藏夹进入了版面目录*/
 
     oldmode = uinfo.mode;
+    currmode=favmode;
     modify_user_mode(SELECT);
     clear();
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
@@ -1068,21 +1071,24 @@ int choose_board(int newflag, char *boardprefix,int favmode)
 
     nbrd = (struct newpostdata *) malloc(sizeof(*nbrd) * BBS_PAGESIZE);
     arg.nbrd = nbrd;
-    if (favmode) {
-        arg.newflag = 1;
-        arg.yank_flag = BOARD_FAV;
-    } else {
-        arg.newflag = newflag;
-        arg.yank_flag = yank_flag;
-    }
     sellist[0] = 1;
-    favlist[0] = -1;
+    if (favmode)
+        favlist[0] = -1;
+    else
+        favlist[0] = group;
     arg.namelist=NULL;
     while (1) {
         bzero((char *) &favboard_conf, sizeof(struct _select_def));
         arg.tmpnum = 0;
+        arg.father = favlist[favlevel];
         if (favmode) {
-            arg.fav_father = favlist[favlevel];
+            arg.newflag = 1;
+            arg.yank_flag = BOARD_FAV;
+        } else {
+            arg.newflag = newflag;
+            arg.yank_flag = yank_flag;
+        }
+        if (favmode) {
             favnow = favlist[favlevel];
         } else {
             arg.boardprefix=boardprefix;
@@ -1136,14 +1142,27 @@ int choose_board(int newflag, char *boardprefix,int favmode)
             favlevel--;
             if (favlevel == -1)
                 break;
+            if (favlevel==changelevel) //从版面目录返回收藏夹
+                favmode=1;
         } else {
-            /*选择了一个目录,SHOW_SELECT*/
+            /*选择了一个目录,SHOW_SELECT，注意有个假设，目录的深度
+            不会大于FAVBOARDNUM，否则selist会溢出
+            TODO: 动态增长sellist
+            */
             sellist[favlevel] = favboard_conf.pos;
             favlevel++;
-            if (favmode)
-                favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
-            else
+            if (favmode) {
+                if (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) {
+                    //进入版面目录
+                    favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos;
+                    changelevel=favlevel-1;
+                    favmode=0;
+                } else
+                    favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
+            }
+            else {
                 favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos;
+            }
             sellist[favlevel] = 1;
         };
         clear();
@@ -1162,5 +1181,5 @@ void FavBoard()
 {
     if (favbrd_list_t == -1)
         load_favboard(1);
-    choose_board(1, NULL,1);
+    choose_board(1, NULL,0,1);
 }

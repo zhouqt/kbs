@@ -583,6 +583,37 @@ int m_editbrd()
                 newfh.flag &= ~BOARD_CLUB_HIDE;
         } else
             newfh.flag &= ~BOARD_CLUB_HIDE;
+        
+        sprintf(buf, "是否为目录 (Y/N)? [%c]", (newfh.flag & BOARD_GROUP) ? 'Y' : 'N');
+        getdata(line++, 0, buf, genbuf, 4, DOECHO, NULL, true);
+        if (*genbuf == 'Y' || *genbuf == 'y')
+            newfh.flag |= BOARD_GROUP;
+        else if (*genbuf == 'N' || *genbuf == 'n')
+            newfh.flag &= ~BOARD_GROUP;
+
+        while(1) {
+            struct boardheader* bh=NULL;
+            char* groupname="无";
+            if (newfh.group) {
+                bh=getboard(int num);
+                if (bh) groupname=bh->filename;
+            }
+            sprintf(buf, "设定所属目录[%s]", groupname);
+            strcpy(genbuf,groupname);
+            getdata(line, 0, buf, genbuf, 4, DOECHO, NULL, false);
+            if (*genbuf == 0) {
+                newfh.group = 0;
+                break;
+            }
+            newfh.group=getbnum(genbuf);
+            if (!(newfh.flag&BOARD_GROUP)) {
+                move(line+1,0);
+                prints("不是目录");
+            } else  if (newfh.group) break;
+        }
+        
+        line++;
+        
         getdata(line++, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y') {
             char ans[5];
