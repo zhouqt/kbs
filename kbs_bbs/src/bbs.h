@@ -59,9 +59,10 @@
 #include <stdarg.h>
 
 #ifndef _cplusplus
+
 #ifndef HAVE_BOOL
-typedef int bool;
-#endif
+typedef enum {false = 0, true = 1} bool;
+#else
 
 #ifndef true
 #define true 1
@@ -69,6 +70,8 @@ typedef int bool;
 
 #ifndef false
 #define false 0
+#endif
+
 #endif
 #endif
 
