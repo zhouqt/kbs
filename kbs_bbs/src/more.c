@@ -40,8 +40,6 @@ enum LINE_CODE {
 
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
 
-/*typedef (void  generate_attach_link_t)(char* buf,int buf_len,char* attachname,long attachpos,long attachsize);
-*/
 static generate_attach_link_t current_attach_link;
 static void* current_attach_link_arg;
 void register_attach_link(generate_attach_link_t fn,void* arg)
@@ -50,28 +48,6 @@ void register_attach_link(generate_attach_link_t fn,void* arg)
     current_attach_link_arg=arg;
 }
 
-/*extern int isblank(int c);*/
-#ifndef HAVE_ISBLANK
-int isblank(int c)
-{
-	if (c == (int)' ' || c == (int)'\t' || c == (int)'\v')
-		return 1;
-	else
-		return 0;
-}
-#endif
-
-
-/*struct FILESHM
-{
-        char line[FILE_MAXLINE][FILE_BUFSIZE];
-        int  fileline;
-        int  max;
-        time_t  update;
-};
-struct  FILESHM   *goodbyeshm;
-struct  FILESHM   *issueshm;
-*/
 struct ACSHM {
     char line[ACBOARD_MAXLINE][ACBOARD_BUFSIZE];
     int movielines;

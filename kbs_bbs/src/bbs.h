@@ -80,11 +80,7 @@ extern char *strcasestr (__const char *__haystack, __const char *__needle);
 #endif
 
 #ifndef HAVE_ISBLANK
-#define isblank(c) ((c==' ')||(c=='\t'))
-#else
-#ifndef isblank //isblank isn't a MACRO
-extern int isblank(int c);
-#endif
+#define isblank(c) ((c) == (int)' ' || (c) == (int)'\t' || (c) == (int)'\v')
 #endif
 
 #ifndef HAVE_SIG_T
