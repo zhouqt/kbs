@@ -20,7 +20,7 @@
 #define INDEXHTML "index.htm"
 #define HEADER BBS_FULL_NAME "∶精华区"
 #define FOOTER BBS_FULL_NAME "∶精华区"
-/* #define MAXLINELEN 512 */
+#define MAX_PATH 512
 #define MAXLINELEN 512
 #ifdef AIX
 #define GNUTAR "/usr/local/bin/tar"
@@ -30,18 +30,18 @@
 #define GNUTAR "/bin/tar"
 #endif
     typedef struct __tagDIR_DATA {
-    char dir[MAXLINELEN];
+    char dir[MAX_PATH];
     struct __tagDIR_DATA *next;
 } DIR_DATA, *LP_DIR_DATA;
 
 LP_DIR_DATA task_head, task_tail;
-char WorkDir[MAXLINELEN];
-char OutDir[MAXLINELEN];
+char WorkDir[MAX_PATH];
+char OutDir[MAX_PATH];
 extern int errno;
 
-char prevprevHtml[MAXLINELEN];
-char prevHtml[MAXLINELEN];
-char nextHtml[MAXLINELEN];
+char prevprevHtml[MAX_PATH];
+char prevHtml[MAX_PATH];
+char nextHtml[MAX_PATH];
 FILE *pdstFile;
 FILE *chmcontentFile;
 FILE *attachFile;
@@ -69,11 +69,11 @@ int DealParameters(int argc, char **argv)
             break;
         case 'w':
             printf("Set Work Directory:%s\n", optarg);
-            strncpy(WorkDir, optarg, MAXLINELEN - 1);
+            strncpy(WorkDir, optarg, MAX_PATH - 1);
             break;
         case 'o':
             printf("Set OutputDirectory:%s\n", optarg);
-            strncpy(OutDir, optarg, MAXLINELEN - 1);
+            strncpy(OutDir, optarg, MAX_PATH - 1);
             if (OutDir[strlen(OutDir) - 1] == '/')
                 OutDir[strlen(OutDir) - 1] = 0;
             break;
@@ -117,7 +117,7 @@ int DealParameters(int argc, char **argv)
         } else
             p = argv[optind];
 
-        strncpy(task_head->dir, p, MAXLINELEN - 1);
+        strncpy(task_head->dir, p, MAX_PATH - 1);
         task_head->next = NULL;
     }
     if (!task_head) {
@@ -129,7 +129,7 @@ int DealParameters(int argc, char **argv)
 
 char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, char *title)
 {
-    static char filename[MAXLINELEN];
+    static char filename[MAX_PATH];
     struct stat st;
     struct tm *tmstruct;
 
@@ -144,7 +144,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         LP_DIR_DATA data = (LP_DIR_DATA) malloc(sizeof(DIR_DATA));
 
         data->next = NULL;
-        strncpy(data->dir, filename, MAXLINELEN);
+        strncpy(data->dir, filename, MAX_PATH);
         if (task_tail) {
             task_tail->next = data;
             task_tail = data;
@@ -163,7 +163,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         FILE *psrcFile;
         FILE *pBBSFile;
         int i, j, k;
-        int attach = 0;
+        int is_attach = 0;
 
         char srcLine[MAXLINELEN], dstLine[MAXLINELEN * 20];
         char Buf2[MAXLINELEN * 4] = "";
@@ -216,149 +216,143 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         if (NULL == (pBBSFile = fopen(filename, "wt")))
             printf("Unexpected error: Can not open file \"%s\"\n", filename);
 
-        while (!feof(psrcFile)) {
-            long attach_len, size;
+        while (!feof(psrcFile) && (is_attach != 1)) {
+            long attach_len, size, left;
             char *attach_ptr, *attach_filename, *p;
+            char dirname[MAXLINELEN];
+	    int asize;
 
             if (fgets(srcLine, MAXLINELEN, psrcFile) == 0)
                 break;
             if (fputs(srcLine, pBBSFile) == EOF)
                 perror("fputs error bbs file:");
 
-            if (attach == 0) {
-                p = srcLine;
-                size = strlen(srcLine);
-                if (NULL != (attach_filename = checkattach(p, size, &attach_len, &attach_ptr))) {
-                    sprintf(filename, "%s/%s/%s", WorkDir, directory, index);
-                    if (mkdir(filename, 0700) == -1) {
-                        if (errno != EEXIST) {
-                            fprintf(stderr, "Create Directory %s failed:%s", filename, strerror(errno));
-                            return;
-                        }
-                    }
-                    strcat(filename, "/");
-                    strcat(filename, attach_filename);
-                    if (NULL == (attachFile = fopen(filename, "wt"))) {
-                        printf("Unexpected error: Can not write file \"%s\"\n", filename);
-                        fclose(attachFile);
-                        return NULL;
-                    }
-                    fputs(attach_ptr, attachFile);
-                    fclose(attachFile);
-                    if (((p = strrchr(attach_filename, '.')) != NULL) && !strcasecmp(p, ".bmp") && !strcasecmp(p, ".jpg") && !strcasecmp(p, ".gif") && !strcasecmp(p, ".jpeg"))
-                        sprintf(dstLine, "附图:\r\n<img src=\"%d/%s\"></img>\r\n", index, attach_filename);
-                    else
-                        sprintf(dstLine, "附件:\r\n<a href=\"%d/%s\">%s</a>\r\n", index, attach_filename, attach_filename);
-                } else {
-                    if ('\n' == srcLine[strlen(srcLine) - 1])
-                        srcLine[strlen(srcLine) - 1] = ' ';
-
-                    for (j = 0; srcLine[j]; j++) {
-                        if (ptr = strchr(srcLine + j, '@')) {
-                            j = ptr - srcLine;
-                            if (strchr(ptr, '.')) {
-                                if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
-                                    for (k = j - 1; k >= 0; k--)
-                                        if (!((srcLine[k] >= '0' && srcLine[k] <= '9')
-                                              || (srcLine[k] >= 'A' && srcLine[k] <= 'Z')
-                                              || (srcLine[k] >= 'a' && srcLine[k] <= 'z')
-                                              || '.' == srcLine[k]))
-                                            break;
-
-                                    strcpy(Buf2, srcLine + k + 1);
-                                    sprintf(srcLine + k + 1, "mailto:%s", Buf2);
-                                    ptr += 7;   /* strlen("mailto:") */
-                                    j = strchr(ptr, ' ') - srcLine - 1;
-                                }       /* End if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) */
-                            }   /* End if (strchr(ptr, '.')) */
-                        }       /* End if (ptr = strchr(srcLine + j, '@')) */
-                    }           /* for (j = 0; srcLine[j]; j ++) */
-
-                    for (j = Buf2[0] = 0; srcLine[j]; j++) {
-                        switch (srcLine[j]) {
-                        case '>':
-                            strcat(Buf2, "&gt;");
-                            break;
-
-                        case '<':
-                            strcat(Buf2, "&lt;");
-                            break;
-
-                        case '&':
-                            strcat(Buf2, "&amp;");
-                            break;
-
-                        case '"':
-                            strcat(Buf2, "&quot;");
-                            break;
-
-                        case ' ':
-                            strcat(Buf2, "&nbsp;");
-                            break;
-
-                        case 27:
-                            ptr = strchr(srcLine + j, 'm');
-                            if (ptr)
-                                j = ptr - srcLine;
-                            break;
-
-                        case 'h':
-                        case 'H':
-                        case 'f':
-                        case 'F':
-                        case 'n':
-                        case 'N':
-                        case 'm':
-                        case 'M':
-                            if (!strncasecmp(srcLine + j, "http://", 7)
-                                || !strncasecmp(srcLine + j, "ftp://", 6)
-                                || !strncasecmp(srcLine + j, "news://", 7)
-                                || !strncasecmp(srcLine + j, "mailto:", 7)) {
-                                ptr = strchr(srcLine + j, ' ');
-
-                                if (ptr) {
-                                    *ptr = 0;
-                                    k = strlen(Buf2);
-                                    sprintf(Buf2 + k, "<a href=\"%s\">%s</a>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
-                                    *ptr = ' ';
-                                    j += ptr - (srcLine + j) - 1;
-                                    break;
-                                }
+            if (is_attach != -1) {
+                is_attach = -1;
+                sprintf(filename, "%s/%s", directory, Link);
+                if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size, NULL) == 0) {
+                    BBS_RETURN_VOID;
+                }
+                for (p = ptr, left = size; left > 0; p++, left--) {
+                    if (NULL != (attach_filename = checkattach(p, left, &attach_len, &attach_ptr))) {
+                        is_attach = 1;
+                        sprintf(dirname, "%s/%s/%08d", WorkDir, directory, index);
+                        left -= (attach_ptr - p) + attach_len - 1;
+                        p = attach_ptr + attach_len - 1;
+                        if (mkdir(dirname, 0700) == -1) {
+                            if (errno != EEXIST) {
+                                fprintf(stderr, "Create Directory %s failed:%s", dirname, strerror(errno));
+                                return;
                             }
-                            /*
-                             * no break here ! 
-                             */
-
-                        default:
-                            Buf2[k = strlen(Buf2)] = srcLine[j];
-                            Buf2[k + 1] = 0;
                         }
+                        strcat(dirname, "/");
+                        strcat(dirname, attach_filename);
+                        if (NULL == (attachFile = fopen(dirname, "a+"))) {
+                            printf("Unexpected error: Can not write file \"%s\"\n", dirname);
+                            fclose(attachFile);
+                            return NULL;
+                        }
+                        fputs(attach_ptr, attachFile);
+                        fclose(attachFile);
+                        if (((ptr = strrchr(attach_filename, '.')) != NULL) && (!strcasecmp(ptr, ".bmp") || !strcasecmp(ptr, ".jpg") || !strcasecmp(ptr, ".gif") || !strcasecmp(ptr, ".jpeg")))
+                            sprintf(dstLine, "附图:\n<img src=\"%d/%s\"></img>\n", index, attach_filename);
+                        else
+                            sprintf(dstLine, "附件:\n<a href=\"%d/%s\">%s</a>\n", index, attach_filename, attach_filename);
                     }
-
-                    if (':' == srcLine[0])
-                        sprintf(dstLine, "∶<i>%s</i><br />\n", Buf2 + 1);
-                    else if ('>' == srcLine[0])
-                        sprintf(dstLine, "＞<i>%s</i><br />\n", Buf2 + 4);
-                    else
-                        sprintf(dstLine, "%s<br />\n", Buf2);
                 }
+                end_mmapfile((void *) ptr, size, -1);
             } else {
-                sprintf(filename, "%s/%s/%s", WorkDir, directory, index);
-                if (mkdir(filename, 0700) == -1) {
-                    if (errno != EEXIST) {
-                        fprintf(stderr, "Create Directory %s failed:%s", filename, strerror(errno));
-                        return;
+                if ('\n' == srcLine[strlen(srcLine) - 1])
+                    srcLine[strlen(srcLine) - 1] = ' ';
+
+                for (j = 0; srcLine[j]; j++) {
+                    if (ptr = strchr(srcLine + j, '@')) {
+                        j = ptr - srcLine;
+                        if (strchr(ptr, '.')) {
+                            if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
+                                for (k = j - 1; k >= 0; k--)
+                                    if (!((srcLine[k] >= '0' && srcLine[k] <= '9')
+                                          || (srcLine[k] >= 'A' && srcLine[k] <= 'Z')
+                                          || (srcLine[k] >= 'a' && srcLine[k] <= 'z')
+                                          || '.' == srcLine[k]))
+                                        break;
+
+                                strcpy(Buf2, srcLine + k + 1);
+                                sprintf(srcLine + k + 1, "mailto:%s", Buf2);
+                                ptr += 7;       /* strlen("mailto:") */
+                                j = strchr(ptr, ' ') - srcLine - 1;
+                            }   /* End if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) */
+                        }       /* End if (strchr(ptr, '.')) */
+                    }           /* End if (ptr = strchr(srcLine + j, '@')) */
+                }               /* for (j = 0; srcLine[j]; j ++) */
+
+                for (j = Buf2[0] = 0; srcLine[j]; j++) {
+                    switch (srcLine[j]) {
+                    case '>':
+                        strcat(Buf2, "&gt;");
+                        break;
+
+                    case '<':
+                        strcat(Buf2, "&lt;");
+                        break;
+
+                    case '&':
+                        strcat(Buf2, "&amp;");
+                        break;
+
+                    case '"':
+                        strcat(Buf2, "&quot;");
+                        break;
+
+                    case ' ':
+                        strcat(Buf2, "&nbsp;");
+                        break;
+
+                    case 27:
+                        ptr = strchr(srcLine + j, 'm');
+                        if (ptr)
+                            j = ptr - srcLine;
+                        break;
+
+                    case 'h':
+                    case 'H':
+                    case 'f':
+                    case 'F':
+                    case 'n':
+                    case 'N':
+                    case 'm':
+                    case 'M':
+                        if (!strncasecmp(srcLine + j, "http://", 7)
+                            || !strncasecmp(srcLine + j, "ftp://", 6)
+                            || !strncasecmp(srcLine + j, "news://", 7)
+                            || !strncasecmp(srcLine + j, "mailto:", 7)) {
+                            ptr = strchr(srcLine + j, ' ');
+
+                            if (ptr) {
+                                *ptr = 0;
+                                k = strlen(Buf2);
+                                sprintf(Buf2 + k, "<a href=\"%s\">%s</a>", srcLine + j, srcLine + j + 7 * (!strncasecmp(srcLine + j, "mailto:", 7)));
+                                *ptr = ' ';
+                                j += ptr - (srcLine + j) - 1;
+                                break;
+                            }
+                        }
+                        /*
+                         * no break here ! 
+                         */
+
+                    default:
+                        Buf2[k = strlen(Buf2)] = srcLine[j];
+                        Buf2[k + 1] = 0;
                     }
                 }
-                strcat(filename, "/");
-                strcat(filename, attach_filename);
-                if (NULL == (attachFile = fopen(filename, "wt"))) {
-                    printf("Unexpected error: Can not write file \"%s\"\n", filename);
-                    fclose(attachFile);
-                    return NULL;
-                }
-                fputs(attach_ptr, attachFile);
-                fclose(attachFile);
+
+                if (':' == srcLine[0])
+                    sprintf(dstLine, "∶<i>%s</i><br />\n", Buf2 + 1);
+                else if ('>' == srcLine[0])
+                    sprintf(dstLine, "＞<i>%s</i><br />\n", Buf2 + 4);
+                else
+                    sprintf(dstLine, "%s<br />\n", Buf2);
             }
 
             fputs(dstLine, pdstFile);
@@ -380,7 +374,7 @@ void DealDirectory(char *directory)
     FILE *IndexHtmlFile;
     FILE *DotFile;
     FILE *BBSDotFile;
-    char filename[MAXLINELEN];
+    char filename[MAX_PATH];
     int index;
 
     printf("Dealing Directory %s\n", directory);
@@ -524,9 +518,9 @@ void DealDirectory(char *directory)
 
 int main(int argc, char **argv)
 {
-    char maindir[MAXLINELEN];
-    char Buf[MAXLINELEN];
-    char basedir[MAXLINELEN];
+    char maindir[MAX_PATH];
+    char Buf[MAX_PATH];
+    char basedir[MAX_PATH];
 
     strcpy(basedir, getcwd(NULL, 0));
     task_head = NULL;
