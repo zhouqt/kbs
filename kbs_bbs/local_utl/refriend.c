@@ -1,58 +1,42 @@
 #include "bbs.h"
 
-int tranfer(uid)
-    char *uid;
+struct oldfriend {
+    char id[13];
+    char exp[40];
+};
+
+int newfd;
+int conver(struct oldfriend* fr,int ent,void* arg)
 {
-    struct friends fh;
-    char genbuf[80], *str;
-    char fname[80];
-    char dname[80];
-    FILE *fp;
+    struct friends newf;
+    memcpy(&newf,fr,sizeof(newf));
+    write(newfd,&newf,sizeof(newf));
+    return 0;
+}
 
-    memset(&fh, 0, sizeof(struct friends));
-
-    sprintf(fname, "/home/bbs/home/%s/overrides", uid);
-    sprintf(dname, "/home/bbs/home/%s/friends", uid);
-
-    if ((fp = fopen(fname, "r")) == NULL) {
-        return 0;
-    }
-    while (fgets(genbuf, 80, fp) != NULL) {
-        if ((str = strtok(genbuf, " \n\r\t")) != NULL) {
-            sprintf(fh.id, "%.12s", str);
-            str = strtok(NULL, " \n\r\t");
-            sprintf(fh.exp, "%.14s", (str == NULL) ? "\0" : str);
-            append_record(dname, &fh, sizeof(fh));
-        }
-    }
-    fclose(fp);
-    sprintf(genbuf, "chown bbs.bbs %s", dname);
-    system(genbuf);
-    unlink(fname);
-    return 1;
+int refriend(struct userec* user,void* arg)
+{
+   char buf[256],buf2[256];
+   char cmd[1024];
+   sethomefile(buf,user->userid,"friends");
+   sethomefile(buf2,user->userid,"friends.sav");
+   f_cp(buf,buf2,O_TRUNC);
+   sethomefile(buf2,user->userid,"newfriends");
+   newfd=open(buf2,O_WRONLY|O_TRUNC|O_CREAT,0644);
+   apply_record(buf,(APPLY_FUNC_ARG)conver,sizeof(struct oldfriend),NULL,0,false);
+   close(newfd);
+   f_rm(buf);
+   f_mv(buf2,buf);
 }
 
 main()
 {
-    FILE *rec;
-    int i = 0;
-    struct userec user;
-
-    rec = fopen("/home/bbs/.PASSWDS", "rb");
-
-    printf("[1;31;5mFriends Records Transfering...[m");
-    while (1) {
-        if (fread(&user, sizeof(user), 1, rec) <= 0)
-            break;
-        if (user.numlogins <= 0)
-            continue;
-        if (tranfer(user.userid) == 1) {
-            printf("[1m%.12s[36m Tranfered[m\n", user.userid);
-        } else
-            printf("[1m%.12s[34m No overrides File...[m\n", user.userid);
-
-        i++;
-    }
-    printf("\n[1m%d [32mFriends Records Tranfered...[m\n", i);
-    fclose(rec);
+   struct userec ur;
+   chdir(BBSHOME);
+   setuid(BBSUID);
+   setgid(BBSGID);
+   resolve_ucache();
+   strcpy(ur.userid,"KCN");
+//   refriend(&ur,NULL);
+   apply_users(refriend,NULL);
 }
