@@ -60,24 +60,26 @@ function main() {
     
 	$count = count ( $online_user_list );
 
-	for ( $i=0; $i<$count ; $i++ ) {
+	$i = 0;
+	foreach($online_user_list as $friend) {
 ?>
 <tr>
 <td class=TableBody1 align=center valign=middle>
 <?php echo $startNum+$i; ?>
 </td>
 <td class=TableBody1 align=center valign=middle style="font-weight:normal">
-<a href="dispuser.php?id=<?php echo $online_user_list[$i]['userid'] ; ?>" target=_blank>
-<?php echo $online_user_list[$i]['userid'] ?></a>
+<a href="dispuser.php?id=<?php echo $friend['userid'] ; ?>" target=_blank>
+<?php echo $friend['userid'] ?></a>
 </td>
-<td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $online_user_list[$i]['userid'] ; ?>" > <?php       echo htmlspecialchars($online_user_list[$i]['username'],ENT_QUOTES); ?></a>	</td>
-<td class=TableBody1 style="font-weight:normal"><?php echo $online_user_list[$i]['userfrom']; ?></td>
-<td class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($online_user_list[$i]['idle']/60), ($online_user_list[$i]['idle']%60)); ?></td>
+<td class=TableBody1 align=left style="font-weight:normal"><a href="dispuser.php?id=<?php echo $friend['userid'] ; ?>" > <?php echo htmlspecialchars($friend['username'],ENT_QUOTES); ?></a>	</td>
+<td class=TableBody1 style="font-weight:normal"><?php echo $friend['userfrom']; ?></td>
+<td class=TableBody1 style="font-weight:normal"><?php printf('%02d:%02d',intval($friend['idle']/60), ($friend['idle']%60)); ?></td>
 <td align=center valign=middle width=130 class=TableBody1>
-<a href="#">添加好友</a> <a href="#">删除好友</a> <a href="javascript:replyMsg('<?php echo $online_user_list[$i]['userid'] ; ?>')">发送消息</a> <a href="#">发送短信</a>
+<a target="_blank" href="friendlist.php?addfriend=<?php echo $friend['userid']; ?>">添加好友</a> <a target="_blank" href="friendlist.php?delfriend=<?php echo $friend['userid']; ?>">删除好友</a> <a href="javascript:replyMsg('<?php echo $friend['userid'] ; ?>')">发送消息</a> <a href="#">发送短信</a>
 </td>
 </tr>
 <?php
+		$i++;
 	}
 ?>
 <tr>
