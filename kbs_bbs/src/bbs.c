@@ -767,7 +767,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
         break;
     case KEY_RIGHT:
 #ifdef NINE_BUILD
-        sread(-1003, 0, ent, 0, fileinfo);
+        sread(0, 0, ent, 0, fileinfo);
         break;
 #endif
     case ' ':
