@@ -274,7 +274,7 @@
 #endif
 
 #ifndef LEN_FRIEND_EXP		/*如果从FB2k升级到smth,这里请设置为40 */
-#define LEN_FRIEND_EXP		13
+#define LEN_FRIEND_EXP		15
 #endif
 
 #ifndef SEC_DELETED_OLDHOME
