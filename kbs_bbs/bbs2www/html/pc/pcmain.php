@@ -168,7 +168,7 @@ function  pcmain_blog_recommend_nodes()
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
 			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		if($rows[htmltag])
-			$body = strip_tags($rows[body]);
+			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
 		echo html_format(substr($body,0,600)." \n");
@@ -211,7 +211,7 @@ function  pcmain_blog_most_hot()
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
 			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		if($rows[htmltag])
-			$body = strip_tags($rows[body]);
+			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
 		echo html_format(substr($body,0,600)." \n");
@@ -254,7 +254,7 @@ function  pcmain_blog_most_trackback()
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
 			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		if($rows[htmltag])
-			$body = strip_tags($rows[body]);
+			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
 		echo html_format(substr($body,0,600)." \n");
@@ -297,7 +297,7 @@ function  pcmain_blog_most_view()
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
 			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		/*if($rows[htmltag])
-			$body = strip_tags($rows[body]);
+			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
 		echo html_format(substr($body,0,600)." \n");

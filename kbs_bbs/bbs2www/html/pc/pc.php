@@ -164,6 +164,12 @@
 [<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
 [<a href="pcnew.php">最新文章列表</a>]
 [<a href="pcnew.php?t=c">最新评论列表</a>]
+<?php
+	if(pc_is_manager($currentuser))
+	{
+		echo "[<a href=\"pcadmin_rec.php\">推荐文章管理</a>]\n";		
+	}
+?>
 <a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <?php
