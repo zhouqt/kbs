@@ -14,6 +14,12 @@ function guestlogin()
 	document.form1.id.value="guest";
 	document.form1.submit();
 }
+function goto_url(urlstr)
+{
+	var mainurl;
+	mainurl = '/guest-frames.html?mainurl=' + escape(urlstr);
+	window.location = mainurl;
+}
 -->
 </script>
 <BODY BGCOLOR="#E5EDE5" TEXT="#000000" LEFTMARGIN="0" TOPMARGIN="0" MARGINWIDTH="0" MARGINHEIGHT="0"  onLoad="setfocus()">
