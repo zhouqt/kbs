@@ -63,6 +63,10 @@
 
 #ifndef MANUAL_DENY		/* 手动解封，缺省使能*/
 #define MANUAL_DENY
+#else
+#if MANUAL_DENY == 0
+#undef MANUAL_DENY
+#endif
 #endif
 
 #ifndef BBS_SERVICE_DICT	/* 词典功能 */
