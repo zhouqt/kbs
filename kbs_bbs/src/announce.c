@@ -56,6 +56,22 @@ static void a_freenames(MENU* pm)
     	free(pm->item[i]);
 }
 
+void a_prompt(bot, pmt, buf)    /* 精华区状态下 输入 */
+    int bot;
+    char *pmt, *buf;
+{
+    move(t_lines + bot, 0);
+    clrtoeol();
+    getdata(t_lines + bot, 0, pmt, buf, 39, DOECHO, NULL, true);
+}
+
+void a_prompt2(int bot,char* pmt,char* buf)    /* 精华区状态下 输入 ,包含原来的内容*/
+{
+    move(t_lines + bot, 0);
+    clrtoeol();
+    getdata(t_lines + bot, 0, pmt, buf, 39, DOECHO, NULL, false);
+}
+
 void a_report(s)                /* Haohmaru.99.12.06 */
     char *s;
 {
@@ -107,7 +123,7 @@ static void load_import_path()
     fn = fopen(buf, "rt");
     if (fn) {
     	for (i=0;i<ANNPATH_NUM;i++) {
-    		if (!feof(buf))
+    		if (!feof(fn))
 	           fgets(buf, MAXPATH-1, fn);
     		else
     		    buf[0]=0;
@@ -118,12 +134,12 @@ static void load_import_path()
     		import_path[i]=(char*)malloc(strlen(buf)+1);
     		strcpy(import_path[i],buf);
     		buf[0]=0;
-    		if (!feof(buf))
+    		if (!feof(fn))
 	           fgets(buf, MAXPATH-1, fn);
     		else { //get the title of pm
     		    MENU pm;
     		    ann_load_directory(&pm);
-    		    strncpy(buf,pm->mtitle,MAXPATH-1);
+    		    strncpy(buf,pm.mtitle,MAXPATH-1);
     		    buf[MAXPATH-1]=0;
     		    a_freenames(&pm);
     		}
@@ -157,7 +173,7 @@ static void free_import_path()
 struct a_select_path_arg
 {
     bool save_mode; /* in save mode,path need valid*/
-    int tmp_num;
+    int tmpnum;
 };
 
 static int a_select_path_onselect(struct _select_def *conf)
@@ -312,7 +328,6 @@ a_select_path_key(struct _select_def *conf, int key)
 		modify_user_mode(oldmode);
 		clear();
 		return SHOW_REFRESH;
-	}
     }
     return SHOW_CONTINUE;
 }
@@ -591,22 +606,6 @@ int a_savenames(pm)            /*保存当前MENU到 .Names */
     	pm->modified_time=st.st_mtime;
     chmod(fpath, 0644);
     return 0;
-}
-
-void a_prompt(bot, pmt, buf)    /* 精华区状态下 输入 */
-    int bot;
-    char *pmt, *buf;
-{
-    move(t_lines + bot, 0);
-    clrtoeol();
-    getdata(t_lines + bot, 0, pmt, buf, 39, DOECHO, NULL, true);
-}
-
-void a_prompt2(int bot,char* pmt,char* buf)    /* 精华区状态下 输入 ,包含原来的内容*/
-{
-    move(t_lines + bot, 0);
-    clrtoeol();
-    getdata(t_lines + bot, 0, pmt, buf, 39, DOECHO, NULL, false);
 }
 
 /* a_SeSave 用来删除存到暂存档时的文件头和尾 Life 1997.4.6 */
