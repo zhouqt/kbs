@@ -854,8 +854,8 @@ void do_naws(int ln, int col)
     t_columns = col;
     if(t_lines<24||t_lines>100)
         t_lines=24;
-    if(t_columns<80||t_columns>240)
-        t_columns = 80;
+//    if(t_columns<80||t_columns>240)
+    t_columns = 80;
     initscr();
     refresh();
 }
