@@ -65,7 +65,7 @@ sh(int n) {
     }
     oldn= n;
     if (strcmp(host2[n],"°ãÈô²¨Á_ÃÜ")==0){  //ÅĞ¶Ï×Ô¶¨ÒåÕ¾µã
-    printf("[22;3H[1;37mÊ¹ÓÃ·½·¨: °´»Ø³µºóÊäÈëip¡£[1;33m[22;32H[1;37m Õ¾Ãû: [1;33m°ãÈô²¨Á_ÃÜ\r\n" );
+    printf("[22;3H[1;37mÊ¹ÓÃ·½·¨: °´»Ø³µºóÊäÈëip¡£[1;33m[22;32H[1;37m Õ¾Ãû: [1;33m×Ô¶¨ÒåÕ¾µã              \r\n");
     printf("[1;37m[23;3HÁ¬Íù: [1;33m__________                   [21;1H");
     }
     else{
@@ -162,29 +162,60 @@ L:
 bbsnet(int n) {
     char buf1[40],buf2[39],c,buf3[2];//Ôö¼ÓµÄ±äÁ¿
     int i;//	
+    int l;//ÅĞ¶ÏÊÇ²»ÊÇport
+    int j,m;
     if(n>= counts) return;
     
     if (strcmp(host2[n],"°ãÈô²¨Á_ÃÜ")==0){//Èç¹ûÊÇ×Ô¶¨ÒåÕ¾µã£¬µÈ´ıÊäÈëip»òÓòÃû
-    for (i=0;i<20;i++) {buf1[i]='\0';buf2[i]='\0';}
-    prints("[23;9H");
+
+    for (i=0;i<25;i++) {buf1[i]='\0';buf2[i]='\0';}
+    prints("[1;32m[23;3HÁ¬Íù: ");
+    refresh();
+    j=0;
+    l=0;
     for (i=0;i<15;i++){
         c= getch();
         if (c==' '||c=='\015'||c=='\0'||c=='\n') break;
+        if (c==':'){
+                 l=1;
+                 sprintf(buf3,"%c",c);
+                 prints("[0;1m");
+                 prints(buf3);
+                 prints("[1;33m");
+        	 refresh();
+                 strncpy(ip_zdh,buf1,40);
+    	         strncpy(ip[n],ip_zdh,40);
+                 for (m=0;m<20;m++) {buf1[m]='\0';buf2[m]='\0';}      
+                 j=0;
+        }
         if ((c>='0'&&c<='9')||(c=='.')||(c>='A'&&c<='Z')||(c>='a'&&c<='z'))
         {
-    
         sprintf(buf3,"%c",c);
         sprintf(buf2,"%s%c",buf1,c);
         sprintf(buf1,"%s",buf2);
         prints(buf3);
         refresh();
+        j=j+1;
         }
+        if ((c==8)&&(j>=1)){
+        for(m=j-1;m<20;m++) {buf1[m]='\0';buf2[m]='\0';}
+        sprintf(buf3,"%c",c);
+        prints(buf3);
+        refresh();
+        j--;
+        }
+        
         refresh();
         i--;
      }
-        strcpy(ip_zdh,buf1);
+     if(l==0){
+        strncpy(ip_zdh,buf1,40);
     	strcpy(ip[n],ip_zdh);
     	}
+    	else{port[n]=atoi(buf1);}
+     }
+
+
     printf("[1H[2J[1;32mo Á¬Íù: %s (%s)\r\n", host2[n], ip[n]);
     printf("%s\r\n\r\n[m", "o Á¬²»ÉÏÊ±ÇëÉÔºò£¬30 Ãëºó½«×Ô¶¯ÍË³ö");
     fflush(stdout);
@@ -272,9 +303,9 @@ proc(char *hostname, char *server,int port)
         fd_set readfds;
         struct timeval tv;
 
- 	struct sockaddr_in tmpsin;
- 	int tmplen = sizeof(struct sockaddr_in);
- 	getpeername(0, &tmpsin,(int *) &tmplen);
+  	struct sockaddr_in tmpsin;
+  	int tmplen = sizeof(struct sockaddr_in);
+  	getpeername(0, &tmpsin,(int *) &tmplen);
 
         signal(SIGALRM, QuitTime);
         alarm(30);
@@ -289,13 +320,14 @@ proc(char *hostname, char *server,int port)
         else
             if ((blah.sin_addr.s_addr = inet_addr(server)) < 0) return;
 
- 	if( (tmpsin.sin_addr.s_addr&0xff00)==(blah.sin_addr.s_addr&0xff00) ){
-         	printf("\n\n\n[1;31m°İÍĞ~ ÔÂ¹â±¦ºĞÔõÃ´ËµÒ²ÊÇ±¦Îï£¬ÄúÄÜÖ±½ÓÈ¥µÄµØ·½»¹ÊÇÖ±½ÓÈ¥°É... :P[m\n\n\n\n\n");
- 		fflush(stdout);
- 		sleep( 3 );
- 		return;
- 	}
-       if(connect(fd,(struct sockaddr *)&blah,16)<0) return;
+  	if( (tmpsin.sin_addr.s_addr&0xff00)==(blah.sin_addr.s_addr&0xff00) ){
+          	printf("\n\n\n[1;31m°İÍĞ~ ÔÂ¹â±¦ºĞÔõÃ´ËµÒ²ÊÇ±¦Îï£¬ÄúÄÜÖ±½ÓÈ¥µÄµØ·½»¹ÊÇÖ±½ÓÈ¥°É... :P[m\n\n\n\n\n");
+  		fflush(stdout);
+  		sleep( 3 );
+  		return;
+  	}
+
+        if(connect(fd,(struct sockaddr *)&blah,16)<0) return;
 
         signal(SIGALRM, SIG_IGN);
         printf("ÒÑ¾­Á¬½ÓÉÏÖ÷»ú£¬°´'ctrl+]'¿ìËÙÍË³ö¡£\n");
