@@ -24,13 +24,13 @@ if(isset($_GET[sig]) && $_GET[nid])
 	}
 	else
 	{
-		$query = "SELECT nid , hostname , created , uid ,subject , body , emote , htmltag FROM nodes WHERE nid =".$nid." AND access = 0 AND type = 0 AND ( recommend = 1 OR recommend = 3 ) LIMIT 0,1;";
+		$query = "SELECT nid , hostname , created , uid ,subject , body , emote , htmltag , recuser FROM nodes WHERE nid =".$nid." AND access = 0 AND type = 0 AND ( recommend = 1 OR recommend = 3 ) LIMIT 0,1;";
 		$result = mysql_query( $query , $link);
 		$rows = mysql_fetch_array($result);
 		if($rows)
 		{
 			$query = "INSERT INTO `recommend` ( `rid` , `nid` , `hostname` , `created` , `uid` , `subject` , `body` , `emote` , `htmltag` , `recuser` ,`state` ) ".
-			"VALUES ('', '".$rows[nid]."', '".addslashes($rows[hostname])."', '".$rows[created]."', '".$rows[uid]."', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$rows[emote]."', '".$rows[htmltag]."' , '".$currentuser[userid]."' , 1);";
+			"VALUES ('', '".$rows[nid]."', '".addslashes($rows[hostname])."', '".$rows[created]."', '".$rows[uid]."', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$rows[emote]."', '".$rows[htmltag]."' , '".addslashes($rows[recuser])."' , 1);";
 			mysql_query($query,$link);
 		}
 		mysql_free_result($result);
@@ -52,25 +52,25 @@ $recstate = array("error" , "<font color=#FF0000>待处理</font>" , "<font color=#
 switch($type)
 {
 	case 1:
-		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend ".
+		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
 		"FROM nodes WHERE access = 0 AND recommend = 1  ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
 		break;
 	case 2:
-		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend ".
+		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
 		"FROM nodes WHERE access = 0 AND recommend = 2  ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
 		break;
 	case 3:
-		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend ".
+		$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
 		"FROM nodes WHERE access = 0 AND recommend = 3  ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
 		break;
 	default:
-	$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend ".
+	$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser ".
 		"FROM nodes WHERE access = 0 AND recommend != 0 AND recommend != 4 ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
@@ -99,6 +99,7 @@ pc_admin_navigation_bar();
 	<td width="20" class="t2">访</td>
 	<td width="20" class="t2">回</td>
 	<td width="20" class="t2">引</td>
+	<td width="80" class="t2">推荐人</td>
 	<td width="60" colspan="3" class="t2">处理</td>
 </tr>
 <?php
@@ -112,19 +113,20 @@ pc_admin_navigation_bar();
 			"<td class=\"t4\">".time_format($recnode[created])."</td>\n".
 			"<td class=\"t3\">".$recnode[visitcount]."</td>\n".
 			"<td class=\"t4\">".$recnode[commentcount]."</td>\n".
-			"<td class=\"t3\">".$recnode[trackbackcount]."</td>\n";
+			"<td class=\"t3\">".$recnode[trackbackcount]."</td>\n".
+			"<td class=\"t4\">".$recnode[recuser]."</td>\n";
 		if( $recnode[recommend] == 2 )
-		echo	"<td class=\"t4\" width=\"20\"><span title=\"将本文撤销为已推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=3\">撤</a></span></td>\n".
-			"<td class=\"t4\" width=\"20\"><span title=\"将本文撤销为未推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=0\">还</a></span></td>\n".
-			"<td class=\"t4\" width=\"20\"><span title=\"将本文撤销为不能推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=4\">绝</a></span></td>\n";
+		echo	"<td class=\"t3\" width=\"20\"><span title=\"将本文撤销为已推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=3\">撤</a></span></td>\n".
+			"<td class=\"t3\" width=\"20\"><span title=\"将本文撤销为未推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=0\">还</a></span></td>\n".
+			"<td class=\"t3\" width=\"20\"><span title=\"将本文撤销为不能推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=4\">绝</a></span></td>\n";
 		elseif( $recnode[recommend] == 3 )
-		echo	"<td class=\"t4\" width=\"20\"><span title=\"将本文加入当前推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=2\">推</a></span></td>\n".
-			"<td class=\"t4\" width=\"20\"><span title=\"将本文撤销为未推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=0\">还</a></span></td>\n".
-			"<td class=\"t4\" width=\"20\"><span title=\"将本文撤销为不能推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=4\">绝</a></span></td>\n";
+		echo	"<td class=\"t3\" width=\"20\"><span title=\"将本文加入当前推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=2\">推</a></span></td>\n".
+			"<td class=\"t3\" width=\"20\"><span title=\"将本文撤销为未推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=0\">还</a></span></td>\n".
+			"<td class=\"t3\" width=\"20\"><span title=\"将本文撤销为不能推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=4\">绝</a></span></td>\n";
 		else
-		echo	"<td class=\"t4\" width=\"20\"><span title=\"将本文加入当前推荐文章中\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=2\">是</a></span></td>\n".
-			"<td class=\"t4\" width=\"20\"><span title=\"不推荐本文，但以后可以再次推荐\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=0\">否</a></span></td>\n".
-			"<td class=\"t4\" width=\"20\"><span title=\"不推荐本文，以后也不能推荐\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=4\">绝</a></span></td>\n";
+		echo	"<td class=\"t3\" width=\"20\"><span title=\"将本文加入当前推荐文章中\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=2\">是</a></span></td>\n".
+			"<td class=\"t3\" width=\"20\"><span title=\"不推荐本文，但以后可以再次推荐\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=0\">否</a></span></td>\n".
+			"<td class=\"t3\" width=\"20\"><span title=\"不推荐本文，以后也不能推荐\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=4\">绝</a></span></td>\n";
 		echo 	"</tr>\n";
 	}
 ?>

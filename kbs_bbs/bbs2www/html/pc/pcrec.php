@@ -34,6 +34,7 @@ if($node[recommend] != 0)
 	html_error_quit("对不起，该文已被推荐");
 	exit();
 }
+/*
 if(!pc_is_manager($currentuser))
 {
 	$pc = pc_load_infor($link,"",$node[uid]);	
@@ -43,8 +44,8 @@ if(!pc_is_manager($currentuser))
 		exit();	
 	}
 }
-
-$query = "UPDATE nodes SET changed  = changed , recommend = 1 WHERE nid = ".$nid." ;";
+*/
+$query = "UPDATE nodes SET changed  = changed , recommend = 1, recuser = '".addslashes($currentuser["userid"])."' WHERE nid = ".$nid." ;";
 mysql_query($query,$link);
 ?>
 <br /><br />
