@@ -103,7 +103,7 @@ int insert_func(int fd, struct fileheader *start, int ent, int total, struct fil
     int i;
     struct fileheader UFile;
 
-    if (match)
+    if (match||!total)
         return 0;
     UFile = start[total - 1];
     for (i = total - 1; i >= ent; i--)
@@ -203,7 +203,7 @@ int UndeleteArticle(struct _select_def* conf,struct fileheader *fileinfo,void* e
             if (UFile.id == 0) {
                 UFile.id = get_nextid(currboard->filename);
                 UFile.groupid = UFile.id;
-                UFile.groupid = UFile.id;
+                UFile.reid = UFile.id;
             }
             lseek(fd, 0, SEEK_END);
             if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
@@ -3896,7 +3896,8 @@ void notepad()
     clear();
     move(0, 0);
     prints("¿ªÊ¼ÄãµÄÁôÑÔ°É£¡´ó¼ÒÕýÊÃÄ¿ÒÔ´ý....\n");
-    sprintf(tmpname, "etc/notepad_tmp/%s.notepad", getCurrentUser()->userid);
+    /* sprintf(tmpname, "etc/notepad_tmp/%s.notepad", getCurrentUser()->userid); */
+    gettmpfilename( tmpname, "notepad" );
     if ((in = fopen(tmpname, "w")) != NULL) {
         for (i = 0; i < 3; i++)
             memset(note[i], 0, STRLEN - 4);
@@ -3925,17 +3926,17 @@ void notepad()
                 i = 2;
             for (n = 0; n <= i; n++) {
 #ifdef FILTER
-	        if (check_badword_str(note[n],strlen(note[n]), getSession())) {
-			int t;
-                        for (t = n; t <= i; t++) 
-                            fprintf(in, "\033[31m©¦\033[m%-74.74s\033[31m©¦\033[m\n", note[t]);
-			fclose(in);
+                if (check_badword_str(note[n],strlen(note[n]), getSession())) {
+                    int t;
+                    for (t = n; t <= i; t++) 
+                        fprintf(in, "\033[31m©¦\033[m%-74.74s\033[31m©¦\033[m\n", note[t]);
+                    fclose(in);
 
-                        post_file(getCurrentUser(), "", tmpname, FILTER_BOARD, "---ÁôÑÔ°æ¹ýÂËÆ÷---", 0, 2,getSession());
+                    post_file(getCurrentUser(), "", tmpname, FILTER_BOARD, "---ÁôÑÔ°æ¹ýÂËÆ÷---", 0, 2,getSession());
 
-			unlink(tmpname);
-			return;
-		}
+                    unlink(tmpname);
+                    return;
+                }
 #endif
                 if (note[n][0] == '\0')
                     break;
