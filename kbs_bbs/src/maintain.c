@@ -1295,3 +1295,18 @@ int m_stoplogin()
             unlink("NOLOGIN");
     }
 }
+
+/* czz added 2002.01.15 */
+int inn_start()
+{
+	char ans[4], tmp_command[80];
+	if (!HAS_PERM(PERM_ADMIN))
+		return;
+	getdata(t_lines - 1, 0, "Æô¶¯×ªÐÅÂð (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+	if (ans[0] == 'Y' || ans[0] == 'y')
+	{
+		sprintf(tmp_command, "~bbs/innd/innbbsd");
+		system(tmp_command);
+	}
+}
+/* added end */

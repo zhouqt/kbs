@@ -80,6 +80,9 @@ int     FavBoard(); /* period  2000-09-11 */
 int 	searchtrace(); 	/* stephen 2000.12.15 */
 int	badlist();	/* Bigman 2000.12.26 */
 int	m_stoplogin();
+int	inn_start();	/* czz 2002.01.15 */
+int	inn_reload();	/* czz 2002.01.15 */
+int	inn_stop();	/* czz 2002.01.15 */
 
 /*Add By Excellent */
 struct scommandlist {
@@ -168,6 +171,9 @@ struct scommandlist {
     "SearchTrace",	searchtrace,	/*stephen 2000.12.15*/
     "StopLogin",	m_stoplogin,	/*stephen 2000.12.15*/
     "ConfirmDelete",	confirm_delete_id, /*Bigman 2001.7.14 */
+    "InnStart",		inn_start,	/* czz 2002.01.15 */
+    "InnReload",	inn_reload,	/* czz 2002.01.15 */
+    "InnStop",		inn_stop,	/* czz 2002.01.15 */
     NULL,           NULL
 };
 
