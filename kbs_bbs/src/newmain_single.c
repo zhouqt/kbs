@@ -39,7 +39,6 @@
 /* KCN add 1999.11.07 
 #undef LOGINASNEW 
 */
-#undef LOGINASNEW 
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;
@@ -499,7 +498,7 @@ login_query()
 #ifdef LOGINASNEW
 	prints( "\n\033[1m[37mÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ×¢²áÇëÊäÈë`\033[36mnew\033[37m',add \033[36m'.'\33[37m after your ID for BIG5[m");
 #else
-	prints( "\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔÝÍ£×¢²áÐÂÕÊºÅ,add \033[36m'.'\33[37m after your ID for BIG5^[[m[m");
+	prints( "\n\033[1m[37mÇëÊäÈë´úºÅ(ÊÔÓÃÇëÊäÈë `\033[36mguest\033[37m', ÔÝÍ£×¢²áÐÂÕÊºÅ,add \033[36m'.'\33[37m after your ID for BIG5[m");
 #endif
     while( 1 ) {
         if( attempts++ >= LOGINATTEMPTS ) {
