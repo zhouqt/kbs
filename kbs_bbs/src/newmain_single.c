@@ -1196,6 +1196,9 @@ void main_bbs(int convit, char *argv)
 /*Add by SmallPig*/
 void update_endline()
 {
+#ifndef FB2KENDLINE
+	char buf[STRLEN];
+#endif
     char stitle[256];
     time_t now;
     int allstay;
