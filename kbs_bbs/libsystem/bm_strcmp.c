@@ -5,8 +5,8 @@
    2002.08.20 周霖 KCN
 */
 #include "system.h"
-/* 字符串匹配函数*/
-char *bm_strcmp(const char *string, const char *pattern)
+/* 字符串查找函数*/
+char *bm_strstr(const char *string, const char *pattern)
 {
     size_t shift[256];
     bool init = false;
@@ -15,13 +15,13 @@ char *bm_strcmp(const char *string, const char *pattern)
 }
 
 /* 字符串多次匹配函数*/
-char *bm_strcmp_rp(const char *string, const char *pattern, size_t * shift, bool * init)
+char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, bool * init)
 {
     return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
 
 /* 字符串大小写不敏感的匹配函数*/
-char *bm_strcasecmp(const char *string, const char *pattern)
+char *bm_strcasestr(const char *string, const char *pattern)
 {
     size_t shift[256];
     bool init = false;
@@ -30,7 +30,7 @@ char *bm_strcasecmp(const char *string, const char *pattern)
 }
 
 /* 字符串多次大小写不敏感匹配函数*/
-char *bm_strcasecmp_rp(const char *string, const char *pattern, size_t * shift, bool * init)
+char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, bool * init)
 {
     return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }

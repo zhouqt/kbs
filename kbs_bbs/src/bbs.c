@@ -1274,6 +1274,8 @@ int search_mode(int mode, char *index)
     char olddirect[PATHLEN];
     char *ptr, *ptr1;
     struct stat buf;
+    bool init;
+    size_t bm_search[256];
 
     strncpy(search_data,index,STRLEN);
     digestmode = 0;
@@ -1319,6 +1321,7 @@ int search_mode(int mode, char *index)
     fcntl(fd2, F_SETLKW, &ldata2);
     total = buf.st_size / size;
 
+    init=false;
     if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
@@ -1333,7 +1336,9 @@ int search_mode(int mode, char *index)
     ptr1 = ptr;
     for (i = 0; i < total; i++) {
         memcpy(&mkpost, ptr1, size);
-        if (mode == 6 && mkpost.id == mkpost.groupid || mode == 7 && strcasecmp(mkpost.owner, index) == 0 || mode == 8 && strstr(mkpost.title, index) != NULL) {
+        if (mode == 6 && mkpost.id == mkpost.groupid || 
+        	mode == 7 && strcasecmp(mkpost.owner, index) == 0 || 
+        	mode == 8 && bm_strstr_rp(mkpost.title, index,bm_search,&init) != NULL) {
             write(fd, &mkpost, size);
             count++;
         }

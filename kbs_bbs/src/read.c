@@ -1389,6 +1389,8 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
     int now, match = 0;
     int complete_search;
     char upper_ptr[STRLEN], upper_query[STRLEN];
+    bool init;
+    size_t bm_search[256];
 
 /*	int mmap_offset,mmap_length; */
     struct fileheader *pFh, *pFh1;
@@ -1410,6 +1412,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
      * clrtoeol();
      * prints("[44m[33mËÑÑ°ÖÐ£¬ÇëÉÔºò....                                                             [m");
      */
+    init=false;
     now = locmem->crs_line;
 /*    refresh();*/
     memset(&SR_fptr, 0, sizeof(struct fileheader));
@@ -1477,7 +1480,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                         }
                     }
 
-                    else if (strstr(upper_ptr, upper_query) != NULL) {
+                    else if (bm_strstr_rp(upper_ptr, upper_query,bm_search,&init) != NULL) {
                         match = cursor_pos(locmem, now, 10);
                         break;
                     }

@@ -7,14 +7,14 @@ int f_touch(char *filename);
 int f_ln(char *src, char *dst);
 
 /* 字符串匹配函数*/
-char* bm_strcmp(const char* string,const char* pattern);
+char* bm_strstr(const char* string,const char* pattern);
 /* 字符串多次匹配函数*/
-char* bm_strcmp_rp(const char* string,const char* pattern,
+char* bm_strstr_rp(const char* string,const char* pattern,
 	size_t* shift,bool* init);
 /* 字符串大小写不敏感的匹配函数*/
-char* bm_strcasecmp(const char* string,const char* pattern);
+char* bm_strcasestr(const char* string,const char* pattern);
 /* 字符串多次大小写不敏感匹配函数*/
-char* bm_strcasecmp_rp(const char* string,const char* pattern,
+char* bm_strcasestr_rp(const char* string,const char* pattern,
 	size_t* shift,bool* init);
 void *memfind(const void *in_block,     /* 数据块 */
               const size_t block_size,  /* 数据块长度 */
