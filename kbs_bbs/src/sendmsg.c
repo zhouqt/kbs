@@ -422,7 +422,7 @@ void r_msg()
     showansi = 1;
     RMSG = true;
     RMSGCount++;
-    for(i=0;i<=24;i++)
+    for(i=0;i<=23;i++)
         saveline(i, 0, savebuffer[i]);
 
     if ((uinfo.mode == POSTING || uinfo.mode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.发文章时不回msg */
@@ -543,7 +543,7 @@ void r_msg()
 
 
 outhere:
-    for(i=0;i<=24;i++)
+    for(i=0;i<=23;i++)
         norefresh_saveline(i, 1, savebuffer[i]);
     showansi = tmpansi;
     good_move(y,x);
