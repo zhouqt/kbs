@@ -27,7 +27,8 @@
     b) 如果您确实想用老的 smthbbs 版本，那么可以参照以下步骤：
          cd $(BBSHOME)
          mkdir var
-       然后再重新启动 bbsd 即可。
+    c) 如果已经存在 var/ 目录，确认它的属主为 bbs 用户；
+  然后再重新启动 bbsd 即可。
 
 2.3. 我的系统已经安装了 libesmtp，configure 是却还是提示出错，说什么
   “checking for smtp_create_session in -lesmtp... no
