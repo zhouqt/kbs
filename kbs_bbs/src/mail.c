@@ -269,7 +269,7 @@ int mailall()
     return -1;
 }
 
-void m_internet()
+int m_internet()
 {
     char receiver[STRLEN], title[STRLEN];
 
@@ -312,6 +312,7 @@ void m_internet()
         pressreturn();
     }
     clear();
+	return 0;
 }
 
 
