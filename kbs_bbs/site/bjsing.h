@@ -41,7 +41,7 @@
 #define HAVE_BRC_CONTROL	1
 
 #define	LEN_FRIEND_EXP	40
-#define FILTER			0
+#define FILTER			1
 
 #undef HAVE_TSINGHUA_INFO_REGISTER
 
