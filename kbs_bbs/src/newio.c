@@ -790,6 +790,8 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch))
             return -ch;         /* Leeward 98.07.30 supporting msgX */
+        if (uinfo.mode == KILLER && (KEY_UP==ch||KEY_DOWN==ch||Ctrl('S')==ch))
+            return -ch;
 #ifdef NINE_BUILD
 	if (true == RMSG && ch == Ctrl('Z') && clen == 0) break;
 #endif
