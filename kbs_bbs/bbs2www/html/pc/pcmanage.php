@@ -7,15 +7,15 @@
 	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
 	*/
 	require("pcfuncs.php");
-	function pc_save_posts($subject,$body) {
+	function pc_save_posts($subject,$body,$htmltag) {
 ?>
 <center>
 <table cellspacing="0" cellpadding="5" border="0" class="t1">
 <tr><td class="t2">请重新登录后再发表</td></tr>
 <tr><td class="t3">主题</td></tr>
-<tr><td class="t5"><input type="text" class="f1" value="<?php echo $subject; ?>" size="100" /></td></tr>
+<tr><td class="t5"><?php echo html_format($subject); ?></td></tr>
 <tr><td class="t3">内容</td></tr>
-<tr><td class="t5"><textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"><?php echo $body; ?></textarea></td></tr>
+<tr><td class="t5"><?php echo html_format($body,1,$htmltag); ?></td></tr>
 </table>
 </center>	    
 <?php	    
@@ -23,25 +23,17 @@
 	
 						
 	if ($loginok != 1) {
+		pc_html_init("gb2312","拯救文档");
 		if ($_GET['act'] == 'post' && ($_POST['subject'] || $_POST['blogbody']))
-		{
-		        pc_html_init("gb2312","拯救文档","","","",1);
-		        pc_save_posts($_POST['subject'],$_POST['blogbody']);
-		}
-		else
-		        html_init("gb2312");
+		   pc_save_posts($_POST['subject'],$_POST['blogbody'],$_POST['htmltag']);
 		html_error_quit("请先登录!");	
 	}
 	elseif(!strcmp($currentuser["userid"],"guest"))
 	{
+		pc_html_init("gb2312","拯救文档");
 		if ($_GET['act'] == 'post' && ($_POST['subject'] || $_POST['blogbody']))
-		{
-		        pc_html_init("gb2312","拯救文档","","","",1);
-		        pc_save_posts($_POST['subject'],$_POST['blogbody']);
-		}
-		else
-		        html_init("gb2312");
-		html_error_quit("guest 没有Blog!");
+		   pc_save_posts($_POST['subject'],$_POST['blogbody'],$_POST['htmltag']);
+		html_error_quit("请先登录!");		
 	}
 	else
 	{
