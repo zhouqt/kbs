@@ -122,9 +122,11 @@ login_init();
 <?php
 				}
 			}
-		}
 ?>
 <option value="-1" <?php if ($currentuser["signature"] < 0) echo "selected "; ?>>随机签名档</option>
+<?php
+		}
+?>
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]
 <?php
