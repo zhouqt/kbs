@@ -108,7 +108,7 @@ struct BCACHE {
 
 struct posttop
 {
-    char author[13];              /* author name */
+    char author[IDLEN+1];              /* author name */
     char board[IDLEN+6];               /* board name */
     char title[66];               /* title name */
     time_t date;                  /* last post's date */

@@ -170,11 +170,11 @@ void add_loginfo(char* filepath,struct userec* user,char* currboard,int Anony)  
     /* ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ */
     if (!strcmp(currboard,"Announce"))
         fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n"
-                ,color,NAME_BBS_CHINESE NAME_BBS_NICK,email_domain(),
+                ,color,BBS_FULL_NAME,email_domain(),
                 NAME_BBS_CHINESE" BBSÕ¾");
     else
         fprintf(fp, "\n[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n"
-                ,color,NAME_BBS_CHINESE NAME_BBS_NICK,email_domain(),(noidboard)?NAME_ANONYMOUS_FROM:fromhost);
+                ,color,BBS_FULL_NAME,email_domain(),(noidboard)?NAME_ANONYMOUS_FROM:fromhost);
 
     fclose(fp);
     return;
@@ -214,4 +214,182 @@ void addsignature(FILE *fp,int blank,struct userec* user)
         fputs(tmpsig[i-1], fp);
     /*fclose(sigfile); Leeward 98.03.29: Extra fclose is a BUG! */
 }
+
+int write_posts(char *id, char *board, char *title)
+{
+    char *ptr;
+    time_t now;
+    struct posttop postlog, pl;
+
+    if(junkboard(board)||normal_board(board)!=1)
+        return ;
+    now = time(0) ;
+    strcpy(postlog.author, id);
+    strcpy(postlog.board, board);
+    ptr = title;
+    if (!strncmp(ptr, "Re: ", 4))
+        ptr += 4;
+    strncpy(postlog.title, ptr, 65);
+    postlog.date = now;
+    postlog.number = 1;
+
+    { /* added by Leeward 98.04.25 
+    TODO: Õâ¸öµØ·½ÓĞµã²»Í×,Ã¿´Î·¢ÎÄÒª±éÀúÒ»´Î,±£´æµ½.XpostÖĞ,
+    ÓÃÀ´Íê³ÉÊ®´ó·¢ÎÄÍ³¼ÆÕë¶ÔID¶ø²»ÊÇÎÄÕÂ.²»ºÃ
+    	KCN*/
+        char buf[STRLEN];
+        int  log = 1;
+        FILE *fp = fopen(".Xpost", "r");
+
+        if (fp)
+        {
+            while (!feof(fp))
+            {
+                fread(&pl, sizeof(pl), 1, fp);
+                if (feof(fp)) break;
+
+                if (!strcmp(pl.title, postlog.title)
+                        && !strcmp(pl.author, postlog.author)
+                        && !strcmp(pl.board, postlog.board))
+                {
+                    log = 0;
+                    break;
+                }
+            }
+            fclose(fp);
+        }
+
+        if (log)
+        {
+            append_record(".Xpost", &postlog, sizeof(postlog));
+            append_record(".post", &postlog, sizeof(postlog));
+        }
+    }
+
+    append_record(".post.X", &postlog, sizeof(postlog));
+}
+
+void write_header(FILE *fp,struct userec* user,int in_mail,char* board,char* title,int Anony,int mode)
+{
+    int  noname;
+    char uid[20] ;
+    char uname[40] ;
+    time_t now;
+
+    now = time(0) ;
+    strncpy(uid,user->userid,20) ;
+    uid[19] = '\0' ;
+    if (in_mail)
+#if defined(MAIL_REALNAMES)
+    	strncpy(uname,user->realname,NAMELEN) ;
+#else
+		strncpy(uname,user->username,NAMELEN) ;
+#endif
+    else
+#if defined(POSTS_REALNAMES)
+        strncpy(uname,user->realname,NAMELEN) ;
+#else
+        strncpy(uname,user->username,NAMELEN) ;
+#endif
+    /* uid[39] = '\0' ; SO FUNNY:-) ¶¨ÒåµÄ 20 ÕâÀïÈ´ÓÃ 39 !
+                        Leeward: 1997.12.11 */
+    uname[39] = 0; /* ÆäÊµÊÇĞ´´í±äÁ¿ÃûÁË! ºÙºÙ */
+    title[STRLEN-10] = '\0' ;
+    noname=seek_in_file("etc/anonymous",board);
+    if(in_mail)
+        fprintf(fp,"¼ÄĞÅÈË: %s (%s)\n",uid,uname) ;
+    else
+    {
+        if(mode==0&&!(noname&&Anony))
+        {
+            write_posts(user->userid,board,title);
+        }
+
+        if (!strcmp(board,"Announce"))
+            /* added By Bigman */
+            fprintf(fp,"·¢ĞÅÈË: %s (%s), ĞÅÇø: %s       \n","SYSOP",
+                    NAME_SYSOP,board) ;
+        else
+            fprintf(fp,"·¢ĞÅÈË: %s (%s), ĞÅÇø: %s       \n",(noname&&Anony)?board:uid,
+                    (noname&&Anony)?NAME_ANONYMOUS:uname,board) ;
+    } 
+
+    fprintf(fp,"±ê  Ìâ: %s\n",title) ;
+    fprintf(fp,"·¢ĞÅÕ¾: %s (%24.24s)\n",BBS_FULL_NAME,ctime(&now)) ;
+    if(in_mail)
+        fprintf(fp,"À´  Ô´: %s \n",fromhost) ;
+    fprintf(fp,"\n");
+
+}
+
+void getcross(char* filepath,char* quote_file,struct userec* user,int in_mail,char* board,char* title,int Anony,int mode)      /* °Ñquote_file¸´ÖÆµ½filepath (×ªÌù»ò×Ô¶¯·¢ĞÅ)*/
+{
+    FILE        *inf, *of;
+    char        buf[256];
+    char        owner[256];
+    int                     count;
+    time_t      now;
+
+    now=time(0);
+    inf=fopen(quote_file,"r");
+    of = fopen( filepath, "w" );
+    if(inf==NULL || of ==NULL)
+    {
+        /*---	---*/
+        if(NULL != inf) fclose(inf);
+        if(NULL != of ) fclose(of) ;
+        /*---	---*/
+
+        report("Cross Post error");
+        return ;
+    }
+    if(mode==0/*×ªÌù*/)
+    {
+        int normal_file;         
+        int header_count;        
+        normal_file=1;           
+
+        write_header(of,1/*²»Ğ´Èë .posts*/);
+        if(fgets( buf, 256, inf ) != NULL)
+            { for(count=8;buf[count]!=' ';count++)
+                owner[count-8]=buf[count];}
+        owner[count-8]='\0';
+        if(in_mail==YEA)
+            fprintf( of, "[1;37m¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô [32m%s [37mµÄĞÅÏä ¡¿\n",user->userid);
+        else
+            fprintf( of, "¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô %s ÌÖÂÛÇø ¡¿\n",board);
+        if (id_invalid(owner)) normal_file=0;
+       if (normal_file) {                                                   
+         for (header_count=0;header_count<3;header_count++) {               
+           if ( fgets( buf, 256, inf ) == NULL) break;/*Clear Post header*/ 
+          }                                                        
+          if ((header_count!=2)||(buf[0]!='\n')) normal_file=0;    
+        }                                                          
+        if (normal_file)                                           
+            fprintf( of, "¡¾ Ô­ÎÄÓÉ %s Ëù·¢±í ¡¿\n",owner);        
+        else                                                       
+            fseek(inf,0,SEEK_SET);                                 
+
+    }else if(mode==1/*×Ô¶¯·¢ĞÅ*/)
+    {
+        fprintf( of,"·¢ĞÅÈË: deliver (×Ô¶¯·¢ĞÅÏµÍ³), ĞÅÇø: %s\n",board);
+        fprintf( of,"±ê  Ìâ: %s\n",title);
+        fprintf( of,"·¢ĞÅÕ¾: %s×Ô¶¯·¢ĞÅÏµÍ³ (%24.24s)\n\n",BBS_FULL_NAME,ctime(&now));
+        fprintf( of,"¡¾´ËÆªÎÄÕÂÊÇÓÉ×Ô¶¯·¢ĞÅÏµÍ³ËùÕÅÌù¡¿\n\n");
+    }else if(mode==2)
+    {
+        write_header(of,user,in_mail,board,title,Anony,0/*Ğ´Èë .posts*/);
+    }
+    while( fgets( buf, 256, inf ) != NULL)
+    {
+        if((strstr(buf,"¡¾ ÒÔÏÂÎÄ×Ö×ªÔØ×Ô ")&&strstr(buf,"ÌÖÂÛÇø ¡¿"))||(strstr(buf,"¡¾ Ô­ÎÄÓÉ")&&strstr(buf,"Ëù·¢±í ¡¿")))
+            continue; /* ±ÜÃâÒıÓÃÖØ¸´ */
+        else
+            fprintf( of, "%s", buf );
+    }
+    fclose( inf );
+    fclose( of);
+    *quote_file = '\0';
+}
+
 
