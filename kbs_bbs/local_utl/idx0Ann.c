@@ -226,7 +226,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
             continue;
         }
 
-        if (!strncmp(psName + 38, "(BM: BMS)", 9) || !strncmp(psName + 38, "(BM: SYSOPS)", 12))
+        if (strstr(psName , "(BM: BMS)") || !strstr(psName ,"(BM: SYSOPS)"))
             continue;
         if (strlen(psPath) <= 0)
             continue;           /* not to form loops */

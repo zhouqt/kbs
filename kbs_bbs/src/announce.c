@@ -504,7 +504,7 @@ MENU *pm;
     prints("\n");
     if (pm->num == 0)
         prints("      << 目前没有文章 >>\n");
-    for (n = pm->page; n < pm->page + 19 && n < pm->num; n++) {
+    for (n = pm->page; n < pm->page + BBS_PAGESIZE && n < pm->num; n++) {
         strncpy(title, pm->item[n]->title, STRLEN * 2 - 1);
         snprintf(fname, STRLEN, "%s", pm->item[n]->fname);
         snprintf(genbuf, MAXPATH, "%s/%s", pm->path, fname);
