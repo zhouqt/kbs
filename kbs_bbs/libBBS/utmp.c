@@ -210,7 +210,7 @@ int getnewutmpent(struct user_info *up)
 {
     struct user_info    *uentp;
     time_t      now;
-    int         pos, n, i,prev;
+    int         pos, n, i;
     int utmpfd,hashkey;
 
 	utmpfd = utmp_lock();
@@ -317,9 +317,7 @@ int getnewutmpent(struct user_info *up)
 int 
 getnewutmpent2(struct user_info *up)
 {
-    struct user_info    *uentp;
-    time_t      now;
-    int         pos, n, i,prev;
+    int         pos, i;
     int utmpfd,hashkey;
 
 	utmpfd = utmp_lock();
@@ -469,14 +467,13 @@ apply_ulist( APPLY_UTMP_FUNC fptr,void* arg) /* apply func on user list */
 
 int apply_ulist_addr( APPLY_UTMP_FUNC fptr,void* arg) /* apply func on user list */
 {
-    struct user_info    *uentp;
     int         i;
     int			num;
 
 	i=utmphead->listhead; 
 	if (!i) return 0;
 	num = 0;
-	if (utmpshm->uinfo[i-1].active)
+	if (utmpshm->uinfo[i-1].active) {
 		if (fptr) {
 			int ret;
 			ret=(*fptr)(&utmpshm->uinfo[i-1],arg,num);
@@ -484,9 +481,10 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,void* arg) /* apply func on user list
 			if (ret==COUNT) num++;
 		} else 
 			num++;
+	}
 	i=utmphead->list_next[i-1];
 	while (i!=utmphead->listhead) {
-		if (utmpshm->uinfo[i-1].active)
+		if (utmpshm->uinfo[i-1].active) {
 			if (fptr) {
 				int ret;
 				ret=(*fptr)(&utmpshm->uinfo[i-1],arg,num);
@@ -494,6 +492,7 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,void* arg) /* apply func on user list
 				if (ret==COUNT) num++;
 			} else 
 				num++;
+		}
 		i=utmphead->list_next[i-1];
 		if (num>=USHM_SIZE) {
 			utmphead->listhead=0;
@@ -508,7 +507,7 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,void* arg) /* apply func on user list
 
 int apply_utmpuid(APPLY_UTMP_FUNC fptr,int uid,void* arg)
 {
-	int i,num;
+	int num;
 	char userid[IDLEN+1];
 	num=0;
 
