@@ -84,13 +84,13 @@ function pcmain_recommend_blogger()
 {
 	global $link;
 	mt_srand();
-	$pos = mt_rand(0,50);//排名前50的blog随机抽取一个
+	$pos = mt_rand(0,50);//排名前50的博客随机抽取一个
 	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT ".$pos.",1;";
 	$result = mysql_query($query,$link);
 	$pc = mysql_fetch_array($result);
 ?>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
-	<tr><td class="channelback" align="right"><font class="channel">BLOG推荐</font></td></tr>
+	<tr><td class="channelback" align="right"><font class="channel">博客推荐</font></td></tr>
 	<tr><td align="left" valign="top" bgcolor="#ECF5FF" class="td">
 	<table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
 	

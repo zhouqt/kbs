@@ -60,7 +60,7 @@ select {font-size: 12px;font-weight: lighter;}
         <td width="80" align="center" valign="middle" style="line-height:25px ">
 		<a href="/mainpage.html">本站首页</a>
 		<br/>
-		<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">BLOG论坛</a>
+		<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">博客论坛</a>
 		<br />
 		<a href="/pc/index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a>
 		</td>
