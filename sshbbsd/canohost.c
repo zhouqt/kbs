@@ -16,6 +16,9 @@ Functions for returning the canonical host name of the remote site.
 /*
  * $Id$
  * $Log$
+ * Revision 1.4  2004/03/23 14:40:35  kxn
+ * 去掉域名反向解析,faint
+ *
  * Revision 1.3  2002/08/04 11:39:41  kcn
  * format c
  *
@@ -86,7 +89,8 @@ char *get_remote_hostname(int socket)
     }
 
     /* Map the IP address to a host name. */
-    hp = gethostbyaddr((char *) &from.sin_addr, sizeof(struct in_addr), from.sin_family);
+    // hp = gethostbyaddr((char *) &from.sin_addr, sizeof(struct in_addr), from.sin_family);
+    hp = NULL;
     if (hp) {
         /* Got host name. */
         strncpy(name, hp->h_name, sizeof(name));
