@@ -237,6 +237,9 @@ char *prompt, *data;
                     }
                     j--;
                     while(temp-data<j) {
+                        move(y, x);
+                        outc(cwlist->word[temp-data]);
+                        x++;
                         *temp = cwlist->word[temp-data];
                         temp++;
                     }
@@ -463,6 +466,9 @@ char *prompt, *data;
                     }
                     j--;
                     while(temp-data<j) {
+                        move(y, x);
+                        outc(cwlist[temp-data]);
+                        x++;
                         *temp = cwlist[temp-data];
                         temp++;
                     }
