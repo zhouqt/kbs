@@ -11,7 +11,7 @@ int mail_forward(int ent,struct fileheader *fileinfo ,char *direct );
 /*screen.c*/
 void move(int y,int x); 
 void clrtobot();
-void prints(...);
+void prints(char * fmt, ...);
 int pressreturn();
 void clear();
 void refresh();
