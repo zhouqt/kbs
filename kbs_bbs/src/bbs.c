@@ -2457,8 +2457,10 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
         /*
          * Leeward 99.07.12 added below to fix a big bug
          */
-        setbdir(digestmode, buf, currboard);
-        if ((fd = open(buf, O_RDONLY, 0)) != -1) {
+	/* modified by stiger */
+        //setbdir(digestmode, buf, currboard);
+        //if ((fd = open(buf, O_RDONLY, 0)) != -1) {
+        if ((fd = open(direct, O_RDONLY, 0)) != -1) {
             for (i = ent; i > 0; i--) {
                 if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
                     if (0 == strcmp(xfh.filename, fileinfo->filename)) {
@@ -2489,9 +2491,32 @@ int mark_post(int ent, struct fileheader *fileinfo, char *direct)
     return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_MARK_FLAG, 0);
 }
 
+/* stiger, 置顶 */
+int zhiding_post(int ent, struct fileheader *fileinfo, char *direct)
+{
+	if(fileinfo->filename[0]=='Z')
+		return del_post(ent,fileinfo,direct);
+    return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_DING_FLAG, 0);
+}
+
 int noreply_post(int ent, struct fileheader *fileinfo, char *direct)
 {
-    return change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_NOREPLY_FLAG, 1);
+	/* add by stiger ,20030414, 置顶选择*/
+	char ans[4];
+
+	if(!chk_currBM(currBM, currentuser)) return DONOTHING;
+
+    move(t_lines - 1, 0);
+    clrtoeol();
+    getdata(t_lines - 1, 0, "切换: 1)不可re标记 2)置顶标记 [1]: ", ans, 3, DOECHO, NULL, true);
+    if (ans[0] == ' ') {
+        ans[0] = ans[1];
+        ans[1] = 0;
+    }
+	if(ans[0]=='2') zhiding_post(ent,fileinfo,direct);
+	else change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_NOREPLY_FLAG, 1);
+
+	return FULLUPDATE;
 }
 
 int noreply_post_noprompt(int ent, struct fileheader *fileinfo, char *direct)

@@ -58,7 +58,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
 static int search_author(struct keeploc *locmem, int offset, char *powner);
 static int search_post(struct keeploc *locmem, int offset);
 static int search_title(struct keeploc *locmem, int offset);
-static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt);
+static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt,char *ding_direct);
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
 static int search_thread(struct keeploc *locmem, int offset, char *title);
 static int search_threadid(struct keeploc *locmem, int offset, int groupid, int mode);
@@ -248,6 +248,14 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     int lbc, mode, ch;
     char *pnt;
 
+    /* add by stiger*/
+    char ding_direct[PATHLEN];
+    /* add end */
+
+    /* add by stiger */
+    sprintf(ding_direct,"boards/%s/%s",currboard,DING_DIR);
+    /* add end */
+
     /*---	Moved from top of file	period	2000-11-12	---*/
 
     strncpy(currdirect, direct, 255);   /* COMMAN: strncpy */
@@ -260,6 +268,10 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     pnt = calloc(t_lines, ssize);
     draw_title(dotitle);
     last_line = get_num_records(currdirect, ssize);
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    last_line += get_num_records(ding_direct,ssize);
+    /* add end */
     if (last_line == 0) {
         if (cmdmode == RMAIL) {
             prints("没有任何信件...");
@@ -294,6 +306,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         locmem->crs_line = locmem->top_line;
     
     recbase = locmem->top_line;
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    entries = read_get_records(currdirect, ding_direct,pnt, ssize, recbase, screen_len);
+    else
+    /* add end */
     entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
 
     /*---	Modofied by period	2000-11-12	---*
@@ -392,7 +409,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             /*---	Modified by period	2000-11-12	---*
                    mode = i_read_key( rcmdlist, locmem, ch ,ssize);
              *---		---*/
-            mode = i_read_key(rcmdlist, locmem, ch, ssize, pnt);
+            mode = i_read_key(rcmdlist, locmem, ch, ssize, pnt,ding_direct);
             while (mode == READ_NEXT || mode == READ_PREV) {
                 int reload;
 
@@ -402,6 +419,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                     break;
                 } else if (reload) {
                     recbase = locmem->top_line;
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    entries = read_get_records(currdirect,ding_direct, pnt, ssize, recbase, screen_len);
+    else
+    /* add end */
                     entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
                     if (entries <= 0) {
                         last_line = -1;
@@ -413,7 +435,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 /*---	Modified by period	2000-11-12	---*
                               mode = i_read_key( rcmdlist, locmem, ch ,ssize);
                  *---		---*/
-                mode = i_read_key(rcmdlist, locmem, ch, ssize, pnt);
+                mode = i_read_key(rcmdlist, locmem, ch, ssize, pnt,ding_direct);
             }
             modify_user_mode(cmdmode);
         }
@@ -425,6 +447,10 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         }
         if (mode == NEWSCREEN) {
             last_line = get_num_records(currdirect, ssize);
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    last_line += get_num_records(ding_direct,ssize);
+    /* add end */
             num = last_line - screen_len + 2;
             locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
             modify_locmem(locmem, last_line);
@@ -432,6 +458,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                 locmem->crs_line = locmem->top_line;
     
             recbase = locmem->top_line;
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    entries = read_get_records(currdirect,ding_direct, pnt, ssize, recbase, screen_len);
+    else
+    /* add end */
             entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
 
             mode = FULLUPDATE;
@@ -441,6 +472,10 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         case DIRCHANGED:
             recbase = -1;
             last_line = get_num_records(currdirect, ssize);
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    last_line += get_num_records(ding_direct,ssize);
+    /* add end */
             if (last_line == 0 && digestmode > 0) {
                 if (digestmode == true)
                     digest_mode();
@@ -469,6 +504,10 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
         case PARTUPDATE:
             if (last_line < locmem->top_line + screen_len) {
                 num = get_num_records(currdirect, ssize);
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    num += get_num_records(ding_direct,ssize);
+    /* add end */
                 if (last_line != num) {
                     last_line = num;
                     recbase = -1;
@@ -485,6 +524,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
                         recbase = 1;
                     locmem->top_line = recbase;
                 }
+    /* add by stiger */
+    if (cmdmode != RMAIL && cmdmode != GMENU)
+	    entries = read_get_records(currdirect,ding_direct, pnt, ssize, recbase, screen_len);
+    else
+    /* add end */
                 entries = get_records(currdirect, pnt, ssize, recbase, screen_len);
             }
             if (locmem->crs_line > last_line)
@@ -514,7 +558,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 }
 
 
-static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt)
+static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char* pnt, char* ding_direct)
 {
     int i, mode = DONOTHING;
 
@@ -669,7 +713,14 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
     default:
         for (i = 0; rcmdlist[i].fptr != NULL; i++) {
             if (rcmdlist[i].key == ch) {
-                mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
+		    /* add by stiger */
+		if( ((fileheader *)(pnt+(locmem->crs_line-locmem->top_line)*ssize))->filename[0]=='Z' ){
+		    if(ch=='D' || ch=='b' || ch=='B') return DONOTHING;
+		    else
+                    mode = (*(rcmdlist[i].fptr)) (locmem->crs_line - get_num_records(currdirect, ssize), &pnt[(locmem->crs_line - locmem->top_line) * ssize], ding_direct );
+		}
+		else
+                    mode = (*(rcmdlist[i].fptr)) (locmem->crs_line, &pnt[(locmem->crs_line - locmem->top_line) * ssize], currdirect);
                 break;
             }
         }

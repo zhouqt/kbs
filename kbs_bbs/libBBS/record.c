@@ -449,6 +449,57 @@ int size, id, number;
     return (n / size);
 }
 
+/* add by stiger */
+int read_get_records(filename, filename1, rptr, size, id, number)
+char *filename;
+char *filename1;
+void *rptr;
+int size, id, number;
+{
+    int fd;
+    int n,m,fnum;
+
+    fnum=get_num_records(filename, size);
+    if(fnum < id){
+        if ((fd = open(filename1, O_RDONLY, 0)) == -1)
+            return -1;
+        if (lseek(fd, size * (id - fnum - 1), SEEK_SET) == -1) {
+            close(fd);
+            return 0;
+        }
+        if ((n = read(fd, rptr, size * number)) == -1) {
+            close(fd);
+            return -1;
+        }
+        close(fd);
+        return (n / size);
+    }else{
+        if ((fd = open(filename, O_RDONLY, 0)) == -1)
+            return -1;
+        if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
+            close(fd);
+            return 0;
+        }
+        if ((n = read(fd, rptr, size * number)) == -1) {
+            close(fd);
+            return -1;
+        }
+        close(fd);
+	m=n/size;
+	if(m==number) return m;
+
+        if ((fd = open(filename1, O_RDONLY, 0)) == -1)
+            return m;
+        if ((n = read(fd, rptr+n, size * (number-m))) == -1) {
+            close(fd);
+            return m;
+        }
+        return (m+ n/size);
+    }
+        
+}
+/* add end */
+
 int substitute_record(filename, rptr, size, id)
 char *filename;
 void *rptr;

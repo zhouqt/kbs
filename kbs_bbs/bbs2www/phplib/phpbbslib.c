@@ -862,6 +862,7 @@ static ZEND_FUNCTION(bbs_getarticles)
     int num;
     int mode;
     char dirpath[STRLEN];
+    char dirpath1[STRLEN];	/* add by stiger */
     int total;
     struct fileheader *articles;
     struct boardheader *bp;
@@ -894,6 +895,10 @@ static ZEND_FUNCTION(bbs_getarticles)
     is_bm = is_BM(bp, currentuser);
     setbdir(mode, dirpath, board);
     total = get_num_records(dirpath, sizeof(struct fileheader));
+    /* add by stiger */
+    sprintf(dirpath1,"boards/%s/.DINGDIR",board);
+    total += get_num_records(dirpath1, sizeof(struct fileheader));
+    /* add end */
     if (start > (total - num + 1))
         start = (total - num + 1);
     if (start <= 0)
@@ -907,7 +912,8 @@ static ZEND_FUNCTION(bbs_getarticles)
     }
     brc_initial(currentuser->userid, board);
     articles = emalloc(num * sizeof(struct fileheader));
-    rows = get_records(dirpath, articles, sizeof(struct fileheader), start, num);
+    /* modified by stiger */
+    rows = read_get_records(dirpath, dirpath1, articles, sizeof(struct fileheader), start, num);
     for (i = 0; i < rows; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
@@ -955,6 +961,10 @@ static ZEND_FUNCTION(bbs_countarticles)
     }
     setbdir(mode, dirpath, bp->filename);
     total = get_num_records(dirpath, sizeof(struct fileheader));
+    /* add by stiger */
+    sprintf(dirpath,"boards/%s/.DINGDIR",bp->filename);
+    total += get_num_records(dirpath, sizeof(struct fileheader));
+    /* add end */
     RETURN_LONG(total);
 }
 

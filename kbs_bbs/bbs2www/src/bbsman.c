@@ -39,7 +39,20 @@ int main()
             if (mode==4)
                 do_set(board, atoi(parm_name[i] + 3), FILE_NOREPLY_FLAG);
             if (mode == 5)
-                do_set(board, atoi(parm_name[i] + 3), 0);
+                do_set(board, atoi(parm_name[i] + 3), FILE_DING_FLAG);
+        }
+       	else if (!strncmp(parm_name[i], "boz", 3)) {
+            total++;
+            if (mode == 1)
+                do_del_zd(board, atoi(parm_name[i] + 3));
+            if (mode == 2)
+                do_set_zd(board, atoi(parm_name[i] + 3), FILE_MARK_FLAG);
+            if (mode == 3)
+                do_set_zd(board, atoi(parm_name[i] + 3), FILE_DIGEST_FLAG);
+            if (mode==4)
+                do_set_zd(board, atoi(parm_name[i] + 3), FILE_NOREPLY_FLAG);
+            if (mode == 5)
+                do_del_zd(board, atoi(parm_name[i] + 3));
         }
     }
     printf("</table>");
@@ -63,6 +76,44 @@ int do_del(char *board, int id)
         http_fatal("错误的参数");
     if( get_records_from_id( fd, id, &f, 1, &ent) ){
 	close(fd);
+        switch (del_post(ent, &f, dir, board)) {
+        case DONOTHING:
+            http_fatal("你无权删除该文");
+            break;
+        default:
+            printf("<tr><td>%s  </td><td>标题:%s </td><td>删除成功.</td></tr>\n", f.owner, nohtml(f.title));
+	}
+	return;
+    }
+
+    printf("<tr><td></td><td></td><td>文件不存在.</td></tr>\n");
+}
+
+int do_del_zd(char *board, int id)
+{
+    FILE *fp;
+	int ffind=0;
+    int ent=1;
+    char dir[256];
+    struct fileheader f;
+
+    sprintf(dir, "boards/%s/.DINGDIR", board);
+
+	fp = fopen(dir, "r+");
+    if (fp == 0) 
+        http_fatal("错误的参数"); 
+    while (1) {
+	    if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
+		    break;               
+	    if (f.id==id) {
+		    ffind=1;
+		    break;
+	    }
+	    ent++;
+    }
+    fclose(fp);
+
+    if( ffind ){
         switch (del_post(ent, &f, dir, board)) {
         case DONOTHING:
             http_fatal("你无权删除该文");
@@ -101,3 +152,37 @@ int do_set(char *board, int id, int flag)
     
 }
 
+
+int do_set_zd(char *board, int id, int flag)
+{
+    FILE *fp;
+    char dir[256];
+    struct fileheader f;
+    int ent=1;
+    int ffind=0;
+
+    sprintf(dir,"boards/%s/.DINGDIR",board);
+    
+	fp = fopen(dir, "r+");
+    if (fp == 0) 
+        http_fatal("错误的参数"); 
+    while (1) {
+	    if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
+		    break;               
+	    if (f.id==id) {
+		    ffind=1;
+		    break;
+	    }
+	    ent++;
+    }
+    fclose(fp);
+
+	if(ffind){
+		if(change_post_flag(NULL, currentuser, 0, board, ent, &f, dir, flag, 0)!=DONOTHING)
+			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
+		else
+			printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
+    }else{
+        printf("<tr><td></td><td></td><td></td><td>文件不存在.</td></tr>\n");
+    }
+}
