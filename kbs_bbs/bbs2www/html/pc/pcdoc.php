@@ -3,6 +3,11 @@
 	** this file display article list in personal corp.
 	** @id:windinsn  Nov 19,2003
 	*/
+	@session_name();
+	@session_start();
+	/*
+	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
+	*/
 	$needlogin=0;
 	require("pcfuncs.php");
 	
@@ -280,6 +285,7 @@
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=r"; ?>" class="f3">评论</a></td>
 	<td class="t2" width="30">修改</td>
 	<td class="t2" width="30">删除</td>
+	<td class="t2" colspan="<?php echo session_is_registered('favaction')?3:2; ?>">操作</a>
 </tr>
 <?php
 		}
@@ -331,8 +337,20 @@
 					"<td class='t3'>".$rows[visitcount]."</td>\n".
 					"<td class='t4'>".$rows[commentcount]."</td>\n".
 					"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">修改</a></td>\n".
-					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n".
-					"</tr>\n";
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n";
+				if($rows[type]==0)
+					echo "<td class='t3'><a href=\"pcmanage.php?act=favcut&nid=".$rows[nid]."\">剪</a></td>".
+					      "<td class='t3'><a href=\"pcmanage.php?act=favcopy&nid=".$rows[nid]."\">复</a></td>";
+				else
+					echo "<td class='t3'>-</td>\n<td class='t3'>-</td>\n";
+				if(session_is_registered("favaction"))
+				{
+					if($rows[type]==1)
+						echo 	"<td class='t3'><a href=\"pcmanage.php?act=favpaste&pid=".$rows[nid]."\">贴</a></td>";
+					else
+						echo "<td class='t3'>-</td>";
+				}
+				echo 	"</tr>\n";
 			}
 			else
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
@@ -367,7 +385,12 @@
 			display_action_bar(3,$pid);			
 ?>
 </form>
-<form action="pcmanage.php" method="post" onsubmit="if(this.dir.value==''){alert('请输入目录名!');return false;}">
+<?php
+		if(session_is_registered("favaction"))
+			echo "<p align='center' class='b2'>[<a href=\"pcmanage.php?act=favpaste&pid=".$rootpid."\">粘贴到根目录</a>]</p>\n";
+?>
+<form action="pcmanage.php?act=adddir" method="post" onsubmit="if(this.dir.value==''){alert('请输入目录名!');return false;}">
+<input type="hidden" name="pid" value="<?php echo $pid; ?>">
 <p class="b2" align="center">
 新建目录:
 <input type="text" name="dir" size="40" id="dir" class="b2">

@@ -3,6 +3,11 @@
 	**manage personal corp.
 	**@id: windinsn Nov 19,2003	
 	*/
+	@session_name();
+	@session_start();
+	/*
+	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
+	*/
 	require("pcfuncs.php");
 	if ($loginok != 1)
 		html_nologin();
@@ -159,7 +164,7 @@
 				mysql_query($query,$link);
 ?>
 <script language="javascript">
-window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo $tag; ?>&tid=<?php echo $_POST["tid"]; ?>";
+window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo $tag; ?>&tid=<?php echo $_POST["tid"]; ?>&pid=<?php echo $pid; ?>";
 </script>
 <?php
 			}
@@ -519,6 +524,95 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
 </p>
 <?php
+		}
+		elseif($act == "adddir" && $_POST["dir"])
+		{
+			$pid = $_POST["pid"];
+			if(pc_dir_num($link,$pc["UID"],$pid)+1 > $pc["DLIM"])
+			{
+				html_error_quit("目标文件夹中的目录数已达上限 ".$pc["DLIM"]. " 个!");
+				exit();
+			}
+			$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ) ".
+				"VALUES ('', '".$pid."', '1', '', '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."', '".date("YmdHis")."', '".$pc["UID"]."', '0', '0', '".addslashes($_POST["dir"])."', NULL , '3', '0', '0', '0');";
+			mysql_query($query,$link);
+?>
+<script language="javascript">
+window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";
+</script>
+<?php
+		}
+		elseif($act == "favcut" || $act == "favcopy")
+		{
+			//目前不支持目录的剪切和复制
+			$query = "SELECT `nid`,`type`,`pid`,`subject` FROM nodes WHERE `nid` = '".$_GET["nid"]."' AND `uid` = '".$pc["UID"]."' AND `access` = 3  AND `type` = 0 LIMIT 0 , 1;";
+			$result = mysql_query($query,$link);
+			$rows = mysql_fetch_array($result);
+			if(!$rows)
+			{
+				html_error_quit("文章不存在!");
+				exit();
+			}
+			$favaction = array(
+					"ACT" => $act,
+					"NID" => $rows[nid],
+					"TYPE" => $rows[type],
+					"PID" => $rows[pid]
+					);
+			mysql_free_result($result);
+			session_register("favaction");
+?>
+<p align="center">
+<a href="javascript:history.go(-1);">操作成功,已将 <font class=f2><?php echo $rows[subject]; ?></font> 放入剪贴板，点击返回</a>
+</p>
+<?php			
+		}
+		elseif($act == "favpaste")
+		{
+			$favaction = $_SESSION["favaction"];
+			if(!session_is_registered("favaction") || !$favaction)
+			{
+				html_error_quit("您的剪贴板是空的，请先剪切或者复制一个文件!");
+				exit();
+			}
+			$pid = $_GET["pid"];
+			$query = "SELECT `nid` FROM nodes WHERE `nid` = '".$pid."' AND `uid` = '".$pc["UID"]."' AND `type` = 1 AND `access` = 3 LIMIT 0 , 1 ;";
+			$result = mysql_query($query,$link);
+			if(!$rows=mysql_fetch_array($result))
+			{
+				mysql_free_result($result);
+				html_error_quit("目标文件夹不存在!");
+				exit();
+			}
+			mysql_free_result($result);
+			
+			if(pc_file_num($link,$pc["UID"],$pid)+1 > $pc["NLIM"])
+			{
+				html_error_quit("目标文件夹中的文件数已达上限 ".$pc["NLIM"]. " 个!");
+				exit();
+			}
+			
+			if($favaction["ACT"] == "favcut")
+			{
+				$query = "UPDATE nodes SET `pid` = '".$pid."' WHERE `nid` = '".$favaction["NID"]."'; ";
+			}
+			else
+			{
+				$query = "SELECT * FROM nodes WHERE `nid` = '".$favaction["NID"]."' LIMIT 0 , 1 ; ";
+				$result = mysql_query($query,$link);
+				$rows = mysql_fetch_array($result);
+				mysql_free_result($result);
+				$query = "INSERT INTO `nodes` ( `nid` , `pid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `tid` , `emote` ) ".
+					"VALUES ('', '".$pid."', '0', '".$rows[source]."', '".$rows[hostname]."', '".date("YmdHis")."' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '".$rows[commentcount]."', '".$rows[subject]."', '".$rows[body]."', '3', '".$rows[visitcount]."', '".$rows[tid]."', '".$rows[emote]."');";
+			}
+			mysql_query($query,$link);
+			unset($favaction);
+			session_unregister("favaction");
+?>
+<script language="javascript">
+window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";
+</script>
+<?php		
 		}
 		
 		html_normal_quit();
