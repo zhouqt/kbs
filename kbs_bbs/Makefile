@@ -134,7 +134,7 @@ bbsdt: bbsd.c
 	cp -f bbsdt ../bin
 
 newpop3d: newpop3.c $(BBSLIB)
-	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.c pass.c $(BBSLIB)
+	$(CC) $(CFLAGS) -o newpop3d $(SITE_DEF) $(DEFINES) newpop3.c $(BBSLIB)
 	cp -f newpop3d ../bin
 #	$(CC) $(CFLAGS) -o pop3d $(SITE_DEF) -D_BSD pop3d.c
 

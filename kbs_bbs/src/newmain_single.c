@@ -31,7 +31,8 @@
 #include "bbs.h"
 
 #define BADLOGINFILE    "logins.bad"
-#define INPUT_ACTIVE 0/*Haohmaru.98.11.3*/
+#define INPUT_ACTIVE 0
+/*Haohmaru.98.11.3*/
 #define INPUT_IDLE 1
 #define WAITTIME  150
 
@@ -81,10 +82,9 @@ int utmpent = -1 ;
 time_t  login_start_time;
 int     showansi=1;
 
-extern char MsgDesUid[14]; /* 保存所发msg的目的uid 1998.7.5 by dong */
- 
-static int i_mode = INPUT_ACTIVE;/*Haohmaru.98.11.3*/
+static int i_domode = INPUT_ACTIVE;
 
+extern char MsgDesUid[14]; /* 保存所发msg的目的uid 1998.7.5 by dong */
 int
 canbemsged(uin)/*Haohmaru.99.5.29*/
 struct user_info *uin;
@@ -101,11 +101,11 @@ struct user_info *uin;
 void
 wait_alarm_clock()/*Haohmaru.98.11.3*/
 {
-    if(i_mode == INPUT_IDLE) {
+    if(i_domode == INPUT_IDLE) {
         clear();
         kill(getpid(),SIGHUP) ;
     }
-    i_mode = INPUT_IDLE ;
+    i_domode = INPUT_IDLE ;
     alarm(WAITTIME) ;
 }
 
@@ -526,8 +526,6 @@ system_abort()
     oflush();
     abort_bbs();
     return;
-    free_mem(); /* Leeward 98.10.13 */
-    exit(0) ;
 }
 
 void

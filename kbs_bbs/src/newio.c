@@ -50,7 +50,7 @@ int ibufsize = 0 ;
 int icurrchar = 0 ;
 int KEY_ESC_arg;
 
-static int i_mode = INPUT_ACTIVE;
+static int i_domode = INPUT_ACTIVE;
 
 extern int convcode;
 extern char* big2gb(char*,int*,int);
@@ -78,7 +78,7 @@ hit_alarm_clock()
 {
     if (HAS_PERM(PERM_NOTIMEOUT))
         return;
-    if(i_mode == INPUT_IDLE) {
+    if(i_domode == INPUT_IDLE) {
         clear();
         /*  change by KCN 1999.09.08
                 fprintf(stderr,"Idle timeout exceeded! Booting...\n") ;
@@ -87,7 +87,7 @@ hit_alarm_clock()
         oflush();
         kill(getpid(),SIGHUP) ;
     }
-    i_mode = INPUT_IDLE ;
+    i_domode = INPUT_IDLE ;
     alarm(IDLE_TIMEOUT) ;
 }
 
@@ -433,7 +433,7 @@ igetagain:
     }
     else     lastch=inbuf[icurrchar];
 
-    i_mode = INPUT_ACTIVE;
+    i_domode = INPUT_ACTIVE;
     c=inbuf[icurrchar];
     switch(c) {
     case Ctrl('L'):
