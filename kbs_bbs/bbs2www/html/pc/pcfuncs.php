@@ -646,6 +646,7 @@ function pc_main_navigation_bar()
 [<a href="pcsearch2.php">Blog搜索</a>]
 [<a href="pcnsearch.php">文章搜索</a>]
 [<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a>]
+[<a href="pcapp0.html">Blog申请</a>]
 <?php
 	if( $pcconfig["ADMIN"] ){
 ?>
@@ -691,4 +692,47 @@ function pc_logs($link , $action , $comment = "" , $pri_id = 0 , $sec_id = 0)
 	return TRUE;
 }
 
+function pc_counter($link)
+{
+	global $pc;
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	$visitcount = $_COOKIE["BLOGVISITCOUNT"];
+	if(!$visitcount)
+	{
+		pc_visit_counter($link,$pc["UID"]);//计数器加1
+		$pc["VISIT"] ++;
+		$visitcount = ",".$pc["UID"].",";
+		setcookie("BLOGVISITCOUNT",$visitcount);
+	}
+	elseif(!stristr($visitcount,",".$pc["UID"].","))
+	{
+		pc_visit_counter($link,$pc["UID"]);//计数器加1
+		$pc["VISIT"] ++;
+		$visitcount .= $pc["UID"].",";
+		setcookie("BLOGVISITCOUNT",$visitcount);
+	}	
+}
+
+function pc_node_counter($link,$nid)
+{
+	$query = "UPDATE nodes SET visitcount = visitcount + 1 , changed  = changed  WHERE `nid` = '".$nid."' ;";
+	mysql_query($query,$link);
+}
+
+function pc_ncounter($link,$nid)
+{
+	if(!$_COOKIE["BLOGREADNODES"])
+	{
+		$readnodes = ",".$nid.",";
+		setcookie("BLOGREADNODES",$readnodes);
+		pc_node_counter($link,$nid);
+	}
+	elseif(!stristr($_COOKIE["BLOGREADNODES"],",".$nid.","))
+	{
+		$readnodes = $_COOKIE["BLOGREADNODES"] . $nid.",";
+		setcookie("BLOGREADNODES",$readnodes);
+		pc_node_counter($link,$nid);
+	}
+}
 ?>

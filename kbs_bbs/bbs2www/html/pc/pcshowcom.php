@@ -3,10 +3,6 @@
 	** this file display single comment
 	** @id:windinsn nov 27,2003
 	*/
-	//$needlogin=0;
-	/*
-	** ../funcs.php中将未登录用户自动初始化为guest，这里不需要传递$needlogin=0，否则不能进行管理 windinsn dec 24,2003
-	*/
 	require("pcfuncs.php");
 	function pc_add_new_comment($nid,$alert)
 	{
@@ -77,29 +73,30 @@
 		html_error_quit("对不起，您要查看的评论不存在");
 		exit();
 	}
-	if($node[access] > 0)
+	
+	$pc = pc_load_infor($link,"",$node[uid]);
+	if(!$pc)   
+        {   
+               	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
+		html_error_quit("对不起，您要查看的Blog不存在");   
+               	exit();   
+        }
+               
+        $userPermission = pc_get_user_permission($currentuser,$pc);
+	$sec = $userPermission["sec"];
+	$pur = $userPermission["pur"];
+	$tags = $userPermission["tags"];
+	if(!$tags[$node[access]])
 	{
-		$pc = pc_load_infor($link,"",$node[uid]);
-		if(!$pc)   
-                {   
-                	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
-			html_error_quit("对不起，您要查看的Blog不存在");   
-                	exit();   
-                }
-                
-                $userPermission = pc_get_user_permission($currentuser,$pc);
-		$sec = $userPermission["sec"];
-		$pur = $userPermission["pur"];
-		$tags = $userPermission["tags"];
-		if(!$tags[$node[access]])
-		{
-			pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
-			html_error_quit("对不起，您不能查看本条记录!");
-			exit();
-		}
+		pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
+		html_error_quit("对不起，您不能查看本条记录!");
+		exit();
 	}
-	if( pc_cache( $comment[changed] ) )
-		return;
+	
+	if($pur != 3)
+		pc_counter($link);
+	pc_ncounter($link,$comment[nid]);
+	
 	pc_html_init("gb2312",$pcconfig["BBSNAME"]."Blog");
 ?>
 <br>

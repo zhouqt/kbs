@@ -2,13 +2,6 @@
 	/*
 	** @id:windinsn dec 3,2003
 	*/
-	
-	@session_start();
-	$visitcount = $_SESSION["visitcount"];
-	//$needlogin=0;
-	/*
-	** ../funcs.php中将未登录用户自动初始化为guest，这里不需要传递$needlogin=0，否则不能进行管理 windinsn dec 24,2003
-	*/
 	require("pcfuncs.php");
 
 	function pc_get_archfile($pc,$wrap=FALSE)
@@ -790,25 +783,9 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	
 	$nodes = pc_load_nodes($link,$pc,$pur);
 	$blogs = pc_blog_menu($link,$pc["UID"],0);
-	/*visit count start*/
+	
 	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
-	{
-		if(!session_is_registered("visitcount"))
-		{
-			pc_visit_counter($link,$pc["UID"]);//计数器加1
-			$pc["VISIT"] ++;
-			$visitcount = ",".$pc["UID"].",";
-			session_register("visitcount");
-		}
-		elseif(!stristr($visitcount,",".$pc["UID"].","))
-		{
-			pc_visit_counter($link,$pc["UID"]);//计数器加1
-			$pc["VISIT"] ++;
-			$visitcount .= $pc["UID"].",";
-			$_SESSION["visitcount"] .= $pc["UID"].",";
-		}
-	}
-	/*visit count end*/
+		pc_counter($link);
 	
 	//if( pc_cache( $pc["MODIFY"] ) )
 	//	return;

@@ -3,14 +3,6 @@
 	** this file display article list in personal corp.
 	** @id:windinsn  Nov 19,2003
 	*/
-	@session_start();
-	/*
-	**	对收藏夹的剪切、复制操作,计数器需要 session 支持 windinsn nov 25,2003
-	*/
-	//$needlogin=0;
-	/*
-	** ../funcs.php中将未登录用户自动初始化为guest，这里不需要传递$needlogin=0，否则不能进行管理 windinsn dec 24,2003
-	*/
 	require("pcfuncs.php");
 	
 	function display_blog_menu($link,$pc,$tag,$tid=0)
@@ -304,7 +296,7 @@
 	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=r"; ?>" class="f3">评论</a></td>
 	<td class="t2" width="30">修改</td>
 	<td class="t2" width="30">删除</td>
-	<td class="t2" colspan="<?php echo session_is_registered('favaction')?3:2; ?>">操作</a>
+	<td class="t2" colspan="<?php echo $_COOKIE["BLOGFAVACTION"]?3:2; ?>">操作</a>
 </tr>
 <?php
 		}
@@ -364,7 +356,7 @@
 					      "<td class='t3' width=20><a href=\"pcmanage.php?act=favcopy&nid=".$rows[nid]."\">复</a></td>";
 				else
 					echo "<td class='t3' width=20>-</td>\n<td class='t3'>-</td>\n";
-				if(session_is_registered("favaction"))
+				if($_COOKIE["BLOGFAVACTION"])
 				{
 					if($rows[type]==1)
 						echo 	"<td class='t3' width=20><a href=\"pcmanage.php?act=favpaste&pid=".$rows[nid]."\">贴</a></td>";
@@ -407,7 +399,7 @@
 ?>
 </form>
 <?php
-		if(session_is_registered("favaction"))
+		if($_COOKIE["BLOGFAVACTION"])
 			echo "<p align='center' class='b2'>[<a href=\"pcmanage.php?act=favpaste&pid=".$rootpid."\">粘贴到根目录</a>]</p>\n";
 ?>
 <form action="pcmanage.php?act=adddir" method="post" onsubmit="if(this.dir.value==''){alert('请输入目录名!');return false;}">
@@ -652,8 +644,7 @@ Blog名
 	$userid = addslashes($_GET["userid"]);
 	$pid = (int)($_GET["pid"]);
 	$tag = (int)($_GET["tag"]);
-	$visitcount = $_SESSION["visitcount"];
-	
+		
 	$link = pc_db_connect();
 	$pc = pc_load_infor($link,$userid);
 	if(!$pc)
@@ -682,22 +673,7 @@ Blog名
 	
 	/*visit count start*/
 	if($pur != 3)//Blog所有者的访问不进行计数  windinsn dec 10,2003
-	{
-		if(!session_is_registered("visitcount"))
-		{
-			pc_visit_counter($link,$pc["UID"]);//计数器加1
-			$pc["VISIT"] ++;
-			$visitcount = ",".$pc["UID"].",";
-			session_register("visitcount");
-		}
-		elseif(!stristr($visitcount,",".$pc["UID"].","))
-		{
-			pc_visit_counter($link,$pc["UID"]);//计数器加1
-			$pc["VISIT"] ++;
-			$visitcount .= $pc["UID"].",";
-			$_SESSION["visitcount"] .= $pc["UID"].",";
-		}
-	}
+		pc_counter($link);
 	/*visit count end*/
 	
 	//if( pc_cache( $pc["MODIFY"] ) )

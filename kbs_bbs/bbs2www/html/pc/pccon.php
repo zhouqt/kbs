@@ -3,8 +3,6 @@
 	** this file display article  in personal corp.
 	** @id:windinsn  Nov 19,2003
 	*/
-	@session_start();
-	//$needlogin=0;
 	require("pcfuncs.php");
 	
 	function pc_add_new_comment($pc,$nid,$alert)
@@ -53,12 +51,6 @@
 </table>
 </center>
 <?php		
-	}
-	
-	function pc_node_counter($link,$nid)
-	{
-		$query = "UPDATE nodes SET visitcount = visitcount + 1 , changed  = changed  WHERE `nid` = '".$nid."' ;";
-		mysql_query($query,$link);
 	}
 	
 	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend)
@@ -190,7 +182,6 @@
 		exit();
 	}
 	
-	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 	
 	if( $err_alert )
 		echo "<script language=\"javascript\">alert(\"".$err_alert."\");</script>";
@@ -207,36 +198,31 @@
 	
 	if(!$rows)
 	{
+		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 		html_error_quit("对不起，您要查看的文章不存在");
 		exit();
 	}
 	if($rows[type]!= 0)
 	{
+		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 		html_error_quit("对不起，您要查看的文章不存在");
 		exit();
 	}
 	
 	if(!$tags[$rows[access]])
 	{
+		pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 		html_error_quit("对不起，您无权查看该文章!");
 		exit();
 	}
 	$nid = $rows[nid];
 	$tid = $rows[tid];
 	
-	if(!session_is_registered("readnodes"))
-	{
-		$readnodes = ",".$nid.",";
-		session_register("readnodes");
-		pc_node_counter($link,$nid);
-		$rows[visitcount] ++;
-	}
-	elseif(!stristr($_SESSION["readnodes"],",".$nid.","))
-	{
-		$_SESSION["readnodes"] .= $nid.",";
-		pc_node_counter($link,$nid);
-		$rows[visitcount] ++;
-	}
+	if($pur != 3)
+		pc_counter($link);
+	pc_ncounter($link,$nid);
+
+	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 ?>
 <a name="top"></a>
 <table cellspacing="0" cellpadding="0" border="0" width="100%">

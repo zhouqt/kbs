@@ -5,6 +5,10 @@
 	require("rsstool.php");
 	require("pcstat.php");
 	
+	//20min更新一次
+	if(pc_update_cache_header())
+		return;
+	
 	$link = pc_db_connect();
 	$rss = getNewBlogs($link);
 	pc_db_close($link);

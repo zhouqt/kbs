@@ -10,6 +10,8 @@
 	require("pcfuncs.php");
 	require("pctbp.php");
 	$blogadmin = intval($_COOKIE["BLOGADMIN"]);
+	$favaction = $_COOKIE["BLOGFAVACTION"];
+	
 					
 	if ($loginok != 1)
 		html_nologin();
@@ -714,7 +716,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 					"PID" => $rows[pid]
 					);
 			mysql_free_result($result);
-			session_register("favaction");
+			setcookie("BLOGFAVACTION",$favaction);
 ?>
 <br>
 <p align="center">
@@ -724,8 +726,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 		}
 		elseif($act == "favpaste")
 		{
-			$favaction = $_SESSION["favaction"];
-			if(!session_is_registered("favaction") || !$favaction)
+			if(!$favaction || !is_array($favaction))
 			{
 				html_error_quit("您的剪贴板是空的，请先剪切或者复制一个文件!");
 				exit();
@@ -762,7 +763,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			}
 			mysql_query($query,$link);
 			unset($favaction);
-			session_unregister("favaction");
+			setcookie("BLOGFAVACTION");
 			pc_update_record($link,$pc["UID"]);
 ?>
 <script language="javascript">

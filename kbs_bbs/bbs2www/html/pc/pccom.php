@@ -40,25 +40,23 @@
 			exit();
 		}	
 		
-		if($rows[access] != 0)
+		$pc = pc_load_infor($link,"",$rows[uid]);
+		if(!$pc)   
+	        {   
+	               	html_error_quit("对不起，您要查看的Blog不存在");   
+	               	exit();   
+	        }
+	               
+	        $userPermission = pc_get_user_permission($currentuser,$pc);
+		$sec = $userPermission["sec"];
+		$pur = $userPermission["pur"];
+		$tags = $userPermission["tags"];
+		if(!$tags[$rows[access]])
 		{
-			$pc = pc_load_infor($link,"",$rows[uid]);
-			if(!$pc)   
-	                {   
-	                	html_error_quit("对不起，您要查看的Blog不存在");   
-	                	exit();   
-	                }
-	                
-	                $userPermission = pc_get_user_permission($currentuser,$pc);
-			$sec = $userPermission["sec"];
-			$pur = $userPermission["pur"];
-			$tags = $userPermission["tags"];
-			if(!$tags[$rows[access]])
-			{
-				html_error_quit("对不起，您不能查看本条记录!");
-				exit();
-			}
+			html_error_quit("对不起，您不能查看本条记录!");
+			exit();
 		}
+		
 		
 		if($act == "pst")
 		{

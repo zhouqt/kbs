@@ -33,6 +33,10 @@
 <?php
 	}
 	
+	//20min更新一次
+	if(pc_update_cache_header())
+		return;
+	
 	$pno = (int)($_GET["pno"]);
 	$pno = ($pno < 1)?1:$pno;
 	$type = ($_GET["t"]=="c")?"c":"n";

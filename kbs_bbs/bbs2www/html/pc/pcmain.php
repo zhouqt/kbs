@@ -227,7 +227,7 @@ function  pcmain_blog_recommend_nodes()
 function  pcmain_blog_most_hot()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , htmltag , body , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND commentcount != 0 ORDER BY commentcount DESC LIMIT 0 , 10;";
+	$query = "SELECT nid , subject , htmltag , body , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND commentcount != 0 ORDER BY commentcount DESC , nid DESC LIMIT 0 , 10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -270,7 +270,7 @@ function  pcmain_blog_most_hot()
 function  pcmain_blog_most_trackback()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , htmltag , body , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-2592000)." AND trackbackcount != 0 ORDER BY trackbackcount DESC LIMIT 0 , 10;";
+	$query = "SELECT nid , subject , htmltag , body , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-2592000)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -313,7 +313,7 @@ function  pcmain_blog_most_trackback()
 function  pcmain_blog_most_view()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC LIMIT 0 , 10;";
+	$query = "SELECT nid , subject , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND visitcount != 0 ORDER BY visitcount DESC , nid DESC LIMIT 0 , 10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
@@ -370,6 +370,7 @@ pc_html_init("gb2312" , $pcconfig["BBSNAME"]."Blog");
 	<a class="t2" href="pcsearch2.php">Blog搜索</a>
 	<a class="t2" href="pcnsearch.php">文章搜索</a>
 	<a class="t2" href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a>
+	<a class="t2" href="pcapp0.html">Blog申请</a>
 	<a class="t2" href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a>
 	</td>
 </tr>
@@ -401,6 +402,7 @@ pcmain_blog_sections();
 			<li><a href="pcsearch2.php">Blog搜索</a></li>
 			<li><a href="pcnsearch.php">文章搜索</a></li>
 			<li><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a></li>
+			<li><a href="pcapp0.html">Blog申请</a></li>
 			<li><a href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a></li>
 		</ul></td>
 		</tr>
