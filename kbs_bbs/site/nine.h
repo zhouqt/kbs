@@ -8,6 +8,8 @@
 #undef HAPPY_BBS
 #define HAVE_COLOR_DATE
 #define HAVE_TEMPORARY_NICK /* 允许临时改变昵称 */
+#define HAVE_FRIENDS_NUM /* 显示好友数目 */
+#undef HAVE_REVERSE_DNS
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
