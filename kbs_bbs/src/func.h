@@ -452,6 +452,10 @@ int clean_cachedata(char* userid,int unum);
      */
     int ann_get_postfilename(char *filename, struct fileheader *fileinfo, MENU * pm);
 
+	/* in libtmpl.c */
+int orig_tmpl_init(char * board, int mode, struct a_template ** ptemp);
+int orig_tmpl_free(struct a_template ** pptemp, int temp_num);
+int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board);
 
 /* zmodem */
     int zsend_file(char *filename, char *title);
