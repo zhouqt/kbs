@@ -255,12 +255,16 @@ void build_sysconf(char    *configfile,char *imgfile)
     char* imgfilename;
 	struct public_data* p;
 	char buf[255];
+	int old_diff;
 
     old_menuitem = menuitem;    old_menu = sysconf_menu;
     old_sysvar   = sysvar;      old_key  = sysconf_key;
     old_buf      = sysconf_buf; old_len  = sysconf_len;
+    old_diff = sysconf_diff;
+    
     menuitem    = (void *) malloc( SC_CMDSIZE * sizeof(struct smenuitem) );
     sysvar      = (void *) malloc( SC_KEYSIZE * sizeof( struct sdefine ) );
+    sysconf_diff = 0;
     sysconf_buf = (void *) malloc( SC_BUFSIZE );
     sysconf_menu = 0;
     sysconf_key  = 0;
@@ -291,6 +295,7 @@ void build_sysconf(char    *configfile,char *imgfile)
     free( menuitem );
     free( sysvar );
     free( sysconf_buf );
+    sysconf_diff=old_diff;
     menuitem    = old_menuitem; sysconf_menu = old_menu;
     sysvar      = old_sysvar;   sysconf_key  = old_key;
     sysconf_buf = old_buf;      sysconf_len  = old_len;
