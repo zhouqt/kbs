@@ -53,10 +53,8 @@
 		else
 		{
 			$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
-/*
                 	if (cache_header("public",filemtime($filename),300))
                 		return;
-*/
 			@$attachpos=$_GET["attachpos"];
 			@$attachname=$_GET["filename"];
 			@$attachsize=$_GET["size"];
