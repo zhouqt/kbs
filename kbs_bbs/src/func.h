@@ -159,6 +159,7 @@ int clean_cachedata(char* userid,int unum);
     unsigned int store_mailbox_prop(char *userid);
     unsigned int get_mailbox_prop(char *userid);
     unsigned int update_mailbox_prop(char *userid, unsigned int prop);
+	int gen_title(char *boardname );
 
 #define time(x) bbstime(x)
 
