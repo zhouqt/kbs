@@ -1,7 +1,6 @@
 #include "bbs.h"
 #include <utime.h>
 
-
 void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
 int outgo_post(struct fileheader *fh, char *board, char *title)
 {
@@ -606,30 +605,39 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     int fd, err = 0, nowid = 0;
     char* p;
 #ifdef FILTER
-    char f[256];
-    char oldpath[50];
-    char newpath[50];
-    FILE *fp;
+    int i, num_badword;
+    char f[2560], oldpath[50], newpath[50];
+    char badword[200][STRLEN];
+    FILE *fp, *badfile;
 #endif
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
         strncpy(fh->title, fh->title + 4, STRLEN);
     }
 #ifdef FILTER
-    /* 关键字过滤 added by Czz 020927 */
+    i = 0;
+    if ((badfile = fopen("etc/badword", "r")) != NULL) {
+        while (fgets(buf, STRLEN, badfile) != NULL && i < 20) {
+            strcpy(badword[i], (char *) strtok(buf, " \n\r\t"));
+            i++;
+        }
+        fclose(badfile);
+    }
+    num_badword = i;
     sprintf(oldpath, "%s/boards/%s/%s", BBSHOME, boardname, fh->filename);
     if ((fp = fopen(oldpath, "r")) == NULL)
 	    return;
     while (fgets(f, sizeof(f), fp) != NULL) {
-	    if(strstr(f,"法轮功")) {
+	    for (i=1; i<=num_badword;i++) {
+	    if(strstr(f,badword[i-1])) {
 		    sprintf(newpath, "%s/boards/Filter/%s", BBSHOME, fh->filename);
 	            symlink(oldpath, newpath);
 		    boardname = "Filter";
 		    break;
 	    }
+	    }
     }
     fclose(fp);
-    /* added end */
 #endif
     setbfile(buf, boardname, DOT_DIR);
 
