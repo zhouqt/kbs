@@ -577,12 +577,13 @@
 				html_error_quit("文章不存在!");
 				exit();
 			}
+			/*
 			if($rows[nodetype]!=0)
 			{
 				html_error_quit("该文不能删除!");
 				exit();
 			}
-			
+			*/
 			if($rows[access] == 4)
 			{
 				//彻底删除	
