@@ -60,7 +60,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c\
 	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
-	   ucache.c utmp.c log.c md5.c $(BBSSITE).c
+   	ucache.c utmp.c log.c md5.c $(BBSSITE).c userd.c
 
 COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
@@ -68,7 +68,7 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o\
            bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
-	   ucache.o utmp.o log.o md5.o $(BBSSITE).o 
+	   ucache.o utmp.o log.o md5.o $(BBSSITE).o userd.o
 
 BBSLIBOBJS = librecord.o liblog.o libucache.o libstuff.o libmd5.o libcrypt.o libpass.o libbcache.o libutmp.o $(BBSSITE).o
 
