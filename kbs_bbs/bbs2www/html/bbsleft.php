@@ -486,7 +486,7 @@
 					<a href="/pc/pcnew.php?t=c" target="f3">最新评论</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcsearch2.php" target="f3">文集搜索</a><br>
+					<a href="/pc/pcsearch2.php" target="f3">Blog搜索</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcnsearch.php" target="f3">文章搜索</a><br>
