@@ -9255,7 +9255,6 @@ static PHP_FUNCTION(bbs_read_ann_dir)
                     trim(id);
                 } else
                     id = "";
-                rtrim(r_title);
             }
             sprintf(buf, "%s/%s", me.path,me.item[i]->fname);
             ptr = strchr(me.path, '/');
