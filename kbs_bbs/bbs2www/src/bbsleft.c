@@ -185,8 +185,15 @@ int main()
     /*printf("<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n"); */
     printf("</div>\n");
     printmenuend();
+#ifdef SMTH
+	printf("<tr><td nowrap>");
+	printf("<img id=\"img7\" src=\"/images/folder.gif\"><A href=\"javascript:changemn('7');\">水木特刊web版</A></div>");
+	printf("<div id=\"div7\" style=\"display: none\">");
+    printf("<img src=\"/images/link.gif\"> <a href=\"/express/0603/smth_express.htm\" target=\"_blank\">2003年6月号</a><br>\n");
+    printf("</div>\n");
+    printmenuend();
+#endif
     printf("<div class=\"r\">");
-    /*printf("<img src=\"/images/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n"); */
     printmenu("<img src=\"/images/find.gif\"><a href=\"/games/index.html\" target=\"f3\">休闲娱乐区</a><br>\n");
     printmenubegin();
 	printf("<table><tr><form action=\"bbssel\" target=\"f3\"><td>&nbsp;&nbsp;"
