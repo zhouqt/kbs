@@ -234,7 +234,10 @@ struct room_struct * myroom;
 void refreshit()
 {
     int i,j;
-    clear();
+    for(i=0;i<t_lines-1;i++) {
+        move(i, 0);
+        clrtoeol();
+    }
     for(i=0;i<myroom->people;i++) {
         move(i+2,0);
         prints(inrooms.peoples[i].id);
@@ -264,6 +267,7 @@ void join_room(struct room_struct * r)
 {
     char buf[80];
     int i,j;
+    clear();
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(r->creator[0]), r->creator, uinfo.pid);
     unlink(buf);
     myroom = r;
