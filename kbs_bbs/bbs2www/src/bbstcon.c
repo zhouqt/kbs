@@ -6,7 +6,7 @@
 /*int no_re=0;*/
 /*	bbscon?board=xx&file=xx&start=xx 	*/
 
-int show_file(char *board, char* encodeboard,struct fileheader *x, int n);
+int show_file(char *board,struct fileheader *x, int n, char* brdencode);
 int main()
 {
     FILE *fp;
@@ -70,7 +70,7 @@ int main()
     http_quit();
 }
 
-int show_file(char *board, char* brdencode,struct fileheader *x, int n)
+int show_file(char *board,struct fileheader *x, int n, char* brdencode)
 {
     FILE *fp;
     char path[80], buf[512], board_url[80];
@@ -84,7 +84,7 @@ int show_file(char *board, char* brdencode,struct fileheader *x, int n)
     encode_url(board_url, board, sizeof(board_url));
     printf("<table width=\"610\"><pre>\n");
     printf("[<a href=\"bbscon?board=%s&file=%s&num=%d\">本篇全文</a>] ", board_url, x->filename, n);
-    if ((x.accessed[1] & FILE_READ) == 0)
+    if ((x->accessed[1] & FILE_READ) == 0)
     	printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=Re: %s&refilename=%s\">回文章</a>]", brdencode, x->filename, x->owner, encode_url(buf, x->title, sizeof(buf)), x->filename);
 //    printf("[<a href=\"bbspst?board=%s&file=%s&title=%s&userid=%s\">回复本文</a>] ", board_url, x->filename, encode_url(buf, x->title, sizeof(buf)), x->owner);
     printf("[本篇作者: %s]\n", userid_str(x->owner));
