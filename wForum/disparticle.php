@@ -19,7 +19,7 @@ global $listType;
 
 preprocess();
 
-setStat(htmlspecialchars($article['TITLE'],ENT_QUOTES));
+setStat(htmlspecialchars($article['TITLE'] ,ENT_QUOTES) . " " );
 
 show_nav();
 
@@ -137,7 +137,7 @@ function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
 		<table width=100% cellPadding=0 cellSpacing=0 border=0>
 		<tr>
 		<th align=left valign=middle width="73%" height=25>
-		&nbsp;* 文章主题</B>： <?php echo htmlspecialchars($article['TITLE'],ENT_QUOTES); ?></th>
+		&nbsp;* 文章主题</B>： <?php echo htmlspecialchars($article['TITLE'],ENT_QUOTES); ?>  </th>
 		<th width=37% align=right>
 		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/saveas.gif" border=0 width=16 height=16 alt=保存该页为文件 align=absmiddle></a>&nbsp;
 		<a href=# onclick="alert('本功能尚未实现');"><img src=pic/report.gif alt=报告本帖给版主 border=0></a>&nbsp;
@@ -268,7 +268,7 @@ if ( chr($user['gender'])=='M' ){
 <table width=100% ><tr><td width=* valign='center'><a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 alt="给Roy发送一个短消息"></a>&nbsp;<a href=# onclick="alert('本功能尚未实现');" target=_blank><img src="pic/friend.gif" border=0 alt="把<?php echo $thread['OWNER']; ?>'加入好友"></a>&nbsp;<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/profile.gif" border=0 alt="查看<?php echo $thread['OWNER']; ?>的个人资料"></a>&nbsp;<a href=# onclick="alert('本功能尚未实现');" target=_blank><img src="pic/find.gif" border=0 alt="搜索<?php echo $thread['OWNER']; ?>'在测试的所有贴子"></a>&nbsp;<A href="sendmail.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><IMG alt="点击这里发送电邮给<?php echo $thread['OWNER']; ?>'" border=0 src=pic/email.gif></A>&nbsp;<a href="editarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border=0 alt=编辑></a>&nbsp;<a href="deletearticle.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border=0 alt=删除>删除</a>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>&quote=1"><img src="pic/reply.gif" border=0 alt=引用回复这个贴子>&nbsp;<a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border=0 alt=回复这个贴子></a></td><td width=50><b><?php echo $num==0?'楼主':'第<font color=#ff0000>'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor=#D8C0B1 height=1 colspan=2></td></tr>
 </table>
 
-<blockquote><table class=tablebody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?><b></b><br><?php 
+<blockquote><table class=tablebody2 border=0 width=90% style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><img src=face/face1.gif border=0 alt=发贴心情>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> <b></b><br><?php 
 	 $isnormalboard=bbs_normalboard($boardName);
 	 $filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
 	 if ($loginok) {
@@ -341,7 +341,7 @@ function showTreeItem($boardName,$articleID,$thread,$threadID,$start,$level){
 	if ($start==$threadID) {
 		echo "<font color=#FF0000>";
 	}
-	echo htmlspecialchars($thread['TITLE'],ENT_QUOTES).'</a><I><font color=gray>(37字) － <a href=dispuser.php?id='.$thread['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$thread['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$thread['POSTTIME']);
+	echo htmlspecialchars($thread['TITLE'],ENT_QUOTES).' </a><I><font color=gray>(37字) － <a href=dispuser.php?id='.$thread['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$thread['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$thread['POSTTIME']);
 	if ($start==$threadID) {
 		echo "</font>";
 	}

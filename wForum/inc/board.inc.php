@@ -166,7 +166,7 @@ function showBoardContents($boardID,$boardName,$page){
 	} else {
 		echo '<img loaded="no" src="pic/plus.gif" id="followImg'.($articles[$i]['ID']).'" style="cursor:hand;" onclick="loadThreadFollow(\''.($articles[$i]['ID'])."','".$boardName."')\" title=展开贴子列表>";
 	}
-?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $articles[$i]['ID'];?>" title="<?php echo htmlspecialchars($articles[$i]['TITLE'],ENT_QUOTES) ;?><br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo htmlspecialchars($articles[$i]['TITLE']) ;?></a> 
+?><a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $articles[$i]['ID'];?>" title="<?php echo htmlspecialchars($articles[$i]['TITLE'],ENT_QUOTES) ;?> <br>作者：<?php echo $articles[$i]['OWNER'] ;?><br>发表于<?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[$i]['POSTTIME']); ?>"><?php echo htmlspecialchars($articles[$i]['TITLE']) ;?> </a> 
 <?php
 	$threadPages=ceil(($threadNum+1)/THREADSPERPAGE);
 	if ($threadPages>1) {
