@@ -136,7 +136,7 @@
 	else
 		$pur = 0;
 		
-	$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' LIMIT 0 , 1 ;  ";
+	$query = "SELECT * FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$id."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
