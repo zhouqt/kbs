@@ -63,7 +63,7 @@ void output_database()
     char * b;
     struct index_file * p, * q;
     
-    fp = fopen("_word_.index", "wb");
+    fp = fopen("bk/_word_.index", "wb");
     fwrite(&wordt, 1, 4, fp);
     for(i=0;i<wordt;i++) {
         c = strlen(word[i].content);
@@ -72,7 +72,7 @@ void output_database()
     }
     fclose(fp);
 
-    fp = fopen("_file_.index", "wb");
+    fp = fopen("bk/_file_.index", "wb");
     fwrite(&filet, 1, 4, fp);
     for(i=0;i<filet;i++) {
         cc = strlen(file[i].content);
@@ -81,7 +81,7 @@ void output_database()
     }
     fclose(fp);
     
-    fp = fopen("_title_.index", "wb");
+    fp = fopen("bk/_title_.index", "wb");
     fwrite(&filet, 1, 4, fp);
     for(i=0;i<filet;i++) {
         c = strlen(titled[i].content);
@@ -90,7 +90,7 @@ void output_database()
     }
     fclose(fp);
     
-    sprintf(buf, "%d.index", indext);
+    sprintf(buf, "bk/%d.index", indext);
     fp = fopen(buf, "wb");
     fwrite(&wordt, 1, 4, fp);
     b = (char *)malloc(21000000);
