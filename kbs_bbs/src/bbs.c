@@ -4365,6 +4365,44 @@ static int content_getdata(struct _select_def *conf, int pos, int len)
 static int content_key(struct _select_def *conf, int key)
 {
 	switch (key) {
+	case 'm':
+		{
+			char ans[3];
+			int newm;
+			getdata(t_lines-1, 0, "移动到新次序:", ans, 2, DOECHO, NULL, true);
+			if( ans[0]=='\0' || ans[0]=='\n' || ans[0]=='\r' )
+				return SHOW_REFRESH;
+			newm=atoi(ans);
+
+			if(newm <= 0 || newm > ptemplate[t_now].tmpl->content_num)
+				return SHOW_REFRESH;
+
+			if( newm > conf->pos ){
+				int i;
+				struct s_content sc;
+				memcpy(&sc, &ptemplate[t_now].cont[conf->pos-1], sizeof(struct s_content));
+				for(i=conf->pos;i<newm;i++)
+					memcpy(& ptemplate[t_now].cont[i-1], & ptemplate[t_now].cont[i], sizeof(struct s_content));
+				memcpy(&ptemplate[t_now].cont[newm-1], &sc, sizeof(struct s_content));
+
+				tmpl_save();
+
+				return SHOW_REFRESH;
+			}else if(newm < conf->pos){
+				int i;
+				struct s_content sc;
+				memcpy(&sc, &ptemplate[t_now].cont[conf->pos-1], sizeof(struct s_content));
+				for(i=conf->pos;i>newm;i--)
+					memcpy(& ptemplate[t_now].cont[i-1], & ptemplate[t_now].cont[i-2], sizeof(struct s_content));
+				memcpy(&ptemplate[t_now].cont[newm-1], &sc, sizeof(struct s_content));
+
+				tmpl_save();
+
+				return SHOW_REFRESH;
+			}else
+				return SHOW_REFRESH;
+
+		}
 	case 'a':
 		if( ptemplate[t_now].tmpl->content_num >= MAX_CONTENT ){
 			char ans[STRLEN];
