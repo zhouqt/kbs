@@ -1372,6 +1372,16 @@ for i in *.c; do
 done
 cd $OLDPWD
 
+if test -f "../wrapper.sh"; then
+abssrcdir=`cd $srcdir && pwd`
+CC="$abssrcdir/../wrapper.sh"
+LIBTOOL="$abssrcdir/../wrapper.sh"
+MAKEFLAG="-s"
+else
+MAKEFLAG=""
+fi
+AC_SUBST(MAKEFLAG)
+
 AC_SUBST(ETCDIR)
 AC_SUBST(PIDDIR)
 AC_SUBST(RSAREFDEP)

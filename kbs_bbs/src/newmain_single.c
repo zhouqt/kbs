@@ -1155,6 +1155,22 @@ void update_endline()
         return;
     }
     now = time(0);
+#ifdef FLOWBANNER
+	allstay = (DEFINE(currentuser, DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
+	if (allstay) {
+		if (allstay & 1) {	//显示系统浮动信息
+			struct public_data *publicshm = get_publicshm();
+			if (publicshm->bannercount) 
+				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, publicshm->banners[time(0)%publicshm->bannercount]);
+			else allstay=0;
+		} else {	//显示版面浮动信息
+			if ((currboard)&&(currboard->bannercount))
+				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, currboard->banners[time(0)%currboard->bannercount]);
+			else allstay=0;
+		}
+	}
+	if (!allstay) {
+#endif
     allstay = (now - login_start_time) / 60;
     sprintf(buf, "[\033[36m%.12s\033[33m]", currentuser->userid);
     if (DEFINE(currentuser, DEF_NOTMSGFRIEND)) {
@@ -1185,6 +1201,14 @@ void update_endline()
     move(t_lines - 1, -strlen(stitle)-1);
     prints("%s", stitle);
     resetcolor();
+#ifdef FLOWBANNER
+	} else {
+    move(t_lines - 1, 0);
+    prints("%s", stitle);
+    clrtoeol();
+    resetcolor();
+	}
+#endif
 
     /* Leeward 98.09.30 show hint for rookies */
     /* PERMs should coincide with ~bbsroot/etc/sysconf.ini: PERM_ADMENU */

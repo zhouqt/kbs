@@ -2,7 +2,7 @@ EXTRA_DIST = README INSTALL include/bbslib.h include/types.h \
              @HTML_FILES@
 SUBDIRS = lib phplib src
 CLEANFILES=@EXTRA_CLEAN@
-AM_MAKEFLAGS=-s
+AM_MAKEFLAGS=@MAKEFLAG@
 
 install-data-local:
 	cp -r html/* @HTMPATH@

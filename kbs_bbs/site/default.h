@@ -37,6 +37,15 @@
 #endif
 #endif
 
+#ifdef FLOWBANNER
+#ifndef MAXBANNER
+#define MAXBANNER 8
+#endif
+#ifndef BANNERSIZE
+#define BANNERSIZE 120
+#endif
+#endif
+
 #if NEW_COMERS == 0
 #undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
 #endif
@@ -553,11 +562,13 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWDETAILUSERDATA	04000000000
 #define DEF_SHOWREALUSERDATA	010000000000
 #define DEF_HIDEIP			040000000001
+#define DEF_SHOWBANNER	040000000002
+
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 33
+#define NUMDEFINES 34
 
 #define SET_DEFINE(user,x) ((user)->userdefine[def_list(x)] |= x)
 #define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)

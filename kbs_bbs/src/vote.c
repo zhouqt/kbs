@@ -125,6 +125,72 @@ int b_notes_edit()
     return FULLUPDATE;
 }
 
+#ifdef FLOWBANNER
+void load_board_banner(const char * board)
+{
+    int i;
+	FILE *fp;
+    struct boardheader bh, *obh;
+    char filename[STRLEN * 2];
+	char buf[512];
+    sprintf(filename, "boards/%s/banner", board);
+	obh = getbcache(board);
+    memcpy(&bh, obh, sizeof(struct boardheader));
+	i = 0;
+    if (NULL != (fp = fopen(filename, "r"))) {
+		while ((!feof(fp))&&(i<MAXBANNER)) {
+			fgets(buf, 512, fp);
+			buf[BANNERSIZE-1] = 0;
+			strcpy(bh.banners[i], buf);
+			if (*banner_filter(bh.banners[i])) i++;
+		}
+		fclose(fp);
+    }
+	bh.bannercount = i;
+	set_board(getboardnum(board, NULL), &bh, NULL);
+}
+
+int b_banner_edit()
+{
+    char buf[STRLEN];
+    char ans[4];
+    int aborted;
+    int oldmode;
+
+    if (!chk_currBM(currBM, currentuser)) {
+        return 0;
+    }
+    clear();
+    sprintf(buf, "boards/%s/banner", currboard->filename);
+    getdata(1, 0, "(E)编辑 (D)删除 本讨论区的流动信息? [E]: ", ans, 2,
+            DOECHO, NULL, true);
+    if (ans[0] == 'D' || ans[0] == 'd') {
+        move(2, 0);
+        if (askyn("真的要删除本讨论区的流动信息", 0)) {
+            move(3, 0);
+            prints("流动信息已经删除...\n");
+            pressanykey();
+            my_unlink(buf);
+            aborted = 1;
+        } else
+            aborted = -1;
+    } else {
+        oldmode = uinfo.mode;
+        modify_user_mode(EDITUFILE);
+        aborted = vedit(buf, false,NULL, NULL);
+        modify_user_mode(oldmode);
+    }
+    if (aborted == -1) {
+        pressreturn();
+    } else {
+    	load_board_banner(currboard->filename);
+        setvfile(buf, currboard->filename, "noterec");
+        my_unlink(buf);
+    }
+    return FULLUPDATE;
+}
+#endif
+
 int b_sec_notes_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char buf[STRLEN];

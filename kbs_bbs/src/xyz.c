@@ -584,7 +584,7 @@ int x_userdefine1()
     move(1, 0);
     clrtobot();
     move(2, 0);
-    newlevel = setperms(lookupuser->userdefine[1], 0, "参数", 1, showuserdefine1, NULL);
+    newlevel = setperms(lookupuser->userdefine[1], 0, "参数", NUMDEFINES-32, showuserdefine1, NULL);
     move(2, 0);
     if (newlevel == lookupuser->userdefine[1])
         prints("参数没有修改...\n");
@@ -766,6 +766,9 @@ void a_edits()
         #ifdef HAVE_CUSTOM_USER_TITLE
         "../" USER_TITLE_FILE,
         #endif
+        #ifdef FLOWBANNER
+        "banner",
+        #endif
         NULL
     };
 
@@ -785,6 +788,9 @@ void a_edits()
         "封禁理由列表", "新用户个人定制区","给新注册用户的信", 
         #ifdef HAVE_CUSTOM_USER_TITLE
         "用户职务表",
+        #endif
+        #ifdef FLOWBANNER
+        "全站流动信息",
         #endif
         NULL
     };
@@ -867,6 +873,11 @@ void a_edits()
 #ifdef HAVE_CUSTOM_USER_TITLE
        if (!strcmp(e_file[ch],"../" USER_TITLE_FILE)) {
           load_user_title();
+       }
+#endif
+#ifdef FLOWBANNER
+       if (!strcmp(e_file[ch],"banner")) {
+          load_site_banner(0);
        }
 #endif
     }

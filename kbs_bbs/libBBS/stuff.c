@@ -729,6 +729,52 @@ void save_maxuser()
     }
 }
 
+#ifdef FLOWBANNER
+char * banner_filter(char * text) { //filter text, no cur-cmds allowed, text should be \0 ended
+	char * r, * w, *t;
+	r = text;
+	w = text;
+	while (*r) {
+		if (*r=='\033') {
+			t = r;
+			do {
+				t++;
+			} while (!((*t=='\0')||((*t>='A')&&(*t<='Z'))||((*t>='a')&&(*t<='z'))));
+			if (*t=='m') {
+				while (r<=t) {
+				*w = *r;
+				w++; r++;
+				}
+			} else {r=t;r++;}	
+		} else {
+			if (*r!='\n') { *w=*r; w++; }
+			r++;
+		}
+	}
+	*w=0;
+	return text;
+}
+
+void load_site_banner(int init)  {
+    int i;
+	FILE *fp;
+	char buf[512];
+ 	i = 0;
+    if (NULL != (fp = fopen("etc/banner", "r"))) {
+		if (!init) setpublicshmreadonly(0);
+		while ((!feof(fp))&&(i<MAXBANNER)) {
+			fgets(buf, 512, fp);
+			buf[BANNERSIZE-1] = 0;
+			strcpy(publicshm->banners[i], buf);
+			if (*banner_filter(publicshm->banners[i])) i++;
+		}
+		publicshm->bannercount = i;
+		if (!init) setpublicshmreadonly(1);
+		fclose(fp);
+    }
+}
+#endif
+
 void bbssettime(time_t now)
 {
     int iscreate;
@@ -745,6 +791,9 @@ void bbssettime(time_t now)
             /*
              * 初始化public共享内存区 
              */
+#ifdef FLOWBANNER
+			load_site_banner(1);
+#endif
             /*
              * 开始的sysconf.img版本号为0 
              */

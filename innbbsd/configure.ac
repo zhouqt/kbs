@@ -67,8 +67,9 @@ AC_FUNC_WAIT3
 AC_CHECK_FUNCS([bzero bcopy dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime killpg])
 
 if test -f "../wrapper.sh"; then
-CC="../wrapper.sh"
-LIBTOOL="../wrapper.sh"
+abssrcdir=`cd $srcdir && pwd`
+CC="$abssrcdir/../wrapper.sh"
+LIBTOOL="$abssrcdir/../wrapper.sh"
 MAKEFLAG="-s"
 else
 MAKEFLAG=""

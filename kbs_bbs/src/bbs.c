@@ -3208,10 +3208,14 @@ int b_note_edit_new(struct _select_def* conf,struct fileheader *fileinfo,void* e
 
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, "编辑: 0)取消 1)备忘录 2)本版模板 [0]: ", ans, 3, DOECHO, NULL, true);
+    getdata(t_lines - 1, 0, "编辑: 0)取消 1)备忘录 2)本版模板"
+#ifdef FLOWBANNER
+		" 3)底部流动信息"
+#endif
+		" [0]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0]=='1') return b_notes_edit();
 	else if(ans[0]=='2'){
-		int ret;
+		int ret;	
 #ifdef NEW_HELP
 		int oldhelpmode=helpmode;
 		helpmode = HELP_TMPL;
@@ -3222,6 +3226,11 @@ int b_note_edit_new(struct _select_def* conf,struct fileheader *fileinfo,void* e
 #endif
 		return ret;
 	}
+#ifdef FLOWBANNER
+	else if(ans[0]=='3'){
+		return b_banner_edit();		
+	}
+#endif
 
 	return FULLUPDATE;
 }

@@ -9,6 +9,12 @@ int mail_forward(struct _select_def* conf,struct fileheader* data,void* extradat
 int mail_uforward(struct _select_def* conf,struct fileheader* data,void* extradata);
 #endif
 
+#ifdef FLOWBANNER
+char * banner_filter(char * text); //filter text, no cur-cmds allowed, text should be \0 ended
+void load_site_banner(int init);
+void load_board_banner(const char * board);
+#endif
+
 /*screen.c*/
 void do_naws(int ln, int col);
 void auto_chinese();
@@ -124,6 +130,7 @@ void RemoveAppendedSpace(char *ptr);
 
 /*vote.c*/
 int b_notes_edit();
+int b_banner_edit();
 int vote_results(char* bname);
 void makevdir(char *bname);
 void setvfile(char *buf, char *bname, char *filename);

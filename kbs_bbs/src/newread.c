@@ -491,6 +491,22 @@ static int read_endline(struct _select_def *conf)
         char pntbuf[256], nullbuf[2] = " ";
         char lbuf[11];
 
+#ifdef FLOWBANNER
+	allstay = (DEFINE(currentuser, DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
+	if (allstay) {
+		if (allstay & 1) {	//显示系统浮动信息
+			struct public_data *publicshm = get_publicshm();
+			if (publicshm->bannercount) 
+				snprintf(pntbuf, 256, "\033[33;44m%s\033[m", publicshm->banners[time(0)%publicshm->bannercount]);
+			else allstay=0;
+		} else {	//显示版面浮动信息
+			if (currboard->bannercount) 
+				snprintf(pntbuf, 256, "\033[33;44m%s\033[m", currboard->banners[time(0)%currboard->bannercount]);
+			else allstay=0;
+		}
+	}
+	if (!allstay) {
+#endif
         snprintf(lbuf,11,"%d",conf->tmpnum);
 
         allstay = (time(0) - login_start_time) / 60;
@@ -499,6 +515,9 @@ static int read_endline(struct _select_def *conf)
                                                                                                                                                                                                                                                                                          * TODO:这个地方有问题，他想对齐，但是代码不对
                                                                                                                                                                                                                                                                                          * , */ nullbuf,
                  (allstay / 60) % 1000, allstay % 60);
+#ifdef FLOWBANNER
+	}
+#endif
         move(t_lines - 1, 0);
         prints(pntbuf);
         clrtoeol();

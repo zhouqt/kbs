@@ -160,6 +160,10 @@ struct boardheader {            /* This structure is used to hold data in */
     int group; /*所属目录*/
     char title_level; /* 设定用户需要什么title可见这个版面*/
     char des[195]; /*版面描述,用于www的版面说明和search */
+#ifdef FLOWBANNER
+	int bannercount;
+	char banners[MAXBANNER][BANNERSIZE];
+#endif
 };
 
 /* add by roy 2003.8.7 struct wwwthreadheader */
@@ -215,7 +219,12 @@ struct public_data {
     int www_guest_count;
     unsigned int max_user;
     unsigned int max_wwwguest;
+#ifdef FLOWBANNER
+        int bannercount;
+        char banners[MAXBANNER][BANNERSIZE];
+#else
     char unused[1004];
+#endif
 };
 struct smenuitem {
     int line, col, level;

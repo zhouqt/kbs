@@ -140,6 +140,16 @@ AC_CHECK_FUNCS([alarm bzero ftruncate getcwd memset mkdir munmap socket strcasec
 WWWSRCDIR=`pwd`
 AC_SUBST(WWWSRCDIR)
 
+if test -f "../wrapper.sh"; then
+abssrcdir=`cd $srcdir && pwd`
+CC="$abssrcdir/../wrapper.sh"
+LIBTOOL="$abssrcdir/../wrapper.sh"
+MAKEFLAG="-s"
+else
+MAKEFLAG=""
+fi
+AC_SUBST(MAKEFLAG)
+
 AC_CONFIG_FILES([Makefile
                  lib/Makefile
                  phplib/Makefile
