@@ -566,7 +566,6 @@ int smsnumber2uid(byte number[4]){
 	
 #endif
 
-#ifdef HAVE_USERMONEY
 /* user score, add by roy 2003.7.23 */
 #ifdef HAVE_USERMONEY
 int get_score(struct userec *user){
