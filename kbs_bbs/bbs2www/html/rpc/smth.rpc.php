@@ -6,7 +6,7 @@ require_once 'config.modules.php';
 $GLOBAL_MODULES = new Modules ();
 
 class Modules {
-    public $mList;
+    var $mList;
     
     function Modules () {
         global $smth_modules;
@@ -29,29 +29,29 @@ class Modules {
 }
 
 class Module{
-    public $mid;
-    public $name;
-    public $access;
-    public $version;
-    public $innerhost;
-    public $innerport;
-    public $outerhost;
-    public $outerport;
-    public $xmlrpcsuser;
-    public $xmlrpcspass;
-    public $xmlrpcstype;
-    public $xmlrpcspath;
-    public $xmlrpcuser;
-    public $xmlrpcpass;
-    public $xmlrpctype;
-    public $managepath;
-    public $path;
-    public $logo;
-    public $type;
-    public $typeName;
-    public $desc;
-    public $public;
-    public $kernel;
+    var $mid;
+    var $name;
+    var $access;
+    var $version;
+    var $innerhost;
+    var $innerport;
+    var $outerhost;
+    var $outerport;
+    var $xmlrpcsuser;
+    var $xmlrpcspass;
+    var $xmlrpcstype;
+    var $xmlrpcspath;
+    var $xmlrpcuser;
+    var $xmlrpcpass;
+    var $xmlrpctype;
+    var $managepath;
+    var $path;
+    var $logo;
+    var $type;
+    var $typeName;
+    var $desc;
+    var $public;
+    var $kernel;
     
     function Module () {
         
@@ -78,7 +78,7 @@ class Module{
         $this->logo = $array['logo'];
         $this->type = $array['type'];
         
-        $this->public = $this->havePerm (MODULE_ACCESS_PUBLIC);
+        $this->var = $this->havePerm (MODULE_ACCESS_PUBLIC);
         $this->kernel = $this->havePerm (MODULE_ACCESS_KERNEL);
         
         settype ($this->mid, 'integer');
@@ -94,7 +94,7 @@ class Module{
     }
 
 
-    function isPublic () {
+    function isvar () {
         return $this->public;    
     }
 
