@@ -525,7 +525,7 @@ while($board = array_shift($boards))
 <hr class="smth">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
   <tr>
-    <td align="center" class="smth">版权所有 &copy; <?php echo BBS_FULL_NAME; ?> 1995-2003 <a href="certificate.html">京ICP备02002号</a></td>
+    <td align="center" class="smth">版权所有 &copy; <?php echo BBS_FULL_NAME; ?> 1995-2004 <a href="certificate.html">京ICP备02002号</a></td>
   </tr>
 </table>
 <br>
