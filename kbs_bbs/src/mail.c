@@ -1239,7 +1239,6 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     char menu_char[3][10]={"I) 收件箱", "J) 垃圾箱", "Q) 退出"};
 
     load_mail_list();
-    if (!mail_list_t) return DONOTHING;
     clear();
     move(5, 3);
     prints("请选择移动到哪个邮箱");
