@@ -902,6 +902,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 change = 1 - t_lines;
                 break;
             case 'j':
+            case 'n':
                 return KEY_DOWN;
             case 'k':
                 return KEY_UP;
