@@ -6,17 +6,26 @@
 #include "select.h"
 static int check_valid(struct _select_def *conf)
 {
+    int ret = SHOW_CONTINUE;;
     if (conf->item_count <= 0)
         return SHOW_QUIT;
-    if (conf->page_pos > conf->item_count)
+    if (conf->page_pos > conf->item_count) {
         conf->page_pos -= conf->item_per_page;
+        ret = SHOW_DIRCHANGE;
+    }
     if (conf->pos > conf->item_count)
         conf->pos = conf->item_count;
     if (conf->pos <= 1)
         conf->pos = 1;
-    if (conf->page_pos <= 1)
-        conf->page_pos = ((conf->pos-1)/conf->item_per_page)*conf->item_per_page+1;
-    return SHOW_CONTINUE;
+    if (conf->page_pos <= 1) {
+        int i;
+        i = ((conf->pos-1)/conf->item_per_page)*conf->item_per_page+1;
+        if(i!=conf->page_pos) {
+            ret = SHOW_DIRCHANGE;
+            conf->page_pos = i;
+        }
+    }
+    return ret;
 }
 static void select_wrong(struct _select_def *conf)
 {
@@ -149,7 +158,7 @@ static int do_select_internal(struct _select_def *conf, int key)
     int ret = SHOW_CONTINUE;
 
     if (!(conf->flag & LF_INITED)) {
-        if (check_valid(conf) == SHOW_QUIT)
+        if ((ret=check_valid(conf)) == SHOW_QUIT)
             return SHOW_QUIT;
         if (conf->init)
             (*conf->init) (conf);
@@ -314,8 +323,9 @@ checkret:
 	            ret=(*conf->get_data) (conf, conf->page_pos, conf->item_per_page);
 	        if (ret==SHOW_QUIT)
 	        	return ret;
-	        if (check_valid(conf) == SHOW_QUIT)
+	        if ((ret=check_valid(conf)) == SHOW_QUIT)
 	            return SHOW_QUIT;
+	        if (ret==SHOW_DIRCHANGE) goto checkret; //possible loop.....
 	    case SHOW_REFRESH:
 	        ret=refresh_select(conf);
 	        break;
