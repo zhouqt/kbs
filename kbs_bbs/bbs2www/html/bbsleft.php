@@ -442,7 +442,7 @@
 				<DIV class="s" id="divchat">
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">&nbsp;
-					<a href="/cgi-bin/bbs/bbsusr" target="f3">在线用户</a><br>
+					<a href="bbsuser.php" target="f3">在线用户</a><br>
 <?php
 	if($currentuser["userid"]=="guest"){
 ?>					

@@ -51,7 +51,7 @@ function Time(){
 //JavaScript End-->
 </script>
 <body class="b2"  onload="Init()">
-<form name="clock">时间[<input class="b8" TYPE="text" NAME="myclock" size="18" READONLY>] 在线[<a href="/cgi-bin/bbs/bbsusr" target="f3" class="b8"><?php 
+<form name="clock">时间[<input class="b8" TYPE="text" NAME="myclock" size="18" READONLY>] 在线[<a href="bbsuser.php" target="f3" class="b8"><?php 
 echo bbs_getonlinenumber(); ?></a>] 帐号[<a href=<?php
 echo "\"/bbsqry.php?userid=" . $currentuser["userid"] . "\""; ?> target="f3" class="b8"><?php
 echo $currentuser["userid"]; ?></a>] <?php

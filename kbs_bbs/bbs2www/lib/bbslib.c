@@ -1208,17 +1208,6 @@ char *void1(unsigned char *s)
     return s;
 }
 
-char *sec(char c)
-{
-    int i;
-
-    for (i = 0; i < SECNUM; i++) {
-        if (strchr(seccode[i], c))
-            return secname[i][0];
-    }
-    return "(unknown.)";
-}
-
 char *flag_str(int access)
 {
     static char buf[80];
@@ -2394,7 +2383,7 @@ char *encode_html(char *buf, const char *str, size_t buflen)
     return buf;
 }
 
-int is_BM(struct boardheader *board, struct userec *user)
+int is_BM(const struct boardheader *board,const struct userec *user)
 {
     char BM[STRLEN];
 
@@ -2994,7 +2983,7 @@ static void clearWWWThreadList(pwwwthreadheader_list p){
 	}
 }
 
-int www_generateOriginIndex(char* board)
+int www_generateOriginIndex(const char* board)
 /* added by roy 2003.7.17 generate .ORIGIN index file*/
 {
     struct fileheader *ptr1,*ptrtemp;

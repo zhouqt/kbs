@@ -1,6 +1,8 @@
+/*
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+*/
     
 #include "php.h"
 #include "php_ini.h"
@@ -447,15 +449,15 @@ static void asssign_maillist(zval * array, char *boxname, char *pathname)
 static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
 {
     add_assoc_long(array, "NUM", num);
-    add_assoc_string(array, "NAME", board->filename, 1);
+    add_assoc_string(array, "NAME", (char*)board->filename, 1);
     /*
      * add_assoc_string(array, "OWNER", board->owner, 1);
      */
-    add_assoc_string(array, "BM", board->BM, 1);
+    add_assoc_string(array, "BM", (char*)board->BM, 1);
     add_assoc_long(array, "FLAG", board->flag);
-    add_assoc_string(array, "DESC", board->title + 13, 1);
-    add_assoc_stringl(array, "CLASS", board->title + 1, 6, 1);
-    add_assoc_stringl(array, "SECNUM", board->title, 1, 1);
+    add_assoc_string(array, "DESC", (char*)board->title + 13, 1);
+    add_assoc_stringl(array, "CLASS", (char*)board->title + 1, 6, 1);
+    add_assoc_stringl(array, "SECNUM", (char*)board->title, 1, 1);
     add_assoc_long(array, "LEVEL", board->level);
     add_assoc_long(array, "CURRENTUSERS", bstatus->currentusers);
     add_assoc_long(array, "TOTAL", bstatus->total);
@@ -1220,7 +1222,7 @@ static void bbs_make_article_array(zval * array, struct fileheader *fh, char *fl
     add_assoc_stringl(array, "INNFLAG", fh->innflag, sizeof(fh->innflag), 1);
     add_assoc_string(array, "OWNER", fh->owner, 1);
     add_assoc_string(array, "TITLE", fh->title, 1);
-    add_assoc_long(array, "LEVEL", fh->level);
+/*    add_assoc_long(array, "LEVEL", fh->level);*/
     add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
     add_assoc_long(array, "ATTACHPOS", fh->attachment);
 }
@@ -1905,12 +1907,12 @@ static PHP_FUNCTION(bbs_getboards)
     {
 	    int n;
 	    struct boardheader const *bptr;
-	    char** namelist;
+	    const char** namelist;
         int* indexlist;
 		time_t tnow;
 
 		tnow = time(0);
-        namelist=(char**)emalloc(sizeof(char**)*(total));
+        namelist=(const char**)emalloc(sizeof(char**)*(total));
 		if (namelist==NULL) {
 			RETURN_FALSE;
 		}
@@ -1953,9 +1955,9 @@ static PHP_FUNCTION(bbs_getboards)
 		  	ptr=&newpost_buffer;
 		   	bptr = getboard(indexlist[i]+1);
 		   	ptr->dir = bptr->flag&BOARD_GROUP?1:0;
-		   	ptr->name = bptr->filename;
-		   	ptr->title = bptr->title;
-		   	ptr->BM = bptr->BM;
+		   	ptr->name = (char*)bptr->filename;
+		   	ptr->title = (char*)bptr->title;
+		   	ptr->BM = (char*)bptr->BM;
 		   	ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
 		   	ptr->pos = indexlist[i];
 		   	if (bptr->flag&BOARD_GROUP) {
@@ -2133,7 +2135,7 @@ static PHP_FUNCTION(bbs_delete_friend)
 
     sethomefile(buf, currentuser->userid, "friends");
 
-    deleted = search_record(buf, &fh, sizeof(fh), cmpfnames2, userid);
+    deleted = search_record(buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames2, userid);
 
     if (deleted > 0) {
         if (delete_record(buf, sizeof(fh), deleted, NULL, NULL) != -1){
@@ -2227,7 +2229,7 @@ static PHP_FUNCTION(bbs_add_friend)
 	if(! getuser(userid,&lookupuser))
 		RETURN_LONG(-4);
 
-    n = search_record(buf, &fh, sizeof(fh), cmpfnames2, lookupuser->userid);
+    n = search_record(buf, &fh, sizeof(fh), (RECORD_FUNC_ARG)cmpfnames2, lookupuser->userid);
     if (n > 0)
 		RETURN_LONG(-2);
 
@@ -2569,7 +2571,7 @@ static PHP_FUNCTION(bbs_getthreads)
     }
 
 
-    ptr1 = (struct fileheader *) ptr;
+    ptr1 = (struct wwwthreadheader *) ptr;
     /*
      * fetching articles 
      */
@@ -3516,7 +3518,7 @@ static PHP_FUNCTION(bbs_is_bm)
 static PHP_FUNCTION(bbs_getbname)
 {
 	int brdnum;
-	struct boardheader *bp=NULL;
+	const struct boardheader *bp=NULL;
     int ac = ZEND_NUM_ARGS();
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &brdnum) == FAILURE) {
@@ -4812,7 +4814,7 @@ static PHP_FUNCTION(bbs_createnewid)
 
 	if (!getuser(newuser.userid,&currentuser))RETURN_LONG(10);
 
-	newbbslog("user","%s","new account from www");
+	newbbslog(BBSLOG_USIES,"%s","new account from www");
 
 	//检查是否有前人的信件
 	sethomepath(tmpstr,userid);
@@ -6671,8 +6673,8 @@ static PHP_FUNCTION(bbs_get_explain)
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 
-	    add_assoc_string(element, "EXPLAIN", secname[i][0], 1);
-	    add_assoc_string(element, "GROUPS", groups[i], 1);
+	    add_assoc_string(element, "EXPLAIN", (char*)secname[i][0], 1);
+	    add_assoc_string(element, "GROUPS", (char*)groups[i], 1);
 		zend_hash_index_update(Z_ARRVAL_P(retarray), i,
 				(void*) &element, sizeof(zval*), NULL);
 
@@ -7406,50 +7408,6 @@ static PHP_FUNCTION(bbs_csv_to_al)
 }
 #endif
 
-/*
- *  bbs_getonline_user_list
- *  获取再线用户列表
- *
- *  没有参数
- *  返回在线用户数组
- *  格式：(invisible,isfriend,userid,username,userfrom,mode,idle(妙))
- */
-static PHP_FUNCTION(bbs_getonline_user_list)
-{
-
-	int i;
-	uinfo_t **user;
-
-	zval* element;
-	
-	int total = 0;
-
-    if ( 0!=ZEND_NUM_ARGS() )
-		WRONG_PARAM_COUNT;
-
-   	if (array_init(return_value) == FAILURE)
-      	 RETURN_FALSE;
-
-	apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &total);
-
-	user = get_ulist_addr();
-
-	for ( i=0; i < total; i++ ) {
-		MAKE_STD_ZVAL ( element );
-		array_init ( element );
-
-		add_assoc_bool ( element, "invisible", user[i]->invisible );
-		add_assoc_bool ( element, "isfriend", isfriend(user[i]->userid) );
-		add_assoc_string ( element, "userid", user[i]->userid, 1 );
-		add_assoc_string ( element, "username", user[i]->username, 1 );
-		add_assoc_string ( element, "userfrom", user[i]->from, 1 );
-		add_assoc_string ( element, "mode", ModeType(user[i]->mode), 1 );
-		add_assoc_long ( element, "idle", (time(0) - get_idle_time(user[i])) );
-
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
-	}
-}
-
 int get_pos(char * s)
 {
     struct stat st;
@@ -7487,6 +7445,70 @@ int get_pos(char * s)
     }
     fclose(fp);
     return -1;
+}
+
+struct fulluserlistarg{
+    int start;
+    int num;
+    zval* return_value;
+};
+
+static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,int count)
+{
+    struct user_info userinfo=*uentp;
+    zval* element;
+    if (!userinfo.active || !userinfo.pid) {
+        return 0;
+    }
+    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && userinfo.invisible && strcmp(userinfo.userid, getcurruserid())) {
+        /*Haohmaru.99.4.24.让隐身者能看见自己 */
+        return 0;
+    }
+    if (count+1<arg->start)
+        return COUNT;
+    if (count+1-arg->start>arg->num)
+        return QUIT;
+    MAKE_STD_ZVAL ( element );
+    array_init ( element );
+
+    add_assoc_bool ( element, "invisible", userinfo.invisible );
+    add_assoc_bool ( element, "isfriend", isfriend(userinfo.userid) );
+    add_assoc_string ( element, "userid", userinfo.userid, 1 );
+    add_assoc_string ( element, "username", userinfo.username, 1 );
+    add_assoc_string ( element, "userfrom", userinfo.from, 1 );
+    add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
+    add_assoc_long ( element, "idle", (time(0) - get_idle_time(&userinfo)) );
+    
+    zend_hash_index_update(Z_ARRVAL_P(arg->return_value), count+1-arg->start, (void *) &element, sizeof(zval *), NULL);
+    return COUNT;
+}
+
+/*
+ *  bbs_getonline_user_list
+ *  获取再线用户列表
+ *  @param start 开始位置
+ *  @param num 获取的个数
+ *  @return 在线用户数组
+ *      格式：(invisible,isfriend,userid,username,userfrom,mode,idle(妙))
+ */
+static PHP_FUNCTION(bbs_getonline_user_list)
+{
+
+    int i;
+    uinfo_t **user;
+    struct fulluserlistarg arg;
+    int ac = ZEND_NUM_ARGS();
+    utmpent = get_curr_utmpent();    //I hate the global variable!!
+
+    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"ll",&arg.start,&arg.num) ==FAILURE){
+        WRONG_PARAM_COUNT;
+    }
+
+    if (array_init(return_value) == FAILURE)
+        RETURN_FALSE;
+
+    arg.return_value=return_value;
+    apply_ulist_addr((APPLY_UTMP_FUNC) full_user_list, &arg);
 }
 
 static PHP_FUNCTION(bbs_x_search)

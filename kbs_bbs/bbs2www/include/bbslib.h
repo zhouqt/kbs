@@ -223,8 +223,6 @@ int init_no_http();
 
 char *void1(unsigned char *s);
 
-char *sec(char c);
-
 char *flag_str(int access);
 
 char *flag_str2(int access, int has_read);
@@ -314,7 +312,7 @@ int can_reply_post(char *board, char *filename);
 char bin2hex(int val);
 char *encode_url(char *buf, const char *str, size_t buflen);
 char *encode_html(char *buf, const char *str, size_t buflen);
-int is_BM(struct boardheader *board, struct userec *user);
+int is_BM(const struct boardheader *board,const struct userec *user);
 int is_owner(struct fileheader *fh, struct userec *user);
 int can_delete_post(struct boardheader *board, struct fileheader *fh, struct userec *user);
 int can_edit_post(struct boardheader *board, struct fileheader *fh, struct userec *user);
@@ -323,7 +321,7 @@ int get_seccode_index(char prefix);
 char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* attachlink);
-int www_generateOriginIndex(char* board);
+int www_generateOriginIndex(const char* board);
 
 struct WWW_GUEST_S* www_get_guest_entry(int idx);
 

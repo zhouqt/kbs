@@ -78,7 +78,7 @@ int main()
             printf("[<a href=\"bbsufind?search=%c\">%c</a>]", i, i);
     }
     printf("<br>\n");
-    printf("[<a href=\"javascript:history.go(-1)\">返回</a>] [<a href=\"bbsusr\">一般模式</a>] ");
+    printf("[<a href=\"javascript:history.go(-1)\">返回</a>] [<a href=\"/bbsuser.php\">一般模式</a>] ");
     printf("</center>\n");
     http_quit();
 }
