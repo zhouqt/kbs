@@ -2202,7 +2202,7 @@ static PHP_FUNCTION(bbs_fillidinfo)
 /**
  * Function: Create a registry form
  *  rototype:
- * int bbs_createregform(string userid ,string realname,string dept,string address,int year,int month,int day,
+ * int bbs_createregform(string userid ,string realname,string dept,string address,int gender,int year,int month,int day,
     string email,string phone,bool bAuto)
  *
  *  bAuto : true -- 自动生成注册单,false -- 手工.
@@ -2229,6 +2229,7 @@ static PHP_FUNCTION(bbs_createregform)
 			address_len,
 			email_len,
 			phone_len,
+			gender,
 	        year,
 	        month,
 			day;
@@ -2243,8 +2244,8 @@ static PHP_FUNCTION(bbs_createregform)
 
     int ac = ZEND_NUM_ARGS();
 
-    if (ac != 10 || zend_parse_parameters(10 TSRMLS_CC, "sssslllssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
-	    &address,&address_len,&year,&month,&day,&email,&email_len,&phone,&phone_len,&bAuto) == FAILURE)
+    if (ac != 11 || zend_parse_parameters(11 TSRMLS_CC, "ssssllllssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
+	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&bAuto) == FAILURE)
     {
 		WRONG_PARAM_COUNT;
 	}
@@ -2287,7 +2288,9 @@ static PHP_FUNCTION(bbs_createregform)
     ud.birthyear=year;
 	ud.birthmonth=month;
 	ud.birthday=day;
-	ud.gender=0;
+	if(gender==1)ud.gender='M';
+	else
+	    ud.gender='F';
 #endif
 	write_userdata(userid, &ud);
 
