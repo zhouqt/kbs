@@ -93,26 +93,28 @@ CREATE TABLE `trackback` (
   PRIMARY KEY  (`tbid`) 
 ) TYPE=MyISAM COMMENT='引用通告' AUTO_INCREMENT=10 ; 
 
-CREATE TABLE `users` ( 
-  `uid` int(10) unsigned NOT NULL auto_increment, 
-  `username` varchar(20) NOT NULL default '', 
-  `corpusname` varchar(40) NOT NULL default '', 
-  `description` varchar(200) default NULL, 
-  `theme` varchar(20) default NULL, 
-  `nodelimit` int(8) NOT NULL default '300', 
-  `dirlimit` int(8) NOT NULL default '100', 
-  `createtime` timestamp(14) NOT NULL, 
-  `style` int(2) NOT NULL default '0', 
-  `backimage` varchar(255) default NULL, 
-  `visitcount` int(10) NOT NULL default '0', 
-  `nodescount` int(10) NOT NULL default '0', 
-  `logoimage` varchar(255) default NULL, 
-  `modifytime` timestamp(14) NOT NULL, 
-  `calendar` text NOT NULL, 
-  `links` varchar(255) NOT NULL default '', 
-  `htmleditor` int(1) NOT NULL default '0', 
-  PRIMARY KEY  (`uid`), 
-  UNIQUE KEY `username` (`username`), 
-  KEY `corpusname` (`corpusname`,`createtime`), 
-  FULLTEXT KEY `corpusname_2` (`corpusname`,`description`) 
-) TYPE=MyISAM COMMENT='用户表' AUTO_INCREMENT=2 ; 
+CREATE TABLE `users` (
+  `uid` int(10) unsigned NOT NULL auto_increment,
+  `username` varchar(20) NOT NULL default '',
+  `corpusname` varchar(40) NOT NULL default '',
+  `description` varchar(200) default NULL,
+  `theme` varchar(20) default NULL,
+  `nodelimit` int(8) NOT NULL default '300',
+  `dirlimit` int(8) NOT NULL default '100',
+  `createtime` timestamp(14) NOT NULL,
+  `style` int(2) NOT NULL default '0',
+  `backimage` varchar(255) default NULL,
+  `visitcount` int(10) NOT NULL default '0',
+  `nodescount` int(10) NOT NULL default '0',
+  `logoimage` varchar(255) default NULL,
+  `modifytime` timestamp(14) NOT NULL,
+  `calendar` text NOT NULL,
+  `links` tinytext NOT NULL,
+  `htmleditor` int(1) NOT NULL default '0',
+  `indexnodes` int(1) NOT NULL default '5',
+  `indexnodechars` int(5) NOT NULL default '500',
+  PRIMARY KEY  (`uid`),
+  UNIQUE KEY `username` (`username`),
+  KEY `corpusname` (`corpusname`,`createtime`),
+  FULLTEXT KEY `corpusname_2` (`corpusname`,`description`)
+) TYPE=MyISAM COMMENT='用户表' AUTO_INCREMENT=2 ;
