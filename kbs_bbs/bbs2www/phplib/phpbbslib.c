@@ -760,7 +760,6 @@ bbs_make_board_zval(zval *value, char *col_name, struct newpostdata *brd)
 }
 
 extern int     brdnum;
-extern int yank_flag;
 
 /**
  * Fetch all boards which have given prefix into an array.
@@ -788,6 +787,7 @@ static ZEND_FUNCTION(bbs_getboards)
 	int i;
 	int j;
 	int ac = ZEND_NUM_ARGS();
+	int brdnum,yank_flag;
 
 	/* getting arguments */
 	if (ac != 2 
@@ -811,11 +811,10 @@ static ZEND_FUNCTION(bbs_getboards)
 		yank_flag = 1; /* see all boards including zapped boards. */
 	if (yank_flag != 0)
 		yank_flag = 1;
-	nbrd = newpost_buffer;
 	brdnum = 0;
 	/* TODO: replace load_board() with a new one, without accessing
 	 * global variables. */
-	if ((brdnum=load_boards(nbrd,prefix,1,MAXBOARD,1,yank_flag,NULL)) <= 0)
+	if ((brdnum=load_boards(newpost_buffer,prefix,1,MAXBOARD,1,yank_flag,NULL)) <= 0)
 	{
 		RETURN_FALSE;
 	}
@@ -844,7 +843,7 @@ static ZEND_FUNCTION(bbs_getboards)
 	/* fill data for each column */
 	for (i = 0; i < rows; i++)
 	{
-		ptr = &nbrd[i];
+		ptr = &newpost_buffer[i];
 		check_newpost(ptr);
 		for (j = 0; j < BOARD_COLUMNS; j++)
 		{

@@ -68,4 +68,3 @@ struct newpostdata {
 
 extern sigjmp_buf bus_jump;
 
-extern struct newpostdata *nbrd;        /*每个版的信息 */

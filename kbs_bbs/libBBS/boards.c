@@ -31,10 +31,8 @@ static const char EmptyChar[] = "空";
 struct favbrd_struct favbrd_list[FAVBOARDNUM];
 int favbrd_list_t = -1, favnow = -1;
 
-struct newpostdata *nbrd;       /*每个版的信息 */
 int *zapbuf;
 int zapbuf_changed = 0;
-int brdnum, yank_flag = 0;
 
 void release_favboard()
 {

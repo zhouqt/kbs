@@ -3,8 +3,6 @@
  */
 #include "bbslib.h"
 
-extern int brdnum;
-extern int yank_flag;
 struct favbrd_struct {
     int flag;
     char *title;
@@ -71,13 +69,14 @@ int brd_show_boards(int sec, int yank)
     struct newpostdata *ptr;
     char *ptr2;
     int i;
+    int brdnum;
+    int yank_flag;
 
     yank_flag = yank;
     if (!strcmp(currentuser->userid, "guest"))
         yank_flag = 1;
-    nbrd = newpost_buffer;
     brdnum = 0;
-    if ((brdnum=fav_loaddata(nbrd,sec,1,FAVBOARDNUM,1,NULL)) == -1)
+    if ((brdnum=fav_loaddata(newpost_buffer,sec,1,FAVBOARDNUM,1,NULL)) == -1)
         return -1;
 /*    qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
     */
@@ -99,7 +98,7 @@ int brd_show_boards(int sec, int yank)
         printf("<tr><td></td><td><img src=\"/images/folder.gif\"></td><td>"
                "<a target=\"f3\" href=\"bbsfav?select=%d\">返回上一级</a></td>" "<td></td><td></td><td></td><td></td></tr>\n", favbrd_list[sec].father);
     for (i = 0; i < brdnum; i++) {
-        ptr = &nbrd[i];
+        ptr = &newpost_buffer[i];
         if (ptr->flag == -1) {
             int j;
 

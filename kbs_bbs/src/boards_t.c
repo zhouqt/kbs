@@ -7,8 +7,7 @@
 extern time_t login_start_time;
 extern int *zapbuf;
 extern int zapbuf_changed;
-extern int brdnum;
-extern int yank_flag;
+static int yank_flag=0;
 extern int favbrd_list_t, favnow;
 int choose_board(int newflag, char *boardprefix,int yank_flag);       /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
 static int check_newpost(struct newpostdata *ptr);
