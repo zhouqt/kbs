@@ -9,6 +9,7 @@ void ann_show_item(MENU * pm, ITEM * it)
     char *id;
     char buf[256];
     char pathbuf[256];
+	char title_en[256];
     char *ptr;
 
     strncpy(title, it->title, sizeof(title) - 1);
@@ -34,14 +35,19 @@ void ann_show_item(MENU * pm, ITEM * it)
     printf("<tr><td>%d</td>", pm->now + 1);
     sprintf(buf, "%s/%s", pm->path, it->fname);
     ptr = strchr(pm->path, '/');
-    if (!file_exist(buf)) {
-        printf("<td>[错误] </td><td>%s</td>", nohtml(title));
+	encode_html(title_en, title, sizeof(title_en));
+	if (!file_exist(buf)) {
+        printf("<td>[错误] </td><td>%s</td>", title_en);
     } else if (file_isdir(buf)) {
         snprintf(pathbuf, sizeof(pathbuf), "%s/%s", ptr == NULL ? "" : ptr, it->fname);
-        printf("<td>[目录] </td><td><a href=\"bbs0an?path=%s\">%s</a></td>", http_encode_string(pathbuf, sizeof(pathbuf)), nohtml(title));
+        printf("<td>[目录] </td><td><a href=\"bbs0an?path=%s\">%s</a></td>", 
+				http_encode_string(pathbuf, sizeof(pathbuf)), 
+				title_en);
     } else {
         snprintf(pathbuf, sizeof(pathbuf), "%s/%s", ptr == NULL ? "" : ptr, it->fname);
-        printf("<td>[文件] </td><td><a href=\"bbsanc?path=%s\">%s</a></td>", http_encode_string(pathbuf, sizeof(pathbuf)), nohtml(title));
+        printf("<td>[文件] </td><td><a href=\"bbsanc?path=%s\">%s</a></td>", 
+				http_encode_string(pathbuf, sizeof(pathbuf)), 
+				title_en);
     }
     if (id[0]) {
         printf("<td>%s</td>", userid_str(id));
