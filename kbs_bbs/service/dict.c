@@ -16,7 +16,7 @@ int dict_main()
                             sysconf_str("MYSQLUSER"),
 			    sysconf_str("MYSQLPASSWORD"),
 			    sysconf_str("MYSQLDATABASE"),
-			    sysconf_eval("MYSQLPORT",1521), 0, 0)) {
+			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0)) {
         prints("%s\n", mysql_error(&s));
         pressanykey();
         return;
