@@ -1312,8 +1312,9 @@ int pressanykey()
 
     showansi = 1;
     move(t_lines - 1, 0);
+    prints("\x1b[m");
     clrtoeol();
-    prints("\x1b[m                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
+    prints("                                \x1b[5;1;33m按任何键继续 ..\x1b[m");
     igetkey();
     move(t_lines - 1, 0);
     clrtoeol();
