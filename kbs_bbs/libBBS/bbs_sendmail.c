@@ -52,6 +52,8 @@ int mail_file(char* fromid,char *tmpfile,char *userid,char *title,int unlink)
         return -1 ;
 
     bbslog("1user","mailed %s ", userid);
+    if (!strcasecmp(userid,"SYSOP"))
+	    updatelastpost("sysmail");
     return 0 ;
 }
 

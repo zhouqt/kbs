@@ -720,6 +720,8 @@ edit_mail_file:
             return -1 ;
 
         bbslog("1user", "mailed %s", userid);
+	if (!strcasecmp(userid,"SYSOP"))
+		updatelastpost("sysmail");
         return 0 ;
     }
 }
