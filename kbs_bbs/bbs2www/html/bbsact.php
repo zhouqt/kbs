@@ -7,8 +7,8 @@ require("funcs.php");
 require("reg.inc.php");
 $retry_time = intval($_COOKIE["ACTRETRYTIME"]);
 
-//if($retry_time > 9)
-//	html_error_quit("您的重试次数过多，请稍后再激活");
+if($retry_time > 9)
+	html_error_quit("您的重试次数过多，请稍后再激活");
 	
 $userid = trim($_GET["userid"]);
 $acode  = trim($_GET["acode"]);
@@ -56,37 +56,4 @@ html_init("gb2312");
 <p align="center"><font color=red>提示：登录后，请进入[个人参数设定]->[填写注册单]，进行用户注册。</font></p>
 <?php
 html_normal_quit();
-/*
-if(!strcmp($gender,"男"))
-	$gender=1;
-else
-	$gender=2;
-settype($year,"integer");
-settype($month,"integer");
-settype($day,"integer");
-settype($m_register,"bool");
-
-if(!$m_register)$mobile_phone="";
-if (BBS_WFORUM==0)  {
-    $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$reg_email,$phone,$mobile_phone,TRUE);//自动生成注册单
-}
-else {
-    $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), TRUE);//自动生成注册单
-}
-
-switch($ret)
-{
-	case 0:
-		break;
-	case 2:
-		html_error_quit("该用户不存在!");
-		break;
-	case 3:
-		html_error_quit("生成注册单发生 参数错误! 请两天后手工填写注册单");
-		break;
-	default:
-		html_error_quit("生成注册单发生 未知的错误! 请两天后手工填写注册单");
-		break;
-}
-*/
 ?>

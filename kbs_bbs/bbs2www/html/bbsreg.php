@@ -27,7 +27,7 @@
 	*/
 	@$password = $_POST["pass1"];
 	@$re_password = $_POST["pass2"];
-	/*
+	
 	session_start();
 	if(!isset($_SESSION['num_auth']))
   	    html_error_quit("请等待识别的图片显示完毕!");
@@ -36,7 +36,7 @@
 
 	if(!strchr($reg_email,'@'))
 	    html_error_quit("错误的注册 email 地址!");
-	*/
+	
 	if($password != $re_password)
 	    html_error_quit("密码与确认密码不一致! ");
 	    
