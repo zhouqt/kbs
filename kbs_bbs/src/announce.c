@@ -393,8 +393,7 @@ int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *
         f_cp(buf, board, 0);
     }
     sprintf(buf, "将 boards/%s/%s 存入暂存档", key, fileinfo->filename);
-    fileinfo->accessed[0] |= FILE_IMPORTED;
-    substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+    change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
     a_report(buf);
     if (!nomsg) {
         sprintf(buf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
@@ -505,8 +504,7 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
                     a_prompt(-1, genbuf, ans);
 
                 /* Leeward 98.04.15 add below FILE_IMPORTED */
-                fileinfo->accessed[0] |= FILE_IMPORTED;
-                substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+                change_post_flag(currBM, currentuser, digestmode, currboard, ent, fileinfo, direct, FILE_IMPORT_FLAG, 0);
                 bmlog(currentuser->userid, currboard, 12, 1);
 
                 for (ch = 0; ch < pm.num; ch++)

@@ -637,6 +637,131 @@ int dele_digest(char *dname, char *direc)
     return 0;
 }
 
+int change_dir_post_flag(struct userec* currentuser, char* currboard, int ent, struct fileheader *fileinfo, int flag)
+{
+    /*---	---*/
+    int newent = 0, ret = 1;
+    char *ptr, buf[STRLEN];
+    char ans[256];
+    char genbuf[1024], direct[256];
+    struct fileheader mkpost;
+    struct flock ldata;
+    int fd, size = sizeof(fileheader);
+
+    setbdir(0, direct, currboard);
+    strcpy(buf, direct);
+    ptr = strrchr(buf, '/') + 1;
+    ptr[0] = '\0';
+    sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
+    if (!dashf(&genbuf[512]))
+        ret = 0;                /* 借用一下newent :PP   */
+
+    if (ret)
+        if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
+            ret = 0;
+    if (ret) {
+        ldata.l_type = F_RDLCK;
+        ldata.l_whence = 0;
+        ldata.l_len = size;
+        ldata.l_start = size * (ent - 1);
+        if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+            report("reclock error");
+            close(fd);
+                                /*---	period	2000-10-20	file should be closed	---*/
+            ret = 0;
+        }
+    }
+    if (ret) {
+        if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
+            report("subrec seek err");
+            /*---	period	2000-10-24	---*/
+            ldata.l_type = F_UNLCK;
+            fcntl(fd, F_SETLK, &ldata);
+            close(fd);
+            ret = 0;
+        }
+    }
+    if (ret) {
+        if (get_record_handle(fd, &mkpost, sizeof(mkpost), ent) == -1) {
+            report("subrec read err");
+            ret = 0;
+        }
+        if (ret)
+            if (strcmp(mkpost.filename, fileinfo->filename))
+                ret = 0;
+        if (!ret) {
+            newent = search_record_back(fd, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename, &mkpost, 1);
+            ret = (newent > 0);
+            if (ret)
+                memcpy(fileinfo, &mkpost, sizeof(mkpost));
+            else {
+                ldata.l_type = F_UNLCK;
+                fcntl(fd, F_SETLK, &ldata);
+                close(fd);
+            }
+            ent = newent;
+        }
+    }
+    if (!ret)
+        return DIRCHANGED;
+    switch (flag) {
+    case FILE_MARK_FLAG:
+        if (fileinfo->accessed[0] & FILE_MARKED) 
+            fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
+        else
+            fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_MARKED;
+        break;
+    case FILE_NOREPLY_FLAG:
+        if (fileinfo->accessed[1] & FILE_READ)
+            fileinfo->accessed[1] &= ~FILE_READ;
+        else
+            fileinfo->accessed[1] |= FILE_READ;
+        break;
+    case FILE_SIGN_FLAG:
+        if (fileinfo->accessed[0] & FILE_SIGN)
+            fileinfo->accessed[0] &= ~FILE_SIGN;
+        else
+            fileinfo->accessed[0] |= FILE_SIGN;
+        break;
+    case FILE_DELETE_FLAG:
+        if (fileinfo->accessed[1] & FILE_DEL)
+            fileinfo->accessed[1] &= ~FILE_DEL;
+        else
+            fileinfo->accessed[1] |= FILE_DEL;
+        break;
+    case FILE_DIGEST_FLAG:
+        if (fileinfo->accessed[0] & FILE_DIGEST) 
+            fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_DIGEST);
+        else
+            fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
+        break;
+    case FILE_IMPORT_FLAG:
+        fileinfo->accessed[0] |= FILE_IMPORTED;
+        break;
+    }
+
+    if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
+        report("subrec seek err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLK, &ldata);
+        close(fd);
+        return DONOTHING;
+    }
+    if (safewrite(fd, fileinfo, size) != size) {
+        report("subrec write err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLK, &ldata);
+        close(fd);
+        return DONOTHING;
+    }
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLK, &ldata);
+    close(fd);
+
+    return newent ? DIRCHANGED : PARTUPDATE;
+}
+
 int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, char* currboard, int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt)
 {
     /*---	---*/
@@ -644,26 +769,22 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     char *ptr, buf[STRLEN];
     char ans[256];
     char genbuf[1024];
-    struct fileheader mkpost;
+    struct fileheader mkpost, mkpost2;
     struct flock ldata;
-    int fd, size = sizeof(fileheader);
+    int fd, size = sizeof(fileheader), orgent;
 
     /*---	---*/
 
     if (!chk_currBM(currBM, currentuser))
         return DONOTHING;
 
-    if (flag == FILE_DIGEST_FLAG && (digestmode == 1 || digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5))
-        /*
-         * 文摘模式内 不能 添加文摘, 回收和纸篓模式也不能 
-         */
+    if (flag == FILE_DIGEST_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
         return DONOTHING;
-    if (flag == FILE_MARK_FLAG && (digestmode == 1 || digestmode == 2 || digestmode == 3 || digestmode == 4 || digestmode == 5))
-        /*
-         * 文摘模式内 不能 添加文摘, 回收和纸篓模式也不能 
-         */
+    if (flag == FILE_MARK_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
         return DONOTHING;
-    if (flag == FILE_DELETE_FLAG && digestmode != 0 && digestmode != 1 && digestmode != 3)
+    if (flag == FILE_IMPORT_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
+        return DONOTHING;
+    if (flag == FILE_DELETE_FLAG && (digestmode == 4 || digestmode == 5))
         return DONOTHING;
     if ((flag == FILE_MARK_FLAG || flag == FILE_DELETE_FLAG) && (!strcmp(currboard, "syssecurity")
                                                                  || !strcmp(currboard, "Filter")))
@@ -671,11 +792,24 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     /*
      * Haohmaru.98.10.12.主题模式下不允许mark文章 
      */
-    if ((flag <= FILE_DELETE_FLAG) && strstr(direct, "/.THREAD"))
-        return DONOTHING;
     if (flag == FILE_TITLE_FLAG && digestmode != 0)
         return DONOTHING;
-
+    if (flag == FILE_NOREPLY_FLAG && digestmode != 0)
+        return DONOTHING;
+    
+    if (digestmode) {
+    	setbdir(0, &genbuf[512], currboard);
+    	orgent = search_record(&genbuf[512], &mkpost2, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename);
+    	if (!orgent) {
+#ifdef BBSMAIN
+        	move(2, 0);
+        	prints(" 该文件可能已经被删除\n");
+        	clrtobot();
+        	pressreturn();
+#endif
+    		return FULLUPDATE;
+    	}
+    }
     strcpy(buf, direct);
     ptr = strrchr(buf, '/') + 1;
     ptr[0] = '\0';
@@ -804,6 +938,8 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
             char *ptr, buf[64];
 
             memcpy(&digest, fileinfo, sizeof(digest));
+            if (digestmode)
+            	strncpy(digest.title, mkpost2.title, STRLEN);
             digest.filename[0] = 'G';
             strcpy(buf, direct);
             ptr = strrchr(buf, '/') + 1;
@@ -843,6 +979,9 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
             strcpy(fileinfo->title, buf);
         }
         break;
+    case FILE_IMPORT_FLAG:
+        fileinfo->accessed[0] |= FILE_IMPORTED;
+        break;
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
@@ -863,7 +1002,10 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLK, &ldata);
     close(fd);
+    if(digestmode)
+    	change_dir_post_flag(currentuser, currboard, orgent, &mkpost2, flag);
 
     return newent ? DIRCHANGED : PARTUPDATE;
 }
+
 
