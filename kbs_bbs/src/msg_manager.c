@@ -152,7 +152,7 @@ static int set_smsg_getdata(struct _select_def *conf,int pos,int len)
 	}
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
 
-	if( conf->item_count - conf->page_pos < BBS_PAGESIZE-1 )
+	if( conf->item_count - conf->page_pos < BBS_PAGESIZE )
 		conf->item_count = count_sql_smsmsg( currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_msgtxt);
 
 	i = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, conf->page_pos-1, BBS_PAGESIZE,sm_msgtxt,sm_desc);
