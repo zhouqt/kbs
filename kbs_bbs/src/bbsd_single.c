@@ -494,6 +494,10 @@ int main(argc, argv)
     /* setup standalone daemon                           */
     /* --------------------------------------------------- */
 
+    /* sanshao@2002.8
+     * use getopt instead
+     * bbsd [-i] [-d] [-p port]
+     */
     /* start_daemon(argc > 1 ? atoi(argv[1]) : 0); */
     /* Thor.981206: 取 0 代表 *没有参数* */
     /* start_daemon(argc > 1 ? atoi(argv[1]) : -1); */
@@ -501,9 +505,28 @@ int main(argc, argv)
     /* Thor.981207: usage,  bbsd, or bbsd 1234, or bbsd -i 1234 */
     /*  start_daemon(argc > 2, atoi(argv[argc-1]));
        KCN change it for not port parm */
-    int inetd, port, listprocess;
+    int inetd, port;
 
     inetd = 0;
+    int c;
+
+    while ((c = getopt(argc, argv, "idp:")) != -1){
+      switch (c){
+      case 'i':
+	inetd = 1;
+	break;
+      case 'd':
+	no_fork=1;
+	break;
+      case 'p':
+	port=atoi(optarg);
+	break;
+      case '?':
+	return -1;
+      }
+    }
+
+#if 0
     if ((argc <= 1) || !strcmp(argv[1], "-i"))  /*如果只有文件名或者第一个参数是“-i” */
         inetd = 1;              /*则用inetd启动 */
     else if (!strcmp(argv[1], "-d"))
@@ -519,6 +542,7 @@ int main(argc, argv)
         else
             listprocess = atoi(argv[2]);
     }
+#endif
     start_daemon(inetd, port);
     main_signals();
 
@@ -528,8 +552,10 @@ int main(argc, argv)
 
     server_pid = getpid();
     if (!inetd) {
+#if 0
         for (; listprocess > 0; listprocess--)
             fork();
+#endif
         for (;;) {
 /*
             value = 1;
