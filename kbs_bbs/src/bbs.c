@@ -734,7 +734,7 @@ void readtitle(struct _select_def* conf)
     resetcolor();
 }
 
-#ifdef COLOR_ONLINE
+#if defined(COLOR_ONLINE) || defined(LOWCOLOR_ONLINE)
 
 int count_login(struct user_info *uentp, int *arg, int pos)
 {
@@ -841,19 +841,31 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 #ifdef COLOR_ONLINE
                         sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                        sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[1;36m%4d\033[m %s%c%s %-12.12s %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
                     else
 #ifdef COLOR_ONLINE
                         sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                        sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[36m%4d\033[m %s%c%s %-12.12s %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
                 else
 #ifdef COLOR_ONLINE
                     sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                    sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %c%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-44.44s", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
             } else {
                 if (readfh&&(readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
@@ -861,19 +873,31 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 #ifdef COLOR_ONLINE
                         sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
                     else
 #ifdef COLOR_ONLINE
                         sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                         sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
                 else
 #ifdef COLOR_ONLINE
                     sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                    sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %c● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " %4d %s%c%s %-12.12s %s %c● %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
             }
 
@@ -884,19 +908,31 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 #ifdef COLOR_ONLINE
                     sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                    sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[1;36m%4d\033[m %s%c%s %-12.12s %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
                 else
 #ifdef COLOR_ONLINE
                     sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                    sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[36m%4d\033[m %s%c%s %-12.12s %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
             else
 #ifdef COLOR_ONLINE
                 sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %c%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                 sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-44.44s", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
         } else {
             if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))      /* 当前阅读主题 标识 */
@@ -904,19 +940,31 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 #ifdef COLOR_ONLINE
                     sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
                 else
 #ifdef COLOR_ONLINE
                     sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                     sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c● %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
             else
 #ifdef COLOR_ONLINE
                 sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %c● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
+#ifdef LOWCOLOR_ONLINE
+                sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %c● %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
+#else
                 sprintf(buf, " %4d %s%c%s %-12.12s %s %c● %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch, TITLE);
+#endif
 #endif
         }
     return buf;
