@@ -8,3 +8,5 @@ dist-hook:
 	cd $(distdir);find . -path "./sshbbsd/gmp-2.0.2-ssh-2" -prune -o \
         -name "./sshbbsd/acconfig.h" -prune -o -name "*.[c|h]" \
 	-exec indent -kr -l200 -i4 -bad -bap -cdb -sc -ip0 -nut {} -o {} \;
+	find $(distdir) -name "*.[c|h]" \
+        -exec $(srcdir)/filter.sh {} \;
