@@ -384,7 +384,7 @@ void x_fillform()
     char ans[5], *mesg, *ptr;
     FILE * fn;
     time_t now;
-	struct userdata ud;
+    struct userdata ud;
 
     modify_user_mode(NEW);
     move(3, 0);
@@ -426,7 +426,6 @@ void x_fillform()
     getdata(t_lines - 1, 0, "您确定要填写注册单吗 (Y/N)? [N]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] != 'Y' && ans[0] != 'y')
         return;
-	read_userdata(currentuser->userid, &ud);
     strncpy(rname, ud.realname, NAMELEN);
     strncpy(addr, ud.address, STRLEN);
     career[0] = phone[0] = birth[0] = '\0';
@@ -462,6 +461,7 @@ void x_fillform()
     strncpy(ud.realname, rname, NAMELEN);
     strncpy(ud.address, addr, STRLEN);
 	write_userdata(currentuser->userid, &ud);
+	memcpy(&curruserdata,&ud,sizeof(ud));
     if ((fn = fopen("new_register", "a")) != NULL) {
         now = time(NULL);
         fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));

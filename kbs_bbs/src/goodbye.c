@@ -82,12 +82,14 @@ char buf[256];
     };
 	struct userdata ud;
 
-    if (currentuser)
+    if (currentuser) {
         douser = *currentuser;
-    else
+        memcpy(&ud,&curruserdata,sizeof(curruserdata));
+    }
+    else {
         bzero(&douser, sizeof(struct userec));
 	bzero(&ud, sizeof(ud));
-	read_userdata(douser.userid, &ud);
+    }
     stuffstr[ST_USERID] = douser.userid;
     stuffstr[ST_USERNAME] = douser.username;
     stuffstr[ST_REALNAME] = ud.realname;

@@ -168,12 +168,8 @@ void u_enter()
     uinfo.freshtime = time(0);
 #endif
     strncpy(uinfo.userid, currentuser->userid, 20);
-	{
-		struct userdata ud;
 
-		read_userdata(currentuser->userid, &ud);
-		strncpy(uinfo.realname, ud.realname, 20);
-	}
+    strncpy(uinfo.realname, curruserdata.realname, 20);
     strncpy(uinfo.username, currentuser->username, 40);
     utmpent = getnewutmpent(&uinfo);
     if (utmpent == -1) {
@@ -510,6 +506,10 @@ void login_query()
 #else
     getdata(0, 0, "\n°´ [RETURN] ¼ÌÐø", genbuf, 10, NOECHO, NULL, true);
 #endif
+
+/* init user data */
+    read_userdata(currentuser->userid, &curruserdata);
+
     clear();
     oflush();
     if (strcasecmp(currentuser->userid, "guest") && !HAS_PERM(currentuser, PERM_BASIC)) {
