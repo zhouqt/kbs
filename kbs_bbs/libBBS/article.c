@@ -1219,15 +1219,26 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     if (flag == FILE_NOREPLY_FLAG && digestmode != 0)
         return DONOTHING;
 
+    if(!fileinfo->filename[0]) {
+        setbdir(digestmode, genbuf, currboard);
+        fd = open(genbuf, O_RDWR | O_CREAT, 0644);
+        if (fd!=-1) {
+            get_record_handle(fd, fileinfo, sizeof(struct fileheader), ent);
+            close(fd);
+        }
+    }
+
     if ((digestmode != DIR_MODE_NORMAL) && (digestmode != DIR_MODE_DIGEST)) {
         setbdir(0, genbuf, currboard);
         orgent = search_record(genbuf, &mkpost2, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename);
         if (!orgent) {
 #ifdef BBSMAIN
-            move(2, 0);
-            prints(" 该文件可能已经被删除\n");
-            clrtobot();
-            pressreturn();
+            if(prompt) {
+                move(2, 0);
+                prints(" 该文件可能已经被删除\n");
+                clrtobot();
+                pressreturn();
+            }
 #endif
             return FULLUPDATE;
         }
@@ -1287,10 +1298,12 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     }
     if (!ret) {
 #ifdef BBSMAIN
-        move(2, 0);
-        prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title);
-        clrtobot();
-        pressreturn();
+        if(prompt) {
+            move(2, 0);
+            prints(" 文章列表发生变动，文章[%s]可能已被删除．\n", fileinfo->title);
+            clrtobot();
+            pressreturn();
+        }
 #endif
         return DIRCHANGED;
     }
@@ -1431,11 +1444,13 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
                     fcntl(fd, F_SETLK, &ldata);
                     close(fd);
 #ifdef BBSMAIN
-                    move(3, 0);
-                    clrtobot();
-                    move(4, 10);
-                    prints("抱歉，你的文摘文章已经超过 %d 篇，无法再加入...\n", MAX_DIGEST);
-                    pressanykey();
+                    if(prompt) {
+                        move(3, 0);
+                        clrtobot();
+                        move(4, 10);
+                        prints("抱歉，你的文摘文章已经超过 %d 篇，无法再加入...\n", MAX_DIGEST);
+                        pressanykey();
+                    }
 #endif
                     return PARTUPDATE;
                 }
@@ -1488,11 +1503,13 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
                     fcntl(fd, F_SETLK, &ldata);
                     close(fd);
 #ifdef BBSMAIN
-                    move(3, 0);
-                    clrtobot();
-                    move(4, 10);
-                    prints("抱歉，你的置顶文章已经超过 %d 篇，无法再加入...\n", MAX_DING);
-                    pressanykey();
+                    if(prompt) {
+                        move(3, 0);
+                        clrtobot();
+                        move(4, 10);
+                        prints("抱歉，你的置顶文章已经超过 %d 篇，无法再加入...\n", MAX_DING);
+                        pressanykey();
+                    }
 #endif
                     return PARTUPDATE;
                 }

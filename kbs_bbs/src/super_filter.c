@@ -335,7 +335,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     if(!index[0]) 
         return FULLUPDATE;
     load_content = (strstr(index, "content")!=NULL)||(strstr(index, "abssize")!=NULL);
-    load_stat = (strstr(index, "ftime")!=NULL)||(strstr(index, "size")!=NULL);
+    load_stat = (strstr(index, "ftime")!=NULL)||(strstr(index, "fsize")!=NULL);
     if (digestmode==7||digestmode==8 ) {
         if (digestmode == 7 || digestmode == 8)
             unlink(currdirect);
@@ -390,10 +390,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     libs = (char*)malloc(LIBLEN);
     for (i = 0; i < total; i++) {
         struct stat st;
-        int fd3;
         int j;
-        char* p;
-        char ffn[80];
         size_t fsize;
         libptr = libs;
         ferr = 0;
@@ -417,20 +414,22 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("attach"), ptr1->attachment);
         set_vars(fvars+fget_var("title"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner);
-        set_vars(fvars+fget_var("file"), ptr1->filename);
+        set_vars(fvars+fget_var("fname"), ptr1->filename);
 #ifdef HAVE_BRC_CONTROL
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
 #endif
         setbfile(ffn, currboard, ptr1->filename);
         if(load_stat) {
             if(stat(ffn, &st)!=-1)
-                set_vard(fvars+fget_var("size"), st.st_size);
+                set_vard(fvars+fget_var("fsize"), st.st_size);
             else
-                set_vard(fvars+fget_var("size"), 0);
+                set_vard(fvars+fget_var("fsize"), 0);
             set_vard(fvars+fget_var("ftime"), st.st_mtime);
         }
         if(load_content) {
-            int k,abssize=0,entercount=0;
+            int k,abssize=0,entercount=0,ignoreline=0;
+            char* p;
+            char ffn[80];
             set_vars(fvars+fget_var("content"), ptr1->filename);
             j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
             if(j) {
@@ -438,12 +437,16 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
                 if(strstr(index, "abssize")!=NULL) {
                     k=fsize;
                     while(k) {
-                        if(k>=2&&*p=='\xa1'&&*(p+1)=='\xbe'&&*(p+2)==' ') break;
-                        if(k>=2&&*p=='-'&&*(p+1)=='-'&&*(p+2)=='\n') break;
-                        if(*p=='\n') entercount++;
+                        if(k>=3&&*p=='\n'&&*(p+1)=='-'&&*(p+2)=='-'&&*(p+3)=='\n') break;
+                        if(*p=='\n') {
+                            entercount++;
+                            ignoreline=0;
+                        }
+                        if(k>=5&&*p=='\n'&&*(p+1)=='\xa1'&&*(p+2)=='\xbe'&&*(p+3)==' '&&*(p+4)=='\xd4'&&*(p+5)=='\xda') ignoreline=1;
+                        if(k>=2&&*p=='\n'&&*(p+1)==':'&&*(p+2)==' ') ignoreline=2;
                         k--;
                         p++;
-                        if(entercount>=4)
+                        if(entercount>=4&&!ignoreline)
                             abssize++;
                     }
                     set_vard(fvars+fget_var("abssize"), abssize);
@@ -487,6 +490,25 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         prints("一个都没有找到....");
         refresh();
         sleep(1);
+    }
+    else if (chk_currBM(currBM, currentuser)) {
+        char ans[4];
+        int i,j,k;
+        int fflag;
+        int y,x;
+        move(3, 0);
+        clrtoeol();
+        prints("找到 %d 篇文章(0-退出, 1-保留标记m, 2-删除标记t, 3-不可回复标记;) [0]", count);
+        getyx(&y, &x);
+        getdata(y, x, 0, ans, 3, 1, 0, 1);
+        if(ans[0]>='1'&&ans[0]<='3') {
+            k=ans[0]-'0';
+            if(ans[0]=='1') fflag=FILE_MARK_FLAG;
+            else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
+            else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
+            for(i=0;i<count;i++)
+                change_post_flag(currBM, currentuser, digestmode, currboard, i+1, currdirect, fflag, 0);
+        }
     }
     return NEWDIRECT;
 }
