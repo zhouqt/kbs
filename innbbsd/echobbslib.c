@@ -1,12 +1,6 @@
-#if defined( LINUX )
 #include "innbbsconf.h"
 #include "bbslib.h"
 #include <stdarg.h>
-#else
-#include <varargs.h>
-#include "innbbsconf.h"
-#include "bbslib.h"
-#endif
 
 char INNBBSCONF[MAXPATHLEN];
 char INNDHOME[MAXPATHLEN];

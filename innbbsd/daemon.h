@@ -50,7 +50,7 @@ typedef struct Daemoncmd {
 
 extern void installdaemon ARG((daemoncmd_t *, int, char *));
 
-#ifndef BSD44
+#if !defined(BSD44) && !defined(FREEBSD)
 #ifndef LINUX
 extern int daemon ARG((int));
 #endif
