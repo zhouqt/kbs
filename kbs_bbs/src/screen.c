@@ -218,10 +218,14 @@ void refresh()
     }
     count = 0;
     for (i=0; i < scr_lns; i++)
-        for(j=0;j<scr_cols;j++)
-            if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].color[j]/16==0)&&!ndiff(i,j))
+        for(j=0;j<scr_cols;j++) 
+        if(!ndiff(i,j)) {
+            if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].color[j]/16==0))
                 count++;
-    if(count>scr_lns*scr_cols/2&&can_clrscr) {
+            else
+                count--;
+        }
+    if(count>5&&can_clrscr) {
         o_clear();
         for (i=0; i < scr_lns; i++)
             for(j=0;j<scr_cols;j++) {
@@ -238,9 +242,12 @@ void refresh()
         ii=scr_cols-1;
         while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[scr_cols-1]/16)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) ii--;
         p=ii+1;
+        count = 0;
+        for(ii=p;ii<scr_cols;ii++)
+            if(!ndiff(j,ii)) count++;
 
         for (k = 0; k < scr_cols; k++)
-        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))) {
+        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&count>=5)) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             s = bp[j].mode[k];
