@@ -270,7 +270,7 @@ static int a_select_path_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[丝路选择菜单]",
-               "退出[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 进入[\x1b[1;32mEnter\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 添加[\x1b[1;32ma\x1b[0;37m] 改名[\x1b[1;32mT\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m 移动[\x1b[1;32mm\x1b[0;37m]帮助[\x1b[1;32mh\x1b[0;37m]\x1b[m");
+               "退出[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 进入[\x1b[1;32mEnter\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 切换[\x1b[1;32ma\x1b[0;37m] 改名[\x1b[1;32mT\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m 移动[\x1b[1;32mm\x1b[0;37m]帮助[\x1b[1;32mh\x1b[0;37m]\x1b[m");
     move(2, 0);
     prints("\033[0;1;37;44m %4s   %-64s", "编号", "丝路名");
     clrtoeol();
@@ -473,9 +473,16 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
                 break;
 
         while (fgets(buf, 256, inf) != NULL) {
-	    if(mode == 0 && strcmp(buf,"--\n") == 0)break;	
-            if(mode == 1 && (strcmp(buf, "--\n") == 0 || strstr(buf, ") 的大作中提到")))
+            /*结束*/
+            if(!strcmp(buf,"--\n"))
                 break;
+            /*引文*/
+            if((mode==1)&&(strstr(buf,": ")==buf||(strstr(buf,"【 在")==buf&&strstr(buf,") 的大作中提到: 】"))))
+                continue;
+            /*来源和修改信息*/
+            if((strstr(buf,"\033[m\033")==buf&&strstr(buf,"※ 来源:·")==buf+10)
+                ||(strstr(buf,"\033[36m※ 修改:·")==buf))
+                continue;
             if (fileinfo->attachment&&
                 !memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
                 findattach=true;
