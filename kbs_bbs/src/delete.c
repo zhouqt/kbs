@@ -53,7 +53,7 @@ int d_board()
     }
     clear();
     stand_title("删除讨论区");
-    make_blist();
+    make_blist(0);
     move(1, 0);
     namecomplete("请输入讨论区: ", genbuf);
     if (genbuf[0] == '\0')

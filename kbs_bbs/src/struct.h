@@ -211,7 +211,8 @@ struct favbrd_struct {
 	/* bid >= 0: 版面
 	   bid < 0: 目录， 表示子目录是 favbrd_list[-bid]
 	   */
-    char title[81];
+    char title[61];
+	char ename[20];
     int father;
 	int level;
 };

@@ -115,7 +115,7 @@ int shownotepad();
 int check_stuffmode();
 int do_reply(struct _select_def* conf,struct fileheader *fileinfo);
 int do_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
-void make_blist();
+void make_blist(int addfav);
 int digest_post(int ent, struct fileheader *fhdr, char *direct);
 int mark_post(int ent, struct fileheader *fhdr, char *direct);
 int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_file);             /*ÓÃ»§ POST ÎÄÕÂ */

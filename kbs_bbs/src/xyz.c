@@ -518,7 +518,7 @@ int Xdeljunk()
     prints("删除版面垃圾箱\n");
     clrtoeol();
     move(1, 0);
-    make_blist();
+    make_blist(0);
     namecomplete("输入讨论区名称: ", genbuf);
     if (genbuf[0] == '\0') {
         clear();

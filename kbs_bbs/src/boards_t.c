@@ -241,7 +241,14 @@ struct favboard_proc_arg {
     int father; /*保存父结点，如果是收藏夹，是fav_father,
     如果是版面目录，是group编号*/
     bool reloaddata;
-    bool select_group; //选择了一个目录
+    int select_group; //选择了一个目录
+	/* stiger: select_group:  
+	   在 select_loop退出，返回SHOW_SELECT的时候
+	   select_group 0: 不是s进入目录
+	                1: s进入版面目录
+					<0, s进入allboard目录, i=0-select_group是 favboard_list[i-1]
+					                       或者i=-1-select_group 是 favboard_list[i]
+	*/
 
     char* boardprefix;
     /*用于search_board得时候缓存*/
@@ -335,10 +342,17 @@ static int fav_show(struct _select_def *conf, int pos)
     if ((ptr->dir == 1)&&arg->favmode) {        /* added by bad 2002.8.3*/
         if (ptr->tag < 0)
             prints("       ");
-        else if (!arg->newflag)
-            prints(" %4d  ＋  <目录>  ", pos);
-        else
-            prints(" %4d  ＋  <目录>  ", ptr->total);
+        else if (!arg->newflag){
+			if(arg->favmode == 1)
+            	prints(" %4d  ＋  <目录>  ", pos);
+			else
+            	prints(" %4d  ＋  %s  ", pos ,ptr->BM);
+		}else{
+			if(arg->favmode == 1)
+            	prints(" %4d  ＋  <目录>  ", ptr->total);
+			else
+            	prints(" %4d  ＋  %s  ", ptr->total, ptr->BM);
+		}
     } else {
 	if ((ptr->dir==1)||(ptr->flag&BOARD_GROUP)) {
             prints(" %4d  ＋ ", ptr->total);
@@ -516,7 +530,7 @@ static int fav_onselect(struct _select_def *conf)
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
 
     if (arg->select_group) return SHOW_SELECT; //select a group
-    arg->select_group=false;
+    arg->select_group=0;
 	if (ptr->dir==1 && ptr->pos==-1 && ptr->flag==-1 && ptr->tag==-1)
 		return SHOW_CONTINUE;
     if ((ptr->dir == 1)||((arg->favmode)&&(ptr->flag&BOARD_GROUP))) {        /* added by bad 2002.8.3*/
@@ -546,7 +560,7 @@ static int fav_onselect(struct _select_def *conf)
                 returnmode=Read();
                 if (returnmode==CHANGEMODE) { //select another board
                     if (currboard->flag&BOARD_GROUP) {
-			arg->select_group=true;
+			arg->select_group=1;
                         return SHOW_SELECT;
                     }
                 } else break;
@@ -714,26 +728,34 @@ static int fav_key(struct _select_def *conf, int command)
         currentuser->flags ^= BRDSORT_FLAG;  /*排序方式 */
         return SHOW_DIRCHANGE;
     case 's':                  /* sort/unsort -mfchen */
-        if (do_select(0, NULL, genbuf) == CHANGEMODE) {
+	{
+		int tmp=1;
+
+        if (do_select(0, NULL, &tmp) == CHANGEMODE) {
+			if (tmp>0){
+				arg->select_group = 0 - tmp;
+				return SHOW_SELECT;
+			}
             if (!(currboard->flag&BOARD_GROUP)) {
                 while (1) {
                     int returnmode;
                     returnmode=Read();
                     if (returnmode==CHANGEMODE) { //select another board
                         if (currboard->flag&BOARD_GROUP) {
-                            arg->select_group=true;
+                            arg->select_group=1;
                             return SHOW_SELECT;
                         }
                     } else break;
                 }
             }
             else {
-		arg->select_group=true;
+				arg->select_group=1;
                 return SHOW_SELECT;
             }
         }
         modify_user_mode(arg->newflag ? READNEW : READBRD);
         return SHOW_REFRESH;
+	}
 	case Ctrl('E'):
 		{
 			int newlevel;
@@ -783,7 +805,7 @@ static int fav_key(struct _select_def *conf, int command)
                 prints("输入讨论区英文名 (大小写皆可，按空白键自动搜寻): ");
                 clrtoeol();
 
-                make_blist();
+                make_blist(0);
                 namecomplete((char *) NULL, bname);
                 CreateNameList();   /*  free list memory. */
                 if (*bname)
@@ -896,6 +918,28 @@ static int fav_key(struct _select_def *conf, int command)
                 save_favboard(arg->favmode);
                 arg->reloaddata=true;
                 return SHOW_DIRCHANGE;
+            }
+        }
+        break;
+    case 't':
+        if (BOARD_FAV == arg->yank_flag) {
+            char bname[20];
+
+			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(currentuser,PERM_SYSOP))
+				return SHOW_REFRESH;
+
+			if (arg->favmode == 1)
+				return SHOW_REFRESH;
+
+            if (ptr->dir == 1 && ptr->tag >= 0) {
+                move(0, 0);
+                clrtoeol();
+                getdata(0, 0, "输入讨论区英文目录名(用于s选择): ", bname, 19, DOECHO, NULL, true);
+                if (bname[0]) {
+                    changeFavBoardDirEname(ptr->tag, bname);
+                    save_favboard(arg->favmode);
+                    return SHOW_REFRESH;
+                }
             }
         }
         break;
@@ -1112,6 +1156,7 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
     int changelevel=-1; /*保存在那一级的目录转换了mode,就是从收藏夹进入了版面目录*/
     int selectlevel=-1; /*保存在哪一级进入了s目录*/
 	int oldfavmode=favmode;
+	int lastloadfavmode = favmode;
 
     oldmode = uinfo.mode;
     modify_user_mode(SELECT);
@@ -1156,7 +1201,12 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 	 }
         arg.find = true;
         arg.loop_mode = 0;
-	arg.select_group =false;
+		arg.select_group =0;
+		if (favmode != 0 && lastloadfavmode != favmode){
+ 			load_favboard(1,favmode);
+			lastloadfavmode = favmode;
+		}
+		arg.favmode = favmode;
 
         favboard_conf.item_per_page = BBS_PAGESIZE;
         favboard_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
@@ -1207,6 +1257,9 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
                 break;
             if (favlevel==changelevel) //从版面目录返回收藏夹
                 favmode=oldfavmode;
+			if (favmode){
+				selectlevel=-1;
+			}
         } else {
             /*选择了一个目录,SHOW_SELECT，注意有个假设，目录的深度
             不会大于FAVBOARDNUM，否则selist会溢出
@@ -1214,30 +1267,58 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
             如果是s跳转，arg->select_group=true,否则arg->select_group=false;
             TODO: 动态增长sellist
             */
+	/* stiger: select_group:  
+	   在 select_loop退出，返回SHOW_SELECT的时候
+	   select_group 0: 不是s进入目录
+	                1: s进入版面目录
+					<0, s进入allboard目录, i=0-select_group是 favboard_list[i-1]
+					                       或者i=-1-select_group 是 favboard_list[i]
+	*/
             sellist[favlevel] = favboard_conf.pos;
-            if ((selectlevel==-1)||(!arg.select_group))
+
+            if ((selectlevel==-1)||(arg.select_group==0))
                 favlevel++;
-	    else
-		favlevel=selectlevel; /*退回到∠一次的目录*/
+	    	else
+				favlevel=selectlevel; /*退回到∠一次的目录*/
+
+			//原来在favboard
             if (favmode) {
-                if (arg.select_group||(nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1)) {
-                    //进入版面目录
-                    if (arg.select_group) //select进入的 
+				//进入版面目录
+                if (arg.select_group > 0 || (arg.select_group==0 && (nbrd[favboard_conf.pos - favboard_conf.page_pos].flag!=-1) ) ) {
+                    //s进入版面目录
+                    if (arg.select_group > 0 ) //select进入的 
                         favlist[favlevel] = currboardent;
+                    //非s进入版面目录
                     else
                         favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
+
                     changelevel=favlevel-1;
                     favmode=0;
-                } else
-                    favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
+				//进入收藏夹目录
+                } else{
+					//s进入的
+					//进入公共收藏夹目录
+					if (arg.select_group < 0){
+                    	favlist[favlevel] = -1 - arg.select_group ;
+						changelevel=favlevel-1;
+						favmode=2;
+					}else{
+                        favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].tag;
+					}
+				}
             }
+			//原来不在 favboard
             else {
-                if (arg.select_group) //select进入的
+                if (arg.select_group > 0) //select进入的
                     favlist[favlevel] = currboardent;
-                else
+				else if (arg.select_group < 0){
+                   	favlist[favlevel] = -1 - arg.select_group ;
+					changelevel=favlevel-1;
+					favmode=2;
+				}else
                 favlist[favlevel] = nbrd[favboard_conf.pos - favboard_conf.page_pos].pos+1;
             }
-            if (arg.select_group) //select进入的
+            if (arg.select_group > 0 ) //select进入的
 		    selectlevel=favlevel;
             sellist[favlevel] = 1;
         };

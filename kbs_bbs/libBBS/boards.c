@@ -294,6 +294,16 @@ void save_favboard(int mode)
     }
 }
 
+int EnameInFav(char *ename)
+{
+    int i;
+
+    for (i = 0; i < bdirshm->allbrd_list_t ; i++)
+        if ( ! strcasecmp( bdirshm->allbrd_list[i].ename , ename) )
+            return i + 1;
+    return 0;
+}
+
 int IsFavBoard(int idx)
 {
     int i;
@@ -311,6 +321,15 @@ int ExistFavBoard(int idx)
     for (i = 0; i < favbrd_list[favnow].bnum; i++)
         if (idx == favbrd_list[favnow].bid[i])
             return i + 1;
+    return 0;
+}
+
+int changeFavBoardDirEname(int i, char *s)
+{
+    if (i >= favbrd_list_t)
+        return -1;
+    strncpy(favbrd_list[i].ename, s, 20);
+	favbrd_list[i].ename[19]=0;
     return 0;
 }
 
@@ -1138,7 +1157,8 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->name = NullChar;
                     ptr->title = favbrd_list[0-favbrd_list[favnow].bid[n]].title;
                     ptr->dir = 1;
-                    ptr->BM = NullChar;
+                    //ptr->BM = NullChar;
+                    ptr->BM = favbrd_list[0-favbrd_list[favnow].bid[n]].ename;
                     ptr->flag = -1;
                     ptr->tag = 0-favbrd_list[favnow].bid[n];
                     ptr->pos = n;
@@ -1220,7 +1240,8 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->name = NullChar;
                     ptr->title = favbrd_list[0-favbrd_list[favnow].bid[indexlist[n]]].title;
                     ptr->dir = 1;
-                    ptr->BM = NullChar;
+                    //ptr->BM = NullChar;
+                    ptr->BM = favbrd_list[0-favbrd_list[favnow].bid[indexlist[n]]].ename;
                     ptr->flag = -1;
                     ptr->tag = 0-favbrd_list[favnow].bid[indexlist[n]];
                     ptr->pos = indexlist[n];

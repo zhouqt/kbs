@@ -283,15 +283,22 @@ int g_board_names(struct boardheader *fhdrp,void* arg)
     return 0;
 }
 
-void make_blist()
+void make_blist(int addfav)
 {                               /* 所有版 版名 列表 */
     CreateNameList();
     apply_boards((int (*)()) g_board_names,NULL);
+	if(addfav){
+		int i;
+		for( i=0; i<bdirshm->allbrd_list_t; i++){
+			if( bdirshm->allbrd_list[i].ename[0] && HAS_PERM(currentuser, bdirshm->allbrd_list[i].level) )
+				AddNameList( bdirshm->allbrd_list[i].ename );
+		}
+	}
 }
 
 int Select()
 {
-    do_select(0, NULL, genbuf);
+    do_select(0, NULL, NULL);
     return 0;
 }
 
@@ -316,7 +323,7 @@ int get_a_boardname(char *bname, char *prompt)
      * struct boardheader fh; 
      */
 
-    make_blist();
+    make_blist(0);
     namecomplete(prompt, bname);        /* 可以自动搜索 */
     if (*bname == '\0') {
         return 0;
@@ -1429,8 +1436,10 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     struct stat st;
     int bid;
     struct read_arg* arg=NULL;
+	int addfav=0;
     
     if (conf!=NULL) arg=conf->arg;
+	if( extraarg ) addfav = * ( (int *) extraarg ) ;
 
     move(0, 0);
     prints("选择一个讨论区 (英文字母大小写皆可,按#进入版面搜索)");
@@ -1438,12 +1447,26 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     prints("\n输入讨论区名 (按空白键自动补齐): ");
     clrtoeol();
 
-    make_blist();               /* 生成所有Board名 列表 */
+    make_blist(addfav);               /* 生成所有Board名 列表 */
 	in_do_sendmsg=true;
     if ( namecomplete((char *) NULL, bname) == '#' ) { /* 提示输入 board 名 */
 		super_select_board(bname);
 	}
 	in_do_sendmsg=0;
+
+	if(addfav){
+		bid = EnameInFav(bname);
+
+		if(bid){
+			*((int *)extraarg) = bid;
+    		board_setcurrentuser(uinfo.currentboard, -1);
+    		uinfo.currentboard = 0;
+    		UPDATE_UTMP(currentboard,uinfo);
+    		return CHANGEMODE;
+		}else
+			*((int *)extraarg) = 0;
+	}
+
     setbpath(bpath, bname);
     if (*bname == '\0')
     	return FULLUPDATE;

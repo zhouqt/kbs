@@ -282,6 +282,8 @@ void unlock_sem_check(int lockid);
     void addFavBoard(int);
     void addFavBoardDir(char *);
     int changeFavBoardDir(int i, char *s);
+    int changeFavBoardDirEname(int i, char *s);
+	int EnameInFav(char *ename);
     int ExistFavBoard(int idx);
     void load_favboard(int dohelp,int mode);
     void save_favboard(int mode);
