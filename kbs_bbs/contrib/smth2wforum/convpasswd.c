@@ -29,7 +29,7 @@ struct olduserec {                 /* Structure used to hold information in */
     time_t lastlogin;
     time_t stay;
     int signature;
-    unsigned int userdefine;
+    unsigned int userdefine[2];
     time_t notedate;
     int noteline;
     int notemode;
@@ -66,6 +66,10 @@ int main()
     int i;
     int allocid;
 
+	if (sizeof(struct olduserec) != sizeof(struct userec)) {
+		fprintf(stderr, "atppp says sizeof(struct olduserec) must equal to sizeof(struct userec)\n");
+		return -1;
+	}
     chdir(BBSHOME);
 
     if ((fd = open(OLD_PASSWDS_FILE, O_RDONLY, 0644)) < 0) {
@@ -77,7 +81,7 @@ int main()
         return -1;
     }
     fstat(fd, &fs);
-	printf("%d %d",sizeof(struct olduserec) ,sizeof(struct userec));
+	printf("%d %d\n",sizeof(struct olduserec) ,sizeof(struct userec));
     olduser = mmap(NULL, fs.st_size, PROT_READ, MAP_PRIVATE, fd, 0);
     close(fd);
     if (olduser == MAP_FAILED) {
