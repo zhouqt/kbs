@@ -1,46 +1,22 @@
 #define MY_CSS "/bbsold.css"
 #include "bbslib.h"
 
+void printdiv(int n, char *str)
+{
+	printf("<div id=div%da class=r><img id=img%d src=/folder.gif>", n, n);
+	printf("<A href='javascript:changemn(\"%d\");'>%s</A></div>\n", n, str);
+	printf("<div id=div%d class=s>\n", n);
+}
+
 int main() {
 	char buf[1024], *ptr;
 	int i;
 
   	init_all();
-	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 14px;}</style><br>\n"
-	"<script>"
-"	function closebut(x, y) {"
-"		if(document.img0) document.img0.src='/folder.gif';"
-"		if(document.img1) document.img1.src='/folder.gif';"
-"		if(document.img2) document.img2.src='/folder.gif';"
-"		if(document.img3) document.img3.src='/folder.gif';"
-"		if(document.img4) document.img4.src='/folder.gif';"
-"		if(document.img5) document.img5.src='/folder.gif';"
-"		if(document.all.div0) document.all.div0.style.display='none';"
-"		if(document.all.div1) document.all.div1.style.display='none';"
-"		if(document.all.div2) document.all.div2.style.display='none';"
-"		if(document.all.div3) document.all.div3.style.display='none';"
-"		if(document.all.div4) document.all.div4.style.display='none';"
-"		if(document.all.div5) document.all.div5.style.display='none';"
-"		x.style.display='block';"
-"		y.src='/folder2.gif';"
-"	}"
-"	function t(x, y) {"
-"		if(x.style.display!='none') {"
-"			x.style.display='none';"
-"			y.src='/folder.gif';"
-"		}"
-"		else"
-"			closebut(x, y);"
-"	}"
-"	function openchat() {"
-"		url='bbschat';"
-"		chatWidth=screen.availWidth;"
-"		chatHeight=screen.availHeight;"
-"		winPara='toolbar=no,location=no,status=no,menubar=no,scrollbars=auto,resizable=yes,left=0,top=0,'+'width='+(chatWidth-10)+',height='+(chatHeight-27);"
-"		window.open(url,'_blank',winPara);"
-"	}"
-"	</script>");
-	printf("<nobr>\n");
+/*	printf("<style type=\"text/css\">A {color: #000080} BODY {BACKGROUND-COLOR: #b0e0b0; FONT-SIZE: 14px;}</style><br>\n"*/
+	printf("<script src=/func.js></script>"
+	"<body leftmargin=1 topmargin=1 MARGINHEIGHT=1 MARGINWIDTH=1>");
+
 	if(!loginok) {
                 printf("<center>"
 "               	<form action=\"bbslogin\" method=\"post\" target=\"_top\"><br>"
@@ -67,11 +43,10 @@ int main() {
 	{
 		int i, mybrdnum=0;
 		const struct boardheader  *bptr;
-		printf("<img src=\"/folder.gif\" name=\"img0\"><a href=\"javascript: t(document.all.div0, document.img0)\">个人定制区</a><br>\n");
-		printf("<div id=\"div0\" style=\"display:none\">\n");
+		printdiv(1,"个人定制区");
 		load_favboard(0);
 		mybrdnum = get_favboard_count();
-  		for(i=0; i<mybrdnum; i++)
+ 		for(i=0; i<mybrdnum; i++)
 		{
 			bptr = getboard(get_favboard(i+1)+1);
 			if (bptr == NULL)
@@ -84,13 +59,13 @@ int main() {
 				"预定管理</a><br>\n");
 		printf("</div>\n");
 	}
-  	printf(" <img src=\"/folder.gif\" name=\"img1\"><a href=\"javascript: t(document.all.div1, document.img1)\">分类讨论区</a><br>"
-"		<div id=\"div1\" style=\"display:none\">\n");
+	printdiv(2,"分类讨论区");
 	for (i = 0; i < SECNUM; i++)
 		printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsboa?%d\">%s</a><br>",
 				i, secname[i][0]);
-	printf("</div><img src=\"/folder.gif\" name=\"img2\"><a href=\"javascript: t(document.all.div2, document.img2)\">谈天说地区</a><br>\n");
-	printf("<div id=\"div2\" style=\"display:none\">\n");
+	printf("</div>\n");
+
+	printdiv(3,"谈天说地区");
   	if(loginok) {
 		printf("<img src=\"/link.gif\"> <a href=\"bbsfriend\" target=\"f3\">在线好友</a><br>\n");
 	}
@@ -116,16 +91,14 @@ int main() {
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnick\">临时改昵称</a><br>"
 /*"		<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"*/
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsfall\">设定好友</a><br>"
-"			%s</div>"
-"			<img src=\"/folder.gif\" name=\"img5\"><a href=\"javascript: t(document.all.div5, document.img5)\">处理信件区</a><br>"
-"			<div id=\"div5\" style=\"display:none\">"
-"			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>"
+"			%s</div>",ptr);
+
+	printdiv(4,"处理信件区");
+	printf("			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsnewmail\">阅览新邮件</a><br>"
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsmail\">所有邮件</a><br>"
 "			<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbspstmail\">发送邮件</a><br>"
-"			</div>", ptr);
-	printf("<img src=\"/folder.gif\" name=\"img4\">");
-	printf("<a href=\"javascript: t(document.all.div4, document.img4)\">特别服务区</a><br>\n");
-	printf("<div id=\"div4\" style=\"display:none\">\n");
+"			</div>");
+  printdiv(5,"特别服务区");
 	printf("<img src=\"/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");
 	/*printf("<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
 	printf("</div>\n");
