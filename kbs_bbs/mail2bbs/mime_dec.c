@@ -173,7 +173,7 @@ const char hexmap[] = {
 
 int qpdec(const char* string, char* buff)
 {
-	char *s;
+	const char *s;
 	char *result = buff;
 	int i;
 	char mid[3];

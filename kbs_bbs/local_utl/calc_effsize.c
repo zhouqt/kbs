@@ -23,7 +23,7 @@ int calcboard(struct boardheader * bh, void * arg)
     fcntl(fd, F_SETLKW, &ldata);
     total = buf.st_size / size;
 
-    if ((i = safe_mmapfile_handle(fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
+    if ((i = safe_mmapfile_handle(fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &ptr, (off_t*)&buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         ldata.l_type = F_UNLCK;
@@ -45,7 +45,7 @@ int calcboard(struct boardheader * bh, void * arg)
             int k,abssize=0,entercount=0,ignoreline=0;
             char * attach;
             long attach_len;
-            j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
+            j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, (off_t *)&fsize, NULL);
             op = p;
             if(j) {
                 k=fsize;

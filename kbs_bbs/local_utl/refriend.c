@@ -14,7 +14,7 @@ int conver(struct oldfriend* fr,int ent,void* arg)
     return 0;
 }
 
-int refriend(struct userec* user,void* arg)
+int refriend(struct userec* user,char* arg)
 {
    char buf[256],buf2[256];
    char cmd[1024];

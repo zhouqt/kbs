@@ -40,7 +40,7 @@ int getid(char * s)
     return statt-1;
 }
 
-void main()
+int main()
 {
     FILE* fp;
     char buf[80];

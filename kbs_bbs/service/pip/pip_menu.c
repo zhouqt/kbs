@@ -180,8 +180,8 @@ const struct pipcommands cmdtable[];
 	int goback = 0, ok = 0;
 	int class1 = 0, class2 = 0, class3 = 0, class4 = 0, class5 = 0;
 	int class6 = 0, class7 = 0, class8 = 0, class9 = 0, class10 = 0;
-	struct pipcommands *cmd1;
-	struct pipcommands *cmd2;
+	const struct pipcommands *cmd1;
+	const struct pipcommands *cmd2;
 	/* Á÷¿Ø ÏÞÖÆ5keys/s*/
 	static time_t lastkey_time[5]={0,0,0,0,0};
 	static int count=0;

@@ -230,7 +230,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
             if (is_attach != -1) {
                 is_attach = -1;
                 sprintf(filename, "%s/%s", directory, Link);
-                if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size, NULL) == 0) {
+                if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (off_t *) & size, NULL) == 0) {
                     BBS_RETURN_VOID;
                 }
                 for (p = ptr, left = size; left > 0; p++, left--) {

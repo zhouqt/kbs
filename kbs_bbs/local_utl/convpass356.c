@@ -99,7 +99,7 @@ static void
 convert_userec(userec_r356 *olduser, struct userec *user)
 {
 	memcpy(user->userid, olduser->userid, IDLEN + 2);
-	memcpy(user->flags, olduser->flags, 2);
+	memcpy(&(user->flags), olduser->flags, 1);
 	user->firstlogin = olduser->firstlogin;
 	memcpy(user->lasthost, olduser->lasthost, 16);
 	user->numlogins = olduser->numlogins;
