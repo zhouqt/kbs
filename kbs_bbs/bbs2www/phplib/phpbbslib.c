@@ -134,6 +134,7 @@ static PHP_FUNCTION(bbs_add_favboarddir);
 static PHP_FUNCTION(bbs_add_favboard);
 static PHP_FUNCTION(bbs_del_favboard);
 static PHP_FUNCTION(bbs_get_father);
+static PHP_FUNCTION(bbs_get_dirname);
 static PHP_FUNCTION(bbs_del_favboarddir);
 
 
@@ -360,6 +361,7 @@ static function_entry smth_bbs_functions[] = {
 	PHP_FE(bbs_add_favboard,NULL)
 	PHP_FE(bbs_del_favboard,NULL)
 	PHP_FE(bbs_get_father,NULL)
+	PHP_FE(bbs_get_dirname,NULL)
 	PHP_FE(bbs_del_favboarddir,NULL)
        PHP_FE(bbs_sysconf_str,NULL)
 		PHP_FE(bbs_get_tmpls,NULL)
@@ -7407,6 +7409,19 @@ static PHP_FUNCTION(bbs_del_favboarddir)
 				RETURN_LONG(-1);
         	save_favboard(1);
 			RETURN_LONG(0);
+
+}
+
+static PHP_FUNCTION(bbs_get_dirname)
+{
+        int ac = ZEND_NUM_ARGS();
+		int select;
+        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
+                WRONG_PARAM_COUNT;
+        }
+	if(select < 0 || select >= favbrd_list_t )
+		RETURN_LONG(0);
+    RETURN_STRING(favbrd_list[select].title,1);
 
 }
 
