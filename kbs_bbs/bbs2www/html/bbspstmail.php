@@ -88,7 +88,7 @@
     		$filename = "boards/" . $board . "/" . $file;
             echo "\n【 在 " . $destuserid . " 的大作中提到: 】\n";
 		}else{
-			$filename = "mail/".strtoupper($destuserid{0})."/".$destuserid."/".$file;
+			$filename = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$file;
             echo "\n【 在 " . $destuserid . " 的来信中提到: 】\n";
 		}
 		if(file_exists($filename))
