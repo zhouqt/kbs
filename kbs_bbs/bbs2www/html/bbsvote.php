@@ -66,8 +66,18 @@
 					}
 				}
 
+			}else if( $votetype == "数字" ){
+				if(isset($_GET["ITEM"]))
+					$votevalueint = $_GET["ITEM"];
+				else
+					html_error_quit("参数错误3");
+
+				settype($votevalueint,"integer");
+
+				if( $votevalueint < 0 )
+					html_error_quit("参数错误7");
 			}else
-				html_error_quit("参数错误5");
+				html_error_quit("参数错误8");
 
 			$retnum = bbs_vote_num($board,$num,$votevalueint);
 			if($retnum <= 0)
@@ -109,9 +119,11 @@
 <table width="613">
 <?php
 		if($uservotearr[0]["USERID"]){
-			for( $i =0; $i < $votearr[0]["TOTALITEMS"]; $i++){
-				if( $uservotearr[0]["VOTED"] & (1 << $i) )
-					$oldvote[$i] = 1;
+			if( $votearr[0]["TYPE"] != "数字" ){
+				for( $i =0; $i < $votearr[0]["TOTALITEMS"]; $i++){
+					if( $uservotearr[0]["VOTED"] & (1 << $i) )
+						$oldvote[$i] = 1;
+				}
 			}
 		}
 		if( $votearr[0]["TYPE"] == "复选" ){
@@ -138,6 +150,13 @@
 <?php
 			}
 ?>
+<input type="hidden" name="type" value="<?php echo $votearr[0]["TYPE"];?>">
+<?php
+		}else if( $votearr[0]["TYPE"] == "数字" ){
+?>
+<tr><td>请输入数值，最大<?php echo $votearr[0]["MAXTKT"];?>:</td>
+<td><input type="text" name="ITEM" value="<?php echo $uservotearr[0]["VOTED"];?>"></td>
+</tr>
 <input type="hidden" name="type" value="<?php echo $votearr[0]["TYPE"];?>">
 <?php
 		}
