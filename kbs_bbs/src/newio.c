@@ -606,7 +606,10 @@ int igetkey()
     while (1) {
         ch = igetch();
 
-        check_calltime();
+        if(check_calltime()){
+			mode = 0;
+			continue;
+		}
 
 #ifdef SMTH
 	if (scrint&&ch==Ctrl('V')) {

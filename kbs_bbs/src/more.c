@@ -121,11 +121,12 @@ int NNread_init()
     return 1;
 }
 
-void check_calltime()
+int check_calltime()
 {
-    int line;
 
-    if (time(0) >= calltime && calltime != 0) {
+    if ( calltime != 0 && time(0) >= calltime ) {
+    	int line;
+		int ch;
         /*
          * if (uinfo.mode != MMENU)
          * {
@@ -150,13 +151,16 @@ void check_calltime()
         bell();
         good_move(line, 0);
         clrtoeol();
-        prints("[44m[32mBBS ÏµÍ³Í¨¸æ: [37m%-65s[m", "ÏµÍ³ÄÖÖÓ Áå¡«¡«¡«¡«¡«¡«");
-        igetkey();
+        prints("[44m[32mBBS ÏµÍ³Í¨¸æ: [37m%-65s[m", "ÏµÍ³ÄÖÖÓ Áå¡«¡«¡«¡«¡«¡«»Ø³µ¼ÌÐø");
+		refresh();
+		for( ch=igetch(); ch!='\r' && ch!='\n'; ch=igetch() ) ;
         good_move(line, 0);
         clrtoeol();
         saveline(line, 1, NULL);
         calltime = 0;
+		return 1;
     }
+	return 0;
 }
 
 void setcalltime()
