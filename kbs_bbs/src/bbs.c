@@ -1927,7 +1927,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 #endif
 
     modify_user_mode(POSTING);
-    if (digestmode==2||digestmode==3) {
+    if (digestmode==2) {
     	olddigestmode=digestmode;
     	digestmode=0;
     	setbdir(digestmode, currdirect, currboard);
