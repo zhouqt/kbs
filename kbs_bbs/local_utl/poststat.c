@@ -222,7 +222,11 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
                 if ((fp1 = fopen(dirfile, "r")) != NULL) {
                     exist = 1;
                     while (fread(fh, sizeof(struct fileheader), 1, fp1)) {
-                        if (strstr(fh->title, top[i].title) /* || strstr(top[i].title,fh->title) */ ) {
+                        char *p1,*p2;
+                        p1=fh->title; p2=top[i].title;
+                        if(p1[0]='R'&&p1[1]='e'&&p1[2]=':'&&p1[3]==' ') p1+=4;
+                        if(p2[0]='R'&&p2[1]='e'&&p2[2]=':'&&p2[3]==' ') p2+=4;
+                        if (!strcmp(p1, p2) /* || strstr(top[i].title,fh->title) */ ) {
                             exist = 0;
                             break;
                         }
