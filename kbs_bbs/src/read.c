@@ -328,8 +328,6 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
         sprintf(genbuf, "%s/%s", buf, h->filename);
         strcpy(lastfile, genbuf);
         draw_content(genbuf,h);
-        move(0, 0);
-        (*dotitle) ();
     }
     PUTCURS(locmem);
     lbc = 0;
@@ -543,12 +541,7 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
                 *t = '\0';
             h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
             sprintf(genbuf, "%s/%s", buf, h->filename);
-            if (strcmp(genbuf,lastfile)) {
-            	draw_content(genbuf,h);
-            	strcpy(lastfile, genbuf);
-            }
-            move(0, 0);
-            (*dotitle) ();
+            draw_content(genbuf,h);
 #else
                 set_alarm(0,300*1000,NULL,NULL);
 #endif
@@ -562,7 +555,14 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
             PUTCURS(locmem);
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) /*added by bad 2002.9.2*/
 #ifdef NINE_BUILD
-            	set_alarm(0,1,NULL,NULL);
+            char buf[256], *t;
+            struct fileheader* h;
+            strcpy(buf, currdirect);
+            if ((t = strrchr(buf, '/')) != NULL)
+                *t = '\0';
+            h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+            sprintf(genbuf, "%s/%s", buf, h->filename);
+            draw_content(genbuf,h);
 #else
                 set_alarm(0,300*1000,NULL,NULL);
 #endif
