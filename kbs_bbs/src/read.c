@@ -268,7 +268,8 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     draw_title(dotitle);
     last_line = get_num_records(currdirect, ssize);
     /* add by stiger */
-    if (cmdmode != RMAIL && cmdmode != GMENU)
+    if ((cmdmode != RMAIL && cmdmode != GMENU)&&
+        (digestmode==DIR_MODE_NORMAL||digestmode==DIR_MODE_THREAD))
 	    last_line += get_num_records(ding_direct,ssize);
     /* add end */
     if (last_line == 0) {
