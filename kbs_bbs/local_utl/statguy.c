@@ -8,6 +8,7 @@ struct libstruct {
 	unsigned int data;
 } *lib;
 int total=0,flag=0;
+int tm_mon, tm_mday, cur = 0; //for birthday
 
 int show()
 {
@@ -60,6 +61,21 @@ int statit(struct userec *user, char *arg)
 	case 3:
 	    d = countexp(user);
 	    break;
+    case 4:
+        {
+            struct userdata aman;
+            if (read_userdata(user->userid, &aman) == 0) {
+                if (aman.birthmonth == tm_mon && aman.birthday == tm_mday) {
+                    if (cur < total) {
+                        strcpy(lib[cur].id, user->userid);
+                        strcpy(lib[cur].nick, user->username);
+                        cur++;
+                    }
+                }
+            }
+            return 1;
+        }
+        break;
     }
     for(i=0; i<total; i++)
     if(lib[i].data<d) {
@@ -78,13 +94,23 @@ main(int argc, char ** argv)
     time_t t;
     struct tm res;
     if (argc<=2) {
-        printf("usage: statguy login|post|stay|all <total>\n");
+        printf("usage: statguy login|post|stay|all|birthday <total>\n");
 	return;
     }
     if (!strcmp(argv[1], "login")) flag = 0;
     if (!strcmp(argv[1], "post")) flag = 1;
     if (!strcmp(argv[1], "stay")) flag = 2;
     if (!strcmp(argv[1], "all")) flag = 3;
+    if (!strcmp(argv[1], "birthday")) {
+        time_t now;
+        struct tm *tmnow;
+        flag = 4;
+        now = time(0);
+        now += 86400;		/* 直接算明天比较准啦! +1 不准 */
+        tmnow = localtime(&now);
+        tm_mon = tmnow->tm_mon + 1;
+        tm_mday = tmnow->tm_mday;
+    }
     total=atoi(argv[2]);
     if(!total) {
         printf("error: <total> must be an integer and greater than zero!\n");
@@ -96,5 +122,16 @@ main(int argc, char ** argv)
     lib = malloc(sizeof(struct libstruct)*total);
     memset(lib, 0, sizeof(struct libstruct)*total);
     apply_users(statit, NULL);
-    show();
+    if (flag == 4) {
+        int i;
+        printf("\n%s明日寿星名表\n\n", NAME_BBS_CHINESE);
+        printf("以下是 %d 月 %d 日的寿星:\n\n",tm_mon, tm_mday);
+        for (i=0; i<cur; i++) {
+            printf(" ** %-15.15s (%s)\n", lib[i].id, lib[i].nick);
+        }
+      	printf("\n\n总共有 %d 位寿星。\n", cur);
+    } else {
+        
+show();
+    }
 }
