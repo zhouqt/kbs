@@ -2032,6 +2032,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         user->lastlogin = time(0);
         user->numlogins++;
         strncpy(user->lasthost, fromhost, IPLEN);
+	user->lasthost[IPLEN-1] = '\0';           /* add by binxun ,fix the bug */
 		read_userdata(user->userid, &ud);
         if (!HAS_PERM(user, PERM_LOGINOK) && !HAS_PERM(user, PERM_SYSOP)) {
             if (strchr(ud.realemail, '@')
