@@ -488,7 +488,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             clrtobot();
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) {
 		lastfile[0]=0;
-            	set_alarm(0,800,NULL,NULL);
+            	set_alarm(0,300*1000,NULL,NULL);
 	    }
             draw_entry(doentry, locmem, entries, ssize, pnt);
             PUTCURS(locmem);
@@ -496,7 +496,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
 
         default:
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) //added by bad 2002.9.2
-            	set_alarm(0,800,NULL,NULL);
+            	set_alarm(0,300*1000,NULL,NULL);
             break;
         }
         mode = DONOTHING;
