@@ -331,7 +331,7 @@ void draw_main()
         i0++;
     }
     for(i=0;i<24;i++)
-        if(sTerm(lyear, i, day)) {
+        if(sTerm(year, i, day)) {
             strcpy(buf, solarTerm[i]);
             k-=strlen(buf);
             move(13, k);
