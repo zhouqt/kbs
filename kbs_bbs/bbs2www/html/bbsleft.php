@@ -449,7 +449,7 @@
 		}
 ?>
 <?php
-	if (defined(HAVE_PC))
+	if (defined("HAVE_PC"))
 	{
 ?>
 		<tr>
