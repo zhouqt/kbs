@@ -135,6 +135,7 @@ getnewuserid()
     char    tmpstr[30];
 
     system_time = time( NULL );
+    /*
     if( stat( "tmp/killuser", &st )== -1 || st.st_mtime < system_time-3600 ) {
         if( (fd = open( "tmp/killuser", O_RDWR|O_CREAT, 0600 )) == -1 )
             return -1;
@@ -147,8 +148,6 @@ getnewuserid()
         if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
             return -1;
         size = sizeof( utmp );
-        /* 因为关站，停止删用户，by alex, 97.3.6*/
-        /* 97.4.25 恢复 , by alex */
         for( i = 0; i < MAXUSERS; i++ ) {
             if( read( fd, &utmp, size ) != size )
                 break;
@@ -172,10 +171,9 @@ getnewuserid()
                 write( fd, &zerorec, sizeof( utmp ) );
             }
         }
-        /* */
         close( fd );
-        /*touchnew();*/
     }
+    */
     if( (fd = open( PASSFILE, O_RDWR|O_CREAT, 0600 )) == -1 )
         return -1;
     flock( fd, LOCK_EX );
