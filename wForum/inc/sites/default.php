@@ -67,6 +67,10 @@ if (!defined('SHOWREPLYTREE')) { //是否用树图显示回复结构
 	define('SHOWREPLYTREE', 1);  //默认用树图显示
 }
 
+if (!defined('ALLOWMULTIQUERY')) { //是否允许全站/多版面查询
+	define('ALLOWMULTIQUERY', 0); //默认关闭
+}
+
 
 /* 格式：每项五个参数，第一个 0 表示 telnet 下专用参数；第二个是参数名称；第三个是参数具体解释；第四五是参数 ON 和 OFF 所代表的具体含义 */
 if (!isset($user_define)) {

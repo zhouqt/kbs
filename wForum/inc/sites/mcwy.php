@@ -44,6 +44,8 @@ $user_define1=array(array(1,"隐藏 IP", "是否发文和被查询的时候隐藏自己的 IP 信息
 
 define('SHOWTELNETPARAM',0);
 
+define('ALLOWMULTIQUERY', 1);
+
 require "default.php";
 $AnnounceBoard = "Announcement"; //override what's in default.php
 ?>

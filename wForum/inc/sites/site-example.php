@@ -37,5 +37,9 @@ $section_names = array(
 );
 $sectionCount=count($section_names);
 
+define('SHOWTELNETPARAM', 0); //不允许配置 telnet 下专用的个人参数
+define('SHOWREPLYTREE', 1);  //用树图显示回复结构
+define('ALLOWMULTIQUERY', 1); //允许全站/多版面查询
+
 require "default.php";
 ?>
