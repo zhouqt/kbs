@@ -23,11 +23,6 @@ if [ -d CVS ]; then
 fi
 
 if [ -d bbs2www ]; then
-  if [ -d CVS ]; then
-    cd bbs2www
-    aclocal; autoheader; automake -a; autoconf
-    cd ..
-  fi
   WWWCONFIG="--with-www=$WWWROOT --with-php=/usr/include/php"
 else
   WWWCONFIG=--disable-www
@@ -45,11 +40,6 @@ else
 fi
 
 if [ -d innbbsd ]; then
-  if [ -d CVS ]; then
-    cd innbbsd
-    aclocal; autoheader; automake -a; autoconf
-    cd ..
-  fi
   INNCONFIG=--enable-innbbsd
 else
   INNCONFIG=--disable-innbbsd
