@@ -117,6 +117,23 @@ function openchat()
 	window.open(url,'_blank',winPara);
 }
 
+function change_style(style)
+{
+	document.cookie = 'STYLE=' + style;
+	switch (style)
+	{
+	case 1:
+		parent.mainframe.cols = "160,*";
+		break;
+	case 0:
+	default:
+		parent.mainframe.cols = "144,*";
+	}
+	top.f2.navigate('/cgi-bin/bbs/bbsleft');
+	top.f3.navigate(top.f3.location);
+	top.f4.navigate(top.f4.location);
+}
+
 Is();
 
 with (document) {
