@@ -18,6 +18,9 @@ border-top-style:solid;
 border-left-style:solid;
 border-color:#999999;
 font-size:12px;
+word-wrap:break-word;
+word-break:break-all;
+table-layout:fixed;
 }
 .t2{
 font-weight:bold;

@@ -17,16 +17,16 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 	$newBlogs = array();
 	$newBlogs[channel] = array(
 			"siteaddr" => "http://".$pcconfig["SITE"],
-			"title" => $pcconfig["BBSNAME"]."即时Blog文章列表" ,
+			"title" => $pcconfig["BBSNAME"]."即时Blog日志" ,
 			"pcaddr" => "http://".$pcconfig["SITE"],
-			"desc" => $pcconfig["BBSNAME"]."最新".$etemnum."篇文章",
+			"desc" => $pcconfig["BBSNAME"]."最新".$etemnum."个日志",
 			"email" => $pcconfig["BBSNAME"],
 			"publisher" => $pcconfig["BBSNAME"],
 			"creator" => $pcconfig["BBSNAME"],
 			"rights" => $pcconfig["BBSNAME"],
 			"date" => date("Y-m-d"),
-			"updatePeriod" => "即时更新",
-			"updateFrequency" => "最新的".$etemnum."篇Blog文章",
+			"updatePeriod" => "20分钟更新一次",
+			"updateFrequency" => "最新的".$etemnum."个Blog日志",
 			"updateBase" => date("Y-m-d H:i:s"),
 			
 			);
@@ -54,7 +54,7 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$bloguser[$rows[uid]]["USER"]."</a>";
 		$newBlogs[useretems][$j] = array(
 					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[uid]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
-					"title" => htmlspecialchars(stripslashes($rows[subject])),
+					"subject" => htmlspecialchars(stripslashes($rows[subject])),
 					"desc" => $body,
 					"tid" => $rows[tid],
 					"nid" => $rows[nid],
@@ -102,5 +102,70 @@ function getNewComments($link,$pno=1,$etemnum=0)
 	return $newComments;
 }
 
-
+function getRecommendBlogs($link,$pno=1,$etemnum=0)
+{
+	global $pcconfig;
+	if($pno < 1)
+		$pno = 1;
+	
+	$etemnum = intval( $etemnum );
+	if($etemnum <= 0 )
+		$etemnum = $pcconfig["NEWS"];
+	
+	$start = ( $pno - 1 ) * $etemnum ;
+	
+	$query = "SELECT recommend.uid  , subject , body , htmltag , emote , hostname , created , recuser , nid , username , corpusname , description  ".
+		 "FROM recommend , users ".
+		 "WHERE recommend.uid = users.uid ".
+		 "ORDER BY state DESC , rid DESC ".
+		 "LIMIT ".$start." , ".$etemnum." ;";
+	$result = mysql_query($query,$link);
+	$num_rows = mysql_num_rows($result);
+	
+	$recommendBlogs = array();
+	$recommendBlogs[channel] = array(
+			"siteaddr" => "http://".$pcconfig["SITE"],
+			"title" => $pcconfig["BBSNAME"]."推荐Blog日志" ,
+			"pcaddr" => "http://".$pcconfig["SITE"],
+			"desc" => $pcconfig["BBSNAME"]."最新".$etemnum."个推荐日志",
+			"email" => $pcconfig["BBSNAME"],
+			"publisher" => $pcconfig["BBSNAME"],
+			"creator" => $pcconfig["BBSNAME"],
+			"rights" => $pcconfig["BBSNAME"],
+			"date" => date("Y-m-d"),
+			"updatePeriod" => "20分钟更新一次",
+			"updateFrequency" => "最新的".$etemnum."个推荐日志",
+			"updateBase" => date("Y-m-d H:i:s"),
+			);
+	for( $i = 0 ; $i < $num_rows ; $i ++ )
+	{
+		$rows = mysql_fetch_array($result);
+		$body = "<br>\n".
+			"来自: ".$rows[corpusname]."<br>\n".
+			"主题: ".$rows[description]."<br>\n".
+			"作者: ".$rows[username]."<br>\n".
+			"发信站: ".$pcconfig["BBSNAME"]."<br>\n".
+			"时间: ".time_format($rows[created])."<br>\n".
+			"<hr size=1>\n".
+			html_format($rows[body],TRUE,$rows[htmltag]).
+			"<hr size=1>\n".
+			"(<a href=\"http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[0]."&nid=".$rows[nid]."&s=all\">浏览全文</a>\n".
+			"<a href=\"http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&nid=".$rows[nid]."\">发表评论</a>)<br>\n".
+			"<a href=\"http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows[username]."\"><img src=\"http://".$pcconfig["SITE"]."/pc/images/xml.gif\" border=\"0\" align=\"absmiddle\" alt=\"XML\">Blog地址：http://".$pcconfig["SITE"]."/pc/rss.php?userid=".$rows[user]."</a>";
+		$recommendBlogs[useretems][$i] = array(
+					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$rows[0]."&amp;nid=".$rows[nid],
+					"subject" => htmlspecialchars(stripslashes($rows[subject])),
+					"desc" => $body,
+					"tid" => 0,
+					"nid" => $rows[nid],
+					"publisher" => $pcconfig["BBSNAME"],
+					"creator" => $rows[username],
+					"pc" => $rows[0],
+					"created" => time_format($rows[created]),
+					"rights" => $rows[username].".bbs@".$pcconfig["SITE"]
+					);
+	}
+	mysql_free_result($result);
+	return $recommendBlogs;
+}
 ?>

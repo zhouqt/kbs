@@ -74,6 +74,7 @@ function pc_load_comments($link,$pc,$pur=0)
 
 function pc_load_calendar($link,$pc,$pur)
 {
+	global $totalnodes;
 	$query = "SELECT `nid` , `created` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 ";
 	if($pur == 0)
 		$query .= " AND `access` = 0 ";
@@ -81,9 +82,10 @@ function pc_load_calendar($link,$pc,$pur)
 		$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
 	elseif($pur == 3)
 		$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
-	$query .= " AND created LIKE '".date("Ym")."%' ORDER BY `nid` DESC;";
+	$query .= " ORDER BY `nid` DESC;";
 	$result = mysql_query($query,$link);
 	$bc = array();
+	$totalnodes = mysql_num_rows($result);
 	while($rows = mysql_fetch_array($result))
 	{
 		if(!$bc[substr($rows[created],0,8)])
@@ -135,6 +137,9 @@ $userPermission = pc_get_user_permission($currentuser,$pc);
 $sec = $userPermission["sec"];
 $pur = $userPermission["pur"];
 $tags = $userPermission["tags"];
+
+if($pur != 3)
+	pc_counter($link);
 
 $nodes = pc_load_nodes($link,$pc,$pur,$pno);   //ÎÄÕÂ
 $blogs = pc_blog_menu($link,$pc["UID"],0);     //·ÖÀà
@@ -315,6 +320,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	]]>
 </smthBlog:formLogin>
 
+<smthBlog:totalNodes><?php echo $totalnodes; ?></smthBlog:totalNodes>
 <smthBlog:totalHits><?php echo $pc["VISIT"]; ?></smthBlog:totalHits>
 <smthBlog:rssLink><?php echo "rss.php?userid=".$pc["USER"]; ?></smthBlog:rssLink>
 <smthBlog:klipLink><?php echo "klip.php?id=".$pc["USER"]; ?></smthBlog:klipLink>

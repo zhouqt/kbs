@@ -110,6 +110,7 @@ function initEditor() {
 function undo_html_format($str)
 {
 	$str = str_replace("&nbsp;"," ",$str);
+	$str = str_replace("<br />","\n",$str);
 	$str = preg_replace("/&gt;/i", ">", $str);
 	$str = preg_replace("/&lt;/i", "<", $str);
 	$str = preg_replace("/&quot;/i", "\"", $str);
@@ -642,6 +643,7 @@ function pc_main_navigation_bar()
 {
 	global $pcconfig;
 ?>
+<p align="center">
 [<a href="pcmain.php">Blog首页</a>]
 [<a href="pc.php">用户列表</a>]
 [<a href="pcsec.php">分类目录</a>]
@@ -657,7 +659,15 @@ function pc_main_navigation_bar()
 ?>
 [<a href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a>]
 <?php
-	}	
+	}
+?>
+</p><p align="center">
+[<b>RSS频道</b>&nbsp;
+最新日志<a href="rssnew.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站最新Blog日志"></a>
+推荐文章<a href="rssrec.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站推荐Blog日志"></a>
+]
+</p>
+<?php	
 }
 
 function pc_update_cache_header($updatetime = 20)

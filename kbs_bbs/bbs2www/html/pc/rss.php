@@ -6,7 +6,7 @@
 	
 	$userid = addslashes($_GET[userid]);
 	$link = pc_db_connect();
-	$query = "SELECT `uid`,`username`,`corpusname`,`description`,`theme` FROM users WHERE `username` = '".$userid."' LIMIT 0 , 1 ;";
+	$query = "SELECT `uid`,`username`,`corpusname`,`description`,`theme`,`modifytime` FROM users WHERE `username` = '".$userid."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	if(!$rows)
@@ -15,6 +15,10 @@
 		html_error_quit("Blog²»´æÔÚ!");
 		exit();
 	}
+	
+	if( pc_cache( $rows[modifytime] ))
+		return;
+	
 	$pc = array(
 			"NAME" => htmlspecialchars(stripslashes($rows[corpusname])),
 			"USER" => $rows[username],

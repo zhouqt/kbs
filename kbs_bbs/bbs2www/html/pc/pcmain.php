@@ -208,8 +208,8 @@ function  pcmain_blog_recommend_nodes()
 			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
-		echo html_format(substr($body,0,500)." \n");
-		if(strlen($body)>500) echo " ... ...\n";
+		echo html_format(substr($body,0,300)." \n");
+		if(strlen($body)>300) echo " ... ...\n";
 		echo "</li>\n";	
 	}
 ?>				
@@ -240,7 +240,7 @@ function  pcmain_blog_most_hot()
 		<table cellspacing=0 cellpadding=10 width=100% class=t1>
 			<tr>
 				<td class=t5 style="line-height=20px">
-				<ul>
+				<ol>
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
@@ -252,12 +252,12 @@ function  pcmain_blog_most_hot()
 			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
-		echo html_format(substr($body,0,300)." \n");
-		if(strlen($body)>300) echo " ... ...\n";
+		echo html_format(substr($body,0,200)." \n");
+		if(strlen($body)>200) echo " ... ...\n";
 		echo "</li>\n";	
 	}
 ?>				
-				</ul>
+				</ol>
 				</td>
 			</tr>
 		</table>
@@ -270,20 +270,20 @@ function  pcmain_blog_most_hot()
 function  pcmain_blog_most_trackback()
 {
 	global $pcconfig,$link;
-	$query = "SELECT nid , subject , htmltag , body , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-2592000)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 10;";
+	$query = "SELECT nid , subject , htmltag , body , uid FROM nodes WHERE access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()-604800)." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , 10;";
 	$result = mysql_query($query,$link);
 	$num = mysql_num_rows($result);
 ?>
 <table cellspacing=0 cellpadding=3 width=98% class=f1>
 <tr>
-	<td class=t7> 三十日内引用最多的话题：</td>
+	<td class=t7> 七日内引用最多的话题：</td>
 </tr>
 <tr>
 	<td>
 		<table cellspacing=0 cellpadding=10 width=100% class=t1>
 			<tr>
 				<td class=t5 style="line-height=20px">
-				<ul>
+				<ol>
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
@@ -295,12 +295,12 @@ function  pcmain_blog_most_trackback()
 			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
-		echo html_format(substr($body,0,300)." \n");
-		if(strlen($body)>300) echo " ... ...\n";
+		echo html_format(substr($body,0,200)." \n");
+		if(strlen($body)>200) echo " ... ...\n";
 		echo "</li>\n";	
 	}
 ?>				
-				</ul>
+				</ol>
 				</td>
 			</tr>
 		</table>
@@ -326,7 +326,7 @@ function  pcmain_blog_most_view()
 		<table cellspacing=0 cellpadding=10 width=100% class=t1>
 			<tr>
 				<td class=t5 style="line-height=24px">
-				<ul>
+				<ol>
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
@@ -334,16 +334,16 @@ function  pcmain_blog_most_view()
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
 			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
-		/*if($rows[htmltag])
+		if($rows[htmltag])
 			$body = undo_html_format(strip_tags($rows[body]));
 		else
 			$body = $rows[body];
-		echo html_format(substr($body,0,600)." \n");
-		if(strlen($body)>500) echo " ... ...\n";
-		*/echo "</li>\n";	
+		echo html_format(substr($body,0,200)." \n");
+		if(strlen($body)>200) echo " ... ...\n";
+		echo "</li>\n";	
 	}
 ?>				
-				</ul>
+				</ol>
 				</td>
 			</tr>
 		</table>
@@ -405,6 +405,17 @@ pcmain_blog_sections();
 			<li><a href="pcapp0.html">Blog申请</a></li>
 			<li><a href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a></li>
 		</ul></td>
+		</tr>
+		<tr>
+		<td class=f1 style="line-height=28px">
+		<p><b>RSS频道</b></p>
+		<ul><li>
+		最新日志
+		<a href="rssnew.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站最新Blog日志"></a>
+		</li><li>
+		推荐文章
+		<a href="rssrec.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站推荐Blog日志"></a>
+		</li></ul></td>
 		</tr>
 	</table>
 	</td>

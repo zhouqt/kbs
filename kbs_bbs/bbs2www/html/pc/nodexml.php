@@ -182,7 +182,7 @@ if($node[comment])
 		<smthBlog:address><?php echo $comment[hostname]; ?></smthBlog:address>
 		<smthBlog:body>
 			<![CDATA[
-			<?php echo html_format($comment[body],TRUE,$comment[htmltag]); ?>
+			<?php echo undo_html_format(html_format($comment[body],TRUE,$comment[htmltag])); ?>
 			]]>
 		</smthBlog:body>
 	</smthBlog:comment>
@@ -208,7 +208,7 @@ if($node[trackback] && $node[access] == 0)
 		<smthBlog:link><?php echo htmlspecialchars(stripslashes($trackback[url])); ?></smthBlog:link>
 		<smthBlog:excerpt>
 			<![CDATA[
-			<?php echo html_format($trackback[excerpt],TRUE); ?>
+			<?php echo undo_html_format(html_format($trackback[excerpt],TRUE)); ?>
 			]]>
 		</smthBlog:excerpt>
 	</smthBlog:trackback>

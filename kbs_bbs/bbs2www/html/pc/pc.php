@@ -167,7 +167,6 @@
 		echo "[<a href=\"pcadmin_rec.php\">管理</a>]\n";		
 	}
 ?>
-<a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <?php
 	display_blog_catalog();
@@ -178,7 +177,6 @@
 <hr size=1>
 <p class="f1">
 <?php pc_main_navigation_bar(); ?>
-<a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">
 本站Blog搜索:<br>
