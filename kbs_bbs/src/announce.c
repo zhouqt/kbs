@@ -1232,7 +1232,7 @@ void a_copypaste(pm, paste)
 				    a_loadnames(pm);
 				    
 				    for(k=0;k<pm->num;k++)
-				    if(!strcmp(pm->fname,filename)) break;
+				    if(!strcmp(pm->item[k]->fname,filename)) break;
 				    item = pm->item[k];
 				    free(item);
 				    (pm->num)--;
