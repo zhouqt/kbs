@@ -5911,7 +5911,7 @@ static PHP_FUNCTION(bbs_add_import_path)
 	int num;
 	char *im_path[ANNPATH_NUM];
 	char *im_title[ANNPATH_NUM];
-	int im_time=0;
+	time_t im_time=0;
 	int im_select=0;
 	char buf[MAXPATH];
 	char board[MAXPATH];
@@ -6005,7 +6005,7 @@ static PHP_FUNCTION(bbs_get_import_path)
     zval *element,*ret_path;
 	char *im_path[ANNPATH_NUM];
 	char *im_title[ANNPATH_NUM];
-	int im_time=0;
+	time_t im_time=0;
 	int im_select=0;
 	FILE *fp;
 	int i;

@@ -226,7 +226,7 @@ struct favboard_proc_arg {
     int find;
     char bname[BOARDNAMELEN + 1];
     int bname_len;
-    char** namelist;
+    const char** namelist;
 };
 
 static int search_board(int *num, struct _select_def *conf, int key)
@@ -242,7 +242,7 @@ static int search_board(int *num, struct _select_def *conf, int key)
         arg->bname_len = 0;
     }
     if (arg->namelist==NULL) {
-    	arg->namelist=(char**)malloc(MAXBOARD*sizeof(char*));
+    	arg->namelist=(const char**)malloc(MAXBOARD*sizeof(char*));
     	conf->get_data(conf,-1,-1);
     }
     while (1) {

@@ -1,5 +1,6 @@
 #include "bbs.h"
 #include <utime.h>
+#define DEBUG
 
 void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
 int outgo_post(struct fileheader *fh, char *board, char *title)
@@ -1915,7 +1916,7 @@ int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int c
     }
 #ifdef DEBUG
 #ifdef BBSMAIN
-            newbbslog(BBSLOG_DEBUG,"%s ftruncate %d",
+            newbbslog(BBSLOG_DEBUG,"%s range ftruncate %d",
                 dirarg->filename?dirarg->filename:currboard->filename,
                 remaincount * sizeof(struct fileheader));
 #endif

@@ -391,7 +391,7 @@ void save_zapbuf()
 
 #ifdef HAVE_BRC_CONTROL
 
-void brc_update(char *userid)
+void brc_update(const char *userid)
 {
     int i;
     gzFile fd = NULL;
@@ -464,7 +464,7 @@ void brc_update(char *userid)
     return;
 }
 
-static int brc_getcache(char *userid)
+static int brc_getcache(const char *userid)
 {
     int i, unchange = -1;
 
@@ -531,7 +531,7 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 }
 
 #if USE_TMPFS==1
-void init_brc_cache(char* userid,bool replace) {
+void init_brc_cache(const char* userid,bool replace) {
     if ((brc_cache_entry==NULL)||(replace)) {
         char dirfile[MAXPATH];
         char temp[MAXPATH];
@@ -558,7 +558,7 @@ void init_brc_cache(char* userid,bool replace) {
     }
 }
 #endif
-int brc_initial(char *userid, char *boardname)
+int brc_initial(const char *userid, const char *boardname)
 {                               /* 读取用户.boardrc文件，取出保存的当前版的brc_list */
     int entry;
     int i;
@@ -566,7 +566,7 @@ int brc_initial(char *userid, char *boardname)
     int brc_size;
     int bid;
     gzFile brcfile;
-    struct boardheader const *bptr;
+    const struct boardheader *bptr;
     int count;
 
     if (boardname == NULL)
@@ -723,9 +723,9 @@ void brc_clear_new_flag(unsigned int fid)
 }
 #endif
 
-int poststatboard(char *currboard)
+int poststatboard(const char *currboard)
 {                               /* 判断当前版是否统计十大 */
-    struct boardheader *bh = getbcache(currboard);
+    const struct boardheader *bh = getbcache(currboard);
 
     if (bh && ! (bh->flag & BOARD_POSTSTAT))
         return true;
@@ -733,7 +733,7 @@ int poststatboard(char *currboard)
         return false;
 }
 
-int junkboard(char *currboard)
+int junkboard(const char *currboard)
 {                               /* 判断当前版是否为 junkboards */
     struct boardheader *bh = getbcache(currboard);
 
@@ -744,7 +744,7 @@ int junkboard(char *currboard)
 /*    return seek_in_file("etc/junkboards",currboard);*/
 }
 
-int checkreadonly(char *board)
+int checkreadonly(const char *board)
 {                               /* 检查是否是只读版面 */
     struct boardheader *bh = getbcache(board);
 
@@ -754,7 +754,7 @@ int checkreadonly(char *board)
         return false;
 }
 
-int anonymousboard(char *board)
+int anonymousboard(const char *board)
 {                               /*检查版面是不是匿名版 */
     struct boardheader *bh = getbcache(board);
 
@@ -764,7 +764,7 @@ int anonymousboard(char *board)
         return false;
 }
 
-int is_outgo_board(char *board)
+int is_outgo_board(const char *board)
 {
     struct boardheader *bh = getbcache(board);
 
@@ -774,7 +774,7 @@ int is_outgo_board(char *board)
         return false;
 }
 
-int is_emailpost_board(char *board)
+int is_emailpost_board(const char *board)
 {
     struct boardheader *bh = getbcache(board);
 
@@ -784,7 +784,7 @@ int is_emailpost_board(char *board)
         return false;
 }
 
-int deny_me(char *user, char *board)
+int deny_me(const char *user,const char *board)
 {                               /* 判断用户 是否被禁止在当前版发文章 */
     char buf[STRLEN];
 
@@ -927,7 +927,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
         return del_from_file(fn, lookupuser ? lookupuser->userid : uident);
 }
 
-int normal_board(char *bname)
+int normal_board(const char *bname)
 {
     register int i;
     struct boardheader bh;
@@ -943,7 +943,7 @@ int normal_board(char *bname)
 #endif
 }
 
-int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,char** input_namelist)
+int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,const char** input_namelist)
 {
 //注意，如果是目录，nbrd的flag应该为-1
     int n, k;
@@ -952,7 +952,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     struct newpostdata *ptr;
     int curcount;
     int* indexlist;
-    char** namelist;
+    const char** namelist;
 
     brdnum = 0;
     curcount=0;
@@ -961,7 +961,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     }
     if (sort) {
     	if (input_namelist==NULL)
-    	    namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    	    namelist=(const char**)malloc(sizeof(char**)*(pos+len-1));
     	else
     	    namelist=input_namelist;
     	indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
@@ -983,7 +983,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
         if (!sort) {
 	    if (input_namelist) {
                 if (favbrd_list[n].flag == -1) 
-	            input_namelist[brdnum-1]=(char*)NullChar;
+	            input_namelist[brdnum-1]=NullChar;
 		else
 	            input_namelist[brdnum-1]=bptr->filename;
             }
@@ -992,10 +992,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             if (nbrd) {
                 ptr = &nbrd[brdnum-pos];
                 if (favbrd_list[n].flag == -1) {
-                    ptr->name = (char*)NullChar;
+                    ptr->name = NullChar;
                     ptr->title = favbrd_list[n].title;
                     ptr->dir = 1;
-                    ptr->BM = (char*)NullChar;
+                    ptr->BM = NullChar;
                     ptr->flag = -1;
                     ptr->tag = n;
                     ptr->pos = 0;
@@ -1022,10 +1022,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             	}
         } else {  /*如果是要排序，那么应该先排序缓存一下*/
             int i;
-            char* title;
+            const char* title;
             int j;
             if (favbrd_list[n].flag == -1)
-            	title=(char*)NullChar;
+            	title=NullChar;
             else
             	title=bptr->filename;
             for (i=0;i<curcount;i++) {
@@ -1046,10 +1046,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     if (brdnum == 0) {
     	if (nbrd) {
         ptr = &nbrd[brdnum++];
-        ptr->name = (char*)NullChar;
+        ptr->name = NullChar;
         ptr->dir = 1;
-        ptr->title = (char*)EmptyChar;
-        ptr->BM = (char*)NullChar;
+        ptr->title = EmptyChar;
+        ptr->BM = NullChar;
         ptr->tag = -1;
         ptr->flag = -1;
         ptr->pos = -1;
@@ -1077,10 +1077,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->total = -1;
                     ptr->zap = (zapbuf[favbrd_list[indexlist[n]].flag] == 0);
                 } else {
-                    ptr->name = (char*)NullChar;
+                    ptr->name = NullChar;
                     ptr->title = favbrd_list[indexlist[n]].title;
                     ptr->dir = 1;
-                    ptr->BM = (char*)NullChar;
+                    ptr->BM = NullChar;
                     ptr->flag = -1;
                     ptr->tag = indexlist[n];
                     ptr->pos = 0;
@@ -1102,15 +1102,15 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     return brdnum;
 }
 
-int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,char** input_namelist)
+int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,const char** input_namelist)
 {
     int n, k;
-    struct boardheader const *bptr;
+    const struct boardheader *bptr;
     int brdnum;
     struct newpostdata *ptr;
     int curcount;
-    char** namelist;
-    char** titlelist;
+    const char** namelist;
+    const char** titlelist;
     int* indexlist;
 	time_t tnow;
 
@@ -1121,10 +1121,10 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int
         load_zapbuf();
     }
     if (input_namelist==NULL)
-        namelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+        namelist=(const char**)malloc(sizeof(char**)*(pos+len-1));
     else
     	namelist=input_namelist;
-    titlelist=(char**)malloc(sizeof(char**)*(pos+len-1));
+    titlelist=(const char**)malloc(sizeof(char**)*(pos+len-1));
     indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
     for (n = 0; n < get_boardcount(); n++) {
         bptr = (struct boardheader *) getboard(n + 1);

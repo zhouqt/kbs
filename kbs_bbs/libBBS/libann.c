@@ -150,8 +150,9 @@ struct _tmp_findboard {
     size_t len;
 };
 
-static int findboard(struct boardheader* bh,struct _tmp_findboard* arg)
+static int findboard(struct boardheader* bh,void* data)
 {
+    struct _tmp_findboard *arg = (struct _tmp_findboard*)data;
 
 	if(! bh->ann_path || ! bh->ann_path[0] ) return 0;
 
@@ -298,7 +299,7 @@ void a_freenames(MENU * pm)
         free(pm->item[i]);
 }
 
-void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos)    /* 产生ITEM object,并初始化 */
+void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,long attachpos)    /* 产生ITEM object,并初始化 */
 {
     ITEM *newitem;
 
@@ -424,7 +425,7 @@ int a_savenames(MENU* pm)             /*保存当前MENU到 .Names */
     return 0;
 }
 
-int save_import_path(char **i_path,char **i_title,int * i_path_time)
+int save_import_path(char **i_path,char **i_title,time_t* i_path_time)
 {
     FILE *fn;
     int i;
@@ -449,7 +450,7 @@ int save_import_path(char **i_path,char **i_title,int * i_path_time)
     return -1;
 }
 
-void load_import_path(char ** i_path,char ** i_title, int * i_path_time,int * i_path_select)
+void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select)
 {
     FILE *fn;
     char buf[MAXPATH];
@@ -515,7 +516,7 @@ void load_import_path(char ** i_path,char ** i_title, int * i_path_time,int * i_
     * i_path_select = 1;
 }
 
-void free_import_path(char ** i_path,char ** i_title,int * i_path_time)
+void free_import_path(char ** i_path,char ** i_title,time_t * i_path_time)
 {
     int i;
 
@@ -549,7 +550,7 @@ char *str;
     return 1;
 }
 
-int linkto(char *path, char *fname, char *title)
+int linkto(char *path, const char *fname, const char *title)
 {
     MENU pm;
 

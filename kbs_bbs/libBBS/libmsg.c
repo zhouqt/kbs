@@ -292,7 +292,7 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 	if( mysql_real_query( s, sql, strlen(sql) )){
 #ifdef BBSMAIN
 		clear();
-		prints("%s\n",mysql_error(&s));
+		prints("%s\n",mysql_error(s));
 		pressanykey();
 #endif
 		free(newmsgbuf);
@@ -304,7 +304,7 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 }
 #endif
 
-int save_msgtext(char *uident, struct msghead * head, char *msgbuf)
+int save_msgtext(char *uident, struct msghead * head,const char *msgbuf)
 {
     char fname[STRLEN], fname2[STRLEN];
     int fd, fd2, i, j, count, size;
@@ -1035,8 +1035,8 @@ int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_ti
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
 		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
+                prints("%s\n",mysql_error(&s));
+                pressanykey();
 #endif
 		mysql_close(&s);
 		return -1;

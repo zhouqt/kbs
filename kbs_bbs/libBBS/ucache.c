@@ -282,7 +282,7 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
 }
 
 #ifdef HAVE_CUSTOM_USER_TITLE
-void flush_user_title();
+static void flush_user_title();
 void load_user_title();
 #endif
 
@@ -879,7 +879,7 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
 
 #if USE_TMPFS==1
 
-void setcachehomefile(char* path,char* user,int unum,char* file)
+void setcachehomefile(char* path,const char* user,int unum,char* file)
 {
     if (unum==-1) {
     if (file==NULL)
@@ -894,7 +894,7 @@ void setcachehomefile(char* path,char* user,int unum,char* file)
     }
 }
 
-void init_cachedata(char* userid,int unum)
+void init_cachedata(const char* userid,int unum)
 {
     char path1[MAXPATH],path2[MAXPATH];
     int fd,logincount;
@@ -935,11 +935,11 @@ void init_cachedata(char* userid,int unum)
     write(fd,path2,strlen(path2));
     close(fd);
 }
-void flush_cachedata(char* userid)
+void flush_cachedata(const char* userid)
 {
 }
 
-int clean_cachedata(char* userid,int unum)
+int clean_cachedata(const char* userid,int unum)
 {
     char path1[MAXPATH],path2[MAXPATH];
     int fd,logincount;
@@ -1055,7 +1055,7 @@ void load_user_title()
 static void flush_user_title()
 {
     FILE* titlefile;
-    if ((titlefile = fopen(USER_TITLE_FILE, "w")) == -1) {
+    if ((titlefile = fopen(USER_TITLE_FILE, "w")) == NULL) {
         bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
     } else {
         int i;

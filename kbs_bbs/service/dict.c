@@ -124,14 +124,14 @@ int dict_main()
         move(2,0);
         word[0]=0;
         while(1) {
-            char ch;
+            int ch;
             move(2,0);
             prints("«Î ‰»Îµ•¥ :  %s", word);
             clrtoeol();
             ch = igetkey();
             clear();
             if(ch==13||ch==10) break;
-            else if((ch==KEY_DEL||ch==8)&&len) {
+            else if(((ch==KEY_DEL)||(ch==8))&&len) {
                 len--; word[len]=0;
             }
             else if(ch==KEY_TAB&&len) {

@@ -212,7 +212,7 @@ int getbnum(const char *bname)
 }
 
 /*---	added by period		2000-11-07	to be used in postfile	---*/
-int getboardnum(char *bname, struct boardheader *bh)
+int getboardnum(const char *bname, struct boardheader *bh)
 {                               /* board name --> board No. & not check level */
     register int i;
 
@@ -224,7 +224,7 @@ int getboardnum(char *bname, struct boardheader *bh)
         }
     return 0;
 }/*---	---*/
-struct boardheader *getbcache(char *bname)
+struct boardheader *getbcache(const char *bname)
 {
     int i;
 
@@ -238,7 +238,7 @@ int get_boardcount()
 {
     return brdshm->numboards;
 }
-struct boardheader const *getboard(int num)
+const struct boardheader *getboard(int num)
 {
     if (num > 0 && num <= MAXBOARD) {
         return &bcache[num - 1];
@@ -404,7 +404,7 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
     bcache_setreadonly(1);
     return 0;
 }
-int board_setreadonly(char *board, int readonly)
+int board_setreadonly(const char *board, int readonly)
 {
     int fd;
     struct boardheader *bh;

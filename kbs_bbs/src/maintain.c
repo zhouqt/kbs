@@ -283,7 +283,7 @@ int m_info()
 
 extern int cmpbnames();
 
-char *chgrp()
+const char *chgrp()
 {
     int i, ch;
     char buf[STRLEN], ans[6];
@@ -320,7 +320,7 @@ int m_newbrd()
     struct boardheader newboard;
     char ans[5];
     char vbuf[100];
-    char *group;
+    const char *group;
 
 
     modify_user_mode(ADMIN);
@@ -423,14 +423,14 @@ int m_newbrd()
 
 int m_editbrd()
 {
-    char bname[STRLEN], buf[STRLEN], oldtitle[STRLEN], vbuf[256], *group;
+    char bname[STRLEN], buf[STRLEN], oldtitle[STRLEN], vbuf[256];
     char oldpath[STRLEN], newpath[STRLEN];
     int pos, noidboard, a_mv;
     struct boardheader fh, newfh;
     int line;
 
-    struct boardheader* bh=NULL;
-    char* groupname="";
+    const struct boardheader* bh=NULL;
+    const char* groupname="";
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -464,7 +464,6 @@ int m_editbrd()
 
 	strncpy(vbuf, fh.des, 60);
 	vbuf[60]=0;
-	if((group=strchr(vbuf, '\n')) != NULL) *group=0;
 	if(strlen(fh.des) > strlen(vbuf)) strcat(vbuf, "...");
     prints("讨论区描述: %s\n", vbuf);
 
@@ -703,6 +702,7 @@ int m_editbrd()
                 sprintf(vbuf, "%-38.38s", newfh.title + 13);
             edit_grp(fh.filename, oldtitle + 13, vbuf);
             if (a_mv >= 1) {
+                const char *group;
                 group = chgrp();
                 /*
                  * 获取该版对应的 group 

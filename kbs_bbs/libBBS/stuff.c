@@ -676,7 +676,7 @@ void RemoveMsgCountFile(char *userID)
     }
     return 0;
 }
-int seek_in_file(char filename[STRLEN], char seekstr[STRLEN])
+int seek_in_file(const char* filename, const char* seekstr)
 {
     FILE *fp;
     char buf[STRLEN];
@@ -1858,8 +1858,8 @@ int gen_title(const char *boardname )
     int *index, *next;
     off_t f_size;
 
-    setbdir(0, olddirect, boardname);
-    setbdir(2, newdirect, boardname);
+    setbdir(DIR_MODE_NORMAL, olddirect, boardname);
+    setbdir(DIR_MODE_THREAD, newdirect, boardname);
     if ((fd = open(newdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
         return -1;              /* 创建文件发生错误*/

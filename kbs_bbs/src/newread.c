@@ -733,7 +733,6 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     struct fileheader *pFh, *pFh1;
     off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
-    size_t bm_search[256];
     bool inited=false;
 
     get_upper_str(upper_query, query);

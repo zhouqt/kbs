@@ -1230,13 +1230,14 @@ int generate_mark(struct read_arg* arg)
     struct fileheader mkpost;
     struct flock ldata, ldata2;
     int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
-    char direct[PATHLEN];
+    char direct[PATHLEN],normaldirect[PATHLEN];
     char *ptr, *ptr1;
     struct stat buf;
 
     setbdir(DIR_MODE_MARK, direct, currboard->filename);
+    setbdir(DIR_MODE_NORMAL, normaldirect, currboard->filename);
     if ((fd = open(direct, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("user", "%s", "recopen err");
+        bbslog("3user", "%s", "recopen err");
         return -1;              /* 创建文件发生错误*/
     }
     ldata.l_type = F_WRLCK;
@@ -1244,7 +1245,7 @@ int generate_mark(struct read_arg* arg)
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("user", "%s", "reclock err");
+        bbslog("3user", "%s", "reclock err");
         close(fd);
         return -1;              /* lock error*/
     }
@@ -1256,8 +1257,8 @@ int generate_mark(struct read_arg* arg)
         return -1;
     }
 
-    if ((fd2 = open(arg->direct, O_RDONLY, 0664)) == -1) {
-        bbslog("user", "%s", "recopen err");
+    if ((fd2 = open(normaldirect, O_RDONLY, 0664)) == -1) {
+        bbslog("3user", "%s", "recopen err");
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);

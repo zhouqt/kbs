@@ -303,7 +303,7 @@ void outfile(filename, linenum)
     char linebuf[10240];
     char *buf, *p;              /* KCN.99.09.01 */
     char *ptr;
-    size_t size;
+    off_t size;
     long left;
 
     if (linenum) {

@@ -5,6 +5,7 @@ int clock_total = 0;
 
 extern time_t calltime;
 extern char calltimememo[];
+static int save_clock_data();
 
 static int default_clock_data()
 {

@@ -64,8 +64,6 @@ extern struct user_info *user_record[USHM_SIZE];
 extern struct userec *user_data;
 extern int friendmode, range;
 
-int junkboard(char *board);
-
 struct post_log {
     char author[IDLEN + 1];
     char board[18];
@@ -168,8 +166,6 @@ char *anno_path_of(char *board);
 int has_BM_perm(struct userec *user, char *board);
 
 int has_read_perm(struct userec *user, char *board);
-
-bcache_t *getbcache(char *board);
 
 int count_mails(char *id, int *total, int *unread);
 

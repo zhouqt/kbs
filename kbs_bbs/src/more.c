@@ -710,7 +710,8 @@ int mmap_show(char *fn, int row, int numlines)
 int mmap_more(char *fn, int quit, char *keystr, char *title)
 {
     char *ptr;
-    int size, retv;
+    off_t size;
+    int retv;
 
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)

@@ -44,10 +44,10 @@ extern "C" {
     int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode);
 
 #if USE_TMPFS==1
-void setcachehomefile(char* path,char* user,int unum, char* file);
-void init_cachedata(char* userid,int unum);
-void flush_cachedata(char* userid);
-int clean_cachedata(char* userid,int unum);
+void setcachehomefile(char* path,const char* user,int unum, char* file);
+void init_cachedata(const char* userid,int unum);
+void flush_cachedata(const char* userid);
+int clean_cachedata(const char* userid,int unum);
 #endif
 
 #ifdef HAVE_CUSTOM_USER_TITLE
@@ -101,7 +101,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     bool hisfriend(int uid, struct user_info *him);
 
 /* defined in newio.c */
-    void output(char *s, int len);
+    void output(const char *s, int len);
 
 /* defined in stuff.c */
     void save_maxuser();
@@ -110,7 +110,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     time_t get_exit_time(char *id, char *exittime);
     int dashf(char *fname);
     int dashd(char *fname);
-    int seek_in_file(char filename[STRLEN], char seekstr[STRLEN]);
+    int seek_in_file(const char* filename, const char* seekstr);
     char *setbdir(int digestmode, char *buf, const char *boardname);
     int my_system(const char *cmdstring);
     char *modestring(int mode, int towho, int complete, char *chatid);
@@ -190,16 +190,16 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 
     int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, off_t * size, int *ret_fd);
     int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, off_t * size);
-    void end_mmapfile(void *ptr, int size, int fd);
+    void end_mmapfile(void *ptr, off_t size, int fd);
     void set_proc_title(char *argv0, char *title);
 
 /* define in bcache.c */
-    int getbnum(char *bname);
+    int getbnum(const char *bname);
     void resolve_boards();
     int get_boardcount();
-    struct boardheader *getbcache(char *bname);
-    int normal_board(char *bname);
-    int getboardnum(char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
+    struct boardheader *getbcache(const char *bname);
+    int normal_board(const char *bname);
+    int getboardnum(const char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
     int add_board(struct boardheader *newboard);
     void build_board_structure(const char *board);
@@ -211,8 +211,8 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int updatelastpost(char *board);
     int setboardmark(char *board, int i);
     int setboardorigin(char *board, int i);
-    int setboardtitle(char *board, int i);
-    int board_setreadonly(char *board, int readonly);   /* 设置版面只读属性 */
+    int setboardtitle(const char *board, int i);
+    int board_setreadonly(const char *board, int readonly);   /* 设置版面只读属性 */
     int get_nextid(char *boardname);    /*生成文章索引号并自动加一 */
     void board_update_toptitle(struct boardheader* bh,int increment); /*改变置顶个数*/
 #if HAVE_WWW==1
@@ -224,10 +224,10 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 /* define in boards.c */
 	int valid_brdname(char *brd);
     void detach_boards();
-    int anonymousboard(char *board);
-    int load_boards(struct newpostdata *nbrd, char *boardprefix, int group, int pos, int len, bool sort, bool yank_flag, char **input_namelist);
+    int anonymousboard(const char *board);
+    int load_boards(struct newpostdata *nbrd, char *boardprefix, int group, int pos, int len, bool sort, bool yank_flag, const char **input_namelist);
 #if USE_TMPFS==1
-    void init_brc_cache(char* userid,bool replace);
+    void init_brc_cache(const char* userid,bool replace);
 #endif
 
     void brc_clear_new_flag(unsigned fid);      /* 清除版面的到这篇文章未读标记 */
@@ -247,28 +247,29 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int DelFavBoard(int i);
     int SetFav(int i);
 
-    int brc_initial(char *userid, char *boardname);
+    int brc_initial(const char *userid, const char *boardname);
     char *brc_putrecord(char *ptr, char *name, int num, int *list);
-    int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, bool sort, char **input_namelist);
+    int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, bool sort,const char **input_namelist);
     /*
      * 保存一个版的brclist 
      */
-    void brc_update(char *userid);      /* 保存当前的brclist到用户的.boardrc */
+    void brc_update(const char *userid);      /* 保存当前的brclist到用户的.boardrc */
     void brc_add_read(unsigned int fid);
     void brc_addreaddirectly(char *userid, int bnum, unsigned int fid);
     void brc_clear();
     int brc_unread(unsigned int fid);
-    int junkboard(char *currboard);     /* 判断是否为 junkboards */
-    int checkreadonly(char *board);     /* 判断是不是只读版面 */
-    int deny_me(char *user, char *board);       /* 判断用户 是否被禁止在当前版发文章 */
+    int junkboard(const char *currboard);     /* 判断是否为 junkboards */
+    int checkreadonly(const char *board);     /* 判断是不是只读版面 */
+    int deny_me(const char *user,const char *board);       /* 判断用户 是否被禁止在当前版发文章 */
     int haspostperm(const struct userec *user,const char *bname);  /* 判断在 bname版 是否有post权 */
     int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
     int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
     int deldeny(struct userec *user, char *board, char *uident, int notice_only);       /* 删除 禁止POST用户 */
     int check_read_perm(struct userec *user, const struct boardheader *board);
     int check_see_perm(struct userec *user, const struct boardheader *board);
-    int is_outgo_board(char *board);
-    int is_emailpost_board(char *board);
+    int is_outgo_board(const char *board);
+    int poststatboard(const char *board);
+    int is_emailpost_board(const char *board);
 
 /* define in article.c */
     struct write_dir_arg {
@@ -519,14 +520,14 @@ int pc_read_comment();
     int ann_get_board(char *path, char *board, size_t len);
     int ann_get_path(char *board, char *path, size_t len);
 	int valid_fname(char *str);
-    void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos);    /* 产生ITEM object,并初始化 */
+    void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,long attachpos);    /* 产生ITEM object,并初始化 */
     int a_loadnames(MENU* pm);             /* 装入 .Names */
     int a_savenames(MENU* pm);             /*保存当前MENU到 .Names */
     void a_freenames(MENU * pm);
-    int save_import_path(char ** i_path,char ** i_title,int * i_path_time );
-	void load_import_path(char ** i_path,char ** i_title, int * i_path_time,int * i_path_select);
-	void free_import_path(char ** i_path,char ** i_title,int * i_path_time);
-	int linkto(char *path, char *fname, char *title);
+    int save_import_path(char ** i_path,char ** i_title,time_t* i_path_time );
+    void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select);
+    void free_import_path(char ** i_path,char ** i_title,time_t* i_path_time);
+	int linkto(char *path,const char *fname,const char *title);
 	int add_grp(const char group[STRLEN],const char bname[STRLEN],const char title[STRLEN],const char gname[STRLEN]);
 
 /* check the user's access for the path

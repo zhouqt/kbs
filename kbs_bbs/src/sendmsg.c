@@ -97,7 +97,7 @@ int mode;
 				return 0;
 			if( !isdigit( uident[0] ) ){
 				char mobile[STRLEN];
-				if( get_al_mobile( uident, mobile) == NULL || *mobile==NULL || !isdigit(mobile[0]) ){
+				if( get_al_mobile( uident, mobile) == NULL || *mobile==0 || !isdigit(mobile[0]) ){
 	        		move(2,0);
         			prints("错误的手机号!");
         			pressreturn();
@@ -725,7 +725,7 @@ int friend_wall()
     clrtobot();
     if (!get_msg("我的好朋友", buf, 1, 0))
         return 0;
-    if (apply_ulist(myfriend_wall, buf) == -1) {
+    if (apply_ulist((APPLY_UTMP_FUNC)myfriend_wall, buf) == -1) {
         move(2, 0);
         prints("线上空无一人\n");
         pressanykey();

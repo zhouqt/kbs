@@ -161,9 +161,7 @@ int raw_read(int fd, char *buf, int len)
 #endif
 }
 
-void output(s, len)
-char *s;
-int len;
+void output(const char *s, int len)
 {
     /*
      * need to change IAC to IAC IAC
