@@ -62,6 +62,7 @@ static PHP_FUNCTION(bbs_update_uinfo);
 static PHP_FUNCTION(bbs_createnewid);
 static PHP_FUNCTION(bbs_fillidinfo);
 static PHP_FUNCTION(bbs_createregform);
+static PHP_FUNCTION(bbs_findpwd_check);
 static PHP_FUNCTION(bbs_delfile);
 static PHP_FUNCTION(bbs_delmail);
 static PHP_FUNCTION(bbs_normalboard);
@@ -126,6 +127,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_update_uinfo, NULL)
         PHP_FE(bbs_createnewid,NULL)
 		PHP_FE(bbs_createregform,NULL)
+		PHP_FE(bbs_findpwd_check,NULL)
         PHP_FE(bbs_fillidinfo,NULL)
         PHP_FE(bbs_delfile,NULL)
         PHP_FE(bbs_delmail,NULL)
@@ -2421,7 +2423,47 @@ static PHP_FUNCTION(bbs_createregform)
         RETURN_LONG(10);
 }
 
+/**
+ *  Function: 根据注册姓名和email生成新的密码.
+ *   string bbs_findpwd_check(string userid,string realname,string email);
+ *
+ *   if failed. reaturn NULL string; or return new password.
+ *
+ */
+static PHP_FUNCTION(bbs_findpwd_check)
+{
+    char*   userid,
+	        realname,
+            email;
+	int     userid_len,
+	        realname_len,
+			email_len;
+	char    pwd[30];
+    struct userdata ud;
+	struct userec* uc;
 
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid,&userid_len,&realname,&realname_len,&email,&email_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	pwd[0] = 0;
+    if(userid_len > IDLEN)RETURN_LONG(1);
+
+    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
+	if(read_userdata(userid,&ud)<0)RETURN_LONG(4);
+
+	if(!strncmp(userid,ud.userid,IDLEN) && !strncmp(email,ud.email,STRLEN))
+	{
+        //生成新密码
+		sprintf(pwd,"S%d",rand());
+		setpasswd(pwd,uc);
+	}
+	else
+	    RETURN_LONG(5);
+    RETURN_STRING(pwd,1);
+}
 
 /**
  * del board article
