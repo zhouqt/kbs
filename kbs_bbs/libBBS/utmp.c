@@ -32,6 +32,12 @@
 
 struct UTMPFILE *utmpshm;
 
+static int longlock(int signo)
+{
+    log("5system","utmp lock for so long time!!!.");
+    exit(-1);
+}
+
 static int utmp_lock()
 {
     int          utmpfd=0;
@@ -39,9 +45,12 @@ static int utmp_lock()
     if( utmpfd < 0 ) {
         exit(-1);
     }
+    signal(SIGALRM,longlock);
+    alarm(10);
     if (flock( utmpfd, LOCK_EX ) ==-1)  {
         exit(-1);
     }
+    alarm(0);
     return utmpfd;
 }
 
