@@ -8,6 +8,8 @@ require("inc/user.inc.php");
 html_init();
 
 ?>
+<body>
+<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <div id="msgcontent">
 <div onkeydown="if(event.keyCode==13 ) { closeWindow(); } ">
 <?php
@@ -86,7 +88,10 @@ function main(){
 
 ?>
 </div>
-<script>
-parent.document.all.floater.innerHTML=msgcontent.innerHTML;
-parent.document.all.floater.style.visibility='visible';
-</script>
+	<script language="javascript">
+	oFloater=getParentRawObject("floater");
+	oMsg=getRawObject("msgcontent");
+	oFloater.innerHTML=oMsg.innerHTML;
+	show(oFloater);
+	</script>
+</body>

@@ -26,22 +26,27 @@ if (document.images) {
 		isW3C = (isCSS && document.getElementById) ? true : false;
 	}
 }
-
-// Convert parent object name string or object reference
+// Convert other frame object name string or object reference
 // into a valid element object reference 
-function getParentRawObject(obj) {
+function getRawObjectFrom(obj, oFrame) {
     var theObj;
     if (typeof obj == "string") {
         if (isIE4) {
-            theObj = parent.document.all(obj);
+            theObj = oFrame.document.all(obj);
         } else if (isW3C) {
-            theObj = parent.document.getElementById(obj);
+            theObj = oFrame.document.getElementById(obj);
         } 
     } else {
         // pass through object reference
         theObj = obj;
     }
     return theObj;
+}
+
+// Convert parent object name string or object reference
+// into a valid element object reference 
+function getParentRawObject(obj) {
+    return getRawObjectFrom(obj, parent);
 }
 
 // Convert object name string or object reference
@@ -80,21 +85,27 @@ function getObjectCollection(obj) {
     return theObj;
 }
 
-// Convert parent object id/name string or object references array
+// Convert other frame's object id/name string or object references array
 // into a valid element object references array
-function getParentObjectCollection(obj) {
+function getObjectCollectionFrom(obj,oFrame) {
     var theObj;
     if (typeof obj == "string") {
 		if (isIE4) {
-			theObj=parent.document.all.item(obj);
+			theObj=oFrame.document.all.item(obj);
 		} else if (isW3C) {
-			theObj=parent.document.getElementsByName(obj);
+			theObj=oFrame.document.getElementsByName(obj);
 		}
     } else {
         // pass through object reference
         theObj = obj;
     }
     return theObj;
+}
+
+// Convert parent object id/name string or object references array
+// into a valid element object references array
+function getParentObjectCollection(obj) {
+    return getObjectCollectionFrom(obj,parent);
 }
    
 // Convert object name string or object reference

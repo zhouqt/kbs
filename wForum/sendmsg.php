@@ -26,11 +26,13 @@ function main() {
 		$destutmp = 0;
 	settype($destutmp, "integer");
 ?>
-<script>
+<body>
+<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
+<script language="javascript">
 parent.pauseMsg();
 </script>
 <div id="msgcontent" >
-<div onkeydown="if(event.keyCode==13 && event.ctrlKey) { document.all.oSend.focus();document.all.oSend.click();} ">
+<div onkeydown="if(event.keyCode==13 && event.ctrlKey) { obj=getRawObject('oSend');obj.focus();obj.click();} ">
 <form action="dosendmsg.php" method=post name=messager id=messager >
 <input type="hidden" name="destutmp" value="<?php echo $destutmp; ?>"/>
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
@@ -86,11 +88,14 @@ parent.pauseMsg();
         </table>
 </div>
 </div>
-	<script>
-	parent.document.all.floater.innerHTML=msgcontent.innerHTML;
-	parent.document.all.floater.style.visibility='visible';
+	<script language="javascript">
+	oFloater=getParentRawObject("floater");
+	oMsg=getRawObject("msgcontent");
+	oFloater.innerHTML=oMsg.innerHTML;
+	show(oFloater);
 	</script>
 <?php
 
 }
 ?>
+</body>

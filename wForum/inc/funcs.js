@@ -205,28 +205,32 @@ var manage= '<a style=font-size:9pt;line-height:14pt; href="usermailbox.php?boxn
 
 var timerID=0;
 function dosendmsg(){
-	document.frames('webmsg').document.all.messager.submit();
+	oMessager=getRawObjectFrom("messager",window.frames['webmsg']);
+	oMessager.submit();
 }
 
 function msg_textchange(str){
-	document.frames('webmsg').document.all.messager.oMsgText.value=str;
+	oMsg=getRawObjectFrom("oMsgText",window.frames['webmsg']);
+	oMsg.value=str;
 }
 function msg_idchange(str){
-	document.frames('webmsg').document.all.messager.odestid.value=str;
+	oID=getRawObjectFrom("odestid",window.frames['webmsg']);
+	oID.value=str;
 }
 function closeWindow(){
-	document.all.floater.style.visibility='hidden';
-	document.frames('webmsg').document.location.href='getmsg.php';
+	hide("floater");
+//	document.all.floater.style.visibility='hidden';
+	window.frames['webmsg'].document.location.href='getmsg.php';
 }
 function refreshWindow(){
-	timerID=window.setTimeout("document.frames('webmsg').document.location.href='getmsg.php';", 60000);
+	timerID=window.setTimeout("window.frames['webmsg'].document.location.href='getmsg.php';", 60000);
 }
 function pauseMsg(){
 	window.clearTimeout(timerID);
 }
 function replyMsg(id){
-	document.frames('webmsg').document.location.href='sendmsg.php?destid='+id;
+	window.frames['webmsg'].document.location.href='sendmsg.php?destid='+id;
 }
 function sendMsg(){
-	document.frames('webmsg').document.location.href='sendmsg.php';
+	window.frames['webmsg'].document.location.href='sendmsg.php';
 }

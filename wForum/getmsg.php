@@ -6,6 +6,7 @@ require("inc/funcs.php");
 html_init();
 ?>
 <body >
+<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <?php
 	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 	if ($ret!=0)  {
@@ -33,9 +34,11 @@ html_init();
 	</table>
 </div>
 	</div>
-	<script>
-	parent.document.all.floater.innerHTML=msgcontent.innerHTML;
-	parent.document.all.floater.style.visibility='visible';
+	<script language="javascript">
+	oFloater=getParentRawObject("floater");
+	oMsg=getRawObject("msgcontent");
+	oFloater.innerHTML=oMsg.innerHTML;
+	show(oFloater);
 	</script>
 <?php
 	}else {
