@@ -70,7 +70,7 @@ int main()
     }
     printf("<a href=/bbsdoc.php?board=%s>一般模式</a> ", brdencode);
     printf("<a href=bbsdenyall?board=%s>封人名单</a> ", brdencode);
-    printf("<a href=bbsmnote?board=%s>编辑进版画面</a> ", brdencode);
+    printf("<a href=/bbsmnote.php?board=%s>编辑进版画面</a> ", brdencode);
     fclose(fp);
     printf("<form action=bbsmdoc?board=%s method=post>\n", brdencode);
     printf("<input type=submit value=跳转到> 第 <input type=text name=start size=4> 篇");
