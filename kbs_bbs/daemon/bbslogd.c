@@ -158,15 +158,12 @@ static void writelog(struct bbs_msgbuf *msg)
 #endif
 
 #ifdef NEWPOSTLOG
-	if (msg->mtype == BBSLOG_POST){
+	if (msg->mtype == BBSLOG_POST && postlog_start){
 
 		char newtitle[161];
 		char sqlbuf[512];
 		struct _new_postlog * ppl = (struct _new_postlog *) ( &msg->mtext[1]) ;
 		char newts[20];
-
-		if(!postlog_start)
-			return;
 
 		msg->mtext[0]=0;
 
@@ -177,12 +174,48 @@ static void writelog(struct bbs_msgbuf *msg)
 		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
 			mysql_fail ++;
 			if(mysql_fail > 10)
-				postlog_start = 0;
-		}else
+				closenewpostlog();
+		}else{
 			mysql_fail = 0;
+
+			return;
+		}
+	}
+
+	if (msg->mtype == BBSLOG_POST){
+		struct _new_postlog * ppl = (struct _new_postlog *) ( &msg->mtext[1]) ;
+
+		msg->mtype = BBSLOG_USER;
+
+    	if ((msg->mtype < 0) || (msg->mtype > sizeof(logconfig) / sizeof(struct taglogconfig)))
+        	return;
+    	pconf = &logconfig[msg->mtype-1];
+
+    	if (pconf->fd<0) return;
+    	n = localtime(&msg->msgtime);
+
+    	snprintf(header, 256, "[%02u/%02u %02u:%02u:%02u %5lu %lu] %s post '%s' on '%s'\n", n->tm_mon + 1, n->tm_mday, n->tm_hour, n->tm_min, n->tm_sec, (long int) msg->pid, msg->mtype, msg->userid, ppl->title, ppl->boardname);
+    	if (pconf->buf) {
+        	if ((int) (pconf->bufptr + strlen(header)) <= pconf->bufsize) {
+            	strcpy(&pconf->buf[pconf->bufptr], header);
+            	pconf->bufptr += strlen(header);
+            	return;
+        	}
+    	}
+
+/*目前log还是分散的，就先lock,seek吧*/
+    	flock(pconf->fd, LOCK_SH);
+    	lseek(pconf->fd, 0, SEEK_END);
+
+    	if (pconf->buf && pconf->bufptr) {
+        	write(pconf->fd, pconf->buf, pconf->bufptr);
+        	pconf->bufptr = 0;
+    	}
+    	flock(pconf->fd, LOCK_UN);
 
 		return;
 	}
+
 #endif
 
     if ((msg->mtype < 0) || (msg->mtype > sizeof(logconfig) / sizeof(struct taglogconfig)))
