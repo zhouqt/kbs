@@ -327,6 +327,7 @@ extern "C" {
     int canmsg(struct userec *fromuser, struct user_info *uin);
     int can_override(char *userid, char *whoasks);
     int delfrom_msglist(int utmpnum, char *userid);
+	int msg_can_sendmsg(char *userid, int utmpnum);
 
 /* site.c */
     char *ModeType(int mode);

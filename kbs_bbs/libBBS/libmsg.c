@@ -218,6 +218,7 @@ int store_msgfile(char *uident, char *msgbuf)
     fclose(fp);
     return 0;
 }
+
 int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 {
     char uident[STRLEN], ret_str[20];
@@ -375,3 +376,27 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     }
     return 1;
 }
+
+int msg_can_sendmsg(char *userid, int utmpnum)
+{
+    struct userec *x;
+    struct user_info *uin;
+
+    if (getuser(userid, &x) == 0)
+        return 0;
+    if (strcmp(x->userid, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+        return 0;
+    if (utmpnum == 0)
+        uin = t_search(userid, utmpnum);
+    else
+        uin = get_utmpent(utmpnum);
+    if (uin == NULL)
+        return 0;
+    if (strcasecmp(uin->userid, userid))
+        return 0;
+    if (!canmsg(currentuser, uin))
+        return 0;
+
+    return 1;
+}
+
