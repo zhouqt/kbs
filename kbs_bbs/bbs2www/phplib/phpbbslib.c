@@ -123,7 +123,7 @@ zend_module_entry smth_bbs_module_entry = {
 /* }}} */
 
 #ifdef COMPILE_DL_SMTH_BBS
-PHP_GET_MODULE(smth_bbs)
+ZEND_GET_MODULE(smth_bbs)
 #endif
 
 /*
@@ -132,13 +132,13 @@ DLEXPORT zend_module_entry *get_module()
 {
     return &smth_bbs_module_entry;
 };
- */
 
 
 static void setstrlen(pval * arg)
 {
     arg->value.str.len = strlen(arg->value.str.val);
 }
+ */
 
 static void assign_user(zval * array, struct userec *user, int num)
 {
@@ -1860,7 +1860,6 @@ PHP_MINIT_FUNCTION(smth_bbs)
     getcwd(old_pwd, 1023);
     old_pwd[1023] = 0;
     chdir(BBSHOME);
-    sleep(10);
     resolve_ucache();
     resolve_utmp();
     resolve_boards();
