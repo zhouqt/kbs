@@ -1,5 +1,4 @@
 #include "bbslib.h"
-#include "boardrc.h"
 
 int main() {
 	char board[80], start[80], buf[256];

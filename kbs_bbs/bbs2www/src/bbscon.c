@@ -1,5 +1,4 @@
 #include "bbslib.h"
-#include "boardrc.h"
 
 int main() {
 	FILE *fp;

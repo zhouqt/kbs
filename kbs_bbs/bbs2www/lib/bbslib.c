@@ -1,6 +1,5 @@
 #include "types.h"
 #include "bbslib.h"
-#include "boardrc.h"
 
 time_t update_time=0;
 int showexplain=0,freshmode=0;

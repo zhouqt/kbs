@@ -1,5 +1,4 @@
 #include "bbslib.h"
-#include "boardrc.h"
 
 char *eff_size();
 int my_t_lines;

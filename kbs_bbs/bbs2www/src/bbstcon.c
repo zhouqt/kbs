@@ -1,5 +1,4 @@
 #include "bbslib.h"
-#include "boardrc.h"
 
 int no_re=0;
 /*	bbscon?board=xx&file=xx&start=xx 	*/

@@ -1,5 +1,4 @@
 #include "bbslib.h"
-#include "boardrc.h"
  
 int write_posts(char *id, char *board, char *title)
 {
