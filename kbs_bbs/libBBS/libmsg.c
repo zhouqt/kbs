@@ -666,6 +666,6 @@ int translate_msg(char* src, struct msghead *head, char* dest)
     dest[len++]='m';
     dest[len++]='\n';
     dest[len]=0;
-    return ret+1;
+    return ret+2;
 }
 
