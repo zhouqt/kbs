@@ -550,7 +550,8 @@ MENU *pm;
 }
 
 /* a_SeSave 用来删除存到暂存档时的文件头和尾 Life 1997.4.6 */
-int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent)
+/* mode-- 0 小b操作,保留引文, 1 大B操作,去掉引文 */
+int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent,int mode)
 {
 
     char ans[STRLEN];
@@ -602,7 +603,8 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
                 break;
 
         while (fgets(buf, 256, inf) != NULL) {
-            if (strcmp(buf, "--\n") == 0 || strstr(buf, ") 的大作中提到"))
+	    if(mode == 0 && strcmp(buf,"--\n") == 0)break;	
+            if(mode == 1 && (strcmp(buf, "--\n") == 0 || strstr(buf, ") 的大作中提到")))
                 break;
             if (fileinfo->attachment&&
                 !memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
