@@ -99,7 +99,7 @@ int main()
     printf("</td></tr></table>");
     printf("</td></tr><tr><td>");
     printf("<table border=0 cellspacing=0 cellpadding=0 align=right width=95%>");
-    printf("<img src=\"/images/home.gif\"><a href=\"/bbssec.php\" target=\"f3\">讨论区首页</a><br>\n");
+    printf("<img src=\"/images/home.gif\"><a href=\"/mainpage.php\" target=\"f3\">首页导读</a><br>\n");
     printf("<img src=\"/images/new.gif\"><a target=\"f3\" href=\"/bbsboa.php?group=0&group2=-2\">新开讨论区</a><br>\n");
     printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
     printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"/bbstop10.php\">今日十大</a><br>\n");
