@@ -322,7 +322,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a class=\"b3\" href=\"/cgi-bin/bbs/bbsqry?userid=%s\"><font class=\"b3\">%s</font></a> ", $bm, $bm);
+					$bm_url .= sprintf("<a class=\"b3\" href=\"/bbsqry.php?userid=%s\"><font class=\"b3\">%s</font></a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
@@ -356,7 +356,7 @@
 		}
 	    ?>
 	    -
-	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>|<a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=-1" class="b2"><font class="b2">预定本版</font></a>)
+	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2"><font class="b2">进版画面</font></a>|<a href="/bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=-1" class="b2"><font class="b2">添加到收藏夹</font></a>)
     </td>
   </tr>
   <tr> 

@@ -142,7 +142,7 @@
 			}
 ?>
 </td>
-<td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td class="t3"><a class="ts1" href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
 <td class="t5">
 <a class="ts2" href="/bbsgcon.php?board=<?php echo $brd_encode; ?>&file=<?php echo $article["FILENAME"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
@@ -209,7 +209,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a href=\"/cgi-bin/bbs/bbsqry?userid=%s\" class=\"b3\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a href=\"/bbsqry.php?userid=%s\" class=\"b3\">%s</a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
