@@ -88,7 +88,7 @@ function bbs_is_readonly_board($board)
 }
 
 
-function showBoardStaticsTop($boardArr, $is_ann=false){
+function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
 	global $conn;
 	global $loginok;
 ?>
@@ -119,6 +119,11 @@ function showBoardStaticsTop($boardArr, $is_ann=false){
 </tr></table></td>
 <td align=right>
 <?php
+	if ($is_bm) {
+?>
+	<a href="bmdeny.php?board=<?php echo $boardArr['NAME']; ?>" title=查看和操作本版封禁名单><font color=red>封禁名单</font></a> | 
+<?php
+	}
 	if ($is_ann) {
 ?>
 	<a href="board.php?name=<?php echo $boardArr['NAME']; ?>" title=查看本版文章><font color=blue><B>讨论区</B></font></a> 

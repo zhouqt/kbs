@@ -47,7 +47,7 @@ if ($boardID) {
 ?>
 </table>
 <?php
-		showBoardStaticsTop($boardArr, true);
+		showBoardStaticsTop($boardArr, bbs_is_bm($boardID, $currentuser["index"]), true);
 ?>
 <table cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php

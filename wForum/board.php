@@ -32,7 +32,7 @@ board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 	if ($isGroup) {
 		showSecs($boardArr['SECNUM'],$boardID,true);
 	} else {
-		showBoardStaticsTop($boardArr);
+		showBoardStaticsTop($boardArr, bbs_is_bm($boardID, $currentuser["index"]));
 ?>
 <TABLE cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php
