@@ -25,7 +25,7 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 	errorQuit("您无权在本版发表文章！");
 }
 ?>
-<body topmargin=0 leftmargin=0>
+<body style="margin: 0pt;">
 <script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 function disableEdit(){
@@ -37,12 +37,12 @@ function disableEdit(){
 </script>
 <form name="form" method="post" action="dopostupload.php?board=<?php echo $_GET['board']; ?>" enctype="multipart/form-data" onSubmit="disableEdit();" id="oForm">
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
-<tr><td class=TableBody2 valign=top height=30>
+<tr><td class=TableBody2 valign=middle height=28>
 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ATTACHMAXSIZE; ?>">
 <input type="file" name="upfile">
 <input type="submit" name="Submit" value="上传">
-<font color=#FF0000 >本文还可上传<?php   echo ATTACHMAXCOUNT-getAttachmentCount(); ?>个，总大小<?php   echo intval((ATTACHMAXTOTALSIZE-$totalsize)/1024) ;?>K</font>；
-  论坛限制：一篇文章<?php   echo ATTACHMAXCOUNT; ?>个，<!--一天<?php   echo $GroupSetting[50]; ?>个,-->每个<?php   echo intval(ATTACHMAXSIZE/1024); ?>K，附件总大小<?php   echo intval(ATTACHMAXTOTALSIZE/1024); ?>K
+<font color=#FF0000 >还可上传<?php   echo ATTACHMAXCOUNT-getAttachmentCount(); ?>个，总大小<?php   echo intval((ATTACHMAXTOTALSIZE-$totalsize)/1024) ;?>K</font>；
+  限制：一篇文章<?php   echo ATTACHMAXCOUNT; ?>个，<!--一天<?php   echo $GroupSetting[50]; ?>个,-->每个<?php   echo intval(ATTACHMAXSIZE/1024); ?>K，附件总大小<?php   echo intval(ATTACHMAXTOTALSIZE/1024); ?>K
 </td></tr>
 </table>
 </form>

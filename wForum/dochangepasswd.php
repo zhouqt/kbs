@@ -44,6 +44,6 @@ function main() {
 	if ($ret!=0) {
 		foundErr("更新密码失败！");
 	}
-	return setSucMsg("更新密码成功！");
+	return setSucMsg("更新密码成功！如果您在登录的时候选择了记住密码，建议您现在重新登录一次，否则您下次上站的时候可能会被提示要求输入密码。");
 }
 ?>

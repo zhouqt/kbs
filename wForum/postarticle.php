@@ -165,7 +165,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 <?php 
     if (ENABLE_UBB) require_once("inc/ubbmenu.php");
 ?>
-<textarea class=smallarea cols=95 name=Content id="oArticleContent" rows=12 wrap=VIRTUAL title="可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
+<textarea class=smallarea cols=95 name=Content id="oArticleContent" rows=12 wrap=VIRTUAL title="IE中可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
     if (($reID > 0) && ($_GET['quote']==1 || OLD_REPLY_STYLE)){
     	$isquote = ($_GET['quote']==1) && ENABLE_UBB;
@@ -305,7 +305,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
                 </td></form></tr>
       </table>
 </form>
-<form name=frmPreview action=preview.php?boardid=<?php echo $Boardid; ?> method=post target=preview_page>
+<form name=frmPreview action=preview.php method=post target=preview_page>
 <input type=hidden name=title value=><input type=hidden name=body value=><input type=hidden name=texflag value=0>
 </form>
 <?php
