@@ -359,6 +359,8 @@ extern "C" {
 	/* in site.c */
 	int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
 						MENU *pm);
+	int ann_addto_search(char *group, char *board);
+	int ann_delfrom_search(char *board);
 
 
 /* zmodem */

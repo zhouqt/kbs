@@ -423,6 +423,7 @@ int m_newbrd()
             prints("\n成立精华区失败....\n");
         else
             prints("已经置入精华区...\n");
+		ann_addto_search(group, newboard.filename);
     }
     prints("\n新讨论区成立\n");
     sprintf(genbuf, "add brd %s", newboard.filename);
@@ -441,7 +442,7 @@ int m_newbrd()
 int m_editbrd()
 {
     char bname[STRLEN], buf[STRLEN], oldtitle[STRLEN], vbuf[256], *group;
-    char oldpath[STRLEN], newpath[STRLEN], tmp_grp[30];
+    char oldpath[STRLEN], newpath[STRLEN];
     int pos, noidboard, a_mv;
     struct boardheader fh, newfh;
 
@@ -534,7 +535,7 @@ int m_editbrd()
         };
         getdata(15, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y')
-            a_mv = 2;
+            a_mv = 2; /* 表示移动精华区目录 */
         else
             a_mv = 0;
         getdata(16, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
@@ -569,7 +570,7 @@ int m_editbrd()
             if (strcmp(fh.filename, newfh.filename)) {
                 char old[256], tar[256];
 
-                a_mv = 1;
+                a_mv = 1; /* 表示版名改变，需要更新精华区路径 */
                 setbpath(old, fh.filename);
                 setbpath(tar, newfh.filename);
                 f_mv(old, tar);
@@ -581,26 +582,25 @@ int m_editbrd()
                 sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
             else
                 sprintf(vbuf, "%-38.38s", newfh.title + 13);
-            ann_get_board(lookgrp, fh.filename, 29);
-            edit_grp(fh.filename, lookgrp, oldtitle + 13, vbuf);
+            edit_grp(fh.filename, oldtitle + 13, vbuf);
             if (a_mv >= 1) {
                 group = chgrp();
-                ann_get_board(lookgrp, fh.filename, 29);
-                strcpy(tmp_grp, lookgrp);
-                if (strcmp(tmp_grp, group) || a_mv != 2) {
-                    del_from_file("0Announce/.Search", fh.filename);
+				/* 获取该版对应的 group */
+				ann_get_path(fh.filename, newpath, sizeof(newpath));
+				snprintf(oldpath, sizeof(oldpath), "0Announce/%s", newpath);
+				sprintf(newpath, "0Announce/groups/%s/%s", group, newfh.filename);
+                if (strcmp(oldpath, newpath) || a_mv != 2) {
                     if (group != NULL) {
                         if (newfh.BM[0] != '\0')
                             sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
                         else
                             sprintf(vbuf, "%-38.38s", newfh.title + 13);
 
+						/* add_grp() 会在 .Search 中加入一条记录 */
                         if (add_grp(group, newfh.filename, vbuf, cexplain) == -1)
                             prints("\n成立精华区失败....\n");
                         else
                             prints("已经置入精华区...\n");
-                        sprintf(newpath, "0Announce/groups/%s/%s", group, newfh.filename);
-                        sprintf(oldpath, "0Announce/groups/%s/%s", tmp_grp, fh.filename);
                         if (dashd(oldpath)) {
                             /*
                              * sprintf(genbuf, "/bin/rm -fr %s", newpath);
@@ -608,7 +608,13 @@ int m_editbrd()
                             f_rm(newpath);
                         }
                         f_mv(oldpath, newpath);
-                        del_grp(tmp_grp, fh.filename, fh.title + 13);
+						/* FIXME: 这里逻辑上有问题，明天再处理了 */
+						/* 因为 del_grp() 需要搜索 .Search 文件，
+						 * 但此时 .Search 中已经没有 fh.filename 了 */
+                        del_grp(fh.filename, fh.title + 13);
+                    	del_from_file("0Announce/.Search", fh.filename);
+						ann_delfrom_search(fh.filename);
+						ann_addto_search(group, newfh.filename);
                     }
                 }
             }
@@ -1825,8 +1831,7 @@ int set_BM()
         		securityreport(genbuf, lookupuser, NULL);
         		lookupuser->userlevel = newlevel;
 
-    		 	ann_get_board(lookgrp, fh.filename, 29);
-    		 	edit_grp(fh.filename, lookgrp, oldtitle + 13, vbuf); 
+    		 	edit_grp(fh.filename, oldtitle + 13, vbuf); 
   			set_board(pos, &newfh);
   			
   			sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);

@@ -130,7 +130,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu);
 /* maintain.c */
 int check_systempasswd();
 void stand_title(char *title);
-int del_grp(char grp[STRLEN], char bname[STRLEN], char title[STRLEN]);
+int del_grp(char bname[STRLEN], char title[STRLEN]);
 void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN]);
 
 /* talk.c */
@@ -229,7 +229,7 @@ void record_exit_time();
 
 /* announce.c */
 int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gname[STRLEN]);
-int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newtitle[100]);
+int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100]);
 
 /* boards_t.c */
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);

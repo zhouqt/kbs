@@ -68,16 +68,13 @@ int d_board()
 #endif
             char lookgrp[30];
 
-            ann_get_board(lookgrp, bname, 29);
-            del_grp(lookgrp, bname, title + 13);
-
+            del_grp(bname, title + 13);
+			ann_delfrom_search(bname);
         }
     }
     if (!bname[0]) {
         if (anonymousboard(bname))
             del_from_file("etc/anonymous", bname);
-        if (seek_in_file("0Announce/.Search", bname))
-            del_from_file("0Announce/.Search", bname);
         sprintf(genbuf, "deleted board %s", bname);
         bbslog("user","%s",genbuf);
         /*

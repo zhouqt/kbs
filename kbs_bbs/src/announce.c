@@ -1368,8 +1368,6 @@ int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gna
         fprintf(fn, "#\n");
         fclose(fn);
     }
-    if (!seek_in_file(buf, bname))
-        addtofile(buf, searchname);
     if (!dashd("0Announce/groups")) {
         mkdir("0Announce/groups", 0755);
         chmod("0Announce/groups", 0755);
@@ -1397,23 +1395,28 @@ int add_grp(char group[STRLEN], char bname[STRLEN], char title[STRLEN], char gna
     return 0;
 }
 
-int del_grp(grp, bname, title)
-    char grp[STRLEN], bname[STRLEN], title[STRLEN];
+int del_grp(bname, title)
+    char bname[STRLEN], title[STRLEN];
 {
-    char buf[STRLEN], buf2[STRLEN], buf3[30];
+    char buf2[STRLEN];
     char gpath[STRLEN * 2];
     char bpath[STRLEN * 2];
     char check[30];
+	char *ptr;
     int i, n;
     MENU pm;
 
-    strcpy(buf3, grp);
-    sprintf(buf, "0Announce/.Search");
-    sprintf(gpath, "0Announce/groups/%s", buf3);
-    sprintf(bpath, "%s/%s", gpath, bname);
-    /*
-       sprintf(genbuf,"/bin/rm -fr %s",bpath) ;
-     */
+	/* 获取该版在精华区中的路径 */
+	if (ann_get_path(bname, gpath, sizeof(gpath)) < 0)
+		return 0;
+	snprintf(bpath, sizeof(bpath), "0Announce/%s", gpath);
+	strcpy(gpath, bpath);
+	/* 获取该版对应 group 的路径 */
+	if ((ptr = strrchr(gpath, '/')) == NULL)
+		return 0;
+	if (strncmp(bname, ptr+1, strlen(bname)) != 0)
+		return 0;
+	*ptr = '\0';
 
     f_rm(bpath);
 
@@ -1431,24 +1434,29 @@ int del_grp(grp, bname, title)
             break;
         }
     }
-    return 0;
+    return 0;  /* FIXME: return value */
 }
 
-int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newtitle[100])
+int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
 {
-    char buf[STRLEN], buf2[STRLEN], buf3[30];
+    char buf2[STRLEN];
     char gpath[STRLEN * 2];
     char bpath[STRLEN * 2];
+	char *ptr;
     int i;
     MENU pm;
 
-    strcpy(buf3, grp);
-    sprintf(buf, "0Announce/.Search");
-    sprintf(gpath, "0Announce/groups/%s", buf3);
-    sprintf(bpath, "%s/%s", gpath, bname); 
-
-    if (!seek_in_file(buf, bname))
-        return 0;
+	/* 获取该版在精华区中的路径 */
+	if (ann_get_path(bname, gpath, sizeof(gpath)) < 0)
+		return 0;
+	snprintf(bpath, sizeof(bpath), "0Announce/%s", gpath);
+	strcpy(gpath, bpath);
+	/* 获取该版对应 group 的路径 */
+	if ((ptr = strrchr(gpath, '/')) == NULL)
+		return 0;
+	if (strncmp(bname, ptr+1, strlen(bname)) != 0)
+		return 0;
+	*ptr = '\0';
 
     pm.path = gpath;
     a_loadnames(&pm);
@@ -1465,7 +1473,7 @@ int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newt
     strcpy(pm.mtitle, newtitle);
     a_savenames(&pm);
 
-    return 0;
+    return 0;  /* FIXME: return value */
 }
 
 void Announce()
