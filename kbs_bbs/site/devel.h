@@ -9,6 +9,10 @@
 #undef HAVE_TEMPORARY_NICK
 #undef HAVE_FRIENDS_NUM
 #undef HAVE_REVERSE_DNS
+/*
+#define BLESS_BOARD "Blessing"
+*/
+#undef BLESS_BOARD
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
