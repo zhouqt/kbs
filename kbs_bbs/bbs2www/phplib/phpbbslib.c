@@ -7010,7 +7010,7 @@ static PHP_FUNCTION(bbs_x_search)
         if(t==0) {
             continue;
         }
-        while(t<180&&t<fsize) {
+        while(t<240&&t<fsize) {
             memset(out2, 0, fsize);
             t=0;
             for(k=0;k<fsize;k++) 
@@ -7043,17 +7043,19 @@ static PHP_FUNCTION(bbs_x_search)
             if(out[i]==1&&!inc) {
                 sprintf(pp, "<font color=\"#BB0808\">");
                 pp += 22;
+                inc = 1;
             }
             else if(inc) {
                 sprintf(pp, "</font>");
                 pp += 7;
+                inc = 0;
             }
             if(buf[i]=='\n') *(pp++) = ' ';
             else if(buf[i]) *(pp++) = buf[i];
             if(p) p=0;
             else if(buf[i]<0) p=1;
             j++;
-            if(j>=69&&p==0) {
+            if(j>=84&&p==0) {
                 t++;
                 if(t>=3) break;
                 j=0;
