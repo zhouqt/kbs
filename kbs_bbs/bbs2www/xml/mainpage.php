@@ -296,7 +296,7 @@ $brdarr = array();
 	</table>
 
 	<table border="0" cellpadding="0" cellspacing="0" width="626">
-
+	<tr><td height=10></td></tr>
 <?php
 # shift through the array
 while($board = array_shift($boards))
@@ -461,11 +461,11 @@ while($board = array_shift($boards))
   <tr>
     <td width="75%">
 <?php
-	gen_hot_subjects_html();
+	gen_commend_html();
 ?>
 <br>
 <?php
-	gen_commend_html();
+	gen_hot_subjects_html();
 	gen_sections_html();
 ?>
 </td>
