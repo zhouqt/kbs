@@ -3,11 +3,6 @@
 	require("inc/funcs.php");
 	require("inc/attachment.inc.php");
 
-	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
-	if ($attachpos==0) {
-		echo 1;
-		exit(0);
-	}
 	$brdarr = array();
 	if( isset( $_GET["bid"] ) ){
 		$brdnum = $_GET["bid"] ;
@@ -25,13 +20,12 @@
 			exit(0);
 		}
 	}
-    $isnormalboard=bbs_normalboard($board);
-    if (($loginok != 1) && !$isnormalboard) {
-		echo $loginok;
+	$isnormalboard=bbs_normalboard($board);
+	if (($loginok != 1) && !$isnormalboard) {
 		echo 5;
-         exit(0);
-    }
-    bbs_set_onboard($brcnum,1);
+		exit(0);
+	}
+	bbs_set_onboard($brcnum,1);
 	if($loginok == 1)
 		$usernum = $currentuser["index"];
 	if (!$isnormalboard && bbs_checkreadperm($usernum, $brdnum) == 0) {
@@ -40,7 +34,7 @@
 	}
 	if (isset($_GET["id"])) {
 		$id = $_GET["id"];
-	}	else {
+	} else {
 		echo 8;
 		exit(0);
 	}
@@ -63,15 +57,32 @@
 	if ($num == 0)	{
 		echo 10;
 		return;
-	}else{
+	}
+
+	@$attachpos = $_GET["ap"]; //pointer to the size after ATTACHMENT PAD
+	if ($attachpos==0) {
+		// jump to the article, this link must be generated from telnet session. added by atppp
+		$gid = $articles[1]["GROUPID"];
+		$boardName = $brdarr["NAME"];
+		$haveprev = 0;
+		$num = bbs_get_threads_from_gid($brdnum, $gid, $gid, $articles, $haveprev );
+		var_dump($articles);
+		if ($num > 0) {
+			for ($i = 0; $i < $num; $i++) {
+				if ($id == $articles[$i]["ID"]) {
+					header("Location: disparticle.php?boardName=$boardName&ID=$gid&start=$i&listType=1");
+					return;
+				}
+			}
+		}
+		echo 1;
+	} else {
 		$filename=bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
 		if ($isnormalboard) {
-	       	if (cache_header("public",filemtime($filename),300)) {
+			if (cache_header("public",filemtime($filename),300)) {
 				exit(0);
 			}
-        }
-//		Header("Cache-control: nocache");
-
+		}
 		output_attachment($filename, $attachpos);
 	}
 ?>
