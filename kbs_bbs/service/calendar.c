@@ -15,7 +15,7 @@ int get_day(int year, int month)
     else return day[month-1];
 }
 
-int get_day(int year)
+int get_day2(int year)
 {
     if(year%4==0&&(year%100!=0||year%400==0)) return 366;
     else return 365;
@@ -24,7 +24,7 @@ int get_day(int year)
 int get_week(int year, int month, int day)
 {
     int total=0,i;
-    for(i=1900;i<year;i++) total+=get_day(i)%7;
+    for(i=1900;i<year;i++) total+=get_day2(i)%7;
     for(i=1;i<month;i++) total+=get_day(year, i)%7;
     total+=day;
     return total%7;
