@@ -64,7 +64,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
-			"<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format(substr($nodes[$i][body],0,600)." ",TRUE); 
+			"<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format(substr($nodes[$i][body],0,600)." ",TRUE,$nodes[$i][htmltag]); 
                         if (strlen($nodes[$i][body])>600) 
                         	echo " ......<A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>"; 
                         echo "</td></tr>\n". 

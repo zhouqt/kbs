@@ -171,8 +171,9 @@
 				else
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
-				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ) ".
-					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."', '".$tag."', '0');";
+				$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
+				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`) ".
+					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."', '".$tag."', '0' , '".$useHtmlTag."' );";
 				mysql_query($query,$link);
 				if($tag == 0)
 					pc_update_record($link,$pc["UID"]," + 1");
@@ -222,11 +223,13 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	<td class="t5"><?php @require("emote.html"); ?></td>
 </tr>
 <tr>
-	<td class="t11">内容</td>
+	<td class="t11">内容
+	<input type="checkbox" name="htmltag" value=1 checked>使用HTML标记
+	</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["EDITORALERT"]."\n&nbsp;".$pcconfig["NOWRAPSTR"]; ?>
+	<td class="t8"><textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<?php echo $pcconfig["EDITORALERT"]."\n&nbsp;".$pcconfig["NOWRAPSTR"].$_POST["blogbody"]; ?>
 	</textarea></td>
 </tr>
 <!--
@@ -257,7 +260,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		elseif($act == "edit")
 		{
 			$nid = (int)($_GET["nid"]);
-			$query = "SELECT `subject` , `body` ,`comment`,`type`,`tid`,`access` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ; ";
+			$query = "SELECT `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ; ";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -272,9 +275,9 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 					$c = 0;
 				else
 					$c = 1;
-				//die(html_editorstr_format($_POST["blogbody"]));
+				$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
+				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."'  WHERE `nid` = '".$nid."' ; ";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 ?>
@@ -352,11 +355,13 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 	<td class="t5"><?php @require("emote.html"); ?></td>
 </tr>
 <tr>
-	<td class="t11">内容</td>
+	<td class="t11">内容
+	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) echo "checked"; ?> >使用HTML标记
+	</td>
 </tr>
 <tr>
 	<td class="t8">
-	<textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<textarea name="blogbody" class="f1" cols="120" rows="30" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
 	<?php echo $pcconfig["EDITORALERT"]."\n&nbsp;".$pcconfig["NOWRAPSTR"]; ?>
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>

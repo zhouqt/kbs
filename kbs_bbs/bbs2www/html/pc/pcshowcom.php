@@ -78,7 +78,7 @@
 </tr>
 <tr>
 	<td class="t13" height="200" align="left" valign="top">
-	<?php echo html_format($comment[body],TRUE); ?>
+	<?php echo html_format($comment[body],TRUE,$comment[htmltag]); ?>
 	</td>
 </tr>
 <tr>

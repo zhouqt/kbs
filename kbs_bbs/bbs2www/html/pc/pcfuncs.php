@@ -81,7 +81,7 @@ _editor_url = "htmlarea/";
 </script>
 <!-- load the main HTMLArea files -->
 <script type="text/javascript" src="htmlarea/htmlarea.js"></script>
-<script type="text/javascript" src="htmlarea/lang/gb.js"></script>
+<script type="text/javascript" src="htmlarea/lang/en.js"></script>
 <script type="text/javascript" src="htmlarea/dialog.js"></script>
 <script type="text/javascript" src="htmlarea/popupwin.js"></script>
 <style type="text/css">
@@ -162,12 +162,12 @@ function html_editorstr_format($str)
 	return $str;
 }
 
-function html_format($str,$multi=FALSE)
+function html_format($str,$multi=FALSE,$useHtmlTag = FALSE)
 {
 	global $pcconfig;
 	if($multi)
 	{
-		if(strstr($str,$pcconfig["NOWRAPSTR"]))
+		if(strstr($str,$pcconfig["NOWRAPSTR"]) || $useHtmlTag )
 			$str = str_replace("<?","&lt;?",stripslashes($str));
 		else
 			$str = nl2br(str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str))));	

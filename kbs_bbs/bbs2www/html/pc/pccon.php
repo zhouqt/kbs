@@ -84,7 +84,7 @@
 			if($spr)
 			{
 				echo "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\">".
-					html_format($rows[body],TRUE)."</td>\n</tr>\n".
+					html_format($rows[body],TRUE,$rows[htmltag])."</td>\n</tr>\n".
 					"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: ".$rows[hostname]."]".
 					"</td>\n</tr>\n";
 			}	
@@ -213,7 +213,7 @@
 		µÿ÷∑£∫<?php echo $rows[hostname]; ?>
 		</td>
 		<td width="80%" height="300" align="left" valign="top" class="t5">
-		<?php echo html_format($rows[body],TRUE); ?>&nbsp;
+		<?php echo html_format($rows[body],TRUE,$rows[htmltag]); ?>&nbsp;
 		</td>
 	</tr>
 	<tr>

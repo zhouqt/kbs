@@ -85,11 +85,13 @@
 	<td class="t5"><?php @require("emote.html"); ?></td>
 </tr>
 <tr>
-	<td class="t11">内容</td>
+	<td class="t11">内容
+	<input type="checkbox" name="htmltag" value=1 checked>使用HTML标记
+	</td>
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
-	<?php echo $pcconfig["EDITORALERT"]."\n&nbsp;".$pcconfig["NOWRAPSTR"]; ?>
+	<?php echo $pcconfig["EDITORALERT"]."\n&nbsp;".$pcconfig["NOWRAPSTR"].$_POST["blogbody"]; ?>
 	</textarea></td>
 </tr>
 <tr>
@@ -111,8 +113,9 @@
 				exit();
 			}
 			$emote = (int)($_POST["emote"]);
-			$query = "INSERT INTO `comments` ( `cid` , `nid` , `uid` , `emote` , `hostname` , `username` , `subject` , `created` , `changed` , `body` )". 
-				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".$_SERVER["REMOTE_ADDR"]."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."');";
+			$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
+			$query = "INSERT INTO `comments` ( `cid` , `nid` , `uid` , `emote` , `hostname` , `username` , `subject` , `created` , `changed` , `body`  , `htmltag`)". 
+				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".$_SERVER["REMOTE_ADDR"]."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , '".$useHtmlTag."' );";
 			mysql_query($query,$link);
 			$query = "UPDATE nodes SET commentcount = commentcount + 1 WHERE `nid` = '".$nid."' ; ";
 			mysql_query($query,$link);

@@ -54,7 +54,7 @@
 		}
 		elseif($act == "edit")
 		{
-			$query = "SELECT `subject`,`body` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ; ";
+			$query = "SELECT `subject`,`body`,`htmltag` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ; ";
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -83,7 +83,9 @@
 	<td class="t5"><?php @require("emote.html"); ?></td>
 </tr>
 <tr>
-	<td class="t11">内容</td>
+	<td class="t11">
+	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) echo "checked"; ?> >使用HTML标记
+	</td>
 </tr>
 <tr>
 	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
@@ -105,7 +107,8 @@
 		elseif($act == "edit2")
 		{
 			$emote = (int)($_POST["emote"]);
-			$query = "UPDATE `comments` SET `subject` = '".addslashes($_POST["subject"])."',`changed` = '".date("YmdHis")."',`body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `emote` = '".$emote."' WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 1 ;";
+			$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
+			$query = "UPDATE `comments` SET `subject` = '".addslashes($_POST["subject"])."',`changed` = '".date("YmdHis")."',`body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 1 ;";
 			mysql_query($query,$link);
 ?>
 <p align="center">

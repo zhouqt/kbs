@@ -781,7 +781,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 			sprintf(ql,"UPDATE users SET `createtime` = `createtime` , modifytime = '%s' , nodescount = nodescount + 1 WHERE uid=%d ;",tt2timestamp(pn->changed,newts),pn->uid );	
 			mysql_real_query( &s, ql, strlen(ql) );
 		}
-		sprintf(ql,"INSERT INTO nodes VALUES (NULL, %lu,  %d, '%s', '%s', '%s', '%s', %d, %d, %lu, '%s', '%s', %d,  %d , 0 , 0);",pn->pid, pn->type, newsource, newhostname, tt2timestamp(pn->changed,newts), tt2timestamp(pn->created, newts1), pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount );
+		sprintf(ql,"INSERT INTO nodes VALUES (NULL, %lu,  %d, '%s', '%s', '%s', '%s', %d, %d, %lu, '%s', '%s', %d,  %d , 0 , 0 , 0 );",pn->pid, pn->type, newsource, newhostname, tt2timestamp(pn->changed,newts), tt2timestamp(pn->created, newts1), pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount );
 	}
 	else
 	{
@@ -857,7 +857,7 @@ int add_pc_comments(struct pc_comments *pn)
 		mysql_escape_string(newbody, pn->body, strlen(pn->body));
 
 	if( pn->cid <= 0 )
-		sprintf(sql,"INSERT INTO comments VALUES (NULL, %lu, %d, '%s', '%s', '%s', '%s', '%s', '%s', 0 );",pn->nid, pn->uid, newhostname, pn->username, newsubject, tt2timestamp(pn->created,newts), tt2timestamp(pn->changed, newts1), pn->body?newbody:"" );
+		sprintf(sql,"INSERT INTO comments VALUES (NULL, %lu, %d, '%s', '%s', '%s', '%s', '%s', '%s', 0 , 0 );",pn->nid, pn->uid, newhostname, pn->username, newsubject, tt2timestamp(pn->created,newts), tt2timestamp(pn->changed, newts1), pn->body?newbody:"" );
 	else
 		sprintf(sql,"UPDATE comments SET nid=%lu, uid=%d, hostname='%s', username='%s', subject='%s', created='%s', changed='%s', body='%s' WHERE cid=%lu ;",pn->nid, pn->uid, newhostname, pn->username, newsubject, tt2timestamp(pn->created,newts), tt2timestamp(pn->changed, newts1), pn->body?newbody:"", pn->cid );
 	
