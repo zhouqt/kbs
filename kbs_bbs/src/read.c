@@ -60,6 +60,7 @@ static int search_title(struct keeploc *locmem, int offset);
 static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, int ssize, char *pnt);
 static int cursor_pos(struct keeploc *locmem, int val, int from_top);
 static int search_thread(struct keeploc *locmem, int offset, char *title);
+static int search_threadid(struct keeploc *locmem, int offset, int groupid);
 
 
 /*struct fileheader *files = NULL;*/
@@ -969,7 +970,13 @@ int thread_up(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 
     locmem = getkeep(direct, 1, 1);
-    if (search_thread(locmem, -1, fileinfo->title)) {
+    if (uinfo.mode != RMAIL) {
+    	if (search_threadid(locmem, -1, fileinfo->groupid)){
+	       update_endline();
+       	return PARTUPDATE;
+    	}
+    }
+    else if (search_thread(locmem, -1, fileinfo->title)) {
         update_endline();
         return PARTUPDATE;
     }
@@ -983,7 +990,13 @@ int thread_down(int ent, struct fileheader *fileinfo, char *direct)
     struct keeploc *locmem;
 
     locmem = getkeep(direct, 1, 1);
-    if (search_thread(locmem, 1, fileinfo->title)) {
+    if (uinfo.mode != RMAIL) {
+    	if (search_threadid(locmem, 1, fileinfo->groupid)){
+	       update_endline();
+       	return PARTUPDATE;
+    	}
+    }
+    else if (search_thread(locmem, 1, fileinfo->title)) {
         update_endline();
         return PARTUPDATE;
     }
@@ -1167,7 +1180,10 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             break;
         }
         if (!isstart) {
-            search_articles(locmem, title, isnext, auser + 2);
+		if (uinfo.mode != RMAIL&&auser==0)
+			search_threadid(locmem, isnext, ptitle->groupid);
+    		else
+    			search_articles(locmem, title, isnext, auser + 2);
         }
         if (previous == locmem->crs_line) {
             break;
@@ -1426,6 +1442,55 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                     match = cursor_pos(locmem, now, 10);
                     break;
                 }
+            }
+        }
+        memcpy(&SR_fptr, pFh + locmem->crs_line - 1, sizeof(struct fileheader));
+        break;
+    case 2:
+        memset(&SR_fptr, 0, sizeof(struct fileheader));
+        match = 0;
+    } ;
+    end_mmapfile((void *) pFh, size, -1);
+    move(t_lines - 1, 0);
+    clrtoeol();
+    return match;
+}
+
+static int search_threadid(struct keeploc *locmem, int offset, int groupid)
+{
+    int now, match = 0;
+
+/*	int mmap_offset,mmap_length; */
+    struct fileheader *pFh, *pFh1;
+    int size;
+
+    now = locmem->crs_line;
+/*    refresh();*/
+    memset(&SR_fptr, 0, sizeof(struct fileheader));
+    match = 0;
+    switch (safe_mmapfile(currdirect, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &pFh, &size, NULL)) {
+    case 0:
+        return 0;
+    case 1:
+    	last_line=size/sizeof(struct fileheader);
+    	if (now>last_line)
+    		break;
+        pFh1 = pFh + now - 1;
+        while (1) {
+            if (offset > 0) {
+                if (++now > last_line)
+                    break;
+                pFh1++;
+            } else {
+                if (--now < 1)
+                    break;
+                pFh1--;
+            }
+            if (now == locmem->crs_line)
+                break;
+            if (pFh1->groupid==groupid) {
+                    match = cursor_pos(locmem, now, 10);
+                    break;
             }
         }
         memcpy(&SR_fptr, pFh + locmem->crs_line - 1, sizeof(struct fileheader));
