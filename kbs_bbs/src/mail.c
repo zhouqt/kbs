@@ -1179,7 +1179,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
     }
 
     /*
-     * 封禁Mail Bigman:2000.8.22 
+     * 封禁Mail Bigman:2000.8.22
      */
     if (HAS_PERM(currentuser, PERM_DENYMAIL)) {
         clear();
@@ -1189,7 +1189,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char *direct, in
         return FULLUPDATE;
     }
 
-    if (!HAS_PERM(currentuser, PERM_FORWARD)) {
+    if (!HAS_PERM(currentuser, PERM_FORWARD) || !HAS_PERM(currentuser,PERM_LOGINOK)) {
         return DONOTHING;
     }
     strncpy(buf, direct, sizeof(buf));
@@ -1934,7 +1934,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     } else {
         strncpy(address, receiver, STRLEN);
         /*
-         * 确认地址是否正确 added by dong, 1998.10.1 
+         * 确认地址是否正确 added by dong, 1998.10.1
          */
         sprintf(genbuf, "确定将文章寄给 %s 吗? (Y/N) [Y]: ", address);
         getdata(3, 0, genbuf, receiver, 3, DOECHO, NULL, true);
