@@ -55,10 +55,16 @@ parent.pauseMsg();
               <input id="oMsgText" name="msg" maxlength="50" size="50" onchange="msg_textchange(this.value);" />
             </td>
           </tr>
+<?php
+	if (SMS_SUPPORT) {
+?>
 		<tr> 
             <td  class=TableBody1 colspan=2> <input type="checkbox" name="isSMS" id="isSMS" <?php echo (isset($_GET['type'])&& ($_GET['type']=='sms'))?'checked':''; ?> onchange="msg_typechanged(this.checked);">&nbsp; <b>发送手机短信</b>
 			</td>
 		</tr>
+<?php
+	}
+?>
           <tr> 
             <td  class=TableBody1 colspan=2>
 <b>说明</b>：<br>

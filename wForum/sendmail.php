@@ -238,18 +238,6 @@ function main() {
 			</td>
 		  </tr>
           <tr> 
-            <td  class=TableBody1 colspan=2>
-<b>说明</b>：<br>
-① 您可以使用<b>Ctrl+Enter</b>键快捷发送短信<br>
-<!--
-② 可以用英文状态下的逗号将用户名隔开实现群发，最多<b>5</b>个用户<br>
-
-③ 标题最多<b>50</b>个字符，内容最多<b>300</b>个字符<br>
--->
-            </td>
-          </tr>
-
-          <tr> 
             <td  class=TableBody2 valign=middle colspan=2 align=center> 
 			  
 			  &nbsp;

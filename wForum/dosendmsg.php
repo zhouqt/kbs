@@ -73,12 +73,8 @@ function main(){
 </script>
 <?php
 		exit(0);
-/*
-		foundErr("短信参数错误");
-		return false;
-*/
 	}
-	if (isset($_POST['isSMS'])) {
+	if (isset($_POST['isSMS']) && SMS_SUPPORT) {
 		if (bbs_send_sms($destid, $msg)!=0){
 			foundErr("手机短信发送失败！", false);
 			return false;

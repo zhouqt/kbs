@@ -34,14 +34,25 @@ document.write("</style>");
 document.write("<div id='dypopLayer' style='position:absolute;z-index:1000' class='cPopText'></div>");
 
 
-function showPopupText(){
-	if (typeof event == "undefined") return; //ToDo: 别的浏览器不支持Fade in/out，直接把他们显示出来算了。
-var o=event.srcElement;
+function showPopupText(evt){
+	var o;
+	if (typeof event == "undefined") {
+		return;
+		event = evt;
+	}
+	if (typeof isIE4 == "undefined") return;
+	if (!isIE4) {
+		o = event.currentTarget;
+	} else {
+		o = event.srcElement;
+	}
+	if (o == null) return;
 	MouseX=event.x;
 	MouseY=event.y;
 	if(o.alt!=null && o.alt!=""){o.dypop=o.alt;o.alt=""};
         if(o.title!=null && o.title!=""){o.dypop=o.title;o.title=""};
 	if(o.dypop!=sPop) {
+		if (isIE4) {
 			sPop=o.dypop;
 			clearTimeout(curShow);
 			clearTimeout(tFadeOut);
@@ -57,7 +68,28 @@ var o=event.srcElement;
 					else popStyle="cPopText";
 				curShow=setTimeout("showIt()",tPopWait);
 			}
-			
+		} else {
+			dypopLayer = getRawObject("dypopLayer");
+			if(sPop==null || sPop=="") {
+				dypopLayer.innerHTML="";
+				dypopLayer.style.display="none";
+			} else {
+				if(o.dyclass!=null) popStyle=o.dyclass 
+				else popStyle="cPopText";
+				dypopLayer.className=popStyle;
+				dypopLayer.innerHTML = sPop;
+				popWidth=dypopLayer.clientWidth;
+				popHeight=dypopLayer.clientHeight;
+				if(MouseX+12+popWidth>document.body.clientWidth) popLeftAdjust=-popWidth-24
+					else popLeftAdjust=0;
+				if(MouseY+12+popHeight>document.body.clientHeight) popTopAdjust=-popHeight-24
+					else popTopAdjust=0;
+				dypopLayer.style.left=MouseX+12+document.body.scrollLeft+popLeftAdjust;
+				dypopLayer.style.top=MouseY+12+document.body.scrollTop+popTopAdjust;
+				dypopLayer.style.display="inline";
+
+			}
+		}			
 	}
 }
 
@@ -239,8 +271,11 @@ var manage= ' \
 
 var talk = ' \
 <a class=\"MItem\" href="showmsgs.php">察看在线短信</a><br> \
-<a class=\"MItem\" href="javascript:sendMsg()">发短信</a><br> \
-<a class=\"MItem\" href="javascript:sendSMSMsg()">发送手机短信</a><br> \
+<a class=\"MItem\" href="javascript:sendMsg()">发短信</a><br>';
+if (siteconf_SMS_SUPPORT) {
+	talk += '<a class=\"MItem\" href="javascript:sendSMSMsg()">发送手机短信</a><br>';
+}
+talk += ' \
 <a class=\"MItem\" href="friendlist.php">编辑好友列表</a><br> \
 <a class=\"MItem\" href="showonlinefriend.php">在线好友</a><br> \
 <a class=\"MItem\" href="showonlineuser.php">在线用户</a><br> \

@@ -530,6 +530,11 @@ function show_nav($boardName='')
 
   html_init();
 ?>
+<script language="javascript">
+<!--
+	var siteconf_SMS_SUPPORT = <?php echo SMS_SUPPORT?"true":"false"; ?>;
+//-->
+</script>
 <script src="inc/funcs.js"  language="javascript"></script>
 <body topmargin=0 leftmargin=0 onmouseover="HideMenu(event);">
 <script src="inc/browser.js"  language="javascript"></script>
