@@ -536,6 +536,12 @@ int igetch()
 	}   
 #endif
         goto igetagain;
+    case Ctrl('Z'):
+        if(!inremsg) {
+            r_msg();
+            goto igetagain;
+        }
+        break;
     default:
         break;
     }
