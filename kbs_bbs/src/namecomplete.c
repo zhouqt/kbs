@@ -158,7 +158,9 @@ char *prompt, *data;
     int ch;
     int count = 0;
     int clearbot = false;
+    extern bool ingetdata;
 
+    ingetdata = true;
     if (scrint) {
         struct word *cwlist, *morelist;
         int x, y;
@@ -306,6 +308,7 @@ char *prompt, *data;
              * for (x=1; x<500; x++);  delay 
              */
         }
+        ingetdata = true;
         return 0;
     }
     if (prompt != NULL) {
@@ -316,6 +319,7 @@ char *prompt, *data;
         longjmp(byebye, -1);
     if ((temp = strchr(data, '\n')) != NULL)
         *temp = '\0';
+    ingetdata = true;
     return 0;
 }
 
