@@ -57,7 +57,7 @@ int main()
     printf("</select>\n");
     printf(" [<a target=\"_balnk\" href=\"/bbssig.php\">查看签名档</a>] \n");
     /* 加上转信支持 */
-    printf("<input type=\"checkbox\" name=\"outgo\" value=\"1\">转信\n");
+    printf("<input type=\"checkbox\" name=\"outgo\" value=\"1\" CHECKED>转信\n");
     /* 加上匿名讨论区支持 */
     if (seek_in_file("etc/anonymous", board))
         printf("<input type=\"checkbox\" name=\"anony\" value=\"1\">使用匿名\n");

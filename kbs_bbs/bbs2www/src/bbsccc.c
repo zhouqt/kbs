@@ -251,7 +251,7 @@ int main()
 	printf("<input type=\"hidden\" name=\"board\" value=\"%s\">", board);
 	printf("<input type=\"hidden\" name=\"file\" value=\"%s\">", file);
 	printf("转载到 <input name=\"target\" size=\"30\" maxlength=\"30\"> 讨论区.<br>\n ");
-	printf("<input type=\"checkbox\" name=\"outgo\" value=\"1\">转信<br>\n");
+	printf("<input type=\"checkbox\" name=\"outgo\" value=\"1\" CHECKED>转信<br>\n");
 	printf("<input type=\"submit\" value=\"确定\"></form></td></tr></table>");
 	http_quit();
 	return 0;
