@@ -166,12 +166,16 @@ char ***argv;
      */
 }
 
+/*
+ * Disabled by flyriver, 2004.2.25
+ *
 int daemonprintf(format)
 char *format;
 {
     fprintf(DOUT, format);
     fflush(DOUT);
 }
+*/
 
 int daemonputs(output)
 char *output;
