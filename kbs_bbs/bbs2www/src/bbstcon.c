@@ -15,10 +15,10 @@ int main()
     struct fileheader x,oldx;
     int i, num = 0, found = 0;
 
-    encode_url(brdencode, board, sizeof(brdencode));
     init_all();
     strsncpy(board, getparm("board"), 32);
     strsncpy(file, getparm("file"), 32);
+    encode_url(brdencode, board, sizeof(brdencode));
     printf("<center>\n");
     if (!has_read_perm(currentuser, board))
         http_fatal("´íÎóµÄÌÖÂÛÇø");
