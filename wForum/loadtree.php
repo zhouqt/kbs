@@ -38,7 +38,7 @@ $total=$threadNum+1;
 $threads=bbs_get_thread_articles($boardName, intval($article['ID']),0,$total);
 $total=count($threads);
 */
-$num = bbs_get_threads_from_gid($boardID, $groupID, 0 , $articles , $haveprev );
+$num = bbs_get_threads_from_gid($boardID, $groupID, $groupID , $articles , $haveprev );
 if ($num==0) {
 	exit(0);
 }
