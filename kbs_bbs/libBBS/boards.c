@@ -793,16 +793,9 @@ int haspostperm(struct userec *user, char *bname)
     if ((i = getbnum(bname)) == 0)
         return 0;
     if (!HAS_PERM(user, PERM_POST))
-        /*
-         * if(!strcmp(bname, "sysop"))
-         * return 1; 
- *//*
- * Leeward 98.05.21 revised by stephen 2000.10.27 
- */
-        /*
-         * let user denied post right post at Complain 
-         */
     {
+        if (!HAS_PERM(user, PERM_LOGINOK))
+	    return 0;
         if (!strcmp(bname, "Complain"))
             return 1;           /* added by stephen 2000.10.27 */
         else if (!strcmp(bname, "sysop"))
