@@ -16,6 +16,7 @@
 #define ROOM_LOCKED 01
 #define ROOM_SECRET 02
 #define ROOM_DENYSPEC 04
+#define ROOM_SPECBLIND 010
 
 struct room_struct {
     int w;
@@ -35,6 +36,7 @@ struct room_struct {
 #define PEOPLE_ROOMOP 010
 #define PEOPLE_POLICE 020
 #define PEOPLE_TESTED 040
+#define PEOPLE_DENYSPEAK 0100
 
 struct people_struct {
     int style;
@@ -582,7 +584,7 @@ void refreshit()
         if(j==-1) continue;
         if(inrooms[myroom].status!=INROOM_STOP)
         if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER && (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR ||
+            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR&&rooms[myroom].flag&ROOM_SPECBLIND ||
             !(inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE))) {
             resetcolor();
             move(i,2);
@@ -605,7 +607,7 @@ void refreshit()
         else if(inrooms[myroom].status == INROOM_DAY ||
             inrooms[myroom].status == INROOM_NIGHT &&
             (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR))
+            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR&&rooms[myroom].flag&ROOM_SPECBLIND))
             if((inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE)&&
             (inrooms[myroom].peoples[j].vote != 0)) {
             resetcolor();
@@ -741,15 +743,15 @@ void start_game()
     kill_msg(-1);
 }
 
-#define menust 8
+#define menust 10
 int do_com_menu()
 {
     char menus[menust][15]=
-        {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-开始游戏"};
-    int menupos[menust],i,j,k,sel=0,ch,max=0,me;
+        {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-发言权", "8-交换位置", "9-开始游戏"};
+    int menupos[menust],i,j,k,sel=0,ch,max=0,me,offset=0;
     char buf[80];
     if(inrooms[myroom].status != INROOM_STOP)
-        strcpy(menus[7], "7-结束游戏");
+        strcpy(menus[9], "9-结束游戏");
     menupos[0]=0;
     for(i=1;i<menust;i++)
         menupos[i]=menupos[i-1]+strlen(menus[i-1])+1;
@@ -757,12 +759,14 @@ int do_com_menu()
         resetcolor();
         move(t_lines-1,0);
         clrtoeol();
+        while(menupos[sel]-menupos[offset]+strlen(menus[sel])) offset++;
         j=mypos;
         for(i=0;i<menust;i++) 
         if(inrooms[myroom].peoples[j].flag&PEOPLE_ROOMOP||i<=3)
+        if(menupos[i]-menupos[offset]>=0)
         {
             resetcolor();
-            move(t_lines-1, menupos[i]);
+            move(t_lines-1, menupos[i]-menupos[offset]);
             if(i==sel) {
                 setfcolor(RED,1);
             }
@@ -794,6 +798,12 @@ int do_com_menu()
                         refreshit();
                         return 0;
                     }
+                    move(t_lines-1, 0);
+                    resetcolor();
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "确认退出？ [y/N] ", buf, 3, 1, 0, 1);
+                    if(kicked) return 0;
+                    if(toupper(buf[0])!='Y') return 0;
                     return 1;
                 case 2:
                     move(t_lines-1, 0);
@@ -910,6 +920,17 @@ int do_com_menu()
                     }
                     move(t_lines-1, 0);
                     clrtoeol();
+                    getdata(t_lines-1, 0, "设置为旁观者无法看见杀手警察的房间? [Y/N]", buf, 30, 1, 0, 1);
+                    if(kicked) return 0;
+                    buf[0]=toupper(buf[0]);
+                    if(buf[0]=='Y'||buf[0]=='N') {
+                        if(buf[0]=='Y') rooms[myroom].flag|=ROOM_SPECBLIND;
+                        else rooms[myroom].flag&=~ROOM_SPECBLIND;
+                        sprintf(buf, "屋主设置房间为%s", (buf[0]=='Y')?"旁观无法看见杀手警察":"旁观可以看见杀手警察");
+                        send_msg(-1, buf);
+                    }
+                    move(t_lines-1, 0);
+                    clrtoeol();
                     getdata(t_lines-1, 0, "设置坏人的数目:", buf, 30, 1, 0, 1);
                     if(kicked) return 0;
                     if(buf[0]) {
@@ -938,13 +959,11 @@ int do_com_menu()
                     move(t_lines-1, 0);
                     resetcolor();
                     clrtoeol();
-                    getdata(t_lines-1, 0, "请输入要踢的id:", buf, 30, 1, 0, 1);
+                    getdata(t_lines-1, 0, "请输入要踢的序号(数字):", buf, 4, 1, 0, 1);
                     if(kicked) return 0;
                     if(buf[0]) {
-                        for(i=0;i<MAX_PEOPLE;i++)
-                            if(inrooms[myroom].peoples[i].style!=-1)
-                            if(!strcmp(inrooms[myroom].peoples[i].id, buf)) break;
-                        if(!strcmp(inrooms[myroom].peoples[i].id, buf) && inrooms[myroom].peoples[i].pid!=uinfo.pid) {
+                        i = atoi(buf);
+                        if(i>=0&&i<MAX_PEOPLE&&inrooms[myroom].peoples[i].style!=-1&&inrooms[myroom].peoples[i].pid!=uinfo.pid) {
                             inrooms[myroom].peoples[i].flag&=~PEOPLE_ALIVE;
                             send_msg(i, "你被踢了");
                             kill_msg(i);
@@ -953,6 +972,26 @@ int do_com_menu()
                     }
                     return 0;
                 case 7:
+                    move(t_lines-1, 0);
+                    resetcolor();
+                    clrtoeol();
+                    getdata(t_lines-1, 0, "请输入要禁止/恢复发言权的序号(数字):", buf, 4, 1, 0, 1);
+                    if(kicked) return 0;
+                    if(buf[0]) {
+                        i = atoi(buf);
+                        if(i>=0&&i<MAX_PEOPLE&&inrooms[myroom].peoples[i].style!=-1&&inrooms[myroom].peoples[i].pid!=uinfo.pid) {
+                            if(inrooms[myroom].peoples[i].flag&PEOPLE_DENYSPEAK)
+                                inrooms[myroom].peoples[i].flag&=~PEOPLE_DENYSPEAK;
+                            else
+                                inrooms[myroom].peoples[i].flag|=PEOPLE_DENYSPEAK;
+                            sprintf(buf, "%d %s被%s了发言权", i, inrooms[myroom].peoples[i].nick, (inrooms[myroom].peoples[i].flag&PEOPLE_DENYSPEAK)?"禁止":"恢复");
+                            send_msg(-1, buf);
+                            kill_msg(-1);
+                            return 0;
+                        }
+                    }
+                    return 0;
+                case 9:
                     start_change_inroom();
                     if(inrooms[myroom].status == INROOM_STOP)
                         start_game();
@@ -1352,6 +1391,10 @@ checkvote:
             strcpy(buf2, buf);
             sprintf(buf, "%d %s: %s", me+1, inrooms[myroom].peoples[me].nick, buf2);
         }
+        if(inrooms[myroom].peoples[me].flags&PEOPLE_DENYSPEAK) {
+            send_msg(i, "你现在没有发言权");
+        }
+        else
         if(inrooms[myroom].status==INROOM_NIGHT) {
             if(inrooms[myroom].peoples[me].flag&PEOPLE_KILLER)
             for(i=0;i<MAX_PEOPLE;i++) 
