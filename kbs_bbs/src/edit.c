@@ -1128,19 +1128,6 @@ static int Origin(struct textline *text)
 #endif
 }
 
-#ifndef VEDITOR
-int Origin2(text)
-    char text[256];
-{
-    char tmp[STRLEN];
-
-    sprintf(tmp, "¡ù À´Ô´:¡¤%s ", BBS_FULL_NAME);
-    if (strstr(text, tmp))
-        return 1;
-    else
-        return 0;
-}
-#endif
 void display_buffer()
 {
     register struct textline *p;

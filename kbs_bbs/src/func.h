@@ -267,6 +267,7 @@ extern "C" {
  */
     int get_records_from_id(int fd, int id, fileheader_t * buf, int num);
 
+    int Origin2(char text[256]);
 /*º”»Îedit mark*/
     int add_edit_mark(char *fname, int mode, char *title);
     int get_postfilename(char *filename, char *direct, int use_subdir);
