@@ -20,13 +20,15 @@ char * libs, * libptr;
 #define fmakesure(o,p) if(ferr) return;\
     if(!(o)) {ferr=p; return;}
 
-extern char * currdirect;
+extern struct boardheader* currboard;
+extern char currdirect[255];
+extern int digestmode;
 
 int fget_var(char * name)
 {
     int i;
     if(ferr) return 0;
-    if(!name[0]||strlen(name)>6) {
+    if(!name[0]||strlen(name)>7) {
         ferr=14;
         return 0;
     }
@@ -128,13 +130,13 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         set_vard(p, f);
         return;
     }
-    if(s[l]=='\''&&s[r]=='\''&&get_rl2(s,r,l)==l) {
-        fmakesure(r-l-2+libptr<libs+LIBLEN,4);
-        strncpy(libptr, s+l+1, r-l-2);
-        libptr[r-l-2]=0;
+    if((s[l]=='\''||s[l]=='"')&&(s[r]=='\''||s[r]=='"')&&get_rl2(s,r,l)==l) {
+        fmakesure(r-l+libptr<libs+LIBLEN,4);
+        strncpy(libptr, s+l+1, r-l-1);
+        libptr[r-l-1]=0;
         p->num=false;
         p->p=libptr;
-        libptr+=r-l-1;
+        libptr+=r-l;
         return;
     }
     i=l;
@@ -144,7 +146,7 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         u.p=0; v.p=0;
         strncpy(buf, s+l, 1000);
         buf[i-l]=0;
-        if(!strncmp("sub",buf,4)) {
+        if(!strcmp("sub",buf)) {
             int j=strchr(s+i+1, ',')-s;
             char * res;
             fmakesure(strchr(s+i+1, ',')!=NULL, 2);
@@ -157,12 +159,14 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
             res = bm_strcasestr(v.p, u.p);
             if(res==NULL) p->s=0;
             else p->s=res-v.p+1;
+            return;
         }
-        else if(!strncmp("len",buf,4)){
+        else if(!strcmp("len",buf)){
             feval(&u, s, i+1, r-1);
             fmakesure(!u.num&&u.p, 3);
             p->num=true;
             p->s = strlen(u.p);
+            return;
         }
         ferr=18;
         return ;
@@ -237,12 +241,12 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         p->s=!m.s;
         return;
     }
-    fmakesure(r-l+libptr<libs+LIBLEN,4);
-    strncpy(libptr, s+l+1, r-l);
-    libptr[r-l]=0;
+    fmakesure(r-l+2+libptr<libs+LIBLEN,4);
+    strncpy(libptr, s+l+1, r-l+1);
+    libptr[r-l+1]=0;
     p->num=false;
     p->p=libptr;
-    libptr+=r-l+1;
+    libptr+=r-l+2;
 }
 
 int super_filter(int ent, struct fileheader *fileinfo, char *direct)
@@ -253,12 +257,12 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
     char olddirect[PATHLEN];
     char *ptr;
     struct stat buf;
-    int mode=6, load_content=0;
+    int mode=8, load_content=0;
     static char index[1024]="";
 
     clear();
     prints("                  超强文章选择\n\n");
-    multi_getdata(2, 0, "请输入表达式: ", index, 1020, 20, 0);
+    multi_getdata(2, 0, 79, "请输入表达式: ", index, 1020, 20, 0);
     if(!index[0]) 
         return FULLUPDATE;
     load_content = (strstr(index, "content")!=NULL);
@@ -334,6 +338,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("attach"), ptr1->attachment);
         set_vars(fvars+fget_var("title"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner);
+        set_vars(fvars+fget_var("unread"), brc_unread(ptr1->id));
         if(load_content) {
         }
         ferr=0;
