@@ -248,6 +248,10 @@ extern "C" {
     int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode);
     int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode);   /* (自动生成文件名) 转贴或自动发信 */
 
+/* bad 2002.8.16 */
+    int dele_digest(char *dname, char *direc);
+    int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, char* currboard, int ent, struct fileheader *fileinfo, char *direct, int flag, int prompt);
+
 /* define in record.c */
     int safewrite(int fd, char *buf, int size);
     typedef int (*RECORD_FUNC_ARG) (void *, void *);
