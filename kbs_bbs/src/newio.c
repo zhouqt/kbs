@@ -527,8 +527,8 @@ int igetch()
     /*---	Ctrl-T disabled as anti-idle key	period	2000-12-05	---*/
 #ifndef NINE_BUILD
     if (Ctrl('T') != c)
+#endif	    
         uinfo.freshtime = now;
-#endif
     /*
      * add by KCN , decrease temp_numposts 
      */
