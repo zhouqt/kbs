@@ -1214,7 +1214,8 @@ void display_buffer()
                         prints("\n");
                         j = 0;
                     }
-                    outc(p->data[i]);
+                    if (p->data[i]==27) outc('*');
+                    else outc(p->data[i]);
                     j++;
                 }
                 if (p == currline && i == currpnt)
