@@ -31,6 +31,7 @@ if test "$CC"="icc"; then
 	archive_cmds="\$CC -shared \$libobjs \$deplibs \$compiler_flags -o \$lib"
 	archive_expsym_cmds="\$CC -shared \$libobjs \$deplibs \$compiler_flags \${wl}-retain-symbols-file \$wl\$export_symbols -o \$lib"
 	build_libtool_need_lc=no
+	wl="-Wl,"
 	for i in $*;
 	do
   	case $i in
