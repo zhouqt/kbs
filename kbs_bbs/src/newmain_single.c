@@ -1195,8 +1195,13 @@ void showtitle( char *title, char*mid)
     else {
         int bid;
         bid = getbnum(DEFAULTBOARD);
+        if (bid==0) {
+            bid=1; //try to get the first board
+        }
         currboardent=bid;
         currboard=(struct boardheader*)getboard(bid);
+        if (currboard==NULL)
+            currboardent=0;
 #ifdef HAVE_BRC_CONTROL
         brc_initial(currentuser->userid, DEFAULTBOARD);
 #endif
