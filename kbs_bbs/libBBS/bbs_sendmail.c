@@ -495,6 +495,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     if ((server == NULL) || !strcmp(server, "(null ptr)"))
         server = "127.0.0.1:25";
     smtp_set_server(smtpsession, server);
+	smtp_set_hostname(smtpsession, email_domain());
     sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
     snprintf(from, STRLEN, "%s(%s) <%s@%s>",session->currentuser->userid, session->currentuser->username, session->currentuser->userid, email_domain());
     from[STRLEN-1]=0;
