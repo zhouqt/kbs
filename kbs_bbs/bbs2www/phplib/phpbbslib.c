@@ -2681,17 +2681,22 @@ static PHP_FUNCTION(bbs_new_board)
 	int btitle_len;
 	char *bbm;
 	int bbm_len;
+	char *section;
+	int section_len;
+	char *desp;
+	int desp_len;
 	int blevel;
 	int banony;
 	int bjunk;
 	int bout;
 	char* bgroup;
 	int bgroup_len;
-
+	
+	int i;
 	struct boardheader newboard;
 	char vbuf[100];
 
-    if (ac != 8 || zend_parse_parameters(8 TSRMLS_CC, "ssslllls", &bname, &bname_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len) == FAILURE) {
+    if (ac != 10 || zend_parse_parameters(10 TSRMLS_CC, "ssssslllls", &bname, &bname_len, &section, &section_len, &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
 
@@ -2705,8 +2710,25 @@ static PHP_FUNCTION(bbs_new_board)
 	strncpy(newboard.filename,bname,18);
 	newboard.filename[17]='\0';
 
-	strncpy(newboard.title,btitle,60);
-	newboard.filename[59]='\0';
+	strncpy(newboard.title+13,btitle,47);
+	newboard.title[59]='\0';
+
+	if(section[0]=='\0' || ! isprint(section[0]))
+		RETURN_LONG(-10);
+	newboard.title[0]=section[0];
+
+	if(desp[0]=='\0')
+		RETURN_LONG(-11);
+
+	strncpy(newboard.title+2,desp,10);
+	newboard.title[1]='[';
+	if(desp_len < 10){
+		newboard.title[2+desp_len]=']';
+		for(i=2+desp_len+1; i<13; i++)
+			newboard.title[i]=' ';
+	}
+	else
+		newboard.title[12]=']';
 
 	if( ! valid_brdname(newboard.filename) )
 		RETURN_LONG(-2);

@@ -32,12 +32,21 @@
 			}else
 				$bbm = "";
 
+			if(isset($_GET["section"])){
+				$section = $_GET["section"];
+			}else
+				$section = "";
+
+			if(isset($_GET["desp"])){
+				$desp = $_GET["desp"];
+			}else
+				$desp = "";
+
 			if(isset($_GET["blevel"])){
 				$blevel = $_GET["blevel"];
 				settype($blevel, "integer");
 			}else
 				$blevel = 0;
-			settype($blevel, "integer");
 
 			if(isset($_GET["banony"])){
 				$banony = 1;
@@ -59,7 +68,7 @@
 			}else
 				$bgroup = 0;
 
-			$ret = bbs_new_board($bname,$btitle,$bbm,$blevel,$banony,$bjunk,$bout,$bgroup);
+			$ret = bbs_new_board($bname,$section,$desp,$btitle,$bbm,$blevel,$banony,$bjunk,$bout,$bgroup);
 
 			if($ret < 0)
 				html_error_quit("加入讨论区失败".$ret);
@@ -73,6 +82,16 @@
 <form name="form0" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
 版面英文名称:<input type="text" name="bname" value=""><br>
 版面中文名称:<input type="text" name="btitle" value=""><br>
+版面分区:<select name="section" class="input" style="WIDTH: 100px">
+<?php
+			for($i = 0; $section_nums[$i]!="" && $section_names[$i]!=""; $i++){
+?>
+<option <?php if($i == 0) echo "selected";?>value=<?php echo $section_nums[$i];?>><?php echo $section_names[$i][0];?></option>
+<?php
+			}
+?>
+</select><br>
+版面分区具体描述(建议4个字符，即2个汉字):<input type="text" name="desp" value=""><br>
 版面管理者:<input type="text" name="bbm" value=""><br>
 版面权限:<input type="text" name="blevel" value=""><br>
 版面精华区位置:<input type="text" name="bgroup" value=""><br>
