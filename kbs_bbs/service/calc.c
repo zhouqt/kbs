@@ -7,13 +7,15 @@
 ******************************************************/
 
 #define BBSMAIN
-//#include "bbs.h"
+#include "bbs.h"
 #include <math.h>
-#include <stdio.h>
 
 #define MINIMUM	0.0000000001
 #define sqr(x)	(x)*(x)
 #define Pi		3.1415926535897932384626433832795
+
+#define MAX_VAR 100
+#define MAX_MEM 10000
 
 int err=0;
 
@@ -23,15 +25,16 @@ struct var_struct {
     double **p;
 };
 
-struct var_struct vars[100];
+struct var_struct vars[MAX_VAR];
 int vart = 0;
 
-#define makesure(o) if(err) return;\
-    if(!(o)) {err=1; return;}
+#define makesure(o,p) if(err) return;\
+    if(!(o)) {err=p; return;}
 
 void makesize(struct var_struct * a, int h, int w)
 {
     int i;
+    makesure(w*h<=MAX_MEM,2);
     if(a->p) {
         for(i=0;i<a->height;i++)
             free(a->p[i]);
@@ -71,7 +74,7 @@ void copy_var(struct var_struct * a, struct var_struct * b)
 void link_h(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j;
-    makesure(a->width==b->width);
+    makesure(a->width==b->width,3);
     makesize(c, a->height+b->height, a->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
@@ -84,7 +87,7 @@ void link_h(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 void link_w(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j;
-    makesure(a->height==b->height);
+    makesure(a->height==b->height,4);
     makesize(c, a->height, a->width+b->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
@@ -97,15 +100,14 @@ void link_w(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 void domatrix(struct var_struct * a, struct var_struct * b, struct var_struct * c, int op)
 {
     int i,j;
-    makesure(a->height==b->height);
-    makesure(a->width==b->width);
+    makesure((a->height==b->height&&a->width==b->width),5);
     makesize(c, a->height, a->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++) {
             switch(op) {
                 case 4: c->p[i][j]=a->p[i][j]*b->p[i][j]; break;
-                case 5: makesure(fabs(b->p[i][j])>MINIMUM); c->p[i][j]=a->p[i][j]/b->p[i][j]; break;
-                case 6: makesure(a->p[i][j]>0); c->p[i][j]=exp(log(a->p[i][j])*b->p[i][j]); break;
+                case 5: makesure(fabs(b->p[i][j])>MINIMUM,6); c->p[i][j]=a->p[i][j]/b->p[i][j]; break;
+                case 6: makesure(a->p[i][j]>0,7); c->p[i][j]=exp(log(a->p[i][j])*b->p[i][j]); break;
             }
         }
 }
@@ -113,8 +115,7 @@ void domatrix(struct var_struct * a, struct var_struct * b, struct var_struct * 
 void add_var(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j;
-    makesure(a->height==b->height);
-    makesure(a->width==b->width);
+    makesure((a->height==b->height)&&(a->width==b->width),5);
     makesize(c, a->height, a->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
@@ -124,8 +125,7 @@ void add_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
 void sub_var(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j;
-    makesure(a->height==b->height);
-    makesure(a->width==b->width);
+    makesure((a->height==b->height)&&(a->width==b->width),5);
     makesize(c, a->height, a->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
@@ -135,7 +135,21 @@ void sub_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
 void mul_var(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j,k;
-    makesure(a->width==b->height);
+    if(is_single_var(a)) {
+        makesize(c, b->height, b->width);
+        for(i=0;i<b->height;i++)
+            for(j=0;j<b->width;j++)
+                c->p[i][j]=b->p[i][j]*a->p[0][0];
+        return;
+    }
+    if(is_single_var(b)) {
+        makesize(c, a->height, a->width);
+        for(i=0;i<a->height;i++)
+            for(j=0;j<a->width;j++)
+                c->p[i][j]=a->p[i][j]*b->p[0][0];
+        return;
+    }
+    makesure(a->width==b->height,5);
     makesize(c, a->height, b->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<b->width;j++) {
@@ -156,7 +170,7 @@ void setzero(struct var_struct * a)
 void setunit(struct var_struct * a)
 {
     int i,j;
-    makesure(a->height==a->width);
+    makesure(a->height==a->width,8);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             a->p[i][j]=(i==j);
@@ -166,8 +180,8 @@ void swaprow(struct var_struct * s, int a, int b)
 {
     int i;
     double temp;
-    makesure(a<s->height&&a>=0);
-    makesure(b<s->height&&b>=0);
+    makesure(a<s->height&&a>=0,9);
+    makesure(b<s->height&&b>=0,9);
     for(i=0;i<s->width;i++) {
         temp = s->p[a][i];
         s->p[a][i] = s->p[b][i];
@@ -179,8 +193,8 @@ void swapcol(struct var_struct * s, int a, int b)
 {
     int i;
     double temp;
-    makesure(a<s->width&&a>=0);
-    makesure(b<s->width&&b>=0);
+    makesure(a<s->width&&a>=0,9);
+    makesure(b<s->width&&b>=0,9);
     for(i=0;i<s->height;i++) {
         temp = s->p[i][a];
         s->p[i][a] = s->p[i][b];
@@ -191,8 +205,8 @@ void swapcol(struct var_struct * s, int a, int b)
 void plusrow(struct var_struct * s, int a, int b, double r)
 {
     int i;
-    makesure(a<s->height&&a>=0);
-    makesure(b<s->height&&b>=0);
+    makesure(a<s->height&&a>=0,9);
+    makesure(b<s->height&&b>=0,9);
     for(i=0;i<s->width;i++) {
         s->p[b][i] += s->p[a][i]*r;
     }
@@ -201,8 +215,8 @@ void plusrow(struct var_struct * s, int a, int b, double r)
 void pluscol(struct var_struct * s, int a, int b, double r)
 {
     int i;
-    makesure(a<s->width&&a>=0);
-    makesure(b<s->width&&b>=0);
+    makesure(a<s->width&&a>=0,9);
+    makesure(b<s->width&&b>=0,9);
     for(i=0;i<s->height;i++) {
         s->p[i][b] += s->p[i][a]*r;
     }
@@ -211,7 +225,7 @@ void pluscol(struct var_struct * s, int a, int b, double r)
 void multrow(struct var_struct * s, int a, double r)
 {
     int i;
-    makesure(a<s->height&&a>=0);
+    makesure(a<s->height&&a>=0,9);
     for(i=0;i<s->width;i++) {
         s->p[a][i] *= r;
     }
@@ -220,7 +234,7 @@ void multrow(struct var_struct * s, int a, double r)
 void multcol(struct var_struct * s, int a, double r)
 {
     int i;
-    makesure(a<s->width&&a>=0);
+    makesure(a<s->width&&a>=0,9);
     for(i=0;i<s->height;i++) {
         s->p[i][a] *= r;
     }
@@ -241,7 +255,7 @@ double envalue(struct var_struct * s)
     double result,ration;
     struct var_struct temp;
     if(s->height!=s->width) {
-        err=1;
+        err=8;
         return 0;
     }
     temp.p = 0;  
@@ -279,7 +293,7 @@ void inverse(struct var_struct * s, struct var_struct * A)
     int i,j;
     double ration;
     struct var_struct temp,tempA;
-    makesure(A->height==A->width);
+    makesure(A->height==A->width,8);
     temp.p = 0; tempA.p = 0;
     makesize(&temp, A->height, A->height);
     setunit(&temp);
@@ -297,7 +311,7 @@ void inverse(struct var_struct * s, struct var_struct * A)
         if(fabs(tempA.p[i][i])<MINIMUM) {
             del(&temp);
             del(&tempA);
-            err=1;
+            err=13;
             return;
         }
         //保证对角线元素不为零
@@ -326,11 +340,19 @@ void inverse(struct var_struct * s, struct var_struct * A)
 int get_var(char * name)
 {
     int i;
+    if(!name[0]||strlen(name)>6) {
+        err=14;
+        return;
+    }
     for(i=0;i<vart;i++)
         if(!strcasecmp(vars[i].name, name)) {
             return i;
         }
-    strcpy(vars[vart].name, name);
+    if(vart>=MAX_VAR) {
+        err=15;
+        return;
+    }
+    strncpy(vars[vart].name, name, 8);
     vars[vart].p = 0;
     vart++;
     return (vart-1);
@@ -370,44 +392,10 @@ int check_var_array(char * s, int l)
     return (p&&count>=1&&count<=2)?count:0;
 }
 
-void set_matrix(struct var_struct * p, char * s)
-{
-    char buf[80];
-    double f;
-    int i,j,k,height=1,width=0;
-    for(i=0;i<strlen(s);i++)
-        if(s[i]==';') height++;
-    j=0;
-    for(i=0;i<strlen(s);i++) {
-        if(s[i]==';') break;
-        if(isdouble(s[i])) {
-            if(j==0) width++;
-            j=1;
-        }
-        else j=0;
-    }
-    makesize(p, height, width);
-    for(i=0;i<height;i++)
-        for(j=0;j<width;j++) {
-            while(*s&&!isdouble(*s)) s++;
-            if(!*s) {
-                err=1;
-                return;
-            }
-            k=0;
-            while(isdouble(s[k])) k++;
-            strcpy(buf, s);
-            buf[k]=0;
-            s+=k;
-            sscanf(buf, "%lf", &f);
-            p->p[i][j]=f;
-        }
-}
-
 void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct * v, struct var_struct * p)
 {
     int i,j,k,i0,j0;
-    makesure(u->height==1&&v->height==1);
+    makesure(u->height==1&&v->height==1,10);
     if(!u->p) {
         makesize(u, 1, s->height);
         for(i=0;i<s->height;i++)
@@ -420,11 +408,11 @@ void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct *
     }
     for(i=0;i<u->width;i++) {
         j=(int)(u->p[0][i]+0.5);
-        makesure(j>=1&&j<=s->height);
+        makesure(j>=1&&j<=s->height,9);
     }
     for(i=0;i<v->width;i++) {
         j=(int)(v->p[0][i]+0.5);
-        makesure(j>=1&&j<=s->width);
+        makesure(j>=1&&j<=s->width,9);
     }
     makesize(p, u->width, v->width);
     for(i=0;i<u->width;i++) {
@@ -486,7 +474,7 @@ char funcname[][8]=
 void take_func(struct var_struct * p, struct var_struct * q, int kind)
 {
     int i,j;
-    makesure(1);
+    makesure(1,0);
     if(kind<23) {
         makesize(p, q->height, q->width);
         for(i=0;i<q->height;i++)
@@ -531,10 +519,10 @@ void eval(struct var_struct * p, char * s, int l, int r)
     int i,j,n;
     char op[7]=";,+-*/^";
     struct var_struct * t,q;
-    char buf[300];
+    char buf[1000];
     while(s[l]==' '&&l<=r) l++;
     while(s[r]==' '&&l<=r) r--;
-    makesure(l<=r);
+    makesure(l<=r,11);
     while(s[l]=='('&&s[r]==')'&&get_rl(s,r,l)==l||
         s[l]=='['&&s[r]==']'&&get_rl2(s,r,l)==l) {
         l++; r--;
@@ -542,7 +530,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
         while(s[r]==' '&&l<=r) r--;
     }
     if(check_var_name(s+l, r-l+1)||s[l]=='%'&&check_var_name(s+l+1, r-l)) {
-        strcpy(buf, s+l);
+        strncpy(buf, s+l, 1000);
         buf[r-l+1]=0;
         i=get_var(buf);
         copy_var(vars+i, p);
@@ -550,16 +538,16 @@ void eval(struct var_struct * p, char * s, int l, int r)
     }
     if(check_var_double(s+l, r-l+1)) {
         double f;
-        strcpy(buf, s+l);
+        strncpy(buf, s+l, 1000);
         buf[r-l+1]=0;
-        sscanf(buf, "%lf", &f);
+        f = atof(buf);
         set_var(p, f);
         return;
     }
     if(check_var_array(s+l, r-l+1)) {
         double f1,f2,f3;
         double f;
-        strcpy(buf, s+l);
+        strncpy(buf, s+l, 1000);
         buf[r-l+1]=0;
         i=check_var_array(s+l,r-l+1);
         if(buf[0]==':'&&!buf[1]) {
@@ -573,7 +561,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
         else {
             sscanf(buf, "%lf:%lf:%lf", &f1, &f2, &f3);
             if(fabs(f3)<MINIMUM) {
-                err=1;
+                err=17;
                 return;
             }
             if((f2-f1)/f3<0) f3=-f3;
@@ -596,7 +584,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
     if(i>l&&s[i]=='('&&s[r]==')'&&get_rl(s,r,l)==i) {
         struct var_struct u,v;
         u.p=0; v.p=0;
-        strcpy(buf, s+l);
+        strncpy(buf, s+l, 1000);
         buf[i-l]=0;
         j=0;
         while(funcname[j][0]) {
@@ -605,20 +593,26 @@ void eval(struct var_struct * p, char * s, int l, int r)
         }
         if(funcname[j][0]) {
             eval(&u, s, i+1, r-1);
-            makesure(1);
+            makesure(1,0);
             take_func(p, &u, j);
             del(&u);
         }
         else {
             int k;
+            char* kk;
             j=get_var(buf);
-            strcpy(buf, s+i+1);
+            strncpy(buf, s+i+1, 1000);
             buf[r-1-i]=0;
-            k=strchr(buf, ',')-buf;
+            kk=strchr(buf, ',');
+            if(!kk) {
+                err=18;
+                return;
+            }
+            k=kk-buf;
             eval(&u, buf, 0, k-1);
-            makesure(1);
+            makesure(1,0);
             eval(&v, buf, k+1, strlen(buf)-1);
-            makesure(1);
+            makesure(1,0);
             selmatrix(vars+j, &u, &v, p);
             del(&u);
             del(&v);
@@ -633,9 +627,9 @@ void eval(struct var_struct * p, char * s, int l, int r)
                 m1.p=0; m2.p=0; m3.p=0;
                 if(n>l&&s[n-1]=='.'&&(j==4||j==5||j==6)) eval(&m1,s,l,n-2);
                 else eval(&m1,s,l,n-1);
-                makesure(1);
+                makesure(1,0);
                 eval(&m2,s,n+1,r);
-                makesure(1);
+                makesure(1,0);
                 switch(j) {
                     case 0:
                         link_h(&m1, &m2, p);
@@ -664,8 +658,8 @@ void eval(struct var_struct * p, char * s, int l, int r)
                     case 6:
                         if(n>l&&s[n-1]=='.') domatrix(&m1,&m2,p,6);
                         else {
-                            makesure(is_single_var(&m1)&&is_single_var(&m2));
-                            makesure((**(m1.p))>0);
+                            makesure(is_single_var(&m1)&&is_single_var(&m2),12);
+                            makesure((**(m1.p))>0,7);
                             set_var(p, exp(log(**(m1.p))*(**(m2.p))));
                         }
                         break;
@@ -683,58 +677,79 @@ void eval(struct var_struct * p, char * s, int l, int r)
         struct var_struct m;
         m.p = 0;
         eval(&m, s, l, r-1);
-        makesure(1);
+        makesure(1,0);
         reverse(&m,p);
         del(&m);
         return;
     }
-    err=1;
+    err=18;
 }
 
 void print_var(struct var_struct * p)
 {
     int i,j;
-    printf("%s =\n", p->name);
+    outline("%s =\n", p->name);
     if(!p->p) {
-        printf("null\n");
+        outline("null\n");
         return;
     }
     else if(is_single_var(p)) {
-        printf("%lf\n", **(p->p));
+        outline("%lf\n", **(p->p));
         return;
     }
-    printf("[");
     for(i=0;i<p->height;i++){
+        if(i==0) outline("[");
+        else outline(" ");
         for(j=0;j<p->width;j++) {
-            printf("%lf", p->p[i][j]);
-            if(j<p->width-1) printf(" ");
+            outline("%lf", p->p[i][j]);
+            if(j<p->width-1) outline(" ");
         }
-        if(i==p->height-1) printf("]");
-        printf("\n");
+        if(i==p->height-1) outline("]");
+        outline("\n");
     }
 }
 
 int main()
 {
-    char cmd[300];
+    char cmd[1000];
+    char einfo[20][30]={
+"",
+"",
+"矩阵太大",
+"矩阵宽度不一致",
+"矩阵长度不一致",
+"矩阵大小不一致",
+"除数不能为0",
+"底数必须为正数",
+"必须为正方矩阵",
+"越界错",
+"矩阵长度必须为1",
+"表达式出错",
+"操作数必须不为矩阵",
+"该矩阵无法求逆",
+"变量名称错",
+"变量数目过多",
+"矩阵输入错误",
+"单步值不能为0",
+"表达式出错",
+""};
     int y,x,res,i,j;
     res = get_var("res");
     set_var(vars+get_var("%pi"), Pi);
-    set_var(vars+get_var("%e"), 2.71828182846);
+    set_var(vars+get_var("%e"), exp(1));
 //    clear();
     while(1) {
-        printf("> ");
-//        getyx(&y, &x);
+        getyx(&y, &x);
 //        getdata(y, x, 0, cmd, 300, 1, 0, 1);
-        gets(cmd);
+        multi_getdata(y, x, scr_cols, "> ", cmd, 1000, 13, 1);
 //        scanf("%s", cmd);
         if(!strcasecmp(cmd, "exit")) break;
         if(!strcasecmp(cmd, "quit")) break;
         if(strchr(cmd, '=')) {
             i=strchr(cmd, '=')-cmd;
             if(i<=0||!check_var_name(cmd, i)) {
-                printf("error\n");
-                continue;
+                err=19;
+                goto checkerr;
             }
             cmd[i]=0;
             res = get_var(cmd);
@@ -745,12 +760,15 @@ int main()
             i=0;
         }
         eval(vars+res, cmd+i, 0, strlen(cmd+i)-1);
+checkerr:
         if(err) {
-            printf("error\n");
+            outline("%s\n", einfo[err]);
             err=0;
             continue;
         }
         else
             print_var(vars+res);
     }
+    for(i=0;i<vart;i++)
+        del(vars+i);
 }
