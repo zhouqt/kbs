@@ -35,7 +35,8 @@ static void strip_fileheader(const fileheader_v1_2 *oldfh, fileheader *fh,
 	fh->groupid = oldfh->groupid;
 	fh->reid = oldfh->reid;
 #if defined(FILTER) || defined(COMMEND_ARTICLE)
-	if (strcmp(bname, "Filter") == 0 || strcmp(bname, "Recommend") == 0)
+	if (strcmp(bname, FILTER_BOARD) == 0 
+			|| strcmp(bname, COMMEND_ARTICLE) == 0)
 	{
 		if (oldfh->o_board[0] != '\0'
 			&& (fh->o_bid = getboardnum(oldfh->o_board, NULL)) == 0)
@@ -131,17 +132,21 @@ static void strip_index_file(const char *bname, const char *dir)
 static int strip_board(struct boardheader * bh, void * arg)
 {
 	char dir_path[256];
-	strip_index_file(bh->filename, ".DIR");
-	strip_index_file(bh->filename, ".DIGEST");
-	strip_index_file(bh->filename, ".DELETED");
-	strip_index_file(bh->filename, ".JUNK");
-	strip_index_file(bh->filename, ".DINGDIR");
-	setbfile(dir_path, bh->filename, ".ORIGIN");
-	unlink(dir_path);
-	setbfile(dir_path, bh->filename, ".MARK");
-	unlink(dir_path);
-	setbfile(dir_path, bh->filename, ".THREAD");
-	unlink(dir_path);
+
+	if (strcmp(bh->filename, SYSMAIL_BOARD)) /* if not SYSMAIL_BOARD */
+	{
+		strip_index_file(bh->filename, ".DIR");
+		strip_index_file(bh->filename, ".DIGEST");
+		strip_index_file(bh->filename, ".DELETED");
+		strip_index_file(bh->filename, ".JUNK");
+		strip_index_file(bh->filename, ".DINGDIR");
+		setbfile(dir_path, bh->filename, ".ORIGIN");
+		unlink(dir_path);
+		setbfile(dir_path, bh->filename, ".MARK");
+		unlink(dir_path);
+		setbfile(dir_path, bh->filename, ".THREAD");
+		unlink(dir_path);
+	}
 
 	return 0;
 }
@@ -293,8 +298,57 @@ int main(int argc, char ** argv)
 		apply_boards(rollback_board, NULL);
 		apply_users(rollback_mail, NULL);
 	}
+	else if (argc == 3 && strcmp(argv[1], "-b"))
+	{
+		struct boardheader *bh;
+		if ((bh = getbcache(argv[2])) == NULL)
+		{
+			fprintf(stderr, "Board <%s> not found!\n", argv[2]);
+			exit(-1);
+		}
+		strip_board(bh, NULL);
+	}
+	else if (argc == 3 && strcmp(argv[1], "-m"))
+	{
+		struct userec *user;
+		if (!getuser(argv[2], &user))
+		{
+			fprintf(stderr, "User <%s> not found!\n", argv[2]);
+			exit(-1);
+		}
+		strip_mail(user, NULL);
+	}
+	else if (argc == 3 && strcmp(argv[1], "--rollback-board"))
+	{
+		struct boardheader *bh;
+		if ((bh = getbcache(argv[2])) == NULL)
+		{
+			fprintf(stderr, "Board <%s> not found!\n", argv[2]);
+			exit(-1);
+		}
+		rollback_board(bh, NULL);
+	}
+	else if (argc == 3 && strcmp(argv[1], "--rollback-mail"))
+	{
+		struct userec *user;
+		if (!getuser(argv[2], &user))
+		{
+			fprintf(stderr, "User <%s> not found!\n", argv[2]);
+			exit(-1);
+		}
+		rollback_mail(user, NULL);
+	}
 	else
-		fprintf(stderr, "Usage: %s [--rollback]\n", argv[0]);
+	{
+		fprintf(stderr, "Usage:\n", argv[0]);
+		fprintf(stderr, "\t%s                        Strip all fileheaders.\n", argv[0]);
+		fprintf(stderr, "\t%s --rollback             Rollback all fileheaders.\n", argv[0]);
+		fprintf(stderr, "\t%s -b board               Strip fileheaders of a board.\n", argv[0]);
+		fprintf(stderr, "\t%s -m user                Strip fileheaders of a user's mailbox.\n", argv[0]);
+		fprintf(stderr, "\t%s --rollback-board board Rollback fileheaders of a board.\n", argv[0]);
+		fprintf(stderr, "\t%s --rollback-mail user   Rollback fileheaders of a user's mailbox.\n", argv[0]);
+		exit(-1);
+	}
 
     return 0;
 }
