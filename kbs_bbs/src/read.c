@@ -698,6 +698,8 @@ char *direct ;
     {
         return DONOTHING;
     }
+    if(digestmode==4||digestmode==5)  /* KCN:暂不允许 */
+	return DONOTHING;
     saveline(t_lines-3, 0, linebuffer);
     saveline(t_lines-2, 0, NULL);
     move(t_lines-3, 0);
@@ -706,15 +708,15 @@ char *direct ;
     for(i=0;i<6;i++)
         sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
-    if (strlen(buf)>80) {
-        char ch=buf[80];
-        buf[80]=0;
+    if (strlen(buf)>70) {
+        char savech=buf[76];
+        buf[76]=0;
         prints("%s",buf);
-        buf[80]=ch;
-        strcpy(buf,buf+80);
+        buf[76]=savech;
+        strcpy(buf,buf+76);
         getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
     } else
-    getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
+        getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
     BMch=atoi(ch);
     if(BMch<=0||BMch>6)
     {
@@ -766,6 +768,9 @@ char *direct ;
     {
         return DONOTHING;
     }
+    if(digestmode==4||digestmode==5)   /* KCN:不允许 */
+        return DONOTHING;
+
     saveline(t_lines-2, 0, NULL);
     move(t_lines-2, 0);
     clrtoeol();

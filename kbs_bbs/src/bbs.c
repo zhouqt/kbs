@@ -96,7 +96,7 @@ extern int 	B_to_b;
 extern struct screenline *big_picture;
 extern struct userec *user_data;
 extern char* pnt;
-extern struct friend *topfriend;
+extern struct friends *topfriend;
 char genbuf[ 1024 ];
 char quote_title[120],quote_board[120];
 char quote_file[120], quote_user[120];
