@@ -370,7 +370,9 @@ int http_init() {
 		}
 		t2=strtok(0, ";");
 	}
-	strsncpy(fromhost, getsenv("REMOTE_ADDR"), IPLEN);
+	strsncpy(fromhost, getsenv("X-Forwarded-For"), IPLEN);
+	if (fromhost[0])
+		strsncpy(fromhost, getsenv("REMOTE_ADDR"), IPLEN);
 }
 
 int __to16(char c) {
