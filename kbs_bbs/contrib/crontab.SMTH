@@ -17,6 +17,8 @@ MAILTO=bbs
 2 * * * * /home/bbs/bin/uonlinelog
 # 每小时记录在线人数用来生成图
 1,7,13,19,25,31,37,43,49,55 * * * * /home/bbs/bin/dayuserlog
+# 每天凌晨生成dayonline.png
+10 0 * * * gnuplot /home/bbs/bin/dayonline.plt
 # 每小时 59 分更新版主统计排行
 59 * * * * /home/bbs/bin/stat.day
 10 0 * * * /home/bbs/bin/stat.other
