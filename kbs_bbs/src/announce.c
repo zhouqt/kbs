@@ -810,13 +810,13 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
     if (ann_get_path(key, buf, sizeof(buf)) == 0)
     {
 	    int i;
+	    bzero(&pm,sizeof(pm));
 	    if ((path==NULL)||(path[0]==0)) {
 			i=a_select_path(true);
 			if (i==0)
 				return 1;
 	              import_path_select=i;
 			i--;
-			bzero(&pm,sizeof(pm));
 			if (import_path[i][0] != '\0') {
 				pm.path = import_path[i];
 				strcpy(path,import_path[i]);
