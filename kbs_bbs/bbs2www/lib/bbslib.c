@@ -62,32 +62,6 @@ struct friends_info *topfriend;
 
 
 
-int seek_in_file(filename,seekstr)
-char filename[STRLEN],seekstr[STRLEN];
-{
-    FILE *fp;
-    char buf[STRLEN];
-    char *namep;
-
-    if ((fp = fopen(filename, "r")) == NULL)
-        return 0;
-    while (fgets(buf, STRLEN, fp) != NULL)
-	{
-        namep = (char *)strtok( buf, ": \n\r\t" );
-        if (namep != NULL && strcasecmp(namep, seekstr) == 0 ) {
-            fclose(fp);
-            return 1;
-        }
-    }
-    fclose(fp);
-    return 0;
-}
-
-int junkboard(char *board)
-{
-    return seek_in_file("etc/junkboards", board);
-}
-
 int file_has_word(char *file, char *word) {
 	FILE *fp;
 	char buf[256], buf2[256];
@@ -207,27 +181,6 @@ char *rtrim(char *s) {
 	while(strchr(" \t\r\n", t2[0]) && t2>t) t2--;
 	t2[1]=0;
 	return t;
-}
-
-char *get_new_shm(int key, int size) {
-        int id;
-        id=shmget(key, size, IPC_CREAT | IPC_EXCL | 0640);
-        if(id<0) return 0;
-        return shmat(id, NULL, 0);
-}
-
-char *get_old_shm(int key, int size) {
-        int id;
-        id=shmget(key, size, 0);
-        if(id<0) return 0;
-        return shmat(id, NULL, 0);
-}
-
-char *get_shm(int key, int size) {
-        int id;
-        id=shmget(key, size, IPC_CREAT | 0640);
-        if(id<0) return 0;
-        return shmat(id, NULL, 0);
 }
 
 char *getsenv(char *s) {
@@ -463,15 +416,6 @@ char *getparm(char *var) {
 	for(n=0; n<parm_num; n++) 
 		if(!strcasecmp(parm_name[n], var)) return parm_val[n];
 	return "";
-}
-
-int get_shmkey(char *s) {
-        int n=0;
-        while(shmkeys[n].key!=0) {
-                if(!strcasecmp(shmkeys[n].key, s)) return shmkeys[n].value;
-                n++;
-        }
-        return 0;
 }
 
 /* smh_init() ÐèÒªÐÞ¸Ä */

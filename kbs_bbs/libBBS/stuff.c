@@ -780,3 +780,26 @@ int Rename(char* srcPath,char* destPath)
    }
    return -1;
 }
+
+int seek_in_file(filename,seekstr)
+char filename[STRLEN],seekstr[STRLEN];
+{
+    FILE *fp;
+    char buf[STRLEN];
+    char *namep;
+
+    if ((fp = fopen(filename, "r")) == NULL)
+        return 0;
+    while (fgets(buf, STRLEN, fp) != NULL)
+	{
+        namep = (char *)strtok( buf, ": \n\r\t" );
+        if (namep != NULL && strcasecmp(namep, seekstr) == 0 ) {
+            fclose(fp);
+            return 1;
+        }
+    }
+    fclose(fp);
+    return 0;
+}
+
+

@@ -834,12 +834,6 @@ Select()
 }
 
 int
-junkboard()  /* 判断当前版是否为 junkboards */
-{
-    return seek_in_file("etc/junkboards",currboard);
-}
-
-int
 Post()  /* 主菜单内的 在当前版 POST 文章 */
 {
     if(!selboard) {

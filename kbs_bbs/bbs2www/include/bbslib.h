@@ -128,12 +128,6 @@ char *rtrim(char *s);
 
 #define trim(s) ltrim(rtrim(s))
 
-char *get_new_shm(int key, int size);
-
-char *get_old_shm(int key, int size);
-
-char *get_shm(int key, int size);
-
 #define setcookie(a, b)	printf("<script>document.cookie='%s=%s'</script>\n", a, b)
 #define redirect(x)	printf("<meta http-equiv='Refresh' content='0; url=%s'>\n", x)
 #define refreshto(x, t)	printf("<meta http-equiv='Refresh' content='%d; url=%s'>\n", t, x)
