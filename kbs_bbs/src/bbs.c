@@ -1755,18 +1755,14 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
     qfile = q_file;
     quser = q_user;
     bflag = strncmp(qfile, "mail", 4);  /* ÅĞ¶ÏÒıÓÃµÄÊÇÎÄÕÂ»¹ÊÇĞÅ */
-    outf = fopen(filepath, "w");
+    outf = fopen(filepath, "a");
     if (outf==NULL) {
     	bbslog("3user","do_quote() fopen(%s):%s",filepath,strerror(errno));
     	return;
     }
     if (*qfile != '\0' && (inf = fopen(qfile, "rb")) != NULL) {  /* ´ò¿ª±»ÒıÓÃÎÄ¼ş */
         op = quote_mode;
-		if( op == 'm' ){	/* Ä£°å */
-                while (skip_attach_fgets(buf, 256, inf) != NULL) {
-                    fprintf(outf, "%s", buf);
-                }
-		}else if (op != 'N') {        /* ÒıÓÃÄ£Ê½Îª N ±íÊ¾ ²»ÒıÓÃ */
+		if (op != 'N') {        /* ÒıÓÃÄ£Ê½Îª N ±íÊ¾ ²»ÒıÓÃ */
             skip_attach_fgets(buf, 256, inf);
             /* È¡³öµÚÒ»ĞĞÖĞ ±»ÒıÓÃÎÄÕÂµÄ ×÷ÕßĞÅÏ¢ */
             if ((ptr = strrchr(buf, ')')) != NULL) {    /* µÚÒ»¸ö':'µ½×îºóÒ»¸ö ')' ÖĞµÄ×Ö·û´® */
@@ -2001,7 +1997,8 @@ int post_article(char *q_file, struct fileheader *re_file)
     struct fileheader post_file;
     char filepath[STRLEN];
     char buf[256], buf2[256], buf3[STRLEN], buf4[STRLEN];
-	char tmplate[STRLEN];
+//	char tmplate[STRLEN];
+	int use_tmpl=0;
     int aborted, anonyboard, olddigestmode = 0;
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'S';
@@ -2052,7 +2049,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     }
 
     memset(&post_file, 0, sizeof(post_file));
-	tmplate[0]='\0';
+//	tmplate[0]='\0';
     clear();
     show_board_notes(currboard->filename);        /* °æÖ÷µÄ»° */
 #ifndef NOREPLY                 /* titleÊÇ·ñ²»ÓÃRe: */
@@ -2092,7 +2089,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         sprintf(buf3, "ÒıÑÔÄ£Ê½ [%c]", include_mode);
         move(t_lines - 4, 0);
         clrtoeol();
-        prints("[m·¢±íÎÄÕÂÓÚ %s ÌÖÂÛÇø     %s  %s\n", currboard->filename, (anonyboard) ? (Anony == 1 ? "[1mÒª[mÊ¹ÓÃÄäÃû" : "[1m²»[mÊ¹ÓÃÄäÃû") : "", mailback? "»Ø¸´µ½ĞÅÏä":"");
+        prints("[m·¢±íÎÄÕÂÓÚ %s ÌÖÂÛÇø  %s %s %s\n", currboard->filename, (anonyboard) ? (Anony == 1 ? "[1mÒª[mÊ¹ÓÃÄäÃû" : "[1m²»[mÊ¹ÓÃÄäÃû") : "", mailback? "»Ø¸´µ½ĞÅÏä":"",use_tmpl?"Ê¹ÓÃÄ£°å":"");
         clrtoeol();
         prints("Ê¹ÓÃ±êÌâ: %s\n", (buf[0] == '\0') ? "[ÕıÔÚÉè¶¨Ö÷Ìâ]" : buf);
         clrtoeol();
@@ -2122,7 +2119,7 @@ int post_article(char *q_file, struct fileheader *re_file)
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
         sprintf(buf2, "°´[1;32m0[m~[1;32m%d/V/L[mÑ¡/¿´/Ëæ»úÇ©Ãûµµ%s£¬[1;32mT[m¸Ä±êÌâ£¬%s[1;32mEnter[m½ÓÊÜËùÓĞÉè¶¨: ", numofsig,
-                (replymode) ? "£¬[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "£¬[1;32mm[mÊ¹ÓÃÄ£°å", (anonyboard) ? "[1;32mM[mÄäÃû£¬" : "");
+                (replymode) ? "£¬[1;32mS/Y[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒıÑÔÄ£Ê½" : "£¬[1;32mP[mÊ¹ÓÃÄ£°å", (anonyboard) ? "[1;32mM[mÄäÃû£¬" : "");
         if(replymode&&anonyboard) buf2[strlen(buf2)-10]=0;
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
@@ -2133,7 +2130,9 @@ int post_article(char *q_file, struct fileheader *re_file)
             include_mode = ans[0];
         } else if (ans[0] == 'T') {
             buf4[0] = '\0';
-		} else if (ans[0] == 'M') {
+		} else if (ans[0] == 'P') {
+			use_tmpl = use_tmpl ? 0 : 1;
+				/*
 			if( replymode == 0 ){
 				choose_tmpl( tmplate );
 				clear();
@@ -2141,7 +2140,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 					setbfile( buf2, currboard->filename, tmplate );
 					ansimore2(buf2, false, 0, 18);
 				}
-			}
+			}*/
 		} else if (ans[0] == 'B') {
 			if( replymode == 0 )
 				mailback = mailback ? 0 : 1;
@@ -2243,19 +2242,42 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     modify_user_mode(POSTING);
 
-	setbfile( buf2, currboard->filename, "M.1056167616.F0" );
-	
-	if( replymode )
-	   	do_quote(filepath, include_mode, q_file, quote_user);       /*ÒıÓÃÔ­ÎÄÕÂ */
-	else{
-		setbfile( buf2, currboard->filename, tmplate );
-		do_quote(filepath, 'm', buf2, quote_user);
+	if( use_tmpl ){
+		FILE *fp,*fp1;
+		char filepath1[STRLEN];
+		char buff[256];
+
+		sprintf(filepath1,"%s.mbak",filepath);
+		aborted =  choose_tmpl( filepath ) ;
+		if(aborted != -1){
+			if( (fp=fopen( filepath1,"w"))!=NULL){
+				if((fp1=fopen(filepath,"r"))==NULL){
+					aborted = -1;
+				}else{
+					write_header(fp, currentuser, 0, currboard->filename, post_file.title, 0, 0);
+					while(fgets(buff,255,fp1))
+						fprintf(fp,"%s",buff);
+					fclose(fp);
+					fclose(fp1);
+
+					unlink(filepath);
+					rename(filepath1,filepath);
+				}
+			}else{
+				aborted = -1;
+			}
+		}
 	}
+				
+
+	do_quote(filepath, include_mode, q_file, quote_user);       /*ÒıÓÃÔ­ÎÄÕÂ */
 
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard->filename);
 
-    aborted = vedit(filepath, true, &eff_size, NULL);    /* ½øÈë±à¼­×´Ì¬ */
+	if( ! use_tmpl )
+	    aborted = vedit(filepath, true, &eff_size, NULL);    /* ½øÈë±à¼­×´Ì¬ */
+
     post_file.eff_size = eff_size;
 
     add_loginfo(filepath, currentuser, currboard->filename, Anony);       /*Ìí¼Ó×îºóÒ»ĞĞ */
@@ -4015,48 +4037,87 @@ int set_ip_acl()
 
 
 /***************************************************************************
- * add by stiger, ÎÄÕÂÄ£°å
+ * add by stiger, ĞÂÎÄÕÂÄ£°å
  ***************************************************************************/
 
-#define TEMPLATE_DIR ".template"
+#define TEMPLATE_DIR ".templt"
 #define MAX_TEMPLATE 10
+#define MAX_CONTENT 10
+
+struct s_content{
+	char text[50];
+	int length;
+};
 
 struct s_template{
 	char title[50];
-	char filename[STRLEN];
+	char title_prefix[20];
+	int content_num;
 	char unused[20];
+};
+
+struct a_template{
+	struct s_template * tmpl;
+	struct s_content * cont;
 } * ptemplate = NULL;
+
 int template_num = 0;
+int t_now = 0;
 
 int tmpl_init(){
 
-	int fd;
+	int fd,i;
 	char tmpldir[STRLEN];
 	struct s_template tmpl;
+	struct s_content * cont;
 
     setbfile(tmpldir, currboard->filename, TEMPLATE_DIR);
 
 	if( ptemplate == NULL ){
-		ptemplate = (struct s_template *) malloc( sizeof( struct s_template ) * MAX_TEMPLATE );
+		ptemplate = (struct a_template *) malloc( sizeof( struct a_template ) * MAX_TEMPLATE );
 		if( ptemplate == NULL )
 			return -1;
 	}
-	bzero( ptemplate, sizeof( struct s_template ) * MAX_TEMPLATE );
+	bzero( ptemplate, sizeof( struct a_template ) * MAX_TEMPLATE );
 	template_num = 0;
 
 	if( (fd = open( tmpldir, O_RDONLY ) ) == -1 ){
 		return 0;
 	}
 	while( read(fd, &tmpl, sizeof( struct s_template )) == sizeof(struct s_template) ){
-		if(tmpl.filename[0] == '\0') continue;
-		memcpy( &(ptemplate[template_num]), &tmpl, sizeof(struct s_template) );
+		cont = (struct s_content *) malloc( sizeof( struct s_content ) * tmpl.content_num );
+		if( cont == NULL )
+			break;
+		bzero(cont, sizeof(struct s_content) * tmpl.content_num );
+		if(read(fd, cont, sizeof(struct s_content)*tmpl.content_num) != sizeof(struct s_content)*tmpl.content_num)
+		 	continue;
+		ptemplate[template_num].tmpl = (struct s_template *)malloc(sizeof(struct s_template));
+		if( ptemplate[template_num].tmpl == NULL ){
+			free(cont);
+			break;
+		}
+		bzero( ptemplate[template_num].tmpl , sizeof(struct s_template) );
+		memcpy( ptemplate[template_num].tmpl, &tmpl, sizeof(struct s_template) );
+		ptemplate[template_num].cont = cont;
 		template_num ++;
-		if( template_num >= 10 )
+		if( template_num >= MAX_TEMPLATE )
 			break;
 	}
 	close(fd);
 
 	return template_num;
+}
+
+int tmpl_free(){
+
+	int i;
+
+	for(i=0; i<template_num; i++){
+		free(ptemplate[i].tmpl);
+		free(ptemplate[i].cont);
+	}
+	free(ptemplate);
+	ptemplate = NULL;
 }
 
 int tmpl_save(){
@@ -4070,9 +4131,10 @@ int tmpl_save(){
 		return -1;
 	}
 	for(i=0; i<template_num; i++){
-		if(ptemplate[i].filename[0] == '\0')
-			break;
-		fwrite( &(ptemplate[i]), sizeof(struct s_template), 1, fp );
+		if(ptemplate[i].tmpl == NULL)
+			continue;
+		fwrite( ptemplate[i].tmpl, sizeof(struct s_template), 1, fp );
+		fwrite( ptemplate[i].cont, sizeof(struct s_content), ptemplate[i].tmpl->content_num, fp);
 	}
 	fclose(fp);
 
@@ -4086,7 +4148,7 @@ int tmpl_add(){
 	char buf[60];
 	struct s_template tmpl;
 
-	if( template_num >= 10 )
+	if( template_num >= MAX_TEMPLATE )
 		return -1;
 
 	bzero(&tmpl, sizeof(struct s_template));
@@ -4099,17 +4161,9 @@ int tmpl_add(){
 	}
 	strncpy(tmpl.title, buf, 50);
 	tmpl.title[49] = '\0';
-	setbfile(filepath, currboard->filename, "");
-	if ( GET_POSTFILENAME(tmpl.filename, filepath) != 0) {
-		return -1;
-	}
 
-    setbfile(filepath, currboard->filename, tmpl.filename);
-    if( vedit(filepath, 0, NULL, NULL) == -1 ){
-		return -1;
-	}
-
-	memcpy( &(ptemplate[template_num]), &tmpl, sizeof(struct s_template) );
+	ptemplate[template_num].tmpl = (struct s_template *) malloc( sizeof(struct s_template) );
+	memcpy( ptemplate[template_num].tmpl, &tmpl, sizeof(struct s_template) );
 	template_num ++;
 
 	tmpl_save();
@@ -4117,14 +4171,50 @@ int tmpl_add(){
 	return 0;
 }
 
+int content_add(){
+
+	struct s_content ct;
+	char buf[60];
+
+	if( ptemplate[t_now].tmpl->content_num >= MAX_CONTENT )
+		return -1;
+
+	bzero(&ct, sizeof(struct s_content));
+	clear();
+	buf[0]='\0';
+	getdata(t_lines - 1, 0, "Ñ¡Ïî±êÌâ: ", buf, 50, DOECHO, NULL, false);
+	if( buf[0]=='\0' || buf[0]=='\n' ){
+		return -1;
+	}
+	strncpy(ct.text, buf, 50);
+	ct.text[49]='\0';
+
+	buf[0]='\0';
+	getdata(t_lines - 1, 0, "Ñ¡Ïî³¤¶È: ", buf, 5, DOECHO, NULL, false);
+	ct.length = atoi(buf);
+	if(ct.length <= 0 || ct.length > 555)
+		return -1;
+
+	ptemplate[t_now].cont = (struct s_content *) realloc( ptemplate[t_now].cont, sizeof(struct s_content) * (ptemplate[t_now].tmpl->content_num+1));
+	memcpy( &( ptemplate[t_now].cont[ptemplate[t_now].tmpl->content_num] ), &ct, sizeof(struct s_content) );
+	ptemplate[t_now].tmpl->content_num ++;
+
+	tmpl_save();
+
+	return 0;
+
+}
+
 
 static int tmpl_show(struct _select_def *conf, int i)
 {
-	if( i > template_num ){
-		prints(" %2d   %-50s", i, "²»Ê¹ÓÃÄ£°å");
-		return SHOW_CONTINUE;
-	}
-	prints(" %2d   %-50s", i, ptemplate[i-1].title);
+	prints(" %2d   %-50s  %3d", i, ptemplate[i-1].tmpl->title, ptemplate[i-1].tmpl->content_num);
+	return SHOW_CONTINUE;
+}
+
+static int content_show(struct _select_def *conf, int i)
+{
+	prints(" %2d   %-50s  %3d", i, ptemplate[t_now].cont[i-1].text, ptemplate[t_now].cont[i-1].length);
 	return SHOW_CONTINUE;
 }
 
@@ -4156,9 +4246,21 @@ static int tmpl_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[°æÃæÄ£°åÉèÖÃ]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ĞŞ¸ÄÄÚÈİ[[1;32me[0;37m] ĞŞ¸Ä±êÌâ[[1;32mt[0;37m]");
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ĞŞ¸Ä±êÌâ[[1;32mt[0;37m]");
     move(2, 0);
-    prints("[0;1;37;44m  %4s    %-50s", "ĞòºÅ", "Ãû³Æ");
+    prints("[0;1;37;44m  %4s    %-50s  %4s", "ĞòºÅ", "Ãû³Æ","Ñ¡Ïî¸öÊı");
+    clrtoeol();
+    update_endline();
+    return SHOW_CONTINUE;
+}
+
+static int content_refresh(struct _select_def *conf)
+{
+    clear();
+    docmdtitle("[°æÃæÄ£°åÑ¡ÏîÉèÖÃ]",
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m ĞŞ¸Ä±êÌâ[[1;32mt[0;37m]");
+    move(2, 0);
+    prints("[0;1;37;44m  %4s    %-50s  %4s", "ĞòºÅ", "Ãû³Æ","³¤¶È");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -4170,11 +4272,90 @@ static int tmpl_getdata(struct _select_def *conf, int pos, int len)
     return SHOW_CONTINUE;
 }
 
+static int content_getdata(struct _select_def *conf, int pos, int len)
+{
+    conf->item_count = ptemplate[t_now].tmpl->content_num;
+    return SHOW_CONTINUE;
+}
+
+static int content_key(struct _select_def *conf, int key)
+{
+	switch (key) {
+	case 'a':
+		if( ptemplate[t_now].tmpl->content_num >= MAX_CONTENT ){
+			char ans[STRLEN];
+			move(t_lines - 1, 0);
+			clrtoeol();
+			a_prompt(-1, "Ñ¡ÏîÒÑÂú£¬°´»Ø³µ¼ÌĞø << ", ans);
+			move(t_lines - 1, 0);
+			clrtoeol();
+			return SHOW_CONTINUE;
+		}
+		content_add();
+		return SHOW_DIRCHANGE;
+		break;
+	case 'd':
+		{
+            char ans[3];
+			char filepath[STRLEN];
+
+            getdata(t_lines - 1, 0, "È·ÊµÒªÉ¾³ıÂğ(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
+            if (ans[0] == 'Y' || ans[0] == 'y') {
+                int i;
+				struct s_content *ct;
+
+				if( ptemplate[t_now].tmpl->content_num == 1){
+					ptemplate[t_now].tmpl->content_num = 0;
+					free(ptemplate[t_now].cont);
+
+					tmpl_save();
+					return SHOW_QUIT;
+				}
+
+				ct = (struct s_content *) malloc( sizeof(struct s_content) * (ptemplate[t_now].tmpl->content_num-1));
+
+				memcpy(ct+i,&(ptemplate[t_now].cont[i]),sizeof(struct s_content) * (conf->pos-1));
+                for(i=conf->pos-1;i<ptemplate[t_now].tmpl->content_num-1;i++)
+                    memcpy(ct+i, &(ptemplate[t_now].cont[i+1]), sizeof(struct s_content));
+
+				free(ptemplate[t_now].cont);
+				ptemplate[t_now].cont = ct;
+
+				ptemplate[t_now].tmpl->content_num --;
+
+				tmpl_save();
+				return SHOW_DIRCHANGE;
+			}
+			return SHOW_REFRESH;
+		}
+	case 't' :
+		{
+			char newtitle[60];
+
+			strcpy(newtitle, ptemplate[t_now].cont[conf->pos-1].text);
+            getdata(t_lines - 1, 0, "ĞÂ±êÌâ: ", newtitle, 50, DOECHO, NULL, false);
+
+			if( newtitle[0] == '\0' || newtitle[0]=='\n' || ! strcmp(newtitle,ptemplate[t_now].cont[conf->pos-1].text) )
+				return SHOW_REFRESH;
+
+			strncpy(ptemplate[t_now].cont[conf->pos-1].text, newtitle, 50);
+			ptemplate[t_now].cont[conf->pos-1].text[49]='\0';
+
+			tmpl_save();
+
+			return SHOW_REFRESH;
+		}
+		break;
+	default:
+		break;
+	}
+}
+
 static int tmpl_key(struct _select_def *conf, int key)
 {
 	switch (key) {
 	case 'a' :
-		if( template_num >= 10 ){
+		if( template_num >= MAX_TEMPLATE ){
 			char ans[STRLEN];
 			move(t_lines - 1, 0);
 			clrtoeol();
@@ -4195,12 +4376,16 @@ static int tmpl_key(struct _select_def *conf, int key)
             if (ans[0] == 'Y' || ans[0] == 'y') {
                 int i;
 
-    			setbfile(filepath, currboard->filename, ptemplate[conf->pos-1].filename);
-				unlink(filepath);
+				if( ptemplate[conf->pos-1].tmpl != NULL)
+					free(ptemplate[conf->pos-1].tmpl);
+				if( ptemplate[conf->pos-1].cont != NULL)
+					free(ptemplate[conf->pos-1].cont);
 
                 template_num--;
                 for(i=conf->pos-1;i<template_num;i++)
-                    memcpy(ptemplate+i, ptemplate+i+1, sizeof(struct s_template));
+                    memcpy(ptemplate+i, ptemplate+i+1, sizeof(struct a_template));
+				ptemplate[template_num].tmpl = NULL;
+				ptemplate[template_num].cont = NULL;
 
 				tmpl_save();
             }
@@ -4210,28 +4395,18 @@ static int tmpl_key(struct _select_def *conf, int key)
 				return SHOW_QUIT;
         }
         break;
-	case 'e' :
-		{
-			char filepath[STRLEN];
-
-			setbfile(filepath,currboard->filename, ptemplate[conf->pos-1].filename);
-    		vedit(filepath, 0, NULL, NULL);
-
-			return SHOW_REFRESH;
-		}
-		break;
 	case 't' :
 		{
 			char newtitle[60];
 
-			strcpy(newtitle, ptemplate[conf->pos-1].title);
+			strcpy(newtitle, ptemplate[conf->pos-1].tmpl->title);
             getdata(t_lines - 1, 0, "ĞÂ±êÌâ: ", newtitle, 50, DOECHO, NULL, false);
 
-			if( newtitle[0] == '\0' || newtitle[0]=='\n' || ! strcmp(newtitle,ptemplate[conf->pos-1].title) )
+			if( newtitle[0] == '\0' || newtitle[0]=='\n' || ! strcmp(newtitle,ptemplate[conf->pos-1].tmpl->title) )
 				return SHOW_REFRESH;
 
-			strncpy(ptemplate[conf->pos-1].title, newtitle, 50);
-			ptemplate[conf->pos-1].title[49]='\0';
+			strncpy(ptemplate[conf->pos-1].tmpl->title, newtitle, 50);
+			ptemplate[conf->pos-1].tmpl->title[49]='\0';
 
 			tmpl_save();
 
@@ -4248,12 +4423,54 @@ static int tmpl_key(struct _select_def *conf, int key)
 static int tmpl_select(struct _select_def *conf)
 {
 
-	char filepath[STRLEN];
-
-	setbfile( filepath, currboard->filename, ptemplate[conf->pos - 1].filename );
+	int i;
+	POINT *pts;
+    struct _select_def grouplist_conf;
 
 	clear();
-	ansimore(filepath, 1);
+	t_now = conf->pos - 1;
+	
+	if( ptemplate[t_now].tmpl->content_num == 0 ){
+		char ans[3];
+		clear();
+        getdata(t_lines - 1, 0, "±¾Ä£°åÏÖÔÚÃ»ÓĞÄÚÈİ£¬ĞèÒªÏÖÔÚÔö¼ÓÂğ(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
+        if (ans[0] != 'Y' && ans[0] != 'y'){
+			return SHOW_REFRESH;
+		}
+		if( content_add() < 0 ){
+			return SHOW_REFRESH;
+		}
+	}
+
+    pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
+    for (i = 0; i < BBS_PAGESIZE; i++) {
+        pts[i].x = 2;
+        pts[i].y = i + 3;
+    }
+    bzero(&grouplist_conf, sizeof(struct _select_def));
+
+    grouplist_conf.item_count = ptemplate[t_now].tmpl->content_num;
+    grouplist_conf.item_per_page = BBS_PAGESIZE;
+    /*
+     * ¼ÓÉÏ LF_VSCROLL ²ÅÄÜÓÃ LEFT ¼üÍË³ö 
+     */
+    grouplist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+    grouplist_conf.prompt = "¡ô";
+    grouplist_conf.item_pos = pts;
+    grouplist_conf.title_pos.x = 0;
+    grouplist_conf.title_pos.y = 0;
+    grouplist_conf.pos = 1;     /* initialize cursor on the first mailgroup */
+    grouplist_conf.page_pos = 1;        /* initialize page to the first one */
+
+    grouplist_conf.show_data = content_show;
+    grouplist_conf.pre_key_command = tmpl_prekey;
+    grouplist_conf.key_command = content_key;
+    grouplist_conf.show_title = content_refresh;
+    grouplist_conf.get_data = content_getdata;
+
+    list_select_loop(&grouplist_conf);
+
+    free(pts);
 
 	return SHOW_REFRESH;
 }
@@ -4278,13 +4495,11 @@ int m_template()
 		clear();
         getdata(t_lines - 1, 0, "±¾°æÏÖÔÚÃ»ÓĞÄ£°å£¬ĞèÒªÏÖÔÚÔö¼ÓÂğ(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
         if (ans[0] != 'Y' && ans[0] != 'y'){
-			free( ptemplate);
-			ptemplate = NULL;
+			tmpl_free();
 			return FULLUPDATE;
 		}
 		if( tmpl_add() < 0 ){
-			free( ptemplate);
-			ptemplate = NULL;
+			tmpl_free();
 			return FULLUPDATE;
 		}
 	}
@@ -4319,22 +4534,22 @@ int m_template()
     list_select_loop(&grouplist_conf);
 
     free(pts);
-	free(ptemplate);
-	ptemplate = NULL;
+	tmpl_free();
 
     return FULLUPDATE;
 
 }
 
-int template_now_choose = 0;
-
+/*********************************
+ * Ä£¿éÑ¡Ôñ·½Ãæ
+ ***************************/
 static int choose_tmpl_refresh(struct _select_def *conf)
 {
     clear();
     docmdtitle("[°æÃæÄ£°åÑ¡Ôñ]",
-               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ê¹ÓÃ[\x1b[1;32mSPACE\x1b[0;37m] ²é¿´[\x1b[1;32ms\x1b[0;37m]");
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] Ê¹ÓÃ[\x1b[1;32mSPACE\x1b[0;37m]");
     move(2, 0);
-    prints("[0;1;37;44m  %4s    %-50s", "ĞòºÅ", "Ãû³Æ");
+    prints("[0;1;37;44m  %4s    %-50s  %-8s", "ĞòºÅ", "Ãû³Æ", "ÊÇ·ñ¿ÉÓÃ");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -4342,23 +4557,52 @@ static int choose_tmpl_refresh(struct _select_def *conf)
 
 static int choose_tmpl_getdata(struct _select_def *conf, int pos, int len)
 {
-    conf->item_count = template_num+1;
+    conf->item_count = template_num;
     return SHOW_CONTINUE;
 }
 
 static int choose_tmpl_select(struct _select_def *conf)
 {
-	if( conf->pos > template_num ){
-		template_now_choose = -1;
+	FILE *fp;
+	int i;
+
+	if( ptemplate[conf->pos-1].tmpl->content_num <= 0 )
+		return SHOW_QUIT;
+
+	if((fp = fopen(conf->arg, "w"))==NULL){
 		return SHOW_QUIT;
 	}
-	template_now_choose = conf->pos;
+
+	for(i=0; i< ptemplate[conf->pos-1].tmpl->content_num; i++){
+		char *ans;
+
+		ans = (char *)malloc(ptemplate[conf->pos-1].cont[i].length + 2);
+		if( ans == NULL ){
+			fclose(fp);
+			return SHOW_QUIT;
+		}
+		clear();
+		move(1,0);
+		prints("Ctrl+Q »»ĞĞ, ENTER ·¢ËÍ");
+		move(3,0);
+		prints("Ä£°åÎÊÌâ:%s",ptemplate[conf->pos-1].cont[i].text);
+		move(4,0);
+		prints("Ä£°å»Ø´ğ(×î³¤%d×Ö·û):",ptemplate[conf->pos-1].cont[i].length);
+        multi_getdata(6, 0, 79, NULL, ans, ptemplate[conf->pos-1].cont[i].length+1, 11, true, 0);
+		fprintf(fp,"[1;32m%s:[m\n%s\n\n",ptemplate[conf->pos-1].cont[i].text, ans);
+		free(ans);
+	}
+	fclose(fp);
+
+	t_now = 1;
+
 	return SHOW_QUIT;
 }
 
 static int choose_tmpl_key(struct _select_def *conf, int key)
 {
 	switch (key) {
+			/*
 	case 's' :
 	{
 		char filepath[STRLEN];
@@ -4366,13 +4610,13 @@ static int choose_tmpl_key(struct _select_def *conf, int key)
 		if( conf->pos > template_num )
 			return SHOW_CONTINUE;
 
-		setbfile( filepath, currboard->filename, ptemplate[conf->pos - 1].filename );
 		clear();
 		ansimore(filepath, 1);
 
 		return SHOW_REFRESH;
 	}
 		break;
+		*/
 	default:
 		break;
 	}
@@ -4380,7 +4624,7 @@ static int choose_tmpl_key(struct _select_def *conf, int key)
 	return SHOW_CONTINUE;
 }
 
-void choose_tmpl(char *tmplfname)
+int choose_tmpl(char *fname)
 {
 	struct s_template tmpl;
 	POINT *pts;
@@ -4388,19 +4632,18 @@ void choose_tmpl(char *tmplfname)
     int i;
 
 	if( tmpl_init() < 0 )
-		return ;
+		return  -1;
 
 	if( template_num == 0 ){
 		clear();
 		move(3,0);
 		prints("±¾°æÃ»ÓĞÄ£°å¿É¹©Ê¹ÓÃ");
 		pressanykey();
-		free( ptemplate);
-		ptemplate = NULL;
-		return ;
+		tmpl_free();
+		return  -1;
 	}
 
-	template_now_choose = 0;
+	t_now = 0;
 
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
     for (i = 0; i < BBS_PAGESIZE; i++) {
@@ -4409,18 +4652,16 @@ void choose_tmpl(char *tmplfname)
     }
     bzero(&grouplist_conf, sizeof(struct _select_def));
 
-    grouplist_conf.item_count = template_num+1;
+	grouplist_conf.arg = fname;
+    grouplist_conf.item_count = template_num;
     grouplist_conf.item_per_page = BBS_PAGESIZE;
-    /*
-     * ¼ÓÉÏ LF_VSCROLL ²ÅÄÜÓÃ LEFT ¼üÍË³ö 
-     */
     grouplist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
     grouplist_conf.prompt = "¡ô";
     grouplist_conf.item_pos = pts;
     grouplist_conf.title_pos.x = 0;
     grouplist_conf.title_pos.y = 0;
-    grouplist_conf.pos = 1;     /* initialize cursor on the first mailgroup */
-    grouplist_conf.page_pos = 1;        /* initialize page to the first one */
+    grouplist_conf.pos = 1;
+    grouplist_conf.page_pos = 1;
 
     grouplist_conf.show_data = tmpl_show;
     grouplist_conf.pre_key_command = tmpl_prekey;
@@ -4432,12 +4673,8 @@ void choose_tmpl(char *tmplfname)
     list_select_loop(&grouplist_conf);
 
 	free(pts);
+	tmpl_free();
 
-    if(template_now_choose > 0 && template_now_choose <= template_num)
-		strcpy( tmplfname, ptemplate[template_now_choose - 1].filename );
-	else if(template_now_choose == -1)
-		tmplfname[0]='\0';
-
-	free(ptemplate);
-	ptemplate = NULL;
+	if( t_now > 0) return 0;
+	return -1;
 }
