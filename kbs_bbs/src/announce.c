@@ -196,9 +196,8 @@ int a_loadnames(pm)             /* 装入 .Names */
     sprintf(buf, "%s/.Names", pm->path);        /*.Names记录菜单信息 */
     if ((fn = fopen(buf, "r")) == NULL)
         return 0;
-    if (fstat(fileno(fn),&st)==-1)
-    	return 0;
-    pm->modified_time=st.st_mtime;
+    if (fstat(fileno(fn),&st)!=-1)
+        pm->modified_time=st.st_mtime;
     hostname[0] = '\0';
     while (fgets(buf, sizeof(buf), fn) != NULL) {
         if ((ptr = strchr(buf, '\n')) != NULL)
@@ -249,12 +248,12 @@ int a_savenames(pm)            /*保存当前MENU到 .Names */
     struct stat st;
 
     sprintf(fpath, "%s/.Names", pm->path);
-    if ((fn = fopen(fpath, "w")) == NULL)
-        return -1;
-    if (fstat(fileno(fn),&st)==-1)
-    	return -2;
+    if (stat(fpath,&st)!=-1) {
     if (st.st_mtime!=pm->modified_time)
     	return -3;
+    }
+    if ((fn = fopen(fpath, "w")) == NULL)
+        return -1;
     fprintf(fn, "#\n");
     if (!strncmp(pm->mtitle, "[目录] ", 7) || !strncmp(pm->mtitle, "[文件] ", 7)
         || !strncmp(pm->mtitle, "[连线] ", 7)) {
