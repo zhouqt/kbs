@@ -659,4 +659,9 @@ attach define
 #undef CHECK_IP_LINK
 #endif
 
+#ifndef ID_CONNECT_CON_THRESHOLD //∑¿÷π…œ’æª˙
+#define ID_CONNECT_CON_THRESHOLD 20.0/60/60
+#define ID_CONNECT_CON_THRESHOLD2 30.0
+#endif
+
 #endif
