@@ -122,18 +122,15 @@ int setboardtitle(char *board, int i)
 
 int get_nextid(char* boardname)
 {
-    struct boardheader* bstr;
     int fd,ret;
 
     fd = bcache_lock();
-    bstr=getbcache(boardname);
-    if (bstr!=0) {
-        bstr->nowid++;
-        ret=bstr->nowid;
-    } else {
+    ret=getboardnum(boardname,NULL);
+    if (ret!=0) {
+        bcache[ret-1].nowid++;
+        ret=bcache[ret-1].nowid;
+    } else
        bbslog("3system", "wrong get_nextid %s", boardname);
-       ret=0;
-    }
     bcache_unlock(fd);
     return ret;
 }
