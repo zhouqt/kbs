@@ -511,6 +511,7 @@ int do_send(char *userid, char *title, char *q_file)
         } 
         else if (ans[0] == 'U'&&HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
             chdir("tmp");
+            if (upload != NULL) unlink(upload);
             upload = bbs_zrecvfile();
             chdir("..");
          }

@@ -2679,6 +2679,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             struct boardheader* b=currboard;
             if(b->flag&BOARD_ATTACH && use_tmpl<=0) {
                 chdir("tmp");
+                if (upload != NULL) unlink(upload);
                 upload = bbs_zrecvfile();
                 chdir("..");
 //				use_tmpl = -1;
