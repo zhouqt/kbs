@@ -10,13 +10,12 @@
 		global $section_names;
 		$brd_encode = urlencode($brdarr["NAME"]);
 	?>		
-<table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">		
+<table width="100%" border="0" cellspacing="0" cellpadding="0">		
 <form name="form1" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
-<input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>"/>
 <tr>
 <td>
 </td>
-<td align="right">
+<td align="right" style="font-size:12px;">
  	<?php
 		      if($order)
 		      {
@@ -81,7 +80,7 @@
 			}
 		    }
 	?>
-<input type="submit" class="b5" value="跳转到"/> 第 <input type="text" name="start" size="3"  onmouseover=this.focus() onfocus=this.select() class="b5"> 篇 
+<input style="height:20px; font-size:12px; border:solid 1px; background-color:#f5f5f5" type="submit" value="跳转到"/> 第 <input style="height:20px; font-size:12px; border:solid 1px;" onmouseover=this.focus() onfocus=this.select() type="text" name="start" size="3"> 篇 
 </td></tr></form></table>
 	<?php
 	}
@@ -89,8 +88,8 @@
 	
 	function display_g_articles($brdarr,$articles,$start,$order=FALSE){
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tr><td class="t2" width="50">序号</td><td class="t2" width="120">推荐者</td><td class="t2" width="80">日期</td><td class="t2">标题</td><td class="t2">原文</td></tr>
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+<tr><TD width=100% align=left class=grid2 height=2 colspan=5>&nbsp;</td></tr>
 <?php
 		$brd_encode = urlencode($brdarr["NAME"]);
 		$i = 0;
@@ -102,13 +101,15 @@
 			$flags = $article["FLAGS"];
 ?>
 <tr>
-<td class="t3"><?php echo $start + $i; ?></td>
-<td class="t4"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
-<td class="t3"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t5">&nbsp;
-<a class="ts2" href="/bbsrecon.php?file=<?php echo $article["FILENAME"]; ?>&num=<?php echo $start + $i; ?>"><?php echo htmlspecialchars($title); ?></a>
+<td width=60% align=left class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
+<?php echo $start + $i; ?>.&nbsp;[标题 :<a href="/bbsrecon.php?id=<?php echo $article["ID"]; ?>"><?php echo htmlspecialchars($title); ?></a>]
+</td><td width=15% class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
+[推荐人 :<a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a>]
+</td><td width=15% class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
+[版面 :<a href="/bbsdoc.php?board=<?php echo $article["O_BOARD"];?>"><?php { $brddarr = array(); if(bbs_getboard($article["O_BOARD"], $brddarr)) echo $brddarr["DESC"]; }?></a>]
+</td><td width=10% class=grid<?php if($i % 2) echo "1"; else echo "2";?>>
+<a href="/bbscon.php?board=<?php echo $article["O_BOARD"];?>&id=<?php echo $article["O_ID"];?>">阅读原文</a>
 </td>
-<td class="t4"><a href="/bbscon.php?board=<?php echo $article["O_BOARD"];?>&id=<?php echo $article["O_ID"];?>">查看原讨论区原文</a></td>
 </tr>
 <?php
 			$i++;
@@ -154,6 +155,33 @@
 	
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
+<style type="text/css"><!--
+body {
+    font-size:12px;
+    }
+.b2 {
+	FONT-SIZE: 14px; COLOR: #000000;BORDER-bottom: #c0d0ff 1px solid; BACKGROUND-COLOR: #f0f5ff; TEXT-DECORATION: none
+}
+A:hover {
+	 COLOR: #000000; TEXT-DECORATION: underline
+}
+A:link {
+	COLOR: #003399; TEXT-DECORATION: none
+}
+A:visited {
+	COLOR: #993300; TEXT-DECORATION: none
+}
+td {font-size:12px;}
+td.grid1{
+BORDER-bottom: #0066cc 1px solid;
+background-color:#f0f5ff;}
+td.grid2{
+BORDER-bottom: #0066cc 1px solid;
+background-color:#ffffff;
+}
+-->
+</style>
+
 <body>
 <a name="listtop"></a>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
@@ -165,33 +193,27 @@
     </td>
   </tr>
 
-  <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
-  <tr><td colspan="2" align="right" class="b1">
+  <tr><td colspan="2" align="right">
   <?php
   	display_navigation_bar($brdarr, $brdnum, $start, $total, $order_articles );
   ?>
   </td></tr>
-  <tr> 
-    <td colspan="2" align="center">
+</table>
+
     	<?php
 		display_g_articles($brdarr,$articles,$start,$order=FALSE);
-	?>	
-    </td>
-  </tr>
-  <tr><td colspan="2" align="right" class="b1">
+	?>
+
+
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr><td colspan="2" align="right">
   <?php
   	display_navigation_bar($brdarr, $brdnum, $start, $total, $order_articles);
   ?>
   </td></tr>
-  <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
 
   <tr> 
     <td colspan="2" align="center" class="b1">
-    	[<a href="#listtop">返回顶部</a>]
     	[<a href="javascript:location=location">刷新</a>]
     </td>
   </tr>
