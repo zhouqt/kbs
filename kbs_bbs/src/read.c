@@ -226,7 +226,7 @@ static int search_author(struct keeploc *locmem, int offset, char *powner)
     char currauth[STRLEN];
 
     strncpy(currauth, powner, STRLEN);
-    snprintf(pmt, STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ? "往後来" : "往先前", currauth);
+    snprintf(pmt, STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ? "往后来" : "往先前", currauth);
     move(t_lines - 1, 0);
     clrtoeol();
     getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, NULL, true);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
@@ -1099,7 +1099,7 @@ static int search_post(struct keeploc *locmem, int offset)
     char ans[STRLEN], pmt[STRLEN];
 
     strncpy(ans, query, STRLEN);
-    snprintf(pmt, STRLEN, "搜寻%s的文章 [%s]: ", offset > 0 ? "往後来" : "往先前", ans);
+    snprintf(pmt, STRLEN, "搜寻%s的文章 [%s]: ", offset > 0 ? "往后来" : "往先前", ans);
     move(t_lines - 1, 0);
     clrtoeol();
     getdata(t_lines - 1, 0, pmt, ans, 50, DOECHO, NULL, true);
