@@ -2947,16 +2947,15 @@ unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsign
 	found=-1;
 	while (low <= high) {
 		mid = (high + low) / 2;
-		comp = (key) - (start[mid].id);
-		if (comp == 0) {
+		if (mid>=total)
+			break;
+		if (key == start[mid].id) {
 			found=mid;
 			break;
-		} else if (comp < 0)
+		} else if (key < start[mid].id)
 			high = mid - 1;
 		else
 			low = mid + 1;
-		if (high<low)
-			break;
 	}
 	return found;
 }
@@ -3014,7 +3013,7 @@ int www_generateOriginIndex(char* board)
     setbdir(DIR_MODE_NORMAL, olddirect, board);
     setbdir(DIR_MODE_WEB_THREAD, currdirect, board);
 	setbdir(DIR_MODE_ZHIDING, dingdir, board);
-    if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
+    if ((fd = open(currdirect, O_WRONLY | O_CREAT | O_TRUNC, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
         return -1;      /* 创建文件发生错误*/
     }
@@ -3036,7 +3035,6 @@ int www_generateOriginIndex(char* board)
         close(fd);
         return -3;
     }
-    fstat(fd2, &buf);
     ldata2.l_type = F_RDLCK;
     ldata2.l_whence = 0;
     ldata2.l_len = 0;
@@ -3049,6 +3047,16 @@ int www_generateOriginIndex(char* board)
         close(fd2);
         return -4;      /* lock error*/
     }
+    if (fstat(fd2, &buf)==-1) {
+        ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -5;
+	}
+	
     total = buf.st_size /sizeof(fileheader);
 
     if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
@@ -3109,7 +3117,6 @@ int www_generateOriginIndex(char* board)
 
 
     ptr1 = (struct fileheader *) ptr;
-
 	for (i=total-1;i>=0;i--) {
 		temp=foundInWWWThreadList(ptr1[i].groupid,tail);
 		if (temp==NULL)	{
@@ -3125,8 +3132,6 @@ int www_generateOriginIndex(char* board)
 			temp->content.flags=0;
 			temp->content.unused=0;
 			tail=temp;
-			if(count>=50000) 
-				break;
 		} else {
 			if (temp->content.lastreply.groupid==temp->content.lastreply.id) {
 				temp->content.lastreply=ptr1[i];
@@ -3136,19 +3141,16 @@ int www_generateOriginIndex(char* board)
 		}
 	}
 
-	count=0;
 	while (tail!=NULL) {
 		temp=tail->previous;
 		write(fd,&(tail->content),size);
 		free(tail);
 		tail=temp;
-		count++;
 	}
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
     close(fd2);
-    ftruncate(fd, count * size);
 
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
