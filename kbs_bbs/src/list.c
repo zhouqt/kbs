@@ -394,6 +394,18 @@ int allnum, pagenum;
         msgflag = false;
     }
     switch (ch) {
+#ifdef NINE_BUILD
+    case 'f':
+    case 'F':
+       buf[0] = '\0';
+       getdata( BBS_PAGESIZE+3, 0, "±ä»»êÇ³Æ: ",buf,NAMELEN,DOECHO,NULL,false);
+       if(buf[0]!='\0')
+       {	       
+	    strncpy(uinfo.username,buf,NAMELEN);
+	    UPDATE_UTMP_STR(username,uinfo);
+       }	    
+    break;	    
+#endif
     case 'k':
     case 'K':
         if (!HAS_PERM(currentuser, PERM_SYSOP) && strcmp(currentuser->userid, user_record[allnum]->userid))
@@ -444,8 +456,6 @@ int allnum, pagenum;
             return 1;
         m_send(user_record[allnum]->userid);
         break;
-    case 'f':
-    case 'F':
 #ifdef NINE_BUILD
     case 'c':
     case 'C':

@@ -3295,13 +3295,29 @@ int Goodbye()
         unlink(fname);
         sethomefile(fname, currentuser->userid, "msgfile");
         if (DEFINE(currentuser, DEF_MAILMSG /*离站时寄回所有信息 */ ) && dashf(fname)) {
+#ifdef NINE_BUILD
+	  time_t now, timeout;	
+	  char ans[3];
+	  timeout = time(0) + 60;
+	  do
+          {
+              move(t_lines-1,0);
+	      clrtoeol();
+	      getdata( t_lines-1, 0, "是否将此次所收到的所有讯息存档 (Y/N)? ", ans,2,DOECHO,NULL,true);
+	      if((toupper(ans[0])=='Y')||(toupper(ans[0])=='N')) break;
+          } while(time(0) < timeout);
+ 	  if (toupper(ans[0])=='Y') {	 
+#endif		
             char title[STRLEN];
             time_t now;
 
             now = time(0);
             sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
             mail_file(currentuser->userid, fname, currentuser->userid, title, 1);
-        } else
+#ifdef NINE_BUILD
+	  }   
+#endif
+	} else
             unlink(fname);
         fp = fopen("friendbook", "r");  /*搜索系统 寻人名单 */
         while (fp != NULL && fgets(buf, sizeof(buf), fp) != NULL) {
