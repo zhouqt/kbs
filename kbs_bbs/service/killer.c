@@ -59,7 +59,7 @@ void load_msgs()
         while(!feof(fp)) {
             if(fgets(buf, 79, fp)==NULL) break;
             if(buf[0]) {
-                if(!strcmp(buf, "你被踢了")) kicked=1;
+                if(!strncmp(buf, "你被踢了", 8)) kicked=1;
                 if(msgst==200) {
                     msgst--;
                     for(i=0;i<msgst;i++)
