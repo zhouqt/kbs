@@ -23,14 +23,14 @@ function pcmain_blog_new_user()
 	global $pcconfig,$link;
 	$newUsers = getNewUsers($link,_PCMAIN_USERS_NUM_);
 ?>
-
+<ul>
 <?php
 	foreach($newUsers as $newUser)
 	{
 		echo "<li><a href=\"index.php?id=".$newUser[username]."\"><span title=\"".html_format($newUser[description])."\">".html_format($newUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$newUser[username]."\"><font class=\"low\">".$newUser[username]."</font></a></li>";	
 	}
 ?>				
-
+</ul>
 <?php
 }
 
@@ -40,14 +40,14 @@ function pcmain_blog_top_ten()
 	$mostVstUsers = getHotUsersByPeriod($link,'day',_PCMAIN_USERS_NUM_); //每日热门
 	//$mostVstUsers = getMostVstUsers($link,_PCMAIN_USERS_NUM_);
 ?>
-		
+<ul>
 <?php
 	foreach($mostVstUsers as $mostVstUser)
 	{
 		echo "<li><a href=\"index.php?id=".$mostVstUser[username]."\"><span title=\"".html_format($mostVstUser[description])."\">".html_format($mostVstUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$mostVstUser[username]."\"><font class=\"low\">".$mostVstUser[username]."</font></a></li>";	
 	}
 ?>				
-		
+</ul>
 <?php
 }
 
@@ -56,14 +56,14 @@ function pcmain_blog_last_update()
 	global $pcconfig,$link;
 	$lastUpdates = getLastUpdates($link,_PCMAIN_USERS_NUM_);
 ?>
-				
+<ul>
 <?php
 	foreach($lastUpdates as $lastUpdate)
 	{
 		echo "<li><a href=\"index.php?id=".$lastUpdate[username]."\"><span title=\"".html_format($lastUpdate[description])."\">".html_format($lastUpdate[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$lastUpdate[username]."\"><font class=\"low\">".$lastUpdate[username]."</font></a></li>";	
 	}
-?>				
-				
+?>
+</ul>
 <?php
 }
 
@@ -74,13 +74,13 @@ function pcmain_annouce()
 ?>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
 	<tr><td class="channelback"><font class="channel">水木动态</font></td></tr>
-	<tr><td align="left" valign="top" class="td">
+	<tr><td align="left" valign="top" class="td"><ul>
 <?php
 	foreach($anns as $ann)
 		echo "<li><a href=\"/pc/pccon.php?id=".$ann[0]."&nid=".$ann[nid]."&s=all\">".html_format($ann[subject])."</a></li>";
 ?>	
 	<li><a href="/pc/index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">&gt;&gt; 更多</a></li>
-	</td></tr>
+	</ul></td></tr>
 </table>
 <?php	
 }
@@ -121,12 +121,12 @@ function pcmain_recommend_blogger()
 	</table>
 	</td></tr>
 	<tr>
-	<td align="left" valign="top" class="td">
+	<td align="left" valign="top" class="td"><ul>
 <?php
 	foreach($nodes as $node)
 		echo "<li><a href=\"pccon.php?id=".$pc[uid]."&nid=".$node[nid]."&s=all\">".html_format($node[subject])."</a></li>";
 ?>
-	</td>
+	</ul></td>
 	</tr>
 </table>
 <?php
@@ -180,7 +180,7 @@ function  pcmain_blog_most_trackback()
 	$num = count($nodes);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
-<tr><td style="line-height:16px " align="left" width="50%">
+<tr><td style="line-height:16px " align="left" width="50%"><ul>
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
@@ -198,7 +198,7 @@ function  pcmain_blog_most_trackback()
 		echo "</li>\n";	
 	}
 ?>				
-</td>
+</ul></td>
 </tr>
 </table>
 <?php		
@@ -211,7 +211,7 @@ function  pcmain_blog_most_view()
 	$num = count($nodes);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
-<tr><td style="line-height:16px " align="left" width="50%">
+<tr><td style="line-height:16px " align="left" width="50%"><ul>
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
@@ -229,7 +229,7 @@ function  pcmain_blog_most_view()
 		echo "</li>\n";	
 	}
 ?>
-</td></tr>				
+</ul></td></tr>
 </table>
 <?php		
 }
@@ -276,7 +276,7 @@ function  pcmain_blog_recommend_nodes()
 	$num = count($nodes);
 ?>
 <table cellspacing=0 cellpadding=3 width=98%>
-<tr><td style="line-height:16px " align="left" width="50%">
+<tr><td style="line-height:16px " align="left" width="50%"><ul>
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
@@ -294,7 +294,7 @@ function  pcmain_blog_recommend_nodes()
 		echo "</li>\n";	
 	}
 ?>
-</td>
+</ul></td>
 </tr>			
 </table>
 <?php		

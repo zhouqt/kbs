@@ -28,13 +28,15 @@ select {font-size: 12px;font-weight: lighter;}
 .td1 {border-bottom-width: 1px;border-bottom-style: dashed;border-bottom-color: #999999;text-align:left;line-height: 16px;background-color: #FCFCFC;word-wrap:break-word;word-break:break-all;}
 .td2 {border-bottom-width: 1px;border-bottom-style: dashed;border-bottom-color: #999999;text-align:left;background-color: #F0F0F0;line-height: 16px;word-wrap:break-word;word-break:break-all;}
 .low2 {color: #3399CC;}
-.navigationbar{color: #ffffff;background-color: #999999;text-decoration: none;line-height: 20px;}
+.navigationbar{color: #ffffff;background-color: #999999;text-decoration: none;line-height: 20px;text-align:center;}
 .navigationbar a {color: #ffffff;}
 .navigationbar a:visited {color: #f6f6f6;}
 .navigationbar a:hover {color: #ff0000;text-decoration: none;text-align: center;}
 .table2{border-width: 1px;border-color: #999999; border-top-style: dashed; border-left-style: dashed;border-right-style: none; border-bottom-style: none;}
 .td3{valign: top; border-width: 1px;border-color: #999999; border-right-style: dashed; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
 .td4{valign: top; border-width: 1px;border-color: #999999; border-right-style: none; border-bottom-style: dashed;border-top-style: none; border-left-style: none;}
+ul {margin: 0px 0px 0px 5px; padding: 0px;}
+li {padding: 0px; margin-left: 10px;}
 -->
 </style>
 </head>
