@@ -12,7 +12,7 @@ int main()
     struct fileheader DirInfo;
     bool attach=false;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("匆匆过客不能发表文章，请先登录");
     strsncpy(board, getparm("board"), 20);
@@ -27,29 +27,29 @@ int main()
         sprintf(title, "Re: %s", getparm("title"));
     if (file[0]&&(VALID_FILENAME(file) < 0))
         http_fatal("错误的文件名");
-    if (!haspostperm(currentuser, board))
+    if (!haspostperm(getCurrentUser(), board))
         http_fatal("错误的讨论区或者您无权在此讨论区发表文章");
     if (file[0] != '\0' && !can_reply_post(board, file))
         http_fatal("您不能回复本文");
     printf("<center>\n");
-    printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
+    printf("%s -- 发表文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, getCurrentUser()->userid);
     printf("<form name=\"postform\" method=\"post\" action=\"bbssnd?board=%s&refilename=%s\">\n<table border=\"1\">\n", encode_url(buf, board, sizeof(buf)), oldfilename);
     printf("<tr><td>");
     printf("<font color=\"green\">发文注意事项: <br>\n");
     printf("发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br></font></td></tr>\n");
     printf("<tr><td>\n");
-    printf("作者: %s<br>\n", currentuser->userid);
+    printf("作者: %s<br>\n", getCurrentUser()->userid);
     printf("使用标题: <input type=\"text\" name=\"title\" size=\"40\" maxlength=\"100\" value=\"%s\">\n", encode_html(buf, void1(title), sizeof(buf)));
     printf("讨论区: [%s]<br>\n", board);
     if (attach)
         printf("<br />\n附件：<input type=\"text\" name=\"attachname\" size=\"50\" value=\"\" disabled > <br />");
     printf("使用签名档 <select name=\"signature\">\n");
-    if (currentuser->signature == 0)
+    if (getCurrentUser()->signature == 0)
         printf("<option value=\"0\" selected>不使用签名档</option>\n");
     else
         printf("<option value=\"0\">不使用签名档</option>\n");
     for (i = 1; i < 6; i++) {
-        if (currentuser->signature == i)
+        if (getCurrentUser()->signature == i)
             printf("<option value=\"%d\" selected>第 %d 个</option>\n", i, i);
         else
             printf("<option value=\"%d\">第 %d 个</option>\n", i, i);

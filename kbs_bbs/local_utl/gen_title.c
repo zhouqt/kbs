@@ -40,6 +40,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
 //    gen_threadid = bh->nowid+1;
     if (gen_threadid<=0) gen_threadid=1;
     if ((fd2 = open(olddirect, O_RDWR, 0664)) == -1) {
+	perror(olddirect);
         return 0;
     }
 
@@ -111,6 +112,11 @@ int generate_board_title(struct boardheader *bh,void* arg)
     fclose(fp);
 #endif
     memcpy(&btmp,getbcache(bh->filename),sizeof(btmp));
+{
+    struct BoardStatus* bs;
+    bs=getbstatus(getbnum(bh->filename));
+    bs->nowid=gen_threadid + 1;
+}
 //    btmp.nowid = gen_threadid + 1;
     set_board(getbnum(bh->filename), &btmp,NULL);
     return 0;

@@ -159,6 +159,8 @@ static struct termios save_tty;
 int unget_flag; 
 char unget_buf;  /* providing capability to ungetch 1 char */
 
+struct user_info uinfo;
+
 /* EDITING */
 unsigned char code_first, code_second; /* input data */
 char chinese; /* if the input data is a chinese char */
@@ -1409,7 +1411,7 @@ void send_mail()
 		}
 
 	} else {
-		if (!bbs_sendmail(s, mail_title, mail_addr, 0, 0, 0)){
+		if (!bbs_sendmail(s, mail_title, mail_addr, 0, 0, 0, getSession())){
 			mail_sent=1;
 		} else {
 			mail_sent=-1;
@@ -3479,7 +3481,7 @@ void _mconf()
 	switch (mail_step) {
 		case ML_ADDR: 
 			 if (!strchr(mail_addr, '@')) {
-			    if (HAS_PERM(currentuser,PERM_DENYMAIL)) {
+			    if (HAS_PERM(getCurrentUser(),PERM_DENYMAIL)) {
 					strcpy(message, "\033[31m你无权给本站用户寄信.\033[0m");
 					draw_sbar();
 					break;
@@ -3860,7 +3862,7 @@ int editor_main()
 
 	oldmode=uinfo.mode;
 
-    strncpy(user_id, currentuser->userid, 20); 
+    strncpy(user_id, getCurrentUser()->userid, 20); 
 
 	modify_user_mode(EDITOR);
 

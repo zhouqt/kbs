@@ -334,7 +334,7 @@ int exec_mbem(char *s)
     char buf[1024];   
     int oldmode;
     
-    if (HAS_PERM(currentuser,PERM_DENYRELAX)) {
+    if (HAS_PERM(getCurrentUser(),PERM_DENYRELAX)) {
 	clear();
         move(4,0);
 	prints("你被封禁了休闲娱乐权限或者自己戒了休闲娱乐功能！");
@@ -409,10 +409,10 @@ static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
 
     int n;
 
-/*    if(!DEFINE(currentuser,DEF_NORMALSCR))
+/*    if(!DEFINE(getCurrentUser(),DEF_NORMALSCR))
  */
     clear();
-    help = (currentuser->flags & CURSOR_FLAG);
+    help = (getCurrentUser()->flags & CURSOR_FLAG);
     line = 3;
     col = 0;
     num = 0;
@@ -432,7 +432,7 @@ static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
                 docmdtitle(sysconf_relocate(pm.desc), cmdprompt);
 		update_endline();
             } else if (strcmp(sysconf_relocate(pm.name), "screen") == 0) {
-                if (DEFINE(currentuser, DEF_SHOWSCREEN)) {
+                if (DEFINE(getCurrentUser(), DEF_SHOWSCREEN)) {
                     if (help && (str = sysconf_str(sysconf_relocate(pm.desc))) != NULL) {
                         move(menupos[n].line, menupos[n].col);
                         decodestr(str);
@@ -446,7 +446,7 @@ static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
             }
             break;
         default:
-            if (menupos[n].line >= 0 && HAS_PERM(currentuser, pm.level)) {
+            if (menupos[n].line >= 0 && HAS_PERM(getCurrentUser(), pm.level)) {
                 if (menupos[n].line == 0) {
                     menupos[n].line = line;
                     menupos[n].col = col;
@@ -535,12 +535,12 @@ char *menu_name;
         int (*fptr) ();
 
         printacbar();
-        while (pm[now].level < 0 || !HAS_PERM(currentuser, pm[now].level)) {
+        while (pm[now].level < 0 || !HAS_PERM(getCurrentUser(), pm[now].level)) {
             now++;
             if (now >= size)
                 now = 0;
         }
-        if (currentuser->flags & CURSOR_FLAG) {
+        if (getCurrentUser()->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
             prints("◆");
         }
@@ -551,7 +551,7 @@ char *menu_name;
         prints("]");
         clrtoeol();
         cmd = igetkey();
-        if (currentuser->flags & CURSOR_FLAG) {
+        if (getCurrentUser()->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
             prints("  ");
         }
@@ -577,7 +577,7 @@ char *menu_name;
             break;
         case KEY_RIGHT:
             for (i = 0; i < size; i++) {
-                if (menupos[base + i].line == menupos[base + now].line && pm[i].level >= 0 && menupos[base + i].col > menupos[base + now].col && HAS_PERM(currentuser, pm[i].level))
+                if (menupos[base + i].line == menupos[base + now].line && pm[i].level >= 0 && menupos[base + i].col > menupos[base + now].col && HAS_PERM(getCurrentUser(), pm[i].level))
                     break;
             }
             if (i < size) {
@@ -610,7 +610,7 @@ char *menu_name;
             break;
         case KEY_LEFT:
             for (i = 0; i < size; i++) {
-                if (menupos[base + i].line == menupos[base + now].line && pm[i].level >= 0 && menupos[base + i].col < menupos[base + now].col && HAS_PERM(currentuser, pm[i].level))
+                if (menupos[base + i].line == menupos[base + now].line && pm[i].level >= 0 && menupos[base + i].col < menupos[base + now].col && HAS_PERM(getCurrentUser(), pm[i].level))
                     break;
                 if (menupos[base + i].fptr == Goodbye)
                     break;
@@ -625,7 +625,7 @@ char *menu_name;
             break;
         case KEY_UP:
             now--;
-            while (pm[now].level < 0 || !HAS_PERM(currentuser, pm[now].level)) {
+            while (pm[now].level < 0 || !HAS_PERM(getCurrentUser(), pm[now].level)) {
                 if (now > 0)
                     now--;
                 else
@@ -633,7 +633,7 @@ char *menu_name;
             }
             break;
         case '~':
-            if (!HAS_PERM(currentuser, PERM_SYSOP)) {
+            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
                 break;
             }
             newbbslog(BBSLOG_USIES, "rebuild sysconf.img");
@@ -652,7 +652,7 @@ char *menu_name;
             if (cmd >= 'a' && cmd <= 'z')
                 cmd = cmd - 'a' + 'A';
             for (i = 0; i < size; i++) {
-                if (menupos[base + i].line > 0 && cmd == *sysconf_relocate(pm[i].name) && HAS_PERM(currentuser, pm[i].level)) {
+                if (menupos[base + i].line > 0 && cmd == *sysconf_relocate(pm[i].name) && HAS_PERM(getCurrentUser(), pm[i].level)) {
                     now = i;
                     break;
                 }

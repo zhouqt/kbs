@@ -82,10 +82,10 @@ char buf[256];
     };
 	struct userdata ud;
 
-    if (currentuser) {
-        douser = *currentuser;
+    if (getCurrentUser()) {
+        douser = *getCurrentUser();
 //        memcpy(&ud,&curruserdata,sizeof(curruserdata));
-		memcpy(&ud, &(currentmemo->ud), sizeof(ud) );
+		memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud) );
     }
     else {
         bzero(&douser, sizeof(struct userec));
@@ -119,10 +119,10 @@ char buf[256];
 
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
 #ifdef _DETAIL_UEXP_
-    tmpnum = countexp(currentuser);
+    tmpnum = countexp(getCurrentUser());
     sprintf(exp, "%d", tmpnum);
     strcpy(ccexp, cexp(tmpnum));
-    tmpnum = countperf(currentuser);
+    tmpnum = countperf(getCurrentUser());
     sprintf(perf, "%d", tmpnum);
     strcpy(ccperf, cperf(tmpnum));
 
@@ -135,7 +135,7 @@ char buf[256];
 
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
 #ifndef _DETAIL_UINFO_
-    if (uinfo.mode == RMAIL && (!HAS_PERM(currentuser, PERM_ADMINMENU))) {
+    if (uinfo.mode == RMAIL && (!HAS_PERM(getCurrentUser(), PERM_ADMINMENU))) {
         strcpy(numlogins, "$log");
         strcpy(numposts, "$pst");
     } else

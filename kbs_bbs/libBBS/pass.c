@@ -96,13 +96,14 @@ int checkpasswd2(const char *passwd, const struct userec *user)
 
 int checkpasswd(const char *passwd, const char *test)
 {
-    char *crypt1(char *buf, char *salt);
+    char *crypt1(char *buf, char* outputbuff, char *salt);
 
-    static char pwbuf[14];
+    char pwbuf[14];
+    char buff[20];
     char *pw;
 
 /*    return 1; */
     strncpy(pwbuf, test, 14);
-    pw = crypt1(pwbuf, (char *) passwd);
+    pw = crypt1(pwbuf, buff, (char *) passwd);
     return (!strcmp(pw, passwd));
 }

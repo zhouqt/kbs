@@ -368,19 +368,19 @@ static int help_key(struct _select_def *conf, int key)
 		return SHOW_REFRESH;
 	}
 	case 'a':
-		if( HAS_PERM(currentuser, PERM_SYSOP) ){
+		if( HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
 			if( add_help(*((int *)conf->arg), -1) < 0 )
 				return SHOW_REFRESH;
 			return SHOW_DIRCHANGE;
 		}
 	case 'e':
-		if( HAS_PERM(currentuser, PERM_SYSOP) ){
+		if( HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
 			if( add_help(*((int *)conf->arg), conf->pos - conf->page_pos) < 0 )
 				return SHOW_REFRESH;
 			return SHOW_DIRCHANGE;
 		}
 	case 'd':
-		if( HAS_PERM(currentuser, PERM_SYSOP) ){
+		if( HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
 			if( del_help(s_help[conf->pos-conf->page_pos].id) < 0 )
 				return SHOW_REFRESH;
 			return SHOW_DIRCHANGE;
@@ -442,7 +442,7 @@ int newhelp_loop(int mode){
 	if( group_conf.item_count<=0 ){
 		free(pts);
 		free(s_help);
-		if( HAS_PERM(currentuser, PERM_SYSOP) ){
+		if( HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
 			add_help(mode, -1);
 		}else{
 			clear();

@@ -67,13 +67,13 @@ int main()
     char buf[256], *ptr;
     int i;
 
-    init_all();
+    initwww_all();
     printf("<style type=\"text/css\">A {color: #000080}</style><br>\n");
     printf("<script src=\"/func.js\"></script>" "<body class=\"dark\" leftmargin=\"5\" topmargin=\"1\" MARGINHEIGHT=\"1\" MARGINWIDTH=\"1\">");
     printf("<table  cellSpacing=0 cellPadding=0 width=\"100%\" border=0><tr><td>");
     printf("<table width=\"100%%\" border=\"0\" cellspacing=\"0\" cellpadding=\"0\">\n");
     printf("<tr><td>");
-    if (currentuser == NULL)
+    if (getCurrentUser() == NULL)
         http_fatal("hehe:%d", loginok);
     printf("用户: <a href=\"/bbsqry.php?userid=%s\" target=\"f3\">%s</a><br>", getcurruserid(), getcurruserid());
     uleveltochar(buf, getcurrusr());
@@ -147,14 +147,14 @@ int main()
     printf("<img src=\"/images/link.gif\"> <a href=\"bbsusr\" target=\"f3\">环顾四方</a><br>\n");
     printf("<img src=\"/images/link.gif\"> <a href=\"/bbsqry.php\" target=\"f3\">查询网友</a><br>\n");
     printf("<img src=\"/images/link.gif\"> <a href=\"/bbssendsms.php\" target=\"f3\">发送短信</a><br>\n");
-    if (loginok && currentuser->userlevel & PERM_PAGE) {
+    if (loginok && getCurrentUser()->userlevel & PERM_PAGE) {
         printf("<img src=\"/images/link.gif\"> <a href=\"/bbssendmsg.php\" target=\"f3\">发送讯息</a><br>\n");
         printf("<img src=\"/images/link.gif\"> <a href=\"/bbsmsg.php\" target=\"f3\">查看所有讯息</a><br>\n");
     }
     printf("</div>\n");
     printmenuend();
     ptr = "";
-    if (loginok && currentuser->userlevel & PERM_CLOAK)
+    if (loginok && getCurrentUser()->userlevel & PERM_CLOAK)
         ptr = "<img src=\"/images/link.gif\"> <a target=\"f3\" onclick=\"return confirm('确实切换隐身状态吗?')\" href=\"/bbscloak.php\">切换隐身</a><br>\n";
     if (loginok) {
         printdiv(4, "个人工具箱", "/images/folder.gif");
@@ -214,12 +214,12 @@ int main()
     /*if(!loginok) 
        printf("<img src=\"/images/link0.gif\"><a href=\"javascript:void open('bbsreg', '', 'width=620,height=550')\">新用户注册</a><br>\n"); */
     if (loginok) {
-        if (HAS_PERM(currentuser, PERM_LOGINOK) && !HAS_PERM(currentuser, PERM_POST))
+        if (HAS_PERM(getCurrentUser(), PERM_LOGINOK) && !HAS_PERM(getCurrentUser(), PERM_POST))
             printmenu("<script>alert('您处于戒网中, 或者您被封禁了全站发表文章的权限, 请参看Announce版公告, 期满后在sysop版申请解封. 如有异议, 可在Complain版提出申诉.')</script>\n");
         if (count_new_mails() > 0)
             printf("<script>alert('您有新信件!')</script>\n");
     }
-    /*if(loginok && !(currentuser->userlevel & PERM_LOGINOK) && !has_fill_form()) 
+    /*if(loginok && !(getCurrentUser()->userlevel & PERM_LOGINOK) && !has_fill_form()) 
        printf("<a target=\"f3\" href=\"bbsform\">填写注册单</a><br>\n"); */
     if (loginok && can_enter_chatroom())
         printmenu("<br><a href=\"javascript:openchat()\">[" CHAT_SERVER "]</a>");
@@ -229,7 +229,7 @@ int main()
     printf("<tr><td>");
     printf("<TABLE cellSpacing=0 cellPadding=0 width=\"90%\" border=0>");
     printf("<tr><td>\n");
-    if (currentuser->userlevel&PERM_SYSOP)
+    if (getCurrentUser()->userlevel&PERM_SYSOP)
         printf("<a href=\"/bbsmboard.php\" target=\"f3\">开设版面</a><br></p>");
     printf("</tr></td></table>\n");
     printf("</td></tr>");
@@ -252,9 +252,9 @@ int count_new_mails()
     char buf[1024];
     FILE *fp;
 
-    if (!loginok && currentuser->userid[0] == 0)
+    if (!loginok && getCurrentUser()->userid[0] == 0)
         return 0;
-    sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(currentuser->userid[0]), currentuser->userid);
+    sprintf(buf, "%s/mail/%c/%s/.DIR", BBSHOME, toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
     fp = fopen(buf, "r");
     if (fp == 0)
         return unread;

@@ -569,21 +569,22 @@ bigger mailbox. --stephen 2001.10.31*/
 #endif
 
 
-extern const char *permstrings[];
-extern const char    *groups[];
-extern const char    *explain[];
-extern const char *user_definestr[];
-extern const char *user_definestr1[];
+extern const char * const permstrings[];
+extern const char    * const groups[];
+extern const char    * const explain[];
+extern const char * const user_definestr[];
+extern const char * const user_definestr1[];
 #ifdef NEW_HELP
-extern const char *helpmodestr[];
+extern const char * const helpmodestr[];
 #endif
 
 #ifdef SMS_SUPPORT
 #define NUMSMSDEF 1
 #define SMSDEF_AUTOTOMOBILE      000001
-extern const char *user_smsdefstr[];
+extern const char * const user_smsdefstr[];
 #endif
-extern const char *mailbox_prop_str[];
+extern const char * const mailbox_prop_str[];
+extern const char secname[SECNUM][2][20];
 
 /**
  * 看在线用户时的按键处理字符。

@@ -172,7 +172,7 @@ AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
 		src/default.h:$SITEDIR/default.h
 		)
 
-cd libBBS; for i in *.c ; do 
+cd libBBS; for i in *.[[ch]] ; do 
 AC_CONFIG_LINKS(src/$i:libBBS/$i)
 done
 cd ..

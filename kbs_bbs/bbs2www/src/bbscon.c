@@ -18,12 +18,12 @@ int main()
     int fd;
     int num;
 
-    init_all();
+    initwww_all();
     strsncpy(board, getparm("board"), 32);
     rid = atoi(getparm("id"));
     printf("<center>\n");
     bp = getbcache(board);
-    if (!check_read_perm(currentuser, bp))
+    if (!check_read_perm(getCurrentUser(), bp))
         http_fatal("错误的讨论区");
     if (rid > bp->nowid)
         http_fatal("本文不存在");
@@ -74,11 +74,11 @@ int main()
     }
     fclose(fp);
 
-    if ((loginok) && strcmp(currentuser->userid, "guest")) {
+    if ((loginok) && strcmp(getCurrentUser()->userid, "guest")) {
 #ifdef HAVE_BRC_CONTROL
-        brc_initial(currentuser->userid, board);
+        brc_initial(getCurrentUser()->userid, board);
         brc_add_read(records[1].id);
-        brc_update(currentuser->userid);
+        brc_update(getCurrentUser()->userid);
 #endif
     }
     encode_url(buf2, board, sizeof(buf2));

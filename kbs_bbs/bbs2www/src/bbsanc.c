@@ -22,7 +22,7 @@ void ann_show_file(char *path)
             snprintf(pathbuf, sizeof(pathbuf), "0Announce%s", path);
         else
             snprintf(pathbuf, sizeof(pathbuf), "0Announce/%s", path);
-        if (ann_traverse_check(pathbuf, currentuser) < 0)
+        if (ann_traverse_check(pathbuf, getCurrentUser()) < 0)
             http_fatal("此目录不存在");
     } else
         http_fatal("错误的文件名");
@@ -50,7 +50,7 @@ int main()
 {
     char path[512];
 
-    init_all();
+    initwww_all();
     strsncpy(path, getparm("path"), 511);
     ann_show_file(path);
     http_quit();

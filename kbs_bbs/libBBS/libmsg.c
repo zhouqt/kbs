@@ -7,8 +7,6 @@
 #include <mysql.h>
 #endif
 #define MAXMESSAGE 5
-char MsgDesUid[20];
-char msgerr[255];
 int getuinfopid(void);
 /*
 int write_peer(bbsmsg_t * msgbuf)
@@ -21,7 +19,6 @@ int write_peer(bbsmsg_t * msgbuf)
 }
 */
 
-struct sms_shm_head* head;
 int canmsg(struct userec *fromuser, struct user_info *uin)
 {
     if ((uin->pager & ALLMSG_PAGER) || HAS_PERM(fromuser, PERM_SYSOP))
@@ -178,21 +175,21 @@ int store_msgfile(char *uident, char *msgbuf)
     return 0;
 }
 
-int msg_can_sendmsg(char *userid, int utmppid)
+int msg_can_sendmsg(struct userec* user,char *userid, int utmppid)
 {
     struct userec *x;
     struct user_info *uin;
 
     if (getuser(userid, &x) == 0)
         return 0;
-    if (strcmp(x->userid, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+    if (strcmp(x->userid, "guest") && !HAS_PERM(user, PERM_PAGE))
         return 0;
     uin = t_search(userid, utmppid);
     if (uin == NULL)
         return 0;
     if (strcasecmp(uin->userid, userid))
         return 0;
-    if (!canmsg(currentuser, uin))
+    if (!canmsg(user, uin))
         return 0;
 
     return 1;
@@ -209,7 +206,7 @@ MYSQL * my_connect_mysql(MYSQL *s){
 			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0);
 }
 
-int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
+int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed, session_t* session)
 {
 	MYSQL s;
 	char * newmsgbuf;
@@ -276,7 +273,7 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 }
 #endif
 
-int save_msgtext(char *uident, struct msghead * head,const char *msgbuf)
+int save_msgtext(char *uident, struct msghead * head,const char *msgbuf,session_t * session)
 {
     char fname[STRLEN], fname2[STRLEN];
     int fd, fd2, i, count, size;
@@ -533,19 +530,19 @@ int load_msgtext(char *uident, struct msghead *head, char *msgbuf)
     return 0;
 }
 
-int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
+int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t* session)
 {
     char uident[STRLEN];
     struct user_info *uin;
     struct msghead head, head2;
 
-    *msgerr = 0;
+    session->msgerr[0] = 0;
     uin = uentp;
     strcpy(uident, uin->userid);
-    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid, currentuser->userid) && mode != 4)
+    if (!HAS_PERM(session->currentuser, PERM_SEECLOAK) && uin->invisible && strcmp(uin->userid, session->currentuser->userid) && mode != 4)
         return -2;
     if ((mode != 3) && (LOCKSCREEN == uin->mode)) {     /* Leeward 98.02.28 */
-        strcpy(msgerr, "对方已经锁定屏幕，请稍候再发或给他(她)写信...");
+        strcpy(session->msgerr, "对方已经锁定屏幕，请稍候再发或给他(她)写信...");
         return -1;
     }
 //    if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
@@ -553,13 +550,13 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
 //	strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
 //       return -1;
 //    }
-    if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
-        strcpy(msgerr, "对方拒绝接受你的讯息...");
+    if ((mode != 3) && (false == canIsend2(session->currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
+        strcpy(session->msgerr, "对方拒绝接受你的讯息...");
         return -1;
     }
     if (mode != 3 && uin->mode != WEBEXPLORE) {
         if (get_unreadcount(uident) > MAXMESSAGE) {
-            strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
+            strcpy(session->msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
             return -1;
         }
     }
@@ -569,7 +566,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     head.time = time(0);
     head.sent = 0;
     head.mode = mode;
-    strncpy(head.id, currentuser->userid, IDLEN+2);
+    strncpy(head.id, session->currentuser->userid, IDLEN+2);
     head.frompid = getuinfopid();
     head.topid = uin->pid;
     memcpy(&head2, &head, sizeof(struct msghead));
@@ -577,51 +574,51 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     strncpy(head2.id, uident, IDLEN+2);
     /*
     if (uin->mode == WEBEXPLORE) {
-        if (send_webmsg(get_utmpent_num(uin), uident, utmpent, 
-						currentuser->userid, head.time, msgstr) < 0) {
+        if (send_webmsg(get_utmpent_num(uin), uident, getSession()->utmpent, 
+						session->getCurrentUser()->userid, head.time, msgstr) < 0) {
             strcpy(msgerr, "无法发送Web消息...");
             return -1;
         }
         if (save_msgtext(uident, &head, msgstr) < 0)
             return -2;
         //save_smsmsg(uident, &head, msgstr, 1);
-        if (strcmp(currentuser->userid, uident)&&mode!=3) {
-            if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
+        if (strcmp(session->getCurrentUser()->userid, uident)&&mode!=3) {
+            if (save_msgtext(session->getCurrentUser()->userid, &head2, msgstr) < 0)
                 return -2;
-            //save_smsmsg(currentuser->userid, &head2, msgstr, 1) ;
+            //save_smsmsg(session->getCurrentUser()->userid, &head2, msgstr, 1) ;
         }
         return 1;
     }
 */
-    uin = t_search(MsgDesUid, uentp->pid);
+    uin = t_search(session->MsgDesUid, uentp->pid);
     if ((uin == NULL) || (uin->active == 0) || (uin->pid == 0) || ((kill(uin->pid, 0) != 0) && (uentp->pid != 1))
-        || strncasecmp(MsgDesUid,uident,STRLEN)) {
+        || strncasecmp(session->MsgDesUid,uident,STRLEN)) {
         if (mode == 0)
             return -2;
-        strcpy(msgerr, "对方已经离线....");
+        strcpy(session->msgerr, "对方已经离线....");
         return -1;
     }
 
-    if (save_msgtext(uident, &head, msgstr) < 0)
+    if (save_msgtext(uident, &head, msgstr, session) < 0)
         return -2;
     //save_smsmsg(uident, &head, msgstr, 1) ;
-    if (strcmp(currentuser->userid, uident)&&mode!=3) {
-        if (save_msgtext(currentuser->userid, &head2, msgstr) < 0)
+    if (strcmp(session->currentuser->userid, uident)&&mode!=3) {
+        if (save_msgtext(session->currentuser->userid, &head2, msgstr, session) < 0)
             return -2;
-        //save_smsmsg(currentuser->userid, &head2, msgstr, 1) ;
+        //save_smsmsg(session->getCurrentUser()->userid, &head2, msgstr, 1) ;
     }
 	if( uin->mode == WWW ){
 		uin->mailcheck |= CHECK_MSG;
 		return 1;
 	}
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
-        strcpy(msgerr, "对方已经离线.....");
+        strcpy(session->msgerr, "对方已经离线.....");
         return -1;
     }
     return 1;
 }
 
-int translate_msg(char* src, struct msghead *head, char* dest)
+int translate_msg(char* src, struct msghead *head, char* dest,session_t* session)
 {
     char *time, attstr[STRLEN];
     int i,j=0,len,pos,ret=0;
@@ -632,8 +629,8 @@ int translate_msg(char* src, struct msghead *head, char* dest)
         case 2:
         case 4:
             if(!head->sent) {
-                sprintf(dest, "\033[44%sm\x1b[36m%-14.14s\033[33m(%-16.16s)\033[37m\033[K\033[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
-                sprintf(attstr, "\033[44%sm\033[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+                sprintf(dest, "\033[44%sm\x1b[36m%-14.14s\033[33m(%-16.16s)\033[37m\033[K\033[m\n", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(attstr, "\033[44%sm\033[37m", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
                 sprintf(dest, "\x1b[0;1;32m=>\033[37m%-12.12s\033[33m(%-16.16s)\033[36m\033[K\033[m\n", head->id, time);
@@ -641,29 +638,29 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             }
             break;
         case 3:
-            sprintf(dest, "\033[44%sm\x1b[33m站长于 %16.16s 时广播\033[37m\033[K\033[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time);
-            sprintf(attstr, "\033[44%sm\033[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+            sprintf(dest, "\033[44%sm\x1b[33m站长于 %16.16s 时广播\033[37m\033[K\033[m\n", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"", time);
+            sprintf(attstr, "\033[44%sm\033[37m", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"");
             break;
         case 1:
             if(!head->sent) {
-                sprintf(dest, "\033[44%sm\x1b[36m%-12.12s(%-16.16s) 邀请你\033[37m\033[K\033[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
-                sprintf(attstr, "\033[44%sm\033[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+                sprintf(dest, "\033[44%sm\x1b[36m%-12.12s(%-16.16s) 邀请你\033[37m\033[K\033[m\n", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(attstr, "\033[44%sm\033[37m", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
-                sprintf(dest, "\033[44%sm\x1b[37m你(%-16.16s) 邀请%-12.12s\033[36m\033[K\033[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", time, head->id);
-                sprintf(attstr, "\033[44%sm\033[36m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+                sprintf(dest, "\033[44%sm\x1b[37m你(%-16.16s) 邀请%-12.12s\033[36m\033[K\033[m\n", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"", time, head->id);
+                sprintf(attstr, "\033[44%sm\033[36m", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"");
             }
 //            space=33;
             break;
         case 5:
-            sprintf(dest, "\033[45%sm\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-16.16s\x1b[33m)\x1b[37m\033[K\033[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
-            sprintf(attstr, "\033[45%sm\033[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+            sprintf(dest, "\033[45%sm\x1b[36m%-14.14s\x1b[33m(\x1b[36m%-16.16s\x1b[33m)\x1b[37m\033[K\033[m\n", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+            sprintf(attstr, "\033[45%sm\033[37m", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"");
 //            space=29;
             break;
         case 6:
             if(!head->sent) {
-                sprintf(dest, "\033[44%sm\x1b[36m短信     %-14.14s\033[33m(%-16.16s)\033[37m\033[K\033[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
-                sprintf(attstr, "\033[44%sm\033[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
+                sprintf(dest, "\033[44%sm\x1b[36m短信     %-14.14s\033[33m(%-16.16s)\033[37m\033[K\033[m\n", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(attstr, "\033[44%sm\033[37m", DEFINE(session->currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
                 sprintf(dest, "\x1b[0;1;32m短信   =>\033[37m%-12.12s\033[33m(%-16.16s)\033[36m\033[K\033[m\n", head->id, time);
@@ -706,7 +703,7 @@ int translate_msg(char* src, struct msghead *head, char* dest)
     return ret+2;
 }
 
-void mail_msg(struct userec* user)
+void mail_msg(struct userec* user,session_t* session)
 {
     char fname[MAXPATH];
     char buf[MAX_MSG_SIZE],showmsg[MAX_MSG_SIZE*2];
@@ -724,7 +721,7 @@ void mail_msg(struct userec* user)
     for(i=0;i<count;i++) {
         load_msghead(0, user->userid, i, &head);
         load_msgtext(user->userid, &head, buf);
-        translate_msg(buf, &head, showmsg);
+        translate_msg(buf, &head, showmsg,session);
         fprintf(fn, "%s", showmsg);
     }
     fclose(fn);
@@ -738,28 +735,24 @@ void mail_msg(struct userec* user)
 
 #ifdef SMS_SUPPORT
 
-void * smsbuf=NULL;
-int smsresult=0;
-struct user_info * smsuin;
-
-int sms_init_memory()
+int sms_init_memory(session_t* session)
 {
     void * p;
     int iscreate;
-    if(smsbuf) return 0;
+    if(session->smsbuf) return 0;
 
     iscreate = 0;
     p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(struct sms_shm_head), &iscreate);
-    head = (struct sms_shm_head *) p;
-    smsbuf = p+sizeof(struct sms_shm_head);
+    session->head = (struct sms_shm_head *) p;
+    session->smsbuf = p+sizeof(struct sms_shm_head);
     return 0;
 }
 
-void sendtosms(void * n, int s)
+void sendtosms(void * n, int s, session_t* session)
 {
-    if(head->length+s>=SMS_SHM_SIZE) return;
-    memcpy(smsbuf+head->length, n, s);
-    head->length+=s;
+    if(session->head->length+s>=SMS_SHM_SIZE) return;
+    memcpy(session->smsbuf+session->head->length, n, s);
+    session->head->length+=s;
 }
 
 void SMS_request(int signo)
@@ -767,12 +760,12 @@ void SMS_request(int signo)
     char fn[80];
     struct stat st;
 //	gettmpfilename( fn, "sms.res");
-    sprintf(fn, "tmp/%d.res", smsuin->pid);
+    sprintf(fn, "tmp/%d.res", getSession()->smsuin->pid);
     if(stat(fn, &st)!=-1)
-        smsresult=1;
+        getSession()->smsresult=1;
 }
 
-int wait_for_result()
+int wait_for_result(session_t* session)
 {
     int count;
     char fn[80];
@@ -780,13 +773,13 @@ int wait_for_result()
     int i,j;
     signal(SIGUSR1, SMS_request);
 //	gettmpfilename( fn, "sms.res");
-    sprintf(fn, "tmp/%d.res", smsuin->pid);
+    sprintf(fn, "tmp/%d.res", session->smsuin->pid);
     unlink(fn);
-    smsresult = 0;
-    head->sem=0;
+    session->smsresult = 0;
+    session->head->sem=0;
 
     count=0;
-    while(!smsresult) {
+    while(!session->smsresult) {
 #ifdef BBSMAIN
         move(t_lines-1, 0);
         clrtoeol();
@@ -796,7 +789,7 @@ int wait_for_result()
 		{
     		struct stat st;
     		if(stat(fn, &st)!=-1 && st.st_size > 0){
-				smsresult = 1;
+				session->smsresult = 1;
 				break;
 			}
 		}
@@ -822,74 +815,74 @@ int wait_for_result()
     else return -j;
 }
 
-int DoReg(char * n)
+int DoReg(char * n, session_t* session)
 {
     int count=0;
     struct header h;
     struct RegMobileNoPacket h1;
     h.Type = CMD_REG;
-    long2byte(smsuin->pid, h.pid);
+    long2byte(session->smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
-    uid2smsid(smsuin,h1.cUserID);
-    while(head->sem) {
+    uid2smsid(session->smsuin,h1.cUserID);
+    while(session->head->sem) {
         sleep(1);
         count++;
         if(count>=5) return -1;
     }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    return wait_for_result();
+    session->head->sem=1;
+    session->head->total++;
+    sendtosms(&h, sizeof(h), session);
+    sendtosms(&h1, sizeof(h1), session);
+    return wait_for_result(session);
 }
 
-int DoUnReg(char * n)
+int DoUnReg(char * n, session_t* session)
 {
     int count=0;
     struct header h;
     struct UnRegPacket h1;
     h.Type = CMD_UNREG;
-    long2byte(smsuin->pid, h.pid);
+    long2byte(session->smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
-    uid2smsid(smsuin,h1.cUserID);
-    while(head->sem) {
+    uid2smsid(session->smsuin,h1.cUserID);
+    while(session->head->sem) {
         sleep(1);
         count++;
         if(count>=5) return -1;
     }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    return wait_for_result();
+    session->head->sem=1;
+    session->head->total++;
+    sendtosms(&h, sizeof(h), session);
+    sendtosms(&h1, sizeof(h1), session);
+    return wait_for_result(session);
 }
 
-int DoCheck(char * n, char * c)
+int DoCheck(char * n, char * c, session_t* session)
 {
     int count=0;
     struct header h;
     struct CheckMobileNoPacket h1;
     h.Type = CMD_CHECK;
-    long2byte(smsuin->pid, h.pid);
+    long2byte(session->smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     strcpy(h1.MobileNo, n);
     strcpy(h1.ValidateNo, c);
-    uid2smsid(smsuin,h1.cUserID);
-    while(head->sem) {
+    uid2smsid(session->smsuin,h1.cUserID);
+    while(session->head->sem) {
         sleep(1);
         count++;
         if(count>=5) return -1;
     }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    return wait_for_result();
+    session->head->sem=1;
+    session->head->total++;
+    sendtosms(&h, sizeof(h), session);
+    sendtosms(&h1, sizeof(h1), session);
+    return wait_for_result(session);
 }
 
-int DoSendSMS(char * n, char * d, char * c)
+int DoSendSMS(char * n, char * d, char * c, session_t* session)
 {
     int count=0;
     int ret;
@@ -897,54 +890,54 @@ int DoSendSMS(char * n, char * d, char * c)
     struct BBSSendSMS h1;
     int number;
     h.Type = CMD_BBSSEND;
-    long2byte(smsuin->pid, h.pid);
+    long2byte(session->smsuin->pid, h.pid);
     long2byte(sizeof(h1)+strlen(c)+1, h.BodyLength);
     long2byte(strlen(c)+1, h1.MsgTxtLen);
     strcpy(h1.SrcMobileNo, n);
     strcpy(h1.DstMobileNo, d);
-    uid2smsid(smsuin,h1.SrccUserID);
-    number=uid2smsnumber(smsuin);
+    uid2smsid(session->smsuin,h1.SrccUserID);
+    number=uid2smsnumber(session->smsuin);
     long2byte(number, h1.UserID);
-    while(head->sem) {
+    while(session->head->sem) {
         sleep(1);
         count++;
         if(count>=5) return -1;
     }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    sendtosms(c, strlen(c)+1);
-    ret= wait_for_result();
+    session->head->sem=1;
+    session->head->total++;
+    sendtosms(&h, sizeof(h), session);
+    sendtosms(&h1, sizeof(h1), session);
+    sendtosms(c, strlen(c)+1, session);
+    ret= wait_for_result(session);
     newbbslog(BBSLOG_SMS,"send %s for %s src %s ret %d",c,d,n,ret);
     return ret;
 }
 
-int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
+int DoReplyCheck(char * n, unsigned int sn, char isSucceed, session_t* session)
 {
     int count=0;
     struct header h;
     struct ReplyBindPacket h1;
     h.Type = CMD_REPLY;
-    long2byte(smsuin->pid, h.pid);
+    long2byte(session->smsuin->pid, h.pid);
     long2byte(sizeof(h1), h.BodyLength);
     long2byte(sn, h.SerialNo);
     strcpy(h1.MobileNo, n);
     h1.isSucceed = isSucceed;
-    while(head->sem) {
+    while(session->head->sem) {
         sleep(1);
         count++;
         if(count>=5) return -1;
     }
-    head->sem=1;
-    head->total++;
-    sendtosms(&h, sizeof(h));
-    sendtosms(&h1, sizeof(h1));
-    return wait_for_result();
+    session->head->sem=1;
+    session->head->total++;
+    sendtosms(&h, sizeof(h), session);
+    sendtosms(&h1, sizeof(h1), session);
+    return wait_for_result(session);
 }
 
 #if HAVE_MYSQL_SMTH == 1
-int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_time, int type, int level, char *msgtxt )
+int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_time, int type, int level, char *msgtxt , session_t* session)
 {
 
 	MYSQL s;
@@ -1024,7 +1017,7 @@ int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_ti
 	return i;
 }
 
-int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc)
+int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc, session_t* session)
 {
 
 	MYSQL s;
@@ -1123,25 +1116,24 @@ int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t sta
 	return i;
 }
 
-int chk_smsmsg(int force ){
+int chk_smsmsg(int force , session_t* session){
 
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char sql[100];
-	static int lastsmsstatus=0;
 
 	if( ! force )
-		return lastsmsstatus;
+		return session->lastsmsstatus;
 
-	lastsmsstatus=0;
+	session->lastsmsstatus=0;
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
 		return 0;
 	}
 
-	sprintf(sql, "SELECT * FROM smsmsg WHERE userid='%s' AND readed=0", currentuser->userid);
+	sprintf(sql, "SELECT * FROM smsmsg WHERE userid='%s' AND readed=0", session->currentuser->userid);
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 		mysql_close(&s);
 		return 0;
@@ -1150,16 +1142,16 @@ int chk_smsmsg(int force ){
 	row = mysql_fetch_row(res);
 
 	while(row != NULL){
-		lastsmsstatus++;
+		session->lastsmsstatus++;
 		row = mysql_fetch_row(res);
 	}
 	mysql_free_result(res);
 
 	mysql_close(&s);
-	return lastsmsstatus;
+	return session->lastsmsstatus;
 }
 
-int sign_smsmsg_read(int id ){
+int sign_smsmsg_read(int id , session_t* session){
 
 	MYSQL s;
 	char sql[100];
@@ -1180,7 +1172,7 @@ int sign_smsmsg_read(int id ){
 }
 #else
 
-int chk_smsmsg(int force ){
+int chk_smsmsg(int force, session_t* session ){
 
 		return 0;
 }
@@ -1262,7 +1254,7 @@ int count_sql_al( char *userid, char *dest, char *group, char *msgtxt)
 }
 
 
-char * get_al_mobile( char *userid, char *mobile)
+char * get_al_mobile( char *userid, char *mobile,session_t* session)
 {
 
 	MYSQL s;
@@ -1291,7 +1283,7 @@ char * get_al_mobile( char *userid, char *mobile)
 	}
 
 	mysql_escape_string(name1, userid, strlen(userid));
-	sprintf(sql,"SELECT mobile FROM addr WHERE userid=\"%s\" AND name=\"%s\"", currentuser->userid, name1 );
+	sprintf(sql,"SELECT mobile FROM addr WHERE userid=\"%s\" AND name=\"%s\"", session->currentuser->userid, name1 );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
@@ -1640,7 +1632,7 @@ static struct csv_list * read_csv_line(char *ptr, off_t size, off_t *dlength)
 #define CSV_HASH_EMAIL 9
 #define CSV_HASH_QQ 10
 #define CSV_HASH_MEMO 11
-int conv_csv_to_al(char *fname)
+int conv_csv_to_al(char *fname,session_t * session)
 {
 	FILE *fp;
 	char *ptr;
@@ -1753,11 +1745,11 @@ int conv_csv_to_al(char *fname)
 						break;
 					}
 				}
-				strncpy(al.userid, currentuser->userid, 12);
+				strncpy(al.userid, session->currentuser->userid, 12);
 				al.userid[12]=0;
 
 				if( al.name[0] ){
-					if(add_sql_al(currentuser->userid, &al, pmemo))
+					if(add_sql_al(session->currentuser->userid, &al, pmemo))
 						ret++;
 				}
 			}

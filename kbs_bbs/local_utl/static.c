@@ -35,8 +35,11 @@ int main(int argc,char* argv[])
     	int day_count[31]; /*每天统计*/
     	time_t counttime; /*上次统计时间*/
     } total_st,old_st;
-    chdir(BBSHOME);
-    resolve_boards();
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
 
     //读入原来的统计数据
     bzero(&total_st,sizeof(total_st));
@@ -190,7 +193,7 @@ int main(int argc,char* argv[])
 			total,count==0?0:total/count);
 		fclose(fp);
 	    } else {
-		 post_file(NULL, "", "0Announce/bbslists/countlogins", "BBSLists", "无法打开文件", 0, 1);
+		 post_file(NULL, "", "0Announce/bbslists/countlogins", "BBSLists", "无法打开文件", 0, 1, getSession());
 	    }
     }
     
@@ -239,9 +242,9 @@ int main(int argc,char* argv[])
 
     if (now_tm.tm_hour==23) {
     	sprintf(buf,"%d年%2d月%2d日人数统计",now_tm.tm_year+1900,now_tm.tm_mon+1,now_tm.tm_mday);
-    	post_file(NULL, "", "0Announce/bbslists/countlogins", "BBSLists", buf, 0, 1);
+    	post_file(NULL, "", "0Announce/bbslists/countlogins", "BBSLists", buf, 0, 1, getSession());
     	sprintf(buf,"%d年%2d月%2d日累计人数统计",now_tm.tm_year+1900,now_tm.tm_mon+1,now_tm.tm_mday);
-	post_file(NULL, "", "0Announce/bbslists/count", "BBSLists", buf, 0, 1);
+	post_file(NULL, "", "0Announce/bbslists/count", "BBSLists", buf, 0, 1, getSession());
     }
     return 0;
 }

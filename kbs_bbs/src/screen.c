@@ -45,7 +45,7 @@ static /*struct screenline old_line; */ char tmpbuffer[LINELEN*3];
 
 void setfcolor(int i,int j)
 {
-    if(!DEFINE(currentuser, DEF_COLOR)) return;
+    if(!DEFINE(getCurrentUser(), DEF_COLOR)) return;
     cur_color = i+(cur_color&0xf0);
     if(j) cur_mode|=SCREEN_BRIGHT;
     else cur_mode&=~SCREEN_BRIGHT;
@@ -53,7 +53,7 @@ void setfcolor(int i,int j)
 
 void setbcolor(int i)
 {
-    if(!DEFINE(currentuser, DEF_COLOR)) return;
+    if(!DEFINE(getCurrentUser(), DEF_COLOR)) return;
     if(i==0) i=8;
     cur_color = (cur_color&0x0f)+(i<<4);
 }
@@ -555,7 +555,7 @@ void outns(const char*str, int n)
                     y=atoi(s1)-1+offsetln;
                     x=atoi(s2)-1;
                     if (x<-1) x = scr_cols+x+1;
-                    if(DEFINE(currentuser, DEF_COLOR))
+                    if(DEFINE(getCurrentUser(), DEF_COLOR))
                     if(y>=0&&y<scr_lns&&x>=0&&x<=scr_cols&&!disable_move) {
                         cur_col=x; cur_ln=y;
                         if(cur_ln<minln) cur_ln=minln;
@@ -583,7 +583,7 @@ void outns(const char*str, int n)
                 if(s1[0]) k=atoi(s1);
                 else k=1;
 
-                if(DEFINE(currentuser, DEF_COLOR))
+                if(DEFINE(getCurrentUser(), DEF_COLOR))
                 if(!disable_move) {
                 
                     if(*(str+i)=='A') {
@@ -619,7 +619,7 @@ void outns(const char*str, int n)
              }
              else if(*(str+i)=='u' && i==2) {
                 str+=3;
-                if(DEFINE(currentuser, DEF_COLOR))
+                if(DEFINE(getCurrentUser(), DEF_COLOR))
                 if(savey!=-1&&savex!=-1&&!disable_move) {
                     cur_ln=savey; cur_col=savex;
                     if(cur_ln<minln) cur_ln=minln;
@@ -633,7 +633,7 @@ void outns(const char*str, int n)
              }
              else if(*(str+i)=='J') {
                 str+=i+1;
-                if(DEFINE(currentuser, DEF_COLOR))
+                if(DEFINE(getCurrentUser(), DEF_COLOR))
                 if(!disable_move) {
                     if(minln) {
                         move(minln, 0);
@@ -646,7 +646,7 @@ void outns(const char*str, int n)
              }
              else if(*(str+i)=='m') {
                 j=1;
-                if(DEFINE(currentuser, DEF_COLOR)&&!disable_color)
+                if(DEFINE(getCurrentUser(), DEF_COLOR)&&!disable_color)
                 while(*(str+j)!='m') {
                     int m;
                     char s[100];
@@ -687,7 +687,7 @@ void outns(const char*str, int n)
              else if(*(str+i)=='M') {
                 k=1;
                 for(j=2;j<i;j++) k=k&&(*(str+j)>='0'&&*(str+j)<='9');
-                if(DEFINE(currentuser, DEF_COLOR))
+                if(DEFINE(getCurrentUser(), DEF_COLOR))
                 if(!disable_move)
                 if(k) {
                     refresh();

@@ -41,7 +41,6 @@
 #endif
 
 #include "chat.h"
-extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 extern char page_requestor[];
 extern char *modestring();
 extern struct UTMPFILE *utmpshm;
@@ -386,11 +385,11 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
         if (inbuf[0] != '\0' && inbuf[0] != '\n' && inbuf[0] != '/') {
             strncpy(pthis->chatid, inbuf, 8);
         } else {
-            strncpy(pthis->chatid, currentuser->userid, 8);
+            strncpy(pthis->chatid, getCurrentUser()->userid, 8);
         }
         pthis->chatid[8] = '\0';
-        sprintf(inbuf, "/! %d %d %s %s", uinfo.uid, currentuser->userlevel,
-                currentuser->userid, pthis->chatid);
+        sprintf(inbuf, "/! %d %d %s %s", uinfo.uid, getCurrentUser()->userlevel,
+                getCurrentUser()->userid, pthis->chatid);
         chat_send(pthis, inbuf);        /* send user info to chatd , and chatd will check it */
         if (chat_recv(pthis, inbuf, 3) != 3) {
             close(pthis->cfd);
@@ -426,7 +425,7 @@ static int ent_chat(int chatnum)
 	int oldhelpmode=helpmode;
 #endif
 
-    if (!strcmp(currentuser->userid, "guest"))
+    if (!strcmp(getCurrentUser()->userid, "guest"))
         return -1;
     pthis = (chatcontext *) malloc(sizeof(chatcontext));
     bzero(pthis, sizeof(chatcontext));
@@ -511,14 +510,14 @@ static int ent_chat(int chatnum)
             continue;
 #ifdef CHINESE_CHARACTER
         case Ctrl('R'):
-			SET_CHANGEDEFINE(currentuser, DEF_CHCHAR);
+			SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
         	continue;
 #endif        	
         case KEY_LEFT:
             if (currchar)
                 --currchar;
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
+			if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
 				int i,j=0;
 				for(i=0;i<currchar;i++)
 					if(j) j=0;
@@ -533,7 +532,7 @@ static int ent_chat(int chatnum)
             if (inbuf[currchar])
                 ++currchar;
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
+			if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
 				int i,j=0;
 				for(i=0;i<currchar;i++)
 					if(j) j=0;
@@ -646,7 +645,7 @@ static int ent_chat(int chatnum)
                 inbuf[69] = ch;
             }
 #ifdef CHINESE_CHARACTER
-			if (DEFINE(currentuser, DEF_CHCHAR)) {
+			if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
 				int i,j=0;
 				for(i=0;i<currchar;i++)
 					if(j) j=0;
@@ -714,7 +713,7 @@ int printuserent(chatcontext * pthis, struct user_info *uentp)
     }
     if (!uentp->active || !uentp->pid)
         return 0;
-    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uentp->invisible)
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible)
         return 0;
 #if 0
     if (kill(uentp->pid, 0) == -1)
@@ -738,21 +737,21 @@ int printuserent(chatcontext * pthis, struct user_info *uentp)
 */
 int print_friend_ent(struct user_info *uentp, chatcontext * pthis, int pos)
 {                               /* print one user & status if he is a friend */
-    char pline[50];
+    char pline[50],buf[80];
 
     if (!uentp->active || !uentp->pid)
         return 0;
-    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uentp->invisible)
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible)
         return 0;
 #if 0
     if (kill(uentp->pid, 0) == -1)
         return 0;
 #endif                          /* 
                                  */
-    if (!myfriend(uentp->uid, NULL))
+    if (!myfriend(uentp->uid, NULL,getSession()))
         return 0;
     sprintf(pline, " %-13s%c%-10s", uentp->userid,
-            uentp->invisible ? '#' : ' ', modestring(uentp->mode,
+            uentp->invisible ? '#' : ' ', modestring(buf,uentp->mode,
                                                      uentp->destuid, 0,
                                                      NULL));
     if (pthis->apply_count < 2)
@@ -803,9 +802,9 @@ void call_user(chatcontext * pthis, const char *arg)
                       "\033[37m*** \033[32m请输入你要邀请的 ID\033[37m ***\033[m");
         return;
     }
-    if (!strcasecmp(arg, currentuser->userid))
+    if (!strcasecmp(arg, getCurrentUser()->userid))
         sprintf(msg, "\033[32m你不用邀请自己啊\033[m");
-    else if (!HAS_PERM(currentuser, PERM_PAGE))
+    else if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
         /* Leeward 98.07.30 */
         sprintf(msg, "\033[32m你没有发信息的权限\033[m");
     else {
@@ -817,7 +816,7 @@ void call_user(chatcontext * pthis, const char *arg)
             sprintf(msg,
                     "\033[32m%s\033[37m已经锁定屏幕，请稍候再邀请或给他(她)写信.\n",
                     uin->userid);
-        else if (!canmsg(currentuser, uin))
+        else if (!canmsg(getCurrentUser(), uin))
             sprintf(msg, "%s 已经关闭接受讯息的呼叫器.\n", uin->userid);
         else {
             FILE *fp;
@@ -837,7 +836,7 @@ void call_user(chatcontext * pthis, const char *arg)
                 sprintf(msg, "到聊天广场的 %s 聊天室 聊聊天",
                         pthis->chatroom);
                 /* 保存所发msg的目的uid 1998.7.5 by dong */
-                strcpy(MsgDesUid, uin->userid);
+                strcpy(getSession()->MsgDesUid, uin->userid);
                 state = do_sendmsg(uin, msg, 1);
                 if (state == 1)
                     sprintf(msg, "\033[37m已经帮你邀请 %s 了\033[m",
@@ -867,7 +866,7 @@ void chat_sendmsg(chatcontext * pthis, const char *arg)
         printchatline(pthis,
                       "\x1b[37m*** \x1b[32m请输入你要发的消息\x1b[37m ***\x1b[m");
         return;
-    } else if (!HAS_PERM(currentuser, PERM_PAGE)) {     /* Leeward 98.07.30 */
+    } else if (!HAS_PERM(getCurrentUser(), PERM_PAGE)) {     /* Leeward 98.07.30 */
         sprintf(msg, "\x1b[32m你没有发信息的权限\x1b[m");
     } else {
         uin = t_search(userid, false);
@@ -879,11 +878,11 @@ void chat_sendmsg(chatcontext * pthis, const char *arg)
                     "\x1b[32m%s\x1b[37m已经锁定屏幕，请稍候再发或给他(她)写信.\n",
                     uin->userid);
         else {
-            if (!canmsg(currentuser, uin))
+            if (!canmsg(getCurrentUser(), uin))
                 sprintf(msg,
                         "\x1b[32m%s\x1b[37m已经关闭接受讯息的呼叫器.\n",
                         uin->userid);
-            else if (false == canIsend2(currentuser,uin->userid))
+            else if (false == canIsend2(getCurrentUser(),uin->userid))
                 sprintf(msg, "\x1b[32m%s\x1b[37m拒绝接受你的讯息.\n", uin->userid);     /*Haohmaru.99.6.6,检查是否被ignore */
             else {
                 FILE *fp;
@@ -901,7 +900,7 @@ void chat_sendmsg(chatcontext * pthis, const char *arg)
                             "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...\n");
                 else {
                     /* 保存所发msg的目的uid 1998.7.5 by dong */
-                    strcpy(MsgDesUid, uin->userid);
+                    strcpy(getSession()->MsgDesUid, uin->userid);
                     state = do_sendmsg(uin, arg, 2);
                     if (state == 1)
                         sprintf(msg,
@@ -923,18 +922,18 @@ int c_cmpuids(int uid, struct user_info *up)
 }
 int chat_status(struct user_info *uentp, chatcontext * pthis)
 {
-    char tmpstr[31];
+    char tmpstr[31],buf[80],buf2[80];
     char *lpTmp;
 
     if (strlen(genbuf)>t_columns) 
     	return QUIT;
     if (uentp->invisible == 1) {
-        if (HAS_PERM(currentuser, PERM_SEECLOAK)) {
+        if (HAS_PERM(getCurrentUser(), PERM_SEECLOAK)) {
             sprintf(genbuf + strlen(genbuf), "\x1b[32m#\x1b[m");
         } else
             return 0;
     }
-    lpTmp = (char *) idle_str(uentp);
+    lpTmp = (char *) idle_str(buf,uentp);
     if (uentp->in_chat) {       /* add by Luzi 1997.11.18 */
         int res;
 
@@ -954,7 +953,7 @@ int chat_status(struct user_info *uentp, chatcontext * pthis)
             return COUNT;
         }
     }
-    sprintf(genbuf, "%s%-8s", genbuf, modestring(uentp->mode, uentp->destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+    sprintf(genbuf, "%s%-8s", genbuf, modestring(buf2,uentp->mode, uentp->destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                                  (uentp->in_chat ? uentp->
                                                   chatid : NULL)));
     if (lpTmp[0] != ' ')
@@ -1005,13 +1004,13 @@ static void query_user(chatcontext * pthis, const char *userid)
 
 	lookupuser->lasthost[IPLEN-1] = '\0';
         sprintf(buf, "目前正在线上: 来自 %s 上线时间 %s" /*\n" */ ,
-                (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /*Haohmaru.99.12.18 */
+                (lookupuser->lasthost[0] == '\0' /* || DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /*Haohmaru.99.12.18 */
         printchatline(pthis, buf);
         printchatline(pthis, genbuf);
     } else {
         lookupuser->lasthost[IPLEN-1] = '\0';  
         sprintf(genbuf, "上次上线来自  %s 时间为 %s " /*\n" */ ,
-                (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /* Haohmaru.99.12.18 */
+                (lookupuser->lasthost[0] == '\0' /* || DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /* Haohmaru.99.12.18 */
         printchatline(pthis, genbuf);
         /* 获得离线时间 Luzi 1998/10/23 */
         exit_time = get_exit_time(lookupuser->userid, genbuf);
@@ -1023,10 +1022,10 @@ static void query_user(chatcontext * pthis, const char *userid)
         if (exit_time <= lookupuser->lastlogin)
             /*
                || (uin.active && uin.pid
-               && (!uin.invisible || (uin.invisible && HAS_PERM(currentuser,PERM_SEECLOAK)))))
+               && (!uin.invisible || (uin.invisible && HAS_PERM(getCurrentUser(),PERM_SEECLOAK)))))
              */
             strcpy(inbuf, "因在线上或非常断线不详");
-        if (exit_time <= lookupuser->lastlogin) {       /* && (uin.invisible&& !HAS_PERM(currentuser,PERM_SEECLOAK))) */
+        if (exit_time <= lookupuser->lastlogin) {       /* && (uin.invisible&& !HAS_PERM(getCurrentUser(),PERM_SEECLOAK))) */
             temp = lookupuser->lastlogin + (lookupuser->numlogins % 7) + 5;
             strcpy(inbuf, ctime(&temp));        /*Haohmaru.98.12.04.让隐身用户看上去离线时间比上线时间晚5秒钟 */
             if ((newline = strchr(inbuf, '\n')) != NULL)
@@ -1037,7 +1036,7 @@ static void query_user(chatcontext * pthis, const char *userid)
         printchatline(pthis, genbuf);
     }
 #ifdef DEBUG
-    if (HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         sprintf(genbuf, "%d", tuid);
         printchatline(pthis, genbuf);
     }
@@ -1104,7 +1103,7 @@ void chat_friends(chatcontext * pthis, const char *arg)
     pthis->apply_buf = genbuf;
     pthis->apply_buf[0] = 0;
     num = 0;
-    u=get_utmpent(utmpent);
+    u=get_utmpent(getSession()->utmpent);
     for (i = 0; i < u->friendsnum; i++) {
         num +=
             apply_utmpuid((APPLY_UTMP_FUNC) print_friend_ent,
@@ -1122,11 +1121,11 @@ void set_rec(chatcontext * pthis, const char *arg)
     time_t now;
 
     now = time(0);
-    /*        if(!HAS_PERM(currentuser,PERM_SYSOP))
+    /*        if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
        return; */
 
-    /*sprintf(fname, "tmp/%s.chat", currentuser->userid);*/
-    sethomefile(fname,currentuser->userid,"chatrec");
+    /*sprintf(fname, "tmp/%s.chat", getCurrentUser()->userid);*/
+    sethomefile(fname,getCurrentUser()->userid,"chatrec");
 
     if (!pthis->rec) {
         if ((pthis->rec = fopen(fname, "a")) == NULL)
@@ -1139,9 +1138,9 @@ void set_rec(chatcontext * pthis, const char *arg)
              pthis->chatroom, pthis->topic, (pthis->rec) ? "录" : "  ");
         fprintf(pthis->rec,
                 "发信人: %s (%s) 房间: %s\n话  题: %s\x1b[m\n\n",
-                currentuser->userid, currentuser->username,
+                getCurrentUser()->userid, getCurrentUser()->username,
                 pthis->chatroom, pthis->topic);
-        fprintf(pthis->rec, "本段由 %s", currentuser->userid);
+        fprintf(pthis->rec, "本段由 %s", getCurrentUser()->userid);
         fprintf(pthis->rec, "所录下，时间： %s", ctime(&now));
         bbslog("user", "start record room %s", pthis->chatroom);
     } else {
@@ -1152,13 +1151,13 @@ void set_rec(chatcontext * pthis, const char *arg)
              pthis->chatroom, pthis->topic, (pthis->rec) ? "录" : "  ");
         fprintf(pthis->rec,
                 "发信人: %s (%s) 房间: %s\n话  题: %s\x1b[m\n\n",
-                currentuser->userid, currentuser->username,
+                getCurrentUser()->userid, getCurrentUser()->username,
                 pthis->chatroom, pthis->topic);
         printchatline(pthis, "\033[5m\033[32mRecord Stop ...\033[m");
         fprintf(pthis->rec, "结束时间：%s\n", ctime(&now));
         fclose(pthis->rec);
         pthis->rec = NULL;
-        mail_file(currentuser->userid, fname, currentuser->userid,
+        mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid,
                   "录音结果", 1, NULL);
 	my_unlink(fname);
         bbslog("user", "stop record room %s", pthis->chatroom);
@@ -1178,14 +1177,14 @@ void call_kickoff(chatcontext * pthis, const char *arg)
     char msg[STRLEN];
     struct user_info *uin;
 
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         printchatline(pthis, "*** 你不是站长 ***");
         return;
     }
     if (!*arg) {
         printchatline(pthis, "*** 请输入你要踢下站的 ID ***");
         return;
-    } else if (!strcasecmp(arg, currentuser->userid))
+    } else if (!strcasecmp(arg, getCurrentUser()->userid))
         sprintf(msg, "*** Faint!你要把自己踢下站啊？***");
     else {
         uin = t_search(arg, false);
@@ -1208,7 +1207,7 @@ void call_listen(chatcontext * pthis, const char *arg)
 
     if (!*arg) {
         printchatline(pthis, "*** 请输入用户的ID ***");
-    } else if (!strcasecmp(arg, currentuser->userid))
+    } else if (!strcasecmp(arg, getCurrentUser()->userid))
         printchatline(pthis, "*** 这是你自己的ID ***");
     else {
         strncpy(uident, arg, IDLEN + 1);
@@ -1217,7 +1216,7 @@ void call_listen(chatcontext * pthis, const char *arg)
             /* change getuser -> searchuser, by dong, 1999.10.26 */
             printchatline(pthis, "*** 没有这个ID ***");
         else {
-            sethomefile(path, currentuser->userid, "/ignores");
+            sethomefile(path, getCurrentUser()->userid, "/ignores");
             nIdx =
                 search_record(path, ignoreuser, IDLEN + 1,
                               (RECORD_FUNC_ARG) cmpinames, uident);
@@ -1246,7 +1245,7 @@ void call_ignore(chatcontext * pthis, const char *arg)
     char ignoreuser[IDLEN + 1];
     int nIdx;
 
-    sethomefile(path, currentuser->userid, "/ignores");
+    sethomefile(path, getCurrentUser()->userid, "/ignores");
     if (!*arg) {
         nIdx = 0;
         if ((fp = fopen(path, "r")) != NULL) {
@@ -1265,7 +1264,7 @@ void call_ignore(chatcontext * pthis, const char *arg)
             printchatline(pthis, buf2);
         else
             printchatline(pthis, "*** 尚未设定忽略用户的名单 ***");
-    } else if (!strcasecmp(arg, currentuser->userid))
+    } else if (!strcasecmp(arg, getCurrentUser()->userid))
         printchatline(pthis, "*** 无法忽略自己的信息 ***");
     else {
         strncpy(uident, arg, IDLEN + 1);
@@ -1312,7 +1311,7 @@ void call_alias(chatcontext * pthis, const char *arg)
     int nIdx;
 
     nextword(&arg, emoteid, sizeof(emoteid));
-    sethomefile(path, currentuser->userid, "/emotes");
+    sethomefile(path, getCurrentUser()->userid, "/emotes");
     if (!emoteid[0]) {
         if ((fp = fopen(path, "r")) == NULL) {
             printchatline(pthis, "*** 还没有自定义的emote ***");
@@ -1395,7 +1394,7 @@ void call_mail(chatcontext * pthis, const char *arg)
         return;
     }
 
-    setmailfile(direct, currentuser->userid, DOT_DIR);
+    setmailfile(direct, getCurrentUser()->userid, DOT_DIR);
     fpin = fopen(direct, "rb");
     if (fpin == NULL)
         return;
@@ -1431,16 +1430,16 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     if (line > 300)
         line = 300;
 	gettmpfilename( fname, "chatmsg" );
-    //sprintf(fname, "tmp/%s.msg", currentuser->userid);
+    //sprintf(fname, "tmp/%s.msg", getCurrentUser()->userid);
     fp = fopen(fname, "w");
-    count = get_msgcount(0, currentuser->userid);
+    count = get_msgcount(0, getCurrentUser()->userid);
     for(i=0;i<count;i++) 
     if(i>=count-line)
     {
         j++;
-        load_msghead(0, currentuser->userid, i, &head);
-        load_msgtext(currentuser->userid, &head, buf);
-        translate_msg(buf, &head, showmsg);
+        load_msghead(0, getCurrentUser()->userid, i, &head);
+        load_msgtext(getCurrentUser()->userid, &head, buf);
+        translate_msg(buf, &head, showmsg,getSession());
         fprintf(fp, "%s", showmsg);
     }
     fclose(fp);

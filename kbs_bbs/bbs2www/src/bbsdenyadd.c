@@ -103,7 +103,7 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
     fn = fopen(buf, "w+");
     snprintf(title, ARTICLE_TITLE_LEN ,"%s被取消在%s版的发文权限", user, board);
 
-    if ((HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) && !chk_BM_instr(bp->BM, currentuser->userid)) {
+    if ((HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !chk_BM_instr(bp->BM, getCurrentUser()->userid)) {
         my_flag = 0;
         fprintf(fn, "寄信人: SYSOP (System Operator) \n");
         fprintf(fn, "标  题: %s\n", title);
@@ -165,7 +165,7 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
        pi.anony = 0;
        pi.access = (FILE_READ << 8) | (FILE_MARKED | FILE_FORWARDED);
      */
-    post_file(usr, "", buf, board, title, 0, 2);
+    post_file(usr, "", buf, board, title, 0, 2, getSession());
     memcpy(usr, &saveusr, sizeof(saveusr));
     snprintf(title, ARTICLE_TITLE_LEN ,"%s 被 %s 封禁本版POST权", user, usr->userid);
     getuser(user, &lookupuser);
@@ -174,7 +174,7 @@ int inform(bcache_t * bp, char *user, char *exp, int dt)
         snprintf(title, ARTICLE_TITLE_LEN , "%s 封某版" NAME_BM " %s 在 %s", usr->userid, user, board);
     else
         snprintf(title, ARTICLE_TITLE_LEN ,"%s 封 %s 在 %s", usr->userid, user, board);
-    post_file(usr, "", buf, "denypost", title, 0, 8);
+    post_file(usr, "", buf, "denypost", title, 0, 8, getSession());
 
     unlink(buf);
     printf("系统已经发信通知了%s.<br>\n", user);
@@ -192,15 +192,15 @@ int main()
     char buf[STRLEN];
     struct boardheader bh;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("您尚未登录, 请先登录");
     strsncpy(board, getparm("board"), 30);
     strsncpy(exp, getparm("exp"), 30);
     dt = atoi(getparm("dt"));
-    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
+    if (getboardnum(board,&bh)==0||!check_read_perm(getCurrentUser(), &bh))
         http_fatal("错误的讨论区");
-    if (!has_BM_perm(currentuser, board))
+    if (!has_BM_perm(getCurrentUser(), board))
         http_fatal("你无权进行本操作");
     loaddenyuser(board);
     userid = getparm("userid");
@@ -209,7 +209,7 @@ int main()
     if (getuser(userid, &u) == 0)
         http_fatal("错误的使用者帐号");
     strcpy(userid, u->userid);
-    if (dt < 1 || dt > (HAS_PERM(currentuser, PERM_SYSOP)?70:14))
+    if (dt < 1 || dt > (HAS_PERM(getCurrentUser(), PERM_SYSOP)?70:14))
         http_fatal("请输入被封天数(1-14)");
     
     if (exp[0] == 0)

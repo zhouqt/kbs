@@ -16,14 +16,14 @@ int main()
     char *ptr;
     bcache_t *bc;
 
-    init_all();
+    initwww_all();
     bc = getbcacheaddr();
     printf("<style type=text/css>A {color: #0000f0}</style>");
     for (i = 0; i < MAXBOARD; i++) {
         x = &(bc[i]);
         if (x->filename[0] <= 32 || x->filename[0] > 'z')
             continue;
-        if (!check_read_perm(currentuser, x))
+        if (!check_read_perm(getCurrentUser(), x))
             continue;
         memcpy(&data[total], x, sizeof(struct boardheader));
         total++;

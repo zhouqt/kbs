@@ -8,7 +8,7 @@ const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 const char seccode[SECNUM][5] = {
     "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "A", "B", "C",
 };
-const char    *groups[] = {
+const char  * const groups[] = {
     "system.faq",
     "thu.faq",
     "univ.faq",
@@ -41,7 +41,7 @@ const char secname[SECNUM][2][20] = {
     {"电脑技术", "[专项技术]"},
 };
 
-const char    *explain[] = {
+const char  * const explain[] = {
     "本站系统",
     "清华大学",
     "校园信息",
@@ -62,7 +62,7 @@ const char    *explain[] = {
 #endif
 
 #ifdef USE_DEFAULT_PERMSTRINGS
-const char *permstrings[] = {
+const char * const permstrings[] = {
         "基本权力",             /* PERM_BASIC */
         "进入聊天室",           /* PERM_CHAT */
         "呼叫他人聊天",         /* PERM_PAGE */
@@ -99,7 +99,7 @@ const char *permstrings[] = {
 
 #ifdef NEW_HELP
 #ifdef HAVE_DEFAULT_HELPMODE
-const char *helpmodestr[] = {
+const char * const helpmodestr[] = {
 	"版面列表",
 	"个人定制区",
 	"文章列表",
@@ -121,7 +121,7 @@ const char *helpmodestr[] = {
 
 #ifdef SMS_SUPPORT
 
-const char *user_smsdefstr[] = {
+const char * const user_smsdefstr[] = {
 	"不在线时转sms到自己手机(自己掏钱)",
 	NULL
 };
@@ -131,7 +131,7 @@ const char *user_smsdefstr[] = {
 #ifdef USE_DEFAULT_DEFINESTR
 /* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
    depending on how/if you use them. */
-const char *user_definestr[] = {
+const char * const user_definestr[] = {
     "活动看版",                 /* DEF_ACBOARD */
     "使用彩色",                 /* DEF_COLOR */
     "编辑时显示状态栏",         /* DEF_EDITMSG */
@@ -170,7 +170,7 @@ const char *user_definestr[] = {
 #endif
 
 #ifdef USE_DEFAULT_MAILBOX_PROP_STR
-const char *mailbox_prop_str[] =
+const char * const mailbox_prop_str[] =
 {
 	"发信时保存信件到发件箱",
 	"删除信件时不保存到垃圾箱",

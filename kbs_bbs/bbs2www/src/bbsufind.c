@@ -22,7 +22,7 @@ int main()
     char search;
     uinfo_t **usr;
 
-    init_all();
+    initwww_all();
     fill_userlist();
     usr = get_ulist_addr();
     printf("<center>\n");
@@ -31,7 +31,7 @@ int main()
         x = usr[i];
         if (x == NULL || x->active == 0)
             continue;
-        if (x->invisible && !HAS_PERM(currentuser, PERM_SEECLOAK))
+        if (x->invisible && !HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
             continue;
         memcpy(&user[total], x, sizeof(uinfo_t));
         total++;

@@ -30,7 +30,7 @@
 #include <sys/sem.h>
 
 extern char *getenv();
-static const char *invalid[] = {
+static const char *const invalid[] = {
    /* "unknown@",*/
     "root@",
     "gopher@",
@@ -38,8 +38,7 @@ static const char *invalid[] = {
     "guest@",
     NULL
 };
-static char modestr[STRLEN];
-static char hh_mm_ss[8];
+
 int my_system(const char *cmdstring)
 {
     pid_t pid;
@@ -72,10 +71,13 @@ int my_system(const char *cmdstring)
     }
     return status;
 }
-char *idle_str(struct user_info *uent)
+
+char *idle_str(char* hh_mm_ss,struct user_info *uent)
 {
     time_t now, diff;
     int hh, mm;
+/*    char hh_mm_ss[8];
+*/
 
     now = time(0);
     diff = now - uent->freshtime;
@@ -103,10 +105,10 @@ char *idle_str(struct user_info *uent)
         sprintf(hh_mm_ss, "   ");
     return hh_mm_ss;
 }
-char *modestring(int mode, int towho, int complete, char *chatid)
+
+char *modestring(char* modestr,int mode, int towho, int complete, char *chatid)
 {
     struct userec urec;
-
 
     /*
      * Leeward: 97.12.18: Below removing ' characters for more display width 
@@ -308,14 +310,14 @@ int do_exec(char *com, *wd)
             }
         bbssetenv("PATH", "/bin:.");
         bbssetenv("TERM", "vt100");
-        bbssetenv("USER", currentuser->userid);
-        bbssetenv("USERNAME", currentuser->username);
+        bbssetenv("USER", session->currentuser->userid);
+        bbssetenv("USERNAME", session->currentuser->username);
 
         /*
          * added for tin's reply to 
          */
-        bbssetenv("REPLYTO", currentuser->email);
-        bbssetenv("FROMHOST", fromhost);
+        bbssetenv("REPLYTO", session->currentuser->email);
+        bbssetenv("FROMHOST", getSession()->fromhost);
 
         /*
          * end of insertion 
@@ -365,20 +367,19 @@ char *Cdate(time_t clock)
     /*
      * Leeward 2000.01.01 Adjust year display for 20** 
      */
-    static char foo[24 /*22 */ ];
-    struct tm *mytm = localtime(&clock);
+    struct tm mytm;
+	struct tm * dtm= localtime_r(&clock,&mytm);
 
-    strftime(foo, 24 /*22 */ , "%Y-%m-%d %T %a" /*"%D %T %a" */ , mytm);
-    return (foo);
+    strftime(getSession()->strbuf, 24 /*22 */ , "%Y-%m-%d %T %a" /*"%D %T %a" */ , dtm);
+    return (getSession()->strbuf);
 }
 
 char *Ctime(time_t clock)
 {                               /* 时间 转换 成 英文 */
-    char *foo;
-    char *ptr = ctime(&clock);
+    char *p,*ptr = ctime_r(&clock,getSession()->strbuf);
 
-    if ((foo = strchr(ptr, '\n')) != NULL)
-        *foo = '\0';
+    if ((p = strchr(ptr, '\n')) != NULL)
+        *p= '\0';
     return (ptr);
 }
 int Isspace(char ch)
@@ -579,10 +580,10 @@ char *setbdir(int digestmode, char *buf,const  char *boardname)
         strcpy(dir, ".ORIGIN");
         break;
     case DIR_MODE_AUTHOR:
-        sprintf(dir, ".AUTHOR.%s", currentuser->userid);
+        sprintf(dir, ".AUTHOR.%s", getCurrentUser()->userid);
         break;
     case DIR_MODE_TITLE:
-        sprintf(dir, ".TITLE.%s", currentuser->userid);
+        sprintf(dir, ".TITLE.%s", getCurrentUser()->userid);
         break;
     case DIR_MODE_ZHIDING:
 	strcpy(dir, DING_DIR);
@@ -591,10 +592,10 @@ char *setbdir(int digestmode, char *buf,const  char *boardname)
         strcpy(dir, DOT_DIR);
         break;
     case DIR_MODE_SUPERFITER:
-        sprintf(dir, ".Search.%s", currentuser->userid);
+        sprintf(dir, ".Search.%s", getCurrentUser()->userid);
         break;
     default:
-        sprintf(dir, ".Search.%s", currentuser->userid);
+        sprintf(dir, ".Search.%s", getCurrentUser()->userid);
 	newbbslog(BBSLOG_DEBUG,"uknown dir mode %d",digestmode); 
         break;
     }
@@ -691,7 +692,6 @@ int seek_in_file(const char* filename, const char* seekstr)
     return 0;
 }
 
-static struct public_data *publicshm;
 struct public_data *get_publicshm()
 {
     int iscreate;
@@ -949,19 +949,19 @@ int cmpfileid(int *id, struct fileheader *fi)
 	return (*id==fi->id);
 }
 
-int canIsend2(struct userec *user, char *userid)
+int canIsend2(struct userec *src, char *userid)
 {                               /* Leeward 98.04.10 */
     char buf[IDLEN + 1];
     char path[256];
 
-    if (HAS_PERM(user, PERM_SYSOP))
+    if (HAS_PERM(src, PERM_SYSOP))
         return true;
     sethomefile(path, userid, "ignores");
-    if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
+    if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, src->userid))
         return false;
     /*
      * sethomefile(path, userid, "/bads");
-     * if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
+     * if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, session->getCurrentUser()->userid))
      * return false;
      * 
      * else
@@ -1298,40 +1298,35 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
     return (f_mv(fnnew, filename));
 }
 
-struct _sigjmp_stack {
-    sigjmp_buf bus_jump;
-    struct _sigjmp_stack* next;
-} static *sigjmp_stack=NULL;
-
 sigjmp_buf* push_sigbus()
 {
   struct _sigjmp_stack* jumpbuf;
   jumpbuf=(struct _sigjmp_stack*) malloc(sizeof(struct _sigjmp_stack));
-  if (sigjmp_stack==NULL) {
-    sigjmp_stack=jumpbuf;
+  if (getSession()->sigjmp_stack==NULL) {
+    getSession()->sigjmp_stack=jumpbuf;
     jumpbuf->next=NULL;
   } else {
-    jumpbuf->next=sigjmp_stack;
-    sigjmp_stack=jumpbuf;
+    jumpbuf->next=getSession()->sigjmp_stack;
+    getSession()->sigjmp_stack=jumpbuf;
   }
   return &(jumpbuf->bus_jump);
 }
 
 void popup_sigbus()
 {
-    struct _sigjmp_stack* jumpbuf=sigjmp_stack;
-    if (sigjmp_stack) {
-        sigjmp_stack=jumpbuf->next;
+    struct _sigjmp_stack* jumpbuf=getSession()->sigjmp_stack;
+    if (getSession()->sigjmp_stack) {
+        getSession()->sigjmp_stack=jumpbuf->next;
         free(jumpbuf);
     }
-    if (sigjmp_stack==NULL)
+    if (getSession()->sigjmp_stack==NULL)
         signal(SIGBUS, SIG_IGN);
 }
 
 void sigbus(int signo)
 {
-    if (sigjmp_stack) {
-        siglongjmp(sigjmp_stack->bus_jump, 1);
+    if (getSession()->sigjmp_stack) {
+        siglongjmp(getSession()->sigjmp_stack->bus_jump, 1);
     }
 };
 
@@ -1659,13 +1654,13 @@ int add_mailgroup_item(const char *userid, mailgroup_list_t * mgl, mailgroup_lis
     return -1;
 }
 
-int add_default_mailgroup_item(const char *userid, mailgroup_list_t * mgl)
+int add_default_mailgroup_item(const char *userid, mailgroup_list_t * mgl,session_t* session)
 {
     mailgroup_list_item item;
 
     bzero(&item, sizeof(item));
     snprintf(item.group_desc, sizeof(item.group_desc), "预设群体信件组");
-    return add_mailgroup_item(currentuser->userid, mgl, &item);
+    return add_mailgroup_item(session->currentuser->userid, mgl, &item);
 }
 
 int delete_mailgroup_item(const char *userid, mailgroup_list_t * mgl, int entry)
@@ -1891,7 +1886,7 @@ int gettmpfilename(char *retchar, char *fmt, ...){
         mkdir(retchar, 0755);
         chmod(retchar, 0755);
 	}
-	strcat(retchar, currentuser->userid);
+	strcat(retchar, getCurrentUser()->userid);
     if (!dashd(retchar)) {
         mkdir(retchar, 0755);
         chmod(retchar, 0755);
@@ -2277,7 +2272,7 @@ int bms_add(char *userid, char *boardname, time_t in, int out, char *memo )
 	if(memo && memo[0])
 		mysql_escape_string(newmemo, memo, strlen(memo));
 
-	sprintf(sql,"INSERT INTO bms VALUES ( NULL, '%s', '%s','%d' ,'%s', '%s', '%s');", boardname, tt2timestamp(in,newts), out, currentuser->userid, newmemo, userid);
+	sprintf(sql,"INSERT INTO bms VALUES ( NULL, '%s', '%s','%d' ,'%s', '%s', '%s');", boardname, tt2timestamp(in,newts), out, getCurrentUser()->userid, newmemo, userid);
 //		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 	
 

@@ -279,10 +279,9 @@ typedef struct royalset royalset;
 #ifndef  MAPLE
 #define  MSG_UID	"请输入使用者代号："
 #define  ERR_UID	"这里没有这个人啦！"
-#define  cuser		currentuser
 #define  b_lines	t_lines-1
 SMTH_API int t_lines;
 #endif				// End MAPLE
-#define   cuser     currentuser
+#define  cuser		getCurrentUser()
 #define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 #define pressanykey(a) temppress(a)

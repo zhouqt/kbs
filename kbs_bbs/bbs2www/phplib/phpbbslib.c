@@ -1556,7 +1556,7 @@ static PHP_FUNCTION(bbs_search_articles)
 
 			MAKE_STD_ZVAL(element);
 			array_init(element);
-			flags[0] = get_article_flag(ptr1+i, currentuser, board,is_bm);
+			flags[0] = get_article_flag(ptr1+i, currentuser, board,is_bm, getSession());
 			if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
 				flags[1] = 'y';
 			else
@@ -1684,7 +1684,7 @@ static PHP_FUNCTION(bbs_searchtitle)
         RETURN_LONG(-210);
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, board, getSession());
 #endif
 	IDList	= emalloc((1000)*sizeof(long int));
 	if (IDList==NULL) {
@@ -1740,7 +1740,7 @@ static PHP_FUNCTION(bbs_searchtitle)
 			threadsFounded++;
 			MAKE_STD_ZVAL(element);
 			array_init(element);
-			flags[0] = get_article_flag(ptr1+found, currentuser, board, is_bm);
+			flags[0] = get_article_flag(ptr1+found, currentuser, board, is_bm, getSession());
 			if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
 				flags[1] = 'y';
 			else
@@ -1950,10 +1950,10 @@ static int check_newpost(struct newpostdata *ptr)
     }
 
 #ifdef HAVE_BRC_CONTROL
-    if (!brc_initial(currentuser->userid, ptr->name)) {
+    if (!brc_initial(currentuser->userid, ptr->name, getSession())) {
         ptr->unread = 1;
     } else {
-        if (brc_unread(bptr->lastpost)) {
+        if (brc_unread(bptr->lastpost, getSession())) {
             ptr->unread = 1;
         }
     }
@@ -2431,8 +2431,8 @@ static PHP_FUNCTION(bbs_domailforward)
 		RETURN_LONG(1);
 	}else{
 		if( big5 == 1)
-			conv_init();
-		if( bbs_sendmail(fname, title, target, 0, big5, noansi) == 0){
+			conv_init(getSession());
+		if( bbs_sendmail(fname, title, target, 0, big5, noansi, getSession()) == 0){
 			RETURN_LONG(1);
 		}else
 			RETURN_LONG(-10);
@@ -2485,8 +2485,8 @@ static PHP_FUNCTION(bbs_doforward)
 		RETURN_LONG(1);
 	}else{
 		if( big5 == 1)
-			conv_init();
-		if( bbs_sendmail(fname, title, target, 0, big5, noansi) == 0){
+			conv_init(getSession());
+		if( bbs_sendmail(fname, title, target, 0, big5, noansi, getSession()) == 0){
 			RETURN_LONG(1);
 		}else
 			RETURN_LONG(-10);
@@ -2653,7 +2653,7 @@ static PHP_FUNCTION(bbs_getarticles)
         RETURN_FALSE;
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, bp->filename);
+    brc_initial(currentuser->userid, bp->filename, getSession());
 #endif
     articles = emalloc(num * sizeof(struct fileheader));
 	if (articles==NULL) {
@@ -2667,7 +2667,7 @@ static PHP_FUNCTION(bbs_getarticles)
     for (i = 0; i < rows; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-        flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm);
+        flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm, getSession());
         if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
             flags[1] = 'y';
         else
@@ -2727,7 +2727,7 @@ static PHP_FUNCTION(bbs_mailwebmsgs){
     if (ZEND_NUM_ARGS()!=0 ) {
         WRONG_PARAM_COUNT;
     }
-	mail_msg(currentuser);
+	mail_msg(currentuser, getSession());
 	RETURN_TRUE;
 }
 
@@ -2827,7 +2827,7 @@ static PHP_FUNCTION(bbs_getthreads)
         RETURN_FALSE;
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, bp->filename);
+    brc_initial(currentuser->userid, bp->filename, getSession());
 #endif
 
 
@@ -2886,7 +2886,7 @@ static PHP_FUNCTION(bbs_getthreads)
 			MAKE_STD_ZVAL(columns[j] );
 			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
 		}
-		flags[0] = get_article_flag(&(ptr1[i].origin), currentuser, bp->filename, is_bm);
+		flags[0] = get_article_flag(&(ptr1[i].origin), currentuser, bp->filename, is_bm, getSession());
 		if (is_bm && (ptr1[i].origin.accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
@@ -2901,7 +2901,7 @@ static PHP_FUNCTION(bbs_getthreads)
 			flags[3] = ' ';
 		array_init(columns[0] );
 		bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
-		flags[0] = get_article_flag(&(ptr1[i].lastreply), currentuser, bp->filename, is_bm);
+		flags[0] = get_article_flag(&(ptr1[i].lastreply), currentuser, bp->filename, is_bm, getSession());
 		if (is_bm && (ptr1[i].lastreply.accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
@@ -3011,7 +3011,7 @@ static PHP_FUNCTION(bbs_get_article)
         RETURN_LONG(-8);
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, bp->filename);
+    brc_initial(currentuser->userid, bp->filename, getSession());
 #endif
 
 	articlesFounded=0;
@@ -3019,7 +3019,7 @@ static PHP_FUNCTION(bbs_get_article)
 	if ( (found=Search_Bin((struct fileheader *)ptr,groupid,0,total-1))>=0) {
 		MAKE_STD_ZVAL(element);
 		array_init(element);
-		flags[0] = get_article_flag(ptr1+found, currentuser, bp->filename, is_bm);
+		flags[0] = get_article_flag(ptr1+found, currentuser, bp->filename, is_bm, getSession());
 		if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
@@ -3141,7 +3141,7 @@ static PHP_FUNCTION(bbs_get_thread_articles)
         RETURN_LONG(-8);
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, bp->filename);
+    brc_initial(currentuser->userid, bp->filename, getSession());
 #endif
 
 	articlesFounded=0;
@@ -3154,7 +3154,7 @@ static PHP_FUNCTION(bbs_get_thread_articles)
 			if ((articlesFounded-1)>=start){
 				MAKE_STD_ZVAL(element);
 				array_init(element);
-				flags[0] = get_article_flag(ptr1+i, currentuser, bp->filename, is_bm);
+				flags[0] = get_article_flag(ptr1+i, currentuser, bp->filename, is_bm, getSession());
 				if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
 					flags[1] = 'y';
 				else
@@ -3252,7 +3252,7 @@ static PHP_FUNCTION(bbs_get_today_article_num){
     }
     ptr1 = (struct fileheader *) ptr;
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, bp->filename);
+    brc_initial(currentuser->userid, bp->filename, getSession());
 #endif
 
 	articleNums=0;
@@ -3366,7 +3366,7 @@ static PHP_FUNCTION(bbs_get_thread_article_num)
         RETURN_LONG(-6);
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, bp->filename);
+    brc_initial(currentuser->userid, bp->filename, getSession());
 #endif
 
 	articleNums=0;
@@ -3679,7 +3679,7 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 	  if(articles[i].id && currentuser ){
-		flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm);
+		flags[0] = get_article_flag(articles + i, currentuser, bp->filename, is_bm, getSession());
 		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else
@@ -3981,7 +3981,7 @@ static PHP_FUNCTION(bbs_postarticle)
         oldx = NULL;
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(currentuser->userid, board, getSession());
 #endif
     if (is_outgo_board(board) && local == 0)
         local = 0;
@@ -4019,7 +4019,7 @@ static PHP_FUNCTION(bbs_postarticle)
     if (r < 0)
         RETURN_LONG(-9) ; //"内部错误，无法发文";
 #ifdef HAVE_BRC_CONTROL
-    brc_update(currentuser->userid);
+    brc_update(currentuser->userid, getSession());
 #endif
     if(oldx)
     	efree(oldx);
@@ -4126,11 +4126,11 @@ static PHP_FUNCTION(bbs_edittitle)
 	if (!strcmp(title,f.title)) //无需修改
 		RETURN_LONG(0);
 #ifdef FILTER
-	if (check_badword_str(title, strlen(title)))
+	if (check_badword_str(title, strlen(title), getSession()))
 		RETURN_LONG(-7);
 #endif
 	setbfile(path, brd.filename, f.filename);
-	if (add_edit_mark(path, 2, title) != 1)
+	if (add_edit_mark(path, 2, title, getSession()) != 1)
 		RETURN_LONG(-10);
 	/* update .DIR START */
 	strcpy(f.title, title);
@@ -4216,7 +4216,7 @@ static PHP_FUNCTION(bbs_checkbadword)
 		WRONG_PARAM_COUNT;
 	}
 #ifdef FILTER
-	if (check_badword_str(str, strlen(str)))
+	if (check_badword_str(str, strlen(str),getSession()))
 		RETURN_TRUE;
 #endif    
     RETURN_FALSE;
@@ -4286,7 +4286,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     fclose(fin);
     fclose(fout);
 #ifdef FILTER
-    if (check_badword(outfile) !=0) {
+    if (check_badword(outfile, getSession()) !=0) {
 		unlink(outfile);
         RETURN_LONG(-1); //修改文章失败，文章可能含有不恰当内容.
     }
@@ -4393,9 +4393,9 @@ static PHP_FUNCTION(bbs_brcaddread)
 	if ((bp=getbcache(board))==0){
 		RETURN_NULL();
 	}
-	brc_initial(currentuser->userid, bp->filename);
-	brc_add_read(fid);
-	brc_update(currentuser->userid);
+	brc_initial(currentuser->userid, bp->filename, getSession());
+	brc_add_read(fid, getSession());
+	brc_update(currentuser->userid, getSession());
     /*brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);*/
 
     RETURN_NULL();
@@ -4803,7 +4803,7 @@ static PHP_FUNCTION(bbs_changemaillist)
         strcpy(maillist.mail_list[maillist.mail_list_t], boxname);
         strcpy(maillist.mail_list[maillist.mail_list_t] + 30, buf);
         maillist.mail_list_t += 1;
-        save_mail_list(&maillist);
+        save_mail_list(&maillist, getSession());
     } else                      //delete
     {
         if (index < 0 || index > maillist.mail_list_t - 1)
@@ -4814,7 +4814,7 @@ static PHP_FUNCTION(bbs_changemaillist)
             strncpy(maillist.mail_list[index], maillist.mail_list[index + 1], 30);
             strncpy(maillist.mail_list[index] + 30, maillist.mail_list[index + 1] + 30, 10);
         }
-        save_mail_list(&maillist);
+        save_mail_list(&maillist, getSession());
     }
 	if( currentuinfo )
 		currentuinfo->mailcheck &= ~CHECK_MAIL;
@@ -4922,7 +4922,7 @@ static PHP_FUNCTION(bbs_sendwebmsg)
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
-    if (!msg_can_sendmsg(destid, destutmp)) {
+    if (!msg_can_sendmsg(destid, destutmp, getSession())) {
         ZVAL_STRING(z_errmsg, "无法发送讯息", 1);
         RETURN_FALSE;
     }
@@ -5246,8 +5246,8 @@ PHP_RINIT_FUNCTION(smth_bbs)
 	output_buffer_size=0;
 	output_buffer_len=0;
 #ifdef SMS_SUPPORT
-	smsbuf=NULL;
-	smsresult=0;
+	getSession()->smsbuf=NULL;
+	getSession()->smsresult=0;
 #endif
     return SUCCESS;
 }
@@ -6368,7 +6368,7 @@ static PHP_FUNCTION(bbs_getonlinefriends)
 	}
 
     set_friendmode(1);
-    utmpent = get_curr_utmpent();    //I hate the global variable!!
+    getSession()->utmpent = get_curr_utmpent();    //I hate the global variable!!
     fill_userlist();
     usr = get_ulist_addr();
     
@@ -6682,7 +6682,7 @@ static PHP_FUNCTION(bbs_add_import_path)
 	if(num < 0 || num >= ANNPATH_NUM)
 		RETURN_LONG(0);
 
-	load_import_path(im_path,im_title,&im_time,&im_select);
+	load_import_path(im_path,im_title,&im_time,&im_select, getSession());
 
 	efree(im_path[num]);
 	if ( (im_path[num] = emalloc(strlen(buf)+1)) ==NULL) {
@@ -6696,7 +6696,7 @@ static PHP_FUNCTION(bbs_add_import_path)
 
 		bzero(&pm,sizeof(pm));
 		pm.path = im_path[num];
-		a_loadnames(&pm);
+		a_loadnames(&pm, getSession());
 		strncpy(buf, pm.mtitle, MAXPATH - 1);
 		buf[MAXPATH - 1]=0;
 		a_freenames(&pm);
@@ -6711,7 +6711,7 @@ static PHP_FUNCTION(bbs_add_import_path)
 	}
 	strcpy(im_title[num],buf);
 
-	save_import_path(im_path,im_title,&im_time);
+	save_import_path(im_path,im_title,&im_time, getSession());
 
 	free_import_path(im_path,im_title,&im_time);
 
@@ -6732,7 +6732,7 @@ static PHP_FUNCTION(bbs_get_import_path)
         RETURN_FALSE;
     }
 
-	load_import_path(im_path,im_title,&im_time,&im_select);
+	load_import_path(im_path,im_title,&im_time,&im_select, getSession());
 
 	for(i=0;i<ANNPATH_NUM;i++){
         MAKE_STD_ZVAL(element);
@@ -7043,7 +7043,7 @@ static PHP_FUNCTION(bbs_new_board)
 			}else
 				sprintf(vbuf,"%-38.38s", newboard.title+13);
 
-			if(add_grp(bgroup, newboard.filename, vbuf, explain[i]) == -1)
+			if(add_grp(bgroup, newboard.filename, vbuf, explain[i], getSession()) == -1)
 				RETURN_LONG( -12);
 
 			snprintf(newboard.ann_path,127,"%s/%s",bgroup, newboard.filename);
@@ -7557,13 +7557,13 @@ static PHP_FUNCTION(bbs_start_vote)
 		fprintf(fp,"%s",buff);
 		fclose(fp);
 #ifdef NINE_BUILD
-		post_file(currentuser, "", buf, bp->filename, buff, 0, 1);
-		post_file(currentuser, "", buf, "vote", buff, 0, 1);
+		post_file(currentuser, "", buf, bp->filename, buff, 0, 1, getSession());
+		post_file(currentuser, "", buf, "vote", buff, 0, 1, getSession());
 #else
 		if( !normal_board(bp->filename) ){
-			post_file(currentuser, "", buf, bp->filename, buff, 0,1);
+			post_file(currentuser, "", buf, bp->filename, buff, 0,1, getSession());
 		}else{
-			post_file(currentuser, "", buf, "vote", buff, 0,1);
+			post_file(currentuser, "", buf, "vote", buff, 0,1, getSession());
 		}
 #endif
 		unlink(buf);
@@ -7583,10 +7583,10 @@ static PHP_FUNCTION(bbs_load_favboard)
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
                 WRONG_PARAM_COUNT;
         }
-        load_favboard(0,1);
+        load_favboard(0,1, getSession());
         if(select<favbrd_list_t)
         {
-                SetFav(select);
+                SetFav(select, getSession());
                 RETURN_LONG(0);
         }
         else 
@@ -7600,7 +7600,7 @@ static PHP_FUNCTION(bbs_is_favboard)
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
-        RETURN_LONG(IsFavBoard(position));
+        RETURN_LONG(IsFavBoard(position, getSession()));
 }
 
 static PHP_FUNCTION(bbs_del_favboarddir)
@@ -7615,10 +7615,10 @@ static PHP_FUNCTION(bbs_del_favboarddir)
 			if(position < 0 || position>= favbrd_list[select].bnum)
 				RETURN_LONG(-1);
 			if(favbrd_list[select].bid[position]<0)
-				DelFavBoardDir(position,select);
+				DelFavBoardDir(position,select, getSession());
 			else
 				RETURN_LONG(-1);
-        	save_favboard(1);
+        	save_favboard(1, getSession());
 			RETURN_LONG(0);
 
 }
@@ -7635,7 +7635,7 @@ static PHP_FUNCTION(bbs_get_dirname)
 	if(select < 0 || select >= favbrd_list_t )
 		RETURN_LONG(0);
 
-	FavGetTitle(select,title);
+	FavGetTitle(select,title, getSession());
 
     RETURN_STRING( title, 1);
 
@@ -7649,7 +7649,7 @@ static PHP_FUNCTION(bbs_get_father)
                 WRONG_PARAM_COUNT;
         }
 
-		RETURN_LONG( FavGetFather(select) );
+		RETURN_LONG( FavGetFather(select, getSession()) );
 }
 
 static PHP_FUNCTION(bbs_del_favboard)
@@ -7660,8 +7660,8 @@ static PHP_FUNCTION(bbs_del_favboard)
         if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
-        	DelFavBoard(position);
-        	save_favboard(1);
+        	DelFavBoard(position, getSession());
+        	save_favboard(1, getSession());
 			RETURN_LONG(0);
 }
 //add fav dir
@@ -7675,8 +7675,8 @@ static PHP_FUNCTION(bbs_add_favboarddir)
         }
         if(char_len <= 20)
         {
-                addFavBoardDir(char_dname);
-                save_favboard(1);
+                addFavBoardDir(char_dname, getSession());
+                save_favboard(1, getSession());
         }
         RETURN_LONG(char_len);
 }
@@ -7691,10 +7691,10 @@ static PHP_FUNCTION(bbs_add_favboard)
                 WRONG_PARAM_COUNT;
         }
         i=getbnum(char_bname);
-        if(i >0 && ! IsFavBoard(i - 1))
+        if(i >0 && ! IsFavBoard(i - 1, getSession()))
         {
-                addFavBoard(i - 1);
-                save_favboard(1);
+                addFavBoard(i - 1, getSession());
+                save_favboard(1, getSession());
         }
 }
 
@@ -7743,14 +7743,14 @@ static PHP_FUNCTION(bbs_fav_boards)
      */
 
 	if (mode==2){
-        load_favboard(0,2);
+        load_favboard(0,2, getSession());
         if(select<favbrd_list_t)
-            SetFav(select);
+            SetFav(select, getSession());
 	}
 	else if(mode==3){
-        load_favboard(0,3);
+        load_favboard(0,3, getSession());
         if(select<favbrd_list_t)
-            SetFav(select);
+            SetFav(select, getSession());
 	}
 
 	if (currentuser == NULL) {
@@ -7758,7 +7758,7 @@ static PHP_FUNCTION(bbs_fav_boards)
     }
     brdnum = 0;
     
-    if ((brdnum = fav_loaddata(newpost_buffer, select, 1, FAVBOARDNUM, 1, NULL)) <= -1) {
+    if ((brdnum = fav_loaddata(newpost_buffer, select, 1, FAVBOARDNUM, 1, NULL, getSession())) <= -1) {
         RETURN_FALSE;
     }
     /*
@@ -8293,7 +8293,7 @@ static PHP_FUNCTION(bbs_getonline_user_list)
     uinfo_t **user;
     struct fulluserlistarg arg;
     int ac = ZEND_NUM_ARGS();
-    utmpent = get_curr_utmpent();    //I hate the global variable!!
+    getSession()->utmpent = get_curr_utmpent();    //I hate the global variable!!
 
     if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"ll",&arg.start,&arg.num) ==FAILURE){
         WRONG_PARAM_COUNT;
@@ -8646,7 +8646,7 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 		MAKE_STD_ZVAL(element);
 		array_init(element);
 	  if(articles[i].id && currentuser ){
-		flags[0] = get_article_flag(articles + i, currentuser, (char *)(bp->filename), is_bm);
+		flags[0] = get_article_flag(articles + i, currentuser, (char *)(bp->filename), is_bm, getSession());
 		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
 			flags[1] = 'y';
 		else

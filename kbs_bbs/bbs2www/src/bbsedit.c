@@ -135,7 +135,7 @@ int update_form(char *board, char *file)
         fprintf(fout, "%s", buf2);
     }
     fprintf(fout, "%s", unix_string(buf));
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(currentuser, fromhost));
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(getCurrentUser(), fromhost));
     while (fgets(buf2, sizeof(buf2), fin) != NULL) {
         if (Origin2(buf2)) {
             fprintf(fout, "%s", buf2);
@@ -145,7 +145,7 @@ int update_form(char *board, char *file)
     fclose(fin);
     fclose(fout);
 #ifdef FILTER
-    if (check_badword(outfile) !=0) {
+    if (check_badword(outfile, getSession()) !=0) {
 		unlink(outfile);
         printf("修改文章失败，文章可能含有不恰当内容.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
     }
@@ -190,7 +190,7 @@ int main()
     struct fileheader x;
     char userid[80], buf[512], path[512], file[512], board[512], title[80] = "";
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("匆匆过客不能修改文章，请先登录");
     strsncpy(board, getparm("board"), 20);
@@ -200,14 +200,14 @@ int main()
         http_fatal("错误的参数");
     if (get_edit_post(getcurruserid(), board, file, &x) < 0)
         http_fatal("您不能编辑这篇文章");
-    printf("<center>%s -- 修改文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
+    printf("<center>%s -- 修改文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, getCurrentUser()->userid);
     if (type != 0)
         return update_form(board, file);
     printf("<table border=\"1\">\n");
     printf("<tr><td>");
     printf("<tr><td><form method=\"post\" action=\"bbsedit\">\n");
     printf("使用标题: %s 讨论区: %s<br>\n", nohtml(x.title), board);
-    printf("本文作者：%s<br>\n", currentuser->userid);
+    printf("本文作者：%s<br>\n", getCurrentUser()->userid);
     printf("<textarea name=\"text\" rows=\"20\" cols=\"80\" wrap=\"physical\">");
     setbfile(path, board, file);
     fp = fopen(path, "r");

@@ -51,13 +51,13 @@ int main()
     char brdencode[STRLEN];
     struct boardheader bh;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("您尚未登录, 请先登录");
     strsncpy(board, getparm("board"), 30);
-    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
+    if (getboardnum(board,&bh)==0||!check_read_perm(getCurrentUser(), &bh))
         http_fatal("错误的讨论区");
-    if (!has_BM_perm(currentuser, board))
+    if (!has_BM_perm(getCurrentUser(), board))
         http_fatal("你无权进行本操作");
     loaddenyuser(board);
     encode_url(brdencode, board, sizeof(brdencode));

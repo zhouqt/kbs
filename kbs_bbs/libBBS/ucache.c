@@ -24,8 +24,6 @@ struct UCACHE {
     struct userec passwd[MAXUSERS];
 };
 
-static struct UCACHE *uidshm = NULL;
-
 #ifndef USE_SEM_LOCK
 static int ucache_lock()
 {
@@ -623,16 +621,16 @@ set_safe_record()
     {
         char buf[STRLEN];
 
-        sprintf(buf,"Error:Read Passfile %4d %12.12s",usernum,currentuser->userid);
+        sprintf(buf,"Error:Read Passfile %4d %12.12s",usernum,session->getCurrentUser()->userid);
         bbslog("user","%s",buf);
         ERROR_READ_SYSTEM_FILE=true;
         abort_bbs(0);
         return -1;
     }
-    currentuser->numposts=tmp.numposts;
-    currentuser->numlogins=tmp.numlogins;
-    currentuser->stay=tmp.stay;
-    currentuser->userlevel=tmp.userlevel;
+    session->getCurrentUser()->numposts=tmp.numposts;
+    session->getCurrentUser()->numlogins=tmp.numlogins;
+    session->getCurrentUser()->stay=tmp.stay;
+    session->getCurrentUser()->userlevel=tmp.userlevel;
 }
 */
 

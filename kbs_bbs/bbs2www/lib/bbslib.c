@@ -506,11 +506,11 @@ int user_init(struct userec **x, struct user_info **y)
      * printf("utmpnum = %s\n", num); 
      */
     key = atoi(getparm("UTMPKEY"));
-    utmpent = atoi(num);
+    getSession()->utmpent = atoi(num);
     if (id[0] == '\0')
         return -1;
 
-    if (www_user_init(utmpent, id, key, x, y, 0) == 0 && strcasecmp("guest", currentuser->userid))
+    if (www_user_init(getSession()->utmpent, id, key, x, y, 0) == 0 && strcasecmp("guest", getCurrentUser()->userid))
         return 1;
     return 0;
 }
@@ -527,7 +527,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
 		if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
-            currentuser->usedspace -= st.st_size;
+            getCurrentUser()->usedspace -= st.st_size;
     }
 
     strcpy(buf, direct);
@@ -559,12 +559,12 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     struct userec *touser;      /*peregrine for updating used space */
     int unum;
     
-    if (false == canIsend2(currentuser, userid)) {
+    if (false == canIsend2(getCurrentUser(), userid)) {
         return -2;
     }
 
     unum = getuser(userid, &touser);
-    if (!HAS_PERM(currentuser, PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
         return -3;
     }
 
@@ -601,7 +601,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     }
     fprintf(fp, "\n--\n");
     sig_append(fp, id, sig);
-    fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, SHOW_USERIP(currentuser, ip));
+    fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, SHOW_USERIP(getCurrentUser(), ip));
     fclose(fp);
     
     if (stat(filepath, &st) != -1)
@@ -623,7 +623,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
 
         f_cp(filepath, sent_filepath, 0);
         if (stat(sent_filepath, &st) != -1) {
-            currentuser->usedspace += st.st_size;
+            getCurrentUser()->usedspace += st.st_size;
         } else {
             return -6;
         }
@@ -653,7 +653,7 @@ void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
     char fname[STRLEN];
 
     color = (user->numlogins % 7) + 31; /* 颜色随机变化 */
-    sethomefile(fname, currentuser->userid, "signatures");
+    sethomefile(fname, getCurrentUser()->userid, "signatures");
     if ((fp2 = fopen(fname, "r")) == NULL ||    /* 判断是否已经 存在 签名档 */
         user->signature == 0 || anony == 1) {
         fputs("\n--\n", fp);
@@ -666,7 +666,7 @@ void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
     if (!strcmp(board, "Announce"))
         fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME, NAME_BBS_CHINESE " BBS站");
     else
-        fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(currentuser, user->lasthost));
+        fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(getCurrentUser(), user->lasthost));
 
     if (fp2)
         fclose(fp2);
@@ -768,8 +768,8 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     /*
      * 在boards版版主发文自动添加文章标记 Bigman:2000.8.12 
      */
-    if (!strcmp(board, "Board") && !HAS_PERM(currentuser, PERM_OBOARDS)
-        && HAS_PERM(currentuser, PERM_BOARDS)) {
+    if (!strcmp(board, "Board") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
+        && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
 
@@ -782,7 +782,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 	}
     fclose(fp);
     post_file.eff_size = get_effsize(filepath);
-	retvalue = after_post(currentuser, &post_file, board, oldx, !(anonyboard && anony));
+	retvalue = after_post(getCurrentUser(), &post_file, board, oldx, !(anonyboard && anony), getSession());
 
     if (attach_dir != NULL) {
 
@@ -927,7 +927,6 @@ int has_BM_perm(struct userec *user, char *board)
     return 0;
 }
 
-extern char MsgDesUid[14];
 int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
 {
     int i;
@@ -944,8 +943,8 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
         return -1;
     if (strcasecmp(uin->userid, destid))
         return -1;
-    strcpy(MsgDesUid, uin->userid);
-    return sendmsgfunc(uin, msg, 2);
+    strcpy(getSession()->MsgDesUid, uin->userid);
+    return sendmsgfunc(uin, msg, 2, getSession());
 }
 
 int user_perm(struct userec *x, int level)
@@ -960,7 +959,7 @@ int getusernum(char *id)
 
 int isfriend(char *id)
 {
-    return myfriend(searchuser(id), NULL);
+    return myfriend(searchuser(id), NULL, getSession());
 }
 
 void http_redirect(char *url)
@@ -970,8 +969,9 @@ void http_redirect(char *url)
     printf("Content-type: text/html; charset=%s\n\n", CHARSET);
 }
 
-int init_all()
+int initwww_all()
 {
+	struct userec * user;
     srand(time(0) * 2 + getpid());
     chdir(BBSHOME);
     http_init();
@@ -980,7 +980,8 @@ int init_all()
      * if(geteuid()!=BBSUID) http_fatal("uid error."); 
      */
     shm_init();
-    loginok = user_init(&currentuser, &u_info);
+    loginok = user_init(&user, &u_info);
+	setCurrentUser(user);
     if (loginok < 0) {
         /*
          * http_redirect(NOLOGIN_PAGE);
@@ -995,6 +996,7 @@ int init_all()
     }
     html_init();
     init_bbslog();
+	init_sessiondata(getSession());
 }
 
 char *void1(unsigned char *s)
@@ -1073,16 +1075,16 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
 }
 
 /* added by flyriver, 2001.12.17
- * using getcurrusr() instead of using currentuser directly
+ * using getcurrusr() instead of using getCurrentUser() directly
  */
 struct userec *getcurrusr()
 {
-    return currentuser;
+    return getCurrentUser();
 }
 
 char *getcurruserid()
 {
-    return currentuser->userid;
+    return getCurrentUser()->userid;
 }
 
 time_t get_idle_time(struct user_info * uentp)
@@ -1127,10 +1129,10 @@ int full_utmp(struct user_info *uentp, int *count)
     if (!uentp->active || !uentp->pid) {
         return 0;
     }
-    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid, getcurruserid())) {  /*Haohmaru.99.4.24.让隐身者能看见自己 */
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid, getcurruserid())) {  /*Haohmaru.99.4.24.让隐身者能看见自己 */
         return 0;
     }
-    if (friendmode && !myfriend(uentp->uid, NULL)) {
+    if (friendmode && !myfriend(uentp->uid, NULL, getSession())) {
         return 0;
     }
     user_record[*count] = uentp;
@@ -1147,7 +1149,7 @@ int fill_userlist()
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
     } else {
-        u = get_utmpent(utmpent);
+        u = get_utmpent(getSession()->utmpent);
         for (i = 0; i < u->friendsnum; i++) {
             if (u->friends_uid[i])
                 apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
@@ -1166,14 +1168,15 @@ int add_favboard(char *brdname)
     else
         return -3;              /* err brdname */
     i--;
-    addFavBoard(i);
+    addFavBoard(i, getSession());
 }
 
 static int printstatusstr(struct user_info *uentp, char *arg, int pos)
 {
+    char modebuf[80];
     if (uentp->invisible == 1) {
 		arg[0] = '1';
-        if (!HAS_PERM(currentuser, PERM_SEECLOAK))
+        if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
             return COUNT;
     }
     if (arg[1]==0)
@@ -1183,7 +1186,7 @@ static int printstatusstr(struct user_info *uentp, char *arg, int pos)
     else {
         char buf[80];
 
-        sprintf(buf, "\033[1m%s\033[m ", modestring(uentp->mode, uentp->destuid, 0, 
+        sprintf(buf, "\033[1m%s\033[m ", modestring(modebuf,uentp->mode, uentp->destuid, 0, 
                                               (uentp->in_chat ? uentp->chatid : NULL)));
         strcat(arg, buf);
     }
@@ -1259,10 +1262,10 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
         setpublicshmreadonly(1);
         return -1;
     }
-    user = currentuser;
-    getuser("guest", &currentuser);
+    user = getCurrentUser();
+    getuser("guest", &getCurrentUser());
 
-    if (currentuser == NULL){
+    if (getCurrentUser() == NULL){
     	www_guest_unlock(fd);
     	setpublicshmreadonly(1);
         return -1;
@@ -1280,7 +1283,7 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
              * 清除use_map 
              */
 	    guestinfo.currentboard=wwwguest_shm->guest_entry[i].currentboard;
-	    do_after_logout(currentuser, &guestinfo, i, 1);
+	    do_after_logout(getCurrentUser(), &guestinfo, i, 1);
 
             wwwguest_shm->use_map[i / 32] &= ~(1 << (i % 32));
 			/* 清除hashtab */
@@ -1363,7 +1366,7 @@ if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip
 		*idx = i*32+j;
 	}
 }
-    currentuser = user;
+    getCurrentUser() = user;
     setpublicshmreadonly(1);
     www_guest_unlock(fd);
     if (num == MAX_WWW_MAP_ITEM)
@@ -1387,7 +1390,7 @@ static int www_free_guest_entry(int idx)
     if ((idx < 0) || (idx > MAX_WWW_GUEST))
         return -1;
     guestinfo.currentboard=wwwguest_shm->guest_entry[idx].currentboard;
-    do_after_logout(currentuser, &guestinfo, idx, 1);
+    do_after_logout(getCurrentUser(), &guestinfo, idx, 1);
     setpublicshmreadonly(0);
     pub = get_publicshm();
     fd = www_guest_lock();
@@ -1482,7 +1485,7 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
             return -5;
 #ifdef HAVE_BRC_CONTROL
 #if USE_TMPFS==1
-	    init_brc_cache((*x)->userid,true);
+	    init_brc_cache((*x)->userid,true,getSession());
 #endif
 #endif
     } else {
@@ -1586,7 +1589,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 		 {
 			 getuser(user->userid,&uc);
 			 if(time(NULL) - uc->firstlogin >= REGISTER_TSINGHUA_WAIT_TIME)
-				if(auto_register(user->userid,ud.realemail,STRLEN)==0)user->userlevel |= PERM_DEFAULT;
+				if(auto_register(user->userid,ud.realemail,STRLEN, getSession())==0)user->userlevel |= PERM_DEFAULT;
 		 }
 		 read_userdata(user->userid,&ud);
 	    }
@@ -1655,11 +1658,11 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 				/*
             }
 			*/
-    	    /* Load currentuser's mailbox properties, added by atppp */
+    	    /* Load getCurrentUser()'s mailbox properties, added by atppp */
     	    u->mailbox_prop = load_mailbox_prop(user->userid);
 
-            getfriendstr(currentuser, u);
-            do_after_login(currentuser,utmpent,0);
+            getfriendstr(getCurrentUser(), u, getSession());
+            do_after_login(getCurrentUser(),utmpent,0);
         }
     } else {
         /*
@@ -1702,10 +1705,10 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
             www_guest_uinfo.utmpkey = wwwguest_shm->guest_entry[idx].key;
             *ppuinfo = &www_guest_uinfo;
             *putmpent = idx;
-            getuser("guest", &currentuser);
+            getuser("guest", &getCurrentUser());
             ret = 0;
 			if( ! exist )
-            	do_after_login(currentuser,idx,1);
+            	do_after_login(getCurrentUser(),idx,1);
         }
     }
 
@@ -1770,7 +1773,7 @@ time_t set_idle_time(struct user_info * uentp, time_t t)
 
 int can_enter_chatroom()
 {
-    if (HAS_PERM(currentuser, PERM_CHAT))
+    if (HAS_PERM(getCurrentUser(), PERM_CHAT))
         return 1;
     else
         return 0;
@@ -1778,10 +1781,10 @@ int can_enter_chatroom()
 
 int can_send_mail()
 {
-    if (HAS_PERM(currentuser, PERM_DENYMAIL))
+    if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL))
         return 0;
-    else if (HAS_PERM(currentuser, PERM_LOGINOK)) {
-        if (chkusermail(currentuser))
+    else if (HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
+        if (chkusermail(getCurrentUser()))
             return 0;
         return 1;
     } else
@@ -2794,7 +2797,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     struct write_dir_arg delarg;
     int ret;
 
-    user = currentuser;
+    user = getCurrentUser();
     bp = getbcache(board);
     memcpy(bm_str, bp->BM, BM_LEN - 1);
     if (!strcmp(board, "syssecurity")
@@ -2806,17 +2809,17 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
         return 2;
     }
     owned = isowner(user, fileinfo);
-    /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
+    /* change by KCN  ! strcmp( fileinfo->owner, getCurrentUser()->userid ); */
     strcpy(usrid, fileinfo->owner);
-    if (!(owned) && !HAS_PERM(currentuser, PERM_SYSOP))
-        if (!chk_currBM(bm_str, currentuser)) {
+    if (!(owned) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
+        if (!chk_currBM(bm_str, getCurrentUser())) {
             return 1;
         }
     init_write_dir_arg(&delarg);
     setbdir(DIR_MODE_NORMAL, direct, bp->filename);
     delarg.filename=direct;
     delarg.ent=ent;
-    ret=do_del_post(currentuser, &delarg, fileinfo, board, DIR_MODE_NORMAL, true);
+    ret=do_del_post(getCurrentUser(), &delarg, fileinfo, board, DIR_MODE_NORMAL, true, getSession());
     free_write_dir_arg(&delarg);
     if (ret != 0)
         return 3;
@@ -3023,8 +3026,6 @@ int www_generateOriginIndex(const char* board)
 
 #ifdef SMS_SUPPORT
 
-extern struct user_info * smsuin;
-
 int web_send_sms(char *dest,char *msgstr){
 	struct userdata ud;
 	char uident[STRLEN];
@@ -3034,15 +3035,15 @@ int web_send_sms(char *dest,char *msgstr){
 	int ret;
 	char buf[MAX_MSG_SIZE];
 
-	read_userdata(currentuser->userid, &ud);
+	read_userdata(getCurrentUser()->userid, &ud);
 	if(!ud.mobileregistered)
 		return -1;
 
 	if(!msgstr || !msgstr[0])
 		return -3;
 
-	sms_init_memory();
-	smsuin = u_info;
+	sms_init_memory(getSession());
+	getSession()->smsuin = u_info;
 
 	if(isdigit(dest[0])){
 		int i;
@@ -3066,7 +3067,7 @@ int web_send_sms(char *dest,char *msgstr){
 	}
 
 	if(!cansend){
-		shmdt(head);
+		shmdt(getSession()->head);
 		return -2;
 	}
 
@@ -3087,19 +3088,19 @@ int web_send_sms(char *dest,char *msgstr){
 
 	}
 
-	ret = DoSendSMS(ud.mobilenumber, uident, buf);
+	ret = DoSendSMS(ud.mobilenumber, uident, buf,getSession());
 
 	if( ret == CMD_ERR_SMS_VALIDATE_FAILED){
-		if( read_user_memo(currentuser->userid, &currentmemo) <= 0) return -1;
+		if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
 		ud.mobilenumber[0]=0;
 		ud.mobileregistered=0;
-		memcpy(&(currentmemo->ud), &ud, sizeof(ud));
-		end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
-		write_userdata(currentuser->userid, &ud);
+		memcpy(&(getSession()->currentmemo->ud), &ud, sizeof(ud));
+		end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+		write_userdata(getCurrentUser()->userid, &ud);
 	}
 
 	if( ret ){
-		shmdt(head);
+		shmdt(getSession()->head);
 		return 1;
 	}else{
 		struct msghead h;
@@ -3115,22 +3116,22 @@ int web_send_sms(char *dest,char *msgstr){
 		h.mode = 6;
 		h.sent = 1;
 		h.time = time(0);
-		save_msgtext(currentuser->userid, &h, buf);
+		save_msgtext(getCurrentUser()->userid, &h, buf,getSession());
 #if HAVE_MYSQL_SMTH == 1
-        save_smsmsg(currentuser->userid, &h, buf, 1);
+        save_smsmsg(getCurrentUser()->userid, &h, buf, 1, getSession());
 #endif
 		if( !isdigit(dest[0]) ){
 			h.sent = 0;
-			strcpy(h.id, currentuser->userid);
-			save_msgtext(destid, &h, buf);
+			strcpy(h.id, getCurrentUser()->userid);
+			save_msgtext(destid, &h, buf,getSession());
 #if HAVE_MYSQL_SMTH == 1
-        	save_smsmsg(uident, &h, buf, 1);
+        	save_smsmsg(uident, &h, buf, 1, getSession());
 #endif
 			if(uin) kill(uin->pid, SIGUSR2);
 		}
 	}
 
-	shmdt(head);
+	shmdt(getSession()->head);
 	return 0;
 
 }
@@ -3143,45 +3144,45 @@ int web_register_sms_sendcheck(char *mnumber)
 	struct userdata ud;
 	int i;
 
-	if( read_user_memo(currentuser->userid, &currentmemo) <= 0) return -1;
-	memcpy(&ud, &(currentmemo->ud), sizeof(ud));
+	if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
+	memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
 
-    sms_init_memory();
-    smsuin = u_info;
+    sms_init_memory(getSession());
+    getSession()->smsuin = u_info;
 
     if(ud.mobileregistered) {
-		shmdt(head);
+		shmdt(getSession()->head);
         return -1;
     }
 
 	if( mnumber == NULL ){
-		shmdt(head);
+		shmdt(getSession()->head);
 		return -2;
 	}
 
 	if( strlen(mnumber) != 11 ){
-		shmdt(head);
+		shmdt(getSession()->head);
 		return -3;
 	}
 
 	for(i=0;i <11; i++){
 		if( ! isdigit( mnumber[i] ) ){
-			shmdt(head);
+			shmdt(getSession()->head);
 			return -4;
 		}
 	}
 
     if(DoReg(mnumber)) {
-		shmdt(head);
+		shmdt(getSession()->head);
         return -5;
     }
 
 	strcpy(ud.mobilenumber, mnumber);
-	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
-	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
-	write_userdata(currentuser->userid, &ud);
+	memcpy(&(getSession()->currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+	write_userdata(getCurrentUser()->userid, &ud);
     
-	shmdt(head);
+	shmdt(getSession()->head);
 	return 0;
 }
 
@@ -3191,38 +3192,38 @@ int web_register_sms_docheck(char *valid)
     char buf2[80];
 	struct userdata ud;
 
-	if( read_user_memo(currentuser->userid, &currentmemo) <= 0) return -1;
-	memcpy(&ud, &(currentmemo->ud), sizeof(ud));
+	if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
+	memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
 
-    sms_init_memory();
-    smsuin = u_info;
+    sms_init_memory(getSession());
+    getSession()->smsuin = u_info;
 
     if(ud.mobileregistered) {
-		shmdt(head);
+		shmdt(getSession()->head);
         return -1;
     }
 
     if(! ud.mobilenumber[0] || strlen(ud.mobilenumber)!=11 ) {
-		shmdt(head);
+		shmdt(getSession()->head);
 		return -2;
     }
 
     if(valid == NULL || !valid[0]){
-		shmdt(head);
+		shmdt(getSession()->head);
 		return -3;
 	}
 
     if(DoCheck(ud.mobilenumber, valid)) {
-		shmdt(head);
+		shmdt(getSession()->head);
         return -4;
     }
 
     ud.mobileregistered = 1;
-	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
-	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
-    write_userdata(currentuser->userid, &ud);
+	memcpy(&(getSession()->currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+    write_userdata(getCurrentUser()->userid, &ud);
     
-	shmdt(head);
+	shmdt(getSession()->head);
 	return 0;
 }
 
@@ -3233,33 +3234,33 @@ int web_unregister_sms()
     char buf2[80];
     int rr;
 
-	if( read_user_memo(currentuser->userid, &currentmemo) <= 0) return -1;
-    sms_init_memory();
-    smsuin = u_info;
+	if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
+    sms_init_memory(getSession());
+    getSession()->smsuin = u_info;
 
-    if(!currentmemo->ud.mobileregistered) {
-        shmdt(head);
-        smsbuf=NULL;
+    if(!getSession()->currentmemo->ud.mobileregistered) {
+        shmdt(getSession()->head);
+        getSession()->smsbuf=NULL;
         return -1;
     }
 
-        rr = DoUnReg(currentmemo->ud.mobilenumber);
+        rr = DoUnReg(getSession()->currentmemo->ud.mobilenumber,getSession());
         if(rr&&rr!=CMD_ERR_NO_SUCHMOBILE) {
-            shmdt(head);
-	    	currentmemo->ud.mobileregistered = 0;
-	    	write_userdata(currentuser->userid, &(currentmemo->ud));
-			end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
-            smsbuf=NULL;
+            shmdt(getSession()->head);
+	    	getSession()->currentmemo->ud.mobileregistered = 0;
+	    	write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+			end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+            getSession()->smsbuf=NULL;
             return -1;
         }
 
-        currentmemo->ud.mobilenumber[0]=0;
-        currentmemo->ud.mobileregistered = 0;
-        write_userdata(currentuser->userid, &(currentmemo->ud));
-		end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+        getSession()->currentmemo->ud.mobilenumber[0]=0;
+        getSession()->currentmemo->ud.mobileregistered = 0;
+        write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+		end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
 
-    shmdt(head);
-    smsbuf=NULL;
+    shmdt(getSession()->head);
+    getSession()->smsbuf=NULL;
 
 	return 0;
 }

@@ -8,9 +8,13 @@ int main(int*argc,int**argv)
 		}
 //eg:./postfile /home/bbs/newer/test test ≤‚ ‘“ªœ¬
 	//	printf("%s",argv[0]);
-		  chdir(BBSHOME);
-	resolve_boards();
-    post_file(NULL, "", argv[1], argv[2], argv[3], 0,1);
+
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
+    post_file(NULL, "", argv[1], argv[2], argv[3], 0,1,getSession());
 	exit(0);
 }
 										 

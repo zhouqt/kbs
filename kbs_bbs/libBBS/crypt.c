@@ -425,21 +425,21 @@ static int body(unsigned long *out0, unsigned long *out1, des_key_schedule ks, u
     return 0;
 }
 
-char *crypt1(char *buf, char *salt)
+char *crypt1(char *buf, char* outputbuff, char *salt)
 {
     unsigned int i, j, x, y;
     unsigned long Eswap0 = 0, Eswap1 = 0;
     unsigned long out[2], ll;
     des_cblock key;
     des_key_schedule ks;
-    static unsigned char buff[20];
+/*    unsigned char buff[20];  TS1 static */
     unsigned char bb[9];
     unsigned char *b = bb;
     unsigned char c, u;
 
-    x = buff[0] = ((salt[0] == '\0') ? 'A' : salt[0]);
+    x = outputbuff[0] = ((salt[0] == '\0') ? 'A' : salt[0]);
     Eswap0 = con_salt[x];
-    x = buff[1] = ((salt[1] == '\0') ? 'A' : salt[1]);
+    x = outputbuff[1] = ((salt[1] == '\0') ? 'A' : salt[1]);
     Eswap1 = con_salt[x] << 4;
     for (i = 0; i < 8; i++) {
         c = *(buf++);
@@ -470,8 +470,8 @@ char *crypt1(char *buf, char *salt)
                 u = 0x80;
             }
         }
-        buff[i] = cov_2char[c];
+        outputbuff[i] = cov_2char[c];
     }
-    buff[13] = 0;
-    return (char *) buff;
+    outputbuff[13] = 0;
+    return (char *) outputbuff;
 }

@@ -9,7 +9,7 @@ int main()
     char brd[100], buf[256];
     bcache_t *bc;
 
-    init_all();
+    initwww_all();
     bc = getbcacheaddr();
     printf("<nobr><center>%s -- 精华区下载服务<hr color=green>\n", BBSNAME);
     printf("<table>\n");

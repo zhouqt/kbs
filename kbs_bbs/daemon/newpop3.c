@@ -673,8 +673,8 @@ int main(int argc, char **argv)
             setgid(BBSGID);
             setuid(BBSUID);
 
-            strcpy(fromhost, (char *) inet_ntoa(fsin.sin_addr));
-            if (check_ban_IP(fromhost, genbuf)>0) {
+            strcpy(getSession()->fromhost, (char *) inet_ntoa(fsin.sin_addr));
+            if (check_ban_IP(getSession()->fromhost, genbuf)>0) {
                 outs("-ERR your ip is baned");
                 close(sock);
                 exit(0);
@@ -774,40 +774,13 @@ int get_userdata(user)
 {
     int uid;
 
-    uid = getuser(user, &currentuser);
+    uid = getuser(user, &getCurrentUser());
     if (uid) {
-        alluser = *currentuser;
-        currentuser = &alluser;
+        alluser = *getCurrentUser();
+        getCurrentUser() = &alluser; /* to fix */
         return 1;
     }
     return -1;
-/*    FILE *rec;
-    int found=0;
-    char buf[256];
-
-    sprintf(buf, "%s/.PASSWDS", BBSHOME);
-    if((rec=fopen(buf,"rb"))==NULL)
-        return -1;
-    while(1)
-    {
-        if(fread(currentuser,sizeof(currentuser),1,rec)<=0) break;
-        if(currentuser->numlogins<=0)
-            continue;
-        if(strcasecmp(user,currentuser->userid))
-            continue;
-        else
-        {
-            found=1;
-            strcpy(user,currentuser->userid);
-            break;
-        }
-    }
-    fclose(rec);
-    if(!found)
-        return -1;
-    else
-        return 1;
-*/
 }
 
 void User()
@@ -861,7 +834,7 @@ void User()
     for (ptr = cmd; *ptr != 0; ++ptr)
         *ptr = tolower(*ptr);
     if (get_userdata(cmd) == 1) {
-        strcpy(LowUserid, currentuser->userid);
+        strcpy(LowUserid, getCurrentUser()->userid);
         sprintf(genbuf, "+OK Password required for %s", cmd);
         outs(genbuf);
     } else {
@@ -883,7 +856,7 @@ void BBSlog_usies(char *buf)
         p = localtime(&now);
 	/* log的Y2K czz 2003.3.8 */
         fprintf(fp, "%04d/%02d/%02d %02d:%02d:%02d [%s](%s) %s\n",
-                p->tm_year+1900, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, currentuser->userid ? currentuser->userid : "", fromhost, buf);
+                p->tm_year+1900, p->tm_mon + 1, p->tm_mday, p->tm_hour, p->tm_min, p->tm_sec, getCurrentUser()->userid ? getCurrentUser()->userid : "", getSession()->fromhost, buf);
         fflush(fp);
         fclose(fp);
     }
@@ -940,7 +913,7 @@ void Retr()
     else
     	sprintf(genbuf, "From: %s", fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "To: %s%s", currentuser->userid, BBSNAME);
+    sprintf(genbuf, "To: %s%s", getCurrentUser()->userid, BBSNAME);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);
@@ -1086,7 +1059,7 @@ void Top()
     else
         sprintf(genbuf, "From: %s", fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "To: %s%s", currentuser->userid, BBSNAME);
+    sprintf(genbuf, "To: %s%s", getCurrentUser()->userid, BBSNAME);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);
@@ -1156,12 +1129,12 @@ void Pass()
         return;
     }
 
-    if (!checkpasswd2(cmd, currentuser)) {
+    if (!checkpasswd2(cmd, getCurrentUser())) {
         sprintf(genbuf, "-ERR Password supplied for \"%s\" is incorrect.", LowUserid);
         outs(genbuf);
         LowUserid[0] = '\0';
         BBSlog_usies("ERROR PASSWD");
-        pop3_logattempt(currentuser->userid, fromhost); /* Leeward 98.07.25 */
+        pop3_logattempt(getCurrentUser()->userid, getSession()->fromhost); /* Leeward 98.07.25 */
         return;
     }
 
@@ -1260,8 +1233,8 @@ void Quit()
     if (State == S_LOGIN) {
         if (markdel) {
             do_delete();
-            getuser(LowUserid, &currentuser);/* 注意原来的currentuser是指向内部的临时变量*/
-            get_mailusedspace(currentuser,1);
+            getuser(LowUserid, &getCurrentUser());/* 注意原来的currentuser是指向内部的临时变量*/
+            get_mailusedspace(getCurrentUser(),1);
         }
         free(fcache);
         free(postlen);

@@ -211,7 +211,7 @@ int confirm_delete_id()
 {
     char buff[STRLEN];
 
-    if (!HAS_PERM(currentuser, PERM_ADMIN)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有总管理员才能修改");
@@ -268,7 +268,7 @@ int x_level()
     /*
      * add by alex, 97.7 , strict the power of sysop 
      */
-    if (!HAS_PERM(currentuser, PERM_ADMIN) || !HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN) || !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有ADMIN权限的管理员才能修改其他用户权限");
@@ -332,14 +332,14 @@ int x_level()
          * Haohmaru.98.10.03.给新任版主自动发信 
          */
 //        if ((lookupuser->userlevel & PERM_BOARDS) && flag == 0)
-//            mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
+//            mail_file(getCurrentUser()->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
         /*
          * Bigman 2000.1.5 修改权限自动发信 
          */
         if ((lookupuser->userlevel & PERM_CLOAK) && flag1 == 0)
-            mail_file(currentuser->userid, "etc/forcloak", lookupuser->userid, NAME_SYSOP_GROUP "授予您隐身权限", BBSPOST_LINK, NULL);
+            mail_file(getCurrentUser()->userid, "etc/forcloak", lookupuser->userid, NAME_SYSOP_GROUP "授予您隐身权限", BBSPOST_LINK, NULL);
         if ((lookupuser->userlevel & PERM_XEMPT) && flag2 == 0)
-            mail_file(currentuser->userid, "etc/forlongid", lookupuser->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", BBSPOST_LINK, NULL);
+            mail_file(getCurrentUser()->userid, "etc/forlongid", lookupuser->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", BBSPOST_LINK, NULL);
 		save_giveupinfo(lookupuser,lcount,s);
     }
     pressreturn();
@@ -352,7 +352,7 @@ int XCheckLevel()
     unsigned int newlevel;
     struct userec scanuser;
 
-    if (!HAS_PERM(currentuser, PERM_ADMIN) || !HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN) || !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 您没有此权限");
@@ -386,7 +386,7 @@ int XCheckLevel()
         long count = 0L;
 
 		gettmpfilename( buffer, "XCL" );
-        //sprintf(buffer, "tmp/XCL.%s%d", currentuser->userid, getpid());
+        //sprintf(buffer, "tmp/XCL.%s%d", getCurrentUser()->userid, getpid());
         if (-1 == (fhp = open(".PASSWDS", O_RDONLY))) {
             prints("系统错误: 无法打开口令文件\n");
         } else if (NULL == (fpx = fopen(buffer, "w"))) {
@@ -461,7 +461,7 @@ int Xdelipacl()
     int id;
     struct userec *lookupuser;
 
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
@@ -501,7 +501,7 @@ int Xdeljunk()
 {
     char buf[256];
 
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
@@ -539,23 +539,23 @@ int x_usersmsdef()
 
     modify_user_mode(USERDEF);
 	clear();
-    if (!strcmp(currentuser->userid, "guest"))
+    if (!strcmp(getCurrentUser()->userid, "guest"))
         return 0;
 
-	if( ! currentmemo->ud.mobileregistered ){
+	if( ! getSession()->currentmemo->ud.mobileregistered ){
         move(3, 0);
 		prints("您没有注册手机号码");
         pressreturn();
         return 0;
     }
     move(2, 0);
-    newlevel = setperms(currentmemo->ud.smsdef, 0, "短信参数", NUMSMSDEF, showsmsdef, NULL);
+    newlevel = setperms(getSession()->currentmemo->ud.smsdef, 0, "短信参数", NUMSMSDEF, showsmsdef, NULL);
     move(2, 0);
-    if (newlevel == currentmemo->ud.smsdef)
+    if (newlevel == getSession()->currentmemo->ud.smsdef)
         prints("参数没有修改...\n");
     else {
-        currentmemo->ud.smsdef = newlevel;
-		write_userdata(currentuser->userid, &(currentmemo->ud) );
+        getSession()->currentmemo->ud.smsdef = newlevel;
+		write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud) );
         prints("新的参数设定完成...\n\n");
     }
     pressreturn();
@@ -571,7 +571,7 @@ int x_userdefine1()
     struct userec *lookupuser;
 
     modify_user_mode(USERDEF);
-    if (!(id = getuser(currentuser->userid, &lookupuser))) {
+    if (!(id = getuser(getCurrentUser()->userid, &lookupuser))) {
         move(3, 0);
         prints("错误的 " NAME_USER_SHORT " ID...");
         clrtoeol();
@@ -579,7 +579,7 @@ int x_userdefine1()
         clear();
         return 0;
     }
-    if (!strcmp(currentuser->userid, "guest"))
+    if (!strcmp(getCurrentUser()->userid, "guest"))
         return 0;
     move(1, 0);
     clrtobot();
@@ -590,7 +590,7 @@ int x_userdefine1()
         prints("参数没有修改...\n");
     else {
         lookupuser->userdefine[1] = newlevel;
-        currentuser->userdefine[1] = newlevel;
+        getCurrentUser()->userdefine[1] = newlevel;
         prints("新的参数设定完成...\n\n");
     }
     pressreturn();
@@ -606,7 +606,7 @@ int x_userdefine()
     struct userec *lookupuser;
 
     modify_user_mode(USERDEF);
-    if (!(id = getuser(currentuser->userid, &lookupuser))) {
+    if (!(id = getuser(getCurrentUser()->userid, &lookupuser))) {
         move(3, 0);
         prints("错误的 " NAME_USER_SHORT " ID...");
         clrtoeol();
@@ -614,7 +614,7 @@ int x_userdefine()
         clear();
         return 0;
     }
-    if (!strcmp(currentuser->userid, "guest"))
+    if (!strcmp(getCurrentUser()->userid, "guest"))
         return 0;
     move(1, 0);
     clrtobot();
@@ -625,26 +625,26 @@ int x_userdefine()
         prints("参数没有修改...\n");
     else {
         lookupuser->userdefine[0] = newlevel;
-        currentuser->userdefine[0] = newlevel;
+        getCurrentUser()->userdefine[0] = newlevel;
         if (((convcode) && (newlevel & DEF_USEGB))      /* KCN,99.09.05 */
             ||((!convcode) && !(newlevel & DEF_USEGB)))
             switch_code();
         uinfo.pager |= FRIEND_PAGER;
         if (!(uinfo.pager & ALL_PAGER)) {
-            if (!DEFINE(currentuser, DEF_FRIENDCALL))
+            if (!DEFINE(getCurrentUser(), DEF_FRIENDCALL))
                 uinfo.pager &= ~FRIEND_PAGER;
         }
         uinfo.pager &= ~ALLMSG_PAGER;
         uinfo.pager &= ~FRIENDMSG_PAGER;
-        if (DEFINE(currentuser, DEF_FRIENDMSG)) {
+        if (DEFINE(getCurrentUser(), DEF_FRIENDMSG)) {
             uinfo.pager |= FRIENDMSG_PAGER;
         }
-        if (DEFINE(currentuser, DEF_ALLMSG)) {
+        if (DEFINE(getCurrentUser(), DEF_ALLMSG)) {
             uinfo.pager |= ALLMSG_PAGER;
             uinfo.pager |= FRIENDMSG_PAGER;
         }
         UPDATE_UTMP(pager, uinfo);
-        if (DEFINE(currentuser, DEF_ACBOARD))
+        if (DEFINE(getCurrentUser(), DEF_ACBOARD))
             nettyNN = NNread_init();
         prints("新的参数设定完成...\n\n");
     }
@@ -705,7 +705,7 @@ void x_edits()
 
     ch = ans[0] - '0' - 1;
 
-    sethomefile(genbuf, currentuser->userid, e_file[ch]);
+    sethomefile(genbuf, getCurrentUser()->userid, e_file[ch]);
     move(3, 0);
     clrtobot();
     sprintf(buf, "(E)编辑 (D)删除 %s? [E]: ", explain_file[ch]);
@@ -728,11 +728,11 @@ void x_edits()
         sprintf(buf, "edit %s", explain_file[ch]);
         if (!strcmp(e_file[ch], "signatures")) {
 
-			currentmemo->ud.signum = calc_numofsig(currentuser->userid);
-			write_userdata( currentuser->userid, &(currentmemo->ud) );
+			getSession()->currentmemo->ud.signum = calc_numofsig(getCurrentUser()->userid);
+			write_userdata( getCurrentUser()->userid, &(getSession()->currentmemo->ud) );
 
-            if (currentmemo->ud.signum&&(currentuser->signature==0))
-            	currentuser->signature=1;
+            if (getSession()->currentmemo->ud.signum&&(getCurrentUser()->signature==0))
+            	getCurrentUser()->signature=1;
             prints("系统重新设定以及读入你的签名档...");
         }
         bbslog("user","%s",buf);

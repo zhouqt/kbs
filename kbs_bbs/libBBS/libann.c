@@ -44,7 +44,7 @@ void ann_add_item(MENU * pm, ITEM * it)
     }
 }
 
-int ann_load_directory(MENU * pm)
+int ann_load_directory(MENU * pm, session_t* session)
 {
     FILE *fn;
     ITEM litem;
@@ -77,9 +77,9 @@ int ann_load_directory(MENU * pm)
                 strncpy(litem.fname, buf + 5, sizeof(litem.fname) - 1);
             if (strstr(litem.fname,"..")) continue;
             litem.fname[sizeof(litem.fname) - 1] = '\0';
-            /*if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
-               (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))) */
-            if (ann_can_access(litem.title, board, currentuser)) {
+            /*if ((!strstr(litem.title,"(BM: BMS)")||HAS_PERM(session->getCurrentUser(),PERM_BOARDS))&&
+               (!strstr(litem.title,"(BM: SYSOPS)")||HAS_PERM(session->getCurrentUser(),PERM_SYSOP))) */
+            if (ann_can_access(litem.title, board, session->currentuser)) {
                 if (strstr(litem.fname, "!@#$%")) {     /*取 host & port */
                     char *ptr1, *ptr2, gtmp[STRLEN];
 
@@ -263,9 +263,9 @@ int ann_traverse_check(char *path, struct userec *user)
                 continue;
             if (strncmp(currpath, path, strlen(currpath)) != 0)
                 continue;
-            /*if ((!strstr(title,"(BM: BMS)")||HAS_PERM(currentuser,PERM_BOARDS))&&
-               (!strstr(title,"(BM: SYSOPS)")||HAS_PERM(currentuser,PERM_SYSOP))&&
-               (!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(currentuser,PERM_SECANC))) */
+            /*if ((!strstr(title,"(BM: BMS)")||HAS_PERM(session->getCurrentUser(),PERM_BOARDS))&&
+               (!strstr(title,"(BM: SYSOPS)")||HAS_PERM(session->getCurrentUser(),PERM_SYSOP))&&
+               (!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(session->getCurrentUser(),PERM_SECANC))) */
             if ((t = ann_can_access(title, board, user)) != 0) {
                 if (ret < t)
                     ret = t;    /* directory can be accessed but it should be access with some
@@ -317,7 +317,7 @@ void a_additem(MENU* pm,const char* title,const char* fname,char* host,int port,
     }
 }
 
-int a_loadnames(MENU* pm)             /* 装入 .Names */
+int a_loadnames(MENU* pm, session_t* session)             /* 装入 .Names */
 {
     FILE *fn;
     ITEM litem;
@@ -345,10 +345,10 @@ int a_loadnames(MENU* pm)             /* 装入 .Names */
             else
                 strncpy(litem.fname, buf + 5, sizeof(litem.fname));
             if (strstr(litem.fname,"..")) continue;
-            if (HAS_PERM(currentuser, PERM_SYSOP)
-                ||((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(currentuser, PERM_BOARDS))
-                 &&(!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(currentuser, PERM_SYSOP)) 
-                 &&(!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(currentuser, PERM_SECANC)))){
+            if (HAS_PERM(session->currentuser, PERM_SYSOP)
+                ||((!strstr(litem.title, "(BM: BMS)") || HAS_PERM(session->currentuser, PERM_BOARDS))
+                 &&(!strstr(litem.title, "(BM: SYSOPS)") || HAS_PERM(session->currentuser, PERM_SYSOP)) 
+                 &&(!strstr(litem.title, "(BM: ZIXIAs)") || HAS_PERM(session->currentuser, PERM_SECANC)))){
                 if (strstr(litem.fname, "!@#$%")) {     /*取 host & port */
                     char *ptr1, *ptr2, gtmp[STRLEN];
 
@@ -426,13 +426,13 @@ int a_savenames(MENU* pm)             /*保存当前MENU到 .Names */
     return 0;
 }
 
-int save_import_path(char **i_path,char **i_title,time_t* i_path_time)
+int save_import_path(char **i_path,char **i_title,time_t* i_path_time, session_t* session)
 {
     FILE *fn;
     int i;
     char buf[MAXPATH];
 
-    sethomefile(buf, currentuser->userid, "BMpath");
+    sethomefile(buf, session->currentuser->userid, "BMpath");
     fn = fopen(buf, "wt");
     if (fn) {
         struct stat st;
@@ -451,14 +451,14 @@ int save_import_path(char **i_path,char **i_title,time_t* i_path_time)
     return -1;
 }
 
-void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select)
+void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select, session_t* session)
 {
     FILE *fn;
     char buf[MAXPATH];
     int i;
     struct stat st;
 
-    sethomefile(buf, currentuser->userid, "BMpath");
+    sethomefile(buf, session->currentuser->userid, "BMpath");
     if (stat(buf, &st) != -1)
         if (st.st_mtime == * i_path_time)
             return;
@@ -476,7 +476,7 @@ void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * 
                 buf[0] = 0;
             /*
              * TODO: access check need complete!
-             * if (buf[0]!=0&&(ann_traverse_check(buf, currentuser)!=0))
+             * if (buf[0]!=0&&(ann_traverse_check(buf, session->getCurrentUser())!=0))
              * buf[0]=0;  can't access 
              */
 
@@ -493,7 +493,7 @@ void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * 
 
                     bzero(&pm, sizeof(pm));
                     pm.path = i_path[i];
-                    a_loadnames(&pm);
+                    a_loadnames(&pm, session);
                     strncpy(buf, pm.mtitle, MAXPATH - 1);
                     buf[MAXPATH - 1] = 0;
                     a_freenames(&pm);
@@ -512,7 +512,7 @@ void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * 
             i_title[i] = (char *) malloc(1);
             i_title[i][0] = 0;
         }
-        save_import_path(i_path,i_title,i_path_time);
+        save_import_path(i_path,i_title,i_path_time, session);
     }
     * i_path_select = 1;
 }
@@ -551,7 +551,7 @@ char *str;
     return 1;
 }
 
-int linkto(char *path, const char *fname, const char *title)
+int linkto(char *path, const char *fname, const char *title, session_t* session)
 {
     MENU pm;
 
@@ -559,7 +559,7 @@ int linkto(char *path, const char *fname, const char *title)
     pm.path = path;
 
     strcpy(pm.mtitle, title);
-    a_loadnames(&pm);
+    a_loadnames(&pm, session);
     a_additem(&pm, title, fname, NULL, 0, 0);
     if (a_savenames(&pm) != 0) {
 #ifdef BBSMAIN
@@ -580,7 +580,7 @@ int linkto(char *path, const char *fname, const char *title)
  *     title    版精华区的中文名
  *     gname    与 group 对应的中文名
  */
-int add_grp(const char group[STRLEN],const char bname[STRLEN],const char title[STRLEN],const char gname[STRLEN])
+int add_grp(const char group[STRLEN],const char bname[STRLEN],const char title[STRLEN],const char gname[STRLEN], session_t* session)
         /*
          * 精华区 加 目录 
          */
@@ -608,17 +608,17 @@ int add_grp(const char group[STRLEN],const char bname[STRLEN],const char title[S
         mkdir("0Announce/groups", 0755);
         chmod("0Announce/groups", 0755);
 
-        linkto("0Announce", "groups", "讨论区精华");
+        linkto("0Announce", "groups", "讨论区精华", session);
     }
     if (!dashd(gpath)) {
         mkdir(gpath, 0755);
         chmod(gpath, 0755);
-        linkto("0Announce/groups", group, gname);
+        linkto("0Announce/groups", group, gname, session);
     }
     if (!dashd(bpath)) {
         mkdir(bpath, 0755);
         chmod(bpath, 0755);
-        linkto(gpath, bname, title);
+        linkto(gpath, bname, title, session);
         sprintf(buf, "%s/.Names", bpath);
         if ((fn = fopen(buf, "w")) == NULL) {
             return -1;

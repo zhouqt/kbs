@@ -506,7 +506,7 @@ int bbs_main(argv)
     /*    modified by period      2000-11-13      allow localhost anyway  */
     /*    if((fp = fopen("NOLOGIN","r")) != NULL) */
 #ifndef DEBUG
-    if (strcmp(fromhost, "0.0.0.0") && strcmp(fromhost, "127.0.0.1") && (fp = fopen("NOLOGIN", "r")) != NULL) {
+    if (strcmp(getSession()->fromhost, "0.0.0.0") && strcmp(getSession()->fromhost, "127.0.0.1") && (fp = fopen("NOLOGIN", "r")) != NULL) {
         while (fgets(buf, 256, fp) != NULL)
             local_prints("%s", buf);
         fclose(fp);
@@ -580,9 +580,9 @@ int bbs_main(argv)
     sprintf(bbs_prog_path, "%s/bin/bbs", BBSHOME);
 #endif
 
-    fromhost[16] = '\0';
-    if (check_ban_IP(fromhost, buf) > 0) {      /* Leeward 98.07.31 */
-        local_prints("本站目前不欢迎来自 %s 访问!\r\n原因：%s。\r\n\r\n", fromhost, buf);
+    getSession()->fromhost[16] = '\0';
+    if (check_ban_IP(getSession()->fromhost, buf) > 0) {      /* Leeward 98.07.31 */
+        local_prints("本站目前不欢迎来自 %s 访问!\r\n原因：%s。\r\n\r\n", getSession()->fromhost, buf);
         local_Net_Sleep(60);
         shutdown(csock, 2);
         close(csock);
@@ -591,16 +591,16 @@ int bbs_main(argv)
     }
 
 #ifdef HAVE_REVERSE_DNS
-	getremotehost(csock, fromhost, sizeof(fromhost));
+	getremotehost(csock, getSession()->fromhost, sizeof(getSession()->fromhost));
 #endif
 
 #if 0
 #ifdef D_TEST
     strcat(bbs_prog_path, "test");
-    execl(bbs_prog_path, "bbstest", code, fromhost, NULL);      /*调用BBS */
+    execl(bbs_prog_path, "bbstest", code, getSession()->fromhost, NULL);      /*调用BBS */
 #else
     strcat(bbs_prog_path, "new");
-    execl(bbs_prog_path, "bbsnew", code, fromhost, NULL);       /*调用BBS */
+    execl(bbs_prog_path, "bbsnew", code, getSession()->fromhost, NULL);       /*调用BBS */
 #endif
 #endif
     {
@@ -634,8 +634,8 @@ enum bbs_handlers{
 #define FROMHOST(sin) \
   {\
     char *host = (char *) inet_ntoa(sin.sin_addr);\
-    strncpy(fromhost, host, IPLEN);\
-    fromhost[IPLEN] = 0;\
+    strncpy(getSession()->fromhost, host, IPLEN);\
+    getSession()->fromhost[IPLEN] = 0;\
   }
 
 static int bbs_standalone_main(char* argv)
@@ -814,8 +814,8 @@ int bbs_entry(void)
     {
         char *host = (char *) inet_ntoa(sin.sin_addr);
 
-        strncpy(fromhost, host, IPLEN);
-        fromhost[IPLEN] = 0;
+        strncpy(getSession()->fromhost, host, IPLEN);
+        getSession()->fromhost[IPLEN] = 0;
     }
     return bbs_main(saved_argv[0]);
 }

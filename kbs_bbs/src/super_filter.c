@@ -469,7 +469,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         set_vard(fvars+fget_var("m"), ptr1->accessed[0]&FILE_MARKED); set_vard(fvars+fget_var("保留"), ptr1->accessed[0]&FILE_MARKED);
         set_vard(fvars+fget_var("g"), ptr1->accessed[0]&FILE_DIGEST); set_vard(fvars+fget_var("文摘"), ptr1->accessed[0]&FILE_DIGEST);
         set_vard(fvars+fget_var("b"), (ptr1->accessed[0]&FILE_MARKED)&&(ptr1->accessed[0]&FILE_DIGEST));
-        if (chk_currBM(currBM, currentuser)) {
+        if (chk_currBM(currBM, getCurrentUser())) {
             set_vard(fvars+fget_var("noreply"), ptr1->accessed[1]&FILE_READ); set_vard(fvars+fget_var("不可回复"), ptr1->accessed[1]&FILE_READ);
             set_vard(fvars+fget_var("sign"), ptr1->accessed[0]&FILE_SIGN); set_vard(fvars+fget_var("标记"), ptr1->accessed[0]&FILE_SIGN);
 #ifdef FILTER
@@ -482,9 +482,9 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         set_vars(fvars+fget_var("title"), ptr1->title); set_vars(fvars+fget_var("标题"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner); set_vars(fvars+fget_var("作者"), ptr1->owner);
         set_vars(fvars+fget_var("fname"), ptr1->filename); set_vars(fvars+fget_var("文件名"), ptr1->filename);
-        set_vard(fvars+fget_var("my"), !strcmp(ptr1->owner,currentuser->userid)); set_vard(fvars+fget_var("我的"), !strcmp(ptr1->owner,currentuser->userid));
+        set_vard(fvars+fget_var("my"), !strcmp(ptr1->owner,getCurrentUser()->userid)); set_vard(fvars+fget_var("我的"), !strcmp(ptr1->owner,getCurrentUser()->userid));
 #ifdef HAVE_BRC_CONTROL
-        set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id)); set_vard(fvars+fget_var("未读"), brc_unread(ptr1->id));
+        set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id, getSession())); set_vard(fvars+fget_var("未读"), brc_unread(ptr1->id, getSession()));
 #endif
         setbfile(ffn, currboard->filename, ptr1->filename);
         set_vard(fvars+fget_var("ftime"), get_posttime(ptr1)); set_vard(fvars+fget_var("时间"), get_posttime(ptr1));
@@ -546,7 +546,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         sleep(1);
         return FULLUPDATE;
     }
-/*    else if (chk_currBM(currBM, currentuser)) {
+/*    else if (chk_currBM(currBM, getCurrentUser())) {
         char ans[4];
         int i,j,k;
         int fflag;
@@ -563,7 +563,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
             else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
             else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
             for(i=0;i<count;i++)
-                change_post_flag(currBM, currentuser, digestmode, currboard, i+1, &f, currdirect, fflag, 0);
+                change_post_flag(currBM, getCurrentUser(), digestmode, currboard, i+1, &f, currdirect, fflag, 0);
         }
     }*/
     strcpy(arg->direct, newdirect);

@@ -11,7 +11,7 @@ int main()
     struct fileheader x;
     struct userec *u = NULL;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("匆匆过客不能写信，请先登录");
     if (!can_send_mail())
@@ -39,7 +39,7 @@ int main()
     if (f_append(filename, unix_string(content)) < 0)
         http_fatal("发信失败");
     
-    if ((i=post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig, backup))!=0)
+    if ((i=post_mail(userid, title, filename, getCurrentUser()->userid, getCurrentUser()->username, fromhost, sig, backup))!=0)
     {
         switch (i) {
         case -1:

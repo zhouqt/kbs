@@ -76,7 +76,6 @@ static int i_domode = INPUT_ACTIVE;
 extern time_t calltime;
 extern char calltimememo[];
 
-extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 int canbemsged(uin)             /*Haohmaru.99.5.29 */
     struct user_info *uin;
 {
@@ -141,58 +140,58 @@ void u_enter()
     memset(&uinfo, 0, sizeof(uinfo));
     uinfo.active = true;
     uinfo.pid = getpid();
-/*    if( HAS_PERM(currentuser,PERM_LOGINCLOAK) && (currentuser->flags[0] & CLOAK_FLAG) && HAS_PERM(currentuser,PERM_SEECLOAK)) */
+/*    if( HAS_PERM(getCurrentUser(),PERM_LOGINCLOAK) && (getCurrentUser()->flags[0] & CLOAK_FLAG) && HAS_PERM(getCurrentUser(),PERM_SEECLOAK)) */
 
     /* Bigman 2000.8.29 智囊团能够隐身 */
-    if ((HAS_PERM(currentuser, PERM_CHATCLOAK) || HAS_PERM(currentuser, PERM_CLOAK)) && (currentuser->flags & CLOAK_FLAG))
+    if ((HAS_PERM(getCurrentUser(), PERM_CHATCLOAK) || HAS_PERM(getCurrentUser(), PERM_CLOAK)) && (getCurrentUser()->flags & CLOAK_FLAG))
         uinfo.invisible = true;
     uinfo.mode = LOGIN;
     uinfo.pager = 0;
-/*    uinfo.pager = !(currentuser->flags[0] & PAGER_FLAG);*/
-    if (DEFINE(currentuser, DEF_FRIENDCALL)) {
+/*    uinfo.pager = !(getCurrentUser()->flags[0] & PAGER_FLAG);*/
+    if (DEFINE(getCurrentUser(), DEF_FRIENDCALL)) {
         uinfo.pager |= FRIEND_PAGER;
     }
-    if (currentuser->flags & PAGER_FLAG) {
+    if (getCurrentUser()->flags & PAGER_FLAG) {
         uinfo.pager |= ALL_PAGER;
         uinfo.pager |= FRIEND_PAGER;
     }
-    if (DEFINE(currentuser, DEF_FRIENDMSG)) {
+    if (DEFINE(getCurrentUser(), DEF_FRIENDMSG)) {
         uinfo.pager |= FRIENDMSG_PAGER;
     }
-    if (DEFINE(currentuser, DEF_ALLMSG)) {
+    if (DEFINE(getCurrentUser(), DEF_ALLMSG)) {
         uinfo.pager |= ALLMSG_PAGER;
         uinfo.pager |= FRIENDMSG_PAGER;
     }
     uinfo.uid = usernum;
-    strncpy(uinfo.from, fromhost, IPLEN);
+    strncpy(uinfo.from, getSession()->fromhost, IPLEN);
 #ifdef SHOW_IDLE_TIME
     uinfo.freshtime = time(0);
 #endif
-    strncpy(uinfo.userid, currentuser->userid, 20);
+    strncpy(uinfo.userid, getCurrentUser()->userid, 20);
 
 //    strncpy(uinfo.realname, curruserdata.realname, 20);
-    strncpy(uinfo.realname, currentmemo->ud.realname, 20);
-    strncpy(uinfo.username, currentuser->username, 40);
-    utmpent = getnewutmpent(&uinfo);
-    if (utmpent == -1) {
+    strncpy(uinfo.realname, getSession()->currentmemo->ud.realname, 20);
+    strncpy(uinfo.username, getCurrentUser()->username, 40);
+    getSession()->utmpent = getnewutmpent(&uinfo);
+    if (getSession()->utmpent == -1) {
         prints("人数已满,无法分配用户条目!\n");
         oflush();
         Net_Sleep(20);
         exit(-1);
     }
 
-    getfriendstr(currentuser,get_utmpent(utmpent));
+    getfriendstr(getCurrentUser(),get_utmpent(getSession()->utmpent), getSession());
     listmode = 0;
 }
 
 void setflags(mask, value)
     int mask, value;
 {
-    if (((currentuser->flags & mask) && 1) != value) {
+    if (((getCurrentUser()->flags & mask) && 1) != value) {
         if (value)
-            currentuser->flags |= mask;
+            getCurrentUser()->flags |= mask;
         else
-            currentuser->flags &= ~mask;
+            getCurrentUser()->flags &= ~mask;
     }
 }
 
@@ -215,18 +214,18 @@ void u_exit()
         return;
 /*---		---*/
     setflags(PAGER_FLAG, (uinfo.pager & ALL_PAGER));
-/*    if (HAS_PERM(currentuser,PERM_LOGINCLOAK)&&HAS_PERM(currentuser,PERM_SEECLOAK))*/
+/*    if (HAS_PERM(getCurrentUser(),PERM_LOGINCLOAK)&&HAS_PERM(getCurrentUser(),PERM_SEECLOAK))*/
 
     /* Bigman 2000.8.29 智囊团能够隐身 */
-    if ((HAS_PERM(currentuser, PERM_CHATCLOAK) || HAS_PERM(currentuser, PERM_CLOAK)))
+    if ((HAS_PERM(getCurrentUser(), PERM_CHATCLOAK) || HAS_PERM(getCurrentUser(), PERM_CLOAK)))
         setflags(CLOAK_FLAG, uinfo.invisible);
 
 #ifdef HAVE_BRC_CONTROL
-    brc_update(currentuser->userid);
+    brc_update(getCurrentUser()->userid, getSession());
 #endif
 
-    if (utmpent > 0)
-        clear_utmp(utmpent, usernum, getpid());
+    if (getSession()->utmpent > 0)
+        clear_utmp(getSession()->utmpent, usernum, getpid());
 }
 
 int cmpuids(uid, up)
@@ -241,7 +240,7 @@ int dosearchuser(userid)
 {
     int id;
 
-    if ((id = getuser(userid, &currentuser)) != 0)
+    if ((id = getuser(userid, &getCurrentUser())) != 0)
         return usernum = id;
     return usernum = 0;
 }
@@ -274,7 +273,7 @@ void abort_bbs(int signo)
         record_exit_time();
         stay = time(0) - login_start_time;
 /*---	period	2000-10-20	4 debug	---*/
-        newbbslog(BBSLOG_USIES, "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, currentuser->username, utmpent, usernum);
+        newbbslog(BBSLOG_USIES, "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, getCurrentUser()->username, getSession()->utmpent, usernum);
         u_exit();
     }
     shutdown(0, 2);
@@ -291,7 +290,7 @@ void multi_user_check()
     int kickmulti = -1;
 
     while (ret != 0) {
-        ret = multilogin_user(currentuser, usernum,0);
+        ret = multilogin_user(getCurrentUser(), usernum,0);
         if (ret == 3) {
             prints("\x1b[33m抱歉, 该IP有太多 \x1b[36mguest 在线, 请稍候再试。\x1b[m\n");
             pressreturn();
@@ -367,7 +366,7 @@ void system_init()
 void system_abort()
 {
     if (started) {
-        newbbslog(BBSLOG_USIES,"ABORT %s", currentuser->username);
+        newbbslog(BBSLOG_USIES,"ABORT %s", getCurrentUser()->username);
         u_exit();
     }
     clear();
@@ -560,17 +559,17 @@ void login_query()
         }
         if (strcasecmp(uid, "new") == 0) {
 #ifdef LOGINASNEW
-            if (check_ban_IP(fromhost, buf) <= 0) {
+            if (check_ban_IP(getSession()->fromhost, buf) <= 0) {
                 new_register();
-                sethomepath(tmpstr, currentuser->userid);
-                sprintf(buf, "/bin/mv -f %s " BBSHOME "/homeback/%s", tmpstr, currentuser->userid);
+                sethomepath(tmpstr, getCurrentUser()->userid);
+                sprintf(buf, "/bin/mv -f %s " BBSHOME "/homeback/%s", tmpstr, getCurrentUser()->userid);
                 system(buf);
-                setmailpath(tmpstr, currentuser->userid);       /*Haohmaru.00.04.23,免得能看前人的信 */
-                sprintf(buf, "/bin/mv -f %s " BBSHOME "/mailback/%s", tmpstr, currentuser->userid);
+                setmailpath(tmpstr, getCurrentUser()->userid);       /*Haohmaru.00.04.23,免得能看前人的信 */
+                sprintf(buf, "/bin/mv -f %s " BBSHOME "/mailback/%s", tmpstr, getCurrentUser()->userid);
                 system(buf);
                 /*给新注册的用户一封信 added by binxun .2003-6-24*/
                 #ifdef SMTH
-                mail_file("deliver","etc/tonewuser",currentuser->userid,"致新注册用户的信",0,NULL);
+                mail_file("deliver","etc/tonewuser",getCurrentUser()->userid,"致新注册用户的信",0,NULL);
                 #endif
                 break;
             }
@@ -582,35 +581,35 @@ void login_query()
             prints("\033[32m" MSG_ERR_USERID "\033[m\n");
         } else
 /* Add by KCN for let sysop can use extra 10 UTMP */
-        if (!HAS_PERM(currentuser, PERM_ADMINMENU) && (curr_login_num >= MAXACTIVE + 10)) {
+        if (!HAS_PERM(getCurrentUser(), PERM_ADMINMENU) && (curr_login_num >= MAXACTIVE + 10)) {
             ansimore("etc/loginfull", false);
             oflush();
             sleep(1);
             exit(1);
         } else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
-            currentuser->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
-            currentuser->flags = CURSOR_FLAG | PAGER_FLAG;
+            getCurrentUser()->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
+            getCurrentUser()->flags = CURSOR_FLAG | PAGER_FLAG;
             break;
         } else {
             if (!convcode)
-                convcode = !(DEFINE(currentuser, DEF_USEGB));      /* KCN,99.09.05 */
+                convcode = !(DEFINE(getCurrentUser(), DEF_USEGB));      /* KCN,99.09.05 */
 
-            if(check_ip_acl(currentuser->userid, fromhost)) {
-                prints("该 ID 不欢迎来自 %s 的用户，byebye!", fromhost);
+            if(check_ip_acl(getCurrentUser()->userid, getSession()->fromhost)) {
+                prints("该 ID 不欢迎来自 %s 的用户，byebye!", getSession()->fromhost);
                 oflush();
                 sleep(1);
                 exit(1);
             }
             getdata(0, 0, "\033[1m\033[37m"PASSWD_PROMPT": \033[m", passbuf, 39, NOECHO, NULL, true);
 #ifdef NINE_BUILD
-            if(!strcmp(fromhost, "10.9.0.1")||!strcmp(fromhost, "10.9.30.133")) {
+            if(!strcmp(getSession()->fromhost, "10.9.0.1")||!strcmp(getSession()->fromhost, "10.9.30.133")) {
 		getdata(0, 0, "", buf, 20, NOECHO, NULL, true);
-                if (buf[0]) strcpy(fromhost, buf);
+                if (buf[0]) strcpy(getSession()->fromhost, buf);
             }
 #endif
 
-            if (!checkpasswd2(passbuf, currentuser)) {
-                logattempt(currentuser->userid, fromhost);
+            if (!checkpasswd2(passbuf, getCurrentUser())) {
+                logattempt(getCurrentUser()->userid, getSession()->fromhost);
                 prints("\033[32m密码输入错误...\033[m\n");
             } else {
                 if (id_invalid(uid)) {
@@ -628,9 +627,9 @@ void login_query()
                 }
                 /* passwd ok, covert to md5 --wwj 2001/5/7 */
 #ifdef CONV_PASS
-                if (currentuser->passwd[0]) {
+                if (getCurrentUser()->passwd[0]) {
                     bbslog("covert", "for md5passwd");
-                    setpasswd(passbuf, currentuser);
+                    setpasswd(passbuf, getCurrentUser());
                 }
 #endif
                 break;
@@ -642,7 +641,7 @@ void login_query()
 #endif //SSHBBS
 
 #ifdef CHECK_CONNECT
-    if(check_ID_lists(currentuser->userid)) {
+    if(check_ID_lists(getCurrentUser()->userid)) {
         prints("你的连接频率过高，byebye!");
         oflush();
         sleep(1);
@@ -651,15 +650,15 @@ void login_query()
 #endif
 
 	/* We must create home directory before initializing current userdata */
-    sethomepath(genbuf, currentuser->userid);
+    sethomepath(genbuf, getCurrentUser()->userid);
     mkdir(genbuf, 0755);
 /* init user data */
-//    read_userdata(currentuser->userid, &curruserdata);
+//    read_userdata(getCurrentUser()->userid, &curruserdata);
 
     clear();
     oflush();
-    if (strcasecmp(currentuser->userid, "guest") && !HAS_PERM(currentuser, PERM_BASIC)) {
-        sethomefile(genbuf, currentuser->userid, "giveup");
+    if (strcasecmp(getCurrentUser()->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_BASIC)) {
+        sethomefile(genbuf, getCurrentUser()->userid, "giveup");
         fn = fopen(genbuf, "rt");
         if (fn) {
             while (!feof(fn)) {
@@ -682,7 +681,7 @@ void login_query()
         exit(1);
     }
 #ifdef DEBUG
-    if (!HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         prints("本端口仅供测试用，请连接本站的其他开放端口。\n");
         oflush();
         Net_Sleep(3);
@@ -691,7 +690,7 @@ void login_query()
 #endif
     multi_user_check();
 
-	if( read_user_memo( currentuser->userid, & currentmemo ) <= 0 ){
+	if( read_user_memo( getCurrentUser()->userid, & getSession()->currentmemo ) <= 0 ){
 		prints("由于程序更新，请先退出此帐号所有连接再重新登陆\n");
 	 	oflush();
 		sleep(1);
@@ -703,11 +702,11 @@ void login_query()
     signal(SIGALRM, SIG_IGN);   /*Haohmaru.98.11.12 */
     term_init();
     scrint = 1;
-    sethomepath(tmpstr, currentuser->userid);
-    sprintf(fname, "%s/%s.deadve", tmpstr, currentuser->userid);
+    sethomepath(tmpstr, getCurrentUser()->userid);
+    sprintf(fname, "%s/%s.deadve", tmpstr, getCurrentUser()->userid);
     if ((fn = fopen(fname, "r")) != NULL) {
-	    if(strcasecmp(currentuser->userid,"guest"))
-            mail_file(currentuser->userid, fname, currentuser->userid, "不正常断线所保留的部份...", BBSPOST_MOVE, NULL);
+	    if(strcasecmp(getCurrentUser()->userid,"guest"))
+            mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid, "不正常断线所保留的部份...", BBSPOST_MOVE, NULL);
         else {
             fclose(fn);
 			unlink(fname);
@@ -718,7 +717,7 @@ void login_query()
 
 void write_defnotepad()
 {
-    currentuser->notedate = time(NULL);
+    getCurrentUser()->notedate = time(NULL);
     return;
 }
 
@@ -744,7 +743,7 @@ void notepad_init()
         check = fopen("etc/checknotepad", "w");
         fprintf(check, "%lu", lastnote);
         fclose(check);
-        sprintf(tmp, "留言板在 %s Login 开启，内定开启时间时间为 %s", currentuser->userid, Ctime(lastnote));
+        sprintf(tmp, "留言板在 %s Login 开启，内定开启时间时间为 %s", getCurrentUser()->userid, Ctime(lastnote));
         bbslog("user","%s",tmp);
     }
     if ((time(NULL) - lastnote) >= maxsec) {
@@ -765,7 +764,7 @@ void notepad_init()
                 else {
                     sprintf(notetitle, "[%.10s] %s", ctime(&now), ntitle);
                     if (dashf(fname)) {
-                        post_file(currentuser, "", fname, bname, notetitle, 0, 1);
+                        post_file(getCurrentUser(), "", fname, bname, notetitle, 0, 1, getSession());
                         sprintf(tmp, "%s 自动张贴", ntitle);
                         bbslog("user","%s",tmp);
                     }
@@ -775,7 +774,7 @@ void notepad_init()
         }
         sprintf(notetitle, "[%.10s] 留言板记录", ctime(&now));
         if (dashf("etc/notepad")) {
-            post_file(currentuser, "", "etc/notepad", "notepad", notetitle, 0, 1);
+            post_file(getCurrentUser(), "", "etc/notepad", "notepad", notetitle, 0, 1, getSession());
             unlink("etc/notepad");
         }
         bbslog("user","%s","自动发信时间更改");
@@ -817,41 +816,41 @@ void user_login()
     unsigned unLevel = PERM_SUICIDE;
 
     /* ?????后面还有check_register_info */
-    newbbslog(BBSLOG_USIES,"ENTER @%s", fromhost);
+    newbbslog(BBSLOG_USIES,"ENTER @%s", getSession()->fromhost);
     u_enter();
-    sprintf(genbuf, "Enter from %-16s", fromhost);      /* Leeward: 97.12.02 */
+    sprintf(genbuf, "Enter from %-16s", getSession()->fromhost);      /* Leeward: 97.12.02 */
 
     bbslog("user","%s",genbuf);
 /*---	period	2000-10-19	4 debug	---*/
-    newbbslog(BBSLOG_USIES,"ALLOC: [%d %d]", utmpent, usernum);
+    newbbslog(BBSLOG_USIES,"ALLOC: [%d %d]", getSession()->utmpent, usernum);
 /*---	---*/
     started = 1;
     if (USE_NOTEPAD == 1)
         notepad_init();
-    if (strcmp(currentuser->userid, "guest") != 0 && USE_NOTEPAD == 1) {
-        if (DEFINE(currentuser, DEF_NOTEPAD)) {
+    if (strcmp(getCurrentUser()->userid, "guest") != 0 && USE_NOTEPAD == 1) {
+        if (DEFINE(getCurrentUser(), DEF_NOTEPAD)) {
             int noteln;
 
-            if (lastnote > currentuser->notedate)
-                currentuser->noteline = 0;
+            if (lastnote > getCurrentUser()->notedate)
+                getCurrentUser()->noteline = 0;
             noteln = countln("etc/notepad");
-            if ((noteln > 0) && (lastnote > currentuser->notedate || currentuser->noteline == 0)) {
+            if ((noteln > 0) && (lastnote > getCurrentUser()->notedate || getCurrentUser()->noteline == 0)) {
                 shownotepad();
-                currentuser->noteline = noteln;
+                getCurrentUser()->noteline = noteln;
                 write_defnotepad();
-            } else if ((noteln - currentuser->noteline) > 0) {
+            } else if ((noteln - getCurrentUser()->noteline) > 0) {
                 clear();
-                ansimore2("etc/notepad", false, 0, noteln - currentuser->noteline + 1);
+                ansimore2("etc/notepad", false, 0, noteln - getCurrentUser()->noteline + 1);
                 prints("\033[31m⊙┴———————————————————————————————————┴⊙\033[m\n");
                 igetkey();
-                currentuser->noteline = noteln;
+                getCurrentUser()->noteline = noteln;
                 write_defnotepad();
                 clear();
             }
         }
     }
     /* Leeward 98.09.24 Use SHARE MEM to diaplay statistic data below */
-    if (DEFINE(currentuser, DEF_SHOWSTATISTIC)) {
+    if (DEFINE(getCurrentUser(), DEF_SHOWSTATISTIC)) {
         /*ansimore("0Announce/bbslists/countlogins", true); 去掉显示上站人数 */
 #ifdef BLESS_BOARD
         if (dashf("etc/posts/bless"))
@@ -866,8 +865,8 @@ void user_login()
         }
     }
     clear();
-    if (DEFINE(currentuser, DEF_SHOWHOT)) {     /* Leeward 98.09.24 Use SHARE MEM and disable old code
-                                                   if (DEFINE(currentuser,DEF_SHOWSTATISTIC)) {
+    if (DEFINE(getCurrentUser(), DEF_SHOWHOT)) {     /* Leeward 98.09.24 Use SHARE MEM and disable old code
+                                                   if (DEFINE(getCurrentUser(),DEF_SHOWSTATISTIC)) {
                                                    ansimore("etc/posts/day", false);
                                                    }
                                                  */
@@ -876,8 +875,8 @@ void user_login()
 
     move(t_lines - 2 /*1 */ , 0);       /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
-    prints("\033[1;36m☆ 这是您第 \033[33m%d\033[36m 次上站，上次您是从 \033[33m%s\033[36m 连往本站。\n", currentuser->numlogins + 1, currentuser->lasthost);
-    prints("☆ 上次连线时间为 \033[33m%s\033[m ", Ctime(currentuser->lastlogin));
+    prints("\033[1;36m☆ 这是您第 \033[33m%d\033[36m 次上站，上次您是从 \033[33m%s\033[36m 连往本站。\n", getCurrentUser()->numlogins + 1, getCurrentUser()->lasthost);
+    prints("☆ 上次连线时间为 \033[33m%s\033[m ", Ctime(getCurrentUser()->lastlogin));
     igetkey();
     /* 全国十大热门话题 added by Czz 020128 */
 #ifdef CNBBS_TOPIC
@@ -898,35 +897,35 @@ void user_login()
         prints("\033[1;36m☆ 按任意键继续...\033[33m\033[m ");
         igetkey();
     }
-	/* Load currentuser's mailbox properties, added by flyriver, 2003.1.5 */
-	uinfo.mailbox_prop = load_mailbox_prop(currentuser->userid);
+	/* Load getCurrentUser()'s mailbox properties, added by flyriver, 2003.1.5 */
+	uinfo.mailbox_prop = load_mailbox_prop(getCurrentUser()->userid);
     move(t_lines - 1, 0);
-    sethomefile(fname, currentuser->userid, BADLOGINFILE);
+    sethomefile(fname, getCurrentUser()->userid, BADLOGINFILE);
     if (ansimore(fname, false) != -1) {
         getdata(t_lines - 1, 0, "您要删除以上密码输入错误的记录吗 (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
         if (*ans != 'N' && *ans != 'n')
             my_unlink(fname);
     }
 
-    strncpy(currentuser->lasthost, fromhost, IPLEN);
-    currentuser->lasthost[15] = '\0';   /* dumb mistake on my part */
-    currentuser->lastlogin = time(NULL);
-    currentuser->numlogins++;
+    strncpy(getCurrentUser()->lasthost, getSession()->fromhost, IPLEN);
+    getCurrentUser()->lasthost[15] = '\0';   /* dumb mistake on my part */
+    getCurrentUser()->lastlogin = time(NULL);
+    getCurrentUser()->numlogins++;
 
     /* Leeward 98.06.20 adds below 3 lines */
-    if ((int) currentuser->numlogins < 1)
-        currentuser->numlogins = 1;
-    if ((int) currentuser->numposts < 0)
-        currentuser->numposts = 0;
-    if ((int) currentuser->stay < 0)
-        currentuser->stay = 1;
-    currentuser->userlevel &= (~unLevel);       /* 恢复自杀标志 Luzi 98.10.10 */
+    if ((int) getCurrentUser()->numlogins < 1)
+        getCurrentUser()->numlogins = 1;
+    if ((int) getCurrentUser()->numposts < 0)
+        getCurrentUser()->numposts = 0;
+    if ((int) getCurrentUser()->stay < 0)
+        getCurrentUser()->stay = 1;
+    getCurrentUser()->userlevel &= (~unLevel);       /* 恢复自杀标志 Luzi 98.10.10 */
 
-    if (currentuser->firstlogin == 0) {
-        currentuser->firstlogin = login_start_time - 7 * 86400;
+    if (getCurrentUser()->firstlogin == 0) {
+        getCurrentUser()->firstlogin = login_start_time - 7 * 86400;
     }
     check_register_info();
-    load_mail_list(currentuser,&user_mail_list);
+    load_mail_list(getCurrentUser(),&user_mail_list);
 }
 
 int chk_friend_book()
@@ -957,9 +956,9 @@ int chk_friend_book()
         if (idnum != usernum || idnum <= 0)
             continue;
         uin = t_search(uid, false);
-        sprintf(msg, "%s 已经上站。", currentuser->userid);
+        sprintf(msg, "%s 已经上站。", getCurrentUser()->userid);
         /* 保存所发msg的目的uid 1998.7.5 by dong */
-        strcpy(MsgDesUid, uin ? uin->userid : "");
+        strcpy(getSession()->MsgDesUid, uin ? uin->userid : "");
         idnum = 0;              /*Haohmaru.99.5.29.修正一个bug,免得有人利用这个来骚扰别人 */
         if (uin != NULL && canbemsged(uin))
             idnum = do_sendmsg(uin, msg, 2);
@@ -987,7 +986,7 @@ void main_bbs(int convit, char *argv)
 	int nummail;
 
 /* Add by KCN for avoid free_mem core dump */
-    topfriend = NULL;
+    getSession()->topfriend = NULL;
     big_picture = NULL;
     user_data = NULL;
     load_sysconf();
@@ -1011,7 +1010,7 @@ void main_bbs(int convit, char *argv)
     initscr();
 
     convcode = convit;
-    conv_init();                /* KCN,99.09.05 */
+    conv_init(getSession());                /* KCN,99.09.05 */
 
     system_init();
     if (setjmp(byebye)) {
@@ -1025,7 +1024,7 @@ void main_bbs(int convit, char *argv)
 
 #ifdef HAVE_PERSONAL_DNS
   //动态域名更新
-    if (HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         struct dns_msgbuf msg;
         int msqid;
         msqid = msgget(sysconf_eval("BBSDNS_MSG", 0x999), IPC_CREAT | 0664);
@@ -1033,10 +1032,10 @@ void main_bbs(int convit, char *argv)
 	    struct msqid_ds buf;
 
             msg.mtype=1;
-            strncpy(msg.userid,currentuser->userid,IDLEN);
+            strncpy(msg.userid,getCurrentUser()->userid,IDLEN);
             msg.userid[IDLEN]=0;
             //水木是可以用fromhost的，不过其他打开dns反解得就要考虑一下了
-            strncpy(msg.ip,fromhost,IPLEN);
+            strncpy(msg.ip,getSession()->fromhost,IPLEN);
             msg.ip[IPLEN]=0;
             msgctl(msqid, IPC_STAT, &buf);
 	    buf.msg_qbytes = (sizeof(msg)-sizeof(msg.mtype))*20;
@@ -1048,9 +1047,9 @@ void main_bbs(int convit, char *argv)
 #endif
 #ifndef DEBUG
 #ifdef SSHBBS
-    sprintf(genbuf, "sshbbsd:%s", currentuser->userid);
+    sprintf(genbuf, "sshbbsd:%s", getCurrentUser()->userid);
 #else
-    sprintf(genbuf, "bbsd:%s", currentuser->userid);
+    sprintf(genbuf, "bbsd:%s", getCurrentUser()->userid);
 #endif
 	set_proc_title(argv, genbuf);
 #endif
@@ -1059,9 +1058,9 @@ void main_bbs(int convit, char *argv)
     tBBSlog_recover();             /* 2000.9.15 Bigman 添加中断talk的恢复 */
 #endif
 
-    setmailfile(genbuf, currentuser->userid, DOT_DIR);
+    setmailfile(genbuf, getCurrentUser()->userid, DOT_DIR);
     currmail = get_num_records(genbuf, sizeof(struct fileheader));
-	get_mail_limit(currentuser, &summail, &nummail);
+	get_mail_limit(getCurrentUser(), &summail, &nummail);
 	if (currmail > nummail)
 	{
 		clear();
@@ -1079,7 +1078,7 @@ void main_bbs(int convit, char *argv)
 		move(4,10);
 		calltimememo[39]='\0';
 		prints("\033[1;31m %s \033[m",calltimememo);
-		prints("\n%s",ctime(&(currentuser->lastlogin)));
+		prints("\n%s",ctime(&(getCurrentUser()->lastlogin)));
 		move(t_lines-1,0);
 		prints("                          press any key to continue...");
 		refresh();
@@ -1087,11 +1086,11 @@ void main_bbs(int convit, char *argv)
 		igetch();
 	}
 
-    if (HAS_PERM(currentuser, PERM_SYSOP) && dashf("new_register"))
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP) && dashf("new_register"))
         prints("有新使用者正在等您通过注册资料。\n");
 
 #ifdef SMS_SUPPORT
-	chk_smsmsg(1);
+	chk_smsmsg(1, getSession());
 #endif
 
     /*chk_friend_book(); */
@@ -1101,17 +1100,17 @@ void main_bbs(int convit, char *argv)
     }
     clear();
     nettyNN = NNread_init();
-    if (DEFINE(currentuser, DEF_INNOTE)) {
-        sethomefile(notename, currentuser->userid, "notes");
+    if (DEFINE(getCurrentUser(), DEF_INNOTE)) {
+        sethomefile(notename, getCurrentUser()->userid, "notes");
         if (dashf(notename))
             ansimore(notename, true);
     }
     b_closepolls();
     num_alcounter();
-    if (count_friends > 0 && DEFINE(currentuser, DEF_LOGFRIEND))
+    if (count_friends > 0 && DEFINE(getCurrentUser(), DEF_LOGFRIEND))
         t_friends();
     while (1) {
-        if (DEFINE(currentuser, DEF_NORMALSCR))
+        if (DEFINE(getCurrentUser(), DEF_NORMALSCR))
             domenu("TOPMENU");
         else
             domenu("TOPMENU2");
@@ -1128,39 +1127,39 @@ void update_endline()
     int allstay;
     int colour;
 
-    if (DEFINE(currentuser, DEF_TITLECOLOR)) {
+    if (DEFINE(getCurrentUser(), DEF_TITLECOLOR)) {
         colour = 4;
     } else {
-        colour = currentuser->numlogins % 4 + 3;
+        colour = getCurrentUser()->numlogins % 4 + 3;
         if (colour == 3)
             colour = 1;
     }
-    if (!DEFINE(currentuser, DEF_ENDLINE)) {
+    if (!DEFINE(getCurrentUser(), DEF_ENDLINE)) {
         move(t_lines - 1, 0);
         clrtoeol();
         return;
     }
     now = time(0);
 #ifdef FLOWBANNER
-	allstay = (DEFINE(currentuser, DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
+	allstay = (DEFINE(getCurrentUser(), DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
 	if (allstay) {
 		if (allstay & 1) {	//显示系统浮动信息
 			struct public_data *publicshm = get_publicshm();
 			if (publicshm->bannercount) 
-				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, publicshm->banners[(time(0)>>1)%publicshm->bannercount]);
+				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(getCurrentUser(),DEF_HIGHCOLOR)) ? "1;" : ""), colour, publicshm->banners[(time(0)>>1)%publicshm->bannercount]);
 			else allstay=0;
 		} else {	//显示版面浮动信息
 			if ((currboard)&&(currboard->bannercount))
-				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(currentuser,DEF_HIGHCOLOR)) ? "1;" : ""), colour, currboard->banners[(time(0)>>1)%currboard->bannercount]);
+				snprintf(stitle, 256, "\033[%s4%dm\033[33m%s", ((DEFINE(getCurrentUser(),DEF_HIGHCOLOR)) ? "1;" : ""), colour, currboard->banners[(time(0)>>1)%currboard->bannercount]);
 			else allstay=0;
 		}
 	}
 	if (!allstay) {
 #endif
     allstay = (now - login_start_time) / 60;
-    sprintf(buf, "[\033[36m%.12s\033[33m]", currentuser->userid);
-    if (DEFINE(currentuser, DEF_NOTMSGFRIEND)) {
-		if (DEFINE(currentuser,DEF_HIGHCOLOR))
+    sprintf(buf, "[\033[36m%.12s\033[33m]", getCurrentUser()->userid);
+    if (DEFINE(getCurrentUser(), DEF_NOTMSGFRIEND)) {
+		if (DEFINE(getCurrentUser(),DEF_HIGHCOLOR))
         	sprintf(stitle, "\033[1;4%dm\033[33m时间[\033[36m%12.12s\033[33m] 呼叫器[好友:%3s：一般:%3s] 使用者%s", colour, ctime(&now) + 4,
                 (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", buf);
 		else
@@ -1172,7 +1171,7 @@ void update_endline()
             sprintf(stitle,"\033[1;4%dm\033[33m时间[\033[36m%12.12s\033[33m] 总人数/好友[%3d/%3d][%c：%c] 使用者%s",colour,
                     ctime(&now)+4,count_users,count_friends,(uinfo.pager&ALL_PAGER)?'Y':'N',(!(uinfo.pager&FRIEND_PAGER))?'N':'Y',buf);
 #else
-	if (DEFINE(currentuser,DEF_HIGHCOLOR))
+	if (DEFINE(getCurrentUser(),DEF_HIGHCOLOR))
         sprintf(stitle, "\x1b[1;4%dm\x1b[33m时间[\x1b[36m%12.12s\x1b[33m] 总人数 [ %3d ] [%c：%c] 使用者%s", colour,
                 ctime(&now) + 4, get_utmp_number() + getwwwguestcount(), (uinfo.pager & ALL_PAGER) ? 'Y' : 'N', (!(uinfo.pager & FRIEND_PAGER)) ? 'N' : 'Y', buf);
 	else
@@ -1198,9 +1197,9 @@ void update_endline()
 
     /* Leeward 98.09.30 show hint for rookies */
     /* PERMs should coincide with ~bbsroot/etc/sysconf.ini: PERM_ADMENU */
-    if (!DEFINE(currentuser, DEF_NORMALSCR) && MMENU == uinfo.mode && !HAS_PERM(currentuser, PERM_ACCOUNTS) 
-        && !HAS_PERM(currentuser, PERM_SYSOP) && !HAS_PERM(currentuser, PERM_OBOARDS)
-        && !HAS_PERM(currentuser, PERM_WELCOME) && !HAS_PERM(currentuser, PERM_ANNOUNCE)) {
+    if (!DEFINE(getCurrentUser(), DEF_NORMALSCR) && MMENU == uinfo.mode && !HAS_PERM(getCurrentUser(), PERM_ACCOUNTS) 
+        && !HAS_PERM(getCurrentUser(), PERM_SYSOP) && !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
+        && !HAS_PERM(getCurrentUser(), PERM_WELCOME) && !HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)) {
         move(t_lines - 2, 0);
         clrtoeol();
         prints("\033[1m\033[32m这是精简模式主选单。要使用一般模式，请设定个人参数第Ｌ项为ＯＮ并正常离站再进站。\033[m");
@@ -1215,10 +1214,10 @@ void showtitle( char *title, char*mid)
     int colour;
     char note[STRLEN];
 
-    if (DEFINE(currentuser, DEF_TITLECOLOR)) {
+    if (DEFINE(getCurrentUser(), DEF_TITLECOLOR)) {
         colour = BLUE;
     } else {
-        colour = currentuser->numlogins % 4 + 3;
+        colour = getCurrentUser()->numlogins % 4 + 3;
         if (colour == YELLOW)
             colour = RED;
     }
@@ -1236,7 +1235,7 @@ void showtitle( char *title, char*mid)
         if (currboard==NULL)
             currboardent=0;
 #ifdef HAVE_BRC_CONTROL
-        brc_initial(currentuser->userid, DEFAULTBOARD);
+        brc_initial(getCurrentUser()->userid, DEFAULTBOARD, getSession());
 #endif
         if (currboardent) {
             selboard = 1;
@@ -1265,7 +1264,7 @@ void showtitle( char *title, char*mid)
 /* rewrite by bad */
     move(0, 0);
     resetcolor();
-    setfcolor(YELLOW,DEFINE(currentuser,DEF_HIGHCOLOR));
+    setfcolor(YELLOW,DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
     setbcolor(colour);
     clrtoeol();
     prints("%s", title);
@@ -1273,16 +1272,16 @@ void showtitle( char *title, char*mid)
     move(0, spc1);
     resetcolor();
     if(strcmp(mid, BBS_FULL_NAME)&&mid[0]!='[')
-        setfcolor(CYAN, DEFINE(currentuser,DEF_HIGHCOLOR));
+        setfcolor(CYAN, DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
     else
-        setfcolor(WHITE, DEFINE(currentuser,DEF_HIGHCOLOR));
+        setfcolor(WHITE, DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
     setbcolor(colour);
     if(mid[0]=='[') prints("\033[5m");
     prints("%s", mid);
 
     move(0, -strlen(note));
     resetcolor();
-    setfcolor(YELLOW,DEFINE(currentuser,DEF_HIGHCOLOR));
+    setfcolor(YELLOW,DEFINE(getCurrentUser(),DEF_HIGHCOLOR));
     setbcolor(colour);
     prints("%s", note);
     resetcolor();
@@ -1305,7 +1304,7 @@ void docmdtitle(char *title, char *prompt)
 */
     chkmailflag = chkmail();
 #ifdef SMS_SUPPORT
-	chksmsmsg = chk_smsmsg(0);
+	chksmsmsg = chk_smsmsg(0, getSession());
 #endif
 
     if (chkmailflag == 2)       /*Haohmaru.99.4.4.对收信也加限制 */
@@ -1339,9 +1338,9 @@ int tBBSlog_recover()
 {
     char buf[256];
 
-    sprintf(buf, "home/%c/%s/talklog", toupper(currentuser->userid[0]), currentuser->userid);
+    sprintf(buf, "home/%c/%s/talklog", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
 
-    if (strcasecmp(currentuser->userid, "guest") == 0 || !dashf(buf))
+    if (strcasecmp(getCurrentUser()->userid, "guest") == 0 || !dashf(buf))
         return;
 
     clear();
@@ -1350,7 +1349,7 @@ int tBBSlog_recover()
     getdata(0, 0, "\033[1;32m您有一个不正常断线所留下来的聊天记录, 您要 .. (M) 寄回信箱 (Q) 算了？[Q]：\033[m", genbuf, 4, DOECHO, NULL, true);
 
     if (genbuf[0] == 'M' || genbuf[0] == 'm')
-        mail_file(currentuser->userid, buf, currentuser->userid, "聊天记录", BBSPOST_MOVE, NULL);
+        mail_file(getCurrentUser()->userid, buf, getCurrentUser()->userid, "聊天记录", BBSPOST_MOVE, NULL);
     else
         my_unlink(buf);
     return;

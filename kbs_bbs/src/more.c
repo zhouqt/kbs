@@ -88,7 +88,7 @@ int NNread_init()
      ---*/
     nnline = 0;
     xxxline = 0;
-    if (!DEFINE(currentuser, DEF_ACBOARD)) {
+    if (!DEFINE(getCurrentUser(), DEF_ACBOARD)) {
         nnline = 1;
         xxxline = 1;
         return 1;
@@ -291,7 +291,7 @@ void netty_more()
     int x, y;
     time_t thetime = time(0);
 
-    if (!DEFINE(currentuser, DEF_ACBOARD)) {
+    if (!DEFINE(getCurrentUser(), DEF_ACBOARD)) {
         update_endline();
         return;
     }
@@ -304,7 +304,7 @@ void netty_more()
     getyx(&y, &x);
     update_endline();
     move(3, 0);
-    while ((nnline < movieshm->movielines) /*&&DEFINE(currentuser,DEF_ACBOARD) */ ) {
+    while ((nnline < movieshm->movielines) /*&&DEFINE(getCurrentUser(),DEF_ACBOARD) */ ) {
         move(2 + ne_row, 0);
         clrtoeol();
 
@@ -330,12 +330,12 @@ void printacbar()
     getyx(&y, &x);
 
     move(2, 0);
-    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+    if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
         prints("\033[1;35m┌——————————————┤\033[37m活  动  看  版\033[35m├——————————————┐ \033[m\n");
     else
         prints("\033[35m┌——————————————┤\033[37m活  动  看  版\033[35m├——————————————┐ \033[m\n");
     move(3 + MAXnettyLN, 0);
-    if (DEFINE(currentuser, DEF_HIGHCOLOR))
+    if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
         prints("\033[1;35m└——————————————┤\033[36m" FOOTER_MOVIE "\033[35m├——————————————┘ \033[m\n");
     else
         prints("\033[35m└——————————————┤\033[36m" FOOTER_MOVIE "\033[35m├——————————————┘ \033[m\n");
@@ -345,7 +345,7 @@ void printacbar()
 extern int idle_count;
 void R_monitor(void *data)
 {
-    if (!DEFINE(currentuser, DEF_ACBOARD))
+    if (!DEFINE(getCurrentUser(), DEF_ACBOARD))
         return;
 
     if (uinfo.mode != MMENU)
@@ -760,7 +760,7 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 	    ("\033[1;44;32m%s (%d%%) 第(%d-%d)行 \033[33m| %s | h 辅助说明\033[m",
 	     (read >= size) ? "看到末尾啦" : "下面还有喔",
 	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
-    if (currentuser != NULL && DEFINE(currentuser, DEF_HIGHCOLOR))
+    if (getCurrentUser() != NULL && DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
         prints("\033[1;44m\033[32m下面还有喔 (%d%%) 第(%d-%d)行\033[33m | g 跳转 |%s / ? 搜索 | s e 开头末尾|", total ? (100 * l2 / total) : (100 * read / size), l1, l2, uinfo.mode==READING?" l n 上下篇 |":"");
     else
         prints("\033[44m\033[32m下面还有喔 (%d%%) 第(%d-%d)行\033[33m | g 跳转 |%s / ? 搜索 | s e 开头末尾|", total ? (100 * l2 / total) : (100 * read / size), l1, l2 ,uinfo.mode==READING?" l n 上下篇 |":"");
@@ -925,7 +925,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 change = 1 - t_lines;
                 break;
             case 'W':
-                if (HAS_PERM(currentuser, PERM_PAGE)) {
+                if (HAS_PERM(getCurrentUser(), PERM_PAGE)) {
                     s_msg();
                     curr_line += t_lines - 1;
                     change = 1 - t_lines;

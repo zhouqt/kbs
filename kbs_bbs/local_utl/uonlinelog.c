@@ -14,6 +14,7 @@ int do_userlist(struct user_info *uentp, char *arg, int t)
     int fd, len;
     char user_info_str[256 /*STRLEN*2 */ ], pagec;
     int override;
+	char modebuf[80],idlebuf[10];
 
     t++;
     if (!uentp->active || !uentp->pid) {
@@ -26,8 +27,8 @@ int do_userlist(struct user_info *uentp, char *arg, int t)
                      " %3d%2s%s%-12.12s%s%s %-16.16s%s %-16.16s %c %c %s%-17.17s\033[m%5.5s\n",
              ---*/
             " %4d%2s%-12.12s %-16.16s %-16.16s %c %c %s%-12.12s\033[m%5.5s %d\n", t, uentp->invisible ? "＃" : "．", uentp->userid, uentp->username, uentp->from, pagec, ' ', (uentp->invisible == true)
-            ? "\033[34m" : "", modestring(uentp->mode, uentp->destuid, 0,  /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
-                                       (uentp->in_chat ? uentp->chatid : NULL)), idle_str(uentp), uentp->pid);
+            ? "\033[34m" : "", modestring(modebuf,uentp->mode, uentp->destuid, 0,  /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+                                       (uentp->in_chat ? uentp->chatid : NULL)), idle_str(idlebuf,uentp), uentp->pid);
     fprintf(fp, "%s", user_info_str);
     return COUNT;
 }
@@ -51,10 +52,14 @@ main()
 	time_t now;
 	struct tm t;
 
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
 	now = time(0);
 	localtime_r( &now, &t);
 
-    chdir(BBSHOME);
 	if( stat( BONLINE_LOGDIR, &st) < 0 ){
 		if(mkdir(BONLINE_LOGDIR, 0755) < 0)
 			exit(0);
@@ -82,11 +87,6 @@ main()
 		exit(0);
 	}
 
-    resolve_utmp();
-	get_publicshm();
-#if HAVE_WWW == 1
-	resolve_guest_table();
-#endif
 	fprintf(fp, "%d\n", get_utmp_number());
 #if HAVE_WWW == 1
 	fprintf(fp1, "%d\n", getwwwguestcount());

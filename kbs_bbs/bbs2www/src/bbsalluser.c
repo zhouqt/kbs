@@ -9,11 +9,11 @@ struct userec *get_passwd_addr()
 {
     int unum;
 
-    unum = searchuser(currentuser->userid);
+    unum = searchuser(getCurrentUser()->userid);
     if (unum == 0)
         return NULL;
     else
-        return currentuser - unum + 1;
+        return getCurrentUser() - unum + 1;
 }
 
 int main()
@@ -23,7 +23,7 @@ int main()
     int total = 0;
     int p, i, start;
 
-    init_all();
+    initwww_all();
     total = allusers();
     x = get_passwd_addr();
     printf("<center>%s -- 所有使用者列表 [用户总数: %d]<hr color=\"green\">\n", BBSNAME, total);

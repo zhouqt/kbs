@@ -1,13 +1,9 @@
 #include "bbs.h"
 
-int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
-int ONLYCOUNT, num_of_matched, total_line;
-char *CurrentFileName;
-
 #ifdef FILTER
 extern int prepf(int fp,void** patternbuf,size_t* patt_image_len);
-extern int mgrep(int fp,void* patternbuf);
-extern int mgrep_str(char* data,int len,void* patternbuf);
+extern int mgrep(int fp,void* patternbuf,session_t* session);
+extern int mgrep_str(char* data,int len,void* patternbuf,session_t* session);
 extern void releasepf(void* patternbuf);
 
 static void* badword_img=NULL;
@@ -32,7 +28,7 @@ int build_badwordimage()
 
     flock(fp,LOCK_UN);
     close(fp);
-    fp = open("etc/badwordv2.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
+    fp = open("etc/badwordv3.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
     if (fp==-1) {
         releasepf(pattern_buf);
     	return -1;
@@ -74,7 +70,7 @@ static int check_badwordimg(int checkreload)
     return 0;
 }
 
-static void default_setting()
+static void default_setting(session_t* session)
 {
     WHOLELINE = 0;
     NOUPPER = 1;
@@ -85,10 +81,10 @@ static void default_setting()
     FNAME = 1;
     ONLYCOUNT = 0;
 
-    num_of_matched = 0;
+    session->num_of_matched = 0;
 }
 
-int check_badword(char *checkfile)
+int check_badword(char *checkfile, session_t* session)
 {
     char *ptr;
     off_t size;
@@ -96,8 +92,8 @@ int check_badword(char *checkfile)
     int retrycount=0;
 
 retry:
-    default_setting();
-    CurrentFileName = checkfile;
+    default_setting(session);
+    session->CurrentFileName = checkfile;
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
 	{
@@ -108,7 +104,7 @@ retry:
 	    end_mmapfile((void *) ptr, size, -1);
             BBS_RETURN(0);
 	}
-        retv = mgrep_str(ptr, size,badword_img);
+        retv = mgrep_str(ptr, size,badword_img, session);
     }
     BBS_CATCH {
         if (check_badwordimg(1)!=0)
@@ -125,19 +121,19 @@ retry:
     return retv;
 }
 
-int check_badword_str(char *string,int str_len)
+int check_badword_str(char *string,int str_len, session_t* session)
 {
     int retv;
     int retrycount=0;
 
-    default_setting();
-    CurrentFileName = "";
+    default_setting(session);
+    session->CurrentFileName = "";
 retry:
     BBS_TRY {
         if (check_badwordimg(0)!=0) {
             BBS_RETURN(0);
 	}
-        retv = mgrep_str(string, str_len,badword_img);
+        retv = mgrep_str(string, str_len,badword_img,session);
     }
     BBS_CATCH {
         if (check_badwordimg(1)!=0) {
@@ -151,7 +147,7 @@ retry:
     BBS_END
     return retv;
 }
-int check_filter(char *patternfile, char *checkfile,int defaultval)
+int check_filter(char *patternfile, char *checkfile,int defaultval, session_t* session)
 {
     int fp;
     char *ptr;
@@ -160,8 +156,8 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
     void* pattern_buf;
     size_t pattern_imagesize;
 
-    default_setting();
-    CurrentFileName = checkfile;
+    default_setting(session);
+    session->CurrentFileName = checkfile;
     fp = open(patternfile, O_RDONLY);
     prepf(fp,&pattern_buf,&pattern_imagesize);
     BBS_TRY {
@@ -169,7 +165,7 @@ int check_filter(char *patternfile, char *checkfile,int defaultval)
 	    close(fp);
             BBS_RETURN(0);
 	}
-        retv = mgrep_str(ptr, size,pattern_buf);
+        retv = mgrep_str(ptr, size,pattern_buf, session);
     }
     BBS_CATCH {
     	retv=defaultval;

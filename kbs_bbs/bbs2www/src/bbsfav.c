@@ -25,7 +25,7 @@ int cmpboard(brd, tmp)          /*ÅÅÐòÓÃ */
 {
     register int type = 0;
 
-    if (!(currentuser->flags & BRDSORT_FLAG)) {
+    if (!(getCurrentUser()->flags & BRDSORT_FLAG)) {
         type = brd->title[0] - tmp->title[0];
         if (type == 0)
             type = strncasecmp(brd->title + 1, tmp->title + 1, 6);
@@ -48,7 +48,7 @@ static int check_newpost(struct newpostdata *ptr)
         return 0;
     ptr->total = bptr->total;
 
-    if (!brc_initial(currentuser->userid, ptr->name)) {
+    if (!brc_initial(getCurrentUser()->userid, ptr->name)) {
         ptr->unread = 1;
     } else {
         if (brc_unread(bptr->lastpost)) {
@@ -78,7 +78,7 @@ int brd_show_boards(int sec, int yank)
     int yank_flag;
 
     yank_flag = yank;
-    if (!strcmp(currentuser->userid, "guest"))
+    if (!strcmp(getCurrentUser()->userid, "guest"))
         yank_flag = 1;
     brdnum = 0;
     if ((brdnum=fav_loaddata(newpost_buffer,sec,1,FAVBOARDNUM,1,NULL)) == -1)
@@ -149,7 +149,7 @@ int main()
     int sec;
     char *s;
 
-    init_all();
+    initwww_all();
     sec = atoi(getparm("select"));
     load_favboard(0);
     if (sec < -1 || sec >= favbrd_list_t)

@@ -5,7 +5,7 @@
 
 int main()
 {
-    init_all();
+    initwww_all();
     printf("<nobr><center>%s -- 新用户注册<hr color=\"green\">\n", BBSNAME);
     printf("<font color=\"green\">欢迎加入本站. 以下资料请如实填写.</font>");
     printf("<form method=\"post\" action=\"bbsdoreg\">\n");

@@ -457,12 +457,15 @@ int main(int argc, char ** argv)
 {
 	int all = 0;
 	struct boardheader *bp;
+	struct userec* sysopuser;
 
-	chdir(BBSHOME);
-	resolve_ucache();
-	resolve_utmp();
-	resolve_boards();
-	getuser("SYSOP", &currentuser);
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
+	getuser("SYSOP", &sysopuser);
+	setCurrentUser(sysopuser);
 	if (argc == 1)
 		all = 1;
 	else if (argc > 2)

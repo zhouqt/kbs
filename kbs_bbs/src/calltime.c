@@ -22,7 +22,7 @@ static int init_clock_data()
 	char fname[STRLEN];
 	struct stat st;
 
-	sethomefile(fname,currentuser->userid,"clock.data");
+	sethomefile(fname,getCurrentUser()->userid,"clock.data");
 	stat(fname,&st);
 	if((fp=fopen(fname,"rb"))==NULL){
 		return default_clock_data();
@@ -46,7 +46,7 @@ static int save_clock_data()
 	FILE *fp;
 	char fname[STRLEN];
 
-	sethomefile(fname,currentuser->userid,"clock.data");
+	sethomefile(fname,getCurrentUser()->userid,"clock.data");
 	fp=fopen(fname,"wb");
 	if(fp==NULL) return 0;
 	fwrite(clock_data,clock_total*sizeof(struct clock_struct),1,fp);
@@ -120,7 +120,7 @@ static time_t get_realcalltime(struct clock_struct * ck)
 		return newtmt;
 	}
 	else if( ck->type == CLOCK_TYPE_LOGIN || ck->type == CLOCK_TYPE_LOGIN_HAD ){
-		return (ck->clock_time + currentuser->lastlogin) ;
+		return (ck->clock_time + getCurrentUser()->lastlogin) ;
 	}
 	else if( ck->type == CLOCK_TYPE_WEEK ){
 		struct tm newtm;

@@ -32,13 +32,13 @@ static void mail_info()
     char filename[STRLEN];
 
     now = time(0);
-    sprintf(filename, "etc/%s.tmp", currentuser->userid);
+    sprintf(filename, "etc/%s.tmp", getCurrentUser()->userid);
     fn = fopen(filename, "w");
-    fprintf(fn, "\033[1m%s\033[m 已经在 \033[1m%24.24s\033[m 自杀了，以下是他(她)的资料，请保留...", currentuser->userid, ctime(&now));
-    getuinfo(fn, currentuser);
+    fprintf(fn, "\033[1m%s\033[m 已经在 \033[1m%24.24s\033[m 自杀了，以下是他(她)的资料，请保留...", getCurrentUser()->userid, ctime(&now));
+    getuinfo(fn, getCurrentUser());
     fprintf(fn, "\n                      \033[1m 系统自动发信系统留\033[m\n");
     fclose(fn);
-    mail_file(currentuser->userid, filename, "acmanager", "自杀通知....", BBSPOST_MOVE, NULL);
+    mail_file(getCurrentUser()->userid, filename, "acmanager", "自杀通知....", BBSPOST_MOVE, NULL);
 }
 
 
@@ -59,7 +59,7 @@ int d_board()
     if (genbuf[0] == '\0')
         return 0;
     strcpy(bname, genbuf);
-    if (delete_board(bname, title) != 0)
+    if (delete_board(bname, title,getSession()) != 0)
         return 0;
     if (seek_in_file("0Announce/.Search", bname)) {
 #ifdef BBSMAIN
@@ -105,11 +105,11 @@ void suicide()
 
     modify_user_mode(OFFLINE);
 #ifndef NINE_BUILD
-    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
-        || HAS_PERM(currentuser, PERM_ANNOUNCE)
-        || HAS_PERM(currentuser, PERM_JURY) || HAS_PERM(currentuser, PERM_SUICIDE) || HAS_PERM(currentuser, PERM_CHATOP) || (!HAS_PERM(currentuser, PERM_POST))
-        || HAS_PERM(currentuser, PERM_DENYMAIL)
-        || HAS_PERM(currentuser, PERM_DENYRELAX)) {
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_BOARDS) || HAS_PERM(getCurrentUser(), PERM_OBOARDS) || HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
+        || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
+        || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP) || (!HAS_PERM(getCurrentUser(), PERM_POST))
+        || HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
+        || HAS_PERM(getCurrentUser(), PERM_DENYRELAX)) {
         clear();
         move(11, 28);
         prints("\033[1m\033[33m你有重任在身，不能自杀！\033[m");
@@ -136,32 +136,32 @@ void suicide()
     if (askyn("你确定要自杀吗？", 0) == 1) {
         clear();
         getdata(0, 0, "请输入原密码(输入正确的话会立刻断线): ", buf, 39, NOECHO, NULL, true);   /*Haohmaru,98.10.12,check the passwds */
-        if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
+        if (*buf == '\0' || !checkpasswd2(buf, getCurrentUser())) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
             return;
         }
 
-        oldXPERM = currentuser->userlevel;
+        oldXPERM = getCurrentUser()->userlevel;
         strcpy(XPERM, XPERMSTR);
         for (num = 0; num < (int) strlen(XPERM); num++)
             if (!(oldXPERM & (1 << num)))
                 XPERM[num] = ' ';
         XPERM[num] = '\0';
-        currentuser->userlevel &= 0x3F; /*Haohmaru,99.3.20.自杀者只保留基本权限 */
-        currentuser->userlevel ^= PERM_SUICIDE;
+        getCurrentUser()->userlevel &= 0x3F; /*Haohmaru,99.3.20.自杀者只保留基本权限 */
+        getCurrentUser()->userlevel ^= PERM_SUICIDE;
 
         /*Haohmaru.99.3.20.自杀通知 */
         now = time(0);
-        sprintf(filename, "etc/%s.tmp", currentuser->userid);
+        sprintf(filename, "etc/%s.tmp", getCurrentUser()->userid);
         fn = fopen(filename, "w");
-        fprintf(fn, "\033[1m%s\033[m 已经在 \033[1m%24.24s\033[m 自杀了，以下是他的资料，请保留...", currentuser->userid, ctime(&now));
+        fprintf(fn, "\033[1m%s\033[m 已经在 \033[1m%24.24s\033[m 自杀了，以下是他的资料，请保留...", getCurrentUser()->userid, ctime(&now));
         fprintf(fn, "\n\n以下是自杀者原来的权限\n\033[1m\033[33m%s\n\033[m", XPERM);
-        getuinfo(fn, currentuser);
+        getuinfo(fn, getCurrentUser());
         fprintf(fn, "\n                      \033[1m 系统自动发信系统留\033[m\n");
         fclose(fn);
-        sprintf(buf, "%s 的自杀通知", currentuser->userid);
-        post_file(currentuser, "", filename, "Goodbye", buf, 0, 1);
+        sprintf(buf, "%s 的自杀通知", getCurrentUser()->userid);
+        post_file(getCurrentUser(), "", filename, "Goodbye", buf, 0, 1,getSession());
         unlink(filename);
 
         /*kick_user(&uinfo);
@@ -169,7 +169,7 @@ void suicide()
         abort_bbs(0);
     }
 #else
-    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS)) {
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         clear();
         move(11, 28);
         prints("\033[1m\033[33m你有重任在身，不能自杀！\033[m");
@@ -190,37 +190,37 @@ void suicide()
         clear();
 	 getdata(0, 0, "请输入一句简短的自杀留言: ", buf2, 75, DOECHO, NULL, true);
         getdata(0, 0, "请输入原密码(输入正确的话会立刻断线并且无法挽回): ", buf, 39, NOECHO, NULL, true);   /*Haohmaru,98.10.12,check the passwds */
-        if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
+        if (*buf == '\0' || !checkpasswd2(buf, getCurrentUser())) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
             return;
         }
 
         now = time(0);
-        sprintf(filename, "etc/%s.tmp", currentuser->userid);
+        sprintf(filename, "etc/%s.tmp", getCurrentUser()->userid);
         fn = fopen(filename, "w");
-        fprintf(fn, "大家好,\n\n我是 %s (%s)。 我已经离开这里了。", currentuser->userid, currentuser->username);
-        fprintf(fn, "\n\n我不会更不可能忘记自 %s", ctime(&(currentuser->firstlogin)));
-        fprintf(fn, "以来我在本站 %d 次 login 中总共 %d 分钟逗留期间的点点滴滴。", currentuser->numlogins, currentuser->stay/60);
-        fprintf(fn, "\n请我的好友把 %s 从你们的好友名单中拿掉吧。", currentuser->userid);
+        fprintf(fn, "大家好,\n\n我是 %s (%s)。 我已经离开这里了。", getCurrentUser()->userid, getCurrentUser()->username);
+        fprintf(fn, "\n\n我不会更不可能忘记自 %s", ctime(&(getCurrentUser()->firstlogin)));
+        fprintf(fn, "以来我在本站 %d 次 login 中总共 %d 分钟逗留期间的点点滴滴。", getCurrentUser()->numlogins, getCurrentUser()->stay/60);
+        fprintf(fn, "\n请我的好友把 %s 从你们的好友名单中拿掉吧。", getCurrentUser()->userid);
         fprintf(fn, "\n\n或许有朝一日我会回来的。 珍重!! 再见!!");
         fprintf(fn, "\n\n自杀者的简短留言: %s", buf2);
         fclose(fn);
-        sprintf(buf, "%s 的自杀通知", currentuser->userid);
-        post_file(currentuser, "", filename, "Goodbye", buf, 0, 2);
+        sprintf(buf, "%s 的自杀通知", getCurrentUser()->userid);
+        post_file(getCurrentUser(), "", filename, "Goodbye", buf, 0, 2);
         unlink(filename);
 
-    setmailpath(tmpbuf, currentuser->userid);
+    setmailpath(tmpbuf, getCurrentUser()->userid);
     f_rm(tmpbuf);
-    sethomepath(tmpbuf, currentuser->userid);
+    sethomepath(tmpbuf, getCurrentUser()->userid);
     f_rm(tmpbuf);
-    sprintf(genbuf, "tmp/email/%s", currentuser->userid);
+    sprintf(genbuf, "tmp/email/%s", getCurrentUser()->userid);
     f_rm(genbuf);
-    currentuser->userlevel = 0;
-    id = searchuser(currentuser->userid);
+    getCurrentUser()->userlevel = 0;
+    id = searchuser(getCurrentUser()->userid);
     setuserid(id, "");
     /*strcpy(lookupuser->address, "");*/
-    strcpy(currentuser->username, "");
+    strcpy(getCurrentUser()->username, "");
     /*strcpy(lookupuser->realname, "");*/
 	/*read_userdata(lookupuser->userid, &ud);
 	strcpy(ud.address, "");
@@ -249,7 +249,7 @@ PERM_DENYRELAX娱乐
     int i, j, k, lcount, tcount;
 
     modify_user_mode(GIVEUPNET);
-    if (!HAS_PERM(currentuser, PERM_LOGINOK)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
         clear();
         move(11, 28);
         prints("\033[1m\033[33m你有还没有注册通过，不能戒网！\033[m");
@@ -257,9 +257,9 @@ PERM_DENYRELAX娱乐
         return -1;
     }
 
-    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_BOARDS) || HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_ACCOUNTS)
-        || HAS_PERM(currentuser, PERM_ANNOUNCE)
-        || HAS_PERM(currentuser, PERM_JURY) || HAS_PERM(currentuser, PERM_SUICIDE) || HAS_PERM(currentuser, PERM_CHATOP)) {
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_BOARDS) || HAS_PERM(getCurrentUser(), PERM_OBOARDS) || HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
+        || HAS_PERM(getCurrentUser(), PERM_ANNOUNCE)
+        || HAS_PERM(getCurrentUser(), PERM_JURY) || HAS_PERM(getCurrentUser(), PERM_SUICIDE) || HAS_PERM(getCurrentUser(), PERM_CHATOP)) {
         clear();
         move(11, 28);
         prints("\033[1m\033[33m你有重任在身，不能戒网！\033[m");
@@ -269,7 +269,7 @@ PERM_DENYRELAX娱乐
 
     lcount = 0;
     tcount = 0;
-    sethomefile(genbuf, currentuser->userid, "giveup");
+    sethomefile(genbuf, getCurrentUser()->userid, "giveup");
     fn = fopen(genbuf, "rt");
     if (fn) {
         clear();
@@ -332,22 +332,22 @@ PERM_DENYRELAX娱乐
     k = 1;
     switch (ans[0]) {
     case '1':
-        k = k && (currentuser->userlevel & PERM_BASIC);
+        k = k && (getCurrentUser()->userlevel & PERM_BASIC);
         break;
     case '2':
-        k = k && (currentuser->userlevel & PERM_POST);
+        k = k && (getCurrentUser()->userlevel & PERM_POST);
         break;
     case '3':
-        k = k && (currentuser->userlevel & PERM_CHAT);
+        k = k && (getCurrentUser()->userlevel & PERM_CHAT);
         break;
     case '4':
-        k = k && (currentuser->userlevel & PERM_PAGE);
+        k = k && (getCurrentUser()->userlevel & PERM_PAGE);
         break;
     case '5':
-        k = k && !(currentuser->userlevel & PERM_DENYMAIL);
+        k = k && !(getCurrentUser()->userlevel & PERM_DENYMAIL);
         break;
     case '6':
-        k = k && !(currentuser->userlevel & PERM_DENYRELAX);
+        k = k && !(getCurrentUser()->userlevel & PERM_DENYRELAX);
         break;
     }
 
@@ -368,7 +368,7 @@ PERM_DENYRELAX娱乐
     if (j <= 0)
         return -1;
 
-    if (compute_user_value(currentuser) <= j) {
+    if (compute_user_value(getCurrentUser()) <= j) {
         prints("\n\n对不起，天数不可以大于生命力...");
         pressanykey();
         return -1;
@@ -379,13 +379,13 @@ PERM_DENYRELAX娱乐
 
     if (askyn("你确定要戒网吗\x1b[1;31m(注意:戒网之后不能提前解开!\x1b[m)？", 0) == 1) {
         getdata(15, 0, "请输入密码: ", buf, 39, NOECHO, NULL, true);
-        if (*buf == '\0' || !checkpasswd2(buf, currentuser)) {
+        if (*buf == '\0' || !checkpasswd2(buf, getCurrentUser())) {
             prints("\n\n很抱歉, 您输入的密码不正确。\n");
             pressanykey();
             return -1;
         }
 
-        sethomefile(genbuf, currentuser->userid, "giveup");
+        sethomefile(genbuf, getCurrentUser()->userid, "giveup");
         fn = fopen(genbuf, "at");
         if (!fn) {
             prints("\n\n由于系统问题，现在你不能戒网");
@@ -397,43 +397,43 @@ PERM_DENYRELAX娱乐
 
         switch (ans[0]) {
         case '1':
-            currentuser->userlevel &= ~PERM_BASIC;
+            getCurrentUser()->userlevel &= ~PERM_BASIC;
             break;
         case '2':
-            currentuser->userlevel &= ~PERM_POST;
+            getCurrentUser()->userlevel &= ~PERM_POST;
             break;
         case '3':
-            currentuser->userlevel &= ~PERM_CHAT;
+            getCurrentUser()->userlevel &= ~PERM_CHAT;
             break;
         case '4':
-            currentuser->userlevel &= ~PERM_PAGE;
+            getCurrentUser()->userlevel &= ~PERM_PAGE;
             break;
         case '5':
-            currentuser->userlevel |= PERM_DENYMAIL;
+            getCurrentUser()->userlevel |= PERM_DENYMAIL;
             break;
         case '6':
-            currentuser->userlevel |= PERM_DENYRELAX;
+            getCurrentUser()->userlevel |= PERM_DENYRELAX;
             break;
         }
         lcount++;
 
-        if (currentuser->userlevel & PERM_BASIC)
+        if (getCurrentUser()->userlevel & PERM_BASIC)
             tcount++;
-        if (currentuser->userlevel & PERM_POST)
+        if (getCurrentUser()->userlevel & PERM_POST)
             tcount++;
-        if (currentuser->userlevel & PERM_CHAT)
+        if (getCurrentUser()->userlevel & PERM_CHAT)
             tcount++;
-        if (currentuser->userlevel & PERM_PAGE)
+        if (getCurrentUser()->userlevel & PERM_PAGE)
             tcount++;
-        if (!(currentuser->userlevel & PERM_DENYMAIL))
+        if (!(getCurrentUser()->userlevel & PERM_DENYMAIL))
             tcount++;
-        if (!(currentuser->userlevel & PERM_DENYRELAX))
+        if (!(getCurrentUser()->userlevel & PERM_DENYRELAX))
             tcount++;
 
         if (lcount + tcount == 6)
-            currentuser->flags |= GIVEUP_FLAG;
+            getCurrentUser()->flags |= GIVEUP_FLAG;
         else
-            currentuser->flags &= ~GIVEUP_FLAG;
+            getCurrentUser()->flags &= ~GIVEUP_FLAG;
 
         prints("\n\n你已经开始戒网了");
         pressanykey();
@@ -448,7 +448,7 @@ void offline()
 {
     modify_user_mode(OFFLINE);
 
-    if (HAS_PERM(currentuser, PERM_SYSOP))
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP))
         return;
     clear();
     move(1, 0);
@@ -456,7 +456,7 @@ void offline()
     move(3, 0);
     if (askyn("你确定要离开这个大家庭", 0) == 1) {
         clear();
-        if (d_user(currentuser->userid) == 1) {
+        if (d_user(getCurrentUser()->userid) == 1) {
             mail_info();
             kick_user(&uinfo);
             exit(0);
@@ -539,7 +539,7 @@ int d_user(cid)
         sprintf(secu, "删除使用者：%s", lookupuser->userid);
         securityreport(secu, lookupuser, NULL);
     }
-    sprintf(genbuf, "%s deleted user %s", currentuser->userid, lookupuser->userid);
+    sprintf(genbuf, "%s deleted user %s", getCurrentUser()->userid, lookupuser->userid);
     bbslog("user","%s",genbuf);
     /*Haohmaru.99.12.23.被删ID一个月内不得注册 */
     if ((fd = open(".badname", O_WRONLY | O_CREAT, 0644)) != -1) {

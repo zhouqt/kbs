@@ -119,7 +119,7 @@ void filter_report(char* title,char *str)
 	if ((se = fopen(fname, "w")) != NULL) {
 		fprintf(se, "%s", str);
 		fclose(se);
-                post_file(&chatuser, "", fname, FILTER_BOARD, title, 0, 2);
+                post_file(&chatuser, "", fname, FILTER_BOARD, title, 0, 2, getSession());
 		unlink(fname);
 	}
 }
@@ -341,7 +341,7 @@ void send_to_room(room, str, unum)
     FD_ZERO(&writefds);
 #ifdef FILTER
     if (filtering) {
-    	if (check_badword_str(str, strlen(str))) {
+    	if (check_badword_str(str, strlen(str), getSession())) {
     		char title[80];
     		char content[256];
     		sprintf(title,"%s 在聊天室说坏话",users[unum].userid);
@@ -2085,6 +2085,8 @@ int main(argc, argv)
        同时注意: 为配合 chat.c, 不可加 \033[m 在标题末尾 */
     setuid(BBSUID);
     setuid(BBSGID);
+
+	init_sessiondata(getSession());
     if (ENABLEMAIN)
         strcpy(rooms[0].topic, "\033[1m大家先随便聊聊吧");
     else

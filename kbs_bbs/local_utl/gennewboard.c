@@ -44,7 +44,7 @@ static int load_boards2(struct newpostdata *nbrd,char *boardprefix,int group,int
 				continue;
 		}else if ((bptr->group!=group)&&!((boardprefix==NULL)&&(group==0)))
             continue;
-        if (!check_see_perm(currentuser,bptr)) {
+        if (!check_see_perm(NULL,bptr)) {
             continue;
         }
         if ((group==0)&&(boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*'))
@@ -150,8 +150,12 @@ int gen_newboards_xml()
 
 int main(int argc, char **argv)
 {
-    	chdir(BBSHOME);
-	resolve_boards();
+
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
 	gen_newboards_xml();
     	return 0;
 }

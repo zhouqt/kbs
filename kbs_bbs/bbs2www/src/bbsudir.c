@@ -9,7 +9,7 @@ int main()
     char path[100];
     struct dir x;
 
-    init_all();
+    initwww_all();
     fp = fopen("upload/.DIR", "r");
     while (1) {
         if (fread(&x, sizeof(x), 1, fp) <= 0)

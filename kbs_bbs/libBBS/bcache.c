@@ -53,7 +53,7 @@ static void bcache_setreadonly(int readonly)
     close(boardfd);
     */
 }
-int getlastpost(char *board, int *lastpost, int *total)
+int getlastpost(const char *board, int *lastpost, int *total)
 {
     struct fileheader fh;
     struct stat st;
@@ -79,7 +79,7 @@ int getlastpost(char *board, int *lastpost, int *total)
     close(fd);
     return 0;
 }
-int updatelastpost(char *board)
+int updatelastpost(const char *board)
 {
     int pos;
 
@@ -91,7 +91,7 @@ int updatelastpost(char *board)
         return -1;
 }
 
-int setboardmark(char *board, int i)
+int setboardmark(const char *board, int i)
 {
     int pos;
 
@@ -106,7 +106,7 @@ int setboardmark(char *board, int i)
         return -1;
 }
 
-int setboardorigin(char *board, int i)
+int setboardorigin(const char *board, int i)
 {
     int pos;
 
@@ -249,7 +249,7 @@ int apply_boards(int (*func) (struct boardheader *, void* ),void* arg)
     return 0;
 }
 
-int fill_super_board(char *searchname, int result[], int max)
+int fill_super_board(struct userec* user,char *searchname, int result[], int max)
 {
 	register int i;
 	int total=0;
@@ -257,7 +257,7 @@ int fill_super_board(char *searchname, int result[], int max)
     for (i = 0; i < brdshm->numboards && total < max ; i++){
         if (bcache[i].filename[0] == '\0')
 			continue;
-    	if (check_read_perm(currentuser, &bcache[i])) {
+    	if (check_read_perm(user, &bcache[i])) {
 			if (strcasestr(bcache[i].filename, searchname) || strcasestr(bcache[i].des, searchname) || strcasestr(bcache[i].title, searchname) ){
 				result[total] = i + 1;
 				total ++;
@@ -273,7 +273,7 @@ int getbnum(const char *bname)
 
     for (i = 0; i < brdshm->numboards; i++)
 #ifdef BBSMAIN
-        if (check_read_perm(currentuser,&bcache[i]))
+        if (check_read_perm(getCurrentUser(),&bcache[i]))
 #endif
             if (!strncasecmp(bname, bcache[i].filename, STRLEN))
                 return i + 1;
@@ -314,7 +314,7 @@ const struct boardheader *getboard(int num)
     }
     return NULL;
 }
-int delete_board(char *boardname, char *title)
+int delete_board(char *boardname, char *title,session_t* session)
 {
     int bid, i;
     char buf[1024];
@@ -351,7 +351,7 @@ int delete_board(char *boardname, char *title)
     securityreport(buf, NULL, NULL);
 #endif                          /* 
                                  */
-    sprintf(buf, " << '%s'被 %s 删除 >>", bcache[bid].filename, currentuser->userid);
+    sprintf(buf, " << '%s'被 %s 删除 >>", bcache[bid].filename, session->currentuser->userid);
 #ifdef BBSMAIN
     getdata(3, 0, "移除精华区 (Yes, or No) [Y]: ", genbuf, 4, DOECHO, NULL, true);
     if (genbuf[0] != 'N' && genbuf[0] != 'n')

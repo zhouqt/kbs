@@ -22,7 +22,7 @@ int load_key(char * fn)
     struct stat st;
     release_key();
     if(fn==NULL)
-        sethomefile(fname, currentuser->userid, "definekey");
+        sethomefile(fname, getCurrentUser()->userid, "definekey");
     else
         strcpy(fname, fn);
     stat(fname, &st);
@@ -68,7 +68,7 @@ int save_key()
 {
     FILE* fp;
     char fname[STRLEN];
-    sethomefile(fname, currentuser->userid, "definekey");
+    sethomefile(fname, getCurrentUser()->userid, "definekey");
     fp=fopen(fname, "wb");
     if(fp==NULL) return -1;
     fwrite(keymem, keymem_total*sizeof(struct key_struct), 1, fp);
@@ -471,7 +471,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
     case 'W':
     case 'w':
         oldmode = uinfo.mode;
-        if (!HAS_PERM(currentuser, PERM_PAGE))
+        if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
             break;
         s_msg();
         modify_user_mode(oldmode);

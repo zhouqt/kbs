@@ -12,6 +12,8 @@
 #define GtoB_bad1 0xa1
 #define GtoB_bad2 0xbc
 
+#include "bbs.h"
+
 static const unsigned char GtoB[] = {
 
     0xa1,0xbc, 0xa1,0xe6, 0xa1,0xbc, 0xa1,0xbc, 0xc9,0x4d, 0xa1,0xbc, 0xa5,0x40, 0xa5,0xe1,
@@ -6010,8 +6012,6 @@ static const unsigned char BtoG[] = {
 #define BtoG_count 23940
 
 extern int convcode;
-static char gb2big_savec[2];
-static char big2gb_savec[2];
 extern void redoscr();
 
 #ifdef BBSMAIN
@@ -6023,12 +6023,12 @@ int switch_code()
 }
 #endif
 
-void conv_init()
+void conv_init(session_t* session)
 {
-    gb2big_savec[0] = 0;
-    big2gb_savec[0] = 0;
-    gb2big_savec[1] = 0;
-    big2gb_savec[1] = 0;
+    session->gb2big_savec[0] = 0;
+    session->big2gb_savec[0] = 0;
+    session->gb2big_savec[1] = 0;
+    session->big2gb_savec[1] = 0;
 }
 
 #define c1  (unsigned char)(s[0])
@@ -6112,20 +6112,14 @@ void (*dbcvrt) ();              /* 2-byte conversion func for a hanzi */
 }
 
 
-char *gb2big(s, plen, inst)
-char *s;
-int *plen;
-int inst;
+char *gb2big(char *s, int *plen, int inst, session_t* session)
 {
-    return (hzconvert(s, plen, &gb2big_savec[inst], g2b));
+    return (hzconvert(s, plen, &session->gb2big_savec[inst], g2b));
 }
 
-char *big2gb(s, plen, inst)
-char *s;
-int *plen;
-int inst;
+char *big2gb( char *s, int *plen, int inst, session_t* session)
 {
-    return (hzconvert(s, plen, &big2gb_savec[inst], b2g));
+    return (hzconvert(s, plen, &session->big2gb_savec[inst], b2g));
 }
 
 /*

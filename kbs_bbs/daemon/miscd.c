@@ -512,7 +512,7 @@ void flushd()
     sigaction(SIGABRT, &act, NULL);
 
     while (1) {
-        sleep(2 * 60 * 60);
+        sleep(24 * 60 * 60);
         flush_ucache();
 		flush_bcache();
         bbslog("4miscdaemon", "flush passwd file");

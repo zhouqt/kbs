@@ -718,7 +718,7 @@ int add_pc_users(struct pc_users *pn)
 		return 0;
 	}
 	
-	sprintf(sql,"UPDATE newapply SET `apptime` = `apptime` , manager = '%s' , management = 0 WHERE username = '%s ' ;", currentuser->userid , pn->username);	
+	sprintf(sql,"UPDATE newapply SET `apptime` = `apptime` , manager = '%s' , management = 0 WHERE username = '%s ' ;", getCurrentUser()->userid , pn->username);	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
 #ifdef BBSMAIN
 		clear();

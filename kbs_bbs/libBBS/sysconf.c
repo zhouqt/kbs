@@ -12,7 +12,8 @@ int sysconf_menu;
 struct sdefine {
     char *key, *str;
     int val;
-} *sysvar;
+};
+static struct sdefine *sysvar;
 
 struct sysheader {
     char *buf;

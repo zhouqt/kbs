@@ -10,13 +10,13 @@ int main()
     struct fileheader x;
     int num, tmp, total;
 
-    init_all();
+    initwww_all();
     strsncpy(file, getparm("file"), 32);
     strsncpy(dirname, getparm("dir"), 15);
     strsncpy(title,getparm("title"),20);
     num = atoi(getparm("num"));
     printf("<center>\n");
-    id = currentuser->userid;
+    id = getCurrentUser()->userid;
     printf("%s -- 阅读信件 [使用者: %s]<hr>\n", BBSNAME, id);
     if (strncmp(file, "M.", 2))
         http_fatal("错误的参数1");

@@ -21,7 +21,7 @@ int main()
 	int gid; /* group id */
 	int bid;
 
-    init_all();
+    initwww_all();
     strsncpy(board, getparm("board"), 32);
 	gid = atoi(getparm("gid"));
 	if( gid < 0 ) gid=0;
@@ -32,7 +32,7 @@ int main()
 	/*
     strsncpy(file, getparm("file"), 32);
 	*/
-    if ((bid = getboardnum(board,&bh))==0||!check_read_perm(currentuser, &bh))
+    if ((bid = getboardnum(board,&bh))==0||!check_read_perm(getCurrentUser(), &bh))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
     encode_url(brdencode, board, sizeof(brdencode));
@@ -49,8 +49,8 @@ int main()
 	}
 
 #ifdef HAVE_BRC_CONTROL
-    if ((loginok)&&strcmp(currentuser->userid,"guest"))
-        brc_initial(currentuser->userid, board);
+    if ((loginok)&&strcmp(getCurrentUser()->userid,"guest"))
+        brc_initial(getCurrentUser()->userid, board, getSession());
 #endif
     printf("%s -- 主题文章阅读 [讨论区: %s]<hr class=\"default\" />", BBSNAME, board);
 
@@ -82,8 +82,8 @@ int main()
 	}
     printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]</center>", brdencode);
 #ifdef HAVE_BRC_CONTROL
-    if ((loginok)&&strcmp(currentuser->userid,"guest"))
-        brc_update(currentuser->userid);
+    if ((loginok)&&strcmp(getCurrentUser()->userid,"guest"))
+        brc_update(getCurrentUser()->userid, getSession());
 #endif
     http_quit();
 }
@@ -142,8 +142,8 @@ int show_file(char *board, int bid, struct boardheader* bh,
     char* title;
 
 #ifdef HAVE_BRC_CONTROL
-    if ((loginok)&&strcmp(currentuser->userid,"guest"))
-        brc_add_read(x->id);
+    if ((loginok)&&strcmp(getCurrentUser()->userid,"guest"))
+        brc_add_read(x->id, getSession());
 #endif
     sprintf(path, "boards/%s/%s", board, x->filename);
     encode_url(board_url, board, sizeof(board_url));

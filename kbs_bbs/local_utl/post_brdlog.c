@@ -131,7 +131,12 @@ main()
 	struct tm t;
 	int i;
 
-    chdir(BBSHOME);
+
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
 	if( stat( BONLINE_LOGDIR, &st) < 0 ){
 		if(mkdir(BONLINE_LOGDIR, 0755) < 0)
 			exit(0);
@@ -150,7 +155,6 @@ main()
 	if( stat( path, &st) < 0)
 		exit(0);
 
-    resolve_boards();
     fillboard();
 
 	for(now=time(0),i=0;i<24;i++,now-=3600){
@@ -170,7 +174,7 @@ main()
 	localtime_r( &now, &t);
 
     sprintf(title, "%d年%2d月%2d日版面统计数据(在线排序)", t.tm_year + 1900, t.tm_mon + 1, t.tm_mday);
-    post_file(NULL, "", path, "SysTrace", title, 0, 1);
+    post_file(NULL, "", path, "SysTrace", title, 0, 1, getSession());
 	unlink(path);
 
     qsort(x, n, sizeof(x[0]), id_cmp);
@@ -182,7 +186,7 @@ main()
 	localtime_r( &now, &t);
 
     sprintf(title, "%d年%2d月%2d日版面统计数据(文章数排序)", t.tm_year + 1900, t.tm_mon + 1, t.tm_mday);
-    post_file(NULL, "", path, "SysTrace", title, 0, 1);
+    post_file(NULL, "", path, "SysTrace", title, 0, 1, getSession());
 	unlink(path);
 
 }

@@ -2,14 +2,13 @@
 #include <utime.h>
 #define DEBUG
 
-void cancelpost(const char *board, const char *userid, struct fileheader *fh, int owned, int autoappend);
 int get_effsize_attach(char *ffn, long *att);
-int outgo_post(struct fileheader *fh, char *board, char *title)
+int outgo_post(struct fileheader *fh, char *board, char *title, session_t* session)
 {
     FILE *foo;
 
     if ((foo = fopen("innd/out.bntp", "a")) != NULL) {
-        fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board, fh->filename, currentuser->userid, currentuser->username, title);
+        fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board, fh->filename, session->currentuser->userid, session->currentuser->username, title);
         fclose(foo);
         return 0;
     }
@@ -255,7 +254,7 @@ int del_origin(char *board, struct fileheader *fileinfo)
     return 0;
 }
 
-int do_del_post(struct userec *user, struct write_dir_arg *dirarg, struct fileheader *fileinfo, char *board, int currmode, int decpost)
+int do_del_post(struct userec *user, struct write_dir_arg *dirarg, struct fileheader *fileinfo, char *board, int currmode, int decpost, session_t* session)
 {
     int owned;
     struct fileheader fh;
@@ -300,7 +299,7 @@ int do_del_post(struct userec *user, struct write_dir_arg *dirarg, struct filehe
 
 
     owned = isowner(user, &fh);
-    cancelpost(board, user->userid, &fh, owned, 1);
+    cancelpost(board, user->userid, &fh, owned, 1, session);
     updatelastpost(board);
     if (fh.accessed[0] & FILE_MARKED)
         setboardmark(board, 1);
@@ -334,7 +333,7 @@ int do_del_post(struct userec *user, struct write_dir_arg *dirarg, struct filehe
    Unlike the fb code which moves the file to the deleted
    board.
 */
-void cancelpost(const char *board, const char *userid, struct fileheader *fh, int owned, int autoappend)
+void cancelpost(const char *board, const char *userid, struct fileheader *fh, int owned, int autoappend, session_t* session)
 {
     struct fileheader postfile;
     char oldpath[50];
@@ -344,7 +343,7 @@ void cancelpost(const char *board, const char *userid, struct fileheader *fh, in
 
 #ifdef BBSMAIN
     if (uinfo.mode == RMAIL) {
-        sprintf(oldpath, "mail/%c/%s/%s", toupper(currentuser->userid[0]), currentuser->userid, fh->filename);
+        sprintf(oldpath, "mail/%c/%s/%s", toupper(session->currentuser->userid[0]), session->currentuser->userid, fh->filename);
         my_unlink(oldpath);
         return;
     }
@@ -426,7 +425,7 @@ void cancelpost(const char *board, const char *userid, struct fileheader *fh, in
 }
 
 
-void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony)
+void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony, session_t* session)
 {                               /* POST 最后一行 添加 */
     FILE *fp;
     int color, noidboard;
@@ -448,7 +447,7 @@ void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony
     if (!strcmp(currboard, "Announce"))
         fprintf(fp, "\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, NAME_BBS_CHINESE " BBS站");
     else
-        fprintf(fp, "\n\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(currentuser, fromhost));
+        fprintf(fp, "\n\033[m\033[1;%2dm※ 来源:·%s %s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (noidboard) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(session->currentuser, session->fromhost));
     fclose(fp);
     return;
 }
@@ -540,7 +539,7 @@ int write_posts(char *id, char *board, unsigned int groupid)
     return 0;
 }
 
-void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode)
+void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, session_t* session)
 {
     int noname;
     char uid[20];
@@ -603,12 +602,12 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
     else
         fprintf(fp, "发信站: %s (%24.24s), 转信\n", BBS_FULL_NAME, ctime(&now));
     if (in_mail)
-        fprintf(fp, "来  源: %s \n", fromhost);
+        fprintf(fp, "来  源: %s \n", session->fromhost);
     fprintf(fp, "\n");
 
 }
 
-void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, int local_article, char *sourceboard)
+void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, int local_article, char *sourceboard, session_t* session)
 {                               /* 把quote_file复制到filepath (转贴或自动发信) */
     FILE *inf, *of;
     char buf[256];
@@ -638,7 +637,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
 
         normal_file = 1;
 
-        write_header(of, user, in_mail, sourceboard, title, Anony, (local_article ? 1 : 2) /*不写入 .posts */ );
+        write_header(of, user, in_mail, sourceboard, title, Anony, (local_article ? 1 : 2 ), session /*不写入 .posts */ );
         if (skip_attach_fgets(buf, 256, inf) != NULL) {
             for (count = 8; buf[count] != ' ' && count < 256; count++)
                 owner[count - 8] = buf[count];
@@ -670,7 +669,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
         fprintf(of, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
         fprintf(of, "【此篇文章是由自动发信系统所张贴】\n\n");
     } else if (mode == 2) {
-        write_header(of, user, in_mail, sourceboard, title, Anony, 0 /*写入 .posts */ );
+        write_header(of, user, in_mail, sourceboard, title, Anony, 0 /*写入 .posts */ ,session);
     }
     while ((asize = -attach_fgets(buf, 256, inf)) != 0) {
         if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
@@ -769,7 +768,7 @@ int post_commend(struct userec *user, char *fromboard, struct fileheader *filein
 #endif
 
 /* Add by SmallPig */
-int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode)
+int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session)
 {                               /* (自动生成文件名) 转贴或自动发信 */
     struct fileheader postfile;
     char filepath[STRLEN];
@@ -833,7 +832,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     oldmode = uinfo.mode;
     modify_user_mode(POSTING);
 #endif
-    getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, local_article, toboard); /*根据fname完成 文件复制 */
+    getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, local_article, toboard, session); /*根据fname完成 文件复制 */
 
     postfile.eff_size = get_effsize_attach(filepath, &postfile.attachment);     /* FreeWizard: get effsize & attachment */
     /*
@@ -858,7 +857,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     } else {
         postfile.innflag[1] = 'S';
         postfile.innflag[0] = 'S';
-        outgo_post(&postfile, toboard, save_title);
+        outgo_post(&postfile, toboard, save_title, session);
     }
     if (!strcmp(toboard, "syssecurity")
         && strstr(title, "修改 ")
@@ -878,7 +877,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 #endif
         postfile.accessed[0] |= FILE_FORWARDED;
     }
-    after_post(user, &postfile, toboard, NULL, !(Anony));
+    after_post(user, &postfile, toboard, NULL, !(Anony), session);
 #ifdef BBSMAIN
     modify_user_mode(oldmode);
 #endif
@@ -886,17 +885,17 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 }
 
 
-int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode)
+int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode, session_t* session)
 /* 将某文件 POST 在某版 */
 {
     if (getboardnum(nboard, NULL) <= 0) {       /* 搜索要POST的版 ,判断是否存在该版 */
         return -1;
     }
-    post_cross(user, nboard, fromboard, posttitle, filename, Anony, false, 'l', mode);  /* post 文件 */
+    post_cross(user, nboard, fromboard, posttitle, filename, Anony, false, 'l', mode, session);  /* post 文件 */
     return 0;
 }
 
-int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat)
+int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat, session_t* session)
 {
     char buf[256];
     int fd, err = 0, nowid = 0;
@@ -928,10 +927,10 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
             isnews = !strcmp(boardname, "News");
             if (isnews || check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
 #else
-            if (check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
+            if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, session))
 #endif
 #else
-            if (check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
+            if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, session))
 #endif
             {
                 /*
@@ -1022,7 +1021,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     else {
 #endif
 #ifdef HAVE_BRC_CONTROL
-        brc_add_read(fh->id);
+        brc_add_read(fh->id, session);
 #endif
 
         /*
@@ -1035,10 +1034,10 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                 char newtitle[STRLEN];
 
                 if (getuser(re->owner, &lookupuser) != 0) {
-                    if ((false != canIsend2(currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && !chkusermail(lookupuser)) {
+                    if ((false != canIsend2(session->currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && !chkusermail(lookupuser)) {
                         setbfile(buf, boardname, fh->filename);
                         snprintf(newtitle, ARTICLE_TITLE_LEN, "[回文转寄]%s", fh->title);
-                        mail_file(currentuser->userid, buf, re->owner, newtitle, 0, fh);
+                        mail_file(session->currentuser->userid, buf, re->owner, newtitle, 0, fh);
                     }
                 }
             }
@@ -1383,14 +1382,14 @@ int Search_Bin(struct fileheader *ptr, int key, int start, int end)
     return -(low + 1);
 }
 
-char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm)
+char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm, session_t* session)
 {
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
     char type;
 
 #ifdef HAVE_BRC_CONTROL
     if (strcmp(user->userid, "guest"))
-        type = brc_unread(ent->id) ? unread_mark : ' ';
+        type = brc_unread(ent->id, session) ? unread_mark : ' ';
     else
 #endif
         type = ' ';
@@ -1483,7 +1482,7 @@ char text[256];
     return (strstr(text, tmp) != NULL);
 }
 
-int add_edit_mark(char *fname, int mode, char *title)
+int add_edit_mark(char *fname, int mode, char *title, session_t* session)
 {
     FILE *fp, *out;
     char buf[256];
@@ -1516,9 +1515,9 @@ int add_edit_mark(char *fname, int mode, char *title)
             if (Origin2(buf) && (!added)) {
                 now = time(0);
                 if (mode & 1)
-                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
                 else
-                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+                    fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
                 step = 3;
                 added = 1;
             }
@@ -1529,9 +1528,9 @@ int add_edit_mark(char *fname, int mode, char *title)
     if (!added) {
         now = time(0);
         if (mode & 1)
-            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本信·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
         else
-            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", currentuser->userid, ctime(&now) + 4, SHOW_USERIP(currentuser, fromhost));
+            fprintf(out, "\033[36m※ 修改:·%s 于 %15.15s 修改本文·[FROM: %s]\033[m\n", session->currentuser->userid, ctime(&now) + 4, SHOW_USERIP(session->currentuser, session->fromhost));
     }
     fclose(fp);
     fclose(out);
@@ -1871,7 +1870,7 @@ long calc_effsize(char *fname)
   删除模式 [del_mode = 0]标记删除 [1]普通删除 [2]强制删除
   TODO: use mmap
 */
-int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, int curmode, const struct boardheader *board)
+int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, int curmode, const struct boardheader *board, session_t* session)
 {
 #define DEL_RANGE_BUF 2048
     struct fileheader *savefhdr;
@@ -2007,7 +2006,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
                 delcount++;
                 if (delcount >= DEL_RANGE_BUF) {
                     for (j = 0; j < DEL_RANGE_BUF; j++)
-                        cancelpost(board->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+                        cancelpost(board->filename, session->currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, session->currentuser->userid), 0, session);
                     delcount = 0;
                     setbdir(DIR_MODE_DELETED, genbuf, board->filename);
                     append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
@@ -2021,7 +2020,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
                     delcount++;
                     if (delcount >= DEL_RANGE_BUF) {
                         delcount = 0;
-                        setmailfile(genbuf, currentuser->userid, ".DELETED");
+                        setmailfile(genbuf, session->currentuser->userid, ".DELETED");
                         append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
                     }
                 } else {
@@ -2032,9 +2031,9 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
                     if (delcount >= DEL_RANGE_BUF) {
                         delcount = 0;
                         for (j = 0; j < DEL_RANGE_BUF; j++) {
-                            setmailfile(genbuf, currentuser->userid, delfhdr[j].filename);
+                            setmailfile(genbuf, session->currentuser->userid, delfhdr[j].filename);
                             if (stat(genbuf, &st) != -1)
-                                currentuser->usedspace -= st.st_size;
+                                session->currentuser->usedspace -= st.st_size;
                         }
                     }
                 }
@@ -2067,21 +2066,21 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
         int j;
 
         for (j = 0; j < delcount; j++)
-            cancelpost(board->filename, currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, currentuser->userid), 0);
+            cancelpost(board->filename, session->currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, session->currentuser->userid), 0, session);
         setbdir(DIR_MODE_DELETED, genbuf, board->filename);
         append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
         setboardorigin(board->filename, 1);
     } else if (curmode == DIR_MODE_MAIL && !strstr(dirarg->filename, ".DELETED")) {
-        setmailfile(genbuf, currentuser->userid, ".DELETED");
+        setmailfile(genbuf, session->currentuser->userid, ".DELETED");
         append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
     } else if (curmode == DIR_MODE_MAIL) {
         struct stat st;
         int j;
 
         for (j = 0; j < delcount; j++) {
-            setmailfile(genbuf, currentuser->userid, delfhdr[j].filename);
+            setmailfile(genbuf, session->currentuser->userid, delfhdr[j].filename);
             if (stat(genbuf, &st) != -1)
-                currentuser->usedspace -= st.st_size;
+                session->currentuser->usedspace -= st.st_size;
         }
     }
     if (dirarg->needlock)
@@ -2162,7 +2161,7 @@ int dele_digest(char *dname, const char *boardname)
 }
 
 #ifdef FILTER
-int pass_filter(struct fileheader *fileinfo, struct boardheader *board)
+int pass_filter(struct fileheader *fileinfo, struct boardheader *board, session_t* session)
 {
 #ifdef SMTH
     if ((!strcmp(board->filename, FILTER_BOARD)) || (!strcmp(board->filename, "NewsClub")))
@@ -2206,7 +2205,7 @@ int pass_filter(struct fileheader *fileinfo, struct boardheader *board)
 
             updatelastpost(getboard(fileinfo->o_bid)->filename);
 #ifdef HAVE_BRC_CONTROL
-            brc_add_read(newfh.id);
+            brc_add_read(newfh.id, session);
 #endif
             if (newfh.id == newfh.groupid)
                 setboardorigin(getboard(fileinfo->o_bid)->filename, 1);
@@ -2236,7 +2235,7 @@ int pass_filter(struct fileheader *fileinfo, struct boardheader *board)
               4 文摘区(置顶区)满
               -1 文件打开错误
   */
-int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardheader *board, struct fileheader *fileinfo, int flag, struct fileheader *data, bool dobmlog)
+int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardheader *board, struct fileheader *fileinfo, int flag, struct fileheader *data, bool dobmlog, session_t* session)
 {
     char buf[MAXPATH];
     struct fileheader *originFh;
@@ -2297,11 +2296,11 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         if (data->accessed[0] & FILE_MARKED) {
             originFh->accessed[0] |= FILE_MARKED;
             if (dobmlog)
-                bmlog(currentuser->userid, board->filename, 7, 1);
+                bmlog(session->currentuser->userid, board->filename, 7, 1);
         } else {
             originFh->accessed[0] &= ~FILE_MARKED;
             if (dobmlog)
-                bmlog(currentuser->userid, board->filename, 6, 1);
+                bmlog(session->currentuser->userid, board->filename, 6, 1);
         }
         setboardmark(board->filename, 1);
     }
@@ -2313,7 +2312,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         if (!strcmp(board->filename, SYSMAIL_BOARD)) {
             char ans[STRLEN];
 
-            snprintf(ans, STRLEN, "〖%s〗 处理: %s", currentuser->userid, fileinfo->title);
+            snprintf(ans, STRLEN, "〖%s〗 处理: %s", session->currentuser->userid, fileinfo->title);
             strncpy(originFh->title, ans, ARTICLE_TITLE_LEN - 1);
             originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
         }
@@ -2358,7 +2357,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
     if (flag & FILE_DIGEST_FLAG) {
         if (data->accessed[0] & FILE_DIGEST) {  /*设置DIGEST */
             if (dobmlog) {
-                bmlog(currentuser->userid, board->filename, 3, 1);
+                bmlog(session->currentuser->userid, board->filename, 3, 1);
                 ret = add_digest(originFh, board->filename);
             } else {            /*其实这时候只需要改一下标志就够了 */
                 originFh->accessed[0] |= FILE_DIGEST;
@@ -2366,7 +2365,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         } else {                /* 如果已经是文摘的话，则从文摘中删除该post */
             originFh->accessed[0] = (originFh->accessed[0] & ~FILE_DIGEST);
             if (dobmlog) {
-                bmlog(currentuser->userid, board->filename, 4, 1);
+                bmlog(session->currentuser->userid, board->filename, 4, 1);
                 ret = dele_digest(originFh->filename, board->filename);
             }
         }
@@ -2389,7 +2388,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         }
 #ifdef FILTER
         if (flag & FILE_CENSOR_FLAG) {
-            ret = pass_filter(originFh, board);
+            ret = pass_filter(originFh, board, session);
         }
 #endif
         if (flag & FILE_ATTACHPOS_FLAG) {
@@ -2412,7 +2411,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         init_write_dir_arg(&dotdirarg);
         setbdir(DIR_MODE_NORMAL, dirpath, board->filename);
         dotdirarg.filename = dirpath;
-        change_post_flag(&dotdirarg, DIR_MODE_NORMAL, board, originFh, flag, data, false);
+        change_post_flag(&dotdirarg, DIR_MODE_NORMAL, board, originFh, flag, data, false, session);
         free_write_dir_arg(&dotdirarg);
     }
     if (dirarg->needlock)

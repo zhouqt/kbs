@@ -166,12 +166,12 @@ void load_mail_list(struct userec *user, struct _mail_list *mail_list)
     }
 }
 
-void save_mail_list(struct _mail_list *mail_list)
+void save_mail_list(struct _mail_list *mail_list,session_t* session)
 {
     char fname[STRLEN];
     int fd;
 
-    sethomefile(fname, currentuser->userid, "maildir");
+    sethomefile(fname, session->currentuser->userid, "maildir");
     if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
         write(fd, &mail_list->mail_list_t, sizeof(int));
         write(fd, mail_list->mail_list, sizeof(mail_list->mail_list));

@@ -42,7 +42,7 @@ static int set_smsg_select(struct _select_def *conf)
 	pressanykey();
 
 	if( ! s_m[conf->pos-conf->page_pos].readed ){
-		if( sign_smsmsg_read( s_m[conf->pos-conf->page_pos].id )){
+		if( sign_smsmsg_read( s_m[conf->pos-conf->page_pos].id , getSession())){
 			s_m[conf->pos-conf->page_pos].readed = 1;
 		}
 	}
@@ -154,9 +154,9 @@ static int set_smsg_getdata(struct _select_def *conf,int pos,int len)
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
 
 	if( conf->item_count - conf->page_pos < BBS_PAGESIZE )
-		conf->item_count = count_sql_smsmsg( currentuser->userid, sm_dest, 0, 0, sm_type, 0, sm_msgtxt);
+		conf->item_count = count_sql_smsmsg( getCurrentUser()->userid, sm_dest, 0, 0, sm_type, 0, sm_msgtxt, getSession());
 
-	i = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, conf->page_pos-1, BBS_PAGESIZE,sm_msgtxt,sm_desc);
+	i = get_sql_smsmsg(s_m, getCurrentUser()->userid, sm_dest, 0, 0, sm_type, 0, conf->page_pos-1, BBS_PAGESIZE,sm_msgtxt,sm_desc, getSession());
 
 	if( i <= 0){
 
@@ -165,7 +165,7 @@ static int set_smsg_getdata(struct _select_def *conf,int pos,int len)
 		sm_type = -1;
 		sm_msgtxt[0]=0;
 		
-		i = get_sql_smsmsg(s_m, currentuser->userid, sm_dest, 0, 0, sm_type, 0, conf->page_pos-1, BBS_PAGESIZE,sm_msgtxt,sm_desc);
+		i = get_sql_smsmsg(s_m, getCurrentUser()->userid, sm_dest, 0, 0, sm_type, 0, conf->page_pos-1, BBS_PAGESIZE,sm_msgtxt,sm_desc, getSession());
 
 		if(i <= 0)
 			return SHOW_QUIT;
@@ -291,33 +291,33 @@ static int set_smsg_key(struct _select_def *conf, int key)
 		clear();
 		prints("修改短消息前缀/后缀,这些会在发送的短消息内容前/后显示,占短消息字节");
 
-		if(currentmemo->ud.smsprefix[0])
-			strcpy(ans, currentmemo->ud.smsprefix);
+		if(getSession()->currentmemo->ud.smsprefix[0])
+			strcpy(ans, getSession()->currentmemo->ud.smsprefix);
 		else
 			ans[0]=0;
 		move(2,0);
 		prints("请输入新的前缀:");
 		multi_getdata(3, 0, 79, NULL, ans, 41, 6, false, 0);
 		if(ans[0]){
-			strncpy(currentmemo->ud.smsprefix, ans, 40);
-			currentmemo->ud.smsprefix[40]=0;
+			strncpy(getSession()->currentmemo->ud.smsprefix, ans, 40);
+			getSession()->currentmemo->ud.smsprefix[40]=0;
 		}else
-			currentmemo->ud.smsprefix[0]=0;
+			getSession()->currentmemo->ud.smsprefix[0]=0;
 
-		if(currentmemo->ud.smsend[0])
-			strcpy(ans, currentmemo->ud.smsend);
+		if(getSession()->currentmemo->ud.smsend[0])
+			strcpy(ans, getSession()->currentmemo->ud.smsend);
 		else
 			ans[0]=0;
 		move(10,0);
 		prints("请输入新的后缀:");
 		multi_getdata(11, 0, 79, NULL, ans, 41, 6, false, 0);
 		if(ans[0]){
-			strncpy(currentmemo->ud.smsend, ans, 40);
-			currentmemo->ud.smsend[40]=0;
+			strncpy(getSession()->currentmemo->ud.smsend, ans, 40);
+			getSession()->currentmemo->ud.smsend[40]=0;
 		}else
-			currentmemo->ud.smsend[0]=0;
+			getSession()->currentmemo->ud.smsend[0]=0;
 
-		write_userdata( currentuser->userid, &(currentmemo->ud) );
+		write_userdata( getCurrentUser()->userid, &(getSession()->currentmemo->ud) );
 
 		move(18,0);
 		prints("修改成功");
@@ -383,8 +383,8 @@ int smsmsg_read()
 
 
 	bzero( s_m, sizeof(struct smsmsg) * BBS_PAGESIZE );
-	group_conf.item_count = count_sql_smsmsg( currentuser->userid, NULL, 0, 0, -1, 0, NULL);
-	i = get_sql_smsmsg(s_m, currentuser->userid, NULL, 0, 0, -1, 0, 0, BBS_PAGESIZE, NULL,sm_desc);
+	group_conf.item_count = count_sql_smsmsg( getCurrentUser()->userid, NULL, 0, 0, -1, 0, NULL, getSession());
+	i = get_sql_smsmsg(s_m, getCurrentUser()->userid, NULL, 0, 0, -1, 0, 0, BBS_PAGESIZE, NULL,sm_desc, getSession());
 	
 	if(i <= 0){
 		free(s_m);
@@ -402,7 +402,7 @@ int smsmsg_read()
 	free(s_m);
 	s_m = NULL;
 
-	chk_smsmsg(1);
+	chk_smsmsg(1, getSession());
 
 	return 1;
 }

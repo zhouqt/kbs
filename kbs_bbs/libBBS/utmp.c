@@ -12,19 +12,7 @@
 #include <sys/socket.h>
 #endif
 
-struct UTMPHEAD {
-    int next[USHM_SIZE];
-    int hashhead[UTMP_HASHSIZE + 1];    /* use UCACHE_HASHSIZE/32 */
-    int number;
-    int listhead;
-    int list_prev[USHM_SIZE];   /* sorted list prev ptr */
-    int list_next[USHM_SIZE];   /* sorted list next ptr */
-    time_t uptime;
-};
-
 static int rebuild_list(struct user_info *up, char *arg, int p);
-static struct UTMPHEAD *utmphead;
-
 struct UTMPFILE *get_utmpshm_addr()
 {
     return utmpshm;
@@ -132,6 +120,7 @@ static int utmp_hash(const char *userid)
     return hash;
 }
 
+/* disable KCN
 struct requesthdr {
     int command;
     union {
@@ -140,7 +129,6 @@ struct requesthdr {
     } u_info;
 } utmpreq;
 
-/* disable KCN
 int sendutmpreq(struct requesthdr *req)
 {
 
@@ -606,7 +594,7 @@ void clear_utmp2(int uent)
     if (!uent) {
         if (!CHECK_UENT(uinfo.uid))
             return;
-        uent = utmpent;
+        uent = getSession()->utmpent;
     }
 #endif
     user=getuserbynum(utmpshm->uinfo[uent-1].uid);
@@ -698,8 +686,7 @@ static int cmpfuid(const void*a,const void*b)
 }
 
 
-struct friends_info* topfriend;
-int getfriendstr(struct userec* user,struct user_info* puinfo)
+int getfriendstr(struct userec* user,struct user_info* puinfo,session_t * session)
 {
     int nf;
     int i;
@@ -707,9 +694,9 @@ int getfriendstr(struct userec* user,struct user_info* puinfo)
     char buf[60];
 
     puinfo->friendsnum=0;
-    if (topfriend != NULL) {
-        free(topfriend);
-        topfriend = NULL;
+    if (session->topfriend != NULL) {
+        free(session->topfriend);
+        session->topfriend = NULL;
     }
     sethomefile(buf, user->userid, "friends");
     nf = get_num_records(buf, sizeof(struct friends));
@@ -728,23 +715,22 @@ int getfriendstr(struct userec* user,struct user_info* puinfo)
         }
     }
     qsort(friendsdata, nf, sizeof(friendsdata[0]),(int (*) (__const__ void *, __const__ void *)) cmpfuid);      /*For Bi_Search */
-    topfriend = (struct friends_info *) calloc(nf,sizeof(struct friends_info));
+    session->topfriend = (struct friends_info *) calloc(nf,sizeof(struct friends_info));
     for (i = 0; i < nf; i++) {
         puinfo->friends_uid[i] = searchuser(friendsdata[i].id);
-        strcpy(topfriend[i].exp, friendsdata[i].exp);
+        strcpy(session->topfriend[i].exp, friendsdata[i].exp);
     }
     free(friendsdata);
     puinfo->friendsnum=nf;
     return 0;
 }
 
-int utmpent=-1;
-int myfriend(int uid, char *fexp)
+int myfriend(int uid, char *fexp,session_t* session)
 {
     int i, found = false;
     struct user_info* u;
 
-    u = get_utmpent(utmpent);
+    u = get_utmpent(session->utmpent);
     /*
      * char buf[IDLEN+3]; 
      */
@@ -758,7 +744,7 @@ int myfriend(int uid, char *fexp)
         }
     }
     if ((found) && fexp)
-        strcpy(fexp, topfriend[i].exp);
+        strcpy(fexp, session->topfriend[i].exp);
     return found;
 }
 

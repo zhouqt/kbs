@@ -114,7 +114,7 @@ int undenyboard(struct boardheader *bh,void* arg)
                                         break;
                                     }
                                 printf("%s %s\n", bh->filename, uid);
-                                deldeny(&deliveruser, bh->filename, uid, 1);
+                                deldeny(&deliveruser, bh->filename, uid, 1, getSession());
                             }
                         }
                         buf[idx1] = 0x0a;
@@ -134,16 +134,17 @@ int undenyboard(struct boardheader *bh,void* arg)
 
 int main(int argc, char **argv)
 {
-    chdir(BBSHOME);
-    resolve_boards();
-    resolve_ucache();
-    resolve_utmp();
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
     bzero(&deliveruser, sizeof(struct userec));
     strcpy(deliveruser.userid, "deliver");
     deliveruser.userlevel = -1;
     strcpy(deliveruser.username, "自动发信系统");
-    currentuser = &deliveruser;
-    strcpy(fromhost, "天堂");
+    setCurrentUser(&deliveruser);
+    strcpy(getSession()->fromhost, "天堂");
     apply_boards(undenyboard,NULL);
     return 0;
 }

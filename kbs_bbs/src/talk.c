@@ -71,7 +71,7 @@ char *user;
 char canpage(friend, pager)
 int friend, pager;
 {
-    if ((pager & ALL_PAGER) || HAS_PERM(currentuser, PERM_SYSOP))
+    if ((pager & ALL_PAGER) || HAS_PERM(getCurrentUser(), PERM_SYSOP))
         return true;
     if ((pager & FRIEND_PAGER)) {
         if (friend)
@@ -93,7 +93,7 @@ int listcuent(struct user_info *uentp, char *arg, int pos)
         return 0;
     if (uentp->mode == ULDL)
         return 0;
-    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uentp->invisible)
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible)
         return 0;
     AddNameList(uentp->userid);
     return 0;
@@ -109,7 +109,7 @@ int t_pager()
 {
     if (uinfo.pager & ALL_PAGER) {
         uinfo.pager &= ~ALL_PAGER;
-        if (DEFINE(currentuser, DEF_FRIENDCALL))
+        if (DEFINE(getCurrentUser(), DEF_FRIENDCALL))
             uinfo.pager |= FRIEND_PAGER;
         else
             uinfo.pager &= ~FRIEND_PAGER;
@@ -160,20 +160,20 @@ char userid[IDLEN];
 }
 int t_printstatus(struct user_info *uentp, int *arg, int pos)
 {
-    char buf[80],buf2[20];
+    char buf[80],buf2[20],buf3[80];
     char* p;
     if (uentp->invisible == 1) {
-        if (!HAS_PERM(currentuser, PERM_SEECLOAK))
+        if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
             return COUNT;
     }
     (*arg)++;
     if (*arg == 1)
         strcpy(genbuf, "目前在站上，状态如下：\n");
 
-    p = idle_str(uentp);
+    p = idle_str(buf3,uentp);
     if(p[0]==' '&&p[1]==' ') buf2[0]=0;
     else sprintf(buf2, "[%s]", p);
-    sprintf(buf, "%s\033[1m%s\033[m%s ", uentp->invisible?"\033[32m":"", modestring(uentp->mode, uentp->destuid, 0,   /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+    sprintf(buf, "%s\033[1m%s\033[m%s ", uentp->invisible?"\033[32m":"", modestring(buf3,uentp->mode, uentp->destuid, 0,   /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                           (uentp->in_chat ? uentp->chatid : NULL)), buf2);
     strcat(genbuf, buf);
 
@@ -190,12 +190,12 @@ struct _tag_talk_showstatus {
 };
 int talk_showstatus(struct user_info *uentp, struct _tag_talk_showstatus *arg, int pos)
 {
-    char buf[80];
+    char buf[80],buf2[80];
 
-    if (uentp->invisible && !HAS_PERM(currentuser, PERM_SEECLOAK))
+    if (uentp->invisible && !HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
         return 0;
     arg->pos[arg->count++] = pos;
-    sprintf(buf, "(%d) 目前状态: %s, 来自: %s \n", arg->count, modestring(uentp->mode, uentp->destuid, 0,       /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+    sprintf(buf, "(%d) 目前状态: %s, 来自: %s \n", arg->count, modestring(buf2,uentp->mode, uentp->destuid, 0,       /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                                                           uentp->in_chat ? uentp->chatid : NULL), uentp->from);
     strcat(genbuf, buf);
     return COUNT;
@@ -205,8 +205,6 @@ int t_cmpuids(int uid, struct user_info *up)
 {
     return (up->active && uid == up->uid);
 }
-
-extern char MsgDesUid[20];
 
 int t_query(char* q_id)
 {
@@ -272,7 +270,7 @@ int t_query(char* q_id)
     perf = countperf(lookupuser);
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
 #ifndef _DETAIL_UINFO_
-    if ((!HAS_PERM(currentuser, PERM_ADMINMENU)) && strcmp(lookupuser->userid, currentuser->userid))
+    if ((!HAS_PERM(getCurrentUser(), PERM_ADMINMENU)) && strcmp(lookupuser->userid, getCurrentUser()->userid))
         prints("%s (%s)", lookupuser->userid, lookupuser->username);
     else
 #endif                          /* 
@@ -301,7 +299,7 @@ int t_query(char* q_id)
 #ifdef NINE_BUILD
     prints("\n上次在  [%s] 从 [%s] 到本站一游。", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)));
 #else
-    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : ( (!strcmp(lookupuser->userid , currentuser->userid) || HAS_PERM(currentuser, PERM_SYSOP) ) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost)) ),    /*Haohmaru.99.12.18. hide ip */
+    prints("\n上次在  [%s] 从 [%s] 到本站一游。\n离线时间[%s] ", Ctime(lookupuser->lastlogin), ((lookupuser->lasthost[0] == '\0') /*|| DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : ( (!strcmp(lookupuser->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP) ) ? lookupuser->lasthost: SHOW_USERIP(lookupuser, lookupuser->lasthost)) ),    /*Haohmaru.99.12.18. hide ip */
            exittime);
 #endif
 #ifdef NINE_BUILD
@@ -315,7 +313,7 @@ int t_query(char* q_id)
            (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #endif
 #if defined(QUERY_REALNAMES)
-    if (HAS_PERM(currentuser, PERM_BASIC))
+    if (HAS_PERM(getCurrentUser(), PERM_BASIC))
         prints("Real Name: %s \n", lookupuser->realname);
 #endif                          /* 
                                  */
@@ -330,13 +328,13 @@ int t_query(char* q_id)
         struct user_info *uin;
         move(t_lines - 1, 0);
         if ((genbuf[0]) && seecount) {
-            if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
                 prints("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续");
             else
                 prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 其它键继续");
         }
         else {
-            if (DEFINE(currentuser, DEF_HIGHCOLOR))
+            if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
                 prints("\x1b[m\x1b[44m        寄信[\x1b[1;32mm\x1b[m\x1b[0;44m]           加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续");
             else
                 prints("\x1b[44m        寄信[m]           加,减朋友[o,d] 其它键继续");
@@ -347,7 +345,7 @@ int t_query(char* q_id)
         switch(toupper(ch)) {
             case 'T':
                 if (!((genbuf[0]) && seecount)) break;
-                if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+                if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
                     break;
                 uin = t_search(uident, false);
                 if(uin==NULL) break;
@@ -363,25 +361,25 @@ int t_query(char* q_id)
 #endif
 		{
 		    if (!((genbuf[0]) && seecount)) break;
-		    if (strcmp(uident, "guest") && !HAS_PERM(currentuser, PERM_PAGE))
+		    if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
 	                break;
 		    uin = t_search(uident, false);
-		    if (!canmsg(currentuser, uin)) {
+		    if (!canmsg(getCurrentUser(), uin)) {
 			sprintf(buf, "%s 已经关闭讯息呼叫器", uident);
 			break;
 		    }
-		    strcpy(MsgDesUid, uident);
+		    strcpy(getSession()->MsgDesUid, uident);
                     do_sendmsg(uin, NULL, 0);
 		}
                 break;
             case 'M':
-                if (HAS_PERM(currentuser, PERM_DENYMAIL)
-                	||!HAS_PERM(currentuser, PERM_LOGINOK))
+                if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
+                	||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
                     break;
                 m_send(uident);
                 break;
             case 'O':
-                if (!strcmp("guest", currentuser->userid))
+                if (!strcmp("guest", getCurrentUser()->userid))
                     break;
                 if (addtooverride(uident) == -1)
                     sprintf(buf, "%s 已在朋友名单", uident);
@@ -394,7 +392,7 @@ int t_query(char* q_id)
                 sleep(1);
                 break;
             case 'D':
-                if (!strcmp("guest", currentuser->userid))
+                if (!strcmp("guest", getCurrentUser()->userid))
                     break;
                 sprintf(buf, "你要把 %s 从朋友名单移除吗 (Y/N) [N]: ", uident);
                 move(BBS_PAGESIZE + 3, 0);
@@ -423,7 +421,7 @@ int count_visible_active(struct user_info *uentp, int *count, int pos)
 {
     if (!uentp->active || !uentp->pid)
         return 0;
-    if (!(!HAS_PERM(currentuser, PERM_SEECLOAK) && uentp->invisible))
+    if (!(!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible))
         (*count)++;
     return 1;
 }
@@ -433,8 +431,8 @@ int alcounter(struct user_info *uentp, char *arg, int pos)
 
     if (!uentp->active || !uentp->pid)
         return 0;
-    canseecloak = (!HAS_PERM(currentuser, PERM_SEECLOAK) && uentp->invisible) ? 0 : 1;
-    if (myfriend(uentp->uid, NULL)) {
+    canseecloak = (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible) ? 0 : 1;
+    if (myfriend(uentp->uid, NULL,getSession())) {
         count_friends++;
         if (!canseecloak)
             count_friends--;
@@ -476,7 +474,7 @@ int ttt_talk(struct user_info *userinfo)
 
     move(1, 0);
     clrtobot();
-    if (!HAS_PERM(currentuser,PERM_PAGE))
+    if (!HAS_PERM(getCurrentUser(),PERM_PAGE))
         return 0;
     if (userinfo == NULL) {
         move(2, 0);
@@ -578,7 +576,7 @@ int ttt_talk(struct user_info *userinfo)
         clrtoeol();
         return -1;
     }
-    if (false == canIsend2(currentuser,uin.userid)) {       /*Haohmaru.99.6.6.检查是否被ignore */
+    if (false == canIsend2(getCurrentUser(),uin.userid)) {       /*Haohmaru.99.6.6.检查是否被ignore */
         move(2, 0);
         prints("对方拒绝和你聊天\n");
         pressreturn();
@@ -923,7 +921,7 @@ char *buf;
 
     if (!uentp->active || !uentp->pid)
         return -1;
-    if (!HAS_PERM(currentuser, PERM_SEECLOAK) && uentp->invisible)
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible)
         return -1;
     switch (uentp->mode) {
     case ULDL:
@@ -1131,7 +1129,7 @@ static int do_talk(int fd)
     endmsg(NULL);
     previous_mode = uinfo.mode;
     modify_user_mode(TALK);
-    sprintf(mid_line, " %s (%s) 和 %s 正在畅谈中", currentuser->userid, currentuser->username, save_page_requestor);
+    sprintf(mid_line, " %s (%s) 和 %s 正在畅谈中", getCurrentUser()->userid, getCurrentUser()->username, save_page_requestor);
     memset(&mywin, 0, sizeof(mywin));
     memset(&itswin, 0, sizeof(itswin));
     i = (t_lines - 1) / 2;
@@ -1250,7 +1248,7 @@ static int do_talk(int fd)
                     talkflush();
                     do_talk_char(&mywin, '\r');
                 }
-            } else if (ch == Ctrl('P') && HAS_PERM(currentuser, PERM_BASIC)) {
+            } else if (ch == Ctrl('P') && HAS_PERM(getCurrentUser(), PERM_BASIC)) {
                 t_pager();
                 update_endline();
             } else if (Ctrl('Z') == ch)
@@ -1278,7 +1276,7 @@ static int do_talk(int fd)
     close(talkrec);
     /*---	这句有用吗?	commented by period	---*/
     /*
-     * sethomefile(genbuf, currentuser->userid, "talklog");  
+     * sethomefile(genbuf, getCurrentUser()->userid, "talklog");  
      */
     /*---	changed by period	2000-09-18	---*/
     *genbuf = 0;
@@ -1288,11 +1286,11 @@ static int do_talk(int fd)
             getdata(23, 0, "是否寄回聊天纪录 [Y/n]: ", genbuf, 2, DOECHO, NULL, true); 
             if (genbuf[0] != 'N' || genbuf[0] != 'n')  {
          *---	also '||' used above is wrong...	---*/
-        sethomefile(buf, currentuser->userid, "talklog");
+        sethomefile(buf, getCurrentUser()->userid, "talklog");
         sprintf(mywords, "跟 %s 的聊天记录 [%12.12s]", partner, Ctime(now) + 6);
-        mail_file(currentuser->userid, buf, currentuser->userid, mywords, 0, NULL);
+        mail_file(getCurrentUser()->userid, buf, getCurrentUser()->userid, mywords, 0, NULL);
     }
-    sethomefile(buf, currentuser->userid, "talklog");
+    sethomefile(buf, getCurrentUser()->userid, "talklog");
     unlink(buf);
 #endif                          /* 
                                  */
@@ -1306,8 +1304,7 @@ struct user_info *uentp;
     int pageusers = 60;
     extern struct user_info *user_record[];
     extern int range;
-
-    fill_userlist();
+	char buf[80];
     if (ulistpage > ((range - 1) / pageusers))
         ulistpage = 0;
     if (ulistpage < 0)
@@ -1327,7 +1324,7 @@ struct user_info *uentp;
         else
             ovv = false;
         sprintf(ubuf, "%s%-12.12s %s%-10.10s\033[m", (ovv) ? "\033[32m．" : "  ", user_record[i]->userid, (user_record[i]->invisible == true) ? "\033[34m" : "",
-                modestring(user_record[i]->mode, user_record[i]->destuid, 0, NULL));
+                modestring(buf,user_record[i]->mode, user_record[i]->destuid, 0, NULL));
         prints("%s", ubuf);
         if ((i + 1) % 3 == 0)
             prints("\n");
@@ -1504,8 +1501,8 @@ char *cmdfile;
     /***** modified by netty, March 15,1995
         sprintf( buf, "/bin/sh %s", cmdfile );
     ******/
-    sethomepath(userhome, currentuser->userid);
-    sprintf(buf, "/bin/sh %s %s %s %s", cmdfile, userhome, currentuser->userid, currentuser->username);
+    sethomepath(userhome, getCurrentUser()->userid);
+    sprintf(buf, "/bin/sh %s %s %s %s", cmdfile, userhome, getCurrentUser()->userid, getCurrentUser()->username);
     RUNSH = true;
     do_exec(buf, NULL);
     RUNSH = false;
@@ -1619,8 +1616,8 @@ char *uident;
     char buf[STRLEN];
 
     memset(&tmp, 0, sizeof(tmp));
-    sethomefile(buf, currentuser->userid, "friends");
-    if ((!HAS_PERM(currentuser, PERM_ACCOUNTS) && !HAS_PERM(currentuser, PERM_SYSOP)) && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
+    sethomefile(buf, getCurrentUser()->userid, "friends");
+    if ((!HAS_PERM(getCurrentUser(), PERM_ACCOUNTS) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
         move(t_lines - 2, 0);
         clrtoeol();
         prints("抱歉，本站目前仅可以设定 %d 个好友, 请按任何键继续...", MAXFRIENDS);
@@ -1630,7 +1627,7 @@ char *uident;
         clrtoeol();
         return -1;
     }
-    if (myfriend(searchuser(uident), NULL))
+    if (myfriend(searchuser(uident), NULL,getSession()))
         return -1;
     if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND) {
         strcpy(tmp.id, uident);
@@ -1645,10 +1642,10 @@ char *uident;
         sprintf(genbuf, "请输入给好友【%s】的说明: ", tmp.id);
         getdata(t_lines - 2, 0, genbuf, tmp.exp, 15, DOECHO, NULL, true);
     }
-    sethomefile(genbuf, currentuser->userid, "friends");
+    sethomefile(genbuf, getCurrentUser()->userid, "friends");
     n = append_record(genbuf, &tmp, sizeof(struct friends));
     if (n != -1)
-        getfriendstr(currentuser,get_utmpent(utmpent));
+        getfriendstr(getCurrentUser(),get_utmpent(getSession()->utmpent),getSession());
     else
         bbslog("user","%s","append friendfile error");
     return n;
@@ -1658,11 +1655,11 @@ int deleteoverride(char *uident)
     int deleted;
     struct friends fh;
 
-    sethomefile(genbuf, currentuser->userid, "friends");
+    sethomefile(genbuf, getCurrentUser()->userid, "friends");
     deleted = search_record(genbuf, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpfnames, uident);
     if (deleted > 0) {
         if (delete_record(genbuf, sizeof(fh), deleted, NULL, NULL) == 0)
-            getfriendstr(currentuser,get_utmpent(utmpent));
+            getfriendstr(getCurrentUser(),get_utmpent(getSession()->utmpent),getSession());
         else {
             deleted = -1;
             bbslog("user","%s","delete friend error");
@@ -1773,7 +1770,7 @@ int friend_dele(struct _select_def* conf,struct friends *fh,void* extraarg)
 
 int friend_mail(struct _select_def* conf,struct friends *fh,void* extraarg)
 {
-    if (!HAS_PERM(currentuser, PERM_POST))
+    if (!HAS_PERM(getCurrentUser(), PERM_POST))
         return DONOTHING;
     m_send(fh->id);
     return FULLUPDATE;
@@ -1836,7 +1833,7 @@ struct key_command friend_list[] = {
 void t_override()
 {
     char genbuf[PATHLEN];
-    sethomefile(genbuf, currentuser->userid, "friends");
+    sethomefile(genbuf, getCurrentUser()->userid, "friends");
     new_i_read(DIR_MODE_FRIEND, genbuf, friend_title, (READ_ENT_FUNC) friend_doentry, friend_list, sizeof(struct friends));
     clear();
     return;
@@ -1881,7 +1878,7 @@ int wait_friend()
         pressanykey();
         return -1;
     }
-    sprintf(buf, "%d@%s", tuid, currentuser->userid);
+    sprintf(buf, "%d@%s", tuid, getCurrentUser()->userid);
     if (!seek_in_file("friendbook", buf))
         fprintf(fp, "%s\n", buf);
     fclose(fp);
@@ -1951,7 +1948,7 @@ int badlist()
 
     modify_user_mode(EDITUFILE);
     clear();
-    sethomefile(path, currentuser->userid, "/ignores");
+    sethomefile(path, getCurrentUser()->userid, "/ignores");
     while (1) {
         cnt = list_ignore(path);
         if (cnt >= MAX_IGNORE) {
@@ -1975,7 +1972,7 @@ int badlist()
             if (!searchuser(userid)) {
                 prints("这个使用者代号是错误的.\n");
                 clear_press();
-            } else if (!strcasecmp(userid, currentuser->userid)) {
+            } else if (!strcasecmp(userid, getCurrentUser()->userid)) {
                 prints("不能是自己的代号\n");
                 clear_press();
             } else {
@@ -2051,12 +2048,12 @@ void do_log(char *msg, int who)
     /*
      * 只帮自己做 
      */
-    sethomefile(buf, currentuser->userid, "talklog");
+    sethomefile(buf, getCurrentUser()->userid, "talklog");
     if (!dashf(buf) || talkrec == -1) {
         talkrec = open(buf, O_RDWR | O_CREAT | O_TRUNC, 0644);
         sprintf(buf, "\033[1;32m与 %s 的聊天记录, 日期: %s \033[m\n", save_page_requestor, Cdate(now));
         write(talkrec, buf, strlen(buf));
-        sprintf(buf, "\t颜色分别代表: \033[1;33m%s\033[m \033[1;36m%s\033[m \n\n", currentuser->userid, partner);
+        sprintf(buf, "\t颜色分别代表: \033[1;33m%s\033[m \033[1;36m%s\033[m \n\n", getCurrentUser()->userid, partner);
         write(talkrec, buf, strlen(buf));
     }
     if (who == 1) {             /* 自己说的话 */

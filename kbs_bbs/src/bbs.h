@@ -485,12 +485,6 @@ enum BBSPOST_MODE
 #define ATTACHMENT_PAD "\0\0\0\0\0\0\0\0"
 #define ATTACHMENT_SIZE 8
 #include "system.h"
-#include "vars.h"
-#include "func.h"
-#ifdef BBSMAIN
-#include "defines_t.h"
-#endif
-
 #define system my_system
 #ifndef MAXPATH
 #define MAXPATH 255
@@ -622,5 +616,11 @@ extern struct sms_shm_head* head;
 
 #endif
 
+#include "var.h"
+#ifdef BBSMAIN
+#include "vars.h"
+#include "defines_t.h"
+#endif
+#include "func.h"
 
 #endif                          /* of _BBS_H_ */

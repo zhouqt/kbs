@@ -77,7 +77,7 @@ int setsystempasswd()
     char passbuf[40], prepass[40];
 
     modify_user_mode(ADMIN);
-    if (strcmp(currentuser->userid, "SYSOP"))
+    if (strcmp(getCurrentUser()->userid, "SYSOP"))
         return -1;
     if (!check_systempasswd())
         return -1;
@@ -114,11 +114,11 @@ char *str;
 
     savemode = uinfo.mode;
 	gettmpfilename( fname, "deliver" );
-    //sprintf(fname, "tmp/deliver.%s.%05d", currentuser->userid, uinfo.pid);
+    //sprintf(fname, "tmp/deliver.%s.%05d", getCurrentUser()->userid, uinfo.pid);
     if ((se = fopen(fname, "w")) != NULL) {
         fprintf(se, "%s\n", str);
         fclose(se);
-        post_file(currentuser, "", fname, currboard->filename, title, 0, 2);
+        post_file(getCurrentUser(), "", fname, currboard->filename, title, 0, 2, getSession());
         unlink(fname);
         modify_user_mode(savemode);
     }
@@ -156,7 +156,7 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 if (strstr(str, "自动处理程序"))
                 	fprintf(se, "真实 E-mail  : %s$%s@SYSOP\n", fdata[3], fdata[5]);
 		else	
-                	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], currentuser->userid);
+                	fprintf(se, "真实 E-mail  : %s$%s@%s\n", fdata[3], fdata[5], getCurrentUser()->userid);
                 fprintf(se, "服务单位     : %s\n", fdata[3]);
                 fprintf(se, "目前住址     : %s\n", fdata[4]);
                 fprintf(se, "连络电话     : %s\n", fdata[5]);
@@ -170,26 +170,26 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 	fprintf(se, "\033[1;32m自动拒绝理由 : %s\033[m\n", fdata[7]);
                 /*
                  * fprintf(se, "\n\033[33m以下是认证者个人资料\033[35m");
-                 * getuinfo(se, currentuser);rem by Haohmaru.99.4.16 
+                 * getuinfo(se, getCurrentUser());rem by Haohmaru.99.4.16 
                  */
                 fclose(se);
                 if (strstr(str,"拒绝"))
-                	post_file(currentuser, "", fname, "reject_registry", str, 0, 1);     
+                	post_file(getCurrentUser(), "", fname, "reject_registry", str, 0, 1, getSession());     
                 else
                 {
 	                if (strstr(str, "自动处理程序"))
-	                	post_file(currentuser, "", fname, "Registry", str, 0, 1);       
+	                	post_file(getCurrentUser(), "", fname, "Registry", str, 0, 1, getSession());       
 	                else
-		                post_file(currentuser, "", fname, "Registry", str, 0, 2);
+		                post_file(getCurrentUser(), "", fname, "Registry", str, 0, 2, getSession());
                 }
             } else if (strstr(str, "删除使用者：")) {
                 fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
                 fprintf(se, "以下是被删者个人资料");
                 getuinfo(se, lookupuser);
                 fprintf(se, "\n以下是删除者个人资料");
-                getuinfo(se, currentuser);
+                getuinfo(se, getCurrentUser());
                 fclose(se);
-                post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
+                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
             } else if ((ptr = strstr(str, "的权限XPERM")) != NULL) {
                 int oldXPERM, newXPERM;
                 int num;
@@ -225,26 +225,26 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
                 fprintf(se, "\n以下是被改者个人资料");
                 getuinfo(se, lookupuser);
                 fprintf(se, "\n以下是修改者个人资料");
-                getuinfo(se, currentuser);
+                getuinfo(se, getCurrentUser());
                 fclose(se);
-                post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
+                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
             } else {            /* Modified for change id by Bigman 2001.5.25 */
 
                 fprintf(se, "系统安全记录系统\x1b[32m原因：%s\x1b[m\n", str);
                 fprintf(se, "以下是个人资料");
                 getuinfo(se, lookupuser);
                 fclose(se);
-                post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
+                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
             }
         } else {
             fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", str);
             fprintf(se, "以下是个人资料");
-            getuinfo(se, currentuser);
+            getuinfo(se, getCurrentUser());
             fclose(se);
             if (strstr(str, "设定使用者注册资料"))      /* Leeward 98.03.29 */
-                post_file(currentuser, "", fname, "Registry", str, 0, 2);
+                post_file(getCurrentUser(), "", fname, "Registry", str, 0, 2, getSession());
             else
-                post_file(currentuser, "", fname, "syssecurity", str, 0, 2);
+                post_file(getCurrentUser(), "", fname, "syssecurity", str, 0, 2, getSession());
         }
         unlink(fname);
         modify_user_mode(savemode);
@@ -406,7 +406,7 @@ int m_newbrd()
         else
             sprintf(vbuf, "%-38.38s", newboard.title + 13);
 
-        if (add_grp(group, newboard.filename, vbuf, cexplain) == -1)
+        if (add_grp(group, newboard.filename, vbuf, cexplain, getSession()) == -1)
             prints("\n成立精华区失败....\n");
         else
             prints("已经置入精华区...\n");
@@ -730,7 +730,7 @@ int m_editbrd()
                         else
                             sprintf(vbuf, "%-38.38s", newfh.title + 13);
 
-                        if (add_grp(group, newfh.filename, vbuf, cexplain) == -1)
+                        if (add_grp(group, newfh.filename, vbuf, cexplain, getSession()) == -1)
                             prints("\n成立精华区失败....\n");
                         else
                             prints("已经置入精华区...\n");
@@ -795,7 +795,7 @@ int searchtrace()
     sprintf(tmp_command, "grep -a -w %s user.log | grep posted > tmp/searchresult.%d", tmp_id, getpid());
     system(tmp_command);
     sprintf(tmp_command, "tmp/searchresult.%d", getpid());
-    mail_file(currentuser->userid, tmp_command, currentuser->userid, "系统查询结果", BBSPOST_MOVE, NULL);
+    mail_file(getCurrentUser()->userid, tmp_command, getCurrentUser()->userid, "系统查询结果", BBSPOST_MOVE, NULL);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf, lookupuser, NULL);      /*写入syssecurity版, stephen 2000.12.21 */
@@ -1280,7 +1280,7 @@ char *logfile, *regfile;
     char result[256], ip[17];   /* Added for IP query by Bigman: 2002.8.20 */
     long pid;                   /* Added by Bigman: 2002.5.31 */
 
-    uid = currentuser->userid;
+    uid = getCurrentUser()->userid;
 
 
     stand_title("依序设定所有新注册资料");
@@ -1489,7 +1489,7 @@ if (ret==-2) {
          if (ret==-2)
          {
 #endif
-                strcpy(sender,currentuser->userid);
+                strcpy(sender,getCurrentUser()->userid);
                 sprintf(genbuf, "%s 让 %s 通过身份确认.", uid, uinfo.userid);
 #ifdef AUTO_CHECK_REGISTER_FORM
          }
@@ -1589,7 +1589,7 @@ if (ret==-2) {
                    if (ret==-2)
                    {
 #endif
-                    strcpy(sender,currentuser->userid);
+                    strcpy(sender,getCurrentUser()->userid);
                     sprintf(genbuf, "<注册失败> - %s", buf);
 #ifdef AUTO_CHECK_REGISTER_FORM
                    }
@@ -1741,7 +1741,7 @@ int m_stoplogin()
     if (!check_systempasswd()) {
         return -1;
     }
-    if (!HAS_PERM(currentuser, PERM_ADMIN))
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN))
         return -1;
     getdata(t_lines - 1, 0, "禁止登陆吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
@@ -1918,7 +1918,7 @@ int set_BM()
     struct userec *lookupuser, uinfo;
     struct boardheader *bptr;
 
-    if (!HAS_PERM(currentuser, PERM_ADMIN) || !HAS_PERM(currentuser, PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN) || !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
         prints("抱歉, 只有ADMIN权限的管理员才能修改其他用户权限");
@@ -2029,7 +2029,7 @@ int set_BM()
                             strcat(newfh.BM, " ");
                         strcat(newfh.BM, lookupuser->userid);
                         newlevel |= PERM_BOARDS;
-                        mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
+                        mail_file(getCurrentUser()->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
 						/* add by stiger,斑竹上任记录 */
 						if(normal_board(newfh.filename)){
 #if HAVE_MYSQL_SMTH == 1

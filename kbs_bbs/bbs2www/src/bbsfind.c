@@ -10,7 +10,7 @@ int main()
     char board[BOARDNAMELEN+1];
     int day;
 
-    init_all();
+    initwww_all();
     strsncpy(user, getparm("user"), 13);
     strsncpy(title, getparm("title"), 50);
     strsncpy(title2, getparm("title2"), 50);
@@ -55,7 +55,7 @@ int search(char* boardname,char *id, char *pat, char *pat2, char *pat3, int dt)
         if (boardname[0]&&strcasemp(bc[i].filename,boardname))
             continue;
         strcpy(board, bc[i].filename);
-        if (!has_read_perm(currentuser, board))
+        if (!has_read_perm(getCurrentUser(), board))
             continue;
         sprintf(dir, "boards/%s/.DIR", board);
         fp = fopen(dir, "r");

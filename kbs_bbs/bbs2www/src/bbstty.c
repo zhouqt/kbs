@@ -10,7 +10,7 @@ int main()
     char s1[256] = "", s2[256] = "", s3[356] = "";
     int r;
 
-    init_all();
+    initwww_all();
     cmd = getparm("cmd");
     r = sscanf(cmd, "%80s %80s %80s", s1, s2, s3);
     if (!strcasecmp(s1, "/q")) {

@@ -9,7 +9,7 @@ int main()
     char buf[256], tmp[256], name[256], cname[256], cc[256];
     int i, r;
 
-    init_all();
+    initwww_all();
     fp = fopen("0Announce/bbslists/board2", "r");
     if (fp == 0)
         http_fatal("error 1");

@@ -9,10 +9,10 @@ int main()
     char *ptr, path[256], buf[256], buf1[256], buf2[256];
     int t_lines = 20, link_mode = 0, def_mode = 0, type;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("匆匆过客不能定制界面");
-    sprintf(path, "home/%c/%s/.mywww", toupper(currentuser->userid[0]), currentuser->userid);
+    sprintf(path, "home/%c/%s/.mywww", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
     fp = fopen(path, "r");
     if (fp) {
         while (1) {
@@ -39,7 +39,7 @@ int main()
     ptr = getparm("def_mode");
     if (ptr[0])
         def_mode = atoi(ptr);
-    printf("<center>%s -- WWW个人定制 [使用者: %s]<hr color=green>", BBSNAME, currentuser->userid);
+    printf("<center>%s -- WWW个人定制 [使用者: %s]<hr color=green>", BBSNAME, getCurrentUser()->userid);
     if (type > 0) {
         save_set(path, t_lines, link_mode, def_mode);
         return;

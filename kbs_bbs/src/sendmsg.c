@@ -12,7 +12,6 @@
 int RMSG = false;
 extern int RUNSH;
 extern struct screenline *big_picture;
-extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 static int RMSGCount = 0;       /* Leeward 98.07.30 supporting msgX */
 extern int i_timeout;
 
@@ -49,7 +48,7 @@ int get_msg(char * uid, char * msg, int line, int sms)
         if (genbuf[0] == 'n' || genbuf[0] == 'N')
             return false;
         if (genbuf[0] == 'G') {
-            if (HAS_PERM(currentuser, PERM_SYSOP))
+            if (HAS_PERM(getCurrentUser(), PERM_SYSOP))
                 return 2;
             else
                 return true;
@@ -63,7 +62,6 @@ int s_msg()
     return do_sendmsg(NULL, NULL, 0);
 }
 
-extern char msgerr[255];
 extern bool inremsg;
 extern bool in_do_sendmsg;
 
@@ -93,14 +91,14 @@ int mode;
         if( namecomplete(NULL, uident) == '#' ){
 			in_do_sendmsg=false;
             inremsg = false;
-    		if(!currentmemo->ud.mobileregistered)
+    		if(!getSession()->currentmemo->ud.mobileregistered)
 				return 0;
             getdata(1, 0, "送短信给:", uident, MOBILE_NUMBER_LEN+1, true, NULL, true);
 			if( uident[0] == 0)
 				return 0;
 			if( !isdigit( uident[0] ) ){
 				char mobile[STRLEN];
-				if( get_al_mobile( uident, mobile) == NULL || *mobile==0 || !isdigit(mobile[0]) ){
+				if( get_al_mobile( uident, mobile, getSession()) == NULL || *mobile==0 || !isdigit(mobile[0]) ){
 	        		move(2,0);
         			prints("错误的手机号!");
         			pressreturn();
@@ -130,7 +128,7 @@ int mode;
             inremsg = false;
             return -1;
         }
-        if (!canmsg(currentuser, uin)) {
+        if (!canmsg(getCurrentUser(), uin)) {
             move(2, 0);
             prints("对方已经关闭接受讯息的呼叫器...");
             pressreturn();
@@ -142,26 +140,26 @@ int mode;
         /*
          * 保存所发msg的目的uid 1998.7.5 by dong 
          */
-        strcpy(MsgDesUid, uident);
+        strcpy(getSession()->MsgDesUid, uident);
         /*
          * uentp = uin; 
          */
 
     } else {
         /*
-         * if(!strcasecmp(uentp->userid,currentuser->userid))  rem by Haohmaru,这样才可以自己给自己发msg
+         * if(!strcasecmp(uentp->userid,getCurrentUser()->userid))  rem by Haohmaru,这样才可以自己给自己发msg
          * return 0;    
          */ uin = uentp;
         strcpy(uident, uin->userid);
         /*
-         * strcpy(MsgDesUid, uin->userid); change by KCN,is wrong 
+         * strcpy(getSession()->MsgDesUid, uin->userid); change by KCN,is wrong 
          */
     }
 
     /*
      * try to send the msg 
      */
-    result = sendmsgfunc(uin, msgstr, mode);
+    result = sendmsgfunc(uin, msgstr, mode, getSession());
 
     switch (result) {
     case 1:                    /* success */
@@ -175,7 +173,7 @@ int mode;
         if (mode == 0) {
             move(2, 0);
             clrtobot();
-            prints(msgerr);
+            prints(getSession()->msgerr);
             pressreturn();
             move(2, 0);
             clrtoeol();
@@ -204,7 +202,7 @@ int mode;
     /*
      * resend the message 
      */
-    result = sendmsgfunc(uin, buf, mode);
+    result = sendmsgfunc(uin, buf, mode, getSession());
 
     switch (result) {
     case 1:                    /* success */
@@ -218,7 +216,7 @@ int mode;
         if (mode == 0) {
             move(2, 0);
             clrtobot();
-            prints(msgerr);
+            prints(getSession()->msgerr);
             pressreturn();
             move(2, 0);
             clrtoeol();
@@ -243,18 +241,18 @@ int show_allmsgs()
     int oldmode, count, i, j, page, ch, y, all=0, reload=0;
     struct msghead head;
 
-    if(!HAS_PERM(currentuser, PERM_PAGE)) return -1;
+    if(!HAS_PERM(getCurrentUser(), PERM_PAGE)) return -1;
     oldmode = uinfo.mode;
     modify_user_mode(LOOKMSGS);
 //    set_alarm(0, 0, NULL, NULL);
 
     page = 0;
-    count = get_msgcount(0, currentuser->userid);
+    count = get_msgcount(0, getCurrentUser()->userid);
     while(1) {
         if(reload) {
             reload = 0;
             page = 0;
-            count = get_msgcount(all?2:0, currentuser->userid);
+            count = get_msgcount(all?2:0, getCurrentUser()->userid);
         }
         clear();
         if(count==0) {
@@ -265,16 +263,16 @@ int show_allmsgs()
         else {
             y = 0;
             i = page;
-            load_msghead(all?2:0, currentuser->userid, i, &head);
-            load_msgtext(currentuser->userid, &head, buf);
-            j = translate_msg(buf, &head, showmsg);
+            load_msghead(all?2:0, getCurrentUser()->userid, i, &head);
+            load_msgtext(getCurrentUser()->userid, &head, buf);
+            j = translate_msg(buf, &head, showmsg, getSession());
             while(y<=t_lines-1) {
                 y+=j; i++;
                 prints("%s", showmsg);
                 if(i>=count) break;
-                load_msghead(all?2:0, currentuser->userid, i, &head);
-                load_msgtext(currentuser->userid, &head, buf);
-                j = translate_msg(buf, &head, showmsg);
+                load_msghead(all?2:0, getCurrentUser()->userid, i, &head);
+                load_msgtext(getCurrentUser()->userid, &head, buf);
+                j = translate_msg(buf, &head, showmsg, getSession());
             }
         }
         move(t_lines-1,0);
@@ -324,7 +322,7 @@ reenter:
             case 's':
             case 'S':
                 reload = 1;
-                count = get_msgcount(0, currentuser->userid);
+                count = get_msgcount(0, getCurrentUser()->userid);
                 if(count==0) break;
                 move(t_lines-1, 0);
                 clrtoeol();
@@ -336,15 +334,15 @@ reenter:
                     struct msghead head;
                     int i;
                     bool init=false;
-                    sethomefile(fname, currentuser->userid, "msgindex");
-                    sethomefile(fname2, currentuser->userid, "msgindex3");
+                    sethomefile(fname, getCurrentUser()->userid, "msgindex");
+                    sethomefile(fname2, getCurrentUser()->userid, "msgindex3");
                     fd = open(fname, O_RDONLY, 0644);
                     fd2 = open(fname2, O_WRONLY|O_CREAT, 0644);
                     write(fd2, &i, 4);
                     lseek(fd, 4, SEEK_SET);
                     for(i=0;i<count;i++) {
                         read(fd, &head, sizeof(struct msghead));
-                        if(toupper(ch)=='S') load_msgtext(currentuser->userid, &head, buf);
+                        if(toupper(ch)=='S') load_msgtext(getCurrentUser()->userid, &head, buf);
                         if((toupper(ch)=='I'&&!strncasecmp(chk, head.id, IDLEN))
                           ||(toupper(ch)=='S'&&bm_strcasestr_rp(buf, chk, bm_search, &init) != NULL))
                             write(fd2, &head, sizeof(struct msghead));
@@ -356,12 +354,12 @@ reenter:
                 break;
             case 'c':
             case 'C':
-                clear_msg(currentuser->userid);
+                clear_msg(getCurrentUser()->userid);
                 goto outofhere;
             case 'a':
             case 'A':
                 if(all) {
-                    sethomefile(buf, currentuser->userid, "msgindex3");
+                    sethomefile(buf, getCurrentUser()->userid, "msgindex3");
                     unlink(buf);
                     all = 0;
                     reload = 1;
@@ -369,7 +367,7 @@ reenter:
                 break;
             case 'm':
             case 'M':
-                if(count!=0)mail_msg(currentuser);
+                if(count!=0)mail_msg(getCurrentUser(), getSession());
                 goto outofhere;
             default:
                 goto reenter;
@@ -378,7 +376,7 @@ reenter:
 outofhere:
     
     if(all) {
-        sethomefile(buf, currentuser->userid, "msgindex3");
+        sethomefile(buf, getCurrentUser()->userid, "msgindex3");
         unlink(buf);
     }
     clear();
@@ -404,7 +402,7 @@ int dowall(struct user_info *uin, char *buf2)
         /*
          * 保存所发msg的目的uid 1998.7.5 by dong 
          */
-        strcpy(MsgDesUid, uin->userid);
+        strcpy(getSession()->MsgDesUid, uin->userid);
 
         do_sendmsg(uin, buf2, 3);       /* 广播时避免被过多的 guest 打断 */
     }
@@ -439,7 +437,7 @@ int wall()
         prints("没有任何使用者上线\n");
         pressanykey();
     }
-    sprintf(genbuf, "%s 广播:%s", currentuser->userid, buf2);
+    sprintf(genbuf, "%s 广播:%s", getCurrentUser()->userid, buf2);
     securityreport(genbuf, NULL, NULL);
     prints("\n已经广播完毕....\n");
     pressanykey();
@@ -478,8 +476,8 @@ void r_msg()
     for(i=0;i<=23;i++)
         saveline(i, 0, savebuffer[i]);
 
-    hasnewmsg=get_unreadcount(currentuser->userid);
-    if ((savemode == POSTING || savemode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.发文章时不回msg */
+    hasnewmsg=get_unreadcount(getCurrentUser()->userid);
+    if ((savemode == POSTING || savemode == SMAIL) && !DEFINE(getCurrentUser(), DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.发文章时不回msg */
         move(0, 0);
         if (hasnewmsg) {
             prints("\033[1m\033[33m你有新的讯息，请发表完文章后按 Ctrl+Z 回讯息\033[m");
@@ -495,7 +493,7 @@ void r_msg()
         clrtoeol();
         goto outhere;
     }
-    count = get_msgcount(1, currentuser->userid);
+    count = get_msgcount(1, getCurrentUser()->userid);
     if (!count) {
         move(0, 0);
         prints("\033[1m没有任何的讯息存在！！\033[m");
@@ -506,22 +504,22 @@ void r_msg()
         goto outhere;
     }
 
-    now = get_unreadmsg(currentuser->userid);
+    now = get_unreadmsg(getCurrentUser()->userid);
     if(now==-1) now = count-1;
     else {
-        load_msghead(1, currentuser->userid, now, &head);
+        load_msghead(1, getCurrentUser()->userid, now, &head);
         while(head.topid!=getuinfopid()&&now<count-1){
-            now = get_unreadmsg(currentuser->userid);
-            load_msghead(1, currentuser->userid, now, &head);
+            now = get_unreadmsg(getCurrentUser()->userid);
+            load_msghead(1, getCurrentUser()->userid, now, &head);
         };
     }
     while(1){
         int reg=0;
-        load_msghead(1, currentuser->userid, now, &head);
-        load_msgtext(currentuser->userid, &head, buf);
-        translate_msg(buf, &head, outmsg);
+        load_msghead(1, getCurrentUser()->userid, now, &head);
+        load_msgtext(getCurrentUser()->userid, &head, buf);
+        translate_msg(buf, &head, outmsg, getSession());
         
-        if (first&&hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG)&&(head.mode!=6))
+        if (first&&hasnewmsg&&DEFINE(getCurrentUser(), DEF_SOUNDMSG)&&(head.mode!=6))
             bell();
         move(0,0);
         if(head.mode==6&&(!strcmp(outmsg,"REQUIRE:BIND")||!strcmp(outmsg,"REQUIRE:UNBIND"))) {
@@ -544,7 +542,7 @@ void r_msg()
             clrtoeol();
             do{
                 ch = igetkey();
-            }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
+            }while(!DEFINE(getCurrentUser(), DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
             first = 0;
             move(y, x);
         }
@@ -596,12 +594,12 @@ void r_msg()
             default:
                 if(canreply) {
                     if(buf[0]) {
-                        strcpy(MsgDesUid, uid);
+                        strcpy(getSession()->MsgDesUid, uid);
                         pid = head.frompid;
                         uin = t_search(uid, pid);
                         if(uin==NULL&&head.mode!=6) {
                             i=-1;
-                            strcpy(msgerr, "对方已经离线....");
+                            strcpy(getSession()->msgerr, "对方已经离线....");
                         }
                         else {
 #ifdef SMS_SUPPORT
@@ -611,37 +609,37 @@ void r_msg()
                                     if(!i) i=1;
                                     else {
                                         i=0;
-                                        sprintf(msgerr, "无法给 %s 发送手机短信", uid);
+                                        sprintf(getSession()->msgerr, "无法给 %s 发送手机短信", uid);
                                     }
                                 }
                                 else {
-                                    i = DoReplyCheck(uid, head.frompid, toupper(buf[0])=='Y');
+                                    i = DoReplyCheck(uid, head.frompid, toupper(buf[0])=='Y', getSession());
                                     if(!i) {
                                         if(reg==1) {
 //                                            curruserdata.mobileregistered = 0;
 //                                            strcpy(curruserdata.mobilenumber, uid);
-                                            currentmemo->ud.mobileregistered = 0;
-                                            strcpy(currentmemo->ud.mobilenumber, uid);
+                                            getSession()->currentmemo->ud.mobileregistered = 0;
+                                            strcpy(getSession()->currentmemo->ud.mobilenumber, uid);
                                         }
                                         else {
 //                                            curruserdata.mobileregistered = 0;
-                                            currentmemo->ud.mobileregistered = 0;
+                                            getSession()->currentmemo->ud.mobileregistered = 0;
                                         }
-//                                        write_userdata(currentuser->userid, &curruserdata);
-                                        write_userdata(currentuser->userid, &(currentmemo->ud));
-                                        sprintf(msgerr, "%s 成功", (reg==1)?"注册":"取消注册");
+//                                        write_userdata(getCurrentUser()->userid, &curruserdata);
+                                        write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+                                        sprintf(getSession()->msgerr, "%s 成功", (reg==1)?"注册":"取消注册");
                                     }
-                                    else sprintf(msgerr, "%s 失败", (reg==1)?"注册":"取消注册");
+                                    else sprintf(getSession()->msgerr, "%s 失败", (reg==1)?"注册":"取消注册");
                                     i = 0;
                                 }
                             }
                             else
 #endif
-                                i = sendmsgfunc(uin, buf, 4);
+                                i = sendmsgfunc(uin, buf, 4, getSession());
                         }
                         buf[0]=0;
                         if(i==1) strcpy(buf, "\033[1m帮你送出讯息了\033[m");
-                        else if(i!=0) strcpy(buf, msgerr);
+                        else if(i!=0) strcpy(buf, getSession()->msgerr);
                         if(buf[0]) {
                             int j=i;
                             if(i!=1&&i!=0) {
@@ -700,14 +698,14 @@ void r_lastmsg()
 
 int myfriend_wall(struct user_info *uin, char *buf, int i)
 {
-    if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid || !canmsg(currentuser, uin))
+    if ((uin->pid - uinfo.pid == 0) || !uin->active || !uin->pid || !canmsg(getCurrentUser(), uin))
         return -1;
-    if (myfriend(uin->uid, NULL)) {
+    if (myfriend(uin->uid, NULL, getSession())) {
         move(1, 0);
         clrtoeol();
         prints("\x1b[1;32m正在送讯息给 %s...  \x1b[m", uin->userid);
         refresh();
-        strcpy(MsgDesUid, uin->userid);
+        strcpy(getSession()->MsgDesUid, uin->userid);
         do_sendmsg(uin, buf, 5);
     }
     return 0;
@@ -741,9 +739,6 @@ int friend_wall()
 
 #ifdef SMS_SUPPORT
 
-extern void * smsbuf;
-extern struct user_info * smsuin;
-
 int register_sms()
 {
     char ans[4];
@@ -751,19 +746,19 @@ int register_sms()
     clear();
     prints("注册手机号\n\n注册你的手机号之后，你可在bbs上发送和接收手机短信\n");
     move(4,0);
-    if(currentmemo->ud.mobileregistered) {
+    if(getSession()->currentmemo->ud.mobileregistered) {
         prints("你已经注册手机号了。每一个账号只能注册一个手机号。\n");
         pressreturn();
         return -1;
     }
-    if(currentmemo->ud.mobilenumber[0]&&strlen(currentmemo->ud.mobilenumber)==11) {
-        sprintf(buf2, "你输入的手机号是%s，是否重新注册？[Y/n]", currentmemo->ud.mobilenumber);
+    if(getSession()->currentmemo->ud.mobilenumber[0]&&strlen(getSession()->currentmemo->ud.mobilenumber)==11) {
+        sprintf(buf2, "你输入的手机号是%s，是否重新注册？[Y/n]", getSession()->currentmemo->ud.mobilenumber);
         getdata(3, 0, buf2, ans, 3, 1, 0, 1);
-        if(toupper(ans[0])!='N') currentmemo->ud.mobilenumber[0]=0;
+        if(toupper(ans[0])!='N') getSession()->currentmemo->ud.mobilenumber[0]=0;
     }
-    if(!currentmemo->ud.mobilenumber[0]||strlen(currentmemo->ud.mobilenumber)!=11) {
-        getdata(4, 0, "请输入手机号: ", currentmemo->ud.mobilenumber, 17, 1, 0, 1);
-        if(!currentmemo->ud.mobilenumber[0]||strlen(currentmemo->ud.mobilenumber)!=11) {
+    if(!getSession()->currentmemo->ud.mobilenumber[0]||strlen(getSession()->currentmemo->ud.mobilenumber)!=11) {
+        getdata(4, 0, "请输入手机号: ", getSession()->currentmemo->ud.mobilenumber, 17, 1, 0, 1);
+        if(!getSession()->currentmemo->ud.mobilenumber[0]||strlen(getSession()->currentmemo->ud.mobilenumber)!=11) {
             move(5, 0);
             prints("错误的手机号");
             pressreturn();
@@ -780,7 +775,7 @@ int register_sms()
     sms_init_memory();
     smsuin = &uinfo;
 //        if(DoReg(curruserdata.mobilenumber)) {
-        if(DoReg(currentmemo->ud.mobilenumber)) {
+        if(DoReg(getSession()->currentmemo->ud.mobilenumber)) {
             signal(SIGUSR1, talk_request);
             move(5, 0);
             prints("发送注册码失败");
@@ -796,7 +791,7 @@ int register_sms()
     getdata(6, 0, "请输入你的注册码: ", valid, 11, 1, 0, 1);
     if(!valid[0]) return -1;
 //    if(DoCheck(curruserdata.mobilenumber, valid)) {
-    if(DoCheck(currentmemo->ud.mobilenumber, valid)) {
+    if(DoCheck(getSession()->currentmemo->ud.mobilenumber, valid)) {
         signal(SIGUSR1, talk_request);
         move(7, 0);
         prints("注册码检查失败");
@@ -807,9 +802,9 @@ int register_sms()
     }
     signal(SIGUSR1, talk_request);
 //    curruserdata.mobileregistered = 1;
-    currentmemo->ud.mobileregistered = 1;
-//    write_userdata(currentuser->userid, &curruserdata);
-    write_userdata(currentuser->userid, &(currentmemo->ud));
+    getSession()->currentmemo->ud.mobileregistered = 1;
+//    write_userdata(getCurrentUser()->userid, &curruserdata);
+    write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
     move(7, 0);
     prints("手机注册成功！ 你可以在bbs上发送短信啦！");
     pressreturn();
@@ -824,53 +819,53 @@ int unregister_sms()
     char ans[4];
     char buf2[80];
     int rr;
-    sms_init_memory();
-    smsuin = &uinfo;
+    sms_init_memory(getSession());
+    getSession()->smsuin = &uinfo;
     clear();
     prints("取消注册手机号");
     move(4,0);
 //    if(!curruserdata.mobileregistered) {
-    if(!currentmemo->ud.mobileregistered) {
+    if(!getSession()->currentmemo->ud.mobileregistered) {
         prints("你尚未注册手机号");
         pressreturn();
-        shmdt(head);
-        smsbuf=NULL;
+        shmdt(getSession()->head);
+        getSession()->smsbuf=NULL;
         return -1;
     }
 //    sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", curruserdata.mobilenumber);
-    sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", currentmemo->ud.mobilenumber);
+    sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", getSession()->currentmemo->ud.mobilenumber);
     getdata(3, 0, buf2, ans, 3, 1, 0, 1);
     if(toupper(ans[0])=='Y') {
         
 //        rr = DoUnReg(curruserdata.mobilenumber);
-        rr = DoUnReg(currentmemo->ud.mobilenumber);
+        rr = DoUnReg(getSession()->currentmemo->ud.mobilenumber, getSession());
         if(rr&&rr!=CMD_ERR_NO_SUCHMOBILE) {
             signal(SIGUSR1, talk_request);
             move(5, 0);
             prints("向网关取消注册失败");
             pressreturn();
-            shmdt(head);
+            shmdt(getSession()->head);
 //	    curruserdata.mobileregistered = 0;
 
-	    currentmemo->ud.mobileregistered = 0;
-        currentmemo->ud.mobilenumber[0]=0;
-//	    write_userdata(currentuser->userid, &curruserdata);
-	    write_userdata(currentuser->userid, &(currentmemo->ud));
-            smsbuf=NULL;
+	    getSession()->currentmemo->ud.mobileregistered = 0;
+        getSession()->currentmemo->ud.mobilenumber[0]=0;
+//	    write_userdata(getCurrentUser()->userid, &curruserdata);
+	    write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+            getSession()->smsbuf=NULL;
             return -1;
         }
         signal(SIGUSR1, talk_request);
         move(5, 0);
         prints("取消注册成功");
 //        curruserdata.mobilenumber[0]=0;
-        currentmemo->ud.mobilenumber[0]=0;
+        getSession()->currentmemo->ud.mobilenumber[0]=0;
 //        curruserdata.mobileregistered = 0;
-        currentmemo->ud.mobileregistered = 0;
-//        write_userdata(currentuser->userid, &curruserdata);
-        write_userdata(currentuser->userid, &(currentmemo->ud));
+        getSession()->currentmemo->ud.mobileregistered = 0;
+//        write_userdata(getCurrentUser()->userid, &curruserdata);
+        write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
     }
-    shmdt(head);
-    smsbuf=NULL;
+    shmdt(getSession()->head);
+    getSession()->smsbuf=NULL;
     return 0;
 }
 
@@ -885,7 +880,7 @@ int do_send_sms_func(char * dest, char * msgstr)
     struct userec * ur;
 
 //    if(!curruserdata.mobileregistered) {
-    if(!currentmemo->ud.mobileregistered) {
+    if(!getSession()->currentmemo->ud.mobileregistered) {
         move(1, 0);
         clrtoeol();
         prints("你尚未注册手机号，无法给别人发送短信");
@@ -903,8 +898,8 @@ int do_send_sms_func(char * dest, char * msgstr)
         return -1;
     }
     
-    sms_init_memory();
-    smsuin = &uinfo;
+    sms_init_memory(getSession());
+    getSession()->smsuin = &uinfo;
     inremsg = true;
 
     oldmode = uinfo.mode;
@@ -975,30 +970,30 @@ int do_send_sms_func(char * dest, char * msgstr)
     else
         strcpy(buf, msgstr);
 
-	if( strlen(buf) + strlen(currentmemo->ud.smsprefix) + strlen(currentmemo->ud.smsend) < MAX_MSG_SIZE ){
+	if( strlen(buf) + strlen(getSession()->currentmemo->ud.smsprefix) + strlen(getSession()->currentmemo->ud.smsend) < MAX_MSG_SIZE ){
 		int i,i1,j;
 
 		i=strlen(buf);
-		i1=strlen(currentmemo->ud.smsprefix);
+		i1=strlen(getSession()->currentmemo->ud.smsprefix);
 		for(j= i+i1; j>=i1; j--){
 			buf[j] = buf[j-i1];
 		}
 		for(j=0;j<i1;j++)
-			buf[j] = currentmemo->ud.smsprefix[j];
-		strcat(buf, currentmemo->ud.smsend);
+			buf[j] = getSession()->currentmemo->ud.smsprefix[j];
+		strcat(buf, getSession()->currentmemo->ud.smsend);
 
 	}
 
 //    ret = DoSendSMS(curruserdata.mobilenumber, udata.mobilenumber, buf);
-    ret = DoSendSMS(currentmemo->ud.mobilenumber, udata.mobilenumber, buf);
+    ret = DoSendSMS(getSession()->currentmemo->ud.mobilenumber, udata.mobilenumber, buf, getSession());
     signal(SIGUSR1, talk_request);
     if(ret==CMD_ERR_SMS_VALIDATE_FAILED) {
 //        curruserdata.mobilenumber[0]=0;
-        currentmemo->ud.mobilenumber[0]=0;
+        getSession()->currentmemo->ud.mobilenumber[0]=0;
 //        curruserdata.mobileregistered = 0;
-        currentmemo->ud.mobileregistered = 0;
-//        write_userdata(currentuser->userid, &curruserdata);
-        write_userdata(currentuser->userid, &(currentmemo->ud));
+        getSession()->currentmemo->ud.mobileregistered = 0;
+//        write_userdata(getCurrentUser()->userid, &curruserdata);
+        write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
     }
     if(ret) {
         clrtoeol();
@@ -1020,16 +1015,16 @@ int do_send_sms_func(char * dest, char * msgstr)
         h.sent = 1;
         h.time = time(0);
         strcpy(h.id, uident);
-        save_msgtext(currentuser->userid, &h, buf);
+        save_msgtext(getCurrentUser()->userid, &h, buf, getSession());
 #if HAVE_MYSQL_SMTH == 1
-        save_smsmsg(currentuser->userid, &h, buf, 1);
+        save_smsmsg(getCurrentUser()->userid, &h, buf, 1, getSession());
 #endif
         if(!isdigit(uident[0])) {
             h.sent = 0;
-            strcpy(h.id, currentuser->userid);
-            save_msgtext(uident, &h, buf);
+            strcpy(h.id, getCurrentUser()->userid);
+            save_msgtext(uident, &h, buf, getSession());
 #if HAVE_MYSQL_SMTH == 1
-        	save_smsmsg(uident, &h, buf, 1);
+        	save_smsmsg(uident, &h, buf, 1, getSession());
 #endif
             if(uin) kill(uin->pid, SIGUSR2);
         }

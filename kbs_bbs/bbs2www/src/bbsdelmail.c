@@ -8,9 +8,9 @@ int main() {
 	struct fileheader f;
 	char path[80], file[80], *id;
 	int num=0;
-	init_all();
+	initwww_all();
 	if(loginok == 0) http_fatal("ÄúÉÐÎ´µÇÂ¼");
-	id=currentuser->userid;
+	id=getCurrentUser()->userid;
 	strsncpy(file, getparm("file"), 20);
 	if(strncmp(file, "M.", 2) || strstr(file, "..")) http_fatal("´íÎóµÄ²ÎÊý");
 	sprintf(path, "mail/%c/%s/.DIR", toupper(id[0]), id);
@@ -36,10 +36,10 @@ int main()
     char path[80], file[80], *id,dirname[15],title[20];
     int num = 0;
 
-    init_all();
+    initwww_all();
     if (loginok == 0)
         http_fatal("ÄúÉÐÎ´µÇÂ¼");
-    id = currentuser->userid;
+    id = getCurrentUser()->userid;
     strsncpy(file, getparm("file"), 20);
     strsncpy(dirname, getparm("dir"), 15);
     strsncpy(title,getparm("title"),20);

@@ -107,13 +107,13 @@ void ann_show_directory(char *path,char * pathbuf)
         http_fatal("·ÖÅäÄÚ´æÊ§°Ü");
     ann_set_items(&me, its, MAXITEMS);
     me.path = pathbuf;
-    if (ann_load_directory(&me) == 0) {
+    if (ann_load_directory(&me, getSession()) == 0) {
         board[0] = '\0';
         ann_get_board(pathbuf, board, sizeof(board));
         buf[0] = '\0';
         if (board[0] != '\0'){
             sprintf(buf, "%s°æ", board);
-			if(ret > 0) bmlog(currentuser->userid,board,13,1);
+			if(ret > 0) bmlog(getCurrentUser()->userid,board,13,1);
 		}
 
 		else
@@ -155,7 +155,7 @@ int ann_check_dir(char * path,char *pathbuf)
             snprintf(pathbuf, 255, "0Announce%s", path);
         else
             snprintf(pathbuf, 255, "0Announce/%s", path);
-        if (ann_traverse_check(pathbuf, currentuser) < 0)
+        if (ann_traverse_check(pathbuf, getCurrentUser()) < 0)
 			return 0;
     } else
         strcpy(pathbuf, "0Announce");
@@ -173,7 +173,7 @@ int ann_check_bm(char *buf)
     ann_get_board(buf, board, sizeof(board));
 	if(board[0]=='\0') return 0;
 
-	if(!has_BM_perm(currentuser, board))
+	if(!has_BM_perm(getCurrentUser(), board))
 		return 0;
 
 	ann_is_bm = 1;
@@ -204,7 +204,7 @@ int ann_del_dir(char *path,char *pathbuf,char *fname)
 
 	bzero(&pm,sizeof(pm));
 	pm.path=pathbuf;
-	a_loadnames(&pm);
+	a_loadnames(&pm,getSession());
 
 	for(n=0; n<pm.num; n++){
 		if(! strcmp(pm.item[n]->fname,fname) )
@@ -255,7 +255,7 @@ int ann_add_dir(char *path,char *pathbuf,char *fname,char *title)
 
 	bzero(&pm,sizeof(pm));
 	pm.path=pathbuf;
-	a_loadnames(&pm);
+	a_loadnames(&pm, getSession());
 
 	sprintf(buf,"%-38.38s",title);
 
@@ -290,7 +290,7 @@ int main()
 	char title[STRLEN];
     char pathbuf[256];
 
-    init_all();
+    initwww_all();
     strsncpy(path, getparm("path"), 511);
 
 	if(! ann_check_dir(path,pathbuf))

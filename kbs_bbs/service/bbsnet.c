@@ -29,6 +29,8 @@ char user[21];
 int sockfd;
 jmp_buf jb;
 
+extern int msg_count;
+
 // added by flyriver, 2001.3.2
 // 穿梭日记
 // mode == 0, 开始穿梭
@@ -89,7 +91,7 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 	fprintf(fp, "    该用户从 \033[1;31m%s\033[m 登录本站.\n", fromhost);
 	fclose(fp);
 	
-	return after_post(NULL, &fh, BBSNET_LOG_BOARD, NULL, 0);
+	return after_post(NULL, &fh, BBSNET_LOG_BOARD, NULL, 0, getSession());
 }
 
 void init_data()
@@ -597,7 +599,7 @@ void main_loop()
 
 int bbsnet_main()
 {
-	strncpy(user, currentuser->userid, 20);
+	strncpy(user, getCurrentUser()->userid, 20);
 	modify_user_mode(BBSNET);
 
     init_data();

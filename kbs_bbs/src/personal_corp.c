@@ -34,7 +34,7 @@ static int pc_sel_user()
     clear();
     getdata(5, 0, "你要查看谁的个人文集? [回车查看自己的个人文集]:", ans, 20, DOECHO, NULL, true);
     if (ans[0] == 0 || ans[0] == '\n' || ans[0] == '\r') {
-        pc_read(currentuser->userid);
+        pc_read(getCurrentUser()->userid);
     } else
         pc_read(ans);
 
@@ -91,7 +91,7 @@ int pc_add_user()
                 move(10, 0);
                 prints("删除成功");
                 pressanykey();
-                sprintf(buf1, "%s 取消 %s 的个人文集", currentuser->userid, lookupuser->userid);
+                sprintf(buf1, "%s 取消 %s 的个人文集", getCurrentUser()->userid, lookupuser->userid);
                 securityreport(buf1, lookupuser, NULL);
                 return 1;
             } else {
@@ -193,7 +193,7 @@ int pc_add_user()
         else
             prints("添加成功,用户%s已经拥有个人文集", lookupuser->userid);
         pressanykey();
-        sprintf(buf1, "%s 增加 %s 的个人文集", currentuser->userid, lookupuser->userid);
+        sprintf(buf1, "%s 增加 %s 的个人文集", getCurrentUser()->userid, lookupuser->userid);
         securityreport(buf1, lookupuser, NULL);
         return 1;
     } else {
@@ -264,7 +264,7 @@ static int pc_change_friend()
     char ans[20];
     char uident[STRLEN];
 
-    sethomefile(buf, currentuser->userid, "pc_friend");
+    sethomefile(buf, getCurrentUser()->userid, "pc_friend");
 
     while (1) {
         clear();
@@ -370,7 +370,7 @@ static int pc_sec_select(struct _select_def *conf)
     if (conf->pos > 2)
         pc_selusr('A' + conf->pos - 3);
     else if (conf->pos == 1)
-        pc_read(currentuser->userid);
+        pc_read(getCurrentUser()->userid);
     else if (conf->pos == 2)
         pc_sel_user();
 
@@ -548,7 +548,7 @@ char pc_select_user[IDLEN + 2];
 static int pc_is_owner(char *userid)
 {
 
-    if (!strcasecmp(userid, currentuser->userid) && pc_u->createtime >= currentuser->firstlogin)
+    if (!strcasecmp(userid, getCurrentUser()->userid) && pc_u->createtime >= getCurrentUser()->firstlogin)
         return 1;
     return 0;
 }
@@ -556,7 +556,7 @@ static int pc_is_owner(char *userid)
 static int pc_is_admin(char *userid)
 {
 
-    if (HAS_PERM(currentuser, PERM_ADMIN) || pc_is_owner(userid))
+    if (HAS_PERM(getCurrentUser(), PERM_ADMIN) || pc_is_owner(userid))
         return 1;
 
     return 0;
@@ -567,7 +567,7 @@ static int pc_is_friend(char *userid)
     char fpath[STRLEN];
 
     sethomefile(fpath, userid, "pc_friend");
-    if (seek_in_file(fpath, currentuser->userid))
+    if (seek_in_file(fpath, getCurrentUser()->userid))
         return 1;
 
     return 0;
@@ -1317,8 +1317,8 @@ static int pc_dir_key(struct _select_def *conf, int key)
                 FILE *fp;
                 int suc = 0;
 
-                sethomefile(fpath, currentuser->userid, "friends");
-                sethomefile(buf, currentuser->userid, "pc_friend");
+                sethomefile(fpath, getCurrentUser()->userid, "friends");
+                sethomefile(buf, getCurrentUser()->userid, "pc_friend");
 
                 if ((fp = fopen(fpath, "r")) == NULL)
                     return SHOW_REFRESH;
@@ -1698,9 +1698,9 @@ static int pc_can_com(int comlevel , unsigned long pcuid )
 {
     if (comlevel == 0)
         return 0;
-    if (comlevel == 1 && !strcmp(currentuser->userid, "guest"))
+    if (comlevel == 1 && !strcmp(getCurrentUser()->userid, "guest"))
         return 0;
-    if (pc_in_blacklist( currentuser->userid , pcuid ) )
+    if (pc_in_blacklist( getCurrentUser()->userid , pcuid ) )
     	return 0;
     return 1;
 }
@@ -1765,7 +1765,7 @@ static int pc_add_a_com(unsigned long nid)
         pn.created = pn.changed;
     pn.uid = pc_u->uid;
     pn.nid = pc_n[pc_now_node_ent].nid;
-    strncpy(pn.username, currentuser->userid, 20);
+    strncpy(pn.username, getCurrentUser()->userid, 20);
     pn.username[20] = 0;
 
     ret = add_pc_comments(&pn);
@@ -1855,7 +1855,7 @@ static int pc_com_key(struct _select_def *conf, int key)
         return SHOW_REFRESH;
         break;
     case 'd':
-        if (!pc_is_admin(pc_u->username) && strcasecmp(currentuser->userid, pc_c[conf->pos - conf->page_pos].username))
+        if (!pc_is_admin(pc_u->username) && strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
             return SHOW_CONTINUE;
         if (del_pc_comments(pc_n[pc_now_node_ent].nid, pc_c[conf->pos - conf->page_pos].cid)) {
             return SHOW_DIRCHANGE;
@@ -1863,7 +1863,7 @@ static int pc_com_key(struct _select_def *conf, int key)
         return SHOW_REFRESH;
         break;
     case 'e':
-        if (strcasecmp(currentuser->userid, pc_c[conf->pos - conf->page_pos].username))
+        if (strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
             return SHOW_CONTINUE;
         if (pc_add_a_com(pc_c[conf->pos - conf->page_pos].cid))
             return SHOW_DIRCHANGE;
@@ -2028,11 +2028,11 @@ int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
     char buf1[512];
     char *t;
 
-    if (!(currentuser->flags & PCORP_FLAG))
+    if (!(getCurrentUser()->flags & PCORP_FLAG))
         return DONOTHING;
 
     bzero(&pu, sizeof(pu));
-    if (get_pc_users(&pu, currentuser->userid) <= 0)
+    if (get_pc_users(&pu, getCurrentUser()->userid) <= 0)
         return FULLUPDATE;
 
     bzero(&pn, sizeof(pn));

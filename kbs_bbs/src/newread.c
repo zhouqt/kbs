@@ -5,7 +5,6 @@
 #include "bbs.h"
 #include "read.h"
 
-extern char MsgDesUid[14];
 extern unsigned int tmpuser;
 
 //每一个模式上次阅读位置保存
@@ -108,7 +107,7 @@ int find_nextnew(struct _select_def* conf,int begin)
             nowFh=pFh+begin-1;
             found=false;
             for (i=begin-1;i<size/sizeof(struct fileheader);i++,nowFh++) {
-                if (brc_unread(nowFh->id)) {
+                if (brc_unread(nowFh->id, getSession())) {
                     found=true;
                     break;
                 }
@@ -143,7 +142,7 @@ int fileheader_thread_read(struct _select_def* conf, struct fileheader* fh,int e
                     return APPLY_QUIT;
                 }
             } else {
-            if (brc_unread(fh->id)) {
+            if (brc_unread(fh->id, getSession())) {
                 conf->new_pos=ent;
 				if (mode==SR_FIRSTNEW)
                     return APPLY_CONTINUE;
@@ -192,7 +191,7 @@ static int read_key(struct _select_def *conf, int command)
             else
                 return DONOTHING;
         case 'w':                  /* Luzi 1997.10.31 */
-            if (!HAS_PERM(currentuser, PERM_PAGE))
+            if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
                 break;
             s_msg();
             mode=FULLUPDATE;
@@ -208,7 +207,7 @@ static int read_key(struct _select_def *conf, int command)
             {                       /* Leeward 98.10.26 fix a bug by saving old mode */
                 int savemode = uinfo.mode;
 
-                if (!HAS_PERM(currentuser, PERM_BASIC))
+                if (!HAS_PERM(getCurrentUser(), PERM_BASIC))
                     break;
                 t_friends();
                 modify_user_mode(savemode);
@@ -480,14 +479,14 @@ static int read_endline(struct _select_def *conf)
 {
     if (conf->tmpnum==-1)
         update_endline();
-    else if (DEFINE(currentuser, DEF_ENDLINE)) {
+    else if (DEFINE(getCurrentUser(), DEF_ENDLINE)) {
         extern time_t login_start_time;
         int allstay;
         char pntbuf[256], nullbuf[2] = " ";
         char lbuf[11];
 
 #ifdef FLOWBANNER
-	allstay = (DEFINE(currentuser, DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
+	allstay = (DEFINE(getCurrentUser(), DEF_SHOWBANNER)) ? (time(0) % 3) : 0;
 	if (allstay) {
 		if (allstay & 1) {	//显示系统浮动信息
 			struct public_data *publicshm = get_publicshm();
@@ -506,7 +505,7 @@ static int read_endline(struct _select_def *conf)
 
         allstay = (time(0) - login_start_time) / 60;
         snprintf(pntbuf, 256, "\033[33;44m转到∶[\033[36m%9.9s\033[33m]" "  呼叫器[好友:%3s∶一般:%3s] 使用者[\033[36m%.12s\033[33m]%s停留[%3d:%2d]\033[m", 
-            lbuf, (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", currentuser->userid,      /*13-strlen(currentuser->userid)
+            lbuf, (!(uinfo.pager & FRIEND_PAGER)) ? "NO " : "YES", (uinfo.pager & ALL_PAGER) ? "YES" : "NO ", getCurrentUser()->userid,      /*13-strlen(getCurrentUser()->userid)
                                                                                                                                                                                                                                                                                          * TODO:这个地方有问题，他想对齐，但是代码不对
                                                                                                                                                                                                                                                                                          * , */ nullbuf,
                  (allstay / 60) % 1000, allstay % 60);
@@ -641,7 +640,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
         bzero((char *) &read_conf, sizeof(struct _select_def));
         read_conf.item_per_page = TDEFINE(TDEF_SPLITSCREEN)?BBS_PAGESIZE/2:BBS_PAGESIZE;
         read_conf.flag = LF_NUMSEL | LF_VSCROLL | LF_BELL | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
-        if (DEFINE(currentuser, DEF_CIRCLE))
+        if (DEFINE(getCurrentUser(), DEF_CIRCLE))
             read_conf.flag |= LF_LOOP ;
         read_conf.prompt = ">";
         read_conf.arg = &arg;
@@ -804,7 +803,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                     if (arg->mode!=DIR_MODE_MAIL)
                         setbfile(p_name, currboard->filename, pFh1->filename);
                     else
-                        setmailfile(p_name, currentuser->userid, pFh1->filename);
+                        setmailfile(p_name, getCurrentUser()->userid, pFh1->filename);
                     if (searchpattern(p_name, query)) {
                         match = 1;
                         break;
@@ -1070,15 +1069,15 @@ int read_sendmsgtoauthor(struct _select_def* conf, struct fileheader* fh, void* 
 {
     struct user_info *uin;
 
-    if (!HAS_PERM(currentuser, PERM_PAGE))
+    if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
         return DONOTHING;
     clear();
     uin = (struct user_info *) t_search(fh->owner, false);
-    if (!uin || !canmsg(currentuser, uin))
+    if (!uin || !canmsg(getCurrentUser(), uin))
         do_sendmsg(NULL, NULL, 0);
 
     else {
-        strncpy(MsgDesUid, uin->userid, 20);
+        strncpy(getSession()->MsgDesUid, uin->userid, 20);
         do_sendmsg(uin, NULL, 0);
     }
     return FULLUPDATE;
@@ -1102,7 +1101,7 @@ int read_showauthorinfo(struct _select_def* conf, struct fileheader* fh, void* e
     struct userec *lookupuser;
     int id;
 
-    if (!HAS_PERM(currentuser, PERM_ACCOUNTS)
+    if (!HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
         || !strcmp(fh->owner, "Anonymous")
         || !strcmp(fh->owner, "deliver"))
         return DONOTHING;
@@ -1129,7 +1128,7 @@ int read_showauthorBM(struct _select_def* conf, struct fileheader* fh, void* ext
     int tuid = 0;
     int n;
 
-    if (!HAS_PERM(currentuser, PERM_ACCOUNTS) || !strcmp(fh->owner, "Anonymous") || !strcmp(fh->owner, "deliver"))
+    if (!HAS_PERM(getCurrentUser(), PERM_ACCOUNTS) || !strcmp(fh->owner, "Anonymous") || !strcmp(fh->owner, "deliver"))
         return DONOTHING;
     else {
         struct userec *lookupuser;
@@ -1176,7 +1175,7 @@ int read_showauthorBM(struct _select_def* conf, struct fileheader* fh, void* ext
 
 int read_addauthorfriend(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    if (!strcmp("guest", currentuser->userid))
+    if (!strcmp("guest", getCurrentUser()->userid))
         return DONOTHING;;
 
     if (!strcmp(fh->owner, "Anonymous") || !strcmp(fh->owner, "deliver"))

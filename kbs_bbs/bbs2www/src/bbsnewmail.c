@@ -10,12 +10,12 @@ int main()
     int filetime, i, total = 0, total2 = 0, type;
     char *ptr, buf[512], path[80], dir[80];
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("您尚未登录, 请先登录");
     printf("<center>\n");
-    printf("%s -- 新邮件列表 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
-    sprintf(dir, "mail/%c/%s/.DIR", toupper(currentuser->userid[0]), currentuser->userid);
+    printf("%s -- 新邮件列表 [使用者: %s]<hr color=green>\n", BBSNAME, getCurrentUser()->userid);
+    sprintf(dir, "mail/%c/%s/.DIR", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
     fp = fopen(dir, "r");
     if (fp == 0)
         http_fatal("目前您的信箱没有任何信件");

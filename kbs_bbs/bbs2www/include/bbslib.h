@@ -187,7 +187,7 @@ int count_online();
 
 int isfriend(char *id);
 
-int init_all();
+int initwww_all();
 
 char *void1(unsigned char *s);
 
@@ -224,16 +224,7 @@ char *getcurruserid();
 
 struct userec *getcurrusr();
 
-//favboard operation
-void save_favboard(int mode);
-int DelFavBoard(int i);
-int SetFav(int i);
-int getfavnum();
-void load_favboard(int dohelp,int mode);
-int IsFavBoard(int idx);
-int add_favboard(char *brdname);
 
-struct boardheader const *getboard(int num);
 //board manage
 int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board);
 

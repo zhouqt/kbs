@@ -91,7 +91,7 @@ int b_notes_edit()
     int aborted;
     int oldmode;
 
-    if (!chk_currBM(currBM, currentuser)) {
+    if (!chk_currBM(currBM, getCurrentUser())) {
         return 0;
     }
     clear();
@@ -156,7 +156,7 @@ int b_banner_edit()
     int aborted;
     int oldmode;
 
-    if (!chk_currBM(currBM, currentuser)) {
+    if (!chk_currBM(currBM, getCurrentUser())) {
         return 0;
     }
     clear();
@@ -196,7 +196,7 @@ int b_sec_notes_edit(struct _select_def* conf,struct fileheader *fileinfo,void* 
     char ans[4];
     int aborted;
 
-    if (!chk_currBM(currBM, currentuser)) {
+    if (!chk_currBM(currBM, getCurrentUser())) {
         return 0;
     }
     clear();
@@ -231,9 +231,9 @@ int b_jury_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extra
     char ans[4];
     int aborted;
 
-    if (!((HAS_PERM(currentuser, PERM_JURY)
-           && HAS_PERM(currentuser, PERM_BOARDS))
-          || HAS_PERM(currentuser, PERM_SYSOP))) {
+    if (!((HAS_PERM(getCurrentUser(), PERM_JURY)
+           && HAS_PERM(getCurrentUser(), PERM_BOARDS))
+          || HAS_PERM(getCurrentUser(), PERM_SYSOP))) {
         return 0;
     }
     clear();
@@ -265,12 +265,12 @@ int b_jury_edit(struct _select_def* conf,struct fileheader *fileinfo,void* extra
         if (aborted == 111) {
             sprintf(secu, "删除 %s 版的仲裁委员名单", currboard->filename);
             securityreport(secu, NULL, NULL);
-            post_file(currentuser, "", buf, "JuryMail", secu, 0, 2);
+            post_file(getCurrentUser(), "", buf, "JuryMail", secu, 0, 2, getSession());
         } else {
             sprintf(secu, "修改 %s 版的仲裁委员名单", currboard->filename);
             securityreport(secu, NULL, NULL);
-            post_file(currentuser, "", buf, "syssecurity", secu, 0, 2);
-            post_file(currentuser, "", buf, "JuryMail", secu, 0, 2);
+            post_file(getCurrentUser(), "", buf, "syssecurity", secu, 0, 2, getSession());
+            post_file(getCurrentUser(), "", buf, "JuryMail", secu, 0, 2, getSession());
         }
         setvfile(buf, currboard->filename, "juryrec");
         my_unlink(buf);
@@ -496,9 +496,9 @@ static int mk_result(int num)
     if (normal_board(currboard->filename))
 #endif
     {
-        post_file(currentuser, "", nname, "vote", title, 0, 1);
+        post_file(getCurrentUser(), "", nname, "vote", title, 0, 1, getSession());
     }
-    post_file(currentuser, "", nname, currboard->filename, title, 0, 1);
+    post_file(getCurrentUser(), "", nname, currboard->filename, title, 0, 1, getSession());
     dele_vote(num);
     return 0;
 }
@@ -571,7 +571,7 @@ int check_result(int num)
     fclose(sug);
     sug = NULL;
     sprintf(title, "[检查] %s 版的投票结果", currboard->filename);
-    mail_file(currentuser->userid, nname, currentuser->userid, title, BBSPOST_MOVE, NULL);
+    mail_file(getCurrentUser()->userid, nname, getCurrentUser()->userid, title, BBSPOST_MOVE, NULL);
     return 0;
 }
 
@@ -607,8 +607,8 @@ char *bname;
     int aborted;
 
     setcontrolfile();
-    if (!HAS_PERM(currentuser, PERM_SYSOP))
-            if (!chk_currBM(currBM, currentuser)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
+            if (!chk_currBM(currBM, getCurrentUser())) {
                 return 0;
             }
     stand_title("开启投票箱");
@@ -700,8 +700,8 @@ char *bname;
     setvoteflag(bname, 1);
     clear();
     /*Haohmaru.99.11.17.根据投票管理员设的限制条件判断是否让该使用者投票 */
-    if (HAS_PERM(currentuser, PERM_SYSOP)
-        || HAS_PERM(currentuser, PERM_JURY)) {
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP)
+        || HAS_PERM(getCurrentUser(), PERM_JURY)) {
         getdata(1, 0, "是否对投票资格进行限制(Y/N) [Y]:", buf, 3, DOECHO,
                 NULL, true);
         if (buf[0] != 'N' && buf[0] != 'n') {
@@ -748,7 +748,7 @@ char *bname;
         pressreturn();
         return FULLUPDATE;
     }
-    strcpy(ball->userid, currentuser->userid);
+    strcpy(ball->userid, getCurrentUser()->userid);
     if (append_record(controlfile, ball, sizeof(*ball)) == -1) {
         prints("发生严重的错误，无法开启投票，请通告站长");
         b_report("Append Control file Error!!");
@@ -774,13 +774,13 @@ char *bname;
             fclose(sug);
             sug = NULL;
 #ifdef NINE_BUILD
-            post_file(currentuser, "", votename, bname, buf, 0, 1);
-            post_file(currentuser, "", votename, "vote", buf, 0, 1);
+            post_file(getCurrentUser(), "", votename, bname, buf, 0, 1);
+            post_file(getCurrentUser(), "", votename, "vote", buf, 0, 1);
 #else
             if (!normal_board(bname)) {
-                post_file(currentuser, "", votename, bname, buf, 0, 1);
+                post_file(getCurrentUser(), "", votename, bname, buf, 0, 1, getSession());
             } else {
-                post_file(currentuser, "", votename, "vote", buf, 0, 1);
+                post_file(getCurrentUser(), "", votename, "vote", buf, 0, 1, getSession());
             }
 #endif
             unlink(votename);
@@ -980,7 +980,7 @@ int user_vote(int num)
     int votevalue;
     int aborted = false, pos;
 
-    if (!haspostperm(currentuser,currboard->filename))
+    if (!haspostperm(getCurrentUser(),currboard->filename))
 	    return -1;
     move(t_lines - 2, 0);
     get_record(controlfile, &currvote, sizeof(struct votebal), num);
@@ -988,13 +988,13 @@ int user_vote(int num)
     if ((pos =
          search_record(fname, &uservote, sizeof(uservote),
                        (RECORD_FUNC_ARG) cmpvuid,
-                       currentuser->userid)) <= 0) {
+                       getCurrentUser()->userid)) <= 0) {
         (void) memset(&uservote, 0, sizeof(uservote));
         voted_flag = false;
     } else {
         voted_flag = true;
     }
-    strcpy(uservote.uid, currentuser->userid);
+    strcpy(uservote.uid, getCurrentUser()->userid);
     sprintf(bname, "desc.%lu", currvote.opendate);
     setvfile(buf, currboard->filename, bname);
     ansimore(buf, true);
@@ -1009,10 +1009,10 @@ int user_vote(int num)
     get_record(limitfile, &userlimit, sizeof(struct votelimit), 1);
     if ((currvote.type <= 0) || (currvote.type > 5))
         currvote.type = 1;
-    if ((currentuser->numposts < userlimit.numposts
-         || currentuser->numlogins < userlimit.numlogins
-         || currentuser->stay < userlimit.stay * 60 * 60
-         || (time(NULL) - currentuser->firstlogin) <
+    if ((getCurrentUser()->numposts < userlimit.numposts
+         || getCurrentUser()->numlogins < userlimit.numlogins
+         || getCurrentUser()->stay < userlimit.stay * 60 * 60
+         || (time(NULL) - getCurrentUser()->firstlogin) <
          userlimit.day * 24 * 60 * 60)) {
         prints
             ("对不起,你不满足版主规定的此次投票所需条件,无法参加投票,谢谢参与,下次再见! :)");
@@ -1046,7 +1046,7 @@ int user_vote(int num)
             getsug(&uservote);
         pos =
             search_record(fname, &tmpbal, sizeof(tmpbal),
-                          (RECORD_FUNC_ARG) cmpvuid, currentuser->userid);
+                          (RECORD_FUNC_ARG) cmpvuid, getCurrentUser()->userid);
         if (pos) {
             substitute_record(fname, &uservote, sizeof(uservote), pos);
         } else if (append_record(fname, &uservote, sizeof(uservote)) == -1) {
@@ -1089,7 +1089,7 @@ int printvote(struct votebal *ent, int idx, int *i)
     setvfile(flagname, currboard->filename, buf);
     if (search_record
         (flagname, &uservote, sizeof(uservote), (RECORD_FUNC_ARG) cmpvuid,
-         currentuser->userid) <= 0) {
+         getCurrentUser()->userid) <= 0) {
         voted_flag = false;
     } else
         voted_flag = true;
@@ -1198,14 +1198,14 @@ int allnum, pagenum;
         break;
     case 'A':
     case 'a':
-        if (!chk_currBM(currBM, currentuser))
+        if (!chk_currBM(currBM, getCurrentUser()))
             return true;
         vote_maintain(currboard->filename);
         deal = 1;
         break;
     case 'O':
     case 'o':
-        if (!chk_currBM(currBM, currentuser))
+        if (!chk_currBM(currBM, getCurrentUser()))
             return true;
         clear();
         deal = 1;
@@ -1227,7 +1227,7 @@ int allnum, pagenum;
         bbslog("user","%s",buf);
         break;
     case '@':
-        if (!HAS_PERM(currentuser, PERM_SYSOP))
+        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
             return true;
         clear();
         deal = 1;
@@ -1238,7 +1238,7 @@ int allnum, pagenum;
         break;
     case 'D':
     case 'd':
-        if (!chk_currBM(currBM, currentuser)) {
+        if (!chk_currBM(currBM, getCurrentUser())) {
             return 1;
         }
         deal = 1;
@@ -1296,7 +1296,7 @@ int b_vote(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 	int oldhelpmode = helpmode;
 #endif
 
-    if (!HAS_PERM(currentuser, PERM_LOGINOK))
+    if (!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
         return 0;               /* Leeward 98.05.15 */
     setcontrolfile();
     num_of_vote = get_num_records(controlfile, sizeof(struct votebal));

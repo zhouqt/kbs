@@ -54,13 +54,13 @@ void init_memory()
 
     iscreate = 0;
     p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(struct sms_shm_head), &iscreate);
-    head = (struct sms_shm_head *) p;
+    getSession()->head = (struct sms_shm_head *) p;
     buf = p+sizeof(struct sms_shm_head);
     if (iscreate == 0)
         bbslog("4system", "loaded an existed smsshm");
-    head->sem = 0;
-    head->total = 0;
-    head->length = 0;
+    getSession()->head->sem = 0;
+    getSession()->head->total = 0;
+    getSession()->head->length = 0;
 }
 
 void start_daemon()
@@ -168,7 +168,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
 	}
 
     hh.topid = uin->pid;
-    save_msgtext(uident, &hh, buf);
+    save_msgtext(uident, &hh, buf, getSession());
 #if HAVE_MYSQL == 1
 	save_smsmsg_nomysqlconnect(&mysql_s, uident, &hh, buf, 1);
 #endif
@@ -206,7 +206,7 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
             sprintf(buf, "你的帐号已经取消和%s的绑定！",ud.mobilenumber);
             newbbslog(BBSLOG_SMS,"UnBind mobilephone %s for %s",ud.mobilenumber,uident);
         }
-	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+	end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
        write_userdata(uident, &ud);
        mail_file("deliver", "", uident, buf, BBSPOST_COPY, NULL);
        return 0;
@@ -296,11 +296,11 @@ return 0;
 
 void getbuf(void * h, int s)
 {
-    if(head->length<s) return;
+    if(getSession()->head->length<s) return;
     if(h)
         memcpy(h, buf, s);
-    memcpy(buf, buf+s, head->length-s);
-    head->length-=s;
+    memcpy(buf, buf+s, getSession()->head->length-s);
+    getSession()->head->length-=s;
 }
 
 void processbbs()
@@ -311,11 +311,11 @@ void processbbs()
     struct UnRegPacket h3;
     struct BBSSendSMS h4;
     struct ReplyBindPacket h5;
-    if(head->sem) return;
-    if(!head->total) return;
-    head->sem=1;
-    while(head->total) {
-        head->total--;
+    if(getSession()->head->sem) return;
+    if(!getSession()->head->total) return;
+    getSession()->head->sem=1;
+    while(getSession()->head->total) {
+        getSession()->head->total--;
         getbuf(&h, sizeof(h));
         if(h.Type!=CMD_REPLY)
             long2byte(sn++, h.SerialNo);
@@ -353,13 +353,13 @@ void processbbs()
                 getbuf(NULL, byte2long(h4.MsgTxtLen));
                 break;
 	    default:
-		head->sem=0;
+		getSession()->head->sem=0;
 		return;
         }
     }
     time(&lastsendtime);
 
-    head->sem=0;
+    getSession()->head->sem=0;
 }
 
 #if HAVE_MYSQL == 1
@@ -392,6 +392,7 @@ int main()
     init_memory();
     running=1;
     errno=0;
+    init_sessiondata(getSession());
 
     bzero(&act, sizeof(act));
     act.sa_handler = do_exit_sig;
@@ -470,7 +471,7 @@ int main()
 #if HAVE_MYSQL == 1
 	mysql_close(&mysql_s);
 #endif
-    shmdt(head);
+    shmdt(getSession()->head);
     buf=NULL;
     return 0;
 }

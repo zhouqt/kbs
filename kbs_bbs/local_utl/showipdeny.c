@@ -10,9 +10,12 @@ int main(int argc, char **argv)
     char * p;
     int i,j,ip[4],t,k,count=0;
     time_t tt;
-    chdir(BBSHOME);
-    resolve_boards();
-    resolve_ucache();
+
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
+
     strcpy(fn, ".IPdenys");
     strcpy(fn2, "tmp/showipdeny.txt");
     fp=fopen(fn, "r");
@@ -44,13 +47,13 @@ int main(int argc, char **argv)
             strcpy(deliveruser.userid, "deliver");
             deliveruser.userlevel = -1;
             strcpy(deliveruser.username, "自动发信系统");
-            currentuser = &deliveruser;
-            strcpy(fromhost, "天堂");
+            setCurrentUser( &deliveruser);
+            strcpy(getSession()->fromhost, "天堂");
             tt = time(0);
             p = ctime(&tt);
             p[19]=0; p+=4;
             sprintf(fn, "%s 的 IP 犯罪记录", p);
-            post_file(&deliveruser, NULL, fn2, "surrender", fn, 0, 1);
+            post_file(&deliveruser, NULL, fn2, "surrender", fn, 0, 1,getSession());
             unlink(fn2);
         }
     }
@@ -84,13 +87,13 @@ int main(int argc, char **argv)
             strcpy(deliveruser.userid, "deliver");
             deliveruser.userlevel = -1;
             strcpy(deliveruser.username, "自动发信系统");
-            currentuser = &deliveruser;
-            strcpy(fromhost, "天堂");
+            setCurrentUser(&deliveruser);
+            strcpy(getSession()->fromhost, "天堂");
             tt = time(0);
             p = ctime(&tt);
             p[19]=0; p+=4;
             sprintf(fn, "%s 的 ID 犯罪记录", p);
-            post_file(&deliveruser, NULL, fn2, "surrender", fn, 0, 1);
+            post_file(&deliveruser, NULL, fn2, "surrender", fn, 0, 1, getSession());
             unlink(fn2);
         }
     }

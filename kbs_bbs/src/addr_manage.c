@@ -211,7 +211,7 @@ int add_addresslist( struct addresslist * oldal ){
 		getdata(t_lines-1, 0, "确定增加? (Y/N) [Y]:", anss, 3, DOECHO, NULL, true);
 
 	if( anss[0] != 'N' && anss[0] != 'n' )
-		return add_sql_al( currentuser->userid, &al, ans );
+		return add_sql_al( getCurrentUser()->userid, &al, ans );
 
 	return 0;
 }
@@ -302,9 +302,9 @@ static int set_al_getdata(struct _select_def *conf,int pos,int len)
 	bzero( a_l, sizeof(struct addresslist) * BBS_PAGESIZE );
 
 	if( conf->item_count - conf->page_pos < BBS_PAGESIZE )
-		conf->item_count = count_sql_al(currentuser->userid, al_dest, al_group, al_msgtxt);
+		conf->item_count = count_sql_al(getCurrentUser()->userid, al_dest, al_group, al_msgtxt);
 
-	i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, conf->page_pos-1, BBS_PAGESIZE,al_order, al_msgtxt);
+	i = get_sql_al(a_l, getCurrentUser()->userid, al_dest, al_group, conf->page_pos-1, BBS_PAGESIZE,al_order, al_msgtxt);
 
 	if( i <= 0){
 
@@ -314,7 +314,7 @@ static int set_al_getdata(struct _select_def *conf,int pos,int len)
 		//sm_type = -1;
 		al_msgtxt[0]=0;
 		
-		i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, 0, BBS_PAGESIZE,al_order, al_msgtxt);
+		i = get_sql_al(a_l, getCurrentUser()->userid, al_dest, al_group, 0, BBS_PAGESIZE,al_order, al_msgtxt);
 
 		if(i <= 0)
 			return SHOW_QUIT;
@@ -477,7 +477,7 @@ static int set_al_key(struct _select_def *conf, int key)
 			FILE *fp;
 			int suc=0;
 
-			sethomefile(fpath, currentuser->userid, "friends");
+			sethomefile(fpath, getCurrentUser()->userid, "friends");
 
 			if((fp=fopen(fpath, "r"))==NULL)
 				return SHOW_REFRESH;
@@ -495,7 +495,7 @@ static int set_al_key(struct _select_def *conf, int key)
 				move(10,0);
 				clrtoeol();
 				prints("正在导入用户 %s......",fh.id);
-				if(add_sql_al( currentuser->userid, &al, fh.exp )){
+				if(add_sql_al( getCurrentUser()->userid, &al, fh.exp )){
 					suc++;
 					prints("成功");
 				}
@@ -558,8 +558,8 @@ int al_read()
 
 
 	bzero( a_l, sizeof(struct addresslist) * BBS_PAGESIZE );
-	group_conf.item_count = count_sql_al(currentuser->userid, al_dest, al_group, NULL);
-	i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, 0, BBS_PAGESIZE, al_order, NULL);
+	group_conf.item_count = count_sql_al(getCurrentUser()->userid, al_dest, al_group, NULL);
+	i = get_sql_al(a_l, getCurrentUser()->userid, al_dest, al_group, 0, BBS_PAGESIZE, al_order, NULL);
 	
 	if(i < 0){
 		free(pts);
@@ -572,7 +572,7 @@ int al_read()
 			free(a_l);
 			return -1;
 		}
-		i = get_sql_al(a_l, currentuser->userid, al_dest, al_group, 0, BBS_PAGESIZE, al_order, NULL);
+		i = get_sql_al(a_l, getCurrentUser()->userid, al_dest, al_group, 0, BBS_PAGESIZE, al_order, NULL);
 		group_conf.item_count = 1;
 	}
 

@@ -1,7 +1,7 @@
 #include "bbs.h"
 
 //自动通过注册的函数  binxun
-int auto_register(char *userid, char *email, int msize)
+int auto_register(char *userid, char *email, int msize, session_t* session)
 {
     struct userdata ud;
     struct userec *uc;
@@ -14,10 +14,10 @@ int auto_register(char *userid, char *email, int msize)
     FILE *fout;
     int n;
     struct userec deliveruser;
-    static const char *finfo[] = { "帐号位置", "申请代号", "真实姓名", "服务单位",
+    static const char * const finfo[] = { "帐号位置", "申请代号", "真实姓名", "服务单位",
         "目前住址", "连络电话", "生    日", NULL
     };
-    static const char *field[] = { "usernum", "userid", "realname", "career",
+    static const char *const field[] = { "usernum", "userid", "realname", "career",
         "addr", "phone", "birth", NULL
     };
 
@@ -88,7 +88,7 @@ int auto_register(char *userid, char *email, int msize)
         //post_file(currentuser, "", fname, "Registry", str, 0, 2);
 
         sprintf(genbuf, "%s 自动通过注册", ud.userid);
-        post_file(&deliveruser, "", fname, "Registry", genbuf, 0, 1);
+        post_file(&deliveruser, "", fname, "Registry", genbuf, 0, 1, session);
         /*
          * if (( fout = fopen(logfile,"a")) != NULL)
          * {

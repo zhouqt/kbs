@@ -36,7 +36,7 @@ int login(struct userec *user)
         ui.pager |= FRIENDMSG_PAGER;
     }
     ui.uid = searchuser(user->userid);
-    strncpy(ui.from, fromhost, IPLEN);
+    strncpy(ui.from, getSession()->fromhost, IPLEN);
     ui.logintime = time(0);     /* for counting user's stay time */
     /* refer to bbsfoot.c for details */
 	ui.freshtime = time(0);
@@ -60,7 +60,7 @@ int login(struct userec *user)
     u->pid = 1;
     tmp = rand() % 100000000;
     u->utmpkey = tmp;
-    getfriendstr(user,u);
+    getfriendstr(user,u, getSession());
     /*setcurruinfo(u);*/
 	/*u_info = ui;*/
     /*if (addto_msglist(get_utmpent_num(getcurruinfo()), getcurruserid()) < 0)
@@ -82,9 +82,11 @@ int main(int argc, char **argv)
 		fprintf(stderr, "Usage: %s <username>\n", argv[0]);
 		exit(-1);
 	}
-	chdir(BBSHOME);
-	resolve_ucache();
-	resolve_utmp();
+
+    if (init_all()) {
+        printf("init data fail\n");
+        return -1;
+    }
 
 	getuser(argv[1], &x);
 	if (x == NULL)
@@ -92,7 +94,7 @@ int main(int argc, char **argv)
 		fprintf(stderr, "%s not found.\n", argv[1]);
 		exit(-1);
 	}
-	currentuser = x;
+	setCurrentUser(x);
 	login(x);
 
 	return 0;

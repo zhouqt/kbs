@@ -379,7 +379,7 @@ int igetch()
                 hifd = i_newfd + 1;
         }
 	//TODO: igetkey重入问题
-        if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(currentuser, DEF_LOGININFORM))
+        if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
         if (scrint&&!inremsg) {
             while (msg_count) {
                 inremsg = true;
@@ -394,7 +394,7 @@ int igetch()
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
                 return KEY_TALK;
-            if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(currentuser, DEF_LOGININFORM))
+            if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
             if (scrint&&!inremsg) {
                 while (msg_count) {
                     inremsg = true;
@@ -454,7 +454,7 @@ int igetch()
                         return KEY_TALK;
                 }
                 if(kicked) return KEY_TIMEOUT;
-                if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(currentuser, DEF_LOGININFORM))
+                if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(getCurrentUser(), DEF_LOGININFORM))
                 if (!inremsg) {
 		      int saveerrno=errno;
                     while (msg_count) {
@@ -631,7 +631,7 @@ int igetkey()
 
 #ifdef SMTH
 	if (scrint&&ch==Ctrl('V')) {
-            if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX)&&uinfo.mode!=DICT)
+            if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=DICT)
             exec_mbem("@mod:service/libdict.so#dict_main");
             continue;
         }
@@ -699,7 +699,7 @@ int igetkey()
                 else ret = KEY_F1+k-1;
         	if (scrint&&ret==KEY_F10&&!incalendar) {
         	      mode=0;
-                    if (currentuser&&!HAS_PERM(currentuser,PERM_DENYRELAX))
+                    if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX))
                     exec_mbem("@mod:service/libcalendar.so#calendar_main");
                     continue;
                 }
@@ -844,7 +844,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             break;
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
-            SET_CHANGEDEFINE(currentuser, DEF_CHCHAR);
+            SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
             init=false;
             continue;
         }
@@ -862,7 +862,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             strcpy(tmp, &buf[curr]);
             buf[--curr] = '\0';
 #ifdef CHINESE_CHARACTER
-            if (DEFINE(currentuser, DEF_CHCHAR)) {
+            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
                 for(i=0;i<curr;i++)
                     if(j) j=0;
@@ -900,7 +900,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             }
             strcpy(tmp, &buf[curr + 1]);
 #ifdef CHINESE_CHARACTER
-            if (DEFINE(currentuser, DEF_CHCHAR)) {
+            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
                 for(i=0;i<curr+1;i++)
                     if(j) j=0;
@@ -923,7 +923,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             }
             curr--;
 #ifdef CHINESE_CHARACTER
-            if (DEFINE(currentuser, DEF_CHCHAR)) {
+            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
                 for(i=0;i<curr;i++)
                     if(j) j=0;
@@ -954,7 +954,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             }
             curr++;
 #ifdef CHINESE_CHARACTER
-            if (DEFINE(currentuser, DEF_CHCHAR)) {
+            if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                 int i,j=0;
                 for(i=0;i<curr;i++)
                     if(j) j=0;
@@ -1106,7 +1106,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
             init=false;
-            SET_CHANGEDEFINE(currentuser, DEF_CHCHAR);
+            SET_CHANGEDEFINE(getCurrentUser(), DEF_CHCHAR);
             continue;
         }
 #endif        	
@@ -1156,7 +1156,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                             y++;
                         }
 #ifdef CHINESE_CHARACTER
-                        if (!DEFINE(currentuser, DEF_CHCHAR)||!chk)
+                        if (!DEFINE(getCurrentUser(), DEF_CHCHAR)||!chk)
 #endif
                         if(y==cursory-1&&x<=cursorx)
                             now=i+1;
@@ -1186,7 +1186,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                             y++;
                         }
 #ifdef CHINESE_CHARACTER
-                        if (!DEFINE(currentuser, DEF_CHCHAR)||!chk)
+                        if (!DEFINE(getCurrentUser(), DEF_CHCHAR)||!chk)
 #endif
                         if(y==cursory+1&&x<=cursorx)
                             now=i+1;
@@ -1205,7 +1205,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                         buf[i]=buf[i+1];
                     now--;
 #ifdef CHINESE_CHARACTER
-                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                    if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
                         for(i=0;i<now;i++) {
                             if(chk) chk=0;
@@ -1228,7 +1228,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 }
                 if(now<strlen(buf)) {
 #ifdef CHINESE_CHARACTER
-                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                    if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
                         for(i=0;i<now+1;i++) {
                             if(chk) chk=0;
@@ -1248,7 +1248,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 if(now>0) {
                     now--;
 #ifdef CHINESE_CHARACTER
-                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                    if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
                         for(i=0;i<now;i++) {
                             if(chk) chk=0;
@@ -1264,7 +1264,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 if(now<strlen(buf)) {
                     now++;
 #ifdef CHINESE_CHARACTER
-                    if (DEFINE(currentuser, DEF_CHCHAR)) {
+                    if (DEFINE(getCurrentUser(), DEF_CHCHAR)) {
                         chk = 0;
                         for(i=0;i<now;i++) {
                             if(chk) chk=0;
@@ -1334,7 +1334,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                         y++;
                     }
 #ifdef CHINESE_CHARACTER
-                    if (!DEFINE(currentuser, DEF_CHCHAR)||!chk)
+                    if (!DEFINE(getCurrentUser(), DEF_CHCHAR)||!chk)
 #endif
                     if(y==cursory&&x<=cursorx)
                         now=i+1;
@@ -1389,7 +1389,7 @@ int lock_scr()
 {                               /* Leeward 98.02.22 */
     char passbuf[STRLEN];
 
-    if (!strcmp(currentuser->userid, "guest"))
+    if (!strcmp(getCurrentUser()->userid, "guest"))
         return 1;
 
     modify_user_mode(LOCKSCREEN);
@@ -1405,7 +1405,7 @@ int lock_scr()
         clrtobot();
         getdata(21, 0, "屏幕现在已经锁定，要解除锁定，请输入密码：", passbuf, 39, NOECHO, NULL, true);
         move(22, 32);
-        if (!checkpasswd2(passbuf, currentuser)) {
+        if (!checkpasswd2(passbuf, getCurrentUser())) {
             prints("\033[1m\033[31m密码输入错误...\033[m\n");
             pressanykey();
         } else {

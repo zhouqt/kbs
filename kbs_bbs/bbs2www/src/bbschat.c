@@ -160,7 +160,7 @@ int main()
     char t[80];
     int pid;
 
-    init_all();
+    initwww_all();
     if (!loginok) {
         http_fatal("´íÎó£¬ÇëÏÈµÇÂ¼");
         exit(0);
@@ -586,7 +586,7 @@ int agent(int pid)
     signal(SIGINT, foo);
     signal(SIGALRM, abort_chat);
     alarm(60);
-    sprintf(genbuf, "/! %d %d %s %s %d\n", u_info->uid, currentuser->userlevel, currentuser->userid, currentuser->userid, 0);
+    sprintf(genbuf, "/! %d %d %s %s %d\n", u_info->uid, getCurrentUser()->userlevel, getCurrentUser()->userid, getCurrentUser()->userid, 0);
     write(chat_fd, genbuf, strlen(genbuf));
     read(chat_fd, genbuf, 2);
     if (!strcasecmp(genbuf, "OK"))

@@ -76,13 +76,13 @@ int main()
     char brdencode[STRLEN];
     struct boardheader bh;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("您尚未登录, 请先登录");
     strsncpy(board, getparm("board"), 30);
-    if (getboardnum(board,&bh)==0||!check_read_perm(currentuser, &bh))
+    if (getboardnum(board,&bh)==0||!check_read_perm(getCurrentUser(), &bh))
         http_fatal("错误的讨论区");
-    if (!has_BM_perm(currentuser, board))
+    if (!has_BM_perm(getCurrentUser(), board))
         http_fatal("你无权进行本操作");
     loaddenyuser(board);
     userid = getparm("userid");
@@ -124,7 +124,7 @@ int inform(char *board, char *user)
     fprintf(fn1, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
     fprintf(fn1, "来  源: %s \n", usr->lasthost);
     fprintf(fn1, "\n");
-    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS))
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS))
         fprintf(fn1, "您被站务人员 %s 解除在 %s 版的封禁\n", usr->userid, board);
     else
         fprintf(fn1, "您被 %s 版版主 %s 解除封禁\n", board, usr->userid);
@@ -147,7 +147,7 @@ int inform(char *board, char *user)
        pi.access = 0;
        post_file(filename, &pi);
      */
-    post_file(usr, "", filename, "undenypost", buffer, 0, 1);
+    post_file(usr, "", filename, "undenypost", buffer, 0, 1, getSession());
     unlink(filename);
 
     printf("系统已经发信通知了%s.<br>\n", user);

@@ -9,7 +9,7 @@ int main()
     int i, total = 0;
     bcache_t *bc;
 
-    init_all();
+    initwww_all();
     board = nohtml(getparm("board"));
     bc = getbcacheaddr();
     if (board[0] == 0) {
@@ -21,7 +21,7 @@ int main()
     } else {
         for (i = 0; i < MAXBOARD; i++) {
             board1 = bc[i].filename;
-            if (!check_read_perm(currentuser, &bc[i]))
+            if (!check_read_perm(getCurrentUser(), &bc[i]))
                 continue;
             if (!strcasecmp(board, board1)) {
                 sprintf(buf, "/bbsdoc.php?board=%s", board1);
@@ -36,7 +36,7 @@ int main()
         for (i = 0; i < MAXBOARD; i++) {
             board1 = bc[i].filename;
             title = bc[i].title + 13;
-            if (!check_read_perm(currentuser, &bc[i]))
+            if (!check_read_perm(getCurrentUser(), &bc[i]))
                 continue;
             if (strcasestr(board1, board) || strcasestr(title, board) || strcasestr(bc[i].des, board)) {
                 total++;

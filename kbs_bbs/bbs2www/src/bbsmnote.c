@@ -8,12 +8,12 @@ int main()
     FILE *fp;
     char *ptr, path[256], buf[10000], board[256];
 
-    init_all();
+    initwww_all();
     printf("<center>\n");
     if (!loginok)
         http_fatal("匆匆过客，请先登录");
     strsncpy(board, getparm("board"), 30);
-    if (!has_BM_perm(currentuser, board))
+    if (!has_BM_perm(getCurrentUser(), board))
         http_fatal("你无权进行本操作");
     strsncpy(board, getbcache(board)->filename, 30);
     sprintf(path, "vote/%s/notes", board);

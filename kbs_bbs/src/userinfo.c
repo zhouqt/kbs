@@ -66,7 +66,7 @@ void disply_userinfo(u, real)
     }
 
     /*---	added by period		hide posts/logins	2000-11-02	---*/
-/*    if(HAS_PERM(currentuser,PERM_ADMINMENU)) { *//* removed to let user can see his own data */
+/*    if(HAS_PERM(getCurrentUser(),PERM_ADMINMENU)) { *//* removed to let user can see his own data */
         prints("上站次数     : %d 次\n", u->numlogins);
     if (real)
         prints("文章数目     : %d 篇\n", u->numposts);
@@ -133,7 +133,7 @@ int uinfo_query(struct userec *u, int real, int unum)
     memcpy(&newinfo, u, sizeof(struct userec));
 	read_userdata(u->userid, &ud);
 	read_user_memo(u->userid, &um);
-	//memcpy(&ud, &(currentmemo->ud), sizeof(ud));
+	//memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
     getdata(t_lines - 1, 0, real ? "请选择 (0)结束 (1)修改资料 (2)设定密码 (3) 改 ID ==> [0]" : "请选择 (0)结束 (1)修改资料 (2)设定密码 ==> [0]", ans, 2, DOECHO, NULL, true);
     clear();
     i = 3;
@@ -428,7 +428,7 @@ int uinfo_query(struct userec *u, int real, int unum)
                 char secu[STRLEN];
 
                 if (strcmp(u->userid, newinfo.userid))
-                    sprintf(secu, "%s 的 ID 被 %s 改为 %s", u->userid, currentuser->userid, newinfo.userid);   /*Haohmaru.99.5.6 */
+                    sprintf(secu, "%s 的 ID 被 %s 改为 %s", u->userid, getCurrentUser()->userid, newinfo.userid);   /*Haohmaru.99.5.6 */
                 
                 else
                     sprintf(secu, "修改 %s 的基本资料或密码。", u->userid);
@@ -443,12 +443,12 @@ int uinfo_query(struct userec *u, int real, int unum)
 void x_info() 
 {
     modify_user_mode(GMENU);
-    disply_userinfo(currentuser, 1);
-    if (!strcmp("guest", currentuser->userid)) {
+    disply_userinfo(getCurrentUser(), 1);
+    if (!strcmp("guest", getCurrentUser()->userid)) {
         pressreturn();
         return;
     }
-    uinfo_query(currentuser, 0, usernum);
+    uinfo_query(getCurrentUser(), 0, usernum);
 }
     void getfield(line, info, desc, buf, len)  int line, len;
     char *info, *desc, *buf;
@@ -484,17 +484,17 @@ void x_fillform()
     modify_user_mode(NEW);
     move(3, 0);
     clrtobot();
-    if (!strcmp("guest", currentuser->userid)) {
+    if (!strcmp("guest", getCurrentUser()->userid)) {
         prints("抱歉, 请用 new 申请一个新帐号后再填申请表.");
         pressreturn();
         return;
     }
-    if (currentuser->userlevel & PERM_LOGINOK) {
+    if (getCurrentUser()->userlevel & PERM_LOGINOK) {
         prints("您的身份确认已经成功, 欢迎加入本站的行列.");
         pressreturn();
         return;
     }
-    if ((time(0) - currentuser->firstlogin) < REGISTER_WAIT_TIME)
+    if ((time(0) - getCurrentUser()->firstlogin) < REGISTER_WAIT_TIME)
 	{
         prints("您首次登入本站未满" REGISTER_WAIT_TIME_NAME "...");
         prints("请先四处熟悉一下，在满" REGISTER_WAIT_TIME_NAME "以后再填写注册单。");
@@ -506,7 +506,7 @@ void x_fillform()
         while (fgets(genbuf, STRLEN, fn) != NULL) {
             if ((ptr = strchr(genbuf, '\n')) != NULL)
                 *ptr = '\0';
-            if (strncmp(genbuf, "userid: ", 8) == 0 && strcmp(genbuf + 8, currentuser->userid) == 0) {
+            if (strncmp(genbuf, "userid: ", 8) == 0 && strcmp(genbuf + 8, getCurrentUser()->userid) == 0) {
                 fclose(fn);
                 prints("站长尚未处理您的注册申请单, 请耐心等候.");
                 pressreturn();
@@ -522,7 +522,7 @@ void x_fillform()
     if (ans[0] != 'Y' && ans[0] != 'y')
         return;
 //    memcpy(&ud,&curruserdata,sizeof(ud));
-    memcpy(&ud,&(currentmemo->ud),sizeof(ud));
+    memcpy(&ud,&(getSession()->currentmemo->ud),sizeof(ud));
     strncpy(rname, ud.realname, NAMELEN);
     strncpy(addr, ud.address, STRLEN);
     career[0] = phone[0] = birth[0] = '\0';
@@ -530,7 +530,7 @@ void x_fillform()
     while (1) {
         move(3, 0);
         clrtoeol();
-        prints("%s 您好, 请据实填写以下的资料(请使用中文):\n", currentuser->userid);
+        prints("%s 您好, 请据实填写以下的资料(请使用中文):\n", getCurrentUser()->userid);
         genbuf[0] = '\0';      /*Haohmaru.99.09.17.以下内容不得过短 */
         while (strlen(genbuf) < 3) {
             getfield(6, "请用中文,不能输入的汉字请用拼音", "真实姓名", rname, NAMELEN);
@@ -559,13 +559,13 @@ void x_fillform()
     }
     strncpy(ud.realname, rname, NAMELEN);
     strncpy(ud.address, addr, STRLEN);
-	write_userdata(currentuser->userid, &ud);
+	write_userdata(getCurrentUser()->userid, &ud);
 //	memcpy(&curruserdata,&ud,sizeof(ud));
-	memcpy(&(currentmemo->ud),&ud,sizeof(ud));
+	memcpy(&(getSession()->currentmemo->ud),&ud,sizeof(ud));
     if ((fn = fopen("new_register", "a")) != NULL) {
         now = time(NULL);
         fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));
-        fprintf(fn, "userid: %s\n", currentuser->userid);
+        fprintf(fn, "userid: %s\n", getCurrentUser()->userid);
         fprintf(fn, "realname: %s\n", rname);
         fprintf(fn, "career: %s\n", career);
         fprintf(fn, "addr: %s\n", addr);

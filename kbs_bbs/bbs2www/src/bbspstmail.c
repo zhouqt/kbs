@@ -10,7 +10,7 @@ int main()
     char userid[80], buf[512], path[512], file[512], board[512], title[80] = "";
 	struct boardheader *bp;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("匆匆过客不能写信，请先登录");
     if (!can_send_mail())
@@ -33,19 +33,19 @@ int main()
 			http_fatal("错误的文件名");
 	}
     printf("<center>\n");
-    printf("%s -- 寄语信鸽 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
+    printf("%s -- 寄语信鸽 [使用者: %s]<hr color=\"green\">\n", BBSNAME, getCurrentUser()->userid);
     printf("<table border=\"1\"><tr><td>\n");
     printf("<form method=\"post\" action=\"bbssndmail?userid=%s\">\n", userid);
-    printf("发信人: &nbsp;%s<br>\n", currentuser->userid);
+    printf("发信人: &nbsp;%s<br>\n", getCurrentUser()->userid);
     printf("信件标题: <input type=\"text\" name=\"title\" size=\"40\" maxlength=\"100\" value=\"%s\"><br> ", title);
     printf("收信人: &nbsp;&nbsp<input type=\"text\" name=\"userid\" value=\"%s\"><br>\n", nohtml(userid));
     printf("使用签名档 <select name=\"signature\">\n");
-    if (currentuser->signature == 0)
+    if (getCurrentUser()->signature == 0)
         printf("<option value=\"0\" selected=\"selected\">不使用签名档</option>\n");
     else
         printf("<option value=\"0\">不使用签名档</option>\n");
     for (i = 1; i < 6; i++) {
-        if (currentuser->signature == i)
+        if (getCurrentUser()->signature == i)
             printf("<option value=\"%d\" selected=\"selected\">第 %d 个</option>\n", i, i);
         else
             printf("<option value=\"%d\">第 %d 个</option>\n", i, i);
@@ -66,7 +66,7 @@ int main()
 		}
 		else
 		{
-			setmailfile(path, currentuser->userid, file);
+			setmailfile(path, getCurrentUser()->userid, file);
 			printf("【 在 %s 的来信中提到: 】\n", userid);
 		}
         fp = fopen(path, "r");

@@ -21,7 +21,7 @@ int change_flag(struct fileheader*f,char* board,char*dirdir,int ent, int flag)
         dirarg.ent = ent;
         if(change_post_flag(&dirarg, 
             DIR_MODE_NORMAL, 
-            bh, f, flag, &data,true)!=0)
+            bh, f, flag, &data,true,getSession())!=0)
         ret = 1;
     else
         ret = 0;
@@ -35,7 +35,7 @@ int main()
     char buf[STRLEN];
     bcache_t *brd;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("请先登录");
     strsncpy(board, getparm("board"), 60);
@@ -44,7 +44,7 @@ int main()
     if (brd == 0)
         http_fatal("错误的讨论区");
     strcpy(board, brd->filename);
-    if (!has_BM_perm(currentuser, board))
+    if (!has_BM_perm(getCurrentUser(), board))
         http_fatal("你无权访问本页");
     if (mode <= 0 || mode > 6)
         http_fatal("错误的参数");
@@ -56,7 +56,7 @@ int main()
 		num = atoi(getparm("num"));
 		if( num < 0 || num >= ANNPATH_NUM )
 			http_fatal("丝路参数错误");
-		load_import_path(i_path,i_title,&i_time,&i_select);
+		load_import_path(i_path,i_title,&i_time,&i_select,getSession());
 		strcpy(im_path,i_path[num]);
 		free_import_path(i_path,i_title,&i_time);
 		if(strncmp(im_path,"0Announce/groups/",17))
@@ -139,11 +139,11 @@ int bbsman_import(int ent,char *board,struct fileheader *f,char *dirdir)
 
 	bzero(&pm, sizeof(pm));
 	pm.path = im_path;
-	a_loadnames(&pm);
+	a_loadnames(&pm,getSession());
 
 	ann_get_postfilename(fname,f,&pm);
 	sprintf(bname,"%s/%s",pm.path,fname);
-	sprintf(buf,"%-38.38s %s",f->title,currentuser->userid);
+	sprintf(buf,"%-38.38s %s",f->title,getCurrentUser()->userid);
 	a_additem(&pm,buf,fname,NULL,0,f->attachment);
 	if(a_savenames(&pm) == 0){
 		sprintf(buf,"boards/%s/%s",board,f->filename);

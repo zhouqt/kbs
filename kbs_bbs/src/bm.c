@@ -116,7 +116,7 @@ int addtodeny(char *uident)
     setbfile(genbuf, currboard->filename, "deny_users");
     if (seek_in_file(genbuf, uident) || !strcmp(currboard->filename, "denypost"))
         return -1;
-    if (HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS))
+    if (HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS))
         maxdeny = 70;
     else
         maxdeny = 14;
@@ -212,9 +212,9 @@ int addtodeny(char *uident)
         denyday = atoi(buf2);
         if ((denyday < 0) || (denyday > maxdeny))
             denyday = 0;        /*goto MUST1; */
-        else if (!(HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) && !denyday)
+        else if (!(HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !denyday)
             denyday = 0;        /*goto MUST1; */
-        else if ((HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) && !denyday && !autofree)
+        else if ((HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !denyday && !autofree)
             break;
     }
 
@@ -224,13 +224,13 @@ int addtodeny(char *uident)
 
         tmtime = gmtime(&undenytime);
 
-        sprintf(strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%lum", uident, denymsg, currentuser->userid, tmtime->tm_mon + 1, tmtime->tm_mday, undenytime);   /*Haohmaru 98,09,25,显示是谁什么时候封的 */
+        sprintf(strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日解\x1b[%lum", uident, denymsg, getCurrentUser()->userid, tmtime->tm_mon + 1, tmtime->tm_mday, undenytime);   /*Haohmaru 98,09,25,显示是谁什么时候封的 */
     } else {
         struct tm *tmtime;
         time_t undenytime = now + denyday * 24 * 60 * 60;
 
         tmtime = gmtime(&undenytime);
-        sprintf(strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%lum", uident, denymsg, currentuser->userid, tmtime->tm_mon + 1, tmtime->tm_mday, undenytime);
+        sprintf(strtosave, "%-12.12s %-30.30s%-12.12s %2d月%2d日后\x1b[%lum", uident, denymsg, getCurrentUser()->userid, tmtime->tm_mon + 1, tmtime->tm_mday, undenytime);
     }
 
     if (addtofile(genbuf, strtosave) == 1) {
@@ -242,14 +242,14 @@ int addtodeny(char *uident)
          * Haohmaru.4.1.自动发信通知并发文章于版上 
          */
 		gettmpfilename( filename, "deny" );
-        //sprintf(filename, "tmp/%s.deny", currentuser->userid);
+        //sprintf(filename, "tmp/%s.deny", getCurrentUser()->userid);
         fn = fopen(filename, "w+");
-        memcpy(&saveuser, currentuser, sizeof(struct userec));
-        saveptr = currentuser;
-        currentuser = &saveuser;
+        memcpy(&saveuser, getCurrentUser(), sizeof(struct userec));
+        saveptr = getCurrentUser();
+        getCurrentUser() = &saveuser;
         sprintf(buffer, "%s被取消在%s版的发文权限", uident, currboard->filename);
 
-        if ((HAS_PERM(currentuser, PERM_SYSOP) || HAS_PERM(currentuser, PERM_OBOARDS)) && !chk_BM_instr(currBM, currentuser->userid)) {
+        if ((HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !chk_BM_instr(currBM, getCurrentUser()->userid)) {
             my_flag = 0;
             fprintf(fn, "寄信人: SYSOP (System Operator) \n");
             fprintf(fn, "标  题: %s\n", buffer);
@@ -264,17 +264,17 @@ int addtodeny(char *uident)
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
-            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", currentuser->userid);
+            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
-            strcpy(currentuser->userid, "SYSOP");
-            strcpy(currentuser->username, NAME_SYSOP);
-            /*strcpy(currentuser->realname, NAME_SYSOP);*/
+            strcpy(getCurrentUser()->userid, "SYSOP");
+            strcpy(getCurrentUser()->username, NAME_SYSOP);
+            /*strcpy(getCurrentUser()->realname, NAME_SYSOP);*/
         } else {
             my_flag = 1;
-            fprintf(fn, "寄信人: %s \n", currentuser->userid);
+            fprintf(fn, "寄信人: %s \n", getCurrentUser()->userid);
             fprintf(fn, "标  题: %s\n", buffer);
             fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
-            fprintf(fn, "来  源: %s \n", SHOW_USERIP(currentuser, fromhost));
+            fprintf(fn, "来  源: %s \n", SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard->filename, denymsg);
             if (denyday)
@@ -284,11 +284,11 @@ int addtodeny(char *uident)
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
-            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", currentuser->userid);
+            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
         }
         fclose(fn);
-        mail_file(currentuser->userid, filename, uident, buffer, 0, NULL);
+        mail_file(getCurrentUser()->userid, filename, uident, buffer, 0, NULL);
         fn = fopen(filename, "w+");
         fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", uident, currboard->filename, denymsg);
         if (denyday)
@@ -299,26 +299,26 @@ int addtodeny(char *uident)
         if (my_flag == 0) {
             fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", saveptr->userid);
         } else {
-            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", currentuser->userid);
+            fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
         }
         fprintf(fn, "                              %s\n", ctime(&now));
         fclose(fn);
-        post_file(currentuser, "", filename, currboard->filename, buffer, 0, 2);
+        post_file(getCurrentUser(), "", filename, currboard->filename, buffer, 0, 2, getSession());
         /*
          * unlink(filename); 
          */
-        currentuser = saveptr;
+        getCurrentUser() = saveptr;
 
-        sprintf(buffer, "%s 被 %s 封禁本版POST权", uident, currentuser->userid);
+        sprintf(buffer, "%s 被 %s 封禁本版POST权", uident, getCurrentUser()->userid);
         getuser(uident, &lookupuser);
 
         if (PERM_BOARDS & lookupuser->userlevel)
-            sprintf(buffer, "%s 封某版" NAME_BM " %s 在 %s", currentuser->userid, uident, currboard->filename);
+            sprintf(buffer, "%s 封某版" NAME_BM " %s 在 %s", getCurrentUser()->userid, uident, currboard->filename);
         else
-            sprintf(buffer, "%s 封 %s 在 %s", currentuser->userid, uident, currboard->filename);
-        post_file(currentuser, "", filename, "denypost", buffer, 0, 8);
+            sprintf(buffer, "%s 封 %s 在 %s", getCurrentUser()->userid, uident, currboard->filename);
+        post_file(getCurrentUser(), "", filename, "denypost", buffer, 0, 8, getSession());
         unlink(filename);
-        bmlog(currentuser->userid, currboard->filename, 10, 1);
+        bmlog(getCurrentUser()->userid, currboard->filename, 10, 1);
     }
     return 0;
 }
@@ -343,8 +343,8 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
  * * Haohmaru.12.18 
  */
     now = time(0);
-    if (!HAS_PERM(currentuser, PERM_SYSOP))
-        if (!chk_currBM(currBM, currentuser)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
+        if (!chk_currBM(currBM, getCurrentUser())) {
             return DONOTHING;
         }
 
@@ -442,7 +442,7 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             move(1, 0);
             clrtoeol();
             if (uident[0] != '\0') {
-                if (deldeny(currentuser, currboard->filename, uident, 0)) {
+                if (deldeny(getCurrentUser(), currboard->filename, uident, 0, getSession())) {
                 }
             }
         } else if (count > 20 && isdigit(ans[0])) {
@@ -552,7 +552,7 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     static char comment[STRLEN]={0};    /* add an additional comment for club .added by binxun . 2003.7.7*/
     char tempbuf[256];
 
-    if (!(chk_currBM(currBM, currentuser))) {
+    if (!(chk_currBM(currBM, getCurrentUser()))) {
         return DONOTHING;
     }
     i=currboardent;
@@ -610,9 +610,9 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
        	             comment[STRLEN-1] = 0;
                     	}
                     sprintf(tempbuf,"附加说明:%s",comment);
-                    sprintf(genbuf, "%s 由 %s 授予 %s 俱乐部权力", uident, currentuser->userid, currboard->filename);
+                    sprintf(genbuf, "%s 由 %s 授予 %s 俱乐部权力", uident, getCurrentUser()->userid, currboard->filename);
                     /*securityreport(genbuf, NULL, NULL);*/
-                    mail_buf(currentuser, tempbuf, uident, genbuf);
+                    mail_buf(getCurrentUser(), tempbuf, uident, genbuf, getSession());
                     deliverreport(genbuf, tempbuf);
                 }
             }
@@ -634,9 +634,9 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 	   	          	}
 	              	sprintf(tempbuf,"附加说明:%s",comment);
 
-	                     sprintf(genbuf, " %s 被 %s 取消 %s 俱乐部权力", uident, currentuser->userid, currboard->filename);
+	                     sprintf(genbuf, " %s 被 %s 取消 %s 俱乐部权力", uident, getCurrentUser()->userid, currboard->filename);
 	                     /*securityreport(genbuf, NULL, NULL);*/
-	                    	mail_buf(currentuser, tempbuf, uident, genbuf);
+	                    	mail_buf(getCurrentUser(), tempbuf, uident, genbuf, getSession());
 	                    	deliverreport(genbuf, tempbuf);
                     }
             }

@@ -82,7 +82,7 @@ int post_cross2(int local_save, char *board)
 
 	time_t now;
 
-	if(!haspostperm(currentuser, board))
+	if(!haspostperm(getCurrentUser(), board))
 	{
 		printf("no post perm.<br>\n");
 		return -1;
@@ -118,7 +118,7 @@ int post_cross2(int local_save, char *board)
 		postfile.innflag[0] = 'S';
 		outgo_post2(&postfile, board, user->userid, user->username, save_title);
 	}
-	after_post(currentuser, &postfile, board, NULL, 1);
+	after_post(getCurrentUser(), &postfile, board, NULL, 1, getSession());
 
 	return 1;
 }
@@ -133,11 +133,11 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct, char *board, ch
 	char bname[STRLEN];
 	char dbname[STRLEN];
 
-	if(!HAS_PERM(currentuser, PERM_POST))	 /* 判断是否有POST权 */
+	if(!HAS_PERM(getCurrentUser(), PERM_POST))	 /* 判断是否有POST权 */
 	{
 		return 0;
 	}
-	if((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(currentuser, PERM_SYSOP))
+	if((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
 	{
 		http_fatal("本文章已经转贴过一次，无法再次转贴");
 	}
@@ -151,7 +151,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct, char *board, ch
 	{
 		http_fatal("\n\n                          本版的文章不需要转贴到本版!");
 	}
-	if(deny_me(currentuser->userid, board2) && !HAS_PERM(currentuser, PERM_SYSOP))	 /* 版主禁止POST 检查 */
+	if(deny_me(getCurrentUser()->userid, board2) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))	 /* 版主禁止POST 检查 */
 	{
 		http_fatal("\n\n                很抱歉，你在该版被其版主停止了 POST 的权力...\n");
 	}
@@ -195,7 +195,7 @@ int main()
 	struct boardheader *src_bp;
 	struct boardheader *dst_bp;
 
-	init_all();
+	initwww_all();
 	strsncpy(board, getparm("board"), 30);
 	strsncpy(file, getparm("file"), 30);
 	strsncpy(target, getparm("target"), 30);
@@ -206,7 +206,7 @@ int main()
 	if (src_bp == NULL)
 		http_fatal("错误的讨论区");
 	strcpy(board, src_bp->filename);
-	if(!check_read_perm(currentuser, src_bp))
+	if(!check_read_perm(getCurrentUser(), src_bp))
 		http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIR", board);
 	fp = fopen(dir, "r");
@@ -226,14 +226,14 @@ int main()
 	fclose(fp);
 	if(found == 0)
 		http_fatal("错误的参数");
-	printf("<center>%s -- 转载文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, currentuser->userid);
+	printf("<center>%s -- 转载文章 [使用者: %s]<hr color=\"green\">\n", BBSNAME, getCurrentUser()->userid);
 	if(target[0])
 	{
 		dst_bp = getbcache(target);
 		if (dst_bp == NULL)
 			http_fatal("错误的讨论区");
 		strcpy(target, dst_bp->filename);
-		if(!haspostperm(currentuser, target))
+		if(!haspostperm(getCurrentUser(), target))
 			http_fatal("错误的讨论区名称或你没有在该版发文的权限");
 		return do_ccc(num + 1, &f, dir, board, target, local);
 	}

@@ -10,7 +10,7 @@ int main()
     char *ptr, buf[512], path[80], dir[80];
     struct fileheader *data;
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("您尚未登录, 请先登录");
     strsncpy(buf, getparm("start"), 10);
@@ -18,8 +18,8 @@ int main()
     if (buf[0] == 0)
         start = 999999;
     printf("<center>\n");
-    printf("%s -- 信件列表 [使用者: %s]<hr color=green>\n", BBSNAME, currentuser->userid);
-    sprintf(dir, "mail/%c/%s/.DIR", toupper(currentuser->userid[0]), currentuser->userid);
+    printf("%s -- 信件列表 [使用者: %s]<hr color=green>\n", BBSNAME, getCurrentUser()->userid);
+    sprintf(dir, "mail/%c/%s/.DIR", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
     total = file_size(dir) / sizeof(struct fileheader);
     if (total < 0 || total > 30000)
         http_fatal("too many mails");

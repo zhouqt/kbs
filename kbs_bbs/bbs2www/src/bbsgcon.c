@@ -12,12 +12,12 @@ int main()
     struct boardheader bh;
     char board_url[80];
 
-    init_all();
+    initwww_all();
     strsncpy(board, getparm("board"), 32);
     strsncpy(file, getparm("file"), 32);
     num = atoi(getparm("num"));
     printf("<center>\n");
-    if (getboardnum(board,&bh) == 0 || !check_read_perm(currentuser, &bh))
+    if (getboardnum(board,&bh) == 0 || !check_read_perm(getCurrentUser(), &bh))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
     printf("%s -- 文章阅读 [讨论区: %s]<hr class=\"default\">", BBSNAME, board);

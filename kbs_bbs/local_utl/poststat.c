@@ -843,8 +843,10 @@ int main(int argc, char **argv)
     int i;
     char buf[80], curfile[80] ;
 
-    chdir(BBSHOME);
-
+	if (init_all()) {
+		printf("init data fail\n");
+		return -1;
+	}
     time(&now);
     ptime = *localtime(&now);
     if (argc == 2) {
@@ -855,7 +857,6 @@ int main(int argc, char **argv)
         }
     }
 
-    resolve_boards();
     if (ptime.tm_hour == 0) {
 		if (ptime.tm_yday == 1)
 			poststat(2, now, &ptime);
@@ -872,7 +873,7 @@ int main(int argc, char **argv)
 		}
 #ifdef BLESS_BOARD
         unlink("etc/posts/bless.0");
-        post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "十大祝福", 0, 1);
+        post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "十大祝福", 0, 1, getSession());
 #endif
     }
     poststat(-1, now, &ptime);
@@ -880,10 +881,10 @@ int main(int argc, char **argv)
         char fname[STRLEN];
 
         sprintf(fname, "%d年%2d月%2d日十大热门话题", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
-        post_file(NULL, "", "etc/posts/day", "BBSLists", fname, 0, 1);
+        post_file(NULL, "", "etc/posts/day", "BBSLists", fname, 0, 1, getSession());
         if (ptime.tm_wday == 6) {
             sprintf(fname, "%d年%2d月%2d日本周五十大热门话题", ptime.tm_year + 1900, ptime.tm_mon + 1, ptime.tm_mday);
-            post_file(NULL, "", "etc/posts/week", "BBSLists", fname, 0, 1);
+            post_file(NULL, "", "etc/posts/week", "BBSLists", fname, 0, 1, getSession());
         }
     }
     return 0;

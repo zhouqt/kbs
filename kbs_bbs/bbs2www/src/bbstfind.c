@@ -15,7 +15,7 @@ int main()
 	int groupid;
 	int same;
 
-    init_all();
+    initwww_all();
     strsncpy(board, getparm("board"), 32);
     strsncpy(title, getparm("title"), 42);
 	groupid=atoi(getparm("groupid"));
@@ -23,7 +23,7 @@ int main()
     if (x1 == 0)
         http_fatal("错误的讨论区");
     strcpy(board, x1->filename);
-    if (!check_read_perm(currentuser, x1))
+    if (!check_read_perm(getCurrentUser(), x1))
         http_fatal("错误的讨论区");
     sprintf(dir, "boards/%s/.DIR", board);
     fp = fopen(dir, "r");
@@ -68,7 +68,7 @@ int main()
     printf("<a href=\"/bbsdoc.php?board=%s\">本讨论区</a> ", brdencode);
     if (total > 0) {
         printf("<a href=\"bbstcon?board=%s&gid=%d\">本主题全部展开</a> ", brdencode, groupid);
-        if (has_BM_perm(currentuser, board))
+        if (has_BM_perm(getCurrentUser(), board))
             printf("<a onclick=\"return confirm('确定同主题全部删除?')\" href=\"%s\">同主题删除</a>", buf);
     }
     http_quit();

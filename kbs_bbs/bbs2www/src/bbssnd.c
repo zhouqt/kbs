@@ -14,7 +14,7 @@ int main()
     int local, anony;
     /*int filtered = 0;*/
 
-    init_all();
+    initwww_all();
     if (!loginok)
         http_fatal("匆匆过客不能发表文章，请先登录");
     strsncpy(board, getparm("board"), 18);
@@ -39,9 +39,9 @@ int main()
     if (title[0] == 0)
         http_fatal("文章必须要有标题");
     sprintf(dir, "boards/%s/.DIR", board);
-    if (true == checkreadonly(board) || !haspostperm(currentuser, board))
+    if (true == checkreadonly(board) || !haspostperm(getCurrentUser(), board))
         http_fatal("此讨论区是唯读的, 或是您尚无权限在此发表文章.");
-    if (deny_me(currentuser->userid, board) && !HAS_PERM(currentuser, PERM_SYSOP))
+    if (deny_me(getCurrentUser()->userid, board) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
         http_fatal("很抱歉, 你被版务人员停止了本版的post权利.");
     if (abs(time(0) - *(int *) (u_info->from + 36)) < 6) {
         *(int *) (u_info->from + 36) = time(0);
@@ -77,40 +77,40 @@ int main()
         oldx = NULL;
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(currentuser->userid, board);
+    brc_initial(getCurrentUser()->userid, board, getSession());
 #endif
     if (is_outgo_board(board) && local == 0)
         local = 0;
     else
         local = 1;
     /*if (filtered == 1)
-		r = post_article(FILTER_BOARD, title, filename, currentuser, fromhost, sig, local, anony, oldx);
+		r = post_article(FILTER_BOARD, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx);
     else*/
     if (brd->flag&BOARD_ATTACH) {
 #if USE_TMPFS==1
-        snprintf(buf,MAXPATH,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(currentuser->userid[0]),
-			currentuser->userid,utmpent);
+        snprintf(buf,MAXPATH,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
+			getCurrentUser()->userid,getSession()->utmpent);
 #else
-        snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,currentuser->userid,utmpent);
+        snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,getSession()->utmpent);
 #endif
-        r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,buf);
+        r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,buf);
         f_rm(buf);
     }
     else
-        r = post_article(board, title, filename, currentuser, fromhost, sig, local, anony, oldx,NULL);
+        r = post_article(board, title, filename, getCurrentUser(), fromhost, sig, local, anony, oldx,NULL);
     if (r < 0)
         http_fatal("内部错误，无法发文");
 #ifdef HAVE_BRC_CONTROL
-    brc_update(currentuser->userid);
+    brc_update(getCurrentUser()->userid, getSession());
 #endif
     if(oldx)
     	free(oldx);
     unlink(filename);
     sprintf(buf, "/bbsdoc.php?board=%s", encode_url(buf2, board, sizeof(buf2)));
     if (!junkboard(board)) {
-        currentuser->numposts++;
+        getCurrentUser()->numposts++;
 		/*  do it in post_article
-        write_posts(currentuser->userid, board, title);
+        write_posts(getCurrentUser()->userid, board, title);
 		*/
     }
     redirect(buf);

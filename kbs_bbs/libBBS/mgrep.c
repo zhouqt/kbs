@@ -18,12 +18,6 @@
 #define W_DELIM	   128
 #define L_DELIM    10
 
-extern int ONLYCOUNT, FNAME, SILENT, FILENAMEONLY, num_of_matched;
-extern int INVERSE;
-extern int WORDBOUND, WHOLELINE, NOUPPER;
-extern unsigned char *CurrentFileName;
-extern int total_line;
-
 #ifdef BBSMAIN
 extern void prints(char *fmt, ...);
 #define printf prints
@@ -32,6 +26,8 @@ extern void prints(char *fmt, ...);
 #define putchar outc
 #endif
 #endif
+
+#include "bbs.h"
 struct pat_list {
     int index;
     int next;
@@ -52,9 +48,13 @@ struct pattern_image {
 	struct pat_list hashtable[max_num+1]; /* 保存所有的pattern hash数据,0节点恒为index=0*/
 };
 
-static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img);
+int ONLYCOUNT, FNAME, SILENT, FILENAMEONLY;
+int INVERSE;
+int WORDBOUND, WHOLELINE, NOUPPER;
+
+static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img, session_t* session);
 static void f_prep(int pat_index, unsigned char *Pattern, struct pattern_image* patt_img);
-static void monkey1(register unsigned char *text, int start,int  end, struct pattern_image* patt_img);
+static void monkey1(register unsigned char *text, int start,int  end, struct pattern_image* patt_img, session_t* session);
 
 int releasepf(struct pattern_image* patt_img)
 {
@@ -168,29 +168,28 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
     return 0;
 }
 
-int mgrep_str(char *text, int num,struct pattern_image* patt_img)
+int mgrep_str(char *text, int num,struct pattern_image* patt_img, session_t* session)
 {
     if (patt_img->SHORT)
-        m_short((unsigned char *)text, 0, num-1, patt_img);
+        m_short((unsigned char *)text, 0, num-1, patt_img, session);
     else
-        monkey1(text, 0, num-1, patt_img);
-    return num_of_matched;
+        monkey1(text, 0, num-1, patt_img, session);
+    return session->num_of_matched;
 }                               /* end mgrep */
 
-static void countline(text, len)
+static int countline(text, len)
 unsigned char *text;
 int len;
 {
-    int i;
+    int i,total_line;
 
     for (i = 0; i < len; i++)
         if (text[i] == '\n')
             total_line++;
+	return total_line;
 }
 
-int mgrep(fd,patt_img)
-int fd;
-struct pattern_image *patt_img;
+int mgrep(int fd,struct pattern_image *patt_img, session_t* session)
 {
     register char r_newline = '\n';
     unsigned char text[2 * BLOCKSIZE + MAXLINE];
@@ -202,18 +201,18 @@ struct pattern_image *patt_img;
 
     while ((num_read = read(fd, text + MAXLINE, BLOCKSIZE)) > 0) {
         if (INVERSE && ONLYCOUNT)
-            countline(text + MAXLINE, num_read);
+            session->total_line=countline(text + MAXLINE, num_read);
         buf_end = end = MAXLINE + num_read - 1;
         while (text[end] != r_newline && end > MAXLINE)
             end--;
         residue = buf_end - end + 1;
         text[start - 1] = r_newline;
         if (patt_img->SHORT)
-            m_short(text, start, end,patt_img);
+            m_short(text, start, end,patt_img, session);
         else
-            monkey1(text, start, end,patt_img);
-        if (FILENAMEONLY && num_of_matched) {
-            return num_of_matched;
+            monkey1(text, start, end,patt_img, session);
+        if (FILENAMEONLY && session->num_of_matched) {
+            return session->num_of_matched;
         }
         start = MAXLINE - residue;
         if (start < 0) {
@@ -225,15 +224,15 @@ struct pattern_image *patt_img;
     text[start - 1] = '\n';
     if (residue > 1) {
         if (patt_img->SHORT)
-            m_short(text, start, end,patt_img);
+            m_short(text, start, end,patt_img, session);
         else
-            monkey1(text, start, end,patt_img);
+            monkey1(text, start, end,patt_img, session);
     }
     return 0;
 }                               /* end mgrep */
 
 
-static void monkey1(register unsigned char *text, int start,int  end, struct pattern_image* patt_img)
+static void monkey1(register unsigned char *text, int start,int  end, struct pattern_image* patt_img, session_t* session)
 {
     register unsigned char *textend;
     register unsigned hash, i;
@@ -277,7 +276,7 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
                     if (patt_img->pat_len[pat_index] <= j) {
                         if (text > textend)
                             return;
-                        num_of_matched++;
+                        session->num_of_matched++;
                         if (FILENAMEONLY || SILENT)
                             return;
                         MATCHED = 1;
@@ -287,14 +286,14 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
                         } else {
                             if (!INVERSE) {
                                 if (FNAME)
-                                    printf("%s: ", CurrentFileName);
+                                    printf("%s: ", session->CurrentFileName);
                                 while (*(--text) != '\n');
                                 while (*(++text) != '\n')
                                     putchar(*text);
                                 printf("\n");
                             } else {
                                 if (FNAME)
-                                    printf("%s: ", CurrentFileName);
+                                    printf("%s: ", session->CurrentFileName);
                                 while (*(--text) != '\n');
                                 if (lastout < text)
                                     OUT = 1;
@@ -335,7 +334,7 @@ static void monkey1(register unsigned char *text, int start,int  end, struct pat
             putchar(*lastout++);
 }
 
-static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img)
+static void m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img, session_t* session)
 {
     register unsigned char *textend;
     register int j;
@@ -364,7 +363,7 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
             if (patt_img->pat_len[pat_index] <= j) {
                 if (text >= textend)
                     return;
-                num_of_matched++;
+                session->num_of_matched++;
                 if (FILENAMEONLY || SILENT)
                     return;
                 if (ONLYCOUNT) {
@@ -372,7 +371,7 @@ static void m_short(unsigned char* text,int start,int end,struct pattern_image* 
                         text++;
                 } else {
                     if (FNAME)
-                        printf("%s: ", CurrentFileName);
+                        printf("%s: ", session->CurrentFileName);
                     if (!INVERSE) {
                         while (*(--text) != '\n');
                         while (*(++text) != '\n')
