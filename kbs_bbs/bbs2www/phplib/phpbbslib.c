@@ -2,7 +2,8 @@
 #include "bbs.h"
 #include "bbslib.h"
 
-static unsigned char third_arg_force_ref[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
+static const unsigned char third_arg_force_ref_111[] = { 3, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
+static const unsigned char third_arg_force_ref_011[] = { 3, BYREF_NONE, BYREF_FORCE, BYREF_FORCE };
 
 static ZEND_FUNCTION(bbs_getuser);
 static ZEND_FUNCTION(bbs_getonlineuser);
@@ -27,6 +28,7 @@ static ZEND_FUNCTION(bbs_countarticles);
 static ZEND_FUNCTION(bbs_is_bm);
 static ZEND_FUNCTION(bbs_getannpath);
 static ZEND_FUNCTION(bbs_getmailnum);
+static ZEND_FUNCTION(bbs_getwebmsg);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -59,7 +61,8 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_countarticles, NULL)
 	ZEND_FE(bbs_is_bm, NULL)
 	ZEND_FE(bbs_getannpath, NULL)
-	ZEND_FE(bbs_getmailnum, third_arg_force_ref)
+	ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
+	ZEND_FE(bbs_getwegmsg, third_arg_force_ref_111)
 	{NULL, NULL, NULL}
 };
 
@@ -1152,6 +1155,50 @@ static ZEND_FUNCTION(bbs_getmailnum)
     ZVAL_LONG(unread, unreadcount);
     RETURN_TRUE;
 }
+
+/**
+ * receive webmsg.
+ * prototype:
+ * bool bbs_getwegmsg(string &srcid,string &buf,long &srcutmpent);
+ *
+ * @return TRUE on success,
+ *       FALSE on failure.
+ *       and return total and unread in argument
+ * @author KCN
+ */
+
+static ZEND_FUNCTION(bbs_getwegmsg)
+{
+    zval *retsrcid,*msgbuf,*srcutmpent;
+    int ac = ZEND_NUM_ARGS();
+    int srcutmp;
+    char buf[MSG_LEN + 1];
+    int srcutmp;
+    char srcid[IDLEN + 1];
+
+    if (ac != 3
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "zzz", &retsrcid,&msgbuf,&srcutmpent) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    /* check for parameter being passed by reference */
+    if (!PZVAL_IS_REF(retsrcid)||!PZVAL_IS_REF(msgbuf)||!PZVAL_IS_REF(srcutmpent))
+    {
+        zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        RETURN_FALSE;
+    }
+
+    if (receive_webmsg(currentuinfonum, currentuser->userid, &srcutmp, srcid, buf) == 0) {
+        ZVAL_STRING(retsrcid, srcid,1);
+        ZVAL_STRING(msgbuf, buf,1);
+        ZVAL_LONG(srcutmpent, srcutmp);
+        RETURN_TRUE;
+    }
+    /* make changes to the parameter */
+    RETURN_FALSE;
+}
+
 
 
 
