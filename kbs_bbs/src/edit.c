@@ -8,6 +8,7 @@
 #include "edit.h"
 
 #define MAX_EDIT_LINE 20000
+#define LOCAL_ARTICLE_DEFAULT 0
 
 extern int temp_numposts;       /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
 extern int local_article;
