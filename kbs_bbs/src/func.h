@@ -101,7 +101,7 @@ int clean_cachedata(char* userid,int unum);
 /* defined in stuff.c */
     void save_maxuser();
     void detach_publicshm();
-    int multilogin_user(struct userec *user, int usernum);
+    int multilogin_user(struct userec *user, int usernum, int mode);
     time_t get_exit_time(char *id, char *exittime);
     int dashf(char *fname);
     int dashd(char *fname);

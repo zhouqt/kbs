@@ -378,7 +378,7 @@ char *ModeType(mode)
     }
 }
 
-int multilogin_user(struct userec *user, int usernum)
+int multilogin_user(struct userec *user, int usernum,int mode)
 {
     int logincount;
     int curr_login_num;
@@ -388,10 +388,6 @@ int multilogin_user(struct userec *user, int usernum)
     if (logincount < 1)
         RemoveMsgCountFile(user->userid);
 
-#ifdef FILTER
-    if (!strcmp(user->userid,"menss")&&logincount<2)
-        return 0;
-#endif
     if (HAS_PERM(user, PERM_MULTILOG))
         return 0;               /* don't check sysops */
     curr_login_num = get_utmp_number();

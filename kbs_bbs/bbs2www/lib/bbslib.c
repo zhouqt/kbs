@@ -2067,7 +2067,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
             int num;
             struct user_info uin;
 
-            multi_ret = multilogin_user(user, useridx);
+            multi_ret = multilogin_user(user, useridx,1);
             if ((multi_ret != 0) && (!kick_multi))
                 return -1;
             if (multi_ret == 0)

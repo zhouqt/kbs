@@ -392,12 +392,28 @@ char *ModeType(mode)
     }
 }
 
-int multilogin_user(struct userec *user, int usernum)
+struct count_arg {
+    int www_count;
+    int telnet_count;
+};
+
+int countuser(struct user_info* uinfo,struct count_arg* arg,int pos)
+{
+    if (uinfo->mode==WEBEXPLORE)
+        arg->www_count++;
+    else
+        arg->telnet_count++;
+    return COUNT;
+}
+
+int multilogin_user(struct userec *user, int usernum,int mode)
 {
     int logincount;
     int curr_login_num;
+    struct count_arg arg;
 
-    logincount = apply_utmpuid(NULL, usernum, 0);
+    bzero(&arg,sizeof(arg));
+    logincount = apply_utmpuid((APPLY_UTMP_FUNC)countuser, usernum, &arg);
 
     if (logincount < 1)
         RemoveMsgCountFile(user->userid);
@@ -423,8 +439,10 @@ int multilogin_user(struct userec *user, int usernum)
             return 2;
         }
         return 0;
-    } else if (((curr_login_num < 700) && (logincount >= 2))
-               || ((curr_login_num >= 700) && (logincount >= 1)))       /*user login limit */
+    } else if (((curr_login_num < 700) && (logincount >= 2)) /*小于700可以双登*/
+               || ((curr_login_num >= 700) && (logincount >= 1)  /*700人以上*/
+                     && !(((arg.telnet_count==0)&&(mode==0))  /* telnet个数为零可以再登一个telnet */
+                            || (((arg.www_count==0)&&(mode==1)) ))))       /*user login limit */
         return 1;
     return 0;
 }

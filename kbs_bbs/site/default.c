@@ -348,7 +348,7 @@ char *ModeType(mode)
 
 #ifdef USE_DEFAULT_MULTILOGIN_CHECK
 
-int multilogin_user(struct userec *user, int usernum)
+int multilogin_user(struct userec *user, int usernum,int mode)
 {
     return 0;
 }

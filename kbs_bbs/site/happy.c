@@ -367,7 +367,7 @@ int     mode;
     }
 }
 
-int multilogin_user(struct userec* user,int usernum)
+int multilogin_user(struct userec* user,int usernum,int mode)
 {
     int logincount;
     int curr_login_num;
