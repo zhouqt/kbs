@@ -53,6 +53,7 @@ int x_fillform();
 int x_vote();
 int ShowWeather();              /* 2001.6.12 */
 int x_results();
+int ConveyID();             /* Added by binxun 2003.5.3 */
 
 int search_ip();
 #ifdef CAN_EXEC
@@ -195,6 +196,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ModifyInfo", m_info},
     {"ModifyLevel", x_level},
     {"QueryBUser", query_bm},
+    {"ConveyID", ConveyID},    /* added by binxun 2003.5.3 */
     /*
      * end of addin 
      */
