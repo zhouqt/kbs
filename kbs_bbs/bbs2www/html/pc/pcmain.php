@@ -166,7 +166,7 @@ function  pcmain_blog_recommend_nodes()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
-			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".html_format($pcinfor[NAME])."</a>]\n<br/>";
+			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		if($rows[htmltag])
 			$body = strip_tags($rows[body]);
 		else
@@ -209,7 +209,7 @@ function  pcmain_blog_most_hot()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
-			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".html_format($pcinfor[NAME])."</a>]\n<br/>";
+			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		if($rows[htmltag])
 			$body = strip_tags($rows[body]);
 		else
@@ -252,7 +252,7 @@ function  pcmain_blog_most_trackback()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
-			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".html_format($pcinfor[NAME])."</a>]\n<br/>";
+			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		if($rows[htmltag])
 			$body = strip_tags($rows[body]);
 		else
@@ -295,7 +295,7 @@ function  pcmain_blog_most_view()
 		$rows = mysql_fetch_array($result);
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">".html_format($rows[subject])."</a>\n".
-			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".html_format($pcinfor[NAME])."</a>]\n<br/>";
+			"[出自<a href=\"/bbsqry.php?userid=".$pcinfor[USER]."\">".$pcinfor[USER]."</a>的Blog:<a href=\"index.php?id=".$pcinfor[USER]."\">".$pcinfor[NAME]."</a>]\n<br/>";
 		/*if($rows[htmltag])
 			$body = strip_tags($rows[body]);
 		else
