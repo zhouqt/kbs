@@ -24,7 +24,7 @@ function BoardUser($board) {
     $db['HOST']=bbs_sysconf_str('MYSQLHOST');
     $db['USER']=bbs_sysconf_str('MYSQLUSER');
     $db['PASS']=bbs_sysconf_str('MYSQLPASSWORD');
-    $db['NAME']=bbs_sysconf_str('MYSQLSMSDATABASE');
+    $db['NAME']='board_user_analyse';//bbs_sysconf_str('MYSQLSMSDATABASE');
     $this->link = mysql_connect($db['HOST'],$db['USER'],$db['PASS']) or exit ('无法连接到服务器!');
     mysql_select_db($db['NAME'],$this->link);
     $this->brdarr = array();
