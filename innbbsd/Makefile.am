@@ -24,7 +24,7 @@ AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DFirebirdBBS -DDBZDEBUG -DFILTER
 innbbsd_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
 bbslink_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
 dbzserver_CFLAGS = -DDBZSERVER $(AM_CFLAGS)
-LDADD=-L../libBBS -lBBS -L../libsystem -lsystem -Llibhztty -lhztty
+LDADD=-L../libBBS -lBBS -L../libsystem -lsystem
 
 install-data-local:
 	sh linkinnd.sh
