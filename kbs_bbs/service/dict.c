@@ -10,14 +10,16 @@ void main()
     int i;
     char sql[600], word[300];
     clear();
+    prints("Hello");
+    refresh();
+    i=igetkey();
     mysql_init(&s);
     if(!mysql_real_connect(&s, "166.111.8.235", "smth", "3s4m5t9h", "ciba2k", 9527, 0, 0))
     {
         prints("%s\n", mysql_error(&s));
         return;
     }
-    good_move(2,0);
-    prints("请输入单词:  ");
+    getdata(2, 0, "请输入单词:  ", word, 70, true, NULL, true);
     sprintf(sql, "SELECT * FROM ecdict WHERE word='%s'", word);
     if(mysql_real_query(&s, sql, strlen(sql))) {
         prints("%s\n", mysql_error(&s));
