@@ -127,8 +127,9 @@ void initscr()
 //		t_columns = WRAPMARGIN;
 //	init_screen(t_lines, WRAPMARGIN);
     init_screen(t_lines, t_columns);
-    o_clear();
     clear();
+    tc_col = 0;
+    tc_ln = t_lines-1;
 }
 
 void rel_move(int was_col, int was_ln, int new_col, int new_ln)
@@ -221,7 +222,7 @@ void refresh()
             bp[j].mode[k]&=~SCREEN_MODIFIED;
             if(~(bp[j].mode[k])&cur_mode!=0) {
                 cur_mode = 0;
-                cur_color = 0;
+                cur_color = 7;
                 push(0);
             }
             if(!(cur_mode&SCREEN_BRIGHT)&&bp[j].mode[k]&SCREEN_BRIGHT) {
