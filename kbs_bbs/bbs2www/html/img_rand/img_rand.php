@@ -2,13 +2,13 @@
 // numric auth. hehe.. by hightman@hightman.net
 // $Id$
 
-$radix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789";
+$radix = "ABCEFGHIJKLMNPQRSTWXYZ123456789";
 $maxlen = 4;
 
 mt_srand();
 
 $fpath = "img_rand/" . mt_rand(0, 6) . ".jpg";
-$font = $_SERVER["DOCUMENT_ROOT"] . "/img_rand/font_rand/" . mt_rand(0, 18) . ".ttf";
+$font = $_SERVER["DOCUMENT_ROOT"] . "/img_rand/font_rand/" . mt_rand(0, 9) . ".ttf";
 
 $im = ImageCreateFromJPEG($fpath); // width=200 height=10
 $color = ImageColorAllocate($im, 0, 0, 0);
