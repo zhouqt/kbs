@@ -464,6 +464,7 @@ int bbs_main(argv)
     sprintf(bbs_prog_path, "%s/bin/bbs", BBSHOME);
 #endif
 
+    fromhost[16] = '\0';
     if (check_ban_IP(fromhost, buf) > 0) {      /* Leeward 98.07.31 */
         local_prints("本站目前不欢迎来自 %s 访问!\r\n原因：%s。\r\n\r\n", fromhost, buf);
         local_Net_Sleep(60);
@@ -473,8 +474,6 @@ int bbs_main(argv)
         return -1;
     }
 
-
-    fromhost[16] = '\0';
 #ifdef HAVE_REVERSE_DNS
 	getremotehost(csock, fromhost, sizeof(fromhost));
 #endif
