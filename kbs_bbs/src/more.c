@@ -1088,7 +1088,8 @@ int draw_content_more(char *ptr, int size, char *fn, struct fileheader *fh)
             displayflag = 0;
         }
         if (!header || (!((i == 0) && ((!strncmp(l.curr, "发信人: ", 8) || (!strncmp(l.curr, "寄信人: ", 8))))) &&
-                        !((i == 1) && !strncmp(l.curr, "标  题: ", 8)) && !((i == 2) && !strncmp(l.curr, "发信站: ", 8)) && !((i == 3) && (l.currlen == 0)))) {
+                        !((i == 1) && !strncmp(l.curr, "标  题: ", 8)) && !((i == 2) && !strncmp(l.curr, "发信站: ", 8)) && !((i == 3) && (l.currlen == 0||!strncmp(l.curr, "来  源: ", 8)))&&
+                        !((i == 4) && (l.currlen==0))) {
             offsetln = t_lines/2+1;
             minln = t_lines/2+1;
             mem_printline(&l, fn, ptr);

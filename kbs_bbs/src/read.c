@@ -317,6 +317,7 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
     /*---	Modofied by period	2000-11-12	---*
     draw_entry( doentry, locmem, entries ,ssize);
      *---			---*/
+    draw_entry(doentry, locmem, entries, ssize, pnt);
     if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU){
         char buf[256], *t;
         struct fileheader* h;
@@ -330,7 +331,6 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
         move(0, 0);
         (*dotitle) ();
     }
-    draw_entry(doentry, locmem, entries, ssize, pnt);
     PUTCURS(locmem);
     lbc = 0;
     mode = DONOTHING;
