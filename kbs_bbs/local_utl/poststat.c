@@ -24,7 +24,7 @@ char *mytitle[] = { "日十大热门话题",
 
 
 #define HASHSIZE 1024
-#define TOPCOUNT 200
+#define TOPCOUNT 1000
 #ifdef BLESS_BOARD
 const char *surfix_bless[21] = {
     "  \x1b[1;34m◆  ",
