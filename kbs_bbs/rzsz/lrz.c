@@ -124,6 +124,8 @@ int Zctlesc;                    /* Encode control characters */
 int tryzhdrtype = ZRINIT;       /* Header type to send corresponding to Last rx close */
 time_t stop_time;
 
+extern int Restricted;
+
 
 int bbs_zrecvfile()
 {
@@ -137,6 +139,7 @@ int bbs_zrecvfile()
 
     Rxtimeout = 100;
     setbuf(stderr, NULL);
+    Restricted = 2;
 
     /* make temporary and unfinished files */
     umask(0077);
@@ -167,6 +170,11 @@ int bbs_zrecvfile()
     if (exitcode && !zmodem_requested)  /* bellow again with all thy might. */
         canit(0);
     return 0;
+}
+
+static void usage(int exitcode, const char *what)
+{
+    exit(exitcode);
 }
 
 /*
@@ -243,9 +251,9 @@ static int wcreceive(int argc, char **argp)
     if (fout)
         fclose(fout);
 
-//    if (Pathname) {
-//        unlink(Pathname);
-//    }
+    if (Restricted && Pathname) {
+        unlink(Pathname);
+    }
     return ERROR;
 }
 
@@ -814,7 +822,7 @@ static void report(int sct)
  */
 static void checkpath(const char *name)
 {
-    {
+    if (Restricted) {
         const char *p;
 
         p = strrchr(name, '/');
@@ -824,7 +832,7 @@ static void checkpath(const char *name)
             p = name;
         /* don't overwrite any file in very restricted mode.
          * don't overwrite hidden files in restricted mode */
-        if ((*name == '.') && fopen(name, "r") != NULL) {
+        if ((Restricted == 2 || *name == '.') && fopen(name, "r") != NULL) {
             canit(0);
             bibi(-1);
         }
@@ -837,7 +845,7 @@ static void checkpath(const char *name)
             canit(0);
             bibi(-1);
         }
-        {
+        if (Restricted > 1) {
             if (name[0] == '.' || strstr(name, "/.")) {
                 canit(0);
                 bibi(-1);
