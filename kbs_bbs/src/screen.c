@@ -240,7 +240,7 @@ void refresh()
         if((bp[j].mode[k]&SCREEN_MODIFIED)&&(isprint2(bp[j].data[k])||bp[j].data[k]==0)) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
-            bp[j].mode&=~SCREEN_MODIFIED;
+            bp[j].mode[k]&=(~SCREEN_MODIFIED);
             if((~bp[j].mode[k])&tc_mode!=0) {
                 tc_mode = 0;
                 tc_color = 7;
