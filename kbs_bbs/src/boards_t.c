@@ -902,7 +902,7 @@ static void fav_refresh(struct _select_def *conf)
             docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ý[d] ÅÅÐò[S] ÇóÖú[h]\n");
         else
             docmdtitle("[ÌÖÂÛÇøÁÐ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] ÁÐ³ö[y] ÅÅÐò[S] ËÑÑ°[/] ÇÐ»»[c] ÇóÖú[h]\n");
-        prints("[44m[37m  %s ÌÖÂÛÇøÃû³Æ        V Àà±ð ×ªÐÅ  %-24s °æ  Ö÷   %s  [m\n", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖÐ  ÎÄ  Ðð  Êö", arg->newflag ? "" : "   ");
+        prints("[44m[37m  %s ÌÖÂÛÇøÃû³Æ        V Àà±ð ×ªÐÅ  %-24s °æ  Ö÷     [m\n", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ Î´¶Á", "ÖÐ  ÎÄ  Ðð  Êö");
     }
     if (!arg->loop_mode)
         update_endline();
