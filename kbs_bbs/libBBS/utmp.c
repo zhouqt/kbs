@@ -105,9 +105,9 @@ int getnewutmpent(struct user_info *up)
     	utmp_unlock(utmpfd);
         return -1;
     }
-    /* add to sorted list 
+    /* add to sorted list  */
 
-	if (!utmpshm->listhead) { /* init the list head 
+	if (!utmpshm->listhead) { /* init the list head  */
 		utmpshm->list_prev[pos]=pos+1;
 		utmpshm->list_next[pos]=pos+1;
 		utmpshm->listhead=pos+1;
@@ -115,7 +115,7 @@ int getnewutmpent(struct user_info *up)
 		int i;
 		i=utmpshm->listhead;
 		if (strcasecmp(utmpshm->uinfo[i-1].userid,up->userid)>=0) {
-			/* add to head 
+			/* add to head */
     		utmpshm->list_prev[pos]=utmpshm->list_prev[i-1];
 	    	utmpshm->list_next[pos]=i;
 
@@ -147,7 +147,7 @@ int getnewutmpent(struct user_info *up)
     		utmpshm->list_next[utmpshm->list_prev[pos]-1]=pos+1;
 		}
 	}
-    */
+/*    */
 
     utmpshm->hashhead[0]=utmpshm->next[pos];
 
@@ -207,7 +207,6 @@ apply_ulist( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
 
 int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list */
 {
-/*
     struct user_info    *uentp;
     int         i;
     int			num;
@@ -236,16 +235,15 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
 		i=utmpshm->list_next[i-1];
 		if (num>=USHM_SIZE) {
 			log("5system","utmp loop!!!!");
-			break;
+			exit(0);
 		};
 	}
-    struct user_info    *uentp, utmp;
-*/
+/*
     int         i, max;
     int         num;
 
     max = USHM_SIZE - 1;
-    while( max > 0 && utmpshm->uinfo[ max ].active == 0 ) /*跳过后段 非active的user*/
+    while( max > 0 && utmpshm->uinfo[ max ].active == 0 ) /*跳过后段 非active的user
         max--;
     for( i = 0; i <= max; i++ ) {
         int ret;
@@ -255,6 +253,7 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
     }
 
     return num;
+*/
 }
 
 int apply_utmpuid(APPLY_UTMP_FUNC fptr,int uid,char* arg)
@@ -343,7 +342,7 @@ void clear_utmp(int uent)
 			utmpshm->next[find-1]=utmpshm->next[uent-1];
 	}
 
-	/* remove from sorted list 
+	/* remove from sorted list */
 	if (utmpshm->listhead==uent) {
 		utmpshm->listhead=utmpshm->list_next[uent-1];
 		if (utmpshm->listhead==uent) utmpshm->listhead=0;
@@ -351,7 +350,7 @@ void clear_utmp(int uent)
 	
 	utmpshm->list_next[utmpshm->list_prev[uent-1]-1]=utmpshm->list_next[uent-1];
 	utmpshm->list_prev[utmpshm->list_next[uent-1]-1]=utmpshm->list_prev[uent-1];
-	*/
+/*	*/
 
   	log("1system","UTMP:clean %s(%d)",utmpshm->uinfo[ uent - 1 ].userid,uent);
 	utmpshm->next[uent-1]=utmpshm->hashhead[0];

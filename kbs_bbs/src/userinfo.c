@@ -265,12 +265,12 @@ int     real, unum;
                 setmailpath( dst, newinfo.userid );
                 sprintf(genbuf,"mv %s %s",src, dst);
                 system(genbuf);/*
-                       rename( src, dst );*/
+                       Rename( src, dst );*/
                 sethomepath( src, u->userid );
                 sethomepath( dst, newinfo.userid );
                 sprintf(genbuf,"mv %s %s",src ,dst);
                 system(genbuf);/*
-                       rename( src, dst );*/
+                       Rename( src, dst );*/
                 sprintf(src,"tmp/email_%s",u->userid);
                 unlink(src);
                 setuserid( unum, newinfo.userid );

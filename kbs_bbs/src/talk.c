@@ -1852,7 +1852,7 @@ char filename[STRLEN],str[STRLEN];
     fclose(fp);
     fclose(nfp);
     if (!deleted) return -1;
-    return(rename(fnnew, filename));
+    return(Rename(fnnew, filename));
 }
 
 

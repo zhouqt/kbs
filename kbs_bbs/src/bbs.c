@@ -2591,7 +2591,9 @@ char *title;
     else
     {
 #endif
-        rename(outname,fname);
+        Rename(outname,fname);
+        pressanykey();
+   
         return 1;
 #ifndef LEEWARD_X_FILTER
     }
@@ -3660,7 +3662,7 @@ notepad()
             fprintf(in,"[31m¡õ©Ð¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ð¡õ[m\n");
             catnotepad( in, "etc/notepad");
             fclose(in);
-            rename(tmpname,"etc/notepad");
+            Rename(tmpname,"etc/notepad");
         }else
         {
             fclose(in);

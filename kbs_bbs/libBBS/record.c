@@ -636,10 +636,10 @@ int size, id ;
         }
     close(fdr) ;
     close(fdw) ;
-    if( rename(filename,deleted) == -1 ||
-            rename(tmpfile,filename) == -1 ) {
+    if( Rename(filename,deleted) == -1 ||
+            Rename(tmpfile,filename) == -1 ) {
         flock(fd,LOCK_UN) ;
-        report("delrec rename err");
+        report("delrec Rename err");
         close(fd) ;
         return -1 ;
     }

@@ -1073,7 +1073,7 @@ do_delete()
     unlink(fpath);
     if (count)
     {
-        rename(fnew, fpath);
+        Rename(fnew, fpath);
     }
     else
         unlink(fnew);

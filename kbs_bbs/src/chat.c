@@ -1125,7 +1125,7 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
     /*        if(!HAS_PERM(PERM_SYSOP))
                     return;*/
 
-    sprintf(fname,"etc/%s.chat",currentuser->userid);
+    sprintf(fname,"tmp/%s.chat",currentuser->userid);
     if(!pthis->rec)
     {
         if((pthis->rec=fopen(fname,"w"))==NULL)return;

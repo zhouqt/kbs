@@ -701,3 +701,28 @@ int id_invalid(char* userid)
     return 0;
 }
 
+
+int Rename(char* srcPath,char* destPath)
+{
+   int ret;
+
+   ret = rename(srcPath,destPath);
+
+   if (ret == 0) return 0;
+
+   if (errno == EXDEV) {
+     int in,out;
+     char data[4096];
+     int readsize;
+
+     if ((in = open(srcPath,O_RDONLY)) == -1) return -1;
+     if ((out = open(destPath,O_WRONLY|O_CREAT| O_TRUNC)) == -1) { close(in);return -1;};
+     
+     while ( (readsize = read(in,data,4096)) >0) write(out,data,readsize);
+
+     close(out);
+     close(in);
+     return 0;
+   }
+   return -1;
+}
