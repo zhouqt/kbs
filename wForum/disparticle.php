@@ -88,6 +88,8 @@ function preprocess(){
 		foundErr("您指定的文章不存在！");
 		return false;
 	}
+	if ($start < 0) $start = 0;
+	if ($start >= $num) $start = $num - 1;
 	return true;
 }
 
