@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.10  2005/03/16 06:36:32  atppp
+ * id大小写不一致的ssh试密码不会被记录，大站最好更新下这个修改
+ *
  * Revision 1.9  2004/05/08 15:26:51  kcn
  * remove rsh check,change currentuser
  *
@@ -197,7 +200,7 @@ int auth_password(const char *server_user, const char *password)
     	return 0;
     }
     if (!checkpasswd2(password, getCurrentUser())) {
-        logattempt((char *)server_user, (char *)get_canonical_hostname());
+        logattempt(getCurrentUser()->userid, (char *)get_canonical_hostname());
         return 0;
     }
     strcpy(useridbuf, server_user);
