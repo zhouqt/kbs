@@ -858,43 +858,61 @@ void setcachehomefile(char* path,char* user,int unum,char* file)
     }
 }
 
+int brcfdr;
+size_t brcfilesize;
+
 void init_cachedata(char* userid,int unum)
 {
     char path1[MAXPATH],path2[MAXPATH];
     int fd,logincount;
     int count;
+    struct stat st;
     struct flock ldata;
     setcachehomefile(path1, userid, -1, NULL);
     mkdir(path1,0700);
     setcachehomefile(path1, userid, unum, NULL);
     if (mkdir(path1,0700)==-1)
-      bbslog("3error","mkdir %s errorno %d",path1,errno);
+        bbslog("3error","mkdir %s errorno %d",path1,errno);
+    
+    setcachehomefile(path1, userid, -1, "entry");
+    if(stat(path1, &st)<0) {
+        char brc[BRC_CACHE_NUM*sizeof(struct _brc_cache_entry)];
+        brcfdr = open(path1, O_RDWR|O_CREAT, 0600);
+        memset(brc, 0, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+        write(brcfdr, brc, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+        close(brcfdr);
+    }
+    if(safe_mmapfile(path1, O_RDWR|O_CREAT, PROT_READ|PROT_WRITE, MAP_SAHRED, (void **)&brc_cache_entry, &brcfilesize, &brcfdr)==0) {
+        bbslog("error", "cannot mmap entry");
+        abort_bbs(0);
+    }
+        
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("3error", "%s", "logincount err");
-        close(fd);
-        return;              /* lock error*/
-    }
-    count=read(fd,path2,MAXPATH);
-    path2[count]=0;
-    logincount=atoi(path2);
+        ldata.l_type = F_RDLCK;
+        ldata.l_whence = 0;
+        ldata.l_len = 0;
+        ldata.l_start = 0;
+        if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+            bbslog("3error", "%s", "logincount err");
+            close(fd);
+            return;              /* lock error*/
+        }
+        count=read(fd,path2,MAXPATH);
+        path2[count]=0;
+        logincount=atoi(path2);
     } else {
-    if ((fd = open(path1, O_WRONLY|O_CREAT, 0664)) != -1) {
-    logincount=0;
-    } else {
-        bbslog("3error", "%s", "write logincount err");
-        return;              /* lock error*/
-    }
+        if ((fd = open(path1, O_WRONLY|O_CREAT, 0664)) != -1) {
+            logincount=0;
+        } else {
+            bbslog("3error", "%s", "write logincount err");
+            return;              /* lock error*/
+        }
     }
     if (logincount==0) {
-      sethomefile(path1, userid, ".boardrc.gz");
-      setcachehomefile(path2, userid, -1, ".boardrc.gz");
-      f_cp(path1,path2,O_TRUNC);
+        sethomefile(path1, userid, ".boardrc.gz");
+        setcachehomefile(path2, userid, -1, ".boardrc.gz");
+        f_cp(path1,path2,O_TRUNC);
     }
     logincount++;
     lseek(fd,0,SEEK_SET);
@@ -917,6 +935,7 @@ int clean_cachedata(char* userid,int unum)
     int count;
     struct flock ldata;
 
+    end_mmapfile(brc_cache_entry, brcfilesize, brcfdr);
     setcachehomefile(path1, userid, unum, NULL);
     f_rm(path1);
     //todo: check the dir
@@ -944,6 +963,8 @@ int clean_cachedata(char* userid,int unum)
 	if ((userid[0]==0)||(userid==NULL)) {
 	  bbslog("3error","error in clean cache");
 	} else {
+        setcachehomefile(path1, userid, -1, "entry");
+        unlink(path1);
         sethomefile(path1, userid, ".boardrc.gz");
         setcachehomefile(path2, userid,-1, ".boardrc.gz");
         f_cp(path2,path1,O_TRUNC);

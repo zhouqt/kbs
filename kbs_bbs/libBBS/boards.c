@@ -20,7 +20,12 @@ static struct _brc_cache_entry {
     int bid;
     unsigned int list[BRC_MAXNUM];
     int changed;
-} brc_cache_entry[BRC_CACHE_NUM];
+} 
+#if USE_TMPFS==1
+* brc_cache_entry;
+#else
+brc_cache_entry[BRC_CACHE_NUM];
+#endif;
 static int brc_currcache=-1;
 
 struct favbrd_struct {
