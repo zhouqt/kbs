@@ -1,5 +1,7 @@
 bin_PROGRAMS = bbsd
 EXTRA_PROGRAMS = 
+CC="@LIBTOOL@"
+CCLD="@CC@"
 bbsd_SOURCES=bbs.c record.c delete.c stuff.c mail.c register.c \
            xyz.c talk.c comm_lists.c namecomplete.c chat.c \
            maintain.c edit.c more.c pass.c help.c bcache.c boards.c \

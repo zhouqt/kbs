@@ -1,3 +1,5 @@
+CC="@LIBTOOL@"
+CCLD="@CC@"
 bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline \
 	showBM idx0Ann lazybm fixdir autoundeny fixwebmsg login statBM gen_title \
 	resetMailTotal getadmin cnv_brdflag find_rm_lost \

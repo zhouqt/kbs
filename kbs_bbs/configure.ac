@@ -31,7 +31,6 @@ CFLAGS="$CFLAGS -D$OSTYPE"
 
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER(config.h)
-#AM_CONDITIONAL(OWN_AR, TRUE)
 
 AC_PREFIX_DEFAULT(/home/bbs)
 
@@ -170,6 +169,12 @@ AC_CONFIG_LINKS(src/$i:libBBS/$i)
 done
 cd ..
 
+ORIGIN_LIBTOOL=$LIBTOOL
+AC_SUBST(ORIGIN_LIBTOOL)
+AC_SUBST(SED)
+abssrcdir=`cd $srcdir && pwd`
+LIBTOOL="$abssrcdir/wrapper.sh"
+AC_SUBST(abssrcdir)
 AC_CONFIG_FILES([Makefile
                  libBBS/Makefile
                  libsystem/Makefile
@@ -186,4 +191,5 @@ AC_CONFIG_FILES([Makefile
                  service/personaldns/Makefile
                  src/bbsconfig.h
                  src/Makefile])
+AC_CONFIG_FILES(wrapper.sh, chmod +x wrapper.sh)
 AC_OUTPUT

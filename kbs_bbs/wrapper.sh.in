@@ -1,0 +1,80 @@
+#!/bin/sh
+Xsed="@SED@ -e s/^X//"
+if test $# -gt 0 ; then
+  optarg=
+  args=
+    for arg in $* ; do
+    case $arg in
+    --mode=CC)
+     ;;
+    --mode=*) optarg=`echo "X$arg" | $Xsed -e 's/[-_a-zA-Z0-9]*=//'`
+     args="$args $arg"
+     ;;
+    *)
+     args="$args $arg"
+     ;;
+    esac
+  done
+  if test -z "$optarg" ; then
+        optarg=CC
+  fi
+
+case $optarg in
+  CC)
+  jump=false
+  for i in $args ; do
+    case $i in
+      -M*)
+        jump=true
+        ;;
+      -*)
+        ;;
+      *)
+       if [ "$jump" == "false" ] ; then
+         srcfile=$i
+       fi
+       jump=false
+       ;;
+    esac
+  done
+  echo "  [Compiling $srcfile]"
+  @CC@ $args
+  exit $?;
+    ;;
+  compile)
+  next=false
+  for i in $args ; do
+    case $i in
+      -o)
+      next=false
+       ;;
+      -*)
+        ;;
+      *)
+      if [ "$next" == "true" ] ; then
+        break;
+      fi
+      next=true
+        ;;
+    esac
+  done
+  echo "  [Compiling $i]"
+    ;;
+  relink | link)
+  next=false
+  for i in $args ; do
+    if [ "$next" != "false" ]; then
+      break;
+    fi
+    if [ "$i" == "-o" ]; then
+      next=true
+    fi
+  done
+  echo "  [Linking $i]"
+    ;;
+  *)
+  echo " [Othering $args]"
+    ;;
+esac
+@SHELL@ @abssrcdir@/libtool $args
+fi

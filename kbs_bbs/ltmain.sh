@@ -287,6 +287,7 @@ if test -z "$show_help"; then
     lastarg=
     srcfile="$nonopt"
     suppress_output=
+    show="true"
 
     user_target=no
     for arg
@@ -730,6 +731,7 @@ compiler."
 
   # libtool link mode
   link | relink)
+    show="true"
     modename="$modename: link"
     case $host in
     *-*-cygwin* | *-*-mingw* | *-*-pw32* | *-*-os2*)
