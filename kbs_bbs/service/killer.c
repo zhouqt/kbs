@@ -257,6 +257,7 @@ void send_msg(int u, char* msg)
         strcpy(buf, buf2);
     }
     while(strlen(buf)>54) {
+        int maxi=0;
         k=0; j = 0; f = 0;
         for(i=0;i<strlen(buf);i++) {
             if(buf[i]=='\x1b') f = 1;
@@ -264,16 +265,19 @@ void send_msg(int u, char* msg)
                 if(isalpha(buf[i])) f=0;
                 continue;
             }
-            if(k==0&&j>=53) break;
+            if(k==0&&i<=54) {
+                if(i>maxi)
+                    maxi = i;
+            }
             j++;
             if(k) k=0;
             else if(buf[i]<0) k=1;
         }
-        if(i<strlen(buf)) {
+        if(maxi<strlen(buf)) {
             strcpy(buf2, buf);
-            buf[i]=0;
+            buf[maxi]=0;
             send_msg(u, buf);
-            strcpy(buf, buf2+i);
+            strcpy(buf, buf2+maxi);
         }
         else break;
     }
