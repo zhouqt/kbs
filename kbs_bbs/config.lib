@@ -1,6 +1,6 @@
 BBSINCLUDE=""
 define([ADDINC],[if test "$1" != "/usr/include"; then
-BBSINCLUDE=$BBSINCLUDE -I$1
+BBSINCLUDE="$BBSINCLUDE -I$1"
 fi])
 AC_ARG_WITH(zlib,
 [  --with-zlib[=DIR]
@@ -79,7 +79,6 @@ if test "$MYSQL_DIR" != "no"; then
 
     MYSQL_LIBS="-L$MYSQL_DIR/lib -L$MYSQL_DIR/lib/mysql -lmysqlclient"
     ADDINC($MYSQL_INC)
-    MYSQL_INC="-I$MYSQL_INC"
     LIBS="$LIBS $MYSQL_LIBS"
   fi
 fi

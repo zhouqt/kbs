@@ -13,8 +13,13 @@ case "${host}" in
         ;;  
   *-*-sunos*)
         OSTYPE="SUNOS"
+	LIBS="$LIBS -lnsl -lsocket"
+        ;;  
+  *-*-linux*)        
+        OSTYPE="LINUX"
         ;;  
   *)        
+        OSTYPE="GENERIC"
         ;;        
 esac              
 CFLAGS="$CFLAGS -D$OSTYPE"
