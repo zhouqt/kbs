@@ -3,7 +3,7 @@
 	 * File included by all other php scripts.
 	 * $Id$
 	 */
-if (!define('_BBS_FUNCS_PHP_'))
+if (!defined('_BBS_FUNCS_PHP_'))
 {
 define('_BBS_FUNCS_PHP_', 1);
 
