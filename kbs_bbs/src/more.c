@@ -29,9 +29,13 @@ char calltimememo[40];
 static int stuffmode = 0;
 
 enum LINE_CODE {
-    LINE_NORMAL,
-    LINE_ATTACHMENT,
-    LINE_ATTACHLINK
+    LINE_NORMAL,                   //normal line
+    LINE_NORMAL_NOCF,        //没有 回车的行
+    LINE_QUOTA,                    //引文
+    LINE_QUOTA_NOCF,         //没有回车的引文
+    LINE_ATTACHMENT,         //附件
+    LINE_ATTACHLINK,           //附件链接
+    LINE_ATTACHALLLINK           //本文链接
 };
 
 static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
@@ -434,6 +438,15 @@ struct MemMoreLines {
     int total;
 };
 
+/*
+  作用:分析一行的数据
+  p0是文章缓冲区
+  size是缓冲区大小
+  *l用于返回行的显示长度
+  *s返回行占用字节长度
+  oldty是上一行的type
+  *ty返回行的type
+*/
 int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 {
     int i, w, in_esc = 0, db = 0, lastspace = 0, asciiart = 0, autoline = 1;
@@ -441,7 +454,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 
     if (size <= 0)
         return -1;
-    if (oldty!=100) { //上一行不是附件
+    if (oldty!=LINE_ATTACHMENT) { //上一行不是附件
         for (i = 0, w = 0; i < size; i++, p++) {
             if (*p == '\n') {
                 *l = i;
@@ -496,45 +509,47 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
             *s = size;
         }
         if (*s > 0 && ((p0[*s - 1] == '\n') || (p0[*s - 1] == '\0'))) {
+            /*有回车的行*/
             switch (oldty) {
-            case 1:
-                *ty = 0;
+            case LINE_NORMAL_NOCF:
+                *ty = LINE_NORMAL;
                 break;
-            case 3:
-                *ty = 2;
+            case LINE_QUOTA_NOCF:
+                *ty = LINE_QUOTA;
                 break;
             default:
                 if (*l < 2 || strncmp(p0, ": ", 2))
-                    *ty = 0;
+                    *ty = LINE_NORMAL;
                 else
-                    *ty = 2;
+                    *ty = LINE_QUOTA; //引文
             }
         } else {
+            /*无回车的行*/
             switch (oldty) {
-            case 1:
-                *ty = 1;
+            case LINE_NORMAL_NOCF:
+                *ty = LINE_NORMAL_NOCF;
                 break;
-            case 3:
-                *ty = 3;
+            case LINE_QUOTA_NOCF:
+                *ty = LINE_QUOTA_NOCF;
                 break;
             default:
                 if (*l < 2 || strncmp(p0, ": ", 2))
-                    *ty = 1;
+                    *ty = LINE_NORMAL_NOCF;
                 else
-                    *ty = 3;
+                    *ty = LINE_QUOTA_NOCF;
             }
         }
         if (*s == size)
             return 0;
     }
-    if ( oldty==100 || (size > ATTACHMENT_SIZE
+    if ( oldty==LINE_ATTACHMENT|| (size > ATTACHMENT_SIZE
         && !memcmp(p0, ATTACHMENT_PAD, ATTACHMENT_SIZE))) {
         long attach_len;
 
-        *ty = 100;
+        *ty = LINE_ATTACHMENT;
         p = p0;
         /* 上一行为附件的行的size=1,因此-1获得真正的attach开始*/
-	 if (oldty==100) p--;
+	 if (oldty==LINE_ATTACHMENT) p--;
 	 /*  跳过attachment前面的PAD */
         p += ATTACHMENT_SIZE;
 
@@ -544,8 +559,8 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         }
         p++;
         *s = ntohl(*(unsigned long *) p) + p - p0 + sizeof(unsigned long);
-	if (oldty==100) { /*上次是附件，下一行是附件连接行*/
-          *ty=101;
+	if (oldty==LINE_ATTACHMENT) { /*上次是附件，下一行是附件连接行*/
+          *ty=LINE_ATTACHLINK;
           *s--;
 	}
 	else {
@@ -559,6 +574,13 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 		*s++;
     }
 
+    if ((oldty==LINE_ATTACHALLLINK)&&(*ty!=LINE_ATTACHMENT)) {
+        //这里有个假设，附件是连续的。否则会在每一个
+        //附件组最后加入全文链接。
+        *ty=LINE_ATTACHALLLINK;
+        *s=0;
+        *l=0;
+    }
     return 0;
 }
 
@@ -702,7 +724,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     char* ptr=l->curr;
     int len=l->currlen;
     int ty=l->currty;
-    if (ty == 100) {
+    if (ty == LINE_ATTACHMENT) {
         char attachname[41], *p;
         strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
         p = strrchr(attachname, '.');
@@ -712,7 +734,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         else
             prints("\033[m附件: %s 链接:\n", attachname);
 	return;
-    } else if (ty == 101) {
+    } else if (ty == LINE_ATTACHLINK) {
         char slink[256];
 
         if (current_attach_link)
@@ -721,6 +743,14 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
             strcpy(slink,"(用www方式阅读本文可以下载此附件)");
 	prints("\033[4m%s\033[m\n",slink);
         return;
+    } else if (ty==LINE_ATTACHALLLINK) {
+        char slink[256];
+
+        if (current_attach_link) {
+            (*current_attach_link)(slink,255,-1,current_attach_link_arg);
+	    prints("\033[4m%s\033[m\n",slink);
+        }
+	 return;
     }
     if (stuffmode) {
         char buf[256];
@@ -738,7 +768,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         outns("\033[m\n", 4);
         return;
     }
-    if (ty >= 2) {
+    if ((ty == LINE_QUOTA)||(LINE_QUOTA_NOCF)) {
         outns("\033[36m", 5);
         outns(ptr, len);
         outns("\033[m\n", 4);
