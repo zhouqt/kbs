@@ -254,6 +254,7 @@ int msg_can_sendmsg(char *userid, int utmpnum)
     return 1;
 }
 
+#if HAVE_MYSQL == 1
 int my_connect_mysql(MYSQL *s){
 	
     return mysql_real_connect(s, 
@@ -336,6 +337,7 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 
 	return 0;
 }
+#endif
 
 int save_msgtext(char *uident, struct msghead * head, char *msgbuf)
 {
@@ -1012,6 +1014,7 @@ int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
     return wait_for_result();
 }
 
+#if HAVE_MYSQL == 1
 int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc)
 {
 
@@ -1169,8 +1172,9 @@ int sign_smsmsg_read(int id ){
 	mysql_close(&s);
 	return 1;
 }
+#endif  //HAVE_MYSQL
 
-#else
+#else	//SMS_SUPPORT
 
 int chk_smsmsg(int force ){
 
@@ -1179,6 +1183,7 @@ int chk_smsmsg(int force ){
 
 #endif
 
+#if HAVE_MYSQL == 1
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group, int start, int num, int order, char *msgtxt)
 {
 
@@ -1377,3 +1382,4 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 
 	return 1;
 }
+#endif

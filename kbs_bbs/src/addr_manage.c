@@ -1,4 +1,5 @@
 #include "bbs.h"
+#if HAVE_MYSQL == 1
 #include "mysql.h"
 
 /**********************************************************
@@ -596,3 +597,4 @@ int al_read()
 
 	return 1;
 }
+#endif

@@ -414,14 +414,17 @@ int clean_cachedata(char* userid,int unum);
     int delfrom_msglist(int utmpnum, char *userid);
     int msg_can_sendmsg(char *userid, int utmpnum);
 #ifdef SMS_SUPPORT
+#if HAVE_MYSQL == 1
 int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc);
 int sign_smsmsg_read(int id );
 #endif
+#endif
 int chk_smsmsg(int force );
 
+#if HAVE_MYSQL == 1
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group,int start, int num, int order, char *msgtxt);
 int add_sql_al(char *userid, struct addresslist *al, char *msgbuf);
-
+#endif
 /* site.c */
     char *ModeType(int mode);
     char *email_domain();

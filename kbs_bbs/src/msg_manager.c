@@ -1,4 +1,5 @@
 #include "bbs.h"
+#if HAVE_MYSQL == 1
 #include "mysql.h"
 
 #ifdef SMS_SUPPORT
@@ -343,4 +344,5 @@ int smsmsg_read()
 	return 1;
 }
 
+#endif
 #endif

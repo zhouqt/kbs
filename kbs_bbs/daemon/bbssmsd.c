@@ -108,13 +108,17 @@ int sendtouser(struct GWSendSMS * h, char* buf)
 
     if(uin == NULL){
 		hh.topid = -1;
+#if HAVE_MYSQL == 1
 		save_smsmsg_nomysqlconnect(&mysql_s, uident, &hh, buf, 0);
+#endif
         return -1;
 	}
 
     hh.topid = uin->pid;
     save_msgtext(uident, &hh, buf);
+#if HAVE_MYSQL == 1
 	save_smsmsg_nomysqlconnect(&mysql_s, uident, &hh, buf, 1);
+#endif
     kill(uin->pid, SIGUSR2);
     return 0;
 }

@@ -118,9 +118,13 @@ int exec_mbem(char *s);
 int register_sms();
 int unregister_sms();
 int send_sms();
+#if HAVE_MYSQL == 1
 int smsmsg_read();
 #endif
+#endif
+#if HAVE_MYSQL == 1
 int al_read();
+#endif
 
 /*Add By Excellent */
 struct scommandlist {
@@ -242,9 +246,13 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"RegisterSMS",register_sms},
     {"UnRegisterSMS",unregister_sms},
     {"SendSMS",send_sms},
+#if HAVE_MYSQL == 1
 	{"SMSmsg",smsmsg_read},
 #endif
+#endif
+#if HAVE_MYSQL == 1
 	{"Addrlist", al_read},
+#endif
     {NULL, NULL},
 };
 
