@@ -2,10 +2,10 @@ bindir=@CGIPATH@
 bin_PROGRAMS = bbsusr bbsbrdadd bbsall bbsanc bbs0an \
 	  bbsleft bbsqry \
 	  bbsfadd bbsfdel bbsfall bbsfriend bbspwd bbsinfo \
-	  bbsmybrd bbsgcon \
+	  bbsmybrd \
 	  bbssnd \
-	  bbssndmail bbsnewmail bbschat bbssel \
-	  bbsnick bbstfind bbstcon bbstdoc \
+	  bbssndmail bbschat bbssel \
+	  bbsnick bbstfind bbstcon \
 	  bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsdenyall bbsdenydel bbsdenyadd \
 	  bbsbfind bbsfav
