@@ -31,7 +31,7 @@ int do_userlist(struct user_info *uentp, char *arg, int t)
     fprintf(fp, "%s", user_info_str);
     return COUNT;
 }
-
+#if HAVE_WWW ==1
 int show_wwwguest()
 {
 	int i;
@@ -43,7 +43,7 @@ int show_wwwguest()
     }
 
 }
-
+#endif
 main()
 {
 	char path[256];
@@ -84,14 +84,18 @@ main()
 
     resolve_utmp();
 	get_publicshm();
+#if HAVE_WWW == 1
 	resolve_guest_table();
-
+#endif
 	fprintf(fp, "%d\n", get_utmp_number());
+#if HAVE_WWW == 1
 	fprintf(fp1, "%d\n", getwwwguestcount());
+#endif
     //fprintf(fp," 序号  用户ID       昵称             来源                 状态     发呆时间 进程号\n");
     apply_ulist_addr((APPLY_UTMP_FUNC)do_userlist, NULL);
+#if HAVE_WWW == 1
 	show_wwwguest();
-
+#endif
     fclose(fp);
     fclose(fp1);
 }
