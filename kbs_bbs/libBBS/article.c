@@ -625,7 +625,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 			setbfile(newpath, FILTER_BOARD, fh->filename);
 			f_mv(oldpath, newpath);
 			strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
-			nowid = get_nextid(FILTER_BOARD);
+			nowid = get_nextid(boardname);
 			fh->o_id = nowid;
 			if (re == NULL) {
 				fh->o_groupid = fh->o_id;
