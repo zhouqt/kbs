@@ -4,6 +4,7 @@
 	 * $Id$
 	 */
 	$needlogin=0;
+	$nologin=1;
 	require("inc/funcs.php");
 function get_mimetype($name)
 {
