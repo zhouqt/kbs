@@ -271,7 +271,7 @@ function defineMenus() {
 <a class=\"MItem\" href="modifyuserdata.php">基本资料修改</a><br> \
 <a class=\"MItem\" href="userparam.php">用户自定义参数</a><br> \
 <a class=\"MItem\" href="bbssig.php">用户签名档</a><br> \
-<a class=\"MItem\" href="changepasswd.php">修改密码</a><br> \
+<a class=\"MItem\" href="changepasswd.php">修改昵称密码</a><br> \
 <a class=\"MItem\" href="alteryank.php">切换版面列表方式</a> \
 ';
 

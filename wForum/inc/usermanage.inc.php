@@ -5,7 +5,7 @@ function showUserManageMenu(){
 <tr>
 <th width=14% height=25 id=TableTitleLink><a href=usermanagemenu.php>控制面板首页</a></th>
 <th width=14%  id=TableTitleLink><a href=modifyuserdata.php>基本资料修改</a></th>
-<th width=14%  id=TableTitleLink><a href=changepasswd.php>用户密码修改</a></th>
+<th width=14%  id=TableTitleLink><a href=changepasswd.php>昵称密码修改</a></th>
 <th width=14%  id=TableTitleLink><a href=userparam.php>用户自定义参数</a></th>
 <th width=14%  id=TableTitleLink><a href=usermailbox.php>用户信件服务</a></th>
 <th width=14%  id=TableTitleLink><a href=friendlist.php>编辑好友列表</a></th>
