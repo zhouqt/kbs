@@ -10,6 +10,7 @@ define("ATTACHMAXCOUNT","10");
 define("HAVE_PC", 1); // 支持个人文集
 define("MAINPAGE_FILE","mainpage.html"); // 使用静态 mainpage 页面
 define("HAVE_BRDENV", 1); //支持版面导读
+define("QUOTED_LINES","3");
 
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");
 $section_names = array(
