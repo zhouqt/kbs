@@ -226,7 +226,7 @@
 	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="tt1">
 		<tr>
 			<td>&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=f1>".BBS_FULL_NAME."</a> - <a href='pc.php' class=f1>Blog</a> - <a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&pid=".$pid."\" class=f1>".$pc["NAME"]."</a>"; ?></td>
-			<td align="right">http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td align="right"><?php echo pc_personal_domainname($pc["USER"]); ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		</tr>
 	</table>
 	</td>

@@ -24,7 +24,6 @@ $pcconfig["BBSNAME"] = BBS_FULL_NAME;
 $pcconfig["ETEMS"] = 20;
 $pcconfig["NEWS"] = 20;
 $pcconfig["SITE"] = "www.smth.edu.cn";
-$pcconfig["DOMAIN"] = ".mysmth.net";
 $pcconfig["BOARD"] = "SMTH_blog";
 $pcconfig["SEARCHFILTER"] = " µÄ";
 $pcconfig["SEARCHNUMBER"] = 10;
@@ -38,6 +37,11 @@ if(!$currentuser["userid"])
 
 $pcconfig["NOWRAPSTR"] = "<!--NoWrap-->";
 $pcconfig["EDITORALERT"] = "<!--Loading HTMLArea Editor , Please Wait/ÕýÔÚ¼ÓÔØ HTML±à¼­Æ÷ £¬ ÇëÉÔºò ¡­¡­-->";
+
+function pc_personal_domainname($userid)
+{
+	return "http://".$userid.".mysmth.net";	
+}
 
 function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$loadhtmlarea=FALSE)
 {

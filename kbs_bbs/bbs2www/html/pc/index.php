@@ -428,7 +428,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<br />
 		&copy;All Rights Reserved
 		&nbsp;&nbsp;
-		http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>
+		<?php echo pc_personal_domainname($pc["USER"]); ?>
 		</p>
 		</td>
 	</tr>
@@ -542,7 +542,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	<br>
 &copy;All Rights Reserved
 &nbsp;&nbsp;
-http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>
+<?php echo pc_personal_domainname($pc["USER"]); ?>
 </td></tr>
 </table>	
 <?php		

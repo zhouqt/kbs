@@ -668,7 +668,7 @@ BlogÃû
 	<table cellspacing="0" cellpadding="3" border="0" class="t0" width="100%" class="tt1">
 		<tr>
 			<td class="tt1">&nbsp;&nbsp;&nbsp;&nbsp;<?php echo "<a href=\"/\" class=\"f1\">".BBS_FULL_NAME."</a> - <a href='pc.php' class=\"f1\">Blog</a> - <a href=\"index.php?id=".$pc["USER"]."\" class=\"f1\">".$pc["NAME"]."</a>"; ?></td>
-			<td align="right" class="tt1">http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
+			<td align="right" class="tt1"><?php echo pc_personal_domainname($pc["USER"]); ?>&nbsp;&nbsp;&nbsp;&nbsp;</td>
 		</tr>
 	</table>
 	</td>

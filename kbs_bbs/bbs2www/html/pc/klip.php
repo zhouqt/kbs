@@ -55,7 +55,7 @@ This Klip File is Used For SMTH.Blog System , Script Writen by windinsn@smth.org
 	</identity>
 		
 	<locations>
-		<defaultlink>http://<?php echo $pc["USER"].$pcconfig["DOMAIN"]; ?></defaultlink>
+		<defaultlink><?php echo pc_personal_domainname($pc["USER"]); ?></defaultlink>
 		<contentsource>http://<?php echo $pcconfig["SITE"]; ?>/pc/rss.php?userid=<?php echo $pc["USER"]; ?></contentsource>
 		<icon></icon>
 		<banner></banner>

@@ -27,7 +27,7 @@
 			"userid" => $pc["UID"] ,
 			"siteaddr" => "http://".$pcconfig["SITE"],
 			"title" => $pc["NAME"],
-			"pcaddr" => "http://".$pc["USER"].$pcconfig["DOMAIN"],
+			"pcaddr" => pc_personal_domainname($pc["USER"]),
 			"desc" => $pc["DESC"],
 			"email" => $pc["USER"].".bbs@".$pcconfig["SITE"]
 			);
