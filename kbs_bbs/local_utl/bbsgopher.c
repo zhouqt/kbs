@@ -190,7 +190,7 @@ int deal_gopherkey(ch, allnum, pagenum)
         enterdir(tmpitem->file);
         savetmpfile(fname);
         if (dashf(fname)) {
-            vedit(fname, NA);
+            vedit(fname, NA,NULL);
             unlink(fname);
             g_refresh();
         }

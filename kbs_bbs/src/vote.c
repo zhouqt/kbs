@@ -109,7 +109,7 @@ int b_notes_edit()
         } else
             aborted = -1;
     } else
-        aborted = vedit(buf, false);
+        aborted = vedit(buf, false,NULL);
     if (aborted == -1) {
         pressreturn();
     } else {
@@ -144,7 +144,7 @@ int b_sec_notes_edit()
         } else
             aborted = -1;
     } else
-        aborted = vedit(buf, false);
+        aborted = vedit(buf, false,NULL);
     if (aborted == -1) {
         pressreturn();
     } else {
@@ -181,7 +181,7 @@ int b_jury_edit()
         } else
             aborted = -1;
     } else if (ans[0] == 'E' || ans[0] == 'e')
-        aborted = vedit(buf, false);
+        aborted = vedit(buf, false,NULL);
     else {
         prints("取消");
         aborted = -1;
@@ -557,7 +557,7 @@ char *bname;
     pressanykey();
     setvfile(genbuf, bname, "desc");
     sprintf(buf, "%s.%lu", genbuf, ball->opendate);
-    aborted = vedit(buf, false);
+    aborted = vedit(buf, false, NULL);
     if (aborted) {
         clear();
         prints("取消此次投票\n");

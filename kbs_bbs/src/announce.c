@@ -628,8 +628,7 @@ void a_newitem(pm, mode)        /* 用户创建新的 ITEM */
         a_report(buf);
         switch (mode) {
         case ADDITEM:
-            /*vedit( fpath, 0 ); */
-            if (-1 == vedit(fpath, 0))
+            if (-1 == vedit(fpath, 0, NULL))
                 return;         /* Leeward 98.06.12 fixes bug */
             chmod(fpath, 0644);
             break;
@@ -984,7 +983,7 @@ void a_manager(pm, ch)
 
                 if (dashf(fpath)) {
                     modify_user_mode(EDITANN);
-                    vedit(fpath, 0);
+                    vedit(fpath, 0, NULL);
                     modify_user_mode(CSIE_ANNOUNCE);
                 }
                 pm->page = 9999;
@@ -1034,7 +1033,7 @@ void a_manager(pm, ch)
         case 'e':
             if (dashf(fpath)) {
                 modify_user_mode(EDITANN);
-                vedit(fpath, 0);
+                vedit(fpath, 0, NULL);
                 modify_user_mode(CSIE_ANNOUNCE);
                 sprintf(genbuf, "修改文章 %s 的内容", pm->path + 17);
                 a_report(genbuf);

@@ -727,15 +727,14 @@ int valid_article(pmt, abort)
 
 }
 
-int write_file(filename, saveheader)
-    char *filename;
-    int saveheader;
+static int write_file(char* filename,int saveheader,long* effsize)
 {
     struct textline *p = firstline;
     FILE *fp;
     char abort[6];
     int aborted = 0;
     int temp;
+    long sign_size;
     extern char quote_title[120], quote_board[120];
     extern int Anony;
 #ifdef FILTER
@@ -877,11 +876,31 @@ int write_file(filename, saveheader)
 	}
 #endif
     }
+    if (effsize)
+        *effsize=0;
+    sign_size=0;
     while (p != NULL) {
         struct textline *v = p->next;
 
         if (!aborted)
             if (p->next != NULL || p->data[0] != '\0') {
+                if (effsize) {
+                	if (!strcmp(p->data,"--")) {
+/*注意处理
+--
+fsdfa
+--
+的情况*/
+                	    *effsize+=sign_size;
+                	    sign_size=2;
+                	} else {
+                	/*如果不是签名档分隔符*/
+                	    if (sign_size!=0) /*在可能的签名档中*/
+                	    	sign_size+=strlen(p->data);
+                	    else
+            	              *effsize+=strlen(p->data);
+                	}
+                }
                 if (abort[0] == 'f' || abort[0] == 'F') {       /* Leeward 98.07.27 支持自动换行 */
                     unsigned char *ppt = (unsigned char *) p->data;     /* 折行处 */
                     unsigned char *pp = (unsigned char *) ppt;  /* 行首 */
@@ -1791,7 +1810,7 @@ void vedit_key(ch)
     clrtoeol();
 }
 
-int raw_vedit(char *filename,int saveheader,int headlines)
+static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size)
 {
     int newch, ch = 0, foo, shift;
     struct textline *st_tmp, *st_tmp2;
@@ -1824,7 +1843,7 @@ int raw_vedit(char *filename,int saveheader,int headlines)
                 firstline->prev = st_tmp;
                 firstline = st_tmp2;
             }
-            foo = write_file(filename, saveheader);
+            foo = write_file(filename, saveheader, &eff_size);
             if (foo != KEEP_EDITING)
                 return foo;
             if (headlines) {
@@ -1860,9 +1879,7 @@ int raw_vedit(char *filename,int saveheader,int headlines)
     return 1;
 }
 
-int vedit(filename, saveheader)
-    char *filename;
-    int saveheader;
+int vedit(char *filename,int saveheader,long* eff_size)
 {
     int ans, t;
 
@@ -1878,14 +1895,12 @@ int vedit(filename, saveheader)
     sprintf(bkfname, "%s~", filename);
     sprintf(currfname, "%s", filename);
 #endif
-    ans = raw_vedit(filename, saveheader, 0);
+    ans = raw_vedit(filename, saveheader, 0,&eff_size);
     showansi = t;
     return ans;
 }
 
-int vedit_post(filename, saveheader)
-    char *filename;
-    int saveheader;
+int vedit_post(char *filename,int saveheader,long* eff_size)
 {
     int ans, t;
 
@@ -1893,7 +1908,7 @@ int vedit_post(filename, saveheader)
     showansi = 0;
     ismsgline = (DEFINE(currentuser, DEF_EDITMSG)) ? 1 : 0;
     domsg();
-    ans = raw_vedit(filename, saveheader, 4);   /*Haohmaru.99.5.5.应该保留一个空行 */
+    ans = raw_vedit(filename, saveheader, 4, &eff_size);   /*Haohmaru.99.5.5.应该保留一个空行 */
     showansi = t;
     return ans;
 }

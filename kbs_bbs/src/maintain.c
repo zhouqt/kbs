@@ -1568,7 +1568,7 @@ int m_stoplogin()
         return -1;
     getdata(t_lines - 1, 0, "½ûÖ¹µÇÂ½Âð (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
-        if (vedit("NOLOGIN", false) == -1)
+        if (vedit("NOLOGIN", false,NULL) == -1)
             unlink("NOLOGIN");
     }
     return 0;

@@ -1905,6 +1905,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'S';
     struct boardheader *bp;
+    long eff_size;/*用于统计文章的有效字数*/
 
 #ifdef FILTER
     int returnvalue;
@@ -2125,7 +2126,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
-    aborted = vedit(filepath, true);    /* 进入编辑状态 */
+    aborted = vedit(filepath, true, &eff_size);    /* 进入编辑状态 */
 
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
@@ -2246,6 +2247,7 @@ int add_edit_mark(char *fname, int mode, char *title)
 {
     char buf[512];
     char *t;
+    long eff_size;
 
     if (!strcmp(currboard, "syssecurity")
         || !strcmp(currboard, "junk")
@@ -2297,7 +2299,7 @@ int add_edit_mark(char *fname, int mode, char *title)
      */
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
-    if (vedit_post(genbuf, false) != -1) {
+    if (vedit_post(genbuf, false, &eff_size) != -1) {
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
     }

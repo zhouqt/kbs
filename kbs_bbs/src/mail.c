@@ -248,7 +248,7 @@ int mailall()
                 }
             }
             do_quote(fname, include_mode, "", quote_user);
-            if (vedit(fname, true) == -1) {
+            if (vedit(fname, true,NULL) == -1) {
                 in_mail = false;
                 unlink(fname);
                 clear();
@@ -496,7 +496,7 @@ int do_send(char *userid, char *title, char *q_file)
     if (internet_mail) {
         int res, ch;
 
-        if (vedit(filepath, false) == -1) {
+        if (vedit(filepath, false,NULL) == -1) {
             unlink(filepath);
             clear();
             return -2;
@@ -566,7 +566,7 @@ int do_send(char *userid, char *title, char *q_file)
     } else
 #endif
     {
-        if (vedit(filepath, true) == -1) {
+        if (vedit(filepath, true,NULL) == -1) {
             unlink(filepath);
             clear();
             return -2;
@@ -1677,7 +1677,7 @@ static int do_gsend(char *userid[], char *title, int num)
      */
 
     strcpy(quote_title, save_title);
-    if (vedit(tmpfile, true) == -1) {
+    if (vedit(tmpfile, true,NULL) == -1) {
         unlink(tmpfile);
         clear();
         return -2;
@@ -1902,7 +1902,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
     f_cp(tmp_buf, fname, 0);
     sprintf(title, "%.50s(转寄)", fh->title);   /*Haohmaru.00.05.01,moved here */
     if (askyn("是否修改文章内容", 0) == 1) {
-        vedit(fname, false);
+        vedit(fname, false,NULL);
         y = 2;
         newbbslog(BBSLOG_USER, "修改被转贴的文章或信件: %s", title);    /*Haohmaru.00.05.01 */
         /*
