@@ -424,7 +424,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
     int i, w, in_esc = 0, db = 0, lastspace = 0, asciiart = 0, autoline = 1;
     char *p = p0;
 
-    if (size == 0)
+    if (size <= 0)
         return -1;
     if (oldty!=100) {
     for (i = 0, w = 0; i < size; i++, p++) {
