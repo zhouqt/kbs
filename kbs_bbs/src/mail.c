@@ -496,8 +496,6 @@ int do_send(char *userid, char *title, char *q_file)
                 int i;
                 chdir("tmp");
                 upload = bbs_zrecvfile();
-                for(i=0;i<strlen(upload);i++)
-                    if(!isalnum(upload[i])) upload[i]='A';
                 chdir("..");
             }
         }

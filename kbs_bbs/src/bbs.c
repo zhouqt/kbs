@@ -1969,6 +1969,8 @@ int add_attach(char* file1, char* file2, char* filename)
     fp=fopen(file1, "ab");
     fp2=fopen(file2, "rb");
     fwrite(o,1,8,fp);
+    for(i=0;i<strlen(filename);i++)
+        if(!isalnum(filename[i])&&filename[i]!='.') filename[i]='A';
     fwrite(filename, 1, strlen(filename)+1, fp);
     fwrite(&size,1,4,fp);
     while((i=fread(buf,1,1024*16,fp2))) {
@@ -2134,8 +2136,6 @@ int post_article(char *q_file, struct fileheader *re_file)
                 int i;
                 chdir("tmp");
                 upload = bbs_zrecvfile();
-                for(i=0;i<strlen(upload);i++)
-                    if(!isalnum(upload[i])) upload[i]='A';
                 chdir("..");
             }
         } else {
