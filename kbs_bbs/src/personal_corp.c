@@ -1480,6 +1480,8 @@ int pc_read_dir(int first)
 		free(pts);
 		if(first)
 			free(pc_n);
+		if( pc_dirmode == 4 )
+			pc_fav_dir = 0;
 		return -1;
 	}
 	if( i == 0 ){
@@ -1491,6 +1493,8 @@ int pc_read_dir(int first)
 			free(pts);
 			if(first)
 				free(pc_n);
+			if( pc_dirmode == 4 )
+				pc_fav_dir = 0;
 			return -1;
 		}
 		clear();
@@ -1500,6 +1504,8 @@ int pc_read_dir(int first)
 			free(pts);
 			if(first)
 				free(pc_n);
+			if( pc_dirmode == 4 )
+				pc_fav_dir = 0;
 			return -1;
 		}
 		i = get_pc_nodes(pc_n, pc_u->uid,pc_fav_dir,-1, pc_dirmode -1, 0, BBS_PAGESIZE, 0);
@@ -1510,6 +1516,8 @@ int pc_read_dir(int first)
 		free(pts);
 		if(first)
 			free(pc_n);
+		if( pc_dirmode == 4 )
+			pc_fav_dir = 0;
 		return -1;
 	}
 
