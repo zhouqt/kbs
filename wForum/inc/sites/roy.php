@@ -22,7 +22,7 @@ $BannerURL="http://172.16.50.79";
 
 //$SiteURL=$_SERVER['SERVER_NAME'];
 
-$SiteURL="http://172.16.50.79";
+$SiteURL="http://172.16.50.79/wbbs/index.php";
 
 
 

@@ -22,28 +22,6 @@ function showUserMailbox(){
 <?php
 }
 
-function preprocess(){
-	GLOBAL $_GET;
-	GLOBAL $_COOKIE;
-	GLOBAL $sectionCount;
-
-	$path='';
-	if ($_GET['ShowBoards']=='Y') {
-		$secNum=intval($_GET['sec']);
-		if ( ($secNum>=0)  && ($secNum<$sectionCount)) {
-			setcookie('ShowSecBoards'.$secNum, 'Y' ,time()+604800,''); 
-			$_COOKIE['ShowSecBoards'.$secNum]='Y';
-		}
-	}
-	if ($_GET['ShowBoards']=='N') {
-		$secNum=intval($_GET['sec']);
-		if ( ($secNum>=0)  && ($secNum<$sectionCount)) {
-			setcookie('ShowSecBoards'.$secNum, '' ,time()+604800);
-			$_COOKIE['ShowSecBoards'.$secNum]='';
-		}
-	}
-}
-
 function showAllSecs(){
 	GLOBAL $sectionCount;
 	GLOBAL $_COOKIE;
@@ -136,7 +114,7 @@ function showSecs($secNum=0,$isFold) {
 		<?php
 						} else {
 		?>
-				主题：<a href="disparticle.php?boardid=<?php echo $brd_bid[$i]; ?>&id=<?php echo $articles[0]['ID']; ?>&gid=<?php echo $articles[0]['GROUPID']; ?>"><?php echo $articles[0]['TITLE']; ?></a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?></a><BR>日期：<?php echo strftime('%Y-%m-%d %H-%M-%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardid=<?php echo $brd_bid[$i]; ?>&id=<?php echo $articles[0]['GROUPID']; ?>&gid=<?php $articles[0]['ID']; ?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo $articles[0]['TITLE']; ?>"></a>
+				主题：<a href="disparticle.php?boardid=<?php echo $brd_bid[$i]; ?>&id=<?php echo $articles[0]['ID']; ?>&gid=<?php echo $articles[0]['GROUPID']; ?>"><?php echo $articles[0]['TITLE']; ?></a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['OWNER']; ?></a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardid=<?php echo $brd_bid[$i]; ?>&id=<?php echo $articles[0]['GROUPID']; ?>&gid=<?php $articles[0]['ID']; ?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo $articles[0]['TITLE']; ?>"></a>
 	<?php
 						}
 					}
@@ -208,8 +186,8 @@ arNews = [<?php
 					echo '"当前没有公告","",';
 				} else {
 					$num=count($articles);
-					for ($i=0;$i<$num;$i++) {
-					echo '"<b><a href=\"disparticle.php?boardid='.$brdarr['BID'].'&id='.$articles[$i]['ID'].'&gid='. $articles[$i]['GROUPID'].'\">' .$articles[$i]['TITLE'] . '</a></b> ('.strftime('%Y-%m-%d %H-%M-%S', intval($articles[$i]['POSTTIME'])).')","",';
+					for ($i=$num-1;$i>=0;$i--) {
+					echo '"<b><a href=\"disparticle.php?boardid='.$brdarr['BID'].'&id='.$articles[$i]['ID'].'&gid='. $articles[$i]['GROUPID'].'\">' .$articles[$i]['TITLE'] . '</a></b> ('.strftime('%Y-%m-%d %H:%M:%S', intval($articles[$i]['POSTTIME'])).')","",';
 					}
 				}
 			}

@@ -7,8 +7,6 @@ if (!defined('_BBS_FUNCS_PHP_'))
 {
 define('_BBS_FUNCS_PHP_', 1);
 
-
-
 function getmicrotime(){ 
    list($usec, $sec) = explode(" ",microtime()); 
    return ((float)$usec + (float)$sec); 
@@ -152,15 +150,15 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 }
 
 // add by stiger, login as "guest" default.....
-if (($utmpkey == "")&&($needlogin!=0)){
+if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){
 	$error = bbs_wwwlogin(0);
 	if($error == 2 || $error == 0){
 		$data = array();
 		$num = bbs_getcurrentuinfo($data);
         setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
         setcookie("UTMPNUM",$num,time()+360000,"");
-        setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
-        setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
+        setcookie("UTMPUSERID",$data["userid"],0,"");
+        setcookie("LOGINTIME",$data["logintime"],0,"");
 		@$utmpkey = $data["utmpkey"];
 		@$utmpnum = $num;
 		@$userid = $data["userid"];
@@ -168,7 +166,7 @@ if (($utmpkey == "")&&($needlogin!=0)){
 		$guestloginok=1;
 	}
 } else {
-	if ( ($utmpkey!="") ) {
+	if ( ($utmpkey!="") || ($userid!='guest')) {
 
 		$ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet);
 
@@ -182,7 +180,6 @@ if (($utmpkey == "")&&($needlogin!=0)){
 		$currentuser_num=bbs_getcurrentuser($currentuser);
 
 	  } else {
-
 		if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
 
 			$ret=bbs_wwwlogin(1);
@@ -196,6 +193,10 @@ if (($utmpkey == "")&&($needlogin!=0)){
 				$currentuinfo_num=bbs_getcurrentuinfo($data);
 				$currentuser_num=bbs_getcurrentuser($currentuser);
 				$path='';
+				setcookie("UTMPKEY",$data["utmpkey"],time()+360000,$path);
+				setcookie("UTMPNUM",$currentuinfo_num,time()+360000,$path);
+				setcookie("LOGINTIME",$data["logintime"],0,$path);
+
 			}else if ($ret==5) {
 				foundErr("请勿频繁登陆！");
 			}
@@ -206,8 +207,8 @@ if (($utmpkey == "")&&($needlogin!=0)){
 				$num = bbs_getcurrentuinfo($data);
 				setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
 				setcookie("UTMPNUM",$num,time()+360000,"");
-				setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
-				setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
+				setcookie("UTMPUSERID",$data["userid"],0,"");
+				setcookie("LOGINTIME",$data["logintime"],0,"");
 				@$utmpkey = $data["utmpkey"];
 				@$utmpnum = $num;
 				@$userid = $data["userid"];
@@ -330,12 +331,13 @@ function html_error_quit()
 <?php   if (($needlogin!=0)&&($loginok!=1))
   {
 ?>
-<form action="login.php?action=chk" method=post>
+<form action="logon.php" method=post>
+<input type="hidden" name="action" value="doLogon">
     <tr>
     <th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登陆</td></tr>
     <tr>
     <td valign=middle class=tablebody1>请输入您的用户名</td>
-    <td valign=middle class=tablebody1><INPUT name=username type=text> &nbsp; <a href=reg.php>没有注册？</a></td></tr>
+    <td valign=middle class=tablebody1><INPUT name=id type=text> &nbsp; <a href=reg.php>没有注册？</a></td></tr>
     <tr>
     <td valign=middle class=tablebody1>请输入您的密码</font></td>
     <td valign=middle class=tablebody1><INPUT name=password type=password> &nbsp; <a href=lostpass.php>忘记密码？</a></td></tr>
@@ -345,11 +347,6 @@ function html_error_quit()
                 <input type=radio name=CookieDate value=1>保存一天<br>
                 <input type=radio name=CookieDate value=2>保存一月<br>
                 <input type=radio name=CookieDate value=3>保存一年<br>                </td></tr>
-    <tr>
-    <td valign=top width=30% class=tablebody1><b>隐身登陆</b><BR> 您可以选择隐身登陆，论坛会员将在用户列表看不到您的信息。</td>
-    <td valign=middle class=tablebody1>                <input type=radio name=userhidden value=2 checked>正常登陆<br>
-                <input type=radio name=userhidden value=1>隐身登陆<br>
-                </td></tr>
 	<input type=hidden name=comeurl value="<?php     echo $_SERVER['HTTP_REFERER']; ?>">
     <tr>
     <td class=tablebody2 valign=middle colspan=2 align=center><input type=submit name=submit value="登 陆">&nbsp;&nbsp;<input type=button name="back" value="返 回" onclick="location.href='<?php  echo $_SERVER['HTTP_REFERER']; ?>'"></td></tr>

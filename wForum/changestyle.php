@@ -14,9 +14,9 @@ if (isErrFounded()) {
 } else {
   if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") )
   {
-    header("Location: ".$SiteURL);
+	  header("Location: ".$SiteURL);
   }   else  {
-    header("Location: ".$_SERVER["HTTP_REFERER"]);
+	 header("Location: ".$_SERVER["HTTP_REFERER"]);
   } 
 } 
 

@@ -20,7 +20,6 @@ show_nav();
 <TABLE cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
 
-
 if ($loginok==1) {
 	showUserMailbox();
 }
@@ -53,6 +52,27 @@ show_footer();
 
 /*--------------- function defines ------------------*/
 
+function preprocess(){
+	GLOBAL $_GET;
+	GLOBAL $_COOKIE;
+	GLOBAL $sectionCount;
+
+	$path='';
+	if ($_GET['ShowBoards']=='Y') {
+		$secNum=intval($_GET['sec']);
+		if ( ($secNum>=0)  && ($secNum<$sectionCount)) {
+			setcookie('ShowSecBoards'.$secNum, 'Y' ,time()+604800,''); 
+			$_COOKIE['ShowSecBoards'.$secNum]='Y';
+		}
+	}
+	if ($_GET['ShowBoards']=='N') {
+		$secNum=intval($_GET['sec']);
+		if ( ($secNum>=0)  && ($secNum<$sectionCount)) {
+			setcookie('ShowSecBoards'.$secNum, '' ,time()+604800);
+			$_COOKIE['ShowSecBoards'.$secNum]='';
+		}
+	}
+}
 
 
 function showTitle() {

@@ -57,6 +57,7 @@ function doLogon(){
 		foundErr("请输入您的用户名");
 		return false;
 	}
+	bbs_wwwlogoff();
 	if (($id!='guest') && (bbs_checkpasswd($id,$passwd)!=0)){
 		foundErr("您的用户名并不存在，或者您的密码错误");
 		return;
@@ -94,12 +95,11 @@ function doLogon(){
 		break;
 	}
 	$path='';
-	setcookie("UTMPKEY",$data["utmpkey"],time()+36000,$path);
-	setcookie("UTMPNUM",$num,time()+36000,$path);
+	setcookie("UTMPKEY",$data["utmpkey"],time()+360000,$path);
+	setcookie("UTMPNUM",$num,time()+360000,$path);
 	setcookie("UTMPUSERID",$data["userid"],$time,$path);
-	setcookie("LOGINTIME",$data["logintime"],$time,$path);
+	setcookie("LOGINTIME",$data["logintime"],0,$path);
 	setcookie("PASSWORD",$passwd,$time,$path);
-
 
 	if ((strpos(strtolower($_POST['comeurl']),'register.php')!==false) || (strpos(strtolower($_POST['comeurl']),'logon.php') !==false) || trim($_POST['comeurl'])=='')  {
 		$comeurlname="";
