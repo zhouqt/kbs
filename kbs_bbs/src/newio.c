@@ -328,6 +328,8 @@ int filter_telnet(char *s, int *len)
 }
 
 static bool inremsg = false;
+extern struct key_struct *keymem=NULL;
+extern int keymem_total;
 
 int igetch()
 {
