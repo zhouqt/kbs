@@ -148,8 +148,7 @@ int ann_get_board(char *path, char *board, size_t len)
     FILE *fp;
     char buf[256];
     char *ptr;
-    char *ptr1,*ptr2;
-    int i;
+    char *ptr2;
 
     ptr = path;
     if (ptr[0] == '\0')
@@ -161,29 +160,12 @@ int ann_get_board(char *path, char *board, size_t len)
         return -1;
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         if ((ptr2 = strrchr(buf, '\n')) != NULL)
-            *ptr2 = '\0'; 
-        if ((ptr2 = strrchr(buf, ':')) != NULL) {
-		*ptr2 = '\0';
-            
-/*	if (strncmp(ptr2 + 2, ptr, strlen(ptr2 + 2)) == 0) {
+            *ptr2 = '\0';
+        if ((ptr2 = strchr(buf, ':')) != NULL) {
+            *ptr2 = '\0';
+            if (strncmp(ptr2 + 2, ptr, strlen(ptr2 + 2)) == 0) {
                 strncpy(board, buf, len - 1);
-                board[len - 1] = '\0'; 
-*/
-
-/* 修正精华区不更新的错误 Bigman:2002.9.2 */
-            if (strstr(ptr2 + 2, board) != NULL) {
-                strncpy(ptr1, ptr2+2, strlen(ptr2+2));
-		*(ptr1+strlen(ptr2+2)-1-strlen(board))='\0';
-
-		ptr2=strchr(ptr1,'/');
-		i=0;
-		while(*(ptr2+1+i)!='\0')
-		{
-			*(ptr+i)=*(ptr2+i+1);
-			i++;
-		}
-		*(ptr+i)='\0';
-
+                board[len - 1] = '\0';
                 fclose(fp);
                 return 0;
             }
@@ -302,3 +284,50 @@ int ann_traverse_check(char *path, struct userec *user)
     }
     return ret;
 }
+
+/* Add a board searching path to .Search file. */
+int ann_addto_search(char *group, char *board)
+{
+	char buf[PATHLEN];
+	char searchname[STRLEN];
+
+	strcpy(buf, "0Announce/.Search");
+	sprintf(searchname, "%s: groups/%s/%s", board, group, board);
+    if (!seek_in_file(buf, board))
+	{
+		addtofile(buf, searchname);
+		return 0;
+	}
+	else
+		return -1;
+}
+
+/* Delete a board searching path from .Search file. */
+int ann_delfrom_search(char *board)
+{
+    FILE *fp, *nfp;
+    int deleted = false;
+	char filename[PATHLEN];
+    char fnnew[256 /*STRLEN*/];
+    char buf[256 /*STRLEN*/];
+
+	strcpy(filename, "0Announce/.Search");
+    if ((fp = fopen(filename, "r")) == NULL)
+        return -1;
+    sprintf(fnnew, "%s.%d", filename, getuid());
+    if ((nfp = fopen(fnnew, "w")) == NULL)
+        return -1;
+    while (fgets(buf, 256 /*STRLEN*/, fp) != NULL) {
+        if (strncasecmp(buf, board, strlen(board)) == 0)
+            deleted = true;
+
+        else if (*buf > ' ')
+            fputs(buf, nfp);
+    }
+    fclose(fp);
+    fclose(nfp);
+    if (!deleted)
+        return -1;
+    return (f_mv(fnnew, filename));
+}
+
