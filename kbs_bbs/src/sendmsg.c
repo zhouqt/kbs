@@ -275,7 +275,7 @@ reenter:
                 if(count==0) break;
                 good_move(23, 0);
                 clrtoeol();
-                getdata(23, 0, "ÇëÊäÈë¹Ø¼ü×Ö:", chk, 50, true, NULL, false);
+                getdata(23, 0, "ÇëÊäÈë¹Ø¼ü×Ö:", chk, 50, true, NULL, true);
                 if(chk[0]) {
                     int fd, fd2;
                     char fname, fname2;
@@ -286,7 +286,7 @@ reenter:
                     sethomefile(fname, currentuser->userid, "msgindex");
                     sethomefile(fname2, currentuser->userid, "msgindex3");
                     fd = open(fname, O_RDONLY, 0644);
-                    fd2 = open(fname, O_WRONLY, 0644);
+                    fd2 = open(fname2, O_WRONLY, 0644);
                     lseek(fd, 4, SEEK_SET);
                     for(i=0;i<count;i++) {
                         read(fd, &head, sizeof(struct msghead));
