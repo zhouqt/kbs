@@ -183,23 +183,25 @@ function get_secname_index($secnum)
 	return -1;
 }
 
-function ansi_getfontcode($fgcolor,$bgcolor,$highlight,$blink,$underlink, &$head,&$tail)
+function ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, &$head,&$tail)
 {
-    $defaultfgcolor = 0;
-    $defaultbgcolor = 7;
-    if ($highlight)
-       $fgcolor+=8;
-    if ($fgcolor==-1)
-      $fgcolor=$defaultfgcolor;
+    $modify="";
+    if ($fgcolor==-1) 
+      $modify=sprintf(" color=%s",$defaultfg);
     else
     if ($fgcolor==-2)
-      $fgcolor=$defaultbgcolor;
+      $modify=sprintf(" color=%s",$defaultbg);
+    else
+    if ($highlight)
+       $fgcolor+=8;
+    if ($fgcolor<0) $fgcolor=0;
     if ($bgcolor==-1)
-      $bgcolor=$defaultbgcolor;
+      $modify .= sprintf(" style='background-color:%s'",$defaultbg);
     else
     if ($bgcolor==-2)
-      $bgcolor=$defaultfgcolor;
-    $head = sprintf("<font class=f%d%2d>",$bgcolor,$fgcolor);
+      $modify .= sprintf(" style='background-color:%s'",$defaultfg);
+    if ($bgcolor<0) $bgcolor=0;
+    $head = sprintf("<font class=f%d%02d%s>",$bgcolor,$fgcolor,$modify);
     if ($underlink) {
        $head .= "<u>";
        $tail = "</u>";
@@ -207,7 +209,7 @@ function ansi_getfontcode($fgcolor,$bgcolor,$highlight,$blink,$underlink, &$head
     $tail .= "</font>";
 }
 
-function ansi_convert( $buf )
+function ansi_convert( $buf , $defaultfg, $defaultbg)
 {
     $keyword = preg_split("/\x1b\[([^a-zA-Z]*)([a-zA-Z])/",$buf,-1,PREG_SPLIT_DELIM_CAPTURE);
     $fgcolor=-1;
@@ -216,6 +218,8 @@ function ansi_convert( $buf )
     $underlink=false;
     $highlight=false;
     for ($i=1;$i<count($keyword);$i+=3) {
+        if ($keyword[$i+2]=="")
+            continue;
         if ($keyword[$i+1]=='m') {
             $head="";
             $tail="";
@@ -278,7 +282,7 @@ function ansi_convert( $buf )
                     }
                 }
                 if ($good)
-                    ansi_getfontcode($fgcolor,$bgcolor,$highlight,$blink,$underlink, $head,$tail);
+                    ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, $head,$tail);
             }
             $final .= $head . $keyword[$i+2] . $tail;
         } else $final .= $keyword[$i+2];

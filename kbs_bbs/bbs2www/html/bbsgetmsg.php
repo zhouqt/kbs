@@ -21,7 +21,7 @@ A {color: #0000FF}
 <bgsound src="/sound/msg.wav">
 <body style="BACKGROUND-COLOR: #f0ffd0">
 <table width="100%">
-<tr><td><?php echo $msgbuf; ?></td>
+<tr><td><?php echo ansi_convert($msgbuf,"#000000","#f0ffd0"); ?></td>
 <td align="right"><a target="f3" href="/cgi-bin/bbs/bbssendmsg?destid=<?php 
 echo $srcid; ?>&destutmp=<?php 
 echo $srcutmpnum; ?>">[»ØÑ¶Ï¢]</a> <a href="bbsgetmsg.php">[ºöÂÔ]</a></td></tr></table>
