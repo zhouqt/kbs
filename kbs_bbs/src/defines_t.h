@@ -44,7 +44,7 @@ void ochar(char c);
 int ask(char *prompt);
 void oflush();
 int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void *nouse, int clearlabel);
-void set_alarm(int set_timeout, void (*timeout_func) (void *), void *data);
+void set_alarm(int set_timeout,int set_timeoutusec, void (*timeout_func) (void *), void *data);
 int igetkey();
 void check_calltime();
 void add_io(int fd, int timeout);

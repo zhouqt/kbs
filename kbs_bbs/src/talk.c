@@ -758,7 +758,7 @@ int talkreply()
     /*
      * added by netty  
      */
-    set_alarm(0, NULL, NULL);
+    set_alarm(0, 0, NULL, NULL);
     clear();
     /*
      * to show plan -cuteyu 
@@ -1024,7 +1024,7 @@ void endmsg(void *data)
     update_endline();
     move(x, y);
     refresh();
-    set_alarm(60, endmsg, NULL);
+    set_alarm(60, 0, endmsg, NULL);
     showansi = tmpansi;
     UNUSED_ARG(data);
     return;
@@ -1177,7 +1177,7 @@ static int do_talk(int fd)
     }
     add_io(0, 0);
     talkflush();
-    set_alarm(0, NULL, NULL);
+    set_alarm(0, 0, NULL, NULL);
     add_flush(NULL);
     modify_user_mode(previous_mode);
 #ifdef TALK_LOG
@@ -1313,12 +1313,12 @@ void sig_catcher(void *data)
 {
     ulistpage++;
     if (uinfo.mode != MONITOR) {
-        set_alarm(0, NULL, NULL);
+        set_alarm(0, 0, NULL, NULL);
         return;
     }
     do_list("探视民情");
     idle_count++;
-    set_alarm(M_INT * idle_count, sig_catcher, NULL);
+    set_alarm(M_INT * idle_count, 0, sig_catcher, NULL);
     UNUSED_ARG(data);
 }
 
@@ -1326,7 +1326,7 @@ int t_monitor()
 {
     int i;
 
-    set_alarm(0, NULL, NULL);
+    set_alarm(0, 0, NULL, NULL);
     /*
      * idle_monitor_time = 0; 
      */
@@ -1334,7 +1334,7 @@ int t_monitor()
     modify_user_mode(MONITOR);
     ulistpage = 0;
     do_list("探视民情");
-    set_alarm(M_INT * idle_count, sig_catcher, NULL);
+    set_alarm(M_INT * idle_count, 0, sig_catcher, NULL);
     while (true) {
         i = igetkey();
         if (i==KEY_REFRESH)

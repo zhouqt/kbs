@@ -443,7 +443,7 @@ char *menu_name;
             if (fptr != NULL) {
                 move(1, cmdplen);
                 clrtoeol();
-                set_alarm(0, NULL, NULL);
+                set_alarm(0, 0, NULL, NULL);
                 (*fptr) (sysconf_relocate(pm[now].arg));
                 if (fptr == Select) {
                     now++;

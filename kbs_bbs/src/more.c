@@ -125,7 +125,7 @@ void check_calltime()
          * prints("请到主选单看备忘录......");
          * return;
          * }
-         * set_alarm(0,NULL,NULL);
+         * set_alarm(0,0, NULL,NULL);
          * showusernote();
          * pressreturn();
          * R_monitor(NULL);
@@ -379,7 +379,7 @@ void R_monitor(void *data)
     netty_more();
     printacbar();
     idle_count++;
-    set_alarm(10 * idle_count, R_monitor, NULL);
+    set_alarm(10 * idle_count, 0, R_monitor, NULL);
     UNUSED_ARG(data);
 }
 

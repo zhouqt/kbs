@@ -80,7 +80,7 @@ void update_data(void *data)
          * refresh(); 
          */
     }
-    set_alarm(refreshtime * idle_count, update_data, NULL);
+    set_alarm(refreshtime * idle_count, 0, update_data, NULL);
     UNUSED_ARG(data);
     return;
 }
@@ -822,7 +822,7 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
     readplan = false;
     (*title_show) ();
     func_list_show = list_show;
-    set_alarm(0, NULL, NULL);
+    set_alarm(0, 0, NULL, NULL);
     if (update == 1)
         update_data(NULL);
     page = -1;
@@ -962,6 +962,6 @@ int choose(int update, int defaultn, int (*title_show) (), int (*key_deal) (), i
             number = 0;
         }
     }
-    set_alarm(0, NULL, NULL);
+    set_alarm(0, 0, NULL, NULL);
     return -1;
 }

@@ -28,6 +28,7 @@
 #define KEY_SELECT		0x1003
 #define KEY_INIT		0x1004
 #define KEY_TALK		0x1005
+#define KEY_TIMEOUT		0x1006
 
 typedef struct tagPOINT {
 

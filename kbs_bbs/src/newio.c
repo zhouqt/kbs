@@ -173,6 +173,7 @@ int i_newfd = 0;
 static void (*flushf) () = NULL;
 
 static int i_timeout = 0;
+static int i_timeoutusec = 0;
 static time_t i_begintimeout;
 static void (*i_timeout_func) (void *);
 static struct timeval i_to, *i_top = NULL;
@@ -194,9 +195,10 @@ void add_flush(void (*flushfunc) ())
     flushf = flushfunc;
 }
 
-void set_alarm(int set_timeout, void (*timeout_func) (void *), void *data)
+void set_alarm(int set_timeout, int set_timeoutusec,void (*timeout_func) (void *), void *data)
 {
     i_timeout = set_timeout;
+    i_timeoutusec=set_timeoutusec;
     i_begintimeout = time(0);
     i_timeout_func = timeout_func;
     timeout_data = data;
@@ -396,11 +398,16 @@ int igetch()
                 if (i_top)
                     to = *i_top;
                 else {
-                    while (i_timeout != 0) {
+                    while ((i_timeout != 0)||(i_timeoutusec!=0))) {
                         to.tv_sec = i_timeout - (time(0) - i_begintimeout);
-                        if (to.tv_sec <= 0) {
+                        to.tv_usec = i_timeoutusec;
+                        if ((to.tv_sec < 0) ||((to.tv_sec==0)&&(i_timeoutusec==0))){
                             i_timeout = 0;
-                            (*i_timeout_func) (timeout_data);
+                            i_timeoutusec=0;
+                            if (i_timeout_func)
+                            	(*i_timeout_func) (timeout_data);
+                            else
+                            	return KEY_TIMEOUT;
                             continue;
                         };
                         alarm_timeout = 1;
@@ -415,7 +422,7 @@ int igetch()
                         return KEY_TALK;
                 }
                 if (!inremsg) {
-		    int saveerrno=errno;
+		            int saveerrno=errno;
                     while (msg_count) {
                         inremsg = true;
                         msg_count--;
@@ -426,7 +433,11 @@ int igetch()
                 }
                 if (sr == 0 && alarm_timeout) {
                     i_timeout = 0;
-                    (*i_timeout_func) (timeout_data);
+                    i_timeoutusec=0;
+                    if (i_timeout_func)
+                    	(*i_timeout_func) (timeout_data);
+                    else
+                    	return KEY_TIMEOUT;
                     continue;
                 }
                 if (sr >= 0)
