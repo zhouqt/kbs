@@ -1,3 +1,11 @@
+/***********
+
+stiger:用于把2003年7月23日前的摸班数据转到之后的代码需要的数据
+第一次设计的不好
+
+*******/
+
+
 #include "./bbs.h"
 #define TEMPLATE_DIR ".templ"
 #define MAX_TEMPLATE 10

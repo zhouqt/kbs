@@ -1,3 +1,13 @@
+/*****
+stiger:    2004.2
+
+记录版面在线人数到日志文件，用于以后统计方便吧
+
+crontab:  2 * * * * /home/bbs/bin/bonlinelog
+
+******/
+
+
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"

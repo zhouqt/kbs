@@ -1,3 +1,10 @@
+/********
+stiger: 计算文章有效字节数
+新发的文章bbsd都会计算了，这个程序主要用于计算以前的文章的有效字节数
+并会改写该版面的.DIR里的effsize
+*/
+
+
 #include "bbs.h"
 
 int calcboard(struct boardheader * bh, void * arg)
