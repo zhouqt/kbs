@@ -369,4 +369,6 @@ attach define
 #define QUOTELEV 0
 #define BOARD_SHOW_ONLINE 1
 
+#define BMSLOG
+
 #endif
