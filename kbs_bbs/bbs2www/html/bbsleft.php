@@ -266,6 +266,18 @@ setTimeout('bbs_auto_reload()',540000);
 		<div class="mi"><a href="/pc/pcsearch2.php">博客搜索</a></div>
 		<div class="mi"><a href="/pc/pcnsearch.php">日志搜索</a></div>
 		<div class="mi"><a href="/bbsdoc.php?board=SMTH_blog">Blog论坛</a></div>
+<?php
+		if ($currentuser && $currentuser["index"]) { //blog manage menu
+			@include("pc/pcconf.php");
+			if (isset($pcconfig["BOARD"])) {
+				$brdarr = array();
+				$pcconfig["BRDNUM"] = bbs_getboard($pcconfig["BOARD"], $brdarr);
+				if (bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"])) {
+?>
+		<div class="mi"><a href="/pc/pcadmin_rec.php">Blog管理</a></div>
+<?php
+		}}} //blog manage menu
+?>
 		<div class="lmi"><a href="/pc/index.php?id=SYSOP">帮助主题</a></div>
 		</div>
 <?php
