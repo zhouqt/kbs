@@ -1056,7 +1056,7 @@ int admin_menu()
     prints("\n");
 
     getdata(3,0,"选择(0-删题,1-禁止开题,2-允许开题,3-禁止做题,4-允许做题,5-列表,其他-离开) ", ans, 2, true, NULL, true);
-    if(ans[0]>='1'&&ans[0]<='4'){
+    if(ans[0]>='0'&&ans[0]<='4'){
         getdata(5,0,"请输入id:",buf,IDLEN+1,true,NULL,true);
         tuid = getuser(buf, &lookuser);
         if(!tuid) {
