@@ -402,6 +402,8 @@ int do_com_menu()
         {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-开始游戏"};
     int menupos[menust],i,j,sel=0,ch,max=0,me;
     char buf[80];
+    if(inrooms.status != INROOM_STOP)
+        strcpy(menus[7], "7-继续");
     menupos[0]=0;
     for(i=1;i<menust;i++)
         menupos[i]=menupos[i-1]+strlen(menus[i-1])+1;
@@ -555,11 +557,15 @@ int do_com_menu()
                                 for(i=0;i<myroom->people;i++)
                                     kill(inrooms.peoples[i].pid, SIGUSR1);
                             }
+                            return 2;
                         }
                     }
                     return 0;
                 case 7:
-                    start_game();
+                    if(inrooms.status == INROOM_STOP)
+                        start_game();
+                    else
+                        return 2;
                     return 0;
             }
             break;
@@ -663,6 +669,7 @@ void join_room(struct room_struct * r)
                             for(i=0;i<myroom->people;i++)
                                 send_msg(inrooms.peoples+i, buf);
                         }
+checkvote:
                         t1=0; t2=0; t3=0;
                         for(i=0;i<myroom->people;i++)
                             inrooms.peoples[i].vnum = 0;
@@ -836,8 +843,10 @@ void join_room(struct room_struct * r)
                 }
             }
             else if(ch<=0&&!buf[0]) {
-                if(do_com_menu()) goto quitgame;
+                j=do_com_menu();
                 if(kicked) goto quitgame;
+                if(j==1) goto quitgame;
+                if(j==2) goto checkvote;
             }
             else if(ch<=0){
                 break;
