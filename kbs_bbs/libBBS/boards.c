@@ -433,7 +433,7 @@ int brc_add_read(char *filename) {
 int brc_clear() {
 	int i;
 	char filename[20];
-	for(i=0; i<60; i++) {
+	for(i=0; i<BRC_MAXNUM; i++) {
 		sprintf(filename, "M.%d.A", time(0)-i);
 		brc_add_read(filename);
 	}
@@ -451,7 +451,11 @@ int brc_clear_new_flag(char* filename)
 		brc_list[n] = ftime;
 		brc_num=n+1;
         	brc_changed = 1;
+		for(i=n+1; i<BRC_MAXNUM; i++) 
+			brc_list[i]=ftime-(i-n);
 	}
+	brc_num=BRC_MAXNUM;
+	brc_changed = 1;
 	return;
 }
 
