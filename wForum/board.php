@@ -125,8 +125,6 @@ function showBoardContents($boardID,$boardName,$page){
 <script language="JavaScript">
 <!--
 	boardName = '<?php echo $boardName; ?>';
-	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
-	SHOW_POST_UNREAD = <?php echo SHOW_POST_UNREAD ? "true" : "false"; ?>;
 <?php
 		for($i=0;$i<$articleNum;$i++){
 			$origin=$articles[$i]['origin'];

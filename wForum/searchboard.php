@@ -5,10 +5,16 @@ require("inc/board.inc.php");
 
 global $keywords;
 global $exact;
-
-setStat("版面搜索");
+global $boards;
 
 preprocess();
+
+if ($boards !== false && sizeof($boards) == 1) {
+	header("Location: board.php?name=" . urlencode($boards[0]['NAME']));
+	exit(0);
+}
+
+setStat("版面搜索");
 
 show_nav();
 
@@ -17,7 +23,7 @@ showUserMailBoxOrBR();
 head_var();
 
 if ($keywords) {
-	doSearch($keywords, $exact);
+	showSearch($boards);
 }
 showSearchForm($keywords);
 
@@ -26,16 +32,19 @@ show_footer();
 function preprocess(){
 	global $keywords;
 	global $exact;
+	global $boards;
 	@$keywords = $_REQUEST['board'];
 	if (isset($_REQUEST['exact'])) {
 		$exact = $_REQUEST['exact'] ? 1 : 0;
 	} else {
 		$exact = 0;
 	}
+	$boards = array();
+	if (!bbs_searchboard($keywords,$exact,$boards)) $boards = false;
+	
 }
 
-function doSearch($keywords, $exact) {
-	$boards = array();
+function showSearch($boards) {
 ?>
 <TABLE cellPadding=3 cellSpacing=1 class=TableBorder1 align=center>
 <TR valign=middle>
@@ -45,23 +54,15 @@ function doSearch($keywords, $exact) {
 <Th width=*>关键字</Th>
 </TR>
 <?php
-	if (bbs_searchboard($keywords,$exact,$boards)) {
-		if (sizeof($boards)==1) {
-?>
-<script language="javascript">
-window.location.href="board.php?name=<?php echo urlencode($boards[0]['NAME']); ?>";
-</script>
-<?php
-		} else {
-			$i = 1;
-	    	foreach ($boards as $board) {
-	        	echo '<tr><td height="27" align="center" class="TableBody2">'.$i.'</td>' .
-	        	 '<td class="TableBody1">&nbsp;<a href="board.php?name='.urlencode($board['NAME']).'">'.htmlspecialchars($board['NAME']).'</a></td>' .
-	             '<td class="TableBody2">&nbsp;'.htmlformat($board['TITLE']).'</td>'.
-	             '<td class="TableBody1">&nbsp;'.htmlformat($board['DESC']).'&nbsp;</td></tr>';    
-	        	$i ++;
-	        }
-	    }
+	if ($boards !== false) {
+		$i = 1;
+		foreach ($boards as $board) {
+        		echo '<tr><td height="27" align="center" class="TableBody2">'.$i.'</td>' .
+			     '<td class="TableBody1">&nbsp;<a href="board.php?name='.urlencode($board['NAME']).'">'.htmlspecialchars($board['NAME']).'</a></td>' .
+			     '<td class="TableBody2">&nbsp;'.htmlformat($board['TITLE']).'</td>'.
+			     '<td class="TableBody1">&nbsp;'.htmlformat($board['DESC']).'&nbsp;</td></tr>';    
+        		$i ++;
+	    	}
 	} else {
 		echo '<tr><td height="27" align="center" colspan="4" class="TableBody1">没有搜索到任何版面</td></tr>';
 	}

@@ -347,6 +347,6 @@ function article_is_noreply(flag) {
 }
 
 function article_is_unread(flag) {
-	if (!SHOW_POST_UNREAD) return false;
+	if (!siteconf_SHOW_POST_UNREAD) return false;
 	return ( 'D' == flag || 'G' == flag || 'M' == flag  || 'B' == flag || 'N' == flag || '*' == flag);
 }

@@ -118,10 +118,10 @@ function showSec(isFold, isFav, boards, secNum) {
 			}
 		} else { //!isFold
 			showed = 0;
-			percent = 100 / boardsPerLine;
+			percent = 100 / siteconf_BOARDS_PER_ROW;
 			for (i = 0; i < boards.length; i++)	{
 				showed++;
-				if (showed % boardsPerLine == 1) {
+				if (showed % siteconf_BOARDS_PER_ROW == 1) {
 					str += "<tr>";
 				}
 				str += '<td class=TableBody1 width="'+percent+'%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=2>';
@@ -142,12 +142,12 @@ function showSec(isFold, isFav, boards, secNum) {
 					str += '<td width="50%">今日：<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width="50%">发贴：' + boards[i].nArticles + '</td>';
 				}
 				str += '</tr></table></td>';
-				if (showed % boardsPerLine == 0) {
+				if (showed % siteconf_BOARDS_PER_ROW == 0) {
 					str += "</tr>";
 				}
 			}
-			if (showed % boardsPerLine != 0) {
-				str += '<td class=TableBody1 colspan="' + (boardsPerLine - showed % boardsPerLine) + '" width="' + (percent*(boardsPerLine - showed % boardsPerLine)) + '%"></td></tr>';
+			if (showed % siteconf_BOARDS_PER_ROW != 0) {
+				str += '<td class=TableBody1 colspan="' + (siteconf_BOARDS_PER_ROW - showed % siteconf_BOARDS_PER_ROW) + '" width="' + (percent*(siteconf_BOARDS_PER_ROW - showed % siteconf_BOARDS_PER_ROW)) + '%"></td></tr>';
 			}
 		}
 	}
@@ -216,17 +216,17 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 		href_title = "原贴已删除";
 	}
 	document.write('<a href="disparticle.php?boardName=' + boardName + '&ID=' + origin.ID + '" title="' + href_title + '">' + html_title + ' </a>');
-	threadPages = Math.ceil((threadNum+1)/THREADSPERPAGE);
+	threadPages = Math.ceil((threadNum+1)/siteconf_THREADSPERPAGE);
 	if (threadPages>1) {
 		document.write("<b>[<img src=\"pic/multipage.gif\"> ");
 		for (t=1; (t<7) && (t<=threadPages); t++) {
-			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((t-1)*THREADSPERPAGE) + "\">" + t + "</a> ");
+			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((t-1)*siteconf_THREADSPERPAGE) + "\">" + t + "</a> ");
 		}
 		if (threadPages>7) {
 			if (threadPages>8) {
 				document.write("...");
 			}
-			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((threadPages-1)*THREADSPERPAGE) + "\">" + threadPages + "</a> ");
+			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((threadPages-1)*siteconf_THREADSPERPAGE) + "\">" + threadPages + "</a> ");
 		}
 		document.write(" ]</b>");
 	}

@@ -27,6 +27,19 @@ mysql 用户、密码和数据库名。然后按照 documents/smallpaper_tb.sql 里的定义在 mysq
 
     ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'
 
+7. inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。:p
+
+8. 几个附加说明：
+8a. httpd.conf 设置 wForum 所在的目录 index.php 也是 DirectoryIndex。可以在 httpd.conf 里面设置
+	DirectoryIndex index.html index.html.var index.php
+8b. php.ini 要关掉自动给引号加前导反斜杠
+	magic_quotes_gpc = off
+8c. 要保证 wForum 下的未读记录正常工作，你的 site.h 必须设置
+	#define USE_TMPFS           1   /*使用内存文件系统加速*/
+	#define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
+    如果 USE_TMPFS 原来是 0，修改后重新编译安装。同时在 ~bbs/ 下建立 cache 目录，重启动服务。
+    可以在 ~bbs/cache/ mount 一个 tmpfs 文件系统提高性能。推荐 USE_TMPFS 定义成 1，否则的话
+    两个 telnet 登录之间的未读记录都不会同步。
 
 
 

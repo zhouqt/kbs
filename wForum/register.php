@@ -22,6 +22,7 @@
 show_footer();
 
 function do_show() {
+	global $SiteName;
 ?>
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
     <tr><th align=center><form action="<?php echo $_SERVER['PHP_SELF'] ?>" method=post>服务条款和声明</td></tr>
@@ -43,11 +44,14 @@ function do_apply(){
 ?>
 <script language="javascript">
 <!--
+	function af(form, fieldID, msg) {
+		alert(msg);
+		form[fieldID].focus();
+		return false;
+	}
 	function checkEmpty(form, fieldID, fieldName) {
 		if (form[fieldID].value == "") {
-			alert('请输入您的' + fieldName + '!');
-			form[fieldID].focus();
-			return false;
+			return af(form, fieldID, '请输入您的' + fieldName + '!');
 		}
 		return true;
 	}
@@ -60,9 +64,10 @@ function do_apply(){
 			if (!checkEmpty(form, fID[i], fName[i])) return false;
 		}
 		if (form["pass1"].value != form["pass2"].value) {
-			alert("你两次输入的密码不一样：（"); 
-			form["pass1"].focus(); 
-			return false; 
+			return af(form, "pass1", "你两次输入的密码不一样：（"); 
+		}
+		if (form["pass1"].value == form["userid"].value) {
+			return af(form, "pass1", "用户名不能与密码相同"); 
 		}
 		return true;
 	}

@@ -535,7 +535,9 @@ function show_nav($boardName='')
 <script language="javascript">
 <!--
 	var siteconf_SMS_SUPPORT = <?php echo SMS_SUPPORT?"true":"false"; ?>;
-	var boardsPerLine = <?php echo BOARDS_PER_ROW; ?>;
+	var siteconf_BOARDS_PER_ROW = <?php echo BOARDS_PER_ROW; ?>;
+	var siteconf_SHOW_POST_UNREAD = <?php echo SHOW_POST_UNREAD ? "true" : "false"; ?>;
+	var siteconf_THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
 //-->
 </script>
 <script src="inc/funcs.js"  language="javascript"></script>
