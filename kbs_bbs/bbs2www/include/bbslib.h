@@ -324,6 +324,8 @@ char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* attachlink);
 int www_generateOriginIndex(char* board);
+unsigned int binarySearchInFileHeader(struct fileheader *start,int total, unsigned int key);
+
 
 struct WWW_GUEST_S* www_get_guest_entry(int idx);
 
