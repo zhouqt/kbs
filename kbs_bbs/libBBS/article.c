@@ -1411,7 +1411,7 @@ int Search_Bin(struct fileheader *ptr, int key, int start, int end)
 
 char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm, session_t* session)
 {
-    char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
+    char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? UNREAD_SIGN : 'N');
     char type;
 
 #ifdef HAVE_BRC_CONTROL

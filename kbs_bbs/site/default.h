@@ -603,6 +603,10 @@ extern const char secname[SECNUM][2][20];
 #define UL_CHANGE_NICK_LOWER   'c'
 #endif
 
+#ifndef UNREAD_SIGN
+#define UNREAD_SIGN '*'
+#endif
+
 #ifndef UL_SWITCH_FRIEND_UPPER
 #define UL_SWITCH_FRIEND_UPPER 'F'
 #endif
