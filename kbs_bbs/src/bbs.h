@@ -154,7 +154,7 @@ extern long ti;
 #define MAX_GOODBYE       5     /* 离站画面数 */
 #define MAX_ISSUE         5     /* 最大进站数 */
 #define MAX_EXP           5     /* 离站画面数 */
-#define MAX_DIGEST        1500  /* 最大文摘数 */
+#define MAX_DIGEST        3000  /* 最大文摘数 */
 #define MAX_DING          5	/* 最大置顶数 */
 
 /* added by bad 2002-08-2	FavBoardDir */
