@@ -789,8 +789,12 @@ int main(argc, argv)
        KCN temp change it for trace IP!! don't remove. 2000.8.19 */
 }
 #else
+static bool sshexiting=false;
 void ssh_exit()
 {
+    if (sshexiting)
+        return;
+    sshexiting=true;
     system_abort();
     packet_disconnect("sshbbsd exit");
 }
