@@ -3040,7 +3040,7 @@ char *direct ;
     clear() ;
     prints("区域删除\n") ;
     /*Haohmaru.99.4.20.增加可以强制删除被mark文章的功能*/
-    getdata(1,0,"删除模式 [0]标记删除 [1]强制删除(被mark的文章一起删) [2]普通删除 (0): ",del_mode,10,DOECHO,NULL,YEA) ;
+    getdata(1,0,"删除模式 [0]标记删除 [1]普通删除 [2]强制删除(被mark的文章一起删) (0): ",del_mode,10,DOECHO,NULL,YEA) ;
     idel_mode=atoi(del_mode);
     /*   if (idel_mode!=0 || idel_mode!=1)
        {
@@ -4303,19 +4303,19 @@ int     autoappend;
     else ph=fh;
 
     sprintf(genbuf, "/board/%s/%s.html", board, fh->filename);
-    ca_expire(genbuf);
+    ca_expire_file(genbuf);
 
-    if (!autoappend) {
+    if (autoappend) {
       bzero(&postfile,sizeof(postfile));
-      now=time(NULL);
-      postfile.accessed[11]=now/(3600*24)%100; //localtime(&now)->tm_mday;
       strcpy( postfile.filename, fh->filename );
       strncpy( postfile.owner, fh->owner, IDLEN+2 );
       postfile.owner[IDLEN+1]=0;
     };
+    now=time(NULL);
     sprintf( genbuf, "%-32.32s - %s", fh->title, userid );
     strncpy( ph->title, genbuf, STRLEN );
     ph->title[STRLEN-1]=0;
+    ph->accessed[11]=now/(3600*24)%100; /*localtime(&now)->tm_mday;*/
     if (autoappend) {
         tmpdigestmode=digestmode;
         digestmode=(owned)?5:4;

@@ -160,3 +160,25 @@ ca_expire(const char *URL)
     }
 }
 
+int
+ca_expire_file(const char *URL)
+{
+    int  r;
+    char dir[MAX_CA_PATH_LEN + 64];
+
+/* KCN,speed up expire 
+    if (r = ca_badpath(URL))
+        return r;
+    else
+    {
+*/
+        strcpy(dir, CACHE_ROOT);
+        strncat(dir, URL, MAX_CA_PATH_LEN);
+        dir[4 + MAX_CA_PATH_LEN] = 0;
+	return unlink(dir);
+/*
+        return ca_rmdir(dir);
+    }
+*/
+}
+
