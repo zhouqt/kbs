@@ -930,11 +930,14 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
     if (effsize)
         *effsize=0;
     sign_size=0;
+    temp=0;  /*±£´æÊÇ·ñ½øÈëÇ©Ãûµ³Î»ÖÃ*/
     while (p != NULL) {
         struct textline *v = p->next;
 
         if (!aborted)
             if (p->next != NULL || p->data[0] != '\0') {
+                if (!strcmp(p->data,"--"))
+                    temp=1;
                 if (effsize) {
                     if (!strcmp(p->data,"--")) {
 /*×¢Òâ´¦Àí
@@ -952,7 +955,7 @@ fsdfa
                               *effsize+=strlen(p->data);
                     }
                 }
-                if (abort[0] == 'f' || abort[0] == 'F') {       /* Leeward 98.07.27 Ö§³Ö×Ô¶¯»»ÐÐ */
+                if (!temp&&(abort[0] == 'f' || abort[0] == 'F')) {       /* Leeward 98.07.27 Ö§³Ö×Ô¶¯»»ÐÐ */
                     unsigned char *ppt = (unsigned char *) p->data;     /* ÕÛÐÐ´¦ */
                     unsigned char *pp = (unsigned char *) ppt;  /* ÐÐÊ× */
                     unsigned int LLL = 78;      /* ÕÛÐÐÎ»ÖÃ */
@@ -965,7 +968,9 @@ fsdfa
                         ich = 0;
                         do {
                             if ((ppx = (unsigned char *) strstr((char *) ppx, "[")) != NULL) {
-                                ich = (int) strchr((char *) ppx, 'm') - (int) ppx;
+                                int ich=0;
+                                while (!isalpha(*(ppx+ich)&&*(ppx+ich)!=0)
+                                    ich++;
                                 if (ich > 0)
                                     ich++;
                                 else
