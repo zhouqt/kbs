@@ -39,6 +39,25 @@
 #include <sys/time.h>
 #include <sys/stat.h>
 
+#ifdef USE_SSL
+/* COMMAN : SPOP3(pop3 through SSL) support */ 
+#include <openssl/rsa.h>       /* SSLeay stuff */
+#include <openssl/crypto.h>
+#include <openssl/x509.h>
+#include <openssl/pem.h>
+#include <openssl/ssl.h>
+#include <openssl/err.h>
+
+#define CERTFILE BBSHOME "/etc/bbs.crt"
+#define KEYFILE  BBSHOME "/etc/bbs.key"
+
+  SSL_CTX* ctx;
+  SSL*     ssl;
+  SSL_METHOD *meth;
+  int use_ssl = 0;
+#endif 
+
+
 #define BUFSIZE         1024
 /*#define POP3PORT 110 remote to sysname.h*/
 
@@ -61,8 +80,8 @@ char genbuf[BUFSIZE];
 
 #define STRN_CPY(d,s,l) { strncpy((d),(s),(l)); (d)[(l)-1] = 0; }
 #define ANY_PORT        0
-#define RFC931_PORT     113
-#define RFC931_TIMEOUT         5
+//#define RFC931_PORT     113
+// #define RFC931_TIMEOUT         5
 /*#define POP3_TIMEOUT         60*/
 /* Leeward 98.05.06 Increases TIMEOUT value for slow modem users */
 #define POP3_TIMEOUT         180
@@ -115,6 +134,45 @@ struct commandlist {
 };
 
 char *crypt();
+#ifdef USE_SSL
+ 
+static void init_ssl(void)
+{ 
+  SSL_load_error_strings();
+  SSLeay_add_ssl_algorithms();
+  meth = SSLv23_server_method();
+  ctx = SSL_CTX_new (meth);
+  if (!ctx) {
+    ERR_print_errors_fp(stderr);
+    exit(-1);
+  }
+  
+  if (SSL_CTX_use_certificate_file(ctx, CERTFILE, SSL_FILETYPE_PEM) <= 0) {
+    ERR_print_errors_fp(stderr);
+    exit(-1);
+  }
+  if (SSL_CTX_use_PrivateKey_file(ctx, KEYFILE, SSL_FILETYPE_PEM) <= 0) {
+    ERR_print_errors_fp(stderr);
+    exit(-1);
+  }
+  if (!SSL_CTX_check_private_key(ctx)) {
+    fprintf(stderr,"Private key does not match the certificate public key\n");
+    exit(-1);
+  }
+     
+}
+
+static void do_ssl(int fd)
+{
+  int err;	 
+  ssl = SSL_new (ctx);                          
+  if (!ssl) exit(-1);
+  SSL_set_fd (ssl, fd);
+  err = SSL_accept (ssl);
+  if (err<0) exit(-1);
+}
+
+#endif 
 
 static void
 logattempt( uid, frm ) /* Leeward 98.07.25 */
@@ -153,7 +211,7 @@ void dokill(int signo)
 {
     kill(0,SIGKILL);
 }
-
+/* COMMAN : no use now 
 static FILE *fsocket(domain, type, protocol)
 int     domain;
 int     type;
@@ -171,7 +229,25 @@ int     protocol;
         return (fp);
     }
 }
-
+*/
+static int readstr(int sock,char *s,int size)
+{
+	/* COMMAN : this function is to be optimized since it reads one byte a time */
+	char c;
+	int ret,retlen = 0;;
+	do 
+	{
+#ifdef USE_SSL
+     if (use_ssl) ret = SSL_read(ssl,&c,1);
+     else 
+#endif 	
+     ret = read(sock, &c,1);
+     if (ret <=0) return retlen;
+     retlen ++;
+     *s++ = c;
+     if (c == '\n' || retlen == size) return retlen;
+	}while (1);
+}
 static void
 outs(str)
 char *str;
@@ -180,6 +256,10 @@ char *str;
 
     (void)bzero(sendbuf, sizeof(sendbuf));
     (void)sprintf(sendbuf, "%s\r\n", str);
+#ifdef USE_SSL    
+    if (use_ssl) SSL_write(ssl,sendbuf,strlen(sendbuf);
+    else 
+#endif     
     (void)write(sock, sendbuf, strlen(sendbuf));
 }
 
@@ -238,7 +318,7 @@ int     sig;
     longjmp(timebuf, sig);
 }
 
-
+#if 0
 void    rfc931(rmt_sin, our_sin, dest)
 struct sockaddr_in *rmt_sin;
 struct sockaddr_in *our_sin;
@@ -346,7 +426,7 @@ char   *dest;
         strcat(dest, (char *)inet_ntoa(rmt_sin->sin_addr));
 
 }
-
+#endif 
 char *
 nextwordlower(str)
 char **str;
@@ -495,7 +575,19 @@ int main( int argc, char **argv)
         ioctl(n, TIOCNOTTY, 0) ;
         close(n);
     }
-
+#ifdef USE_SSL
+    switch (fork()) {
+    	case 0:
+    	    port_num = 995;
+    	    use_ssl = 1;
+    	    break;
+    	case -1: 
+    	    exit(-1);
+    	    break;
+    	default:  
+    	    break;      
+    }
+#endif
     if ((msock = socket(AF_INET,SOCK_STREAM,0)) < 0) {
         exit(1);
     }
@@ -550,13 +642,23 @@ int main( int argc, char **argv)
             getsockname(sock, (struct sockaddr *) &our,(socklen_t*)&len);
 
             Init();
-
+            
+#ifdef USE_SSL
+         /* COMMAN: SSL init */
+            if (use_ssl) do_ssl(sock); 
+#endif            
+  /*  COMMAN: do we really need ident lookup?  2002-7
             rfc931( &fsin, &our, remote_userid );
-
+ */
+ /*   COMMAN: stdio lib is of no use
             cfp = fdopen(sock, "r+");
             setbuf(cfp, (char *) 0);
-
-            sprintf(genbuf, "+OK Pandora BBS Pop3 server at %s starting.", strchr(BBSNAME, '@') + 1);
+ */
+#ifdef USE_SSL
+            sprintf(genbuf, "+OK SMTH BBS POP3%s server at %s starting.", (use_ssl)?"S(SSL)":"",strchr(BBSNAME, '@') + 1);
+#else
+            sprintf(genbuf, "+OK SMTH BBS POP3 server at %s starting.", strchr(BBSNAME, '@') + 1);
+#endif             
             outs(genbuf);
 
             log_usies("CONNECT");
@@ -1090,7 +1192,7 @@ void Quit()
         if (markdel) do_delete();
     }
     log_usies("EXIT");
-    sprintf(genbuf, "+OK Pandora BBS Pop3 server at %s signing off.", strchr(BBSNAME, '@') + 1);
+    sprintf(genbuf, "+OK SMTH BBS Pop3 server at %s signing off.", strchr(BBSNAME, '@') + 1);
     outs(genbuf);
     fclose(cfp);
     close(sock);
