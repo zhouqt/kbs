@@ -92,7 +92,7 @@ int raw_write(int fd, char *buf, int len)
     int nowcounter, i;
     static int bufcounter;
     int retlen;
-
+#ifndef NINE_BUILD
     if (ZmodemRateLimit) {
         nowcounter = time(0);
         if (lastcounter == nowcounter) {
@@ -110,6 +110,7 @@ int raw_write(int fd, char *buf, int len)
         }
         lastcounter = nowcounter;
     }
+#endif    
 #ifdef SSHBBS
     return ssh_write(fd, buf, len);
 #else
