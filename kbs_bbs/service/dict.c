@@ -163,6 +163,7 @@ int dict_main()
                     if(i>=20) break;
                     row = mysql_fetch_row(res);
                 }
+				mysql_free_result(res);
             }
         }
         if (word[0]==0) break;
@@ -209,6 +210,7 @@ int dict_main()
            clear();
            unlink(fn);
         }
+		mysql_free_result(res);
     //i = igetkey();
     }
 exit_dict:
