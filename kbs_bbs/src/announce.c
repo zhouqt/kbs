@@ -34,6 +34,7 @@
 #define ADDMAIL         2
 #define ADDGOPHER       3
 
+#define ANNPATH_NUM	20
 int bmonly = 0;
 int a_fmode = 1;
 char *email_domain();
@@ -44,6 +45,16 @@ extern void a_prompt();         /* added by netty */
 int t_search_down();
 int t_search_up();
 
+static char* import_path[ANNPATH_NUM]; /*¶àË¿Â·*/
+static char* import_title[ANNPATH_NUM];
+static int import_path_select=0;
+
+static void a_freenames(MENU* pm)
+{
+    int i;
+    for (i=0;i<pm->num;i++)
+    	free(pm->item[i]);
+}
 
 void a_report(s)                /* Haohmaru.99.12.06 */
     char *s;
@@ -68,6 +79,303 @@ void a_report(s)                /* Haohmaru.99.12.06 */
         return ;
     }
 */
+}
+
+static int save_import_path()
+{
+    FILE* fn;
+    int i;
+    char buf[MAXPATH];
+    sethomefile(buf, currentuser->userid, "BMpath");
+    fn = fopen(buf, "wt");
+    if (fn) {
+    	for (i=0;i<ANNPATH_NUM;i++) {
+    		fputs(import_path[i],fn);
+    		fputs(import_title[i],fn);
+    	}
+    	return 0;
+    }
+    return -1;
+}
+
+static void load_import_path()
+{
+    FILE* fn;
+    char buf[MAXPATH];
+    int i;
+    sethomefile(buf, currentuser->userid, "BMpath");
+    fn = fopen(buf, "rt");
+    if (fn) {
+    	for (i=0;i<ANNPATH_NUM;i++) {
+    		if (!feof(buf))
+	           fgets(buf, MAXPATH-1, fn);
+    		else
+    		    buf[0]=0;
+    		
+    		if (buf[0]!=0&&(ann_traverse_check(buf, currentuser)!=0))
+    			buf[0]=0; /* can't access */
+    		
+    		import_path[i]=(char*)malloc(strlen(buf)+1);
+    		strcpy(import_path[i],buf);
+    		buf[0]=0;
+    		if (!feof(buf))
+	           fgets(buf, MAXPATH-1, fn);
+    		else { //get the title of pm
+    		    MENU pm;
+    		    ann_load_directory(&pm);
+    		    strncpy(buf,pm->mtitle,MAXPATH-1);
+    		    buf[MAXPATH-1]=0;
+    		    a_freenames(&pm);
+    		}
+    		if (import_path[i][0]==0) /* if invalid path,then let the title empty */
+    			buf[0]=0;
+    		import_title[i]=(char*)malloc(strlen(buf)+1);
+    		strcpy(import_title[i],buf);
+    	}
+	fclose(fn);
+    } else {
+    	for (i=0;i<ANNPATH_NUM;i++) {
+    		import_path[i]=(char*)malloc(1);
+    		import_path[i][0]=0;
+    		import_title[i]=(char*)malloc(1);    		
+    		import_path[i][0]=0;
+    	}
+    	save_import_path();
+    }
+    import_path_select=1;
+}
+
+static void free_import_path()
+{
+    int i;
+    for (i=0;i<ANNPATH_NUM;i++) {
+    	free(import_path[i]);
+    	free(import_title[i]);
+    }
+}
+
+struct a_select_path_arg
+{
+    bool save_mode; /* in save mode,path need valid*/
+    int tmp_num;
+};
+
+static int a_select_path_onselect(struct _select_def *conf)
+{
+    a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
+    if (arg->save_mode) {/* check valid path */
+    	if (import_title[conf->pos-1][0]==0||import_path[conf->pos-1][0]==0) {
+    		bell();
+    		return SHOW_CONTINUE;
+    	}
+    }
+    else { /* confirm replace */
+    	if (import_title[conf->pos-1][0]!=0&&import_path[conf->pos-1][0]!=0) {
+    		char ans[STRLEN];
+    		a_prompt(-2, "Òª¸²¸ÇÒÑÓÐµÄË¿Â·Ã´£¿(Y/N) [N]", ans);
+    		if (toupper(ans[0])!='Y')
+    		    return SHOW_CONTINUE;
+    	}
+    }
+    return SHOW_SELECT;
+}
+
+static int 
+a_select_path_show(struct _select_def *conf, int i)
+{
+    if (import_title[i-1][0]!=0)
+        prints(" %2d   %s", i, import_title[i-1]);
+    else
+        prints(" %2d   ÉÐÎ´Éè¶¨", i);
+    return SHOW_CONTINUE;
+}
+
+static int
+a_select_path_prekey(struct _select_def *conf, int key)
+{
+    a_select_path_arg *arg = (a_select_path_arg *) conf->arg;
+
+	if ((*key == '\r' || *key == '\n') && (arg->tmpnum != 0))
+	{
+		conf->new_pos = arg->tmpnum;
+		arg->tmpnum = 0;
+		return SHOW_SELCHANGE;
+	}
+
+	if (!isdigit(*key))
+		arg->tmpnum = 0;
+
+	switch (*key)
+	{
+	case 'e':
+	case 'q':
+		*key = KEY_LEFT;
+		break;
+	case 'p':
+	case 'k':
+		*key = KEY_UP;
+		break;
+	case ' ':
+	case 'N':
+		*key = KEY_PGDN;
+		break;
+	case 'n':
+	case 'j':
+		*key = KEY_DOWN;
+		break;
+	}
+	return SHOW_CONTINUE;
+}
+
+static int 
+a_select_path_key(struct _select_def *conf, int key)
+{
+    int oldmode;
+    switch (key) {
+        case 'T':
+        case 't':
+            if (import_path[conf->pos-1][0]!=0) {
+                    char new_title[STRLEN];
+                    strcpy(new_title,import_title[conf->pos-1]);
+                    a_prompt2(-2, "ÐÂ±êÌâ: ", new_title);
+                    if (new_title[0]!=0) {
+                        free(import_title[conf->pos-1]);
+                        new_title[80]=0;
+                        import_title[conf->pos-1]=(char*)malloc(strlen(new_title)+1);
+                        strcpy(import_title[conf->pos-1],new_title);
+                        save_import_path();
+                        return SHOW_DIRCHANGE;
+                    }
+                    return SHOW_REFRESH;
+            }
+            break;
+        case 'D':
+        case 'd':
+            if (import_title[conf->pos-1][0]!=0) {
+            	      char ans[STRLEN];
+                    a_prompt2(-2, "ÒªÉ¾³ýÕâ¸öË¿Â·£¿", ans);
+                    if (toupper(ans[0])=='Y') {
+                        free(import_title[conf->pos-1]);
+                        import_title[conf->pos-1]=(char*)malloc(1);
+                        import_title[conf->pos-1][0]=0;
+                        save_import_path();
+                        return SHOW_DIRCHANGE;
+                    }
+                    return SHOW_REFRESH;
+            }
+            break;
+        case 'M':
+        case 'm':
+            {
+                char ans[STRLEN];
+                a_prompt2(-2, "ÊäÈëÒªÒÆ¶¯µ½µÄÎ»ÖÃ£º", ans);
+                if ((ans[0]!=0)&&isdigit(ans[0])) {
+                    int new_pos;
+                    new_pos=atoi(ans);
+                    if ((new_pos>=1)&&(new_pos<=ANNPATH_NUM)&&(new_pos!=conf->pos)) {
+                    	  char* tmp;
+                    	  tmp=import_title[conf->pos-1];
+                    	  import_title[conf->pos-1]=import_title[new_pos-1];
+                    	  import_title[new_pos-1]=tmp;
+                       tmp=import_path[conf->pos-1];
+                    	  import_path[conf->pos-1]=import_path[new_pos-1];
+                    	  import_path[new_pos-1]=tmp;
+                       save_import_path();
+                       conf->pos=new_pos;
+                       return SHOW_DIRCHANGE;
+                   }
+                }
+            }
+            break;
+        case Ctrl('Z'):
+		oldmode = uinfo.mode;
+		r_lastmsg();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+        case 'L':
+		oldmode = uinfo.mode;
+		show_allmsgs();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+        case 'W':
+		oldmode = uinfo.mode;
+		if (!HAS_PERM(currentuser, PERM_PAGE))
+			break;
+		s_msg();
+		modify_user_mode(oldmode);
+		return SHOW_REFRESH;
+        case 'U':
+		oldmode = uinfo.mode;
+		clear();
+		modify_user_mode(QUERY);
+		t_query(NULL);
+		modify_user_mode(oldmode);
+		clear();
+		return SHOW_REFRESH;
+	}
+    }
+    return SHOW_CONTINUE;
+}
+
+static int 
+a_select_path_refresh(struct _select_def *conf)
+{
+    clear();
+    docmdtitle("[Ë¿Â·Ñ¡Ôñ²Ëµ¥]",
+               "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m ÒÆ¶¯[\x1b[1;32mm\x1b[0;37m]\x1b[m");
+    move(2, 0);
+    prints("[0;1;37;44m %4s  %s[m", "±àºÅ", "Ë¿Â·Ãû");
+    update_endline();
+    return SHOW_CONTINUE;
+}
+
+/* select a announce path
+     return the index in import_path
+     		1 base,0=error
+     author: KCN
+     */
+static int 
+a_select_path(bool save_mode)
+{
+    int i;
+    struct _select_def pathlist_conf;
+    POINT *pts;
+    struct a_select_path arg;
+    int i;
+    
+    clear();
+    if (import_path_select==0)
+    	load_import_path();
+    arg.save_mode=save_mode;
+    pts = (POINT *)malloc(sizeof(POINT) * ANNPATH_NUM);
+    for (i = 0; i < ANNPATH_NUM; i++)
+    {
+        pts[i].x = 2;
+        pts[i].y = i + 3;
+    }
+    bzero(&pathlist_conf, sizeof(struct _select_def));
+    pathlist_conf.item_count = ANNPATH_NUM;
+    pathlist_conf.item_per_page = ANNPATH_NUM;
+    /* ¼ÓÉÏ LF_VSCROLL ²ÅÄÜÓÃ LEFT ¼üÍË³ö */
+    pathlist_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;
+    pathlist_conf.prompt = "¡ô";
+    pathlist_conf.item_pos = pts;
+    pathlist_conf.arg = NULL;
+    pathlist_conf.title_pos.x = 0;
+    pathlist_conf.title_pos.y = 0;
+    pathlist_conf.pos = import_path_select; 
+    pathlist_conf.page_pos = 1; /* initialize page to the first one */
+
+    pathlist_conf.on_select = a_select_path_onselect;
+    pathlist_conf.show_data = a_select_path_show;
+    pathlist_conf.pre_key_command = a_select_path_prekey;
+    pathlist_conf.key_command = a_select_path_key;
+    pathlist_conf.show_title = a_select_path_refresh;
+    pathlist_conf.get_data = NULL;
+
+    list_select_loop(&pathlist_conf);
+    free(pts);
+    return pathlist_conf.pos;
 }
 
 int valid_fname(str)
@@ -179,13 +487,6 @@ void a_additem(pm, title, fname, host, port)    /* ²úÉúITEM object,²¢³õÊ¼»¯ */
         strncpy(newitem->fname, fname, sizeof(newitem->fname) - 1);
         pm->item[(pm->num)++] = newitem;
     }
-}
-
-void a_freenames(MENU* pm)
-{
-    int i;
-    for (i=0;i<pm->num;i++)
-    	free(pm->item[i]);
 }
 
 int a_loadnames(pm)             /* ×°Èë .Names */
@@ -446,23 +747,21 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
     modify_user_mode(CSIE_ANNOUNCE);
     if (ann_get_path(key, buf, sizeof(buf)) == 0)
 	{
+	    int i;
 		snprintf(Importname, sizeof(Importname), "%s/%s", path, buf);
 
 		/* Leeward: 97.12.17: ¶Ô°æÖ÷µÄ¶à¸ö´°¿ÚÍ¬²½Ë¿Â· 
 		    KCN: 2003.1.17:Ó¦¸ÃÓÃ°æÖ÷Ä¿Â¼ÏÂµÄÎÄ¼þ¡£¶ø²»ÊÇ
 		    ¶à¸ö°ßÖñ¹«ÓÃ¡£
 		*/
-		sethomefile(buf, currentuser->userid, "BMpath");
-		fn = fopen(buf, "rt");
-		if (fn) {
-			fgets(netty_path, 256, fn);
-			fclose(fn);
-		}
+		i=a_select_path(true);
+		if (i==0)
+			return 1;
 
 		bzero(&pm,sizeof(pm));
-		if (netty_path[0] != '\0') {
+		if (import_path[i][0] != '\0') {
 			/* Ö±½Ó¼ÓÈëµ½¾«»ªÇøÄÚ£¬²»ÓÃÈ·ÈÏ Life */
-			pm.path = netty_path;
+			pm.path = import_path[i][0];
 		}
 		else {
 			sprintf(buf, "½«¸ÃÎÄÕÂ·Å½ø %s,È·¶¨Âð?(Y/N) [N]: ", Importname);
@@ -990,27 +1289,17 @@ void a_manager(pm, ch)
     case 'p':
         a_copypaste(pm, 1);
         break;
-    case 'f':
-        pm->page = 9999;
-        sprintf(genbuf, "Â·¾¶Îª %s, ÒªÉèÎªµ±Ç°Â·¾¶Âð?(Y/N) [Y]: ", pm->path);
-        a_prompt(-1, genbuf, ans);
-        /*if( ans[0] == 'Y' || ans[0] == 'y' ) { */
-        if (ans[0] != 'N' && ans[0] != 'n') {
-            strcpy(netty_path, pm->path);
-            /*sprintf( genbuf, "ÒÑ½«¸ÃÂ·¾¶ÉèÎªµ±Ç°Â·¾¶, Çë°´ÈÎºÎ¼üÒÔ¼ÌÐø <<" );
-               a_prompt( -1, genbuf, ans );Leeward 98.04.15 */
-            {                   /* Leeward: 97.12.17: ¶Ô°æÖ÷µÄ¶à¸ö´°¿ÚÍ¬²½Ë¿Â· */
-                FILE *sl;
+    case 'f': {
+    	    int i;
+           pm->page = 9999;
+	    i=a_select_path(true);
+	    if (i==0)
+	        break;
 
-                /* by zixia: ÓÃÏà¶ÔÂ·¾­ sprintf(genbuf, "%s/%s", BBSHOME,netty_path); */
-                sethomefile(genbuf,currentuser->userid,"BMpath");
-                sl = fopen(genbuf, "wt");
-                if (sl) {
-                    fputs(netty_path, sl);
-                    fclose(sl);
-                }
-            }                   /* End if  # Leeward */
-        }
+	    free(import_path[i][0];
+	    import_path[i][0]=malloc(strlen(pm->path)+1);
+	    strcpy(import_path[i][0],pm->path);
+	 }
         break;
     }
     if (pm->num > 0)

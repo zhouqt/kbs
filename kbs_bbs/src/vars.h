@@ -23,7 +23,6 @@ extern struct userec lookupuser;        /* Used when searching for other user in
 
 
 extern int nettyNN;
-extern char netty_path[];       /* 纪念本站创始人之一  netty */
 extern char netty_board[];      /* 纪念本站创始人之一  netty */
 extern char currboard[];        /* name of currently selected board */
 extern char currBM[];           /* BM of currently selected board */

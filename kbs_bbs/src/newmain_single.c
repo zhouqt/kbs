@@ -69,8 +69,6 @@ time_t lastnote;
 
 struct user_info uinfo;
 
-/* char netty_path[ 60 ]; FAINT!!! 怎么会不出错呢!!! Leeward: 1997.12.10 */
-char netty_path[256];
 time_t login_start_time;
 int showansi = 1;
 
@@ -875,7 +873,6 @@ void main_bbs(int convit, char *argv)
         pressreturn();
     }
     clear();
-    memset(netty_path, 0, sizeof(netty_path));
     nettyNN = NNread_init();
     set_numofsig();
     if (DEFINE(currentuser, DEF_INNOTE)) {
