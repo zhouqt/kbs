@@ -46,5 +46,10 @@ wryext: wryext.c decode.o
 
 QQwry.txt ipinfo_version ipinfo_count: QQWry.Dat wryext
 	./wryext QQWry.Dat > QQwry.txt
+
+updateip:
+	wget http://96hk.y365.com/soft/qqwry.rar
+	unrar e qqwry.rar QQWry.Dat
+	
 clean:
 	rm -rf convert ipmask.txt build bin2obj ipinfo_tree string_index string_pool libiplook.so *.o  test looktest wryext ipinfo_version ipinfo_count
