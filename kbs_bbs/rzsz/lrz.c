@@ -103,22 +103,18 @@ static void report(int sct);
 static void uncaps(char *s);
 static int IsAnyLower(const char *s);
 static int putsec(struct zm_fileinfo *zi, char *buf, size_t n);
-static int make_dirs(char *pathname);
 static int procheader(char *name, struct zm_fileinfo *);
 static int wcgetsec(size_t * Blklen, char *rxbuf, unsigned int maxtime);
 static int wcrx(struct zm_fileinfo *);
 static int wcrxpn(struct zm_fileinfo *, char *rpn);
-static int wcreceive(int argc, char **argp);
+static int wcreceive(int argc, const char **argp);
 static int rzfile(struct zm_fileinfo *);
-static void usage(int exitcode, const char *what);
 static int closeit(struct zm_fileinfo *);
 static void ackbibi(void);
 static void zmputs(const char *s);
 static size_t getfree(void);
 
 static long buffersize = 32768;
-static unsigned long min_bps = 0;
-static long min_bps_time = 120;
 
 char Lzmanag;                   /* Local file management request */
 char zconv;                     /* ZMODEM file conversion request */
@@ -138,14 +134,11 @@ static char fname[1024];
 
 char * bbs_zrecvfile()
 {
-    register char *cp;
     register int npats = 0;
     char **patts = NULL;        /* keep compiler quiet */
     int exitcode = 0;
-    int c;
-    char paths[100]="tmp/";
+    const char* paths="tmp/";
     char* fn;
-    unsigned int startup_delay = 0;
 
     Rxtimeout = 100;
     Restricted = 2;
@@ -173,16 +166,11 @@ char * bbs_zrecvfile()
     return fn;
 }
 
-static void usage(int exitcode, const char *what)
-{
-    exit(exitcode);
-}
-
 /*
  * Let's receive something already.
  */
 
-static int wcreceive(int argc, char **argp)
+static int wcreceive(int argc, const char **argp)
 {
     int c;
     struct zm_fileinfo zi;
@@ -720,7 +708,7 @@ static int procheader(char *name, struct zm_fileinfo *zi)
             return ERROR;
         }
     }
-  buffer_it:{
+    {
         static char *s = NULL;
         static size_t last_length = 0;
 
@@ -1031,10 +1019,6 @@ struct oosb_t *anker = NULL;
 static int rzfile(struct zm_fileinfo *zi)
 {
     register int c, n;
-    long last_rxbytes = 0;
-    unsigned long last_bps = 0;
-    long not_printed = 0;
-    time_t low_bps = 0;
     size_t bytes_in_block = 0;
 
     zi->eof_seen = FALSE;

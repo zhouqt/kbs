@@ -672,9 +672,9 @@ int get_utmpent_num(struct user_info *uent)
     return uent - utmpshm->uinfo + 1;
 }
 
-static int cmpfuid(struct friends *a, struct friends *b)
+static int cmpfuid(const void*a,const void*b)
 {
-    return strncasecmp(a->id, b->id, IDLEN);
+    return strncasecmp(((struct friends*)a)->id, ((struct friends*)b)->id, IDLEN);
 }
 
 
@@ -707,7 +707,7 @@ int getfriendstr(struct userec* user,struct user_info* puinfo)
             nf--;
         }
     }
-    qsort(friendsdata, nf, sizeof(friendsdata[0]), (int (*)(const void *, const void *)) cmpfuid);      /*For Bi_Search */
+    qsort(friendsdata, nf, sizeof(friendsdata[0]),(int (*) (__const__ void *, __const__ void *)) cmpfuid);      /*For Bi_Search */
     topfriend = (struct friends_info *) calloc(nf,sizeof(struct friends_info));
     for (i = 0; i < nf; i++) {
         puinfo->friends_uid[i] = searchuser(friendsdata[i].id);

@@ -232,6 +232,9 @@
 /* Define to 1 if `n_un.n_name' is member of `struct nlist'. */
 #undef HAVE_STRUCT_NLIST_N_UN_N_NAME
 
+/* Define to 1 if the system has the type `struct utimbuf'. */
+#undef HAVE_STRUCT_UTIMBUF
+
 /* Define to 1 if you have the <sys/dir.h> header file, and it defines `DIR'.
    */
 #undef HAVE_SYS_DIR_H

@@ -87,6 +87,10 @@ typedef unsigned char byte;
 typedef enum { false = 0, true = 1 } bool;
 #else
 
+#ifndef __GNUC__
+#define __const__ const
+#endif
+
 #ifndef true
 #define true 1
 #endif

@@ -23,6 +23,7 @@
   02111-1307, USA.
 */
 
+#define BBSMAIN
 #include "bbs.h"
 #include <sys/types.h>
 
@@ -250,11 +251,5 @@ int zrdata(char *buf, int length, size_t * received);
 int zgethdr(char *hdr, int eflag, size_t *);
 void stohdr(size_t pos);
 long rclhdr(char *hdr);
-
-
-
-
-
-
-
+void readline_clean(void);
 #endif

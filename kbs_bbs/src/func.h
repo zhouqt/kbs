@@ -276,6 +276,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     int is_emailpost_board(const char *board);
 
 /* define in article.c */
+
     struct write_dir_arg {
       char* filename; /*.dir的文件名*/
       int fd;                 //文件句柄
@@ -288,6 +289,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     void malloc_write_dir_arg(struct write_dir_arg*filearg);
     int init_write_dir_arg(struct write_dir_arg*filearg);
     void free_write_dir_arg(struct write_dir_arg*filearg);
+
 	/* Search_Bin 
 	 * 功能：依据key, 对ptr传入的.DIR索引进行二分查找
 	 */
@@ -307,6 +309,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
     typedef int (*DIR_APPLY_FUNC) (int fd, struct fileheader * start, int ent, int total, struct fileheader * data, bool match);
     typedef int (*search_handler_t) (int fd, fileheader_t * base, int ent, int total, bool match, void *arg);
     int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
+    int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func);
     int get_effsize(char * ffn);
 	
 

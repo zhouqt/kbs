@@ -51,6 +51,7 @@ int rdchk(int fd)
     ioctl(fd, FIONREAD, &lf);
     return ((int) lf);
 #endif
+    return 0;
 }
 
 

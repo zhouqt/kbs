@@ -3,6 +3,7 @@
 #define DEBUG
 
 void cancelpost(const char *board,const char *userid,struct fileheader *fh, int owned, int autoappend);
+int get_effsize_attach(char * ffn, long *att);
 int outgo_post(struct fileheader *fh, char *board, char *title)
 {
     FILE *foo;
@@ -1603,7 +1604,7 @@ int get_effsize(char * ffn)
     return abssize;
 }
  
-int get_effsize_attach(char * ffn, int *att)
+int get_effsize_attach(char * ffn, long *att)
 {
     char* p,*op, *attach;
     long attach_len;

@@ -1,11 +1,13 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
+#include <utime.h>
+#include <unistd.h>
 
 #ifndef O_LARGEFILE
 #define O_LARGEFILE 0
 #endif
-f_touch(char *filename)
+int f_touch(char *filename)
 {
     int fd;
 

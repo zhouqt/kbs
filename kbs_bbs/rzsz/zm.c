@@ -58,36 +58,6 @@ static char lastsent;           /* Last char we sent */
 int turbo_escape;
 int bytes_per_error = 0;
 
-static const char *frametypes[] = {
-    "Carrier Lost",             /* -3 */
-    "TIMEOUT",                  /* -2 */
-    "ERROR",                    /* -1 */
-#define FTOFFSET 3
-    "ZRQINIT",
-    "ZRINIT",
-    "ZSINIT",
-    "ZACK",
-    "ZFILE",
-    "ZSKIP",
-    "ZNAK",
-    "ZABORT",
-    "ZFIN",
-    "ZRPOS",
-    "ZDATA",
-    "ZEOF",
-    "ZFERR",
-    "ZCRC",
-    "ZCHALLENGE",
-    "ZCOMPL",
-    "ZCAN",
-    "ZFREECNT",
-    "ZCOMMAND",
-    "ZSTDERR",
-    "xxxxx"
-#define FRTYPES 22              /* Total number of frame types in this array */
-        /*  not including psuedo negative entries */
-};
-
 #define badcrc _("Bad CRC")
 /* static char *badcrc = "Bad CRC"; */
 static inline int noxrd7(void);
@@ -422,7 +392,6 @@ void zshhdr(int type, char *hdr)
 /*
  * Send binary array buf of length length, with ending ZDLE sequence frameend
  */
-static const char *Zendnames[] = { "ZCRCE", "ZCRCG", "ZCRCQ", "ZCRCW" };
 void zsdata(const char *buf, size_t length, int frameend)
 {
     register unsigned short crc;

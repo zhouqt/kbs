@@ -32,14 +32,14 @@ static int rm_dir(fpath)
     if (!(dirp = opendir(fpath)))
         return -1;
 
-    for (fname = buf; *fname = *fpath; fname++, fpath++);
+    for (fname = buf; (*fname = *fpath)!=0; fname++, fpath++);
 
     *fname++ = '/';
 
     readdir(dirp);
     readdir(dirp);
 
-    while (de = readdir(dirp)) {
+    while ((de = readdir(dirp))!=NULL) {
         fpath = de->d_name;
         if (*fpath) {
             strcpy(fname, fpath);

@@ -49,13 +49,13 @@ void *mm_addr = NULL;
 extern int errno;
 #endif
 
-unsigned Baudrate = 2400;       /* Default, should be set by first mode() call */
-unsigned Txwindow;              /* Control the size of the transmitted window */
-unsigned Txwspac;               /* Spacing between zcrcq requests */
-unsigned Txwcnt;                /* Counter used to space ack requests */
-size_t Lrxpos;                  /* Receiver's last reported offset */
-int errors;
-enum zm_type_enum protocol;
+static unsigned Baudrate = 2400;       /* Default, should be set by first mode() call */
+static unsigned Txwindow;              /* Control the size of the transmitted window */
+static unsigned Txwspac;               /* Spacing between zcrcq requests */
+static unsigned Txwcnt;                /* Counter used to space ack requests */
+static size_t Lrxpos;                  /* Receiver's last reported offset */
+static int errors;
+static enum zm_type_enum protocol;
 extern int turbo_escape;
 static int no_unixmode;
 
@@ -71,8 +71,6 @@ static int sendzsinit(void);
 static int wctx(struct zm_fileinfo *);
 static int zsendfdata(struct zm_fileinfo *);
 static int getinsync(struct zm_fileinfo *, int flag);
-static void countem(int argc, char **argv);
-static int zsendcmd(const char *buf, size_t blen);
 static void saybibi(void);
 static int wcputsec(char *buf, int sectnum, size_t cseclen);
 
@@ -160,9 +158,6 @@ int error_count;
 #define MK_STRING(x) #x
 
 jmp_buf intrjmp;                /* For the interrupt on RX CAN */
-
-static long min_bps;
-static long min_bps_time;
 
 static int io_mode_fd = 0;
 static int zrqinits_sent = 0;
@@ -293,8 +288,6 @@ static int wcs(const char *oname, const char *remotename)
         dont_mmap_this = 1;
 #endif
     } else if ((input_f = fopen(oname, "r")) == NULL) {
-        int e = errno;
-
         ++errcnt;
         return OK;              /* pass over it, there may be others */
     } else {
@@ -957,8 +950,6 @@ static int zsendfile(struct zm_fileinfo *zi, const char *buf, size_t blen)
             if (!mm_addr)
 #endif
                 if (rxpos && fseek(input_f, (long) rxpos, 0)) {
-                    int er = errno;
-
                     return ERROR;
                 }
             if (rxpos)
@@ -976,11 +967,7 @@ static int zsendfdata(struct zm_fileinfo *zi)
     static int c;
     int newcnt;
     static int junkcount;       /* Counts garbage chars received by TX */
-    static size_t last_txpos = 0;
-    static long last_bps = 0;
-    static long not_printed = 0;
     static long total_sent = 0;
-    static time_t low_bps = 0;
 
 #ifdef HAVE_MMAP
     if (use_mmap && !mm_addr) {
@@ -1067,7 +1054,6 @@ static int zsendfdata(struct zm_fileinfo *zi)
     do {
         size_t n;
         int e;
-        unsigned old = blklen;
 
         blklen = calc_blklen(total_sent);
         total_sent += blklen + OVERHEAD;
@@ -1346,78 +1332,4 @@ static void saybibi(void)
         }
     }
 }
-
-/* Send command and related info */
-static int zsendcmd(const char *buf, size_t blen)
-{
-    int c;
-    pid_t cmdnum;
-    size_t rxpos;
-
-    cmdnum = getpid();
-    errors = 0;
-    for (;;) {
-        stohdr((size_t) cmdnum);
-        Txhdr[ZF0] = Cmdack1;
-        zsbhdr(ZCOMMAND, Txhdr);
-        ZSDATA(buf, blen, ZCRCW);
-      listen:
-        Rxtimeout = 100;        /* Ten second wait for resp. */
-        c = zgethdr(Rxhdr, 1, &rxpos);
-
-        switch (c) {
-        case ZRINIT:
-            goto listen;        /* CAF 8-21-87 */
-        case ERROR:
-        case TIMEOUT:
-            if (++errors > Cmdtries)
-                return ERROR;
-            continue;
-        case ZCAN:
-        case ZABORT:
-        case ZFIN:
-        case ZSKIP:
-        case ZRPOS:
-            return ERROR;
-        default:
-            if (++errors > 20)
-                return ERROR;
-            continue;
-        case ZCOMPL:
-            Exitcode = rxpos;
-            saybibi();
-            return OK;
-        case ZRQINIT:
-            goto listen;
-        }
-    }
-}
-
-
-static void countem(int argc, char **argv)
-{
-    struct stat f;
-
-    for (Totalleft = 0, Filesleft = 0; --argc >= 0; ++argv) {
-        f.st_size = -1;
-        if (access(*argv, R_OK) >= 0 && stat(*argv, &f) >= 0) {
-#if defined(S_ISDIR)
-            if (!S_ISDIR(f.st_mode) && !S_ISBLK(f.st_mode)) {
-#else
-            int c;
-
-            c = f.st_mode & S_IFMT;
-            if (c != S_IFDIR && c != S_IFBLK) {
-#endif
-                ++Filesleft;
-                Totalleft += f.st_size;
-            }
-        } else if (strcmp(*argv, "-") == 0) {
-            ++Filesleft;
-            Totalleft += DEFBYTL;
-        }
-    }
-    calc_blklen(Totalleft);
-}
-
 /* End of lsz.c */

@@ -7,7 +7,7 @@ int f_mv(src, dst)
 {
     int ret;
 
-    if (ret = rename(src, dst)) {
+    if ((ret = rename(src, dst))!=NULL) {
         ret = f_cp(src, dst, O_TRUNC);
         if (!ret)
             unlink(src);
