@@ -1365,10 +1365,6 @@ for i in *.c; do
 	BBSOBJS="$BBSOBJS `echo $i|sed 's/.c$/.o/'`"
 done
 cd $OLDPWD
-AC_CONFIG_LINKS(mkinstalldirs:../mkinstalldirs)
-AC_CONFIG_LINKS(missing:../missing)
-AC_CONFIG_LINKS(depcomp:../depcomp)
-AC_CONFIG_LINKS(gmp-2.0.2-ssh-2/depcomp:../depcomp)
 
 AC_SUBST(ETCDIR)
 AC_SUBST(PIDDIR)
