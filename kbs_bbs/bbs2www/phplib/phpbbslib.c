@@ -6599,7 +6599,7 @@ static PHP_FUNCTION(bbs_denyadd)
     autofree = true;
 #endif
 
-#ifdef HAVE_BRC_CONTROL
+#if 0
     brc_initial(getCurrentUser()->userid, board, getSession());
 #endif
 
