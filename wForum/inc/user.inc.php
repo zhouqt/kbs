@@ -212,7 +212,7 @@ function showSecs($secNum,$group,$isFold,$isFav = false,$isHide = false) {
 		$select = $secNum; //代码相似性 :D
 		if ($isFold) {
 ?>
-<img src="pic/nofollow.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow()" border=0 title="关闭版面列表">
+<img src="pic/nofollow.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow()" border=0 title="折叠版面列表">
 <?php
 		} else {
 ?>
