@@ -42,6 +42,7 @@ static ZEND_FUNCTION(bbs_mail_file);
 static ZEND_FUNCTION(bbs_update_uinfo);
 static ZEND_FUNCTION(bbs_createnewid);
 static ZEND_FUNCTION(bbs_fillidinfo);
+static ZEND_FUNCTION(bbs_delfile);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -88,6 +89,7 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_update_uinfo, NULL)
         ZEND_FE(bbs_createnewid,NULL)
         ZEND_FE(bbs_fillidinfo,NULL)
+		ZEND_FE(bbs_delfile,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -1923,3 +1925,65 @@ static ZEND_FUNCTION(bbs_fillidinfo)
 }
 
 
+/**
+ * del board article
+ * prototype:
+ * int bbs_delfile(char* board, char* filename);
+ *
+ *  @return the result
+ *  	0 -- success, -1 -- no perm
+ *  	-2 -- wrong parameter
+ *  @author binxun
+ */
+static ZEND_FUNCTION(bbs_delfile)
+{
+	FILE *fp;
+    bcache_t *brd;
+    struct fileheader f;
+    struct userec *u = NULL;
+    char dir[80], path[80];
+	long result = 0;
+
+	char* board;
+	char* file;
+	int board_len,file_len;
+    int num = 0;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &board_len,&file,&file_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	brd = getbcache(board);
+    if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
+        RETURN_LONG(-2);
+    if (strstr(file, ".."))
+        RETURN_LONG(-2);
+    if (brd == 0)
+        RETURN_LONG(-2);
+    if (!haspostperm(currentuser, board))
+        RETURN_LONG(-2);
+
+    sprintf(dir, "boards/%s/.DIR", board);
+    sprintf(path, "boards/%s/%s", board, file);
+    fp = fopen(dir, "r");
+    if (fp == 0)
+        RETURN_LONG(-2);
+
+	while (1) {
+		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
+			break;
+		if (!strcmp(f.filename, file)) {
+			if(del_post(num + 1, &f, dir, board) == DONOTHING)
+				result = -1;
+			else
+				result = 0;
+			break;
+		}
+		num++;
+    }
+    fclose(fp);
+
+	RETURN_LONG(result);
+}
