@@ -653,7 +653,8 @@ static long insert_from_fp(FILE *fp, long * attach_length)
                 if (*data==0) {
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
-                        int d, size;
+                        int d;
+						long attsize;
 						char *sstart = data;
                         data++; not++;
 						if(ret == 0)
@@ -665,9 +666,9 @@ static long insert_from_fp(FILE *fp, long * attach_length)
                         data++;
                         not++;
                         memcpy(&d, data, 4);
-                        size = htonl(d);
-                        data+=4+size-1;
-                        not+=4+size-1;
+                        attsize = htonl(d);
+                        data+=4+attsize-1;
+                        not+=4+attsize-1;
                         matched = 0;
 						*attach_length += data - sstart + ATTACHMENT_SIZE;
                     }
