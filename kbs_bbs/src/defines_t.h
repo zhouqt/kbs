@@ -147,6 +147,8 @@ int kick_user(struct user_info *userinfo);
 int d_user(char cid[IDLEN]);
 
 /* read.c */
+int show_author( int ent , struct fileheader *fileinfo , char *direct );
+int show_authorinfo( int ent , struct fileheader *fileinfo , char *direct );
 struct keeploc * getkeep(char *s,int def_topline,int def_cursline);
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
 void fixkeep(char* s,int first,int last);
@@ -220,5 +222,8 @@ void  record_exit_time();
 /* announce.c */
 int add_grp( char group[STRLEN],char bname[STRLEN],char title[STRLEN],char gname[STRLEN]);
 int edit_grp( char bname[STRLEN],char grp[STRLEN],char title[STRLEN],char newtitle[100]);
+
+/* boards_t.c */
+int show_authorBM( int ent , struct fileheader *fileinfo , char *direct );
 #endif
 

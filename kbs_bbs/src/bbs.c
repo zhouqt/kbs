@@ -60,11 +60,8 @@ int     post_search_up();
 int     thread_up();
 int     thread_down();
 int     deny_user();
-int     show_author();
 /*int     b_jury_edit();  stephen 2001.11.1*/
 int     add_author_friend();
-int     show_authorinfo();/*Haohmaru.98.12.05*/
-int	show_authorBM();/* cityhunter 00.10.18 */
 int	m_read();/*Haohmaru.2000.2.25*/
 int     SR_first_new();
 int     SR_last();
@@ -219,9 +216,7 @@ setqtitle(char* stitle)   /* 取 Reply 文章后新的 文章title */
     }
 }
 
-void
-setquotefile(filepath)
-char filepath[];
+void setquotefile(char filepath[])
 {
     strcpy(quote_file,filepath);
 }
@@ -263,9 +258,7 @@ void printutitle()  /* 屏幕显示 用户列表 title */
 }
 
 
-int
-g_board_names(fhdrp)
-struct boardheader *fhdrp ;
+int g_board_names( struct boardheader *fhdrp )
 {
     if ((fhdrp->level & PERM_POSTMASK) || HAS_PERM(currentuser,fhdrp->level)
             ||(fhdrp->level & PERM_NOZAP))
@@ -279,7 +272,7 @@ void
 make_blist()  /* 所有版 版名 列表 */
 {
     CreateNameList() ;
-    apply_boards(g_board_names) ;
+    apply_boards((int (*) ())g_board_names) ;
 }
 
 int
@@ -330,10 +323,7 @@ int get_a_boardname(char* bname,char* prompt)  /* 输入一个版名 */
 
 /* Add by SmallPig */
 int
-do_cross(ent,fileinfo,direct)  /* 转贴 一篇 文章 */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+do_cross(int ent,struct fileheader* fileinfo,char* direct)  /* 转贴 一篇 文章 */
 {
     char bname[STRLEN];
     char dbname[STRLEN];
@@ -638,11 +628,7 @@ readdoent(char* buf,int num,struct fileheader* ent)  /* 在文章列表中 显示 一篇文
     return buf ;
 }
 
-int
-add_author_friend(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+int add_author_friend(int ent , struct fileheader *fileinfo,char *direct )
 {
     if(!strcmp("guest",currentuser->userid))
         return DONOTHING;;
@@ -657,11 +643,7 @@ char *direct ;
     return FULLUPDATE;
 }
 
-int
-read_post(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+int read_post( int ent , struct fileheader *fileinfo , char *direct )
 {
     char *t ;
     char buf[512];
@@ -836,21 +818,15 @@ case 'O': case 'o':         /* Luzi 1997.11.1 */
     return FULLUPDATE ;
 }
 
-int
-skip_post( ent, fileinfo, direct )
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+int skip_post( int ent , struct fileheader *fileinfo , char *direct )
 {
     brc_add_read( fileinfo->filename ) ;
     return GOTO_NEXT;
 }
 
 int
-do_select( ent, fileinfo, direct )  /* 输入讨论区名 选择讨论区 */
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+do_select( int ent , struct fileheader *fileinfo , char *direct )
+	/* 输入讨论区名 选择讨论区 */
 {
     char bname[STRLEN], bpath[ STRLEN ];
     struct stat st ;
@@ -1057,9 +1033,7 @@ thread_mode()
 }
 
 int
-dele_digest(dname,direc)         /* 删除文摘内一篇POST, dname=post文件名,direc=文摘目录名 */
-char *dname;
-char *direc;
+dele_digest(char* dname,char *direc)         /* 删除文摘内一篇POST, dname=post文件名,direc=文摘目录名 */
 {
     char digest_name[STRLEN];
     char new_dir[STRLEN];
@@ -1140,9 +1114,7 @@ digest_post(int ent,struct fileheader *fhdr,char *direct)
 }
 
 #ifndef NOREPLY
-int
-do_reply(title)         /* reply POST */
-char *title;
+int do_reply(char* title)         /* reply POST */
 {
     strcpy(replytitle, title);
     post_article();
@@ -1151,9 +1123,7 @@ char *title;
 }
 #endif
 
-int
-garbage_line( str )                  /* 判断本行是否是 无用的 */
-char *str;
+int garbage_line(char* str )                  /* 判断本行是否是 无用的 */
 {
     int qlevel = 0;
 
@@ -1260,10 +1230,8 @@ do_post()                 /* 用户post */
 
 /*ARGSUSED*/
 int
-post_reply(ent,fileinfo,direct)    /* 回信给POST作者 */
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+post_reply( int ent , struct fileheader *fileinfo , char *direct )
+	/* 回信给POST作者 */
 {
     char        uid[STRLEN] ;
     char        title[STRLEN] ;
@@ -1335,8 +1303,7 @@ char *direct ;
 }
 
 int
-show_board_notes(bname)     /* 显示版主的话 */
-char bname[30];
+show_board_notes(char bname[30])     /* 显示版主的话 */
 {
     char buf[256];
 
@@ -1654,10 +1621,8 @@ add_edit_mark(char *fname,int mode,char *title)
 
 /*ARGSUSED*/
 int
-edit_post(ent,fileinfo,direct)  /* POST 编辑 */
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+edit_post( int ent , struct fileheader *fileinfo , char *direct )
+	/* POST 编辑 */
 {
     char buf[512] ;
     char *t ;
@@ -1719,11 +1684,8 @@ char *direct ;
     return FULLUPDATE ;
 }
 
-int
-edit_title(ent,fileinfo,direct)  /* 编辑文章标题 */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int edit_title( int ent, struct fileheader *fileinfo, char *direct)
+	/* 编辑文章标题 */
 {
     char        buf[ STRLEN ];
 
@@ -1802,11 +1764,8 @@ char *direct;
     return PARTUPDATE;
 }
 
-int
-mark_post(ent,fileinfo,direct)  /* Mark POST */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int mark_post( int ent, struct fileheader *fileinfo, char *direct)
+	/* Mark POST */
 {
     /*---	---*/
     int newent = 1;
@@ -1869,10 +1828,8 @@ char *direct;
 }
 
 int
-noreply_post(ent,fileinfo,direct)  /*Haohmaru.99.01.01设定文章不可re */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+noreply_post( int ent, struct fileheader *fileinfo, char *direct)
+	/*Haohmaru.99.01.01设定文章不可re */
 {
     char ans[256];
 
@@ -1907,11 +1864,8 @@ char *direct;
     return PARTUPDATE;
 }
 
-int
-noreply_post_noprompt(ent,fileinfo,direct)  /*Haohmaru.99.01.01设定文章不可re */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int noreply_post_noprompt( int ent, struct fileheader *fileinfo, char *direct)
+	/*Haohmaru.99.01.01设定文章不可re */
 {
     char ans[256];
 
@@ -1944,10 +1898,8 @@ char *direct;
 }
 
 int
-sign_post(ent,fileinfo,direct)  /*Bigman:2000.8.12 设定文章标志 */
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+sign_post( int ent, struct fileheader *fileinfo, char *direct)
+	/*Bigman:2000.8.12 设定文章标志 */
 {
     char ans[STRLEN];
     if( !HAS_PERM(currentuser,PERM_OBOARDS) )
@@ -2157,11 +2109,7 @@ int Save_post(int ent,struct fileheader *fileinfo,char *direct)
 }
 
 /* Semi_save 用来把文章存到暂存档，同时删除文章的头尾 Life 1997.4.6 */
-int
-Semi_save(ent,fileinfo,direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int Semi_save( int ent, struct fileheader *fileinfo, char *direct)
 {
     if(!HAS_PERM(currentuser,PERM_SYSOP))
         if(!chk_currBM(currBM,currentuser))
@@ -2170,11 +2118,7 @@ char *direct;
 }
 
 /* Added by netty to handle post saving into (0)Announce */
-int
-Import_post(ent,fileinfo,direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+int Import_post( int ent, struct fileheader *fileinfo, char *direct)
 {
     char szBuf[STRLEN];
 
@@ -2291,21 +2235,14 @@ sequent_messages(struct fileheader *fptr,int* continue_flag)
 }
 
 int
-sequential_read(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+sequential_read( int ent , struct fileheader *fileinfo , char *direct )
 {
     readpost=1;
     clear();
     return sequential_read2(ent);
 }
 /*ARGSUSED*/
-int
-sequential_read2(ent/*,fileinfo,direct*/)
-int ent ;
-/*struct fileheader *fileinfo ;
-char *direct ;*/
+int sequential_read2(int ent)
 {
     char        buf[ STRLEN ];
     int continue_flag;
@@ -2853,10 +2790,7 @@ Welcome()               /* 显示欢迎画面 Welcome */
     return 0 ;
 }
 
-int
-cmpbnames( bname, brec)
-char *bname;
-struct fileheader *brec;
+int cmpbnames( char *bname, struct fileheader *brec)
 {
     if (!strncasecmp( bname, brec->filename, sizeof(brec->filename)))
         return 1;
@@ -2896,10 +2830,7 @@ int i_read_mail()
 }
 
 int
-set_delete_mark(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+set_delete_mark( int ent , struct fileheader *fileinfo , char *direct )
 {
     /*---	---*/
     int newent = 1;

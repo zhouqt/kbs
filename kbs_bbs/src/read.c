@@ -34,7 +34,6 @@ char *pnt;
  *---	current code memory leak ---*/
 
 extern char MsgDesUid[14];
-int     show_authorBM();
 
 struct keeploc {
     char *key ;
@@ -650,11 +649,7 @@ char *direct ;
 }
 
 /*Haohmaru.98.12.05.系统管理员可以直接查作者资料*/
-int
-show_authorinfo(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+int show_authorinfo( int ent , struct fileheader *fileinfo , char *direct )
 {
     struct userec uinfo ;
     struct userec* lookupuser;
