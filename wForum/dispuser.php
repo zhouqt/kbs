@@ -50,7 +50,6 @@ function showUserData($user, $user_num) {
 	   默认设置是 1 开启 2 关闭。下面的资料可能需要调整一下以和 BBS 系统一致？比方该看到的信息就应该永远可以看到...
 	 */
 require("inc/userdatadefine.inc.php");
-if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
 ?>
 <table width=97% border=0 cellspacing=0 cellpadding=3 align=center>
   <tr> 
@@ -70,7 +69,9 @@ if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
   </td>
   </tr>
 </table>
-
+<?php
+if ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA) {
+?>
 <table cellspacing=1 cellpadding=3 align=center  style="table-layout:fixed;word-break:break-all" class=TableBorder1>
   <col width=20% ><col width=*><col width=40% > 
   <tr> 
