@@ -96,6 +96,9 @@ char wFtv[][100] = {
 "1144 感恩节",
 ""};
 
+char lmonths[14][20] = {
+"","正","二","三","四","五","六","七","八","九","十","十一","腊",""}
+
 int day,month,year;
 
 #define getnum(a) (((a)[0]-'0')*10+(a)[1]-'0')
@@ -185,7 +188,7 @@ int get_week(int year, int month, int day)
 void draw_main()
 {
     int i,j,k,x,y,lmonth,lday,i0;
-    char buf[80];
+    char buf[80],buf2[80];
     struct stat st;
     for(i=0;i<t_lines;i++)
         saveline(i, 1, save_scr[i]);
@@ -258,7 +261,14 @@ void draw_main()
     move(12, 56);
     resetcolor();
     Lunar(day, &lmonth, &lday);
-    sprintf(buf, "农历:%d月%d日", lmonth, lday);
+    if(lday<=10) sprintf(buf2, "初%s", nums[lday]);
+    else if(lday<=19) sprintf(buf2, "十%s", nums[lday-10]);
+    else if(lday==20) sprintf(buf2, "二十");
+    else if(lday<=29) sprintf(buf2, "廿%s", nums[lday-20]);
+    else if(lday==30) sprintf(buf2, "三十");
+    else if(lday<=39) sprintf(buf2, "卅%s", nums[lday-30]);
+    else sprintf(buf2, "□");
+    sprintf(buf, "农历 %s月%s", lmonths[lmonth], buf2);
     move(12, 80-strlen(buf));
     resetcolor();
     prints(buf);
