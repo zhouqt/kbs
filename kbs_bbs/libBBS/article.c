@@ -776,7 +776,7 @@ int dele_digest(char *dname, char *direc)
     strcpy(digest_name, dname);
     strcpy(new_dir, direc);
 
-    digest_name[0] = 'G';
+    POSTFILE_BASENAME(digest_name)[0] = 'G';
     ptr = strrchr(new_dir, '/') + 1;
     strcpy(ptr, DIGEST_DIR);
     pos = search_record(new_dir, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpname, digest_name);      /* 文摘目录下 .DIR中 搜索 该POST */
