@@ -265,14 +265,17 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
         </tr>
 
 		<tr>
-                <td class=tablebody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>&nbsp;
+                <td class=tablebody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>
 <?php 
-	for ($i=1; $i<=28; $i++) {
+	for ($i=1; $i<=69; $i++) {
 		if (strlen($i)==1)   {
 			$ii="0".$i;
 		} else  {
 			$ii=$i;
 		} 
+		if ($i!=1 && (($i-1)%20)==0) {
+			echo "<br>\n";
+		}
 		echo "<img src=\"emot/em".$ii."\" border=0 onclick=\"insertsmilie('[em".$ii."]')\" style=\"CURSOR: hand\">&nbsp;";
 	} 
 ?>

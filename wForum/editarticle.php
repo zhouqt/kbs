@@ -199,7 +199,23 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 </textarea>
           </td>
         </tr>
-
+		<tr>
+                <td class=tablebody1 valign=top colspan=2 style="table-layout:fixed; word-break:break-all"><b>点击表情图即可在帖子中加入相应的表情</B><br>
+<?php 
+	for ($i=1; $i<=69; $i++) {
+		if (strlen($i)==1)   {
+			$ii="0".$i;
+		} else  {
+			$ii=$i;
+		} 
+		if ($i!=1 && (($i-1)%20)==0) {
+			echo "<br>\n";
+		}
+		echo "<img src=\"emot/em".$ii."\" border=0 onclick=\"insertsmilie('[em".$ii."]')\" style=\"CURSOR: hand\">&nbsp;";
+	} 
+?>
+    		</td>
+                </tr>
 <tr>
 	<td valign=middle colspan=2 align=center class=tablebody2>
 	<input type=Submit value='发 表' name=Submit> &nbsp; <input type=button value='预 览' name=Button onclick=gopreview()>&nbsp;
