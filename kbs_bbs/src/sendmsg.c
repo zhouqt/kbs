@@ -383,7 +383,7 @@ void r_msg()
                     }
                     break;
             }
-            if (ch=='\r'||ch=='\n') break;
+            if (ch=='\r'||ch=='\n'||ch==0&&canreply) break;
         }
 
         now = get_unreadmsg(currentuser->userid);
