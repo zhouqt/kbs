@@ -7,11 +7,12 @@ require("inc/user.inc.php");
 
 require("inc/board.inc.php");
 
-$action=0; //0: 新发邮件；1: 指定收件人；2: 回复信件；3: 回复版面文章
+//ToDo: 转发信件会加入额外的信头，而 telnet 方式转发是不会加入信头的，有必要改成一致的吗？- atppp
+$action=0; //0: 新发信件；1: 指定收件人新发信件；2: 回复信件；3: 回复版面文章；4: 转发信件
 $mail_receiver="";
 $article;
 
-setStat("撰写新邮件");
+setStat("撰写新信件");
 
 show_nav();
 
@@ -43,7 +44,8 @@ function preprocess() {
 	}
 	if (isset($_GET['boxname'])) {
 		setstat("回复信件");
-		$action=2;
+		if (isset($_GET['forward'])) $action = 4;
+		else $action = 2;
 		$num=intval($_GET['num']);
 		$boxName = $_GET['boxname'];
 		if (getMailBoxPathDesc($boxName, $path, $desc)) {
@@ -129,12 +131,12 @@ function main() {
 <form action="dosendmail.php" method=post name=messager id="messager" onkeydown="if(event.keyCode==13 && event.ctrlKey){ obj=getRawObject('messager');obj.submit();} ">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
           <tr> 
-            <th colspan=3><?php echo $action<2?"撰写新邮件":"回复邮件"; ?></td>
+            <th colspan=3><?php echo $action<2?"撰写新信件":($action==4?"转发信件":"回复信件"); ?></td>
           </tr>
           <tr> 
             <td class=TableBody1 valign=middle><b>收件人:</b></td>
             <td class=TableBody1 valign=middle>
-              <input name="destid" maxlength="12" value="<?php if ($action!=0) 
+              <input name="destid" maxlength="12" value="<?php if ($action!=0 && $action!=4) 
 			echo ($action==1?$mail_receiver:$article['OWNER']).'" size="12" readonly />'; 
 					else { ?>" size="12" />			 
               <SELECT name=font onchange=DoTitle(this.options[this.selectedIndex].value)>
@@ -147,9 +149,15 @@ function main() {
             <td  class=TableBody1 valign=middle>
 <?php
 		if ($action>1)	{
-	        if(!strncmp($article["TITLE"],"Re: ",4)) $nowtitle = $article["TITLE"];
-	        else
-	            $nowtitle = "Re: " . $article["TITLE"];
+	        if ($action == 4) {
+	        	$nowtitle = $article["TITLE"]."(转寄)";
+	        } else {
+	        	if (!strncmp($article["TITLE"],"Re: ",4)) {
+	        		$nowtitle = $article["TITLE"];
+	        	} else {
+	            	$nowtitle = "Re: " . $article["TITLE"];
+	            }
+	        }
 		} else {
 			$nowtitle='';
 		}
@@ -167,39 +175,44 @@ function main() {
             echo "\n【 在 " . $article['OWNER'] . " 的大作中提到: 】\n";
 		}else{
 			$filename = bbs_setmailfile($currentuser["userid"],$article['FILENAME']) ;
-            echo "\n【 在 " . $article['OWNER'] . " 的来信中提到: 】\n";
+            if ($action != 4) echo "\n【 在 " . $article['OWNER'] . " 的来信中提到: 】\n";
 		}
 		if(file_exists($filename))
 		{
 		    $fp = fopen($filename, "r");
 	        if ($fp) {
 				$buf = fgets($fp,500);
-				if(strncmp($buf, "发信人", 6) == 0) {
-					for ($i = 0; $i < 4; $i++) {
-						if (($buf = fgets($fp,500)) == FALSE)
-							break;
+				$prefix = "";
+				if ($action != 4) {
+					if(strncmp($buf, "发信人", 6) == 0) {
+						for ($i = 0; $i < 4; $i++) {
+							if (($buf = fgets($fp,500)) == FALSE)
+								break;
+						}
 					}
+					$prefix = ": ";
 				}
 				while (1) {
-					if (strncmp($buf, ": 【", 4) == 0)
-						continue;
-					if (strncmp($buf, ": : ", 4) == 0)
-						continue;
-					if (strpos($buf, "※ 来源") !== FALSE)
-						break;
-					if (strpos($buf, "※ 修改") !== FALSE)
-						break;
-					if (strncmp($buf, "--\n", 3) == 0)
-						break;
-					if (strncmp($buf,'\n',1) == 0)
-						continue;
-					if (++$lines > 10) {
-						echo ": ...................\n";
-						break;
+					if ($action != 4) {
+						if (strncmp($buf, ": 【", 4) == 0)
+							continue;
+						if (strncmp($buf, ": : ", 4) == 0)
+							continue;
+						if (strpos($buf, "※ 来源") !== FALSE)
+							break;
+						if (strpos($buf, "※ 修改") !== FALSE)
+							break;
+						if (strncmp($buf, "--\n", 3) == 0)
+							break;
+						if (strncmp($buf,'\n',1) == 0)
+							continue;
+						if (++$lines > 10) {
+							echo ": ...................\n";
+							break;
+						}
 					}
-					/* */
 					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-						echo ": ". $buf;
+						echo $prefix . $buf;
 					if (($buf = fgets($fp,500)) == FALSE)
 						break;
 				}
