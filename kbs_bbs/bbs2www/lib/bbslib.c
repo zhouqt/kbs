@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "types.h"
 #include "bbslib.h"
 #include <assert.h>

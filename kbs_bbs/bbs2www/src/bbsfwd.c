@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 /*void debug_abort(int signo)

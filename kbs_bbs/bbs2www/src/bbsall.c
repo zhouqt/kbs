@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 int cmp_board(b1, b2)

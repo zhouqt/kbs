@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 #define BBS_PAGESIZE    (20)

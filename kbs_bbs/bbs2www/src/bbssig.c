@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 FILE *fp;
 

@@ -1,3 +1,9 @@
+/*
+ * $Id$
+ */
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 int main() {

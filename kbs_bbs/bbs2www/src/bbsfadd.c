@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 int addtooverride2(char *uident, char *exp)

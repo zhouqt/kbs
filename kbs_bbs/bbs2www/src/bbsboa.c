@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 static int cmp_board(struct boardheader *b1, struct boardheader *b2)

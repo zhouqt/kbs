@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 int cmpfnames2(char *userid, struct friends *uv)

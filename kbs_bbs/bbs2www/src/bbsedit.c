@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 
 int get_edit_post(char *userid, char *board, char *file, struct fileheader *x)

@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "internal/crypt.h"
 
 static int des_set_key(des_cblock *key, struct des_ks_struct *schedule) {

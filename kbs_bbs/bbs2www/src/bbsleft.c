@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #define MY_CSS "/bbsold.css"
 #include "bbslib.h"
 
