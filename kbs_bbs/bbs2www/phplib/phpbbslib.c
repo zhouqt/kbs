@@ -9373,7 +9373,7 @@ static PHP_FUNCTION(bbs_read_ann_dir)
                 } else
                     id = "";
             }
-            sprintf(buf, "%s/%s", me.path,me.item[i]->fname);
+            snprintf(buf, sizeof(buf), "%s/%s", me.path,me.item[i]->fname);
             ptr = strchr(me.path, '/');
             
             if (!file_exist(buf)) 
