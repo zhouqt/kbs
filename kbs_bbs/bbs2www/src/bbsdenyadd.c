@@ -9,7 +9,7 @@ struct deny
 	char exp[80];
 	char comment[80];
 	time_t free_time;
-} denyuser[256];
+} denyuser[1024];
 
 int denynum=0;
 
@@ -230,7 +230,7 @@ int main()
 		if(!strcasecmp(denyuser[i].id, userid))
 			http_fatal("此用户已经被封");
 	}
-	if(denynum > 40)
+	if(denynum > 512)
 	   	http_fatal("太多人被封了");
 	strsncpy(denyuser[denynum].id, userid, 13);
 	strsncpy(denyuser[denynum].exp, exp, 30);

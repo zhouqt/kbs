@@ -9,7 +9,7 @@ struct deny
 	char exp[80];
 	char comment[80];
 	time_t free_time;
-} denyuser[256];
+} denyuser[1024];
 
 int denynum=0;
 
