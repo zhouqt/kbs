@@ -17,7 +17,7 @@ login_init();
 <input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>"/>
 <tbody><tr>
 <td>
-<a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" border="0" alt="发表话题"></a><?php include("tshirtlink.php"); ?>
+<a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" border="0" alt="发表话题"></a><?php @include("tshirtlink.php"); ?>
 </td>
 <td align="right">
  	<?php
