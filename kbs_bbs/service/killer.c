@@ -5,7 +5,7 @@
 #define ROOM_SECRET 02
 
 struct room_struct {
-    char name[NAMELEN];
+    char name[14];
     char creator[IDLEN+2];
     int style; /* 0 - chat room 1 - killer room */
     unsigned int level;
@@ -126,6 +126,13 @@ void load_inroom(struct room_struct * r)
     }
 }
 
+void clear_inroom(struct room_struct * r)
+{
+    char filename[80];
+    sprintf(filename, "home/%c/%s/.INROOM", toupper(r->creator[0]), r->creator);
+    unlink(filename);
+}
+
 void save_inroom(struct room_struct * r)
 {
     int fd;
@@ -238,6 +245,15 @@ void refreshit()
         move(i, 0);
         clrtoeol();
     }
+    move(0,0);
+    prints("[44;33;1m ·¿¼ä:[36m%-12s[33m»°Ìâ:[36m%-40s[33m×´Ì¬:[36m%6s",
+        myroom->name, inrooms.title, (inrooms.status==INROOM_STOP?"Î´¿ªÊ¼":(inrooms.status==INROOM_NIGHT?"ºÚÒ¹ÖÐ":"´ó°×Ìì")));
+    clrtoeol();
+    resetcolor();
+    move(1,0);
+    prints("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
+    move(t_lines-2,0);
+    prints("¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª");
     for(i=0;i<myroom->people;i++) {
         move(i+2,0);
         prints(inrooms.peoples[i].id);
@@ -259,8 +275,8 @@ void room_refresh(int signo)
     load_msgs();
     getyx(&y, &x);
     refreshit();
-    refresh();
     move(y, x);
+    refresh();
 }
 
 void join_room(struct room_struct * r)
@@ -398,7 +414,7 @@ static int room_list_key(struct _select_def *conf, int key)
     switch(key) {
     case 'a':
         strcpy(r.creator, currentuser->userid);
-        getdata(0, 0, "·¿¼äÃû:", name, 38, 1, NULL, 1);
+        getdata(0, 0, "·¿¼äÃû:", name, 12, 1, NULL, 1);
         if(!name[0]) return SHOW_REFRESH;
         strcpy(r.name, name);
         r.style = 1;
@@ -412,10 +428,11 @@ static int room_list_key(struct _select_def *conf, int key)
             refresh(); sleep(1);
             return SHOW_REFRESH;
         }
+        clear_inroom(&r);
         join_room(find_room(r.name));
         return SHOW_DIRCHANGE;
     case 'J':
-        getdata(0, 0, "·¿¼äÃû:", name, 38, 1, NULL, 1);
+        getdata(0, 0, "·¿¼äÃû:", name, 12, 1, NULL, 1);
         if(!name[0]) return SHOW_REFRESH;
         if((r2=find_room(name))==NULL) {
             move(0, 0);
