@@ -2086,6 +2086,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         strncpy(user->lasthost, fromhost, IPLEN);
         user->lasthost[IPLEN - 1] = '\0';       /* add by binxun ,fix the bug */
         read_userdata(user->userid, &ud);
+	user->userlevel &= (~PERM_SUICIDE);
         if (!HAS_PERM(user, PERM_LOGINOK) && !HAS_PERM(user, PERM_SYSOP)) {
             if (strchr(ud.realemail, '@')
                 && valid_ident(ud.realemail)) {
@@ -2100,7 +2101,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         memset(&ui, 0, sizeof(struct user_info));
         ui.active = true;
         /*
-         * Bigman 2000.8.29 智囊团能够隐身 
+         * Bigman 2000.8.29 智囊团能够隐身
          */
         if ((HAS_PERM(user, PERM_CHATCLOAK)
              || HAS_PERM(user, PERM_CLOAK))
