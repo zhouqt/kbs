@@ -150,6 +150,24 @@ static int do_select_internal(struct _select_def *conf, int key)
     }
     if (key == KEY_INIT)
         return SHOW_CONTINUE;
+
+    /*如果定义了预处理键,那么执行之*/
+    if (conf->pre_key_command) {
+    	ret=(*conf->pre_key_command)(conf,&key);
+    	if (ret!=SHOW_CONTINUE)
+    		return ret;
+    }
+
+    /* 查转换表*/
+    if (conf->key_table) {
+    	struct key_translate *p=conf->key_table;
+    	while (p->ch!=-1) {
+    		if (p->ch==key) {
+    			key=p->command;
+    			break;
+    		}
+    	}
+    }
     switch (key) {
     case KEY_REFRESH:
         return refresh_select(conf);
@@ -243,46 +261,108 @@ int list_select(struct _select_def *conf, int key)
     int old_pos = conf->pos;
 
 //      int old_item_count = conf->item_count;
-    ret = do_select_internal(conf, key);
-    switch (ret) {
-    case SHOW_DIRCHANGE:
-        if (conf->get_data)
-            (*conf->get_data) (conf, conf->page_pos, conf->item_per_page);
-        if (check_valid(conf) == SHOW_QUIT)
-            return SHOW_QUIT;
-    case SHOW_REFRESH:
-        refresh_select(conf);
-        break;
-    case SHOW_SELCHANGE:
-        ret = select_change(conf, conf->new_pos);
-        return ret;
-    case SHOW_REFRESHSELECT:
-        show_item(conf, conf->pos, true);
-        break;
-    case SHOW_SELECT:
-        ret = do_select_internal(conf, KEY_SELECT);
-    case SHOW_QUIT:
-        return ret;
-    }
+	ret=SHOW_QUIT;
+	while (ret!=SHOW_CONTINUE) {
+	    ret = do_select_internal(conf, key);
+	    switch (ret) {
+	    case SHOW_DIRCHANGE:
+	        if (conf->get_data)
+	            ret=(*conf->get_data) (conf, conf->page_pos, conf->item_per_page);
+	        if (ret==SHOW_QUIT)
+	        	return ret;
+	        if (check_valid(conf) == SHOW_QUIT)
+	            return SHOW_QUIT;
+	    case SHOW_REFRESH:
+	        ret=refresh_select(conf);
+	        break;
+	    case SHOW_SELCHANGE:
+	        ret = select_change(conf, conf->new_pos);
+	        if ((ret!=SHOW_SELECT)&&(ret!=SHOW_QUIT)) {
+	        	key=ret;
+	        	continue;
+	        }
+	    case SHOW_REFRESHSELECT:
+	        show_item(conf, conf->pos, true);
+	        ret=SHOW_CONTINUE;
+	        break;
+	    case SHOW_SELECT:
+	        ret = do_select_internal(conf, KEY_SELECT);
+	        if (ret!=SHOW_SELECT) {
+	        	key=ret;
+	        	continue;
+	        }
+	    case SHOW_QUIT:
+	    	if (conf->quit)
+	    		(*conf->quit)(conf);
+	        return ret;
+	    }
+	    key=ret;
+	}
     return SHOW_CONTINUE;
 }
-void list_select_loop(struct _select_def *conf)
+int list_select_loop(struct _select_def *conf)
 {
     int ch;
 
     list_select(conf, KEY_INIT);
     while (1) {
+    	int ret;
         ch = igetkey();
-        if (list_select(conf, ch) == SHOW_QUIT)
-            break;
+        ret=list_select(conf, ch);
+        if ((ret == SHOW_QUIT)||(ret == SHOW_SELECT))
+            return ret;
     }
 }
-
 
 struct _simple_select_arg{
 	struct _select_item* items;
 	int flag;
 };
+
+
+static int simple_onselect(struct _select_def *conf)
+{
+    struct _simple_select_arg*arg = (struct struct _simple_select_arg *) conf->arg;
+    return SHOW_CONTINUE;
+}
+
+static int simple_show(struct _select_def *conf, int i)
+{
+    struct _simple_select_arg*arg = (struct struct _simple_select_arg *) conf->arg;
+    struct _select_item * item;
+
+	i=i-1;
+	item=arg->items[i];
+	if (item->type==SIT_SELECT) {
+		outs((char*)item->data);
+	} //TODO: Add other SIT support
+    return SHOW_CONTINUE;
+}
+
+static int simple_key(struct _select_def *conf, int key)
+{
+    struct _simple_select_arg*arg = (struct struct _simple_select_arg *) conf->arg;
+    int sel;
+
+	if (arg->flag&SIF_NUMBERKEY) {
+	    if (key <= '0'+conf->item_count && key >= '0') {
+	        conf->new_pos = key-'0' +1;
+	        return SHOW_SELCHANGE;
+	    }
+	} else
+	if (arg->flag&SIF_ALPHAKEY) {
+	    if (key <= 'z' && key >= 'a')
+	        sel = key - 'a';
+	    else
+	        sel = key - 'A';
+	    if (sel >= 0 && sel < (conf->item_count)) {
+	        conf->new_pos = sel + 1;
+	        return SHOW_SELCHANGE;
+	    }
+	}
+    return SHOW_CONTINUE;
+}
+
 
 int simple_select_loop(struct _select_item* item_conf,int flag,POINT title,union _select_return_value* ret)
 {
@@ -311,17 +391,15 @@ int simple_select_loop(struct _select_item* item_conf,int flag,POINT title,union
     simple_conf.arg = &arg;
     simple_conf.title_pos = title;
     simple_conf.pos = numbers;
-/*
-    if (select)
-        simple_conf.on_select = select;
-    else
-        simple_conf.on_select = setperm_select;
-    simple_conf.show_data = show;
-    simple_conf.key_command = setperm_key;
-*/
-    list_select_loop(&simple_conf);
-    free(pts);
-    return arg.flag;
-}
+    simple_conf.on_select = simple_onselect;
+    simple_conf.show_data = simple_show;
+    simple_conf.key_command = simple_key;
 
+    i=list_select_loop(&simple_conf);
+    free(pts);
+
+    if ((flag&SIF_SINGLE)&&(i==SHOW_SELECT))
+    	return simple_conf.pos;
+    return 0;
+}
 

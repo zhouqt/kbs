@@ -64,18 +64,25 @@ struct _select_def {
     int (*show_data) (struct _select_def * conf, int pos);      /*显示pos位置的数据。 */
     int (*show_title) (struct _select_def * conf);      /*显示标题。 */
     int (*show_endline) (struct _select_def * conf);    /*显示行末。 */
+    int (*pre_key_command) (struct _select_def * conf, int* command);        /*在上下左右被处理前处理键盘输入 */
     int (*key_command) (struct _select_def * conf, int command);        /*处理键盘输入 */
-    int (*quit) (struct _select_def * conf);    /*结束 */
+    void (*quit) (struct _select_def * conf);    /*结束 */
     int (*on_selchange) (struct _select_def * conf, int new_pos);       /*改变选择的时候的回调函数 */
-    int (*on_select) (struct _select_def * conf);       /*选择了某一个 */
+
+    /*选择了某一个*/
+    int (*on_select) (struct _select_def * conf);       
+    
     int (*active) (struct _select_def * conf);  /*激活列表 */
     int (*deactive) (struct _select_def * conf);        /*列表失去焦点 */
 };
 int list_select(struct _select_def *conf, int key);
-void list_select_loop(struct _select_def *conf);
+int list_select_loop(struct _select_def *conf);
 
 /* 简单的选择框*/
 #define SIF_SINGLE 0x1
+#define SIF_NUMBERKEY	0x100  /* 数字选择0-9*/
+#define SIF_ALPHAKEY	0x200  /*字母选择a-z*/
+
 
 #define SIT_SELECT	0x1
 #define SIT_EDIT	0x2
