@@ -206,17 +206,17 @@ function ann_display_folder($articles, $parent) {
 	if ($parent != "") {
 ?>
 <tr>
-	<td height="27" align="center" class="TableBody2">0</td>
-	<td align="center" class="TableBody1"><img src="pic/istop.gif" alt="目录" border="0" /></td>
-	<td class="TableBody2"><a href="elite.php?path=<?php echo rawurlencode($parent); ?>">&nbsp;上级目录</a></td>
-	<td align="center" class="TableBody1">&nbsp;</td>
+	<td height="27" align="center" class="TableBody1">0</td>
+	<td align="center" class="TableBody2"><img src="pic/istop.gif" alt="目录" border="0" /></td>
+	<td class="TableBody1"><a href="elite.php?path=<?php echo rawurlencode($parent); ?>">&nbsp;上级目录</a></td>
 	<td align="center" class="TableBody2">&nbsp;</td>
+	<td align="center" class="TableBody1">&nbsp;</td>
 </tr>
 <?php
 	}
     $i = 1;
     foreach ($articles as $article) {
-        echo '<tr><td height="27" align="center" class="TableBody2">'.$i.'</td><td align="center" class="TableBody1">';
+        echo '<tr><td height="27" align="center" class="TableBody1">'.$i.'</td><td align="center" class="TableBody2">';
         switch($article['FLAG']) {
             case 0:
                 continue;
@@ -233,7 +233,7 @@ function ann_display_folder($articles, $parent) {
                 $url = 'elite.php?file='.rawurlencode($article['PATH']);
         }
         echo '<img src="'.$img.'" alt="'.$alt.'" border="0" />';
-        echo '</td><td class="TableBody2">';
+        echo '</td><td class="TableBody1">';
         if ($article['FLAG']==3)
             echo '<font color="red">@</font>';
         else
@@ -242,7 +242,7 @@ function ann_display_folder($articles, $parent) {
         echo '<a href="'.$url.'">'.$title.'</a>';
         $bm = explode(' ',$article['BM']);
         $bm = $bm[0];
-        echo '</td><td align="center" class="TableBody1">'.($bm?'<a target="_blank" href="dispuser.php?id='.$bm.'">'.$bm.'</a>':'&nbsp;').'</td><td align="center" class="TableBody2">'.date('Y-m-d',$article['TIME']).'</td></tr>';
+        echo '</td><td align="center" class="TableBody2">'.($bm?'<a target="_blank" href="dispuser.php?id='.$bm.'">'.$bm.'</a>':'&nbsp;').'</td><td align="center" class="TableBody1">'.date('Y-m-d',$article['TIME']).'</td></tr>';
         $i ++;
     }
 ?>
@@ -253,13 +253,13 @@ function ann_display_folder($articles, $parent) {
 function ann_display_file($filename, $parent) {
 ?>
 <table cellPadding=1 cellSpacing=1 align=center class=TableBorder1 style=" table-layout:fixed;word-break:break-all">
-<tr><th height="25" width="100%" class=TableBody1>精华区文章阅读</th></tr>
-<tr><td width="100%" style="font-size:9pt;line-height:12pt;padding:10px" class=TableBody2>
+<tr><th height="25" width="100%" class=TableBody2>精华区文章阅读</th></tr>
+<tr><td width="100%" style="font-size:9pt;line-height:12pt;padding:10px" class=TableBody1>
 <?php
 		echo dvbcode(bbs_printansifile($filename,1,'elite.php?file='.rawurlencode($_GET['file'])),0,"TableBody1");
 ?>
 </td></tr>
-<tr><td height="20" align="center" class=TableBody1>[<a href="elite.php?path=<?php echo rawurlencode($parent); ?>">返回精华区目录</a>]</td></tr></table>
+<tr><td height="20" align="center" class=TableBody2>[<a href="elite.php?path=<?php echo rawurlencode($parent); ?>">返回精华区目录</a>]</td></tr></table>
 <?php
 }
 ?>
