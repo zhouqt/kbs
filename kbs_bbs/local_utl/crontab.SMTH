@@ -1,0 +1,136 @@
+# 每小时 59 分执行热门话题统计; 1 分 html 化 -- 注意: 只能一小时一次, 不能再快
+59 * * * * /home0/bbs/bin/poststat /home0/bbs
+1 * * * * (/home0/bbs/bin/htmltop10 /home0/bbs ; /usr/bin/sed s/cgi-bin/SMTH2000/g /home0/bbs/0Announce/bbslists/day.html > /home0/bbs/0Announce/bbslists/day2000.html)
+#每分钟生成useronline的telnet用户列表
+#* * * * * /home0/bbs/bin/listonline
+# 每天 0:01-0:02, 23:59 保存当日十大新闻 -- 注意: 只能 0:01-0:02 cp; 23:59 mv
+1 0  * * * cp -f /home0/bbs/etc/posts/day /home0/bbs/0Announce/bbslists/posts
+2 0 * * * cp -f /home0/bbs/0Announce/bbslists/day.html /home0/bbs/0Announce/bbslists/posts.html
+2 0 * * * cp -f /home0/bbs/0Announce/bbslists/day2000.html /home0/bbs/0Announce/bbslists/posts2000.html
+59 23 * * * rm -f /home0/bbs/.Xpost
+59 23 * * * rm -f /home0/bbs/.post.X
+# 每个小时 59 分统计上站人数图; 2 分 html 化
+59 * * * * /home0/bbs/bin/static
+#没有找到htmlcntlg KCN
+#2 * * * * /home0/bbs/bin/htmlcntlg /home0/bbs
+# 每天 0:01-0:03 保存昨日上站人数图
+1 0 * * * cp -f /home0/bbs/0Announce/bbslists/countlogins /home0/bbs/0Announce/bbslists/old.logins
+3 0 * * * cp -f /home0/bbs/0Announce/bbslists/countlogins.html /home0/bbs/0Announce/bbslists/old.logins.html
+# 每天 0:02 清除 WWW 计数器错误记录
+2 0 * * * cat /dev/null > /tmp/nph-count.errors
+# 每天 0:01 在各版生成最近七天的打包文件（必须在自动删文前几分钟运行）
+1 0 * * * /home0/bbs/bin/AIXB >/dev/null 2>&1
+# 每周 1 早上 1:01 为各版生成精华区的打包文件（必须在磁盘最空时运行）
+#1 1 * * 1 /home0/bbs/bin/AIX >/dev/null 2>&1
+1 1 * * 1 /home0/bbs/bin/NEWAIX >/dev/null 2>&1
+# 每周四早上备份trace文件
+1 3 * * 4 /home0/bbs/bin/backtrace
+# 每周 6 早上 0:05 备份本周五十大新闻
+5 0 * * 6 cp -f /home0/bbs/etc/posts/week /home0/bbs/0Announce/bbslists/week
+# 每个月 1 号早上 0:10 备份上个月百大新闻
+10 0 1 * * cp -f /home0/bbs/etc/posts/month /home0/bbs/0Announce/bbslists/month
+# 每年 1 月 1 号早上 0:15 备份去年百大新闻
+15 0 1 1 * cp -f /home0/bbs/etc/posts/year /home0/bbs/0Announce/bbslists/year
+# 每天早上 4:44 将 BBS 帐号档备份
+44 4 * * * (rm -f /backup/bbs/.PASSWDS.gz; cp -f .PASSWDS /backup/bbs; /usr/share/bin/gzip /backup/bbs/.PASSWDS)
+# 每星期四早上 6:00 将 BBS 帐号档备份
+0 6 * * 4 cp -f /backup/bbs/.PASSWDS.gz /backup/bbs/.PASSWDS.week.gz
+# 每月１号早上 6:00 将 BBS 帐号档备份
+0 6 1 * * cp -f /backup/bbs/.PASSWDS.gz /backup/bbs/.PASSWDS.month.gz
+# 每天早上 4:33 统计各版使用状况0
+33 4 * * * /home0/bbs/bin/usage 0
+# 每天早上 4:36 统计各版使用状况1
+36 4 * * * /home0/bbs/bin/usage 1
+# 每周二早上 4:30 备份上周版面使用状况（必须是周二：和版面管理办法配合）
+30 4 * * 2 (cp -f /home0/bbs/0Announce/bbslists/board1 /home0/bbs/0Announce/bbslists/board.1; cp -f /home0/bbs/0Announce/bbslists/board2 /home0/bbs/0Announce/bbslists/board.2; cp -f /home0/bbs/0Announce/bbslists/averagetime /home0/bbs/0Announce/bbslists/averagetime1; cp -f /home0/bbs/0Announce/bbslists/totaltime /home0/bbs/0Announce/bbslists/totaltime1)
+# 因为重新格式化了磁盘，这个先不要啦
+# 每周一早上 0:10 删除过期文章（自动删文：必须在AIXB之后几分钟运行）
+#10 0 * * 1 /home0/bbs/bin/expirepost /home0/bbs 60 2000 200
+# 每个月一号早上 3:30 , 将 BBS 系统中长度为零的档案砍掉
+30 3 1 * * /usr/bin/find /home0/bbs/. -size 0 -exec /bin/rm -f {} \;
+# 每个月一号早上 3:20, 将身份认证记录区的资料备份起来
+20 3 1 * * /home0/bbs/bin/ReG
+# 每周日早上 4:30 将重要档案及看板中的资料备份起来
+30 4 * * 0 (cd /home0/bbs; mv -f /backup/bbs/bbs.tar.gz /backup/bbs/bbs.tgz.bak; tar cf - .BOARDS .bad* register.list etc vote bin| gzip -cf >  /backup/bbs/bbs.tar.gz)
+# 每周二早上 1:30 将用户的资料备份起来
+30 1 * * 2 (cd /home0/bbs; tar cf - /home0/bbs/home | gzip -cf > /backup/bbs/home.tgz )
+# 每周四早上 1:30 将用户的资料备份起来
+30 1 * * 4 (cd /home0/bbs; tar cf - /home0/bbs/mail | gzip -cf > /backup/bbs/mail.tgz )
+# 每周三早上 1:30 将版面文章起来
+30 1 * * 3 (cd /home0/bbs; mv -f /backup/bbs/boards.tgz /backup/bbs/boards.tgz.bak; tar cf - /home0/bbs/boards | gzip -cf > /backup/bbs/boards.tgz )
+# 每周一早上 2:30 将精华区中的资料备份起来
+#30 2 * * 1 (cd /home0/bbs; mv -f /backup/bbs/best.tgz /backup/bbs/best.tgz.bak; tar cf - /home0/bbs/0Announce | gzip -cf > /backup/bbs/best.tgz )
+# 每周一早上 6:00 将上个星期的trace, use_board, usies备份，并清除
+0 6 * * 1 (rm -f /backup/bbs/*.old.gz; mv -f /home0/bbs/boardusage.log /backup/bbs/use_board.old; mv -f /home0/bbs/usies /backup/bbs/usies.old; /usr/share/bin/gzip /backup/bbs/*.old)
+0 6 * * 4 (/bin/bash /home0/bbs/bin/backtrace)
+# 每月一号早上 6:10 将上月的a_trace备份并清除
+10 6 1 * * (rm -f /backup/bbs/a_trace.old; mv -f /home0/bbs/a_trace /backup/bbs/a_trace; /usr/share/bin/gzip /backup/bbs/a_trace; mv /backup/bbs/a_trace.gz a_trace.old)
+# 每周一早上 6:30 将原始码备份起来
+30 6 * * 1 (cd /home0/bbs; mv -f /backup/bbs/src.tar.gz /backup/bbs/src.tgz.bak; tar cf - bbs_src bbs2www | gzip -cf > /backup/bbs/src.tar.gz)
+# 每周一早上 3:33 , 将 BBS home 中超过七天的 chatlog & talklog 的档案砍掉
+33 3 * * 1 /usr/bin/find /home0/bbs/home/ \! -ctime 7 \( -name chat_\* -o -name talk_\* \) | xargs rm -f
+# 每天早上1:00清理一个字母的mail里的死信,每天早上3:00清理一个字母的boards里的死文章,27号清理小写字母的boards里的死文章
+00 1 1 * * find /home0/bbs/mail/A  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 1 * * find /home0/bbs/boards/A*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 2 * * find /home0/bbs/mail/B  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 2 * * find /home0/bbs/boards/B*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 3 * * find /home0/bbs/mail/C  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 3 * * find /home0/bbs/boards/C*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 4 * * find /home0/bbs/mail/D  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 4 * * find /home0/bbs/boards/D*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 5 * * find /home0/bbs/mail/E  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 5 * * find /home0/bbs/boards/E*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 6 * * find /home0/bbs/mail/F  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 6 * * find /home0/bbs/boards/F*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 7 * * find /home0/bbs/mail/G  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 7 * * find /home0/bbs/boards/G*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 8 * * find /home0/bbs/mail/H  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 8 * * find /home0/bbs/boards/H*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 9 * * find /home0/bbs/mail/I  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 9 * * find /home0/bbs/boards/I*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 10 * * find /home0/bbs/mail/J  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 10 * * find /home0/bbs/boards/J*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 11 * * find /home0/bbs/mail/K  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 11 * * find /home0/bbs/boards/K*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 12 * * find /home0/bbs/mail/L  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 12 * * find /home0/bbs/boards/L*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 13 * * find /home0/bbs/mail/M  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 13 * * find /home0/bbs/boards/M*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 14 * * find /home0/bbs/mail/N  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 14 * * find /home0/bbs/boards/N*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 15 * * find /home0/bbs/mail/O  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 15 * * find /home0/bbs/boards/O*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 16 * * find /home0/bbs/mail/P  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 16 * * find /home0/bbs/boards/P*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 17 * * find /home0/bbs/mail/Q  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 17 * * find /home0/bbs/boards/Q*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 18 * * find /home0/bbs/mail/R  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 18 * * find /home0/bbs/boards/R*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 19 * * find /home0/bbs/mail/S  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 19 * * find /home0/bbs/boards/S*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 20 * * find /home0/bbs/mail/T  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 20 * * find /home0/bbs/boards/T*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 21 * * find /home0/bbs/mail/U  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 21 * * find /home0/bbs/boards/U*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 22 * * find /home0/bbs/mail/V  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 22 * * find /home0/bbs/boards/V*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 23 * * find /home0/bbs/mail/W  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 23 * * find /home0/bbs/boards/W*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 24 * * find /home0/bbs/mail/X  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 24 * * find /home0/bbs/boards/X*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 25 * * find /home0/bbs/mail/Y  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 25 * * find /home0/bbs/boards/Y*  -type f -exec /home0/bbs/bin/Xclean {} \;
+00 1 26 * * find /home0/bbs/mail/Z  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 26 * * find /home0/bbs/boards/Z*  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 3 27 * * find /home0/bbs/boards/b*  -type f -exec /home0/bbs/bin/Xclean {} \;
+#20 3 27 * * find /home0/bbs/boards/d*  -type f -exec /home0/bbs/bin/Xclean {} \;
+#40 3 27 * * find /home0/bbs/boards/j*  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 4 27 * * find /home0/bbs/boards/n*  -type f -exec /home0/bbs/bin/Xclean {} \;
+#20 4 27 * * find /home0/bbs/boards/s*  -type f -exec /home0/bbs/bin/Xclean {} \;
+#40 4 27 * * find /home0/bbs/boards/t*  -type f -exec /home0/bbs/bin/Xclean {} \;
+#00 5 27 * * find /home0/bbs/boards/v*  -type f -exec /home0/bbs/bin/Xclean {} \;
+# 每天5:30更新版主上站记录	period	2000-11-12
+30 5 * * * bin/lazybm > 0Announce/groups/system.faq/sys_discuss/lazybm.log 2>&1
+# 每周更新各版精华区目录	period	2000-11-22
+45 5 * * * bin/buildAnnIDX.sh
+# The end of crontab for SMTH BBS

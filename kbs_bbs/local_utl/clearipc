@@ -1,0 +1,2 @@
+#!/bin/sh
+ipcs |awk '$0~/bbs/ {system(sprintf("ipcrm shm %s",$2));}'

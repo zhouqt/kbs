@@ -2,18 +2,15 @@ filename=`date +%Y%m%d`
 backupdir=/backup/bbs/trace
 dirname=$backupdir/`date +%Y%m`
 mkdir $dirname
-mv -f /home0/bbs/trace $dirname
-/bin/gzip -S "$filename.gz" $dirname/trace
+mv -f /home/bbs/usies $dirname
+gzip -S "$filename.gz" $dirname/usies
 
-mv -f /home0/bbs/bbs.log $dirname
-/bin/gzip -S "$filename.gz" $dirname/bbs.log
+mv -f /home/bbs/trace $dirname
+gzip -S "$filename.gz" $dirname/trace
 
-mv -f /home0/bbs/user.log $dirname
-/bin/gzip -S "$filename.gz" $dirname/user.log
+mv -f /home/bbs/user.log $dirname
+gzip -S "$filename.gz" $dirname/user.log
 
-mv -f /home0/bbs/connect.log /home0/back/connect.log
-mv -f /home0/bbs/ValidIP /backup/bbs/ValidIP
-/bin/gzip -S "$filename.gz" /backup/bbs/ValidIP
-#tar cfvh /backup/bbs/trace/ValidIP$filename.tar /backup/bbs/trace/ValidIP
-#/usr/share/bin/gzip /backup/bbs/trace/ValidIP$filename.tar
-#mv /backup/bbs/ValidIP$filename.tar.gz /backup/bbs/ValidIP$filename.tgz
+#mv -f /home/bbs/connect.log /home/back/connect.log
+#mv -f /home/bbs/ValidIP /backup/bbs/ValidIP
+#gzip -S "$filename.gz" /backup/bbs/ValidIP

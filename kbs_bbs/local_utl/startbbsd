@@ -1,0 +1,4 @@
+ps -Af|awk '$1~/bbs/ && $0~/bbsd_single/ && $0!~/bbsd:/ && $0!~/grep/ && $0!~/awk/ {system(sprintf("kill -TERM %s",$2))};'
+/home/bbs/bin/bbsd_single 23 
+/home/bbs/bin/bbsd_single 8001
+/home/bbs/bin/bbsd_single 8002
