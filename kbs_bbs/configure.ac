@@ -43,7 +43,9 @@ AC_ARG_ENABLE(innbbsd,
 [
 	if test "$enableval" = "yes" ; then
 	        if test -d innbbsd; then
-        	        AC_CONFIG_SUBDIRS(innbbsd)
+        	        AC_CONFIG_FILES(innbbsd/Makefile
+									innbbsd/linkinnd.sh)
+					subdirs="$subdirs innbbsd"
 	        else
         	        AC_MSG_ERROR([can't find innbbsd package,please get it first!])
 	        fi
@@ -159,6 +161,7 @@ AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
 AC_PROG_RANLIB
+AC_PROG_YACC
 m4_include(config.lib)
 
 # Checks for libraries.
