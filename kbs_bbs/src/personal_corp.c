@@ -83,10 +83,13 @@ int pc_add_user()
 				return 0;
 
 			if( del_pc_users( &pu ) ){
+				char buf1[256];
 				lookupuser->flags &= ~PCORP_FLAG ;
 				move(10,0);
 				prints("删除成功");
 				pressanykey();
+				sprintf(buf1, "%s 取消 %s 的个人文集", currentuser->userid, lookupuser->userid);
+                securityreport(buf1, lookupuser, NULL);
 				return 1;
 			}else{
 				move(10,0);
@@ -178,6 +181,7 @@ int pc_add_user()
 		pu.createtime = time(0);
 
 	if(add_pc_users(&pu) ){
+		char buf1[256];
 		lookupuser->flags |= PCORP_FLAG ;
 		move(18,0);
 		if(pu.uid)
@@ -185,6 +189,8 @@ int pc_add_user()
 		else
 			prints("添加成功,用户%s已经拥有个人文集",lookupuser->userid);
 		pressanykey();
+		sprintf(buf1, "%s 增加 %s 的个人文集", currentuser->userid, lookupuser->userid);
+        securityreport(buf1, lookupuser, NULL);
 		return 1;
 	}else{
 		move(18,0);
