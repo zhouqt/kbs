@@ -37,9 +37,17 @@
 			$desc = 0;
 		settype($desc, "integer");
 		if($desc == 1)
-			$order="DESC";
+			$descstr="DESC";
 		else
-			$order="ASC";
+			$descstr="ASC";
+
+		if( $_GET["order"] ){
+			$order = $_GET["order"];
+		}else if( $_POST["order"] ){
+			$order = $_POST["order"];
+		}
+		if( $order != "bbsid" && $order != "name" )
+			$order="groupname";
 
 		$db = mysql_connect($hostname, $username, $password) or die(mysql_error());
 		mysql_select_db($dbname, $db) or die(mysql_error());
@@ -64,7 +72,7 @@
 
 		}
 
-		$sqlstr = "SELECT * FROM addr WHERE userid=\"".$currentuser["userid"]."\" ORDER BY groupname ".$order." LIMIT ".$startnum.",".$count;
+		$sqlstr = "SELECT * FROM addr WHERE userid=\"".$currentuser["userid"]."\" ORDER BY ".$order." ".$descstr." LIMIT ".$startnum.",".$count;
 
 		$result = mysql_query($sqlstr) or die(mysql_error());
 
@@ -89,7 +97,7 @@
 <td><?php echo $row[3];?></td>
 <td><?php echo $row[15];?></td>
 <td><pre><?php echo $row[14];?></pre></td>
-<td><a onclick="return confirm('你真的要删除这条记录吗?')" href="/bbsal.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&desc=<?php echo $desc;?>">删除</a></td>
+<td><a onclick="return confirm('你真的要删除这条记录吗?')" href="/bbsal.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">删除</a></td>
 </tr>
 <?php
 				$i++;
@@ -104,7 +112,7 @@
 <?php
 		if( $startnum > 0 ){
 ?>
-<a href="/bbsal.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">上一页</a>
+<a href="/bbsal.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">上一页</a>
 <?php	}else{
 ?>
 上一页
@@ -113,7 +121,7 @@
 
 		if( $i >= $count ){
 ?>
-<a href="/bbsal.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">下一页</a>
+<a href="/bbsal.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">下一页</a>
 <?php	}else{
 ?>
 下一页
@@ -123,24 +131,48 @@
 
 <script language="javascript">
 <!--//
-function doRefresh(){
-	var oSelectType=document.getElementById("oType");
+function doOrder(){
+	var oSelectType=document.getElementById("oOrder");
 	var type=oSelectType.value;
 
-	if(type=="1")
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=0";
+	if(type=="name")
+		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=name&desc=<?php echo $desc;?>";
+	else if(type=="bbsid")
+		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=bbsid&desc=<?php echo $desc;?>";
 	else
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=1";
+		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=groupname&desc=<?php echo $desc;?>";
 
 	return;
 }
 //-->
 </script>
 
-<select name="type" class="input"  style="WIDTH: 60px" id="oType" onChange="doRefresh();">
+&nbsp;&nbsp;&nbsp;按<select name="type" class="input"  style="WIDTH: 55px" id="oOrder" onChange="doOrder();">
+<option value="name"<?php if( $order=="name" ) { ?> selected="selected"<?php } ?>>姓名</option>
+<option value="bbsid"<?php if( $order=="bbsid" ) { ?> selected="selected"<?php } ?>>bbsid</option>
+<option value="groupname"<?php if( $order=="groupname" ) { ?> selected="selected"<?php } ?>>分组</option>
+</select>
+
+<script language="javascript">
+<!--//
+function doRefresh(){
+	var oSelectType=document.getElementById("oType");
+	var type=oSelectType.value;
+
+	if(type=="1")
+		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=0";
+	else
+		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=1";
+
+	return;
+}
+//-->
+</script>
+
+<select name="type" class="input"  style="WIDTH: 48px" id="oType" onChange="doRefresh();">
 <option value="1"<?php if( $desc==0 ) { ?> selected="selected"<?php } ?>>增序</option>
 <option value="2"<?php if( $desc==1 ) { ?> selected="selected"<?php } ?>>倒序</option>
-</select>
+</select>排列
 
 </center>
 </body>
