@@ -358,6 +358,8 @@ int igetch()
                 hifd = i_newfd + 1;
         }
         sr = select(hifd, &readfds, NULL, NULL, &to);
+	if (sr < 0 && errno == EINTR && talkrequest )
+	    return KEY_TALK;
         if (sr < 0 && errno != EINTR)
             abort_bbs(0);
         if (sr == 0) {
@@ -396,6 +398,8 @@ int igetch()
                         to.tv_sec = IDLE_TIMEOUT;
                 }
                 sr = select(hifd, &readfds, NULL, &xds, &to);
+		if (sr < 0 && errno == EINTR && talkrequest )
+	    		return KEY_TALK;
                 if (sr == 0 && alarm_timeout) {
                     i_timeout = 0;
                     (*i_timeout_func) (timeout_data);
@@ -523,7 +527,7 @@ int igetkey()
 
         check_calltime();
 
-        if (talkrequest) {
+        if ((ch==KEY_TALK)&&talkrequest) {
         	if(uinfo.mode!=CHAT1&&uinfo.mode!=CHAT2&&uinfo.mode!=CHAT3&&uinfo.mode!=CHAT4
         		&&uinfo.mode!=TALK&&uinfo.mode!=PAGE) {
 		        talkreply();
