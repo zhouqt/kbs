@@ -113,9 +113,10 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			echo "<table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
 			"<tr><td class=\"".$cellclass[0]."\">".time_format_date($nodes[$i][created])."</td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
-			"<tr><td class=\"".$cellclass[1]."\" colspan=2><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
+			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
-			"<tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>";
+			"<td align=right class=\"".$cellclass[1]."\"><img src=\"images/xmas/xmas".rand(0,27).".gif\" alt=\"Merrey Christmas!\" align=\"right\"></td>".
+			"</tr><tr><td colspan=2 class=\"".$cellclass[1]."\"><font class='".$contentcss."'>";
 			if($pc["INDEX"]["nodeChars"]==0)
 				echo html_format($nodes[$i][body],TRUE,$nodes[$i][htmltag]);//先暂时改成显示全文吧，直接切断问题颇多。windinsn dec 21 , 2003 
 			else

@@ -164,7 +164,7 @@
 <p align="center" class="f2">
 <?php echo BBS_FULL_NAME; ?>Blog
 </p>
-<hr size=1>
+<img src="images/xmas1.gif" alt="<?php echo BBS_FULL_NAME; ?>祝大家圣诞快乐~">
 <p class="f1">
 [<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
 [<a href="pcnew.php">最新文章列表</a>]
@@ -176,7 +176,7 @@
 	display_navigation_bar($totalpage,$pageno,$char,$listorder,$listorder1);
 	display_char_bar($char);
 ?>
-<hr size=1>
+<img src="images/xmas2.gif" alt="<?php echo BBS_FULL_NAME; ?>祝大家圣诞快乐~">
 <p class="f1">
 [<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的Blog</a>]
 [<a href="pcnew.php">最新文章列表</a>]
