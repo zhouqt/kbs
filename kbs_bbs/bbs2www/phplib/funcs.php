@@ -21,4 +21,6 @@ else {
   $fromhost=$_SERVER["REMOTE_ADDR"];
   $fullfromhost=$fromhost;
 }
+
+bbs_setfromhost($fromhost,$fullfromhost);
 ?>

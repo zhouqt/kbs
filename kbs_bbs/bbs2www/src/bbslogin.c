@@ -176,10 +176,10 @@ int wwwlogin(struct userec *user) {
 	if (addto_msglist(get_utmpent_num(getcurruinfo()), getcurruserid()) < 0)
 		http_fatal("无法添加当前用户到消息列表中");
 	sprintf(buf, "%d", utmpent);
-	setcookie("utmpnum", buf);
+	setcookie("UTMPNUM", buf);
 	sprintf(buf, "%d", tmp);
-	setcookie("utmpkey", buf);
-	setcookie("utmpuserid", user->userid);
+	setcookie("UTMPKEY", buf);
+	setcookie("UTMPUSERID", user->userid);
 	set_my_cookie();
 	return 0;
 }

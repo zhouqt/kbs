@@ -435,11 +435,11 @@ int user_init(struct userec **x, struct user_info **y)
 	int i, uid, key;
 	struct UTMPFILE *utmpshm_ptr;
 
-	strsncpy(id, getparm("utmpuserid"), 13);
-	strsncpy(num, getparm("utmpnum"), 12);
+	strsncpy(id, getparm("UTMPUSERID"), 13);
+	strsncpy(num, getparm("UTMPNUM"), 12);
 	/*printf("utmpuserid = %s\n", id);*/
 	/*printf("utmpnum = %s\n", num);*/
-	key=atoi(getparm("utmpkey"));
+	key=atoi(getparm("UTMPKEY"));
 	i=atoi(num);
 	if(i<1 || i>=MAXACTIVE)
 		/*return 0;*/

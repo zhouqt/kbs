@@ -21,7 +21,7 @@ DEFINES = $(OS_DEF) $(SITE_DEF)
 # complier and linker
 PHPBASE = /home/share/php-4.2.0
 
-$(TARGET): $(OBJ)
+$(TARGET): $(OBJ) ../../libBBS.a ../../libsystem.a
 	$(LD) -shared $(LDFLAGS) -o $(TARGET) $(OBJ) ../../libBBS.a ../../libsystem.a
 
 install: $(TARGET)

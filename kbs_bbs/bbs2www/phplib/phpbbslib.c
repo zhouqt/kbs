@@ -7,6 +7,10 @@ static ZEND_FUNCTION(bbs_getonlinenumber);
 static ZEND_FUNCTION(bbs_countuser);
 static ZEND_FUNCTION(bbs_setfromhost);
 static ZEND_FUNCTION(bbs_checkpasswd);
+static ZEND_FUNCTION(bbs_getcurrentuser);
+static ZEND_FUNCTION(bbs_setonlineuser);
+static ZEND_FUNCTION(bbs_getcurrentuinfo);
+static ZEND_FUNCTION(bbs_wwwlogin);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -22,6 +26,10 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_countuser, NULL)
         ZEND_FE(bbs_setfromhost, NULL)
         ZEND_FE(bbs_checkpasswd, NULL)
+        ZEND_FE(bbs_getcurrentuser, NULL)
+        ZEND_FE(bbs_setonlineuser, NULL)
+	ZEND_FE(bbs_getcurrentuinfo, NULL)
+	ZEND_FE(bbs_wwwlogin, NULL)
         {NULL,NULL,NULL}
 };
 
@@ -104,10 +112,23 @@ static void assign_userinfo(zval* array,struct user_info* uinfo)
 
 static int currentusernum;
 static char* fullfrom;
+static struct user_info *currentuinfo;
+static int currentuinfonum;
 
 static inline struct userec* getcurrentuser()
 {
 	return currentuser;
+}
+
+static inline struct user_info* getcurrentuinfo()
+{
+	return currentuinfo;
+}
+
+static inline void setcurrentuinfo(struct user_info* uinfo,int uinfonum)
+{
+	currentuinfo=uinfo;
+	currentuinfonum=uinfonum;
 }
 
 static inline void setcurrentuser(struct userec* user,int usernum)
@@ -121,10 +142,13 @@ static inline int getcurrentuser_num()
 	return currentusernum;
 }
 
+static inline int getcurrentuinfo_num()
+{
+	return currentuinfonum;
+}
 time_t set_idle_time(struct user_info *uentp, time_t t)
 {
 	uentp->freshtime = t;
-
 	return t;
 }
 
@@ -196,6 +220,7 @@ static ZEND_FUNCTION(bbs_getonlineuser)
 		  ret=idx;
 	  }
 	}
+	RETURN_LONG(ret);
 }
 
 static ZEND_FUNCTION(bbs_getonlinenumber)
@@ -261,7 +286,6 @@ static ZEND_FUNCTION(bbs_checkpasswd)
 			logattempt(user->userid, fromhost);
 		}
        }
-
 	RETURN_LONG(ret);
 }
 
@@ -278,6 +302,28 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 	if(strcasecmp(getcurrentuser()->userid, "guest")) {
 		struct user_info ui;
 		int utmpent;
+                time_t t;
+
+		if(!HAS_PERM(getcurrentuser(), PERM_BASIC))
+			RETURN_LONG(3);
+		if(!check_ban_IP(fromhost,buf))
+			RETURN_LONG(4);
+		t=getcurrentuser()->lastlogin;
+		getcurrentuser()->lastlogin=time(0);
+		if(abs(t-time(0))<5)
+			RETURN_LONG(5);
+		getcurrentuser()->numlogins++;
+		strncpy(getcurrentuser()->lasthost, fromhost, IPLEN);
+		if (!HAS_PERM(getcurrentuser(),PERM_LOGINOK) && !HAS_PERM(getcurrentuser(),PERM_SYSOP))
+		{
+			if (strchr(getcurrentuser()->realemail, '@')
+				&& valid_ident(getcurrentuser()->realemail))
+			{
+				getcurrentuser()->userlevel |= PERM_DEFAULT;
+				if (HAS_PERM(getcurrentuser(),PERM_DENYPOST)/* && !HAS_PERM(currentuser,PERM_SYSOP)*/)
+					getcurrentuser()->userlevel &= ~PERM_POST;
+			}
+		}
 
 		memset( &ui, 0, sizeof( struct user_info ) );
     		ui.active = YEA ;
@@ -324,7 +370,7 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 			u->pid = 1;
 			tmp=rand()%100000000;
 			u->utmpkey=tmp;
-			if (addto_msglist(utmpent-1, getcurrentuser()->userid) < 0)
+			if (addto_msglist(utmpent, getcurrentuser()->userid) < 0)
 				ret=2;
 			else {
 				/*
@@ -335,9 +381,98 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 				setcookie("utmpuserid", getcurrentuser()->userid);
 				set_my_cookie();
 				*/
+				setcurrentuinfo(u,utmpent);
 				ret=0;
 			}
 		}
+	} else /* guest */
+		ret=0;
+	RETURN_LONG(ret);
+}
+
+static ZEND_FUNCTION(bbs_getcurrentuinfo)
+{
+        zval* user_array;
+        long ret;
+
+        if (zend_parse_parameters(1 TSRMLS_CC, "a" , &user_array) != SUCCESS) {
+                WRONG_PARAM_COUNT;
+        }
+
+        if(array_init(user_array) != SUCCESS) {
+                ret=0;
+        }
+        else {
+                if (getcurrentuinfo()) {
+                  assign_userinfo(user_array,getcurrentuinfo());
+                  ret=getcurrentuinfo_num();
+                } else
+                        ret=0;
+        }
+        RETURN_LONG(ret);
+}
+
+static ZEND_FUNCTION(bbs_getcurrentuser)
+{
+	zval* user_array;
+	long ret;
+
+        if (zend_parse_parameters(1 TSRMLS_CC, "a" , &user_array) != SUCCESS) {
+                WRONG_PARAM_COUNT;
+        }
+	
+	if(array_init(user_array) != SUCCESS) {
+		ret=0;
+	}
+	else {
+		if (getcurrentuser()) {
+		  assign_user(user_array,getcurrentuser());
+		  ret=getcurrentuser_num();
+		} else
+			ret=0;
+	}
+	RETURN_LONG(ret);
+}
+
+static ZEND_FUNCTION(bbs_setonlineuser)
+{
+	zval* user_array;
+	char* userid;
+	int userid_len;
+	long utmpnum;
+	long utmpkey;
+	long ret;
+	struct user_info* pui;
+	int idx;
+	struct userec* user;
+
+        if (zend_parse_parameters(4 TSRMLS_CC, "slla" , &userid, &userid_len,
+				&utmpnum, &utmpkey, &user_array) != SUCCESS) {
+                WRONG_PARAM_COUNT;
+        }
+	if (userid_len>IDLEN) RETURN_LONG(1);
+	if(utmpnum<1 || utmpnum>=MAXACTIVE)
+		RETURN_LONG(2);
+
+	pui = get_utmpent(utmpnum);
+	if (strcasecmp(pui->userid,"guest")) {
+		if (pui->utmpkey!=utmpkey)
+			RETURN_LONG(3);
+		if (pui->active==0)
+			RETURN_LONG(4);
+		if (strcmp(pui->userid,userid))
+			RETURN_LONG(5);
+	}
+	setcurrentuinfo(pui,utmpnum);
+	idx=getuser(pui->userid,&user);
+	if (user==NULL)
+		RETURN_LONG(6);
+	setcurrentuser(user,idx);
+	if(array_init(user_array) != SUCCESS)
+		ret=7;
+	else {
+		assign_userinfo(user_array,pui);
+		ret=0;
 	}
 	RETURN_LONG(ret);
 }
