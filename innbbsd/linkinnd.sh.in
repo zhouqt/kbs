@@ -1,0 +1,16 @@
+#!/bin/sh
+
+INNPROGS="innbbsd makedbz mkhistory dbzserver bbsnnrp ctlinnbbsd dbz_query_sample bbslink"
+LN_S="@LN_S@"
+
+if test ! -e @prefix@/innd ; then
+	mkdir @prefix@/innd
+fi
+
+for innprog in $INNPROGS ; do
+	if test -e @prefix@/innd/$innprog; then
+		rm -f @prefix@/innd/$innprog
+	fi
+	$LN_S @prefix@/bin/$innprog @prefix@/innd
+done
+

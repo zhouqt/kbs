@@ -25,3 +25,6 @@ innbbsd_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
 bbslink_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
 dbzserver_CFLAGS = -DDBZSERVER $(AM_CFLAGS)
 LDADD=-L../libBBS -lBBS -L../libsystem -lsystem -Llibhztty -lhztty
+
+install-data-local:
+	sh linkinnd.sh
