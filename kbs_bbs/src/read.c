@@ -691,33 +691,49 @@ char *direct ;
 {
     int i;
     char buf[STRLEN],ch[4],BMch;
-    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档"};
+    char *SR_BMitems[]={"删除","保留","文摘","放入精华区","放入暂存档","标记删除"};
+    char linebuffer[256];
 
     if(!chk_currBM(currBM))
     {
         return DONOTHING;
     }
+    saveline(t_lines-3, 0, linebuffer);
     saveline(t_lines-2, 0, NULL);
-    move(t_lines-2, 0);
+    move(t_lines-3, 0);
     clrtoeol();
-    strcpy(buf,"相同主题 (0)取消 ");
-    for(i=0;i<5;i++)
-        sprintf(buf,"%s(%d)%s ",buf,i+1,SR_BMitems[i]);
+    strcpy(buf,"相同主题 (0)取消  ");
+    for(i=0;i<6;i++)
+        sprintf(buf,"%s(%d)%s  ",buf,i+1,SR_BMitems[i]);
     strcat(buf,"? [0]: ");
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+    if (strlen(buf)>80) {
+        char ch=buf[80];
+        buf[80]=0;
+        prints("%s",buf);
+        buf[80]=ch;
+        strcpy(buf,buf+80);
+        getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+    } else
+    getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
     BMch=atoi(ch);
-    if(BMch<=0||BMch>5)
+    if(BMch<=0||BMch>6)
     {
         saveline(t_lines-2, 1, NULL);
+        saveline(t_lines-3, 1, linebuffer);
         return DONOTHING;
     }
-    if(digestmode==2&&BMch<=3)
-        return;
+    if(digestmode==2&&BMch<=3) {
+        saveline(t_lines-2, 1, NULL);
+        saveline(t_lines-3, 1, linebuffer);
+        return DONOTHING;
+    }
     move(t_lines-2, 0);
+    clrtoeol();
+    move(t_lines-3, 0);
     clrtoeol();
     /* Leeward 98.04.16 */
     sprintf(buf,"是否从此主题第一篇开始%s (Y)第一篇 (N)目前这篇 (C)取消 (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+    getdata(t_lines-3, 0,buf,ch,3,DOECHO,NULL,YEA);
     switch (ch[0])
     {
     default:
@@ -729,6 +745,7 @@ case 'n': case 'N':
         break;
 case 'c': case 'C':
         saveline(t_lines-2, 1, NULL);
+        saveline(t_lines-3, 1, linebuffer);
         return DONOTHING;
     }
     sread(BMch+SR_BMBASE,0,ent,0,fileinfo);
@@ -1111,6 +1128,25 @@ case 0: case 1: case 2:
             else
                 break;
         case SR_BMDEL:
+            if(digestmode)
+                return;
+            /* Leeward 97.11.18: fix bugs: add "if" block */
+            /* if (!( ptitle->accessed[0] & FILE_MARKED )) */
+            if (!( SR_fptr.accessed[ 0 ] & FILE_MARKED ))
+                /* Bigman 2000.8.20: 修改同主题删除错误.... Leeward这个增加的不对呀,以后的内容没有读呀 */
+            {
+                SR_BMDELFLAG=YEA;
+                del_post(locmem->crs_line,&SR_fptr,currdirect);
+                SR_BMDELFLAG=NA;
+                if(sysconf_eval( "KEEP_DELETED_HEADER" )<=0)
+                {
+                    last_line--;
+                    locmem->crs_line--;
+                    previous=locmem->crs_line;
+                }
+            }
+            break;
+        case SR_BMMARKDEL:
             if(digestmode)
                 return;
             /* Leeward 97.11.18: fix bugs: add "if" block */
