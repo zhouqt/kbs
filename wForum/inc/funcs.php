@@ -69,9 +69,9 @@ if (!isset($needlogin)){
 	$needlogin=1;
 }
 
-function setSucMsg($msg){ //ToDo: non-standard HTML - atppp
+function setSucMsg($msg){
 	global $sucmsg;
-	$sucmsg.='<br><li>'.$msg;
+	$sucmsg.='<li>'.$msg.'</li>';
 }
 function setStat($stat){
 	GLOBAL $stats;
@@ -81,7 +81,7 @@ function setStat($stat){
 function foundErr($msg){ //ToDo: non-standard HTML - atppp
 	global $errMsg;
 	global $foundErr;
-	$errMsg.='<br><li>'.$msg;
+	$errMsg.='<li>'.$msg.'</li>';
 	$foundErr=true;
 }
 
@@ -372,9 +372,11 @@ function html_error_quit()
 </tr>
 <tr>
 <td width="100%" class=TableBody1 colspan=2>
-<b>产生错误的可能原因：</b><br><br>
-<li>您是否仔细阅读了<a href="boardhelp.php">帮助文件</a>，可能您还没有登陆或者不具有使用当前功能的权限。
+<b>产生错误的可能原因：</b>
+<ul>
+<li>您是否仔细阅读了<a href="boardhelp.php">帮助文件</a>，可能您还没有登陆或者不具有使用当前功能的权限。</li>
 <?php   echo $errMsg; ?>
+</ul>
 </td></tr>
 <?php
 	if (($needlogin!=0)&&($loginok!=1)) {
@@ -400,8 +402,10 @@ function html_success_quit($Desc='',$URL='')
 </tr>
 <tr>
 <td width="100%" class=TableBody1>
-<b>操作成功：</b><br><br>
+<b>操作成功：</b>
+<ul>
 <?php   echo $sucmsg; ?>
+</ul>
 </td></tr>
 <tr align=center><td width="100%" class=TableBody2>
 <?php
@@ -691,7 +695,7 @@ function head_var($Title='', $URL='',$showWelcome=0)
   } 
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
-<tr><td height=25 valign=middle>
+<tr><td>
 <img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> → 
 <?php 
 	if ($Title!='') {
@@ -699,7 +703,6 @@ function head_var($Title='', $URL='',$showWelcome=0)
 	}
 	echo $stats;
 ?>
-<a name=top></a>
 </td></td>
 </table>
 <br>

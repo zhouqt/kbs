@@ -265,7 +265,7 @@ function showBroadcast($boardID,$boardName){
 	global $conn;
 ?>
 <tr><td class=TableBody1 colspan=5 height=20>
-	<table width=100% ><tr><td valign=middle height=20 width=50><!-- <a href=allpaper.php?board=<?php echo $boardName; ?> title=点击查看本论坛所有小字报>--><a href=# title=点击查看本论坛所有小字报 ><b>广播：</b></a> </td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}">
+	<table width=100% ><tr><td valign=middle height=20 width=50><a href=allpaper.php?board=<?php echo $boardName; ?> title=点击查看本论坛所有小字报><b>广播</b></a>：</td><td width=*> <marquee scrolldelay=150 scrollamount=4 onmouseout="if (document.all!=null){this.start()}" onmouseover="if (document.all!=null){this.stop()}">
 <?php
 	$sth = $conn->query("SELECT ID,Owner,Title FROM smallpaper_tb where Addtime>=subdate(Now(),interval 1 day) and boardID=" . $boardID . " ORDER BY Addtime desc limit 5");
 	while($rs = $sth->fetchRow(DB_FETCHMODE_ASSOC)) {
@@ -295,10 +295,9 @@ function board_head_var($boardDesc,$boardName,$secNum)
   }
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder2>
-<tr><td height=25 valign=middle>
-<img src="pic/forum_nav.gif" align=absmiddle> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> → 
+<tr><td>
+<img src="pic/forum_nav.gif"> <a href="<?php echo $SiteURL; ?>"><?php   echo $SiteName; ?></a> → 
 <a href="section.php?sec=<?php echo $secNum; ?>"><?php echo $section_names[intval($secNum)][0] ; ?></a> → <a href="board.php?name=<?php echo $boardName; ?>"><?php echo $boardDesc; ?></a> → <?php echo $stats; ?> 
-<a name=top></a>
 </td></tr>
 </table>
 <br>

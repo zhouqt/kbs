@@ -336,11 +336,8 @@ function showUserInfo(){
 <?php
 $userip = $_SERVER["HTTP_X_FORWARDED_FOR"];
 $userip2 = $_SERVER["REMOTE_ADDR"];
-if  ($userip=='') {
-	echo '您的真实ＩＰ 是：'. $userip2. '，';
-} else {
-	echo '您的真实ＩＰ 是：'. $userip .'，';
-}
+if ($userip=='') $userip = $userip2;
+echo '您的真实ＩＰ是：'. $userip. '，';
 echo usersysinfo($_SERVER["HTTP_USER_AGENT"]);
 
 ?>
