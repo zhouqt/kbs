@@ -18,7 +18,7 @@ define('OLD_REPLY_STYLE', true); //使用传统 telnet re 文方式
 
 define("ENABLE_UBB", true); //是否支持 UBB
 
-define('SHOW_REGISTER_TIME', false); //是否显示用户注册时间
+define('SHOW_REGISTER_TIME', false); //是否支持显示真实用户信息（包括用户注册时间）
 
 /* 附件：每个最大尺寸，总最大尺寸，总最大数量 */
 define("ATTACHMAXSIZE","5242880");
