@@ -628,13 +628,13 @@ void clear_utmp2(int uent)
     utmpshm->uinfo[ uent - 1 ] = zeroinfo;
 }
 
-void clear_utmp(int uent,int useridx)
+void clear_utmp(int uent,int useridx,int pid)
 {
 	int lockfd;
    	lockfd=utmp_lock();
 	utmp_setreadonly(0);
 
-	if ((useridx==0)||(utmpshm->uinfo[uent-1].uid==useridx))
+	if (((useridx==0)||(utmpshm->uinfo[uent-1].uid==useridx)) && pid==utmpshm->uinfo[uent-1].pid)
 		clear_utmp2(uent);
 
 	utmp_setreadonly(1);

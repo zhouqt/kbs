@@ -20,15 +20,17 @@ AC_ARG_WITH(icc,
 		CC=icc
 		CXX=icc
 		CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
-		LDFLAGS="$LDFLAGS -ipo"
-		AR=xiar
+		LDFLAGS="$LDFLAGS -ipo -static"
+		CONFIG_AR=xiar
+		EXTRA_CLEAN="*.il"
     else
 		echo "can't find intel compiler in $withval!"
         exit 1
     fi
-],[AR=ar])
+],[CONFIG_AR=ar; EXTRA_CLEAN=""])
 
-AC_SUBST(AR)
+AC_SUBST(CONFIG_AR)
+AC_SUBST(EXTRA_CLEAN)
 
 # Checks for programs.
 AC_PROG_CXX
@@ -105,24 +107,10 @@ AC_CONFIG_LINKS(libBBS/site.c:site/$BBSSITE.c
 		src/site.h:site/$BBSSITE.h
 		)
 
-AC_CONFIG_LINKS(src/record.c:libBBS/record.c
-		src/log.c:libBBS/log.c
-		src/ucache.c:libBBS/ucache.c
-		src/stuff.c:libBBS/stuff.c
-		src/md5.c:libBBS/md5.c
-		src/crypt.c:libBBS/crypt.c
-		src/pass.c:libBBS/pass.c
-		src/bcache.c:libBBS/bcache.c
-		src/utmp.c:libBBS/utmp.c
-		src/lvars.c:libBBS/lvars.c
-		src/boards.c:libBBS/boards.c
-		src/bbs_sendmail.c:libBBS/bbs_sendmail.c
-		src/libmsg.c:libBBS/libmsg.c
-		src/article.c:libBBS/article.c
-		src/convcode.c:libBBS/convcode.c
-		src/sysconf.c:libBBS/sysconf.c
-		src/libann.c:libBBS/libann.c
-		)
+cd libBBS; for i in *.c ; do 
+AC_CONFIG_LINKS(src/$i:libBBS/$i)
+done
+cd ..
 
 AC_CONFIG_FILES([Makefile
                  libBBS/Makefile
