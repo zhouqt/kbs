@@ -6,6 +6,7 @@
 */
 require("funcs.php");
 require("pcconf.php");//blog配置文件
+require("pctbp.php");//引用通告相关函数
 $db["HOST"]=bbs_sysconf_str("MYSQLHOST");
 $db["USER"]=bbs_sysconf_str("MYSQLUSER");
 $db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
@@ -240,13 +241,86 @@ function pc_is_friend($userid,$uid)
 	}
 }
 
+function pc_is_member($pc,$userid)
+{
+	global $currentuser;
+	if(pc_is_manager($currentuser))
+		return TRUE;
+	
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	
+	$query = "SELECT uid FROM members WHERE uid = '".intval($pc["UID"])." AND username = '".addslashes($userid)."' LIMIT 0 , 1;";
+	$result = mysql_query($query);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
+	if(!$rows)
+		return FALSE;
+	else
+		return TRUE;
+}
+
+function pc_get_members($link,$pc)
+{
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	if($pc["TYPE"]!=1)
+		return FALSE;
+	$members = array();
+	$query = "SELECT username FROM members WHERE uid = '".intval($pc["UID"])."';";	
+	$result = mysql_query($query,$link);
+	while($rows = mysql_fetch_array($result))
+		$members[] = $rows[username];
+	mysql_free_result($result);
+	return $members;
+}
+
+function pc_add_member($link,$pc,$userid)
+{
+	global $currentuser;
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	if($pc["TYPE"]!=1)
+		return FALSE;
+	$lookupuser = array();
+	if(bbs_getuser($userid,$lookupuser)==0)
+		return FALSE;
+	
+	$userid = $lookupuser["userid"];
+	$query = "INSERT INTO `members` ( `uid` , `username` ) ".
+	         "VALUES ( '".intval($pc["UID"])."', '".addslashes($userid)."' );";
+	if(!mysql_query($query,$link))
+		return FALSE;
+	
+	$action = "ADD MEMBER: ".$userid; 
+	if(!pc_group_logs($link,$pc,$action))
+		exit("公有BLOG LOG错误");
+	return TRUE;
+}
+
+function pc_del_member($link,$pc,$userid)
+{
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	if($pc["TYPE"]!=1)
+		return FALSE;
+	$query = "DELETE FROM members WHERE uid = '".$pc["UID"]."' AND username = '".addslashes($userid)."' LIMIT 1;";
+	if(!mysql_query($query,$link))
+		return FALSE;
+	
+	$action = "DEL MEMBER: ".$userid; 
+	if(!pc_group_logs($link,$pc,$action))
+		exit("公有BLOG LOG错误");
+	return TRUE;
+}
+
 function pc_is_admin($currentuser,$pc)
 {
 	global $pcconfig;
-	if( $pc["USER"] == $pcconfig["ADMIN"] && pc_is_manager($currentuser) && intval($_COOKIE["BLOGADMIN"]) )
-		return TRUE;
-	if( $pc["USER"] != $pcconfig["ADMIN"] && pc_is_manager($currentuser) && intval($_COOKIE["BLOGADMIN"]) )
-		return FALSE;
+	if( $pc["TYPE"] == 1 )
+	{
+		return pc_is_member($currentuser,$pc);
+	}
 	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
 		return TRUE;
 	else
@@ -352,9 +426,9 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 {
 	global $cssFile;
 	if($userid)
-		$query = "SELECT * FROM users WHERE `username`= '".$userid."'  LIMIT 0,1;";
+		$query = "SELECT * FROM users WHERE `username`= '".addslashes($userid)."'  LIMIT 0,1;";
 	else
-		$query = "SELECT * FROM users WHERE `uid` = '".$uid."' LIMIT 0,1;";
+		$query = "SELECT * FROM users WHERE `uid` = '".intval($uid)."' LIMIT 0,1;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
@@ -386,7 +460,9 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"EMAIL" => htmlspecialchars(stripslashes($rows[useremail])),
 			"FAVMODE" => (int)($rows[favmode]),
 			"UPDATE" => (int)($rows[updatetime]),
-			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor]))
+			"INFOR" => str_replace("<?","&lt;?",stripslashes($rows[userinfor])),
+			"TYPE" => $rows[pctype],
+			"LOGTID" => $rows[logtid] 
 			);
 	if($pc["CSSFILE"])
 		$cssFile = $pc["CSSFILE"];
@@ -807,5 +883,243 @@ function myAddslashes($str)
     return $str;
 }
 
+function pc_load_topic($link,$uid,$tid,&$topicname,$access=9)
+{
+	$uid = intval($uid);
+	$tid = intval($tid);
+	$access = intval($access);
+	
+	if($access == 9)
+		$query = "SELECT topicname FROM topics WHERE tid = ".$tid." AND uid = ".$uid." LIMIT 0 , 1;";
+	else
+		$query = "SELECT topicname FROM topics WHERE tid = ".$tid." AND uid = ".$uid." AND access = ".$access." LIMIT 0 , 1;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	if(!$rows)
+		return FALSE;
+	
+	mysql_free_result($result);
+	$topicname = $rows[topicname];
+	return TRUE;
+}
+
+function pc_load_directory($link,$uid,$pid)
+{
+	$uid = intval($uid);
+	$pid = intval($pid);
+	
+	$query = "SELECT `nid` FROM nodes WHERE `uid` = '".$uid."' AND `access` = 3 AND `nid` = '".$pid."' AND `type` = 1 LIMIT 1;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	if(!$rows)
+		return FALSE;
+	
+	mysql_free_result($result);
+	return TRUE;
+}
+
+/*
+** add a node
+** $pc  : pc infor-->load by pc_load_infor() function
+** return  0  :seccess
+**         -1 :缺少主题
+**         -2 :收藏夹目录不存在
+**         -3 :目标文件夹超过文章上限
+**         -4 :目标分类不存在
+**         -5 :数据库添加错误
+**         -6 :系统错误导致引用通告发送失败
+**         -7 :引用通告的url错误
+**         -8 :引用通告目标服务器连接超时
+*/
+function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$tbpUrl="",$tbpArt="")
+{
+	global $pcconfig;
+	
+	$pid = intval($pid);
+	$tid = intval($tid);
+	$emote = intval($emote);
+	$comment = ($comment==1)?1:0;
+	$access = intval($access);
+	$htmlTag = ($htmlTag==1)?1:0;
+	$trackback = ($trackback==1)?1:0;
+	$subject = addslashes($subject);
+	$body = html_editorstr_format($body);
+	$nodeType = intval($nodeType); //0: 普通;1: log,不可删除
+	
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	
+	if(!$subject) //检查主题
+		return -1;
+	
+	if($access < 0 || $access > 4 )
+		$access = 2;//如果参数错误先在私人区发表
+	
+	if($access == 3) //若是发表在收藏区，检查目标文件夹
+	{
+		if(!pc_load_directory($link,$pc["UID"],$pid))
+			return -2;
+		if(pc_used_space($link,$pc["UID"],3,$pid) >= $pc["NLIM"]) //目标文件夹使用空间
+			return -3;
+		$tid = 0;
+	}
+	else
+	{
+		$pid = 0;
+		if(pc_used_space($link,$pc["UID"],$tag) >= $pc["NLIM"]) //目标文件夹使用空间
+			return -3;
+		if($tid != 0) //如果是发布在一个分类下面，需要检查分类
+		{
+			if(!pc_load_topic($link,$pc["UID"],$tid,&$topicname,$access))
+				return -4;
+		}
+	}
+	
+	if($access != 0) //公开区以外不发布引用通告
+		$tbpUrl = "";
+	
+	if($tbpUrl && pc_tbp_check_url($tbpUrl) && $tbpArt) //若有引用通告的相关文章，加上链接
+	{
+		if($htmlTag)
+			$body .= "<br /><br /><strong>相关文章</strong><br />\n".
+			         "<a href='".$tbpArt."'>".$tbpArt."</a>";
+		else
+			$body .= "\n\n[相关文章]\n".$tbpArt;
+		
+	}
+	$body = addslashes($body);
+	
+	//日志入库
+	$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
+	   	 "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
+	if(!mysql_query($query,$link))
+		return -5;
+	
+	//公开区文章发布后更新文章数
+	if($access == 0)
+		pc_update_record($link,$pc["UID"],"+1");
+	
+	if($tbpUrl) //发送引用通告
+	{
+		//提取日志的nid
+		$query = "SELECT `nid` FROM nodes WHERE `subject` = '".$subject."' AND `body` = '".$body."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$access."' AND `pid` = '".$pid."' AND `tid` = '".$tid."' ORDER BY nid DESC LIMIT 0,1;";
+		$result = mysql_query($query,$link);
+		$rows = mysql_fetch_array($result);
+		
+		if(!$rows)
+			return -6;
+		
+		$thisNid = $rows[nid];
+		mysql_free_result($result);
+		
+		if($htmlTag)
+			$tbbody = strip_tags($body);
+		else
+			$tbbody = $body;
+		
+		if(strlen($tbbody) > 255 )
+			$tbbody = substr($tbbody,0,251)." ...";
+		
+		$tbarr = array(
+				"title" => stripslashes($subject),
+				"excerpt" => stripslashes($tbbody),
+				"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".$tid."&nid=".$thisNid."&s=all",
+				"blogname" => undo_html_format($pc["NAME"])
+				);	
+		
+		$r = pc_tbp_trackback_ping($tbpUrl,$tbarr);
+		if($r == -1)
+			return -7;
+		if($r == -2)
+			return -8;
+	}
+	
+	return 0;
+}
+
+//获取收藏夹根目录的pid
+function pc_fav_rootpid($link,$uid)
+{
+	$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".intval($uid)."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	if(!$rows)
+		return FALSE;
+	mysql_free_result($result);	
+	return $rows[nid];
+}
+
+//公有BLOG的log
+function pc_group_logs($link,$pc,$action,$content="")
+{
+	global $currentuser;
+	if($pc["TYPE"] != 1 || !$pc["LOGTID"])
+		return FALSE;
+	if(!$action)
+		return FALSE;
+	
+	$action = "[".date("Y-m-d H:i:s")."@".$_SERVER["REMOTE_ADDR"]."]".$currentuser["userid"]." ".$action;	 
+	$ret = pc_add_node($link,$pc,0,$pc["LOGTID"],0,1,2,0,0,$action,$content,1);
+	if($ret != 0)
+		return FALSE;
+	return TRUE;
+}
+
+//分区下添加分类
+function pc_add_topic($link,$pc,$access,$topicname)
+{
+	if(!$pc || !is_array($pc))
+		return FALSE;
+	if(!$topicname)
+		return FALSE;
+	$access = intval($access);
+	if($access < 0 || $access > 2)
+		$access = 2;
+	
+	$query = "INSERT INTO `topics` (`uid` , `access` , `topicname` , `sequen` ) ".
+		"VALUES ( '".$pc["UID"]."', '".$access."', '".addslashes($topicname)."', '0');";
+	if(!mysql_query($query,$link))
+		return FALSE;
+	return TRUE;
+}
+
+/*
+** 把一个BLOG变成公有BLOG
+** return 0 : seccess
+**        -1:$pc参数错误
+**        -2:已是公有BLOG
+**        -3:LOG目录初始化错误
+**        -4:系统错误
+**        -5:LOG 错误
+*/
+function pc_convertto_group($link,$pc)
+{
+	if(!$pc || !is_array($pc))
+		return -1;
+	if($pc["TYPE"] == 1)
+		return -2;
+	
+	if(!pc_add_topic($link,$pc,2,"GROUPWORD LOGs"))
+		return -3;
+	
+	$query = "SELECT tid FROM topics WHERE uid = '".$pc["UID"]."' AND access = 2 AND topicname = 'GROUPWORD LOGs' ORDER BY tid DESC LIMIT 0,1;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
+	if(!$rows)
+		return -3;
+	$logtid = $rows[tid];
+	
+	$query = "UPDATE users SET createtime = createtime , pctype = 1 , logtid = ".$logtid." WHERE uid = ".$pc["UID"]." LIMIT 1;";
+	if(!mysql_query($query,$link))
+		return -4;
+	
+	$pc["TYPE"] = 1;
+	$pc["LOGTID"] = $logtid;
+	
+	if(!pc_group_logs($link,$pc,"CONVERT TO GROUPWORD"))
+		return -5;
+	return 0;
+}
 
 ?>

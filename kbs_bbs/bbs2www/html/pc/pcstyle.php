@@ -1,6 +1,6 @@
 <?php
 require("pcfuncs.php");
-$blogadmin = intval($_COOKIE["BLOGADMIN"]);
+
 if ($loginok != 1)
 	html_nologin();
 elseif(!strcmp($currentuser["userid"],"guest"))
@@ -12,12 +12,16 @@ elseif(!strcmp($currentuser["userid"],"guest"))
 else
 {
 	$link = pc_db_connect();
-	if( pc_is_manager($currentuser) && $blogadmin )
-		$pc = pc_load_infor($link,$pcconfig["ADMIN"]);
-	else
-		$pc = pc_load_infor($link,$currentuser["userid"]);
+	$pc = pc_load_infor($link,$_GET["userid"]);
+		
+	if(!$pc)
+	{
+		pc_db_close($link);
+		html_error_quit("对不起，您要查看的Blog不存在");
+		exit();
+	}
 	
-	if(!$pc || !pc_is_admin($currentuser,$pc))
+	if(!pc_is_admin($currentuser,$pc))
 	{
 		pc_db_close($link);
 		html_error_quit("对不起，您要查看的Blog不存在");
@@ -65,9 +69,9 @@ else
 ?>
 <br /><br />
 <p align="center">
-[<a href="pcstyle.php?type=1">首页样式表</a>]&nbsp;&nbsp;
-[<a href="pcstyle.php?type=2">文章样式表</a>]&nbsp;&nbsp;
-[<a href="pcstyle.php">CSS样式</a>]
+[<a href="pcstyle.php?userid=<?php echo $pc["USER"]; ?>&type=1">首页样式表</a>]&nbsp;&nbsp;
+[<a href="pcstyle.php?userid=<?php echo $pc["USER"]; ?>&type=2">文章样式表</a>]&nbsp;&nbsp;
+[<a href="pcstyle.php?userid=<?php echo $pc["USER"]; ?>">CSS样式</a>]
 </p>
 <p align="center">
 编辑<b><font color=red><?php echo $title; ?></font></b>&nbsp;&nbsp;
@@ -78,7 +82,7 @@ if($rows){
 上次保存地点:<?php echo html_format($rows[hostname]); ?>
 <?php } ?>
 </p>
-<form action="pcstyle.php" method="post" name="postform"><center>
+<form action="pcstyle.php?userid=<?php echo $pc["USER"]; ?>" method="post" name="postform"><center>
 浏览XML文档所用的样式表：
 <input type="radio" name="stylesheet" value="0" <?php if($rows[stylesheet]==0) echo "checked"; ?>>XSL样式表
 <input type="radio" name="stylesheet" value="1" <?php if($rows[stylesheet]==1) echo "checked"; ?>>CSS样式表

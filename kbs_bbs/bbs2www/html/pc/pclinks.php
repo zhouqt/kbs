@@ -5,6 +5,7 @@
 	require("pcfuncs.php");
 	function pc_edit_link($link,$favlinks,$uid)
 	{
+		global $pc;
 		$links = "";
 		foreach($favlinks as $favlink)
 		{
@@ -16,6 +17,9 @@
 			
 		$query = "UPDATE users SET `createtime` = `createtime` , `modifytime` = '".date("YmdHis")."' , `links` = '".addslashes($links)."' WHERE `uid` = '".$uid."' ";
 		mysql_query($query,$link);
+		
+		if($pc["TYPE"]==1)
+			pc_group_logs($link,$pc,"EDIT LINKS");
 	}
 	
 	if ($loginok != 1)
@@ -29,13 +33,20 @@
 	else
 	{
 		$link = pc_db_connect();
-		$pc = pc_load_infor($link,$currentuser["userid"]);
-		if(!$pc || !pc_is_admin($currentuser,$pc))
+		$pc = pc_load_infor($link,$_GET["userid"]);
+		if(!$pc)
 		{
 			pc_db_close($link);
 			html_error_quit("对不起，您要查看的Blog不存在");
 			exit();
 		}
+		if(!pc_is_admin($currentuser,$pc))
+		{
+			pc_db_close($link);
+			html_error_quit("对不起，您要查看的Blog不存在");
+			exit();
+		}
+		
 		$favlinks = $pc["LINKS"];
 		
 		if($_GET["act"] == "edit")
@@ -72,7 +83,7 @@
 <br><br><p align=center class=f2>友情链接管理</p>
 <hr size=1>
 <center>
-<form action="pclinks.php?act=edit" method="post">
+<form action="pclinks.php?userid=<?php echo $pc["USER"]; ?>&act=edit" method="post">
 <table cellspacing=0 cellpadding=5 width=98% border=0 class=t1>
 	<tr>
 		<td class=t2 width=30>编号</td>
@@ -92,7 +103,7 @@
 		if($favlinks[$i]["IMAGE"]) echo " checked ";
 		echo "></td>\n";
 		if( $i != $favlinksnum - 1 )
-			echo "<td class=t4><a href='pclinks.php?act=del&linkid=".($i+1)."'>删除</a>\n<a href='http://".$favlinks[$i]["URL"]."'>链接</a></td>";
+			echo "<td class=t4><a href='pclinks.php?userid=".$pc["USER"]."&act=del&linkid=".($i+1)."'>删除</a>\n<a href='http://".$favlinks[$i]["URL"]."'>链接</a></td>";
 		else
 			echo "<td class=t4>-</td>";
 		echo "</tr>\n";

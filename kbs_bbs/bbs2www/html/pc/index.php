@@ -35,10 +35,10 @@ var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
 		$query = "SELECT `nid` , `created` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 ";
 		if($pur == 0)
 			$query .= " AND `access` = 0 ";
-		elseif($pur == 1)
+		elseif($pur > 0)
 			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
-		elseif($pur == 3)
-			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
+		//elseif($pur == 3)
+		//	$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
 		$query .= " ORDER BY `nid` DESC;";
 		$result = mysql_query($query,$link);
 		$totalnodes = mysql_num_rows($result); //所有日志数
@@ -73,10 +73,10 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		$query = "SELECT * FROM `nodes` WHERE `uid` = '".$pc["UID"]."' AND type = 0 ";
 		if($pur == 0)
 			$query .= " AND `access` = 0 ";
-		elseif($pur == 1)
+		elseif($pur > 0)
 			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
-		elseif($pur == 3)
-			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
+		//elseif($pur == 3)
+		//	$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
 		$query .= " ORDER BY `nid` DESC LIMIT ".$start." , 10 ;";
 		$result = mysql_query($query,$link);
 		$nodes = array();
@@ -283,7 +283,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 ?>			
 			<tr><td align="left" class="t3">
 			[
-			<a href="pcmanage.php?act=post&tag=0&pid=0">添加文章</a>
+			<a href="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&tag=0&pid=0">添加文章</a>
 			]
 			[
 			<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=7">参数设定</a>
@@ -362,10 +362,10 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid ";
 		if($pur == 0)
 			$query .= " AND access = 0 ";
-		elseif($pur == 1)
+		elseif($pur > 0)
 			$query .= " AND ( access = 0 OR access = 1 ) ";
-		elseif($pur == 3)
-			$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 OR `access` = 3 ) ";
+		//elseif($pur == 3)
+		//	$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
 		$query .= " AND comments.uid = ".$pc["UID"]." AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
 		$result = mysql_query($query,$link);
 		for($i = 0;$i < mysql_num_rows($result) ; $i++)

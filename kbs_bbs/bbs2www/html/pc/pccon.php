@@ -68,9 +68,9 @@
 			echo "<a href=\"pccom.php?act=pst&nid=".$nid."\">发表评论</a>\n";
 		}
 		if($trackback && $tag == 0)
-			echo "<a href=\"/pc/pcmanage.php?act=post&tag=0&tbArtAddr=".urlencode("http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all")."&tbTBP=".urlencode("http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nid)."\"><font color=red>拿该日志来写BLOG</font></a>\n";
+			echo "<a href=\"/pc/pcmanage.php?userid=".$pc["USER"]."&act=post&tag=0&tbArtAddr=".urlencode("http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&nid=".$nid."&s=all")."&tbTBP=".urlencode("http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nid)."\"><font color=red>拿该日志来写BLOG</font></a>\n";
 		if($pur == 3)
-			echo "<a href=\"pcmanage.php?act=edit&nid=".$nid."\">修改</a>\n";
+			echo "<a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$nid."\">修改</a>\n";
 		if((pc_is_manager($currentuser) || pc_is_admin($currentuser,$pc)) && $recommend == 0)
 			echo "<a href=\"pcrec.php?nid=".$nid."\">推荐</a>\n";
 		if($trackback && $tag == 0)

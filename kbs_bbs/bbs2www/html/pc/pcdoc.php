@@ -32,12 +32,12 @@
 	
 	function display_action_bar($tag,$tid=0,$pid=0)
 	{
-		global $sec,$blogMenus;
+		global $pc,$sec,$blogMenus;
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="95%" class="b2">
 <tr>
 <td>
-<a href="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid."&tid=".$tid; ?>">
+<a href="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid."&tid=".$tid; ?>">
 <img src="images/post.gif" border="0" alt="发表文章">
 </a>
 </td>
@@ -69,7 +69,7 @@
 <input type="submit" value="GO" class="b1">
 </td>
 <td align="right">
-<a href="#" onclick="bbsconfirm('pcmanage.php?act=clear','清空删除区的文章吗(无法恢复)?')">清空删除区</a>
+<a href="#" onclick="bbsconfirm('pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=clear','清空删除区的文章吗(无法恢复)?')">清空删除区</a>
 </td>
 </tr>
 </table>
@@ -109,7 +109,7 @@
 		$result = mysql_query($query,$link);
 		$i = 0;
 ?>
-<form action="pcmanage.php" method="post">	
+<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>" method="post">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">
 <?php
 		if($pur > 2)
@@ -187,8 +187,8 @@
 					echo $rows[trackback]?$rows[trackbackcount]:"-";
 					echo "</td>\n";
 				}
-				echo	"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">改</a></td>\n".
-					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n".
+				echo	"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$rows[nid]."\">改</a></td>\n".
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?userid=".$pc["USER"]."&act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n".
 					"</tr>\n";
 			}
 			else
@@ -222,14 +222,10 @@
 
 	function display_fav_folder($link,$pc,$pid=0,$pur,$order="")
 	{
-		$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".$pc["UID"]."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ;";
-		$result = mysql_query($query,$link);
-		if($rows = mysql_fetch_array($result))
-		{
-			$rootpid = $rows[nid];
-			mysql_free_result($result);
-		}
-		else
+		
+		
+		$rootpid = pc_fav_rootpid($link,$pc["UID"]);
+		if(!$rootpid)
 		{
 			$pif = pc_init_fav($link,$pc["UID"]);
 			if($pif)
@@ -244,6 +240,7 @@
 				exit();
 			}
 		}	
+		
 		
 		if($pid == 0)
 			$pid = $rootpid;
@@ -281,7 +278,7 @@
 		$result = mysql_query($query,$link);
 		$i = 0;
 ?>
-<form action="pcmanage.php" method="post">	
+<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>" method="post">	
 <table cellspacing="0" cellpadding="5" border="0" width="99%" class="t1">
 <?php
 		if($pur > 2)
@@ -355,17 +352,17 @@
 					"<td class='t4'>".time_format($rows[created])."<br/>".time_format($rows[changed])."</td>\n".
 					"<td class='t3'>".$rows[visitcount]."</td>\n".
 					"<td class='t4'>".$rows[commentcount]."</td>\n".
-					"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">改</a></td>\n".
-					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n";
+					"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=edit&nid=".$rows[nid]."\">改</a></td>\n".
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?userid=".$pc["USER"]."&act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n";
 				if($rows[type]==0)
-					echo "<td class='t3' width=20><a href=\"pcmanage.php?act=favcut&nid=".$rows[nid]."\">剪</a></td>".
-					      "<td class='t3' width=20><a href=\"pcmanage.php?act=favcopy&nid=".$rows[nid]."\">复</a></td>";
+					echo "<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favcut&nid=".$rows[nid]."\">剪</a></td>".
+					      "<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favcopy&nid=".$rows[nid]."\">复</a></td>";
 				else
 					echo "<td class='t3' width=20>-</td>\n<td class='t3'>-</td>\n";
 				if($_COOKIE["BLOGFAVACTION"])
 				{
 					if($rows[type]==1)
-						echo 	"<td class='t3' width=20><a href=\"pcmanage.php?act=favpaste&pid=".$rows[nid]."\">贴</a></td>";
+						echo 	"<td class='t3' width=20><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favpaste&pid=".$rows[nid]."\">贴</a></td>";
 					else
 						echo "<td class='t3' width=20>-</td>";
 				}
@@ -406,9 +403,9 @@
 </form>
 <?php
 		if($_COOKIE["BLOGFAVACTION"])
-			echo "<p align='center' class='b2'>[<a href=\"pcmanage.php?act=favpaste&pid=".$rootpid."\">粘贴到根目录</a>]</p>\n";
+			echo "<p align='center' class='b2'>[<a href=\"pcmanage.php?userid=".$pc["USER"]."&act=favpaste&pid=".$rootpid."\">粘贴到根目录</a>]</p>\n";
 ?>
-<form action="pcmanage.php?act=adddir" method="post" onsubmit="if(this.dir.value==''){alert('请输入目录名!');return false;}">
+<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=adddir" method="post" onsubmit="if(this.dir.value==''){alert('请输入目录名!');return false;}">
 <input type="hidden" name="pid" value="<?php echo $pid; ?>">
 <p class="b2" align="center">
 新建目录:
@@ -433,8 +430,10 @@
 		{
 			$id = $lookupuser["userid"];
 			pc_add_friend($id,$pc["USER"]);
-			return "";
 		}
+		
+		if($pc["TYPE"]==1)
+			pc_group_logs($link,$pc,"ADD FRIEND: ".$id);
 	}
 	
 	
@@ -442,6 +441,8 @@
 	{
 		$id = $_GET["id"];	
 		pc_del_friend($id,$pc["USER"]);
+		if($pc["TYPE"]==1)
+			pc_group_logs($link,$pc,"DEL FRIEND: ".$id);
 	}
 		
 	
@@ -503,15 +504,15 @@
 			echo "<tr>\n<td class='t3'>".($i+1)."</td>\n".
 				"<td class='t5'>&nbsp;<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$blog[$i]["TAG"]."&tid=".$blog[$i]["TID"]."\">《".html_format($blog[$i]["NAME"])."》</a></td>\n".
 				"<td class='t3'><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$blog[$i]["TAG"]."\">".$sec[$blog[$i]["TAG"]]."</a></td>\n".
-				"<td class='t4'><a href=\"pcmanage.php?act=tedit&tid=".$blog[$i]["TID"]."\">修改</a></td>\n".
-				"<td class='t3'><a href=\"pcmanage.php?act=tdel&tid=".$blog[$i]["TID"]."\">"."删除</a></td>\n".
+				"<td class='t4'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=tedit&tid=".$blog[$i]["TID"]."\">修改</a></td>\n".
+				"<td class='t3'><a href=\"pcmanage.php?userid=".$pc["USER"]."&act=tdel&tid=".$blog[$i]["TID"]."\">"."删除</a></td>\n".
 				"</tr>\n";	
 			
 		}
 		
 ?>
 </table>
-<form action="pcmanage.php?act=tadd" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
+<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=tadd" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
 <input type="hidden" name="tag" value="<?php echo $tag; ?>">
 <p align="center" class="b2">
 新建Blog：
@@ -532,7 +533,7 @@ Blog名
 	function display_pc_settings($pc)
 	{
 ?>
-<form action="pcmanage.php?act=sedit" method="post" onsubmit="if(this.pcname.value==''){alert('请输入Blog名称!');return false;}">	
+<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=sedit" method="post" onsubmit="if(this.pcname.value==''){alert('请输入Blog名称!');return false;}">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">		
 <tr>
 	<td class="t2" colspan="2">参数设定</td>
@@ -591,9 +592,22 @@ Blog名
 <tr>
 	<td class="t3">友情链接管理</td>
 	<td class="t5">&nbsp;
-	<a href="pclinks.php">点击此处</a>
+	<a href="pclinks.php?userid=<?php echo $pc["USER"]; ?>">点击此处</a>
 	</td>
 </tr>
+<?php
+	if($pc["TYPE"]==1)
+	{
+?>
+<tr>
+	<td class="t3">成员管理</td>
+	<td class="t5">&nbsp;
+	<a href="pcmember.php?userid=<?php echo $pc["USER"]; ?>">点击此处</a>
+	</td>
+</tr>
+<?php
+	}
+?>
 <tr>
 	<td class="t3">HTML编辑器</td>
 	<td class="t5">
@@ -608,7 +622,7 @@ Blog名
 	<input type="radio" name="template" value="1" <?php if($pc["STYLE"]["SID"]==1) echo "checked"; ?>>水木清华
 	<input type="radio" name="template" value="2" <?php if($pc["STYLE"]["SID"]==2) echo "checked"; ?>>Earth Song
 	<input type="radio" name="template" value="9" <?php if($pc["STYLE"]["SID"]==9) echo "checked"; ?>>自定义模板
-	<a href="pcstyle.php">管理自定义模板(XML/XSL/CSS)</a>
+	<a href="pcstyle.php?userid=<?php echo $pc["USER"]; ?>">管理自定义模板(XML/XSL/CSS)</a>
 	</td>
 </tr>
 <tr>

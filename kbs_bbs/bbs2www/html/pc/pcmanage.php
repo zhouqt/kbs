@@ -7,8 +7,6 @@
 	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
 	*/
 	require("pcfuncs.php");
-	require("pctbp.php");
-	$blogadmin = intval($_COOKIE["BLOGADMIN"]);
 	$favaction = $_COOKIE["BLOGFAVACTION"];
 	
 					
@@ -23,12 +21,16 @@
 	else
 	{
 		$link = pc_db_connect();
-		if( pc_is_manager($currentuser) && $blogadmin )
-			$pc = pc_load_infor($link,$pcconfig["ADMIN"]);
-		else
-			$pc = pc_load_infor($link,$currentuser["userid"]);
+		$pc = pc_load_infor($link,$_GET["userid"]);
 		
-		if(!$pc || !pc_is_admin($currentuser,$pc))
+		if(!$pc)
+		{
+			pc_db_close($link);
+			html_error_quit("对不起，您要查看的Blog不存在");
+			exit();
+		}
+		
+		if(!pc_is_admin($currentuser,$pc))
 		{
 			pc_db_close($link);
 			html_error_quit("对不起，您要查看的Blog不存在");
@@ -52,11 +54,8 @@
 			{
 				$target = intval(substr($_POST["target"],1,strlen($_POST["target"])-1));
 				$in_section = 1;
-				$query = "SELECT tid FROM topics WHERE tid = ".$target." AND uid = ".$pc["UID"]." LIMIT 0 , 1;";
-				$result = mysql_query($query);
-				if(!$rows=mysql_fetch_array($result))
+				if(!pc_load_topic($link,$pc["UID"],$target,$topicname))
 					$target = 0; //如果参数错误就移入未分类
-				mysql_free_result($result);
 			}
 			else
 			{
@@ -69,14 +68,8 @@
 			
 			if(!$in_section && 3 == $target ) //跨区  移入收藏区
 			{
-				$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".$pc["UID"]."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ;";
-				$result = mysql_query($query,$link);
-				if($rows = mysql_fetch_array($result))
-				{
-					$rootpid = $rows[nid];
-					mysql_free_result($result);
-				}
-				else
+				$rootpid = pc_fav_rootpid($link,$pc["UID"]);
+				if($rootpid)
 				{
 					html_error_quit("收藏夹根目录错误!");
 					exit();
@@ -88,7 +81,7 @@
 			if($in_section)
 			{
 				if($act == "cut")
-					$query = "UPDATE nodes SET created = created , `tid` = '".$target."' , `changed` = NOW( ) , `pid` = '0' WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
+					$query = "UPDATE nodes SET created = created , `tid` = '".$target."' , `changed` = NOW( ) , `pid` = '0' WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
 				else
 					$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
 			}
@@ -111,7 +104,11 @@
 					$j ++;
 				}
 			}
-			$query .= " ) ;";
+			$query .= " ) ";
+			
+			if($act == "cut")
+			$query .= " AND nodetype = 0 ";
+			//nodetype != 0的是公有blog的log文件
 			
 			if($in_section)
 			{
@@ -180,6 +177,7 @@
 				if($target == 0)
 					pc_update_record($link,$pc["UID"]," + ".$j);
 			}
+			$log_action = "CUT/COPY NODE";
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -188,123 +186,81 @@
 		}
 		elseif($act == "post")
 		{
-			$tag =(int)($_GET["tag"]);
-			if($tag < 0 || $tag > 4 )
-				$tag = 2;//如果参数错误先在私人区发表
-			if($tag == 3)
-			{
-				
-				$pid = (int)($_GET["pid"]);
-				$query = "SELECT `nid` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 3 AND `nid` = '".$pid."';";
-				$result = mysql_query($query,$link);
-				if($rows = mysql_fetch_array($result))
-				{
-					mysql_free_result($result);
-					if(pc_used_space($link,$pc["UID"],3,$pid) >= $pc["NLIM"])
-					{
-						html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
-						exit();
-					}
-				}
-				else
-				{
-					mysql_free_result($result);
-					html_error_quit("该目录不存在!");
-					exit();
-				}
-					
-			}
-			else
-			{
-				$pid = 0;
-				if(pc_used_space($link,$pc["UID"],$tag) >= $pc["NLIM"])
-				{
-					html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
-					exit();
-				}
-			}
 			if($_POST["subject"])
 			{
-				if($_POST["comment"]==1)
-					$c = 0;
-				else
-					$c = 1;
-				$emote = (int)($_POST["emote"]);
-				$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
-				$trackback = ($_POST["trackback"]==1)?1:0;
-				$blogbody = html_editorstr_format($_POST["blogbody"]);
-				if($_POST["trackbackurl"] && pc_tbp_check_url($_POST["trackbackurl"]) && $_POST["trackbackname"])
+				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$_POST["blogbody"],0,$_POST["trackbackurl"],$_POST["trackbackname"]);
+				$error_alert = "";
+				switch($ret)
 				{
-					if($useHtmlTag)
-						$blogbody .= "<br /><br /><strong>相关文章</strong><br />\n".
-								"<a href='".$_POST["trackbackname"]."'>".$_POST["trackbackname"]."</a>";
-					else
-						$blogbody .= "\n\n[相关文章]\n".$_POST["trackbackname"];
+					case -1:
+						html_error_quit("缺少日志主题");
+						exit();
+						break;
+					case -2:
+						html_error_quit("目录不存在");
+						exit();
+						break;
+					case -3:
+						html_error_quit("该目录的日志数已达上限");
+						exit();
+						break;
+					case -4:
+						html_error_quit("分类不存在");
+						exit();
+						break;
+					case -5:
+						html_error_quit("由于系统原因日志添加失败,请联系管理员");
+						exit();
+						break;
+					case -6:
+						$error_alert = "由于系统错误,引用通告发送失败!";
+						break;
+					case -7:
+						$error_alert = "TrackBack Ping URL 错误,引用通告发送失败!";
+						break;
+					case -8:
+						$error_alert = "对方服务器无响应,引用通告发送失败!";
+						break;
+					default:
 				}
 				
-				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`) ".
-					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($blogbody)."', '".$tag."', '0' , '".$useHtmlTag."' ,'".$trackback."','0');";
-				mysql_query($query,$link);
+				if($error_alert)
+					echo "<script language=\"javascript\">alert('".$error_alert."');</script>";
 				//管理员管理时的log
-				if( pc_is_manager($currentuser) && $blogadmin )
-				{
-					$action = $currentuser[userid]." 发表管理员文章";
-					$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 发表文章。".
-							"\n主题：".$_POST["subject"];
-					pc_logs($link , $action , $comment);
-				}
-				
-				if($tag == 0)
-					pc_update_record($link,$pc["UID"]," + 1");
-				if($_POST["trackbackurl"])
-				{
-					$url = $_POST["trackbackurl"];
-					$query = "SELECT `nid` FROM nodes WHERE `subject` = '".addslashes($_POST["subject"])."' AND `body` = '".addslashes($blogbody)."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$tag."' AND `pid` = '".$pid."' AND `tid` = '".(int)($_POST["tid"])."' ORDER BY tid DESC LIMIT 0,1;";
-					$result = mysql_query($query,$link);
-					$rows = mysql_fetch_array($result);
-					$thisNid = $rows[nid];
-					mysql_free_result($result);
-					if($useHtmlTag)
-						$tbbody = strip_tags($_POST["blogbody"]);
-					else
-						$tbbody = $_POST["blogbody"];
-					if(strlen($tbbody) > 255 )
-						$tbbody = substr($tbbody,0,251)." ...";
-					$tbarr = array(
-							"title" => $_POST["subject"],
-							"excerpt" => $tbbody,
-							"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".(int)($_POST["tid"])."&nid=".$thisNid."&s=all",
-							"blogname" => undo_html_format($pc["NAME"])
-							);	
-					$r = pc_tbp_trackback_ping($url,$tbarr);
-					if($r != 0)
-						echo "<script language=\"javascript\">alert('引用通告发送失败！');</script>";
-				}
-				
+				$log_action = "ADD NODE: ".$_POST["subject"];
 ?>
 <script language="javascript">
-window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo $tag; ?>&tid=<?php echo $_POST["tid"]; ?>&pid=<?php echo $pid; ?>";
+window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo $_GET["tag"]; ?>&tid=<?php echo $_POST["tid"]; ?>&pid=<?php echo $_GET["pid"]; ?>";
 </script>
 <?php
 			}
 			else
 			{
-				//默认发表在该分区的当前目录下 windinsn feb 22 , 2004
-				$tid = (int)($_GET["tid"]);
+				$tid = intval($_GET["tid"]);
+				$pid = intval($_GET["pid"]);
+				$tag = intval($_GET["tag"]);
+				if($tag < 0 || $tag > 4)
+					$tag =2 ;
+				
 				if($tid)
 				{
-					$query = "SELECT tid FROM topics WHERE tid = ".$tid." AND uid = ".$pc["UID"]." AND access = ".$tag." LIMIT 0 , 1;";
-					$result = mysql_query($query,$link);
-					if(!$rows = mysql_fetch_array($result))
+					if(!pc_load_topic($link,$pc["UID"],$tid,$topicname,$tag))
 					{
 						html_error_quit("所指定的分类不存在，请重试!");
 						exit();
 					}
-					mysql_free_result($result);
+				}
+				if($pid)
+				{
+					if(!pc_load_directory($link,$pc["UID"],$pid))
+					{
+						html_error_quit("所指定的分类不存在，请重试!");
+						exit();
+					}
 				}
 ?>
 <br><center>
-<form name="postform" action="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
 	<td class="t2">发表文章</td>
@@ -317,8 +273,8 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 <tr>
 	<td class="t5">
 	评论
-	<input type="radio" name="comment" value="0" checked class="f1">允许
-	<input type="radio" name="comment" value="1" class="f1">不允许
+	<input type="radio" name="comment" value="1" checked class="f1">允许
+	<input type="radio" name="comment" value="0" class="f1">不允许
 	</td>
 </tr>
 <tr>
@@ -386,7 +342,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		elseif($act == "edit")
 		{
 			$nid = (int)($_GET["nid"]);
-			$query = "SELECT `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ;";
+			$query = "SELECT `nodetype` , `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -395,6 +351,12 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				html_error_quit("文章不存在!");
 				exit();
 			}
+			if($rows[nodetype] != 0)
+			{
+				html_error_quit("该文不可编辑!");
+				exit();
+			}
+			
 			if($_POST["subject"])
 			{
 				if($_POST["comment"]==1)
@@ -404,18 +366,16 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
 				$trackback = ($_POST["trackback"]==1)?1:0;
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' ;";
+				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' AND nodetype = 0;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
-				//管理员修改文章时的log
-				if( pc_is_manager($currentuser) && $blogadmin )
+				if($rows[subject]==$_POST["subject"])
+					$log_action = "EDIT NODE: ".$rows[subject];
+				else
 				{
-					$action = $currentuser[userid]." 修改管理员文章";
-					$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 修改文章。".
-							"\n主题：".$_POST["subject"];
-					pc_logs($link , $action , $comment);
+					$log_action = "EDIT NODE: ".$_POST["subject"];
+					$log_content = "OLD SUBJECT: ".$rows[subject]."\nNEW SUBJECT: ".$_POST["subject"];
 				}
-				
 ?>
 <p align="center">
 <a href="javascript:history.go(-2);">操作成功,点击返回</a>
@@ -426,7 +386,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			{
 ?>
 <br><center>			
-<form name="postform" action="pcmanage.php?act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
+<form name="postform" action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <?php
 		if($rows[type]==1)
@@ -525,7 +485,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		elseif($act == "del")
 		{
 			$nid = (int)($_GET["nid"]);	
-			$query = "SELECT `access`,`type` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `nid` = '".$nid."' ;";
+			$query = "SELECT `access`,`type`,`nodetype`,`subject` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `nid` = '".$nid."' ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -534,6 +494,12 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				html_error_quit("文章不存在!");
 				exit();
 			}
+			if($rows[nodetype]!=0)
+			{
+				html_error_quit("该文不能删除!");
+				exit();
+			}
+			
 			if($rows[access] == 4)
 			{
 				//彻底删除	
@@ -543,6 +509,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				mysql_query($query,$link);
 				$query = "DELETE FROM trackback WHERE `nid` = '".$nid."' ";
 				mysql_query($query,$link);
+				$log_action = "DEL NODE: ".$rows[subject];
 			}
 			else
 			{
@@ -559,11 +526,13 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 					mysql_free_result($result);
 					$query = "DELETE FROM nodes WHERE `nid` = '".$nid."' ;";
 					mysql_query($query,$link);
+					$log_action = "DEL DIR: ".$rows[subject];
 				}
 				else
 				{
 					$query = "UPDATE nodes SET `access` = '4' , `changed` = '".date("YmdHis")."' , `tid` = '0' WHERE `nid` = '".$nid."' ;";
 					mysql_query($query,$link);
+					$log_action = "DEL TO JUNK: ".$rows[subject];
 					if($rows[access] == 0)
 						pc_update_record($link,$pc["UID"]," - 1");
 				}
@@ -590,6 +559,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			mysql_query($query_tb,$link);
 			$query = "DELETE FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = '4' ;";
 			mysql_query($query,$link);
+			$log_action = "EMPTY JUNK";
 			pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
@@ -599,11 +569,8 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "tedit")
 		{
-			$query = "SELECT * FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ;";	
-			$result = mysql_query($query,$link);
-			$rows = mysql_fetch_array($result);
-			mysql_free_result($result);
-			if(!$rows)
+			$tid = pc_load_topic($link,$pc["UID"],intval($_GET["tid"]),$topicname);
+			if(!$tid)
 			{
 				html_error_quit("Blog不存在!");
 				exit();
@@ -618,8 +585,10 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				}
 				*/
 				//$query = "UPDATE topics SET `topicname` = '".$_POST["topicname"]."' , `access` = '".$_POST["access"]."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ;";
-				$query = "UPDATE topics SET `topicname` = '".addslashes($_POST["topicname"])."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ;";
+				$query = "UPDATE topics SET `topicname` = '".addslashes($_POST["topicname"])."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$tid."' ;";
 				mysql_query($query,$link);
+				$log_action = "UPDATE TOPIC: ".$_POST["topicname"];
+				$log_content = "OLD TITLE: ".$topicname."\nNEW TITLE: ".$_POST["topicname"];
 				pc_update_record($link,$pc["UID"]);
 				
 ?>
@@ -634,7 +603,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 ?>
 <br>
 <center>
-<form action="pcmanage.php?act=tedit&tid=<?php echo $rows[tid]; ?>" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
+<form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>&act=tedit&tid=<?php echo $rows[tid]; ?>" method="post" onsubmit="if(this.topicname.value==''){alert('请输入Blog名称!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
 <tr>
 	<td class="t2">修改Blog</td>
@@ -678,7 +647,13 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "tdel")
 		{
-			$query = "SELECT `nid` FROM nodes WHERE `tid` = '".(int)($_GET["tid"])."' ;";
+			$tid = pc_load_topic($link,$pc["UID"],intval($_GET["tid"]),$topicname);
+			if(!$tid)
+			{
+				html_error_quit("Blog不存在!");
+				exit();
+			}
+			$query = "SELECT `nid` FROM nodes WHERE `tid` = '".$tid."' ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -692,6 +667,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
+				$log_action = "DEL TOPIC: ".$topicname;
 ?>
 <p align="center">
 <a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=6">操作成功,点击返回</a>
@@ -701,13 +677,12 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "tadd" && $_POST["topicname"])
 		{
-			$access = (int)($_POST["access"]);
-			if($access < 0 || $access > 2)
-				$access = 0;
-			$query = "INSERT INTO `topics` (`uid` , `access` , `topicname` , `sequen` ) ".
-					"VALUES ( '".$pc["UID"]."', '".$access."', '".addslashes($_POST["topicname"])."', '0');";
-			mysql_query($query,$link);
-			pc_update_record($link,$pc["UID"]);
+			if(!pc_add_topic($link,$pc,$_POST["access"],$_POST["topicname"]))
+			{
+				html_error_quit("分类添加失败");
+				exit();
+			}
+			$log_action = "ADD TOPIC: ".$_POST["topicname"];
 ?>
 <p align="center">
 <a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=6">操作成功,点击返回</a>
@@ -722,13 +697,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = '".date("YmdHis")."' , `htmleditor` = '".(int)($_POST["htmleditor"])."', `style` = '".(int)($_POST["template"])."' , `indexnodechars` = '".(int)($_POST["indexnodechars"])."' , `indexnodes` = '".(int)($_POST["indexnodes"])."' , `favmode` = '".$favmode."' , `useremail` = '".addslashes($_POST["pcuseremail"])."' , `userinfor` = '".addslashes($_POST["userinfor"])."'  WHERE `uid` = '".$pc["UID"]."';";	
 			mysql_query($query,$link);
 			
-			//管理员管理时的log
-			if( pc_is_manager($currentuser) && $blogadmin )
-			{
-				$action = $currentuser[userid]." 修改管理员Blog参数";
-				$comment = $currentuser[userid]." 于 ".date("Y-m-d H:i:s")." 自 ".$_SERVER["REMOTE_ADDR"]." 修改管理员Blog参数。";
-				pc_logs($link , $action , $comment);
-			}
+			$log_action = "UPDATE SETTINGS";
 			
 ?>
 <p align="center">
@@ -748,6 +717,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				"VALUES ('', '".$pid."', '1', '', '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."', '".date("YmdHis")."', '".$pc["UID"]."', '0', '0', '".addslashes($_POST["dir"])."', NULL , '3', '0', '0', '0');";
 			mysql_query($query,$link);
 			pc_update_record($link,$pc["UID"]);
+			$log_action = "ADD DIR: ".$_POST["dir"];
 ?>
 <script language="javascript">
 window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";
@@ -787,16 +757,12 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 				html_error_quit("您的剪贴板是空的，请先剪切或者复制一个文件!");
 				exit();
 			}
-			$pid = (int)($_GET["pid"]);
-			$query = "SELECT `nid` FROM nodes WHERE `nid` = '".$pid."' AND `uid` = '".$pc["UID"]."' AND `type` = 1 AND `access` = 3 LIMIT 0 , 1 ;";
-			$result = mysql_query($query,$link);
-			if(!$rows=mysql_fetch_array($result))
+			$pid = intval($_GET["pid"]);
+			if(!pc_load_directory($link,$pc["UID"],$pid))
 			{
-				mysql_free_result($result);
 				html_error_quit("目标文件夹不存在!");
 				exit();
 			}
-			mysql_free_result($result);
 			
 			if(pc_file_num($link,$pc["UID"],$pid)+1 > $pc["NLIM"])
 			{
@@ -821,12 +787,16 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			unset($favaction);
 			setcookie("BLOGFAVACTION");
 			pc_update_record($link,$pc["UID"]);
+			$log_action = "CUT/COPY FAV";
 ?>
 <script language="javascript">
 window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?php echo $pid; ?>";
 </script>
 <?php		
 		}
+	
+		if($pc["TYPE"]==1)
+			pc_group_logs($link,$pc,$log_action,$log_content);
 		
 		html_normal_quit();
 	}
