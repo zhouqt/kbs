@@ -38,6 +38,7 @@ $section_names = array(
     array("大圣取经", "[专业/申请]") 
 );
 
+define("DB_ENABLED", true);
 require "dbconn.php";
 require "default.php";
 ?>

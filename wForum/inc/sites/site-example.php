@@ -72,6 +72,7 @@ $section_names = array(
 
 
 /* 数据库配置 */
+//define("DB_ENABLED", true); //是否启用数据库支持，目前仅用于小字报，这个功能默认是关闭的！
 $dbhost='localhost';
 $dbuser='';
 $dbpasswd='';

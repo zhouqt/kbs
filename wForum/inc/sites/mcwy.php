@@ -37,6 +37,7 @@ define("ATTACHMAXCOUNT", "20");
 /* 自定义头像相关 */
 
 /* 数据库相关 */
+define("DB_ENABLED", true);
 $dbuser = "wForum";
 $dbpasswd = "fuckatp";
 $dbname = "wForum";
