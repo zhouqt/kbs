@@ -211,7 +211,7 @@ function display_navigation_bar($brdarr, $articles, $num, $brdnum)
 			Header("Content-type: " . get_mimetype($attachname));
 			Header("Accept-Ranges: bytes");
 			Header("Accept-Length: " . $attachsize);
-			Header("Content-Disposition: filename=" . $attachname);
+			Header("Content-Disposition: inline;filename=" . $attachname);
 			echo fread($file,$attachsize);
 			fclose($file);
 			exit;
