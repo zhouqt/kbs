@@ -124,6 +124,7 @@ static PHP_FUNCTION(bbs_set_onboard);
 static PHP_FUNCTION(bbs_get_tmpls);
 static PHP_FUNCTION(bbs_get_tmpl_from_num);
 static PHP_FUNCTION(bbs_make_tmpl_file);
+static PHP_FUNCTION(bbs_docross);
 
 static PHP_FUNCTION(bbs_delfile);
 static PHP_FUNCTION(bbs_normalboard);
@@ -379,6 +380,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_get_tmpls,NULL)
 		PHP_FE(bbs_get_tmpl_from_num,NULL)
 		PHP_FE(bbs_make_tmpl_file,NULL)
+		PHP_FE(bbs_docross,NULL)
 #ifdef SMS_SUPPORT
 		PHP_FE(bbs_send_sms,NULL)
 		PHP_FE(bbs_register_sms_sendcheck,NULL)
@@ -8445,6 +8447,92 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 
 	//RETURN_LONG(1);
 	RETURN_STRING(newtitle,1);
+}
+
+/**
+ * 转贴文章
+ * int bbs_docross(string board,int id,string target,int out_go);
+ * return  0 :seccess
+ *         -1:源版面不存在
+ *         -2:目标版面不存在
+ *         -3:目标版面只读
+ *         -4:无发文权限
+ *         -5:被封禁
+ *         -6:文件记录不存在
+ *         -7:已经被转载过了
+ *         -8:不能在板内转载
+ *         -9:目标版面不支持附件
+ *         -10:system error
+ * @author: windinsn
+ */
+static PHP_FUNCTION(bbs_docross)
+{
+    char *board,*target;
+    int  board_len,target_len;
+    int  id,out_go;
+    struct boardheader *src_bp;
+	struct boardheader *dst_bp;
+	struct fileheader f;
+    int  ent;
+    int  fd;
+    struct userec *u = NULL;
+    char path[256],ispost[10];
+    
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slsl", &board, &board_len, &id, &target, &target_len, &out_go) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	
+	u = getCurrentUser();
+	src_bp = getbcache(board);
+	if (src_bp == NULL)
+	    RETURN_LONG(-1);
+	strcpy(board, src_bp->filename);
+	if(!check_read_perm(u, src_bp))
+		RETURN_LONG(-1);
+    
+    dst_bp = getbcache(target);
+    if (dst_bp == NULL)
+        RETURN_LONG(-2);
+    strcpy(target, dst_bp->filename);
+
+#ifndef NINE_BUILD    
+    if (!strcmp(board,target))
+        RETURN_LONG(-8);
+#endif
+    
+    if(!check_read_perm(u, dst_bp))
+		RETURN_LONG(-2);
+    if (true == checkreadonly(target))
+		RETURN_LONG(-3); //只读讨论区
+    if (!HAS_PERM(u,PERM_SYSOP)) { //权限检查
+	    if (!haspostperm(u, target))
+	        	RETURN_LONG(-4);
+	    if (deny_me(u->userid, target))
+	        	RETURN_LONG(-5);
+	}
+	
+	setbdir(DIR_MODE_NORMAL, path, board);
+	if ((fd = open(path, O_RDWR, 0644)) < 0)
+		RETURN_LONG(-10);
+    if (!get_records_from_id(fd,id,&f,1,&ent)) {
+		close(fd);
+		RETURN_LONG(-6); //无法取得文件记录
+	}
+	close(fd);
+#ifndef NINE_BUILD
+    if ((f.accessed[0] & FILE_FORWARDED) && !HAS_PERM(u, PERM_SYSOP)) 
+        RETURN_LONG(-7);
+#endif	
+	
+	if ((f.attachment!=0)&&!(dst_bp->flag&BOARD_ATTACH)) 
+        RETURN_LONG(-9);
+	
+	strcpy(ispost ,((dst_bp->flag & BOARD_OUTFLAG) && out_go)?"s":"l");
+	setbfile(path, board, f.filename);
+	if (post_cross(u, target, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
+	    RETURN_LONG(-10);
+    RETURN_LONG(0);
 }
 
 #ifdef SMS_SUPPORT

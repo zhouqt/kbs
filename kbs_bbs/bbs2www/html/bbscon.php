@@ -80,7 +80,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 	{
 ?>
 [<a href="/bbsfwd.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">×ª¼Ä</a>]
-[<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">×ªÌù</a>]
+[<a href="bbsccc.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">×ªÌù</a>]
 <?php
 	}
 ?>
