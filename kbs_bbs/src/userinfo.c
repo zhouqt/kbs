@@ -456,7 +456,9 @@ void x_fillform()
         while (strlen(genbuf) < 2) {
             getfield(12, "包括可连络时间,若无可用呼机或Email地址代替", "连络电话", phone, STRLEN);
         }
+#ifndef HAVE_BIRTHDAY
         getfield(14, "年.月.日(公元)", "出生年月", birth, STRLEN);
+#endif
         mesg = "以上资料是否正确, 按 Q 放弃注册 (Y/N/Quit)? [N]: ";
         getdata(t_lines - 1, 0, mesg, ans, 3, DOECHO, NULL, true);
         if (ans[0] == 'Q' || ans[0] == 'q')
@@ -476,7 +478,11 @@ void x_fillform()
         fprintf(fn, "career: %s\n", career);
         fprintf(fn, "addr: %s\n", addr);
         fprintf(fn, "phone: %s\n", phone);
+#ifndef HAVE_BIRTHDAY
         fprintf(fn, "birth: %s\n", birth);
+#else
+        fprintf(fn, "birth: %d-%d-%d\n", ud.birthyear, ud.birthmonth, ud.birthday);
+#endif
         fprintf(fn, "----\n");
         fclose(fn);
     }
