@@ -455,7 +455,7 @@ int MoveFavBoard(int p, int q)
 			favbrd_list[favnow].bid[k] = favbrd_list[favnow].bid[k+1];
 		favbrd_list[favnow].bid[k] = i;
 	}
-	return 0;
+	return favnow;
 }
 
 /*---   ---*/
