@@ -221,3 +221,8 @@ BODY
 	line-height: 20px;
 	text-decoration: none;
 }
+.hand {  
+	cursor: hand;
+	font-size: 8pt;
+	font-family: "Georgia", "Times New Roman", "Times", "serif"
+}

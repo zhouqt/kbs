@@ -8,10 +8,33 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 
-	function display_calendar()
+	function get_calendar_array($link,$pc)
 	{
-		
-		
+?>
+<script language="javascript">
+var blogCalendarArray = new Array();
+var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
+<?php	
+		$query = "SELECT `nid` , `created` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 0 ORDER BY `nid` DESC;";
+		$result = mysql_query($query,$link);
+		$bc = array();
+		while($rows = mysql_fetch_array($result))
+		{
+			if(!$bc[substr($rows[created],0,8)])
+			{
+				$bc[substr($rows[created],0,8)] = $rows[nid] ;
+				
+?>
+blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)($rows[nid]); ?>;
+<?php			
+			}
+			else
+				continue;
+		}
+?>
+</script>
+<?php
+		mysql_free_result($result);
 	}
 	
 	function pc_load_nodes($link,$pc)
@@ -199,22 +222,30 @@ PassWord:
 		</td>
 	</tr>
 	<tr>
-		<td align="center" class="t3" colspan="2">
+		<td align="center" class="t10" valign="top">
 		<table cellpadding=3 cellspacing=0 width="100%" border=0 class=t1>
 			<tr><td class=t2>
 			.:Blog List:.
 			</td></tr>
 			<tr><td class=t4>
+			<ul>
 <?php
 		for($i=0;$i<( count($blogs) - 1);$i++)
 		{
-			echo "<a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</a>&nbsp;\n";	
+			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</a></li>\n";	
 			
 		}
 		
 ?>			
+			</ul>
 			</td></tr>
 		</table>
+		</td>
+		<td align="center" class="t3" valign="top">
+		<span id='bc'></span>
+		<script language=javascript>
+		blogCalendar(<?php echo date("Y,m,d"); ?>);
+		</script>
 		</td>
 	</tr>
 </table>		
@@ -235,7 +266,7 @@ PassWord:
 		<a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>" class="f1">:BlogÂÛÌ³:</a>
 		<a href="pcsearch2.php" class="f1">:BlogËÑË÷:</a>
 		<a href="pc.php" class="f1">:BlogÊ×Ò³:</a>
-		<a href="<?php echo $pcconfig["SITE"]; ?>" class="f1">:<?php echo BBS_FULL_NAME; ?>:</a>
+		<a href="http://<?php echo $pcconfig["SITE"]; ?>" class="f1">:<?php echo BBS_FULL_NAME; ?>:</a>
 		<br><br>
 		<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank">
 		<img src="images/xml.gif" align="absmiddle" alt="XML" border="0">
@@ -312,8 +343,9 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 	}
 	/*visit count end*/	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
-	
+	get_calendar_array($link,$pc);
 ?>
+<script src="bc.js"></script>
 <center>
 <?php
 	display_top_bar($link,$pc,$sec,$nodes,$blogs,$pur);
