@@ -38,6 +38,7 @@
 char *sysconf_str();
 char *Ctime();
 
+extern struct user_info uinfo;
 extern time_t login_start_time;
 extern int convcode;            /* KCN,99.09.05 */
 extern int switch_code();       /* KCN,99.09.05 */
@@ -164,12 +165,18 @@ void new_register()
     bbslog("user","%s","new account");
 }
 
+/*¼ÓÈë¶Ô #TH ½áÎ²µÄrealemailµÄÕÊºÅ×Ô¶¯Í¨¹ý×¢²áµÄ¹¦ÄÜ  by binxun
+*/
 int invalid_realmail(userid, email, msize)
     char *userid, *email;
     int msize;
 {
     FILE *fn;
     char *emailfile, ans[4], fname[STRLEN];
+    char genbuf[STRLEN];
+    struct userec* uc;
+    time_t now;
+    int len = strlen(email);
 
     if ((emailfile = sysconf_str("EMAILFILE")) == NULL)
         return 0;
@@ -203,7 +210,135 @@ int invalid_realmail(userid, email, msize)
             return 0;
         }
     }
+
+#ifdef SMTH
+
+    if(len >= 3)
+    {
+    	strncpy(genbuf,email+strlen(email)-3,3);
+	if(!strncasecmp(genbuf,"#TH",3))
+	{
+		getuser(userid,&uc);
+		// > 3 days
+		now = time(NULL);
+		if(now - uc->firstlogin >= REGISTER_WAIT_TIME)
+		{
+	 		if(auto_register(userid,email,msize) < 0) // Íê³É×Ô¶¯×¢²á
+				return 1;
+			else
+				return 0;     //success
+		}
+	}
+    }
+#endif
     return 1;
+}
+
+int auto_register(char* userid,char* email,int msize)
+{
+	struct userdata ud;
+	struct userec* uc;
+	char* item,*temp;
+	char fdata[7][STRLEN];
+	char genbuf[STRLEN];
+	char buf[STRLEN];
+	char fname[STRLEN];
+	int unum;
+	FILE* fout;
+	int n;
+	struct userec deliveruser;
+
+	bzero(&deliveruser,sizeof(struct userec));
+	strcpy(deliveruser.userid,"deliver");
+	deliveruser.userlevel = -1;
+	strcpy(deliveruser.username,"×Ô¶¯·¢ÐÅÏµÍ³");
+
+
+	static const char *finfo[] = { "ÕÊºÅÎ»ÖÃ", "ÉêÇë´úºÅ", "ÕæÊµÐÕÃû", "·þÎñµ¥Î»",
+        "Ä¿Ç°×¡Ö·", "Á¬Âçµç»°", "Éú    ÈÕ", NULL
+    };
+  	static const char *field[] = { "usernum", "userid", "realname", "career",
+    	"addr", "phone", "birth", NULL
+	};
+
+	bzero(fdata,7*STRLEN);
+
+	if((unum = getuser(userid,&uc)) == 0)return -1;//faild
+	if(read_userdata(userid,&ud) < 0)return -1;
+
+	strncpy(genbuf,email,STRLEN - 16);
+	item =strtok(genbuf,"#");
+	if(item)strncpy(ud.realname,item,NAMELEN);
+	item = strtok(NULL,"#");  //Ñ§ºÅ
+	item = strtok(NULL,"#");
+	if(item)strncpy(ud.address,item,STRLEN);
+
+	email[strlen(email) - 3] = '@';
+	strncpy(ud.realemail,email,STRLEN-16); //email length must be less STRLEN-16
+
+
+	sprintf(fdata[0],"%d",unum);
+	strncpy(fdata[2],ud.realname,NAMELEN);
+	strncpy(fdata[4],ud.address,STRLEN);
+	strncpy(fdata[5],ud.email,STRLEN);
+	strncpy(fdata[1],userid,IDLEN);
+
+	sprintf(buf,"tmp/email/%s",userid);
+	if ((fout = fopen(buf,"w")) != NULL)
+	{
+		fprintf(fout,"%s\n",email);
+		fclose(fout);
+	}
+
+	if(write_userdata(userid,&ud) < 0)return -1;
+	mail_file("deliver","etc/s_fill",userid,"¹§Ï²Äã,ÄãÒÑ¾­Íê³É×¢²á.",0,0);
+	//sprintf(genbuf,"deliver ÈÃ %s ×Ô¶¯Í¨¹ýÉí·ÝÈ·ÈÏ.",uinfo.userid);
+
+	sprintf(fname, "tmp/security.%d", getpid());
+	if ((fout = fopen(fname, "w")) != NULL)
+	{
+		fprintf(fout, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s×Ô¶¯Í¨¹ý×¢²á[m\n", userid);
+                fprintf(fout, "ÒÔÏÂÊÇÍ¨¹ýÕß¸öÈË×ÊÁÏ");
+                fprintf(fout, "\n\nÄúµÄ´úºÅ     : %s\n", ud.userid);
+                fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uc->username);
+                fprintf(fout, "ÕæÊµÐÕÃû     : %s\n", ud.realname);
+                fprintf(fout, "µç×ÓÓÊ¼þÐÅÏä : %s\n", ud.email);
+                fprintf(fout, "ÕæÊµ E-mail  : %s\n", ud.realemail);
+                fprintf(fout, "·þÎñµ¥Î»     : %s\n", "");
+                fprintf(fout, "Ä¿Ç°×¡Ö·     : %s\n", ud.address);
+                fprintf(fout, "Á¬Âçµç»°     : %s\n", "");
+                fprintf(fout, "×¢²áÈÕÆÚ     : %s", ctime(&uc->firstlogin));
+                fprintf(fout, "×î½ü¹âÁÙÈÕÆÚ : %s", ctime(&uc->lastlogin));
+                fprintf(fout, "×î½ü¹âÁÙ»úÆ÷ : %s\n", uc->lasthost);
+                fprintf(fout, "ÉÏÕ¾´ÎÊý     : %d ´Î\n", uc->numlogins);
+                fprintf(fout, "ÎÄÕÂÊýÄ¿     : %d(Board)\n", uc->numposts);
+                fprintf(fout, "Éú    ÈÕ     : %s\n", "");
+
+                fclose(fout);
+                //post_file(currentuser, "", fname, "Registry", str, 0, 2);
+
+		sprintf(genbuf,"%s ×Ô¶¯Í¨¹ý×¢²á",ud.userid);
+		post_file(&deliveruser,"",fname,"Registry",genbuf,0,1);
+	/*if (( fout = fopen(logfile,"a")) != NULL)
+	{
+		fclose(fout);
+	}*/
+	}
+
+	sethomefile(buf, userid, "/register");
+	if ((fout = fopen(buf, "w")) != NULL) {
+		for (n = 0; field[n] != NULL; n++)
+			fprintf(fout, "%s     : %s\n", finfo[n], fdata[n]);
+		fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uc->username);
+		fprintf(fout, "µç×ÓÓÊ¼þÐÅÏä : %s\n", ud.email);
+		fprintf(fout, "ÕæÊµ E-mail  : %s\n", ud.realemail);
+		fprintf(fout, "×¢²áÈÕÆÚ     : %s\n", ctime(&uc->firstlogin));
+		fprintf(fout, "×¢²áÊ±µÄ»úÆ÷ : %s\n", uc->lasthost);
+		fprintf(fout, "Approved: %s\n", userid);
+		fclose(fout);
+	}
+
+	return 0;
 }
 
 void check_register_info()
@@ -221,7 +356,11 @@ void check_register_info()
     }
     /*urec->userlevel |= PERM_DEFAULT; */
     perm = PERM_DEFAULT & sysconf_eval("AUTOSET_PERM",PERM_DEFAULT);
-	read_userdata(currentuser->userid, &ud);
+    read_userdata(currentuser->userid, &ud);
+
+    invalid_realmail(currentuser->userid,ud.realemail,STRLEN - 16);
+
+    read_userdata(currentuser->userid,&ud);
 
     /*    if( sysconf_str( "IDENTFILE" ) != NULL ) {  commented out by netty to save time */
     while (strlen(currentuser->username) < 2) {
@@ -255,7 +394,7 @@ void check_register_info()
            prints( "µç×ÓÐÅÏä¸ñÊ½Îª: xxx@xxx.xxx.edu.cn \n" );
            getdata( 18, 0, "ÇëÊäÈëµç×ÓÐÅÏä: (²»ÄÜÌá¹©Õß°´ <Enter>) << "
            , urec->email, STRLEN,DOECHO,NULL,true);
-           if ((strchr( urec->email, '@' ) == NULL )) { 
+           if ((strchr( urec->email, '@' ) == NULL )) {
            sprintf( genbuf, "%s.bbs@%s", urec->userid,buf );
            strncpy( urec->email, genbuf, STRLEN);
            }

@@ -210,6 +210,7 @@ int domenu(char *menu_name);
 /* register.c */
 void check_register_info();
 void new_register();
+int auto_register(char* userid,char* email,int msize);
 
 /* help.c */
 void show_help(char *fname);
