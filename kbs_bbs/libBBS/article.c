@@ -606,7 +606,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     char* p;
 #ifdef FILTER
     int i, num_badword;
-    char f[2560], oldpath[50], newpath[50];
+    char f[256], oldpath[50], newpath[50];
     char badword[200][STRLEN];
     FILE *fp, *badfile;
 #endif
@@ -615,29 +615,30 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         strncpy(fh->title, fh->title + 4, STRLEN);
     }
 #ifdef FILTER
-    i = 0;
-    if ((badfile = fopen("etc/badword", "r")) != NULL) {
-        while (fgets(buf, STRLEN, badfile) != NULL && i < 20) {
-            strcpy(badword[i], (char *) strtok(buf, " \n\r\t"));
-            i++;
-        }
-        fclose(badfile);
-    }
-    num_badword = i;
+//    i = 0;
+//    if ((badfile = fopen("etc/badword", "r")) != NULL) {
+//        while (fgets(buf, STRLEN, badfile) != NULL && i < 20) {
+//            strcpy(badword[i], (char *) strtok(buf, " \n\r\t"));
+//            i++;
+//        }
+//        fclose(badfile);
+//    }
+//    num_badword = i;
     sprintf(oldpath, "%s/boards/%s/%s", BBSHOME, boardname, fh->filename);
-    if ((fp = fopen(oldpath, "r")) == NULL)
-	    return;
-    while (fgets(f, sizeof(f), fp) != NULL) {
-        for (i=1; i<=num_badword;i++) {
-	    if(strstr(f,badword[i-1])) {
+//    if ((fp = fopen(oldpath, "r")) == NULL)
+//	    return;
+//    while (fgets(f, sizeof(f), fp) != NULL) {
+//        for (i=1; i<=num_badword;i++) {
+//	    if(strstr(f,badword[i-1])) {
+	    if(check_badword(oldpath)) {
 		    sprintf(newpath, "%s/boards/Filter/%s", BBSHOME, fh->filename);
 	            symlink(oldpath, newpath);
 		    boardname = "Filter";
-		    break;
+//		    break;
 	    }
-        }
-    }
-    fclose(fp);
+//        }
+//    }
+//    fclose(fp);
 #endif
     setbfile(buf, boardname, DOT_DIR);
 
