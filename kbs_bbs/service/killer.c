@@ -245,8 +245,8 @@ void send_msg(int u, char* msg)
         }
     strcpy(buf, msg);
 
-    while(strchr('\n', buf)!=NULL) {
-        i = strchr('\n', buf)-buf;
+    while(strchr(buf, '\n')!=NULL) {
+        i = strchr(buf, '\n')-buf;
         buf[i]=0;
         send_msg(u, buf);
         strcpy(buf2, buf+i+1);
