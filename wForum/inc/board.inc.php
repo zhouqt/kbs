@@ -219,7 +219,8 @@ function board_head_var($boardDesc,$boardName,$secCode)
 ?>
 <br/>
 <?php 
-} 
+}
+
 function boardJump(){
 	global $section_names;
 	global $sectionCount;

@@ -6,7 +6,11 @@ define('_BBS_FUNCS_PHP_', 1);
 $Version="Powered by wForum Version 0.9";
 $Copyright="<a href=\"http://www.aka.cn/\" target=\"_blank\">阿卡信息技术(北京)有限公司</a> &amp; <a href=\"http://www.smth.cn\" target=\"_blank\">水木清华BBS</a> 版权所有 1994 - 2008 <br/><a href=\"http://wforum.zixia.net/\" target=\"_blank\"><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\" color=\"#6000CC\"><b>@zixia.net</b></font></a>";
 
-if (!isset($nocookie) && ((!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']=='')))
+if (!isset($needlogin)){ //本页面是否需要设置cookie等登录变量，默认需要
+	$needlogin=1;
+}
+
+if ($needlogin && ((!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']=='')))
 {
 	setcookie('iscookies','0',time()+3650*24*3600);
 ?>
@@ -78,10 +82,6 @@ if (!isset($nologin)) {
 
 if (!isset($setboard)){
 	$setboard=0;
-}
-
-if (!isset($needlogin)){ //本页面是否需要设置cookie等登录变量，默认需要
-	$needlogin=1;
 }
 
 $cachemode="";
@@ -222,7 +222,7 @@ function update_cache_header($updatetime = 10,$expiretime = 300)
 	return cache_process("public, must-revalidate", 60 * $updatetime, time(), $expiretime);
 }
 
-function html_init($charset="",$title="",$otherheader="",$is_mathml=false)
+function html_init($charset="",$otherheader="",$is_mathml=false)
 {
 	global $cachemode;
 	global $HTMLTitle;
@@ -234,9 +234,7 @@ function html_init($charset="",$title="",$otherheader="",$is_mathml=false)
 	if ($charset==""){
 		$charset=$HTMLCharset;
 	}
-	if ($title=="") {
-		$title=$HTMLTitle;
-	}
+	$title = $HTMLTitle;
 	if (isset($stats) ){
 		$title = $title . ' -- ' . $stats;
 	}
@@ -462,7 +460,7 @@ function show_nav($boardName='',$is_mathml=false,$other_headers="")
 	global $needloginok;
 	$showedbanner = true;
 
-	html_init("","",$other_headers,$is_mathml);
+	html_init("",$other_headers,$is_mathml);
 ?>
 <script language="javascript">
 <!--

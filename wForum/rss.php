@@ -1,7 +1,6 @@
 <?php
 
 $needlogin = 0;
-$nocookie = 1;
 
 require("inc/funcs.php");
 require("inc/board.inc.php");
@@ -21,6 +20,7 @@ function preprocess(){
 	global $boardName;
 	global $boardArr;
 	global $loginok;
+	global $guestloginok;
 	global $currentuser;
 	global $modifytime;
 	if (!isset($_GET['board'])) {
@@ -34,7 +34,7 @@ function preprocess(){
 	if ($boardID == 0) {
 		exit;
 	}
-	if (!$loginok) bbs_setguest_nologin();
+	if (!$loginok && !$guestloginok) bbs_setguest_nologin();
 	if (!($isnormalboard = bbs_normalboard($boardName))) {
 		if($loginok == 1) {
 			$usernum = $currentuser["index"];

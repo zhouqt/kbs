@@ -268,7 +268,7 @@ arNews = [<?php
 ?>"<b>ª∂”≠π‚¡Ÿ<?php echo $SiteName; ?></b>",""
 ];
 </SCRIPT>
-<div id="elFader" style="position:relative;visibility:hidden; height:16" ></div>
+<div id="elFader" style="position:relative; visibility:visible; height:20px; padding:4px;" ></div>
 </td>
 </tr>
 <?php

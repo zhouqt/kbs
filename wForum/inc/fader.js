@@ -38,6 +38,8 @@ FDRloadCount = 0;
 
 blendTimer = null;
 
+var oElFader;
+
 if (!window.prefix) prefix = "";
 window.onload = FDRcountLoads;
 
@@ -46,16 +48,6 @@ function FDRcountLoads(e) {
 }
 
 function FDRinit(){
-	var ooElFader;
-	if(!window.arNews) {
-		if(!window.arTXT || !window.arURL) return;
-		if(arTXT.length != arURL.length) return;
-		arNews = [];
-		for (i=0;i<arTXT.length;i++){
-			arNews[arNews.length] = arTXT[i];
-			arNews[arNews.length] = arURL[i];
-		}
-	}
 	if (!(oElFader=getRawObject("elFader"))) return;
 	oElFader.innerHTML ="";
 	if (!document.styleSheets.length) document.createStyleSheet();
@@ -63,7 +55,7 @@ function FDRinit(){
 	with (oElFader.style) {
 		errorOffset =  0;
 		width = (FDRboxWid - (errorOffset * 2)) +'px';
-		height = (FDRboxHgt - (errorOffset * 2))+'px';
+		//height = (FDRboxHgt - (errorOffset * 2))+'px';
 
 		backgroundColor = FDRbackCol;
 		overflow = "hidden";
@@ -79,7 +71,7 @@ function FDRinit(){
 		borderWidth = FDRborWid;
 		borderStyle = FDRborSty;
 		borderColor = FDRborCol;
-		padding  = FDRboxPad+'px';
+		//padding  = FDRboxPad+'px';
 
 		if(!FDRjustFlip) filter = "blendTrans(duration=" + FDRblendDur + ")";
 	}
@@ -131,12 +123,12 @@ function FDRmakeStr(){
 		linkStr = arNews[newsCount+1];
 		isLink = linkStr.length;
 		if (isLink) {
-			tempStr += "<P><A CLASS=newslink "
+			tempStr += "<A CLASS=newslink "
 					+ "HREF='" + prefix + linkStr + "'>"
-		            + dispStr + "</A></P>"
+		            + dispStr + "</A>"
 		}
 		else {
-			tempStr +=  "<P>" +dispStr+"</P>";
+			tempStr += dispStr;
 
 		}
 		newsCount += 2;

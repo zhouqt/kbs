@@ -1,7 +1,6 @@
 <?php
 
 $needlogin = 0;
-$nocookie = 1;
 
 require("inc/funcs.php");
 require("inc/rss.inc.php");

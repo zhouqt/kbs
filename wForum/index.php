@@ -16,9 +16,7 @@ showUserMailBoxOrBR();
 <?php
 showAnnounce(); 
 ?>
-<tr><td align=center width=100% valign=middle colspan=2>
-<hr>
-</td></tr>
+<tr><td align=center width=100% valign=middle colspan=2 height=1 bgcolor="#cccccc"></td></tr>
 <?php
 showTitle();
 ?>

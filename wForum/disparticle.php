@@ -285,7 +285,12 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <tr><td width="*" valign="middle" style="filter:glow(color=#9898BA,strength=2)" >&nbsp;
 <?php
 	$str = "<font color=\"#990000\"><b>" . $thread['OWNER'] . "</b></font>";
-	if ($user !== false) $str = "<a href=\"dispuser.php?id=" . $thread['OWNER']. "\" target=\"_blank\" title=\"查看" . $thread['OWNER'] . "的个人资料\" style=\"TEXT-DECORATION: none;\">" . $str . "</a>";
+	if ($user !== false) {
+		$str = "<a href=\"dispuser.php?id=" . $thread['OWNER']. "\" target=\"_blank\" title=\"查看" . $thread['OWNER'] . "的个人资料\" style=\"TEXT-DECORATION: none;\">" . $str . "</a>";
+		if ($isbm) {
+			$str .= "&nbsp;[<a href=\"bmdeny.php?board=".$boardName."&amp;userid=".$thread['OWNER']."\" title=\"封禁本文作者\"><font color=\"red\">封</font></a>]";
+		}
+	}
 	echo $str;
 ?>
 </td>
@@ -364,12 +369,13 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 ?>
 <a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 title="给<?php echo $thread['OWNER']; ?>发送一个短消息"></a>&nbsp;
 <?php
-	}*/
-?>
+	}
 <a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/friend.gif" border="0" title="把<?php echo $thread['OWNER']; ?>加入好友"/></a>&nbsp;
-<!--<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/profile.gif" border="0" title="查看<?php echo $thread['OWNER']; ?>的个人资料"/></a>&nbsp;-->
+<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/profile.gif" border="0" title="查看<?php echo $thread['OWNER']; ?>的个人资料"/></a>&nbsp;
+*/
+?>
 <a href="queryresult.php?userid=<?php echo $thread['OWNER']; ?>&amp;boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border="0" title="搜索<?php echo $thread['OWNER']; ?>在本版的所有贴子"/></a>&nbsp;
-<a href="sendmail.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img title="点击这里发送电邮给<?php echo $thread['OWNER']; ?>" border="0" src="pic/email.gif"/></a>&nbsp;
+<a href="sendmail.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img title="点击这里发送信件给<?php echo $thread['OWNER']; ?>" border="0" src="pic/email.gif"/></a>&nbsp;
 <a href="editarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border="0" title="编辑"/></a>&nbsp;
 <a href="deletearticle.php?board=<?php echo $boardName; ?>&amp;ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border="0" title="删除"/></a>&nbsp;
 <?php
@@ -385,22 +391,25 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <b><?php echo $num==0?'楼主':'第<font color="#ff0000">'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor="#D8C0B1" height="1" colspan="2"></td></tr>
 </table>
 
-<table class="TableBody2" border="0" width="90%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><blockquote><img src="face/face1.gif" border="0" title="发贴心情"/>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> 
+<table class="TableBody2" border="0" width="90%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><blockquote>
 <?php
-	if ($isbm) {
-?>
-&nbsp;[<a href="bmdeny.php?board=<?php echo $boardName; ?>&amp;userid=<?php echo $thread['OWNER']; ?>" title="封禁本文作者"><font color="red">封禁</font></a>]
-<?php
-	}
-?>
-<br/><?php 
-	$isnormalboard=bbs_normalboard($boardName);
+/*
+<img src="face/face1.gif" border="0" title="发贴心情"/>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> 
+<br/> */
 	$filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
 	if ($loginok) {
 		bbs_brcaddread($boardName, $thread['ID']);
 	};
 	$is_tex = SUPPORT_TEX && $thread["IS_TEX"];
 	$str = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID'],$is_tex,0);
+	if (1) {
+		$chit = strpos( $str, "标&nbsp;&nbsp;题:" );
+		if ($chit !== false) $str = substr($str, $chit);
+		
+		$search=array("'<br /> <font class=\"f000\"></font><font class=\"f[0-9]+\">※&nbsp;来源:·.+\[FROM:&nbsp;[^\]]+\]</font><font class=\"f000\"> <br />'");
+        $replace=array("");
+        $str = preg_replace($search,$replace,$str);
+	}
 	echo DvbTexCode($str,0,$fgstyle,$is_tex);
 ?>
 </blockquote></td></tr></table>

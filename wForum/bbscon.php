@@ -2,11 +2,10 @@
 	@$attachpos = $_GET["ap"]; //pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
 		$needlogin=0;
-		$nocookie = 1;
-	}
+s	}
 	require("inc/funcs.php");
 
-	if (!$loginok && $attachpos!=0) bbs_setguest_nologin();
+	if (!$loginok && !$guestloginok && $attachpos!=0) bbs_setguest_nologin();
 	
 	$brdarr = array();
 	if( isset( $_GET["bid"] ) ){
@@ -104,7 +103,7 @@ function viewArticle($article, $boardID, $boardName) {
 
 	$is_tex = SUPPORT_TEX ? $article["IS_TEX"] : 0;
 	setStat(htmlspecialchars($article['TITLE'] ,ENT_QUOTES) . " " );
-	html_init("","","",$is_tex);
+	html_init("","",$is_tex);
 	$this_link = 'bbscon.php?bid='.$boardID.'&amp;id='.$article['ID'];
 	$full_link = 'disparticle.php?boardName='.$boardName.'&amp;ID='.$article["GROUPID"];
 ?>

@@ -5,7 +5,7 @@ require("inc/ubbcode.php");
 setStat("Ìû×ÓÔ¤ÀÀ");
 
 $is_tex = SUPPORT_TEX ? intval($_POST["texflag"]) : 0;
-html_init("","","",$is_tex);
+html_init("","",$is_tex);
 ?>
 <body>
 <script src="inc/browser.js"  language="javascript"></script>

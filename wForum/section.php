@@ -19,10 +19,6 @@ head_var($section_names[$secNum][0],'section.php?sec='.$secNum, 0);
  <?php
 	showAnnounce(); 
 ?>
-<tr>
-<td align=center width=100% valign=middle colspan=2>
-<hr>
-</td></tr>
 </table>
 <?php
 showSecs($secNum,0,true);
