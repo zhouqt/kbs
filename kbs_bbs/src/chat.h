@@ -97,12 +97,14 @@ typedef struct {
     char topic[STRLEN];
 
     int  chatline;                  /* Where to display message now */
+    int  outputcount;
     
     int  cmdpos;
     char lastcmd[MAXLASTCMD][128];
 
-	int apply_count;
+    int apply_count;
     char* apply_buf;
+
     FILE *rec;
 } chatcontext;
 

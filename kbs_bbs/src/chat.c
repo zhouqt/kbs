@@ -36,6 +36,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <netdb.h>
+#include <sys/ioctl.h>    /* for FIONREAD */
 
 #include "chat.h"
 
@@ -68,7 +69,20 @@ struct user_info *t_search();
 const char *msg_seperator = "¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª";
 const char *msg_shortulist = "\033[33m\033[44m Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬  ©¦ Ê¹ÓÃÕß´úºÅ    Ä¿Ç°×´Ì¬ \033[m";
 
-void printchatline(chatcontext * pthis, const char *str) /*ÏÔÊ¾Ò»ÐÐ£¬²¢ÏÂÒÆÖ¸Ê¾·û*/
+
+int chat_waitkey(chatcontext *pthis)
+{
+    char ch;
+
+    outs("[5;31m¡ô °´¿Õ¸ñ¼ü¼ÌÐø ¡ô[m");
+    add_io(0, 0);
+    ch=igetkey();
+    add_io(pthis->cfd, 0);
+
+    return strchr(" \r\n",ch)!=NULL;
+}
+
+int printchatline(chatcontext * pthis, const char *str) /*ÏÔÊ¾Ò»ÐÐ£¬²¢ÏÂÒÆÖ¸Ê¾·û, return 0 -> ²»ÒªÔÙÐ´ÁË*/
 {
     char tmpstr[256];
     const char *p;
@@ -150,8 +164,19 @@ void printchatline(chatcontext * pthis, const char *str) /*ÏÔÊ¾Ò»ÐÐ£¬²¢ÏÂÒÆÖ¸Ê¾·
     tmpstr[i++] = 'm';
     tmpstr[i] = 0;
 
+
     move(pthis->chatline, 0);
     clrtoeol();
+
+    i=1;
+    if(pthis->outputcount++==screen_lines-1){
+        i=chat_waitkey(pthis);
+        pthis->outputcount=1;
+
+        move(pthis->chatline, 0);
+        clrtoeol();
+    }
+
     outs(tmpstr); /* snow change at 10.25 */
     outc('\n');
     
@@ -161,7 +186,9 @@ void printchatline(chatcontext * pthis, const char *str) /*ÏÔÊ¾Ò»ÐÐ£¬²¢ÏÂÒÆÖ¸Ê¾·
     
     move(pthis->chatline, 0);
     clrtoeol();
+
     outs("==>");
+    return i;
 }
 
 
@@ -174,6 +201,7 @@ void chat_clear(chatcontext * pthis) /* clear chat */
     }
     pthis->chatline = s_lines - 1;
     printchatline(pthis,"");
+    pthis->outputcount=0;
 }
 
 
@@ -192,16 +220,6 @@ int chat_send(chatcontext * pthis, const char *buf)
     for(len=0;len<sizeof(gbuf)-1 && buf[len];len++)gbuf[len]=buf[len];
     gbuf[len++]='\n';
     return (send(pthis->cfd, gbuf, len, 0) == len);  /* Í¨¹ýsocket send */
-}
-
-int chat_waitkey(chatcontext *pthis)
-{
-    char ch;
-    outs("                     [5;31m¡ô °´¿Õ¸ñ¼ü¼ÌÐø ¡ô[m");
-    add_io(0, 0);
-    ch=igetkey();
-    add_io(pthis->cfd, 0);
-    return strchr(" \r\n",ch)!=NULL;
 }
 
 
@@ -228,12 +246,12 @@ int chat_recv(chatcontext * pthis, char * buf, int sz)
     return 0;
 }
 
-int chat_parse(chatcontext * pthis,int drecv)
+int chat_parse(chatcontext * pthis)
 {
     int  len;
     char *bptr;
 
-    if(drecv)chat_recv(pthis,NULL,0);
+    if(!pthis->bufptr || pthis->buf[pthis->bufptr-1]!=0)chat_recv(pthis,NULL,0);
     
     len=0;
 
@@ -254,7 +272,7 @@ int chat_parse(chatcontext * pthis,int drecv)
             {
             case 'p':
                 /* add by KCN for list long emote */
-                chat_waitkey(pthis);
+                /* chat_waitkey(pthis);  removed by wwj */
                 break;
                 
             case 'c':
@@ -302,6 +320,18 @@ int chat_parse(chatcontext * pthis,int drecv)
         pthis->bufptr = 0;
     }
     return 0;
+}
+
+int chat_checkparse(chatcontext * pthis)
+{
+    long cnt;
+    cnt=0;
+    if( pthis->bufptr || (ioctl(pthis->cfd,FIONREAD,&cnt)== 0 && cnt)){
+        do {
+            if (chat_parse(pthis) == -1) return 0; 
+        } while(pthis->bufptr); /* read all data from server*/
+    }
+    return 1;
 }
 
 
@@ -464,15 +494,20 @@ int ent_chat(int chatnum)  /* ½øÈëÁÄÌìÊÒ*/
     /* chat begin */
     while (chatting)
     {
-        if(pthis->bufptr && chat_parse(pthis,0) == -1) break; /* have more data? */
-        
+        if(!chat_checkparse(pthis))break;
+
         move(b_lines, currchar + 10);
         ch = igetkey();
 
-        if (talkrequest)
-            page_pending = YEA;
-        if (page_pending)
-            page_pending = servicepage(0, NULL);
+        pthis->outputcount=0;
+
+
+        if (talkrequest) page_pending = YEA;
+        if (page_pending) page_pending = servicepage(0, NULL);
+
+        if(!chat_checkparse(pthis))break;
+        if( ch == I_OTHERDATA ) continue;
+
 
         switch (ch)
         {
@@ -538,12 +573,6 @@ int ent_chat(int chatnum)  /* ½øÈëÁÄÌìÊÒ*/
         {
             newmail = 1;
             printchatline(pthis,"[32m*** [31mµ±£¡ÄãÓÐÐÂÐÅÀ´À²...[m");
-        }
-
-        if (ch == I_OTHERDATA)      /* incoming */
-        {
-            if (chat_parse(pthis,1) == -1) break;
-            continue;
         }
 
 #ifdef BIT8
@@ -1230,7 +1259,7 @@ void call_ignore(chatcontext *pthis,const char *arg)             /* added by Luz
         nIdx=0;
         if((fp=fopen(path,"r"))!=NULL)
         {
-            strcpy(buf2,"¡¼ºöÂÔÆäÑ¶Ï¢µÄÓÃ»§IDÁÐ±í¡½");
+            strcpy(buf2,"¡¾ºöÂÔÆäÑ¶Ï¢µÄÓÃ»§IDÁÐ±í¡¿");
             while(fread(buf, IDLEN+1, 1,fp)>-0 )
             {
                 if (nIdx%4==0)
@@ -1313,16 +1342,10 @@ void call_alias(chatcontext *pthis,const char *arg)             /* added by Luzi
             return;
         }
         nIdx=0;
-        chat_clear(pthis);
         printchatline(pthis,"¡¼ÓÃ»§×Ô¶¨ÒåemoteÁÐ±í¡½");
-        while(fread(buf, 128, 1,fp)>-0 )
+        while( fread(buf, 128, 1,fp) >0 )
         {
             printchatline(pthis,buf);
-            nIdx++;
-            if (nIdx%(screen_lines)==0)
-            {
-            	if(!chat_waitkey(pthis))break;
-            }
         }
         fclose(fp);
     } else {
@@ -1406,7 +1429,7 @@ void call_mail(chatcontext *pthis,const char *arg) /* added by Luzi, 1997/12/22 
     setmailfile(currmaildir, currentuser.userid, DOT_DIR);
     fpin = fopen(currmaildir, "rb");
     if (fpin == NULL) return;
-    printchatline(pthis,"\033[32m*** µ±Ç°ÐÂµÄÐÅ¼þÈçÏÂ ***\033[m");
+    printchatline(pthis,"\033[32m¡¾µ±Ç°ÐÂµÄÐÅ¼þÈçÏÂ¡¿\033[m");
     while(fread(&mailheader, sizeof (fileheader), 1, fpin))
     {
         if ((mailheader.accessed[0] & FILE_READ) == 0)
@@ -1462,10 +1485,9 @@ void chat_show_allmsgs(chatcontext *pthis,const char *arg)
             }
         }
         
-        sprintf(buf,"***** ×î½ü %d ÌõÏûÏ¢ *****",line);
+        sprintf(buf,"¡¾×î½ü %d ÌõÏûÏ¢¡¿",line);
         printchatline(pthis,buf);
         
-        line=0;
         while (!feof(fp)) {
             bzero(buf,sizeof(buf));
             fgets(buf,sizeof(buf),fp);
@@ -1473,11 +1495,6 @@ void chat_show_allmsgs(chatcontext *pthis,const char *arg)
             cnt=strlen(buf)-1;
             buf[cnt]=0;  /* delete \n */
             printchatline(pthis,buf);
-
-            line++;
-            if(line%(screen_lines)==0){
-            	if(!chat_waitkey(pthis))break;
-            }
         }
         fclose(fp);
     } else {
