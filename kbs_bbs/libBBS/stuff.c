@@ -1658,3 +1658,26 @@ int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user)
     return 0;
 }
 
+int gettmpfilename(char *retchar, char *fmt, ...){
+		/* stiger : 这里没有对fname做检查 */
+	char fname[STRLEN];
+	va_list ap;
+
+	va_start(ap, fmt);
+	vsnprintf(fname, STRLEN-20, fmt, ap);
+	va_end(ap);
+
+	sprintf(retchar, "tmp/%d/", getpid());
+    if (!dashd(retchar)) {
+        mkdir(retchar, 0755);
+        chmod(retchar, 0755);
+	}
+	strcat(retchar, currentuser->userid);
+    if (!dashd(retchar)) {
+        mkdir(retchar, 0755);
+        chmod(retchar, 0755);
+	}
+	strcat(retchar,"/");
+	strcat(retchar, fname);
+	return 1;
+}
