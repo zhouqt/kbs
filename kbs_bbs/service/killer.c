@@ -328,14 +328,14 @@ void start_game()
             total++;
     if(total<6) {
         send_msg(inrooms.peoples+me, "\x1b[31m至少6人参加才能开始游戏\x1b[m");
-        killer(inrooms.peoples[me].pid, SIGUSR1);
+        kill(inrooms.peoples[me].pid, SIGUSR1);
         end_change_inroom();
         return;
     }
     if(totalk==0) totalk=total*3/10+0.5;
     if(totalk>total) {
         send_msg(inrooms.peoples+me, "\x1b[31m总人数少于要求的坏人人数,无法开始游戏\x1b[m");
-        killer(inrooms.peoples[me].pid, SIGUSR1);
+        kill(inrooms.peoples[me].pid, SIGUSR1);
         end_change_inroom();
         return;
     }
@@ -438,7 +438,6 @@ void join_room(struct room_struct * r)
         inrooms.killernum = 0;
         strcpy(inrooms.title, "我杀我杀我杀杀杀");
         inrooms.peoples[i].flag = PEOPLE_ROOMOP;
-        save_inroom(myroom);
     }
     r->people++;
     end_change_inroom();
