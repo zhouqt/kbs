@@ -7,8 +7,6 @@ crontab:  10 0 * * * /home/bbs/bin/post_brdlog
 
 ******/
 
-#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
-
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"

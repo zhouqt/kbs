@@ -13,8 +13,6 @@ crontab:  2 0 * * * /home/bbs/bin/bonlinelog
 #include "bbs.h"
 #include "config.h"
 
-#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
-
 main(int argc, char **argv)
 {
 	char path[256];

@@ -265,8 +265,6 @@ int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
 		numboards --;
 }
 
-#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
-
 main()
 {
 	char path[256];

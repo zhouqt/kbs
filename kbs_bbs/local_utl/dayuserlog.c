@@ -22,8 +22,6 @@ int telnetschool=0;
 int wwwnotguestschool=0;
 int wwwguestschool=0;
 
-#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
-
 static int is_school(char *ip)
 {
 	if(! strncmp(ip, "219.224", 7) )

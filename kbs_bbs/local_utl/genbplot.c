@@ -1,6 +1,5 @@
 #include "bbs.h"
 
-#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
 int generate_board(struct boardheader *bh,void* arg)
 {
 	char buf[256];

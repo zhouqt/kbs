@@ -6,8 +6,6 @@
 FILE *fp;
 FILE *fp1;
 
-#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
-
 int do_userlist(struct user_info *uentp, char *arg, int t)
 {
     int i;

@@ -26,8 +26,6 @@ int tt5=0;
 int tt6=0;
 int tt7=0;
 
-#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
-
 main()
 {
 	char path[256];
