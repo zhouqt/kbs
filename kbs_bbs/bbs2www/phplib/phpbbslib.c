@@ -898,8 +898,10 @@ static ZEND_FUNCTION(bbs_getarticles)
     setbdir(mode, dirpath, board);
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
-    sprintf(dirpath1,"boards/%s/.DINGDIR",board);
-    total += get_num_records(dirpath1, sizeof(struct fileheader));
+	if(mode == DIR_MODE_NORMAL){
+    	sprintf(dirpath1,"boards/%s/.DINGDIR",board);
+    	total += get_num_records(dirpath1, sizeof(struct fileheader));
+	}
     /* add end */
     if (start > (total - num + 1))
         start = (total - num + 1);
@@ -915,7 +917,10 @@ static ZEND_FUNCTION(bbs_getarticles)
     brc_initial(currentuser->userid, board);
     articles = emalloc(num * sizeof(struct fileheader));
     /* modified by stiger */
-    rows = read_get_records(dirpath, dirpath1, articles, sizeof(struct fileheader), start, num);
+	if(mode == DIR_MODE_NORMAL)
+    	rows = read_get_records(dirpath, dirpath1, articles, sizeof(struct fileheader), start, num);
+	else
+    	rows = get_records(dirpath, articles, sizeof(struct fileheader), start, num);
     for (i = 0; i < rows; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
