@@ -364,12 +364,13 @@ main(argc, argv)
                 fprintf(op, "%4d[m %-15.15s%-25.25s %5d %-.8s %10d\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname,
 				    sec_board[i][j].times, timetostr(sec_board[i][j].sum), sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times);
 		}else{
+		
+                fprintf(op,"\n·ÖÇøÍ³¼Æ:\n");
 		    //·ÖÇøÁÐ±í
             for(j = 0;j < sec_board_num[i]; j++)
 			{
-                fprintf(op,"\n·ÖÇøÍ³¼Æ:\n");
 
-                fprintf(op, "      [37mµÚ[31m%3d [37mÃû ÌÖÂÛÇøÃû³Æ£º[31m%s [35m%s[m\n", i + 1, sec_board[i][j].boardname, sec_board[i][j].expname);
+                fprintf(op, "      [37mµÚ[31m%3d [37mÃû ÌÖÂÛÇøÃû³Æ£º[31m%s [35m%s[m\n", j + 1, sec_board[i][j].boardname, sec_board[i][j].expname);
 				fprintf(op, "[37m    ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª\n");
 				fprintf(op, "[37mÈË´Î©¦[m[34m");
 				for (jj = 0; jj < sec_board[i][j].times / c[0]; jj++) {
