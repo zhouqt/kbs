@@ -30,9 +30,11 @@
 </dt>
 <dt>2.2. <a href="#install_wforum">安装 wForum</a>
 </dt>
-<dt>2.3. <a href="#feature_notes">default.php 内部分参数的附加说明</a>
+<dd><dl><dt>2.2.1. <a href="#feature_notes">default.php 内部分参数的附加说明</a>
+</dt></dl></dd>
+<dt>2.3. <a href="#install_uploadface">自定义头像功能</a>
 </dt>
-<dt>2.4. <a href="#install_uploadface">自定义头像功能</a>
+<dt>2.4. <a href="#install_mysql">加入 mysql 支持和小字报功能</a>
 </dt>
 <dt>2.5. <a href="#install_tex2mathml">加入 itex2mathml 支持</a>
 </dt>
@@ -50,8 +52,12 @@
 </dt>
 <dt>3.2. <a href="#thread_notes">wForum 对文章列表部分的处理</a>
 </dt>
-<dd><dl><dt>3.2.1. <a href="#thread_notes_1">关于同主题模式的利弊</a>
-</dt></dl></dd>
+<dd><dl>
+<dt>3.2.1. <a href="#prev_next_thread">文章阅读界面跳转到上一主题/下一主题的实现</a>
+</dt>
+<dt>3.2.2. <a href="#thread_notes_1">关于同主题模式的利弊</a>
+</dt>
+</dl></dd>
 <dt>3.3. <a href="#reply_tree">关于树形回复结构</a>
 </dt>
 <dt>3.4. <a href="#section_list">分区版面列表</a>
@@ -60,7 +66,7 @@
 </dt>
 <dt>3.6. <a href="#itex2mathml_details">itex2mathml 的一些技术细节</a>
 </dt>
-<dt>3.7. <a href="#browscap">USEBROWSCAP 站点参数</a>
+<dt>3.7. <a href="#browscap">USEBROWSCAP 站点参数（这个功能目前关闭）</a>
 </dt>
 <dt>3.8. <a href="#bbsleft">wForum 框架结构支持</a>
 </dt>
@@ -92,7 +98,7 @@
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h2 class="title" style="clear: both">
 <a name="install"></a>2. wForum 安装说明</h2></div></div>
-<p>首先到 <a href="http://dev.smth.org/" target="_blank">smthbbs 开发主页</a> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom 及 mysql。</p>
+<p>首先到 <a href="http://dev.smth.org/" target="_blank">smthbbs 开发主页</a> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 版本或者 snapshot 版本使用，比如下载同一天的 snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.1 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom。</p>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
 <a name="install_smthbbs"></a>2.1. smthbbs 安装</h3></div></div>
@@ -108,27 +114,13 @@
 cp inc/sites/site-example.php inc/sites/kcn.php
 ln -s inc/sites/kcn.php inc/site.php</pre>
 <p>
-				inc/site.php 就是你的站点定义文件。请注意，inc/site.php 必须是一个指向 inc/sites/ 目录下某个文件的符号连接，否则程序会找不到系统默认参数配置文件 default.php。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。数据库支持默认是开启的，可以在 site.php 中关掉。用如下语句在 mysql 中建立一个数据表来支持小字报功能：
-				</p>
-<pre class="programlisting">
-create table smallpaper_tb(
- ID int    not null auto_increment primary key,
- boardID   int not null,
- Owner     varchar(14) not null,
- Title     varchar(100) not null,
- Content   mediumtext   not null,
- Hits      int not null,
- Addtime   datetime not null
-);</pre>
-<p>
-				inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
+				inc/site.php 就是你的站点定义文件。请注意，inc/site.php 必须是一个指向 inc/sites/ 目录下某个文件的符号连接，否则程序会找不到系统默认参数配置文件 default.php。修改 inc/site.php 里面的各类参数，特别是分类讨论区。另外，inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
 			</p>
-</div>
 <div class="section" lang="zh_cn">
-<div class="titlepage"><div><h3 class="title">
-<a name="feature_notes"></a>2.3. default.php 内部分参数的附加说明</h3></div></div>
+<div class="titlepage"><div><h4 class="title">
+<a name="feature_notes"></a>2.2.1. default.php 内部分参数的附加说明</h4></div></div>
 <p>inc/sites/default.php 列举了可以在 inc/site.php 里定义的参数。大多数参数说明已经足够明确，下面对个别参数作附加说明。
-					</p>
+						</p>
 <div class="itemizedlist"><ul type="disc">
 <li><p>$SiteURL: 这个变量用于一些需要输出绝对路径的地方，应该定义为 wForum 安装的根的 URL，最后一个字符必须是 '/'。</p></li>
 <li><p>MAINTITLE: 站点标题可以包含 html，打开 mathml 支持的站点千万注意 html 必须符合 xhtml 标准。</p></li>
@@ -139,11 +131,12 @@ create table smallpaper_tb(
 </li>
 </ul></div>
 <p>
-				</p>
+					</p>
+</div>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="install_uploadface"></a>2.4. 自定义头像功能</h3></div></div>
+<a name="install_uploadface"></a>2.3. 自定义头像功能</h3></div></div>
 <p>如果开启自定义头像功能，确认一下 wForum 主目录下面有 uploadFace/ 目录，如果没有的话就建立一下。注意这个目录必须是 httpd 运行身份的用户（一般建议用 bbs 用户）可写的。</p>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">自定义头像的更多细节</h3>
@@ -173,6 +166,26 @@ create table smallpaper_tb(
 <p>
 				</p>
 </div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="install_mysql"></a>2.4. 加入 mysql 支持和小字报功能</h3></div></div>
+<p>目前 wForum 的 mysql 支持仅用于版面的小字报功能，默认是关闭的。正确加入 mysql 支持之后小字报功能就会自动打开。mysql 支持首先要求 PHP 支持 mysql。在 site.php 加入：</p>
+<pre class="programlisting">define(&quot;DB_ENABLED&quot;, true);</pre>
+<p>以打开 mysql 支持，同时配置 mysql 用户、密码和数据库名。用如下语句在 mysql 中建立一个数据表来支持小字报功能：
+				</p>
+<pre class="programlisting">
+create table smallpaper_tb(
+ ID int    not null auto_increment primary key,
+ boardID   int not null,
+ Owner     varchar(14) not null,
+ Title     varchar(100) not null,
+ Content   mediumtext   not null,
+ Hits      int not null,
+ Addtime   datetime not null
+);</pre>
+<p>
+			如果安装或者配置不正确，可能导致版面文章列表的页面出错。如果出错，可以使用 SYSOP 权限的用户登录之后打开 admin.check_mysql.php 页面判断可能的错误。</p>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
@@ -272,6 +285,7 @@ define('COOKIE_PREFIX', '');
 define('COOKIE_PATH', '/');
 </pre>
 <p>
+				如果两个 web 界面在同一个域名下的不同子域名，共享 cookie 还是可能的。wForum 留出了定义 COOKIE_DOMAIN 常量的接口，如果配置 COOKIE_DOMAIN 常量请一定完全搞明白这样做可能带来的安全问题。
 			</p>
 </div>
 </div>
@@ -398,7 +412,13 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 </dl></div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h4 class="title">
-<a name="thread_notes_1"></a>3.2.1. 关于同主题模式的利弊</h4></div></div>
+<a name="prev_next_thread"></a>3.2.1. 文章阅读界面跳转到上一主题/下一主题的实现</h4></div></div>
+<p>基本思路：大部分文章阅读链接加入 pos 参数指示该主题在 .WEBTHREADS 索引中的位置，页面内上/下主题的链接同时带入 groupID 参数指示当前贴子的 groupID。处理上/下主题跳转的脚本用 groupID 验证 pos 位置的主题是否还仍旧是这个主题，如果不是的话说明版面索引发生变化，直接返回错误，并提示返回版面；否则就从位置 pos +/- 1 取出上/下主题 groupID。当主题索引发生变化时原则上可以在 .WEBTHREADS 中线性查找重新定位，但返回错误的原因是因为此时（按照最后回复顺序排列的）上/下主题的意义可能已经发生变化，</p>
+<p>两个问题：1、php 脚本内多次调用 bbs 库函数，中间有时间差，原则上有漏洞，但，可能性不大；2、可能出现 pos 位置 groupID 没有变但版面索引 .WEBTHREADS 已经发生变化的情况，可能性不大。</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h4 class="title">
+<a name="thread_notes_1"></a>3.2.2. 关于同主题模式的利弊</h4></div></div>
 <p>同主题模式和公网论坛比较一致但是和传统 telnet 配合的时候可能会有不一致的地方。以下几个问题是特别需要注意的：
 					</p>
 <div class="itemizedlist"><ul type="disc">
@@ -569,7 +589,7 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="browscap"></a>3.7. USEBROWSCAP 站点参数</h3></div></div>
+<a name="browscap"></a>3.7. USEBROWSCAP 站点参数（这个功能目前关闭）</h3></div></div>
 <p>开启 USEBROWSCAP 站点参数就会使用 browscap() 函数来更准确地判断浏览器和操作系统类型，需要配置 PHP 的 browscap.ini。默认关闭这个功能。开启这个功能虽然会准确判断出非 IE 浏览器，但是会大大降低出首页的速度，参考：<a href="http://www.php.net/manual/en/function.get-browser.php" target="_blank">get_browser() 函数文档</a> 中 verx at implix dot com 添加的用户注释。</p>
 </div>
 <div class="section" lang="zh_cn">

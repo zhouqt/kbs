@@ -6,7 +6,7 @@ body {
 h2.title {
 }
 pre.programlisting {
-	background-color: bisque ;
+	background-color: #eeeeee ;
 	border: 1px dashed #006600 ;
 	padding: 4px 10px;
 	font-family: 'Courier New',Courier;
