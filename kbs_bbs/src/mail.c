@@ -1362,7 +1362,7 @@ g_send()
                 move(2,0);
                 prints("这个使用者代号是错误的.\n");
             }
-	    strcpy(uident,lookupuser->userid);
+	    else strcpy(uident,lookupuser->userid);
         }
         switch(tmp[0])
         {
