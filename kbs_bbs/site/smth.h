@@ -214,7 +214,7 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /* Don't mess with this. */
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
+#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
 
 #define TDEFINE(x) ((x)?(tmpuser)&(x):1)
 
