@@ -45,9 +45,6 @@ int main()
     *(int *) (u_info->from + 36) = time(0);
     sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
     f_append(filename, unix_string(content));
-	/*if (check_badword_str(title, strlen(title)) == 1 
-			|| check_badword(filename) == 1)
-		filtered = 1;*/
     if(oldfilename[0]){
     	int pos;
     	oldx = (struct fileheader*)malloc(sizeof(struct fileheader));

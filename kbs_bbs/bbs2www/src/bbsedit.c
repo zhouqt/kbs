@@ -102,11 +102,12 @@ int update_form(char *board, char *file)
     }
     fclose(fin);
     fclose(fout);
-	if (check_badword(outfile) != 1)
-    	f_mv(outfile, infile);
-	else
+#ifdef FILTER
+	if (check_badword(outfile) !=0)
 		unlink(outfile);
-
+	else
+#endif
+    	f_mv(outfile, infile);
     printf("修改文章成功.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
     return 0;
 }
