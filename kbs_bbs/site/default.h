@@ -561,6 +561,10 @@ extern const char *permstrings[];
 extern const char    *groups[];
 extern const char    *explain[];
 extern const char *user_definestr[];
+#ifdef NEW_HELP
+extern const char *helpmodestr[];
+#endif
+
 #ifdef SMS_SUPPORT
 #define NUMSMSDEF 1
 #define SMSDEF_AUTOTOMOBILE      000001
@@ -684,6 +688,32 @@ typedef struct fileheader fileheader_t;
 #define MAX_MAILGROUP_USERS 300
 
 #endif //MBPNUMS
+
+
+/***
+  new help
+*/
+#ifdef NEW_HELP
+
+#ifndef NUMHELPMODE
+
+#define NUMHELPMODE 13
+#define HELP_BOARD 1
+#define HELP_GOODBOARD 2
+#define HELP_ARTICLE 3
+#define HELP_ANNOUNCE 4
+#define HELP_EDIT 5
+#define HELP_CHAT 6
+#define HELP_VOTE 7
+#define HELP_FRIEND 8
+#define HELP_TIME 9
+#define HELP_TMPL 10
+#define HELP_FRIENDTEST 11
+#define HELP_CHICKEN 12
+#define HELP_KILLER 13
+
+#endif //NUMHELPMODE
+#endif //NEW_HELP
 
 /**
 attach define

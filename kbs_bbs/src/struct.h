@@ -202,7 +202,7 @@ struct BCACHE {
 };
 struct posttop {
 /*    char author[IDLEN + 1];      author name */
-    char board[IDLEN + 6];      /* board name */
+    char board[IDLEN + 6];  /*     board name */
 /*    int bnum; */
 /*    char title[66];              title name */
     unsigned int groupid;	/* article group id */
@@ -307,6 +307,17 @@ struct key_struct { // 自定义键 by bad
     int key;
     int mapped[10];
 };
+
+#ifdef NEW_HELP
+struct helps
+{
+	unsigned int id;
+	int modeid;
+	char index[11];
+	char desc[41];
+	char *content;
+};
+#endif
 
 //个人文集 by stiger
 #ifdef PERSONAL_CORP

@@ -794,11 +794,20 @@ int do_query2(int star, int curr)
 
 void Users()
 {
+#ifdef NEW_HELP
+	int oldhelpmode=helpmode;
+#endif
     range = allusers();
     modify_user_mode(LAUSERS);
     clear();
     user_data = (struct userec *) calloc(sizeof(struct userec), BBS_PAGESIZE);
+#ifdef NEW_HELP
+	helpmode=HELP_FRIEND;
+#endif
     choose(false, 0, print_title2, deal_key2, Show_Users, do_query2);
+#ifdef NEW_HELP
+	helpmode=oldhelpmode;
+#endif
     clear();
     free(user_data);
     return;
@@ -808,6 +817,9 @@ int t_friends()
 {
     FILE *fp;
     char genbuf[STRLEN];
+#ifdef NEW_HELP
+	int oldhelpmode=helpmode;
+#endif
 
     modify_user_mode(FRIEND);
     friendmode = true;
@@ -832,13 +844,25 @@ int t_friends()
             page = -1;
             friendmode = false;
             update_time = 0;
+#ifdef NEW_HELP
+			helpmode=HELP_FRIEND;
+#endif
             choose(true, 0, print_title, deal_key, show_userlist, do_query);
+#ifdef NEW_HELP
+	helpmode=oldhelpmode;
+#endif
             clear();
             return 0;
         }
     } else {
+#ifdef NEW_HELP
+		helpmode=HELP_FRIEND;
+#endif
         update_time = 0;
         choose(true, 0, print_title, deal_key, show_userlist, do_query);
+#ifdef NEW_HELP
+	helpmode=oldhelpmode;
+#endif
     }
     clear();
     friendmode = false;
@@ -847,6 +871,9 @@ int t_friends()
 
 int t_users()
 {
+#ifdef NEW_HELP
+	int oldhelpmode=helpmode;
+#endif
     friendmode = false;
     modify_user_mode(LUSERS);
     range = num_visible_users();
@@ -856,7 +883,13 @@ int t_users()
         prints("目前无使用者上线\n");
     }
     update_time = 0;
+#ifdef NEW_HELP
+	helpmode=HELP_FRIEND;
+#endif
     choose(true, 0, print_title, deal_key, show_userlist, do_query);
+#ifdef NEW_HELP
+	helpmode=oldhelpmode;
+#endif
     clear();
     return 0;
 }

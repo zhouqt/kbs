@@ -423,6 +423,9 @@ static int ent_chat(int chatnum)
     int newmail;
     int page_pending = false;
     int chatting = true;
+#ifdef NEW_HELP
+	int oldhelpmode=helpmode;
+#endif
 
     if (!strcmp(currentuser->userid, "guest"))
         return -1;
@@ -436,6 +439,9 @@ static int ent_chat(int chatnum)
         free(pthis);
         return ch;
     }
+#ifdef NEW_HELP
+	helpmode=HELP_CHAT;
+#endif
     add_io(pthis->cfd, 0);
     modified = newmail = cmdpos = currchar = 0;
     /* update uinfo */
@@ -687,6 +693,9 @@ static int ent_chat(int chatnum)
     UPDATE_UTMP(chatid[0], uinfo);
     clear();
     free(pthis);
+#ifdef NEW_HELP
+	helpmode=oldhelpmode;
+#endif
     return 0;
 }
 

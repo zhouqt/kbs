@@ -33,6 +33,7 @@ int scrint = 0;
 int local_article;
 int readpost;
 int digestmode;
+int helpmode = 0;
 int usernum;
 //char currboard[STRLEN - BM_LEN];
 struct boardheader* currboard=NULL;
@@ -3014,7 +3015,18 @@ int b_note_edit_new()
     clrtoeol();
     getdata(t_lines - 1, 0, "编辑: 0)取消 1)备忘录 2)本版模板 [0]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0]=='1') return b_notes_edit();
-	else if(ans[0]=='2') return m_template();
+	else if(ans[0]=='2'){
+		int ret;
+#ifdef NEW_HELP
+		int oldhelpmode=helpmode;
+		helpmode = HELP_TMPL;
+#endif
+		ret =  m_template();
+#ifdef NEW_HELP
+		helpmode = oldhelpmode;
+#endif
+		return ret;
+	}
 
 	return FULLUPDATE;
 }
@@ -3144,6 +3156,9 @@ int Read()
     struct stat st;
     int bid;
     int returnmode;
+#ifdef NEW_HELP
+	int oldhelpmode;
+#endif
 
     if (!selboard||!currboard) {
         move(2, 0);
@@ -3193,7 +3208,14 @@ int Read()
         }
     }
     usetime = time(0);
+#ifdef NEW_HELP
+	oldhelpmode = helpmode;
+	helpmode = HELP_ARTICLE;
+#endif
     returnmode=i_read(READING, buf, readtitle, (READ_FUNC) readdoent, &read_comms[0], sizeof(struct fileheader));  /*进入本版 */
+#ifdef NEW_HELP
+	helpmode = oldhelpmode;
+#endif
     newbbslog(BBSLOG_BOARDUSAGE, "%-20s Stay: %5ld", currboard->filename, time(0) - usetime);
     bmlog(currentuser->userid, currboard->filename, 0, time(0) - usetime);
     bmlog(currentuser->userid, currboard->filename, 1, 1);

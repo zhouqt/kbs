@@ -760,6 +760,9 @@ int set_clock()
 	struct _select_def group_conf;
 	int i;
 	POINT *pts;
+#ifdef NEW_HELP
+	int oldhelpmode=helpmode;
+#endif
 
 	clock_data = (struct clock_struct *) malloc(sizeof(struct clock_struct) * MAX_CLOCK_DEF);
 	if(clock_data==NULL) return -1;
@@ -791,7 +794,13 @@ int set_clock()
 	group_conf.get_data = set_clock_getdata;
 	group_conf.key_command = set_clock_key;
 
+#ifdef NEW_HELP
+	helpmode=HELP_TIME;
+#endif
 	list_select_loop(&group_conf);
+#ifdef NEW_HELP
+	helpmode=oldhelpmode;
+#endif
 	save_clock_data();
 	free(pts);
 	free(clock_data);

@@ -417,6 +417,8 @@ int mode;
         return "登录控制";
     case EDITOR:
         return "编辑器";
+	case HELP:
+		return "帮助";
     default:
         return "去了那里!?";
     }

@@ -2024,12 +2024,21 @@ int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos)
 {
     int ans, t;
     long attachpos=0;
+#ifdef NEW_HELP
+	int oldhelpmode=helpmode;
+#endif
 
     t = showansi;
     showansi = 0;
     ismsgline = (DEFINE(currentuser, DEF_EDITMSG)) ? 1 : 0;
     domsg();
+#ifdef NEW_HELP
+	helpmode = HELP_EDIT;
+#endif
     ans = raw_vedit(filename, saveheader, 0,eff_size,pattachpos?pattachpos:&attachpos);
+#ifdef NEW_HELP
+	helpmode = oldhelpmode;
+#endif
     showansi = t;
     return ans;
 }

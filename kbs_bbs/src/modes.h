@@ -95,3 +95,4 @@
 #define CALC 68
 #define SETACL 69
 #define EDITOR 70
+#define HELP 71

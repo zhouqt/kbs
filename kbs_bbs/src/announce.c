@@ -1519,9 +1519,15 @@ int lastlevel, lastbmonly;
     char buf[STRLEN];
     int bmonly;
     int number = 0;
+#ifdef NEW_HELP
+	int oldhelpmode = helpmode;
+#endif
 
     bzero(&me, sizeof(me));
     modify_user_mode(CSIE_ANNOUNCE);
+#ifdef NEW_HELP
+	helpmode = HELP_ANNOUNCE;
+#endif
     me.path = path;
     strcpy(me.mtitle, maintitle);
     me.level = lastlevel;
@@ -1786,6 +1792,9 @@ int lastlevel, lastbmonly;
     }
     for (ch = 0; ch < me.num; ch++)
         free(me.item[ch]);
+#ifdef HELP_MODE
+	helpmode = oldhelpmode;
+#endif
 }
 
 int del_grp(bname, title)

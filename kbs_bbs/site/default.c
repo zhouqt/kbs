@@ -97,6 +97,27 @@ const char *permstrings[] = {
 };
 #endif
 
+#ifdef NEW_HELP
+#ifdef HAVE_DEFAULT_HELPMODE
+const char *helpmodestr[] = {
+	"版面列表",
+	"个人定制区",
+	"文章列表",
+	"精华区",
+	"编辑",
+	"聊天",
+	"投票",
+	"查看在线好友/查看在线用户",
+	"闹钟",
+	"模板",
+	"友谊测试",
+	"星空战斗鸡",
+	"杀人",
+	NULL
+};
+#endif
+#endif
+
 #ifdef SMS_SUPPORT
 
 const char *user_smsdefstr[] = {
@@ -356,6 +377,8 @@ char *ModeType(mode)
 	case FRIENDTEST:  return "心有灵犀";
     case CHICKEN:
 	return "星空战斗鸡";
+	case HELP:
+	return "帮助";
     default:
         return "去了那里!?";
     }

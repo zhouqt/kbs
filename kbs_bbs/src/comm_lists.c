@@ -494,6 +494,9 @@ char *menu_name;
 
     }
     modify_user_mode(MMENU);
+#ifdef NEW_HELP
+	helpmode = 0;
+#endif
     /*
      * added by netty  
      */
@@ -534,6 +537,9 @@ char *menu_name;
 		case KEY_REFRESH:
             domenu_screen(pm, cmdprompt);
             modify_user_mode(MMENU);
+#ifdef NEW_HELP
+	helpmode = 0;
+#endif
             /*
              * Modify to showout ActiveBoard After talking 
              */
@@ -566,6 +572,9 @@ char *menu_name;
                 }
                 domenu_screen(pm, cmdprompt);
                 modify_user_mode(MMENU);
+#ifdef NEW_HELP
+	helpmode = 0;
+#endif
                 if (nettyNN) {
                     R_monitor(NULL);
                 }

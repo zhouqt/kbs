@@ -721,6 +721,18 @@ int igetkey()
         last = ch;
     }
 
+#ifdef NEW_HELP
+	if(scrint && ret == KEY_F1 && uinfo.mode != HELP ){
+		int oldmode = uinfo.mode;
+
+		modify_user_mode(HELP);
+		newhelp(helpmode);
+		modify_user_mode(oldmode);
+
+		return igetkey();
+	}
+#endif
+
     if(scrint&&keymem_total&&!skip_key&&!ingetdata) {
         int i,j,k,p;
         for(i=0;i<keymem_total;i++) {

@@ -1053,6 +1053,12 @@ int choose_board(int newflag, char *boardprefix,int group,int favmode)
 
     oldmode = uinfo.mode;
     modify_user_mode(SELECT);
+#ifdef NEW_HELP
+	if(favmode)
+		helpmode = HELP_GOODBOARD;
+	else
+		helpmode = HELP_BOARD;
+#endif
     clear();
     //TODO: 窗口大小动态改变的情况？这里有bug
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
