@@ -787,11 +787,11 @@ if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
 	bbs_setonlineuser($userid,$currentuinfo_num,$data["utmpkey"],$currentuinfo,$compat_telnet);
 	$currentuser_num=bbs_getcurrentuser($currentuser);
 	if ($setidcookie) {
-		setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],time()+360000,COOKIE_PATH);
+		setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],time()+360000,COOKIE_PATH,COOKIE_DOMAIN);
 	}
-	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+360000,COOKIE_PATH);
-	setcookie(COOKIE_PREFIX."UTMPNUM",$currentuinfo_num,time()+360000,COOKIE_PATH);
-	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],time()+360000,COOKIE_PATH);
+	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+360000,COOKIE_PATH,COOKIE_DOMAIN);
+	setcookie(COOKIE_PREFIX."UTMPNUM",$currentuinfo_num,time()+360000,COOKIE_PATH,COOKIE_DOMAIN);
+	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],time()+360000,COOKIE_PATH,COOKIE_DOMAIN);
 }
 
 

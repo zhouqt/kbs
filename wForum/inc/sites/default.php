@@ -86,6 +86,9 @@ if (!defined('COOKIE_PREFIX')) { //cookieÃû³ÆµÄÇ°×º
 if (!defined('COOKIE_PATH')) {
     define('COOKIE_PATH', "");
 }
+if (!defined('COOKIE_DOMAIN')) {
+    define('COOKIE_DOMAIN', "");
+}
 if (!defined('QUOTE_LEV')) {
 	define('QUOTE_LEV', BBS_QUOTE_LEV);
 }
