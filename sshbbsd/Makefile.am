@@ -34,9 +34,7 @@ EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 	README.CIPHERS README.DEATTACK INSTALL TODO libdes-README \
 	libdes-COPYING libdes-ARTISTIC gnu-COPYING-GPL OVERVIEW \
 	configure configure.in config.guess config.sub Makefile.in \
-	host_config.sample config.sample acconfig.h config.h.in \
-	server_config.sample install-sh make-ssh-known-hosts.pl RFC.nroff \
-	RFC rfc-pg.c ChangeLog
+	config.sample acconfig.h config.h.in install-sh ChangeLog
 
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
