@@ -96,6 +96,15 @@
   相关的开发包 (一般会有 libxml2-devel 或 libxml2-dev 之类的名字)。自己编译
   安装的 libxml2 则不存在此问题。
 
+2.9. 登陆WWW的时候，报告找不到bbsguestleft.html，bbsguestfoot.html之类的页面
+[答复]
+  smth的代码为了效率考虑，对于guest的页面采用生成静态页面的方式。bbsguestXX.html
+等都是用bbsXXX.php生成的。你可以用
+  wget http://www/bbsXXX.php -O tmp.html; mv -f tmp.html bbsguestXXX.html
+来生成。假如编译了php的cli版本，也可以用
+  php bbsXXX.php 2>/dev/null | awk 'NR>3 {print;}' > tmp.html; mv -f 
+tmp.html bbsguestXXX.html
+
 3. 管理维护
 
 3.1. 第一次注册SYSOP的时候，说 "抱歉, 由于某些系统原因, 无法注册新的帐号."
