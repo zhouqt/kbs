@@ -126,6 +126,7 @@ static PHP_FUNCTION(bbs_update_uinfo);
 static PHP_FUNCTION(bbs_createnewid);
 static PHP_FUNCTION(bbs_fillidinfo);
 static PHP_FUNCTION(bbs_modify_info);
+static PHP_FUNCTION(bbs_recalc_sig);
 static PHP_FUNCTION(bbs_modify_nick);
 static PHP_FUNCTION(bbs_createregform);
 static PHP_FUNCTION(bbs_findpwd_check);
@@ -280,6 +281,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_fillidinfo,NULL)
 	PHP_FE(bbs_getonlinefriends,NULL)
         PHP_FE(bbs_modify_info,NULL)
+        PHP_FE(bbs_recalc_sig,NULL)
         PHP_FE(bbs_modify_nick,NULL)
         PHP_FE(bbs_delfile,NULL)
         PHP_FE(bbs_delmail,NULL)
@@ -5111,6 +5113,40 @@ static PHP_FUNCTION(bbs_modify_nick)
 
 	RETURN_LONG(0);
 }
+
+static PHP_FUNCTION(bbs_recalc_sig)
+{
+	struct userec newinfo;
+	int unum;
+    char signame[STRLEN];
+	int sigln;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if( (unum = getusernum(currentuser->userid))==0)
+		RETURN_LONG(-1);
+	memcpy(&newinfo, currentuser, sizeof(struct userec));
+    
+    sethomefile(signame, currentuser->userid, "signatures");
+    sigln = countln(signame);
+
+	if(sigln>0 && newinfo.signature>0)
+		RETURN_LONG(1);
+
+	if(sigln<=0 && newinfo.signature==0)
+		RETURN_LONG(2);
+
+	if(sigln > 0)
+    	newinfo.signature = 1;
+	else
+		newinfo.signature = 0;
+
+	update_user(&newinfo, unum, 1);
+
+	RETURN_LONG(3);
+
+}
+
 
 /* bbsinfo.php, stiger */
 static PHP_FUNCTION(bbs_modify_info)

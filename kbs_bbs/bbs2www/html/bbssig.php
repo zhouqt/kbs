@@ -14,6 +14,7 @@
 		    fwrite($fp,str_replace("\r\n", "\n", $_POST["text"]));
 		    fclose($fp);
                     }
+			bbs_recalc_sig();
 		}
 ?>
 <body>
