@@ -992,7 +992,15 @@ int choose_board(int newflag, char *boardprefix,int favmode)
             favboard_conf.get_data = boards_getdata;
         (*favboard_conf.get_data)(&favboard_conf, favboard_conf.page_pos, BBS_PAGESIZE);
         if (favboard_conf.item_count==0)
-            break;
+            if (arg.yank_flag == BOARD_FAV || arg.yank_flag == BOARD_BOARDALL)
+                break;
+	    else {
+                char ans[3];
+                getdata(t_lines - 1, 0, "该讨论区组的版面已经被你全部取消了，是否查看所有讨论区？(Y/N)[N]", ans, 2, DOECHO, NULL, true);
+                if (toupper(ans[0]) != 'Y')
+                    break;
+		arg.yank_flag=BOARD_BOARDALL;
+	    }
         fav_gotonextnew(&favboard_conf);
         favboard_conf.on_select = fav_onselect;
         favboard_conf.show_data = fav_show;

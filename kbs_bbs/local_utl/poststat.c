@@ -137,7 +137,7 @@ void load_stat(fname)
     }
 }
 
-void writestat(int mytype,struct postrec* dobucket)
+void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
 {
     struct postrec *pp;
     FILE *fp;
