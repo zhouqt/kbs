@@ -51,4 +51,8 @@ if (!defined('USEBROWSCAP')) { //ÊÇ·ñÊ¹ÓÃ browscap º¯ÊýÀ´¸ü×¼È·µØÅÐ¶Ïä¯ÀÀÆ÷ºÍ²Ù×
 	define('USEBROWSCAP',0); //Ä¬ÈÏ OFF
 }
 
+if (!defined('SHOWTELNETPARAM')) { //ÊÇ·ñÔÊÐíÅäÖÃ telnet ÏÂ×¨ÓÃµÄ¸öÈË²ÎÊý - atppp
+	define('SHOWTELNETPARAM',1); //Ä¬ÈÏ ON£¬±£³ÖºÍÒÔÇ°µÄ¼æÈÝÐÔ
+}
+
 ?>

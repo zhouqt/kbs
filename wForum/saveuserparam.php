@@ -24,16 +24,30 @@ if (isErrFounded()) {
 
 show_footer();
 
-function main(){
-	global $currentuser;
-	global $user_define_num;
-	$flags=0;
-	for ($i=0;$i<$user_define_num;$i++) {
-		if ($_POST['param'.$i]==1) {
-			$flags|= (1<<$i);
+function getOptions($var_name, $oldvalue) {
+	global $$var_name;
+	$userdefine = $$var_name;
+	$ccc = count($userdefine);
+	$flags = $oldvalue;
+	for ($i = 0; $i < $ccc; $i++) {
+		if (isset($_POST[$var_name.$i])) {
+			if ($_POST[$var_name.$i] == 1) {
+				$flags |= (1<<$i);
+			} else {
+				$flags &= ~(1<<$i);
+			}
 		}
 	}
-	bbs_setuserparam($flags,0,0);
+	return $flags;
+}
+
+function main(){
+	global $currentuser;
+	global $currentuinfo;
+	$userdefine0 = getOptions("user_define", $currentuser['userdefine0']);
+	$userdefine1 = getOptions("user_define1", $currentuser['userdefine1']);
+	$mailbox_prop = getOptions("mailbox_prop", $currentuinfo['mailbox_prop']);
+	bbs_setuserparam($userdefine0, $userdefine1, $mailbox_prop);
 	setSucMsg("修改成功！");
 	return html_success_quit('返回控制面板', 'usermanagemenu.php');
 }
