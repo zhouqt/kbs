@@ -27,8 +27,10 @@ int build_badwordimage()
    	flock(fp,LOCK_UN);
     close(fp);
     fp = open("etc/badword.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
-    if (fp==-1)
+    if (fp==-1) {
+        releasepf(pattern_buf);
     	return -1;
+    }
     write(fp,pattern_buf,pattern_imagesize);
     close(fp);
     releasepf(pattern_buf);
