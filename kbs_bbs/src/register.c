@@ -213,9 +213,6 @@ int invalid_realmail(userid, email, msize)
 
 #ifdef SMTH
 
-#ifndef REGISTER_TSINGHUA_WAIT_TIME
-#define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
-#endif
     if(len >= 3)
     {
     	strncpy(genbuf,email+strlen(email)-3,3);
