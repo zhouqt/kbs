@@ -323,7 +323,7 @@ u_exit()
 	if((HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)))
         setflags(CLOAK_FLAG, ui->invisible);
 
-    clear_utmp2(ui);
+    clear_utmp(ui);
 }
 
 void abort_program() {

@@ -348,7 +348,7 @@ void utmpd()
 			id = -1;
 			break; // clear, by uentp
 		case 3:    // clear, by id
-		       clear_utmp2(utmpreq.u_info.uent);
+		       clear_utmp(utmpreq.u_info.uent);
 		       id = 0;
 			break;
 		default:

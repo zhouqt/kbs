@@ -296,7 +296,7 @@ int getnewutmpent(struct user_info *up)
             {
                 char buf[STRLEN];
                 strncpy(buf, uentp->userid, IDLEN+2);
-                clear_utmp(n+1);
+                clear_utmp2(n+1); /* 不需要再lock了*/
                 RemoveMsgCountFile(buf);
             }
         }
@@ -512,11 +512,18 @@ void clear_utmp(int uent)
 #endif
 void clear_utmp(int uent)
 {
+	int lockfd;
+   	lockfd=utmp_lock();
+	utmp_setreadonly(0);
+
 	clear_utmp2(uent);
+
+	utmp_setreadonly(1);
+    utmp_unlock(lockfd);
 }	
 void clear_utmp2(int uent)
 {
- 	int lockfd , hashkey, find;
+ 	int hashkey, find;
    	struct user_info zeroinfo;
 #ifdef BBSMAIN
 	if (!uent) {
@@ -525,9 +532,6 @@ void clear_utmp2(int uent)
 		uent=utmpent;
 	}
 #endif
-   	lockfd=utmp_lock();
-	utmp_setreadonly(0);
-
 	hashkey=utmp_hash(utmpshm->uinfo[uent-1].userid);
 	find = utmphead->hashhead[hashkey];
 
@@ -564,8 +568,6 @@ void clear_utmp2(int uent)
 
     utmpshm->uinfo[ uent - 1 ] = zeroinfo;
   	utmphead->number--;
-	utmp_setreadonly(1);
-    utmp_unlock(lockfd);
 }
 
 int get_utmp_number()
