@@ -339,6 +339,7 @@ void search()
 {
     char tmp[STRLEN];
 
+	tmp[0]='\0';
     set_alarm(0, 0, NULL, NULL);
     getdata(23, 0, "ËÑÑ°×Ö´®: ", tmp, 65, DOECHO, NULL, 0);
     domsg();
