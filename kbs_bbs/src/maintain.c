@@ -1607,7 +1607,7 @@ int x_deny()
                 else
                     prints("封禁中");
             }
-        sel = simple_select_loop(level_conf, SIF_NUMBERKEY|SIF_SINGLE, 0, 6, NULL);
+        sel = simple_select_loop(level_conf, SIF_NUMBERKEY | SIF_SINGLE, 0, 6, NULL);
         if (sel == i + 2)
             break;
         if (sel > 0 && sel <= i) {
@@ -1615,28 +1615,30 @@ int x_deny()
             char reportbuf[120];
 
             move(40, 0);
-            if ((lookupuser->userlevel & level[sel-1]) == normal_level[sel-1]) {
-                sprintf(buf, "真的要封禁%s的%s", lookupuser->userid, (char *) level_conf[sel-1].data+2);
+            if ((lookupuser->userlevel & level[sel - 1]) == normal_level[sel - 1]) {
+                sprintf(buf, "真的要封禁%s的%s", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
                 if (askyn(buf, 0) != 0) {
-                	sprintf(reportbuf, "封禁%s的%s ", lookupuser->userid, (char *) level_conf[sel-1].data+2);
-                    lookupuser->userlevel ^= level[sel-1];
-                    securityreport(reportbuf,NULL,NULL);
+                    sprintf(reportbuf, "封禁%s的%s ", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
+                    lookupuser->userlevel ^= level[sel - 1];
+                    securityreport(reportbuf, NULL, NULL);
+                    break;
                 }
             } else {
-            	if ((basicperm&level[sel-1]) == normal_level[sel-1])  {
-                	sprintf(buf, "真的要解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel-1].data+2);
-                	sprintf(reportbuf, "解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel-1].data+2);
-            	}
-                else {
-                	sprintf(buf, "真的要解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel-1].data+2);
-                	sprintf(reportbuf, "解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel-1].data+2);
+                if ((basicperm & level[sel - 1]) != normal_level[sel - 1]) {
+                    sprintf(buf, "真的要解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
+                    sprintf(reportbuf, "解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
+                } else {
+                    sprintf(buf, "真的要解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
+                    sprintf(reportbuf, "解开%s的%s 戒网", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
+                    break;
                 }
                 if (askyn(buf, 0) != 0) {
-                    lookupuser->userlevel ^= level[sel-1];
-                    securityreport(reportbuf,NULL,NULL);
+                    lookupuser->userlevel ^= level[sel - 1];
+                    securityreport(reportbuf, NULL, NULL);
+                    break;
                 }
             }
-	    save_giveupinfo(lookupuser,lcount,s);
+            save_giveupinfo(lookupuser, lcount, s);
         }
     }
     return 0;
