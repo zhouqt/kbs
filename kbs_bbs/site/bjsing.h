@@ -1,6 +1,22 @@
 /**
   缺省的配置文件
 */
+#define FIRSTARTICLE_SIGN "●"
+#define SET_CHANGEDEFINE(user,x) ((user)->userdefine[def_list(x)] ^= x)
+#define SET_UNDEFINE(user,x) ((user)->userdefine[def_list(x)] &= ~x)
+#define MAXnettyLN      5       /* lines of  activity board  */
+#define QUOTELEV 0
+#ifndef DELIVER
+#define DELIVER "deliver"
+#endif
+
+#ifndef MBP_DEFAULT //其实最好放在#ifndef MBP_NUMS里面，希望以后会整理define的... - atppp 20040719
+#define MBP_DEFAULT           0x00000000  //默认（新注册用户）的邮箱属性
+#endif
+
+#ifndef ARTICLE_TITLE_LEN
+#define ARTICLE_TITLE_LEN 60
+#endif
 
 #ifndef __SYS_DEFAULT_H_
 #define __SYS_DEFAULT_H_
@@ -258,7 +274,8 @@ bigger mailbox. --stephen 2001.10.31*/
 
 /* Don't mess with this. */
 #define HAS_PERM(user,x) ((x)?((user)->userlevel)&(x):1)
-#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
+//#define DEFINE(user,x)     ((x)?((user)->userdefine)&(x):1)
+#define DEFINE(user,x)     ((x)?((user)->userdefine[def_list(x)])&(x):1)
 
 
 #define PERM_AUTOSET	PERM_BASIC
@@ -299,7 +316,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWDETAILUSERDATA	04000000000
 #define DEF_SHOWREALUSERDATA	010000000000
 
-/*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
+#define DEF_HIDEIP    02000000000  /*Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//*
  * means the rest is a post mask 
@@ -315,12 +332,16 @@ extern const char *groups[];
 extern const char *explain[];
 extern const char *user_definestr[];
 extern const char *mailbox_prop_str[];
+extern const char secname[SECNUM][2][20];
 
 /**
  * 看在线用户时的按键处理字符。
  */
 #define UL_CHANGE_NICK_UPPER   'C'
 #define UL_CHANGE_NICK_LOWER   'c'
+#ifndef UNREAD_SIGN
+#define UNREAD_SIGN '*'
+#endif
 #define UL_SWITCH_FRIEND_UPPER 'F'
 #define UL_SWITCH_FRIEND_LOWER 'f'
 
@@ -335,6 +356,7 @@ extern const char *mailbox_prop_str[];
 
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];        /* the DIR files */
+int o_bid;
     unsigned int id, groupid, reid;
 #ifdef FILTER
     char o_board[STRLEN - BM_LEN];
@@ -349,6 +371,7 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     char owner[OWNER_LEN];
     char unused2[42];
     unsigned int eff_size;
+time_t posttime;
     long attachment;
     char title[STRLEN];
     unsigned level;
@@ -362,6 +385,7 @@ typedef struct fileheader fileheader_t;
 #define VALID_FILENAME(x) valid_filename(x,0)
 #define POSTFILE_BASENAME(x) (x)
 #define MAILFILE_BASENAME(x) (x)
+#define SHOW_USERIP(y,x) x
 
 // WWW部分
 
