@@ -42,6 +42,7 @@ void check_calltime();
 void add_io(int fd,int timeout);
 void add_flush(void (*flushfunc)() );
 int igetch();
+int num_in_buf();
 
 /* xyz.c*/
 int modify_user_mode(int mode);

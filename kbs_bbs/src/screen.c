@@ -489,7 +489,7 @@ int n ;
     register int reg_col=0;
     register struct screenline *slp=NULL ;
     register int len=0;
-    char* begin_str=str;
+    const char* begin_str=str;
     int begincol=0;
 
 #define DO_MODIFY { if (slp->smod > begincol) slp->smod=begincol; \
@@ -575,7 +575,7 @@ prints(char *format, ...)
 {
     va_list ap ;
     register char *fmt ;
-    char *bp ;
+    const char *bp ;
     register int i, count, hd, indx ;
     char* begin;
 
