@@ -39,6 +39,8 @@ int gen_commend_xml()
 		if( numrecords > MAX_COMMEND )
 			lseek(dirfd, sizeof(struct fileheader)*(numrecords - MAX_COMMEND), SEEK_SET);
 
+		numrecords -= MAX_COMMEND;
+
 		while(read(dirfd, &dirfh, sizeof(dirfh)) >= sizeof(dirfh) ){
 
 			setbfile(dirfile, COMMEND_ARTICLE, dirfh.filename);
@@ -46,10 +48,13 @@ int gen_commend_xml()
 			if(( fp1=fopen(dirfile, "r"))==NULL )
 				continue;
 
+			numrecords ++;
+
 			fprintf(fp, "<hotsubject>\n");
 			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, dirfh.title, sizeof(xml_buf)));
 			fprintf(fp, "<author>%s</author>\n", dirfh.owner);
 			fprintf(fp, "<board>%s</board>\n", COMMEND_ARTICLE);
+			fprintf(fp, "<num>%d</num>\n", numrecords);
 			fprintf(fp, "<o_board>%s</o_board>\n", dirfh.o_board);
 			fprintf(fp, "<o_id>%d</o_id>\n", dirfh.o_id);
 			fprintf(fp, "<o_groupid>%d</o_groupid>\n<brief>", dirfh.o_groupid);
