@@ -2442,8 +2442,8 @@ static PHP_FUNCTION(bbs_createregform)
 
     if(strcmp(mobile_phone,"")){
 	    ud.mobileregistered = true;
-		strncpy(ud.mobilenumber,mobile_phone,MOBILENUMBERLEN);
-		ud.mobilenumber[MOBILENUMBERLEN-1] = '\0';
+		strncpy(ud.mobilenumber,mobile_phone,MOBILE_NUMBER_LEN);
+		ud.mobilenumber[MOBILE_NUMBER_LEN-1] = '\0';
 	}
     else{
     	ud.mobileregistered = false;
