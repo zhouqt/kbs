@@ -1555,6 +1555,27 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     }
 }
 
+static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdata *brd)
+{
+    int len = strlen(col_name);
+
+    if (strncmp(col_name, "DESC", len) == 0) {
+        ZVAL_STRING(value, brd->title, 1);
+    } else if (strncmp(col_name, "NAME", len) == 0) {
+        ZVAL_STRING(value, brd->name, 1);
+    } else if (strncmp(col_name, "POSITION", len) == 0){
+		/* 保存目录的上一级的索引值 */
+        ZVAL_LONG(value, favbrd_list[brd->tag].father);
+    } else if (strncmp(col_name, "FLAG", len) == 0){
+        ZVAL_LONG(value, brd->flag);/*added end */
+    } else if (strncmp(col_name, "BID", len) == 0){
+		/* 保存目录的索引值 */
+        ZVAL_LONG(value, brd->tag);/*added end */
+    } else {
+        ZVAL_EMPTY_STRING(value);
+    }
+}
+
 #ifdef HAVE_WFORUM
 
 unsigned int * zapbuf;
@@ -6183,17 +6204,15 @@ static PHP_FUNCTION(bbs_start_vote)
 
 /*
   * bbs_load_favboard()
-
 */
 static PHP_FUNCTION(bbs_load_favboard)
 {
         int ac = ZEND_NUM_ARGS();
-        int dohelp;
         int select;
-        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &dohelp,&select) ==FAILURE) {
+        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
                 WRONG_PARAM_COUNT;
         }
-        load_favboard(dohelp);
+        load_favboard(0);
         if(select<favbrd_list_t)
         {
                 SetFav(select);
@@ -6342,7 +6361,10 @@ static PHP_FUNCTION(bbs_fav_boards)
         check_newpost(ptr);
         for (j = 0; j < BOARD_COLUMNS; j++) {
             MAKE_STD_ZVAL(element);
-            bbs_make_board_zval(element, brd_col_names[j], ptr);
+			if (ptr->flag == -1) /* the item is a directory */
+            	bbs_make_favdir_zval(element, brd_col_names[j], ptr);
+			else
+            	bbs_make_board_zval(element, brd_col_names[j], ptr);
             zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
         }       
     }
