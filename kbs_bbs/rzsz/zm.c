@@ -752,6 +752,7 @@ int zgethdr(char *hdr, int eflag, size_t * Rxpos)
     case RCDO:
         /* **** FALL THRU TO **** */
     default:
+	;
     }
     if (Rxpos)
         *Rxpos = rxpos;

@@ -572,8 +572,6 @@ int do_send(char *userid, char *title, char *q_file)
             return -2;
         }
         clear();
-//        if (askyn("ÊÇ·ñ±¸·Ý¸ø×Ô¼º", false) == true)
-//            mail_file(currentuser->userid, filepath, currentuser->userid, save_title, 0);
         /*
          * if(!chkreceiver(userid))
          * {
@@ -835,7 +833,6 @@ void mailtitle()
     else if (UsedSpace < 0)
         UsedSpace = 0;
     prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK [m\n", (strstr(currmaildir, ".SENT")) ? "ÊÕÐÅÕß" : "·¢ÐÅÕß", "ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace);    /* modified by dong , 1998.9.19 */
-//    clrtobot();
 }
 
 char *maildoent(char *buf, int num, struct fileheader *ent)
@@ -1481,7 +1478,7 @@ int g_send()
                 n++;
                 if (!fmode) {
                     prints("(A)Ê£ÏÂµÄÈ«²¿¼ÓÈë (Y)¼ÓÈë (N)²»¼ÓÈë (Q)½áÊø? [Y]:");
-                    //TODO: add KEY_REFRESH support
+                    /*TODO: add KEY_REFRESH support*/
                     key = igetkey();
                 } else
                     key = 'Y';
@@ -2424,7 +2421,7 @@ int MailProc()
     bzero((char *) &maillist_conf, sizeof(struct _select_def));
     maillist_conf.item_count = arg.numbers;
     maillist_conf.item_per_page = arg.numbers;
-    maillist_conf.flag = LF_BELL | LF_LOOP;     //|LF_HILIGHTSEL;
+    maillist_conf.flag = LF_BELL | LF_LOOP;     /*|LF_HILIGHTSEL;*/
     maillist_conf.prompt = "¡ô";
     maillist_conf.item_pos = pts;
     maillist_conf.arg = &arg;

@@ -88,7 +88,7 @@ postbbslog("user","%s",fileinfo->title, -1, currboard); added by alex, 96.9.12 *
     if (fileinfo->id == fileinfo->groupid)
         setboardorigin(board, 1);
     setboardtitle(board, 1);
-    //added by bad 2002.8.12
+    /*added by bad 2002.8.12*/
     fail = delete_record(direct, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
 /*
     } else {
@@ -404,7 +404,6 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
         fprintf(fp, "发信站: %s (%24.24s), 站内信件\n", BBS_FULL_NAME, ctime(&now));
     else
         fprintf(fp, "发信站: %s (%24.24s), 转信\n", BBS_FULL_NAME, ctime(&now));
-//    fprintf(fp, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
     if (in_mail)
         fprintf(fp, "来  源: %s \n", fromhost);
     fprintf(fp, "\n");
@@ -1031,7 +1030,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     }
     switch (flag) {
     case FILE_MARK_FLAG:
-        if (fileinfo->accessed[0] & FILE_MARKED) {      //added by bad 2002.8.7 mark file mode added
+        if (fileinfo->accessed[0] & FILE_MARKED) {      /*added by bad 2002.8.7 mark file mode added*/
             fileinfo->accessed[0] = (fileinfo->accessed[0] & ~FILE_MARKED);
             bmlog(currentuser->userid, currboard, 7, 1);
         } else {

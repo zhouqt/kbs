@@ -221,9 +221,6 @@ static void start_daemon(inetd, port)
         return;
     }
     else {
-//      sprintf(buf, "bbsd start at %s", ctime(&val));
-//      cat(PID_FILE, buf);
-
       sprintf(buf, "bbsd.%d", port);
       switch (dodaemon(buf,true,true)) {
       	case 0:
@@ -256,7 +253,6 @@ static void start_daemon(inetd, port)
         strcpy(code, "d");
       sin.sin_port = htons(port);
       if ((bind(n, (struct sockaddr *) &sin, sizeof(sin)) < 0) || (listen(n, QLEN) < 0)) {
-//        cat(PID_FILE, strerror(errno));
         exit(1);
       }
 
@@ -500,7 +496,7 @@ enum bbs_handlers{
   BBS_STANDALONE,
   BBS_INETD,
   BBS_PREFORK,
-  BBS_HANDLERS,
+  BBS_HANDLERS
 };
 
 #define FROMHOST(sin) \

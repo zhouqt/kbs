@@ -497,7 +497,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
     return 0;
 }
 
-int effectiveline;              //有效行数, 只计算前面的部分, 头部不含, 空行不含, 签名档不含, 引言不含 
+int effectiveline;              /*有效行数, 只计算前面的部分, 头部不含, 空行不含, 签名档不含, 引言不含 */
 void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
 {
     int i, s, u;
@@ -653,9 +653,7 @@ void mem_printline(char *ptr, int len, char *fn, char ty)
         outns("\033[m\n", 4);
         return;
     }
-    //else outns("\033[37m",5);
     outns(ptr, len);
-    //outns("\033[m\n", 4);
     outns("\n", 1);
 }
 
@@ -945,8 +943,8 @@ int draw_content_more(char *ptr, int size, char *fn,struct fileheader* fh)
     init_MemMoreLines(&l, ptr, size);
 
     move(t_lines/2, 0);
-//    prints("\033[34m——————————————————预览窗口—————————————————");
-//    move(t_lines/2+1, 0);
+/*    prints("\033[34m——————————————————预览窗口—————————————————");*/
+/*    move(t_lines/2+1, 0);*/
     sprintf(buf,"\033[1;32m\x1b[44m发信人: \033[1;33m%-13.13s\033[1;32m标  题: \033[1;33m%-50.50s\033[1;32m %4.4s\033[m",
     	fh->owner,
     	fh->title,

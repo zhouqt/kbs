@@ -153,7 +153,7 @@ unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int 
     bzero((char *) &perm_conf, sizeof(struct _select_def));
     perm_conf.item_count = numbers + 1;
     perm_conf.item_per_page = numbers + 1;
-    perm_conf.flag = LF_BELL | LF_LOOP; //|LF_HILIGHTSEL;
+    perm_conf.flag = LF_BELL | LF_LOOP; /*|LF_HILIGHTSEL;*/
     perm_conf.prompt = "◆";
     perm_conf.item_pos = pts;
     perm_conf.arg = &arg;
@@ -825,6 +825,7 @@ int my_inet_aton(const char * ip, struct in_addr* queryip)
 }
 
 int find_ip(ip,flag,result)
+const char *ip;
 int flag;
 char result[];
 /* 查找IP的主程序，flag：1	普通调用，打印所有信息 */

@@ -706,7 +706,7 @@ int haspostperm(struct userec *user, char *bname)
         return 0;
     }                           /* stephen 2000.10.27 */
     if (HAS_PERM(user, (bcache[i - 1].level & ~PERM_NOZAP) & ~PERM_POSTMASK)) {
-        if (bcache[i - 1].flag & BOARD_CLUB_WRITE) {    //俱乐部 
+        if (bcache[i - 1].flag & BOARD_CLUB_WRITE) {    /*俱乐部 */
             if (bcache[i - 1].clubnum <= 0 || bcache[i - 1].clubnum >= MAXCLUB)
                 return 0;
             if (user->club_write_rights[(bcache[i - 1].clubnum - 1) >> 5] & (1 << ((bcache[i - 1].clubnum - 1) & 0x1f)))
@@ -815,7 +815,7 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
     if (board == NULL)
         return 0;
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
-        if (board->flag & BOARD_CLUB_READ) {    //俱乐部
+        if (board->flag & BOARD_CLUB_READ) {    /*俱乐部*/
             if (HAS_PERM(user, PERM_OBOARDS))
                 return 1;
             if (board->clubnum <= 0 || board->clubnum >= MAXCLUB)
@@ -837,7 +837,7 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
     if (HAS_PERM(user, PERM_NOZAP))
         return 1;
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
-        if (board->flag & BOARD_CLUB_HIDE)     //隐藏俱乐部
+        if (board->flag & BOARD_CLUB_HIDE)     /*隐藏俱乐部*/
 	{
             if (HAS_PERM(user, PERM_OBOARDS))
                 return 1;
@@ -893,7 +893,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             if (!check_see_perm(currentuser,bptr))
                 continue;
         }
-        //肯定要计算的版面
+        /*肯定要计算的版面*/
         brdnum++;
         if (!sort) {
 	    if (input_namelist) {
@@ -932,7 +932,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
                 }
             	}
-        } else {  //如果是要排序，那么应该先排序缓存一下
+        } else {  /*如果是要排序，那么应该先排序缓存一下*/
             int i;
             char* title;
             int j;
@@ -943,7 +943,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             for (i=0;i<curcount;i++) {
             	if (strcasecmp(namelist[i],title)>0) break;
             }
-            if ((i==curcount)&&curcount>=pos+len-1) //已经在范围之外乐
+            if ((i==curcount)&&curcount>=pos+len-1) /*已经在范围之外乐*/
             	continue;
             else
             	   for (j=(curcount>=pos+len-1)?pos+len-2:curcount;j>i;j--) {
@@ -1048,7 +1048,7 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
             int i;
             int j;
             brdnum++;
-            //都要排序
+            /*都要排序*/
             for (i=0;i<curcount;i++) {
                     int ret;
 		    int type;
@@ -1063,7 +1063,7 @@ int load_boards(struct newpostdata *nbrd,char *boardprefix,int pos,int len,bool 
                         type = strcasecmp(namelist[i], bptr->filename);
 		    if (type>0) break;
             }
-            if ((i==curcount)&&curcount>=pos+len-1) //已经在范围之外乐
+            if ((i==curcount)&&curcount>=pos+len-1) /*已经在范围之外乐*/
                 continue;
             else
                 for (j=(curcount>=pos+len-1)?pos+len-2:curcount;j>i;j--) {

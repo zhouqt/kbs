@@ -226,7 +226,7 @@ int bbs_zsendfile(char *filename, char *remote)
             struct zm_fileinfo zi;
             char *pa;
 
-            pa = alloca(PATH_MAX + 1);
+            pa = (char *)alloca(PATH_MAX + 1);
             *pa = '\0';
             zi.fname = pa;
             zi.modtime = 0;
@@ -239,7 +239,7 @@ int bbs_zsendfile(char *filename, char *remote)
         }
 
         oflush();
-        // here needs a oflush
+        /* here needs a oflush */
         /* eat avalible input */
         /* better to eat some input here */
         io_mode(io_mode_fd, 0);
@@ -282,7 +282,7 @@ static int wcs(const char *oname, const char *remotename)
     if (0 == strcmp(oname, "-")) {
         char *p = getenv("ONAME");
 
-        name = alloca(PATH_MAX + 1);
+        name = (char *)alloca(PATH_MAX + 1);
         if (p) {
             strcpy(name, p);
         } else {
@@ -298,7 +298,7 @@ static int wcs(const char *oname, const char *remotename)
         ++errcnt;
         return OK;              /* pass over it, there may be others */
     } else {
-        name = alloca(PATH_MAX + 1);
+        name = (char *)alloca(PATH_MAX + 1);
         strcpy(name, oname);
     }
 #ifdef HAVE_MMAP
@@ -405,7 +405,7 @@ static int wctxpn(struct zm_fileinfo *zi)
     char *name2;
     struct stat f;
 
-    name2 = alloca(PATH_MAX + 1);
+    name2 = (char *)alloca(PATH_MAX + 1);
 
     if (protocol == ZM_XMODEM) {
         return OK;

@@ -493,7 +493,7 @@ int addclubmember(char *uident, int readperm)
         return DONOTHING;
     seek = addtofile(genbuf, uident);;
     if (seek == 1) {
-        if (readperm == 1)      //读权限
+        if (readperm == 1)      /*读权限*/
             lookupuser->club_read_rights[(bh.clubnum - 1) >> 5] |= 1 << ((bh.clubnum - 1) & 0x1f);
         else
             lookupuser->club_write_rights[(bh.clubnum - 1) >> 5] |= 1 << ((bh.clubnum - 1) & 0x1f);
@@ -530,7 +530,7 @@ int delclubmember(char *uident, int readperm)
         setbfile(fn, currboard, "write_club_users");
     ret = del_from_file(fn, uident);
     if (ret == 0) {
-        if (readperm == 1)      //读权限
+        if (readperm == 1)      /*读权限*/
             lookupuser->club_read_rights[(bh.clubnum - 1) >> 5] &= ~(1 << ((bh.clubnum - 1) & 0x1f));
         else
             lookupuser->club_write_rights[(bh.clubnum - 1) >> 5] &= ~(1 << ((bh.clubnum - 1) & 0x1f));
@@ -584,7 +584,7 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
         prints("设定俱乐部名单\n");
         count = listfilecontent(buf);
         if (count)
-            getdata(1, 0, "(A)增加 (D)删除or (E)离开[E]",       //or (M)写信给所有成员 [E]: ",
+            getdata(1, 0, "(A)增加 (D)删除or (E)离开[E]",
                     ans, 7, DOECHO, NULL, true);
         else
             getdata(1, 0, "(A)增加 or (E)离开 [E]: ", ans, 7, DOECHO, NULL, true);

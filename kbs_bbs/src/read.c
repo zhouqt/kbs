@@ -286,7 +286,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
     locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
     modify_locmem(locmem, last_line);
 
-    if(locmem->crs_line-locmem->top_line>=screen_len) //added by bad 2002.9.2
+    if(locmem->crs_line-locmem->top_line>=screen_len) /*added by bad 2002.9.2*/
         locmem->crs_line = locmem->top_line;
     
     recbase = locmem->top_line;
@@ -424,7 +424,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             num = last_line - screen_len + 2;
             locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
             modify_locmem(locmem, last_line);
-            if(locmem->crs_line-locmem->top_line>=screen_len-1) //added by bad 2002.9.2
+            if(locmem->crs_line-locmem->top_line>=screen_len-1) /*added by bad 2002.9.2*/
                 locmem->crs_line = locmem->top_line;
     
             recbase = locmem->top_line;
@@ -498,7 +498,7 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             break;
 
         default:
-            if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) //added by bad 2002.9.2
+            if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) /*added by bad 2002.9.2*/
             	set_alarm(0,300*1000,NULL,NULL);
             break;
         }
@@ -540,7 +540,7 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
             return junk_mode();
 
         else if (digestmode > 0)
-            return change_mode();       // added by bad 2002.8.8
+            return change_mode();       /* added by bad 2002.8.8*/
 
         else
             return DOQUIT;
@@ -649,9 +649,9 @@ static int i_read_key(struct one_key *rcmdlist, struct keeploc *locmem, int ch, 
         if (TDEFINE(TDEF_SPLITSCREEN))
             screen_len = screen_len/2-1;
 
-//        num = last_line - screen_len + 2;
+/*        num = last_line - screen_len + 2;
 //        locmem = getkeep(currdirect, num < 1 ? 1 : num, last_line);
-//        modify_locmem(locmem, last_line);
+//        modify_locmem(locmem, last_line);*/
 
         return NEWSCREEN;
         break;

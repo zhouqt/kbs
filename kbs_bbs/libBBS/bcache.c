@@ -330,7 +330,7 @@ static int clearclubreadright(struct userec* user,struct boardheader* bh)
     return 0;
 }
 
-static int clearclubwriteright(struct userec* user,struct boardheader* bh)
+static int clearclubwriteright(struct userec* user, struct boardheader* bh)
 {
     user->club_write_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
     return 0;
@@ -342,14 +342,14 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
     if (oldbh) {
     	char buf[100];
     	if ((board->flag&BOARD_CLUB_READ)^(oldbh->flag&BOARD_CLUB_READ)) {
-    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) //如果是老的俱乐部
-    	        apply_users(clearclubreadright,(void*)oldbh);
+    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
+    	        apply_users((int (*)(struct userec*,char*))clearclubreadright,(void*)oldbh);
 	    setbfile(buf, board->filename, "read_club_users");
 	    unlink(buf);
     	}
     	if ((board->flag&BOARD_CLUB_WRITE)^(oldbh->flag&BOARD_CLUB_WRITE)) {
-    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) //如果是老的俱乐部
-    	         apply_users(clearclubwriteright,(void*)oldbh);
+    	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
+    	         apply_users((int (*)(struct userec*,char*))clearclubwriteright,(void*)oldbh);
 	    setbfile(buf, board->filename, "write_club_users");
 	    unlink(buf);
     	}

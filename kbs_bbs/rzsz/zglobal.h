@@ -23,10 +23,11 @@
   02111-1307, USA.
 */
 
+#include "bbs.h"
 #include <sys/types.h>
 
 #include <stdarg.h>
-//#include <mpatrol.h>
+/*#include <mpatrol.h>*/
 
 #include <setjmp.h>
 
@@ -106,8 +107,6 @@ extern void raw_ochar(char c);
 #if !defined(PATH_MAX) && defined(MAXPATHLEN)
 # define PATH_MAX MAXPATHLEN
 #endif
-
-# include <limits.h>
 
 #ifndef PATH_MAX
 # define PATH_MAX _POSIX_PATH_MAX

@@ -544,7 +544,6 @@ void r_msg()
                 if (-1 == XOK)
                     sprintf(msgbuf, "[1mΩ· ¯ªÿ’‚Ãı—∂œ¢[m");
                 else if (0 == XOK && (-KEY_UP == msgXch || -KEY_DOWN == msgXch))
-//                    sprintf(msgbuf, "[1mœµÕ≥¥ÌŒÛ£∫sendmsg.c/r_msg/msgx/fopen|locate[m"); fixed by bad 2002.8.12
                     ;
                 else {
                     if (buf[0] != '\0') {

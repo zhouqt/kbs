@@ -57,8 +57,8 @@ clrnlines(int n)
 {
 	register struct screenline *slp;
 	register int i, k;
-//	if (dumb_term)
-//		return;
+/*	if (dumb_term)*/
+/*		return;*/
 	for (i = cur_ln; i < cur_ln + n; i++) {
 		slp = &big_picture[(i + roll) % scr_lns];
 		slp->mode = 0;
@@ -226,7 +226,7 @@ redoscr()
 void
 refresh()
 {
-	register int i, j;
+	int i, j;
 	register struct screenline *bp = big_picture;
 	extern int automargins;
 

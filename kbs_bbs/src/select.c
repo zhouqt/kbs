@@ -49,8 +49,8 @@ static int show_item(struct _select_def *conf, int item, bool clear)
     if (clear) {
         if (conf->flag & LF_VSCROLL)
             clrtoeol();
-        //TODO:
-        //check LF_NEEDFORCECLEAN  to clean
+        /*TODO:
+        //check LF_NEEDFORCECLEAN  to clean*/
     }
     if (conf->show_data)
         if ((*conf->show_data) (conf, item) == SHOW_QUIT)
@@ -63,10 +63,10 @@ static int refresh_select(struct _select_def *conf)
 {
     int i;
 
-    //TODO:
-    //目前应该清除的区域尚未定义，所以先清全部
+    /*TODO:
+    //目前应该清除的区域尚未定义，所以先清全部*/
     good_move(conf->title_pos.y, conf->title_pos.x);
-    //clrtobot();
+    /*clrtobot();*/
     if (conf->show_title) {
         (*conf->show_title) (conf);
     }
@@ -103,9 +103,9 @@ static int select_change(struct _select_def *conf, int new_pos)
             return ret;
     }
     if (conf->flag & LF_MULTIPAGE) {
-        //TODO multi page
+        /*TODO multi page*/
         if (new_pos<conf->page_pos || new_pos>=conf->page_pos+conf->item_per_page)
-        { //需要换页了
+        { /*需要换页了*/
             conf->page_pos=((new_pos-1)/conf->item_per_page)*conf->item_per_page+1;
             conf->pos = new_pos;
             return SHOW_DIRCHANGE;
@@ -126,8 +126,8 @@ static int select_change(struct _select_def *conf, int new_pos)
             outns(conf->prompt, pre_len);
         }
     }
-    // 如果是高亮的选择方式，需要清除原来的行
-    // 和重绘新行
+    /* 如果是高亮的选择方式，需要清除原来的行*/
+    /* 和重绘新行*/
     old_pos=conf->pos;
     conf->pos = new_pos;
     if (conf->flag & LF_HILIGHTSEL) {
@@ -143,7 +143,7 @@ static int select_change(struct _select_def *conf, int new_pos)
     good_move(conf->item_pos[new_pos-conf->page_pos].y,
     	    conf->item_pos[new_pos-conf->page_pos].x);
     refresh();
-    //conf->pos = new_pos;
+    /*conf->pos = new_pos;*/
     return ret;
 }
 static int do_select_internal(struct _select_def *conf, int key)
@@ -301,10 +301,10 @@ int list_select(struct _select_def *conf, int key)
 {
     int ret;
 
-//      int old_page_num=conf->page_num;
+/*      int old_page_num=conf->page_num;*/
     int old_pos = conf->pos;
 
-//      int old_item_count = conf->item_count;
+/*      int old_item_count = conf->item_count;*/
 	ret=SHOW_QUIT;
 	while (ret!=SHOW_CONTINUE) {
 	    ret = do_select_internal(conf, key);
@@ -384,7 +384,7 @@ static int simple_show(struct _select_def *conf, int i)
 	item=&arg->items[i];
 	if (item->type==SIT_SELECT) {
 		outs((char*)item->data);
-	} //TODO: Add other SIT support
+	} /*TODO: Add other SIT support*/
     return SHOW_CONTINUE;
 }
 
@@ -446,7 +446,7 @@ int simple_select_loop(const struct _select_item* item_conf,int flag,int titlex,
     bzero((char *) &simple_conf, sizeof(struct _select_def));
     simple_conf.item_count = numbers;
     simple_conf.item_per_page = numbers;
-    simple_conf.flag = LF_BELL | LF_LOOP; //|LF_HILIGHTSEL;
+    simple_conf.flag = LF_BELL | LF_LOOP; /*|LF_HILIGHTSEL;*/
     simple_conf.prompt = "◆";
     simple_conf.item_pos = pts;
     simple_conf.arg = &arg;

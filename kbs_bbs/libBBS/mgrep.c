@@ -6,11 +6,11 @@
 #define MAXLINE 1024
 #define MAXSYM  256
 #define MAXMEMBER1 4096
-#define MAXPATFILE 2600 //pattern文件的最大长度
-#define BLOCKSIZE  8192  //用于预读的数据大小
-#define MAXHASH    512  //pattern使用的hash表大小
-#define mm 	   511  //用于hash值的取模运算
-#define max_num    200 //最大的pattern个数
+#define MAXPATFILE 2600 /*pattern文件的最大长度*/
+#define BLOCKSIZE  8192  /*用于预读的数据大小*/
+#define MAXHASH    512  /*pattern使用的hash表大小*/
+#define mm 	   511  /*用于hash值的取模运算*/
+#define max_num    200 /*最大的pattern个数*/
 #define W_DELIM	   128
 #define L_DELIM    10
 
@@ -22,12 +22,15 @@ extern int total_line;
 
 #ifdef BBSMAIN
 #define printf prints
+#ifdef putchar
+#undef putchar
 #define putchar outc
+#endif
 #endif
 struct pat_list {
     int index;
     int next;
-//    struct pat_list *next;
+/*    struct pat_list *next;*/
 };
 struct pattern_image {
 	int LONG;
@@ -161,7 +164,7 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
 int mgrep_str(char *text, int num,struct pattern_image* patt_img)
 {
     if (patt_img->SHORT)
-        m_short(text, 0, num-1, patt_img);
+        m_short((unsigned char *)text, 0, num-1, patt_img);
     else
         monkey1(text, 0, num-1, patt_img);
     return num_of_matched;

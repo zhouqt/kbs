@@ -255,7 +255,7 @@ struct favboard_proc_arg {
     bool reloaddata;
 
     char* boardprefix;
-    //用于search_board得时候缓存
+    /*用于search_board得时候缓存*/
     int loop_mode;
     int find;
     char bname[BOARDNAMELEN + 1];
@@ -344,7 +344,7 @@ static int fav_show(struct _select_def *conf, int pos)
     char buf[LENGTH_SCREEN_LINE];
 
     ptr = &arg->nbrd[pos-(conf->page_pos)];
-    if (ptr->dir == 1) {        // added by bad 2002.8.3
+    if (ptr->dir == 1) {        /* added by bad 2002.8.3*/
         if (ptr->tag < 0)
             prints("       ");
         else if (!arg->newflag)
@@ -378,13 +378,13 @@ static int fav_show(struct _select_def *conf, int pos)
     if (ptr->dir == 2)
         sprintf(buf, "%s(%d)", ptr->title, ptr->total);
     else if (ptr->dir >= 1)
-        sprintf(buf, "%s", ptr->title); // added by bad 2002.8.3
+        sprintf(buf, "%s", ptr->title); /* added by bad 2002.8.3*/
     else if (true == checkreadonly(ptr->name))
         sprintf(buf, "[只读] %s", ptr->title + 8);
     else
         sprintf(buf, "%s", ptr->title + 1);
 
-    if (ptr->dir >= 1)          // added by bad 2002.8.3
+    if (ptr->dir >= 1)          /* added by bad 2002.8.3*/
         prints("%-50s\n", buf);
     else {
           char flag[20];
@@ -439,7 +439,7 @@ static int fav_prekey(struct _select_def *conf, int *command)
         return SHOW_REFRESH;
     }
     if ((*command == '\r' || *command == '\n') && (arg->tmpnum != 0)) {
-        // 直接输入数字跳转
+        /* 直接输入数字跳转*/
         conf->new_pos = arg->tmpnum;
         arg->tmpnum = 0;
         return SHOW_SELCHANGE;
@@ -477,7 +477,7 @@ static int fav_gotonextnew(struct _select_def *conf)
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
     int tmp, num,page_pos=conf->page_pos;
 
-        //搜寻下一个未读的版面
+        /*搜寻下一个未读的版面*/
     if (arg->newflag) {
       num = tmp = conf->pos;
       while(num<=conf->item_count) {
@@ -514,7 +514,7 @@ static int fav_onselect(struct _select_def *conf)
 
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
 
-    if (ptr->dir == 1) {        // added by bad 2002.8.3
+    if (ptr->dir == 1) {        /* added by bad 2002.8.3*/
         return SHOW_SELECT;
     } else {
         struct boardheader bh;
@@ -736,7 +736,7 @@ static int fav_key(struct _select_def *conf, int command)
             }
         }
         break;
-    case 'A':                  // added by bad 2002.8.3
+    case 'A':                  /* added by bad 2002.8.3*/
         if (BOARD_FAV == arg->yank_flag) {
             char bname[STRLEN];
             int i = 0;
@@ -759,7 +759,7 @@ static int fav_key(struct _select_def *conf, int command)
             }
         }
         break;
-    case 'T':                  // added by bad 2002.8.3
+    case 'T':                  /* added by bad 2002.8.3*/
         if (BOARD_FAV == arg->yank_flag) {
             char bname[STRLEN];
             int i = 0;
@@ -972,7 +972,7 @@ int choose_board(int newflag, char *boardprefix,int favmode)
         arg.loop_mode = 0;
 
         favboard_conf.item_per_page = BBS_PAGESIZE;
-        favboard_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     //|LF_HILIGHTSEL;
+        favboard_conf.flag = LF_VSCROLL | LF_BELL | LF_LOOP | LF_MULTIPAGE;     /*|LF_HILIGHTSEL;*/
         favboard_conf.prompt = ">";
         favboard_conf.item_pos = pts;
         favboard_conf.arg = &arg;
@@ -1013,12 +1013,12 @@ int choose_board(int newflag, char *boardprefix,int favmode)
 
         update_endline();
         if (list_select_loop(&favboard_conf) == SHOW_QUIT) {
-            //退出一层目录
+            /*退出一层目录*/
             favlevel--;
             if (favlevel == -1)
                 break;
         } else {
-            //选择了一个目录,SHOW_SELECT
+            /*选择了一个目录,SHOW_SELECT*/
             sellist[favlevel] = favboard_conf.pos;
             favlevel++;
             if (favmode)

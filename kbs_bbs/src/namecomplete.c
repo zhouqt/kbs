@@ -505,7 +505,6 @@ char *prompt, *data;
 
         if (prompt != NULL) {
             prints("%s", prompt);
-            //fflush( stdout );
             oflush();
         }
         if (fgets(data, STRLEN, stdin) == NULL)
