@@ -156,7 +156,7 @@ int main()
     /*if(loginok && !(currentuser->userlevel & PERM_LOGINOK) && !has_fill_form()) 
        printf("<a target=\"f3\" href=\"bbsform\">ÃÓ–¥◊¢≤·µ•</a><br>\n"); */
     if (loginok && can_enter_chatroom())
-        printmenu("<br><a href=\"javascript:openchat()\">[" CHAT_SERVER "<font color=\"red\">≤‚ ‘÷–</font>]</a>");
+        printmenu("<br><a href=\"javascript:openchat()\">[" CHAT_SERVER "]</a>");
     printf("<script>if(isNS4) arrange();if(isOP)alarrangeO();</script></p>");
     printf("</table></td></tr>");
 #ifdef SMTH
