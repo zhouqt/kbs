@@ -56,7 +56,7 @@ struct read_arg {
     enum BBS_DIR_MODE mode;
     enum BBS_DIR_MODE newmode; /*当返回NEWDIRECT的时候，设置这个*/
     char* direct;
-    char* dingdirect; /*置顶的.DIR保存在这里*/
+    char* dingdirect;
     void (*dotitle) ();
     READ_ENT_FUNC doentry;
     struct key_command *rcmdlist;
@@ -66,7 +66,9 @@ struct read_arg {
 
     struct write_dir_arg* writearg;
 
+    int bid;
     struct boardheader* board;
+    struct BoardStatus* boardstatus;
 
     /*用于确定当前的阅读模式，如果是
     READ_NORMAL  正常的顺序阅读

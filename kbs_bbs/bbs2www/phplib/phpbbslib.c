@@ -3628,13 +3628,20 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 	{
 		RETURN_LONG(0);
 	}*/
-	setbdir(mode, dirpath, bp->filename);
-  if(mode == DIR_MODE_ZHIDING){
-		num = search_record(dirpath, articles+1, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileid, &id);
-		if(num == 0) RETURN_LONG(0);
-		memset(articles,0,sizeof(struct fileheader));
-		memset(articles+2,0,sizeof(struct fileheader));
-  }else{
+    setbdir(mode, dirpath, bp->filename);
+    if(mode == DIR_MODE_ZHIDING){
+        struct BoardStatus* bs=getbstatus(getboardnum(bp->filename,NULL));
+        for (i=0;i<bs->toptitle;i++) {
+            if (bs->topfh[i].id==id) {
+                memcpy(&articles[1],&bs->topfh[i],sizeof(struct fileheader));
+                num=i;
+                break;
+            }
+        }
+	if(num == 0) RETURN_LONG(0);
+	memset(articles,0,sizeof(struct fileheader));
+	memset(articles+2,0,sizeof(struct fileheader));
+    }else{
 
 	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
 	{

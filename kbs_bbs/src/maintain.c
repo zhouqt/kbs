@@ -506,7 +506,6 @@ int m_editbrd()
 		if( newfh.des[0] ){
         	getdata(21, 0, "确定要更改吗? (Y/N) [N]: ", genbuf, 4, DOECHO, NULL, true);
         	if (*genbuf == 'Y' || *genbuf == 'y') {
-		newfh.nowid=-1;
             	set_board(pos, &newfh, &fh);
             	sprintf(genbuf, "更改讨论区 %s 的描述 --> %s", fh.filename, newfh.filename);
             	bbslog("user", "%s", genbuf);
@@ -742,7 +741,6 @@ int m_editbrd()
                 newfh.flag &= ~BOARD_ANNONY;
                 del_from_file("etc/anonymous", newfh.filename);
             }
-	    newfh.nowid=-1;
             set_board(pos, &newfh, &fh);
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
             bbslog("user", "%s", genbuf);
@@ -2067,7 +2065,6 @@ int set_BM()
                     lookupuser->userlevel = newlevel;
 
                     edit_grp(fh.filename, oldtitle + 13, vbuf);
-		    newfh.nowid=-1;
                     set_board(pos, &newfh, NULL);
 
                     sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);

@@ -30,7 +30,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     bnum = getboardnum(fptr->filename,&bp);
     bs = getbstatus(bnum);
 
-	fprintf(fp, "%-15.15s %-40.40s %5d %d\n", fptr->filename, fptr->title+13, bs->currentusers, fptr->nowid);
+	fprintf(fp, "%-15.15s %-40.40s %5d %d\n", fptr->filename, fptr->title+13, bs->currentusers, bs->nowid);
 
     return 0;
 }

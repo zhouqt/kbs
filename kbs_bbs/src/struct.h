@@ -148,7 +148,7 @@ struct boardheader {            /* This structure is used to hold data in */
     char BM[BM_LEN];
     char title[STRLEN];
     unsigned level;
-    unsigned int nowid;
+    unsigned int idseq;
     unsigned int clubnum; /*如果是俱乐部，这个是俱乐部序号*/
     unsigned int flag;
     union {
@@ -156,7 +156,8 @@ struct boardheader {            /* This structure is used to hold data in */
     unsigned int group_total; /*如果是二级目录，应该是目录的版面总数*/
     } board_data;
     time_t createtime;
-    int toptitle;
+/*    int toptitle; move to board status */
+    int unused;
     char ann_path[128];
     int group; /*所属目录*/
     char title_level; /* 设定用户需要什么title可见这个版面*/
@@ -197,6 +198,9 @@ struct BoardStatus {            /* use this to speed up board list */
     bool updatetitle;
     bool updateorigin;
     int currentusers;
+    int nowid;
+    int toptitle;
+    struct fileheader topfh[MAX_DING];
 #ifdef HAVE_WFORUM
 	int todaynum;
 #endif

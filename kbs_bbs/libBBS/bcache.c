@@ -4,6 +4,7 @@
 #include <sys/ipc.h>
 #include <sys/shm.h>
 static void bcache_setreadonly(int readonly);
+#ifndef USE_SEM_LOCK
 static int bcache_lock()
 {
     int lockfd;
@@ -23,8 +24,21 @@ static void bcache_unlock(int fd)
     bcache_setreadonly(1);
     close(fd);
 }
+#else
+static int bcache_lock()
+{
+    lock_sem(BCACHE_SEMLOCK);
+    return 0;
+}
+
+static void bcache_unlock(int fd)
+{
+	unlock_sem_check(BCACHE_SEMLOCK);
+}
+#endif
 static void bcache_setreadonly(int readonly)
 {
+/* ulock disable it
     int boardfd;
 	void *oldptr = bcache;
     munmap(bcache, MAXBOARD * sizeof(struct boardheader));
@@ -37,6 +51,7 @@ static void bcache_setreadonly(int readonly)
     else
         bcache = (struct boardheader *) mmap(oldptr, MAXBOARD * sizeof(struct boardheader), PROT_READ | PROT_WRITE, MAP_SHARED, boardfd, 0);
     close(boardfd);
+    */
 }
 int getlastpost(char *board, int *lastpost, int *total)
 {
@@ -80,7 +95,7 @@ int setboardmark(char *board, int i)
 {
     int pos;
 
-    pos = getbnum(board);       /* board name --> board No. */
+    pos = getboardnum(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
     	 int j;
     	 j=brdshm->bstatus[pos - 1].updatemark;
@@ -95,7 +110,7 @@ int setboardorigin(char *board, int i)
 {
     int pos;
 
-    pos = getbnum(board);       /* board name --> board No. */
+    pos = getboardnum(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
     	 int j;
     	 j=brdshm->bstatus[pos - 1].updateorigin;
@@ -110,7 +125,7 @@ int setboardtitle(const char *board, int i)
 {
     int pos;
 
-    pos = getbnum(board);       /* board name --> board No. */
+    pos = getboardnum(board,NULL);       /* board name --> board No. */
     if (pos > 0) {
     	 int j;
     	 j=brdshm->bstatus[pos - 1].updatetitle;
@@ -121,33 +136,29 @@ int setboardtitle(const char *board, int i)
         return -1;
 }
 
-int get_nextid(char* boardname)
-{
-    int fd,ret;
-
-    fd = bcache_lock();
-    ret=getboardnum(boardname,NULL);
-    if (ret!=0) {
-        bcache[ret-1].nowid++;
-        ret=bcache[ret-1].nowid;
-    } else
-       bbslog("3system", "wrong get_nextid %s", boardname);
-    bcache_unlock(fd);
-    return ret;
-}
-
 int get_nextid_bid(int bid)
 {
     int fd,ret;
 
-	ret = bid;
-	if (ret > 0)
+	if (bid > 0)
 	{
 		fd = bcache_lock();
-		bcache[ret-1].nowid++;
-		ret=bcache[ret-1].nowid;
+		brdshm->bstatus[bid-1].nowid++;
+		ret=brdshm->bstatus[bid-1].nowid;
 		bcache_unlock(fd);
 	}
+    return ret;
+}
+
+int get_nextid(char* boardname)
+{
+    int ret;
+
+    ret=getboardnum(boardname,NULL);
+    if (ret!=0) {
+        ret=get_nextid_bid(ret);
+    } else
+       bbslog("3system", "wrong get_nextid %s", boardname);
     return ret;
 }
 
@@ -161,8 +172,7 @@ void resolve_boards()
             bbslog("3system", "Can't open " BOARDS "file %s", strerror(errno));
             exit(-1);
         }
-		ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
-        bcache = (struct boardheader *) mmap(NULL, MAXBOARD * sizeof(struct boardheader), PROT_READ , MAP_SHARED, boardfd, 0);
+        bcache = (struct boardheader *) mmap(NULL, MAXBOARD * sizeof(struct boardheader), PROT_READ |PROT_WRITE, MAP_SHARED, boardfd, 0);
         if (bcache == (struct boardheader *) -1) {
             bbslog("4system", "Can't map " BOARDS "file %s", strerror(errno));
             close(boardfd);
@@ -179,7 +189,22 @@ void resolve_boards()
             fd = bcache_lock();
             for (i = 0; i < MAXBOARD; i++)
                 if (bcache[i].filename[0]) {
+                    int count;
+                    char filename[MAXPATH];
+                    struct fileheader lastfh;
                     getlastpost(bcache[i].filename, &brdshm->bstatus[i].lastpost, &brdshm->bstatus[i].total);
+                    /* ulock: get nowid from the last fileheader and idseq*/
+                    setbfile(filename,bcache[i].filename,DOT_DIR);
+                    count=get_num_records(filename,sizeof(struct fileheader));
+                    get_record(filename, &lastfh, sizeof(struct fileheader), count-1);
+                    brdshm->bstatus[i].nowid=lastfh.id+1;
+                    if (bcache[i].idseq>lastfh.id+1)
+                        brdshm->bstatus[i].nowid=bcache[i].idseq;
+                    else
+                        brdshm->bstatus[i].nowid=lastfh.id+1;
+                    /* update top title */
+                    board_update_toptitle(i+1,false);
+                    
                     maxi = i;
                 }
             if (maxi != -1)
@@ -209,6 +234,8 @@ void detach_boards()
 
 struct BoardStatus *getbstatus(int index)
 {
+    if (index<=0||index>MAXBOARD)
+        return NULL;
     return &brdshm->bstatus[index-1];
 }
 int apply_boards(int (*func) (struct boardheader *, void* ),void* arg)
@@ -357,6 +384,7 @@ int add_board(struct boardheader *newboard)
 {
     int bid = 0;
     int fd;
+    int ret=-1;
 
     fd = bcache_lock();
     if ((bid = getbnum("")) <= 0)
@@ -367,11 +395,10 @@ int add_board(struct boardheader *newboard)
         memcpy(&bcache[bid - 1], newboard, sizeof(struct boardheader));
         if (bid > brdshm->numboards)
             brdshm->numboards = bid;
-        bcache_unlock(fd);
-        return 0;
+        ret=0;
     }
     bcache_unlock(fd);
-    return -1;
+    return ret;
 }
 
 static int clearclubreadright(struct userec* user,struct boardheader* bh)
@@ -424,7 +451,10 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
     	    	board->flag&=(~BOARD_CLUB_READ) & (~BOARD_CLUB_WRITE);
     	    } else board->clubnum=i+1;
        }
+       /*
+       ulock remove nowid
        board->nowid=bcache[bid-1].nowid;
+       */
        /*重新计算目录的版面数*/
        if (board->flag&BOARD_GROUP) {
            int i;
@@ -440,8 +470,10 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
                 bcache[board->group-1].board_data.group_total++;
        }
     }
+    /* ulock remove nowid
     if (board->nowid==-1) //保存nowid
 	    board->nowid=bcache[bid-1].nowid;
+	    */
     memcpy(&bcache[bid - 1], board, sizeof(struct boardheader));
     bcache_setreadonly(1);
     return 0;
@@ -477,14 +509,35 @@ void board_setcurrentuser(int idx,int num)
         brdshm->bstatus[idx - 1].currentusers=0;
 }
 
-void board_update_toptitle(struct boardheader* bh,int increment)
+void board_update_toptitle(int bid,bool needlock)
 {
-    int fd=bcache_lock();
-    if (increment==0)
-      bh->toptitle=0;
-    else
-      bh->toptitle+=increment;
-    bcache_unlock(fd);
+    struct BoardStatus* bs=getbstatus(bid);
+    struct boardheader* bh;
+    char dirpath[MAXPATH];
+    if (bs==NULL)
+        return;
+    bh=&bcache[bid-1];
+    if (bh->filename[0]==0)
+        return;
+    setbdir(DIR_MODE_ZHIDING,dirpath,bh->filename);
+    int fd;
+    if (needlock)
+        fd=bcache_lock();
+    bs->toptitle=get_num_records(dirpath, sizeof(struct fileheader));
+    if (bs->toptitle>MAX_DING) {
+        bs->toptitle=MAX_DING;
+    }
+    get_records(dirpath, bs->topfh, sizeof(struct fileheader), 1, bs->toptitle);
+    if (needlock)
+        bcache_unlock(fd);
+}
+
+void flush_bcache()
+{
+    int i;
+    for (i = 0; i < MAXBOARD; i++)
+	    bcache[i].idseq=brdshm->bstatus[i].nowid;
+    msync(bcache,MAXBOARD * sizeof(struct boardheader),MS_SYNC);
 }
 
 /* add by stiger, 2004,0322 */

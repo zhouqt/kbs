@@ -2165,13 +2165,13 @@ static int get_locksemid(int semnum)
 	int i;
 	static int locksemid = -1;
 	if (locksemid < 0) {
-		key_t semkey = sysconf_eval("PUBLIC_SEMID", 0x54188);
+        key_t semkey = sysconf_eval("PUBLIC_SEMID", 0x54188);
 		locksemid =semget(semkey,SEMLOCK_COUNT,0); 
 		if (locksemid < 0) {
 			struct sembuf buf;
 			 locksemid = semget(semkey,SEMLOCK_COUNT,IPC_CREAT|IPC_EXCL|0700);
 			 if (locksemid <0) {
-			 	bbslog("system","semget create error, key = %d", semkey);
+			 	bbslog("3system","semget create error, key = %d", semkey);
 			 	exit(-1); 
 			 }
 			 buf.sem_op = 1;
@@ -2179,7 +2179,7 @@ static int get_locksemid(int semnum)
 			for (i = 0; i< SEMLOCK_COUNT; i++) {
 				buf.sem_num = i;
 				if (semop(locksemid,&buf,1) <0) {
-					bbslog("system","semop +1 error with semid %d, semnum %d",locksemid, i);
+					bbslog("3system","semop +1 error with semid %d, semnum %d",locksemid, i);
 					exit(-1);
 				}
 			}	
@@ -2201,7 +2201,7 @@ void lock_sem(int lockid)
 	buf.sem_flg = SEM_UNDO;
 	semid = get_locksemid(lockid);
 	if (semop(semid,&buf,1) <0) {
-		bbslog("system","semop -1 error with semid %d, semnum %d",semid, lockid);
+		bbslog("3system","semop -1 error with semid %d, semnum %d",semid, lockid);
 		exit(-1);
 	}
 }
@@ -2212,10 +2212,10 @@ void unlock_sem(int lockid)
 	int semid;
 	buf.sem_num =lockid;
 	buf.sem_op = 1;
-	buf.sem_flg = 0;
+	buf.sem_flg = SEM_UNDO;
 	semid = get_locksemid(lockid);
 	if (semop(semid,&buf,1) <0) {
-		bbslog("system","semop +1 error with semid %d, semnum %d",semid, lockid);
+		bbslog("3system","semop +1 error with semid %d, semnum %d",semid, lockid);
 		exit(-1);
 	}
 }
@@ -2226,10 +2226,13 @@ void unlock_sem_check(int lockid)
 	struct sembuf buf;
 	buf.sem_num =lockid;
 	buf.sem_op = 1;
-	buf.sem_flg = 0;
-	if (semctl(semid,lockid,GETVAL) != 0) return;
+	buf.sem_flg = SEM_UNDO;
+	if (semctl(semid,lockid,GETVAL) != 0) {
+	    bbslog("3system","check lock %d error",lockid);
+	    return;
+	}
 	if (semop(semid,&buf,1) <0) {
-		bbslog("system","semop +1 error with semid %d, semnum %d",semid, lockid);
+		bbslog("3system","semop +1 error with semid %d, semnum %d",semid, lockid);
 		exit(-1);
 	}
 }

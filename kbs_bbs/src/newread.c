@@ -259,7 +259,9 @@ static int read_key(struct _select_def *conf, int command)
   另一个问题，在这里，conf->pos没法设定成filecount,因为此时还没有getdata
 */
                 savePos(arg->mode,arg->direct,conf->pos,arg->board);
-		arg->board=currboard;
+                arg->board=currboard;
+                arg->bid=getboardnum(currboard->filename, NULL);
+                arg->boardstatus=getbstatus(arg->bid);
                 read_getdata(conf,1,conf->item_per_page);
                 lastpos=getPos(arg->newmode,arg->direct,currboard);
                 if ((lastpos!=0)&&(lastpos<arg->filecount))
@@ -396,7 +398,7 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
         if ((arg->mode==DIR_MODE_NORMAL)||
             (arg->mode==DIR_MODE_MARK))
         { //需要检查置顶
-            dingcount=currboard->toptitle;
+            dingcount=arg->boardstatus->toptitle;
         }
 
 	if (count+dingcount==0) {
@@ -423,27 +425,21 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
             if (entry!=len) { //需要读入.DING
                 int dingfd;
                 n=0;
-                if ((dingfd=open(arg->dingdirect,O_RDONLY,0))!=-1) {
-		    if (pos>count) {
-                       lseek(dingfd, (pos-count-1)*arg->ssize,SEEK_SET);
-                       n=read(dingfd, arg->data, arg->ssize * len);
-		       entry=pos-count;
-		    }
-		    else
-                       n=read(dingfd, arg->data+arg->ssize*entry, arg->ssize * (len-entry));
-		    if (n!=-1) {
-                        n/=arg->ssize;
-                    } else n=0;
-                    close(dingfd);
+                if (pos>count) {
+                    n=len;
+                    if ((n+pos-count-1)>dingcount) {
+                        n=dingcount-(pos-count-1);
+                    }
+                    if (n>0) {
+                        memcpy(arg->data,&arg->boardstatus->topfh[pos-count-1],arg->ssize * n);
+                        entry=pos-count;
+                    }
+                }  else {
+                    n=len-entry;
+                    if (n>dingcount)
+                        n=dingcount;
+                    memcpy(arg->data+arg->ssize*entry,&arg->boardstatus->topfh[0],arg->ssize * n);
                 }
-                if (pos<=count) {
-		  if ((n!=dingcount)&&(n!=(len-entry))) {
-                    /*置顶数据肯定出问题*/
-                    dingcount=n;
-                  }
-	        } else {
-                    dingcount=n+pos-count-1;
-		}
             }
             /*加上置顶个数*/
             count+=dingcount;
@@ -629,6 +625,8 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
     arg.returnvalue=QUIT;
     arg.writearg=NULL;
     arg.board=currboard;
+    arg.bid=getboardnum(currboard->filename, NULL);
+    arg.boardstatus=getbstatus(arg.bid);
     if ((arg.mode==DIR_MODE_NORMAL)||
         ((arg.mode>=DIR_MODE_THREAD)&&(arg.mode<=DIR_MODE_WEB_THREAD))) {
         char ding_direct[PATHLEN];

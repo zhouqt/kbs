@@ -322,36 +322,35 @@ int load_ucache()
 
     if (!iscreate) {
         bbslog("4system", "load a exitist ucache shm!");
-        ucache_unlock(fd);
-        return 0;
-    }
+    } else {
 
 #ifdef HAVE_CUSTOM_USER_TITLE
-    load_user_title();
+        load_user_title();
 #endif
-    if ((passwdfd = open(PASSFILE, O_RDWR | O_CREAT, 0644)) == -1) {
-        bbslog("3system", "Can't open " PASSFILE "file %s", strerror(errno));
-        exit(-1);
+        if ((passwdfd = open(PASSFILE, O_RDWR | O_CREAT, 0644)) == -1) {
+            bbslog("3system", "Can't open " PASSFILE "file %s", strerror(errno));
+            ucache_unlock(fd);
+            exit(-1);
+        }
+        ftruncate(passwdfd, MAXUSERS * sizeof(struct userec));
+    	close(passwdfd);
+        if (get_records(PASSFILE, uidshm->passwd, sizeof(struct userec), 1, MAXUSERS) != MAXUSERS) {
+            bbslog("4system", "error PASS file!");
+            ucache_unlock(fd);
+            exit(-1);
+        }
+        bzero(uidshm->hashhead, UCACHE_HASHSIZE * sizeof(int));
+        usernumber = 0;
+
+        ucache_hashinit();
+
+        prev = 0;
+        for (i = 0; i < MAXUSERS; i++)
+            fillucache(&uidshm->passwd[i], &usernumber, &prev);
+
+        newbbslog(BBSLOG_USIES, "CACHE:reload ucache for %d users", usernumber);
+        uidshm->number = usernumber;
     }
-    ftruncate(passwdfd, MAXUSERS * sizeof(struct userec));
-	close(passwdfd);
-    if (get_records(PASSFILE, uidshm->passwd, sizeof(struct userec), 1, MAXUSERS) != MAXUSERS) {
-        bbslog("4system", "PASS file!");
-        ucache_unlock(fd);
-        return -1;
-    }
-    bzero(uidshm->hashhead, UCACHE_HASHSIZE * sizeof(int));
-    usernumber = 0;
-
-    ucache_hashinit();
-
-    prev = 0;
-    for (i = 0; i < MAXUSERS; i++)
-        fillucache(&uidshm->passwd[i], &usernumber, &prev);
-
-    newbbslog(BBSLOG_USIES, "CACHE:reload ucache for %d users", usernumber);
-    uidshm->number = usernumber;
-
     ucache_unlock(fd);
     return 0;
 }
@@ -359,23 +358,18 @@ int load_ucache()
 int resolve_ucache()
 {
     int iscreate;
-    int fd;
 
-    fd=ucache_lock();
     iscreate = 0;
     if (uidshm == NULL) {
         uidshm = (struct UCACHE *) attach_shm("UCACHE_SHMKEY", 3696, sizeof(*uidshm), &iscreate);
-        /*attach to user shm,readonly */
         if (iscreate) {         /* shouldn't load passwd file in this place */
             bbslog("4system", "passwd daemon havn't startup");
             remove_shm("UCACHE_SHMKEY",3696,sizeof(*uidshm));
-            ucache_unlock(fd);
             return -1;
         }
         
     }
-    ucache_unlock(fd);
-	return 0;
+    return 0;
 }
 
 void detach_ucache()
@@ -723,8 +717,8 @@ int getnewuserid(char *userid)
 
         i = searchnewuser();
         if (i <= 0 || i > MAXUSERS) {
-            ucache_unlock(fd);
-            return -1;
+            ret=-1;
+            break;
         }
         memset(&utmp, 0, sizeof(utmp));
         strcpy(utmp.userid, userid);
@@ -1103,10 +1097,11 @@ void set_user_title(unsigned char titleidx,char* newtitle)
 {
     int fd;
     fd=ucache_lock();
-    if (titleidx==0) return;
-    uidshm->user_title[titleidx-1][USER_TITLE_LEN-1]=0;
-    strncpy(uidshm->user_title[titleidx-1],newtitle,USER_TITLE_LEN-1);
-    flush_user_title();
+    if (titleidx!=0) {
+        uidshm->user_title[titleidx-1][USER_TITLE_LEN-1]=0;
+        strncpy(uidshm->user_title[titleidx-1],newtitle,USER_TITLE_LEN-1);
+        flush_user_title();
+    }
     ucache_unlock(fd);
 }
 #endif

@@ -208,7 +208,7 @@ convert_board_articles(struct boardheader *brd)
 	}
 	munmap(oldfh, fs.st_size);
 	close(fd);
-	brd->nowid = records;
+//	brd->nowid = records;
 	printf("Converting board %s's articles successfully\n", brd->filename);
 }
 

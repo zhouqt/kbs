@@ -563,21 +563,15 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     move(1, 0);
     getdata(1, 0, "(S)转信 (L)本站 (A)取消? [A]: ", ispost, 9, DOECHO, NULL, true);
     if (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l') {
-	/*add by stiger*/
-	if(conf->pos>arg->filecount) {
-            struct fileheader xfh;
-            int i=0,fd;
-            if ((fd = open(arg->dingdirect, O_RDONLY, 0)) != -1) {
-                for (i = conf->pos-arg->filecount; i > 0; i--) {
-                    if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
-                        if (0 == strcmp(xfh.filename, fileinfo->filename)) {
-                            conf->new_pos=i;
-                            break;
-                        }
-                    }
+        /*add by stiger
+        if(conf->pos<=arg->filecount) {
+            int i=0;
+            for (i = conf->pos-arg->filecount; i > 0; i--) {
+                if (0 == strcmp(arg->boardstatus->topfh[i].filename, fileinfo->filename)) {
+                    conf->new_pos=i;
+                    break;
                 }
-                close(fd);
-            }
+           }
 	    if (i==0){
                 move(2, 0);
 	        prints("文章列表发生变化，取消");
@@ -585,8 +579,8 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 		pressreturn();
 		return FULLUPDATE;
 	    }
-	} else conf->new_pos=conf->pos;
-	/*add old*/
+        } else conf->new_pos=conf->pos; */
+        /*add old*/
         if (post_cross(currentuser, bname, currboard->filename, 
             quote_title, q_file, Anony, 
             arg->mode==DIR_MODE_MAIL?1:0, 
@@ -598,10 +592,12 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         move(2, 0);
         prints("' %s ' 已转贴到 %s 版 \n", quote_title, bname);
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
-	if(conf->pos>arg->filecount)
-            substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->new_pos);
+	if(conf->pos<=arg->filecount)
+            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
+    /* 置顶贴可以多次转载应该没有问题吧...
         else
-            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->new_pos);
+            substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->new_pos);
+    */
         conf->new_pos=0;
     } else {
         prints("取消");
@@ -2787,7 +2783,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 	} else fd=arg->fd;
 	/* add end */
 	if (fd!=-1) {
-            for (i = ent; i > 0; i--) {
+            for (i = ent; i > 0; i--) {//todo: dingdirect needn't read,should read from boardstatus
                 if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
                     if (0 == strcmp(xfh.filename, fileinfo->filename)) {
                         ent = i;
@@ -2799,6 +2795,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
                 close(fd);
                 if (i!=0) 
                     substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), ent);
+                board_update_toptitle(arg->bid, true);
             } else
                 if (i!=0) 
                     substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), ent);
@@ -2868,7 +2865,7 @@ int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     }else{
         snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
         my_unlink(tmpname);
-        board_update_toptitle(currboard,-1);
+        board_update_toptitle(arg->bid, true);
     }
     return DIRCHANGED;
 }

@@ -10,6 +10,7 @@
 void do_exit()
 {
     flush_ucache();
+	flush_bcache();
     bbslog("4miscdaemon", "flush passwd file");
 }
 
@@ -513,6 +514,7 @@ void flushd()
     while (1) {
         sleep(2 * 60 * 60);
         flush_ucache();
+		flush_bcache();
         bbslog("4miscdaemon", "flush passwd file");
     };
 }
@@ -579,6 +581,8 @@ static int miscd_dodaemon(char *argv1, char *daemon)
 		fprintf(stderr, "Error! File %s is not writable.\n", BOARDS);
 		exit(-1);
 	}
+	truncate(BOARDS, MAXBOARD * sizeof(struct boardheader));
+
     if (load_ucache() != 0) {
         printf("ft,load ucache error!");
         exit(-1);
