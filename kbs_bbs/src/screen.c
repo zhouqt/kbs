@@ -129,7 +129,7 @@ void initscr()
     init_screen(t_lines, t_columns);
     clear();
     tc_col = 0;
-    tc_ln = t_lines-1;
+    tc_line = t_lines-1;
 }
 
 void rel_move(int was_col, int was_ln, int new_col, int new_ln)
