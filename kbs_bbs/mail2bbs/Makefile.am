@@ -1,5 +1,5 @@
 bin_PROGRAMS = mail2bbs qmail2bbs 
-EXTRA_FILES = mailgate.pl tcp.pl
+EXTRA_FILES = mailgate.pl tcp.pl mime_dec.c
 mail2bbs_SOURCES= mail2bbs.c qp_conv.c
 qmail2bbs_SOURCES= qmail2bbs.c qp_conv.c
 #qmailpost_SOURCES= qmailpost.c qp_conv.c
