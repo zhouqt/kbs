@@ -455,7 +455,6 @@ int user_init(struct userec **x, struct user_info **y)
 		/*printf("fromhost error!\n");*/
 		goto forguest;
 	}
-	/*
 	if((*y)->utmpkey != key)
 	{
 		goto forguest;
@@ -475,7 +474,9 @@ int user_init(struct userec **x, struct user_info **y)
 	}
 	if(!strcasecmp((*y)->userid, "new") || !strcasecmp((*y)->userid, "guest"))
 		goto forguest;
+	
 	getuser((*y)->userid, x);
+
 	if(*x==0)
 	{
 		goto forguest;
@@ -484,7 +485,6 @@ int user_init(struct userec **x, struct user_info **y)
 	{
 		goto forguest;
 	}
-	*/
 	return 1;
 
 forguest:
