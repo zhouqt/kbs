@@ -83,8 +83,8 @@
 	
 	if ($pcconfig["ENCODINGTBP"]) {
         $title = iconv(mb_detect_encoding ($title),$default_encoding,$title);
-	    $excerpt = iconv(mb_detect_encoding ($title),$default_encoding,$excerpt);
-	    $blog_name = iconv(mb_detect_encoding ($title),$default_encoding,$blog_name);
+	    $excerpt = iconv(mb_detect_encoding ($excerpt),$default_encoding,$excerpt);
+	    $blog_name = iconv(mb_detect_encoding ($blog_name),$default_encoding,$blog_name);
 	}
 	
 	$tbarr = array(

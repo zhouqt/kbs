@@ -1132,8 +1132,8 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     		if ($pcconfig["ENCODINGTBP"]) {
                 iconv_set_encoding("internal_encoding", $convert_encoding);
                 iconv_set_encoding("output_encoding", $convert_encoding);
-                $subject = iconv ($default_encoding,$convert_encoding,$subject);
-                $tbbody = iconv ($default_encoding,$convert_encoding,$tbbody);
+                $subject =  iconv ($default_encoding,$convert_encoding,$subject);
+                $tbbody =   iconv ($default_encoding,$convert_encoding,$tbbody);
                 $blogname = iconv ($default_encoding,$convert_encoding,$blogname);
             }
 
