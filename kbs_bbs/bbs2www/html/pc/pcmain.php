@@ -392,16 +392,16 @@ pcmain_blog_sections();
 ?>	
 	<table cellspacing=0 cellpadding=5 width=100% border=0 class=f1>
 		<tr>
-		<td class=f1><ul>
-			<li><a class="t2" href="pc.php">用户列表</a></li>
-			<li><a class="t2" href="pcreclist.php">推荐话题</a></li>
-			<li><a class="t2" href="pcsec.php">分类目录</a></li>
-			<li><a class="t2" href="pcnew.php">最新文章</a></li>
-			<li><a class="t2" href="pcnew.php?t=c">最新评论</a></li>
-			<li><a class="t2" href="pcsearch2.php">Blog搜索</a></li>
-			<li><a class="t2" href="pcnsearch.php">文章搜索</a></li>
-			<li><a class="t2" href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a></li>
-			<li><a class="t2" href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a></li>
+		<td class=f1 style="line-height=28px"><ul>
+			<li><a href="pc.php">用户列表</a></li>
+			<li><a href="pcreclist.php">推荐话题</a></li>
+			<li><a href="pcsec.php">分类目录</a></li>
+			<li><a href="pcnew.php">最新文章</a></li>
+			<li><a href="pcnew.php?t=c">最新评论</a></li>
+			<li><a href="pcsearch2.php">Blog搜索</a></li>
+			<li><a href="pcnsearch.php">文章搜索</a></li>
+			<li><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a></li>
+			<li><a href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">帮助主题</a></li>
 		</ul></td>
 		</tr>
 	</table>

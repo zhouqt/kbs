@@ -64,22 +64,8 @@
 	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject , $recommend)
 	{
 		global $currentuser,$loginok;
-		$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;";
-		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
-		if($rows)
-			echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&pid=".$pid."&tag=".$tag."&tid=".$tid."\">上一篇</a>\n";
-		else
-			echo " 上一篇\n";
-		mysql_free_result($result);
-		$query = "SELECT `nid` FROM nodes WHERE `nid` > ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` ASC LIMIT 0 , 1 ;";
-		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
-		if($rows)
-			echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&pid=".$pid."&tag=".$tag."&tid=".$tid."\">下一篇</a>\n";
-		else
-			echo " 下一篇\n";
-		mysql_free_result($result);
+		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=p\">上一篇</a>\n";
+		echo " <a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nid."&pid=".$pid."&tag=".$tag."&tid=".$tid."&p=n\">下一篇</a>\n";
 		
 		if($comment != 0)
 		{
@@ -168,12 +154,33 @@
 	$nid = (int)($_GET["nid"]);
 	$pid = (int)($_GET["pid"]);
 	$tag = (int)($_GET["tag"]);
+	$tid = (int)($_GET["tid"]);
+	
 	if($_GET["s"]=="all")
 		$spr = TRUE;
 	else
 		$spr = FALSE;
 	
 	$link = pc_db_connect();
+	if( $_GET["p"] == "p" || $_GET["p"] == "n" )
+	{
+		if( $_GET["p"] == "p" )
+		{
+			$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$id."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;";
+			$err_alert = "本文已是该分类第一篇文章。";
+		}
+		else
+		{
+			$query = "SELECT `nid` FROM nodes WHERE `nid` > ".$nid." AND `uid` = '".$id."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` ASC LIMIT 0 , 1 ;";
+			$err_alert = "本文已是该分类最后一篇文章。";
+		}
+		$result = mysql_query($query,$link);
+		$rows = mysql_fetch_array($result);
+		mysql_free_result($result);
+		if($rows)
+			header("Location: pccon.php?id=".$id."&nid=".$rows[nid]."&pid=".$pid."&tag=".$tag."&tid=".$tid);	
+	}
+	
 	$pc = pc_load_infor($link,"",$id);
 	if(!$pc)
 	{
@@ -184,6 +191,9 @@
 	}
 	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
+	
+	if( $err_alert )
+		echo "<script language=\"javascript\">alert(\"".$err_alert."\");</script>";
 	
 	$userPermission = pc_get_user_permission($currentuser,$pc);
 	$pur = $userPermission["pur"];
@@ -287,6 +297,26 @@
 				echo "引用：".$rows[trackbackcount]."次<br/>";
 		?>
 		地址：<?php echo $rows[hostname]; ?>
+		<br/><br/><br/>
+		<table cellspacing=0 cellpadding=5 width=95% border=0 class=t1>
+			<tr><td class=t3>
+			:::栏目:::
+			</td></tr>
+			<tr><td class=t5 style="line-height:20px">
+			<ul>
+<?php
+	$blogtopics = pc_blog_menu($link,$pc["UID"],$rows[access]);
+	foreach( $blogtopics as $blogtopic )
+	{
+		if( $blogtopic["TID"] != $tid )
+			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&tid=".$blogtopic["TID"]."\">".html_format($blogtopic["NAME"])."</a></li>";
+		else
+			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=".$rows[access]."&tid=".$blogtopic["TID"]."\"><strong><font color=red>".html_format($blogtopic["NAME"])."</font></strong></a></li>";
+	}
+?>
+			</ul>
+			</td></tr>
+		</table>
 		</td>
 		<td width="80%" height="300" align="left" valign="top" class="t5">
 		<font class="<?php echo ($rows[htmltag])?"contentwithhtml":"content"; ?>">
