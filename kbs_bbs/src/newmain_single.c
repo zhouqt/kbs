@@ -331,14 +331,6 @@ void RemoveMsgCountFile()
   unlink(fname);
  }
 
-void RemoveMsgCountFile2(userID)
-char *userID;
-{
-  char fname[STRLEN];
-  sethomefile(fname,userID,"msgcount");
-  unlink(fname);
- }
-
 /* to be Continue to fix kick problem */
 void
 multi_user_check()

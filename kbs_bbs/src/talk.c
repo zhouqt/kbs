@@ -124,42 +124,6 @@ int friend,pager;
     }
     return NA;
 }
-/*
-#ifdef SHOW_IDLE_TIME*/
-char *
-idle_str( uent )
-struct user_info *uent ;
-{
-    static char hh_mm_ss[ 32 ];
-    struct stat buf;
-    time_t      now, diff;
-    int         hh, mm;
-
-    now = time(0);
-    diff = now - uent->freshtime;
-    if (diff==now) /* @#$#!@$#@! */
-        diff=0;
-#ifdef DOTIMEOUT
-    /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
-       kicking out all users */
-
-    if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5 ))
-        kill( uent->pid, SIGHUP );
-#endif
-
-    hh = diff / 3600;
-    mm = (diff / 60) % 60;
-
-    if ( hh > 0 )
-        sprintf( hh_mm_ss, "%d:%02d", hh, mm );
-    else if ( mm > 0 )
-        sprintf( hh_mm_ss, "%d", mm );
-    else sprintf ( hh_mm_ss, "   ");
-
-    return hh_mm_ss;
-}/*
-#endif*/
-
 
 int
 listcuent(struct user_info *uentp,char* arg,int pos)
@@ -360,7 +324,7 @@ char q_id[IDLEN];
     /* SNOW CHANGE AT 10.20 (CHANGE THIS MSG)
         prints("ÐÅÏä£º[[5m%2s[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
                 ,(check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",exp,cexp(exp),perf,
-                  cperf(perf),compute_user_value(&lookupuser),
+                  cperf(perf),compute_user_value(lookupuser),
                (lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":" ");
     */
     uleveltochar(&permstr,lookupuser->userlevel);

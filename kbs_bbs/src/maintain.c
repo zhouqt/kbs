@@ -119,7 +119,7 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	        {
 	            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
 	            fprintf(se, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
-	            /*    getuinfo(se, &lookupuser);*/
+	            /*    getuinfo(se, lookupuser);*/
 	            /*Haohmaru.99.4.15.°Ñ±»×¢²áµÄ×ÊÁÏÁĞµÃ¸üÏêÏ¸,Í¬Ê±È¥µô×¢²áÕßµÄ×ÊÁÏ*/
 	            fprintf(se,"\n\nÄúµÄ´úºÅ     : %s\n",fdata[1]);
 	            fprintf(se,"ÄúµÄêÇ³Æ     : %s\n",lookupuser->username);
@@ -144,7 +144,7 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	        {
 	            fprintf(se, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s[m\n", str);
 	            fprintf(se, "ÒÔÏÂÊÇ±»É¾Õß¸öÈË×ÊÁÏ");
-	            getuinfo(se, &lookupuser);
+	            getuinfo(se, lookupuser);
 	            fprintf(se, "\nÒÔÏÂÊÇÉ¾³ıÕß¸öÈË×ÊÁÏ");
 	            getuinfo(se, currentuser);
 	            fclose(se);
@@ -185,7 +185,7 @@ int securityreport(char *str,struct userec* lookupuser)		/* Leeward: 1997.12.02 
 	                    "\n");
 
 	            fprintf(se, "\nÒÔÏÂÊÇ±»¸ÄÕß¸öÈË×ÊÁÏ");
-	            getuinfo(se, &lookupuser);
+	            getuinfo(se, lookupuser);
 	            fprintf(se, "\nÒÔÏÂÊÇĞŞ¸ÄÕß¸öÈË×ÊÁÏ");
 	            getuinfo(se, currentuser);
 	            fclose(se);

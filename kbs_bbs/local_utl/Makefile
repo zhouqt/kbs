@@ -6,7 +6,7 @@ CC       = cc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 CPP       = gcc -g -DLINUX -DSYSV -DLEEWARD_X_RECORD -I../include -I..
 include Makefile.spec
 
-BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann printboards MakeTar
+BINFILE= poststat static usage bfinger Xclean Xhtml Bhtml bfinger refriend chlevel listonline syncann printboards MakeTar 
 
 .SUFFIXES: .o .c .cpp .ln
 
@@ -51,8 +51,8 @@ chlevel: chlevel.c record.c
 install: all
 	cp -f $(BINFILE) ../../bin
 
-listonline:listonline.o bcache.o
-	gcc -o listonline listonline.o bcache.o
+listonline:listonline.o ../libBBS.a
+	gcc -o listonline listonline.o ../libBBS.a
 
 #bcache.o:bcache.c
 #	gcc -c bcache.c

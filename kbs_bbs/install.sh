@@ -1,238 +1,101 @@
-#!/bin/sh
-#
-# install - install a program, script, or datafile
-# This comes from X11R5.
-#
-# Calling this script install-sh is preferred over install.sh, to prevent
-# `make' implicit rules from creating a file called install from it
-# when there is no Makefile.
-#
-# This script is compatible with the BSD install script, but was written
-# from scratch.
-#
+#! /bin/sh
 
+BBS_HOME=/home/bbs
+INSTALL="//bin/install -c"
+TARGET=/home/bbs/bin
 
-# set DOITPROG to echo to test this script
+echo "This script will install the whole BBS to ${BBS_HOME}..."
+echo -n "Press <Enter> to continue ..."
+read ans
 
-# Don't use :- since 4.3BSD and earlier shells don't like it.
-doit="${DOITPROG-}"
-
-
-# put in absolute paths if you don't have them in your path; or use env. vars.
-
-mvprog="${MVPROG-mv}"
-cpprog="${CPPROG-cp}"
-chmodprog="${CHMODPROG-chmod}"
-chownprog="${CHOWNPROG-chown}"
-chgrpprog="${CHGRPPROG-chgrp}"
-stripprog="${STRIPPROG-strip}"
-rmprog="${RMPROG-rm}"
-mkdirprog="${MKDIRPROG-mkdir}"
-
-tranformbasename=""
-transform_arg=""
-instcmd="$mvprog"
-chmodcmd="$chmodprog 0755"
-chowncmd=""
-chgrpcmd=""
-stripcmd=""
-rmcmd="$rmprog -f"
-mvcmd="$mvprog"
-src=""
-dst=""
-dir_arg=""
-
-while [ x"$1" != x ]; do
-    case $1 in
-	-c) instcmd="$cpprog"
-	    shift
-	    continue;;
-
-	-d) dir_arg=true
-	    shift
-	    continue;;
-
-	-m) chmodcmd="$chmodprog $2"
-	    shift
-	    shift
-	    continue;;
-
-	-o) chowncmd="$chownprog $2"
-	    shift
-	    shift
-	    continue;;
-
-	-g) chgrpcmd="$chgrpprog $2"
-	    shift
-	    shift
-	    continue;;
-
-	-s) stripcmd="$stripprog"
-	    shift
-	    continue;;
-
-	-t=*) transformarg=`echo $1 | sed 's/-t=//'`
-	    shift
-	    continue;;
-
-	-b=*) transformbasename=`echo $1 | sed 's/-b=//'`
-	    shift
-	    continue;;
-
-	*)  if [ x"$src" = x ]
-	    then
-		src=$1
-	    else
-		# this colon is to work around a 386BSD /bin/sh bug
-		:
-		dst=$1
-	    fi
-	    shift
-	    continue;;
-    esac
-done
-
-if [ x"$src" = x ]
-then
-	echo "install:	no input file specified"
-	exit 1
+if [ -d ${BBS_HOME} ] ; then
+        echo -n "Warning: ${BBS_HOME} already exists, overwrite whole bbs [N]?"
+        read ans
+        ans=${ans:-N}
+        case $ans in
+            [Yy]) echo "Installing new bbs to ${BBS_HOME}" ;;
+            *) echo "Abort ..." ; exit ;;
+        esac
 else
-	true
+        echo "Making dir ${BBS_HOME}"
+        mkdir ${BBS_HOME}
+        chown -R bbs ${BBS_HOME}
+        chgrp -R bbs ${BBS_HOME}
 fi
 
-if [ x"$dir_arg" != x ]; then
-	dst=$src
-	src=""
-	
-	if [ -d $dst ]; then
-		instcmd=:
-	else
-		instcmd=mkdir
-	fi
-else
+echo "Setup bbs directory tree ....."
+( cd bbshome ; tar cf - * ) | ( cd ${BBS_HOME} ; tar xf - )
 
-# Waiting for this to be detected by the "$instcmd $src $dsttmp" command
-# might cause directories to be created, which would be especially bad 
-# if $src (and thus $dsttmp) contains '*'.
+chown -R bbs ${BBS_HOME}
+chgrp -R bbs ${BBS_HOME}
 
-	if [ -f $src -o -d $src ]
-	then
-		true
-	else
-		echo "install:  $src does not exist"
-		exit 1
-	fi
-	
-	if [ x"$dst" = x ]
-	then
-		echo "install:	no destination specified"
-		exit 1
-	else
-		true
-	fi
+${INSTALL} -m 770  -s -g bbs -o bbs    bbs        ${TARGET}
+${INSTALL} -m 770  -s -g bbs -o bbs    bbs.chatd  ${TARGET}
+${INSTALL} -m 4755 -s -g bin -o root   bbsrf      ${TARGET}
 
-# If destination is a directory, append the input filename; if your system
-# does not like double slashes in filenames, you may need to add some logic
+cat > ${BBS_HOME}/etc/sysconf.ini << EOF
+# comment
 
-	if [ -d $dst ]
-	then
-		dst="$dst"/`basename $src`
-	else
-		true
-	fi
-fi
+BBSHOME         = "/home/bbs"
+BBSID           = "NoName"
+BBSNAME         = "Never Land BBS"
+BBSDOMAIN       = "some.where.on.earth"
 
-## this sed command emulates the dirname command
-dstdir=`echo $dst | sed -e 's,[^/]*$,,;s,/$,,;s,^$,.,'`
+#SHOW_IDLE_TIME         = 1
+KEEP_DELETED_HEADER     = 0
 
-# Make sure that the destination directory exists.
-#  this part is taken from Noah Friedman's mkinstalldirs script
+#BBSNTALKD      = 1
+#NTALK          = "/bin/ctalk.sh"
+#REJECTCALL     = "/bin/rejectcall.sh"
+#GETPAGER       = "getpager"
 
-# Skip lots of stat calls in the usual case.
-if [ ! -d "$dstdir" ]; then
-defaultIFS='	
-'
-IFS="${IFS-${defaultIFS}}"
+BCACHE_SHMKEY   = 7813
+UCACHE_SHMKEY   = 7912
+UTMP_SHMKEY     = 3785
+ACBOARD_SHMKEY  = 9013
+ISSUE_SHMKEY    = 5002
+GOODBYE_SHMKEY  = 5003
 
-oIFS="${IFS}"
-# Some sh's can't handle IFS=/ for some reason.
-IFS='%'
-set - `echo ${dstdir} | sed -e 's@/@%@g' -e 's@^%@/@'`
-IFS="${oIFS}"
+IDENTFILE       = "etc/preach"
+EMAILFILE       = "etc/mailcheck"
+#NEWREGFILE     = "etc/newregister"
 
-pathcomp=''
+PERM_BASIC      = 0x00001
+PERM_CHAT       = 0x00002
+PERM_PAGE       = 0x00004
+PERM_POST       = 0x00008
+PERM_LOGINOK    = 0x00010
+PERM_DENYPOST   = 0x00020
+PERM_CLOAK      = 0x00040
+PERM_SEECLOAK   = 0x00080
+PERM_XEMPT      = 0x00100
+PERM_WELCOME    = 0x00200
+PERM_BOARDS     = 0x00400
+PERM_ACCOUNTS   = 0x00800
+PERM_CHATCLOAK  = 0x01000
+PERM_OVOTE      = 0x02000
+PERM_SYSOP      = 0x04000
+PERM_POSTMASK   = 0x08000
+PERM_ANNOUNCE   = 0x10000
+PERM_OBOARDS    = 0x20000
+PERM_ACBOARD    = 0x40000
+UNUSE1          = 0x80000
+UNUSE2          = 0x100000
+UNUSE3          = 0x200000
+UNUSE4          = 0x400000
+UNUSE5          = 0x800000
+UNUSE6          = 0x1000000
+UNUSE7          = 0x2000000
+UNUSE8          = 0x4000000
+UNUSE9          = 0x8000000
+UNUSE10         = 0x10000000
+UNUSE11         = 0x20000000
 
-while [ $# -ne 0 ] ; do
-	pathcomp="${pathcomp}${1}"
-	shift
+PERM_ADMENU    = PERM_ACCOUNTS , PERM_OVOTE , PERM_SYSOP,PERM_OBOARDS,PERM_WELCOME,PERM_ANNOUNCE
+AUTOSET_PERM    = PERM_CHAT, PERM_PAGE, PERM_POST, PERM_LOGINOK
 
-	if [ ! -d "${pathcomp}" ] ;
-        then
-		$mkdirprog "${pathcomp}"
-	else
-		true
-	fi
+#include "etc/menu.ini"
+EOF
 
-	pathcomp="${pathcomp}/"
-done
-fi
-
-if [ x"$dir_arg" != x ]
-then
-	$doit $instcmd $dst &&
-
-	if [ x"$chowncmd" != x ]; then $doit $chowncmd $dst; else true ; fi &&
-	if [ x"$chgrpcmd" != x ]; then $doit $chgrpcmd $dst; else true ; fi &&
-	if [ x"$stripcmd" != x ]; then $doit $stripcmd $dst; else true ; fi &&
-	if [ x"$chmodcmd" != x ]; then $doit $chmodcmd $dst; else true ; fi
-else
-
-# If we're going to rename the final executable, determine the name now.
-
-	if [ x"$transformarg" = x ] 
-	then
-		dstfile=`basename $dst`
-	else
-		dstfile=`basename $dst $transformbasename | 
-			sed $transformarg`$transformbasename
-	fi
-
-# don't allow the sed command to completely eliminate the filename
-
-	if [ x"$dstfile" = x ] 
-	then
-		dstfile=`basename $dst`
-	else
-		true
-	fi
-
-# Make a temp file name in the proper directory.
-
-	dsttmp=$dstdir/#inst.$$#
-
-# Move or copy the file name to the temp name
-
-	$doit $instcmd $src $dsttmp &&
-
-	trap "rm -f ${dsttmp}" 0 &&
-
-# and set any options; do chmod last to preserve setuid bits
-
-# If any of these fail, we abort the whole thing.  If we want to
-# ignore errors from any of these, just make sure not to ignore
-# errors from the above "$doit $instcmd $src $dsttmp" command.
-
-	if [ x"$chowncmd" != x ]; then $doit $chowncmd $dsttmp; else true;fi &&
-	if [ x"$chgrpcmd" != x ]; then $doit $chgrpcmd $dsttmp; else true;fi &&
-	if [ x"$stripcmd" != x ]; then $doit $stripcmd $dsttmp; else true;fi &&
-	if [ x"$chmodcmd" != x ]; then $doit $chmodcmd $dsttmp; else true;fi &&
-
-# Now rename the file to the real destination.
-
-	$doit $rmcmd -f $dstdir/$dstfile &&
-	$doit $mvcmd $dsttmp $dstdir/$dstfile 
-
-fi &&
-
-
-exit 0
+#------------------------------------------------------------------
+echo "Install is over...."

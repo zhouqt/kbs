@@ -665,50 +665,6 @@ char filepath[];
     strcpy(quote_file,filepath);
 }
 
-
-
-char *
-sethomefile( buf, userid, filename )  /*取某用户文件 路径*/
-char    *buf, *userid, *filename;
-{
-    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
-        sprintf( buf, "home/%c/%s/%s", toupper(userid[0]), userid, filename );
-    else
-        sprintf( buf, "home/wrong/%s/%s", userid, filename);
-    return buf;
-}
-
-char *
-setuserfile( buf, filename )    /* 取当前用户文件 路径*/
-char    *buf, *filename;
-{
-    if (isalpha(currentuser->userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
-        sprintf( buf, "home/%c/%s/%s", toupper(currentuser->userid[0]), currentuser->userid, filename );
-    else
-        sprintf( buf, "home/wrong/%s/%s", currentuser->userid, filename);
-    return buf;
-}
-
-char *
-setmailfile( buf, userid, filename )    /* 取某用户mail文件 路径*/
-char    *buf, *userid, *filename;
-{
-    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
-        sprintf( buf, "mail/%c/%s/%s", toupper(userid[0]), userid, filename );
-    else
-        sprintf( buf, "mail/wrong/%s/%s", userid, filename);
-    return buf;
-}
-
-char *
-setbpath( buf, boardname )   /* 取某版 路径 */
-char *buf, *boardname;
-{
-    strcpy( buf, "boards/" );
-    strcat( buf, boardname );
-    return buf;
-}
-
 char *
 setbdir( buf, boardname )  /* 根据阅读模式 取某版 目录路径 */
 char *buf, *boardname;
@@ -737,13 +693,7 @@ char *buf, *boardname;
     return buf;
 }
 
-char *
-setbfile( buf, boardname, filename )  /* 取某版下文件 */
-char *buf, *boardname, *filename;
-{
-    sprintf( buf, "boards/%s/%s", boardname, filename );
-    return buf;
-}
+
 
 int
 deny_me()   /* 判断当前用户 是否被禁止在当前版发文章 */

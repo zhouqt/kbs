@@ -119,6 +119,38 @@ pressanykey()
 
 #include "modetype.c"
 
+char *idle_str( struct user_info *uent )
+{
+    static char hh_mm_ss[ 32 ];
+    struct stat buf;
+    time_t      now, diff;
+    int         hh, mm;
+
+    now = time(0);
+    diff = now - uent->freshtime;
+    if (diff==now) /* @#$#!@$#@! */
+        diff=0;
+#ifdef DOTIMEOUT
+    /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
+       kicking out all users */
+
+    if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5 ))
+        kill( uent->pid, SIGHUP );
+#endif
+
+    hh = diff / 3600;
+    mm = (diff / 60) % 60;
+
+    if ( hh > 0 )
+        sprintf( hh_mm_ss, "%d:%02d", hh, mm );
+    else if ( mm > 0 )
+        sprintf( hh_mm_ss, "%d", mm );
+    else sprintf ( hh_mm_ss, "   ");
+
+
+    return hh_mm_ss;
+}
+
 char *modestring(int mode,int towho,int complete,char *chatid)
 {
     static char modestr[STRLEN];
@@ -415,10 +447,7 @@ char    *name;
     exit( 1 );
 }
 
-void *
-attach_shm( shmstr, defaultkey, shmsize )  /* attach share memory */
-char    *shmstr;
-int     defaultkey, shmsize;
+void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 {
     void        *shmptr;
     int         shmkey, shmid;
@@ -433,26 +462,24 @@ int     defaultkey, shmsize;
         if( shmptr == (void *)-1 )
             attach_err( shmkey, "shmat" );
         memset( shmptr, 0, shmsize );
+        *iscreate=1;
     } else {
         shmptr = (void *) shmat( shmid, NULL, 0 );
         if( shmptr == (void *)-1 )
             attach_err( shmkey, "shmat" );
+        *iscreate=0;
     }
     return shmptr;
 }
 #else
-void
-attach_err( shmkey, name )
-int     shmkey;
-char    *name;
+void attach_err( int     shmkey,char    *name)
 {
     sprintf( genbuf, "Error! %s error! key = %x.\n", name, shmkey );
     write( 1, genbuf, strlen( genbuf ) );
     exit( 1 );
 }
 
-void *
-attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
+void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 {
     void        *shmptr;
     int         shmkey, shmid;
@@ -600,5 +627,64 @@ int compute_user_value( struct userec *urec)
          return (667 * 24 * 60 - value)/(60*24); */
     return (120 * 24 * 60 - value)/(60*24);
 }
+
+
+char *
+sethomefile( buf, userid, filename )  /*取某用户文件 路径*/
+char    *buf, *userid, *filename;
+{
+    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
+        sprintf( buf, "home/%c/%s/%s", toupper(userid[0]), userid, filename );
+    else
+        sprintf( buf, "home/wrong/%s/%s", userid, filename);
+    return buf;
+}
+
+char *
+setuserfile( buf, filename )    /* 取当前用户文件 路径*/
+char    *buf, *filename;
+{
+    if (isalpha(currentuser->userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
+        sprintf( buf, "home/%c/%s/%s", toupper(currentuser->userid[0]), currentuser->userid, filename );
+    else
+        sprintf( buf, "home/wrong/%s/%s", currentuser->userid, filename);
+    return buf;
+}
+
+char *
+setmailfile( buf, userid, filename )    /* 取某用户mail文件 路径*/
+char    *buf, *userid, *filename;
+{
+    if (isalpha(userid[0]))  /* 加入错误判断,提高容错性, alex 1997.1.6*/
+        sprintf( buf, "mail/%c/%s/%s", toupper(userid[0]), userid, filename );
+    else
+        sprintf( buf, "mail/wrong/%s/%s", userid, filename);
+    return buf;
+}
+
+char *
+setbpath( buf, boardname )   /* 取某版 路径 */
+char *buf, *boardname;
+{
+    strcpy( buf, "boards/" );
+    strcat( buf, boardname );
+    return buf;
+}
+
+char *
+setbfile( buf, boardname, filename )  /* 取某版下文件 */
+char *buf, *boardname, *filename;
+{
+    sprintf( buf, "boards/%s/%s", boardname, filename );
+    return buf;
+}
+
+void RemoveMsgCountFile2(userID)
+char *userID;
+{
+  char fname[STRLEN];
+  sethomefile(fname,userID,"msgcount");
+  unlink(fname);
+ }
 
 

@@ -263,11 +263,13 @@ void clear_utmp(int uent)
 {
  	int lockfd , hashkey, find;
    	struct user_info zeroinfo;
+#ifdef BBSMAIN
 	if (!uent) {
 		if (!CHECK_UENT(uinfo.uid))
 			return;
 		uent=utmpent;
 	}
+#endif
    	lockfd=utmp_lock();
 
 	hashkey=utmp_hash(utmpshm->uinfo[uent-1].userid);
@@ -279,7 +281,7 @@ void clear_utmp(int uent)
 		while (utmpshm->next[find-1]&&utmpshm->next[find-1]!=uent)
 			find = utmpshm->next[find-1];
 		if (!utmpshm->next[find-1])
-			log("3system","UTMP:Can't find %s [%d]",uinfo.userid,uent);
+			log("3system","UTMP:Can't find %s [%d]",utmpshm->uinfo[uent-1].userid,uent);
 		else
 			utmpshm->next[find-1]=utmpshm->next[uent-1];
 	}

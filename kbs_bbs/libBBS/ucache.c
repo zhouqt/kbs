@@ -524,7 +524,9 @@ int getnewuserid(char* userid)
     flock( fd, LOCK_EX );
 
     i = searchnewuser();
+#ifdef BBSMAIN
     log( "1system", "APPLY: uid %d from %s", i, fromhost );
+#endif
 
     if( i <= 0 || i > MAXUSERS ) {
         flock(fd,LOCK_UN) ;
