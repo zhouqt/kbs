@@ -206,11 +206,11 @@ int get_top(int type)
 	if(type==0 || type==4){
 		sprintf(cmptime,"YEAR(time)=YEAR(CURDATE()) AND MONTH(time)=MONTH(CURDATE()) AND DAYOFMONTH(time)=DAYOFMONTH(CURDATE())");
 	}else if(type==1){
-		sprintf(cmptime,"YEAR(time)=YEAR(CURDATE()) AND WEEK(time)=WEEK(CURDATE())");
+		sprintf(cmptime,"YEAR(date)=YEAR(CURDATE()) AND WEEK(date)=WEEK(CURDATE())");
 	}else if(type==2){
-		sprintf(cmptime,"YEAR(time)=YEAR(CURDATE()) AND MONTH(time)=MONTH(CURDATE())");
+		sprintf(cmptime,"YEAR(date)=YEAR(CURDATE()) AND MONTH(date)=MONTH(CURDATE())");
 	}else if(type==3){
-		sprintf(cmptime,"YEAR(time)=YEAR(CURDATE())");
+		sprintf(cmptime,"YEAR(date)=YEAR(CURDATE())");
 	}
 
 	bzero(top, TOPCOUNT * sizeof(struct postrec));
@@ -227,15 +227,21 @@ int get_top(int type)
 			if(topnum>=mytop[type])
 				break;
 #endif
-		}else{
+		}else if(type==0){
 			if(topnum>=mytop[type] && sectopnumtotal>=SECNUM*SECTOPCOUNT)
+				break;
+		}else{
+			if(topnum >= mytop[type])
 				break;
 		}
 
 		if(start > MAXCMP)
 			break;
 
-		sprintf(sqlbuf,"SELECT bname,threadid,MAX(time) AS maxtime,count(DISTINCT userid) AS count FROM postlog WHERE %s GROUP BY bname,threadid ORDER BY count desc LIMIT %d,%d;", cmptime, start, INTERVAL);
+		if(type==0 || type==4)
+			sprintf(sqlbuf,"SELECT bname,threadid,MAX(time) AS maxtime,count(DISTINCT userid) AS count FROM postlog WHERE %s GROUP BY bname,threadid ORDER BY count desc LIMIT %d,%d;", cmptime, start, INTERVAL);
+		else
+			sprintf(sqlbuf,"SELECT bname,threadid,time,count,title,userid FROM toplog WHERE %s ORDER BY count desc LIMIT %d,%d",cmptime,start, INTERVAL);
 		
 		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
 			mysql_close(&s);
@@ -281,12 +287,19 @@ int get_top(int type)
 				continue;
 
 			threadid = atoi(row[1]);
-			if(get_file_title(row[0], threadid, title, userid) == NULL){
-				continue;
+			if(type==0 || type==4){
+				if(get_file_title(row[0], threadid, title, userid) == NULL){
+					continue;
+				}
+			}else{
+				strncpy(title, row[4], 80);
+				title[80]=0;
+				strncpy(userid, row[5], IDLEN);
+				userid[IDLEN]=0;
 			}
 /**一个版面最多3个十大**/
 #ifndef NINE_BUILD
-			if(type!=4){
+			if(type==0){
                 m = 0;
                 for (n = 0; n < topnum; n++) {
                     if (!strcmp(row[0], top[n].board))
@@ -305,7 +318,7 @@ int get_top(int type)
 					if(m>3)
 						continue;
 				}
-			}else{
+			}else if(type==4){
 #ifdef SMTH
 				if(strcasecmp(row[0], BLESS_BOARD)){
                 	m = 0;
@@ -360,6 +373,8 @@ int get_top(int type)
 #endif
 
 			/***计算分区十大***/
+			if(type==0){
+
 			i=secid;
 			if(i!=-1){
 				if( sectopnum[i] < SECTOPCOUNT){
@@ -379,6 +394,8 @@ int get_top(int type)
 				}
 			}
 
+			}//type==0
+
 			if(type==4){
 #ifdef SMTH
 				if(topnum>=5 && topnum1>=5)
@@ -387,8 +404,11 @@ int get_top(int type)
 				if(topnum>=mytop[type])
 					break;
 #endif
-			}else{
+			}else if(type==0){
 				if(topnum >= mytop[type] && sectopnumtotal >= SECNUM*SECTOPCOUNT)
+					break;
+			}else{
+				if(topnum >= mytop[type])
 					break;
 			}
 
@@ -634,7 +654,7 @@ void poststat(int mytype)
 	get_top(mytype);
 	writestat(mytype);
 	gen_hot_subjects_xml(mytype);
-	if(mytype!=4)
+	if(mytype==0)
 		gen_secs_hot_subjects_xml(mytype);
 
 	if(mytype==0)
