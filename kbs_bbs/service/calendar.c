@@ -44,7 +44,7 @@ void draw_main()
         saveline(i, 1, save_scr[i]);
     resetcolor();
     for(i=0;i<13;i++) {
-        move(i, 50);
+        move(i, 48);
         clrtoeol();
     }
     move(0, 52);
@@ -54,28 +54,28 @@ void draw_main()
         prints("\x1b[0;36m©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥©¥");
     }
     prints("\x1b[32;1m");
-    move(1, 50);
+    move(1, 49);
     prints("%s", nums[year/1000]);
-    move(2, 50);
+    move(2, 49);
     prints("%s", nums[year/100%10]);
-    move(3, 50);
+    move(3, 49);
     prints("%s", nums[year/10%10]);
-    move(4, 50);
+    move(4, 49);
     prints("%s", nums[year%10]);
-    move(5, 50);
+    move(5, 49);
     prints("Äê");
     if(month>10) {
-        move(6, 50);
+        move(7, 49);
         prints("%s", nums[10]);
-        move(7, 50);
+        move(8, 49);
         prints("%s", nums[month%10]);
-        move(8, 50);
+        move(9, 49);
         prints("ÔÂ");
     }
     else {
-        move(6, 50);
+        move(7, 49);
         prints("%s", nums[month]);
-        move(7, 50);
+        move(8, 49);
         prints("ÔÂ");
     }
     k=0;
@@ -104,6 +104,7 @@ void draw_main()
         }
         i++;
     }
+    move(t_lines-1, 80);
 }
 
 int newfile(char * s)
