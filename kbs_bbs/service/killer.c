@@ -438,6 +438,7 @@ void join_room(struct room_struct * r)
         inrooms.killernum = 0;
         strcpy(inrooms.title, "ÎÒÉ±ÎÒÉ±ÎÒÉ±É±É±");
         inrooms.peoples[i].flag = PEOPLE_ROOMOP;
+        save_inroom(myroom)
     }
     r->people++;
     end_change_inroom();
