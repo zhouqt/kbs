@@ -52,7 +52,7 @@ function showBoardGroup($secNum, $group, $boardName, $boardDesc = "") {
 ?>
 <td width=33% align=left>
 <input type="checkbox" value="1"  name="<?php echo $brd_name[$t]; ?>"<?php if (bbs_is_favboard($brd_id[$t])) echo " checked=\"checked\""; ?>>
-<a href="board.php?name=<?php echo $brd_name[$t]; ?>"><?php echo $brd_name[$t]; ?> (<?php echo $brd_desc[$t]; ?>)</a></td>
+<a href="board.php?name=<?php echo $brd_name[$t]; ?>"><?php echo htmlspecialchars($brd_name[$t]); ?> (<?php echo htmlspecialchars($brd_desc[$t]); ?>)</a></td>
 <?php
 					$boards++;
 					if ($boards % 3 == 0) echo "</tr>";
@@ -85,14 +85,19 @@ function showBoardGroup($secNum, $group, $boardName, $boardDesc = "") {
 function main() {
 	global $section_names;
 	global $sectionCount;
-	if(bbs_load_favboard(0)==-1) { //0: always use the top level fav boards
+	if (isset($_GET["select"]))
+		$select = $_GET["select"];
+	else
+		$select = 0;
+	settype($select, "integer");
+	if(bbs_load_favboard($select) == -1) {
 		foundErr("无法读取收藏夹");
 		return false;
 	}
 ?>
 <br>
 <base target="_blank" />
-<form method="post" target="_self" action="savefavboards.php">
+<form method="post" target="_self" action="savefavboards.php?select=<?php echo $select; ?>">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <?php
 	for ($i=0;$i<$sectionCount;$i++){
@@ -100,7 +105,7 @@ function main() {
 	}
 ?>
 </table>
-<p align="center"><input type="submit" value="保存到收藏夹顶级目录" /></p>
+<p align="center"><input type="submit" value="保存到<?php echo ($select==0)?"顶层":"当前"; ?>收藏夹目录" /></p>
 </form>
 <?php
 	return true;

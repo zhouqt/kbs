@@ -25,6 +25,12 @@ if (isErrFounded()) {
 show_footer();
 
 function main(){
+	if (isset($_GET["select"]))
+		$select = $_GET["select"];
+	else
+		$select = 0;
+	settype($select, "integer");
+
 /*
 	这个地方先用最丑陋的代码，需要调用PHP函数n次，保存fav文件n次。
 	下面这个是理想化的代码，但是PHP函数传参array的用法太繁，懒得写... - atppp
@@ -32,9 +38,8 @@ function main(){
 	foreach($_POST as $board => $value) {
 		if ($value == 1) $boards[] = $board;
 	}
-	bbs_set_favboards($boards);
+	bbs_set_favboards($select, $boards);
 */
-	$select = 0;
 	if (bbs_load_favboard($select) == -1) {
 		foundErr("无法读取收藏夹");
 		return false;
@@ -55,6 +60,6 @@ function main(){
 		if ($value == 1) bbs_add_favboard($board);
 	}
 	setSucMsg("修改成功！");
-	return html_success_quit('返回控制面板', 'usermanagemenu.php');
+	return html_success_quit('返回收藏版面', 'favboard.php?select='.$select);
 }
 ?>

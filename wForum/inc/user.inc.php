@@ -76,19 +76,19 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 <?php
 		}
 	} else {
+		$select = $secNum; //代码相似性 :D
 ?>
 用户收藏夹
 <?php
-		if ($secNum != 0) {
-			$list_father = bbs_get_father($secNum);
+		if ($select != 0) {
+			$list_father = bbs_get_father($select);
 ?>
 &nbsp;[<a href="favboard.php?select=<?php echo $list_father; ?>">回到上一级</a>]
 <?php
-		} else {
-?>
-&nbsp;[<a href="modifyfavboards.php">管理收藏夹</a>]
-<?php
 		}
+?>
+&nbsp;[<a href="modifyfavboards.php?select=<?php echo $select; ?>">管理本收藏夹目录</a>]
+<?php
 	}
 ?>
 </th></tr>
@@ -101,7 +101,7 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 		if ($loadFav == 0) {
 			$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
 		} else {
-			$boards = bbs_fav_boards($secNum, 1);
+			$boards = bbs_fav_boards($select, 1);
 			if ($boards == FALSE) {
 	    		foundErr("读取版列表失败");
 	    		return false;
@@ -155,10 +155,13 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 		<TABLE cellSpacing=0 cellPadding=2 width=100% border=0>
 		<tr><td class=TableBody1 width=*>
 <?php
-					if ($loadFav == 0 || !$isGroup) { //ToDo: 这个地方有必要用htmlspecialchars? - atppp
-						echo '<a href="board.php?name='.$brd_name[$i].'"><font color=#000066>'.$brd_name[$i].'</font></a>';
+					if ($loadFav == 0 || !$isGroup) {
+						echo '<a href="board.php?name='.$brd_name[$i].'"><font color=#000066>'.htmlspecialchars($brd_name[$i]).'</font></a>';
+						if ($loadFav == 1) {
+							echo '&nbsp;&nbsp;<a href="favboard.php?select='.$select.'&delete='.$brd_npos[$i].'" title="从收藏中删除该版面">&lt;删&gt;</a>';
+						}
 					} else {
-						echo '<a href="favboard.php?select='.$brd_bid[$i].'"><font color=#000066>[目录]'.$brd_desc[$i].'</font></a>';
+						echo '<a href="favboard.php?select='.$brd_bid[$i].'"><font color=#000066>[目录]'.htmlspecialchars($brd_desc[$i]).'</font></a>&nbsp;&nbsp;<a href="favboard.php?select='.$select.'&deldir='.$brd_npos[$i].'" title="从收藏中删除该目录">&lt;删&gt;</a>';
 					}
 
 ?>
