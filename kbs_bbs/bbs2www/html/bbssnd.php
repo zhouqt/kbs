@@ -26,7 +26,17 @@ login_init();
 		if (bbs_checkpostperm($usernum, $boardID) == 0) html_error_quit("您无权在该版面发文!");
 		
 		if (!isset($_POST["title"])) html_error_quit("没有指定文章标题!");
-		if (!isset($_POST["text"])) html_error_quit("没有指定文章内容!");
+		if (!isset($_POST["tmpl"])) {
+			if (!isset($_POST["text"])) html_error_quit("没有指定文章内容!");
+			$tmpl = 0;
+		} else {
+			$tmpl = 1;
+			$filename = "tmp/".$currentuser["userid"].".tmpl.tmp";
+			$handle = fopen($filename, "r");
+			$contents = fread($handle, filesize($filename));
+			fclose($handle);
+			unlink($filename);
+		}
 		if (!isset($_POST["reid"])) $reID = $_GET["reid"];   
 		else
 			$reID = 0;
@@ -46,7 +56,7 @@ login_init();
 		//post articles
 		$anony = isset($_POST["anony"])?intval($_POST["anony"]):0;
 		$ret = bbs_postarticle($boardName, preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST["title"])), 
-			preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["text"]), intval($_POST["signature"]), $reID, 
+			preg_replace("/\\\(['|\"|\\\])/","$1",($tmpl ? $contents :$_POST["text"])), intval($_POST["signature"]), $reID, 
 			$outgo, $anony);
 		switch ($ret) {
 			case -1:

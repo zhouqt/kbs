@@ -59,7 +59,7 @@
 		echo bbs_printansifile($tmpfile);
 ?>
 <hr class="default"/>
-<form name="postform" method="post" action="/cgi-bin/bbs/bbssnd?board=<?php echo $board; ?>">
+<form name="postform" method="post" action="/bbssnd.php?board=<?php echo $board; ?>">
 <input type="hidden" name="tmpl" value=1>
 <input type="hidden" name="title" value="<?php echo $title;?>">
 <input type="submit" value="·¢±í" />
