@@ -120,11 +120,11 @@
 		{
 ?>
 附&nbsp;&nbsp;件: <input class="sb1" type="text" name="attachname" size="50" value="" disabled="disabled" />
-<a href="#" onclick="return GoAttachWindow()" class="b2">操作附件</a>
+<a href="#" onclick="return GoAttachWindow()" class="b2">操作附件</a><br />
 <?php
 		}
 ?>
-<br>使用签名档 <select class="sb1" name="signature">
+使用签名档 <select class="sb1" name="signature">
 <?php
 		if ($currentuser["signum"] == 0)
 		{
@@ -156,8 +156,16 @@
 ?>
 </select>
  [<a target="_blank" href="bbssig.php">查看签名档</a>]
-<input type="checkbox" name="outgo" value="1" CHECKED/>转信<br />
-<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
+<?php
+    if (bbs_is_anony_board($brdarr))
+    {
+?>
+<input type="checkbox" name="anony" value="1" />匿名
+<?php
+    }
+?>
+<input type="checkbox" name="outgo" value="1" checked="checked" />转信<br />
+<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="76" wrap="hard">
 <?php
     if($reid > 0){
     $filename = $articles[1]["FILENAME"];
