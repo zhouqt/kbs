@@ -382,7 +382,7 @@ int do_commend(int ent, struct fileheader *fileinfo, char *direct)
     if ((fileinfo->accessed[1] & FILE_COMMEND) && !HAS_PERM(currentuser, PERM_SYSOP)) {
         clear();
         move(1, 0);
-        prints("本文章已经推荐过，无需再推荐");
+        prints("本文章已经推荐过，感谢您的热心推荐");
         move(2, 0);
         pressreturn();
         return FULLUPDATE;
