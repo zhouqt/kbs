@@ -278,4 +278,12 @@ function isMultiQueryAllowed() {
 	}
 	return false;
 }
+
+function isSelfMultiQueryAllowed() {
+	global $loginok;
+
+    if ($loginok != 1) return false;
+    if (isMultiQueryAllowed()) return true;
+    return (ALLOW_SELF_MULTIQUERY);
+}
 ?>
