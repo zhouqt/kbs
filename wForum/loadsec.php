@@ -22,6 +22,17 @@ if ( isset($_GET['fav']) ) {
 	$fav = false;
 	if ( ($secNum < 0)  && ($secNum >= $sectionCount)) exit(0);
 }
+
+/* set the cookie to avoid problem. */
+if (SECTION_DEF_CLOSE) {
+	$cn = "HideSecBoards";
+	if (!isset($_COOKIE[$cn])) {
+		if (!$fav) {
+			$ssb = ~(1 << ($secNum+1));
+		} else $ssb = ~0;
+		setcookie($cn, $ssb ,time() + 604800);
+	}
+}
 ?>
 <html>
 <body>
