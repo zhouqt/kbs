@@ -2678,7 +2678,7 @@ do { \
             BUFFERED_OUTPUT(output, "&nbsp;", 6); \
             break; \
         case '\'': \
-            BUFFERED_OUTPUT(output, "''", 2); \
+            BUFFERED_OUTPUT(output, "\\\'", 2); \
             break; \
         default: \
             BUFFERED_OUTPUT(output, &(_js_ptr[_js_i]), 1); \
@@ -2863,7 +2863,7 @@ do { \
     for (_jbo_i = 0; _jbo_i < buflen; _jbo_i++) { \
         switch (_jbo_ptr[_jbo_i]) { \
         case '\'': \
-            BUFFERED_OUTPUT(output, "''", 2); \
+            BUFFERED_OUTPUT(output, "\\\'", 2); \
             break; \
         default: \
             BUFFERED_OUTPUT(output, &(_jbo_ptr[_jbo_i]), 1); \
@@ -3047,6 +3047,10 @@ void output_ansi_javascript(char *buf, size_t buflen,
 
 }
 
+/**
+ * Warning: Use of this function is deprecated. It's kept only for compatible
+ * purpose. Use output_ansi_text() instead.
+ */
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char* attachlink)
 {
     unsigned int font_style = 0;
