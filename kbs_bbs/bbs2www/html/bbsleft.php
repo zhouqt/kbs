@@ -227,6 +227,20 @@ login_init();
 
 ?>
 <script src="bbsleft.js"></script>
+<script language="javascript">
+function bbs_auto_reload() {
+    top.f4.location.reload();
+<?php
+    if($currentuser["userid"]!="guest"){
+?>
+    top.fmsg.location.reload();
+<?php
+    }
+?>
+    setTimeout('bbs_auto_reload()',540000);
+}
+bbs_auto_reload();
+</script>
 <body  TOPMARGIN="0" leftmargin="0">
 <iframe id="hiddenframe" name="hiddenframe" width="0" height="0"></iframe>
 <table width="100%" border="0" cellspacing="0" cellpadding="0">

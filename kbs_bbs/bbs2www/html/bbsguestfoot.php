@@ -5,7 +5,9 @@ login_init();
     if ($loginok != 1)
         html_nologin();
     else {
-        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"1000; url=/bbsguestfoot.php\">",1);
+        //html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"1000; url=/bbsguestfoot.php\">",1);
+        html_init("gb2312","","",1);
+        
 ?>
 <script language="JavaScript">
 <!--

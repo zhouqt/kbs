@@ -40,12 +40,15 @@ echo $srcutmpnum; ?>">[»ØÑ¶Ï¢]</a> <a href="bbsgetmsg.php?refresh">[ºöÂÔ]</a></t
 </script>
 <?php
     } else {
-        $refresh_time = (isset($_GET["refresh"]))?60:600;
 		//no msg
 ?><script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "0,*,20";
 </script>
-<meta http-equiv="Refresh" content="<?php echo $refresh_time; ?>; url=/bbsgetmsg.php">
 <?php
+    if (isset($_GET["refresh"])) {
+?>
+<meta http-equiv="Refresh" content="60; url=/bbsgetmsg.php">
+<?php
+	}	
 		}
 		html_normal_quit();
     }

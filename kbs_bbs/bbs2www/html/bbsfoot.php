@@ -5,8 +5,8 @@ login_init();
     if ($loginok != 1)
         html_nologin();
     else {
-        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"600; url=/bbsfoot.php\">",1);
-
+        //html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"600; url=/bbsfoot.php\">",1);
+        html_init("gb2312","","",1);
 		if (isset($_GET["total"]))
 			$oldtotal = $_GET["total"];
 		else
