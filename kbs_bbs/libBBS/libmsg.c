@@ -203,7 +203,7 @@ MYSQL * my_connect_mysql(MYSQL *s){
                             sysconf_str("MYSQLUSER"),
 			    sysconf_str("MYSQLPASSWORD"),
 			    sysconf_str("MYSQLSMSDATABASE"),
-			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0);
+			    sysconf_eval("MYSQLPORT",3306), sysconf_str("MYSQLSOCKET"), 0);
 }
 
 int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed, session_t* session)
