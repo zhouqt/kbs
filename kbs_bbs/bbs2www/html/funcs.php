@@ -3,7 +3,7 @@
 	 * File included by all other php scripts.
 	 * $Id$
 	 */
-dl("../libexec/bbs/libphpbbslib.so");
+@dl("$topdir/../libexec/bbs/libphpbbslib.so");
 global $SQUID_ACCL;
 global $BBS_PERM_POSTMASK;
 global $BBS_PERM_NOZAP;
@@ -38,7 +38,9 @@ $filename_trans = array(" " => "_",
 	"&" => "_",
 	">" => "_",
 	"<" => "_",
-	"*" => "_"
+	"*" => "_",
+	"\"" => "_",
+	"'" => "_"
 	);
 require("site.php");
 
