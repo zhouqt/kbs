@@ -107,7 +107,6 @@
 <?php
 				}
 			}
-                        bbs_release_favboard(); 
                         
                 }
 ?>
