@@ -909,7 +909,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
     }
     firstline = NULL;
     if (!aborted) {
-        if (*pattachpos) {
+        if (pattachpos && *pattachpos) {
             char buf[MAXPATH];
             int fsrc,fdst;
             snprintf(buf,MAXPATH,"%s.attach",filename);
