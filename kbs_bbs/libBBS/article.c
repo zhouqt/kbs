@@ -526,7 +526,7 @@ int post_cross(struct userec* user,char* toboard,char* fromboard,char* title,cha
         sprintf(buf,"cross_posted '%s' on '%s'", postfile.title, toboard) ;
     else
         sprintf(buf,"自动发表系统 POST '%s' on '%s'", postfile.title, toboard) ;
-    bbslog("1user",buf) ;
+    bbslog("1user","%s",buf) ;
     return 1;
 }
 

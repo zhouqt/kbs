@@ -69,8 +69,10 @@ int main() {
 
 	init_all();
 	if(!loginok) http_fatal("ÄãÃ»ÓÐµÇÂ¼");
-	abort_program();
+	if (getcurrusr())
+		www_user_logoff(getcurrusr(),getusernum(x->userid),u_info,get_curr_utmpent());
 	/*
+	abort_program();
 	setcookie("UTMPKEY", "");
 	setcookie("UTMPNUM", "");
 	setcookie("UTMPUSERID", "");

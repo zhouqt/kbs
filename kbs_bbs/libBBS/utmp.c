@@ -190,13 +190,13 @@ static void logloop()
      data[i]=ptr-1;
         for (j=0;j<i;j++) {
 			if (data[j]==data[i]){
-				bbslog("3system",buf);
+				bbslog("3system","%s",buf);
 				bbslog("3system","find loop!");
 				exit(0);
 			}
 		}
      if ((i-1)%10==0) {
-		bbslog("3system",buf);
+		bbslog("3system","%s",buf);
 		buf[0]=0;
      }
      ptr=utmphead->list_next[ptr-1];

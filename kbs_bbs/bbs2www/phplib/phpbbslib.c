@@ -299,141 +299,25 @@ static int cmpuids2(int unum, struct user_info *urec)
 
 static ZEND_FUNCTION(bbs_wwwlogin)
 {
-	char buf[255];
 	long ret;
 	long kick_multi=0;
+	struct user_info *pu;
+	int utmpent;
+	
 	if(ZEND_NUM_ARGS() == 1) {
           if (zend_parse_parameters(1 TSRMLS_CC, "l" , &kick_multi) != SUCCESS) {
                 WRONG_PARAM_COUNT;
           }
-	}
-	if(strcasecmp(getcurrentuser()->userid, "guest")) {
-		struct user_info ui;
-		int utmpent;
-                time_t t;
-		int multi_ret=1;
-		int tmp;
-		while (multi_ret!=0) {
-			int lres;
-			int num;
-			struct user_info uin;
-			multi_ret=multilogin_user(getcurrentuser(),getcurrentuser_num());
-			if ((multi_ret!=0)&&(!kick_multi))
-				RETURN_LONG(-1);
-			if (multi_ret==0) break;
-	                if ( !(num=search_ulist( &uin, cmpuids2, getcurrentuser_num()) ))
-	                        continue;  /* user isn't logged in */
-			if (uin.pid==1) {
-				clear_utmp(num,getcurrentuser_num());
-				continue;
-			}
-	                if (!uin.active || (kill(uin.pid,0) == -1)) {
-				clear_utmp(num,getcurrentuser_num());
-	                        continue;  /* stale entry in utmp file */
-			}
-	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
-			lres = kill(uin.pid, SIGHUP);
-			sleep(1);
-			if(lres)
-	/*---	---*/
-	                  kill(uin.pid,9);
-			clear_utmp(num,getcurrentuser_num());
-		}
-
-		if(!HAS_PERM(getcurrentuser(), PERM_BASIC))
-			RETURN_LONG(3);
-		if(check_ban_IP(fromhost,buf))
-			RETURN_LONG(4);
-		t=getcurrentuser()->lastlogin;
-		getcurrentuser()->lastlogin=time(0);
-		if(abs(t-time(0))<5)
-			RETURN_LONG(5);
-		getcurrentuser()->numlogins++;
-		strncpy(getcurrentuser()->lasthost, fromhost, IPLEN);
-		if (!HAS_PERM(getcurrentuser(),PERM_LOGINOK) && !HAS_PERM(getcurrentuser(),PERM_SYSOP))
-		{
-			if (strchr(getcurrentuser()->realemail, '@')
-				&& valid_ident(getcurrentuser()->realemail))
-			{
-				getcurrentuser()->userlevel |= PERM_DEFAULT;
-				if (HAS_PERM(getcurrentuser(),PERM_DENYPOST)/* && !HAS_PERM(currentuser,PERM_SYSOP)*/)
-					getcurrentuser()->userlevel &= ~PERM_POST;
-			}
-		}
-
-		memset( &ui, 0, sizeof( struct user_info ) );
-    		ui.active = YEA ;
-		/* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
-		if( (HAS_PERM(getcurrentuser(),PERM_CHATCLOAK)
-			|| HAS_PERM(getcurrentuser(),PERM_CLOAK)) 
-			&& (getcurrentuser()->flags[0] & CLOAK_FLAG))
-		    	ui.invisible = YEA;
-		ui.pager = 0;
-		if(DEFINE(getcurrentuser(),DEF_FRIENDCALL))
-		{
-		    ui.pager|=FRIEND_PAGER;
-		}
-		if(getcurrentuser()->flags[0] & PAGER_FLAG)
-		{
-		    ui.pager|=ALL_PAGER;
-		    ui.pager|=FRIEND_PAGER;
-		}
-		if(DEFINE(getcurrentuser(),DEF_FRIENDMSG))
-		{
-		    ui.pager|=FRIENDMSG_PAGER;
-		}
-		if(DEFINE(getcurrentuser(),DEF_ALLMSG))
-		{
-		    ui.pager|=ALLMSG_PAGER;
-		    ui.pager|=FRIENDMSG_PAGER;
-		}
-		ui.uid=getcurrentuser_num();
-		strncpy( ui.from, fromhost, IPLEN );
-		ui.logintime=time(0);	/* for counting user's stay time */
-										/* refer to bbsfoot.c for details */
-		ui.freshtime = time(0);
-		tmp=rand()%100000000;
-		ui.utmpkey=tmp;
-		ui.mode = WEBEXPLORE;
-		strncpy( ui.userid,   getcurrentuser()->userid,   20 );
-		strncpy( ui.realname, getcurrentuser()->realname, 20 );
-		strncpy( ui.username, getcurrentuser()->username, 40 );
-		utmpent = getnewutmpent(&ui) ;
-		if (utmpent == -1)
-			ret=1;
-		else {
-			struct user_info* u;
-			u = get_utmpent(utmpent);
-			u->pid = 1;
-			if (addto_msglist(utmpent, getcurrentuser()->userid) < 0)
-			{
-				zend_error(E_WARNING,"can't add msg:%d %s!!!\n",utmpent,getcurrentuser()->userid);
-				setcurrentuinfo(u,utmpent);
-				ret=2;
-			}
-			else {
-				/*
-				sprintf(buf, "%d", utmpent);
-				setcookie("utmpnum", buf);
-				sprintf(buf, "%d", tmp);
-				setcookie("utmpkey", buf);
-				setcookie("utmpuserid", getcurrentuser()->userid);
-				set_my_cookie();
-				*/
-				setcurrentuinfo(u,utmpent);
-				ret=0;
-			}
-		}
-	} else /* guest */
-		ret=0;
-	if ((ret==0)||(ret==2)) {
+	} else if (ZEND_NUM_ARGS() != 0) 
+                WRONG_PARAM_COUNT;
+	ret=www_user_login(getcurrentuser(),getcurrentuser_num(), kick_multi, 
 #ifdef SQUID_ACCL
-		snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fullfrom);
+		fullfrom,
 #else
-		snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
+		fromhost,
 #endif
-		bbslog("1system", buf);
-	}
+		&pu,&utmpent);
+	setcurrentuinfo(pu,utmpent);
 	RETURN_LONG(ret);
 }
 
@@ -497,33 +381,26 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 	int idx;
 	struct userec* user;
 
-    if (zend_parse_parameters(4 TSRMLS_CC, "slla" , &userid, &userid_len,
+	if (zend_parse_parameters(4 TSRMLS_CC, "slla" , &userid, &userid_len,
 				&utmpnum, &utmpkey, &user_array) != SUCCESS) {
-                WRONG_PARAM_COUNT;
-    }
+	            WRONG_PARAM_COUNT;
+	}
 	if (userid_len>IDLEN) RETURN_LONG(1);
 	if(utmpnum<1 || utmpnum>=MAXACTIVE)
 		RETURN_LONG(2);
 
-	pui = get_utmpent(utmpnum);
-	if (strcasecmp(pui->userid,"guest")) {
-		if (pui->utmpkey!=utmpkey)
-			RETURN_LONG(3);
-		if (pui->active==0)
-			RETURN_LONG(4);
-		if (strcmp(pui->userid,userid))
-			RETURN_LONG(5);
+	if ((ret=www_user_init(utmpnum,userid,utmpkey,&user, &pui))==0) {
 		setcurrentuinfo(pui,utmpnum);
-	};
-	idx=getuser(pui->userid,&user);
-	if (user==NULL)
-		RETURN_LONG(6);
-	setcurrentuser(user,idx);
-	if(array_init(user_array) != SUCCESS)
-		ret=7;
-	else {
-		assign_userinfo(user_array,pui,idx);
-		ret=0;
+		idx=getuser(pui->userid,&user);
+		setcurrentuser(user,idx);
+		if (user==NULL)
+			RETURN_LONG(6);
+		if(array_init(user_array) != SUCCESS)
+			ret=7;
+		else {
+			assign_userinfo(user_array,pui,idx);
+			ret=0;
+		}
 	}
 	RETURN_LONG(ret);
 }
@@ -728,13 +605,14 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 	resolve_ucache();
 	resolve_utmp();
 	resolve_boards();
+	www_data_init();
 #ifdef SQUID_ACCL
 	REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);
 #else
 	REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 0, CONST_CS | CONST_PERSISTENT);
 #endif
-	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_POSTMASK", 0100000, CONST_CS | CONST_PERSISTENT);
-	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_NOZAP", 02000000, CONST_CS | CONST_PERSISTENT);
+	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);
+	REGISTER_MAIN_LONG_CONSTANT("BBS_PERM_NOZAP", PERM_NOZAP, CONST_CS | CONST_PERSISTENT);
 	chdir(old_pwd);
 #ifdef DEBUG
 	zend_error(E_WARNING,"module init");

@@ -469,6 +469,7 @@ int shm_init()
 	resolve_ucache();
 	resolve_utmp();
 	resolve_boards(); 
+	www_data_init();
 }
 
 int user_init(struct userec **x, struct user_info **y)
@@ -483,57 +484,8 @@ int user_init(struct userec **x, struct user_info **y)
 	/*printf("utmpnum = %s\n", num);*/
 	key=atoi(getparm("UTMPKEY"));
 	i=atoi(num);
-	if(i<1 || i>=MAXACTIVE)
-		/*return 0;*/
-		goto forguest;
-	/*utmpshm_ptr = get_utmpshm_addr();*/
-	/* 这里有问题, (*y)在后面将一直指向&(utmpshm_ptr->uinfo[i]),
-	 * 不管后面的那些判断是否成功 */
-	(*y) = get_user_info(i);
-	if(strncmp((*y)->from, fromhost, IPLEN))
-	{
-		/*printf("from is ->%s<-, len = %d\n", (*y)->from, strlen((*y)->from));*/
-		/*printf("fromhost is ->%s<-, len = %d\n", fromhost, strlen(fromhost));*/
-		/*printf("fromhost error!\n");*/
-		goto forguest;
-	}
-	if((*y)->utmpkey != key)
-	{
-		goto forguest;
-	}
-	
-	if((*y)->active == 0)
-	{
-		goto forguest;
-	}
-	if((*y)->userid[0] == 0)
-	{
-		goto forguest;
-	}
-	if((*y)->mode!=WEBEXPLORE)
-	{
-		goto forguest;
-	}
-	if(!strcasecmp((*y)->userid, "new") || !strcasecmp((*y)->userid, "guest"))
-		goto forguest;
-	
-	getuser((*y)->userid, x);
 
-	if(*x==0)
-	{
-		goto forguest;
-	}
-	if(strcmp((*x)->userid, id))
-	{
-		goto forguest;
-	}
-	return 1;
-
-forguest:
-	getuser("guest", x);
-	if (*x == NULL)
-		exit(-1);
-	return 0;
+	www_user_init(i,id, key, x, y);
 }
 
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig)
@@ -1693,3 +1645,397 @@ int get_curr_utmpent()
 {
 	return get_utmpent_num(u_info);
 }
+
+
+/* 以下的代码是cgi和php都使用的*/
+#define MAX_WWW_GUEST 30000
+
+static struct user_info www_guest_uinfo;
+/* WWW GUEST这样做有个同步问题，就是当被清除一个
+  GUEST的时候如果正好这个guest刷新了，那么会重写数据结构
+  所以，要注意除了key之外的数据如果要变动，必须保证
+  在这种情况下不会逻辑混乱。freshtime因为即使被错误的
+  client更新了，误差在秒级，而且也不会造成用户问题，所以
+  不会出错。但是如果需要更新key，那么就有可能导致下一个
+  guest用户的key被错误的覆盖。这个是个问题
+  */
+struct WWW_GUEST_S {
+	int key;
+	time_t freshtime;
+	time_t logintime;
+};
+
+#define MAX_WWW_MAP_ITEM MAX_WWW_GUEST>>5  /* 除以32 */
+#define MAX_WWW_GUEST_IDLE_TIME 3600 /* www guest发呆时间设为1小时*/
+
+struct WWW_GUEST_TABLE {
+	DWORD use_map[MAX_WWW_MAP_ITEM];
+	time_t uptime;
+	struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
+};
+
+static struct WWW_GUEST_TABLE *wwwguest_shm=NULL;
+
+static void longlock(int signo)
+{
+    bbslog("5system","www_guest lock for so long time!!!.");
+    exit(-1);
+}
+
+static int www_guest_lock()
+{
+    int          fd=0;
+    fd = open( "www_guest.lock", O_RDWR|O_CREAT, 0600 );
+    if( utmpfd < 0 ) {
+        return -1;
+    }
+    signal(SIGALRM,longlock);
+    alarm(10);
+    if (flock( fd, LOCK_EX ) ==-1)  {
+        return -1;
+    }
+    signal(SIGALRM,SIG_IGN);
+    return fd;
+}
+
+static void www_guest_unlock(int fd)
+{
+	flock(fd,LOCK_UN);
+	close(fd);
+}
+
+static int www_new_guest_entry()
+{
+	struct public_data* pub=get_publicshm();
+	int fd,i,j;
+	time_t now;
+	if (pub->www_guest_count>=MAX_WWW_GUEST)
+		return -1;
+	fd = www_guest_lock();
+	if (fd==-1) return -1;
+
+    	now = time( NULL );
+    	if(( now > wwwguest_shm->uptime + 240 )||(now < wwwguest_shm->uptime-240)) {
+        	wwwguest_shm->uptime = now;
+        	bbslog( "1system", "WWW guest:Clean guest table");
+        	for (i=0;i<MAX_WWW_GUEST;i++) {
+        		if (now-wwwguest_shm->guest_entry[i].freshtime<MAX_WWW_GUEST_IDLE_TIME)
+        			continue;
+        		/*清除use_map*/
+        		wwwguest_shm->use_map[i/32]&=1<<(i%32);
+			if ((wwwguest_shm->use_map[i/32])&(1<<(i%32)))
+				pub->www_guest_count--;
+        		/* 清除数据 */
+        		bzero(&wwwguest_shm->guest_entry[i],sizeof(struct WWW_GUEST_S));
+        	}
+    	}
+	for (i=0;i< MAX_WWW_MAP_ITEM;i++)
+		if (wwwguest_shm->use_map[i]!=0xFFFFFFFF) {
+			DWORD map=wwwguest_shm->use_map[i];
+			for (j=0;j<32;j++)
+				if ((map&1)==0) {
+					wwwguest_shm->use_map[i]|=1<<j;
+					wwwguest_shm->guest_entry[i*32+j].freshtime=time(0);
+					/*避免被kick下去*/
+					break;
+				}
+				else map=map>>1;
+			break;
+		}
+	if (i!=MAX_WWW_MAP_ITEM)
+		pub->www_guest_count++;
+	www_guest_unlock(fd);
+	if (i==MAX_WWW_MAP_ITEM)
+		return -1;
+	return i*32+j;
+}
+
+static int www_free_guest_entry(int idx)
+{
+	int fd;
+	struct public_data* pub=get_publicshm();
+	if ((idx<0)||(idx>MAX_WWW_GUEST))
+		return -1;
+	fd = www_guest_lock();
+	wwwguest_shm->use_map[idx/32]&=1<<(idx%32);
+	if ((wwwguest_shm->use_map[idx/32])&(1<<(idx%32)))
+		pub->www_guest_count--;
+	www_guest_unlock(fd);
+	return 0;
+}
+
+static int resolve_guest_table()
+{
+	int iscreate;
+    	if( wwwguest_shm == NULL ) {
+       	 wwwguest_shm = (struct WWW_GUEST_TABLE*)
+        	attach_shm( "WWWGUEST_SHMKEY", 4500, sizeof( *wwwguest_shm ),&iscreate );/*attach user tmp cache */
+	        if (iscreate) {
+			struct public_data* pub=get_publicshm();
+			int fd = www_guest_lock();
+			if (fd==-1) return -1;
+			bzero(wwwguest_shm,sizeof(*wwwguest_shm));
+			pub->www_guest_count=0;
+			wwwguest_shm.uptime=time(0);
+	        	www_guest_unlock(fd);
+	    	}
+    	}
+    	return 0;
+}
+int www_data_init()
+{
+	struct userec *guest;
+	/* www_guest_info目前先使用一个全局变量来做，这样
+	  会导致线程不安全:P   但是对于进程模型的cgi 和php
+	  足够了
+	  */
+	bzero(&www_guest_uinfo,sizeof(www_guest_uinfo));
+	www_guest_uinfo.active=YEA;
+	www_guest_uinfo.uid=getuser("guest",&guest);
+	if (www_guest_uinfo.uid==0)
+		return -1;
+	www_guest_uinfo.invisible=YEA;
+	www_guest_uinfo.pid=1;
+	www_guest_uinfo.mode=WEBEXPLORE;
+	strcpy(www_guest_uinfo.username,guest->username);
+	strcpy(www_guest_uinfo.userid,guest->userid);
+	www_guest_uinfo.pager=0;
+	strcpy(www_guest_uinfo.realname,guest->realname);
+	www_guest_uinfo.utmpkey=0;
+
+	/* destuid 将被用来存放www guest表的入口*/
+	www_guest_uinfo.destuid=0;
+
+	if (resolve_guest_table()!=0)
+		return -1;
+	return 0;
+}
+
+int www_user_init(int useridx,char* userid,int key,struct userec **x, struct user_info **y)
+{
+	struct UTMPFILE *utmpshm_ptr;
+
+	/*printf("utmpuserid = %s\n", id);*/
+	/*printf("utmpnum = %s\n", num);*/
+	if(strcasecmp(userid, "new"))
+		return -1;
+	
+	if (strcasecmp(userid,"guest")) {
+	 	/* 非guest在线用户处理*/
+		if(useridx<1 || useridx>=MAXACTIVE)
+			return -1;
+		(*y) = get_user_info(i);
+		if((strncmp((*y)->from, fromhost, IPLEN))||((*y)->utmpkey != key))
+			return -2;
+		
+		if(((*y)->active == 0))||((*y)->userid[0] == 0)
+			||((*y)->mode!=WEBEXPLORE)
+			return -3;
+
+		if(strcmp((*y)->userid, userid))
+			return -4;
+		getuser((*y)->userid, x);
+
+		if(*x==0)
+			return -1;
+	} else {
+	/* guest用户处理 */
+		struct WWW_GUEST_S * guest_info;
+		if(useridx<1 || useridx>=MAX_WWW_GUEST)
+			return -1;
+		guest_info=&wwwguest_shm->guest_entry[useridx];
+		if (guest_info->key!=key)
+			return -2;
+		
+		strncpy(www_guest_uinfo.from,fromhost,IPLEN);
+		www_guest_uinfo.freshtime=guest_info.freshtime;
+		www_guest_uinfo.utmpkey=key;
+		www_guest_uinfo.destuid=useridx;
+		www_guest_uinfo.logintime=guest_info.logintime;
+
+		*y=&www_guest_uinfo;
+
+		getuser("guest", x);
+		if (*x == NULL)
+			return -1;
+	}
+	return 0;
+}
+
+int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost,
+	struct **user_info ppuinfo,int* putmpent)
+{
+	int ret;
+	char buf[255];
+	if(strcasecmp(user->userid, "guest")) {
+		struct user_info ui;
+		int utmpent;
+              time_t t;
+		int multi_ret=1;
+		int tmp;
+		while (multi_ret!=0) {
+			int lres;
+			int num;
+			struct user_info uin;
+			multi_ret=multilogin_user(user,useridx);
+			if ((multi_ret!=0)&&(!kick_multi))
+				return -1;
+			if (multi_ret==0) break;
+	                if ( !(num=search_ulist( &uin, cmpuids2, useridx) ))
+	                        continue;  /* user isn't logged in */
+			if (uin.pid==1) {
+				clear_utmp(num,useridx);
+				continue;
+			}
+	                if (!uin.active || (kill(uin.pid,0) == -1)) {
+				clear_utmp(num,useridx);
+	                        continue;  /* stale entry in utmp file */
+			}
+	/*---	modified by period	first try SIGHUP	2000-11-08	---*/
+			lres = kill(uin.pid, SIGHUP);
+			sleep(1);
+			if(lres)
+	/*---	---*/
+	                  kill(uin.pid,9);
+			clear_utmp(num,useridx);
+		}
+
+		if(!HAS_PERM(user, PERM_BASIC))
+			return 3;
+		if(check_ban_IP(fromhost,buf))
+			return 4;
+		t=user->lastlogin;
+		if(abs(t-time(0))<5)
+			return 5;
+		user->lastlogin=time(0);
+		user->numlogins++;
+		strncpy(user->lasthost, fromhost, IPLEN);
+		if (!HAS_PERM(user,PERM_LOGINOK) && !HAS_PERM(user,PERM_SYSOP))
+		{
+			if (strchr(user->realemail, '@')
+				&& valid_ident(user->realemail))
+			{
+				user->userlevel |= PERM_DEFAULT;
+				if (HAS_PERM(user,PERM_DENYPOST)/* && !HAS_PERM(currentuser,PERM_SYSOP)*/)
+					user->userlevel &= ~PERM_POST;
+			}
+		}
+
+		memset( &ui, 0, sizeof( struct user_info ) );
+    		ui.active = YEA ;
+		/* Bigman 2000.8.29 智囊团能够隐身 */
+		if( (HAS_PERM(user,PERM_CHATCLOAK)
+			|| HAS_PERM(user,PERM_CLOAK)) 
+			&& (user->flags[0] & CLOAK_FLAG))
+		    	ui.invisible = YEA;
+		ui.pager = 0;
+		if(DEFINE(user,DEF_FRIENDCALL))
+		{
+		    ui.pager|=FRIEND_PAGER;
+		}
+		if(user->flags[0] & PAGER_FLAG)
+		{
+		    ui.pager|=ALL_PAGER;
+		    ui.pager|=FRIEND_PAGER;
+		}
+		if(DEFINE(user,DEF_FRIENDMSG))
+		{
+		    ui.pager|=FRIENDMSG_PAGER;
+		}
+		if(DEFINE(user,DEF_ALLMSG))
+		{
+		    ui.pager|=ALLMSG_PAGER;
+		    ui.pager|=FRIENDMSG_PAGER;
+		}
+		ui.uid=useridx;
+		strncpy( ui.from, fromhost, IPLEN );
+		ui.logintime=time(0);	/* for counting user's stay time */
+										/* refer to bbsfoot.c for details */
+		ui.freshtime = time(0);
+		tmp=rand()%100000000;
+		ui.utmpkey=tmp;
+		ui.mode = WEBEXPLORE;
+		strncpy( ui.userid,   user->userid,   20 );
+		strncpy( ui.realname, user->realname, 20 );
+		strncpy( ui.username, user->username, 40 );
+		utmpent = getnewutmpent(&ui) ;
+		if (utmpent == -1)
+			ret=1;
+		else {
+			struct user_info* u;
+			u = get_utmpent(utmpent);
+			u->pid = 1;
+			if (addto_msglist(utmpent, user->userid) < 0)
+			{
+				bbslog("3system","can't add msg:%d %s!!!\n",utmpent,user->userid);
+				*ppuinfo=u;
+				*pputmpent=utmpent;
+				ret=2;
+			}
+			else {
+				*ppuinfo=u;
+				*putmpent=utmpent;
+				ret=0;
+			}
+		}
+	} else {
+	/* TODO:alloc guest table*/ 
+		int idx=www_new_guest_entry();
+		if (idx<0) ret = 5;
+		else {
+			int tmp=rand()%100000000;
+			wwwguest_shm->guest_entry[idx].key=tmp;
+			wwwguest_shm->guest_entry[idx].logintime=time(0);
+			www_guest_uinfo.logintime=wwwguest_shm->guest_entry[idx].logintime;
+
+			wwwguest_shm->guest_entry[idx].freshtime=time(0);
+			www_guest_uinfo.freshtime=wwwguest_shm->guest_entry[idx].freshtime;
+
+			www_guest_uinfo.destuid=idx;
+			www_guest_uinfo.utmpkey=key;
+			*ppuinfo=&www_guest_uinfo;
+			*putmpent=-1;
+			ret=0;
+		}
+	}
+	
+	if ((ret==0)||(ret==2)) {
+		snprintf(buf, sizeof(buf), "ENTER ?@%s [www]", fromhost);
+		bbslog("1system", "%s",buf);
+	}
+	return ret;
+}
+
+static void setflags(struct userec*u, int mask, value)
+{
+    if (((u->flags[0] & mask) && 1) != value) {
+        if (value) u->flags[0] |= mask;
+        else u->flags[0] &= ~mask;
+    }
+}
+int www_user_logoff(struct userec* user,int useridx,struct *user_info puinfo,int userinfoidx)
+{
+	int stay=0;
+	struct userec *x = NULL;
+
+	stay = abs(time(0) - u_info->logintime);
+	/* 上站时间超过 2 小时按 2 小时计 */
+	if(stay>7200)
+		stay = 7200;
+	user->stay+=stay;
+	record_exit_time();
+	bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, 
+			x->username, get_curr_utmpent(), useridx);
+	if (strccasecmp(user->userid,"guest")) {
+	    	if(!puinfo->active) return;
+	    		setflags(user,PAGER_FLAG, (puinfo->pager&ALL_PAGER));
+
+		if((HAS_PERM(user,PERM_CHATCLOAK) || HAS_PERM(puinfo,PERM_CLOAK)))
+	        	setflags(user,CLOAK_FLAG, puinfo->invisible);
+
+    		clear_utmp(userinfoidx,puinfo);
+	} else {
+		www_free_guest_entry(puinfo->destuid);
+	}
+}
+

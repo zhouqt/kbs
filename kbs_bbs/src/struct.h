@@ -120,7 +120,8 @@ struct posttop
 struct public_data {
 	time_t nowtime;
 	int	sysconfimg_version;
-	char unused[1016];
+	int www_guest_count;
+	char unused[1012];
 };
 
 struct smenuitem {

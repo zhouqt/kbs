@@ -16,7 +16,7 @@
 #ifdef SMTH
 #define CACHE_ROOT "/backup/www/htdocs"
 #define MAX_CA_PATH_LEN 1024
-#define report(x)        bbslog("user",x)
+#define report(x)        bbslog("user","%s",x)
 #endif
 
 #define FIRST_PAGE	"/index.html"
@@ -323,5 +323,11 @@ time_t file_time(char *file);
 int count_user_online(char *uid);
 
 int get_curr_utmpent();
+
+int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost,
+	struct **user_info ppuinfo,int* putmpent);
+int www_user_logoff(struct userec* user,int useridx,struct *user_info puinfo,int userinfoidx);
+int www_user_init(int useridx,char* userid,int key,struct userec **x, struct user_info **y);
+int www_data_init();
 
 #endif /* BBSLIB_H */
