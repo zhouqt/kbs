@@ -149,7 +149,8 @@ function main() {
            <tr> 
             <td class=TableBody1 valign=top width=15%><b>ÄÚÈÝ£º</b></td>
             <td  class=TableBody1 valign=middle>
-              <textarea style="width:500px;height:300px" name="content"><?php
+              <textarea style="width:500px;height:300px" name="content">
+<?php
     if($action>1){
 		if ($action==3){
     		$filename = "boards/" . $_GET['board']. "/" . $article['FILENAME'];
