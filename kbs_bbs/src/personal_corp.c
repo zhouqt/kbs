@@ -645,7 +645,7 @@ int pc_read(char *userid)
         return 0;
 
     strncpy(pc_select_user, userid, IDLEN + 2);
-    pc_select_user[IDLEN - 1] = 0;
+    pc_select_user[IDLEN] = 0;
 
   startuser:
     clear();
