@@ -161,10 +161,10 @@ login_init();
 		
 	function display_blog_menu($userid,$userfirstlogin)
 	{
-		$db["HOST"]=bbs_sysconf_str("MYSQLHOST");
-		$db["USER"]=bbs_sysconf_str("MYSQLUSER");
-		$db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
-		$db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
+		$db["HOST"]=bbs_sysconf_str("MYSQLBLOGHOST");
+		$db["USER"]=bbs_sysconf_str("MYSQLBLOGUSER");
+		$db["PASS"]=bbs_sysconf_str("MYSQLBLOGPASSWORD");
+		$db["NAME"]=bbs_sysconf_str("MYSQLBLOGDATABASE");
 		
 		@$link = mysql_connect($db["HOST"],$db["USER"],$db["PASS"]) ;
 		if (!$link) return;
