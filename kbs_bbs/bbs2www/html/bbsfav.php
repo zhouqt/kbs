@@ -21,7 +21,7 @@
                 
                 if ($select < -1)// || $group > sizeof($section_nums))
                         html_error_quit("错误的参数");
-                if(bbs_load_favboard(0,$select)==-1)
+                if(bbs_load_favboard($select)==-1)
                         html_error_quit("错误的参数");
                 if (isset($_GET["delete"]))
                 {
@@ -39,14 +39,7 @@
                         $add_bname=$_GET["bname"];
                         $sssss=bbs_add_favboard($add_bname);
                 }
-        /*      if (isset($_GET["yank"]))
-                        $yank = $_GET["yank"];
-                else
-                        $yank = 0;
-                settype($yank, "integer");
-        */
-                $boards = bbs_fav_boards($select, $yank);
-                //print_r($boards);
+                $boards = bbs_fav_boards($select, 1);
                 if ($boards == FALSE)
                         html_error_quit("读取版列表失败");
 ?>
@@ -57,18 +50,6 @@
  if( $select===-1 ) echo "[根目录]";
 ?>
 <a href="bbssec.php">分类讨论区</a>
-<?php
-                if ($yank == 0)
-                {
-?>
-<?php
-                }
-                else
-                {
-?>
-<?php
-                }
-?>
 <hr class="default"/>
 <table width="610">
 <tr>
@@ -89,6 +70,8 @@
                 $brd_unread = $boards["UNREAD"]; // 未读标记
                 $brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
                 $brd_position= $boards["POSITION"];//位置
+                $brd_flag= $boards["FLAG"];//目录标识
+                $brd_bid= $boards["BID"];//目录标识
                 $rows = sizeof($brd_name);
                 if($select != -1)
                 {
@@ -96,7 +79,7 @@
                 <tr>
 <td></td>
 <td><img src=/images/folder.gif></td>
-<td><a href="bbsfav.php?select=<?php echo $list_father?>">回到上一级</a></td>
+<td><a href="bbsfav.php?select=<?php echo $list_father; ?>">回到上一级</a></td>
 <td colspan=4></td>
 </tr>
 <?php
@@ -110,16 +93,16 @@
 <td><?php echo $i+1; ?></td>
 <td>
 <?php
-                        if ($brd_unread[$i] ==-1 )
+                        if ($brd_flag[$i] ==-1 )
                         {
 ?>
         <img src=/images/folder.gif></td>
         <td>
-        <a href="bbsfav.php?select=<?php echo $brd_artcnt[$i];?>&up=<?php echo $select;?>">
-        <?php echo $brd_name[$i];?>
+        <a href="bbsfav.php?select=<?php echo $brd_bid[$i];?>&up=<?php echo $select; ?>">
+        <?php echo $brd_desc[$i];?>
         </a></td>
         <td colspan=4></td>
-        <td><a href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo $brd_artcnt[$i];?>">删除</a></td>
+        <td><a href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo $brd_bid[$i];?>">删除</a></td>
         </tr>   
 <?php
                                 continue;
