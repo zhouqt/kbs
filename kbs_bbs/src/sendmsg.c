@@ -217,7 +217,7 @@ int show_allmsgs()
             i = 0;
         }
         else {
-            for(j=0;j<23;j++) {
+            for(j=0;j<24;j++) {
                 good_move(j, 0);
                 clrtoeol();
             }
