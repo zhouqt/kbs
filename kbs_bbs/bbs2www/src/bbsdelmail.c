@@ -54,7 +54,7 @@ int main()
         if (!strcmp(f.filename, file)) {
             fclose(fp);
             sprintf(path, "mail/%c/%s/%s", toupper(id[0]), id, ".DIR");
-            del_mail(num, fileheader, path);
+            del_mail(num, &f, path);
             printf("信件已删除.<br><a href=\"bbsmail\">返回所有信件列表</a>\n");
             http_quit();
         }
