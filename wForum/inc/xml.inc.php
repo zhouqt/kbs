@@ -1,6 +1,9 @@
 <?php
 /* most code copied from bbs2www code */
 
+if (version_compare(PHP_VERSION,'5','>='))
+	require_once('domxml-php4-to-php5.inc.php'); //Load the PHP5 converter
+
 function undo_html_format($str)
 {
 	$str = preg_replace("/&gt;/i", ">", $str);
