@@ -1220,6 +1220,8 @@ static PHP_FUNCTION(bbs_printansifile)
 static void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
 {
     add_assoc_string(array, "FILENAME", fh->filename, 1);
+    add_assoc_string(array, "O_BOARD", fh->o_board, 1);
+    add_assoc_long(array, "O_ID", fh->o_id);
     add_assoc_long(array, "ID", fh->id);
     add_assoc_long(array, "GROUPID", fh->groupid);
     add_assoc_long(array, "REID", fh->reid);
