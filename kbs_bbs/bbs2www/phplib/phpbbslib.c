@@ -6693,6 +6693,7 @@ static PHP_FUNCTION(bbs_register_sms_docheck)
 		WRONG_PARAM_COUNT;
 	}
 
+	{char cmd[256];sprintf(cmd,"echo %s_ >> /home/stiger/test",dest);system(cmd);}
 	ret = web_register_sms_docheck( dest );
 
 	RETURN_LONG(ret);
