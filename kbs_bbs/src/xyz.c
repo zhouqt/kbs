@@ -22,7 +22,6 @@
 */
 
 #include "bbs.h"
-#include "select.h"
 int use_define=0;
 extern int iscolor;
 extern int switch_code(); /* KCN,99.09.05 */
@@ -94,6 +93,11 @@ showperminfo( unsigned int pbits,int i,int flag)
 }
 */
 
+struct _setperm_select {
+	unsigned int pbits;
+	unsigned int basic;
+	unsigned int oldbits;
+};
 int showperminfo(struct _select_def* conf,int i)
 {
 	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
@@ -140,11 +144,6 @@ unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc
     return( pbits );
 }
 */
-struct _setperm_select {
-	unsigned int pbits;
-	unsigned int basic;
-	unsigned int oldbits;
-};
 int setperm_select(struct _select_def* conf)
 {
 	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
@@ -193,8 +192,7 @@ int setperm_key(struct _select_def *conf,int key)
     return SHOW_CONTINUE;
 }
 
-unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def* conf,int i))
-)
+unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def*,int))
 {
 	struct _select_def perm_conf;
 	struct _setperm_select arg;
@@ -530,7 +528,7 @@ XCheckLevel() /* Leeward 98.06.05 */
     prints("请设定需要检查的权限\n");
     scanuser.userlevel = 0;
     /* change showperminfoX to showperminfo*/
-    newlevel = setperms(scanuser.userlevel,"权限",NUMPERMS,showperminfo);
+    newlevel = setperms(scanuser.userlevel, 0, "权限",NUMPERMS,showperminfo);
     move(2,0);
     if (newlevel == scanuser.userlevel)
         prints("你没有设定任何权限\n");
@@ -638,7 +636,7 @@ x_userdefine()
     clrtobot();
     move(2,0);
     use_define=1;
-    newlevel = setperms(lookupuser->userdefine,"参数",NUMDEFINES,showperminfo);
+    newlevel = setperms(lookupuser->userdefine,0 , "参数",NUMDEFINES,showperminfo);
     move(2,0);
     if (newlevel == lookupuser->userdefine)
         prints("参数没有修改...\n");

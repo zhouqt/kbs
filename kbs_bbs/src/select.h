@@ -1,3 +1,5 @@
+#ifndef _SELECT_H
+#define _SELECT_H
 #define SHOW_QUIT 0 /*函数退出*/
 #define SHOW_DIRCHANGE 1 /*需要重新获取数据刷新列表*/
 #define SHOW_REFRESH 2	/* 只重画列表*/
@@ -71,3 +73,4 @@ struct _select_def {
 
 int list_select(struct _select_def* conf,int key);
 void list_select_loop(struct _select_def* conf);
+#endif

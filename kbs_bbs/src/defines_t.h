@@ -2,6 +2,7 @@
 
 */
 #ifdef BBSMAIN
+#include "select.h"
 
 #ifdef INTERNET_EMAIL
 int mail_uforward(int ent,struct fileheader *fileinfo,char *direct );
@@ -48,7 +49,6 @@ int num_in_buf();
 
 /* xyz.c*/
 int modify_user_mode(int mode);
-int showperminfo( unsigned int pbits,int i,int flag);
 
 /* more.c */
 int ansimore(char* filename,int promptend);
@@ -216,7 +216,8 @@ void do_move(int destcol,int destline,void (*outc)(char));
 
 /* xyz.c */
 int do_exec(char* com,char*wd);
-unsigned int setperms(unsigned int pbits,char *prompt,int numbers,int (*showfunc)(unsigned int ,int ,int));
+int showperminfo(struct _select_def* conf,int i);
+unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int numbers,int (*show)(struct _select_def*,int));
 void  record_exit_time();
 
 /* announce.c */

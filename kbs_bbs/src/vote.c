@@ -876,7 +876,7 @@ struct ballot *uv;
     i=uv->voted;
     move(0,0);
     show_voteing_title();
-    uv->voted = setperms(uv->voted,"ѡƱ",currvote.totalitems,showvoteitems);
+    uv->voted = setperms(uv->voted,0,"ѡƱ",currvote.totalitems,showvoteitems);
     if(uv->voted==i)
         return -1;
     return 1;
