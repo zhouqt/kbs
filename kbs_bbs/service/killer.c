@@ -945,6 +945,7 @@ int do_com_menu()
                             if(inrooms[myroom].peoples[i].style!=-1)
                             if(!strcmp(inrooms[myroom].peoples[i].id, buf)) break;
                         if(!strcmp(inrooms[myroom].peoples[i].id, buf) && inrooms[myroom].peoples[i].pid!=uinfo.pid) {
+                            inrooms[myroom].peoples[i].flag&=~PEOPLE_ALIVE;
                             send_msg(i, "Äã±»ÌßÁË");
                             kill_msg(i);
                             return 2;
