@@ -708,8 +708,6 @@ standout()
     register struct screenline *slp ;
     register int        ln;
 
-    if( !strtstandoutlen)
-        return ;
     if(!standing) {
         ln = cur_ln + roll;
         while( ln >= scr_lns )  ln -= scr_lns;
@@ -727,8 +725,6 @@ standend()
     register struct screenline *slp ;
     register int        ln;
 
-    if( !strtstandoutlen)
-        return ;
     if(standing) {
         ln = cur_ln + roll;
         while( ln >= scr_lns )  ln -= scr_lns;
