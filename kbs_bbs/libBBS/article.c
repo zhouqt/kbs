@@ -383,7 +383,11 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
         fprintf(fp, "寄信人: %s (%s)\n", uid, uname);
     else {
         noname = anonymousboard(board);
-        if (mode == 0 && !(noname && Anony)) {
+        if (((mode == 0)||(mode == 2)) && !(noname && Anony)) {
+		/* mode=0是正常的发文并且local save 
+		 * mode=1是不需要记录的
+		 * mode=2是非local save的
+		 */
             write_posts(user->userid, board, title);
         }
 
