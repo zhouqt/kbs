@@ -1022,7 +1022,7 @@ static PHP_FUNCTION(bbs_getuserlevel){
 		RETURN_LONG(-1);
 	}
 	uleveltochar(title,u);
-	title[9]=0;
+	title[USER_TITLE_LEN-1]=0;
 	RETURN_STRINGL(title,strlen(title),1);
 }
 #ifdef HAVE_USERMONEY
