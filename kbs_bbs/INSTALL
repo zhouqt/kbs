@@ -1,6 +1,8 @@
 水木代码安装指南(1.0)
 0. ChangeLog
   该文档由水木清华BBS站系统维护站务维护。
+2002.7.31
+  COMMAN 加入对 ssh 部分的说明, 修正 pop3s 的说明  
 2002.7.27
   KCN v1.1
   加入pop3s，ssh部分的说明
@@ -78,9 +80,16 @@ funcs.jsp, 编辑这个 funcs.jsp 文件, 把 dl("../libexec/bbs/libphpbbslib.so")
 然后就可以用 telnet 访问 BBS 系统了. 再启动 apache 就可以从 web 端访问 BBS
 系统了.
 
-4. 其他
-1)如果想加上 ssh 支持, 在 ./configure 时加上 --enable-ssh, 不过必须有 sshbbsd
+4. SSH 的支持
+  如果想加上 ssh 支持, 在 ./configure 时加上 --enable-ssh, 不过必须有 sshbbsd
 的源代码存在. 其他的参数请参考 ./configure --help 的输出.
-2)pop3s的支持：在./configure的时候加上--with-openssl[=path]，生成的newpop3d将
+  ssh 的配置文件并未包含在发布包中，请自己从 ssh 1.2.x 的包里面找到范例编写
+配置文件都放在 bbshome/etc 下面, 如果是初次架站没有密钥，需要使用 ssh 1.2.x
+的 ssh-keygen 生成一个
+
+5. 其他
+  pop3s的支持：在./configure的时候加上--with-openssl[=path]，生成的newpop3d将
   自动包含pop3和pop3s的支持。
+  pop3s 支持需要一个证书，可以用 openssl 生成并放置在 bbshome/etc/bbs.crt 和 bbs.key
+  
 
