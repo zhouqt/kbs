@@ -2967,9 +2967,17 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
         return FULLUPDATE;
     }
     sprintf(buf, "1-保留标记m  2-删除标记t  3-文摘标记g  4-不可Re标记  5-标记#%s:[0]",
+#ifdef FILTER
         HAS_PERM(currentuser, PERM_SYSOP)?"  6-审查标记@":"");
+#else
+        "");
+#endif
     getdata(4, 0, buf, ans, 4, DOECHO, NULL, true);
+#ifdef FILTER
     if(ans[0]=='6'&&!HAS_PERM(currentuser, PERM_SYSOP)) return FULLUPDATE;
+#else
+    if(ans[0]=='6') return FULLUPDATE;
+#endif
     if(ans[0]<'1'||ans[0]>'6') return FULLUPDATE;
     if(askyn("请慎重考虑, 确认操作吗?", 0)==0) return FULLUPDATE;
     k=ans[0]-'0';
@@ -2978,7 +2986,9 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
     else if(k==3) fflag=FILE_DIGEST_FLAG;
     else if(k==4) fflag=FILE_NOREPLY_FLAG;
     else if(k==5) fflag=FILE_SIGN_FLAG;
+#ifdef FILTER
     else if(k==6) fflag=FILE_CENSOR_FLAG;
+#endif
     for(i=inum1;i<=inum2;i++) 
     if(i>=1&&i<=total) {
         f.filename[0]=0;
