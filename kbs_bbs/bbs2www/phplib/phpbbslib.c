@@ -29,11 +29,15 @@ static ZEND_FUNCTION(bbs_countarticles);
 static ZEND_FUNCTION(bbs_is_bm);
 static ZEND_FUNCTION(bbs_getannpath);
 static ZEND_FUNCTION(bbs_getmailnum);
+static ZEND_FUNCTION(bbs_getmailnum2);
+static ZEND_FUNCTION(bbs_getmails);
+static ZEND_FUNCTION(bbs_loadmaillist);
+static ZEND_FUNCTION(bbs_changemaillist);
 static ZEND_FUNCTION(bbs_getwebmsg);
 static ZEND_FUNCTION(bbs_sendwebmsg);
 static ZEND_FUNCTION(bbs_sethomefile);
+static ZEND_FUNCTION(bbs_setmailfile);
 static ZEND_FUNCTION(bbs_mail_file);
-static ZEND_FUNCTION(bbs_loadmaillist);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -67,11 +71,15 @@ static function_entry bbs_php_functions[] = {
 	ZEND_FE(bbs_is_bm, NULL)
 	ZEND_FE(bbs_getannpath, NULL)
 	ZEND_FE(bbs_getmailnum, third_arg_force_ref_011)
+    	ZEND_FE(bbs_getmailnum2,NULL)
+    	ZEND_FE(bbs_getmails,NULL)
+	ZEND_FE(bbs_loadmaillist,NULL)
+	ZEND_FE(bbs_changemaillist,NULL)
 	ZEND_FE(bbs_getwebmsg, third_arg_force_ref_111)
-    ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
+    	ZEND_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
 	ZEND_FE(bbs_sethomefile, NULL)
-    ZEND_FE(bbs_mail_file, NULL)
-    ZEND_FE(bbs_loadmaillist, NULL)
+    	ZEND_FE(bbs_setmailfile,NULL)
+    	ZEND_FE(bbs_mail_file, NULL)
 	{NULL, NULL, NULL}
 };
 
@@ -156,6 +164,13 @@ static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
     add_assoc_string(array, "userid", uinfo->userid, 1);
     add_assoc_string(array, "realname", uinfo->realname, 1);
     add_assoc_string(array, "username", uinfo->username, 1);
+}
+
+//char* maillist, 40 bytes long, 30 bytes for the mailbox name,10 bytes for the mailbox path file name.
+static void asssign_maillist(zval* array, char* boxname,char* pathname)
+{
+	add_assoc_string(array,"boxname",boxname,1);
+	add_assoc_string(array,"pathname",pathname,1);
 }
 
 static void assign_board(zval * array, struct boardheader *board, int num)
@@ -905,7 +920,7 @@ static ZEND_FUNCTION(bbs_getarticles)
 	int ac = ZEND_NUM_ARGS();
 
 	/* getting arguments */
-	if (ac != 4 
+	if (ac != 4
 		|| zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &start, &num, &mode) == FAILURE)
 	{
 		WRONG_PARAM_COUNT;
@@ -1170,6 +1185,227 @@ static ZEND_FUNCTION(bbs_getmailnum)
 }
 
 /**
+ * get the number of one user's mail path.
+ * prototype:
+ * int bbs_getmailnum2(string path);
+ *
+ * @return the number
+ * @author binxun
+ */
+static ZEND_FUNCTION(bbs_getmailnum2)
+{
+    char* path;
+    int path_len;
+
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 1
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &path,&path_len) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    RETURN_LONG(getmailnum(path));
+}
+
+/**
+ * Fetch a list of mails in one user's mail path file into an array.
+ * prototype:
+ * array bbs_getmails(char *filename);
+ *
+ * @return array of loaded mails on success,
+ *         FALSE on failure.
+ * @author binxun
+ */
+static ZEND_FUNCTION(bbs_getmails)
+{
+    	char* mailpath;
+    	int mailpath_len;
+    	int total,rows,i;
+
+	struct fileheader *mails;
+	zval *element;
+	char flags[2]; /* flags[0]: status
+			* flags[1]: reply status
+			*/
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+	if (ac != 1
+		|| zend_parse_parameters(1 TSRMLS_CC, "s", &mailpath,&mailpath_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+
+	total = getmailnum(mailpath);
+
+	/* fetching mails */
+	if (array_init(return_value) == FAILURE)
+	{
+		RETURN_FALSE;
+	}
+
+	mails = emalloc(total * sizeof(struct fileheader));
+	if(!mails)RETURN_FALSE;
+	rows = get_records(mailpath, mails, sizeof(struct fileheader), 1,total);
+	if(rows == -1)RETURN_FALSE;
+	for (i = 0; i < rows; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		if (mails[i].accessed[0] & FILE_READ) {
+			if (mails[i].accessed[0] & FILE_MARKED)
+				flags[0] = 'm';
+			else
+				flags[0] = ' ';
+		} else {
+			if (mails[i].accessed[0] & FILE_MARKED)
+				flags[0] = 'M';
+			else
+				flags[0] = 'N';
+			}
+		if (mails[i].accessed[0] & FILE_REPLIED) {
+			if (mails[i].accessed[0] & FILE_FORWARDED)
+				flags[1] = 'A';
+			else
+				flags[1] = 'R';
+		} else {
+			if (mails[i].accessed[0] & FILE_FORWARDED)
+				flags[1] = 'F';
+			else
+				flags[1] = ' ';
+			}
+		bbs_make_article_array(element, mails + i, flags, sizeof(flags));
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
+			(void*) &element, sizeof(zval*), NULL);
+	}
+	efree(mails);
+}
+
+/**
+ * load mail list. user custom mailboxs.
+ * prototype:
+ * array bbs_loadmaillist(char *userid);
+ *
+ * @return array of loaded mails on success,
+ *         FALSE on failure.
+ * @author binxun
+ */
+static ZEND_FUNCTION(bbs_loadmaillist)
+{
+    	char* userid;
+    	int userid_len;
+	char buf[10];
+	struct _mail_list maillist;
+
+	struct userec* user;
+    	int i;
+	zval *element;
+
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+	if (ac != 1
+		|| zend_parse_parameters(1 TSRMLS_CC, "s", &userid,&userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (userid_len > IDLEN)RETURN_FALSE;
+
+	if (!getuser(userid,&user))RETURN_FALSE;
+	load_mail_list(user,&maillist);
+
+	if(maillist.mail_list_t <= 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
+	{
+		RETURN_FALSE;
+	}
+
+	if (array_init(return_value) == FAILURE)
+	{
+		RETURN_FALSE;
+	}
+
+	for (i = 0; i < maillist.mail_list_t; i++)
+	{
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+		sprintf(buf,".%s",maillist.mail_list[i]+30);
+		//assign_maillist(element,maillist.mail_list[i],buf);
+		add_assoc_string(element,"boxname",maillist.mail_list[i],1);
+		add_assoc_string(element,"pathname",buf,1);
+		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
+			(void*) &element, sizeof(zval*), NULL);
+
+	}
+}
+
+/**
+ * change mail list and save new for user custom mailboxs.
+ * prototype:
+ * bool bbs_changemaillist(bool bAdd,char* userid,char* newboxname,int index); index--0 based
+ *
+ * @return
+ *         FALSE on failure.
+ * @author binxun
+ */
+static ZEND_FUNCTION(bbs_changemaillist)
+{
+    	char* boxname;
+    	int boxname_len;
+	char* userid;
+	int userid_len;
+	zend_bool bAdd;
+	int index;
+
+	struct _mail_list maillist;
+	char buf[10];
+
+	struct userec* user;
+    	int i;
+	zval *element;
+
+	int ac = ZEND_NUM_ARGS();
+
+	/* getting arguments */
+	if (ac != 4
+		|| zend_parse_parameters(4 TSRMLS_CC, "bssl", &bAdd,&userid,&userid_len,&boxname,&boxname_len,&index) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (userid_len > IDLEN)RETURN_FALSE;
+	if (boxname_len > 29)boxname[29]='\0';
+
+	if (!getuser(userid,&user))RETURN_FALSE;
+	load_mail_list(user,&maillist);
+
+	if(maillist.mail_list_t <= 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
+	{
+		RETURN_FALSE;
+	}
+
+	if(bAdd) //add
+	{
+		if(maillist.mail_list_t == MAILBOARDNUM)RETURN_FALSE;  //最大值了
+		sprintf(buf,"MAILBOX%d",maillist.mail_list_t+1);
+		strcpy(maillist.mail_list[maillist.mail_list_t],boxname);
+		strcpy(maillist.mail_list[maillist.mail_list_t]+30,buf);
+		maillist.mail_list_t +=1;
+		save_mail_list(&maillist);
+	}
+	else //delete
+	{
+		if(index < 0 || index > maillist.mail_list_t - 1)RETURN_LONG(-1);
+		maillist.mail_list_t -=1;
+		if(index != maillist.mail_list_t - 1)//it is not the last one
+		{
+			strncpy(maillist.mail_list[index],maillist.mail_list[index+1],30);
+			strncpy(maillist.mail_list[index]+30,maillist.mail_list[index+1]+30,10);
+		}
+		save_mail_list(&maillist);
+	}
+	RETURN_LONG(maillist.mail_list_t);
+}
+
+/**
  * receive webmsg.
  * prototype:
  * bool bbs_getwegmsg(string &srcid,string &buf,long &srcutmpent);
@@ -1311,6 +1547,37 @@ static ZEND_FUNCTION(bbs_sethomefile)
 }
 
 /**
+ * get the user mail dir or file.
+ * prototype:
+ * string bbs_setmailfile(string userid[,string filename])
+ *
+ * @return path string
+ * @author binxun
+ */
+static ZEND_FUNCTION(bbs_setmailfile)
+{
+    char *userid, *file;
+    int userid_len, file_len=0;
+    char buf[60];
+    int ac = ZEND_NUM_ARGS();
+    if (ac==2)  {
+    	if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else
+    if (ac==1) {
+    	if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else
+        WRONG_PARAM_COUNT;
+    if (file_len!=0)
+        setmailfile(buf,userid, file);
+    else
+        setmailpath(buf,userid);
+    RETURN_STRING(buf,1);
+}
+
+
+/**
  * mail a file from a user to another user.
  * prototype:
  * string bbs_mail_file(string srcid, string filename, string destid,
@@ -1342,66 +1609,7 @@ static ZEND_FUNCTION(bbs_mail_file)
 		RETURN_FALSE;
 	RETURN_TRUE;
 }
-
-
-static void assign_maillist(zval* array, char* boxname, char*pathname)
-{
-	add_assoc_string(array,"boxname",boxname,1);
-	add_assoc_string(array,"pathname",pathname,1);
-}
-
-/**
- * load mail list. user custom mailboxs.
- * prototype:
- * array bbs_loadmaillist(char *userid);
- * 
- * @return array of loaded mails on success,
- *         FALSE on failure.
- * @author binxun
- */
-static ZEND_FUNCTION(bbs_loadmaillist)
-{
-	char* userid;
-	int userid_len;
-	char buf[10];
-	struct _mail_list maillist;
-	struct userec* user;
-	int i;
-	zval *element;
-	int ac = ZEND_NUM_ARGS();
-	/* getting arguments */
-	if (ac != 1
-	|| zend_parse_parameters(1 TSRMLS_CC, "s", &userid,&userid_len) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	if (userid_len > IDLEN)
-		RETURN_FALSE;
-	if (!getuser(userid,&user))
-		RETURN_FALSE;
-	load_mail_list(user,&maillist);
-	if(maillist.mail_list_t <= 0 || maillist.mail_list_t > MAILBOARDNUM)//no custom mail box
-	{
-		RETURN_FALSE;
-	}
-	if (array_init(return_value) == FAILURE)
-	{
-		RETURN_FALSE;
-	}
-	for (i = 0; i < maillist.mail_list_t; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		sprintf(buf,".%s",maillist.mail_list[i]+30);
-		assign_maillist(element,maillist.mail_list[i],buf);
-		//按我的设想应该是用上面这句，结果现在只好用下面两句代替之。
-		//add_assoc_string(element,"boxname",maillist.mail_list[i],1);
-		//add_assoc_string(element,"pathname",buf,1);
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void*) &element, 
-				sizeof(zval*), NULL);
-	}
-}
-
+	
 static ZEND_MINIT_FUNCTION(bbs_module_init)
 {
     zval *bbs_home;
