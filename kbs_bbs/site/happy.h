@@ -18,6 +18,8 @@
 #define MAILOUT			0	/* 是否允许向站外主动发信 */
 #define HAVE_TSINGHUA_INFO_REGISTER 0
 
+#define BUILD_PHP_EXTENSION 1 /*将php lib编成php extension*/
+
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
@@ -138,6 +140,7 @@
 #define PERM_POST       000010
 #define PERM_LOGINOK    000020
 #define PERM_UNUSE		000040
+#define PERM_BMAMANGER 000040
 #define PERM_CLOAK      000100
 #define PERM_SEECLOAK   000200
 #define PERM_XEMPT      000400
