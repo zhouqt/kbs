@@ -57,7 +57,7 @@
 正文格式如下:<br>
 </center>
 <?php
-			echo bbs_printansifile($votearr[0]["FILENAME"]);
+			bbs_print_article($votearr[0]["FILENAME"]);
 ?>
 <center>
 <hr class="default"/>

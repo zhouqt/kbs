@@ -269,7 +269,7 @@ var strDesc = '<?php echo htmlspecialchars($brdarr["DESC"]); ?>';
 <tr><td class="t5">
 <font class="content">
 <?php
-			echo bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
+			bbs_print_article($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
 ?>
 </font>
 </td></tr>
