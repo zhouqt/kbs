@@ -18,8 +18,8 @@
 #include <time.h>
 #define DOTNAMES ".Names"
 #define INDEXHTML "index.htm"
-#define HEADER BBS_FULL_NAME ## "∶精华区"
-#define FOOTER BBS_FULL_NAME ## "∶精华区"
+#define HEADER BBS_FULL_NAME "∶精华区"
+#define FOOTER BBS_FULL_NAME "∶精华区"
 #define MAXPATH 512
 #define MAXLINELEN 512
 #ifdef AIX
