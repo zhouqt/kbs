@@ -1057,7 +1057,9 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     newbbslog(BBSLOG_USER, "%s", buf);
 
     if (fh->id == fh->groupid){
-		if( setboardorigin(boardname, -1) ){
+		if( ! normal_board(boardname) ){
+			setboardorigin(boardname, 1);
+		}else if( setboardorigin(boardname, -1) ){
 			board_regenspecial(boardname,DIR_MODE_ORIGIN,NULL);
 		}else{
     		setbdir(DIR_MODE_ORIGIN, buf, boardname);
