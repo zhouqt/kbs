@@ -257,17 +257,27 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;<a name=1><font color=#990000><B><?php echo $thread['OWNER']; ?></B></font></a></td>
 <td width=25 valign=middle>
 <?php 
-if ( chr($user['gender'])=='M' ){
-?>
-	<img src=pic/Male.gif alt=帅哥哟，在线，有人找我吗？>
-<?php 
-	//<!--img src=pic/ofmale.gif alt=帅哥哟，-->
-} else {
-	//<!--img src=pic/offemale.gif alt=美女哟，-->
-?>
-	<img src=pic/Female.gif alt=美女哟，离线，有人找我吗？>
-<?php
-}
+	$is_online = bbs_isonline($thread['OWNER']);
+	if ( chr($user['gender'])=='M' ){
+		$c = "帅哥";
+		if ($is_online) {
+			$img = "pic/Male.gif";
+		} else {
+			$img = "pic/ofmale.gif";
+		}
+	} else {
+		$c = "美女";
+		if ($is_online) {
+			$img = "pic/Female.gif";
+		} else {
+			$img = "pic/offemale.gif";
+		}
+	}
+	if ($loginok && $is_online) {
+		echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border=0 alt="'.$c.'哟，在线，有人找我吗？"/></a>';
+	} else {
+		echo '<img src="'.$img.'" border=0 alt="'.$c.'哟"/>';
+	}
 ?>
 </td>
 <td width=16 valign=middle></td></tr></table>
@@ -294,11 +304,11 @@ if ( chr($user['gender'])=='M' ){
 
 <table width=100% ><tr><td width=* valign='center'>
 <?php
-	if ($loginok) {
+/*	if ($loginok) {
 ?>
 <a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 alt="给<?php echo $thread['OWNER']; ?>发送一个短消息"></a>&nbsp;
 <?php
-	}
+	}*/
 ?>
 <a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/friend.gif" border=0 alt="把<?php echo $thread['OWNER']; ?>加入好友"></a>&nbsp;
 <a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank><img src="pic/profile.gif" border=0 alt="查看<?php echo $thread['OWNER']; ?>的个人资料"></a>&nbsp;
