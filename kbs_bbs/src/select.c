@@ -347,6 +347,7 @@ static int simple_key(struct _select_def *conf, int key)
 {
     struct _simple_select_arg *arg = (struct _simple_select_arg *) conf->arg;
     int sel;
+    int i;
 
 	if ((arg->flag&SIF_ESCQUIT)&&(key==KEY_ESC))
 		return SHOW_QUIT;
@@ -366,6 +367,11 @@ static int simple_key(struct _select_def *conf, int key)
 	        return SHOW_SELCHANGE;
 	    }
 	}
+	for (i=0;i<conf->item_count;i++)
+		if (key==arg->items[i].hotkey) {
+	        conf->new_pos = i + 1;
+	        return SHOW_SELCHANGE;
+		}
     return SHOW_CONTINUE;
 }
 
