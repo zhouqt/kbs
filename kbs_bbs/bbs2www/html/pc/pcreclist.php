@@ -62,6 +62,10 @@ $num = mysql_num_rows($result);
 </p>
 <hr size=1>
 <p align="center"><?php pc_main_navigation_bar(); ?></p>
+<p align="center">
+Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+    <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
+	</p>
 <p align="center">∞Ê»®À˘”– &copy; <?php echo $pcconfig["BBSNAME"]; ?></p>
 <?php
 mysql_free_result($result);

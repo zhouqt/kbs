@@ -175,6 +175,10 @@
 	pc_add_new_comment($comment[nid],$alert); 
 ?>
 </center>
+<p align="center">
+Powered By <a href="http://dev.smth.org" target="_blank"><font face=Verdana, Arial, Helvetica, sans-serif><b><font color="#CC0000">SmthBBS</font> 2.0</b></font></a>
+    <a href="http://www.smth.org"><font face=Verdana, Arial, Helvetica, sans-serif><b>Smth<font color="#CC0000">.Org</font></b></font></a>
+	</p>
 <?php	
 	pc_db_close($link);
 	html_normal_quit();	
