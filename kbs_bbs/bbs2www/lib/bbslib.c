@@ -2588,11 +2588,12 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             char outbuf[256];
 
             extension = attachfilename + strlen(attachfilename);
-            snprintf(link,255,"%s&amp;ap=%d",attachlink,i+attachptr-buf-i,attachfilename,attach_len);
+            snprintf(link,255,"%s&amp;ap=%d",attachlink,attachfilename-buf,attachfilename,attach_len);
 	    link[255]=0;
 	    i+=(attachptr-buf-i)+attach_len-1;
 	    if (i>buflen) continue;
             type = 0;
+	    extension--;
             while ((*extension != '.') && (*extension != NULL))
                 extension--;
             if (*extension == '.') {
