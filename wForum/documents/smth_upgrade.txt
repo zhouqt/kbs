@@ -1,4 +1,4 @@
-smth系统安装wforum说明
+smth系统升级安装wforum说明
 roy@zixia.net
 
 1. 原smth系统要使用wforum,首先需要在site.h中定义HAVE_WFORUM
