@@ -3871,7 +3871,8 @@ static int set_acl_list_refresh(struct _select_def *conf)
     docmdtitle("[µÇÂ½IP¿ØÖÆÁÐ±í]",
                "ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %4s  %-40s %-31s[m", "¼¶±ð", "IPµØÖ··¶Î§", "ÔÊÐí/¾Ü¾ø");
+    prints("[0;1;37;44m  %4s  %-40s %-31s", "¼¶±ð", "IPµØÖ··¶Î§", "ÔÊÐí/¾Ü¾ø");
+    clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
 }

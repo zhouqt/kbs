@@ -510,7 +510,8 @@ static int set_keydefine_refresh(struct _select_def *conf)
     docmdtitle("[ÉèÖÃ×Ô¶¨Òå¼ü]",
                "Ô¤¶¨Òå[\x1b[1;32mTab\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ÐÞ¸ÄÄ£Ê½[\x1b[1;32me\x1b[0;37m] ÐÞ¸Ä¼ü¶¨Òå[\x1b[1;32ms\x1b[0;37m] É¾³ý[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %-6s  %-36s  %-32s[m", "°´¼ü", "Ìæ»»ÐòÁÐ", "Ä£Ê½");
+    prints("[0;1;37;44m  %-6s  %-36s  %-32s", "°´¼ü", "Ìæ»»ÐòÁÐ", "Ä£Ê½");
+    clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
 }

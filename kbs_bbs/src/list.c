@@ -76,7 +76,7 @@ int print_user_info_title()
              /*---	modified by period	2000-10-21	ÔÚÏßÓÃ»§Êý¿ÉÒÔ´óÓÚ1000µÄ
                      "[44m%s%-12.12s %-16.16s %-16.16s %c %c %-16.16s %5s[m\n",
              ---*/
-            "[44m %s%-12.12s %-16.16s %-16.16s %c %c %-15.15s %5s[m\n", "±àºÅ  ", "Ê¹ÓÃÕß´úºÅ", (showexplain == 1) ? "ºÃÓÑËµÃ÷»ò´úºÅ" : field_2, "À´×Ô", 'P',
+            "[44m %s%-12.12s %-16.16s %-16.16s %c %c %-15.15s %5s", "±àºÅ  ", "Ê¹ÓÃÕß´úºÅ", (showexplain == 1) ? "ºÃÓÑËµÃ÷»ò´úºÅ" : field_2, "À´×Ô", 'P',
             /*
              * (HAS_PERM(currentuser,PERM_SYSOP) ? 'C' : ' ') 
              */ 'M', "¶¯Ì¬",
@@ -88,6 +88,7 @@ int print_user_info_title()
 
 #endif                          /*  */
     prints("%s", title_str);
+    clrtoeol();
     return 0;
 }
 void show_message(char *msg)

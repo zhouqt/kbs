@@ -2241,10 +2241,12 @@ static void maillist_refresh(struct _select_def *conf)
     update_endline();
 
     move(2, 0);
-    prints("%s", "\x1b[1;44;37m©§©§π¶ƒ‹—°µ•©§©§©§©§©§©§©§©§©§©§©§©§©§©–©§©§©§©§◊‘∂®“Â” œ‰©§©§©§©§©§©§©§\x1b[m");
+    prints("%s", "\x1b[1;44;37m©§©§π¶ƒ‹—°µ•©§©§©§©§©§©§©§©§©§©§©§©§©§©–©§©§©§©§◊‘∂®“Â” œ‰©§©§©§©§©§©§©§");
+    for(i=0;i<scr_cols/2-36;i++)
+        prints("©§");
     for (i = 3; i < scr_lns - 1; i++) {
         move(i, 38);
-        prints("%s", "\x1b[1;44;37m®O\x1b[m");
+        prints("%s", "\x1b[1;44;37m©¶\x1b[m");
     }
     move(17, 0);
     prints("%s", "\x1b[1;44;37m©§©§œµÕ≥‘§∂®“Â” œ‰©§©§©§©§©§©§©§©§©§©§©»\x1b[m");
@@ -2882,7 +2884,8 @@ static int set_mailgroup_refresh(struct _select_def *conf)
     docmdtitle("[…Ë÷√»∫ÃÂ–≈º˛◊È]",
                "ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ω¯»Î[\x1b[1;32mEnter\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m] ÃÌº”[\x1b[1;32ma\x1b[0;37m] –ﬁ∏ƒÀµ√˜[\x1b[1;32mT\x1b[0;37m] …æ≥˝[\x1b[1;32md\x1b[0;37m]\x1b[m ∑¢–≈[\x1b[1;32mm\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %4s  %-12s  %-58s[m", "±‡∫≈", "”√ªß¥˙∫≈", "”√ªßÀµ√˜");
+    prints("[0;1;37;44m  %4s  %-12s  %-58s", "±‡∫≈", "”√ªß¥˙∫≈", "”√ªßÀµ√˜");
+    clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
 }
@@ -3178,7 +3181,8 @@ static int set_mailgroup_list_refresh(struct _select_def *conf)
     docmdtitle("[»∫ÃÂ–≈º˛—°µ•]",
                "ÕÀ≥ˆ[\x1b[1;32m°˚\x1b[0;37m,\x1b[1;32me\x1b[0;37m] Ω¯»Î[\x1b[1;32mEnter\x1b[0;37m] —°‘Ò[\x1b[1;32m°¸\x1b[0;37m,\x1b[1;32m°˝\x1b[0;37m] ÃÌº”[\x1b[1;32ma\x1b[0;37m] ∏ƒ√˚[\x1b[1;32mT\x1b[0;37m] …æ≥˝[\x1b[1;32md\x1b[0;37m]\x1b[m ∑¢»∫ÃÂ–≈[\x1b[1;32mm\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m  %4s  %-40s %-31s[m", "±‡∫≈", "»∫ÃÂ–≈º˛◊È√˚≥∆", "»À ˝");
+    prints("[0;1;37;44m  %4s  %-40s %-31s", "±‡∫≈", "»∫ÃÂ–≈º˛◊È√˚≥∆", "»À ˝");
+    clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
 }

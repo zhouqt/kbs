@@ -1156,7 +1156,7 @@ void update_endline()
     move(t_lines - 1, 0);
     prints("%s", stitle);
     clrtoeol();
-    sprintf(stitle, "Õ£¡Ù[%d:%d]", (allstay / 60) % 1000, allstay % 60);
+    sprintf(stitle, "Õ£¡Ù[%3d:%d]", (allstay / 60) % 1000, allstay % 60);
     move(t_lines - 1, -strlen(stitle)-1);
     prints("%s", stitle);
     resetcolor();
