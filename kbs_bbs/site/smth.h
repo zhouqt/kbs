@@ -8,6 +8,8 @@
 #undef HAVE_TEMPORARY_NICK
 #undef HAVE_FRIENDS_NUM
 #undef HAVE_REVERSE_DNS
+#define CHINESE_CHARACTER
+
 
 #define SMTH
 #define FILTER
@@ -223,11 +225,12 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
+#define DEF_CHCHAR    02000000000
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
 
-#define NUMDEFINES 28
+#define NUMDEFINES 29
 
 
 #define TDEF_SPLITSCREEN 000001

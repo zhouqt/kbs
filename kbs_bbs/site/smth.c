@@ -71,7 +71,7 @@ const char *user_definestr[] = {
     "观看人数统计和祝福榜", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
-    "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
+    "对汉字进行整字处理"  /* DEF_SPLITSCREEN 2002.9.1 */
 };
 
 const char    *explain[] = {
