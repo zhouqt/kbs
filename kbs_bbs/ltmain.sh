@@ -25,6 +25,7 @@
 # the same distribution terms that you use for the rest of that program.
 
 if test "$CC" = "icc"; then
+    build_libtool_libs=yes
     lt_cv_compiler_c_o=yes
     compiler_c_o=yes
 	AR="xiar"
