@@ -510,6 +510,10 @@ struct header{
 #define CMD_BBSSEND 8
 #define CMD_GWSEND 9
 
+struct LoginPacket { //Type=1
+    char user[USER_LEN];
+    char pass[PASS_LEN];
+};
 struct RegMobileNoPacket { //Type=3
     char MobileNo[MOBILE_NUMBER_LEN];
 };
@@ -520,10 +524,24 @@ struct CheckMobileNoPacket { //Type=4
 struct UnRegPacket { //Type=5
     char MobileNo[MOBILE_NUMBER_LEN];
 };
+struct RequireBindPacket { //Type = 6
+    byte UserID[4];
+    char MobileNo[MOBILE_NUMBER_LEN];
+    char Bind;
+};
+struct ReplyBindPacket { //Type=7
+    char MobileNo[MOBILE_NUMBER_LEN];
+    char isSucceed;
+};
 struct BBSSendSMS { //Type=8
     byte UserID[4];
     char SrcMobileNo[MOBILE_NUMBER_LEN];
     char DstMobileNo[MOBILE_NUMBER_LEN];
+    byte MsgTxtLen[4];
+};
+struct GWSendSMS { //Type=9
+    byte UserID[4];
+    char SrcMobileNo[MOBILE_NUMBER_LEN];
     byte MsgTxtLen[4];
 };
 
