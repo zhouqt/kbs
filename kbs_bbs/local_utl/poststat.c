@@ -210,7 +210,7 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
         printf("i : %d, j: %d \n", i, j);
 #endif
         real = 0;
-        for (i = 0; !mytype ? (real < 10) : (i < j); i++) {
+        for (i = 0; i < j; i++) {
             strcpy(buf, ctime(&top[i].date));
             buf[20] = NULL;
             p = buf + 4;
