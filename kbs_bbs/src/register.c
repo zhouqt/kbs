@@ -301,6 +301,7 @@ void check_register_info()
 	
         move(6,0);
 		prints("此ID由您的朋友转让给您,恭喜您获得此ID,请填写以下资料.");
+		getCurrentUser()->firstlogin = getCurrentUser()->lastlogin; /* atppp 20050312 */
 		do{
 		    getdata(7,0,"学校系级或单位全称(具体到部门):",career,STRLEN,DOECHO,NULL,true);
 		}while(strlen(career) < 4);
@@ -317,7 +318,6 @@ void check_register_info()
 		getSession()->currentmemo->ud.realemail[STRLEN-16-1]='\0';
 //		write_userdata(getCurrentUser()->userid,&curruserdata);
 		write_userdata(getCurrentUser()->userid,&(getSession()->currentmemo->ud));
-		
 	}
 
 #ifdef HAVE_BIRTHDAY
