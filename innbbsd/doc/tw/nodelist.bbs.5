@@ -1,0 +1,143 @@
+.TH NODELIST.BBS 5 "30 Jul 1995" "NCTU CSIE" "Kuhn\'s Utility Reference Manual"
+.SH NAME
+nodelist.bbs \- specify the node list for use by 
+.I innbbsd 
+and 
+.I bntplink.
+
+.SH SYNOPSIS
+
+node[/exclude1,exclude2,...] [+|-][username@]hostname protocol(port) full name
+
+.SH DESCRIPTION
+.PP
+You can use 
+.BI nodelist.bbs 
+for 
+.I innbbsd 
+and
+.I bntplink.
+When used by
+.I innbbsd, 
+it controls the access permission for receiving incoming 
+articles and when used by
+.I bntplink, 
+it specifies the destination user, host, port and 
+protocol to contact for sending outgoing articles.
+
+.SH OPTIONS
+
+.TP
+.I node[/exclude1,exclude2,..]
+is the nodename for reference by 
+.I newsfeeds.bbs
+.TP
+.I /exclude1,exclude2,...
+is used to exclude posts from site exclude1, exclude2,....
+.
+.TP
+.I hostname
+is the referred hostname in full qualified domain name and 
+optionally with 
+.I [+|-]username.  
+When used by 
+.I innbbsd
+, the  
+.I [username@]hostname 
+is used for access control. Only hosts specified in 
+.I nodelist.bbs,
+can connect to 
+.I innbbsd. If 
+.I username
+is added, 
+.I innbbsd
+will consult to remote 
+.I identd
+and only ident user matched to specified 
+.I username
+has permission to access 
+.I innbbsd.
+
+.TP
+.I protocol(port)
+is the protocol used by 
+.I bntplink
+when sending outgoing articles.
+Current supports of prototol include
+.I IHAVE,
+.I POST,
+and,
+.I DATA.
+You can add optionally any number as
+.I port
+, but only root can use number less than 1024.
+
+.TP
+.I full name
+can be added for reference. It is meaningful when
+.I node
+matches to name specified in
+.I bbsname.bbs,
+and is used for 
+.I Organization 
+header for every outgoing articles sent out from this host.
+
+.SH EXAMPLES
+.IP
+.nf
+.ft B
+# This is a sample nodelist.bbs
+#
+# default protocol is IHAVE(119)
+# default POST and IHAVE port is 119
+# name   hostname & domainname  protocol(port)  full name
+#------- ---------------------- -------------   ----
+my-bbs   bbs.xxx.edu.tw         IHAVE(7777)     My BBS Organization Name
+news1    news@news.xxx.edu.tw   IHAVE(119)      News Feed Source 1
+news2    news@news.yyy.edu.tw   IHAVE(119)      News Feed Source 2
+news3    news@news.xxx.com.tw   POST(119)       News drain Source 1
+news4    @news.zzz.com.tw       POST(119)       News drain Source 2
+news5    news.aaa.com.tw        POST(119)       News drain Source 3
+bbs1     bbs@bbs.xxx.edu.tw     IHAVE(5555)     BBS Feed destination for local
+bbs2/bbs.yyy.edu.tw   +bbs@bbs.yyy.edu.tw    IHAVE(5555)     BBS Feed destination for all
+mail-list1 user1@serv.xxx.tw    DATA(25)        Reply for list owner
+mail-list2 -user2@serv.xxx.tw   DATA(25)        Reply for list owner and remove
+.ft R
+.fi
+.LP
+Hosts or user@host in 
+.I bbs.xxx.edu.tw,
+.I news@news.xxx.edu.tw,
+.I news@news.yyy.edu.tw,
+.I news@news.xxx.com.tw,
+.I news.aaa.com.tw,
+.I bbs@bbs.xxx.edu.tw,
+.I bbs@bbs.yyy.edu.tw,
+.I user1@serv.xxx.tw,
+and
+.I user2@serv.xxx.tw
+have permission to connect 
+.I innbbsd,
+and you should note no users in
+.I news.zzz.com.tw
+(specified by node 
+.I news4
+) can connect, since the user field is null. It is used for 
+.I bntplink 
+only.
+.PP
+The node
+.I bbs2
+indicate every articles received or posted should be sent to it.
+
+.SH FILES and DIRECTORIES
+.BR ~bbs/innd/bbsname.bbs, ~bbs/innd/nodelist.bbs, ~bbs/innd/newsfeeds.bbs 
+.BR ~bbs/innd/innbbs.conf, ~bbs/out.going, ~bbs/innd/bbslog
+.BR ~bbs/bbslog
+.BR ~bbs/boards
+
+.SH AUTHOR
+Shih-Kun Huang (skhuang@csie.nctu.edu.tw)
+.SH BUGS
+.SH "SEE ALSO"
+.BR newsfeeds.bbs (5), innbbsd (8), bntplink (8)

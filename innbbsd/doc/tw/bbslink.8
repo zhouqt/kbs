@@ -1,0 +1,65 @@
+.TH NODELIST.BBS 5 "30 Jul 1995" "NCTU CSIE" "Kuhn\'s Utility Reference Manual"
+.SH NAME
+bntplink, bbslink \- BBS to News Transfer Program Link for sending out articles
+.SH SYNOPSIS
+.B bntplink 
+bbs_home
+.PP
+.B bbslink 
+[\-\fBh\fP]
+[\-\fBv\fP]
+[\-\fBn\fP]
+[\-\fBs\fP \fIsite\fP]
+[\-\fBV\fP]
+[\-\fBN\fP]
+bbs_home
+
+
+.SH DESCRIPTION
+.PP
+.B Bbtplink 
+is a program for sending out articles posted locally and
+received remotely. When startup, it will consult to
+.I ~bbs/innd/nodelist.bbs
+and
+.I ~bbs/innd/newsfeeds.bbs
+, visit all articles posted after last run of bntplink
+and check any outgoing batch in
+.I ~bbs/out.going/nodename.feed.
+.PP
+.B Bbslink 
+is compatible to 
+.I bntplink
+but with more options and implemented in C without Perl.
+
+.SH OPTIONS
+No options for bntplink.
+.PP
+Options for bbslink
+.TP
+.BI  \-v
+Show transmission status.
+.TP
+.BI  \-n 
+Dont send out articles and leave queue untouched.
+.TP
+.BI  \-s " site"
+Only process articles sent to site.
+.TP
+.BI  \-V 
+Visit only: bbspost visit.
+.TP
+.BI  \-N 
+No visit, and only process batch queue.
+
+.SH FILES and DIRECTORIES
+.BR ~bbs/innd/newsfeeds.bbs, ~bbs/innd/nodelist.bbs, ~bbs/innd/bbsname.bbs
+.BR ~bbs/out.going/nodename.link, ~bbs/out.going/nodename.sending
+.BR ~bbs/out.going/nodename.feed, ~bbs/out.going/nodename.feeding
+.BR ~bbs/bbslog
+.SH AUTHOR
+Shih-Kun Huang (skhuang@csie.nctu.edu.tw)
+.SH BUGS
+.SH "SEE ALSO"
+.BR newsfeeds.bbs (5), innbbsd (8), bntplink (8)
+

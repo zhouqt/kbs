@@ -1,0 +1,144 @@
+.......................................................................
+本文件针对 innbbsd-0.50.tar.gz 所设...
+
+由于 PowerBBS 只用到 innbbsd 对 Message-ID 的处理, 因此 Make 的步骤如下:
+
+	1. Makefile 中 BBSHOME 与 BBS_SRC 的 Path 设与 PowerBBS 中的 setup.h
+	   中的 SYSTEM_PATH 相同
+
+	2. 执行 make <sys-type>
+	   <sys-type> 请参照原 make 的列表
+
+	3. 将 innbbsd 与 ctlinnbbsd 考到 PowerBBS 的 SYSTEM_PATH 里
+
+	4. 另外有个 bbsnnrp 是 Client Gateway 的转信程式, 若您要使用
+	   Client Gateway 方式转信, 一并考过去. 底下有更详细的说明.
+
+	5. 在 SYSTEM_PATH 下再 mkdir innd
+
+	6. innd 下放下列两个档案即可
+
+		bbsname.bbs	(请参照所附的 innd/bbsname.bbs)
+		innbbs.conf	(同样将原附的 innd/innbbs.conf 拷去就行)
+
+	7. 将 innbbs.conf 中的
+
+		nodelist  local
+		newsfeeds none
+
+	   打开, 就是把前面的 # 挀掉
+
+	8. PowerBBS 的 setup.h 中的 DBZ_CHANNEL 设与 SYSTEM_PATH 同即可
+
+	9. 试执行 innbbsd
+
+	10.若执行有问题则试排除
+
+
+
+注意事项:
+
+	1. 若 innbbsd 要在 rc.local 中被执行, 则必须在 pbbsnnrpd 之前就
+	   执行
+
+	2. 在 rc.local 中执行 innbbsd 要如下:
+
+		(假设您的 SYSTEM_PATH 为 /pbbs)
+
+		if [ -f /pbbs/innd/.innbbsd ]; then
+			rm -f /pbbs/innd/.innbbsd
+		fi
+		echo 'innbbsd'
+		/pbbs/innbbsd
+
+	3. 若要停止 innbbsd 请用 ctlinnbbsd shutdown
+
+	4. 本版与原 innbbsd-0.50 有一处差异, 在 inndchannel.c 中对
+	   connect from 的 log 若以 -DPowerBBS 去 make 的将不会被
+	   log, 由于 PowerBBS 所使用的 innbbsd 只能以 localuser 去
+	   connect 并且 pbbsnnrpd 使用频繁, 因此 log 此项已无意义,
+	   在此跳过.
+
+.................................................................
+有关 Client Gateway 的设定
+
+    所谓 Client Gateway 就是让 PowerBBS 的转信不必等上游站送, 直接去
+News Server 里抓, 就好像用 tin 去把信全部抓回来一样, 使用 Client
+Gateway 的方式转信, 与 Server Gateway (上游主动送) 其功能上完全相同,
+包括连线砍信都有支援, 唯独对机器的负担较 Server Gateway 方式重很多,
+因此除非您只接少数的信区, 不然建议使用 Server Gateway. 详细的差异
+请参考 innbbsd-0.50 中的 README.
+
+	首先需要有 bbsnnrp 的程式, 在上半部有说明如何 make 出 bbsnnrp
+
+1. 设定 group.nntp
+
+#index  IP               port  Link_level  Station_id             alt feed IP
+#............................................................................
+cgate   140.113.214.200  119   *           news.csie.nctu.edu.tw  140.126.3.111
+
+	index	是一个代号, 不要取太长...
+	IP 	要转信的 News Server 的 IP
+	port	他的 port (NNTP 是 119)
+	Link_level 	* 表以 POST 去送信, + 用 IHAVE
+			一般来说, 除非是特别设定的 News Server, 不然
+			请用 * 以 POST 出去, + 大多是给 Server Gateway
+			转信在用的.
+	Station_id	News Server 的 Path: 栏代号.
+	alt feed IP	这要填执行 bbsnnrp 所在机器的 IP
+
+接着信区设定与原来的相同, 如:
+
+tw.bbs.test	bbstest		cgate
+
+
+2. 在 innd/ 内设入两种档案:
+
+	active	设您要接的信区, 格式如下:
+
+tw.bbs.test 000000000 000000001 y
+tw.bbs.csbbs.pbbs 000000000 000000001 y
+(依此类推)
+
+	active.cmsg 为连线砍信用, 固定如下:
+
+control.cancel 0000000000 0000000001 y
+control 000000000 000000001 y
+
+
+3. 第一次执行时, 请先重设抓信指标
+(假设抓信的 server 是 news.csie.nctu.edu.tw)
+
+bbsnnrp -c news.csie.nctu.edu.tw active
+bbsnnrp -c news.csie.nctu.edu.tw active.cmsg
+
+注意: 这个步骤非常重要, 不然收 control message 时你就知道什么叫惨了!!!
+
+
+4. 接下就定时去执行底下的程式
+
+bbsnnrp -r (pbbsnnrp 的 IP) -p (pbbsnnrp 的 port no) news.csie.nctu.edu.tw active
+bbsnnrp -r (pbbsnnrp 的 IP) -p (pbbsnnrp 的 port no) news.csie.nctu.edu.tw active.cmsg
+
+可以用 crontab 的方式去设, 详细的说明请见 innbbsd-0.50 中 README 第 <3>
+项的 Client Gateway 中的第 <6> 点.
+
+
+5. 记得定期去处理 innd/ 底下的 bbsnnrp.log
+
+6. 多重 News Server 的抓取也请见原文件的 README 说明
+
+7. PowerBBS 可以将 Client Gateway 与 Server Gateway 同时并用, 也就是您可
+将用 Client Gateway 方式抓来的信, 再以 Server Gateway 的方式转给你的下游站,
+直接混合设定即可.
+
+8. 在 Client Gateway 中是否要支援连线砍信请深思熟虑, 砍信的 Control Message
+可能会比所有要抓的信还要更多
+
+9. 其他的说明请见原始的 README 文件, 但本说明应已足以应付一般的使用了.
+
+.......................................................................
+最后还是要感谢 skhuang 先生的 innbbsd 及其大力协助...
+
+From Samson
+Sep 5, 1995

@@ -1,0 +1,122 @@
+.TH NODELIST.BBS 5 "30 Jul 1995" "NCTU CSIE" "Kuhn\'s Utility Reference Manual"
+.SH NAME
+newsfeeds.bbs \- specify the newsfeeds relation between 
+.I News Newsgroups
+and
+.I BBS Boards
+for use by
+.I innbbsd
+and
+.I bntplink.
+
+.SH SYNOPSIS
+
+Newsgroups Boards Server Lists
+
+group1,group2,... board1,board2,board3,... node1 node2 node3
+
+.SH DESCRIPTION
+.PP
+When referred by 
+.I innbbsd,
+articles from
+.I Newsgroups
+will be received and posted into Boards.
+When referred by
+.I bntplink, 
+articles in
+.I Boards 
+will be sent to 
+.I Newsgroups
+
+.SH OPTIONS
+.TP
+.I Newsgroups
+is the newsgroups to be received by 
+.I innbbsd
+or sent to by
+.I bntplink. 
+You can specify multiple newsgroups separated by  commas ","
+without space, for example, "tw.test,csie.test".
+
+.TP
+.I Boards
+is the boards to carry articles from
+.I innbbsd
+or sent out by
+.I bntplink.
+You can specify multiple boards separated by commas ","
+without space; for example, "SYSOP,admin".
+
+.TP
+.I Server Lists
+is the list of servers to be the feed destination from 
+.I bntplink
+or the source of
+.I innbbsd.
+You can specify multiple feed destination or source by
+specifying lists separated by space, for example, "server1 server2".
+.SH EXAMPLES
+.IP
+.nf
+.ft B
+# This is a sample of newsfeeds.bbs
+# newsgroups                boards          servers
+#-----------------------  --------------    -----------
+csie.bbs.adm.local        admin             news.csie.nctu
+tw.bbs.comp.hardware      hardware          bbsroute skhuang.graddorm
+tw.bbs.comp.network       network,          null
+tw.bbs.rec.comic,         comic             bbsroute
+nctu.test,                nctutest          bbsgate  skhuang.graddorm
+nctu.test,                nctutest2         bbsgate  skhuang.graddorm
+nctu.test                 nctutest,nctutest2 bbsgate skhuang.graddorm
+csie.test,tw.test         csietest          bbsgate sk-mail-list skhuang.graddorm
+tw.test                   csietest,          bbsgate skhuang.graddorm
+csie.test                 csietest,          news.csie.nctu sk-mail-list skhuang.graddorm
+.ft R
+.fi
+.LP
+
+.PP
+The server lists can be referred to nodelist.bbs.
+The first line specifies 1). articles from newsgroups "csie.bbs.adm.local"
+will be received from news.csie.nctu and put in board "admin". 2). 
+article in board "admin" will be sent out to csie.bbs.adm.local in
+server news.csie.nctu.
+.PP
+The second line specifies 1). articles from newsgroups "tw.bbs.comp.hardware"
+will be received and put in board "hardware". 2). articles in board "hardware"
+will be sent out to servers "bbsroute" and "skhuang.graddorm".
+.PP
+The third line specifies single direction gateway:
+articles from "tw.bbs.comp.network" will be put in board "network" but 
+won't be sent out to any servers.
+.PP
+The forth line specifies another single direction gateway:
+articles in board "comic" will be sent out to  "tw.bbs.rec.comic", but
+won't be received.
+.PP
+The following three lines specifies single group to multiple boards
+gateway:
+.IP
+group nctu.test           --> boards nctutest,nctutest2
+.IP
+boards nctutest,nctutest2 --> nctu.test
+.PP
+The last three lines specifies multiple groups to single board gateway:
+.IP
+group tw.test,csie.test -> board csietest
+.IP
+board csietest          -> groups tw.test,csie.test
+
+.SH FILES and DIRECTORIES
+.BR ~bbs/innd/bbsname.bbs, ~bbs/innd/nodelist.bbs
+.BR ~bbs/innd/innbbs.conf, ~bbs/out.going, ~bbs/innd/bbslog
+.BR ~bbs/bbslog
+.BR ~bbs/boards
+
+.SH AUTHOR
+Shih-Kun Huang (skhuang@csie.nctu.edu.tw)
+.SH BUGS
+.SH "SEE ALSO"
+.BR newsfeeds.bbs (5), innbbsd (8), bntplink (8)

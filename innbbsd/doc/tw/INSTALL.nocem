@@ -1,0 +1,79 @@
+NoCeM-innbbsd-patch (以下简称 ncm-innbbsd)
+INSTALL
+
+本程式只是 patch, 请按照下列方式修改 innbbsd.
+
+1. 于 bbslib.c initial_bbs() 后段加入 readNCMfile(INNDHOME);
+
+   if (NONENEWSFEEDS == 0)
+     readnffile(INNDHOME);
++  readNCMfile(INNDHOME);
+   if (LOCALNODELIST == 0) {
+     if (readnlfile(INNDHOME, outgoing) != 0) return 0;
+   }
+
+2. 于 bbslink.c 中加入空的 readNCMfile()
+
+readNCMfile()
+{
+}
+
+3.a (一般) 于 innbbsd.c CMDihave() 的 receive_article 前方加入 receive_nocem
+
+  else if (strstr(path1, path2))
+    bbslog( ":Warn: Loop back article: %s!%s\n",MYBBSID,PATH);
++ else if (strstr(SUBJECT, "@@") && strstr(BODY, "NCM") && strstr(BODY, "PGP"))
++   rel = receive_nocem();
+  else
+    rel = receive_article();
+
+3.b (Maple3) 于 receive_article.c
+
+        for (;;)
+        {
+          cc = *data++;
+          if (cc == 0)
+          {
++           if (strstr(SUBJECT, "@@") && strstr(BODY, "NCM") && strstr(BODY, "PGP"))
++             rel = receive_nocem();
++           else
+            rel = receive_article();
+            break;
+          }
+        :
+        :
+#else
+
++       if (strstr(SUBJECT, "@@") && strstr(BODY, "NCM") && strstr(BODY, "PGP") 
++         rel = receive_nocem();
++       else
+        rel = receive_article();
+#endif
+
+4.a (一般) 修改 receive_article.c cancel_article_front() 检查非法砍信部分
+
+!     if (strcmp(xfrom0, xfrom) && !search_issuer(FROM))
+      {
+        bbslog("Invalid cancel %s, path: %s!%s, [`%s` != `%s`]\n",
+           FROM, MYBBSID, PATH, xfrom0, xfrom);
+        return 0;
+      }
+
+4.b (Maple3) 修改 receive_article.c cancel_article_front() 检查非法砍信部分
+
+!      if (!strncmp(myfrom, xfrom, 80) || search_issuer(FROM))
+          fd = -1;
+
+     另外 Maple3 的 cancel_article_front() 定义为 static, nocem.c 无法呼叫它
+     请把 receive_article.c 里面 cancel_article_front() 前的 static 挀掉.
+
+5. 修改 innbbsd 之 Makefile, 将 nocem.c 及 nocem.o 分别加入 SRCS 及 OBJS
+
+OBJS = nocem.o inndchannel.o innbbsd.o connectsock.o rfc931.o \
+       daemon.o file.o pmain.o parsdate.o his.o dbz.o \
+       closeonexec.o dbztool.o inntobbs.o echobbslib.o receive_article.o
+SRCS = nocem.c inndchannel.c innbbsd.c connectsock.c rfc931.c \
+       daemon.c file.c pmain.c parsdate.y his.c dbz.c port.c \
+       closeonexec.c dbztool.c inntobbs.c bbslib.c receive_article.c
+
+6. 将 nocem.c nocem.h 复制到 innbbsd 目录下, 重新编译 innbbsd

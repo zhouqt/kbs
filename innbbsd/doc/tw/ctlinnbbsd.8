@@ -1,0 +1,56 @@
+.TH CTLINNBBSD 8 "16 Jul 1995" "NCTU CSIE" "Kuhn\'s Utility Reference Manual"
+.UC E 86-1
+.SH NAME
+ctlinnbbsd \- ConTroL INNBBSD 
+.SH SYNOPSIS
+.B ctlinnbbsd 
+[\-\fBh|?\fP]
+[\-\fBp\fP \fIpath\fP]
+command
+.SH DESCRIPTION
+.PP
+.B Ctlinnbbsd
+is a program to control 
+.I
+innbbsd
+
+.SH OPTIONS
+.TP
+.BI \-h|? 
+Show help messages. 
+.TP
+.BI \-p  " path"
+Send articles to remotehost. Default=localhost
+.I remotehostname 
+is the host where you want to send articles.
+
+.SH COMMANDS
+Available commands for 
+.I innbbsd
+can be listed as follows:
+.TP
+ctlinnbbsd reload   : reload datafiles for innbbsd
+.TP
+ctlinnbbsd shutdown : shutdown innbbsd gracefully
+.TP
+ctlinnbbsd mode     : examine mode of innbbsd
+.TP
+ctlinnbbsd addhist <mid> path: add history
+.TP
+ctlinnbbsd grephist <mid>: query history
+.TP
+ctlinnbbsd verboselog on|off : verboselog on/off
+.TP
+ctlinnbbsd hismaint : maintain history
+.TP
+ctlinnbbsd getrusage: get resource usage
+.TP
+ctlinnbbsd mallocmap: get malloc map
+
+.SH FILES
+.PD 0
+.TP 
+~bbs/innd/innbbs.conf
+.PD
+.SH AUTHOR
+.SH BUGS

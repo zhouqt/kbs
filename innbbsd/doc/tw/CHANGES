@@ -1,0 +1,123 @@
+4-26-95 linux mmap has problems, don't use mmap
+4-27-95 timeout value should be reset before each select call
+4-27-95 bbspost_write_1 crossposted articles with empty body
+4-27-95 active file format corrected:
+	newsgroup 0000000000 0000000001 y 
+4-28-95 mistake innbbsconf.h as config.h in bbslib.c
+4-28-95 if active size is zero, won't rename to old. prevent from 
+	disk full and override old backup.
+4-28-95 flushrc bug, actdirty should be set to 0,
+	write to /tmp/bbsnnrp.pid.active when write fail.
+4-28-95 add -v option to innbbsd and bbsnnrp for verbose log of protocol 
+	transactions
+4-28-95 ihave with empty article will hang (fixed)
+4-28-95 change log date from gmtime into localtime
+4-29-95 access file restrction bug. (when can't gethostyaddr,)
+4-30-95 -c bug. if reset only, shouldn't stat articles. Fixed.
+4-30-95 add MAX_STATS define, for maximum number of articles stated.
+        add bbsnnrp optiones
+		    -a max-arts for MAX_ARTS
+	            -s max-stats for MAX_STATS
+5-1-95  control.cancel bug fix.
+        port to aix, hpux, irix, solaris
+5-1-95  should store message-ID for control message
+5-1-95  filename contention changed from .A,.B, to now += xxx
+	reconstruct source 
+	add grephist and addhist commands to innbbsd
+5-2-95  bntplink ihave 435,437 shouldn't queue batch, just throw away 
+        bbsnnrp handle exception (can't ihave)
+	innbbsd handle exception (disk full, can't write history)
+5-2-95 his.c bug, long line history will core dump.
+       cancel_article_front bug. (crosspost article)
+0.37
+5-3-95 log article size and restrict size by MAX_ART_SIZE
+       add -s option for innbbsd.
+       seems has memory leak in argify. change to static allocation
+       add -i option for innbbsd not to use in core dbz
+       add innbbs.conf for innbbsd
+       add ctlinnbbsd command for sending control command
+0.41
+5-6-95 his.c, inndchannel.c Expiredays, His_Maint_xxx bug,
+       add cc support
+       add getrusage, hismaint command to innbbsd
+       add -c max-connections to innbbsd
+       add local nodelist and none newsfeeds to innbbs.conf
+       add -DPowerBBS for empty receive_article and cancel_article_front
+0.42
+5-18-95 
+       add PalmBBS support,
+0.43
+5-28-95
+       his.c .n.pag, .n.dir check 
+       it is said OSF/1 works too.
+       add bbsnnrp -t stdin -g newsgroups
+       if -f ECHOMAIL then echomaillog 
+       add Origin for NNTP-POSTING-HOST header from news
+       chop long line for Path, from headers in receive_article 
+
+0.44
+6-11-95
+      patch OSF/1 unsigned long to unsigned int
+      handle duplicated crosspost newsgroups line: tw.bbs.netnews,tw.bbs.netnews...
+      handle elm tag (mail folder style)
+      use link for crossposted articles (or copy if failed)
+      will remove local socket file when there is one before bind
+      ctlinnbbsd reload will reopen bbslog and check eechomail.log.
+      add ctlinnbbsd verboselog on/off
+      bbsnnrp bug, not handle bad article number
+      unknown group won't record history
+      encourage use of inetd
+      change TARGET for INNBBSD or BBSNNRP
+      bbsnnrp won't get extra one (high+1) to prevent from duplciated aritcles
+0.46
+7-6-95
+      innbbsd -i bug, fixed
+      bbsnnrp will open active file in current directory at first,
+        ~bbs/innd/ next.
+      shouldn't remove .innbbsd
+      add identuser@host authentication for nodelist.bbs
+7-22-95
+      add control, bbsfeeds
+      add -o -m to bbsnnrp
+      add -f (From: ) -F (From ) bbsnnrp for .forward pipe authentication
+      add -r prot:hostname, eg  "ihave:aidebbs.edu.tw" or 
+				"post:aidebbs.edu.tw".
+in nodelist.bbs
+node    +host ....     will feed new posts got 
+node    -host ....     will delete posts when send out.
+      
+      modify receive_article.c when can't write, innbbsd will hang
+0.50beta
+8-7-95
+     add bbslink: bntplink in C.
+8-9-95
+     change innbbsconf.h, SOLARIS define
+     should mkdir(out.going) in readnl
+     comments in nodelist.bbs will be chopped. fixed.
+     if .send or .feeding found, should append to .link.
+
+0.50beta-1
+     dbz.c, should check basef if null.
+
+0.50beta-3
+     bbslink.c rename bug
+
+0.50beta-4
+     add -k option
+     fix PalmBBS bug for bbslink.c, not include utime.h
+
+0.50beta-5
+     bbslink broken for organization with "(".
+     bbslink may lose posts when connections broken
+     process disk write failed in received_article
+     add ctlinnbbsd pause, go command to pause/resume innbbsd.
+     add extra meaning for bbsnnrp -g option:
+	stdin: -g to specify and override newsgroups name
+	nntp:  -g to specify the newsgroup name to process in the active file
+     add more options for innbbs.conf
+     add -f innbbs.conf -D /home/bbs to use another innbbs.conf or
+        change BBSHOME
+     add filter.ctl 
+     remove ~{, ~} for HZ->GB conversion
+     can't remove for PalmBBS
+     incorrect date information for bbslink

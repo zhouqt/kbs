@@ -1,0 +1,43 @@
+From news.csie.nctu.edu.tw!skhuang Mon Jun 26 04:12:00 1995
+Path: news.csie.nctu.edu.tw!skhuang
+From: skhuang.bbs@csie.nctu.edu.tw (Shih-Kun Huang)
+Newsgroups: twbbs.adm.sysop,tw.bbs.admin.installbbs,tw.bbs.csbbs.pbbs
+Subject: bbsnnrp: A Generic News Client gateway
+Date: 18 Jun 1995 03:50:42 GMT
+Organization: 交大资工天龙新闻社(by nbbstin)
+Lines: 28
+Message-ID: <3s07qi$pft@news.csie.nctu.edu.tw>
+Reply-To: skhuang@csie.nctu.edu.tw
+NNTP-Posting-Host: ccsun22.csie.nctu.edu.tw
+X-Newsreader: TIN [version 1.2 PL2]
+Xref: news.csie.nctu.edu.tw twbbs.adm.sysop:89 tw.bbs.admin.installbbs:2997 tw.bbs.csbbs.pbbs:163
+
+BBS (Eagle, or PowerBBS) + bbsnnrp -> simple offline news reader.
+
+当初为了改进 bbsinnd, 从 perl 改成 C, 并将 dbm 改为 dbz, 
+但还是保留 "server" gateway 的架构. 
+"bbsnnrp" 只是顺便随手写的, 以吸引更多 "个体户 BBS". 不过
+现在回想起来, bbsnnrp 不仅能适用于 innbbsd, 不久前也测过
+bbsinnd, 我想应该也能在 PowerBBS 上使用. 以后大家可任意发
+展自己的 News 转信 server gateway, 只要支援,
+
+ 1. ihave
+ 2. stat (optional, 若有, 处理 cancel 效率较佳)
+ 
+两个 NNTP protocol, 就有现成的 "client gateway" 可用.
+大家应该看过我对 client gateway 和 server gateway 的比较.
+client gateway 自主性高, 对一些随性架起的 BBS 比较方便.
+  
+其实 Eagle BBS (如 Phoenix BBS) + bbsnnrp
+即使不挀来 serve 别人, 也是不错的 "offline" news reader.
+架个 Linux, 跑 PPP/SLIP, install Eagle BBS + bbsnnrp, 每天半夜
+跑 bbsnnrp cron, 白天就不用挤几百人的大站, 也不用
+浪费电话连线的情况下在家里优游自在地阅读  "tw.bbs.*". 
+(直接跑 bbsrf)
+
+下一个 bbsnnrp patch 将能独立于 innbbsd 之外,
+并能单独使用在任何 server gateway.
+--
+Shih-Kun Huang
+EC638, CSIE, NCTU, Taiwan, R.O.C. Phone: 886-35-712121 (x54709)
+

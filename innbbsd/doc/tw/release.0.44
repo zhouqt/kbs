@@ -1,0 +1,101 @@
+Subject: [innbbsd patch] innbbsd 0.44
+Newsgroups: tw.bbs.admin.installbbs
+Reply-To: skhuang@csie.nctu.edu.tw
+Summary: 
+Keywords: 
+
+请取 ftp://ftp.csie.nctu.edu.tw/pub/bbs/misc/innbbsd/innbbsd-0.44.tar.gz
+
+(1). [简介]
+(2). [有关 innbbsd 的 patch]
+(3). [有关 bbsnnrp 的 patch]
+(4). [有关 bntplink 的 patch]
+(5). [几种转信架构]
+   a. 收送 mailing-list. b. 收送 news server feed. c. 收 tin, elm tag pipe.
+   d. 收送 bbs server feed. e. a,b,c,d 混合使用 
+
+(1). [简介]: 
+      innbbsd 是一个 News <-> BBS 转信 gateway. 支援 client 主动取信和
+      server 被动等信两种架构, 并可混用, 或任意换 server, 同时接收多个 
+      server 餵送. 目前支援 BBS 系统 有:
+            Phoenix BBS, Power BBS, Palm BBS, Secreet BBS.  
+      测试过的 OS 有: SunOS 4.x, Sun Solaris, Linux, IBM AIX, HP UX,
+                      IRIX, DEC Alpha OSF/1.
+      其中 bbsnnrp 可配合 bbsinnd, 或任何支援 NNTP 的 server 作用                      
+      (如 INN1.4 或 pbbsnnrpd), "-t stdin" 模式更可配合 tin, elm
+      tag 或收 .forward "| bbsnnrp -t stin -g group-name" 
+      来做 mailing-list 的转信.  
+
+主要 patch:
+(2). [有关 innbbsd 的 patch]
+1. 直接杀掉无主之 .innbbsd socket file. 此 fix 主要目地是使 inetd 的启动
+    方式 innbbsd -i 适用于 client gateway (bbsnnrp only user).
+   
+   现在 innbbsd-0.44 鼓励大家用 inetd 来启动 innbbsd. 以 inetd 启动有
+   几个好处:
+   1. 假使 innbbsd 有 bug, 因而死掉. 下个 connection request 会自动再叫起
+      新的 innbbsd process.   
+   2. innbbsd 是 standalone single process server. 用 inetd 叫起来之后
+      就会常驻不停. 以 inetd 启动的设定方法如下:
+      a. 在 /etc/services 加入:
+bbsinnd         7777/tcp                        # For BBS innd
+      b. 在 /etc/inetd.conf 加入:
+bbsinnd  stream  tcp    wait  bbs   /home/bbs/innd/innbbsd innbbsd -i
+                          |                           |            |
+请注意此为 wait 非 nowait-    innbbsd 的绝对 path -----      用 -i option
+         
+      c. kill -1 pid-of-inetd. 此后也不用跑 innbbsd 或加在 rc.local.    
+      
+2. 对从 News crosspost 来的文章, innbbsd 采用与 news server 相同的处理方法--
+   不管 crosspost 到多少讨论区, 只写一份, 其它都用 "link". 
+3. 处理重复的 Newsgroups entries. 例如 Newsgroups: tw.bbs.test,tw.bbs.test
+4. 不成功的转信不记录 history.
+5. 增加 ctlinnbbsd verboselog on/off.
+6. ctlinnbbsd reload 将重新 open 所有 log.
+7. 若 echomail.log 不存在, 则不做 echomail.log.
+8. history 写入失败不再视为转信错误.
+
+(2). [有关 bbsnnrp]
+1. 支援 Alpha OSF/1
+2. 支援 tin 和 elm 的 tag pipe.
+3. fix bbsnnrp 对 bad article number 处理的 bug. 
+4. fix bbsnnrp 取 article 时,  initial 多取一次. 
+5. 支援 bbsnnrp only user, 请改 Makefile, 
+  将
+TARGET=$(INNBBSD)
+  改为
+TARGET=$(BBSNNRP)
+
+(3). [有关 bntplink 的 patch]
+增加 protocol "DATA". 例如在 nodelist.bbs 中使用:
+
+  bbs-mail-list a-user-list@list-server DATA(25)  --mail list reply
+  
+则若在 newsfeeds.bbs 使用如
+
+  tw.bbs.test test bbs-mail-list bbsroute
+  
+在 test 中的 post 将送给 bbs-mail-list 和 bbsroute.
+
+(4). [几种转信架构]
+a. 收送 mailing list.
+建立特定 user, 在其 .forward 加上 "| bbsnnrp -t stdin -g group-name"
+其中 group-name 必须设在 newsfeeds.bbs ,并对应到 BBS board name.
+例如想转华夏文摘到 BBS board "hxwz", 则 subscribe hxwz, 并在
+newsfeeds.bbs 加上
+
+mailinglist.forward.hxwz hxwz no-reply
+
+若允许 reply, 则伀上例在 nodelist.bbs 加上适当之 entry.
+
+b. 收送 news server feed.
+   可同时收多个 news server feed.
+c. 收送 elm, tin tag pipe.
+   藉助于 tin 和 elm, 可选择性的转信.   
+d. 收送 bbs server feed.
+   可不经 news server, BBS server 间转信.    
+e. a,b.c.d 可同时混合使用, 相同讨论区可接多个 feed, 外送多个 server.   
+   可任意更换 server.
+--
+Shih-Kun Huang
+EC638, CSIE, NCTU, Taiwan, R.O.C. Phone: 886-35-712121 (x54765, x54709)
