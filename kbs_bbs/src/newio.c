@@ -746,6 +746,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
                 int y,x;
                 if (clen == 0)
                     continue;
+                clen--;
                 getyx(&y,&x);
                 move(y,x-1);
                 outc(' ');
