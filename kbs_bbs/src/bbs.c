@@ -720,6 +720,8 @@ void readtitle(struct _select_def* conf)
         strcpy(readmode, "±êÌâ");
     else if (arg->mode== DIR_MODE_SUPERFITER)
         strcpy(readmode, "ËÑË÷");
+    else
+        strcpy(readmode, "Î´Öª");
 
     move(2, 0);
     setfcolor(WHITE, DEFINE(getCurrentUser(), DEF_HIGHCOLOR));
