@@ -3138,8 +3138,10 @@ static PHP_FUNCTION(bbs_countarticles)
 
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
-    sprintf(dirpath,"boards/%s/%s",bp->filename, DING_DIR);
-    total += get_num_records(dirpath, sizeof(struct fileheader));
+	if( mode == DIR_MODE_NORMAL || mode == DIR_MODE_THREAD || mode == DIR_MODE_ORIGIN || mode == DIR_MODE_TITLE || mode == DIR_MODE_WEB_THREAD ){
+    	sprintf(dirpath,"boards/%s/%s",bp->filename, DING_DIR);
+    	total += get_num_records(dirpath, sizeof(struct fileheader));
+	}
     /* add end */
     RETURN_LONG(total);
 }
