@@ -16,6 +16,7 @@
 #define CNBBS_TOPIC		1	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		0	/* 是否允许直接 mail to any board */
 #define MAILOUT			0	/* 是否允许向站外主动发信 */
+#define HAVE_TSINGHUA_INFO_REGISTER 0
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.

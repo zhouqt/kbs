@@ -5,6 +5,7 @@
 #define BBSGID 			501
 
 #define SMTH    1 /*作为SMTH的测试站嘛*/
+#define HAVE_TSINGHUA_INFO_REGISTER 1
 
 /** 使用缺省的FILEHeader结构*/
 #define HAVE_FILEHEADER_DEFINE

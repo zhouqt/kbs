@@ -23,6 +23,7 @@
 
 #define SMTH			1
 #define FILTER			1
+#define HAVE_TSINGHUA_INFO_REGISTER 0
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
