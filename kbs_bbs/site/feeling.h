@@ -1,6 +1,7 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
+#define CONV_PASS
 #undef NINE_BUILD
 #undef HAVE_BIRTHDAY
 #undef HAPPY_BBS
@@ -66,30 +67,30 @@
 #define DAY_DELETED_CLEAN	97
 #define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30£¬×¢²áĞÂÓÃ»§Èç¹û´æÔÚÕâ¸öÓÃ»§µÄÄ¿Â¼£¬±£ÁôÊ±¼ä */
 
-#define	REGISTER_WAIT_TIME	(72*60*60)
+#define	REGISTER_WAIT_TIME	(0)
 #define	REGISTER_WAIT_TIME_NAME	"72 Ğ¡Ê±"
 
-#define MAIL_BBSDOMAIN      "smth.org"
-#define MAIL_MAILSERVER     "166.111.8.236:25"
+#define MAIL_BBSDOMAIN      "bbs.feeling.smth.org"
+#define MAIL_MAILSERVER     "127.0.0.1:25"
 
-#define NAME_BBS_ENGLISH	"smth.org"
-#define	NAME_BBS_CHINESE	"Ë®Ä¾Çå»ª"
+#define NAME_BBS_ENGLISH	"bbs.feeling.smth.org"
+#define	NAME_BBS_CHINESE	"ÎÂÜ°Ğ¡Îİ"
 #define NAME_BBS_NICK		"BBS Õ¾"
 
-#define BBS_FULL_NAME "BBS Ë®Ä¾Çå»ªÕ¾"
+#define BBS_FULL_NAME "BBS ÎÂÜ°Ğ¡ÎİÕ¾"
 
 #define FOOTER_MOVIE		"»¶  Ó­  Í¶  ¸å"
 /*#define ISSUE_LOGIN		"±¾Õ¾Ê¹ÓÃÊï¹â¹«Ë¾Êï¹âÌìÑİ·şÎñÆ÷"*/
-#define ISSUE_LOGIN		"Êï¹âPC  µÚ21½ì´óÔË»áÖ¸¶¨·şÎñÆ÷"
+#define ISSUE_LOGIN		"[1;45m±¾  Õ¾  ÓÀ ºã Ö÷ Ìâ  £º¡¤¼ÜÕ¾¡¤×ªĞÅ¡¤¼¼Êõ¡¤ÓéÀÖ¡¤ASCII art¡¤Ë½ÈË¡¤              [m\n"
 #define ISSUE_LOGOUT		"»¹ÊÇ×ßÁËÂŞ"
 
 #define NAME_USER_SHORT		"ÓÃ»§"
-#define NAME_USER_LONG		"Ë®Ä¾ÓÃ»§"
+#define NAME_USER_LONG		"ÎÂÜ°Ğ¡ÎİÓÃ»§"
 #define NAME_SYSOP		"System Operator"
 #define NAME_BM			"°æÖ÷"
 #define NAME_POLICE		"¾¯²ì"
 #define	NAME_SYSOP_GROUP	"Õ¾Îñ×é"
-#define NAME_ANONYMOUS		"Ë®Ä¸ÇàÍÜ Today!"
+#define NAME_ANONYMOUS		"ÎÒ°®ÎÂÜ°Ğ¡Îİ!"
 #define NAME_ANONYMOUS_FROM	"ÄäÃûÌìÊ¹µÄ¼Ò"
 #define ANONYMOUS_DEFAULT 0
 
