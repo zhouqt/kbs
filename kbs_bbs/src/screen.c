@@ -669,6 +669,44 @@ int n;
                                     break;
                                 }
                              }
+                             else if((*(str+i)=='A'||*(str+i)=='B'||*(str+i)=='C'||*(str+i)=='D')&&i<=4) {
+                                register k;
+                                char s1[5];
+                                s1[i-2]=0;
+                                memcpy(s1,str+2,i-2);
+                                if(s1[0]) k=atoi(s1);
+                                else k=1;
+                                
+                        	    if (slp && (begincol != reg_col)) {
+                        		if (slp->len < reg_col)
+                        			slp->len = reg_col;
+                        		DO_MODIFY;
+                        		cur_col = reg_col;
+                        	    }
+                                good_getyx(&savey, &savex);
+                                
+                                if(*(str+i)=='A') savey-=k;
+                                else if(*(str+i)=='B') savey+=k;
+                                else if(*(str+i)=='C') savex+=k;
+                                else if(*(str+i)=='D') savex-=k;
+
+                                if(savex<0) savex=0;
+                                if(savex>=scr_cols) savex=scr_cols-1;
+                                if(savey<0) savey=0;
+                                if(savey>=scr_lns) savey=scr_lns-1;
+
+                                good_gotoyx(savey,savex);
+                                str+=i+1;
+                                break;
+                             }
+                             else if(*(str+i)=='m') {
+                                memcpy(slp->data+reg_col+i+1, slp->data+reg_col, LINELEN-reg_col-i-1);
+                                memcpy(slp->data, str, i+1);
+                                slp->len+=i+1;
+                                str+=i+1;
+                                reg_col+=i+1;
+                                continue;
+                             }
                       }
                       if(*str == ''&&*(str+1)=='['&&*(str+2)=='s') {
                         str+=3;
