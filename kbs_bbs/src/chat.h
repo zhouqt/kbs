@@ -43,20 +43,20 @@
 #define MAX_EMOTES      36      /* emotes user defined */
 
 enum    ERROR   {
-    ERROR_COMMAND,          ERROR_HELP_TOPIC,       ERROR_ACTION,
+        ERROR_COMMAND,          ERROR_HELP_TOPIC,       ERROR_ACTION,
 
-    ERROR_NO_USER,          ERROR_NO_ROOM,
+        ERROR_NO_USER,          ERROR_NO_ROOM,
 
-    ERROR_NEED_NICK,        ERROR_NEED_ID,          ERROR_NEED_ROOM,
-    ERROR_NEED_TITLE
+        ERROR_NEED_NICK,        ERROR_NEED_ID,          ERROR_NEED_ROOM,
+        ERROR_NEED_TITLE
 };
 
 enum    SORRY   {
-    SORRY_EXIST_ROOM,       SORRY_EXIST_NICK,
+        SORRY_EXIST_ROOM,       SORRY_EXIST_NICK,
 
-    SORRY_RESERVE_ROOM,     SORRY_CROWDED_ROOM,
-    SORRY_NOFREE_ROOM,      SORRY_INTIME_TITLE,
-    SORRY_NOT_LEADER
+        SORRY_RESERVE_ROOM,     SORRY_CROWDED_ROOM,
+        SORRY_NOFREE_ROOM,      SORRY_INTIME_TITLE,
+        SORRY_NOT_LEADER
 };
 
 
@@ -64,28 +64,28 @@ enum    SORRY   {
 #define INCHAT_BIT      0x0002
 #define LEADER_BIT      0x0004
 struct  person_info     {
-    int             portfd;
-    int             uid;            /* Used to find person in PASSWD file */
-    unsigned        userlevel;      /* Level of this user */
-    unsigned        flag;
-    char            bbsid[IDLEN + 1];
-    char            chatid[CHAT_IDLEN + 1];
+        int             portfd;
+        int             uid;            /* Used to find person in PASSWD file */
+        unsigned        userlevel;      /* Level of this user */
+        unsigned        flag;
+        char            bbsid[IDLEN + 1];
+        char            chatid[CHAT_IDLEN + 1];
 };
 
 struct  chat_info       {
-    char            name[CHAT_NAMELEN + 1];         /* Chat-room Name */
-    char            title[CHAT_TITLELEN + 1];       /* Chat-room Title */
-    int             time;                           /* Set time of Chat-room Title */
-    unsigned        access_level;                   /* Who can access this room */
-    int             numports;
-    struct  person_info     person[MAX_PORTS];
+        char            name[CHAT_NAMELEN + 1];         /* Chat-room Name */
+        char            title[CHAT_TITLELEN + 1];       /* Chat-room Title */
+        int             time;                           /* Set time of Chat-room Title */
+        unsigned        access_level;                   /* Who can access this room */
+        int             numports;
+        struct  person_info     person[MAX_PORTS];
 };
 
 struct  chat_command    {
-    char            *cmdname;               /* Char-room command length */
-    void             (*cmdfunc)();           /* Pointer to function */
-    short  nCmdLenth;/*命令字串判别需要匹配的字符数*/
-    short  bNeed;    /*调用命令函数时是否需要传递与chatd通讯的句柄*/
+        char            *cmdname;               /* Char-room command length */
+        void             (*cmdfunc)();           /* Pointer to function */
+        short  nCmdLenth;/*命令字串判别需要匹配的字符数*/
+        short  bNeed;    /*调用命令函数时是否需要传递与chatd通讯的句柄*/
 };
 
 

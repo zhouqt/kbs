@@ -31,12 +31,12 @@ flock(fd, op)
 int fd, op;
 {
     switch (op) {
-    case LOCK_EX:
-        return lockf( fd, F_LOCK, 0 );
-    case LOCK_UN:
-        return lockf( fd, F_ULOCK, 0 );
-    default:
-        return -1;
+        case LOCK_EX:
+            return lockf( fd, F_LOCK, 0 );
+        case LOCK_UN:
+            return lockf( fd, F_ULOCK, 0 );
+        default:
+            return -1;
     }
 }
 #endif
@@ -62,7 +62,7 @@ int size;
                 report("safewrite: foiled attempt to write bugged record\n");
                 return origsz;
             }
-    }
+        }
 #endif
     do {
         cc = write(fd,bp,sz);
@@ -132,25 +132,25 @@ int     size;
 
 get_sum_records(char* fpath, int size) /* alex于1996.10.20添加 */
 {
-    struct stat st;
-    long ans = 0;
-    FILE* fp;
-    fileheader fhdr;
-    char buf[200], *p;
+   struct stat st;
+   long ans = 0;
+   FILE* fp;
+   fileheader fhdr;
+   char buf[200], *p;
 
-    if (!(fp = fopen(fpath, "r")))
-        return -1;
+   if (!(fp = fopen(fpath, "r")))
+      return -1;
 
-    strcpy(buf, fpath);
-    p = strrchr(buf, '/') + 1;
+   strcpy(buf, fpath);
+   p = strrchr(buf, '/') + 1;
 
-    while (fread(&fhdr, size, 1, fp) == 1) {
-        strcpy(p, fhdr.filename);
-        if (stat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
-            ans += st.st_size;
-    }
-    fclose(fp);
-    return ans / 1024;
+   while (fread(&fhdr, size, 1, fp) == 1) {
+      strcpy(p, fhdr.filename);
+      if (stat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
+         ans += st.st_size;
+   }
+   fclose(fp);
+   return ans / 1024;
 }
 
 
@@ -169,7 +169,7 @@ int size ;
         saverecords(filename, size, numrecs+1);
 #endif
     /*if((fd = open(filename,O_WRONLY|O_CREAT,0644)) == -1) {*/
-    if((fd = open(filename,O_WRONLY|O_CREAT,0664)) == -1)
+    if((fd = open(filename,O_WRONLY|O_CREAT,0664)) == -1) 
     { /* Leeward 98.04.27: 0664->Enable write access of WWW-POST programe */
         perror("open") ;
         return -1 ;
@@ -191,9 +191,9 @@ int size ;
 void
 toobigmesg()
 {
-    /* change by KCN 1999.09.08
-        fprintf( stderr, "record size too big!!\n" );
-    */
+/* change by KCN 1999.09.08
+    fprintf( stderr, "record size too big!!\n" );
+*/
 }
 
 int
@@ -235,12 +235,12 @@ int size ;
 #  endif
 #endif
 
-int
+int 
 search_record_back(filename, size, start, fptr, farg, rptr, sorted)
 char *filename ; /* idx file name */
 int size ;	/* record size */
 int start ;	/* where to start reverse search */
-int (*fptr)() ;	/* compare function */
+int (*fptr)() ;	/* compare function */ 
 char *farg ;	/* additional param to call fptr() / original record */
 char *rptr ;	/* record data buffer to be used for reading idx file */
 int sorted ; /* if records in file are sorted */
@@ -253,7 +253,7 @@ int sorted ; /* if records in file are sorted */
     char * rbuf;
     ncnt = CheckStep - 1;
 #endif
-
+    
     npos  = get_num_records(filename, size);
     if(start > npos) start = npos;  /* if not enough,begin at end of file */
     start --;   /* convert from list index to file index */
@@ -270,7 +270,7 @@ int sorted ; /* if records in file are sorted */
     nblk = size * CheckStep;
     if( (NULL == (rbuf = malloc(nblk)))
             || (read(fd, rbuf, nblk) <= 0) ) {
-        if(NULL != rbuf) free(rbuf);
+	if(NULL != rbuf) free(rbuf);
         close(fd);
         return 0;
     }
@@ -296,7 +296,7 @@ int sorted ; /* if records in file are sorted */
     }
     free(rbuf);
 #else
-id = npos;
+    id = npos;
     while(read(fd,rptr,size) == size) {
         nres = (*fptr)(farg, rptr);
         if(!nres) {
@@ -321,7 +321,7 @@ id = npos;
 /*---   End of Addition     ---*/
 int
 search_record(filename,rptr,size,fptr,farg)
-char *filename ;
+char *filename ; 
 char *rptr ;
 int size ;
 int (*fptr)() ;
@@ -349,9 +349,9 @@ int fd;
 char *rptr ;
 int size, id ;
 {
-    if(lseek(fd,size*(id-1),SEEK_SET) == -1)
+    if(lseek(fd,size*(id-1),SEEK_SET) == -1) 
         return -1 ;
-    if(read(fd,rptr,size) != size)
+    if(read(fd,rptr,size) != size) 
         return -1 ;
     return 0 ;
 }
@@ -400,7 +400,7 @@ char *filename ;
 char *rptr ;
 int size, id ;
 {
-    /* add by KCN */
+/* add by KCN */
     struct flock ldata;
     int retval;
 
@@ -411,32 +411,32 @@ int size, id ;
 #endif
     if((fd = open(filename,O_WRONLY|O_CREAT,0644)) == -1)
         return -1 ;
-    /* change by KCN
-        flock(fd,LOCK_EX) ;
-    */
+/* change by KCN 
+    flock(fd,LOCK_EX) ;
+*/
     ldata.l_type=F_WRLCK;
     ldata.l_whence=0;
     ldata.l_len=size;
     ldata.l_start=size*(id-1);
     if ((retval=fcntl(fd,F_SETLKW,&ldata))== -1) {
         report("reclock error");
-        close(fd);	/*---	period	2000-10-20	file should be closed	---*/
+	close(fd);	/*---	period	2000-10-20	file should be closed	---*/
         return -1;
     }
 
     if (lseek(fd,size*(id-1),SEEK_SET) == -1) {
         report("subrec seek err");
         /*---	period	2000-10-24	---*/
-        ldata.l_type=F_UNLCK;
-        fcntl(fd,F_SETLK,&ldata);
-        close(fd);
+	ldata.l_type=F_UNLCK;
+	fcntl(fd,F_SETLK,&ldata);
+	close(fd);
         return -1;
     }
     if (safewrite(fd,rptr,size) != size)
         report("subrec write err");
-    /* change by KCN
-        flock(fd,LOCK_UN) ;
-    */
+/* change by KCN 
+    flock(fd,LOCK_UN) ;
+*/
     ldata.l_type=F_UNLCK;
     fcntl(fd,F_SETLK,&ldata);
 
@@ -450,17 +450,17 @@ int size, id ;
 
 int
 checkreadonly(checked) /* Haohmaru 2000.3.19 */
-char *checked;
+char *checked;          
 {
-    struct stat st;
-    char        buf[STRLEN];
+  struct stat st;
+  char        buf[STRLEN];
 
-    sprintf(buf, "boards/%s", checked);
-    stat(buf, &st);
-    if (365 == (st.st_mode & 0X1FF)) /* Checking if DIR access mode is "555" */
-        return YEA;
-    else
-        return NA;
+  sprintf(buf, "boards/%s", checked);
+  stat(buf, &st);
+  if (365 == (st.st_mode & 0X1FF)) /* Checking if DIR access mode is "555" */
+	return YEA;
+  else
+    return NA;
 }
 
 void
@@ -470,26 +470,26 @@ char    *filename, *tmpfile, *deleted;
     char        *ptr, delfname[STRLEN], tmpfname[STRLEN];
 
     strcpy( tmpfile, filename );
-    if (YEA == checkreadonly(currboard))/*Haohmaru 2000.3.19*/
-    {
-        sprintf(delfname,".%sdeleted",currboard);
-        sprintf(tmpfname,".%stmpfile",currboard);
-        if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
-            strcpy( ptr+1, delfname );
-            strcpy( deleted, tmpfile );
-            strcpy( ptr+1, tmpfname );
-        } else {
-            strcpy( deleted, delfname );
-            strcpy( tmpfile, tmpfname );
-        }
-        return;
-    }
-    else{
-        sprintf(delfname , ".deleted");
-        sprintf(tmpfname , ".tmpfile");}
+            if (YEA == checkreadonly(currboard))/*Haohmaru 2000.3.19*/
+           {
+               sprintf(delfname,".%sdeleted",currboard);
+               sprintf(tmpfname,".%stmpfile",currboard);
+		if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
+       		 strcpy( ptr+1, delfname );
+ 		       strcpy( deleted, tmpfile );
+ 		       strcpy( ptr+1, tmpfname );
+ 		   } else {
+ 		       strcpy( deleted, delfname );
+ 		       strcpy( tmpfile, tmpfname );
+ 		   }
+	        return;
+           }
+	else{
+    sprintf(delfname , ".deleted");
+    sprintf(tmpfname , ".tmpfile");}
 
-    /*    if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
-     changed by alex , 97.5.2 , 修正不能删除friends的bug */ 
+/*    if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
+ changed by alex , 97.5.2 , 修正不能删除friends的bug */ 
     if( (ptr = strrchr( tmpfile, '/' )) != NULL ) {
         strcpy( ptr+1, delfname );
         strcpy( deleted, tmpfile );
@@ -546,7 +546,7 @@ int size, id ;
     close(fdr) ;
     close(fdw) ;
     if( rename(filename,deleted) == -1 ||
-            rename(tmpfile,filename) == -1 ) {
+        rename(tmpfile,filename) == -1 ) {
         flock(fd,LOCK_UN) ;
         report("delrec rename err");
         close(fd) ;
@@ -579,13 +579,13 @@ int id1,id2,del_mode ;
     }
 
     if((fdw = open(tmpfile,O_WRONLY|O_CREAT|O_EXCL,0644)) == -1) {
-        /* add by KCN for debug
-        #undef perror
-        	dup2(0,1);
-        	dup2(0,2);
-        	perror(tmpfile);
-        	pressanykey();
-        */
+/* add by KCN for debug
+#undef perror
+	dup2(0,1);
+	dup2(0,2);
+	perror(tmpfile);
+	pressanykey();
+*/
         close(fdr);
         flock(fd,LOCK_UN);
         close(fd);
@@ -611,9 +611,9 @@ int id1,id2,del_mode ;
                 *t = '\0';
             sprintf(fullpath,"%s/%s",buf,fhdr.filename);
 #ifndef LEEWARD_X_RECORD /* This macro need defining for *.c under directories
-            of both local_utl and innd */
+                                                  of both local_utl and innd */
             /* Leeward: 98.01.22 adds below for logs in deleted/junk */
-            cancelpost(currboard, currentuser.userid,
+            cancelpost(currboard, currentuser.userid, 
                        &fhdr, !strcmp(fhdr.owner, currentuser.userid));
 #endif
             unlink(fullpath);
@@ -624,8 +624,8 @@ int id1,id2,del_mode ;
     close(fdr);
     if (YEA == checkreadonly(currboard))/*Haohmaru.使只读情况下也可以区段删除*/
     {
-        sprintf(buf,"cp -f ~bbsroot/%s ~bbsroot/%s",filename,deleted);
-        system(buf);
+	sprintf(buf,"cp -f ~bbsroot/%s ~bbsroot/%s",filename,deleted);
+	system(buf);
     }
     else if(rename(filename,deleted) == -1) {
         flock(fd,LOCK_UN);
@@ -636,8 +636,8 @@ int id1,id2,del_mode ;
     {
         sprintf(buf,"cp -f ~bbsroot/%s ~bbsroot/%s",tmpfile,filename);
         system(buf);
-        sprintf(buf,"rm -rf ~bbsroot/%s",tmpfile);
-        system(buf);
+	sprintf(buf,"rm -rf ~bbsroot/%s",tmpfile);
+	system(buf);
     }
     else if(rename(tmpfile,filename) == -1) {
         flock(fd,LOCK_UN);
@@ -721,35 +721,35 @@ int (*filecheck)() ;
     if((fd = open(dirname,O_RDWR)) == -1)
         return -1 ;
     flock(fd,LOCK_EX) ;
-    /*---	modified by period	2000-09.21	4 debug	---*/
+/*---	modified by period	2000-09.21	4 debug	---*/
     numents = fstat(fd,&st);
     if(0 != numents) {
-        char buf[256];
-        sprintf(buf, "%s stat error - delf", dirname);
-        report(buf);
+	char buf[256];
+	sprintf(buf, "%s stat error - delf", dirname);
+	report(buf);
     }
-    /*    fstat(fd,&st) ;  */
+/*    fstat(fd,&st) ;  */
     numents = ((long)st.st_size)/size ;
     if(((long)st.st_size) % size != 0)
-        /* change by KCN 1999.09.08
-                fprintf(stderr,"align err\n") ;
-        */
-        if(lseek(fd,size*(ent-1),SEEK_SET) != -1) {
-            if(read(fd,abuf,size) == size)
-                if((*filecheck)(abuf)) {
-                    int i ;
-                    for(i = ent; i < numents; i++) {
-                        if(lseek(fd,(i)*size,SEEK_SET) == -1)       break ;
-                        if(read(fd,abuf,size) != size)              break ;
-                        if(lseek(fd,(i-1)*size,SEEK_SET) == -1)     break ;
-                        if(safewrite(fd,abuf,size) != size)         break ;
-                    }
-                    ftruncate(fd,(off_t)size*(numents-1)) ;
-                    flock(fd,LOCK_UN) ;
-                    close(fd) ;
-                    return 0 ;
+/* change by KCN 1999.09.08
+        fprintf(stderr,"align err\n") ;
+*/
+    if(lseek(fd,size*(ent-1),SEEK_SET) != -1) {
+        if(read(fd,abuf,size) == size)
+            if((*filecheck)(abuf)) {
+                int i ;
+                for(i = ent; i < numents; i++) {
+                    if(lseek(fd,(i)*size,SEEK_SET) == -1)       break ;
+                    if(read(fd,abuf,size) != size)              break ;
+                    if(lseek(fd,(i-1)*size,SEEK_SET) == -1)     break ;
+                    if(safewrite(fd,abuf,size) != size)         break ;
                 }
-        }
+                ftruncate(fd,(off_t)size*(numents-1)) ;
+                flock(fd,LOCK_UN) ;
+                close(fd) ;
+                return 0 ;
+            }
+    }
     lseek(fd,0,SEEK_SET) ;
 
     /* Leeward 99.07.13 revised below '1' to '0' to fix a big bug */

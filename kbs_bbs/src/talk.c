@@ -51,18 +51,18 @@ int     talkrec = -1;
 char    partner[IDLEN + 1];
 #endif
 struct one_key  friend_list[] = {
-                                    'r',        friend_query,
-                                    'm',        friend_mail,
-                                    'M',        friend_mail,
-                                    'a',        friend_add,
-                                    'A',        friend_add,
-                                    'd',        friend_dele,
-                                    'D',        friend_dele,
-                                    'E',        friend_edit,
-                                    'h',        friend_help,
-                                    'H',        friend_help,
-                                    '\0',       NULL
-                                } ;
+    'r',        friend_query,
+    'm',        friend_mail,
+    'M',        friend_mail,
+    'a',        friend_add,
+    'A',        friend_add,
+    'd',        friend_dele,
+    'D',        friend_dele,
+    'E',        friend_edit,
+    'h',        friend_help,
+    'H',        friend_help,
+    '\0',       NULL
+} ;
 
 
 struct talk_win {
@@ -125,15 +125,15 @@ char *chatid;
     }
     if (mode != TALK && mode != PAGE && mode != QUERY)
         return (ModeType(mode));
-    /*---	modified by period	2000-10-20	---*
-        if (get_record(PASSFILE, &urec, sizeof(urec), towho) == -1)
-            return (ModeType(mode));
-    ---*/
+/*---	modified by period	2000-10-20	---*
+    if (get_record(PASSFILE, &urec, sizeof(urec), towho) == -1)
+        return (ModeType(mode));
+---*/
     if(getuserid(urec.userid, towho) != towho) return ModeType(mode);
-    /*---	---*/
+/*---	---*/
 
     if (mode != QUERY && !HAS_PERM(PERM_SYSOP) && isidhidden(towho)
-            /*---ishidden(urec.userid)---*/) return (ModeType(TMENU));
+        /*---ishidden(urec.userid)---*/) return (ModeType(TMENU));
     if (complete)
         sprintf(modestr, "%s %s", ModeType(mode), urec.userid);
     else
@@ -146,12 +146,12 @@ pagerchar(friend, pager)
 int friend,pager;
 {
     if (pager&ALL_PAGER) return ' ';
-    if ((friend))
+    if ((friend)) 
     {
         if(pager&FRIEND_PAGER)
-            return 'O';
+                return 'O';
         else
-            return '#';
+                return '#';
     }
     return '*';
 }
@@ -164,7 +164,7 @@ int friend,pager;
     if ((pager&FRIEND_PAGER))
     {
         if(friend)
-            return YEA;
+                return YEA;
     }
     return NA;
 }
@@ -182,36 +182,36 @@ struct user_info *uent ;
 
     strcpy( tty, uent->tty );
     if (tty[0]) {
-        /* KCN add tty[0]==0 for bbsd */
-        if ( (stat( tty, &buf ) != 0) /*||
-                     (strstr( tty, "tty" ) == NULL)*/) {
-            strcpy( hh_mm_ss, "²»Ïê");
-            return hh_mm_ss;
-        }/*;Õâ¸ö·ÖºÅÊ²Ã´ÒâË¼?Haohmaru*/
+	/* KCN add tty[0]==0 for bbsd */
+    if ( (stat( tty, &buf ) != 0) /*|| 
+         (strstr( tty, "tty" ) == NULL)*/) {
+        strcpy( hh_mm_ss, "²»Ïê");
+        return hh_mm_ss;
+    }/*;Õâ¸ö·ÖºÅÊ²Ã´ÒâË¼?Haohmaru*/
 
-        now = time( 0 );
+    now = time( 0 );
 
-        diff = now - buf.st_atime;
+    diff = now - buf.st_atime;
     } else {
-        now = time(0);
-        diff = now - *(time_t*)(uent->tty+1);
-        if (diff==now) /* @#$#!@$#@! */
-            diff=0;
+	now = time(0);
+	diff = now - *(time_t*)(uent->tty+1);
+	if (diff==now) /* @#$#!@$#@! */
+		diff=0;
     }
 #ifdef DOTIMEOUT
     /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
        kicking out all users */
 
-    if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5 ))
+    if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5 )) 
         kill( uent->pid, SIGHUP );
 #endif
 
     hh = diff / 3600;
     mm = (diff / 60) % 60;
-
-    if ( hh > 0 )
+    
+    if ( hh > 0 ) 
         sprintf( hh_mm_ss, "%d:%02d", hh, mm );
-    else if ( mm > 0 )
+    else if ( mm > 0 ) 
         sprintf( hh_mm_ss, "%d", mm );
     else sprintf ( hh_mm_ss, "   ");
 
@@ -228,9 +228,9 @@ struct user_info *uentp ;
         CreateNameList() ;
         return 0;
     }
-    /*    if(uentp->uid == usernum)		rem by Haohmaru,00.5.26,ÕâÑù²ÅÄÜ¸ø×Ô¼º·¢msg
-            return 0;
-    */    if(!uentp->active || !uentp->pid)
+/*    if(uentp->uid == usernum)		rem by Haohmaru,00.5.26,ÕâÑù²ÅÄÜ¸ø×Ô¼º·¢msg
+        return 0;
+*/    if(!uentp->active || !uentp->pid)
         return 0;
     if(uentp->mode == ULDL)
         return 0;
@@ -255,9 +255,9 @@ t_pager()
     {
         uinfo.pager&=~ALL_PAGER;
         if( DEFINE(DEF_FRIENDCALL))
-            uinfo.pager|=FRIEND_PAGER;
+                uinfo.pager|=FRIEND_PAGER;
         else
-            uinfo.pager&=~FRIEND_PAGER;
+                uinfo.pager&=~FRIEND_PAGER;
     }else
     {
         uinfo.pager|=ALL_PAGER;
@@ -280,29 +280,29 @@ int
 show_user_plan(userid)
 char userid[IDLEN];
 {
-    int i;
-    char pfile[STRLEN],pbuf[256];
-    FILE *pf;
+        int i;
+        char pfile[STRLEN],pbuf[256];
+        FILE *pf;
 
-    sethomefile(pfile,userid,"plans");
-    if ((pf = fopen(pfile, "r")) == NULL)
-    {
-        prints("[36mÃ»ÓÐ¸öÈËËµÃ÷µµ[m\n");
-        /*fclose(pf);*/ /* Leeward 98.04.20 */
-        return NA;
-    }
-    else
-    {
-        prints("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");
-        for (i=1; i<=MAXQUERYLINES; i++)
+        sethomefile(pfile,userid,"plans");
+        if ((pf = fopen(pfile, "r")) == NULL)
         {
-            if (fgets(pbuf, sizeof(pbuf), pf))
-                prints("%s", pbuf);
-            else break;
+                prints("[36mÃ»ÓÐ¸öÈËËµÃ÷µµ[m\n");
+                /*fclose(pf);*/ /* Leeward 98.04.20 */
+                return NA;
         }
+        else 
+        {
+                prints("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");
+                for (i=1; i<=MAXQUERYLINES; i++) 
+                {
+                if (fgets(pbuf, sizeof(pbuf), pf))
+                        prints("%s", pbuf);
+                else break;
+                }
         fclose(pf);
         return YEA;
-    }
+        }
 }
 
 
@@ -322,25 +322,25 @@ char q_id[IDLEN];
     char exittime[40];
     time_t exit_time,temp/*Haohmaru.98.12.04*/;
 
-    if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND&&uinfo.mode!=READING &&uinfo.mode!=MAIL&&uinfo.mode!=RMAIL&&uinfo.mode!=GMENU){
-        modify_user_mode( QUERY );
-        refresh();
-        /*    count = shortulist(NULL);*/
-        move(2,0);
-        clrtobot();
-        prints("<ÊäÈëÊ¹ÓÃÕß´úºÅ, °´¿Õ°×¼ü¿ÉÁÐ³ö·ûºÏ×Ö´®>\n");
-        move(1,0);
-        clrtoeol();
-        prints("²éÑ¯Ë­: ");
-        usercomplete(NULL,uident);
-        if(uident[0] == '\0') {
-            clear() ;
-            return 0 ;
-        }
-    }else
-    {
-        strcpy(uident,strtok(q_id," "));
+  if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND&&uinfo.mode!=READING &&uinfo.mode!=MAIL&&uinfo.mode!=RMAIL&&uinfo.mode!=GMENU){
+    modify_user_mode( QUERY );
+    refresh();
+/*    count = shortulist(NULL);*/
+    move(2,0);
+    clrtobot();
+    prints("<ÊäÈëÊ¹ÓÃÕß´úºÅ, °´¿Õ°×¼ü¿ÉÁÐ³ö·ûºÏ×Ö´®>\n");
+    move(1,0);
+    clrtoeol();
+    prints("²éÑ¯Ë­: ");
+    usercomplete(NULL,uident);
+    if(uident[0] == '\0') {
+        clear() ;
+        return 0 ;
     }
+  }else
+  {
+    strcpy(uident,strtok(q_id," "));
+  }
     if(!(tuid = getuser(uident))) {
         move(2,0) ;
         clrtoeol();
@@ -352,75 +352,75 @@ char q_id[IDLEN];
     }
     uinfo.destuid = tuid ;
     update_utmp();
-
+   
     search_ulist( &uin, t_cmpuids, tuid );
 
     move(1,0);
     clrtobot();
     setmailfile(qry_mail_dir, lookupuser.userid, DOT_DIR);
-
+   
     exp=countexp(&lookupuser);
     perf=countperf(&lookupuser);
-    /*---	modified by period	2000-11-02	hide posts/logins	---*/
+/*---	modified by period	2000-11-02	hide posts/logins	---*/
 #ifndef _DETAIL_UINFO_
     if((!HAS_PERM(PERM_ADMINMENU)) && strcmp(lookupuser.userid, currentuser.userid))
         prints( "%s (%s)", lookupuser.userid, lookupuser.username);
     else
 #endif
         prints( "%s (%s) ¹²ÉÏÕ¾ %d ´Î£¬·¢±í¹ý %d ÆªÎÄÕÂ",
-                lookupuser.userid, lookupuser.username,
-                lookupuser.numlogins,lookupuser.numposts);
+            lookupuser.userid, lookupuser.username,
+            lookupuser.numlogins,lookupuser.numposts);
     strcpy(planid,lookupuser.userid);
     strcpy(genbuf, ctime(&(lookupuser.lastlogin)));
     if( (newline = strchr(genbuf, '\n')) != NULL )
         *newline = '\0';
-    /* »ñµÃÀëÏßÊ±¼ä Luzi 1998/10/23 */
+/* »ñµÃÀëÏßÊ±¼ä Luzi 1998/10/23 */
     exit_time = get_exit_time(lookupuser.userid,exittime);
     if( (newline = strchr(exittime, '\n')) != NULL )
         *newline = '\0';
 
-    if (exit_time <= lookupuser.lastlogin
-            || (uin.active && uin.pid
-                && (!uin.invisible || (uin.invisible && HAS_PERM(PERM_SEECLOAK)))))
-        strcpy(exittime,"ÒòÔÚÏßÉÏ»ò·Ç³£¶ÏÏß²»Ïê");
+    if (exit_time <= lookupuser.lastlogin 
+     || (uin.active && uin.pid 
+         && (!uin.invisible || (uin.invisible && HAS_PERM(PERM_SEECLOAK))))) 
+      strcpy(exittime,"ÒòÔÚÏßÉÏ»ò·Ç³£¶ÏÏß²»Ïê");
     if (exit_time <= lookupuser.lastlogin && (uin.invisible&& !HAS_PERM(PERM_SEECLOAK)))
-    {
-        temp=lookupuser.lastlogin+(lookupuser.numlogins%7)+5;
-        strcpy(exittime,ctime(&temp));/*Haohmaru.98.12.04.ÈÃÒþÉíÓÃ»§¿´ÉÏÈ¥ÀëÏßÊ±¼ä±ÈÉÏÏßÊ±¼äÍí5µ½12ÃëÖÓ*/
+	{
+	temp=lookupuser.lastlogin+(lookupuser.numlogins%7)+5;
+	strcpy(exittime,ctime(&temp));/*Haohmaru.98.12.04.ÈÃÒþÉíÓÃ»§¿´ÉÏÈ¥ÀëÏßÊ±¼ä±ÈÉÏÏßÊ±¼äÍí5µ½12ÃëÖÓ*/
         if( (newline = strchr(exittime, '\n')) != NULL )
-            *newline = '\0';
-    }
-    prints( "\nÉÏ´ÎÔÚ  [%s] ´Ó [%s] µ½±¾Õ¾Ò»ÓÎ¡£\nÀëÏßÊ±¼ä[%s] ", genbuf,
-            ((lookupuser.lasthost[0] == '\0') /*|| DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser.lasthost),/*Haohmaru.99.12.18. hide ip*/
-            exittime);
+        *newline = '\0';
+	}
+    prints( "\nÉÏ´ÎÔÚ  [%s] ´Ó [%s] µ½±¾Õ¾Ò»ÓÎ¡£\nÀëÏßÊ±¼ä[%s] ", genbuf, 
+        ((lookupuser.lasthost[0] == '\0') /*|| DEFINE(DEF_HIDEIP)*/ ? "(²»Ïê)" : lookupuser.lasthost),/*Haohmaru.99.12.18. hide ip*/
+        exittime);
 
-    /* SNOW CHANGE AT 10.20 (CHANGE THIS MSG)
-        prints("ÐÅÏä£º[[5m%2s[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
-                ,(check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",exp,cexp(exp),perf,
-                  cperf(perf),compute_user_value(&lookupuser),
-               (lookupuser.userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":" ");
-    */
+/* SNOW CHANGE AT 10.20 (CHANGE THIS MSG)
+    prints("ÐÅÏä£º[[5m%2s[m]£¬¾­ÑéÖµ£º[%d](%s) ±íÏÖÖµ£º[%d](%s) ÉúÃüÁ¦£º[%d]%s\n"
+            ,(check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",exp,cexp(exp),perf,
+              cperf(perf),compute_user_value(&lookupuser),
+           (lookupuser.userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":" ");
+*/
     uleveltochar(&permstr,lookupuser.userlevel);
     prints("ÐÅÏä£º[[5m%2s[m] ÉúÃüÁ¦£º[%d] µÈ¼¶: [%s]%s\n",
-           (check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",
-           compute_user_value(&lookupuser),
-           permstr,(lookupuser.userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":"¡£");
+        (check_query_mail(qry_mail_dir)==1)? "ÐÅ":"  ",
+        compute_user_value(&lookupuser),
+        permstr,(lookupuser.userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":"¡£");
 
     t_search_ulist( &uin, t_cmpuids, tuid );
 
 #if defined(QUERY_REALNAMES)
-    if (HAS_PERM(PERM_BASIC))
+    if (HAS_PERM(PERM_BASIC))   
         prints("Real Name: %s \n",lookupuser.realname);
 #endif
 
     show_user_plan(planid);
 
     if (uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND&&uinfo.mode!=GMENU)
-        pressanykey();
-
+      pressanykey();
+        
     uinfo.destuid = 0;
     return 0;
-}
+}               
 
 int
 count_active(uentp)
@@ -453,8 +453,8 @@ struct user_info *uentp ;
     if(!uentp->active || !uentp->pid)
         return 0 ;
     if(uentp->mode==WWW||uentp->mode==CSIE_TIN||uentp->mode==CSIE_GOPHER
-            ||uentp->mode==EXCE_CHESS||uentp->mode==EXCE_BIG2||uentp->mode==EXCE_MJ
-            ||uentp->mode==IRCCHAT)
+        ||uentp->mode==EXCE_CHESS||uentp->mode==EXCE_BIG2||uentp->mode==EXCE_MJ
+        ||uentp->mode==IRCCHAT)
         count++ ;
     return 1 ;
 }
@@ -466,12 +466,12 @@ struct user_info *uentp ;
     static int count ;
 
     if(uentp == NULL) {
-        int c = count;
-        count = 0;
-        return c;
+       int c = count;
+       count = 0;
+       return c;
     }
     if(!uentp->active || !uentp->pid)
-        return 0 ;
+       return 0 ;
     if(!ci_strcmp(uentp->userid,save_page_requestor))
         count++ ;
     return 1 ;
@@ -482,17 +482,17 @@ count_visible_active(uentp)
 struct user_info *uentp ;
 {
     static int count ;
-
+    
     if(uentp == NULL) {
-        int c = count;
-        count = 0;
-        return c;
+       int c = count;
+       count = 0;
+       return c;
     }
     if(!uentp->active || !uentp->pid)
-        return 0 ;
+       return 0 ;
     count++ ;
     if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
-        count--;
+       count--;
     return 1 ;
 }
 
@@ -504,24 +504,24 @@ struct user_info *uentp ;
     int canseecloak;
 
     if(uentp == NULL) {
-        count_friends= vi_friends;
-        count_users= vi_users;
-        vi_users=vi_friends=0;
-        return 1;
+       count_friends= vi_friends;
+       count_users= vi_users;
+       vi_users=vi_friends=0;
+       return 1;
     }
     if(!uentp->active || !uentp->pid)
-        return 0 ;
+       return 0 ;
 
     canseecloak=(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)?0:1;
     if(myfriend(uentp->userid))
     {
         vi_friends++ ;
-        if(!canseecloak)
-            vi_friends--;
+       if(!canseecloak)
+                vi_friends--;
     }
     vi_users++ ;
     if(!canseecloak)
-        vi_users--;
+       vi_users--;
     return 1 ;
 }
 
@@ -571,7 +571,7 @@ cmpfnames(userid, uv)
 char    *userid;
 struct friend *uv;
 {
-    return !ci_strcmp(userid, uv->id);
+        return !ci_strcmp(userid, uv->id);
 }
 
 int
@@ -587,11 +587,11 @@ int
 t_talk()
 {
     int  netty_talk ;
-
+    
 #ifdef DOTIMEOUT
-    init_alarm();
+        init_alarm();
 #else
-    signal(SIGALRM, SIG_IGN);
+        signal(SIGALRM, SIG_IGN);
 #endif
     refresh();
     netty_talk = ttt_talk();
@@ -607,79 +607,79 @@ struct user_info *userinfo ;
     char test[STRLEN];
     int tuid, ucount, unum, tmp ;
     struct user_info uin ;
-
-    move(1,0);
-    clrtobot();
-    if(uinfo.mode!=LUSERS&&uinfo.mode!=FRIEND)
-    {
-        move(2,0) ;
-        prints("<ÊäÈëÊ¹ÓÃÕß´úºÅ>\n") ;
-        move(1,0) ;
-        clrtoeol() ;
-        prints("¸úË­ÁÄÌì: ") ;
-        creat_list() ;
-        namecomplete(NULL,uident) ;
-        if(uident[0] == '\0') {
-            clear() ;
-            return 0 ;
-        }
-        if(!(tuid = getuser(uident)) || tuid == usernum) { /* change searchuser to getuser, by dong, 1999.10.26 */
-            move(2,0) ;
-            prints("´íÎó´úºÅ\n") ;
-            pressreturn() ;
-            move(2,0) ;
-            clrtoeol() ;
-            return -1 ;
-        }
-        ucount=count_logins( &uin, t_cmpuids, tuid, 0);
-        move(3,0);
-        prints("Ä¿Ç° %s µÄ %d logins ÈçÏÂ: \n", uident, ucount);
-        clrtobot() ;
-        if(ucount>1) {
-list:   move(5,0) ;
-            prints("(0) ËãÁËËãÁË£¬²»ÁÄÁË¡£\n");
-            ucount=count_logins( &uin, t_cmpuids, tuid, 0);
-            count_logins( &uin, t_cmpuids, tuid, 1);
-            clrtobot() ;
-            tmp=ucount+8;
-            getdata( tmp, 0, "ÇëÑ¡Ò»¸öÄã¿´µÄ±È½ÏË³ÑÛµÄ [0]: ",
-                     genbuf, 4, DOECHO, NULL,YEA);
-            unum=atoi(genbuf);
-            if(unum == 0) { clear(); return 0; }
-            if(unum > ucount || unum < 0) {
-                move(tmp,0);
-                prints("±¿±¿£¡ÄãÑ¡´íÁËÀ²£¡\n") ;
-                clrtobot();
-                pressreturn();
-                goto list;
-            }
-            search_ulistn( &uin, t_cmpuids, tuid, unum );
-        }else
-            search_ulist( &uin, t_cmpuids, tuid );
-    }else
-    {
-        /*     memcpy(&uin,userinfo,sizeof(uin));*/
-        uin=*userinfo;
-        tuid=uin.uid;
-        strcpy(uident,uin.userid);
-        move(1,0) ;
-        clrtoeol() ;
-        prints("¸úË­ÁÄÌì: %s",uin.userid) ;
+    
+   move(1,0);
+   clrtobot();
+   if(uinfo.mode!=LUSERS&&uinfo.mode!=FRIEND)
+   {
+    move(2,0) ;
+    prints("<ÊäÈëÊ¹ÓÃÕß´úºÅ>\n") ;
+    move(1,0) ;
+    clrtoeol() ;
+    prints("¸úË­ÁÄÌì: ") ;
+    creat_list() ;
+    namecomplete(NULL,uident) ;
+    if(uident[0] == '\0') {
+        clear() ;
+        return 0 ;
     }
-    /*  check if pager on/off       --gtv */
-    if(!canpage(can_override(uin.userid, currentuser.userid),uin.pager))
-    {
+    if(!(tuid = getuser(uident)) || tuid == usernum) { /* change searchuser to getuser, by dong, 1999.10.26 */
         move(2,0) ;
-        prints("¶Ô·½ºô½ÐÆ÷ÒÑ¹Ø±Õ.\n") ;
+        prints("´íÎó´úºÅ\n") ;
         pressreturn() ;
         move(2,0) ;
         clrtoeol() ;
         return -1 ;
     }
-    /*modified by Excellent*/
-    if(uin.mode == ULDL || uin.mode == IRCCHAT ||
-            uin.mode == BBSNET || uin.mode == FOURM || uin.mode==EXCE_BIG2 ||
-            uin.mode == EXCE_MJ || uin.mode==EXCE_CHESS) {
+    ucount=count_logins( &uin, t_cmpuids, tuid, 0);
+    move(3,0);
+    prints("Ä¿Ç° %s µÄ %d logins ÈçÏÂ: \n", uident, ucount);
+    clrtobot() ;
+    if(ucount>1) {
+    list:   move(5,0) ;
+    prints("(0) ËãÁËËãÁË£¬²»ÁÄÁË¡£\n");
+    ucount=count_logins( &uin, t_cmpuids, tuid, 0);
+    count_logins( &uin, t_cmpuids, tuid, 1);
+    clrtobot() ;
+    tmp=ucount+8;
+    getdata( tmp, 0, "ÇëÑ¡Ò»¸öÄã¿´µÄ±È½ÏË³ÑÛµÄ [0]: ",
+    genbuf, 4, DOECHO, NULL,YEA);
+    unum=atoi(genbuf);
+    if(unum == 0) { clear(); return 0; }
+      if(unum > ucount || unum < 0) {
+        move(tmp,0);
+        prints("±¿±¿£¡ÄãÑ¡´íÁËÀ²£¡\n") ;
+        clrtobot();
+        pressreturn();
+        goto list;
+        }
+        search_ulistn( &uin, t_cmpuids, tuid, unum );
+    }else
+        search_ulist( &uin, t_cmpuids, tuid );
+   }else
+   {
+/*     memcpy(&uin,userinfo,sizeof(uin));*/
+     uin=*userinfo;
+     tuid=uin.uid;
+     strcpy(uident,uin.userid);
+     move(1,0) ;
+     clrtoeol() ;
+     prints("¸úË­ÁÄÌì: %s",uin.userid) ;
+   }
+    /*  check if pager on/off       --gtv */
+    if(!canpage(can_override(uin.userid, currentuser.userid),uin.pager)) 
+    {
+          move(2,0) ;
+          prints("¶Ô·½ºô½ÐÆ÷ÒÑ¹Ø±Õ.\n") ;
+          pressreturn() ;
+          move(2,0) ;
+          clrtoeol() ;
+          return -1 ;
+    }
+   /*modified by Excellent*/
+    if(uin.mode == ULDL || uin.mode == IRCCHAT || 
+        uin.mode == BBSNET || uin.mode == FOURM || uin.mode==EXCE_BIG2 ||
+        uin.mode == EXCE_MJ || uin.mode==EXCE_CHESS) {
         move(2,0) ;
         prints("Ä¿Ç°ÎÞ·¨ºô½Ð.\n") ;
         pressreturn() ;
@@ -798,7 +798,7 @@ list:   move(5,0) ;
         add_io(0,0) ;
         close(sock) ;
         uinfo.sockactive = NA ;
-        /*      uinfo.destuid = 0 ;*/
+/*      uinfo.destuid = 0 ;*/
         read(msgsock,&c,sizeof c) ;
 
         clear() ;
@@ -806,12 +806,12 @@ list:   move(5,0) ;
         if(c == 'y'|| c=='Y' ) {
             sprintf( save_page_requestor, "%s (%s)", uin.userid, uin.username);
 
-            /* Bigman 2000.9.15 Ôö¼ÓTalk¼ÇÂ¼ */
+/* Bigman 2000.9.15 Ôö¼ÓTalk¼ÇÂ¼ */
 #ifdef TALK_LOG
             strcpy(partner, uin.userid);
 #endif
             do_talk(msgsock) ;
-            /*Add by SmallPig*/
+/*Add by SmallPig*/
         } else if(c=='n'||c=='N'){
             prints("%s (%s)Ëµ£º±§Ç¸£¬ÎÒÏÖÔÚºÜÃ¦£¬²»ÄÜ¸úÄãÁÄ¡£\n", uin.userid, uin.username) ;
             pressreturn() ;
@@ -831,18 +831,18 @@ list:   move(5,0) ;
         {   prints("%s (%s)Ëµ£ºÇëÄã¼ÄÒ»·âÐÅ¸øÎÒ£¬ÎÒÏÖÔÚÃ»¿Õ¡£\n", uin.userid, uin.username) ;
             pressreturn() ;
         } else if(c=='M' || c=='m')
-        {
-            read(msgsock,test,sizeof test) ;
-            prints("%s (%s)Ëµ£º%s\n", uin.userid, uin.username,test);
-            pressreturn() ;
+        {   
+                read(msgsock,test,sizeof test) ;
+                prints("%s (%s)Ëµ£º%s\n", uin.userid, uin.username,test);
+                pressreturn() ;
         } else{
-            sprintf( save_page_requestor, "%s (%s)", uin.userid, uin.username);
+                    sprintf( save_page_requestor, "%s (%s)", uin.userid, uin.username);
 
-            /* Bigman 2000.9.15 Ôö¼ÓTalk¼ÇÂ¼ */
+/* Bigman 2000.9.15 Ôö¼ÓTalk¼ÇÂ¼ */
 #ifdef TALK_LOG
             strcpy(partner, uin.userid);
 #endif
-            do_talk(msgsock) ;
+                    do_talk(msgsock) ;
         }
         close(msgsock) ;
         clear() ;
@@ -864,8 +864,8 @@ int unum ;
 struct user_info *up ;
 {
     if(!up->active)
-        return 0 ;
-    return (unum == up->destuid) ;
+      return 0 ;
+        return (unum == up->destuid) ;
 }
 
 int
@@ -874,8 +874,8 @@ int unum ;
 struct user_info *up ;
 {
     if(!up->active)
-        return 0 ;
-    return (unum == up->destuid&&up->sockactive==2) ;
+      return 0 ;
+        return (unum == up->destuid&&up->sockactive==2) ;
 }
 
 int
@@ -884,9 +884,9 @@ int mode;
 {
     int tuid;
     if(mode==0)
-        tuid = search_ulist( &ui, cmpunums, usernum );
+            tuid = search_ulist( &ui, cmpunums, usernum );      
     else
-        tuid = search_ulist( &ui, cmpmsgnum, usernum );
+            tuid = search_ulist( &ui, cmpmsgnum, usernum );
     if(tuid == 0)
         return 1;
     if(!ui.sockactive)
@@ -911,13 +911,13 @@ char    *mesg;
     if (!talkrequest) {
         if (page_requestor[0]) {
             switch (uinfo.mode) {
-            case TALK:
-                move(line, 0);
-                printdash( mesg );
-                break;
-            default: /* a chat mode */
-                sprintf(buf, "** %s ÒÑÍ£Ö¹ºô½Ð.", page_requestor);
-                printchatline(buf);
+                case TALK:
+                    move(line, 0);
+                    printdash( mesg );
+                    break;
+                default: /* a chat mode */
+                    sprintf(buf, "** %s ÒÑÍ£Ö¹ºô½Ð.", page_requestor);
+                    printchatline(buf);
             }
             memset(page_requestor, 0, STRLEN);
             last_check = 0;
@@ -938,7 +938,7 @@ char    *mesg;
                 default: /* chat */
                     sprintf(buf, "** %s ÕýÔÚºô½ÐÄã", page_requestor);
                     printchatline(buf);
-                }
+            }
         }
     }
     return YEA;
@@ -955,12 +955,12 @@ setnpagerequest()
     if (sysconf_str("GETPAGER") == NULL) return 1;
 
     sprintf(tmp_buf,"%s %s", sysconf_str("GETPAGER"),currentuser.userid);
-    getpager = popen(tmp_buf,"r");
-    if (getpager == NULL)
-        return 1;
+    getpager = popen(tmp_buf,"r"); 
+    if (getpager == NULL) 
+       return 1;
     fgets(npage_requestor, STRLEN, getpager);
     if ( *npage_requestor == '\0')
-        return 1;
+       return 1;
     return 0;
 }
 void
@@ -971,10 +971,10 @@ int reject;
     char tmp_buf[STRLEN + 128];
 
     if (reject) {
-        sprintf(tmp_buf,"/bin/sh %s %s", sysconf_str("REJECTCALL"),pager);
+     sprintf(tmp_buf,"/bin/sh %s %s", sysconf_str("REJECTCALL"),pager);
     } else {
-        sprintf(tmp_buf,"/bin/sh %s %s", sysconf_str("NTALK"),pager);
-        modify_user_mode( TALK );
+     sprintf(tmp_buf,"/bin/sh %s %s", sysconf_str("NTALK"),pager);
+     modify_user_mode( TALK );
     }
     reset_tty() ;
     do_exec(tmp_buf,NULL) ;
@@ -991,8 +991,8 @@ ntalkreply()
     talkrequest = NA ;
     ntalkrequest = NA ;
 
-    if (setnpagerequest()) return 0;
-
+    if (setnpagerequest()) return 0;    
+    
 #ifdef DOTIMEOUT
     init_alarm();
 #else
@@ -1000,16 +1000,16 @@ ntalkreply()
 #endif
     clear() ;
     move(1,0);
-    prints("(N)¡¾±§Ç¸£¬ÎÒÏÖÔÚºÜÃ¦£¬²»ÄÜ¸úÄãÁÄ¡£¡¿(B)¡¾ÎÒÏÖÔÚºÜ·³£¬²»Ïë¸ú±ðÈËÁÄÌì¡£ ¡¿\n");
-    prints("(C)¡¾ÎÒÓÐ¼±ÊÂ£¬ÎÒµÈÒ»ÏÂÔÙ Call Äã¡£¡¿(D)¡¾Çë²»ÒªÔÙ Page£¬ÎÒ²»Ïë¸úÄãÁÄ¡£¡¿\n");
-    prints("(E)¡¾ÎÒÒªÀë¿ªÁË£¬ÏÂ´ÎÔÚÁÄ°É¡£      ¡¿(F)¡¾Çë¼ÄÒ»·âÐÅ¸øÎÒ£¬ÎÒÏÖÔÚÃ»¿Õ¡£ ¡¿\n");
+prints("(N)¡¾±§Ç¸£¬ÎÒÏÖÔÚºÜÃ¦£¬²»ÄÜ¸úÄãÁÄ¡£¡¿(B)¡¾ÎÒÏÖÔÚºÜ·³£¬²»Ïë¸ú±ðÈËÁÄÌì¡£ ¡¿\n");
+prints("(C)¡¾ÎÒÓÐ¼±ÊÂ£¬ÎÒµÈÒ»ÏÂÔÙ Call Äã¡£¡¿(D)¡¾Çë²»ÒªÔÙ Page£¬ÎÒ²»Ïë¸úÄãÁÄ¡£¡¿\n");
+prints("(E)¡¾ÎÒÒªÀë¿ªÁË£¬ÏÂ´ÎÔÚÁÄ°É¡£      ¡¿(F)¡¾Çë¼ÄÒ»·âÐÅ¸øÎÒ£¬ÎÒÏÖÔÚÃ»¿Õ¡£ ¡¿\n");
     sprintf( inbuf, "ÄãÏë¸ú %s ÁÄÁÄÌìÂð? (Y N B C D E F)[Y]: ", npage_requestor );
     getdata(0,0, inbuf ,buf,STRLEN,DOECHO,NULL,YEA) ;
 
     if(buf[0] != 'n' && buf[0] != 'N'&& buf[0] != 'B'&& buf[0] != 'b'
-            && buf[0] != 'C'&& buf[0] != 'c'&& buf[0] != 'D'&& buf[0] != 'd'
-            && buf[0] != 'e'&& buf[0] != 'E'&& buf[0] != 'f'&& buf[0] != 'F')
-        buf[0] = 'y';
+       && buf[0] != 'C'&& buf[0] != 'c'&& buf[0] != 'D'&& buf[0] != 'd'
+       && buf[0] != 'e'&& buf[0] != 'E'&& buf[0] != 'f'&& buf[0] != 'F') 
+    buf[0] = 'y';
     if(buf[0] != 'y') {
         report("page refused");
         ndo_talk(npage_requestor,1) ;
@@ -1017,7 +1017,7 @@ ntalkreply()
         refresh();
         return 0 ;
     }
-
+                        
     clear() ;
     report("page accepted");
     ndo_talk(npage_requestor,0) ;
@@ -1035,12 +1035,12 @@ talkreply()
     char hostname[STRLEN] ;
     struct sockaddr_in sin ;
     char inbuf[STRLEN*2];
-
+                
     talkrequest = NA ;
 #ifdef BBSNTALKD
     ntalkrequest = NA ;
 #endif
-    if (setpagerequest(0/*For Talk*/)) return 0;
+    if (setpagerequest(0/*For Talk*/)) return 0;     
     /*  added by netty  */
 #ifdef DOTIMEOUT
     init_alarm();
@@ -1049,21 +1049,21 @@ talkreply()
 #endif
     clear() ;
 
-    /* to show plan -cuteyu */
+/* to show plan -cuteyu */
 
     move( 5, 0 );
     clrtobot();
     show_user_plan(page_requestorid);
     /*Add by SmallPig*/
     move(1,0);
-    prints("(N)¡¾±§Ç¸£¬ÎÒÏÖÔÚºÜÃ¦£¬²»ÄÜ¸úÄãÁÄ¡£¡¿(B)¡¾ÎÒÏÖÔÚºÜ·³£¬²»Ïë¸ú±ðÈËÁÄÌì¡£ ¡¿\n");
-    prints("(C)¡¾ÎÒÓÐ¼±ÊÂ£¬ÎÒµÈÒ»ÏÂÔÙ Call Äã¡£¡¿(D)¡¾Çë²»ÒªÔÙ Page£¬ÎÒ²»Ïë¸úÄãÁÄ¡£¡¿\n");
-    prints("(E)¡¾ÎÒÒªÀë¿ªÁË£¬ÏÂ´ÎÔÚÁÄ°É¡£      ¡¿(F)¡¾Çë¼ÄÒ»·âÐÅ¸øÎÒ£¬ÎÒÏÖÔÚÃ»¿Õ¡£ ¡¿\n");
-    prints("(M)¡¾ÁôÑÔ¸ø %-12s           ¡¿\n",page_requestorid);
+prints("(N)¡¾±§Ç¸£¬ÎÒÏÖÔÚºÜÃ¦£¬²»ÄÜ¸úÄãÁÄ¡£¡¿(B)¡¾ÎÒÏÖÔÚºÜ·³£¬²»Ïë¸ú±ðÈËÁÄÌì¡£ ¡¿\n");
+prints("(C)¡¾ÎÒÓÐ¼±ÊÂ£¬ÎÒµÈÒ»ÏÂÔÙ Call Äã¡£¡¿(D)¡¾Çë²»ÒªÔÙ Page£¬ÎÒ²»Ïë¸úÄãÁÄ¡£¡¿\n");
+prints("(E)¡¾ÎÒÒªÀë¿ªÁË£¬ÏÂ´ÎÔÚÁÄ°É¡£      ¡¿(F)¡¾Çë¼ÄÒ»·âÐÅ¸øÎÒ£¬ÎÒÏÖÔÚÃ»¿Õ¡£ ¡¿\n");
+prints("(M)¡¾ÁôÑÔ¸ø %-12s           ¡¿\n",page_requestorid);
     sprintf( inbuf, "ÄãÏë¸ú %s ÁÄÁÄÌìÂð? (Y N B C D E F)[Y]: ", page_requestor );
     strcpy(save_page_requestor, page_requestor);
 
-    /* 2000.9.15 Bigman Ìí¼ÓTalk¼ÇÂ¼ */
+/* 2000.9.15 Bigman Ìí¼ÓTalk¼ÇÂ¼ */
 #ifdef TALK_LOG
     strcpy(partner, page_requestorid);
 #endif
@@ -1085,19 +1085,19 @@ talkreply()
         return -1 ;
     }
     if(buf[0] != 'n' && buf[0] != 'N'&& buf[0] != 'B'&& buf[0] != 'b'
-            && buf[0] != 'C'&& buf[0] != 'c'&& buf[0] != 'D'&& buf[0] != 'd'
-            && buf[0] != 'e'&& buf[0] != 'E'&& buf[0] != 'f'&& buf[0] != 'F'
-            && buf[0] != 'm'&& buf[0] != 'M')
-        buf[0]='y';
+       && buf[0] != 'C'&& buf[0] != 'c'&& buf[0] != 'D'&& buf[0] != 'd'
+       && buf[0] != 'e'&& buf[0] != 'E'&& buf[0] != 'f'&& buf[0] != 'F'
+       && buf[0] != 'm'&& buf[0] != 'M')
+      buf[0]='y';            
     if(buf[0]=='M'||buf[0]=='m')
     {
-        move(1,0);
-        clrtobot();
-        getdata(1,0, "Áô»°£º" ,reason,50,DOECHO,NULL,YEA) ;
-    }
+       move(1,0);
+       clrtobot();
+       getdata(1,0, "Áô»°£º" ,reason,50,DOECHO,NULL,YEA) ;
+    }   
     write(a,buf,1) ;
     if(buf[0]=='M'||buf[0]=='m')
-        write(a,reason,sizeof reason) ;
+          write(a,reason,sizeof reason) ;
     if(buf[0] != 'y') {
         close(a) ;
         report("page refused");
@@ -1124,27 +1124,27 @@ char *buf;
     if(!HAS_PERM(PERM_SEECLOAK) && uentp->invisible)
         return -1;
     switch(uentp->mode) {
-    case ULDL: mch = 'U'; break;
-    case TALK: mch = 'T'; break;
-    case CHAT1:
-    case CHAT2:
-    case CHAT3:
-    case CHAT4: mch = 'C'; break;
-    case IRCCHAT: mch = 'I'; break;
-    case FOURM: mch = '4'; break;
-    case BBSNET: mch = 'B'; break;
-    case READNEW:
-    case READING: mch = 'R'; break;
-    case POSTING: mch = 'P'; break;
-    case SMAIL:
-    case RMAIL:
-    case MAIL: mch = 'M'; break;
-    default: mch = '-';
+        case ULDL: mch = 'U'; break;
+        case TALK: mch = 'T'; break;
+        case CHAT1:
+        case CHAT2:
+        case CHAT3:
+        case CHAT4: mch = 'C'; break;
+        case IRCCHAT: mch = 'I'; break;
+        case FOURM: mch = '4'; break;
+        case BBSNET: mch = 'B'; break;
+        case READNEW:
+        case READING: mch = 'R'; break;
+        case POSTING: mch = 'P'; break;
+        case SMAIL:
+        case RMAIL:
+        case MAIL: mch = 'M'; break;
+        default: mch = '-';
     }
     sprintf(buf, "%s%s(%c), ", uentp->invisible?"*":"", uentp->userid, mch);
     return 0;
 }
-
+ 
 int
 dotalkuent(uentp)
 struct user_info *uentp;
@@ -1157,7 +1157,7 @@ struct user_info *uentp;
     }
     return 0;
 }
-
+ 
 void
 do_talk_nextline( twin )
 struct talk_win *twin;
@@ -1165,15 +1165,15 @@ struct talk_win *twin;
     twin->curln = twin->curln + 1;
     if( twin->curln > twin->eline )
         twin->curln = twin->sline;
-    /*    if( curln != twin->eline ) {
-            move( curln + 1, 0 );
-            clrtoeol();
-        }*/
+/*    if( curln != twin->eline ) {
+        move( curln + 1, 0 );
+        clrtoeol();
+    }*/
     move( twin->curln, 0 );
     clrtoeol();
     twin->curcol = 0;
 }
-
+ 
 void
 do_talk_char( twin, ch )
 struct talk_win *twin;
@@ -1193,27 +1193,27 @@ int             ch ;
         return;
     }
     switch(ch) {
-    case Ctrl('H'):
-                case '\177':
-        if(dumb_term) ochar(Ctrl('H')) ;
-if( twin->curcol == 0 ) {
-            return;
-        }
-        (twin->curcol)-- ;
-        move( twin->curln, twin->curcol );
-        if(!dumb_term) prints(" ") ;
-        move( twin->curln, twin->curcol );
-        return ;
-    case Ctrl('M'):
-                case Ctrl('J'):
-                        if(dumb_term) prints("\n") ;
-        do_talk_nextline( twin );
-        return ;
-    case Ctrl('G'):
-                    bell() ;
-        return ;
-    default:
-        break ;
+        case Ctrl('H'):
+        case '\177':
+            if(dumb_term) ochar(Ctrl('H')) ;
+            if( twin->curcol == 0 ) {
+                return;
+            }
+            (twin->curcol)-- ;
+            move( twin->curln, twin->curcol );
+            if(!dumb_term) prints(" ") ;
+            move( twin->curln, twin->curcol );
+            return ;
+        case Ctrl('M'):
+        case Ctrl('J'):
+            if(dumb_term) prints("\n") ;
+            do_talk_nextline( twin );
+            return ;
+        case Ctrl('G'):
+            bell() ;
+            return ;
+        default:
+            break ;
     }
     return ;
 }
@@ -1243,7 +1243,7 @@ struct talk_win *twin;
     }
     strcpy( talk_uent_buf, "\n" );
     do_talk_string( twin, bigbuf );
-    if (savecolumns) t_columns = savecolumns;
+    if (savecolumns) t_columns = savecolumns;        
 }
 
 char talkobuf[80] ;
@@ -1253,8 +1253,8 @@ int talkflushfd ;
 void
 talkflush()
 {
-    if(talkobuflen)
-        write(talkflushfd,talkobuf,talkobuflen) ;
+    if(talkobuflen) 
+      write(talkflushfd,talkobuf,talkobuflen) ;
     talkobuflen = 0 ;
 }
 
@@ -1262,53 +1262,53 @@ int
 moveto(mode,twin)
 struct talk_win *twin;
 {
-    if(mode==1)
-        twin->curln--;
-    if(mode==2)
-        twin->curln++;
-    if(mode==3)
-        twin->curcol++;
-    if(mode==4)
-        twin->curcol--;
-    if(twin->curcol<0)
-    {
-        twin->curln--;
-        twin->curcol=0;
-    }else if(twin->curcol>79)
-    {
-        twin->curln++;
-        twin->curcol=0;
-    }
-    if(twin->curln<twin->sline)
-    {
-        twin->curln=twin->eline;
-    }
-    if(twin->curln>twin->eline)
-    {
-        twin->curln=twin->sline;
-    }
-    move(twin->curln,twin->curcol);
+        if(mode==1)
+                twin->curln--;
+        if(mode==2)
+                twin->curln++;
+        if(mode==3)
+                twin->curcol++;
+        if(mode==4)
+                twin->curcol--;
+        if(twin->curcol<0)
+        {
+                twin->curln--;
+                twin->curcol=0;
+        }else if(twin->curcol>79)
+        {
+                twin->curln++;
+                twin->curcol=0;
+        }
+        if(twin->curln<twin->sline)
+        {
+                twin->curln=twin->eline;
+        }
+        if(twin->curln>twin->eline)
+        {
+                twin->curln=twin->sline;
+        }
+        move(twin->curln,twin->curcol);
 }
 
 void
 endmsg()
 {
-    int x,y;
-    int tmpansi;
-    tmpansi=showansi;
-    showansi=1;
-    talkidletime+=60;
-    if(talkidletime>=IDLE_TIMEOUT)
-        kill(getpid(),SIGHUP);
-    if(uinfo.in_chat == YEA)
-        return;
-    getyx(&x,&y);
-    update_endline();
-    signal(SIGALRM, endmsg);
-    move(x,y);
-    refresh();
-    alarm(60);
-    showansi=tmpansi;
+        int x,y;
+        int tmpansi;
+        tmpansi=showansi;
+        showansi=1;
+        talkidletime+=60;
+        if(talkidletime>=IDLE_TIMEOUT)
+                kill(getpid(),SIGHUP);
+        if(uinfo.in_chat == YEA)
+                return;
+        getyx(&x,&y);
+        update_endline();
+        signal(SIGALRM, endmsg);
+        move(x,y);
+        refresh();
+        alarm(60);
+        showansi=tmpansi;
     return;
 }
 
@@ -1332,8 +1332,8 @@ int fd ;
     refresh() ;
     previous_mode=uinfo.mode;
     modify_user_mode( TALK );
-    sprintf( mid_line, " %s (%s) ºÍ %s ÕýÔÚ³©Ì¸ÖÐ",
-             currentuser.userid, currentuser.username, save_page_requestor );
+    sprintf( mid_line, " %s (%s) ºÍ %s ÕýÔÚ³©Ì¸ÖÐ", 
+        currentuser.userid, currentuser.username, save_page_requestor );
 
     memset( &mywin,  0, sizeof( mywin ) );
     memset( &itswin, 0, sizeof( itswin ) );
@@ -1357,11 +1357,11 @@ int fd ;
             page_pending = servicepage( (t_lines-1) / 2, mid_line );
         ch = igetkey();
         talkidletime=0;
-        if ( ch == '' )
+        if ( ch == '' ) 
         {
-            igetch();
-            igetch();
-            continue;
+           igetch();
+           igetch();    
+           continue;
         }
         if(ch == I_OTHERDATA) {
             char data[80];
@@ -1369,37 +1369,37 @@ int fd ;
             register int i ;
 
             datac = read(fd,data,80) ;
-            if(datac<=0)
+            if(datac<=0) 
                 break ;
             for(i=0;i<datac;i++)
             {
-                if(data[i]>=1&&data[i]<=4)
-                {
-                    moveto(data[i]-'\0',&itswin);
-                    continue;
-                }
+            if(data[i]>=1&&data[i]<=4)
+            {
+                moveto(data[i]-'\0',&itswin);
+                continue;
+            }
 
 #ifdef TALK_LOG
                 /* Bigman 2000.9.15 Ìí¼ÓTALK¼ÇÂ¼
                  */
                 /* existing do_log() overflow problem       */
-                else if (isprint2(data[i])) {
-                    if (ilen >= 80) {
-                        itswords[80] = '\0';
-                        (void) do_log(itswords, 2);
-                        ilen = 0;
-                    } else {
-                        itswords[ilen] = data[i];
-                        ilen++;
-                    }
-                } else if ((data[i] == Ctrl('H') || data[i] == '\177') && !ilen) {
-                    itswords[ilen--] = '\0';
-                } else if (data[i] == Ctrl('M') || data[i] == '\r' ||
-                           data[i] == '\n') {
-                    itswords[ilen] = '\0';
-                    (void) do_log(itswords, 2);
-                    ilen = 0;
-                }
+	    else if (isprint2(data[i])) {
+		    if (ilen >= 80) {
+			    itswords[80] = '\0';
+			    (void) do_log(itswords, 2);
+			    ilen = 0;
+		    } else {
+			    itswords[ilen] = data[i];
+			    ilen++;
+		    }
+	    } else if ((data[i] == Ctrl('H') || data[i] == '\177') && !ilen) {
+		    itswords[ilen--] = '\0';
+	    } else if (data[i] == Ctrl('M') || data[i] == '\r' ||
+			    data[i] == '\n') {
+		    itswords[ilen] = '\0';
+		    (void) do_log(itswords, 2);
+		    ilen = 0;
+	    }
 #endif
                 do_talk_char( &itswin, data[i] );
             }
@@ -1407,28 +1407,28 @@ int fd ;
             if(ch == Ctrl('D') || ch == Ctrl('C'))
                 break ;
             if(isprint2(ch) || ch == Ctrl('H') || ch == '\177'
-                    || ch == Ctrl('G')/* || ch == Ctrl('M')*/ ) {
+                || ch == Ctrl('G')/* || ch == Ctrl('M')*/ ) {
                 talkobuf[talkobuflen++] = ch ;
                 if(talkobuflen == 80) talkflush() ;
 
 #ifdef TALK_LOG
-                if (mlen < 80) {
-                    if ((ch == Ctrl('H') || ch == '\177') && mlen != 0) {
-                        mywords[mlen--] = '\0';
-                    } else {
-                        mywords[mlen] = ch;
-                        mlen++;
-                    }
-                } else if (mlen >= 80) {
-                    mywords[80] = '\0';
-                    (void) do_log(mywords, 1);
-                    mlen = 0;
-                }
+		if (mlen < 80) {
+			if ((ch == Ctrl('H') || ch == '\177') && mlen != 0) {
+				mywords[mlen--] = '\0';
+			} else {
+				mywords[mlen] = ch;
+				mlen++;
+			}
+		} else if (mlen >= 80) {
+			mywords[80] = '\0';
+			(void) do_log(mywords, 1);
+			mlen = 0;
+		}
 #endif
                 do_talk_char( &mywin, ch );
 
-                /*            } else if (ch == '\n') {   Bigman 2000.9.15 */
-            } else if (ch == '\n' || ch == Ctrl('M') || ch == '\r') {
+/*            } else if (ch == '\n') {   Bigman 2000.9.15 */
+	} else if (ch == '\n' || ch == Ctrl('M') || ch == '\r') {
 #ifdef TALK_LOG
                 if (mywords[0] != '\0') {
                     mywords[mlen++] = '\0';
@@ -1439,32 +1439,32 @@ int fd ;
                 talkobuf[talkobuflen++] = '\r';
                 talkflush();
                 do_talk_char( &mywin, '\r' );
-                /*            } else if (ch == Ctrl('T')) {
-                                now=time(0);
-                                strcpy(ct,ctime(&now));
-                                do_talk_string( &mywin, ct);
-                            } else if (ch == Ctrl('U') || ch == Ctrl('W')) {
-                                dotalkuserlist( &mywin );*/
+/*            } else if (ch == Ctrl('T')) {
+                now=time(0);
+                strcpy(ct,ctime(&now));
+                do_talk_string( &mywin, ct);
+            } else if (ch == Ctrl('U') || ch == Ctrl('W')) {
+                dotalkuserlist( &mywin );*/
             }else if(ch>=KEY_UP&&ch<=KEY_LEFT)
             {
-                moveto(ch-KEY_UP+1,&mywin);
-                talkobuf[talkobuflen++] = ch -KEY_UP+1;
-                if(talkobuflen == 80) talkflush() ;
+                  moveto(ch-KEY_UP+1,&mywin);
+                  talkobuf[talkobuflen++] = ch -KEY_UP+1;
+                  if(talkobuflen == 80) talkflush() ;
             }
             else if (ch == Ctrl('E')) {
-                for(i2=0;i2<=10;i2++)
-                {
-                    talkobuf[talkobuflen++] = '\r';
-                    talkflush();
-                    do_talk_char( &mywin, '\r' );
-                }
+               for(i2=0;i2<=10;i2++)
+               {
+                talkobuf[talkobuflen++] = '\r';
+                talkflush();
+                do_talk_char( &mywin, '\r' );
+               }
             } else if (ch == Ctrl('P') && HAS_PERM(PERM_BASIC)) {
                 t_pager();
                 update_utmp();
                 update_endline();
             }
             else if (Ctrl('Z') == ch)
-                r_lastmsg(); /* Leeward 98.07.30 support msgX */
+              r_lastmsg(); /* Leeward 98.07.30 support msgX */
         }
     }
     add_io(0,0) ;
@@ -1489,22 +1489,22 @@ int fd ;
 
     close(talkrec);
 
-    /*---	Õâ¾äÓÐÓÃÂð?	commented by period	---*/
-    /*    sethomefile(genbuf, currentuser.userid, "talklog");	*/
+/*---	Õâ¾äÓÐÓÃÂð?	commented by period	---*/
+/*    sethomefile(genbuf, currentuser.userid, "talklog");	*/
 
-    /*---	changed by period	2000-09-18	---*/
+/*---	changed by period	2000-09-18	---*/
     *genbuf = 0;
-    move(t_lines-1,0);
-    if(askyn("ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ ", NA)==YEA) {
-        /*---						---*
-            getdata(23, 0, "ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ [Y/n]: ", genbuf, 2, DOECHO, NULL, YEA); 
+      move(t_lines-1,0);
+      if(askyn("ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ ", NA)==YEA) {
+/*---						---*
+    getdata(23, 0, "ÊÇ·ñ¼Ä»ØÁÄÌì¼ÍÂ¼ [Y/n]: ", genbuf, 2, DOECHO, NULL, YEA); 
 
-            if (genbuf[0] != 'N' || genbuf[0] != 'n')  {
-         *---	also '||' used above is wrong...	---*/
-        sethomefile(buf, currentuser.userid, "talklog");
-        sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%12.12s]", partner, Ctime(&now) + 6);
-        mail_file(buf, currentuser.userid, mywords);
-    }
+    if (genbuf[0] != 'N' || genbuf[0] != 'n')  {
+ *---	also '||' used above is wrong...	---*/
+	    sethomefile(buf, currentuser.userid, "talklog");
+	    sprintf(mywords, "¸ú %s µÄÁÄÌì¼ÇÂ¼ [%12.12s]", partner, Ctime(&now) + 6);
+	    mail_file(buf, currentuser.userid, mywords); 
+	}
     sethomefile(buf, currentuser.userid, "talklog");
     unlink(buf);
 #endif
@@ -1536,18 +1536,18 @@ struct user_info *uentp;
     {
         char ubuf[STRLEN];
         int ovv;
-
+        
         if(i<numf||friendmode)
-            ovv=YEA;
+                ovv=YEA;
         else
-            ovv=NA;
+                ovv=NA;
         sprintf(ubuf,"%s%-12.12s %s%-10.10s[m",(ovv)?"[32m£®":"  ",user_record[i]->userid,(user_record[i]->invisible==YEA)?"[34m":"",
-                modestring(user_record[i]->mode, user_record[i]->destuid, 0, NULL));
+        modestring(user_record[i]->mode, user_record[i]->destuid, 0, NULL));
         prints("%s",ubuf);
         if((i+1)%3==0)
-            prints("\n");
+                prints("\n");
         else
-            prints(" |");
+                prints(" |");
     }
     return range;
 }
@@ -1555,40 +1555,40 @@ struct user_info *uentp;
 int
 do_list( modestr )
 char *modestr;
-{
+{       
     char        buf[ STRLEN ];
     int         count;
     extern int RMSG;
-    int chkmailflag=0;
+int chkmailflag=0;
 
     if(RMSG!=YEA)/*Èç¹ûÊÕµ½ Msg µÚÒ»ÐÐ²»ÏÔÊ¾¡£*/
     {
-        move(0,0);
-        clrtoeol();
+            move(0,0);
+            clrtoeol();
         chkmailflag=chkmail();
 
         if(chkmailflag==2)/*Haohmaru.99.4.4.¶ÔÊÕÐÅÒ²¼ÓÏÞÖÆ*/
-            showtitle(modestr,"[ÄúµÄÐÅÏä³¬¹ýÈÝÁ¿,²»ÄÜÔÙÊÕÐÅ!]");
-        else if(chkmailflag)
-            showtitle(modestr,"[ÄúÓÐÐÅ¼þ]");
-        else
-            showtitle(modestr,BoardName);
+                showtitle(modestr,"[ÄúµÄÐÅÏä³¬¹ýÈÝÁ¿,²»ÄÜÔÙÊÕÐÅ!]");
+            else if(chkmailflag)
+                showtitle(modestr,"[ÄúÓÐÐÅ¼þ]");
+            else
+                showtitle(modestr,BoardName);
     }
     move(2,0);
     clrtoeol();
     sprintf( buf, "  %-12s %-10s", "Ê¹ÓÃÕß´úºÅ", "Ä¿Ç°¶¯Ì¬" );
     prints( "[33m[44m%s |%s |%s[m", buf, buf, buf );
-    /*    if(apply_ulist( shortulist ) == -1) {
-            prints("No Users Exist\n") ;
-            return 0;
-        }
-        count = shortulist(NULL);*/
+/*    if(apply_ulist( shortulist ) == -1) {
+        prints("No Users Exist\n") ;
+        return 0;
+    }
+    count = shortulist(NULL);*/
     count = shortulist();
     if (uinfo.mode == MONITOR) {
-        time_t thetime = time(0);
+        time_t thetime = time(0);               
         move(t_lines-1, 0);
         prints("[44m[33mÄ¿Ç°ÓÐ %3d %6sÉÏÏß, Ê±¼ä: %s , Ä¿Ç°×´Ì¬£º%10s   [m"
-               ,count, friendmode ? "ºÃÅóÓÑ":"Ê¹ÓÃÕß",Ctime(&thetime),friendmode ? "ÄãµÄºÃÅóÓÑ":"ËùÓÐÊ¹ÓÃÕß");
+        ,count, friendmode ? "ºÃÅóÓÑ":"Ê¹ÓÃÕß",Ctime(&thetime),friendmode ? "ÄãµÄºÃÅóÓÑ":"ËùÓÐÊ¹ÓÃÕß");
     }
     refresh();
     return 0;
@@ -1606,7 +1606,7 @@ t_list()
     return 0;
 }
 
-
+                    
 void
 sig_catcher()
 {
@@ -1615,23 +1615,23 @@ sig_catcher()
 #ifdef DOTIMEOUT
         init_alarm();
 #else
-signal(SIGALRM, SIG_IGN);
+        signal(SIGALRM, SIG_IGN);
 #endif
         return;
-    }
+    }           
     if (signal(SIGALRM, sig_catcher)==SIG_ERR) {
         perror("signal");
         exit(1);
     }
-    /*#ifdef DOTIMEOUT
-        idle_monitor_time += M_INT;
-        if (idle_monitor_time > MONITOR_TIMEOUT) {
-            clear();
-    	prints("timeout ...\n");
-    	oflush();
-            kill(getpid(), SIGHUP);
-        }
-    #endif*/
+/*#ifdef DOTIMEOUT
+    idle_monitor_time += M_INT;
+    if (idle_monitor_time > MONITOR_TIMEOUT) {
+        clear();
+	prints("timeout ...\n");
+	oflush();
+        kill(getpid(), SIGHUP);
+    }
+#endif*/
     do_list("Ì½ÊÓÃñÇé");
     alarm(M_INT);
 }
@@ -1640,11 +1640,11 @@ int
 t_monitor()
 {
     int i;
-
+        
 
     alarm(0);
     signal(SIGALRM, sig_catcher);
-    /*    idle_monitor_time = 0;*/
+/*    idle_monitor_time = 0;*/
     report("monitor");
     modify_user_mode( MONITOR );
     ulistpage=0;
@@ -1654,26 +1654,26 @@ t_monitor()
         i=egetch();
         if (Ctrl('Z') == i) r_lastmsg(); /* Leeward 98.07.30 support msgX */
         if(i=='f' ||i=='F'){
-            if(friendmode==YEA)
-                friendmode=NA;
-            else
-                friendmode=YEA;
-            do_list("Ì½ÊÓÃñÇé");
+                if(friendmode==YEA)
+                        friendmode=NA;
+                else
+                        friendmode=YEA;
+                do_list("Ì½ÊÓÃñÇé");
         }
         if(i == KEY_DOWN)
         {
-            ulistpage++;
-            do_list("Ì½ÊÓÃñÇé");
+                ulistpage++;
+                do_list("Ì½ÊÓÃñÇé");
         }
         if(i == KEY_UP)
         {
-            ulistpage--;
-            do_list("Ì½ÊÓÃñÇé");
+                ulistpage--;
+                do_list("Ì½ÊÓÃñÇé");
         }
         if (i == Ctrl('D') || i == Ctrl('C')|| i== KEY_LEFT) break;
-        /*        else if (i == -1) {
-                    if (errno != EINTR) { perror("read"); exit(1); }
-                } else idle_monitor_time = 0;*/
+/*        else if (i == -1) {
+            if (errno != EINTR) { perror("read"); exit(1); }
+        } else idle_monitor_time = 0;*/
     }
     move(2,0);
     clrtoeol();
@@ -1710,10 +1710,10 @@ char    *cmdfile;
         uinfo.pager = 0;
     }
     modify_user_mode( umode );
-    /***** modified by netty, March 15,1995
-        sprintf( buf, "/bin/sh %s", cmdfile );
-    ******/    
-    sethomepath(userhome, currentuser.userid);
+/***** modified by netty, March 15,1995 
+    sprintf( buf, "/bin/sh %s", cmdfile );
+******/    
+        sethomepath(userhome, currentuser.userid);
     sprintf( buf, "/bin/sh %s %s %s %s", cmdfile, userhome,currentuser.userid, currentuser.username);
     reset_tty() ;
     RUNSH=YEA;
@@ -1876,47 +1876,47 @@ char *uident;
     struct friend tmp;
     int  n;
     char buf[STRLEN];
-
+    
     memset(&tmp,0,sizeof(tmp));
     setuserfile( buf, "friends" );
-    if((!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP)) &&
-            (get_num_records(buf,sizeof(struct friend))>=MAXFRIENDS) )
+    if((!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP)) && 
+        (get_num_records(buf,sizeof(struct friend))>=MAXFRIENDS) )
     {
-        move(t_lines-2,0);
-        clrtoeol();
-        prints("±§Ç¸£¬±¾Õ¾Ä¿Ç°½ö¿ÉÒÔÉè¶¨ %d ¸öºÃÓÑ, Çë°´ÈÎºÎ¼þ¼ÌÐø...",MAXFRIENDS);
-        igetkey();
-        move(t_lines-2,0);
-        clrtoeol();
-        return -1;
+           move(t_lines-2,0);
+           clrtoeol();
+           prints("±§Ç¸£¬±¾Õ¾Ä¿Ç°½ö¿ÉÒÔÉè¶¨ %d ¸öºÃÓÑ, Çë°´ÈÎºÎ¼þ¼ÌÐø...",MAXFRIENDS);
+           igetkey();
+           move(t_lines-2,0);
+           clrtoeol();
+           return -1;
     }
     if( myfriend( uident ) )
         return -1;
-    if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND)
-    {
-        strcpy(tmp.id,uident);
-        move(2,0);
-        clrtoeol();
-        sprintf(genbuf,"ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ",tmp.id);
-        getdata(2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
-    }
-    else
-    {
-        move(t_lines-2,0);
-        clrtoeol();
-        refresh();
-        strcpy(tmp.id,uident);
-        sprintf(genbuf,"ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ",tmp.id);
-        getdata(t_lines-2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
-    }
+   if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND)
+   {
+           strcpy(tmp.id,uident);
+           move(2,0);
+           clrtoeol();
+           sprintf(genbuf,"ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ",tmp.id);
+           getdata(2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
+   }
+   else
+   {
+           move(t_lines-2,0);
+           clrtoeol();
+           refresh();
+           strcpy(tmp.id,uident);
+           sprintf(genbuf,"ÇëÊäÈë¸øºÃÓÑ¡¾%s¡¿µÄËµÃ÷: ",tmp.id);
+           getdata(t_lines-2,0,genbuf, tmp.exp,15,DOECHO,NULL,YEA);
+   }
     setuserfile( genbuf, "friends" );
     n=append_record(genbuf,&tmp,sizeof(struct friend));
     if(n!=-1)
-        getfriendstr();
+            getfriendstr();
     else
         report("append friendfile error");
     return n;
-}
+} 
 
 int
 del_from_file(filename,str)
@@ -1954,11 +1954,11 @@ char *uident;
     if(deleted>0)
     {
         if(delete_record(genbuf,sizeof(fh),deleted)!=-1)
-            getfriendstr();
+                getfriendstr();
         else
         {
-            deleted=-1;
-            report("delete friend error");
+           deleted=-1;
+           report("delete friend error");
         }
     }
     return (deleted>0)?1:-1;
@@ -1966,13 +1966,13 @@ char *uident;
 
 friend_title()
 {
-    int chkmailflag=0;
-    chkmailflag=chkmail();
-    if(chkmailflag==2)/*Haohmaru.99.4.4.¶ÔÊÕÐÅÒ²¼ÓÏÞÖÆ*/
-        strcpy(genbuf,"[ÄúµÄÐÅÏä³¬¹ýÈÝÁ¿,²»ÄÜÔÙÊÕÐÅ!]");
+	int chkmailflag=0;
+	chkmailflag=chkmail();
+        if(chkmailflag==2)/*Haohmaru.99.4.4.¶ÔÊÕÐÅÒ²¼ÓÏÞÖÆ*/
+                strcpy(genbuf,"[ÄúµÄÐÅÏä³¬¹ýÈÝÁ¿,²»ÄÜÔÙÊÕÐÅ!]");
     else if ( chkmailflag )
         strcpy( genbuf, "[ÄúÓÐÐÅ¼þ]" );
-    else
+    else                
         strcpy( genbuf, BoardName );
     showtitle("[±à¼­ºÃÓÑÃûµ¥]",genbuf);
 
@@ -1985,10 +1985,10 @@ friend_doentry(ent,fh)
 int ent;
 struct friend *fh;
 {
-    static char buf[STRLEN/2];
-
-    sprintf(buf," %4d  %-12.12s  %s",ent,fh->id,fh->exp);
-    return buf;
+        static char buf[STRLEN/2];
+        
+        sprintf(buf," %4d  %-12.12s  %s",ent,fh->id,fh->exp);
+        return buf;
 }
 
 int
@@ -1997,30 +1997,30 @@ int ent;
 struct friend *fh;
 char *direc;
 {
-    struct friend nh;
-    char buf[STRLEN/2];
-    int pos;
+     struct friend nh;        
+     char buf[STRLEN/2];
+     int pos;  
 
-    pos=search_record( direc, &nh, sizeof(nh), cmpfnames, fh->id );
-    move(t_lines-2,0);
-    clrtoeol();
-    if(pos>0)
-    {
+     pos=search_record( direc, &nh, sizeof(nh), cmpfnames, fh->id );
+     move(t_lines-2,0);
+     clrtoeol();
+     if(pos>0)
+     {
         sprintf(buf,"ÇëÊäÈë %s µÄÐÂºÃÓÑËµÃ÷: ",fh->id);
         getdata(t_lines-2,0,buf,nh.exp,15,DOECHO,NULL,NA);
-    }
-    if(substitute_record(direc, &nh, sizeof(nh), pos)<0)
+     }
+      if(substitute_record(direc, &nh, sizeof(nh), pos)<0)
         report("Friend files subs err");
-    move(t_lines-2,0);
-    clrtoeol();
-    return NEWDIRECT;
+      move(t_lines-2,0);
+      clrtoeol();
+      return NEWDIRECT;
 }
 
 int
 friend_help()
 {
-    show_help("help/friendshelp");
-    return FULLUPDATE;
+        show_help("help/friendshelp");
+        return FULLUPDATE;
 }
 
 int
@@ -2029,22 +2029,22 @@ int ent;
 struct friend *fh;
 char *direct;
 {
-    char uident[13];
+      char uident[13];
 
-    clear();
-    move(1,0);
-    usercomplete("ÇëÊäÈëÒªÔö¼ÓµÄ´úºÅ: ", uident);
-    if( uident[0] != '\0' )
-    {
+      clear();
+      move(1,0);
+      usercomplete("ÇëÊäÈëÒªÔö¼ÓµÄ´úºÅ: ", uident);
+      if( uident[0] != '\0' )
+      {
         if(getuser(uident)<=0)
         {
-            move(2,0);
-            prints("´íÎóµÄÊ¹ÓÃÕß´úºÅ...");
-            pressanykey();
-        }else
-            addtooverride(uident);
-    }
-    return FULLUPDATE;
+                move(2,0);
+                prints("´íÎóµÄÊ¹ÓÃÕß´úºÅ...");
+                pressanykey();
+        }else 
+           addtooverride(uident);
+      }
+      return FULLUPDATE;
 }
 
 int
@@ -2053,36 +2053,36 @@ int ent;
 struct friend *fh;
 char *direct;
 {
-    char buf[STRLEN];
-    int deleted=NA;
+      char buf[STRLEN];
+      int deleted=NA;
 
-    saveline(t_lines-2, 0, NULL);
-    move(t_lines-2,0);
-    clrtoeol();
-    sprintf(buf,"ÊÇ·ñ°Ñ¡¾%s¡¿´ÓºÃÓÑÃûµ¥ÖÐÈ¥³ý",fh->id);
-    if(askyn(buf,NA)==YEA)
-    {
-        move(t_lines-2,0);
-        clrtoeol();
-        if(deleteoverride(fh->id)==1)
-        {
-            prints("ÒÑ´ÓºÃÓÑÃûµ¥ÖÐÒÆ³ý¡¾%s¡¿,°´ÈÎºÎ¼ü¼ÌÐø...",fh->id);
-            deleted=YEA;
-        }
-        else
-            prints("ÕÒ²»µ½¡¾%s¡¿,°´ÈÎºÎ¼ü¼ÌÐø...",fh->id);
-    }
-    else
-    {
-        move(t_lines-2,0);
-        clrtoeol();
-        prints("È¡ÏûÉ¾³ýºÃÓÑ...");
-    }
-    igetkey();
-    move(t_lines-2,0);
-    clrtoeol();
-    saveline(t_lines-2, 1, NULL);
-    return (deleted)?FULLUPDATE:DONOTHING;
+      saveline(t_lines-2, 0, NULL);
+      move(t_lines-2,0);
+      clrtoeol();
+      sprintf(buf,"ÊÇ·ñ°Ñ¡¾%s¡¿´ÓºÃÓÑÃûµ¥ÖÐÈ¥³ý",fh->id);
+      if(askyn(buf,NA)==YEA)
+      {
+         move(t_lines-2,0);
+         clrtoeol();
+         if(deleteoverride(fh->id)==1)
+         {
+                prints("ÒÑ´ÓºÃÓÑÃûµ¥ÖÐÒÆ³ý¡¾%s¡¿,°´ÈÎºÎ¼ü¼ÌÐø...",fh->id);
+                deleted=YEA;
+         }
+         else
+                prints("ÕÒ²»µ½¡¾%s¡¿,°´ÈÎºÎ¼ü¼ÌÐø...",fh->id);
+      }
+      else
+      {
+         move(t_lines-2,0);
+         clrtoeol();
+         prints("È¡ÏûÉ¾³ýºÃÓÑ...");
+      }
+      igetkey();
+      move(t_lines-2,0);
+      clrtoeol();
+      saveline(t_lines-2, 1, NULL);
+      return (deleted)?FULLUPDATE:DONOTHING;
 }
 
 int
@@ -2091,10 +2091,10 @@ int ent;
 struct friend *fh;
 char *direct;
 {
-    if(!HAS_PERM(PERM_POST))
-        return DONOTHING;
-    m_send(fh->id);
-    return FULLUPDATE;
+      if(!HAS_PERM(PERM_POST))
+          return DONOTHING;
+      m_send(fh->id);
+      return FULLUPDATE;
 }
 
 int
@@ -2112,20 +2112,20 @@ char *direct;
     prints("[44m[31m[¶ÁÈ¡ºÃÓÑËµÃ÷µµ][33m ¼ÄÐÅ¸øºÃÓÑ m ©¦ ½áÊø Q,¡û ©¦ÉÏÒ»Î» ¡ü©¦ÏÂÒ»Î» <Space>,¡ý      [m");
     ch = egetch();
     switch( ch ) {
-    case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
-        break;
-case 'N': case 'Q':
-case 'n': case 'q': case KEY_LEFT:
-        break;
-case 'm': case 'M':
-        m_send(fh->id);
-        break;
-    case ' ':
-case 'j': case KEY_RIGHT: case KEY_DOWN: case KEY_PGDN:
-        return READ_NEXT;
-case KEY_UP: case KEY_PGUP:
-        return READ_PREV;
-    default : break;
+        case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
+                break;
+        case 'N': case 'Q':
+        case 'n': case 'q': case KEY_LEFT:
+                break;
+        case 'm': case 'M':
+             m_send(fh->id);
+             break;
+        case ' ':
+        case 'j': case KEY_RIGHT: case KEY_DOWN: case KEY_PGDN:
+                return READ_NEXT;
+        case KEY_UP: case KEY_PGUP:
+                return READ_PREV;
+        default : break;
     }
     return FULLUPDATE ;
 }
@@ -2133,16 +2133,16 @@ case KEY_UP: case KEY_PGUP:
 void
 t_override()
 {
-
+    
     setuserfile( genbuf, "friends" );
     i_read( GMENU, genbuf , friend_title , friend_doentry, friend_list ,sizeof(struct friend));
     clear();
     return;
-}
+}               
 
 struct user_info *
-            t_search(sid,pid)
-            char *sid;
+t_search(sid,pid)
+char *sid;
 int  pid;
 {
     int         i;
@@ -2150,18 +2150,18 @@ int  pid;
     struct      user_info *cur,*tmp=NULL;
 
     resolve_utmp();
-    for( i = 0; i < USHM_SIZE; i++ )
+    for( i = 0; i < USHM_SIZE; i++ ) 
     {
         cur = &(utmpshm->uinfo[ i ]);
         if (!cur->active || !cur->pid )
             continue;
-        if( !strcasecmp(cur->userid,sid) )
+        if( !strcasecmp(cur->userid,sid) ) 
         {
-            if(pid==0)
-                return cur;
-            tmp=cur;
-            if(pid==cur->pid)
-                break;
+                if(pid==0)
+                        return cur;
+                tmp=cur;
+                if(pid==cur->pid)
+                        break;
         }
     }
     return tmp;
@@ -2186,7 +2186,7 @@ getfriendstr()
     if(nf<=0)
         return 0;
     if(!HAS_PERM(PERM_ACCOUNTS) && !HAS_PERM(PERM_SYSOP))/*Haohmaru.98.11.16*/
-        nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
+    nf=(nf>=MAXFRIENDS)?MAXFRIENDS:nf;
     topfriend=(struct friend *)calloc(sizeof(struct friend),nf);
     get_records(genbuf,topfriend,sizeof(struct friend),1,nf);
     qsort( topfriend, nf, sizeof( topfriend[0] ), cmpfuid );/*For Bi_Search*/
@@ -2195,226 +2195,226 @@ getfriendstr()
 int
 wait_friend()
 {
-    FILE *fp;
-    int tuid;
-    char buf[STRLEN];
-    char uid[13];
+        FILE *fp;
+        int tuid;       
+        char buf[STRLEN];
+        char uid[13];
 
-    modify_user_mode( WFRIEND );
-    clear();
-    move(1,0);
-    usercomplete("ÇëÊäÈëÊ¹ÓÃÕß´úºÅÒÔ¼ÓÈëÏµÍ³µÄÑ°ÈËÃû²á: ", uid);
-    if(uid[0] == '\0')
-    {
-        clear() ;
-        return 0 ;
-    }
-    if(!(tuid = getuser(uid)))
-    {
-        move(2,0) ;
-        prints("[1m²»ÕýÈ·µÄÊ¹ÓÃÕß´úºÅ[m\n") ;
-        pressanykey() ;
+        modify_user_mode( WFRIEND );
         clear();
-        return -1 ;
-    }
-    sprintf(buf,"ÄãÈ·¶¨Òª°Ñ %s ¼ÓÈëÏµÍ³Ñ°ÈËÃûµ¥ÖÐ",uid);
-    move(2,0);
-    if(askyn(buf,YEA)==NA)
-    {
-        clear();
-        return;
-    }
-    if((fp=fopen("friendbook","a"))==NULL)
-    {
-        prints("ÏµÍ³µÄÑ°ÈËÃû²áÎÞ·¨¿ªÆô£¬ÇëÍ¨ÖªÕ¾³¤...\n");
+        move(1,0);
+        usercomplete("ÇëÊäÈëÊ¹ÓÃÕß´úºÅÒÔ¼ÓÈëÏµÍ³µÄÑ°ÈËÃû²á: ", uid);
+        if(uid[0] == '\0') 
+        {
+          clear() ;
+          return 0 ;
+        }
+        if(!(tuid = getuser(uid))) 
+        {
+          move(2,0) ;
+          prints("[1m²»ÕýÈ·µÄÊ¹ÓÃÕß´úºÅ[m\n") ;
+          pressanykey() ;
+          clear();
+          return -1 ;
+        }
+        sprintf(buf,"ÄãÈ·¶¨Òª°Ñ %s ¼ÓÈëÏµÍ³Ñ°ÈËÃûµ¥ÖÐ",uid);
+        move(2,0);
+        if(askyn(buf,YEA)==NA)
+        {
+                clear();
+                return;
+        }
+        if((fp=fopen("friendbook","a"))==NULL)
+        {
+                prints("ÏµÍ³µÄÑ°ÈËÃû²áÎÞ·¨¿ªÆô£¬ÇëÍ¨ÖªÕ¾³¤...\n");
+                pressanykey();
+                return;
+        }
+        sprintf(buf,"%d@%s",tuid,currentuser.userid);
+        if(!seek_in_file("friendbook",buf))
+           fprintf(fp,"%s\n",buf);
+        fclose(fp);
+        move(3,0);
+        prints("ÒÑ¾­°ïÄã¼ÓÈëÑ°ÈËÃû²áÖÐ£¬%s ÉÏÕ¾ÏµÍ³Ò»¶¨»áÍ¨ÖªÄã...\n",uid);
         pressanykey();
+        clear();
         return;
-    }
-    sprintf(buf,"%d@%s",tuid,currentuser.userid);
-    if(!seek_in_file("friendbook",buf))
-        fprintf(fp,"%s\n",buf);
-    fclose(fp);
-    move(3,0);
-    prints("ÒÑ¾­°ïÄã¼ÓÈëÑ°ÈËÃû²áÖÐ£¬%s ÉÏÕ¾ÏµÍ³Ò»¶¨»áÍ¨ÖªÄã...\n",uid);
-    pressanykey();
-    clear();
-    return;
 }
 /* »µÈËÃûµ¥:Bigman 2000.12.26 */
 int list_ignore(fname)
 char *fname;
 {
-    FILE *fp;
-    int x = 0, y = 4, nIdx = 0;
-    char buf[IDLEN+1],buf2[80];
+	FILE *fp;   
+	int x = 0, y = 4, nIdx = 0;
+	char buf[IDLEN+1],buf2[80];
 
-    clear();
-    move(y,x);
-    /*	clrtoeol();*/
+	clear();
+	move(y,x); 
+/*	clrtoeol();*/
 
-    if((fp=fopen(fname,"r"))==NULL)
-    {
-        prints("\033[1;33m*** ÉÐÎ´Éè¶¨ºÚÃûµ¥ ***\033[m");
-        return(0);
-    }
-    else
-    {
-        strcpy(buf2,"\033[1;32m¡¼ºÚÃûµ¥ÉÏµÄÓÃ»§IDÁÐ±í¡½\033[m");
+	if((fp=fopen(fname,"r"))==NULL)
+	{
+		prints("\033[1;33m*** ÉÐÎ´Éè¶¨ºÚÃûµ¥ ***\033[m");
+		return(0);
+	}
+	else
+	{
+		strcpy(buf2,"\033[1;32m¡¼ºÚÃûµ¥ÉÏµÄÓÃ»§IDÁÐ±í¡½\033[m");
+		
+		while(fread(buf, IDLEN+1, 1,fp)>0 )
+		{
+			if (nIdx%4==0)
+			{
+				prints(buf2);
+				memset(buf2,0,IDLEN+1);
+				y++;
+				move(y,x);
+			}
+			nIdx++;
+			sprintf(buf2+strlen(buf2),"  %-13s",buf);
+		}
+		if (nIdx>0) {
+			prints(buf2);
+		}
+		else 
+		{
+			prints("\033[1;32m*** ÉÐÎ´Éè¶¨ºÚÃûµ¥ ***\033[m");
+		}
+			y++;
+			move(y,x);
+			clrtoeol();
+		fclose(fp);
 
-        while(fread(buf, IDLEN+1, 1,fp)>0 )
-        {
-            if (nIdx%4==0)
-            {
-                prints(buf2);
-                memset(buf2,0,IDLEN+1);
-                y++;
-                move(y,x);
-            }
-            nIdx++;
-            sprintf(buf2+strlen(buf2),"  %-13s",buf);
-        }
-        if (nIdx>0) {
-            prints(buf2);
-        }
-        else
-        {
-            prints("\033[1;32m*** ÉÐÎ´Éè¶¨ºÚÃûµ¥ ***\033[m");
-        }
-        y++;
-        move(y,x);
-        clrtoeol();
-        fclose(fp);
+		return(nIdx);
 
-        return(nIdx);
-
-    }
-}
+	}
+} 
 void clear_press()	/* 2000.12.28 Bigman ÖØ¸´ÊäÈëµÄ»Ø³µ£¬Çå³ý */
 {
-    pressreturn();
-    move(1,0);
-    clrtoeol();
-    move(2,0);
-    clrtoeol();
+	pressreturn();
+	move(1,0);
+	clrtoeol();
+	move(2,0);
+	clrtoeol(); 
 }
 int badlist()
 {
-    char userid[IDLEN+1],tmp[3];
-    int cnt,nIdx;
-    char ignoreuser[IDLEN+1],path[40];
+	char userid[IDLEN+1],tmp[3];
+	int cnt,nIdx;
+	char ignoreuser[IDLEN+1],path[40];
 
-    int cmpinames();
-    int search_record(),append_record(),delete_record();
-    int strcasecmp();
-    int usercomplete(),namecomplete();
+	int cmpinames();
+	int search_record(),append_record(),delete_record();
+	int strcasecmp();
+	int usercomplete(),namecomplete();
 
-    modify_user_mode( EDITUFILE);
-    clear();
+        modify_user_mode( EDITUFILE);
+        clear();
 
-    sethomefile( path, currentuser.userid , "/ignores");
+	sethomefile( path, currentuser.userid , "/ignores");
 
-    while(1)
-    {	cnt=list_ignore(path);
+	while(1)
+	{	cnt=list_ignore(path);
+	
+		if (cnt>=MAX_IGNORE)
+		{
+			move(1,0);
+			prints("ÒÑ¾­µ½´ïºÚÃûµ¥×î´óÈËÊýÏÞÖÆ");
+			getdata(0,0,"(D)É¾³ý (C)Çå³ý (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);	
+		}
+		else if (cnt<=0)
+			getdata(0,0,"(A)Ôö¼Ó (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);	
+		else	
+			getdata(0,0,"(A)Ôö¼Ó (D)É¾³ý (C)Çå³ý (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);
 
-        if (cnt>=MAX_IGNORE)
-        {
-            move(1,0);
-            prints("ÒÑ¾­µ½´ïºÚÃûµ¥×î´óÈËÊýÏÞÖÆ");
-            getdata(0,0,"(D)É¾³ý (C)Çå³ý (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);
-        }
-        else if (cnt<=0)
-            getdata(0,0,"(A)Ôö¼Ó (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);
-        else
-            getdata(0,0,"(A)Ôö¼Ó (D)É¾³ý (C)Çå³ý (Q)·µ»Ø? [Q]£º " , tmp,2,DOECHO,NULL,YEA);
 
+		if(tmp[0]=='Q'||tmp[0]=='q'||tmp[0]=='\0')
+		{
+			break;
+		}
 
-        if(tmp[0]=='Q'||tmp[0]=='q'||tmp[0]=='\0')
-        {
-            break;
-        }
+		if (((tmp[0]=='a'||tmp[0]=='A')&&(cnt<MAX_IGNORE))||((tmp[0]=='d'||tmp[0]=='D')&&(cnt>0)))
+		{
+			
+                                usercomplete("ÇëÊäÈëÊ¹ÓÃÕß´úºÅ(Ö»°´ ENTER ½áÊøÊäÈë): ",userid) ;
 
-        if (((tmp[0]=='a'||tmp[0]=='A')&&(cnt<MAX_IGNORE))||((tmp[0]=='d'||tmp[0]=='D')&&(cnt>0)))
-        {
-
-            usercomplete("ÇëÊäÈëÊ¹ÓÃÕß´úºÅ(Ö»°´ ENTER ½áÊøÊäÈë): ",userid) ;
-
-            if(userid[0] == '\0')
-            {
-                move(1,0);
-                clrtoeol();
-                continue ;
-            }
-            if(!getuser(userid))
-            {
-                prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
-                clear_press();
-            }
-            else if (!strcasecmp(userid,currentuser.userid))
-            {
-                prints("²»ÄÜÊÇ×Ô¼ºµÄ´úºÅ\n");
-                clear_press();
-            }
-            else
-            {
-                nIdx=search_record( path,ignoreuser, IDLEN+1, cmpinames, userid );
-
-                if (tmp[0]=='a' || tmp[0]=='A')
-                {
-                    if (nIdx>0)
-                    {
-                        prints("¸ÃIDÒÑ¾­ÔÚºÚÃûµ¥ÉÏ£¡");
-                        clear_press();
-                    }
-                    else
-                    {
-                        if (append_record( path, userid, IDLEN+1)==0)
+                        if(userid[0] == '\0') 
+			{
+				move(1,0);
+				clrtoeol();
+				continue ;
+			}
+                        if(!getuser(userid))
                         {
-                            /*	prints("ÒÑ¾­³É¹¦Ìí¼Óµ½ºÚÃûµ¥ÖÐ"); */
-                            /*		cnt=list_ignore(path); */
+                                prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
+				clear_press();	
                         }
-                        else {
-                            prints("*** ÏµÍ³´íÎó , ÇëÓëSYSOPÁªÏµ***");
-                            clear_press();}
-                    }
-                }
-                else
-                {
-                    if (nIdx <= 0)
-                    {
-                        prints("¸ÃIDÃ»ÓÐÔÚºÚÃûµ¥ÉÏ£¡");
-                        clear_press();
-                    }
-                    else
-                    {
-                        if (delete_record( path, IDLEN+1, nIdx)==0)
-                        {
-                            /*		prints("ÒÑ¾­³É¹¦´ÓºÚÃûµ¥ÖÐÉ¾³ý"); */
-                            /*		cnt=list_ignore(path); */
+			else if (!strcasecmp(userid,currentuser.userid))
+				                     {
+                                prints("²»ÄÜÊÇ×Ô¼ºµÄ´úºÅ\n");
+				clear_press();
                         }
-                        else
-                        {
-                            prints("*** ÏµÍ³´íÎó , ÇëÓëSYSOPÁªÏµ***");
-                            clear_press();}
-                    }
-                }
-            }
+			else
+			{	 
+				nIdx=search_record( path,ignoreuser, IDLEN+1, cmpinames, userid );
 
-        }
-        else if ((tmp[0]=='c'||tmp[0]=='C')&&(cnt>0))
-        {
-            getdata(1,0,"È·¶¨É¾³ýºÚÃûµ¥? (Y/N) [N]:" , tmp,2,DOECHO,NULL,YEA);
-            if (tmp[0]=='y'||tmp[0]=='Y') {
-                unlink(path);
-                /*cnt=list_ignore(path);*/
-            }
-            else {
-                move(1,0);
-                clrtoeol();}
-        }
+				if (tmp[0]=='a' || tmp[0]=='A')	
+				{	
+					if (nIdx>0)
+					{
+						prints("¸ÃIDÒÑ¾­ÔÚºÚÃûµ¥ÉÏ£¡");
+						clear_press();
+					}
+			  		else
+					{ 
+						if (append_record( path, userid, IDLEN+1)==0)
+						{
+						/*	prints("ÒÑ¾­³É¹¦Ìí¼Óµ½ºÚÃûµ¥ÖÐ"); */
+					/*		cnt=list_ignore(path); */
+						}
+						else {
+							prints("*** ÏµÍ³´íÎó , ÇëÓëSYSOPÁªÏµ***");
+							clear_press();}
+					}
+				}
+				else
+				{
+					if (nIdx <= 0)
+					{	
+						prints("¸ÃIDÃ»ÓÐÔÚºÚÃûµ¥ÉÏ£¡");
+						clear_press();	
+					}
+					else
+					{
+						if (delete_record( path, IDLEN+1, nIdx)==0)
+						{
+						/*		prints("ÒÑ¾­³É¹¦´ÓºÚÃûµ¥ÖÐÉ¾³ý"); */
+					/*		cnt=list_ignore(path); */
+						}
+						else 
+						{
+							prints("*** ÏµÍ³´íÎó , ÇëÓëSYSOPÁªÏµ***");
+							clear_press();}					
+					}
+				}
+			}
 
-    }
-    pressreturn();
-    return(cnt);
+		}
+		else if ((tmp[0]=='c'||tmp[0]=='C')&&(cnt>0))
+		{
+			getdata(1,0,"È·¶¨É¾³ýºÚÃûµ¥? (Y/N) [N]:" , tmp,2,DOECHO,NULL,YEA);
+			if (tmp[0]=='y'||tmp[0]=='Y') {
+					unlink(path);
+					/*cnt=list_ignore(path);*/
+						}
+			else {
+			move(1,0);
+                        clrtoeol();}
+		}
+
+	}
+	pressreturn();
+	return(cnt);
 }
 #ifdef TALK_LOG
 /* Bigman 2000.9.15 ·Ö±ðÎªÁ½Î»ÁÄÌìµÄÈË×÷¼ÍÂ¼ */
@@ -2449,7 +2449,7 @@ do_log(char *msg, int who)
     } else if (who == 2) {  /* ±ðÈËËµµÄ»° */
         sprintf(buf, "\033[1;36m%s \033[m\n", msg);
         write(talkrec, buf, strlen(buf));
-    }
+   }
 }
 #endif
 

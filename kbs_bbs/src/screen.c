@@ -62,37 +62,37 @@ int
 num_noans_chr(str)
 char *str;
 {
-    int len,i,ansinum,ansi;
+        int len,i,ansinum,ansi;
 
-    ansinum=0;
-    ansi=NA;
-    len=strlen(str);
-    for (i=0; i < len; i++)
-    {
-        if (str[i] == KEY_ESC)
+        ansinum=0;
+        ansi=NA;
+        len=strlen(str);
+        for (i=0; i < len; i++)
         {
-            ansi = YEA;
-            ansinum++;
-            continue;
+                if (str[i] == KEY_ESC)
+                {
+                        ansi = YEA;
+                        ansinum++;
+                        continue;
+                }
+                if (ansi)
+                {
+                        if (strchr("[0123456789; ", str[i]))
+                        {
+                                ansinum++;
+                                continue;
+                        }
+                        else if (isalpha(str[i]))
+                        {
+                                ansinum++;
+                                ansi = NA;
+                                continue;
+                        }
+                        else
+                                break;
+                }
         }
-        if (ansi)
-        {
-            if (strchr("[0123456789; ", str[i]))
-            {
-                ansinum++;
-                continue;
-            }
-            else if (isalpha(str[i]))
-            {
-                ansinum++;
-                ansi = NA;
-                continue;
-            }
-            else
-                break;
-        }
-    }
-    return len-ansinum;
+        return len-ansinum;
 }
 
 
@@ -105,8 +105,8 @@ int     slns, scols;
     scr_lns = slns ;
     scr_cols = Min(scols, LINELEN) ;
     if (!big_picture)
-        big_picture = (struct screenline *) calloc(scr_lns,
-                      sizeof(struct screenline)) ;
+	big_picture = (struct screenline *) calloc(scr_lns,
+                                               sizeof(struct screenline)) ;
     for(slns=0;slns<scr_lns;slns++) {
         slp = &big_picture[ slns ];
         slp->mode = 0 ;
@@ -122,8 +122,8 @@ void
 initscr()
 {
     if(!dumb_term && !big_picture)
-        t_columns=WRAPMARGIN;
-    init_screen(t_lines,WRAPMARGIN) ;
+      t_columns=WRAPMARGIN;
+      init_screen(t_lines,WRAPMARGIN) ;
 }
 
 int tc_col, tc_line ;
@@ -136,27 +136,27 @@ int     was_col,was_ln,new_col,new_ln;
     extern char *BC ;
 
     if(new_ln >= t_lines  || new_col >= t_columns)
-        return ;
+      return ;
     tc_col = new_col ;
     tc_line = new_ln ;
     if((new_col == 0) && (new_ln == was_ln+1)) {
         ochar('\n') ;
         if(was_col != 0)
-            ochar('\r') ;
+          ochar('\r') ;
         return ;
     }
     if((new_col == 0) && (new_ln == was_ln)) {
         if(was_col != 0)
-            ochar('\r') ;
+          ochar('\r') ;
         return ;
     }
     if(was_col == new_col && was_ln == new_ln)
-        return ;
+      return ;
     if(new_col == was_col - 1 && new_ln == was_ln) {
         ochar(Ctrl('H')) ;
         return ;
     }
-
+    
     do_move(new_col,new_ln,ochar) ;
 }
 
@@ -174,12 +174,12 @@ int ds,de,sso,eso ;
     st_start = Max(sso,ds) ;
     st_end = Min(eso,de) ;
     if(sso > ds)
-        output(buf+ds,sso-ds) ;
+      output(buf+ds,sso-ds) ;
     o_standup() ;
     output(buf+st_start,st_end-st_start) ;
     o_standdown() ;
     if(de > eso)
-        output(buf+eso,de-eso) ;
+      output(buf+eso,de-eso) ;
 }
 
 void
@@ -190,7 +190,7 @@ redoscr()
     register struct screenline *bp = big_picture ;
 
     if(dumb_term)
-        return ;
+      return ;
     o_clear() ;
     tc_col = 0 ;
     tc_line = 0 ;
@@ -201,18 +201,18 @@ redoscr()
             continue ;
         rel_move(tc_col,tc_line,0,i) ;
         if(bp[j].mode&STANDOUT)
-            standoutput(bp[j].data,0,bp[j].len,bp[j].sso,bp[j].eso) ;
-        else
-            output(bp[j].data,bp[j].len) ;
+          standoutput(bp[j].data,0,bp[j].len,bp[j].sso,bp[j].eso) ;
+        else 
+          output(bp[j].data,bp[j].len) ;
         tc_col+=bp[j].len ;
         if(tc_col >= t_columns) {
             if(!automargins) {
                 tc_col -= t_columns ;
                 tc_line++ ;
                 if(tc_line >= t_lines)
-                    tc_line = t_lines - 1 ;
+                  tc_line = t_lines - 1 ;
             }  else
-                tc_col = t_columns-1 ;
+              tc_col = t_columns-1 ;
         }
         bp[j].mode &= ~(MODIFIED) ;
         bp[j].oldlen = bp[j].len ;
@@ -231,32 +231,32 @@ refresh()
     extern int automargins ;
 
     if(dumb_term)
-        return ;
+      return ;
     if(num_in_buf() != 0)
-        return ;
+      return ;
     if((docls) || (abs(scrollcnt) >= (scr_lns-3)) ) {
         redoscr() ;
         return ;
     }
-    /*    if(scrollcnt < 0) {
-            if(!scrollrevlen) {
-                redoscr() ;
-                return ;
-            }
-            rel_move(tc_col,tc_line,0,0) ;
-            while(scrollcnt < 0) {
-                o_scrollrev() ;
-                scrollcnt++ ;
-            }
+/*    if(scrollcnt < 0) {
+        if(!scrollrevlen) {
+            redoscr() ;
+            return ;
         }
-        if(scrollcnt > 0) {
-            rel_move(tc_col,tc_line,0,t_lines-1) ;
-            while(scrollcnt > 0) {
-                ochar('\n') ;
-                scrollcnt-- ;
-            }
+        rel_move(tc_col,tc_line,0,0) ;
+        while(scrollcnt < 0) {
+            o_scrollrev() ;
+            scrollcnt++ ;
         }
-    */
+    }
+    if(scrollcnt > 0) {
+        rel_move(tc_col,tc_line,0,t_lines-1) ;
+        while(scrollcnt > 0) {
+            ochar('\n') ;
+            scrollcnt-- ;
+        }
+    }
+*/
     if(scrollcnt < 0) {
         char buf[10];
         rel_move(tc_col,tc_line,0,0) ;
@@ -265,8 +265,8 @@ refresh()
         scrollcnt=0;
     }
     if(scrollcnt > 0) {
-        /*        rel_move(tc_col,tc_line,0,t_lines-1) ;
-        */
+/*        rel_move(tc_col,tc_line,0,t_lines-1) ;
+*/
         do_move(0,1024,ochar);
         while(scrollcnt > 0) {
             ochar('\n') ;
@@ -281,22 +281,22 @@ refresh()
         if(bp[j].mode&MODIFIED && bp[j].smod < bp[j].len) {
             bp[j].mode &= ~(MODIFIED) ;
             if(bp[j].emod >= bp[j].len)
-                bp[j].emod = bp[j].len - 1 ;
+              bp[j].emod = bp[j].len - 1 ;
             rel_move(tc_col,tc_line,bp[j].smod,i) ;
             if(bp[j].mode&STANDOUT)
-                standoutput(bp[j].data,bp[j].smod,bp[j].emod+1,
-                            bp[j].sso,bp[j].eso) ;
-            else
-                output(&bp[j].data[bp[j].smod],bp[j].emod-bp[j].smod+1) ;
+              standoutput(bp[j].data,bp[j].smod,bp[j].emod+1,
+                          bp[j].sso,bp[j].eso) ;
+            else 
+              output(&bp[j].data[bp[j].smod],bp[j].emod-bp[j].smod+1) ;
             tc_col = bp[j].emod+1 ;
             if(tc_col >= t_columns) {
                 if(automargins) {
                     tc_col -= t_columns ;
                     tc_line++ ;
                     if(tc_line >= t_lines)
-                        tc_line = t_lines - 1 ;
+                      tc_line = t_lines - 1 ;
                 } else
-                    tc_col = t_columns-1 ;
+                  tc_col = t_columns-1 ;
             }
         }
         if(bp[j].oldlen > bp[j].len) {
@@ -332,7 +332,7 @@ clear()
     register struct screenline *slp;
 
     if(dumb_term)
-        return ;
+      return ;
     roll = 0 ;
     docls = YEA ;
     downfrom = 0 ;
@@ -346,7 +346,7 @@ clear()
 }
 
 void
-clear_whole_line(i)
+clear_whole_line(i) 
 int i;
 {
     register struct screenline *slp = &big_picture[ i ];
@@ -361,17 +361,17 @@ clrtoeol()
     register int        ln;
 
     if(dumb_term)
-        return ;
+      return ;
     standing = NA ;
     ln = cur_ln + roll;
     while( ln >= scr_lns )  ln -= scr_lns;
     slp = &big_picture[ ln ];
     if(cur_col <= slp->sso)
-        slp->mode &= ~STANDOUT ;
+      slp->mode &= ~STANDOUT ;
     if(cur_col > slp->oldlen) {
         register int i ;
         for(i=slp->len;i<=cur_col;i++)
-            slp->data[i] = ' ' ;
+          slp->data[i] = ' ' ;
     }
     slp->len = cur_col ;
 }
@@ -383,7 +383,7 @@ clrtobot()
     register int        i, j;
 
     if(dumb_term)
-        return ;
+      return ;
     for(i=cur_ln; i<scr_lns;i++) {
         j = i + roll;
         while( j >= scr_lns )  j -= scr_lns;
@@ -399,9 +399,9 @@ clrstandout()
 {
     register int i ;
     if(dumb_term)
-        return ;
+      return ;
     for(i=0;i<scr_lns;i++)
-        big_picture[i].mode &= ~(STANDOUT) ;
+      big_picture[i].mode &= ~(STANDOUT) ;
 }
 
 static char nullstr[] = "(null)" ;
@@ -420,8 +420,8 @@ register unsigned char c ;
     {
         if(c=='m')
         {
-            inansi=0;
-            return;
+                inansi=0;
+                return;
         }
         return;
     }
@@ -502,196 +502,196 @@ register unsigned char c ;
     cur_col = reg_col;  /* store cur_col back */
 }
 
-void
+void 
 RemoveAnsiX(char *szStr, int n) /* Leeward 98.01.12 */
 {
-    int nLen = (n > 0 ? n : strlen(szStr));
-    char *ptrHead, *ptrTail, *ptr;
-    int nIndex;
+  int nLen = (n > 0 ? n : strlen(szStr)); 
+  char *ptrHead, *ptrTail, *ptr;
+  int nIndex;
 
-    for (nIndex = 0; nIndex < nLen;)
+  for (nIndex = 0; nIndex < nLen;)
+  {
+    switch (szStr[nIndex])
     {
-        switch (szStr[nIndex])
+      case 27:
+        nIndex ++;
+        if (nIndex < nLen)
         {
-        case 27:
+          if (27 == szStr[nIndex])
+            szStr[nIndex - 1] = ' '; /* remove extra ESC */
+        }
+        break;
+ 
+      case '(':
+        if (nIndex - 1 >= 0)
+        {
+          if (27 == szStr[nIndex - 1])
+          {
+            ptrHead = szStr + nIndex - 1;
             nIndex ++;
             if (nIndex < nLen)
             {
-                if (27 == szStr[nIndex])
-                    szStr[nIndex - 1] = ' '; /* remove extra ESC */
+              while ((szStr[nIndex] >= '0' && szStr[nIndex] <= '9')
+                   ||(szStr[nIndex] >= 'A' && szStr[nIndex] <= 'Z'))
+              {
+                nIndex ++;
+                if (nIndex >= nLen)
+                  break;
+              }
             }
+            ptrTail = szStr + nIndex - 1;
+            nIndex = ptrTail - szStr + 1;
+            ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
+            memset(ptrHead, ' ', ptrTail - ptrHead + 1);
             break;
+          }
+        }       
+        nIndex ++;
+        break;
 
-        case '(':
-            if (nIndex - 1 >= 0)
-            {
-                if (27 == szStr[nIndex - 1])
-                {
-                    ptrHead = szStr + nIndex - 1;
-                    nIndex ++;
-                    if (nIndex < nLen)
-                    {
-                        while ((szStr[nIndex] >= '0' && szStr[nIndex] <= '9')
-                                ||(szStr[nIndex] >= 'A' && szStr[nIndex] <= 'Z'))
-                        {
-                            nIndex ++;
-                            if (nIndex >= nLen)
-                                break;
-                        }
-                    }
-                    ptrTail = szStr + nIndex - 1;
-                    nIndex = ptrTail - szStr + 1;
-                    ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
-                    memset(ptrHead, ' ', ptrTail - ptrHead + 1);
-                    break;
-                }
-            }
-            nIndex ++;
-            break;
+      case '[':
+      case ']':
+        nIndex ++;
+        if (nIndex < nLen)
+        {
+          ptrHead = szStr + nIndex - 1;
+          if (nIndex - 2 >= 0)
+          {
+            if (27 == szStr[nIndex - 2])
+              ptrHead = szStr + nIndex - 2;
+          }
 
-        case '[':
-        case ']':
-            nIndex ++;
-            if (nIndex < nLen)
-            {
-                ptrHead = szStr + nIndex - 1;
-                if (nIndex - 2 >= 0)
-                {
-                    if (27 == szStr[nIndex - 2])
-                        ptrHead = szStr + nIndex - 2;
-                }
+          switch (szStr[nIndex])
+          {
+            case '[':
+            case ']': /* AnsiX executes client-side applications */
+              if (27 != *ptrHead 
+              && !('[' == szStr[nIndex - 1] && ']' == szStr[nIndex]))
+              {
+                nIndex ++;
+                break;
+              }
 
+              ptrTail = strchr(ptrHead + 1, 27);
+              if (ptrTail)
+              {
+                if (ptr = strchr(ptrTail, '*'))
+                  ptrTail = ptr;
+              }
+              else
+              /*  ptrTail = szStr + nIndex;*/
+              {
+                nIndex ++;
+                break;
+              }
+             
+              nIndex = ptrTail - szStr + 1;
+              ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
+	      /*---	modified by period	2000-11-22	---*/
+              memset(ptrHead, ' ', ptrTail - ptrHead /* + 1 */);
+              break;  
+
+            case '=': /* AnsiX modifys client information */
+              nIndex ++;
+              if (nIndex < nLen)
+              {
                 switch (szStr[nIndex])
                 {
-                case '[':
-                case ']': /* AnsiX executes client-side applications */
-                    if (27 != *ptrHead
-                            && !('[' == szStr[nIndex - 1] && ']' == szStr[nIndex]))
-                    {
-                        nIndex ++;
-                        break;
-                    }
-
+                  case 'm':
+                  case 'M':
                     ptrTail = strchr(ptrHead + 1, 27);
                     if (ptrTail)
                     {
-                        if (ptr = strchr(ptrTail, '*'))
-                            ptrTail = ptr;
+                      if (ptr = strchr(ptrTail, 'S'))
+                        ptrTail = ptr;
+                      else if (ptr = strchr(ptrTail, '='))
+                        ptrTail = ptr;
                     }
                     else
-                        /*  ptrTail = szStr + nIndex;*/
-                    {
-                        nIndex ++;
-                        break;
-                    }
+                      ptrTail = szStr + nIndex;
+                    break;
+                  case 'k':
+                  case 'K':
+                    /*break;*/
+                  default:
+                    ptrTail = szStr - nIndex;
+                }
+              }
+              else
+                ptrTail = szStr - nIndex - 1;
 
-                    nIndex = ptrTail - szStr + 1;
-                    ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
-                    /*---	modified by period	2000-11-22	---*/
-                    memset(ptrHead, ' ', ptrTail - ptrHead /* + 1 */);
+              nIndex = ptrTail - szStr + 1;
+              ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
+              memset(ptrHead, ' ', ptrTail - ptrHead + 1);
+              break;
+
+            default:
+              while (szStr[nIndex] >= '0' && szStr[nIndex] <= '9')
+              {
+                nIndex ++;
+                if (nIndex >= nLen)
+                  break;
+              }
+              if (nIndex < nLen) 
+              {
+                if (!(szStr[nIndex - 1] >= '0' && szStr[nIndex - 1] <= '9'))
+                {
+                  nIndex ++;
+                  break;
+                }
+               
+                ptrTail = 0;
+                switch (szStr[nIndex])
+                {
+                  case 'i':  /* AnsiX has client-side disk/port access */
+                    ptrTail = szStr + nIndex;
                     break;
 
-                case '=': /* AnsiX modifys client information */
+                  case 'q':  /* AnsiX modifys client information */
+                    ptrTail = szStr + nIndex;
+                    break;
+
+                  case ';':
                     nIndex ++;
-                    if (nIndex < nLen)
-                    {
-                        switch (szStr[nIndex])
-                        {
-                        case 'm':
-                        case 'M':
-                            ptrTail = strchr(ptrHead + 1, 27);
-                            if (ptrTail)
-                            {
-                                if (ptr = strchr(ptrTail, 'S'))
-                                    ptrTail = ptr;
-                                else if (ptr = strchr(ptrTail, '='))
-                                    ptrTail = ptr;
-                            }
-                            else
-                                ptrTail = szStr + nIndex;
-                            break;
-                        case 'k':
-                        case 'K':
-                            /*break;*/
-                        default:
-                            ptrTail = szStr - nIndex;
-                        }
-                    }
-                    else
-                        ptrTail = szStr - nIndex - 1;
-
-                    nIndex = ptrTail - szStr + 1;
-                    ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
-                    memset(ptrHead, ' ', ptrTail - ptrHead + 1);
-                    break;
-
-                default:
                     while (szStr[nIndex] >= '0' && szStr[nIndex] <= '9')
                     {
-                        nIndex ++;
-                        if (nIndex >= nLen)
-                            break;
+                      nIndex ++;
+                      if (nIndex >= nLen)
+                      break;
                     }
                     if (nIndex < nLen)
                     {
-                        if (!(szStr[nIndex - 1] >= '0' && szStr[nIndex - 1] <= '9'))
-                        {
-                            nIndex ++;
-                            break;
-                        }
+                      if ('h' == szStr[nIndex]) /* AnsiX changes screen size */
+                        ptrTail = szStr + nIndex;
+                    }
+                    break;
 
-                        ptrTail = 0;
-                        switch (szStr[nIndex])
-                        {
-                        case 'i':  /* AnsiX has client-side disk/port access */
-                            ptrTail = szStr + nIndex;
-                            break;
+                  case 'm':
+                    if (nIndex - 3 >= 0)
+                    {
+                      if ('1' == szStr[nIndex - 3] && '3' == szStr[nIndex - 2] && '2' == szStr[nIndex - 1]) /* AnsiX modifys display size */
+                        ptrTail = szStr + nIndex;
+                    }
+                    break;
 
-                        case 'q':  /* AnsiX modifys client information */
-                            ptrTail = szStr + nIndex;
-                            break;
+                  default: ptrTail = 0;
+                }
+             
+                if (ptrTail)
+                {
+                  nIndex = ptrTail - szStr + 1;
+                  ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
+                  memset(ptrHead, ' ', ptrTail - ptrHead + 1);
+                }
+                else nIndex ++;
+              } /* End if (nIndex < nLen) */
+          } /* End switch (szStr[nIndex]) */
+        } /* End if (nIndex < nLen) */
+        break;
 
-                        case ';':
-                            nIndex ++;
-                            while (szStr[nIndex] >= '0' && szStr[nIndex] <= '9')
-                            {
-                                nIndex ++;
-                                if (nIndex >= nLen)
-                                    break;
-                            }
-                            if (nIndex < nLen)
-                            {
-                                if ('h' == szStr[nIndex]) /* AnsiX changes screen size */
-                                    ptrTail = szStr + nIndex;
-                            }
-                            break;
-
-                        case 'm':
-                            if (nIndex - 3 >= 0)
-                            {
-                                if ('1' == szStr[nIndex - 3] && '3' == szStr[nIndex - 2] && '2' == szStr[nIndex - 1]) /* AnsiX modifys display size */
-                                    ptrTail = szStr + nIndex;
-                            }
-                            break;
-
-                        default: ptrTail = 0;
-                        }
-
-                        if (ptrTail)
-                        {
-                            nIndex = ptrTail - szStr + 1;
-                            ptrTail = (ptrTail > ptrHead) ? ptrTail : ptrHead;
-                            memset(ptrHead, ' ', ptrTail - ptrHead + 1);
-                        }
-                        else nIndex ++;
-                    } /* End if (nIndex < nLen) */
-                } /* End switch (szStr[nIndex]) */
-            } /* End if (nIndex < nLen) */
-            break;
-
-        default: nIndex ++;
-        } /* End switch (szStr[nIndex]) */
-    } /* End for (nIndex = 0; nIndex < nLen;) */
+      default: nIndex ++;
+    } /* End switch (szStr[nIndex]) */
+  } /* End for (nIndex = 0; nIndex < nLen;) */
 }
 
 void
@@ -699,16 +699,16 @@ outs(str)
 register char *str ;
 {
     if (DEFINE(DEF_IGNOREANSIX))
-        RemoveAnsiX(str, 0);
+      RemoveAnsiX(str, 0);
 
     while(*str != '\0'){
 #ifndef VEDITOR
-        if(*str==''&&!iscolor){
-            while(*str!='m'){
-                str++;}
-            str++;}else
+         if(*str==''&&!iscolor){
+          while(*str!='m'){
+            str++;}
+          str++;}else
 #endif
-            outc(*str++) ;}
+          outc(*str++) ;}
 }
 
 void
@@ -717,144 +717,144 @@ register char *str ;
 register int n ;
 {
     if (DEFINE(DEF_IGNOREANSIX))
-        RemoveAnsiX(str, n);
+      RemoveAnsiX(str, n);
 
     for(;n>0;n--){
 #ifndef VEDITOR
-        if(*str==''&&!iscolor){
-            while(*str!='m'){
-                str++;n--;}
-            str++;n--;}else
+     if(*str==''&&!iscolor){
+       while(*str!='m'){
+           str++;n--;}
+       str++;n--;}else
 #endif
-            outc(*str++) ;}
+       outc(*str++) ;}
 }
 
 
 int dec[] = {1000000000,100000000,10000000,1000000,100000,10000,1000,100,10,1};
-
+ 
 void
 prints(va_alist)
 va_dcl
 {
-    va_list ap ;
-    register char *fmt ;
-    char *bp ;
-    register int i, count, hd, indx ;
-
-    va_start(ap) ;
-    fmt = va_arg(ap, char *) ;
-    while(*fmt != '\0')
-    {
-#ifndef VEDITOR
-    if(*fmt==''&&!iscolor){
-            while(*fmt!='m')
-                fmt++;
-            fmt++;continue;}
-#endif
-        if(*fmt == '%')
+        va_list ap ;
+        register char *fmt ;
+        char *bp ;
+        register int i, count, hd, indx ;
+        
+        va_start(ap) ;
+        fmt = va_arg(ap, char *) ;
+        while(*fmt != '\0')
         {
-            int sgn = 1 ;
-            int val = 0 ;
-            int len,negi ;
-
-            fmt++ ;
-            while(*fmt == '-') {
-                sgn *= -1 ;
-                fmt++ ;
-            }
-            while(isdigit(*fmt)) {
-                val *= 10 ;
-                val += *fmt - '0' ;
-                fmt++ ;
-            }
-            switch(*fmt)
+#ifndef VEDITOR
+          if(*fmt==''&&!iscolor){
+                while(*fmt!='m')
+                        fmt++;
+                fmt++;continue;}
+#endif
+          if(*fmt == '%')
             {
-            case 's':
-                bp = va_arg(ap, char *) ;
-                if(bp == NULL)
-                    bp = nullstr ;
-                if(val) {
-                    register int slen = strlen(bp) ;
-                    if(val <= slen)
-                        outns(bp,val) ;
-                    else if(sgn > 0) {
-                        for(slen=val-slen;slen > 0; slen--)
-                            outc(' ') ;
-                        outs(bp) ;
-                    } else {
-                        outs(bp) ;
-                        for(slen=val-slen;slen > 0; slen--)
-                            outc(' ') ;
-                    }
-                } else outs(bp) ;
-                break ;
-            case 'd':
-                i = va_arg(ap, int) ;
+                int sgn = 1 ;
+                int val = 0 ;
+                int len,negi ;
 
-                negi = NA ;
-                if(i < 0)
-                {
-                    negi = YEA ;
-                    i *= -1 ;
+                fmt++ ;
+                while(*fmt == '-') {
+                    sgn *= -1 ;
+                    fmt++ ;
                 }
-                for(indx=0;indx < 10;indx++)
-                    if(i >= dec[indx])
-                        break ;
-                if(i == 0)
-                    len = 1 ;
-                else
-                    len = 10 - indx ;
-                if(negi)
-                    len++ ;
-                if(val >= len && sgn > 0) {
-                    register int slen ;
-                    for(slen = val-len;slen>0;slen--)
-                        outc(' ') ;
+                while(isdigit(*fmt)) {
+                    val *= 10 ;
+                    val += *fmt - '0' ;
+                    fmt++ ;
                 }
-                if(negi)
-                    outc('-') ;
-                hd = 1, indx = 0;
-                while(indx < 10)
-                {
-                    count = 0 ;
-                    while(i >= dec[indx])
-                    {
-                        count++ ;
-                        i -= dec[indx] ;
-                    }
-                    indx++ ;
-                    if(indx == 10)
-                        hd = 0 ;
-                    if(hd && !count)
-                        continue ;
-                    hd = 0 ;
-                    outc('0'+count) ;
-                }
-                if(val >= len && sgn < 0) {
-                    register int slen ;
-                    for(slen = val-len;slen>0;slen--)
-                        outc(' ') ;
-                }
-                break ;
-            case 'c':
-                i = va_arg(ap, int) ;
-                outc(i) ;
-                break ;
-            case '\0':
-                goto endprint ;
-            default:
-                outc(*fmt) ;
-                break ;
+                switch(*fmt)
+                  {
+                    case 's':
+                      bp = va_arg(ap, char *) ;
+                      if(bp == NULL)
+                        bp = nullstr ;
+                      if(val) {
+                          register int slen = strlen(bp) ;
+                          if(val <= slen)
+                            outns(bp,val) ;
+                          else if(sgn > 0) {
+                              for(slen=val-slen;slen > 0; slen--)
+                                outc(' ') ;
+                              outs(bp) ;
+                          } else {
+                              outs(bp) ;
+                              for(slen=val-slen;slen > 0; slen--)
+                                outc(' ') ;
+                          }
+                      } else outs(bp) ;
+                      break ;
+                    case 'd':
+                      i = va_arg(ap, int) ;
+
+                      negi = NA ;
+                      if(i < 0)
+                        {
+                            negi = YEA ;
+                            i *= -1 ;
+                        }
+                      for(indx=0;indx < 10;indx++)
+                        if(i >= dec[indx])
+                          break ;
+                      if(i == 0)
+                        len = 1 ;
+                      else
+                        len = 10 - indx ;
+                      if(negi)
+                        len++ ;
+                      if(val >= len && sgn > 0) {
+                          register int slen ;
+                          for(slen = val-len;slen>0;slen--)
+                            outc(' ') ;
+                      }
+                      if(negi)
+                        outc('-') ;
+                      hd = 1, indx = 0;
+                      while(indx < 10)
+                        {
+                            count = 0 ;
+                            while(i >= dec[indx])
+                              {
+                                  count++ ;
+                                  i -= dec[indx] ;
+                              }
+                            indx++ ;
+                            if(indx == 10)
+                              hd = 0 ;
+                            if(hd && !count)
+                              continue ;
+                            hd = 0 ;
+                            outc('0'+count) ;
+                        }
+                      if(val >= len && sgn < 0) {
+                          register int slen ;
+                          for(slen = val-len;slen>0;slen--)
+                            outc(' ') ;
+                      }
+                      break ;
+                    case 'c':
+                      i = va_arg(ap, int) ;
+                      outc(i) ;
+                      break ;
+                    case '\0':
+                      goto endprint ;
+                    default:
+                      outc(*fmt) ;
+                      break ;
+                  }
+                fmt++ ;
+                continue ;
             }
-            fmt++ ;
-            continue ;
-        }
-
-        outc(*fmt) ;
-        fmt++ ;
-    }
-    endprint:
-    return ;
+          
+          outc(*fmt) ;
+          fmt++ ;
+      }
+  endprint:
+        return ;
 }
 
 void
@@ -899,7 +899,7 @@ standout()
     register int        ln;
 
     if(dumb_term  || !strtstandoutlen)
-        return ;
+      return ;
     if(!standing) {
         ln = cur_ln + roll;
         while( ln >= scr_lns )  ln -= scr_lns;
@@ -918,7 +918,7 @@ standend()
     register int        ln;
 
     if(dumb_term || !strtstandoutlen)
-        return ;
+      return ;
     if(standing) {
         ln = cur_ln + roll;
         while( ln >= scr_lns )  ln -= scr_lns;
@@ -936,19 +936,19 @@ char *buffer;
     static /*struct screenline old_line;*/char tmpbuffer[256];
     char *tmp=tmpbuffer;
     int x,y;
-    if (buffer) tmp=buffer;
+  if (buffer) tmp=buffer;
     switch (mode) {
-    case 0 :
-        strncpy(tmp/*old_line.data*/, bp[line].data, LINELEN) ;
-        tmp[bp[line].len]='\0';
-        break;
-    case 1 :
-        getyx(&x,&y);
-        move(line,0);
-        clrtoeol();
-        prints("%s",tmp);
-        move(x,y);
-        refresh();
+        case 0 :
+            strncpy(tmp/*old_line.data*/, bp[line].data, LINELEN) ;
+            tmp[bp[line].len]='\0';
+            break;
+        case 1 :
+            getyx(&x,&y);
+            move(line,0);
+            clrtoeol();
+            prints("%s",tmp);
+            move(x,y);
+            refresh();
     }
 } ;
 
@@ -974,14 +974,14 @@ lock_monitor() /* Leeward 98.03.01 */
     xx += dx;
     yy += dy;
     c=tm%7+1;
-    move(yy, xx);
+    move(yy, xx); 
     /*if(tm%2==0)
       prints("[3%dmŒ“ « %12s[m",c,currentuser.userid);
     else
       prints("[3%dmŒ“ « %12s[m",c,currentuser.username);*/
     prints("[1m[3%dmBBS ÀÆƒæ«Âª™’æ[0m[0m", c);
     signal(SIGALRM,lock_monitor);
-    alarm(1);
+    alarm(1); 
     move(cy,cx);
     refresh();
 }
@@ -990,34 +990,34 @@ lock_monitor() /* Leeward 98.03.01 */
 int
 lock_scr() /* Leeward 98.02.22 */
 {
-    char passbuf[STRLEN];
+        char passbuf[STRLEN];
 
 
-    if (!strcmp(currentuser.userid, "guest"))
-        return;
+        if (!strcmp(currentuser.userid, "guest"))
+          return;
 
-    modify_user_mode(LOCKSCREEN);
-    clear();
-    /*lock_monitor();*/
-    while(1)
-    {
-        move(19,32);
-        clrtobot();
-        prints("[1m[32mBBSÀÆƒæ«Âª™’æ[m");
-        move(21,0);
-        clrtobot();
-        getdata(21, 0, "∆¡ƒªœ÷‘⁄“—æ≠À¯∂®£¨“™Ω‚≥˝À¯∂®£¨«Î ‰»Î√‹¬Î£∫", passbuf, PASSLEN, NOECHO, NULL ,YEA);
-        passbuf[8] = '\0';
-        move(22,32);
-        if( !checkpasswd( currentuser.passwd, passbuf )) {
-            prints( "[1m[31m√‹¬Î ‰»Î¥ÌŒÛ...[m\n" );
-            pressanykey();
-        }
-        else
+        modify_user_mode(LOCKSCREEN);
+        clear();
+        /*lock_monitor();*/
+        while(1)
         {
-            prints( "[1m[31m∆¡ƒªœ÷‘⁄“—æ≠Ω‚≥˝À¯∂®[m\n" );
-            /*pressanykey();*/
-            break;
+                move(19,32);
+                clrtobot();
+                prints("[1m[32mBBSÀÆƒæ«Âª™’æ[m");
+                move(21,0);
+                clrtobot();
+                getdata(21, 0, "∆¡ƒªœ÷‘⁄“—æ≠À¯∂®£¨“™Ω‚≥˝À¯∂®£¨«Î ‰»Î√‹¬Î£∫", passbuf, PASSLEN, NOECHO, NULL ,YEA);
+                passbuf[8] = '\0';
+                move(22,32);
+                if( !checkpasswd( currentuser.passwd, passbuf )) {
+                        prints( "[1m[31m√‹¬Î ‰»Î¥ÌŒÛ...[m\n" );
+                        pressanykey();
+                }
+                else
+                {
+                        prints( "[1m[31m∆¡ƒªœ÷‘⁄“—æ≠Ω‚≥˝À¯∂®[m\n" );
+                        /*pressanykey();*/
+                        break;
+                }
         }
-    }
 }

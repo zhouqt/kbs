@@ -33,7 +33,7 @@ int B_to_b=NA;
 char *pnt;
  *---	current code memory leak ---*/
 
-extern char MsgDesUid[14];
+extern char MsgDesUid[14]; 
 int     show_authorBM();
 
 struct keeploc {
@@ -53,30 +53,30 @@ extern int	m_read();
 int
 search_file(char *filename) /* Leeward 98.10.02 */
 {
-    char p_name[256];
-    int  fd, i = 0;
-    struct fileheader rptr;
+  char p_name[256];
+  int  fd, i = 0;
+  struct fileheader rptr;
 
-    if (uinfo.mode!=RMAIL) setbdir( p_name, currboard);
-    else setmailfile(p_name, currentuser.userid, DOT_DIR);
+  if (uinfo.mode!=RMAIL) setbdir( p_name, currboard);
+  else setmailfile(p_name, currentuser.userid, DOT_DIR);
 
-    if ((fd = open(p_name,O_RDONLY,0)) == -1) return 0;
+  if ((fd = open(p_name,O_RDONLY,0)) == -1) return 0;
 
-    while(read(fd, &rptr, sizeof(struct fileheader)) > 0) {
-        i ++;
-        if (!strcmp(filename, rptr.filename)) {
-            close(fd) ;
-            return i;
-        }
+  while(read(fd, &rptr, sizeof(struct fileheader)) > 0) {
+    i ++;
+    if (!strcmp(filename, rptr.filename)) {
+       close(fd) ;
+       return i;
     }
-    close(fd);
+  }
+  close(fd);
 
-    return - 1;
-}
+  return - 1;
+}        
 
 struct keeploc *
-            getkeep(s,def_topline,def_cursline)
-            char    *s;
+getkeep(s,def_topline,def_cursline)
+char    *s;
 int     def_topline;
 int     def_cursline;
 {
@@ -85,8 +85,8 @@ int     def_cursline;
 
     for(p = keeplist; p!= NULL; p = p->next) {
         if(!strcmp(s,p->key)) {
-            if (p->crs_line < 1) p->crs_line = 1;   /* DAMMIT! - rrr */
-            return p ;
+          if (p->crs_line < 1) p->crs_line = 1;   /* DAMMIT! - rrr */
+          return p ;
         }
     }
     p = (struct keeploc *) malloc(sizeof (*p)) ;
@@ -181,20 +181,20 @@ struct keeploc  *locmem;
 int             num,ssize;
 ---*/
 void draw_entry(char *(*doentry)(), struct keeploc * locmem,
-                int num, int ssize, char * pnt)
+		        int num, int ssize, char * pnt)
 {
     char        *str;
     int         base, i;
-
+    
     base = locmem->top_line;
     move( 3, 0 );
     clrtobot();
     for( i = 0; i < num; i++ ) {
         str = (*doentry)( base + i, &pnt[ i *ssize ] );
         if(!check_stuffmode())
-            prints( "%s", str );
+                prints( "%s", str );
         else
-            showstuff(str);
+                showstuff(str);
         prints("\n");
     }
     move(t_lines-1,0);
@@ -221,36 +221,36 @@ int     ssize;
     char * pnt;
 
     strcpy( currdirect, direct );
-    /*---	HERE:	---*/
+/*---	HERE:	---*/
     screen_len = t_lines - 4;
     modify_user_mode( cmdmode );
     pnt =  calloc( screen_len, ssize );
     draw_title( dotitle );
     last_line = get_num_records( currdirect, ssize );
     if( last_line == 0 ) {
-        if (cmdmode==RMAIL)
-        {
+          if (cmdmode==RMAIL)
+          {
             prints("Ã»ÓĞÈÎºÎĞÂĞÅ¼ş...");
             pressreturn();
             clear();
-        }
-        else if(cmdmode==GMENU)
-        {
+          }
+          else if(cmdmode==GMENU)
+          {
             getdata(t_lines-1, 0, "Ã»ÓĞÈÎºÎºÃÓÑ (A)ĞÂÔöºÃÓÑ (Q)Àë¿ª£¿[Q] ",
-                    genbuf, 4, DOECHO,NULL,YEA);
+              genbuf, 4, DOECHO,NULL,YEA);
             if (genbuf[0] == 'a'||genbuf[0] == 'A')
-                friend_add();
-        }
-        else
-        {
+            	  friend_add();
+          }
+          else 
+          {
             getdata(t_lines-1, 0, "¿´°åĞÂ³ÉÁ¢ (P)·¢±íÎÄÕÂ (Q)Àë¿ª£¿[Q] ",
-                    genbuf, 4, DOECHO,NULL,YEA);
+              genbuf, 4, DOECHO,NULL,YEA);
             if (genbuf[0] == 'p'||genbuf[0] == 'P')
-                do_post();
-        }
-        free(pnt);
-        pnt = NULL;
-        return;
+              do_post();
+          }
+          free(pnt);
+	  pnt = NULL;
+          return;
     }
     num = last_line - screen_len + 2;
     locmem = getkeep( currdirect, num < 1 ? 1 : num, last_line );
@@ -268,52 +268,52 @@ int     ssize;
         if( talkrequest ) {
             talkreply();
             mode = FULLUPDATE;
-            /*        } else if( ch >= '0' && ch <= '9' ) {
-                        if( lbc < 9 )
-                            lbuf[ lbc++ ] = ch;
-            */	/*---	Modified by period	2000-09-11	---*/
-        } else if( ch >= '0' && ch <= '9' ||
-                   ((Ctrl('H') == ch || '\177' == ch) && lbc > 0) ) {
-            if(Ctrl('H') == ch || '\177' == ch)
-                lbuf[lbc--] = 0;
-            else if( lbc < 9 )
+/*        } else if( ch >= '0' && ch <= '9' ) {
+            if( lbc < 9 )
                 lbuf[ lbc++ ] = ch;
-            lbuf[lbc] = 0;
-            if(!lbc) update_endline();
-            else if(DEFINE(DEF_ENDLINE)) {
-                extern time_t login_start_time;
-                int allstay;
-                char pntbuf[256], nullbuf[2] = " ";
-                allstay = (time(0) - login_start_time)/60;
-                sprintf(pntbuf, "\033[33;44m×ªµ½¡Ã[\033[36m%9.9s\033[33m]"
-                        "  ºô½ĞÆ÷[ºÃÓÑ:%3s¡ÃÒ»°ã:%3s] Ê¹ÓÃÕß[\033[36m%.12s\033[33m]%*sÍ£Áô[%3d:%2d]\033[m",
-                        lbuf, (!(uinfo.pager&FRIEND_PAGER)) ? "NO " : "YES",
-                        (uinfo.pager&ALL_PAGER) ? "YES" : "NO ",
-                        currentuser.userid, /*IDLEN+1*/13-strlen(currentuser.userid), nullbuf,
-                        (allstay/60)%1000, allstay%60, nullbuf);
-                move(t_lines-1, 0);
-                clrtoeol();
-                prints(pntbuf);
-            }
-            /*---		---*/
+*/	/*---	Modified by period	2000-09-11	---*/
+        } else if( ch >= '0' && ch <= '9' ||
+		((Ctrl('H') == ch || '\177' == ch) && lbc > 0) ) {
+	    if(Ctrl('H') == ch || '\177' == ch)
+		    lbuf[lbc--] = 0;
+	    else if( lbc < 9 )
+                lbuf[ lbc++ ] = ch;
+	    lbuf[lbc] = 0;
+	    if(!lbc) update_endline();
+	    else if(DEFINE(DEF_ENDLINE)) {
+		extern time_t login_start_time;
+		int allstay;
+		char pntbuf[256], nullbuf[2] = " ";
+		allstay = (time(0) - login_start_time)/60;
+		sprintf(pntbuf, "\033[33;44m×ªµ½¡Ã[\033[36m%9.9s\033[33m]"
+				"  ºô½ĞÆ÷[ºÃÓÑ:%3s¡ÃÒ»°ã:%3s] Ê¹ÓÃÕß[\033[36m%.12s\033[33m]%*sÍ£Áô[%3d:%2d]\033[m",
+			lbuf, (!(uinfo.pager&FRIEND_PAGER)) ? "NO " : "YES",
+			(uinfo.pager&ALL_PAGER) ? "YES" : "NO ",
+			currentuser.userid, /*IDLEN+1*/13-strlen(currentuser.userid), nullbuf,
+			(allstay/60)%1000, allstay%60, nullbuf);
+		move(t_lines-1, 0);
+		clrtoeol();
+		prints(pntbuf);
+	    }
+	/*---		---*/
         } else if( lbc > 0 && (ch == '\n' || ch == '\r') ) {
-            /*---	2000-09-11	---*/
-            update_endline();
-            /*---	---*/
+	    /*---	2000-09-11	---*/
+	    update_endline();
+	    /*---	---*/
             lbuf[ lbc ] = '\0';
             lbc = atoi( lbuf );
             if( cursor_pos( locmem, lbc, 10 ) )
                 mode = PARTUPDATE;
             lbc = 0;
         } else {
-            /*---	2000-09-11	---*/
-            if(lbc) update_endline();
-            /*---	---*/
+	    /*---	2000-09-11	---*/
+	    if(lbc) update_endline();
+	    /*---	---*/
             lbc = 0;
-            /*---	Modified by period	2000-11-12	---*
-                   mode = i_read_key( rcmdlist, locmem, ch ,ssize);
-             *---		---*/
-            mode = i_read_key( rcmdlist, locmem, ch , ssize, pnt);
+	    /*---	Modified by period	2000-11-12	---*
+            mode = i_read_key( rcmdlist, locmem, ch ,ssize);
+	     *---		---*/
+	    mode = i_read_key( rcmdlist, locmem, ch , ssize, pnt);
 
             while( mode == READ_NEXT || mode == READ_PREV) {
                 int     reload;
@@ -325,17 +325,17 @@ int     ssize;
                 } else if( reload ) {
                     recbase = locmem->top_line;
                     entries = get_records(currdirect, pnt, ssize,
-                                          recbase, screen_len);
+                                            recbase, screen_len);
                     if( entries <= 0 ) {
                         last_line = -1;
                         break;
                     }
                 }
                 num = locmem->crs_line - locmem->top_line;
-                /*---	Modified by period	2000-11-12	---*
-                              mode = i_read_key( rcmdlist, locmem, ch ,ssize);
-                 *---		---*/
-                mode = i_read_key( rcmdlist, locmem, ch , ssize, pnt);
+		/*---	Modified by period	2000-11-12	---*
+                mode = i_read_key( rcmdlist, locmem, ch ,ssize);
+		 *---		---*/
+		mode = i_read_key( rcmdlist, locmem, ch , ssize, pnt);
             }
             modify_user_mode( cmdmode );
         }
@@ -346,62 +346,62 @@ int     ssize;
             mode = PARTUPDATE;
         }
         switch( mode ) {
-        case NEWDIRECT:
-        case DIRCHANGED:
-            recbase = -1;
-            last_line = get_num_records( currdirect, ssize );
-            if(last_line==0&&digestmode>0)
-            {
-                if(digestmode==YEA)
-                    digest_mode();
-                else
-                    thread_mode();
-            }
-            if( mode == NEWDIRECT ) {
-                num = last_line - screen_len + 1;
-                locmem = getkeep(currdirect, num<1 ? 1 : num, last_line );
-            }
-        case FULLUPDATE:
-            draw_title( dotitle );
-        case PARTUPDATE:
-            if( last_line < locmem->top_line + screen_len ) {
-                num = get_num_records(currdirect, ssize) ;
-                if( last_line != num ) {
-                    last_line = num;
-                    recbase = -1;
+            case NEWDIRECT:
+            case DIRCHANGED:
+                recbase = -1;
+                last_line = get_num_records( currdirect, ssize );
+                if(last_line==0&&digestmode>0)
+                {
+                        if(digestmode==YEA)
+                                digest_mode();
+                        else
+                                thread_mode();
                 }
-            }
-            if(last_line == 0) {
-                prints("No Messages\n") ;
-                entries = 0 ;
-            } else if( recbase != locmem->top_line ) {
-                recbase = locmem->top_line;
-                if( recbase > last_line ) {
-                    recbase = last_line - screen_len / 2;
-                    if( recbase < 1 )  recbase = 1;
-                    locmem->top_line = recbase;
+                if( mode == NEWDIRECT ) {
+                    num = last_line - screen_len + 1;
+                    locmem = getkeep(currdirect, num<1 ? 1 : num, last_line );
                 }
-                entries = get_records(currdirect, pnt, ssize,
-                                      recbase, screen_len);
-            }
-            if(locmem->crs_line > last_line)
-                locmem->crs_line = last_line;
-            /*---	Modified by period	2000-11-12	---*
-                          draw_entry( doentry, locmem, entries,ssize);
-             *---		---*/
-            draw_entry( doentry, locmem, entries, ssize, pnt);
-            PUTCURS;
-            break;
-            /*---	Commented by period	2000-11-12	coz it memory leak	---*/
+            case FULLUPDATE:
+                draw_title( dotitle );
+            case PARTUPDATE:
+                if( last_line < locmem->top_line + screen_len ) {
+                    num = get_num_records(currdirect, ssize) ;
+                    if( last_line != num ) {
+                        last_line = num;
+                        recbase = -1;
+                    }
+                }
+                if(last_line == 0) {
+                    prints("No Messages\n") ;
+                    entries = 0 ;
+                } else if( recbase != locmem->top_line ) {
+                    recbase = locmem->top_line;
+                    if( recbase > last_line ) {
+                        recbase = last_line - screen_len / 2;
+                        if( recbase < 1 )  recbase = 1;
+                        locmem->top_line = recbase;
+                    }
+                    entries = get_records(currdirect, pnt, ssize,
+                                        recbase, screen_len);
+                }
+                if(locmem->crs_line > last_line)
+                    locmem->crs_line = last_line;
+		/*---	Modified by period	2000-11-12	---*
+                draw_entry( doentry, locmem, entries,ssize);
+		 *---		---*/
+		draw_entry( doentry, locmem, entries, ssize, pnt);
+                PUTCURS;
+                break;
+/*---	Commented by period	2000-11-12	coz it memory leak	---*/
 #if 0
-        case 100:		/*Haohmaru.2000.04.26*/
-            clear();
-            free(pnt);
-            pnt = NULL;
-            goto HERE;
+            case 100:		/*Haohmaru.2000.04.26*/
+		clear();
+		free(pnt);
+		pnt = NULL;
+		goto HERE;
 #endif /*0*/
-        default:
-            break;
+	    default:
+                break;
         }
         mode = DONOTHING;
         if( entries == 0 )
@@ -420,131 +420,131 @@ struct keeploc  *locmem;
 int     ch,ssize;
  *---		---*/
 int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,
-               int ch, int ssize, char * pnt)
+		        int ch, int ssize, char * pnt)
 {
     int         i, mode = DONOTHING;
     char buf[STRLEN];
 
     switch( ch ) {
-    case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
-        break;
-        /*---	Commented by period	2000-11-12	coz it memory leak	---*/
-#if 0 /*1 0   revised by stephen 2000-12-03 for a mailbox-board bug */
-    case 'v': 		/*Haohmaru.2000.04.26*/
-        if(uinfo.mode==RMAIL || digestmode!=NA)
-            break;
-        strcpy(buf,currdirect);
-        m_read();
-        strcpy(currdirect,buf);
-        return 100;
-#endif /*0*/
-case 'q': case 'e': case KEY_LEFT:
-        if(digestmode==YEA)
-            return digest_mode();
-        else if(digestmode==2)
-            return thread_mode();
-        else
-            return DOQUIT;
-    case Ctrl('L'):
-                    redoscr();
-        break;
-case 'k': case KEY_UP:
-        if( cursor_pos( locmem, locmem->crs_line-1, screen_len-2 ) )
-            return PARTUPDATE;
-        break;
-case 'j': case KEY_DOWN:
-        if( cursor_pos( locmem, locmem->crs_line+1, 0 ) )
-            return PARTUPDATE;
-        break;
-case 'N': case Ctrl('F'): case KEY_PGDN: case ' ':
-if( last_line >= locmem->top_line + screen_len) {
-            locmem->top_line += screen_len - 1;
-            locmem->crs_line = locmem->top_line;
-            return PARTUPDATE;
-        }
-        RMVCURS;
-        locmem->crs_line = last_line;
-        PUTCURS;
-        break;
-case 'P': case Ctrl('B'): case KEY_PGUP:
-        if( locmem->top_line > 1 ) {
-            locmem->top_line -= screen_len - 1;
-            if( locmem->top_line <= 0 )
-                locmem->top_line = 1;
-            locmem->crs_line = locmem->top_line;
-            return PARTUPDATE;
-        }else
-        {
-            RMVCURS;
-            locmem->crs_line = locmem->top_line;
-            PUTCURS;
-        }
-        break;
-    case KEY_HOME:
-        locmem->top_line = 1;
-        locmem->crs_line = 1;
-        return PARTUPDATE;
-    case '$':
-    case KEY_END:
-        if( last_line >= locmem->top_line + screen_len ) {
-            locmem->top_line = last_line - screen_len + 1;
-            if( locmem->top_line <= 0 )
-                locmem->top_line = 1;
-            locmem->crs_line = last_line;
-            return PARTUPDATE;
-        }
-        RMVCURS;
-        locmem->crs_line = last_line;
-        PUTCURS;
-        break;
-case 'L': case 'l':  /* Luzi 1997.10.31 */
-        if(uinfo.mode!=LOOKMSGS)
-        {
-            show_allmsgs();
-            return FULLUPDATE;
-            break;
-        }
-        else
-            return DONOTHING;
-    case 'H':  /* Luzi 1997.10.31 */
-        r_lastmsg();
-        break;
-    case 'w':       /* Luzi 1997.10.31 */
-        if (!HAS_PERM(PERM_PAGE)) break;
-        s_msg();
-        return FULLUPDATE;
-        break;
-    case 'u':	/* Haohmaru. 99.11.29*/
-        clear();
-        modify_user_mode(QUERY);
-        t_query();
-        return FULLUPDATE;
-        break;
-case 'O': case 'o':       /* Luzi 1997.10.31 */
-        { /* Leeward 98.10.26 fix a bug by saving old mode */
-            int  savemode = uinfo.mode;
-            if (!HAS_PERM(PERM_BASIC)) break;
-            t_friends();
-            modify_user_mode(savemode);
-            return FULLUPDATE;
-            break;
-        }
-    case '!' :/*Haohmaru 1998.09.24*/
-        Goodbye();
-        return FULLUPDATE;
-        break;
-case '\n': case '\r': case KEY_RIGHT:
-        ch = 'r';
-        /* lookup command table */
-    default:
-        for( i = 0; rcmdlist[i].fptr != NULL; i++ ) {
-            if( rcmdlist[i].key == ch ) {
-                mode = (*(rcmdlist[i].fptr)) (locmem->crs_line,
-                                              &pnt[ (locmem->crs_line - locmem->top_line)*ssize],
-                                              currdirect );
+        case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
                 break;
+/*---	Commented by period	2000-11-12	coz it memory leak	---*/
+#if 0 /*1 0   revised by stephen 2000-12-03 for a mailbox-board bug */
+	case 'v': 		/*Haohmaru.2000.04.26*/
+		if(uinfo.mode==RMAIL || digestmode!=NA)
+			break;
+		strcpy(buf,currdirect);
+		m_read();
+		strcpy(currdirect,buf);
+		return 100;
+#endif /*0*/
+        case 'q': case 'e': case KEY_LEFT:
+            if(digestmode==YEA)
+                return digest_mode();
+            else if(digestmode==2)
+                return thread_mode();
+            else
+                return DOQUIT;
+        case Ctrl('L'):
+            redoscr();
+            break;
+        case 'k': case KEY_UP:
+            if( cursor_pos( locmem, locmem->crs_line-1, screen_len-2 ) )
+                return PARTUPDATE;
+            break;
+        case 'j': case KEY_DOWN:
+            if( cursor_pos( locmem, locmem->crs_line+1, 0 ) )
+                return PARTUPDATE;
+            break;
+        case 'N': case Ctrl('F'): case KEY_PGDN: case ' ':
+            if( last_line >= locmem->top_line + screen_len) {
+                locmem->top_line += screen_len - 1;
+                locmem->crs_line = locmem->top_line;
+                return PARTUPDATE;
             }
+            RMVCURS;
+            locmem->crs_line = last_line;
+            PUTCURS;
+            break;
+        case 'P': case Ctrl('B'): case KEY_PGUP:
+            if( locmem->top_line > 1 ) {
+                locmem->top_line -= screen_len - 1;
+                if( locmem->top_line <= 0 )
+                    locmem->top_line = 1;
+                locmem->crs_line = locmem->top_line;
+                return PARTUPDATE;
+            }else
+            {
+                RMVCURS;
+                locmem->crs_line = locmem->top_line;
+                PUTCURS;
+            }
+            break;
+        case KEY_HOME:
+            locmem->top_line = 1;
+            locmem->crs_line = 1;
+            return PARTUPDATE;
+        case '$':
+        case KEY_END:
+            if( last_line >= locmem->top_line + screen_len ) {
+                locmem->top_line = last_line - screen_len + 1;
+                if( locmem->top_line <= 0 )
+                    locmem->top_line = 1;
+                locmem->crs_line = last_line;
+                return PARTUPDATE;
+            }
+            RMVCURS;
+            locmem->crs_line = last_line;
+            PUTCURS;
+            break;
+        case 'L': case 'l':  /* Luzi 1997.10.31 */
+	    if(uinfo.mode!=LOOKMSGS)
+	    {
+            	show_allmsgs();
+            return FULLUPDATE;
+            break;
+	    }
+	    else
+                        return DONOTHING;
+        case 'H':  /* Luzi 1997.10.31 */
+                r_lastmsg();
+                break;
+        case 'w':       /* Luzi 1997.10.31 */
+                if (!HAS_PERM(PERM_PAGE)) break;
+                s_msg();
+                return FULLUPDATE;
+                break;
+	case 'u':	/* Haohmaru. 99.11.29*/
+		clear();
+		modify_user_mode(QUERY);
+		t_query();
+		return FULLUPDATE;
+		break;
+        case 'O': case 'o':       /* Luzi 1997.10.31 */
+        { /* Leeward 98.10.26 fix a bug by saving old mode */
+                int  savemode = uinfo.mode;
+                if (!HAS_PERM(PERM_BASIC)) break;
+                t_friends();
+                modify_user_mode(savemode);
+                return FULLUPDATE;
+                break;
         }
+	case '!' :/*Haohmaru 1998.09.24*/
+		Goodbye();
+		return FULLUPDATE;
+		break;
+        case '\n': case '\r': case KEY_RIGHT:
+            ch = 'r';
+            /* lookup command table */
+        default:
+            for( i = 0; rcmdlist[i].fptr != NULL; i++ ) {
+                if( rcmdlist[i].key == ch ) {
+                    mode = (*(rcmdlist[i].fptr)) (locmem->crs_line,
+                            &pnt[ (locmem->crs_line - locmem->top_line)*ssize],
+                            currdirect );
+                    break;
+                }
+            }
     }
     return mode;
 }
@@ -620,24 +620,24 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    struct userec uinfo ;
+    struct userec uinfo ;   
     int id;
     if(!HAS_PERM( PERM_ACCOUNTS )||!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver"))
         return DONOTHING;
     else
-    {
-        if(0 == (id=getuser(fileinfo->owner))) {
-            move(2, 0);
-            prints("²»ÕıÈ·µÄÊ¹ÓÃÕß´úºÅ");
-            clrtoeol();
-            return PARTUPDATE;
-        }
+	{
+	if(0 == (id=getuser(fileinfo->owner))) {
+		move(2, 0);
+		prints("²»ÕıÈ·µÄÊ¹ÓÃÕß´úºÅ");
+		clrtoeol();
+		return PARTUPDATE;
+	}
         memcpy( &uinfo, &lookupuser, sizeof(uinfo)) ;
         move(1,0);
         clrtobot();
         disply_userinfo( &uinfo, 1 );
-        uinfo_query( &uinfo, 1, id );
-    }
+        uinfo_query( &uinfo, 1, id );   
+	}
     return FULLUPDATE;
 }
 
@@ -649,16 +649,16 @@ char *direct ;
 {
     struct user_info *uin ;
     int id;
-    if(!HAS_PERM(PERM_PAGE))
-        return DONOTHING;
-    clear();
-    uin=t_search(fileinfo->owner,NA);
-    if( !uin || !canmsg(uin))
-        do_sendmsg(NULL,NULL,0);
-    else {
-        strcpy(MsgDesUid, uin->userid);
-        do_sendmsg(uin,NULL,0);
-    }
+	if(!HAS_PERM(PERM_PAGE))
+		return DONOTHING;
+	clear();
+	uin=t_search(fileinfo->owner,NA);
+	if( !uin || !canmsg(uin))
+		do_sendmsg(NULL,NULL,0);
+	else {
+	strcpy(MsgDesUid, uin->userid);
+	do_sendmsg(uin,NULL,0);
+	}
     return FULLUPDATE;
 }
 
@@ -671,7 +671,7 @@ char *direct ;
     if(/*strchr(fileinfo->owner,'.')||*/!strcmp(fileinfo->owner,"Anonymous")||!strcmp(fileinfo->owner,"deliver")) /* Leeward 98.04.14 */
         return DONOTHING;
     else
-        t_query(fileinfo->owner);
+        t_query(fileinfo->owner); 
     return FULLUPDATE;
 }
 
@@ -681,50 +681,50 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    int i;
-    char buf[STRLEN],ch[4],BMch;
-    char *SR_BMitems[]={"É¾³ı","±£Áô","ÎÄÕª","·ÅÈë¾«»ªÇø","·ÅÈëÔİ´æµµ"};
+     int i;
+     char buf[STRLEN],ch[4],BMch;
+     char *SR_BMitems[]={"É¾³ı","±£Áô","ÎÄÕª","·ÅÈë¾«»ªÇø","·ÅÈëÔİ´æµµ"};
 
-    if(!chk_currBM(currBM))
-    {
+     if(!chk_currBM(currBM))
+     {
         return DONOTHING;
-    }
-    saveline(t_lines-2, 0, NULL);
-    move(t_lines-2, 0);
-    clrtoeol();
-    strcpy(buf,"ÏàÍ¬Ö÷Ìâ (0)È¡Ïû ");
-    for(i=0;i<5;i++)
+     }
+     saveline(t_lines-2, 0, NULL);
+     move(t_lines-2, 0);
+     clrtoeol();
+     strcpy(buf,"ÏàÍ¬Ö÷Ìâ (0)È¡Ïû ");
+     for(i=0;i<5;i++)
         sprintf(buf,"%s(%d)%s ",buf,i+1,SR_BMitems[i]);
-    strcat(buf,"? [0]: ");
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
-    BMch=atoi(ch);
-    if(BMch<=0||BMch>5)
-    {
+     strcat(buf,"? [0]: ");
+     getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+     BMch=atoi(ch);
+     if(BMch<=0||BMch>5)
+     {
         saveline(t_lines-2, 1, NULL);
         return DONOTHING;
-    }
-    if(digestmode==2&&BMch<=3)
+     }
+     if(digestmode==2&&BMch<=3)
         return;
-    move(t_lines-2, 0);
-    clrtoeol();
-    /* Leeward 98.04.16 */
-    sprintf(buf,"ÊÇ·ñ´Ó´ËÖ÷ÌâµÚÒ»Æª¿ªÊ¼%s (Y)µÚÒ»Æª (N)Ä¿Ç°ÕâÆª (C)È¡Ïû (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
-    switch (ch[0])
-    {
-    default:
-case 'y': case 'Y':
-        ent=sread(2,0,ent,0,fileinfo);  /* Ôö¼Ó·µ»ØÖµ,ĞŞ¸ÄÍ¬Ö÷Ìâ Bigman: 2000.8.20 */
-        fileinfo=&SR_fptr;
-        break;
-case 'n': case 'N':
-        break;
-case 'c': case 'C':
-        saveline(t_lines-2, 1, NULL);
-        return DONOTHING;
-    }
-    sread(BMch+SR_BMBASE,0,ent,0,fileinfo);
-    return DIRCHANGED;
+     move(t_lines-2, 0);
+     clrtoeol();
+/* Leeward 98.04.16 */
+     sprintf(buf,"ÊÇ·ñ´Ó´ËÖ÷ÌâµÚÒ»Æª¿ªÊ¼%s (Y)µÚÒ»Æª (N)Ä¿Ç°ÕâÆª (C)È¡Ïû (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
+     getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);       
+     switch (ch[0])
+     {
+       default:
+       case 'y': case 'Y':
+         ent=sread(2,0,ent,0,fileinfo);  /* Ôö¼Ó·µ»ØÖµ,ĞŞ¸ÄÍ¬Ö÷Ìâ Bigman: 2000.8.20 */
+         fileinfo=&SR_fptr;              
+         break;
+       case 'n': case 'N':
+         break;
+       case 'c': case 'C':
+         saveline(t_lines-2, 1, NULL);  
+         return DONOTHING;
+     }
+     sread(BMch+SR_BMBASE,0,ent,0,fileinfo);
+     return DIRCHANGED;
 }
 
 int
@@ -733,55 +733,55 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    int i;
-    char buf[STRLEN],ch[4],BMch;
-    char *SR_BMitems[]={"É¾³ı","±£Áô","ÎÄÕª","·ÅÈë¾«»ªÇø","·ÅÈëÔİ´æµµ"};
+     int i;
+     char buf[STRLEN],ch[4],BMch;
+     char *SR_BMitems[]={"É¾³ı","±£Áô","ÎÄÕª","·ÅÈë¾«»ªÇø","·ÅÈëÔİ´æµµ"};
 
-    if(!chk_currBM(currBM))
-    {
+     if(!chk_currBM(currBM))
+     {
         return DONOTHING;
-    }
-    saveline(t_lines-2, 0, NULL);
-    move(t_lines-2, 0);
-    clrtoeol();
-    strcpy(buf,"ÏàÍ¬Ö÷Ìâ (0)È¡Ïû ");
-    for(i=0;i<5;i++)
+     }
+     saveline(t_lines-2, 0, NULL);
+     move(t_lines-2, 0);
+     clrtoeol();
+     strcpy(buf,"ÏàÍ¬Ö÷Ìâ (0)È¡Ïû ");
+     for(i=0;i<5;i++)
         sprintf(buf,"%s(%d)%s ",buf,i+1,SR_BMitems[i]);
-    strcat(buf,"? [0]: ");
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
-    BMch=atoi(ch);
-    if(BMch<=0||BMch>5)
-    {
+     strcat(buf,"? [0]: ");
+     getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+     BMch=atoi(ch);
+     if(BMch<=0||BMch>5)
+     {
         saveline(t_lines-2, 1, NULL);
         return DONOTHING;
-    }
-    if(digestmode==2&&BMch<=3)
+     }
+     if(digestmode==2&&BMch<=3)
         return;
-    move(t_lines-2, 0);
-    clrtoeol();
-    /* Leeward 98.04.16 */
-    sprintf(buf,"ÊÇ·ñ´Ó´ËÖ÷ÌâµÚÒ»Æª¿ªÊ¼%s (Y)µÚÒ»Æª (N)Ä¿Ç°ÕâÆª (C)È¡Ïû (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
-    getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
-    B_to_b = YEA;
-    switch (ch[0])
-    {
-    default:
-case 'y': case 'Y':
-        ent=sread(2,0,ent,0,fileinfo);  /* Ôö¼Ó·µ»ØÖµ,ĞŞ¸ÄÍ¬Ö÷Ìâ Bigman: 2000.8.20 */
-        fileinfo=&SR_fptr;
-        break;
-case 'n': case 'N':
-        break;
-case 'c': case 'C':
-        saveline(t_lines-2, 1, NULL);
-        return DONOTHING;
-    }
-    if (SR_BMTMP == BMch+SR_BMBASE) /* Leeward 98.04.16 */
-        sread(-(BMch+SR_BMBASE),0,ent,0,fileinfo);
-    else
-        sread(BMch+SR_BMBASE,0,ent,0,fileinfo);
-    B_to_b = NA;
-    return DIRCHANGED;
+     move(t_lines-2, 0);
+     clrtoeol();
+/* Leeward 98.04.16 */
+     sprintf(buf,"ÊÇ·ñ´Ó´ËÖ÷ÌâµÚÒ»Æª¿ªÊ¼%s (Y)µÚÒ»Æª (N)Ä¿Ç°ÕâÆª (C)È¡Ïû (Y/N/C)? [Y]: ",SR_BMitems[BMch-1]);
+     getdata(t_lines-2, 0,buf,ch,3,DOECHO,NULL,YEA);
+     B_to_b = YEA;
+     switch (ch[0])
+     {
+       default:
+       case 'y': case 'Y':
+         ent=sread(2,0,ent,0,fileinfo);  /* Ôö¼Ó·µ»ØÖµ,ĞŞ¸ÄÍ¬Ö÷Ìâ Bigman: 2000.8.20 */
+         fileinfo=&SR_fptr;
+         break;
+       case 'n': case 'N':
+         break;
+       case 'c': case 'C':
+         saveline(t_lines-2, 1, NULL);
+         return DONOTHING;
+     }
+     if (SR_BMTMP == BMch+SR_BMBASE) /* Leeward 98.04.16 */
+       sread(-(BMch+SR_BMBASE),0,ent,0,fileinfo);
+     else 
+       sread(BMch+SR_BMBASE,0,ent,0,fileinfo);
+     B_to_b = NA;
+     return DIRCHANGED;
 }
 
 int
@@ -790,13 +790,13 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    sread(2,0,ent,0,fileinfo);
-    if(sread(3,0,NULL,0,&SR_fptr)==-1)/*Found The First One*/
-    {
-        sread(0,1,NULL,0,&SR_fptr);
-        return FULLUPDATE;
-    }
-    return PARTUPDATE;
+      sread(2,0,ent,0,fileinfo);
+      if(sread(3,0,NULL,0,&SR_fptr)==-1)/*Found The First One*/
+      {
+              sread(0,1,NULL,0,&SR_fptr);
+              return FULLUPDATE;
+      }
+      return PARTUPDATE;
 }
 
 int
@@ -805,8 +805,8 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    sread(1,0,ent,0,fileinfo);
-    return PARTUPDATE;
+      sread(1,0,ent,0,fileinfo);
+      return PARTUPDATE;
 }
 
 int
@@ -815,8 +815,8 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    sread(2,0,ent,0,fileinfo);
-    return PARTUPDATE;
+      sread(2,0,ent,0,fileinfo);
+      return PARTUPDATE;
 }
 
 int
@@ -825,8 +825,8 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    sread(0,1,NULL,0,fileinfo);
-    return FULLUPDATE;
+      sread(0,1,NULL,0,fileinfo);
+      return FULLUPDATE;
 }
 
 /* Leeward 98.10.03 Í¬Ö÷ÌâÔÄ¶ÁÍË³öÊ±ÎÄÕÂÎ»ÖÃ²»±ä */
@@ -836,8 +836,8 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    sread(-1003,1,NULL,0,fileinfo);
-    return FULLUPDATE;
+      sread(-1003,1,NULL,0,fileinfo);
+      return FULLUPDATE;
 }
 
 int
@@ -846,8 +846,8 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    sread(0,1,NULL,1,fileinfo);
-    return FULLUPDATE;
+      sread(0,1,NULL,1,fileinfo);
+      return FULLUPDATE;
 }
 
 /* Leeward 98.10.03 Í¬×÷ÕßÔÄ¶ÁÍË³öÊ±ÎÄÕÂÎ»ÖÃ²»±ä */
@@ -857,8 +857,8 @@ int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
 {
-    sread(-1003,1,NULL,1,fileinfo);
-    return FULLUPDATE;
+      sread(-1003,1,NULL,1,fileinfo);
+      return FULLUPDATE;
 }
 
 int
@@ -872,14 +872,14 @@ char            *powner;
     char currauth[STRLEN];
 
     strcpy( currauth, powner);
-
+    
     sprintf( pmt, "%sµÄÎÄÕÂËÑÑ°×÷Õß [%s]: ", offset > 0 ?  "ÍùááÀ´" : "ÍùÏÈÇ°", currauth );
     move(t_lines-1,0);
     clrtoeol();
     getdata( t_lines-1, 0, pmt, ans, IDLEN+1, DOECHO, NULL ,YEA);/*Haohmaru.98.09.29.ĞŞÕı×÷Õß²éÕÒÖ»ÄÜ11Î»IDµÄ´íÎó*/
     if( ans[0] != '\0' )  strcpy( author, ans );
-    else strcpy(author,currauth);
-
+        else strcpy(author,currauth);
+        
     return search_articles( locmem, author, offset, 1 );
 }
 
@@ -957,8 +957,8 @@ char *direct ;
     locmem = getkeep( direct, 1, 1 );
     if( search_thread( locmem, -1 ,fileinfo->title) )
     {
-        update_endline();
-        return PARTUPDATE;
+         update_endline();
+         return PARTUPDATE;
     }
     update_endline();
     return DONOTHING;
@@ -975,8 +975,8 @@ char *direct ;
     locmem = getkeep( direct, 1, 1 );
     if( search_thread( locmem, 1 ,fileinfo->title) )
     {
-        update_endline();
-        return PARTUPDATE;
+         update_endline();
+         return PARTUPDATE;
     }
     update_endline();
     return DONOTHING;
@@ -997,7 +997,7 @@ int             offset;
     clrtoeol();
     getdata( t_lines-1, 0, pmt, ans, 50 , DOECHO, NULL ,YEA);
     if( ans[0] != '\0' )  strcpy( query, ans );
-
+    
     return search_articles( locmem, query, offset, -1 );
 }
 
@@ -1036,7 +1036,7 @@ int
 sread(passonly,readfirst,pnum,auser,ptitle)
 int passonly,readfirst,auser,pnum;
 struct fileheader *ptitle;
-{
+{   
     struct keeploc  *locmem;
     int istest=0,isstart=0,isnext=1;
     int previous;
@@ -1048,173 +1048,173 @@ struct fileheader *ptitle;
 
     strcpy(ori_file, ptitle->filename);
 
-    B = (passonly < 0 ? - 1 : 1); /* Leeward 98.04.16 */
+    B = (passonly < 0 ? - 1 : 1); /* Leeward 98.04.16 */     
     passonly *= B;
 
     RemoveAppendedSpace(ptitle->title); /* Leeward 98.02.13 */
 
     previous=pnum;
-    if(passonly==0)
-    {
-        if(readfirst)
-            isstart=1;
-        else{
-            isstart=0;
-            move(t_lines-1,0);
-            clrtoeol();
-            prints("[1m[44m[31m[%8s] [33mÏÂÒ»·â ' ',<Enter>,¡ı©¦ÉÏÒ»·â ¡ü,U                                  [m" , auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á" );
-            switch(egetch()){
-        case ' ': case '\n':
+  if(passonly==0)
+  {
+    if(readfirst)
+        isstart=1;
+    else{
+        isstart=0;
+        move(t_lines-1,0);
+        clrtoeol();
+        prints("[1m[44m[31m[%8s] [33mÏÂÒ»·â ' ',<Enter>,¡ı©¦ÉÏÒ»·â ¡ü,U                                  [m" , auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á" );
+        switch(egetch()){
+            case ' ': case '\n':
             case KEY_DOWN:
-                isnext=1;
-                break;
-case KEY_UP:case 'u':case'U':
-                isnext=-1;
-                break;
+            isnext=1;
+            break;      
+            case KEY_UP:case 'u':case'U':
+            isnext=-1;
+            break;      
             default : break;}
         }
-    }else if(passonly==1||passonly>=3)
+  }else if(passonly==1||passonly>=3)
         isnext=1;
-    else
+  else
         isnext=-1;
-    locmem = getkeep( currdirect, 1, 1);
-    ori_top = locmem->top_line; /* Leeward 98.10.02 */
-    ori_crs = locmem->crs_line;
-    if(auser==0)
+     locmem = getkeep( currdirect, 1, 1);
+     ori_top = locmem->top_line; /* Leeward 98.10.02 */
+     ori_crs = locmem->crs_line; 
+     if(auser==0)
+     {
+             strcpy(title,ptitle->title);
+             setqtitle(title);
+     }else
+     {
+             strcpy(title,ptitle->owner);
+             setqtitle(ptitle->title);
+     }
+     if( !strncmp(title,"Re: ",4)|!strncmp(title,"RE: ",4))
+          {strcpy(title,title+4);}
+     memcpy(&SR_fptr,ptitle,sizeof(SR_fptr));
+while(!istest){
+    switch(passonly)
     {
-        strcpy(title,ptitle->title);
-        setqtitle(title);
-    }else
-    {
-        strcpy(title,ptitle->owner);
-        setqtitle(ptitle->title);
-    }
-    if( !strncmp(title,"Re: ",4)|!strncmp(title,"RE: ",4))
-    {strcpy(title,title+4);}
-    memcpy(&SR_fptr,ptitle,sizeof(SR_fptr));
-    while(!istest){
-        switch(passonly)
-        {
-case 0: case 1: case 2:
-            break;
+        case 0: case 1: case 2:
+          break;
         case 3:
-            if(brc_unread( SR_fptr.filename ))
-                return -1;
-            else
+          if(brc_unread( SR_fptr.filename ))
+                return -1;      
+          else
                 break;
         case SR_BMDEL:
-            if(digestmode)
+             if(digestmode)
                 return;
-            /* Leeward 97.11.18: fix bugs: add "if" block */
-            /* if (!( ptitle->accessed[0] & FILE_MARKED )) */
-            if (!( SR_fptr.accessed[ 0 ] & FILE_MARKED ))
-                /* Bigman 2000.8.20: ĞŞ¸ÄÍ¬Ö÷ÌâÉ¾³ı´íÎó.... LeewardÕâ¸öÔö¼ÓµÄ²»¶ÔÑ½,ÒÔºóµÄÄÚÈİÃ»ÓĞ¶ÁÑ½ */
-            {
+             /* Leeward 97.11.18: fix bugs: add "if" block */ 
+	    /* if (!( ptitle->accessed[0] & FILE_MARKED )) */      
+             if (!( SR_fptr.accessed[ 0 ] & FILE_MARKED ))
+     /* Bigman 2000.8.20: ĞŞ¸ÄÍ¬Ö÷ÌâÉ¾³ı´íÎó.... LeewardÕâ¸öÔö¼ÓµÄ²»¶ÔÑ½,ÒÔºóµÄÄÚÈİÃ»ÓĞ¶ÁÑ½ */
+             {
                 SR_BMDELFLAG=YEA;
                 del_post(locmem->crs_line,&SR_fptr,currdirect);
                 SR_BMDELFLAG=NA;
                 if(sysconf_eval( "KEEP_DELETED_HEADER" )<=0)
                 {
-                    last_line--;
-                    locmem->crs_line--;
-                    previous=locmem->crs_line;
+                   last_line--;
+                   locmem->crs_line--;
+                   previous=locmem->crs_line;
                 }
-            }
-            break;
+             } 
+             break;
         case SR_BMMARK:
-            if(digestmode==2)
+             if(digestmode==2)
                 return;
-            mark_post(locmem->crs_line,&SR_fptr,currdirect);
-            break;
+             mark_post(locmem->crs_line,&SR_fptr,currdirect);
+             break;
         case SR_BMDIGEST:
-            if(digestmode==YEA)
+             if(digestmode==YEA)
                 return;
-            digest_post(locmem->crs_line,&SR_fptr,currdirect);
-            break;
-        case SR_BMIMPORT:
-            a_Import( "0Announce", currboard, &SR_fptr ,YEA, currdirect, locmem->crs_line);  /* Leeward 98.04.15 */
-            break;
-        case SR_BMTMP: /* Leeward 98.04.16 */
-            if (-1 == B) a_SeSave("0Announce", currboard, &SR_fptr ,YEA);
-            else           a_Save("0Announce", currboard, &SR_fptr ,YEA);
-            break;
-        }
-        if(!isstart)
-        {
-            search_articles( locmem, title, isnext,auser+2 );
-        }
-        if(previous==locmem->crs_line)
-        {
-            break;
-        }
-        if(uinfo.mode!=RMAIL)
-            setbfile( genbuf, currboard, SR_fptr.filename );
-        else
-            setmailfile(genbuf, currentuser.userid, SR_fptr.filename);
-        previous=locmem->crs_line;
-        setquotefile(genbuf);
-        if(passonly==0)
-        {
-            int lch;	/* period 2000-09-11	·½°¸1:				*
-            * ½â¾ö:Í¬Ö÷ÌâÏòÉÏ²éÕÒ,ÎÄÕÂ´óÓÚÒ»ÆÁÊ±°´Ò»´ÎUP¼üÆÁÄ»ÎŞÄÚÈİ *
-            * ·½°¸2: rawmore()º¯ÊıÖĞ, ÅĞ¶ÏKEY_UP==ch´¦²»Ó¦¸ÃÇåÆÁ	*/
-            lch = ansimore(genbuf,NA) ;
-            /*    ansimore(genbuf,NA) ;  */
-            brc_addlist( SR_fptr.filename ) ;
-            isstart=0;
-            move(t_lines-1, 0);
-            clrtoeol();
-            prints("[1m[44m[31m[%8s] [33m»ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÏÂÒ»·â ¡ı,Enter©¦ÉÏÒ»·â ¡ü,U ©¦ ^R »Ø¸ø×÷Õß   \033[m",auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á");
-            /*  period 2000-09-11	Ô­ÒòÍ¬ÉÏ*/
-            if(KEY_UP != lch && 'U' != lch) lch = egetch();
-            switch( lch ) {
-                /*    switch( egetch() ) { */
+             digest_post(locmem->crs_line,&SR_fptr,currdirect);
+             break;
+        case SR_BMIMPORT:                                     
+             a_Import( "0Announce", currboard, &SR_fptr ,YEA, currdirect, locmem->crs_line);  /* Leeward 98.04.15 */  
+             break;
+        case SR_BMTMP: /* Leeward 98.04.16 */ 
+             if (-1 == B) a_SeSave("0Announce", currboard, &SR_fptr ,YEA);
+             else           a_Save("0Announce", currboard, &SR_fptr ,YEA);
+             break;
+    }
+    if(!isstart)
+    {
+           search_articles( locmem, title, isnext,auser+2 );
+    }
+    if(previous==locmem->crs_line)
+    {
+        break;
+     }
+    if(uinfo.mode!=RMAIL)
+        setbfile( genbuf, currboard, SR_fptr.filename );
+    else
+                setmailfile(genbuf, currentuser.userid, SR_fptr.filename);
+    previous=locmem->crs_line;
+    setquotefile(genbuf);
+  if(passonly==0)
+  {
+    int lch;	/* period 2000-09-11	·½°¸1:				*
+		 * ½â¾ö:Í¬Ö÷ÌâÏòÉÏ²éÕÒ,ÎÄÕÂ´óÓÚÒ»ÆÁÊ±°´Ò»´ÎUP¼üÆÁÄ»ÎŞÄÚÈİ *
+		 * ·½°¸2: rawmore()º¯ÊıÖĞ, ÅĞ¶ÏKEY_UP==ch´¦²»Ó¦¸ÃÇåÆÁ	*/
+    lch = ansimore(genbuf,NA) ;
+/*    ansimore(genbuf,NA) ;  */
+    brc_addlist( SR_fptr.filename ) ;
+    isstart=0;
+    move(t_lines-1, 0);
+    clrtoeol();
+    prints("[1m[44m[31m[%8s] [33m»ØĞÅ R ©¦ ½áÊø Q,¡û ©¦ÏÂÒ»·â ¡ı,Enter©¦ÉÏÒ»·â ¡ü,U ©¦ ^R »Ø¸ø×÷Õß   \033[m",auser ? "ÏàÍ¬×÷Õß" : "Ö÷ÌâÔÄ¶Á");
+/*  period 2000-09-11	Ô­ÒòÍ¬ÉÏ*/
+    if(KEY_UP != lch && 'U' != lch) lch = egetch();
+    switch( lch ) {
+/*    switch( egetch() ) { */
             case Ctrl('Z'): r_lastmsg(); /* Leeward 98.07.30 support msgX */
                 break;
-        case 'N': case 'Q':
-        case 'n': case 'q':
+            case 'N': case 'Q':
+            case 'n': case 'q':
             case KEY_LEFT:
-                istest=1;
-                break;
-        case 'Y' : case 'R':
-        case 'y' : case 'r':
-                do_reply(SR_fptr.title);
-        case ' ': case '\n':
+            istest=1;
+            break;
+            case 'Y' : case 'R':
+            case 'y' : case 'r':
+            do_reply(SR_fptr.title);
+            case ' ': case '\n':
             case KEY_DOWN:
-                isnext=1;
-                break;
+            isnext=1;
+            break;
             case Ctrl('A'):
-                            clear();
+                clear();            
                 show_author(0, &SR_fptr, currdirect);
                 isnext=1;
                 break;
-            case Ctrl('Q'):/*Haohmaru.98.12.05.ÏµÍ³¹ÜÀíÔ±Ö±½Ó²é×÷Õß×ÊÁÏ*/
-                            clear();
-                show_authorinfo(0, &SR_fptr, currdirect);
-                isnext=1;
-                break;
-            case Ctrl('W'):/* cityhunter 00.10.18 °æÖ÷¹ÜÀíÖ±½Ó²ì¿´°æÖ÷ĞÅÏ¢ */
-                            clear();
-                show_authorBM(0, &SR_fptr,currdirect);
-                isnext=1;
-                break;
-case 'z':case 'Z':/*Haohmaru.2000.5.19,Ö±½Ó¸ø×÷Õß·¢msg*/
-                if (!HAS_PERM(PERM_PAGE)) break;
-                sendmsgtoauthor(0, &SR_fptr, currdirect);
-                isnext=1;
-                break;
-case KEY_UP:case 'u':case'U':
-                isnext=-1;
-                break;
+	    case Ctrl('Q'):/*Haohmaru.98.12.05.ÏµÍ³¹ÜÀíÔ±Ö±½Ó²é×÷Õß×ÊÁÏ*/
+		clear();
+		show_authorinfo(0, &SR_fptr, currdirect);
+		isnext=1;
+		break;
+	    case Ctrl('W'):/* cityhunter 00.10.18 °æÖ÷¹ÜÀíÖ±½Ó²ì¿´°æÖ÷ĞÅÏ¢ */
+		clear();
+		show_authorBM(0, &SR_fptr,currdirect);
+		isnext=1;
+		break;
+	    case 'z':case 'Z':/*Haohmaru.2000.5.19,Ö±½Ó¸ø×÷Õß·¢msg*/
+		if (!HAS_PERM(PERM_PAGE)) break;
+		sendmsgtoauthor(0, &SR_fptr, currdirect);
+		isnext=1;
+		break;
+            case KEY_UP:case 'u':case'U':
+            isnext=-1;
+            break;
             case Ctrl('R'):
-                            post_reply( 0, &SR_fptr, (char *)NULL );
+                post_reply( 0, &SR_fptr, (char *)NULL );
                 break;
             case 'g':
                 digest_post( 0, &SR_fptr, currdirect );
                 break;
-        case 'L': case 'l':  /* Luzi 1997.11.1 */
-                if(uinfo.mode==LOOKMSGS)
-                    break;
+            case 'L': case 'l':  /* Luzi 1997.11.1 */
+		if(uinfo.mode==LOOKMSGS)
+                	break;
                 show_allmsgs();
                 break;
             case 'H':            /* Luzi 1997.11.1 */
@@ -1224,50 +1224,50 @@ case KEY_UP:case 'u':case'U':
                 if (!HAS_PERM(PERM_PAGE)) break;
                 s_msg();
                 break;
-            case '!' :/*Haohmaru 1998.09.24*/
+        case '!' :/*Haohmaru 1998.09.24*/
                 Goodbye();
-                break;
-        case 'O': case 'o':  /* Luzi 1997.11.1 */
+                break;               
+            case 'O': case 'o':  /* Luzi 1997.11.1 */
                 if (!HAS_PERM(PERM_BASIC)) break;
                 t_friends();
                 break;
-            default : break;
-            }
+           default : break;
         }
-    }
+  }
+}       
 
-    /* Leeward 98.10.02 add all below except last "return 1" */
-if (Xflag) {
-        if (search_file(ori_file) != ori_crs) bell();
+  /* Leeward 98.10.02 add all below except last "return 1" */
+  if (Xflag) {
+    if (search_file(ori_file) != ori_crs) bell(); 
 
-        RMVCURS;
-        locmem->top_line    = ori_top;
-        locmem->crs_line    = ori_crs;
-        PUTCURS;
-    }
+    RMVCURS;
+    locmem->top_line    = ori_top;
+    locmem->crs_line    = ori_crs;
+    PUTCURS;
+  }  
 
-    if ((passonly==2)&&(readfirst==0)&&(auser==0)) /*ÔÚÍ¬Ö÷ÌâÉ¾³ıÊ±,ÄÜ¹»·µ»ØµÚÒ»ÆªÎÄÕÂ Bigman:2000.8.20*/
-        return previous;
-    else
-        return 1;
+if ((passonly==2)&&(readfirst==0)&&(auser==0)) /*ÔÚÍ¬Ö÷ÌâÉ¾³ıÊ±,ÄÜ¹»·µ»ØµÚÒ»ÆªÎÄÕÂ Bigman:2000.8.20*/
+	return previous;
+else
+	return 1;
 }
-
+                        
 void
 get_upper_str(ptr2,ptr1)
 char *ptr1,*ptr2;
 {
-    int ln,i;
+        int ln,i;
 
-    ln=strlen(ptr1);
-    for(i=0;i<ln;i++)
-    {
-        ptr2[i]=toupper(ptr1[i]);
-        /******** ÏÂÃæÎªLuziÌí¼Ó ************/
-        if(ptr2[i]=='\0')
-            ptr2[i]='\1';
-        /******** ÒÔÉÏÎªLuziÌí¼Ó ************/
-    }
-    ptr2[ln]='\0';
+        ln=strlen(ptr1);
+        for(i=0;i<ln;i++)
+        {
+                ptr2[i]=toupper(ptr1[i]);
+/******** ÏÂÃæÎªLuziÌí¼Ó ************/
+                if(ptr2[i]=='\0')
+                       ptr2[i]='\1';
+/******** ÒÔÉÏÎªLuziÌí¼Ó ************/
+        }
+        ptr2[ln]='\0';
 }
 
 int
@@ -1275,21 +1275,21 @@ searchpattern(filename,query)
 char *filename;
 char *query;
 {
-    FILE *fp;
-    char buf[256];
+        FILE *fp;
+        char buf[256];
 
-    if((fp=fopen(filename,"r"))==NULL)
-        return 0;
-    while(fgets(buf,256,fp)!=NULL)
-    {
-        if(strstr(buf,query))
+        if((fp=fopen(filename,"r"))==NULL)
+                return 0;
+        while(fgets(buf,256,fp)!=NULL)
         {
-            fclose(fp);
-            return YEA;
+                if(strstr(buf,query))
+                {
+                        fclose(fp);
+                        return YEA;
+                }
         }
-    }
-    fclose(fp);
-    return NA;
+        fclose(fp);
+        return NA;
 }
 
 
@@ -1313,7 +1313,7 @@ int             offset, aflag;
     {
         complete_search=0;
     }
-
+        
     if( *query == '\0' ) {
         return 0;
     }
@@ -1332,52 +1332,52 @@ int             offset, aflag;
             break;
         get_record( currdirect, &SR_fptr, ssize, now );
 
-        RemoveAppendedSpace(SR_fptr.title); /* Leeward 98.02.13 */
+        RemoveAppendedSpace(SR_fptr.title); /* Leeward 98.02.13 */    
 
         if(aflag==-1)
         {
-            char p_name[256];
-            if(uinfo.mode!=RMAIL)
-                setbfile( p_name, currboard, SR_fptr.filename );
-            else
-                setmailfile(p_name, currentuser.userid, SR_fptr.filename);
-            if(searchpattern(p_name,query))
-            {
-                match = cursor_pos( locmem, now, 10 );
-                break;
-            }else
+             char p_name[256];
+             if(uinfo.mode!=RMAIL)
+                 setbfile( p_name, currboard, SR_fptr.filename );
+             else
+                                 setmailfile(p_name, currentuser.userid, SR_fptr.filename);
+             if(searchpattern(p_name,query))
+             {
+                 match = cursor_pos( locmem, now, 10 );
+                 break;
+             }else
                 continue;
         }
         ptr = aflag ? SR_fptr.owner : SR_fptr.title;
         if(complete_search==1)
         {
-            if((*ptr=='R'||*ptr=='r')&&(*(ptr+1)=='E'||*(ptr+1)=='e')
-                    &&(*(ptr+2)==':')&&(*(ptr+3)==' '))
-            {
-                ptr=ptr+4;
-            }
-            if( !strcmp( ptr, query )) {
-                match = cursor_pos( locmem, now, 10 );
-                break;
-            }
+          if((*ptr=='R'||*ptr=='r')&&(*(ptr+1)=='E'||*(ptr+1)=='e')
+             &&(*(ptr+2)==':')&&(*(ptr+3)==' '))
+          {
+                  ptr=ptr+4;
+          }
+          if( !strcmp( ptr, query )) {
+              match = cursor_pos( locmem, now, 10 );
+              break;
+          }
         }else
-        {
-            char upper_ptr[STRLEN],upper_query[STRLEN];
-            get_upper_str(upper_ptr,ptr);
-            get_upper_str(upper_query,query);
-            /* Í¬×÷Õß²éÑ¯¸Ä³ÉÍêÈ«Æ¥Åä by dong, 1998.9.12 */
-            if (aflag == 1) /* ½øĞĞÍ¬×÷Õß²éÑ¯ */
-            {
-                if( !strcmp( upper_ptr, upper_query )) {
-                    match = cursor_pos( locmem, now, 10 );
-                    break;
-                }
-            }
-            else if( strstr( upper_ptr, upper_query ) != NULL ) {
-                match = cursor_pos( locmem, now, 10 );
-                break;
-            }
-        }
+         {
+          char upper_ptr[STRLEN],upper_query[STRLEN];
+          get_upper_str(upper_ptr,ptr);
+          get_upper_str(upper_query,query);
+	  /* Í¬×÷Õß²éÑ¯¸Ä³ÉÍêÈ«Æ¥Åä by dong, 1998.9.12 */
+          if (aflag == 1) /* ½øĞĞÍ¬×÷Õß²éÑ¯ */
+          {
+              if( !strcmp( upper_ptr, upper_query )) {
+                  match = cursor_pos( locmem, now, 10 );
+                  break;
+              }
+          }
+          else if( strstr( upper_ptr, upper_query ) != NULL ) {
+              match = cursor_pos( locmem, now, 10 );
+              break;
+          }
+        } 
     }
     move( t_lines-1, 0 );
     clrtoeol();

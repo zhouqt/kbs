@@ -1,9 +1,9 @@
 struct vote_class {
-    int qid;
-    int type;
-    char title[80];
-    int constrain ;
-    int IsAns ;
+        int qid;
+        int type;
+        char title[80];
+        int constrain ;
+        int IsAns ;
 } ;
 #define Vote_YesNo      (1)
 #define Vote_Single     (2)

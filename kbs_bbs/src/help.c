@@ -26,17 +26,17 @@ void
 show_help(fname)
 char *fname;
 {
-    /*---	Modified by period	2000-10-26	according to ylsdd's warning	---*/
-    static short int cnt;
-    if(cnt >= 2) {
-        refresh();
-        return;
-    }
-    ++cnt;
-    clear();
-    ansimore(fname,YEA);
-    clear();
-    --cnt;
+/*---	Modified by period	2000-10-26	according to ylsdd's warning	---*/
+	static short int cnt;
+	if(cnt >= 2) {
+		refresh();
+		return;
+	}
+	++cnt;
+        clear();
+        ansimore(fname,YEA);
+        clear();
+	--cnt;
 }
 
 /*void

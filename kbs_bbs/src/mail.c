@@ -66,66 +66,66 @@ char *userid;
     char        recmaildir[STRLEN];
 
     if (!getuser(userid))
-        return 0;
+    	return 0;
 
-    /* Bigman 2000.9.8 : ÐÞÕýÃ»ÓÐÓÃ»§µÄ»°,·µ»Ø0 */
-    /* ÐÞÕýPERM_SYSOP¸ø×ÔÉ±ÓÃ»§·¢ÐÅºóµÄ´íÎó*/
+/* Bigman 2000.9.8 : ÐÞÕýÃ»ÓÐÓÃ»§µÄ»°,·µ»Ø0 */
+/* ÐÞÕýPERM_SYSOP¸ø×ÔÉ±ÓÃ»§·¢ÐÅºóµÄ´íÎó*/
 
     if (HAS_PERM(PERM_SYSOP))  /* Leeward 99.07.28 */
-        return 1;
+      return 1; 
 
 
-    if (!( lookupuser.userlevel & PERM_SYSOP ))
+    if (!( lookupuser.userlevel & PERM_SYSOP )) 
     {
         if ( lookupuser.userlevel & PERM_CHATCLOAK)
         {
             sumlimit = 2000;
             numlimit = 2000;
         }
+        else 
+        if (lookupuser.userlevel & PERM_BOARDS)
+        {
+            sumlimit = 300;
+            numlimit = 300;
+        }
+        else if (lookupuser.userlevel & PERM_LOGINOK)
+        {
+            sumlimit = 120;
+            numlimit = 150;
+        }
         else
-            if (lookupuser.userlevel & PERM_BOARDS)
-            {
-                sumlimit = 300;
-                numlimit = 300;
-            }
-            else if (lookupuser.userlevel & PERM_LOGINOK)
-            {
-                sumlimit = 120;
-                numlimit = 150;
-            }
-            else
-            {
-                sumlimit = 15;
-                numlimit = 15;
-            }
-        setmailfile(recmaildir, lookupuser.userid, DOT_DIR);
+        {
+            sumlimit = 15;
+            numlimit = 15;
+        }
+    setmailfile(recmaildir, lookupuser.userid, DOT_DIR);
         if (getmailnum(lookupuser.userid)>numlimit||(sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
             return 0;
     }
     return 1;
 }
 
-int
+int 
 canIsend2(userid) /* Leeward 98.04.10 */
 char *userid;
 {
-    char buf[IDLEN+1];
-    char path[256];
+   char buf[IDLEN+1];
+   char path[256];
+                                               
+   if (HAS_PERM(PERM_SYSOP)) return YEA;
 
-    if (HAS_PERM(PERM_SYSOP)) return YEA;
-
-    sethomefile( path, userid , "/ignores");
-    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser.userid))
-        return NA;
-    sethomefile( path, userid , "/bads");
-    if (search_record(path, buf, IDLEN+1, cmpinames, currentuser.userid))
-        return NA;
-    else
-        return YEA;
+   sethomefile( path, userid , "/ignores");
+   if (search_record(path, buf, IDLEN+1, cmpinames, currentuser.userid))
+      return NA; 
+   sethomefile( path, userid , "/bads");
+   if (search_record(path, buf, IDLEN+1, cmpinames, currentuser.userid))
+      return NA;
+   else 
+      return YEA;
 }
 
 
-void
+void 
 system_delete(fname)   /* Added by ming, 96.10.10 */
 char * fname;
 {
@@ -133,12 +133,12 @@ char * fname;
     system( genbuf );
 }
 
-void
+void 
 system_convert(from, to, type) /* Added by ming, 96.10.10 */
 char * from, * to, * type;
 {
     sprintf(genbuf, "%s/bin/hc -m %s -t %s/bin/hc.tab < %s > %s",
-            BBSHOME, type, BBSHOME, from, to);
+        BBSHOME, type, BBSHOME, from, to);
     system(genbuf);
 }
 
@@ -177,14 +177,14 @@ chkmail()
     if( !HAS_PERM( PERM_BASIC ) ) {
         return 0;
     }
-    if ( !HAS_PERM(PERM_SYSOP) ) {/*Haohmaru.99.4.4.¶ÔÊÕÐÅÒ²¼ÓÏÞÖÆ,¸Ä¶¯ÏÂÃæµÄÊý×ÖÊ±ÇëÍ¬Ê±¸Ä¶¯chkreceiverº¯Êý*/
+    if ( !HAS_PERM(PERM_SYSOP) ) {/*Haohmaru.99.4.4.¶ÔÊÕÐÅÒ²¼ÓÏÞÖÆ,¸Ä¶¯ÏÂÃæµÄÊý×ÖÊ±ÇëÍ¬Ê±¸Ä¶¯chkreceiverº¯Êý*/ 
         if (HAS_PERM(PERM_CHATCLOAK))
-            /* Bigman:2000.8.17 ÖÇÄÒÍÅÐÞ¸Ä */
+	/* Bigman:2000.8.17 ÖÇÄÒÍÅÐÞ¸Ä */
         {
             sumlimit = 2000;
             numlimit = 2000;
         }
-        else if (HAS_PERM(PERM_BOARDS))
+        else if (HAS_PERM(PERM_BOARDS))  
         {
             sumlimit = 300;
             numlimit = 300;
@@ -206,7 +206,7 @@ chkmail()
     }
     offset = (int)((char *)&(fh.accessed[0]) - (char *)&(fh)) ;
     if((fd = open(currmaildir,O_RDONLY)) < 0)
-        return (ismail = 0) ;
+      return (ismail = 0) ;
     fstat(fd,&st) ;
     if(lasttime >= st.st_mtime) {
         close(fd) ;
@@ -216,8 +216,8 @@ chkmail()
     numfiles = st.st_size ;
     numfiles = numfiles/sizeof(fh) ;
     if(numfiles <= 0) {
-        close(fd) ;
-        return (ismail = 0) ;
+      close(fd) ;
+      return (ismail = 0) ;
     }
     lseek(fd,(st.st_size-(sizeof(fh)-offset)),SEEK_SET) ;
     for(i = 0 ; i < numfiles ; i++) {
@@ -240,9 +240,9 @@ char recmaildir[STRLEN];
     struct stat st ;
     int fd ;
     register int numfiles ;
-
+ 
     if((fd = open(recmaildir,O_RDONLY)) < 0)
-        return 0;
+      return 0;
     fstat(fd,&st) ;
     numfiles = st.st_size ;
     numfiles = numfiles/sizeof(fh) ;
@@ -259,7 +259,7 @@ get_mailnum()
     extern char currmaildir[ STRLEN ] ;
 
     if((fd = open(currmaildir,O_RDONLY)) < 0)
-        return 0;
+      return 0;
     fstat(fd,&st) ;
     numfiles = st.st_size ;
     numfiles = numfiles/sizeof(fh) ;
@@ -278,28 +278,28 @@ char qry_mail_dir[STRLEN];
     register int  offset ;
     register long numfiles ;
     unsigned char ch ;
-
+   
     offset = (int)((char *)&(fh.accessed[0]) - (char *)&(fh)) ;
     if((fd = open(qry_mail_dir,O_RDONLY)) < 0)
-        return 0 ;
+      return 0 ;
     fstat(fd,&st) ;
     numfiles = st.st_size ;
     numfiles = numfiles/sizeof(fh) ;
     if(numfiles <= 0) {
-        close(fd) ;
-        return 0 ;
+      close(fd) ;
+      return 0 ;
     }
     lseek(fd,(st.st_size-(sizeof(fh)-offset)),SEEK_SET) ;
-    /*    for(i = 0 ; i < numfiles ; i++) {
-            read(fd,&ch,1) ;
-            if(!(ch & FILE_READ)) {
-                close(fd) ;
-                return YEA ;
-            }
-            lseek(fd,-sizeof(fh)-1,SEEK_CUR);
-        }*/
-    /*ÀëÏß²éÑ¯ÐÂÐÅÖ»Òª²éÑ¯×îááÒ»·âÊÇ·ñÎªÐÂÐÅ£¬ÆäËû²¢²»ÖØÒª*/
-    /*Modify by SmallPig*/
+/*    for(i = 0 ; i < numfiles ; i++) {
+        read(fd,&ch,1) ;
+        if(!(ch & FILE_READ)) {
+            close(fd) ;
+            return YEA ;
+        }
+        lseek(fd,-sizeof(fh)-1,SEEK_CUR);
+    }*/
+/*ÀëÏß²éÑ¯ÐÂÐÅÖ»Òª²éÑ¯×îááÒ»·âÊÇ·ñÎªÐÂÐÅ£¬ÆäËû²¢²»ÖØÒª*/
+/*Modify by SmallPig*/
     read(fd,&ch,1) ;
     if(!(ch & FILE_READ)) {
         close(fd) ;
@@ -309,125 +309,125 @@ char qry_mail_dir[STRLEN];
     return NA ;
 }
 
-int
+int 
 mailall()
 {
-    char    ans[4],ans4[4],ans2[4],fname[STRLEN],title[STRLEN];
-    char    doc[4][STRLEN],buf[STRLEN];
-    char    buf2[STRLEN],include_mode='Y';
-    char    buf3[STRLEN],buf4[STRLEN];
-    int     i,replymode=0;/* Post New UI*/
+        char    ans[4],ans4[4],ans2[4],fname[STRLEN],title[STRLEN];
+        char    doc[4][STRLEN],buf[STRLEN];
+        char    buf2[STRLEN],include_mode='Y';
+        char    buf3[STRLEN],buf4[STRLEN];
+        int     i,replymode=0;/* Post New UI*/
 
-    strcpy(title,"Ã»Ö÷Ìâ");
-    buf4[0]='\0';
-    modify_user_mode( SMAIL );
-    clear();
-    move(0,0);
-    sprintf(fname,"etc/%s.mailtoall",currentuser.userid);
-    prints("ÄãÒª¼Ä¸øËùÓÐµÄ£º\n");
-    prints("(0) ·ÅÆú\n");
-    strcpy(doc[0],"(1) Î´ÈÏÖ¤Éí·ÝÕß");
-    strcpy(doc[1],"(2) ÒÑÈÏÖ¤Éí·ÝÕß");
-    strcpy(doc[2],"(3) ÓÐ°åÖ÷È¨ÏÞÕß");
-    strcpy(doc[3],"(4) ÖÇÄÒÍÅ³ÉÔ±");
-    for(i=0;i<4;i++)
-        prints("%s\n",doc[i]);
-    while(1)
-    {
-        getdata(8, 0, "ÇëÊäÈëÄ£Ê½ (0~4)? [0]: ", ans4, 2, DOECHO, NULL,YEA) ;
-
-        if(ans4[0]-'0'>=1&&ans4[0]-'0'<=4)
+        strcpy(title,"Ã»Ö÷Ìâ");
+        buf4[0]='\0';
+        modify_user_mode( SMAIL );
+        clear();
+        move(0,0);
+        sprintf(fname,"etc/%s.mailtoall",currentuser.userid);
+        prints("ÄãÒª¼Ä¸øËùÓÐµÄ£º\n");
+        prints("(0) ·ÅÆú\n");
+        strcpy(doc[0],"(1) Î´ÈÏÖ¤Éí·ÝÕß");
+        strcpy(doc[1],"(2) ÒÑÈÏÖ¤Éí·ÝÕß");
+        strcpy(doc[2],"(3) ÓÐ°åÖ÷È¨ÏÞÕß");
+        strcpy(doc[3],"(4) ÖÇÄÒÍÅ³ÉÔ±");
+        for(i=0;i<4;i++)
+                prints("%s\n",doc[i]);
+        while(1)
         {
-            sprintf(buf,"ÊÇ·ñÈ·¶¨¼Ä¸ø%s (Y/N)? [N]: ",doc[ans4[0]-'0'-1]);
-            getdata(9, 0, buf, ans2, 2, DOECHO, NULL,YEA) ;
-            if(ans2[0]!='Y' && ans2[0]!='y')
-            {
-                return ;
-            }
-            in_mail = YEA;
-            /* Leeward 98.01.17 Prompt whom you are writing to */
-            strcpy(lookupuser.userid, doc[ans4[0]-'0'-1] + 4);
+                getdata(8, 0, "ÇëÊäÈëÄ£Ê½ (0~4)? [0]: ", ans4, 2, DOECHO, NULL,YEA) ;
 
-            if(currentuser.signature>numofsig||currentuser.signature<0)
-                currentuser.signature=1;
-            while(1)
-            {
-                sprintf(buf3,"ÒýÑÔÄ£Ê½ [[1m%c[m]",include_mode);
-                move( t_lines-4, 0 );
-                clrtoeol();
-                prints("ÊÕÐÅÈË: [1m%s[m\n",doc[ans4[0]-'0'-1]);
-                clrtoeol();
-                prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕýÔÚÉè¶¨±êÌâ]":title);
-                clrtoeol();
-                prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser.signature
-                       ,(replymode)? buf3:"");
+                if(ans4[0]-'0'>=1&&ans4[0]-'0'<=4)
+                {
+                    sprintf(buf,"ÊÇ·ñÈ·¶¨¼Ä¸ø%s (Y/N)? [N]: ",doc[ans4[0]-'0'-1]);
+                        getdata(9, 0, buf, ans2, 2, DOECHO, NULL,YEA) ;
+                        if(ans2[0]!='Y' && ans2[0]!='y')
+                        {
+                                return ;
+                        }
+                       in_mail = YEA;
+                       /* Leeward 98.01.17 Prompt whom you are writing to */
+                       strcpy(lookupuser.userid, doc[ans4[0]-'0'-1] + 4);
 
-                if(buf4[0]=='\0'||buf4[0]=='\n'){
-                    move(t_lines-1,0);
-                    clrtoeol();
-                    getdata(t_lines-1,0,"±êÌâ: ",buf4,50,DOECHO,NULL,YEA);
-                    if((buf4[0]=='\0'||buf4[0]=='\n'))
-                    {
+    if(currentuser.signature>numofsig||currentuser.signature<0)
+               currentuser.signature=1;
+  while(1)
+  {
+    sprintf(buf3,"ÒýÑÔÄ£Ê½ [[1m%c[m]",include_mode);
+    move( t_lines-4, 0 );
+    clrtoeol();
+    prints("ÊÕÐÅÈË: [1m%s[m\n",doc[ans4[0]-'0'-1]);
+    clrtoeol();
+    prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕýÔÚÉè¶¨±êÌâ]":title);
+    clrtoeol();
+    prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser.signature
+           ,(replymode)? buf3:"");
+
+    if(buf4[0]=='\0'||buf4[0]=='\n'){
+           move(t_lines-1,0);
+           clrtoeol();
+           getdata(t_lines-1,0,"±êÌâ: ",buf4,50,DOECHO,NULL,YEA);
+           if((buf4[0]=='\0'||buf4[0]=='\n'))
+           {
                         buf4[0]=' ';
                         continue;
-                    }
-                    strcpy(title,buf4);
-                    continue;
-                }
-                move(t_lines-1,0);
-                clrtoeol();
-                /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-                sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓÐÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒýÑÔÄ£Ê½" : "");
-                getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
-                ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
-                if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
-                {
-                    if(atoi(ans)<=numofsig)
-                        currentuser.signature=atoi(ans);
-                }else if((ans[0]=='Y'||ans[0]=='N'||ans[0]=='A'||ans[0]=='R')&&replymode)
-                {
-                    include_mode=ans[0];
-                }else if(ans[0]=='T')
-                {
-                    buf4[0]='\0';
-                }else if(ans[0]=='V')
-                { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-                    setuserfile(buf2,"signatures");
-                    move(t_lines-1,0);
-                    if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èý¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âð",NA,YEA)==YEA)
-                        ansimore(buf2);
-                    else
-                    {
-                        clear();
-                        ansimore2(buf2,NA,0,18);
-                    }
-                }else
-                {
-                    strncpy(save_title,title,STRLEN) ;
-                    break;
-                }
-            }
-            setquotefile("");
-            do_quote( fname ,include_mode);
-            if (vedit(fname,YEA) == -1) {
-                in_mail = NA;
-                unlink( fname );
-                clear(); return -2;
-            }
-            move(t_lines-1,0);
-            clrtoeol();
-            prints("[32m[44mÕýÔÚ¼ÄÐÅ¼þÖÐ£¬ÇëÉÔºò.....                                                        [m");
-            refresh();
-            mailtoall(ans4[0]-'0');
-            move(t_lines-1);
-            clrtoeol();
-            unlink( fname );
-            in_mail = NA;
-            return 0;
-        }else
-            in_mail = NA;
-        return 0;
+           }
+           strcpy(title,buf4);
+           continue;
     }
+    move(t_lines-1,0);
+    clrtoeol();
+    /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
+    sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓÐÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒýÑÔÄ£Ê½" : "");
+    getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
+    ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
+    if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
+    {
+           if(atoi(ans)<=numofsig)
+              currentuser.signature=atoi(ans);
+    }else if((ans[0]=='Y'||ans[0]=='N'||ans[0]=='A'||ans[0]=='R')&&replymode)
+    {
+           include_mode=ans[0];
+    }else if(ans[0]=='T')
+    {
+           buf4[0]='\0';
+    }else if(ans[0]=='V')
+    { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
+        setuserfile(buf2,"signatures");
+        move(t_lines-1,0);
+        if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èý¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âð",NA,YEA)==YEA)
+           ansimore(buf2);
+        else
+        {
+          clear();
+          ansimore2(buf2,NA,0,18);
+        }          
+    }else
+    {
+        strncpy(save_title,title,STRLEN) ;
+        break;
+    }
+  }
+    setquotefile("");
+    do_quote( fname ,include_mode);
+                       if (vedit(fname,YEA) == -1) {
+                            in_mail = NA;
+                            unlink( fname );
+                            clear(); return -2;
+                        }
+                        move(t_lines-1,0);
+                        clrtoeol();
+                        prints("[32m[44mÕýÔÚ¼ÄÐÅ¼þÖÐ£¬ÇëÉÔºò.....                                                        [m");
+                        refresh();
+                        mailtoall(ans4[0]-'0');
+                        move(t_lines-1);
+                        clrtoeol();
+                        unlink( fname );
+                        in_mail = NA;
+                        return 0;
+                }else
+                in_mail = NA;
+                return 0;
+        }
 }
 
 void
@@ -437,25 +437,25 @@ m_internet()
 
     modify_user_mode( SMAIL );
     getdata(1, 0, "ÊÕÐÅÈË: ", receiver, 70, DOECHO, NULL,YEA) ;
-    getdata(2, 0, "Ö÷Ìâ  : ", title, 70, DOECHO, NULL ,YEA);
+    getdata(2, 0, "Ö÷Ìâ  : ", title, 70, DOECHO, NULL ,YEA); 
     if ( !invalidaddr(receiver) && strchr(receiver, '@') && strlen( title ) > 0 ) {
         clear(); /* Leeward 98.09.24fix a bug */
         *quote_file = '\0';
         switch(do_send( receiver, title )) /* Leeward 98.05.11 adds "switch" */
         {
-        case -1: prints("ÊÕÐÅÕß²»ÕýÈ·\n") ; break;
-        case -2: prints("È¡Ïû·¢ÐÅ\n"); break;
-        case -3: prints("'%s' ÎÞ·¨ÊÕÐÅ\n", receiver); break;
-        case -4:
-            clear();
-            move(1,0);
-            prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n", receiver); break;/*Haohmaru.4.5.ÊÕÐÅÏÞÖÆ*/
-        case -5:
-            clear();
-            move(1,0);
-            prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", receiver); break;/*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ*/
-        case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷[0m[0m\n", MAXMAILSIZE); break;
-        default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
+          case -1: prints("ÊÕÐÅÕß²»ÕýÈ·\n") ; break;
+          case -2: prints("È¡Ïû·¢ÐÅ\n"); break;
+          case -3: prints("'%s' ÎÞ·¨ÊÕÐÅ\n", receiver); break;
+	  case -4:
+		 clear();
+		 move(1,0);
+		 prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n", receiver); break;/*Haohmaru.4.5.ÊÕÐÅÏÞÖÆ*/
+	  case -5:
+       		  clear();
+       		  move(1,0);
+       		  prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", receiver); break;/*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ*/
+          case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷[0m[0m\n", MAXMAILSIZE); break;
+          default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
         }
         pressreturn() ;
 
@@ -485,27 +485,27 @@ char *userid, *title ;
     char        buf2[256],buf3[STRLEN],buf4[STRLEN];
     int         replymode=1; /* Post New UI*/
     char        ans[4],include_mode='Y';
-
+    
     int         internet_mail = 0;
     char        tmp_fname[ 256 ];
     int		noansi;
 
-    int now;	/* added by Bigman: for SYSOP mail */
+	int now;	/* added by Bigman: for SYSOP mail */
 
     if (!chkreceiver(userid))
-        return -4;
+       return -4;
 
     if ((lookupuser.userlevel & PERM_SUICIDE) && ( !HAS_PERM(PERM_SYSOP) ) )
-        return -5;
-    /* SYSOPÒ²ÄÜ¸ø×ÔÉ±µÄÈË·¢ÐÅ */
+	return -5;
+/* SYSOPÒ²ÄÜ¸ø×ÔÉ±µÄÈË·¢ÐÅ */
 
-    if ( !HAS_PERM(PERM_SYSOP) ) {
-        if ( HAS_PERM(PERM_CHATCLOAK))
-            /* Bigman: 2000.8.17, ÖÇÄÒÍÅÐÅÏä*/
-        {
-            sumlimit = 2000;
-            numlimit = 2000;
-        }
+    if ( !HAS_PERM(PERM_SYSOP) ) { 
+        if ( HAS_PERM(PERM_CHATCLOAK)) 
+	/* Bigman: 2000.8.17, ÖÇÄÒÍÅÐÅÏä*/
+	{
+	    sumlimit = 2000;
+	    numlimit = 2000;
+	}
         else if (HAS_PERM(PERM_BOARDS))  /* alexÓÚ1996.10.20Ìí¼Ó£¬mailboxÈÝÁ¿ÏÞÖÆ */
         {
             sumlimit = 300;
@@ -542,15 +542,15 @@ char *userid, *title ;
 #ifdef INTERNET_PRIVATE_EMAIL
     /* I hate go to , but I use it again for the noodle code :-) */
     if (strchr(userid, '@')) {
-        /*        if(!strstr(userid,"edu.tw")){
-                if(strstr(userid,"@bbs.ee.nthu."))
-                        strcat(userid,"edu.tw");
-                else
-                        strcat(userid,".edu.tw");}*/
+/*        if(!strstr(userid,"edu.tw")){
+        if(strstr(userid,"@bbs.ee.nthu."))
+                strcat(userid,"edu.tw");
+        else
+                strcat(userid,".edu.tw");}*/
         internet_mail = 1;
         buf4[0]=' ';
         sprintf( tmp_fname, "/tmp/bbs-internet-gw-%05d", getpid() );
-        strcpy( filepath, tmp_fname);
+        strcpy( filepath, tmp_fname);   
         goto edit_mail_file;
     }
     /* end of kludge for internet mail */
@@ -563,25 +563,25 @@ char *userid, *title ;
 
     setmailpath(filepath, userid);
     if(stat(filepath,&st) == -1) {
-        if(mkdir(filepath,0755) == -1)
-            return -1 ;
-    } else {
-        if(!(st.st_mode & S_IFDIR))
-            return -1 ;
+	    if(mkdir(filepath,0755) == -1) 
+		    return -1 ;
+    } else {    
+	    if(!(st.st_mode & S_IFDIR))
+		    return -1 ;
     }
 
     memset(&newmessage, 0,sizeof(newmessage)) ;
-    now=time(NULL);
+	now=time(NULL);
     sprintf(fname,"M.%d.A", now) ;
 
     setmailfile(filepath, userid, fname);
     ip = strrchr(fname,'A') ;
     while((fp = open(filepath,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
-        if(*ip == 'Z')
-            ip++,*ip = 'A', *(ip + 1) = '\0' ;
-        else
-            (*ip)++ ;
-        setmailfile(filepath, userid, fname);
+	    if(*ip == 'Z')
+		    ip++,*ip = 'A', *(ip + 1) = '\0' ;
+	    else
+		    (*ip)++ ;
+	    setmailfile(filepath, userid, fname);
     }
 
     close(fp) ;
@@ -595,12 +595,12 @@ char *userid, *title ;
     }
     else
         buf4[0]=' ';
-    /*strncpy(newmessage.title,title,STRLEN) ;*/
+        /*strncpy(newmessage.title,title,STRLEN) ;*/
     in_mail = YEA ;
 #if defined(MAIL_REALNAMES)
     sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.realname) ;
 #else
-/*sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.username) ;*/
+    /*sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.username) ;*/
     strcpy(genbuf, currentuser.userid); /* Leeward 98.04.14 */
 #endif
     strncpy(newmessage.owner,genbuf,STRLEN) ;
@@ -611,67 +611,67 @@ char *userid, *title ;
 edit_mail_file:
 #endif
 
-    if(currentuser.signature>numofsig||currentuser.signature<0)
-        currentuser.signature=1;
-    while(1)
-    {
-        sprintf(buf3,"ÒýÑÔÄ£Ê½ [[1m%c[m]",include_mode);
-        move( t_lines-4, 0 );
-        clrtoeol();
-        prints("ÊÕÐÅÈË: [1m%s[m\n",userid);
-        clrtoeol();
-        prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕýÔÚÉè¶¨±êÌâ]":title);
-        clrtoeol();
-        prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser.signature
-               ,(replymode)? buf3:"");
+  if(currentuser.signature>numofsig||currentuser.signature<0)
+               currentuser.signature=1;
+  while(1)
+  {
+    sprintf(buf3,"ÒýÑÔÄ£Ê½ [[1m%c[m]",include_mode);
+    move( t_lines-4, 0 );
+    clrtoeol();
+    prints("ÊÕÐÅÈË: [1m%s[m\n",userid);
+    clrtoeol();
+    prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕýÔÚÉè¶¨±êÌâ]":title);
+    clrtoeol();
+    prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser.signature
+           ,(replymode)? buf3:"");
 
-        if(buf4[0]=='\0'||buf4[0]=='\n'){
-            move(t_lines-1,0);
-            clrtoeol();
-            getdata(t_lines-1,0,"±êÌâ: ",buf4,50,DOECHO,NULL,YEA);
-            if((buf4[0]=='\0'||buf4[0]=='\n'))
-            {
-                buf4[0]=' ';
-                continue;
-            }
-            title=buf4;
-            continue;
-        }
-        move(t_lines-1,0);
-        clrtoeol();
-        /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓÐÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒýÑÔÄ£Ê½" : "");
-        getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
-        ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
-        if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
-        {
-            if(atoi(ans)<=numofsig)
-                currentuser.signature=atoi(ans);
-        }else if((ans[0]=='Y'||ans[0]=='N'||ans[0]=='A'||ans[0]=='R')&&replymode)
-        {
-            include_mode=ans[0];
-        }else if(ans[0]=='T')
-        {
-            buf4[0]='\0';
-        }else if(ans[0]=='V')
-        { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-            setuserfile(buf2,"signatures");
-            move(t_lines-1,0);
-            if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èý¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âð",NA,YEA)==YEA)
-                ansimore(buf2);
-            else
-            {
-                clear();
-                ansimore2(buf2,NA,0,18);
-            }
-        }else
-        {
-            strcpy(newmessage.title, title);
-            strncpy(save_title,newmessage.title,STRLEN) ;
-            strncpy(save_filename,fname,4096) ;
-            break;
-        }
+    if(buf4[0]=='\0'||buf4[0]=='\n'){
+           move(t_lines-1,0);
+           clrtoeol();
+           getdata(t_lines-1,0,"±êÌâ: ",buf4,50,DOECHO,NULL,YEA);
+           if((buf4[0]=='\0'||buf4[0]=='\n'))
+           {
+                        buf4[0]=' ';
+                        continue;
+           }
+           title=buf4;
+           continue;
     }
+    move(t_lines-1,0);
+    clrtoeol();
+    /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
+    sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓÐÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒýÑÔÄ£Ê½" : "");
+    getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
+    ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
+    if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
+    {
+           if(atoi(ans)<=numofsig)
+              currentuser.signature=atoi(ans);
+    }else if((ans[0]=='Y'||ans[0]=='N'||ans[0]=='A'||ans[0]=='R')&&replymode)
+    {
+           include_mode=ans[0];
+    }else if(ans[0]=='T')
+    {
+           buf4[0]='\0';
+    }else if(ans[0]=='V')
+    { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
+        setuserfile(buf2,"signatures");
+        move(t_lines-1,0);
+        if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èý¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âð",NA,YEA)==YEA)
+           ansimore(buf2);
+        else
+        {
+          clear();
+          ansimore2(buf2,NA,0,18);
+        }      
+    }else
+    {
+        strcpy(newmessage.title, title);
+        strncpy(save_title,newmessage.title,STRLEN) ;
+        strncpy(save_filename,fname,4096) ;
+        break;
+    }
+  }
 
     do_quote( filepath ,include_mode);
 
@@ -689,17 +689,17 @@ edit_mail_file:
         refresh();
         ch = egetch();
         switch ( ch ) {
-    case 'N': case 'n':
-            prints("%c\n", 'N');
-            prints("\nÐÅ¼þÒÑÈ¡Ïû...\n");
-            res = -2;
-            break;
-        default:
-            {
+            case 'N': case 'n': 
+                prints("%c\n", 'N');
+                prints("\nÐÅ¼þÒÑÈ¡Ïû...\n");
+                res = -2;
+                break;
+            default: 
+            {   
                 /* uuencode or convert to big5 option -- Add by ming, 96.10.9 */
                 char data[3];
                 int isuu, isbig5;
-
+            
                 prints("%c\n", 'Y');
                 if(askyn("ÊÇ·ñ±¸·Ý¸ø×Ô¼º",NA)==YEA)
                     mail_file(tmp_fname,currentuser.userid,save_title);
@@ -714,9 +714,9 @@ edit_mail_file:
                 if(data[0]=='y' || data[0]=='Y') isbig5 = 1;
                 else isbig5 = 0;
 
-                getdata(8, 0, "¹ýÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0);
-                if(data[0]=='n' || data[0]=='N') noansi = 0;
-                else noansi = 1;
+        	getdata(8, 0, "¹ýÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0);
+        	if(data[0]=='n' || data[0]=='N') noansi = 0;
+        	else noansi = 1;
 
                 prints("ÇëÉÔºò, ÐÅ¼þ´«µÝÖÐ...\n"); refresh();
                 /* res = bbs_sendmail( tmp_fname, title, userid );  */
@@ -725,7 +725,7 @@ edit_mail_file:
                 break;
             }
         }
-        unlink(tmp_fname);
+        unlink(tmp_fname);      
         return res;
     } else
 #endif
@@ -736,88 +736,88 @@ edit_mail_file:
         }
         clear() ;
         if(askyn("ÊÇ·ñ±¸·Ý¸ø×Ô¼º",NA)==YEA)
-            mail_file(filepath,currentuser.userid,save_title);
-        /*
-        if(!chkreceiver(userid))
-    {
-        prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ",userid);
-        return -4;
-    }
-        */
+                mail_file(filepath,currentuser.userid,save_title);
+/*
+if(!chkreceiver(userid))
+{
+prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ",userid);
+return -4;
+}
+*/
 
-        if (NA==canIsend2(userid)) /* Leeward 98.04.10 */
-        {
-            prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", userid);
-            sprintf(save_title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", userid);
-            mail_file(filepath, currentuser.userid, save_title);
-            unlink(filepath);
-            return -2;
-        }
-        if(askyn("È·¶¨¼Ä³ö£¿",YEA)==NA)
-            return -2;
+if (NA==canIsend2(userid)) /* Leeward 98.04.10 */
+{
+  prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", userid);
+  sprintf(save_title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", userid);
+  mail_file(filepath, currentuser.userid, save_title);
+  unlink(filepath); 
+  return -2;
+}
+	if(askyn("È·¶¨¼Ä³ö£¿",YEA)==NA)
+		return -2;
 
-        setmailfile(genbuf, userid, DOT_DIR);
+	setmailfile(genbuf, userid, DOT_DIR);
         if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
-            return -1 ;
+             return -1 ;
+        
+	     sprintf(genbuf, "mailed %s", userid);
+	     report(genbuf);
+	     return 0 ;
+	     }
+	     }
 
-        sprintf(genbuf, "mailed %s", userid);
-        report(genbuf);
-        return 0 ;
-    }
-}
-
-int
+	int
 m_send(userid)
-char userid[];
+	char userid[];
 {
-    char uident[STRLEN] ;
+	char uident[STRLEN] ;
 
-    /* ·â½ûMail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL))
-        return DONOTHING;
+	/* ·â½ûMail Bigman:2000.8.22 */
+	if (HAS_PERM(PERM_DENYMAIL))
+		return DONOTHING;	
 
-    if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND
-            &&uinfo.mode!=GMENU)
-    {
-        move(1,0) ;
-        clrtoeol() ;
-        modify_user_mode( SMAIL );
-        usercomplete("ÊÕÐÅÈË£º ",uident) ;
-        if(uident[0] == '\0') {
-            clear() ;
-            return 0 ;
-        }
-    }else
-        strcpy(uident,userid);
-    clear();
-    *quote_file = '\0';
-    switch (do_send(uident,NULL)) {
-    case -1: prints("ÊÕÐÅÕß²»ÕýÈ·\n") ; break;
-    case -2: prints("È¡Ïû·¢ÐÅ\n"); break;
-    case -3: prints("'%s' ÎÞ·¨ÊÕÐÅ\n", uident); break;
-    case -4:
-        clear();
-        move(1,0);
-        prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n", uident); break;/*Haohmaru.4.5.ÊÕÐÅÏÞÖÆ*/
-    case -5:
-        clear();
-        move(1,0);
-        prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", uident); break;/*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ*/
-    case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷[0m[0m\n", MAXMAILSIZE); break;
-    default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
-    }
-    pressreturn() ;
-    return 0 ;
+	if(uinfo.mode!=LUSERS&&uinfo.mode!=LAUSERS&&uinfo.mode!=FRIEND
+			&&uinfo.mode!=GMENU)
+	{
+		move(1,0) ;
+		clrtoeol() ;
+		modify_user_mode( SMAIL );
+		usercomplete("ÊÕÐÅÈË£º ",uident) ;
+		if(uident[0] == '\0') {
+			clear() ;
+			return 0 ;
+		}
+	}else
+		strcpy(uident,userid);
+	clear();
+	*quote_file = '\0';
+	switch (do_send(uident,NULL)) {
+		case -1: prints("ÊÕÐÅÕß²»ÕýÈ·\n") ; break;
+		case -2: prints("È¡Ïû·¢ÐÅ\n"); break;
+		case -3: prints("'%s' ÎÞ·¨ÊÕÐÅ\n", uident); break;
+		case -4:
+			 clear();
+			 move(1,0);
+			 prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n", uident); break;/*Haohmaru.4.5.ÊÕÐÅÏÞÖÆ*/
+		case -5:
+			 clear();
+			 move(1,0);
+			 prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", uident); break;/*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ*/
+		case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû·¢ÐÅ²Ù×÷[0m[0m\n", MAXMAILSIZE); break;
+		default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
+	}
+	pressreturn() ;
+	return 0 ;
 }
 
-int
+	int
 read_mail(fptr)
-struct fileheader *fptr ;
+	struct fileheader *fptr ;
 {
-    setmailfile(genbuf, currentuser.userid, fptr->filename);
-    ansimore(genbuf,NA) ;
-    fptr->accessed[0] |= FILE_READ;
-    return 0 ;
+	setmailfile(genbuf, currentuser.userid, fptr->filename);
+	ansimore(genbuf,NA) ;
+	fptr->accessed[0] |= FILE_READ;
+	return 0 ;
 }
 
 int mrd ;
@@ -825,674 +825,674 @@ int mrd ;
 int delmsgs[1024] ;
 int delcnt ;
 
-int
+	int
 read_new_mail(fptr)
-struct fileheader *fptr ;
+	struct fileheader *fptr ;
 {
-    static int idc ;
-    char done = NA, delete_it;
-    char fname[256];
+	static int idc ;
+	char done = NA, delete_it;
+	char fname[256];
 
-    if(fptr == NULL) {
-        delcnt = 0 ;
-        idc = 0 ;
-        return 0;
-    }
-    idc++ ;
-    if(fptr->accessed[0])
-        return 0 ;
-    prints("¶ÁÈ¡ %s ¼ÄÀ´µÄ '%s' ?\n",fptr->owner,fptr->title);
-    prints("(Yes, or No): ") ;
-    getdata(1,0,"(Y)¶ÁÈ¡ (N)²»¶Á (Q)Àë¿ª [Y]: ",genbuf,3,DOECHO,NULL,YEA) ;
-    if(genbuf[0] == 'q'||genbuf[0] == 'Q')
-    {
-        clear();
-        return QUIT;
-    }
-    if(genbuf[0] != 'y' && genbuf[0] != 'Y' && genbuf[0] != '\0') {
-        clear() ;
-        return 0 ;
-    }
-    read_mail(fptr) ;
-    strcpy(fname, genbuf);
-    mrd = 1 ;
-    if(substitute_record(currmaildir,fptr,sizeof(*fptr),idc))
-        return -1 ;
-    delete_it = NA;
-    while (!done) {
-        move(t_lines-1, 0);
-        prints("(R)»ØÐÅ, (D)É¾³ý, (G)¼ÌÐø ? [G]: ");
-        switch ( egetch() ) {
-    case 'R': case 'r':
+	if(fptr == NULL) {
+		delcnt = 0 ;
+		idc = 0 ;
+		return 0;
+	}
+	idc++ ;
+	if(fptr->accessed[0])
+		return 0 ;
+	prints("¶ÁÈ¡ %s ¼ÄÀ´µÄ '%s' ?\n",fptr->owner,fptr->title);
+	prints("(Yes, or No): ") ;
+	getdata(1,0,"(Y)¶ÁÈ¡ (N)²»¶Á (Q)Àë¿ª [Y]: ",genbuf,3,DOECHO,NULL,YEA) ;
+	if(genbuf[0] == 'q'||genbuf[0] == 'Q')
+	{
+		clear();
+		return QUIT;
+	}
+	if(genbuf[0] != 'y' && genbuf[0] != 'Y' && genbuf[0] != '\0') {
+		clear() ;
+		return 0 ;
+	}
+	read_mail(fptr) ;
+	strcpy(fname, genbuf);
+	mrd = 1 ;
+	if(substitute_record(currmaildir,fptr,sizeof(*fptr),idc))
+		return -1 ;
+	delete_it = NA;
+	while (!done) {
+		move(t_lines-1, 0);
+		prints("(R)»ØÐÅ, (D)É¾³ý, (G)¼ÌÐø ? [G]: ");
+		switch ( egetch() ) {
+			case 'R': case 'r': 
 
-            /* ·â½ûMail Bigman:2000.8.22 */
-            if (HAS_PERM(PERM_DENYMAIL))
-            {
-                clear();
-                move(3,10);
-                prints("ºÜ±§Ç¸,ÄúÄ¿Ç°Ã»ÓÐMailÈ¨ÏÞ!");
-                pressreturn();
-                break;
-            }
-            mail_reply(idc, fptr, currmaildir);
-            substitute_record(currmaildir, fptr, sizeof(*fptr),idc) ;
-            break;
-    case 'D': case 'd': delete_it = YEA;
-        default: done = YEA;
-        }
-        if (!done) ansimore(fname, NA);  /* re-read */
-    }
-    if (delete_it) {
-        clear() ;
-        prints("Delete Message '%s' ",fptr->title) ;
-        getdata(1,0,"(Yes, or No) [N]: ",genbuf,3,DOECHO,NULL,YEA) ;
-        if(genbuf[0] == 'Y' || genbuf[0] == 'y') { /* if not yes quit */
-            setmailfile(genbuf, currentuser.userid, fptr->filename);
-            unlink(genbuf) ;
-            delmsgs[delcnt++] = idc ;
-        }
-    }
-    clear() ;
-    return 0 ;
+				/* ·â½ûMail Bigman:2000.8.22 */
+				if (HAS_PERM(PERM_DENYMAIL))
+				{
+					clear();
+					move(3,10);
+					prints("ºÜ±§Ç¸,ÄúÄ¿Ç°Ã»ÓÐMailÈ¨ÏÞ!");
+					pressreturn();
+					break;
+				}
+				mail_reply(idc, fptr, currmaildir);
+				substitute_record(currmaildir, fptr, sizeof(*fptr),idc) ;
+				break;
+			case 'D': case 'd': delete_it = YEA;
+			default: done = YEA;
+		}
+		if (!done) ansimore(fname, NA);  /* re-read */
+	}
+	if (delete_it) {
+		clear() ;
+		prints("Delete Message '%s' ",fptr->title) ;
+		getdata(1,0,"(Yes, or No) [N]: ",genbuf,3,DOECHO,NULL,YEA) ;
+		if(genbuf[0] == 'Y' || genbuf[0] == 'y') { /* if not yes quit */
+			setmailfile(genbuf, currentuser.userid, fptr->filename);
+			unlink(genbuf) ;
+			delmsgs[delcnt++] = idc ;
+		}
+	}
+	clear() ;
+	return 0 ;
 }
 
-int
+	int
 m_new()
 {
-    clear() ;
-    mrd = 0 ;
-    modify_user_mode( RMAIL );
-    read_new_mail(NULL) ;
-    if(apply_record(currmaildir,read_new_mail,sizeof(struct fileheader)) == -1) {
-        clear() ;
-        move(0,0) ;
-        prints("No new messages\n\n\n") ;
-        return -1 ;
-    }
-    if(delcnt) {
-        while(delcnt--)
-            delete_record(currmaildir,sizeof(struct fileheader),delmsgs[delcnt]) ;
-    }
-    clear() ;
-    move(0,0) ;
-    if(mrd)
-        prints("No more messages.\n\n\n") ;
-    else
-        prints("No new messages.\n\n\n") ;
-    return -1 ;
+	clear() ;
+	mrd = 0 ;
+	modify_user_mode( RMAIL );
+	read_new_mail(NULL) ;
+	if(apply_record(currmaildir,read_new_mail,sizeof(struct fileheader)) == -1) {
+		clear() ;
+		move(0,0) ;
+		prints("No new messages\n\n\n") ;
+		return -1 ;
+	}
+	if(delcnt) {
+		while(delcnt--)
+			delete_record(currmaildir,sizeof(struct fileheader),delmsgs[delcnt]) ;
+	}
+	clear() ;
+	move(0,0) ;
+	if(mrd)
+		prints("No more messages.\n\n\n") ;
+	else
+		prints("No new messages.\n\n\n") ;
+	return -1 ;
 }
 
 extern char BoardName[];
 
-void
+	void
 mailtitle()
 {
-    /* Leeward 98.01.19 adds below codes for statistics */
-    int MailSpace = (HAS_PERM(PERM_SYSOP) ? 9999 : (HAS_PERM(PERM_CHATCLOAK) ? 2000: (HAS_PERM(PERM_BOARDS) ? 300 : (HAS_PERM(PERM_LOGINOK) ? 120 : 15) ) ) ) ;
-    int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
+	/* Leeward 98.01.19 adds below codes for statistics */
+	int MailSpace = (HAS_PERM(PERM_SYSOP) ? 9999 : (HAS_PERM(PERM_CHATCLOAK) ? 2000: (HAS_PERM(PERM_BOARDS) ? 300 : (HAS_PERM(PERM_LOGINOK) ? 120 : 15) ) ) ) ;
+	int UsedSpace = get_sum_records(currmaildir, sizeof(fileheader));
 
-    showtitle( "ÓÊ¼þÑ¡µ¥    ", BoardName );
-    prints( "Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ý]  ÔÄ¶ÁÐÅ¼þ[¡ú,r]  »ØÐÅ[R]  ¿³ÐÅ£¯Çå³ý¾ÉÐÅ[d,D]  ÇóÖú[h][m\n" );
-    /*prints("[44m±àºÅ    %-20s %-49s[m\n","·¢ÐÅÕß","±ê  Ìâ") ;*/
-    if (0 != get_mailnum() && 0 == UsedSpace)
-        UsedSpace = 1;
-    else if (UsedSpace < 0)
-        UsedSpace = 0;
-    prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK [m\n","·¢ÐÅÕß","ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace); /* modified by dong , 1998.9.19 */
-    clrtobot() ;
+	showtitle( "ÓÊ¼þÑ¡µ¥    ", BoardName );
+	prints( "Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ý]  ÔÄ¶ÁÐÅ¼þ[¡ú,r]  »ØÐÅ[R]  ¿³ÐÅ£¯Çå³ý¾ÉÐÅ[d,D]  ÇóÖú[h][m\n" );
+	/*prints("[44m±àºÅ    %-20s %-49s[m\n","·¢ÐÅÕß","±ê  Ìâ") ;*/
+	if (0 != get_mailnum() && 0 == UsedSpace)
+		UsedSpace = 1;
+	else if (UsedSpace < 0)
+		UsedSpace = 0;
+	prints("[44m±àºÅ    %-12s %6s  %-13sÄúµÄÐÅÏäÉÏÏÞÈÝÁ¿%4dK£¬µ±Ç°ÒÑÓÃ%4dK [m\n","·¢ÐÅÕß","ÈÕ  ÆÚ", "±ê  Ìâ", MailSpace, UsedSpace); /* modified by dong , 1998.9.19 */
+	clrtobot() ;
 }
 
-char *
+	char *
 maildoent(num,ent)
-int     num;
-struct fileheader *ent ;
+	int     num;
+	struct fileheader *ent ;
 {
-    static char buf[512] ;
-    time_t      filetime;
-    char        *date;
-    char b2[512] ;
-    char status, reply_status;
-    char *t ;
-    extern char  ReadPost[];
-    extern char  ReplyPost[];
-    char c1[8];
-    char c2[8];
-    int same=NA;
+	static char buf[512] ;
+	time_t      filetime;
+	char        *date;
+	char b2[512] ;
+	char status, reply_status;
+	char *t ;
+	extern char  ReadPost[];
+	extern char  ReplyPost[];
+	char c1[8];
+	char c2[8];
+	int same=NA;
 
-    filetime = atoi( ent->filename + 2 ); /* ÓÉÎÄ¼þÃûÈ¡µÃÊ±¼ä */
-    if( filetime > 740000000 )
-        date = ctime( &filetime ) + 4;  /* Ê±¼ä -> Ó¢ÎÄ */
-    else
-        /* date = ""; char *ÀàÐÍ±äÁ¿, ¿ÉÄÜ´íÎó, modified by dong, 1998.9.19 */
-    { date = ctime( &filetime ) + 4; date = ""; }
+	filetime = atoi( ent->filename + 2 ); /* ÓÉÎÄ¼þÃûÈ¡µÃÊ±¼ä */
+	if( filetime > 740000000 )
+		date = ctime( &filetime ) + 4;  /* Ê±¼ä -> Ó¢ÎÄ */
+	else
+		/* date = ""; char *ÀàÐÍ±äÁ¿, ¿ÉÄÜ´íÎó, modified by dong, 1998.9.19 */
+	{ date = ctime( &filetime ) + 4; date = ""; }
 
-    strcpy(c1,"[33m");
-    strcpy(c2,"[36m");
-    if(!strcmp(ReadPost,ent->title)||!strcmp(ReplyPost,ent->title))
-        same=YEA;
-    strncpy(b2,ent->owner,STRLEN) ;
-    if( (t = strchr(b2,' ')) != NULL )
-        *t = '\0' ;
-    if (ent->accessed[0] & FILE_READ) {
-        if (ent->accessed[0] & FILE_MARKED) status = 'm';
-        else status = ' ';
-    }
-    else {
-        if (ent->accessed[0] & FILE_MARKED) status = 'M';
-        else status = 'N';
-    }
-    if (ent->accessed[0] & FILE_REPLIED) {
-        if (ent->accessed[0] & FILE_FORWARDED) reply_status = 'A';
-        else reply_status = 'R';
-    }
-    else {
-        if (ent->accessed[0] & FILE_FORWARDED) reply_status = 'F';
-        else reply_status = ' ';
-    }
-    /*        if (ent->accessed[0] & FILE_REPLIED)
-    	  reply_status = 'R';
-    	  else
-    	  reply_status = ' '; */ /*added by alex, 96.9.7 */
-    if (!strncmp("Re:",ent->title,3)){
-        sprintf(buf," %s%3d[m %c%c %-12.12s %6.6s  %s%.50s[m",same?c1:"",num,reply_status,status,b2,date, same?c1:"",ent->title) ;} /* modified by dong, 1998.9.19 */
-    else{
-        sprintf(buf," %s%3d[m %c%c %-12.12s %6.6s  ¡ï %s%.49s[m",same?c2:"",num,reply_status,status,b2,date, same?c2:"",ent->title);} /* modified by dong, 1998.9.19 */
-    return buf ;
+	strcpy(c1,"[33m");
+	strcpy(c2,"[36m");
+	if(!strcmp(ReadPost,ent->title)||!strcmp(ReplyPost,ent->title))
+		same=YEA;
+	strncpy(b2,ent->owner,STRLEN) ;
+	if( (t = strchr(b2,' ')) != NULL )
+		*t = '\0' ;
+	if (ent->accessed[0] & FILE_READ) {
+		if (ent->accessed[0] & FILE_MARKED) status = 'm';
+		else status = ' ';
+	}
+	else {
+		if (ent->accessed[0] & FILE_MARKED) status = 'M';
+		else status = 'N';
+	}
+	if (ent->accessed[0] & FILE_REPLIED) {
+		if (ent->accessed[0] & FILE_FORWARDED) reply_status = 'A';
+		else reply_status = 'R';
+	}
+	else {
+		if (ent->accessed[0] & FILE_FORWARDED) reply_status = 'F';
+		else reply_status = ' ';
+	}
+	/*        if (ent->accessed[0] & FILE_REPLIED) 
+		  reply_status = 'R';
+		  else
+		  reply_status = ' '; */ /*added by alex, 96.9.7 */
+	if (!strncmp("Re:",ent->title,3)){
+		sprintf(buf," %s%3d[m %c%c %-12.12s %6.6s  %s%.50s[m",same?c1:"",num,reply_status,status,b2,date, same?c1:"",ent->title) ;} /* modified by dong, 1998.9.19 */
+	else{
+		sprintf(buf," %s%3d[m %c%c %-12.12s %6.6s  ¡ï %s%.49s[m",same?c2:"",num,reply_status,status,b2,date, same?c2:"",ent->title);} /* modified by dong, 1998.9.19 */
+	return buf ;
 }
 
 #ifdef POSTBUG
 extern int bug_possible;
 #endif
 
-int
+	int
 mail_read(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    char buf[512], notgenbuf[128];
-    char *t ;
-    int  readnext;
-    char done = NA, delete_it, replied;
+	char buf[512], notgenbuf[128];
+	char *t ;
+	int  readnext;
+	char done = NA, delete_it, replied;
 
-    clear() ;
-    readnext=NA;
-    setqtitle(fileinfo->title);
-    strcpy(buf,direct) ;
-    if( (t = strrchr(buf,'/')) != NULL )
-        *t = '\0' ;
-    sprintf(notgenbuf, "%s/%s",buf,fileinfo->filename) ;
-    delete_it = replied = NA;
-    while (!done) {
-        ansimore(notgenbuf, NA) ;
-        move(t_lines-1, 0);
-        prints("(R)»ØÐÅ, (D)É¾³ý, (G)¼ÌÐø? [G]: ");
-        switch (egetch()) {
-    case 'R': case 'r':
+	clear() ;
+	readnext=NA;
+	setqtitle(fileinfo->title);
+	strcpy(buf,direct) ;
+	if( (t = strrchr(buf,'/')) != NULL )
+		*t = '\0' ;
+	sprintf(notgenbuf, "%s/%s",buf,fileinfo->filename) ;
+	delete_it = replied = NA;
+	while (!done) {
+		ansimore(notgenbuf, NA) ;
+		move(t_lines-1, 0);
+		prints("(R)»ØÐÅ, (D)É¾³ý, (G)¼ÌÐø? [G]: ");
+		switch (egetch()) {
+			case 'R': case 'r':
 
-            /* ·â½ûMail Bigman:2000.8.22 */
-            if (HAS_PERM(PERM_DENYMAIL))
-            {
-                clear();
-                move(3,10);
-                prints("ºÜ±§Ç¸,ÄúÄ¿Ç°Ã»ÓÐMailÈ¨ÏÞ!");
-                pressreturn();
-                break;
-            }
-            replied = YEA;
-            mail_reply(ent,fileinfo, direct);
-            break;
-        case ' ':
-case 'j': case KEY_RIGHT: case KEY_DOWN: case KEY_PGDN:
-            done = YEA;
-            readnext=YEA;
-            break;
-    case 'D': case 'd': delete_it = YEA;
-        default: done = YEA;
-        }
-    }
-    if (delete_it)
-        return mail_del(ent, fileinfo, direct);
-    else {
-        fileinfo->accessed[0] |= FILE_READ;
+				/* ·â½ûMail Bigman:2000.8.22 */
+				if (HAS_PERM(PERM_DENYMAIL))
+				{
+					clear();
+					move(3,10);
+					prints("ºÜ±§Ç¸,ÄúÄ¿Ç°Ã»ÓÐMailÈ¨ÏÞ!");
+					pressreturn();
+					break;
+				} 
+				replied = YEA;
+				mail_reply(ent,fileinfo, direct);
+				break;
+			case ' ':
+			case 'j': case KEY_RIGHT: case KEY_DOWN: case KEY_PGDN:
+				done = YEA;
+				readnext=YEA;
+				break;
+			case 'D': case 'd': delete_it = YEA;
+			default: done = YEA;
+		}
+	} 
+	if (delete_it) 
+		return mail_del(ent, fileinfo, direct);
+	else {
+		fileinfo->accessed[0] |= FILE_READ;
 #ifdef POSTBUG
-        if (replied) bug_possible = YEA;
+		if (replied) bug_possible = YEA;
 #endif
-        substitute_record(currmaildir, fileinfo, sizeof(*fileinfo),ent) ;
+		substitute_record(currmaildir, fileinfo, sizeof(*fileinfo),ent) ;
 #ifdef POSTBUG
-        bug_possible = NA;
+		bug_possible = NA;
 #endif
-    }
-    if(readnext==YEA)
-        return READ_NEXT;
-    return FULLUPDATE ;
+	}
+	if(readnext==YEA)
+		return READ_NEXT;
+	return FULLUPDATE ;
 }
 
 /*ARGSUSED*/
-int
+	int
 mail_reply(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    char        uid[STRLEN] ;
-    char        title[STRLEN] ;
-    char        *t ;
+	char        uid[STRLEN] ;
+	char        title[STRLEN] ;
+	char        *t ;
 
-    clear();
-    modify_user_mode( SMAIL );
-    strncpy(uid,fileinfo->owner,STRLEN) ;
-    if( (t = strchr(uid,' ')) != NULL )
-        *t = '\0' ;
-    if (toupper(fileinfo->title[0]) != 'R' || fileinfo->title[1] != 'e' ||
-            fileinfo->title[2] != ':') strcpy(title,"Re: ") ;
-    else title[0] = '\0';
-    strncat(title,fileinfo->title,STRLEN-5) ;
+	clear();
+	modify_user_mode( SMAIL );
+	strncpy(uid,fileinfo->owner,STRLEN) ;
+	if( (t = strchr(uid,' ')) != NULL )
+		*t = '\0' ;
+	if (toupper(fileinfo->title[0]) != 'R' || fileinfo->title[1] != 'e' ||
+			fileinfo->title[2] != ':') strcpy(title,"Re: ") ;
+	else title[0] = '\0';
+	strncat(title,fileinfo->title,STRLEN-5) ;
 
-    setmailfile(quote_file, currentuser.userid, fileinfo->filename);
-    strcpy(quote_user, fileinfo->owner);
-    switch (do_send(uid,title)) {
-    case -1: prints("ÎÞ·¨Í¶µÝ\n"); break;
-    case -2: prints("È¡Ïû»ØÐÅ\n"); break;
-    case -3: prints("'%s' ÎÞ·¨ÊÕÐÅ\n", uid); break;
-    case -4:
-        clear();
-        move(1,0);
-        prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n", uid); break;/*Haohmaru.4.5.ÊÕÐÅÏÞÖÆ*/
-    case -5:
-        clear();
-        move(1,0);
-        prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", uid); break;/*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ*/
-    default:
-        prints("ÐÅ¼þÒÑ¼Ä³ö\n");
-        fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
-    }
-    pressreturn() ;
-    return FULLUPDATE ;
+	setmailfile(quote_file, currentuser.userid, fileinfo->filename);
+	strcpy(quote_user, fileinfo->owner);      
+	switch (do_send(uid,title)) {
+		case -1: prints("ÎÞ·¨Í¶µÝ\n"); break;
+		case -2: prints("È¡Ïû»ØÐÅ\n"); break;
+		case -3: prints("'%s' ÎÞ·¨ÊÕÐÅ\n", uid); break;
+		case -4:
+			 clear();
+			 move(1,0);	
+			 prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n", uid); break;/*Haohmaru.4.5.ÊÕÐÅÏÞÖÆ*/
+		case -5:
+			 clear();
+			 move(1,0);
+			 prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n", uid); break;/*Haohmaru.99.10.26.×ÔÉ±Õß²»ÄÜÊÕÐÅ*/
+		default: 
+			 prints("ÐÅ¼þÒÑ¼Ä³ö\n");
+			 fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
+	}
+	pressreturn() ;
+	return FULLUPDATE ;
 }
 
-int
+	int
 mail_del(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    char buf[512] ;
-    char *t ;
-    extern int cmpfilename() ;
-    extern char currfile[] ;
+	char buf[512] ;
+	char *t ;
+	extern int cmpfilename() ;
+	extern char currfile[] ;
 
-    clear() ;
-    prints("É¾³ý´ËÐÅ¼þ '%s' ",fileinfo->title) ;
-    getdata(1,0,"(Yes, or No) [N]: ",genbuf,2,DOECHO,NULL,YEA) ;
-    if(genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
-        move(2,0) ;
-        prints("È¡ÏûÉ¾³ý\n") ;
-        pressreturn() ;
-        clear() ;
-        return FULLUPDATE ;
-    }
-    strcpy(buf,direct) ;
-    if( (t = strrchr(buf,'/')) != NULL )
-        *t = '\0' ;
-    strncpy(currfile,fileinfo->filename,STRLEN) ;
-    if(!delete_file(direct,sizeof(*fileinfo),ent,cmpfilename)) {
-        sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
-        unlink(genbuf) ;
-        return DIRCHANGED ;
-    }
-    move(2,0) ;
-    prints("É¾³ýÊ§°Ü\n") ;
-    pressreturn() ;
-    clear() ;
-    return FULLUPDATE ;
+	clear() ;
+	prints("É¾³ý´ËÐÅ¼þ '%s' ",fileinfo->title) ;
+	getdata(1,0,"(Yes, or No) [N]: ",genbuf,2,DOECHO,NULL,YEA) ;
+	if(genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
+		move(2,0) ;
+		prints("È¡ÏûÉ¾³ý\n") ;
+		pressreturn() ;
+		clear() ;
+		return FULLUPDATE ;
+	}               
+	strcpy(buf,direct) ;
+	if( (t = strrchr(buf,'/')) != NULL )
+		*t = '\0' ;
+	strncpy(currfile,fileinfo->filename,STRLEN) ;
+	if(!delete_file(direct,sizeof(*fileinfo),ent,cmpfilename)) {
+		sprintf(genbuf,"%s/%s",buf,fileinfo->filename) ;
+		unlink(genbuf) ;
+		return DIRCHANGED ;
+	}
+	move(2,0) ;
+	prints("É¾³ýÊ§°Ü\n") ;
+	pressreturn() ;
+	clear() ;
+	return FULLUPDATE ;
 }
 
 /* Convert mail from BIG5 to GB -- Added by ming, 96.10.9 */
-int
+	int
 convert_change(fhdr)
-struct fileheader *fhdr ;
+	struct fileheader *fhdr ;
 {
-    strncpy( fhdr->owner, genbuf, IDLEN );
-    strncpy( fhdr->title, genbuf + IDLEN + 1, STRLEN );
-    return 0;
+	strncpy( fhdr->owner, genbuf, IDLEN );
+	strncpy( fhdr->title, genbuf + IDLEN + 1, STRLEN );
+	return 0;
 }
 
 
-int
+	int
 convert_to_gb(fname, owner, title)
-char * fname, * owner, * title;
+	char * fname, * owner, * title;
 {
-    /*
-     * hname: filename of all headers
-     * cname: filename of mail content, including owner and title perhaps
-     * tname: filename after convert
-     */
-    char hname[ STRLEN ], cname[ STRLEN ], tname[ STRLEN ];
-    FILE *ffile, *fhead, *fcont;
-    int  head = 1;
+	/*
+	 * hname: filename of all headers
+	 * cname: filename of mail content, including owner and title perhaps
+	 * tname: filename after convert
+	 */
+	char hname[ STRLEN ], cname[ STRLEN ], tname[ STRLEN ];
+	FILE *ffile, *fhead, *fcont;
+	int  head = 1;
 
-    sprintf( hname, "/tmp/head%05d", getpid() );
-    sprintf( cname, "/tmp/cont%05d", getpid() );
+	sprintf( hname, "/tmp/head%05d", getpid() );
+	sprintf( cname, "/tmp/cont%05d", getpid() );
 
-    ffile  = fopen( fname, "r" );
-    fhead  = fopen( hname, "w" );
-    fcont  = fopen( cname, "w" );
-    if (ffile == NULL || fhead == NULL || fcont == NULL) return -1;
+	ffile  = fopen( fname, "r" );
+	fhead  = fopen( hname, "w" );
+	fcont  = fopen( cname, "w" );
+	if (ffile == NULL || fhead == NULL || fcont == NULL) return -1;
 
-    /* split header and content
-     * there are only owner and title information need convert to GB
-     * in header section, so extract them from header and write to 
-     * content section
-     */
-    while (fgets(genbuf, 255, ffile))
-    {
-        if (strncmp(genbuf, "¼ÄÐÅÈË", 6 ) == 0 ||
-                strncmp(genbuf, "·¢ÐÅÈË", 6 ) == 0 )
-            fputs(genbuf + 8, fcont);   /* owner */
-        else if (strncmp(genbuf, "±ê  Ìâ", 6 ) == 0)
-            fputs(genbuf + 8, fcont);   /* title */
+	/* split header and content
+	 * there are only owner and title information need convert to GB
+	 * in header section, so extract them from header and write to 
+	 * content section
+	 */
+	while (fgets(genbuf, 255, ffile))
+	{
+		if (strncmp(genbuf, "¼ÄÐÅÈË", 6 ) == 0 ||
+				strncmp(genbuf, "·¢ÐÅÈË", 6 ) == 0 )
+			fputs(genbuf + 8, fcont);   /* owner */
+		else if (strncmp(genbuf, "±ê  Ìâ", 6 ) == 0)
+			fputs(genbuf + 8, fcont);   /* title */
 
-        fputs(genbuf, fhead);
+		fputs(genbuf, fhead);
 
-        if (genbuf[0] == '\n')
-            break;
-    }
+		if (genbuf[0] == '\n') 
+			break;
+	}
 
-    while (fgets(genbuf, 255, ffile))
-        fputs(genbuf, fcont);
+	while (fgets(genbuf, 255, ffile))
+		fputs(genbuf, fcont);
 
-    fclose(ffile);
-    fclose(fhead);
-    fclose(fcont);
+	fclose(ffile);
+	fclose(fhead);
+	fclose(fcont);
 
-    /* convert file cname, just convert all content */
-    sprintf( tname, "/tmp/cvt%05d", getpid() );
-    system_convert(cname, tname, "b2g");
+	/* convert file cname, just convert all content */    
+	sprintf( tname, "/tmp/cvt%05d", getpid() );
+	system_convert(cname, tname, "b2g");
 
-    ffile  = fopen( fname, "w" );
-    fhead  = fopen( hname, "r" );
-    fcont  = fopen( tname, "r" );
-    if (ffile == NULL || fhead == NULL || fcont == NULL) return -1;
+	ffile  = fopen( fname, "w" );
+	fhead  = fopen( hname, "r" );
+	fcont  = fopen( tname, "r" );
+	if (ffile == NULL || fhead == NULL || fcont == NULL) return -1;
 
-    /* first write head section */
-    while (fgets(genbuf, 255, fhead))
-    {
-        if (strncmp(genbuf, "¼ÄÐÅÈË", 6 ) == 0 ||
-                strncmp(genbuf, "·¢ÐÅÈË", 6 ) == 0 )
-        {
-            fgets(owner, 255, fcont);
-            strcpy(genbuf + 8, owner);
-            owner[strlen(owner)-1] = '\0'; /* delete '\n' */
-        }
-        else if (strncmp(genbuf, "±ê  Ìâ", 6 ) == 0)
-        {
-            fgets(title, 255, fcont);
-            strcpy(genbuf + 8, title);
-            title[strlen(title)-1] = '\0'; /* delete '\n' */
-        }
+	/* first write head section */
+	while (fgets(genbuf, 255, fhead))
+	{
+		if (strncmp(genbuf, "¼ÄÐÅÈË", 6 ) == 0 ||
+				strncmp(genbuf, "·¢ÐÅÈË", 6 ) == 0 )
+		{
+			fgets(owner, 255, fcont);
+			strcpy(genbuf + 8, owner);
+			owner[strlen(owner)-1] = '\0'; /* delete '\n' */
+		}
+		else if (strncmp(genbuf, "±ê  Ìâ", 6 ) == 0)
+		{
+			fgets(title, 255, fcont);
+			strcpy(genbuf + 8, title);
+			title[strlen(title)-1] = '\0'; /* delete '\n' */
+		}
 
-        fputs(genbuf, ffile);
+		fputs(genbuf, ffile);
 
-        if (genbuf[0] == '\n')
-            break;
-    }
+		if (genbuf[0] == '\n') 
+			break;
+	}
 
-    /* then content section */
-    while (fgets(genbuf, 255, fcont))
-        fputs(genbuf, ffile);
+	/* then content section */
+	while (fgets(genbuf, 255, fcont))
+		fputs(genbuf, ffile);
 
-    fclose(ffile);
-    fclose(fhead);
-    fclose(fcont);
+	fclose(ffile);
+	fclose(fhead);
+	fclose(fcont);
 
-    system_delete(hname);
-    system_delete(cname);
-    system_delete(tname);
+	system_delete(hname);
+	system_delete(cname);
+	system_delete(tname);
 
-    return 0;
+	return 0;
 }
 
-int
+	int
 mail_converttogb(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    char buf[512], fname[512], owner[ STRLEN ], title[ STRLEN ] ;
-    char *t ;
-    extern int cmpfilename() ;
-    extern char currfile[] ;
+	char buf[512], fname[512], owner[ STRLEN ], title[ STRLEN ] ;
+	char *t ;
+	extern int cmpfilename() ;
+	extern char currfile[] ;
 
-    clear() ;
-    prints("½«´ËÐÅ¼þ×ª»»³ÉGBÂë '%s' ",fileinfo->title) ;
-    getdata(1,0,"(Yes, or No) [N]: ",genbuf,2,DOECHO,NULL,YEA) ;
-    if(genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
-        move(2,0) ;
-        prints("È¡Ïû×ª»»\n") ;
-        pressreturn() ;
-        clear() ;
-        return FULLUPDATE ;
-    }
-    strcpy(buf,direct) ;
-    if( (t = strrchr(buf,'/')) != NULL )
-        *t = '\0' ;
-    strncpy(currfile,fileinfo->filename,STRLEN) ;
+	clear() ;
+	prints("½«´ËÐÅ¼þ×ª»»³ÉGBÂë '%s' ",fileinfo->title) ;
+	getdata(1,0,"(Yes, or No) [N]: ",genbuf,2,DOECHO,NULL,YEA) ;
+	if(genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
+		move(2,0) ;
+		prints("È¡Ïû×ª»»\n") ;
+		pressreturn() ;
+		clear() ;
+		return FULLUPDATE ;
+	}
+	strcpy(buf,direct) ;
+	if( (t = strrchr(buf,'/')) != NULL )
+		*t = '\0' ;
+	strncpy(currfile,fileinfo->filename,STRLEN) ;
 
-    sprintf(fname,"%s/%s",buf,fileinfo->filename) ;
-    *owner = *title = '\0';
+	sprintf(fname,"%s/%s",buf,fileinfo->filename) ;
+	*owner = *title = '\0';
 
-    if (convert_to_gb(fname, owner, title) == 0)
-    {
-        if (*owner != '\0' || *title != '\0')
-        {
-            strcpy(genbuf, owner);
-            strcpy(genbuf + IDLEN + 1, title);
-            update_file(direct,sizeof(*fileinfo),ent,cmpfilename, convert_change);
-        }
-        return DIRCHANGED ;
-    }
-    move(2,0) ;
-    prints("×ª»»Ê§°Ü\n") ;
-    pressreturn() ;
-    clear() ;
-    return FULLUPDATE ;
+	if (convert_to_gb(fname, owner, title) == 0)
+	{
+		if (*owner != '\0' || *title != '\0') 
+		{
+			strcpy(genbuf, owner);
+			strcpy(genbuf + IDLEN + 1, title);
+			update_file(direct,sizeof(*fileinfo),ent,cmpfilename, convert_change);
+		}
+		return DIRCHANGED ;
+	}
+	move(2,0) ;
+	prints("×ª»»Ê§°Ü\n") ;
+	pressreturn() ;
+	clear() ;
+	return FULLUPDATE ;
 }
 
 /** Added by netty to handle mail to 0Announce */
-int
+	int
 mail_to_tmp(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    char buf[STRLEN];
-    char *p;
-    char        fname[STRLEN];
-    char        board[ STRLEN ];
-    char        ans[ STRLEN ];
+	char buf[STRLEN];
+	char *p;
+	char        fname[STRLEN];
+	char        board[ STRLEN ];
+	char        ans[ STRLEN ];
 
-    if (!HAS_PERM(PERM_BOARDS)) {
-        return DONOTHING;
-    }
-    strncpy(buf, direct, sizeof(buf));
-    if ((p = strrchr(buf, '/')) != NULL)
-        *p = '\0';
-    clear();
-    sprintf(fname, "%s/%s", buf, fileinfo->filename);
-    sprintf ( genbuf, "½«--%s--´æÈëÔÝ´æµµ,È·¶¨Âð?(Y/N) [N]: " , fileinfo->title );
-    a_prompt( -1, genbuf, ans );
-    if( ans[0] == 'Y' || ans[0] == 'y' ) {
-        sprintf( board, "tmp/bm.%s", currentuser.userid );
-        if( dashf( board ) ) {
-            sprintf ( genbuf, "Òª¸½¼ÓÔÚ¾ÉÔÝ´æµµÖ®ááÂð?(Y/N) [N]: " );
-            a_prompt( -1, genbuf, ans );
-            if( ans[0] == 'Y' || ans[0] == 'y' ) {
-                sprintf( genbuf, "/bin/cat %s >> tmp/bm.%s", fname , currentuser.userid );
-            }
-            else {
-                sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", fname , currentuser.userid );
-            }
-        }
-        else {
-            sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", fname , currentuser.userid );
-        }
-        system( genbuf );
-        sprintf( genbuf, " ÒÑ½«¸ÃÎÄÕÂ´æÈëÔÝ´æµµ, Çë°´ÈÎºÎ¼üÒÔ¼ÌÐø << " );
-        a_prompt( -1, genbuf, ans );
-    }
-    clear();
-    return FULLUPDATE;
+	if (!HAS_PERM(PERM_BOARDS)) {
+		return DONOTHING;
+	}
+	strncpy(buf, direct, sizeof(buf));
+	if ((p = strrchr(buf, '/')) != NULL)
+		*p = '\0';
+	clear();
+	sprintf(fname, "%s/%s", buf, fileinfo->filename);
+	sprintf ( genbuf, "½«--%s--´æÈëÔÝ´æµµ,È·¶¨Âð?(Y/N) [N]: " , fileinfo->title );
+	a_prompt( -1, genbuf, ans );
+	if( ans[0] == 'Y' || ans[0] == 'y' ) {
+		sprintf( board, "tmp/bm.%s", currentuser.userid );
+		if( dashf( board ) ) {
+			sprintf ( genbuf, "Òª¸½¼ÓÔÚ¾ÉÔÝ´æµµÖ®ááÂð?(Y/N) [N]: " ); 
+			a_prompt( -1, genbuf, ans );
+			if( ans[0] == 'Y' || ans[0] == 'y' ) {
+				sprintf( genbuf, "/bin/cat %s >> tmp/bm.%s", fname , currentuser.userid );                      
+			}   
+			else {
+				sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", fname , currentuser.userid );
+			}
+		}
+		else {
+			sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", fname , currentuser.userid );
+		}
+		system( genbuf );
+		sprintf( genbuf, " ÒÑ½«¸ÃÎÄÕÂ´æÈëÔÝ´æµµ, Çë°´ÈÎºÎ¼üÒÔ¼ÌÐø << " );
+		a_prompt( -1, genbuf, ans );
+	}
+	clear();
+	return FULLUPDATE;
 }
 
 
 #ifdef INTERNET_EMAIL
 
-int
+	int
 mail_forward(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    char buf[STRLEN];
-    char *p;
-    if (!HAS_PERM(PERM_FORWARD)) {
-        return DONOTHING;
-    }
-    strncpy(buf, direct, sizeof(buf));
-    if ((p = strrchr(buf, '/')) != NULL)
-        *p = '\0';
-    clear();
-    switch (doforward(buf, fileinfo, 0)) {
-    case 0:
-        prints("ÎÄÕÂ×ª¼ÄÍê³É!\n");
-        fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
-        /* comment out by jjyang for direct mail delivery */
-        sprintf(genbuf, "forwarded file to %s", currentuser.email);
-        report(genbuf);
-        /* comment out by jjyang for direct mail delivery */
+	char buf[STRLEN];
+	char *p;
+	if (!HAS_PERM(PERM_FORWARD)) {
+		return DONOTHING;
+	}
+	strncpy(buf, direct, sizeof(buf));
+	if ((p = strrchr(buf, '/')) != NULL)
+		*p = '\0';
+	clear();
+	switch (doforward(buf, fileinfo, 0)) {
+		case 0:  
+			prints("ÎÄÕÂ×ª¼ÄÍê³É!\n");
+			fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
+			/* comment out by jjyang for direct mail delivery */
+			sprintf(genbuf, "forwarded file to %s", currentuser.email);
+			report(genbuf);
+			/* comment out by jjyang for direct mail delivery */
 
-        break;
-    case -1: prints("Forward failed: system error.\n");
-        break;
-    case -2: prints("Forward failed: missing or invalid address.\n");
-        break;
-    case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷[0m[0m\n\nÇë¸æÖªÊÕÐÅÈË£¨Ò²Ðí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ [1m[33mWWW[0m[0m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ [1m[33mpop3[0m[0m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄÐÅÏäÈ¡ÐÅ£¬Ã»ÓÐÈÎºÎ³¤¶ÈÏÞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·þÎñ£¬ÇëÔÄ¶Á [1m[33mAnnounce[0m[0m °æÓÐ¹Ø¹«¸æ¡£\n", MAXMAILSIZE); break;
-    default: prints("È¡Ïû×ª¼Ä...\n");
-    }
-    pressreturn();
-    clear();
-    return FULLUPDATE;
+			break;
+		case -1: prints("Forward failed: system error.\n");
+			 break;
+		case -2: prints("Forward failed: missing or invalid address.\n");
+			 break;
+		case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷[0m[0m\n\nÇë¸æÖªÊÕÐÅÈË£¨Ò²Ðí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ [1m[33mWWW[0m[0m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ [1m[33mpop3[0m[0m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄÐÅÏäÈ¡ÐÅ£¬Ã»ÓÐÈÎºÎ³¤¶ÈÏÞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·þÎñ£¬ÇëÔÄ¶Á [1m[33mAnnounce[0m[0m °æÓÐ¹Ø¹«¸æ¡£\n", MAXMAILSIZE); break;
+		default: prints("È¡Ïû×ª¼Ä...\n");
+	}
+	pressreturn();
+	clear();
+	return FULLUPDATE;
 }
 
-int
+	int
 mail_uforward(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    char buf[STRLEN];
-    char *p;
-    if (!HAS_PERM(PERM_FORWARD)) {
-        return DONOTHING;
-    }
-    strncpy(buf, direct, sizeof(buf));
-    if ((p = strrchr(buf, '/')) != NULL)
-        *p = '\0';
-    clear();
-    switch (doforward(buf, fileinfo, 1)) {
-    case 0:
-        prints("ÎÄÕÂ×ª¼ÄÍê³É!\n");
-        fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
-        /* comment out by jjyang for direct mail delivery */
-        sprintf(genbuf, "forwarded file to %s", currentuser.email);
-        report(genbuf);
-        /* comment out by jjyang for direct mail delivery */
+	char buf[STRLEN];
+	char *p;
+	if (!HAS_PERM(PERM_FORWARD)) {
+		return DONOTHING;
+	}
+	strncpy(buf, direct, sizeof(buf));
+	if ((p = strrchr(buf, '/')) != NULL)
+		*p = '\0';
+	clear();
+	switch (doforward(buf, fileinfo, 1)) {
+		case 0:  
+			prints("ÎÄÕÂ×ª¼ÄÍê³É!\n");
+			fileinfo->accessed[0] |= FILE_FORWARDED;  /*added by alex, 96.9.7 */
+			/* comment out by jjyang for direct mail delivery */
+			sprintf(genbuf, "forwarded file to %s", currentuser.email);
+			report(genbuf);
+			/* comment out by jjyang for direct mail delivery */
 
-        break;
-    case -1: prints("Forward failed: system error.\n");
-        break;
-    case -2: prints("Forward failed: missing or invalid address.\n");
-        break;
-    case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷[0m[0m\n\nÇë¸æÖªÊÕÐÅÈË£¨Ò²Ðí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ [1m[33mWWW[0m[0m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ [1m[33mpop3[0m[0m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄÐÅÏäÈ¡ÐÅ£¬Ã»ÓÐÈÎºÎ³¤¶ÈÏÞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·þÎñ£¬ÇëÔÄ¶Á [1m[33mAnnounce[0m[0m °æÓÐ¹Ø¹«¸æ¡£\n", MAXMAILSIZE); break;
-    default: prints("È¡Ïû×ª¼Ä...\n");
-    }
-    pressreturn();
-    clear();
-    return FULLUPDATE;
+			break;
+		case -1: prints("Forward failed: system error.\n");
+			 break;
+		case -2: prints("Forward failed: missing or invalid address.\n");
+			 break;
+		case -552: prints("\n[1m[33mÐÅ¼þ³¬³¤£¨±¾Õ¾ÏÞ¶¨ÐÅ¼þ³¤¶ÈÉÏÏÞÎª %d ×Ö½Ú£©£¬È¡Ïû×ª¼Ä²Ù×÷[0m[0m\n\nÇë¸æÖªÊÕÐÅÈË£¨Ò²Ðí¾ÍÊÇÄú×Ô¼º°É:PP£©£º\n\n*1* Ê¹ÓÃ [1m[33mWWW[0m[0m ·½Ê½·ÃÎÊ±¾Õ¾£¬ËæÊ±¿ÉÒÔ±£´æÈÎÒâ³¤¶ÈµÄÎÄÕÂµ½×Ô¼ºµÄ¼ÆËã»ú£»\n*2* Ê¹ÓÃ [1m[33mpop3[0m[0m ·½Ê½´Ó±¾Õ¾ÓÃ»§µÄÐÅÏäÈ¡ÐÅ£¬Ã»ÓÐÈÎºÎ³¤¶ÈÏÞÖÆ¡£\n*3* Èç¹û²»ÊìÏ¤±¾Õ¾µÄ WWW »ò pop3 ·þÎñ£¬ÇëÔÄ¶Á [1m[33mAnnounce[0m[0m °æÓÐ¹Ø¹«¸æ¡£\n", MAXMAILSIZE); break;
+		default: prints("È¡Ïû×ª¼Ä...\n");
+	}
+	pressreturn();
+	clear();
+	return FULLUPDATE;
 }
 
 #endif
 
-int
+	int
 mail_del_range(ent, fileinfo, direct)
-int ent;
-struct fileheader *fileinfo;
-char *direct;
+	int ent;
+	struct fileheader *fileinfo;
+	char *direct;
 {
-    return(del_range(ent, fileinfo, direct,0));/*Haohmaru.99.5.14.ÐÞ¸ÄÒ»¸öbug,
-    					     ·ñÔò¿ÉÄÜ»áÒòÎªÉ¾ÐÅ¼þµÄ.tmpfile¶ø´íÉ¾°æÃæµÄ.tmpfile*/
+	return(del_range(ent, fileinfo, direct,0));/*Haohmaru.99.5.14.ÐÞ¸ÄÒ»¸öbug,
+						     ·ñÔò¿ÉÄÜ»áÒòÎªÉ¾ÐÅ¼þµÄ.tmpfile¶ø´íÉ¾°æÃæµÄ.tmpfile*/
 }
 
-int
+	int
 mail_mark(ent,fileinfo,direct)
-int ent ;
-struct fileheader *fileinfo ;
-char *direct ;
+	int ent ;
+	struct fileheader *fileinfo ;
+	char *direct ;
 {
-    if (fileinfo->accessed[0] & FILE_MARKED)
-        fileinfo->accessed[0] &= ~FILE_MARKED;
-    else fileinfo->accessed[0] |= FILE_MARKED;
-    substitute_record(currmaildir, fileinfo, sizeof(*fileinfo),ent) ;
-    return(PARTUPDATE);
+	if (fileinfo->accessed[0] & FILE_MARKED)
+		fileinfo->accessed[0] &= ~FILE_MARKED;
+	else fileinfo->accessed[0] |= FILE_MARKED;
+	substitute_record(currmaildir, fileinfo, sizeof(*fileinfo),ent) ;
+	return(PARTUPDATE);     
 }
 
 extern int mailreadhelp();
 
 struct one_key  mail_comms[] = {
-                                   'd',        mail_del,
-                                   'D',        mail_del_range,
-                                   'r',        mail_read,
-                                   'R',        mail_reply,
-                                   'm',        mail_mark,
-                                   'i',        mail_to_tmp,
+	'd',        mail_del,
+	'D',        mail_del_range,
+	'r',        mail_read,
+	'R',        mail_reply,
+	'm',        mail_mark,
+	'i',        mail_to_tmp,
 #ifdef INTERNET_EMAIL
-                                   'F',        mail_forward,
-                                   'U',        mail_uforward,
+	'F',        mail_forward,
+	'U',        mail_uforward,
 #endif
-                                   /* Added by ming, 96.10.9 */
-                                   'g',        mail_converttogb,
-                                   'a',        auth_search_down,
-                                   'A',        auth_search_up,
-                                   '/',        t_search_down,
-                                   '?',        t_search_up,
-                                   ']',        thread_down,
-                                   '[',        thread_up,
-                                   Ctrl('A'),  show_author,
-                                   Ctrl('Q'),  show_authorinfo,/*Haohmaru.98.12.19*/
-                                   Ctrl('W'),  show_authorBM,/*cityhunter 00.10.18*/
-                                   Ctrl('N'),  SR_first_new,
-                                   '\\',       SR_last,
-                                   '=',        SR_first,
-                                   Ctrl('C'),  do_cross,
-                                   Ctrl('S'),  SR_read,
-                                   'n',        SR_first_new,
-                                   'p',        SR_read,
-                                   Ctrl('X'),  SR_readX, /* Leeward 98.10.03 */
-                                   Ctrl('U'),  SR_author,
-                                   Ctrl('H'),  SR_authorX, /* Leeward 98.10.03 */
-                                   'h',        mailreadhelp,
-                                   Ctrl('J'),  mailreadhelp,
-                                   '\0',       NULL
-                               } ;
+	/* Added by ming, 96.10.9 */
+	'g',        mail_converttogb,
+	'a',        auth_search_down,
+	'A',        auth_search_up,
+	'/',        t_search_down,
+	'?',        t_search_up,
+	']',        thread_down,
+	'[',        thread_up,
+	Ctrl('A'),  show_author,
+	Ctrl('Q'),  show_authorinfo,/*Haohmaru.98.12.19*/
+	Ctrl('W'),  show_authorBM,/*cityhunter 00.10.18*/
+	Ctrl('N'),  SR_first_new,
+	'\\',       SR_last,
+	'=',        SR_first,
+	Ctrl('C'),  do_cross,
+	Ctrl('S'),  SR_read,
+	'n',        SR_first_new,
+	'p',        SR_read,
+	Ctrl('X'),  SR_readX, /* Leeward 98.10.03 */
+	Ctrl('U'),  SR_author,
+	Ctrl('H'),  SR_authorX, /* Leeward 98.10.03 */
+	'h',        mailreadhelp,
+	Ctrl('J'),  mailreadhelp,
+	'\0',       NULL
+} ;
 
-int
+	int
 m_read()
 {
-    in_mail = YEA;
-    i_read( RMAIL, currmaildir,mailtitle,maildoent,&mail_comms[0],sizeof(struct fileheader)) ;
-    in_mail = NA;
-    return FULLUPDATE /* 0 */ ;
+	in_mail = YEA;
+	i_read( RMAIL, currmaildir,mailtitle,maildoent,&mail_comms[0],sizeof(struct fileheader)) ;
+	in_mail = NA;
+	return FULLUPDATE /* 0 */ ;
 }
 
 #ifdef INTERNET_EMAIL
@@ -1503,493 +1503,493 @@ m_read()
 #define BBSMAILDIR "/usr/spool/mqueue"
 extern char BoardName[];
 
-int
+	int
 invalidaddr(addr)
-char *addr;
+	char *addr;
 {
-    if (*addr == '\0') return 1;   /* blank */
-    while (*addr) {
-        if (!isalnum(*addr) && strchr("[].%!@:-_", *addr) == NULL)
-            return 1;
-        addr++;
-    }
-    return 0;
+	if (*addr == '\0') return 1;   /* blank */
+	while (*addr) {
+		if (!isalnum(*addr) && strchr("[].%!@:-_", *addr) == NULL)
+			return 1;
+		addr++;
+	}
+	return 0;
 }
 
-void
+	void
 spacestozeros(s)
-char *s;
+	char *s;
 {
-    while (*s) {
-        if (*s == ' ') *s = '0';
-        s++;
-    }
+	while (*s) {
+		if (*s == ' ') *s = '0';
+		s++;
+	}
 }
 
-int
+	int
 getqsuffix(s)
-char *s;
+	char *s;
 {
-    struct stat stbuf;
-    char qbuf[STRLEN], dbuf[STRLEN];
-    char c1 = 'A', c2 = 'A';
-    int pos = strlen(BBSMAILDIR) + 3;
-    sprintf(dbuf, "%s/dfAA%5d", BBSMAILDIR, getpid());
-    sprintf(qbuf, "%s/qfAA%5d", BBSMAILDIR, getpid());
-    spacestozeros(dbuf);
-    spacestozeros(qbuf);
-    while (1) {
-        if (stat(dbuf, &stbuf) && stat(qbuf, &stbuf)) break;
-        if (c2 == 'Z') {
-            c2 = 'A';
-            if (c1 == 'Z') return -1;
-            else c1++;
-            dbuf[pos] = c1;
-            qbuf[pos] = c1;
-        }
-        else c2++;
-        dbuf[pos+1] = c2;
-        qbuf[pos+1] = c2;
-    }
-    strcpy(s, &(qbuf[pos]));
-    return 0;
+	struct stat stbuf;
+	char qbuf[STRLEN], dbuf[STRLEN];
+	char c1 = 'A', c2 = 'A';
+	int pos = strlen(BBSMAILDIR) + 3;
+	sprintf(dbuf, "%s/dfAA%5d", BBSMAILDIR, getpid());
+	sprintf(qbuf, "%s/qfAA%5d", BBSMAILDIR, getpid());
+	spacestozeros(dbuf);
+	spacestozeros(qbuf);
+	while (1) {
+		if (stat(dbuf, &stbuf) && stat(qbuf, &stbuf)) break;
+		if (c2 == 'Z') {
+			c2 = 'A';
+			if (c1 == 'Z') return -1;
+			else c1++;
+			dbuf[pos] = c1;
+			qbuf[pos] = c1;
+		}
+		else c2++;
+		dbuf[pos+1] = c2;
+		qbuf[pos+1] = c2;               
+	}
+	strcpy(s, &(qbuf[pos]));
+	return 0;
 }
 
-void
+	void
 convert_tz(local, gmt, buf)
-int gmt, local;
-char *buf;
+	int gmt, local;
+	char *buf;
 {
-    local -= gmt;
-    if (local < -11) local += 24;
-    else if (local > 12) local -= 24;
-    sprintf(buf, " %4d", abs(local * 100));
-    spacestozeros(buf);
-    if (local < 0) buf[0] = '-';
-    else if (local > 0) buf[0] = '+';
-    else buf[0] = '\0';
+	local -= gmt;
+	if (local < -11) local += 24;
+	else if (local > 12) local -= 24;
+	sprintf(buf, " %4d", abs(local * 100));
+	spacestozeros(buf);
+	if (local < 0) buf[0] = '-';
+	else if (local > 0) buf[0] = '+';
+	else buf[0] = '\0';     
 }
 
 #if 0
-int
+	int
 createqf(title, qsuffix)
-char *title, *qsuffix;
+	char *title, *qsuffix;
 {
-    static int configured = 0;
-    static char myhostname[STRLEN];
-    static char myusername[20];
-    char mytime[STRLEN];
-    char idtime[STRLEN];
-    char qfname[STRLEN];
-    char t_offset[6];
-    FILE *qfp;
-    time_t timenow;
-    int savehour;
-    struct tm *gtime, *ltime;
-    struct hostent *hbuf;
-    struct passwd *pbuf;
+	static int configured = 0;
+	static char myhostname[STRLEN];
+	static char myusername[20];
+	char mytime[STRLEN];
+	char idtime[STRLEN];
+	char qfname[STRLEN];
+	char t_offset[6];
+	FILE *qfp;
+	time_t timenow;
+	int savehour;
+	struct tm *gtime, *ltime;
+	struct hostent *hbuf;
+	struct passwd *pbuf;
 
-    if (!configured) {
-        /* get host name */
-        gethostname(myhostname, STRLEN);
-        hbuf = gethostbyname(myhostname);
-        if (hbuf) strncpy(myhostname, hbuf->h_name, STRLEN);
+	if (!configured) {
+		/* get host name */
+		gethostname(myhostname, STRLEN);
+		hbuf = gethostbyname(myhostname);
+		if (hbuf) strncpy(myhostname, hbuf->h_name, STRLEN);
 
-        /* get bbs uident */
-        pbuf = getpwuid(getuid());
-        if (pbuf) strncpy(myusername, pbuf->pw_name, 20);
-        if (hbuf && pbuf) configured = 1;
-        else return -1;
-    }
+		/* get bbs uident */
+		pbuf = getpwuid(getuid());
+		if (pbuf) strncpy(myusername, pbuf->pw_name, 20);
+		if (hbuf && pbuf) configured = 1;
+		else return -1;
+	}
 
-    /* get file name */
-    sprintf(qfname, "%s/qf%s", BBSMAILDIR, qsuffix);
-    if ((qfp = fopen(qfname, "w")) == NULL) return -1;
+	/* get file name */
+	sprintf(qfname, "%s/qf%s", BBSMAILDIR, qsuffix);
+	if ((qfp = fopen(qfname, "w")) == NULL) return -1;
 
-    /* get time */
-    time(&timenow);
-    ltime = localtime(&timenow);
+	/* get time */
+	time(&timenow);
+	ltime = localtime(&timenow);
 #ifdef SYSV
-    ascftime(mytime, "%a, %d %b %Y %T ", ltime);
+	ascftime(mytime, "%a, %d %b %Y %T ", ltime);
 #else
-strftime(mytime, sizeof(mytime), "%a, %d %b %Y %T ", ltime);
+	strftime(mytime, sizeof(mytime), "%a, %d %b %Y %T ", ltime);
 #endif
-    savehour = ltime->tm_hour;
-    gtime = gmtime(&timenow);
-    strftime(idtime, sizeof(idtime), "%Y%m%d%y%H%M", gtime);
-    convert_tz(savehour, gtime->tm_hour, t_offset);
-    strcat(mytime, t_offset);
-    fprintf(qfp, "P1000\nT%lu\nDdf%s\nS%s\nR%s\n", timenow, qsuffix,
-            myusername, currentuser.email);
+	savehour = ltime->tm_hour;
+	gtime = gmtime(&timenow);
+	strftime(idtime, sizeof(idtime), "%Y%m%d%y%H%M", gtime); 
+	convert_tz(savehour, gtime->tm_hour, t_offset);
+	strcat(mytime, t_offset);
+	fprintf(qfp, "P1000\nT%lu\nDdf%s\nS%s\nR%s\n", timenow, qsuffix,
+			myusername, currentuser.email);
 #ifdef ERRORS_TO
-    fprintf(qfp, "E%s\n", ERRORS_TO);
+	fprintf(qfp, "E%s\n", ERRORS_TO);
 #endif
-    /* do those headers! */
-    fprintf(qfp, "HReceived: by %s (%s)\n\tid %s; %s\n",
-            myhostname, VERSION_ID, qsuffix, mytime);
-    fprintf(qfp, "HReturn-Path: <%s@%s>\n", myusername, myhostname);
-    fprintf(qfp, "HDate: %s\n", mytime);
-    fprintf(qfp, "HMessage-Id: <%s.%s@%s>\n", idtime, qsuffix,
-            myhostname);
-    fprintf(qfp, "HFrom: %s@%s (%s in NCTU CSIE BBS)\n", myusername, myhostname, currentuser.userid);
-    fprintf(qfp, "HSubject: %s (fwd)\n", title);
-    fprintf(qfp, "HTo: %s\n", currentuser.email);
-    fprintf(qfp, "HX-Forwarded-By: %s (%s)\n", currentuser.userid,
+	/* do those headers! */
+	fprintf(qfp, "HReceived: by %s (%s)\n\tid %s; %s\n",
+			myhostname, VERSION_ID, qsuffix, mytime);
+	fprintf(qfp, "HReturn-Path: <%s@%s>\n", myusername, myhostname);
+	fprintf(qfp, "HDate: %s\n", mytime);
+	fprintf(qfp, "HMessage-Id: <%s.%s@%s>\n", idtime, qsuffix,
+			myhostname);
+	fprintf(qfp, "HFrom: %s@%s (%s in NCTU CSIE BBS)\n", myusername, myhostname, currentuser.userid);
+	fprintf(qfp, "HSubject: %s (fwd)\n", title);
+	fprintf(qfp, "HTo: %s\n", currentuser.email);
+	fprintf(qfp, "HX-Forwarded-By: %s (%s)\n", currentuser.userid,
 #ifdef REALNAME
-            currentuser.realname);
+			currentuser.realname);
 #else
-            currentuser.username);
+	currentuser.username);
 #endif
-    fprintf(qfp, "HX-Disclaimer: %s ¶Ô±¾ÐÅÄÚÈÝË¡²»¸ºÔð¡£\n", BoardName);
-    fclose(qfp);
-    return 0;
+	fprintf(qfp, "HX-Disclaimer: %s ¶Ô±¾ÐÅÄÚÈÝË¡²»¸ºÔð¡£\n", BoardName);
+	fclose(qfp);
+	return 0;
 }
 #endif
 
-int
+	int
 bbs_sendmail(fname, title, receiver, isuu, isbig5, noansi) /* Modified by ming, 96.10.9  KCN,99.12.16*/
-char *fname, *title, *receiver;
-int isuu, isbig5, noansi;
+	char *fname, *title, *receiver;
+	int isuu, isbig5, noansi;
 {
-    static int configured = 0;
-    static char myhostname[STRLEN];
-    static char myusername[20];
-    struct hostent *hbuf;
-    struct passwd *pbuf;
+	static int configured = 0;
+	static char myhostname[STRLEN];
+	static char myusername[20];
+	struct hostent *hbuf;
+	struct passwd *pbuf;
 
-    FILE *fin, *fin2, *fout;
+	FILE *fin, *fin2, *fout;
 
-    /* hname: sendmail heads file
-    tname: head after convert to big5
-    cname: content file after convert to big5
-    uname: uuencode file, just decode cname
-     */
-    char hname[STRLEN], tname[STRLEN], cname[STRLEN], uname[STRLEN];
+	/* hname: sendmail heads file
+tname: head after convert to big5
+cname: content file after convert to big5
+uname: uuencode file, just decode cname
+	 */
+	char hname[STRLEN], tname[STRLEN], cname[STRLEN], uname[STRLEN];
 
-    struct stat st; /* Leeward 98.05.11 */
-    char* buf,*p;/* KCN.99.09.01*/
-    char newbuf[256];
-    int esc;
+	struct stat st; /* Leeward 98.05.11 */
+	char* buf,*p;/* KCN.99.09.01*/
+	char newbuf[256];
+	int esc;
 
-    stat(fname, &st); /* Leeward 98.05.11 checks size of the mail */
-    /*    if (st.st_size > MAXMAILSIZE)
-          return - 552;  sendmail: 552 Message exceeds maximum fixed size */
+	stat(fname, &st); /* Leeward 98.05.11 checks size of the mail */
+	/*    if (st.st_size > MAXMAILSIZE)
+	      return - 552;  sendmail: 552 Message exceeds maximum fixed size */
 
-    /*
-     *  setup the hosmname and username 
-     */
-    if (!configured) {
-        /* get host name */
-        gethostname(myhostname, STRLEN);
-        hbuf = gethostbyname(myhostname);
-        if (hbuf) strncpy(myhostname, hbuf->h_name, STRLEN);
+	/*
+	 *  setup the hosmname and username 
+	 */
+	if (!configured) {
+		/* get host name */
+		gethostname(myhostname, STRLEN);
+		hbuf = gethostbyname(myhostname);
+		if (hbuf) strncpy(myhostname, hbuf->h_name, STRLEN);
 
-        /* get bbs uident */
-        pbuf = getpwuid(getuid());
-        if (pbuf) strncpy(myusername, pbuf->pw_name, 20);
-        if (hbuf && pbuf) configured = 1;
-        else return -1;
-    }
+		/* get bbs uident */
+		pbuf = getpwuid(getuid());
+		if (pbuf) strncpy(myusername, pbuf->pw_name, 20);
+		if (hbuf && pbuf) configured = 1;
+		else return -1;
+	}
 
-    /* creat a file include all heads and content */
-    sprintf( hname, "/tmp/head%05d", getpid() );
-    fout = fopen( hname, "w" );
-    if (fout == NULL) return -1;
+	/* creat a file include all heads and content */
+	sprintf( hname, "/tmp/head%05d", getpid() );
+	fout = fopen( hname, "w" );
+	if (fout == NULL) return -1;
 
 #ifdef INTERNET_PRIVATE_EMAIL
-    fprintf( fout, "Reply-To: %s.bbs@%s\n", currentuser.userid, email_domain());
-    fprintf( fout, "From: %s.bbs@%s\n", currentuser.userid, email_domain() );
+	fprintf( fout, "Reply-To: %s.bbs@%s\n", currentuser.userid, email_domain());
+	fprintf( fout, "From: %s.bbs@%s\n", currentuser.userid, email_domain() ); 
 #else
-    fprintf( fout, "From: %s@%s (%s)\n",
-             myusername, myhosmname, get_bbs_english_name());
+	fprintf( fout, "From: %s@%s (%s)\n", 
+			myusername, myhosmname, get_bbs_english_name()); 
 #endif
-    fprintf( fout, "To: %s\n", receiver);
-    fprintf( fout, "Subject: %s\n", title);
-    fprintf( fout, "X-Forwarded-By: %s (%s)\n",
-             currentuser.userid,
+	fprintf( fout, "To: %s\n", receiver);
+	fprintf( fout, "Subject: %s\n", title);
+	fprintf( fout, "X-Forwarded-By: %s (%s)\n", 
+			currentuser.userid, 
 #ifdef REALNAME
-             currentuser.REALNAME);
+			currentuser.REALNAME);
 #else
-             currentuser.username);
+	currentuser.username);
 #endif
 
-    fprintf(fout, "X-Disclaimer: %s ¶Ô±¾ÐÅÄÚÈÝË¡²»¸ºÔð¡£\n", BoardName);
-    fprintf(fout, "Precedence: junk\n");
-    fprintf(fout, "\n");
+	fprintf(fout, "X-Disclaimer: %s ¶Ô±¾ÐÅÄÚÈÝË¡²»¸ºÔð¡£\n", BoardName);
+	fprintf(fout, "Precedence: junk\n"); 
+	fprintf(fout, "\n");
 
-    fclose(fout);
+	fclose(fout);
 
-    /* convert to BIG5 if necessary */
-    if ( isbig5 == 0 )
-    {
-        strcpy(tname, hname);
-        strcpy(cname, fname);
-    }
-    else
-    {
-        sprintf(tname, "/tmp/hcvt%05d", getpid() );
-        system_convert(hname, tname, "g2b");
+	/* convert to BIG5 if necessary */
+	if ( isbig5 == 0 ) 
+	{
+		strcpy(tname, hname);
+		strcpy(cname, fname);
+	}
+	else 
+	{
+		sprintf(tname, "/tmp/hcvt%05d", getpid() );
+		system_convert(hname, tname, "g2b");
 
-        sprintf(cname, "/tmp/ccvt%05d", getpid() );
-        system_convert(fname, cname, "g2b");
-    }
+		sprintf(cname, "/tmp/ccvt%05d", getpid() );
+		system_convert(fname, cname, "g2b");
+	}
 
-    /* uuencode if necessary */
-    if ( isuu == 0 )
-        strcpy( uname, cname );
-    else {
-        sprintf( uname, "/tmp/uu%05d", getpid() );
-        sprintf( genbuf, "uuencode %s thbbs.%05d > %s",
-                 cname, getpid(), uname );
-        system( genbuf );
-    }
+	/* uuencode if necessary */
+	if ( isuu == 0 )
+		strcpy( uname, cname );
+	else {
+		sprintf( uname, "/tmp/uu%05d", getpid() );
+		sprintf( genbuf, "uuencode %s thbbs.%05d > %s",
+				cname, getpid(), uname ); 
+		system( genbuf );
+	}
 
-    /*
-     *  Running the sendmail 
-     */
-    sprintf( genbuf, "/usr/lib/sendmail -f %s.bbs@%s %s ",
-             currentuser.userid, email_domain(), receiver );
-    fout = popen( genbuf, "w" );
-    fin  = fopen( tname, "r" );
-    fin2 = fopen( uname, "r" );
-    if (fout == NULL || fin == NULL || fin2 == NULL) return -1;
+	/*
+	 *  Running the sendmail 
+	 */
+	sprintf( genbuf, "/usr/lib/sendmail -f %s.bbs@%s %s ", 
+			currentuser.userid, email_domain(), receiver );
+	fout = popen( genbuf, "w" );
+	fin  = fopen( tname, "r" );
+	fin2 = fopen( uname, "r" );
+	if (fout == NULL || fin == NULL || fin2 == NULL) return -1; 
 
-    while (fgets( genbuf, 255, fin ) != NULL ) {
-        if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
-            fputs( ". \n", fout );
-        else
-            fputs( genbuf, fout );
-    }
+	while (fgets( genbuf, 255, fin ) != NULL ) {
+		if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
+			fputs( ". \n", fout );
+		else 
+			fputs( genbuf, fout );
+	}
 
-    while (fgets( genbuf, 255, fin2 ) != NULL ) {
-        if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
-            fputs( ". \n", fout );
-        else
-            if (noansi)
-            {
-                /*      Added by KCN 1999.09.01 for filter ANSI */
-                buf=newbuf;
-                esc=0;
-                for (p=genbuf;*p;p++) {
-                    if (esc) {
-                        if (*p=='\033') {
-                            esc=0;
-                            *buf=*p;
-                            buf++;
-                        }else
-                            if (isalpha(*p))
-                                esc=0;
-                    } else {
-                        if (*p=='\033') {
-                            esc=1;
-                        } else {
-                            *buf=*p;
-                            buf++;
-                        }
-                    }
-                }
+	while (fgets( genbuf, 255, fin2 ) != NULL ) {
+		if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
+			fputs( ". \n", fout );
+		else 
+			if (noansi)
+			{
+				/*      Added by KCN 1999.09.01 for filter ANSI */
+				buf=newbuf;
+				esc=0;
+				for (p=genbuf;*p;p++) {
+					if (esc) {
+						if (*p=='\033') {
+							esc=0;
+							*buf=*p;
+							buf++;
+						}else
+							if (isalpha(*p))
+								esc=0;
+					} else {
+						if (*p=='\033') {
+							esc=1;
+						} else {
+							*buf=*p;
+							buf++;
+						}
+					}
+				}
 
-                *buf=0;
-                fputs( newbuf, fout );
-            } else
-                fputs( genbuf, fout );
-    }
-    fprintf(fout, ".\n");
+				*buf=0;
+				fputs( newbuf, fout );
+			} else
+				fputs( genbuf, fout );
+	}
+	fprintf(fout, ".\n");
 
-    fclose( fin );
-    pclose( fout );
+	fclose( fin );
+	pclose( fout );
 
-    /* delete all temp files */
-    if ( isuu == 1 )
-        system_delete(uname);
-    if ( isbig5 == 1 ) {
-        system_delete(cname);
-        system_delete(tname);
-    }
-    system_delete(hname);
+	/* delete all temp files */
+	if ( isuu == 1 )
+		system_delete(uname);
+	if ( isbig5 == 1 ) {
+		system_delete(cname);
+		system_delete(tname);
+	}
+	system_delete(hname);
 
-    return 0;
+	return 0;
 }
 
 /*Add by SmallPig*/
 
-int
+	int
 g_send()
 {
-    char uident[13],tmp[3];
-    int cnt, i,n,fmode=NA;
-    char maillists[STRLEN];
+	char uident[13],tmp[3];
+	int cnt, i,n,fmode=NA;
+	char maillists[STRLEN];
 
-    /* ·â½ûMail Bigman:2000.8.22 */
-    if (HAS_PERM(PERM_DENYMAIL)) return DONOTHING;
+	/* ·â½ûMail Bigman:2000.8.22 */
+	if (HAS_PERM(PERM_DENYMAIL)) return DONOTHING;
 
-    modify_user_mode( SMAIL );
-    *quote_file = '\0';
-    clear();
-    sethomefile( maillists, currentuser.userid, "maillist" );
-    cnt=listfilecontent(maillists);
-    while(1)
-    {
-        if(cnt>maxrecp-10)
-        {
-            move(2,0);
-            prints("Ä¿Ç°ÏÞÖÆ¼ÄÐÅ¸ø [1m%d[m ÈË",maxrecp);
-        }
-        getdata(0,0,"(A)Ôö¼Ó (D)É¾³ý (I)ÒýÈëºÃÓÑ (C)Çå³ýÄ¿Ç°Ãûµ¥ (E)·ÅÆú (S)¼Ä³ö? [S]£º ",
-                tmp,2,DOECHO,NULL,YEA);
-        if(tmp[0]=='\n'||tmp[0]=='\0'||tmp[0]=='s'||tmp[0]=='S')
-        {
-            break;
-        }
-        if(tmp[0]=='a'||tmp[0]=='d'||tmp[0]=='A'||tmp[0]=='D')
-        {
-            move(1,0);
-            if(tmp[0]=='a'||tmp[0]=='A')
-                usercomplete("ÇëÒÀ´ÎÊäÈëÊ¹ÓÃÕß´úºÅ(Ö»°´ ENTER ½áÊøÊäÈë): ",uident) ;
-            else
-                namecomplete("ÇëÒÀ´ÎÊäÈëÊ¹ÓÃÕß´úºÅ(Ö»°´ ENTER ½áÊøÊäÈë): ",uident) ;
-            move(1,0);
-            clrtoeol();
-            if(uident[0] == '\0') continue ;
-            if(!getuser(uident))
-            {
-                move(2,0);
-                prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
-            }
-        }
-        switch(tmp[0])
-        {
-    case 'A': case 'a':
-            if (!(lookupuser.userlevel & PERM_READMAIL))
-            {
-                move(2,0);
-                prints("ÐÅ¼þÎÞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser);
-                break;
-            }
-            else if ( seek_in_file(maillists,uident) ) {
-                move(2,0);
-                prints("ÒÑ¾­ÁÐÎªÊÕ¼þÈËÖ®Ò» \n");
-                break;
-            }
-            addtofile(maillists,uident);
-            cnt++;
-            break;
-case 'E':case 'e':
-            cnt=0;
-            break;
-case 'D':case 'd':
-            {
-                if(seek_in_file(maillists,uident))
-                {
-                    del_from_file(maillists,uident);
-                    cnt--;
-                }
-                break;
-            }
-case 'I':case 'i':
-            n=0;
-            clear();
-            for(i=cnt;i<maxrecp&&n<nf;i++)
-            {
-                int key;
-                move(2,0);
-                prints("%s\n",topfriend[n].id);
-                move(4, 0);
-                clrtoeol();
-                move(3,0);
-                n++;
-                prints("(A)È«²¿¼ÓÈë (Y)¼ÓÈë (N)²»¼ÓÈë (Q)½áÊø? [Y]:");
-                if(!fmode)
-                    key=igetkey();
-                else
-                    key='Y';
-                if(key=='q'||key=='Q')
-                    break;
-                if(key=='A'||key=='a')
-                {
-                    fmode=YEA;
-                    key='Y';
-                }
-                if(key=='\0'||key=='\n'||key=='y'||key=='Y' || '\r' == key)
-                {
-                    strcpy(uident,topfriend[n-1].id);
-                    if(!getuser(uident))
-                    {
-                        move(4,0);
-                        prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
-                        pressreturn();
-                        i--;
-                        continue;
-                    }else
-                        if (!(lookupuser.userlevel & PERM_READMAIL))
-                        {
-                            move(4,0);
-                            prints("ÐÅ¼þÎÞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser);
-                            i--;
-                            continue;
-                        }else
-                            if ( seek_in_file(maillists,uident) )
-                            {
-                                i--;
-                                continue;
-                            }
-                    addtofile(maillists,uident);
-                    cnt++;
-                }
-            }
-            fmode=NA;
-            clear();
-            break;
-    case 'C': case 'c':
-            unlink(maillists);
-            cnt=0;
-            break;
-        }
-        if(tmp[0]=='e'||tmp[0]=='E')
-            break;
-        move(5,0);
-        clrtobot();
-        if(cnt>maxrecp)
-            cnt=maxrecp;
-        move(3,0);
-        clrtobot();
-        listfilecontent(maillists);
-    }
-    if(cnt > 0) {
-        G_SENDMODE=2;
-        switch (do_gsend(NULL,NULL,cnt)) {
-        case -1: prints("ÐÅ¼þÄ¿Â¼´íÎó\n"); break;
-        case -2: prints("È¡Ïû·¢ÐÅ\n"); break;
-        case -4: prints("ÐÅÏäÒÑ¾­³¬³öÏÞ¶î\n");break;
-        default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
-        }
-        G_SENDMODE=0;
-        pressreturn() ;
-    }
-    return 0 ;
+	modify_user_mode( SMAIL );
+	*quote_file = '\0';
+	clear();
+	sethomefile( maillists, currentuser.userid, "maillist" );
+	cnt=listfilecontent(maillists);
+	while(1)
+	{
+		if(cnt>maxrecp-10)
+		{
+			move(2,0);
+			prints("Ä¿Ç°ÏÞÖÆ¼ÄÐÅ¸ø [1m%d[m ÈË",maxrecp);
+		}
+		getdata(0,0,"(A)Ôö¼Ó (D)É¾³ý (I)ÒýÈëºÃÓÑ (C)Çå³ýÄ¿Ç°Ãûµ¥ (E)·ÅÆú (S)¼Ä³ö? [S]£º ",
+				tmp,2,DOECHO,NULL,YEA);
+		if(tmp[0]=='\n'||tmp[0]=='\0'||tmp[0]=='s'||tmp[0]=='S')
+		{
+			break;
+		}
+		if(tmp[0]=='a'||tmp[0]=='d'||tmp[0]=='A'||tmp[0]=='D')
+		{
+			move(1,0);
+			if(tmp[0]=='a'||tmp[0]=='A')
+				usercomplete("ÇëÒÀ´ÎÊäÈëÊ¹ÓÃÕß´úºÅ(Ö»°´ ENTER ½áÊøÊäÈë): ",uident) ;
+			else
+				namecomplete("ÇëÒÀ´ÎÊäÈëÊ¹ÓÃÕß´úºÅ(Ö»°´ ENTER ½áÊøÊäÈë): ",uident) ;
+			move(1,0);
+			clrtoeol();
+			if(uident[0] == '\0') continue ;
+			if(!getuser(uident)) 
+			{
+				move(2,0);
+				prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
+			}
+		}
+		switch(tmp[0])
+		{
+			case 'A': case 'a':
+				if (!(lookupuser.userlevel & PERM_READMAIL)) 
+				{
+					move(2,0);
+					prints("ÐÅ¼þÎÞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser);
+					break;
+				}
+				else if ( seek_in_file(maillists,uident) ) {
+					move(2,0);
+					prints("ÒÑ¾­ÁÐÎªÊÕ¼þÈËÖ®Ò» \n");
+					break;
+				}
+				addtofile(maillists,uident);
+				cnt++;
+				break;
+			case 'E':case 'e':
+				cnt=0;
+				break;
+			case 'D':case 'd':
+				{
+					if(seek_in_file(maillists,uident))
+					{
+						del_from_file(maillists,uident);
+						cnt--;
+					}
+					break;
+				}
+			case 'I':case 'i':
+				n=0;
+				clear();
+				for(i=cnt;i<maxrecp&&n<nf;i++)
+				{
+					int key;
+					move(2,0);
+					prints("%s\n",topfriend[n].id);
+					move(4, 0);
+					clrtoeol();
+					move(3,0);
+					n++;
+					prints("(A)È«²¿¼ÓÈë (Y)¼ÓÈë (N)²»¼ÓÈë (Q)½áÊø? [Y]:");
+					if(!fmode)
+						key=igetkey();
+					else
+						key='Y';
+					if(key=='q'||key=='Q')
+						break;
+					if(key=='A'||key=='a')
+					{
+						fmode=YEA;
+						key='Y';
+					}
+					if(key=='\0'||key=='\n'||key=='y'||key=='Y' || '\r' == key)
+					{
+						strcpy(uident,topfriend[n-1].id);
+						if(!getuser(uident))
+						{
+							move(4,0);
+							prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
+							pressreturn();
+							i--;
+							continue;
+						}else 
+							if (!(lookupuser.userlevel & PERM_READMAIL))
+							{
+								move(4,0);
+								prints("ÐÅ¼þÎÞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser);
+								i--;
+								continue;
+							}else
+								if ( seek_in_file(maillists,uident) ) 
+								{
+									i--;
+									continue;
+								}
+							addtofile(maillists,uident);
+							cnt++;
+					}
+				}
+				fmode=NA;
+				clear();
+				break;
+			case 'C': case 'c':
+				unlink(maillists);
+				cnt=0;
+				break;      
+		}
+		if(tmp[0]=='e'||tmp[0]=='E')
+			break;
+		move(5,0);
+		clrtobot();
+		if(cnt>maxrecp)
+			cnt=maxrecp;
+		move(3,0);
+		clrtobot();
+		listfilecontent(maillists);
+	} 
+	if(cnt > 0) {
+		G_SENDMODE=2;
+		switch (do_gsend(NULL,NULL,cnt)) {
+			case -1: prints("ÐÅ¼þÄ¿Â¼´íÎó\n"); break;
+			case -2: prints("È¡Ïû·¢ÐÅ\n"); break;
+			case -4: prints("ÐÅÏäÒÑ¾­³¬³öÏÞ¶î\n");break;
+			default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
+		}
+		G_SENDMODE=0;
+		pressreturn() ;
+	}
+	return 0 ;
 }
 
 /*Add by SmallPig*/
 
-int
+	int
 do_gsend(userid,title,num)
-char *userid[], *title ;
-int num ;
+	char *userid[], *title ;
+	int num ;
 {
-    struct stat st ;
-    char        buf2[256],buf3[STRLEN],buf4[STRLEN];
-    int         replymode=1; /* Post New UI*/
-    char        ans[4],include_mode='Y';
-    char        filepath[STRLEN], tmpfile[STRLEN], fname[STRLEN];
-    int         cnt;
-    FILE        *mp;
+	struct stat st ;
+	char        buf2[256],buf3[STRLEN],buf4[STRLEN];
+	int         replymode=1; /* Post New UI*/
+	char        ans[4],include_mode='Y';
+	char        filepath[STRLEN], tmpfile[STRLEN], fname[STRLEN];
+	int         cnt;
+	FILE        *mp;
 
-    /* Ìí¼ÓÔÚºÃÓÑ¼ÄÐÅÊ±µÄ·¢ÐÅÉÏÏÞÏÞÖÆ Bigman 2000.12.11 */
-    int sumlimit,numlimit,sum;
+/* Ìí¼ÓÔÚºÃÓÑ¼ÄÐÅÊ±µÄ·¢ÐÅÉÏÏÞÏÞÖÆ Bigman 2000.12.11 */
+	int sumlimit,numlimit,sum;
 
     if ( !HAS_PERM(PERM_SYSOP) ) {
         if (HAS_PERM(PERM_CHATCLOAK))
-            /* Bigman: 2000.8.17 ÖÇÄÒÍÅ */
+        /* Bigman: 2000.8.17 ÖÇÄÒÍÅ */
         {
             sumlimit = 2000;
             numlimit = 2000;
@@ -2017,8 +2017,8 @@ int num ;
             pressreturn();
             return -4;
         }
-
-        if ((sum = get_sum_records(currmaildir, sizeof(fileheader))) > sumlimit)
+        
+               if ((sum = get_sum_records(currmaildir, sizeof(fileheader))) > sumlimit)
         {
             move(1, 0);
             prints("ÄãµÄÐÅÏäÈÝÁ¿ %d(k)³¬³öÉÏÏÞ %d(k), ÎÞ·¨×ª¼ÄÐÅ¼þ¡£", sum, sumlimit);
@@ -2027,245 +2027,245 @@ int num ;
         }
     }
 
-    in_mail = YEA ;
+	in_mail = YEA ;
 #if defined(MAIL_REALNAMES)
-    sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.realname) ;
+	sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.realname) ;
 #else
-    /*sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.username) ;*/
-    strcpy(genbuf, currentuser.userid); /* Leeward 98.04.14 */
+	/*sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.username) ;*/
+	strcpy(genbuf, currentuser.userid); /* Leeward 98.04.14 */  
 #endif
-    move(1,0);
-    clrtoeol();
-    if(!title){
-        replymode=0;
-        title="Ã»Ö÷Ìâ";
-        buf4[0]='\0';
-    }
-    else
-        buf4[0]=' ';
+	move(1,0);
+	clrtoeol();
+	if(!title){
+		replymode=0;
+		title="Ã»Ö÷Ìâ";
+		buf4[0]='\0';
+	}
+	else
+		buf4[0]=' ';
 
-    sprintf( tmpfile, "tmp/bbs-gsend-%05d", getpid() );
-    /* Leeward 98.01.17 Prompt whom you are writing to */
-    if (1 == G_SENDMODE)
-        strcpy(lookupuser.userid, "ºÃÓÑÃûµ¥");
-    else if (2 == G_SENDMODE)
-        strcpy(lookupuser.userid, "¼ÄÐÅÃûµ¥");
-    else
-        strcpy(lookupuser.userid, "¶àÎ»ÍøÓÑ");
+	sprintf( tmpfile, "tmp/bbs-gsend-%05d", getpid() );
+	/* Leeward 98.01.17 Prompt whom you are writing to */
+	if (1 == G_SENDMODE)
+		strcpy(lookupuser.userid, "ºÃÓÑÃûµ¥");
+	else if (2 == G_SENDMODE)
+		strcpy(lookupuser.userid, "¼ÄÐÅÃûµ¥");
+	else
+		strcpy(lookupuser.userid, "¶àÎ»ÍøÓÑ");
 
-    if(currentuser.signature>numofsig||currentuser.signature<0)
-        currentuser.signature=1;
-    while(1)
-    {
-        sprintf(buf3,"ÒýÑÔÄ£Ê½ [[1m%c[m]",include_mode);
-        move( t_lines-3, 0 );
-        clrtoeol();
-        prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕýÔÚÉè¶¨±êÌâ]":title);
-        clrtoeol();
-        prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser.signature
-               ,(replymode) ? buf3:"");
+	if(currentuser.signature>numofsig||currentuser.signature<0)
+		currentuser.signature=1;
+	while(1)
+	{
+		sprintf(buf3,"ÒýÑÔÄ£Ê½ [[1m%c[m]",include_mode);
+		move( t_lines-3, 0 );
+		clrtoeol();
+		prints("Ê¹ÓÃ±êÌâ: [1m%-50s[m\n", (title[0]=='\0') ? "[ÕýÔÚÉè¶¨±êÌâ]":title);
+		clrtoeol();
+		prints("Ê¹ÓÃµÚ [1m%d[m ¸öÇ©Ãûµµ     %s",currentuser.signature
+				,(replymode) ? buf3:"");
 
-        if(buf4[0]=='\0'||buf4[0]=='\n'){
-            move(t_lines-1,0);
-            clrtoeol();
-            getdata(t_lines-1,0,"±êÌâ: ",buf4,50,DOECHO,NULL,YEA);
-            if((buf4[0]=='\0'||buf4[0]=='\n'))
-            {
-                buf4[0]=' ';
-                continue;
-            }
-            title=buf4;
-            continue;
-        }
-        move(t_lines-1,0);
-        clrtoeol();
-        /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-        sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓÐÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒýÑÔÄ£Ê½" : "");
-        getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
-        ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
-        if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
-        {
-            if(atoi(ans)<=numofsig)
-                currentuser.signature=atoi(ans);
-        }else if((ans[0]=='Y'||ans[0]=='N'||ans[0]=='A'||ans[0]=='R')&&replymode)
-        {
-            include_mode=ans[0];
-        }else if(ans[0]=='T')
-        {
-            buf4[0]='\0';
-        }else if(ans[0]=='V')
-        { /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
-            setuserfile(buf2,"signatures");
-            move(t_lines-1,0);
-            if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èý¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âð",NA,YEA)==YEA)
-                ansimore(buf2);
-            else
-            {
-                clear();
-                ansimore2(buf2,NA,0,18);
-            }
-        }else
-        {
-            strncpy(save_title,title,STRLEN) ;
-            strncpy(save_filename,fname,4096) ;
-            break;
-        }
-    }
+		if(buf4[0]=='\0'||buf4[0]=='\n'){
+			move(t_lines-1,0);
+			clrtoeol();
+			getdata(t_lines-1,0,"±êÌâ: ",buf4,50,DOECHO,NULL,YEA);
+			if((buf4[0]=='\0'||buf4[0]=='\n'))
+			{
+				buf4[0]=' ';
+				continue;
+			}
+			title=buf4;
+			continue;
+		}
+		move(t_lines-1,0);
+		clrtoeol();
+		/* Leeward 98.09.24 add: viewing signature(s) while setting post head */
+		sprintf(buf2,"Çë°´ [1;32m0[m~[1;32m%d V[m Ñ¡/¿´Ç©Ãûµµ%s£¬[1;32mT[m ¸Ä±êÌâ£¬[1;32mEnter[m ½ÓÊÜËùÓÐÉè¶¨: ",numofsig,(replymode) ? "£¬[1;32mY[m/[1;32mN[m/[1;32mR[m/[1;32mA[m ¸ÄÒýÑÔÄ£Ê½" : "");
+		getdata(t_lines-1,0,buf2,ans,3,DOECHO,NULL,YEA);
+		ans[0] = toupper(ans[0]); /* Leeward 98.09.24 add; delete below toupper */
+		if((ans[0]-'0')>=0&&ans[0]-'0'<=9)
+		{
+			if(atoi(ans)<=numofsig)
+				currentuser.signature=atoi(ans);
+		}else if((ans[0]=='Y'||ans[0]=='N'||ans[0]=='A'||ans[0]=='R')&&replymode)
+		{
+			include_mode=ans[0];
+		}else if(ans[0]=='T')
+		{
+			buf4[0]='\0';
+		}else if(ans[0]=='V')
+		{ /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
+			setuserfile(buf2,"signatures");
+			move(t_lines-1,0);
+			if (askyn("Ô¤ÉèÏÔÊ¾Ç°Èý¸öÇ©Ãûµµ, ÒªÏÔÊ¾È«²¿Âð",NA,YEA)==YEA)
+				ansimore(buf2);
+			else
+			{
+				clear();
+				ansimore2(buf2,NA,0,18);
+			}     
+		}else
+		{
+			strncpy(save_title,title,STRLEN) ;
+			strncpy(save_filename,fname,4096) ;
+			break;
+		}
+	}
 
-    /* Bigman:2000.8.13 ÈºÌå·¢ÐÅÎªÊ²Ã´ÒªÒýÓÃÎÄÕÂÄØ */
-    /*    do_quote( tmpfile,include_mode ); */
+	/* Bigman:2000.8.13 ÈºÌå·¢ÐÅÎªÊ²Ã´ÒªÒýÓÃÎÄÕÂÄØ */
+	/*    do_quote( tmpfile,include_mode ); */
 
-    if (vedit(tmpfile,YEA) == -1) {
-        unlink( tmpfile );
-        clear(); return -2;
-    }
-    clear() ;
-    if(G_SENDMODE==2)
-    {
-        char maillists[STRLEN];
+	if (vedit(tmpfile,YEA) == -1) {
+		unlink( tmpfile );
+		clear(); return -2;
+	}
+	clear() ;
+	if(G_SENDMODE==2)
+	{
+		char maillists[STRLEN];
 
-        setuserfile( maillists,"maillist"  );
-        if ((mp = fopen(maillists, "r")) == NULL)
-        {
-            return -3;
-        }
-    }
-    for(cnt = 0; cnt < num; cnt++)
-    {
-        char uid[13];
-        char buf[STRLEN];
+		setuserfile( maillists,"maillist"  );
+		if ((mp = fopen(maillists, "r")) == NULL)
+		{
+			return -3;
+		}
+	}
+	for(cnt = 0; cnt < num; cnt++) 
+	{
+		char uid[13];
+		char buf[STRLEN];
 
-        if(G_SENDMODE==1)
-            strcpy(uid,topfriend[cnt].id);
-        else if(G_SENDMODE==2)
-        {
-            if(fgets(buf, STRLEN, mp) != NULL)
-            {
-                if ( strtok( buf, " \n\r\t") != NULL)
-                    strcpy( uid, buf);
-                else
-                    continue;
-            }else
-            {
-                cnt=num;
-                continue;
-            }
-        }
-        else
-            strcpy(uid, userid[cnt]);
-        setmailpath(filepath, uid);
-        if(stat(filepath,&st) == -1) {
-            if(mkdir(filepath,0755) == -1)
-            {
-                if(G_SENDMODE==2)
-                    fclose(mp);
-                return -1 ;
-            }
-        } else {
-            if(!(st.st_mode & S_IFDIR))
-            {
-                if(G_SENDMODE==2)
-                    fclose(mp);
-                return -1 ;
-            }
-        }
+		if(G_SENDMODE==1)
+			strcpy(uid,topfriend[cnt].id);
+		else if(G_SENDMODE==2)
+		{
+			if(fgets(buf, STRLEN, mp) != NULL) 
+			{
+				if ( strtok( buf, " \n\r\t") != NULL)
+					strcpy( uid, buf);
+				else
+					continue;
+			}else
+			{
+				cnt=num;
+				continue;
+			}
+		}
+		else
+			strcpy(uid, userid[cnt]);
+		setmailpath(filepath, uid);
+		if(stat(filepath,&st) == -1) {
+			if(mkdir(filepath,0755) == -1) 
+			{
+				if(G_SENDMODE==2)
+					fclose(mp);
+				return -1 ;
+			}
+		} else {  
+			if(!(st.st_mode & S_IFDIR))
+			{
+				if(G_SENDMODE==2)
+					fclose(mp);
+				return -1 ;
+			}
+		}
 
-        if(!chkreceiver(uid))/*Haohamru.99.4.05*/
-        {
-            prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ,Çë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...",uid);
-            pressreturn();
-            clear();
-        }
-        else	/* Bigman. 2000.9.8 ÐÞÕýºÃÓÑ·¢ÐÅ´íÎó */
-            if(lookupuser.userlevel & PERM_SUICIDE)
-            {
-                prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ£¬Çë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...",uid);
-                pressreturn();
-                clear();
-            }
-            else	/* ÐÞÕýºÃÓÑ·¢ÐÅµÄ´íÎó Bigman 2000.9.8 */
-                if (NA==canIsend2(uid)) /* Leeward 98.04.10 */
-                {
-                    char tmp_title[STRLEN], save_title_bak[STRLEN];
+		if(!chkreceiver(uid))/*Haohamru.99.4.05*/
+		{
+			prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ,Çë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...",uid);
+			pressreturn();
+			clear();
+		}
+		else	/* Bigman. 2000.9.8 ÐÞÕýºÃÓÑ·¢ÐÅ´íÎó */
+			if(lookupuser.userlevel & PERM_SUICIDE)
+			{
+				prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ£¬Çë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...",uid);
+				pressreturn();
+				clear();
+			}
+			else	/* ÐÞÕýºÃÓÑ·¢ÐÅµÄ´íÎó Bigman 2000.9.8 */
+				if (NA==canIsend2(uid)) /* Leeward 98.04.10 */
+				{
+					char tmp_title[STRLEN], save_title_bak[STRLEN];
 
-                    prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨Ïò %s ·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®\n\nÇë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...[m[m\n\n", uid, uid);
-                    pressreturn();
-                    clear();
-                    strcpy(save_title_bak, save_title);
-                    sprintf(tmp_title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", uid);
-                    mail_file(tmpfile, currentuser.userid, tmp_title);
-                    strcpy(save_title, save_title_bak);
-                }
-                else
-                {
-                    mail_file(tmpfile,uid,save_title);
-                }
-    }
-    unlink( tmpfile ) ;
-    if(G_SENDMODE==2)
-        fclose(mp);
-    return 0 ;
+					prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨Ïò %s ·¢³ö´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®\n\nÇë°´ Enter ¼ü¼ÌÐøÏòÆäËûÈË·¢ÐÅ...[m[m\n\n", uid, uid);
+					pressreturn();
+					clear();
+					strcpy(save_title_bak, save_title);
+					sprintf(tmp_title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", uid);
+					mail_file(tmpfile, currentuser.userid, tmp_title);
+					strcpy(save_title, save_title_bak);
+				}               
+				else
+				{
+					mail_file(tmpfile,uid,save_title);
+				}
+	}
+	unlink( tmpfile ) ;
+	if(G_SENDMODE==2)
+		fclose(mp);
+	return 0 ;
 }
 
-int
+	int
 mail_file(tmpfile,userid,title)
-char tmpfile[STRLEN],userid[STRLEN],title[STRLEN];
+	char tmpfile[STRLEN],userid[STRLEN],title[STRLEN];
 {
-    struct fileheader newmessage ;
-    struct stat st ;
-    char fname[STRLEN],filepath[STRLEN],*ip;
-    int fp;
+	struct fileheader newmessage ;
+	struct stat st ;
+	char fname[STRLEN],filepath[STRLEN],*ip;
+	int fp;
 
-    int now; /* added for mail to SYSOP: Bigman 2000.8.11 */
+	int now; /* added for mail to SYSOP: Bigman 2000.8.11 */
 
-    memset(&newmessage, 0,sizeof(newmessage)) ;
+	memset(&newmessage, 0,sizeof(newmessage)) ;
 #if defined(MAIL_REALNAMES)
-    sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.realname) ;
+	sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.realname) ;
 #else
-/*sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.username) ;*/
-    strcpy(genbuf, currentuser.userid); /* Leeward 98.04.14 */
+	/*sprintf(genbuf,"%s (%s)",currentuser.userid,currentuser.username) ;*/
+	strcpy(genbuf, currentuser.userid); /* Leeward 98.04.14 */  
 #endif
-    strncpy(newmessage.owner,genbuf,STRLEN) ;
-    strncpy(newmessage.title,title,STRLEN) ;
-    strncpy(save_title,newmessage.title,STRLEN) ;
+	strncpy(newmessage.owner,genbuf,STRLEN) ;
+	strncpy(newmessage.title,title,STRLEN) ;
+	strncpy(save_title,newmessage.title,STRLEN) ;
 
-    setmailpath(filepath, userid);
-    if(stat(filepath,&st) == -1) {
-        if(mkdir(filepath,0755) == -1)
-            return -1 ;
-    } else {
-        if(!(st.st_mode & S_IFDIR))
-            return -1 ;
-    }
+	setmailpath(filepath, userid);
+	if(stat(filepath,&st) == -1) {
+		if(mkdir(filepath,0755) == -1) 
+			return -1 ;
+	} else {  
+		if(!(st.st_mode & S_IFDIR))
+			return -1 ;
+	}
 
-    now=time(NULL);
+	now=time(NULL);
 
-    sprintf(fname,"M.%d.A", now) ;
+	sprintf(fname,"M.%d.A", now) ;
 
-    setmailfile(filepath, userid, fname);
-    ip = strrchr(fname,'A') ;
-    while((fp = open(filepath,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
-        if(*ip == 'Z')
-            ip++,*ip = 'A', *(ip + 1) = '\0' ;
-        else
-            (*ip)++ ;
-        setmailfile(filepath, userid, fname);
-    }
+	setmailfile(filepath, userid, fname);
+	ip = strrchr(fname,'A') ;
+	while((fp = open(filepath,O_CREAT|O_EXCL|O_WRONLY,0644)) == -1) {
+		if(*ip == 'Z')
+			ip++,*ip = 'A', *(ip + 1) = '\0' ;
+		else
+			(*ip)++ ;
+		setmailfile(filepath, userid, fname);
+	}
+          
+      close(fp) ;
+      strcpy(newmessage.filename,fname) ;
+      strncpy(save_filename,fname,4096) ;
+      setmailfile(filepath, userid, fname) ; 
 
-    close(fp) ;
-    strcpy(newmessage.filename,fname) ;
-    strncpy(save_filename,fname,4096) ;
-    setmailfile(filepath, userid, fname) ;
+      sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
+      system(genbuf);
 
-    sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
-    system(genbuf);
+      setmailfile(genbuf, userid, DOT_DIR);
+      if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
+             return -1 ;
 
-    setmailfile(genbuf, userid, DOT_DIR);
-    if(append_record(genbuf,&newmessage,sizeof(newmessage)) == -1)
-        return -1 ;
-
-    sprintf(genbuf, "mailed %s ", userid);
-    report(genbuf);
+      sprintf(genbuf, "mailed %s ", userid);
+      report(genbuf);
     return 0 ;
 }
 
@@ -2273,44 +2273,44 @@ char tmpfile[STRLEN],userid[STRLEN],title[STRLEN];
 int
 ov_send()
 {
-    int all,i;
+        int all,i;
 
-    /* ·â½ûMail Bigman:2000.8.22 */
+/* ·â½ûMail Bigman:2000.8.22 */
     if (HAS_PERM(PERM_DENYMAIL)) return DONOTHING;
 
-    modify_user_mode( SMAIL );
-    move(1,0); clrtobot();
-    move(2,0); prints("¼ÄÐÅ¸øºÃÓÑÃûµ¥ÖÐµÄÈË£¬Ä¿Ç°±¾Õ¾ÏÞÖÆ½ö¿ÉÒÔ¼Ä¸ø [1m%d[m Î»¡£\n", maxrecp);
-    if(nf<=0)
-    {
-        prints("Äã²¢Ã»ÓÐÉè¶¨ºÃÓÑ¡£\n");
+        modify_user_mode( SMAIL );
+        move(1,0); clrtobot();
+        move(2,0); prints("¼ÄÐÅ¸øºÃÓÑÃûµ¥ÖÐµÄÈË£¬Ä¿Ç°±¾Õ¾ÏÞÖÆ½ö¿ÉÒÔ¼Ä¸ø [1m%d[m Î»¡£\n", maxrecp);
+        if(nf<=0)
+        {
+             prints("Äã²¢Ã»ÓÐÉè¶¨ºÃÓÑ¡£\n");
+             pressanykey();
+             clear();
+             return 0;
+        }
+        else
+        {
+             prints("Ãûµ¥ÈçÏÂ£º\n");
+        }
+        G_SENDMODE=1;
+        all=(nf>=maxrecp)? maxrecp:nf;
+        for(i=0;i<all;i++)
+        {
+            prints("%-12s ",topfriend[i].id);
+            if((i+1)%6==0)
+                prints("\n");
+        }
         pressanykey();
-        clear();
+        switch (do_gsend(NULL,NULL,all)) 
+        {
+          case -1: prints("ÐÅ¼þÄ¿Â¼´íÎó\n"); break;
+          case -2: prints("ÐÅ¼þÈ¡Ïû\n"); break;
+	  case -4: prints("ÐÅÏäÒÑ¾­³¬³öÏÞ¶î\n");break;
+          default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
+        }
+        pressreturn();
+        G_SENDMODE=0;
         return 0;
-    }
-    else
-    {
-        prints("Ãûµ¥ÈçÏÂ£º\n");
-    }
-    G_SENDMODE=1;
-    all=(nf>=maxrecp)? maxrecp:nf;
-    for(i=0;i<all;i++)
-    {
-        prints("%-12s ",topfriend[i].id);
-        if((i+1)%6==0)
-            prints("\n");
-    }
-    pressanykey();
-    switch (do_gsend(NULL,NULL,all))
-    {
-    case -1: prints("ÐÅ¼þÄ¿Â¼´íÎó\n"); break;
-    case -2: prints("ÐÅ¼þÈ¡Ïû\n"); break;
-    case -4: prints("ÐÅÏäÒÑ¾­³¬³öÏÞ¶î\n");break;
-    default: prints("ÐÅ¼þÒÑ¼Ä³ö\n") ;
-    }
-    pressreturn();
-    G_SENDMODE=0;
-    return 0;
 }
 
 int
@@ -2320,12 +2320,12 @@ int cnt;
 {
     int i;
 
-    for(i = 0; i < cnt; i++)
-        if(!strcmp(uident[i], uident[cnt]))
-        {
-            return i+1;
-        }
-    return 0;
+    for(i = 0; i < cnt; i++) 
+      if(!strcmp(uident[i], uident[cnt])) 
+      {
+                return i+1;
+      }
+    return 0; 
 }
 
 int
@@ -2347,15 +2347,15 @@ int isuu;
     clear();
     if( address[0] == '\0' ) {
         strncpy( address, currentuser.email, STRLEN );
-        if(strstr(currentuser.email,"bbs@bbs.net.tsinghua.edu.cn") || strstr(currentuser.email,"bbs@smth.org") || strlen(currentuser.email)==0)
-        {
-            strcpy(address,currentuser.userid);
-        }
+	if(strstr(currentuser.email,"bbs@bbs.net.tsinghua.edu.cn") || strstr(currentuser.email,"bbs@smth.org") || strlen(currentuser.email)==0)
+	{
+		strcpy(address,currentuser.userid);
+	}
     }
 
     if ( !HAS_PERM(PERM_SYSOP) ) {
         if (HAS_PERM(PERM_CHATCLOAK))
-            /* Bigman: 2000.8.17 ÖÇÄÒÍÅ */
+	/* Bigman: 2000.8.17 ÖÇÄÒÍÅ */
         {
             sumlimit = 2000;
             numlimit = 2000;
@@ -2375,7 +2375,7 @@ int isuu;
             sumlimit = 15;
             numlimit = 15;
         }
-        if (get_mailnum()>numlimit)
+        if (get_mailnum()>numlimit)             
         {
             move(1, 0);
             prints("ÄãµÄÐÅÏäÒÑ¾­³¬³öÏÞ¶î£¬ÎÞ·¨×ª¼ÄÐÅ¼þ¡£\n");
@@ -2390,9 +2390,9 @@ int isuu;
             pressreturn();
             return -4;
         }
-    }
-
-    prints("ÇëÖ±½Ó°´ Enter ½ÓÊÜÀ¨ºÅÄÚÌáÊ¾µÄµØÖ·, »òÕßÊäÈëÆäËûµØÖ·\n");
+    }                 
+  
+    prints("ÇëÖ±½Ó°´ Enter ½ÓÊÜÀ¨ºÅÄÚÌáÊ¾µÄµØÖ·, »òÕßÊäÈëÆäËûµØÖ·\n"); 
     prints("(ÈçÒª×ªÐÅµ½×Ô¼ºµÄBBSÐÅÏä,ÇëÖ±½ÓÊäÈëÄãµÄID×÷ÎªµØÖ·¼´¿É)\n");
     prints("°Ñ %s µÄ¡¶%s¡·×ª¼Ä¸ø:", fh->owner, fh->title );
     sprintf(genbuf,"[%s]: ",address);
@@ -2406,15 +2406,15 @@ int isuu;
     } else {
         strncpy( address, receiver, STRLEN );
         /* È·ÈÏµØÖ·ÊÇ·ñÕýÈ· added by dong, 1998.10.1 */
-        sprintf( genbuf, "È·¶¨½«ÎÄÕÂ¼Ä¸ø %s Âð? (Y/N) [Y]: ", address );
-        getdata( 3, 0, genbuf, receiver, 3, DOECHO, NULL ,YEA);
-        if( receiver[0] == 'n' || receiver[0] == 'N' )
-            return 1;
-        strncpy( receiver, address, STRLEN );
+	sprintf( genbuf, "È·¶¨½«ÎÄÕÂ¼Ä¸ø %s Âð? (Y/N) [Y]: ", address );
+	getdata( 3, 0, genbuf, receiver, 3, DOECHO, NULL ,YEA);
+	if( receiver[0] == 'n' || receiver[0] == 'N' )
+ 	    return 1;
+	strncpy( receiver, address, STRLEN );
     }
     if (invalidaddr(receiver)) return -2;
-    if (!HAS_PERM(PERM_POST))
-        if(!strstr(receiver,"@")&&!strstr(receiver,"."))
+   if (!HAS_PERM(PERM_POST))
+      if(!strstr(receiver,"@")&&!strstr(receiver,".")) 
         {
             prints("ÄãÉÐÎÞÈ¨ÏÞ×ª¼ÄÐÅ¼þ¸øÕ¾ÄÚÆäËüÓÃ»§¡£");
             pressreturn();
@@ -2423,27 +2423,27 @@ int isuu;
 
     sprintf(fname,"/tmp/.forward.%s.%05d",currentuser.userid,currentuser.userid,getpid());
     sprintf( tmp_buf, "cp %s/%s %s",
-             direct, fh->filename, fname);
+                  direct, fh->filename, fname);
     system( tmp_buf );
     sprintf(title,"%.50s(×ª¼Ä)",fh->title);/*Haohmaru.00.05.01,moved here*/
     if(askyn("ÊÇ·ñÐÞ¸ÄÎÄÕÂÄÚÈÝ",0)==1)
     {
         vedit(fname,NA);
         y = 2;
-        sprintf(tmp_buf,"ÐÞ¸Ä±»×ªÌùµÄÎÄÕÂ»òÐÅ¼þ: %s",title);/*Haohmaru.00.05.01*/
-        report(tmp_buf);
+	sprintf(tmp_buf,"ÐÞ¸Ä±»×ªÌùµÄÎÄÕÂ»òÐÅ¼þ: %s",title);/*Haohmaru.00.05.01*/
+	report(tmp_buf);
         /* clear(); */
     }
-
+  
     { /* Leeward 98.04.27: better:-) */
-        char *ptrX;
-
-        ptrX = strstr(receiver, ".bbs@smth.org");
-        /*disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@"); */
-
-        if (ptrX)  *ptrX = 0;
+      char *ptrX;
+   
+      ptrX = strstr(receiver, ".bbs@smth.org");
+/*disable by KCN      if (!ptrX) ptrX = strstr(receiver, ".bbs@"); */
+      
+      if (ptrX)  *ptrX = 0;
     }
-
+      
     if(!strstr(receiver,"@")&&!strstr(receiver,"."))
     {   /* sending local file need not uuencode or convert to big5... */
         prints("×ª¼ÄÐÅ¼þ¸ø %s, ÇëÉÔºò....\n", receiver);
@@ -2452,33 +2452,33 @@ int isuu;
         return_no=getuser(receiver);
         if(return_no==0)
         {
-            return_no=1;
-            prints("Ê¹ÓÃÕßÕÒ²»µ½...\n");
+                return_no=1;
+                prints("Ê¹ÓÃÕßÕÒ²»µ½...\n");
         }else
         {	/* ²éÍêºóÓ¦¸ÃÊ¹ÓÃlookupuserÖÐµÄÄÚÈÝ,±£Ö¤´óÐ¡Ð´ÕýÈ·  period 2000-12-13 */
-            strncpy(receiver, lookupuser.userid, IDLEN+1);
-            receiver[IDLEN] = 0;
+		strncpy(receiver, lookupuser.userid, IDLEN+1);
+		receiver[IDLEN] = 0;
 
-            if(!chkreceiver(receiver))/*Haohamru.99.4.05*/
-            {
-                prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n",receiver);
-                return -4;
-            }
+if(!chkreceiver(receiver))/*Haohamru.99.4.05*/
+{
+prints("%s ÐÅÏäÒÑÂú,ÎÞ·¨ÊÕÐÅ\n",receiver);
+return -4;
+}
 
-            if(lookupuser.userlevel & PERM_SUICIDE)
-            {
-                prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n",receiver);
-                return -5;
-            }
+if(lookupuser.userlevel & PERM_SUICIDE)
+{
+prints("%s ×ÔÉ±ÖÐ£¬²»ÄÜÊÕÐÅ\n",receiver);
+return -5;
+}
 
-            if (NA==canIsend2(receiver)) /* Leeward 98.04.10 */
-            {
-                prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨×ª¼Ä´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", receiver);
-                sprintf(title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", receiver);
-                mail_file(fname, currentuser.userid, title);
-                return -4;
-            }
-            return_no = mail_file(fname, lookupuser.userid,title);
+if (NA==canIsend2(receiver)) /* Leeward 98.04.10 */
+{
+  prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎÞ·¨×ª¼Ä´ËÐÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®[m[m\n\n", receiver);
+  sprintf(title, "ÍËÐÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄÐÅ¼þ£®", receiver);
+  mail_file(fname, currentuser.userid, title);
+  return -4;
+}           
+                return_no = mail_file(fname, lookupuser.userid,title);
         }
     }
     else
@@ -2486,7 +2486,7 @@ int isuu;
         /* Add by ming, 96.10.9 */
         char data[3];
         int isbig5;
-
+    
         prints("ÈôÄúÒª½«ÐÅ¼þ×ª¼Äµ½Ì¨ÍåÇëÊäÈë Y »ò y\n");
         getdata(7, 0, "×ª³ÉBIG5Âë? [N]: ", data, 2, DOECHO, 0);
         if(data[0]=='y' || data[0]=='Y') isbig5 = 1;
@@ -2495,7 +2495,7 @@ int isuu;
         getdata(8, 0, "¹ýÂËANSI¿ØÖÆ·û¿? [Y]: ", data, 2, DOECHO, 0);
         if(data[0]=='n' || data[0]=='N') noansi = 0;
         else noansi = 1;
-
+        
         prints("×ª¼ÄÐÅ¼þ¸ø %s, ÇëÉÔºò....\n", receiver);
         refresh();
 
@@ -2505,7 +2505,7 @@ int isuu;
     }
 
     unlink(fname);
-    return ( return_no );
+    return ( return_no );       
 }
 
 #endif

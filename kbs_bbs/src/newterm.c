@@ -45,7 +45,7 @@ int dumb_term = YEA;
 
 int get_tty()
 {
-    return 1;
+	return 1;
 }
 
 void
@@ -67,18 +67,18 @@ int
 term_init(term)
 char* term;
 {
-    extern char* BC;
-    extern int obufsize,ibufsize,icurrchar;
-    static char* BCBuf="\010";
-    obufsize=0;
-    ibufsize=0;
-    icurrchar = 0;
-    BC=BCBuf;
-    dumb_term=0;
-    strncpy(clearbuf,"\033[H\033[J",clearbuflen);
-    strncpy(cleolbuf,"\033[K",cleolbuflen);
-    strncpy(strtstandout,"\033[7m",strtstandoutlen);
-    strncpy(endstandout,"\033[m",endstandoutlen);
+	extern char* BC;
+	extern int obufsize,ibufsize,icurrchar;
+	static char* BCBuf="\010";
+	obufsize=0;
+	ibufsize=0;
+	icurrchar = 0;
+	BC=BCBuf;
+	dumb_term=0;
+	strncpy(clearbuf,"\033[H\033[J",clearbuflen);
+	strncpy(cleolbuf,"\033[K",cleolbuflen);
+	strncpy(strtstandout,"\033[7m",strtstandoutlen);
+	strncpy(endstandout,"\033[m",endstandoutlen);
 }
 
 void
@@ -90,7 +90,7 @@ int (*outc)() ;
     char* p;
     sprintf(buf,"\033[%d;%dH",destline+1,destcol+1);
     for (p=buf;*p!=0;p++)
-        (*outc)(*p) ;
+    	(*outc)(*p) ;
 }
 
 

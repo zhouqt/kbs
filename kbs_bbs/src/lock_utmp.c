@@ -7,7 +7,7 @@ main()
     static int utmpfd;
     struct flock fl;
     fl.l_type = F_WRLCK;
-    //    fl.l_whence = SEEK_SET;
+//    fl.l_whence = SEEK_SET;
     fl.l_whence = 0;
     fl.l_start = 0;
     fl.l_len = 0;
