@@ -44,14 +44,6 @@ static void utmp_unlock(int fd)
     close(fd);
 }
 
-static void utmp_setreadonly(int readonly)
-{
-    int iscreate;
-
-    shmdt(utmphead);
-    utmphead = (struct UTMPHEAD *) attach_shm1(NULL, 3698, sizeof(struct UTMPHEAD), &iscreate, readonly, utmphead);     /*attach user tmp head */
-}
-
 void detach_utmp()
 {
     shmdt(utmphead);
@@ -190,10 +182,8 @@ int getnewutmpent(struct user_info *up)
     int utmpfd, hashkey;
 
     utmpfd = utmp_lock();
-    utmp_setreadonly(0);
     pos = utmphead->hashhead[0] - 1;
     if (pos == -1) {
-        utmp_setreadonly(1);
         utmp_unlock(utmpfd);
         return -1;
     }
@@ -229,7 +219,6 @@ int getnewutmpent(struct user_info *up)
                     utmphead->listhead = 0;
                     bbslog("3system", "UTMP:maybe loop rebuild!");
                     apply_ulist((APPLY_UTMP_FUNC) rebuild_list, NULL);
-                    utmp_setreadonly(1);
                     utmp_unlock(utmpfd);
                     exit(-1);
                 }
@@ -283,7 +272,6 @@ int getnewutmpent(struct user_info *up)
             }
         }
     }
-    utmp_setreadonly(1);
     utmp_unlock(utmpfd);
     return pos + 1;
 }
@@ -297,10 +285,8 @@ int getnewutmpent2(struct user_info *up)
     int utmpfd, hashkey;
 
     utmpfd = utmp_lock();
-    utmp_setreadonly(0);
     pos = utmphead->hashhead[0] - 1;
     if (pos == -1) {
-        utmp_setreadonly(1);
         utmp_unlock(utmpfd);
         return -1;
     }
@@ -336,7 +322,6 @@ int getnewutmpent2(struct user_info *up)
                     utmphead->listhead = 0;
                     bbslog("3system", "UTMP:maybe loop rebuild..!");
                     apply_ulist((APPLY_UTMP_FUNC) rebuild_list, NULL);
-                    utmp_setreadonly(1);
                     utmp_unlock(utmpfd);
                     return -1;
                 }
@@ -367,7 +352,6 @@ int getnewutmpent2(struct user_info *up)
     utmphead->hashhead[hashkey] = pos + 1;
 
     utmphead->number++;
-    utmp_setreadonly(1);
     utmp_unlock(utmpfd);
     return pos + 1;
 }
@@ -614,12 +598,10 @@ void clear_utmp(int uent, int useridx, int pid)
     int lockfd;
 
     lockfd = utmp_lock();
-    utmp_setreadonly(0);
 
     if (((useridx == 0) || (utmphead->uinfo[uent - 1].uid == useridx)) && pid == utmphead->uinfo[uent - 1].pid)
         clear_utmp2(uent);
 
-    utmp_setreadonly(1);
     utmp_unlock(lockfd);
 }
 
