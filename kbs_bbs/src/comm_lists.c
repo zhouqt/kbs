@@ -161,7 +161,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"FavBoard",	FavBoard},	/* added period 2000-09-11 */
     {"BadList",	badlist},	/* added Bigman 2000.12.26 */
     {"GiveupNet", giveupnet},	/* added Bad 2002.7.5 */
-	{"ClearAllNew", clear_all_board_read_flag(), /* kcn 2002.07.18 */
+    {"ClearAllNew", clear_all_board_read_flag}, /* kcn 2002.07.18 */
     {"CheckForm",    m_register},
     {"ModifyInfo",   m_info},
     {"ModifyLevel",  x_level},
