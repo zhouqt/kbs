@@ -6,6 +6,7 @@ stiger: 增加到 BONLINE_LOGDIR/year/mon/day_useronline 文件
 然后每天快结束时会有专门的程序根据来生成dayonline.png
 mkonlinepng.sh
 
+lastcount文件可以用来snmp分析....
 *******************************************/
 
 #include <time.h>
@@ -14,6 +15,7 @@ mkonlinepng.sh
 #include "config.h"
 
 FILE *fp;
+FILE *fp_forcount;
 int totalonline=0;
 int wwwguestonline=0;
 int wwwnotguestonline=0;
@@ -96,6 +98,14 @@ main()
 		exit(0);
 	}
 
+
+    sprintf(path, "%s/lastcount", BONLINE_LOGDIR);
+
+    if((fp_forcount=fopen(path, "a"))==NULL){
+        printf("cannot open log file\n");
+        exit(0);
+    }
+
     resolve_utmp();
 	get_publicshm();
 #if HAVE_WWW == 1
@@ -114,5 +124,7 @@ main()
 
 	/*格式: 时间 totalonline wwwguestonline wwwnotguestonline telnetonline wwwguestschool wwwnotguestschool telnetschool */
 	fprintf(fp, "%d.%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", t.tm_hour, t.tm_min/6, totalonline, wwwguestonline, wwwnotguestonline, telnetonline, wwwguestschool, wwwnotguestschool, telnetschool);
+	fprintf(fp_forcount, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n", totalonline, wwwguestonline, wwwnotguestonline, telnetonline, wwwguestschool, wwwnotguestschool, telnetschool);
     fclose(fp);
+    fclose(fp_forcount);
 }

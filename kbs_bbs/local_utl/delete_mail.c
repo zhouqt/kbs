@@ -29,6 +29,7 @@ int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC
 				setmailfile(from, touser, fname);
 				setmailfile(to, touser, buf2);
 				rename(from, to);
+				printf("found one %s...\n",fname);
 				if (lstat(to, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
 					subspace += st.st_size;
 				}
