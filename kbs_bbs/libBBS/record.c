@@ -30,7 +30,7 @@
 
 static sigjmp_buf bus_jump;
 
-int sigbus(int signo)
+void sigbus(int signo)
 {
   siglongjmp(bus_jump,1);
 };
@@ -234,11 +234,12 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
     		munmap(buf,stat.st_size);
     		close(fd);
     		return QUIT;
+            }
     	}
     }
     munmap(buf,stat.st_size);
     close(fd) ;
-    signal(SIGBUS,SIGIGN);
+    signal(SIGBUS,SIG_IGN);
     return 0 ;
 }
 
@@ -259,8 +260,7 @@ apply_record(char *filename ,int (*fptr)(char*,char*) ,int size ,char* arg)
 #endif
 
 /* COMMAN : use mmap to speed up searching */ 
-int
-search_record_back(filename, size, start, fptr, farg, rptr, sorted)
+int search_record_back(filename, size, start, fptr, farg, rptr, sorted)
 char *filename ; /* idx file name */
 int size ;	/* record size */
 int start ;	/* where to start reverse search */
@@ -291,7 +291,7 @@ int sorted ; /* if records in file are sorted */
     }
     munmap(buf,start * size);
     close(fd);
-    signal(SIGBUS,SIGIGN);
+    signal(SIGBUS,SIG_IGN);
     return 0;
 }
 
@@ -331,7 +331,7 @@ char *farg ;
     }
     munmap(buf,stat.st_size);
     close(fd) ;
-    signal(SIGBUS,SIGIGN);
+    signal(SIGBUS,SIG_IGN);
     return 0 ;
 }
 
