@@ -81,11 +81,14 @@ function main() {
 	}
 	$friends_list = bbs_getfriends($currentuser["userid"], $startNum);
     
-	$count = count ( $friends_list );
-
-	$i = 0;
-	foreach($friends_list as $friend) {
-		$i++;
+    if ($friends_list === FALSE) {
+        $count = $total_friends = 0;
+    } else {
+    	$count = count ( $friends_list );
+    
+    	$i = 0;
+    	foreach($friends_list as $friend) {
+    		$i++;
 ?>
 <tr>
 <td class=TableBody1 align=center valign=middle>
@@ -102,6 +105,7 @@ function main() {
 </td>
 </tr>
 <?php
+        }
 	}
 ?>
 <tr>
