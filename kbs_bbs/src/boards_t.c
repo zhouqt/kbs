@@ -299,9 +299,9 @@ void show_brdlist(page, clsflag, newflag)       /* show board list */
     if (clsflag) {
         clear();
         if(yank_flag==2)
-	        docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a] ÒÆ¶¯[m] É¾³ı[d] Ä¿Â¼[A] ÇóÖú[h]\n");
+	        docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ı[d] ÅÅĞò[S] ÇóÖú[h]\n");
         else
-       	 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] ÁĞ³ö[y] ÅÅĞò[s] ËÑÑ°[/] ÇĞ»»[c] ÇóÖú[h]\n");
+       	 docmdtitle("[ÌÖÂÛÇøÁĞ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ı] ÁĞ³ö[y] ÅÅĞò[S] ËÑÑ°[/] ÇĞ»»[c] ÇóÖú[h]\n");
         prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ğ ×ªĞÅ  %-24s °å  Ö÷   %s   [m\n", newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖĞ  ÎÄ  Ğğ  Êö", newflag ? "" : "   ");
     }
 
@@ -373,8 +373,8 @@ static int choose_board(int newflag, char *boardprefix)
         if (brdnum <= 0) {      /*³õÊ¼»¯ */
             if (load_boards(boardprefix) == -1)
                 continue;
-            if(yank_flag!=2)
-            qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
+            if((yank_flag!=2)||(currentuser->flags[0]& BRDSORT_FLAG))
+                qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);
             page = -1;
             if (brdnum <= 0)
                 break;
@@ -603,19 +603,37 @@ static int choose_board(int newflag, char *boardprefix)
                 update_endline();
             }
             break;
-        case 's':              /* sort/unsort -mfchen */
+	case 'S':
+            currentuser->flags[0] ^= BRDSORT_FLAG;      /*ÅÅĞò·½Ê½ */
             if(yank_flag!=2){
-	            currentuser->flags[0] ^= BRDSORT_FLAG;      /*ÅÅĞò·½Ê½ */
-	            qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*ÅÅĞò */
+                    qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*ÅÅĞò */
+                    page = 999;
+            } else {
+                    if (currentuser->flags[0]& BRDSORT_FLAG) {      /*ÅÅĞò·½Ê½ */
+                    	qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);       /*ÅÅĞò */
+		    }
+            	    else if (load_boards(boardprefix) == -1)
+			continue;
+                    page = 999;
+	    }
+	    break;
+        case 's':              /* sort/unsort -mfchen */
+	    /*
+            if(yank_flag!=2){
+	            currentuser->flags[0] ^= BRDSORT_FLAG;   
+	            qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);     
 	            page = 999;
             }
             else {
+	    */
             	modify_user_mode(SELECT);
 		if(do_select(0, NULL, genbuf)==NEWDIRECT)
             	Read();
               show_brdlist(page, 1, newflag);     /*  refresh screen */
               modify_user_mode(newflag ? READNEW : READBRD);
+	      /*
             }
+	    */
             break;
             /*---	added period 2000-09-11	4 FavBoard	---*/
         case 'a':
@@ -699,6 +717,12 @@ static int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'm':
+                if(yank_flag==2) {
+		  if (currentuser->flags[0]& BRDSORT_FLAG) {
+			  move(0,0);
+			  prints("ÅÅĞòÄ£Ê½ÏÂ²»ÄÜÒÆ¶¯£¬ÇëÓÃ'S'¼üÇĞ»»!");
+			  pressreturn();
+		  } else {
         	if (nbrd[num].flag != -1 || nbrd[num].pos != -1){
         		int p,q;
         		char ans[5];
@@ -726,6 +750,9 @@ static int choose_board(int newflag, char *boardprefix)
                           save_favboard();
                           brdnum = -1;
                     }
+		}
+		}
+                    show_brdlist(page, 1, newflag);     /*  refresh screen */
         	}
         	break;
         case 'd':
