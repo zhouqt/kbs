@@ -2168,12 +2168,17 @@ int my_unlink(char *fname)
 #endif
 }
 
+/* DEBUG CODE */
+static int sem_lock[SEMLOCK_COUNT];
+
 /* get or create public semset */
 static int get_locksemid(int semnum)
 {
 	int i;
 	static int locksemid = -1;
 	if (locksemid < 0) {
+		for (i=0;i<SEMLOCK_COUNT;i++)
+			sem_lock[i]=0;
         key_t semkey = sysconf_eval("PUBLIC_SEMID", 0x54188);
 		locksemid =semget(semkey,SEMLOCK_COUNT,0); 
 		if (locksemid < 0) {
@@ -2205,6 +2210,11 @@ void lock_sem(int lockid)
 {
 	struct sembuf buf;
 	int semid;
+	if (sem_lock[lockid]!=0) {
+		bbslog("3system","lock a sem already be locked",semid, lockid);
+		return;
+	}
+	sem_lock[lockid]=1;
 	buf.sem_num =lockid;
 	buf.sem_op = -1;
 	buf.sem_flg = SEM_UNDO;
@@ -2219,6 +2229,11 @@ void unlock_sem(int lockid)
 {
 	struct sembuf buf;
 	int semid;
+	if (sem_lock[lockid]==0) {
+		bbslog("3system","unlock a sem already be unlocked",semid, lockid);
+		return;
+	}
+	sem_lock[lockid]=0;
 	buf.sem_num =lockid;
 	buf.sem_op = 1;
 	buf.sem_flg = SEM_UNDO;
@@ -2233,6 +2248,11 @@ void unlock_sem_check(int lockid)
 {
 	int semid = get_locksemid(lockid);
 	struct sembuf buf;
+	if (sem_lock[lockid]==0) {
+		bbslog("3system","unlock a sem already be unlocked",semid, lockid);
+		return;
+	}
+	sem_lock[lockid]=0;
 	buf.sem_num =lockid;
 	buf.sem_op = 1;
 	buf.sem_flg = SEM_UNDO;
