@@ -6,6 +6,107 @@ const char seccode[SECNUM][5] = {
     "0", "1", "3", "4", "5", "6", "7", "8", "9"
 };
 
+const char *permstrings[] = {
+        "基本权力",             /* PERM_BASIC */
+        "进入聊天室",           /* PERM_CHAT */
+        "呼叫他人聊天",         /* PERM_PAGE */
+        "发表文章",             /* PERM_POST */
+        "使用者资料正确",       /* PERM_LOGINOK */
+        "监理帐号",         /* PERM_BMMANAGER */
+        "可隐身",               /* PERM_CLOAK */
+        "可见隐身",             /* PERM_SEECLOAK */
+        "长期帐号",         /* PERM_XEMPT */
+        "编辑系统档案",         /* PERM_WELCOME */
+        "板主",                 /* PERM_BOARDS */
+        "帐号管理员",           /* PERM_ACCOUNTS */
+        "水木清华智囊团",       /* PERM_CHATCLOAK */
+        "投票管理员",           /* PERM_OVOTE */
+        "系统维护管理员",       /* PERM_SYSOP */
+        "Read/Post 限制",       /* PERM_POSTMASK */
+        "精华区总管",           /* PERM_ANNOUNCE*/
+        "讨论区总管",           /* PERM_OBOARDS*/
+        "活动看版总管",         /* PERM_ACBOARD*/
+        "不能 ZAP(讨论区专用)", /* PERM_NOZAP*/
+        "聊天室OP(元老院专用)", /* PERM_CHATOP */
+        "系统总管理员",         /* PERM_ADMIN */
+        "荣誉帐号",           /* PERM_HONOR*/
+        "特殊权限 5",           /* PERM_UNUSE?*/
+        "仲裁委员",           /* PERM_JURY*/
+        "特殊权限 7",           /* PERM_UNUSE?*/
+        "自杀进行中",        /*PERM_SUICIDE*/
+        "集体专用帐号",           /* PERM_COLLECTIVE*/
+        "看系统讨论版",           /* PERM_UNUSE?*/
+        "封禁Mail",           /* PERM_DENYMAIL*/
+
+};
+
+/* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
+   depending on how/if you use them. */
+char *user_definestr[] = {
+    "活动看版",                 /* DEF_ACBOARD */
+    "使用彩色",                 /* DEF_COLOR */
+    "编辑时显示状态栏",         /* DEF_EDITMSG */
+    "分类讨论区以 New 显示",    /* DEF_NEWPOST */
+    "选单的讯息栏",             /* DEF_ENDLINE */
+    "上站时显示好友名单",       /* DEF_LOGFRIEND */
+    "让好友呼叫",               /* DEF_FRIENDCALL */
+    "使用自己的离站画面",       /* DEF_LOGOUT */
+    "进站时显示备忘录",         /* DEF_INNOTE */
+    "离站时显示备忘录",         /* DEF_OUTNOTE */
+    "讯息栏模式：呼叫器/人数",  /* DEF_NOTMSGFRIEND */
+    "菜单模式选择：一般/精简",  /* DEF_NORMALSCR */
+    "阅读文章是否使用绕卷选择", /* DEF_CIRCLE */
+    "阅读文章游标停於第一篇未读",       /* DEF_FIRSTNEW */
+    "屏幕标题色彩：一般/变换",  /* DEF_TITLECOLOR */
+    "接受所有人的讯息",         /* DEF_ALLMSG */
+    "接受好友的讯息",           /* DEF_FRIENDMSG */
+    "收到讯息发出声音",         /* DEF_SOUNDMSG */
+    "离站後寄回所有讯息",       /* DEF_MAILMSG */
+    "发文章时实时显示讯息",     /*"所有好友上站均通知",    DEF_LOGININFORM */
+    "菜单上显示帮助信息",       /* DEF_SHOWSCREEN */
+    "进站时显示十大新闻",       /* DEF_SHOWHOT */
+    "进站时观看留言版",         /* DEF_NOTEPAD */
+    "忽略讯息功能键: Enter/Esc",        /* DEF_IGNOREMSG */
+    "使用高亮界面",                   /* DEF_HIGHCOLOR */
+    "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
+    "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
+    "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
+    "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
+};
+
+const char    *explain[] = {
+    "本站系统",
+    "休闲娱乐",
+    "电脑技术",
+    "学术科学",
+    "体育健身",
+    "谈天说地",
+    "校园信息",
+    "艺术文化",
+    "人文社会",
+    "网络信息",
+    "清华大学",
+    "兄弟院校",
+    "其  他",
+    NULL
+};
+
+const char    *groups[] = {
+    "system.faq",
+    "rec.faq",
+    "comp.faq",
+    "sci.faq",
+    "sport.faq",
+    "talk.faq",
+    "campus.faq",
+    "literal.faq",
+    "soc.faq",
+    "network.faq",
+    "thu.faq",
+    "univ.faq",
+    "other.faq",
+    NULL
+};
 const char secname[SECNUM][2][20] = {
     {"BBS 系统", "[站内]"},
     {"清华大学", "[本校]"},
@@ -74,6 +175,10 @@ int uleveltochar(char *buf, struct userec *lookupuser)
         strcpy(buf, "站务");
     else if (lvl & PERM_JURY)
         strcpy(buf, "仲裁");    /* stephen :增加中文查询"仲裁" 2001.10.31 */
+    if (lvl & PERM_BMAMANGER)
+        strcpy(buf, "监理");
+    if (lvl & PERM_COLLECTIVE)
+        strcpy(buf, "集体");
     else if (lvl & PERM_CHATCLOAK)
         strcpy(buf, "元老");
     else if (lvl & PERM_CHATOP)
@@ -277,7 +382,9 @@ int multilogin_user(struct userec *user, int usernum)
     /* Leeward: 97.12.22 BMs may open 2 windows at any time */
     /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
     /* stephen: 2001.10.30 仲裁可以开两个窗口 */
-    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) || HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK))
+    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
+    	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
+    	|| HAS_PERM(user, PERM_BMAMANGER) )
         && logincount < 2)
         return 0;
     /* allow multiple guest user */
@@ -445,3 +552,36 @@ void build_board_structure(const char *board)
 	return;
 }
 
+
+void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
+{
+    if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
+        if (user->userlevel & PERM_BMAMANGER) {
+            *sumlimit = 2000;
+            *numlimit = 2000;
+        } else
+        if (user->userlevel & PERM_CHATCLOAK) {
+            *sumlimit = 4000;
+            *numlimit = 4000;
+        } else
+            /*
+             * if (lookupuser->userlevel & PERM_BOARDS)
+             * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
+             */
+        if (user->userlevel & PERM_MANAGER) {
+            *sumlimit = 600;
+            *numlimit = 600;
+        } else if (user->userlevel & PERM_LOGINOK) {
+            *sumlimit = 240;
+            *numlimit = 300;
+        } else {
+            *sumlimit = 15;
+            *numlimit = 15;
+        }
+    }
+    else {
+        *sumlimit = 9999;
+        *numlimit = 9999;
+        return 0;
+    }
+}

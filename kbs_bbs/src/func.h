@@ -334,7 +334,8 @@ extern "C" {
     int safe_kill(int x, int y);
 
     void main_bbs(int convit, char *argv);
-
+    void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit);
+    
 /* bbs_sendmail.c */
     int chkusermail(struct userec *user);
     int chkreceiver(struct userec *fromuser, struct userec *touser);

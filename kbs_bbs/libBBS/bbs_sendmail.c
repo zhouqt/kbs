@@ -30,54 +30,25 @@ int chkusermail(struct userec *user)
     int num,sum, sumlimit, numlimit, i;
 
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
-#ifdef NINE_BUILD
-    sumlimit = 10000;
-    numlimit = 10000;
-#else
-    if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
-        if (user->userlevel & PERM_CHATCLOAK) {
-            sumlimit = 4000;
-            numlimit = 4000;
-        } else
-            /*
-             * if (lookupuser->userlevel & PERM_BOARDS)
-             * set BM, chatop, and jury have bigger mailbox, stephen 2001.10.31 
-             */
-        if (user->userlevel & PERM_MANAGER) {
-            sumlimit = 600;
-            numlimit = 600;
-        } else if (user->userlevel & PERM_LOGINOK) {
-            sumlimit = 240;
-            numlimit = 300;
-        } else {
-            sumlimit = 15;
-            numlimit = 15;
-        }
+    get_mail_limit(&sumlimit,&numlimit);
+    /*peregrine*/
+    setmailfile(recmaildir, user->userid, DOT_DIR);
+    num=getmailnum(recmaildir);
+    setmailfile(recmaildir, user->userid, ".SENT");
+    num+=getmailnum(recmaildir) ;
+    setmailfile(recmaildir, user->userid, ".DELETED");
+    num+=getmailnum(recmaildir) ;
+    load_mail_list(user);
+    for(i=0;i<mail_list_t;i++){
+	    sprintf(buf, ".%s", mail_list[i]+30);
+	    setmailfile(recmaildir, user->userid, buf);
+	    num+=getmailnum(recmaildir);
     }
-    else {
-        sumlimit = 9999;
-        numlimit = 9999;
-        return 0;
-    }
-#endif
-        /*peregrine*/
-        setmailfile(recmaildir, user->userid, DOT_DIR);
-        num=getmailnum(recmaildir);
-        setmailfile(recmaildir, user->userid, ".SENT");
-        num+=getmailnum(recmaildir) ;
-        setmailfile(recmaildir, user->userid, ".DELETED");
-        num+=getmailnum(recmaildir) ;
-        load_mail_list(user);
-	 for(i=0;i<mail_list_t;i++){
-		sprintf(buf, ".%s", mail_list[i]+30);
-		setmailfile(recmaildir, user->userid, buf);
-		num+=getmailnum(recmaildir);
-        }
-        sum=get_mailusedspace(user,0)/1024;
-        /*if(user==currentuser)sum=user->usedspace/1024;
-        else sum = get_sum_records(recmaildir, sizeof(fileheader)); 
-        if(user!=currentuser)sum += get_sum_records(recmaildir, sizeof(fileheader));*/
-        if(num>numlimit||sum> sumlimit)return 1;
+    sum=get_mailusedspace(user,0)/1024;
+    /*if(user==currentuser)sum=user->usedspace/1024;
+    else sum = get_sum_records(recmaildir, sizeof(fileheader)); 
+    if(user!=currentuser)sum += get_sum_records(recmaildir, sizeof(fileheader));*/
+    if(num>numlimit||sum> sumlimit)return 1;
     return 0;
 }
 int chkreceiver(struct userec *fromuser, struct userec *touser)
