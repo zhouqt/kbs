@@ -111,8 +111,8 @@ char txbuf[MAX_BLOCK];
 
 long vpos = 0;                  /* Number of bytes read from file */
 
-char Lastrx;
-char Crcflg;
+static char Lastrx;
+static char Crcflg;
 int Restricted = 0;             /* restricted; no /.. or ../ in filenames */
 int Quiet = 0;                  /* overrides logic that would otherwise set verbose */
 int Ascii = 0;                  /* Add CR's for brain damaged programs */

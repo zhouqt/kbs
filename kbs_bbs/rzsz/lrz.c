@@ -61,10 +61,10 @@ extern unsigned Baudrate;
 FILE *fout;
 
 
-int Lastrx;
-int Crcflg;
-int Firstsec;
-int errors;
+static int Lastrx;
+static int Crcflg;
+static int Firstsec;
+static int errors;
 extern int Restricted;             /* restricted; no /.. or ../ in filenames */
 int Readnum = HOWMANY;          /* Number of bytes to ask for in read() from modem */
 int skip_if_not_found;
