@@ -562,26 +562,14 @@ static ZEND_FUNCTION(bbs_printansifile)
                         continue;
                     }
                     if (*p == '&')
-<<<<<<< phpbbslib.c
-                        OUTPUT("&amp;", 5)
-                            else
-                    if (*p == '<')
-                        OUTPUT("&lt;", 4)
-                            else
-                    if (*p == '>')
-                        OUTPUT("&gt;", 4)
-                            else
-					if (*p == '\n')
-						OUTPUT("<br />\n", 7)
-							else
-=======
                         OUTPUT("&amp;", 5);
                     else if (*p == '<')
                         OUTPUT("&lt;", 4);
                     else if (*p == '>')
                         OUTPUT("&gt;", 4);
+                    else if (*p == '\n')
+                        OUTPUT("<br />\n", 7);
                     else
->>>>>>> 1.68.2.3
                         break;
                     continue;
                 case 1:
