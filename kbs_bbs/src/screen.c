@@ -111,7 +111,7 @@ void clear()
     for (i = 0; i < scr_lns; i++) {
         slp = big_picture;
         for(j=0; j<scr_cols;j++) {
-            if((slp[i].data[j]==' '||slp[i].data[j]==' ')&&slp[i].mode[j]&SCREEN_LINE==0&&slp[i].mode[j]&SCREEN_BACK==0&&slp[i].color[j]/16==0)
+            if((slp[i].data[j]==0||slp[i].data[j]==' ')&&slp[i].mode[j]&~SCREEN_MODIFIED==0&&slp[i].color[j]/16==0)
                 slp[i].mode[j]=0;
             else
                 slp[i].mode[j]=SCREEN_MODIFIED;
@@ -207,7 +207,7 @@ void refresh()
     }
     for (i=0; i<scr_lns; i++)
         for(k=0; k<scr_cols; k++)
-            if((bp[i].data[k]==' '||bp[i].data[k]==' ')&&bp[i].mode[k]&SCREEN_LINE==0&&bp[i].mode[k]&SCREEN_BACK==0&&bp[i].color[k]/16==0&&bp[i].mode[k]&SCREEN_MODIFIED)
+            if((bp[i].data[k]==0||bp[i].data[k]==' ')&&bp[i].mode[k]==SCREEN_MODIFIED&&bp[i].color[k]/16==0)
                 count++;
     if(count>scr_lns*scr_cols/2) {
         o_clear();
@@ -217,7 +217,7 @@ void refresh()
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
         for (k = 0; k < scr_cols; k++)
-        if(bp[j].mode[k]&SCREEN_MODIFIED&&(isprint2(bp[j].data[k]))||bp[j].data[k]==0) {
+        if((bp[j].mode[k]&SCREEN_MODIFIED)&&(isprint2(bp[j].data[k])||bp[j].data[k]==0)) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             bp[j].mode[k]&=~SCREEN_MODIFIED;
@@ -254,7 +254,7 @@ void refresh()
             if(k<scr_cols-3&&(bp[j].data[k]==0||bp[j].data[k]==32)&&(bp[j].data[k+1]==0||bp[j].data[k+1]==32)) {
                 int p=1;
                 for(ii=k+1;ii<scr_cols;ii++)
-                    p=p&&((bp[j].data[ii]==0||bp[j].data[ii]==32)&&bp[j].color[ii]/16==bp[j].color[k]/16&&(bp[j].mode[ii]&~SCREEN_MODIFIED==bp[j].mode[k]&~SCREEN_MODIFIED));
+                    p=p&&((bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]/16)==(bp[j].color[k]/16)&&((bp[j].mode[ii]&~SCREEN_MODIFIED)==(bp[j].mode[k]&~SCREEN_MODIFIED)));
                 if(p) {
                     for(ii=k;ii<scr_cols;ii++)
                         bp[j].mode[ii]&=~SCREEN_MODIFIED;
