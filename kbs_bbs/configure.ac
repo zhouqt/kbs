@@ -23,7 +23,7 @@ AC_ARG_WITH(icc,
 			CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
 		fi
 		if test -z "$LDFLAGS"; then
-			LDFLAGS="$LDFLAGS -ipo -static"
+			LDFLAGS="$LDFLAGS -ipo"
 		fi
 		CONFIG_AR=xiar
 		AR=xiar
