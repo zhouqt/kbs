@@ -2232,6 +2232,8 @@ static PHP_FUNCTION(bbs_createnewid)
 
     int ac = ZEND_NUM_ARGS();
 
+    getcwd(old_pwd, 1023);
+    chdir(BBSHOME);
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid, &userid_len,&passbuf,&passbuf_len,&nickname,&nickname_len) == FAILURE)
 	{
 		WRONG_PARAM_COUNT;
@@ -2283,7 +2285,7 @@ static PHP_FUNCTION(bbs_createnewid)
 
 	if (!getuser(newuser.userid,&currentuser))RETURN_LONG(10);
 
-	bbslog("user","%s","new account from www");
+	newbbslog("user","%s","new account from www");
 
 	//检查是否有前人的信件
 	sethomepath(tmpstr,userid);
@@ -2295,7 +2297,10 @@ static PHP_FUNCTION(bbs_createnewid)
 
 	//创建新目录
 	sethomepath(tmpstr,userid);
-	if(mkdir(tmpstr,0755) < 0)RETURN_LONG(10);
+	if(mkdir(tmpstr,0755) < 0) {
+	    bbslog("3error","create id %s home dir error:%s",userid,strerror(errno));
+	    RETURN_LONG(10);
+	}
 
 	RETURN_LONG(0);
 }
