@@ -1216,7 +1216,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
      */
     if (flag == FILE_TITLE_FLAG && digestmode != 0)
         return DONOTHING;
-    if (flag == FILE_NOREPLY_FLAG && digestmode != 0)
+    if (flag == FILE_NOREPLY_FLAG && (digestmode == 1 || digestmode==4 || digestmode==5))
         return DONOTHING;
 
     if(!fileinfo->filename[0]) {
