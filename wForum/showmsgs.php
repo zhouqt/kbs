@@ -1,35 +1,26 @@
 <?php
 
-
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 setStat("用户短信服务");
 
+requireLoginok();
+
 show_nav();
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-if (isErrFounded()) {
-		html_error_quit();
-}
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+main();
 
 show_footer();
 
 function main() {
-	global $currentuser;
 	$msgs=bbs_getwebmsgs();
 	$num=count($msgs);
 ?>
+<form method="post" action="mailmsgs.php">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 width="97%"><tr><th colspan=3>短消息记录</td></tr>
 <?php
 	if ($num==0) {
@@ -57,11 +48,11 @@ function main() {
 <?php
 		}
 ?>
-           <tr><td  class=TableBody2 align="middle"><form method="post" action="mailmsgs.php"><input type="submit" value="将记录保存到信箱中"></form></td></tr>
+           <tr><td  class=TableBody2 align="middle"><input type="submit" value="将记录保存到信箱中"></td></tr>
 <?php
 	}
 ?>
-        </table>
+</table></form>
 <?php
 }
 ?>

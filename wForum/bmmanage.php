@@ -9,8 +9,6 @@ $bbsman_modes = array(
     "ZHIDING" => 5
     );
 
-$needlogin=1;
-
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
@@ -21,24 +19,18 @@ global $boardName;
 global $reID;
 global $reArticles;
 
-preprocess();
-
 setStat("管理文章");
+
+requireLoginok("游客不能切换文章。");
+
+preprocess();
 
 show_nav();
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	doSwitchAritcles($boardID,$boardName,$boardArr,$reID,$reArticles);
-	if (isErrFounded()) {
-		html_error_quit() ;
-	}
-}
+showUserMailBoxOrBR();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+doSwitchAritcles($boardID,$boardName,$boardArr,$reID,$reArticles);
 
-//showBoardSampleIcons();
 show_footer();
 
 function preprocess(){
@@ -49,13 +41,8 @@ function preprocess(){
 	global $loginok;
 	global $reID;
 	global $reArticles;
-	if ($loginok!=1) {
-		foundErr("游客不能切换文章。");
-		return false;
-	}
 	if (!isset($_GET['board'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_GET['board'];
 	$brdArr=array();
@@ -64,18 +51,15 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版");
-		return false;
 	}
 	if (isset($_GET["ID"])) {
 		$reID = $_GET["ID"];
 	}else {
 		foundErr("未指定切换的文章.");
-		return false;
 	}
 	settype($reID, "integer");
 	$articles = array();
@@ -83,7 +67,6 @@ function preprocess(){
 	$num = bbs_get_records_from_id($boardName, $reID,$dir_modes["NORMAL"],$articles);
 		if ($num == 0)	{
 			foundErr("错误的文章编号");
-			return false;
 		}
 	}
 	$reArticles=$articles;
@@ -96,15 +79,12 @@ function doSwitchAritcles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	switch ($ret) {
         case -2:
             foundErr('您无权切换精华');
-            return false;        
         case -1:
         case -3:
         case -9:
             foundErr('系统错误'.$ret);
-            return false;
         case -4:
             foundErr('文章ID错误');
-            return false;
         default:  
 
 	}

@@ -6,20 +6,14 @@ require_once("inc/myface.inc.php");
 
 setStat("基本资料修改");
 
+requireLoginok();
+
 show_nav();
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	showUserManageMenu();
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-if (isErrFounded()) {
-		html_error_quit();
-} 
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+showUserManageMenu();
+main();
 
 show_footer();
 

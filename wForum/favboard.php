@@ -5,19 +5,13 @@ require("inc/user.inc.php");
 
 setStat("用户收藏版面");
 
+requireLoginok();
+
 show_nav();	
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	main();	
-}else {	
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");	
-}
-
-if (isErrFounded())	{
-	html_error_quit();
-}
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+main();	
 
 show_footer();
 
@@ -32,38 +26,31 @@ function main()	{
 
 	if ($select	< 0) {
 		foundErr("错误的参数");
-		return false;
 	}
 	if (bbs_load_favboard($select)==-1) {
 		foundErr("错误的参数");
-		return false;
 	}
 
-    if (isset($_GET["delete"]))
-    {
-            $delete_s=$_GET["delete"];
-            settype($delete_s,"integer");
-            bbs_del_favboard($select,$delete_s);
+    if (isset($_GET["delete"])) {
+        $delete_s=$_GET["delete"];
+        settype($delete_s,"integer");
+        bbs_del_favboard($select,$delete_s);
     }
-    if (isset($_GET["deldir"]))
-    {
-            $delete_s=$_GET["deldir"];
-            settype($delete_s,"integer");
-            bbs_del_favboarddir($select,$delete_s);
+    if (isset($_GET["deldir"])) {
+        $delete_s=$_GET["deldir"];
+        settype($delete_s,"integer");
+        bbs_del_favboarddir($select,$delete_s);
     }
-    if (isset($_GET["dname"]))
-    {
-            $add_dname=trim($_GET["dname"]);
-            if ($add_dname)
-                bbs_add_favboarddir($add_dname);
+    if (isset($_GET["dname"])) {
+        $add_dname=trim($_GET["dname"]);
+        if ($add_dname)
+            bbs_add_favboarddir($add_dname);
     }
-    if (isset($_GET["bname"]))
-    {
-            $add_bname=trim($_GET["bname"]);
-            if ($add_bname)
-                $sssss=bbs_add_favboard($add_bname);
+    if (isset($_GET["bname"])) {
+        $add_bname=trim($_GET["bname"]);
+        if ($add_bname)
+            $sssss=bbs_add_favboard($add_bname);
     }
-
 	showSecs($select, 0, true, 1); //第三个参数是 isFold，暂时设定为永远展开。如果要改那 showSecs() 函数也要改。- atppp
 ?>
 <center>

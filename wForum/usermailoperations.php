@@ -1,11 +1,14 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
-if ($_POST['action']=='lock') {
+setStat("操作邮件");
+
+requireLoginok();
+
+if ($_POST['action']=='lock') { //ToDo: need to revise
 	setStat("锁定邮件");
 } else {
 	setStat("删除邮件");
@@ -16,20 +19,9 @@ show_nav();
 echo "<br>";
 
 $boxDesc=getMailBoxName($_POST['boxname']);
+head_var($userid."的".$boxDesc,"usermailbox.php?boxname=".$_POST['boxname'],0);
+main();
 
-if (!isErrFounded()) {
-	head_var($userid."的".$boxDesc,"usermailbox.php?boxname=".$_POST['boxname'],0);
-}
-if ($loginok==1) {
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-
-if (isErrFounded()) {
-		html_error_quit();
-} 
 show_footer();
 
 function main(){
@@ -37,42 +29,32 @@ function main(){
 	global $boxDesc;
 	if (!isset($_POST['boxname'])) {
 		foundErr("您没有指定操作的邮箱!");
-		return false;
 	}
 	$boxName=$_POST['boxname'];
 	if (getMailBoxPathDesc($boxName, $path, $desc) === false) {
 		foundErr("您指定了错误的邮箱名称！");
-		return false;
 	}
 	if (!isset($_POST['nums'])) {
 		foundErr("您所指定的信件不存在!");
-		return false;
 	}
 	$action=$_POST['action'];
 	if ($action=='deleteAll') {
 		deleteAllMails($boxName, $path, $desc);
-		return true;
-	}
-	if ($action=='delete'){
+	} else if ($action=='delete'){
 		if ($_POST['nums'] == "") {
 			foundErr("您没有指定信件！");
-			return false;			
 		}
 		$nums=split(',',$_POST['nums']);
 		deleteMails($boxName, $path, $desc, $nums);
-		return true;
-	}
-	if ($action=='lock'){
+	} else if ($action=='lock'){
 		if ($_POST['nums'] == "") {
 			foundErr("您没有指定信件！");
-			return false;			
 		}
 		$nums=split(',',$_POST['nums']);
 		lockMails($boxName, $path, $desc, $nums);
-		return true;
+	} else {
+		foundErr("参数错误！");
 	}
-	foundErr("参数错误！");
-	return false;
 }
 
 function deleteMails($boxName, $boxPath, $boxDesc, $nums){
@@ -82,7 +64,6 @@ function deleteMails($boxName, $boxPath, $boxDesc, $nums){
 	$total = filesize( $dir ) / 256 ;
 	if( $total <= 0 ){
 		foundErr("您所指定的信件不存在。");
-		return false;
 	}
 	$mailnum=count($nums);
 
@@ -116,7 +97,6 @@ function deleteAllMails($boxName, $boxPath, $boxDesc) {
 }
 
 function lockMails($boxName, $boxPath, $boxDesc, $nums){
-	
 	setSucMsg("本功能尚未实现:((");
 	return html_success_quit('返回'.$boxDesc, 'usermailbox.php?boxname='.$boxName);
 }

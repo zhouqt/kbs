@@ -1,30 +1,22 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 setStat("在线好友列表");
 
+requireLoginok();
+
 show_nav();
 
-if ($loginok==1) {
-	showUserMailBox();
-	head_var("谈天说地","usermanagemenu.php",0);
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-if (isErrFounded()) {
-		html_error_quit();
-}
+showUserMailBox();
+head_var("谈天说地","usermanagemenu.php",0);
+main();
 
 show_footer();
 
 function main() {
-	global $currentuser;
 ?>
 <form action="" method=post id="oForm">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>

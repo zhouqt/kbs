@@ -1,6 +1,5 @@
 <?php
 
-
 $setboard=1;
 
 require("inc/funcs.php");
@@ -25,28 +24,21 @@ showTitle();
 </table>
 <?php
 
-
-
 if ($loginok!=1) {
 	FastLogin();
 }
 
 showAllSecs();
 
-if (isErrFounded()) {
-	html_error_quit();
-} else {
-	showUserInfo();
-	showOnlineUsers();
-	showSample();
-}
+showUserInfo();
+showOnlineUsers();
+showSample();
+
 show_footer();
 
 /*--------------- function defines ------------------*/
 
 function preprocess(){
-	GLOBAL $_GET;
-	GLOBAL $_COOKIE;
 	GLOBAL $sectionCount;
 
 	$path='';

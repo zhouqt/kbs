@@ -1,5 +1,4 @@
 <?php
-$needlogin=1;
 
 require("inc/funcs.php");
 require("inc/user.inc.php");
@@ -11,24 +10,18 @@ global $boardName;
 global $reID;
 global $reArticles;
 
-preprocess();
-
 setStat("删除文章");
+
+requireLoginok("游客不能删除文章。");
+
+preprocess();
 
 show_nav();
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	doPostAritcles($boardID,$boardName,$boardArr,$reID,$reArticles);
-	if (isErrFounded()) {
-		html_error_quit() ;
-	}
-}
+showUserMailBoxOrBR();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+doPostAritcles($boardID,$boardName,$boardArr,$reID,$reArticles);
 
-//showBoardSampleIcons();
 show_footer();
 
 function preprocess(){
@@ -36,16 +29,10 @@ function preprocess(){
 	global $boardName;
 	global $currentuser;
 	global $boardArr;
-	global $loginok;
 	global $reID;
 	global $reArticles;
-	if ($loginok!=1) {
-		foundErr("游客不能删除文章。");
-		return false;
-	}
 	if (!isset($_GET['board'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_GET['board'];
 	$brdArr=array();
@@ -54,26 +41,21 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版");
-		return false;
 	}
 	if (bbs_is_readonly_board($boardArr)) {
-			foundErr("本版为只读讨论区！");
-			return false;
+		foundErr("本版为只读讨论区！");
 	}
 	if (bbs_checkpostperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版");
-		return false;
 	}
 	if (isset($_GET["ID"])) {
 		$reID = $_GET["ID"];
 	}else {
-		foundErr("未指定编辑的文章.");
-		return false;
+		foundErr("未指定删除的文章.");
 	}
 	settype($reID, "integer");
 	$articles = array();
@@ -81,23 +63,19 @@ function preprocess(){
 	$num = bbs_get_records_from_id($boardName, $reID,$dir_modes["NORMAL"],$articles);
 		if ($num == 0)	{
 			foundErr("错误的文章文编号");
-			return false;
 		}
 	}
 	$reArticles=$articles;
 	return true;
 }
 
-function 	doPostAritcles($boardID,$boardName,$boardArr,$reID,$reArticles){
+function doPostAritcles($boardID,$boardName,$boardArr,$reID,$reArticles){
 	$ret=bbs_delfile($boardName,$reArticles[1]['FILENAME']);
 	switch ($ret) {
 		case -1:
 			foundErr("您无权删除该文。");
-			return false;
 		case -2:
 			foundErr("错误的版名或者文件名!");
-			return false;
-
 	}
 ?>
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>

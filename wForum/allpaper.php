@@ -10,33 +10,22 @@ global $boardID;
 global $boardName;
 global $page;
 
-preprocess();
-
 setStat("小字报列表");
+
+preprocess();
 
 show_nav($boardName);
 
-if (isErrFounded()) {
-	html_error_quit() ;
+showUserMailBoxOrBR();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+if ($_POST['action']=="delpaper") {
+	batch();
+	html_success_quit('返回小字报列表', 'allpaper.php?action=batch&board='.$boardName);
 } else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	if ($_POST['action']=="delpaper") {
-		batch();
-		if (isErrFounded()) {
-			html_error_quit();
-		} else {
-			html_success_quit('返回小字报列表', 'allpaper.php?action=batch&board='.$boardName);
-		}
-	} else {
-		boardeven($boardID,$boardName);
-	} 
-}
+	boardeven($boardID,$boardName);
+} 
 
-//showBoardSampleIcons();
 show_footer();
-
-CloseDatabase();
 
 function preprocess(){
 	global $boardID;
@@ -46,7 +35,6 @@ function preprocess(){
 	global $usernum;
 	if (!isset($_REQUEST['board'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_REQUEST['board'];
 	$brdArr=array();
@@ -55,12 +43,10 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版");
-		return false;
 	}
 	return true;
 }
@@ -152,11 +138,9 @@ function batch()
 	global $conn;
 	if ($loginok!=1) {
 		foundErr("您无权删除小字报。");
-		return false;
 	}
 	if ($_POST["nums"]=="") {
 		foundErr("请指定相关小字报。");
-		return false;
 	}
 	$query = "delete from smallpaper_tb where boardID=".$boardID." and ID in (".$_POST["nums"].")";
 	if (!bbs_is_bm($boardID,$usernum)) {

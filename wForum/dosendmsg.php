@@ -13,10 +13,10 @@ html_init();
 <div id="msgcontent">
 <div onkeydown="if(event.keyCode==13 ) { closeWindow(); } ">
 <?php
-if ($loginok==1) {
+requireLoginok(false, false);
+
+if (!isErrFounded()) {
 	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
 }
 
 ?>
@@ -80,12 +80,12 @@ function main(){
 	}
 	if (isset($_POST['isSMS'])) {
 		if (bbs_send_sms($destid, $msg)!=0){
-			foundErr("手机短信发送失败！");
+			foundErr("手机短信发送失败！", false);
 			return false;
 		}
 	} else {
 		if (bbs_sendwebmsg($destid, $msg, $destutmp, $errmsg)==FALSE){
-			foundErr($errmsg);
+			foundErr($errmsg, false);
 			return false;
 		}
 	}

@@ -1,6 +1,5 @@
 <?php
 
-
 $setboard=1;
 
 require("inc/funcs.php");
@@ -13,17 +12,14 @@ global $boardID;
 global $boardName;
 global $page;
 
-preprocess();
-
 setStat("文章列表");
+
+preprocess();
 
 show_nav($boardName);
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+showUserMailBoxOrBR();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 ?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
@@ -39,28 +35,20 @@ if (isErrFounded()) {
 <iframe width=0 height=0 src="" id="hiddenframe" name="hiddenframe"></iframe>
 
 <?php
-		showBoardStaticsTop($boardArr);
+	showBoardStaticsTop($boardArr);
 ?>
 <TABLE cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php
-
-		showBroadcast($boardID,$boardName);
-
-		showBoardContents($boardID,$boardName,$page);
-
-		boardSearchAndJump($boardName, $boardID);
-
-		showBoardSampleIcons();
+	showBroadcast($boardID,$boardName);
+	showBoardContents($boardID,$boardName,$page);
+	boardSearchAndJump($boardName, $boardID);
+	showBoardSampleIcons();
 ?>
 </table>
 <?php
 	}
-}
 
-//showBoardSampleIcons();
 show_footer();
-
-CloseDatabase();
 
 function preprocess(){
 	global $boardID;
@@ -70,7 +58,6 @@ function preprocess(){
 	global $page;
 	if (!isset($_GET['name'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_GET['name'];
 	$brdArr=array();
@@ -79,12 +66,10 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版");
-		return false;
 	}
 	if (!isset($_GET['page'])) {
 		$page=-1;

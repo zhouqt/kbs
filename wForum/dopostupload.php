@@ -1,5 +1,5 @@
 <?php
-$needlogin=1;
+
 require("inc/funcs.php");
 require("inc/board.inc.php");
 html_init();
@@ -31,8 +31,7 @@ if (bbs_checkreadperm($usernum, $boardID) == 0) {
 	errorQuit("您无权阅读本版！");
 }
 if (bbs_is_readonly_board($boardArr)) {
-		errorQuit("本版为只读讨论区！");
-		return false;
+	errorQuit("本版为只读讨论区！");
 }
 if (bbs_checkpostperm($usernum, $boardID) == 0) {
 	errorQuit("您无权在本版发表文章！");

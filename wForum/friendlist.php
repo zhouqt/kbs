@@ -1,54 +1,40 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 setStat("好友列表");
 
+requireLoginok();
+
 show_nav();
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	if (preProcess()) {
-		html_success_quit("查看所有好友列表", "friendlist.php");
-	} else if (!isErrFounded()) {
-		showUserManageMenu();
-		main();
-	}
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-if (isErrFounded()) {
-	html_error_quit();
-}
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+showUserManageMenu();
+preprocess();
+main();
 
 show_footer();
 
-function preProcess() {
-	global $_GET, $currentuser;
+function preprocess() {
+	global $currentuser;
 	
 	if (isset($_GET["addfriend"])) {
 		$friend = $_GET["addfriend"];
 		$ret = bbs_add_friend( $friend ,"" );
 		if($ret == -1) {
 			foundErr("您没有权限设定好友或者好友个数超出限制");
-			return false;
 		} else if($ret == -2) {
 			foundErr("$friend 本来就在你的好友名单中");
-			return false;
 		} else if($ret == -3) {
 			foundErr("系统出错");
-			return false;
 		} else if($ret == -4) {
 			foundErr("$friend 用户不存在");
-			return false;
 		} else{
 			setSucMsg("$friend 已增加到您的好友名单中");
-			return true;
+			return html_success_quit("查看所有好友列表", "friendlist.php");
 		}
 	} else if (isset($_GET["delfriend"])) {
 		$friend = $_GET["delfriend"];
@@ -56,16 +42,13 @@ function preProcess() {
 		$error = 2;
 		if ($ret == 1) {
 			foundErr("您没有设定任何好友");
-			return false;
 		} else if($ret == 2) {
 			foundErr("$friend 本来就不在你的好友名单中");
-			return false;
 		} else if($ret == 3) {
 			foundErr("删除失败");
-			return false;
 		} else {
 			setSucMsg("$friend 已从您的好友名单中删除");
-			return true;		
+			return html_success_quit("查看所有好友列表", "friendlist.php");		
 		}
 	}
 }
@@ -78,7 +61,7 @@ function main() {
 <tr>
 <th valign=middle width=30 height=25>序号</th>
 <th valign=middle width=100>用户账号</th>
-<th valign=middle width=280>好友说明</th>
+<th valign=middle width=*>好友说明</th>
 <th valign=middle width=150>操作</th>
 </tr>
 <?php

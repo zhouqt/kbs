@@ -1,4 +1,5 @@
 <?php
+$needlogin = 0;
 require("inc/funcs.php");
 require("inc/userdatadefine.inc.php");
 html_init();

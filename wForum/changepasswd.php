@@ -1,26 +1,19 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 setStat("修改密码");
 
+requireLoginok();
+
 show_nav();
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	showUserManageMenu();
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-if (isErrFounded()) {
-		html_error_quit();
-} 
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+showUserManageMenu();
+main();
 
 show_footer();
 
@@ -59,8 +52,6 @@ function main() {
 
     </table></form>
 <?php
-
 	return false;
 }
-
 ?>

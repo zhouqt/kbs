@@ -9,22 +9,16 @@ global $boardArr;
 global $boardID;
 global $boardName;
 
-preprocess();
+setStat("阅读小字报");
 
-setStat("发布小字报");
+preprocess();
 
 html_init();
 echo "<body>";
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showpaper($boardID,$boardName);
-}
+showpaper($boardID,$boardName);
 
 show_footer(false);
-
-CloseDatabase();
 
 function preprocess(){
 	global $boardID;
@@ -34,10 +28,8 @@ function preprocess(){
 	global $loginok;
 	global $id;
 
-
 	if (!isset($_GET['boardname'])) {
-		foundErr("未指定版面。");
-		return false;
+		foundErr("未指定版面。", true, false);
 	}
 	$boardName=$_GET['boardname'];
 	$brdArr=array();
@@ -45,17 +37,14 @@ function preprocess(){
 	$boardArr=$brdArr;
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
-		foundErr("指定的版面不存在。");
-		return false;
+		foundErr("指定的版面不存在。", true, false);
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
-		foundErr("您无权阅读本版！");
-		return false;
+		foundErr("您无权阅读本版！", true, false);
 	}
 	if (!isset($_GET['id'])){
-		foundErr("错误的参数！");
-		return false;
+		foundErr("错误的参数！", true, false);
 	}
 	$id=intval($_GET['id']);
 	return true;
@@ -66,8 +55,7 @@ function showpaper($boardID,$boardName){
 	global $id;
 	$rs=$conn->getRow("select * from smallpaper_tb where ID=".$id,DB_FETCHMODE_ASSOC);
 	if (count($rs)==0) {
-		foundErr("没有找到相关信息。");
-		return false;
+		foundErr("没有找到相关信息。", true, false);
 	}	else  {
 		$conn->query("update smallpaper_tb set Hits=Hits+1 where ID=".$id);
 ?>

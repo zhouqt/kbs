@@ -1,21 +1,15 @@
 <?php
 
-
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 html_init();
 
-if ($loginok==1) {
-	main();
-}
+if ($loginok != 1) return;
+main();
 
 function main() {
-	global $currentuser;
-	global $_GET;
 	if (isset($_GET["destid"]))
 		$destid = $_GET["destid"];
 	else
@@ -98,8 +92,7 @@ parent.pauseMsg();
 	oFloater.innerHTML=oMsg.innerHTML;
 	show(oFloater);
 	</script>
+</body>
 <?php
-
 }
 ?>
-</body>

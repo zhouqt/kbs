@@ -1,12 +1,9 @@
 <?php
 
-$needlogin=1;
-
 require("inc/funcs.php");
 require("inc/board.inc.php");
 require("inc/user.inc.php");
 require("inc/attachment.inc.php");
-require("inc/conn.php");
 require("inc/ubbcode.php");
 
 global $boardName;
@@ -15,6 +12,8 @@ global $boardID;
 global $parent;
 global $file;
 global $cacheit;
+
+setStat("精华区");
 
 preprocess();
 
@@ -34,17 +33,14 @@ setStat("精华区文章".($file===false?"列表":"阅读"));
 
 show_nav($boardName);
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	if ($boardID) {
-		board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-		if ($file === false) {
+showUserMailBoxOrBR();
+if ($boardID) {
+	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+	if ($file === false) {
 ?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
-	showAnnounce(); 
+		showAnnounce(); 
 ?>
 </table>
 <?php
@@ -52,24 +48,22 @@ if (isErrFounded()) {
 ?>
 <table cellPadding=1 cellSpacing=1 class=TableBorder1 align=center>
 <?php
+		require("inc/conn.php");
 		showBroadcast($boardID,$boardName, true);
 ?>
 </table>
 <?php
-		}
-	} else {
-		head_var("精华区", "elite.php");
 	}
-	if ($file !== false) {
-		ann_display_file($file, $parent);
-	} else {
-		ann_display_folder($articles, $parent);
-	}
+} else {
+	head_var("精华区", "elite.php");
+}
+if ($file !== false) {
+	ann_display_file($file, $parent);
+} else {
+	ann_display_folder($articles, $parent);
 }
 
 show_footer();
-
-CloseDatabase();
 
 function preprocess(){
 	global $articles;
@@ -99,7 +93,6 @@ function preprocess(){
 	
 	if (strstr($path, '.Names') || strstr($path, '..') || strstr($path, 'SYSHome')) {
 	    foundErr('不存在该目录');
-	    return false;
 	}
 	
 	$boardName = '';
@@ -110,26 +103,21 @@ function preprocess(){
 		switch ($ret) {
 		    case -1:
 		        foundErr('精华区目录不存在');
-		        return false;
 		    case -2:
 		        foundErr('无法加载目录文件');
-		        return false;
 		    case -3:
 		        /* 其实所有的信息都有返回，只不过 $articles 没东西而已，可以继续处理. See Also bbs_read_ann_dir() in phpbbslib.c.
 		        foundErr('该目录尚无文章');
-		        return false;
 		        */
 		        break;
 		    case -9:
 		        foundErr('系统错误');
-		        return false;
 		    default;
 		}
 		$path = $path_tmp;
 	} else {
 		if( bbs_ann_traverse_check($path, $currentuser["userid"]) < 0 ) {
 			foundErr("错误的目录");
-			return false;
 		}
 	}
 	$parent = '';
@@ -148,7 +136,6 @@ function preprocess(){
 	        $usernum = $currentuser['index'];
 	        if (bbs_checkreadperm($usernum, $boardID) == 0) {
 	    		foundErr('不存在该目录');
-	    		return false;
 	    	}
 	        bbs_set_onboard($boardID,1);
 	        if (!bbs_normalboard($board)) $cacheit = false;
@@ -208,7 +195,7 @@ function ann_display_folder($articles, $parent) {
 <tr>
 	<td height="27" align="center" class="TableBody1">0</td>
 	<td align="center" class="TableBody2"><img src="pic/istop.gif" alt="目录" border="0" /></td>
-	<td class="TableBody1">&nbsp;<a href="elite.php?path=<?php echo rawurlencode($parent); ?>">上级目录</a></td>
+	<td class="TableBody1">&nbsp;<a href="elite.php?path=<?php echo urlencode($parent); ?>">上级目录</a></td>
 	<td align="center" class="TableBody2">&nbsp;</td>
 	<td align="center" class="TableBody1">&nbsp;</td>
 </tr>
@@ -226,14 +213,14 @@ function ann_display_folder($articles, $parent) {
 	            case 1:
 	                $img = 'pic/ifolder.gif';
 	                $alt = '目录';
-	                $url = 'elite.php?path='.rawurlencode($article['PATH']);
+	                $url = 'elite.php?path='.urlencode($article['PATH']);
 	                break;
 	            case 2:
 	            case 3:
 	            default:
 	                $img = 'pic/folder.gif';
 	                $alt = '文件';
-	                $url = 'elite.php?file='.rawurlencode($article['PATH']);
+	                $url = 'elite.php?file='.urlencode($article['PATH']);
 	        }
 	        echo '<img src="'.$img.'" alt="'.$alt.'" border="0" />';
 	        echo '</td><td class="TableBody1">';
@@ -260,10 +247,10 @@ function ann_display_file($filename, $parent) {
 <tr><th height="25" width="100%" class=TableBody2>精华区文章阅读</th></tr>
 <tr><td width="100%" style="font-size:9pt;line-height:12pt;padding:10px" class=TableBody1>
 <?php
-		echo dvbcode(bbs_printansifile($filename,1,'elite.php?file='.rawurlencode($_GET['file'])),0,"TableBody1");
+		echo dvbcode(bbs_printansifile($filename,1,'elite.php?file='.urlencode($_GET['file'])),0,"TableBody1");
 ?>
 </td></tr>
-<tr><td height="20" align="center" class=TableBody2>[<a href="elite.php?path=<?php echo rawurlencode($parent); ?>">返回精华区目录</a>]</td></tr></table>
+<tr><td height="20" align="center" class=TableBody2>[<a href="elite.php?path=<?php echo urlencode($parent); ?>">返回精华区目录</a>]</td></tr></table>
 <?php
 }
 ?>

@@ -1,4 +1,5 @@
 <?php
+
 require("inc/funcs.php");
 require("inc/board.inc.php");
 require("inc/user.inc.php");
@@ -8,24 +9,19 @@ global $boardArr;
 global $boardID;
 global $boardName;
 
-preprocess();
-
 setStat("发布小字报");
+
+requireLoginok("游客不能发表小字报。");
+
+preprocess();
 
 show_nav($boardName);
 
-if (isErrFounded()) {
-	echo"<br>";
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	main($boardID,$boardName);
-}
+showUserMailBox();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+main($boardID,$boardName);
 
 show_footer();
-
-CloseDatabase();
 
 function preprocess(){
 	global $boardID;
@@ -41,27 +37,18 @@ function preprocess(){
 
 	if ($title=="") {
 	    foundErr("主题不应为空。");
-		return false;
 	}
 	if (strlen($title)>80) {
 		foundErr("主题长度不能超过80");
-		return false;
 	}
 	if ($Content=="") {
 		foundErr("没有填写内容。");
-		return false;
 	}
 	if (strlen($Content)>500) {
 		foundErr("发言内容不得大于500");
-		return false;
 	} 
-	if ($loginok!=1) {
-		foundErr("游客不能发表小字报。");
-		return false;
-	}
 	if (!isset($_POST['board'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_POST['board'];
 	$brdArr=array();
@@ -70,20 +57,16 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在。");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版！");
-		return false;
 	}
 	if (bbs_is_readonly_board($boardArr)) {
-			foundErr("本版为只读讨论区！");
-			return false;
+		foundErr("本版为只读讨论区！");
 	}
 	if (bbs_checkpostperm($usernum, $boardID) == 0) {
 		foundErr("您无权在本版发表小字报！");
-		return false;
 	}
 
 	return true;

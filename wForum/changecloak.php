@@ -3,36 +3,26 @@
 require("inc/funcs.php");
 setStat("切换隐身状态");
 
+requireLoginok("guest不能使用隐身");
+
 do_changeCloak();
 
-if (isErrFounded()) {
-		show_nav();
-		head_var();
-		html_error_quit();
-		show_footer();
-} else {
-  if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") )
-  {
-	  header("Location: ".$SiteURL);
-  }   else  {
-	 header("Location: ".$_SERVER["HTTP_REFERER"]);
-  } 
+if (!isset($_SERVER["HTTP_REFERER"]) || ( $_SERVER["HTTP_REFERER"]=="") )
+{
+	header("Location: index.php");
+}   else  {
+	header("Location: ".$_SERVER["HTTP_REFERER"]);
 } 
-
 
 function do_changeCloak()
 {
 	global $currentuser;
 	global $currentuinfo;
-	
-	if (!strcasecmp($currentuser["userid"],"guest")) {
-		foundErr("guest不能使用隐身");
-		return;
-	}
+
 	if (!($currentuser["userlevel"] & BBS_PERM_CLOAK)) {
 		foundErr("您没有隐身权限");
-		return;
+	} else {
+		bbs_update_uinfo("invisible", !$currentuinfo["invisible"]);
 	}
-	bbs_update_uinfo("invisible", !$currentuinfo["invisible"]);
 } 
 ?>

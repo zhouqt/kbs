@@ -1,7 +1,5 @@
 <?php
 
-$needlogin=1;
-
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
@@ -18,21 +16,18 @@ global $groupID;
 global $start;
 global $listType;
 
+setStat("文章阅读");
+
 preprocess();
 
 setStat(htmlspecialchars($articles[0]['TITLE'] ,ENT_QUOTES) . " " );
 
 show_nav($boardName);
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType);
-}
+showUserMailBoxOrBR();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listType);
 
-//showBoardSampleIcons();
 show_footer();
 
 function preprocess(){
@@ -47,7 +42,6 @@ function preprocess(){
 	global $start;
 	if (!isset($_GET['boardName'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_GET['boardName'];
 	$brdArr=array();
@@ -56,16 +50,13 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版");
-		return false;
 	}
 	if (!isset($_GET['ID'])) {
 		foundErr("您指定的文章不存在！");
-		return false;
 	} else {
 		$groupID=intval($_GET['ID']);
 	}
@@ -85,7 +76,6 @@ function preprocess(){
 	$num = bbs_get_threads_from_gid($boardID, $groupID, $groupID, $articles, $haveprev );
 	if ($num==0) {
 		foundErr("您指定的文章不存在！");
-		return false;
 	}
 	if ($start < 0) $start = 0;
 	if ($start >= $num) $start = $num - 1;
@@ -96,8 +86,8 @@ function article_bar($boardName,$boardID,$groupID,$article,$startNum,$listType){
 	global $dir_modes;
 ?>
 <table cellpadding=2 cellspacing=0 border=0 width=97% align=center>
-	<tr>
-	<td align=left valign=middle style="height:27"><table cellpadding=0 cellspacing=0 border=0 ><tr><td width=2> </td>
+	<tr><td width=2> </td>
+	<td align=left valign=middle style="height:27"><table cellpadding=0 cellspacing=0 border=0 ><tr>
 	<td width="110"><a href=postarticle.php?board=<?php echo $boardName; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
 	<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>
 	<td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>&reID=<?php echo $article['ID']; ?>"><div class="buttonClass4" border=0 alt=回复本主题></div></a></td>

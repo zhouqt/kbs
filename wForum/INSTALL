@@ -5,21 +5,18 @@ roy@zixia.net
 
 wForum部分安装
 2. 解压wForum。ln -s inc/sites/ 下的适当文件到inc/site.php
-可参考site-example.php
+可参考site-example.php。修改里面的各类参数，包括 mysql 用户、密码和数据库名
+按照documents/smallpaper_tb.sql里的定义在mysql中建立一个数据表。
 
-3. copy inc/conn.php.origin 为inc/conn.php,修改里面的mysql 用户、密码和数据库名
-按照documents/smallpaper_tb.sql里的定义在mysql中建立一个数据表
-
-4.smth安装请参考其安装文档；必须打开WWW支持
+3.smth安装请参考其安装文档；必须打开WWW支持
 站点文件清参考site/wforum.h和site/wforum.c
 
+4.原先安装了smth系统的站点需要升级.PASSWDS文件。请参考documents/smth_update.txt文件
 
-5.原先安装了smth系统的站点需要升级.PASSWDS文件。请参考documents/smth_update.txt文件
-
-6.确认一下wForum主目录下面有uploadFace/目录，如果没有的话就建立一下，否则自定义头像
+5.确认一下wForum主目录下面有uploadFace/目录，如果没有的话就建立一下，否则自定义头像
 的功能将不能正常工作
 
-7.如果是升级wForum，推荐升级之后删除~bbs/boards/目录下所有的.WEBTHREAD强制让系统
+6.如果是升级wForum，推荐升级之后删除~bbs/boards/目录下所有的.WEBTHREAD强制让系统
 重新生成索引。可以在~bbs/boards/下执行这样一个命令：
 
     ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'
@@ -32,7 +29,7 @@ wForum需要php支持gd及mysql。
 首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype
 及各自相应的devel包
 
-然后用下面的参数编译php：
+然后用下面的参数编译php（假设 apache 1.3.x）：
 ./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with
 -jpeg-dir --with-png-dir --with-config-file-path=/bbs/www/conf --with-zlib
 -dir --with-mysql --with-apxs=/bbs/www/bin/apxs

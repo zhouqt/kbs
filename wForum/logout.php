@@ -13,5 +13,5 @@ setcookie("W_UTMPUSERID",'',time()+36000000,$path);
 setcookie("W_LOGINTIME",'',time()+36000000,$path);
 setcookie("W_PASSWORD",'',time()+36000000,$path);
 
-header('Location: '.$SiteURL); //ToDo: 是否跳回 REFERER ? - atppp
+header('Location: index.php'); //ToDo: 是否跳回 REFERER ? - atppp
 ?>

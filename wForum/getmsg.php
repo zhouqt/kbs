@@ -1,11 +1,10 @@
 <?php
 
-
 require("inc/funcs.php");
 
 html_init();
 ?>
-<body >
+<body>
 <script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <?php
 	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);

@@ -8,23 +8,19 @@ global $boardArr;
 global $boardID;
 global $boardName;
 
-preprocess();
-
 setStat("发布小字报");
+
+requireLoginok("游客不能发表小字报。");
+
+preprocess();
 
 show_nav($boardName);
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	main($boardID,$boardName);
-}
+showUserMailBoxOrBR();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+main($boardID,$boardName);
 
 show_footer();
-
-CloseDatabase();
 
 function preprocess(){
 	global $boardID;
@@ -33,13 +29,8 @@ function preprocess(){
 	global $boardArr;
 	global $loginok;
 
-	if ($loginok!=1) {
-		foundErr("游客不能发表小字报。");
-		return false;
-	}
 	if (!isset($_GET['board'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_GET['board'];
 	$brdArr=array();
@@ -48,26 +39,19 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在。");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版！");
-		return false;
 	}
 	if (bbs_is_readonly_board($boardArr)) {
-			foundErr("本版为只读讨论区！");
-			return false;
+		foundErr("本版为只读讨论区！");
 	}
 	if (bbs_checkpostperm($usernum, $boardID) == 0) {
 		foundErr("您无权在本版发表小字报！");
-		return false;
 	}
-
 	return true;
 }
-
-
 
 function main($boardID,$boardName) {
 	global $conn;

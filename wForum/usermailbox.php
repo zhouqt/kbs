@@ -1,28 +1,19 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 setStat("用户邮件服务");
 
+requireLoginok();
+
 show_nav();
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-
-if (isErrFounded()) {
-		html_error_quit();
-} else {
-	showMailSampleIcon();
-}
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+main();
+showMailSampleIcon();
 
 show_footer();
 
@@ -43,10 +34,9 @@ function main() {
 		showUserManageMenu();
 		showmailBoxes();
 		showmailBox($boxName, $path, $desc, $startNum);
-		return true;
+	} else {
+		foundErr("您指定了错误的邮箱名称！");
 	}
-	foundErr("您指定了错误的邮箱名称！");
-	return false;
 }
 
 
@@ -76,7 +66,6 @@ function showmailBox($boxName, $path, $desc, $startNum){
 	$mail_num = bbs_getmailnum2($mail_fullpath);
 	if($mail_num < 0 || $mail_num > 30000) {
 		foundErr('您的'.$desc.'中信件太多！');
-		return false;
 	}
 	if($mail_num == 0) {
 ?>
@@ -96,8 +85,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 	}
 	$maildata = bbs_getmails($mail_fullpath,$startNum,$num);
 	if ($maildata == FALSE) {
-			foundErr("读取邮件数据失败!");
-			return false;
+		foundErr("读取邮件数据失败!");
 	}
 	for ($i = $num-1; $i >= 0; $i--){
 ?>

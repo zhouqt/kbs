@@ -1,34 +1,22 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
-
 require("inc/ubbcode.php");
 
 setStat("察看信件");
+
+requireLoginok();
 
 show_nav();
 
 echo "<br>";
 
 $boxDesc=getMailBoxName($_GET['boxname']);
+head_var($userid."的".$boxDesc,"usermailbox.php?boxname=".$_GET['boxname'],0);
+main();
 
-if (!isErrFounded()) {
-	head_var($userid."的".$boxDesc,"usermailbox.php?boxname=".$_GET['boxname'],0);
-}
-
-if ($loginok==1) {
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
-
-
-if (isErrFounded()) {
-		html_error_quit();
-} 
 show_footer();
 
 function main(){
@@ -37,7 +25,6 @@ function main(){
 	$boxName=$_GET['boxname'];
 	if (!isset($_GET['num'])) {
 		foundErr("您所指定的信件不存在!");
-		return false;
 	}
 	$num=intval($_GET['num']);
 	if ($boxName=='') {
@@ -45,10 +32,9 @@ function main(){
 	}
 	if (getMailBoxPathDesc($boxName, $path, $desc)) {
 		showmail($boxName, $path, $desc, $num);
-		return true;
+	} else {
+		foundErr("您指定了错误的邮箱名称！");
 	}
-	foundErr("您指定了错误的邮箱名称！");
-	return false;
 }
 
 function showmail($boxName, $boxPath, $boxDesc, $num){

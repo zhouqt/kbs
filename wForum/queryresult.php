@@ -15,17 +15,13 @@ show_nav($singleBoard);
 
 showUserMailBoxOrBR();
 
-if ($boardArr !== false && !isErrFounded()) 
+if ($boardArr !== false) 
 	board_head_var($boardArr['DESC'],$singleBoard,$boardArr['SECNUM']);
 else {
 	head_var("论坛搜索",'query.php',0);
 }
 
-if (isErrFounded()) {
-	html_error_quit();
-} else {
-	doSearch($boardNames);
-}
+doSearch($boardNames);
 
 show_footer();
 
@@ -37,7 +33,6 @@ function preprocess(){
 	global $title,$title2,$title3,$author;
 	if (!isset($_REQUEST['boardNames'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardNames = split(',',$_REQUEST['boardNames']);
 	if (count($boardNames) == 1) {
@@ -48,19 +43,16 @@ function preprocess(){
 		$singleBoard=$brdArr['NAME'];
 		if ($boardID==0) {
 			foundErr("指定的版面不存在");
-			return false;
 		}
 		$usernum = $currentuser["index"];
 		if (bbs_checkreadperm($usernum, $boardID) == 0) {
 			foundErr("指定的版面不存在");
-			return false;
 		}
 	} else {
 		$singleBoard = '';
 		$boardArr = false;
 		if (!ALLOWMULTIQUERY) {
 			foundErr("不允许多版面查询，请重新查询。");
-			return false;
 		}
 	}
 	$title=trim($_REQUEST['title']);
@@ -103,7 +95,8 @@ function doSearch($boardNames){
 		$boardArr = $brdArr;
 		if (bbs_checkreadperm($usernum, $boardID) == 0) continue; //这个其实是没必要的，因为bbs_searchtitle()是检查的
 		if (bbs_getThreadNum($boardID) == 0) continue; //其实主要目的是强制重新生成 .WEBTHREAD
-		$articles=bbs_searchtitle($boardName,$title,$title2,$title3,$author,intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),$maxreturn);
+		$articles=bbs_searchtitle($boardName,$title,$title2,$title3,$author,
+		                          intval($_REQUEST['dt']),isset($_REQUEST['mg']),isset($_REQUEST['ag']),$maxreturn);
 				
 		$num=count($articles);
 	
@@ -111,9 +104,9 @@ function doSearch($boardNames){
 		$totalnum += $num;
 		if (!$singleSearch) {
 ?>
-<tr><td height="27" align="left" colspan="5" class="TableBody2">&nbsp;&nbsp;<b><a href="board.php?name=<?php echo rawurlencode($boardName); ?>"><?php echo $boardArr['DESC']; ?></a></b><?php
+<tr><td height="27" align="left" colspan="5" class="TableBody2">&nbsp;&nbsp;<b><a href="board.php?name=<?php echo urlencode($boardName); ?>"><?php echo $boardArr['DESC']; ?></a></b><?php
 			if (count($articles) > $maxreturn - 1) {
-				$morelink = "queryresult.php?title=".rawurlencode($title)."&title2=".rawurlencode($title2)."&title3=".rawurlencode($title3)."&userid=".rawurlencode($author)."&dt=".$_REQUEST['dt']."&boardNames=".rawurlencode($boardName);
+				$morelink = "queryresult.php?title=".urlencode($title)."&title2=".urlencode($title2)."&title3=".urlencode($title3)."&userid=".urlencode($author)."&dt=".$_REQUEST['dt']."&boardNames=".urlencode($boardName);
 				if (isset($_REQUEST['mg'])) {
 					$morelink .= "&mg=on";
 				}

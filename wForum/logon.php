@@ -1,23 +1,16 @@
 <?php
 
-
 $needlogin=0;
 
 require("inc/funcs.php"); 
-setStat("用户登陆");
+setStat("用户登录");
+show_nav();
+echo "<br>";
+head_var("用户登录");
 
 if ($_POST['action']=="doLogon") {
 	doLogon();
-	if (isErrFounded()){
-		show_nav();
-		echo "<br>";
-		head_var("用户登陆");
-		html_error_quit(); 
-	} 
 } else {
-	show_nav();
-	echo "<br>";
-	head_var("用户登陆");
 	showLogon();
 }
 
@@ -29,32 +22,25 @@ function doLogon(){
 	@$passwd = $_POST["password"];
 	if ($id=='') {
 		foundErr("请输入您的用户名");
-		return false;
 	}
 	if  ( ($loginok==1) || ($guestloginok==1) ) {
 		bbs_wwwlogoff();
 	}
 	if (($id!='guest') && (bbs_checkpasswd($id,$passwd)!=0)){
 		foundErr("您的用户名并不存在，或者您的密码错误");
-		return;
 	}
 	$ret=bbs_wwwlogin(1);
 	switch ($ret) {
 	case -1:
 		foundErr("您已登陆的账号过多，无法重复登陆!");
-		return false;
 	case 3:
 		foundErr("您的账号已被管理员禁用！");
-		return false;
 	case 4:
 		foundErr("您所使用的IP已被本站禁用！");
-		return false;
 	case 5:
 		foundErr("请勿频繁登陆!");
-		return false;
 	case 1:
 		foundErr("系统在线人数已达上限，请稍后再访问本站。");
-		return false;
 	}
 	$data=array();
     $num=bbs_getcurrentuinfo($data);
@@ -84,9 +70,6 @@ function doLogon(){
 		$comeurl=$_POST['comeurl'];
 		$comeurlname="<li><a href=".$_POST['comeurl'].">".$_POST['comeurl']."</a></li>";
 	} 
-	show_nav();
-	echo "<br>";
-	head_var("用户登陆");
 ?>
 <meta HTTP-EQUIV=REFRESH CONTENT='2; URL=<?php   echo $comeurl; ?>' >
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 >

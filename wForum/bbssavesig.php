@@ -1,26 +1,19 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 setStat("编辑显示签名档");
 
+requireLoginok();
+
 show_nav();
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+main();
 
-
-if (isErrFounded()) {
-		html_error_quit();
-} 
 show_footer();
 
 function main(){
@@ -29,7 +22,6 @@ function main(){
 	$fp=@fopen($filename,"w+");
     if ($fp==false) {
 		foundErr("无法存盘，请联系管理员！");
-		return false;
 	}
 	fwrite($fp,str_replace("\r\n", "\n", $_POST["text"]));
 	fclose($fp);

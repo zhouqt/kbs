@@ -1,31 +1,23 @@
 <?php
 
-
-$needlogin=1;
-
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/ubbcode.php");
 require_once("inc/myface.inc.php");
 
-preprocess();
-
 setStat("察看用户信息");
+
+preprocess();
 
 show_nav();
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	head_var();
-	if ($user !== false) {
-		showUserData($user,$user_num);
-	}
-	showQueryForm();
+showUserMailBoxOrBR();
+head_var();
+if ($user !== false) {
+	showUserData($user,$user_num);
 }
+showQueryForm();
 
-//showBoardSampleIcons();
 show_footer();
 
 function preprocess() {
@@ -37,7 +29,6 @@ function preprocess() {
 	$userarray=array();
 	if (($user_num=bbs_getuser($_GET['id'],$userarray))==0) {
 		foundErr("查找用户数据失败！");
-		return false;
 	}
 	$user=$userarray;
 	return true;

@@ -1,8 +1,8 @@
 <?php
+
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
-
 
 global $boardName;
 global $boardArr;
@@ -21,11 +21,7 @@ else {
 	head_var("ÂÛÌ³ËÑË÷",'',0);
 }
 
-if (isErrFounded()) {
-		html_error_quit();
-} else {
-	showSearchMenu();
-}
+showSearchMenu();
 
 show_footer();
 

@@ -22,7 +22,6 @@ if ($boardID==0) {
 $usernum = $currentuser["index"];
 if (bbs_checkreadperm($usernum, $boardID) == 0) {
 	exit(0);
-	return false;
 }
 bbs_set_onboard($boardID,1);
 

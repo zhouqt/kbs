@@ -1,46 +1,33 @@
 <?php
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
-
 require("inc/board.inc.php");
 
 //ToDo: 转发信件会加入额外的信头，而 telnet 方式转发是不会加入信头的，有必要改成一致的吗？- atppp
 $action=0; //0: 新发信件；1: 指定收件人新发信件；2: 回复信件；3: 回复版面文章；4: 转发信件
 $mail_receiver="";
-$article;
 
 setStat("撰写新信件");
+
+requireLoginok();
 
 show_nav();
 
 preprocess();
 
-if ($loginok==1) {
-	if (!isErrFounded()) {
-		showUserMailbox();
-		head_var($userid."的发件箱","usermailbox.php?boxname=sendbox",0);
-		showUserManageMenu();
-		showmailBoxes();
-		main();
-	}
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
+showUserMailbox();
+head_var($userid."的发件箱","usermailbox.php?boxname=sendbox",0);
+showUserManageMenu();
+showmailBoxes();
+main();
 
-
-if (isErrFounded()) {
-		html_error_quit();
-} 
 show_footer();
 
 function preprocess() {
 	global $action, $mail_receiver;
     if (!bbs_can_send_mail()) {
 		foundErr("您没有写信权力!");
-		return false;
 	}
 	if (isset($_GET['boxname'])) {
 		setstat("回复信件");
@@ -50,6 +37,8 @@ function preprocess() {
 		$boxName = $_GET['boxname'];
 		if (getMailBoxPathDesc($boxName, $path, $desc)) {
 			return getmail($boxName, $path, $num);
+		} else {
+			foundErr("您指定了错误的邮箱名称！");
 		}
 	}
 	if (isset($_GET['board'])) {
@@ -72,16 +61,13 @@ function getarticle($boardName,$reID){
 	$boardArr=$brdArr;
 	if ($boardID==0) {
 		foundErr("指定的版面不存在。");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版！");
-		return false;
 	}
 	if (bbs_is_readonly_board($boardArr)) {
-			foundErr("本版为只读讨论区！");
-			return false;
+		foundErr("本版为只读讨论区！");
 	}
 	settype($reID, "integer");
 	$articles = array();
@@ -89,7 +75,6 @@ function getarticle($boardName,$reID){
 	$num = bbs_get_records_from_id($brdArr['NAME'], $reID,$dir_modes["NORMAL"],$articles);
 		if ($num == 0)	{
 			foundErr("错误的文章文编号");
-			return false;
 		}
 	}
 	$article=$articles[1];
@@ -105,25 +90,21 @@ function getmail($boxName, $boxPath, $num){
 	$articles = array ();
 	if( bbs_get_records_from_num($dir, $num, $articles) ) {
 		$file = $articles[0]["FILENAME"];
-	}else{
+	} else {
 		foundErr("您所指定的信件不存在");
-		return false;
 	}
 
 	$filename = bbs_setmailfile($currentuser["userid"],$file) ;
 
 	if(! file_exists($filename)){
 		foundErr("您所指定的信件不存在");
-		return false;
 	}
 	$article=$articles[0];
-
 	return true;
 }
 
 function main() {
 	global $currentuser;
-	global $_GET;
 	global $article, $mail_receiver;
 	global $action;
 ?>

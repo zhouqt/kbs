@@ -1,8 +1,5 @@
 <?php
 
-
-$needlogin=1;
-
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
@@ -13,21 +10,18 @@ global $boardName;
 global $reID;
 global $reArticles;
 
-preprocess();
-
 setStat("编辑文章");
+
+requireLoginok("游客不能编辑文章。");
+
+preprocess();
 
 show_nav();
 
-if (isErrFounded()) {
-	html_error_quit() ;
-} else {
-	showUserMailBoxOrBR();
-	board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
-	showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles);
-}
+showUserMailBoxOrBR();
+board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
+showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles);
 
-//showBoardSampleIcons();
 show_footer();
 
 function preprocess(){
@@ -38,13 +32,8 @@ function preprocess(){
 	global $loginok;
 	global $reID;
 	global $reArticles;
-	if ($loginok!=1) {
-		foundErr("游客不能发表文章。");
-		return false;
-	}
 	if (!isset($_GET['board'])) {
 		foundErr("未指定版面。");
-		return false;
 	}
 	$boardName=$_GET['board'];
 	$brdArr=array();
@@ -53,26 +42,21 @@ function preprocess(){
 	$boardName=$brdArr['NAME'];
 	if ($boardID==0) {
 		foundErr("指定的版面不存在。");
-		return false;
 	}
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) {
 		foundErr("您无权阅读本版！");
-		return false;
 	}
 	if (bbs_is_readonly_board($boardArr)) {
-			foundErr("本版为只读讨论区！");
-			return false;
+		foundErr("本版为只读讨论区！");
 	}
 	if (bbs_checkpostperm($usernum, $boardID) == 0) {
 		foundErr("您无权在本版发表文章！");
-		return false;
 	}
 	if (isset($_GET["reID"])) {
 		$reID = $_GET["reID"];
 	}else {
 		foundErr("未指定编辑的文章.");
-		return false;
 	}
 	settype($reID, "integer");
 	$articles = array();
@@ -80,32 +64,24 @@ function preprocess(){
 	$num = bbs_get_records_from_id($boardName, $reID,$dir_modes["NORMAL"],$articles);
 		if ($num == 0)	{
 			foundErr("错误的文章文编号");
-			return false;
 		}
 	}
 	$ret=bbs_caneditfile($boardName,$articles[1]['FILENAME']);
 	switch ($ret) {
 	case -1:
 		foundErr("讨论区名称错误");
-		return false;
 	case -2:
 		foundErr("本版不能修改文章");
-		return false;
 	case -3:
 		foundErr("本版已被设置只读");
-		return false;
 	case -4:
 		foundErr("无法取得文件记录");
-		return false;
 	case -5:
 		foundErr("不能修改他人文章!");
-		return false;
 	case -6:
 		foundErr("同名ID不能修改老ID的文章");
-		return false;
 	case -7:
 		foundErr("您的POST权被封");
-		return false;
 	}
 	$reArticles=$articles;
 	return true;

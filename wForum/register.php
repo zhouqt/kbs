@@ -2,7 +2,7 @@
 	$needlogin=0;
 	require("inc/funcs.php");
 	setStat("新用户注册");
-		show_nav();
+	show_nav();
 	@$action=$_POST['action'];
 	if ($action=='apply') {
 		setStat("填写资料");
@@ -18,9 +18,6 @@
 		do_show();
 	}
 
-	if (isErrFounded()) {
-		html_error_quit();
-	}
 show_footer();
 
 function do_show() {
@@ -365,9 +362,6 @@ function do_save(){
 		foundErr("两次密码输入不一样");
 	else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
        	foundErr("密码长度太短或者和用户名相同!");
-	if (isErrFounded() ){
-		return false;
-	}
 	$ret=bbs_createnewid($userid,$pass1,$nickname);
 	switch($ret)
 	{
@@ -398,9 +392,6 @@ function do_save(){
 			foundErr("注册ID时发生未知的错误!");
 			break;
 	}
-	if (isErrFounded() ){
-		return false;
-	}
 	if($gender!='1')$gender=2;
     settype($year,"integer");
 	settype($month,"integer");
@@ -427,9 +418,6 @@ $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$da
 	default:
 		foundErr("未知的错误!");
 		break;
-	}
-	if (isErrFounded() ){
-		return false;
 	}
 	$signature=trim($_POST["Signature"]);
 	if ($signature!='') {

@@ -1,6 +1,5 @@
 <?php
 
-
 $setboard=1;
 
 require("inc/funcs.php");
@@ -13,11 +12,8 @@ setStat("十大热门话题");
 showUserMailBoxOrBR();
 head_var();
 
-if (isErrFounded()) {
-	html_error_quit();
-} else {
-	showTopTen();
-}
+showTopTen();
+
 show_footer();
 
 /*--------------- function defines ------------------*/
@@ -27,7 +23,6 @@ function showTopTen(){
 	$fp = fopen($top_file, "r");
 	if ($fp == FALSE) {
 		foundErr("无法读取十大话题数据");
-		return false;
 	}
 	$modifytime=filemtime($top_file);
 ?>

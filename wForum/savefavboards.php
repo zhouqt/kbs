@@ -1,26 +1,19 @@
 <?php
+
 require("inc/funcs.php");
-
 require("inc/usermanage.inc.php");
-
 require("inc/user.inc.php");
 
 setStat("保存收藏版面");
 
 show_nav();
 
-if ($loginok==1) {
-	showUserMailbox();
-	head_var($userid."的控制面板","usermanagemenu.php",0);
-	showUserManageMenu();
-	main();
-}else {
-	foundErr("本页需要您以正式用户身份登陆之后才能访问！");
-}
+requireLoginok();
 
-if (isErrFounded()) {
-		html_error_quit();
-} 
+showUserMailbox();
+head_var($userid."的控制面板","usermanagemenu.php",0);
+showUserManageMenu();
+main();
 
 show_footer();
 
@@ -42,12 +35,10 @@ function main(){
 */
 	if (bbs_load_favboard($select) == -1) {
 		foundErr("无法读取收藏夹");
-		return false;
 	}
 	$boards = bbs_fav_boards($select, 1);
 	if ($boards == FALSE) {
 		foundErr("无法读取收藏夹");
-		return false;
 	}
 	$brd_flag= $boards["FLAG"];
 	$brd_npos= $boards["NPOS"];
