@@ -2264,7 +2264,7 @@ static int maillist_key(struct _select_def *conf, int command)
         }
         return SHOW_REFRESH;
     }
-    if (toupper(command) == 'T') {
+    if (command == 'T') {
         int p = 1, i, j;
         char bname[STRLEN];
 	int num;
