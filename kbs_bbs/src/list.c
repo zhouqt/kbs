@@ -293,9 +293,9 @@ int do_userlist()
         clrtoeol();
         getyx(&y, &x);
         move(y, 20);
-        disable_move = false;
-        prints(tbuf);
         disable_move = true;
+        prints(tbuf);
+        disable_move = false;
         resetcolor();
         move(y, x);
         sprintf(user_info_str,

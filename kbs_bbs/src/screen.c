@@ -646,10 +646,10 @@ void outns(const char*str, int n)
                 k=1;
                 for(j=2;j<i;j++) k=k&&(*(str+j)>='0'&&*(str+j)<='9');
                 if(DEFINE(currentuser, DEF_COLOR))
+                if(!disable_move)
                 if(k) {
                     refresh();
                     output(str, i+1);
-                    oflush();
                 }
                 str+=i+1;
                 continue;
