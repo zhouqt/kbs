@@ -155,10 +155,40 @@ long get_mail_sum_records(char *fpath, int size)
     return ans ;
 }
 
+char mail_list[MAILBOARDNUM][40];
+int mail_list_t;
+
+void load_mail_list()
+{
+    char fname[STRLEN];
+    int fd;
+
+    sethomefile(fname, currentuser->userid, "maildir");
+    mail_list_t=0;
+    if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
+        read(fd, &mail_list_t, sizeof(int));
+        read(fd, mail_list, sizeof(mail_list));
+        close(fd);
+    }
+}
+
+void save_mail_list()
+{
+    char fname[STRLEN];
+    int fd;
+
+    sethomefile(fname, currentuser->userid, "maildir");
+    if ((fd = open(fname, O_WRONLY|O_CREAT, 0600)) != -1) {
+        write(fd, &mail_list_t, sizeof(int));
+        write(fd, mail_list, sizeof(mail_list));
+        close(fd);
+    }
+}
+
 long get_mailusedspace(struct userec *user,int force)
 {
-	char recmaildir[200];
-	int sum=0;
+	char recmaildir[200], buf[STRLEN];
+	int sum=0, i;
 	if(user->usedspace==0xFFFF||force!=0)
 	{
 		setmailfile(recmaildir, user->userid, DOT_DIR);
@@ -167,6 +197,12 @@ long get_mailusedspace(struct userec *user,int force)
 		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
 		setmailfile(recmaildir, user->userid, ".DELETED");
 		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
+		load_mail_list();
+		for(i=0;i<mail_list_t;i++){
+		    sprintf(buf, ".%s", mail_list[i]+30);
+		    setmailfile(recmaildir, user->userid, buf);
+		    sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
+		}
 		user->usedspace=sum;
 		return sum;
 	}
@@ -687,6 +723,19 @@ int id1, id2, del_mode;
                     setmailfile(genbuf, currentuser->userid, ".DELETED");
                     append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
                 }
+            }
+            else {
+               int j;
+	        struct stat st;
+               memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
+               delcount++;
+               if (delcount >= DEL_RANGE_BUF) {
+               	delcount = 0;
+	        	for (j = 0; j < DEL_RANGE_BUF; j++){
+	            		setmailfile(genbuf, currentuser->userid, delfhdr[j].filename);
+	            		if (stat(genbuf, &st) !=-1) currentuser->usedspace-=st.st_size;
+	        	}
+               }
             }
 #endif                          /* 
                                  */

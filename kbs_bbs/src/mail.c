@@ -52,8 +52,8 @@ extern int numofsig;
 extern char quote_user[];
 char *sysconf_str();
 char currmaildir[STRLEN];
-char mail_list[MAILBOARDNUM][40];
-int mail_list_t;
+extern char mail_list[MAILBOARDNUM][40];
+extern int mail_list_t;
 
 #define maxrecp 300
 
@@ -2063,33 +2063,8 @@ char mail_mtitle[3][10]=
 "DELETED"
 };
 
-void load_mail_list()
-{
-    char fname[STRLEN];
-    int fd;
-
-    sethomefile(fname, currentuser->userid, "maildir");
-    mail_list_t=0;
-    if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-        read(fd, &mail_list_t, sizeof(int));
-        read(fd, mail_list, sizeof(mail_list));
-        close(fd);
-    }
-}
-
-void save_mail_list()
-{
-    char fname[STRLEN];
-    int fd;
-
-    sethomefile(fname, currentuser->userid, "maildir");
-    if ((fd = open(fname, O_WRONLY|O_CREAT, 0600)) != -1) {
-        write(fd, &mail_list_t, sizeof(int));
-        write(fd, mail_list, sizeof(mail_list));
-        close(fd);
-    }
-}
-
+extern void load_mail_list();
+extern void save_mail_list();
 extern int t_override();
 
 int load_mboards()

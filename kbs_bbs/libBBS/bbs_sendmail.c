@@ -4,6 +4,11 @@ extern char *sysconf_str();
 
 #include <libesmtp.h>
 
+extern char mail_list[MAILBOARDNUM][40];
+extern int mail_list_t;
+extern void load_mail_list();
+
+
 int getmailnum(char* recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
 {   
     struct fileheader fh;
@@ -22,8 +27,8 @@ int getmailnum(char* recmaildir)      /*Haohmaru.99.4.5.查对方信件数 */
 
 int chkusermail(struct userec *user)
 {
-    char recmaildir[STRLEN];
-    int num,sum, sumlimit, numlimit;
+    char recmaildir[STRLEN], buf[STRLEN];
+    int num,sum, sumlimit, numlimit, i;
 
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
 #ifdef NINE_BUILD
@@ -63,6 +68,12 @@ int chkusermail(struct userec *user)
         num+=getmailnum(recmaildir) ;
         setmailfile(recmaildir, user->userid, ".DELETED");
         num+=getmailnum(recmaildir) ;
+        load_mail_list();
+	 for(i=0;i<mail_list_t;i++){
+		sprintf(buf, ".%s", mail_list[i]+30);
+		setmailfile(recmaildir, user->userid, buf);
+		num+=getmailnum(recmaildir);
+        }
         sum=get_mailusedspace(user,0)/1024;
         /*if(user==currentuser)sum=user->usedspace/1024;
         else sum = get_sum_records(recmaildir, sizeof(fileheader)); 
