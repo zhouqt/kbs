@@ -125,7 +125,7 @@ int post_cross2(char islocal, char *board)
     local_article = 0;
     if ( !strcmp( postfile.title, buf ) && quote_file[0] != '\0' )
         if(islocal=='l'||islocal=='L')
-            local_article=YEA;
+            local_article=true;
 
     getcross2(filepath, board, getcurrusr()); /*根据fname完成 文件复制 */
 
@@ -195,7 +195,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct,
 	{
 		http_fatal("\n\n                很抱歉，你在该版被其版主停止了 POST 的权力...\n");
 	}
-	else if (YEA == checkreadonly(board2)) /* Leeward 98.03.28 */
+	else if (true == checkreadonly(board2)) /* Leeward 98.03.28 */
 	{
 		return FULLUPDATE;
 	}

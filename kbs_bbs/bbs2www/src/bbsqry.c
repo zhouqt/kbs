@@ -17,7 +17,7 @@ char userid[IDLEN];
     if ((pf = fopen(pfile, "r")) == NULL)
     {
         hprintf("[36mÃ»ÓÐ¸öÈËËµÃ÷µµ[m\n");
-        return NA;
+        return false;
     }
     else
     {
@@ -29,7 +29,7 @@ char userid[IDLEN];
             else break;
         }
         fclose(pf);
-        return YEA;
+        return true;
     }
 }
 

@@ -21,7 +21,7 @@ int get_edit_post(char *userid, char *board, char *file, struct fileheader *x)
             ||!strcmp(board, "junk")
             ||!strcmp(board, "deleted"))    /* Leeward : 98.01.22 */
         return -1;
-	if (checkreadonly(board) == YEA)
+	if (checkreadonly(board) == true)
 	{
 		/*http_fatal("ÌÖÂÛÇøÖ»¶Á");*/
 		return -1;

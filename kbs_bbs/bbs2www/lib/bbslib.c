@@ -1411,17 +1411,17 @@ int get_friendmode()
 int myfriend(int uid,char* fexp)
 {
     extern int  nf;
-    int i,found=NA;
+    int i,found=false;
     int cmp;
     /*char buf[IDLEN+3];*/
 
     if(nf<=0)
     {
-        return NA;
+        return false;
     }
     for (i=0;i<nf;i++) {
     	if (topfriend[i].uid==uid) {
-    		found=YEA;
+    		found=true;
     		break;
     	}
     }
@@ -1831,11 +1831,11 @@ int www_data_init()
 	  足够了
 	  */
 	bzero(&www_guest_uinfo,sizeof(www_guest_uinfo));
-	www_guest_uinfo.active=YEA;
+	www_guest_uinfo.active=true;
 	www_guest_uinfo.uid=getuser("guest",&guest);
 	if (www_guest_uinfo.uid==0)
 		return -1;
-	www_guest_uinfo.invisible=YEA;
+	www_guest_uinfo.invisible=true;
 	www_guest_uinfo.pid=1;
 	www_guest_uinfo.mode=WEBEXPLORE;
 	strcpy(www_guest_uinfo.username,guest->username);
@@ -1970,12 +1970,12 @@ int www_user_login(struct userec* user,int useridx,int kick_multi,char* fromhost
 		}
 
 		memset( &ui, 0, sizeof( struct user_info ) );
-    		ui.active = YEA ;
+    		ui.active = true ;
 		/* Bigman 2000.8.29 智囊团能够隐身 */
 		if( (HAS_PERM(user,PERM_CHATCLOAK)
 			|| HAS_PERM(user,PERM_CLOAK)) 
 			&& (user->flags[0] & CLOAK_FLAG))
-		    	ui.invisible = YEA;
+		    	ui.invisible = true;
 		ui.pager = 0;
 		if(DEFINE(user,DEF_FRIENDCALL))
 		{

@@ -105,11 +105,11 @@ int wwwlogin(struct userec *user) {
 	int utmpent;
 
     memset( &ui, 0, sizeof( uinfo_t ) );
-    ui.active = YEA ;
+    ui.active = true ;
 
     /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
     if( (HAS_PERM(currentuser,PERM_CHATCLOAK) || HAS_PERM(currentuser,PERM_CLOAK)) && (user->flags[0] & CLOAK_FLAG))
-        ui.invisible = YEA;
+        ui.invisible = true;
     ui.pager = 0;
     if(define(DEF_FRIENDCALL))
     {
