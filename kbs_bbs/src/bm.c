@@ -104,6 +104,7 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
     char filebuf[STRLEN];
     char denymsg[STRLEN];
     int  denyday;
+    int reasonfile;
 
     now=time(0);
     strncpy(date,ctime(&now)+4,7);
@@ -116,6 +117,64 @@ int addtodeny(char* uident) /* 添加 禁止POST用户 */
         maxdeny=14;
 
     *denymsg = 0;
+    if ((reasonfile=open("etc/deny_reason",O_RDONLY))!=-1) {
+    	int reason=-1;
+    	int maxreason;
+    	char* file_buf;
+    	char *denymsglist[50];
+    	struct stat st;
+	    move(4,0);
+	    if (fstat(reasonfile,&st)==0) {
+	    	int i;
+	    	file_buf=(char*)malloc(st.st_size);
+	    	read(reasonfile,file_buf,st.st_size);
+	    	maxreason=1;
+	    	denymsglist[0]=file_buf;
+	    	for (i=1;i<st.st_size;i++) {
+	    		if (file_buf[i]=='\n') {
+	    			file_buf[i]=0;
+				prints("%d.%s\n",maxreason,denymsglist[maxreason-1]);
+	    			if (i==st.st_size-1) break;
+	    			if (file_buf[i+1]=='\r') {
+	    				if (i+1==st.st_size-1) break;
+	    				denymsglist[maxreason]=&file_buf[i+2];
+	    				maxreason++;
+	    				i+=2;
+	    			} else {
+	    				denymsglist[maxreason]=&file_buf[i+1];
+	    				maxreason++;
+	    				i++;
+	    			}
+	    		}
+	    	}
+		prints("%s","0.手动输入封禁理由");
+		    while (1) {
+		    	getdata(2,0,"输入封禁理由:",denymsg,2,DOECHO,NULL,YEA);
+		    	if (isdigit(denymsg[0])) {
+		    		reason=atoi(denymsg);
+		    		if (reason==0) {
+		    			denymsg[0]=0;
+		    			move(2,0);
+    					clrtobot();
+		    			break;
+		    		}
+		    		if (reason<=maxreason) {
+		    			strncpy(denymsg,denymsglist[reason-1],STRLEN-1);
+		    			denymsg[STRLEN-1]=0;
+		    			move(2,0);
+    					clrtobot();
+    					prints("封禁理由: %s\n",denymsg);
+		    			break;
+		    		}
+		    	}
+		    	move(3,0);
+		    	prints("%s","输入错误!");
+		    }
+		    free(file_buf);
+	    }
+    	close(reasonfile);
+    }
+
     while(0 == strlen(denymsg)) {
 	    getdata(2,0,"输入说明(按*取消): ", denymsg,30,DOECHO,NULL,YEA);
     }
