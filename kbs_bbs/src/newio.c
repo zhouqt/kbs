@@ -634,6 +634,10 @@ int igetkey()
                ret = KEY_UP + (ch - 'A');
                break;
             }
+            else if (ch >= 'P' && ch <= 'S') {
+                ret = KEY_F1+ch-'P';
+                break;
+            }
             else if (ch >= '1' && ch <= '6')
                 mode = 3;
             else {

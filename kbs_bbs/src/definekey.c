@@ -78,9 +78,20 @@ int get_key_name(int key, char* s)
         case 32:
             strcpy(s, "Space");
             break;
+        case KEY_F1:
+            strcpy(s, "F1");
+            break;
+        case KEY_F2:
+            strcpy(s, "F2");
+            break;
+        case KEY_F3:
+            strcpy(s, "F3");
+            break;
+        case KEY_F4:
+            strcpy(s, "F4");
+            break;
         case KEY_TAB:
             strcpy(s, "Tab");
-            break;
             break;
         case KEY_LEFT:
             strcpy(s, "Left");

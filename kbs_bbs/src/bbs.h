@@ -289,6 +289,10 @@ O MaxMessageSize=32000
 #define KEY_END         0x0204
 #define KEY_PGUP        0x0205
 #define KEY_PGDN        0x0206
+#define KEY_F1            0x0207
+#define KEY_F2            0x0208
+#define KEY_F3            0x0209
+#define KEY_F4            0x020a
 #endif
 
 #define Ctrl(c)         ( c & 037 )
