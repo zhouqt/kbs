@@ -386,10 +386,16 @@ static int setuserid_internal(int num, const char *userid)
     if (num > 0 && num <= MAXUSERS) {
         int oldkey, newkey, find;
 
-        if (num > uidshm->number)
-            uidshm->number = num;
         oldkey = ucache_hash((char *) uidshm->passwd[num - 1].userid);
         newkey = ucache_hash(userid);
+        find = uidshm->hashhead[newkey];
+        while (find) { //check duplicate
+            if (!strcasecmp(uidshm->passwd[find-1].userid,userid))
+                return -1;
+            find = uidshm->next[find-1];
+        }
+        if (num > uidshm->number)
+            uidshm->number = num;
 /*        if (oldkey!=newkey) { disable,为了加强兼容性*/
         find = uidshm->hashhead[oldkey];
 
