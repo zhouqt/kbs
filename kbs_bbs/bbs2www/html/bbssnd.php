@@ -33,6 +33,7 @@ login_init();
 		if (bbs_is_outgo_board($brdArr)) $outgo = intval($_POST["outgo"]);
 		else $outgo = 0;
 		
+		$boardName = $brdArr["NAME"];
 		settype($reID, "integer");
 				
 		$articles = array();
