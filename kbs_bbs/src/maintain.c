@@ -1132,12 +1132,11 @@ char *logfile, *regfile;
     char ans[5], *ptr, *uid;
     int n, unum, fd;
     int count, sum, total_num;  /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
-
+    char result[256],ip[17];    /* Added for IP query by Bigman: 2002.8.20 */
     long pid;                   /* Added by Bigman: 2002.5.31 */
 
     uid = currentuser->userid;
 
-    char result[256],ip[17];	/* Added for IP query by Bigman: 2002.8.20 */
 
     stand_title("依序设定所有新注册资料");
 /*    sprintf(fname, "%s.tmp", regfile);*/

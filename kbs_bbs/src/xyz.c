@@ -827,15 +827,16 @@ char result[];
     FILE *fn; 
     int num=0;
 
+    unsigned long temp_num;
+    struct in_addr queryip;
+    char linebuf[256];
+
     fn = fopen("etc/ip_arrange.txt", "rt");
 
     if (fn == NULL) {
         strncpy(result,"√ª’“µΩip_arrange.txt",255);
         return 1;
     }
-
-    unsigned long temp_num;
-    struct in_addr queryip;
 
 	temp_num=0;
 
@@ -848,7 +849,6 @@ char result[];
 	queryip.s_addr=ntohl(queryip.s_addr);
 	fseek(fn,0,SEEK_SET);
 
-	char linebuf[256];
 	linebuf[255] = 0;
 
         while (fgets(linebuf, 254, fn)) {
