@@ -380,6 +380,7 @@ char *ModeType(mode)
         return "ĞİÏĞÓéÀÖ..";
 	case FRIENDTEST:  return "ĞÄÓĞÁéÏ¬";
 	case TETRIS:  return "¶íÂŞË¹·½¿é";
+	case WINMINE:  return "É¨À×";
     case CHICKEN:
 	return "ĞÇ¿ÕÕ½¶·¼¦";
 	case HELP:

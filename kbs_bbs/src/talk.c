@@ -667,7 +667,7 @@ int ttt_talk(struct user_info *userinfo)
     /*
      * modified by Excellent 
      */
-    if (uin.mode == ULDL || uin.mode == IRCCHAT || uin.mode == BBSNET || uin.mode == FOURM || uin.mode == EXCE_BIG2 || uin.mode == EXCE_MJ || uin.mode == EXCE_CHESS || uin.mode == TETRIS) {
+    if (uin.mode == ULDL || uin.mode == IRCCHAT || uin.mode == BBSNET || uin.mode == FOURM || uin.mode == EXCE_BIG2 || uin.mode == EXCE_MJ || uin.mode == EXCE_CHESS || uin.mode == TETRIS || uin.mode==WINMINE) {
         move(2, 0);
         prints("目前无法呼叫.\n");
         pressreturn();

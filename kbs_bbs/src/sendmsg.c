@@ -554,7 +554,7 @@ void r_msg()
         if(head.mode==6) canreply = 1;
         else
 #endif
-        if(head.mode==3||uin==NULL||uin->mode==BBSNET||uin->mode==TETRIS) canreply = 0;
+        if(head.mode==3||uin==NULL||uin->mode==BBSNET||uin->mode==TETRIS||uin->mode==WINMINE) canreply = 0;
         else canreply = 1;
         
         clrtoeol();
@@ -597,7 +597,7 @@ void r_msg()
                         strcpy(getSession()->MsgDesUid, uid);
                         pid = head.frompid;
                         uin = t_search(uid, pid);
-                        if((uin==NULL || uin->mode == BBSNET || uin->mode==TETRIS) && head.mode!=6) {
+                        if((uin==NULL || uin->mode == BBSNET || uin->mode==TETRIS || uin->mode==WINMINE) && head.mode!=6) {
                             i=-1;
                             strcpy(getSession()->msgerr, "对方已经离线....");
                         }

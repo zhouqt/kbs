@@ -571,7 +571,7 @@ int igetch()
 #endif
         goto igetagain;
     case Ctrl('Z'):
-        if(scrint&&uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&!inremsg) {
+        if(scrint&&uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&uinfo.mode!=WINMINE&&!inremsg) {
             icurrchar++;
             inremsg = true;
             r_msg();

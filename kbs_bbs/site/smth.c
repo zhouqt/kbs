@@ -425,6 +425,8 @@ int mode;
         return "模板发文";
 	case TETRIS:
 		return "俄罗斯方块";
+	case WINMINE:
+		return "扫雷";
     default:
         return "去了那里!?";
     }

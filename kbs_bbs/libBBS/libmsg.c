@@ -21,7 +21,7 @@ int write_peer(bbsmsg_t * msgbuf)
 
 int canmsg(struct userec *fromuser, struct user_info *uin)
 {
-	if (uin->mode == BBSNET || uin->mode == TETRIS)
+	if (uin->mode == BBSNET || uin->mode == TETRIS || uin->mode==WINMINE)
 		return false;
     if ((uin->pager & ALLMSG_PAGER) || HAS_PERM(fromuser, PERM_SYSOP))
         return true;
