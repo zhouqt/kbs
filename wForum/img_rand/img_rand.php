@@ -8,6 +8,7 @@ $maxlen = 4;
 mt_srand();
 
 $fpath = "img_rand/" . mt_rand(0, 6) . ".jpg";
+//ToDo: 这个地方最好不要用 DOCUMENT_ROOT，因为 wForum 可能装在非 WEB 顶层目录
 $font =  $_SERVER['DOCUMENT_ROOT']."/img_rand/font_rand/" . mt_rand(0, 18) . ".ttf";
 $im = ImageCreateFromJPEG($fpath); // width=200 height=10
 $color = ImageColorAllocate($im, 0, 0, 0);
