@@ -73,6 +73,8 @@ struct fileheader currentmail;
 struct userec alluser;
 
 char LowUserid[20];
+char LowUserPostfix[20];
+char MailBoxName[20];
 char genbuf[BUFSIZE];
 
 #define QLEN            5
@@ -95,7 +97,7 @@ int State;
 int msock, sock;                /* master server socket */
 static void reaper(int signo);
 static char inbuf[BUFSIZE];
-char remote_userid[STRLEN];
+/*char remote_userid[STRLEN];*/
 char *msg, *cmd;
 int fd;
 struct fileheader *fcache;
@@ -531,7 +533,9 @@ void Init()
 {
     State = S_CONNECT;
     LowUserid[0] = '\0';
-    remote_userid[0] = 0;
+    LowUserPostfix[0] = '\0';
+    MailBoxName[0] = '\0';
+    /*remote_userid[0] = 0;*/
     markdel = 0;
     idletime = 0;
 }
@@ -543,7 +547,7 @@ void Login_init()
     struct stat st;
 
     totalnum = totalbyte = 0;
-    sprintf(genbuf, "mail/%c/%s/.DIR", toupper(*LowUserid), LowUserid);
+    sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, MailBoxName);
     if (stat(genbuf, &st) == -1 || st.st_size == 0) {
         return;
     }
@@ -816,18 +820,34 @@ void User()
         return;
     }
 
-    cmd = nextwordlower(&msg);
+    cmd = nextword2(&msg);
     if (*cmd == 0) {
         outs("-ERR Too few arguments for the user command.");
         return;
     }
-    if ((ptr = strstr(cmd, ".bbs")) != NULL) {
+    if ((ptr = strstr(cmd, ".bbs")) != NULL || (ptr = strstr(cmd, ".BBS")) != NULL) {
         if (*(ptr + 4) != 0) {
             sprintf(genbuf, "-ERR Unknown user: \"%s\".", cmd);
             outs(genbuf);
             return;
         }
         *ptr = '\0';
+    }
+    /* 设置缺省邮箱 */
+    strcpy(MailBoxName, ".DIR");
+    if ((ptr = strchr(cmd, '.')) != NULL) {
+        /* 识别邮箱 */
+        if (*(ptr+1) != 0) {
+           strncpy(MailBoxName, ptr, sizeof(MailBoxName));
+           strncpy(LowUserPostfix, ptr+1, sizeof(LowUserPostfix));
+           MailBoxName[sizeof(MailBoxName)-1] = '\0';
+           LowUserPostfix[sizeof(LowUserPostfix)-1] = '\0';
+        }
+        *ptr = '\0';
+        ptr = MailBoxName+1+strcspn(MailBoxName+1, "/.\\");
+        *ptr = '\0';
+        for (ptr = LowUserPostfix; *ptr != 0; ++ptr)
+            *ptr = tolower(*ptr);
     }
     /*
        if (strstr(cmd, ".bbs") == NULL) {
@@ -839,6 +859,8 @@ void User()
        ptr = strchr(cmd, '.');
        *ptr = '\0';
      */
+    for (ptr = cmd; *ptr != 0; ++ptr)
+        *ptr = tolower(*ptr);
     if (get_userdata(cmd) == 1) {
         strcpy(LowUserid, currentuser->userid);
         sprintf(genbuf, "+OK Password required for %s", cmd);
@@ -1208,8 +1230,8 @@ void do_delete()
     int i, fdr, fdw, count;
     char fpath[80], fnew[80];
 
-    sprintf(fpath, "mail/%c/%s/.DIR", toupper(*LowUserid), LowUserid);
-    sprintf(fnew, "mail/%c/%s/.DIR.pop3", toupper(*LowUserid), LowUserid);
+    sprintf(fpath, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, MailBoxName);
+    sprintf(fnew, "mail/%c/%s/%s.pop3", toupper(*LowUserid), LowUserid, MailBoxName);
     if ((fdr = open(fpath, O_RDONLY)) == -1)
         return;
     if ((fdw = open(fnew, O_RDWR | O_CREAT, 0644)) == -1)
