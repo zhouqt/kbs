@@ -23,7 +23,7 @@ int main(int argc,char** argv)
 
 	init_all();
 	strsncpy(id, getparm("id"), 13);
-    strsncpy(pw, getparm("pw"), sizeof(pw));
+    strsncpy(pw, getparm("passwd"), sizeof(pw));
 /*
 	strsncpy(id, argv[1], 13);
     strsncpy(pw, argv[2], 13);
@@ -93,7 +93,7 @@ int main(int argc,char** argv)
 	n=0;
 	if(!loginok && strcasecmp(id, "guest"))
 		wwwlogin(x);
-	redirect(FIRST_PAGE);
+	redirect(MAIN_PAGE);
 }
 
 int wwwlogin(struct userec *user) {
