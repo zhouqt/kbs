@@ -9,18 +9,6 @@ crontab:  2 * * * * /home/bbs/bin/bonlinelog
 
 /* mysql 
  *
- * +-------+-------------+------+-----+------------+----------------+
- * | Field | Type        | Null | Key | Default    | Extra          |
- * +-------+-------------+------+-----+------------+----------------+
- * | id    | int(10)     |      | PRI | NULL       | auto_increment |
- * | bname | varchar(20) |      |     |            |                |
- * | users | int(11)     |      |     | 0          |                |
- * | nowid | int(11)     |      |     | 0          |                |
- * | bdate | date        |      | MUL | 0000-00-00 |                |
- * | bhour | int(2)      |      |     | 0          |                |
- * +-------+-------------+------+-----+------------+----------------+
-
-
  CREATE TABLE bonline (
  id int(10) NOT NULL auto_increment,
  bname varchar(20) NOT NULL default '',
@@ -28,6 +16,7 @@ crontab:  2 * * * * /home/bbs/bin/bonlinelog
  nowid int(11) NOT NULL default '0',
  bdate date NOT NULL default '0000-00-00',
  bhour int(2) NOT NULL default '0',
+ min int(2) NOT NULL default '0',
  PRIMARY KEY  (id),
  KEY bdate (bdate)
  ) TYPE=MyISAM COMMENT='bonline';
@@ -56,9 +45,9 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     bnum = getboardnum(fptr->filename,&bp);
     bs = getbstatus(bnum);
 
-	sprintf(sql, "INSERT INTO bonline VALUES ( NULL, '%s', '%d', '%d', \"%d-%d-%d\", '%d' );",
+	sprintf(sql, "INSERT INTO bonline VALUES ( NULL, '%s', '%d', '%d', \"%d-%d-%d\", '%d', '%d' );",
 				fptr->filename, bs->currentusers, bs->nowid, 
-				t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+				t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour, t.tm_min/6);
     if( mysql_real_query( &s, sql, strlen(sql) ))
         printf("%s\n",mysql_error(&s));
     return 0;
@@ -74,7 +63,7 @@ main()
 	time_t now;
 
     chdir(BBSHOME);
-	now = time(0) - 3600;
+	now = time(0);
 	localtime_r( &now, &t);
 
 	mysql_init(&s);
