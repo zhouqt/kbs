@@ -90,28 +90,16 @@ int check_badword(char *checkfile)
     int pattern_img_size;
     int retrycount=0;
 
-    alarm(2);
-#ifdef BBSMAIN
-    signal(SIGALRM,abort_bbs);
-#endif
 retry:
     default_setting();
     CurrentFileName = checkfile;
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
 	{
-    alarm(0);
-#ifdef BBSMAIN
-    signal(SIGALRM,SIG_IGN);
-#endif
             BBS_RETURN(0);
 	}
         if (check_badwordimg(0)!=0)
 	{
-    alarm(0);
-#ifdef BBSMAIN
-    signal(SIGALRM,SIG_IGN);
-#endif
             BBS_RETURN(0);
 	}
         retv = mgrep_str(ptr, size,badword_img);
@@ -119,10 +107,6 @@ retry:
     BBS_CATCH {
         if (check_badwordimg(1)!=0)
 	{
-    alarm(0);
-#ifdef BBSMAIN
-    signal(SIGALRM,SIG_IGN);
-#endif
             BBS_RETURN(0);
 	}
 	retrycount++;
@@ -131,10 +115,6 @@ retry:
     	retv=-2;
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
-    alarm(0);
-#ifdef BBSMAIN
-    signal(SIGALRM,SIG_IGN);
-#endif
     return retv;
 }
 
@@ -143,29 +123,17 @@ int check_badword_str(char *string,int str_len)
     int retv;
     int retrycount=0;
 
-    alarm(2);
-#ifdef BBSMAIN
-    signal(SIGALRM,abort_bbs);
-#endif
     default_setting();
     CurrentFileName = "";
 retry:
     BBS_TRY {
         if (check_badwordimg(0)!=0) {
-    alarm(0);
-#ifdef BBSMAIN
-    signal(SIGALRM,SIG_IGN);
-#endif
             BBS_RETURN(0);
 	}
         retv = mgrep_str(string, str_len,badword_img);
     }
     BBS_CATCH {
         if (check_badwordimg(1)!=0) {
-    alarm(0);
-#ifdef BBSMAIN
-    signal(SIGALRM,SIG_IGN);
-#endif
             BBS_RETURN(0);
 	}
 	retrycount++;
@@ -174,10 +142,6 @@ retry:
     	retv=-2;
     }
     BBS_END
-    alarm(0);
-#ifdef BBSMAIN
-    signal(SIGALRM,SIG_IGN);
-#endif
     return retv;
 }
 

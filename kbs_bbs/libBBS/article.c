@@ -620,7 +620,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     if (strcmp(fh->owner,"deliver")) {
 	if (((bh&&bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD))
 	{
-	    if (check_badword_str(fh->title,strlen(fh->title))||check_badword(oldpath)) {
+	    if (!strcmp(boardname,"News")||check_badword_str(fh->title,strlen(fh->title))||check_badword(oldpath)) {
 			/* FIXME: There is a potential bug here. */
 			setbfile(newpath, FILTER_BOARD, fh->filename);
 			f_mv(oldpath, newpath);
