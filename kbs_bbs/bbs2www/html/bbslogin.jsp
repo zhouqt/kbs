@@ -21,14 +21,26 @@ if ($id!="") {
       else {
         $loginok=0;
         $num=bbs_getcurrentuinfo($data);
-        setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"/");
-        setcookie("UTMPNUM",$num,time()+360000,"/");
-        setcookie("UTMPUSERID",$data["userid"],time()+360000,"/");
-        setcookie("LOGINTIME",$data["logintime"],time()+360000,"/");
+        setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
+        setcookie("UTMPNUM",$num,time()+360000,"");
+        setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
+        setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
 	    header("Location: /frames.html");
 	    return;
       }
     }
+} else {
+?>
+<html>
+<body >
+<SCRIPT language="javascript">
+	alert("用户名不能为空!");
+	window.location = "/index.html";
+</SCRIPT>
+</body>
+</html>
+<?
+    return;
 }
 ?>
 <html>
