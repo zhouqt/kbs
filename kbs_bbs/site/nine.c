@@ -193,6 +193,7 @@ int     mode;
     case WFRIEND:   return "寻人名册";
     case LOCKSCREEN:return "屏幕锁定";
     case GIVEUPNET: return "戒网中..";
+    case SERVICE:    return "休闲娱乐..";
     default: return "去了那里!?" ;
     }
 }

@@ -84,3 +84,4 @@
 #define EDITSIG         57
 #define EDITPLAN        58
 #define GIVEUPNET	59
+#define SERVICES	60

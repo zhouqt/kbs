@@ -269,6 +269,7 @@ int exec_mbem(char *s)
     char *c;   
     char buf[1024];   
     
+    modify_user_mode(SERVICES);
     strcpy(buf,s);   
     s=strstr(buf,"@mod:");   
     if(s)   
