@@ -53,7 +53,7 @@ int gen_commend_xml()
 			fprintf(fp, "<hotsubject>\n");
 			fprintf(fp, "<title>%s</title>\n", encode_xml(xml_buf, dirfh.title, sizeof(xml_buf)));
 			fprintf(fp, "<author>%s</author>\n", dirfh.owner);
-			fprintf(fp, "<time>%d</time>\n", dirfh.posttime);
+			fprintf(fp, "<time>%d</time>\n", get_posttime(&dirfh));
 			fprintf(fp, "<board>%s</board>\n", COMMEND_ARTICLE);
 			fprintf(fp, "<id>%d</id>\n", dirfh.id);
 			fprintf(fp, "<o_board>%s</o_board>\n", dirfh.o_board);
