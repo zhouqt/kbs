@@ -704,7 +704,7 @@ int add_pc_users(struct pc_users *pn)
 	mysql_escape_string(newdesc, pn->description, strlen(pn->description));
 
 	if( pn->uid <= 0 )
-		sprintf(sql,"INSERT INTO users VALUES (NULL, '%s', '%s', '%s', '%s', %d, %d, '%s', 0 ,NULL,0,0,NULL,'%s' , '');",pn->username, newcorp, newdesc, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), tt2timestamp(pn->createtime,newts) );
+		sprintf(sql,"INSERT INTO users VALUES (NULL, '%s', '%s', '%s', '%s', %d, %d, '%s', 0 ,NULL,0,0,NULL,'%s' , '' , '0');",pn->username, newcorp, newdesc, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), tt2timestamp(pn->createtime,newts) );
 	else
 		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%lu AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 	
