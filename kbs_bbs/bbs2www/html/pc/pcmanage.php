@@ -181,9 +181,13 @@
 					$rows = mysql_fetch_array($result);
 					$thisNid = $rows[nid];
 					mysql_free_result($result);
+					if(strlen($_POST["blogbody"]) < 255 ))
+						$tbbody = $_POST["blogbody"];
+					else
+						$tbbody = substr($_POST["blogbody"],0,251)." ..."
 					$tbarr = array(
 							"title" => $_POST["subject"],
-							"excerpt" => substr($_POST["blogbody"],0,254)." ",
+							"excerpt" => $tbbody,
 							"url" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&tid=".(int)($_POST["tid"])."&nid=".$thisNid."&s=all",
 							"blogname" => undo_html_format($pc["NAME"])
 							);	
