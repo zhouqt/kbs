@@ -297,7 +297,7 @@ int do_userlist()
         resetcolor();
         move(y, x);
         sprintf(user_info_str,
-                " %4d%2s%s%-12.12s%s%s "), 
+                " %4d%2s%s%-12.12s%s%s ", 
                 i + 1 + page, (override) ? (uentp.invisible ? "££" : FRIENDSIG) : (uentp.invisible ? "£ª" : ""),
                 (override) ? "[1;32m" : "", uentp.userid, (override) ? "[m" : "", 
                 (override && showexplain) ? "[1;31m" : "");
