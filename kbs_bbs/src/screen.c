@@ -404,8 +404,7 @@ void redoscr()
         for (k=0;k < scr_cols; k++)
             bp[j].ldata[k]=255;
     }
-    move(0, 0);
-    do_move(0, 0, ochar);
+    do_move(tc_col, tc_line, ochar);
     refresh();
 }
 
