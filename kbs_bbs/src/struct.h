@@ -48,10 +48,10 @@ struct userdata
 	unsigned char   birthday;
 #endif
     char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
-#ifdef SMS_SUPPORT
+/*#ifdef SMS_SUPPORT*/
     bool mobileregistered;
     char mobilenumber[MOBILENUMBERLEN];
-#endif
+/*#endif*/
 };
 
 struct user_info {              /* Structure used in UTMP file */
