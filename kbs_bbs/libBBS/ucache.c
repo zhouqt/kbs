@@ -457,6 +457,7 @@ int getnewuserid(char* userid)
     struct stat st;
     int         fd, size, val, i;
     char    tmpstr[30];
+    time_t system_time;
 
     system_time = time( NULL );
     /*
@@ -543,9 +544,9 @@ int update_user(struct userec* user,int num,int all)
 		memcpy(tmpuser.userid,passwd[num-1].userid,IDLEN+2);
 		memcpy(tmpuser.passwd,passwd[num-1].passwd,IDLEN+2);
 		memcpy(tmpuser.md5passwd,passwd[num-1].passwd,IDLEN+2);
-		memcpy(passwd[num-1],&tmpuser,sizeof(userec));
+		memcpy(&passwd[num-1],&tmpuser,sizeof(struct userec));
 	} else
-		memcpy(passwd[num-1],user,sizeof(userec));
+		memcpy(&passwd[num-1],user,sizeof(struct userec));
 	return 0;
 }
 

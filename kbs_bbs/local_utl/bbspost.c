@@ -27,7 +27,6 @@ char *ProgramUsage = "\
 
 char currboard[1];
 
-struct userec       currentuser;
 char            *crypt();
 char            *homepath;
 int             visitflag;
@@ -36,6 +35,8 @@ char szRemoteHost[16]; /* Leeward: 97.12.20: 让 3W 发文影响生命力 */
 char EMode = ' '; /* Leeward: 97.12.23: for 3W modify article */
 int 		sign;/*Haohmaru.第sign个签名档*/
 
+struct userec alluser;
+struct userec* currentuser=&alluser;
 
 int
 CheckBM(BMstr,record)   /* 根据输入的版主名单 判断当前user是否是版主 added by dong, 1998.9.28*/
@@ -413,7 +414,7 @@ post_article( usermail )
         FILE *fpMail;
 
 
-        check_userec( &currentuser, userid );
+        check_userec( &alluser, userid );
 
         gets( letter );
         Xuserec2(letter); /* Leeward 98.10.01 Fix a bug */
@@ -468,7 +469,7 @@ post_article( usermail )
     }
 
     if( usermail ) {
-        check_userec( &currentuser, userid );
+        check_userec( &alluser, userid );
         strcpy(Xid, userid);
         ptr = strrchr( homepath, '/' );
         (ptr == NULL) ? (ptr = homepath) : (ptr++);

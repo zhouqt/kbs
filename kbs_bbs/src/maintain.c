@@ -1106,7 +1106,7 @@ char           *logfile, *regfile;
                     }
                     sprintf(genbuf, "<×¢²áÊ§°Ü> - %s", buf);
                     strncpy(uinfo.address, genbuf, NAMELEN);
-                    update_user(&uinfo,unum);
+                    update_user(&uinfo,unum,0);
 
                     /* ------------------- Added by Marco */
                     switch (buff)

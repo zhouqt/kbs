@@ -68,7 +68,7 @@ static jmp_buf timebuf;
 int     State;
 int     msock,sock;    /* master server socket */
 static int reaper();
-char    fromhost[ STRLEN ];
+char    fromhost[ 60 ];
 char    inbuf[ BUFSIZE ];
 char    remote_userid[ STRLEN ];
 FILE    *cfp;

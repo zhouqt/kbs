@@ -55,4 +55,4 @@ extern int in_mail ;
 extern int dumb_term ;
 extern int showansi;
 
-
+extern char fromhost[60];

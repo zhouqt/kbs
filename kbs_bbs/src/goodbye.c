@@ -181,7 +181,7 @@ char    buf[256];
 		ST_END
 	};
     char numlogins[10],numposts[10],rgtday[35];
-	char lasttime[35],thistime[35],stay[10],
+    char lasttime[35],thistime[35],stay[10];
     char alltime[20];
     
 #ifdef _DETAIL_UEXP_
@@ -256,8 +256,8 @@ char    buf[256];
     sprintf(tin, "%d", post_in_tin(currentuser->userid));
 #endif
     sprintf(alltime,"%dÐ¡Ê±%d·ÖÖÓ",currentuser->stay/3600,(currentuser->stay/60)%60);
-    sprintf(rgtday, "%24.24s",ctime(currentuser->firstlogin));
-    sprintf(lasttime, "%24.24s",ctime(currentuser->lastlogin));
+    sprintf(rgtday, "%24.24s",ctime(&currentuser->firstlogin));
+    sprintf(lasttime, "%24.24s",ctime(&currentuser->lastlogin));
     sprintf(thistime,"%24.24s",ctime(&now));
     sprintf(stay,"%d",(time(0) - login_start_time) / 60);
     /*---	modified by period	hide posts/logins	2000-11-02	---*/
@@ -286,7 +286,7 @@ char    buf[256];
             for (i = 0; i<ST_END; i++)
             {
             	strlength=strlen(loglst[i]);
-                if(!strncmp(ptr, loglst[i],strlength)
+                if(!strncmp(ptr, loglst[i],strlength))
                 {
                 	/*
                     ptr2 = ptr+strlength;
