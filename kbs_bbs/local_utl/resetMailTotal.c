@@ -1,3 +1,10 @@
+/*
+ * 这个程序有问题，本来的原理是，设置了 0xffff 之后，在用户检查邮箱的时候就会自动重新扫描
+ * 所有的信件 reset usedspace。但是，有可能在自动扫描之前 usedspace 就发生了变化比方收到了
+ * 新信件。如果你真的要真的重新设置 usedspace，把 0xffff 改成 get_mailusedspace(user,1)，
+ * 不过这样一来这个程序的运行时间就会大大加长。另外什么情况下 usedspace 会不正确？嘿嘿，
+ * 不要怀疑是水木的程序有问题，肯定是因为服务器上有人操作失误误删了文件！- atppp...如果不对请指正。
+ */
 #include "bbs.h"
 
 char *curuserid;
