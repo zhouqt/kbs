@@ -4065,7 +4065,7 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 		RETURN_LONG(0);
 
 	if( currentuser == NULL )
-		RETURN_LOGN(0);
+		RETURN_LONG(0);
 
 	setbfile(path, bname, TEMPLATE_DIR);
 
