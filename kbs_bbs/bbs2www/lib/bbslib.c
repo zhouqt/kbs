@@ -581,6 +581,7 @@ int del_mail(int ent, struct fileheader* fh, char* direct)
 {
     char buf[PATHLEN];
     char* t;
+    char genbuf[PATHLEN];
     struct stat st;
 
     if(strstr(direct, ".DELETED")) {
