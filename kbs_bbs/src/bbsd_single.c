@@ -388,8 +388,9 @@ struct ip_struct{
     unsigned char ip[4];
     time_t first,last;
     int t;
-} ips[MAXLIST];
+} * ips, * bads, * proxys;
 bool initIP=false;
+
 
 int check_IP_lists(unsigned int IP2)
 {
@@ -398,15 +399,56 @@ int check_IP_lists(unsigned int IP2)
     int ip[4];
     int found=0,min=0,ret=0;
     time_t now;
+    if(!initIP) {
+        ips = (struct ip_struct *) malloc(sizeof(struct ip_struct)*MAXLIST);
+        bads = (struct ip_struct *) malloc(sizeof(struct ip_struct)*MAXLIST);
+        proxys = (struct ip_struct *) malloc(sizeof(struct ip_struct)*MAXLIST);
+        memset(ips, 0, sizeof(struct ip_struct)*MAXLIST);
+        memset(bads, 0, sizeof(struct ip_struct)*MAXLIST);
+        memset(proxys, 0, sizeof(struct ip_struct)*MAXLIST);
+        fp=fopen(".denyIP", "r");
+        if(fp) {
+            i=0;
+            while(!feof(fp)) {
+                if(fscanf(fp, "%d.%d.%d.%d",&ip[0],&ip[1],&ip[2],&ip[3])<=0) break;
+                bads[i].ip[0]=ip[0];
+                bads[i].ip[1]=ip[1];
+                bads[i].ip[2]=ip[2];
+                bads[i].ip[3]=ip[3];
+                i++;
+            }
+            fclose(fp);
+        }
+        fp=fopen(".proxyIP", "r");
+        if(fp) {
+            i=0;
+            while(!feof(fp)) {
+                if(fscanf(fp, "%d.%d.%d.%d",&ip[0],&ip[1],&ip[2],&ip[3])<=0) break;
+                proxys[i].ip[0]=ip[0];
+                proxys[i].ip[1]=ip[1];
+                proxys[i].ip[2]=ip[2];
+                proxys[i].ip[3]=ip[3];
+                i++;
+            }
+            fclose(fp);
+        }
+        initIP=true;
+    }
     now = time(0);
     ip[0]=IP2&0xff;
     ip[1]=(IP2&0xff00)>>8;
     ip[2]=(IP2&0xff0000)>>16;
     ip[3]=(IP2&0xff000000)>>24;
     if(ip[0]==0) return 0;
-    if(!initIP) {
-        memset(ips, 0, sizeof(struct ip_struct)*MAXLIST);
-        initIP=true;
+    for(i=0;i<MAXLIST;i++) {
+        if(bads[i][0]==0) break;
+        if(ip[0]==bads[i][0]&&ip[1]==bads[i][1]&&ip[2]==bads[i][2]&&ip[3]==bads[i][3])
+            return 1;
+    }
+    for(i=0;i<MAXLIST;i++) {
+        if(proxys[i][0]==0) break;
+        if(ip[0]==proxys[i][0]&&ip[1]==proxys[i][1]&&ip[2]==proxys[i][2]&&ip[3]==proxys[i][3])
+            return 1;
     }
     for(i=0;i<MAXLIST;i++) {
         if((double)(now-ips[i].last)>60*60) {
