@@ -580,7 +580,7 @@ void r_msg()
                                     }
                                 }
                                 else {
-                                    i = DoReplyCheck(uid, head.frompid, toupper(buf[0])=='Y')
+                                    i = DoReplyCheck(uid, head.frompid, toupper(buf[0])=='Y');
                                     if(!i) {
                                         if(reg==1) {
                                             curruserdata.mobileregistered = 0;

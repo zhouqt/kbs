@@ -460,7 +460,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
         } else if (isprint2(*p)) {
             if (!db) {
                 if(autoline)
-                if (w >= scr_cols-1&&(i<size-1||*(p+1)<0) || w >= scr_cols) {
+                if (w >= scr_cols-1&&(i>=size-1||*(p+1)<0) || w >= scr_cols) {
                     *l = i;
                     *s = i;
                     break;
