@@ -850,7 +850,7 @@ int DoSendSMS(char * n, char * d, char * c)
     struct BBSSendSMS h1;
     h.Type = CMD_BBSSEND;
     long2byte(uinfo.pid, h.pid);
-    long2byte(sizeof(h1), h.BodyLength);
+    long2byte(sizeof(h1)+strlen(c)+1, h.BodyLength);
     long2byte(strlen(c)+1, h1.MsgTxtLen);
     long2byte(uinfo.uid, h1.UserID);
     strcpy(h1.SrcMobileNo, n);
@@ -986,6 +986,7 @@ int do_send_sms_func(char * dest, char * msgstr)
         return 0;
     }
     
+    init_memory();
     inremsg = true;
 
     oldmode = uinfo.mode;
