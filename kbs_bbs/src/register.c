@@ -394,7 +394,8 @@ void check_register_info()
 		FILE *fout;
 		char buf2[STRLEN];
 
-		sprintf(buf, "tmp/newcomer.%s", currentuser->userid);
+		gettmpfilename( buf, "newcomer" );
+		//sprintf(buf, "tmp/newcomer.%s", currentuser->userid);
 		if ((fout = fopen(buf, "w")) != NULL)
 		{
 			fprintf(fout, "大家好,\n\n");
@@ -575,7 +576,8 @@ void ConveyID()
 
         //记录备份信息
         now = time(0);
-        sprintf(filename, "tmp/%s.tmp", currentuser->userid);
+		gettmpfilename( filename, "convey" );
+        //sprintf(filename, "tmp/%s.tmp", currentuser->userid);
         fn = fopen(filename, "w");
 		if(fn){
 			fprintf(fn,"\033[1m %s \033[m 在 \033[1m%24.24s\033[m 转让ID了,以下是他的资料，请保留...",currentuser->userid,ctime(&now));

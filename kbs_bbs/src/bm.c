@@ -239,7 +239,8 @@ int addtodeny(char *uident)
         /*
          * Haohmaru.4.1.自动发信通知并发文章于版上 
          */
-        sprintf(filename, "tmp/%s.deny", currentuser->userid);
+		gettmpfilename( filename, "deny" );
+        //sprintf(filename, "tmp/%s.deny", currentuser->userid);
         fn = fopen(filename, "w+");
         memcpy(&saveuser, currentuser, sizeof(struct userec));
         saveptr = currentuser;

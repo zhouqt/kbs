@@ -960,6 +960,7 @@ int do_after_login(struct userec* user,int unum,int mode)
 int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int mode)
 {
     char buf[MAXPATH];
+
     if (userinfo&&(mode==0)) {
 #if USE_TMPFS==0
       if (userinfo->utmpkey!=0) {
@@ -967,6 +968,10 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
         f_rm(buf);
       }
 #endif
+	  if(userinfo -> pid > 1 ){
+		snprintf(buf,MAXPATH,"rm -rf tmp/%d/%s/", userinfo->pid, userinfo->userid);
+		system(buf);
+	  }
     }
     if (user) {
 #if USE_TMPFS==1

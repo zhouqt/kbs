@@ -692,7 +692,8 @@ char *bname;
         b_report("OPEN VOTE");
         prints("投票箱已经开启了！\n");
         range++;
-        sprintf(votename, "tmp/votetmp.%d", getpid());
+		gettmpfilename( votename, "votetmp" );
+        //sprintf(votename, "tmp/votetmp.%d", getpid());
         if ((sug = fopen(votename, "w")) != NULL) {
             sprintf(buf, "[通知] %s 举办投票：%s", bname, ball->title);
             get_result_title();

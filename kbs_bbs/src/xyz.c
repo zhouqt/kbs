@@ -355,7 +355,8 @@ int XCheckLevel()
         FILE *fpx;
         long count = 0L;
 
-        sprintf(buffer, "tmp/XCL.%s%d", currentuser->userid, getpid());
+		gettmpfilename( buffer, "XCL" );
+        //sprintf(buffer, "tmp/XCL.%s%d", currentuser->userid, getpid());
         if (-1 == (fhp = open(".PASSWDS", O_RDONLY))) {
             prints("系统错误: 无法打开口令文件\n");
         } else if (NULL == (fpx = fopen(buffer, "w"))) {

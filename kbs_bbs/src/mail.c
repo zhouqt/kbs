@@ -397,7 +397,8 @@ int do_send(char *userid, char *title, char *q_file)
         internet_mail = 1;
         modify_user_mode(IMAIL);
         buf4[0] = ' ';
-        sprintf(tmp_fname, "tmp/bbs-internet-gw/%05d", getpid());
+		gettmpfilename(tmp_fname, "bbs-internet-gw" );
+        //sprintf(tmp_fname, "tmp/bbs-internet-gw/%05d", getpid());
         strcpy(filepath, tmp_fname);
         goto edit_mail_file;
     }
@@ -1740,7 +1741,8 @@ static int do_gsend(char *userid[], char *title, int num)
     } else
         buf4[0] = ' ';
 
-    sprintf(tmpfile, "tmp/bbs-gsend/%05d", getpid());
+	gettmpfilename(tmpfile, "bbs-gsend");
+    //sprintf(tmpfile, "tmp/bbs-gsend/%05d", getpid());
     /*
      * Leeward 98.01.17 Prompt whom you are writing to 
      * if (1 == G_SENDMODE)
@@ -2030,7 +2032,8 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
             return -22;
         }
 
-    sprintf(fname, "tmp/forward/%s.%05d", currentuser->userid, getpid());
+	gettmpfilename(fname, "forward");
+    //sprintf(fname, "tmp/forward/%s.%05d", currentuser->userid, getpid());
     /*
      * sprintf( tmp_buf, "cp %s/%s %s",
      * direct, fh->filename, fname);

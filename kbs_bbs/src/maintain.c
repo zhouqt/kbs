@@ -113,7 +113,8 @@ char *str;
     int savemode;
 
     savemode = uinfo.mode;
-    sprintf(fname, "tmp/deliver.%s.%05d", currentuser->userid, uinfo.pid);
+	gettmpfilename( fname, "deliver" );
+    //sprintf(fname, "tmp/deliver.%s.%05d", currentuser->userid, uinfo.pid);
     if ((se = fopen(fname, "w")) != NULL) {
         fprintf(se, "%s\n", str);
         fclose(se);
@@ -132,7 +133,8 @@ void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN])
     char *ptr;
 
     savemode = uinfo.mode;
-    sprintf(fname, "tmp/security.%d", getpid());
+	gettmpfilename( fname, "security" );
+    //sprintf(fname, "tmp/security.%d", getpid());
     if ((se = fopen(fname, "w")) != NULL) {
         if (lookupuser) {
             if (strstr(str, "让") && strstr(str, "通过身份确认")) {
@@ -1051,7 +1053,8 @@ int num;
     if (sum >= num) {
         sum = 0;
 
-        sprintf(fname2, "tmp/reg.%ld", pid);
+		gettmpfilename( fname2, "reg" );
+        //sprintf(fname2, "tmp/reg.%ld", pid);
 
         if ((tmp_fn = fopen(fname2, "w")) == NULL) {
             prints("不能建立临时文件:%s\n", fname2);
@@ -1123,7 +1126,8 @@ int mod;
         fd = fileno(fn1);
         flock(fd, LOCK_EX);
 
-        sprintf(fname2, "tmp/reg.c%ld", getpid());
+		gettmpfilename( fname2, "reg.c");
+        //sprintf(fname2, "tmp/reg.c%ld", getpid());
 
         if ((fn2 = fopen(fname2, "w")) == NULL) {
             prints("不能建立临时文件:%s\n", fname2);

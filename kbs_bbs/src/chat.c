@@ -1414,7 +1414,8 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
         line = screen_lines - 1;
     if (line > 300)
         line = 300;
-    sprintf(fname, "tmp/%s.msg", currentuser->userid);
+	gettmpfilename( fname, "chatmsg" );
+    //sprintf(fname, "tmp/%s.msg", currentuser->userid);
     fp = fopen(fname, "w");
     count = get_msgcount(0, currentuser->userid);
     for(i=0;i<count;i++) 

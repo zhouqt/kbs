@@ -688,7 +688,8 @@ void mail_msg(struct userec* user)
     FILE* fn;
     int count;
 
-    sprintf(fname, "tmp/%s.msg", user->userid);
+	gettmpfilename(fname, "mailmsg" );
+    //sprintf(fname, "tmp/%s.msg", user->userid);
     fn = fopen(fname, "w");
     count = get_msgcount(0, user->userid);
     for(i=0;i<count;i++) {
@@ -748,7 +749,8 @@ void SMS_request(int signo)
 {
     char fn[80];
     struct stat st;
-    sprintf(fn, "tmp/%d.res", smsuin->pid);
+	gettmpfilename( fn, "sms.res");
+    //sprintf(fn, "tmp/%d.res", smsuin->pid);
     if(stat(fn, &st)!=-1)
         smsresult=1;
 }
@@ -760,7 +762,8 @@ int wait_for_result()
     FILE* fp;
     int i;
     signal(SIGUSR1, SMS_request);
-    sprintf(fn, "tmp/%d.res", smsuin->pid);
+	gettmpfilename( fn, "sms.res");
+    //sprintf(fn, "tmp/%d.res", smsuin->pid);
     unlink(fn);
     smsresult = 0;
     head->sem=0;

@@ -451,7 +451,8 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     if (isuu) {
         char buf[256];
 
-        sprintf(uname, "tmp/uu%05d", getpid());
+		gettmpfilename( uname, "uu" );
+        //sprintf(uname, "tmp/uu%05d", getpid());
         sprintf(buf, "uuencode %s thbbs.%05d > %s", fname, getpid(), uname);
         system(buf);
     }
