@@ -26,7 +26,7 @@
 #include <time.h>
 
 /*#include "../SMTH2000/cache/cache.h"*/
-/* dfasdfas */
+
 extern int numofsig;
 int scrint = 0;
 int local_article;
@@ -764,7 +764,7 @@ else
         break;
     case KEY_RIGHT:
 #ifdef NINE_BUILD
-        sread(0, 0, ent, 0, fileinfo);
+        sread(-1003, 0, ent, 0, fileinfo);
         break;
 #endif
     case ' ':
