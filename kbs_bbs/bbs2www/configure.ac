@@ -88,10 +88,18 @@ AC_ARG_WITH(www,
     PHPBBSLIBPATH=$WWWBASE/libexec/bbs
 ],[AC_MSG_ERROR("must have www support!")])
 
+AC_ARG_ENABLE(site,
+[  --enable-site=sitename
+                          select site special files (see site dir) ],
+[
+    BBSSITE=$enableval
+],[BBSSITE="smth"])
+
 AC_SUBST(WWWBASE)
 AC_SUBST(CGIPATH)
 AC_SUBST(HTMPATH)
 AC_SUBST(PHPBBSLIBPATH)
+AC_SUBST(BBSSITE)
 
 HTML_FILES=`find html -path '*/CVS/*' -prune -o -type f -print | xargs`
 AC_SUBST(HTML_FILES)
