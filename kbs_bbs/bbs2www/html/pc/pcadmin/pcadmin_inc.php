@@ -32,6 +32,7 @@ Blog管理员工具:
 <a href="pcadmin_bla.php">黑名单管理</a>
 <a href="pcadmin_app.php">处理申请</a>
 <a href="pcadmin_grp.php">特殊BLOG管理</a>
+<a href="pcdoc.php?userid=_filter">过滤器</a>
 ]
 </p>
 <?php

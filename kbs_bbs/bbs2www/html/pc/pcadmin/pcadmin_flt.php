@@ -13,7 +13,11 @@ if (strtolower($_GET['filter'])=='n') {
         $query = 'UPDATE filter SET state = 1 WHERE fid = '.$fid.' LIMIT 1;';
         mysql_query($query);
         $pc = pc_load_infor($link,"",$node[uid]);
-        $ret = pc_add_node($link,$pc,$node[pid],$node[tid],$node[emote],$node[comment],$node[access],$node[htmltag],$node[trackback],$node[subject],$node[body],$node[nodetype],$node[auto_tbp],$node[tbp_url],$node[tbp_art],true);
+        
+        if ($node[nid])//过滤的是评论
+            $ret = pc_add_comment($link,$pc,$node[nid],$node[emote],$node[username],$node[subject],$node[body],$node[htmltag],true,$node[hostname]);
+        else
+            $ret = pc_add_node($link,$pc,$node[pid],$node[tid],$node[emote],$node[comment],$node[access],$node[htmltag],$node[trackback],$node[subject],$node[body],$node[nodetype],$node[auto_tbp],$node[tbp_url],$node[tbp_art],true,$node[hostname]);
                 switch($ret)
 				{
 					case -1:

@@ -114,7 +114,7 @@ pc_admin_navigation_bar();
 			"<td class=\"t3\">".$recnode[visitcount]."</td>\n".
 			"<td class=\"t4\">".$recnode[commentcount]."</td>\n".
 			"<td class=\"t3\">".$recnode[trackbackcount]."</td>\n".
-			"<td class=\"t4\">".$recnode[recuser]."</td>\n";
+			"<td class=\"t4\"><a href=\"/bbsqry.php?userid=".$recnode[recuser]."\">".$recnode[recuser]."</a></td>\n";
 		if( $recnode[recommend] == 2 )
 		echo	"<td class=\"t3\" width=\"20\"><span title=\"将本文撤销为已推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=3\">撤</a></span></td>\n".
 			"<td class=\"t3\" width=\"20\"><span title=\"将本文撤销为未推荐文章\"><a href=\"pcadmin_rec.php?type=".$type."&pno=".$pno."&nid=".$recnode[nid]."&sig=0\">还</a></span></td>\n".

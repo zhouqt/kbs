@@ -1007,7 +1007,7 @@ function pc_detect_trackbackpings($body,&$detecttbps)
 **         -8 :引用通告目标服务器连接超时
 **         -9 :被审核
 */
-function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp=FALSE,$tbpUrl="",$tbpArt="",$filtered=false)
+function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp=FALSE,$tbpUrl="",$tbpArt="",$filtered=false,$address=NULL)
 {
 	global $pcconfig;
 	
@@ -1073,14 +1073,14 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     	}
 	
 	$body = addslashes($body);
-	
+	if (!$address) $address = $_SERVER["REMOTE_ADDR"];
 	//日志入库
 	if ($into_filter)
-	    $query = "INSERT INTO `filter` (  `pid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`) ".
-	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."');";
+	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`) ".
+	   	     "VALUES ( '".$pid."', 0 , '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."');";
 	else
 	    $query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
-	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
+	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($address)."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
 	
 	if(!mysql_query($query,$link))
 		return -5;
@@ -1527,6 +1527,59 @@ function pc_check_referer()
     }
     html_error_quit("对不起，该地址无法访问资源");
     exit() ;
+}
+
+/*
+** add a comment
+** $pc  : pc infor-->load by pc_load_infor() function
+** return  0  :seccess
+**         -1 :缺少主题
+**         -2 :收藏夹目录不存在
+**         -3 :目标文件夹超过文章上限
+**         -4 :目标分类不存在
+**         -5 :数据库添加错误
+**         -6 :系统错误导致引用通告发送失败
+**         -7 :引用通告的url错误
+**         -8 :引用通告目标服务器连接超时
+**         -9 :被审核
+*/
+function pc_add_comment($link,$pc,$nid,$emote,$userid,$subject,$body,$htmltag,$filtered=false,$address=NULL)
+{
+    if (!$pc || !is_array($pc))
+        return false;
+    
+    $nid = intval($nid);
+    $emote = intval($emote);
+    $htmltag = ($htmltag==1)?1:0;
+    if (!$subject) return -1;
+    
+    if (!$filtered) //未经过过滤检查的要先检查一次
+	    if (bbs_checkbadword($subject) || bbs_checkbadword($body))
+	        $into_filter = true;
+    
+    $subject = addslashes($subject);
+    $body = addslashes($body);
+    $userid = addslashes($userid);
+    if (!$address) $address = $_SERVER["REMOTE_ADDR"];
+    
+    if ($into_filter)
+	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`) ".
+	   	     "VALUES ( 0, '".$nid."' , 0 , 0 , 0 , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".$userid."' , 0, 0, '".$subject."', '".$body."', 0 , 0 , '".$htmltag."' ,0,0,0,'','',0);";
+	else
+        $query = "INSERT INTO `comments` ( `cid` , `nid` , `uid` , `emote` , `hostname` , `username` , `subject` , `created` , `changed` , `body`  , `htmltag`)". 
+	    	 "VALUES ('', '".$nid."', '".$pc["UID"]."', '".$emote."' , '".addslashes($address)."', '".$userid."', '".$subject."', NOW( ) , NOW( ), '".$body."' , '".$htmltag."' );";
+	if (!mysql_query($query,$link))
+	    return -6;
+	if (!$into_filter) {    
+	    $query = "UPDATE nodes SET commentcount = commentcount + 1 , changed = changed  WHERE `nid` = '".$nid."' ;";
+	    if(!mysql_query($query,$link))
+	        return -6;
+	    else
+            return 0;
+    }
+    else
+        return -9;
+    
 }
 
 ?>

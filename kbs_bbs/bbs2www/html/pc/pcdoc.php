@@ -79,7 +79,7 @@
 	function display_art_list($link,$pc,$tag,$pur,$tid=0,$order="",$pno)
 	{
 		if ($pc['USER'] == '_filter' )
-	    	$query = "SELECT `fid` , `pid` , `state` , `username`, `uid` , `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
+	    	$query = "SELECT `fid` , `pid` , `nid` , `state` , `username`, `uid` , `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
 	    		" FROM filter WHERE `state` = '".$tag."' ";
 		else
 	    	$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
@@ -127,6 +127,7 @@
 ?>
 <tr>
 	<td class="t2" width="30">序号</td>
+	<td class="t2" width="40">类别</td>
 	<td class="t2" width="80">作者</td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=co&tid=".$tid; ?>" class="f3">状态</a></td>
 	<td class="t2">主题</td>
@@ -200,6 +201,7 @@
 		    if ($pc['USER'] == '_filter' )
 		    {
 		        echo "<tr>\n<td class='t3'>".$i."</td>\n".
+		            "<td class='t4'>".($rows[nid]?'评论':'文章')."</td>".
 					"<td align=\"center\" class='t4'><a href=\"/bbsqry.php?userid=".$rows[username]."\">".html_format($rows[username])."</a></td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>";

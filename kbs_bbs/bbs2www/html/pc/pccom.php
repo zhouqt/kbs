@@ -123,13 +123,17 @@
 				html_error_quit("请输入评论标题!");
 				exit();
 			}
-			$emote = (int)($_POST["emote"]);
-			$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
-			$query = "INSERT INTO `comments` ( `cid` , `nid` , `uid` , `emote` , `hostname` , `username` , `subject` , `created` , `changed` , `body`  , `htmltag`)". 
-				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".addslashes($_SERVER["REMOTE_ADDR"])."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , '".$useHtmlTag."' );";
-			mysql_query($query,$link);
-			$query = "UPDATE nodes SET commentcount = commentcount + 1 , changed = changed  WHERE `nid` = '".$nid."' ;";
-			mysql_query($query,$link);
+			$ret = pc_add_comment($link,$pc,$nid,intval(($_POST["emote"])),$currentuser["userid"],$_POST["subject"],html_editorstr_format($_POST["blogbody"]),(($_POST["htmltag"]==1)?1:0),false);
+            switch($ret) {
+                case -6:
+                    html_error_quit("由于系统原因导致评论失败");
+                    break;
+                case -9:
+                    echo "<script language=\"javascript\">alert('您的文章可能含有不当词汇，请等待管理员审核。');</script>";
+                    break;
+                default:    
+            }
+            
 ?>
 <script language="javascript">
 window.location.href="pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>";
