@@ -105,7 +105,7 @@ int setboardorigin(char *board, int i)
         return -1;
 }
 
-int setboardtitle(char *board, int i)
+int setboardtitle(const char *board, int i)
 {
     int pos;
 
@@ -198,8 +198,7 @@ int apply_boards(int (*func) (struct boardheader *, void* ),void* arg)
     return 0;
 }
 
-int getbnum(bname)              /* board name --> board No. */
-char *bname;
+int getbnum(const char *bname)
 {
     register int i;
 

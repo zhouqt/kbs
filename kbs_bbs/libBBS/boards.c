@@ -553,7 +553,7 @@ void init_brc_cache(char* userid,bool replace) {
         brcfdr = open(dirfile, O_RDWR, 0600);
 	if (brcfdr==-1) bbslog("3error","can't open %s errno %d",dirfile,errno);
         brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
-	if (brc_cache_entry==-1) bbslog("3error","can't mmap %s errno %d",dirfile,errno);
+	if (brc_cache_entry==MAP_FAILED) bbslog("3error","can't mmap %s errno %d",dirfile,errno);
         close(brcfdr);
     }
 }
@@ -579,7 +579,7 @@ int brc_initial(char *userid, char *boardname)
 #if USE_TMPFS==1
     init_brc_cache(userid,false);
     if (brc_cache_entry==NULL) return 0;
-    if (brc_cache_entry==-1) return 0;
+    if (brc_cache_entry==MAP_FAILED) return 0;
 #endif
 
     for (i = 0; i < BRC_CACHE_NUM; i++)
@@ -695,7 +695,7 @@ void brc_add_read(unsigned int fid)
 
 void brc_clear()
 {
-    struct boardheader *bh;
+    struct boardheader const *bh;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(currentuser->userid,"guest")) return;
     bh = getboard(brc_cache_entry[brc_currcache].bid);
@@ -983,7 +983,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
         if (!sort) {
 	    if (input_namelist) {
                 if (favbrd_list[n].flag == -1) 
-	            input_namelist[brdnum-1]=NullChar;
+	            input_namelist[brdnum-1]=(char*)NullChar;
 		else
 	            input_namelist[brdnum-1]=bptr->filename;
             }
@@ -992,10 +992,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             if (nbrd) {
                 ptr = &nbrd[brdnum-pos];
                 if (favbrd_list[n].flag == -1) {
-                    ptr->name = NullChar;
+                    ptr->name = (char*)NullChar;
                     ptr->title = favbrd_list[n].title;
                     ptr->dir = 1;
-                    ptr->BM = NullChar;
+                    ptr->BM = (char*)NullChar;
                     ptr->flag = -1;
                     ptr->tag = n;
                     ptr->pos = 0;
@@ -1025,7 +1025,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             char* title;
             int j;
             if (favbrd_list[n].flag == -1)
-            	title=NullChar;
+            	title=(char*)NullChar;
             else
             	title=bptr->filename;
             for (i=0;i<curcount;i++) {
@@ -1046,10 +1046,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     if (brdnum == 0) {
     	if (nbrd) {
         ptr = &nbrd[brdnum++];
-        ptr->name = NullChar;
+        ptr->name = (char*)NullChar;
         ptr->dir = 1;
-        ptr->title = EmptyChar;
-        ptr->BM = NullChar;
+        ptr->title = (char*)EmptyChar;
+        ptr->BM = (char*)NullChar;
         ptr->tag = -1;
         ptr->flag = -1;
         ptr->pos = -1;
@@ -1077,10 +1077,10 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
                     ptr->total = -1;
                     ptr->zap = (zapbuf[favbrd_list[indexlist[n]].flag] == 0);
                 } else {
-                    ptr->name = NullChar;
+                    ptr->name = (char*)NullChar;
                     ptr->title = favbrd_list[indexlist[n]].title;
                     ptr->dir = 1;
-                    ptr->BM = NullChar;
+                    ptr->BM = (char*)NullChar;
                     ptr->flag = -1;
                     ptr->tag = indexlist[n];
                     ptr->pos = 0;
@@ -1105,7 +1105,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
 int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,char** input_namelist)
 {
     int n, k;
-    struct boardheader *bptr;
+    struct boardheader const *bptr;
     int brdnum;
     struct newpostdata *ptr;
     int curcount;
