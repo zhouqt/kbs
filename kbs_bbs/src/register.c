@@ -374,7 +374,11 @@ void check_register_info()
 			fprintf(fout, "我是 %s (%s), 来自 %s\n", currentuser->userid,
 					currentuser->username, fromhost);
 			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
+#ifdef HAVE_BIRTHDAY
 					(curruserdata.gender == 'M') ? "小弟" : "小女子");
+#else
+                                        "小弟");
+#endif
 			move(9, 0);
 			prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
 			prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
