@@ -859,7 +859,7 @@ int normal_board(char *bname)
     if ((i = getboardnum(bname,&bh)) == 0)
         return 0;
 #ifdef NINE_BUILD
-    return (bh.level&(~PERM_DEFAULT)== 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
+    return (bh.level&(~(PERM_DEFAULT|PERM_DCS))== 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
 #else
     return (bh.level == 0)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
 #endif
