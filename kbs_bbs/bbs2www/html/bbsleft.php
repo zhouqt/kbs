@@ -325,7 +325,7 @@
 					<a href="/bbsfillform.html" target="f3">填写注册单</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="cgi-bin/bbs/bbsinfo" target="f3">个人资料</a><br>
+					<a href="/bbsinfo.php" target="f3">个人资料</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="bbsplan.php" target="f3">改说明档</a><br>

@@ -106,6 +106,7 @@ static PHP_FUNCTION(bbs_mail_file);
 static PHP_FUNCTION(bbs_update_uinfo);
 static PHP_FUNCTION(bbs_createnewid);
 static PHP_FUNCTION(bbs_fillidinfo);
+static PHP_FUNCTION(bbs_modify_info);
 static PHP_FUNCTION(bbs_createregform);
 static PHP_FUNCTION(bbs_findpwd_check);
 static PHP_FUNCTION(bbs_delfile);
@@ -250,6 +251,7 @@ static function_entry smth_bbs_functions[] = {
 	PHP_FE(bbs_createregform,NULL)
 	PHP_FE(bbs_findpwd_check,NULL)
         PHP_FE(bbs_fillidinfo,NULL)
+        PHP_FE(bbs_modify_info,NULL)
         PHP_FE(bbs_delfile,NULL)
         PHP_FE(bbs_delmail,NULL)
         PHP_FE(bbs_normalboard,NULL)
@@ -4626,6 +4628,84 @@ static PHP_FUNCTION(bbs_createnewid)
 
 	RETURN_LONG(0);
 }
+
+/* bbsinfo.php, stiger */
+static PHP_FUNCTION(bbs_modify_info)
+{
+    char* username;
+    int username_len;
+    char* realname;
+    int realname_len;
+    char* address;
+    int address_len;
+    char* email;
+    int email_len;
+
+    struct userdata ud;
+	struct userec newinfo;
+	int unum;
+
+    int ac = ZEND_NUM_ARGS();
+
+	int m;
+
+
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &username, &username_len,&realname,&realname_len,&address,&address_len,&email,&email_len) == FAILURE)
+    {
+            WRONG_PARAM_COUNT;
+    }
+
+	for( m=0; m<strlen(username); m++){
+		if( username[m] < 32 && username[m] > 0 || username[m]==-1)
+			username[m]=0;
+	}
+	for( m=0; m<strlen(realname); m++){
+		if( realname[m] < 32 && realname[m] > 0 || realname[m]==-1)
+			realname[m]=0;
+	}
+	for( m=0; m<strlen(address); m++){
+		if( address[m] < 32 && address[m] > 0 || address[m]==-1)
+			address[m]=0;
+	}
+	for( m=0; m<strlen(email); m++){
+		if( email[m] < 32 && email[m] > 0 || email[m]==-1)
+			email[m]=0;
+	}
+
+    if(strlen(username) >= NAMELEN || strlen(realname) >= NAMELEN || strlen(address) >= STRLEN || strlen(email)>= STRLEN)
+       RETURN_LONG(-1);
+
+    memset(&ud,0,sizeof(ud));
+	if( read_user_memo(currentuser->userid, &currentmemo) <= 0) RETURN_LONG(-2);
+
+    if(read_userdata(currentuser->userid,&ud) < 0)RETURN_LONG(-2);
+
+    strncpy(ud.realname, realname, NAMELEN);
+    strncpy(ud.address,address,STRLEN);
+    strncpy(ud.email,email,STRLEN);
+
+	memcpy(&(currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+
+    if(write_userdata(currentuser->userid,&ud) < 0)RETURN_LONG(-2);
+
+                if( (unum = getusernum(currentuser->userid))==0)
+       				RETURN_LONG(-1);
+				memcpy(&newinfo, currentuser, sizeof(struct userec));
+                if (strcmp(newinfo.username, username)) {
+
+                    strcpy(newinfo.username, username);
+					update_user(&newinfo, unum, 1);
+
+					strcpy(currentuinfo->username, username);
+                    UPDATE_UTMP_STR(username, (*currentuinfo));
+                }
+
+	bbslog("user","%s","change user info from www");
+
+    RETURN_LONG(0);
+}
+
 /**
  * fill infomation of ID ,name, NO. dept, for tsinghua
  * prototype:
