@@ -113,10 +113,12 @@
 <center><p><?php echo BBS_FULL_NAME; ?> -- [投票列表] [用户:<?php echo $currentuser["userid"];?>] 
 <?php echo $board; ?>版投票<br></p>
 <hr class="default"/>
+</center>
 <?php
 		$descdir = "vote/".$board."/desc.".$votearr[0]["DATE"] ;
 		bbs_printansifile($descdir);
 ?>
+<center>
 <hr class="default"/>
 <table width="613">
 <tr><td>序号</td><td><?php echo $num;?></tr>
