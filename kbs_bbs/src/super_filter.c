@@ -350,13 +350,15 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vard(fvars+fget_var("m"), ptr1->accessed[0]&FILE_MARKED);
         set_vard(fvars+fget_var("g"), ptr1->accessed[0]&FILE_DIGEST);
         set_vard(fvars+fget_var("b"), (ptr1->accessed[0]&FILE_MARKED)&&(ptr1->accessed[0]&FILE_DIGEST));
-        set_vard(fvars+fget_var("noreply"), ptr1->accessed[1]&FILE_READ);
-        set_vard(fvars+fget_var("sign"), ptr1->accessed[0]&FILE_SIGN);
+        if (chk_currBM(currBM, currentuser)) {
+            set_vard(fvars+fget_var("noreply"), ptr1->accessed[1]&FILE_READ);
+            set_vard(fvars+fget_var("sign"), ptr1->accessed[0]&FILE_SIGN);
 #ifdef FILTER
-        set_vard(fvars+fget_var("censor"), ptr1->accessed[1]&FILE_CENSOR);
+            set_vard(fvars+fget_var("censor"), ptr1->accessed[1]&FILE_CENSOR);
 #endif
-        set_vard(fvars+fget_var("del"), ptr1->accessed[1]&FILE_DEL);
-        set_vard(fvars+fget_var("import"), ptr1->accessed[0]&FILE_IMPORTED);
+            set_vard(fvars+fget_var("del"), ptr1->accessed[1]&FILE_DEL);
+            set_vard(fvars+fget_var("import"), ptr1->accessed[0]&FILE_IMPORTED);
+        }
         set_vard(fvars+fget_var("attach"), ptr1->attachment);
         set_vars(fvars+fget_var("title"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner);
