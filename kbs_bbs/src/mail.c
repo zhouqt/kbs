@@ -835,8 +835,13 @@ char *maildoent(char *buf, int num, struct fileheader *ent)
         date = "";
     }
 
-    strcpy(c1, "[33m");
-    strcpy(c2, "[36m");
+    if (DEFINE(currentuser,DEF_HIGHCOLOR)) {
+        strcpy(c1, "[1;33m");
+        strcpy(c2, "[1;36m");
+    } else {
+        strcpy(c1, "[33m");
+        strcpy(c2, "[36m");
+    }
     if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
         same = true;
     strncpy(b2, ent->owner, OWNER_LEN);
