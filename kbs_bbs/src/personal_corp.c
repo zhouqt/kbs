@@ -711,7 +711,7 @@ int pc_now_node_ent=0;
 /* 复制粘贴的东西，保存临时node nid */
 unsigned long pc_pasteboard=0;
 
-unsigned long pc_get_fav_root( )
+int pc_get_fav_root(unsigned long *nid )
 {
 	struct pc_nodes pn;
 	int ret;
@@ -720,7 +720,8 @@ unsigned long pc_get_fav_root( )
 	if( ret <= 0)
 		return ret;
 
-	return pn.nid;
+	*nid = pn.nid;
+	return 1;
 }
 
 int pc_add_fav_root()
@@ -1303,7 +1304,7 @@ static int pc_dir_getdata(struct _select_def *conf,int pos,int len)
 	bzero(pc_n, sizeof(struct pc_nodes) * BBS_PAGESIZE);
 
 	if( conf->item_count - conf->page_pos < BBS_PAGESIZE )
-		conf->item_count = count_pc_nodes(pc_u->uid, pc_fav_dir, -1, pc_dirmode-1, 0);
+		conf->item_count = count_pc_nodes(pc_u->uid, pc_fav_dir, -1, pc_dirmode-1);
 
 	if(pos <=0){
 		clear();
@@ -1358,18 +1359,19 @@ int pc_read_dir(int first)
 //	pc_dir_start = 0;
 
 	if( pc_dirmode == 4 ){
-		unsigned long ret;
+		int ret;
+		unsigned long retnid;
 		if(pc_fav_dir==0){
-			ret = pc_get_fav_root( ) ;
+			ret = pc_get_fav_root( &retnid ) ;
 			if( ret < 0 )
 				return 0;
 			if( ret == 0 ){
 				pc_add_fav_root( );
-				ret = pc_get_fav_root( pc_u->uid ) ;
+				ret = pc_get_fav_root( &retnid ) ;
 				if( ret <= 0 )
 					return 0;
 			}
-			pc_fav_dir = ret;
+			pc_fav_dir = retnid;
 		}
 	}
 
@@ -1404,7 +1406,7 @@ int pc_read_dir(int first)
 
 	bzero(pc_n, sizeof(struct pc_nodes) * BBS_PAGESIZE);
 
-	group_conf.item_count = count_pc_nodes( pc_u->uid, pc_fav_dir,-1, pc_dirmode -1, 0);
+	group_conf.item_count = count_pc_nodes( pc_u->uid, pc_fav_dir,-1, pc_dirmode -1);
 	i = get_pc_nodes(pc_n, pc_u->uid, pc_fav_dir,-1, pc_dirmode -1, 0, BBS_PAGESIZE, 0);
 
 	if( i < 0 ){
