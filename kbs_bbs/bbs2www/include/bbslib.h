@@ -23,6 +23,7 @@
 #define MAIN_PAGE   "/frames.html"
 #define NOLOGIN_PAGE "/nologin.html"
 #define CSS_FILE 	"/bbs.css"
+#define CSS_FILE_BIGFONT 	"/bbs-bf.css"
 #define CHARSET		"gb2312"
 #define UCACHE_SHMKEY	get_shmkey("UCACHE_SHMKEY")
 #define UTMP_SHMKEY	get_shmkey("UTMP_SHMKEY")
