@@ -833,6 +833,7 @@ checksmsagain:
         move(1, 0);
         clrtoeol();
         prints("你尚未注册手机号，无法给别人发送短信");
+        /*
         getdata(2, 0, "是否现在注册手机号? (y/N)", ans, 3, 1, 0, 1);
         move(1, 0);
         clrtoeol();
@@ -841,6 +842,7 @@ checksmsagain:
             if(!register_sms())
                 goto checksmsagain;
         }
+        */
         return -1;
     }
     
