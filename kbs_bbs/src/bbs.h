@@ -124,8 +124,6 @@ typedef enum { false = 0, true = 1 } bool;
 #include "site.h"
 #include "default.h"
 
-#include "permissions.h"
-
 #define PUBLIC_SHMKEY	3700
 /*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要
 public shm,而attach shm又需要sysconf_eval,ft*/
