@@ -12,5 +12,5 @@ plot "/home/bbs/dayonline" u 1:2 title "total" with l 1,\
      "/home/bbs/dayonline" u 1:4 title "www not guest" with l 3,\
      "/home/bbs/dayonline" u 1:5 title "telnet" with l 4,\
      "/home/bbs/dayonline" u 1:6 title "www guest in tsinghua" with l 8,\
-     "/home/bbs/dayonline" u 1:7 title "www not guest in tsinghua" with l 6,\
+     "/home/bbs/dayonline" u 1:7 title "www not guest in tsinghua" with l 5,\
      "/home/bbs/dayonline" u 1:8 title "telnet in tsinghua" with l 0
