@@ -30,10 +30,12 @@ AC_ARG_ENABLE(www,
 [  --enable-www
         enable web support(need bbs2www package)],
 [
-    if test -d bbs2www; then
-        AC_CONFIG_SUBDIRS(bbs2www)
-    else
-        AC_MSG_ERROR([can't find bbs2www package,please get it first!])
+    if [ test "$enableval" = "yes" ]; then
+	    if test -d bbs2www; then
+		AC_CONFIG_SUBDIRS(bbs2www)
+		else
+		AC_MSG_ERROR([can't find bbs2www package,please get it first!])
+	   fi
     fi
 ])
 
@@ -99,17 +101,21 @@ AC_ARG_ENABLE(site,
 [
     if test -f $srcdir/site/$enableval.c; then
         BBSSITE=$enableval
+	SITEDIR=site
     else
     if test -f $srcdir/sites/$enableval.c; then
         BBSSITE=$enableval
+	SITEDIR=sites
     else
         AC_MSG_ERROR([ERROR! Unknown site $enableval, see site/])
     fi
-],[BBSSITE="smth"])
+    fi
+],[BBSSITE="smth"
+SITEDIR=site])
 AC_SUBST(BBSSITE)
 
-AC_CONFIG_LINKS(libBBS/site.c:site/$BBSSITE.c
-		libBBS/site.h:site/$BBSSITE.h
+AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
+		libBBS/site.h:$SITEDIR/$BBSSITE.h
 		src/site.c:site/$BBSSITE.c
 		src/site.h:site/$BBSSITE.h
 		)
