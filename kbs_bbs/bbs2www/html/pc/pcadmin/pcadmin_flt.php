@@ -74,10 +74,10 @@ if (strtolower($_GET['filter'])=='r') {
 		$node_o = mysql_fetch_array($result);
 		if (!$node_o)
     		html_error_quit("作者已经将文章删除");
-    	if (($node_o[body] != '@ @ 本文已被管理员删除 @ @') && (!isset($_GET["or"])))
+    	if (($node_o[body] != '@ @ 本文已被管理员屏蔽 @ @') && (!isset($_GET["or"])))
     		html_error_quit("原文已经被修改过<br/><a href='pcadmin_flt.php?filter=r&or=1&fid=".$fid."'>强行恢复</a>");
     	$body = addslashes($node[body]);
-    	$query = "UPDATE nodes SET `body` = '".$body."' where `nid` = " . $nid . ";";
+    	$query = "UPDATE nodes SET `body` = '".$body."', `changed`='".$node[changed]."' where `nid` = " . $nid . ";";
 		if (!mysql_query($query)) {
 			html_error_quit("修改原文出错");
 		}
