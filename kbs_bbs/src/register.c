@@ -362,6 +362,46 @@ void check_register_info()
 		}
 	}
 #endif
+#ifdef NINE_BUILD
+    if (currentuser->numlogins == 1)
+    {
+        time_t now;
+        struct tm *tmnow;
+        FILE *fout;
+        char buf2[STRLEN];
+	sprintf(buf, "tmp/newcomer.%s", currentuser->userid);
+	if ((fout = fopen(buf, "w")) != NULL)
+	{
+		fprintf(fout, "大家好,\n\n");
+		fprintf(fout, "我是 %s (%s), 来自 %s\n", currentuser->userid,
+				currentuser->username, fromhost);
+		fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
+				"小弟");
+		move(9, 0);
+		prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
+		prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
+		getdata(11, 0, ":", buf2, 75, DOECHO, NULL, true);
+		if (buf2[0] != '\0')
+		{
+			fprintf(fout, "\n\n自我介绍:\n\n");
+			fprintf(fout, "%s\n", buf2);
+			getdata(12, 0, ":", buf2, 75, DOECHO, NULL, true);
+			if (buf2[0] != '\0')
+			{
+				fprintf(fout, "%s\n", buf2);
+				getdata(13, 0, ":", buf2, 75, DOECHO, NULL, true);
+				if (buf2[0] != '\0')
+				{
+					fprintf(fout, "%s\n", buf2);
+				}
+			}
+		}
+		fclose(fout);
+		sprintf(buf2, "新手上路: %s", currentuser->username);
+		post_file(currentuser, "", buf, "newcomers", buf2, 0, 2);
+		unlink(buf);
+    }
+#endif
     if (!strcmp(currentuser->userid, "SYSOP")) {
         currentuser->userlevel = ~0;
         currentuser->userlevel &= ~PERM_SUICIDE;        /* Leeward 98.10.13 */
