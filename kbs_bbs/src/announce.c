@@ -431,19 +431,15 @@ int a_Import(path, key, fileinfo, nomsg, direct, ent)
 	{
 		snprintf(Importname, sizeof(Importname), "%s/%s", path, buf);
 
-		/* Leeward: 97.12.17: 对版主的多个窗口同步丝路 */
-		sprintf(buf, "%s", Importname);
-		ptr = strstr(buf, ".faq/");
-		if (ptr) {
-			if ((ptr = strchr(ptr + 5, '/')) != NULL)
-				strcpy(ptr + 1, ".BMpath");
-			else
-				strcat(buf, "/.BMpath");
-			fn = fopen(buf, "rt");
-			if (fn) {
-				fgets(netty_path, 256, fn);
-				fclose(fn);
-			}
+		/* Leeward: 97.12.17: 对版主的多个窗口同步丝路 
+		    KCN: 2003.1.17:应该用版主目录下的文件。而不是
+		    多个斑竹公用。
+		*/
+		sethomefile(buf, currentuser->userid, "BMpath");
+		fn = fopen(buf, "rt");
+		if (fn) {
+			fgets(netty_path, 256, fn);
+			fclose(fn);
 		}
 
 		if (netty_path[0] != '\0') {
@@ -941,18 +937,11 @@ void a_manager(pm, ch)
                 char *ptr;
 
                 /* by zixia: 用相对路经 sprintf(genbuf, "%s/%s", BBSHOME,netty_path); */
-                sprintf(genbuf, "%s", netty_path);
-                ptr = strstr(genbuf, ".faq/");
-                if (ptr) {
-                    if ((ptr = strchr(ptr + 5, '/')) != NULL)
-                        strcpy(ptr + 1, ".BMpath");
-                    else
-                        strcat(genbuf, "/.BMpath");
-                    sl = fopen(genbuf, "wt");
-                    if (sl) {
-                        fputs(netty_path, sl);
-                        fclose(sl);
-                    }
+                sethomefile(genbuf,currentuser->userid,"BMpath");
+                sl = fopen(genbuf, "wt");
+                if (sl) {
+                    fputs(netty_path, sl);
+                    fclose(sl);
                 }
             }                   /* End if  # Leeward */
         }
