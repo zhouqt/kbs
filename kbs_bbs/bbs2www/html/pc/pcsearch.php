@@ -88,8 +88,8 @@
 			$themekey = urlencode(stripslashes($rows[theme]));
 			echo "<tr>\n<td class=t3>".($startno + $i + 1)."</td>\n".
 				"<td class=t4><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
-				"<td class=t3>&nbsp;<a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[corpusname])."</a></td>\n".
-				"<td class=t5>&nbsp;<a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[description])."</a></td>\n".
+				"<td class=t3>&nbsp;<a href=\"index.php?id=".$rows[username]."\">".html_format($rows[corpusname])."</a></td>\n".
+				"<td class=t5>&nbsp;<a href=\"index.php?id=".$rows[username]."\">".html_format($rows[description])."</a></td>\n".
 				"<td class=t3>&nbsp;<a href=\"pcsearch.php?exact=0&key=t&keyword=".$themekey."\">".html_format($rows[theme])."</a></td>\n".
 				"<td class=\"t4\">".$rows[nodescount]."</a>".
 				"<td class=\"t3\">".$rows[visitcount]."</a>".
