@@ -372,6 +372,8 @@ void brc_update(char *userid)
     unsigned int data[MAXBOARD][BRC_MAXNUM];
     size_t count;
 
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(userid,"guest")) return;
 #if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
 #else
@@ -452,6 +454,8 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
     int list[BRC_MAXNUM];
     gzFile fd;
 
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(userid,"guest")) return;
 #if USE_TMPFS==0
     sethomefile(dirfile, userid, BRCFILE);
 #else
@@ -515,6 +519,8 @@ int brc_initial(char *userid, char *boardname)
     strncpy(currboard, boardname, STRLEN - BM_LEN);     /*很是ft,居然在这里置currboard */
     currboard[STRLEN - BM_LEN] = 0;
 #endif
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(userid,"guest")) return 0;
     for (i = 0; i < BRC_CACHE_NUM; i++)
         if (brc_cache_entry[i].bid == bid) {
             brc_currcache = i;
@@ -567,6 +573,8 @@ int brc_unread(unsigned int fid)
 {
     int n;
 
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(currentuser->userid,"guest")) return 1;
     for (n = 0; n < BRC_MAXNUM; n++) {
         if (brc_cache_entry[brc_currcache].list[n] == 0) {
             if (n == 0)
@@ -592,6 +600,8 @@ void brc_add_read(unsigned int fid)
 {
     int n, i;
 
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(currentuser->userid,"guest")) return;
     for (n = 0; (n < BRC_MAXNUM) && brc_cache_entry[brc_currcache].list[n]; n++) {
         if (fid == brc_cache_entry[brc_currcache].list[n]) {
             return;
@@ -627,6 +637,8 @@ void brc_add_read(unsigned int fid)
 void brc_clear()
 {
     struct boardheader *bh = getboard(brc_cache_entry[brc_currcache].bid);
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(currentuser->userid,"guest")) return;
 
     brc_cache_entry[brc_currcache].list[0] = bh->nowid;
     brc_cache_entry[brc_currcache].list[1] = 0;
@@ -636,6 +648,8 @@ void brc_clear()
 void brc_clear_new_flag(unsigned int fid)
 {
     int n;
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(currentuser->userid,"guest")) return;
 
     for (n = 0; (n < BRC_MAXNUM) && brc_cache_entry[brc_currcache].list[n]; n++)
         if (fid >= brc_cache_entry[brc_currcache].list[n])
