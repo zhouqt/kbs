@@ -786,6 +786,8 @@ int haspostperm(struct userec *user, char *bname)
     if ((i = getbnum(bname)) == 0)
         return 0;
     if (!HAS_PERM(user, PERM_POST)) {
+        if(!strcasecmp(user->userid, "guest"))
+            return 0;
         if (!strcmp(bname, "BBShelp"))
             return 1;
         if (!HAS_PERM(user, PERM_LOGINOK))
