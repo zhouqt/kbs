@@ -173,7 +173,7 @@ create table smallpaper_tb(
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
 <a name="install_tex2mathml"></a>2.5. 加入 itex2mathml 支持</h3></div></div>
-<p>现在 wForum 支持 itex（数学公式排版语言 tex 的一种衍生形式） 到 mathml （浏览器显示数学公式的推荐标准）的自动转化。这部分功能参考 ythtbbs 系统完成，<a href="http://ytht.net" target="_blank">一塌糊涂 BBS 站</a>在 web 下发表文章的页面有一个链接是这个功能的说明，可以参考。</p>
+<p>现在 wForum 支持 itex（数学公式排版语言 tex 的一种衍生形式） 到 mathml （浏览器显示数学公式的推荐标准）的自动转化。这部分功能参考 ythtbbs 系统完成，部分使用 ythtbbs 代码的站点有这个功能的介绍可以参考，比如 <a href="http://bbs.qxntc.edu.cn/" target="_blank">笔山书院 BBS</a> web 下的用户帮助里面就有。</p>
 <p>wForum 支持 itex2mathml 对客户端和服务器端都有要求。客户端的要求是最新版的 Mozilla Firefox，Netscape 等使用 Mozilla 内核的浏览器。如果是 MSIE 浏览器的话，必须是 5.5 版以上，而且需要预装 <a href="http://www.dessci.com/en/products/mathplayer/download.htm" target="_blank">MathPlayer 2.0</a> 插件，wForum 不会提示用户安装。服务器端要求 <a href="http://pear.math.pitt.edu/mathzilla/itex2mml.html" target="_blank">itex2mml</a> 转换程序，请下载后将 itex2MML 可执行文件放在 ~bbs/bin/ 目录下面，并且在 site.php 里面加入：</p>
 <pre class="programlisting">define(&quot;SUPPORT_TEX&quot;, true);</pre>
 <p>用户发表需要 itex2mathml 支持的帖子的时候要选择“使用 tex 发表”选项。关于 itex2mml 支持的 tex 格式可以在其主页上找到文档。目前这部分功能还有很多问题，但是基本功能已经可以使用。具体的技术细节可以参考下面的 <a href="#itex2mathml_details">itex2mathml 的一些技术细节</a>。</p>
