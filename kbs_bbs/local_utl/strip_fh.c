@@ -35,16 +35,19 @@ static void strip_fileheader(const fileheader_v1_2 *oldfh, fileheader *fh,
 	fh->groupid = oldfh->groupid;
 	fh->reid = oldfh->reid;
 #if defined(FILTER) || defined(COMMEND_ARTICLE)
-	if (oldfh->o_board[0] != '\0'
-		&& (fh->o_bid = getboardnum(oldfh->o_board, NULL)) == 0)
+	if (strcmp(bname, "Filter") == 0 || strcmp(bname, "Recommend") == 0)
 	{
-		fprintf(stderr, 
-				"Warning: Cannot find original board <%s>: %s/%s/id<%d>.\n",
-				oldfh->o_board, bname, dir, oldfh->id);
+		if (oldfh->o_board[0] != '\0'
+			&& (fh->o_bid = getboardnum(oldfh->o_board, NULL)) == 0)
+		{
+			fprintf(stderr, 
+					"Warning: Cannot find original board <%s>: %s/%s/id<%d>.\n",
+					oldfh->o_board, bname, dir, oldfh->id);
+		}
+		fh->o_id = oldfh->o_id;
+		fh->o_groupid = oldfh->o_groupid;
+		fh->o_reid = oldfh->o_reid;
 	}
-	fh->o_id = oldfh->o_id;
-	fh->o_groupid = oldfh->o_groupid;
-	fh->o_reid = oldfh->o_reid;
 #endif
 	fh->innflag[0] = oldfh->innflag[0];
 	fh->innflag[1] = oldfh->innflag[1];
