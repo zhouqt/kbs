@@ -502,7 +502,7 @@ int ent_chat(int chatnum)  /* 进入聊天室*/
     /* chat begin */
     while (chatting)
     {
-        if(!chat_checkparse(pthis))break;
+        if (chat_checkparse(pthis) == 0) break;
 
         move(b_lines, currchar + 10);
         pthis->outputcount=0;
@@ -516,7 +516,7 @@ int ent_chat(int chatnum)  /* 进入聊天室*/
         	}
         }
 
-        if(!chat_checkparse(pthis))break;
+        if (chat_checkparse(pthis)== 0) break;
         if( ch == I_OTHERDATA ) continue;
 
 
