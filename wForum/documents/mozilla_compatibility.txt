@@ -30,6 +30,9 @@ oButton.value="I'm new button";
 </script>
 .....
 
+函数：
+getParentRawObject(obj)  用于子frame;获取父窗口中ID为obj的对象
+
 
 函数:
 getObjectCollection(obj) 获取ID/Name为obj的一组对象
@@ -48,6 +51,9 @@ for (i=0;i<oCheckboxs.length;i++) {
 ...
 </script>
 .....
+
+函数:
+getParentObjectCollection(obj) 获取父窗口ID/Name为obj的一组对象
 
 函数:
 getObjectStyle(obj) 获取ID为obj的对象的style

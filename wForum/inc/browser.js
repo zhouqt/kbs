@@ -27,6 +27,22 @@ if (document.images) {
 	}
 }
 
+// Convert parent object name string or object reference
+// into a valid element object reference 
+function getParentRawObject(obj) {
+    var theObj;
+    if (typeof obj == "string") {
+        if (isIE4) {
+            theObj = parent.document.all(obj);
+        } else if (isW3C) {
+            theObj = parent.document.getElementById(obj);
+        } 
+    } else {
+        // pass through object reference
+        theObj = obj;
+    }
+    return theObj;
+}
 
 // Convert object name string or object reference
 // into a valid element object reference
@@ -45,6 +61,10 @@ function getRawObject(obj) {
     return theObj;
 }
 
+
+
+// Convert object id/name string or object references array
+// into a valid element object references array
 function getObjectCollection(obj) {
     var theObj;
     if (typeof obj == "string") {
@@ -52,6 +72,23 @@ function getObjectCollection(obj) {
 			theObj=document.all.item(obj);
 		} else if (isW3C) {
 			theObj=document.getElementsByName(obj);
+		}
+    } else {
+        // pass through object reference
+        theObj = obj;
+    }
+    return theObj;
+}
+
+// Convert parent object id/name string or object references array
+// into a valid element object references array
+function getParentObjectCollection(obj) {
+    var theObj;
+    if (typeof obj == "string") {
+		if (isIE4) {
+			theObj=parent.document.all.item(obj);
+		} else if (isW3C) {
+			theObj=parent.document.getElementsByName(obj);
 		}
     } else {
         // pass through object reference
@@ -69,7 +106,7 @@ function getObjectStyle(obj) {
     }
     return theObj;
 }
-   
+
 // Position an object at a specific pixel coordinate
 function shiftTo(obj, x, y) {
     var theObj = getObjectStyle(obj);

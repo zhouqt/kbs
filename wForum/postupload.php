@@ -30,15 +30,10 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 <script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 function disableEdit(){
-	if (isIE4) {
-		parent.frmAnnounce.Submit.disabled=true;
-		parent.frmAnnounce.Submit2.disabled=true;
-	} else if (isW3C) {
-		oSubmit=parent.document.getElementById("oSubmit");
-		oSubmit2=parent.document.getElementById("oSubmit2");
-		oSubmit.disabled=true;
-		oSubmit2.disabled=true;		
-	}
+	oSubmit=getParentRawObject("oSubmit");
+	oSubmit2=getParentRawObject("oSubmit2");
+	oSubmit.disabled=true;
+	oSubmit2.disabled=true;		
 }
 </script>
 <form name="form" method="post" action="dopostupload.php?board=<?php echo $_GET['board']; ?>" enctype="multipart/form-data" onSubmit="disableEdit();" id="oForm">
