@@ -2959,7 +2959,7 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
     if (inum1 <= 0) return FULLUPDATE;
     getdata(3, 0, "Ä©ÆªÎÄÕÂ±àºÅ: ", num2, 10, DOECHO, NULL, true);
     inum2 = atoi(num2);
-    if (inum2 <= inum1||inum2>total||inum1>total) {
+    if (inum2 <= inum1) {
         prints("´íÎó±àºÅ\n");
         pressreturn();
         return FULLUPDATE;
@@ -2969,7 +2969,8 @@ int range_flag(int ent, struct fileheader *fileinfo, char *direct)
     k=ans[0]-'0';
     if(ans[0]=='1') fflag=FILE_MARK_FLAG;
     else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
-    for(i=inum1;i<=inum2;i++) {
+    for(i=inum1;i<=inum2;i++) 
+    if(i>=1&&i<=total) {
         f.filename[0]=0;
         change_post_flag(currBM, currentuser, digestmode, currboard, i, &f, direct, fflag, 0);
     }

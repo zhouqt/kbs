@@ -193,6 +193,19 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
             p->s = mktime(&t);
             return;
         }
+        else if(!strcmp("today",buf)){
+            struct tm t;
+            time_t tt;
+            char * res;
+            p->num=true;
+            tt=time(0);
+            gmtime_r(&tt, &t);
+            t.tm_sec=0;
+            t.tm_min=0;
+            t.tm_hour=0;
+            p->s = mktime(&t);
+            return;
+        }
         else if(!strcmp("time",buf)){
             int j=strchr(s+i+1, ',')-s, k;
             struct tm t;
@@ -417,6 +430,7 @@ int super_filter(int ent, struct fileheader *fileinfo, char *direct)
         set_vars(fvars+fget_var("title"), ptr1->title);
         set_vars(fvars+fget_var("author"), ptr1->owner);
         set_vars(fvars+fget_var("fname"), ptr1->filename);
+        set_vard(fvars+fget_var("my"), !strcmp(ptr1->owner,currentuser->userid));
 #ifdef HAVE_BRC_CONTROL
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id));
 #endif
