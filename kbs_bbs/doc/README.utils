@@ -88,3 +88,20 @@ INSTALL只写了bbsd等主要程序的安装方法
    代码: service/friendtest
    menu.ini:
 		  @RunMBEM     0, 0, PERM_LOGINOK, "T@mod:service/libfriendtest.so#friend_main", "(T) 友谊测试"
+
+ 5.) 打字游戏
+   代码: service/tt.c
+   menu.ini:
+		  @RunMBEM     0, 0, PERM_LOGINOK, "G@mod:service/libtt.so#tt_main", "(G) 打字游戏"
+
+ 6.) 杀人游戏
+   代码: service/kill.c
+   menu.ini:
+		  @RunMBEM     0, 0, PERM_LOGINOK, "K@mod:service/libkiller.so#killer_main", "(K) 杀人游戏"
+
+ 7.) 开心词典
+   代码: service/quiz.c
+   menu.ini:
+		  @RunMBEM     0, 0, PERM_LOGINOK, "Q@mod:service/libquiz.so#quiz_main", "(Q) 开心词典"
+   mysql:
+          好像没有公开，呵呵，所以暂时sorry.
