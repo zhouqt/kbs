@@ -467,7 +467,7 @@ int load_msgtext(char *uident, int index, char *msgbuf)
         next = size;
     lseek(fd2, now, SEEK_SET);
     if(next-now > MAX_MSG_SIZE+100) next=now+MAX_MSG_SIZE+100-1;
-    read(fd, msgbuf, next-now);
+    read(fd2, msgbuf, next-now);
     msgbuf[next-now-1] = 0;
 
     close(fd2);
