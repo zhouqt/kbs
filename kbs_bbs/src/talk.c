@@ -350,15 +350,15 @@ char q_id[IDLEN];
         move(t_lines - 1, 0);
         if ((genbuf[0]) && seecount) {
             if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                prints("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            ");
+                prints("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续");
             else
-                prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 其它键继续                            ");
+                prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 其它键继续");
         }
         else {
             if (DEFINE(currentuser, DEF_HIGHCOLOR))
-                prints("\x1b[m\x1b[44m        寄信[\x1b[1;32mm\x1b[m\x1b[0;44m]           加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续                            ");
+                prints("\x1b[m\x1b[44m        寄信[\x1b[1;32mm\x1b[m\x1b[0;44m]           加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续");
             else
-                prints("\x1b[44m        寄信[m]           加,减朋友[o,d] 其它键继续                            ");
+                prints("\x1b[44m        寄信[m]           加,减朋友[o,d] 其它键继续");
         }
         clrtoeol();
         resetcolor();
