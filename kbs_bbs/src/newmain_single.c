@@ -894,23 +894,6 @@ void main_bbs(int convit, char *argv)
     }
 }
 
-char *boardmargin()
-{
-    static char buf[STRLEN];
-
-    if (selboard)
-	    sprintf(buf, "讨论区 [%s]", currboard);
-    else {
-        brc_initial(currentuser->userid, DEFAULTBOARD);
-        if (getbnum(currboard)) {
-            selboard = 1;
-            sprintf(buf, "讨论区 [%s]", currboard);
-        } else
-            sprintf(buf, "目前并没有设定讨论区");
-    }
-    return buf;
-}
-
 /*Add by SmallPig*/
 void update_endline()
 {
@@ -976,10 +959,11 @@ void update_endline()
 void showtitle(title, mid)
     char *title, *mid;
 {
-    char buf[STRLEN], *note;
+    char buf[STRLEN];
     char stitle[256];
     int spc1, spc2;
     int colour;
+    char note[STRLEN];
 
     if (DEFINE(currentuser, DEF_TITLECOLOR)) {
         colour = 4;
@@ -988,23 +972,28 @@ void showtitle(title, mid)
         if (colour == 3)
             colour = 1;
     }
-    note = boardmargin();
 
-#ifndef NINE_BUILD
-   if (strstr(title,"版主")!=NULL)
-	/*为了多版主修改 Bigman:2002.9.7 */
-	{
-    note = note + 7 ;
-    spc1 = 78 - num_noans_chr(title) - strlen(mid) - strlen(note);
-    spc2 = 2;
+    if (selboard)
+	    sprintf(note, "讨论区 [%s]", currboard);
+    else {
+        brc_initial(currentuser->userid, DEFAULTBOARD);
+        if (getbnum(currboard)) {
+            selboard = 1;
+            sprintf(note, "讨论区 [%s]", currboard);
+        } else
+            sprintf(note, "目前并没有设定讨论区");
+    }
 
-	}
-    else 
-#endif
-    {
+
     spc1 = 39 - num_noans_chr(title) - strlen(mid) / 2;
     spc2 = 40 - strlen(note) - strlen(mid) / 2;
-	}
+    if ((strstr(title,"版主")!=NULL)&&(num_noans_chr(title)>36))
+	/*为了多版主修改 Bigman:2002.9.7 */
+    {
+        note = note + 7 ;
+        spc1 = 78 - num_noans_chr(title) - strlen(mid) - strlen(note);
+        spc2 = 2;
+    }
 /* Modified by Leeward 97/11/23 -- modification starts */
 /* If title is too long (BM names too long), spc1 < 2 (even < 0)
    Then we should decrease spc2 to avoid the line length exceed default(80)
@@ -1067,7 +1056,7 @@ void docmdtitle(char *title, char *prompt)
     chkmailflag = chkmail();
 
     if (chkmailflag == 2)       /*Haohmaru.99.4.4.对收信也加限制 */
-        strcpy(middoc, "[您的信箱超过容量,不能再收信!]");
+        strcpy(middoc, "[信箱超容]");
     else if (chkmailflag)
         strcpy(middoc, "[您有信件]");
 /*    else if ( vote_flag( DEFAULTBOARD, '\0' ,0) == 0&&(bp->flag&BOARD_VOTEFLAG))
