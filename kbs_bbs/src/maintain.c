@@ -1860,26 +1860,33 @@ int set_BM()
     		 		p = strtok(fh.BM, " ");
     		 		if (p) { 
     		 			if (strcmp(p, lookupuser->userid))
-    		 				{strncpy(newfh.BM,p,IDLEN+2);
+    		 			{
+						strncpy(newfh.BM,p,IDLEN+2);
     		 				m++;
-    		 				}
-					else if (brd_num==1) 
-						{newlevel &= ~PERM_BOARDS;
-						newlevel &= ~PERM_CLOAK; }
     		 			}
+					else if (brd_num==1) 
+					{
+						newlevel &= ~PERM_BOARDS;
+						newlevel &= ~PERM_CLOAK; 
+					}
+    		 		}
     		 		/* 如果增加版主数目请修改这里 */	
     		 		for(n=1;n< (BM_LEN - 1)/(IDLEN +2);n++) {
     		 			p = strtok(NULL, " ");
     		 			if (p==NULL) break;
     		 			else if (strcmp(p, lookupuser->userid))
-    		 				{
+    		 			{
     		 				if (m>0) {
 							strcat(newfh.BM," ");
-							strcat(newfh.BM,p);}
+							strcat(newfh.BM,p);
+						}
     		 				else strncpy(newfh.BM,p,IDLEN+2);
     		 				m++;
-    		 				}
-					else if (brd_num==1) newlevel &= ~PERM_BOARDS;
+    		 			}
+					else if (brd_num==1) {
+						newlevel &= ~PERM_BOARDS;
+						newlevel &= ~PERM_CLOAK; 
+					}
     		 		}
     		 		
     		 		
