@@ -15,13 +15,13 @@ static void flush_buffer(buffered_output_t *output)
 static int buffered_output(char *buf, size_t buflen, void *arg)
 {
 	buffered_output_t *output = (buffered_output_t *)arg;
-	if (output->buflen < buflen)
+	if (output->buflen <= buflen)
 	{
 		output->flush(output);
 		printf("%s", buf);
 		return 0;
 	}
-	if ((output->buflen - (output->outp - output->buf)) < buflen) 
+	if ((output->buflen - (output->outp - output->buf) - 1) <= buflen) 
 		output->flush(output);
 	strncpy(output->outp, buf, buflen); 
 	output->outp += buflen;
