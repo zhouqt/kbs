@@ -56,7 +56,7 @@ int calc_mailsize(char *userid, char *dirname)
     return 0;
 }
 
-int sync_mailsize(struct userec *user, void *arg)
+int sync_mailsize(struct userec *user, char *arg)
 {
     char buf[40];
     int i;
