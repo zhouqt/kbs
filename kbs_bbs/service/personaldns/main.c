@@ -14,6 +14,7 @@ char dns_server[50];
 char dns_zone[50];
 
 unsigned int dns_ttl;
+FILE* nsupdate_pipe=NULL;
 
 int reread;
 int getconf(char* key,char* value,int len) {
@@ -28,6 +29,10 @@ int getconf(char* key,char* value,int len) {
 }
 
 int readconfig() {
+    if (nsupdate_pipe!=NULL) {
+        fprintf(nsupdate_pipe,"quit\n",dns_server);
+        pclose(nsupdate_pipe); 
+    }
     if (getconf("DNS_UPDATE_ZONE",dns_zone,50)!=0) {
     	printf("please configure dns_update_key!\n");
 	return -1;
@@ -47,6 +52,15 @@ int readconfig() {
     	return -1;
     }
     dns_ttl=sysconf_eval("DNS_TTL", 60);
+
+    nsupdate_pipe=popen("nsupdate", "w");
+    if (nsupdate_pipe==NULL) {
+        printf("can't open nsupdate:%s",strerror(errno));
+        return -1;
+    }
+    fprintf(nsupdate_pipe,"server %s\n",dns_server);
+    fprintf(nsupdate_pipe,"zone %s\n",dns_zone);
+    fprintf(nsupdate_pipe,"key %s %s\n",update_keyname,update_key);
     return 0;
 }
 
@@ -76,6 +90,7 @@ int main()
     chdir(BBSHOME);
     reread=0; 
     if (readconfig()!=0) return -1;
+
     sigaction(SIGHUP, &act, NULL);
     act.sa_handler = reconfig;
 #ifdef AIX
@@ -112,18 +127,18 @@ int main()
             }
         }
 
-	if (fork()==0) {
-	update_dns(dns_server, dns_zone,
-		update_keyname, update_key,
-		msg.userid, msg.ip, dns_ttl); 	
+        fprintf(nsupdate_pipe,"update delete %s A\n",msg.userid);
+        fprintf(nsupdate_pipe,"update add %s %d A %s\n",msg.userid,dns_ttl,msg.ip);
+        fprintf(nsupdate_pipe,"send\n",msg.userid,dns_ttl,msg.ip);
 	bbslog("3error","update dns %s %s",msg.userid,msg.ip);
-	exit(0);
-	}
+
         if (reread) 
             if (readconfig()!=0) {
             	bbslog("3error","bbsupdated config error");
             }
     }
+    fprintf(nsupdate_pipe,"quit\n");
+    pclose(nsupdate_pipe);
 #else
     return 0;
 #endif
