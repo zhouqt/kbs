@@ -4,12 +4,39 @@ extern char *gb2big (char*,int*,int);
 extern char    *sysconf_str();
 
 #include <libesmtp.h>
+char *email_domain()
+{
+    char        *domain;
+
+    domain = sysconf_str( "BBSDOMAIN" );
+    if( domain == NULL )  domain = "unknown.BBSDOMAIN";
+    return domain;
+}
+
 
 struct mail_option{
     FILE* fin;
     int isbig5;
     int noansi;
+    int bfirst;
 };
+
+monitor_cb (const char *buf, int buflen, int writing, void *arg)
+{
+  FILE *fp = arg;
+
+  if (writing == SMTP_CB_HEADERS)
+    {
+      fputs ("H: ", fp);
+      fwrite (buf, 1, buflen, fp);
+      return;
+    }
+
+ fputs (writing ? "C >>>>\n" : "S <<<<\n", fp);
+ fwrite (buf, 1, buflen, fp);
+ if (buf[buflen - 1] != '\n')
+   putc ('\n', fp);
+}
 
 char *
 bbs_readmailfile (char **buf, int *len, void *arg)
@@ -17,24 +44,47 @@ bbs_readmailfile (char **buf, int *len, void *arg)
 #define MAILBUFLEN	8192
     struct mail_option* pmo=(struct mail_option*)arg;
     char* retbuf;
+    char* p,*pout;
+    int i;
+    char getbuf[MAILBUFLEN/2];
     
     if (*buf == NULL)
-    *buf = malloc (MAILBUFLEN);
+      *buf = malloc (MAILBUFLEN);
     
     
     if (len == NULL)
     {
       rewind (pmo->fin);
+      pmo->bfirst=1;
       return NULL;
     }
 
-    *len = fread(*buf, 1, MAILBUFLEN, pmo->fin);
+    *len = fread(getbuf, 1, MAILBUFLEN/2, pmo->fin);
 
     if (pmo->isbig5) {
-        retbuf = gb2big(*buf,len,1);
+        retbuf = gb2big(getbuf,len,1);
     } else {
-        retbuf=*buf;
+        retbuf=getbuf;
     }
+    p=retbuf;
+    pout=*buf;
+    if (pmo->bfirst) {
+//	sprintf(pout,"Reply-To: %s.bbs@%s\r\n\r\n", currentuser.userid, email_domain());
+	sprintf(pout,"\r\n\r\n", currentuser.userid, email_domain());
+	pout=*buf+strlen(*buf);
+	pmo->bfirst=0;
+    }
+    for (i=0;i<*len;i++) {
+        if ((*p=='\n')&&( (i==0)||(*(p-1)!='\r') )) {
+	  *pout='\r';
+	  pout++;
+        }
+        *pout=*p;
+        pout++;
+        p++;
+    }
+    *len = pout-(*buf);
+    retbuf = *buf;
 
     if (pmo->noansi) {
         char *p1,*p2;
@@ -43,7 +93,7 @@ bbs_readmailfile (char **buf, int *len, void *arg)
         p1=retbuf;
         p2=retbuf;
         esc=0;
-        for (;*p1;p1++) {
+        for (i=0;i<*len;i++,p1++) {
             if (esc) {
                 if (*p1=='\033') {
                     esc=0;
@@ -63,18 +113,10 @@ bbs_readmailfile (char **buf, int *len, void *arg)
         }
     
         *p2=0;
+        *len = p2-retbuf;
     };
     return retbuf;
 #undef MAILBUFLEN
-}
-
-char *email_domain()
-{
-    char        *domain;
-
-    domain = sysconf_str( "BBSDOMAIN" );
-    if( domain == NULL )  domain = "unknown.BBSDOMAIN";
-    return domain;
 }
 
 /* Callback to prnt the recipient status */
@@ -95,7 +137,8 @@ int isuu, isbig5, noansi;
 {
     struct mail_option mo;
     FILE *fin,*fout;
-    char uname[STRLEN],hname[STRLEN];
+    char uname[STRLEN];
+    int len;
 
     smtp_session_t session;
     smtp_message_t message;
@@ -105,51 +148,37 @@ int isuu, isbig5, noansi;
     enum notify_flags notify = Notify_NOTSET;
     char* server;
 
-    char newbuf[256];
-    
-    if ((fin = fopen (fname, "r")) == NULL)
-    {
-      prints("can't open %s: %s\n", fname, strerror (errno));
-      return -1;
-    }
-
-	/* creat a file include all heads and content */
-	sprintf( hname, "tmp/head%05d", getpid() );
-	
-    if ((fout = fopen (hname, "w+")) == NULL)
-    {
-      prints("can't open %s: %s\n", hname, strerror (errno));
-      return -1;
-    }
-
-    fprintf( fout, "Reply-To: %s.bbs@%s\n", currentuser.userid, email_domain());
-    fprintf( fout, "\n");
-
-    while (fgets( newbuf, 255, fin ) != NULL ) {
-        fputs(newbuf,fout);
-    }
-    fclose(fin);
-    fclose(fout);
+    char newbuf[257];
     
     if ( isuu  )
     {
         sprintf( uname, "tmp/uu%05d", getpid() );
         sprintf( genbuf, "uuencode %s thbbs.%05d > %s",
-                 hname, getpid(), uname );
+                 fname, getpid(), uname );
         system( genbuf );
     }
 
-    if ((fin = fopen (isuu?uname:hname, "r")) == NULL)
+    if ((fin = fopen (isuu?uname:fname, "r")) == NULL)
     {
-      prints("can't open %s: %s\n", isuu?uname:hname, strerror (errno));
+      prints("can't open %s: %s\n", isuu?uname:fname, strerror (errno));
       return -1;
     }
     
+
     session = smtp_create_session ();
     message = smtp_add_message (session);
+
+/*
+    if ((fout = fopen ("tmp/maillog", "w+")) == NULL)
+    {
+      prints("can't open %s: %s\n", "tmp/maillog", strerror (errno));
+      return -1;
+    }
+    smtp_set_monitorcb (session, monitor_cb, fout, 1);
+*/
     
     server = sysconf_str( "MAILSERVER" );
-    if( server == NULL )  server = "166.111.8.18:25";
+    if(( server == NULL )||!strcmp(server,"(null ptr)"))  server = "166.111.8.18:25";
 
     smtp_set_server (session, server);
 
@@ -157,20 +186,18 @@ int isuu, isbig5, noansi;
     smtp_set_reverse_path (message, newbuf);
     smtp_set_header (message, "Message-Id", NULL);
     
+    if (isbig5)  {
+      strcpy(newbuf,title);
+      len=strlen(title);
+      smtp_set_header(message,"Subject",gb2big(title,&len,1));
+    } else
     smtp_set_header (message, "Subject", title);
     smtp_set_header_option (message, "Subject", Hdr_OVERRIDE, 1);
-
-/*    
-    smtp_set_header (message,"Content-Transfer-Encoding", "8bit");
-    if (isbig5)
-        smtp_set_header (message,"Content-Type","text/plain;\n\tcharset=\"big5\"");
-    else
-        smtp_set_header (message,"Content-Type","text/plain;\n\tcharset=\"gb2312\"");
-*/
 
     mo.isbig5=isbig5;
     mo.noansi=noansi;
     mo.fin=fin;
+    mo.bfirst = 1;
     smtp_set_messagecb (message, bbs_readmailfile, (void*)&mo);
 
     recipient = smtp_add_recipient (message, receiver);
@@ -187,113 +214,8 @@ int isuu, isbig5, noansi;
     */
     smtp_destroy_session (session);
     fclose (fin);
-//    unlink(uname);
-//    unlink(hname);
-/*
-    char* buf,*p;
-    char newbuf[256];
-    int esc;
-
-    fprintf( fout, "Reply-To: %s.bbs@%s\n", currentuser.userid, email_domain());
-    fprintf( fout, "From: %s.bbs@%s\n", currentuser.userid, email_domain() );
-    fprintf( fout, "To: %s\n", receiver);
-    fprintf( fout, "Subject: %s\n", title);
-    fprintf( fout, "X-Forwarded-By: %s (%s)\n",
-             currentuser.userid,
-#ifdef REALNAME
-             currentuser.REALNAME);
-#else
-             currentuser.username);
-#endif
-
-    fprintf(fout, "X-Disclaimer: %s 对本信内容恕不负责。\n", BoardName);
-    fprintf(fout, "Precedence: junk\n");
-    fprintf(fout, "\n");
-
-    fclose(fout);
-
-    if ( isbig5 == 0 )
-    {
-        strcpy(tname, hname);
-        strcpy(cname, fname);
-    }
-    else
-    {
-        sprintf(tname, "/tmp/hcvt%05d", getpid() );
-        system_convert(hname, tname, "g2b");
-
-        sprintf(cname, "/tmp/ccvt%05d", getpid() );
-        system_convert(fname, cname, "g2b");
-    }
-
-    if ( isuu == 0 )
-        strcpy( uname, cname );
-    else {
-        sprintf( uname, "tmp/uu%05d", getpid() );
-        sprintf( genbuf, "uuencode %s thbbs.%05d > %s",
-                 cname, getpid(), uname );
-        system( genbuf );
-    }
-
-    sprintf( genbuf, "/usr/lib/sendmail -f %s.bbs@%s %s ",
-             currentuser.userid, email_domain(), receiver );
-    fout = popen( genbuf, "w" );
-    fin  = fopen( tname, "r" );
-    fin2 = fopen( uname, "r" );
-    if (fout == NULL || fin == NULL || fin2 == NULL) return -1;
-
-    while (fgets( genbuf, 255, fin ) != NULL ) {
-        if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
-            fputs( ". \n", fout );
-        else
-            fputs( genbuf, fout );
-    }
-
-    while (fgets( genbuf, 255, fin2 ) != NULL ) {
-        if (genbuf[0] == '.' && genbuf[ 1 ] == '\n')
-            fputs( ". \n", fout );
-        else
-            if (noansi)
-            {
-                buf=newbuf;
-                esc=0;
-                for (p=genbuf;*p;p++) {
-                    if (esc) {
-                        if (*p=='\033') {
-                            esc=0;
-                            *buf=*p;
-                            buf++;
-                        }else
-                            if (isalpha(*p))
-                                esc=0;
-                    } else {
-                        if (*p=='\033') {
-                            esc=1;
-                        } else {
-                            *buf=*p;
-                            buf++;
-                        }
-                    }
-                }
-
-                *buf=0;
-                fputs( newbuf, fout );
-            } else
-                fputs( genbuf, fout );
-    }
-    fprintf(fout, ".\n");
-
-    fclose( fin );
-    pclose( fout );
-
-    if ( isuu == 1 )
-        system_delete(uname);
-    if ( isbig5 == 1 ) {
-        system_delete(cname);
-        system_delete(tname);
-    }
-    system_delete(hname);
-*/
-    return 0;
+    if (isuu)
+    	unlink(uname);
+    return (status==250);
 }
 
