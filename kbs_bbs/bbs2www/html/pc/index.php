@@ -278,15 +278,35 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		$result = mysql_query($query,$link);
 		while($rows = mysql_fetch_array($result))
 		{
-			echo "<li><a href=\"".htmlspecialchars(stripslashes($rows[url]))."\">".html_format($rows[title])."</a>";
-			if($rows[blogname]) echo "[".html_format($rows[blogname])."]";
-			echo "</li>";
+			echo "<li>";
+			if($rows[blogname]) echo "[".$rows[blogname]."]";
+			echo "<a href=\"".htmlspecialchars(stripslashes($rows[url]))."\">".html_format($rows[title])."</a>"
+				."\n(".time_format($rows[time]).")</li>";
 		}
 		mysql_free_result($result);
 ?>
 </ul>
 <?php
 	}
+	
+	function display_new_comments($link,$pc)
+	{
+?>
+<ul>
+<?php
+		$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0 AND comments.uid = 1 AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
+		$result = mysql_query($query,$link);
+		for($i = 0;$i < mysql_num_rows($result) ; $i++)
+		{
+			$rows = mysql_fetch_array($result);
+			echo "<li>[<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>]<a href=\"pcshowcom.php?cid=".$rows[cid]."\">".html_format($rows[subject])."</a>(".time_format($rows[created]).")</li>";
+		}
+		mysql_free_result($result);
+?>
+</ul>
+<?php		
+	}
+	
 	
 	function display_blog_smth($link,$pc,$sec,$nodes,$blogs,$pur)
 	{
@@ -333,6 +353,17 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					<td align=middle class=t14>
 					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
 					<?php display_newnodes_list($link,$pc,$nodes); ?>
+					</td></tr></table>
+					</td>
+				</tr>
+				<tr><td height=10> </td></tr>
+				<tr><td class=t17>
+				::最近收到的评论::
+				</td></tr>
+				<tr>
+					<td align=middle class=t14>
+					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
+					<?php display_new_comments($link,$pc); ?>
 					</td></tr></table>
 					</td>
 				</tr>
@@ -448,16 +479,28 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		display_nodes($link,$pc,$nodes,700);
 ?>
 <table cellpadding=10 cellspacing=0 width=700 border=0 class=t15>
-<tr><td align="center" class="t11">
+<tr>
+<td align="center" class="t14" width="50%" valign="top">
 <table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
-		<tr><td class="t2">
+		<tr>
+		<td class="t2">
+		.: 最近收到的评论 :. 
+		</td></tr>
+		<tr><td class="t8">
+<?php display_new_comments($link,$pc); ?>
+</td></tr></table>
+</td>
+<td align="center" class="t11" width="50%" valign="top">
+<table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
+		<tr>
+		<td class="t2">
 		.: 最近收到的引用通告 :. 
 		</td></tr>
 		<tr><td class="t8">
 <?php display_trackback_links($link,$pc); ?>
 </td></tr></table>
 </td></tr>
-<tr><td align="center" class="t11">
+<tr><td colspan="2" align="center" class="t11">
 <table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
 		<tr><td class="t2">
 		.: 友情链接 :. 
@@ -468,7 +511,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	<?php display_blog_out_rss($pc); ?>
 		</td></tr></table>
 </td></tr>
-<tr><td class="t3">
+<tr><td class="t3" colspan="2">
 	访问量 
 	<font class="f4">
 	<?php echo $pc["VISIT"]; ?>
