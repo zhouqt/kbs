@@ -105,6 +105,7 @@ static PHP_FUNCTION(bbs_valid_filename);
 static PHP_FUNCTION(bbs_can_send_mail);
 static PHP_FUNCTION(bbs_loadmaillist);
 static PHP_FUNCTION(bbs_changemaillist);
+static PHP_FUNCTION(bbs_checkwebmsg);
 static PHP_FUNCTION(bbs_getwebmsg);
 static PHP_FUNCTION(bbs_sendwebmsg);
 static PHP_FUNCTION(bbs_sethomefile);
@@ -252,6 +253,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_can_send_mail, NULL)
         PHP_FE(bbs_loadmaillist, NULL)
         PHP_FE(bbs_changemaillist, NULL)
+        PHP_FE(bbs_checkwebmsg, NULL)
         PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
         PHP_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
         PHP_FE(bbs_sethomefile, NULL)
@@ -4232,6 +4234,23 @@ static PHP_FUNCTION(bbs_changemaillist)
 	if( currentuinfo )
 		currentuinfo->mailcheck &= ~CHECK_MAIL;
     RETURN_LONG(-1);
+}
+
+/**
+ * check webmsg.
+ * prototype:
+ * bool bbs_checkwegmsg();
+ *
+ * @return TRUE if has any webmsg,
+ *       FALSE otherwise.
+ * @author flyriver
+ */
+static PHP_FUNCTION(bbs_checkwebmsg)
+{
+	if( currentuinfo==NULL || !(currentuinfo->mailcheck & CHECK_MSG))
+		RETURN_FALSE;
+
+    RETURN_TRUE;
 }
 
 /**
