@@ -106,14 +106,15 @@ if test "$PTHREAD_DIR" != "no"; then
     SAVE_LIBS=$LIBS
     LIBS="$LIBS -L$PTHREAD_DIR/lib"
     AC_CHECK_LIB([pthread], [pthread_create], [
-      PTHREAD_LIBS="-L$LIBESMTP_DIR/lib -lpthread"
-      LIBS="$LIBS $PTHREAD_LIBS"
+      PTHREAD_LIBS="-L$PTHREAD_DIR/lib -lpthread"
+      LIBS="$SAVE_LIBS $PTHREAD_LIBS"
     ],[
       LIBS=$SAVE_LIBS
     ])
   fi
 fi
 
+# Check libesmtp support.
 AC_ARG_WITH(libesmtp,
 [  --with-libesmtp[=DIR]
        Specify libesmtp library directory.],
@@ -124,20 +125,18 @@ if test "$LIBESMTP_DIR" != "no"; then
       LIBESMTP_INC=$LIBESMTP_DIR/include
   fi
  
-  if test -z "$LIBESMTP_INC"; then
-    AC_MSG_ERROR(Cannot find libesmtp library.)
+  if test "x$LIBESMTP_INC" != "x"; then
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS -L$LIBESMTP_DIR/lib"
+    AC_CHECK_LIB([esmtp], [smtp_create_session], [
+      AC_DEFINE(HAVE_LIBESMTP,1,[ ])
+      ADDINC($LIBESMTP_INC)
+      LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
+      LIBS="$SAVE_LIBS $LIBESMTP_LIBS"
+    ],[
+      LIBS=$SAVE_LIBS
+    ])
   fi
-
-  SAVE_LIBS=$LIBS
-  LIBS="$LIBS -L$LIBESMTP_DIR/lib"
-  AC_CHECK_LIB([esmtp], [smtp_create_session], [
-    AC_DEFINE(HAVE_LIBESMTP,1,[ ])
-  ],[
-    AC_MSG_ERROR(The libesmtp library required)])
-
-  LIBS=$SAVE_LIBS
-
-  LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
 else
   for i in /usr/local /usr ; do
     if test -f $i/include/libesmtp.h; then
@@ -146,25 +145,19 @@ else
     fi
   done
   
-  if test "$LIBESMTP_DIR" = "no"; then
-    AC_MSG_ERROR(Cannot find libesmtp library.)
+  if test "x$LIBESMTP_DIR" != "x"; then
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS -L$LIBESMTP_DIR/lib"
+    AC_CHECK_LIB([esmtp], [smtp_create_session], [
+      AC_DEFINE(HAVE_LIBESMTP,1,[ ])
+      ADDINC($LIBESMTP_INC)
+      LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
+      LIBS="$SAVE_LIBS $LIBESMTP_LIBS"
+    ],[
+      LIBS=$SAVE_LIBS
+    ])
   fi
-
-  SAVE_LIBS=$LIBS
-  LIBS="$LIBS -L$LIBESMTP_DIR/lib"
-  AC_CHECK_LIB([esmtp], [smtp_create_session], [
-    AC_DEFINE(HAVE_LIBESMTP,1,[ ])
-  ],[
-    AC_MSG_ERROR(The libesmtp library required)])
-
-  LIBS=$SAVE_LIBS
-
-  LIBESMTP_LIBS="-L$LIBESMTP_DIR/lib -lesmtp"
 fi
-ADDINC($LIBESMTP_INC)
-
-LIBS="$LIBS $LIBESMTP_LIBS"
-
 
 AH_TEMPLATE([USE_SSL],
 [Define to use openssl library])
