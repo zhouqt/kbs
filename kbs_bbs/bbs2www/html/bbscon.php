@@ -57,7 +57,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 	if ($articles[0]["ID"] != 0)
 	{
 ?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[0]["ID"]; ?>">上一篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
 <?php
 	}
 	else
@@ -69,7 +69,7 @@ function display_navigation_bar($brdarr, $articles, $num)
 	if ($articles[2]["ID"] != 0)
 	{
 ?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[2]["ID"]; ?>">下一篇</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
 <?php
 	}
 	else
@@ -184,6 +184,23 @@ function display_navigation_bar($brdarr, $articles, $num)
 				exit;
 			} else
 			{
+				// 检查上一篇或下一篇
+				@$ptr=$_GET["p"];
+				$brd_encode = urlencode($brdarr["NAME"]);
+				if ($ptr == 'p' && $articles[0]["ID"] != 0)
+				{
+					if ($currentuser["userid"] != "guest")
+						bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
+					header("Location: http://" . $_SERVER["HTTP_HOST"] . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[0]["ID"]);
+					exit;
+				}
+				elseif ($ptr == 'n' && $articles[2]["ID"] != 0)
+				{
+					if ($currentuser["userid"] != "guest")
+						bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
+					header("Location: http://" . $_SERVER["HTTP_HOST"] . "/bbscon.php?board=" . $brd_encode . "&id=" . $articles[2]["ID"]);
+					exit;
+				}
 				html_init("gb2312");
 ?>
 <body>
