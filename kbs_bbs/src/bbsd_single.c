@@ -17,6 +17,9 @@ int max_load = 79; /* 原值39 , modified by KCN,1999.09.07 */
 int heavy_load;
 int server_pid;
 
+/* COMMAN: for debugging use */
+static int no_fork = 0;
+
 char code[3];
 void
 cat(filename,msg)
@@ -215,15 +218,16 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
     cat(PID_FILE, buf);
 
     close(0);
+    /* COMMAN: do not fork in debuggind mode */
+  if (!no_fork) {
+       if (fork())
+          exit(0);
 
-    if (fork())
-        exit(0);
+      setsid();
 
-    setsid();
-
-    if (fork())
-        exit(0); 
-
+       if (fork())
+          exit(0); 
+   }
     sin.sin_family = AF_INET;
     sin.sin_addr.s_addr = htonl(INADDR_ANY);
 /*    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);*/
@@ -506,6 +510,8 @@ char *argv[];
     inetd = 0;
     if ((argc<=1) || !strcmp(argv[1],"-i") )  /*如果只有文件名或者第一个参数是“-i”*/
        inetd=1;                               /*则用inetd启动 */
+    if (!strcmp(argv[1],"-d")) no_fork = 1;
+                                             /* COMMAN: 如果有 -d 参数则不 fork */
     else {
        if (argc<=1) port = 23;
        else
@@ -539,13 +545,14 @@ char *argv[];
 /*                reaper();*/
                 continue;
             }
-
-            if (fork())
-            {
-                close(csock);
-                continue;
-            }
-	    
+            /* COMMAN :do not fork in debugging mode*/
+	   if (!no_fork) {	
+                   if (fork())
+                   {
+                     close(csock);
+                     continue;
+                   }
+	    }
 	    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */	
             getpeername(csock,(struct sockaddr*)&sin,(socklen_t*)&value);
             bbslog("0connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
