@@ -619,7 +619,7 @@ static PHP_FUNCTION(bbs_printansifile)
     int fd;
     struct stat st;
     const int outbuf_len = 4096;
-    buffered_output_t out;
+    buffered_output_t *out;
     char* attachlink;
     long attachlink_len;
 
@@ -661,24 +661,22 @@ static PHP_FUNCTION(bbs_printansifile)
     close(fd);
     if (ptr == NULL)
         RETURN_LONG(-1);
-	if ((out.buf = (char *)emalloc(outbuf_len)) == NULL)
+	if ((out = alloc_output(outbuf_len)) == NULL)
 	{
 		munmap(ptr, st.st_size);
         RETURN_LONG(2);
 	}
-	out.outp = out.buf;
-	out.buflen = outbuf_len;
-	out.output = buffered_output;
-	out.flush = flush_buffer;
+	override_default_output(out, buffered_output);
+	override_default_flush(out, flush_buffer);
 
     if (!sigsetjmp(bus_jump, 1)) 
 	{
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-		output_ansi_html(ptr, st.st_size, &out,attachlink);
+		output_ansi_html(ptr, st.st_size, out, attachlink);
     } 
     munmap(ptr, st.st_size);
-	efree(out.buf);
+	free_output(out);
     signal(SIGBUS, SIG_IGN);
     signal(SIGSEGV, SIG_IGN);
     RETURN_LONG(0);
