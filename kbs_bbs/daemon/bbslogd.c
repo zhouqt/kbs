@@ -36,8 +36,7 @@ struct taglogconfig {
 static struct taglogconfig logconfig[] = {
     {"usies", 100 * 1024, 0, NULL, -1},
     {"user.log", 100 * 1024, 0, NULL, 0},
-    {"boardusage.log", 100 * 1024, 0, NULL, 0},
-    {"error.log", 100 * 1024, 0, NULL, 0}
+    {"boardusage.log", 100 * 1024, 0, NULL, 0}
 };
 
 static void openbbslog()
