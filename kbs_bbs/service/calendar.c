@@ -131,10 +131,10 @@ int newfile(char * s)
 void encode_file(char * s)
 {
     char buf[1024*16];
-    char fn;
+    char fn[80];
     int o, i;
     FILE *fp1, *fp2;
-    sprintf(fn, "tmp/%d.cal", rand()%12345);
+    sprintf(fn, "tmp/%d.cal", rand());
     fp1 = fopen(s, "rb");
     fp2 = fopen(fn, "wb");
     while((o=fread(buf, 1, 1024*16, fp1))>0) {
