@@ -205,7 +205,7 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 	return FALSE;
 }
 
-function html_init($charset,$title="",$otherheader="")
+function html_init($charset,$title="",$otherheader="",$new_style=0)
 {
 	global $_COOKIE;
 	global $cachemode;
@@ -229,22 +229,41 @@ function html_init($charset,$title="",$otherheader="")
 <title><?php echo $title; ?></title>
 <?php
         }
-	switch ($css_style)
-	{
-	case 0:
+	if($new_style==9 ){
+?>
+<link rel="stylesheet" type="text/css" href="/bbsleft.css"/>
+<?php		
+		}
+	elseif($new_style!=0 && $css_style==1){
+?>
+<link rel="stylesheet" type="text/css" href="/default.css"/>
+<?php			
+		}
+	elseif($new_style!=0 && $css_style==0){
+?>
+<link rel="stylesheet" type="text/css" href="/default-bf.css"/>
+<?php
+			}
+	else{
+		switch ($css_style)
+		{
+		case 0:
 ?>
 <link rel="stylesheet" type="text/css" href="/bbs-bf.css"/>
 <?php
-		break;
-	case 1:
-	default:
+			break;
+		case 1:
+		default:
 ?>
 <link rel="stylesheet" type="text/css" href="/bbs.css"/>
 <?php
-	}
+		}
 ?>
 <link rel="stylesheet" type="text/css" href="/ansi.css"/>
-<?php echo($otherheader); ?>
+<?php	
+	}
+	echo($otherheader); 
+?>
 </head>
 <?php
 	if($_SERVER['PHP_SELF']!="/bbsgetmsg.php"){

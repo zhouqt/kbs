@@ -49,22 +49,22 @@ function get_mimetype($name)
 	return "application/octet-stream";
 }
 
-function display_navigation_bar_in($brdarr, $articles, $num, $brdnum)
+function display_navigation_bar_in($brdarr, $articles, $num, $brdnum )
 {
 	global $currentuser;
 
 	$brd_encode = urlencode($brdarr["NAME"]);
 	$PAGE_SIZE = 20;
 ?>
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="b7">
 <tr><td>
-[<a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $articles[1]["ID"];?>">回文章</a>]
-[<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=<?php if(strncmp($articles[1]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[1]["TITLE"]); ?>">回信给作者</a>]
+<a href="/bbspst.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $articles[1]["ID"];?>"><img src="images/reply.gif" border="0" alt="回复帖子" align="absmiddle"></a>
+<a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" border="0" alt="发表话题" align="absmiddle"></a>
 </td><td align="right">
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tp">同主题上篇</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tn">同主题下篇</a>]
+[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=p">上一篇</a>]
+[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=n">下一篇</a>]
+[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tp">同主题上篇</a>]
+[<a class="b7" href="<?php echo $_SERVER["PHP_SELF"]; ?>?bid=<?php echo $brdnum; ?>&id=<?php echo $articles[1]["ID"]; ?>&p=tn">同主题下篇</a>]
 </td></tr></table>
 <?php
 }
@@ -84,9 +84,10 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 <?php
 	}
 ?>
+[<a href="/bbspstmail.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>&userid=<?php echo $articles[1]["OWNER"]; ?>&title=<?php if(strncmp($articles[1]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[1]["TITLE"]); ?>">回信给作者</a>]
 [<a href="/cgi-bin/bbs/bbsedit?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">修改文章</a>]
 [<a onclick="return confirm('你真的要删除本文吗?')" href="bbsdel.php?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">删除文章</a>]
-[<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"];?>">同主题阅读</a>]
+[<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $articles[1]["GROUPID"]; ?>">同主题阅读</a>]
 [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>&page=<?php echo intval(($num + $PAGE_SIZE - 1) / $PAGE_SIZE); ?>">返回版面</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <?php
@@ -95,16 +96,16 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 	if( isset( $_GET["bid"] ) ){
 		$brdnum = $_GET["bid"] ;
 		if( $brdnum == 0 ){
-			html_init("gb2312");
+			html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区!");
 		}
 		$board = bbs_getbname($brdnum);
 		if( !$board ){
-			html_init("gb2312");
+			html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 		}
 		if( $brdnum != bbs_getboard($board, $brdarr) ){
-			html_init("gb2312");
+			html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 		}
 	}
@@ -112,7 +113,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 		$board = $_GET["board"];
 		$brdnum = bbs_getboard($board, $brdarr);
 		if ($brdnum == 0) {
-			html_init("gb2312");
+			html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 		}
 	}
@@ -120,12 +121,12 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 		$board = $_SERVER['argv'][1];
 		$brdnum = bbs_getboard($board, $brdarr);
 		if ($brdnum == 0) {
-			html_init("gb2312");
+			html_init("gb2312","","",1);
 			html_error_quit("错误的讨论区");
 		}
 	}
 	else {
-		html_init("gb2312");
+		html_init("gb2312","","",1);
 		html_error_quit("错误的讨论区");
 	}
                $isnormalboard=bbs_normalboard($board);
@@ -139,7 +140,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 		$usernum = $currentuser["index"];
 
 	if (!$isnormalboard && bbs_checkreadperm($usernum, $brdnum) == 0) {
-		html_init("gb2312");
+		html_init("gb2312","","",1);
 		html_error_quit("错误的讨论区");
 	}
 	if (isset($_GET["id"]))
@@ -147,7 +148,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 	elseif (isset($_SERVER['argv'][2]))
 		$id = $_SERVER['argv'][2];
 	else {
-		html_init("gb2312");
+		html_init("gb2312","","",1);
 		html_error_quit("错误的文章号");
 	}
 	settype($id, "integer");
@@ -188,7 +189,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 		$ftype = $dir_modes["NORMAL"];
 	$total = bbs_countarticles($brdnum, $ftype);
 	if ($total <= 0) {
-		html_init("gb2312");
+		html_init("gb2312","","",1);
 		html_error_quit("本讨论区目前没有文章,$brdnum,$board,$ftype,$total".$brdarr["NAME"]);
 	}
 	$articles = array ();
@@ -196,7 +197,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 			$ftype, $articles);
 	if ($num == 0)
 	{
-		html_init("gb2312");
+		html_init("gb2312","","",1);
 		html_error_quit("错误的文章号.");
 	}
 	else
@@ -244,38 +245,52 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 				header("Location: " ."/bbscon.php?bid=" . $brdnum . "&id=" . $articles[2]["ID"]);
 				exit;
 			}
-			html_init("gb2312");
+			html_init("gb2312","","",1);
 ?>
 <body>
-<script language="javascript">
+<table width="100%" border="0" cellspacing="0" cellpadding="3">
+<tr><td class="b2">
+    <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
+    -
+    <?php
+    	$sec_index = get_secname_index($brdarr["SECNUM"]);
+	if ($sec_index >= 0)
+	{
+    ?>
+	<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><?php echo $section_names[$sec_index][0]; ?></a>
+    <?php
+	}
+    ?>
+    -
+    <?php echo $brdarr["NAME"]; ?>版
+</td></tr>
+<tr><td align="center" class="b4"><?php echo $brdarr["NAME"]; ?> 版</td></tr>
+<tr><td class="b1">
+<table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
+<tr><td class="t2">
 <?php
-			$query_str = urlencode($_SERVER["PHP_SELF"] . "?" . $_SERVER["QUERY_STRING"]);
-			$home_url = "/guest-frames.html?mainurl=" . $query_str;
+			display_navigation_bar_in($brdarr, $articles, $num, $brdnum );
 ?>
-var strHomeURL = '<?php echo $home_url; ?>';
-var strBBSName = '<?php echo BBS_FULL_NAME; ?>';
-var strDesc = '<?php echo htmlspecialchars($brdarr["DESC"]); ?>';
-</script>
-<script language="javascript" src="bbscon.js"></script>
-<?php
-			display_navigation_bar_in($brdarr, $articles, $num, $brdnum);
-?>
-<hr class="default" />
-<table width="610" border="0">
-<tr><td>
+</td></tr>
+<tr><td class="t5">
 <?php
 			echo bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
 ?>
-</td></tr></table>
-<hr class="default" />
+</td></tr>
+</td></tr>
+<tr><td class="t2">
 <?php
-			display_navigation_bar_in($brdarr, $articles, $num, $brdnum);
+			display_navigation_bar_in($brdarr, $articles, $num, $brdnum );
 ?>
-<p align="center">
+</td></tr>
+</table></td></tr>
+<tr><td height="20" class="b1"> </td></tr>
+<tr><td align="center" class="b1">
 <?php
 			display_navigation_bar_out($brdarr, $articles, $num, $brdnum);
 ?>
-</p>
+</td></tr>
+</table>
 <?php
 		}
 	}

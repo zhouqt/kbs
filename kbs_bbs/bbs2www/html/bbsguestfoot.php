@@ -4,7 +4,7 @@ $setboard=0;
     if ($loginok != 1)
         html_nologin();
     else {
-        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"3000; url=/bbsguestfoot.php\">");
+        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"3000; url=/bbsguestfoot.php\">",1);
 ?>
 <script language="JavaScript">
 <!--
@@ -37,14 +37,12 @@ function Time(){
  setTimeout("Time()",58000)
 }
 //JavaScript End-->
-</script><style type="text/css">
-A {color: #0000FF}
-</style>
-<body onload="Init()">
-<form name="clock">时间[<input class="readonly" TYPE="text" NAME="myclock" size="18">] 在线[<a href="/cgi-bin/bbs/bbsusr" target="f3"><?php 
+</script>
+<body onload="Init()" class="b2">
+<form name="clock">时间[<input class="b8" TYPE="text" NAME="myclock" size="18">] 在线[<a href="/cgi-bin/bbs/bbsusr" target="f3" class="b8"><?php 
 echo bbs_getonlinenumber(); ?></a>] 帐号[<a href=<?php
-echo "\"/bbsqry.php?userid=" . $currentuser["userid"] . "\""; ?> target="f3"><?php
-echo $currentuser["userid"]; ?></a>] 停留[<input class="readonly" TYPE="text" NAME="stay" size="10">]
+echo "\"/bbsqry.php?userid=" . $currentuser["userid"] . "\""; ?> target="f3" class="b8"><?php
+echo $currentuser["userid"]; ?></a>] 停留[<input class="b8" TYPE="text" NAME="stay" size="10">]
 </form>
 <?php
         html_normal_quit();

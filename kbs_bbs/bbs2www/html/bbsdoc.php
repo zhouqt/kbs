@@ -4,7 +4,7 @@
 	 * $Id$
 	 */
 	require("funcs.php");
-
+	
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$page,$order=FALSE)
 	{
 		global $section_names;
@@ -19,20 +19,20 @@
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
     	?>
-<input class="b1" type="button" value="发表文章" onclick="window.location.href='bbspst.php?board=<?php echo $brd_encode; ?>'">
+<a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" border="0" alt="发表话题"></a>
     	<?php
     		}
     	?>
 </td>
-<td class="b1" align="right">
+<td align="right">
  	<?php
 		      if($order)
 		      {
 		   	if ($start <= $total - 20)
 			{
 		    ?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">第一页</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">上一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">第一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">上一页</a>]
 		    <?php
 			}
 			else
@@ -45,8 +45,8 @@
 			if ($page > 1)
 			{
 		?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">下一页</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">最后一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">下一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">最后一页</a>]
 		    <?php
 			}
 			else
@@ -62,8 +62,8 @@
 		     	if ($page > 1)
 			{
 		?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">第一页</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">第一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>]
 		    <?php
 			}
 			else
@@ -76,8 +76,8 @@
 			if ($start <= $total - 20)
 			{
 		    ?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">最后一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>]
+[<a class="b1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">最后一页</a>]
 		    <?php
 			}
 			else
@@ -89,19 +89,20 @@
 			}
 		    }
 	?>
-<input class="b1" type="submit" value="跳转到"> 第 <input class="b1" type="text" name="start" size="3"  onmouseover="this.focus()" onfocus="this.select()"> 篇 
+<input type="submit" class="b5" value="跳转到"/> 第 <input type="text" name="start" size="3"  onmouseover=this.focus() onfocus=this.select() class="b5"> 篇 
 </td></tr></form></table>
 	<?php
 	}
-	
+
+
 	function display_articles($brdarr,$articles,$start,$order=FALSE)
 	{
 		global $dir_modes;
 		global $default_dir_mode;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<table width="95%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tr align="center" class="t2"><td width="50" class="t2">序号</td><td width="40" class="t2">标记</td><td width="120" class="t2">作者</td><td width="80" class="t2">日期</td><td class="t2">标题</td></tr>
+<table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
+<tr><td class="t2" width="50">序号</td><td class="t2" width="40">标记</td><td class="t2" width="120">作者</td><td class="t2" width="80">日期</td><td class="t2">标题</td></tr>
 <?php
 		$ding_cnt = 0;
 		foreach ($articles as $article)
@@ -127,35 +128,23 @@
 <?php
 			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
 ?>
-<td colspan="2" align="center" class="t2"><img src="images/istop.gif" alt="提示" align="absmiddle"> <strong>提示</strong></td>
+<td colspan="2" align="center" class="t6"><img src="images/istop.gif" alt="提示" align="absmiddle"> 提示</td>
 <?php
 
 			} else {
 ?>
-<td align="center" class="t2"><?php echo $start+$i; ?></td>
-<td align="center" class="t2">&nbsp;
+<td class="t3"><?php echo $start+$i; ?></td>
+<td class="t4">&nbsp;
 <?php
 			if ($flags[1] == 'y')
 			{
 				if ($flags[0] == ' ')
-				{
-?>
-<font class="f208">&nbsp;</font>
-<?php
-				}
+					echo "&nbsp;";
 				else
-				{
-?>
-<font class="f002"><?php echo $flags[0]; ?></font>
-<?php
-				}
+					echo $flags[0];
 			}
 			elseif ($flags[0] == 'N' || $flags[0] == '*')
-			{
-?>
-<font class="f008"><?php echo $flags[0]; ?></font>
-<?php
-			}
+				echo $flags[0];
 			else
 				echo $flags[0];
 			echo $flags[3];
@@ -164,9 +153,9 @@
 <?php
 	}//置顶
 ?>
-<td align="center" class="t2"><a href="/bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
-<td align="center" class="t2"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td class="t2">&nbsp;
+<td class="t3"><a class="ts1" href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td class="t4"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
+<td class="t5">&nbsp;
 <?php
 	switch ($default_dir_mode)
 	{
@@ -174,7 +163,7 @@
 		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1))
 		{
 ?>
-<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=9"><?php echo htmlspecialchars($title); ?>
+<a class="ts2" href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?>&ftype=9"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -182,7 +171,7 @@
 		else
 		{
 ?>
-<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
+<a class="ts2" href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $article["GROUPID"]; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -191,7 +180,7 @@
 	case $dir_modes["NORMAL"]:
 	default:
 ?>
-<a href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=9"; ?>"><?php echo htmlspecialchars($title); ?>
+<a class="ts2" href="/bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $article["ID"]; ?><?php if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) echo "&ftype=9"; ?>"><?php echo htmlspecialchars($title); ?>
 
 </a>
 <?php
@@ -215,7 +204,7 @@
 	else
 	{
 		$board_list_error=FALSE;
-		html_init("gb2312");
+		html_init("gb2312","","",1);
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
 		else{
@@ -314,7 +303,7 @@
 			{
 				foreach ($bms as $bm)
 				{
-					$bm_url .= sprintf("<a href=\"/bbsqry.php?userid=%s\">%s</a> ", $bm, $bm);
+					$bm_url .= sprintf("<a class=\"b3\" href=\"/cgi-bin/bbs/bbsqry?userid=%s\">%s</a> ", $bm, $bm);
 				}
 				$bm_url = trim($bm_url);
 			}
@@ -322,47 +311,48 @@
 		if (!isset($order_articles))
 			$order_articles = FALSE;
 			
+
 ?>
 <body>
 <?php
 	if($board_list_error==FALSE)
 	{
-		$order=$order_articles;
+		
 		$brd_encode = urlencode($brdarr["NAME"]);
 		$ann_path = bbs_getannpath($brdarr["NAME"]);
 ?>
 <a name="listtop"></a>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
-    <td colspan="2" class="b1">
-	    <a href="bbssec.php"><?php echo BBS_FULL_NAME; ?></a>
+    <td colspan="2" class="b2">
+	    <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
 	    -
 	    <?php
 	    	$sec_index = get_secname_index($brdarr["SECNUM"]);
 		if ($sec_index >= 0)
 		{
 	    ?>
-		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo $section_names[$sec_index][0]; ?></a>
+		<a href="/bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><?php echo $section_names[$sec_index][0]; ?></a>
 	    <?php
 		}
 	    ?>
 	    -
-	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>">进版画面</a>|<a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>">预定本版</a>)
+	    <?php echo $brdarr["NAME"]; ?>版(<a href="bbsnot.php?board=<?php echo $brd_encode; ?>" class="b2">进版画面</a>|<a href="/cgi-bin/bbs/bbsbrdadd?board=<?php echo $brdarr["NAME"]; ?>" class="b2">预定本版</a>)
     </td>
   </tr>
   <tr> 
-    <td colspan="2" align="center" height="80"><font size=6><strong><?php echo $brdarr["NAME"]."(".htmlspecialchars($brdarr["DESC"]).")"; ?>版</strong></font></td>
+    <td colspan="2" align="center" class="b4"><?php echo $brdarr["NAME"]."(".$brdarr["DESC"].")"; ?> 版</td>
   </tr>
-  <tr><td colspan="2" class="b1">
+  <tr><td class="b1">
   <img src="images/bm.gif" alt="版主" align="absmiddle">版主 <?php echo $bm_url; ?>
   </td></tr>
   <tr> 
     <td class="b1">
-    <img src="images/online.gif" alt="本版在线人数" align="absmiddle">在线 <font color=#CC0000><strong><?php echo $brdarr["CURRENTUSERS"]+1; ?></strong></font> 人
-    <img src="images/postno.gif" alt="本版文章数" align="absmiddle">文章 <font color=#CC0000><strong><?php echo $total; ?></strong></font> 篇
+    <img src="images/online.gif" alt="本版在线人数" align="absmiddle">在线 <font class="b3"><?php echo $brdarr["CURRENTUSERS"]+1; ?></font> 人
+    <img src="images/postno.gif" alt="本版文章数" align="absmiddle">文章 <font class="b3"><?php echo $total; ?></font> 篇
     </td>
     <td align="right" class="b1">
-	    <img src="images/gmode.gif" align="absmiddle" alt="文摘区"><a href="bbsgdoc.php?board=<?php echo $brd_encode; ?>">文摘区</a> 
+	    <img src="images/gmode.gif" align="absmiddle" alt="文摘区"><a class="b1" href="bbsgdoc.php?board=<?php echo $brd_encode; ?>">文摘区</a> 
 	    <?php
   	    	if ($ann_path != FALSE)
 		{
@@ -370,45 +360,48 @@
 			$ann_path=substr($ann_path,9);
 	    ?>
 	    | 
-	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
+  	    <img src="images/soul.gif" align="absmiddle" alt="精华区"><a class="b1" href="/cgi-bin/bbs/bbs0an?path=<?php echo urlencode($ann_path); ?>">精华区</a>
 	    <?php
 		}
 	    ?>
 	    | 
-	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a href="/cgi-bin/bbs/bbsbfind?board=<?php echo $brd_encode; ?>">版内查询</a>
+  	    <img src="images/search.gif" align="absmiddle" alt="版内查询"><a class="b1" href="/cgi-bin/bbs/bbsbfind?board=<?php echo $brd_encode; ?>">版内查询</a>
 	    <?php
     		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
     	    ?>
 	    | 
-	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>">本版投票</a>
+  	    <img src="images/vote.gif" align="absmiddle" alt="本版投票"><a class="b1" href="/bbsshowvote.php?board=<?php echo $brd_encode; ?>">本版投票</a>
 	    | 
-	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文模板</a>
+  	    <img src="images/model.gif" align="absmiddle" alt="发文模板"><a class="b1" href="/bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文摸板</a>
     	    <?php
     		}
     	    ?>	
     </td>
   </tr>
+  <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
   </tr>
-  <tr><td colspan="2"><hr class="default"/></td></tr>
-  <tr><td colspan="2" align="right">
+  <tr><td colspan="2" align="right" class="b1">
   <?php
-  	display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);
+  	display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
   ?>
   </td></tr>
   <tr> 
     <td colspan="2" align="center">
     	<?php
-		display_articles($brdarr, $articles, $start, $order_articles);
+		display_articles($brdarr, $articles, $start, $order_articles );
 	?>	
     </td>
   </tr>
-  <tr><td colspan="2" align="right">
+  <tr><td colspan="2" align="right" class="b1">
   <?php
   	display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);
   ?>
   </td></tr>
-  <tr><td colspan="2"><hr class="default"/></td></tr>
+  <tr> 
+    <td colspan="2" height="9" background="images/dashed.gif"> </td>
+  </tr>
   <tr> 
     <td colspan="2" align="center" class="b1">
     	[<a href="#listtop">返回顶部</a>]
