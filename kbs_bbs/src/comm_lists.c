@@ -106,6 +106,7 @@ int inn_reload();               /* czz 2002.01.15 */
 int inn_stop();                 /* czz 2002.01.15 */
 int clear_all_board_read_flag();        /* kcn 2002.07.18 */
 int friend_wall();
+int define_key();
 
 int exec_mbem(char *s);
 
@@ -220,6 +221,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"InnReload", inn_reload},  /* czz 2002.01.15 */
     {"InnStop", inn_stop},      /* czz 2002.01.15 */
     {"SearchIP",search_ip},
+    {"DefineKeys",define_key},
     {NULL, NULL},
 };
 
