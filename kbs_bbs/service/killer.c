@@ -400,6 +400,7 @@ void start_game()
     {
         inrooms[myroom].peoples[i].flag &= ~PEOPLE_KILLER;
         inrooms[myroom].peoples[i].flag &= ~PEOPLE_POLICE;
+        inrooms[myroom].peoples[i].vote = 0;
     }
     totalk=inrooms[myroom].killernum;
     totalc=inrooms[myroom].policenum;
