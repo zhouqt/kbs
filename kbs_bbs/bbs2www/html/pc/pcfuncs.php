@@ -73,9 +73,6 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$lo
 <link rel="stylesheet" type="text/css" href="default.css"/>
 <?php
 	}
-?>
-<link rel="stylesheet" type="text/css" href="/ansi.css"/>
-<?php
 	if($loadhtmlarea)
 	{
 ?>

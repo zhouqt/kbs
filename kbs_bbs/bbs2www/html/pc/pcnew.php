@@ -38,7 +38,7 @@
 	</tr>
 	<?php
 		foreach($newBlogs[useretems] as $node)
-			echo "<tr>\n<td class=t4><a href='/bbsqry.php?useid=".$node[pc][USER]."'>".$node[pc][USER]."</a></td>\n".
+			echo "<tr>\n<td class=t4><a href='/bbsqry.php?userid=".$node[pc][USER]."'>".$node[pc][USER]."</a></td>\n".
 				"<td class=t3><span title='".$node[pc][DESC]."'><a href='index.php?id=".$node[pc][USER]."'>".$node[pc][NAME]."</a>&nbsp;</span></td>\n".
 				"<td class=t4>".$node[pc][THEM]."&nbsp;</td>\n".
 				"<td class=t3>".$node[pc][VISIT]."</td>\n".
