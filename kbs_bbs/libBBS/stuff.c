@@ -941,13 +941,13 @@ int safe_mmapfile(char* filename,int openflag,int prot,int flag,void** ret_ptr,i
 		close(fd);
 		return 0;
 	}
+	*ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
 	if (!ret_fd)
 		close(fd);
 	else {
 		*ret_fd=fd;
 		flock(fd,LOCK_EX);
 	}
-	*ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
 	if (*ret_ptr == NULL)
 		return 0;
     if (!sigsetjmp(bus_jump,1)) {
