@@ -584,6 +584,8 @@ outc(unsigned char c)
 	cur_col = reg_col;	/* store cur_col back */
 }
 
+int savey=-1, savex=-1;
+
 void
 outns(str, n)
 const char *str;
@@ -667,6 +669,24 @@ int n;
                                     break;
                                 }
                              }
+                      }
+                      if(*str == ''&&*(str+1)=='['&&*(str+2)=='s') {
+                        str+=3;
+                        good_getyx(&savey, &savex);
+                        continue;
+                      }
+                      else if(*str == ''&&*(str+1)=='['&&*(str+2)=='u') {
+                        str+=3;
+                        if(savey!=-1&&savex!=-1) {
+                        	if (slp && (begincol != reg_col)) {
+                        		if (slp->len < reg_col)
+                        			slp->len = reg_col;
+                        		DO_MODIFY;
+                        	}
+                            good_move(savey,savex);
+                            break;
+                        }
+                        continue;
                       }
               
 			if (*str == '\n' || *str == '\r') {
