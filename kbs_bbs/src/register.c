@@ -125,7 +125,7 @@ void new_register()
         setpasswd(passbuf, &newuser);
         break;
     }
-    newuser.userlevel = PERM_BASIC|PERM_DENYMAIL|PERM_DENYRELAX;
+    newuser.userlevel = PERM_BASIC;
     newuser.userdefine = -1;
 /*   newuser.userdefine&=~DEF_MAILMSG;
     newuser.userdefine&=~DEF_EDITMSG; */
