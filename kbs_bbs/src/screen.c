@@ -642,6 +642,8 @@ int n;
                                         good_move(y,x);
                                     }
                                     str+=i+1;
+                                    DO_MODIFY;
+                                    DO_CRLF;
                                     break;
                                 }
                              }
