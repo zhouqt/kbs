@@ -39,7 +39,7 @@ struct pattern_image {
         unsigned int HASH[MAXHASH];
 	unsigned char buf[MAXPATFILE + BLOCKSIZE];
 	unsigned char pat_spool[MAXPATFILE + 2 * max_num + MAXPAT];
-	unsigned char *patt[max_num];
+	unsigned long patt[max_num]; /*用于指向pat_spool的偏移*/
 	unsigned char pat_len[max_num];
 	struct pat_list hashtable[max_num];
 };
@@ -92,7 +92,7 @@ int prepf(int fp,struct pattern_image** ppatt_img)
     i = 0;
     p = 1;
     while (i < length) {
-        patt_img->patt[p] = pat_ptr;
+        patt_img->patt[p] = pat_ptr-patt_img->pat_spool;
         if (WORDBOUND)
             *pat_ptr++ = W_DELIM;
         if (WHOLELINE)
@@ -131,7 +131,7 @@ int prepf(int fp,struct pattern_image** ppatt_img)
     num_pat = p - 1;
     patt_img->p_size = MAXPAT;
     for (i = 1; i <= num_pat; i++) {
-        p = strlen(patt_img->patt[i]);
+        p = strlen(patt_img->pat_spool+patt_img->patt[i]);
         patt_img->pat_len[i] = p;
         if (p != 0 && p < patt_img->p_size)
             patt_img->p_size = p;
@@ -153,7 +153,7 @@ int prepf(int fp,struct pattern_image** ppatt_img)
         patt_img->HASH[i] = 0;
     }
     for (i = 1; i <= num_pat; i++)
-        f_prep(i, patt_img->patt[i],patt_img);
+        f_prep(i, patt_img->pat_spool+patt_img->patt[i],patt_img);
 }
 
 int mgrep_str(char *text, int num,struct pattern_image* patt_img)
@@ -315,7 +315,7 @@ struct pattern_image* patt_img;
                     p = &patt_img->hashtable[p->next-1];
                 qx = text - m1;
                 j = 0;
-                while (patt_img->tr[patt_img->patt[pat_index][j]] == patt_img->tr[*(qx++)])
+                while (patt_img->tr[patt_img->pat_spool+patt_img->patt[pat_index]+j] == patt_img->tr[*(qx++)])
                     j++;
                 if (j > m1) {
                     if (patt_img->pat_len[pat_index] <= j) {
@@ -404,7 +404,7 @@ int m_short(unsigned char* text,int start,int end,struct pattern_image* patt_img
                 p = &patt_img->hashtable[p->next-1];
             qx = text;
             j = 0;
-            while (patt_img->tr[patt_img->patt[pat_index][j]] == patt_img->tr[*(qx++)])
+            while (patt_img->tr[patt_img->pat_spool+patt_img->patt[pat_index]+j] == patt_img->tr[*(qx++)])
                 j++;
             if (patt_img->pat_len[pat_index] <= j) {
                 if (text >= textend)
