@@ -74,7 +74,7 @@ funcs.jsp, 编辑这个 funcs.jsp 文件, 把 dl("../libexec/bbs/libphpbbslib.so")
 看看 $(BBSHOME)/ 及其子目录的权限是否正确, bin/ 和 lib/ 子目录及其文件
 的属主如果是 root 也没有关系. 进入 bin/ 目录, 运行
                 ./miscd daemon
-                ./bbsd port
+                ./bbsd -p port
                 ./newpop3d
                 ./webmsgd
 然后就可以用 telnet 访问 BBS 系统了. 再启动 apache 就可以从 web 端访问 BBS

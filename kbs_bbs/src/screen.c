@@ -280,7 +280,8 @@ void refresh()
         }
         bp[j].oldlen = bp[j].len;
     }
-    rel_move(tc_col, tc_line, cur_col, cur_ln);
+    good_getyx(&i,&j);
+    rel_move(tc_col, tc_line, j, i);
     oflush();
 }
 
@@ -310,7 +311,7 @@ void good_move(int y, int x)
         } else if (j >= x) {
             cur_col = i /*+c_shift(y,x) */ ;
             break;
-        }
+        } else
         if (slp->data[i] == KEY_ESC)
             inansi = 1;
         else
@@ -325,6 +326,32 @@ void getyx(int *y, int *x)
 {
     *y = cur_ln;
     *x = cur_col /*-c_shift(y,x)*/ ;
+}
+
+void good_getyx(int *y,int *x)
+{
+    register struct screenline *slp;
+    register int ln;
+    int i, j = 0;
+    int inansi = 0;
+
+    *y = cur_ln;
+    ln = cur_ln + roll;
+    while (ln >= scr_lns)
+        ln -= scr_lns;
+    slp = &big_picture[ln];
+
+    for (i = 0; i < cur_col; i++) {
+        if (inansi) {
+            if ((slp->data[i] == KEY_ESC) || (isalpha(slp->data[i])))
+                inansi = 0;
+        } else if (slp->data[i] == KEY_ESC)
+            inansi=1;
+        else
+            j++;
+    }
+
+    *x =  j + cur_col-i;
 }
 
 void clear()

@@ -2965,16 +2965,12 @@ int Goodbye()
     int left=(80-36)/2;
     int top=(scr_lns-11)/2;
     struct _select_item level_conf[]={
-        { left+23,top+2,-1,SIT_SELECT,(void*)""},
-        { left+23,top+3,-1,SIT_SELECT,(void*)""},
-        { left+23,top+4,-1,SIT_SELECT,(void*)""},
-        { left+23,top+5,-1,SIT_SELECT,(void*)""},
+        { left+7,top+2,-1,SIT_SELECT,(void*)""},
+        { left+7,top+3,-1,SIT_SELECT,(void*)""},
+        { left+7,top+4,-1,SIT_SELECT,(void*)""},
+        { left+7,top+5,-1,SIT_SELECT,(void*)""},
         { -1,-1,-1,0 ,NULL}
     };
-    if (!iscolor) {
-	for (i=0;i<4;i++)
-		level_conf[i].x=left+7;
-    }
 
 /*---	显示备忘录的关掉该死的活动看板	2001-07-01	---*/
     modify_user_mode(READING);

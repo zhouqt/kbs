@@ -14,6 +14,8 @@ extern unsigned char scr_cols,scr_lns;
 extern int iscolor;
 void clear_whole_line(int i);
 void move(int y, int x);
+void good_move(int y, int x);
+
 void clrtobot();
 void prints(char *fmt, ...);
 int pressreturn();
@@ -31,6 +33,7 @@ void bell();
 void outc(unsigned char c);
 void outns(const char *str, int n);
 void getyx(int *y, int *x);
+void good_getyx(int *y, int *x);
 void outs(register const char *str);
 void printdash(char *mesg);
 void scroll();
