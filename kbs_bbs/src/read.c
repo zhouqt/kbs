@@ -532,7 +532,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             move(3, 0);
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) {
 		lastfile[0]=0;
-            	set_alarm(0,300*1000,NULL,NULL);
+#ifdef NINE_BUILD
+            	set_alarm(0,1,NULL,NULL);
+#else
+                set_alarm(0,300*1000,NULL,NULL);
+#endif
 	    }
             draw_entry(doentry, locmem, entries, ssize, pnt);
             PUTCURS(locmem);
@@ -542,7 +546,11 @@ void i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, st
             RMVCURS(locmem);
             PUTCURS(locmem);
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) /*added by bad 2002.9.2*/
-            	set_alarm(0,300*1000,NULL,NULL);
+#ifdef NINE_BUILD
+            	set_alarm(0,1,NULL,NULL);
+#else
+                set_alarm(0,300*1000,NULL,NULL);
+#endif
             break;
         }
         mode = DONOTHING;
