@@ -836,6 +836,8 @@ int searchtrace()
 		return -1;
 	}
 
+	fprintf(fp,"%s  最近的发文记录\n",lookupuser->userid);
+
 	res = mysql_store_result(&s);
 	while(1){
 		row = mysql_fetch_row(res);
