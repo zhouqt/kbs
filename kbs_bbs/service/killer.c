@@ -29,7 +29,7 @@ int add_room(struct room_struct * r)
 
 int del_room(struct room_struct * r)
 {
-    int i;
+    int i, j;
     for(i=0;i<*roomst;i++)
     if(!strcmp(rooms[i].name, r->name)) {
         (*roomst)--;
@@ -72,9 +72,9 @@ struct room_struct * find_room(char * s)
 {
     int i;
     struct room_struct * r2;
-    for(i=0;i<room_count;i++) {
+    for(i=0;i<room_count();i++) {
         r2 = room_get(i);
-        if(!strcmp(r2.name, s)) {
+        if(!strcmp(r2->name, s)) {
             return r2;
         }
     }
