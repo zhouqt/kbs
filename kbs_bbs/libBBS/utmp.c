@@ -358,6 +358,7 @@ getnewutmpent2(struct user_info *up)
 				    i=utmphead->list_next[i-1];
 				    count++;
 				    if (count>USHM_SIZE) {
+					utmphead->listhead=0;
 					bbslog( "3system", "UTMP:maybe loop rebuild..!");
 					apply_ulist(rebuild_list,NULL);
 					utmp_setreadonly(1);
@@ -402,6 +403,7 @@ static int rebuild_list(struct user_info* up,char* arg,int p)
 {
     int pos=p-1;
     /* add to sorted list  */
+    if ((up->userid[0]==0)||(!up->active)) return COUNT;
 
 	if (!utmphead->listhead) { /* init the list head  */
 		utmphead->list_prev[pos]=pos+1;
@@ -494,6 +496,7 @@ int apply_ulist_addr( APPLY_UTMP_FUNC fptr,char* arg) /* apply func on user list
 				num++;
 		i=utmphead->list_next[i-1];
 		if (num>=USHM_SIZE) {
+			utmphead->listhead=0;
 		        bbslog( "3system", "UTMP:maybe loop rebuild!!");
 			apply_ulist(rebuild_list,NULL);
 

@@ -23,12 +23,13 @@ SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' -DINVISIBLE
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 CFLAGS += -I.. -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"$(BBSSITE).h"' 
 
-BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline showBM idx0Ann lazybm
+BINFILE= poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline showBM idx0Ann \
+	lazybm fixdir
 
 .SUFFIXES: .o .c .ln
 
-.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -DBBSMAIN -c $*.c
-.cpp.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -DBBSMAIN -c $*.c
+.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -c $*.c
+.cpp.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -c $*.c
 .c.ln:  ;   lint -abhi $*.c
 
 
