@@ -233,7 +233,7 @@ void draw_main()
         }
         prints("ÔÂ  Àú");
         setfcolor(RED, 1);
-        strcpy(buf, emonth[month]);
+        strcpy(buf, emonths[month]);
         move(1, 40-strlen(buf));
         prints(buf);
         move(3, 4);
