@@ -1465,11 +1465,6 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                         break;
                     }
                 } else {
-
-                    /*
-                     * COMMAN : move upper_query out of loop  
-                     */
-                    get_upper_str(upper_ptr, ptr);
                     /*
                      * 同作者查询改成完全匹配 by dong, 1998.9.12 
                      */
@@ -1480,7 +1475,7 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                         }
                     }
 
-                    else if (bm_strstr_rp(upper_ptr, upper_query,bm_search,&init) != NULL) {
+                    else if (bm_strcasestr_rp(upper_ptr, upper_query,bm_search,&init) != NULL) {
                         match = cursor_pos(locmem, now, 10);
                         break;
                     }
