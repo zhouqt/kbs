@@ -360,18 +360,25 @@ int parm_add(char *name, char *val) {
 
 void html_init()
 {
+	int style;
+
 	printf("Content-type: text/html; charset=%s\n\n\n", CHARSET);
-#ifndef SILENCE
 	printf("<html>\n");
 	printf("<head>\n");
 	printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", CHARSET);
-#ifndef MY_CSS
-	printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE);
-#else
-	printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", MY_CSS);
-#endif
+	style = atoi(getparm("STYLE"));
+	switch (style)
+	{
+	case 1: /* default color, big font */
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n",
+				CSS_FILE_BIGFONT);
+		break;
+	case 0:
+	default: /* default color, small font */
+		printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n",
+				CSS_FILE);
+	}
 	printf("</head>");
-#endif
 }
 
 int http_init()
@@ -983,7 +990,8 @@ void http_redirect(char *url)
 	printf("Content-type: text/html; charset=%s\n\n", CHARSET);
 }
 
-int init_all() {
+int init_all()
+{
 	srand(time(0)*2+getpid());
 	chdir(BBSHOME);
 	http_init();

@@ -31,7 +31,7 @@ int main()
 	printf("身份: %s<br>\n", buf);
 	printf("<a href=\"/bbslogout.jsp\" target=\"_top\">注销本次登录</a><br>\n");
 	printf("</td></tr><tr><td>\n");
-	printf("<hr style=\"color:2020f0; height=1px\" width=\"84px\" align=\"center\">\n");
+	printf("<hr style=\"color:#2020f0; height:1px\" width=\"84px\" align=\"center\">\n");
 	printf("</td></tr></table>");
   	printf("<img src=\"/images/home.gif\"><a href=\"bbssec\" target=\"f3\">讨论区首页</a><br>\n");
         printf("<img src=\"/images/link0.gif\"><a target=\"f3\" href=\"bbs0an\">精华公布栏</a><br>\n");
@@ -101,10 +101,11 @@ int main()
 		printf("			</div>\n");
 	}
 
-	/*printdiv(6,"特别服务区","/images/folder.gif");
-	printf("<img src=\"/images/link.gif\"> <a target=\"f3\" href=\"bbsalluser\">所有使用者</a><br>\n");*/
+	printdiv(6,"界面风格","/images/folder.gif");
+	printf("<img src=\"/images/link.gif\"> <a href=\"bbsstyle?style=0\">小字体</a><br>\n");
+	printf("<img src=\"/images/link.gif\"> <a href=\"bbsstyle?style=1\">大字体</a><br>\n");
 	/*printf("<img src=\"/images/link.gif\"><a target=\"f3\" href=\"bbsadl\">下载精华区</a><br>\n");*/
-	/*printf("</div>\n");*/
+	printf("</div>\n");
 	printf("<div class=\"r\">");
   	/*printf("<img src=\"/images/link0.gif\"><a href=\"bbsfind\" target=\"f3\">文章查询</a><br>\n");*/
 	printf("<img src=\"/images/find.gif\"><a href=\"bbssel\" target=\"f3\">查找讨论区</a><br>\n");
