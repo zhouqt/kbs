@@ -6035,12 +6035,12 @@ static PHP_FUNCTION(bbs_saveuserdata)
 	int shengxiao, int bloodtype, int religion , int profession, int married, int education, string graduate_school,
 	int character,	bool bAuto)
  *
- * #else
+ * 或者 (wForum 用下面的方式调用表示重新填写注册单)
+ * #endif
  *
  * int bbs_createregform(string userid ,string realname,string dept,string address,int gender,int year,int month,int day,
     string email,string phone,string mobile_phone,bool bAuto)
  *
- * #endif
  *
  *  bAuto : true -- 自动生成注册单,false -- 手工.
  *  @return the result
@@ -6114,21 +6114,23 @@ static PHP_FUNCTION(bbs_createregform)
 	char*   ptr;
 	int     usernum;
 	long    now;
-
+#ifdef HAVE_WFORUM
+	int     bReFill;
+#endif
     int ac = ZEND_NUM_ARGS();
 
 
 #ifdef HAVE_WFORUM
+	bReFill = (ac == 12);
 	if (ac != 32 || zend_parse_parameters(32 TSRMLS_CC, "ssssllllssssssslslllsssllllllslb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
 	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&mobile_phone,&mobile_phone_len,
 		&OICQ, &OICQ_len, &ICQ, &ICQ_len, &MSN, &MSN_len, &homepage, &homepage_len, &userface_img,
 		&userface_url, &userface_url_len, &userface_width, &userface_height, &group, &country, &country_len,
 		&province, &province_len, &city, &city_len, &shengxiao, &bloodtype, &religion, &profession,
 		&married, &education, &graduate_school, &graduate_school_len, &character,&bAuto) == FAILURE)
-#else
+#endif
     if (ac != 12 || zend_parse_parameters(12 TSRMLS_CC, "ssssllllsssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
 	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&mobile_phone,&mobile_phone_len,&bAuto) == FAILURE)
-#endif
     {
 		WRONG_PARAM_COUNT;
 	}
@@ -6139,17 +6141,19 @@ static PHP_FUNCTION(bbs_createregform)
 	if(0 == usernum)RETURN_LONG(3);
 
 #ifdef HAVE_WFORUM
-	if (userface_url_len!=0) {
-		userface_img=-1;
-		if ( (userface_width<0) || (userface_width>120) ){
-			RETURN_LONG(-1);
+	if (!bReFill) {
+		if (userface_url_len!=0) {
+			userface_img=-1;
+			if ( (userface_width<0) || (userface_width>120) ){
+				RETURN_LONG(-1);
+			}
+			if ( (userface_height<0) || (userface_height>120) ){
+				RETURN_LONG(-2);
+			}
+		} else {
+			userface_width=0;
+			userface_height=0;
 		}
-		if ( (userface_height<0) || (userface_height>120) ){
-			RETURN_LONG(-2);
-		}
-	} else {
-		userface_width=0;
-		userface_height=0;
 	}
 #endif
 
@@ -6181,26 +6185,39 @@ static PHP_FUNCTION(bbs_createregform)
     strncpy(ud.address, address, STRLEN);
 	strncpy(ud.reg_email,email,STRLEN);
 #ifdef HAVE_WFORUM
-	strncpy(ud.OICQ,OICQ,STRLEN);
-	strncpy(ud.ICQ,ICQ,STRLEN);
-	strncpy(ud.MSN,MSN,STRLEN);
-	strncpy(ud.homepage,homepage,STRLEN);
-	strncpy(ud.userface_url,userface_url,STRLEN);
-	strncpy(ud.country,country,STRLEN);
-	strncpy(ud.province,province,STRLEN);
-	strncpy(ud.city,city,STRLEN);
-	strncpy(ud.graduateschool,graduate_school,STRLEN);
-	strncpy(ud.telephone,phone,STRLEN);
-	ud.telephone[STRLEN-1]=0;
-	ud.OICQ[STRLEN-1]=0;
-	ud.ICQ[STRLEN-1]=0;
-	ud.MSN[STRLEN-1]=0;
-	ud.homepage[STRLEN-1]=0;
-	ud.userface_url[STRLEN-1]=0;
-	ud.country[STRLEN-1]=0;
-	ud.province[STRLEN-1]=0;
-	ud.city[STRLEN-1]=0;
-	ud.graduateschool[STRLEN-1]=0;
+	if (!bReFill) {
+		strncpy(ud.OICQ,OICQ,STRLEN);
+		strncpy(ud.ICQ,ICQ,STRLEN);
+		strncpy(ud.MSN,MSN,STRLEN);
+		strncpy(ud.homepage,homepage,STRLEN);
+		strncpy(ud.userface_url,userface_url,STRLEN);
+		strncpy(ud.country,country,STRLEN);
+		strncpy(ud.province,province,STRLEN);
+		strncpy(ud.city,city,STRLEN);
+		strncpy(ud.graduateschool,graduate_school,STRLEN);
+		strncpy(ud.telephone,phone,STRLEN);
+		ud.telephone[STRLEN-1]=0;
+		ud.OICQ[STRLEN-1]=0;
+		ud.ICQ[STRLEN-1]=0;
+		ud.MSN[STRLEN-1]=0;
+		ud.homepage[STRLEN-1]=0;
+		ud.userface_url[STRLEN-1]=0;
+		ud.country[STRLEN-1]=0;
+		ud.province[STRLEN-1]=0;
+		ud.city[STRLEN-1]=0;
+		ud.graduateschool[STRLEN-1]=0;
+		ud.userface_img=userface_img;
+		ud.userface_width=userface_width;
+		ud.userface_height=userface_height;
+		ud.group=group;
+		ud.shengxiao=shengxiao;
+		ud.bloodtype=bloodtype;
+		ud.religion=religion;
+		ud.profession=profession;
+		ud.married=married;
+		ud.education=education;
+		ud.character=character;
+	}
 #endif
     ud.realname[NAMELEN-1] = '\0';
 	ud.address[STRLEN-1] = '\0';
@@ -6222,19 +6239,6 @@ static PHP_FUNCTION(bbs_createregform)
 	if(gender==1)ud.gender='M';
 	else
 	    ud.gender='F';
-#endif
-#ifdef HAVE_WFORUM
-	ud.userface_img=userface_img;
-	ud.userface_width=userface_width;
-	ud.userface_height=userface_height;
-	ud.group=group;
-	ud.shengxiao=shengxiao;
-	ud.bloodtype=bloodtype;
-	ud.religion=religion;
-	ud.profession=profession;
-	ud.married=married;
-	ud.education=education;
-	ud.character=character;
 #endif
 	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
 	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);

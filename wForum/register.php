@@ -1,20 +1,40 @@
 <?php
-	$needlogin=0;
-	session_start();
+	@$action=$_REQUEST['action'];
+	$refill = (($action == "refill") || ($action == "refillsave"));
+	if (!$refill) {
+    	$needlogin=0;
+	    session_start();
+	}
 	require("inc/funcs.php");
-	setStat("新用户注册");
-	show_nav(false);
-	@$action=$_POST['action'];
+	if ($refill) {
+	    require("inc/user.inc.php");
+	    requireLoginok("请登录后使用这个功能");
+	}
 	if ($action=='apply') {
 		setStat("填写资料");
+	    show_nav($refill);
 		head_var("新用户注册",'',1);
 		do_apply();
 	} elseif ($action=='save') {
 		setStat("提交注册");
+	    show_nav($refill);
 		head_var("新用户注册",'',1);
 		do_save();
+	} elseif ($action=='refill') {
+	    setStat("重新填写注册单");
+	    show_nav($refill);
+	    showUserMailbox();	    
+	    head_var("重新填写注册单",'register.php?action=refill');
+		do_apply(true);
+	} elseif ($action=='refillsave') {
+	    setStat("递交重新填写注册单");
+	    show_nav($refill);
+	    showUserMailbox();
+	    head_var("重新填写注册单",'register.php?action=refill');
+		do_save(true);
 	} else {
 		setStat("注册协议");
+	    show_nav($refill);
 		head_var("新用户注册",'',1);
 		do_show();
 	}
@@ -37,8 +57,8 @@ function do_show() {
 
 }
 
-function do_apply(){
-	global $SiteName;
+function do_apply($refill = false){
+	global $SiteName, $currentuser;
 	require "inc/userdatadefine.inc.php";
 
 ?>
@@ -57,6 +77,18 @@ function do_apply(){
 	}
 	function CheckDataValid(form) 
 	{
+<?php
+    if ($refill) {
+?>
+		var fID = new Array("realname", "dept", "address");
+		var fName = new Array("真实姓名", "学校系级或工作单位", "详细通讯地址");
+		var len = fID.length;
+		for (i = 0; i < len; i++) {
+			if (!checkEmpty(form, fID[i], fName[i])) return false;
+		}
+<?php
+    } else {
+?>
 		var fID = new Array("userid", "pass1", "validCode", "realname", "dept", "address");
 		var fName = new Array("用户名", "密码", "验证码", "真实姓名", "学校系级或工作单位", "详细通讯地址");
 		var len = fID.length;
@@ -69,17 +101,21 @@ function do_apply(){
 		if (form["pass1"].value == form["userid"].value) {
 			return af(form, "pass1", "用户名不能与密码相同"); 
 		}
+<?php
+    }
+?>
 		return true;
 	}
 //-->
 </script> 
 <form method=post action="register.php" onsubmit="return CheckDataValid(this);" name="theForm">
-<input type="hidden" name="action" value="save">
+<input type="hidden" name="action" value="<?php echo $refill?"refillsave":"save"; ?>">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <thead>
-<Th colSpan=2 height=24><?php echo $SiteName; ?> -- 新用户注册</Th>
+<Th colSpan=2 height=24><?php echo $SiteName; ?> -- <?php echo $refill?"重新填写注册单":"新用户注册"; ?></Th>
 </thead>
 <TBODY> 
+<?php if (!$refill) { ?>
 <TR> 
 <TD width=40% class=TableBody1><B>代号</B>：<BR>2-12字符，可用英文字母或数字，首字符必须是字母</TD>
 <TD width=60%  class=TableBody1> 
@@ -107,22 +143,30 @@ function do_apply(){
 <TD width=60%  class=TableBody1> 
 <input name=username size=20 maxlength=32></TD>
 </TR>
+<?php } //$refill ?>
 <TR> 
 <TD width=40% class=TableBody1><B>真实姓名</B>：<BR>请用中文, 至少2个汉字</TD>
 <TD width=60%  class=TableBody1> 
-<input name=realname size=20></TD>
+<input name=realname size=20<?php if ($refill) echo " value=\"".htmlEncode($currentuser['realname'])." \""; ?>></TD>
 </TR>
 <TR> 
 <TD width=40% class=TableBody1><B>性别</B>：<BR>请选择您的性别</TD>
-<TD width=60%  class=TableBody1> <INPUT type=radio CHECKED value=1 name=gender>
+<?php
+    if ($refill) {
+        $male = (chr($currentuser['gender'])=='M');
+    } else {
+        $male = true;
+    }
+?>
+<TD width=60%  class=TableBody1> <INPUT type=radio <?php if ($male) echo "checked"; ?> value=1 name=gender>
 <IMG  src=pic/Male.gif align=absMiddle>男孩 &nbsp;&nbsp;&nbsp;&nbsp; 
-<INPUT type=radio value=2 name=gender>
+<INPUT type=radio <?php if (!$male) echo "checked"; ?> value=2 name=gender>
 <IMG  src=pic/Female.gif align=absMiddle>女孩</font></TD>
 </TR>
 <TR> 
 <TD width=40% class=TableBody1><B>Email</B>：<BR>您的有效电子邮件地址</TD>
 <TD width=60%  class=TableBody1> 
-<input name=email size=40></TD>
+<input name=email size=40 <?php if ($refill) echo " value=\"".htmlEncode($currentuser['reg_email'])." \""; ?>></TD>
 </TR>
 <TR> 
 <TD width=40% class=TableBody1><B>学校系级或工作单位</B>：<BR>请用中文，至少6个字符</TD>
@@ -132,20 +176,27 @@ function do_apply(){
 <TR> 
 <TD width=40% class=TableBody1><B>详细通讯地址</B>：<BR>请用中文，至少6个字符</TD>
 <TD width=60%  class=TableBody1> 
-<input name=address size=40></TD>
+<input name=address size=40 <?php if ($refill) echo " value=\"".htmlEncode($currentuser['address'])." \""; ?>></TD>
 </TR>
+<tr>    
+<td width=40%  class=TableBody1><B>生日</B><BR>如不想填写，请全部留空</td>   
+<td width=60%  class=TableBody1 valign=center>
+<input maxlength="4" size="4" name="year" value="<?php if ($refill) echo '19'.$currentuser['birthyear']; ?>" /> 年 <input maxlength="2" size="2" name="month" value="<?php if ($refill) echo $currentuser['birthmonth']; ?>"/> 月 <input size="2" maxlength="2" name="day" value="<?php if ($refill) echo $currentuser['birthday']; ?>"/> 日
+</td>   
+</tr>
 <TR> 
 <TD width=40% class=TableBody1><B>联络电话</B>：<BR>您的联络电话，请写明区号</TD>
 <TD width=60%  class=TableBody1> 
-<input name=phone size=40> </TD>
+<input name=phone size=40 <?php if ($refill) echo " value=\"".htmlEncode($currentuser['telephone'])." \""; ?>> </TD>
 </TR>
 <TR> 
 <TD width=40% class=TableBody1><B>手机</B>：<BR>您的手机号码（如果没有可以不填）</TD>
 <TD width=60%  class=TableBody1> 
-<input name=mobile size=40></TD>
+<input name=mobile size=40 <?php if ($refill) echo " value=\"".htmlEncode($currentuser['mobile_telephone'])." \""; ?>></TD>
 </TR>
 </table>
- <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 id=adv style="DISPLAY: none">
+<?php if (!$refill) { ?>
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 id=adv style="DISPLAY: none">
 <TBODY> 
 <TR align=middle> 
 <Th colSpan=2 height=24 align=left>填写详细资料</TD>
@@ -166,12 +217,6 @@ function do_apply(){
 </select>
 <img id=imgmyface src=userface/image1.gif>&nbsp;<a href="javascript:openScript('showallfaces.php',500,400)">查看所有头像</a>
 </TR>
-<tr>    
-<td width=40%  class=TableBody1><B>生日</B><BR>如不想填写，请全部留空</td>   
-<td width=60%  class=TableBody1 valign=center>
-<input maxlength="4" size="4" name="year" /> 年 <input maxlength="2" size="2" name="month" /> 月 <input size="2" maxlength="2" name="day" /> 日
-</td>   
-</tr>
 <tr> 
 <td width=40%  class=TableBody1><B>回复提示</B>：<BR>当您发表的帖子有人回复时，使用论坛信息通知您。</td>
 <td width=60%  class=TableBody1>
@@ -343,8 +388,11 @@ function do_apply(){
 <td width=50% height=24>
 	<INPUT id=advshow name=advshow type=checkbox value=1 onclick=showadv()><span name=advance id=advance>显示高级用户设置选项</span>
 </td>
-<td width=50% ><input type=submit value=提交表格>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <input type=reset value=重新填写></td>
+<td width=50% ><input type=submit value=提交表格></td>
 </tr></table>
+<?php } else { //$refill ?>
+<center><br><input type=submit value=提交表格></center>
+<?php } ?>
 </form>
 <form name=preview action=checkid.php method=post target=preview_page>
 <input type=hidden name=id value=>
@@ -371,8 +419,8 @@ if (document.theForm.advshow.checked == true) {
 <?php
 }
 
-function do_save(){
-	global $SiteName;
+function do_save($refill = false){
+	global $SiteName,$currentuser;
 	@$userid=$_POST["userid"];
 	@$pass1=$_POST["pass1"];
 	@$pass2=$_POST["pass2"];
@@ -389,91 +437,121 @@ function do_save(){
 	@$mobile_phone=$_POST["mobile"];
 	@$gender=$_POST["gender"];
 
-
-    if(!isset($_SESSION['num_auth']))
-		foundErr("请等待验证码图片显示完毕！");
-    if(strcasecmp($_SESSION['num_auth'],$_POST['validCode']))
-        foundErr("您输入的验证码错误！");
-	if(strcmp($pass1,$pass2))
-		foundErr("两次密码输入不一样");
-	else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
-       	foundErr("密码长度太短或者和用户名相同!");
-	$ret=bbs_createnewid($userid,$pass1,$nickname);
-	switch($ret)
-	{
-	case 0:
-			break;
-	case 1:
-			foundErr("用户名有非数字字母字符或者首字符不是字母!");
-			break;
-	case 2:
-			foundErr("用户名至少为两个字母!");
-			break;
-	case 3:
-			foundErr("系统用字或不雅用字!");
-			break;
-	case 4:
-			foundErr("该用户名已经被使用!");
-			break;
-	case 5:
-			foundErr("用户名太长,最长12个字符!");
-			break;
-	case 6:
-			foundErr("密码太长,最长39个字符!");
-			break;
-	case 10:
-			foundErr("系统错误,请与系统管理员SYSOP联系.");
-			break;
-	default:
-			foundErr("注册ID时发生未知的错误!");
-			break;
-	}
+    if (!$refill) {
+        if(!isset($_SESSION['num_auth']))
+    		foundErr("请等待验证码图片显示完毕！");
+        if(strcasecmp($_SESSION['num_auth'],$_POST['validCode']))
+            foundErr("您输入的验证码错误！");
+    	if(strcmp($pass1,$pass2))
+    		foundErr("两次密码输入不一样");
+    	else if(strlen($pass1) < 5 || !strcmp($pass1,$userid))
+           	foundErr("密码长度太短或者和用户名相同!");
+    	$ret=bbs_createnewid($userid,$pass1,$nickname);
+    	switch($ret)
+    	{
+    	case 0:
+    			break;
+    	case 1:
+    			foundErr("用户名有非数字字母字符或者首字符不是字母!");
+    			break;
+    	case 2:
+    			foundErr("用户名至少为两个字母!");
+    			break;
+    	case 3:
+    			foundErr("系统用字或不雅用字!");
+    			break;
+    	case 4:
+    			foundErr("该用户名已经被使用!");
+    			break;
+    	case 5:
+    			foundErr("用户名太长,最长12个字符!");
+    			break;
+    	case 6:
+    			foundErr("密码太长,最长39个字符!");
+    			break;
+    	case 10:
+    			foundErr("系统错误,请与系统管理员SYSOP联系.");
+    			break;
+    	default:
+    			foundErr("注册ID时发生未知的错误!");
+    			break;
+    	}
+    }
 	if($gender!='1')$gender=2;
     settype($year,"integer");
 	settype($month,"integer");
 	settype($day,"integer");
 
-$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), '', 0, 0, intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
+    if ($refill) {
+        $ret=bbs_createregform($currentuser["userid"],$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, FALSE);//自动生成注册单
+    } else {
+        $ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), '', 0, 0, intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
+    }
 
-	switch($ret)
-	{
-	case 0:
-		break;
-	case -1:
-		foundErr("用户自定义图像宽度错误");
-		break;
-	case -2:
-		foundErr("用户自定义图像高度错误");
-		break;
-	case 2:
-		foundErr("该用户不存在!");
-		break;
-	case 3:
-		foundErr("参数错误");
-		break;
-	default:
-		foundErr("未知的错误!");
-		break;
-	}
-	$signature=trim($_POST["Signature"]);
-	if ($signature!='') {
-		$filename=bbs_sethomefile($userid,"signatures");
-		$fp=@fopen($filename,"w+");
-		if ($fp!=false) {
-			fwrite($fp,str_replace("\r\n", "\n", $signature));
-			fclose($fp);
-			bbs_recalc_sig();
-		}
-	}
-	$personal=trim($_POST["personal"]);
-	if ($signature!='') {
-		$filename=bbs_sethomefile($userid,"plans");
-		$fp=@fopen($filename,"w+");
-		if ($fp!=false) {
-			fwrite($fp,str_replace("\r\n", "\n", $personal));
-			fclose($fp);
-		}
-	}
+    if ($refill) {
+    	switch($ret)
+    	{
+    	case 0:
+    		break;
+    	case 1:
+    		foundErr("您的注册单还没有处理，请耐心等候");
+    		break;
+    	case 2:
+    		foundErr("该用户不存在!");
+    		break;
+    	case 3:
+    		foundErr("参数错误");
+    		break;
+    	case 4:
+    		foundErr("你已经通过注册了!");
+    		break;
+    	default:
+    		foundErr("未知的错误!");
+    		break;
+    	}
+    } else {
+    	switch($ret)
+    	{
+    	case 0:
+    		break;
+    	case -1:
+    		foundErr("用户自定义图像宽度错误");
+    		break;
+    	case -2:
+    		foundErr("用户自定义图像高度错误");
+    		break;
+    	case 2:
+    		foundErr("该用户不存在!");
+    		break;
+    	case 3:
+    		foundErr("参数错误");
+    		break;
+    	default:
+    		foundErr("未知的错误!");
+    		break;
+    	}
+    }
+	if (!$refill) {
+    	$signature=trim($_POST["Signature"]);
+    	if ($signature!='') {
+    		$filename=bbs_sethomefile($userid,"signatures");
+    		$fp=@fopen($filename,"w+");
+    		if ($fp!=false) {
+    			fwrite($fp,str_replace("\r\n", "\n", $signature));
+    			fclose($fp);
+    			bbs_recalc_sig();
+    		}
+    	}
+    	$personal=trim($_POST["personal"]);
+    	if ($signature!='') {
+    		$filename=bbs_sethomefile($userid,"plans");
+    		$fp=@fopen($filename,"w+");
+    		if ($fp!=false) {
+    			fwrite($fp,str_replace("\r\n", "\n", $personal));
+    			fclose($fp);
+    		}
+    	}
+    }
 ?>
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 <tr>

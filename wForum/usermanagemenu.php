@@ -21,6 +21,11 @@ show_footer();
 function main(){
 	global $currentuser;
 	require("inc/userdatadefine.inc.php");
+if (!($currentuser["userlevel"] & BBS_PERM_LOGINOK )) {
+?>
+<p style="text-align:center;color:red;font-weight:bold;">您还没有通过身份认证，点<a href="register.php?action=refill">这里</a>重新填写注册单。</p>
+<?php
+}
 ?>
 <table cellpadding=0 cellspacing=6 width=97% align=center ><tr  align=center ><td  width=28% valign=top><table align=center style="width:100%" height=100% cellspacing=1 cellpadding=6 class=TableBorder1><tr><th height=25>用户头像</th></tr><tr align=center><td class=TableBody1>
 <?php
