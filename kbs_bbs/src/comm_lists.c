@@ -229,7 +229,7 @@ void decodestr(register char *str)
 {
     register char ch;
     int n, i=0;
-    char buf[512];
+    char buf[4096];
 
     while ((ch = *str++) != '\0')
         if (ch != '\01')
