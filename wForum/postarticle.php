@@ -231,7 +231,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 					if (strncmp($buf, "\n", 1) == 0)
 						continue;
 					if (++$lines > 10) {
-						$buf2 .= "...................\n";
+						$buf2 .= ": ...................\n";
 						break;
 					}
 					/* */
