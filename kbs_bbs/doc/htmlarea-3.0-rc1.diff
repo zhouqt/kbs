@@ -1,0 +1,50 @@
+diff -u -r HTMLArea-3.0-rc1/htmlarea.js htmlarea/htmlarea.js
+--- HTMLArea-3.0-rc1/htmlarea.js	2004-03-01 11:37:54.000000000 -0800
++++ htmlarea/htmlarea.js	2005-01-04 22:18:32.000000000 -0800
+@@ -654,9 +654,10 @@
+ 			// call previous submit methods if they were there.
+ 			if (typeof a != "undefined") {
+ 				for (var i in a) {
+-					a[i]();
++					if (!a[i]()) return false;
+ 				}
+ 			}
++			return true;
+ 		};
+ 	}
+ 
+@@ -1467,6 +1468,8 @@
+ 			var value = param[field];
+ 			switch (field) {
+ 			    case "f_alt"    : img.alt	 = value; break;
++				case "f_width"  : p = parseInt(value || "0"); if (p > 0) img.width = p; break;
++				case "f_height" : p = parseInt(value || "0"); if (p > 0) img.height = p; break;
+ 			    case "f_border" : img.border = parseInt(value || "0"); break;
+ 			    case "f_align"  : img.align	 = value; break;
+ 			    case "f_vert"   : img.vspace = parseInt(value || "0"); break;
+diff -u -r HTMLArea-3.0-rc1/popups/insert_image.html htmlarea/popups/insert_image.html
+--- HTMLArea-3.0-rc1/popups/insert_image.html	2004-03-01 11:37:56.000000000 -0800
++++ htmlarea/popups/insert_image.html	2005-01-03 13:19:28.000000000 -0800
+@@ -37,7 +37,7 @@
+     }
+   }
+   // pass data back to the calling window
+-  var fields = ["f_url", "f_alt", "f_align", "f_border",
++  var fields = ["f_url", "f_alt", "f_width" , "f_height" , "f_align", "f_border",
+                 "f_horiz", "f_vert"];
+   var param = new Object();
+   for (var i in fields) {
+@@ -119,6 +119,13 @@
+     <td><input type="text" name="alt" id="f_alt" style="width:100%"
+       title="For browsers that don't support images" /></td>
+   </tr>
++  <tr>
++    <td style="width: 7em; text-align: right">Image Size:</td>
++    <td>
++    Width:  <input type="text" name="width" id="f_width" style="width:20%" title="Width of the Image" />
++    Height: <input type="text" name="height" id="f_height" style="width:20%" title="Height of the Image" />
++    </td>
++  </tr>
+ 
+   </tbody>
+ </table>
