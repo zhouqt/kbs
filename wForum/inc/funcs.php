@@ -7,6 +7,8 @@ if (!defined('_BBS_FUNCS_PHP_'))
 {
 define('_BBS_FUNCS_PHP_', 1);
 
+
+
 function getmicrotime(){ 
    list($usec, $sec) = explode(" ",microtime()); 
    return ((float)$usec + (float)$sec); 
@@ -36,12 +38,32 @@ global $cachemode;
 global $errMsg;
 global $foundErr;
 global $stats;
+global $gusetloginok;
 $stats='';
 $errMsg='';
 $foundErr=false;
+$loginok=0;
+$guestloginok=0;
 
 if (!isset($needlogin)){
 	$needlogin=1;
+}
+
+function setStat($stat){
+	GLOBAL $stats;
+	$stats=$stat;
+}
+
+function foundErr($msg){
+	global $errMsg;
+	global $foundErr;
+	$errMsg.='<br><li>'.$msg;
+	$foundErr=true;
+}
+
+function isErrFounded(){
+	GLOBAL $foundErr;
+	return $foundErr;
 }
 
 $cachemode="";
@@ -140,28 +162,40 @@ if (($utmpkey == "")&&($needlogin!=0)){
 		@$utmpnum = $num;
 		@$userid = $data["userid"];
   		$compat_telnet=1;
+		$guestloginok=1;
 	}
-}
-//add end
-
-if ($utmpkey!="") {
-  if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet))==0) {
-    $loginok=1;
-    $currentuinfo_num=bbs_getcurrentuinfo();
-    $currentuser_num=bbs_getcurrentuser($currentuser);
-  } else {
-	if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
-		$ret=bbs_wwwlogin(1);
-		if ( ($ret==2) || ($ret==0) ){
-		    $loginok=1;
-		    $currentuinfo_num=bbs_getcurrentuinfo();
-		    $currentuser_num=bbs_getcurrentuser($currentuser);
+} else {
+	if ( ($utmpkey!="") ) {
+		$ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo,$compat_telnet);
+	  if (($ret)==0) {
+		if ($userid!="guest") {
+			$loginok=1;
+		} else {
+			$guestloginok=1;
 		}
+		$currentuinfo_num=bbs_getcurrentuinfo();
+		$currentuser_num=bbs_getcurrentuser($currentuser);
+	  } else {
+		if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
+			$ret=bbs_wwwlogin(1);
+			if ( ($ret==2) || ($ret==0) ){
+				if ($userid!="guest") {
+					$loginok=1;
+				} else {
+					$guestloginok=1;
+				}
+				$data=array();
+				$currentuinfo_num=bbs_getcurrentuinfo($data);
+				$currentuser_num=bbs_getcurrentuser($currentuser);
+				$path='';
+			}else if ($ret==5) {
+				foundErr("ÇëÎðÆµ·±µÇÂ½£¡");
+			}
+		}
+
+	  }
 	}
-
-  }
 }
-
 function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")!=FALSE))
@@ -248,26 +282,13 @@ function html_init($charset="",$title="",$otherheader="")
 }
 
 
-function setStat($stat){
-	GLOBAL $stats;
-	$stats=$stat;
-}
 
-function foundErr($msg){
-	global $errMsg;
-	global $foundErr;
-	$errMsg.='<br><li>'.$msg;
-	$foundErr=true;
-}
-
-function isErrFounded(){
-	GLOBAL $foundErr;
-	return $foundErr;
-}
 
 function html_error_quit()
 {
 	global $errMsg;
+	global $needlogin;
+	global $loginok;
 ?>
 <br>
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1 style="width:75%">
@@ -498,6 +519,7 @@ function show_nav()
 	global $SiteName;
 	global $SiteURL;
 	global $StartTime;
+	global $loginok;
 
 
   html_init();
@@ -530,20 +552,20 @@ function show_nav()
         <tr> 
           <td class=TopLighNav1 height=22  valign="middle">&nbsp;&nbsp;
 <?php   
-	if (!$Founduser)  {
+	if ($loginok!=1)  {
 ?>
 <a href="logon.php">µÇÂ½</a> <img src=pic/navspacer.gif align=absmiddle> <a href="register.php">×¢²á</a>
 <?php  
 	}  else  {
 ?>
- <img src=pic/navspacer.gif align=absmiddle> <a href="login.php">ÖØµÇÂ½</a> 
+<a href="logon.php">ÖØµÇÂ½</a> 
 <?php
  }
 ?>
  <img src=pic/navspacer.gif align=absmiddle>  <a href="#" onMouseOver='ShowMenu(stylelist,100)'>×ÔÑ¡·ç¸ñ</a> 
- <?php    if ($Founduser)
+ <?php    if ($loginok)
   {
-?> <img src=<?php     echo $Forum_info[7]; ?>navspacer.gif align=absmiddle> <a href="logout.php">ÍË³ö</a><?php   
+?> <img src=pic/navspacer.gif align=absmiddle> <a href="logout.php">ÍË³ö</a><?php   
 } ?>
 			</td>
         </tr>
@@ -606,7 +628,7 @@ function show_footer()
 
 } 
 
-if (($needlogin!=0)&&($loginok!=1)) {
+if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
 	show_nav();
 	foundErr("ÄúÉÐÎ´µÇÂ½£¡");
 	html_error_quit();
@@ -615,7 +637,8 @@ if (($needlogin!=0)&&($loginok!=1)) {
 	return;
 }
 
-if (($loginok==1)&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
+if (( ($loginok==1) || ($guestloginok==1) )&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
+
 
 
 } // !define ('_BBS_FUNCS_PHP_')

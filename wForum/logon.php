@@ -93,9 +93,9 @@ function doLogon(){
 		$time=time()+31536000; //365*24*60*60 sec
 		break;
 	}
-	$path="";
-	setcookie("UTMPKEY",$data["utmpkey"],$time,$path);
-	setcookie("UTMPNUM",$num,$time,$path);
+	$path='';
+	setcookie("UTMPKEY",$data["utmpkey"],time()+36000,$path);
+	setcookie("UTMPNUM",$num,time()+36000,$path);
 	setcookie("UTMPUSERID",$data["userid"],$time,$path);
 	setcookie("LOGINTIME",$data["logintime"],$time,$path);
 	setcookie("PASSWORD",$passwd,$time,$path);
@@ -111,7 +111,7 @@ function doLogon(){
 	show_nav();
 	head_var("用户登陆");
 ?>
-<!--meta HTTP-EQUIV=REFRESH CONTENT='2; URL=<?php   echo $comeurl; ?>' -->
+<meta HTTP-EQUIV=REFRESH CONTENT='2; URL=<?php   echo $comeurl; ?>' >
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1 >
 <tr>
 <th height=25>登陆成功：<?php   echo $Forum_info[0]; ?>欢迎您的到来</th>

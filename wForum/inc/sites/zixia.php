@@ -38,4 +38,5 @@ $section_names = array(
     array("月光宝盒", "[转信/列表]"),
     array("大圣取经", "[专业/申请]") 
 );
+$sectionCount=count($section_names);
 ?>
