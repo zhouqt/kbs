@@ -51,8 +51,16 @@
 		 */
 		if ($start == 0 || $start > ($total - $artcnt + 1))
 		{
-			$start = ($total - $artcnt + 1);
-			$page = ($start + $artcnt - 1) / $artcnt + 1;
+			if ($total <= $artcnt)
+			{
+				$start = 1;
+				$page = 1;
+			}
+			else
+			{
+				$start = ($total - $artcnt + 1);
+				$page = ($start + $artcnt - 1) / $artcnt + 1;
+			}
 		}
 		else
 			$page = ($start + $artcnt - 1) / $artcnt;
