@@ -41,7 +41,10 @@ void disply_userinfo(u, real)
     prints("您的昵称     : %s\n", u->username);
     prints("真实姓名     : %s\n", ud.realname);
     prints("居住住址     : %s\n", ud.address);
-    prints("电子邮件信箱 : %s\n", ud.email);
+    if(real)
+	prints("注册E-mail   : %s\n",ud.reg_email);
+    else
+    	prints("电子邮件信箱 : %s\n", ud.email);
 
 	/*加入生日等显示 added by binxun 2003.5.20*/
 #ifdef HAVE_BIRTHDAY
