@@ -264,7 +264,11 @@ else
 	$pid = intval($_GET['pid'])?$_GET['pid']:$root_pid;
 	pc_get_userfiles($link,$pc,$used,$total);
 	
-	$c_dir = new UserFile($pid,$pc["UID"]);
+	if (!($c_dir = new UserFile($pid,$pc["UID"])))
+	{
+		pc_db_close($link);
+		html_error_quit("对不起，您要查看的目录不存在");
+	}   
 		
     if ($_GET['act']=='edit' || $_GET['act']=='edit2' || $_GET['act']=='rm' || $_GET['act']=='cp' || $_GET['act']=='mv' || $_GET['act']=='pt') {
         $fid = intval($_GET['fid']);
@@ -332,7 +336,7 @@ else
 ?>
 <br />
 <p align="center"><b>
-我的文件夹
+<?php echo BBS_FULL_NAME; ?>个人空间
 </b></p>
 <?php	
 	pc_file_navigationbar($pc);

@@ -619,9 +619,9 @@ Blog名
 	    {
 ?>
 <tr>
-	<td class="t3">我的文件夹</td>
+	<td class="t3">个人空间</td>
 	<td class="t5">&nbsp;
-	<a href="pcfile.php?userid=<?php echo $pc["USER"]; ?>">管理我的文件夹</a>
+	<a href="pcfile.php?userid=<?php echo $pc["USER"]; ?>">管理我的个人空间</a>
 	</td>
 </tr>
 <?php
