@@ -414,7 +414,7 @@ int t_query(char* q_id)
 #elif defined(FREE)
 	prints("经验值：[\033[1;32m%d\033[m](\033[1;33m%s\033[m) 信箱：[\033[1;5;32m%2s\033[m]\n"
 	      , exp,cexp(exp), (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ");
-	prints("文章数: [\033[1;32m%d\033[m] 银行存款: [\033[1;32m%d元\033[m] 奖章数: [\033[1;32m%d元\033[m] 生命力: [\033[1;32m%d\033[m]\n",
+	prints("文章数: [\033[1;32m%d\033[m] 银行存款: [\033[1;32m%d元\033[m] 奖章数: [\033[1;32m%d\033[m] 生命力: [\033[1;32m%d\033[m]\n",
 	      lookupuser->numposts,lookupuser->money, lookupuser->score,
 		  compute_user_value(lookupuser) );
 #else
