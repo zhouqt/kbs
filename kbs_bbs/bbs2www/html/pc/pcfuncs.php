@@ -1013,7 +1013,7 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 		mysql_free_result($result);
 		
 		if($htmlTag)
-			$tbbody = strip_tags($body);
+			$tbbody = undo_html_format(strip_tags($body));
 		else
 			$tbbody = $body;
 		
@@ -1126,27 +1126,11 @@ function pc_ubb_parse($txt)
 {
 	$bbcode_lib = $_SERVER["DOCUMENT_ROOT"]."/pc/bbcode.php";
 	if(file_exists($bbcode_lib))
-		include("bbcode.php");
+		include($bbcode_lib);
 	else
 		return $txt;
 	
-	$html_entities_match = array('#&(?!(\#[0-9]+;))#', '#<#', '#>#');
-	$html_entities_replace = array('&amp;', '&lt;', '&gt;');
-	$unhtml_specialchars_match = array('#&gt;#', '#&lt;#', '#&quot;#', '#&amp;#');
-	$unhtml_specialchars_replace = array('>', '<', '"', '&');
-	
-	$bbcode_uid = make_bbcode_uid();
-	
-	$txt = htmlspecialchars(trim(stripslashes($txt)));
-	$txt = trim(addslashes(preg_replace($unhtml_specialchars_match, $unhtml_specialchars_replace, $txt)));
-	$txt = preg_replace($html_entities_match, $html_entities_replace, $txt);
-	$txt = bbencode_first_pass($txt, $bbcode_uid);
-	$txt = stripslashes($txt);
-	$txt = bbencode_second_pass($txt, $bbcode_uid);
-	$txt = make_clickable($txt);
-	$txt = str_replace("\n", '<br />', $txt);
-	
-	return $txt;
+	return pc_bbcode_parse($txt);
 }
 
 function pc_ubb_content($txt="")

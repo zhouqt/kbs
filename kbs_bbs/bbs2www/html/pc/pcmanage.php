@@ -71,7 +71,7 @@
 			if(!$in_section && 3 == $target ) //跨区  移入收藏区
 			{
 				$rootpid = pc_fav_rootpid($link,$pc["UID"]);
-				if($rootpid)
+				if(!$rootpid)
 				{
 					html_error_quit("收藏夹根目录错误!");
 					exit();
