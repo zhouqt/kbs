@@ -921,6 +921,7 @@ int register_sms()
         return -1;
     }
     curruserdata.mobileregistered = 1;
+    write_userdata(currentuser->userid, &curruserdata);
     move(7, 0);
     prints("手机注册成功！ 你可以在bbs上发送短信啦！");
     pressreturn();
@@ -959,6 +960,7 @@ int unregister_sms()
         prints("取消注册成功");
         curruserdata.mobilenumber[0]=0;
         curruserdata.mobileregistered = 0;
+        write_userdata(currentuser->userid, &curruserdata);
     }
     shmdt(head);
     buf=NULL;
