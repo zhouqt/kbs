@@ -53,7 +53,7 @@ int nnline = 0, xxxline = 0;
 int more_size, more_num;
 int displayflag = 0, shownflag = 1;
 
-static int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char* title);
+static int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title);
 
 int NNread_init()
 {
@@ -116,18 +116,19 @@ void check_calltime()
     int line;
 
     if (time(0) >= calltime && calltime != 0) {
-        /*         if (uinfo.mode != MMENU)
-           {
-           bell();
-           move(0,0);
-           clrtoeol();
-           prints("Çëµ½Ö÷Ñ¡µ¥¿´±¸ÍüÂ¼......");
-           return;
-           }
-           set_alarm(0,NULL,NULL);
-           showusernote();
-           pressreturn();
-           R_monitor(NULL);
+        /*
+         * if (uinfo.mode != MMENU)
+         * {
+         * bell();
+         * move(0,0);
+         * clrtoeol();
+         * prints("Çëµ½Ö÷Ñ¡µ¥¿´±¸ÍüÂ¼......");
+         * return;
+         * }
+         * set_alarm(0,NULL,NULL);
+         * showusernote();
+         * pressreturn();
+         * R_monitor(NULL);
          */
         if (uinfo.mode == TALK)
             line = t_lines / 2 - 1;
@@ -197,8 +198,10 @@ int readln(int fd, char *buf, char *more_buf)
                 in_esc = 0;
             }
         } else if (isprint2(ch)) {
-            /*if(len>79)
-               break; */
+            /*
+             * if(len>79)
+             * break; 
+             */
             len++, *buf++ = ch;
         }
     }
@@ -256,7 +259,7 @@ int morekey()
         case 'u':              /*Haohmaru 99.11.29 */
             return 'u';
         case KEY_REFRESH:
-        	return KEY_REFRESH;
+            return KEY_REFRESH;
         default:;
         }
     }
@@ -291,7 +294,7 @@ int seek_nth_line(int fd, int no, char *more_buf)
 
 /*Add by SmallPig*/
 int countln(fname)
-    char *fname;
+char *fname;
 {
     FILE *fp;
     char tmp[256];
@@ -306,7 +309,9 @@ int countln(fname)
     return count;
 }
 
-/* below added by netty  *//*Rewrite by SmallPig */
+/* below added by netty  *//*
+ * Rewrite by SmallPig 
+ */
 void netty_more()
 {
     char buf[256];
@@ -404,20 +409,21 @@ static int rawmore(char *filename, int promptend, int row, int numlines)
     numbytes = readln(fd, buf, more_buf);
     curr_row++;
     linesread++;
-    /*if (numbytes)
-       {
-       char *lpTmp;
-       lpTmp=strstr(buf,"¶ÁÕßÊý");
-       if (lpTmp)
-       { FILE *fp;
-       memset(lpTmp,32,15);
-       lpTmp[15]=NULL;
-       fp=fopen(filename,"rb+");
-       fwrite(buf,strlen(buf),1,fp);
-       fclose(fp);
-       lpTmp[15]=32;
-       }
-       }
+    /*
+     * if (numbytes)
+     * {
+     * char *lpTmp;
+     * lpTmp=strstr(buf,"¶ÁÕßÊý");
+     * if (lpTmp)
+     * { FILE *fp;
+     * memset(lpTmp,32,15);
+     * lpTmp[15]=NULL;
+     * fp=fopen(filename,"rb+");
+     * fwrite(buf,strlen(buf),1,fp);
+     * fclose(fp);
+     * lpTmp[15]=32;
+     * }
+     * }
      */
     while (numbytes) {
         if (linesread <= numlines || numlines == 0) {
@@ -497,7 +503,9 @@ static int rawmore(char *filename, int promptend, int row, int numlines)
                     numbytes = readln(fd, buf, more_buf);
                     curr_row++;
                 }
-                /* Luzi  ÐÂÔöÔÄ¶ÁÈÈ¼ü 1997.11.1 */
+                /*
+                 * Luzi  ÐÂÔöÔÄ¶ÁÈÈ¼ü 1997.11.1 
+                 */
                 else if (ch == 'O') {
                     if (HAS_PERM(currentuser, PERM_BASIC)) {
                         t_friends();
@@ -666,8 +674,8 @@ static int rawmore(char *filename, int promptend, int row, int numlines)
 }
 
 int ansimore(filename, promptend)
-    char *filename;
-    int promptend;
+char *filename;
+int promptend;
 {
     int ch;
 
@@ -680,10 +688,10 @@ int ansimore(filename, promptend)
 }
 
 int ansimore2(filename, promptend, row, numlines)
-    char *filename;
-    int promptend;
-    int row;
-    int numlines;
+char *filename;
+int promptend;
+int row;
+int numlines;
 {
     int ch;
 
@@ -913,29 +921,30 @@ int mmap_show(char *fn, int row, int numlines)
     char *ptr;
     int size, retv;
 
-    switch (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL)) {
-    case 0:                    //mmap error
-        return 0;
-    case 1:
+    BBS_TRY {
+        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+            BBS_RETURN(0);
         retv = mem_show(ptr, size, row, numlines, fn);
-        break;
     }
-    end_mmapfile((void *) ptr, size, -1);
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, size, -1);
     return retv;
 }
 
-int mmap_more(char *fn, int quit, char *keystr,char* title)
+int mmap_more(char *fn, int quit, char *keystr, char *title)
 {
     char *ptr;
     int size, retv;
 
-    switch (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL)) {
-    case 0:                    //mmap error
-        return -1;
-    case 1:
-        retv = mem_more(ptr, size, quit, keystr, fn,title);
+    BBS_TRY {
+        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+            BBS_RETURN(-1);
+        retv = mem_more(ptr, size, quit, keystr, fn, title);
     }
-    end_mmapfile((void *) ptr, size, -1);
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, size, -1);
     return retv;
 }
 
@@ -1011,7 +1020,7 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
     prints("[44m[32mÏÂÃæ»¹ÓÐà¸ (%d%%)[33m   ©¦ ½áÊø ¡û <q> ©¦ ¡ü/¡ý/PgUp/PgDn ÒÆ¶¯ ©¦ ? ¸¨ÖúËµÃ÷ ©¦     [m", total ? (100 * l2 / total) : (100 * read / size));
 }
 
-int mem_more(char *ptr, int size, int quit, char *keystr, char *fn,char* title)
+int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
 {
     extern int t_lines;
     struct MemMoreLines l;
@@ -1142,13 +1151,13 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn,char* title)
                 curr_line += t_lines - 1;
                 change = 1 - t_lines;
                 break;
-	    case Ctrl('Y'):
-		if (title) {
-		    zsend_file(fn,title);
+            case Ctrl('Y'):
+                if (title) {
+                    zsend_file(fn, title);
                     curr_line += t_lines - 1;
                     change = 1 - t_lines;
-		}
-		break;
+                }
+                break;
             default:
                 if (keystr != NULL && strchr(keystr, ch) != NULL)
                     return ch;
@@ -1194,12 +1203,12 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn,char* title)
     }
 }
 
-int ansimore( char *filename, int promptend)
+int ansimore(char *filename, int promptend)
 {
     int ch;
 
     clear();
-    ch = mmap_more(filename, 1, "RrEexp",NULL);
+    ch = mmap_more(filename, 1, "RrEexp", NULL);
     if (promptend)
         pressanykey();
     move(t_lines - 1, 0);
@@ -1208,29 +1217,29 @@ int ansimore( char *filename, int promptend)
 }
 
 int ansimore2(filename, promptend, row, numlines)
-    char *filename;
-    int promptend;
-    int row;
-    int numlines;
+char *filename;
+int promptend;
+int row;
+int numlines;
 {
     int ch;
 
     if (numlines)
         ch = mmap_show(filename, row, numlines);
     else
-        ch = mmap_more(filename, 1, NULL,NULL);
+        ch = mmap_more(filename, 1, NULL, NULL);
     if (promptend)
         pressanykey();
     refresh();
     return ch;
 }
 
-int ansimore_withzmodem( char *filename, int promptend,char* title)
+int ansimore_withzmodem(char *filename, int promptend, char *title)
 {
     int ch;
 
     clear();
-    ch = mmap_more(filename, 1, "RrEexp",title);
+    ch = mmap_more(filename, 1, "RrEexp", title);
     if (promptend)
         pressanykey();
     move(t_lines - 1, 0);

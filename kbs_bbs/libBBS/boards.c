@@ -250,7 +250,8 @@ int DelFavBoard(int i)
     for (j = 0; j < favbrd_list_t; j++)
         if (favbrd_list[j].father >= i)
             favbrd_list[j].father--;
-    if(favnow>=i) favnow--;
+    if (favnow >= i)
+        favnow--;
     if (!favbrd_list_t) {
         favbrd_list_t = 1;      /*  favorite board count    */
         favbrd_list[0].flag = 0;        /*  default sysop board     */
@@ -260,28 +261,34 @@ int DelFavBoard(int i)
 
 void MoveFavBoard(int p, int q)
 {
-	struct favbrd_struct temp;
-	int i;
-	if (p==q) return;
-	if (p<0||p>=favbrd_list_t) return;
-	if (q<0||q>=favbrd_list_t) return;
-	for(i=0;i<favbrd_list_t;i++)
-		if(favbrd_list[i].father==p)
-			favbrd_list[i].father = q;
-		else if(p>q&&favbrd_list[i].father>=q&&favbrd_list[i].father<p)
-			favbrd_list[i].father++;
-		else if(p<q&&favbrd_list[i].father<=q&&favbrd_list[i].father>p)
-			favbrd_list[i].father--;
-	if(p>q&&favnow>=q&&favnow<p) favnow++;
-	if(p<q&&favnow<=q&&favnow>p) favnow--;
-	temp=favbrd_list[p];
-	if(p>q)
-	for(i=p;i>q;i--)
-		favbrd_list[i]=favbrd_list[i-1];
-	else
-	for(i=p;i<q;i++)
-		favbrd_list[i]=favbrd_list[i+1];
-	favbrd_list[q]=temp;
+    struct favbrd_struct temp;
+    int i;
+
+    if (p == q)
+        return;
+    if (p < 0 || p >= favbrd_list_t)
+        return;
+    if (q < 0 || q >= favbrd_list_t)
+        return;
+    for (i = 0; i < favbrd_list_t; i++)
+        if (favbrd_list[i].father == p)
+            favbrd_list[i].father = q;
+        else if (p > q && favbrd_list[i].father >= q && favbrd_list[i].father < p)
+            favbrd_list[i].father++;
+        else if (p < q && favbrd_list[i].father <= q && favbrd_list[i].father > p)
+            favbrd_list[i].father--;
+    if (p > q && favnow >= q && favnow < p)
+        favnow++;
+    if (p < q && favnow <= q && favnow > p)
+        favnow--;
+    temp = favbrd_list[p];
+    if (p > q)
+        for (i = p; i > q; i--)
+            favbrd_list[i] = favbrd_list[i - 1];
+    else
+        for (i = p; i < q; i++)
+            favbrd_list[i] = favbrd_list[i + 1];
+    favbrd_list[q] = temp;
 }
 
 /*---   ---*/
@@ -363,69 +370,67 @@ int load_boards(char *boardprefix)
                     if (favbrd_list[k].father == n)
                         ptr->total++;
                 ptr->zap = 0;
-            }
-            else if (favbrd_list[n].father == favnow) {
-	        bptr = (struct boardheader *) getboard(favbrd_list[n].flag + 1);
-	        if (!bptr)
-	            continue;
+            } else if (favbrd_list[n].father == favnow) {
+                bptr = (struct boardheader *) getboard(favbrd_list[n].flag + 1);
+                if (!bptr)
+                    continue;
 #ifndef _DEBUG_
-	        if (!*bptr->filename)
-	            continue;
+                if (!*bptr->filename)
+                    continue;
 #endif /*_DEBUG_*/
-	        if (!(bptr->level & PERM_POSTMASK) && !HAS_PERM(currentuser, bptr->level) && !(bptr->level & PERM_NOZAP))
-	            continue;
-	        if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
-	            continue;
-	        if (boardprefix != NULL && boardprefix[0] == '*')
-	            if (!strstr(bptr->title, "●") && !strstr(bptr->title, "⊙")
-	                && bptr->title[0] != '*')
-	                continue;
-	        if (boardprefix == NULL && bptr->title[0] == '*')
-	            continue;
-	        
-	            ptr = &nbrd[brdnum++];
-	            ptr->name = bptr->filename;
-	            ptr->title = bptr->title;
-	            ptr->BM = bptr->BM;
-	            ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-	            ptr->pos = favbrd_list[n].flag;
-	            ptr->total = -1;
-	            ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
+                if (!(bptr->level & PERM_POSTMASK) && !HAS_PERM(currentuser, bptr->level) && !(bptr->level & PERM_NOZAP))
+                    continue;
+                if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
+                    continue;
+                if (boardprefix != NULL && boardprefix[0] == '*')
+                    if (!strstr(bptr->title, "●") && !strstr(bptr->title, "⊙")
+                        && bptr->title[0] != '*')
+                        continue;
+                if (boardprefix == NULL && bptr->title[0] == '*')
+                    continue;
+
+                ptr = &nbrd[brdnum++];
+                ptr->name = bptr->filename;
+                ptr->title = bptr->title;
+                ptr->BM = bptr->BM;
+                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+                ptr->pos = favbrd_list[n].flag;
+                ptr->total = -1;
+                ptr->zap = (zapbuf[favbrd_list[n].flag] == 0);
             }
-    }
-    else
-    for (n = 0; n < get_boardcount(); n++) {
-        bptr = (struct boardheader *) getboard(n + 1);
-        if (!bptr)
-            continue;
-#ifndef _DEBUG_
-        if (!*bptr->filename)
-            continue;
-#endif /*_DEBUG_*/
-        if (!(bptr->level & PERM_POSTMASK) && !HAS_PERM(currentuser, bptr->level) && !(bptr->level & PERM_NOZAP)) {
-            continue;
-        }
-        if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
-            continue;
-        if (boardprefix != NULL && boardprefix[0] == '*') {
-            if (!strstr(bptr->title, "●") && !strstr(bptr->title, "⊙")
-                && bptr->title[0] != '*')
+    } else
+        for (n = 0; n < get_boardcount(); n++) {
+            bptr = (struct boardheader *) getboard(n + 1);
+            if (!bptr)
                 continue;
-        }
-        if (boardprefix == NULL && bptr->title[0] == '*')
-            continue;
+#ifndef _DEBUG_
+            if (!*bptr->filename)
+                continue;
+#endif /*_DEBUG_*/
+            if (!(bptr->level & PERM_POSTMASK) && !HAS_PERM(currentuser, bptr->level) && !(bptr->level & PERM_NOZAP)) {
+                continue;
+            }
+            if (boardprefix != NULL && strchr(boardprefix, bptr->title[0]) == NULL && boardprefix[0] != '*')
+                continue;
+            if (boardprefix != NULL && boardprefix[0] == '*') {
+                if (!strstr(bptr->title, "●") && !strstr(bptr->title, "⊙")
+                    && bptr->title[0] != '*')
+                    continue;
+            }
+            if (boardprefix == NULL && bptr->title[0] == '*')
+                continue;
         /*---	period	2000-09-11	4 FavBoard	---*/
-        if ((1 == yank_flag || (!yank_flag && (zapbuf[n] != 0 || (bptr->level & PERM_NOZAP))))) {
-            ptr = &nbrd[brdnum++];
-            ptr->name = bptr->filename;
-            ptr->title = bptr->title;
-            ptr->BM = bptr->BM;
-            ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-            ptr->pos = n;
-            ptr->total = -1;
-            ptr->zap = (zapbuf[n] == 0);
+            if ((1 == yank_flag || (!yank_flag && (zapbuf[n] != 0 || (bptr->level & PERM_NOZAP))))) {
+                ptr = &nbrd[brdnum++];
+                ptr->name = bptr->filename;
+                ptr->title = bptr->title;
+                ptr->BM = bptr->BM;
+                ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
+                ptr->pos = n;
+                ptr->total = -1;
+                ptr->zap = (zapbuf[n] == 0);
+            }
         }
-    }
     if (yank_flag == 2 && brdnum == 0) {
         ptr = &nbrd[brdnum++];
         ptr->name = DirChar;
@@ -534,26 +539,26 @@ void brc_addreaddirectly(char *userid, int bnum, int posttime)
 {
     char dirfile[MAXPATH];
     int *ptr, *list;
-    int filesize, fdr;
+    size_t filesize; 
+    int fdr;
     int i, n;
 
     sethomefile(dirfile, userid, ".boardrc");
-    switch (safe_mmapfile(dirfile, O_RDWR | O_CREAT, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &filesize, &fdr)) {
-    case 0:
-        return;
-    case 1:
+    BBS_TRY {
+        if (safe_mmapfile(dirfile, O_RDWR | O_CREAT, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &filesize, &fdr) == 0)
+            BBS_RETURN_VOID;
         ftruncate(fdr, BRC_FILESIZE);
         list = ptr + BRC_ITEMSIZE * (bnum - 1);
         for (n = 0; (n < BRC_MAXNUM) && list[n]; n++) {
             if (posttime == list[n]) {
                 end_mmapfile((void *) ptr, filesize, fdr);
-                return;
+                BBS_RETURN_VOID;
             } else if (posttime > list[n]) {
                 for (i = BRC_MAXNUM - 1; i > n; i--)
                     list[i] = list[i - 1];
                 list[n] = posttime;
                 end_mmapfile((void *) ptr, filesize, fdr);
-                return;
+                BBS_RETURN_VOID;
             }
         }
         if (n == 0) {
@@ -562,7 +567,9 @@ void brc_addreaddirectly(char *userid, int bnum, int posttime)
             list[n] = 0;
         }
     }
-    end_mmapfile((void *) ptr, filesize, fdr);
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, filesize, fdr);
     return;
 }
 
@@ -576,8 +583,8 @@ int brc_initial(char *userid, char *boardname)
     int fd;
     struct boardheader const *bptr;
 
-    if (boardname==NULL)
-	    return 0;
+    if (boardname == NULL)
+        return 0;
     bid = getbnum(boardname);
 #ifdef BBSMAIN
     strncpy(currboard, boardname, STRLEN - BM_LEN);     /*很是ft,居然在这里置currboard */
@@ -601,7 +608,9 @@ int brc_initial(char *userid, char *boardname)
         }
 
         if ((brc_size) && (brc_size < BRC_FILESIZE)) {
-            /* 老版的boardrc,因为应该只需要转化一次，不考虑效率啦 */
+            /*
+             * 老版的boardrc,因为应该只需要转化一次，不考虑效率啦 
+             */
             char brc_buffer[BRC_OLD_MAXSIZE];
 
             if (lseek(fd, 0, SEEK_SET) != -1) {
@@ -620,13 +629,14 @@ int brc_initial(char *userid, char *boardname)
     lseek(fd, (bid - 1) * BRC_ITEMSIZE, SEEK_SET);
     read(fd, &brc_cache_entry[entry].list, BRC_ITEMSIZE);
     /*
-       先不加入版面的创建时间的判断
-       if (brc_cache_entry[entry].list[0])
-       &&(brc_cache_entry[entry].list[0]<bptr->createtime) )
-       {
-       brc_cache_entry[entry].changed=1;
-       brc_cache_entry[entry].list[0]=0;
-       } else */
+     * 先不加入版面的创建时间的判断
+     * if (brc_cache_entry[entry].list[0])
+     * &&(brc_cache_entry[entry].list[0]<bptr->createtime) )
+     * {
+     * brc_cache_entry[entry].changed=1;
+     * brc_cache_entry[entry].list[0]=0;
+     * } else 
+     */
     {
         brc_cache_entry[entry].changed = 0;
         brc_cache_entry[entry].bid = bid;
@@ -682,16 +692,17 @@ void brc_add_read(char *filename)
             return;
         }
     }
-    /* 这个地方加入是不对的，因为只可能有2情况，一个是根本没有unread记录，
-     * 或者所有list[n]的时间之前的文章都被认为已读
-     if (n!=BRC_MAXNUM) {
-     brc_cache_entry[brc_currcache].list[n]=ftime;
-     n++;
-     if (n!=BRC_MAXNUM)
-     brc_cache_entry[brc_currcache].list[n]=0;
-     brc_cache_entry[brc_currcache].changed = 1;
-     }
-     应该用如下
+    /*
+     * 这个地方加入是不对的，因为只可能有2情况，一个是根本没有unread记录，
+     * * 或者所有list[n]的时间之前的文章都被认为已读
+     * if (n!=BRC_MAXNUM) {
+     * brc_cache_entry[brc_currcache].list[n]=ftime;
+     * n++;
+     * if (n!=BRC_MAXNUM)
+     * brc_cache_entry[brc_currcache].list[n]=0;
+     * brc_cache_entry[brc_currcache].changed = 1;
+     * }
+     * 应该用如下
      */
     if (n == 0) {
         for (n = 0; n < BRC_MAXNUM - 1; n++)
@@ -776,13 +787,21 @@ int haspostperm(struct userec *user, char *bname)
     if (digestmode)
         return 0;
 #endif
-    /*    if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1; change by KCN 2000.09.01 */
+    /*
+     * if( strcmp( bname, DEFAULTBOARD ) == 0 )  return 1; change by KCN 2000.09.01 
+     */
     if ((i = getbnum(bname)) == 0)
         return 0;
     if (HAS_PERM(user, PERM_DENYPOST))
-        /*if(!strcmp(bname, "sysop"))
-   return 1; *//* Leeward 98.05.21 revised by stephen 2000.10.27 */
-        /* let user denied post right post at Complain */
+        /*
+         * if(!strcmp(bname, "sysop"))
+         * return 1; 
+ *//*
+ * Leeward 98.05.21 revised by stephen 2000.10.27 
+ */
+        /*
+         * let user denied post right post at Complain 
+         */
     {
         if (!strcmp(bname, "Complain"))
             return 1;           /* added by stephen 2000.10.27 */
@@ -814,7 +833,9 @@ int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2])
 
 
 int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user)
-        /* 根据输入的版主名单 判断user是否有版主 权限 */
+        /*
+         * 根据输入的版主名单 判断user是否有版主 权限 
+         */
 {
     if (HAS_PERM(currentuser, PERM_OBOARDS) || HAS_PERM(currentuser, PERM_SYSOP))
         return true;
@@ -836,7 +857,9 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
 
     now = time(0);
     setbfile(fn, board, "deny_users");
-    /*Haohmaru.4.1.自动发信通知 */
+    /*
+     * Haohmaru.4.1.自动发信通知 
+     */
     sprintf(filename, "etc/%s.dny", user->userid);
     fn1 = fopen(filename, "w");
     if (HAS_PERM(user, PERM_SYSOP) || HAS_PERM(user, PERM_OBOARDS)) {
@@ -861,7 +884,9 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only)
     }
     fclose(fn1);
 
-    /*解封同样发文到undenypost版  Bigman:2000.6.30 */
+    /*
+     * 解封同样发文到undenypost版  Bigman:2000.6.30 
+     */
     getuser(uident, &lookupuser);
     if (lookupuser == NULL)
         sprintf(buffer, "%s 解封死掉的帐号 %s 在 %s ", user->userid, uident, board);

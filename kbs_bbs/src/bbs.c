@@ -532,7 +532,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
         }
     }
 /*    if(HAS_PERM(currentuser,PERM_OBOARDS) && ent->accessed[1] & FILE_READ) *//*
- * * °æÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7 
+ * * * * °æÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7 
  */
     if (manager & ent->accessed[1] & FILE_READ) {       /* °æÖ÷ÒÔÉÏÄÜ¿´²»¿Ére±êÖ¾, Bigman.2001.2.27 */
         switch (type) {
@@ -626,40 +626,38 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     TITLE = ent->title;         /*ÎÄÕÂ±êÌâTITLE */
 
-    if (uinfo.mode != RMAIL&&digestmode!=1&&digestmode!=4&&digestmode!=5) { // ÐÂ·½·¨±È½Ï
-	if (FFLL == 0) {
-        if (ent->groupid!=ent->id&&(!strncmp("Re:", ent->title, 3)||(!strncmp("©¸ ", ent->title, 3)||!strncmp("©À ", ent->title, 3))&&digestmode==2))       /*ReµÄÎÄÕÂ */
-            sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-        else                    /* ·ÇReµÄÎÄÕÂ */
-            sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-    } else {                    /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
-        if (ent->groupid!=ent->id) { /*ReµÄÎÄÕÂ */
-            if (!strncmp("Re:", ent->title, 3)||(!strncmp("©¸ ", ent->title, 3)||!strncmp("©À ", ent->title, 3))&&digestmode==2)
-	            if (ReadPostHeader.groupid==ent->groupid) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-	                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-	            else
-	                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-            else
-	            if (ReadPostHeader.groupid==ent->groupid)      /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-	                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-	            else
-	                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-        } else {
-            if (ReadPostHeader.groupid==ent->groupid)      /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
-                sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %6.6s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
-            else
+    if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5) { // ÐÂ·½·¨±È½Ï
+        if (FFLL == 0) {
+            if (ent->groupid != ent->id && (!strncmp("Re:", ent->title, 3) || (!strncmp("©¸ ", ent->title, 3) || !strncmp("©À ", ent->title, 3)) && digestmode == 2))   /*ReµÄÎÄÕÂ */
+                sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+            else                /* ·ÇReµÄÎÄÕÂ */
                 sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+        } else {                /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
+            if (ent->groupid != ent->id) {      /*ReµÄÎÄÕÂ */
+                if (!strncmp("Re:", ent->title, 3) || (!strncmp("©¸ ", ent->title, 3) || !strncmp("©À ", ent->title, 3)) && digestmode == 2)
+                    if (ReadPostHeader.groupid == ent->groupid) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+                        sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                    else
+                        sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                else if (ReadPostHeader.groupid == ent->groupid)        /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+                    sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                else
+                    sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+            } else {
+                if (ReadPostHeader.groupid == ent->groupid)     /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+                    sprintf(buf, " [33m%4d[m %s%c%s %-12.12s %6.6s[33m£®¡ñ %-44.44s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+                else
+                    sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
+            }
+
         }
-    	
-    }
-    }
-    else if (FFLL == 0) {   // ¾É·½·¨±È½Ï
-        if (!strncmp("Re:", ent->title, 3))       /*ReµÄÎÄÕÂ */
+    } else if (FFLL == 0) {     // ¾É·½·¨±È½Ï
+        if (!strncmp("Re:", ent->title, 3))     /*ReµÄÎÄÕÂ */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         else                    /* ·ÇReµÄÎÄÕÂ */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
     } else {                    /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
-        if (!strncmp("Re:", ent->title, 3)) { /*ReµÄÎÄÕÂ */
+        if (!strncmp("Re:", ent->title, 3)) {   /*ReµÄÎÄÕÂ */
             if (!strcmp(ReplyPost + 3, ent->title + 3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                 sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
             else
@@ -756,7 +754,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 
     refresh();
 /* sleep(1); *//*
- * * ????? 
+ * * * * ????? 
  */
     if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP))
         ch = igetkey();
@@ -1042,27 +1040,38 @@ int generate_mark()
     fcntl(fd2, F_SETLKW, &ldata2);
     total = buf.st_size / size;
 
-    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
+    BBS_TRY {
+        if (safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & buf.st_size) == 0) {
+            ldata2.l_type = F_UNLCK;
+            fcntl(fd2, F_SETLKW, &ldata2);
+            close(fd2);
+            ldata.l_type = F_UNLCK;
+            fcntl(fd, F_SETLKW, &ldata);
+            close(fd);
+            BBS_RETURN(-1);
+        }
+        ptr1 = ptr;
+        for (i = 0; i < total; i++) {
+            memcpy(&mkpost, ptr1, size);
+            if (mkpost.accessed[0] & FILE_MARKED) {
+                write(fd, &mkpost, size);
+                count++;
+            }
+            ptr1 += size;
+        }
+    }
+    BBS_CATCH {
         ldata2.l_type = F_UNLCK;
         fcntl(fd2, F_SETLKW, &ldata2);
         close(fd2);
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-        return -1;
+        end_mmapfile((void *) ptr, buf.st_size, -1);
+        BBS_RETURN(-1);
     }
-    ptr1 = ptr;
-    for (i = 0; i < total; i++) {
-        memcpy(&mkpost, ptr1, size);
-        if (mkpost.accessed[0] & FILE_MARKED) {
-            write(fd, &mkpost, size);
-            count++;
-        }
-        ptr1 += size;
-    }
-    end_mmapfile((void *) ptr, buf.st_size, -1);
+    BBS_END end_mmapfile((void *) ptr, buf.st_size, -1);
+
     ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
     close(fd2);
@@ -1076,14 +1085,14 @@ int generate_mark()
     return 0;
 }
 
-static int simple_digest(char* str,int maxlen)
+static int simple_digest(char *str, int maxlen)
 {
-	char x[sizeof(int)];
-	char *p;
-	bzero(x,sizeof(int));
-	for (p=str;*p&&((p-str)<maxlen);p++)
-		x[(p-str)%sizeof(int)]+=*p;
-	return (int)x;
+    char x[sizeof(int)];
+    char *p;
+    bzero(x, sizeof(int));
+    for (p = str; *p && ((p - str) < maxlen); p++)
+        x[(p - str) % sizeof(int)] += *p;
+    return (int) x;
 }
 
 int generate_title()
@@ -1094,7 +1103,7 @@ int generate_title()
     char olddirect[PATHLEN];
     char *ptr, *t;
     struct hashstruct {
-    	int index, data;
+        int index, data;
     } *hashtable;
     int *index, *next;
     struct stat buf;
@@ -1137,86 +1146,113 @@ int generate_title()
     ldata2.l_start = 0;
     fcntl(fd2, F_SETLKW, &ldata2);
 
-    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
+    index = NULL;
+    hashtable = NULL;
+    next = NULL;
+    BBS_TRY {
+        if (safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & buf.st_size) == 0) {
+            ldata2.l_type = F_UNLCK;
+            fcntl(fd2, F_SETLKW, &ldata2);
+            close(fd2);
+            ldata.l_type = F_UNLCK;
+            fcntl(fd, F_SETLKW, &ldata);
+            close(fd);
+            BBS_RETURN(-1);
+        }
+        total = buf.st_size / size;
+        hasht = total * 8 / 5;
+        hashtable = (struct hashstruct *) malloc(sizeof(*hashtable) * hasht);
+        index = (int *) malloc(sizeof(int) * total);
+        next = (int *) malloc(sizeof(int) * total);
+        memset(hashtable, 0xFF, sizeof(*hashtable) * hasht);
+        memset(index, 0, sizeof(int) * total);
+        ptr1 = (struct fileheader *) ptr;
+        for (i = 0; i < total; i++, ptr1++) {
+            int l = 0, m;
+
+            if (ptr1->groupid == ptr1->id)
+                l = i;
+            else {
+                l = ptr1->groupid % hasht;
+                while (hashtable[l].index != ptr1->groupid && hashtable[l].index != -1) {
+                    l++;
+                    if (l >= hasht)
+                        l = 0;
+                }
+                if (hashtable[l].index == -1)
+                    l = i;
+                else
+                    l = hashtable[l].data;
+            }
+            if (l == i) {
+                l = ptr1->groupid % hasht;
+                while (hashtable[l].index != -1) {
+                    l++;
+                    if (l >= hasht)
+                        l = 0;
+                }
+                hashtable[l].index = ptr1->groupid;
+                hashtable[l].data = i;
+                index[i] = i;
+                next[i] = 0;
+            } else {
+                m = index[l];
+                next[m] = i;
+                next[i] = 0;
+                index[l] = i;
+                index[i] = -1;
+            }
+        }
+        ptr1 = (struct fileheader *) ptr;
+        for (i = 0; i < total; i++, ptr1++)
+            if (index[i] != -1) {
+                int last;
+
+                write(fd, ptr1, size);
+                count++;
+                j = next[i];
+                while (j != 0) {
+                    ptr2 = (struct fileheader *) (ptr + j * size);
+                    memcpy(&mkpost, ptr2, sizeof(mkpost));
+                    t = ptr2->title;
+                    if (!strncmp(t, "Re:", 3))
+                        t += 4;
+                    if (next[j] == 0)
+                        sprintf(mkpost.title, "©¸ %s", t);
+                    else
+                        sprintf(mkpost.title, "©À %s", t);
+                    write(fd, &mkpost, size);
+                    count++;
+                    j = next[j];
+                }
+            }
+
+        free(index);
+        free(next);
+        free(hashtable);
+    }
+    BBS_CATCH {
         ldata2.l_type = F_UNLCK;
         fcntl(fd2, F_SETLKW, &ldata2);
         close(fd2);
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-        return -1;
+        end_mmapfile((void *) ptr, buf.st_size, -1);
+        if (index)
+            free(index);
+        if (next)
+            free(next);
+        if (hashtable)
+            free(hashtable);
+        BBS_RETURN(-1);
     }
-    total = buf.st_size / size;
-    hasht = total*8/5;
-    hashtable = (struct hashstruct*) malloc(sizeof(*hashtable)*hasht);
-    index = (int*)malloc(sizeof(int)*total);
-    next = (int*)malloc(sizeof(int)*total);
-    memset(hashtable, 0xFF, sizeof(*hashtable)*hasht);
-    memset(index, 0, sizeof(int)*total);
-    ptr1 = (struct fileheader*)ptr;
-    for(i=0;i<total;i++,ptr1++){
-    	int l=0, m;
-    	if(ptr1->groupid==ptr1->id)
-    		l=i;
-    	else {
-    		l=ptr1->groupid%hasht;
-    		while(hashtable[l].index!=ptr1->groupid&&hashtable[l].index!=-1){
-    			l++;
-    			if(l>=hasht) l=0;
-    		}
-    		if(hashtable[l].index==-1) l=i;
-    		else l=hashtable[l].data;
-    	}
-    	if(l==i){
-    		l=ptr1->groupid%hasht;
-    		while(hashtable[l].index!=-1){
-    			l++;
-    			if(l>=hasht) l=0;
-    		}
-    		hashtable[l].index=ptr1->groupid;
-    		hashtable[l].data=i;
-    		index[i]=i;
-    		next[i]=0;
-    	}
-    	else {
-    		m=index[l];
-    		next[m]=i;
-    		next[i]=0;
-    		index[l]=i;
-    		index[i]=-1;
-    	}
-    }
-    ptr1 = (struct fileheader*)ptr;
-    for(i=0;i<total;i++,ptr1++) 
-    if (index[i]!=-1) {
-    	int last;
-    	write(fd, ptr1, size);
-    	count++;
-    	j=next[i];
-    	while(j!=0){
-    		ptr2=(struct fileheader*)(ptr+j*size);
-    		memcpy(&mkpost, ptr2, sizeof(mkpost));
-    		t = ptr2->title;
-    		if(!strncmp(t, "Re:", 3)) t+=4;
-		if(next[j]==0) sprintf(mkpost.title, "©¸ %s", t);
-		else sprintf(mkpost.title, "©À %s", t);
-    		write(fd, &mkpost, size);
-    		count++;
-    		j=next[j];
-    	}
-    }
-    free(index);
-    free(next);
-    free(hashtable);
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata2.l_type = F_UNLCK;
+    BBS_END ldata2.l_type = F_UNLCK;
     fcntl(fd2, F_SETLKW, &ldata2);
     close(fd2);
     ftruncate(fd, count * size);
 
-    setboardtitle(currboard, 0); // ±ê¼Çflag
+    setboardtitle(currboard, 0);        // ±ê¼Çflag
 
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        // ÍË³ö»¥³âÇøÓò
@@ -1232,88 +1268,92 @@ int generate_all_title()
     struct boardheader btmp;
     char olddirect[PATHLEN];
     char *ptr, *t, *t2;
-    struct search_temp{
-    	bool has_pre;
-    	int digest;
-    	int thread_id;
-    	int id;
-    	int next; 
-    }  *index;
+    struct search_temp {
+        bool has_pre;
+        int digest;
+        int thread_id;
+        int id;
+        int next;
+    } *index;
     struct stat buf;
     int gen_threadid;
 
-    if(!HAS_PERM(currentuser, PERM_SYSOP)) return 0;
+    if (!HAS_PERM(currentuser, PERM_SYSOP))
+        return 0;
 
 
-    for(boardt=1;boardt<=get_boardcount();boardt++){
-    	memcpy(&btmp, &bcache[boardt-1], sizeof(struct boardheader));
-    	strcpy(currboard, btmp.filename);
-    	setbdir(digestmode, currdirect, currboard);
+    for (boardt = 1; boardt <= get_boardcount(); boardt++) {
+        memcpy(&btmp, &bcache[boardt - 1], sizeof(struct boardheader));
+        strcpy(currboard, btmp.filename);
+        setbdir(digestmode, currdirect, currboard);
 
-	gen_threadid=1;
+        gen_threadid = 1;
 
-    if ((fd2 = open(currdirect, O_RDWR, 0664)) == -1) {
-        report("recopen err");
-        continue;
-    }
+        if ((fd2 = open(currdirect, O_RDWR, 0664)) == -1) {
+            report("recopen err");
+            continue;
+        }
 
-    if ((i = safe_mmapfile_handle(fd2, O_RDWR, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
+        BBS_TRY {
+            if (safe_mmapfile_handle(fd2, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size) == 0) {
+                close(fd2);
+                continue;
+            }
+            total = buf.st_size / size;
+            index = (int *) malloc(sizeof(*index) * total);
+            ptr1 = (struct fileheader *) ptr;
+            for (i = 0; i < total; i++, ptr1++) {
+                int j;
+
+                t2 = ptr1->title;
+                if (!strncmp(t2, "Re:", 3)) {
+                    index[i].has_pre = true;
+                    t2 += 4;
+                } else
+                    index[i].has_pre = false;
+                index[i].thread_id = 0;
+                index[i].digest = simple_digest(t2, STRLEN);
+                for (j = i - 1; j >= 0; j--) {
+                    struct fileheader *tmppost;
+
+                    if (index[j].digest != index[i].digest)
+                        continue;
+                    tmppost = ((struct fileheader *) (ptr + j * size));
+                    t = tmppost->title;
+                    if (index[j].has_pre)
+                        t += 4;
+                    if (!strcmp(t, t2)) {
+                        index[j].next = i;
+                        index[i].thread_id = index[j].thread_id;
+                        index[i].next = 0;
+                        break;
+                    }
+                }
+                if (index[i].thread_id == 0) {
+                    index[i].thread_id = gen_threadid;
+                    index[i].id = gen_threadid;
+                    index[i].next = 0;
+                    gen_threadid++;
+                } else {
+                    index[i].id = gen_threadid;
+                    gen_threadid++;
+                }
+            }
+            ptr1 = (struct fileheader *) ptr;
+            for (i = 0; i < total; i++, ptr1++) {
+                ptr1->id = index[i].id;
+                ptr1->groupid = index[i].thread_id;
+                ptr1->reid = index[i].thread_id;
+            }
+        }
+        BBS_CATCH {
+        }
+        BBS_END free(index);
+        end_mmapfile((void *) ptr, buf.st_size, -1);
         close(fd2);
-        continue;
+        btmp.nowid = gen_threadid + 1;
+        set_board(boardt, &btmp);
     }
-    total = buf.st_size / size;
-    index = (int*)malloc(sizeof(*index)*total);
-    ptr1 = (struct fileheader*)ptr;
-    for (i = 0; i < total; i++, ptr1++) {
-    	int j;
-        t2 = ptr1->title;
-        if (!strncmp(t2, "Re:",3)) {
-   			index[i].has_pre=true;
-        	t2+=4;
-        } else
-   			index[i].has_pre=false;
-        index[i].thread_id=0;
-        index[i].digest=simple_digest(t2,STRLEN);
-    	for (j=i-1; j>=0;j--) {
-    		struct fileheader* tmppost;
-    		if (index[j].digest!=index[i].digest)
-    			continue;
-    		tmppost = ((struct fileheader*)(ptr+j*size));
-    		t = tmppost->title;
-    		if (index[j].has_pre) 
-    			t+=4;
-    		if (!strcmp(t, t2)) {
-    			index[j].next=i;
-    			index[i].thread_id=index[j].thread_id;
-    			index[i].next=0;
-    			break;
-    		}
-    	}
-        if (index[i].thread_id==0) {
-        	index[i].thread_id=gen_threadid;
-        	index[i].id = gen_threadid;
-        	index[i].next=0;
-        	gen_threadid++;
-        }
-        else {
-        	index[i].id = gen_threadid;
-        	gen_threadid++;
-        }
-    }
-    ptr1 = (struct fileheader*)ptr;
-    for(i=0;i<total;i++,ptr1++) {
-    	ptr1->id = index[i].id;
-    	ptr1->groupid = index[i].thread_id;
-    	ptr1->reid = index[i].thread_id;
-    }
-    free(index);
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    close(fd2);
-    btmp.nowid = gen_threadid+1;
-    set_board(boardt, &btmp);
-   }
     return 0;
 }
 
@@ -1343,7 +1383,7 @@ int marked_mode()
 int title_mode()
 {
     struct stat st;
-    
+
     if (!stat("heavyload", &st)) {
         move(t_lines - 1, 0);
         clrtoeol();
@@ -1352,7 +1392,7 @@ int title_mode()
         pressanykey();
         return FULLUPDATE;
     }
-    
+
     digestmode = 2;
     if (setboardtitle(currboard, -1)) {
         if (generate_title() == -1) {
@@ -1383,8 +1423,8 @@ int search_mode(int mode, char *index)
     setbdir(digestmode, olddirect, currboard);
     digestmode = mode;
     setbdir(digestmode, currdirect, currboard);
-    if (mode==6&& !setboardorigin(currboard, -1)) {
-    	return NEWDIRECT;
+    if (mode == 6 && !setboardorigin(currboard, -1)) {
+        return NEWDIRECT;
     }
     if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
         report("recopen err");
@@ -1400,7 +1440,7 @@ int search_mode(int mode, char *index)
         return FULLUPDATE;      // lock error
     }
     // ¿ªÊ¼»¥³â¹ý³Ì
-    if (mode==6&& !setboardorigin(currboard, -1)) {
+    if (mode == 6 && !setboardorigin(currboard, -1)) {
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
@@ -1448,8 +1488,9 @@ int search_mode(int mode, char *index)
     close(fd2);
     ftruncate(fd, count * size);
 
-    if(mode==6) setboardorigin(currboard, 0); // ±ê¼Çflag
-    
+    if (mode == 6)
+        setboardorigin(currboard, 0);   // ±ê¼Çflag
+
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        // ÍË³ö»¥³âÇøÓò
     close(fd);
@@ -1473,8 +1514,8 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
     clrtoeol();
     getdata(t_lines - 1, 0, "ÇÐ»»Ä£Ê½µ½: 1)ÎÄÕª 2)Í¬Ö÷Ìâ 3)±»mÎÄÕÂ 4)Ô­×÷ 5)Í¬×÷Õß 6)±êÌâ¹Ø¼ü×Ö [1]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0] == ' ') {
-    	 ans[0] = ans[1];
-    	 ans[1] = 0;
+        ans[0] = ans[1];
+        ans[1] = 0;
     }
     if (ans[0] == '5') {
         move(t_lines - 1, 0);
@@ -1504,12 +1545,12 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
         return digest_mode();
         break;
     case '2':
-    	 return title_mode();
-    	 break;
+        return title_mode();
+        break;
     case '3':
         return marked_mode();
         break;
-   case '4':
+    case '4':
         return search_mode(6, buf);
         break;
     case '5':
@@ -2290,7 +2331,7 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
                 return DONOTHING;
             }
     strcpy(buf, fileinfo->title);
-    getdata(t_lines - 1, 0, "ÐÂÎÄÕÂ±êÌâ: ", buf, 50, DOECHO, NULL, false);       /*ÊäÈë±êÌâ */
+    getdata(t_lines - 1, 0, "ÐÂÎÄÕÂ±êÌâ: ", buf, 50, DOECHO, NULL, false);      /*ÊäÈë±êÌâ */
     if (buf[0] != '\0') {
         char tmp[STRLEN * 2], *t;
         char tmp2[STRLEN];      /* Leeward 98.03.29 */
@@ -2347,8 +2388,8 @@ int edit_title(int ent, struct fileheader *fileinfo, char *direct)
 
         substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
 
-	 setboardorigin(currboard, 1);
-	 setboardtitle(currboard, 1);
+        setboardorigin(currboard, 1);
+        setboardtitle(currboard, 1);
     }
     return PARTUPDATE;
 }
@@ -3048,7 +3089,7 @@ int Goodbye()
              * i,sysoplist[i+4],syswork[i+4]);
              * prints("[[33m%1d[m] »¹ÊÇ×ßÁËÂÞ£¡\n",4); 
  *//*
- * * ×îºóÒ»¸öÑ¡Ïî 
+ * * * * ×îºóÒ»¸öÑ¡Ïî 
  */
             /*
              * sprintf(spbuf,"ÄãµÄÑ¡ÔñÊÇ [[32m%1d[m]£º",4);
@@ -3196,7 +3237,7 @@ int Goodbye()
             if (!strcmp(uid, currentuser->userid))      /*É¾³ý±¾ÓÃ»§µÄ Ñ°ÈËÃûµ¥ */
                 del_from_file("friendbook", buf);       /*Ñ°ÈËÃûµ¥Ö»ÔÚ±¾´ÎÉÏÏßÓÐÐ§ */
         }
-        if (fp)                                                    /*---	add by period 2000-11-11 fix null hd bug	---*/
+        if (fp)                                                            /*---	add by period 2000-11-11 fix null hd bug	---*/
             fclose(fp);
     }
     sleep(1);
@@ -3324,8 +3365,8 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
      */
     if ((flag <= FILE_DELETE_FLAG) && strstr(direct, "/.THREAD"))
         return DONOTHING;
-    if (flag==FILE_TITLE_FLAG&&digestmode!=0)
-    	return DONOTHING;
+    if (flag == FILE_TITLE_FLAG && digestmode != 0)
+        return DONOTHING;
 
     strcpy(buf, direct);
     ptr = strrchr(buf, '/') + 1;
@@ -3468,14 +3509,14 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
             }
         }
         break;
-      case FILE_TITLE_FLAG:
-      	fileinfo->groupid = fileinfo->id;
-      	fileinfo->reid = fileinfo->id;
-      	if(!strncmp(fileinfo->title, "Re:", 3)) {
-      		strcpy(buf, fileinfo->title+4);
-      		strcpy(fileinfo->title, buf);
-      	}
-      	break;
+    case FILE_TITLE_FLAG:
+        fileinfo->groupid = fileinfo->id;
+        fileinfo->reid = fileinfo->id;
+        if (!strncmp(fileinfo->title, "Re:", 3)) {
+            strcpy(buf, fileinfo->title + 4);
+            strcpy(fileinfo->title, buf);
+        }
+        break;
     }
 
     if (lseek(fd, size * (ent - 1), SEEK_SET) == -1) {
@@ -3502,7 +3543,8 @@ int change_post_flag(int ent, struct fileheader *fileinfo, char *direct, int fla
 
 int set_be_title(int ent, struct fileheader *fileinfo, char *direct)
 {
-    /*ÉèÖÃ¸ÃÎÄ¼þÎª±êÌâÎÄ¼þ---- added by bad 2002.8.14*/
+    /*
+     * ÉèÖÃ¸ÃÎÄ¼þÎª±êÌâÎÄ¼þ---- added by bad 2002.8.14
+     */
     return change_post_flag(ent, fileinfo, direct, FILE_TITLE_FLAG, 0);
 }
-

@@ -81,8 +81,10 @@ char *idle_str(struct user_info *uent)
         diff = 0;
 
 #ifdef DOTIMEOUT
-    /* the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
-       kicking out all users */
+    /*
+     * the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
+     * kicking out all users 
+     */
     if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5))
         kill(uent->pid, SIGHUP);
 
@@ -104,7 +106,9 @@ char *modestring(int mode, int towho, int complete, char *chatid)
     struct userec urec;
 
 
-    /* Leeward: 97.12.18: Below removing ' characters for more display width */
+    /*
+     * Leeward: 97.12.18: Below removing ' characters for more display width 
+     */
     if (chatid) {
         if (complete)
             sprintf(modestr, "%s %s", ModeType(mode), chatid);
@@ -163,7 +167,7 @@ int numbbsenvs = 0;
 #endif
 
 /* Case Independent strncmp */
-int ci_strncmp(register char *s1,register char  *s2,register int n)
+int ci_strncmp(register char *s1, register char *s2, register int n)
 {
     char c1, c2;
 
@@ -182,7 +186,7 @@ int ci_strncmp(register char *s1,register char  *s2,register int n)
     return 0;
 }
 
-int ci_strcmp(register char *s1,register char  *s2)
+int ci_strcmp(register char *s1, register char *s2)
 {
     char c1, c2;
 
@@ -199,9 +203,10 @@ int ci_strcmp(register char *s1,register char  *s2)
             return 0;
     }
 }
+
 #ifdef BBSMAIN
 #ifdef CAN_EXEC
-int bbssetenv(char *env,char *val)
+int bbssetenv(char *env, char *val)
 {
     register int i, len;
 
@@ -291,8 +296,9 @@ int do_exec(char *com, *wd)
         if (wd)
             if (chdir(wd)) {
 
-                /* change by KCN 1999.09.08
-                   fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
+                /*
+                 * change by KCN 1999.09.08
+                 * fprintf(stderr,"Unable to chdir to '%s'\n",wd) ;
                  */
                 prints("Unable to chdir to '%s'\n", wd);
                 oflush();
@@ -303,19 +309,24 @@ int do_exec(char *com, *wd)
         bbssetenv("USER", currentuser->userid);
         bbssetenv("USERNAME", currentuser->username);
 
-        /* added for tin's reply to */
+        /*
+         * added for tin's reply to 
+         */
         bbssetenv("REPLYTO", currentuser->email);
         bbssetenv("FROMHOST", fromhost);
 
-        /* end of insertion */
+        /*
+         * end of insertion 
+         */
         if ((tz = getenv("TZ")) != NULL)
             bbssetenv("TZ", tz);
         if (numbbsenvs == 0)
             bbsenv[0] = NULL;
         execve(path, arglist, bbsenv);
 
-        /* change by KCN 1999.09.08
-           fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
+        /*
+         * change by KCN 1999.09.08
+         * fprintf(stderr,"EXECV FAILED... path = '%s'\n",path) ;
          */
         prints("EXECV FAILED... path = '%s'\n", path);
         oflush();
@@ -325,13 +336,15 @@ int do_exec(char *com, *wd)
     qsig = signal(SIGQUIT, SIG_IGN);
     while ((w = wait(&status)) != pid && w != 1)
 
-        /* NULL STATEMENT */ ;
+        /*
+         * NULL STATEMENT 
+         */ ;
     signal(SIGINT, isig);
     signal(SIGQUIT, qsig);
     return ((w == -1) ? w : status);
 }
 
-#endif /* CAN _EXEC */
+#endif                          /* CAN _EXEC */
 #endif                          /*  */
 
 #ifdef kill
@@ -347,7 +360,9 @@ int safe_kill(int x, int y)
 char *Cdate(time_t clock)
 {                               /* 时间 --> 英文 */
 
-    /* Leeward 2000.01.01 Adjust year display for 20** */
+    /*
+     * Leeward 2000.01.01 Adjust year display for 20** 
+     */
     static char foo[24 /*22 */ ];
     struct tm *mytm = localtime(&clock);
 
@@ -567,7 +582,9 @@ int countperf(struct userec *udata)
     return perf > 0 ? perf : 0;
 }
 char *setbdir(int digestmode, char *buf, char *boardname)
-  /* 根据阅读模式 取某版 目录路径 */
+  /*
+   * 根据阅读模式 取某版 目录路径 
+   */
 {
     char dir[STRLEN];
 
@@ -582,8 +599,8 @@ char *setbdir(int digestmode, char *buf, char *boardname)
         strcpy(dir, THREAD_DIR);
         break;
     case 3:
-    	 strcpy(dir, ".MARK");
-    	 break;
+        strcpy(dir, ".MARK");
+        break;
     case 4:
         strcpy(dir, ".DELETED");
         break;
@@ -591,14 +608,14 @@ char *setbdir(int digestmode, char *buf, char *boardname)
         strcpy(dir, ".JUNK");
         break;
     case 6:
-    	 strcpy(dir, ".ORIGIN");
-    	 break;
+        strcpy(dir, ".ORIGIN");
+        break;
     case 7:
-    	 sprintf(dir, ".AUTHOR.%s", currentuser->userid);
-    	 break;
+        sprintf(dir, ".AUTHOR.%s", currentuser->userid);
+        break;
     case 8:
-    	 sprintf(dir, ".TITLE.%s", currentuser->userid);
-    	 break;
+        sprintf(dir, ".TITLE.%s", currentuser->userid);
+        break;
     }
     sprintf(buf, "boards/%s/%s", boardname, dir);
     return buf;
@@ -716,8 +733,12 @@ void bbssettime(time_t now)
         publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, NULL);    /* attach public share memory */
         if (iscreate) {
 
-            /* 初始化public共享内存区 */
-            /* 开始的sysconf.img版本号为0 */
+            /*
+             * 初始化public共享内存区 
+             */
+            /*
+             * 开始的sysconf.img版本号为0 
+             */
             unlink("sysconf.img.0");
             publicshm->sysconfimg_version = 0;
         }
@@ -891,7 +912,7 @@ void sigbus(int signo)
 {
     siglongjmp(bus_jump, 1);
 };
-int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_ptr, int *size)
+int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_ptr, size_t * size)
 {
     struct stat st;
 
@@ -912,17 +933,13 @@ int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_pt
     *ret_ptr = mmap(NULL, st.st_size, prot, flag, fd, 0);
     if (*ret_ptr == NULL)
         return 0;
-    if (!sigsetjmp(bus_jump, 1)) {
-        signal(SIGBUS, sigbus);
-
-        /*
-           signal(SIGSEGV,sigbus);
-         */
-        *size = st.st_size;
-        return 1;
-    }
+    /*
+     * signal(SIGSEGV,sigbus);
+     */
+    *size = st.st_size;
+    return 1;
 }
-int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, int *size, int *ret_fd)
+int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, size_t * size, int *ret_fd)
 {
     int fd;
     struct stat st;
@@ -952,23 +969,14 @@ int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_p
     }
     if (*ret_ptr == NULL)
         return 0;
-    if (!sigsetjmp(bus_jump, 1)) {
-        signal(SIGBUS, sigbus);
-	/*
-        signal(SIGSEGV, sigbus);
-	*/
-        *size = st.st_size;
-        return 1;
-    }
-    return 2;
+    *size = st.st_size;
+    return 1;
 }
 void end_mmapfile(void *ptr, int size, int fd)
 {
     munmap(ptr, size);
-    signal(SIGBUS, SIG_IGN);
-
     /*
-       signal(SIGSEGV,SIG_IGN);
+     * signal(SIGSEGV,SIG_IGN);
      */
     if (fd != -1)
         close(fd);
@@ -1015,10 +1023,12 @@ char filename[STRLEN], str[STRLEN];
 
 time_t get_exit_time(char *id, char *exittime)
 {                               /* 获取离线时间，id:用户ID,
-                                   exittime:保存返回的时间，结束符为\n
-                                   建议定义为 char exittime[40]
-                                   Luzi 1998/10/23 */
-    /* Leeward 98.10.26 add return value: time_t */
+                                 * exittime:保存返回的时间，结束符为\n
+                                 * 建议定义为 char exittime[40]
+                                 * Luzi 1998/10/23 */
+    /*
+     * Leeward 98.10.26 add return value: time_t 
+     */
     char path[80];
 
     FILE *fp;
@@ -1117,10 +1127,10 @@ char *uid, *frm;
 }
 int check_ban_IP(char *IP, char *buf)
 {                               /* Leeward 98.07.31
-                                   RETURN:
-                                   - 1: No any banned IP is defined now
-                                   0: The checked IP is not banned
-                                   other value over 0: The checked IP is banned, the reason is put in buf
+                                 * RETURN:
+                                 * - 1: No any banned IP is defined now
+                                 * 0: The checked IP is not banned
+                                 * other value over 0: The checked IP is banned, the reason is put in buf
                                  */
     FILE *Ban = fopen(".badIP", "r");
     char IPBan[64];
