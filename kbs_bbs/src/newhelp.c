@@ -151,7 +151,7 @@ static int del_help(unsigned int id)
 	return 0;
 }
 
-static int add_new_help(int mode, struct helps *pn, char *body)
+static int add_new_help(int mode, struct helps *pn, char *body, int num)
 {
 	MYSQL s;
 	char newindex[21];
@@ -175,7 +175,11 @@ static int add_new_help(int mode, struct helps *pn, char *body)
 	mysql_escape_string(newdesc, pn->desc, strlen(pn->desc));
 	mysql_escape_string(newbody, body, strlen(body));
 
-	sprintf(sql,"INSERT INTO help VALUES (NULL, %d, '%s', '%s', '%s');",mode, newindex, newdesc, newbody);
+	if( num == -1 ){
+		sprintf(sql,"INSERT INTO help VALUES (NULL, %d, '%s', '%s', '%s');",mode, newindex, newdesc, newbody);
+	}else{
+		sprintf(sql,"UPDATE help SET prekey='%s', func='%s', content='%s' WHERE id=%d;", newindex, newdesc, newbody, s_help[num].id);
+	}
 	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
 		clear();
@@ -190,7 +194,7 @@ static int add_new_help(int mode, struct helps *pn, char *body)
 	return 0;
 }
 
-int add_help(int mode)
+int add_help(int mode, int num)
 {
 	struct helps pn;
 	char ans[501];
@@ -198,26 +202,41 @@ int add_help(int mode)
 	bzero( &pn, sizeof(pn) );
 
 	clear();
-	prints("新增加帮助,模式: %s\n", helpmodestr[mode-1]);
+	prints("%s帮助,模式: %s\n", num==-1?"增加":"修改",helpmodestr[mode-1]);
 
 	pn.modeid = mode;
-	getdata(2,0,"索引(10字节最多):",ans,11,DOECHO,NULL,true);
+
+	if( num == -1 )
+		ans[0] = 0;
+	else
+		strcpy(ans, s_help[num].index);
+	getdata(2,0,"索引(10字节最多):",ans,11,DOECHO,NULL,false);
 	if(! ans[0])
 		return -1;
 	strncpy(pn.index, ans, 10);
 	pn.index[10]=0;
 
-	getdata(3,0,"简单描述(40字节最多):",ans,41,DOECHO,NULL,true);
+	if( num == -1 )
+		ans[0] = 0;
+	else
+		strcpy(ans, s_help[num].desc);
+	getdata(3,0,"简单描述(40字节最多):",ans,41,DOECHO,NULL,false);
 	if(! ans[0])
 		return -1;
 	strncpy(pn.desc, ans, 40);
 	pn.desc[40]=0;
 
+	if(num != -1 && s_help[num].content!=NULL) {
+		strncpy(ans, s_help[num].content, 500);
+		ans[500]=0;
+	}else
+		ans[0]=0;
+
 	move(4,0);
 	prints("请输入具体描述,15行500字内:");
-	multi_getdata(5, 0, 79, NULL, ans, 500, 15, true, 0);
+	multi_getdata(5, 0, 79, NULL, ans, 500, 15, false, 0);
 
-	if( add_new_help(mode, &pn, ans) == 0) {
+	if( add_new_help(mode, &pn, ans, num) == 0) {
 		prints("\n增加成功\n");
 		pressanykey();
 		return 0;
@@ -347,7 +366,13 @@ static int help_key(struct _select_def *conf, int key)
 	}
 	case 'a':
 		if( HAS_PERM(currentuser, PERM_SYSOP) ){
-			if( add_help(*((int *)conf->arg)) < 0 )
+			if( add_help(*((int *)conf->arg), -1) < 0 )
+				return SHOW_REFRESH;
+			return SHOW_DIRCHANGE;
+		}
+	case 'e':
+		if( HAS_PERM(currentuser, PERM_SYSOP) ){
+			if( add_help(*((int *)conf->arg), conf->pos - conf->page_pos) < 0 )
 				return SHOW_REFRESH;
 			return SHOW_DIRCHANGE;
 		}
@@ -415,7 +440,7 @@ int newhelp_loop(int mode){
 		free(pts);
 		free(s_help);
 		if( HAS_PERM(currentuser, PERM_SYSOP) ){
-			add_help(mode);
+			add_help(mode, -1);
 		}else{
 			clear();
 			prints("现在没有该状态下帮助，或者系统出错\n");
