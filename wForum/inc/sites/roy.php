@@ -27,8 +27,9 @@ $SiteURL="http://172.16.50.79";
 
 
 
-define("ATTACHMAXSIZE","2097152");
-define("ATTACHMAXCOUNT","3");
+define("ATTACHMAXSIZE","1048576");
+define("ATTACHMAXCOUNT","5");
+
 $section_nums = array("0", "1", "2", "3", "4");
 $section_names = array(
     array("BBS ϵͳ", "[ϵͳ]"),

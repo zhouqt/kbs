@@ -260,8 +260,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 			}
 		}
 	}
-?>
-	</textarea>
+?></textarea>
           </td>
         </tr>
 
