@@ -48,20 +48,24 @@ int show_user_plan(userid)
 
         hprintf("[36m¸öÈËËµÃ÷µµÈçÏÂ£º[m\n");
     	printf("</pre>\n");
-		if (flock(fd, LOCK_EX) == -1)
+		if (flock(fd, LOCK_EX) == -1){
+			close(fd);
 			return 0;
+		}
 		BBS_TRY
 		{
 			if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED,
 						(void **)&ptr, &filesize) == 0)
 			{
 				flock(fd, LOCK_UN);
+				close(fd);
 				BBS_RETURN(0);
 			}
 			if ((out.buf = (char *)malloc(outbuf_len)) == NULL)
 			{
 				end_mmapfile((void *)ptr, filesize, -1);
 				flock(fd, LOCK_UN);
+				close(fd);
 				BBS_RETURN(0);
 			}
 			out.outp = out.buf;
@@ -76,6 +80,7 @@ int show_user_plan(userid)
 		}
 		BBS_END end_mmapfile((void *)ptr, filesize, -1);
 		flock(fd, LOCK_UN);
+		close(fd);
         return 1;
     }
 }

@@ -87,11 +87,14 @@ int show_article(char *filename,char *www_url)
 		const int outbuf_len = 4096;
 		buffered_output_t *out;
 
-		if (flock(fd, LOCK_EX) == -1)
+		if (flock(fd, LOCK_EX) == -1){
+			close(fd);
 			return 0;
+		}
 		if ((out = alloc_output(outbuf_len)) == NULL)
 		{
 			flock(fd, LOCK_UN);
+			close(fd);
 			return 0;
 		}
 		BBS_TRY
@@ -101,6 +104,7 @@ int show_article(char *filename,char *www_url)
 			{
 				flock(fd, LOCK_UN);
 				free_output(out);
+				close(fd);
 				BBS_RETURN(0);
 			}
 			output_ansi_html(ptr, filesize, out, www_url);
@@ -111,6 +115,7 @@ int show_article(char *filename,char *www_url)
 		BBS_END end_mmapfile((void *)ptr, filesize, -1);
 		flock(fd, LOCK_UN);
 		free_output(out);
+		close(fd);
         return 1;
     }
 }
