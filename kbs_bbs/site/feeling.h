@@ -6,7 +6,7 @@
 #define CONV_PASS		1
 #define NINE_BUILD		0
 #define NEW_COMERS		1	/* 注册后在 newcomers 版自动发文 */
-#define HAVE_BIRTHDAY		0
+#define HAVE_BIRTHDAY		1
 #define HAPPY_BBS		0
 #define HAVE_COLOR_DATE		1
 #define HAVE_TEMPORARY_NICK	1
@@ -22,7 +22,7 @@
 #define MAILOUT			1	/* 是否允许向站外主动发信 */
 #define MANUAL_DENY		0	/*是否允许手动解封*/
 #define BBS_SERVICE_DICT	1
-#define HAVE_TSINGHUA_INFO_REGISTER 0
+#define HAVE_TSINGHUA_INFO_REGISTER 0	/* 允许从清华信息系统注册 */
 
 #define SMTH			1
 #define FILTER			1
@@ -336,4 +336,6 @@ typedef struct fileheader fileheader_t;
 attach define
 */
 #define ATTACHTMPPATH "boards/_attach"
+
+#define CHECK_IP_LINK
 #endif

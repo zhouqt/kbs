@@ -373,31 +373,54 @@ char *ModeType(mode)
     case CHICKEN:
 	return "星空战斗鸡";
     case KILLER:        return "杀人游戏";
+    case CALENDAR:  return "万年历";
+    case CALENEDIT: return "日记本";
+    case DICT: return "查字典";
+    case CALC: return "计算器";
+    case SETACL: return "登录控制";
     default:
         return "去了那里!?";
     }
+}
+
+struct count_arg {
+    int www_count;
+    int telnet_count;
+};
+
+int countuser(struct user_info* uinfo,struct count_arg* arg,int pos)
+{
+    if (uinfo->mode==WEBEXPLORE)
+        arg->www_count++;
+    else
+        arg->telnet_count++;
+    return COUNT;
 }
 
 int multilogin_user(struct userec *user, int usernum,int mode)
 {
     int logincount;
     int curr_login_num;
+    struct count_arg arg;
 
-    logincount = apply_utmpuid(NULL, usernum, 0);
+    bzero(&arg,sizeof(arg));
+    logincount = apply_utmpuid((APPLY_UTMP_FUNC)countuser, usernum, &arg);
 
     if (logincount < 1)
         RemoveMsgCountFile(user->userid);
 
+#ifdef FILTER
+    if (!strcmp(user->userid,"menss")&&logincount<2)
+        return 0;
+#endif
     if (HAS_PERM(user, PERM_MULTILOG))
         return 0;               /* don't check sysops */
     curr_login_num = get_utmp_number();
-    /* Leeward: 97.12.22 BMs may open 2 windows at any time */
-    /* Bigman: 2000.8.17 智囊团能够开2个窗口 */
-    /* stephen: 2001.10.30 仲裁可以开两个窗口 */
+    /* binxun 2003.5 仲裁，版主，Chatop，等都可以三登*/
     if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
     	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
     	|| HAS_PERM(user, PERM_BMAMANGER) )
-        && logincount < 2)
+        && logincount < 3)
         return 0;
     /* allow multiple guest user */
     if (!strcmp("guest", user->userid)) {
@@ -405,8 +428,10 @@ int multilogin_user(struct userec *user, int usernum,int mode)
             return 2;
         }
         return 0;
-    } else if (((curr_login_num < 700) && (logincount >= 2))
-               || ((curr_login_num >= 700) && (logincount >= 1)))       /*user login limit */
+    } else if (((curr_login_num < 700) && (logincount >= 3)) /*小于700可以三登*/
+               || ((curr_login_num >= 700) && (logincount >= 2)  /*700人以上*/
+                     && !(((arg.telnet_count==0)&&(mode==0))  /* telnet个数为零可以再登一个telnet */
+                            || (((arg.www_count==0)&&(mode==1)) ))))       /*user login limit */
         return 1;
     return 0;
 }
