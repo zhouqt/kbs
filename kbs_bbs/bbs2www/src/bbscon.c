@@ -88,7 +88,7 @@ int main()
     if (records[0].id != 0) {
         printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">上一篇</a>]", buf2, records[0].id, num - 1);
     }
-    printf("[<a href=\"/bbsdoc.php?board=%s&page=%d\">本讨论区</a>]", buf2, (num + BBS_PAGE_SIZE - 1) / BBS_PAGE_SIZE);
+    printf("[<a href=\"/bbsdoc.php?board=%s&page=%d\">本讨论区</a>]", buf2, (num + WWW_PAGE_SIZE - 1) / WWW_PAGE_SIZE);
     if (records[2].id != 0) {
         printf("[<a href=\"bbscon?board=%s&id=%d&num=%d\">下一篇</a>]", buf2, records[2].id, num + 1);
     }

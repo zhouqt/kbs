@@ -571,4 +571,8 @@ attach define
 #ifndef ATTACHTMPPATH
 #define ATTACHTMPPATH "boards/_attach"
 #endif
+
+#ifndef WWW_PAGE_SIZE //www的每页条目数
+#define WWW_PAGE_SIZE 20
+#endif
 #endif
