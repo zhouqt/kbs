@@ -14,7 +14,7 @@
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
 <title>欢迎莅临<?php echo BBS_FULL_NAME; ?></title>
 </head>
-<frameset name=mainframe frameborder=0 border=0 cols="167,11,*">
+<frameset name=mainframe id=mainframe frameborder=0 border=0 cols="167,11,*">
 	<frame name=menu noresize="true" marginwidth=0 marginheight=0 src="/bbsleft.php">
 	<frame scrolling=no noresize="true" name=toogle marginwidth=0 marginheight=0 src="/wtoogle.html">
 	<frameset name="viewfrm" <?php 

@@ -108,6 +108,7 @@ login_init();
                 {
                 if( $brd_unread[$i] ==-1 && $brd_artcnt[$i] ==-1)
                         continue;
+                if ($brd_bid[$i] == -1) continue;
 ?>
 <tr>
 <td class="kt3 c2" align=center height=25><?php echo $i+1; ?></td>
