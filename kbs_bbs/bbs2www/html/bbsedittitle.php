@@ -27,7 +27,7 @@ if ($brdnum == 0)
 
 $board=$brdarr["NAME"];
 $brd_encode = urlencode($board);
-bbs_set_onboard($brcnum,1);
+bbs_set_onboard($brdnum,1);
 $usernum = $currentuser["index"];
 if (bbs_checkreadperm($usernum, $brdnum) == 0)
 	html_error_quit("错误的讨论区");
@@ -54,7 +54,7 @@ $num = bbs_get_records_from_id($board, $id, $mode, $articles);
 if($num==0)
 	html_error_quit("错误的文章号,原文可能已经被删除");
 
-if($_POST["title"])
+if(isset($_POST["title"]))
 {
 	$ret = bbs_edittitle($board,$id,$_POST["title"],$mode);
 	if($ret != 0)

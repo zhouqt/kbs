@@ -136,7 +136,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
                    html_nologin();
                    return;
                }
-        bbs_set_onboard($brcnum,1);
+        bbs_set_onboard($brdnum,1);
 
 	if($loginok == 1)
 		$usernum = $currentuser["index"];
@@ -249,7 +249,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 			}
 			html_init("gb2312","","",1);
 ?>
-<body>
+<body topmargin="0">
 <!-- 暂时这样改，比较 ugly  -->
 <script language="javascript">
 <?php

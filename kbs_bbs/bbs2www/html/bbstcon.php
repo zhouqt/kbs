@@ -50,9 +50,9 @@ login_init();
 	
 	$gid = $_GET["gid"];
 	settype($gid, "integer");
-	$start = $_GET["start"];
+	$start = isset($_GET["start"])?$_GET["start"]:0;
 	settype($start, "integer");
-	$pno = $_GET["pno"];
+	$pno = isset($_GET["pno"])?$_GET["pno"]:0;
 	settype($pno, "integer");
 	
 	if( $gid < 0 ) $gid = 0 ; 
@@ -76,7 +76,7 @@ login_init();
         	html_nologin();
         	return;
         }
-        bbs_set_onboard($brcnum,1);
+        bbs_set_onboard($bid,1);
 
 	if($loginok == 1)
 		$usernum = $currentuser["index"];

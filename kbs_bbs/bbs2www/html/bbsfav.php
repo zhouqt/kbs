@@ -49,7 +49,7 @@ login_init();
                 if ($boards == FALSE)
                         html_error_quit("¶ÁÈ¡°æÁÐ±íÊ§°Ü");
 ?>
-<body>
+<body topmargin="0">
 <table width="100%" border="0" cellspacing="0" cellpadding="3" >
   <tr> 
     <td colspan="2" class="kb2" colspan=2>

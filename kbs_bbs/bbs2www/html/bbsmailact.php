@@ -14,9 +14,9 @@ login_init();
 	else
 	{
 		$act = $_GET["act"];
-		$dirname = $_GET["dir"];
-		$title = $_GET["title"];
-		$act2 = $_POST["act2"];
+		$dirname = isset($_GET["dir"])?$_GET["dir"]:false;
+		$title = isset($_GET["title"])?$_GET["title"]:false;
+		$act2 = isset($_POST["act2"])?$_POST["act2"]:false;
 		
 		if($act == "clear" )
 		{

@@ -29,7 +29,7 @@ login_init();
 			html_error_quit("错误的参数2");
 		}
 		$dir = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$dirname ;
-		$total = filesize( $dir ) / 256 ;
+		$total = filesize($dir) / 140;
 		if( $total <= 0 ){
 			html_init("gb2312");
 			html_error_quit("信笺不存在");

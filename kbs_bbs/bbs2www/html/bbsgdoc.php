@@ -8,7 +8,7 @@ login_init();
 
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$order=FALSE)
 	{
-		global $section_names;
+		global $section_names,$currentuser;
 		$brd_encode = urlencode($brdarr["NAME"]);
 	?>		
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">		
@@ -177,7 +177,7 @@ login_init();
 		$total = bbs_countarticles($brdnum, $dir_modes["DIGEST"]);
 		if ($total <= 0)
 			html_error_quit("本讨论区目前没有文章");
-		bbs_set_onboard($brcnum,1);
+		bbs_set_onboard($brdnum,1);
 
 		if (isset($_GET["start"]))
 			$start = $_GET["start"];
@@ -217,8 +217,9 @@ login_init();
 		}
 	
 		$brd_encode = urlencode($brdarr["NAME"]);
+		$order_articles = false;
 ?>
-<body>
+<body topmargin="0">
 <a name="listtop"></a>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 

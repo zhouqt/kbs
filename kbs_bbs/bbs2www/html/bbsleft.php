@@ -563,7 +563,7 @@ bbs_auto_reload();
 					<a href="bbssig.php" target="f3">改签名档</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="cgi-bin/bbs/bbspwd" target="f3">修改密码</a><br>
+					<a href="/bbspwd.php" target="f3">修改密码</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="cgi-bin/bbs/bbsparm" target="f3">修改个人参数</a><br>

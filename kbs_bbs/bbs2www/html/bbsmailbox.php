@@ -78,6 +78,7 @@ function bbsconfirm(url,infor){
 }
 -->
 </script>
+<body topmargin="0">
 <p align="left" class="b2">
 <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
 -
