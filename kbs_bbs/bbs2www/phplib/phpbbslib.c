@@ -4469,9 +4469,26 @@ static PHP_FUNCTION(bbs_getmailnum)
     int fd;
 	long oldtotal,oldunread;
 
+#ifndef HAVE_WFORUM
     if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "szzll", &userid, &userid_len, &total, &unread, &oldtotal, &oldunread) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
+#else //added by atppp
+    if (ac == 5) {
+        if (zend_parse_parameters(5 TSRMLS_CC, "szzll", &userid, &userid_len, &total, &unread, &oldtotal, &oldunread) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+    } else if (ac == 3) {
+        if (zend_parse_parameters(3 TSRMLS_CC, "szz", &userid, &userid_len, &total, &unread) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+        oldtotal = 0;
+        oldunread = 0;
+    } else {
+        WRONG_PARAM_COUNT;
+    }
+#endif
+
     if (userid_len > IDLEN)
         WRONG_PARAM_COUNT;
 
