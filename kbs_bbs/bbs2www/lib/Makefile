@@ -24,4 +24,4 @@ install:
 #	cp html/* $(HTMPATH)
 
 clean:
-	rm -f *.o core *.core libbbslib.a
+	rm -f *.il *.o core *.core libbbslib.a

@@ -50,4 +50,4 @@ $(patsubst %,$(CGIPATH)/%,$(CGI)): $(CGIPATH)/%: %
 	$(INSTALL) -m04771 $^ $(CGIPATH)
 
 clean:
-	rm -f *.o core *.core libbbslib.a $(CGI)
+	rm -f *.il *.o core *.core libbbslib.a $(CGI)

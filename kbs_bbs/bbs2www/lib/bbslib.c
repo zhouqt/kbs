@@ -1773,7 +1773,7 @@ static int www_free_guest_entry(int idx)
 
 static int resolve_guest_table()
 {
-	int iscreate;
+	int iscreate=0;
     	if( wwwguest_shm == NULL ) {
        	 wwwguest_shm = (struct WWW_GUEST_TABLE*)
         	attach_shm( "WWWGUEST_SHMKEY", 4500, sizeof( *wwwguest_shm ),&iscreate );/*attach user tmp cache */
