@@ -741,6 +741,12 @@ void mail_msg(struct userec* user,session_t* session)
 	gettmpfilename(fname, "mailmsg" );
     //sprintf(fname, "tmp/%s.msg", user->userid);
     fn = fopen(fname, "w");
+    if (!fn) return;
+
+    now = time(0);
+    sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
+
+    write_header(fn, user,1,NULL,title,0,0,session);
     count = get_msgcount(0, user->userid);
     for(i=0;i<count;i++) {
         load_msghead(0, user->userid, i, &head);
@@ -750,8 +756,6 @@ void mail_msg(struct userec* user,session_t* session)
     }
     fclose(fn);
 
-    now = time(0);
-    sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
     mail_file(user->userid, fname, user->userid, title, BBSPOST_MOVE, NULL);
     unlink(fname);
     clear_msg(user->userid);
