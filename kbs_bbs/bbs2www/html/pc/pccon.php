@@ -210,6 +210,9 @@
 				echo "锁定主题<br>";
 			else
 				echo "评论：".$rows[commentcount]."篇<br>";
+			
+			if($rows[trackback])
+				echo "引用：".$rows[trackbackcount]."次<br/>";
 		?>
 		地址：<?php echo $rows[hostname]; ?>
 		</td>
