@@ -172,23 +172,23 @@
 <option style="background-color:#9ACD32;color: #9ACD32" value="#9ACD32">#9ACD32</option>
 </SELECT>
 <br>
-<img onclick=Cbold() src="pic/bold.gif" width="22" height="22" alt="粗体" border="0">
-<img onclick=Citalic() src="pic/italicize.gif" width="23" height="22" alt="斜体" border="0">
-<img onclick=Cunder() src="pic/underline.gif" width="23" height="22" alt="下划线" border="0">
-<img onclick=Ccenter() src="pic/center.gif" width="22" height="22" alt="居中" border="0">
-<img onclick=Curl() src="pic/url1.gif" width="22" height="22" alt="超级连接" border="0">
-<img onclick=Cemail() src="pic/email1.gif" width="23" height="22" alt="Email连接" border="0">
-<img onclick=Cimage() src="pic/image.gif" width="23" height="22" alt="图片" border="0">
-<img onclick=Cswf() src="pic/swf.gif" width="23" height="22" alt="Flash图片" border="0">
-<img onclick=Cdir() src="pic/Shockwave.gif" width="23" height="22" alt="Shockwave文件" border="0">
-<img onclick=Crm() src="pic/rm.gif" width="23" height="22" alt="realplay视频文件" border="0">
-<img onclick=Cwmv() src="pic/mp.gif" width="23" height="22" alt="Media Player视频文件" border="0">
-<img onclick=Cmov() src="pic/qt.gif" width="23" height="22" alt="QuickTime视频文件" border="0">
+<img onclick=Cbold() src="pic/bold.gif" width="22" height="22" title="粗体" border="0">
+<img onclick=Citalic() src="pic/italicize.gif" width="23" height="22" title="斜体" border="0">
+<img onclick=Cunder() src="pic/underline.gif" width="23" height="22" title="下划线" border="0">
+<img onclick=Ccenter() src="pic/center.gif" width="22" height="22" title="居中" border="0">
+<img onclick=Curl() src="pic/url1.gif" width="22" height="22" title="超级连接" border="0">
+<img onclick=Cemail() src="pic/email1.gif" width="23" height="22" title="Email连接" border="0">
+<img onclick=Cimage() src="pic/image.gif" width="23" height="22" title="图片" border="0">
+<img onclick=Cswf() src="pic/swf.gif" width="23" height="22" title="Flash图片" border="0">
+<img onclick=Cdir() src="pic/Shockwave.gif" width="23" height="22" title="Shockwave文件" border="0">
+<img onclick=Crm() src="pic/rm.gif" width="23" height="22" title="realplay视频文件" border="0">
+<img onclick=Cwmv() src="pic/mp.gif" width="23" height="22" title="Media Player视频文件" border="0">
+<img onclick=Cmov() src="pic/qt.gif" width="23" height="22" title="QuickTime视频文件" border="0">
 
-<img onclick=Cquote() src="pic/quote1.gif" width="23" height="22" alt="引用" border="0">
-<IMG onclick=Cfly() height=22 alt=飞行字 src="pic/fly.gif" width=23 border=0>
-<IMG onclick=Cmarquee() height=22 alt=移动字 src="pic/move.gif" width=23 border=0>
-<IMG onclick=Cguang() height=22 alt=发光字 src="pic/glow.gif" width=23 border=0>
-<IMG onclick=Cying() height=22 alt=阴影字 src="pic/shadow.gif" width=23 border=0>
-<!--<IMG onclick=openScript('smiles.php',500,600) src="pic/ubb_smilie.gif" border=0 alt=查看更多的心情图标>-->
-<img onclick=Csound() src="pic/csound.gif" width="23" height="22" alt="背景音乐" border="0">
+<img onclick=Cquote() src="pic/quote1.gif" width="23" height="22" title="引用" border="0">
+<IMG onclick=Cfly() height=22 title="飞行字" src="pic/fly.gif" width=23 border=0>
+<IMG onclick=Cmarquee() height=22 title="移动字" src="pic/move.gif" width=23 border=0>
+<IMG onclick=Cguang() height=22 title="发光字" src="pic/glow.gif" width=23 border=0>
+<IMG onclick=Cying() height=22 title="阴影字" src="pic/shadow.gif" width=23 border=0>
+<!--<IMG onclick=openScript('smiles.php',500,600) src="pic/ubb_smilie.gif" border=0 title=查看更多的心情图标>-->
+<img onclick=Csound() src="pic/csound.gif" width="23" height="22" title="背景音乐" border="0">

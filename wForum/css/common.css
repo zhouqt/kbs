@@ -12,3 +12,15 @@
 .NWeight { /* normal weight */
 	font-weight: normal;
 }
+.cPopText { /* popup tip */
+	background-color: #F8F8F5;
+	color:#000000;
+	border: 1px #000000 solid;
+	font-color: font-size: 12px;
+	padding-right: 4px;
+	padding-left: 4px;
+	height: 20px;
+	padding-top: 2px;
+	padding-bottom: 2px;
+	filter: Alpha(Opacity=0)
+}

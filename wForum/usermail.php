@@ -79,10 +79,10 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
 	}
 ?>
     <tr><td class=TableBody1 valign=middle align=center colspan=3>
-	    <a href="deleteusermail.php?file=<?php echo $file; ?>&boxname=<?php echo $boxName; ?>"><img src="pic/m_delete.gif" border=0 alt="删除信件"></a>&nbsp;
-	    <a href="sendmail.php"><img src="pic/m_write.gif" border=0 alt="撰写信件"></a>&nbsp;
-	    <a href="sendmail.php?num=<?php echo $num ;?>&boxname=<?php echo $boxName; ?>"><img src="pic/m_reply.gif" border=0 alt="回复信件"></a>&nbsp;
-	    <a href="sendmail.php?num=<?php echo $num ;?>&boxname=<?php echo $boxName; ?>&forward=1"><img src=pic/m_fw.gif border=0 alt="转发信件"></a></td>
+	    <a href="deleteusermail.php?file=<?php echo $file; ?>&boxname=<?php echo $boxName; ?>"><img src="pic/m_delete.gif" border=0 title="删除信件"></a>&nbsp;
+	    <a href="sendmail.php"><img src="pic/m_write.gif" border=0 title="撰写信件"></a>&nbsp;
+	    <a href="sendmail.php?num=<?php echo $num ;?>&boxname=<?php echo $boxName; ?>"><img src="pic/m_reply.gif" border=0 title="回复信件"></a>&nbsp;
+	    <a href="sendmail.php?num=<?php echo $num ;?>&boxname=<?php echo $boxName; ?>&forward=1"><img src=pic/m_fw.gif border=0 title="转发信件"></a></td>
     </tr>
     <tr><td class=TableBody2 height=25>
 		    <b><?php echo $articles[0]['OWNER'] ;?></b> 在 <b><?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[0]['POSTTIME']); ?></b> 给您发送的信件：<b>[<?php echo htmlspecialchars($articles[0]['TITLE'],ENT_QUOTES) ;?>]</b>

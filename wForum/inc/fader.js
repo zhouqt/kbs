@@ -85,7 +85,7 @@ function FDRinit(){
 	}
 	oElFader.onselectstart = function(){return false};
 
-	if (isIE4) {
+	if (isIE) {
 		IEhasFilters = (oElFader.filters.blendTrans) ? true : false;
 	}
 
@@ -148,9 +148,9 @@ function FDRfade(){
 
 	newsStr = FDRmakeStr();
 	
-	if(isIE4 && IEhasFilters) oElFader.filters.blendTrans.Apply();
+	if(isIE && IEhasFilters) oElFader.filters.blendTrans.Apply();
 	oElFader.innerHTML = newsStr;
-	if(isIE4 && IEhasFilters)oElFader.filters.blendTrans.Play();
+	if(isIE && IEhasFilters)oElFader.filters.blendTrans.Play();
 
 	if(FDRhdlineCount==1) window.status = (FDRisOver && isLink) ? (prefix + linkStr) : "";
 }

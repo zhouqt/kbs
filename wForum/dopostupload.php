@@ -4,16 +4,10 @@ require("inc/funcs.php");
 require("inc/board.inc.php");
 html_init();
 ?>
-<body topmargin=0 leftmargin=0>
+<body style="margin: 0pt;">
 <script src="inc/browser.js"  language="javascript"></script>
-<script language="javascript">
-	oSubmit=getParentRawObject("oSubmit");
-	oSubmit2=getParentRawObject("oSubmit2");
-	oSubmit.disabled=false;
-	oSubmit2.disabled=false;	
-</script>
 <table width="100%" border=0 cellspacing=0 cellpadding=0>
-<tr><td class=TableBody2 valign=top height=40>
+<tr><td class=TableBody2 valign=middle height=28>
 <?php 
 if (!isset($_GET['board'])) {
 	errorQuit("Î´Ö¸¶¨°æÃæ¡£");

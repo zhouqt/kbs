@@ -1,32 +1,31 @@
 /****************** browser compatibility functions **********************/
 /* origin for O'Reilly's "JavaScript & DHTML Cookbook" By Danny Goodman */
 /* modified by roy@zixia.net */
+/* modified by atppp 20041201 http://www.webreference.com/tools/browser/javascript.html */
 
 // Global variables
-var isCSS=false;
-var isW3C=false;
-var isIE4=false;
-var isNN4=false;
-var isIE6CSS=false;
+var isW3C = false;
+var isIE = false;
+var isCSS = true;
 
-// Initialize upon load to let all browsers establish content objects
+function determine_browser() {
+    var agt=navigator.userAgent.toLowerCase();
+    var appVer = navigator.appVersion.toLowerCase();
+    var is_minor = parseFloat(appVer);
+    var is_major = parseInt(is_minor);
+    var iePos  = appVer.indexOf('msie');
+    if (iePos !=-1) {
+       is_minor = parseFloat(appVer.substring(iePos+5,appVer.indexOf(';',iePos)))
+       is_major = parseInt(is_minor);
+    }
+    var is_opera = (agt.indexOf("opera") != -1);
+    isIE   = ((iePos!=-1) && (!is_opera));
 
-if( ! document.body ) {
-	alert("browers.js must be include after <body> tag!");
+	isW3C = (document.getElementById) ? true : false;
 }
 
+determine_browser();
 
-if (document.images) {
-	isCSS = (document.body && document.body.style) ? true : false;
-	isIE4 = (isCSS && document.all) ? true : false;
-	if( isIE4 )	{
-		isIE6CSS = (document.compatMode && document.compatMode.indexOf("CSS1") >= 0) ? 
-			true : false;
-	}
-	
-	/* use W3C standard instead of IE function if possible - atppp */
-	isW3C = (isCSS && document.getElementById) ? true : false;
-}
 // Convert other frame object name string or object reference
 // into a valid element object reference 
 function getRawObjectFrom(obj, oFrame) {
@@ -34,7 +33,7 @@ function getRawObjectFrom(obj, oFrame) {
     if (typeof obj == "string") {
         if (isW3C) {
             theObj = oFrame.document.getElementById(obj);
-        } else if (isIE4) {
+        } else if (isIE) {
             theObj = oFrame.document.all(obj);
         } 
     } else {
@@ -57,7 +56,7 @@ function getRawObject(obj) {
     if (typeof obj == "string") {
         if (isW3C) {
             theObj = document.getElementById(obj);
-        } else if (isIE4) {
+        } else if (isIE) {
             theObj = document.all(obj);
         } 
     } else {
@@ -76,7 +75,7 @@ function getObjectCollection(obj) {
     if (typeof obj == "string") {
 		if (isW3C) {
 			theObj=document.getElementsByName(obj);
-		} else if (isIE4) {
+		} else if (isIE) {
 			theObj=document.all.item(obj);
 		}
     } else {
@@ -93,7 +92,7 @@ function getObjectCollectionFrom(obj,oFrame) {
     if (typeof obj == "string") {
 		if (isW3C) {
 			theObj=oFrame.document.getElementsByName(obj);
-		} else if (isIE4) {
+		} else if (isIE) {
 			theObj=oFrame.document.all.item(obj);
 		}
     } else {
@@ -237,30 +236,4 @@ function getObjectHeight(obj)  {
         result = elem.style.pixelHeight;
     }
     return parseInt(result);
-}
-   
-// Return the available content width space in browser window
-function getInsideWindowWidth( ) {
-    if (window.innerWidth) {
-        return window.innerWidth;
-    } else if (isIE6CSS) {
-        // measure the html element's clientWidth
-        return document.body.parentElement.clientWidth;
-    } else if (document.body && document.body.clientWidth) {
-        return document.body.clientWidth;
-    }
-    return 0;
-}
-   
-// Return the available content height space in browser window
-function getInsideWindowHeight( ) {
-    if (window.innerHeight) {
-        return window.innerHeight;
-    } else if (isIE6CSS) {
-        // measure the html element's clientHeight
-        return document.body.parentElement.clientHeight;
-    } else if (document.body && document.body.clientHeight) {
-        return document.body.clientHeight;
-    }
-    return 0;
 }

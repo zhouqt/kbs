@@ -131,9 +131,9 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 				str += '<TR><TD align=middle width="100%" class=TableBody1>';
 				str += '<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=center width=46 class=TableBody1>';
 				if (boards[i].isUnread) {
-					str += "<img src=pic/forum_isnews.gif alt=有新帖子>";
+					str += "<img src=pic/forum_isnews.gif title=\"有新帖子\">";
 				} else {
-					str += "<img src=pic/forum_nonews.gif alt=无新帖子>";
+					str += "<img src=pic/forum_nonews.gif title=无新帖子>";
 				}
 				str += '</TD><TD width=1 bgcolor=#7a437a></TD>';
 				str += '<TD vAlign=top width=* class=TableBody1>';
@@ -161,7 +161,7 @@ function showSec(isFold, isFav, boards, secNum, isHide) {
 				}
 				str += ' </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>';
 				if (!boards[i].isFavGroup && !boards[i].isBoardGroup) {
-					str += '<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;' + boards[i].nThreads + '</td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;' + boards[i].nArticles + '</td></tr></table>';
+					str += '<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif title=今日帖 align=absmiddle>&nbsp;<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif title=主题 border=0  align=absmiddle>&nbsp;' + boards[i].nThreads + '</td><td width=45% vAlign=middle><img src=pic/forum_post.gif title=文章 border=0 align=absmiddle>&nbsp;' + boards[i].nArticles + '</td></tr></table>';
 				}
 				str += '</TD></TR></TBODY></TABLE></td>';
 				str += '<TD width=1 bgcolor=#7a437a></TD><td class=TableBody1 align=center width=30>';
@@ -252,27 +252,31 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 	//if (!origin_exists) return;
 	document.write("<TR align=middle><TD class=TableBody2 width=32 height=27 align=\"center\">");
 	if (article_is_zhiding(origin.FLAGS)) {
-		document.write("<img src=\"pic/istop.gif\" alt=固顶的主题>");
+		document.write("<img src=\"pic/istop.gif\" title=\"固顶的主题\">");
 	} else if( threadNum > 10 ) {
-		document.write("<img src=\"pic/blue/hotfolder.gif\" alt=回复超过10贴>");
+		document.write("<img src=\"pic/blue/hotfolder.gif\" title=\"回复超过10贴\">");
 	} else if(article_is_noreply(origin.FLAGS)) {
-		document.write("<img src=\"pic/blue/lockfolder.gif\" alt=锁定的主题>");
+		document.write("<img src=\"pic/blue/lockfolder.gif\" title=\"锁定的主题\">");
 	} else if(article_is_digest(origin.FLAGS)) {
-		document.write("<img src=\"pic/isbest.gif\" alt=精华帖>");
+		document.write("<img src=\"pic/isbest.gif\" title=\"精华帖\">");
 	} else {
-		document.write("<img src=\"pic/blue/folder.gif\" alt=开放主题>");
+		document.write("<img src=\"pic/blue/folder.gif\" title=\"开放主题\">");
 	}
 	document.write("</TD><TD align=left class=TableBody1 width=* >");
 	if (threadNum==0) {
 		document.write('<img src="pic/nofollow.gif" id="followImg' + unused_id + '">');
 	} else {
-		document.write('<img loaded="no" src="pic/plus.gif" id="followImg' + origin.ID + '" style="cursor:hand;" onclick="loadThreadFollow(\'' + origin.ID +"','" + boardName + "')\" title=展开贴子列表>");
+		document.write('<img loaded="no" src="pic/plus.gif" id="followImg' + origin.ID + '" style="cursor:hand;" onclick="loadThreadFollow(\'' + origin.ID +"','" + boardName + "')\" title=\"展开贴子列表\">");
 	}
 /*	if (has_attach) {
-		document.write('<img src="pic/havefolder.gif" align=absmiddle alt="有附件">');
+		document.write('<img src="pic/havefolder.gif" align=absmiddle title="有附件">');
 	} 图标不好看，暂时不 enable - atppp */
 	if (origin_exists) {
-		href_title = html_title + ' <br>作者：' + origin.OWNER + '<br>发表于' + origin.POSTTIME;
+		if (isIE) {
+			href_title = html_title + ' <br>作者：' + origin.OWNER + '<br>发表于' + origin.POSTTIME;
+		} else {
+			href_title = '发表于' + origin.POSTTIME;
+		}
 	} else {
 		href_title = "原贴已删除";
 	}
@@ -293,7 +297,7 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 	}
 	if (article_is_unread(lastreply.FLAGS)) {
 		 //最后回复未读那这个 thread 就未读
-		document.write("<img src=\"pic/topnew2.gif\" alt=\"未读\">");
+		document.write("<img src=\"pic/topnew2.gif\" title=\"未读\">");
 	}
 	document.write("</TD>");
 	document.write('<TD class=TableBody2 width=80 align="center">');

@@ -124,29 +124,29 @@ function article_bar($boardName,$boardID,$groupID,$article,$startNum,$listType){
 <table cellpadding="2" cellspacing="0" border="0" width="97%" align="center">
 	<tr><td width="2"> </td>
 	<td align="left" valign="middle" style="height:27"><table cellpadding="0" cellspacing="0" border="0" ><tr>
-	<td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>"><div class="buttonClass1" border="0" alt="发新帖"></div></a></td>
-<!--	<td width="110"><a href="#" onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border="0" alt="发起新投票"></div></a></td>-->
-	<td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $article['ID']; ?>"><div class="buttonClass4" border="0" alt="回复本主题"></div></a></td>
+	<td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>"><div class="buttonClass1" border="0" title="发新帖"></div></a></td>
+<!--	<td width="110"><a href="#" onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border="0" title="发起新投票"></div></a></td>-->
+	<td width="110"><a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $article['ID']; ?>"><div class="buttonClass4" border="0" title="回复本主题"></div></a></td>
 	</tr></table>
 	</td>
 	<td align="right" valign="middle">
 <!--
-	<a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $groupID>1?$groupID-1:1; ?>"><img src="pic/prethread.gif" border="0" alt="浏览上一篇主题" width="52" height="12"/></a>&nbsp;
+	<a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $groupID>1?$groupID-1:1; ?>"><img src="pic/prethread.gif" border="0" title="浏览上一篇主题" width="52" height="12"/></a>&nbsp;
 -->
-	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border="0" alt="刷新本主题" width="40" height="12"/></a> &nbsp;
+	<a href="javascript:this.location.reload()"><img src="pic/refresh.gif" border="0" title="刷新本主题" width="40" height="12"/></a> &nbsp;
 <?php
 	if ($listType==1) {
 ?>
-	<a href="?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;start=<?php echo (ceil(($startNum+1)/THREADSPERPAGE)-1)*THREADSPERPAGE;; ?>&amp;listType=0"><img src="pic/flatview.gif" width="40" height="12" border="0" alt="平板显示贴子"/></a>
+	<a href="?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;start=<?php echo (ceil(($startNum+1)/THREADSPERPAGE)-1)*THREADSPERPAGE;; ?>&amp;listType=0"><img src="pic/flatview.gif" width="40" height="12" border="0" title="平板显示贴子"/></a>
 <?php
 	} else {
 ?>
-	<a href="?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;start=<?php echo $startNum; ?>&amp;listType=1"><img src="pic/treeview.gif" width="40" height="12" border="0" alt="树形显示贴子"/></a>
+	<a href="?boardName=<?php echo $boardName; ?>&amp;ID=<?php echo $groupID; ?>&amp;start=<?php echo $startNum; ?>&amp;listType=1"><img src="pic/treeview.gif" width="40" height="12" border="0" title="树形显示贴子"/></a>
 <?php
 	}
 ?>
 <!--
-	　<a href="disparticle.php?boardName=<?php 	echo $boardName; ?>&ID=<?php echo $groupID<bbs_getThreadNum($boardID)?$groupID+1:$groupID; ?>"><img src="pic/nextthread.gif" border="0" alt="浏览下一篇主题" width="52" height="12"/></a>
+	　<a href="disparticle.php?boardName=<?php 	echo $boardName; ?>&ID=<?php echo $groupID<bbs_getThreadNum($boardID)?$groupID+1:$groupID; ?>"><img src="pic/nextthread.gif" border="0" title="浏览下一篇主题" width="52" height="12"/></a>
 -->
 	</td>
 	</tr>
@@ -180,14 +180,14 @@ function dispArticleTitle($boardName,$boardID,$groupID,$article, $startNum){
 		</th>
 		<th width="37%" align="right">
 <!--
-		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/saveas.gif" border=0 alt=保存该页为文件></a>&nbsp;
-		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/report.gif" alt=报告本帖给版主 border=0></a>&nbsp;
-		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/printpage.gif" alt=显示可打印的版本 border=0></a>&nbsp;
-		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/pag.gif" border=0 alt=把本贴打包邮递></a>&nbsp;
-		<a href=# onclick="alert('本功能尚未实现');"><IMG SRC="pic/fav_add.gif" BORDER=0 alt=把本贴加入论坛收藏夹></a>&nbsp;
-		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/emailtofriend.gif" border=0 alt=发送本页面给朋友></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/saveas.gif" border=0 title=保存该页为文件></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/report.gif" title=报告本帖给版主 border=0></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/printpage.gif" title=显示可打印的版本 border=0></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/pag.gif" border=0 title=把本贴打包邮递></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><IMG SRC="pic/fav_add.gif" BORDER=0 title=把本贴加入论坛收藏夹></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/emailtofriend.gif" border=0 title=发送本页面给朋友></a>&nbsp;
 -->
-		<a href="#" onClick="window.external.AddFavorite(location.href, document.title);"><img src="pic/fav_add1.gif" border="0" width="15" height="15" alt="把本贴加入IE收藏夹"/></a>&nbsp;
+		<a href="#" onClick="window.external.AddFavorite(location.href, document.title);"><img src="pic/fav_add1.gif" border="0" width="15" height="15" title="把本贴加入IE收藏夹"/></a>&nbsp;
 		</th>
 		</tr>
 		</table>
@@ -319,12 +319,12 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 			}
 		}
 		if ($loginok && $is_online) {
-			echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border="0" alt="'.$c.'，在线，有人找我吗？"/></a>';
+			echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border="0" title="'.$c.'，在线，有人找我吗？"/></a>';
 		} else {
-			echo '<img src="'.$img.'" border="0" alt="'.$c.'，'.($is_online?'在线':'离线').'"/>';
+			echo '<img src="'.$img.'" border="0" title="'.$c.'，'.($is_online?'在线':'离线').'"/>';
 		}
 	} else {
-		echo '<img src="pic/offline1.gif" border="0" alt="未知用户"/>';
+		echo '<img src="pic/offline1.gif" border="0" title="未知用户"/>';
 	}
 ?>
 </td>
@@ -362,30 +362,30 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <?php
 /*	if ($loginok) {
 ?>
-<a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 alt="给<?php echo $thread['OWNER']; ?>发送一个短消息"></a>&nbsp;
+<a href="javascript:replyMsg('<?php echo $thread['OWNER']; ?>')"><img src="pic/message.gif" border=0 title="给<?php echo $thread['OWNER']; ?>发送一个短消息"></a>&nbsp;
 <?php
 	}*/
 ?>
-<a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/friend.gif" border="0" alt="把<?php echo $thread['OWNER']; ?>加入好友"/></a>&nbsp;
-<!--<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/profile.gif" border="0" alt="查看<?php echo $thread['OWNER']; ?>的个人资料"/></a>&nbsp;-->
-<a href="queryresult.php?userid=<?php echo $thread['OWNER']; ?>&amp;boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border="0" alt="搜索<?php echo $thread['OWNER']; ?>在本版的所有贴子"/></a>&nbsp;
-<a href="sendmail.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img alt="点击这里发送电邮给<?php echo $thread['OWNER']; ?>" border="0" src="pic/email.gif"/></a>&nbsp;
-<a href="editarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border="0" alt="编辑"/></a>&nbsp;
-<a href="deletearticle.php?board=<?php echo $boardName; ?>&amp;ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border="0" alt="删除"/></a>&nbsp;
+<a href="friendlist.php?addfriend=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/friend.gif" border="0" title="把<?php echo $thread['OWNER']; ?>加入好友"/></a>&nbsp;
+<!--<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target="_blank"><img src="pic/profile.gif" border="0" title="查看<?php echo $thread['OWNER']; ?>的个人资料"/></a>&nbsp;-->
+<a href="queryresult.php?userid=<?php echo $thread['OWNER']; ?>&amp;boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border="0" title="搜索<?php echo $thread['OWNER']; ?>在本版的所有贴子"/></a>&nbsp;
+<a href="sendmail.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img title="点击这里发送电邮给<?php echo $thread['OWNER']; ?>" border="0" src="pic/email.gif"/></a>&nbsp;
+<a href="editarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border="0" title="编辑"/></a>&nbsp;
+<a href="deletearticle.php?board=<?php echo $boardName; ?>&amp;ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border="0" title="删除"/></a>&nbsp;
 <?php
 	if (!OLD_REPLY_STYLE && ENABLE_UBB) {
 ?>
-<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>&amp;quote=1"><img src="pic/reply.gif" border="0" alt="引用回复这个贴子"/></a>&nbsp;
+<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>&amp;quote=1"><img src="pic/reply.gif" border="0" title="引用回复这个贴子"/></a>&nbsp;
 <?php
 	}
 ?>
-<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border="0" alt="回复这个贴子"/></a>
+<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border="0" title="回复这个贴子"/></a>
 </td>
 <td width="50">
 <b><?php echo $num==0?'楼主':'第<font color="#ff0000">'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor="#D8C0B1" height="1" colspan="2"></td></tr>
 </table>
 
-<table class="TableBody2" border="0" width="90%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><blockquote><img src="face/face1.gif" border="0" alt="发贴心情"/>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> 
+<table class="TableBody2" border="0" width="90%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt"><blockquote><img src="face/face1.gif" border="0" title="发贴心情"/>&nbsp;<?php echo  htmlspecialchars($thread['TITLE'],ENT_QUOTES); ?> 
 <?php
 	if ($isbm) {
 ?>
@@ -409,11 +409,11 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 </tr>
 <!--
 <tr>
-<td class=<?php echo $bgstyle ;?> valign=middle align=center width=175><a href=# onclick="alert('本功能尚未实现');" target=_blank><img align=absmiddle border=0 width=13 height=15 src="pic/ip.gif" alt="点击查看用户来源及管理<br>发贴IP：*.*.*.*"></a> <?php echo strftime("%Y-%m-%d %H:%M:%S",$thread['POSTTIME']); ?></td>
+<td class=<?php echo $bgstyle ;?> valign=middle align=center width=175><a href=# onclick="alert('本功能尚未实现');" target=_blank><img align=absmiddle border=0 width=13 height=15 src="pic/ip.gif" title="点击查看用户来源及管理<br>发贴IP：*.*.*.*"></a> <?php echo strftime("%Y-%m-%d %H:%M:%S",$thread['POSTTIME']); ?></td>
 <td class=<?php echo $bgstyle ;?> valign=middle width=*>
 <table width=100% cellpadding=0 cellspacing=0><tr>
   <td align=left valign=middle> &nbsp;&nbsp;<a href=# onclick="alert('本功能尚未实现');" title="同意该帖观点，给他一朵鲜花，将消耗您5点金钱"><img src=pic/xianhua.gif border=0>鲜花</a>(<font color=#FF0000>0</font>)&nbsp;&nbsp;<a href=# onclick="alert('本功能尚未实现');" title="不同意该帖观点，给他一个鸡蛋，将消耗您5点金钱"><img src=pic/jidan.gif border=0>鸡蛋</a>(<font color=#FF0000>0</font>)</td><td align=right nowarp valign=bottom width=200></td>
-  <td align=right valign=bottom width=4><a href="bmmanage.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>"><img src="pic/jing.gif" border=0 alt=切换精华</a></td>
+  <td align=right valign=bottom width=4><a href="bmmanage.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>"><img src="pic/jing.gif" border=0 title=切换精华</a></td>
 </tr></table>
 </td></tr>-->
 

@@ -189,7 +189,7 @@ function ann_display_folder($articles, $parent) {
 ?>
 <tr>
 	<td height="27" align="center" class="TableBody1">0</td>
-	<td align="center" class="TableBody2"><img src="pic/istop.gif" alt="目录" border="0" /></td>
+	<td align="center" class="TableBody2"><img src="pic/istop.gif" title="目录" border="0" /></td>
 	<td class="TableBody1">&nbsp;<a href="elite.php?path=<?php echo urlencode($parent); ?>">上级目录</a></td>
 	<td align="center" class="TableBody2">&nbsp;</td>
 	<td align="center" class="TableBody1">&nbsp;</td>
@@ -217,7 +217,7 @@ function ann_display_folder($articles, $parent) {
 	                $url = 'elite.php?file='.urlencode($article['PATH']);
 	        }
 	        echo '<tr><td height="27" align="center" class="TableBody1">'.$i.'</td><td align="center" class="TableBody2">';
-	        echo '<img src="'.$img.'" alt="'.$alt.'" border="0" />';
+	        echo '<img src="'.$img.'" title="'.$alt.'" border="0" />';
 	        echo '</td><td class="TableBody1">';
 	        if ($article['FLAG']==3)
 	            echo '<font color="red">@</font>';

@@ -1,7 +1,7 @@
 
 function submitonce(theform){
 //if IE 4+ or NS 6+
-if (isIE4 || isW3C){
+if (isIE || isW3C){
 //screen thru every element in the form, and hunt down "submit" and "reset"
 	for (i=0;i<theform.length;i++){
 		var tempobj=theform.elements[i]
@@ -28,68 +28,29 @@ tFadeOut=null;
 tFadeIn=null;
 tFadeWaiting=null;
 
-document.write("<style type=\"text/css\" id=\"defaultPopStyle\">");
-document.write(".cPopText {  background-color: #F8F8F5;color:#000000; border: 1px #000000 solid;font-color: font-size: 12px; padding-right: 4px; padding-left: 4px; height: 20px; padding-top: 2px; padding-bottom: 2px; filter: Alpha(Opacity=0)}");
-document.write("</style>");
-document.write("<div id='dypopLayer' style='position:absolute;z-index:1000' class='cPopText'></div>");
-
-
-function showPopupText(evt){
-	var o;
-	if (typeof event == "undefined") {
-		return;
-		event = evt;
-	}
-	if (typeof isIE4 == "undefined") return;
-	if (!isIE4) {
-		o = event.currentTarget;
-	} else {
-		o = event.srcElement;
-	}
+function showPopupText(){
+	var o = event.srcElement;
 	if (o == null) return;
 	MouseX=event.x;
 	MouseY=event.y;
-	if(o.alt!=null && o.alt!=""){o.dypop=o.alt;o.alt=""};
-		if(o.title!=null && o.title!=""){o.dypop=o.title;o.title=""};
-	if(o.dypop!=sPop) {
-		if (isIE4) {
-			sPop=o.dypop;
-			clearTimeout(curShow);
-			clearTimeout(tFadeOut);
-			clearTimeout(tFadeIn);
-			clearTimeout(tFadeWaiting);	
-			if(sPop==null || sPop=="") {
-				dypopLayer.innerHTML="";
-				dypopLayer.style.filter="Alpha()";
-				dypopLayer.filters.Alpha.opacity=0;	
-				}
-			else {
-				if(o.dyclass!=null) popStyle=o.dyclass 
-					else popStyle="cPopText";
-				curShow=setTimeout("showIt()",tPopWait);
-			}
-		} else {
-			dypopLayer = getRawObject("dypopLayer");
-			if(sPop==null || sPop=="") {
-				dypopLayer.innerHTML="";
-				dypopLayer.style.display="none";
-			} else {
-				if(o.dyclass!=null) popStyle=o.dyclass 
-				else popStyle="cPopText";
-				dypopLayer.className=popStyle;
-				dypopLayer.innerHTML = sPop;
-				popWidth=dypopLayer.clientWidth;
-				popHeight=dypopLayer.clientHeight;
-				if(MouseX+12+popWidth>document.body.clientWidth) popLeftAdjust=-popWidth-24
-					else popLeftAdjust=0;
-				if(MouseY+12+popHeight>document.body.clientHeight) popTopAdjust=-popHeight-24
-					else popTopAdjust=0;
-				dypopLayer.style.left=MouseX+12+document.body.scrollLeft+popLeftAdjust;
-				dypopLayer.style.top=MouseY+12+document.body.scrollTop+popTopAdjust;
-				dypopLayer.style.display="inline";
+	if(o.title!=null && o.title!=""){o.dypop=o.title;o.title=""};
 
+	if(o.dypop!=sPop) {
+		sPop=o.dypop;
+		clearTimeout(curShow);
+		clearTimeout(tFadeOut);
+		clearTimeout(tFadeIn);
+		clearTimeout(tFadeWaiting);	
+		if(sPop==null || sPop=="") {
+			dypopLayer.innerHTML="";
+			dypopLayer.style.filter="Alpha()";
+			dypopLayer.filters.Alpha.opacity=0;	
 			}
-		}			
+		else {
+			if(o.dyclass!=null) popStyle=o.dyclass 
+				else popStyle="cPopText";
+			curShow=setTimeout("showIt()",tPopWait);
+		}
 	}
 }
 
@@ -125,7 +86,11 @@ function fadeIn(){
 		tFadeIn=setTimeout("fadeIn()",1);
 		}
 }
-document.onmouseover=showPopupText;
+
+if (isIE) {
+	document.write("<div id='dypopLayer' style='position:absolute;z-index:1000;' class='cPopText'></div>");
+	document.onmouseover=showPopupText;
+}
 
 function CheckAll(form)  {
 	var e;
@@ -207,7 +172,7 @@ function ShowMenu_Internal(vMnuCode,tWidth,evt,isTd) {
 		shiftTo(oDiv,l,t)
 		show(oDiv);
 		isvisible = true;
-		if( isIE4 ){
+		if( isIE ){
 			makeRectangularDropShadow(submenu, MENU_SHADOW_COLOR, 4)
 		}
 	}
@@ -352,6 +317,7 @@ function article_is_unread(flag) {
 
 /* 服务器时钟 */
 var serverDiff;
+var lastClockStr = "";
 function initTime(st) {
 	serverDiff = st * 1000 - new Date().getTime();
 	showTime();
@@ -364,8 +330,11 @@ function prefixZero(d) {
 function showTime() {
 	if ((KCN = getRawObject("serverTime")) == null) return;
 	var Timer = new Date(serverDiff + new Date().getTime());
-	str = Timer.getUTCFullYear() + "-" + prefixZero(Timer.getUTCMonth() + 1) + "-" + prefixZero(Timer.getUTCDate()) + " " + prefixZero(Timer.getUTCHours()) + ":" + prefixZero(Timer.getUTCMinutes()) + ":" + prefixZero(Timer.getUTCSeconds());
-	KCN.innerHTML = "服务器时间: " + str;
+	str = Timer.getUTCFullYear() + "-" + prefixZero(Timer.getUTCMonth() + 1) + "-" + prefixZero(Timer.getUTCDate()) + " " + prefixZero(Timer.getUTCHours()) + ":" + prefixZero(Timer.getUTCMinutes()); // + ":" + prefixZero(Timer.getUTCSeconds());
+	if (lastClockStr != str) {
+		lastClockStr = str;
+		KCN.innerHTML = "服务器时间: " + str;
+	}
 }
 
 

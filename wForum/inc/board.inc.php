@@ -119,12 +119,12 @@ function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
 <BR>
 <table cellpadding=2 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td>
 <td align=left style="height:27" valign="center"><table cellpadding=0 cellspacing=0 border=0 ><tr>
-<td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border=0 alt=发新帖></div></a></td>
-<!--<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border=0 alt=发起新投票></div></a></td>-->
+<td width="110"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass1" border="0" title="发新帖"></div></a></td>
+<!--<td width="110"><a href=# onclick="alert('本功能尚在开发中！')"><div class="buttonClass2" border="0" title="发起新投票"></div></a></td>-->
 <?php
 	if ($conn !== false) {
 ?>
-<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border=0 alt=发布小字报></div></a></td>
+<td width="110"><a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><div class="buttonClass3" border="0" title="发布小字报"></div></a></td>
 <?php
 	}
 ?>

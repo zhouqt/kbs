@@ -472,6 +472,7 @@ function show_nav($boardName='',$is_mathml=false,$other_headers="")
 	var siteconf_THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
 //-->
 </script>
+<script src="inc/browser.js"  language="javascript"></script>
 <script src="inc/funcs.js"  language="javascript"></script>
 <script language="javascript">
 <!--
@@ -479,7 +480,6 @@ function show_nav($boardName='',$is_mathml=false,$other_headers="")
 //-->
 </script>
 <body topmargin="0" leftmargin="0" onmouseover="HideMenu(event);">
-<script src="inc/browser.js"  language="javascript"></script>
 <div id="menuDiv" class="navClass1"></div>
 <table cellspacing="0" cellpadding="0" align="center" class="navClass2">
 <tr><td width="100%">
