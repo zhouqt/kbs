@@ -35,7 +35,6 @@
    cacnel_article_front(mid) --> cancel_article() --> bbspost_write_cancel();
 */
 
-
 #ifndef PowerBBS
 
 #include "innbbsconf.h"
@@ -55,6 +54,10 @@ report()
 	/* Function called from record.o */
 	/* Please leave this function empty */
 }
+#define NO_OSDEP_H	/* skip the os_dep.h, we have it already! */
+#include "bbs.h"
+#undef  OS_OSDEP_H
+
 #if defined(PalmBBS)
 #ifndef PATH
 #define PATH XPATH
@@ -299,6 +302,7 @@ receive_article()
 	char    firstpath[MAXPATHLEN], *firstpathbase;
 	char   *lesssym, *nameptrleft, *nameptrright;
 	static char sitebuf[80];
+	resolve_boards();
 	if (FROM == NULL) {
 		innbbslog(":Err: article without usrid %s\n", MSGID);
 		return 0;
@@ -679,9 +683,6 @@ char   *msgid;
 #if defined(FirebirdBBS)|| defined(PhoenixBBS) || defined(SecretBBS) || defined(PivotBBS) || defined(MapleBBS)
 /* for PhoenixBBS's post article and cancel article */
 
-#define NO_OSDEP_H	/* skip the os_dep.h, we have it already! */
-#include "bbs.h"
-#undef  OS_OSDEP_H
 
 char   *
 post_article(homepath, userid, board, writebody, pathname, firstpath)

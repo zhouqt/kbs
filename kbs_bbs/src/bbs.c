@@ -2916,7 +2916,7 @@ int Goodbye()
     prints("[[33m2[m] ·µ»Ø[32m*" NAME_BBS_CHINESE " BBS*[m\n");
     if (strcmp(currentuser->userid, "guest") != 0) {
         if (USE_NOTEPAD == 1)
-            prints("[[33m3[m] Ğ´Ğ´*ÁôÑÔ°æ*[m\n");
+            prints("[[33m3[m] Ğ´Ğ´*ÁôÑÔ°å*[m\n");
     }
     prints("[[33m4[m] Àë¿ª±¾BBSÕ¾\n");
     sprintf(spbuf, "ÄãµÄÑ¡ÔñÊÇ [4]£º");
