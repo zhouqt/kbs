@@ -350,7 +350,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     if (!strcmp(bname, currboard) && (uinfo.mode != RMAIL)) {
         move(3, 0);
         clrtobot();
-        prints("\n\n                          本版的文章不需要转贴到本板!");
+        prints("\n\n                          本版的文章不需要转贴到本版!");
         pressreturn();
         clear();
         return FULLUPDATE;
