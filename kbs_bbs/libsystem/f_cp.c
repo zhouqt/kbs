@@ -1,5 +1,7 @@
 #include <fcntl.h>
+#include "system.h"
 
+#define BLK_SIZ 10240
 
 int
 f_cp(src, dst, mode)
@@ -16,8 +18,7 @@ f_cp(src, dst, mode)
 
     if ((fdst = open(dst, O_WRONLY | O_CREAT | mode, 0600)) >= 0)
     {
-      char pool[BLK_SIZ];
-
+      char* pool=(char*)malloc(BLK_SIZ);
       src = pool;
       do
       {
@@ -26,6 +27,7 @@ f_cp(src, dst, mode)
 	  break;
       } while (write(fdst, src, ret) > 0);
       close(fdst);
+      free(pool);
     }
     close(fsrc);
   }

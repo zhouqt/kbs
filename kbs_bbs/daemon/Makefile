@@ -32,7 +32,7 @@ BINFILE=utmpd miscd
 
 allthing:  $(BINFILE)
 
-$(BINFILE): % : %.o ../libBBS.a
+$(BINFILE): % : %.o ../libBBS.a ../libsystem.a
 	$(CC) $^ -o $*
 
 install: all

@@ -12,7 +12,7 @@ include	../Makefile.spec
 MAKE = make
 #CC 	= gcc
 CFLAGS += -I$(BBSINCLUDE2)
-LDFLAGS = -L$(BBSLIBRARY) -L$(BBSLIBRARY2) -lbbslib -lBBS -lsystem
+LDFLAGS += -L$(BBSLIBRARY) -L$(BBSLIBRARY2) -lbbslib -lBBS -lsystem
 OS_DEF = -DLINUX
 SITE_DEF = -DINVISIBLE -DSMTH -DNJU_WWWBBS -DBBS2WWW
 #DEFINES = $(OS_DEF) $(SITE_DEF)

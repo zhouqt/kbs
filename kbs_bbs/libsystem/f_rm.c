@@ -1,5 +1,6 @@
 #include <sys/stat.h>
 #include <dirent.h>
+#include "system.h"
 
 
 static int rm_dir();

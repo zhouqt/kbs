@@ -39,13 +39,10 @@ clean:
 # Modification ends here by Leeward 1997.11
 
 $(BINFILE): % : %.o
-	$(CC) -o $* $^ ../libBBS.a
+	$(CC) $(LDFLAGS) -o $* $^ ../libBBS.a ../libsystem.a
 
 install: all
 	$(INSTALL) $(BINFILE) printboards MakeTar $(BBSHOME)/bin
-
-syncann:syncann.cpp
-	gcc -o syncann syncann.cpp
 
 PrintBoards.o:PrintBoards.cpp
 	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c PrintBoards.cpp
@@ -60,7 +57,7 @@ MakeTar.o:MakeTar.cpp
 	$(CPP) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $^ 
 
 printboards:PrintBoards.o RecordFile.o
-	$(CC) -o $@ $^ $(LIBBSD)
+	$(CC) $(LDFLAGS) -o $@ $^ $(LIBBSD)
 
 MakeTar:MakeTar.o Mutex.o
-	$(CPP) -o MakeTar MakeTar.o Mutex.o ../libBBS.a $(PTHREAD)
+	$(CPP) $(LDFLAGS) -o MakeTar MakeTar.o Mutex.o ../libBBS.a ../libsystem.a $(PTHREAD)
