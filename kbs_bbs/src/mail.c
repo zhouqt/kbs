@@ -731,7 +731,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
         strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
-		if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
+	if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1)
             currentuser->usedspace -= st.st_size;
     }
 
@@ -741,8 +741,10 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
     if (!delete_record(direct, sizeof(*fh), ent, (RECORD_FUNC_ARG) cmpname, fh->filename)) {
         sprintf(genbuf, "%s/%s", buf, fh->filename);
         if (strstr(direct, ".DELETED")
-            || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL))
+            || HAS_MAILBOX_PROP(&uinfo, MBP_FORCEDELETEMAIL)) {
+            if (fh->filename[0]!=0)
             my_unlink(genbuf);
+	}
         else {
             strcpy(buf, direct);
             t = strrchr(buf, '/') + 1;
