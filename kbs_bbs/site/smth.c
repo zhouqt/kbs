@@ -68,7 +68,7 @@ const char *user_definestr[] = {
     "进站时观看留言版",         /* DEF_NOTEPAD */
     "忽略讯息功能键: Enter/Esc",        /* DEF_IGNOREMSG */
     "使用高亮界面",                   /* DEF_HIGHCOLOR */
-    "进站时观看上站人数统计图", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
+    "观看人数统计和祝福榜", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
     "阅读方式: 全屏/分屏"  /* DEF_SPLITSCREEN 2002.9.1 */
