@@ -556,7 +556,7 @@ void x_edits()
         return;
     }
     modify_user_mode(EDITUFILE);
-    aborted = vedit(genbuf, false);
+    aborted = vedit(genbuf, false, NULL);
     clear();
     if (!aborted) {
         prints("%s 更新过\n", explain_file[ch]);
@@ -665,7 +665,7 @@ void a_edits()
         return;
     }
     modify_user_mode(EDITSFILE);
-    aborted = vedit(genbuf, false);
+    aborted = vedit(genbuf, false, NULL);
     clear();
     if (aborted != -1) {
         prints("%s 更新过", explain_file[ch]);

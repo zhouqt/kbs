@@ -12,19 +12,8 @@
 #include <sys/socket.h>
 #endif
 
-struct UTMPHEAD {
-    int next[USHM_SIZE];
-    int hashhead[UTMP_HASHSIZE + 1];    /* use UCACHE_HASHSIZE/32 */
-    int number;
-    int listhead;
-    int list_prev[USHM_SIZE];   /* sorted list prev ptr */
-    int list_next[USHM_SIZE];   /* sorted list next ptr */
-    time_t uptime;
-    struct user_info uinfo[USHM_SIZE];
-};
-
 static int rebuild_list(struct user_info *up, char *arg, int p);
-static struct UTMPHEAD *utmphead;
+struct UTMPHEAD *utmphead;
 
 static void longlock(int signo)
 {
