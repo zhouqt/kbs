@@ -335,6 +335,7 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
     lbc = 0;
     mode = DONOTHING;
     while ((ch = igetkey()) != EOF) {
+#ifndef NINE_BUILD
     	if ((ch==KEY_TIMEOUT)&&(TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU)) {
             char buf[256], *t;
             struct fileheader* h;
@@ -351,7 +352,9 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
             (*dotitle) ();
             PUTCURS(locmem);
 	    continue;
-    	} else if (ch == KEY_REFRESH) {
+    	} else 
+#endif
+    	if (ch == KEY_REFRESH) {
             mode = FULLUPDATE;
 
             /*
@@ -530,15 +533,27 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
                 locmem->crs_line = last_line;
 
             move(3, 0);
+            draw_entry(doentry, locmem, entries, ssize, pnt);
             if (TDEFINE(TDEF_SPLITSCREEN)&&cmdmode!=GMENU) {
-		lastfile[0]=0;
 #ifdef NINE_BUILD
-            	set_alarm(0,1,NULL,NULL);
+            char buf[256], *t;
+            struct fileheader* h;
+            strcpy(buf, currdirect);
+            if ((t = strrchr(buf, '/')) != NULL)
+                *t = '\0';
+            h = &pnt[(locmem->crs_line - locmem->top_line) * ssize];
+            sprintf(genbuf, "%s/%s", buf, h->filename);
+            if (strcmp(genbuf,lastfile)) {
+            	draw_content(genbuf,h);
+            	strcpy(lastfile, genbuf);
+            }
+            move(0, 0);
+            (*dotitle) ();
 #else
                 set_alarm(0,300*1000,NULL,NULL);
 #endif
+		lastfile[0]=0;
 	    }
-            draw_entry(doentry, locmem, entries, ssize, pnt);
             PUTCURS(locmem);
             break;
 
