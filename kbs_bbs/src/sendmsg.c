@@ -475,14 +475,6 @@ void r_msg()
         clrtoeol();
         prints("%s", outmsg);
 
-        if(first) {
-            refresh();
-            do{
-                ch = igetkey();
-            }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
-            first = 0;
-        }
-        
         strncpy(uid, head.id, IDLEN+2);
         pid = head.frompid;
         uin = t_search(uid, pid);
@@ -497,6 +489,14 @@ void r_msg()
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
             else
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
+        if(first) {
+            refresh();
+            do{
+                ch = igetkey();
+            }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
+            first = 0;
+        }
+        
         good_getyx(&oy, &ox);
         
         if(canreply)
