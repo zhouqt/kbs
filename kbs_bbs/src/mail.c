@@ -1499,6 +1499,7 @@ static int do_gsend(char *userid[],char *title,int num)
     char        filepath[STRLEN], tmpfile[STRLEN], fname[STRLEN];
     int         cnt;
     FILE        *mp;
+    extern char quote_title[120];
 
     /* 添加在好友寄信时的发信上限限制 Bigman 2000.12.11 */
     int sumlimit,numlimit,sum;
@@ -1633,6 +1634,7 @@ static int do_gsend(char *userid[],char *title,int num)
     /* Bigman:2000.8.13 群体发信为什么要引用文章呢 */
     /*    do_quote( tmpfile,include_mode ); */
 
+    strcpy(quote_title,save_title);
     if (vedit(tmpfile,YEA) == -1) {
         unlink( tmpfile );
         clear(); return -2;
