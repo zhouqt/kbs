@@ -285,7 +285,7 @@ N/A
     <td  width=35%  class=TableBody1><b>
 <?php echo showIt($groups[$user['group']]); ?>
  </b></td>
-    <td class=TableBody1 width=15% align=right>登陆次数：</td>
+    <td class=TableBody1 width=15% align=right>登录次数：</td>
     <td width=35%  class=TableBody1><b><?php echo $user['numlogins']; ?></b> 
     </td>
   </tr>
@@ -331,7 +331,7 @@ N/A
 
 <!-- 暂时禁止 - atppp
 <tr><td class=TableBody1 height=25 colspan=2>
-<B>用户管理选项</B>：   『 <a href=# onclick="alert('该功能尚在开发中。');" title=锁定该用户不允许登陆和发言>锁定</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=屏蔽该用户在论坛的发言>屏蔽</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=解除该用户在论坛的锁定和屏蔽>解除</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=对用户进行分值奖励>奖励</a> | <a href=# onclick="alert('该功能尚在开发中。');">编辑该用户论坛权限</a> 』
+<B>用户管理选项</B>：   『 <a href=# onclick="alert('该功能尚在开发中。');" title=锁定该用户不允许登录和发言>锁定</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=屏蔽该用户在论坛的发言>屏蔽</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=解除该用户在论坛的锁定和屏蔽>解除</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=对用户进行分值奖励>奖励</a> | <a href=# onclick="alert('该功能尚在开发中。');">编辑该用户论坛权限</a> 』
 </td></tr>
 -->
 

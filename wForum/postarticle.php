@@ -114,9 +114,9 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
           <td width=80% class=TableBody2>
 <?php
 		if ($reID>0)	{
-	        if(!strncmp($reArticles[1]["TITLE"],"Re: ",4)) $nowtitle = $reArticles[1]["TITLE"];
+	        if(!strncmp($reArticles[1]["TITLE"],"Re: ",4)) $nowtitle = $reArticles[1]["TITLE"]." ";
 	        else
-	            $nowtitle = "Re: " . $reArticles[1]["TITLE"];
+	            $nowtitle = "Re: " . $reArticles[1]["TITLE"]." ";
 		} else {
 			$nowtitle='';
 		}

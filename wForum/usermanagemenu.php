@@ -36,7 +36,7 @@ function main(){
 精华帖数： N/A<br>
 帖数总数： <?php echo $currentuser['numposts']; ?><br>
 注册时间： <?php echo strftime("%Y-%m-%d %H:%M:%S", $currentuser['firstlogin']); ?><br>
-登陆次数： <?php echo $currentuser['numlogins']; ?><br>
+登录次数： <?php echo $currentuser['numlogins']; ?><br>
 </td></tr></table>
 <!--
 <br>

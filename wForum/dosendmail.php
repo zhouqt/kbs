@@ -36,7 +36,7 @@ function preprocess(){
 
 function main() {
 	global $_POST;
-	$ret=bbs_postmail($_POST['destid'],preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['title']),preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['content']),intval($_POST['signature']), isset($_POST['backup'])?1:0);
+	$ret=bbs_postmail($_POST['destid'],preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST['title'])),preg_replace("/\\\(['|\"|\\\])/","$1",$_POST['content']),intval($_POST['signature']), isset($_POST['backup'])?1:0);
 	switch ($ret) {
 		case -1:
 			foundErr("无法创建临时文件");

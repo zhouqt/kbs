@@ -32,13 +32,13 @@ function doLogon(){
 	$ret=bbs_wwwlogin(1);
 	switch ($ret) {
 	case -1:
-		foundErr("您已登陆的账号过多，无法重复登陆!");
+		foundErr("您已登录的账号过多，无法重复登录!");
 	case 3:
 		foundErr("您的账号已被管理员禁用！");
 	case 4:
 		foundErr("您所使用的IP已被本站禁用！");
 	case 5:
-		foundErr("请勿频繁登陆!");
+		foundErr("请勿频繁登录!");
 	case 1:
 		foundErr("系统在线人数已达上限，请稍后再访问本站。");
 	}
@@ -77,7 +77,7 @@ function doLogon(){
 <meta HTTP-EQUIV=REFRESH CONTENT='2; URL=<?php   echo $comeurl; ?>' >
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1 >
 <tr>
-<th height=25>登陆成功：<?php   echo $Forum_info[0]; ?>欢迎您的到来</th>
+<th height=25>登录成功：<?php   echo $Forum_info[0]; ?>欢迎您的到来</th>
 </tr>
 <tr><td class=TableBody1><br>
 <ul><?php   echo $comeurlname; ?><li><a href=index.php>返回首页</a></li></ul>

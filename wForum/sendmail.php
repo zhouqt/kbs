@@ -134,9 +134,9 @@ function main() {
 	        	$nowtitle = $article["TITLE"]."(×ª¼Ä)";
 	        } else {
 	        	if (!strncmp($article["TITLE"],"Re: ",4)) {
-	        		$nowtitle = $article["TITLE"];
+	        		$nowtitle = $article["TITLE"]." ";
 	        	} else {
-	            	$nowtitle = "Re: " . $article["TITLE"];
+	            	$nowtitle = "Re: " . $article["TITLE"]." ";
 	            }
 	        }
 		} else {
