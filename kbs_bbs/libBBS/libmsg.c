@@ -1278,7 +1278,7 @@ char * deal_sql_string( char *old, char *new){
 	int i,j;
 
 	for(i=0,j=0; old[i]; i++){
-		if(old[i] =='\'' || old[i] =='\"')
+		if(old[i] =='\'' || old[i] =='\"' || old[i]=='\\')
 			new[j++]='\\';
 		new[j++]=old[i];
 	}
