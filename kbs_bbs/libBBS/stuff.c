@@ -2402,9 +2402,6 @@ int mail_birth()
 	int i;
 	char filename[256];
 
-    if ( ! DEFINE(getCurrentUser(), DEF_SHOWDETAILUSERDATA))
-		return 0;
-
 	now = time(0);
 
 	if ((int)(getCurrentUser()->lastlogin/86400) >= (int)(now/86400))
