@@ -1845,7 +1845,7 @@ int www_user_init(int useridx,char* userid,int key,struct userec **x, struct use
 	} else {
 	/* guest用户处理 */
 		struct WWW_GUEST_S * guest_info;
-		if((useridx<1) || (useridx>=MAX_WWW_GUEST))
+		if((useridx<0) || (useridx>=MAX_WWW_GUEST))
 			return -1;
 		guest_info=&wwwguest_shm->guest_entry[useridx];
 		if (guest_info->key!=key) {
