@@ -27,6 +27,7 @@ static ZEND_FUNCTION(bbs_ann_get_board);
 static ZEND_FUNCTION(bbs_getboards);
 static ZEND_FUNCTION(bbs_getarticles);
 static ZEND_FUNCTION(bbs_get_records_from_id);
+static ZEND_FUNCTION(bbs_get_filename_from_num);
 static ZEND_FUNCTION(bbs_countarticles);
 static ZEND_FUNCTION(bbs_is_bm);
 static ZEND_FUNCTION(bbs_getannpath);
@@ -77,6 +78,7 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_getboards, NULL)
         ZEND_FE(bbs_getarticles, NULL)
         ZEND_FE(bbs_get_records_from_id, NULL)
+        ZEND_FE(bbs_get_filename_from_num, NULL)
         ZEND_FE(bbs_countarticles, NULL)
         ZEND_FE(bbs_is_bm, NULL)
         ZEND_FE(bbs_getannpath, NULL)
@@ -980,6 +982,60 @@ static ZEND_FUNCTION(bbs_countarticles)
     total += get_num_records(dirpath, sizeof(struct fileheader));
     /* add end */
     RETURN_LONG(total);
+}
+
+/**
+ * Get filename from num in the DIR
+ * @param sll
+ * 		s: board
+ * 		l: num
+ * 		l: mode
+ * @return error: 0
+ * 		   success: s: filename
+ * @author: stiger
+ */
+static ZEND_FUNCTION(bbs_get_filename_from_num)
+{
+
+	char *board;
+	int blen;
+	int num;
+	int mode;
+	struct boardheader *bp;
+	char dirpath[STRLEN];
+	fileheader_t fh;
+	FILE *fp;
+
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 3
+        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &board, &blen, &num, &mode) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+    /* check for parameter being passed by reference */
+	if (currentuser == NULL)
+	{
+		RETURN_LONG(0);
+	}
+	if ((bp = getbcache(board)) == NULL)
+	{
+		RETURN_LONG(0);
+	}
+
+	setbdir(mode, dirpath, board);
+	if ((fp=fopen(dirpath,"r"))==NULL)
+	{
+		RETURN_LONG(0);
+	}
+	fseek(fp, sizeof(fh) * (num-1), SEEK_SET);
+	if( fread(&fh, sizeof(fh), 1, fp) < 1 )
+	{
+		fclose(fp);
+		RETURN_LONG(0);
+	}
+	fclose(fp);
+
+	RETURN_STRING(fh.filename,1);
 }
 
 /**
