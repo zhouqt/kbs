@@ -455,7 +455,7 @@ int     numlines;
                 scroll() ;
                 pos-- ;
             }
-            numbytes = readln(fd,buf) ; curr_row++; linesread++;
+            numbytes = readln(fd,buf,more_buf) ; curr_row++; linesread++;
             if( numbytes == 0 )
                 break ;
             if( i == t_lines -1 )
@@ -489,15 +489,15 @@ int     numlines;
                     curr_row -= (ch == KEY_PGUP) ? (2 * t_lines - 2) : (t_lines + 1);
                     if (curr_row < 0) { close( fd ); return ch; }
                     viewed = seek_nth_line(fd, curr_row,more_buf);
-                    numbytes = readln(fd,buf) ;  curr_row++;
+                    numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                 } else if(ch == 'H')
                 {
                     show_help( "help/morehelp" );
                     i = pos = 0;
                     curr_row -= (t_lines);
                     if (curr_row < 0) curr_row = 0;
-                    viewed = seek_nth_line(fd, curr_row);
-                    numbytes = readln(fd,buf) ;  curr_row++;
+                    viewed = seek_nth_line(fd, curr_row,more_buf);
+                    numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                 }
                 /* Luzi  新增阅读热键 1997.11.1 */
                 else if (ch=='O')
@@ -507,8 +507,8 @@ int     numlines;
                         i = pos = 0;
                         curr_row -= (t_lines);
                         if (curr_row < 0) curr_row = 0;
-                        viewed = seek_nth_line(fd, curr_row);
-                        numbytes = readln(fd,buf) ;  curr_row++;
+                        viewed = seek_nth_line(fd, curr_row,more_buf);
+                        numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                     }
                 }
                 else if (ch=='!')/*Haohmaru 98.09.24 快速离站*/
@@ -517,8 +517,8 @@ int     numlines;
                     i = pos = 0;
                     curr_row -= (t_lines);
                     if (curr_row < 0) curr_row = 0;
-                    viewed = seek_nth_line(fd, curr_row);
-                    numbytes = readln(fd,buf) ;  curr_row++;
+                    viewed = seek_nth_line(fd, curr_row,more_buf);
+                    numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                 }
                 else if (ch=='L')
                 {
@@ -528,8 +528,8 @@ int     numlines;
                         i = pos = 0;
                         curr_row -= (t_lines);
                         if (curr_row < 0) curr_row = 0;
-                        viewed = seek_nth_line(fd, curr_row);
-                        numbytes = readln(fd,buf) ;  curr_row++;
+                        viewed = seek_nth_line(fd, curr_row,more_buf);
+                        numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                     }
                 }
                 else if (ch=='M')
@@ -539,8 +539,8 @@ int     numlines;
                     i = pos = 0;
                     curr_row -= (t_lines);
                     if (curr_row < 0) curr_row = 0;
-                    viewed = seek_nth_line(fd, curr_row);
-                    numbytes = readln(fd,buf) ;  curr_row++;
+                    viewed = seek_nth_line(fd, curr_row,more_buf);
+                    numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                 }
                 else if (ch=='W')
                     { if (HAS_PERM(PERM_PAGE))
@@ -549,8 +549,8 @@ int     numlines;
                         i = pos = 0;
                         curr_row -= (t_lines);
                         if (curr_row < 0) curr_row = 0;
-                        viewed = seek_nth_line(fd, curr_row);
-                        numbytes = readln(fd,buf) ;  curr_row++;
+                        viewed = seek_nth_line(fd, curr_row,more_buf);
+                        numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                     }
                 }
                 else if (ch == 'u')
@@ -564,8 +564,8 @@ int     numlines;
                     i = pos = 0;
                     curr_row -= (t_lines);
                     if (curr_row < 0) curr_row = 0;
-                    viewed = seek_nth_line(fd, curr_row);
-                    numbytes = readln(fd,buf) ;  curr_row++;
+                    viewed = seek_nth_line(fd, curr_row,more_buf);
+                    numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                 }
                 else if ('X' == ch) /* Leeward 98.06.05 */
                 {
@@ -655,8 +655,8 @@ int     numlines;
                     i = pos = 0;
                     curr_row -= (t_lines);
                     if (curr_row < 0) curr_row = 0;
-                    viewed = seek_nth_line(fd, curr_row);
-                    numbytes = readln(fd,buf) ;  curr_row++;
+                    viewed = seek_nth_line(fd, curr_row,more_buf);
+                    numbytes = readln(fd,buf,more_buf) ;  curr_row++;
                 }
             }
         }

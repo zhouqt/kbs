@@ -331,6 +331,8 @@ int     real, unum;
             memcpy( u, &newinfo, sizeof(newinfo) );
             set_safe_record();
             substitute_record( PASSFILE, &newinfo, sizeof(newinfo), unum );
+            strcpy(uinfo.username,newinfo.username);
+            UPDATE_UTMP_STR(username,uinfo);
             break;/*Haohmaru.98.01.10.faint...Luzi加个for循环也不break!*/
         }
     }clear();
