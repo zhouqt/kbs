@@ -640,6 +640,11 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
     return ret;
 }
 
+/*
+  filename，要操作的.DIR文件名
+  id1,id2, 起始编号
+  删除模式 [del_mode = 0]标记删除 [1]普通删除 [2]强制删除
+*/
 int delete_range(filename, id1, id2, del_mode)
 char *filename;
 int id1, id2, del_mode;
