@@ -11,7 +11,7 @@ $db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
 $db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
 
 $pcconfig["LIST"] = 20;
-$pcconfig["HOME"] = bbs_sysconf_str("BBSHOME");
+$pcconfig["HOME"] = BBS_HOME;
 
 if(!$currentuser["userid"])
 		$currentuser["userid"] = "guest";

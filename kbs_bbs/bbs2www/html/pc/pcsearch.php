@@ -56,7 +56,7 @@
 	$result = mysql_query($query,$link);
 	$num_rows = mysql_num_rows($result);
 	
-	html_init("gb2312","个人文集搜索","",1);
+	pc_html_init("gb2312","个人文集搜索");
 	if($num_rows == 0)
 	{
 		mysql_free_result($result);
@@ -65,17 +65,18 @@
 	}
 	else
 	{
-		echo "按照 ".$keyname." 查询，关键字为 ".$keyword1." 。<br>".
-			"系统共为您查到 ".$num_rows." 笔记录：";
+		echo "<br>按照 <font class=f2>".$keyname."</font> 查询，关键字为 <font class=f2>".$keyword1."</font> 。<br>".
+			"系统共为您查到 <font class=f2>".$num_rows."</font> 笔记录：";
 ?>
-<table border="1">
+<center><br><br><br>
+<table cellspacing="0" cellpadding="3" width="95%" class="t1">
 <tr>
-	<td>编号</td>
-	<td>用户名</td>
-	<td>文集名称</td>
-	<td>描述</td>
-	<td>主题</td>
-	<td>创建时间</td>
+	<td class="t2">编号</td>
+	<td class="t2">用户名</td>
+	<td class="t2">文集名称</td>
+	<td class="t2">描述</td>
+	<td class="t2">主题</td>
+	<td class="t2">创建时间</td>
 </tr>
 <?php
 		for($i=0 ; $i < $num_rows ; $i++)
@@ -84,15 +85,16 @@
 			$t = $rows[createtime];
 			$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]." ".$t[8].$t[9].":".$t[10].$t[11].":".$t[12].$t[13];
 			$themekey = urlencode(stripslashes($rows[theme]));
-			echo "<tr>\n<td>".($startno + $i + 1)."</td>\n".
-				"<td><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
-				"<td><a href=\"pcdoc.php?userid=".$rows[userid]."\">".html_format($rows[corpusname])."</a></td>\n".
-				"<td><a href=\"pcdoc.php?userid=".$rows[userid]."\">".html_format($rows[description])."</a></td>\n".
-				"<td><a href=\"pcsearch.php?exact=0&key=t&keyword=".$themekey."\">".html_format($rows[theme])."</a></td>\n".
-				"<td>".$t."</td>\n</tr>\n";
+			echo "<tr>\n<td class=t3>".($startno + $i + 1)."</td>\n".
+				"<td class=t4><a href=\"/bbsqry.php?userid=".html_format($rows[username])."\">".html_format($rows[username])."</a></td>\n".
+				"<td class=t3><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[corpusname])."</a></td>\n".
+				"<td class=t5><a href=\"pcdoc.php?userid=".$rows[username]."\">".html_format($rows[description])."</a></td>\n".
+				"<td class=t3><a href=\"pcsearch.php?exact=0&key=t&keyword=".$themekey."\">".html_format($rows[theme])."</a></td>\n".
+				"<td class=t4>".$t."</td>\n</tr>\n";
 		}
 ?>
 </table>
+</center>
 <p align="center">
 <a href="pc.php">返回个人文集首页</a>
 </p>		
