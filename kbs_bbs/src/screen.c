@@ -212,7 +212,7 @@ void refresh()
         for(j=0;j<scr_cols;j++)
             if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].mode[j]==1)&&(bp[i].color[j]/16==0))
                 count++;
-    if(count>scr_lns*scr_cols/2) {
+/*    if(count>scr_lns*scr_cols/2) {
         o_clear();
         for (i=0; i < scr_lns; i++)
             for(j=0;j<scr_cols;j++)
@@ -221,7 +221,7 @@ void refresh()
                     bp[i].mode[j]=0;
                 else
                     bp[i].mode[j]|=SCREEN_MODIFIED;
-    }
+    }*/
 
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
