@@ -46,6 +46,7 @@ define("SHOWTELNETPARAM", false);
 define("ALLOW_SYSOP_MULTIQUERY", true);
 define('ALLOW_SELF_MULTIQUERY', true);
 define("SUPPORT_TEX", true);
+define("ONBOARD_USERS", true);
 
 /* ƒ¨»œ≈‰÷√ */
 define('COOKIE_PREFIX', '');

@@ -48,6 +48,10 @@ define('ALLOW_SELF_MULTIQUERY', false); //是否允许全站查询自己发表的文章
 
 //define('USER_FACE', 1); //是否允许自定义头像
 
+//define("RSS_SUPPORT", true); //是否允许 RSS
+
+//define("ONBOARD_USERS", false); //是否允许显示版面在线用户
+
 //define('AUDIO_CHAT', 0); //是否显示语音聊天室的 link
 	
 $SiteURL = "http://localhost/wForum/"; //站点根地址，注意最后一个字符必须是 '/'

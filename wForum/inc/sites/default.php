@@ -53,6 +53,7 @@ array(0, "ALLOWMULTIQUERY", 'b', false, "是否允许一般用户进行全站/多版面查询"),
 array(0, "ALLOW_SYSOP_MULTIQUERY", 'b', false, "是否允许管理员进行全站/多版面查询"),
 array(0, "ALLOW_SELF_MULTIQUERY", 'b', false, "是否允许全站查询自己发表的文章"),
 array(0, "RSS_SUPPORT", 'b', true, "是否允许 RSS"),
+array(0, "ONBOARD_USERS", 'b', false, "是否允许显示版面在线用户"),
 array(0, "SMS_SUPPORT", 'b', false, "是否允许手机短信"),
 array(0, "AUDIO_CHAT", 'b', false, "是否显示语音聊天室的 link"),
 false
