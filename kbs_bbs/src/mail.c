@@ -1064,15 +1064,6 @@ char *direct;
     char *t;
 
     clear();
-	
-   	setmailfile(q_file, currentuser->userid, DOT_DIR);
-	if( strcmp(q_file,direct) ){
-		move(3, 10);
-		prints("很抱歉,此信箱内暂时不可以回复!");
-		pressreturn();
-		return FULLUPDATE;
-	}
-
     modify_user_mode(SMAIL);
     strncpy(uid, fileinfo->owner, OWNER_LEN);
     uid[OWNER_LEN - 1] = 0;
@@ -1110,8 +1101,7 @@ char *direct;
     default:
         prints("信件已寄出\n");
         fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
-        setmailfile(q_file, currentuser->userid, DOT_DIR);
-        substitute_record(q_file, fileinfo, sizeof(*fileinfo), ent);
+        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
     }
     pressreturn();
     return FULLUPDATE;
@@ -1413,7 +1403,7 @@ int mail_move(int ent, struct fileheader *fileinfo, char *direct)
             }
     }
     free(sel);
-    return (FULLUPDATE);
+    return (DIRCHANGED);
 }
 
 extern int mailreadhelp();
