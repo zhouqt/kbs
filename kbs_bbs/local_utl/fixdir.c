@@ -11,14 +11,7 @@ extern int errno;
 int mailmode;
 struct fileheader data[20000];
 int len = 0;
-const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
-
-int getposttime(char* filename)
-{
-	    if (filename[1]=='/')
-		    return atoi(filename + 4);
-	   return atoi(filename + 2);
-}
+extern const char alphabet[];
 
 
 int cmpfile(f1, f2)
@@ -26,8 +19,8 @@ struct fileheader *f1, *f2;
 {
     time_t t1, t2;
 
-    t1 = getposttime(f1->filename);
-    t2 = getposttime(f2->filename);
+    t1 = get_posttime(f1);
+    t2 = get_posttime(f2);
     return t1 - t2;
 }
 
@@ -127,7 +120,7 @@ int addfile(char* filename)
 		fclose(art);
                 return 0;
             }
-	    fh.posttime=getposttime(fh.filename);
+		set_posttime(&fh);
             insertfile(fh);
             fclose(art);
         }
