@@ -31,6 +31,17 @@ $section_names = array(
 	array("体育健身", "[运动/健身]"),
 	array("知性感性", "[谈天/感性]")
 );
+$dir_modes = array(
+	"NORMAL" => 0,
+	"DIGEST" => 1,
+	"THREAD" => 2,
+	"MARK" => 3,
+	"DELETED" => 4,
+	"JUNK" => 5,
+	"ORIGIN" => 6,
+	"AUTHOR" => 7,
+	"TITLE" => 8
+);
 
 $loginok=0;
 header("Cache-Control: no-cache");
@@ -157,6 +168,18 @@ function get_bbsfile($relative_name)
 {
 	global $BBS_HOME;
 	return $BBS_HOME . $relative_name;
+}
+
+function get_secname_index($secnum)
+{
+	global $section_nums;
+	$arrlen = sizeof($section_nums);
+	for ($i = 0; $i < $arrlen; $i++)
+	{
+		if (strcmp($section_nums[$i], $secnum) == 0)
+			return $i;
+	}
+	return -1;
 }
 
 if (($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {

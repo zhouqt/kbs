@@ -83,11 +83,11 @@
 				echo "*";
 			else
 				echo "&nbsp;";
-?><a href="/cgi-bin/bbs/bbsdoc?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
+?><a href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
 </td>
 <td><?php echo $brd_class[$i]; ?></td>
 <td>
-<a href="/cgi-bin/bbs/bbsdoc?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
+<a href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
 </td>
 <td>
 <?php
