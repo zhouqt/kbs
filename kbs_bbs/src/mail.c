@@ -493,10 +493,11 @@ int do_send(char *userid, char *title, char *q_file)
         } 
         else if (ans[0] == 'U'&&HAS_PERM(currentuser, PERM_SYSOP)) {
             if(currboard->flag&BOARD_ATTACH) {
+                int i;
                 chdir("tmp");
                 upload = bbs_zrecvfile();
-                while(strchr(upload, '>')) *strchr(upload, '>')='A';
-                while(strchr(upload, '<')) *strchr(upload, '<')='A';
+                for(i=0;i<strlen(upload);i++)
+                    if(!isalnum(upload[i])) upload[i]='A';
                 chdir("..");
             }
         }
