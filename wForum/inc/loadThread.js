@@ -283,8 +283,8 @@ function writepost(unused_id, html_title, threadNum, origin, lastreply, origin_e
 		for (t=1; (t<7) && (t<=threadPages); t++) {
 			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((t-1)*siteconf_THREADSPERPAGE) + "\">" + t + "</a> ");
 		}
-		if (threadPages>7) {
-			if (threadPages>8) {
+		if (threadPages>=7) {
+			if (threadPages>=8) {
 				document.write("...");
 			}
 			document.write("<a href=\"disparticle.php?boardName=" + boardName + "&ID=" + origin.ID + "&start=" + ((threadPages-1)*siteconf_THREADSPERPAGE) + "\">" + threadPages + "</a> ");
