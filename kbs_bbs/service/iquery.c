@@ -271,24 +271,24 @@ static int choose_file_show(struct _select_def *conf, int ii)
             if(qn[i]>='a'&&qn[i]<='z'||qn[i]>='A'&&qn[i]<='Z') {
                 j=i;
                 while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
-                for(k=0;k<fsize-(j-i);k++)
+                for(k=0;k<fsize-(j-i)+1;k++)
                     if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='a'&&buf[k-1]<='z'||buf[k-1]>='A'&&buf[k-1]<='Z'))&&
-                        (k==fsize-1||!(buf[k+j-i]>='a'&&buf[k+j-i]<='z'||buf[k+j-i]>='A'&&buf[k+j-i]<='Z')))
+                        (k+j-i==fsize||!(buf[k+j-i]>='a'&&buf[k+j-i]<='z'||buf[k+j-i]>='A'&&buf[k+j-i]<='Z')))
                         for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
                 i=j-1;
             }
             if(qn[i]>='0'&&qn[i]<='9') {
                 j=i;
                 while(qn[j]>='0'&&qn[j]<='9') j++;
-                for(k=0;k<fsize-(j-i);k++)
+                for(k=0;k<fsize-(j-i)+1;k++)
                     if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='0'&&buf[k-1]<='9'))&&
-                        (k==fsize-1||!(buf[k+j-i]>='0'&&buf[k+j-i]<='9')))
+                        (k+j-i==fsize||!(buf[k+j-i]>='0'&&buf[k+j-i]<='9')))
                         for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
                 i=j-1;
             }
             if(qn[i]<0&&qn[i+1]<0) {
                 j=i+2;
-                for(k=0;k<fsize-(j-i);k++)
+                for(k=0;k<fsize-(j-i)+1;k++)
                     if(!strncmp(qn+i,buf+k,j-i))
                         for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
                 i=j-1;
