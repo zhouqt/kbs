@@ -94,7 +94,7 @@ LinuxKernel 版面。
     BBSLists        各类统计列表。
     Blessing        祝福版面。祝福榜排名将从这个版面产生。
     denypost        各版面封禁记录。
-    Filter          文章中出现了系统自动过滤的词语。
+    Filter          出现了系统自动过滤词语的文章将出现在这个版面。站务按 @ 审核。
     Goodbye         ID 自杀记录。
     newcomers       新手上路，这个最古老了。
     notepad         留言版记录。
@@ -115,7 +115,7 @@ LinuxKernel 版面。
 
 1.3 如何给版面开通转信
 
-    首先站点需要开通转信，这个请参考相关文档。
+    首先站点需要开通转信，这个请参考相关文档，比如源代码 innbbsd/INSTALL。
 
     一般开通转信的版面的名称会有●的标记，比方说，我站上的 cnBBSDev 的讨论区
 说明就是：
@@ -308,8 +308,8 @@ PERM_ACCOUNTS 企图让账号管理员拥有更改使用者权限的权利，这样做是不够的，因为
     ~bbs/vote/ 下面删除对应的目录即可。
 
 5.4 十大话题，十大祝福什么的都显示不出来。
-    参考 contrib/crontab.SMTH 和 doc/README.local_utl，登录 BBS 主机给 bbs 用户
-    配置 crontab 文件。
+    参考 contrib/crontab.SMTH，doc/README.utils 和 doc/README.local_utl，登录
+    BBS 主机给 bbs 用户配置 crontab 文件。
 
 5.5 进入系统管理选单的时候提示 请输入系统密码，可是我忘了啊！
     登录 BBS 主机，删掉文件 ~bbs/etc/systempassword
