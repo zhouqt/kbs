@@ -661,6 +661,7 @@ int searchtrace()
 }                               /* stephen 2000.12.15 let sysop search in trace */
 
 
+/*
 char curruser[IDLEN + 2];
 extern int delmsgs[];
 extern int delcnt;
@@ -751,6 +752,7 @@ int m_mclean()
     clear();
     return 0;
 }
+*/
 
 void trace_state(flag, name, size)
     int flag, size;

@@ -83,8 +83,9 @@ int switch_code();              /* add by KCN */
 
 
 int x_level(), XCheckLevel(), m_info(), d_user(), m_register(), m_newbrd(), setsystempasswd();
-int d_board(), m_editbrd(), m_mclean(), m_trace(), m_vote(), wall();
-
+int d_board(), m_editbrd(), m_trace(), m_vote(), wall();
+/*
+int m_mclean();*/
 /* inserted by cityhunter */
 int query_bm();
 
@@ -193,7 +194,9 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"EditBoard", m_editbrd},
     {"DelBoard", d_board},
     {"SetTrace", m_trace},
+/*    
     {"CleanMail", m_mclean},
+    */
     {"EditSFiles", a_edits},
     {"Announceall", wall},
     {"Setsyspass", setsystempasswd},

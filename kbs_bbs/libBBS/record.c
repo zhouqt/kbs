@@ -180,7 +180,7 @@ void toobigmesg()
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 /* COMMAN : use mmap to speed up searching */
 int apply_record(char *filename, RECORD_FUNC_ARG fptr, int size, void *arg,
-                 int applycopy)
+                 int applycopy,bool reverse)
 {
     char *buf, *buf1, *buf2;
     int i;
@@ -194,7 +194,11 @@ int apply_record(char *filename, RECORD_FUNC_ARG fptr, int size, void *arg,
     case 0:
         return 0;
     case 1:
-        for (i = 0, buf1 = buf; i < file_size / size; i++, buf1 += size) {
+    	if (reverse)
+    		buf1=buf+((file_size/size)-1)*size;
+    	else
+    		buf1=buf;
+        for (i = 0; i < file_size / size; i++, reverse?buf1-=size:buf1 += size) {
             if (applycopy)
                 memcpy(buf2, buf1, size);
             else

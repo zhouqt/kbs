@@ -653,7 +653,7 @@ pressanykey();
     
 (void) memset(result, 0, sizeof(result));
     
-if (apply_record(fname, (RECORD_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0) == -1)
+if (apply_record(fname, (RECORD_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,false) == -1)
         
  {
         
@@ -818,7 +818,7 @@ pressanykey();
     
 (void) memset(result, 0, sizeof(result));
     
-if (apply_record(fname, (RECORD_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0) == -1)
+if (apply_record(fname, (RECORD_FUNC_ARG) count_result, sizeof(struct ballot), 0, 0,false) == -1)
         
  {
         
@@ -2302,7 +2302,7 @@ i = 0;
     
 setcontrolfile();
     
-if (apply_record(controlfile, (RECORD_FUNC_ARG) printvote, sizeof(struct votebal), &i, 0) == -1) {
+if (apply_record(controlfile, (RECORD_FUNC_ARG) printvote, sizeof(struct votebal), &i, 0,false) == -1) {
         
 prints("错误，没有投票箱开启....");
         

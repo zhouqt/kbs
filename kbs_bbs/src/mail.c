@@ -646,22 +646,22 @@ int read_mail(fptr)
 }
 
 int mrd;
-
-int delmsgs[1024];
-int delcnt;
-
-int read_new_mail(struct fileheader *fptr, char *arg)
+int delete_new_mail(struct fileheader *fptr, int * idc)
 {
-    static int idc;
+	(*idc)++;
+    if (fptr->accessed[1]&FILE_DEL) {
+        delete_record(currmaildir, sizeof(struct fileheader), *idc, NULL, NULL);
+        return 1;
+    }
+    return 0;
+}
+
+int read_new_mail(struct fileheader *fptr, int * idc)
+{
     char done = false, delete_it;
     char fname[256];
 
-    if (fptr == NULL) {
-        delcnt = 0;
-        idc = 0;
-        return 0;
-    }
-    idc++;
+    (*idc)++;
     if (fptr->accessed[0])
         return 0;
     prints("¶ÁÈ¡ %s ¼ÄÀ´µÄ '%s' ?\n", fptr->owner, fptr->title);
@@ -678,8 +678,6 @@ int read_new_mail(struct fileheader *fptr, char *arg)
     read_mail(fptr);
     strcpy(fname, genbuf);
     mrd = 1;
-    if (substitute_record(currmaildir, fptr, sizeof(*fptr), idc))
-        return -1;
     delete_it = false;
     while (!done) {
         move(t_lines - 1, 0);
@@ -696,8 +694,10 @@ int read_new_mail(struct fileheader *fptr, char *arg)
                 pressreturn();
                 break;
             }
-            mail_reply(idc, fptr, currmaildir);
+            mail_reply(*idc, fptr, currmaildir);
+            /*
             substitute_record(currmaildir, fptr, sizeof(*fptr), idc);
+            */
             break;
         case 'D':
         case 'd':
@@ -715,29 +715,37 @@ int read_new_mail(struct fileheader *fptr, char *arg)
         if (genbuf[0] == 'Y' || genbuf[0] == 'y') {     /* if not yes quit */
             setmailfile(genbuf, currentuser->userid, fptr->filename);
             unlink(genbuf);
-            delmsgs[delcnt++] = idc;
         }
+        fptr->accessed[1]|=FILE_DEL;
     }
+    if (substitute_record(currmaildir, fptr, sizeof(*fptr), *idc))
+        return -1;
     clear();
     return 0;
 }
 
 int m_new()
 {
+	int idc;
     clear();
     mrd = 0;
+    idc=0;
     modify_user_mode(RMAIL);
     read_new_mail(NULL, 0);
-    if (apply_record(currmaildir, (RECORD_FUNC_ARG) read_new_mail, sizeof(struct fileheader), 0, 1) == -1) {
+    if (apply_record(currmaildir, (RECORD_FUNC_ARG) read_new_mail, sizeof(struct fileheader), &idc, 1,false) == -1) {
         clear();
         move(0, 0);
         prints("No new messages\n\n\n");
         return -1;
     }
+    idc=0;
+    apply_record(currmaildir, (RECORD_FUNC_ARG) delete_new_mail, sizeof(struct fileheader), &idc, 1,true));
+/*    	
     if (delcnt) {
         while (delcnt--)
             delete_record(currmaildir, sizeof(struct fileheader), delmsgs[delcnt], NULL, NULL);
     }
+*/
     clear();
     move(0, 0);
     if (mrd)
