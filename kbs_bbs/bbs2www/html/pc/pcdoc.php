@@ -607,14 +607,13 @@
 	{
 		pc_update_record($link,$pc["UID"],"+0",TRUE);//计数器加1
 		$pc["VISIT"] ++;
-		session_unregister("visitcount");
 		$visitcount .= $pc["UID"].",";
-		session_register("visitcount");
+		$_SESSION["visitcount"] .= $pc["UID"].",";
 	}
 	/*visit count end*/
 	
 	$isfriend = pc_is_friend($currentuser["userid"],$pc["USER"]);
-	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]))
+	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
 		$sec = array("公开区","好友区","私人区","收藏区","删除区","设定好友","文集管理","参数设定");
 		$pur = 3;

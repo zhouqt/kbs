@@ -19,7 +19,7 @@
 	else
 	{
 		$link = pc_db_connect();
-		$query = "SELECT `uid`,`nodelimit`,`dirlimit`,`corpusname`,`username`  FROM users WHERE username = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
+		$query = "SELECT `uid`,`nodelimit`,`dirlimit`,`corpusname`,`username`  FROM users WHERE username = '".$currentuser["userid"]."' AND `createtime` > '".date("YmdHis",$currentuser["firstlogin"])."' LIMIT 0 , 1 ;";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		if(!$rows)
@@ -106,7 +106,7 @@
 					/*	目前复制文章的时候评论不同步复制	*/
 					$rows = mysql_fetch_array($result);
 					$query = "INSERT INTO `nodes` ( `pid` , `tid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` )  ".
-						" VALUES ('0','0' , '0', '".$rows[source]."', '".$rows[hostname]."','".date("YmdHis")."' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '".$rows[commentcount]."', '".$rows[subject]."', '".$rows[body]."', '".$target."', '".$rows[visitcount]."');";
+						" VALUES ('0','0' , '0', '".$rows[source]."', '".$rows[hostname]."','".date("YmdHis")."' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".$rows[subject]."', '".$rows[body]."', '".$target."', '0');";
 					mysql_query($query,$link);
 				}
 				

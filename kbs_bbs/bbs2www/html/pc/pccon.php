@@ -121,6 +121,7 @@
 	$pc = array(
 			"NAME" => html_format($rows[corpusname]),
 			"USER" => $rows[username],
+			"TIME" => $rows[createtime],
 			"DESC" => html_format($rows[description]),
 			"THEM" => html_format($rows[theme]),
 			"UID" => $id,
@@ -131,7 +132,7 @@
 	
 	pc_html_init("gb2312",stripslashes($rows[corpusname]),"","",$pc["BKIMG"]);
 	
-	if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
+	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 		$pur = 3;
 	/*
 	elseif(bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"]))

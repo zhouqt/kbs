@@ -160,6 +160,14 @@ function pc_is_friend($userid,$uid)
 	}
 }
 
+function pc_is_admin($currentuser,$pc)
+{
+	if(strtolower($pc["USER"]) == strtolower($currentuser["userid"]) && $pc["TIME"] > date("YmdHis",$currentuser["firstlogin"]) && $currentuser["firstlogin"])
+		return TRUE;
+	else
+		return FALSE;
+}
+
 function pc_friend_list($uid)
 {
 	$file = pc_friend_file_open($uid,"r");

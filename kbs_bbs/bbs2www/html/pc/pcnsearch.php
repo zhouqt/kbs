@@ -47,21 +47,25 @@
 		
 		@$body = pc_search_special_keyword(html_format($body),$keyword);
 ?>
-<p align="left" class="f1">
+<table cellspacing="0" cellpadding="3" border="0" class="f1" width="500">
+<tr><td>
 <font class="f5">
 <a href="pccon.php?<?php echo "id=".$rows[uid]."&nid=".$rows[nid]."&tid=".$rows[tid]; ?>">
 <?php echo html_format($rows[subject]); ?>&nbsp;
 </a>
 </font>
-<br><br>
+</td></tr>
+<tr><td>
 <?php echo $body; ?>
-<br><br>
+</td></tr>
+<tr><td>
 <font color="#336600">
 http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?<?php echo "id=".$rows[uid]."&nid=".$rows[nid]."&tid=".$rows[tid]; ?>
 &nbsp;-<?php echo (int)(strlen($rows[body].$rows[subject])/100)/10; ?>K-
 <?php echo time_format($rows[created]); ?>-
 </font>
-</p>	
+</td></tr>
+</table>	
 <?php		
 	}
 	
