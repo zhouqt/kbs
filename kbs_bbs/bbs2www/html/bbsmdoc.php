@@ -110,6 +110,7 @@ else echo "box";
 			}
 			else
 				echo $flags[0];
+			echo $flags[3];
 ?>
 </td>
 <td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>

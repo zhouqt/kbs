@@ -201,6 +201,7 @@
 			}
 			else
 				echo $flags[0];
+			echo $flags[3];
 ?>
 </td>
 <?php

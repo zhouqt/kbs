@@ -872,9 +872,10 @@ static ZEND_FUNCTION(bbs_getarticles)
     int i;
     zval *element;
     int is_bm;
-    char flags[3];              /* flags[0]: flag character
+    char flags[4];              /* flags[0]: flag character
                                  * flags[1]: imported flag
                                  * flags[2]: no reply flag
+                                 * flags[3]: attach flag
                                  */
     int ac = ZEND_NUM_ARGS();
 
@@ -933,6 +934,10 @@ static ZEND_FUNCTION(bbs_getarticles)
             flags[2] = 'y';
         else
             flags[2] = 'n';
+        if (articles[i].attachment)
+            flags[3] = '@';
+        else
+            flags[3] = '';
         bbs_make_article_array(element, articles + i, flags, sizeof(flags));
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
