@@ -9,11 +9,15 @@
 
 		if(isset($_GET["board"]))
 			$board = $_GET["board"];
+		else if(isset($_POST["board"]))
+			$board = $_POST["board"];
 		else
 			html_error_quit("讨论区错误");
 
 		if(isset($_GET["num"]))
 			$num = $_GET["num"];
+		else if(isset($_POST["num"]))
+			$num = $_POST["num"];
 		else
 			html_error_quit("参数错误1");
 
@@ -33,23 +37,25 @@
 			$oldvote[$i] = 0;
 		}
 
-		if( $_GET["submit"] ){
+		if( $_POST["submit"] ){
 
 			if(isset($_GET["type"]))
 				$votetype = $_GET["type"];
+			else if(isset($_POST["type"]))
+				$votetype = $_POST["type"];
 			else
 				html_error_quit("参数错误2");
 
-			if(isset($_GET["msg"]))
-				$msg = $_GET["msg"];
+			if(isset($_POST["msg"]))
+				$msg = $_POST["msg"];
 			else
 				$msg = "";
 
 			$votevalueint = 0;
 
 			if( $votetype == "单选" || $votetype == "是非" ){
-				if(isset($_GET["ITEM"]))
-					$itemvalue = $_GET["ITEM"];
+				if(isset($_POST["ITEM"]))
+					$itemvalue = $_POST["ITEM"];
 				else
 					html_error_quit("参数错误3");
 
@@ -66,14 +72,14 @@
 
 				for($i = 0; $i < 32; $i++){
 					$itemstr = "ITEM".($i+1);
-					if(isset($_GET[$itemstr]) && $_GET[$itemstr]=="on"){
+					if(isset($_POST[$itemstr]) && $_POST[$itemstr]=="on"){
 						$votevalueint += ( 1 << $i );
 					}
 				}
 
 			}else if( $votetype == "数字" ){
-				if(isset($_GET["ITEM"]))
-					$votevalueint = $_GET["ITEM"];
+				if(isset($_POST["ITEM"]))
+					$votevalueint = $_POST["ITEM"];
 				else
 					html_error_quit("参数错误3");
 
@@ -122,7 +128,7 @@
 <tr><td><?php if($uservotearr[0]["USERID"]){?>您已经投票，现在可以更改<?php }else{?>您尚未投票<?php }?></td><td></td></tr>
 </table>
 <hr class="default"/>
-<form action="/bbsvote.php" method="get">
+<form action="/bbsvote.php?board=<?php echo $board;?>&num=<?php echo $num?>" method="post">
 <table width="613">
 <?php
 		if($uservotearr[0]["USERID"]){
@@ -177,8 +183,6 @@
 <?php echo $uservotearr[0]["MSG1"]; echo $uservotearr[0]["MSG2"]; echo $uservotearr[0]["MSG3"];?>
 </textarea></td></tr>
 </table>
-<input type="hidden" name="board" value="<?php echo $board;?>">
-<input type="hidden" name="num" value="<?php echo $num;?>">
 <input type="submit" name="submit" value="确认">
 </form>
 <?php
