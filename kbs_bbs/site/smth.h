@@ -369,6 +369,7 @@ attach define
 #define MYUNLINK_BACKUPDIR "0Announce/backup"
 
 #define BMSLOG
+#define NEWPOSTLOG
 
 //#define USE_SEM_LOCK
 #endif
