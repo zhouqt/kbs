@@ -22,7 +22,7 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <sys/stat.h>
-int safewrite( int fd, void *buf, int size)
+int safewrite(int fd, void *buf, int size)
 {
     int cc, sz = size, origsz = size;
     char *bp = buf;
@@ -36,7 +36,7 @@ int safewrite( int fd, void *buf, int size)
         setbpath(tmp, fbuf->filename);
         if (!isalpha(fbuf->filename[0]) || stat(tmp, &stbuf) == -1)
             if (fbuf->filename[0] != 'M' || fbuf->filename[1] != '.') {
-                bbslog("user","%s","safewrite: foiled attempt to write bugged record\n");
+                bbslog("user", "%s", "safewrite: foiled attempt to write bugged record\n");
                 return origsz;
             }
     }
@@ -45,7 +45,7 @@ int safewrite( int fd, void *buf, int size)
     do {
         cc = write(fd, bp, sz);
         if ((cc < 0) && (errno != EINTR)) {
-            bbslog("user","%s","safewrite err!");
+            bbslog("user", "%s", "safewrite err!");
             return -1;
         }
         if (cc > 0) {
@@ -93,7 +93,7 @@ int size, pos;
     flock(fd, LOCK_EX);
     lseek(fd, (pos - numtowrite - 1) * size, SEEK_SET);
     safewrite(fd, bigbuf, numtowrite * size);
-    bbslog("user","%s","post bug poison set out!");
+    bbslog("user", "%s", "post bug poison set out!");
     flock(fd, LOCK_UN);
     bigbuf[0] = '\0';
     close(fd);
@@ -132,7 +132,7 @@ long get_sum_records(char *fpath, int size)
 }
 
 static long get_mail_sum_records(char *fpath, int size)
-{                               
+{
     struct stat st;
     long ans = 0;
     FILE *fp;
@@ -149,16 +149,16 @@ static long get_mail_sum_records(char *fpath, int size)
             ans += st.st_size;
     }
     fclose(fp);
-    return ans ;
+    return ans;
 }
 
-void load_mail_list(struct userec *user,struct _mail_list* mail_list)
+void load_mail_list(struct userec *user, struct _mail_list *mail_list)
 {
     char fname[STRLEN];
     int fd;
 
     sethomefile(fname, user->userid, "maildir");
-    mail_list->mail_list_t=0;
+    mail_list->mail_list_t = 0;
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
         read(fd, &mail_list->mail_list_t, sizeof(int));
         read(fd, mail_list->mail_list, sizeof(mail_list->mail_list));
@@ -166,42 +166,42 @@ void load_mail_list(struct userec *user,struct _mail_list* mail_list)
     }
 }
 
-void save_mail_list(struct _mail_list* mail_list)
+void save_mail_list(struct _mail_list *mail_list)
 {
     char fname[STRLEN];
     int fd;
 
     sethomefile(fname, currentuser->userid, "maildir");
-    if ((fd = open(fname, O_WRONLY|O_CREAT, 0600)) != -1) {
+    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
         write(fd, &mail_list->mail_list_t, sizeof(int));
         write(fd, mail_list->mail_list, sizeof(mail_list->mail_list));
         close(fd);
     }
 }
 
-long get_mailusedspace(struct userec *user,int force)
+long get_mailusedspace(struct userec *user, int force)
 {
-	char recmaildir[200], buf[STRLEN];
-	int sum=0, i;
-	struct _mail_list mail;
-	if(user->usedspace==0xFFFF||force!=0)
-	{
-		setmailfile(recmaildir, user->userid, DOT_DIR);
-		sum=get_mail_sum_records(recmaildir, sizeof(fileheader));
-		setmailfile(recmaildir, user->userid, ".SENT");
-		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
-		setmailfile(recmaildir, user->userid, ".DELETED");
-		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
-		load_mail_list(user,&mail);
-		for(i=0;i<mail.mail_list_t;i++){
-		    sprintf(buf, ".%s", mail.mail_list[i]+30);
-		    setmailfile(recmaildir, user->userid, buf);
-		    sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
-		}
-		user->usedspace=sum;
-		return sum;
-	}
-	else return user->usedspace;
+    char recmaildir[200], buf[STRLEN];
+    int sum = 0, i;
+    struct _mail_list mail;
+
+    if (user->usedspace == 0xFFFF || force != 0) {
+        setmailfile(recmaildir, user->userid, DOT_DIR);
+        sum = get_mail_sum_records(recmaildir, sizeof(fileheader));
+        setmailfile(recmaildir, user->userid, ".SENT");
+        sum += get_mail_sum_records(recmaildir, sizeof(fileheader));
+        setmailfile(recmaildir, user->userid, ".DELETED");
+        sum += get_mail_sum_records(recmaildir, sizeof(fileheader));
+        load_mail_list(user, &mail);
+        for (i = 0; i < mail.mail_list_t; i++) {
+            sprintf(buf, ".%s", mail.mail_list[i] + 30);
+            setmailfile(recmaildir, user->userid, buf);
+            sum += get_mail_sum_records(recmaildir, sizeof(fileheader));
+        }
+        user->usedspace = sum;
+        return sum;
+    } else
+        return user->usedspace;
 }
 
 int append_record(filename, record, size)
@@ -231,7 +231,7 @@ int size;
     flock(fd, LOCK_EX);
     lseek(fd, 0, SEEK_END);
     if (safewrite(fd, record, size) == -1)
-        bbslog("user","%s","apprec write err!");
+        bbslog("user", "%s", "apprec write err!");
     flock(fd, LOCK_UN);
     close(fd);
 #ifdef POSTBUG
@@ -337,6 +337,35 @@ int search_record_back(int fd,  /* file handle */
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) buf, filesize, -1);
+
+    return 0;
+}
+
+//和search_record_back区别是最多搜num个
+int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_ARG fptr, void *farg, void *rptr, int sorted)
+{
+    char *buf, *buf1;
+    int i;
+    size_t filesize;
+
+    BBS_TRY {
+        if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
+            BBS_RETURN(0);
+        if (start > filesize / size)
+            start = filesize / size;
+        for (i = start, buf1 = buf + size * (start - 1); (i > 0 && i > start - num); i--, buf1 -= size) {
+            if ((*fptr) (farg, buf1)) {
+                if (rptr)
+                    memcpy(rptr, buf1, size);
+                end_mmapfile((void *) buf, filesize, -1);
+                BBS_RETURN(i);
+            }
+        }
+    }
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) buf, filesize, -1);
+
     return 0;
 }
 
@@ -425,10 +454,10 @@ char *rptr;
 int size, id, number;
 {
     int fd;
-    int n,m,fnum;
+    int n, m, fnum;
 
-    fnum=get_num_records(filename, size);
-    if(fnum < id){
+    fnum = get_num_records(filename, size);
+    if (fnum < id) {
         if ((fd = open(filename1, O_RDONLY, 0)) == -1)
             return -1;
         if (lseek(fd, size * (id - fnum - 1), SEEK_SET) == -1) {
@@ -441,7 +470,7 @@ int size, id, number;
         }
         close(fd);
         return (n / size);
-    }else{
+    } else {
         if ((fd = open(filename, O_RDONLY, 0)) == -1)
             return -1;
         if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
@@ -453,20 +482,22 @@ int size, id, number;
             return -1;
         }
         close(fd);
-	m=n/size;
-	if(m==number) return m;
+        m = n / size;
+        if (m == number)
+            return m;
 
         if ((fd = open(filename1, O_RDONLY, 0)) == -1)
             return m;
-        if ((n = read(fd, rptr + m*size, size * (number-m))) == -1) {
+        if ((n = read(fd, rptr + m * size, size * (number - m))) == -1) {
             close(fd);
             return m;
         }
-		close(fd);
-        return (m+ n/size);
+        close(fd);
+        return (m + n / size);
     }
-        
+
 }
+
 /* add end */
 
 int substitute_record(filename, rptr, size, id)
@@ -497,13 +528,13 @@ int size, id;
     ldata.l_len = size;
     ldata.l_start = size * (id - 1);
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("user","%s","reclock error");
+        bbslog("user", "%s", "reclock error");
         close(fd);
                         /*---	period	2000-10-20	file should be closed	---*/
         return -1;
     }
     if (lseek(fd, size * (id - 1), SEEK_SET) == -1) {
-        bbslog("user","%s","subrec seek err");
+        bbslog("user", "%s", "subrec seek err");
         /*---	period	2000-10-24	---*/
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLK, &ldata);
@@ -511,7 +542,7 @@ int size, id;
         return -1;
     }
     if (safewrite(fd, rptr, size) != size)
-        bbslog("user","%s","subrec write err");
+        bbslog("user", "%s", "subrec write err");
     /*
      * change by KCN
      * flock(fd,LOCK_UN) ;
@@ -604,4 +635,3 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
 
     return ret;
 }
-
