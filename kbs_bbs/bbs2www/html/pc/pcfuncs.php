@@ -699,7 +699,7 @@ function pc_counter($link)
 	$action = $currentuser["userid"]." visit ".$pc["USER"]."'s Blog(www)";
 	if(!$visitcount)
 	{
-		$query = "SELECT logtime FROM logs WHERE hostname = '".addslashes($_SERVER["REMOTE_ADDR"])."' AND username = '".addslashes($currentuser[userid])."' AND pri_id = '".addslashes($pc["USER"])."' AND action LIKE '%visit%'s Blog(www)' order by lid DESC LIMIT 0,1;";
+		$query = "SELECT logtime FROM logs WHERE hostname = '".addslashes($_SERVER["REMOTE_ADDR"])."' AND username = '".addslashes($currentuser[userid])."' AND pri_id = '".addslashes($pc["USER"])."' ORDER BY lid DESC LIMIT 0,1;";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		mysql_free_result($result);
@@ -712,6 +712,8 @@ function pc_counter($link)
 			setcookie("BLOGVISITCOUNT",$visitcount);
 			return;
 		}
+		else
+			return;
 	}
 	elseif(!stristr($visitcount,",".$pc["UID"].","))
 	{
