@@ -618,6 +618,8 @@
 </tr>
 </table>
 <p align="center"><a href="http://www.dawning.com.cn/" target="_blank"><img src="/images/dawning.gif" width="120" height="53" border="0" alt="曙光公司"></a></p>
+<p align="center"><table width=120 cellspacing="0" cellpadding="3" style="border:solid 1px #88aacc;background-color:#202020"><tr><td align=center><a href="http://www.happyu.cn/" target="_blank" style="color:#d0e0f0;"><font color=#ffff00>你</font><font color=#e0e0e0>发短信，<font color=#ff0000>我</font>买单</font><br>发送<font color=#ffffff> U </font>到<font color=#ffffff> 05959 </font><br><font color=#55cc55>免费</font>注册<br>登陆 <font color=#ffffff> HAPPYU.CN </font><br><font color=#55cc55>免费</font>在线发短信</a></td></tr></p>
+
 <?php
 		html_normal_quit();
 		}
