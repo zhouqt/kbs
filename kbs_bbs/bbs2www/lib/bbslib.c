@@ -1283,7 +1283,8 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
              * Çå³ýuse_map 
              */
 	    guestinfo.currentboard=wwwguest_shm->guest_entry[i].currentboard;
-	    do_after_logout(getCurrentUser(), &guestinfo, i, 1);
+	    do_after_logout(getCurrentUser(), &guestinfo, i, 1,false);
+	    do_after_logout(getCurrentUser(), &guestinfo, i, 1,true);
 
             wwwguest_shm->use_map[i / 32] &= ~(1 << (i % 32));
 			/* Çå³ýhashtab */
@@ -1390,7 +1391,8 @@ static int www_free_guest_entry(int idx)
     if ((idx < 0) || (idx > MAX_WWW_GUEST))
         return -1;
     guestinfo.currentboard=wwwguest_shm->guest_entry[idx].currentboard;
-    do_after_logout(getCurrentUser(), &guestinfo, idx, 1);
+    do_after_logout(getCurrentUser(), &guestinfo, idx, 1,false);
+    do_after_logout(getCurrentUser(), &guestinfo, idx, 1,true);
     setpublicshmreadonly(0);
     pub = get_publicshm();
     fd = www_guest_lock();

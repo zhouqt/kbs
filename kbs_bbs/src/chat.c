@@ -819,17 +819,7 @@ void call_user(chatcontext * pthis, const char *arg)
         else if (!canmsg(getCurrentUser(), uin))
             sprintf(msg, "%s 已经关闭接受讯息的呼叫器.\n", uin->userid);
         else {
-            FILE *fp;
-            int msg_count = 0;
-            char buf[STRLEN];
-
-            sethomefile(buf, uin->userid, "msgcount");
-            fp = fopen(buf, "rb");
-            if (fp != NULL) {
-                fread(&msg_count, sizeof(int), 1, fp);
-                fclose(fp);
-            }
-            if (msg_count > MAXMESSAGE)
+            if (get_unreadcount(uin->userid) > MAXMESSAGE)
                 sprintf(msg,
                         "对方尚有一些讯息未处理，请稍候再邀请或给他(她)写信...\n");
             else {
@@ -885,17 +875,7 @@ void chat_sendmsg(chatcontext * pthis, const char *arg)
             else if (false == canIsend2(getCurrentUser(),uin->userid))
                 sprintf(msg, "\x1b[32m%s\x1b[37m拒绝接受你的讯息.\n", uin->userid);     /*Haohmaru.99.6.6,检查是否被ignore */
             else {
-                FILE *fp;
-                int msg_count = 0;
-                char buf[STRLEN];
-
-                sethomefile(buf, uin->userid, "msgcount");
-                fp = fopen(buf, "rb");
-                if (fp != NULL) {
-                    fread(&msg_count, sizeof(int), 1, fp);
-                    fclose(fp);
-                }
-                if (msg_count > MAXMESSAGE)
+                if (get_unreadcount(uin->userid) > MAXMESSAGE)
                     sprintf(msg,
                             "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...\n");
                 else {

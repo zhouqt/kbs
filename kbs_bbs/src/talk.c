@@ -1458,7 +1458,7 @@ int count_useshell(struct user_info *uentp, int *count, int pos)
 {
     if (!uentp->active || !uentp->pid)
         return 0;
-    if (uentp->mode == WWW || uentp->mode == CSIE_TIN || uentp->mode == CSIE_GOPHER || uentp->mode == EXCE_CHESS || uentp->mode == EXCE_BIG2 || uentp->mode == EXCE_MJ || uentp->mode == IRCCHAT)
+    if (uentp->mode == WEBEXPLORE || uentp->mode == CSIE_TIN || uentp->mode == CSIE_GOPHER || uentp->mode == EXCE_CHESS || uentp->mode == EXCE_BIG2 || uentp->mode == EXCE_MJ || uentp->mode == IRCCHAT)
         (*count)++;
     return 1;
 }

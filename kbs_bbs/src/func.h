@@ -24,6 +24,9 @@ extern "C" {
 
 
 /* defined in ucache.c */
+    int lock_user(char* userid);
+    void unlock_user(int fd);
+
     void load_user_title(ARG_VOID);
     struct userec *getuserbynum(int num);
     int getnewuserid2(char *userid);
@@ -48,7 +51,7 @@ extern "C" {
     int get_giveupinfo(char *userid, int *basicperm, int s[10][2]);
     void save_giveupinfo(struct userec *lookupuser, int lcount, int s[10][2]);
     int do_after_login(struct userec* user,int unum,int mode);
-    int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode);
+    int do_after_logout(struct userec* user,struct user_info* uinfo,int unum, int mode,int locked);
 
 #if USE_TMPFS==1
 void setcachehomefile(char* path,const char* user,int unum, char* file);
@@ -93,7 +96,7 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 #if 0
     void clear_utmp2(struct user_info *uentp);
 #endif
-    void clear_utmp2(int uentp);
+    void kick_idle_user();
     void clear_utmp(int uentp, int useridx, int pid);   /*先锁住utmp调用clear_utmp2,并校验useridx */
     int apply_ulist(APPLY_UTMP_FUNC fptr, void *arg);
     int apply_utmpuid(APPLY_UTMP_FUNC fptr, int uid, void *arg);

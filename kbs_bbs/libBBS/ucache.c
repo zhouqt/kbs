@@ -1000,35 +1000,38 @@ int do_after_login(struct userec* user,int unum,int mode)
   return 0;
 }
 
-int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int mode)
+int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int mode,int locked)
 {
     char buf[MAXPATH];
-
-    if (userinfo&&(mode==0)) {
+    if (locked) { //utmp locked
+        if (userinfo&&userinfo->currentboard)
+            board_setcurrentuser(userinfo->currentboard,-1);
+        return 0;
+    }else { //do something without utmp lock
+        int lockfd;
+        lockfd=lock_user(userinfo->userid);
+        if(userinfo->pid > 1 && strcmp(userinfo->userid,"guest")){
+              snprintf(buf,MAXPATH,"tmp/%d/%s/", userinfo->pid, userinfo->userid);
+              f_rm(buf);
+        }
+        if (userinfo&&(mode==0)) {
 #if USE_TMPFS==0
-      if (userinfo->utmpkey!=0) {
-        snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,userinfo->userid,unum);
-        f_rm(buf);
-      }
+            if (userinfo->utmpkey!=0) {
+                snprintf(buf,MAXPATH,"%s/%s_%d",ATTACHTMPPATH,userinfo->userid,unum);
+                f_rm(buf);
+            }
 #endif
-	  if(userinfo -> pid > 1 ){
-		snprintf(buf,MAXPATH,"rm -rf tmp/%d/%s/", userinfo->pid, userinfo->userid);
-		system(buf);
-	  }
-    }
-    if (user) {
+        }
 #if USE_TMPFS==1
-        if (mode==0)
-            clean_cachedata(user->userid,unum);
-        else //www guest,使用负数来和telnet guest区分
-	{
-            clean_cachedata(user->userid,-unum);
-	}
+        if (user) {
+            if (mode==0)
+                clean_cachedata(user->userid,unum);
+            else //www guest,使用负数来和telnet guest区分
+                clean_cachedata(user->userid,-unum);
+        }
 #endif
+        unlock_user(lockfd);
     }
-    if (userinfo&&userinfo->currentboard)
-        board_setcurrentuser(userinfo->currentboard,-1);
-    return 0;
 }
 
 #ifdef HAVE_CUSTOM_USER_TITLE
@@ -1171,5 +1174,27 @@ int resolve_guest_table()
         }
     }
     return 0;
+}
+
+int lock_user(char* userid)
+{
+    int fd = 0;
+    char buf[MAX_PATH];
+
+    sethomefile(buf,userid,"lock");
+    fd = open(buf, O_RDWR | O_CREAT, 0600);
+    if (fd < 0) {
+        return -1;
+    }
+    if (flock(fd, LOCK_EX) == -1) {
+        return -1;
+    }
+    return fd;
+}
+
+void unlock_user(int fd)
+{
+    flock(fd, LOCK_UN);
+    close(fd);
 }
 #endif

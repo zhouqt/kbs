@@ -607,7 +607,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
             return -2;
         //save_smsmsg(session->getCurrentUser()->userid, &head2, msgstr, 1) ;
     }
-	if( uin->mode == WWW ){
+	if( uin->mode == WEBEXPLORE){
 		uin->mailcheck |= CHECK_MSG;
 		return 1;
 	}
