@@ -1,7 +1,9 @@
 #include "bbs.h"
 #include <sys/types.h>
 
+#ifdef PERSONAL_CORP
 #include <mysql.h>
+#endif
 
 time_t timestamp2tt( char *row )
 {
