@@ -281,11 +281,13 @@ void refresh()
         scrollcnt = 0;
     }
     if (scrollcnt > 0) {
-        rel_move(tc_col, tc_line, 0, t_lines - 1);
+        do_move(0, 1024, ochar);
         while (scrollcnt > 0) {
             ochar('\n');
             scrollcnt--;
         }
+        do_move(0, scr_lns-1, ochar);
+        tc_col = 0; tc_line = scr_lns-1;
     }
 /*    if(can_clrscr) {
         o_clear();
@@ -312,7 +314,7 @@ void refresh()
         p=ii+1;
 
         for (k = 0; k < scr_cols; k++)
-        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&count>=3)) {
+        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
             stackt=0;
             rel_move(tc_col, tc_line, k, i);
             s = bp[j].mode[k];
@@ -370,7 +372,7 @@ void refresh()
                 output(buf, pos);
                 stackt=0; 
             }
-            if(k>=p&&p<=scr_cols-4) {
+            if(k>=p&&(p<=scr_cols-4||i==scr_lns-1)) {
                 memcpy(bp[j].ldata+k, bp[j].data+k, scr_cols-k);
                 memcpy(bp[j].lmode+k, bp[j].mode+k, scr_cols-k);
                 memcpy(bp[j].lcolor+k, bp[j].color+k, scr_cols-k);
