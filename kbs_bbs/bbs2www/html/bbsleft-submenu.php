@@ -7,7 +7,6 @@ if(isset($_GET["fav"]))
 	if( bbs_load_favboard($select)==-1 ) exit();
 	$subMenu = "submenu_fav_".$select;
 	$boards = bbs_fav_boards($select, 1);
-	bbs_release_favboard(); 
 }
 else
 {
