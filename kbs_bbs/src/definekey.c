@@ -52,7 +52,7 @@ int add_key(struct key_struct *s)
     if(keymem_total>=MAX_KEY_DEFINE) return -1;
     if(!keymem)
         keymem = malloc(MAX_KEY_DEFINE*sizeof(struct key_struct));
-    memcpy(keymem+keymem_total*sizeof(struct key_struct), s, sizeof(struct key_struct));
+    memcpy(keymem+keymem_total, s, sizeof(struct key_struct));
     keymem_total++;
     return 0;
 }
@@ -62,7 +62,7 @@ int remove_key(int i)
     int j;
     if(keymem_total<=0) return -1;
     for(j=i;j<keymem_total-1;j++)
-        memcpy(keymem+j*sizeof(struct key_struct), keymem+(j+1)*sizeof(struct key_struct), sizeof(struct key_struct));
+        memcpy(keymem+j, keymem+j+1, sizeof(struct key_struct));
     keymem_total--;
     return 0;
 }
@@ -151,7 +151,7 @@ static int set_keydefine_show(struct _select_def *conf, int i)
     char buf[120], buf2[20], buf3[200];
     get_key_name(keymem[i-1].key, buf2);
     get_keys_name(keymem+i-1, buf);
-    get_keys_name(keymem+i-1, buf3);
+    get_modes_name(keymem+i-1, buf3);
     prints(" %-6s  %-36s  %-32s", buf2, buf, buf3);
     return SHOW_CONTINUE;
 }
