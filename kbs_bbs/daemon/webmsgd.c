@@ -9,6 +9,7 @@
 #undef perror
 #undef printf
 
+static msglist_t *msgshm;
 void save_daemon_pid()
 {
 	FILE *fp;

@@ -207,7 +207,7 @@ toobigmesg()
 int apply_record(char *filename ,RECORD_FUNC_ARG fptr,int size ,void* arg,int applycopy)
 {
     char *buf,*buf1,*buf2;
-    int fd, sizeread, n, i;
+    int fd, i;
     struct stat stat;
     if (applycopy)
     	buf2=malloc(size);
@@ -308,8 +308,7 @@ int search_record_back(
 int
 search_record(char *filename,void *rptr,int size,RECORD_FUNC_ARG fptr,void *farg)
 {
-    int fd, sizeread, n, i;
-    int id = 1 ;
+    int fd, i;
     char *buf,*buf1;
 	struct stat stat;
     if((fd = open(filename,O_RDONLY,0)) == -1)
@@ -664,7 +663,6 @@ int id1,id2,del_mode ;
     totalcount = pos_end/sizeof(struct fileheader);
     pos_end = totalcount*sizeof(struct fileheader);
     if (id2!=-1) {
-        char buf[3];
         pos_read=sizeof(struct fileheader)*id2;
     }
     else
@@ -708,8 +706,8 @@ int id1,id2,del_mode ;
     delfhdr =(struct fileheader*) malloc(DEL_RANGE_BUF*sizeof(struct fileheader));
     if ((id1!=0)&&(del_mode==0)) { /*rangle mark del*/
         while (count<=id2) {
-            int i,j;
-	    int readcount;
+            int i;
+	    	int readcount;
             lseek(fdr,pos_write,SEEK_SET);
             readcount=read(fdr,savefhdr,DEL_RANGE_BUF*sizeof(struct fileheader))/sizeof(struct fileheader);
             for (i=0;i<readcount;i++,count++) {

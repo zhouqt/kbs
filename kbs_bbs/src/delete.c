@@ -44,7 +44,6 @@ static void mail_info()
 int
 d_board()
 {
-    int bid ;
     char bname[STRLEN];
     char title[STRLEN];
     extern char lookgrp[];
@@ -99,7 +98,7 @@ d_board()
     return 0 ;
 }
 
-suicide()
+void suicide()
 {
     char buf[STRLEN];
     FILE *fn;
@@ -175,10 +174,8 @@ suicide()
 }
 
 
-offline()
+void offline()
 {
-    char buf[STRLEN];
-
     modify_user_mode( OFFLINE );
 
     if(HAS_PERM(currentuser,PERM_SYSOP))
@@ -275,7 +272,7 @@ char cid[IDLEN];
         char thtime[40];
         time_t dtime;
         dtime = time(0);
-        sprintf(thtime,"%d",dtime);
+        sprintf(thtime,"%lu",dtime);
         flock(fd,LOCK_EX) ;
         lseek(fd,0,SEEK_END) ;
         sprintf(buf,"%-12.12s %-66.66s\n",lookupuser->userid, thtime) ;
@@ -319,8 +316,6 @@ int kick_user(struct user_info *userinfo)
 {
     int id, ind ;
     struct user_info uin;
-    struct userec kuinfo;
-    char buffer [40];
     char userid[40];
 
     if(uinfo.mode!=LUSERS&&uinfo.mode!=OFFLINE&&uinfo.mode!=FRIEND)

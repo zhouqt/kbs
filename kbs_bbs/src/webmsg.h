@@ -39,7 +39,6 @@ typedef struct _msg_t
 	char rawdata[2*STRLEN];	/* */
 }msg_t;
 
-static msglist_t *msgshm;
 /*static msg_t     msgbuf;*/
 
 enum
