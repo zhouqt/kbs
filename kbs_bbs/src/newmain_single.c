@@ -881,7 +881,7 @@ void user_login()
     igetkey();
     /* 全国十大热门话题 added by Czz 020128 */
 #ifdef CNBBS_TOPIC
-    show_help("0Announce/bbslist/newsday");
+    show_help("0Announce/bbslists/newsday");
 #endif
     /* added end */
     if (dashf("0Announce/systeminfo")) {
