@@ -42,6 +42,7 @@
 #include "bbslib.h"
 #include "inntobbs.h"
 #include "lang.h"
+#include "bbs.h"
 
 #define innbbslog(x) bbslog("3rror",x)
 extern int Junkhistory;
@@ -88,6 +89,14 @@ char *filename;
     if (strlen(SUBJECT) > 256)
         FAILED;
     str_decode(conv_buf, SUBJECT);
+    /* big 标题转码，original patch by dgwang @ 笔山书院 */
+    if(strstr(SUBJECT,"=?big5?") || strstr(SUBJECT,"=?Big5?") ||
+       strstr(SUBJECT,"=?BIG5?") ){
+       int len;
+       len = strlen(conv_buf);
+       big2gb(conv_buf,&len,0,getSession());
+    }
+
     if (fprintf(fhfd, "%s%s, %s%s\n", FromTxt, FROM, BoardTxt, board) == EOF
         || fprintf(fhfd, "%s%.70s\n", SubjectTxt, conv_buf) == EOF || fprintf(fhfd, "%s%.43s (%s)\n", OrganizationTxt, SITE, DATE) == EOF || fprintf(fhfd, "%s%s\n", PathTxt, PATH) == EOF)
         FAILED;
@@ -844,7 +853,16 @@ char *pathname, *firstpath;
     strcpy(header.filename, name);
     strncpy(header.owner, userid, OWNER_LEN);
     header.owner[OWNER_LEN - 1] = 0;
+
     str_decode(conv_buf, SUBJECT);
+    /* big 标题转码，original patch by dgwang @ 笔山书院 */
+    if(strstr(SUBJECT,"=?big5?") || strstr(SUBJECT,"=?Big5?") ||
+       strstr(SUBJECT,"=?BIG5?") ){
+       int len;
+       len = strlen(conv_buf);
+       big2gb(conv_buf,&len,0,getSession());
+    }
+
     strncpy(header.title, conv_buf, ARTICLE_TITLE_LEN);
     header.title[ARTICLE_TITLE_LEN - 1] = '\0';
     header.innflag[1] = 'M';
