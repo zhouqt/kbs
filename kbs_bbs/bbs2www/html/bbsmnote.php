@@ -22,7 +22,7 @@ login_init();
 			html_error_quit("你不是版主" . $brdnum . "!!" . $usernum);
 		$top_file="vote/" . $board . "/notes";
 		if ($_GET["type"]=="update") {
-			$fp = fopen($top_file, "w");
+			$fp = @fopen($top_file, "w");
 			if ($fp==FALSE) {
 				html_error_quit("无法打开文件");
 			} else {
@@ -39,7 +39,7 @@ login_init();
 <?php
 			}
 		} else {
-			$fp = fopen($top_file, "r");
+			$fp = @fopen($top_file, "r");
 ?>
 <body>
 <center><?php echo BBS_FULL_NAME; ?> -- 备忘录 [讨论区: <?php echo $board; ?>]<hr color=green>

@@ -9,7 +9,7 @@ login_init();
 	else
 	{
 		$top_file = get_bbsfile("/etc/notepad");
-		$fp = fopen($top_file, "r");
+		$fp = @fopen($top_file, "r");
 		if ($fp == FALSE) {
 		        html_init("gb2312");
 			html_error_quit("现在没有留言");
