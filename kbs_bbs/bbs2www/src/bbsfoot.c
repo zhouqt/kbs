@@ -15,7 +15,7 @@ int main() {
 function Init() {\n\
   servertime=new Date()\n\
   servertime.setTime(%d*1000)\n\
-  staytime=%d*1000\n\
+  staytime=%d\n\
   localtime=new Date()\n\
   Time()\n\
 }\n\
@@ -32,7 +32,7 @@ function Time(){\n\
  if (minutes<=9)\n\
  minutes=\"0\"+minutes\n\
  myclock=Timer.getYear()+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDay()+\"日\"+hours+\":\"+minutes\n\
- var staysec=((now.getTime()-localtime.getTime())/1000+staytime)/60;\n\
+ var staysec=(now.getTime()-localtime.getTime())/60000+staytime;\n\
  stayclock=parseInt(staysec/60)+\"小时\"+parseInt(staysec%60)+\"分钟\"\n\
 if (document.layers){\n\
 document.layers.position.document.write(myclock)\n\
@@ -47,7 +47,7 @@ setTimeout(\"Time()\",58000)\n\
  }\n\
 //JavaScript End-->
 </script>\
-",time(0)+20,loginok?*(int*)(u_info->from+32):0);
+",time(0)+20,loginok?dt:0);
 	printf("<style type=text/css>\nA {color: #0000FF}\n</style>\n");
   	printf("<body bgcolor=#c0c0f0 onload=\"Init()\">\n");
   	printf("时间[<span id=\"position\"></span>] ");
