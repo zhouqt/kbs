@@ -1059,9 +1059,10 @@ static PHP_FUNCTION(bbs_setonlineuser)
     }
     if (userid_len > IDLEN)
         RETURN_LONG(1);
+	/*
     if (utmpnum < 0 || utmpnum >= MAXACTIVE)
         RETURN_LONG(2);
-
+		*/
     if (userid_len==0)
         userid=NULL;
     if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui, compat_telnet)) == 0) {
