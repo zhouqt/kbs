@@ -92,4 +92,6 @@
 #define CALENDAR 65
 #define CALENEDIT 66
 #define DICT 67
+#define CALC 68
+#define SETACL 69
 

@@ -464,10 +464,15 @@ int check_ip_acl(char * id, char * sip)
     ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
     fp = fopen(fn, "r");
     if(fp) {
-        fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a);
-        rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
-        if(((ips>>l)<<l)==((rips>>l)<<l))
-            return a;
+        while(!feof(fp)) {
+            if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a)<=0) break;
+            rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
+            if(((ips>>l)<<l)==((rips>>l)<<l)) {
+                fclose(fp);
+                return a;
+            }
+        }        
+        fclose(fp);
     }
     return 0;
 }
