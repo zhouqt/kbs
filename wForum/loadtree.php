@@ -138,7 +138,7 @@ function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
 		} else {
 			echo htmlspecialchars($article['TITLE'],ENT_QUOTES);
 		} */
-		echo htmlspecialchars($article['TITLE'],ENT_QUOTES);
+		echo addslashes(htmlspecialchars($article['TITLE'],ENT_QUOTES));
 		echo '</a> -- <a href="dispuser.php?id='.$article['OWNER'].'">'.$article['OWNER'].'</a>';
 	}
 	echo '</td></tr>';

@@ -1,8 +1,4 @@
 <?php
-	/**
-	 * This file displays article to user.
-	 * $Id$
-	 */
 	$needlogin=0;
 	require("inc/funcs.php");
 	require("inc/attachment.inc.php");
