@@ -190,7 +190,6 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     struct stat st;
     char fname[STRLEN], filepath[STRLEN];
     char buf[255];
-    int now;                    /* added for mail to SYSOP: Bigman 2000.8.11 */
     struct userec *touser;      /*peregrine for updating used space */
     int unum;
 
@@ -210,18 +209,10 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
         if (!(st.st_mode & S_IFDIR))
             return -1;
     }
-    now = time(NULL);
-    /*
-     * setmailpath(filepath, userid, fname); 
-     */
-    setmailpath(filepath, userid);
     if (GET_MAILFILENAME(fname, filepath) < 0)
         return -1;
     strcpy(newmessage.filename, fname);
     setmailfile(filepath, userid, fname);
-    /*
-     * sprintf(genbuf, "cp %s %s",tmpfile, filepath) ;
-     */
 
     if (unlink)
         f_mv(tmpfile, filepath);
