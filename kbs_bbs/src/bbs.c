@@ -2307,7 +2307,9 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         buf4[0] = '\0';
         replymode = 0;
     }
-    if (currentuser->signature > currentmemo->ud.signum)      /*签名档No.检查 */
+    if (currentmemo->ud.signum == 0)
+        currentuser->signature = 0;
+    else if (currentuser->signature > currentmemo->ud.signum)      /*签名档No.检查 */
         currentuser->signature = 1;
     anonyboard = anonymousboard(currboard->filename);     /* 是否为匿名版 */
     if (!strcmp(currboard->filename, "Announce"))
