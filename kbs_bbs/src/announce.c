@@ -1508,6 +1508,20 @@ void a_manager(MENU *pm,int ch)
         }
 }
 
+void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
+{
+    char *fname=(char *)arg;
+    char* server=sysconf_str("BBS_WEBDOMAIN");
+    if (server==NULL)
+        server=sysconf_str("BBSDOMAIN");
+    /*
+     *if (normal_board(currboard->filename)) {
+     * @todo: generate temp sid
+     */
+      snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s&ap=%d",
+        server,fname+10,attachpos);
+}
+
 void a_menu(maintitle, path, lastlevel, lastbmonly)
 char *maintitle, *path;
 int lastlevel, lastbmonly;
@@ -1684,7 +1698,9 @@ int lastlevel, lastbmonly;
                      * Leeward 98.09.13 ĞÂÌí¹¦ÄÜ¡Ã
                      * £¬ÓÃÉÏ£¯ÏÂ¼ıÍ·Ö±½ÓÌø×ªµ½Ç°£¯ºóÒ»Ïî 
                      */
+					register_attach_link(ann_attach_link, fname);
                     ansimore_withzmodem(fname, false, me.item[me.now]->title);
+					register_attach_link(NULL,NULL);
                     move(t_lines - 1, 0);
                     prints("[1m[44m[31m[ÔÄ¶Á¾«»ªÇø×ÊÁÏ]  [33m½áÊø Q,¡û ©¦ ÉÏÒ»Ïî×ÊÁÏ U,¡ü©¦ ÏÂÒ»Ïî×ÊÁÏ <Enter>,<Space>,¡ı [m");
                     switch (ch = igetkey()) {
