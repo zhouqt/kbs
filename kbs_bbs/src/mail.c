@@ -2034,27 +2034,27 @@ static int m_clean()
     char buf[40];
     int num;
     move(0,0);
-	setmailfile(buf,currentuser->userid,mail_sysbox[1]);
-	num = get_num_records(buf, sizeof(struct fileheader)));
-    if (num&&askyn("清除发件箱么?")) 
-    	delete_range(buf, 1, , 2);
+    setmailfile(buf,currentuser->userid,mail_sysbox[1]);
+    num = get_num_records(buf, sizeof(struct fileheader));
+    if (num&&askyn("清除发件箱么?",0)) 
+    	delete_range(buf, 1, num, 2);
     move(0,0);
-	setmailfile(buf,currentuser->userid,mail_sysbox[2]);
-	num = get_num_records(buf, sizeof(struct fileheader)));
-    if (num&&askyn("清除垃圾箱么?")) 
-    	delete_range(buf, 1, get_num_records(buf, sizeof(struct fileheader))), 2);
+    setmailfile(buf,currentuser->userid,mail_sysbox[2]);
+    num = get_num_records(buf, sizeof(struct fileheader));
+    if (num&&askyn("清除垃圾箱么?",0)) 
+    	delete_range(buf, 1, num, 2);
     if (mail_list_t) {
-   		int i;
-   		for (i=0;i<mail_list_t;i++) {
-    		move(0,0);
-			setmailfile(buf,currentuser->userid,mail_list[i]+30);
-			num = get_num_records(buf, sizeof(struct fileheader)));
-    		if (num) {
+   	int i;
+   	for (i=0;i<mail_list_t;i++) {
+    	    move(0,0);
+	    setmailfile(buf,currentuser->userid,mail_list[i]+30);
+	    num = get_num_records(buf, sizeof(struct fileheader));
+    	    if (num) {
     			char prompt[80];
     			sprintf(prompt,"清除自定义邮箱 %s 么?",mail_list[i]);
-    			if (askyn(prompt))
-    				delete_range(buf, 1, get_num_records(buf, sizeof(struct fileheader))), 2);
-    		}
+    			if (askyn(prompt,0))
+    				delete_range(buf, 1, num, 2);
+    	    }
     	}
     }
 }
@@ -2188,13 +2188,14 @@ static int maillist_prekey(struct _select_def *conf, int *command)
 	else
             *command='\t';
     }
-    if (*command == KEY_LEFT)
+    if (*command == KEY_LEFT) {
 	if ((conf->pos <= arg->cmdnum + arg->sysboxnum))
             return SHOW_QUIT;
         else {
 	    *command='\t';
             return SHOW_CONTINUE;
 	}
+    }
     
     if (*command == 'e')
         return SHOW_QUIT;
