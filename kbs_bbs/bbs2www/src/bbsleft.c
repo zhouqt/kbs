@@ -114,7 +114,7 @@ int main() {
 "			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsparm\"> 修改个人参数</a><br>"
 "			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsmywww\"> WWW个人定制</a><br>"
 "			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsnick\"> 临时改昵称</a><br>"
-"			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br>"
+"		<!--img src=\"/link.gif\"><a target=\"f3\" href=\"bbsstat\"> 排名统计</a><br-->"
 "			<img src=\"/link.gif\"><a target=\"f3\" href=\"bbsfall\"> 设定好友</a><br>"
 "			%s</div>"
 "			<img src=\"/folder.gif\" name=\"img5\"><a href=\"javascript: t(document.all.div5, document.img5)\">处理信件区</a><br>"

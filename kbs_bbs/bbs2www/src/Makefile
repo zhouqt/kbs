@@ -20,8 +20,8 @@ CGI	= bbsusr bbstop10 bbssec bbsdoc bbscon bbsbrdadd bbsboa bbsall bbsanc bbs0an
 	  bbsmybrd bbssig bbspst bbsgcon bbsgdoc bbsdel bbsdelmail bbsmailcon bbsmail \
 	  bbsdelmsg bbssnd bbsalluser bbsnotepad bbsmsg bbssendmsg bbsreg \
 	  bbsmailmsg bbssndmail bbsnewmail bbspstmail bbsgetmsg bbschat bbssel bbscloak \
-	  bbsmdoc bbsnick bbsjs bbstfind bbsadl bbstcon bbstdoc \
-	  bbsdoreg bbsmywww bbsccc bbsufind bbsclear bbsstat bbsedit bbsman bbsparm \
+	  bbsmdoc bbsnick bbsjs bbstfind bbstcon bbstdoc \
+	  bbsdoreg bbsmywww bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsmnote bbsdenyall bbsdenydel bbsdenyadd \
 	  bbstopb10 bbsbfind bbstty\
 
