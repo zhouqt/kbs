@@ -123,7 +123,7 @@ function change_style(style)
 	switch (style)
 	{
 	case 1:
-		parent.mainframe.cols = "160,*";
+		parent.mainframe.cols = "180,*";
 		break;
 	case 0:
 	default:
