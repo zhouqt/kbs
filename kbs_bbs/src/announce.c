@@ -454,7 +454,7 @@ int ent;
 {
 
     FILE        *fn;
-    char        fname[ STRLEN ],*ip,bname[STRLEN];
+    char        fname[ STRLEN ],*ip,bname[PATHLEN];
     char        buf[ PATHLEN ], *ptr;
     int         len, ch;
     MENU        pm;

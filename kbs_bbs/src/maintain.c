@@ -686,10 +686,11 @@ int searchtrace()
         return -1;
     }
 
-    sprintf(tmp_command, "grep -w %s user.log | grep posted > etc/searchresult", tmp_id);
+    sprintf(tmp_command, "grep -a -w %s user.log | grep posted > tmp/searchresult.%d", tmp_id,getpid());
     system(tmp_command);
-    mail_file("etc/searchresult", currentuser->userid, "系统查询结果");
-    unlink("etc/searchresult");
+    sprintf(tmp_command,"tmp/searchresult.%d",getpid());
+    mail_file(tmp_command, currentuser->userid, "系统查询结果");
+    unlink(tmp_command);
 
     sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
     securityreport(buf,NULL);  /*写入syssecurity板, stephen 2000.12.21*/

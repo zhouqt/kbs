@@ -1105,7 +1105,7 @@ struct fileheader *ptitle;
     int ori_top, ori_crs; /* Leeward 98.10.03 add these 3 ori_...  and Xflag */
     char ori_file[STRLEN];
 /*    int Xflag = (-1003 != passonly )? 0 : !(passonly = 0);Ææ¹Ö°¡KCN */
-    int Xflag = (-1003 != passonly )? 0 : !(passonly == 0);
+    int Xflag = (-1003 != passonly )? 0 : (passonly = 0,1);
 
     strcpy(ori_file, ptitle->filename);
 
