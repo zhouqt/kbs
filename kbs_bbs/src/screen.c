@@ -639,10 +639,11 @@ int n;
                                     y=atoi(s1)-1;
                                     x=atoi(s2)-1;
                                     if(y>=0&&y<scr_lns&&x>=0&&x<scr_cols) {
-                			     DO_MODIFY;
-                                        slp->len=reg_col;
-                                        if(cur_col < slp->sso)
-                                             slp->mode&=~STANDOUT;
+                                    	if (slp && (begincol != reg_col)) {
+                                    		if (slp->len < reg_col)
+                                    			slp->len = reg_col;
+                                    		DO_MODIFY;
+                                    	}
                                         good_move(y,x);
                                     }
                                     str+=i+1;
