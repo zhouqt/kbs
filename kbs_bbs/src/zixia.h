@@ -62,7 +62,7 @@
 #define CHAT_SYSTEM		"上天" //"系统"
 #define	CHAT_PARTY		"帮众" // "大家"
 
-#define DEFAULT_NICK		"每天爱你多一些"
+#define DEFAULT_NICK		"旺财"
 
 #define MSG_ERR_USERID		"嗯？这个猪头是谁？..."
 
