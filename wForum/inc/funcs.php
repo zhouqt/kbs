@@ -37,6 +37,8 @@ global $errMsg;
 global $foundErr;
 global $stats;
 global $gusetloginok;
+global $sucmsg;
+$sucmsg='';
 $stats='';
 $errMsg='';
 $foundErr=false;
@@ -47,6 +49,10 @@ if (!isset($needlogin)){
 	$needlogin=1;
 }
 
+function setSucMsg($msg){
+	global $sucmsg;
+	$sucmsg.='<br><li>'.$msg;
+}
 function setStat($stat){
 	GLOBAL $stats;
 	$stats=$stat;
@@ -150,19 +156,19 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 }
 
 // add by stiger, login as "guest" default.....
-if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){
+if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){ 
 	$error = bbs_wwwlogin(0);
 	if($error == 2 || $error == 0){
 		$data = array();
 		$num = bbs_getcurrentuinfo($data);
-        setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
-        setcookie("UTMPNUM",$num,time()+360000,"");
-        setcookie("UTMPUSERID",$data["userid"],0,"");
-        setcookie("LOGINTIME",$data["logintime"],0,"");
+		setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
+		setcookie("UTMPNUM",$num,time()+360000,"");
+		setcookie("UTMPUSERID",$data["userid"],0,"");
+		setcookie("LOGINTIME",$data["logintime"],0,"");
 		@$utmpkey = $data["utmpkey"];
 		@$utmpnum = $num;
 		@$userid = $data["userid"];
-  		$compat_telnet=1;
+		$compat_telnet=1;
 		$guestloginok=1;
 	}
 } else {
@@ -220,6 +226,7 @@ if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){
 	  }
 	}
 }
+
 
 function valid_filename($fn)
 {
@@ -358,6 +365,38 @@ function html_error_quit()
     <tr>
     <td class=tablebody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"><<返回上一页</a></td></tr>
 <?php   } ?>
+</table>
+<?php 
+} 
+
+function html_success_quit($Desc='',$URL='')
+{
+  global $sucmsg;
+?>
+<br>
+<table cellpadding=3 cellspacing=1 align=center class=tableborder1>
+<tr align=center>
+<th width="100%">论坛成功信息
+</td>
+</tr>
+<tr>
+<td width="100%" class=tablebody1>
+<b>操作成功：</b><br><br>
+<?php   echo $sucmsg; ?>
+</td></tr>
+<tr align=center><td width="100%" class=tablebody2>
+<?php
+	if ($Desc=='') {
+?>
+<a href="<?php   echo $_SERVER['HTTP_REFERER']; ?>"> << 返回上一页</a>
+<?php
+	} else {
+?>
+<a href="<?php   echo $URL; ?>"> << <?php echo $Desc; ?></a>
+<?php
+	}
+?>
+</td></tr>
 </table>
 <?php 
 } 

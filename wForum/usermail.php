@@ -29,19 +29,6 @@ if (isErrFounded()) {
 } 
 show_footer();
 
-function getMailBoxName($name){
-	if ($name=='inbox') {
-		return "收件箱";
-	}
-	if ($name=='sendbox') {
-		return "收件箱";
-	}
-	if ($name=='deleted') {
-		return "收件箱";
-	}
-	return "未知邮箱";
-}
-
 function main(){
 	global $_GET;
 	global $boxDesc;
@@ -79,9 +66,7 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
             <tr>
                 <th colspan=3>欢迎使用邮件功能，<?php echo $currentuser['userid'] ; ?></th>
             </tr>
-            <tr>
-                <td class=tablebody1 valign=middle align=center colspan=3><a href="deleteusermail.php?num=<?php echo $num ;?>"><img src="pic/m_delete.gif" border=0 alt="删除邮件"></a> &nbsp; <a href="newusermail.php"><img src="pic/m_write.gif" border=0 alt="发送消息"></a> &nbsp;<a href="replyusermail.php?num=<?php echo $num ;?>"><img src="pic/m_reply.gif" border=0 alt="回复消息"></a>&nbsp;<a href="forwardusermail.php?num=<?php echo $num ;?>"><img src=pic/m_fw.gif border=0 alt=转发消息></a></td>
-            </tr>
+
 <?php
 	$dir = bbs_setmailfile($currentuser["userid"],$boxPath);
 
@@ -117,6 +102,9 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
 		return false;
 	}
 ?>
+    <tr>
+	    <td class=tablebody1 valign=middle align=center colspan=3><a href="deleteusermail.php?file=<?php echo $file; ?>&boxname=<?php echo $boxName; ?>"><img src="pic/m_delete.gif" border=0 alt="删除邮件"></a> &nbsp; <a href="newusermail.php"><img src="pic/m_write.gif" border=0 alt="发送消息"></a> &nbsp;<a href="replyusermail.php?num=<?php echo $num ;?>"><img src="pic/m_reply.gif" border=0 alt="回复消息"></a>&nbsp;<a href="forwardusermail.php?num=<?php echo $num ;?>"><img src=pic/m_fw.gif border=0 alt=转发消息></a></td>
+    </tr>
     <tr><td class=tablebody2 height=25>
 		    <b><?php echo $articles[0]['OWNER'] ;?></b> 在 <b><?php echo strftime("%Y-%m-%d %H:%M:%S", $articles[0]['POSTTIME']); ?></b> 给您发送的信件：<b>[<?php echo $articles[0]['TITLE'] ;?>]</b>
 </td>
@@ -131,8 +119,12 @@ function showmail($boxName, $boxPath, $boxDesc, $num){
 	&nbsp;
                     </td>
                 </tr>
+				<tr align=center><td width="100%" class=tablebody2>
+				<a href="<?php   echo 'usermailbox.php?boxname='.$boxName; ?>"> << <?php echo '返回'.$boxDesc; ?></a>
+				</td></tr>
                 </table>
 <?php
+		bbs_setmailreaded($dir,$num);
 }
 
 ?>

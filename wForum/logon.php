@@ -57,7 +57,9 @@ function doLogon(){
 		foundErr("请输入您的用户名");
 		return false;
 	}
-	bbs_wwwlogoff();
+	if  ( ($loginok==1) || ($guestloginok==1) ) {
+		bbs_wwwlogoff();
+	}
 	if (($id!='guest') && (bbs_checkpasswd($id,$passwd)!=0)){
 		foundErr("您的用户名并不存在，或者您的密码错误");
 		return;

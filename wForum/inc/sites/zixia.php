@@ -14,7 +14,7 @@ define("ARTICLESPERPAGE",20);
 
 $SiteName="≤‚ ‘BBS";
 
-$SiteURL="http://news.zixia.net:8080/wbbs";
+$SiteURL="http://news.zixia.net:8080";
 
 $HTMLTitle="≤‚ ‘BBS";
 

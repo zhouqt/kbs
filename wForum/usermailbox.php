@@ -123,10 +123,34 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <tr>
 <td class=tablebody1 align=center valign=middle>
 <?php 
-         if ($maildata[$i]["FLAGS"]=='Y')
-			echo  '<img src="pic/m_news.gif">';
-         else
-			echo  '<img src="pic/m_olds.gif">';
+		
+		if ($maildata[$i]["FLAGS"][1]=='R') {
+			
+			switch($maildata[$i]["FLAGS"][0]){
+			case 'M':
+				echo  '<img src="pic/m_oldlocks.gif">';
+					break;
+			case 'm':
+				echo  '<img src="pic/m_newlocks.gif">';
+					break;
+			default:
+				echo  '<img src="pic/m_replys.gif">';
+			}
+		} else {
+			switch($maildata[$i]["FLAGS"][0]){
+			case 'N':
+				echo  '<img src="pic/m_news.gif">';
+				break;
+			case 'M':
+				echo  '<img src="pic/m_oldlocks.gif">';
+					break;
+			case 'm':
+				echo  '<img src="pic/m_newlocks.gif">';
+					break;
+			default:
+				echo  '<img src="pic/m_olds.gif">';
+			}
+		}
 ?>
 </td>
 <td class=tablebody1 align=center valign=middle style="font-weight:normal">
@@ -135,7 +159,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <td class=tablebody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo $maildata[$i]['TITLE']; ?></a>	</td>
 <td class=tablebody1 style="font-weight:normal"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
 <td class=tablebody1 style="font-weight:normal"> N/A Byte</td>
-<td align=center valign=middle width=30 class=tablebody1><input type=checkbox name=num value=<?php echo $i+$startNum; ?>></td>
+<td align=center valign=middle width=30 class=tablebody1><input type=checkbox name=num id="oNum" value=<?php echo $i+$startNum; ?>></td>
 </tr>
 <?php
 	}
@@ -171,10 +195,26 @@ function showmailBox($boxName, $path, $desc, $startNum){
 ?>
 <br>
 <input type="hidden" name="action" id="oAction">
+<input type="hidden" name="nums" id="oNums">
+<input type="hidden" id="oNum">
 <script >
-function doDelete($desc,$action) {
-	if(confirm($desc))	{
-		oForm.oAction.value=$action;
+function doDelete(desc,action) {
+	var nums,s,first;
+	if(confirm(desc))	{
+		oForm.oNums.value="";
+		oForm.oAction.value=action;
+		first=true;
+		for (nums=new Enumerator(document.all.item("oNum"));!nums.atEnd();nums.moveNext()){
+			s=nums.item();
+			if (s.checked) {
+				if (first) {
+					first=false;
+				} else {
+					oForm.oNums.value+=',';
+				}
+				oForm.oNums.value+=s.value;
+			}
+		}
 		return oForm.submit()
 	}
 	return false;
