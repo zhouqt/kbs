@@ -153,21 +153,63 @@ int strsncpy(char *s1, char *s2, int n) {
 	s1[n-1]=0;
 }
 
-char *ltrim(char *s) {
-	char *s2=s;
-	if(s[0]==0) return s;
-	while(s2[0] && strchr(" \t\r\n", s2[0])) s2++;
-	return s2;
+char *ltrim(char *s)
+{
+	char *ptr;
+	char *ptr2;
+
+	if (s[0] == '\0')
+		return s;
+	ptr = ptr2 = s;
+	while (*ptr != '\0')
+	{
+		if ((*ptr != ' ') && (*ptr != '\t') && (*ptr != '\r')
+			&& (*ptr != '\n'))
+		{
+			break;
+		}
+		ptr++;
+	}
+	if (ptr == s)
+		return s;
+	if (*ptr == '\0')
+	{
+		s[0] = '\0';
+		return s;
+	}
+	while (*ptr != '\0')
+	{
+		*ptr2 = *ptr;
+		ptr++;
+		ptr2++;
+	}
+	*ptr2 = '\0';
+
+	return s;
 }
 
-char *rtrim(char *s) {
-	static char t[1024], *t2;
-	if(s[0]==0) return s;
-	strsncpy(t, s, 1024);
-	t2=t+strlen(s)-1;
-	while(strchr(" \t\r\n", t2[0]) && t2>t) t2--;
-	t2[1]=0;
-	return t;
+char *rtrim(char *s)
+{
+	char *ptr;
+	char *ptr2;
+
+	if (s[0] == '\0')
+		return s;
+	ptr = s;
+	ptr2 = s + strlen(s) - 1;
+	while (ptr2 != ptr)
+	{
+		if ((*ptr2 == ' ') || (*ptr2 == '\t') || (*ptr2 == '\r')
+			|| (*ptr2 == '\n'))
+		{
+			*ptr2 = '\0';
+			ptr2--;
+			continue;
+		}
+		break;
+	}
+
+	return s;
 }
 
 char *getsenv(char *s) {
