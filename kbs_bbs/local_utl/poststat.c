@@ -258,6 +258,7 @@ void poststat(int mytype)
         /* load previous results and statictic processing */
         /* ---------------------------------------------- */
 
+        char *p;
 #ifdef BLESS_BOARD
         if (mytype==0) {
             char fname[STRLEN];
@@ -266,7 +267,6 @@ void poststat(int mytype)
             post_file(NULL, "", "etc/posts/bless", BLESS_BOARD, "Ê®´ó×£¸£", 0, 1);
         }                
 #endif
-        char *p;
         i = mycount[mytype];
         p = myfile[mytype];
         while (i) {

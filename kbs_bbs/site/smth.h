@@ -36,6 +36,8 @@
 #define DEFAULTBOARD    	"test"
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
+#define BLESS_BOARD "Blessing"
+
 #define MAXUSERS  		200000
 #define MAXCLUB			128
 #define MAXBOARD  		600
