@@ -4,6 +4,7 @@
 #include "config.h"
 
 FILE *fp;
+FILE *fp1;
 
 #define BONLINE_LOGDIR "/home/bbs/bonlinelog"
 
@@ -29,6 +30,18 @@ int do_userlist(struct user_info *uentp, char *arg, int t)
                                        (uentp->in_chat ? uentp->chatid : NULL)), idle_str(uentp), uentp->pid);
     fprintf(fp, "%s", user_info_str);
     return COUNT;
+}
+
+int show_wwwguest()
+{
+	int i;
+
+    for (i = 0; i < MAX_WWW_GUEST; i++) {
+        if (!(wwwguest_shm->use_map[i / 32] & (1 << (i % 32))) )
+            continue;
+	    fprintf(fp1, "%s\n", inet_ntoa(wwwguest_shm->guest_entry[i].fromip));
+    }
+
 }
 
 main()
@@ -62,15 +75,25 @@ main()
 		printf("cannot open log file\n");
 		exit(0);
 	}
+	sprintf(path, "%s/%d/%d/%d_%d.wwwguest", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	if((fp1=fopen(path, "w"))==NULL){
+		fclose(fp);
+		printf("cannot open log file1\n");
+		exit(0);
+	}
 
     resolve_utmp();
 	get_publicshm();
+	resolve_guest_table();
 
-	fprintf(fp, "%d\n%d\n", get_utmp_number(), getwwwguestcount());
+	fprintf(fp, "%d\n", get_utmp_number());
+	fprintf(fp1, "%d\n", getwwwguestcount());
     //fprintf(fp," 序号  用户ID       昵称             来源                 状态     发呆时间 进程号\n");
     apply_ulist_addr(do_userlist, NULL);
+	show_wwwguest();
 
     fclose(fp);
+    fclose(fp1);
 }
 
 
