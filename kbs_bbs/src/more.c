@@ -452,8 +452,16 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
     int i, w, in_esc = 0, db = 0, lastspace = 0, asciiart = 0, autoline = 1;
     char *p = p0;
 
-    if (size <= 0)
+    if (size <= 0) {
+        if ((oldty==LINE_ATTACHLINK)&&(size==0)) {
+            //这里有个假设，附件是最后一个
+            *ty=LINE_ATTACHALLLINK;
+            *s=0;
+            *l=0;
+			return 0;
+        }
         return -1;
+    }
     if (oldty!=LINE_ATTACHMENT) { //上一行不是附件
         for (i = 0, w = 0; i < size; i++, p++) {
             if (*p == '\n') {
@@ -574,13 +582,6 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 		*s++;
     }
 
-    if ((oldty==LINE_ATTACHALLLINK)&&(*ty!=LINE_ATTACHMENT)) {
-        //这里有个假设，附件是连续的。否则会在每一个
-        //附件组最后加入全文链接。
-        *ty=LINE_ATTACHALLLINK;
-        *s=0;
-        *l=0;
-    }
     return 0;
 }
 
@@ -596,7 +597,7 @@ void init_MemMoreLines(struct MemMoreLines *l, char *ptr, int size)
     l->num = 0;
     l->total = 0;
     effectiveline = 0;
-    for (i = 0, p0 = ptr, s = size; i < 50 && s > 0; i++) {
+    for (i = 0, p0 = ptr, s = size; i < 50 && s >= 0; i++) {
         u = (l->start + l->num) % 100;
         l->line[u] = p0;
         if (measure_line(p0, s, &l->len[u], &l->s[u], oldty, &l->ty[u])
@@ -633,9 +634,11 @@ int next_MemMoreLines(struct MemMoreLines *l)
         char oldty;
 
         n = (l->start + l->num - 1) % 100;
+/*
         if (l->ptr + l->size == (l->line[n] + l->s[n])) {
             return -1;
         }
+*/
         if (l->num == 100) {
             l->start++;
             l->num--;
@@ -644,7 +647,8 @@ int next_MemMoreLines(struct MemMoreLines *l)
         p0 = l->line[n] + l->s[n];
         n = (l->start + l->num) % 100;
         l->line[n] = p0;
-        measure_line(p0, l->size - (p0 - l->ptr), &l->len[n], &l->s[n], oldty, &l->ty[n]);
+        if (measure_line(p0, l->size - (p0 - l->ptr), &l->len[n], &l->s[n], oldty, &l->ty[n])==-1)
+			return -1;
         l->num++;
         if (l->size - (p0 - l->ptr) == l->s[n]) {
             l->total = l->start + l->num;
@@ -748,7 +752,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
 
         if (current_attach_link) {
             (*current_attach_link)(slink,255,-1,current_attach_link_arg);
-	    prints("\033[4m%s\033[m\n",slink);
+	    prints("全文连接：\033[4m%s\033[m\n",slink);
         }
 	 return;
     }
@@ -768,7 +772,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         outns("\033[m\n", 4);
         return;
     }
-    if ((ty == LINE_QUOTA)||(LINE_QUOTA_NOCF)) {
+    if ((ty == LINE_QUOTA)||(ty == LINE_QUOTA_NOCF)) {
         outns("\033[36m", 5);
         outns(ptr, len);
         outns("\033[m\n", 4);
