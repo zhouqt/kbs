@@ -1469,7 +1469,7 @@ char *logfile, *regfile;
                         mail_file(currentuser->userid, "etc/f_fill.toomany", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     default:
-                        mail_file(currentuser->userid, "etc/f_fill.real", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
+                        mail_file(currentuser->userid, "etc/f_fill", uinfo.userid, ud.address, BBSPOST_LINK, NULL);
                         break;
                     }
                     /*
