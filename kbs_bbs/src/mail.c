@@ -24,6 +24,8 @@
 #include "bbs.h"
 #define         INTERNET_PRIVATE_EMAIL
 
+#include <libesmtp.h>
+
 /*For read.c*/
 int     auth_search_down();
 int     auth_search_up();
@@ -131,15 +133,6 @@ char * fname;
 {
     sprintf( genbuf, "/bin/rm -r -f %s", fname );
     system( genbuf );
-}
-
-void
-system_convert(from, to, type) /* Added by ming, 96.10.10 */
-char * from, * to, * type;
-{
-    sprintf(genbuf, "%s/bin/hc -m %s -t %s/bin/hc.tab < %s > %s",
-            BBSHOME, type, BBSHOME, from, to);
-    system(genbuf);
 }
 
 char *email_domain()
@@ -1554,97 +1547,6 @@ char *s;
     strcpy(s, &(qbuf[pos]));
     return 0;
 }
-
-void
-convert_tz(local, gmt, buf)
-int gmt, local;
-char *buf;
-{
-    local -= gmt;
-    if (local < -11) local += 24;
-    else if (local > 12) local -= 24;
-    sprintf(buf, " %4d", abs(local * 100));
-    spacestozeros(buf);
-    if (local < 0) buf[0] = '-';
-    else if (local > 0) buf[0] = '+';
-    else buf[0] = '\0';
-}
-
-#if 0
-int
-createqf(title, qsuffix)
-char *title, *qsuffix;
-{
-    static int configured = 0;
-    static char myhostname[STRLEN];
-    static char myusername[20];
-    char mytime[STRLEN];
-    char idtime[STRLEN];
-    char qfname[STRLEN];
-    char t_offset[6];
-    FILE *qfp;
-    time_t timenow;
-    int savehour;
-    struct tm *gtime, *ltime;
-    struct hostent *hbuf;
-    struct passwd *pbuf;
-
-    if (!configured) {
-        /* get host name */
-        gethostname(myhostname, STRLEN);
-        hbuf = gethostbyname(myhostname);
-        if (hbuf) strncpy(myhostname, hbuf->h_name, STRLEN);
-
-        /* get bbs uident */
-        pbuf = getpwuid(getuid());
-        if (pbuf) strncpy(myusername, pbuf->pw_name, 20);
-        if (hbuf && pbuf) configured = 1;
-        else return -1;
-    }
-
-    /* get file name */
-    sprintf(qfname, "%s/qf%s", BBSMAILDIR, qsuffix);
-    if ((qfp = fopen(qfname, "w")) == NULL) return -1;
-
-    /* get time */
-    time(&timenow);
-    ltime = localtime(&timenow);
-#ifdef SYSV
-    ascftime(mytime, "%a, %d %b %Y %T ", ltime);
-#else
-strftime(mytime, sizeof(mytime), "%a, %d %b %Y %T ", ltime);
-#endif
-    savehour = ltime->tm_hour;
-    gtime = gmtime(&timenow);
-    strftime(idtime, sizeof(idtime), "%Y%m%d%y%H%M", gtime);
-    convert_tz(savehour, gtime->tm_hour, t_offset);
-    strcat(mytime, t_offset);
-    fprintf(qfp, "P1000\nT%lu\nDdf%s\nS%s\nR%s\n", timenow, qsuffix,
-            myusername, currentuser.email);
-#ifdef ERRORS_TO
-    fprintf(qfp, "E%s\n", ERRORS_TO);
-#endif
-    /* do those headers! */
-    fprintf(qfp, "HReceived: by %s (%s)\n\tid %s; %s\n",
-            myhostname, VERSION_ID, qsuffix, mytime);
-    fprintf(qfp, "HReturn-Path: <%s@%s>\n", myusername, myhostname);
-    fprintf(qfp, "HDate: %s\n", mytime);
-    fprintf(qfp, "HMessage-Id: <%s.%s@%s>\n", idtime, qsuffix,
-            myhostname);
-    fprintf(qfp, "HFrom: %s@%s (%s in NCTU CSIE BBS)\n", myusername, myhostname, currentuser.userid);
-    fprintf(qfp, "HSubject: %s (fwd)\n", title);
-    fprintf(qfp, "HTo: %s\n", currentuser.email);
-    fprintf(qfp, "HX-Forwarded-By: %s (%s)\n", currentuser.userid,
-#ifdef REALNAME
-            currentuser.realname);
-#else
-            currentuser.username);
-#endif
-    fprintf(qfp, "HX-Disclaimer: %s 对本信内容恕不负责。\n", BoardName);
-    fclose(qfp);
-    return 0;
-}
-#endif
 
 int
 bbs_sendmail(fname, title, receiver, isuu, isbig5, noansi) /* Modified by ming, 96.10.9  KCN,99.12.16*/
