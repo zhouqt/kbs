@@ -24,6 +24,7 @@ $pcconfig["NEWS"] = 50;
 $pcconfig["THEMLIST"] = 50;
 $pcconfig["SITE"] = "www.smth.edu.cn";
 $pcconfig["BOARD"] = "SMTH_blog";
+$pcconfig["APPBOARD"] = "BlogApply";
 $pcconfig["SEARCHFILTER"] = " µÄ";
 $pcconfig["SEARCHNUMBER"] = 10;
 $pcconfig["ADMIN"] = "SYSOP";

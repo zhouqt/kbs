@@ -1,7 +1,7 @@
 <?php
 /*
 **  为水木清华blog申请定制的申请处理程序
-**  处理后完成添加blog用户，$pcconfig["BOARD"]版面通告，Email通知
+**  处理后完成添加blog用户，$pcconfig["APPBOARD"]版面通告，Email通知
 **  不通过申请则发Email通知用户
 **  @windinsn Mar 28 , 2004
 */
@@ -70,7 +70,7 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 		$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
 	 		 "VALUES ('', '".addslashes($lookupuser["userid"])."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes($currentuser["userid"])."' , '0');";
 	else
-		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($lookupuser["userid"])."' LIMIT 1 ;";
+		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($lookupuser["userid"])."' ORDER BY naid DESC LIMIT 1 ;";
 	if(!mysql_query($query,$link))
 	{
 		pc_db_close($link);
@@ -83,7 +83,7 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 		    "    Blog ，Blog 名称“".$corpusname."”。\n\n".
 		    "        Blog 大部分功能提供在web 模式下，Blog 名称、描述、\n".
 		    "    分类等属性请用户在web 登录后自行修改。\n\n";
-	$ret = bbs_postarticle($pcconfig["BOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody), 0 , 0 , 0 , 0);
+	$ret = bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody), 0 , 0 , 0 , 0);
 	if($ret != 0)
 		return FALSE;
 	return TRUE;
@@ -94,7 +94,7 @@ function pc_reject_apply($link,$userid,$applyAgain)
 	global $currentuser;
 	if(!$userid) return FALSE;
 	if($applyAgain != 3) $applyAgain = 2;
-	$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '".$applyAgain."' WHERE username = '".addslashes($userid)."' LIMIT 1 ;";
+	$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '".$applyAgain."' WHERE username = '".addslashes($userid)."';";
 	if(!mysql_query($query,$link))
 	{
 		pc_db_close($link);

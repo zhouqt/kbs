@@ -1,7 +1,7 @@
 <?php
 /*
 **  为水木清华blog申请定制的申请表
-**  满足条件的申请表将被提交至$pcconfig["BOARD"]
+**  满足条件的申请表将被提交至$pcconfig["APPBOARD"]
 **  并在数据表newapply中保留申请资料
 **  @windinsn Mar 12 , 2004
 */
@@ -101,7 +101,7 @@ else
 	
 	pc_db_close($link);
 	
-	$ret = bbs_postarticle($pcconfig["BOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$apptitle), preg_replace("/\\\(['|\"|\\\])/","$1",$appbody), 0 , 0 , 0 , 0);
+	$ret = bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$apptitle), preg_replace("/\\\(['|\"|\\\])/","$1",$appbody), 0 , 0 , 0 , 0);
 	switch ($ret) {
 			case -1:
 				html_error_quit("错误的讨论区名称!");
@@ -141,6 +141,7 @@ else
 <li><a href="/mainpage.php">返回首页</a></li>
 <li><a href="/pc/pcmain.php">返回Blog首页</a></li>
 <li><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">返回Blog论坛</a></li>
+<li><a href="/bbsdoc.php?board=<?php echo $pcconfig["APPBOARD"]; ?>">返回Blog申请版面</a></li>
 </ul></td></tr></table>
 <?php	
 	html_normal_quit();
