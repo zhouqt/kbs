@@ -5,7 +5,8 @@
 void set_height(int h)
 {
     printf("<script language=javascript>\
-parent.viewfrm.rows = \"%d,*,20\";\
+if (parent.viewfrm)\
+	parent.viewfrm.rows = \"%d,*,20\";\
 </script>",h);
 }
 
