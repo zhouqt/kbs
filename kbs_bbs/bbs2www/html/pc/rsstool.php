@@ -23,7 +23,7 @@
 <?php
 	}
 	
-	function pc_rss_channel($rss)
+	function pc_rss_channel($rss, $rssetems)
 	{
 ?>
 	<channel rdf:about="<?php echo $rss[channel][siteaddr]; ?>">
@@ -83,8 +83,13 @@
 ?>
 		<items>
 			<rdf:Seq>
-				<rdf:li resource="<?php echo $rss[channel][siteaddr]; ?>" /> 
-				<rdf:li resource="<?php echo $rss[channel][pcaddr]; ?>" /> 
+<?php
+		foreach($rssetems as $etem) {
+?>
+			<rdf:li resource="<?php echo $etem[addr]; ?>" /> 
+<?php
+        }
+?>
 			</rdf:Seq>
 		</items>
 	</channel>
@@ -94,12 +99,12 @@
 	function pc_rss_etem($etem)
 	{
 		$etembody = $etem[etemdesc]."\n<br><hr size=1>\n".
-				"(<a href=\"".$etem[etemaddr]."\">阅读全文</a>)\n".
+				"(<a href=\"".$etem[addr]."\">阅读全文</a>)\n".
 				"(<a href=\"".$etem[etemcomaddr]."\">发表评论</a>)";
 ?>
-	<item rdf:about="<?php echo $etem[etemaddr]; ?>">
+	<item rdf:about="<?php echo $etem[addr]; ?>">
 		<title><?php echo $etem[etemtitle]; ?></title> 
-		<link><?php echo $etem[etemaddr]; ?></link>
+		<link><?php echo $etem[addr]; ?></link>
 		<dc:creator><?php echo $etem[etemauth]; ?></dc:creator> 
 		<dc:date><?php echo $etem[etemtime]; ?></dc:date> 
 		<description>
@@ -133,7 +138,7 @@
 	function pc_rss_user($rss)
 	{
 		pc_rss_init();
-		pc_rss_channel($rss);
+		pc_rss_channel($rss, $rss[useretems]);
 		foreach($rss[useretems] as $useretem)
 			pc_rss_user_etem($useretem);
 		pc_rss_end();
@@ -142,7 +147,7 @@
 	function pc_rss_output($rss)
 	{
 		pc_rss_init();
-		pc_rss_channel($rss);
+		pc_rss_channel($rss, $rss[etems]);
 		foreach($rss[etems] as $etem)
 			pc_rss_etem($etem);
 		pc_rss_end();

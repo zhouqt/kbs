@@ -42,7 +42,7 @@
 	while($rows = mysql_fetch_array($result))
 	{
 		$rss[etems][$i] = array(
-					"etemaddr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
+					"addr" => "http://".$pcconfig["SITE"]."/pc/pccon.php?id=".$pc["UID"]."&amp;nid=".$rows[nid]."&amp;tid=".$rows[tid],
 					"etemcomaddr" => "http://".$pcconfig["SITE"]."/pc/pccom.php?act=pst&amp;nid=".$rows[nid],
 					"etemtitle" => htmlspecialchars(stripslashes($rows[subject])),
 					"etemdesc" => html_format($rows[body],TRUE,$rows[htmltag]),
