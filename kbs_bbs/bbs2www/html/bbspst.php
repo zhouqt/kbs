@@ -57,6 +57,15 @@ login_init();
 	}
 ?>
 <link rel="stylesheet" type="text/css" href="/ansi.css"/>
+<script language=javascript>
+<!--
+function dosubmit() {
+    document.postform.post.value='发表中，请稍候...';
+    document.postform.post.disabled=true;
+    document.postform.submit();
+}
+//-->
+</script>
 <body>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
@@ -174,7 +183,7 @@ login_init();
     }
 ?>
 <br />
-<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' rows="20" cols="80" wrap="physical">
+<textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {dosubmit(); return false;}'  onkeypress='if(event.keyCode==10) return dosubmit()' rows="20" cols="80" wrap="physical">
 <?php
     if($reid > 0){
     $filename = $articles[1]["FILENAME"];
@@ -221,7 +230,7 @@ login_init();
 ?>
 </textarea><br>
 <center>
-<input class="sb1" type="submit" value="发表" />
+<input class="sb1" type="button" onclick="dosubmit();" name="post" value="发表" />
 <input class="sb1" type="reset" value="清除" />
 <?php
 		if (bbs_is_attach_board($brdarr))
