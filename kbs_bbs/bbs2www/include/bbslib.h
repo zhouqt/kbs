@@ -13,11 +13,7 @@
 #include "types.h"
 /*#include "crypt.h"*/
 
-#ifdef SMTH
-#define CACHE_ROOT "/backup/www/htdocs"
-#define MAX_CA_PATH_LEN 1024
 #define report(x)        bbslog("user","%s",x)
-#endif
 
 #define FIRST_PAGE	"/index.html"
 #define MAIN_PAGE   "/frames.html"
@@ -102,10 +98,6 @@ struct stat *f_stat(char *file);
 /* PERM_DENYMAIL in SMTH */
 #define PERM_SPECIAL8  04000000000
 
-#ifndef SMTH
-int get_record(void *buf, int size, int num, char *file);
-#endif
-
 int put_record(void *buf, int size, int num, char *file);
 
 int del_record(char *file, int size, int num);
@@ -171,11 +163,7 @@ int del_mail(int ent, struct fileheader* fh, char* direct);
 
 int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 
-#ifndef SMTH
-int post_article(char *board, char *title, char *file, char *id, char *nickname, char *ip, int sig);
-#else
 int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader* oldx);
-#endif
 
 int sig_append(FILE * fp, char *id, int sig);
 
@@ -271,11 +259,9 @@ struct dir {
     int accessed;
 };
 
-#ifdef SMTH
 int full_utmp(struct user_info *uentp, int *count);
 struct user_info **get_ulist_addr();
 uinfo_t *get_user_info(int utmpnum);
-#endif                          /* SMTH */
 
 char *getcurruserid();
 
