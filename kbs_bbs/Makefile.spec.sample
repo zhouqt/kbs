@@ -15,9 +15,7 @@ CFLAGS   = -W -g -Ilibesmtp
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc -Ilibesmtp
 #LIBS     = -lbsd -lcrypt
 #CFLAGS   = -O3
-LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
-
-INSTALL  = ./install.sh 
+#LIBS     = -lbsd -lesmtp -Llibesmtp/.libs
 
 CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_ -DOS_LACK_SOCKLEN
 #CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
