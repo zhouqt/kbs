@@ -599,4 +599,5 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 	if (strstr(fh->title, "Re:")!=fh->title) setboardorigin(boardname, 1);
 	setboardtitle(boardname, 1);
 	if (fh->accessed[0]&FILE_MARKED) setboardmark(boardname, 1);
+	return 0;
 }
