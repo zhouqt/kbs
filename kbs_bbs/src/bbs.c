@@ -2692,7 +2692,8 @@ Goodbye()    /*离站 选单*/
         }
     }else
     {
-        ansimore("etc/logout",NA);
+        logouts=countlogouts("etc/logout"); /* logouts 为 离站画面 总数 */
+        user_display("etc/logout",rand()%logouts+1,YEA);
     }
 
     /*if(DEFINE(currentuser,DEF_LOGOUT\*使用自己的离站画面*\)) Leeward: disable the old code
