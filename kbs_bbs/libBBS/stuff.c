@@ -2277,7 +2277,7 @@ int bms_add(char *userid, char *boardname, time_t in, int out, char *memo )
 	if(memo && memo[0])
 		mysql_escape_string(newmemo, memo, strlen(memo));
 
-	sprintf(sql,"INSERT INTO bms VALUES ( '%s', '%s', '%s','%d' ,'%s', '%s');",userid, boardname, tt2timestamp(in,newts), out, currentuser->userid, newmemo);
+	sprintf(sql,"INSERT INTO bms VALUES ( NULL, '%s', '%s','%d' ,'%s', '%s', '%s');", boardname, tt2timestamp(in,newts), out, currentuser->userid, newmemo, userid);
 //		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 	
 
