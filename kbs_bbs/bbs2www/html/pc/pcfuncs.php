@@ -188,11 +188,11 @@ function pc_get_links($linkstr)
 {
 	if(!$linkstr)
 		return NULL;
-	$linkarrays = explode("||",$linkstr);	
+	$linkarrays = explode("|",$linkstr);	
 	$links = array();
 	for($i = 0 ; $i < count($linkarrays) ; $i ++ )
 	{
-		$linkarray = explode("|",$linkarrays[$i]);
+		$linkarray = explode("#",$linkarrays[$i]);
 		$links[$i] = array("LINK" => base64_decode($linkarray[0]) , "URL" => base64_decode($linkarray[1]) , "IMAGE" => $linkarray[2]?TRUE:FALSE);
 	}
 	return $links ;

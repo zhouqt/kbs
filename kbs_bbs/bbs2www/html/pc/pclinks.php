@@ -9,9 +9,9 @@
 		foreach($favlinks as $favlink)
 		{
 			if($links == "")
-				$links .= base64_encode($favlink["LINK"])."|".base64_encode($favlink["URL"])."|".$favlink["IMAGE"];
+				$links .= base64_encode($favlink["LINK"])."#".base64_encode($favlink["URL"])."#".(int)($favlink["IMAGE"]);
 			else
-				$links .= "||".base64_encode($favlink["LINK"])."|".base64_encode($favlink["URL"])."|".$favlink["IMAGE"];
+				$links .= "|".base64_encode($favlink["LINK"])."#".base64_encode($favlink["URL"])."#".(int)($favlink["IMAGE"]);
 		}
 			
 		$query = "UPDATE users SET `createtime` = `createtime` , `modifytime` = '".date("YmdHis")."' , `links` = '".addslashes($links)."' WHERE `uid` = '".$uid."' ";
