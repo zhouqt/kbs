@@ -17,13 +17,13 @@
 #############################################################
 
 # The home directory for the user 'bbs'
-BBSHOME=/home/system/bbs
+#BBSHOME=/home/system/bbs
 # The uid for the user 'bbs'
-BBSUID=9999
+#BBSUID=9999
 
-#OS_DEF   = -DAIX -DSYSV -DOS_LACK_SOCKLEN
+OS_DEF   = -DAIX -DSYSV 
 #OS_DEF   = -DLINUX -DSYSV 
-OS_DEF	= -DFREEBSD
+#OS_DEF	= -DFREEBSD
 
 
 CC       = gcc
@@ -55,7 +55,7 @@ CFILE    = bbs.c record.c delete.c stuff.c mail.c register.c \
            xyz.c talk.c read.c comm_lists.c namecomplete.c chat.c \
            maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
            screen.c userinfo.c vote.c announce.c sendmsg.c\
-	   bm.c list.c goodbye.c fileshm.c cache.c \
+	   bm.c list.c goodbye.c fileshm.c cache.c bbsd_single.c \
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
 	   ucache.c utmp.c log.c md5.c smth.c 
 
@@ -63,7 +63,7 @@ COBJS    = bbs.o record.o delete.o stuff.o mail.o register.o \
            xyz.o talk.o read.o comm_lists.o namecomplete.o chat.o \
            maintain.o edit.o more.o pass.o help.o bcache.o boards.o \
            screen.o userinfo.o vote.o announce.o sendmsg.o\
-           bm.o list.o goodbye.o fileshm.o cache.o \
+           bm.o list.o goodbye.o fileshm.o cache.o bbsd_single.o \
 	   newmain_single.o newio.o newterm.o convcode.o bbs_sendmail.o crypt.o \
 	   ucache.o utmp.o log.o md5.o smth.o 
 
@@ -96,11 +96,8 @@ dep:
 	rm -f .depend
 	ls *.c | xargs gcc $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL  -M  >>.depend
 
-$(PROGNAME): $(COBJS) $(OTHERS) bbsd_single.o
-	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) bbsd_single.o -g
-
-bbsd_single.o:	bbsd_single.c
-	$(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c bbsd_single.c
+$(PROGNAME): $(COBJS) $(OTHERS)
+	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
 
 bbstest: $(BBSLIB) $(OTHERS) newmain_single.o newio.o newterm.o convcode.o
 	$(CC) -o bbstest $(CFLAGS) $(BBSLIB) $(LIBS) newmain_single.o newio.o newterm.o convcode.o

@@ -37,14 +37,13 @@
 #define FOOTER "BBS"NAME_BBS_CHINESE"Õ¾¡ÃÌÖÂÛÇø"  
 
 
-struct fileheader { /* This structure is used to hold data in */
+typedef struct fileheader { /* This structure is used to hold data in */
     char filename[STRLEN];          /* the DIR files */
     char owner[STRLEN];
     char title[STRLEN];
     unsigned level;
     unsigned char accessed[12];   /* struct size = 256 bytes */
-} ;
-typedef struct fileheader fileheader;
+} fileheader;
 
 /* Leeward 98.08.28: Do not process those boards not public */
 #define XBOARDNUM 6
