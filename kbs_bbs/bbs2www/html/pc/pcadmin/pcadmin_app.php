@@ -84,8 +84,9 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="",$groupmanag
 		 "VALUES ('', '".addslashes($userid)."', '".addslashes($corpusname)."', '".addslashes($corpusname)."' , 'others', '300', '300', NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '1', '600', '5', '', '0', NOW( ) , '' , '0' , '其他类别' , '".$userfile_limit."','".$userfile_num_limit."');";
 	if(!mysql_query($query,$link))
 	{
+		$errstr = "MySQL Error: ".mysql_error($link);
 		pc_db_close($link);
-		exit("MySQL Error: ".mysql_error($link));
+		exit($errstr);
 	}
 	
 	//log一下
@@ -104,8 +105,9 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="",$groupmanag
 		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($userid)."' ORDER BY naid DESC LIMIT 1 ;";
 	if(!mysql_query($query,$link))
 	{
+		$errstr = "MySQL Error: ".mysql_error($link);
 		pc_db_close($link);
-		exit("MySQL Error: ".mysql_error($link));
+		exit($errstr);
 	}
 	
 	//发布公告
@@ -150,8 +152,9 @@ function pc_reject_apply($link,$userid,$applyAgain)
 	$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '".$applyAgain."' WHERE username = '".addslashes($userid)."';";
 	if(!mysql_query($query,$link))
 	{
+		$errstr = "MySQL Error: ".mysql_error($link);
 		pc_db_close($link);
-		exit("MySQL Error: ".mysql_error($link));
+		exit($errstr);
 	}
 	
 	//log一下
