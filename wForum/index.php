@@ -29,9 +29,9 @@ if ($loginok!=1) {
 
 showAllSecs();
 
-//showUserInfo();
-showFriendLinks();
+showUserInfo();
 showOnlineUsers();
+showFriendLinks();
 showSample();
 
 show_footer();
@@ -77,11 +77,16 @@ function FastLogin()
 </tr>
 <tr>
 <td class=TableBody1 height=40 width="100%">
-&nbsp;用户名：<input maxLength=16 name=id size=12>　　密码：<input maxLength=20 name=passwd size=12 type=password>　　<select name=CookieDate><option selected value=0>不保存</option><option value=1>保存一天</option><option value=2>保存一月</option><option value=3>保存一年</option></select><input type=hidden name=comeurl value="<?php echo $_SERVER['PHP_SELF']; ?>">&nbsp;<input type=submit name=submit value="登 录">
+&nbsp;用户名：<input maxLength="16" name="id" size="12" id="idF">　　密码：<input maxLength=20 name=passwd size=12 type=password>　　<select name=CookieDate><option selected value=0>不保存</option><option value=1>保存一天</option><option value=2>保存一月</option><option value=3>保存一年</option></select><input type=hidden name=comeurl value="<?php echo $_SERVER['PHP_SELF']; ?>">&nbsp;<input type=submit name=submit value="登 录">
 </td>
 </tr>
 </form>
 </table><br>
+<script language="Javascript">
+<!--
+	//registerFocusOnLoad("idF");
+//-->
+</script>
 <?php 
 }
 

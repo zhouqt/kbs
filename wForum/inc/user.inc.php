@@ -308,6 +308,7 @@ function usersysinfo($info){
 
 function showUserInfo(){
 	global $fromhost;
+	return; //disabled  - atppp 20041204
 ?>
 <table cellpadding=5 cellspacing=1 class=TableBorder1 align=center style="word-break:break-all;" width="97%">
 <TR><Th align=left colSpan=2 height=25>-=&gt; 用户来访信息</Th></TR>

@@ -40,11 +40,11 @@ board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 ?>
 </table>
 <?php
-	}
-	if (ONBOARD_USERS) {
+		if (ONBOARD_USERS) {
 ?>
 <script language="JavaScript" src="board_online.php?board=<?php echo $boardArr["NAME"]; ?>&amp;js=1"></script> 
 <?php
+		}
 	}
 show_footer();
 

@@ -128,7 +128,7 @@ function showSearchMenu(){
 		c.selected = false;
 		c.selected = true;
 	}
-	window.onload = kickBrowser; // Force browser to highlight selection. Opera has no problem, but firefox and IE do need this. - atppp
+	addOnLoadListener("kickBrowser()"); // Force browser to highlight selection. Opera has no problem, but firefox and IE do need this. - atppp
 <?php
 	}
 ?>

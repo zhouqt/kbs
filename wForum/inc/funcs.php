@@ -482,7 +482,7 @@ function show_nav($boardName='',$is_mathml=false,$other_headers="")
     defineMenus();
 //-->
 </script>
-<body style="margin: 0px;" onmouseover="HideMenu(event);">
+<body style="margin: 1px;" onmouseover="HideMenu(event);">
 <div id="menuDiv" class="navClass1"></div>
 <table cellspacing="0" cellpadding="0" align="center" class="navClass2">
 <tr><td width="100%">
