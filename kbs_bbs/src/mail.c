@@ -340,8 +340,7 @@ void m_internet()
     getdata(2, 0, "主题  : ", title, 70, DOECHO, NULL, true);
     if (!invalidaddr(receiver) && strchr(receiver, '@') && strlen(title) > 0) {
         clear();                /* Leeward 98.09.24fix a bug */
-        *quote_file = '\0';
-        switch (do_send(receiver, title)) {     /* Leeward 98.05.11 adds "switch" */
+        switch (do_send(receiver, title,"")) {     /* Leeward 98.05.11 adds "switch" */
         case -1:
             prints("收信者不正确\n");
             break;
@@ -383,8 +382,7 @@ void m_init()
     setmailfile(currmaildir, currentuser->userid, DOT_DIR);
 }
 
-int do_send(userid, title)
-    char *userid, *title;
+int do_send(char *userid, *title,char* q_file)
 {
     struct fileheader newmessage;
     struct stat st;
@@ -553,7 +551,7 @@ int do_send(userid, title)
         }
     }
 
-    do_quote(filepath, include_mode,quote_file,quote_user);
+    do_quote(filepath, include_mode,q_file,quote_user);
     strcpy(quote_title, newmessage.title);
 
 #ifdef INTERNET_PRIVATE_EMAIL
@@ -678,8 +676,7 @@ int m_send(char userid[])
     } else
         strcpy(uident, userid);
     clear();
-    *quote_file = '\0';
-    switch (do_send(uident, NULL)) {
+    switch (do_send(uident, NULL,"")) {
     case -1:
         prints("收信者不正确\n");
         break;
@@ -983,6 +980,7 @@ int mail_read(ent, fileinfo, direct)
 {
     char uid[STRLEN];
     char title[STRLEN];
+    char q_file[STRLEN];
     char *t;
 
     clear();
@@ -996,10 +994,10 @@ int mail_read(ent, fileinfo, direct)
         title[0] = '\0';
     strncat(title, fileinfo->title, STRLEN - 5);
 
-    setmailfile(quote_file, currentuser->userid, fileinfo->filename);
+    setmailfile(q_file, currentuser->userid, fileinfo->filename);
     strncpy(quote_user, fileinfo->owner, IDLEN);
     quote_user[IDLEN] = 0;
-    switch (do_send(uid, title)) {
+    switch (do_send(uid, title,q_file)) {
     case -1:
         prints("无法投递\n");
         break;

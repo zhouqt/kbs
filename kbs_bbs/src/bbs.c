@@ -318,6 +318,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     char bname[STRLEN];
     char dbname[STRLEN];
     char ispost[10];
+    char q_file[STRLEN];
 
     if (!HAS_PERM(currentuser, PERM_POST)) {    /* 判断是否有POST权 */
         return DONOTHING;
@@ -333,10 +334,9 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     }
 
     if (uinfo.mode != RMAIL)
-        sprintf(genbuf, "boards/%s/%s", currboard, fileinfo->filename);
+        sprintf(q_file, "boards/%s/%s", currboard, fileinfo->filename);
     else
-        setmailfile(genbuf, currentuser->userid, fileinfo->filename);
-    strcpy(quote_file, genbuf);
+        setmailfile(q_file, currentuser->userid, fileinfo->filename);
     strcpy(quote_title, fileinfo->title);
 
     clear();
@@ -384,7 +384,7 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
         strcpy(quote_board, currboard);
         strcpy(dbname, currboard);
         strcpy(currboard, bname);
-        if (post_cross(currentuser, currboard, quote_board, quote_title, quote_file, Anony, in_mail, ispost[0], 0) == -1) {     /* 转贴 */
+        if (post_cross(currentuser, currboard, quote_board, quote_title, q_file, Anony, in_mail, ispost[0], 0) == -1) {     /* 转贴 */
             pressreturn();
             move(2, 0);
             strcpy(currboard, dbname);
@@ -2315,13 +2315,13 @@ int Goodbye()
                 if (choose == 1)        /*modified by Bigman : 2000.8.8 */
                     do_send(sysoplist[0], "【站务总管】使用者寄来的建议信");
                 else if (choose == 2)
-                    do_send(sysoplist[1], "【系统维护】使用者寄来的建议信");
+                    do_send(sysoplist[1], "【系统维护】使用者寄来的建议信","");
                 else if (choose == 3)
-                    do_send(sysoplist[2], "【版面管理】使用者寄来的建议信");
+                    do_send(sysoplist[2], "【版面管理】使用者寄来的建议信","");
                 else if (choose == 4)
-                    do_send(sysoplist[3], "【身份确认】使用者寄来的建议信");
+                    do_send(sysoplist[3], "【身份确认】使用者寄来的建议信","");
                 else if (choose == 5)
-                    do_send(sysoplist[4], "【仲裁事宜】使用者寄来的建议信");
+                    do_send(sysoplist[4], "【仲裁事宜】使用者寄来的建议信","");
             }
 /* added by stephen 11/13/01 */
             choose = -1;
@@ -2340,7 +2340,7 @@ int Goodbye()
             getdata(num_sysop + 6, 0, spbuf, genbuf, 4, DOECHO, NULL, true);
             choose = genbuf[0] - '0';
             if (choose == 1)    /*modified by Bigman : 2000.8.8 */
-                do_send(sysoplist[3], "【身份确认】使用者寄来的建议信");
+                do_send(sysoplist[3], "【身份确认】使用者寄来的建议信","");
             choose = -1;
 
             /*  for(i=0;i<=3;i++)
