@@ -46,6 +46,32 @@ function bbs_ann_header($board='') {
 <?php
 }
 
+function bbs_ann_xsearch($board) {
+?>
+<table width="100%" border="0" cellspacing="0" cellpadding="9">
+  <form action="/bbsxsearch.php" name="qf0">
+<tr> 
+    <td align="right" colspan="2">
+	    <a href="/bbsxsearch.php">令狐冲精华区搜索引擎</a>
+	     <input type="text" class="b1" name="q" value="" size="41" onmouseover="this.focus();" />
+<?php
+    if ($board) {
+?>
+搜索范围
+<input class="b1" type="radio" name="board" value="" />全站
+<input class="b1" type="radio" name="board" checked value="<?php echo urlencode($board); ?>" /><?php echo $board; ?>版
+<?php        
+    }
+?>	     
+	     <input type="submit" class="a" style="width: 80px" value="开始搜" class="a" />
+    &nbsp;&nbsp;&nbsp;</td>
+  </tr>
+   </form>    
+</table>
+<?php
+}
+
+
 function bbs_ann_foot($parent) {
 ?>   
 <p align="center">
@@ -58,6 +84,7 @@ function bbs_ann_foot($parent) {
     }
 ?>
 [<a href="/bbs0an.php">根目录</a>]
+[<a href="/bbsxsearch.php">令狐冲精华区搜索</a>]
 [<a href="#listtop">返回顶部</a>]
 [<a href="javascript:location=location">刷新</a>] 
 </p>
@@ -177,6 +204,7 @@ else {
     bbs_ann_header();
 }
 
+bbs_ann_xsearch($board);
 $up_cnt = bbs_ann_updirs($path,$up_dirs);
 bbs_ann_display_articles($articles);
 if ($bid)

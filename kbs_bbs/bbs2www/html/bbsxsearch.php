@@ -98,6 +98,13 @@ a:visited,a:link {
                         echo "</p>";
                     }
                 }
+?>
+<hr />
+<p align="center">
+Powered By <a href="http://www.aka.cn/" target="_blank">Aka</a>
+<a href="http://www.aka.cn/serv_prod/coreSearch/index.shtml" target="_blank">coreSearch海量中文检索系统</a>
+</p>
+<?php
                 html_normal_quit();
         }
 ?>
