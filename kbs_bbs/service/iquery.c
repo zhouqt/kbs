@@ -243,16 +243,16 @@ static int choose_file_refresh(struct _select_def *conf)
     return SHOW_CONTINUE;
 }
 
-static int choose_file_show(struct _select_def *conf, int i)
+static int choose_file_show(struct _select_def *conf, int ii)
 {
     struct room_struct * r;
-    prints("  %3d  %-35s %s", i+wh*MAX_KEEP, res_title[i-1], res_path[i-1]);
+    prints("  %3d  %-35s %s", ii+wh*MAX_KEEP, res_title[ii-1], res_path[ii-1]);
     clrtoeol();
     if(show_mode) {
         char buf[10*1024],out[10*1024],out2[10*1024];
         FILE* fp;
         int i,j,k,l,fsize=0,t=0;
-        fp = fopen(res_filename[i-1], "rb");
+        fp = fopen(res_filename[ii-1], "rb");
         if(!fp) {
             prints("\n"); clrtoeol();
             prints("\n"); clrtoeol();
