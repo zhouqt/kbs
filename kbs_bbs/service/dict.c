@@ -136,7 +136,7 @@ int dict_main()
             }
             else if(ch==KEY_TAB&&len) {
             }
-            else if(isprint2(ch)) {
+            else if(isprint2(ch)&&!strchr("';\\\"/",ch)) {
 	        if (len==WORDLEN-1) continue;
                 word[len]=ch;
                 len++;
