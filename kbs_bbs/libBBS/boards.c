@@ -15,6 +15,7 @@
 #define BRC_CACHE_NUM 1        /* 未读标记被cache在tmpfs中了 */
 #endif
 
+#define BRCFILE ".boardrc.gz"
 static struct _brc_cache_entry {
     int bid;
     unsigned int list[BRC_MAXNUM];
@@ -372,9 +373,9 @@ void brc_update(char *userid)
     size_t count;
 
 #if USE_TMPFS==0
-    sethomefile(dirfile, userid, ".boardrc.gz");
+    sethomefile(dirfile, userid, BRCFILE);
 #else
-    setcachehomefile(dirfile, userid, userid);
+    setcachehomefile(dirfile, userid, BRCFILE);
 #endif
     for (i = 0; i < BRC_CACHE_NUM; i++) {
         if (brc_cache_entry[i].changed) {
@@ -383,6 +384,7 @@ void brc_update(char *userid)
     }
     if (i == BRC_CACHE_NUM)
         return;
+    bzero(data, BRC_FILESIZE);
     if ((fd = gzopen(dirfile, "rb6")) == NULL) {
         const char *errstr;
         int gzerrno;
@@ -391,9 +393,9 @@ void brc_update(char *userid)
         if (errno == Z_ERRNO)
             errstr = strerror(errno);
         bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
-        return;
-    }
-    bzero(data, BRC_FILESIZE);
+	f_rm(dirfile);
+//        return;
+    } else {
     count = 0;
     while (count < BRC_FILESIZE) {
         int ret;
@@ -404,6 +406,7 @@ void brc_update(char *userid)
         count += ret;
     }
     gzclose(fd);
+    }
     fd = gzopen(dirfile, "w+b6");
 
     for (i = 0; i < BRC_CACHE_NUM; i++) {
@@ -450,9 +453,9 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
     gzFile fd;
 
 #if USE_TMPFS==0
-    sethomefile(dirfile, userid, ".boardrc.gz");
+    sethomefile(dirfile, userid, BRCFILE);
 #else
-    setcachehomefile(dirfile, userid, userid);
+    setcachehomefile(dirfile, userid, BRCFILE);
 #endif
 
     if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
@@ -519,9 +522,9 @@ int brc_initial(char *userid, char *boardname)
         }
 
 #if USE_TMPFS==0
-    sethomefile(dirfile, userid, ".boardrc.gz");
+    sethomefile(dirfile, userid, BRCFILE);
 #else
-    setcachehomefile(dirfile, userid, userid);
+    setcachehomefile(dirfile, userid, BRCFILE);
 #endif
 
     if ((brcfile = gzopen(dirfile, "rb6")) == NULL)

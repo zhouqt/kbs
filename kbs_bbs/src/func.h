@@ -44,9 +44,9 @@ extern "C" {
 
 #if USE_TMPFS==1
 void setcachehomefile(char* path,char* user,char* file);
-void init_cachedata(struct userec* user,int unum);
-void flush_cachedata(struct userec* user);
-int clean_cachedata(struct userec* user,int unum);
+void init_cachedata(char* userid,int unum);
+void flush_cachedata(char* userid);
+int clean_cachedata(char* userid,int unum);
 #endif
 
 /* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/

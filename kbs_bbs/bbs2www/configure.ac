@@ -129,9 +129,12 @@ AC_FUNC_MMAP
 AC_TYPE_SIGNAL
 AC_FUNC_STAT
 AC_CHECK_FUNCS([alarm bzero ftruncate getcwd memset mkdir munmap socket strcasecmp strchr strdup strerror strncasecmp strrchr strstr])
+WWWSRCDIR=`pwd`
+AC_SUBST(WWWSRCDIR)
 
 AC_CONFIG_FILES([Makefile
                  lib/Makefile
                  phplib/Makefile
+                 phplib/config.m4
                  src/Makefile])
 AC_OUTPUT

@@ -521,12 +521,24 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     struct sigaction act;
     char *commandline;
     char commbuf[10];
+    char ch;
 
     if (load_ucache() != 0) {
         printf("ft,load ucache error!");
         exit(-1);
     }
 
+#ifdef TMPFS
+    /* init tmpfs */
+    sprintf(genbuf1,"%s/home",TMPFSROOT);
+    mkdir(genbuf1,0700);
+    sprintf(genbuf1,"%s/boards",TMPFSROOT);
+    mkdir(genbuf1,0700);
+    for (ch='A';ch<='Z';ch++) {
+    sprintf(genbuf1,"%s/home/%c",TMPFSROOT,ch);
+    mkdir(genbuf1,0700);
+    }
+#endif
     resolve_boards();
     if (argv1 != NULL) {
         switch (fork()) {

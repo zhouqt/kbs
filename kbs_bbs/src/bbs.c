@@ -909,6 +909,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     case 'R':
     case 'y':
     case 'r':
+#ifdef SMTH
         if ((!strcmp(currboard, "News")) || (!strcmp(currboard, "Original"))) {
             clear();
             move(3, 0);
@@ -917,6 +918,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
             pressreturn();
             break;              /*Haohmaru.98.12.19,不能回文章的版 */
         }
+#endif
         if (fileinfo->accessed[1] & FILE_READ) {        /*Haohmaru.99.01.01.文章不可re */
             clear();
             move(3, 0);

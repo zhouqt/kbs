@@ -9,6 +9,14 @@
 #undef NINE_BUILD
 #endif
 
+#ifndef USE_TMPFS  /* 使用TMPFS */
+#define USE_TMPFS 0
+#else
+#ifndef TMPFSROOT
+#error must define tmpfs root directory
+#endif
+#endif
+
 #ifndef SMTH /*水木清华专有代码,缺省使能*/
 #define SMTH 1
 #else

@@ -846,42 +846,105 @@ void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
 void setcachehomefile(char* path,char* user,char* file)
 {
     if (file==NULL)
-      sprintf(path, "%s/home/%c/%s",TMPFSROOT,user->userid[0],user->userid);
+      sprintf(path, "%s/home/%c/%s",TMPFSROOT,toupper(user[0]),user);
     else
-      sprintf(path, "%s/home/%c/%s/%s",TMPFSROOT, user->userid[0], user->userid,file);
+      sprintf(path, "%s/home/%c/%s/%s",TMPFSROOT, toupper(user[0]), user,file);
 }
 
 void init_cachedata(char* userid,int unum)
 {
     char path1[MAXPATH],path2[MAXPATH];
-    sethomefile(path1, userid, NULL);
-    mkdir(path1);
-    sethomefile(path1, userid, unum);
-    mkdir(path1);
+    int fd,logincount;
+    int count;
+    struct flock ldata;
+    setcachehomefile(path1, userid, NULL);
+    mkdir(path1,0700);
+    sprintf(path2,"%d",unum);
+    setcachehomefile(path1, userid, path2);
+    mkdir(path1,0700);
     sethomefile(path1, userid, ".boardrc.gz");
     setcachehomefile(path2, userid,".boardrc.gz");
-    f_cp(path1,path2);
+    f_cp(path1,path2,O_TRUNC);
+    setcachehomefile(path1, userid, "logincount");
+    if ((fd = open(path1, O_RDWR, 0664)) != -1) {
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("3error", "%s", "logincount err");
+        close(fd);
+        return;              /* lock error*/
+    }
+    count=read(fd,path2,MAXPATH);
+    path2[count]=0;
+    logincount=atoi(path2);
+    } else {
+    if ((fd = open(path1, O_WRONLY|O_CREAT, 0664)) != -1) {
+    logincount=0;
+    } else {
+        bbslog("3error", "%s", "write logincount err");
+        return;              /* lock error*/
+    }
+    }
+    logincount++;
+    lseek(fd,0,SEEK_SET);
+    sprintf(path2,"%d",logincount);
+    write(fd,path2,strlen(path2));
+    close(fd);
 }
 void flush_cachedata(char* userid)
 {
     char path1[MAXPATH],path2[MAXPATH];
     sethomefile(path1, userid, ".boardrc.gz");
     setcachehomefile(path2, userid,".boardrc.gz");
-    f_cp(path2,path1);
+    f_cp(path2,path1,O_TRUNC);
 }
 
 int clean_cachedata(char* userid,int unum)
 {
-    char path1[MAXPATH];
-    setcachehomefile(path1, userid, unum);
+    char path1[MAXPATH],path2[MAXPATH];
+    int fd,logincount;
+    int count;
+    struct flock ldata;
+    sethomefile(path1, userid, ".boardrc.gz");
+    setcachehomefile(path2, userid,".boardrc.gz");
+    f_cp(path2,path1,O_TRUNC);
+
+    sprintf(path2, "%d",unum);
+    setcachehomefile(path1, userid, path2);
     f_rm(path1);
     //todo: check the dir
-    setcachehomefile(path1, userid, NULL);
-    f_rm(path1);
+    setcachehomefile(path1, userid, "logincount");
+    if ((fd = open(path1, O_RDWR, 0664)) != -1) {
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("3error", "%s", "logincount err");
+        close(fd);
+        return;              /* lock error*/
+    }
+    count=read(fd,path2,MAXPATH);
+    path2[count]=0;
+    logincount=atoi(path2);
+    logincount--;
+    lseek(fd,0,SEEK_SET);
+    sprintf(path2,"%d",logincount);
+    write(fd,path2,strlen(path2));
+    close(fd);
+    } else logincount=0;
+    if (logincount==0) {
+        setcachehomefile(path1, userid, NULL);
+        f_rm(path1);
+    }
 }
 #endif
 
 int do_after_login(struct userec* user,int unum)
 {
+#if USE_TMPFS==1
   init_cachedata(user->userid,unum);
+#endif
 }

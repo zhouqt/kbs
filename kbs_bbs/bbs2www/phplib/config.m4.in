@@ -1,0 +1,64 @@
+dnl $Id$
+dnl config.m4 for extension smth_bbs
+
+dnl Comments in this file start with the string 'dnl'.
+dnl Remove where necessary. This file will not work
+dnl without editing.
+
+dnl If your extension references something external, use with:
+
+dnl PHP_ARG_WITH(smth_bbs, for smth_bbs support,
+dnl Make sure that the comment is aligned:
+dnl [  --with-smth_bbs             Include smth_bbs support])
+
+dnl Otherwise use enable:
+
+PHP_ARG_ENABLE(smth_bbs, whether to enable smth_bbs support,
+Make sure that the comment is aligned:
+[  --enable-smth_bbs           Enable smth_bbs support])
+
+if test "$PHP_SMTH_BBS" != "no"; then
+  dnl Write more examples of tests here...
+
+  dnl # --with-smth_bbs -> check with-path
+  dnl SEARCH_PATH="/usr/local /usr"     # you might want to change this
+  dnl SEARCH_FOR="/include/smth_bbs.h"  # you most likely want to change this
+  dnl if test -r $PHP_SMTH_BBS/; then # path given as parameter
+  dnl   SMTH_BBS_DIR=$PHP_SMTH_BBS
+  dnl else # search default path list
+  dnl   AC_MSG_CHECKING([for smth_bbs files in default path])
+  dnl   for i in $SEARCH_PATH ; do
+  dnl     if test -r $i/$SEARCH_FOR; then
+  dnl       SMTH_BBS_DIR=$i
+  dnl       AC_MSG_RESULT(found in $i)
+  dnl     fi
+  dnl   done
+  dnl fi
+  dnl
+  dnl if test -z "$SMTH_BBS_DIR"; then
+  dnl   AC_MSG_RESULT([not found])
+  dnl   AC_MSG_ERROR([Please reinstall the smth_bbs distribution])
+  dnl fi
+
+  dnl # --with-smth_bbs -> add include path
+  PHP_ADD_INCLUDE(@WWWSRCDIR@/../src)
+
+  dnl # --with-smth_bbs -> chech for lib and symbol presence
+  dnl LIBNAME=smth_bbs # you may want to change this
+  dnl LIBSYMBOL=smth_bbs # you most likely want to change this 
+
+  dnl PHP_CHECK_LIBRARY($LIBNAME,$LIBSYMBOL,
+  dnl [
+  dnl   PHP_ADD_LIBRARY_WITH_PATH($LIBNAME, $SMTH_BBS_DIR/lib, SMTH_BBS_SHARED_LIBADD)
+  dnl   AC_DEFINE(HAVE_SMTH_BBSLIB,1,[ ])
+  dnl ],[
+  dnl   AC_MSG_ERROR([wrong smth_bbs lib version or lib not found])
+  dnl ],[
+  dnl   -L$SMTH_BBS_DIR/lib -lm -ldl
+  dnl ])
+  dnl
+  SMTH_BBS_SHARED_LIBADD="-L@WWWSRCDIR@/../libBBS -lBBS -L@WWWSRCDIR@/../libsystem -lsystem -L@WWWSRCDIR@/lib -lbbslib"
+  PHP_SUBST(SMTH_BBS_SHARED_LIBADD)
+
+  PHP_NEW_EXTENSION(smth_bbs, phpbbslib.c, $ext_shared)
+fi
