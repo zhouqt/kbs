@@ -49,7 +49,7 @@ void *mm_addr = NULL;
 extern int errno;
 #endif
 
-static unsigned Baudrate = 2400;       /* Default, should be set by first mode() call */
+unsigned Baudrate = 2400;       /* Default, should be set by first mode() call */
 static unsigned Txwindow;              /* Control the size of the transmitted window */
 static unsigned Txwspac;               /* Spacing between zcrcq requests */
 static unsigned Txwcnt;                /* Counter used to space ack requests */
