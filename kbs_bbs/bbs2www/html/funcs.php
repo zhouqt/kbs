@@ -133,10 +133,12 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 
 function html_init($charset,$title="")
 {
+	global $_COOKIE;
 	global $cachemode;
 	if ($cachemode=="")
 		cache_header("nocache");
 	@$css_style = $_COOKIE["STYLE"];
+	settype($css_style, "integer");
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
