@@ -146,5 +146,11 @@ struct bbs_msgbuf {
 	char mtext[1];
 };
 
+struct _mail_list{
+    char mail_list[MAILBOARDNUM][40];
+    int mail_list_t;
+} ;
+
+
 #endif
 

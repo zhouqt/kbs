@@ -66,5 +66,7 @@ struct newpostdata {
     int (*fptr) ();
 };
 
+extern struct _mail_list user_mail_list;
+
 extern sigjmp_buf bus_jump;
 

@@ -152,32 +152,29 @@ long get_mail_sum_records(char *fpath, int size)
     return ans ;
 }
 
-char mail_list[MAILBOARDNUM][40];
-int mail_list_t;
-
-void load_mail_list(struct userec *user)
+void load_mail_list(struct userec *user,struct _mail_list* mail_list)
 {
     char fname[STRLEN];
     int fd;
 
     sethomefile(fname, user->userid, "maildir");
-    mail_list_t=0;
+    mail->mail_list_t=0;
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-        read(fd, &mail_list_t, sizeof(int));
-        read(fd, mail_list, sizeof(mail_list));
+        read(fd, &mail->mail_list_t, sizeof(int));
+        read(fd, mail->mail_list, sizeof(mail_list));
         close(fd);
     }
 }
 
-void save_mail_list()
+void save_mail_list(struct _mail_list* mail_list)
 {
     char fname[STRLEN];
     int fd;
 
     sethomefile(fname, currentuser->userid, "maildir");
     if ((fd = open(fname, O_WRONLY|O_CREAT, 0600)) != -1) {
-        write(fd, &mail_list_t, sizeof(int));
-        write(fd, mail_list, sizeof(mail_list));
+        write(fd, &mail_list.mail_list_t, sizeof(int));
+        write(fd, mail_list.mail_list, sizeof(mail_list.mail_list));
         close(fd);
     }
 }
@@ -186,6 +183,7 @@ long get_mailusedspace(struct userec *user,int force)
 {
 	char recmaildir[200], buf[STRLEN];
 	int sum=0, i;
+	struct _mail_list mail;
 	if(user->usedspace==0xFFFF||force!=0)
 	{
 		setmailfile(recmaildir, user->userid, DOT_DIR);
@@ -194,9 +192,9 @@ long get_mailusedspace(struct userec *user,int force)
 		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
 		setmailfile(recmaildir, user->userid, ".DELETED");
 		sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
-		load_mail_list(user);
-		for(i=0;i<mail_list_t;i++){
-		    sprintf(buf, ".%s", mail_list[i]+30);
+		load_mail_list(user,&mail);
+		for(i=0;i<mail.mail_list_t;i++){
+		    sprintf(buf, ".%s", mail.mail_list[i]+30);
 		    setmailfile(recmaildir, user->userid, buf);
 		    sum+=get_mail_sum_records(recmaildir, sizeof(fileheader));
 		}

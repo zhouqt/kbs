@@ -4,10 +4,6 @@ extern char *sysconf_str();
 
 #include <libesmtp.h>
 
-extern char mail_list[MAILBOARDNUM][40];
-extern int mail_list_t;
-
-
 int getmailnum(char *recmaildir)
 {                               /*Haohmaru.99.4.5.查对方信件数 */
     struct fileheader fh;
@@ -31,6 +27,7 @@ int chkusermail(struct userec *user)
 {
     char recmaildir[STRLEN], buf[STRLEN];
     int num, sum, sumlimit, numlimit, i;
+    struct _mail_list usermail;
 
 /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
     get_mail_limit(user, &sumlimit, &numlimit);
@@ -44,9 +41,9 @@ int chkusermail(struct userec *user)
         num += getmailnum(recmaildir);
         setmailfile(recmaildir, user->userid, ".DELETED");
         num += getmailnum(recmaildir);
-        load_mail_list(user);
-        for (i = 0; i < mail_list_t; i++) {
-            sprintf(buf, ".%s", mail_list[i] + 30);
+        load_mail_list(user,&usermail);
+        for (i = 0; i < usermail.mail_list_t; i++) {
+            sprintf(buf, ".%s", usermail.mail_list[i] + 30);
             setmailfile(recmaildir, user->userid, buf);
             num += getmailnum(recmaildir);
         }

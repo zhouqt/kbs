@@ -4,4 +4,7 @@ struct boardheader *bcache;
 struct BCACHE *brdshm;
 struct UTMPFILE *utmpshm;
 struct userec *currentuser;
+struct _mail_list user_mail_list;
+
+
 char fromhost[IPLEN + 1];

@@ -209,9 +209,6 @@ int query_bm()
 /* end of insertion */
 
 extern int load_mboards();
-extern void save_mail_list();
-extern char mail_list[MAILBOARDNUM][40];
-extern int mail_list_t;
 extern void mailtitle();
 extern char *maildoent(char *buf, int num, struct fileheader *ent);
 

@@ -740,7 +740,7 @@ void user_login()
         currentuser->firstlogin = login_start_time - 7 * 86400;
     }
     check_register_info();
-    load_mail_list(currentuser);
+    load_mail_list(currentuser,&user_mail_list);
 }
 
 void set_numofsig()

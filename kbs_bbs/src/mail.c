@@ -51,9 +51,6 @@ extern int numofsig;
 extern char quote_user[];
 char *sysconf_str();
 char currmaildir[STRLEN];
-extern char mail_list[MAILBOARDNUM][40];
-extern int mail_list_t;
-
 #define maxrecp 300
 
 static int mail_reply(int ent, struct fileheader *fileinfo, char *direct);
@@ -1230,7 +1227,7 @@ int mail_move(int ent, struct fileheader *fileinfo, char *direct)
     clear();
     move(5, 3);
     prints("请选择移动到哪个邮箱");
-    sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (mail_list_t + 4));
+    sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (user_mail_list.mail_list_t + 4));
     sel[0].x = 3;
     sel[0].y = 6;
     sel[0].hotkey = 'I';
@@ -1241,31 +1238,31 @@ int mail_move(int ent, struct fileheader *fileinfo, char *direct)
     sel[1].hotkey = 'J';
     sel[1].type = SIT_SELECT;
     sel[1].data = menu_char[1];
-    for (i = 0; i < mail_list_t; i++) {
+    for (i = 0; i < user_mail_list.mail_list_t; i++) {
         sel[i + 2].x = 3;
         sel[i + 2].y = i + 8;
-        sel[i + 2].hotkey = mail_list[i][0];
+        sel[i + 2].hotkey = user_mail_list.mail_list[i][0];
         sel[i + 2].type = SIT_SELECT;
         sel[i + 2].data = (void *) mail_list[i];
     }
-    sel[mail_list_t + 2].x = 3;
-    sel[mail_list_t + 2].y = mail_list_t + 8;
-    sel[mail_list_t + 2].hotkey = 'Q';
-    sel[mail_list_t + 2].type = SIT_SELECT;
-    sel[mail_list_t + 2].data = menu_char[2];
-    sel[mail_list_t + 3].x = -1;
-    sel[mail_list_t + 3].y = -1;
-    sel[mail_list_t + 3].hotkey = -1;
-    sel[mail_list_t + 3].type = 0;
-    sel[mail_list_t + 3].data = NULL;
+    sel[user_mail_list.mail_list_t + 2].x = 3;
+    sel[user_mail_list.mail_list_t + 2].y = user_mail_list.mail_list_t + 8;
+    sel[user_mail_list.mail_list_t + 2].hotkey = 'Q';
+    sel[user_mail_list.mail_list_t + 2].type = SIT_SELECT;
+    sel[user_mail_list.mail_list_t + 2].data = menu_char[2];
+    sel[user_mail_list.mail_list_t + 3].x = -1;
+    sel[user_mail_list.mail_list_t + 3].y = -1;
+    sel[user_mail_list.mail_list_t + 3].hotkey = -1;
+    sel[user_mail_list.mail_list_t + 3].type = 0;
+    sel[user_mail_list.mail_list_t + 3].data = NULL;
     i = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
-    if (i >= 0 && i < mail_list_t + 2) {
+    if (i >= 0 && i < user_mail_list.mail_list_t + 2) {
         strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         *t = '.';
         t++;
         if (i >= 2)
-            strcpy(t, mail_list[i - 2] + 30);
+            strcpy(t, user_mail_list.mail_list[i - 2] + 30);
         else if (i == 0)
             strcpy(t, "DIR");
         else if (i == 1)
@@ -2044,17 +2041,17 @@ static int m_clean()
     num = get_num_records(buf, sizeof(struct fileheader));
     if (num&&askyn("清除垃圾箱么?",0)) 
     	delete_range(buf, 1, num, 2);
-    if (mail_list_t) {
+    if (user_mail_list.mail_list_t) {
    	int i;
-   	for (i=0;i<mail_list_t;i++) {
+   	for (i=0;i<user_mail_list.mail_list_t;i++) {
 	    char filebuf[20];
     	    move(0,0);
-	    sprintf(filebuf,".%s",mail_list[i]+30);
+	    sprintf(filebuf,".%s",user_mail_list.mail_list[i]+30);
 	    setmailfile(buf,currentuser->userid,filebuf);
 	    num = get_num_records(buf, sizeof(struct fileheader));
     	    if (num) {
     			char prompt[80];
-    			sprintf(prompt,"清除自定义邮箱 %s 么?",mail_list[i]);
+    			sprintf(prompt,"清除自定义邮箱 %s 么?",user_mail_list.mail_list[i]);
     			if (askyn(prompt,0))
     				delete_range(buf, 1, num, 2);
     	    }
@@ -2108,7 +2105,7 @@ static void maillist_refresh(struct _select_def *conf)
     move(17, 0);
     prints("%s", "\x1b[1;44;37m──系统预定义邮箱──────────┤\x1b[m");
 
-    if (mail_list_t == 0) {
+    if (user_mail_list.mail_list_t == 0) {
         good_move(14, 46);
         prints("%s", "无自定义邮箱");
     }
@@ -2141,8 +2138,8 @@ static int maillist_show(struct _select_def *conf, int pos)
         sel = pos - arg->cmdnum - arg->sysboxnum;
         if (sel < 10)
             outc(' ');
-        prints("%d) %s", sel, mail_list[sel - 1]);
-        sprintf(dirbstr, ".%s", mail_list[sel - 1] + 30);
+        prints("%d) %s", sel, user_mail_list.mail_list[sel - 1]);
+        sprintf(dirbstr, ".%s", user_mail_list.mail_list[sel - 1] + 30);
         setmailfile(buf, currentuser->userid, dirbstr);
         prints("(%d)", getmailnum(buf));
     }
@@ -2176,7 +2173,7 @@ static int maillist_onselect(struct _select_def *conf)
         int sel;
 
         sel = conf->pos - arg->sysboxnum - arg->cmdnum - 1;
-        sprintf(buf, ".%s", mail_list[sel]+30);
+        sprintf(buf, ".%s", user_mail_list.mail_list[sel]+30);
         setmailfile(currmaildir, currentuser->userid, buf);
         in_mail = true;
         i_read(RMAIL, currmaildir, mailtitle, (READ_FUNC) maildoent, &mail_comms[0], sizeof(struct fileheader));
@@ -2193,7 +2190,7 @@ static int maillist_prekey(struct _select_def *conf, int *command)
      * 如果是左键并且到了左边
      */
     if (*command == KEY_RIGHT) {
-	if ((mail_list_t==0)||(conf->pos>arg->cmdnum+arg->sysboxnum))
+	if ((user_mail_list.mail_list_t==0)||(conf->pos>arg->cmdnum+arg->sysboxnum))
             *command='\n';
 	else
             *command='\t';
@@ -2223,7 +2220,7 @@ static int maillist_key(struct _select_def *conf, int command)
     if (command=='\t') {
         if (conf->pos<=arg->cmdnum+arg->sysboxnum) {
 	/* 左边*/
-	    if (!mail_list_t)
+	    if (!user_mail_list.mail_list_t)
                 return SHOW_CONTINUE;
 	    arg->leftpos=conf->pos;
 	    conf->new_pos=arg->rightpos;
@@ -2245,7 +2242,7 @@ static int maillist_key(struct _select_def *conf, int command)
 
         if (!HAS_PERM(currentuser,PERM_LOGINOK)) 
 	    return SHOW_CONTINUE;
-        if (mail_list_t >= MAILBOARDNUM) {
+        if (user_mail_list.mail_list_t >= MAILBOARDNUM) {
             move(2, 0);
             clrtoeol();
             prints("邮箱数已经达上限(%d)！", MAILBOARDNUM);
@@ -2258,7 +2255,7 @@ static int maillist_key(struct _select_def *conf, int command)
         if (buf[0] == 0) {
             return SHOW_REFRESH;
         }
-        strncpy(mail_list[mail_list_t], buf, 29);
+        strncpy(user_mail_list.mail_list[user_mail_list.mail_list_t], buf, 29);
         move(0, 0);
         clrtoeol();
         while (1) {
@@ -2270,16 +2267,16 @@ static int maillist_key(struct _select_def *conf, int command)
         }
         sprintf(bname, "MAILBOX%d", i);
         f_touch(buf);
-        strncpy(mail_list[mail_list_t] + 30, bname, 9);
-        mail_list_t++;
-        save_mail_list();
+        strncpy(user_mail_list.mail_list[user_mail_list.mail_list_t] + 30, bname, 9);
+        user_mail_list.mail_list_t++;
+        save_mail_list(&user_mail_list);
         x = 0;
 
-        y = 3 + (20 - mail_list_t) / 2;
+        y = 3 + (20 - user_mail_list.mail_list_t) / 2;
         arg->numbers++;
         conf->item_count = arg->numbers;
         conf->item_per_page = arg->numbers;
-        for (i = arg->cmdnum + arg->sysboxnum; i < arg->cmdnum + arg->sysboxnum + mail_list_t; i++) {
+        for (i = arg->cmdnum + arg->sysboxnum; i < arg->cmdnum + arg->sysboxnum + user_mail_list.mail_list_t; i++) {
             conf->item_pos[i].x = 44;
             conf->item_pos[i].y = y + i - arg->cmdnum - arg->sysboxnum;
         }
@@ -2300,16 +2297,16 @@ static int maillist_key(struct _select_def *conf, int command)
         p = ans[0] == 'Y' || ans[0] == 'y';
         if (p) {
             p = conf->pos-arg->cmdnum-arg->sysboxnum-1;
-            for (j = p; j < mail_list_t - 1; j++)
-                memcpy(mail_list[j], mail_list[j + 1], sizeof(mail_list[j]));
-            mail_list_t--;
-            save_mail_list();
-            y = 3 + (20 - mail_list_t) / 2;
+            for (j = p; j < user_mail_list.mail_list_t - 1; j++)
+                memcpy(user_mail_list.mail_list[j], user_mail_list.mail_list[j + 1], sizeof(user_mail_list.mail_list[j]));
+            user_mail_list.mail_list_t--;
+            save_mail_list(&user_mail_list);
+            y = 3 + (20 - user_mail_list.mail_list_t) / 2;
             arg->numbers--;
             conf->item_count = arg->numbers;
             conf->item_per_page = arg->numbers;
 	    if (conf->pos>arg->numbers) conf->pos=arg->numbers;
-            for (i = arg->cmdnum + arg->sysboxnum; i < arg->cmdnum + arg->sysboxnum + mail_list_t; i++) {
+            for (i = arg->cmdnum + arg->sysboxnum; i < arg->cmdnum + arg->sysboxnum + user_mail_list.mail_list_t; i++) {
                 conf->item_pos[i].x = 44;
                 conf->item_pos[i].y = y + i - arg->cmdnum - arg->sysboxnum;
             }
@@ -2330,11 +2327,11 @@ static int maillist_key(struct _select_def *conf, int command)
         move(0, 0);
         clrtoeol();
         i = conf->pos-arg->cmdnum-arg->sysboxnum-1;
-        strcpy(bname, mail_list[i]);
+        strcpy(bname, user_mail_list.mail_list[i]);
         getdata(0, 0, "输入信箱中文名: ", bname, 30, DOECHO, NULL, false);
         if (bname[0]) {
-            strcpy(mail_list[i], bname);
-            save_mail_list();
+            strcpy(user_mail_list.mail_list[i], bname);
+            save_mail_list(&user_mail_list);
             return SHOW_REFRESH;
         }
         return SHOW_REFRESH;
@@ -2354,9 +2351,9 @@ static int maillist_key(struct _select_def *conf, int command)
         int num;
 
         num = command - '0';
-        if ((arg->tmpnum == -1) || (num + arg->tmpnum * 10 > mail_list_t)) {
+        if ((arg->tmpnum == -1) || (num + arg->tmpnum * 10 > user_mail_list.mail_list_t)) {
             arg->tmpnum = command - '0';
-            if (arg->tmpnum <= mail_list_t) {
+            if (arg->tmpnum <= user_mail_list.mail_list_t) {
                 conf->new_pos = arg->tmpnum + arg->cmdnum + arg->sysboxnum;
                 return SHOW_SELCHANGE;
             }
@@ -2387,7 +2384,7 @@ int MailProc()
         }
     }
     arg.sysboxnum = sizeof(mail_sysbox) / sizeof(char *);
-    arg.numbers = mail_list_t + arg.cmdnum + arg.sysboxnum;
+    arg.numbers = user_mail_list.mail_list_t + arg.cmdnum + arg.sysboxnum;
     arg.leftpos=2;
     arg.rightpos=arg.cmdnum + arg.sysboxnum+1;
     pts = (POINT *) malloc(sizeof(POINT) * (arg.numbers+MAILBOARDNUM));
@@ -2413,8 +2410,8 @@ int MailProc()
      * 计算系统邮箱地位置
      */
 
-    y = 3 + (20 - mail_list_t) / 2;
-    for (; i < arg.cmdnum + arg.sysboxnum + mail_list_t; i++) {
+    y = 3 + (20 - user_mail_list.mail_list_t) / 2;
+    for (; i < arg.cmdnum + arg.sysboxnum + user_mail_list.mail_list_t; i++) {
         pts[i].x = 44;
         pts[i].y = y + i - arg.cmdnum - arg.sysboxnum;
     }
