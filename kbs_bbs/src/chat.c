@@ -128,8 +128,7 @@ void printchatline(chatcontext * pthis, const char *str) /*ÏÔÊ¾Ò»ÐÐ£¬²¢ÏÂÒÆÖ¸Ê¾·
                 p++;
                 len+=2;
             }
-        }
-        else {
+        } else {
             if (inesc) {
                 if (isalpha(*p))
                     inesc=0;
@@ -197,8 +196,8 @@ int chat_send(chatcontext * pthis, const char *buf)
 
 int chat_waitkey(chatcontext *pthis)
 {
-	char ch;
-    outs("             [5;31m*** °´¿Õ¸ñ¼ü¼ÌÐø ***[m");
+    char ch;
+    outs("                     [5;31m¡ô °´¿Õ¸ñ¼ü¼ÌÐø ¡ô[m");
     add_io(0, 0);
     ch=igetkey();
     add_io(pthis->cfd, 0);
@@ -240,14 +239,14 @@ int chat_parse(chatcontext * pthis,int drecv)
 
     bptr = pthis->buf;
     while (bptr<pthis->buf+pthis->bufptr)  {
-        for(len=0;bptr[len];len++){
-            if(bptr+len==pthis->buf+pthis->bufptr){
-                len=-1;
+        for(len=0;bptr+len<pthis->buf+pthis->bufptr;len++){
+            if(!bptr[len]){
+                len=-len;
                 break;
             }
         }
-        if(len<0)break;
-        len++; /* skip 0 */
+        if(len>0)break;
+        len=-len+1; /* skip 0 */
 
         if (*bptr == '/') /* ´¦Àíserver´«À´µÄÃüÁî */
         {
@@ -292,12 +291,12 @@ int chat_parse(chatcontext * pthis,int drecv)
             printchatline(pthis,bptr);
         }
         bptr += len;
+        len=0;
     }
 
-    if (len< 0)
+    if (len>0)
     {
-        strcpy(genbuf, bptr);
-        strcpy(pthis->buf, genbuf);
+        memcpy(pthis->buf,bptr,pthis->bufptr-(bptr-pthis->buf));
         pthis->bufptr-=bptr-pthis->buf;
     } else {
         pthis->bufptr = 0;
