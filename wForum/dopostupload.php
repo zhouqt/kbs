@@ -113,7 +113,7 @@ case UPLOAD_ERR_FORM_SIZE:
 	errorQuit( "文件超过预定的大小" . intval(ATTACHMAXSIZE/1024) . "KB");
 	break;
 case UPLOAD_ERR_PARTIAL:
-	errorQuir( "文件传输出错！");
+	errorQuit( "文件传输出错！");
 	break;
 case UPLOAD_ERR_NO_FILE:
 	errorQuit( "没有文件上传！");
