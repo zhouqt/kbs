@@ -702,11 +702,10 @@ int m_send(char *userid)
     return 0;
 }
 
-int read_mail(fptr)
-struct fileheader *fptr;
+int read_mail(struct fileheader *fptr)
 {
     setmailfile(genbuf, currentuser->userid, fptr->filename);
-    ansimore(genbuf, false);
+    ansimore_withzmodem(genbuf, false, fptr->title);
     fptr->accessed[0] |= FILE_READ;
     return 0;
 }
