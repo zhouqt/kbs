@@ -7,7 +7,7 @@ int main() {
 	FILE *fp;
 	int num=0, total=0, type, dt, mg=0, og=0;
 	char dir[80], title[80], title2[80], title3[80], board[80], userid[80];
-	bcache_t *brd;
+	bcache_t *brd,bh;
 	struct fileheader x;
 
 	init_all();
@@ -24,10 +24,11 @@ int main() {
 	if(!strcasecmp(getparm("og"), "on")) og=1;
 	if(dt<0) dt=0;
 	if(dt>9999) dt=9999;
-	brd=getbcacheaddr(board);
-	if(brd==0) http_fatal("错误的讨论区");
+	num=getboardnum(board,&bh);
+	if(num==0) http_fatal("错误的讨论区");
+	brd=&bh;
 	strcpy(board, brd->filename);
-	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区名称");
+	if(!has_read_perm(currentuser, board)) http_fatal("错误的讨论区");
 	sprintf(dir, "boards/%s/.DIR", board);
 	fp=fopen(dir, "r");
 	if(fp==0) http_fatal("讨论区错误或没有目前文章");

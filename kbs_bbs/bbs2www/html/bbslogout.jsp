@@ -13,6 +13,7 @@
     setcookie("UTMPKEY","");
     setcookie("UTMPNUM","");
     setcookie("UTMPUSERID","");
+    setcookie("LOGINTIME","");
 
 	header("Location: /index.html");
    }

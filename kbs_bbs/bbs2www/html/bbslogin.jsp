@@ -24,6 +24,7 @@ if ($id!="") {
         setcookie("UTMPKEY",$data["utmpkey"]);
         setcookie("UTMPNUM",$num);
         setcookie("UTMPUSERID",$data["userid"]);
+        setcookie("LOGINTIME",$data["logintime"]);
 	    header("Location: /frames.html");
 	    return;
       }
