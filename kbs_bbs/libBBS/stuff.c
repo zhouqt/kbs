@@ -2164,8 +2164,14 @@ int my_unlink(char *fname)
 #ifndef MYUNLINK_BACKUPDIR
     return unlink(fname);
 #else
+
+#ifdef SMTH
+	return unlink(fname);
+#else
 	return backup_mv(fname);
-#endif
+#endif //SMTH
+
+#endif //MYUNLINK_BACKUPDIR
 }
 
 /* DEBUG CODE */
