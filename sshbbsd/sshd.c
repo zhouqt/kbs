@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.10  2003/05/17 11:33:57  bad
+ * 加上#IFDEF
+ *
  * Revision 1.9  2003/05/17 10:57:41  bad
  * fork之前
  *
@@ -1076,7 +1079,9 @@ int main(int ac, char **av)
 #endif                          /* LIBWRAP */
                 break;
             } else {
+#ifdef CHECK_IP_LINK==1
                 if (check_IP_lists(sin.sin_addr.s_addr)==0) 
+#endif
                 /* Normal production daemon.  Fork, and have the child process
                    the connection.  The parent continues listening. */
                 if ((pid = fork()) == 0) {
