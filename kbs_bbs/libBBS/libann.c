@@ -411,4 +411,110 @@ int a_savenames(MENU* pm)             /*保存当前MENU到 .Names */
     return 0;
 }
 
+int save_import_path(char **i_path,char **i_title,int * i_path_time)
+{
+    FILE *fn;
+    int i;
+    char buf[MAXPATH];
 
+    sethomefile(buf, currentuser->userid, "BMpath");
+    fn = fopen(buf, "wt");
+    if (fn) {
+        struct stat st;
+
+        for (i = 0; i < ANNPATH_NUM; i++) {
+            fputs(i_path[i], fn);
+            fputs("\n", fn);
+            fputs(i_title[i], fn);
+            fputs("\n", fn);
+        }
+        fstat(fileno(fn), &st);
+        fclose(fn);
+        * i_path_time = st.st_mtime;
+        return 0;
+    }
+    return -1;
+}
+
+void load_import_path(char ** i_path,char ** i_title, int * i_path_time,int * i_path_select)
+{
+    FILE *fn;
+    char buf[MAXPATH];
+    int i;
+    struct stat st;
+
+    sethomefile(buf, currentuser->userid, "BMpath");
+    if (stat(buf, &st) != -1)
+        if (st.st_mtime == * i_path_time)
+            return;
+    if (* i_path_select != 0)
+        free_import_path(i_path,i_title,i_path_time);
+    fn = fopen(buf, "rt");
+    if (fn) {
+        * i_path_time = st.st_mtime;
+        for (i = 0; i < ANNPATH_NUM; i++) {
+            if (!feof(fn)) {
+                fgets(buf, MAXPATH - 1, fn);
+                if (buf[strlen(buf) - 1] == '\n')
+                    buf[strlen(buf) - 1] = 0;
+            } else
+                buf[0] = 0;
+            /*
+             * TODO: access check need complete!
+             * if (buf[0]!=0&&(ann_traverse_check(buf, currentuser)!=0))
+             * buf[0]=0;  can't access 
+             */
+
+            i_path[i] = (char *) malloc(strlen(buf) + 1);
+            strcpy(i_path[i], buf);
+            if (!feof(fn)) {
+                fgets(buf, MAXPATH - 1, fn);
+                if (buf[strlen(buf) - 1] == '\n')
+                    buf[strlen(buf) - 1] = 0;
+            } else {            //get the title of pm
+                buf[0] = 0;
+                if (i_path[i][0]) {
+                    MENU pm;
+
+                    bzero(&pm, sizeof(pm));
+                    pm.path = i_path[i];
+                    a_loadnames(&pm);
+                    strncpy(buf, pm.mtitle, MAXPATH - 1);
+                    buf[MAXPATH - 1] = 0;
+                    a_freenames(&pm);
+                }
+            }
+            if (i_path[i][0] == 0) /* if invalid path,then let the title empty */
+                buf[0] = 0;
+            i_title[i] = (char *) malloc(strlen(buf) + 1);
+            strcpy(i_title[i], buf);
+        }
+        fclose(fn);
+    } else {
+        for (i = 0; i < ANNPATH_NUM; i++) {
+            i_path[i] = (char *) malloc(1);
+            i_path[i][0] = 0;
+            i_title[i] = (char *) malloc(1);
+            i_title[i][0] = 0;
+        }
+        save_import_path(i_path,i_title,i_path_time);
+    }
+    * i_path_select = 1;
+}
+
+void free_import_path(char ** i_path,char ** i_title,int * i_path_time)
+{
+    int i;
+
+    for (i = 0; i < ANNPATH_NUM; i++) {
+        if (i_path[i] != NULL) {
+            free(i_path[i]);
+            i_path[i] = NULL;
+        }
+        if (i_title[i] != NULL) {
+            free(i_title[i]);
+            i_title[i] = NULL;
+        }
+    }
+    * i_path_time = 0;
+}
