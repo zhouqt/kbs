@@ -30,7 +30,7 @@ board_head_var($boardArr['DESC'],$boardName,$boardArr['SECNUM']);
 <script src="inc/loadThread.js"></script>
 <?php
 	if ($isGroup) {
-		showSecs($boardArr['SECNUM'],$boardID,true);
+		showSecs(get_secname_index($boardArr['SECNUM']),$boardID,true);
 	} else {
 		showBoardStaticsTop($boardArr, bbs_is_bm($boardID, $currentuser["index"]));
 ?>
