@@ -531,6 +531,7 @@ void refreshit()
             setfcolor(RED, 1);
         }
         sprintf(buf, "%d %s", j+1, inrooms[myroom].peoples[j].nick);
+        buf[12]=0;
         prints("%s", buf);
     }
     resetcolor();
@@ -542,6 +543,7 @@ void refreshit()
         if(!strcmp(ss, "你被踢了")) kicked = 1;
         move(i,20);
         if(ss) prints("%s", ss);
+        resetcolor();
     }
 }
 
@@ -1175,7 +1177,7 @@ checkvote:
                 if(!party_data[i].verb) break;
                 if(!strcmp(party_data[i].verb, buf)) {
                     k=0;
-                    sprintf(buf, "%s %s %s", party_data[i].part1_msg, buf2[0]?buf2:"大家", party_data[i].part2_msg);
+                    sprintf(buf, "%s \x1b[1m%s\x1b[m %s", party_data[i].part1_msg, buf2[0]?buf2:"大家", party_data[i].part2_msg);
                     break;
                 }
             }
@@ -1200,7 +1202,7 @@ checkvote:
 
             if(k) continue;
             strcpy(buf2, buf);
-            sprintf(buf, "%s %s", inrooms[myroom].peoples[me].nick, buf2);
+            sprintf(buf, "\x1b[1m%s\x1b[m %s", inrooms[myroom].peoples[me].nick, buf2);
         }
         else {
             strcpy(buf2, buf);
