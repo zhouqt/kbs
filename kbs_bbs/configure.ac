@@ -5,8 +5,30 @@ AM_INIT_AUTOMAKE(smthbbs, 1.0)
 
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER(config.h)
+#AM_CONDITIONAL(OWN_AR, TRUE)
 
 AC_PREFIX_DEFAULT(/home/bbs)
+
+AC_ARG_WITH(icc,
+[  --with-icc
+                          select intel compiler],
+[
+	if test "$withval"="yes"; then
+		withval=/opt/intel/compiler60/ia32
+	fi
+    if test -d $withval; then
+		CC=icc
+		CXX=icc
+		CFLAGS="$CFLAGS -tpp6 -axK -O3 -unroll256 -w1 -ipo -g -I$withval/include"
+		LDFLAGS="$LDFLAGS -ipo"
+		AR=xiar
+    else
+		echo "can't find intel compiler in $withval!"
+        exit 1
+    fi
+],[AR=ar])
+
+AC_SUBST(AR)
 
 # Checks for programs.
 AC_PROG_CXX
