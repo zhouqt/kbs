@@ -263,6 +263,7 @@ void refresh()
 {
     int i, j, k, ii, p, s;
     struct screenline *bp = big_picture;
+    int chc;
     int count=0;
     int stack[10],stackt=0;
 
@@ -313,77 +314,85 @@ void refresh()
         }
         p=ii+1;
 
-        for (k = 0; k < scr_cols; k++)
-        if(!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
-            stackt=0;
-            rel_move(tc_col, tc_line, k, i);
-            s = bp[j].mode[k];
-            if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '||
-                !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
-                !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '||
-                !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||((tc_color>>4)!=0&&(bp[j].color[k]>>4)==0)) {
-                char buf[10];
-                tc_mode = 0;
-                tc_color = 7;
-                sprintf(buf, "\x1b[m");
-                output(buf, strlen(buf));
-            }
-            if(!(tc_mode&SCREEN_BRIGHT)&&s&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
-                tc_mode|=SCREEN_BRIGHT;
-                stack[stackt++]=1;
-            }
-            if(!(tc_mode&SCREEN_LINE)&&s&SCREEN_LINE) {
-                tc_mode|=SCREEN_LINE;
-                stack[stackt++]=4;
-            }
-            if(!(tc_mode&SCREEN_BLINK)&&s&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
-                tc_mode|=SCREEN_BLINK;
-                stack[stackt++]=5;
-            }
-            if(!(tc_mode&SCREEN_BACK)&&s&SCREEN_BACK) {
-                tc_mode|=SCREEN_BACK;
-                stack[stackt++]=7;
-            }
-            if((tc_color&0x0f)!=(bp[j].color[k]&0x0f)&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
-                tc_color=(tc_color&0xf0)+(bp[j].color[k]&0x0f);
-                stack[stackt++]=30+(bp[j].color[k]&0x0f);
-            }
-            if((tc_color>>4)!=(bp[j].color[k]>>4)) {
-                tc_color=(bp[j].color[k]&0xf0)+(tc_color&0x0f);
-                if((bp[j].color[k]>>4)==8)
-                    stack[stackt++]=40;
-                else
-                    stack[stackt++]=40+(bp[j].color[k]>>4);
-            }
-            if(stackt>0) {
-                char buf[200],*p;
-                int pos = 2;
-                sprintf(buf, "\x1b[");
-                p=buf+2;
-                if(stackt!=1||stack[0]!=0)
-                for(ii=0;ii<stackt;ii++) {
-                    pos++;
-                    if(ii==0) sprintf(p, "%d", stack[ii]);
-                    else {sprintf(p, ";%d", stack[ii]);pos++;}
-                    if(stack[ii]>9) pos++;
-                    p=buf+pos;
+        chc = 0;
+        for (k = 0; k < scr_cols; k++) {
+            if(chc==1) chc=2;
+            else if(bp[j].data[k]&0x80) chc=1;
+            else chc=0;
+            if((chc==1)&&(k<scr_cols-1)&&(bp[j].data[k+1]&0x80)&&(!ndiff(j,k+1))||!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
+                stackt=0;
+                rel_move(tc_col, tc_line, k, i);
+                s = bp[j].mode[k];
+                if((!(s&SCREEN_BRIGHT)&&tc_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' '||
+                    !(s&SCREEN_LINE)&&tc_mode&SCREEN_LINE||
+                    !(s&SCREEN_BLINK)&&tc_mode&SCREEN_BLINK&&bp[j].data[k]!=' '||
+                    !(s&SCREEN_BACK)&&tc_mode&SCREEN_BACK)||((tc_color>>4)!=0&&(bp[j].color[k]>>4)==0)) {
+                    char buf[10];
+                    tc_mode = 0;
+                    tc_color = 7;
+                    sprintf(buf, "\x1b[m");
+                    output(buf, strlen(buf));
                 }
-                *p='m'; pos++;
-                output(buf, pos);
-                stackt=0; 
+                if(!(tc_mode&SCREEN_BRIGHT)&&s&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
+                    tc_mode|=SCREEN_BRIGHT;
+                    stack[stackt++]=1;
+                }
+                if(!(tc_mode&SCREEN_LINE)&&s&SCREEN_LINE) {
+                    tc_mode|=SCREEN_LINE;
+                    stack[stackt++]=4;
+                }
+                if(!(tc_mode&SCREEN_BLINK)&&s&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
+                    tc_mode|=SCREEN_BLINK;
+                    stack[stackt++]=5;
+                }
+                if(!(tc_mode&SCREEN_BACK)&&s&SCREEN_BACK) {
+                    tc_mode|=SCREEN_BACK;
+                    stack[stackt++]=7;
+                }
+                if((tc_color&0x0f)!=(bp[j].color[k]&0x0f)&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
+                    tc_color=(tc_color&0xf0)+(bp[j].color[k]&0x0f);
+                    stack[stackt++]=30+(bp[j].color[k]&0x0f);
+                }
+                if((tc_color>>4)!=(bp[j].color[k]>>4)) {
+                    tc_color=(bp[j].color[k]&0xf0)+(tc_color&0x0f);
+                    if((bp[j].color[k]>>4)==8)
+                        stack[stackt++]=40;
+                    else
+                        stack[stackt++]=40+(bp[j].color[k]>>4);
+                }
+                if(stackt>0) {
+                    char buf[200],*p;
+                    int pos = 2;
+                    sprintf(buf, "\x1b[");
+                    p=buf+2;
+                    if(stackt!=1||stack[0]!=0)
+                    for(ii=0;ii<stackt;ii++) {
+                        pos++;
+                        if(ii==0) sprintf(p, "%d", stack[ii]);
+                        else {sprintf(p, ";%d", stack[ii]);pos++;}
+                        if(stack[ii]>9) pos++;
+                        p=buf+pos;
+                    }
+                    *p='m'; pos++;
+                    output(buf, pos);
+                    stackt=0; 
+                }
+                if(k>=p&&(p<=scr_cols-4||i==scr_lns-1)) {
+                    memcpy(bp[j].ldata+k, bp[j].data+k, scr_cols-k);
+                    memcpy(bp[j].lmode+k, bp[j].mode+k, scr_cols-k);
+                    memcpy(bp[j].lcolor+k, bp[j].color+k, scr_cols-k);
+                    o_cleol();
+                    break;
+                }
+                if(chc==1&&(k==scr_cols-1||!(bp[j].data[k+1]&0x80)))
+                    ochar('?');
+                else
+                    ochar(bp[j].data[k]);
+                bp[j].ldata[k]=bp[j].data[k];
+                bp[j].lmode[k]=bp[j].mode[k];
+                bp[j].lcolor[k]=bp[j].color[k];
+                tc_col++;
             }
-            if(k>=p&&(p<=scr_cols-4||i==scr_lns-1)) {
-                memcpy(bp[j].ldata+k, bp[j].data+k, scr_cols-k);
-                memcpy(bp[j].lmode+k, bp[j].mode+k, scr_cols-k);
-                memcpy(bp[j].lcolor+k, bp[j].color+k, scr_cols-k);
-                o_cleol();
-                break;
-            }
-            ochar(bp[j].data[k]);
-            bp[j].ldata[k]=bp[j].data[k];
-            bp[j].lmode[k]=bp[j].mode[k];
-            bp[j].lcolor[k]=bp[j].color[k];
-            tc_col++;
         }
     }
     rel_move(tc_col, tc_line, cur_col , cur_ln);
