@@ -430,7 +430,6 @@ void r_msg()
     hasnewmsg=get_unreadcount(currentuser->userid);
     if ((savemode == POSTING || savemode == SMAIL) && !DEFINE(currentuser, DEF_LOGININFORM)) {      /*Haohmaru.99.12.16.·¢ÎÄÕÂÊ±²»»Ømsg */
         good_move(0, 0);
-        clrtoeol();
         if (hasnewmsg) {
             prints("[1m[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[m");
             good_move(y, x);
@@ -442,13 +441,14 @@ void r_msg()
             refresh();
             sleep(1);
         }
+        clrtoeol();
         goto outhere;
     }
     count = get_msgcount(1, currentuser->userid);
     if (!count) {
         good_move(0, 0);
-        clrtoeol();
         prints("[1mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[m");
+        clrtoeol();
         good_move(y, x);
         refresh();
         sleep(1);
@@ -472,7 +472,6 @@ void r_msg()
         if (first&&hasnewmsg&&DEFINE(currentuser, DEF_SOUNDMSG))
             bell();
         good_move(0,0);
-        clrtoeol();
         prints("%s", outmsg);
 
         strncpy(uid, head.id, IDLEN+2);
@@ -484,7 +483,6 @@ void r_msg()
         if(first) {
             int x,y;
             getyx(&y,&x);
-            clrtoeol();
             prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢", now+1, count);
             do{
                 ch = igetkey();
@@ -493,7 +491,6 @@ void r_msg()
             move(y, x);
         }
         
-        clrtoeol();
         if(canreply)
             prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s\n", now+1, count, uid);
         else

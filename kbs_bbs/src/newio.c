@@ -936,7 +936,6 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     while (1) {
         y = starty; x = startx;
         good_move(y, x);
-        clrtoeol();
         chk = 0;
         if(now==0) {
             cursory = y;
@@ -948,20 +947,18 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             if(chk&&x>=maxcol) x++;
             if(buf[i]!=13&&buf[i]!=10) {
                 if(x>maxcol) {
+                    clrtoeol();
                     x = col;
                     y++;
-                    good_move(y, 0);
-                    clrtoeol();
                     good_move(y, x);
                 }
                 prints("%c", buf[i]);
                 x++;
             }
             else {
+                clrtoeol();
                 x = col;
                 y++;
-                good_move(y, 0);
-                clrtoeol();
                 good_move(y, x);
             }
             if(i==now-1) {
@@ -969,6 +966,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 cursorx = x;
             }
         }
+        clrtoeol();
         good_move(cursory, cursorx);
         ch = igetkey();
         if (ch == '\n' || ch == '\r')
