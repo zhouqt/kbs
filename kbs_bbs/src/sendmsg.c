@@ -506,6 +506,10 @@ void r_msg()
         strncpy(uid, head.id, IDLEN+2);
         pid = head.frompid;
         uin = t_search(uid, pid);
+#ifdef SMS_SUPPORT
+        if(head.mode==6) canreply = 1;
+        else
+#endif
         if(head.mode==3||uin==NULL) canreply = 0;
         else canreply = 1;
         
@@ -550,8 +554,20 @@ void r_msg()
                             i=-1;
                             strcpy(msgerr, "¶Ô·½ÒÑ¾­ÀëÏß....");
                         }
-                        else
-                            i = sendmsgfunc(uin, buf, 4);
+                        else {
+#ifdef SMS_SUPPORT
+                            if(head.mode==6) {
+                                i = do_send_sms_func(uid, buf);
+                                if(!i) i=1;
+                                else {
+                                    i=0;
+                                    sprintf(msgerr, "ÎŞ·¨¸ø %s ·¢ËÍÊÖ»ú¶ÌĞÅ", uid);
+                                }
+                            }
+                            else
+#endif
+                                i = sendmsgfunc(uin, buf, 4);
+                        }
                         buf[0]=0;
                         if(i==1) strcpy(buf, "[1m°ïÄãËÍ³öÑ¶Ï¢ÁË[m");
                         else if(i!=0) strcpy(buf, msgerr);
@@ -721,6 +737,7 @@ int register_sms()
     pressreturn();
     shmdt(head);
     smsbuf=NULL;
+    return 0;
 }
 
 int unregister_sms()
@@ -761,6 +778,7 @@ int unregister_sms()
     }
     shmdt(head);
     smsbuf=NULL;
+    return 0;
 }
 
 int do_send_sms_func(char * dest, char * msgstr)
@@ -768,20 +786,26 @@ int do_send_sms_func(char * dest, char * msgstr)
     char uident[STRLEN];
     struct user_info *uin;
     struct userdata udata;
-    char buf[MAX_MSG_SIZE];
+    char buf[MAX_MSG_SIZE], ans[4];
     int oldmode;
     int result, ret;
     bool cansend=true;
     struct userec * ur;
 
+checksmsagain:
     if(!curruserdata.mobileregistered) {
         move(1, 0);
         clrtoeol();
         prints("ÄãÉĞÎ´×¢²áÊÖ»úºÅ£¬ÎŞ·¨¸ø±ğÈË·¢ËÍ¶ÌĞÅ");
-        pressreturn();
+        getdata(2, 0, "ÊÇ·ñÏÖÔÚ×¢²áÊÖ»úºÅ? (y/N)", ans, 3, 1, 0, 1);
         move(1, 0);
         clrtoeol();
-        return 0;
+        move(2, 0);
+        if(toupper(ans[0])=='Y') {
+            if(!register_sms())
+                goto checksmsagain;
+        }
+        return -1;
     }
     
     sms_init_memory();
@@ -798,7 +822,7 @@ int do_send_sms_func(char * dest, char * msgstr)
             clear();
             modify_user_mode(oldmode);
             inremsg = false;
-            return 0;
+            return -1;
         }
     }
     else
@@ -839,7 +863,7 @@ int do_send_sms_func(char * dest, char * msgstr)
             clrtoeol();
             modify_user_mode(oldmode);
             inremsg = false;
-            return 0;
+            return -1;
         }
     }
     else
@@ -874,12 +898,12 @@ int do_send_sms_func(char * dest, char * msgstr)
 
     modify_user_mode(oldmode);
     inremsg = false;
-    return 1;
+    return ret;
 }
 
 int send_sms()
 {
-    do_send_sms_func(NULL, NULL);
+    return do_send_sms_func(NULL, NULL);
 }
 
 #endif

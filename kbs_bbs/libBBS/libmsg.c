@@ -634,11 +634,11 @@ int translate_msg(char* src, struct msghead *head, char* dest)
             break;
         case 6:
             if(!head->sent) {
-                sprintf(dest, "[44%sm\x1b[36m¶ÌĞÅ%-14.14s[33m(%-16.16s)[37m[K[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
+                sprintf(dest, "[44%sm\x1b[36m¶ÌĞÅ     %-14.14s[33m(%-16.16s)[37m[K[m\n", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"", head->id, time);
                 sprintf(attstr, "[44%sm[37m", DEFINE(currentuser, DEF_HIGHCOLOR)?";1":"");
             }
             else {
-                sprintf(dest, "\x1b[0;1;32m¶ÌĞÅ=>[37m%-12.12s[33m(%-16.16s)[36m[K[m\n", head->id, time);
+                sprintf(dest, "\x1b[0;1;32m¶ÌĞÅ   =>[37m%-12.12s[33m(%-16.16s)[36m[K[m\n", head->id, time);
                 sprintf(attstr, "[36;1m");
             }
             break;
