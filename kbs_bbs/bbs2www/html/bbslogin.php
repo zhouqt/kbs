@@ -69,7 +69,7 @@ if ($loginok != 1) {
   } else {
 ?>
 <body >
-<form name="infoform" action="bbslogin.jsp" method="post">
+<form name="infoform" action="bbslogin.php" method="post">
 <input class="default" type="hidden" name="id" maxlength="12" size="8" value=<?
 echo "\"$id\"";
 ?>
