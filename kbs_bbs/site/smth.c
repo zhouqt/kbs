@@ -99,7 +99,6 @@ const char    *explain[] = {
 const char    *groups[] = {
     "system.faq",
     "thu.faq",
-    "univ.faq",
     "sci.faq",
     "rec.faq",
     "literal.faq",
@@ -111,6 +110,7 @@ const char    *groups[] = {
     "develop.faq",
     "os.faq",
     "comp.faq",
+    "univ.faq",
     NULL
 };
 const char secname[SECNUM][2][20] = {
