@@ -218,7 +218,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         if (NULL == (pBBSFile = fopen(filename, "wt")))
             printf("Unexpected error: Can not open file \"%s\"\n", filename);
 
-        while (!feof(psrcFile) && (is_attach != 1)) {
+        while (!feof(psrcFile)) {
             off_t attach_len, size, left;
             char *attach_ptr, *attach_filename, *p;
             char dirname[MAXLINELEN];
@@ -230,44 +230,49 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
                 break;
             if (ret<0)
                 is_attach=1;
-            if (fputs(srcLine, pBBSFile) == EOF)
-                perror("fputs error bbs file:");
-
+            else
+                is_attach=-1;
             if (is_attach != -1) {
+                char buf[1024*16];
+                int o,size,headersize;
+		headersize=ATTACHMENT_SIZE+4+strlen(srcLine)+1;
+                size=-ret;
                 is_attach = -1;
-                sprintf(filename, "%s/%s", directory, Link);
-                if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, & size, NULL) == 0) {
-                    BBS_RETURN_VOID;
-                }
-                for (p = ptr, left = size; left > 0; p++, left--) {
-                    if (NULL != (attach_filename = checkattach(p, left, &attach_len, &attach_ptr))) {
-                        is_attach = 1;
-                        sprintf(dirname, "%s/%s/%08d", WorkDir, directory, index);
-                        left -= (attach_ptr - p) + attach_len - 1;
-                        p = attach_ptr + attach_len - 1;
-                        if (mkdir(dirname, 0700) == -1) {
-                            if (errno != EEXIST) {
-                                fprintf(stderr, "Create Directory %s failed:%s", dirname, strerror(errno));
-                                return;
-                            }
-                        }
-                        strcat(dirname, "/");
-                        strcat(dirname, attach_filename);
-                        if (NULL == (attachFile = fopen(dirname, "a+"))) {
-                            printf("Unexpected error: Can not write file \"%s\"\n", dirname);
-                            fclose(attachFile);
-                            return NULL;
-                        }
-                        fputs(attach_ptr, attachFile);
-                        fclose(attachFile);
-                        if (((ptr = strrchr(attach_filename, '.')) != NULL) && (!strcasecmp(ptr, ".bmp") || !strcasecmp(ptr, ".jpg") || !strcasecmp(ptr, ".gif") || !strcasecmp(ptr, ".jpeg")))
-                            sprintf(dstLine, "¸½Í¼:\n<img src=\"%d/%s\"></img>\n", index, attach_filename);
-                        else
-                            sprintf(dstLine, "¸½¼þ:\n<a href=\"%d/%s\">%s</a>\n", index, attach_filename, attach_filename);
+                sprintf(dirname, "%s/%s/%08d", WorkDir, directory, index);
+                if (mkdir(dirname, 0700) == -1) {
+                    if (errno != EEXIST) {
+                        fprintf(stderr, "Create Directory %s failed:%s", dirname, strerror(errno));
+                        return 0;
                     }
                 }
-                end_mmapfile((void *) ptr, size, -1);
+                strcat(dirname, "/");
+                strcat(dirname, srcLine);
+                if (NULL == (attachFile = fopen(dirname, "a+"))) {
+                    printf("Unexpected error: Can not write file \"%s\"\n", dirname);
+                    return NULL;
+                }
+                fread(buf, 1, headersize, psrcFile);
+                fwrite(buf, 1, headersize, pBBSFile);
+                size-=headersize;
+                while(size&&(o=fread(buf, 1, size>1024*16?1024*16:size, psrcFile))!=0) {
+                       size-=o;
+                       fwrite(buf, 1, o, pBBSFile);
+                       fwrite(buf, 1, o, attachFile);
+                }
+/*
+		put_attach(psrcFile,pBBSFile,size);//save attach;
+		fseek(psrcFile,-(-ret-(ATTACHMENT_SIZE+4+strlen(srcLine)+1)),SEEK_CUR); //seek attachment header
+		put_attach(psrcFile,attachFile,-ret-(ATTACHMENT_SIZE+4+strlen(srcLine)+1));//save attach;
+*/
+                fclose(attachFile);
+                if (((ptr = strrchr(srcLine, '.')) != NULL) && (!strcasecmp(ptr, ".bmp") || !strcasecmp(ptr, ".jpg") || !strcasecmp(ptr, ".gif") || !strcasecmp(ptr, ".jpeg")))
+                            sprintf(dstLine, "¸½Í¼:<br />\n<img src=\"%08d/%s\"></img>\n", index, srcLine);
+                else
+                            sprintf(dstLine, "¸½¼þ:<br />\n<a href=\"%08d/%s\">%s</a>\n", index, srcLine, srcLine);
             } else {
+                if (fputs(srcLine, pBBSFile) == EOF)
+                    perror("fputs error bbs file:");
+
                 if ('\n' == srcLine[strlen(srcLine) - 1])
                     srcLine[strlen(srcLine) - 1] = ' ';
 

@@ -1632,9 +1632,13 @@ int attach_fgets(char* s,int size,FILE* stream)
      if (ch==ATTACHMENT_PAD[matchpos]) {
         matchpos++;
         if (matchpos==ATTACHMENT_SIZE) {
-            int size, d, count=8+4+1;
-            while((ch=fgetc(stream))!=0)
+            int size, d=0, count=ATTACHMENT_SIZE+4+1;
+            ptr=s;
+            while((ch=fgetc(stream))!=0) {
+		*ptr=ch;
+		ptr++;
                 count++;
+            }
             fread(&d, 1, 4, stream);
             size = htonl(d);
             fseek(stream,-count,SEEK_CUR);
@@ -1665,7 +1669,7 @@ int put_attach(FILE* in, FILE* out, int size)
     char buf[1024*16];
     int o;
     if(size<=0) return -1;
-    while((o=fread(buf, 1, 1024*16, in))!=0) {
+    while((o=fread(buf, 1, size>1024*16?1024*16:size, in))!=0) {
         size-=o;
         fwrite(buf, 1, o, out);
     }
