@@ -40,7 +40,7 @@
 			echo "<table cellspacing=0 cellpadding=5 width=650 class=t15>\n".
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
-			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">Add Comment</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">Mail ".$pc["USER"]."</a>]</td></tr>\n".
+			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
 			"<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format($nodes[$i][body],TRUE)."</td></tr>\n".
 			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\nBy <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> at ".time_format($nodes[$i][created]).
 			"\n|\nViews[".$nodes[$i][visitcount]."]".
@@ -70,7 +70,7 @@ More Articles
 <?php
 	}
 	
-	function display_top_bar($link,$pc,$sec,$nodes,$blogs)
+	function display_top_bar($link,$pc,$sec,$nodes,$blogs,$pur)
 	{
 		global $loginok,$currentuser,$pcconfig;
 		
@@ -180,6 +180,18 @@ PassWord:
 				}
 			?>
 			</td></tr>
+<?php
+			if($pur == 3)
+			{
+?>			
+			<tr><td align="left" class="t3">
+			[
+			<a href="pcmanage.php?act=post&tag=0&pid=0">添加文章</a>
+			]
+			</td></tr>
+<?php
+			}
+?>
 		</table>
 		</td>
 	</tr>
@@ -318,7 +330,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 ?>
 <center>
 <?php
-	display_top_bar($link,$pc,$sec,$nodes,$blogs);
+	display_top_bar($link,$pc,$sec,$nodes,$blogs,$pur);
 	display_nodes($link,$pc,$nodes);
 	display_bottom_bar($pc)
 ?>
