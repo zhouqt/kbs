@@ -1641,6 +1641,10 @@ char **argv;
         printf("MYADDR: %s\n", MYADDR);
         printf("MYSITE: %s\n", MYSITE);
     }
+    if (nl == NULL) {
+        fprintf(stderr, "can't find %s in nodelist.bbs\n", MYBBSID);
+        return -1;
+    }
     left = strchr(nl->protocol, '(');
     right = strrchr(nl->protocol, ')');
     if (left && right) {
