@@ -28,6 +28,7 @@ $(TARGET): $(OBJ)
 install: $(TARGET)
 	@mkdir -p $(PHPBBSLIBDIR)
 	$(INSTALL) $(TARGET) $(PHPBBSLIBDIR)
+	$(INSTALL) funcs.jsp $(PHPBBSLIBDIR)
 
 clean:
 	rm -f *.o *.so core

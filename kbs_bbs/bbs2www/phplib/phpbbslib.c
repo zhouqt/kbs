@@ -1,7 +1,7 @@
 #include <php.h>
 #include "bbs.h"
 
-static ZEND_FUNCTION(getuser);
+static ZEND_FUNCTION(bbs_getuser);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -12,7 +12,7 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry bbs_php_functions[] = {
-        ZEND_FE(getuser, NULL)
+        ZEND_FE(bbs_getuser, NULL)
         {NULL,NULL,NULL}
 };
 
@@ -76,7 +76,7 @@ static void assign_user(zval* array,struct userec* user)
  */
 
 /* arguments: userid, username, ipaddr, operation */
-static ZEND_FUNCTION(getuser)
+static ZEND_FUNCTION(bbs_getuser)
 {
         long                    v1;
 	struct	userec *lookupuser;
@@ -111,6 +111,11 @@ static ZEND_MINIT_FUNCTION(bbs_module_init)
 	resolve_ucache();
 	resolve_utmp();
 	resolve_boards();
+#ifdef SQUID_ACCL
+	REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);
+#else
+	REGISTER_MAIN_LONG_CONSTANT("SETTING_SQUID_ACCL", 0, CONST_CS | CONST_PERSISTENT);
+#endif
 	chdir(old_pwd);
 	return SUCCESS;
 }
