@@ -1084,6 +1084,8 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
     char *t;
     long eff_size;
     long attachpos;
+    struct stat st;
+    int before = 0;
 
     clear();
     strcpy(buf, direct);
@@ -1091,6 +1093,8 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
         *t = '\0';
 
     sprintf(genbuf, "%s/%s", buf, fileinfo->filename);
+    if(stat(genbuf,&st) != -1) before = st.st_size;
+
     if (vedit_post(genbuf, false, &eff_size,&attachpos) != -1) {
         if (ADD_EDITMARK)
             add_edit_mark(genbuf, 1, /*NULL*/ fileinfo->title);
@@ -1099,6 +1103,8 @@ static int mail_edit(int ent, struct fileheader *fileinfo, char *direct)
             substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
         }
     }
+    if(stat(genbuf,&st) != -1) currentuser->usedspace -= (before - st.st_size);
+
     newbbslog(BBSLOG_USER, "edited mail '%s' on %s", fileinfo->title, currboard);
     return FULLUPDATE;
 }
