@@ -327,6 +327,7 @@ int chat_parse(chatcontext * pthis)
 
 int chat_checkparse(chatcontext * pthis)
 {
+#if 0
     long cnt;
     int result=0;
     cnt=0;
@@ -337,6 +338,9 @@ int chat_checkparse(chatcontext * pthis)
     }
     if (result!=0) return 0;
     return 1;
+#endif  
+   if (chat_parse(pthis) == -1) return 0;
+   return 1;
 }
 
 
