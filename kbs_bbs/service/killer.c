@@ -316,12 +316,17 @@ void refreshit()
             setfcolor(RED, 1);
             prints("*");
         }
-        if(inrooms.status!=INROOM_STOP)
-        if(!(inrooms.peoples[j].flag&PEOPLE_ALIVE)) {
+        if(inrooms.status!=INROOM_STOP&&!(inrooms.peoples[j].flag&PEOPLE_ALIVE)) {
             resetcolor();
             move(i,3);
             setfcolor(BLUE, 1);
             prints("X");
+        }
+        else if(!(inrooms.peoples[j].flag&PEOPLE_SPECTATOR)) {
+            resetcolor();
+            move(i,3);
+            setfcolor(GREEN, 1);
+            prints("O");
         }
         resetcolor();
         move(i,4);
@@ -362,7 +367,6 @@ void start_game()
 {
     int i,j,totalk=0,total=0, me;
     char buf[80];
-    start_change_inroom(myroom);
     for(me=0;me<myroom->people;me++)
         if(inrooms.peoples[me].pid==uinfo.pid) break;
     for(i=0;i<myroom->people;i++) {
@@ -541,7 +545,7 @@ int do_com_menu()
                     if(kicked) return 0;
                     if(buf[0]) {
                         i=atoi(buf);
-                        if(i>0)
+                        if(i>0&&i<=100)
                             myroom->maxpeople = i;
                     }
                     move(t_lines-1, 0);
@@ -590,10 +594,10 @@ int do_com_menu()
                     }
                     return 0;
                 case 7:
+                    start_change_inroom(myroom);
                     if(inrooms.status == INROOM_STOP)
                         start_game();
                     else {
-                        start_change_inroom(myroom);
                         inrooms.status = INROOM_STOP;
                         for(i=0;i<myroom->people;i++) {
                             send_msg(inrooms.peoples+i, "游戏被屋主强制结束");
@@ -601,7 +605,6 @@ int do_com_menu()
                         end_change_inroom();
                         for(i=0;i<myroom->people;i++)
                             kill(inrooms.peoples[i].pid, SIGUSR1);
-                        return 0;
                     }
                     return 0;
             }
@@ -614,7 +617,7 @@ int do_com_menu()
     }while(1);
 }
 
-void join_room(struct room_struct * r)
+void join_room(struct room_struct * r, int spec)
 {
     char buf[80],buf2[80],buf3[80],roomname[80];
     int i,j,killer,me;
@@ -640,6 +643,7 @@ void join_room(struct room_struct * r)
         strcpy(inrooms.title, "我杀我杀我杀杀杀");
         inrooms.peoples[i].flag = PEOPLE_ROOMOP;
     }
+    if(spec) inrooms.peoples[i].flag|=PEOPLE_SPECTATOR;
     r->people++;
     end_change_inroom();
 
@@ -833,7 +837,7 @@ checkvote:
                                         if(inrooms.peoples[i].flag&PEOPLE_KILLER) a++;
                                         else b++;
                                     }
-                                if(a>=b-1) {
+                                if(a>0&&a>=b-2&&inrooms.status==INROOM_DAY) {
                                     inrooms.status = INROOM_STOP;
                                     for(i=0;i<myroom->people;i++) {
                                         send_msg(inrooms.peoples+i, "坏人获得了胜利...");
@@ -1003,6 +1007,7 @@ static int room_list_show(struct _select_def *conf, int i)
 static int room_list_select(struct _select_def *conf)
 {
     struct room_struct * r = room_get(conf->pos-1), * r2;
+    char ans[4];
     if(r==NULL) return SHOW_CONTINUE;
     if((r2=find_room(r->name))==NULL) {
         move(0, 0);
@@ -1018,7 +1023,8 @@ static int room_list_select(struct _select_def *conf)
         refresh(); sleep(1);
         return SHOW_REFRESH;
     }
-    join_room(find_room(r2->name));
+    getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
+    join_room(find_room(r2->name), toupper(ans[0])=='Y');
     return SHOW_DIRCHANGE;
 }
 
@@ -1055,11 +1061,11 @@ static int room_list_prekey(struct _select_def *conf, int *key)
 static int room_list_key(struct _select_def *conf, int key)
 {
     struct room_struct r, *r2;
-    char name[40];
+    char name[40], ans[4];
     switch(key) {
     case 'a':
         strcpy(r.creator, currentuser->userid);
-        getdata(0, 0, "房间名:", name, 12, 1, NULL, 1);
+        getdata(0, 0, "房间名:", name, 13, 1, NULL, 1);
         if(!name[0]) return SHOW_REFRESH;
         if(name[0]==' '||name[strlen(name)-1]==' ') {
             move(0, 0);
@@ -1081,7 +1087,7 @@ static int room_list_key(struct _select_def *conf, int key)
             return SHOW_REFRESH;
         }
         clear_inroom(&r);
-        join_room(find_room(r.name));
+        join_room(find_room(r.name), 0);
         return SHOW_DIRCHANGE;
     case 'J':
         getdata(0, 0, "房间名:", name, 12, 1, NULL, 1);
@@ -1100,7 +1106,8 @@ static int room_list_key(struct _select_def *conf, int key)
             refresh(); sleep(1);
             return SHOW_REFRESH;
         }
-        join_room(find_room(name));
+        getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
+        join_room(find_room(name), toupper(ans[0])=='Y');
         return SHOW_DIRCHANGE;
     case 'K':
         if(!HAS_PERM(currentuser, PERM_SYSOP)) return SHOW_CONTINUE;
