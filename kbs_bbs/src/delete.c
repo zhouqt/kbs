@@ -505,17 +505,25 @@ int d_user(cid)
         clear();
         return 0;
     }
+     /* 增加显示用户信息 Bigman:2003.5.11*/
+    struct userec uinfo1;
+    uinfo1 = *lookupuser;
+    clrtobot();
+
+    disply_userinfo(&uinfo1, 1);
+
     /*    if (!isalpha(lookupuser->userid[0])) return 0; */
     /* rrr - don't know how... */
-    move(1, 0);
+    move(22, 0);
     if (uinfo.mode != OFFLINE)
         prints("删除使用者 '%s'.", userid);
     else
         prints(" %s 将离开这里", cid);
-    clrtoeol();
-    getdata(2, 0, "(Yes, or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
+/*    clrtoeol(); */
+    
+    getdata(24, 0, "(Yes, or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
     if (genbuf[0] != 'Y' && genbuf[0] != 'y') { /* if not yes quit */
-        move(2, 0);
+        move(24, 0);
         if (uinfo.mode != OFFLINE)
             prints("取消删除使用者...\n");
         else
@@ -574,7 +582,7 @@ int d_user(cid)
 	strcpy(ud.realname, "");
 	write_userdata(lookupuser->userid, &ud);*/
 /*    lookupuser->userid[0] = '\0' ; */
-    move(2, 0);
+    move(24, 0);
     prints("%s 已经已经和本家庭失去联络....\n", userid);
     pressreturn();
 
