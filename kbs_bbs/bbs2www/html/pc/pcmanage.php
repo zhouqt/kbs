@@ -125,10 +125,6 @@
 			}
 			$query .= " ) ";
 			
-			if($act == "cut")
-			$query .= " AND nodetype = 0 ";
-			//nodetype != 0的是公有blog的log文件
-			
 			if($in_section)
 			{
 				if("cut" == $act)
