@@ -60,11 +60,15 @@ int tmpl_init(char *boardname){
 
 	int fd,i;
 	char tmpldir[STRLEN];
+	char tmpldir1[STRLEN];
 	struct s_template_old tmpl;
 	struct s_template tmpl_new;
 	struct s_content * cont;
 
     setbfile(tmpldir, boardname, TEMPLATE_DIR);
+	strcpy(tmpldir1,tmpldir);
+	strcat(tmpldir1,".bak");
+	f_cp(tmpldir,tmpldir1,0);
 
 	if( ptemplate == NULL ){
 		ptemplate = (struct aa_template *) malloc( sizeof( struct aa_template ) * MAX_TEMPLATE );
