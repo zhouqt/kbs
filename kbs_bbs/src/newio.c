@@ -992,7 +992,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     char tmp[1024];
     extern int RMSG;
 
-    if(!RMSG)
+    if(uinfo.mode!=MSG)
         ingetdata = true;
     if (clearlabel == true) {
         buf[0] = 0;
