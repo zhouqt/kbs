@@ -84,7 +84,35 @@ if test "$MYSQL_DIR" != "no"; then
 fi
 
 # Check pthread support
-AC_CHECK_LIB([pthread], [pthread_create], [LIBS="$LIBS -lpthread"])
+AC_ARG_WITH(pthread,
+[  --with-pthread[=DIR]
+       Specify POSIX thread library directory.],
+PTHREAD_DIR="$withval", PTHREAD_DIR="yes")
+if test "$PTHREAD_DIR" != "no"; then
+  if test "$PTHREAD_DIR" != "yes"; then
+    if test -f $PTHREAD_DIR/include/pthread.h; then
+      PTHREAD_INC=$PTHREAD_DIR/include
+    fi
+  else
+    for i in /usr/local /usr ; do
+      if test -f $i/include/pthread.h; then
+        PTHREAD_DIR=$i
+        PTHREAD_INC=$i/include
+      fi
+    done
+  fi
+ 
+  if "x$PTHREAD_INC" != "x"; then
+    SAVE_LIBS=$LIBS
+    LIBS="$LIBS -L$PTHREAD_DIR/lib"
+    AC_CHECK_LIB([pthread], [pthread_create], [
+      PTHREAD_LIBS="-L$LIBESMTP_DIR/lib -lpthread"
+      LIBS="$LIBS $PTHREAD_LIBS"
+    ],[
+      LIBS=$SAVE_LIBS
+    ])
+  fi
+fi
 
 AC_ARG_WITH(libesmtp,
 [  --with-libesmtp[=DIR]
@@ -141,6 +169,7 @@ LIBS="$LIBS $LIBESMTP_LIBS"
 AH_TEMPLATE([USE_SSL],
 [Define to use openssl library])
 
+AC_MSG_CHECKING(OpenSSL)
 AC_ARG_WITH(openssl,
 [  --with-openssl[=path],Build with OpenSSL [yes|no|path].
         ],
