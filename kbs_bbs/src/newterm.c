@@ -52,7 +52,7 @@ void term_init()
     strncpy(endstandout,"\033[m",endstandoutlen);
 }
 
-void do_move(int destcol,int destline,int (*outc)(char))
+void do_move(int destcol,int destline,void (*outc)(char))
 {
     char buf[30];
     char* p;

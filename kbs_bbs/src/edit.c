@@ -101,7 +101,6 @@ msgline()
 void domsg()
 {
     int x,y;
-    time_t now=time(0);
     int tmpansi;
     tmpansi=showansi;
     showansi=1;
@@ -524,9 +523,9 @@ register int ch ;
     { /* Leeward 98.07.28 */
         int ich, lln;
 
-        if (*s > 127) { /* ±ÜÃâÔÚºº×ÖÖÐ¼äÕÛÐÐ */
+        if ((((unsigned char)*s) > 127) { /* ±ÜÃâÔÚºº×ÖÖÐ¼äÕÛÐÐ */
             for (ich = 0, lln = s - p->data + 1; lln > 0; lln --)
-                    if (p->data[lln - 1] < 128) break; else ich ++;
+                    if ((((unsigned char)p->data[lln - 1]) < 128) break; else ich ++;
             if (ich % 2) s --;
         }
     }
@@ -658,7 +657,7 @@ valid_article( pmt, abort )
 char    *pmt, *abort;
 {
     struct textline *p = firstline ;
-    char        ans[3], ch;
+    char        ch;
     int         total, lines, len, sig, y;
     int		temp;
 #ifndef VEDITOR
@@ -821,7 +820,7 @@ int saveheader ;
     while(p != NULL) {
         struct textline *v = p->next ;
         if (!aborted)
-            if(p->next != NULL || p->data[0] != '\0')
+            if(p->next != NULL || p->data[0] != '\0') {
                 if (abort[0] == 'f' || abort[0] == 'F')
                 { /* Leeward 98.07.27 Ö§³Ö×Ô¶¯»»ÐÐ */
                     char *ppt = p->data; /* ÕÛÐÐ´¦ */
@@ -833,7 +832,7 @@ int saveheader ;
                     while (strlen(pp) > LLL) {
                         lll = 0; ppx = pp; ich = 0;
                         do {
-                            if (ppx = strstr(ppx, "[")) {
+                            if ((ppx = strstr(ppx, "["))!=NULL) {
                                 ich = (int)strchr(ppx, 'm') - (int)ppx;
                                 if (ich > 0) ich ++; else ich = 2;
                                 lll += ich; ppx += 2; ich = 0;
@@ -841,14 +840,14 @@ int saveheader ;
                         } while (ppx);
                         ppt += LLL + lll;
 
-                        if (*ppt > 127) { /* ±ÜÃâÔÚºº×ÖÖÐ¼äÕÛÐÐ */
+                        if (((unsigned char)*ppt) > 127) { /* ±ÜÃâÔÚºº×ÖÖÐ¼äÕÛÐÐ */
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-                                    if (*ppx < 128) break; else ich ++;
+                                    if (((unsigned char)*ppx) < 128) break; else ich ++;
                             if (ich % 2) ppt --;
                         }
                         else if (*ppt) {
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx --)
-                                    if (*ppx > 127 || ' ' == *ppx) break; else ich ++;
+                                    if (((unsigned char)*ppx) > 127 || ' ' == *ppx) break; else ich ++;
                             if (ppx > pp && ich < 16) ppt -= ich;
                         }
 
@@ -863,6 +862,7 @@ int saveheader ;
                 }
                 else
                     fprintf(fp,"%s\n",p->data) ;
+            }
 
         free(p) ;
         p = v ;
@@ -891,9 +891,7 @@ int saveheader ;
 void keep_fail_post()
 {
     char filename[STRLEN];
-    char buf[STRLEN];
     char tmpbuf[30];
-    time_t now;
     struct textline *p = firstline ;
     FILE        *fp ;
 
@@ -1145,8 +1143,8 @@ process_MARK_action(arg, msg)
 int    arg;    /* operation of MARK */
 char   *msg;   /* message to return */
 {
-    struct textline *p,*p2;
-    int i,dele_1line;
+    struct textline *p;
+    int dele_1line;
 
     switch( arg ) {
     case '0': /* cancel */
@@ -1180,11 +1178,12 @@ char   *msg;   /* message to return */
         break;
     case '4': /* delete mark */
         dele_1line=0;
-        if (mark_on&&(currline->attr & M_MARK))
+        if (mark_on&&(currline->attr & M_MARK)) {
             if(currline==firstline)
                 dele_1line=1;
             else
                 dele_1line=2;
+        }
         for(p = firstline; p != NULL; p = p->next)
         {
             if (p->attr & M_MARK)
@@ -1350,7 +1349,6 @@ vedit_key( ch )
 int     ch;
 {
     int i;
-    char tmp[STRLEN];
 #define NO_ANSI_MODIFY  if(no_touch) { warn++; break; }
 
     static int lastindent = -1 ;

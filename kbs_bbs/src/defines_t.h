@@ -210,7 +210,7 @@ void show_goodbyeshm();
 
 /* newterm.c */
 void term_init();
-void do_move(int destcol,int destline,int (*outc)(char));
+void do_move(int destcol,int destline,void (*outc)(char));
 
 /* xyz.c */
 int do_exec(char* com,char*wd);
