@@ -41,7 +41,6 @@
 
 #define BUFSIZE         1024
 /*#define POP3PORT 110 remote to sysname.h*/
-#define BADLOGINFILE "logins.bad"
 
 #ifdef BBSNAME
 #undef BBSNAME
