@@ -2280,6 +2280,7 @@ int post_article(char *q_file, struct fileheader *re_file)
 						}else{
 							snprintf(save_title, STRLEN, "%s%s", title_prefix, post_file.title);
 						}
+						save_title[STRLEN-1]='\0';
             			strncpy(post_file.title, save_title, STRLEN);
 					}
 
@@ -4712,11 +4713,14 @@ static int choose_tmpl_select(struct _select_def *conf)
 
 				while(fgets(buf,255,fpsrc)){
 					int l;
+					int linex = 0;
+					int ischinese=0;
 					char *pn,*pe;
 
 					for(pn = buf; *pn!='\0'; pn++){
 						if( *pn != '[' || *(pn+1)!='$' ){
 							fputc(*pn, fp);
+							linex++;
 						}else{
 							pe = strchr(pn,']');
 							if(pe == NULL){
