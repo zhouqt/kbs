@@ -579,13 +579,11 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
     case Ctrl('L'):
         redoscr();
         break;
-    case 'l':
     case 'k':
     case KEY_UP:
         if (cursor_pos(locmem, locmem->crs_line - 1, screen_len - 2))
             return PARTUPDATE;
         break;
-    case 'n':
     case 'j':
     case KEY_DOWN:
         if (cursor_pos(locmem, locmem->crs_line + 1, 0))
@@ -650,6 +648,7 @@ static int i_read_key(int cmdmode, struct one_key *rcmdlist, struct keeploc *loc
         PUTCURS(locmem);
         break;
     case 'L':
+    case 'l':                  /* Luzi 1997.10.31 */
         if (uinfo.mode != LOOKMSGS) {
             show_allmsgs();
             return FULLUPDATE;
@@ -1545,6 +1544,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
             case ' ':
             case '\n':
             case 'j':
+            case 'n':
             case KEY_DOWN:
                 isnext = 1;
                 break;
@@ -1571,6 +1571,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 isnext = 1;
                 break;
             case 'k':
+            case 'l':
             case KEY_UP:
             case 'u':
             case 'U':
@@ -1583,7 +1584,6 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 digest_post(0, &SR_fptr, currdirect);
                 break;
             case 'L':
-            case 'l':
                 if (uinfo.mode == LOOKMSGS)
                     break;
                 show_allmsgs();
