@@ -218,7 +218,7 @@ void check_register_info()
         return;
     }
     /*urec->userlevel |= PERM_DEFAULT; */
-    perm = PERM_DEFAULT & sysconf_eval("AUTOSET_PERM");
+    perm = PERM_DEFAULT & sysconf_eval("AUTOSET_PERM",PERM_DEFAULT);
 
     /*    if( sysconf_str( "IDENTFILE" ) != NULL ) {  commented out by netty to save time */
     while (strlen(currentuser->username) < 2) {

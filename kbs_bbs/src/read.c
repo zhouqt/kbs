@@ -1151,7 +1151,7 @@ int sread(int passonly, int readfirst, int pnum, int auser, struct fileheader *p
                 SR_BMDELFLAG = true;
                 del_post(locmem->crs_line, &SR_fptr, currdirect);
                 SR_BMDELFLAG = false;
-                if (sysconf_eval("KEEP_DELETED_HEADER") <= 0) {
+                if (sysconf_eval("KEEP_DELETED_HEADER",0) <= 0) {
                     last_line--;
                     locmem->crs_line--;
                     previous = locmem->crs_line;

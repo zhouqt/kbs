@@ -465,7 +465,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
     int shmkey, shmid;
 
     if (shmstr)
-        shmkey = sysconf_eval(shmstr);
+        shmkey = sysconf_eval(shmstr,defaultkey);
 
     else
         shmkey = 0;

@@ -2426,7 +2426,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct)
 
     if (digestmode == 4 || digestmode == 5 )
         return DONOTHING;
-    keep = sysconf_eval("KEEP_DELETED_HEADER"); /*是否保持被删除的POST的 title */
+    keep = sysconf_eval("KEEP_DELETED_HEADER",0); /*是否保持被删除的POST的 title */
     if (fileinfo->owner[0] == '-' && keep > 0 && !SR_BMDELFLAG) {
         clear();
         prints("本文章已删除.\n");

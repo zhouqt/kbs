@@ -48,7 +48,7 @@ char *sysconf_str(char *key)
     return NULL;
 }
 
-int sysconf_eval(char *key)
+int sysconf_eval(char *key,int defaultval)
 {
     int n;
 
@@ -57,11 +57,7 @@ int sysconf_eval(char *key)
     for (n = 0; n < sysconf_key; n++)
         if (strcmp(key, sysvar[n].key + sysconf_diff) == 0)
             return (sysvar[n].val);
-    if (*key < '0' || *key > '9') {
-        /*        sprintf( genbuf, "sysconf: unknown key: %s.", key );
-           bbslog("user","%s", genbuf );
-         */ }
-    return (strtol(key, NULL, 0));
+    return defaultval;
 }
 
 char *sysconf_relocate(char *data)
@@ -73,7 +69,7 @@ struct smenuitem *sysconf_getmenu(char *menu_name)
 {
     if (sysconf_version == -1)
         load_sysconf();
-    return &menuitem[sysconf_eval(menu_name)];
+    return &menuitem[sysconf_eval(menu_name,0)];
 }
 
 static void sysconf_addkey(char *key, char *str, int val)
@@ -132,16 +128,16 @@ static void sysconf_addmenu(FILE * fp, char *key)
             }
         }
         pm = &menuitem[sysconf_menu++];
-        pm->line = sysconf_eval(arg[0]);        /*菜单项位置 */
-        pm->col = sysconf_eval(arg[1]);
+        pm->line = sysconf_eval(arg[0],strtol(arg[0],NULL,0));        /*菜单项位置 */
+        pm->col = sysconf_eval(arg[1],strtol(arg[1],NULL,0));
         if (*cmd == '@') {      /*对应 某功能 */
-            pm->level = sysconf_eval(arg[2]);
+            pm->level = sysconf_eval(arg[2],strtol(arg[2],NULL,0));
             pm->name = sysconf_addstr(arg[3]);
             pm->desc = sysconf_addstr(arg[4]);
             pm->func_name = sysconf_addstr(cmd + 1);
             pm->arg = pm->name;
         } else if (*cmd == '!') {       /* 对应 下一级菜单 */
-            pm->level = sysconf_eval(arg[2]);
+            pm->level = sysconf_eval(arg[2],strtol(arg[2],NULL,0));
             pm->name = sysconf_addstr(arg[3]);
             pm->desc = sysconf_addstr(arg[4]);
             pm->func_name = sysconf_addstr("domenu");
@@ -236,7 +232,7 @@ static void parse_sysconf(char *fname)
                     strcpy(tmp, str);
                     ptr = strtok(tmp, ", \t");
                     while (ptr != NULL) {
-                        val |= sysconf_eval(ptr);
+                        val |= sysconf_eval(ptr,strtol(ptr,NULL,0));
                         ptr = strtok(NULL, ", \t");
                     }
                     sysconf_addkey(key, NULL, val);

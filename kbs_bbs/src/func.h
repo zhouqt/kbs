@@ -297,7 +297,7 @@ extern "C" {
 
 /* define in sysconf.c */
     char *sysconf_str(char *key);
-    int sysconf_eval(char *key);
+    int sysconf_eval(char *key,int defaultval);
     struct smenuitem *sysconf_getmenu(char *menu_name);
     void build_sysconf(char *configfile, char *imgfile);
     void load_sysconf();
@@ -349,6 +349,7 @@ extern "C" {
 /* zmodem */
     int zsend_file(char *filename, char *title);
 #define FILENAME2POSTTIME(x) (atoi(((char*)x)+2))
+
 #ifdef __cplusplus
 }
 #endif
