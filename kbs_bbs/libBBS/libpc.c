@@ -1,8 +1,6 @@
 #include "bbs.h"
 #include <sys/types.h>
 
-#ifdef PERSONAL_CORP
-
 #include <mysql.h>
 
 time_t timestamp2tt( char *row )
@@ -58,6 +56,8 @@ char * tt2timestamp( time_t tt, char *c)
 
 	return c;
 }
+
+#ifdef PERSONAL_CORP
 
 int pc_conv_file_to_body( char **body, char *fname)
 {

@@ -552,10 +552,10 @@ int count_sql_al( char *userid, char *dest, char *group, char *msgtxt);
 MYSQL * my_connect_mysql(MYSQL *s);
 #endif
 
-#ifdef PERSONAL_CORP
-
 char * tt2timestamp( time_t tt, char *c);
 time_t timestamp2tt( char *row );
+
+#ifdef PERSONAL_CORP
 int pc_conv_file_to_body( char **body, char *fname);
 int pc_load_usr( struct _pc_selusr **ps, char prefix);
 int get_pc_users( struct pc_users * pu, char * userid );

@@ -187,12 +187,14 @@ int get_top(int type)
 	char title[81];
 	char userid[IDLEN+1];
 	int m,n;
-#ifdef SMTH
+#ifdef BLESS_BOARD
 	struct boardheader *bh;
 #endif
 
 	topnum = 0;
+#ifdef SMTH
 	topnum1 = 0;
+#endif
 
 	if(type < 0 || type > 4)
 		return 0;
@@ -597,6 +599,7 @@ void gen_blessing_list_xml()
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
         }
+#ifdef SMTH
         for (i = 5; i < topnum1+5; i++) 
 		{
 			fprintf(fp, "<hotsubject>\n");
@@ -609,6 +612,7 @@ void gen_blessing_list_xml()
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
         }
+#endif
 		fprintf(fp, "</hotsubjects>\n");
 
         fclose(fp);
