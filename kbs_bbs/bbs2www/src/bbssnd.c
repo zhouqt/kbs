@@ -60,5 +60,6 @@ int main()
 		write_posts(currentuser->userid, board, title);
 	}
 	redirect(buf);
+	return 0;
 }
 
