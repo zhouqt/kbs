@@ -34,28 +34,28 @@ int readconfig() {
         pclose(nsupdate_pipe); 
     }
     if (getconf("DNS_UPDATE_ZONE",dns_zone,50)!=0) {
-    	printf("please configure dns_update_key!\n");
+    	bbslog("3error","please configure dns_update_key!\n");
 	return -1;
     }
 
     if (getconf("DNS_UPDATE_KEYNAME",update_keyname,20)!=0) {
-    	printf("please configure dns_update_key!\n");
+    	bbslog("3error","please configure dns_update_key!\n");
     	return -1;
     }
 
     if (getconf("DNS_UPDATE_KEY",update_key,99)!=0) {
-    	printf("please configure dns updat_key!\n");
+    	bbslog("3error","please configure dns updat_key!\n");
     	return -1;
     }
     if (getconf("DNS_UPDATE_SERVER",dns_server,50)!=0) {
-    	printf("please configure dns update server!\n");
+    	bbslog("3error","please configure dns update server!\n");
     	return -1;
     }
     dns_ttl=sysconf_eval("DNS_TTL", 60);
 
     nsupdate_pipe=popen("nsupdate 2>&1 > reclog/nsupdate.log", "w");
     if (nsupdate_pipe==NULL) {
-        printf("can't open nsupdate:%s",strerror(errno));
+        bbslog("3error","can't open nsupdate:%s",strerror(errno));
         return -1;
     }
     fprintf(nsupdate_pipe,"server %s\n",dns_server);
@@ -90,9 +90,10 @@ int main()
 
     chdir(BBSHOME);
     reread=0; 
-    if (readconfig()!=0) return -1;
 
     sigaction(SIGHUP, &act, NULL);
+    act.sa_handler = reconfig;
+    sigaction(SIGPIPE, &act, NULL);
     act.sa_handler = reconfig;
 #ifdef AIX
     act.sa_handler = NULL;
@@ -108,7 +109,8 @@ int main()
     setreuid(BBSUID, BBSUID);
     setgid(BBSGID);
     setregid(BBSGID, BBSGID);
-    dodaemon("bbsnsupdated", true, true);
+    if (readconfig()!=0) return -1;
+    dodaemon("bbsnsupdated", true, false);
     
     msqid = msgget(sysconf_eval("BBSDNS_MSG", 0x999), IPC_CREAT | 0664);
     if (msqid < 0)
