@@ -272,7 +272,6 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 	MYSQL s;
 	char newmsgbuf[2048];
 	char sql[2600];
-	int i,j;
 
 	mysql_init(&s);
 	if (! my_connect_mysql(&s) ){
@@ -284,14 +283,7 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 		return -1;
 	}
 
-	for(i=0,j=0; msgbuf[i] && j < 2047 ; i++){
-		if(msgbuf[i] == '\'' || msgbuf[i]=='\"'){
-			newmsgbuf[j++]='\\';
-			newmsgbuf[j++]=msgbuf[i];
-		}else
-			newmsgbuf[j++]=msgbuf[i];
-	}
-	newmsgbuf[j] = 0;
+	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
 
 	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
 
@@ -314,16 +306,8 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 {
 	char newmsgbuf[2048];
 	char sql[2600];
-	int i,j;
 
-	for(i=0,j=0; msgbuf[i] && j < 2047 ; i++){
-		if(msgbuf[i] == '\'' || msgbuf[i]=='\"'){
-			newmsgbuf[j++]='\\';
-			newmsgbuf[j++]=msgbuf[i];
-		}else
-			newmsgbuf[j++]=msgbuf[i];
-	}
-	newmsgbuf[j] = 0;
+	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
 
 	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
 
