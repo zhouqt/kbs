@@ -289,6 +289,8 @@ int do_userlist()
         pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
         strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, 80);
         tbuf[80]=0;
+        resetcolor();
+        clrtoeol();
         getyx(&y, &x);
         move(y, 20);
         disable_move = false;
