@@ -218,7 +218,7 @@ int chat_send(chatcontext * pthis, const char *buf)
 {
     int  len;
     char gbuf[256];
-    for(len=0;len<sizeof(gbuf)-1 && buf[len];len++)gbuf[len]=buf[len];
+    for(len=0;len<(int)sizeof(gbuf)-1 && buf[len];len++)gbuf[len]=buf[len];
     gbuf[len++]='\n';
     return (send(pthis->cfd, gbuf, len, 0) == len);  /* Í¨¹ýsocket send */
 }
@@ -1480,7 +1480,7 @@ void chat_show_allmsgs(chatcontext *pthis,const char *arg)
         
         cnt=0;
         while(cnt<line){
-        	if(pos<sizeof(buf)){/* begin of file */
+        	if(pos<(int)sizeof(buf)){/* begin of file */
         		fseek(fp,0,SEEK_SET);
         		break;
             }

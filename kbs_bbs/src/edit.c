@@ -299,7 +299,7 @@ char text[STRLEN];
                 tt=0;
             if(strstr(p->data+tt,text))
             {
-                addr=(int)(strstr(p->data+tt,text) - p->data)+strlen(text);
+                addr=(int)strstr(p->data+tt,text) - (int)p->data+strlen(text);
                 currpnt=addr;
                 break;
             }
@@ -458,7 +458,7 @@ register struct textline *line ;
         delete_line(line->next) ;
         return YEA ;
     } else {
-        register char *s ;
+        register unsigned char *s ;
         register struct textline *p = line->next ;
 
         s = p->data + p->len - ovfl -1 ;
@@ -490,7 +490,7 @@ insert_char(ch)
 register int ch ;
 {
     register int i ;
-    register char *s ;
+    register unsigned char *s ;
     register struct textline *p = currline ;
     int wordwrap = YEA ;
 
@@ -984,17 +984,17 @@ int saveheader ;
             if(p->next != NULL || p->data[0] != '\0')
                 if (abort[0] == 'f' || abort[0] == 'F')
                 { /* Leeward 98.07.27 Ö§³Ö×Ô¶¯»»ÐÐ */
-                    char *ppt = p->data; /* ÕÛÐÐ´¦ */
-                    char *pp  = ppt; /* ÐÐÊ× */
-                    int  LLL = 78; /* ÕÛÐÐÎ»ÖÃ */
-                    char *ppx, cc;
+                    unsigned char *ppt = p->data; /* ÕÛÐÐ´¦ */
+                    unsigned char *pp  = ppt; /* ÐÐÊ× */
+                    unsigned int  LLL = 78; /* ÕÛÐÐÎ»ÖÃ */
+                    unsigned char *ppx, cc;
                     int  ich, lll;
 
                     while (strlen(pp) > LLL) {
                         lll = 0; ppx = pp; ich = 0;
                         do {
                             if (ppx = strstr(ppx, "[")) {
-                                ich = strchr(ppx, 'm') - ppx;
+                                ich = (int)strchr(ppx, 'm') - (int)ppx;
                                 if (ich > 0) ich ++; else ich = 2;
                                 lll += ich; ppx += 2; ich = 0;
                             }
@@ -1250,7 +1250,7 @@ case 'Q': case 'q': /* Leeward 98.07.30 Change hot key for msgX */
         marknum=0;
         ch2 = '0'; /* not used */   action = 'M'; break;
     default:
-        return;
+        return 0;
     }
 
     if ( strchr( "IES", action) &&
@@ -1260,6 +1260,8 @@ case 'Q': case 'q': /* Leeward 98.07.30 Change hot key for msgX */
     else {
         return ask( CHOOSE_ERROR );
     }
+
+    return 0;
 }
 
 int

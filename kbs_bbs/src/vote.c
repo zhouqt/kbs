@@ -873,7 +873,7 @@ struct ballot *uv;
     {
         getdata(3,0,"ÇëÊäÈëÒ»¸öÖµ? [0]: ",buf,5,DOECHO,NULL,NA);
         uv->voted=abs(atoi(buf));
-    }while(uv->voted>currvote.maxtkt && buf[0]!='\n' && buf[0]!='\0');
+    }while((int)uv->voted>currvote.maxtkt && buf[0]!='\n' && buf[0]!='\0');
     if( buf[0]=='\n' || buf[0]=='\0' ||uv->voted==chs)
         return -1;
     return 1;
@@ -1010,6 +1010,7 @@ printvote(struct  votebal *ent,char* arg)
     sprintf(buf," %s%3d %-12.12s %-6.6s %-40.40s%-4.4s %3d  %4d[m\n",(voted_flag==NA)?"[1m":"",i,ent->userid,
             date,ent->title,vote_type[ent->type-1],ent->maxdays,num_voted);
     prints("%s",buf);
+    return 0;
 }
 
 int

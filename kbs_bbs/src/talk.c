@@ -1167,6 +1167,7 @@ talkflush()
 
 int
 moveto(mode,twin)
+int mode;
 struct talk_win *twin;
 {
     if(mode==1)
@@ -2094,6 +2095,7 @@ getfriendstr()
     	strcpy(topfriend[i].exp,friendsdata[i].exp);
     }
     free(friendsdata);
+    return 0;
 }
 
 int
@@ -2126,13 +2128,13 @@ wait_friend()
     if(askyn(buf,YEA)==NA)
     {
         clear();
-        return;
+        return -1;
     }
     if((fp=fopen("friendbook","a"))==NULL)
     {
         prints("系统的寻人名册无法开启，请通知站长...\n");
         pressanykey();
-        return;
+        return -1;
     }
     sprintf(buf,"%d@%s",tuid,currentuser->userid);
     if(!seek_in_file("friendbook",buf))
@@ -2142,7 +2144,7 @@ wait_friend()
     prints("已经帮你加入寻人名册中，%s 上站系统一定会通知你...\n",uid);
     pressanykey();
     clear();
-    return;
+    return 0;
 }
 /* 坏人名单:Bigman 2000.12.26 */
 int list_ignore(fname)
@@ -2291,7 +2293,8 @@ int badlist()
                     {
                         if (delete_record( path, IDLEN+1, nIdx)==0)
                         {
-                            /*		prints("已经成功从黑名单中删除"); */
+                            ;
+			    /*		prints("已经成功从黑名单中删除"); */
                             /*		cnt=list_ignore(path); */
                         }
                         else

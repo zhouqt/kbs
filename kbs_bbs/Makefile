@@ -24,12 +24,14 @@ BBSUID=9999
 
 OS_DEF   = -DAIX -DSYSV 
 #OS_DEF   = -DLINUX -DSYSV 
+#OS_DEF	= -DFREEBSD
+
 
 CC       = gcc
 #CC       = cc
 CFLAGS   = -W -g -Ilibesmtp -static 
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
-LIBS     = -lbsd -L. -lesmtp 
+LIBS     = -L. -L/usr/local/lib -lesmtp -lbsd
 	#-lcrypt -lpthread -lltdl -ldl
 
 #CFLAGS   = -O3

@@ -39,7 +39,9 @@
 #include <ctype.h>
 #include <errno.h>
 #include <time.h>
+#ifndef FREEBSD
 #include <malloc.h>
+#endif
 #include <sys/time.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -274,7 +276,7 @@ extern int Net_Sleep(int);
 #endif
 
 #define NULL 0
-#define UNUSED_ARG(a) {if (&a) /* null */ ;}
+#define UNUSED_ARG(a) {while (&a); /* null */ }
 
 #ifdef OS_LACK_SOCKLEN
 typedef size_t socklen_t;

@@ -180,7 +180,7 @@ struct boardheader const* getboard(int num)
 	if (num>0&&num<=MAXBOARD) {
 		return &bcache[num-1];
 	}
-	return 0;
+	return NULL;
 }
 
 int delete_board(char* boardname,char* title)

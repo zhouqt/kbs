@@ -68,7 +68,7 @@ search_file(char *filename) /* Leeward 98.10.02 */
 	if (fstat(fd,&st)<0) {close(fd); return -1;}
 	rptr = (struct fileheader *) mmap (NULL, st.st_size, PROT_READ, MAP_SHARED,fd,0);
 	if (rptr == (struct fileheader * )-1) {close(fd);return -1;}
-	for (i = 0, rptr1 = rptr; i<st.st_size/sizeof(struct fileheader); i++, rptr1++)
+	for (i = 0, rptr1 = rptr; i<(int)(st.st_size/sizeof(struct fileheader)); i++, rptr1++)
 		if (!strcmp(filename,rptr1->filename)) {
 			munmap(rptr,st.st_size);
 			close(fd);
@@ -805,7 +805,7 @@ char *direct ;
         return DONOTHING;
     }
     if(digestmode==2&&BMch<=3)
-        return;
+        return DONOTHING;
     move(t_lines-3, 0);
     clrtoeol();
     /* Leeward 98.04.16 */
@@ -1153,7 +1153,7 @@ case 0: case 1: case 2:
                 break;
         case SR_BMDEL:
             if(digestmode)
-                return;
+                return -1;
             /* Leeward 97.11.18: fix bugs: add "if" block */
             /* if (!( ptitle->accessed[0] & FILE_MARKED )) */
             if (!( SR_fptr.accessed[ 0 ] & FILE_MARKED ))
@@ -1172,7 +1172,7 @@ case 0: case 1: case 2:
             break;
         case SR_BMMARKDEL:
             if(digestmode)
-                return;
+                return -1;
             /* Leeward 97.11.18: fix bugs: add "if" block */
             /* if (!( ptitle->accessed[0] & FILE_MARKED )) */
             if (!( SR_fptr.accessed[ 0 ] & FILE_MARKED ))
@@ -1183,7 +1183,7 @@ case 0: case 1: case 2:
             break;
         case SR_BMNOREPLY:
             if(digestmode)
-                return;
+                return -1;
             if (!( SR_fptr.accessed[ 1 ] & FILE_SIGN))
                 /* Bigman 2000.8.20: 修改同主题删除错误.... Leeward这个增加的不对呀,以后的内容没有读呀 */
             {
@@ -1192,12 +1192,12 @@ case 0: case 1: case 2:
             break;	
         case SR_BMMARK:
             if(digestmode==2)
-                return;
+                return -1;
             mark_post(locmem->crs_line,&SR_fptr,currdirect);
             break;
         case SR_BMDIGEST:
             if(digestmode==YEA||digestmode==4||digestmode==5)
-                return;
+                return -1;
             digest_post(locmem->crs_line,&SR_fptr,currdirect);
             break;
         case SR_BMIMPORT:

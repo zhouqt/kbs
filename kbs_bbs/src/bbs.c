@@ -2399,7 +2399,7 @@ post_article()                         /*用户 POST 文章 */
         }else{
             /* Changed by KCN,disable color title */
             {
-                int i;
+                unsigned int i;
                 for (i=0;(i<strlen(buf))&&(i<STRLEN-1);i++)
                     if (buf[i]==0x1b) post_file.title[i]=' ';
                     else post_file.title[i]=buf[i];
@@ -2709,7 +2709,7 @@ char *direct;
         strcpy(tmp2, fileinfo->title); /* Do a backup */
         /* Changed by KCN,disable color title */
         {
-            int i;
+            unsigned int i;
             for (i=0;(i<strlen(buf))&&(i<STRLEN-1);i++)
                 if (buf[i]==0x1b) fileinfo->title[i]=' ';
                 else fileinfo->title[i]=buf[i];
@@ -2910,7 +2910,7 @@ char *direct;
     char ans[STRLEN];
     if( !HAS_PERM(PERM_OBOARDS) )
     {
-        return DONOTHING;
+        return (int)DONOTHING;
     }
 
     /*Bigman:2000.8.12 文摘方式下不能设定文章提醒标志 */
@@ -2933,6 +2933,7 @@ del_range(ent,fileinfo,direct,mailmode)   /* 区域删除 */
 int ent ;
 struct fileheader *fileinfo ;
 char *direct ;
+int mailmode;
 {
     char del_mode[11],num1[11],num2[11],temp[2] ;
     char fullpath[STRLEN];

@@ -128,7 +128,7 @@ void load_favboard(int dohelp)
         while(++idx <= *favbrd_list) {
         	struct boardheader* bh;
             fd = favbrd_list[idx];
-            bh = getboard(fd+1);
+            bh = (struct boardheader*) getboard(fd+1);
             if(fd >= 0 && fd <= get_boardcount() && (
             			bh &&
                         bh->filename[0]
@@ -166,6 +166,7 @@ int DelFavBoard(int i)
         *favbrd_list = 1;       /*  favorate board count    */
         *(favbrd_list+1) = 0;   /*  default sysop board     */
     }
+    return 0;
 }
 /*---   ---*/
 void
@@ -232,7 +233,7 @@ load_boards()
     }
     brdnum = 0;
     for( n = 0; n < get_boardcount(); n++ ) {
-    	bptr = getboard(n+1);
+    	bptr = (struct boardheader*)getboard(n+1);
     	if (!bptr) continue;
 #ifndef _DEBUG_
         if(!*bptr->filename) continue;
@@ -468,7 +469,7 @@ char *direct ;
         prints("┃            版英文名            ┃            版中文名            ┃\n");
 
         for( n = 0; n < get_boardcount(); n++ ) {
-            bptr = getboard(n+1);
+            bptr = (struct boardheader*) getboard(n+1);
             if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA){
                 prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");
                 prints("┃%-32s┃%-32s┃\n",bptr->filename,bptr->title+12);
@@ -530,7 +531,7 @@ query_bm( )
     prints("┃            版英文名            ┃            版中文名            ┃\n");
 
     for( n = 0; n < get_boardcount(); n++ ) {
-        bptr = getboard(n+1);
+        bptr = (struct shortfile*) getboard(n+1);
         if( chk_BM_instr(bptr->BM,lookupuser->userid) == YEA)
         {
             prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");

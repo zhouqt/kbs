@@ -6,7 +6,11 @@
 #ifdef lint
 #include <sys/uio.h>
 #endif  
-typedef unsigned int socklen_t;
+
+#ifdef OS_LACK_SOCKLEN
+typedef size_t socklen_t;
+#endif
+
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -321,7 +325,7 @@ fuzzy_chatid_to_indx(chatid) /* Modified by ming, 96.10.10 */
 char *chatid;              /* Fixed a bug by Leeward 99.10.08 */
 {
     register int i, indx = -1;
-    int len = strlen(chatid);
+    size_t len = strlen(chatid);
 
     /* search chatid first */
     for (i = 0; i < CHATMAXACTIVE; i++)
@@ -668,7 +672,7 @@ char *msg;
 
 
 void
-logout_user(unum)
+logout_user(unsigned int unum)
 {
     int i, sockfd = users[unum].sockfd;
 
@@ -684,7 +688,7 @@ logout_user(unum)
     num_conns--;
 }
 
-print_user_counts(unum)
+print_user_counts(unsigned int unum)
 {
     int i, c, userc = 0, suserc = 0, roomc = 0;
     for (i = 0; i < MAXROOM; i++)

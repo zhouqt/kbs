@@ -8,6 +8,10 @@
 #include <sys/resource.h>
 #include <varargs.h>
 
+#ifdef LINUX
+#include <arpa/inet.h>
+#endif
+
 #define	QLEN		50
 #define	PID_FILE	"reclog/bbs.pid"
 #define	LOG_FILE	"reclog/bbs.log"
@@ -44,6 +48,7 @@ char *filename,*msg;
 }
 
 int local_Net_Sleep(time)
+time_t time;
 {
 	/*
 	time秒内 如果 端口csock 有数据就读入然后丢弃。 
@@ -72,6 +77,7 @@ int local_Net_Sleep(time)
         FD_SET(csock,&fd);
         FD_SET(csock,&efd);
     };
+    return 0;
 }
 
 
@@ -597,7 +603,7 @@ char *argv[];
             }
 	    
 	    /* sanshao@10.24: why next line is originally sizeof(sin) not &value */	
-            getpeername(csock,&sin,&value);
+            getpeername(csock,(struct sockaddr*)&sin,&value);
             log("1connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
             setsid();
 

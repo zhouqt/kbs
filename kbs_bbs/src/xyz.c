@@ -199,7 +199,7 @@ p_level()
         clrtobot();
         prints( "抱歉, 只有版务管理权限的管理员才能修改");
         pressreturn();
-        return;
+        return 0;
     }
 
     modify_user_mode( ADMIN );
@@ -265,7 +265,7 @@ int
 x_level()
 {
     int id ;
-    int newlevel;
+    unsigned int newlevel;
     int flag=0;/*Haohmaru,98.10.05*/
     int flag1=0,flag2=0; /* bigman 2000.1.5 */
     struct userec* lookupuser;
@@ -277,13 +277,13 @@ x_level()
         clrtobot();
         prints( "抱歉, 只有ADMIN权限的管理员才能修改其他用户权限");
         pressreturn();
-        return;
+        return 0;
     }
 
     modify_user_mode( ADMIN );
     if(!check_systempasswd())
     {
-        return;
+        return 0;
     }
     clear();
     move(0,0) ;
@@ -347,7 +347,7 @@ x_level()
 int
 XCheckLevel() /* Leeward 98.06.05 */
 {
-    int newlevel;
+    unsigned int newlevel;
     struct userec scanuser;
 
     if (!HAS_PERM(PERM_ADMIN) || !HAS_PERM(PERM_SYSOP))
@@ -356,13 +356,13 @@ XCheckLevel() /* Leeward 98.06.05 */
         clrtobot();
         prints( "抱歉, 您没有此权限");
         pressreturn();
-        return;
+        return -1;
     }
 
     modify_user_mode( ADMIN );
     if(!check_systempasswd())
     {
-        return;
+        return -1;
     }
     clear();
     move(0,0) ;
@@ -460,7 +460,7 @@ int
 x_userdefine()
 {
     int id ;
-    int newlevel;
+    unsigned int newlevel;
     extern int nettyNN;
     struct userec* lookupuser;
 
@@ -726,3 +726,4 @@ ent_bnet()  /* Bill Schwartz */
 }
 
 #endif
+

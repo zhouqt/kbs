@@ -39,6 +39,6 @@ struct textline {
     struct textline *next ;
     int  len ;
     unsigned char attr;
-    char data[WRAPMARGIN + 1] ;
+    unsigned char data[WRAPMARGIN + 1] ;
 } ;
 

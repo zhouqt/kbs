@@ -321,7 +321,7 @@ mailall()
             getdata(9, 0, buf, ans2, 2, DOECHO, NULL,YEA) ;
             if(ans2[0]!='Y' && ans2[0]!='y')
             {
-                return ;
+                return -1;
             }
             in_mail = YEA;
             /* Leeward 98.01.17 Prompt whom you are writing to */
@@ -407,6 +407,7 @@ mailall()
             in_mail = NA;
         return 0;
     }
+    return -1;
 }
 
 void

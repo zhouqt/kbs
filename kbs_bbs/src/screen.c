@@ -493,7 +493,7 @@ unsigned char *str ;
 int n ;
 {
     register int reg_col=0;
-    register struct screenline *slp ;
+    register struct screenline *slp=NULL ;
     register len=0;
     unsigned char* begin_str=str;
     int begincol=0;
@@ -515,7 +515,6 @@ int n ;
                             cur_ln++ ; \
 			reg_col=begincol; \
                   }
-
 	if (!scrint) {
 		for (;*begin_str&&(reg_col<n);reg_col++,begin_str++) outc(*begin_str);
 	return;
