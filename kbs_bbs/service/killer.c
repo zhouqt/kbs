@@ -63,9 +63,62 @@ struct inroom_struct {
 struct room_struct * rooms;
 struct inroom_struct * inrooms;
 
+struct killer_record {
+    int w; //0 - 平民胜利 1 - 杀手胜利
+    time_t t;
+    int peoplet;
+    char id[MAX_PEOPLE][IDLEN+2];
+    int st[MAX_PEOPLE]; // 0 - 活着平民 1 - 死了平民 2 - 活着杀手 3 - 死了杀手 4 - 其他情况
+};
+
 int myroom, mypos;
 
 extern int kicked;
+
+void save_result(int w)
+{
+    int fd;
+    struct flock ldata;
+    struct killer_record r;
+    int i,j;
+    char filename[80]="service/.KILLERRESULT";
+    r.t = time(0);
+    r.w = w;
+    r.peoplet = 0; j = 0;
+    for(i=0;i<MAX_PEOPLE;i++)
+    if(inrooms[myroom].peoples[i].style!=-1&&!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR)) {
+        strcpy(r.id[j], inrooms[myroom].peoples[i].id[i]);
+        r.st[j] = 4;
+        if(!(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER)) {
+            if(inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE)
+                r.st[j] = 0;
+            else
+                r.st[j] = 1;
+        } else {
+            if(inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE)
+                r.st[j] = 2;
+            else
+                r.st[j] = 3;
+        }
+        
+        j++;
+        r.peoplet++;
+    }
+    if((fd = open(filename, O_WRONLY|O_CREAT, 0644))!=-1) {
+        ldata.l_type=F_WRLCK;
+        ldata.l_whence=0;
+        ldata.l_len=0;
+        ldata.l_start=0;
+        if(fcntl(fd, F_SETLKW, &ldata)!=-1){
+            lseek(fd, 0, SEEK_END);
+            write(fd, &r, sizeof(struct killer_record));
+            	
+            ldata.l_type = F_UNLCK;
+            fcntl(fd, F_SETLKW, &ldata);
+        }
+        close(fd);
+    }
+}
 
 /*void load_msgs()
 {
@@ -1155,6 +1208,7 @@ checkvote:
                                 if(a>0&&a>=b-1&&inrooms[myroom].status==INROOM_DAY) {
                                     inrooms[myroom].status = INROOM_STOP;
                                     send_msg(-1, "坏人获得了胜利...");
+                                    save_result(1);
                                     for(j=0;j<MAX_PEOPLE;j++)
                                     if(inrooms[myroom].peoples[j].style!=-1)
                                     if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER &&
@@ -1167,6 +1221,7 @@ checkvote:
                                 else if(a==0) {
                                     inrooms[myroom].status = INROOM_STOP;
                                     send_msg(-1, "所有坏人都被处决了，好人获得了胜利...");
+                                    save_result(0);
                                 }
                                 else if(inrooms[myroom].status == INROOM_DAY) {
                                     inrooms[myroom].status = INROOM_NIGHT;
