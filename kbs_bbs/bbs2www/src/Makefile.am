@@ -1,10 +1,10 @@
 bindir=@CGIPATH@
-bin_PROGRAMS = bbsusr bbscon bbsbrdadd bbsall bbsanc bbs0an \
+bin_PROGRAMS = bbsusr bbsbrdadd bbsall bbsanc bbs0an \
 	  bbsleft bbsqry \
 	  bbsfadd bbsfdel bbsfall bbsfriend bbspwd bbsinfo \
 	  bbsmybrd bbsgcon bbsmailcon \
 	  bbssnd \
-	  bbssndmail bbsnewmail bbspstmail bbschat bbssel \
+	  bbssndmail bbsnewmail bbschat bbssel \
 	  bbsnick bbstfind bbstcon bbstdoc \
 	  bbsccc bbsufind bbsclear bbsedit bbsman bbsparm \
 	  bbsfwd bbsdenyall bbsdenydel bbsdenyadd \
