@@ -177,7 +177,11 @@ int dodaemon()
          default : exit(0); break;
      }
      setsid();
+#ifdef AIX
+     setpgrp();
+#else
      setpgrp(0, 0);
+#endif
 #ifdef AIX
     act.sa_handler = NULL;
     act.sa_flags = SA_RESTART|SA_NOCLDWAIT;

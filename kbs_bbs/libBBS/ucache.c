@@ -230,9 +230,10 @@ fillucache(struct userec *uentp ,int* number)
 		log("3system","UCACHE:hash(%s) %d error",uentp->userid, hashkey);
 		exit(0);
 	}
+addempty:
 	if (hashkey==0) { /* empty user add in recurise sort 
 		int i=uidshm->hashhead[0];
-        uidshm->next[*number] = 0;
+                uidshm->next[*number] = 0;
 		if (i==0) uidshm->hashhead[0]=++(*number);
 		else {
 			int prev;
@@ -252,19 +253,35 @@ fillucache(struct userec *uentp ,int* number)
 		}
 		prev=*number;
 	} else {
-/* add by KCN,should check the multi entry 
-        if (uidshm->hashhead[hashkey]) {
-           int i;
+/* check multi-entry of user */
+           int i,prev;
            i = uidshm->hashhead[hashkey];
+           prev=-1;
            while (i!=0) {
-               if (!strcasecmp(passwd[*number].userid,uentp->userid) {
-                   if (passwd[*number].login
+               struct userec* uentp;
+               uentp=&passwd[i-1];
+               if (!strcasecmp(passwd[*number].userid,uentp->userid)) {
+                   if (passwd[*number].numlogins>uentp->numlogins) {
+                        log("3passwd","deleted %s in %d",uentp->userid,i-1);
+                        if (prev==-1) 
+                            uidshm->hashhead[hashkey]=uidshm->next[i-1]; 
+                        else
+                            uidshm->next[prev-1]=uidshm->next[i-1];
+                        uentp->userid[0]=0;
+                        uidshm->next[i-1]=0;
+                        uidshm->hashhead[0]=i;
+                   } else {
+                        log("3passwd","deleted %s in %d",passwd[*number].userid,*number);
+                        passwd[*number].userid[0]=0;
+                        hashkey=0;
+                        goto addempty;
+                   }
                }
+               prev=i;
+               i=uidshm->next[i-1];
            }
-        }
-*/
-        uidshm->next[*number] = uidshm->hashhead[hashkey];
-        uidshm->hashhead[hashkey] = ++(*number);
+           uidshm->next[*number] = uidshm->hashhead[hashkey];
+           uidshm->hashhead[hashkey] = ++(*number);
 	}
     }
     return 0 ;
