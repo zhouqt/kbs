@@ -36,12 +36,12 @@
 			html_error_quit("错误");
 ?>
 <body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- [摸板详细显示] [用户:<?php echo $currentuser["userid"];?>] 
-版面<?php echo $board; ?>第<?php echo $retnum;?>个摸板<br></p>
+<center><p><?php echo BBS_FULL_NAME; ?> -- [模板详细显示] [用户:<?php echo $currentuser["userid"];?>] 
+版面<?php echo $board; ?>第<?php echo $retnum;?>个模板<br></p>
 <hr class="default"/>
 <table width="613">
 <tr>
-<td>摸板说明</td><td><?php echo $votearr[0]["TITLE"];?></td>
+<td>模板说明</td><td><?php echo $votearr[0]["TITLE"];?></td>
 </tr>
 <tr>
 <td>问题个数</td><td><?php echo $votearr[0]["CONT_NUM"];?></td>

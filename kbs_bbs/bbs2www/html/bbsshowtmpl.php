@@ -28,8 +28,8 @@
 			$retnum = 0;
 ?>
 <body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- [摸板列表] [用户:<?php echo $currentuser["userid"];?>] 
-版面<?php echo $board; ?>共有<?php echo $retnum;?>个摸板<br></p>
+<center><p><?php echo BBS_FULL_NAME; ?> -- [模板列表] [用户:<?php echo $currentuser["userid"];?>] 
+版面<?php echo $board; ?>共有<?php echo $retnum;?>个模板<br></p>
 <hr class="default"/>
 <table width="613">
 <tr><td>序号</td><td>标题</td><td>类型</td><td>问题个数</td><td></td></tr>
@@ -45,7 +45,7 @@
 </td><td>
 <?php echo $votearr[$i]["CONT_NUM"];?>
 </td><td>
-<a href="/bbspsttmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>">使用本摸板发文</a>
+<a href="/bbspsttmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>">使用本模板发文</a>
 </td></tr>
 <?php
 		}
