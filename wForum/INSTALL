@@ -50,13 +50,13 @@ mysql 用户、密码和数据库名。然后按照 documents/smallpaper_tb.sql 里的定义在 mysq
 
 附1：php编译说明
 wForum需要php支持gd及mysql。
-首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype
+首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype、libxml2
 及各自相应的devel包
 
 然后用下面的参数编译php（假设 apache 1.3.x）：
 ./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with
 -jpeg-dir --with-png-dir --with-config-file-path=/bbs/www/conf --with-zlib
--dir --with-mysql --with-apxs=/bbs/www/bin/apxs
+-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom
 
 make
 make install
