@@ -304,7 +304,7 @@ int chat_parse(chatcontext * pthis)
                 move(0, 0);
                 clrtoeol();
                 if (bptr[1]=='t') strcpy(pthis->topic,bptr+2);
-                prints("[44m[33m ·¿¼ä£º [36m%-14s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", 
+                prints("[44m[33m ·¿¼ä£º [36m%-10s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", 
                          pthis->chatroom, pthis->topic ,(pthis->rec)?"Â¼":"  ");
                 break;
             }
@@ -1133,20 +1133,25 @@ void set_rec(chatcontext *pthis, const char *arg) /* set recorder */
         printchatline(pthis,"[5m[32mRecord Start ...[m");
         move(0, 0);
         clrtoeol();
-        sprintf(genbuf, "·¿¼ä£º [36m%s", pthis->chatroom);
-        prints("[44m[33m %-21s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", genbuf, pthis->topic ,(pthis->rec)?"Â¼":"  ");
+        prints("[44m[33m ·¿¼ä£º [36m%-10s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", 
+                 pthis->chatroom, pthis->topic ,(pthis->rec)?"Â¼":"  ");
 
         fprintf(pthis->rec,"·¢ĞÅÈË: %s (%s) ·¿¼ä: %s\n»°  Ìâ: %s\x1b[m\n\n",
             currentuser->userid, currentuser->username, pthis->chatroom, pthis->topic);
-	    fprintf(pthis->rec, "±¾¶ÎÓÉ %s",currentuser->userid);
+	fprintf(pthis->rec, "±¾¶ÎÓÉ %s",currentuser->userid);
         fprintf(pthis->rec,"ËùÂ¼ÏÂ£¬Ê±¼ä£º %s",ctime(&now));
         
         log("user","start record room %s", pthis->chatroom);
     } else {
         move(0, 0);
         clrtoeol();
-        sprintf(genbuf, "·¿¼ä£º [36m%s", pthis->chatroom);
-        prints("[44m[33m %-21s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", genbuf, pthis->topic ,(pthis->rec)?"Â¼":"  ");
+
+
+        prints("[44m[33m ·¿¼ä£º [36m%-10s  [33m»°Ìâ£º[36m%-51s[31m%2s[m", 
+                 pthis->chatroom, pthis->topic ,(pthis->rec)?"Â¼":"  ");
+
+        fprintf(pthis->rec,"·¢ĞÅÈË: %s (%s) ·¿¼ä: %s\n»°  Ìâ: %s\x1b[m\n\n",
+            currentuser->userid, currentuser->username, pthis->chatroom, pthis->topic);
 
         printchatline(pthis,"[5m[32mRecord Stop ...[m");
         fprintf(pthis->rec,"½áÊøÊ±¼ä£º%s\n",ctime(&now));
