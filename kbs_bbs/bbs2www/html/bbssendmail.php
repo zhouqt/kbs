@@ -30,9 +30,8 @@ if (!$title) $title = '无主题';
 
 $sig = intval($_POST['signature']); //签名档
 $backup = isset($_POST['backup'])?strlen($_POST['backup']):0; //备份
-$content = preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["text"]); 
 
-$ret = bbs_postmail($incept,$title,$content,$sig,$backup);
+$ret = bbs_postmail($incept,$title,preg_replace("/\\\(['|\"|\\\])/","$1",$_POST["text"]),$sig,$backup);
 
 if ($ret < 0)  {
     switch($ret) {
