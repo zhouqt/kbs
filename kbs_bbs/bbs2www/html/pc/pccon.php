@@ -97,7 +97,6 @@
 	}
 	
 	$id = $_GET["id"];
-	$tid = (int)($_GET["tid"]);
 	$nid = $_GET["nid"];
 	$pid = $_GET["pid"];
 	$tag = $_GET["tag"];
@@ -158,6 +157,7 @@
 		exit();
 	}
 	$nid = $rows[nid];
+	$tid = $rows[tid];
 	$query = "UPDATE nodes SET visitcount = visitcount + 1 WHERE `nid` = '".$nid."' ; ";
 	mysql_query($query,$link);
 	
