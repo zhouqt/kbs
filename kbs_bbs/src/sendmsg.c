@@ -562,30 +562,6 @@ void r_msg(int signo)
     return;
 }
 
-int friend_login_wall(pageinfo)
-    struct user_info *pageinfo;
-{
-    char msg[STRLEN];
-    struct userec *lookupuser;
-
-    if (!pageinfo->active || !pageinfo->pid)
-        return 0;
-    if (can_override(pageinfo->userid, currentuser->userid)) {
-        if (getuser(pageinfo->userid, &lookupuser) <= 0)
-            return 0;
-        if (!(lookupuser->userdefine & DEF_LOGININFORM))
-            return 0;
-        if (!strcasecmp(pageinfo->userid, currentuser->userid))
-            return 0;
-        sprintf(msg, "你的好朋友 %s 已经上站罗！", currentuser->userid);
-
-        /* 保存所发msg的目的uid 1998.7.5 by dong */
-        strcpy(MsgDesUid, pageinfo->userid);
-        do_sendmsg(pageinfo, msg, 2);
-    }
-    return 0;
-}
-
 void r_lastmsg()
 {
     f_offset = 0;
