@@ -310,7 +310,7 @@ int usermenu()
         setfcolor(RED,1);
         prints("©¦");
         if (i>=userst) {
-            move(7+i, 20+7);
+            move(7+i, 20);
             setfcolor(GREEN,1);
             prints("--¿Õ--");
         }
@@ -319,7 +319,7 @@ int usermenu()
             setfcolor(GREEN,1);
             prints(users[i].userid);
         }
-        move(7+i, 31+14);
+        move(7+i, 31);
         setfcolor(RED,1);
         prints("©¦");
     }
@@ -335,20 +335,20 @@ int usermenu()
     setfcolor(RED,1);
     prints("¨q©¤©¤©¤©¤©¤©¤©¤¨r");
     for(i=0;i<10;i++){
-        move(7+i, 55+7+7);
+        move(7+i, 55);
         setfcolor(RED,1);
         prints("©¦");
         if (userst-i-1<0) {
-            move(7+i, 60+7+7+7);
+            move(7+i, 60);
             setfcolor(GREEN,1);
             prints("--¿Õ--");
         }
         else {
-            move(7+i, 63-strlen(users[userst-i-1].userid)/2+7+7+7);
+            move(7+i, 63-strlen(users[userst-i-1].userid)/2);
             setfcolor(GREEN,1);
             prints(users[userst-i-1].userid);
         }
-        move(7+i, 71+14+7+7);
+        move(7+i, 71);
         setfcolor(RED,1);
         prints("©¦");
     }
