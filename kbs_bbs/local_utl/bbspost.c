@@ -31,7 +31,7 @@ char            *crypt();
 char            *homepath;
 int             visitflag;
 char emailad[STRLEN];
-char szRemoteHost[16]; /* Leeward: 97.12.20: 让 3W 发文影响生命力 */
+char fromhost[60]; /* Leeward: 97.12.20: 让 3W 发文影响生命力 */
 char EMode = ' '; /* Leeward: 97.12.23: for 3W modify article */
 int 		sign;/*Haohmaru.第sign个签名档*/
 
@@ -229,7 +229,7 @@ struct userec   *record;
 }*/
 
     /* Leeward: 97.12.20: 让 3W 发文影响生命力 */
-    strcpy(record->lasthost, szRemoteHost);
+    strcpy(record->lasthost, fromhost);
     record->lastlogin = time(NULL) ;
 }
 
@@ -442,7 +442,7 @@ post_article( usermail )
             return;
         }
 
-        fprintf(fpMail, "寄信人: %s (%s) [WWW MAIL]\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s)\n来  源: %s\n\n", userid, currentuser->username, subject, ctime(&now), szRemoteHost);
+        fprintf(fpMail, "寄信人: %s (%s) [WWW MAIL]\n标  题: %s\n发信站: BBS 水木清华站 (%24.24s)\n来  源: %s\n\n", userid, currentuser->username, subject, ctime(&now), fromhost);
         while(fgets(buf, MAXLEN, stdin) != NULL )
             fputs(buf, fpMail);
         AddSignature(fpMail, userid, 0); /* Leeward: 98.05.17 */
@@ -889,10 +889,10 @@ char    *argv[];
 
     /* Leeward: 97.12.20: 让 3W 发文能影响生命力 */
     if (argc < 5)/*Haohmaru.99.11.24.原来为4*/
-        strcpy(szRemoteHost, "WWW");
+        strcpy(fromhost, "WWW");
     else
-        strncpy(szRemoteHost, argv[4], 15);/*Haohmaru.99.11.24.原来为[3]*/
-    szRemoteHost[15] = 0;
+        strncpy(fromhost, argv[4], 15);/*Haohmaru.99.11.24.原来为[3]*/
+    fromhost[15] = 0;
 
     sign = atoi(argv[3]);/*Haohmaru.99.11.24.第sign个签名档*/
     if(sign<0 || sign>5)
