@@ -120,7 +120,7 @@ function bbs_confirm(url,infor){
 <?php
 			if($i>2){
 ?>
-<a href="bbsmailbox.php?delete=<?php echo $i-2; ?>">É¾³ý</a>
+<a href="bbsmail.php?delete=<?php echo $i-2; ?>">É¾³ý</a>
 <?php
 				}
 			else{
