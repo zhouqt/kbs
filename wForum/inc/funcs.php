@@ -123,7 +123,9 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$utmpkey = $_COOKIE["UTMPKEY"];
 	@$utmpnum = $_COOKIE["UTMPNUM"];
 	@$userid = $_COOKIE["UTMPUSERID"];
+	@$userpassword=$_COOKIE["PASSWORD"];
 }
+
 // add by stiger, login as "guest" default.....
 if (($utmpkey == "")&&($needlogin!=0)){
 	$error = bbs_wwwlogin(0);
@@ -147,6 +149,16 @@ if ($utmpkey!="") {
     $loginok=1;
     $currentuinfo_num=bbs_getcurrentuinfo();
     $currentuser_num=bbs_getcurrentuser($currentuser);
+  } else {
+	if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
+		$ret=bbs_wwwlogin(1);
+		if ( ($ret==2) || ($ret==0) ){
+		    $loginok=1;
+		    $currentuinfo_num=bbs_getcurrentuinfo();
+		    $currentuser_num=bbs_getcurrentuser($currentuser);
+		}
+	}
+
   }
 }
 
@@ -594,8 +606,12 @@ function show_footer()
 
 } 
 
-if (($needlogin!=0)&&($loginok!=1)&&($_SERVER["PHP_SELF"]!="/bbslogin.php")) {
-	error_nologin();
+if (($needlogin!=0)&&($loginok!=1)) {
+	show_nav();
+	foundErr("ÄúÉÐÎ´µÇÂ½£¡");
+	html_error_quit();
+	show_footer();
+	exit(0);
 	return;
 }
 
