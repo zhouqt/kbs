@@ -3097,7 +3097,6 @@ int www_generateOriginIndex(char* board)
 					temp->content.flags=FILE_ON_TOP;
 					temp->content.unused=0;
 					tail=temp;
-					count++;
 				}
 			    end_mmapfile((void *) ptr3, buf3.st_size, -1);
 			} else if (i == 2)
@@ -3125,7 +3124,6 @@ int www_generateOriginIndex(char* board)
 			temp->content.articlecount=1;
 			temp->content.flags=0;
 			temp->content.unused=0;
-			count++;
 			tail=temp;
 			if(count>=50000) 
 				break;
@@ -3138,11 +3136,13 @@ int www_generateOriginIndex(char* board)
 		}
 	}
 
+	count=0;
 	while (tail!=NULL) {
 		temp=tail->previous;
 		write(fd,&(tail->content),size);
 		free(tail);
 		tail=temp;
+		count++;
 	}
     end_mmapfile((void *) ptr, buf.st_size, -1);
     ldata2.l_type = F_UNLCK;
