@@ -2539,7 +2539,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             } else
                 STATE_CLR(ansi_state, STATE_QUOTE_LINE);
         }
-		if ( buf[i] == '[' )	{ //UBB控制代码开始?
+		if (buf[i] == '[' && !STATE_ISSET(ansi_state, STATE_ESC_SET))	{ //UBB控制代码开始?
 			if (STATE_ISSET(ansi_state, STATE_UBB_START)){
 				size_t len;
 				STATE_CLR(ansi_state, STATE_UBB_START);
@@ -2574,7 +2574,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
 			UBBCodeLen=0;
 			continue;
 
-		} else if ( buf[i] == ']' )	{ //UBB控制代码结束?
+		} else if (buf[i] == ']' && !STATE_ISSET(ansi_state, STATE_ESC_SET))	{ //UBB控制代码结束?
 			if (STATE_ISSET(ansi_state, STATE_UBB_START))	{
 				int num;
 				num=0;
