@@ -529,3 +529,5 @@ while($board = array_shift($boards))
   </tr>
 </table>
 <br>
+</body>
+</html>
