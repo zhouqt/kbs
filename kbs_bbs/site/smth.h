@@ -353,6 +353,9 @@ attach define
 
 #define PERSONAL_CORP
 
+#define NEW_HELP
+#define HAVE_DEFAULT_HELPMODE
+
 #define NOT_USE_DEFAULT_SMS_FUNCTIONS
 
 #endif
