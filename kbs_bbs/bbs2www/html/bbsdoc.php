@@ -103,7 +103,7 @@
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="3" class="t1">
-<tr><td class="t2" width="40">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
+<tr><td class="t2" width="50">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
 </table>
 <?php
 		$ding_cnt = 0;
@@ -131,12 +131,13 @@
 <?php
 			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
 ?>
-<td colspan="2" align="center" class="t6"  width="70"><img src="images/istop.gif" alt="提示" align="absmiddle"> 提示</td>
+<td class="t6" width="50">提示</td>
+<td class="t3" width="30"><img src="images/istop.gif" alt="提示" align="absmiddle"></td>
 <?php
 
 			} else {
 ?>
-<td class="t3" width="40"><?php echo $start+$i; ?></td>
+<td class="t3" width="50"><?php echo $start+$i; ?></td>
 <td class="t4" width="30">
 <?php
 			if ($flags[1] == 'y')
