@@ -68,7 +68,7 @@ int show_user_plan(userid)
 			out.buflen = outbuf_len;
 			out.output = buffered_output;
 			out.flush = flush_buffer;
-			output_ansi_html(ptr, filesize, &out);
+			output_ansi_html(ptr, filesize, &out,NULL);
 			free(out.buf);
 		}
 		BBS_CATCH

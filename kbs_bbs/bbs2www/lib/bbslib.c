@@ -67,20 +67,19 @@ int file_has_word(char *file, char *word)
 int f_append(char *file, char *buf)
 {
     FILE *fp;
-	char *ptr;
+    char *ptr;
 
     fp = fopen(file, "a");
     if (fp == 0)
         return -1;
-	ptr = buf;
-	while (*ptr != '\0')
-	{
-		if (*ptr == '\x09')  /* horizontal tab */
-			fprintf(fp, "    ");
-		else
-			fputc(*ptr, fp);
-		ptr++;
-	}
+    ptr = buf;
+    while (*ptr != '\0') {
+        if (*ptr == '\x09')     /* horizontal tab */
+            fprintf(fp, "    ");
+        else
+            fputc(*ptr, fp);
+        ptr++;
+    }
     fclose(fp);
 
     return 0;
@@ -386,14 +385,16 @@ int hhprintf(char *fmt, ...)
             tmp = strtok(s, "\'\" \r\t)(,;\n");
             if (tmp == 0)
                 break;
-            /*if(1) {
-               if(strstr(tmp, ".gif") || strstr(tmp, ".jpg") || strstr(tmp, ".bmp")) {
-               printf("<img src=\"%s\">", nohtml(tmp));
-               tmp=strtok(0, "");
-               if(tmp==0) return -1;
-               return hhprintf("%s",tmp);
-               }
-               } */
+            /*
+             * if(1) {
+             * if(strstr(tmp, ".gif") || strstr(tmp, ".jpg") || strstr(tmp, ".bmp")) {
+             * printf("<img src=\"%s\">", nohtml(tmp));
+             * tmp=strtok(0, "");
+             * if(tmp==0) return -1;
+             * return hhprintf("%s",tmp);
+             * }
+             * } 
+             */
             printf("<a target=\"_blank\" href=\"%s\">%s</a>", nohtml(tmp), nohtml(tmp));
             tmp = strtok(0, "");
             if (tmp == 0)
@@ -484,7 +485,9 @@ int http_init()
         t2 = strtok(0, "&");
     }
     strsncpy(buf2, getsenv("HTTP_COOKIE"), 1024);
-    /*printf("HTTP_COOKIE = %s\n", buf2); */
+    /*
+     * printf("HTTP_COOKIE = %s\n", buf2); 
+     */
     t2 = strtok(buf2, ";");
     while (t2) {
         t3 = strchr(t2, '=');
@@ -573,8 +576,12 @@ int user_init(struct userec **x, struct user_info **y)
 
     strsncpy(id, getparm("UTMPUSERID"), 13);
     strsncpy(num, getparm("UTMPNUM"), 12);
-    /*printf("utmpuserid = %s\n", id); */
-    /*printf("utmpnum = %s\n", num); */
+    /*
+     * printf("utmpuserid = %s\n", id); 
+     */
+    /*
+     * printf("utmpnum = %s\n", num); 
+     */
     key = atoi(getparm("UTMPKEY"));
     utmpent = atoi(num);
     if (id[0] == '\0')
@@ -585,29 +592,30 @@ int user_init(struct userec **x, struct user_info **y)
     return 0;
 }
 
-int del_mail(int ent, struct fileheader* fh, char* direct)
+int del_mail(int ent, struct fileheader *fh, char *direct)
 {
     char buf[PATHLEN];
-    char* t;
+    char *t;
     char genbuf[PATHLEN];
     struct stat st;
 
-    if(strstr(direct, ".DELETED")) {
-        strcpy(buf, direct);    
+    if (strstr(direct, ".DELETED")) {
+        strcpy(buf, direct);
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
-        if (stat(buf, &st) !=-1) currentuser->usedspace-=st.st_size;
+        if (stat(buf, &st) != -1)
+            currentuser->usedspace -= st.st_size;
     }
-     
+
     strcpy(buf, direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
     if (!delete_record(direct, sizeof(*fh), ent, (RECORD_FUNC_ARG) cmpname, fh->filename)) {
         sprintf(genbuf, "%s/%s", buf, fh->filename);
-        if(strstr(direct, ".DELETED"))
+        if (strstr(direct, ".DELETED"))
             unlink(genbuf);
         else {
-            strcpy(buf, direct);    
+            strcpy(buf, direct);
             t = strrchr(buf, '/') + 1;
             strcpy(t, ".DELETED");
             append_record(buf, fh, sizeof(*fh));
@@ -623,7 +631,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     char buf3[256], dir[256];
     struct fileheader header;
     struct stat st;
-    struct userec *touser;/*peregrine for updating used space*/
+    struct userec *touser;      /*peregrine for updating used space */
     int unum;
     int t, i;
 
@@ -638,13 +646,13 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     if (i >= 99)
         return -1;
 
-    if (false==canIsend2(currentuser,userid)) {
+    if (false == canIsend2(currentuser, userid)) {
         return -2;
     }
-    
-    unum=getuser(userid,&touser);
-    if (!HAS_PERM(currentuser, PERM_SYSOP) && chkusermail(touser)) {        /*Haohamru.99.4.05 */
-    	return -3;
+
+    unum = getuser(userid, &touser);
+    if (!HAS_PERM(currentuser, PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
+        return -3;
     }
     sprintf(header.filename, "M.%d.A", t);
     strsncpy(header.title, title, 60);
@@ -667,7 +675,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     fprintf(fp, "\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
     fclose(fp);
     if (stat(buf3, &st) != -1)
-		touser->usedspace+=st.st_size;
+        touser->usedspace += st.st_size;
     sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
     fp = fopen(dir, "a");
     if (fp == NULL)
@@ -687,7 +695,7 @@ int outgo_post2(struct fileheader *fh, char *board, char *userid, char *username
     }
 }
 
-void add_loginfo2(FILE* fp, char *board, struct userec *user, int anony)
+void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
 {
     FILE *fp2;
     int color;
@@ -701,7 +709,9 @@ void add_loginfo2(FILE* fp, char *board, struct userec *user, int anony)
     } else {                    /*Bigman 2000.8.10ÐÞ¸Ä,¼õÉÙ´úÂë */
         fprintf(fp, "\n");
     }
-    /* ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ */
+    /*
+     * ÓÉBigmanÔö¼Ó:2000.8.10 Announce°æÄäÃû·¢ÎÄÎÊÌâ 
+     */
     if (!strcmp(board, "Announce"))
         fprintf(fp, "[m[%2dm¡ù À´Ô´:¡¤%s %s¡¤[FROM: %s][m\n", color, BBS_FULL_NAME, BBS_FULL_NAME);
     else
@@ -745,7 +755,7 @@ int write_file2(FILE * fp, FILE * fp2)
 /* return value:
    >0		success
    -1		write .DIR failed*/
-int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader* oldx,char* attach_dir)
+int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader *oldx, char *attach_dir)
 {
     struct fileheader post_file;
     char filepath[MAXPATH], fname[STRLEN];
@@ -754,18 +764,20 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     FILE *fp, *fp2;
 
     memset(&post_file, 0, sizeof(post_file));
-    anonyboard = anonymousboard(board);  /* ÊÇ·ñÎªÄäÃû°æ */
+    anonyboard = anonymousboard(board); /* ÊÇ·ñÎªÄäÃû°æ */
 
-    /* ×Ô¶¯Éú³É POST ÎÄ¼þÃû */
+    /*
+     * ×Ô¶¯Éú³É POST ÎÄ¼þÃû 
+     */
     setbfile(filepath, board, "");
-	if (GET_POSTFILENAME(post_file.filename, filepath) != 0) {
-		return -1;
-	}
-	setbfile(filepath, board, post_file.filename);
+    if (GET_POSTFILENAME(post_file.filename, filepath) != 0) {
+        return -1;
+    }
+    setbfile(filepath, board, post_file.filename);
 
     anony = anonyboard && anony;
     strncpy(post_file.owner, anony ? board : getcurruserid(), OWNER_LEN);
-    post_file.owner[OWNER_LEN-1]=0;
+    post_file.owner[OWNER_LEN - 1] = 0;
 
     if ((!strcmp(board, "Announce")) && (!strcmp(post_file.owner, board)))
         strcpy(post_file.owner, "SYSOP");
@@ -776,7 +788,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     fclose(fp2);
     if (!anony)
         addsignature(fp, user, sig);
-    add_loginfo2(fp, board, user, anony); /*Ìí¼Ó×îºóÒ»ÐÐ */
+    add_loginfo2(fp, board, user, anony);       /*Ìí¼Ó×îºóÒ»ÐÐ */
 
     strncpy(post_file.title, title, STRLEN);
     if (local_save == 1) {      /* local save */
@@ -790,56 +802,63 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 
     setbfile(buf, board, DOT_DIR);
 
-    /* ÔÚboards°æ°æÖ÷·¢ÎÄ×Ô¶¯Ìí¼ÓÎÄÕÂ±ê¼Ç Bigman:2000.8.12 */
+    /*
+     * ÔÚboards°æ°æÖ÷·¢ÎÄ×Ô¶¯Ìí¼ÓÎÄÕÂ±ê¼Ç Bigman:2000.8.12 
+     */
     if (!strcmp(board, "Board") && !HAS_PERM(currentuser, PERM_OBOARDS)
         && HAS_PERM(currentuser, PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
 
-    if (attach_dir!=NULL) {
-        snprintf(filepath,MAXPATH, "%s/.index",attach_dir);
-        if ((fp2=fopen(filepath,"r"))!=NULL) {
-            fputs("\n",fp);
+    if (attach_dir != NULL) {
+        snprintf(filepath, MAXPATH, "%s/.index", attach_dir);
+        if ((fp2 = fopen(filepath, "r")) != NULL) {
+            fputs("\n", fp);
             while (!feof(fp2)) {
-                char* name;
-		long size,begin,save_size;
-		char* ptr;
-                fgets(buf,256,fp2);
-                name=strchr(buf,' ');
-                if (name==NULL)
+                char *name;
+                long size, begin, save_size;
+                char *ptr;
+
+                fgets(buf, 256, fp2);
+                name = strchr(buf, ' ');
+                if (name == NULL)
                     continue;
-                *name=0;
+                *name = 0;
                 name++;
-                ptr=strchr(name,'\n');
-		if (ptr) *ptr=0;
-                
-                    if (-1==(fd=open(buf,O_RDONLY)))
-                        continue;
-                    if (post_file.attachment==0) {
-                        /* log the attachment begin */
-                        post_file.attachment=ftell(fp)+1;
+                ptr = strchr(name, '\n');
+                if (ptr)
+                    *ptr = 0;
+
+                if (-1 == (fd = open(buf, O_RDONLY)))
+                    continue;
+                if (post_file.attachment == 0) {
+                    /*
+                     * log the attachment begin 
+                     */
+                    post_file.attachment = ftell(fp) + 1;
+                }
+                fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fp);
+                fwrite(name, strlen(name) + 1, 1, fp);
+                BBS_TRY {
+                    if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 0) {
+                        size = 0;
+                        save_size = htonl(size);
+                        fwrite(&save_size, sizeof(save_size), 1, fp);
+                    } else {
+                        save_size = htonl(size);
+                        fwrite(&save_size, sizeof(save_size), 1, fp);
+                        begin = ftell(fp);
+                        fwrite(ptr, size, 1, fp);
                     }
-                    fwrite(ATTACHMENT_PAD,ATTACHMENT_SIZE,1,fp);
-                    fwrite(name,strlen(name)+1,1,fp);
-                    BBS_TRY {
-                        if (safe_mmapfile_handle(fd, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t *) & size) == 0) {
-                            size=0;
-                            save_size=htonl(size);
-                            fwrite(&save_size,sizeof(save_size),1,fp);
-                        } else {
-                            save_size=htonl(size);
-                            fwrite(&save_size,sizeof(save_size),1,fp);
-                            begin=ftell(fp);
-                            fwrite(ptr,size,1,fp);
-                        }
-                    }
-                    BBS_CATCH {
-                        ftruncate(fileno(fp),begin+size);
-                        fseek(fp,begin+size,SEEK_SET);
-                    }
-                    BBS_END end_mmapfile((void *) ptr, size, -1);
-                    close(fd);
-    		}
+                }
+                BBS_CATCH {
+                    ftruncate(fileno(fp), begin + size);
+                    fseek(fp, begin + size, SEEK_SET);
+                }
+                BBS_END end_mmapfile((void *) ptr, size, -1);
+
+                close(fd);
+            }
         }
     }
     fclose(fp);
@@ -861,37 +880,42 @@ int sig_append(FILE * fp, char *id, int sig)
     getuser(id, &x);
     if (x == 0)
         return -1;
-	sethomefile(path, x->userid, "signatures");
+    sethomefile(path, x->userid, "signatures");
     fp2 = fopen(path, "r");
     if (fp2 == NULL)
         return -1;
-	/* Ìø¹ýÇ°ÃæµÄ (sig - 1)*6 ÐÐ  */
-	do
-	{
-		if (skip_lines == (sig - 1) * 6)
-			break;
-		skip_lines++;
-	}while ((fgets(buf, sizeof(buf), fp2)) != NULL);
-	/* ¼ì²éÊÇ·ñ¿ÉÒÔ¶ÁÈëµÚ sig ¸öÇ©Ãûµµ */
-	if (skip_lines == (sig - 1) * 6)
-	{
-		/* ¶ÁÈëÇ©Ãûµµ²¢Ð´Èë fp ¶ÔÓ¦µÄÎÄ¼þÖÐ */
-		for (i = skip_lines; i < skip_lines + 6; i++)
-		{
-			if (fgets(buf, sizeof(buf), fp2) == NULL)
-				break;
-			unix_string(buf);
-			if (buf[0] != '\n')
-				fprintf(fp, "%s", buf);
-		}
-		/* ¶ÁÈëÇ©Ãûµµ³É¹¦£¬ÉèÖÃÄ¬ÈÏÇ©ÃûµµÎªµ±Ç°Ê¹ÓÃµÄÇ©Ãûµµ */
-		if (i > skip_lines)
-    		x->signature = sig;
-	}
+    /*
+     * Ìø¹ýÇ°ÃæµÄ (sig - 1)*6 ÐÐ  
+     */
+    do {
+        if (skip_lines == (sig - 1) * 6)
+            break;
+        skip_lines++;
+    } while ((fgets(buf, sizeof(buf), fp2)) != NULL);
+    /*
+     * ¼ì²éÊÇ·ñ¿ÉÒÔ¶ÁÈëµÚ sig ¸öÇ©Ãûµµ 
+     */
+    if (skip_lines == (sig - 1) * 6) {
+        /*
+         * ¶ÁÈëÇ©Ãûµµ²¢Ð´Èë fp ¶ÔÓ¦µÄÎÄ¼þÖÐ 
+         */
+        for (i = skip_lines; i < skip_lines + 6; i++) {
+            if (fgets(buf, sizeof(buf), fp2) == NULL)
+                break;
+            unix_string(buf);
+            if (buf[0] != '\n')
+                fprintf(fp, "%s", buf);
+        }
+        /*
+         * ¶ÁÈëÇ©Ãûµµ³É¹¦£¬ÉèÖÃÄ¬ÈÏÇ©ÃûµµÎªµ±Ç°Ê¹ÓÃµÄÇ©Ãûµµ 
+         */
+        if (i > skip_lines)
+            x->signature = sig;
+    }
     fclose(fp2);
-	if (i > skip_lines)
-    	return sig;
-	return 0;
+    if (i > skip_lines)
+        return sig;
+    return 0;
 }
 
 int has_BM_perm(struct userec *user, char *board)
@@ -966,7 +990,9 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
     int i;
     uinfo_t *uin;
 
-    /* ÂËµôÌØÊâ×Ö·û£¬Ó¦¸ÃÐ´³ÉÒ»¸öº¯Êý */
+    /*
+     * ÂËµôÌØÊâ×Ö·û£¬Ó¦¸ÃÐ´³ÉÒ»¸öº¯Êý 
+     */
     for (i = 0; i < (int) strlen(msg); i++)
         if ((0 < msg[i] && msg[i] <= 27) || msg[i] == -1)
             msg[i] = 32;
@@ -1101,17 +1127,21 @@ int init_all()
     srand(time(0) * 2 + getpid());
     chdir(BBSHOME);
     http_init();
-    /*seteuid(BBSUID);
-       if(geteuid()!=BBSUID) http_fatal("uid error."); */
+    /*
+     * seteuid(BBSUID);
+     * if(geteuid()!=BBSUID) http_fatal("uid error."); 
+     */
     shm_init();
     loginok = user_init(&currentuser, &u_info);
     if (loginok < 0) {
         /*
-           http_redirect(NOLOGIN_PAGE);
-           exit(0);
+         * http_redirect(NOLOGIN_PAGE);
+         * exit(0);
          */
         printf("Content-type: text/html; charset=%s\n\n", CHARSET);
-        /*redirect(NOLOGIN_PAGE); */
+        /*
+         * redirect(NOLOGIN_PAGE); 
+         */
         printf("<script>top.window.location='/nologin.html';</script>\n");
         exit(0);
     }
@@ -1423,7 +1453,7 @@ uinfo_t *get_user_info(int utmpnum)
 int get_friends_num()
 {
     return get_utmpent(utmpent)->friendsnum;
-;
+    ;
 }
 
 struct boardheader *getbcache_addr()
@@ -1433,7 +1463,7 @@ struct boardheader *getbcache_addr()
 
 /* from talk.c */
 int cmpfuid(a, b)
-    struct friends *a, *b;
+struct friends *a, *b;
 {
     return strcasecmp(a->id, b->id);
 }
@@ -1487,13 +1517,13 @@ int full_utmp(struct user_info *uentp, int *count)
 int fill_userlist()
 {
     static int i, i2;
-    struct user_info* u;
+    struct user_info *u;
 
     i2 = 0;
     if (!friendmode) {
         apply_ulist_addr((APPLY_UTMP_FUNC) full_utmp, (char *) &i2);
     } else {
-        u= get_utmpent(utmpent);
+        u = get_utmpent(utmpent);
         for (i = 0; i < u->friendsnum; i++) {
             if (u->friends_uid[i])
                 apply_utmpuid((APPLY_UTMP_FUNC) full_utmp, u->friends_uid[i], (char *) &i2);
@@ -1811,11 +1841,15 @@ static int www_new_guest_entry()
             if (!(wwwguest_shm->use_map[i / 32] & (1 << (i % 32))) || (now - wwwguest_shm->guest_entry[i].freshtime < MAX_WWW_GUEST_IDLE_TIME))
                 continue;
             newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", now - wwwguest_shm->guest_entry[i].freshtime, wwwguest_shm->guest_entry[i].key);
-            /*Çå³ýuse_map */
+            /*
+             * Çå³ýuse_map 
+             */
             wwwguest_shm->use_map[i / 32] &= ~(1 << (i % 32));
             if (pub->www_guest_count > 0) {
                 pub->www_guest_count--;
-                /* Çå³ýÊý¾Ý */
+                /*
+                 * Çå³ýÊý¾Ý 
+                 */
                 bzero(&wwwguest_shm->guest_entry[i], sizeof(struct WWW_GUEST_S));
             }
         }
@@ -1828,7 +1862,9 @@ static int www_new_guest_entry()
                 if ((map & 1) == 0) {
                     wwwguest_shm->use_map[i] |= 1 << j;
                     wwwguest_shm->guest_entry[i * 32 + j].freshtime = time(0);
-                    /*±ÜÃâ±»kickÏÂÈ¥ */
+                    /*
+                     * ±ÜÃâ±»kickÏÂÈ¥ 
+                     */
                     break;
                 } else
                     map = map >> 1;
@@ -1836,7 +1872,7 @@ static int www_new_guest_entry()
         }
     if (i != MAX_WWW_MAP_ITEM) {
         pub->www_guest_count++;
-        if (get_utmp_number() + getwwwguestcount()>get_publicshm()->max_user) {
+        if (get_utmp_number() + getwwwguestcount() > get_publicshm()->max_user) {
             save_maxuser();
         }
     }
@@ -1893,16 +1929,17 @@ static int resolve_guest_table()
 void www_data_detach()
 {
     shmdt(wwwguest_shm);
-    wwwguest_shm= NULL;
+    wwwguest_shm = NULL;
 }
 
 int www_data_init()
 {
     struct userec *guest;
 
-    /* www_guest_infoÄ¿Ç°ÏÈÊ¹ÓÃÒ»¸öÈ«¾Ö±äÁ¿À´×ö£¬ÕâÑù
-       »áµ¼ÖÂÏß³Ì²»°²È«:P   µ«ÊÇ¶ÔÓÚ½ø³ÌÄ£ÐÍµÄcgi ºÍphp
-       ×ã¹»ÁË
+    /*
+     * www_guest_infoÄ¿Ç°ÏÈÊ¹ÓÃÒ»¸öÈ«¾Ö±äÁ¿À´×ö£¬ÕâÑù
+     * »áµ¼ÖÂÏß³Ì²»°²È«:P   µ«ÊÇ¶ÔÓÚ½ø³ÌÄ£ÐÍµÄcgi ºÍphp
+     * ×ã¹»ÁË
      */
     bzero(&www_guest_uinfo, sizeof(www_guest_uinfo));
     www_guest_uinfo.active = true;
@@ -1915,15 +1952,17 @@ int www_data_init()
     strcpy(www_guest_uinfo.username, guest->username);
     strcpy(www_guest_uinfo.userid, guest->userid);
     www_guest_uinfo.pager = 0;
-	{
-		struct userdata ud;
+    {
+        struct userdata ud;
 
-		read_userdata(guest->userid, &ud);
-    	strcpy(www_guest_uinfo.realname, ud.realname);
-	}
+        read_userdata(guest->userid, &ud);
+        strcpy(www_guest_uinfo.realname, ud.realname);
+    }
     www_guest_uinfo.utmpkey = 0;
 
-    /* destuid ½«±»ÓÃÀ´´æ·Åwww guest±íµÄÈë¿Ú */
+    /*
+     * destuid ½«±»ÓÃÀ´´æ·Åwww guest±íµÄÈë¿Ú 
+     */
     www_guest_uinfo.destuid = 0;
 
     if (resolve_guest_table() != 0)
@@ -1933,13 +1972,19 @@ int www_data_init()
 
 int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y)
 {
-    /*printf("utmpuserid = %s\n", id); */
-    /*printf("utmpnum = %s\n", num); */
+    /*
+     * printf("utmpuserid = %s\n", id); 
+     */
+    /*
+     * printf("utmpnum = %s\n", num); 
+     */
     if (!strcasecmp(userid, "new"))
         return -1;
 
     if (strcasecmp(userid, "guest")) {
-        /* ·ÇguestÔÚÏßÓÃ»§´¦Àí */
+        /*
+         * ·ÇguestÔÚÏßÓÃ»§´¦Àí 
+         */
         if (useridx < 1 || useridx >= MAXACTIVE) {
             return -1;
         }
@@ -1959,7 +2004,9 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
         if (*x == 0)
             return -5;
     } else {
-        /* guestÓÃ»§´¦Àí */
+        /*
+         * guestÓÃ»§´¦Àí 
+         */
         struct WWW_GUEST_S *guest_info;
 
         if ((useridx < 0) || (useridx >= MAX_WWW_GUEST))
@@ -1989,7 +2036,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 {
     int ret;
     char buf[255];
-	struct userdata ud;
+    struct userdata ud;
 
     if (user != NULL && strcasecmp(user->userid, "guest")) {
         struct user_info ui;
@@ -2037,22 +2084,24 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         user->lastlogin = time(0);
         user->numlogins++;
         strncpy(user->lasthost, fromhost, IPLEN);
-	user->lasthost[IPLEN-1] = '\0';           /* add by binxun ,fix the bug */
-		read_userdata(user->userid, &ud);
+        user->lasthost[IPLEN - 1] = '\0';       /* add by binxun ,fix the bug */
+        read_userdata(user->userid, &ud);
         if (!HAS_PERM(user, PERM_LOGINOK) && !HAS_PERM(user, PERM_SYSOP)) {
             if (strchr(ud.realemail, '@')
                 && valid_ident(ud.realemail)) {
                 user->userlevel |= PERM_DEFAULT;
                 /*
-                if (HAS_PERM(user, PERM_DENYPOST)  )
-                    user->userlevel &= ~PERM_POST;
-				*/
+                 * if (HAS_PERM(user, PERM_DENYPOST)  )
+                 * user->userlevel &= ~PERM_POST;
+                 */
             }
         }
 
         memset(&ui, 0, sizeof(struct user_info));
         ui.active = true;
-        /* Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí */
+        /*
+         * Bigman 2000.8.29 ÖÇÄÒÍÅÄÜ¹»ÒþÉí 
+         */
         if ((HAS_PERM(user, PERM_CHATCLOAK)
              || HAS_PERM(user, PERM_CLOAK))
             && (user->flags[0] & CLOAK_FLAG))
@@ -2075,7 +2124,9 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         ui.uid = useridx;
         strncpy(ui.from, fromhost, IPLEN);
         ui.logintime = time(0); /* for counting user's stay time */
-        /* refer to bbsfoot.c for details */
+        /*
+         * refer to bbsfoot.c for details 
+         */
         ui.freshtime = time(0);
         tmp = rand() % 100000000;
         ui.utmpkey = tmp;
@@ -2101,10 +2152,12 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                 *putmpent = utmpent;
                 ret = 0;
             }
-            getfriendstr(currentuser,u);
+            getfriendstr(currentuser, u);
         }
     } else {
-        /* TODO:alloc guest table */
+        /*
+         * TODO:alloc guest table 
+         */
         int idx = www_new_guest_entry();
 
         if (idx < 0)
@@ -2150,13 +2203,15 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
     struct userec *x = NULL;
 
     stay = abs(time(0) - puinfo->logintime);
-    /* ÉÏÕ¾Ê±¼ä³¬¹ý 2 Ð¡Ê±°´ 2 Ð¡Ê±¼Æ */
+    /*
+     * ÉÏÕ¾Ê±¼ä³¬¹ý 2 Ð¡Ê±°´ 2 Ð¡Ê±¼Æ 
+     */
     if (stay > 7200)
         stay = 7200;
     user->stay += stay;
     record_exit_time(user->userid);
     if (strcasecmp(user->userid, "guest")) {
-        newbbslog(BBSLOG_USIES,"EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, get_curr_utmpent(), useridx);
+        newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, get_curr_utmpent(), useridx);
         if (!puinfo->active)
             return 0;
         setflags(user, PAGER_FLAG, (puinfo->pager & ALL_PAGER));
@@ -2199,11 +2254,10 @@ int can_send_mail()
     if (HAS_PERM(currentuser, PERM_DENYMAIL))
         return 0;
     else if (HAS_PERM(currentuser, PERM_LOGINOK)) {
-    	if (chkusermail(currentuser)) 
-			return 0;
+        if (chkusermail(currentuser))
+            return 0;
         return 1;
-    }
-    else
+    } else
         return 0;
 }
 
@@ -2310,10 +2364,12 @@ char *encode_html(char *buf, const char *str, size_t buflen)
             string_copy(&buf[j], "&amp;", &k);
             j += k;
             break;
-            /*case ' ':
-               snprintf(&buf[j], buflen-j, "&nbsp;");
-               j = strlen(buf);
-               break; */
+            /*
+             * case ' ':
+             * snprintf(&buf[j], buflen-j, "&nbsp;");
+             * j = strlen(buf);
+             * break; 
+             */
         case '>':
             k = buflen - j;
             string_copy(&buf[j], "&gt;", &k);
@@ -2416,255 +2472,283 @@ char *unix_string(char *str)
     return str;
 }
 
-static void print_font_style(unsigned int style, buffered_output_t *output)
+static void print_font_style(unsigned int style, buffered_output_t * output)
 {
-	char font_class[8];
-	char font_style[STRLEN];
-	char font_str[256];
-	unsigned int bg;
+    char font_class[8];
+    char font_style[STRLEN];
+    char font_str[256];
+    unsigned int bg;
 
-	if (STYLE_ISSET(style, FONT_BG_SET))
-	{
-		bg = 8;
-	}
-	else
-		bg = STYLE_GET_BG(style);
-	sprintf(font_class, "f%01d%02d", bg, STYLE_GET_FG(style));
-	font_style[0] = '\0';
-	if (STYLE_ISSET(style, FONT_STYLE_UL))
-		strcat(font_style, "text-decoration: underline; ");
-	if (STYLE_ISSET(style, FONT_STYLE_ITALIC))
-		strcat(font_style, "font-style: italic; ");
-	if (font_style[0] != '\0')
-		sprintf(font_str, "<font class=\"%s\" style=\"%s\">", 
-				font_class, font_style);
-	else
-		sprintf(font_str, "<font class=\"%s\">", font_class);
-	output->output(font_str, strlen(font_str), output);
+    if (STYLE_ISSET(style, FONT_BG_SET)) {
+        bg = 8;
+    } else
+        bg = STYLE_GET_BG(style);
+    sprintf(font_class, "f%01d%02d", bg, STYLE_GET_FG(style));
+    font_style[0] = '\0';
+    if (STYLE_ISSET(style, FONT_STYLE_UL))
+        strcat(font_style, "text-decoration: underline; ");
+    if (STYLE_ISSET(style, FONT_STYLE_ITALIC))
+        strcat(font_style, "font-style: italic; ");
+    if (font_style[0] != '\0')
+        sprintf(font_str, "<font class=\"%s\" style=\"%s\">", font_class, font_style);
+    else
+        sprintf(font_str, "<font class=\"%s\">", font_class);
+    output->output(font_str, strlen(font_str), output);
 }
 
-static void html_output(char *buf, size_t buflen, buffered_output_t *output)
+static void html_output(char *buf, size_t buflen, buffered_output_t * output)
 {
-	size_t i;
-	
-	for (i = 0; i < buflen; i++)
-	{
-		switch (buf[i])
-		{
-		case '&':
-			output->output("&amp;", 5, output);
-			break;
-		case '<':
-			output->output("&lt;", 4, output);
-			break;
-		case '>':
-			output->output("&gt;", 4, output);
-			break;
-		case ' ':
-			output->output("&nbsp;", 6, output);
-			break;
-		default:
-			output->output(&buf[i], 1, output);
-		}
-	}
+    size_t i;
+
+    for (i = 0; i < buflen; i++) {
+        switch (buf[i]) {
+        case '&':
+            output->output("&amp;", 5, output);
+            break;
+        case '<':
+            output->output("&lt;", 4, output);
+            break;
+        case '>':
+            output->output("&gt;", 4, output);
+            break;
+        case ' ':
+            output->output("&nbsp;", 6, output);
+            break;
+        default:
+            output->output(&buf[i], 1, output);
+        }
+    }
 }
 
-static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t *output)
+static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
 {
-	size_t i;
-	
-	for (i = 0; i < buflen; i++)
-	{
-		if (buf[i] == 0x1b)
-			html_output("*", 1, output);
-		else
-			html_output(&buf[i], 1, output);
-	}
+    size_t i;
+
+    for (i = 0; i < buflen; i++) {
+        if (buf[i] == 0x1b)
+            html_output("*", 1, output);
+        else
+            html_output(&buf[i], 1, output);
+    }
 }
 
-static void generate_font_style(unsigned int *style, unsigned int *ansi_val,
-								size_t len)
+static void generate_font_style(unsigned int *style, unsigned int *ansi_val, size_t len)
 {
-	size_t i;
-	unsigned int color;
+    size_t i;
+    unsigned int color;
 
-	for (i = 0; i < len; i++)
-	{
-		if (ansi_val[i] == 0)
-			STYLE_ZERO(*style);
-		else if (ansi_val[i] == 1)
-			STYLE_SET(*style, FONT_FG_BOLD);
-		else if (ansi_val[i] == 4)
-			STYLE_SET(*style, FONT_STYLE_UL);
-		else if (ansi_val[i] == 5)
-			STYLE_SET(*style, FONT_STYLE_BLINK);
-		else if (ansi_val[i] >= 30 && ansi_val[i] <= 37)
-		{
-			color = ansi_val[i] - 30;
-			STYLE_SET_FG(*style, color);
-		}
-		else if (ansi_val[i] >= 40 && ansi_val[i] <= 47)
-		{
-			/* user explicitly specify background color */
-			/* STYLE_SET(*style, FONT_BG_SET); */
-			color = ansi_val[i] - 40;
-			STYLE_SET_BG(*style, color);
-		}
-	}
+    for (i = 0; i < len; i++) {
+        if (ansi_val[i] == 0)
+            STYLE_ZERO(*style);
+        else if (ansi_val[i] == 1)
+            STYLE_SET(*style, FONT_FG_BOLD);
+        else if (ansi_val[i] == 4)
+            STYLE_SET(*style, FONT_STYLE_UL);
+        else if (ansi_val[i] == 5)
+            STYLE_SET(*style, FONT_STYLE_BLINK);
+        else if (ansi_val[i] >= 30 && ansi_val[i] <= 37) {
+            color = ansi_val[i] - 30;
+            STYLE_SET_FG(*style, color);
+        } else if (ansi_val[i] >= 40 && ansi_val[i] <= 47) {
+            /*
+             * user explicitly specify background color 
+             */
+            /*
+             * STYLE_SET(*style, FONT_BG_SET); 
+             */
+            color = ansi_val[i] - 40;
+            STYLE_SET_BG(*style, color);
+        }
+    }
 }
 
-void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output)
+void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char* attachlink)
 {
-	unsigned int font_style = 0;
-	unsigned int ansi_state;
-	unsigned int ansi_val[STRLEN];
-	int ival = 0;
-	size_t i;
-	char *ptr = buf;
-	char *ansi_begin;
-	char *ansi_end;
-	
-	if (ptr == NULL)
-		return;
-	STATE_ZERO(ansi_state);
-	bzero(ansi_val, sizeof(ansi_val));
-	for (i = 0; i < buflen; i++)
-	{
-		if (STATE_ISSET(ansi_state, STATE_NEW_LINE))
-		{
-			STATE_CLR(ansi_state, STATE_NEW_LINE);
-			if (i < (buflen - 1) && (buf[i] == ':' && buf[i+1] == ' '))
-			{
-				STATE_SET(ansi_state, STATE_QUOTE_LINE);
-				if (STATE_ISSET(ansi_state, STATE_FONT_SET))
-					output->output("</font>", 7, output);
-				/* set quoted line styles */
-				STYLE_SET(font_style, FONT_STYLE_QUOTE);
-				STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
-				STYLE_CLR_BG(font_style);
-				print_font_style(font_style, output);
-				output->output(&buf[i], 1, output);
-				STATE_SET(ansi_state, STATE_FONT_SET);
-				STATE_CLR(ansi_state, STATE_ESC_SET);
-				/* clear ansi_val[] array */
-				bzero(ansi_val, sizeof(ansi_val));
-				ival = 0;
-				continue;
-			}
-			else
-				STATE_CLR(ansi_state, STATE_QUOTE_LINE);
-		}
-		if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i+1] == '['))
-		{
-			if (STATE_ISSET(ansi_state, STATE_ESC_SET))
-			{
-				/* *[*[ or *[13;24*[ */
-				size_t len;
-				ansi_end = &buf[i - 1];
-				len = ansi_end - ansi_begin + 1;
-				print_raw_ansi(ansi_begin, len, output);
-			}
-			STATE_SET(ansi_state, STATE_ESC_SET);
-			ansi_begin = &buf[i];
-			i++; /* skip the next '[' character */
-		}
-		else if (buf[i] == '\n')
-		{
-			if (STATE_ISSET(ansi_state, STATE_ESC_SET))
-			{
-				/* *[\n or *[13;24\n */
-				size_t len;
-				ansi_end = &buf[i - 1];
-				len = ansi_end - ansi_begin + 1;
-				print_raw_ansi(ansi_begin, len, output);
-				STATE_CLR(ansi_state, STATE_ESC_SET);
-			}
-			if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE))
-			{
-				/* end of a quoted line */
-				output->output("</font>", 7, output);
-				STYLE_CLR(font_style, FONT_STYLE_QUOTE);
-				STATE_CLR(ansi_state, STATE_FONT_SET);
-			}
-			output->output("<br />\n", 7, output);
-			STATE_CLR(ansi_state, STATE_QUOTE_LINE);
-			STATE_SET(ansi_state, STATE_NEW_LINE);
-		}
-		else
-		{
-			if (STATE_ISSET(ansi_state, STATE_ESC_SET))
-			{
-				if (buf[i] == 'm')
-				{
-					/* *[0;1;4;31m */
-					if (STATE_ISSET(ansi_state, STATE_FONT_SET))
-					{
-						output->output("</font>", 7, output);
-						STATE_CLR(ansi_state, STATE_FONT_SET);
-					}
-					if (i < buflen - 1)
-					{
-						generate_font_style(&font_style, ansi_val, ival+1);
-						if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE))
-							STYLE_SET(font_style, FONT_STYLE_QUOTE);
-						print_font_style(font_style, output);
-						STATE_SET(ansi_state, STATE_FONT_SET);
-						STATE_CLR(ansi_state, STATE_ESC_SET);
-						/*STYLE_ZERO(font_style);*/
-						/* clear ansi_val[] array */
-						bzero(ansi_val, sizeof(ansi_val));
-						ival = 0;
-					}
-				}
-				else if (isalpha(buf[i]))
-				{
-					/* *[23;32H */
-					/* ignore it */
-					STATE_CLR(ansi_state, STATE_ESC_SET);
-					STYLE_ZERO(font_style);
-					/* clear ansi_val[] array */
-					bzero(ansi_val, sizeof(ansi_val));
-					ival = 0;
-					continue;
-				}
-				else if (buf[i] == ';')
-				{
-					if (ival < sizeof(ansi_val) - 1)
-					{
-						ival ++; /* go to next ansi_val[] element */
-						ansi_val[ival] = 0;
-					}
-				}
-				else if (buf[i] >= '0' && buf[i] <= '9')
-				{
-					ansi_val[ival] *= 10;
-					ansi_val[ival] += (buf[i] - '0');
-				}
-				else
-				{
-					/* *[1;32/XXXX or *[* or *[[ */
-					/* not a valid ANSI string, just output it */
-					size_t len;
-					
-					ansi_end = &buf[i];
-					len = ansi_end - ansi_begin + 1;
-					print_raw_ansi(ansi_begin, len, output);
-					STATE_CLR(ansi_state, STATE_ESC_SET);
-					/* clear ansi_val[] array */
-					bzero(ansi_val, sizeof(ansi_val));
-					ival = 0;
-				}
-				
-			}
-			else
-				print_raw_ansi(&buf[i], 1, output);
-		}
-	}
-	if (STATE_ISSET(ansi_state, STATE_FONT_SET))
-	{
-		output->output("</font>", 7, output);
-		STATE_CLR(ansi_state, STATE_FONT_SET);
-	}
-	output->flush(output);
-}
+    unsigned int font_style = 0;
+    unsigned int ansi_state;
+    unsigned int ansi_val[STRLEN];
+    int ival = 0;
+    size_t i;
+    char *ptr = buf;
+    char *ansi_begin;
+    char *ansi_end;
+    int attachmatched;
+    char link[STRLEN];
 
+    if (ptr == NULL)
+        return;
+    STATE_ZERO(ansi_state);
+    bzero(ansi_val, sizeof(ansi_val));
+    attachmatched = 0;
+    for (i = 0; i < buflen; i++) {
+        long attach_len;
+        char *attachptr, *attachfilename;
+
+        if (attachlink&&((attachfilename = checkattach(buf + i, buflen - i, &attach_len, &attachptr)) != NULL)) {
+            char *extension;
+            int type;
+            char outbuf[256];
+
+            sprintf(link,"%s&amp;attachpos=%d",attachlink,i);
+            extension = attachfilename + strlen(atachfilename);
+            type = 0;
+            while ((*extension != '.') && (*extension != NULL))
+                extension--;
+            if (*extension == '.') {
+                extension++;
+                if (!strcmp(extension, "bmp") || !strcmp(extension, "jpg")
+                    || !strcmp(extension, "png") || !strcmp(extension, "jpeg")
+                    || !strcmp(extension, "pcx") || !strcmp(extension, "gif"))
+                    type = 1;
+                else if (!strcmp(extension, "swf"))
+                    type = 2;
+            }
+            switch (type) {
+            case 1:
+                sprintf(outbuf, "Í¼Æ¬:%s(%d)<br><img src='%s'></img>", attachfilename, attach_len, link);
+                break;
+            case 2:
+                sprintf(outbuf, "Flash¶¯»­: "
+                        "<a href='%s'>%s</a> (%d ×Ö½Ú)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s'>" "<EMBED SRC='%s'></EMBED></OBJECT>", link, attachfilename, attach_len, link, link);
+            default:
+                sprintf(outbuf, "¸½¼þ: <a href='%s'>%s</a> (%d ×Ö½Ú)\n", link, attachfilename);
+                break;
+            }
+            output->output(outbuf, strlen(outbuf), output);
+        }
+        if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
+            STATE_CLR(ansi_state, STATE_NEW_LINE);
+            if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
+                STATE_SET(ansi_state, STATE_QUOTE_LINE);
+                if (STATE_ISSET(ansi_state, STATE_FONT_SET))
+                    output->output("</font>", 7, output);
+                /*
+                 * set quoted line styles 
+                 */
+                STYLE_SET(font_style, FONT_STYLE_QUOTE);
+                STYLE_SET_FG(font_style, FONT_COLOR_QUOTE);
+                STYLE_CLR_BG(font_style);
+                print_font_style(font_style, output);
+                output->output(&buf[i], 1, output);
+                STATE_SET(ansi_state, STATE_FONT_SET);
+                STATE_CLR(ansi_state, STATE_ESC_SET);
+                /*
+                 * clear ansi_val[] array 
+                 */
+                bzero(ansi_val, sizeof(ansi_val));
+                ival = 0;
+                continue;
+            } else
+                STATE_CLR(ansi_state, STATE_QUOTE_LINE);
+        }
+        if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i + 1] == '[')) {
+            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
+                /*
+                 *[*[ or *[13;24*[ */
+                size_t len;
+
+                ansi_end = &buf[i - 1];
+                len = ansi_end - ansi_begin + 1;
+                print_raw_ansi(ansi_begin, len, output);
+            }
+            STATE_SET(ansi_state, STATE_ESC_SET);
+            ansi_begin = &buf[i];
+            i++;                /* skip the next '[' character */
+        } else if (buf[i] == '\n') {
+            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
+                /*
+                 *[\n or *[13;24\n */
+                size_t len;
+
+                ansi_end = &buf[i - 1];
+                len = ansi_end - ansi_begin + 1;
+                print_raw_ansi(ansi_begin, len, output);
+                STATE_CLR(ansi_state, STATE_ESC_SET);
+            }
+            if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE)) {
+                /*
+                 * end of a quoted line 
+                 */
+                output->output("</font>", 7, output);
+                STYLE_CLR(font_style, FONT_STYLE_QUOTE);
+                STATE_CLR(ansi_state, STATE_FONT_SET);
+            }
+            output->output("<br />\n", 7, output);
+            STATE_CLR(ansi_state, STATE_QUOTE_LINE);
+            STATE_SET(ansi_state, STATE_NEW_LINE);
+        } else {
+            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
+                if (buf[i] == 'm') {
+                    /*
+                     *[0;1;4;31m */
+                    if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
+                        output->output("</font>", 7, output);
+                        STATE_CLR(ansi_state, STATE_FONT_SET);
+                    }
+                    if (i < buflen - 1) {
+                        generate_font_style(&font_style, ansi_val, ival + 1);
+                        if (STATE_ISSET(ansi_state, STATE_QUOTE_LINE))
+                            STYLE_SET(font_style, FONT_STYLE_QUOTE);
+                        print_font_style(font_style, output);
+                        STATE_SET(ansi_state, STATE_FONT_SET);
+                        STATE_CLR(ansi_state, STATE_ESC_SET);
+                        /*
+                         * STYLE_ZERO(font_style);
+                         */
+                        /*
+                         * clear ansi_val[] array 
+                         */
+                        bzero(ansi_val, sizeof(ansi_val));
+                        ival = 0;
+                    }
+                } else if (isalpha(buf[i])) {
+                    /*
+                     *[23;32H */
+                    /*
+                     * ignore it 
+                     */
+                    STATE_CLR(ansi_state, STATE_ESC_SET);
+                    STYLE_ZERO(font_style);
+                    /*
+                     * clear ansi_val[] array 
+                     */
+                    bzero(ansi_val, sizeof(ansi_val));
+                    ival = 0;
+                    continue;
+                } else if (buf[i] == ';') {
+                    if (ival < sizeof(ansi_val) - 1) {
+                        ival++; /* go to next ansi_val[] element */
+                        ansi_val[ival] = 0;
+                    }
+                } else if (buf[i] >= '0' && buf[i] <= '9') {
+                    ansi_val[ival] *= 10;
+                    ansi_val[ival] += (buf[i] - '0');
+                } else {
+                    /*
+                     *[1;32/XXXX or *[* or *[[ */
+                    /*
+                     * not a valid ANSI string, just output it 
+                     */
+                    size_t len;
+
+                    ansi_end = &buf[i];
+                    len = ansi_end - ansi_begin + 1;
+                    print_raw_ansi(ansi_begin, len, output);
+                    STATE_CLR(ansi_state, STATE_ESC_SET);
+                    /*
+                     * clear ansi_val[] array 
+                     */
+                    bzero(ansi_val, sizeof(ansi_val));
+                    ival = 0;
+                }
+
+            } else
+                print_raw_ansi(&buf[i], 1, output);
+        }
+    }
+    if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
+        output->output("</font>", 7, output);
+        STATE_CLR(ansi_state, STATE_FONT_SET);
+    }
+    output->flush(output);
+}

@@ -86,8 +86,8 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_setmailfile, NULL)
         ZEND_FE(bbs_mail_file, NULL)
         ZEND_FE(bbs_update_uinfo, NULL)
-	ZEND_FE(bbs_createNewID,NULL)
-	ZEND_FE(bbs_fillIDInfo,NULL)
+        ZEND_FE(bbs_createNewID,NULL)
+        ZEND_FE(bbs_fillIDInfo,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -534,8 +534,10 @@ static ZEND_FUNCTION(bbs_printansifile)
     char *ptr;
     int fd;
     struct stat st;
-	const int outbuf_len = 4096;
-	buffered_output_t out;
+    const int outbuf_len = 4096;
+    buffered_output_t out;
+    char* attachlink;
+    long attachlink_len;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -545,11 +547,16 @@ static ZEND_FUNCTION(bbs_printansifile)
             WRONG_PARAM_COUNT;
         }
         linkmode = 1;
-    } else {
+        attachlink=NULL;
+    } else if (ZEND_NUM_ARGS() == 2) {
         if (zend_parse_parameters(2 TSRMLS_CC, "sl", &filename, &filename_len, &linkmode) != SUCCESS) {
             WRONG_PARAM_COUNT;
         }
-    }
+        attachlink=NULL;
+    } else 
+        if (zend_parse_parameters(3 TSRMLS_CC, "sls", &filename, &filename_len, &linkmode,&attachlink,&attachlink_len) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
     fd = open(filename, O_RDONLY);
     if (fd < 0)
         RETURN_LONG(2);
@@ -584,7 +591,7 @@ static ZEND_FUNCTION(bbs_printansifile)
 	{
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
-		output_ansi_html(ptr, st.st_size, &out);
+		output_ansi_html(ptr, st.st_size, &out,attachlink);
     } 
     munmap(ptr, st.st_size);
 	efree(out.buf);
@@ -601,9 +608,6 @@ static ZEND_FUNCTION(bbs_getboard)
     const struct boardheader *bh;
     int b_num;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
         if (zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &boardname_len) != SUCCESS)
             WRONG_PARAM_COUNT;
@@ -1853,42 +1857,42 @@ static ZEND_FUNCTION(bbs_createNewID)
  */
 static ZEND_FUNCTION(bbs_fillIDInfo)
 {
-	char* userid;
-	int userid_len;
-	char* realname;
-	int realname_len;
-	char* number;
-	int number_len;	
-	char* dept;
-	int dept_len;
-	char genbuf[STRLEN];
+    char* userid;
+    int userid_len;
+    char* realname;
+    int realname_len;
+    char* number;
+    int number_len;	
+    char* dept;
+    int dept_len;
+    char genbuf[STRLEN];
 
-	struct userdata ud;
-	
-	int ac = ZEND_NUM_ARGS();
+    struct userdata ud;
+
+    int ac = ZEND_NUM_ARGS();
 
 
-       if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &userid, &userid_len,&realname,&realname_len,&number,&number_len,&dept,&dept_len) == FAILURE) 
-       {
-	        WRONG_PARAM_COUNT;
-	}
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &userid, &userid_len,&realname,&realname_len,&number,&number_len,&dept,&dept_len) == FAILURE) 
+    {
+            WRONG_PARAM_COUNT;
+    }
 
-       if(userid_len > IDLEN || realname_len > NAMELEN || dept_len > STRLEN)
-	       RETURN_LONG(-1);
+    if(userid_len > IDLEN || realname_len > NAMELEN || dept_len > STRLEN)
+       RETURN_LONG(-1);
      
-	memset(&ud,0,sizeof(ud));
-	if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
-	
-	strncpy(ud.realname, realname, NAMELEN);
-	strncpy(ud.address,dept,STRLEN);
-	sprintf(genbuf,"%s#%s#%s#TH",realname,number,dept);
-	if(strlen(genbuf) >= STRLEN - 16) //too long
-		sprintf(genbuf,"%s#%s#TH",realname,number);//must < STRLEN - 16
-        strncpy(ud.realemail,genbuf,STRLEN-16);
-	
-        if(write_userdata(userid,&ud) < 0)RETURN_LONG(-2);
+    memset(&ud,0,sizeof(ud));
+    if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
 
-	RETURN_LONG(0);
+    strncpy(ud.realname, realname, NAMELEN);
+    strncpy(ud.address,dept,STRLEN);
+    sprintf(genbuf,"%s#%s#%s#TH",realname,number,dept);
+    if(strlen(genbuf) >= STRLEN - 16) //too long
+		sprintf(genbuf,"%s#%s#TH",realname,number);//must < STRLEN - 16
+    strncpy(ud.realemail,genbuf,STRLEN-16);
+
+    if(write_userdata(userid,&ud) < 0)RETURN_LONG(-2);
+
+    RETURN_LONG(0);
 }
 
 
