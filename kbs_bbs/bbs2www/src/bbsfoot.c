@@ -20,8 +20,6 @@ function Init() {\n\
   Time()\n\
 }\n\
 function Time(){\n\
- if (!document.layers&&!document.all)\n\
- return\n\
  var now=new Date()\n\
  var Timer=new Date()\n\
  Timer.setTime(servertime.getTime()+now.getTime()-localtime.getTime());\n\
@@ -31,9 +29,20 @@ function Time(){\n\
  hours=12\n\
  if (minutes<=9)\n\
  minutes=\"0\"+minutes\n\
- myclock=Timer.getYear()+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDay()+\"日\"+hours+\":\"+minutes\n\
+ var year=Timer.getYear();
+ if (year < 1900)    // Y2K Fix, Isaac Powell
+	 year = year + 1900; // http://onyx.idbsu.edu/~ipowell
+
+ myclock=year+\"年\"+(Timer.getMonth()+1)+\"月\"+Timer.getDay()+\"日\"+hours+\":\"+minutes\n\
  var staysec=(now.getTime()-localtime.getTime())/60000+staytime;\n\
  stayclock=parseInt(staysec/60)+\"小时\"+parseInt(staysec%60)+\"分钟\"\n\
+ document.clock.myclock.value=myclock\n\
+ document.clock.stay.value=stayclock\n\
+ setTimeout(\"Time()\",58000)\n\
+}\n\
+//JavaScript End-->\n\
+</script>",time(0)+20,loginok?dt:0);
+ /*
 if (document.layers){\n\
 document.layers.position.document.write(myclock)\n\
 document.layers.position.document.close()\n\
@@ -45,12 +54,14 @@ position.innerHTML=myclock\n\
 stay.innerHTML=stayclock\n\
 setTimeout(\"Time()\",58000)\n\
  }\n\
-//JavaScript End-->
-</script>\
-",time(0)+20,loginok?dt:0);
+ */
+
 	printf("<style type=text/css>\nA {color: #0000FF}\n</style>\n");
-  	printf("<body bgcolor=#c0c0f0 onload=\"Init()\">\n");
-  	printf("时间[<span id=\"position\"></span>] ");
+  	printf("<body bgcolor=#c0c0f0 onload=\"Init()\"><form name=\"clock\">");
+  	printf("时间[<INPUT TYPE=\"text\" NAME=\"myclock\" size=\"16\" style=\"border: 0\">] ");
+	/*
+  	printf("时间[<span id=\"myclock\"></span>] ");
+	*/
 	printf("在线[<a href=bbsusr target=f3>%d</a>] ", count_online());
 	printf("帐号[<a href=bbsqry?userid=%s target=f3>%s</a>] ", id, id);
 	if(loginok) {
@@ -63,9 +74,11 @@ setTimeout(\"Time()\",58000)\n\
 				mail_total, mail_unread);
 		}
 	}
+	printf("停留[<INPUT TYPE=\"text\" NAME=\"stay\" size=\"10\" style=\"border: 0\">]</form>");
+	/*
 	printf("停留[<span id=\"stay\"></span>]");
-  	printf("<script>setTimeout('self.location=self.location', 240000);</script>");
-  	printf("</body>");
+	*/
+  	printf("</body></html>");
 }
 
 int mails(char *id, int unread_only) {
