@@ -699,7 +699,7 @@ void mem_printbotline(int l1, int l2, int total, int read, int size)
 	    ("\033[1;44;32m%s (%d%%) ตฺ(%d-%d)ะะ \033[33m| %s | h ธจึ๚หตร๗\033[m",
 	     (read >= size) ? "ฟดตฝฤฉฮฒภฒ" : "ฯยรๆปนำะเธ",
 	     total ? (100 * l2 / total) : (100 * read / size), l1, l2, s[n]);*/
-	if (DEFINE(currentuser,DEF_HIGHCOLOR))
+	if (currentuser != NULL && DEFINE(currentuser,DEF_HIGHCOLOR))
     	prints("[1;44m[32mฯยรๆปนำะเธ (%d%%)[33m   ฉฆ ฝแส๘ ก๛ <q> ฉฆ กü/กý/PgUp/PgDn าฦถฏ ฉฆ ? ธจึ๚หตร๗ ฉฆ     [m", total ? (100 * l2 / total) : (100 * read / size));
 	else
     	prints("[44m[32mฯยรๆปนำะเธ (%d%%)[33m   ฉฆ ฝแส๘ ก๛ <q> ฉฆ กü/กý/PgUp/PgDn าฦถฏ ฉฆ ? ธจึ๚หตร๗ ฉฆ     [m", total ? (100 * l2 / total) : (100 * read / size));
