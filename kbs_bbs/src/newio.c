@@ -973,7 +973,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             default:
                 if(isprint2(ch)&&strlen(buf)<len) {
-                    for(i=strlen(buf);i>=now;i--)
+                    for(i=strlen(buf);i>now;i--)
                         buf[i]=buf[i-1];
                     buf[now++]=ch;
                 }
