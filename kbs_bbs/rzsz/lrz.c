@@ -154,7 +154,7 @@ int bbs_zrecvfile()
     zsendline_init();
 
     io_mode(0, 1);
-    readline_setup(1, 128, 256);
+    readline_setup(1, HOWMANY, MAX_BLOCK * 2);
     patts = &paths;
     if (wcreceive(npats, patts) == ERROR) {
         exitcode = 0200;
