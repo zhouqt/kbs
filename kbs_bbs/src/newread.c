@@ -423,7 +423,6 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
         /* 获得置顶的数据*/
         if (dingcount) {
             if (entry!=len) { //需要读入.DING
-                int dingfd;
                 n=0;
                 if (pos>count) {
                     n=len;
