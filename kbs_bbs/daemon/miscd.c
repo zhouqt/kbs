@@ -535,6 +535,31 @@ void timed()
     }
 }
 
+static int check_file_writable(const char *filename)
+{
+	struct stat st;
+	int val;
+
+	val = stat(filename, &st);
+	if (val < 0 && errno == ENOENT) /* 文件不存在，认为可写 */
+		return 1;
+	else if (val == 0)
+	{
+		/* 只检查文件 owner */
+		if (st.st_uid == getuid() 
+				&& ((st.st_mode & (S_IRUSR | S_IWUSR)) == (S_IRUSR | S_IWUSR)))
+			return 1;
+		/*
+		else if (st.st_gid == getgid() 
+				&& (st.st_mode & (S_IRGRP | S_IWGRP) == (S_IRGRP | S_IWGRP)))
+			return 1;
+		else if (st.st_mode & (S_IROTH | S_IWOTH) == (S_IROTH | S_IWOTH))
+			return 1;
+		*/
+	}
+	return 0;
+}
+
 static int miscd_dodaemon(char *argv1, char *daemon)
 {
     struct sigaction act;
@@ -544,6 +569,16 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     char ch;
 #endif
 
+	if (!check_file_writable(PASSFILE))
+	{
+		fprintf(stderr, "Error! File %s is not writable.\n", PASSFILE);
+		exit(-1);
+	}
+	if (!check_file_writable(BOARDS))
+	{
+		fprintf(stderr, "Error! File %s is not writable.\n", BOARDS);
+		exit(-1);
+	}
     if (load_ucache() != 0) {
         printf("ft,load ucache error!");
         exit(-1);
