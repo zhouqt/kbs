@@ -1,5 +1,9 @@
 #!/bin/sh
-Xsed="@SED@ -e s/^X//"
+SED=@SED@
+if test -z "$SED" ; then
+SED=sed
+fi
+Xsed="$SED -e s/^X//"
 if test $# -gt 0 ; then
   optarg=
   args=
