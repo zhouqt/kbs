@@ -12,7 +12,7 @@ struct fileheader data[20000];
 int len = 0;
 
 int cmpfile(f1, f2)
-    struct fileheader *f1, *f2;
+struct fileheader *f1, *f2;
 {
     time_t t1, t2;
 
@@ -22,7 +22,7 @@ int cmpfile(f1, f2)
 }
 
 void insertfile(fh)
-    struct fileheader fh;
+struct fileheader fh;
 {
     data[len] = fh;
     len++;
@@ -196,10 +196,12 @@ int main(int argc, char **argv)
         if (stat(".DIR", &st) != -1)
             restore = 1;
         printf("\nwrite .DIR ok=%d\n", f_mv(".tmpfile", ".DIR"));
-        chmod(".DIR", st.st_mode);
-        ut.actime = st.st_atime;
-        ut.modtime = st.st_mtime;
-        utime(".DIR", &ut);
+        if (restore) {
+            chmod(".DIR", st.st_mode);
+            ut.actime = st.st_atime;
+            ut.modtime = st.st_mtime;
+            utime(".DIR", &ut);
+        }
     }
     chdir(cwd);
     if (!flag)
