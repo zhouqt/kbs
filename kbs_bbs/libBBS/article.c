@@ -506,6 +506,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     char filepath[STRLEN];
     char buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
     int aborted, local_article;
+	int oldmode;
 
     if (!mode && !haspostperm(user, toboard)) {
 #ifdef BBSMAIN
@@ -557,6 +558,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
             local_article = 0;
     }
 #ifdef BBSMAIN
+	oldmode = uinfo.mode;
     modify_user_mode(POSTING);
 #endif
     getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, toboard);        /*根据fname完成 文件复制 */
@@ -603,6 +605,9 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         postfile.accessed[0] |= FILE_FORWARDED;
     }
     after_post(user, &postfile, toboard, NULL);
+#ifdef BBSMAIN
+    modify_user_mode(oldmode);
+#endif
     return 1;
 }
 
