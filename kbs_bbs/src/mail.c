@@ -1353,7 +1353,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct,int
     case 0:
         prints("文章转寄完成!\n");
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.9.7 */
-        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
+//        substitute_record(direct, fileinfo, sizeof(*fileinfo), ent);
         break;
     case -1:
         prints("Forward failed: system error.\n");
