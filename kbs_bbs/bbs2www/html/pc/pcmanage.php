@@ -8,6 +8,8 @@
 	**	对收藏夹的剪切、复制操作需要 session 支持 windinsn nov 25,2003
 	*/
 	require("pcfuncs.php");
+	require("pctbp.php");
+					
 	if ($loginok != 1)
 		html_nologin();
 	elseif(!strcmp($currentuser["userid"],"guest"))
@@ -167,14 +169,23 @@
 				$emote = (int)($_POST["emote"]);
 				$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
 				$trackback = ($_POST["trackback"]==1)?1:0;
+				$blogbody = html_editorstr_format($_POST["blogbody"]);
+				if($_POST["trackbackurl"] && pc_tbp_check_url($_POST["trackbackurl"]) && $_POST["trackbackname"])
+				{
+					if($useHtmlTag)
+						$blogbody .= "<br /><br /><strong>相关文章</strong><br />\n".
+								"<a href='".str_replace("<?","&lt;?",$_POST["trackbackname"])."'>".htmlspecialchars($_POST["trackbackname"])."</a>";
+					else
+						$blogbody .= "\n\n[相关文章]\n".$_POST["trackbackname"];
+				}
+				
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`) ".
-					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes(html_editorstr_format($_POST["blogbody"]))."', '".$tag."', '0' , '".$useHtmlTag."' ,'".$trackback."','0');";
+					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($blogbody)."', '".$tag."', '0' , '".$useHtmlTag."' ,'".$trackback."','0');";
 				mysql_query($query,$link);
 				if($tag == 0)
 					pc_update_record($link,$pc["UID"]," + 1");
 				if($_POST["trackbackurl"])
 				{
-					include("pctbp.php");
 					$url = $_POST["trackbackurl"];
 					$query = "SELECT `nid` FROM nodes WHERE `subject` = '".addslashes($_POST["subject"])."' AND `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' AND `uid` = '".$pc["UID"]."' AND `access` = '".$tag."' AND `pid` = '".$pid."' AND `tid` = '".(int)($_POST["tid"])."' ORDER BY tid DESC LIMIT 0,1;";
 					$result = mysql_query($query,$link);
@@ -256,7 +267,8 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t5">
-	<input type="text" size="60" maxlength="255" name="trackbackurl" class="f1">
+	文章链接: <input type="text" size="80" maxlength="255" name="trackbackname" class="f1"><br />
+	Trackback Ping URL: <input type="text" size="80" maxlength="255" name="trackbackurl" class="f1">
 	(必须以"http://"开头)
 	</td>
 </tr>
