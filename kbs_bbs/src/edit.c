@@ -911,10 +911,12 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
             strncpy(save_title, buf, STRLEN);
             strncpy(quote_title, buf, STRLEN);
         }
-    } else if ((local_article != 1) && (abort[0] == 's' || abort[0] == 'S')) {
-        local_article = 0;
     } else if (abort[0] == 'f' || abort[0] == 'F') {
         // ±£³ÖÄ¬ÈÏ - atppp
+    } else if ((local_article == 2) && (abort[0] == 's' || abort[0] == 'S')) {
+        local_article = 0;
+    } else if ((local_article == 0) && (abort[0] != 'l' && abort[0] != 'L')) {
+        // local_article = 0
     } else {                    /* Added by flyriver, 2002.7.1, local save */
         abort[0] = 'l';
         local_article = 1;

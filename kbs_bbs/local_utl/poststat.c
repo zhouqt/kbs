@@ -313,7 +313,7 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
             fprintf(fp,
                         "                                                                         %s\x1b[m\n"
                         "                                                                         %s\x1b[m\n",
-                        surfix_bless[(real + 5) * 2 + 1], surfix_bless[(real + 6) * 2 ] );
+                        surfix_bless[(real + 6) * 2 + 1], surfix_bless[(real + 7) * 2 ] );
 		}
 
 		fclose(fp);
