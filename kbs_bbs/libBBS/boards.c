@@ -202,7 +202,7 @@ void load_favboard(int dohelp,int mode)
                 k=getbnum(bn);
                 if(k) {
 					if(favbrd_list[0].bnum < MAXBOARDPERDIR){
-						favbrd_list[0].bid[favbrd_list[0].bnum]=k;
+						favbrd_list[0].bid[favbrd_list[0].bnum]=k-1;
 						favbrd_list[0].bnum++;
 					}
                 }
