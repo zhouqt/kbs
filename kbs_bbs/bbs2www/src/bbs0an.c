@@ -45,7 +45,7 @@ void ann_show_item(MENU * pm, ITEM * it)
 				title_en);
     } else {
         snprintf(pathbuf, sizeof(pathbuf), "%s/%s", ptr == NULL ? "" : ptr, it->fname);
-        printf("<td>[文件] </td><td><a href=\"bbsanc?path=%s\">%s</a></td>", 
+        printf("<td>[文件] </td><td><a href=\"/bbsanc.php?path=%s\">%s</a></td>", 
 				http_encode_string(pathbuf, sizeof(pathbuf)), 
 				title_en);
     }
