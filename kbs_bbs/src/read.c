@@ -1469,13 +1469,13 @@ static int search_articles(struct keeploc *locmem, char *query, int offset, int 
                      * 同作者查询改成完全匹配 by dong, 1998.9.12 
                      */
                     if (aflag == 1) {   /* 进行同作者查询 */
-                        if (!strcasecmp(upper_ptr, upper_query)) {
+                        if (!strcasecmp(ptr, upper_query)) {
                             match = cursor_pos(locmem, now, 10);
                             break;
                         }
                     }
 
-                    else if (bm_strcasestr_rp(upper_ptr, upper_query,bm_search,&init) != NULL) {
+                    else if (bm_strcasestr_rp(ptr, upper_query,bm_search,&init) != NULL) {
                         match = cursor_pos(locmem, now, 10);
                         break;
                     }
