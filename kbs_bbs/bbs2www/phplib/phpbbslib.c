@@ -3818,7 +3818,7 @@ static PHP_FUNCTION(bbs_getbdes)
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    if (bp = getbcache(board) == NULL) {
+    if ((bp = getbcache(board)) == NULL) {
         RETURN_LONG(0);
     }
 	RETURN_STRING(bp->des,1);
