@@ -298,6 +298,7 @@ int define_key()
         add_key(&key);
     }
     
+    bzero(&group_conf, sizeof(struct _select_def));
     group_conf.item_count = keymem_total;
 
     pts = (POINT *) malloc(sizeof(POINT) * BBS_PAGESIZE);
