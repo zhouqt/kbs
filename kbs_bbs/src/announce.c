@@ -1494,7 +1494,7 @@ void a_manager(MENU *pm,int ch)
         case 'e':
 	    if (item) {
             if (dashf(fpath)) {
-                long attachpos;
+                long attachpos=item->attachpos;
                 modify_user_mode(EDITANN);
                 vedit(fpath, 0, NULL,&attachpos, 0);
                 if (item->attachpos!=attachpos) {
