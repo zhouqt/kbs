@@ -3,7 +3,7 @@
 #ifndef REGISTER_TSINGHUA_WAIT_TIME
 #define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
 #endif
- 
+
 const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
 const char seccode[SECNUM][5] = {
@@ -11,36 +11,36 @@ const char seccode[SECNUM][5] = {
 };
 
 const char *permstrings[] = {
-        "»ù±¾È¨Á¦",             /* PERM_BASIC */
-        "½øÈëÁÄÌìÊÒ",           /* PERM_CHAT */
-        "ºô½ĞËûÈËÁÄÌì",         /* PERM_PAGE */
-        "·¢±íÎÄÕÂ",             /* PERM_POST */
-        "Ê¹ÓÃÕß×ÊÁÏÕıÈ·",       /* PERM_LOGINOK */
-        "ÊµÏ°Õ¾Îñ",         /* PERM_BMMANAGER */
-        "¿ÉÒşÉí",               /* PERM_CLOAK */
-        "¿É¼ûÒşÉí",             /* PERM_SEECLOAK */
-        "³¤ÆÚÕÊºÅ",         /* PERM_XEMPT */
-        "±à¼­ÏµÍ³µµ°¸",         /* PERM_WELCOME */
-        "°åÖ÷",                 /* PERM_BOARDS */
-        "ÕÊºÅ¹ÜÀíÔ±",           /* PERM_ACCOUNTS */
-        "Ë®Ä¾Çå»ªÖÇÄÒÍÅ",       /* PERM_CHATCLOAK */
-        "·â½ûÓéÀÖÈ¨ÏŞ",           /* PERM_DENYRELAX */
-        "ÏµÍ³Î¬»¤¹ÜÀíÔ±",       /* PERM_SYSOP */
-        "Read/Post ÏŞÖÆ",       /* PERM_POSTMASK */
-        "¾«»ªÇø×Ü¹Ü",           /* PERM_ANNOUNCE*/
-        "ÌÖÂÛÇø×Ü¹Ü",           /* PERM_OBOARDS*/
-        "»î¶¯¿´°æ×Ü¹Ü",         /* PERM_ACBOARD*/
-        "²»ÄÜ ZAP(ÌÖÂÛÇø×¨ÓÃ)", /* PERM_NOZAP*/
-        "ÁÄÌìÊÒOP(ÔªÀÏÔº×¨ÓÃ)", /* PERM_CHATOP */
-        "ÏµÍ³×Ü¹ÜÀíÔ±",         /* PERM_ADMIN */
-        "ÈÙÓşÕÊºÅ",           /* PERM_HONOR*/
-        "ÌØÊâÈ¨ÏŞ 5",           /* PERM_UNUSE?*/
-        "ÖÙ²ÃÎ¯Ô±",           /* PERM_JURY*/
-        "ÌØÊâÈ¨ÏŞ 7",           /* PERM_UNUSE?*/
-        "×ÔÉ±½øĞĞÖĞ",        /*PERM_SUICIDE*/
-        "¼¯Ìå×¨ÓÃÕÊºÅ",           /* PERM_COLLECTIVE*/
-        "¿´ÏµÍ³ÌÖÂÛ°æ",           /* PERM_UNUSE?*/
-        "·â½ûMail",           /* PERM_DENYMAIL*/
+    "»ù±¾È¨Á¦",                 /* PERM_BASIC */
+    "½øÈëÁÄÌìÊÒ",               /* PERM_CHAT */
+    "ºô½ĞËûÈËÁÄÌì",             /* PERM_PAGE */
+    "·¢±íÎÄÕÂ",                 /* PERM_POST */
+    "Ê¹ÓÃÕß×ÊÁÏÕıÈ·",           /* PERM_LOGINOK */
+    "ÊµÏ°Õ¾Îñ",                 /* PERM_BMMANAGER */
+    "¿ÉÒşÉí",                   /* PERM_CLOAK */
+    "¿É¼ûÒşÉí",                 /* PERM_SEECLOAK */
+    "³¤ÆÚÕÊºÅ",                 /* PERM_XEMPT */
+    "±à¼­ÏµÍ³µµ°¸",             /* PERM_WELCOME */
+    "°åÖ÷",                     /* PERM_BOARDS */
+    "ÕÊºÅ¹ÜÀíÔ±",               /* PERM_ACCOUNTS */
+    "Ë®Ä¾Çå»ªÖÇÄÒÍÅ",           /* PERM_CHATCLOAK */
+    "·â½ûÓéÀÖÈ¨ÏŞ",             /* PERM_DENYRELAX */
+    "ÏµÍ³Î¬»¤¹ÜÀíÔ±",           /* PERM_SYSOP */
+    "Read/Post ÏŞÖÆ",           /* PERM_POSTMASK */
+    "¾«»ªÇø×Ü¹Ü",               /* PERM_ANNOUNCE */
+    "ÌÖÂÛÇø×Ü¹Ü",               /* PERM_OBOARDS */
+    "»î¶¯¿´°æ×Ü¹Ü",             /* PERM_ACBOARD */
+    "²»ÄÜ ZAP(ÌÖÂÛÇø×¨ÓÃ)",     /* PERM_NOZAP */
+    "ÁÄÌìÊÒOP(ÔªÀÏÔº×¨ÓÃ)",     /* PERM_CHATOP */
+    "ÏµÍ³×Ü¹ÜÀíÔ±",             /* PERM_ADMIN */
+    "ÈÙÓşÕÊºÅ",                 /* PERM_HONOR */
+    "ÌØÊâÈ¨ÏŞ 5",               /* PERM_UNUSE? */
+    "ÖÙ²ÃÎ¯Ô±",                 /* PERM_JURY */
+    "ÌØÊâÈ¨ÏŞ 7",               /* PERM_UNUSE? */
+    "×ÔÉ±½øĞĞÖĞ",               /*PERM_SUICIDE */
+    "¼¯Ìå×¨ÓÃÕÊºÅ",             /* PERM_COLLECTIVE */
+    "¿´ÏµÍ³ÌÖÂÛ°æ",             /* PERM_UNUSE? */
+    "·â½ûMail",                 /* PERM_DENYMAIL */
 
 };
 
@@ -71,16 +71,16 @@ const char *user_definestr[] = {
     "½øÕ¾Ê±ÏÔÊ¾Ê®´óĞÂÎÅ",       /* DEF_SHOWHOT */
     "½øÕ¾Ê±¹Û¿´ÁôÑÔ°æ",         /* DEF_NOTEPAD */
     "ºöÂÔÑ¶Ï¢¹¦ÄÜ¼ü: Enter/Esc",        /* DEF_IGNOREMSG */
-    "Ê¹ÓÃ¸ßÁÁ½çÃæ",                   /* DEF_HIGHCOLOR */
-    "¹Û¿´ÈËÊıÍ³¼ÆºÍ×£¸£°ñ", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
+    "Ê¹ÓÃ¸ßÁÁ½çÃæ",             /* DEF_HIGHCOLOR */
+    "¹Û¿´ÈËÊıÍ³¼ÆºÍ×£¸£°ñ",     /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "Î´¶Á±ê¼ÇÊ¹ÓÃ *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "Ê¹ÓÃGBÂëÔÄ¶Á",             /* DEF_USEGB KCN 99.09.03 */
-    "¶Ôºº×Ö½øĞĞÕû×Ö´¦Àí",  /* DEF_SPLITSCREEN 2002.9.1 */
-    "ÏÔÊ¾ÏêÏ¸ÓÃ»§Êı¾İ",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-    "ÏÔÊ¾ÕæÊµÓÃ»§Êı¾İ" /*DEF_REALDETAILUSERDATA 2003.7.31 */
+    "¶Ôºº×Ö½øĞĞÕû×Ö´¦Àí",       /* DEF_SPLITSCREEN 2002.9.1 */
+    "ÏÔÊ¾ÏêÏ¸ÓÃ»§Êı¾İ",         /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
+    "ÏÔÊ¾ÕæÊµÓÃ»§Êı¾İ"          /*DEF_REALDETAILUSERDATA 2003.7.31 */
 };
 
-const char    *explain[] = {
+const char *explain[] = {
     "±¾Õ¾ÏµÍ³",
     "Çå»ª´óÑ§",
     "Ğ£Ô°ĞÅÏ¢",
@@ -98,7 +98,7 @@ const char    *explain[] = {
     NULL
 };
 
-const char    *groups[] = {
+const char *groups[] = {
     "system.faq",
     "thu.faq",
     "sci.faq",
@@ -131,11 +131,10 @@ const char secname[SECNUM][2][20] = {
     {"µçÄÔ¼¼Êõ", "[×¨Ïî¼¼Êõ]"},
 };
 
-const char *mailbox_prop_str[] =
-{
-	"·¢ĞÅÊ±±£´æĞÅ¼şµ½·¢¼şÏä",
-	"É¾³ıĞÅ¼şÊ±²»±£´æµ½À¬»øÏä",
-	"°æÃæ°´ 'v' Ê±½øÈë: ÊÕ¼şÏä(OFF) / ĞÅÏäÖ÷½çÃæ(ON)",
+const char *mailbox_prop_str[] = {
+    "·¢ĞÅÊ±±£´æĞÅ¼şµ½·¢¼şÏä",
+    "É¾³ıĞÅ¼şÊ±²»±£´æµ½À¬»øÏä",
+    "°æÃæ°´ 'v' Ê±½øÈë: ÊÕ¼şÏä(OFF) / ĞÅÏäÖ÷½çÃæ(ON)",
 };
 
 struct _shmkey {
@@ -175,9 +174,10 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     char userid[IDLEN + 2];
 
 #ifdef HAVE_CUSTOM_USER_TITLE
-    if (lookupuser->title!=0) {
-        strcpy(buf,get_user_title(lookupuser->title));
-        if (buf[0]!=0) return 0;
+    if (lookupuser->title != 0) {
+        strcpy(buf, get_user_title(lookupuser->title));
+        if (buf[0] != 0)
+            return 0;
     }
 #endif
     lvl = lookupuser->userlevel;
@@ -194,8 +194,12 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     }
 */
 
-    /* Bigman: Ôö¼ÓÖĞÎÄ²éÑ¯ÏÔÊ¾ 2000.8.10 */
-    /*if( lvl & PERM_ZHANWU ) strcpy(buf,"Õ¾Îñ"); */
+    /*
+     * Bigman: Ôö¼ÓÖĞÎÄ²éÑ¯ÏÔÊ¾ 2000.8.10 
+     */
+    /*
+     * if( lvl & PERM_ZHANWU ) strcpy(buf,"Õ¾Îñ"); 
+     */
     if ((lvl & PERM_ANNOUNCE) && (lvl & PERM_OBOARDS))
         strcpy(buf, "Õ¾Îñ");
     else if (lvl & PERM_JURY)
@@ -212,12 +216,14 @@ int uleveltochar(char *buf, struct userec *lookupuser)
         strcpy(buf, "°æÖ÷");
     else if (lvl & PERM_HORNOR)
         strcpy(buf, "ÈÙÓş");
-    /* Bigman: ĞŞ¸ÄÏÔÊ¾ 2001.6.24 */
+    /*
+     * Bigman: ĞŞ¸ÄÏÔÊ¾ 2001.6.24 
+     */
     else if (lvl & (PERM_LOGINOK)) {
         if (lookupuser->flags & GIVEUP_FLAG)
             strcpy(buf, "½äÍø");
-        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST)) 
-        		|| (lvl & (PERM_DENYMAIL)) || (lvl & (PERM_DENYRELAX)))
+        else if (!(lvl & (PERM_CHAT)) || !(lvl & (PERM_PAGE)) || !(lvl & (PERM_POST))
+                 || (lvl & (PERM_DENYMAIL)) || (lvl & (PERM_DENYRELAX)))
             strcpy(buf, "ÊÜÏŞ");
         else
             strcpy(buf, "ÓÃ»§");
@@ -271,7 +277,7 @@ int uleveltochar(char *buf, struct userec *lookupuser)
 #include "modes.h"
 
 char *ModeType(mode)
-    int mode;
+int mode;
 {
     switch (mode) {
     case IDLE:
@@ -337,18 +343,20 @@ char *ModeType(mode)
     case VOTING:
         return "Í¶Æ±";
     case BBSNET:
-        return "´©ËóÒøºÓ"; //why ft?
-	/*
-        return "´©ËóÒøºÓ";
-	*/
+        return "´©ËóÒøºÓ";      //why ft?
+        /*
+         * return "´©ËóÒøºÓ";
+         */
 //    case EDITWELC:
 //        return "±à¼­ Welc";
     case EDITUFILE:
         return "±à¼­µµ°¸";
     case EDITSFILE:
         return "ÏµÍ³¹ÜÀí";
-        /*        case  EDITSIG:  return "¿ÌÓ¡";
-           case  EDITPLAN: return "Äâ¼Æ»­"; */
+        /*
+         * case  EDITSIG:  return "¿ÌÓ¡";
+         * case  EDITPLAN: return "Äâ¼Æ»­"; 
+         */
 //    case ZAP:
 //        return "¶©ÔÄÌÖÂÛÇø";
 //    case EXCE_MJ:
@@ -386,21 +394,29 @@ char *ModeType(mode)
     case LOCKSCREEN:
         return "ÆÁÄ»Ëø¶¨";
     case IMAIL:
-	return "¼ÄÕ¾ÍâĞÅÖĞ";
+        return "¼ÄÕ¾ÍâĞÅÖĞ";
     case GIVEUPNET:
         return "½äÍøÖĞ..";
     case SERVICES:
         return "ĞİÏĞÓéÀÖ..";
-	case FRIENDTEST:  return "ĞÄÓĞÁéÏ¬";
+    case FRIENDTEST:
+        return "ĞÄÓĞÁéÏ¬";
     case CHICKEN:
-	return "ĞÇ¿ÕÕ½¶·¼¦";
-    case KILLER:        return "É±ÈËÓÎÏ·";
-    case CALENDAR:  return "ÍòÄêÀú";
-    case CALENEDIT: return "ÈÕ¼Ç±¾";
-    case DICT: return "²é×Öµä";
-    case CALC: return "¼ÆËãÆ÷";
-    case SETACL: return "µÇÂ¼¿ØÖÆ";
-    case EDITOR: return "±à¼­Æ÷";
+        return "ĞÇ¿ÕÕ½¶·¼¦";
+    case KILLER:
+        return "É±ÈËÓÎÏ·";
+    case CALENDAR:
+        return "ÍòÄêÀú";
+    case CALENEDIT:
+        return "ÈÕ¼Ç±¾";
+    case DICT:
+        return "²é×Öµä";
+    case CALC:
+        return "¼ÆËãÆ÷";
+    case SETACL:
+        return "µÇÂ¼¿ØÖÆ";
+    case EDITOR:
+        return "±à¼­Æ÷";
     default:
         return "È¥ÁËÄÇÀï!?";
     }
@@ -411,9 +427,9 @@ struct count_arg {
     int telnet_count;
 };
 
-int countuser(struct user_info* uinfo,struct count_arg* arg,int pos)
+int countuser(struct user_info *uinfo, struct count_arg *arg, int pos)
 {
-    if (uinfo->mode==WEBEXPLORE)
+    if (uinfo->mode == WEBEXPLORE)
         arg->www_count++;
     else
         arg->telnet_count++;
@@ -422,51 +438,58 @@ int countuser(struct user_info* uinfo,struct count_arg* arg,int pos)
 
 int checkguestip(struct user_info *uentp, char *arg, int count)
 {
-	if (!strcmp( uentp->from , arg ))
-		return COUNT;
-	return 0;
+    if (!strcmp(uentp->from, arg))
+        return COUNT;
+    return 0;
 }
 
-int multilogin_user(struct userec *user, int usernum,int mode)
+int multilogin_user(struct userec *user, int usernum, int mode)
 {
     int logincount;
     int curr_login_num;
     struct count_arg arg;
 
-    bzero(&arg,sizeof(arg));
-    logincount = apply_utmpuid((APPLY_UTMP_FUNC)countuser, usernum, &arg);
+    bzero(&arg, sizeof(arg));
+    logincount = apply_utmpuid((APPLY_UTMP_FUNC) countuser, usernum, &arg);
 
     if (logincount < 1)
         RemoveMsgCountFile(user->userid);
 
 #ifdef FILTER
-    if (!strcmp(user->userid,"menss")&&logincount<2)
+    if (!strcmp(user->userid, "menss") && logincount < 2)
         return 0;
 #endif
     if (HAS_PERM(user, PERM_MULTILOG))
         return 0;               /* don't check sysops */
     curr_login_num = get_utmp_number();
-    /* binxun 2003.5 ÖÙ²Ã£¬°æÖ÷£¬Chatop£¬µÈ¶¼¿ÉÒÔÈıµÇ*/
-    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP) 
-    	|| HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
-    	|| HAS_PERM(user, PERM_BMAMANGER) )
+    /*
+     * binxun 2003.5 ÖÙ²Ã£¬°æÖ÷£¬Chatop£¬µÈ¶¼¿ÉÒÔÈıµÇ
+     */
+    if ((HAS_PERM(user, PERM_BOARDS) || HAS_PERM(user, PERM_CHATOP)
+         || HAS_PERM(user, PERM_JURY) || HAS_PERM(user, PERM_CHATCLOAK)
+         || HAS_PERM(user, PERM_BMAMANGER))
         && logincount < 3)
         return 0;
 
     if (!strcmp("guest", user->userid)) {
-        if (logincount > MAX_GUEST_NUM) return 2;
+        if (logincount > MAX_GUEST_NUM)
+            return 2;
 #define MAX_GUEST_PER_IP 20
-    	if( apply_utmp((APPLY_UTMP_FUNC) checkguestip, 0, "guest", fromhost) > MAX_GUEST_PER_IP ) return 3;
+        if (apply_utmp((APPLY_UTMP_FUNC) checkguestip, 0, "guest", fromhost) > MAX_GUEST_PER_IP)
+            return 3;
         return 0;
     }
 
-    /* Î´Í¨¹ı×¢²áµÄÓÃ»§²»ÄÜË«µÇ added by bixnun 2003.5.30 */
-    if((!HAS_PERM(user,PERM_LOGINOK)) && logincount >0)return 1; 
-    
-    if (((curr_login_num < 700) && (logincount >= 3)) /*Ğ¡ÓÚ700¿ÉÒÔÈıµÇ*/
-               || ((curr_login_num >= 700) && (logincount >= 2)  /*700ÈËÒÔÉÏ*/
-                     && !(((arg.telnet_count==0)&&(mode==0))  /* telnet¸öÊıÎªÁã¿ÉÒÔÔÙµÇÒ»¸ötelnet */
-                            || (((arg.www_count==0)&&(mode==1)) ))))       /*user login limit */
+    /*
+     * Î´Í¨¹ı×¢²áµÄÓÃ»§²»ÄÜË«µÇ added by bixnun 2003.5.30 
+     */
+    if ((!HAS_PERM(user, PERM_LOGINOK)) && logincount > 0)
+        return 1;
+
+    if (((curr_login_num < 700) && (logincount >= 3))   /*Ğ¡ÓÚ700¿ÉÒÔÈıµÇ */
+        ||((curr_login_num >= 700) && (logincount >= 2) /*700ÈËÒÔÉÏ */
+           &&!(((arg.telnet_count == 0) && (mode == 0)) /* telnet¸öÊıÎªÁã¿ÉÒÔÔÙµÇÒ»¸ötelnet */
+               ||(((arg.www_count == 0) && (mode == 1))))))     /*user login limit */
         return 1;
     return 0;
 }
@@ -475,38 +498,51 @@ int old_compute_user_value(struct userec *urec)
 {
     int value;
 
-    /* if (urec) has CHATCLOAK permission, don't kick it */
-    /* ÔªÀÏºÍÈÙÓşÕÊºÅ ÔÚ²»×ÔÉ±µÄÇé¿öÏÂ£¬ ÉúÃüÁ¦999 Bigman 2001.6.23 */
-    /* 
-       * zixia 2001-11-20 ËùÓĞµÄÉúÃüÁ¦¶¼Ê¹ÓÃºêÌæ»»£¬
-       * ÔÚ smth.h/zixia.h ÖĞ¶¨Òå 
-       * */
+    /*
+     * if (urec) has CHATCLOAK permission, don't kick it 
+     */
+    /*
+     * ÔªÀÏºÍÈÙÓşÕÊºÅ ÔÚ²»×ÔÉ±µÄÇé¿öÏÂ£¬ ÉúÃüÁ¦999 Bigman 2001.6.23 
+     */
+    /*
+     * * zixia 2001-11-20 ËùÓĞµÄÉúÃüÁ¦¶¼Ê¹ÓÃºêÌæ»»£¬
+     * * ÔÚ smth.h/zixia.h ÖĞ¶¨Òå 
+     * * 
+     */
 
     if (((urec->userlevel & PERM_HORNOR) || (urec->userlevel & PERM_CHATCLOAK)) && (!(urec->userlevel & PERM_SUICIDE)))
         return LIFE_DAY_NODIE;
 
     if (urec->userlevel & PERM_SYSOP)
         return LIFE_DAY_SYSOP;
-    /* Õ¾ÎñÈËÔ±ÉúÃüÁ¦²»±ä Bigman 2001.6.23 */
+    /*
+     * Õ¾ÎñÈËÔ±ÉúÃüÁ¦²»±ä Bigman 2001.6.23 
+     */
 
 
     value = (time(0) - urec->lastlogin) / 60;   /* min */
     if (0 == value)
         value = 1;              /* Leeward 98.03.30 */
 
-    /* ĞŞ¸Ä: ½«ÓÀ¾ÃÕÊºÅ×ªÎª³¤ÆÚÕÊºÅ, Bigman 2000.8.11 */
+    /*
+     * ĞŞ¸Ä: ½«ÓÀ¾ÃÕÊºÅ×ªÎª³¤ÆÚÕÊºÅ, Bigman 2000.8.11 
+     */
     if ((urec->userlevel & PERM_XEMPT) && (!(urec->userlevel & PERM_SUICIDE))) {
         if (urec->lastlogin < 988610030)
             return LIFE_DAY_LONG;       /* Èç¹ûÃ»ÓĞµÇÂ¼¹ıµÄ */
         else
             return (LIFE_DAY_LONG * 24 * 60 - value) / (60 * 24);
     }
-    /* new user should register in 30 mins */
+    /*
+     * new user should register in 30 mins 
+     */
     if (strcmp(urec->userid, "new") == 0) {
         return (LIFE_DAY_NEW - value) / 60;     /* *->/ modified by dong, 1998.12.3 */
     }
 
-    /* ×ÔÉ±¹¦ÄÜ,Luzi 1998.10.10 */
+    /*
+     * ×ÔÉ±¹¦ÄÜ,Luzi 1998.10.10 
+     */
     if (urec->userlevel & PERM_SUICIDE)
         return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
     /**********************/
@@ -514,8 +550,10 @@ int old_compute_user_value(struct userec *urec)
         return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
     if (!(urec->userlevel & PERM_LOGINOK))
         return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24);
-    /* if (urec->userlevel & PERM_LONGID)
-       return (667 * 24 * 60 - value)/(60*24); */
+    /*
+     * if (urec->userlevel & PERM_LONGID)
+     * return (667 * 24 * 60 - value)/(60*24); 
+     */
     return (LIFE_DAY_USER * 24 * 60 - value) / (60 * 24);
 }
 
@@ -525,17 +563,26 @@ int compute_user_value(struct userec *urec)
     int registeryear;
     int basiclife;
 
-    /* if (urec) has CHATCLOAK permission, don't kick it */
-    /* ÔªÀÏºÍÈÙÓşÕÊºÅ ÔÚ²»×ÔÉ±µÄÇé¿öÏÂ£¬ ÉúÃüÁ¦999 Bigman 2001.6.23 */
-    /* 
-       * zixia 2001-11-20 ËùÓĞµÄÉúÃüÁ¦¶¼Ê¹ÓÃºêÌæ»»£¬
-       * ÔÚ smth.h/zixia.h ÖĞ¶¨Òå 
-       * */
-    /* ÌØÊâ´¦ÀíÇëÒÆ¶¯³öcvs ´úÂë */
+    /*
+     * if (urec) has CHATCLOAK permission, don't kick it 
+     */
+    /*
+     * ÔªÀÏºÍÈÙÓşÕÊºÅ ÔÚ²»×ÔÉ±µÄÇé¿öÏÂ£¬ ÉúÃüÁ¦999 Bigman 2001.6.23 
+     */
+    /*
+     * * zixia 2001-11-20 ËùÓĞµÄÉúÃüÁ¦¶¼Ê¹ÓÃºêÌæ»»£¬
+     * * ÔÚ smth.h/zixia.h ÖĞ¶¨Òå 
+     * * 
+     */
+    /*
+     * ÌØÊâ´¦ÀíÇëÒÆ¶¯³öcvs ´úÂë 
+     */
 
     if (urec->lastlogin < 1022036050)
         return old_compute_user_value(urec);
-    /* Õâ¸öÊÇËÀÈËµÄid,sigh */
+    /*
+     * Õâ¸öÊÇËÀÈËµÄid,sigh 
+     */
     if ((urec->userlevel & PERM_HORNOR) && !(urec->userlevel & PERM_LOGINOK))
         return LIFE_DAY_LONG;
 
@@ -545,19 +592,25 @@ int compute_user_value(struct userec *urec)
 
     if ((urec->userlevel & PERM_ANNOUNCE) && (urec->userlevel & PERM_OBOARDS))
         return LIFE_DAY_SYSOP;
-    /* Õ¾ÎñÈËÔ±ÉúÃüÁ¦²»±ä Bigman 2001.6.23 */
+    /*
+     * Õ¾ÎñÈËÔ±ÉúÃüÁ¦²»±ä Bigman 2001.6.23 
+     */
 
 
     value = (time(0) - urec->lastlogin) / 60;   /* min */
     if (0 == value)
         value = 1;              /* Leeward 98.03.30 */
 
-    /* new user should register in 30 mins */
+    /*
+     * new user should register in 30 mins 
+     */
     if (strcmp(urec->userid, "new") == 0) {
         return (LIFE_DAY_NEW - value) / 60;     /* *->/ modified by dong, 1998.12.3 */
     }
 
-    /* ×ÔÉ±¹¦ÄÜ,Luzi 1998.10.10 */
+    /*
+     * ×ÔÉ±¹¦ÄÜ,Luzi 1998.10.10 
+     */
     if (urec->userlevel & PERM_SUICIDE)
         return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
     /**********************/
@@ -565,8 +618,10 @@ int compute_user_value(struct userec *urec)
         return (LIFE_DAY_SUICIDE * 24 * 60 - value) / (60 * 24);
     if (!(urec->userlevel & PERM_LOGINOK))
         return (LIFE_DAY_NEW * 24 * 60 - value) / (60 * 24);
-    /* if (urec->userlevel & PERM_LONGID)
-       return (667 * 24 * 60 - value)/(60*24); */
+    /*
+     * if (urec->userlevel & PERM_LONGID)
+     * return (667 * 24 * 60 - value)/(60*24); 
+     */
     registeryear = (time(0) - urec->firstlogin) / 31536000;
     if (registeryear < 2)
         basiclife = LIFE_DAY_USER + 1;
@@ -580,25 +635,24 @@ int compute_user_value(struct userec *urec)
 /**
  * ¾«»ªÇøÏà¹Øº¯Êı¡£
  */
-int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
-						MENU *pm)
+int ann_get_postfilename(char *filename, struct fileheader *fileinfo, MENU * pm)
 {
-	char fname[PATHLEN];
-	char *ip;
+    char fname[PATHLEN];
+    char *ip;
 
-	if (fileinfo->filename[1] == '/')
-		strcpy(filename, fileinfo->filename + 2);
-	else
-		strcpy(filename, fileinfo->filename);
-	sprintf(fname, "%s/%s", pm->path, filename);
-	ip = &filename[strlen(filename) - 1];
-	while (dashf(fname)) {
-		if (*ip == 'Z')
-			ip++, *ip = 'A', *(ip + 1) = '\0';
-		else
-			(*ip)++;
-		sprintf(fname, "%s/%s", pm->path, filename);
-	}
+    if (fileinfo->filename[1] == '/')
+        strcpy(filename, fileinfo->filename + 2);
+    else
+        strcpy(filename, fileinfo->filename);
+    sprintf(fname, "%s/%s", pm->path, filename);
+    ip = &filename[strlen(filename) - 1];
+    while (dashf(fname)) {
+        if (*ip == 'Z')
+            ip++, *ip = 'A', *(ip + 1) = '\0';
+        else
+            (*ip)++;
+        sprintf(fname, "%s/%s", pm->path, filename);
+    }
 }
 
 /**
@@ -606,21 +660,21 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo,
  */
 time_t get_posttime(const struct fileheader *fileinfo)
 {
-	if (fileinfo->filename[1] == '/')
-		return fileinfo->posttime;
-	else
-		return atoi(fileinfo->filename + 2);
+    if (fileinfo->filename[1] == '/')
+        return fileinfo->posttime;
+    else
+        return atoi(fileinfo->filename + 2);
 }
 
 void set_posttime(struct fileheader *fileinfo)
 {
-	if (fileinfo->filename[1] == '/')
-		fileinfo->posttime = atoi(fileinfo->filename + 4);
+    if (fileinfo->filename[1] == '/')
+        fileinfo->posttime = atoi(fileinfo->filename + 4);
 }
 
 void set_posttime2(struct fileheader *dest, struct fileheader *src)
 {
-	dest->posttime = src->posttime;
+    dest->posttime = src->posttime;
 }
 
 /**
@@ -628,36 +682,32 @@ void set_posttime2(struct fileheader *dest, struct fileheader *src)
  */
 void build_board_structure(const char *board)
 {
-	int i;
-	int len;
-	char buf[STRLEN];
+    int i;
+    int len;
+    char buf[STRLEN];
 
-	len = strlen(alphabet);
-    for (i = 0; i < len; i++)
-    {
-		snprintf(buf, sizeof(buf), "boards/%s/%c", board, alphabet[i]);
-		mkdir(buf, 0755);
+    len = strlen(alphabet);
+    for (i = 0; i < len; i++) {
+        snprintf(buf, sizeof(buf), "boards/%s/%c", board, alphabet[i]);
+        mkdir(buf, 0755);
     }
-	return;
+    return;
 }
 
 
-void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
+void get_mail_limit(struct userec *user, int *sumlimit, int *numlimit)
 {
     if ((!(user->userlevel & PERM_SYSOP)) && strcmp(user->userid, "Arbitrator")) {
-	if (user->userlevel & PERM_COLLECTIVE) {
-	    *sumlimit = -1;
-	    *numlimit = -1;
-	} else
-        if (user->userlevel & PERM_JURY) {
+        if (user->userlevel & PERM_COLLECTIVE) {
+            *sumlimit = -1;
+            *numlimit = -1;
+        } else if (user->userlevel & PERM_JURY) {
             *sumlimit = 10000;
             *numlimit = 10000;
-        } else
-        if (user->userlevel & PERM_BMAMANGER) {
+        } else if (user->userlevel & PERM_BMAMANGER) {
             *sumlimit = 8000;
             *numlimit = 8000;
-        } else
-        if (user->userlevel & PERM_CHATCLOAK) {
+        } else if (user->userlevel & PERM_CHATCLOAK) {
             *sumlimit = 8000;
             *numlimit = 8000;
         } else
@@ -675,8 +725,7 @@ void get_mail_limit(struct userec* user,int *sumlimit,int * numlimit)
             *sumlimit = 15;
             *numlimit = 15;
         }
-    }
-    else {
+    } else {
         *sumlimit = 9999;
         *numlimit = 9999;
         return;
@@ -689,16 +738,15 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
     if (board == NULL)
         return 0;
 
-    if (user==NULL) {
-        if (board->title_level!=0) return 0;
-    } else 
-    if (!HAS_PERM(user, PERM_OBOARDS)&&board->title_level
-        &&(board->title_level!=user->title))
+    if (user == NULL) {
+        if (board->title_level != 0)
+            return 0;
+    } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
         return 0;
 
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
-        if (board->flag & BOARD_CLUB_READ) {    /*¾ãÀÖ²¿*/
-            if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
+        if (board->flag & BOARD_CLUB_READ) {    /*¾ãÀÖ²¿ */
+            if (HAS_PERM(user, PERM_OBOARDS) && HAS_PERM(user, PERM_SYSOP))
                 return 1;
             if (board->clubnum <= 0 || board->clubnum >= MAXCLUB)
                 return 0;
@@ -712,140 +760,142 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
     return 0;
 }
 
-int check_see_perm(struct userec* user,const struct boardheader* board)
+int check_see_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
-    if (user==NULL) {
-        if (board->title_level!=0) return 0;
-    } else 
-    if (!HAS_PERM(user, PERM_OBOARDS)&&board->title_level
-        &&(board->title_level!=user->title))
+    if (user == NULL) {
+        if (board->title_level != 0)
+            return 0;
+    } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
         return 0;
 
-    if (board->level & PERM_POSTMASK
-    	|| ((user==NULL)&&(board->level==0))
-    	|| ((user!=NULL)&& HAS_PERM(user, board->level) )
-    	|| (board->level & PERM_NOZAP))
-	{
-        if (board->flag & BOARD_CLUB_HIDE)     /*Òş²Ø¾ãÀÖ²¿*/
-		{
-			if (user==NULL) return 0;
-			   if (HAS_PERM(user, PERM_OBOARDS))
-					return 1;
-			   return check_read_perm(user,board);
-		}
+    if (board->level & PERM_POSTMASK || ((user == NULL) && (board->level == 0))
+        || ((user != NULL) && HAS_PERM(user, board->level))
+        || (board->level & PERM_NOZAP)) {
+        if (board->flag & BOARD_CLUB_HIDE) {    /*Òş²Ø¾ãÀÖ²¿ */
+            if (user == NULL)
+                return 0;
+            if (HAS_PERM(user, PERM_OBOARDS))
+                return 1;
+            return check_read_perm(user, board);
+        }
         return 1;
     }
     return 0;
 }
 
 //×Ô¶¯Í¨¹ı×¢²áµÄº¯Êı  binxun
-int auto_register(char* userid,char* email,int msize)
+int auto_register(char *userid, char *email, int msize)
 {
-	struct userdata ud;
-	struct userec* uc;
-	char* item,*temp;
-	char fdata[7][STRLEN];
-	char genbuf[STRLEN];
-	char buf[STRLEN];
-	char fname[STRLEN];
-	int unum;
-	FILE* fout;
-	int n;
-	struct userec deliveruser;
-	static const char *finfo[] = { "ÕÊºÅÎ»ÖÃ", "ÉêÇë´úºÅ", "ÕæÊµĞÕÃû", "·şÎñµ¥Î»",
+    struct userdata ud;
+    struct userec *uc;
+    char *item, *temp;
+    char fdata[7][STRLEN];
+    char genbuf[STRLEN];
+    char buf[STRLEN];
+    char fname[STRLEN];
+    int unum;
+    FILE *fout;
+    int n;
+    struct userec deliveruser;
+    static const char *finfo[] = { "ÕÊºÅÎ»ÖÃ", "ÉêÇë´úºÅ", "ÕæÊµĞÕÃû", "·şÎñµ¥Î»",
         "Ä¿Ç°×¡Ö·", "Á¬Âçµç»°", "Éú    ÈÕ", NULL
     };
-  	static const char *field[] = { "usernum", "userid", "realname", "career",
-    	"addr", "phone", "birth", NULL
-	};
+    static const char *field[] = { "usernum", "userid", "realname", "career",
+        "addr", "phone", "birth", NULL
+    };
 
-	bzero(&deliveruser,sizeof(struct userec));
-	strcpy(deliveruser.userid,"deliver");
-	deliveruser.userlevel = -1;
-	strcpy(deliveruser.username,"×Ô¶¯·¢ĞÅÏµÍ³");
-
-
-
-	bzero(fdata,7*STRLEN);
-
-	if((unum = getuser(userid,&uc)) == 0)return -1;//faild
-	if(read_userdata(userid,&ud) < 0)return -1;
-
-	strncpy(genbuf,email,STRLEN - 16);
-	item =strtok(genbuf,"#");
-	if(item)strncpy(ud.realname,item,NAMELEN);
-	item = strtok(NULL,"#");  //Ñ§ºÅ
-	item = strtok(NULL,"#");
-	if(item)strncpy(ud.address,item,STRLEN);
-
-	email[strlen(email) - 3] = '@';
-	strncpy(ud.realemail,email,STRLEN-16); //email length must be less STRLEN-16
+    bzero(&deliveruser, sizeof(struct userec));
+    strcpy(deliveruser.userid, "deliver");
+    deliveruser.userlevel = -1;
+    strcpy(deliveruser.username, "×Ô¶¯·¢ĞÅÏµÍ³");
 
 
-	sprintf(fdata[0],"%d",unum);
-	strncpy(fdata[2],ud.realname,NAMELEN);
-	strncpy(fdata[4],ud.address,STRLEN);
-	strncpy(fdata[5],ud.email,STRLEN);
-	strncpy(fdata[1],userid,IDLEN);
 
-	sprintf(buf,"tmp/email/%s",userid);
-	if ((fout = fopen(buf,"w")) != NULL)
-	{
-		fprintf(fout,"%s\n",email);
-		fclose(fout);
-	}
+    bzero(fdata, 7 * STRLEN);
 
-	if(write_userdata(userid,&ud) < 0)return -1;
-	mail_file("deliver","etc/s_fill",userid,"¹§Ï²Äã,ÄãÒÑ¾­Íê³É×¢²á.",0,0);
-	//sprintf(genbuf,"deliver ÈÃ %s ×Ô¶¯Í¨¹ıÉí·İÈ·ÈÏ.",uinfo.userid);
+    if ((unum = getuser(userid, &uc)) == 0)
+        return -1;              //faild
+    if (read_userdata(userid, &ud) < 0)
+        return -1;
 
-	sprintf(fname, "tmp/security.%d", getpid());
-	if ((fout = fopen(fname, "w")) != NULL)
-	{
-		fprintf(fout, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s×Ô¶¯Í¨¹ı×¢²á[m\n", userid);
-                fprintf(fout, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
-                fprintf(fout, "\n\nÄúµÄ´úºÅ     : %s\n", ud.userid);
-                fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uc->username);
-                fprintf(fout, "ÕæÊµĞÕÃû     : %s\n", ud.realname);
-                fprintf(fout, "µç×ÓÓÊ¼şĞÅÏä : %s\n", ud.email);
-                fprintf(fout, "ÕæÊµ E-mail  : %s\n", ud.realemail);
-                fprintf(fout, "·şÎñµ¥Î»     : %s\n", "");
-                fprintf(fout, "Ä¿Ç°×¡Ö·     : %s\n", ud.address);
-                fprintf(fout, "Á¬Âçµç»°     : %s\n", "");
-                fprintf(fout, "×¢²áÈÕÆÚ     : %s", ctime(&uc->firstlogin));
-                fprintf(fout, "×î½ü¹âÁÙÈÕÆÚ : %s", ctime(&uc->lastlogin));
-                fprintf(fout, "×î½ü¹âÁÙ»úÆ÷ : %s\n", uc->lasthost);
-                fprintf(fout, "ÉÏÕ¾´ÎÊı     : %d ´Î\n", uc->numlogins);
-                fprintf(fout, "ÎÄÕÂÊıÄ¿     : %d(Board)\n", uc->numposts);
-                fprintf(fout, "Éú    ÈÕ     : %s\n", "");
+    strncpy(genbuf, email, STRLEN - 16);
+    item = strtok(genbuf, "#");
+    if (item)
+        strncpy(ud.realname, item, NAMELEN);
+    item = strtok(NULL, "#");   //Ñ§ºÅ
+    item = strtok(NULL, "#");
+    if (item)
+        strncpy(ud.address, item, STRLEN);
 
-                fclose(fout);
-                //post_file(currentuser, "", fname, "Registry", str, 0, 2);
+    email[strlen(email) - 3] = '@';
+    strncpy(ud.realemail, email, STRLEN - 16);  //email length must be less STRLEN-16
 
-		sprintf(genbuf,"%s ×Ô¶¯Í¨¹ı×¢²á",ud.userid);
-		post_file(&deliveruser,"",fname,"Registry",genbuf,0,1);
-	/*if (( fout = fopen(logfile,"a")) != NULL)
-	{
-		fclose(fout);
-	}*/
-	}
 
-	sethomefile(buf, userid, "/register");
-	if ((fout = fopen(buf, "w")) != NULL) {
-		for (n = 0; field[n] != NULL; n++)
-			fprintf(fout, "%s     : %s\n", finfo[n], fdata[n]);
-		fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uc->username);
-		fprintf(fout, "µç×ÓÓÊ¼şĞÅÏä : %s\n", ud.email);
-		fprintf(fout, "ÕæÊµ E-mail  : %s\n", ud.realemail);
-		fprintf(fout, "×¢²áÈÕÆÚ     : %s\n", ctime(&uc->firstlogin));
-		fprintf(fout, "×¢²áÊ±µÄ»úÆ÷ : %s\n", uc->lasthost);
-		fprintf(fout, "Approved: %s\n", userid);
-		fclose(fout);
-	}
+    sprintf(fdata[0], "%d", unum);
+    strncpy(fdata[2], ud.realname, NAMELEN);
+    strncpy(fdata[4], ud.address, STRLEN);
+    strncpy(fdata[5], ud.email, STRLEN);
+    strncpy(fdata[1], userid, IDLEN);
 
-	return 0;
+    sprintf(buf, "tmp/email/%s", userid);
+    if ((fout = fopen(buf, "w")) != NULL) {
+        fprintf(fout, "%s\n", email);
+        fclose(fout);
+    }
+
+    if (write_userdata(userid, &ud) < 0)
+        return -1;
+    mail_file("deliver", "etc/s_fill", userid, "¹§Ï²Äã,ÄãÒÑ¾­Íê³É×¢²á.", 0, 0);
+    //sprintf(genbuf,"deliver ÈÃ %s ×Ô¶¯Í¨¹ıÉí·İÈ·ÈÏ.",uinfo.userid);
+
+    sprintf(fname, "tmp/security.%d", getpid());
+    if ((fout = fopen(fname, "w")) != NULL) {
+        fprintf(fout, "ÏµÍ³°²È«¼ÇÂ¼ÏµÍ³\n[32mÔ­Òò£º%s×Ô¶¯Í¨¹ı×¢²á[m\n", userid);
+        fprintf(fout, "ÒÔÏÂÊÇÍ¨¹ıÕß¸öÈË×ÊÁÏ");
+        fprintf(fout, "\n\nÄúµÄ´úºÅ     : %s\n", ud.userid);
+        fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uc->username);
+        fprintf(fout, "ÕæÊµĞÕÃû     : %s\n", ud.realname);
+        fprintf(fout, "µç×ÓÓÊ¼şĞÅÏä : %s\n", ud.email);
+        fprintf(fout, "ÕæÊµ E-mail  : %s\n", ud.realemail);
+        fprintf(fout, "·şÎñµ¥Î»     : %s\n", "");
+        fprintf(fout, "Ä¿Ç°×¡Ö·     : %s\n", ud.address);
+        fprintf(fout, "Á¬Âçµç»°     : %s\n", "");
+        fprintf(fout, "×¢²áÈÕÆÚ     : %s", ctime(&uc->firstlogin));
+        fprintf(fout, "×î½ü¹âÁÙÈÕÆÚ : %s", ctime(&uc->lastlogin));
+        fprintf(fout, "×î½ü¹âÁÙ»úÆ÷ : %s\n", uc->lasthost);
+        fprintf(fout, "ÉÏÕ¾´ÎÊı     : %d ´Î\n", uc->numlogins);
+        fprintf(fout, "ÎÄÕÂÊıÄ¿     : %d(Board)\n", uc->numposts);
+        fprintf(fout, "Éú    ÈÕ     : %s\n", "");
+
+        fclose(fout);
+        //post_file(currentuser, "", fname, "Registry", str, 0, 2);
+
+        sprintf(genbuf, "%s ×Ô¶¯Í¨¹ı×¢²á", ud.userid);
+        post_file(&deliveruser, "", fname, "Registry", genbuf, 0, 1);
+        /*
+         * if (( fout = fopen(logfile,"a")) != NULL)
+         * {
+         * fclose(fout);
+         * }
+         */
+    }
+
+    sethomefile(buf, userid, "/register");
+    if ((fout = fopen(buf, "w")) != NULL) {
+        for (n = 0; field[n] != NULL; n++)
+            fprintf(fout, "%s     : %s\n", finfo[n], fdata[n]);
+        fprintf(fout, "ÄúµÄêÇ³Æ     : %s\n", uc->username);
+        fprintf(fout, "µç×ÓÓÊ¼şĞÅÏä : %s\n", ud.email);
+        fprintf(fout, "ÕæÊµ E-mail  : %s\n", ud.realemail);
+        fprintf(fout, "×¢²áÈÕÆÚ     : %s\n", ctime(&uc->firstlogin));
+        fprintf(fout, "×¢²áÊ±µÄ»úÆ÷ : %s\n", uc->lasthost);
+        fprintf(fout, "Approved: %s\n", userid);
+        fclose(fout);
+    }
+
+    return 0;
 }
 
 #ifdef SMS_SUPPORT
@@ -853,31 +903,36 @@ int smsnumber2uid(byte number[4])
 {
     int uid;
     char buf[10];
+
     uid = byte2long(number);
-    /* ÏÖÔÚÎÒÃÇÓÃµÄÊÇ1¿ªÍ·µÄ,ĞèÒªÈ¥µô¿ªÊ¼µÄÄÇ¸ö1*/
-    sprintf(buf,"%d",uid);
-    if (buf[0]!='1')
+    /*
+     * ÏÖÔÚÎÒÃÇÓÃµÄÊÇ1¿ªÍ·µÄ,ĞèÒªÈ¥µô¿ªÊ¼µÄÄÇ¸ö1
+     */
+    sprintf(buf, "%d", uid);
+    if (buf[0] != '1')
         return -1;
-    uid=atoi(buf+1);
+    uid = atoi(buf + 1);
     return uid;
 }
 
-int uid2smsnumber(struct user_info* uin)
+int uid2smsnumber(struct user_info *uin)
 {
-  char buf[10];
-  sprintf(buf,"1%d",uin->uid);
-  return atoi(buf);
+    char buf[10];
+
+    sprintf(buf, "1%d", uin->uid);
+    return atoi(buf);
 }
 
-int smsid2uid(char* smsid) {
-   if (smsid[0]!='1')
+int smsid2uid(char *smsid)
+{
+    if (smsid[0] != '1')
         return -1;
-    return atoi(smsid+1);  
+    return atoi(smsid + 1);
 }
 
-void uid2smsid(struct user_info* uin,char* smsid)
+void uid2smsid(struct user_info *uin, char *smsid)
 {
-    sprintf(smsid,"1%d",uin->uid);
+    sprintf(smsid, "1%d", uin->uid);
 }
 
 

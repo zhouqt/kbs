@@ -1,10 +1,10 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#define USE_TMPFS           1   /*使用内存文件系统加速*/
-#define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
+#define USE_TMPFS           1   /*使用内存文件系统加速 */
+#define TMPFSROOT   "cache"     /*tmpfs的根在bbshome/cache */
 #define NINE_BUILD 		0
-#define NEW_COMERS 		0	/* 注册后在 newcomers 版自动发文 */
+#define NEW_COMERS 		0       /* 注册后在 newcomers 版自动发文 */
 #define HAVE_BIRTHDAY 		1
 #define HAPPY_BBS		0
 #define HAVE_COLOR_DATE		0
@@ -12,17 +12,17 @@
 #define HAVE_FRIENDS_NUM	0
 #define HAVE_REVERSE_DNS	0
 #define CHINESE_CHARACTER	1
-#define ANTISPAM_MAILADDR	0	/* 转信后的文章隐藏真实 MAIL */
-#define CNBBS_TOPIC		0	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
-#define MAIL2BOARD		0	/* 是否允许直接 mail to any board */
-#define MAILOUT			0	/* 是否允许向站外主动发信 */
-#define MANUAL_DENY         0   /*是否允许手动解封*/
+#define ANTISPAM_MAILADDR	0       /* 转信后的文章隐藏真实 MAIL */
+#define CNBBS_TOPIC		0       /* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#define MAIL2BOARD		0       /* 是否允许直接 mail to any board */
+#define MAILOUT			0       /* 是否允许向站外主动发信 */
+#define MANUAL_DENY         0   /*是否允许手动解封 */
 #define BBS_SERVICE_DICT    1
-#define HAVE_TSINGHUA_INFO_REGISTER 1 /* 允许从清华信息系统注册 */
-#define HAVE_PERSONAL_DNS   1   /*个人域名服务*/
-#define HAVE_CUSTOM_USER_TITLE 1 /*定义用户特定的title*/
+#define HAVE_TSINGHUA_INFO_REGISTER 1   /* 允许从清华信息系统注册 */
+#define HAVE_PERSONAL_DNS   1   /*个人域名服务 */
+#define HAVE_CUSTOM_USER_TITLE 1        /*定义用户特定的title */
 
-#define BUILD_PHP_EXTENSION 1 /*将php lib编成php extension*/
+#define BUILD_PHP_EXTENSION 1   /*将php lib编成php extension */
 
 #define HAVE_WFORUM	1
 #define RAW_ARTICLE 0
@@ -39,8 +39,8 @@
 /* 
  *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
  *    */
-#define IDLE_TIMEOUT    (60*20) 
-#define MONITOR_TIMEOUT (60*20) 
+#define IDLE_TIMEOUT    (60*20)
+#define MONITOR_TIMEOUT (60*20)
 
 #define BBSUID 			9999
 #define BBSGID 			99
@@ -243,7 +243,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWHOT      010000000
 #define DEF_NOTEPAD      020000000
 #define DEF_IGNOREMSG    040000000      /* Added by Marco */
-#define DEF_HIGHCOLOR	0100000000   /*Leeward 98.01.12 */
+#define DEF_HIGHCOLOR	0100000000      /*Leeward 98.01.12 */
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
@@ -252,7 +252,9 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWREALUSERDATA	010000000000
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
-/*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */
+/*#define PERM_POSTMASK  0100000  *//*
+ * means the rest is a post mask 
+ */
 
 #define NUMDEFINES 31
 
@@ -260,8 +262,8 @@ bigger mailbox. --stephen 2001.10.31*/
 #define TDEF_SPLITSCREEN 000001
 
 extern const char *permstrings[];
-extern const char    *groups[];
-extern const char    *explain[];
+extern const char *groups[];
+extern const char *explain[];
 extern const char *user_definestr[];
 extern const char *mailbox_prop_str[];
 
@@ -281,7 +283,7 @@ extern const char *mailbox_prop_str[];
 #define FILENAME_LEN 20
 #define OWNER_LEN 30
 typedef struct fileheader {     /* This structure is used to hold data in */
-    char filename[FILENAME_LEN];      /* the DIR files */
+    char filename[FILENAME_LEN];        /* the DIR files */
     unsigned int id, groupid, reid;
 #ifdef FILTER
     char o_board[STRLEN - BM_LEN];
