@@ -92,7 +92,6 @@ void load_favboard(int dohelp,int mode)
 	}else{
 		favbrd_list=bdirshm->allbrd_list;
 		favbrd_list_count = &bdirshm->allbrd_list_t;
-		{FILE *fp;if((fp=fopen("/home/bbs/stiger.test","a"))!=NULL){for(i=0;i<favbrd_list_t;i++){fprintf(fp,"%d %d %s:",i,favbrd_list[i].father,favbrd_list[i].title);for(j=0;j<favbrd_list[i].bnum;j++) fprintf(fp," %d",favbrd_list[i].bid[j]);fprintf(fp,"\n");}fprintf(fp,"--%d-\n",favbrd_list_t);fclose(fp);}}
 		return;
 	}
 	if(favbrd_list_t>0) return;
@@ -107,7 +106,7 @@ void load_favboard(int dohelp,int mode)
              */
             favbrd_list_t = 1;
             favbrd_list[0].father = -1;
-            for (k=0; k<i; k++) {
+            for (k=0; k<MAXBOARDPERDIR; k++) {
                 read(fd, &j, sizeof(int));
                 favbrd_list[0].bid[k] = j;
             }
