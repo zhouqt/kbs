@@ -169,27 +169,18 @@ if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
 	@$utmpnum = $_COOKIE["W_UTMPNUM"];
 	@$userid = $_COOKIE["W_UTMPUSERID"];
 	@$userpassword=$_COOKIE["W_PASSWORD"];
-	if ($userid=='') {
-		$userid='guest';
-	}
+}
+if ($userid=='') {
+	$userid='guest';
 }
 
+$setonlined=0;
 if ($nologin==0) {
 
 	// add by stiger, login as "guest" default.....
 	if ( ($userid=='guest') && ($utmpkey == "")&&($needlogin!=0)){ 
 		$error = bbs_wwwlogin(0);
 		if($error == 2 || $error == 0){
-			$data = array();
-			$num = bbs_getcurrentuinfo($data);
-			setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,"");
-			setcookie("W_UTMPNUM",$num,time()+360000,"");
-			setcookie("W_UTMPUSERID",$data["userid"],0,"");
-			setcookie("W_LOGINTIME",$data["logintime"],0,"");
-			@$utmpkey = $data["utmpkey"];
-			@$utmpnum = $num;
-			@$userid = $data["userid"];
-			$compat_telnet=1;
 			$guestloginok=1;
 		}
 	} else {
@@ -203,6 +194,7 @@ if ($nologin==0) {
 				}
 				$currentuinfo_num=bbs_getcurrentuinfo();
 				$currentuser_num=bbs_getcurrentuser($currentuser);
+				$setonlined=1;
 			} else {
 				if (($userid!='guest') && (bbs_checkpasswd($userid,$userpassword)==0)){
 					$ret=bbs_wwwlogin(1);
@@ -212,29 +204,13 @@ if ($nologin==0) {
 						} else {
 							$guestloginok=1;
 						}
-						$data=array();
-						$currentuinfo_num=bbs_getcurrentuinfo($data);
-						$currentuser_num=bbs_getcurrentuser($currentuser);
-						$path='';
-						setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
-						setcookie("W_UTMPNUM",$currentuinfo_num,time()+360000,$path);
-						setcookie("W_LOGINTIME",$data["logintime"],0,$path);
+
 					}else if ($ret==5) {
 						foundErr("ÇëÎðÆµ·±µÇÂ½£¡");
 					}
 				} else {
 					$error = bbs_wwwlogin(0);
 					if($error == 2 || $error == 0){
-						$data = array();
-						$num = bbs_getcurrentuinfo($data);
-						setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,"");
-						setcookie("W_UTMPNUM",$num,time()+360000,"");
-						setcookie("W_UTMPUSERID",$data["userid"],0,"");
-						setcookie("W_LOGINTIME",$data["logintime"],0,"");
-						@$utmpkey = $data["utmpkey"];
-						@$utmpnum = $num;
-						@$userid = $data["userid"];
-						$compat_telnet=1;
 						$guestloginok=1;
 					}
 				}
@@ -242,6 +218,19 @@ if ($nologin==0) {
 		}
 	}
 }
+
+if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
+	$data=array();
+	$currentuinfo_num=bbs_getcurrentuinfo($data);
+	bbs_setonlineuser($userid,$currentuinfo_num,$data["utmpkey"],$currentuinfo,$compat_telnet);
+	$currentuser_num=bbs_getcurrentuser($currentuser);
+	$path='';
+	setcookie("W_UTMPUSERID",$data["userid"],time()+360000,"",$path);
+	setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
+	setcookie("W_UTMPNUM",$currentuinfo_num,time()+360000,$path);
+	setcookie("W_LOGINTIME",$data["logintime"],time()+360000,$path);
+}
+
 function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")!=FALSE))

@@ -1,6 +1,7 @@
 <?php
 require("inc/funcs.php");
 header("Expires: .0");
+
 if (!isset($_GET['bname'])){
 	exit(0);
 }
@@ -8,6 +9,7 @@ $boardName=$_GET['bname'];
 if (!isset($_GET['ID'])){
 	exit(0);
 }
+
 $articleID=intval($_GET['ID']);
 $brdArr=array();
 $boardID= bbs_getboard($boardName,$brdArr);
@@ -22,6 +24,7 @@ if (bbs_checkreadperm($usernum, $boardID) == 0) {
 	return false;
 }
 bbs_set_onboard($boardID,1);
+
 $articles = bbs_get_article($boardName, $articleID);
 @$article=$articles[0];
 if ($article==NULL) {
@@ -32,6 +35,7 @@ $total=$threadNum+1;
 $threads=bbs_get_thread_articles($boardName, intval($article['ID']),0,$total);
 $total=count($threads);
 
+showTree($boardName,$boardID,$articleID,$article,$threads,$total);
 ?>
 <script>
 	parent.followTd<?php echo $articleID; ?>.innerHTML='<TABLE border=0 cellPadding=0 cellSpacing=0 width="100%" align=center><TBODY><?php showTree($boardName,$boardID,$articleID,$article,$threads,$total);?></TBODY></TABLE>';
@@ -70,22 +74,25 @@ function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
 }
 */
 function showTree($boardName,$boardID,$articleID,$article,$threads,$threadNum) {
-		$IDs=array();
+	$IDs=array();
 	$nodes=array();
 	$printed=array();
 	$level=array();
 	$head=0;
 	$bottom=0;
-	$IDs[$bottom]=intval($threads[$threadNum-1]['ID']);
+	$IDs[$bottom]=intval($article['ID']);
 	$level[$bottom]=0;
 	$printed[0]=1;
 	$nodes[0]=0;
 	$bottom++;
 	while($head<$bottom) {
-		showTreeItem($boardName,$articleID,$threads[$threadNum-$nodes[$head]-1],$nodes[$head],$level[$head]);
-		for ($i=0;$i<$threadNum;$i++){
-			if ( (!isset($printed[$i])) && ($threads[$threadNum-$i-1]['REID']==$IDs[$head]) ) {
-				$IDs[$bottom]=intval($threads[$threadNum-$i-1]['ID']);
+		if ($head==0) 
+			showTreeItem($boardName,$articleID,$article,0,$start, 0);
+		else 
+			showTreeItem($boardName,$articleID,$threads[$threadNum-$nodes[$head]],$nodes[$head], $level[$head]);
+		for ($i=1;$i<=$threadNum;$i++){
+			if ( (!isset($printed[$i])) && ($threads[$threadNum-$i]['REID']==$IDs[$head]) ) {
+				$IDs[$bottom]=intval($threads[$threadNum-$i]['ID']);
 				$level[$bottom]=$level[$head]+1;
 				$printed[$i]=1;
 				$nodes[$bottom]=$i;
@@ -108,6 +115,5 @@ function showTreeItem($boardName,$articleID,$thread,$threadID,$level){
 		echo htmlspecialchars($thread['TITLE'],ENT_QUOTES);
 	}
 	echo '</a> -- <a href="dispuser.php?id='.$thread['OWNER'].'">'.$thread['OWNER'].'</a></td></tr>';
-
 }
 ?>

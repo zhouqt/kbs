@@ -177,13 +177,18 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$start,$list
 	$page=ceil(($start+1)/THREADSPERPAGE);
 	$threads=bbs_get_thread_articles($boardName, intval($article['ID']), 	$total-$start-$num,$num);
 	$num=count($threads);
+	if ($start==0)
+		$num++;
 	article_bar($boardName,$boardID,$articleID, $article, $start, $listType);
 	dispArticleTitle($boardName,$boardID,$articleID,$article,$start);
 ?>
 <TABLE cellPadding=5 cellSpacing=1 align=center class=tableborder1 style=" table-layout:fixed;word-break:break-all">
 <?php
 	for($i=0;$i<$num;$i++) {
-			showArticle($boardName,$boardID,$i+$start,intval($threads[$num-$i-1]['ID']),$threads[$num-$i-1],$i%2);
+			if (($i+$start)==0) 
+				showArticle($boardName,$boardID,0,intval($article['ID']),$article,$i%2);
+			else 
+				showArticle($boardName,$boardID,$i+$start,intval($threads[$num-$i-1]['ID']),$threads[$num-$i-1],$i%2);
 	}
 ?>
 </table>
@@ -303,16 +308,19 @@ function showArticleTree($boardName,$boardID,$articleID,$article,$threads,$threa
 	$level=array();
 	$head=0;
 	$bottom=0;
-	$IDs[$bottom]=intval($threads[$threadNum-1]['ID']);
+	$IDs[$bottom]=intval($article['ID']);
 	$level[$bottom]=0;
 	$printed[0]=1;
 	$nodes[0]=0;
 	$bottom++;
 	while($head<$bottom) {
-		showTreeItem($boardName,$articleID,$threads[$threadNum-$nodes[$head]-1],$nodes[$head],$start, $level[$head]);
-		for ($i=0;$i<$threadNum;$i++){
-			if ( (!isset($printed[$i])) && ($threads[$threadNum-$i-1]['REID']==$IDs[$head]) ) {
-				$IDs[$bottom]=intval($threads[$threadNum-$i-1]['ID']);
+		if ($head==0) 
+			showTreeItem($boardName,$articleID,$article,0,$start, 0);
+		else 
+			showTreeItem($boardName,$articleID,$threads[$threadNum-$nodes[$head]],$nodes[$head],$start, $level[$head]);
+		for ($i=1;$i<=$threadNum;$i++){
+			if ( (!isset($printed[$i])) && ($threads[$threadNum-$i]['REID']==$IDs[$head]) ) {
+				$IDs[$bottom]=intval($threads[$threadNum-$i]['ID']);
 				$level[$bottom]=$level[$head]+1;
 				$printed[$i]=1;
 				$nodes[$bottom]=$i;

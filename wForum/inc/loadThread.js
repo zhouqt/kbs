@@ -5,9 +5,7 @@ function loadThreadFollow(t_id,b_name){
 		if (targetDiv.style.display!='block'){
 			targetDiv.style.display="block";
 			targetImg.src="pic/nofollow.gif";
-			if (targetImg.loaded=="no"){
-				document.frames["hiddenframe"].location.replace("loadtree.php?bname="+b_name+"&ID="+t_id);
-			}
+			document.frames["hiddenframe"].location.replace("loadtree.php?bname="+b_name+"&ID="+t_id);
 		}else{
 			targetDiv.style.display="none";
 			targetImg.src="pic/plus.gif";
