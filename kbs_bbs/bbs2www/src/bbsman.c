@@ -33,11 +33,11 @@ int main()
             if (mode == 1)
                 do_del(board, atoi(parm_name[i] + 3));
             if (mode == 2)
-                do_set(board, atoi(parm_name[i] + 3), FILE_MARKED);
+                do_set(board, atoi(parm_name[i] + 3), FILE_MARK_FLAG);
             if (mode == 3)
-                do_set(board, atoi(parm_name[i] + 3), FILE_DIGEST);
+                do_set(board, atoi(parm_name[i] + 3), FILE_DIGEST_FLAG);
             if (mode==4)
-                do_set(board, atoi(parm_name[i] + 3), FILE_READ);
+                do_set(board, atoi(parm_name[i] + 3), FILE_NOREPLY_FLAG);
             if (mode == 5)
                 do_set(board, atoi(parm_name[i] + 3), 0);
         }
@@ -91,6 +91,8 @@ int do_set(char *board, int id, int flag)
     FILE *fp;
     char path[256], dir[256];
     struct fileheader f;
+    int ent=1;
+    int ffind=0;
 
     sprintf(dir, "boards/%s/.DIR", board);
     //sprintf(path, "boards/%s/%s", board, file);
@@ -101,6 +103,7 @@ int do_set(char *board, int id, int flag)
         if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
             break;
         if (f.id==id) {
+/*
             if (flag==FILE_READ)
                 f.accessed[1] |= flag;
             else
@@ -114,10 +117,20 @@ int do_set(char *board, int id, int flag)
             fclose(fp);
             printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
             return;
+*/
+	    ffind=1;
+	    break;
         }
+	ent++;
     }
     fclose(fp);
-    printf("<tr><td></td><td></td><td></td><td>文件不存在.</td></tr>\n");
+
+    if(ffind){
+	if(change_post_flag(NULL, currentuser, 0, board, ent, &f, dir, flag, 0)!=DONOTHING)
+            printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
+	else
+            printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
+    }else
+        printf("<tr><td></td><td></td><td></td><td>文件不存在.</td></tr>\n");
 }
 
-//change_post_flag(NULL, currentuser, 0, board, ent, fileinfo, direct, flag, 0)

@@ -123,10 +123,9 @@
 <input type="hidden" name="mode" value="">
 <input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>">
 <input type="button" value="删除" onclick="document.form1.mode.value=1; document.form1.submit();">
-<input type="button" value="加M" onclick="document.form1.mode.value=2; document.form1.submit();">
-<input type="button" value="加G" onclick="document.form1.mode.value=3; document.form1.submit();">
-<input type="button" value="不可Re" onclick="document.form1.mode.value=4; document.form1.submit();">
-<input type="button" value="清除MG" onclick="document.form1.mode.value=5; document.form1.submit();">
+<input type="button" value="切换M" onclick="document.form1.mode.value=2; document.form1.submit();">
+<input type="button" value="切换G" onclick="document.form1.mode.value=3; document.form1.submit();">
+<input type="button" value="切换不可Re" onclick="document.form1.mode.value=4; document.form1.submit();">
 </form>
 <?php
 		if ($start > 0)
