@@ -1089,7 +1089,7 @@ static int room_list_select(struct _select_def *conf)
         return SHOW_REFRESH;
     }
     getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
-    if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC) {
+    if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC&&!HAS_PERM(currentuser, PERM_SYSOP)) {
         move(0, 0);
         clrtoeol();
         prints(" 该房间拒绝旁观者");
@@ -1181,7 +1181,7 @@ static int room_list_key(struct _select_def *conf, int key)
             return SHOW_REFRESH;
         }
         getdata(0, 0, "是否以旁观者身份进入? [y/N]", ans, 3, 1, NULL, 1);
-        if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC) {
+        if(toupper(ans[0])=='Y'&&r2->flag&ROOM_DENYSPEC&&!HAS_PERM(currentuser, PERM_SYSOP)) {
             move(0, 0);
             clrtoeol();
             prints(" 该房间拒绝旁观者");
