@@ -12,17 +12,6 @@ show_nav();
 showUserMailBoxOrBR();
 ?>
 <script src="inc/loadThread.js"></script>
-<?php
-	if (BOARDLISTSTYLE == 'simplest') {
-?>
-<script language="JavaScript">
-<!--
-	simplestBoardsList = true;
-//-->
-</script>
-<?php
-	}
-?>
 <table cellSpacing=0 cellPadding=0 width=97% border=0 align=center>
 <?php
 showAnnounce(); 
@@ -52,7 +41,7 @@ function showAllSecs(){
 	GLOBAL $sectionCount;
 	
 	for ($i=0;$i<$sectionCount;$i++){
-		showSecs($i,0,getSecFoldCookie($i));
+		showSecs($i,0,getSecFoldCookie($i),false,getSecFoldCookie($i, false));
 		flush();
 	}
 	return false;

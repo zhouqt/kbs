@@ -32,6 +32,7 @@ array(0, "BOARDS_PER_ROW", 'i', 3, "уш╣Ч╟ФцФап╠Мц©пп╟ФцФйЩд©"),
 array(0, "SHOWREPLYTREE", 'b', true, "йг╥ЯсцйВм╪отй╬╩ь╦╢╫А╧╧"),
 array(0, "TREEVIEW_MAXITEM", 'i', 51, "йВпн╩ь╦╢╫А╧╧вН╤Юотй╬╣д╩ь╦╢йЩ"),
 array(0, "SHOW_POST_UNREAD", 'b', true, "╟ФцФлШвсап╠Мйг╥Яотй╬ new ╣дн╢╤а╠Йж╬"),
+array(0, "BOARD_DEF_CLOSE", 'b', false, "йврЁ╥жгЬ╟ФцФап╠Мтзд╛хогИ©Жобйг╥Я╧ь╠у"),
 "╦╫╪ЧоЮ╧ь",
 array(0, "ATTACHMAXSIZE", 's', '524288', "вН╢С╦╫╪ЧЁъ╢Гё╛пХр╙м╛й╠пч╦дphp.iniюО╣дupload_max_size ,╣╔н╩byte"),
 array(0, "ATTACHMAXTOTALSIZE", 's', '2097152', "р╩ф╙ндубжпкЫсп╦╫╪Ч╣двэ╢Сп║очжф, ╣╔н╩byte"),
@@ -79,14 +80,6 @@ $HTMLCharset = "GB2312"; //уБ╦Жнр╬У╣ц©о╤╗йг gb2312 ╟иё╛рт╨Ср╙╠Д╣д╩╟тывЖЁи©ивт╤╗р
 
 if (!isset($HTMLTitle)) {
 	$HTMLTitle = $SiteName;
-}
-
-if (!defined('BOARDLISTSTYLE')) { 
-/* ╟ФцФап╠М╥╫й╫
- * default х╠й║
- * simplest ╡╩отй╬ап╠М
- */
-	define('BOARDLISTSTYLE','default');
 }
 
 if (!defined('USEBROWSCAP')) { //йг╥Яй╧сц browscap ╨╞йЩю╢╦Эв╪х╥╣ьеп╤оД╞ююфВ╨м╡ывВо╣мЁюЮпмё╛пХр╙еДжц PHP - atppp

@@ -9,6 +9,9 @@ if (!isset($_GET['sec'])){
 $secNum=$_GET['sec'];
 is_numeric($secNum) or exit(0);
 
+if (isset($_GET['fold'])) $isFold = true;
+else $isFold = false;
+
 if ( isset($_GET['fav']) ) {
 	$fav = true;
 	if ($loginok != 1) exit(0);
@@ -21,7 +24,8 @@ if ( isset($_GET['fav']) ) {
 }
 
 
-setSecFoldCookie($fav ? -1 : $secNum, true);
+setSecFoldCookie($fav ? -1 : $secNum, true, true);
+setSecFoldCookie($fav ? -1 : $secNum, false, false);
 
 ?>
 <html>
@@ -29,15 +33,11 @@ setSecFoldCookie($fav ? -1 : $secNum, true);
 <script language="javascript" type="text/javascript" src="inc/browser.js"></script>
 <script src="inc/loadThread.js"></script>
 <?php
-	showSecsJS($secNum,0,true,$fav);
+	showSecsJS($secNum,0,$isFold,$fav, false);
 ?>
 <script language="javascript">
-	str = showSec(true, <?php echo ($fav ? "true" : "false"); ?>, boards, <?php echo $secNum ?>);
-	parent.boards<?php echo $secNum; ?> = boards;
-	oTd = getParentRawObject("followSpan<?php echo $secNum; ?>");
-	oTip = getParentRawObject("followTip<?php echo $secNum; ?>");
-	oTip.style.display = 'none';
-	oTd.innerHTML = str;
+	var siteconf_BOARDS_PER_ROW = <?php echo BOARDS_PER_ROW; ?>;
+	loadBoardFollow_Internal(<?php echo $secNum ?>, <?php echo ($fav ? "true" : "false"); ?>, false, false, <?php echo ($isFold?"true":"false"); ?>, true);
 </script>
 </body>
 </html>

@@ -1,11 +1,12 @@
 document.write('<iframe width=0 height=0 src="" id="hiddenframe" name="hiddenframe" style="display:none"></iframe>');
-var simplestBoardsList = false;
 
 /* 版面列表以及详细列表展开 */
 
 /* sec == 1 means fav */
-function setSecCookie(sec) {
-	szCookieName = "ShowSecBoards=";
+function setSecCookie(sec, flag, isShow) {
+	if (isShow) cn = "ShowSecBoards";
+	else cn = "HideSecBoards";
+	szCookieName = cn + "=";
 	var szCookie = document.cookie;
 	var iPos1 = szCookie.indexOf(szCookieName), iPos2 = 0;
 	if (iPos1 >= 0)
@@ -17,47 +18,104 @@ function setSecCookie(sec) {
 		ssb = unescape(szCookie.substring(iPos1, iPos2));
 		ssb = ssb.valueOf();
 	} else {
-		ssb = 1;
+		ssb = 0;
 	}
-	ssb = ssb & ~(1 << (sec+1));
+	if (flag) {
+		ssb = ssb | (1 << (sec+1));
+	} else {
+		ssb = ssb & ~(1 << (sec+1));
+	}
 	var expTime = new Date();
 	expTime.setTime(expTime.getTime() + 604800 * 1000);
 	document.cookie = szCookieName + escape(ssb) + '; Expires=' + expTime.toGMTString();
 }
 
-function loadBoardFollow(sec, isFav){
-	var targetImg = getRawObject("followImg" + sec);
-	var targetDiv = getRawObject("followSpan" + sec);
-	var targetTip = getRawObject("followTip" + sec);
+/* isParent is true when called from loadsec.php */
+function loadBoardFollow_Internal(sec, isFav, isLoading, isHide, isFold, isParent){
+	if (isParent) {
+		targetImg = getParentRawObject("followImg" + sec);
+		targetDiv = getParentRawObject("followSpan" + sec);
+		targetTip = getParentRawObject("followTip" + sec);
+		targetTip.style.display = 'none';
+		eval("parent.foldflag" + sec + " = " + (isFold ? 2 : 1) + ";");
+	} else {
+		targetImg = getRawObject("followImg" + sec);
+		targetDiv = getRawObject("followSpan" + sec);
+		targetTip = getRawObject("followTip" + sec);
+	}
 
-	if ("object"==typeof(targetImg)){
-		eval("fold = fold" + sec + ";");
-		if (!fold){
-			targetImg.src="pic/nofollow.gif";
-			targetTip.style.display = '';
-			str = "loadsec.php?sec=" + sec;
-			if (isFav) str += "&fav=1";
-			window.frames["hiddenframe"].document.location.href = str;
-		} else{
+	if (isLoading){
+		targetTip.style.display = '';
+		str = "loadsec.php?sec=" + sec;
+		if (isFav) str += "&fav=1";
+		if (isFold) str += "&fold=1";
+		window.frames["hiddenframe"].document.location.href = str;
+		/* HTML 和 JS 元素的变化等待 loadsec.php 回调本函数，因为那个时候数据和状态才真正到位 - atppp */
+	} else {
+		eval("boards = boards" + sec + ";");
+		
+		 //when we are called from loadsec.php, we are always getting more data in boards, so it's safe to replace.
+		if (isParent) eval("parent.boards" + sec + " = boards;");
+		
+		targetDiv.innerHTML = showSec(isFold, isFav, boards, sec, isHide);
+		setSecCookie(isFav ? -1 : sec, isFold, true);
+		setSecCookie(isFav ? -1 : sec, isHide, false);
+		if (isHide || !isFold) {
 			targetImg.src="pic/plus.gif";
-			eval("boards = boards" + sec + ";");
-			targetDiv.innerHTML = showSec(false, isFav, boards, sec);
-			setSecCookie(isFav ? -1 : sec);
+			targetImg.title = "展开版面列表";
+		} else {
+			targetImg.src="pic/nofollow.gif";
+			targetImg.title = "折叠版面列表";
 		}
-		eval("fold" + sec + " = !fold;");
+		str = "curfold" + sec + " = " + (isHide ? 0 : (isFold ? 2 : 1)) + ";";
+		if (isParent) str = "parent." + str;
+		eval(str);
+		if (!isFav) {
+			if (isParent) {
+				targetHide = getParentRawObject("toogleHide" + sec);
+			} else {
+				targetHide = getRawObject("toogleHide" + sec);
+			}
+			targetHide.innerHTML = (isHide ? "展开" : "关闭") + "版面列表";
+		}
+	}
+}
+function loadBoardFollow(sec, isFav, isLoading, isHide, isFold){
+	loadBoardFollow_Internal(sec, isFav, isLoading, isHide, isFold, false);
+}
+
+function toogleHide(sec) {
+	eval("foldflag = foldflag" + sec + ";");
+	eval("curfold = curfold" + sec + ";");
+	if (curfold == 0) {
+		loadBoardFollow(sec, false, (foldflag == 0), false, false);
+	} else {
+		loadBoardFollow(sec, false, false, true, false);
 	}
 }
 
 function loadSecFollow(sec) {
-	loadBoardFollow(sec, false);
+	eval("foldflag = foldflag" + sec + ";");
+	eval("curfold = curfold" + sec + ";");
+	if (curfold == 2) {
+		loadBoardFollow(sec, false, false, false, false);
+	} else {
+		loadBoardFollow(sec, false, (foldflag <= curfold), false, (curfold == 1));
+	}
 }
 
-function loadFavFollow(select) {
-	loadBoardFollow(select, true);
+function loadFavFollow() {
+	eval("foldflag = foldflag" + j_select + ";");
+	eval("curfold = curfold" + j_select + ";");
+	if (curfold == 2) {
+		loadBoardFollow(j_select, true, false, false, false);
+	} else {
+		loadBoardFollow(j_select, true, (foldflag == 1), false, true);
+	}
 }
 
 function Board(isGroup,isUnread,boardName,boardDesc,lastID,lastTitle,lastOwner,lastPosttime,
-               bm,todayNum,nArticles,nThreads,select,npos,bid) {
+               bm,todayNum,nArticles,nThreads,npos,bid,currentusers) {
 	this.isGroup = isGroup;
 	this.isUnread = isUnread;
 	this.boardName = boardName;
@@ -70,19 +128,19 @@ function Board(isGroup,isUnread,boardName,boardDesc,lastID,lastTitle,lastOwner,l
 	this.todayNum = todayNum;
 	this.nArticles = nArticles;
 	this.nThreads = nThreads;
-	this.select = select;
 	this.npos = npos;
 	this.bid = bid;
+	this.currentusers = currentusers;
 }
 
-function BoardS(isGroup, boardName, boardDesc, todayNum, nArticles, select, npos, bid) {
-	return new Board(isGroup, 0, boardName, boardDesc, 0,0,0,0,0,todayNum, nArticles, 0, select, npos, bid);
+function BoardS(isGroup, boardName, boardDesc, todayNum, nArticles, npos, bid, currentusers) {
+	return new Board(isGroup, 0, boardName, boardDesc, 0,0,0,0,0,todayNum, nArticles, 0, npos, bid, currentusers);
 }
 
-function showSec(isFold, isFav, boards, secNum) {
+function showSec(isFold, isFav, boards, secNum, isHide) {
 	str = '<table cellspacing=1 cellpadding=0 align=center class=TableBorder1 style="width:100%">';
-	if (!isFold && simplestBoardsList) {
-		str += '<TR><TD class=TableBody1>&nbsp;版面列表已关闭 [<a href="#" onclick="loadSecFollow('+secNum+')" title="展开版面列表">展开</a>]</td></tr>';
+	if (isHide) {
+		// str += '<TR><TD class=TableBody1>&nbsp;版面列表已关闭 [<a href="#" onclick="loadSecFollow('+secNum+')" title="展开版面列表">展开</a>]</td></tr>';
 	} else if ((boards.length == 0)) {
 		str += '<TR><TD class=TableBody1 align="center" height="25">尚无版面</td></tr>';
 	} else {
@@ -101,10 +159,10 @@ function showSec(isFold, isFav, boards, secNum) {
 				if (!isFav || !boards[i].isGroup) {
 					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardName + '</font></a>';
 					if (isFav) {
-						str += '&nbsp;&nbsp;<a href="favboard.php?select=' + boards[i].select + '&delete=' + boards[i].npos + '" title="从收藏中删除该版面">&lt;删&gt;</a>';
+						str += '&nbsp;&nbsp;<a href="favboard.php?select=' + j_select + '&delete=' + boards[i].npos + '" title="从收藏中删除该版面">&lt;删&gt;</a>';
 					}
 				} else {
-					str += '<a href="favboard.php?select=' + boards[i].bid + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>&nbsp;&nbsp;<a href="favboard.php?select=' + boards[i].select + '&deldir=' + boards[i].npos + '" title="从收藏中删除该目录">&lt;删&gt;</a>';
+					str += '<a href="favboard.php?select=' + boards[i].bid + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>&nbsp;&nbsp;<a href="favboard.php?select=' + j_select + '&deldir=' + boards[i].npos + '" title="从收藏中删除该目录">&lt;删&gt;</a>';
 				}
 				str += '</td><td width=40 rowspan=2 align=center class=TableBody1></td><td width=200 rowspan=2 class=TableBody1>';
 				if (boards[i].isGroup) {
@@ -128,22 +186,25 @@ function showSec(isFold, isFav, boards, secNum) {
 				if (showed % siteconf_BOARDS_PER_ROW == 1) {
 					str += "<tr>";
 				}
-				str += '<td class=TableBody1 width="'+percent+'%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=2>';
+				str += '<td class=TableBody1 width="'+percent+'%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=3>';
 
 				if (!isFav || !boards[i].isGroup) {
 					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc;
 					str += '&nbsp;[' + boards[i].boardName + ']</font></a>';
 					if (isFav) {
-						str += '&nbsp;&nbsp;<a href="favboard.php?select=' + boards[i].select + '&delete=' + boards[i].npos + '" title="从收藏中删除该版面">&lt;删&gt;</a>';
+						str += '&nbsp;&nbsp;<a href="favboard.php?select=' + j_select + '&delete=' + boards[i].npos + '" title="从收藏中删除该版面">&lt;删&gt;</a>';
 					}
 				} else {
-					str += '<a href="favboard.php?select=' + boards[i].bid + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>&nbsp;&nbsp;<a href="favboard.php?select=' + boards[i].select + '&deldir=' + boards[i].npos + '" title="从收藏中删除该目录">&lt;删&gt;</a>';
+					str += '<a href="favboard.php?select=' + boards[i].bid + '"><font color=#000066>[目录]' + boards[i].boardDesc + '</font></a>&nbsp;&nbsp;<a href="favboard.php?select=' + j_select + '&deldir=' + boards[i].npos + '" title="从收藏中删除该目录">&lt;删&gt;</a>';
 				}
 				str += '</td></tr><tr>';
 				if (boards[i].isGroup) {
 					str += '<td> <b>本版为二级目录版</b></td>';
 				} else {
-					str += '<td width="50%">今日：<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width="50%">发贴：' + boards[i].nArticles + '</td>';
+					str += '<td width="33%">今日：<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width="34%">发贴：' + boards[i].nArticles + '</td><td width="33%">在线：';
+					if (boards[i].currentusers > 0) str += '<font color=#FF0000>' + boards[i].currentusers + '</font>';
+					else str += '0';
+					str += '</td>';
 				}
 				str += '</tr></table></td>';
 				if (showed % siteconf_BOARDS_PER_ROW == 0) {

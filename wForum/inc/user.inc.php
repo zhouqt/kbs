@@ -35,46 +35,51 @@ function showUserMailbox(){ //这个函数直接调用必须保证 $loginok==1
 }
 
 /* $secNum == -1 means fav */
-function setSecFoldCookie($secNum, $isFold) {
-	if (isset($_COOKIE["ShowSecBoards"])) {
-		$ssb = $_COOKIE["ShowSecBoards"];
+function setSecFoldCookie($secNum, $flag, $isShow) {
+	if ($isShow) $cn = "ShowSecBoards";
+	else $cn = "HideSecBoards";
+	if (isset($_COOKIE[$cn])) {
+		$ssb = $_COOKIE[$cn];
 		settype($ssb, "integer");
 	}
-	else $ssb = 1;
-	if ($isFold) {
+	else $ssb = 0;
+	if ($flag) {
 		$ssb = $ssb | (1 << ($secNum+1));
 	} else {
 		$ssb = $ssb & ~(1 << ($secNum+1));
 	}
-	setcookie('ShowSecBoards', $ssb ,time() + 604800);
-	$_COOKIE["ShowSecBoards"] = $ssb;
+	setcookie($cn, $ssb ,time() + 604800);
+	$_COOKIE[$cn] = $ssb;
 	return 0;
 }
 
-function getSecFoldCookie($secNum) {
-	if (isset($_COOKIE["ShowSecBoards"])) {
-		$ssb = $_COOKIE["ShowSecBoards"];
+function getSecFoldCookie($secNum, $isShow = true) {
+	if ($isShow) $cn = "ShowSecBoards";
+	else $cn = "HideSecBoards";
+	if (isset($_COOKIE[$cn])) {
+		$ssb = $_COOKIE[$cn];
 		settype($ssb, "integer");
+	} else {
+		if (BOARD_DEF_CLOSE && !$isShow) $ssb = ~0;
+		else $ssb = 0;
 	}
-	else $ssb = 1;
 	return (($ssb & (1 << ($secNum+1))) != 0);
 }
 
-function showSecsJS($secNum,$group,$isFold,$isFav) {
+function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 	global $yank;
 	global $section_nums;
-	
-	if ($isFav) {
-		$select = $secNum; //代码相似性 :D
-	}
 ?>
 <script language="JavaScript">
 <!--
 	boards = new Array();
 <?php
-	if (!$isFold && (BOARDLISTSTYLE=='simplest') && !$isFav) {
-		// hehe 
-	} else {
+	if ($isFav) {
+		$select = $secNum; //代码相似性 :D
+		echo "j_select = $select;\n";
+	}
+
+	if (!$isHide) {
 		if (!$isFav) {
 			if (!$isFold) $flag = $yank | 2;
 			else $flag = $yank;
@@ -99,6 +104,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 			}
 			$brd_flag = $boards["FLAG"]; //flag
 			$brd_bid = $boards["BID"]; //flag
+			$brd_currentusers = $boards["CURRENTUSERS"];
 			$rows = sizeof($brd_name);
 			$showed = 0;
 			for ($i = 0; $i < $rows; $i++)	{
@@ -129,12 +135,12 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 					$j_nArticles = $brd_artcnt[$i];
 				}
 				if ($isFav) {
-					$j_select = $select;
 					$j_npos = $brd_npos[$i];
 					$j_bid = $brd_bid[$i];
 				} else {
-					$j_select = $j_npos = $j_bid = 0;
+					$j_npos = $j_bid = 0;
 				}
+				$j_currentusers = $brd_currentusers[$i];
 				if ($isFold) {
 					$j_isUnread = ($brd_unread[$i] == 1 ? "true" : "false");
 					if ($j_nArticles > 0) {
@@ -152,16 +158,16 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
 						$j_nThreads = $j_nArticles = $j_lastID = $j_lastTitle = $j_lastOwner = $j_lastPosttime = 0;
 					}
 					$j_bm = "'".$brd_bm[$i]."'";
-					echo "boards[boards.length] = new Board($j_isGroup,$j_isUnread,$j_boardName,$j_boardDesc,$j_lastID,$j_lastTitle,$j_lastOwner,$j_lastPosttime,$j_bm,$j_todayNum,$j_nArticles,$j_nThreads,$j_select,$j_npos,$j_bid);\n";
+					echo "boards[boards.length] = new Board($j_isGroup,$j_isUnread,$j_boardName,$j_boardDesc,$j_lastID,$j_lastTitle,$j_lastOwner,$j_lastPosttime,$j_bm,$j_todayNum,$j_nArticles,$j_nThreads,$j_npos,$j_bid,$j_currentusers);\n";
 				} else {
-					echo "boards[boards.length] = BoardS($j_isGroup,$j_boardName,$j_boardDesc,$j_todayNum,$j_nArticles,$j_select,$j_npos,$j_bid);\n";
+					echo "boards[boards.length] = BoardS($j_isGroup,$j_boardName,$j_boardDesc,$j_todayNum,$j_nArticles,$j_npos,$j_bid,$j_currentusers);\n";
 				}
 			}
 		}
 	}
 ?>
 	boards<?php echo $secNum; ?> = boards;
-	fold<?php echo $secNum; ?> = <?php echo ($isFold?"true":"false"); ?>;
+	curfold<?php echo $secNum; ?> = foldflag<?php echo $secNum; ?> = <?php echo ($isHide ? 0 : ($isFold ? 2 : 1)); ?>;
 //-->
 </script>
 <?php
@@ -172,7 +178,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav) {
  * $isFav = true 的时候表示载入收藏夹，参数说明：$secNum 相当于 bbs2www/html/bbsfav.php 里头的 $select, $group 参数此时没有作用 - atppp
  * isFold: true when show detailed boards list.
  */
-function showSecs($secNum,$group,$isFold,$isFav = false) {
+function showSecs($secNum,$group,$isFold,$isFav = false,$isHide = false) {
 	global $section_names;
 ?>
 <table cellspacing=0 cellpadding=0 align=center width="97%" class=TableBorder1>
@@ -182,7 +188,7 @@ function showSecs($secNum,$group,$isFold,$isFav = false) {
 		if ($group == 0) {
 			if ($isFold) {
 ?>
-<img src="pic/nofollow.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadSecFollow(<?php echo $secNum; ?>)" border=0 title="关闭版面列表">
+<img src="pic/nofollow.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadSecFollow(<?php echo $secNum; ?>)" border=0 title="折叠版面列表">
 <?php
 			} else {
 ?>
@@ -197,15 +203,20 @@ function showSecs($secNum,$group,$isFold,$isFav = false) {
 ?>
 <a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?></a>
 <?php
+		if ($group == 0) {
+?>
+[<a id="toogleHide<?php echo $secNum ; ?>" href="javascript:toogleHide(<?php echo $secNum; ?>)"><?php echo $isHide ? "展开" : "关闭"; ?>版面列表</a>]
+<?php
+		}
 	} else {
 		$select = $secNum; //代码相似性 :D
 		if ($isFold) {
 ?>
-<img src="pic/nofollow.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadFavFollow(<?php echo $select; ?>)" border=0 title="关闭版面列表">
+<img src="pic/nofollow.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow()" border=0 title="关闭版面列表">
 <?php
 		} else {
 ?>
-<img src="pic/plus.gif" id="followImg<?php echo $secNum; ?>" style="cursor:hand;" onclick="loadFavFollow(<?php echo $select; ?>)" border=0 title="展开版面列表">
+<img src="pic/plus.gif" id="followImg<?php echo $select; ?>" style="cursor:hand;" onclick="loadFavFollow()" border=0 title="展开版面列表">
 <?php
 		}
 ?>
@@ -224,13 +235,13 @@ function showSecs($secNum,$group,$isFold,$isFav = false) {
 ?>
 </th></tr>
 <?php
-	showSecsJS($secNum,$group,$isFold,$isFav);
+	showSecsJS($secNum,$group,$isFold,$isFav,$isHide);
 ?>
 <tr style="display:none" id="followTip<?php echo $secNum; ?>"><td style="text-align:center;border:1px solid black;background-color:lightyellow;color:black;padding:2px" onclick="loadSecFollow('<?php echo $secNum; ?>')">正在读取版面列表数据，请稍侯……</div></td></tr>
 <TR><Td id="followSpan<?php echo $secNum; ?>">
 <script language="JavaScript">
 <!--
-	str = showSec(<?php echo ($isFold?"true":"false"); ?>, <?php echo ($isFav?"true":"false"); ?>, boards, <?php echo $secNum ?>);
+	str = showSec(<?php echo ($isFold?"true":"false"); ?>, <?php echo ($isFav?"true":"false"); ?>, boards, <?php echo $secNum ?>, <?php echo ($isHide?"true":"false"); ?>);
 	document.write(str);
 //-->
 </script>

@@ -2,12 +2,6 @@
 
 //$AnnounceBoard="Announce"; //公告版面
 
-/* 版面列表方式
- * default 缺省
- * simplest 不显示列表
- */
-//define('BOARDLISTSTYLE','default');
-
 define("ANNOUNCENUMBER",5);  //首页滚动显示的公告数量
 
 define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
@@ -15,6 +9,8 @@ define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
 define("BOARDS_PER_ROW", 3); //折叠版面列表每行版面数目
+
+//define("BOARD_DEF_CLOSE", false); //首页分区版面列表在默认情况下是否关闭
 
 define ('MAINTITLE','<IMG SRC="bar/title.jpg">'); //页面正上方显示的站点标题
 

@@ -106,6 +106,21 @@ f. ·ÖÇø°æÃæÁÐ±í²ÉÓÃJSÐ´Ò³Ãæ¡£Õ¹¿ªÁÐ±íÐèÒªÒþ²Øiframe¶ÁÊý¾Ý£¬ÕÛµþÁÐ±íÖ±½ÓÊ¹ÓÃÒÑÓÐµ
    ±íÊ¾ÊÕ²Ø¼Ð°æÃæÁÐ±íÊÇ·ñÕ¹¿ª£¬µÚ(i+1) bit ±íÊ¾µÚ i ¸ö·ÖÇøÊÇ·ñÕ¹¿ª¡£¶þ¼¶Ä¿Â¼ÓÀÔ¶Õ¹¿ª¡£
    Õ¹¿ª°æÃæÁÐ±íÒÔºó·þÎñÆ÷¶ËÉèÖÃ cookie£»ÕÛµþÁÐ±íÓÉ¿Í»§¶Ë×Ô¼ºÉèÖÃ cookie¡£
 
+   ÁÐ±íÒ²¿ÉÒÔÍêÈ«Òþ²Ø¡£Õâ¸öÓÉ HideSecBoards cookie ¿ØÖÆ¡£LSB Ã»ÓÐ×÷ÓÃ¡£µÚ (i+1) bit ±íÊ¾
+   µÚ i ¸ö·ÖÇøµÄ°æÃæÍêÈ«Òþ²Ø¡£ÊÕ²Ø¼Ð²»¿ÉÒÔ±»Òþ²Ø¡£
+
+   JavaScript ±äÁ¿
+      "foldflag"+i ±íÊ¾µÚ i ¸ö·ÖÇø£¨»òÕß select == i µÄÊÕ²Ø¼Ð£©µÄÊý¾Ý×´Ì¬:
+        0: µ±Ç°»¹Ã»ÓÐÈÎºÎ°æÃæÊý¾Ý
+        1: µ±Ç°ÓÐÕÛµþ°æÃæÁÐ±íËù±ØÐèµÄËùÓÐÊý¾Ý
+        2: µ±Ç°ÒÑ¾­ÓÐËùÓÐÓÃ×÷ÏÔÊ¾µÄ°æÃæÊý¾ÝÁË
+      "curfold"+i ±íÊ¾µÚ i ¸ö·ÖÇø£¨»òÕß select == i µÄÊÕ²Ø¼Ð£©µÄÕÛµþ×´Ì¬:
+        0: Òþ²Ø
+        1: ÕÛµþ°æÃæÁÐ±í
+        2: ÏêÏ¸°æÃæÁÐ±í
+
+   ÉÏÃæÕâÁ½¸ö cookie µÄÄ¬ÈÏÖµÔÝÊ±Í³Ò»ÉèÖÃÎª 0
+
 
 
 5. browscap.ini get_browser() º¯Êý¡£Ä¬ÈÏ¹Ø±ÕÕâ¸ö¹¦ÄÜ¡£²Î¿¼£º

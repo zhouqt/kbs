@@ -1,7 +1,5 @@
 <?php
 
-//define('BOARDLISTSTYLE','simplest');
-
 $SiteName="大话西游";
 
 $SiteURL="http://wforum.zixia.net";
