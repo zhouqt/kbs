@@ -862,7 +862,7 @@ checkvote:
                                         if(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER) a++;
                                         else b++;
                                     }
-                                if(a>0&&a>=b-2&&inrooms[myroom].status==INROOM_DAY) {
+                                if(a>0&&a>=b-1&&inrooms[myroom].status==INROOM_DAY) {
                                     inrooms[myroom].status = INROOM_STOP;
                                     send_msg(-1, "坏人获得了胜利...");
                                     for(j=0;j<MAX_PEOPLE;j++)
