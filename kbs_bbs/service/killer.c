@@ -689,18 +689,20 @@ void join_room(int w, int spec)
             }
             else if(ch==Ctrl('S')) {
                 int pid;
+                int sel;
+                sel = getpeople(selected);
                 me=mypos;
-                pid=inrooms[myroom].peoples[selected].pid;
+                pid=inrooms[myroom].peoples[sel].pid;
                 if(inrooms[myroom].peoples[me].vote==0)
                 if(inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE&&
                     (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER&&inrooms[myroom].status==INROOM_NIGHT ||
                     inrooms[myroom].status==INROOM_DAY)) {
-                    if(inrooms[myroom].peoples[selected].flag&PEOPLE_ALIVE && 
-                        !(inrooms[myroom].peoples[selected].flag&PEOPLE_SPECTATOR) &&
-                        selected!=me) {
+                    if(inrooms[myroom].peoples[sel].flag&PEOPLE_ALIVE && 
+                        !(inrooms[myroom].peoples[sel].flag&PEOPLE_SPECTATOR) &&
+                        sel!=me) {
                         int i,j,t1,t2,t3;
                         sprintf(buf, "\x1b[32;1m%s投了%s一票\x1b[m", inrooms[myroom].peoples[me].nick[0]?inrooms[myroom].peoples[me].nick:inrooms[myroom].peoples[me].id,
-                            inrooms[myroom].peoples[selected].nick[0]?inrooms[myroom].peoples[selected].nick:inrooms[myroom].peoples[selected].id);
+                            inrooms[myroom].peoples[sel].nick[0]?inrooms[myroom].peoples[sel].nick:inrooms[myroom].peoples[sel].id);
                         start_change_inroom();
                         inrooms[myroom].peoples[me].vote = pid;
                         end_change_inroom();
@@ -879,9 +881,9 @@ checkvote:
                         kill_msg(-1);
                     }
                     else {
-                        if(selected==me)
+                        if(sel==me)
                             send_msg(me, "\x1b[31;1m你不能选择自杀\x1b[m");
-                        else if(!(inrooms[myroom].peoples[selected].flag&PEOPLE_ALIVE))
+                        else if(!(inrooms[myroom].peoples[sel].flag&PEOPLE_ALIVE))
                             send_msg(me, "\x1b[31;1m此人已死\x1b[m");
                         else
                             send_msg(me, "\x1b[31;1m此人是旁观者\x1b[m");
