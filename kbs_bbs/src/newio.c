@@ -846,6 +846,16 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
             good_move(y, x + curr);
             continue;
         }
+
+        if(ch == KEY_ESC) {
+            curr = 0;
+            clen = 0;
+            buf[0] = 0;
+            good_move(y, x);
+            clrtoeol();
+            continue;
+        }
+        
         if (ch == KEY_DEL) {
             if (curr >= clen) {
                 curr = clen;
