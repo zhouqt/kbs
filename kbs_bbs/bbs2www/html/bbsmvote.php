@@ -154,7 +154,7 @@
 
 <script language="javascript">
 <!--//
-var maxitemnum=32;
+var maxitemnum=10;
 var defaultitem=3;
 function doGenerate(){
 	var oSelectType=document.getElementById("oType");
