@@ -72,7 +72,7 @@ DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 
 .SUFFIXES: .o .c .ln
 
-.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -c $*.c
+.c.o:   ;   $(CC) $(CFLAGS) $(SITE_DEF) $(DEFINES) -DSAFE_KILL -g -c $*.c
 .c.ln:  ;   lint -abhi $*.c
 
 #--------------------- Dependency starts here -------------------
@@ -88,7 +88,7 @@ listonline: $(COBJS)
 
 
 $(PROGNAME): $(COBJS) $(OTHERS) 
-	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS)
+	$(CC) -o bbsd_single $(CFLAGS) $(COBJS) $(LIBS) -g
 #	cp -f bbsnew ../bin/bbsnew
 
 bbstest: $(COBJS) $(OTHERS) newmain.o newio.o newterm.o convcode.o

@@ -54,23 +54,34 @@ int
 search_file(char *filename) /* Leeward 98.10.02 */
 {
     char p_name[256];
-    int  fd, i = 0;
-    struct fileheader rptr;
+    int  fd, i = 0, sizeread, n, j;
+    struct fileheader *buf;
+
+    if((buf=malloc(sizeof(struct fileheader)*NUMBUFFER))==NULL)
+        return -1;
 
     if (uinfo.mode!=RMAIL) setbdir( p_name, currboard);
     else setmailfile(p_name, currentuser.userid, DOT_DIR);
 
-    if ((fd = open(p_name,O_RDONLY,0)) == -1) return 0;
+    if ((fd = open(p_name,O_RDONLY,0)) == -1) {
+        free(buf);
+        return 0;
+    }
 
-    while(read(fd, &rptr, sizeof(struct fileheader)) > 0) {
-        i ++;
-        if (!strcmp(filename, rptr.filename)) {
-            close(fd) ;
-            return i;
+    while((sizeread=read(fd,buf,sizeof(struct fileheader)*NUMBUFFER)) > 0) {
+        n=sizeread/sizeof(struct fileheader);
+        for(j=0;j<n;j++) {
+            i++;
+            if (!strcmp(filename, buf[j].filename)) {
+                close(fd);
+                free(buf);
+                return i;
+            }
         }
+        if(sizeread%sizeof(struct fileheader)!=0) break;
     }
     close(fd);
-
+    free(buf);
     return - 1;
 }
 

@@ -24,7 +24,6 @@
 #include "bbs.h"
 
 #define BUFSIZE (MAXUSERS + 244)
-#define NUMBUFFER 20
 
 #ifdef SYSV
 int
@@ -215,8 +214,10 @@ int size ;
         toobigmesg();
         return -1;
     }
-    if((fd = open(filename,O_RDONLY,0)) == -1)
+    if((fd = open(filename,O_RDONLY,0)) == -1) {
+        free(buf);
         return -1 ;
+    }
     while((sizeread=read(fd, buf, size*NUMBUFFER))>0) {
         n=sizeread/size;
         for(i=0;i<n;i++) {

@@ -286,3 +286,8 @@ extern int Net_Sleep(int);
 #endif /* of _BBS_H_ */
 
 #define MAX_IGNORE      30      /* ignore-users' count */
+#define NUMBUFFER 20  /* number of records to preload. ylsdd*/
+
+#ifdef SAFE_KILL
+#define kill(x,y) safe_kill(x,y)
+#endif

@@ -91,7 +91,7 @@ struct boardheader *fptr ;
 }
 
 void
-resolve_boards()
+reload_boards()
 {
     struct stat st;
     time_t      now;
@@ -126,6 +126,36 @@ resolve_boards()
     }
     flock(lockfd,LOCK_UN);
     close(lockfd);
+}
+
+void
+resolve_boards()
+{
+    struct stat st;
+    time_t      now;
+    int lockfd;
+    static int n=0;
+
+    if( brdshm == NULL ) {
+        brdshm = attach_shm( "BCACHE_SHMKEY", 3693, sizeof( *brdshm ) ); /* attach board share memory*/
+    }
+    numboards = brdshm->number;
+    bcache = brdshm->bcache;
+    
+    if( brdshm->uptime < 999999 ) {
+        reload_boards();
+        return;
+    }
+
+    n++;
+    if(n%50) return;
+    
+    now = time( NULL );
+    if( stat( BOARDS, &st ) < 0 ) {
+        st.st_mtime = now - 3600;
+    }
+    if( brdshm->uptime < st.st_mtime || brdshm->uptime < now - 3600 )
+        reload_boards();
 }
 
 int

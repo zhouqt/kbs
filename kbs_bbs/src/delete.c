@@ -97,7 +97,7 @@ d_board()
     strcpy( binfo.title, genbuf );
     binfo.level = PERM_SYSOP;
     substitute_record( BOARDS, &binfo, sizeof( binfo ), bid );
-
+    reload_boards();
     move(4,0) ;
     prints("本讨论区已经删除...\n") ;
     pressreturn() ;

@@ -329,3 +329,11 @@ if((pid = vfork()) == 0) {
     return((w == -1)? w: status) ;
 }
 
+#ifdef kill
+#undef kill
+#endif
+
+int safe_kill(int x, int y)
+{  if(x<=0) return -1;
+   return kill(x,y);
+}

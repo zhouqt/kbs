@@ -57,6 +57,7 @@ setvoteflag(bname,flag)
         fh.flag = fh.flag|VOTE_FLAG;
     if ( substitute_record( BOARDS, &fh, sizeof(fh), pos ) == -1 )
         prints("Error updating BOARDS file...\n");
+    reload_boards();
 }
 
 void
