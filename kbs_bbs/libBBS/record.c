@@ -158,10 +158,10 @@ void load_mail_list(struct userec *user,struct _mail_list* mail_list)
     int fd;
 
     sethomefile(fname, user->userid, "maildir");
-    mail->mail_list_t=0;
+    mail_list->mail_list_t=0;
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-        read(fd, &mail->mail_list_t, sizeof(int));
-        read(fd, mail->mail_list, sizeof(mail_list));
+        read(fd, &mail_list->mail_list_t, sizeof(int));
+        read(fd, mail_list->mail_list, sizeof(mail_list->mail_list));
         close(fd);
     }
 }
@@ -173,8 +173,8 @@ void save_mail_list(struct _mail_list* mail_list)
 
     sethomefile(fname, currentuser->userid, "maildir");
     if ((fd = open(fname, O_WRONLY|O_CREAT, 0600)) != -1) {
-        write(fd, &mail_list.mail_list_t, sizeof(int));
-        write(fd, mail_list.mail_list, sizeof(mail_list.mail_list));
+        write(fd, &mail_list->mail_list_t, sizeof(int));
+        write(fd, mail_list->mail_list, sizeof(mail_list->mail_list));
         close(fd);
     }
 }

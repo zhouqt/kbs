@@ -1243,7 +1243,7 @@ int mail_move(int ent, struct fileheader *fileinfo, char *direct)
         sel[i + 2].y = i + 8;
         sel[i + 2].hotkey = user_mail_list.mail_list[i][0];
         sel[i + 2].type = SIT_SELECT;
-        sel[i + 2].data = (void *) mail_list[i];
+        sel[i + 2].data = (void *) user_mail_list.mail_list[i];
     }
     sel[user_mail_list.mail_list_t + 2].x = 3;
     sel[user_mail_list.mail_list_t + 2].y = user_mail_list.mail_list_t + 8;

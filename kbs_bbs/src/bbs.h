@@ -128,6 +128,11 @@ extern long ti;
 #define MAX_EXP           5     /* 离站画面数 */
 #define MAX_DIGEST        1500  /* 最大文摘数 */
 
+/* added by bad 2002-08-2	FavBoardDir */
+#define FAVBOARDNUM     100     /*收藏夹最大条目*/
+#define MAILBOARDNUM	20      /*自定义邮箱最大数目*/
+
+
 #define MORE_BUFSIZE    4096
 #define MAXnettyLN      5       /* lines of  activity board  */
 /*#define ACBOARD_BUFSIZE      150    max. length of each line for activity board  */
@@ -340,10 +345,6 @@ typedef size_t socklen_t;
 #ifndef BBS_PAGESIZE
 #define BBS_PAGESIZE    (t_lines - 4)
 #endif
-
-/* added by bad 2002-08-2	FavBoardDir */
-#define FAVBOARDNUM     100
-#define MAILBOARDNUM	20
 
 /* added by bad 2002.8.1 */
 #define FILE_MARK_FLAG 0

@@ -365,6 +365,7 @@ void check_register_info()
         currentuser->userlevel = ~0;
         currentuser->userlevel &= ~PERM_SUICIDE;        /* Leeward 98.10.13 */
         currentuser->userlevel &= ~(PERM_DENYMAIL|PERM_DENYRELAX);       /* Bigman 2000.9.22 */
+        currentuser->userlevel &= ~PERM_JURY;       /* ²»ÄÜÊÇÖÙ²Ã */
     }
     if (!(currentuser->userlevel & PERM_LOGINOK)) {
         if (HAS_PERM(currentuser, PERM_SYSOP))
