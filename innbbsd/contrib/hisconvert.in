@@ -1,0 +1,11 @@
+#!@PERL@
+while (<>)
+{
+   ($mid,$path) = split(/\s+/);
+   if ( $path =~ /\w+\/M\.(\d+)\./) {
+     $now = $1;
+   } else {
+     $now = time();
+   }
+   print "$mid\t$now\t$path\n";
+}
