@@ -75,7 +75,7 @@ int print_user_info_title()
              /*---	modified by period	2000-10-21	在线用户数可以大于1000的
                      "\033[44m%s%-12.12s %-16.16s %-16.16s %c %c %-16.16s %5s\033[m\n",
              ---*/
-            "\033[44m %s%-12.12s %-16.16s %-16.16s %c %c %-15.15s %5s", "编号  ", "使用者代号", (showexplain == 1) ? "好友说明或代号" : field_2, "来自", 'P',
+            "\033[44m %s%-12.12s %-22.22s %-16.16s %c %c %-10.10s%5s", "编号  ", "使用者代号", (showexplain == 1) ? "好友说明或代号" : field_2, "来自", 'P',
             /*
              * (HAS_PERM(getCurrentUser(),PERM_SYSOP) ? 'C' : ' ') 
              */ 'M', "动态",
@@ -317,16 +317,16 @@ int do_userlist()
             return 0;
         }
         pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
-        strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, 80);
+        strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, sizeof(tbuf));
 //昵称在列表中最后一字消除乱码，shiyao  2003.6.1
 //	j = 15;
 //	while (j>=0 && tbuf[j]<0) j--;
 //	if ((15-j)%2)  tbuf[15] = 0;
-        tbuf[80]=0;
+        tbuf[sizeof(tbuf) - 1]=0;
         resetcolor();
         clrtoeol();
         getyx(&y, &x);
-        move(y, 20);
+        move(y, (i+page>9998)?21:20);
         if(!showcolor)
             disable_color = true;
         disable_move = true;
@@ -343,8 +343,8 @@ int do_userlist()
                 (override && showexplain) ? "\033[1;31m" : "");
         prints("%s", user_info_str);
         resetcolor();
-        move(y, 36);
-        sprintf(user_info_str, " %-16.16s %c %c %s%-16.16s\033[m%5.5s\n",  
+        move(y, 42);
+        sprintf(user_info_str, " %-16.16s %c %c %s%-10.10s\033[m%5.5s\n",  
                 (HAS_PERM(getCurrentUser(), PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(lookupuser, uentp.from) : FROMSTR ),
                 pagec, msgchar(&uentp, &isfriend), 
                 (uentp.invisible == true)? "\033[34m" : "", modestring(modebuf,uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
