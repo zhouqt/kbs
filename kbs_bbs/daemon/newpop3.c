@@ -40,7 +40,6 @@
 #include <sys/stat.h>
 
 #define BUFSIZE         1024
-#define BBSNAME "@" NAME_BBS_ENGLISH
 /*#define POP3PORT 110 remote to sysname.h*/
 #define BADLOGINFILE "logins.bad"
 

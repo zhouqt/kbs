@@ -75,6 +75,7 @@
 #define OFFLINE         49
 #define EDITANN         50
 #define WWW             51
+#define WEBEXPLORE	WWW
 #define CCUGOPHER       52
 #define LOOKMSGS        53
 #define WFRIEND         54

@@ -349,7 +349,7 @@ resolve_ucache()
 
     iscreate = 0;
     if( uidshm == NULL ) {
-        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1, NULL); 
+        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 0, NULL); 
             /*attach to user shm,readonly */
         if (iscreate) { /* shouldn't load passwd file in this place */
         	log("4system","passwd daemon havn't startup");

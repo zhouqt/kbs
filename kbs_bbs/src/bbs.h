@@ -258,7 +258,6 @@ extern    int  KEY_ESC_arg;
 /* ============================================ */
 
 extern int Net_Sleep(int);
-#endif /* of _BBS_H_ */
 
 #define MAX_IGNORE      30      /* ignore-users' count */
 #define NUMBUFFER 80  /* number of records to preload. ylsdd*/
@@ -288,14 +287,15 @@ extern int Net_Sleep(int);
 typedef size_t socklen_t;
 #endif
 
-#ifndef NJU_WWWBBS
+#ifndef	BBS2WWW
 #include "vars.h"
 #include "func.h"
-#endif /* not NJU_WWWBBS */
+#endif
 
 #define system my_system
 
-#ifdef NJU_WWWBBS
+#if 0
+#ifdef BBS2WWW
 #define MAXREJECTS (32)
 #define BBSNAME NAME_BBS_CHINESE
 #define BBSHOST NAME_BBS_ENGLISH
@@ -304,3 +304,6 @@ typedef size_t socklen_t;
 #define SYS_MSGFILE         "msgfile"
 #define SYS_MSGFILELOG      "msgfile.log"   /* "msgfile.me" */
 #endif
+#endif
+#endif /* of _BBS_H_ */
+

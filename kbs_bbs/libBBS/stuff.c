@@ -474,10 +474,10 @@ void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate,int readonly, void* shmaddr)
 {
     void        *shmptr;
-    int         shmkey, shmid;
-
+    int         shmkey=0, shmid;
+ 
     shmkey = defaultkey;
-    shmid = shmget( shmkey, shmsize, 0 );
+
     if( shmid < 0 ) {
         if (readonly) {
             attach_err( shmkey, "shmget:readonly" );
