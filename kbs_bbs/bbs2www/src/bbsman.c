@@ -132,10 +132,10 @@ int do_set(char *board, char *file, int flag)
         if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
             break;
         if (!strcmp(f.filename, file)) {
-        	if (flag==FILE_READ)
-            f.accessed[0] |= flag;
-        	else
-            f.accessed[1] |= flag;
+            if (flag==FILE_READ)
+                f.accessed[1] |= flag;
+            else
+                f.accessed[0] |= flag;
             if (flag == 0) {
                 f.accessed[0] &= ~(FILE_MARKED|FILE_DIGEST|FILE_SIGN);
                 f.accessed[1] &= ~(FILE_READ);
