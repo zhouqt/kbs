@@ -508,7 +508,7 @@ char *argv[];
     inetd = 0;
     if ((argc<=1) || !strcmp(argv[1],"-i") )  /*如果只有文件名或者第一个参数是“-i”*/
        inetd=1;                               /*则用inetd启动 */
-    if (!strcmp(argv[1],"-d")) no_fork = 1;
+	else if (!strcmp(argv[1],"-d")) no_fork = 1;
                                              /* COMMAN: 如果有 -d 参数则不 fork */
     else {
        if (argc<=1) port = 23;
