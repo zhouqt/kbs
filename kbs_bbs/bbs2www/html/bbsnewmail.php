@@ -39,7 +39,7 @@ if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
 	echo "бя" .  htmlspecialchars($maildata[$i]["TITLE"]);
 else
     echo htmlspecialchars($maildata[$i]["TITLE"]);
-?></a>
+?> </a>
 </tr>
 <?php
 		}

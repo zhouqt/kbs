@@ -16,7 +16,7 @@ login_init();
 			$board = $_GET["board"];
 		if (isset($_GET["file"]))
 			$file = $_GET["file"];
-		$title = isset($_GET["title"])?$_GET["title"]:'';
+		$title = isset($_GET["title"])?$_GET["title"].' ':'';
 	    $destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
 
 		if (isset( $board )){
