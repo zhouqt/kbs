@@ -7,6 +7,8 @@
 	<xsl:output method="html" 
 		encoding="gb2312" 
 		indent="yes" />
+	<xsl:param name="html.stylesheet" select="'wForum.css'"/>
 	<xsl:param name="section.autolabel" select="1"/>
-	<xsl:param name="toc.section.depth" select="2"/>
+	<xsl:param name="toc.section.depth" select="3"/>
+	<xsl:param name="ulink.target" select="'_blank'"></xsl:param>
 </xsl:stylesheet> 

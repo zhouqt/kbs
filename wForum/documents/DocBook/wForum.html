@@ -8,57 +8,109 @@
 <body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF"><div class="article" lang="zh_cn">
 <div class="titlepage">
 <div><h2 class="title">
-<a name="id2745059"></a>wForum 文档</h2></div>
+<a name="id2745201"></a>wForum 文档</h2></div>
 <hr>
 </div>
 <div class="toc">
 <p><b>目录</b></p>
 <dl>
-<dt>1. <a href="#id2853366">wForum 安装说明</a>
+<dt>1. <a href="#id2853523">wForum 简介</a>
+</dt>
+<dd><dl><dt>1.1. <a href="#id2840554">版权声明</a>
+</dt></dl></dd>
+<dt>2. <a href="#id2840585">wForum 安装说明</a>
 </dt>
 <dd><dl>
-<dt>1.1. <a href="#id2791382">smthbbs 安装</a>
+<dt>2.1. <a href="#id2840605">smthbbs 安装</a>
 </dt>
-<dt>1.2. <a href="#id2840408">安装 wForum</a>
+<dt>2.2. <a href="#id2840633">安装 wForum</a>
 </dt>
-<dt>1.3. <a href="#id2840471">自定义头像功能</a>
+<dt>2.3. <a href="#id2791695">自定义头像功能</a>
 </dt>
-<dt>1.4. <a href="#id2791438">升级 wForum 的操作</a>
+<dt>2.4. <a href="#id2790030">升级 wForum 的操作</a>
 </dt>
-<dt>1.5. <a href="#id2791460">附加说明</a>
+<dt>2.5. <a href="#id2790054">附加说明</a>
 </dt>
-<dt>1.6. <a href="#id2791690">PHP 编译说明</a>
+<dt>2.6. <a href="#upgrade_smthbbs">smthbbs 系统升级安装 wForum 说明</a>
+</dt>
+</dl></dd>
+<dt>3. <a href="#id2790391">技术细节</a>
+</dt>
+<dd><dl>
+<dt>3.1. <a href="#id2790398">wForum 兼容 mozilla 需要注意的主要问题</a>
+</dt>
+<dt>3.2. <a href="#id2790737">wForum 对文章列表部分的处理</a>
+</dt>
+<dd><dl><dt>3.2.1. <a href="#id2790832">关于同主题模式的利弊</a>
+</dt></dl></dd>
+<dt>3.3. <a href="#id2790882">关于树形回复结构</a>
+</dt>
+<dt>3.4. <a href="#id2790936">分区版面列表</a>
+</dt>
+<dt>3.5. <a href="#id2791055">inc/funcs.php 代码分析</a>
+</dt>
+<dt>3.6. <a href="#id2792172">USEBROWSCAP 站点参数</a>
+</dt>
+<dt>3.7. <a href="#id2792203">一些杂事</a>
 </dt>
 </dl></dd>
 </dl>
 </div>
 <div class="section" lang="zh_cn">
-<div class="titlepage">
-<div><h2 class="title" style="clear: both">
-<a name="id2853366"></a>1. wForum 安装说明</h2></div>
-<div><div class="author"><h3 class="author"></h3></div></div>
-</div>
-<p>首先下载最新的 smthbbs 和 wForum 代码。</p>
+<div class="titlepage"><div><h2 class="title" style="clear: both">
+<a name="id2853523"></a>1. wForum 简介</h2></div></div>
+<div class="itemizedlist"><ul type="disc">
+<li>wForum 是基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统；</li>
+<li>主页：<a href="http://wforum.aka.cn/" target="_blank">http://wforum.aka.cn/</a>；</li>
+<li>推荐使用 linux 系统（redhat)。</li>
+</ul></div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="id2791382"></a>1.1. smthbbs 安装</h3></div></div>
-<p>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/wforum.h 和 site/wforum.c。</p>
-<p>原先安装了 smthbbs 系统的站点需要升级 .PASSWDS 文件。请参考 documents/smth_update.txt 文件。</p>
+<a name="id2840554"></a>1.1. 版权声明</h3></div></div>
+<div class="itemizedlist"><ul type="disc">
+<li>这份软件基于 GPL 版本发布。请参考 COPYING.GPL 文件。任何对本软件代码的修改需要同样遵循 GPL 许可。</li>
+<li>版权归属 阿卡信息技术(北京)有限公司 和 水木清华 BBS 共同所有。</li>
+<li>额外声明：未经北京阿卡公司书面许可，不允许将本软件作商业应用。</li>
+</ul></div>
+</div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h2 class="title" style="clear: both">
+<a name="id2840585"></a>2. wForum 安装说明</h2></div></div>
+<p>首先到 <a href="http://dev.smth.org/" target="_blank">smthbbs 开发主页</a> 下载最新的 smthbbs 和 wForum 代码。</p>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2840605"></a>2.1. smthbbs 安装</h3></div></div>
+<p>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</p>
+<p>原先安装了 smthbbs 系统的站点需要升级 .PASSWDS 文件。请参考 <a href="#upgrade_smthbbs">smthbbs 系统升级安装 wForum 说明</a>。</p>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="id2840408"></a>1.2. 安装 wForum</h3></div></div>
-<p>解压 wForum。给你的站点取个名字，比方叫 mcwy。进入 wForum 目录，执行下面几个命令：
+<a name="id2840633"></a>2.2. 安装 wForum</h3></div></div>
+<p>解压 wForum 到 web 根目录下面的 wForum 目录。给你的站点取个名字，比方叫 mcwy。进入 wForum 目录，执行下面几个命令：
 				</p>
 <pre class="programlisting">
 cp inc/sites/site-example.php inc/sites/mcwy.php
 ln -s inc/sites/mcwy.php inc/site.php</pre>
 <p>
-				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。然后按照 documents/smallpaper_tb.sql 里的定义在 mysql 中建立一个数据表。inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。:p
+				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。数据库支持是可选的，可以用如下语句在 mysql 中建立一个数据表来支持小字报功能：
+				</p>
+<pre class="programlisting">
+create table smallpaper_tb(
+ ID int    not null auto_increment primary key,
+ boardID   int not null,
+ Owner     varchar(14) not null,
+ Title     varchar(100) not null,
+ Content   mediumtext   not null,
+ Hits      int not null,
+ Addtime   datetime not null
+);</pre>
+<p>
+				inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
 			</p>
 <div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">警告</h3>
-<p>以后如果需要修改站点配置，可以用 SYSOP 权限的用户登录直接用浏览器请求	admin.site_defines.php 来设置 site.php。这个功能默认是开启的！特别提醒！！如果你担心你站上别的管理员会恶意修改 site.php，请在 admin.site_defines.php 最开始加上
+<p>以后如果需要修改站点配置，可以用 SYSOP 权限的用户登录直接用浏览器请求	admin.site_defines.php 来设置 site.php。这个功能默认是开启的！特别提醒：如果你担心你站上别的管理员会恶意修改 site.php，请在 admin.site_defines.php 最开始加上
 					</p>
 <pre class="programlisting">die(&quot;disabled, heihei&quot;);</pre>
 <p>
@@ -68,7 +120,7 @@ ln -s inc/sites/mcwy.php inc/site.php</pre>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="id2840471"></a>1.3. 自定义头像功能</h3></div></div>
+<a name="id2791695"></a>2.3. 自定义头像功能</h3></div></div>
 <p>如果开启自定义头像功能，确认一下 wForum 主目录下面有 uploadFace/ 目录，如果没有的话就建立一下。</p>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">自定义头像的更多细节</h3>
@@ -101,7 +153,7 @@ ln -s inc/sites/mcwy.php inc/site.php</pre>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="id2791438"></a>1.4. 升级 wForum 的操作</h3></div></div>
+<a name="id2790030"></a>2.4. 升级 wForum 的操作</h3></div></div>
 <p>如果是升级 wForum，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
 				</p>
 <pre class="programlisting">ls -d1 * | awk '{system(sprintf(&quot;rm %s/.WEBTHREAD&quot;, $1));}'</pre>
@@ -110,19 +162,21 @@ ln -s inc/sites/mcwy.php inc/site.php</pre>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="id2791460"></a>1.5. 附加说明</h3></div></div>
+<a name="id2790054"></a>2.5. 附加说明</h3></div></div>
 <div class="orderedlist"><ol type="1">
 <li>
-<p>httpd.conf 设置 wForum 所在的目录 index.php 也是 DirectoryIndex。可以在 httpd.conf 里面设置
+<p>httpd.conf 最好设置 wForum 所在的目录 index.php 也是 DirectoryIndex。可以在 httpd.conf 里面设置
 					</p>
 <pre class="programlisting">DirectoryIndex index.html index.html.var index.php</pre>
 <p>
 				</p>
 </li>
 <li>
-<p>php.ini 要关掉自动给引号加前导反斜杠
+<p>php.ini 要关掉自动给引号加前导反斜杠，并且禁止 PHP 代码开始标志的缩写形式：
 					</p>
-<pre class="programlisting">magic_quotes_gpc = off</pre>
+<pre class="programlisting">
+magic_quotes_gpc = off
+short_open_tag = off</pre>
 <p>
 				</p>
 </li>
@@ -130,10 +184,19 @@ ln -s inc/sites/mcwy.php inc/site.php</pre>
 <p>要保证 wForum 下的未读记录正常工作，你的 site.h 必须设置
 					</p>
 <pre class="programlisting">
-#define USE_TMPFS           1   /*使用内存文件系统加速*/
+#define USE_TMPFS   1       /*使用内存文件系统加速*/
 #define TMPFSROOT   &quot;cache&quot; /*tmpfs的根在bbshome/cache */</pre>
 <p>
 					如果 USE_TMPFS 原来是 0，修改后重新编译安装。同时在 ~bbs/ 下建立 cache 目录，重启动服务。可以在 ~bbs/cache/ mount 一个 tmpfs 文件系统提高性能。推荐 USE_TMPFS 定义成 1，否则的话两个 telnet 登录之间的未读记录都不会同步。
+				</p>
+</li>
+<li>
+<p>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
+					</p>
+<pre class="programlisting">
+./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
+--with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</pre>
+<p>
 				</p>
 </li>
 <li>
@@ -150,14 +213,318 @@ ln -s inc/sites/mcwy.php inc/site.php</pre>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="id2791690"></a>1.6. PHP 编译说明</h3></div></div>
-<p>wForum 需要 PHP 支持 gd 及 mysql。首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的devel包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
-				</p>
-<pre class="programlisting">
-./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
---with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</pre>
+<a name="upgrade_smthbbs"></a>2.6. smthbbs 系统升级安装 wForum 说明</h3></div></div>
+<div class="orderedlist"><ol type="1">
+<li>
+<p>原 smthbbs 系统要使用 wForum，首先需要在 site.h 中定义 HAVE_WFORUM：
+					</p>
+<pre class="programlisting">#define HAVE_WFORUM 1</pre>
 <p>
+					如果您的系统原来就已经定义了这个，那么，恭喜你，转换已经完成！
+				</p>
+</li>
+<li>
+<p>停掉所有的 BBS 服务，重新编译安装所有的 BBS 程序。备份 ~bbs/.PASSWDS 文件,拷贝一份为 ~bbs/.PASSWDS.OLD，到 contrib/smth2wforum/ 下编译 convpasswd 文件
+					</p>
+<pre class="programlisting">gcc -o convpasswd convpasswd.c -lBBS -lsystem</pre>
+<p>
+					运行之：
+					</p>
+<pre class="programlisting">./convpasswd</pre>
+<p>
+					然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序实质上只是设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</p>
+<p>全部转换工作就此完成。</p>
+</li>
+</ol></div>
+</div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h2 class="title" style="clear: both">
+<a name="id2790391"></a>3. 技术细节</h2></div></div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2790398"></a>3.1. wForum 兼容 mozilla 需要注意的主要问题</h3></div></div>
+<div class="orderedlist"><ol type="1">
+<li><p>mozilla 对 class、ID 等属性是大小写敏感的；而 IE 是大小写不敏感的。在设置和应用样式单时要注意 class 的大小写。</p></li>
+<li>
+<p>设置 html 对象的 id 时应同时设定 name 属性，且两个属性的值应完全相同。如：
+					</p>
+<pre class="programlisting">&lt;div id=&quot;menuDiv&quot; name=&quot;menuDiv&quot;&gt;....&lt;/div&gt;</pre>
+<p>
+				</p>
+</li>
+<li>
+<p>在网页 &lt;body&gt; 标签之后 include browers.js 文件:
+					</p>
+<pre class="programlisting">&lt;script language=&quot;javascript&quot; type=&quot;text/javascript&quot; src=&quot;inc/browser.js&quot;&gt;&lt;/script&gt;</pre>
+<p>
+				</p>
+</li>
+<li>
+<p>browser.js 文件主要函数、变量及功能:
+					</p>
+<div class="glosslist"><dl>
+<dt>变量: isIE4</dt>
+<dd><p>浏览器是否兼容 IE4</p></dd>
+<dt>变量: isW3C</dt>
+<dd><p>浏览器是否兼容 W3C 标准（mozilla or IE5）。如果浏览器支持 W3C 标准，以下函数将会优先使用 W3C 标准函数以避免 bug。</p></dd>
+<dt>函数：getRawObject(obj)</dt>
+<dd>
+<p>获取ID为obj的对象。例:
+								</p>
+<pre class="programlisting">
+.....
+&lt;input type=&quot;button&quot; name=&quot;clickIt&quot; id=&quot;clickIt&quot; value=&quot;I'm button&quot;&gt;
+.....
+&lt;script language=&quot;javascript&quot;&gt;
+...
+oButton=getRawObject(&quot;clickIt&quot;);
+oButton.value=&quot;I'm new button&quot;;
+...
+&lt;/script&gt;
+.....</pre>
+<p>
+							</p>
+</dd>
+<dt>函数：getParentRawObject(obj)</dt>
+<dd><p>用于子frame;获取父窗口中ID为obj的对象。</p></dd>
+<dt>函数：getRawObjectFrom(obj,oFrame)</dt>
+<dd><p>从oFrame中获取ID为obj的对象。</p></dd>
+<dt>函数: getObjectCollection(obj)</dt>
+<dd>
+<p>获取ID/Name为obj的一组对象。例:
+								</p>
+<pre class="programlisting">
+.....
+&lt;input type=&quot;checkbox&quot; name=&quot;checkMe&quot; id=&quot;checkMe&quot; value=&quot;0&quot;&gt;checkbox0
+&lt;input type=&quot;checkbox&quot; name=&quot;checkMe&quot; id=&quot;checkMe&quot; value=&quot;1&quot;&gt;checkbox1
+&lt;input type=&quot;checkbox&quot; name=&quot;checkMe&quot; id=&quot;checkMe&quot; value=&quot;2&quot;&gt;checkbox2
+.....
+&lt;script language=&quot;javascript&quot;&gt;
+...
+oCheckboxs=getObjectCollection(&quot;CheckMe&quot;);
+for (i=0;i&lt;oCheckboxs.length;i++) {
+	alert(oCheckbox[i].value);
+}
+...
+&lt;/script&gt;
+.....</pre>
+<p>
+							</p>
+</dd>
+<dt>函数: getParentObjectCollection(obj)</dt>
+<dd><p>获取父窗口ID/Name为obj的一组对象。</p></dd>
+<dt>函数: getObjectCollectionFrom(obj,oFrame)</dt>
+<dd><p>从oFrame中获取ID/Name为obj的一组对象。</p></dd>
+<dt>函数: getObjectStyle(obj)</dt>
+<dd>
+<p>获取ID为obj的对象的style。例:
+								</p>
+<pre class="programlisting">
+menuDivStyle=getObjectStyle(&quot;menuDiv&quot;);
+menuDivStyle.visible=&quot;hidden&quot;;</pre>
+<p>
+							</p>
+</dd>
+<dt>函数: shiftTo(obj, x, y)</dt>
+<dd>
+<p>将ID为obj的对象移动到坐标(x,y)。例:
+							</p>
+<pre class="programlisting">shiftTo(&quot;menuDiv&quot;,0,0);</pre>
+<p>
+							</p>
+</dd>
+<dt>函数: shiftBy(obj, deltaX, deltaY)</dt>
+<dd><p>将ID为obj的对象移动(deltaX,deltaY)。</p></dd>
+<dt>函数: setZIndex(obj, zOrder)</dt>
+<dd><p>将ID为obj的对象的zIndex值设为zOrder。</p></dd>
+<dt>函数: hide(obj) show(obj)</dt>
+<dd><p>隐藏/显示ID为obj的对象。</p></dd>
+<dt>函数: getObjectLeft(obj) getObjectTop(obj) getObjectWidth(obj) getObjectHeight(obj)</dt>
+<dd><p>获取ID为obj的对象的坐标和长宽等。</p></dd>
+<dt>函数: getInsideWindowWidth() getInsideWindowHeight()</dt>
+<dd><p>
+							获取当前窗口的长和宽。
+							</p></dd>
+</dl></div>
+<p>
+				</p>
+</li>
+</ol></div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2790737"></a>3.2. wForum 对文章列表部分的处理</h3></div></div>
+<p>现在的 wForum 文章列表是基于同主题的，列表时只列出同主题首篇文章；列表按照同主题最后一篇文章的发文时间降序排序，有分页功能。这部分处理主要由 phpbbslib.c 中的下面几个函数来完成：</p>
+<div class="glosslist"><dl>
+<dt>bbs_getthreadnum(string boardName)</dt>
+<dd>
+<p>该函数求某版面下的主题数量。这个函数首先比较 .DIR 和 .WEBTHREAD 文件的时间戳，如果 .WEBTHREAD 旧于 .DIR 则调用 bbslib.c 中的www_generateOriginIndex() 函数重新生成 .WEBTHREAD 文件（似乎需要一个更好的判断方式来触发更新 .WEBTHREAD），然后直接由 .WEBTHREAD 的文件长度求记录数目。</p>
+<p>其主要算法是：首先建立一标志数组，在其中存放已找到的groupID。这个标志数组有两个内部数据结构：第一个是链表，按照每个主题最后发文时间排序，最后可以直接顺序写入 .WEBTHREAD。另一个结构是平衡二叉树，目的是方便快速搜索 groupID。程序倒序遍历 .DIR 中的记录，如果其 groupID 不在标志数组中，则加入标志数组。在遍历过程中同时判断该帖子是否是原文，如果是，同时需要将原文信息复制进标志数组。最后生成 .WEBTHREAD 的时候是按照链表顺序写，判断该主题是否有原文，如果没有，作一些特殊处理再写入 .WEBTHREAD 以便到时候显示原文是否被删除。关于这里是否有原文的处理细节，参见代码。</p>
+</dd>
+<dt>bbs_getthreads(string boardName, int start, int num)</dt>
+<dd><p>该函数按同主题最后一篇文章的发文时间降序排列，取从 start 开始的 num 篇主题信息。这个函数充分利用已经产生的 .WEBTHREAD 文件来操作。</p></dd>
+</dl></div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h4 class="title">
+<a name="id2790832"></a>3.2.1. 关于同主题模式的利弊</h4></div></div>
+<p>同主题模式和公网论坛比较一致但是和传统 telnet 配合的时候可能会有不一致的地方。以下几个问题是特别需要注意的：
+					</p>
+<div class="itemizedlist"><ul type="disc">
+<li><p>删除了原文的置顶不能阅读；</p></li>
+<li><p>一个主题是否显示成精华，不可re，and/or 置顶仅仅是判断原文是否有这个属性。特别的，如果一个re文被g，这个主题不会自动成为精华贴。类似的，一片re文被设置为不可re，这个主题不会显示为不可re；但是如果原文被设置成不可re，这个主题会显示为不可re(当然这个标志只有版主能看见)不过所有已有的re文还都是可re的。这里还有不少细节问题。</p></li>
+</ul></div>
+<p>
+					这个以后可能会改。
+				</p>
+</div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2790882"></a>3.3. 关于树形回复结构</h3></div></div>
+<p>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，smthbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</p>
+<p>default.php 里面定义了 SHOWREPLYTREE，如果为 1 就会支持树形回复结构。如果为 0 就是平级显示所有回复。这里也有文章可做，SHOWREPLYTREE 其实定义成用户自定义参数或者 cookie 参数可能更好。</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2790936"></a>3.4. 分区版面列表</h3></div></div>
+<p>分区版面列表采用 JS 写页面。展开列表可能需要隐藏 iframe 读数据，折叠列表直接使用已有的 js 变量重写页面。列表是否展开由一个 ShowSecBoards cookie 控制。这个 cookie 变量的最低一个 bit 表示收藏夹版面列表是否展开，第(i+1) bit 表示第 i 个分区是否展开。二级目录永远展开。</p>
+<p>列表也可以完全隐藏。这个由 HideSecBoards cookie 控制。LSB 没有作用。第 (i+1) bit 表示第 i 个分区的版面是否完全隐藏。收藏夹不可以被隐藏。</p>
+<p>这两个 cookie 全部由客户端设置，服务器端只读取（除了特殊情况设置初始值）。</p>
+<p>JavaScript 变量
+				</p>
+<div class="itemizedlist"><ul type="disc">
+<li>
+<p>&quot;foldflag&quot; + i 表示第 i 个分区（或者 select == i 的收藏夹）的数据状态:
+						</p>
+<div class="itemizedlist"><ul type="circle">
+<li><p>0: 当前还没有任何版面数据。</p></li>
+<li><p>1: 当前有折叠版面列表所必需的所有数据。</p></li>
+<li><p>2: 当前已经有所有用作显示的版面数据了。</p></li>
+</ul></div>
+<p>
+					</p>
+</li>
+<li>
+<p>&quot;curfold&quot; + i 表示第 i 个分区（或者 select == i 的收藏夹）的折叠状态:
+						</p>
+<div class="itemizedlist"><ul type="circle">
+<li><p>0: 隐藏。</p></li>
+<li><p>1: 折叠版面列表。</p></li>
+<li><p>2: 详细版面列表。</p></li>
+</ul></div>
+<p>
+					</p>
+</li>
+</ul></div>
+<p>
+				上面这两个 cookie 的默认值：ShowSecBoards 是 0，HideSecBoards 可配置为 0 或者 ~0。
 			</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2791055"></a>3.5. inc/funcs.php 代码分析</h3></div></div>
+<div class="orderedlist"><ol type="1">
+<li>
+<p>可引用的全局变量。这些变量在 include 之后生效
+					</p>
+<div class="glosslist"><dl>
+<dt>$loginok</dt>
+<dd><p>是否以正式用户登录了，guest 登录的话为 0。</p></dd>
+<dt>$guestloginok</dt>
+<dd><p>FIXME。</p></dd>
+<dt>$currentuser</dt>
+<dd><p>FIXME。</p></dd>
+<dt>$currentuinfo</dt>
+<dd><p>FIXME。</p></dd>
+</dl></div>
+<p>
+				</p>
+</li>
+<li>
+<p>可设置的全局变量。必须在 include 之前设置
+					</p>
+<div class="glosslist"><dl>
+<dt>$setboard</dt>
+<dd><p>FIXME。</p></dd>
+<dt>$needlogin</dt>
+<dd><p>本页面是否需要设置 cookie 等登录变量，默认需要。</p></dd>
+</dl></div>
+<p>
+				</p>
+</li>
+<li>
+<p>有用的函数说明</p>
+<div class="glosslist"><dl>
+<dt>cache_header($scope,$modifytime=0,$expiretime=300)</dt>
+<dd><p>检查/设置页面 cache。</p></dd>
+<dt>html_init($charset=&quot;&quot;,$title=&quot;&quot;,$otherheader=&quot;&quot;)</dt>
+<dd><p>初始化 html 页面，一般不需要直接调用，除非是小页面。</p></dd>
+<dt>show_nav($boardName='')</dt>
+<dd><p>调用 html_init() 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。如果 $boardName 为 false，不显示菜单条。所有POST递交生成的页面原则上都应该设置 $boardName=false，否则用户重新登录，调整页面风格等可能会造成返回后的 URL 不正确。</p></dd>
+<dt>setStat($stat)</dt>
+<dd><p>设置页面标题。</p></dd>
+<dt>head_var($Title='', $URL='',$showWelcome=0)</dt>
+<dd><p>显示导航条。</p></dd>
+<dt>setSucMsg($msg)</dt>
+<dd><p>添加成功操作信息 $msg。</p></dd>
+<dt>html_success_quit($Desc='',$URL='')</dt>
+<dd><p>显示成功操作信息。</p></dd>
+<dt>requireLoginok($msg = false, $directexit = true)</dt>
+<dd>
+<p>声明本页面必须正式注册用户才能访问。如果当前用户是正式用户，函数直接返回。否则直接调用 foundErr(错误信息, $directexit, false)，其中错误信息由 $msg 控制：</p>
+<div class="itemizedlist">
+<div class="glosslist"><dl>
+<dt>$msg</dt>
+<dd><p>错误信息。如果为 false 就是用默认的错误信息。</p></dd>
+</dl></div>
+<ul type="disc"></ul>
+</div>
+<p>这个函数还有一个作用是，调用它之后调用 show_nav() 显示的页面头里面的注销 link 将会带到首页，否则注销仍旧会回到当前页面。页面调用这几个函数的顺序应该是：setStat, requireLoginok, show_nav。</p>
+</dd>
+<dt>foundErr($msg, $directexit = true, $showmsg = true)</dt>
+<dd>
+<p>添加操作错误信息 $msg。$directexit 为 true 时，调用 show_footer($showmsg, true) 并结束页面，如果之前还没有显示过页面头，这个函数会自动调用 show_nav() 显示页面头。</p>
+<div class="warning" style="margin-left: 0.5in; margin-right: 0.5in;">
+<h3 class="title">警告</h3>
+<p>当 $directexit 为 true (默认) 的时候，requireLoginok() 和 foundErr() 两个函数如果碰到错误会结束页面！</p>
+</div>
+</dd>
+<dt>isErrFounded()</dt>
+<dd><p>是否有错误发生。</p></dd>
+<dt>html_error_quit()</dt>
+<dd><p>显示错误信息。如果曾经调用过 requireLoginok() 而当前用户又是 guest，将会显示登录框。这个函数一般不需要直接调用。</p></dd>
+<dt>show_footer($showmsg = true, $showerr = true)</dt>
+<dd>
+<p>显示页面最后的版权信息等。参数：</p>
+<div class="glosslist"><dl>
+<dt>$showmsg</dt>
+<dd><p>指示本页面是否有自动刷新消息接受页面的功能。除非是小页面，一般都设置成 true。</p></dd>
+<dt>$showerr</dt>
+<dd><p>如果页面有错误，是否调用 html_error_quit() 输出错误信息。</p></dd>
+</dl></div>
+</dd>
+<dt>jumpReferer()</dt>
+<dd><p>如果 Referer 有设置，跳到 Referer，否则跳到首页。</p></dd>
+</dl></div>
+</li>
+</ol></div>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2792172"></a>3.6. USEBROWSCAP 站点参数</h3></div></div>
+<p>开启 USEBROWSCAP 站点参数就会使用 browscap() 函数来更准确地判断浏览器和操作系统类型，需要配置 PHP 的 browscap.ini。默认关闭这个功能。开启这个功能虽然会准确判断出非 IE 浏览器，但是会大大降低出首页的速度，参考：<a href="http://www.php.net/manual/en/function.get-browser.php" target="_blank">get_browser() 函数文档</a> 中 verx at implix dot com 添加的用户注释。</p>
+</div>
+<div class="section" lang="zh_cn">
+<div class="titlepage"><div><h3 class="title">
+<a name="id2792203"></a>3.7. 一些杂事</h3></div></div>
+<div class="itemizedlist"><ul type="disc">
+<li><p>一个主题，如果最后一个回复是未读的，自动认为这个主题未读。</p></li>
+<li><p>版面搜索功能只搜索楼主，时间范围指定的是最后回复时间范围。</p></li>
+<li><p>query.php 里面设置了 window.onload，因为如果 &lt;select size 不是 1 的话，IE 和 firefox 有时候不能正确 highlight 预选的版面。如果在 funcs.js 或类似地方全局性的设置 window.onload 一定注意保证 query.php 的 onload 逻辑不变。比方 fader.js 就设置了 window.onload，所以 query.php 如果直接加系统公告就会出问题。DOM2 加入了 addEventListener 可以用以避免这个问题，不过 IE6 似乎不支持。</p></li>
+<li><p>queryresult.php 使用 javascript 来写页面。如果搜索结果过多，可能会提示是否取消 javascript 运行。另外搜索结果全都放在一 table 里面，如果页面没有下完，就什么都不会显示。这些暂时不管了吧，以后搜索做成分页的就好了。</p></li>
+<li><p>目前使用 php session 的只有注册页的图片识别。register.php 和 img_rand/img_rand.php 自己调用 session_start(), inc/funcs.php 不调用 session_start()。这个以后有必要的话可以改。比方浏览器 cookie 标准是有个数上限的，可以考虑把 cookie 全都放到 session 里面。当然那样的话 php session_tmp 那个目录要弄成 tmpfs。另外需要注意新的 php 版本，session_start() 不能被调用两次。</p></li>
+</ul></div>
 </div>
 </div>
 </div></body>

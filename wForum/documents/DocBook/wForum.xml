@@ -4,26 +4,50 @@
 <article lang="zh_cn">
 	<title>wForum 文档</title>
 	<section>
-		<sectioninfo>
-			<author><email>roy@zixia.net</email></author>
-		</sectioninfo>
+		<title>wForum 简介</title>
+		<itemizedlist>
+			<listitem>wForum 是基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统；</listitem>
+			<listitem>主页：<ulink url="http://wforum.aka.cn/">http://wforum.aka.cn/</ulink>；</listitem>
+			<listitem>推荐使用 linux 系统（redhat)。</listitem>
+		</itemizedlist>
+		<section>
+			<title>版权声明</title>
+			<itemizedlist>
+				<listitem>这份软件基于 GPL 版本发布。请参考 COPYING.GPL 文件。任何对本软件代码的修改需要同样遵循 GPL 许可。</listitem>
+				<listitem>版权归属 阿卡信息技术(北京)有限公司 和 水木清华 BBS 共同所有。</listitem>
+				<listitem>额外声明：未经北京阿卡公司书面许可，不允许将本软件作商业应用。</listitem>
+			</itemizedlist>
+		</section>
+	</section>
+	<section>
 		<title>wForum 安装说明</title>
-		<para>首先下载最新的 smthbbs 和 wForum 代码。</para>
+		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。</para>
 		<section>
 			<title>smthbbs 安装</title>
-			<para>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/wforum.h 和 site/wforum.c。</para>
-			<para>原先安装了 smthbbs 系统的站点需要升级 .PASSWDS 文件。请参考 documents/smth_update.txt 文件。</para>
+			<para>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</para>
+			<para>原先安装了 smthbbs 系统的站点需要升级 .PASSWDS 文件。请参考 <xref linkend="upgrade_smthbbs" endterm="upgrade_smthbbs_title"/>。</para>
 		</section>
 		<section>
 			<title>安装 wForum</title>
-			<para>解压 wForum。给你的站点取个名字，比方叫 mcwy。进入 wForum 目录，执行下面几个命令：
+			<para>解压 wForum 到 web 根目录下面的 wForum 目录。给你的站点取个名字，比方叫 mcwy。进入 wForum 目录，执行下面几个命令：
 				<programlisting>
 cp inc/sites/site-example.php inc/sites/mcwy.php
 ln -s inc/sites/mcwy.php inc/site.php</programlisting>
-				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。然后按照 documents/smallpaper_tb.sql 里的定义在 mysql 中建立一个数据表。inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。:p
+				inc/site.php 就是你的站点定义文件。修改 inc/site.php 里面的各类参数，特别是分类讨论区，mysql 用户、密码和数据库名。数据库支持是可选的，可以用如下语句在 mysql 中建立一个数据表来支持小字报功能：
+				<programlisting>
+create table smallpaper_tb(
+ ID int    not null auto_increment primary key,
+ boardID   int not null,
+ Owner     varchar(14) not null,
+ Title     varchar(100) not null,
+ Content   mediumtext   not null,
+ Hits      int not null,
+ Addtime   datetime not null
+);</programlisting>
+				inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
 			</para>
 			<warning>
-				<para>以后如果需要修改站点配置，可以用 SYSOP 权限的用户登录直接用浏览器请求	admin.site_defines.php 来设置 site.php。这个功能默认是开启的！特别提醒！！如果你担心你站上别的管理员会恶意修改 site.php，请在 admin.site_defines.php 最开始加上
+				<para>以后如果需要修改站点配置，可以用 SYSOP 权限的用户登录直接用浏览器请求	admin.site_defines.php 来设置 site.php。这个功能默认是开启的！特别提醒：如果你担心你站上别的管理员会恶意修改 site.php，请在 admin.site_defines.php 最开始加上
 					<programlisting>die("disabled, heihei");</programlisting>
 					或者干脆删除该文件。
 				</para>
@@ -60,17 +84,24 @@ ln -s inc/sites/mcwy.php inc/site.php</programlisting>
 		<section>
 			<title>附加说明</title>
 			<orderedlist>
-				<listitem><para>httpd.conf 设置 wForum 所在的目录 index.php 也是 DirectoryIndex。可以在 httpd.conf 里面设置
+				<listitem><para>httpd.conf 最好设置 wForum 所在的目录 index.php 也是 DirectoryIndex。可以在 httpd.conf 里面设置
 					<programlisting>DirectoryIndex index.html index.html.var index.php</programlisting>
 				</para></listitem>
-				<listitem><para>php.ini 要关掉自动给引号加前导反斜杠
-					<programlisting>magic_quotes_gpc = off</programlisting>
+				<listitem><para>php.ini 要关掉自动给引号加前导反斜杠，并且禁止 PHP 代码开始标志的缩写形式：
+					<programlisting>
+magic_quotes_gpc = off
+short_open_tag = off</programlisting>
 				</para></listitem>
 				<listitem><para>要保证 wForum 下的未读记录正常工作，你的 site.h 必须设置
 					<programlisting>
-#define USE_TMPFS           1   /*使用内存文件系统加速*/
+#define USE_TMPFS   1       /*使用内存文件系统加速*/
 #define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */</programlisting>
 					如果 USE_TMPFS 原来是 0，修改后重新编译安装。同时在 ~bbs/ 下建立 cache 目录，重启动服务。可以在 ~bbs/cache/ mount 一个 tmpfs 文件系统提高性能。推荐 USE_TMPFS 定义成 1，否则的话两个 telnet 登录之间的未读记录都不会同步。
+				</para></listitem>
+				<listitem><para>PHP 编译说明: wForum 需要 PHP 支持 gd、dom 及 mysql。首先，确认你的 linux 系统已安装了 mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的 devel 包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
+					<programlisting>
+./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
+--with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</programlisting>
 				</para></listitem>
 				<listitem><para>如果使用 apache2 需要注意的地方：
 					<itemizedlist>
@@ -80,13 +111,283 @@ ln -s inc/sites/mcwy.php inc/site.php</programlisting>
 				</para></listitem>
 			</orderedlist>
 		</section>
+		<section id="upgrade_smthbbs">
+			<title id="upgrade_smthbbs_title">smthbbs 系统升级安装 wForum 说明</title>
+			<orderedlist>
+				<listitem><para>原 smthbbs 系统要使用 wForum，首先需要在 site.h 中定义 HAVE_WFORUM：
+					<programlisting>#define HAVE_WFORUM 1</programlisting>
+					如果您的系统原来就已经定义了这个，那么，恭喜你，转换已经完成！
+				</para></listitem>
+				<listitem><para>停掉所有的 BBS 服务，重新编译安装所有的 BBS 程序。备份 ~bbs/.PASSWDS 文件,拷贝一份为 ~bbs/.PASSWDS.OLD，到 contrib/smth2wforum/ 下编译 convpasswd 文件
+					<programlisting>gcc -o convpasswd convpasswd.c -lBBS -lsystem</programlisting>
+					运行之：
+					<programlisting>./convpasswd</programlisting>
+					然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序实质上只是设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</para>
+					<para>全部转换工作就此完成。</para>
+				</listitem>
+			</orderedlist>
+		</section>
+	</section>
+	<section>
+		<title>技术细节</title>
 		<section>
-			<title>PHP 编译说明</title>
-			<para>wForum 需要 PHP 支持 gd 及 mysql。首先，确认你的linux系统已安装了mysql、gd、libjpeg、libpng、freetype、libxml2 及各自相应的devel包，然后用下面的参数编译 PHP（假设 apache 1.3.x）：
-				<programlisting>
-./configure  --prefix=/bbs/www --with-freetype-dir=/usr/lib --with-gd --with-jpeg-dir --with-png-dir 
---with-config-file-path=/bbs/www/conf --with-zlib-dir --with-mysql --with-apxs=/bbs/www/bin/apxs --with-dom</programlisting>
+			<title>wForum 兼容 mozilla 需要注意的主要问题</title>
+			<orderedlist>
+				<listitem><para>mozilla 对 class、ID 等属性是大小写敏感的；而 IE 是大小写不敏感的。在设置和应用样式单时要注意 class 的大小写。</para></listitem>
+				<listitem><para>设置 html 对象的 id 时应同时设定 name 属性，且两个属性的值应完全相同。如：
+					<programlisting>&lt;div id="menuDiv" name="menuDiv"&gt;....&lt;/div&gt;</programlisting>
+				</para></listitem>
+				<listitem><para>在网页 &lt;body&gt; 标签之后 include browers.js 文件:
+					<programlisting>&lt;script language="javascript" type="text/javascript" src="inc/browser.js"&gt;&lt;/script&gt;</programlisting>
+				</para></listitem>
+				<listitem><para>browser.js 文件主要函数、变量及功能:
+					<glosslist>
+						<glossentry><glossterm>变量: isIE4</glossterm>
+							<glossdef><para>浏览器是否兼容 IE4</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>变量: isW3C</glossterm>
+							<glossdef><para>浏览器是否兼容 W3C 标准（mozilla or IE5）。如果浏览器支持 W3C 标准，以下函数将会优先使用 W3C 标准函数以避免 bug。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数：getRawObject(obj)</glossterm>
+							<glossdef><para>获取ID为obj的对象。例:
+								<programlisting>
+.....
+&lt;input type="button" name="clickIt" id="clickIt" value="I'm button"&gt;
+.....
+&lt;script language="javascript"&gt;
+...
+oButton=getRawObject("clickIt");
+oButton.value="I'm new button";
+...
+&lt;/script&gt;
+.....</programlisting>
+							</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数：getParentRawObject(obj)</glossterm>
+							<glossdef><para>用于子frame;获取父窗口中ID为obj的对象。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数：getRawObjectFrom(obj,oFrame)</glossterm>
+							<glossdef><para>从oFrame中获取ID为obj的对象。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: getObjectCollection(obj)</glossterm>
+							<glossdef><para>获取ID/Name为obj的一组对象。例:
+								<programlisting>
+.....
+&lt;input type="checkbox" name="checkMe" id="checkMe" value="0"&gt;checkbox0
+&lt;input type="checkbox" name="checkMe" id="checkMe" value="1"&gt;checkbox1
+&lt;input type="checkbox" name="checkMe" id="checkMe" value="2"&gt;checkbox2
+.....
+&lt;script language="javascript"&gt;
+...
+oCheckboxs=getObjectCollection("CheckMe");
+for (i=0;i&lt;oCheckboxs.length;i++) {
+	alert(oCheckbox[i].value);
+}
+...
+&lt;/script&gt;
+.....</programlisting>
+							</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: getParentObjectCollection(obj)</glossterm>
+							<glossdef><para>获取父窗口ID/Name为obj的一组对象。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: getObjectCollectionFrom(obj,oFrame)</glossterm>
+							<glossdef><para>从oFrame中获取ID/Name为obj的一组对象。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: getObjectStyle(obj)</glossterm>
+							<glossdef><para>获取ID为obj的对象的style。例:
+								<programlisting>
+menuDivStyle=getObjectStyle("menuDiv");
+menuDivStyle.visible="hidden";</programlisting>
+							</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: shiftTo(obj, x, y)</glossterm>
+							<glossdef><para>将ID为obj的对象移动到坐标(x,y)。例:
+							<programlisting>shiftTo("menuDiv",0,0);</programlisting>
+							</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: shiftBy(obj, deltaX, deltaY)</glossterm>
+							<glossdef><para>将ID为obj的对象移动(deltaX,deltaY)。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: setZIndex(obj, zOrder)</glossterm>
+							<glossdef><para>将ID为obj的对象的zIndex值设为zOrder。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: hide(obj) show(obj)</glossterm>
+							<glossdef><para>隐藏/显示ID为obj的对象。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: getObjectLeft(obj) getObjectTop(obj) getObjectWidth(obj) getObjectHeight(obj)</glossterm>
+							<glossdef><para>获取ID为obj的对象的坐标和长宽等。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>函数: getInsideWindowWidth() getInsideWindowHeight()</glossterm>
+							<glossdef><para>
+							获取当前窗口的长和宽。
+							</para></glossdef>
+						</glossentry>
+					</glosslist>
+				</para></listitem>
+			</orderedlist>
+		</section>
+		<section>
+			<title>wForum 对文章列表部分的处理</title>
+			<para>现在的 wForum 文章列表是基于同主题的，列表时只列出同主题首篇文章；列表按照同主题最后一篇文章的发文时间降序排序，有分页功能。这部分处理主要由 phpbbslib.c 中的下面几个函数来完成：</para>
+			<glosslist>
+				<glossentry><glossterm>bbs_getthreadnum(string boardName)</glossterm>
+					<glossdef>
+						<para>该函数求某版面下的主题数量。这个函数首先比较 .DIR 和 .WEBTHREAD 文件的时间戳，如果 .WEBTHREAD 旧于 .DIR 则调用 bbslib.c 中的www_generateOriginIndex() 函数重新生成 .WEBTHREAD 文件（似乎需要一个更好的判断方式来触发更新 .WEBTHREAD），然后直接由 .WEBTHREAD 的文件长度求记录数目。</para>
+						<para>其主要算法是：首先建立一标志数组，在其中存放已找到的groupID。这个标志数组有两个内部数据结构：第一个是链表，按照每个主题最后发文时间排序，最后可以直接顺序写入 .WEBTHREAD。另一个结构是平衡二叉树，目的是方便快速搜索 groupID。程序倒序遍历 .DIR 中的记录，如果其 groupID 不在标志数组中，则加入标志数组。在遍历过程中同时判断该帖子是否是原文，如果是，同时需要将原文信息复制进标志数组。最后生成 .WEBTHREAD 的时候是按照链表顺序写，判断该主题是否有原文，如果没有，作一些特殊处理再写入 .WEBTHREAD 以便到时候显示原文是否被删除。关于这里是否有原文的处理细节，参见代码。</para>
+					</glossdef>
+				</glossentry>
+				<glossentry><glossterm>bbs_getthreads(string boardName, int start, int num)</glossterm>
+					<glossdef><para>该函数按同主题最后一篇文章的发文时间降序排列，取从 start 开始的 num 篇主题信息。这个函数充分利用已经产生的 .WEBTHREAD 文件来操作。</para></glossdef>
+				</glossentry>
+			</glosslist>
+			<section>
+				<title>关于同主题模式的利弊</title>
+				<para>同主题模式和公网论坛比较一致但是和传统 telnet 配合的时候可能会有不一致的地方。以下几个问题是特别需要注意的：
+					<itemizedlist>
+						<listitem><para>删除了原文的置顶不能阅读；</para></listitem>
+						<listitem><para>一个主题是否显示成精华，不可re，and/or 置顶仅仅是判断原文是否有这个属性。特别的，如果一个re文被g，这个主题不会自动成为精华贴。类似的，一片re文被设置为不可re，这个主题不会显示为不可re；但是如果原文被设置成不可re，这个主题会显示为不可re(当然这个标志只有版主能看见)不过所有已有的re文还都是可re的。这里还有不少细节问题。</para></listitem>
+					</itemizedlist>
+					这个以后可能会改。
+				</para>
+			</section>
+		</section>
+		<section>
+			<title>关于树形回复结构</title>
+			<para>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，smthbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</para>
+			<para>default.php 里面定义了 SHOWREPLYTREE，如果为 1 就会支持树形回复结构。如果为 0 就是平级显示所有回复。这里也有文章可做，SHOWREPLYTREE 其实定义成用户自定义参数或者 cookie 参数可能更好。</para>
+		</section>
+		<section>
+			<title>分区版面列表</title>
+			<para>分区版面列表采用 JS 写页面。展开列表可能需要隐藏 iframe 读数据，折叠列表直接使用已有的 js 变量重写页面。列表是否展开由一个 ShowSecBoards cookie 控制。这个 cookie 变量的最低一个 bit 表示收藏夹版面列表是否展开，第(i+1) bit 表示第 i 个分区是否展开。二级目录永远展开。</para>
+			<para>列表也可以完全隐藏。这个由 HideSecBoards cookie 控制。LSB 没有作用。第 (i+1) bit 表示第 i 个分区的版面是否完全隐藏。收藏夹不可以被隐藏。</para>
+			<para>这两个 cookie 全部由客户端设置，服务器端只读取（除了特殊情况设置初始值）。</para>
+			<para>JavaScript 变量
+				<itemizedlist>
+					<listitem><para>"foldflag" + i 表示第 i 个分区（或者 select == i 的收藏夹）的数据状态:
+						<itemizedlist>
+							<listitem><para>0: 当前还没有任何版面数据。</para></listitem>
+							<listitem><para>1: 当前有折叠版面列表所必需的所有数据。</para></listitem>
+							<listitem><para>2: 当前已经有所有用作显示的版面数据了。</para></listitem>
+						</itemizedlist>
+					</para></listitem>
+					<listitem><para>"curfold" + i 表示第 i 个分区（或者 select == i 的收藏夹）的折叠状态:
+						<itemizedlist>
+							<listitem><para>0: 隐藏。</para></listitem>
+							<listitem><para>1: 折叠版面列表。</para></listitem>
+							<listitem><para>2: 详细版面列表。</para></listitem>
+						</itemizedlist>
+					</para></listitem>
+				</itemizedlist>
+				上面这两个 cookie 的默认值：ShowSecBoards 是 0，HideSecBoards 可配置为 0 或者 ~0。
 			</para>
+		</section>
+		<section>
+			<title>inc/funcs.php 代码分析</title>
+			<orderedlist>
+				<listitem><para>可引用的全局变量。这些变量在 include 之后生效
+					<glosslist>
+						<glossentry><glossterm>$loginok</glossterm>
+							<glossdef><para>是否以正式用户登录了，guest 登录的话为 0。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>$guestloginok</glossterm>
+							<glossdef><para>FIXME。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>$currentuser</glossterm>
+							<glossdef><para>FIXME。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>$currentuinfo</glossterm>
+							<glossdef><para>FIXME。</para></glossdef>
+						</glossentry>
+					</glosslist>
+				</para></listitem>
+				<listitem><para>可设置的全局变量。必须在 include 之前设置
+					<glosslist>
+						<glossentry><glossterm>$setboard</glossterm>
+							<glossdef><para>FIXME。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>$needlogin</glossterm>
+							<glossdef><para>本页面是否需要设置 cookie 等登录变量，默认需要。</para></glossdef>
+						</glossentry>
+					</glosslist>
+				</para></listitem>
+				<listitem><para>有用的函数说明</para>
+					<glosslist>
+						<glossentry><glossterm>cache_header($scope,$modifytime=0,$expiretime=300)</glossterm>
+							<glossdef><para>检查/设置页面 cache。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>html_init($charset="",$title="",$otherheader="")</glossterm>
+							<glossdef><para>初始化 html 页面，一般不需要直接调用，除非是小页面。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>show_nav($boardName='')</glossterm>
+							<glossdef><para>调用 html_init() 并显示页面头。如果 $boardName 不为空，搜索的链接将会自动选中此版面。如果 $boardName 为 false，不显示菜单条。所有POST递交生成的页面原则上都应该设置 $boardName=false，否则用户重新登录，调整页面风格等可能会造成返回后的 URL 不正确。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>setStat($stat)</glossterm>
+							<glossdef><para>设置页面标题。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>head_var($Title='', $URL='',$showWelcome=0)</glossterm>
+							<glossdef><para>显示导航条。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>setSucMsg($msg)</glossterm>
+							<glossdef><para>添加成功操作信息 $msg。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>html_success_quit($Desc='',$URL='')</glossterm>
+							<glossdef><para>显示成功操作信息。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>requireLoginok($msg = false, $directexit = true)</glossterm>
+							<glossdef><para>声明本页面必须正式注册用户才能访问。如果当前用户是正式用户，函数直接返回。否则直接调用 foundErr(错误信息, $directexit, false)，其中错误信息由 $msg 控制：</para>
+								<itemizedlist>
+									<glosslist>
+										<glossentry><glossterm>$msg</glossterm>
+											<glossdef><para>错误信息。如果为 false 就是用默认的错误信息。</para></glossdef>
+										</glossentry>
+									</glosslist>
+								</itemizedlist>
+							<para>这个函数还有一个作用是，调用它之后调用 show_nav() 显示的页面头里面的注销 link 将会带到首页，否则注销仍旧会回到当前页面。页面调用这几个函数的顺序应该是：setStat, requireLoginok, show_nav。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>foundErr($msg, $directexit = true, $showmsg = true)</glossterm>
+							<glossdef><para>添加操作错误信息 $msg。$directexit 为 true 时，调用 show_footer($showmsg, true) 并结束页面，如果之前还没有显示过页面头，这个函数会自动调用 show_nav() 显示页面头。</para>
+								<warning><para>当 $directexit 为 true (默认) 的时候，requireLoginok() 和 foundErr() 两个函数如果碰到错误会结束页面！</para></warning>
+							</glossdef>
+						</glossentry>
+						<glossentry><glossterm>isErrFounded()</glossterm>
+							<glossdef><para>是否有错误发生。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>html_error_quit()</glossterm>
+							<glossdef><para>显示错误信息。如果曾经调用过 requireLoginok() 而当前用户又是 guest，将会显示登录框。这个函数一般不需要直接调用。</para></glossdef>
+						</glossentry>
+						<glossentry><glossterm>show_footer($showmsg = true, $showerr = true)</glossterm>
+							<glossdef><para>显示页面最后的版权信息等。参数：</para>
+								<glosslist>
+									<glossentry><glossterm>$showmsg</glossterm>
+										<glossdef><para>指示本页面是否有自动刷新消息接受页面的功能。除非是小页面，一般都设置成 true。</para></glossdef>
+									</glossentry>
+									<glossentry><glossterm>$showerr</glossterm>
+										<glossdef><para>如果页面有错误，是否调用 html_error_quit() 输出错误信息。</para></glossdef>
+									</glossentry>
+								</glosslist>
+							</glossdef>
+						</glossentry>
+						<glossentry><glossterm>jumpReferer()</glossterm>
+							<glossdef><para>如果 Referer 有设置，跳到 Referer，否则跳到首页。</para></glossdef>
+						</glossentry>
+					</glosslist>
+				</listitem>
+			</orderedlist>
+		</section>
+		<section>
+			<title>USEBROWSCAP 站点参数</title>
+			<para>开启 USEBROWSCAP 站点参数就会使用 browscap() 函数来更准确地判断浏览器和操作系统类型，需要配置 PHP 的 browscap.ini。默认关闭这个功能。开启这个功能虽然会准确判断出非 IE 浏览器，但是会大大降低出首页的速度，参考：<ulink url="http://www.php.net/manual/en/function.get-browser.php">get_browser() 函数文档</ulink> 中 verx at implix dot com 添加的用户注释。</para>
+		</section>
+		<section>
+			<title>一些杂事</title>
+			<itemizedlist>
+				<listitem><para>一个主题，如果最后一个回复是未读的，自动认为这个主题未读。</para></listitem>
+				<listitem><para>版面搜索功能只搜索楼主，时间范围指定的是最后回复时间范围。</para></listitem>
+				<listitem><para>query.php 里面设置了 window.onload，因为如果 &lt;select size 不是 1 的话，IE 和 firefox 有时候不能正确 highlight 预选的版面。如果在 funcs.js 或类似地方全局性的设置 window.onload 一定注意保证 query.php 的 onload 逻辑不变。比方 fader.js 就设置了 window.onload，所以 query.php 如果直接加系统公告就会出问题。DOM2 加入了 addEventListener 可以用以避免这个问题，不过 IE6 似乎不支持。</para></listitem>
+				<listitem><para>queryresult.php 使用 javascript 来写页面。如果搜索结果过多，可能会提示是否取消 javascript 运行。另外搜索结果全都放在一 table 里面，如果页面没有下完，就什么都不会显示。这些暂时不管了吧，以后搜索做成分页的就好了。</para></listitem>
+				<listitem><para>目前使用 php session 的只有注册页的图片识别。register.php 和 img_rand/img_rand.php 自己调用 session_start(), inc/funcs.php 不调用 session_start()。这个以后有必要的话可以改。比方浏览器 cookie 标准是有个数上限的，可以考虑把 cookie 全都放到 session 里面。当然那样的话 php session_tmp 那个目录要弄成 tmpfs。另外需要注意新的 php 版本，session_start() 不能被调用两次。</para></listitem>
+			</itemizedlist>
 		</section>
 	</section>
 </article>
