@@ -291,6 +291,15 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
 			}
 			close(fd);
 
+            m = 0;
+            for (n = 0; n < real; n++) {
+                if (!strcmp(top[i].board, BoardName[n]))
+                    m++;
+			}
+			if( m > 0 )
+				continue;
+
+            strcpy(BoardName[real], top[i].board);
             real++;
 
             fprintf(fp,
