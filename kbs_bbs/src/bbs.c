@@ -554,9 +554,9 @@ void readtitle()
     clrtoeol();
     if (DEFINE(currentuser, DEF_HIGHCOLOR))
         prints
-            ("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ĞÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m][m\n");
+            ("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ĞÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m][m");
     else
-        prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h]\x1b[m\n");
+        prints("Àë¿ª[¡û,e] Ñ¡Ôñ[¡ü,¡ı] ÔÄ¶Á[¡ú,r] ·¢±íÎÄÕÂ[Ctrl-P] ¿³ĞÅ[d] ±¸ÍüÂ¼[TAB] ÇóÖú[h]\x1b[m");
     if (digestmode == 0)        /* ÔÄ¶ÁÄ£Ê½ */
         strcpy(readmode, "Ò»°ã");
     else if (digestmode == 1)
@@ -576,14 +576,16 @@ void readtitle()
     else if (digestmode == 8)
         strcpy(readmode, "±êÌâ");
 
-    if (DEFINE(currentuser, DEF_HIGHCOLOR))
-        prints("[1;37m[44m ±àºÅ   %-12s %6s %-28sÔÚÏß:%4d [%4sÄ£Ê½] [m", 
-        "¿¯ µÇ Õß", "ÈÕ  ÆÚ", 
-            " ÎÄÕÂ±êÌâ", bs->currentusers, readmode);
-    else
-        prints("[37m[44m ±àºÅ   %-12s %6s %-28sÔÚÏß:%4d [%4sÄ£Ê½] [m", 
-        "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", bs->currentusers, readmode);
+    move(2, 0);
+    setfcolor(WHITE, DEFINE(currentuser, DEF_HIGHCOLOR));
+    setbcolor(BLUE);
     clrtoeol();
+    prints(" ±àºÅ   %-12s %6s %s", 
+        "¿¯ µÇ Õß", "ÈÕ  ÆÚ", " ÎÄÕÂ±êÌâ", bs->currentusers, readmode);
+    sprintf(title, "ÔÚÏß:%4d [%4sÄ£Ê½]", bs->currentusers, readmode);
+    move(2, -strlen(title)-1);
+    prints("%s", title);
+    resetcolor();
 }
 
 char *readdoent(char *buf, int num, struct fileheader *ent)
