@@ -154,11 +154,14 @@ void main()
     fprintf(fp, "%4s %-12s  %8s  %8s\n", "名次", "尊姓大名", "累计积分", "名人等级");
     j=0;
     for(i=0;i<statt;i++) {
+        if(statlib[i].socre<=0.1) continue;
         strcpy(buf, "");
         if(statlib[i].score<100) strcpy(buf, "无名小卒");
         else if(statlib[i].score<1000) strcpy(buf, "碌碌无闻");
-        else if(statlib[i].score<10000) strcpy(buf, "");
-        fprintf(fp, "%3d  %-12s   %6.2lf   %s\n", j+1, statlib[i].id, statlib[i].score, buf);
+        else if(statlib[i].score<10000) strcpy(buf, "小有成就");
+        else if(statlib[i].score<100000) strcpy(buf, "扬名天下");
+        else if(statlib[i].score<1000000) strcpy(buf, "一代宗师");
+        fprintf(fp, "%3d  %-12s   %6.2lf   %s\n", j+1, statlib[i].id, statlib[i].score/100, buf);
         j++;
         if(j>=MAXK) break;
     }
@@ -269,11 +272,14 @@ void main()
     fprintf(fp, "%4s %-12s  %8s  %8s\n", "名次", "尊姓大名", "累计积分", "名人等级");
     j=0;
     for(i=0;i<statt;i++) {
+        if(statlib[i].score<=0.1) continue;
         strcpy(buf, "");
         if(statlib[i].score<100) strcpy(buf, "无名小卒");
         else if(statlib[i].score<1000) strcpy(buf, "碌碌无闻");
-        else if(statlib[i].score<10000) strcpy(buf, "");
-        fprintf(fp, "%3d  %-12s   %6.2lf   %s\n", j+1, statlib[i].id, statlib[i].score, buf);
+        else if(statlib[i].score<10000) strcpy(buf, "小有成就");
+        else if(statlib[i].score<100000) strcpy(buf, "扬名天下");
+        else if(statlib[i].score<1000000) strcpy(buf, "一代宗师");
+        fprintf(fp, "%3d  %-12s   %6.2lf   %s\n", j+1, statlib[i].id, statlib[i].score/100, buf);
         j++;
         if(j>=MAXK) break;
     }
