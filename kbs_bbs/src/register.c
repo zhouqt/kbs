@@ -273,6 +273,7 @@ void check_register_info()
         strcpy(curruserdata.address, buf);
     }
     if (strchr(curruserdata.email, '@') == NULL) {
+        clear();
         move(3, 0);
         prints("只有本站的合法公民才能够完全享有各种功能， \n");
         /* alex           prints( "成为本站合法公民有两种办法：\n\n" );
