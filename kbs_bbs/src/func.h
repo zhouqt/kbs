@@ -459,6 +459,9 @@ int auto_register(char* userid,char* email,int msize);
 void *memmem(register const void *s, size_t slen, register const void *p, 
 		size_t plen);
 #endif /* ! HAVE_MEMMEM */
+
+/* calltime.c */
+time_t calc_calltime(int mode);
     
 #ifdef __cplusplus
 }
