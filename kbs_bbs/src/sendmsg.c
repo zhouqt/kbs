@@ -430,7 +430,10 @@ void r_msg(int signo)
                             while (fgets(bufX, 256, fpX)) {
                                 Line++;
                                 ptrX = strrchr(bufX, '[');
-                                send_pidX = atoi(ptrX + 1);
+                                if (ptrX)
+                                	send_pidX = atoi(ptrX + 1);
+                                else
+                                	send_pidX=0;
                                 if (send_pidX > 100)
                                     send_pidX -= 100;
                                 if (uinfo.pid == send_pidX) {
