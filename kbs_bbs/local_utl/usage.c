@@ -63,6 +63,20 @@ int record_data(board, sec)
     return;
 }
 
+int add_data( struct binfo *btmp)
+{
+    int i;
+
+    for (i = 0; i < numboards; i++) {
+        if (!strcmp(st[i].boardname, btmp->boardname)) {
+            st[i].times += btmp->times;
+            st[i].sum += btmp->sum;
+            return;
+        }
+    }
+    return;
+}
+
 int fillbcache(struct boardheader *fptr,int idx,void* arg)
 {
 
@@ -145,20 +159,12 @@ void gen_board_rank_xml(int brdcount, struct binfo *bi)
     fclose(fp);
 }
 
-main(argc, argv)
-    char *argv[];
+int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
 {
-    char *progmode;
-    FILE *fp;
-    FILE *op, *op1, *op2;
-    char buf[256], buf1[256], buf2[256], *p, bname[20];
-    char *q;                    //added by Czz 010614
-    char date[80];
-    int mode;
+    FILE *op, *op1, *op2, *op3;
     int c[3];
     int max[3];
     unsigned int ave[3];
-    int now, sec;
     int i, j, k;
     char *blk[10] = {
         /* 方框太难看了 modified by Czz */
@@ -169,51 +175,16 @@ main(argc, argv)
         /* modified end */
     };
 
-    chdir(BBSHOME);
-    if (argc <= 1)
-        exit(0);
-    mode = atoi(argv[1]);
-    if (mode == 1) {
-        strcpy(buf, BBSHOME "/0Announce/bbslists/board2");
-        strcpy(buf1, BBSHOME "/0Announce/bbslists/totaltime");
-        strcpy(buf2, BBSHOME "/0Announce/bbslists/averagetime");
-    } else {
-        strcpy(buf, BBSHOME "/0Announce/bbslists/board1");
-    }
-    if ((fp = fopen(BBSHOME "/boardusage.log", "r")) == NULL) {
-        printf("cann't open boardusage.log\n");
-        return 1;
-    }
-    if (mode == 1) {
-        if ((op = fopen(buf, "w")) == NULL || (op1 = fopen(buf1, "w")) == NULL || (op2 = fopen(buf2, "w")) == NULL) {
+	/*注:等待改*/
+    if ((op = fopen(buf, "w")) == NULL || (op1 = fopen(buf1, "w")) == NULL || (op2 = fopen(buf2, "w")) == NULL || (op3=fopen(buf3, "w")) == NULL ) {
             printf("Can't Write file\n");
             return 1;
-        }
-    } else if ((op = fopen(buf, "w")) == NULL) {
-        printf("Can't Write file\n");
-        return 1;
     }
 
-    resolve_boards();
-    fillboard();
-    now = time(0);
-    sprintf(date, "%6.6s", Ctime(&now) + 4);
-    printf("%6.6s", date);
-     /**/ while (fgets(buf, 256, fp)) {
-        if (strlen(buf) < 57)
-            continue;
-        if (p = (char *) strstr(buf, "Stay: ")) {
-            q = p - 21;
-            q = strtok(q, " ");
-            strcpy(bname, q);
-            sec = atoi(p + 6);
-        }
-        record_data(bname, sec);
-    }
-    fclose(fp);
     qsort(st, numboards, sizeof(st[0]), brd_cmp);
+
     printf("%d", numboards);
-     /**/ ave[0] = 0;
+    ave[0] = 0;
     ave[1] = 0;
     ave[2] = 0;
     max[1] = 0;
@@ -241,53 +212,157 @@ main(argc, argv)
     st[numboards - 1].sum = ave[1] / numboards;
     strcpy(st[numboards - 1].boardname, "Average");
     strcpy(st[numboards - 1].expname, "总平均");
-    if (mode == 1) {
-        fprintf(op, "名次 %-15.15s%-25.25s %5s %8s %10s\n", "讨论区名称", "中文叙述", "人次", "累积时间", "平均时间");
-    } else {
-        fprintf(op, "      \033[37m1 \033[m\033[34m%2s\033[37m= %d (总人次) \033[37m1 \033[m\033[32m%2s\033[37m= %s (累积总时数) \033[37m1 \033[m\033[31m%2s\033[37m= %d 秒(平均时数)\n\n",
+
+    fprintf(op, "名次 %-15.15s%-25.25s %5s %8s %10s\n", "讨论区名称", "中文叙述", "人次", "累积时间", "平均时间");
+    fprintf(op3, "      \033[37m1 \033[m\033[34m%2s\033[37m= %d (总人次) \033[37m1 \033[m\033[32m%2s\033[37m= %s (累积总时数) \033[37m1 \033[m\033[31m%2s\033[37m= %d 秒(平均时数)\n\n",
                 blk[9], c[0], blk[9], timetostr(c[1]), blk[9], c[2]);
-    }
 
     for (i = 0; i < numboards; i++) {
-        if (mode == 1) {
+
             /* generate 0Announce/bbslists/board2 file */
             fprintf(op, "%4d\033[m %-15.15s%-25.25s %5d %-.8s %10d\n", i + 1, st[i].boardname, st[i].expname, st[i].times, timetostr(st[i].sum), st[i].times == 0 ? 0 : st[i].sum / st[i].times);
-        } else {
-            fprintf(op, "      \033[37m第\033[31m%3d \033[37m名 讨论区名称：\033[31m%s \033[35m%s\033[m\n", i + 1, st[i].boardname, st[i].expname);
-            fprintf(op, "\033[37m    ┌————————————————————————————————————\n");
-            fprintf(op, "\033[37m人次│\033[m\033[34m");
+
+			/* 声成 board1, 图表 */
+            fprintf(op3, "      \033[37m第\033[31m%3d \033[37m名 讨论区名称：\033[31m%s \033[35m%s\033[m\n", i + 1, st[i].boardname, st[i].expname);
+            fprintf(op3, "\033[37m    ┌————————————————————————————————————\n");
+            fprintf(op3, "\033[37m人次│\033[m\033[34m");
             for (j = 0; j < st[i].times / c[0]; j++) {
-                fprintf(op, "%2s", blk[9]);
+                fprintf(op3, "%2s", blk[9]);
             }
-            fprintf(op, "%2s \033[37m%d\033[m\n", blk[(st[i].times % c[0]) * 10 / c[0]], st[i].times);
-            fprintf(op, "\033[1;37m时间│\033[m\033[32m");
+            fprintf(op3, "%2s \033[37m%d\033[m\n", blk[(st[i].times % c[0]) * 10 / c[0]], st[i].times);
+            fprintf(op3, "\033[1;37m时间│\033[m\033[32m");
             for (j = 0; j < st[i].sum / c[1]; j++) {
-                fprintf(op, "%2s", blk[9]);
+                fprintf(op3, "%2s", blk[9]);
             }
-            fprintf(op, "%2s \033[37m%s\033[m\n", blk[(st[i].sum % c[1]) * 10 / c[1]], timetostr(st[i].sum));
+            fprintf(op3, "%2s \033[37m%s\033[m\n", blk[(st[i].sum % c[1]) * 10 / c[1]], timetostr(st[i].sum));
             j = st[i].times == 0 ? 0 : st[i].sum / st[i].times;
-            fprintf(op, "\033[37m平均│\033[m\033[31m");
+            fprintf(op3, "\033[37m平均│\033[m\033[31m");
             for (k = 0; k < j / c[2]; k++) {
-                fprintf(op, "%2s", blk[9]);
+                fprintf(op3, "%2s", blk[9]);
             }
-            fprintf(op, "%2s \033[37m%s\033[m\n", blk[(j % c[2]) * 10 / c[2]], timetostr(j));
-            fprintf(op, "\033[37m    └————————————————————————————————————\033[m\n\n");
-        }
+            fprintf(op3, "%2s \033[37m%s\033[m\n", blk[(j % c[2]) * 10 / c[2]], timetostr(j));
+            fprintf(op3, "\033[37m    └————————————————————————————————————\033[m\n\n");
     }
     fclose(op);
-    /* generate boards usage result in xml format */
-    if (mode == 1)
-        gen_board_rank_xml(numboards, st);
-    if (mode == 1) {
+    fclose(op3);
+
+	/*生成 总时间排序的 */
         qsort(st, numboards - 1, sizeof(st[0]), total_cmp);
         fprintf(op1, "名次 %-15.15s%-25.25s %8s %5s %10s\n", "讨论区名称", "中文叙述", "累积时间", "人次", "平均时间");
         for (i = 0; i < numboards; i++)
             fprintf(op1, "%4d %-15.15s%-25.25s %-.8s %5d %10d\n", i + 1, st[i].boardname, st[i].expname, timetostr(st[i].sum), st[i].times, st[i].times == 0 ? 0 : st[i].sum / st[i].times);
         fclose(op1);
+
+	/* 生成 平均时间排序的 */
         qsort(st, numboards - 1, sizeof(st[0]), average_cmp);
         fprintf(op2, "名次 %-15.15s%-25.25s %10s %5s %8s\n", "讨论区名称", "中文叙述", "平均时间", "累积时间", "人次");
         for (i = 0; i < numboards; i++)
             fprintf(op2, "%4d %-15.15s%-25.25s %10d %-.8s %5d\n", i + 1, st[i].boardname, st[i].expname, st[i].times == 0 ? 0 : st[i].sum / st[i].times, timetostr(st[i].sum), st[i].times);
         fclose(op2);
+
+		numboards --;
+}
+
+#define BONLINE_LOGDIR "/home/bbs/bonlinelog"
+
+main()
+{
+	char path[256];
+	FILE *fp;
+	char buf[256], buf1[256],buf2[256], buf3[256], buf4[256];
+	struct stat stt;
+	time_t now;
+	struct tm t;
+	int sec;
+	int fd;
+	int i;
+    char *p, bname[20], *q;
+	char weeklogfile[256];
+
+	now = time(0);
+	localtime_r( &now, &t);
+
+    chdir(BBSHOME);
+
+	if( stat( BONLINE_LOGDIR, &stt) < 0 ){
+		if(mkdir(BONLINE_LOGDIR, 0755) < 0)
+			exit(0);
+	}
+	sprintf(path, "%s/%d", BONLINE_LOGDIR, t.tm_year+1900);
+	if( stat(path, &stt) < 0){
+		if(mkdir(path, 0755) < 0)
+			exit(0);
+	}
+	sprintf(path, "%s/%d/%d", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1);
+	if( stat(path, &stt) < 0){
+		if(mkdir(path, 0755) < 0)
+			exit(0);
+	}
+
+	sprintf(buf4, "%s/%d/%d/%d_%d_boarduse.visit", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(buf1, "%s/%d/%d/%d_%d_boarduse.total", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(buf2, "%s/%d/%d/%d_%d_boarduse.average", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(buf3, "%s/%d/%d/%d_%d_boarduse.visittable", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+
+    strcpy(weeklogfile, BBSHOME "/boardusage.week");
+
+	/*生成今日数据*/
+	system("killall -USR2 bbslogd");
+    if ((fp = fopen(BBSHOME "/boardusage.log.0", "r")) == NULL) {
+        printf("cann't open boardusage.log.0\n");
+        return 1;
     }
+
+    resolve_boards();
+    fillboard();
+
+	/*加上今日数据*/
+    while (fgets(buf, 256, fp)) {
+        if (strlen(buf) < 57)
+            continue;
+        if (p = (char *) strstr(buf, "Stay: ")) {
+            q = p - 21;
+            q = strtok(q, " ");
+            strcpy(bname, q);
+            sec = atoi(p + 6);
+        }
+        record_data(bname, sec);
+    }
+    fclose(fp);
+
+	/*统计今日数据*/
+	gen_usage(buf4,buf1,buf2,buf3);
+
+    strcpy(buf4, BBSHOME "/0Announce/bbslists/board2");
+    strcpy(buf1, BBSHOME "/0Announce/bbslists/totaltime");
+    strcpy(buf2, BBSHOME "/0Announce/bbslists/averagetime");
+    strcpy(buf3, BBSHOME "/0Announce/bbslists/board1");
+	
+	/*加上这周数据*/
+	if((fd=open(weeklogfile,O_RDONLY)) >=0 ){
+		struct binfo stmp;
+		while( read(fd, &stmp,sizeof(stmp)) >= sizeof(stmp) ){
+					add_data( &stmp );
+				}
+				close(fd);
+			}
+
+			/*统计这周数据*/
+			gen_usage(buf4,buf1,buf2,buf3);
+
+			/*写入这周数据*/
+			if((fd=open(weeklogfile, O_WRONLY | O_CREAT ,0644 )) >= 0){
+				for(i=0; i<numboards; i++)
+					write(fd, &(st[i]), sizeof(struct binfo));
+		close(fd);
+	}
+
+	numboards++;
+    /* generate boards usage result in xml format */
+    gen_board_rank_xml(numboards, st);
+
+	/*每周四计算完后，清楚这周记录，并备份boardusage.week */
+	sprintf(buf, "%s/%d/%d/%d_%d.boardusage.week.bak", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	if( t.tm_wday == 3 )
+		f_mv(weeklogfile, buf);
 }

@@ -65,15 +65,7 @@ MAILTO=bbs
 # 每月１号早上 6:00 将 BBS 帐号档备份
 0 6 1 * * cp -f /backup/bbs/.PASSWDS.gz /backup/bbs/.PASSWDS.month.gz
 # 每天早上 4:33 统计各版使用状况0
-33 4 * * * /home/bbs/bin/usage 0
-39 4 * * * /home/bbs/bin/newusage2 0
-42 4 * * * /home/bbs/bin/newusage6 0
-45 4 * * * /home/bbs/bin/newusages 0
-# 每天早上 4:36 统计各版使用状况1
-36 4 * * * /home/bbs/bin/usage 1
-49 4 * * * /home/bbs/bin/newusage2 1
-52 4 * * * /home/bbs/bin/newusage6 1
-56 4 * * * /home/bbs/bin/newusages 1
+33 2 * * * /home/bbs/bin/usage
 # 每周二早上 4:30 备份上周版面使用状况（必须是周二：和版面管理办法配合）
 30 4 * * 2 (cp -f /home/bbs/0Announce/bbslists/board1 /home/bbs/0Announce/bbslists/board.1; cp -f /home/bbs/0Announce/bbslists/board2 /home/bbs/0Announce/bbslists/board.2; cp -f /home/bbs/0Announce/bbslists/averagetime /home/bbs/0Announce/bbslists/averagetime1; cp -f /home/bbs/0Announce/bbslists/totaltime /home/bbs/0Announce/bbslists/totaltime1)
 # 因为重新格式化了磁盘，这个先不要啦
