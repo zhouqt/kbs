@@ -32,7 +32,7 @@ $pcconfig["BRDNUM"] = bbs_getboard($pcconfig["BOARD"], $brdarr);
 if(!$currentuser["userid"])
 		$currentuser["userid"] = "guest";
 
-function pc_html_init($charset,$title="",$otherheader="",$style="")
+function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="")
 {
 	global $_COOKIE;
 	global $cachemode;
@@ -70,7 +70,12 @@ function pc_html_init($charset,$title="",$otherheader="",$style="")
 ?>
 </head>
 <script src="pc.js"></script>
-<body LEFTMARGIN="2" TOPMARGIN="0">
+<body LEFTMARGIN="2" TOPMARGIN="0"
+<?php
+	if($bkimg)
+		echo " background = \"".$bkimg."\" ";
+?>
+>
 <?php
 }
 

@@ -537,6 +537,20 @@
 	</td>
 </tr>
 <tr>
+	<td class="t3">Logo图片</td>
+	<td class="t5">&nbsp;
+	<input type="text" name="pclogo" value="<?php echo $pc["LOGO"]; ?>" class="f1">
+	(请填写Logo图片所在的URL地址，留空表示无LOGO图片)
+	</td>
+</tr>
+<tr>
+	<td class="t3">背景图片</td>
+	<td class="t5">&nbsp;
+	<input type="text" name="pcbkimg" value="<?php echo $pc["BKIMG"]; ?>" class="f1">
+	(请填写背景图片所在的URL地址，留空表示无背景图片)
+	</td>
+</tr>
+<tr>
 	<td class="t4" colspan="2">
 	<input type="submit" value="修改文集参数" class="b1">
 	<input type="reset" value="恢复原始参数" class="b1">
@@ -574,7 +588,9 @@
 			"THEM" => html_format($rows[theme]),
 			"TIME" => $rows[createtime],
 			"VISIT" => $rows[visitcount],
-			"MODIFY" => $rows[modifytime]
+			"MODIFY" => $rows[modifytime],
+			"LOGO" => stripslashes($rows[logoimage]),
+			"BKIMG" => stripslashes($rows[backimage])
 			);
 	mysql_free_result($result);
 	
@@ -628,7 +644,7 @@
 	if($tag < 0 || $tag > $secnum )
 		$tag = 0;
 	
-	pc_html_init("gb2312",stripslashes($rows[corpusname]));
+	pc_html_init("gb2312",stripslashes($rows[corpusname]),"","",$pc["BKIMG"]);
 ?>
 <a name="top"></a>
 <table cellspacing="0" cellpadding="0" border="0" width="100%">
@@ -653,6 +669,11 @@
 	<td>
 	<table cellspacing="0" cellpadding="10" border="0" width="100%" class="tt2">
 	<tr>
+<?php
+	if($pc["LOGO"])
+		echo "<td><img src=\"".$pc["LOGO"]."\" border=\"0\" alt=\"".$pc["DESC"]."\"></td>\n";
+
+?>	
 		<td align="left">&nbsp;<?php echo $pc["DESC"]; ?></td>
 		<td align="right">[主题:<?php echo $pc["THEM"]; ?>]&nbsp;</td>
 	</tr>

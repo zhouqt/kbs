@@ -106,7 +106,7 @@
 		$spr = FALSE;
 	
 	$link = pc_db_connect();
-	$query = "SELECT `username`,`corpusname`,`description`,`theme` FROM users WHERE uid = '".$id."' LIMIT 0 , 1 ;";
+	$query = "SELECT * FROM users WHERE uid = '".$id."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	if(!$rows)
@@ -123,11 +123,13 @@
 			"USER" => $rows[username],
 			"DESC" => html_format($rows[description]),
 			"THEM" => html_format($rows[theme]),
-			"UID" => $id
+			"UID" => $id,
+			"LOGO" => stripslashes($rows[logoimage]),
+			"BKIMG" => stripslashes($rows[backimage])
 			);
 	mysql_free_result($result);
 	
-	pc_html_init("gb2312",stripslashes($rows[corpusname]));
+	pc_html_init("gb2312",stripslashes($rows[corpusname]),"","",$pc["BKIMG"]);
 	
 	if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
 		$pur = 3;
@@ -189,6 +191,11 @@
 	<td>
 	<table cellspacing="0" cellpadding="10" border="0" width="100%" class="tt2">
 	<tr>
+<?php
+	if($pc["LOGO"])
+		echo "<td><img src=\"".$pc["LOGO"]."\" border=\"0\" alt=\"".$pc["DESC"]."\"></td>\n";
+
+?>	
 		<td align="left">&nbsp;<?php echo $pc["DESC"]; ?></td>
 		<td align="right">[Ö÷Ìâ:<?php echo $pc["THEM"]; ?>]&nbsp;</td>
 	</tr>

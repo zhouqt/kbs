@@ -515,7 +515,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
-<a href="javascript:history.go(-1);">操作成功,点击返回</a>
+<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=6">操作成功,点击返回</a>
 </p>
 <?php				
 			}
@@ -531,18 +531,18 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			pc_update_record($link,$pc["UID"]);
 ?>
 <p align="center">
-<a href="javascript:history.go(-1);">操作成功,点击返回</a>
+<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=6">操作成功,点击返回</a>
 </p>
 <?php
 		}
 		elseif($act == "sedit" && $_POST["pcname"])
 		{
-			$query = "UPDATE `users` SET `corpusname` = '".addslashes($_POST["pcname"])."',`description` = '".addslashes($_POST["pcdesc"])."',`theme` = '".addslashes($_POST["pcthem"])."' WHERE `uid` = '".$pc["UID"]."' LIMIT 1 ;";	
+			$query = "UPDATE `users` SET `corpusname` = '".addslashes($_POST["pcname"])."',`description` = '".addslashes($_POST["pcdesc"])."',`theme` = '".addslashes($_POST["pcthem"])."' , `backimage` = '".addslashes($_POST["pcbkimg"])."' , `logoimage` = '".addslashes($_POST["pclogo"])."' , `modifytime` = '".date("YmdHis")."' WHERE `uid` = '".$pc["UID"]."' LIMIT 1 ;";	
 			mysql_query($query,$link);
-			pc_update_record($link,$pc["UID"]);
+			
 ?>
 <p align="center">
-<a href="javascript:history.go(-1);">操作成功,点击返回</a>
+<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>">操作成功,点击返回</a>
 </p>
 <?php
 		}
