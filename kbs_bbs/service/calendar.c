@@ -267,8 +267,8 @@ void draw_main()
                 i0++;
             }
             if(i==day) setbcolor(PINK);
-            move(y,x+2);
-            prints("%-2d", i);
+            move(y,x);
+            prints("  %-2d", i);
 
             sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(currentuser->userid[0]), currentuser->userid, year, month, i);
             if(stat(buf, &st)!=-1) prints("\x1b[4m");
@@ -291,6 +291,39 @@ void draw_main()
             if(j==6) k++;
         }
 
+        k = 3;
+        resetcolor();
+        i0=0;
+        while(sFtv[i0][0]) {
+            if(getnum(sFtv[i0])==month&&getnum(sFtv[i0]+2)==day) {
+                strcpy(buf, sFtv[i0]+5);
+                move(23, k);
+                k+=strlen(buf)+1;
+                prints(buf);
+            }
+            i0++;
+        }
+        i0=0;
+        while(lFtv[i0][0]) {
+            if(getnum(lFtv[i0])==lmonth&&getnum(lFtv[i0]+2)==lday) {
+                strcpy(buf, lFtv[i0]+5);
+                move(23, k);
+                k+=strlen(buf)+1;
+                prints(buf);
+            }
+            i0++;
+        }
+        i0=0;
+        while(wFtv[i0][0]) {
+            if(getnum(wFtv[i0])==month&&(wFtv[i0][3]-'0'==get_week(year,month,day))&&
+                ((wFtv[i0][2]-'1'==day/7)||('8'-wFtv[i0][2]==(get_day(year,month)+1-day)/7))) {
+                strcpy(buf, wFtv[i0]+5);
+                move(23, k);
+                k+=strlen(buf)+1;
+                prints(buf);
+            }
+            i0++;
+        }
     }
     else {
         resetcolor();
@@ -652,6 +685,8 @@ int calendar_main()
                 }
                 break;
             case KEY_HOME:
+            case 'h':
+            case 'H':
                 day = nowr.tm_mday;
                 month = nowr.tm_mon+1;
                 year = nowr.tm_year+1900;
@@ -665,6 +700,8 @@ int calendar_main()
                 }
                 break;
             case KEY_F9:
+            case 'f':
+            case 'F':
                 fullscr = !fullscr;
                 break;
         }
