@@ -529,7 +529,7 @@ function show_nav($boardName='',$is_mathml=false)
 <?php 
 	if ($loginok) {
 ?>
-<img src="pic/navspacer.gif" align="absmiddle"/> <a href="logout.php<?php if ($needloginok!=0) echo "?jumphome=1"; ?>">ÍË³ö</a>
+<img src="pic/navspacer.gif" align="absmiddle"/> <a href="logout.php<?php if ($needloginok!=0) echo "?jumphome=1"; ?>">×¢Ïú</a>
 <?php   
 	}
 ?>
