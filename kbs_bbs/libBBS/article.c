@@ -1384,7 +1384,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
             break;
         }
     }
-    if (is_bm && (ent->accessed[1] & FILE_READ)) {
+    if ((ent->accessed[1] & FILE_READ)) { /*开放给普通用户*/
         switch (type) {
         case 'g':
         case 'G':
