@@ -87,3 +87,6 @@
 #define SERVICES	60
 #define FRIENDTEST  61
 #define	CHICKEN		62
+#define QUIZ 63
+#define KILLER 64
+
