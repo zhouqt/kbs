@@ -74,10 +74,8 @@ int chkreceiver(char* userid,struct userec* lookupuser)
     /* Bigman 2000.9.8 : 修正没有用户的话,返回0 */
     /* 修正PERM_SYSOP给自杀用户发信后的错误*/
 
-    if (HAS_PERM(currentuser,PERM_SYSOP))  /* Leeward 99.07.28 */
-        return 1;
-
-    if (!strcmp(lookupuser->userid, "Arbitrator")) /* Bigman 2002.6.5: Arbitrator can send any mail to user */ 
+    if ((HAS_PERM(currentuser,PERM_SYSOP)) ||(!strcmp(currentuser->userid, "Arbitrator")))  
+	/* Leeward 99.07.28 , Bigman 2002.6.5: Arbitrator can send any mail to user */ 
         return 1;
 
     if (!( lookupuser->userlevel & PERM_SYSOP ) || !strcmp(lookupuser->userid, "Arbitrator") ) /*Arbitrator's mailbox has no limit, stephen 2001.11.1 */
