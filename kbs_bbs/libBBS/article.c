@@ -782,7 +782,7 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
         return DONOTHING;
     if (flag == FILE_MARK_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
         return DONOTHING;
-    if (flag == FILE_IMPORT_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
+    if (flag == FILE_IMPORT_FLAG && (digestmode == 4 || digestmode == 5))
         return DONOTHING;
     if (flag == FILE_DELETE_FLAG && (digestmode == 4 || digestmode == 5))
         return DONOTHING;
@@ -797,8 +797,8 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     if (flag == FILE_NOREPLY_FLAG && digestmode != 0)
         return DONOTHING;
     
-    if (digestmode) {
-    	setbdir(0, &genbuf[512], currboard);
+    if ((digestmode!=DIR_MODE_NORMAL)&&(digestmode!=DIR_MODE_DIGEST)) {
+    	setbdir(0, genbuf, currboard);
     	orgent = search_record(&genbuf[512], &mkpost2, sizeof(struct fileheader), (RECORD_FUNC_ARG) cmpfileinfoname, fileinfo->filename);
     	if (!orgent) {
 #ifdef BBSMAIN
@@ -1002,7 +1002,7 @@ int change_post_flag(char* currBM, struct userec* currentuser, int digestmode, c
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLK, &ldata);
     close(fd);
-    if(digestmode)
+    if((digestmode!=DIR_MODE_NORMAL)&&(DIR_MODE_DIGEST))
     	change_dir_post_flag(currentuser, currboard, orgent, &mkpost2, flag);
 
     return newent ? DIRCHANGED : PARTUPDATE;
