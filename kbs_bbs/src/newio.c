@@ -15,7 +15,7 @@
   输入缓冲区一般都利用不上，给
   个128字节吧
 */
-#define OBUFSIZE  (1024*2)
+#define OBUFSIZE  (1024)
 #define IBUFSIZE  (128)
 
 #define INPUT_ACTIVE 0
