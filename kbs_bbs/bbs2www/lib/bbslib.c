@@ -692,6 +692,7 @@ int write_file2(FILE * fp, FILE * fp2)
     while (1) {
         if (fgets(buf3, sizeof(buf3), fp2) == NULL)
             break;
+		buf3[1023]='\0';
         ptr = strrchr(buf3, '\r');
         if (ptr != NULL) {
             if (*(ptr + 1) == '\n') {
@@ -699,7 +700,8 @@ int write_file2(FILE * fp, FILE * fp2)
                 *(ptr + 1) = '\0';
             }
         }
-        fprintf2(fp, buf3);
+//        fprintf2(fp, buf3);
+		fputs(buf3,fp);
     }
 }
 
