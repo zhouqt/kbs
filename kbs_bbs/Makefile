@@ -136,7 +136,7 @@ $(BBSLIB) : $(BBSLIBOBJS)
 	ranlib $@
 	
 chatd: station.c 
-	$(CC) -g $(CFLAGS) $(SITE_DEF) -o chatd $(OS_DEF) station.c $(LIBS)
+	$(CC) -g $(CFLAGS) $(SITE_DEF) $(DEFINES) -o chatd $(OS_DEF) station.c $(LIBS)
 #	cp -f chatd $(BBSHOME)/bin
 
 
