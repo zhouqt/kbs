@@ -10,7 +10,7 @@ bbsd_SOURCES=bbs.c record.c delete.c stuff.c mail.c register.c \
 	   filter.c mgrep.c definekey.c default.c
 noinst_HEADERS = bbsconfig.h ann.h bbs.h chat.h defines_t.h edit.h func.h ioctl.h \
            md5.h modes.h permissions.h prototype.h screen.h struct.h system.h \
-           systemexp.h uhashgen.h vars.h vote.h webmsg.h select.h default.h
+           systemexp.h uhashgen.h vars.h vote.h webmsg.h select.h default.h ansi.h output.h
 LDADD=$(top_builddir)/libsystem/.libs/libsystem.a $(top_builddir)/rzsz/.libs/libzmodem.a
 bbsd_LDFLAGS=-rdynamic
 AM_CFLAGS=-DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME
