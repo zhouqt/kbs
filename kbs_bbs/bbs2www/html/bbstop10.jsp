@@ -36,9 +36,9 @@
 ?>
 <tr>
 <td>µÚ <?php echo $i+1; ?> Ãû</td>
-<td><a href="bbsdoc?board=<?php echo $r_board; ?>"><?php echo $r_board; ?></a></td>
-<td><a href="bbstfind?board=<?php echo $r_board; ?>&title=<?php echo urlencode($r_title); ?>"><?php echo $r_title; ?></a></td>
-<td><a href="bbsqry?userid=<?php echo $r_id; ?>"><?php echo $r_id; ?></a></td>
+<td><a href="/cgi-bin/bbs/bbsdoc?board=<?php echo $r_board; ?>"><?php echo $r_board; ?></a></td>
+<td><a href="/cgi-bin/bbs/bbstfind?board=<?php echo $r_board; ?>&title=<?php echo urlencode($r_title); ?>"><?php echo $r_title; ?></a></td>
+<td><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $r_id; ?>"><?php echo $r_id; ?></a></td>
 <td><?php echo $r_num; ?></td>
 </tr>
 <?php
