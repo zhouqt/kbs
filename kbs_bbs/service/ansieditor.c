@@ -733,7 +733,7 @@ void gotoxy(char x, char y)
 		cur_x--;
 	}
 //	prints("[%d;%dH", cur_y+1, cur_x+1);
-	move(cur_y, cur_x+1);
+	move(cur_y, cur_x);
 }
 void gotoxy2(char x, char y)
 {
@@ -744,7 +744,7 @@ void gotoxy2(char x, char y)
 	cur_x = x;
 	cur_y = y;
 //	prints("[%d;%dH", cur_y+1, cur_x+1);
-	move(cur_y, cur_x+1);
+	move(cur_y, cur_x);
 }
 /***************************************************************************
  *                       undo/redo functions                               *

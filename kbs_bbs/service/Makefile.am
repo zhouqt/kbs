@@ -14,4 +14,4 @@ libdir=${prefix}/service
 AM_CFLAGS = -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@
 install-data-local:
-	cp -f definekey.* $(libdir)
+	cp -f definekey.* ansihelp.txt $(libdir)
