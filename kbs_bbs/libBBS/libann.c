@@ -349,7 +349,9 @@ static int canread(int level, char *path, char * fname, char *title)
 
 #ifdef FB2KPC
 	if(!strncmp(path,FB2KPC,strlen(FB2KPC))){
-		if(strstr(title,"<secret>") && !fb2kpc_is_owner(buf))
+		if(fb2kpc_is_owner(buf))
+			return 1;
+		if(strstr(title,"<secret>"))
 			return 0;
 	}else{
 #endif
