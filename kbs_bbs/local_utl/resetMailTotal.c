@@ -7,11 +7,9 @@
  */
 #include "bbs.h"
 
-char *curuserid;
-
 int query_BM(struct userec *user, char *arg)
 {
-    curuserid = user->userid;
+    if (!user->userid[0]) return 0;
     user->usedspace = 0xffff;
     return 1;
 }
