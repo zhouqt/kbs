@@ -57,7 +57,7 @@ login_init();
 		$anony = isset($_POST["anony"])?intval($_POST["anony"]):0;
 		$ret = bbs_postarticle($boardName, preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST["title"])), 
 			preg_replace("/\\\(['|\"|\\\])/","$1",($tmpl ? $contents :$_POST["text"])), intval($_POST["signature"]), $reID, 
-			$outgo, $anony);
+			$outgo, $anony, intval($_POST["mailback"]), 0);
 		switch ($ret) {
 			case -1:
 				html_error_quit("错误的讨论区名称!");

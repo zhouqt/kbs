@@ -185,6 +185,7 @@ function dosubmit() {
 <?php
     }
 ?>
+<input type="checkbox" name="mailback" value="1" />reÎÄ³­ËÍĞÅÏä
 <br />
 <textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {dosubmit(); return false;}'  onkeypress='if(event.keyCode==10) return dosubmit()' rows="20" cols="80" wrap="physical">
 <?php
