@@ -120,22 +120,22 @@
 	<td class="t2" width="30">选中</td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=co&tid=".$tid; ?>" class="f3">状态</a></td>
 	<td class="t2">主题</td>
-	<td class="t2" width="260">
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">创建时间</a>
+	<td class="t2" width="120">
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">创建</a>
 	|
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u&tid=".$tid; ?>" class="f3">更新时间</a></td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u&tid=".$tid; ?>" class="f3">更新</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
 <?php
 	if($tag == 0)
 	{
 ?>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=tb&tid=".$tid; ?>" class="f3">引用</td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=tb&tid=".$tid; ?>" class="f3">引用</td>
 <?php
 	}
 ?>	
-	<td class="t2" width="30">修改</td>
-	<td class="t2" width="30">删除</td>
+	<td class="t2" width="15">改</td>
+	<td class="t2" width="15">删</td>
 </tr>
 <?php
 		}
@@ -146,16 +146,16 @@
 	<td class="t2" width="30">序号</td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=co&tid=".$tid; ?>" class="f3">状态</a></td>
 	<td class="t2">主题</td>
-	<td class="t2" width="260"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">创建时间</a>
+	<td class="t2" width="120"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">创建</a>
 	|
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u&tid=".$tid; ?>" class="f3">更新时间</a></td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=u&tid=".$tid; ?>" class="f3">更新</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">浏览</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">评论</a></td>
 <?php
 	if($tag == 0)
 	{
 ?>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=tb&tid=".$tid; ?>" class="f3">引用</td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=tb&tid=".$tid; ?>" class="f3">引用</td>
 <?php
 	}
 ?>
@@ -177,7 +177,7 @@
 					"<td class='t5'>";
 				echo ($rows[htmltag]==1)?"&nbsp;":"#";
 				echo "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t3'>\n".time_format($rows[created])."\n|\n".time_format($rows[changed])."\n</td>\n".
+					"<td class='t3'>\n".time_format($rows[created])."<br/>".time_format($rows[changed])."\n</td>\n".
 					"<td class='t4'>".$rows[visitcount]."</td>\n".
 					"<td class='t3'>".$rows[commentcount]."</td>\n";
 				if($tag == 0)
@@ -187,8 +187,8 @@
 					echo $rows[trackback]?$rows[trackbackcount]:"-";
 					echo "</td>\n";
 				}
-				echo	"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">修改</a></td>\n".
-					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n".
+				echo	"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">改</a></td>\n".
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n".
 					"</tr>\n";
 			}
 			else
@@ -196,7 +196,7 @@
 				echo "<tr>\n<td class='t3'>".$i."</td>\n".
 					"<td class='t4'>".$c."</td>\n".
 					"<td class='t8'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\ align=\"absmiddle\">\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$rows[nid]."&order=".$order."&tid=".$tid."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t4'>\n".time_format($rows[created])."\n|\n".time_format($rows[changed])."\n</td>\n".
+					"<td class='t4'>\n".time_format($rows[created])."<br/>".time_format($rows[changed])."\n</td>\n".
 					"<td class='t3'>".$rows[visitcount]."</td>\n".
 					"<td class='t4'>".$rows[commentcount]."</td>\n";
 				if($tag == 0)
@@ -293,15 +293,15 @@
 	<td class="t2" width="30">类型</td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=co"; ?>" class="f3">状态</a></td>
 	<td class="t2">主题</td>
-	<td class="t2" width="250">
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=c"; ?>" class="f3">创建时间</a>
+	<td class="t2" width="120">
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=c"; ?>" class="f3">创建</a>
 	|
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=u"; ?>" class="f3">更新时间</a>
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=u"; ?>" class="f3">更新</a>
 	</td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=v"; ?>" class="f3">浏览</a></td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=r"; ?>" class="f3">评论</a></td>
-	<td class="t2" width="30">修改</td>
-	<td class="t2" width="30">删除</td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=v"; ?>" class="f3">浏览</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=r"; ?>" class="f3">评论</a></td>
+	<td class="t2" width="15">改</td>
+	<td class="t2" width="15">删</td>
 	<td class="t2" colspan="<?php echo $_COOKIE["BLOGFAVACTION"]?3:2; ?>">操作</a>
 </tr>
 <?php
@@ -314,12 +314,12 @@
 	<td class="t2" width="30">类型</td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=co"; ?>" class="f3">状态</a></td>
 	<td class="t2">主题</td>
-	<td class="t2" width="260">
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=c"; ?>" class="f3">创建时间</a>
+	<td class="t2" width="120">
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=c"; ?>" class="f3">创建</a>
 	|
-	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=u"; ?>" class="f3">更新时间</a></td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=v"; ?>" class="f3">浏览</a></td>
-	<td class="t2" width="40"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=r"; ?>" class="f3">评论</a></td>
+	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=u"; ?>" class="f3">更新</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=v"; ?>" class="f3">浏览</a></td>
+	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=3&pid=".$pid."&order=r"; ?>" class="f3">评论</a></td>
 </tr>
 <?php
 		}
@@ -352,11 +352,11 @@
 					"<td class='t8'>";
 				echo   ($rows[htmltag]==1)?"&nbsp;":"#";	
 				echo    "<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t4'>".time_format($rows[created])."|".time_format($rows[changed])."</td>\n".
+					"<td class='t4'>".time_format($rows[created])."<br/>".time_format($rows[changed])."</td>\n".
 					"<td class='t3'>".$rows[visitcount]."</td>\n".
 					"<td class='t4'>".$rows[commentcount]."</td>\n".
-					"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">修改</a></td>\n".
-					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删除</a></td>\n";
+					"<td class='t3'><a href=\"pcmanage.php?act=edit&nid=".$rows[nid]."\">改</a></td>\n".
+					"<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcmanage.php?act=del&nid=".$rows[nid]."','确认删除?')\">删</a></td>\n";
 				if($rows[type]==0)
 					echo "<td class='t3' width=20><a href=\"pcmanage.php?act=favcut&nid=".$rows[nid]."\">剪</a></td>".
 					      "<td class='t3' width=20><a href=\"pcmanage.php?act=favcopy&nid=".$rows[nid]."\">复</a></td>";
@@ -376,7 +376,7 @@
 					"<td class='t4'>".$type."</td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>&nbsp;<img src=\"icon/".$rows[emote].".gif\" border=\"0\" align=\"absmiddle\">\n<a href=\"".$url."\">".html_format($rows[subject])."</a></td>\n".
-					"<td class='t3'>".time_format($rows[created])."|".time_format($rows[changed])."</td>\n".
+					"<td class='t3'>".time_format($rows[created])."<br/>".time_format($rows[changed])."</td>\n".
 					"<td class='t4'>".$rows[visitcount]."</td>\n".
 					"<td class='t3'>".$rows[commentcount]."</td>\n".
 					"</tr>\n";
