@@ -286,8 +286,7 @@ void refreshit()
         resetcolor();
         move(i,4);
         if(j==selected) {
-            setbcolor(GREEN);
-            setfcolor(BLUE, 0);
+            setbcolor(BLUE);
         }
         if(inrooms.peoples[j].nick[0])
             prints(inrooms.peoples[j].nick);
@@ -333,7 +332,7 @@ void start_game()
 #define menust 8
 int do_com_menu()
 {
-    char menus[menust][10]=
+    char menus[menust][15]=
         {"0-返回","1-退出游戏","2-改名字", "3-玩家列表", "4-改话题", "5-设置房间", "6-踢玩家", "7-开始游戏"};
     int menupos[menust],i,j,sel=0,ch;
     menupos[0]=0;
@@ -351,8 +350,7 @@ int do_com_menu()
             resetcolor();
             move(t_lines-1, menupos[i]);
             if(i==sel) {
-                setbcolor(GREEN);
-                setfcolor(BLUE, 0);
+                setbcolor(BLUE);
             }
             prints(menus[i]);
         }
@@ -388,8 +386,8 @@ int do_com_menu()
 
 void join_room(struct room_struct * r)
 {
-    char buf[80];
-    int i,j;
+    char buf[80],buf2[80];
+    int i,j,killer;
     clear();
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(r->creator[0]), r->creator, uinfo.pid);
     unlink(buf);
@@ -420,7 +418,7 @@ void join_room(struct room_struct * r)
         do{
             getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 1);
             if(!buf[0]) {
-                do_com_menu();
+                if(do_com_menu()) goto quitgame;
             }
         }while(!buf[0]);
         for(i=0;i<myroom->people;i++) {
@@ -428,9 +426,16 @@ void join_room(struct room_struct * r)
             kill(inrooms.peoples[i].pid, SIGUSR1);
         }
     }
+
+quitgame:
+    killer=0;
     start_change_inroom(r);
     for(i=0;i<myroom->people;i++)
         if(inrooms.peoples[i].pid==uinfo.pid) {
+            if(inrooms.peoples[i].flag&PEOPLE_KILLER) killer=1;
+            strcpy(buf2, inrooms.peoples[i].nick);
+            if(!buf2[0])
+                strcpy(buf2, inrooms.peoples[i].id);
             for(j=i;j<myroom->people-1;j++)
                 memcpy(inrooms.peoples+j, inrooms.peoples+j+1, sizeof(struct people_struct));
             break;
@@ -438,7 +443,10 @@ void join_room(struct room_struct * r)
     r->people--;
     end_change_inroom();
 
-    sprintf(buf, "%s离开房间", currentuser->userid);
+    if(killer)
+        sprintf(buf, "杀手%s潜逃了", buf2);
+    else
+        sprintf(buf, "%s离开房间", buf2);
     for(i=0;i<myroom->people;i++) {
         send_msg(inrooms.peoples+i, buf);
         kill(inrooms.peoples[i].pid, SIGUSR1);
