@@ -71,7 +71,7 @@ var o=null;
 		o.visibility = "hide";
 		o=eval("document.div"+mn+"a.document.images[0]");
 	}
-	if(o!=null) o.src='/folder.gif';
+	if(o!=null) o.src='/images/folder.gif';
 }
 
 function openmn(mn) {
@@ -92,7 +92,7 @@ var o=null;
 		o.visibility = "show";
 		o=eval("document.div"+mn+"a.document.images[0]");
 	}
-	if(o!=null) o.src='/folder2.gif';
+	if(o!=null) o.src='/images/folder2.gif';
 }
 
 function changemn(mn) {
@@ -115,17 +115,6 @@ function openchat()
 	chatHeight=screen.availHeight;
 	winPara='toolbar=no,location=no,status=no,menubar=no,scrollbars=auto,resizable=yes,left=0,top=0,'+'width='+(chatWidth-10)+',height='+(chatHeight-27);
 	window.open(url,'_blank',winPara);
-}
-function openanother() {
-	window.top.document.location.href='http://1999.ytht.net';
-}
-function openlog()
-{
-	open('/login.htm','','left=255,top=190,width=130,height=100');
-}
-function openreg()
-{
-	open('/cgi-bin/bbs/bbsreg', '', 'width=600,height=460');
 }
 
 Is();

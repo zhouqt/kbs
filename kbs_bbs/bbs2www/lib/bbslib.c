@@ -1750,7 +1750,7 @@ static int www_new_guest_entry()
         		if (!(wwwguest_shm->use_map[i/32]&(1<<(i%32)))||
 						(now-wwwguest_shm->guest_entry[i].freshtime<MAX_WWW_GUEST_IDLE_TIME))
         			continue;
-				bbslog("1system","EXIT: Stay:%3ld (%s)[%d %d](www)",now-wwwguest_shm->guest_entry[i].freshtime,currentuser->username,wwwguest_shm->guest_entry[i].key);
+				bbslog("1system","EXIT: Stay:%3ld (guest)[%d %d](www)",now-wwwguest_shm->guest_entry[i].freshtime,wwwguest_shm->guest_entry[i].key);
         		/*Çå³ıuse_map*/
         		wwwguest_shm->use_map[i/32]&=~(1<<(i%32));
 				if (pub->www_guest_count>0) {
@@ -1793,7 +1793,7 @@ static int www_free_guest_entry(int idx)
 	setpublicshmreadonly(0);
 	pub=get_publicshm();
 	fd = www_guest_lock();
-	if (wwwguest_shm->use_map[idx/32])&(1<<(idx%32))
+	if (wwwguest_shm->use_map[idx/32]&(1<<(idx%32))) {
 		wwwguest_shm->use_map[idx/32]&=~(1<<(idx%32));
 		if (pub->www_guest_count>0)
 			pub->www_guest_count--;
@@ -2071,9 +2071,9 @@ int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int
 		stay = 7200;
 	user->stay+=stay;
 	record_exit_time(user->userid);
-	bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, 
-			user->username, get_curr_utmpent(), useridx);
 	if (strcasecmp(user->userid,"guest")) {
+		bbslog( "1system", "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, 
+			user->username, get_curr_utmpent(), useridx);
 	    	if(!puinfo->active) return 0;
 	    		setflags(user,PAGER_FLAG, (puinfo->pager&ALL_PAGER));
 
@@ -2081,6 +2081,8 @@ int www_user_logoff(struct userec* user,int useridx,struct user_info* puinfo,int
 	        	setflags(user,CLOAK_FLAG, puinfo->invisible);
     	clear_utmp(userinfoidx,useridx);
 	} else {
+		bbslog( "1system", "EXIT: Stay:%3ld (guest)[%d %d](www)", stay / 60, 
+			puinfo->destuid, useridx);
 		www_free_guest_entry(puinfo->destuid);
 	}
 	return 0;
