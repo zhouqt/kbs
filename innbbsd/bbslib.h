@@ -2,6 +2,7 @@
 #define BBSLIB_H
 
 #include "bbsconfig.h"
+#include <netinet/in.h>
 
 typedef struct nodelist_t {
     char *node;

@@ -680,7 +680,7 @@ LookupWord(buff, length)
 }
 
 
-static int
+int
 date_lex()
 {
     register char	c;
