@@ -1416,33 +1416,12 @@ void chat_show_allmsgs(chatcontext * pthis, const char *arg)
     for(i=0;i<count;i++) {
         load_msghead(0, currentuser->userid, i, &head);
         load_msgtext(currentuser->userid, &head, buf);
-        translate_msg(buf, showmsg);
+        translate_msg(buf, &head, showmsg);
         fprintf(fp, "%s", showmsg);
     }
     fclose(fp);
     if (count) {
         fp = fopen(fname, "rb");
-        fseek(fp, 0, SEEK_END);
-        pos = ftell(fp);
-        cnt = 0;
-        while (cnt < line) {
-            if (pos < (int) sizeof(buf)) {      /* begin of file */
-                fseek(fp, 0, SEEK_SET);
-                break;
-            }
-            pos -= sizeof(buf);
-            fseek(fp, pos, SEEK_SET);
-            i = fread(buf, 1, sizeof(buf), fp);
-            while (i > 0) {
-                i--;
-                if (buf[i] == '\n')
-                    cnt++;
-                if (cnt == line) {
-                    fseek(fp, pos + i + 1, SEEK_SET);
-                    break;
-                }
-            }
-        }
         sprintf(buf, "【最近 %d 条消息】", count);
         printchatline(pthis, buf);
         while (!feof(fp)) {

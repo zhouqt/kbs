@@ -324,7 +324,7 @@ reenter:
                 for(i=0;i<count;i++) {
                     load_msghead(0, currentuser->userid, i, &head);
                     load_msgtext(currentuser->userid, &head, buf);
-                    translate_msg(buf, showmsg);
+                    translate_msg(buf, &head, showmsg);
                     fprintf(fn, "%s", showmsg);
                 }
                 fclose(fn);
