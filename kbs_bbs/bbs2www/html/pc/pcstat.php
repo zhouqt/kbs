@@ -166,4 +166,41 @@ function getRecommendBlogs($link,$pno=1,$etemnum=0)
 	mysql_free_result($result);
 	return $recommendBlogs;
 }
+
+function getNewUsers($link,$userNum=0)
+{
+	if(!$userNum) $userNum = 0;
+	$query = "SELECT username,corpusname,description FROM users ORDER BY createtime DESC LIMIT 0,".intval($userNum).";";
+	$result = mysql_query($query,$link);
+	$newUsers = array();
+	while($rows = mysql_fetch_array($result))
+		$newUsers[] = $rows;
+	mysql_free_result($result);
+	return $newUsers;
+}
+
+function getMostVstUsers($link,$userNum=0)
+{
+	if(!$userNum) $userNum = 0;
+	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT 0,".intval($userNum).";";
+	$result = mysql_query($query,$link);
+	$mostVstUsers = array();
+	while($rows = mysql_fetch_array($result))
+		$mostVstUsers[] = $rows;
+	mysql_free_result($result);
+	return $mostVstUsers;
+}
+	
+function getLastUpdates($link,$userNum=0)
+{
+	if(!$userNum) $userNum = 0;
+	$query = "SELECT username , corpusname , description FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,".intval($userNum).";";
+	$result = mysql_query($query,$link);
+	$lastUpdates = array();
+	while($rows = mysql_fetch_array($result))
+		$lastUpdates[] = $rows;
+	mysql_free_result($result);
+	return $lastUpdates;
+}	
+
 ?>

@@ -665,6 +665,9 @@ function pc_main_navigation_bar()
 [<b>RSS频道</b>&nbsp;
 最新日志<a href="rssnew.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站最新Blog日志"></a>
 推荐文章<a href="rssrec.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站推荐Blog日志"></a>
+新用户(OPML)<a href="opml.php?t=2"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站新增Blog用户"></a>
+最近更新(OPML)<a href="opml.php"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站新增Blog用户"></a>
+访问最多(OPML)<a href="opml.php?t=1"><img src="images/xml.gif" border="0" align="absmiddle" alt="本站新增Blog用户"></a>
 ]
 </p>
 <?php	

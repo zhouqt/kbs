@@ -32,16 +32,13 @@ function pcmain_blog_statistics_list()
 function pcmain_blog_new_user()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username,corpusname,description FROM users ORDER BY createtime DESC LIMIT 0,20;";
-	$result = mysql_query($query,$link);
-	$num = mysql_num_rows($result);
+	$newUsers = getNewUsers($link,20);
 ?>
 <ul>
 <?php
-	for($i = 0;$i<$num;$i++)
+	foreach($newUsers as $newUser)
 	{
-		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\"><span title=\"".html_format($rows[description])."\">".html_format($rows[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$rows[username]."\"><font class=\"low\">".$rows[username]."</font></a></li>";	
+		echo "<li><a href=\"index.php?id=".$newUser[username]."\"><span title=\"".html_format($newUser[description])."\">".html_format($newUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$newUser[username]."\"><font class=\"low\">".$newUser[username]."</font></a></li>";	
 	}
 ?>				
 </ul>
@@ -51,35 +48,29 @@ function pcmain_blog_new_user()
 function pcmain_blog_top_ten()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username , corpusname , description FROM users ORDER BY visitcount DESC LIMIT 0,20;";
-	$result = mysql_query($query,$link);
-	$num = mysql_num_rows($result);
+	$mostVstUsers = getMostVstUsers($link,20);
 ?>
 		<ul>
 <?php
-	for($i = 0;$i<$num;$i++)
+	foreach($mostVstUsers as $mostVstUser)
 	{
-		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\"><span title=\"".html_format($rows[description])."\">".html_format($rows[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$rows[username]."\"><font class=\"low\">".$rows[username]."</font></a></li>";	
+		echo "<li><a href=\"index.php?id=".$mostVstUser[username]."\"><span title=\"".html_format($mostVstUser[description])."\">".html_format($mostVstUser[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$mostVstUser[username]."\"><font class=\"low\">".$mostVstUser[username]."</font></a></li>";	
 	}
 ?>				
-				</ul>
+		</ul>
 <?php
 }
 
 function pcmain_blog_last_update()
 {
 	global $pcconfig,$link;
-	$query = "SELECT username , corpusname , description FROM users WHERE createtime != modifytime ORDER BY modifytime DESC LIMIT 0,20;";
-	$result = mysql_query($query,$link);
-	$num = mysql_num_rows($result);
+	$lastUpdates = getLastUpdates($link,20);
 ?>
 				<ul>
 <?php
-	for($i = 0;$i<$num;$i++)
+	foreach($lastUpdates as $lastUpdate)
 	{
-		$rows = mysql_fetch_array($result);
-		echo "<li><a href=\"index.php?id=".$rows[username]."\"><span title=\"".html_format($rows[description])."\">".html_format($rows[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$rows[username]."\"><font class=\"low\">".$rows[username]."</font></a></li>";	
+		echo "<li><a href=\"index.php?id=".$lastUpdate[username]."\"><span title=\"".html_format($lastUpdate[description])."\">".html_format($lastUpdate[corpusname])."</span></a>&nbsp;<a href=\"/bbsqry.php?userid=".$lastUpdate[username]."\"><font class=\"low\">".$lastUpdate[username]."</font></a></li>";	
 	}
 ?>				
 				</ul>
@@ -513,13 +504,18 @@ input {
               <td class="channelback"><table width="100%"  border="0" cellspacing="0" cellpadding="0">
                 <tr>
                   <td class="channel">点击排行</td>
-                  <td align="right" class="more"><a href="pc.php?order=visitcount&order1=DESC" class="more">更多</a></td>
+                  <td align="right" class="more"><a href="pc.php?order=visitcount&order1=DESC"><font class="more">更多</font></a></td>
               </tr>
               </table></td>
             </tr>
             <tr>
               <td align="left" valign="top" bgcolor="#F6F6F6" class="td">
-			  <?php pcmain_blog_top_ten(); ?>			  </td>
+		<?php pcmain_blog_top_ten(); ?>
+	      <center>
+	      <a href="pc.php?order=visitcount&order1=DESC" class="low2">更多</a>
+	      <a href="opml.php?t=1" class="low2">OPML</a>
+	      </center>
+	      </td>
           </tr>
           </table>
           <br />
@@ -528,14 +524,18 @@ input {
                 <td class="channelback"><table width="100%"  border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td width="70%" class="channel">最近更新</td>
-                    <td width="30%" align="right" class="more"><a href="pc.php?order=modifytime&order1=DESC" class="more">更多</a></td>
+                    <td width="30%" align="right" class="more"><a href="pc.php?order=modifytime&order1=DESC"><font class="more">更多</font></a></td>
                   </tr>
                 </table></td>
             </tr>
               <tr>
                 <td align="left" valign="top" bgcolor="#E8FFEE" class="td">
 				<?php pcmain_blog_last_update(); ?>
-				</td>
+		<center>
+	        <a href="pc.php?order=modifytime&order1=DESC" class="low2">更多</a>
+	        <a href="opml.php" class="low2">OPML</a>
+	        </center>
+		</td>
             </tr>
             </table>
           <br />
@@ -544,13 +544,18 @@ input {
                 <td class="channelback"><table width="100%"  border="0" cellspacing="0" cellpadding="0">
                   <tr>
                     <td width="74%" class="channel">最新申请</td>
-                    <td width="26%" align="right" class="more"><a class="more" href="pc.php?order=createtime&order1=DESC">更多</a></td>
+                    <td width="26%" align="right" class="more"><a href="pc.php?order=createtime&order1=DESC"><font class="more">更多</font></a></td>
                   </tr>
                 </table></td>
             </tr>
               <tr>
                 <td align="left" valign="top" bgcolor="#FFFFE6" class="td">
-				<?php pcmain_blog_new_user(); ?>				</td>
+				<?php pcmain_blog_new_user(); ?>
+		<center>
+	        <a href="pc.php?order=createtime&order1=DESC" class="low2">更多</a>
+	        <a href="opml.php?t=2" class="low2">OPML</a>
+	        </center>
+		</td>
             </tr>
             </table>
           <br />

@@ -109,7 +109,7 @@
 				"</a>&nbsp;&nbsp;".
 				"[".time_format($rows[time])."]".
 				"</td><td width=\"100\" align=\"right\" class=\"".$tdclass[0]."\"><font class=\"f4\">".($i+1)."</font>&nbsp;&nbsp;</td>\n</tr>\n".
-			        "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\"><font class='".$contentcss."'>".
+			        "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\"><font class=\"content\">".
 				html_format($rows[excerpt],TRUE)."</font></td>\n</tr>\n".
 				"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: <a href=\"".htmlspecialchars($rows[url])."\">".$rows[blogname]."</a> ]".
 				"</td>\n</tr>\n";
