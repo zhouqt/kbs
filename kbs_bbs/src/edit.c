@@ -1019,7 +1019,7 @@ fsdfa
             int fsrc;
             struct stat st;
             snprintf(buf,MAXPATH,"%s.attach",filename);
-            fstat(fileno(fp),&st));
+            fstat(fileno(fp),&st);
             *pattachpos=st.st_size+1;
             if ((fsrc = open(buf, O_RDONLY)) >= 0) {
                 char* src=(char*)malloc(10240);
