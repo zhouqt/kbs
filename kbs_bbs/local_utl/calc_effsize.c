@@ -64,6 +64,7 @@ int calcboard(struct boardheader * bh, void * arg)
             }
             end_mmapfile((void*)op, fsize, -1);
         }
+        ptr1->posttime = get_posttime(ptr1);
         ptr1++;
     }
     end_mmapfile((void *) ptr, buf.st_size, -1);

@@ -288,7 +288,7 @@ typedef struct fileheader {     /* This structure is used to hold data in */
     char owner[OWNER_LEN];
     char unused2[38];
     unsigned int eff_size;
-	time_t posttime;
+    time_t posttime;
     long attachment;
     char title[STRLEN];
     unsigned level;
