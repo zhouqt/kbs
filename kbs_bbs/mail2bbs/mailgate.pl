@@ -57,11 +57,15 @@ sub parse_header {
                     $Header{'Received'} = $tmp;
                 }
             }
+#            elsif ( $1 eq "Content-Type" ) {
+#               if ( $MAIL[$index+1] =~ /^\s*boundary="(.+)"$/ ) { 
+#                       $Header{"boundary"} = $1;
+#               }
+#           } 
             else {
-	    	print "$1 $2 $3 $4 $5 $6 ";
-                if ($1) $Header{$1} = $2;
-		if ($3) $Header{$3} = $4;
-		if ($5) $Header{$5} = $6;
+                $Header{$1} = $2;
+                $Header{$3} = $4;
+                $Header{$5} = $6;
             }
         }
     }

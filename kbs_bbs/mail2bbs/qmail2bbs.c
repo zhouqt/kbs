@@ -654,6 +654,7 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 		if (append_record(buf, &newmessage, sizeof(newmessage)) == 0)
 		{
 			update_user_usedspace(fs.st_size, user);
+			setmailcheck(user->userid);
 			return 0;
 		}
 	}
@@ -713,6 +714,7 @@ main(argc, argv)
 	chdir(BBSHOME);
 	resolve_ucache();
 	resolve_boards();
+	resolve_utmp();
 	
 	if (argv[1] == NULL || strlen(argv[1]) == 0)
 	{
