@@ -1653,6 +1653,7 @@ int junk_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         arg->newmode = DIR_MODE_JUNK;
         setbdir(DIR_MODE_JUNK, arg->direct, currboard->filename);
         if (!dashf(arg->direct)) {
+            arg->newmode = DIR_MODE_NORMAL;
             setbdir(arg->mode, arg->direct, currboard->filename);
             return DONOTHING;
         }
