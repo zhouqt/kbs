@@ -120,10 +120,10 @@ void clear_room()
 {
     int i;
     for(i=0;i<*roomst;i++)
-        if(!strcmp(rooms[i].creator, currentuser->userid))
+        if(!strcmp(rooms[i].creator, currentuser->userid) && (rooms[i].style!=-1))
             rooms[i].style=-1;
     for(i=0;i<*roomst;i++)
-        if(rooms[i].people==0)
+        if((rooms[i].people==0) && (rooms[i].style!=-1))
             rooms[i].style=-1;
     for(i=0;i<*roomst;i++)
         if(rooms[i].style==-1) del_room(rooms+i);
@@ -979,7 +979,7 @@ static int room_list_select(struct _select_def *conf)
         refresh(); sleep(1);
         return SHOW_REFRESH;
     }
-    if(r2->people>=r2->maxpeople) {
+    if(r2->people>=r2->maxpeople&&!HAS_PERM(currentuser, PERM_SYSOP)) {
         move(0, 0);
         clrtoeol();
         prints(" 该房间人数已满");
@@ -1029,6 +1029,13 @@ static int room_list_key(struct _select_def *conf, int key)
         strcpy(r.creator, currentuser->userid);
         getdata(0, 0, "房间名:", name, 12, 1, NULL, 1);
         if(!name[0]) return SHOW_REFRESH;
+        if(name[0]==' '||name[strlen(name)-1]==' ') {
+            move(0, 0);
+            clrtoeol();
+            prints(" 房间名开头结尾不能为空格");
+            refresh(); sleep(1);
+            return SHOW_CONTINUE;
+        }
         strcpy(r.name, name);
         r.style = 1;
         r.flag = 0;
@@ -1054,7 +1061,7 @@ static int room_list_key(struct _select_def *conf, int key)
             refresh(); sleep(1);
             return SHOW_REFRESH;
         }
-        if(r2->people>=r2->maxpeople) {
+        if(r2->people>=r2->maxpeople&&!HAS_PERM(currentuser, PERM_SYSOP)) {
             move(0, 0);
             clrtoeol();
             prints(" 该房间人数已满");
