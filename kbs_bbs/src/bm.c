@@ -195,7 +195,11 @@ int addtodeny(char *uident)
     }
     if (denymsg[0] == '*')
         return 0;
+#ifdef MANUAL_DENY
     autofree = askyn("¸Ã·â½ûÊÇ·ñ×Ô¶¯½â·â£¿(Ñ¡ [1;31mY[m ±íÊ¾½øĞĞ×Ô¶¯½â·â)", true);
+#else
+    autofree = true;
+#endif
     sprintf(filebuf, "ÊäÈëÌìÊı(×î³¤%dÌì)(°´*È¡Ïû·â½û)", maxdeny);
     denyday = 0;
     while (!denyday) {

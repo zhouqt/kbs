@@ -61,6 +61,10 @@
 #undef MAILOUT			/* 是否允许向站外主动发信 */
 #endif
 
+#ifndef MANUAL_DENY		/* 手动解封，缺省使能*/
+#define MANUAL_DENY
+#endif
+
 #ifndef BBS_SERVICE_DICT	/* 词典功能 */
 #define BBS_SERVICE_DICT
 #endif
