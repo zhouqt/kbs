@@ -3349,7 +3349,7 @@ int Goodbye()
             }
 #endif*/
         } else
-            clear_msg();
+            clear_msg(currentuser->userid);
         fp = fopen("friendbook", "r");  /*搜索系统 寻人名单 */
         while (fp != NULL && fgets(buf, sizeof(buf), fp) != NULL) {
             char uid[14];

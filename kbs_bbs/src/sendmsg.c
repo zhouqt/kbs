@@ -222,12 +222,12 @@ int show_allmsgs()
             }
         }
         good_move(23,0);
-        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ý <[37mc[32m>   ¼Ä»ØÐÅÏä<[37mm[m");
         clrtoeol();
+        prints("[1;44;32mÑ¶Ï¢ä¯ÀÀÆ÷   ±£Áô <[37mr[32m>    Çå³ý <[37mc[32m>   ¼Ä»ØÐÅÏä<[37mm[m");
         refresh();
         oflush();
 reenter:
-        ch = igetch();
+        ch = igetkey();
         switch(ch) {
             case 'r':
             case 'R':
@@ -252,7 +252,7 @@ reenter:
                 break;
             case 'c':
             case 'C':
-                clear_msg();
+                clear_msg(currentuser->userid);
                 goto outofhere;
             case 'm':
             case 'M':
@@ -261,7 +261,7 @@ reenter:
                 for(i=0;i<count;i++) {
                     load_msgtext(0, currentuser->userid, i, buf);
                     translate_msg(buf, showmsg);
-                    fprintf(fname, "%s", showmsg);
+                    fprintf(fn, "%s", showmsg);
                 }
                 fclose(fn);
 
