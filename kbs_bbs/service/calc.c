@@ -170,20 +170,21 @@ int get_var(char * name)
         }
     strcpy(vars[vart].name, name);
     vars[vart].p = 0;
-    return (vart++);
+    vart++;
+    return (vart-1);
 }
 
 void set_var(struct var_struct * a, double f)
 {
     makesize(a, 1, 1);
-    **(a->p) = f;
+    (**(a->p)) = f;
 }
 
 int check_var_name(char * s, int l)
 {
     int i,p=1;
     for(i=0;i<l;i++)
-        p==p&&(isalpha(s[i]));
+        p=p&&(isalpha(s[i]));
     return p;
 }
 
@@ -193,13 +194,14 @@ int check_var_double(char * s, int l)
 {
     int i,p=1;
     for(i=0;i<l;i++)
-        p==p&&(isdouble(s[i]));
+        p=p&&(isdouble(s[i]));
     return p;
 }
 
 void set_matrix(struct var_struct * p, char * s)
 {
     char buf[80];
+    double f;
     int i,j,k,height=1,width=0;
     for(i=0;i<strlen(s);i++)
         if(s[i]==';') height++;
@@ -225,7 +227,8 @@ void set_matrix(struct var_struct * p, char * s)
             strcpy(buf, s);
             buf[k]=0;
             s+=k;
-            p->p[i][j]=atof(buf);
+            sscanf(buf, "%lf", &f);
+            p->p[i][j]=f;
         }
 }
 
@@ -275,9 +278,11 @@ void eval(struct var_struct * p, char * s, int l, int r)
         return;
     }
     if(check_var_double(s+l, r-l+1)) {
+        double f;
         strcpy(buf, s+l);
         buf[r-l+1]=0;
-        set_var(p, atof(buf));
+        sscanf(buf, "%lf", &f);
+        set_var(p, f);
         return;
     }
     if(s[l]=='['&&s[r]==']'&&get_rl2(s,r,l)==l) {
@@ -338,7 +343,11 @@ void eval(struct var_struct * p, char * s, int l, int r)
 void print_var(struct var_struct * p)
 {
     int i,j;
-    printf("%s\n", p->name);
+    printf("%s =\n", p->name);
+    if(is_single_var(p)) {
+        printf("%lf\n", **(p->p));
+        return;
+    }
     printf("[");
     for(i=0;i<p->height;i++){
         for(j=0;j<p->width;j++) {
@@ -362,12 +371,12 @@ int main()
         printf("> ");
 //        getyx(&y, &x);
 //        getdata(y, x, 0, cmd, 300, 1, 0, 1);
-        fscanf("%s", cmd);
+        scanf("%s", cmd);
         if(!strcasecmp(cmd, "exit")) break;
         if(!strcasecmp(cmd, "quit")) break;
         if(strchr(cmd, '=')) {
             i=strchr(cmd, '=')-cmd;
-            if(i<=1||!check_var_name(cmd, i-1)) {
+            if(i<=0||!check_var_name(cmd, i)) {
                 printf("error\n");
                 continue;
             }
@@ -380,6 +389,12 @@ int main()
             i=0;
         }
         eval(vars+res, cmd+i, 0, strlen(cmd+i)-1);
-        print_var(vars+res);
+        if(err) {
+            printf("error\n");
+            err=0;
+            continue;
+        }
+        else
+            print_var(vars+res);
     }
 }
