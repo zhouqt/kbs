@@ -13,21 +13,12 @@ function DvBCode($strContent,$filterHTML, $abgcolor='')
 	$strContent=FilterJS($strContent);
 
 //IMG Code
-/*
-	$search = array("'\[IMG\]((?:http|https|ftp)://[^\[]*)\[\/IMG\]'i",
-						"'\[UPLOAD=(gif|jpg|jpeg|bmp|png)\]([^\[]*\.)\\1\[/UPLOAD\]'i");
-*/
 	$search = array("'\[IMG\]((?:http|https|ftp)://[^\[]*)\[\/IMG\]'i");
 
-	$replace= array("<a onfocus=this.blur() href=\"\\1\" target=_blank><IMG SRC=\"\\1\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></a>",
-						"<br><IMG SRC=\"images/files/\\1.gif\" border=0>此主题相关图片如下：<br><A HREF=\"\\2\\1\" TARGET=_blank><IMG SRC=\"\\2\\1\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A>");
+	$replace= array("<a onfocus=\"this.blur()\" href=\"\\1\" target=\"_blank\"><img src=\"\\1\" border=\"0\" alt=\"按此在新窗口浏览图片\" onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\" /></a>");
 
 	$strContent=preg_replace($search,$replace,$strContent);
-/*
-	$strContent=preg_replace("'\[UPLOAD=([^\[]*)\]([^\[]*)\[\/UPLOAD\]'i",
-							"<br><IMG SRC=\"images/files/\\1.gif\" border=0> <a href=\"\\2\">点击浏览该文件</a>",
-							$strContent);
-*/
+
 //多媒体标签
 	$search = array("'\[DIR=(\d*),(\d*)\]([^\[]*)\[/DIR\]'i",
 						"'\[QT=(\d*),(\d*)\]([^\[]*)\[/QT\]'i",
@@ -36,12 +27,12 @@ function DvBCode($strContent,$filterHTML, $abgcolor='')
 						"'\[FLASH(?:=(\d*),(\d*))?\]([^\[]*)\[\/FLASH\]'ie",
 						"'\[SOUND\]([^\[]*)\[/SOUND\]'i");
 
-		$replace= array("<object classid=clsid:166B1BCA-3F9C-11CF-8075-444553540000 codebase=http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=7,0,2,0 width=\\1 height=\\2><param name=src value=\\3><embed src=\\3 pluginspage=http://www.macromedia.com/shockwave/download/ width=\\1 height=\\2></embed></object>",
-						"<embed src=\\3 width=\\1 height=\\2 autoplay=true loop=false controller=true playeveryframe=false cache=false scale=TOFIT bgcolor=#000000 kioskmode=false targetcache=false pluginspage=http://www.apple.com/quicktime/>",
-						"<object align=middle classid=CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95 class=OBJECT id=MediaPlayer width=\\1 height=\\2 ><param name=ShowStatusBar value=-1><param name=Filename value=\\3><embed type=application/x-oleobject, codebase=http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701 flename=mp src=\\3 width=\\1 height=\\2></embed></object>",
-						"<OBJECT classid=clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA class=OBJECT id=RAOCX width=\\1 height=\\2><PARAM NAME=SRC VALUE=\\3><PARAM NAME=CONSOLE VALUE=Clip1><PARAM NAME=CONTROLS VALUE=imagewindow><PARAM NAME=AUTOSTART VALUE=true></OBJECT><br><OBJECT classid=CLSID:CFCDAA03-8BE4-11CF-B84B-0020AFBBCCFA height=32 id=video2 width=\\1><PARAM NAME=SRC VALUE=\\3><PARAM NAME=AUTOSTART VALUE=-1><PARAM NAME=CONTROLS VALUE=controlpanel><PARAM NAME=CONSOLE VALUE=Clip1></OBJECT>",
-						"'<a href=\"\\3\" TARGET=_blank><IMG SRC=pic/swf.gif border=0 alt=点击开新窗口欣赏该FLASH动画! height=16 width=16>[全屏欣赏]</a><br><OBJECT codeBase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=4,0,2,0 classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 width='.(strlen('\\1')?'\\1':500).' height='.(strlen('\\2')?'\\2':400).'><PARAM NAME=movie VALUE=\"\\3\"><PARAM NAME=quality VALUE=high><embed src=\"\\3\" quality=high pluginspage=\"http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash\" type=\"application/x-shockwave-flash\" width='.(strlen('\\1')?'\\1':500).' height='.(strlen('\\2')?'\\2':400).'>\\3</embed></OBJECT>'",
-						"<a href=\"\\1\" target=_blank><IMG SRC=pic/mid.gif border=0 alt='背景音乐'></a><bgsound src=\"\\1\" loop=\"-1\">");
+		$replace= array("<object classid=\"clsid:166B1BCA-3F9C-11CF-8075-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab#version=7,0,2,0\" width=\"\\1\" height=\"\\2\"><param name=\"src\" value=\"\\3\"/><embed src=\"\\3\" pluginspage=\"http://www.macromedia.com/shockwave/download/\" width=\"\\1\" height=\"\\2\"></embed></object>",
+						"<embed src=\"\\3\" width=\"\\1\" height=\"\\2\" autoplay=\"true\" loop=\"false\" controller=\"true\" playeveryframe=\"false\" cache=\"false\" scale=\"TOFIT\" bgcolor=\"#000000\" kioskmode=\"false\" targetcache=\"false\" pluginspage=\"http://www.apple.com/quicktime/\"/>",
+						"<object align=\"middle\" classid=\"CLSID:22d6f312-b0f6-11d0-94ab-0080c74c7e95\" class=\"OBJECT\" id=\"MediaPlayer\" width=\"\\1\" height=\"\\2\" ><param name=\"ShowStatusBar\" value=\"-1\"/><param name=\"Filename\" value=\"\\3\"/><embed type=\"application/x-oleobject\" codebase=\"http://activex.microsoft.com/activex/controls/mplayer/en/nsmp2inf.cab#Version=5,1,52,701\" flename=\"mp\" src=\"\\3\" width=\"\\1\" height=\"\\2\"></embed></object>",
+						"<object classid=\"clsid:CFCDAA03-8BE4-11cf-B84B-0020AFBBCCFA\" class=\"OBJECT\" id=\"RAOCX\" width=\"\\1\" height=\"\\2\"><param name=\"src\" value=\"\\3\"/><param name=\"console\" value=\"clip1\"/><param name=\"controls\" value=\"imagewindow\"/><param name=\"autostart\" value=\"true\"/></object><br/><object classid=\"CLSID:CFCDAA03-8BE4-11CF-B84B-0020AFBBCCFA\" height=\"32\" id=\"video2\" width=\"\\1\"><param name=\"src\" value=\"\\3\"/><param name=\"autostart\" value=\"-1\"/><param name=\"controls\" value=\"controlpanel\"/><param name=\"console\" value=\"clip1\"/></object>",
+						"'<a href=\"\\3\" target=\"_blank\"><img src=\"pic/swf.gif\" border=\"0\" alt=\"点击开新窗口欣赏该FLASH动画!\" height=\"16\" width=\"16\"/>[全屏欣赏]</a><br/><object codeBase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=4,0,2,0\" classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" width=\"'.(strlen('\\1')?'\\1':500).'\" height=\"'.(strlen('\\2')?'\\2':400).'\"><param name=\"movie\" value=\"\\3\"/><param name=\"quality\" value=\"high\"/><embed src=\"\\3\" quality=\"high\" pluginspage=\"http://www.macromedia.com/shockwave/download/index.cgi?P1_Prod_Version=ShockwaveFlash\" type=\"application/x-shockwave-flash\" width=\"'.(strlen('\\1')?'\\1':500).'\" height=\"'.(strlen('\\2')?'\\2':400).'\"/>\\3</object>'",
+						"<a href=\"\\1\" target=\"_blank\"><img src=\"pic/mid.gif\" border=\"0\" alt=\"背景音乐\"/></a><bgsound src=\"\\1\" loop=\"-1\"/>");
 
 	$strContent=preg_replace($search,$replace,$strContent);
     
@@ -273,23 +264,23 @@ e=1>\\4";
                 "'<I></I>'i"
                 );
 
-    $replace=array("'<A HREF=\"'.(strlen('\\1')?'\\1':'\\2').'\" TARGET=_blank>\\2</A>'",
-                "'<img align=absmiddle src=pic/email1.gif><A HREF=\"mailto:'.(strlen('\\1')?'\\1':'\\2').'\">\\2</A>'",
-				"<img align=absmiddle src=pic/url.gif border=0><a target=_blank href=\\0>\\0</a>",
+    $replace=array("'<a href=\"'.(strlen('\\1')?'\\1':'\\2').'\" target=\"_blank\">\\2</a>'",
+                "'<img align=\"absmiddle\" src=\"pic/email1.gif\"/><a href=\"mailto:'.(strlen('\\1')?'\\1':'\\2').'\">\\2</a>'",
+				"<img align=\"absmiddle\" src=\"pic/url.gif\" border=\"0\"/><a target=\"_blank\" href=\"\\0\">\\0</a>",
                 //WWW替换结果
                 //Email替换结果
-				"<table width='100%' border='0' cellspacing='0' cellpadding='6' class='".$abgcolor."'><td><b>以下内容为程序代码:</b><br>\\1</td></table>'i",
-				"<table style=\"width:100%\" cellpadding=5 cellspacing=1 class=TableBorder1><TR><TD class=".$abgcolor." width=\"100%\">\\1</td></tr></table><br>",
-				"<marquee width=90% behavior=alternate scrollamount=3>\\1</marquee>",
-				"<MARQUEE scrollamount=3>\\1</marquee>",
-                "<font \\1=\\2>\\3</font>",
-                "<div align=\\1>\\2</div>",
-                "<table width=\\2 ><tr><td style=\"filter:\\1(color=\\3, strength=\\4)\">\\5</td></tr></table>",
+				"<table width=\"100%\" border=\"0\" cellspacing=\"0\" cellpadding=\"6\" class=\"".$abgcolor."\"><td><b>以下内容为程序代码:</b><br/>\\1</td></table>'i",
+				"<table style=\"width:100%\" cellpadding=\"5\" cellspacing=\"1\" class=\"TableBorder1\"><tr><td class=\"".$abgcolor."\" width=\"100%\">\\1</td></tr></table><br/>",
+				"<marquee width=\"90%\" behavior=\"alternate\" scrollamount=\"3\">\\1</marquee>",
+				"<marquee scrollamount=\"3\">\\1</marquee>",
+                "<font \\1=\"\\2\">\\3</font>",
+                "<div align=\"\\1\">\\2</div>",
+                "<table width=\"\\2\" ><tr><td style=\"filter:\\1(color=\\3, strength=\\4)\">\\5</td></tr></table>",
 //              "<\\1>\\2</\\1>",
 				"<i>\\1</i>",
 				"<u>\\1</u>",
 				"<b>\\1</b>",
-                "<font size=\\1>\\2</font>",
+                "<font size=\"\\1\">\\2</font>",
                 ""
                 );
 
