@@ -33,4 +33,6 @@
 </center>
 <?php
 	}
+	@require("ad.php");
 ?>
+</html>
