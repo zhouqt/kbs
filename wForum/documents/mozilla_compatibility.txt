@@ -1,0 +1,87 @@
+wForum兼容mozilla需要注意的主要问题
+author: roy@zixia.net
+
+1. mozilla对class、ID等属性是大小写敏感的；而IE是大小写不敏感的。
+在设置和应用样式单时要注意class的大小写
+
+2。设置html对象的id时应同时设定name属性，且两个属性的值应完全相同。如：
+<div id="menuDiv" name="menuDiv">....</div>
+
+2。在网页<body>标签之后include browers.js文件:
+<script language="javascript" type="text/javascript" src="inc/browser.js"></script>
+
+3. browser.js文件主要函数、变量及功能:
+
+变量：
+isIE4 浏览器是否兼容IE4
+isW3C 浏览器是否兼容W3C标准（mozilla）
+
+函数：
+getRawObject(obj)  获取ID为obj的对象
+例:
+.....
+<input type="button" name="clickIt" id="clickIt" value="I'm button">
+.....
+<script language="javascript">
+...
+oButton=getRawObject("clickIt");
+oButton.value="I'm new button";
+...
+</script>
+.....
+
+
+函数:
+getObjectCollection(obj) 获取ID/Name为obj的一组对象
+例:
+.....
+<input type="checkbox" name="checkMe" id="checkMe" value="0">checkbox0
+<input type="checkbox" name="checkMe" id="checkMe" value="1">checkbox1
+<input type="checkbox" name="checkMe" id="checkMe" value="2">checkbox2
+.....
+<script language="javascript">
+...
+oCheckboxs=getObjectCollection("CheckMe");
+for (i=0;i<oCheckboxs.length;i++) {
+	alert(oCheckbox[i].value);
+}
+...
+</script>
+.....
+
+函数:
+getObjectStyle(obj) 获取ID为obj的对象的style
+例:
+menuDivStyle=getObjectStyle("menuDiv");
+menuDivStyle.visible="hidden";
+
+函数
+shiftTo(obj, x, y) 将ID为obj的对象移动到坐标(x,y)
+例:
+shiftTo("menuDiv",0,0);
+
+函数:
+shiftBy(obj, deltaX, deltaY) 将ID为obj的对象移动(deltaX,deltaY)
+
+函数:
+setZIndex(obj, zOrder) 将ID为obj的对象的zIndex值设为zOrder
+
+函数
+hide(obj)/show(obj) 隐藏/显示ID为obj的对象
+    var theObj = getObjectStyle(obj);
+    if (theObj) {
+        theObj.visibility = "visible";
+    }
+}
+  
+函数:
+function getObjectLeft(obj) 
+function getObjectTop(obj) 
+function getObjectWidth(obj)
+function getObjectHeight(obj) 
+获取ID为obj的对象的坐标和长宽等
+   
+函数:
+function getInsideWindowWidth( ) 
+function getInsideWindowHeight( ) 
+获取当前窗口的长和宽

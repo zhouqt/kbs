@@ -27,7 +27,7 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 }
 ?>
 <body topmargin=0 leftmargin=0>
-<script src="inc/browers.js"  language="javascript"></script>
+<script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 function disableEdit(){
 	if (isIE4) {

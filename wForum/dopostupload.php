@@ -5,7 +5,7 @@ require("inc/board.inc.php");
 html_init();
 ?>
 <body topmargin=0 leftmargin=0>
-<script src="inc/browers.js"  language="javascript"></script>
+<script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 	if (isIE4) {
 		parent.frmAnnounce.Submit.disabled=false;
