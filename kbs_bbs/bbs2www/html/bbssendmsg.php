@@ -50,7 +50,7 @@ login_init();
 <script>top.fmsg.location="bbsgetmsg.php"</script>
 <br/>
 <form name="form1">
-<input name="b1" type="button" onclick="history.go(-2)" value="[·µ»Ø]"/>
+<input name="b1" type="button" onclick="window.location.href='/bbsgetmsg.php?refresh';" value="[·µ»Ø]"/>
 </form>
 <?php
 		html_normal_quit();

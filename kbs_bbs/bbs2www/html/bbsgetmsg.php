@@ -32,18 +32,19 @@ A {color: #0000FF}
     <td align="left" valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
     <td align="right" valign="top" nowrap="nowrap"><a target="f3" href="/bbssendmsg.php?destid=<?php 
 echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>">[回讯息]</a> <a href="bbsgetmsg.php">[忽略]</a></td>
+echo $srcutmpnum; ?>">[回讯息]</a> <a href="bbsgetmsg.php?refresh">[忽略]</a></td>
   </tr>
 </form>
 </table>
 <script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "54,*,20";
 </script>
 <?php
-        } else {
+    } else {
+        $refresh_time = (isset($_GET["refresh"]))?60:600;
 		//no msg
 ?><script language="javascript">if (parent.viewfrm)	parent.viewfrm.rows = "0,*,20";
 </script>
-<meta http-equiv="Refresh" content="600; url=/bbsgetmsg.php">
+<meta http-equiv="Refresh" content="<?php echo $refresh_time; ?>; url=/bbsgetmsg.php">
 <?php
 		}
 		html_normal_quit();
