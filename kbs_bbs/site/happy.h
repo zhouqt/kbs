@@ -1,21 +1,21 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#define CONV_PASS
-#undef NINE_BUILD
-#undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
-#define HAVE_BIRTHDAY
-#define HAPPY_BBS
-#define HAVE_COLOR_DATE
-#define HAVE_TEMPORARY_NICK /* 允许临时改变昵称 */
-#define HAVE_FRIENDS_NUM /* 显示好友数目 */
-#define HAVE_REVERSE_DNS /* 反查域名 */
-#define FILTER
-#define CHINESE_CHARACTER
-#undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
-#define CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
-#undef MAIL2BOARD		/* 是否允许直接 mail to any board */
-#undef MAILOUT			/* 是否允许向站外主动发信 */
+#define CONV_PASS		1
+#define NINE_BUILD		0
+#define NEW_COMERS		0	/* 注册后在 newcomers 版自动发文 */
+#define HAVE_BIRTHDAY		1
+#define HAPPY_BBS		1
+#define HAVE_COLOR_DATE		1
+#define HAVE_TEMPORARY_NICK 	1	/* 允许临时改变昵称 */
+#define HAVE_FRIENDS_NUM 	1	/* 显示好友数目 */
+#define HAVE_REVERSE_DNS 	1	/* 反查域名 */
+#define FILTER			1
+#define CHINESE_CHARACTER	1
+#define ANTISPAM_MAILADDR	0	/* 转信后的文章隐藏真实 MAIL */
+#define CNBBS_TOPIC		1	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#define MAIL2BOARD		0	/* 是否允许直接 mail to any board */
+#define MAILOUT			0	/* 是否允许向站外主动发信 */
 
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.

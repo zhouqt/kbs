@@ -1,24 +1,24 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#define CONV_PASS
-#undef NINE_BUILD
-#define NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
-#undef HAVE_BIRTHDAY
-#undef HAPPY_BBS
-#define HAVE_COLOR_DATE
-#define HAVE_TEMPORARY_NICK
-#define HAVE_FRIENDS_NUM
-#define HAVE_REVERSE_DNS
-#define CHINESE_CHARACTER
+#define CONV_PASS		1
+#define NINE_BUILD		0
+#define NEW_COMERS		1	/* 注册后在 newcomers 版自动发文 */
+#define HAVE_BIRTHDAY		0
+#define HAPPY_BBS		0
+#define HAVE_COLOR_DATE		1
+#define HAVE_TEMPORARY_NICK	1
+#define HAVE_FRIENDS_NUM	1
+#define HAVE_REVERSE_DNS	1
+#define CHINESE_CHARACTER	1
 #define ANTISPAM_MAILADDR	"feeling-NOsmthSPAM-org"	/* 转信后的文章隐藏真实 MAIL */
-#define CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
-#define MAIL2BOARD		/* 是否允许直接 mail to any board */
-#define MAILOUT			/* 是否允许向站外主动发信 */
-#define BBS_SERVICE_DICT
+#define CNBBS_TOPIC		1	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#define MAIL2BOARD		1	/* 是否允许直接 mail to any board */
+#define MAILOUT			1	/* 是否允许向站外主动发信 */
+#define BBS_SERVICE_DICT	1
 
-#define SMTH
-#define FILTER
+#define SMTH			1
+#define FILTER			1
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in

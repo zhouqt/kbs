@@ -5,63 +5,63 @@
 #ifndef __SYS_DEFAULT_H_
 #define __SYS_DEFAULT_H_
 
-#ifndef NINE_BUILD /* 9#,3.0K专有代码*/
+#if NINE_BUILD == 0  /* 9#,3.0K专有代码*/
 #undef NINE_BUILD
 #endif
 
-#ifndef SMTH /*水木清华专有代码*/
-#define SMTH
+#ifndef SMTH /*水木清华专有代码,缺省使能*/
+#define SMTH 1
 #endif
 
-#ifndef HAPPY_BBS /* HAPPY BBS专有代码 */
+#if HAPPY_BBS == 0 /* HAPPY BBS专有代码 */
 #undef HAPPY_BBS
 #endif
 
-#ifndef NEW_COMERS
+#if NEW_COMERS == 0
 #undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
 #endif
 
-#ifndef HAVE_BIRTHDAY
+#if HAVE_BIRTHDAY == 0
 #undef HAVE_BIRTHDAY
 #endif
 
-#ifndef HAVE_COLOR_DATE
+#if HAVE_COLOR_DATE == 0
 #undef HAVE_COLOR_DATE
 #endif
 
-#ifndef HAVE_TEMPORARY_NICK
+#if HAVE_TEMPORARY_NICK == 0
 #undef HAVE_TEMPORARY_NICK
 #endif
 
-#ifndef HAVE_FRIENDS_NUM
+#if HAVE_FRIENDS_NUM == 0
 #undef HAVE_FRIENDS_NUM
 #endif
 
-#ifndef HAVE_REVERSE_DNS  /*反向dns解析 */
+#if HAVE_REVERSE_DNS == 0 /*反向dns解析 */
 #undef HAVE_REVERSE_DNS
 #endif
 
-#ifndef CHINESE_CHARACTER /*汉字整字处理*/
+#ifndef CHINESE_CHARACTER /*汉字整字处理,缺省使能*/
 #define CHINESE_CHARACTER
 #endif
 
-#ifndef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
+#if ANTISPAM_MAILADDR == 0	/* 转信后的文章隐藏真实 MAIL */
 #undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
 #endif
 
-#ifndef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#if CNBBS_TOPIC	== 0		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #undef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #endif
 
-#ifndef MAIL2BOARD		/* 是否允许直接 mail to any board */
+#if MAIL2BOARD == 0		/* 是否允许直接 mail to any board */
 #undef MAIL2BOARD		/* 是否允许直接 mail to any board */
 #endif
 
-#ifndef MAILOUT			/* 是否允许向站外主动发信 */
+#if MAILOUT == 0		/* 是否允许向站外主动发信 */
 #undef MAILOUT			/* 是否允许向站外主动发信 */
 #endif
 
-#ifndef BBS_SERVICE_DICT /* 词典功能 */
+#ifndef BBS_SERVICE_DICT	/* 词典功能 */
 #define BBS_SERVICE_DICT
 #endif
 

@@ -1,23 +1,23 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#undef NINE_BUILD
-#undef NEW_COMERS		/* 注册后在 newcomers 版自动发文 */
-#undef HAVE_BIRTHDAY
-#undef HAPPY_BBS
-#undef HAVE_COLOR_DATE
-#undef HAVE_TEMPORARY_NICK
-#undef HAVE_FRIENDS_NUM
-#undef HAVE_REVERSE_DNS
-#define CHINESE_CHARACTER
-#undef ANTISPAM_MAILADDR	/* 转信后的文章隐藏真实 MAIL */
-#undef CNBBS_TOPIC		/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
-#undef MAIL2BOARD		/* 是否允许直接 mail to any board */
-#undef MAILOUT			/* 是否允许向站外主动发信 */
+#define NINE_BUILD 		0
+#define NEW_COMERS 		0	/* 注册后在 newcomers 版自动发文 */
+#define HAVE_BIRTHDAY 		0
+#define HAPPY_BBS		0
+#define HAVE_COLOR_DATE		0
+#define HAVE_TEMPORARY_NICK	0
+#define HAVE_FRIENDS_NUM	0
+#define HAVE_REVERSE_DNS	0
+#define CHINESE_CHARACTER	1
+#define ANTISPAM_MAILADDR	0	/* 转信后的文章隐藏真实 MAIL */
+#define CNBBS_TOPIC		0	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
+#define MAIL2BOARD		0	/* 是否允许直接 mail to any board */
+#define MAILOUT			0	/* 是否允许向站外主动发信 */
 #define BBS_SERVICE_DICT
 
-#define SMTH
-#define FILTER
+#define SMTH			1
+#define FILTER			1
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
