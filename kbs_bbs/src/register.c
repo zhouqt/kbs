@@ -320,7 +320,7 @@ void check_register_info()
 
 
 //    if (strchr(curruserdata.email, '@') == NULL) {
-    if (strchr(currentmemo->ud.email, '@') == NULL) {
+    if (currentmemo->ud.email[0]==0) {
         clear();
         move(3, 0);
         prints("只有本站的合法公民才能够完全享有各种功能，");
