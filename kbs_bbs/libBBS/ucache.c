@@ -57,7 +57,7 @@ static int ucache_lock()
     return lockfd;
 }
 
-static int ucache_unlock(int fd)
+static void ucache_unlock(int fd)
 {
     flock(fd,LOCK_UN);
     close(fd);
@@ -81,9 +81,9 @@ static void ucache_hashinit()
         if(line[0]=='#')continue;
         j=0;
         ptr=0;
-        while(line[ptr]>='0' && line[ptr]<='9' || line[ptr]=='-'){
+        while((line[ptr]>='0' && line[ptr]<='9') || line[ptr]=='-'){
             data=ptr;
-            while(line[ptr]>='0' && line[ptr]<='9' || line[ptr]=='-')ptr++;
+            while((line[ptr]>='0' && line[ptr]<='9') || line[ptr]=='-')ptr++;
             line[ptr++]=0;
             if(i==0){
                 if(j>=26){
@@ -118,7 +118,7 @@ static void ucache_hashinit()
  */
 unsigned int ucache_hash_deep(const char* userid)
 {
-    int n1,n2,n,len;
+    int n1,n2,n;
     ucache_hashtable * hash;
     ucache_hashtable * usage;
 
@@ -293,9 +293,6 @@ int flush_ucache()
 int load_ucache()
 {
     int iscreate;
-    struct stat st ;
-    int         ftime;
-    time_t      now;
     int     usernumber,i;
     int passwdfd;
 	int prev;
@@ -362,16 +359,6 @@ resolve_ucache()
     }        
 }
 
-static void ucache_setreadonly(int readonly)
-{
-    int iscreate;
-    shmdt(uidshm);
-    if (readonly)
-        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 1, uidshm); 
-    else
-        uidshm = (struct UCACHE*)attach_shm1( "UCACHE_SHMKEY", 3696, sizeof( *uidshm ) ,&iscreate , 0, uidshm); 
-}
-
 /*---	period	2000-10-20	---*/
 int getuserid(char * userid, int uid)
 {
@@ -400,7 +387,7 @@ setuserid_internal( int     num,const char    *userid) /* 设置user num的id为user
 	      			find=uidshm->next[find-1];
 	      			i++;
 	      			if (i>MAXUSERS) {
-		          	    bbslog("3system","UCACHE:uhash loop???! find %d,%s",num,userid);
+		          	    bbslog("3system","UCACHE:uhash loop! find %d,%s",num,userid);
 		          	    exit(0);
 	      			}
 	      	  }
@@ -470,7 +457,6 @@ void setuserid(int num,const char * userid)
 int
 searchnewuser() /* 找cache中 空闲的 user num */
 {
-    register int num, i;
     if (uidshm->hashhead[0]) return uidshm->hashhead[0];
     if (uidshm->number<MAXUSERS) return uidshm->number+1;
     return 0;
@@ -647,10 +633,8 @@ int getnewuserid2(char * userid)
 
 int getnewuserid(char* userid)
 {
-    struct userec utmp, zerorec;
-    struct stat st;
-    int         fd, size, val, i;
-    char    tmpstr[30];
+    struct userec utmp;
+    int         fd, i;
     time_t system_time;
 
     system_time = time( NULL );
