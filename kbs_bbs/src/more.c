@@ -937,13 +937,14 @@ int draw_content_more(char *ptr, int size, char *fn)
     extern int t_lines;
     struct MemMoreLines l;
     int i, ch = 0, curr_line, last_line, change;
+    bool header=true;
 
     displayflag = 0;
     shownflag = 1;
     init_MemMoreLines(&l, ptr, size);
 
     move(t_lines/2, 0);
-    prints("\033[34m！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！！");
+    prints("\033[34m！！！！！！！！！！！！！！！！！！圓誓完笥！！！！！！！！！！！！！！！！！");
 //    move(t_lines/2+1, 0);
     prints("\n\033[m");
     curr_line = l.curr_line;
@@ -951,7 +952,13 @@ int draw_content_more(char *ptr, int size, char *fn)
         if (shownflag) {
             displayflag = 0;
         }
-        mem_printline(l.curr, l.currlen, fn, l.currty);
+	if (!header||(!((i==0)&&!strncmp(l.curr,"窟佚繁: ",8))&&
+	    !((i==1)&&!strncmp(l.curr,"炎  籾: ",8))&&
+	    !((i==2)&&!strncmp(l.curr,"窟佚嫋: ",8))&&
+	    !((i==3)&&(l.currlen==0)))) {
+            mem_printline(l.curr, l.currlen, fn, l.currty);
+	    header=false;
+	}
         i++;
         if (i >= t_lines - t_lines/2 - 2)
             break;
