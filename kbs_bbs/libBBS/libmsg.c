@@ -288,7 +288,7 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed)
 
 	mysql_escape_string(newmsgbuf, msgbuf, strlen(msgbuf));
 
-	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d,0);",uident, head->id, head->sent, newmsgbuf, readed );
+	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
 #ifdef BBSMAIN
@@ -948,6 +948,7 @@ int DoCheck(char * n, char * c)
 int DoSendSMS(char * n, char * d, char * c)
 {
     int count=0;
+    int ret;
     struct header h;
     struct BBSSendSMS h1;
     int number;
@@ -970,7 +971,9 @@ int DoSendSMS(char * n, char * d, char * c)
     sendtosms(&h, sizeof(h));
     sendtosms(&h1, sizeof(h1));
     sendtosms(c, strlen(c)+1);
-    return wait_for_result();
+    ret= wait_for_result();
+    newbbslog(BBSLOG_SMS,"send %s for %s src %s ret %d",c,d,n,ret);
+    return ret;
 }
 
 int DoReplyCheck(char * n, unsigned int sn, char isSucceed)
@@ -1101,7 +1104,7 @@ int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t sta
 		return -1;
 	}
 
-	sprintf(sql,"SELECT * FROM smsmsg WHERE userid=\"%s\" and deleted=0", userid );
+	sprintf(sql,"SELECT * FROM smsmsg WHERE userid=\"%s\"", userid );
 
 	if(dest && *dest){
 		snprintf(qtmp, 99, " AND dest=\"%s\"", dest);

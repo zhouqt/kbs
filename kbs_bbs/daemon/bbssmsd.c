@@ -93,7 +93,7 @@ void loginas(char* user, char* pass)
     long2byte(sn++, h.SerialNo);
     long2byte(sizeof(p), h.BodyLength);
     long2byte(0, h.pid);
-    printf("send CMD_LOGIN\n");
+    newbbslog(BBSLOG_SMS,"send CMD_LOGIN");
     write(sockfd, &h, sizeof(h));
     write(sockfd, &p, sizeof(p));
 }
@@ -117,6 +117,7 @@ int sendtouser(struct GWSendSMS * h, char* buf)
     strncpy(hh.id, h->SrcMobileNo, IDLEN+2);
     hh.id[IDLEN+1] = 0;
 
+    newbbslog(BBSLOG_SMS,"receive %s for %s",buf,uin->userid);
     if(uin == NULL){
 		hh.topid = -1;
 #if HAVE_MYSQL == 1
@@ -150,20 +151,20 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
     if (read_user_memo(uident, &pum)>0) {
         memcpy(&ud,&pum->ud,sizeof(ud));
         if (strncmp(ud.mobilenumber, h->MobileNo, MOBILE_NUMBER_LEN-1)) {
-            bbslog("1user","Bind error:mobilephone %s for %s",ud.mobilenumber,uident);
+            newbbslog(BBSLOG_SMS,"Bind error:mobilephone %s for %s",ud.mobilenumber,uident);
             return 2;
         }
         if(h->Bind==0) {
             pum->ud.mobileregistered=true;
             ud.mobileregistered=true;
             sprintf(buf, "你的帐号已经和%s绑定！",ud.mobilenumber);
-            bbslog("1user","Bind mobilephone %s for %s",ud.mobilenumber,uident);
+            newbbslog(BBSLOG_SMS,"Bind mobilephone %s for %s",ud.mobilenumber,uident);
         }
         else {
             pum->ud.mobileregistered=false;
             ud.mobileregistered=false;
             sprintf(buf, "你的帐号已经取消和%s的绑定！",ud.mobilenumber);
-            bbslog("1user","UnBind mobilephone %s for %s",ud.mobilenumber,uident);
+            newbbslog(BBSLOG_SMS,"UnBind mobilephone %s for %s",ud.mobilenumber,uident);
         }
 	end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
        write_userdata(uident, &ud);
@@ -188,7 +189,7 @@ void processremote()
     sprintf(fn, "tmp/%d.res", pid);
     switch(h.Type) {
         case CMD_OK:
-            printf("get CMD_OK\n");
+            newbbslog(BBSLOG_SMS,"get CMD_OK");
             if(pid) {
                 fp=fopen(fn, "w");
                 fprintf(fp, "1\n0");
@@ -205,7 +206,7 @@ void processremote()
 	case CMD_ERR_NO_SUCHMOBILE:
 	case CMD_ERR_REGISTERED:
 	case CMD_EXCEEDMONEY_LIMIT:
-	    printf("get CMD_ERR\n");
+	    newbbslog(BBSLOG_SMS,"get CMD_ERR");
             if(pid) {
                 fp=fopen(fn, "w");
                 fprintf(fp, "0\n%d", h.Type);
@@ -217,7 +218,6 @@ void processremote()
                struct header* pheader;
                struct ReplyBindPacket rp;
                pheader=(struct header*)buf;
-    	        printf("get CMD_REQUIRE\n");
                read(sockfd, &h1, sizeof(h1));
                rp.isSucceed = requiretouser(&h1, byte2long(h.SerialNo));
                //Copy a reth struct in reply packet
@@ -225,28 +225,23 @@ void processremote()
                reth.Type = CMD_REPLY;
                long2byte(sizeof(rp), reth.BodyLength);
                
-               printf("send CMD_REPLY  %d\n",rp.isSucceed);
                write(sockfd, &reth, sizeof(reth));
 			   write(sockfd, &rp,sizeof(rp));
             }
             break;
         case CMD_GWSEND:
-	    printf("get CMD_GWSEND\n");
             read(sockfd, &h2, sizeof(h2));
             read(sockfd, buf, byte2long(h2.MsgTxtLen));
             buf[byte2long(h2.MsgTxtLen)] = 0;
             if(sendtouser(&h2, buf)) {
                 reth.Type = CMD_ERR;
-                printf("send CMD_ERR\n");
             }
             else {
                 reth.Type = CMD_OK;
-                printf("send CMD_OK\n");
             }
             write(sockfd, &reth, sizeof(reth));
             break;
 	case CMD_LINK:
-	    printf("get CMD_LINK\n");
 	    break;
     }
 }
@@ -255,7 +250,6 @@ int keepLink(){
 struct header head;
 head.Type=CMD_LINK;
 long2byte(0,head.BodyLength);
-printf("send CMD_LINK\n");
 write(sockfd,&head,sizeof(head));
 
 }
@@ -287,31 +281,31 @@ void processbbs()
             long2byte(sn++, h.SerialNo);
         switch(h.Type) {
             case CMD_REG:
-                printf("send CMD_REG\n");
+                newbbslog(BBSLOG_SMS,"send CMD_REG");
                 getbuf(&h1, sizeof(h1));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h1, sizeof(h1));
                 break;
             case CMD_CHECK:
-                printf("send CMD_CHECK\n");
+                newbbslog(BBSLOG_SMS,"send CMD_CHECK");
                 getbuf(&h2, sizeof(h2));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h2, sizeof(h2));
                 break;
             case CMD_UNREG:
-                printf("send CMD_UNREG\n");
+                newbbslog(BBSLOG_SMS,"send CMD_UNREG");
                 getbuf(&h3, sizeof(h3));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h3, sizeof(h3));
                 break;
             case CMD_REPLY:
-                printf("send CMD_REPLY\n");
+                newbbslog(BBSLOG_SMS,"send CMD_REPLY");
                 getbuf(&h5, sizeof(h5));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h5, sizeof(h5));
                 break;
             case CMD_BBSSEND:
-                printf("send CMD_BBSSEND\n");
+                newbbslog(BBSLOG_SMS,"send CMD_BBSSEND");
                 getbuf(&h4, sizeof(h4));
                 write(sockfd, &h, sizeof(h));
                 write(sockfd, &h4, sizeof(h4));
@@ -332,7 +326,7 @@ void processbbs()
 int sms_init_mysql(){
 	mysql_init(&mysql_s);
 	if (! my_connect_mysql(&mysql_s) ){
-		printf("%s\n",mysql_error(&mysql_s));
+		newbbslog(BBSLOG_SMS,"connect mysql error:%s",mysql_error(&mysql_s));
 		mysql_close(&mysql_s);
 		exit(0);
 	}
@@ -384,7 +378,7 @@ int main()
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) {
         close(sockfd);
         bbslog("3error","smsd:Unable to connect.\n");
-        printf("Unable to connect.\n");
+        newbbslog(BBSLOG_SMS,"Unable to connect.");
 	sleep(5);
 	continue;
 	/*
