@@ -217,21 +217,9 @@ int user_perm(struct userec *x, int level);
 
 int getusernum(char *id);
 
-#ifndef SMTH
-struct userec *getuser(char *id);
-#else /* SMTH */
-int getuser(const char *userid,struct userec** user);
-#endif /* SMTH */
-
-int checkpasswd(const char *pw_crypted, const char *pw_try);
-
 int checkuser(char *id, char *pw);
 
-int count_id_num(char *id);
-
 int count_online();
-
-int count_online2();
 
 int loadfriend(char *id);
 
@@ -330,5 +318,9 @@ char * setmailpath( char *buf, char *userid );
 int get_unifile(char *filename, char *key, int mode);
 
 time_t file_time(char *file);
+
+int count_user_online(char *uid);
+
+int get_curr_utmpent();
 
 #endif /* BBSLIB_H */
