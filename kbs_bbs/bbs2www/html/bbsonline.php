@@ -96,7 +96,7 @@
 ?>
 <br>
 <?php
-	if( file_exists( "/home0/www/htdocs".$pngurl ) ){
+	if( file_exists( $_SERVER["DOCUMENT_ROOT"].$pngurl ) ){
 ?>
 <img src="<?php echo $pngurl;?>"></img>
 <?php
