@@ -208,6 +208,30 @@ MYSQL * my_connect_mysql(MYSQL *s){
 			    sysconf_eval("MYSQLPORT",3306), sysconf_str("MYSQLSOCKET"), 0);
 }
 
+#if HAVE_MYSQL_SMTH == 1
+MYSQL * my_connect_mysql_blog(MYSQL *s){
+	
+    return mysql_real_connect(s, 
+                            sysconf_str("MYSQLBLOGHOST"),
+                            sysconf_str("MYSQLBLOGUSER"),
+			    sysconf_str("MYSQLBLOGPASSWORD"),
+			    sysconf_str("MYSQLBLOGDATABASE"),
+			    sysconf_eval("MYSQLBLOGPORT",3306), sysconf_str("MYSQLBLOGSOCKET"), 0);
+}
+
+
+#if HAVE_MYSQL_SMTH == 1
+MYSQL * my_connect_mysql_dict(MYSQL *s){
+	
+    return mysql_real_connect(s, 
+                            sysconf_str("MYSQLDICTHOST"),
+                            sysconf_str("MYSQLDICTUSER"),
+			    sysconf_str("MYSQLDICTPASSWORD"),
+			    sysconf_str("MYSQLDICTDATABASE"),
+			    sysconf_eval("MYSQLDICTPORT",3306), sysconf_str("MYSQLDICTSOCKET"), 0);
+}
+
+
 int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed, session_t* session)
 {
 	MYSQL s;
