@@ -31,7 +31,7 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			
 			);
 	
-	$query = "SELECT users.visitcount,description,corpusname,username,created,subject,body,htmltag,nodes.uid,nid,tid,theme,nodescount ".
+	$query = "SELECT users.visitcount,description,corpusname,username,created,subject,body,htmltag,nodes.uid,nid,tid,users.theme,nodescount ".
 	         "FROM nodes,users ".
 	         "WHERE `access` = 0 ".
 	         "   AND nodes.uid = users.uid ".
@@ -404,6 +404,35 @@ function getRecommendNodesByTopic($link,$topic,&$nodes)
         $nodes[] = $rows;
     mysql_free_result($result);
     return true;
+}
+
+function getSectionHotNodes($link,$section,$timeLong,$num)
+{
+    global $pcconfig;
+    if (!$section || !$pcconfig["SECTION"][$section])
+        return false;    
+    $query = "SELECT nodes.uid , nid , subject , username , corpusname  ".
+             " FROM nodes,users ".
+             " WHERE nodes.uid = users.uid ".
+             "   AND nodetype = 0 ".
+             "   AND pctype <= 4 ".
+             "   AND access = 0 ".
+             "   AND type = 0 ".
+             "   AND recommend != 2 ".
+             "   AND nodes.theme = '".addslashes($section)."'".
+             "   AND created > ".date("YmdHis",time()- $timeLong ).
+             "   AND nodes.visitcount != 0 ".
+             " ORDER BY nodes.visitcount DESC , nid DESC ".
+             " LIMIT 0 , ".intval($num).";";
+    $result = mysql_query($query,$link);	
+    exit ('r='.$query);
+	if (mysql_num_rows($result)==0)
+	    return false;
+	$nodes = array();
+	while($rows = mysql_fetch_array($result))
+		$nodes[] = $rows;
+	mysql_free_result($result);
+	return $nodes;
 }
 
 

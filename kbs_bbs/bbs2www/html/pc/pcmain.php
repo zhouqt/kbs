@@ -329,28 +329,10 @@ function pcmain_section_top_view()
 	$othersections = array();
 	foreach( $sections as $section )
 	{
-		$query = "SELECT nodes.uid , nid , subject , theme , username , corpusname  ".
-			 "FROM nodes , users ".
-			 "WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > ".date("YmdHis",time()- _PCMAIN_TIME_LONG_ )." AND theme = '".$section."' ".
-			 "GROUP BY nodes.uid ".
-			 "ORDER BY nodes.visitcount DESC , nid DESC ".
-			 "LIMIT 0 , 12 ;";
-		$result = mysql_query($query,$link);
-		$num_rows = mysql_num_rows($result);
-		if($num_rows)
+		$nodes = getSectionHotNodes($link,$section,_PCMAIN_TIME_LONG_,_PCMAIN_SECTION_NODES_);
+		if($nodes)
 		{
-			$nodes = array();
-			$totallength = 0;
-			while($rows = mysql_fetch_array($result) )
-			{
-				if( $totallength + strlen( $rows[subject] ) > 65 )
-					continue;
-				$nodes[] = $rows;
-				$totallength += strlen( $rows[subject] );
-			}
-			mysql_free_result($result);
-			//$subjectlength = ( $totallength > 65 )?13:65;
-			$nodesNum = max(1,count($nodes) - 1);
+		    $nodesNum = sizeof($nodes);
 ?>
 <tr><td align="left">
 [<strong><a href="/pc/pcsec.php?sec=<?php echo $section; ?>"><font class=low2><?php echo $pcconfig["SECTION"][$section]; ?></font></a></strong>]&nbsp;
@@ -359,9 +341,6 @@ function pcmain_section_top_view()
 			{
 				echo "<a href=\"/pc/pccon.php?id=".$nodes[$i][0]."&nid=".$nodes[$i][nid]."&s=all\">".
 				     "<span title=\"".html_format($nodes[$i][subject])."(".$nodes[$i][username]."'s BLOG:".html_format($nodes[$i][corpusname]).")\">";
-				//$subject = substr( $nodes[$i][subject] , 0 , $subjectlength );
-				//if( strlen( $nodes[$i][subject] ) > $subjectlength ) $subject .= "...";
-				//echo html_format($subject)."</span></a>";
 				echo html_format($nodes[$i][subject])."</span></a>";
 				if( $i < $nodesNum - 1 ) echo " | ";
 			}

@@ -213,7 +213,7 @@
 				else
 				    $convert_encoding = '';
 				    
-				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"],$convert_encoding,0,0);
+				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["theme"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"],$convert_encoding,0,0);
 				$error_alert = "";
 				switch($ret)
 				{
@@ -317,6 +317,18 @@
 		}
 ?>
 	</select>
+	&nbsp;&nbsp;&nbsp;
+	主题
+	<select name="theme" class="f1">
+<?php
+    while (list ($key,$val) = each ($pcconfig["SECTION"])) {
+        if ($key == $pc["THEM"])
+            echo "<option value=\"".$key."\" selected>".html_format($val)."</option>";
+        else
+            echo "<option value=\"".$key."\">".html_format($val)."</option>";
+    }
+?>	
+	</select> 
 	</td>
 </tr>
 <tr>
@@ -423,7 +435,7 @@
 				$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
 				$trackback = ($_POST["trackback"]==1)?1:0;
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' AND nodetype = 0;";
+				$query = "UPDATE nodes SET `theme` = '".addslashes($_POST["theme"])."'  , `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' AND nodetype = 0;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 				if($rows[subject]==$_POST["subject"])
@@ -498,6 +510,16 @@
 		}
 ?>
 	</select>
+	&nbsp;&nbsp;&nbsp;主题
+	<select name="theme" class="f1">
+<?php
+    while (list ($key,$val) = each ($pcconfig["SECTION"])) {
+        if ($key == $pc["THEM"])
+            echo "<option value=\"".$key."\" selected>".html_format($val)."</option>";
+        else
+            echo "<option value=\"".$key."\">".html_format($val)."</option>";
+    }
+?>	
 	</td>
 </tr>
 <tr>

@@ -333,6 +333,7 @@
 		更新时间：<br/>
 		<?php echo time_format($rows[changed]); ?><br/>
 		浏览：<?php echo $rows[visitcount]; ?>次<br>
+		主题：<a href="pcsec.php?sec=<?php echo $rows[theme]; ?>"><?php echo html_format($pcconfig["SECTION"][$rows[theme]]); ?></a><br/>
 		<?php
 			if($rows[comment]==0)
 				echo "锁定主题<br>";

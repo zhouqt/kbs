@@ -1021,7 +1021,7 @@ function pc_detect_trackbackpings($body,&$detecttbps)
 **         -8 :引用通告目标服务器连接超时
 **         -9 :被审核
 */
-function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$subject,$body,$nodeType,$autodetecttbp,$tbpUrl,$tbpArt,$convert_encoding,$filtered,$address)
+function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$theme,$subject,$body,$nodeType,$autodetecttbp,$tbpUrl,$tbpArt,$convert_encoding,$filtered,$address)
 {
 	global $pcconfig,$support_encodings,$sending_encoding;
 	
@@ -1096,15 +1096,20 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     	    $body = pc_groupwork_addhead($pc,$body,$htmlTag);
     	}
     }
-	$body = addslashes($body);
+    
+    if (!$pcconfig["SECTION"][$theme])
+        $theme = "others";
+    
+    $theme = addslashes($theme);
+    $body = addslashes($body);
 	if (!$address) $address = $_SERVER["REMOTE_ADDR"];
 	//日志入库
 	if ($into_filter)
-	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`,`tbpencoding`) ".
-	   	     "VALUES ( '".$pid."', 0 , '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."','".addslashes($convert_encoding)."');";
+	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`,`tbpencoding`,`theme`) ".
+	   	     "VALUES ( '".$pid."', 0 , '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."','".addslashes($convert_encoding)."','".$theme."');";
 	else
-	    $query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) ".
-	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($address)."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."');";
+	    $query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`theme`) ".
+	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($address)."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".$theme."');";
 	
 	if(!mysql_query($query,$link))
 		return -5;

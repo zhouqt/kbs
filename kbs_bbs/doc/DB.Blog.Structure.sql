@@ -56,6 +56,7 @@ CREATE TABLE `filter` (
   `tbp_url` varchar(255) NOT NULL default '',
   `tbp_art` varchar(255) NOT NULL default '',
   `auto_tbp` int(1) NOT NULL default '0',
+  `theme` varchar(20) NOT NULL default '',
   PRIMARY KEY  (`fid`),
   KEY `pid` (`pid`),
   KEY `created` (`changed`),
@@ -125,6 +126,7 @@ CREATE TABLE `nodes` (
   `nodetype` int(1) NOT NULL default '0',
   `recuser` varchar(12) NOT NULL default '',
   `rectopic` varchar(20) NOT NULL default '',
+  `theme` varchar(20) NOT NULL default 'others',
   PRIMARY KEY  (`nid`),
   KEY `pid` (`pid`),
   KEY `created` (`changed`),
@@ -135,6 +137,7 @@ CREATE TABLE `nodes` (
   KEY `trackbackcount` (`trackbackcount`),
   KEY `visitcount` (`visitcount`),
   KEY `commentcount` (`commentcount`),
+  KEY `theme` (`theme`),
   FULLTEXT KEY `body` (`body`),
   FULLTEXT KEY `subject` (`subject`)
 ) TYPE=MyISAM COMMENT='ндуб╠М' ;

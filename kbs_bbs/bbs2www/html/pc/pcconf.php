@@ -71,6 +71,7 @@ define("_PCMAIN_NODES_NUM_" , 20 );     //显示的日志数目
 define("_PCMAIN_USERS_NUM_" , 20 );     //显示的用户数目
 define("_PCMAIN_REC_NODES_" , 40 );     //推荐日志数目
 define("_PCMAIN_NEW_NODES_" , 40 );     //新日志数目
+define("_PCMAIN_SECTION_NODES_" , 5 );     //分类日志数
 define("_PCMAIN_ANNS_NUM_"  , 6  );     //公告数目
 define("_PCMAIN_RECOMMEND_" , 1   );  //博客推荐
 //define("_PCMAIN_RECOMMEND_BLOGGER_" , "SYSOP"); //固定推荐
