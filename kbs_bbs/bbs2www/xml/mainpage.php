@@ -81,7 +81,7 @@ while($board = array_shift($boards))
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <li class="default">
-<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a> &nbsp;&nbsp;[作者: <a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a> &nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 }
 ?>
