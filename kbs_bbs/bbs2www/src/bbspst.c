@@ -83,11 +83,11 @@ int main()
             }
 			printf("\n【 在 %s 的大作中提到: 】\n", quser);
             for (i = 0; i < 3; i++) {
-                if (fgets(buf, 500, fp) == 0)
+                if (attach_fgets(buf, 500, fp) != 0)
                     break;
             }
             while (1) {
-                if (fgets(buf, 500, fp) == 0)
+                if (attach_fgets(buf, 500, fp) != 0)
                     break;
                 if (!strncmp(buf, ": 【", 4))
                     continue;
