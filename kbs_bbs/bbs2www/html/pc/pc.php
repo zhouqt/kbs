@@ -164,13 +164,21 @@
 <p align="center" class="f2">
 <?php echo BBS_FULL_NAME; ?>个人文集
 </p>
+<hr size=1>
+<p class="f1">
+[<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的文集</a>]
+[<a href="pcnew.php">最新文章列表</a>]
+<a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
+</p>
 <?php
 	display_user_list($link,$listorder,$listorder1,$char,$startno,$pagesize);
 	display_navigation_bar($totalpage,$pageno,$char,$listorder,$listorder1);
 	display_char_bar($char);
 ?>
+<hr size=1>
 <p class="f1">
 [<a href="pcsearch.php?keyword=<?php echo $currentuser["userid"]; ?>&exact=1&key=u">自己的文集</a>]
+[<a href="pcnew.php">最新文章列表</a>]
 <a href="rssnew.php" target="_blank"><img src="images/xml.gif" border="0" align="absmiddle" alt="XML"></a>
 </p>
 <form action="pcsearch.php" method="get" onsubmit="if(this.keyword.value==''){alert('请输入关键字');return false;}">

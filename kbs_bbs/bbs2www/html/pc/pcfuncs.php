@@ -20,6 +20,7 @@ $db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
 */
 $pcconfig["LIST"] = 20;
 $pcconfig["HOME"] = BBS_HOME;
+$pcconfig["BBSNAME"] = BBS_FULL_NAME;
 $pcconfig["ETEMS"] = 20;
 $pcconfig["NEWS"] = 20;
 $pcconfig["SITE"] = "www.smth.edu.cn";
@@ -317,9 +318,12 @@ function pc_db_close($link)
 	@mysql_close($link);
 }
 
-function pc_load_infor($link,$userid,$uid=0)
+function pc_load_infor($link,$userid=FALSE,$uid=0)
 {
-	$query = "SELECT * FROM users WHERE `username`= '".$userid."' OR `uid` = '".$uid."' LIMIT 0,1;";
+	if($userid)
+		$query = "SELECT * FROM users WHERE `username`= '".$userid."'  LIMIT 0,1;";
+	else
+		$query = "SELECT * FROM users WHERE `uid` = '".$uid."' LIMIT 0,1;";
 	$result = mysql_query($query,$link);
 	$rows = mysql_fetch_array($result);
 	mysql_free_result($result);
@@ -336,6 +340,7 @@ function pc_load_infor($link,$userid,$uid=0)
 			"TIME" => $rows[createtime],
 			"VISIT" => $rows[visitcount],
 			"MODIFY" => $rows[modifytime],
+			"NODES" => $rows[nodescount],
 			"STYLE" => pc_style_array($rows[stype]),
 			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
 			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage]))
