@@ -205,7 +205,11 @@ int main(int argc,char* argv[])
 
     fprintf(fp, "\n\x1b[36m    ┌——————————— 超过 \033[01m\033[37m1000\033[00m\033[36m 将不显示千位数字 ———————————┐\n");
     for (i = max / item + 1; i >= 0; i--) {
-        fprintf(fp, "\x1b[34m%4d\x1b[36m│\x1b[33m", (i) * item);
+        if ((i) * item >= 10000) {
+            fprintf(fp, "\x1b[34m%-6d\x1b[33m", (i) * item);
+        } else {
+            fprintf(fp, "\x1b[34m%4d\x1b[36m│\x1b[33m", (i) * item);
+        }
         for (j = 0; j < 24; j++) {
             if ((item * (i) > st.no[j]) && (item * (i - 1) <= st.no[j]) && st.no[j]) {
                 /* 每一千换一种颜色 Czz 020507 */
