@@ -94,9 +94,10 @@ hog or anything, but if you don't want it...
 /* 
    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
 */
+#ifndef NINE_BUILD
 #define IDLE_TIMEOUT    (60*20) 
 #define MONITOR_TIMEOUT (60*20) 
-
+#endif 
 /* 
    This defines the set of characters disallowed in chat id's. These
    characters get translated to underscores (_) when someone tries to use
