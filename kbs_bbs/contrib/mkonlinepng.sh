@@ -8,10 +8,12 @@ cd /home/bbs
 nowyear=`date '+%Y'`
 nowmonth=`date '+%m'`
 nowday=`date '+%d'`
-declare -i intmonth=$nowmonth
-declare -i intday=$nowday
-shortmonth=`echo $intmonth`
-shortday=`echo $intday`
+#declare -i intmonth=$nowmonth
+#declare -i intday=$nowday
+#shortmonth=`echo $intmonth`
+#shortday=`echo $intday`
+shortday=`expr 0 + $nowday`
+shortmonth=`expr 0 + $nowmonth`
 
 if test ! -d "$OUTPUTDIR/$nowyear/$nowmonth"
 then
