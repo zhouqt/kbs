@@ -79,7 +79,7 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 	if( $articles[1]["ATTACHPOS"] == 0)
 	{
 ?>
-[<a href="/cgi-bin/bbs/bbsfwd?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">×ª¼Ä</a>]
+[<a href="/bbsfwd.php?board=<?php echo $brd_encode; ?>&id=<?php echo $articles[1]["ID"]; ?>">×ª¼Ä</a>]
 [<a href="/cgi-bin/bbs/bbsccc?board=<?php echo $brd_encode; ?>&file=<?php echo $articles[1]["FILENAME"]; ?>">×ªÌù</a>]
 <?php
 	}

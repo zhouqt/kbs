@@ -84,6 +84,7 @@ static PHP_FUNCTION(bbs_getfriends);
 static PHP_FUNCTION(bbs_countfriends);
 static PHP_FUNCTION(bbs_delete_friend);
 static PHP_FUNCTION(bbs_add_friend);
+static PHP_FUNCTION(bbs_doforward);
 static PHP_FUNCTION(bbs_get_records_from_id);
 static PHP_FUNCTION(bbs_get_records_from_num);
 static PHP_FUNCTION(bbs_get_filename_from_num);
@@ -228,6 +229,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_countfriends, NULL)
         PHP_FE(bbs_delete_friend, NULL)
         PHP_FE(bbs_add_friend, NULL)
+        PHP_FE(bbs_doforward, NULL)
         PHP_FE(bbs_get_records_from_id, NULL)
         PHP_FE(bbs_get_records_from_num, NULL)
         PHP_FE(bbs_get_filename_from_num, NULL)
@@ -2137,6 +2139,60 @@ static PHP_FUNCTION(bbs_delete_friend)
         }
     } else{
 		RETURN_LONG(2);
+	}
+}
+
+static PHP_FUNCTION(bbs_doforward)
+{
+    char *board,*filename, *tit, *target;
+    long board_len,filename_len,tit_len,target_len;
+    bcache_t bh;
+	char fname[STRLEN];
+	long big5,noansi;
+    struct boardheader *bp;
+	char title[512];
+	struct userec *u;
+    
+	if (ZEND_NUM_ARGS() != 6 || zend_parse_parameters(6 TSRMLS_CC, "ssssll", &board, &board_len,&filename, &filename_len, &tit, &tit_len, &target, &target_len, &big5, &noansi) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+    }
+
+    if( target[0] == 0 )
+        RETURN_LONG(-3);
+    if( !strchr(target, '@') ){
+        if( HAS_PERM(currentuser, PERM_DENYMAIL) )
+            RETURN_LONG(-5);
+        if( getuser(target,&u) == 0)
+            RETURN_LONG(-6);
+        big5=0;
+        noansi=0;
+    }
+
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_LONG(-4);
+    }
+    if (getboardnum(board, &bh) == 0)
+        RETURN_LONG(-1); //"错误的讨论区";
+    if (!check_read_perm(currentuser, &bh))
+        RETURN_LONG(-2); //您无权阅读本版;
+
+    setbfile(fname, bp->filename, filename);
+
+    if( !file_exist(fname) )
+        RETURN_LONG(-7);
+
+    snprintf(title, 511, "%.50s(转寄)", tit);
+
+    if( !strchr(target, '@') ){
+        mail_file(currentuser->userid, fname, u->userid, title,0, NULL);
+		RETURN_LONG(1);
+	}else{
+		if( big5 == 1)
+			conv_init();
+		if( bbs_sendmail(fname, title, target, 0, big5, noansi) == 0){
+			RETURN_LONG(1);
+		}else
+			RETURN_LONG(-10);
 	}
 }
 
