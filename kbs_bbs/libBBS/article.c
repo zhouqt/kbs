@@ -607,6 +607,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #ifdef FILTER
     char oldpath[50], newpath[50];
     int filtered;
+    struct boardheader* bh;
 #endif
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
@@ -615,9 +616,11 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #ifdef FILTER
 	setbfile(oldpath, boardname, fh->filename);
     filtered=0;
-	if ((bcache[i].level & PERM_POSTMASK || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD))
+    bh=getbcache(boardname);
+    
+	if (((bh&&bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD))
 	{
-	    if (check_badword(oldpath)) {
+	    if (check_badword_str(fh->title,strlen(fh->title))||check_badword(oldpath)) {
 			/* FIXME: There is a potential bug here. */
 			setbfile(newpath, FILTER_BOARD, fh->filename);
 			f_mv(oldpath, newpath);

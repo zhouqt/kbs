@@ -791,7 +791,7 @@ int write_file(filename, saveheader)
 #endif
 
 #ifdef FILTER
-    if (((abort[0] != 'a')||(abort[0] != 'e'))&&
+    if (((abort[0] != 'a')&&(abort[0] != 'e'))&&
     	(uinfo.mode==EDIT)) {
 	while (p != NULL) {
 	    if(check_badword_str(p->data, sizeof(p->data))) {
