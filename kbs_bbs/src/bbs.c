@@ -2313,7 +2313,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         strcpy(sbuf+strlen(sbuf), upload);
 #ifdef FILTER
         if(returnvalue==2)
-            setbfile(filepath, FILTER_BOARD, postfile.filename);
+            setbfile(filepath, FILTER_BOARD, post_file.filename);
 #endif
         add_attach(filepath, sbuf, upload);
     }
