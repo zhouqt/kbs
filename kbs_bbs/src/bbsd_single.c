@@ -541,7 +541,7 @@ char *argv[];
     int inetd,port,listprocess;
 
     inetd = 0;
-    if (!strcmp(argv[1],"-i") )
+    if ((argc<=1) || !strcmp(argv[1],"-i") )
        inetd=1;
     else {
        if (argc<=1) port = 23;

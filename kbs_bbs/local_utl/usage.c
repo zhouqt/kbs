@@ -163,12 +163,14 @@ char *argv[];
   {
     if(strlen(buf)<57)
         continue;
+/*
     if ( !strncmp(buf+21, "USE", 3))
     {
       p=strstr(buf,"USE");
       p+=4;
       p=strtok(p," ");
       strcpy(bname,p);
+*/
     if ( p = (char *)strstr(buf+46, "Stay: "))
     {
       sec=atoi( p + 6);
@@ -177,7 +179,9 @@ char *argv[];
         sec=0;
     record_data(bname,sec);
     }
+/*
    }
+*/
    fclose(fp);
    qsort(st, numboards, sizeof( st[0] ), brd_cmp);
    printf("%d",numboards);/**/

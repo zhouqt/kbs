@@ -398,7 +398,8 @@ int getuser(const char *userid,struct userec** user) /* 取用户信息 */
 
 char* getuserid2(int uid)
 {
-	return passwd[uid-1].userid;
+    if( uid > uidshm->number || uid <= 0 ) return NULL;
+    return passwd[uid-1].userid;
 }
 
 char *u_namearray( char    buf[][ IDLEN+1 ],int     *pnum, char * tag)

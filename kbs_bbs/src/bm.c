@@ -354,7 +354,7 @@ Here:
 
                     if (my_flag==0)
                     {
-                        fprintf(fn,"                            水木清华站务组值班站务：\x1b[4m%s\x1b[0m\n",saveuser.userid);
+                        fprintf(fn,"                            水木清华站务组值班站务：\x1b[4m%s\x1b[0m\n",saveptr->userid);
                     }
                     else
                     {

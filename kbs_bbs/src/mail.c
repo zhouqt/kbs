@@ -1868,7 +1868,12 @@ ov_send()
     all=(nf>=maxrecp)? maxrecp:nf;
     for(i=0;i<all;i++)
     {
-        prints("%-12s ",getuserid2(topfriend[i].uid));
+        char* userid;
+        userid = getuserid2(topfriend[i].uid);
+        if (!userid) 
+            prints("\x1b[1;32m%-12s\x1b[0m ",topfriend[i].uid);
+        else 
+            prints("%-12s ",userid);
         if((i+1)%6==0)
             prints("\n");
     }

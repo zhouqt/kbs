@@ -84,7 +84,12 @@ void resolve_utmp()
 
 static int utmp_hash(const char* userid)
 {
-	return (ucache_hash(userid)/3)%UTMP_HASHSIZE; 
+        int hash;
+        hash = ucache_hash(userid);
+        if (hash==0) return 0;
+        hash = (hash/3)%UTMP_HASHSIZE;
+        if (hash==0) return 1;
+	return hash; 
 }
 
 int getnewutmpent(struct user_info *up)
