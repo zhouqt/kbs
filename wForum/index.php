@@ -93,7 +93,7 @@ function showSecs($secNum=0,$isFold) {
 <a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N" title="关闭论坛列表"><img src="pic/nofollow.gif" border=0></a><a href="viewsec.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?></a>
 </th></tr>
 <?php
-		$boards = bbs_getboards($section_nums[$secNum], 0);
+		$boards = bbs_getboards($section_nums[$secNum], 0, 0);
 		if ($boards == FALSE) {
 ?>
 		<TR><TD colspan="2" class=tablebody1>&nbsp;本分区尚无版面</td></tr>
