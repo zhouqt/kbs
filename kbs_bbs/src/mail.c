@@ -690,7 +690,7 @@ int del_mail(int ent, struct fileheader* fh, char* direct)
     char* t;
     struct stat st;
 
-    if(!strcmp(direct, ".DELETED")) {
+    if(strstr(direct, ".DELETED")) {
         strcpy(buf, direct);    
         t = strrchr(buf, '/') + 1;
         strcpy(t, fh->filename);
