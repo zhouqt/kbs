@@ -978,8 +978,10 @@ void auto_chinese()
         k=scr_cols-1;
         while(k>0) {
             if(b[k]) k-=2;
-            else k--;
-            if(bp[j].data[k+1]>=0x80) bp[j].data[k+1]='?';
+            else {
+                k--;
+                if(bp[j].data[k+1]>=0x80) bp[j].data[k+1]='?';
+            }
         }
     }
     redoscr();
