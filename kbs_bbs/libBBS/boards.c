@@ -236,7 +236,6 @@ void brc_update(char *userid) {
     	sethomefile( dirfile, userid, ".boardrc" );
 	for (i=0;i<BRC_CACHE_NUM;i++) {
 		if (brc_cache_entry[i].changed) {
-			int j;
 			if (fd==-1) {
 				if ((fd=open(dirfile,O_RDWR|O_CREAT,0600))==-1) {
 					bbslog("3user","can't %s open to readwrite:%s",dirfile,strerror(errno));
@@ -432,15 +431,15 @@ void brc_add_read(char *filename) {
         }
 }
 
-int brc_clear() {
+void brc_clear() {
 	brc_cache_entry[brc_currcache].list[0]=time(0);
 	brc_cache_entry[brc_currcache].list[1]=0;
 	brc_cache_entry[brc_currcache].changed=1;
 }
 
-int brc_clear_new_flag(char* filename)
+void brc_clear_new_flag(char* filename)
 {
-        int     ftime, n, i;
+        int     ftime, n;
         ftime=atoi(&filename[2]);
         if(filename[0]!='M' && filename[0]!='G')  return;
         for (n = 0; (n < BRC_MAXNUM)&&brc_cache_entry[brc_currcache].list[n]; n++) 
@@ -523,9 +522,6 @@ int chk_BM_instr(const char BMstr[STRLEN-1],const char    bmname[IDLEN+2])
 int chk_currBM(const char BMstr[STRLEN-1],struct userec* user)   
 	/* 根据输入的版主名单 判断user是否有版主 权限*/
 {
-    char *ptr;
-    char BMstrbuf[STRLEN-1];
-
     if(HAS_PERM(currentuser,PERM_OBOARDS)||HAS_PERM(currentuser,PERM_SYSOP))
         return YEA;
 
@@ -563,7 +559,7 @@ int deldeny(struct userec* user,char* board,char* uident,int notice_only)  /* 删
     }
     else
     {
-        sprintf(buffer,"[通知]",board,user->userid);
+        sprintf(buffer,"[通知]");
         fprintf(fn1,"寄信人: %s \n",user->userid) ;
         fprintf(fn1,"标  题: %s\n",buffer) ;
         fprintf(fn1,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
