@@ -35,7 +35,7 @@ document.write("<div id='dypopLayer' style='position:absolute;z-index:1000' clas
 
 
 function showPopupText(){
-var o=event.srcElement;
+var o=event.srcElement; // ToDo: 这里 firefox 显示 JS 错误：event 没有定义 - atppp
 	MouseX=event.x;
 	MouseY=event.y;
 	if(o.alt!=null && o.alt!=""){o.dypop=o.alt;o.alt=""};
@@ -207,7 +207,7 @@ var manage= '<a style=font-size:9pt;line-height:14pt; href="usermailbox.php?boxn
 
 var timerID=0;
 function dosendmsg(){
-	oMessager=getRawObjectFrom("messager",document.frames['webmsg']);
+	oMessager=getRawObjectFrom("messager",window.frames['webmsg']);
 	oMessager.submit();
 }
 

@@ -184,7 +184,7 @@ function showBoardContents($boardID,$boardName,$page){
 		echo " ]</b>";
 	}
 	if ((($origin['FLAGS'][0] >= 'A') && ($origin['FLAGS'][0] <= 'Z')) || ($origin['FLAGS'][0] == '*')) {
-		 //very dirty way, 测试而已，只判断原贴是否为读，可以换成比方判断24小时之内有新贴 blah blah... - atppp
+		 //very dirty way, 测试而已，只判断原贴是否未读，可以换成比方判断24小时之内有新贴 blah blah... - atppp
 		echo "<img src=\"pic/topnew2.gif\" alt=\"原贴未读\">";
 	}
 ?>
