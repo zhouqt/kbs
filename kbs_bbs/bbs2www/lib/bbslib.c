@@ -592,7 +592,7 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     fprintf(fp, "寄信人: %s (%s)\n", id, nickname);
     fprintf(fp, "标  题: %s\n", title);
     fprintf(fp, "发信站: %s (%s)\n", BBSNAME, wwwCTime(time(0)));
-    fprintf(fp, "来  源: %s\n\n", SHOW_USERIP(currentuser, ip));
+    fprintf(fp, "来  源: %s\n\n", ip);
     if (fp2) {
         while (fgets(buf3, 256, fp2) != NULL) {
             fprintf2(fp, buf3);
