@@ -53,7 +53,8 @@ int main()
             if (s == 0)
                 s = "\n";
             if (strlen(id) < 13 && getuser(id, &user)) {
-                printf("发信人: %s%s", userid_str(id), s);
+                printf("发信人: %s", userid_str(id));
+				hprintf("%s",s);
                 free(ptr);
                 continue;
             }
