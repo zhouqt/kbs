@@ -2424,6 +2424,8 @@ static PHP_FUNCTION(bbs_add_import_path)
 		RETURN_LONG(0);
 	path_len = strlen(path);
 	if(path[path_len-1]=='/')
+		path[path_len-1]='\0';
+	if(path[0]=='/')
 		snprintf(buf, sizeof(buf), "0Announce%s", path);
 	else if(strncmp(path,"0Announce",9))
 		snprintf(buf, sizeof(buf), "0Announce/%s", path);
