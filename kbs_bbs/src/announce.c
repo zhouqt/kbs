@@ -334,7 +334,7 @@ int    nomsg;
     char        ans[ STRLEN ];
     FILE        *inf, *outf;
     char        qfile[ STRLEN ], filepath[ STRLEN ];
-    char        buf[256], *ptr;
+    char        buf[256];
 
     sprintf( qfile, "boards/%s/%s", key, fileinfo->filename);
     sprintf( filepath, "tmp/se.%s", currentuser->userid );
@@ -371,7 +371,7 @@ int    nomsg;
 		/*
             sprintf( genbuf, "/bin/cp -r %s  tmp/bm.%s", filepath, currentuser->userid );
 	    */
-            sprintf( genbuf, "tmp/bm.%s", filepath, currentuser->userid );
+            sprintf( genbuf, "tmp/bm.%s", currentuser->userid );
 	    f_cp(filepath,genbuf,0);
         }
         else if(ans[0] == 'C' || ans[0] == 'c')
@@ -485,7 +485,7 @@ int ent;
                 ptr = strstr(genbuf, ".faq/");
                 if (ptr)
                 {
-                    if (ptr = strchr(ptr + 5, '/'))
+                    if ((ptr = strchr(ptr + 5, '/'))!=NULL)
                         strcpy(ptr + 1, ".BMpath");
                     else
                         strcat(genbuf, "/.BMpath");
@@ -523,7 +523,7 @@ int ent;
                         pm.path =  Importname;
                     }
                     else {
-                        sprintf( genbuf, "你改变心意了?? ,请按任何键以结束 << " , fileinfo->title );
+                        sprintf( genbuf, "你改变心意了?? ,请按任何键以结束 << ");
                         a_prompt( -1, genbuf, ans );
                         return 1;
                     }
@@ -684,7 +684,7 @@ int     mode;
     char uident[STRLEN] ;
     char        board[ STRLEN ], title[ STRLEN ];
     char        fname[ STRLEN ], fpath[ PATHLEN ],fpath2[ PATHLEN ];
-    char        *mesg, *domain;
+    char        *mesg;
     FILE        *pn;
     char        ans[ STRLEN ];
     char	buf[255];
@@ -1035,7 +1035,7 @@ int     ch;
                 ptr = strstr(genbuf, ".faq/");
                 if (ptr)
                 {
-                    if (ptr = strchr(ptr + 5, '/'))
+                    if ((ptr = strchr(ptr + 5, '/'))!=NULL)
                         strcpy(ptr + 1, ".BMpath");
                     else
                         strcat(genbuf, "/.BMpath");
@@ -1129,8 +1129,6 @@ int     lastlevel,lastbmonly;
     int         ch;
     char        *bmstr;
     char        buf[STRLEN];
-    char        *ptr1,*ptr2;
-    int         port;
     int         bmonly;
     int         number=0;
 
@@ -1337,8 +1335,7 @@ case KEY_PGDN: case Ctrl( 'F' ): case ' ':
 }
 
 int
-linkto(path,fname,title)
-char *path,*title,*fname;
+linkto(char *path,char*fname,char *title)
 {
     MENU    pm;
     char    fpath[STRLEN];
@@ -1350,20 +1347,17 @@ char *path,*title,*fname;
     a_loadnames(&pm);
     a_additem(&pm,title,fname ,NULL,0);
     a_savenames(&pm);
+    return 0;
 }
 
 int add_grp( char group[STRLEN],char bname[STRLEN],char title[STRLEN],char gname[STRLEN])
 	/* 精华区 加 目录 */
 {
     FILE        *fn;
-    char        buf[ PATHLEN ], *ptr;
+    char        buf[ PATHLEN ];
     char        searchname[STRLEN];
     char        gpath[STRLEN*2];
     char        bpath[STRLEN*2];
-    char        old_bpath[STRLEN*2];
-    int         len, ch;
-    MENU        pm;
-    char        ans[ STRLEN ];
 
     sprintf( buf, "0Announce/.Search");
     sprintf(searchname,"%s: groups/%s/%s",bname,group,bname);
@@ -1417,14 +1411,12 @@ int
 del_grp(grp,bname,title)
 char grp[STRLEN],bname[STRLEN],title[STRLEN];
 {
-    char        buf[ STRLEN ], *ptr,buf2[STRLEN],buf3[30];
-    char        searchname[STRLEN];
+    char        buf[ STRLEN ],buf2[STRLEN],buf3[30];
     char        gpath[STRLEN*2];
     char        bpath[STRLEN*2];
     char        check[30];
-    int         len, i,n;
+    int         i,n;
     MENU        pm;
-    char        ans[ STRLEN ];
 
     strcpy(buf3,grp);
     sprintf( buf, "0Announce/.Search");
@@ -1457,13 +1449,11 @@ char grp[STRLEN],bname[STRLEN],title[STRLEN];
 
 int edit_grp( char bname[STRLEN],char grp[STRLEN],char title[STRLEN],char newtitle[100])
 {
-    char        buf[ STRLEN ], *ptr,buf2[STRLEN],buf3[30];
-    char        searchname[STRLEN];
+    char        buf[ STRLEN ], buf2[STRLEN],buf3[30];
     char        gpath[STRLEN*2];
     char        bpath[STRLEN*2];
-    int         len, i;
+    int         i;
     MENU        pm;
-    char        ans[ STRLEN ];
 
     strcpy(buf3,grp);
     sprintf( buf, "0Announce/.Search");
