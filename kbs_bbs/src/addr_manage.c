@@ -82,10 +82,26 @@ int add_addresslist( struct addresslist * oldal ){
 	al.bbsid[14]=0;
 
 	if(oldal)
+		strcpy(ans, oldal->mobile);
+	else
+		ans[0]=0;
+	getdata(4, 0, "请输入移动电话:", ans, 15, DOECHO, NULL, false);
+	strncpy(al.mobile, ans, 15);
+	al.mobile[14]=0;
+
+	if(oldal)
+		strcpy(ans, oldal->group);
+	else
+		ans[0]=0;
+	getdata(5, 0, "请输入分组名称:", ans, 10, DOECHO, NULL, false);
+	strncpy(al.group, ans, 10);
+	al.group[9]=0;
+
+	if(oldal)
 		strcpy(ans, oldal->school);
 	else
 		ans[0]=0;
-	getdata(4, 0, "请输入学校:", ans, 100, DOECHO, NULL, false);
+	getdata(6, 0, "请输入学校:", ans, 100, DOECHO, NULL, false);
 	strncpy(al.school, ans, 100);
 	al.school[99]=0;
 
@@ -93,7 +109,7 @@ int add_addresslist( struct addresslist * oldal ){
 		strcpy(ans, oldal->zipcode);
 	else
 		ans[0]=0;
-	getdata(5, 0, "请输入邮政编码:", ans, 7, DOECHO, NULL, false);
+	getdata(7, 0, "请输入邮政编码:", ans, 7, DOECHO, NULL, false);
 	strncpy(al.zipcode, ans, 7);
 	al.zipcode[6]=0;
 
@@ -101,7 +117,7 @@ int add_addresslist( struct addresslist * oldal ){
 		strcpy(ans, oldal->homeaddr);
 	else
 		ans[0]=0;
-	getdata(6, 0, "请输入家庭地址:", ans, 100, DOECHO, NULL, false);
+	getdata(8, 0, "请输入家庭地址:", ans, 100, DOECHO, NULL, false);
 	strncpy(al.homeaddr, ans, 100);
 	al.homeaddr[99]=0;
 
@@ -109,7 +125,7 @@ int add_addresslist( struct addresslist * oldal ){
 		strcpy(ans, oldal->companyaddr);
 	else
 		ans[0]=0;
-	getdata(7, 0, "请输入工作地址:", ans, 100, DOECHO, NULL, false);
+	getdata(9, 0, "请输入工作地址:", ans, 100, DOECHO, NULL, false);
 	strncpy(al.companyaddr, ans, 100);
 	al.companyaddr[99]=0;
 
@@ -117,7 +133,7 @@ int add_addresslist( struct addresslist * oldal ){
 		strcpy(ans, oldal->tel_h);
 	else
 		ans[0]=0;
-	getdata(8, 0, "请输入家庭电话:", ans, 20, DOECHO, NULL, false);
+	getdata(10, 0, "请输入家庭电话:", ans, 20, DOECHO, NULL, false);
 	strncpy(al.tel_h, ans, 20);
 	al.tel_h[19]=0;
 
@@ -125,23 +141,15 @@ int add_addresslist( struct addresslist * oldal ){
 		strcpy(ans, oldal->tel_o);
 	else
 		ans[0]=0;
-	getdata(9, 0, "请输入工作电话:", ans, 20, DOECHO, NULL, false);
+	getdata(11, 0, "请输入工作电话:", ans, 20, DOECHO, NULL, false);
 	strncpy(al.tel_o, ans, 20);
 	al.tel_o[19]=0;
-
-	if(oldal)
-		strcpy(ans, oldal->mobile);
-	else
-		ans[0]=0;
-	getdata(10, 0, "请输入移动电话:", ans, 15, DOECHO, NULL, false);
-	strncpy(al.mobile, ans, 15);
-	al.mobile[14]=0;
 
 	if(oldal)
 		strcpy(ans, oldal->email);
 	else
 		ans[0]=0;
-	getdata(11, 0, "请输入电子邮箱:", ans, 30, DOECHO, NULL, false);
+	getdata(12, 0, "请输入电子邮箱:", ans, 30, DOECHO, NULL, false);
 	strncpy(al.email, ans, 30);
 	al.email[29]=0;
 
@@ -149,17 +157,9 @@ int add_addresslist( struct addresslist * oldal ){
 		strcpy(ans, oldal->qq);
 	else
 		ans[0]=0;
-	getdata(12, 0, "请输入qq:", ans, 10, DOECHO, NULL, false);
+	getdata(13, 0, "请输入qq:", ans, 10, DOECHO, NULL, false);
 	strncpy(al.qq, ans, 10);
 	al.qq[9]=0;
-
-	if(oldal)
-		strcpy(ans, oldal->group);
-	else
-		ans[0]=0;
-	getdata(13, 0, "请输入分组名称:", ans, 10, DOECHO, NULL, false);
-	strncpy(al.group, ans, 10);
-	al.group[9]=0;
 
 	if(oldal)
 		sprintf(ans,"%d", oldal->birth_year);
