@@ -117,7 +117,7 @@ void load_favboard(int dohelp)
             favbrd_list[0].father = -1;
             while(!feof(fp)) {
                 int k;
-                if(fscanf(fp, "%s", bn)<=1) break;
+                if(fscanf(fp, "%s", bn)<1) break;
                 k=getbnum(bn);
                 if(k) {
                     favbrd_list[favbrd_list_t].flag = k-1;
