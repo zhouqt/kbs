@@ -1995,6 +1995,17 @@ int set_BM()
                         strcat(newfh.BM, lookupuser->userid);
                         newlevel |= PERM_BOARDS;
                         mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", BBSPOST_LINK, NULL);
+						/* add by stiger,斑竹上任记录 */
+						{
+							FILE *fp;
+							char bmat[256];
+							if((fp=fopen("etc/bmat","a"))!=NULL){
+								sprintf(bmat,"%s %s %u %s\n",lookupuser->userid, newfh.filename, (unsigned int)time(0), currentuser->userid);
+								fputs(bmat, fp);
+								fclose(fp);
+							}
+						}
+
                     } else if (flag == 2) {
                         m = 0;
                         newfh.BM[0] = '\0';
@@ -2009,6 +2020,12 @@ int set_BM()
                                 newlevel &= ~PERM_CLOAK;
                             }
                         }
+						/* stiger,斑竹免记录 */
+						{
+							char bmtest[256];
+							sprintf(bmtest,"%s %s",lookupuser->userid, newfh.filename);
+							del_from_file("etc/bmat",bmtest);
+						}
                         /*
                          * 如果增加版主数目请修改这里 
                          */
