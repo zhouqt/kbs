@@ -414,6 +414,7 @@ static int wcgetsec(size_t * Blklen, char *rxbuf, unsigned int maxtime)
             if (Firstsec)
                 goto humbug;
           bilge:
+			;
         }
 
       humbug:
