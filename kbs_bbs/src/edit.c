@@ -652,12 +652,14 @@ static long insert_from_fp(FILE *fp)
                     matched++;
                     if (matched==ATTACHMENT_SIZE) {
                         int d, size;
+                        data++; not++;
+                        while(*data) {data++; not++;}
                         data++;
-                        while(*data) data++;
-                        data++;
+                        not++;
                         memcpy(&d, data, 4);
                         size = htonl(d);
                         data+=4+size-1;
+                        not+=4+size-1;
                         matched = 0;
                     }
                     continue;
