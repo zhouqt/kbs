@@ -4,7 +4,7 @@
     if ($loginok != 1)
         html_nologin();
     else {
-        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"240; url=/bbsfoot.php\">",1);
+        html_init("gb2312","","",1);
 
 		if (isset($_GET["total"]))
 			$oldtotal = $_GET["total"];
@@ -51,7 +51,7 @@ function Time(){
 //JavaScript End-->
 </script>
 <body class="b2"  onload="Init()">
-<form name="clock">时间[<input class="b8" TYPE="text" NAME="myclock" size="18">] 在线[<a href="/cgi-bin/bbs/bbsusr" target="f3" class="b8"><?php 
+<form name="clock">时间[<input class="b8" TYPE="text" NAME="myclock" size="18" READONLY>] 在线[<a href="/cgi-bin/bbs/bbsusr" target="f3" class="b8"><?php 
 echo bbs_getonlinenumber(); ?></a>] 帐号[<a href=<?php
 echo "\"/bbsqry.php?userid=" . $currentuser["userid"] . "\""; ?> target="f3" class="b8"><?php
 echo $currentuser["userid"]; ?></a>] <?php
@@ -69,7 +69,7 @@ echo $currentuser["userid"]; ?></a>] <?php
 		      echo "信箱[<a href=\"bbsreadmail.php\" target=\"f3\" class=\"b8\">0封</a>] ";
 		}
 ?>
-停留[<input class="b8" TYPE="text" NAME="stay" size="10">]
+停留[<input class="b8" TYPE="text" NAME="stay" size="10" READONLY>]
 </form>
 <?php
         html_normal_quit();
