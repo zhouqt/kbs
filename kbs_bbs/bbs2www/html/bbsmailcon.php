@@ -129,7 +129,7 @@ function get_mimetype($name)
 ?>
 </td></tr></table>
 <hr>
-[<a onclick='return confirm("你真的要删除这封信吗？")' href="/bbsdelmail.php?dir=<?php echo $dirname;?>&file=<?php echo $file;?>&title=<?php echo $title;?>">删除</a>]
+[<a onclick='return confirm("你真的要删除这封信吗？")' href="/bbsmailact.php?act=del&dir=<?php echo $dirname;?>&file=<?php echo $file;?>&title=<?php echo $title;?>">删除</a>]
 [<a href="javascript:history.go(-1)">返回上一页</a>]
 <?php
 				if($num > 0){

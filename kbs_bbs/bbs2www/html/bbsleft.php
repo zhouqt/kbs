@@ -509,7 +509,6 @@
 				</DIV>
 			</td>
 		</tr>
-<!--
 		<tr>
 			<td width="16">
 				<DIV class="r" id="divstylea">
@@ -531,7 +530,6 @@
 				</DIV>
 			</td>
 		</tr>
--->
 		<tr>
 			<td width="16"><img src="/images/open.gif" border="0"></td>
 			<form action="cgi-bin/bbs/bbssel" target="f3">

@@ -8,12 +8,12 @@
 		{
 		case 0:
 			setcookie("STYLE",0);
-			$colwidth="170,*";
+			//$colwidth="170,*";
 			break;
 		case 1:
 		default:
 			setcookie("STYLE",1);
-			$colwidth="144,*";
+			//$colwidth="144,*";
 		}
 		$charset = "gb2312";
 ?>
@@ -24,11 +24,11 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
-<meta http-equiv="Refresh" content="0; url=/cgi-bin/bbs/bbsleft" />
+<meta http-equiv="Refresh" content="0; url=/bbsleft.php" />
 </head>
 <body>
 <script language="javascript">
-top.mainframe.cols = "<?php echo $colwidth; ?>";
+top.mainframe.cols = 180";
 top.f3.navigate(top.f3.location);
 top.f4.navigate(top.f4.location);
 </script>

@@ -119,7 +119,6 @@ function bbsconfirm(url,infor){
 	<tr>
 		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">
 		<table width="100%" cellspacing="0" cellpadding="0">
-<form action="/bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".urlencode($mail_title); ?>" method="POST">
 			<tr>
 				<td width="7" background="/images/m3.gif"><img src="/images/empty.gif"></td>
 				<td background="/images/m6.gif" height="400" align="center" valign="top">
@@ -130,6 +129,7 @@ function bbsconfirm(url,infor){
 您的 <font class="b3"><?php echo $mail_title; ?></font> 里共有 <font class="b3"><?php echo $mail_num; ?></font> 封邮件
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
 </p>
+<form action="/bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".urlencode($mail_title); ?>" method="POST">
 <table width="95%" cellspacing="0" cellpadding="5" class="mt1">
 	<tr>
 		<td class="mt2" width="30">已读</td>
@@ -222,7 +222,23 @@ else
 		}
 ?>
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
-&nbsp;&nbsp;</td></tr></table>
+&nbsp;&nbsp;</td></tr></table></form>
+<table cellpadding="3" cellspacing="0" width="95%" border="0" class="b9">
+<form action="/bbsdelmail.php?<?php echo "dir=".urlencode($mail_path)."&title=".urlencode($mail_title); ?>" method="POST">
+<input type="hidden" name="dir" value="<?php echo $mail_path; ?>">
+<input type="hidden" name="title" value="<?php echo $mail_title; ?>">
+<tr><td class="b9">
+区段删除：
+起始序号
+<input type="text" size="3" class="b9" name="dstart">
+结束序号
+<input type="text" size="3" class="b9" name="dend">
+删除类型：
+<input type="radio" class="b9" name="dtype" value="0" checked>普通
+<input type="radio" class="b9" name="dtype" value="1">强制&nbsp;&nbsp;
+<input type="submit" value="区段删除邮件" class="bt1" onclick="if(confirm('区段删除指定邮件吗?')){submit();return true;}return false;">
+</td></tr>
+</form></table>
 <?php				
 				
 				
@@ -231,7 +247,7 @@ else
 				</td>
 				<td width="7" background="/images/m4.gif"><img src="/images/empty.gif"></td>
 			</tr>
-		</form>
+		
 		</table>
 		</td>
 	<tr>
