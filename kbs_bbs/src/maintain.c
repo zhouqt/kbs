@@ -1634,7 +1634,7 @@ int x_deny()
                     break;
                 }
             } else {
-                if ((basicperm & level[sel - 1]) != normal_level[sel - 1]) {
+                if (!(basicperm & level[sel - 1])) {
                     sprintf(buf, "真的要解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
                     sprintf(reportbuf, "解开%s的%s 封禁", lookupuser->userid, (char *) level_conf[sel - 1].data + 2);
                 } else {
