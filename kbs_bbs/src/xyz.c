@@ -55,6 +55,10 @@ int showperminfo(struct _select_def* conf,int i)
 		prints( "%c. ÍË³ö ",'A'+i);
 	}
 	else
+		if ((arg->pbits&(1<<i))!=(arg->oldbits&(1<<i))) {
+	        prints( "%c. %-27s [31;1m%3s[m", 'A' + i, permstrings[i],
+	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+		} else
 	{
     	prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, permstrings[i],
              ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
@@ -70,6 +74,10 @@ int showuserdefine(struct _select_def* conf,int i)
 		prints( "%c. ÍË³ö ",'A'+i);
 	}
 	else
+		if ((arg->pbits&(1<<i))!=(arg->oldbits&(1<<i))) {
+	        prints( "%c. %-27s [31;1m%3s[m", 'A' + i, user_definestr[i],
+	                 ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+		} else
 	{
     	prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, user_definestr[i],
              ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
@@ -116,6 +124,11 @@ int setperm_key(struct _select_def *conf,int key)
     int sel;
     if (key==Ctrl('Q'))
     	return SHOW_QUIT;
+    if (key==Ctrl('A')) {
+	struct _setperm_select* arg=(struct _setperm_select*)conf->arg;
+	arg->pbits=arg->oldbits;
+    	return SHOW_QUIT;
+    }
     if (key<='z'&&key>='a')
 	sel=key-'a';
     else
@@ -137,7 +150,7 @@ unsigned int setperms(unsigned int pbits,unsigned int basic,char *prompt,int num
 	pts=(POINT*)malloc(sizeof(POINT)*(numbers+1));
 
     move(4,0);
-    prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s, Ctrl+QÍË³ö.\n",prompt);
+    prints("Çë°´ÏÂÄãÒªµÄ´úÂëÀ´Éè¶¨%s, Ctrl+QÍË³ö£¬Ctrl+A·ÅÆúĞŞ¸ÄÍË³ö.\n",prompt);
     move(6,0);
     clrtobot();
     

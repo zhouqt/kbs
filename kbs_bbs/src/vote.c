@@ -807,7 +807,11 @@ int vote_select(struct _select_def* conf)
 	arg->pbits ^= (1 << (conf->pos-1));
         count= vote_check(arg->pbits);
         if(count > currvote.maxtkt) {
-	    arg->pbits ^= (1 << (conf->pos-1));
+	    if (currvote.maxtkt==1) {
+	        arg->pbits = (1 << (conf->pos-1));
+		return SHOW_REFRESH;
+	    } else
+	        arg->pbits ^= (1 << (conf->pos-1));
             return SHOW_CONTINUE;
 	}
         move(2,0);
