@@ -24,3 +24,8 @@
 	padding-bottom: 2px;
 	filter: Alpha(Opacity=0)
 }
+.buttonClass1,.buttonClass2,.buttonClass3,.buttonClass4
+{
+	background-color: lightblue;
+	cursor: hand;
+}
