@@ -111,10 +111,7 @@ void clear()
     for (i = 0; i < scr_lns; i++) {
         slp = big_picture;
         for(j=0; j<scr_cols;j++) {
-            if((slp[i].data[j]==0||slp[i].data[j]==' ')&&(slp[i].mode[j]&~SCREEN_MODIFIED)==0&&slp[i].color[j]/16==0)
-                slp[i].mode[j]=0;
-            else
-                slp[i].mode[j]=SCREEN_MODIFIED;
+            slp[i].mode[j]=SCREEN_MODIFIED;
             slp[i].data[j]=0;
             slp[i].color[j]=7;
         }
@@ -344,12 +341,8 @@ void clear_whole_line(int i)
     register struct screenline *slp = &big_picture[(i+roll)%scr_lns];
     register int k;
     for(k=0;k<scr_cols;k++) {
-        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
-            slp->mode[k]=0;
-        else
-            slp->mode[k]=SCREEN_MODIFIED;
         slp->data[k]=0;
-        slp->mode[k]|=cur_mode;
+        slp->mode[k]=SCREEN_MODIFIED|cur_mode;
         slp->color[k]=cur_color;
     }
 }
@@ -367,12 +360,8 @@ void clrtoeol()
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
     for(k=cur_col;k<t_columns;k++) {
-        if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
-            slp->mode[k]=0;
-        else
-            slp->mode[k]=SCREEN_MODIFIED;
         slp->data[k]=0;
-        slp->mode[k]|=cur_mode;
+        slp->mode[k]=SCREEN_MODIFIED|cur_mode;
         slp->color[k]=cur_color;
     }
 }
@@ -388,12 +377,8 @@ void clrtobot()
         for(k=0;k<t_columns;k++) 
         if(i!=cur_ln||k>=cur_col)
         {
-            if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
-                slp->mode[k]=0;
-            else
-                slp->mode[k]=SCREEN_MODIFIED;
             slp->data[k]=0;
-            slp->mode[k]|=cur_mode;
+            slp->mode[k]=SCREEN_MODIFIED|cur_mode;
             slp->color[k]=cur_color;
         }
     }
