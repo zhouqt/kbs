@@ -184,8 +184,12 @@ function dosubmit() {
 <input type="checkbox" name="outgo" value="1"<?php if (!$local_save) echo " checked=\"checked\""; ?> />转信
 <?php
     }
+    if ($reid == 0) {
 ?>
 <input type="checkbox" name="mailback" value="1" />re文抄送信箱
+<?php
+	}
+?>
 <br />
 <textarea class="sb1" name="text"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {dosubmit(); return false;}'  onkeypress='if(event.keyCode==10) return dosubmit()' rows="20" cols="80" wrap="physical">
 <?php
