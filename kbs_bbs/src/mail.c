@@ -1393,6 +1393,7 @@ g_send()
                 move(2,0);
                 prints("Õâ¸öÊ¹ÓÃÕß´úºÅÊÇ´íÎóµÄ.\n");
             }
+	    strcpy(uident,lookupuser->userid);
         }
         switch(tmp[0])
         {
@@ -1400,7 +1401,7 @@ g_send()
             if (!(lookupuser->userlevel & PERM_READMAIL))
             {
                 move(2,0);
-                prints("ĞÅ¼şÎŞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser);
+                prints("ĞÅ¼şÎŞ·¨±»¼Ä¸ø: [1m%s[m\n", lookupuser->userid);
                 break;
             }
             else if ( seek_in_file(maillists,uident) ) {

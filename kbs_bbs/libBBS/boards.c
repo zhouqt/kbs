@@ -239,7 +239,7 @@ void brc_update(char *userid) {
 			int j;
 			if (fd==-1) {
 				if ((fd=open(dirfile,O_RDWR))==-1) {
-					bbslog("3user","can't open to readwrite",dirfile);
+					bbslog("3user","can't %s open to readwrite:%s",dirfile,strerror(errno));
 					return;
 				};
 			}
