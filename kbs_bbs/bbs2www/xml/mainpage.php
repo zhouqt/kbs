@@ -262,7 +262,7 @@ $boards = $root->child_nodes();
 	# shift through the array
 	while($board = array_shift($boards))
 	{
-		if($j > 10)
+		if($j > 9)
 			break;
 		
 		if ($board->node_type() == XML_TEXT_NODE)
@@ -281,7 +281,7 @@ $boards = $root->child_nodes();
 ?>
 </ul>
 <?php
-	if($j == 10)
+	if($j > 9)
 	{
 ?>
 <p align="right"><a href="/bbsnewbrd.php">&gt;&gt;¸ü¶à</a></p>
