@@ -118,6 +118,8 @@ extern long ti;
 #define MAXFRIENDS (400)
 /*#define NUMPERMS (31)*/
 
+#define MAX_SIGNATURES 20       /* 最大签名档个数 by flyriver, 2002.11.10 */
+
 /*#define FILE_BUFSIZE      160    max. length of a file in SHM*/
 #define FILE_BUFSIZE      LENGTH_FILE_BUFFER    /* max. length of a file in SHM */
 #define FILE_MAXLINE      24    /* max. line of a file in SHM */
