@@ -1998,6 +1998,7 @@ int post_article(char *q_file, struct fileheader *re_file)
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
     char* upload = NULL;
+	int mailback = 0;		/* stiger,回复到信箱 */
 
 #ifdef FILTER
     int returnvalue;
@@ -2121,6 +2122,9 @@ int post_article(char *q_file, struct fileheader *re_file)
             include_mode = ans[0];
         } else if (ans[0] == 'T') {
             buf4[0] = '\0';
+		} else if (ans[0] == 'B') {
+			if( replytitle[0] == '\0' )
+				mailback = mailback ? 0 : 1;
         } else if (ans[0] == 'M') {
             Anony = (Anony == 1) ? 0 : 1;
         } else if (ans[0] == 'L') {
@@ -2193,6 +2197,10 @@ int post_article(char *q_file, struct fileheader *re_file)
      */
     strncpy(post_file.owner, (anonyboard && Anony) ? currboard->filename : currentuser->userid, OWNER_LEN);
     post_file.owner[OWNER_LEN - 1] = 0;
+
+	/* 回复到信箱，stiger */
+	if(mailback)
+		post_file.accessed[1] |= FILE_MAILBACK;
 
     /*
      * if ((!strcmp(currboard,"Announce"))&&(!strcmp(post_file.owner,"Anonymous")))

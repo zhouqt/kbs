@@ -744,6 +744,23 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #ifdef HAVE_BRC_CONTROL
         brc_add_read(fh->id);
 #endif
+
+		/* 回文寄到原作者信箱, stiger */
+		if( re ){
+			if( re->accessed[1] & FILE_MAILBACK ){
+
+				struct userec *lookupuser;
+
+				if(getuser(re->owner, &lookupuser) != 0){
+					if(( false != canIsend2(currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && !chkusermail(lookupuser)){
+						setbfile(buf, boardname, fh->filename);
+						mail_file(currentuser->userid, buf, re->owner, fh->title, 0, fh);
+					}
+				}
+			}
+		}
+
+
         sprintf(buf, "posted '%s' on '%s'", fh->title, boardname);
 #ifdef FILTER
     }
