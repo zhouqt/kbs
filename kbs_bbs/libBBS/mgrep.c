@@ -6,11 +6,11 @@
 #define MAXLINE 1024
 #define MAXSYM  256
 #define MAXMEMBER1 4096
-#define MAXPATFILE 260000
-#define BLOCKSIZE  8192
-#define MAXHASH    8192
-#define mm 	   8191
-#define max_num    30000
+#define MAXPATFILE 2600 //pattern文件的最大长度
+#define BLOCKSIZE  8192  //用于预读的数据大小
+#define MAXHASH    511  //pattern使用的hash表大小
+#define mm 	   511  //用于hash值的取模运算
+#define max_num    200 //最大的pattern个数
 #define W_DELIM	   128
 #define L_DELIM    10
 
