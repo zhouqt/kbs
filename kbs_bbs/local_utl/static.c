@@ -25,8 +25,8 @@ main(argc, argv)
   struct tm * date_tm;
   char    *blk[10] =
   {
-      "  ", "  ", "  ", "  ", "  ",
-      "¡õ", "¡õ", "¡õ", "¡õ", "¡õ",
+      "£ß", "£ß", "¨x", "¨y", "¨z",
+      "¨{", "¨|", "¨}", "¨~", "¨€",
   };
 
   if ((fp = fopen(BBSHOME"/usies", "r")) == NULL)
