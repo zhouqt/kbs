@@ -5,9 +5,10 @@
 	*/
 	require("pcfuncs.php");
 	
-	function display_blog_menu($link,$pc,$tag,$tid=0)
+	function display_blog_menu($link,$pc,$tag,$tid=0,&$blogMenus)
 	{
 		$blogs = pc_blog_menu($link,$pc["UID"],$tag);
+		$blogMenus = $blogs;
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="95%">
 <tr>
@@ -31,7 +32,7 @@
 	
 	function display_action_bar($tag,$tid=0,$pid=0)
 	{
-		global $sec;
+		global $sec,$blogMenus;
 ?>
 <table cellspacing="0" cellpadding="5" border="0" width="95%" class="b2">
 <tr>
@@ -57,6 +58,11 @@
 		{
 			if($i!=$tag)
 				echo "<option value=\"".$i."\">".$sec[$i]."</option>\n";
+		}
+		for( $i = 0 ; $i < count($blogMenus) ; $i ++ )
+		{
+			if($blogMenus[$i]["TID"]!=$tid)
+				echo "<option value=\"T".$blogMenus[$i]["TID"]."\">[".$sec[$tag]."∑÷¿‡]".html_format($blogMenus[$i]["NAME"])."</option>\n";
 		}
 ?>
 </select>
@@ -723,7 +729,7 @@ Blog√˚
 	{
 ?>
 	<td rowspan="2" align="middle" valign="top" width="150">
-	<?php display_blog_menu($link,$pc,$tag,(int)($_GET["tid"])); ?>
+	<?php display_blog_menu($link,$pc,$tag,(int)($_GET["tid"]),$blogMenus); ?>
 	</td>
 <?php
 	}

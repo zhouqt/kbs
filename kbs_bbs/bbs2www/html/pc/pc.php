@@ -71,7 +71,7 @@
 	
 	function display_navigation_bar($total,$page,$char,$order="username",$order1="ASC")
 	{
-		$listno = 7;
+		$listno = 20;
 		$pre = min($listno,$page-1);
 		$next = min($listno,$total-$page);
 		if($char)

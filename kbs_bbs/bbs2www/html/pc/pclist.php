@@ -57,9 +57,6 @@ pcmain_html_init();
 	<td>
 	<table width="100%" cellpadding="0" cellspacing="0" border="0">
 		<tr>
-		<td colspan="3" bgcolor="#999999" height="3"> </td>
-		</tr>
-		<tr>
 		<td width="33%" valign="top">
 			<table class="table2" width="100%" cellspacing="0" cellpadding="3" >
 				<tr>
@@ -137,6 +134,9 @@ pcmain_html_init();
 				</tr>
 			</table>
 		</td>
+		</tr>
+		<tr>
+		<td colspan="3" bgcolor="#999999" height="3"> </td>
 		</tr>
 		<tr>
 		<td width="33%" valign="top">

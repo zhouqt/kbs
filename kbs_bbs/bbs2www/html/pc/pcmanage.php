@@ -47,11 +47,27 @@
 		
 		if($act == "cut" || $act == "copy")
 		{
-			$target = (int)($_POST["target"]);
-			$access = (int)($_POST["access"]);
-			if($target < 0 || $target > 4 )
-				$target = 2;//如果参数错误先移入私人区
-			if($target == 3)
+			$access = intval($_POST["access"]);
+			if(stristr($_POST["target"],'T'))
+			{
+				$target = intval(substr($_POST["target"],1,strlen($_POST["target"])-1));
+				$in_section = 1;
+				$query = "SELECT tid FROM topics WHERE tid = ".$target." AND uid = ".$pc["UID"]." LIMIT 0 , 1;";
+				$result = mysql_query($query);
+				if(!$rows=mysql_fetch_array($result))
+					$target = 0; //如果参数错误就移入未分类
+				mysql_free_result($result);
+			}
+			else
+			{
+				$target = intval($_POST["target"]);
+				$in_section = 0;
+				if($target < 0 || $target > 4 )
+					$target = 2;//如果参数错误先移入私人区
+			}
+			
+			
+			if(!$in_section && 3 == $target ) //跨区  移入收藏区
 			{
 				$query = "SELECT `nid` FROM nodes WHERE `access` = '3' AND  `uid` = '".$pc["UID"]."' AND `pid` = '0' AND `type` = '1' LIMIT 0 , 1 ;";
 				$result = mysql_query($query,$link);
@@ -69,13 +85,23 @@
 			else
 				$rootpid = 0;
 			
-			if($act == "cut" && $target == 3)
-				$query = "UPDATE nodes SET created = created , `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '".$rootpid."', `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND ( `nid` = '0' ";
-			elseif($act == "cut")
-				$query = "UPDATE nodes SET created = created , `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '0' , `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
+			if($in_section)
+			{
+				if($act == "cut")
+					$query = "UPDATE nodes SET created = created , `tid` = '".$target."' , `changed` = NOW( ) , `pid` = '0' WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
+				else
+					$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
+			}
 			else
-				$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
-			
+			{
+				if($act == "cut" && $target == 3)
+					$query = "UPDATE nodes SET created = created , `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '".$rootpid."', `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND ( `nid` = '0' ";
+				elseif($act == "cut")
+					$query = "UPDATE nodes SET created = created , `access` = '".$target."' , `changed` = '".date("YmdHis")."' , `pid` = '0' , `tid` = 0 WHERE `uid` = '".$pc["UID"]."' AND `type` = 0  AND ( `nid` = '0' ";
+				else
+					$query = "SELECT * FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `type` = 0 AND ( `nid` = '0' ";
+			}
+				
 			$j = 0;
 			for($i = 1 ;$i < $pc["NLIM"]+1 ; $i ++)
 			{
@@ -86,43 +112,74 @@
 				}
 			}
 			$query .= " ) ;";
-			if($act == "cut")
+			
+			if($in_section)
 			{
-				if(pc_used_space($link,$pc["UID"],$target)+$j > $pc["NLIM"])
+				if("cut" == $act)
 				{
-					html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
-					exit();
+					mysql_query($query,$link);
 				}
 				else
 				{
-					mysql_query($query,$link);
+					$result = mysql_query($query,$link);
+					$num_rows = mysql_num_rows($result);
+					$j = $num_rows;
+					if(pc_used_space($link,$pc["UID"],$access)+$num_rows > $pc["NLIM"])
+					{
+						html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
+						exit();
+					}
+					for($i = 0;$i < $num_rows ; $i ++)
+					{
+						/*	目前复制文章的时候评论不同步复制	*/
+						$rows = mysql_fetch_array($result);
+						$query = "INSERT INTO `nodes` ( `pid` , `tid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ,`htmltag`)  ".
+							" VALUES ('0','".$target."' , '0', '".addslashes($rows[source])."', '".addslashes($rows[hostname])."','NOW( )' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$access."', '0','".$rows[htmltag]."');";
+						mysql_query($query,$link);
+					}
+					if($access == 0)
+						pc_update_record($link,$pc["UID"]," + ".$j);
 				}
 			}
 			else
 			{
-				$result = mysql_query($query,$link);
-				$num_rows = mysql_num_rows($result);
-				$j = $num_rows;
-				
-				if(pc_used_space($link,$pc["UID"],$target)+$num_rows > $pc["NLIM"])
+				if($act == "cut")
 				{
-					html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
-					exit();
+					if(pc_used_space($link,$pc["UID"],$target)+$j > $pc["NLIM"])
+					{
+						html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
+						exit();
+					}
+					else
+					{
+						mysql_query($query,$link);
+					}
 				}
-				for($i = 0;$i < $num_rows ; $i ++)
+				else
 				{
-					/*	目前复制文章的时候评论不同步复制	*/
-					$rows = mysql_fetch_array($result);
-					$query = "INSERT INTO `nodes` ( `pid` , `tid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ,`htmltag`)  ".
-						" VALUES ('".$rootpid."','0' , '0', '".$rows[source]."', '".$rows[hostname]."','".date("YmdHis")."' , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".$rows[subject]."', '".$rows[body]."', '".$target."', '0','".$rows[htmltag]."');";
-					mysql_query($query,$link);
-				}
-				
+					$result = mysql_query($query,$link);
+					$num_rows = mysql_num_rows($result);
+					$j = $num_rows;
+					
+					if(pc_used_space($link,$pc["UID"],$target)+$num_rows > $pc["NLIM"])
+					{
+						html_error_quit("目标区域文章数超过上限 (".$pc["NLIM"]." 篇)!");
+						exit();
+					}
+					for($i = 0;$i < $num_rows ; $i ++)
+					{
+						/*	目前复制文章的时候评论不同步复制	*/
+						$rows = mysql_fetch_array($result);
+						$query = "INSERT INTO `nodes` ( `pid` , `tid` , `type` , `source` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ,`htmltag`)  ".
+							" VALUES ('".$rootpid."','0' , '0', '".addslashes($rows[source])."', '".addslashes($rows[hostname])."',NOW( ) , '".$rows[created]."', '".$pc["UID"]."', '".$rows[comment]."', '0', '".addslashes($rows[subject])."', '".addslashes($rows[body])."', '".$target."', '0','".$rows[htmltag]."');";
+						mysql_query($query,$link);
+					}
+				}	
+				if($access == 0 && $act == "cut")
+					pc_update_record($link,$pc["UID"]," - ".$j);
+				if($target == 0)
+					pc_update_record($link,$pc["UID"]," + ".$j);
 			}
-			if($access == 0 && $act == "cut")
-				pc_update_record($link,$pc["UID"]," - ".$j);
-			if($target == 0)
-				pc_update_record($link,$pc["UID"]," + ".$j);
 ?>
 <p align="center">
 <a href="javascript:history.go(-1);">操作成功,点击返回</a>
@@ -435,7 +492,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t11">内容
-	<input type="checkbox" name="htmltag" value=1 <?php if((strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) && $pc["EDITOR"] == 0) echo "checked"; ?> >使用HTML标记
+	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) echo "checked"; ?> >使用HTML标记
 	</td>
 </tr>
 <tr>
