@@ -232,6 +232,9 @@ O MaxMessageSize=32000
 #define MAXMAILSIZE (32000L - 2000)
 /* 2000 bytes for sendmail header */
 
+#define CHECK_MAIL 0x1	/*0需要检查信笺  1不需要重新检查*/
+#define CHECK_MSG 0x2	/*0没有msg 1有msg*/
+
 #define BOARD_VOTEFLAG 0x1
 #define BOARD_NOZAPFLAG 0x2
 #define BOARD_READONLY 0x4

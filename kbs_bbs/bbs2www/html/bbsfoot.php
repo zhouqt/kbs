@@ -5,6 +5,18 @@
         html_nologin();
     else {
         html_init("gb2312");
+
+		if (isset($_GET["total"]))
+			$oldtotal = $_GET["total"];
+		else
+			$oldtotal = 0;
+		settype($oldtotal,"integer");
+
+		if (isset($_GET["unread"]))
+			$oldunread = $_GET["unread"];
+		else
+			$oldunread = 0;
+		settype($oldunread,"integer");
 ?>
 <script language="JavaScript">
 <!--
@@ -47,7 +59,7 @@ echo "\"/cgi-bin/bbs/bbsqry?userid=" . $currentuser["userid"] . "\""; ?> target=
 echo $currentuser["userid"]; ?></a>] <?php
 		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
-		    if (bbs_getmailnum($currentuser["userid"],$total,$unread)) {
+		    if (bbs_getmailnum($currentuser["userid"],$total,$unread, $oldtotal, $oldunread)) {
 			  if ($unread!=0) {
 		        echo "ÐÅÏä[<a href=\"bbsreadmail.php\" target=\"f3\">" . $total . "·â(ÐÂÐÅ" . $unread . ")</a>] ";
 			  }

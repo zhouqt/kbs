@@ -1,10 +1,9 @@
-bin_PROGRAMS = miscd newpop3d chatd webmsgd bbslogd bbssmsd
+bin_PROGRAMS = miscd newpop3d chatd bbslogd bbssmsd
 EXTRA_PROGRAMS = 
 miscd_SOURCES = miscd.c
 bbslogd_SOURCES = bbslogd.c
 newpop3d_SOURCES = newpop3.c
 chatd_SOURCES = station.c
-webmsgd_SOURCES = webmsgd.c
 bbssmsd_SOURCES = bbssmsd.c
 LDADD=../libBBS/.libs/libBBS.a ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
 #AM_LDFLAGS=-static

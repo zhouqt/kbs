@@ -77,12 +77,12 @@ int chkmail()
 	}else
 		uinfo.mailcheck = 0;
 
-	if( uinfo.mailcheck == 1 ){
+	if( uinfo.mailcheck & CHECK_MAIL ){
 		return ismail;
 	}
 
-	utmpshm->uinfo[ utmpent - 1 ].mailcheck=1;
-	uinfo.mailcheck = 1;
+	utmpshm->uinfo[ utmpent - 1 ].mailcheck |= CHECK_MAIL;
+	uinfo.mailcheck |= CHECK_MAIL;
 
     setmailfile(curmaildir, currentuser->userid, DOT_DIR);
 

@@ -118,14 +118,7 @@ struct user_info {              /* Structure used in UTMP file */
     unsigned int friends_p[MAXFRIENDS];
 #endif
     int currentboard;
-	int mailcheck;				/* if have new mail or new msg, stiger */
-								/* IN TELNET: mail
-								 * 0: need recheck
-								 * 1: not check
-								 *
-								 * IN WWW: msg
-								 * 1: need getunreadmsg
-								 * 0: not need */
+	unsigned int mailcheck;				/* if have new mail or new msg, stiger */
 };
 
 struct usermemo {

@@ -2130,16 +2130,20 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 
             u = get_utmpent(utmpent);
             u->pid = 1;
+			/*
             if (addto_msglist(utmpent, user->userid) < 0) {
                 bbslog("3system", "can't add msg:%d %s!!!\n", utmpent, user->userid);
                 *ppuinfo = u;
                 *putmpent = utmpent;
                 ret = 2;
             } else {
+			*/
                 *ppuinfo = u;
                 *putmpent = utmpent;
                 ret = 0;
+				/*
             }
+			*/
             getfriendstr(currentuser, u);
             do_after_login(currentuser,utmpent,0);
         }

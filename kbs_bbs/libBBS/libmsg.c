@@ -10,6 +10,7 @@
 char MsgDesUid[20];
 char msgerr[255];
 int getuinfopid(void);
+/*
 int write_peer(bbsmsg_t * msgbuf)
 {
     char buf[2 * STRLEN];
@@ -18,6 +19,7 @@ int write_peer(bbsmsg_t * msgbuf)
     snprintf(buf, sizeof(buf), "%d %s", msgbuf->type, msgbuf->rawdata);
     return write(msgbuf->sockfd, buf, strlen(buf));
 }
+*/
 int canmsg(struct userec *fromuser, struct user_info *uin)
 {
     if ((uin->pager & ALLMSG_PAGER) || HAS_PERM(fromuser, PERM_SYSOP))
@@ -36,6 +38,7 @@ int can_override(char *userid, char *whoasks)
     sethomefile(buf, userid, "friends");
     return (search_record(buf, &fh, sizeof(fh), (RECORD_FUNC_ARG) cmpfnames, whoasks) > 0) ? true : false;
 }
+/*
 int read_peer(int sockfd, bbsmsg_t * msgbuf)
 {
     char buf[2 * STRLEN];
@@ -43,13 +46,6 @@ int read_peer(int sockfd, bbsmsg_t * msgbuf)
     int rv;
     int rc;
 
-    /*
-     * if (msgbuf == NULL)
-     * return -1; 
-     */
-    /*
-     * assert() macro can be removed by -DNDEBUG 
-     */
     assert(msgbuf != NULL);
     msgbuf->sockfd = sockfd;
     if ((rc = read(sockfd, buf, sizeof(buf) - 1)) < 0)
@@ -136,6 +132,7 @@ int delfrom_msglist(int utmpnum, char *userid)
     close(msgbuf.sockfd);
     return -1;
 }
+*/
 /*
 int send_webmsg(int destutmp, char *destid, int srcutmp, char *srcid, 
 				time_t sndtime, char *msg)
@@ -646,7 +643,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         //save_smsmsg(currentuser->userid, &head2, msgstr, 1) ;
     }
 	if( uin->mode == WWW ){
-		uin->mailcheck = 1;
+		uin->mailcheck |= CHECK_MSG;
 		return 1;
 	}
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {

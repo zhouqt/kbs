@@ -3453,8 +3453,9 @@ static PHP_FUNCTION(bbs_getmailnum)
     int totalcount = 0, unreadcount = 0;
     int ac = ZEND_NUM_ARGS();
     int fd;
+	long oldtotal,oldunread;
 
-    if (ac != 3 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "szz", &userid, &userid_len, &total, &unread) == FAILURE) {
+    if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "szzll", &userid, &userid_len, &total, &unread, &oldtotal, &oldunread) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
     if (userid_len > IDLEN)
@@ -3467,6 +3468,14 @@ static PHP_FUNCTION(bbs_getmailnum)
         zend_error(E_WARNING, "Parameter wasn't passed by reference");
         RETURN_FALSE;
     }
+
+	if( oldtotal && currentuinfo && !(currentuinfo->mailcheck & CHECK_MAIL) ){
+		totalcount = oldtotal;
+		unreadcount = oldunread;
+    	ZVAL_LONG(total, totalcount);
+    	ZVAL_LONG(unread, unreadcount);
+    	RETURN_TRUE;
+	}
 
     setmailfile(path, userid, DOT_DIR);
     fd = open(path, O_RDONLY);
@@ -3483,6 +3492,8 @@ static PHP_FUNCTION(bbs_getmailnum)
      */
     ZVAL_LONG(total, totalcount);
     ZVAL_LONG(unread, unreadcount);
+	if( currentuinfo )
+		currentuinfo->mailcheck |= CHECK_MAIL;
     RETURN_TRUE;
 }
 
@@ -3595,6 +3606,9 @@ static PHP_FUNCTION(bbs_getmails)
 		zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
 	}
     efree(mails);
+
+	if( currentuinfo )
+		currentuinfo->mailcheck &= ~CHECK_MAIL;
 }
 
 /**
@@ -3737,6 +3751,8 @@ static PHP_FUNCTION(bbs_changemaillist)
         }
         save_mail_list(&maillist);
     }
+	if( currentuinfo )
+		currentuinfo->mailcheck &= ~CHECK_MAIL;
     RETURN_LONG(-1);
 }
 
@@ -3772,7 +3788,7 @@ static PHP_FUNCTION(bbs_getwebmsg)
         RETURN_FALSE;
     }
 
-	if( currentuinfo==NULL || currentuinfo->mailcheck==0 )
+	if( currentuinfo==NULL || !(currentuinfo->mailcheck & CHECK_MSG))
 		RETURN_FALSE;
 
     if (receive_webmsg(currentuinfonum, currentuser->userid, &srcpid, srcid, &sndtime, buf) == 0) {
@@ -3782,7 +3798,7 @@ static PHP_FUNCTION(bbs_getwebmsg)
         ZVAL_LONG(z_sndtime, sndtime);
         RETURN_TRUE;
     }
-	currentuinfo->mailcheck=0;
+	currentuinfo->mailcheck &= ~CHECK_MSG;
     /*
      * make changes to the parameter 
      */
@@ -5181,6 +5197,9 @@ static PHP_FUNCTION(bbs_setmailreaded)
 
 	if(total <= 0)
 		RETURN_LONG(0);
+
+	if( currentuinfo )
+		currentuinfo->mailcheck &= ~CHECK_MAIL;
 
 	if(num >=0 && num < total){
 		if((fp=fopen(dirname,"r+"))==NULL)

@@ -624,8 +624,10 @@ void clear_utmp2(int uent)
     utmphead->hashhead[0] = uent;
     /* Delete the user's msglist entry from webmsgd,
      * if the user is login from web. */
+	/*
     if (utmpshm->uinfo[uent - 1].mode == WEBEXPLORE)
         delfrom_msglist(uent, utmpshm->uinfo[uent - 1].userid);
+		*/
     zeroinfo.active = false;
     zeroinfo.pid = 0;
     zeroinfo.invisible = true;
