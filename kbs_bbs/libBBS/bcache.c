@@ -140,20 +140,6 @@ void resolve_boards()
    	close(boardfd);
 }
 
-/* zixia: 真正的所有的版，不会跳过限制阅读/POST的版  */
-int apply_ALL_boards(int (*func)()) 
-{
-    register int i ;
-
-    for(i=0;i<brdshm->numboards;i++){
-        if (bcache[i].filename[0]){
-            if((*func)(&bcache[i]) == QUIT)
-                return QUIT;
-	}
-    }
-    return 0;
-}
-
 struct BoardStatus* getbstatus(int index)
 {
 	return &brdshm->bstatus[index];

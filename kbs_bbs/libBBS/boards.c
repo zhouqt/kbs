@@ -588,3 +588,12 @@ int deldeny(struct userec* user,char* board,char* uident,int notice_only)  /* ɾ
     	return del_from_file(fn,lookupuser?lookupuser->userid:uident);
 }
 
+int check_read_perm(struct userec* user,int num)
+{
+	struct boardheader* board=getboard(num);
+    if( board.level & PERM_POSTMASK || 
+         HAS_PERM(user, board.level ) || 
+         (board.level&PERM_NOZAP))
+         return 1;
+    return 0;
+}

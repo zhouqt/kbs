@@ -788,17 +788,19 @@ int has_BM_perm(struct userec *user, char *board) {
 }
 
 int has_read_perm(struct userec *user, char *board) {  
-	bcache_t *x;	/* 版面不存在返回0, p和z版面返回1, 有权限版面返回1. */
+	int x;	/* 版面不存在返回0, p和z版面返回1, 有权限版面返回1. */
 
 	if(board[0]<=32) return 0;
-	x=getbcache(board);
+	x=getbnum(board);
 	if(x==0) return 0; 
+	return check_read_perm(user,x);
+/*	
 	if(x->level==0) return 1;
 	if(x->level & (PERM_POSTMASK | PERM_NOZAP)) return 1;
 	if(!user_perm(user, PERM_BASIC)) return 0;
-	/*if(user_perm(user, PERM_SPECIAL8)) return 0;*/
 	if(user_perm(user, x->level)) return 1;
 	return 0;
+*/
 }
 
 int count_mails(char *id, int *total, int *unread) {
