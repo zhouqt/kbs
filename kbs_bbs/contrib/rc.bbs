@@ -1,0 +1,30 @@
+BBSHOME=/home/bbs
+cd $BBSHOME
+mv $BBSHOME/tmp $BBSHOME/.bbs.tmp
+rm -rf $BBSHOME/.bbs.tmp&
+mkdir $BBSHOME/tmp
+mkdir $BBSHOME/tmp/forward
+mkdir $BBSHOME/tmp/bbs-gsend
+mkdir $BBSHOME/tmp/email
+mkdir $BBSHOME/tmp/clip
+mkdir $BBSHOME/tmp/bbs-internet-gw
+chown -R bbs.bbs $BBSHOME/tmp
+
+su bbs -c "rm -rf /tmp/* /tmp/.*&"
+su bbs -c "rm -f $BBSHOME/sysconf.img.*"
+
+#init...
+bin/miscd daemon
+bin/webmsgd
+bin/bbslogd
+
+sleep 5
+bin/startbbsd
+bin/startsshd
+bin/newpop3d
+if [ -f innd/innbbsd ]; then
+	su bbs -c innd/innbbsd &> /dev/null
+fi
+
+/home0/www/bin/apachectl start
+/home0/www2/bin/apachectl start
