@@ -246,6 +246,9 @@ void processremote()
             }
             write(sockfd, &reth, sizeof(reth));
             break;
+	case CMD_LINK:
+	    printf("get CMD_LINK\n");
+	    break;
     }
 }
 
@@ -321,7 +324,7 @@ void processbbs()
 		return;
         }
     }
-    time(lastsendtime);
+    time(&lastsendtime);
 
     head->sem=0;
 }
