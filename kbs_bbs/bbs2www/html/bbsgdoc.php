@@ -223,33 +223,9 @@ login_init();
   	display_navigation_bar($brdarr, $brdnum, $start, $total, $order_articles);
   ?>
   </td></tr>
-  <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
-  <tr> 
-    <td colspan="2" align="center" class="b1">
-    	[<a href="#listtop">返回顶部</a>]
-    	[<a href="bbsdoc.php?board=<?php echo $brdarr["NAME"]; ?>">返回一般模式</a>]
-    	[<a href="javascript:location=location">刷新</a>]
-  	    [<a href="/bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>]
-    	<?php
-    		if (strcmp($currentuser["userid"], "guest") != 0)
-		{
-    	?>
-    	[<a href="/cgi-bin/bbs/bbsclear?board=<?php echo $brd_encode; ?>&start=<?php echo $start; ?>">清除未读</a>]
-	<?php
-		}
-		if (bbs_is_bm($brdnum, $usernum))
-		{
-	?>
-	[<a href="bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>]
-	<?php
-		}
-	?>
-    </td>
-  </tr>
 </table>
 <?php
+	bbs_board_foot($brdarr,'DIGEST');
 	}
 	html_normal_quit();
 ?>

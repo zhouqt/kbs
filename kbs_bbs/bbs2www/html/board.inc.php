@@ -174,18 +174,12 @@ function bbs_board_foot($brdarr,$listmode='')
     	[<a href="#listtop">返回顶部</a>]
     	[<a href="javascript:location=location">刷新</a>]
 <?php
-	switch($listmode)
-	{
-		case "NORMAL":
+	if ($listmode != "ORIGIN") {
 ?>
 [<a href="bbsodoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]
 <?php		
-			break;
-		case "ORIGIN":
-		case "DENYLIST":
-		case "CROSS":
-		case "MANAGE":
-		default:
+    }
+    if ($listmode != "NORMAL") {
 ?>
 [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>]
 <?php

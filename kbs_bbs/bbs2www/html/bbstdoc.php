@@ -158,7 +158,7 @@ login_init();
 		if (strcmp($currentuser["userid"], "guest") != 0)
 		{
 ?>
-<a href="/cgi-bin/bbs/bbsclear?board=<?php echo $brd_encode; ?>&start=<?php echo $start; ?>">Çå³ıÎ´¶Á</a>
+<a href="/bbsclear.php?board=<?php echo $brd_encode; ?>">Çå³ıÎ´¶Á</a>
 <?php
 		}
 		$sec_index = get_secname_index($brdarr["SECNUM"]);
