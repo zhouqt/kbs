@@ -4,12 +4,13 @@
 	require("funcs.php");
 login_init();
 	
-        $img_subdir = "/images/menuspring/";
+        $img_subdir = "/images/newstyle/";
         
 	function display_board_list($section_names,$section_nums)
 	{
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="1" class="b1">
+<col width="16px"/><col align="left"/>
 <?php
 		$i = 0;
 		foreach ($section_names as $secname)
@@ -20,7 +21,7 @@ login_init();
 			$level = 0;
 ?>
 <tr>
-<td align="right" width="16">
+<td align="right">
 <a href="javascript:submenu(0,0,<?php echo $group; ?>,0,0)">
 <img id="submenuimg_brd_<?php echo $group; ?>_0" src="/images/close.gif" border="0">
 </a>
@@ -39,7 +40,7 @@ login_init();
 		}
 ?>
 <tr>
-<td align="right" width="16">
+<td align="right">
 <img src="/images/open.gif" border="0">
 </td>
 <td>
@@ -54,6 +55,7 @@ login_init();
 	{
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">
+<col width="16px"/><col align="left"/>
 <?php
  		$select = 0; 
  		$yank = 0;
@@ -72,7 +74,7 @@ login_init();
 				{
 ?>
 <tr>
-<td align="right" width="16">
+<td align="right">
 <a href="javascript:submenu(1,<?php echo $brd_bid[$j]; ?>,0,0,0)">
 <img id="submenuimg_fav_<?php echo $brd_bid[$j]; ?>" src="/images/close.gif" border="0">
 </a>
@@ -93,7 +95,7 @@ login_init();
 				{
 ?>
 <tr>
-<td width="16" align="right">
+<td align="right">
 <?php			  		
 			  		$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
 
@@ -159,10 +161,10 @@ login_init();
 		
 	function display_blog_menu($userid,$userfirstlogin)
 	{
-		$db["HOST"]=bbs_sysconf_str("MYSQLHOST");
-		$db["USER"]=bbs_sysconf_str("MYSQLUSER");
-		$db["PASS"]=bbs_sysconf_str("MYSQLPASSWORD");
-		$db["NAME"]=bbs_sysconf_str("MYSQLSMSDATABASE");
+		$db["HOST"]=bbs_sysconf_str("MYSQLBLOGHOST");
+		$db["USER"]=bbs_sysconf_str("MYSQLBLOGUSER");
+		$db["PASS"]=bbs_sysconf_str("MYSQLBLOGPASSWORD");
+		$db["NAME"]=bbs_sysconf_str("MYSQLBLOGDATABASE");
 		
 		@$link = mysql_connect($db["HOST"],$db["USER"],$db["PASS"]) ;
 		if (!$link) return;
@@ -314,16 +316,17 @@ setTimeout('bbs_auto_reload()',540000);
 <tr>
 	<td align="center">
 		<table width="90%" border="0" cellspacing="0" cellpadding="1" class="b1">
+		<col width="16px"/><col align="left"/>
 		<tr>
-			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><img src="/images/open.gif" border="0"></td>
 			<td><a href="<?php echo MAINPAGE_FILE; ?>" target="f3"><img src="<?php echo $img_subdir; ?>m0.gif" border="0" alt="首页" align="absmiddle"> 首页导读</a></td>
 		</tr>
 		<tr>
-			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><img src="/images/open.gif" border="0"></td>
 			<td><a href="/bbs0an.php" target="f3"><img src="<?php echo $img_subdir; ?>m1.gif" border="0" alt="精华区" align="absmiddle"> 精华区</a></td>
 		</tr>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divboarda">
 				<a href='javascript:changemn("board");'><img id="imgboard" src="/images/close.gif" border="0"></a>
 				</DIV>
@@ -341,11 +344,11 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 		</tr>
 		<tr>
-			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><img src="/images/open.gif" border="0"></td>
 			<form action="/bbssel.php" method="get" target="f3">
 			<td><nobr>
 			<img src="<?php echo $img_subdir; ?>m5.gif" border="0" alt="搜索讨论区" align="absmiddle">
-			<input name="board" type="text" class="f2" value="搜索讨论区" size="12" onclick="this.value=''" /> 
+			<input name="board" type="text" class="f2" value="搜索讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
 <input name="submit" type="submit" value="GO" style="width:25px;height:20px;font-size: 12px;color: #ffffff;border-style: none;background-color: #718BD6;" />
 			</nobr></td>
 			</form>
@@ -354,7 +357,7 @@ setTimeout('bbs_auto_reload()',540000);
 	if($currentuser["userid"]!="guest"){
 ?>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divfava">
 				<a href='javascript:changemn("fav");'><img id="imgfav" src="/images/close.gif" border="0"></a>
 				</DIV>
@@ -371,6 +374,10 @@ setTimeout('bbs_auto_reload()',540000);
 				</DIV>
 			</td>
 		</tr>
+		<tr>
+			<td><img src="/images/open.gif" border="0"></td>
+			<td><a href="bbssfav.php?userid=<?php echo $currentuser['userid']; ?>" target="f3"><img src="<?php echo $img_subdir; ?>m18.gif" border="0" alt="<?php echo FAVORITE_NAME; ?>" align="absmiddle"> <?php echo FAVORITE_NAME; ?></a></td>
+		</tr>
 <?php
 		}
 ?>
@@ -379,13 +386,13 @@ setTimeout('bbs_auto_reload()',540000);
 	{
 ?>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divpca">
 				<a href='javascript:changemn("pc");'><img id="imgpc" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
 			<td>
-			<a href='/pc/pcmain.php' target='f3'>
+			<a href='/pc/index.html' target='f3'>
 			<img src="<?php echo $img_subdir; ?>m3.gif" border="0" alt="<?php echo BBS_FULL_NAME; ?>Blog" align="absmiddle"> 水木Blog
 			</a>
 			</td>
@@ -400,7 +407,7 @@ setTimeout('bbs_auto_reload()',540000);
 ?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/pc/pcmain.php" target="f3">Blog首页</a><br>
+					<a href="/pc/index.html" target="f3">Blog首页</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pc.php" target="f3">用户列表</a><br>
@@ -442,7 +449,7 @@ setTimeout('bbs_auto_reload()',540000);
 	if($currentuser["userid"]!="guest"){
 ?>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divmaila">
 				<a href='javascript:changemn("mail");'><img id="imgmail" src="/images/close.gif" border="0"></a>
 				</DIV>
@@ -463,7 +470,7 @@ setTimeout('bbs_auto_reload()',540000);
 		}
 ?>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divchata">
 				<a href='javascript:changemn("chat");'><img id="imgchat" src="/images/close.gif" border="0"></a>
 				</DIV>
@@ -478,10 +485,14 @@ setTimeout('bbs_auto_reload()',540000);
 			<td> </td>
 			<td>
 				<DIV class="s" id="divchat">
+<?php
+    if (!defined("SITE_SMTH")) { // Smth不提供在线用户列表 add by windinsn, May 5,2004
+?>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="bbsuser.php" target="f3">在线用户</a><br>
 <?php
+        }
 	if($currentuser["userid"]=="guest"){
 ?>					
 					&nbsp;
@@ -499,9 +510,6 @@ setTimeout('bbs_auto_reload()',540000);
 					<a href="/bbsfriend.php" target="f3">在线好友</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbssendsms.php" target="f3">发送短信</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsmsg.php" target="f3">查看所有讯息</a><br>
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
@@ -513,7 +521,7 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 		</tr>
 		<tr>
-			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><img src="/images/open.gif" border="0"></td>
 			<td><a href="/bbsstyle0.php" target="f3"><img src="<?php echo $img_subdir; ?>m2.gif" border="0" alt="界面方案" align="absmiddle"> 界面方案</a>
 		</tr>
 <?php
@@ -521,7 +529,7 @@ setTimeout('bbs_auto_reload()',540000);
 	{
 ?>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divtoola">
 				<a href='javascript:changemn("tool");'><img id="imgtool" src="/images/close.gif" border="0"></a>
 				</DIV>
@@ -566,13 +574,10 @@ setTimeout('bbs_auto_reload()',540000);
 					<a href="/bbspwd.php" target="f3">修改密码</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="cgi-bin/bbs/bbsparm" target="f3">修改个人参数</a><br>
+					<a href="/bbsparm.php" target="f3">修改个人参数</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsal.php" target="f3">通讯录</a><br>
-					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/bbsrsmsmsg.php" target="f3">短信管理器</a><br>
 					&nbsp;
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsnick.php" target="f3">临时改昵称</a><br>
@@ -586,7 +591,7 @@ setTimeout('bbs_auto_reload()',540000);
 	}
 ?>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divexpa">
 				<a href='javascript:changemn("exp");'><img id="imgexp" src="/images/close.gif" border="0"></a>
 				</DIV>
@@ -617,7 +622,7 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 		</tr>
 		<tr>
-			<td width="16">
+			<td>
 				<DIV class="r" id="divsera">
 				<a href='javascript:changemn("ser");'><img id="imgser" src="/images/close.gif" border="0"></a>
 				</DIV>
@@ -645,8 +650,8 @@ setTimeout('bbs_auto_reload()',540000);
     }
 ?>
 					&nbsp;
-					<img src="/images/line.gif" border="0" align="absmiddle">
-					<a href="/data/fterm-smth.zip" target="_blank">Fterm下载</a><br>
+					<img src="/images/line1.gif" border="0" align="absmiddle">
+					<a href="/data/fterm-2004memory.rar" target="_blank">Fterm下载</a><br>
 				<?php /*
 					&nbsp;
 					<img src="/images/line1.gif" border="0" align="absmiddle">
@@ -656,24 +661,27 @@ setTimeout('bbs_auto_reload()',540000);
 			</td>
 		</tr>
 		<tr>
-			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><img src="/images/open.gif" border="0"></td>
 			<td><a href="telnet:smth.org"><img src="<?php echo $img_subdir; ?>m6.gif" border="0" alt="telnet登录" align="absmiddle"> Telnet登录</a>
 		</tr>
 <?php
-require("bbsleftmenu.php");
+    if (defined("SITE_SMTH")) {
+        if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
+			include_once ('bbsleftmenu.php');
+		}
+    }
 ?>
 <!--
 		<tr>
-			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><img src="/images/open.gif" border="0"></td>
 			<td><img src="/images/t10.gif" border="0" alt="查看帮助信息" align="absmiddle"> 查看帮助
 		</tr>
 -->
 <?php
-	if($currentuser["userid"]!="guest")
-	{
+	if($currentuser["userid"]!="guest"){
 ?>
 		<tr>
-			<td width="16"><img src="/images/open.gif" border="0"></td>
+			<td><img src="/images/open.gif" border="0"></td>
 			<td><a href="/bbslogout.php" target="_top"><img src="<?php echo $img_subdir; ?>m7.gif" border="0" alt="离开本站" align="absmiddle"> 离开本站</a>
 		</tr>
 <?php
@@ -690,7 +698,8 @@ require("bbsleftmenu.php");
 		powered_by_smth();
 ?>
 </P>
+</body>
+</html>
 <?php
-		html_normal_quit();
-		}
+    } //loginok
 ?>
