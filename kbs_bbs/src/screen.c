@@ -286,7 +286,7 @@ void refresh()
             scrollcnt--;
         }
     }
-    if(can_clrscr) {
+/*    if(can_clrscr) {
         o_clear();
         can_clrscr = 0;
         for (i=0; i < scr_lns; i++) {
@@ -294,7 +294,7 @@ void refresh()
             memset(bp[i].lmode, 0, scr_cols);
             memset(bp[i].lcolor, 7, scr_cols);
         }
-    }
+    }*/
     
     for (i = 0; i < scr_lns; i++) {
         j = (i + roll)%scr_lns;
