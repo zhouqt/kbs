@@ -196,7 +196,7 @@ void clear_room()
 {
     int i;
     for(i=0;i<MAX_ROOM;i++)
-        if((rooms[i].style!=-1) && (!strcmp(rooms[i].creator, currentuser->userid)||rooms[i].people==0))
+        if((rooms[i].style!=-1) && (rooms[i].people==0))
             rooms[i].style=-1;
 }
 
