@@ -665,7 +665,7 @@ function jumpReferer($forcehome = false) {
 <script language="JavaScript">
 <!--
     if (top == self) {
-        location.href = "<?php echo $target; ?>";
+        location.href = "<?php echo addslashes($target); ?>";
     } else {
         top.location.href = "frames.php?target=<?php echo urlencode($target); ?>";
     }
