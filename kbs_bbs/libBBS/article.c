@@ -395,7 +395,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
 
         write_header(of, user, in_mail, sourceboard, title, Anony, 1 /*≤ª–¥»Î .posts */ );
         if (fgets(buf, 256, inf) != NULL) {
-            for (count = 8; buf[count] != ' '; count++)
+            for (count = 8; buf[count] != ' '&& count<256 ; count++)
                 owner[count - 8] = buf[count];
         }
         owner[count - 8] = '\0';
