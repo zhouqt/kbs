@@ -1,3 +1,6 @@
+/*
+ * $Id$
+ */
 #include "bbslib.h"
 #include "netinet/in.h"
 #include <netdb.h>
@@ -155,16 +158,18 @@ struct action condition_data[] =
         {NULL, NULL, NULL}
     };
 
-int main() {
+int main()
+{
 	char t[80];
 	int pid;
 
 	init_all();
 	strsncpy(t, getparm("t"), 80);
-	pid=atoi(getparm("pid"));
+	pid = atoi(getparm("pid"));
 	if(pid==0)
 		reg();
-	if(!loginok) {
+	if(!loginok)
+	{
 		http_fatal("´íÎó£¬ÇëÏÈµÇÂ¼");
 		exit(0);
 	}
