@@ -545,9 +545,14 @@ int haspostperm(struct userec* user,char *bname) /* 判断在 bname版 是否有post权 
         /*if(!strcmp(bname, "sysop"))
                return 1;*/ /* Leeward 98.05.21 revised by stephen 2000.10.27*/ 
         /* let user denied post right post at Complain*/
-    {if (!strcmp(bname, "Complain")) return 1;/* added by stephen 2000.10.27*/
+    {
+    	if (!strcmp(bname, "Complain")) 
+    		return 1;/* added by stephen 2000.10.27*/
         else if(!strcmp(bname, "sysop"))
-            return 1;} /* stephen 2000.10.27 */
+        	return 1;
+        else if(!strcmp(bname, "Arbitration"))
+            return 1;
+    } /* stephen 2000.10.27 */
     if (!HAS_PERM(user,PERM_POST)) return 0;
     return (HAS_PERM(user,(bcache[i-1].level&~PERM_NOZAP) & ~PERM_POSTMASK));
 }
