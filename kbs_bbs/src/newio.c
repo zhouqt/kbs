@@ -932,8 +932,6 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 break;
             case KEY_DEL:
                 if(now<strlen(buf)) {
-                    for(i=now;i<strlen(buf);i++)
-                        buf[i]=buf[i+1];
 #ifdef CHINESE_CHARACTER
                     if (DEFINE(currentuser, DEF_CHCHAR)) {
                         chk = 0;
@@ -946,6 +944,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                                 buf[i]=buf[i+1];
                     }
 #endif
+                    for(i=now;i<strlen(buf);i++)
+                        buf[i]=buf[i+1];
                 }
                 break;
             case KEY_LEFT:

@@ -1744,7 +1744,6 @@ void vedit_key(ch)
                 redraw_everything = true;
                 break;
             }
-            delete_char();
 #ifdef CHINESE_CHARACTER
 			if (DEFINE(currentuser, DEF_CHCHAR)) {
 				int i,j=0;
@@ -1755,6 +1754,7 @@ void vedit_key(ch)
 		            delete_char();
 			}
 #endif
+            delete_char();
             break;
         case Ctrl('Y'):        /* delete current line */
             /* STONGLY coupled with Ctrl-K */
