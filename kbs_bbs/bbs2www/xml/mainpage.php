@@ -80,7 +80,7 @@ while($board = array_shift($boards))
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <li class="default">
-<a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode(iconv("UTF-8", "GBK", $hot_title)); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a> &nbsp;&nbsp;[作者: <a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a> &nbsp;&nbsp;[作者: <a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 }
 ?>
@@ -123,7 +123,7 @@ function gen_sec_hot_subjects_html($secid)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li class="default"><a href="/cgi-bin/bbs/bbstfind?board=<?php echo $brd_encode; ?>&title=<?php echo urlencode(iconv("UTF-8", "GBK", $hot_title)); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default"><a href="/cgi-bin/bbs/bbstcon?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
@@ -384,7 +384,7 @@ while($board = array_shift($boards))
     $hot_board = find_content($board, "board");
     $hot_groupid = find_content($board, "groupid");
 ?>
-<li class="default"><a href="/cgi-bin/bbs/bbstfind?board=<?php echo $hot_board; ?>&title=<?php echo urlencode(iconv("UTF-8", "GBK", $hot_title)); ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a></li>
+<li class="default"><a href="/cgi-bin/bbs/bbstcon?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars(iconv("UTF-8", "GBK", $hot_title)); ?></a></li>
 <?php
 }
 ?>
