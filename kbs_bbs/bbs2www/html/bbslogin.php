@@ -62,7 +62,7 @@ if ($id!="") {
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=gb2312" />
-    <title>BBS 水木清华站</title>
+    <title><?php echo BBS_FULL_NAME; ?></title>
   </head>
 <body >
 <SCRIPT language="javascript">

@@ -73,7 +73,7 @@ $mailbody="
 <html>
 <body><P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">  " . $realname  . "欢迎您来到</SPAN><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">BBS水木清华站。</SPAN></FONT></P>
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">" . BBS_FULL_NAME . "。</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">您的注册信息是：</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><SPAN 
@@ -88,7 +88,7 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">：" . $reg_email . "</SPAN></FONT></P>
 <P class=MsoNormal><FONT size=2><A 
 href=\"https://www.smth.edu.cn\"><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里登录BBS 水木清华</SPAN>
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里登录" . BBS_FULL_NAME . "</SPAN>
 <P class=MsoNormal><FONT size=2><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">您现在尚不能进行发表文章等操作,请等待站长手工通过注册单,谢谢.</SPAN></FONT></P>
 </body>
@@ -101,7 +101,7 @@ $headers .= "Content-type: text/html; charset=gb2312\r\n";
 /* additional headers */
 $headers .= "From: BBS水木清华站 <https://www.smth.edu.cn>\r\n";
 
-if(!mail($reg_email, "welcome to BBS水木清华站",$mailbody,$headers))
+if(!mail($reg_email, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
     html_error_quit("发送密码到您的注册Email失败!请确认您的该Email地址正确");
 
 	if(!strcmp($gender,"男"))$gender=1;
