@@ -59,7 +59,7 @@ int number,mode;
     return;
 }
 
-showstuff(buf)
+void showstuff(buf)
 char    buf[256];
 {
     struct userec douser;

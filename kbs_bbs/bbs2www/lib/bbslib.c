@@ -832,20 +832,6 @@ char *whoasks;
     return (search_record( buf, &fh, sizeof(fh), cmpfnames, whoasks )>0)?YEA:NA;
 }
 
-int
-canmsg(uin)
-struct user_info *uin;
-{
-    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(currentuser,PERM_SYSOP))
-		return YEA;
-    if ((uin->pager&FRIENDMSG_PAGER))
-    {
-        if(can_override(uin->userid, getcurruserid()))
-            return YEA;
-    }
-    return NA;
-}
-
 extern char MsgDesUid[14];
 int send_msg(char *srcid, int srcutmp, char *destid, int destutmp, char *msg)
 {

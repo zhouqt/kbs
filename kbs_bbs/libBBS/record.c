@@ -369,7 +369,7 @@ int size, id ;
 int
 get_records(filename,rptr,size,id,number)
 char *filename ;
-char *rptr ;
+void *rptr ;
 int size, id, number ;
 {
     int fd ;

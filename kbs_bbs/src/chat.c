@@ -836,7 +836,7 @@ void call_user(chatcontext *pthis,const char *arg) /* invite user online to chat
         else if(LOCKSCREEN == uin->mode) /* Leeward 98.02.28 */
             sprintf(msg,"[32m%s[37m“—æ≠À¯∂®∆¡ƒª£¨«Î…‘∫Ú‘Ÿ—˚«ÎªÚ∏¯À˚(À˝)–¥–≈.\n", uin->userid);
         else
-            if(!canmsg(uin))
+            if(!canmsg(currentuser,uin))
                 sprintf(msg,"%s “—æ≠πÿ±’Ω” ‹—∂œ¢µƒ∫ÙΩ–∆˜.\n", uin->userid);
             else {  FILE *fp;
                 int msg_count=0;
@@ -896,7 +896,7 @@ void chat_sendmsg(chatcontext *pthis,const char *arg) /* send msg in chatroom , 
 			sprintf(msg,"\x1b[32m%s\x1b[37m“—æ≠À¯∂®∆¡ƒª£¨«Î…‘∫Ú‘Ÿ∑¢ªÚ∏¯À˚(À˝)–¥–≈.\n", uin->userid);
 		else
 		{
-			if(!canmsg(uin))
+			if(!canmsg(currentuser,uin))
 				sprintf(msg,"\x1b[32m%s\x1b[37m“—æ≠πÿ±’Ω” ‹—∂œ¢µƒ∫ÙΩ–∆˜.\n", uin->userid);
 			else if(NA==canIsend2(uin->userid))
 				sprintf(msg,"\x1b[32m%s\x1b[37mæ‹æ¯Ω” ‹ƒ„µƒ—∂œ¢.\n",uin->userid);/*Haohmaru.99.6.6,ºÏ≤È «∑Ò±ªignore*/

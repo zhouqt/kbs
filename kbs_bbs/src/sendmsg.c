@@ -50,19 +50,6 @@ int line;
     }
 }
 
-int
-canmsg(uin)
-struct user_info *uin;
-{
-    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(currentuser,PERM_SYSOP)) return YEA;
-    if ((uin->pager&FRIENDMSG_PAGER))
-    {
-        if(can_override(uin->userid,currentuser->userid))
-            return YEA;
-    }
-    return NA;
-}
-
 void s_msg()
 {
     do_sendmsg(NULL,NULL,0);
@@ -114,7 +101,7 @@ int mode;
             clrtoeol() ;
             return -1 ;
         }
-        if(!canmsg(uin))
+        if(!canmsg(currentuser,uin))
         {
             move(2,0) ;
             prints("对方已经关闭接受讯息的呼叫器...\n");

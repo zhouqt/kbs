@@ -43,6 +43,10 @@ struct keeploc {
     struct keeploc *next ;
 } ;
 
+static int search_articles(struct keeploc  *locmem,char *query,int offset,int aflag);
+static int search_author(struct keeploc  *locmem,int offset,char *powner);
+static int search_post(struct keeploc  *locmem,int  offset);
+static int search_title(struct keeploc  *locmem,int  offset);
 
 /*struct fileheader *files = NULL;*/
 char            currdirect[ 255 ]; /*COMMAN: increased directory length to MAX_PATH */
@@ -213,6 +217,28 @@ void draw_entry(char *(*doentry)(char*,int,char*), struct keeploc * locmem,
     move(t_lines-1,0);
     clrtoeol();
     update_endline();
+}
+
+static int
+search_author( locmem, offset ,powner)
+struct keeploc  *locmem;
+int             offset;
+char            *powner;
+{
+    static char author[ IDLEN+1 ];
+    char        ans[ IDLEN+1 ], pmt[ STRLEN ];
+    char currauth[STRLEN];
+
+    strncpy( currauth, powner,STRLEN);
+
+    snprintf( pmt,STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ?  "往後来" : "往先前", currauth );
+    move(t_lines-1,0);
+    clrtoeol();
+    getdata( t_lines-1, 0, pmt, ans, IDLEN+1, DOECHO, NULL ,YEA);/*Haohmaru.98.09.29.修正作者查找只能11位ID的错误*/
+    if( ans[0] != '\0' )  strncpy( author, ans,IDLEN);
+    else strcpy(author,currauth);
+
+    return search_articles( locmem, author, offset, 1 );
 }
 
 
@@ -669,7 +695,7 @@ char *direct ;
         return DONOTHING;
     clear();
     uin=(struct user_info*)t_search(fileinfo->owner,NA);
-    if( !uin || !canmsg(uin))
+    if( !uin || !canmsg(currentuser,uin))
         do_sendmsg(NULL,NULL,0);
     else {
         strncpy(MsgDesUid, uin->userid, 20);
@@ -920,28 +946,6 @@ char *direct ;
 }
 
 int
-search_author( locmem, offset ,powner)
-struct keeploc  *locmem;
-int             offset;
-char            *powner;
-{
-    static char author[ IDLEN+1 ];
-    char        ans[ IDLEN+1 ], pmt[ STRLEN ];
-    char currauth[STRLEN];
-
-    strncpy( currauth, powner,STRLEN);
-
-    snprintf( pmt,STRLEN, "%s的文章搜寻作者 [%s]: ", offset > 0 ?  "往後来" : "往先前", currauth );
-    move(t_lines-1,0);
-    clrtoeol();
-    getdata( t_lines-1, 0, pmt, ans, IDLEN+1, DOECHO, NULL ,YEA);/*Haohmaru.98.09.29.修正作者查找只能11位ID的错误*/
-    if( ans[0] != '\0' )  strncpy( author, ans,IDLEN);
-    else strcpy(author,currauth);
-
-    return search_articles( locmem, author, offset, 1 );
-}
-
-int
 auth_post_down(ent,fileinfo,direct)
 int ent ;
 struct fileheader *fileinfo ;
@@ -1041,7 +1045,7 @@ char *direct ;
 }
 
 
-int
+static int
 search_post( locmem, offset)
 struct keeploc  *locmem;
 int             offset;
@@ -1059,7 +1063,7 @@ int             offset;
     return search_articles( locmem, query, offset, -1 );
 }
 
-int
+static int
 search_title( locmem, offset )
 struct keeploc  *locmem;
 int             offset;
@@ -1372,7 +1376,7 @@ char *query;
 }
 
 /* COMMAN : use mmap to speed up searching */
-int
+static int
 search_articles( locmem, query, offset, aflag )
 struct keeploc  *locmem;
 char            *query;

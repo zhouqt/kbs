@@ -411,7 +411,7 @@ case 's': case 'S':
         if( strcmp(user_record[allnum]->userid,"guest") && 
 		!HAS_PERM(currentuser,PERM_PAGE))
             return 1;
-        if(!canmsg(user_record[allnum]))
+        if(!canmsg(currentuser,user_record[allnum]))
         {
             sprintf(buf,"%s 已经关闭讯息呼叫器",
                     user_record[allnum]->userid);

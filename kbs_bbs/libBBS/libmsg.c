@@ -20,6 +20,26 @@ int write_peer(msg_t *msgbuf)
 	return write(msgbuf->sockfd, buf, strlen(buf));
 }
 
+int canmsg(struct userec * fromuser,struct user_info *uin)
+{
+    if ((uin->pager&ALLMSG_PAGER) || HAS_PERM(fromuser,PERM_SYSOP)) return YEA;
+    if ((uin->pager&FRIENDMSG_PAGER))
+    {
+        if(can_override(uin->userid,fromuser->userid))
+            return YEA;
+    }
+    return NA;
+}
+
+int can_override(char *userid,char *whoasks)
+{
+    struct friends fh;
+    char buf[255];
+
+    sethomefile( buf, userid, "friends" );
+    return  (search_record( buf, &fh, sizeof(fh), cmpfnames, whoasks )>0)?YEA:NA;
+}
+
 int read_peer(int sockfd, msg_t *msgbuf)
 {
 	char buf[2*STRLEN];

@@ -42,8 +42,10 @@ int dosearchuser(char* userid);
 void showtitle(char* title,char* mid);
 void abort_bbs();
 int egetch();
+void update_endline();
 
 /* bbs.c*/
+int check_stuffmode();
 int do_reply(char* title);
 int do_select(int ent,struct fileheader* fileinfo,char* direct );  /* 输入讨论区名 选择讨论区 */
 int do_post();
@@ -58,6 +60,12 @@ int post_cross(char islocal,int mode);
 int a_Save(char    *path,char *key,struct fileheader *fileinfo,int nomsg,
 	char *direct,int ent);
 int a_Import(char *path,char *key,struct fileheader *fileinfo,int nomsg,char *direct,int ent);  /* Leeward 98.04.15 */
+int digest_mode();
+int thread_mode();
+int deleted_mode();
+int junk_mode();
+int Goodbye();
+
 
 /*vote.c*/
 void makevdir(char* bname);
@@ -78,6 +86,7 @@ int del_from_file(char filename[STRLEN],char str[STRLEN]);
 int addtooverride(char* uident);
 int t_query(char q_id[IDLEN]);
 int talkreply();
+int friend_add(int ent,struct friends * fh,char* direct);
 
 /* delete.c */
 int kick_user(struct user_info *userinfo);
@@ -86,10 +95,14 @@ int d_user(char cid[IDLEN]);
 /* read.c */
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
 void fixkeep(char* s,int first,int last);
+int cursor_pos(struct keeploc *locmem,int val,int from_top);
+int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,
+               int ch, int ssize, char * pnt);
 
 /* sendmsg.c */
 void s_msg();
 void r_lastmsg();
+int show_allmsgs();
 
 /* list.c */
 int t_friends();
@@ -102,5 +115,10 @@ int vedit_post(char *filename,int saveheader );
 /* Announce.c */
 void a_prompt(int bot,char* pmt,char* buf);
 
+/* goodbye.c */
+void showstuff(char buf[256]);
+
+/* userinfo.c */
+void disply_userinfo(struct userec *u ,int real);
 #endif
 

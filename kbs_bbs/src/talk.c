@@ -1561,17 +1561,6 @@ x_excechess() {
 */
 
 int
-can_override( userid, whoasks )
-char *userid;
-char *whoasks;
-{
-    struct friends fh;
-
-    sethomefile( genbuf, userid, "friends" );
-    return  (search_record( genbuf, &fh, sizeof(fh), cmpfnames, whoasks )>0)?YEA:NA;
-}
-
-int
 listfilecontent(fname)
 char *fname;
 {
