@@ -103,7 +103,7 @@ struct userec *urec;
 
     /* 修改: 将永久帐号转为长期帐号, Bigman 2000.8.11 */
     if ((urec->userlevel & PERM_XEMPT) && (!(urec->userlevel & PERM_SUICIDE)) )
-    {	if (urec->lastlogin < 966135212)
+    {	if (urec->lastlogin < 988610030)
         return 666; /* 如果没有登录过的 */
         else
             return (667 * 24 * 60 - value)/(60*24);
