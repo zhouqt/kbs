@@ -89,6 +89,8 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 <P class=MsoNormal><FONT size=2><A 
 href=\"https://www.smth.edu.cn\"><SPAN 
 style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里登录BBS 水木清华</SPAN>
+<P class=MsoNormal><FONT size=2><SPAN 
+style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">您现在尚不能进行发表文章等操作,请等待站长手工通过注册单,谢谢.</SPAN></FONT></P>
 </body>
 </html>
 ";
