@@ -323,30 +323,33 @@ check_register_info()
 
     clear();
     sprintf(buf,"%s",email_domain());
-    if( !(urec->userlevel & PERM_BASIC) ) {
-        urec->userlevel = 0;
+    if( !(currentuser->userlevel & PERM_BASIC) ) {
+        currentuser->userlevel = 0;
         return;
     }
     /*urec->userlevel |= PERM_DEFAULT;*/
     perm = PERM_DEFAULT & sysconf_eval( "AUTOSET_PERM" );
 
     /*    if( sysconf_str( "IDENTFILE" ) != NULL ) {  commented out by netty to save time */
-    while ( strlen( urec->username ) < 2 ) {
-        getdata( 2, 0, "ÇëÊäÈëÄúµÄêÇ³Æ:(ÀıÈç,´òµ¹±±Ô¼) << ", urec->username, NAMELEN,DOECHO,NULL ,YEA);
-        strcpy(uinfo.username,urec->username);
+    while ( strlen( currentuser->username ) < 2 ) {
+        getdata( 2, 0, "ÇëÊäÈëÄúµÄêÇ³Æ:(ÀıÈç,ÎÒ°®XXX) << ", buf, NAMELEN,DOECHO,NULL ,YEA);
+        strcpy(currentuser->username,buf);
+        strcpy(uinfo.username,buf);
         UPDATE_UTMP_STR(username,uinfo);
     }
-    if ( strlen( urec->realname ) < 2 ) {
+    if ( strlen( currentuser->realname ) < 2 ) {
         move( 3, 0 );
         prints( "ÇëÊäÈëÄúµÄÕæÊµĞÕÃû: (Õ¾³¤»á°ïÄú±£ÃÜµÄ !)\n" );
-        getdata( 4, 0, "> ", urec->realname, NAMELEN,DOECHO,NULL,YEA);
+        getdata( 4, 0, "> ", buf, NAMELEN,DOECHO,NULL,YEA);
+        strcpy(currentuser->realname,buf);
     }
-    if ( strlen( urec->address ) < 6 ) {
+    if ( strlen( currentuser->address ) < 6 ) {
         move( 5, 0 );
         prints( "ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", strlen( urec->address ) > 0 ? urec->address : "¿ÕµØÖ·" ); /* Leeward 98.04.26 */
-        getdata( 6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", urec->address, NAMELEN,DOECHO,NULL,YEA);
+        getdata( 6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN,DOECHO,NULL,YEA);
+        strcpy(currentuser->address,buf);
     }
-    if ( strchr( urec->email, '@' ) == NULL ) {
+    if ( strchr( currentuser->email, '@' ) == NULL ) {
         move( 3, 0 );
         prints( "Ö»ÓĞ±¾Õ¾µÄºÏ·¨¹«Ãñ²ÅÄÜ¹»ÍêÈ«ÏíÓĞ¸÷ÖÖ¹¦ÄÜ£¬ \n" );
         /* alex           prints( "³ÉÎª±¾Õ¾ºÏ·¨¹«ÃñÓĞÁ½ÖÖ°ì·¨£º\n\n" );
