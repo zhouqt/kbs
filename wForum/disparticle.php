@@ -221,9 +221,9 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 £¨∑÷“≥£∫ 
 <?php
 		if ($page>4) {
-			echo "<a href=\"?boardName=".$boardName."&amp;ID=".$groupID."&amp;start=0\">[1]</a> ";
+			echo "<a href=\"?boardName=".$boardName."&amp;ID=".$groupID."&amp;start=0\">[1]</a>";
 			if ($page>5) {
-				echo "...";
+				echo " ...";
 			}
 		} 
 
@@ -243,7 +243,7 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 
 		if ($endpage<$totalPages) {
 			if ($endpage<$totalPages-1){
-				echo "...";
+				echo " ...";
 			}
 			echo " <a href=\"?boardName=".$boardName."&amp;ID=".$groupID."&amp;start=".($totalPages-1)*THREADSPERPAGE."\">[".$totalPages."]</a>";
 		} 
