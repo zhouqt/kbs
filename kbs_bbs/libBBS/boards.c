@@ -519,11 +519,13 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 void init_brc_cache(char* userid,bool replace) {
     if ((brc_cache_entry==NULL)||(replace)) {
         char dirfile[MAXPATH];
+        char temp[MAXPATH];
         int brcfdr;
 	struct stat st;
 	if (brc_cache_entry)
 		munmap(brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
-        setcachehomefile(dirfile, userid, -1, "entry");
+        setcachehomefile(temp, userid, -1, "entry");
+	sprintf(dirfile,BBSHOME "/%s",temp);
         if(stat(dirfile, &st)<0) {
             char brc[BRC_CACHE_NUM*sizeof(struct _brc_cache_entry)];
             brcfdr = open(dirfile, O_RDWR|O_CREAT, 0600);
@@ -532,7 +534,9 @@ void init_brc_cache(char* userid,bool replace) {
             close(brcfdr);
         }
         brcfdr = open(dirfile, O_RDWR, 0600);
+	if (brcfdr==-1) bbslog("3error","can't open %s errno %d",dirfile,errno);
         brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
+	if (brc_cache_entry==-1) bbslog("3error","can't mmap %s errno %d",dirfile,errno);
         close(brcfdr);
     }
 }
@@ -561,6 +565,8 @@ int brc_initial(char *userid, char *boardname)
     if (!strcmp(userid,"guest")) return 0;
 #if USE_TMPFS==1
     init_brc_cache(userid,false);
+    if (brc_cache_entry==NULL) return 0;
+    if (brc_cache_entry==-1) return 0;
 #endif
 
     for (i = 0; i < BRC_CACHE_NUM; i++)

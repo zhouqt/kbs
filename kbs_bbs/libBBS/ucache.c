@@ -987,7 +987,9 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
         if (mode==0)
             clean_cachedata(user->userid,unum);
         else //www guest,使用负数来和telnet guest区分
+	{
             clean_cachedata(user->userid,-unum);
+	}
 #endif
     }
     if (userinfo&&userinfo->currentboard)
