@@ -194,27 +194,31 @@ int pc_add_user()
 	}
 }
 
-static int pc_add_friend(char *uident, char *fpath)
+static int pc_add_friend(char *uident, char *fpath, int echo)
 {
     int seek;
     int id;
     struct userec *lookupuser;
 
     if (!(id = getuser(uident, &lookupuser))) {
+		if( echo){
         move(3, 0);
         prints("Invalid User Id");
         clrtoeol();
         pressreturn();
         clear();
+		}
         return 0;
     }
     strcpy(uident, lookupuser->userid);
 
 	seek = seek_in_file(fpath, uident);
 	if (seek) {
+		if(echo){
 		move(2, 0);
 		prints("输入的ID 已经存在!");
 		pressreturn();
+		}
 		return -1;
 	}
 
@@ -265,7 +269,7 @@ static int pc_change_friend()
             move(1, 0);
             usercomplete("增加个人文集好友成员: ", uident);
             if (*uident != '\0') {
-                pc_add_friend(uident,buf) ;
+                pc_add_friend(uident,buf,1) ;
             }
         } else if ((*ans == 'D' || *ans == 'd') && count) {
             move(1, 0);
@@ -1142,10 +1146,56 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	case 'a':
 		if( strcasecmp(pc_u->username, currentuser->userid) )
 			return SHOW_CONTINUE;
+		if( conf->item_count > pc_u->nodelimit ){
+			clear();
+			prints("文章数目达到限制");
+			pressreturn();
+			return SHOW_REFRESH;
+		}
 		if( pc_add_a_node(0) )
 			return SHOW_DIRCHANGE;
 		return SHOW_REFRESH;
 		break;
+	case 'i':
+	{
+		char ans[4];
+
+		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 2 )
+			return SHOW_CONTINUE;
+
+		clear();
+        getdata(3, 0, "确实要导入好友名单? (Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
+		if(ans[0] != 'y' && ans[0] != 'Y'){
+			return SHOW_REFRESH;
+		}else{
+			char fpath[STRLEN];
+			char buf[STRLEN];
+			struct friends fh;
+			FILE *fp;
+			int suc=0;
+
+			sethomefile(fpath, currentuser->userid, "friends");
+			sethomefile(buf, currentuser->userid, "pc_friend");
+
+			if((fp=fopen(fpath, "r"))==NULL)
+				return SHOW_REFRESH;
+
+			while(fread(&fh, sizeof(fh), 1, fp)){
+
+				if(pc_add_friend(fh.id, buf, 0) > 0)
+					suc++;
+
+			}
+			fclose(fp);
+
+			move(10,0);
+			clrtoeol();
+			prints("成功导入 %d 个好友", suc);
+			pressanykey();
+
+			return SHOW_REFRESH;
+		}
+	}
 	case 'o':
 		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 2 )
 			return SHOW_CONTINUE;
@@ -1155,6 +1205,12 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	case 'g':
 		if( strcasecmp(pc_u->username, currentuser->userid) || pc_dirmode != 4 || pc_fav_dir==0)
 			return SHOW_CONTINUE;
+		if( conf->item_count > pc_u->dirlimit ){
+			clear();
+			prints("目录数目达到限制");
+			pressreturn();
+			return SHOW_REFRESH;
+		}
 		if( pc_add_a_dir(0) )
 			return SHOW_DIRCHANGE;
 		return SHOW_REFRESH;
@@ -1233,6 +1289,12 @@ static int pc_dir_key(struct _select_def *conf, int key)
 	case 'p':
 		if( strcasecmp(pc_u->username, currentuser->userid) )
 			return SHOW_CONTINUE;
+		if( conf->item_count > pc_u->nodelimit ){
+			clear();
+			prints("文章数目达到限制");
+			pressreturn();
+			return SHOW_REFRESH;
+		}
 		if( pc_pasteboard <= 0 ){
 			move(t_lines -1, 0);
 			clrtoeol();
