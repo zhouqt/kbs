@@ -173,14 +173,22 @@ int ann_get_board(char *path, char *board, size_t len)
         return -1;
     if (ptr[0] == '/')
         ptr++;
-    if (strncmp(path,"0Announce/groups/",strlen("0Announce/groups/")))
-        return -1;
-    arg.path=path+strlen("0Announce/groups/");
-    arg.board=board;
-    arg.len=len;
-    if (apply_boards(findboard,&arg)==QUIT)
-        return 0;
-    return -1;
+    if (! strncmp(path,"0Announce/groups/",strlen("0Announce/groups/"))){
+	    arg.path=path+strlen("0Announce/groups/");
+	    arg.board=board;
+	    arg.len=len;
+	    if (apply_boards(findboard,&arg)==QUIT)
+	        return 0;
+	    return -1;
+	}else if(! strncmp(path,"groups/",7)){
+	    arg.path=path+7;
+	    arg.board=board;
+	    arg.len=len;
+	    if (apply_boards(findboard,&arg)==QUIT)
+	        return 0;
+	    return -1;
+	}
+	return -1;
 }
 
 /*
