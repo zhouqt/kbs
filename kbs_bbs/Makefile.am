@@ -1,4 +1,4 @@
-EXTRA_DIST = README INSTALL site/smth.c site/smth.h
+EXTRA_DIST = README INSTALL sites/site.c sites/site.h
 SUBDIRS=libsystem libBBS rzsz src daemon local_utl mail2bbs @subdirs@
 CLEANFILES=@EXTRA_CLEAN@
 

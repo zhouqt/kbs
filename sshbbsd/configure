@@ -1673,6 +1673,7 @@ fi;
 
 
 
+no_x="yes"
 
 # Make sure we can run config.sub.
 $ac_config_sub sun4 >/dev/null 2>&1 ||

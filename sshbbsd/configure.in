@@ -19,6 +19,7 @@ AC_PREREQ(2.10)
 LIBS="-L/usr/local/lib $LIBS"
 
 m4_include(../config.icc)
+no_x="yes"
 
 AC_CANONICAL_HOST
 AC_MSG_CHECKING(cached information)
