@@ -1167,8 +1167,8 @@ char *uid, *frm;
 
 #define IPListName ".IPlists"
 #define MAXLIST 1000
-#define CON_THRESHOLD 1000.0*24
-#define CON_THRESHOLD2 1.0/24/60/60
+#define CON_THRESHOLD 1000.0/60/60
+#define CON_THRESHOLD2 1.0
 
 int check_IP_lists(char *IP)
 {
