@@ -1275,7 +1275,7 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
     if ((fp = fopen(filename, "r")) == NULL)
         return -1;
     flock(fileno(fp), LOCK_EX);
-    sprintf(fnnew, "%s.%d", filename, getuid());
+    sprintf(fnnew, "%s.%d", filename, getpid());
     if ((nfp = fopen(fnnew, "w")) == NULL) {
         flock(fileno(fp), LOCK_UN);
         fclose(fp);
@@ -1291,8 +1291,10 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
     flock(fileno(fp), LOCK_UN);
     fclose(fp);
     fclose(nfp);
-    if (!deleted)
+    if (!deleted){
+		my_unlink(fnnew);
         return -1;
+	}
     return (f_mv(fnnew, filename));
 }
 
