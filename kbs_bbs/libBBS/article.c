@@ -1216,9 +1216,9 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #ifdef FILTER
     case FILE_CENSOR_FLAG:
 #ifdef SMTH
-        if (!strcmp(currboard, FILTER_BOARD)) 
-#else
         if ((!strcmp(currboard, FILTER_BOARD)) ||(!strcmp(currboard, "NewsClub")))
+#else
+        if (!strcmp(currboard, FILTER_BOARD)) 
 #endif
         {
             if (fileinfo->accessed[1] & FILE_CENSOR || fileinfo->o_board[0] == 0) {
@@ -1409,8 +1409,8 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         type = '#';
 #ifdef FILTER
 #ifdef SMTH
-    } else if ((HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && (!strcmp(boardname, FILTER_BOARD))
-    ||(!strcmp(boardname,"NewsClub")&&is_bm))) {
+    } else if ((HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && (!strcmp(boardname, FILTER_BOARD)
+    ||(!strcmp(boardname,"NewsClub")&&is_bm)))) {
         type = '@';
 #else
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
