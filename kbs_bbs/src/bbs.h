@@ -59,9 +59,9 @@
 #include <stdarg.h>
 
 /* System names.. by zixia.*/
-#include BBSSITE_H
+#include "site.h"
 
-#include "config.h"             /* User-configurable stuff */
+#include "bbsconfig.h"             /* User-configurable stuff */
 #include "permissions.h"
 
 #define PUBLIC_SHMKEY	3700 

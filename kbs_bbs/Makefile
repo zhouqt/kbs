@@ -16,39 +16,23 @@
 ####   Setup the following site-specific information     ####
 #############################################################
 
-# The home directory for the user 'bbs'
-#BBSHOME=/home/system/bbs
-# The uid for the user 'bbs'
-#BBSUID=9999
 
 OS_DEF   = -DAIX -DSYSV 
-#OS_DEF   = -DLINUX -DSYSV 
-#OS_DEF	= -DFREEBSD
 
 
 CC       = gcc
 AR	 = ar
 LD	 = gcc 
-#CC       = cc
 CFLAGS   = -g -Ilibesmtp
 LDFLAGS  = -lc
-#CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
-#LIBS     = -L. -L/usr/local/lib -lesmtp
-	#-lcrypt -lltdl -ldl -lbsd
 LIBS     = -lbsd -lesmtp -Llibesmtp/.libs -lltdl -ldl
 
-#CFLAGS   = -O3
-#LIBS     = -ltermcap -lbsd -lcrypt
-
-#INSTALL  = /usr/bin/install -c
 INSTALL  = ./install.sh 
 
 BBSLIB = libBBS.a
 BBSLIB-SHARE = libBBS.so
 
-#CSIE_DEF = -DSHOW_IDLE_TIME -D_DETAIL_UINFO_ 
 CSIE_DEF = -DSHOW_IDLE_TIME -DBBSGID=99 -D_DETAIL_UINFO_
-#-DTALK_LOG
 
 PROGNAME = bbsd_single
 
@@ -86,10 +70,8 @@ OTHERS   = bbs.h edit.h
 
 GARBAGE  = a.out core installchatd adminbbs chatd
 
-# The -DINVISIBLE makes bbs users invisible to 'finger' and 'who'.
-# Simply remove it if you don't want this feature.
 
-SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DBBSSITE_H='"site.h"' -DINVISIBLE
+SITE_DEF = -DBBSHOME='"$(BBSHOME)"' -DINVISIBLE
 
 DEFINES	=  $(CSIE_DEF) $(OS_DEF)
 
