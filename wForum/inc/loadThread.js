@@ -1,4 +1,4 @@
-document.write('<iframe width=0 height=0 src="" id="hiddenframe" name="hiddenframe" style="display:none"></iframe>');
+document.write('<iframe width=0 height=0 src="" frameborder="0" scrolling="no" id="hiddenframe" name="hiddenframe"></iframe>');
 
 /* 版面列表以及详细列表展开 */
 
