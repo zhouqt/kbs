@@ -45,7 +45,6 @@ int SR_author();
 int SR_authorX();               /* Leeward 98.10.03 */
 int G_SENDMODE = false;
 extern int add_author_friend();
-extern int zsend_post();
 int cmpinames();                /* added by Leeward 98.04.10 */
 
 extern int numofsig;
