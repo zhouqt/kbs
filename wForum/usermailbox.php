@@ -160,7 +160,7 @@ function showmailBox($boxName, $path, $desc, $startNum){
 <td class=TableBody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=<?php echo $boxName; ?>&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($maildata[$i]['TITLE'],ENT_QUOTES); ?></a>	</td>
 <td class=TableBody1 style="font-weight:normal"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
 <td class=TableBody1 style="font-weight:normal"> N/A Byte</td>
-<td align=center valign=middle width=30 class=TableBody1><input type=checkbox name=num id="oNum" value=<?php echo $i+$startNum; ?>></td>
+<td align=center valign=middle width=30 class=TableBody1><input type=checkbox name=num id="num" value=<?php echo $i+$startNum; ?>></td>
 </tr>
 <?php
 	}
@@ -195,28 +195,32 @@ function showmailBox($boxName, $path, $desc, $startNum){
 		}
 ?>
 <br>
-<input type="hidden" name="action" id="oAction">
-<input type="hidden" name="nums" id="oNums">
-<input type="hidden" id="oNum">
+<input type="hidden" name="action" id="Action">
+<input type="hidden" name="nums" id="Nums">
+<input type="hidden" id="Num" name="num">
 <script >
 function doAction(desc,action) {
-	var nums,s,first;
+	var nums,s,first,i;
 	if(confirm(desc))	{
-		oForm.oNums.value="";
-		oForm.oAction.value=action;
+		objForm=getRawObject("oForm");
+		objNums=getRawObject("Nums");
+		objAction=getRawObject("Action");
+		objNums.value="";
+		objAction.value=action;
 		first=true;
-		for (nums=new Enumerator(document.all.item("oNum"));!nums.atEnd();nums.moveNext()){
-			s=nums.item();
+		nums=getObjectCollection("num");
+		for (i=0;i<nums.length;i++){
+			s=nums[i];
 			if (s.checked) {
 				if (first) {
 					first=false;
 				} else {
-					oForm.oNums.value+=',';
+					objNums.value+=',';
 				}
-				oForm.oNums.value+=s.value;
+				objNums.value+=s.value;
 			}
 		}
-		return oForm.submit()
+		return objForm.submit()
 	}
 	return false;
 }
