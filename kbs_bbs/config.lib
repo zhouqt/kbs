@@ -33,8 +33,8 @@ if test "$ZLIB_DIR" != "no"; then
 else
   AC_MSG_ERROR(Need zlib support)
 fi
-AC_SUBST(ZLIB_LIBS)
-AC_SUBST(ZLIB_INC)
+LIBS="$LIBS $ZLIB_LIBS"
+CFLAGS="$CFLAGS $ZLIB_INC"
 
 AC_CHECK_LIB([bsd], [vfork], [LIBS="$LIBS -lbsd"])
 AC_CHECK_LIB([dl], [dlopen], [LIBS="$LIBS -ldl"])

@@ -243,8 +243,8 @@ int wall()
         prints("没有任何使用者上线\n");
         pressanykey();
     }
-    sprintf(buf2, "%s 广播:%s", currentuser->userid,buf2);
-    securityreport(buf2, NULL, NULL);
+    sprintf(genbuf, "%s 广播:%s", currentuser->userid,buf2);
+    securityreport(genbuf, NULL, NULL);
     prints("\n已经广播完毕....\n");
     pressanykey();
     return 0;
