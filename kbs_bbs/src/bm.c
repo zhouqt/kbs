@@ -594,7 +594,7 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
             usercomplete("增加俱乐部成员: ", uident);
             if (*uident != '\0') {
                 if (addclubmember(uident, readperm) == 1) {
-                    sprintf(genbuf, "%s由%s授予%s俱乐部权力", uident, currentuser->userid, currboard->filename);
+                    sprintf(genbuf, "%s由%s授予%s俱乐部权力\n", uident, currentuser->userid, currboard->filename);
                     securityreport(genbuf, NULL, NULL);
                     mail_buf(currentuser, genbuf, uident, genbuf);
                     deliverreport(genbuf, genbuf);
@@ -609,7 +609,7 @@ int clubmember(int ent, struct fileheader *fh, char *direct)
                 sprintf(genbuf, "真的要取消%s的俱乐部权力么？", uident);
                 if (askyn(genbuf, true))
                     if (delclubmember(uident, readperm)) {
-                        sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力", uident, currentuser->userid, currboard->filename);
+                        sprintf(genbuf, " %s 被%s 取消 %s 俱乐部 权力\n", uident, currentuser->userid, currboard->filename);
                         securityreport(genbuf, NULL, NULL);
                         mail_buf(currentuser, genbuf, uident, genbuf);
                         deliverreport(genbuf, genbuf);
