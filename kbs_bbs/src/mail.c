@@ -402,31 +402,36 @@ int do_send(userid, title)
     int now;                    /* added by Bigman: for SYSOP mail */
     int ret;
 
-    if (!strchr(userid, '@'))
-        return -4;
-
-    if (getuser(userid,&user)==0)
-    	return -4;
-	ret = chkreceiver(currentuser, user);
-	if (ret==1)
-		return -3;
-    /* SYSOP也能给自杀的人发信 */
+    if (!strchr(userid, '@')) {
+	    if (getuser(userid,&user)==0)
+	    	return -4;
+		ret = chkreceiver(currentuser, user);
+		if (ret==1)
+			return -3;
+	    /* SYSOP也能给自杀的人发信 */
 
 
-	if (ret==2) {
-		move(1, 0);
-        prints("你的信箱容量 %d(k)超出上限 %d(k), 无法发送信件。", sum, sumlimit);
-        pressreturn();
-        return -2;
-	}
+		if (ret==2) {
+			move(1, 0);
+	        prints("你的信箱容量 %d(k)超出上限 %d(k), 无法发送信件。", sum, sumlimit);
+	        pressreturn();
+	        return -2;
+		}
+    }
 #ifdef INTERNET_PRIVATE_EMAIL
     /* I hate go to , but I use it again for the noodle code :-) */
-    if (strchr(userid, '@')) {
+    else {
         /*        if(!strstr(userid,"edu.tw")){
            if(strstr(userid,"@bbs.ee.nthu."))
            strcat(userid,"edu.tw");
            else
            strcat(userid,".edu.tw");} */
+        if (chkusermail(currentuser)) {
+			move(1, 0);
+	        prints("你的信箱容量 %d(k)超出上限 %d(k), 无法发送信件。", sum, sumlimit);
+	        pressreturn();
+	        return -2;
+        }
         internet_mail = 1;
         modify_user_mode(IMAIL);
         buf4[0] = ' ';
