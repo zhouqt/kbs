@@ -1193,3 +1193,37 @@ int is_valid_date(int year, int month, int day)
 	}
 }
 
+/*
+ * Return value:
+ *      0       Success
+ *     -1       so called "bad arg1"
+ *     -2       so called "bad arg2"
+ */
+int valid_filename(char *file, int use_subdir)
+{
+	if (file == NULL)
+		return -1;
+	if (use_subdir)
+	{
+		char *ptr;
+
+		if (strstr(file, ".."))
+			return -2;
+		ptr = file;
+		if (isalpha(file[0]) && file[1] == '/')
+			ptr = file + 2;
+		if (strncmp(ptr, "M.", 2) && strncmp(ptr, "G.", 2))
+			return -1;
+		if (strchr(ptr, '/'))
+			return -2;
+	}
+	else
+	{
+		if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
+			return -1;
+		if (strstr(file, "..") || strstr(file, "/"))
+			return -2;
+	}
+    return 0;
+}
+

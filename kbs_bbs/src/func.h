@@ -137,6 +137,7 @@ extern "C" {
     void logattempt(char *uid, char *frm);
     int check_ban_IP(char *IP, char *buf);
 	int is_valid_date(int year, int month, int day);
+	int valid_filename(char *file, int use_subdir);
 
 #define time(x) bbstime(x)
 
