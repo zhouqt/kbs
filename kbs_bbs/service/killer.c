@@ -455,10 +455,9 @@ void join_room(struct room_struct * r)
 
     room_refresh(0);
     while(1){
-        buf[0]=0;
         do{
             int ch;
-            ch=-getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 0);
+            ch=-getdata(t_lines-1, 0, "输入:", buf, 75, 1, NULL, 1);
             if(ch==KEY_UP) {
                 selected--;
                 if(selected<0) selected = myroom->people-1;
@@ -476,7 +475,8 @@ void join_room(struct room_struct * r)
                 pid=inrooms.peoples[selected].pid;
                 if(inrooms.status!=INROOM_STOP) {
                     if(inrooms.peoples[selected].flag&PEOPLE_ALIVE && 
-                        !(inrooms.peoples[selected].flag&PEOPLE_SPECTATOR)) {
+                        !(inrooms.peoples[selected].flag&PEOPLE_SPECTATOR) &&
+                        selected!=me) {
                         int i,j;
                         sprintf(buf, "\x1b[32;1m%s投了%s一票\x1b[m", inrooms.peoples[me].nick[0]?inrooms.peoples[me].nick:inrooms.peoples[me].id,
                             inrooms.peoples[selected].nick[0]?inrooms.peoples[selected].nick:inrooms.peoples[selected].id);
@@ -559,14 +559,65 @@ void join_room(struct room_struct * r)
                                 }
                             }
                             else {
-                                sprintf(buf, "%s被杀掉了!",
-                                    inrooms.peoples[maxi].nick[0]?inrooms.peoples[maxi].nick:inrooms.peoples[maxi].id);
+                                int a=0,b=0;
+                                if(inrooms.status == INROOM_DAY)
+                                    sprintf(buf, "你大家处决了!");
+                                else
+                                    sprintf(buf, "你被凶手杀掉了!");
+                                send_msg(inrooms.peoples+maxi, buf);
+                                if(inrooms.status == INROOM_DAY) {
+                                    if(inrooms.peoples[maxi].flag&PEOPLE_KILLER)
+                                        sprintf(buf, "坏人%s被处决了!",
+                                            inrooms.peoples[maxi].nick[0]?inrooms.peoples[maxi].nick:inrooms.peoples[maxi].id);
+                                    else
+                                        sprintf(buf, "好人%s被处决了!",
+                                            inrooms.peoples[maxi].nick[0]?inrooms.peoples[maxi].nick:inrooms.peoples[maxi].id);
+                                }
+                                else
+                                    sprintf(buf, "%s被杀掉了!",
+                                        inrooms.peoples[maxi].nick[0]?inrooms.peoples[maxi].nick:inrooms.peoples[maxi].id);
                                 for(j=0;j<myroom->people;j++)
-                                    send_msg(inrooms.peoples+j, buf);
+                                    if(j!=maxi)
+                                        send_msg(inrooms.peoples+j, buf);
                                 start_change_inroom(myroom);
                                 for(i=0;i<myroom->people;i++)
                                     if(inrooms.peoples[i].pid == maxpid)
                                         inrooms.peoples[i].flag &= ~PEOPLE_ALIVE;
+                                for(i=0;i<myroom->people;i++)
+                                    if(inrooms.peoples[i].flag&PEOPLE_ALIVE) {
+                                        if(inrooms.peoples[i].flag&PEOPLE_KILLER) a++;
+                                        else b++;
+                                    }
+                                if(a>=b-1) {
+                                    inrooms.status = INROOM_STOP;
+                                    for(i=0;i<myroom->people;i++) {
+                                        send_msg(inrooms.peoples+i, "坏人获得了胜利...");
+                                        for(j=0;j<myroom->people;j++)
+                                        if(inrooms.peoples[j].flag&PEOPLE_KILLER &&
+                                            inrooms.peoples[j].flag&PEOPLE_ALIVE) {
+                                            sprintf(buf, "原来%s是坏人!",
+                                                inrooms.peoples[j].nick[0]?inrooms.peoples[j].nick:inrooms.peoples[j].id);
+                                            send_msg(inrooms.peoples+i, buf);
+                                        }
+                                    }
+                                }
+                                else if(a==0) {
+                                    inrooms.status = INROOM_STOP;
+                                    for(i=0;i<myroom->people;i++)
+                                        send_msg(inrooms.peoples+i, "所有坏人都被处决了，好人获得了胜利...");
+                                }
+                                else if(inrooms.status == INROOM_DAY) {
+                                    inrooms.status = INROOM_NIGHT;
+                                    for(i=0;i<myroom->people;i++)
+                                        send_msg(inrooms.peoples+i, "恐怖的夜色又降临了...");
+                                }
+                                else {
+                                    inrooms.status = INROOM_DAY;
+                                    for(i=0;i<myroom->people;i++)
+                                        send_msg(inrooms.peoples+i, "天亮了...");
+                                }
+                                for(i=0;i<myroom->people;i++)
+                                    inrooms.peoples[i].vote = 0;
                                 end_change_inroom();
                             }
                         }
@@ -574,11 +625,13 @@ void join_room(struct room_struct * r)
                             kill(inrooms.peoples[i].pid, SIGUSR1);
                     }
                     else {
-                        if(!(inrooms.peoples[selected].flag&PEOPLE_ALIVE))
+                        if(selected==me)
+                            send_msg(inrooms.peoples+me, "\x1b[31;1m你不能选择自杀\x1b[m");
+                        else if(!(inrooms.peoples[selected].flag&PEOPLE_ALIVE))
                             send_msg(inrooms.peoples+me, "\x1b[31;1m此人已死\x1b[m");
                         else
                             send_msg(inrooms.peoples+me, "\x1b[31;1m此人是旁观者\x1b[m");
-                        kill(inrooms.peoples[i].pid, SIGUSR1);
+                        kill(inrooms.peoples[me].pid, SIGUSR1);
                     }
                 }
             }
