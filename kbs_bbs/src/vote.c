@@ -1080,7 +1080,16 @@ char *bname;
 
 int b_vote_maintain()
 {
-    return vote_maintain(currboard->filename);
+	int ret;
+#ifdef NEW_HELP
+	int oldhelpmode = helpmode;
+	helpmode = HELP_VOTE;
+#endif
+    ret =  vote_maintain(currboard->filename);
+#ifdef NEW_HELP
+	helpmode = oldhelpmode;
+#endif
+	return ret;
 }
 
 int vote_title()
@@ -1216,6 +1225,9 @@ int b_vote()
 {
     int num_of_vote;
     int voting;
+#ifdef NEW_HELP
+	int oldhelpmode = helpmode;
+#endif
 
     if (!HAS_PERM(currentuser, PERM_LOGINOK))
         return 0;               /* Leeward 98.05.15 */
@@ -1231,7 +1243,13 @@ int b_vote()
     }
     setlistrange(num_of_vote);
     clear();
+#ifdef NEW_HELP
+	helpmode = HELP_VOTE;
+#endif
     voting = choose(false, 0, vote_title, vote_key, Show_Votes, user_vote);
+#ifdef NEW_HELP
+	helpmode = oldhelpmode;
+#endif
     clear();
     return /*user_vote( currboard->filename ) */ FULLUPDATE;
 }
