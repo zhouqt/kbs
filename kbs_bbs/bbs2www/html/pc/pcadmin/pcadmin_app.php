@@ -86,6 +86,11 @@ function pc_add_users($link,$userid,$corpusname,$manual)
 	$ret = bbs_postarticle($pcconfig["APPBOARD"], preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody), 0 , 0 , 0 , 0);
 	if($ret != 0)
 		return FALSE;
+	//发信件给用户
+	$ret = bbs_postmail($lookupuser["userid"],preg_replace("/\\\(['|\"|\\\])/","$1",$annTitle), preg_replace("/\\\(['|\"|\\\])/","$1",$annBody),0,0);
+	if($ret < 0)
+		return FALSE;
+	
 	return TRUE;
 }
 
