@@ -206,7 +206,7 @@ function showBoardContents($boardID,$boardName,$page){
 </TD>
 <TD class=TableBody2 width=80 align="center"><a href="dispuser.php?id=<?php echo $origin['OWNER'] ;?>" target=_blank><?php echo $origin['OWNER'] ;?></a></TD>
 <TD class=TableBody1 width=64 align="center"><?php echo $threadNum; ?></TD>
-<TD align=left class=TableBody2 width=200>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $total; ?>">
+<TD align=left class=TableBody2 width=200>&nbsp;<a href="disparticle.php?boardName=<?php echo $boardName ;?>&ID=<?php echo $origin['ID'];?>&start=<?php echo $threadNum; ?>">
 <?php
 			echo strftime("%Y-%m-%d %H:%M", $lastreply['POSTTIME']);
 ?></a>&nbsp;<font color=#FF0000>|</font>&nbsp;<a href=dispuser.php?id=<?php echo $lastreply['OWNER']; ?>  target=_blank>
