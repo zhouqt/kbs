@@ -409,7 +409,8 @@ void attach_err(int shmkey, char *name)
     oflush();
 #else
     char buf[256];
-    sprintf(buf,"Error! %s error! key = %x.", name, shmkey);
+
+    sprintf(buf, "Error! %s error! key = %x.", name, shmkey);
     perror(buf);
 #endif
     exit(1);
@@ -425,7 +426,7 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
     int shmkey, shmid;
 
     if (shmstr)
-        shmkey = sysconf_eval(shmstr,defaultkey);
+        shmkey = sysconf_eval(shmstr, defaultkey);
 
     else
         shmkey = 0;
@@ -463,56 +464,54 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
     } return shmptr;
 }
 
-char *
-cexp(exp)
+char *cexp(exp)
 int exp;
 {
-        int expbase=0;
+    int expbase = 0;
 
-        if(exp==-9999)
-                return "没等级";
-        if(exp<=100+expbase)
-                return "新手上路";
-        if(exp>100+expbase&&exp<=450+expbase)
-                return "一般站友";
-        if(exp>450+expbase&&exp<=850+expbase)
-                return "中级站友";
-        if(exp>850+expbase&&exp<=1500+expbase)
-                return "高级站友";
-        if(exp>1500+expbase&&exp<=2500+expbase)
-                return "老站友";
-        if(exp>2500+expbase&&exp<=3000+expbase)
-                return "长老级";
-        if(exp>3000+expbase&&exp<=5000+expbase)
-                return "本站元老";
-        if(exp>5000+expbase)
-                return "开国大老";
-        
+    if (exp == -9999)
+        return "没等级";
+    if (exp <= 100 + expbase)
+        return "新手上路";
+    if (exp > 100 + expbase && exp <= 450 + expbase)
+        return "一般站友";
+    if (exp > 450 + expbase && exp <= 850 + expbase)
+        return "中级站友";
+    if (exp > 850 + expbase && exp <= 1500 + expbase)
+        return "高级站友";
+    if (exp > 1500 + expbase && exp <= 2500 + expbase)
+        return "老站友";
+    if (exp > 2500 + expbase && exp <= 3000 + expbase)
+        return "长老级";
+    if (exp > 3000 + expbase && exp <= 5000 + expbase)
+        return "本站元老";
+    if (exp > 5000 + expbase)
+        return "开国大老";
+
 }
 
-char *
-cperf(perf)
+char *cperf(perf)
 int perf;
-{        
-        
-        if(perf==-9999)
-                return "没等级";
-        if(perf<=5)
-                return "赶快加油";
-        if(perf>5&&perf<=12)
-                return "努力中";
-        if(perf>12&&perf<=35)
-                return "还不错";
-        if(perf>35&&perf<=50)
-                return "很好";
-        if(perf>50&&perf<=90)
-                return "优等生";
-        if(perf>90&&perf<=140)
-                return "太优秀了";
-        if(perf>140&&perf<=200)
-                return "本站支柱";
-        if(perf>200)
-                return "神～～";
+{
+
+    if (perf == -9999)
+        return "没等级";
+    if (perf <= 5)
+        return "赶快加油";
+    if (perf > 5 && perf <= 12)
+        return "努力中";
+    if (perf > 12 && perf <= 35)
+        return "还不错";
+    if (perf > 35 && perf <= 50)
+        return "很好";
+    if (perf > 50 && perf <= 90)
+        return "优等生";
+    if (perf > 90 && perf <= 140)
+        return "太优秀了";
+    if (perf > 140 && perf <= 200)
+        return "本站支柱";
+    if (perf > 200)
+        return "神～～";
 
 }
 
@@ -571,7 +570,7 @@ char *setbdir(int digestmode, char *buf, char *boardname)
         sprintf(dir, ".TITLE.%s", currentuser->userid);
         break;
     case DIR_MODE_NORMAL:
-	default:
+    default:
         strcpy(dir, DOT_DIR);
         break;
     }
@@ -686,12 +685,24 @@ struct public_data *get_publicshm()
 void detach_publicshm()
 {
     shmdt(publicshm);
-    publicshm=NULL;
+    publicshm = NULL;
 }
 
 int getwwwguestcount()
 {
     return publicshm->www_guest_count;
+}
+
+void save_maxuser()
+{
+    FILE *fp;
+
+    publicshm->max_user=get_utmp_number() + getwwwguestcount();
+    publicshm->max_wwwguest= getwwwguestcount();
+    if (NULL != (fp = fopen("etc/maxuser", "w"))) {
+        fprintf(fp, "%d %d", publicshm->max_user,publicshm->max_wwwguest);
+        fclose(fp);
+    }
 }
 
 void bbssettime(time_t now)
@@ -701,7 +712,12 @@ void bbssettime(time_t now)
     if (publicshm == NULL) {
         publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 0, NULL);    /* attach public share memory */
         if (iscreate) {
+            FILE *fp;
 
+            if (NULL != (fp = fopen("etc/maxuser", "r"))) {
+                fscanf(fp, "%d %d", &publicshm->max_user,&publicshm->max_wwwguest);
+                fclose(fp);
+            }
             /*
              * 初始化public共享内存区 
              */
@@ -710,6 +726,7 @@ void bbssettime(time_t now)
              */
             unlink("sysconf.img.0");
             publicshm->sysconfimg_version = 0;
+
         }
     }
     publicshm->nowtime = now;
@@ -855,8 +872,8 @@ int cmpfileinfoname(char *filename, struct fileheader *fi)
     return !strncmp(filename, fi->filename, FILENAME_LEN);
 }
 
-int canIsend2(struct userec* user,char* userid)           /* Leeward 98.04.10 */
-{
+int canIsend2(struct userec *user, char *userid)
+{                               /* Leeward 98.04.10 */
     char buf[IDLEN + 1];
     char path[256];
 
@@ -866,13 +883,13 @@ int canIsend2(struct userec* user,char* userid)           /* Leeward 98.04.10 */
     if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
         return false;
     /*
-    sethomefile(path, userid, "/bads");
-    if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
-        return false;
-
-    else
-    */
-        return true;
+     * sethomefile(path, userid, "/bads");
+     * if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
+     * return false;
+     * 
+     * else
+     */
+    return true;
 }
 
 sigjmp_buf bus_jump;
@@ -1021,48 +1038,47 @@ time_t get_exit_time(char *id, char *exittime)
 
 int read_userdata(const char *userid, struct userdata *ud)
 {
-	char datafile[STRLEN];
-	int fd;
+    char datafile[STRLEN];
+    int fd;
 
-	if ((userid == NULL || userid[0] == '\0') || ud == NULL)
-		return -1;
-	sethomefile(datafile, userid, USERDATA);
-	if ((fd = open(datafile, O_RDONLY, 0644)) < 0)
-	{
-		if ((fd = open(datafile, O_WRONLY | O_CREAT, 0644)) < 0)
-			return -1;
-		bzero(ud, sizeof(struct userdata));
-		strncpy(ud->userid, userid, sizeof(ud->userid)-1);
-		ud->userid[sizeof(ud->userid)-1] = '\0';
-		write(fd, ud, sizeof(struct userdata));
-		close(fd);
-		return 1; /* created new .userdata file */
-	}
-	read(fd, ud, sizeof(struct userdata));
-	close(fd);
-	return 0; /* success */
+    if ((userid == NULL || userid[0] == '\0') || ud == NULL)
+        return -1;
+    sethomefile(datafile, userid, USERDATA);
+    if ((fd = open(datafile, O_RDONLY, 0644)) < 0) {
+        if ((fd = open(datafile, O_WRONLY | O_CREAT, 0644)) < 0)
+            return -1;
+        bzero(ud, sizeof(struct userdata));
+        strncpy(ud->userid, userid, sizeof(ud->userid) - 1);
+        ud->userid[sizeof(ud->userid) - 1] = '\0';
+        write(fd, ud, sizeof(struct userdata));
+        close(fd);
+        return 1;               /* created new .userdata file */
+    }
+    read(fd, ud, sizeof(struct userdata));
+    close(fd);
+    return 0;                   /* success */
 }
 
 int write_userdata(const char *userid, const struct userdata *ud)
 {
-	char datafile[STRLEN];
-	int fd;
+    char datafile[STRLEN];
+    int fd;
 
-	if ((userid == NULL || userid[0] == '\0') || ud == NULL)
-		return -1;
-	sethomefile(datafile, userid, USERDATA);
-	if ((fd = open(datafile, O_WRONLY, 0644)) < 0)
-		return -1;
-	write(fd, ud, sizeof(struct userdata));
-	close(fd);
-	return 0;
+    if ((userid == NULL || userid[0] == '\0') || ud == NULL)
+        return -1;
+    sethomefile(datafile, userid, USERDATA);
+    if ((fd = open(datafile, O_WRONLY, 0644)) < 0)
+        return -1;
+    write(fd, ud, sizeof(struct userdata));
+    close(fd);
+    return 0;
 }
 
 void getuinfo(FILE * fn, struct userec *ptr_urec)
 {
-	struct userdata ud;
+    struct userdata ud;
 
-	read_userdata(ptr_urec->userid, &ud);
+    read_userdata(ptr_urec->userid, &ud);
     fprintf(fn, "\n\n您的代号     : %s\n", ptr_urec->userid);
     fprintf(fn, "您的昵称     : %s\n", ptr_urec->username);
     fprintf(fn, "真实姓名     : %s\n", ud.realname);
@@ -1085,11 +1101,11 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
 
     if ((fp = fopen(filename, "r")) == NULL)
         return -1;
-    flock(fileno(fp),LOCK_EX);
+    flock(fileno(fp), LOCK_EX);
     sprintf(fnnew, "%s.%d", filename, getuid());
     if ((nfp = fopen(fnnew, "w")) == NULL) {
-    	flock(fileno(fp),LOCK_UN);
-    	 fclose(fp);
+        flock(fileno(fp), LOCK_UN);
+        fclose(fp);
         return -1;
     }
     while (fgets(buf, 256 /*STRLEN*/, fp) != NULL) {
@@ -1099,7 +1115,7 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
         else if (*buf > ' ')
             fputs(buf, nfp);
     }
-    flock(fileno(fp),LOCK_UN);
+    flock(fileno(fp), LOCK_UN);
     fclose(fp);
     fclose(nfp);
     if (!deleted)
@@ -1173,75 +1189,84 @@ int check_ban_IP(char *IP, char *buf)
     return IPX;
 }
 
-int dodaemon(char* daemonname,bool single,bool closefd)
+int dodaemon(char *daemonname, bool single, bool closefd)
 {
     int pidfd;
     char path[MAXPATH];
     char line[20];
 
     if (fork())
-	exit(0);
+        exit(0);
     setsid();
     if (fork())
         exit(0);
-    sprintf(path,"var/%s.pid",daemonname);
-    pidfd=open(path,O_RDWR|O_CREAT,0660);
-    if (write_lock(pidfd,0,SEEK_SET,0)<0) {
-    	if (errno==EACCES||errno==EAGAIN)
-    		return 1;
+    sprintf(path, "var/%s.pid", daemonname);
+    pidfd = open(path, O_RDWR | O_CREAT, 0660);
+    if (write_lock(pidfd, 0, SEEK_SET, 0) < 0) {
+        if (errno == EACCES || errno == EAGAIN)
+            return 1;
         else
-        	return 2;
+            return 2;
     }
 
     if (closefd) {
-    	int i;
-    	for (i=0;i<64;i++)
-		if (i!=pidfd)
-    		close(i);
+        int i;
+
+        for (i = 0; i < 64; i++)
+            if (i != pidfd)
+                close(i);
     }
-    snprintf(line,sizeof(line),"%ld\n",(long)getpid());
-    ftruncate(pidfd,0);
-    write(pidfd,line,strlen(line));
+    snprintf(line, sizeof(line), "%ld\n", (long) getpid());
+    ftruncate(pidfd, 0);
+    write(pidfd, line, strlen(line));
     return 0;
 }
 
 int is_valid_date(int year, int month, int day)
 {
-	int feb;
-	/* 首先检查月份 */
-	switch (month)
-	{
-	case 1:
-	case 3:
-	case 5:
-	case 7:
-	case 8:
-	case 10:
-	case 12:
-		/* 大月 */
-		if (day >= 1 && day <= 31)
-			return 1;
-		else
-			return 0;
-	case 4:
-	case 6:
-	case 9:
-	case 11:
-		/* 小月 */
-		if (day >= 1 && day <= 30)
-			return 1;
-		else
-			return 0;
-	case 2:
-		/* 是否闰年 */
-		feb = 28 + ((year % 100 == 0) ? (year % 400 == 0) : (year % 4 == 0));
-		if (day >= 1 && day <= feb)
-			return 1;
-		else
-			return 0;
-	default:
-		return 0;
-	}
+    int feb;
+
+    /*
+     * 首先检查月份 
+     */
+    switch (month) {
+    case 1:
+    case 3:
+    case 5:
+    case 7:
+    case 8:
+    case 10:
+    case 12:
+        /*
+         * 大月 
+         */
+        if (day >= 1 && day <= 31)
+            return 1;
+        else
+            return 0;
+    case 4:
+    case 6:
+    case 9:
+    case 11:
+        /*
+         * 小月 
+         */
+        if (day >= 1 && day <= 30)
+            return 1;
+        else
+            return 0;
+    case 2:
+        /*
+         * 是否闰年 
+         */
+        feb = 28 + ((year % 100 == 0) ? (year % 400 == 0) : (year % 4 == 0));
+        if (day >= 1 && day <= feb)
+            return 1;
+        else
+            return 0;
+    default:
+        return 0;
+    }
 }
 
 /*
@@ -1252,428 +1277,374 @@ int is_valid_date(int year, int month, int day)
  */
 int valid_filename(char *file, int use_subdir)
 {
-	if (file == NULL)
-		return -1;
-	if (use_subdir)
-	{
-		char *ptr;
+    if (file == NULL)
+        return -1;
+    if (use_subdir) {
+        char *ptr;
 
-		if (strstr(file, ".."))
-			return -2;
-		ptr = file;
-		if (isalpha(file[0]) && file[1] == '/')
-			ptr = file + 2;
-		if (strncmp(ptr, "M.", 2) && strncmp(ptr, "G.", 2))
-			return -1;
-		if (strchr(ptr, '/'))
-			return -2;
-	}
-	else
-	{
-		if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
-			return -1;
-		if (strstr(file, "..") || strstr(file, "/"))
-			return -2;
-	}
+        if (strstr(file, ".."))
+            return -2;
+        ptr = file;
+        if (isalpha(file[0]) && file[1] == '/')
+            ptr = file + 2;
+        if (strncmp(ptr, "M.", 2) && strncmp(ptr, "G.", 2))
+            return -1;
+        if (strchr(ptr, '/'))
+            return -2;
+    } else {
+        if (strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
+            return -1;
+        if (strstr(file, "..") || strstr(file, "/"))
+            return -2;
+    }
     return 0;
 }
 
 void set_proc_title(char *argv0, char *title)
 {
 #ifdef FREEBSD
-	setproctitle("-%s", title);
+    setproctitle("-%s", title);
 #else
-	strcpy(argv0, title);
+    strcpy(argv0, title);
 #endif
 }
 
 int cmpuids2(unum, urec)
-    int unum;
-    struct user_info *urec;
+int unum;
+struct user_info *urec;
 {
     return (unum == urec->uid);
 }
 
-unsigned int 
-load_mailbox_prop(char *userid)
+unsigned int load_mailbox_prop(char *userid)
 {
-	char filename[256];
-	int prop = 0;
-	int fd;
+    char filename[256];
+    int prop = 0;
+    int fd;
 
-	sethomefile(filename, userid, ".mailbox.prop");
-	if ((fd = open(filename, O_RDONLY, 0644)) > 0)
-	{
-		read(fd, &prop, sizeof(prop));
-		close(fd);
-	}
-	return update_mailbox_prop(userid, prop);
+    sethomefile(filename, userid, ".mailbox.prop");
+    if ((fd = open(filename, O_RDONLY, 0644)) > 0) {
+        read(fd, &prop, sizeof(prop));
+        close(fd);
+    }
+    return update_mailbox_prop(userid, prop);
 }
 
-unsigned int 
-store_mailbox_prop(char *userid)
+unsigned int store_mailbox_prop(char *userid)
 {
-	char filename[256];
-	int prop;
-	int fd;
+    char filename[256];
+    int prop;
+    int fd;
 
-	prop = get_mailbox_prop(userid);
-	sethomefile(filename, userid, ".mailbox.prop");
-	if ((fd = open(filename, O_WRONLY | O_CREAT, 0644)) > 0)
-	{
-		write(fd, &prop, sizeof(prop));
-		close(fd);
-	}
-	return prop;
+    prop = get_mailbox_prop(userid);
+    sethomefile(filename, userid, ".mailbox.prop");
+    if ((fd = open(filename, O_WRONLY | O_CREAT, 0644)) > 0) {
+        write(fd, &prop, sizeof(prop));
+        close(fd);
+    }
+    return prop;
 }
 
-unsigned int 
-get_mailbox_prop(char *userid)
+unsigned int get_mailbox_prop(char *userid)
 {
-	struct user_info *uip;
+    struct user_info *uip;
 
-	uip = t_search(userid, 0);
-	if (uip == NULL)
-		return 0;
-	else
-		return uip->mailbox_prop;
+    uip = t_search(userid, 0);
+    if (uip == NULL)
+        return 0;
+    else
+        return uip->mailbox_prop;
 }
 
-unsigned int 
-update_mailbox_prop(char *userid, unsigned int prop)
+unsigned int update_mailbox_prop(char *userid, unsigned int prop)
 {
-	struct user_info *uip;
+    struct user_info *uip;
 
-	uip = t_search(userid, 0);
-	if (uip != NULL)
-		return uip->mailbox_prop = prop;
-	else
-		return 0;
+    uip = t_search(userid, 0);
+    if (uip != NULL)
+        return uip->mailbox_prop = prop;
+    else
+        return 0;
 }
 
-unsigned int 
-load_mailgroup_list(const char *userid, mailgroup_list_t *mgl)
+unsigned int load_mailgroup_list(const char *userid, mailgroup_list_t * mgl)
 {
     char fname[STRLEN];
     int fd;
 
-	bzero(mgl, sizeof(mailgroup_list_t));
+    bzero(mgl, sizeof(mailgroup_list_t));
     sethomefile(fname, userid, "mailgroup");
-    if ((fd = open(fname, O_RDONLY, 0600)) != -1)
-	{
+    if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
         read(fd, mgl, sizeof(mailgroup_list_t));
         close(fd);
     }
-	return mgl->groups_num; /* return zero for failure or no group lists */
+    return mgl->groups_num;     /* return zero for failure or no group lists */
 }
 
-int 
-store_mailgroup_list(const char *userid, const mailgroup_list_t *mgl)
+int store_mailgroup_list(const char *userid, const mailgroup_list_t * mgl)
 {
     char fname[STRLEN];
     int fd;
 
     sethomefile(fname, userid, "mailgroup");
-    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1)
-	{
+    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
         write(fd, mgl, sizeof(mailgroup_list_t));
         close(fd);
-		return 0;
-    }
-	else
-		return -1;
+        return 0;
+    } else
+        return -1;
 }
 
 /*
  * FIXME: If unpredictable system power lost often occurs, there may
  *        be a possibility that this function always return failure.
  */
-static int 
-get_mailgroup_name(const char *userid, mailgroup_list_item *item)
+static int get_mailgroup_name(const char *userid, mailgroup_list_item * item)
 {
-	int i;
-	char groupname[sizeof(item->group_name)];
-	char buf[STRLEN];
-	char filename[STRLEN];
-	struct stat st;
-	int fd;
+    int i;
+    char groupname[sizeof(item->group_name)];
+    char buf[STRLEN];
+    char filename[STRLEN];
+    struct stat st;
+    int fd;
 
-	sethomefile(buf, userid, "mgroups");
-    if (stat(buf, &st) == -1)
-	{
+    sethomefile(buf, userid, "mgroups");
+    if (stat(buf, &st) == -1) {
         if (mkdir(buf, 0755) == -1)
             return -1;
-    }
-	else
-	{
+    } else {
         if (!(st.st_mode & S_IFDIR))
             return -1;
     }
-	for (i = 0; i < MAX_MAILGROUP_NUM; i++)
-	{
-		snprintf(groupname, sizeof(groupname), "group%02d", i);
-    	snprintf(filename, sizeof(filename), "%s/%s", buf, groupname);
-		if ((fd = open(filename, O_CREAT | O_EXCL | O_WRONLY, 0600)) != -1)
-			break;
-	}
-	if (fd == -1)
-		return -1;
-	close(fd);
-	strcpy(item->group_name, groupname);
-	return 0;
+    for (i = 0; i < MAX_MAILGROUP_NUM; i++) {
+        snprintf(groupname, sizeof(groupname), "group%02d", i);
+        snprintf(filename, sizeof(filename), "%s/%s", buf, groupname);
+        if ((fd = open(filename, O_CREAT | O_EXCL | O_WRONLY, 0600)) != -1)
+            break;
+    }
+    if (fd == -1)
+        return -1;
+    close(fd);
+    strcpy(item->group_name, groupname);
+    return 0;
 }
 
-int 
-add_mailgroup_item(const char *userid, mailgroup_list_t *mgl, 
-		mailgroup_list_item *item)
+int add_mailgroup_item(const char *userid, mailgroup_list_t * mgl, mailgroup_list_item * item)
 {
-	int i;
+    int i;
 
-	if (get_mailgroup_name(userid, item) < 0)
-		return -1;
-	for (i = 0; i < MAX_MAILGROUP_NUM; i++)
-	{
-		if (mgl->groups[i].group_name[0] == '\0')
-		{
-			memcpy(&(mgl->groups[i]), item, sizeof(mailgroup_list_item));
-			mgl->groups_num ++;
-			return 0;
-		}
-	}
-	return -1;
+    if (get_mailgroup_name(userid, item) < 0)
+        return -1;
+    for (i = 0; i < MAX_MAILGROUP_NUM; i++) {
+        if (mgl->groups[i].group_name[0] == '\0') {
+            memcpy(&(mgl->groups[i]), item, sizeof(mailgroup_list_item));
+            mgl->groups_num++;
+            return 0;
+        }
+    }
+    return -1;
 }
 
-int 
-add_default_mailgroup_item(const char *userid, mailgroup_list_t *mgl)
+int add_default_mailgroup_item(const char *userid, mailgroup_list_t * mgl)
 {
-	mailgroup_list_item item;
+    mailgroup_list_item item;
 
-	bzero(&item, sizeof(item));
-	snprintf(item.group_desc, sizeof(item.group_desc), "预设群体信件组");
-	return add_mailgroup_item(currentuser->userid, mgl, &item);
+    bzero(&item, sizeof(item));
+    snprintf(item.group_desc, sizeof(item.group_desc), "预设群体信件组");
+    return add_mailgroup_item(currentuser->userid, mgl, &item);
 }
 
-int 
-delete_mailgroup_item(const char *userid, mailgroup_list_t *mgl, int entry)
+int delete_mailgroup_item(const char *userid, mailgroup_list_t * mgl, int entry)
 {
-	int i;
-	char buf[STRLEN];
-	char filename[STRLEN];
-
-	sethomefile(buf, userid, "mgroups");
-	snprintf(filename, sizeof(filename), "%s/%s", buf,
-			mgl->groups[entry].group_name);
-	for (i = entry; i < mgl->groups_num - 1; i++)
-	{
-		memcpy(&(mgl->groups[i]), &(mgl->groups[i+1]), 
-				sizeof(mailgroup_list_item));
-	}
-	bzero(&(mgl->groups[i]), sizeof(mailgroup_list_item));
-	mgl->groups_num --;
-	unlink(filename);
-	return 0;
-}
-
-int 
-modify_mailgroup_item(const char *userid, mailgroup_list_t *mgl, int entry,
-							mailgroup_list_item *item)
-{
-	memcpy(&(mgl->groups[entry]), item, sizeof(mailgroup_list_item));
-
-	return 0;
-}
-
-int 
-load_mailgroup(const char *userid, const char *group, mailgroup_t *mg, int num)
-{
-    char fname[STRLEN];
-	char buf[STRLEN];
-    int fd;
-	int ret = 0;
+    int i;
+    char buf[STRLEN];
+    char filename[STRLEN];
 
     sethomefile(buf, userid, "mgroups");
-	snprintf(fname, sizeof(fname), "%s/%s", buf, group);
+    snprintf(filename, sizeof(filename), "%s/%s", buf, mgl->groups[entry].group_name);
+    for (i = entry; i < mgl->groups_num - 1; i++) {
+        memcpy(&(mgl->groups[i]), &(mgl->groups[i + 1]), sizeof(mailgroup_list_item));
+    }
+    bzero(&(mgl->groups[i]), sizeof(mailgroup_list_item));
+    mgl->groups_num--;
+    unlink(filename);
+    return 0;
+}
+
+int modify_mailgroup_item(const char *userid, mailgroup_list_t * mgl, int entry, mailgroup_list_item * item)
+{
+    memcpy(&(mgl->groups[entry]), item, sizeof(mailgroup_list_item));
+
+    return 0;
+}
+
+int load_mailgroup(const char *userid, const char *group, mailgroup_t * mg, int num)
+{
+    char fname[STRLEN];
+    char buf[STRLEN];
+    int fd;
+    int ret = 0;
+
+    sethomefile(buf, userid, "mgroups");
+    snprintf(fname, sizeof(fname), "%s/%s", buf, group);
     if ((fd = open(fname, O_RDONLY, 0600)) < 0)
-		return -1;
-	if (read(fd, mg, sizeof(mailgroup_t) * num) == sizeof(mailgroup_t) * num)
-	{
-		int i;
-		int len;
+        return -1;
+    if (read(fd, mg, sizeof(mailgroup_t) * num) == sizeof(mailgroup_t) * num) {
+        int i;
+        int len;
 
-		for (i = 0; i < num; i++)
-		{
-			len = strlen(mg[i].id);
-			if (mg[i].id[len - 1] == '\n')
-				mg[i].id[len - 1] = '\0';
-		}
-		ret = num;
-	}
-	close(fd);
+        for (i = 0; i < num; i++) {
+            len = strlen(mg[i].id);
+            if (mg[i].id[len - 1] == '\n')
+                mg[i].id[len - 1] = '\0';
+        }
+        ret = num;
+    }
+    close(fd);
 
-	return ret; /* return zero on failure or no users,
-				 * else return the number of users had been loaded. */
+    return ret;                 /* return zero on failure or no users,
+                                 * else return the number of users had been loaded. */
 }
 
-int 
-store_mailgroup(const char *userid, const char *group, 
-		const mailgroup_t *mg, int num)
+int store_mailgroup(const char *userid, const char *group, const mailgroup_t * mg, int num)
 {
     char fname[STRLEN];
-	char buf[STRLEN];
+    char buf[STRLEN];
     int fd;
 
     sethomefile(buf, userid, "mgroups");
-	snprintf(fname, sizeof(fname), "%s/%s", buf, group);
-    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1)
-	{
+    snprintf(fname, sizeof(fname), "%s/%s", buf, group);
+    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
         write(fd, mg, sizeof(mailgroup_t) * num);
         close(fd);
-		return 0;
+        return 0;
+    } else
+        return -1;
+}
+
+int import_old_mailgroup(const char *userid, mailgroup_list_t * mgl)
+{
+    char oldgroup[STRLEN];
+    char tmpgroup[STRLEN];
+    char buf[STRLEN];
+    int num = 0;
+    int len;
+    mailgroup_list_item item;
+    mailgroup_t mg;
+    FILE *fp;
+    int fd;
+
+    sethomefile(oldgroup, userid, "maillist");
+    sprintf(buf, "tmpgroup%d", getpid());
+    sethomefile(tmpgroup, userid, buf);
+    if ((fp = fopen(oldgroup, "r")) == NULL)
+        return -1;
+    if ((fd = open(tmpgroup, O_CREAT | O_WRONLY, 0600)) < 0) {
+        fclose(fp);
+        return -1;
     }
-	else
-		return -1;
+    while (num < MAX_MAILGROUP_USERS && fgets(buf, sizeof(buf), fp) != NULL) {
+        len = strlen(buf);
+        if (buf[len - 1] == '\n')
+            buf[len - 1] = '\0';
+        strncpy(mg.id, buf, sizeof(mg.id) - 1);
+        mg.id[sizeof(mg.id) - 1] = '\0';
+        mg.exp[0] = '\0';
+        write(fd, &mg, sizeof(mg));
+        num++;
+    }
+    fclose(fp);
+    close(fd);
+    bzero(&item, sizeof(item));
+    item.users_num = num;
+    snprintf(item.group_desc, sizeof(item.group_desc), "老版本群体信件组");
+    if (add_mailgroup_item(userid, mgl, &item) < 0) {
+        unlink(tmpgroup);
+        return -1;
+    }
+    sethomefile(buf, userid, "mgroups/");
+    strcat(buf, item.group_name);
+    rename(tmpgroup, buf);
+
+    return 0;
 }
 
-int 
-import_old_mailgroup(const char *userid, mailgroup_list_t *mgl)
+int import_friends_mailgroup(const char *userid, mailgroup_list_t * mgl)
 {
-	char oldgroup[STRLEN];
-	char tmpgroup[STRLEN];
-	char buf[STRLEN];
-	int num = 0;
-	int len;
-	mailgroup_list_item item;
-	mailgroup_t mg;
-	FILE *fp;
-	int fd;
+    char oldgroup[STRLEN];
+    char tmpgroup[STRLEN];
+    char buf[STRLEN];
+    int num = 0;
+    mailgroup_list_item item;
+    mailgroup_t mg;
+    struct friends fr;
+    int fd2;
+    int fd;
 
-	sethomefile(oldgroup, userid, "maillist");
-	sprintf(buf, "tmpgroup%d", getpid());
-	sethomefile(tmpgroup, userid, buf);
-	if ((fp = fopen(oldgroup, "r")) == NULL)
-		return -1;
-	if ((fd = open(tmpgroup, O_CREAT | O_WRONLY, 0600)) < 0)
-	{
-		fclose(fp);
-		return -1;
-	}
-	while (num < MAX_MAILGROUP_USERS && fgets(buf, sizeof(buf), fp) != NULL)
-	{
-		len = strlen(buf);
-		if (buf[len - 1] == '\n')
-			buf[len - 1] = '\0';
-		strncpy(mg.id, buf, sizeof(mg.id) - 1);
-		mg.id[sizeof(mg.id) - 1] = '\0';
-		mg.exp[0] = '\0';
-		write(fd, &mg, sizeof(mg));
-		num ++;
-	}
-	fclose(fp);
-	close(fd);
-	bzero(&item, sizeof(item));
-	item.users_num = num;
-	snprintf(item.group_desc, sizeof(item.group_desc), "老版本群体信件组");
-	if (add_mailgroup_item(userid, mgl, &item) < 0)
-	{
-		unlink(tmpgroup);
-		return -1;
-	}
-	sethomefile(buf, userid, "mgroups/");
-	strcat(buf, item.group_name);
-	rename(tmpgroup, buf);
+    sethomefile(oldgroup, userid, "friends");
+    sprintf(buf, "tmpgroup%d", getpid());
+    sethomefile(tmpgroup, userid, buf);
+    if ((fd2 = open(oldgroup, O_RDONLY, 0600)) < 0)
+        return -1;
+    if ((fd = open(tmpgroup, O_CREAT | O_WRONLY, 0600)) < 0) {
+        close(fd2);
+        return -1;
+    }
+    while (num < MAX_MAILGROUP_USERS && read(fd2, &fr, sizeof(fr)) == sizeof(fr)) {
+        strncpy(mg.id, fr.id, sizeof(mg.id) - 1);
+        mg.id[sizeof(mg.id) - 1] = '\0';
+        strncpy(mg.exp, fr.exp, sizeof(mg.exp) - 1);
+        mg.exp[sizeof(mg.exp) - 1] = '\0';
+        write(fd, &mg, sizeof(mg));
+        num++;
+    }
+    close(fd2);
+    close(fd);
+    bzero(&item, sizeof(item));
+    item.users_num = num;
+    snprintf(item.group_desc, sizeof(item.group_desc), "好友群体信件组");
+    if (add_mailgroup_item(userid, mgl, &item) < 0) {
+        unlink(tmpgroup);
+        return -1;
+    }
+    sethomefile(buf, userid, "mgroups/");
+    strcat(buf, item.group_name);
+    rename(tmpgroup, buf);
 
-	return 0;
+    return 0;
 }
 
-int 
-import_friends_mailgroup(const char *userid, mailgroup_list_t *mgl)
+int add_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, mailgroup_t * user)
 {
-	char oldgroup[STRLEN];
-	char tmpgroup[STRLEN];
-	char buf[STRLEN];
-	int num = 0;
-	mailgroup_list_item item;
-	mailgroup_t mg;
-	struct friends fr;
-	int fd2;
-	int fd;
+    int i;
 
-	sethomefile(oldgroup, userid, "friends");
-	sprintf(buf, "tmpgroup%d", getpid());
-	sethomefile(tmpgroup, userid, buf);
-	if ((fd2 = open(oldgroup, O_RDONLY, 0600)) < 0)
-		return -1;
-	if ((fd = open(tmpgroup, O_CREAT | O_WRONLY, 0600)) < 0)
-	{
-		close(fd2);
-		return -1;
-	}
-	while (num < MAX_MAILGROUP_USERS 
-			&& read(fd2, &fr, sizeof(fr)) == sizeof(fr))
-	{
-		strncpy(mg.id, fr.id, sizeof(mg.id) - 1);
-		mg.id[sizeof(mg.id) - 1] = '\0';
-		strncpy(mg.exp, fr.exp, sizeof(mg.exp) - 1);
-		mg.exp[sizeof(mg.exp) - 1] = '\0';
-		write(fd, &mg, sizeof(mg));
-		num ++;
-	}
-	close(fd2);
-	close(fd);
-	bzero(&item, sizeof(item));
-	item.users_num = num;
-	snprintf(item.group_desc, sizeof(item.group_desc), "好友群体信件组");
-	if (add_mailgroup_item(userid, mgl, &item) < 0)
-	{
-		unlink(tmpgroup);
-		return -1;
-	}
-	sethomefile(buf, userid, "mgroups/");
-	strcat(buf, item.group_name);
-	rename(tmpgroup, buf);
-
-	return 0;
+    for (i = 0; i < MAX_MAILGROUP_USERS; i++) {
+        if (users[i].id[0] == '\0') {
+            memcpy(&users[i], user, sizeof(mailgroup_t));
+            mgl->groups[entry].users_num++;
+            return 0;
+        }
+    }
+    return -1;
 }
 
-int 
-add_mailgroup_user(mailgroup_list_t *mgl, int entry, 
-					mailgroup_t *users, mailgroup_t *user)
+int delete_mailgroup_user(mailgroup_list_t * mgl, int entry, mailgroup_t * users, int pos)
 {
-	int i;
+    int i;
 
-	for (i = 0; i < MAX_MAILGROUP_USERS; i++)
-	{
-		if (users[i].id[0] == '\0')
-		{
-			memcpy(&users[i], user, sizeof(mailgroup_t));
-			mgl->groups[entry].users_num ++;
-			return 0;
-		}
-	}
-	return -1;
+    for (i = pos; i < mgl->groups[entry].users_num - 1; i++) {
+        memcpy(&users[i], &users[i + 1], sizeof(mailgroup_t));
+    }
+    bzero(&users[i], sizeof(mailgroup_t));
+    mgl->groups[entry].users_num--;
+    return 0;
 }
 
-int 
-delete_mailgroup_user(mailgroup_list_t *mgl, int entry, 
-					mailgroup_t *users, int pos)
+int modify_mailgroup_user(mailgroup_t * users, int pos, mailgroup_t * user)
 {
-	int i;
+    memcpy(&users[pos], user, sizeof(mailgroup_t));
 
-	for (i = pos; i < mgl->groups[entry].users_num - 1; i++)
-	{
-		memcpy(&users[i], &users[i+1], sizeof(mailgroup_t));
-	}
-	bzero(&users[i], sizeof(mailgroup_t));
-	mgl->groups[entry].users_num --;
-	return 0;
-}
-
-int 
-modify_mailgroup_user(mailgroup_t *users, int pos, mailgroup_t *user)
-{
-	memcpy(&users[pos], user, sizeof(mailgroup_t));
-
-	return 0;
+    return 0;
 }
 
 #ifdef FREEBSD
@@ -1726,36 +1697,38 @@ modify_mailgroup_user(mailgroup_t *users, int pos, mailgroup_t *user)
  * Boyer R.S., Moore J.S. 1977, "A fast string searching algorithm",
  * Communications of ACM. 20:762-772.
  */
-void *
-memmem(s, slen, p, plen)
-	register const void	*s, *p;
-	size_t			slen, plen;
+void *memmem(s, slen, p, plen)
+register const void *s, *p;
+size_t slen, plen;
 {
-	register const u_char 	*str, *substr;
-	register size_t		i, max_shift, curr_shift;
+    register const u_char *str, *substr;
+    register size_t i, max_shift, curr_shift;
 
-	size_t			shift[UCHAR_MAX + 1];
+    size_t shift[UCHAR_MAX + 1];
 
-	if (!plen)
-		return ((void *)s);
-	if (plen > slen)
-		return (NULL);
+    if (!plen)
+        return ((void *) s);
+    if (plen > slen)
+        return (NULL);
 
-	str = (const u_char *)s;
-	substr = (const u_char *)p;
+    str = (const u_char *) s;
+    substr = (const u_char *) p;
 
-	for (i = 0; i <= UCHAR_MAX; i++) shift[i] = plen + 1;
-	for (i = 0; i < plen; i++) shift[substr[i]] = plen - i;
+    for (i = 0; i <= UCHAR_MAX; i++)
+        shift[i] = plen + 1;
+    for (i = 0; i < plen; i++)
+        shift[substr[i]] = plen - i;
 
-	i = 0;
-	max_shift = slen - plen;
-	while (i <= max_shift) {
-		if (*str == *substr && !memcmp(str + 1, substr + 1, plen - 1))
-			return ((void *)str);
-		curr_shift = shift[str[plen]];
-		str += curr_shift;
-		i += curr_shift;
-	}
-	return (NULL);
+    i = 0;
+    max_shift = slen - plen;
+    while (i <= max_shift) {
+        if (*str == *substr && !memcmp(str + 1, substr + 1, plen - 1))
+            return ((void *) str);
+        curr_shift = shift[str[plen]];
+        str += curr_shift;
+        i += curr_shift;
+    }
+    return (NULL);
 }
 #endif
+

@@ -1865,6 +1865,9 @@ static int www_new_guest_entry()
         }
     if (i != MAX_WWW_MAP_ITEM) {
         pub->www_guest_count++;
+        if (get_utmp_number() + getwwwguestcount()>get_publicshm()->max_user) {
+            save_maxuser();
+        }
     }
     currentuser = user;
     setpublicshmreadonly(1);

@@ -281,6 +281,11 @@ int getnewutmpent(struct user_info *up)
     utmphead->hashhead[hashkey] = pos + 1;
 
     utmphead->number++;
+    if (get_utmp_number() + getwwwguestcount()>get_publicshm()->max_user) {
+        setpublicshmreadonly(0);
+        save_maxuser();
+        setpublicshmreadonly(1);
+    }
     now = time(NULL);
     if ((now > utmphead->uptime + 120) || (now < utmphead->uptime - 120)) {
         utmphead->uptime = now;

@@ -89,6 +89,7 @@ extern "C" {
     void output(char *s, int len);
 
 /* defined in stuff.c */
+    void save_maxuser();
     void detach_publicshm();
     int multilogin_user(struct userec *user, int usernum);
     time_t get_exit_time(char *id, char *exittime);

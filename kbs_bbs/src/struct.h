@@ -130,7 +130,9 @@ struct public_data {
     time_t nowtime;
     int sysconfimg_version;
     int www_guest_count;
-    char unused[1012];
+    unsigned int max_user;
+    unsigned int max_wwwguest;
+    char unused[1004];
 };
 struct smenuitem {
     int line, col, level;
