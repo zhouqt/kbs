@@ -21,7 +21,7 @@
 #include "bbslib.h"
 #include "vote.h"
 
-#ifdef ATPPP_COMPILES_WITH_PHP5 // successfully compiles with PHP5RC3
+#if PHP_MAJOR_VERSION == 5
 static
      ZEND_BEGIN_ARG_INFO(one_arg_force_ref_1, 0)
              ZEND_ARG_PASS_INFO(1)
@@ -72,7 +72,7 @@ static
              ZEND_ARG_PASS_INFO(1)
              ZEND_ARG_PASS_INFO(1)
      ZEND_END_ARG_INFO();
-#else
+#else //if PHP_MAJOR_VERSION == 4
 static unsigned char one_arg_force_ref_1[]  = { 1, BYREF_FORCE };
 static unsigned char two_arg_force_ref_01[] = { 2, BYREF_NONE, BYREF_FORCE };
 static unsigned char third_arg_force_ref_1111[] = { 4, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE, BYREF_FORCE };
