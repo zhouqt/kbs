@@ -6,12 +6,6 @@
 #define	PID_FILE	"reclog/bbs.pid"
 #define	LOG_FILE	"reclog/bbs.log"
 
-#define MAXPORTS        4
-#ifdef D_TEST
-static int myports[MAXPORTS] = {49457/* , 3456, 3001, 3002, 3003 */ };
-#else
-static int myports[MAXPORTS] = {23,8000,8001,8002/* , 3456, 3001, 3002, 3003 */ };
-#endif
 static int mport;
 int csock;                      /* socket for Master and Child */
 
@@ -142,9 +136,9 @@ char *buf;
 
     while (fgets(IPBan, 64, Ban))
     {
-        if (ptr = strchr(IPBan, '\n'))
+        if ((ptr = strchr(IPBan, '\n'))!=NULL)
             *ptr = 0;
-        if (ptr = strchr(IPBan, ' '))
+        if ((ptr = strchr(IPBan, ' '))!=NULL)
         {
             *ptr ++ = 0;
             strcpy(buf, ptr);
@@ -164,9 +158,6 @@ telnet_init()
 {
     int n, len;
     char *cmd;
-    int rset;
-    struct timeval to;
-    char buf[64];
     char svr[] = {
         IAC, DO, TELOPT_TTYPE,
         IAC, SB, TELOPT_TTYPE, TELQUAL_SEND, IAC, SE,
@@ -215,8 +206,7 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
 {
     int n;
     struct sockaddr_in sin;
-    struct rlimit rl;
-    char buf[80], data[80];
+    char buf[80];
     time_t val;
     FILE* lock_pid;
 
@@ -411,7 +401,6 @@ int
 bbs_main(argv)
 char* argv;
 {
-    int         uid;
     char        buf[256]; /* Leeward 98.07.31 */
     char bbs_prog_path[ 256 ];
     FILE        *fp;
@@ -540,10 +529,8 @@ int argc;
 char *argv[];
 {
     int csock;			/* socket for Master and Child */
-    int *totaluser;
     int value;
     struct sockaddr_in sin;
-    struct hostent * whee;
 
     /* --------------------------------------------------- */
     /* setup standalone daemon				 */
@@ -635,8 +622,7 @@ char *argv[];
         fromhost[IPLEN]=0;
     }
     telnet_init();
-    bbs_main(argv[0]);
-
+    return bbs_main(argv[0]);
 }
 #else
 void ssh_exit()

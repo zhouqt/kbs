@@ -40,11 +40,9 @@ int t_columns = 80 ;
 
 int automargins=1;
 
-int
-term_init()
+void term_init()
 {
     extern int obufsize,ibufsize,icurrchar;
-    static char* BCBuf="\010";
     obufsize=0;
     ibufsize=0;
     icurrchar = 0;

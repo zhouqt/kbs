@@ -634,7 +634,7 @@ int id1,id2,del_mode ;
     int         fdr;
     int         count,totalcount,delcount,remaincount,keepcount;
     int         pos_read,pos_write,pos_end;
-    int		i,j;
+    int		i;
 #ifdef BBSMAIN
     int savedigestmode;
     /*digestmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
@@ -687,7 +687,6 @@ int id1,id2,del_mode ;
     }
     
     if (id2>totalcount) {
-	char buf[3];
 #ifdef BBSMAIN
         getdata(6,0,"文章编号大于文章总数，确认删除 (Y/N)? [N]: ",buf,2,DOECHO,NULL,YEA) ;
         if(*buf != 'Y' && *buf != 'y') {

@@ -266,7 +266,10 @@ extern    int  editansi;
 extern    int  KEY_ESC_arg;
 /* ============================================ */
 
-extern int Net_Sleep(int);
+#ifdef BBSMAIN
+#define Sleep Net_Sleep
+extern void Net_Sleep(int);
+#endif
 
 #define MAX_IGNORE      30      /* ignore-users' count */
 #define NUMBUFFER 80  /* number of records to preload. ylsdd*/

@@ -208,7 +208,7 @@ int fill_shmfile(int mode,char* shmkey,char* fname);
 void show_goodbyeshm();
 
 /* newterm.c */
-int term_init();
+void term_init();
 void do_move(int destcol,int destline,int (*outc)(char));
 
 /* xyz.c */

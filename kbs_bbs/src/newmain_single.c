@@ -60,7 +60,6 @@ int     numofsig=0;
 jmp_buf byebye ;
 
 int convcode=0; /* KCN,99.09.05 */
-extern conv_init(); /* KCN,99.09.05 */        
 
 FILE *ufp ;
 int     RUNSH=NA;
@@ -112,8 +111,7 @@ initalarm()/*Haohmaru.98.11.3*/
         alarm(WAITTIME) ;
 }
 
-int Net_Sleep(times) /* KCN 1999.9.15 */
-int times;
+void Net_Sleep(int times) /* KCN 1999.9.15 */
 {
         struct timeval tv ;
         int     sr;
@@ -334,28 +332,28 @@ multi_user_check()
         }
         return;
     }
-    else if ( (curr_login_num<700)&&(count_user()>=2) 
-           || (curr_login_num>=700)&& (count_user()>=1) ) /*user login limit*/
+    else if ( ((curr_login_num<700)&&(count_user()>=2) )
+           || ((curr_login_num>=700)&& (count_user()>=1)) ) /*user login limit*/
     {  
         getdata(0, 0, "你同时上线的窗口数过多，是否踢出本ID其它窗口(Y/N)? [N]", 
                 genbuf, 4, DOECHO, NULL, YEA);
         if(genbuf[0] == 'Y' || genbuf[0] == 'y') 
         {
-		int lres;
-                if ( !search_ulist( &uin, cmpuids2, usernum) )
+			int lres;
+            if ( !search_ulist( &uin, cmpuids2, usernum) )
                         return;  /* user isn't logged in */
-                if (!uin.active || (kill(uin.pid,0) == -1))
+            if (!uin.active || (kill(uin.pid,0) == -1))
                         return;  /* stale entry in utmp file */
 /*---	modified by period	first try SIGHUP	2000-11-08	---*/
-		lres = kill(uin.pid, SIGHUP);
-		sleep(1);
-		if(lres)
+		    lres = kill(uin.pid, SIGHUP);
+		    sleep(1);
+		    if(lres)
 /*---	---*/
                 kill(uin.pid,9);
-                sprintf(buffer, "kicked (multi-login)" );
-                report(buffer);
+            sprintf(buffer, "kicked (multi-login)" );
+            report(buffer);
 
-		return ; /* 不继续检查，返回, 不踢自己窗口, added by dong, 1999.1.25 */
+			return ; /* 不继续检查，返回, 不踢自己窗口, added by dong, 1999.1.25 */
         } 
         oflush();
         exit(1);       /* 多窗口时踢掉一个，自己也断线 */
@@ -374,8 +372,8 @@ multi_user_check()
         sprintf(buffer, "kicked (multi-login)" );
         report(buffer);
     }
-    else if ( (curr_login_num<700)&&(count_user()>=2)
-              || (curr_login_num>=700)&& (count_user()>=1) )
+    else if ( ((curr_login_num<700)&&(count_user()>=2))
+              || ((curr_login_num>=700)&& (count_user()>=1)) )
         {
            oflush();
                 exit(1);
@@ -400,8 +398,6 @@ char *str;
 void
 system_init()
 {
-    char        *rhost;
-
     login_start_time = time( 0 );
     gethostname( genbuf ,256 );
 #ifdef SINGLE
@@ -480,9 +476,9 @@ check_ban_IP(char *IP, char *buf)
 
   while (fgets(IPBan, 64, Ban))
   {
-    if (ptr = strchr(IPBan, '\n'))
+    if ((ptr = strchr(IPBan, '\n'))!=NULL)
       *ptr = 0;
-    if (ptr = strchr(IPBan, ' '))
+    if ((ptr = strchr(IPBan, ' '))!=NULL)
     {
       *ptr ++ = 0;
       strcpy(buf, ptr);
@@ -750,7 +746,7 @@ notepad_init()
         {
                 lastnote=time(NULL)-(time(NULL)%maxsec);
                 check=fopen( "etc/checknotepad", "w" );
-                fprintf(check,"%d",lastnote);
+                fprintf(check,"%lu",lastnote);
                 fclose(check);
                 sprintf(tmp,"留言板在 %s Login 开启，内定开启时间时间为 %s"
                 ,currentuser->userid,Ctime(lastnote));
@@ -764,7 +760,7 @@ notepad_init()
                 now=time(0);
                 check=fopen( "etc/checknotepad", "w" );
                 lastnote=time(NULL)-(time(NULL)%maxsec);
-                fprintf(check,"%d",lastnote);
+                fprintf(check,"%lu",lastnote);
                 fclose(check);
                 if((check=fopen("etc/autopost","r"))!=NULL)
                 {
