@@ -222,12 +222,12 @@ main(argc, argv)
         exit(0);
     mode = atoi(argv[1]);
     if (mode == 1) {
-        strcpy(buf, BBSHOME "/0Announce/bbslists/board2");
-        strcpy(buf1, BBSHOME "/0Announce/bbslists/totaltime");
-        strcpy(buf2, BBSHOME "/0Announce/bbslists/averagetime");
+        strcpy(buf, BBSHOME "/0Announce/groups/system.faq/sys_discuss/boardstats/board2");
+        strcpy(buf1, BBSHOME "/0Announce/groups/system.faq/sys_discuss/boardstats/totaltime");
+        strcpy(buf2, BBSHOME "/0Announce/groups/system.faq/sys_discuss/boardstats/averagetime");
     } else {
-        strcpy(buf, BBSHOME "/0Announce/bbslists/board1");
-    }
+        strcpy(buf, BBSHOME "/0Announce/groups/system.faq/sys_discuss/boardstats/board1");
+     }
     if ((fp = fopen(BBSHOME "/boardusage.log", "r")) == NULL) {
         printf("cann't open boardusage.log\n");
         return 1;
