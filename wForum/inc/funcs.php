@@ -531,6 +531,7 @@ function show_nav($boardName='')
 <script language="javascript">
 <!--
 	var siteconf_SMS_SUPPORT = <?php echo SMS_SUPPORT?"true":"false"; ?>;
+	var boardsPerLine = <?php echo BOARDS_PER_ROW; ?>;
 //-->
 </script>
 <script src="inc/funcs.js"  language="javascript"></script>

@@ -118,12 +118,13 @@ function showSec(isFold, isFav, boards, secNum) {
 			}
 		} else { //!isFold
 			showed = 0;
+			percent = 100 / boardsPerLine;
 			for (i = 0; i < boards.length; i++)	{
 				showed++;
-				if (showed % 4 == 1) {
+				if (showed % boardsPerLine == 1) {
 					str += "<tr>";
 				}
-				str += '<td class=TableBody1 width="25%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=2>';
+				str += '<td class=TableBody1 width="'+percent+'%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" colspan=2>';
 
 				if (!isFav || !boards[i].isGroup) {
 					str += '<a href="board.php?name=' + boards[i].boardName + '"><font color=#000066>' + boards[i].boardDesc + '</font>';
@@ -141,12 +142,12 @@ function showSec(isFold, isFav, boards, secNum) {
 					str += '<td width="50%">ΩÒ»’£∫<font color=#FF0000>' + boards[i].todayNum + '</font></td><td width="50%">∑¢Ã˘£∫' + boards[i].nArticles + '</td>';
 				}
 				str += '</tr></table></td>';
-				if (showed % 4 == 0) {
+				if (showed % boardsPerLine == 0) {
 					str += "</tr>";
 				}
 			}
-			if (showed % 4 != 0) {
-				str += '<td class=TableBody1 colspan="' + (4 - showed % 4) + '" width="' + (25*(4 - showed % 4)) + '%"></td></tr>';
+			if (showed % boardsPerLine != 0) {
+				str += '<td class=TableBody1 colspan="' + (boardsPerLine - showed % boardsPerLine) + '" width="' + (percent*(boardsPerLine - showed % boardsPerLine)) + '%"></td></tr>';
 			}
 		}
 	}

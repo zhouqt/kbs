@@ -14,6 +14,8 @@ define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 
 define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
+define("BOARDS_PER_ROW", 3); //折叠版面列表每行版面数目
+
 define ('MAINTITLE','<IMG SRC="bar/title.jpg">'); //页面正上方显示的站点标题
 
 define('OLD_REPLY_STYLE', true); //使用传统 telnet re 文方式
