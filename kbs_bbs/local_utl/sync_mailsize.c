@@ -6,8 +6,9 @@ atppp: 同步邮件字节数
 
 
 #include "bbs.h"
-/* #define FORCE_SYNC */
+#define FORCE_SYNC /* 强制重新扫描信件并且重设总使用空间 */
 
+/* return total size */
 int calc_mailsize(char *userid, char *dirname)
 {
     char fn[256];
@@ -16,6 +17,7 @@ int calc_mailsize(char *userid, char *dirname)
     struct flock ldata;
     struct fileheader * ptr1;
     char * ptr;
+    int totalsize = 0;
     int size=sizeof(struct fileheader);
 
     setmailfile(fn, userid, dirname);
@@ -45,11 +47,18 @@ int calc_mailsize(char *userid, char *dirname)
         struct stat st;
         char ffn[256];
 #ifndef FORCE_SYNC
-        if (ptr1->eff_size > 0) continue;
+        if (ptr1->eff_size > 0) {
+            ptr1++;
+            totalsize += ptr1->eff_size;
+            continue;
+        }
 #endif
         setmailfile(ffn, userid, ptr1->filename);
         if (lstat(ffn, &st) == -1 || !S_ISREG(st.st_mode)) ptr1->eff_size = 0;
-        else ptr1->eff_size = st.st_size;
+        else {
+            ptr1->eff_size = st.st_size;
+            totalsize += ptr1->eff_size;
+        }
 
         ptr1++;
     }
@@ -57,25 +66,32 @@ int calc_mailsize(char *userid, char *dirname)
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);
     close(fd);
-    return 0;
+    return totalsize;
 }
 
 int sync_mailsize(struct userec *user, char *arg)
 {
     char buf[40];
     int i;
+    int totalsize = 0;
     struct _mail_list mail;
 
     if (!user->userid[0]) return 0;
-    calc_mailsize(user->userid, DOT_DIR);
-    calc_mailsize(user->userid, ".SENT");
-    calc_mailsize(user->userid, ".DELETED");
+    totalsize += calc_mailsize(user->userid, DOT_DIR);
+    totalsize += calc_mailsize(user->userid, ".SENT");
+    totalsize += calc_mailsize(user->userid, ".DELETED");
     load_mail_list(user, &mail);
     for (i = 0; i < mail.mail_list_t; i++) {
         sprintf(buf, ".%s", mail.mail_list[i] + 30);
-        calc_mailsize(user->userid, buf);
+        totalsize += calc_mailsize(user->userid, buf);
     }
-    printf("%s\n", user->userid);
+    printf("%s ok.\n", user->userid);
+    if (totalsize != user->usedspace) {
+        fprintf(stderr, "%s %d %d\n", user->userid, totalsize, user->usedspace);
+#ifdef FORCE_SYNC
+        user->usedspace = totalsize;
+#endif
+    }
     return 0;
 }
 
