@@ -1642,8 +1642,6 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
          */
         ui.freshtime = time(0);
         ui.mode = WEBEXPLORE;
-	    /* Load currentuser's mailbox properties, added by atppp */
-	    ui.mailbox_prop = load_mailbox_prop(user->userid);
         
         strncpy(ui.userid, user->userid, 20);
         strncpy(ui.realname, ud.realname, 20);
@@ -1673,6 +1671,9 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
 				/*
             }
 			*/
+    	    /* Load currentuser's mailbox properties, added by atppp */
+    	    u->mailbox_prop = load_mailbox_prop(user->userid);
+
             getfriendstr(currentuser, u);
             do_after_login(currentuser,utmpent,0);
         }
