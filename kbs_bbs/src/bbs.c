@@ -496,10 +496,10 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
             struct fileheader xfh;
             int i,fd;
             if ((fd = open(arg->dingdirect, O_RDONLY, 0)) != -1) {
-                for (i = conf->pos; i > 0; i--) {
+                for (i = conf->pos-arg->filecount; i > 0; i--) {
                     if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
                         if (0 == strcmp(xfh.filename, fileinfo->filename)) {
-                            conf->pos= i;
+                            conf->new_pos=i;
                             break;
                         }
                     }
@@ -513,7 +513,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 		pressreturn();
 		return FULLUPDATE;
 	    }
-	}
+	} else conf->new_pos=conf->pos;
 	/*add old*/
         if (post_cross(currentuser, bname, currboard->filename, 
             quote_title, q_file, Anony, 
@@ -527,9 +527,10 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         prints("' %s ' 已转贴到 %s 版 \n", quote_title, bname);
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
 	if(conf->pos>arg->filecount)
-            substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->pos);
+            substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->new_pos);
         else
-            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
+            substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->new_pos);
+        conf->new_pos=0;
     } else {
         prints("取消");
     }
