@@ -85,9 +85,15 @@ int main()
 	}
 
 	free(fh);
-    printf("<hr class=\"default\" />");
-    printf("[<a href=\"javascript:history.go(-1)\">返回上一页</a>]");
-    printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", brdencode);
+    printf("<hr class=\"default\" /><center>");
+    printf("[<a href=\"javascript:history.go(-1)\">后退</a>]");
+	if( haveprev ){
+    	printf("[<a href=\"/cgi-bin/bbs/bbstcon?board=%s&gid=%d&start=%d&num=%d\">上一页</a>]", brdencode, gid, haveprev, shownum);
+	}
+	if( havenext ){
+    	printf("[<a href=\"/cgi-bin/bbs/bbstcon?board=%s&gid=%d&start=%d&num=%d\">下一页</a>]", brdencode, gid, havenext, shownum);
+	}
+    printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]</center>", brdencode);
 #ifdef HAVE_BRC_CONTROL
     if ((loginok)&&strcmp(currentuser->userid,"guest"))
         brc_update(currentuser->userid);
