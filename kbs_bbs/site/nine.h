@@ -93,8 +93,8 @@
 #define NAME_BM			"版主"
 #define NAME_POLICE		"警察"
 #define	NAME_SYSOP_GROUP	"站务组"
-#define NAME_ANONYMOUS		"酒井青蛙 Today!"
-#define NAME_ANONYMOUS_FROM	"匿名天使的家"
+#define NAME_ANONYMOUS		"今天你非典了吗?"
+#define NAME_ANONYMOUS_FROM	"非典患者的家"
 #define ANONYMOUS_DEFAULT 0
 
 #define NAME_MATTER		"站务"
