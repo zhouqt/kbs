@@ -25,7 +25,6 @@ char user[21];
 int sockfd;
 jmp_buf jb;
 
-extern char fromhost[];
 extern int msg_count;
 extern struct user_info uinfo;
 extern int utmpent;
@@ -103,7 +102,7 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 		}
 		fprintf(fp, "    本次穿梭一共用了 %s.\n", buf);
 	}
-	fprintf(fp, "    该用户从 \033[1;31m%s\033[m 登录本站.\n", fromhost);
+	fprintf(fp, "    该用户从 \033[1;31m%s\033[m 登录本站.\n", getSession()->fromhost);
 	fclose(fp);
 	
 	return after_post(NULL, &fh, BBSNET_LOG_BOARD, NULL, 0, getSession());
