@@ -129,7 +129,9 @@ const char *user_definestr[] = {
     "观看人数统计和祝福榜", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
     "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
     "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
-    "对汉字进行整字处理"  /* DEF_SPLITSCREEN 2002.9.1 */
+    "对汉字进行整字处理",  /* DEF_SPLITSCREEN 2002.9.1 */
+    "显示详细用户数据",  /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
+    "显示真实用户数据" /*DEF_REALDETAILUSERDATA 2003.7.31 */
 };
 #endif
 
@@ -151,6 +153,12 @@ int uleveltochar(char *buf, struct userec *lookupuser)
     lvl = lookupuser->userlevel;
     strncpy(userid, lookupuser->userid, IDLEN + 2);
 
+#ifdef HAVE_CUSTOM_USER_TITLE
+    if (lookupuser->title!=0) {
+        strcpy(buf,get_user_title(lookupuser->title));
+        if (buf[0]!=0) return 0;
+    }
+#endif
     if (!(lvl & PERM_BASIC) && !(lookupuser->flags & GIVEUP_FLAG)) {
         strcpy(buf, "新人");
         return 0;
@@ -488,6 +496,11 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
+    if (!HAS_PERM(user, PERM_OBOARDS)&&board->title_level
+        &&(board->title_level!=user->title))
+        return 0;
+
+
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*俱乐部*/
             if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
@@ -509,6 +522,9 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 int check_see_perm(struct userec* user,const struct boardheader* board)
 {
     if (board == NULL)
+        return 0;
+    if (!HAS_PERM(user, PERM_OBOARDS)&&board->title_level
+        &&(board->title_level!=user->title))
         return 0;
     if (board->level & PERM_POSTMASK
     	|| ((user==NULL)&&(board->level==0))

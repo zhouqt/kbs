@@ -180,6 +180,10 @@ extern long ti;
 #define PASSFILE   ".PASSWDS"   /* Name of file User records stored in */
 #define ULIST "UTMP"            /* Names of users currently on line */
 #define POSTLOGFILE ".post.X"   /* Name of file which log posting report */
+
+#define USER_TITLE_LEN	18
+#define USER_TITLE_FILE "etc/title"
+
 #ifndef BBSIRC
 
 #define FLUSH    ".PASSFLUSH"   /* Stores date for user cache flushing */

@@ -1569,7 +1569,7 @@ int fill_userlist()
 
 int countusers(struct userec *uentp, char *arg)
 {
-    char permstr[10];
+    char permstr[USER_TITLE_LEN];
 
     if (uentp->numlogins != 0 && uleveltochar(permstr, uentp) != 0)
         return COUNT;

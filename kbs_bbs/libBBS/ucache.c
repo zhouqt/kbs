@@ -18,9 +18,12 @@ struct UCACHE {
     int next[MAXUSERS];
     time_t uptime;
     int number;
+#ifdef HAVE_CUSTOM_USER_TITLE
+    char user_title[255][USER_TITLE_LEN]; //定义用户的称号字符串。
+#endif
+    struct userec passwd[MAXUSERS];
 };
 
-static struct userec *passwd = NULL;
 static struct UCACHE *uidshm = NULL;
 
 static int ucache_lock()
@@ -250,9 +253,9 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
             while (i != 0) {
                 struct userec *uentp;
 
-                uentp = &passwd[i - 1];
-                if (!strcasecmp(passwd[*number].userid, uentp->userid)) {
-                    if (passwd[*number].numlogins > uentp->numlogins) {
+                uentp = &uidshm->passwd[i - 1];
+                if (!strcasecmp(uidshm->passwd[*number].userid, uentp->userid)) {
+                    if (uidshm->passwd[*number].numlogins > uentp->numlogins) {
                         bbslog("3passwd", "deleted %s in %d", uentp->userid, i - 1);
                         if (prev == -1)
                             uidshm->hashhead[hashkey] = uidshm->next[i - 1];
@@ -262,8 +265,8 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
                         uidshm->next[i - 1] = 0;
                         uidshm->hashhead[0] = i;
                     } else {
-                        bbslog("3passwd", "deleted %s in %d", passwd[*number].userid, *number);
-                        passwd[*number].userid[0] = 0;
+                        bbslog("3passwd", "deleted %s in %d", uidshm->passwd[*number].userid, *number);
+                        uidshm->passwd[*number].userid[0] = 0;
                         hashkey = 0;
                         goto addempty;
                     }
@@ -278,9 +281,19 @@ static int fillucache(struct userec *uentp, int *number, int *prev)
     return 0;
 }
 
+#ifdef HAVE_CUSTOM_USER_TITLE
+void flush_user_title();
+void load_user_title();
+#endif
+
 int flush_ucache()
 {
-    return substitute_record(PASSFILE, passwd, MAXUSERS * sizeof(struct userec), 1);
+    int ret;
+    ret= substitute_record(PASSFILE, uidshm->passwd, MAXUSERS * sizeof(struct userec), 1);
+#ifdef HAVE_CUSTOM_USER_TITLE
+    flush_user_title();
+#endif
+    return ret;
 }
 
 int load_ucache()
@@ -290,29 +303,30 @@ int load_ucache()
     int passwdfd;
     int prev;
 
+    int fd;
+
+    fd=ucache_lock();
     uidshm = (struct UCACHE *) attach_shm("UCACHE_SHMKEY", 3696, sizeof(*uidshm), &iscreate);   /*attach to user shm */
 
     if (!iscreate) {
         bbslog("4system", "load a exitist ucache shm!");
-/*        return -1; */
-    }
-
-    passwd = (struct userec *) attach_shm("PASSWDCACHE_SHMKEY", 3697, MAXUSERS * sizeof(struct userec), &iscreate);     /*attach to user shm */
-    if (!iscreate) {            /* shouldn't load passwd file in this place */
-        bbslog("4system", "load a exitist ucache shm!");
+        ucache_unlock(fd);
         return 0;
     }
 
+#ifdef HAVE_CUSTOM_USER_TITLE
+    load_user_title();
+#endif
     if ((passwdfd = open(PASSFILE, O_RDWR | O_CREAT, 0644)) == -1) {
         bbslog("3system", "Can't open " PASSFILE "file %s", strerror(errno));
         exit(-1);
     }
     ftruncate(passwdfd, MAXUSERS * sizeof(struct userec));
-    if (get_records(PASSFILE, passwd, sizeof(struct userec), 1, MAXUSERS) != MAXUSERS) {
+    if (get_records(PASSFILE, uidshm->passwd, sizeof(struct userec), 1, MAXUSERS) != MAXUSERS) {
         bbslog("4system", "PASS file!");
+        ucache_unlock(fd);
         return -1;
     }
-
     bzero(uidshm->hashhead, UCACHE_HASHSIZE * sizeof(int));
     usernumber = 0;
 
@@ -320,43 +334,41 @@ int load_ucache()
 
     prev = 0;
     for (i = 0; i < MAXUSERS; i++)
-        fillucache(&passwd[i], &usernumber, &prev);
+        fillucache(&uidshm->passwd[i], &usernumber, &prev);
 
     newbbslog(BBSLOG_USIES, "CACHE:reload ucache for %d users", usernumber);
     uidshm->number = usernumber;
 
+    ucache_unlock(fd);
     return 0;
 }
 
-void resolve_ucache()
+int resolve_ucache()
 {
     int iscreate;
+    int fd;
 
+    fd=ucache_lock();
     iscreate = 0;
     if (uidshm == NULL) {
-        uidshm = (struct UCACHE *) attach_shm1("UCACHE_SHMKEY", 3696, sizeof(*uidshm), &iscreate, 1, NULL);
+        uidshm = (struct UCACHE *) attach_shm("UCACHE_SHMKEY", 3696, sizeof(*uidshm), &iscreate);
         /*attach to user shm,readonly */
         if (iscreate) {         /* shouldn't load passwd file in this place */
             bbslog("4system", "passwd daemon havn't startup");
-            exit(-1);
+            remove_shm("UCACHE_SHMKEY",3696,sizeof(*uidshm));
+            ucache_unlock(fd);
+            return -1;
         }
+        
     }
-
-    if (passwd == NULL) {
-        passwd = (struct userec *) attach_shm1("PASSWDCACHE_SHMKEY", 3697, MAXUSERS * sizeof(struct userec), &iscreate, 0, NULL);       /*attach to user shm */
-        if (iscreate) {         /* shouldn't load passwd file in this place */
-            bbslog("4system", "passwd daemon havn't startup");
-            exit(-1);
-        }
-    }
+    ucache_unlock(fd);
+	return 0;
 }
 
 void detach_ucache()
 {
     shmdt(uidshm);
     uidshm=NULL;
-    shmdt(passwd);
-    passwd=NULL;
 }
 
 /*---	period	2000-10-20	---*/
@@ -364,7 +376,7 @@ int getuserid(char *userid, int uid)
 {
     if (uid > uidshm->number || uid <= 0)
         return 0;
-    strncpy(userid, (char *) passwd[uid - 1].userid, IDLEN + 1);
+    strncpy(userid, (char *) uidshm->passwd[uid - 1].userid, IDLEN + 1);
     userid[IDLEN] = 0;
     return uid;
 }
@@ -376,7 +388,7 @@ static int setuserid_internal(int num, const char *userid)
 
         if (num > uidshm->number)
             uidshm->number = num;
-        oldkey = ucache_hash((char *) passwd[num - 1].userid);
+        oldkey = ucache_hash((char *) uidshm->passwd[num - 1].userid);
         newkey = ucache_hash(userid);
 /*        if (oldkey!=newkey) { disable,为了加强兼容性*/
         find = uidshm->hashhead[oldkey];
@@ -396,7 +408,7 @@ static int setuserid_internal(int num, const char *userid)
             }
             if (!uidshm->next[find - 1]) {
                 if (oldkey != 0) {
-                    bbslog("3system", "UCACHE:can't find %s in hash table", passwd[num - 1].userid);
+                    bbslog("3system", "UCACHE:can't find %s in hash table", uidshm->passwd[num - 1].userid);
 /*		          	exit(0);*/
                 }
                 return -1;
@@ -407,7 +419,7 @@ static int setuserid_internal(int num, const char *userid)
         uidshm->next[num - 1] = uidshm->hashhead[newkey];
         uidshm->hashhead[newkey] = num;
 /*        }	        */
-        strncpy(passwd[num - 1].userid, userid, IDLEN + 1);
+        strncpy(uidshm->passwd[num - 1].userid, userid, IDLEN + 1);
     }
     return 0;
 }
@@ -485,7 +497,7 @@ int searchuser(const char *userid)
 
     i = uidshm->hashhead[ucache_hash(userid)];
     while (i)
-        if (!strcasecmp(userid, passwd[i - 1].userid))
+        if (!strcasecmp(userid, uidshm->passwd[i - 1].userid))
             return i;
         else
             i = uidshm->next[i - 1];
@@ -502,7 +514,7 @@ int getuser(const char *userid, struct userec **user)
         return 0;
     }
     if (user)
-        *user = &passwd[uid - 1];
+        *user = &uidshm->passwd[uid - 1];
     return uid;
 }
 
@@ -510,7 +522,7 @@ char *getuserid2(int uid)
 {
     if (uid > uidshm->number || uid <= 0)
         return NULL;
-    return passwd[uid - 1].userid;
+    return uidshm->passwd[uid - 1].userid;
 }
 
 char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag)
@@ -540,8 +552,8 @@ char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag)
         for (n = 0; n < UCACHE_HASHBSIZE; n++) {
             num = reg_ushm->hashhead[(hash + n % UCACHE_HASHBSIZE) % UCACHE_HASHSIZE + 1];
             while (num) {
-                if (!strncasecmp(passwd[num - 1].userid, tag, len)) {
-                    strcpy(buf[(*pnum)++], passwd[num - 1].userid);     /*如果匹配, add into buf */
+                if (!strncasecmp(uidshm->passwd[num - 1].userid, tag, len)) {
+                    strcpy(buf[(*pnum)++], uidshm->passwd[num - 1].userid);     /*如果匹配, add into buf */
                 }
                 num = reg_ushm->next[num - 1];
             }
@@ -557,8 +569,8 @@ char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag)
             for (n = 0; n < UCACHE_HASHBSIZE; n++) {
                 num = reg_ushm->hashhead[(hash + n % UCACHE_HASHBSIZE) % UCACHE_HASHSIZE + 1];  /* see hash() */
                 while (num) {
-                    if (!strncasecmp(passwd[num - 1].userid, tagv, ksz)) {
-                        strcpy(buf[(*pnum)++], passwd[num - 1].userid); /*如果匹配, add into buf */
+                    if (!strncasecmp(uidshm->passwd[num - 1].userid, tagv, ksz)) {
+                        strcpy(buf[(*pnum)++], uidshm->passwd[num - 1].userid); /*如果匹配, add into buf */
                     }
                     num = reg_ushm->next[num - 1];
                 }
@@ -668,7 +680,7 @@ struct userec *getuserbynum(int num)
 {
     if (num <= 0 || num >= MAXUSERS)
         return NULL;
-    return &passwd[num - 1];
+    return &uidshm->passwd[num - 1];
 }
 
 int getnewuserid(char *userid)
@@ -699,7 +711,7 @@ int getnewuserid(char *userid)
         ret = setuserid_internal(i, userid);    /* added by dong, 1998.12.2 */
         if (ret == 0)
             break;
-        passwd[i - 1].userid[0] = 0;
+        uidshm->passwd[i - 1].userid[0] = 0;
     }
     update_user(&utmp, i, 0);
     ucache_unlock(fd);
@@ -711,18 +723,18 @@ int update_user(struct userec *user, int num, int all)
     struct userec tmpuser;
 
     if (!all) {
-        if (strncasecmp(user->userid, passwd[num - 1].userid, IDLEN))
+        if (strncasecmp(user->userid, uidshm->passwd[num - 1].userid, IDLEN))
             return -1;
         tmpuser = *user;
 #ifdef CONV_PASS
-        memcpy(tmpuser.passwd, passwd[num - 1].passwd, IDLEN + 2);
+        memcpy(tmpuser.passwd, uidshm->passwd[num - 1].passwd, IDLEN + 2);
 #endif
-        memcpy(tmpuser.md5passwd, passwd[num - 1].md5passwd, IDLEN + 2);
+        memcpy(tmpuser.md5passwd, uidshm->passwd[num - 1].md5passwd, IDLEN + 2);
     } else {
         tmpuser = *user;
-        memcpy(tmpuser.userid, passwd[num - 1].userid, IDLEN + 2);
+        memcpy(tmpuser.userid, uidshm->passwd[num - 1].userid, IDLEN + 2);
     }
-    memcpy(&passwd[num - 1], &tmpuser, sizeof(struct userec));
+    memcpy(&uidshm->passwd[num - 1], &tmpuser, sizeof(struct userec));
     return 0;
 }
 
@@ -736,7 +748,7 @@ int apply_users(int (*fptr) (struct userec *, char *), char *arg)
         if (fptr) {
             int ret;
 
-            ret = (*fptr) (&passwd[i], arg);
+            ret = (*fptr) (&uidshm->passwd[i], arg);
             if (ret == QUIT)
                 break;
             if (ret == COUNT)
@@ -1001,6 +1013,78 @@ int do_after_logout(struct userec* user,struct user_info* userinfo,int unum,int 
         board_setcurrentuser(userinfo->currentboard,-1);
 }
 
+#ifdef HAVE_CUSTOM_USER_TITLE
+/**
+ * user_title数组是1 base,所以idx都要减一
+ * 当title==0的时候，应该用原来的显示体系结构
+ */
+
+/**
+  * 读入文件中保存的user title
+  */
+void load_user_title()
+{
+    FILE* titlefile;
+    bzero(uidshm->user_title,sizeof(uidshm->user_title));
+    if ((titlefile = fopen(USER_TITLE_FILE, "r")) == -1) {
+        bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
+    } else {
+        int i;
+        for (i=0;i<256;i++) {
+            fgets(uidshm->user_title[i],USER_TITLE_LEN,titlefile);
+            
+            if ((uidshm->user_title[i][0]!=0)&&(uidshm->user_title[i][strlen(uidshm->user_title[i])-1]=='\n'))
+                uidshm->user_title[i][strlen(uidshm->user_title[i])-1]=0;
+        }
+        fclose(titlefile);
+    }
+}
+
+/**
+  *  把user_title数组写入磁盘
+  */
+static void flush_user_title()
+{
+    FILE* titlefile;
+    if ((titlefile = fopen(USER_TITLE_FILE, "w")) == -1) {
+        bbslog("3system", "Can't open " USER_TITLE_FILE "file %s", strerror(errno));
+    } else {
+        int i;
+        for (i=0;i<256;i++) {
+            fprintf(titlefile,"%s\n",uidshm->user_title[i]);
+        }
+        fclose(titlefile);
+    }
+}
+
+/**
+ * 获得title对应的字符串
+ * @param titleidx 1base的title
+ * @return 用于显示的title
+ */
+char* get_user_title(unsigned char titleidx)
+{
+    if (titleidx==0) return "";
+    return uidshm->user_title[titleidx-1];
+}
+
+/**
+ * 设置title对应的字符串
+ * @param titleidx 1base的title
+ * @param newtitle 需要设置的title
+ */
+void set_user_title(unsigned char titleidx,char* newtitle)
+{
+    int fd;
+    fd=ucache_lock();
+    if (titleidx==0) return;
+    uidshm->user_title[titleidx-1][USER_TITLE_LEN-1]=0;
+    strncpy(uidshm->user_title[titleidx-1],newtitle,USER_TITLE_LEN-1);
+    flush_user_title();
+    ucache_unlock(fd);
+}
+#endif
+
 #if HAVE_WWW==1
 
 /* WWW GUEST这样做有个同步问题，就是当被清除一个
@@ -1048,9 +1132,13 @@ int resolve_guest_table()
 {
     int iscreate = 0;
 
+    sleep(20);
+	bbslog("3error","loading guest shm:%d",errno);
     if (wwwguest_shm == NULL) {
         wwwguest_shm = (struct WWW_GUEST_TABLE *)
             attach_shm("WWWGUEST_SHMKEY", 4500, sizeof(*wwwguest_shm), &iscreate);      /*attach user tmp cache */
+		if (wwwguest_shm==NULL)
+			bbslog("3error","can't load guest shm:%d",errno);
         if (iscreate) {
             struct public_data *pub;
             int fd = www_guest_lock();

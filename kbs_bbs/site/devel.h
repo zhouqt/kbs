@@ -32,6 +32,11 @@
 #define REGISTER_TSINGHUA_WAIT_TIME (240*60)
 #define WWW_MAX_LOGIN 128
 
+#define HAVE_WFORUM 1
+
+#define RAW_ARTICLE 1
+#define HAVE_USERMONEY 1
+
 #endif
 
 

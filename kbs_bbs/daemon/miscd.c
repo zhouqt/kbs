@@ -663,12 +663,12 @@ int main(int argc, char *argv[])
     init_bbslog();
     if (argc > 1) {
         if (strcasecmp(argv[1], "killuser") == 0) {
-            if (load_ucache() != 0)
+            if (resolve_ucache() != 0)
                 return -1;
             return dokilluser();
         }
         if (strcasecmp(argv[1], "giveup") == 0) {
-            if (load_ucache() != 0)
+            if (resolve_ucache() != 0)
                 return -1;
             return doupdategiveupuser();
         }

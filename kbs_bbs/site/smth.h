@@ -20,6 +20,9 @@
 #define BBS_SERVICE_DICT    1
 #define HAVE_TSINGHUA_INFO_REGISTER 1 /* 允许从清华信息系统注册 */
 #define HAVE_PERSONAL_DNS   1   /*个人域名服务*/
+#define HAVE_CUSTOM_USER_TITLE 1 /*定义用户特定的title*/
+
+#define BUILD_PHP_EXTENSION 1 /*将php lib编成php extension*/
 
 #define SMTH			1
 #define FILTER			1

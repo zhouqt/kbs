@@ -464,6 +464,22 @@ void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int 
     } return shmptr;
 }
 
+void remove_shm(char *shmstr, int defaultkey, int shmsize)
+{
+    void *shmptr;
+    int shmkey, shmid;
+
+    if (shmstr)
+        shmkey = sysconf_eval(shmstr, defaultkey);
+
+    else
+        shmkey = 0;
+    if (shmkey < 1024)
+        shmkey = defaultkey;
+    shmid = shmget(shmkey, shmsize, 0);
+    shmctl(shmid,IPC_RMID,NULL);
+}
+
 char *cexp(exp)
 int exp;
 {

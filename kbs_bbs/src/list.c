@@ -680,7 +680,7 @@ int allnum, pagenum;
 int printuent(struct userec *uentp, char *arg)
 {
     static int i;
-    char permstr[10];
+    char permstr[USER_TITLE_LEN];
     int override;
     char fexp[30];
 
@@ -735,9 +735,6 @@ int printuent(struct userec *uentp, char *arg)
 }
 int countusers(struct userec *uentp, char *arg)
 {
-    char permstr[10];
-
-//    if (uentp->numlogins != 0 && uleveltochar(permstr, uentp) != 0)
     if (uentp->userid[0]!=0)
         return COUNT;
     return 0;

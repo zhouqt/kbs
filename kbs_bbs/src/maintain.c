@@ -288,42 +288,6 @@ char *chgrp()
     int i, ch;
     char buf[STRLEN], ans[6];
 
-    /*
-     * static char    *explain[] = {
-     * "本站系统",
-     * "休闲娱乐",
-     * "电脑技术",
-     * "学术科学",
-     * "体育健身",
-     * "谈天说地",
-     * "校园信息",
-     * "艺术文化",
-     * "人文社会",
-     * "网络信息",
-     * "清华大学",
-     * "兄弟院校",
-     * "其  他",
-     * NULL
-     * };
-     * 
-     * static char    *groups[] = {
-     * "system.faq",
-     * "rec.faq",
-     * "comp.faq",
-     * "sci.faq",
-     * "sport.faq",
-     * "talk.faq",
-     * "campus.faq",
-     * "literal.faq",
-     * "soc.faq",
-     * "network.faq",
-     * "thu.faq",
-     * "univ.faq",
-     * "other.faq",
-     * NULL
-     * };
-     */
-
     clear();
     move(2, 0);
     prints("选择精华区的目录\n");
@@ -508,7 +472,10 @@ int m_editbrd()
     else
         prints("%s", "俱乐部:   无\n");
     strcpy(oldtitle, fh.title);
-    prints("限制 %s 权力: %s", (fh.level & PERM_POSTMASK) ? "POST" : "READ", (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限");
+    prints("限制 %s 权力: %s      需要的用户职务: %s(%d)", 
+        (fh.level & PERM_POSTMASK) ? "POST" : "READ", 
+        (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限",
+        fh.title_level? get_user_title(fh.title_level):"无",fh.title_level);
     getdata(10, 0, "是否更改以上资讯? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
     if (*genbuf == 'y' || *genbuf == 'Y') {
         move(9, 0);
@@ -631,6 +598,10 @@ int m_editbrd()
         
         line++;
         
+        getdata(line++, 0, "所需职务: ", genbuf, 60, DOECHO, NULL, true); 
+        if (*genbuf != 0)
+            newfh.title_level=atoi(genbuf);
+
         getdata(line++, 0, "是否更改存取权限 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y') {
             char ans[5];

@@ -234,7 +234,7 @@ char q_id[IDLEN];
     int exp, perf;              /*Add by SmallPig */
     char qry_mail_dir[STRLEN];
     char planid[IDLEN + 2];
-    char permstr[10];
+    char permstr[USER_TITLE_LEN];
     char exittime[40];
     time_t exit_time, temp /*Haohmaru.98.12.04 */ ;
     int logincount, seecount, oldmode;

@@ -107,6 +107,10 @@
 #endif
 #endif
 
+#ifndef HAVE_CUSTOM_USER_TITLE /*定义用户特定的title,default enable*/
+#define HAVE_CUSTOM_USER_TITLE
+#endif
+
 #if HAVE_PERSONAL_DNS == 0	/*个人域名服务，缺省不使能*/
 #undef HAVE_PERSONAL_DNS
 #endif
@@ -521,7 +525,10 @@ bigger mailbox. --stephen 2001.10.31*/
 #define DEF_SHOWSTATISTIC 0200000000    /* Haohmaru */
 #define DEF_UNREADMARK 0400000000       /* Luzi 99.01.12 */
 #define DEF_USEGB     01000000000       /* KCN,99.09.05 */
-#define DEF_CHCHAR    02000000000
+#define DEF_CHCHAR				02000000000
+#define DEF_SHOWDETAILUSERDATA	04000000000
+#define DEF_SHOWREALUSERDATA	010000000000
+
 /*#define DEF_HIDEIP    02000000000  Haohmaru,99.12.18*/
 
 /*#define PERM_POSTMASK  0100000  *//* means the rest is a post mask */

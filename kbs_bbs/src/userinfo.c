@@ -51,6 +51,9 @@ void disply_userinfo(u, real)
     prints("您的性别     : %s\n",(ud.gender=='M')?"男":"女");
 	prints("您的生日     : %d-%d-%d\n",ud.birthyear+1900,ud.birthmonth,ud.birthday);
 #endif
+#ifdef HAVE_CUSTOM_USER_TITLE
+    prints("您的职务: %s\n",get_user_title(u->title));
+#endif
 
     if (real) {
         prints("真实 E-mail  : %s\n", ud.realemail);
@@ -211,6 +214,12 @@ int uinfo_query(struct userec *u, int real, int unum)
 #endif
 
         if (real) {
+#ifdef HAVE_CUSTOM_USER_TITLE
+            sprintf(genbuf, "当前职务%s[%d](填数字序号): ", get_user_title(u->title),u->title);
+            getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
+            if (buf[0])
+                newinfo.title=atoi(buf);
+#endif
             sprintf(genbuf, "真实Email[%s]: ", ud.realemail);
             getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
             if (buf[0])

@@ -157,7 +157,8 @@ struct boardheader {            /* This structure is used to hold data in */
     int toptitle;
     char ann_path[128];
     int group; /*所属目录*/
-    char des[196]; /*版面描述,用于www的版面说明和search */
+    char title_level; /* 设定用户需要什么title可见这个版面*/
+    char des[195]; /*版面描述,用于www的版面说明和search */
 };
 
 /* add by roy 2003.8.7 struct wwwthreadheader */

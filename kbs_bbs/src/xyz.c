@@ -590,7 +590,11 @@ void a_edits()
         "../0Announce/systeminfo",
         "forbm",
         "forcloak",
-        "forlongid", "../innd/newsfeeds.bbs", "deny_reason", "initial_favboard","tonewuser", NULL
+        "forlongid", "../innd/newsfeeds.bbs", "deny_reason", "initial_favboard","tonewuser", 
+        #ifdef HAVE_CUSTOM_USER_TITLE
+        "../" USER_TITLE_FILE,
+        #endif
+        NULL
     };
 
     /*
@@ -606,7 +610,11 @@ void a_edits()
         "¸øĞÂÈÎ°æÖ÷µÄĞÅ        ", "¸øÒşÉíÓÃ»§µÄĞÅ",
         "¸ø³¤ÆÚÓÃ»§µÄĞÅ        ",
         "×ªĞÅ°æºÍĞÂÎÅ×é¶ÔÓ¦",
-        "·â½ûÀíÓÉÁĞ±í", "ĞÂÓÃ»§¸öÈË¶¨ÖÆÇø","¸øĞÂ×¢²áÓÃ»§µÄĞÅ", NULL
+        "·â½ûÀíÓÉÁĞ±í", "ĞÂÓÃ»§¸öÈË¶¨ÖÆÇø","¸øĞÂ×¢²áÓÃ»§µÄĞÅ", 
+        #ifdef HAVE_CUSTOM_USER_TITLE
+        "ÓÃ»§Ö°Îñ±í",
+        #endif
+        NULL
     };
 
     modify_user_mode(ADMIN);
@@ -617,7 +625,7 @@ void a_edits()
     move(0, 0);
     prints("±àĞŞÏµÍ³µµ°¸\n\n");
     for (num = 0; e_file[num] != NULL && explain_file[num] != NULL; num++) {
-        prints("[[32m%2d[m] %s%s", num + 1, explain_file[num], (num + 1 >= 1 && num + 1 <= 28 && (num + 1) % 2) ? "      " : "\n");
+        prints("[[32m%2d[m] %s%s", num + 1, explain_file[num], ((num + 1) % 2) ? "      " : "\n");
         /*
          * Leeward 98.03.29 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°ÏµÍ³×Ô¶¯¹ıÂËµÄ´ÊÓï¡±Ò»Ïî
          */
@@ -683,6 +691,11 @@ void a_edits()
             unlink(BADWORD_IMG_FILE);
             prints("\n¹ıÂË´Ê±í¸üĞÂ");
 	}
+#endif
+#ifdef HAVE_CUSTOM_USER_TITLE
+       if (!strcmp(e_file[ch],"../" USER_TITLE_FILE)) {
+          load_user_title();
+       }
 #endif
     }
     pressreturn();

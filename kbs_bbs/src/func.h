@@ -22,7 +22,7 @@ extern "C" {
     int getnewuserid2(char *userid);
     unsigned int ucache_hash(const char *userid);       /* hash function export for utmp usage */
 
-    void resolve_ucache();
+    int resolve_ucache();
     void detach_ucache();
 
     int getuserid(char *userid, int uid);
@@ -48,6 +48,11 @@ void setcachehomefile(char* path,char* user,int unum, char* file);
 void init_cachedata(char* userid,int unum);
 void flush_cachedata(char* userid);
 int clean_cachedata(char* userid,int unum);
+#endif
+
+#ifdef HAVE_CUSTOM_USER_TITLE
+char* get_user_title(unsigned char titleidx);
+void set_user_title(unsigned char titleidx,char* newtitle);
 #endif
 
 /* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/
@@ -114,6 +119,7 @@ int clean_cachedata(char* userid,int unum);
     int compute_user_value(struct userec *urec);
     void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate);
     void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr);
+    void    remove_shm(char *shmstr, int defaultkey, int shmsize);
     void attach_err(int shmkey, char *name);
     int id_invalid(char *userid);
     int addtofile(char filename[STRLEN], char str[STRLEN]);
