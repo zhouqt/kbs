@@ -6434,7 +6434,7 @@ static PHP_FUNCTION(bbs_getonlinefriends)
     }
     //if(!usr) RETURN_LONG(0);
     
-    for (i = 0; i < USHM_SIZE; i++) {
+    for (i = 0; i < range; i++) {
         x = usr[i];
 	if (x == NULL)continue;
 	if (x->active == 0) continue;
