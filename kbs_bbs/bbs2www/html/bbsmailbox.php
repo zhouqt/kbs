@@ -58,7 +58,7 @@
 				}
 			}
 		$mailboxnum = $i + 1;
-	
+		$mail_title_encode = rawurlencode($mail_title);
 ?>
 <script language="javascript">
 <!--
@@ -129,7 +129,7 @@ function bbsconfirm(url,infor){
 您的 <font class="b3"><?php echo $mail_title; ?></font> 里共有 <font class="b3"><?php echo $mail_num; ?></font> 封邮件
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
 </p>
-<form action="/bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".urlencode($mail_title); ?>" method="POST">
+<form action="/bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
 <table width="95%" cellspacing="0" cellpadding="5" class="mt1">
 	<tr>
 		<td class="mt2" width="30">已读</td>
@@ -167,15 +167,15 @@ function bbsconfirm(url,infor){
 	</td>
 	<td class="mt3"><?php echo $start+$i+1;?></td>
 	<td class="mt4">&nbsp;<?php echo $maildata[$i]["FLAGS"];?>&nbsp;</td>
-	<td class="mt3"><a href=/bbsqry.php?userid=<?php echo $maildata[$i]["OWNER"];?>><?php echo $maildata[$i]["OWNER"];?></a></td>
-	<td class="mt5">&nbsp;<a href=/bbsmailcon.php?dir=<?php echo $mail_path;?>&num=<?php echo $i+$start;?>&title=<?php echo $mail_title;?>><?php
+	<td class="mt3"><a href="/bbsqry.php?userid=<?php echo $maildata[$i]["OWNER"];?>"><?php echo $maildata[$i]["OWNER"];?></a></td>
+	<td class="mt5">&nbsp;<a href="/bbsmailcon.php?dir=<?php echo $mail_path;?>&num=<?php echo $i+$start;?>&title=<?php echo $mail_title_encode;?>"><?php
 if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
 	echo "★" .  htmlspecialchars($maildata[$i]["TITLE"]);
 else
     echo htmlspecialchars($maildata[$i]["TITLE"]);
 ?></a></td>
 	<td class="mt3"><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?></td>
-	<td class="mt4"><input type="button" name="del" value="删除" class="bt1" onclick="bbsconfirm('bbsmailact.php?act=del&<?php echo "dir=".urlencode($mail_path)."&file=".urlencode($maildata[$i]["FILENAME"])."&title=".urlencode($mail_title); ?>','确认删除该邮件吗?')"></td>
+	<td class="mt4"><input type="button" name="del" value="删除" class="bt1" onclick="bbsconfirm('bbsmailact.php?act=del&<?php echo "dir=".$mail_title_encode."&file=".urlencode($maildata[$i]["FILENAME"])."&title=".$mail_title_encode; ?>','确认删除该邮件吗?')"></td>
 </tr>
 <?php
 		}
@@ -210,23 +210,23 @@ else
 		{
 			$i = $start - 19;
 			if ($i < 0)$i = 0;
-			echo "<a href=bbsmailbox.php?path=$mail_path&start=0&title=$mail_title>第一页</a> ";
-			echo "<a href=bbsmailbox.php?path=$mail_path&start=$i&title=$mail_title>上一页</a> ";
+			echo "<a href=\"bbsmailbox.php?path=$mail_path&start=0&title=$mail_title_encode\">第一页</a> ";
+			echo "<a href=\"bbsmailbox.php?path=$mail_path&start=$i&title=$mail_title_encode\">上一页</a> ";
 		}
 		if ($start < $mail_num - 19)
 		{
 			$i = $start + 19;
 			if ($i > $mail_num -1)$i = $mail_num -1;
-			echo "<a href=bbsmailbox.php?path=$mail_path&start=$i&title=$mail_title>下一页</a> ";
-			echo "<a href=bbsmailbox.php?path=$mail_path&title=$mail_title>最后一页</a> ";
+			echo "<a href=\"bbsmailbox.php?path=$mail_path&start=$i&title=$mail_title_encode\">下一页</a> ";
+			echo "<a href=\"bbsmailbox.php?path=$mail_path&title=$mail_title_encode\">最后一页</a> ";
 		}
 ?>
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
 &nbsp;&nbsp;</td></tr></table></form>
 <table cellpadding="3" cellspacing="0" width="95%" border="0" class="b9">
-<form action="/bbsdelmail.php?<?php echo "dir=".urlencode($mail_path)."&title=".urlencode($mail_title); ?>" method="POST">
+<form action="/bbsdelmail.php?<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
 <input type="hidden" name="dir" value="<?php echo $mail_path; ?>">
-<input type="hidden" name="title" value="<?php echo $mail_title; ?>">
+<input type="hidden" name="title" value="<?php echo $mail_title_encode; ?>">
 <tr><td class="b9">
 区段删除：
 起始序号

@@ -68,6 +68,8 @@ function get_mimetype($name)
 			$title=$_GET["title"];
 		else
 			$title="收件箱";
+			
+		$title_encode = rawurlencode($title);
 
     	if (strstr($dirname, "..") || strstr($dirname, "/")){
 			html_init("gb2312");
@@ -129,20 +131,20 @@ function get_mimetype($name)
 ?>
 </td></tr></table>
 <hr>
-[<a onclick='return confirm("你真的要删除这封信吗？")' href="/bbsmailact.php?act=del&dir=<?php echo $dirname;?>&file=<?php echo $file;?>&title=<?php echo $title;?>">删除</a>]
+[<a onclick='return confirm("你真的要删除这封信吗？")' href="/bbsmailact.php?act=del&dir=<?php echo $dirname;?>&file=<?php echo $file;?>&title=<?php echo $title_encode;?>">删除</a>]
 [<a href="javascript:history.go(-1)">返回上一页</a>]
 <?php
 				if($num > 0){
 ?>
-[<a href="/bbsmailcon.php?dir=<?php echo $dirname;?>&num=<?php echo $num-1;?>&title=<?php echo $title;?>">上一篇</a>]
+[<a href="/bbsmailcon.php?dir=<?php echo $dirname;?>&num=<?php echo $num-1;?>&title=<?php echo $title_encode;?>">上一篇</a>]
 <?php
 				}
 ?>
-[<a href="/bbsmailbox.php?path=<?php echo $dirname;?>&title=<?php echo $title;?>">返回信件列表</a>]
+[<a href="/bbsmailbox.php?path=<?php echo $dirname;?>&title=<?php echo $title_encode;?>">返回信件列表</a>]
 <?php
 				if($num < $total-1){
 ?>
-[<a href="/bbsmailcon.php?dir=<?php echo $dirname;?>&num=<?php echo $num+1;?>&title=<?php echo $title;?>">下一篇</a>]
+[<a href="/bbsmailcon.php?dir=<?php echo $dirname;?>&num=<?php echo $num+1;?>&title=<?php echo $title_encode;?>">下一篇</a>]
 <?php
 				}
 ?>
