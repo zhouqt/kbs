@@ -24,6 +24,22 @@ char *cmd;
     choose_board( DEFINE(currentuser,DEF_NEWPOST)?1:0 );
 }
 
+static int clear_all_board_read_flag_func(struct boardheader *bh)
+{
+	brc_initial(currentuser->userid, bh->filename);
+	brc_clear();
+}
+
+int clear_all_board_read_flag()
+{
+	char save_board[BOARDNAMELEN];
+	strncpy(save_board,currboard,BOARDNAMELEN);
+	save_board[BOARDNAMELEN-1]=0;
+
+	apply_boards(clear_all_board_read_flag_func);
+	strcpy(currboard,save_board);
+}
+
 void
 Boards()
 {
