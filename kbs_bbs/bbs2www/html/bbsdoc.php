@@ -9,89 +9,89 @@
 	{
 		global $section_names;
 		$brd_encode = urlencode($brdarr["NAME"]);
-?>		
-<table width="100%" border="0" cellspacing="0" cellpadding="0">		
+	?>		
+<table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">		
 <form name="form1" action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">
 <input type="hidden" name="board" value="<?php echo $brdarr["NAME"]; ?>"/>
 <tr>
 <td>
-<?php
-			if (strcmp($currentuser["userid"], "guest") != 0)
-			{
-?>
-<input type="button" value="发表文章" onclick="window.location.href=href='bbspst.php?board=<?php echo $brd_encode; ?>'">
-<?php
+    	<?php
+    		if (strcmp($currentuser["userid"], "guest") != 0)
+		{
+    	?>
+<input class="b1" type="button" value="发表文章" onclick="window.location.href=href='bbspst.php?board=<?php echo $brd_encode; ?>'">
+    	<?php
     		}
-?>
+    	?>
 </td>
-<td align="right">
-<?php
-			if($order)
+<td class="b1" align="right">
+ 	<?php
+		      if($order)
+		      {
+		   	if ($start <= $total - 20)
 			{
-				if ($start <= $total - 20)
-				{
-?>
+		    ?>
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">第一页</a>]
 [<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">上一页</a>]
-<?php
-				}
-				else
-				{
-?>
-[第一页] 
-[上一页]
-<?php
-				}
-				if ($page > 1)
-				{
-?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">下一页</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">最后一页</a>]
-<?php
-				}
-				else
-				{
-?>
-[下一页] 
-[最后一页]
-<?php
-				}
+		    <?php
 			}
 			else
-			{	
-		     	if ($page > 1)
-				{
-?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">第一页</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>]
-<?php
-				}
-				else
-				{
-?>
+			{
+		    ?>
 [第一页] 
 [上一页]
-<?php
-				}
-				if ($start <= $total - 20)
-				{
-?>
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>]
-[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">最后一页</a>]
-<?php
-				}
-				else
-				{
-?>
+		    <?php
+			}
+			if ($page > 1)
+			{
+		?>
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">下一页</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">最后一页</a>]
+		    <?php
+			}
+			else
+			{
+		    ?>
 [下一页] 
 [最后一页]
-<?php
-				}
+		    <?php
+			}
+		     }
+		     else
+		     {	
+		     	if ($page > 1)
+			{
+		?>
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=1">第一页</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page - 1; ?>">上一页</a>]
+		    <?php
+			}
+			else
+			{
+		    ?>
+[第一页] 
+[上一页]
+		    <?php
+			}
+			if ($start <= $total - 20)
+			{
+		    ?>
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&page=<?php echo $page + 1; ?>">下一页</a>]
+[<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>">最后一页</a>]
+		    <?php
+			}
+			else
+			{
+		    ?>
+[下一页] 
+[最后一页]
+		    <?php
+			}
 		    }
-?>
-<input type="submit" value="跳转到"> 第 <input type="text" class="default" name="start" size="3"  onmouseover="this.focus()" onfocus="this.select()"> 篇 
+	?>
+<input class="b1" type="submit" value="跳转到"> 第 <input class="b1" type="text" name="start" size="3"  onmouseover=this.focus() onfocus=this.select()> 篇 
 </td></tr></form></table>
-<?php
+	<?php
 	}
 	
 	function display_articles($brdarr,$articles,$start,$order=FALSE)
@@ -100,8 +100,8 @@
 		global $default_dir_mode;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<table width="95%" border="0" cellspacing="0" cellpadding="3">
-<tr align="center"><td width="50">序号</td><td width="40">标记</td><td width="120">作者</td><td width="80">日期</td><td>标题</td></tr>
+<table width="95%" border="0" cellspacing="0" cellpadding="3" class="t1">
+<tr align="center" class="t2"><td width="50" class="t2">序号</td><td width="40" class="t2">标记</td><td width="120" class="t2">作者</td><td width="80" class="t2">日期</td><td class="t2">标题</td></tr>
 <?php
 		$ding_cnt = 0;
 		foreach ($articles as $article)
@@ -127,13 +127,13 @@
 <?php
 			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
 ?>
-<td colspan="2" align="center"><img src="images/istop.gif" alt="提示" align="absmiddle"> <strong>提示</strong></td>
+<td colspan="2" align="center" class="t2"><img src="images/istop.gif" alt="提示" align="absmiddle"> <strong>提示</strong></td>
 <?php
 
 			} else {
 ?>
-<td align="center"><?php echo $start+$i; ?></td>
-<td align="center">&nbsp;
+<td align="center" class="t2"><?php echo $start+$i; ?></td>
+<td align="center" class="t2">&nbsp;
 <?php
 			if ($flags[1] == 'y')
 			{
@@ -164,9 +164,9 @@
 <?php
 	}//置顶
 ?>
-<td align="center"><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
-<td align="center"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
-<td>&nbsp;
+<td align="center" class="t2"><a href="/cgi-bin/bbs/bbsqry?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
+<td align="center" class="t2"><?php echo strftime("%b&nbsp;%e", $article["POSTTIME"]); ?></td>
+<td class="t2">&nbsp;
 <?php
 	switch ($default_dir_mode)
 	{
@@ -334,7 +334,7 @@
 <a name="listtop"></a>
 <table width="100%" border="0" cellspacing="0" cellpadding="3">
   <tr> 
-    <td colspan="2">
+    <td colspan="2" class="b1">
 	    <a href="bbssec.php"><?php echo BBS_FULL_NAME; ?></a>
 	    -
 	    <?php
@@ -353,13 +353,15 @@
   <tr> 
     <td colspan="2" align="center" height="80"><font size=6><strong><?php echo $brdarr["NAME"]."(".$brdarr["DESC"].")"; ?>版</strong></font></td>
   </tr>
+  <tr><td colspan="2" class="b1">
+  <img src="images/bm.gif" alt="版主" align="absmiddle">版主 <?php echo $bm_url; ?>
+  </td></tr>
   <tr> 
-    <td>
-    <img src="images/bm.gif" alt="版主" align="absmiddle">版主 <?php echo $bm_url; ?>
+    <td class="b1">
     <img src="images/online.gif" alt="本版在线人数" align="absmiddle">在线 <font color=#CC0000><strong><?php echo $brdarr["CURRENTUSERS"]+1; ?></strong></font> 人
     <img src="images/postno.gif" alt="本版文章数" align="absmiddle">文章 <font color=#CC0000><strong><?php echo $total; ?></strong></font> 篇
     </td>
-    <td align="right">
+    <td align="right" class="b1">
 	    <img src="images/gmode.gif" align="absmiddle" alt="文摘区"><a href="bbsgdoc.php?board=<?php echo $brd_encode; ?>">文摘区</a> 
 	    <?php
   	    	if ($ann_path != FALSE)
@@ -408,7 +410,7 @@
   </td></tr>
   <tr><td colspan="2"><hr class="default"/></td></tr>
   <tr> 
-    <td colspan="2" align="center">
+    <td colspan="2" align="center" class="b1">
     	[<a href="#listtop">返回顶部</a>]
     	[<a href="javascript:location=location">刷新</a>]
     	[<a href="bbstdoc.php?board=<?php echo $brd_encode; ?>">同主题模式</a>]
