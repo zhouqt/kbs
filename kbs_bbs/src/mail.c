@@ -241,6 +241,7 @@ int mailall()
                 } else if (ans[0] == 'L') {
                     currentuser->signature = -1;
                 } else {
+			extern char quote_title[120];
                     strncpy(save_title, title, STRLEN);
                     strncpy(quote_title,title,STRLEN);
                     break;
