@@ -470,7 +470,7 @@ struct pc_logs {
 
 #if HAVE_WWW==1
 
-#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST/32)
+#define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST>>5)
 
 struct WWW_GUEST_S {
     int key;
