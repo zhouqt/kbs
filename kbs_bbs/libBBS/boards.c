@@ -262,6 +262,10 @@ void brc_update(char *userid, char *board) {
         char    tmp_name[BRC_STRLEN];
         int     tmp_list[BRC_MAXNUM], tmp_num;
         int     fd, tmp_size;
+	if (brc_changed == 0) {
+		return;
+	}
+
         ptr = brc_buf;
         if (brc_num > 0) {
                 ptr = brc_putrecord(ptr, brc_name, brc_num, brc_list);
@@ -288,6 +292,7 @@ void brc_update(char *userid, char *board) {
                 write(fd, brc_buf, brc_size);
                 close(fd);
         }
+	brc_changed = 0;
 }
 
 int
@@ -302,7 +307,6 @@ brc_initial(char *userid, char *boardname ) /* ¶ÁÈ¡ÓÃ»§.boardrcÎÄ¼þ£¬È¡³ö±£´æµÄµ
     }
     brc_update(currentuser->userid,currboard); /*ÏÈ±£´æµ±Ç°µÄbrc_list*/
     strcpy( currboard, boardname );
-    brc_changed = 0;
     if( brc_buf[0] == '\0' ) {
 #endif
         sethomefile( dirfile, userid, ".boardrc" );
@@ -403,6 +407,7 @@ int brc_add_read(char *filename) {
         if(filename[0]!='M' && filename[0]!='G')  return;
         if(brc_num<=0) {
                 brc_list[brc_num++] = ftime;
+		brc_changed = 1;
                 return;
         }
         for (n = 0; n < brc_num; n++) {
@@ -415,10 +420,12 @@ int brc_add_read(char *filename) {
                                 brc_list[i] = brc_list[i - 1];
                         }
                         brc_list[n] = ftime;
+			brc_changed = 1;
                         return;
                 }
         }
         if(brc_num<BRC_MAXNUM) brc_list[brc_num++] = ftime;
+	brc_changed = 1;
 }
 
 int brc_clear() {
