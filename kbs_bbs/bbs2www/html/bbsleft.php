@@ -54,7 +54,7 @@
 ?>
 <table width="100%" border="0" cellspacing="0" cellpadding="0" class="b1">
 <?php
- 		$select = -1; 
+ 		$select = 0; 
  		$yank = 0;
  		 		
                 if( bbs_load_favboard($select)!=-1 && $boards = bbs_fav_boards($select, 1)) 
@@ -115,7 +115,6 @@
 <?php
 				}
 			}
-                        bbs_release_favboard(); 
                         
                 }
 ?>
@@ -341,7 +340,7 @@
 				<a href='javascript:changemn("fav");'><img id="imgfav" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><a href="bbsfav.php?select=-1" target="f3"><img src="<?php echo $img_subdir; ?>mfolder3.gif" border="0" alt="我的收藏夹" align="absmiddle"> 我的收藏夹</a></td>
+			<td><a href="bbsfav.php?select=0" target="f3"><img src="<?php echo $img_subdir; ?>mfolder3.gif" border="0" alt="我的收藏夹" align="absmiddle"> 我的收藏夹</a></td>
 		</tr>
 		<tr>
 			<td> </td>
