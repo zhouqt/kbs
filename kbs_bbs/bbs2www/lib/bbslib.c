@@ -2663,6 +2663,6 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output)
 		output->output("</font>", 7, output);
 		STATE_CLR(ansi_state, STATE_FONT_SET);
 	}
-	flush_buffer(output);
+	output->flush(output);
 }
 

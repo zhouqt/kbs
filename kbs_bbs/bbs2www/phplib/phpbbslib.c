@@ -513,11 +513,12 @@ static int buffered_output(char *buf, size_t buflen, void *arg)
 	buffered_output_t *output = (buffered_output_t *)arg;
 	if (output->buflen < buflen)
 	{
+		output->flush(output);
 		zend_printf("%s", buf);
 		return 0;
 	}
 	if ((output->buflen - (output->outp - output->buf)) < buflen) 
-		flush_buffer(output);
+		output->flush(output);
 	strncpy(output->outp, buf, buflen); 
 	output->outp += buflen;
 
@@ -576,6 +577,7 @@ static ZEND_FUNCTION(bbs_printansifile)
 	out.outp = out.buf;
 	out.buflen = outbuf_len;
 	out.output = buffered_output;
+	out.flush = flush_buffer;
 
     if (!sigsetjmp(bus_jump, 1)) 
 	{
