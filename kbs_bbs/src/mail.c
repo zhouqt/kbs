@@ -1442,7 +1442,7 @@ int mailreadhelp(struct _select_def* conf,void* data,void* extraarg)
 
 struct key_command mail_comms[] = {
     {'d', (READ_KEY_FUNC)mail_del,NULL},
-    {'D', (READ_KEY_FUNC)mail_del_range,NULL},
+//    {'D', (READ_KEY_FUNC)mail_del_range,NULL},
 //added by bad 03-2-10
     {'E', (READ_KEY_FUNC)mail_edit,NULL},
 	{'T', (READ_KEY_FUNC)mail_edit_title,NULL},
