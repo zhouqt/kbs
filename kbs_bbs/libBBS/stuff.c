@@ -952,7 +952,9 @@ int safe_mmapfile(char* filename,int openflag,int prot,int flag,void** ret_ptr,i
 		return 0;
     if (!sigsetjmp(bus_jump,1)) {
         signal(SIGBUS,sigbus);
+		/*
 		signal(SIGSEGV,sigbus);
+		*/
 		*size=st.st_size;
 		return 1;
     }
@@ -963,7 +965,9 @@ void end_mmapfile(void* ptr,int size,int fd)
 {
  	munmap(ptr, size);
     signal(SIGBUS,SIG_IGN);
+	/*
     signal(SIGSEGV,SIG_IGN);
+	*/
     if (fd!=-1) close(fd);
 }
 

@@ -515,8 +515,10 @@ login_query()
 
         getdata( 0,0, "\n«Î ‰»Î¥˙∫≈£∫", uid, STRLEN-1, DOECHO, NULL ,YEA);
 		uid[STRLEN-1]=0;
-		if (uid[strlen(uid)-1]=='.')
+		if (uid[strlen(uid)-1]=='.') {
 			convcode=1;
+			uid[strlen(uid)-1]=0;
+		}
         if( strcmp( uid, "new" ) == 0 ) {
 #ifdef LOGINASNEW
             if (check_ban_IP(fromhost,buf)<=0)
