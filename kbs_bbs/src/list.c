@@ -752,10 +752,10 @@ int t_friends()
         move(2, 0);
         clrtobot();
         prints("目前无好友上线\n");
-        getdata(BBS_PAGESIZE + 3, 0, "是否转换成使用者模式 (Y/N)[Y]: ", genbuf, 4, DOECHO, NULL, true);
+        getdata(BBS_PAGESIZE + 3, 0, "是否转换成使用者模式 (Y/N)[N]: ", genbuf, 4, DOECHO, NULL, true);
         move(BBS_PAGESIZE + 3, 0);
         clrtobot();
-        if (genbuf[0] != 'N' && genbuf[0] != 'n') {
+        if (genbuf[0] == 'Y' || genbuf[0] == 'y') {
             range = num_visible_users();
             page = -1;
             friendmode = false;
