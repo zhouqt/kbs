@@ -33,7 +33,7 @@ if( $rows[stylesheet] == 1 )
 }
 else
 {
-	header("Content-Type: text/xsl");
+	header("Content-Type: text/xml");
 	header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xsl");
 }
 
