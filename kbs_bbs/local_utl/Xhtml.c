@@ -194,7 +194,9 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
             return NULL;
         }
 
-        fputs("<HTML>\n<HEAD>\n<TITLE>", pdstFile);
+        fputs("<HTML>\n<HEAD>\n", pdstFile);
+	fputs("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=gb2312\">\n", pdstFile);
+	fputs("<TITLE>", pdstFile);
         fputs(title, pdstFile);
         fputs("</TITLE>\n</HEAD>\n<BODY>\n<CENTER><H1>", pdstFile);
         fputs(HEADER, pdstFile);
@@ -496,7 +498,7 @@ int main(int argc, char **argv)
         fprintf(stderr, "mkdir %s/bbs:%s", WorkDir, strerror(errno));
         return 0;
     }
-    printf("Begine %s\n", task_head->dir);
+    printf("Begin %s\n", task_head->dir);
     task_tail = task_head;
     while (task_head) {
         LP_DIR_DATA dirdata = task_head;
@@ -516,7 +518,7 @@ int main(int argc, char **argv)
     sprintf(Buf, "%s/%s.bbs.tgz", OutDir, maindir);
     unlink(Buf);
     sprintf(Buf, "cd %s/bbs; %s zcf %s/%s.bbs.tgz %s", WorkDir, GNUTAR, OutDir, maindir, maindir);
-    printf("%s", Buf);
+    printf("%s\n", Buf);
     system(Buf);
 
     printf("Compressing HTML files...\n");
@@ -524,7 +526,7 @@ int main(int argc, char **argv)
     sprintf(Buf, "%s/%s.html.tgz", OutDir, maindir);
     unlink(Buf);
     sprintf(Buf, "cd %s; %s zcf %s/%s.html.tgz %s", WorkDir, GNUTAR, OutDir, maindir, maindir);
-    printf("%s", Buf);
+    printf("%s\n", Buf);
     system(Buf);
 
     printf("Cleaning working directory/data...\n");
