@@ -21,7 +21,7 @@ int main()
 		save_note(path);
 	printf("%s -- 编辑进版画面 [讨论区: %s]<hr>\n", BBSNAME, board);
    	printf("<form method=\"post\" action=\"bbsmnote?type=update&board=%s\">\n",
-			board);
+			encode_url(buf, board, sizeof(buf)));
 	fp=fopen(path, "r");
 	if(fp)
 	{

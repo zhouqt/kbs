@@ -3,9 +3,11 @@
  */
 #include "bbslib.h"
 
-int main() {
+int main()
+{
 	FILE *fp;
 	char buf[512], board[80], filename[80];
+
 	init_all();
 	strsncpy(board, getparm("board"), 32);
 	if(!has_read_perm(currentuser, board)) http_fatal("错误的版面");
@@ -13,7 +15,8 @@ int main() {
 	printf("%s -- 备忘录 [讨论区: %s]<hr color=green>\n", BBSNAME, board);
    	sprintf(filename, "vote/%s/notes", board);
 	fp=fopen(filename, "r");
-	if(fp==0) {
+	if(fp==0)
+	{
 		printf("<br>本讨论区尚无「进版画面」。\n");
 		http_quit();
 	}
@@ -34,9 +37,10 @@ int main() {
 	}
  	fclose(fp); 
  	printf("</pre></table><hr>\n");
-   	printf("[<a href=bbsdoc?board=%s>本讨论区</a>] ", board);
+	encode_url(buf, board, sizeof(buf));
+   	printf("[<a href=bbsdoc?board=%s>本讨论区</a>] ", buf);
 	if(has_BM_perm(currentuser, board)) 
-		printf("[<a href=bbsmnote?board=%s>编辑进版画面</a>]", board);
+		printf("[<a href=bbsmnote?board=%s>编辑进版画面</a>]", buf);
    	printf("</center>\n"); 
 	http_quit();
 }

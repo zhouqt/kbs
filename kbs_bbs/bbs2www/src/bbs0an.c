@@ -49,7 +49,7 @@ void ann_show_item(MENU *pm, ITEM *it)
 	{
 		snprintf(pathbuf, sizeof(pathbuf), "%s/%s", 
 				ptr == NULL ? "" : ptr, it->fname);
-		printf("<td>[Ŀ¼] </td><td><a href=\"bbs0an?path=%s/%s\">%s</a></td>",
+		printf("<td>[Ŀ¼] </td><td><a href=\"bbs0an?path=%s\">%s</a></td>",
 			   http_encode_string(pathbuf, sizeof(pathbuf)), nohtml(title));
 	}
 	else

@@ -79,6 +79,7 @@ int main()
 {
 	int i; 
 	char board[80], *userid;
+	char brdencode[STRLEN];
 
 	init_all();
    	if(!loginok)
@@ -90,6 +91,7 @@ int main()
 	   	http_fatal("你无权进行本操作");
 	loaddenyuser(board);
 	userid = getparm("userid");
+	encode_url(brdencode, board, sizeof(brdencode));
    	for(i=0; i<denynum; i++)
    	{
 		if(!strcasecmp(denyuser[i].id, userid))
@@ -98,12 +100,12 @@ int main()
 			savedenyuser(board);
 			printf("已经给 %s 解封. <br>\n", userid);
 			inform(board, userid);
-			printf("[<a href=\"bbsdenyall?board=%s\">返回被封名单</a>]", board);
+			printf("[<a href=\"bbsdenyall?board=%s\">返回被封名单</a>]",
+					brdencode);
 			http_quit();
 		}
 	}
 	http_fatal("这个用户不在被封名单中");
-	http_quit();
 	return 0;
 }
 

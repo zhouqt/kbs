@@ -42,9 +42,11 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     return DIRCHANGED;
 }
 
-int main() {
+int main()
+{
 	int i, total=0, mode;
 	char board[80], *ptr;
+	char buf[STRLEN];
 	bcache_t *brd;
 
 	init_all();
@@ -78,7 +80,8 @@ int main() {
 	}
 	printf("</table>");
 	if(total<=0) printf("请先选定文章<br>\n");
-	printf("<br><a href=\"bbsmdoc?board=%s\">返回管理模式</a>", board);
+	printf("<br><a href=\"bbsmdoc?board=%s\">返回管理模式</a>",
+			encode_url(buf, board, sizeof(buf)));
 	http_quit();
 }
 

@@ -52,6 +52,7 @@ int main()
 {
 	int i; 
 	char board[80];
+	char brdencode[STRLEN];
 
 	init_all();
    	if(!loginok)
@@ -62,6 +63,7 @@ int main()
 	if(!has_BM_perm(currentuser, board))
 		http_fatal("你无权进行本操作");
 	loaddenyuser(board);
+	encode_url(brdencode, board, sizeof(brdencode));
    	printf("<center>\n");
    	printf("%s -- 被封用户名单 [讨论区: %s]<hr color=\"green\"><br>\n", BBSNAME, board);
    	printf("本版共有 %d 人被封<br>", denynum);
@@ -73,9 +75,9 @@ int main()
 		printf("<td>%s</td>\n", nohtml(denyuser[i].exp));
 		printf("<td>%s</td>\n", denyuser[i].comment);
 		printf("<td>[<a onclick=\"return confirm('确实解封吗?')\" href=\"bbsdenydel?board=%s&userid=%s\">解封</a>]</td></tr>\n", 
-			board, denyuser[i].id);
+			brdencode, denyuser[i].id);
 	}
    	printf("</table><hr color=\"green\">\n");
-	printf("[<a href=\"bbsdenyadd?board=%s\">设定新的不可POST用户</a>]</center>\n", board);
+	printf("[<a href=\"bbsdenyadd?board=%s\">设定新的不可POST用户</a>]</center>\n", brdencode);
 	http_quit();
 }

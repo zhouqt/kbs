@@ -245,7 +245,8 @@ int main()
 	printf("封禁 %s 成功<br>\n", userid);
 	bp = getbcache(board);
 	inform(bp, userid, exp, dt);
-	printf("[<a href=\"bbsdenyall?board=%s\">返回被封帐号名单</a>]", board);
+	printf("[<a href=\"bbsdenyall?board=%s\">返回被封帐号名单</a>]",
+			http_encode_string(board, sizeof(board)));
 	http_quit();
 }
 

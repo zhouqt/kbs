@@ -7,6 +7,7 @@ int main()
 {
 	FILE *fp;
 	char board[80], dir[80], *ptr;
+	char brdencode[STRLEN];
 	bcache_t *x1;
 	struct fileheader x;
 	int i, start, total;
@@ -31,6 +32,7 @@ int main()
 		start=total-20;
   	if(start<0)
 		start=0;
+	encode_url(brdencode, board, sizeof(brdencode));
 	printf("<nobr><center>\n");
 	printf("%s -- [讨论区: %s] 版主[%s] 文章数[%d]<hr color=\"green\">\n", 
 		BBSNAME, board, userid_str(x1->BM), total);
@@ -53,9 +55,9 @@ int main()
 				flag_str(x.accessed[0]), userid_str(x.owner));
 		printf("<td>%12.12s</td>", wwwCTime(atoi(x.filename+2))+4);
 		printf("<td><a href=\"bbscon?board=%s&file=%s&num=%d\">%s%36.36s </a></td></tr>",
-		board, x.filename, start+i,
-		strncmp(x.title, "Re: ", 4) ? "○ " : "",
-		void1(nohtml(x.title)));
+			brdencode, x.filename, start+i,
+			strncmp(x.title, "Re: ", 4) ? "○ " : "",
+			void1(nohtml(x.title)));
 	}
 	printf("</table>\n");
 	printf("<input type=\"hidden\" name=\"mode\" value=\"\">\n");
@@ -68,17 +70,17 @@ int main()
 	printf("</form>\n");
 	if(start>0) {
 		printf("<a href=bbsmdoc?board=%s&start=%d>上一页</a> ",
-			board, start<20 ? 0 : start-20);
+			brdencode, start<20 ? 0 : start-20);
 	}
 	if(start<total-20) {
 		printf("<a href=bbsmdoc?board=%s&start=%d>下一页</a> ",
-			board, start+20);
+			brdencode, start+20);
 	}
-	printf("<a href=bbsdoc?board=%s>一般模式</a> ", board);
-	printf("<a href=bbsdenyall?board=%s>封人名单</a> ", board);
-	printf("<a href=bbsmnote?board=%s>编辑进版画面</a> ", board);
+	printf("<a href=bbsdoc?board=%s>一般模式</a> ", brdencode);
+	printf("<a href=bbsdenyall?board=%s>封人名单</a> ", brdencode);
+	printf("<a href=bbsmnote?board=%s>编辑进版画面</a> ", brdencode);
 	fclose(fp);
-	printf("<form action=bbsmdoc?board=%s method=post>\n", board);
+	printf("<form action=bbsmdoc?board=%s method=post>\n", brdencode);
 	printf("<input type=submit value=跳转到> 第 <input type=text name=start size=4> 篇");
 	printf("</form>\n");
 	http_quit();

@@ -22,7 +22,7 @@ int main()
 	}
 	fclose(fp);
 	printf("<a onclick=\"return confirm('你真的要清除所有讯息吗?')\" href=\"bbsdelmsg\">清除所有讯息</a> ");
-	printf("<a href=\"bbsmailmsg\">讯息寄回信息</a>");
+	printf("<a href=\"bbsmailmsg\">寄回所有信息</a>");
 	printf("</pre>");
 	http_quit();
 }
