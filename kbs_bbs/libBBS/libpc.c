@@ -703,7 +703,7 @@ int add_pc_users(struct pc_users *pn)
 	mysql_escape_string(newdesc, pn->description, strlen(pn->description));
 
 	if( pn->uid <= 0 )
-		sprintf(sql,"INSERT INTO users VALUES (NULL, '%s', '%s', '%s', 'others', %d, %d, '%s', 0 ,NULL,0,0,NULL,'%s' , '' , 0 , 600 , 5 , '' , 0 , '%s' , '' , 0 , 0 , '');",pn->username, newcorp, newdesc, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), tt2timestamp(pn->createtime,newts) , tt2timestamp(pn->createtime,newts));
+		sprintf(sql,"INSERT INTO `users` ( `uid` , `username` , `corpusname` , `description` , `theme` , `nodelimit` , `dirlimit` , `createtime` , `style` , `backimage` , `visitcount` , `nodescount` , `logoimage` , `modifytime` , `links` , `htmleditor` , `indexnodechars` , `indexnodes` , `useremail` , `favmode` , `updatetime` , `userinfor` , `pctype` ,`defaulttopic`) VALUES ('', '%s', '%s', '%s' , 'others', %d, %d, NOW( ) , '0', '' , '0', '0', '' , NOW( ) , '', '1', '600', '5', '', '0', NOW( ) , '' , '0' , '其他类别');",pn->username, newcorp, newdesc, pn->nodelimit, pn->dirlimit );
 	else
 		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 	
@@ -791,7 +791,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 			sprintf(ql,"UPDATE users SET `createtime` = `createtime` , modifytime = '%s' , nodescount = nodescount + 1 WHERE uid=%d ;",tt2timestamp(pn->changed,newts),pn->uid );	
 			mysql_real_query( &s, ql, strlen(ql) );
 		}
-		sprintf(ql,"INSERT INTO nodes VALUES (NULL, %lu,  %d, '%s', '%s', '%s', '%s', %d, %d, %lu, '%s', '%s', %d,  %d , 0 , 0 , 0 , 1 , 0 ,0 , '%s' ,0 , '');",pn->pid, pn->type, newsource, newhostname, tt2timestamp(pn->changed,newts), tt2timestamp(pn->created, newts1), pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount , tt2timestamp(pn->changed,newts));
+		sprintf(ql,"INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`) VALUES ( %lu , 0 , %d , '%s', 0 ,  '%s', '%s' , '%s' , %d , %d , %lu , '%s', '%s', %d , %d , 0 , 1 , 0 , 0 );",pn->pid, pn->type, newsource, newhostname, tt2timestamp(pn->changed,newts), tt2timestamp(pn->created, newts1), pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount );
 	}
 	else
 	{
