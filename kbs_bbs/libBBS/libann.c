@@ -239,8 +239,9 @@ int ann_traverse_check(char *path, struct userec *user)
     } else {
         if (check_read_perm(user, getbcache(board)) == 0) return -1;
         ann_get_path(board, filename, sizeof(filename));
-        sprintf(pathbuf, "0Announce%s/", filename);
+        sprintf(pathbuf, "0Announce%s", filename);
         ptr = path + strlen(pathbuf);
+        i = strlen(pathbuf);
     }
 #endif
     while (*ptr != '\0') {
