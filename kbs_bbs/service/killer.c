@@ -84,6 +84,17 @@ extern int kicked;
     }
 }*/
 
+void start_change_inroom()
+{
+    while(inrooms[myroom].w) sleep(0);
+    inrooms[myroom].w = 1;
+}
+
+void end_change_inroom()
+{
+    inrooms[myroom].w = 0;
+}
+
 void send_msg(int u, char* msg)
 {
     int i, j;
@@ -100,13 +111,16 @@ void send_msg(int u, char* msg)
     }
     else {
         strcpy(inrooms[myroom].msgs[j], msg);
-        inrooms[myroom].msgpid[j] = inrooms[myroom].peoples[u].pid;
+        if(u==-1)
+            inrooms[myroom].msgpid[j] = u;
+        else
+            inrooms[myroom].msgpid[j] = inrooms[myroom].peoples[u].pid;
     }
 }
 
 void kill_msg(int u)
 {
-    int i,j;
+    int i,j,k;
     char buf[80];
     for(i=0;i<MAX_PEOPLE;i++)
     if(inrooms[myroom].peoples[i].style!=-1)
@@ -115,6 +129,21 @@ void kill_msg(int u)
         if(j==-1) {
             sprintf(buf, "%s掉线了", inrooms[myroom].peoples[i].nick[0]?inrooms[myroom].peoples[i].nick:inrooms[myroom].peoples[i].id);
             send_msg(-1, buf);
+            start_change_inroom();
+            inrooms[myroom].peoples[i].style=-1;
+            rooms[myroom].people--;
+            if(inrooms[myroom].peoples[i].flag&PEOPLE_ROOMOP) {
+                for(k=0;k<MAX_PEOPLE;k++) 
+                if(inrooms[myroom].peoples[k].style!=-1&&!(inrooms[myroom].peoples[k].flag&PEOPLE_SPECTATOR))
+                {
+                    inrooms[myroom].peoples[k].flag|=PEOPLE_ROOMOP;
+                    sprintf(buf, "%s成为新房主", inrooms[myroom].peoples[k].nick[0]?inrooms[myroom].peoples[k].nick:inrooms[myroom].peoples[k].id);
+                    send_msg(-1, buf);
+                    break;
+                }
+            }
+            end_change_inroom();
+            i=-1;
         }
     }
 }
@@ -136,15 +165,17 @@ int add_room(struct room_struct * r)
         inrooms[i].killernum = 0;
         inrooms[i].msgi = 0;
         inrooms[i].policenum = 0;
+        inrooms[i].w = 0;
         for(j=0;j<MAX_MSG;j++)
             inrooms[i].msgs[j][0]=0;
         for(j=0;j<MAX_PEOPLE;j++)
-            inrooms[j].peoples[j].style = -1;
+            inrooms[i].peoples[j].style = -1;
         return 0;
     }
     return -1;
 }
 
+/*
 int del_room(struct room_struct * r)
 {
     int i, j;
@@ -155,24 +186,14 @@ int del_room(struct room_struct * r)
     }
     return 0;
 }
+*/
 
 void clear_room()
 {
     int i;
-    for(i=0;i<MAX_ROOM;i++)
-        if((rooms[i].style!=-1) && (!strcmp(rooms[i].creator, currentuser->userid)||rooms[i].people==0))
-            rooms[i].style=-1;
-}
-
-void start_change_inroom()
-{
-    while(inrooms[myroom].w) sleep(0);
-    inrooms[myroom].w = 1;
-}
-
-void end_change_inroom()
-{
-    inrooms[myroom].w = 0;
+//    for(i=0;i<MAX_ROOM;i++)
+//        if((rooms[i].style!=-1) && (!strcmp(rooms[i].creator, currentuser->userid)||rooms[i].people==0))
+//            rooms[i].style=-1;
 }
 
 int can_see(struct room_struct * r)
@@ -217,7 +238,7 @@ int find_room(char * s)
 {
     int i;
     struct room_struct * r2;
-    for(i=0;i<*roomst;i++) {
+    for(i=0;i<MAX_ROOM;i++) {
         r2 = rooms+i;
         if(!can_enter(r2)) continue;
         if(!strcmp(r2->name, s))
@@ -231,7 +252,7 @@ int selected = 0, ipage=0, jpage=0;
 int getpeople(int i)
 {
     int j, k=0;
-    for(j=0;j<rooms[myroom].people;j++) {
+    for(j=0;j<MAX_PEOPLE;j++) {
         if(inrooms[myroom].peoples[j].style==-1) continue;
         if(i==k) return j;
         k++;
@@ -250,7 +271,7 @@ int get_msgt()
     return j;
 }
 
-char * get_msg(int s)
+char * get_msgs(int s)
 {
     int i,j=0,k;
     for(i=0;i<MAX_MSG;i++) {
@@ -330,7 +351,7 @@ void refreshit()
     for(i=2;i<=t_lines-3;i++) 
     if(msgst-1-(t_lines-3-i)-jpage>=0)
     {
-        char * ss=get_msg(msgst-1-(t_lines-3-i)-jpage);
+        char * ss=get_msgs(msgst-1-(t_lines-3-i)-jpage);
         move(i,20);
         if(ss)
             prints(ss);
@@ -345,7 +366,7 @@ void room_refresh(int signo)
     signal(SIGUSR1, room_refresh);
 
     if(RMSG) return;
-    if(rooms[myroom]->style!=1) kicked = 1;
+    if(rooms[myroom].style!=1) kicked = 1;
     
     getyx(&y, &x);
     refreshit();
@@ -401,7 +422,7 @@ void start_game()
     }
     inrooms[myroom].status = INROOM_NIGHT;
     end_change_inroom();
-    kill_msg(-1, SIGUSR1);
+    kill_msg(-1);
 }
 
 #define menust 8
@@ -452,7 +473,7 @@ int do_com_menu()
                     return 0;
                 case 1:
                     me=mypos;
-                    if(inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE&&!(inrooms[myroom].peoples[me].flag&PEOPLE_ROOMOP)) {
+                    if(inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE&&!(inrooms[myroom].peoples[me].flag&PEOPLE_ROOMOP)||inrooms[myroom].status==INROOM_STOP) {
                         send_msg(me, "你还在游戏,不能退出");
                         refreshit();
                         return 0;
@@ -519,7 +540,7 @@ int do_com_menu()
                     if(kicked) return 0;
                     if(buf[0]) {
                         start_change_inroom();
-                        strcpy(inrooms[myroom].title, buf);
+                        strcpy(rooms[myroom].title, buf);
                         end_change_inroom();
                         kill_msg(-1);
                     }
@@ -629,6 +650,7 @@ void join_room(int w, int spec)
     rooms[myroom].people++;
     end_change_inroom();
 
+    kill_msg(-1);
 /*    sprintf(buf, "%s进入房间", currentuser->userid);
     for(i=0;i<myroom->people;i++) {
         send_msg(inrooms.peoples+i, buf);
@@ -640,18 +662,18 @@ void join_room(int w, int spec)
         do{
             int ch;
             ch=-getdata(t_lines-1, 0, "输入:", buf, 70, 1, NULL, 1);
-            if(rooms[myroom]->style!=1) kicked = 1;
+            if(rooms[myroom].style!=1) kicked = 1;
             if(kicked) goto quitgame;
             if(ch==KEY_UP) {
                 selected--;
-                if(selected<0) selected = rooms[myroom]->people-1;
+                if(selected<0) selected = rooms[myroom].people-1;
                 if(ipage>selected) ipage=selected;
                 if(selected>ipage+t_lines-5) ipage=selected-(t_lines-5);
                 refreshit();
             }
             else if(ch==KEY_DOWN) {
                 selected++;
-                if(selected>=rooms[myroom]->people) selected=0;
+                if(selected>=rooms[myroom].people) selected=0;
                 if(ipage>selected) ipage=selected;
                 if(selected>ipage+t_lines-5) ipage=selected-(t_lines-5);
                 refreshit();
@@ -886,7 +908,7 @@ checkvote:
         if(inrooms[myroom].status==INROOM_NIGHT) {
             if(inrooms[myroom].peoples[me].flag&PEOPLE_KILLER)
             for(i=0;i<MAX_PEOPLE;i++) 
-            if(inrooms[myroom].people[i].style!=-1)
+            if(inrooms[myroom].peoples[i].style!=-1)
             {
                 if(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER||
                     inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR) {
@@ -911,7 +933,7 @@ quitgame:
         if(i!=me) {
             send_msg(i, "你被踢了");
         }
-        rooms[myroom]->style = -1;
+        rooms[myroom].style = -1;
         end_change_inroom();
         for(i=0;i<MAX_PEOPLE;i++)
             if(inrooms[myroom].peoples[i].style!=-1)
@@ -921,6 +943,7 @@ quitgame:
     }
     inrooms[myroom].peoples[me].style=-1;
     rooms[myroom].people--;
+    end_change_inroom();
 
 /*    if(killer)
         sprintf(buf, "杀手%s潜逃了", buf2);
@@ -956,9 +979,9 @@ static int room_list_refresh(struct _select_def *conf)
 static int room_list_show(struct _select_def *conf, int i)
 {
     struct room_struct * r;
-    int i = room_get(i-1);
-    if(i!=-1) {
-        r=rooms+i;
+    int j = room_get(i-1);
+    if(j!=-1) {
+        r=rooms+j;
         prints("  %3d  %-14s %-12s %4s %3d  %3d   %2s  %-20s", i, r->name, r->creator, "杀人", r->people, r->maxpeople, (r->flag&ROOM_LOCKED)?"是":"否", r->title);
     }
     return SHOW_CONTINUE;
@@ -1093,11 +1116,11 @@ static int room_list_key(struct _select_def *conf, int key)
         if(!HAS_PERM(currentuser, PERM_SYSOP)) return SHOW_CONTINUE;
         i = room_get(conf->pos-1);
         if(i!=-1) {
-            for(j=0;j<MAX_PEOPLE;j++)
-                if(inrooms[i].peoples[j].style!=-1)
-                    kickout(i, j);
             r2 = rooms+i;
             r2->style = -1;
+            for(j=0;j<MAX_PEOPLE;j++)
+            if(inrooms[i].peoples[j].style!=-1)
+                kill(inrooms[i].peoples[j].pid, SIGUSR1);
         }
         return SHOW_DIRCHANGE;
     }
