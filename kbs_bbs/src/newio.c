@@ -125,7 +125,7 @@ int raw_write(int fd,char *buf,int len)
     for (i=0;i<len;i++)
     	{
     	    int mylen;
-    	     if (buf[i] == 0xff) 
+    	     if ((unsigned char)buf[i] == 0xff) 
     	     	  mylen = write (fd,"\0xff,0xff",2);
     	     else if (buf[i] == 13) 
     	     	  mylen =  write(fd,"\x0d\x00",2);
@@ -523,10 +523,10 @@ int getdata(int line,int col,char* prompt,char* buf,int len,int echo,void* nouse
     move(line, col);
     if (prompt)
         prints("%s", prompt);
-//    y = line;
-    getyx(&y,&x);
-//    col+= (prompt == NULL) ? 0 : strlen(prompt);
-//    x = col;
+    y = line;
+//    getyx(&y,&x);
+    col+= (prompt == NULL) ? 0 : num_noans_chr(prompt);
+    x = col;
     clen = strlen(buf);
     curr = (clen >= len) ? len-1: clen;
     buf[curr]='\0';
