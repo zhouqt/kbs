@@ -20,10 +20,10 @@
 #define MAILOUT			1	/* 是否允许向站外主动发信 */
 #define MANUAL_DENY		0	/*是否允许手动解封*/
 #define BBS_SERVICE_DICT	1
+#define HAVE_TSINGHUA_INFO_REGISTER 0
 
 #define SMTH			1
 #define FILTER			1
-#define HAVE_TSINGHUA_INFO_REGISTER 0
 /* 
  *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
  *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
@@ -77,7 +77,7 @@
 #define LIFE_DAY_NEW		15
 #define LIFE_DAY_SUICIDE	15
 
-#define DAY_DELETED_CLEAN	97
+#define DAY_DELETED_CLEAN	30
 #define SEC_DELETED_OLDHOME	2592000 /* 3600*24*30，注册新用户如果存在这个用户的目录，保留时间 */
 
 #define	REGISTER_WAIT_TIME	(0)
