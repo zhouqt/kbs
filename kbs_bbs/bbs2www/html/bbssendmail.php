@@ -21,6 +21,9 @@ if (!bbs_getuser($incept,$lookupuser))
     html_error_quit("错误的收件人ID");
 $incept = $lookupuser['userid'];
 
+if (!strcasecmp($incept,'guest'))
+    html_error_quit("不能发信给guest");
+
 $title = preg_replace("/\\\(['|\"|\\\])/","$1",trim($_POST["title"]));
 if (!$title) $title = '无主题';
 
