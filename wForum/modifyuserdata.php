@@ -67,40 +67,40 @@ function main(){
 ?>
 </select>
 &nbsp;<a href="javascript:openScript('showallfaces.php',500,400)">查看所有头像</a>
-</TR>
+</tr>
 
-<TR> 
-<TD width=40% valign=top class=TableBody1><B>自定义头像</B>：<br>如果图像位置中有连接图片将以自定义的为主</TD>
-<TD width=60%  class=TableBody1>
+<tr> 
+<td width="40%" valign="top" class="TableBody1"><b>自定义头像</b>：<br/>如果图像位置中有连接图片将以自定义的为主</td>
+<td width="60%" class="TableBody1">
 <?php
 	if (USER_FACE) {
 ?>
-<iframe name=ad frameborder=0 width=100% height=24 scrolling=no src="postface.php"></iframe>
+<iframe name="ad" frameborder="0" width="100%" height="24" scrolling="no" src="postface.php"></iframe>
 <?php
 	}
 ?>
 <table width="100%"><tr><td>
 图像位置： 
-<input type=TEXT name=myface id=myface size=60 maxlength=100 value="<?php echo htmlEncode($currentuser['userface_url']); ?>">
+<input type="text" name="myface" id="myface" size="60" maxlength="100" value="<?php echo htmlEncode($currentuser['userface_url']); ?>" />
 &nbsp;完整Url地址<br>
 宽&nbsp;&nbsp;&nbsp;&nbsp;度： 
-<input type=TEXT name=width id=width size=3 value="<?php echo $currentuser['userface_width'];  ?>" >
+<input type="text" name="width" id="width" size="3" value="<?php echo $currentuser['userface_width'];  ?>" />
 0---120的整数<br>
 高&nbsp;&nbsp;&nbsp;&nbsp;度： 
-<input type=TEXT name=height id=height size=3 value="<?php echo $currentuser['userface_height'];  ?>">
+<input type="text" name="height" id="height" size="3" value="<?php echo $currentuser['userface_height'];  ?>" />
 0---120的整数<br>
 </td><td align="right"><?php echo get_myface($currentuser, "id=\"imgmyface\""); ?></td></tr></table>
-</TD></TR>
+</td></tr>
 <tr>    
-<td width="40%" class=TableBody1><B>个人照片</B>：<BR>如果您有照片在网上，请输入网页地址。此项可选</td>   
-<td width="60%" class=TableBody1>    
-<input type="TEXT" name="userphoto" value="<?php echo $currentuser['photo_url']; ?>" size=30 maxlength=100>   
+<td width="40%" class="TableBody1"><b>个人照片</b>：<br/>如果您有照片在网上，请输入网页地址。此项可选</td>   
+<td width="60%" class="TableBody1">    
+<input type="text" name="userphoto" value="<?php echo $currentuser['photo_url']; ?>" size="30" maxlength="100"/>   
 </td>   
 </tr>   
-<TR> 
-<TD width=40% class=TableBody1><B>门派</B>：<BR>您可以自由选择要加入的门派</TD>
-<TD width=60% class=TableBody1> 
-<select name=groupname>
+<tr> 
+<td width="40%" class="TableBody1"><b>门派</b>：<br/>您可以自由选择要加入的门派</td>
+<td width="60%" class="TableBody1"> 
+<select name="groupname">
 <?php 
 	for($i=0;$i<count($groups);$i++) {
 		echo "<option value=\"".$i."\"";
@@ -111,7 +111,7 @@ function main(){
 	}
 ?>
 </select>
-</TD>
+</td>
 </tr>
 <TR> 
 <TD width=40%  class=TableBody1><B>OICQ号码</B>：<BR>填写您的QQ地址，方便与他人的联系</TD>
