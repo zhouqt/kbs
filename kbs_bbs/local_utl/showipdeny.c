@@ -56,6 +56,7 @@ int main(int argc, char **argv)
     strcpy(fn2, "tmp/showiddeny.txt");
     fp=fopen(fn, "r");
     if(fp) {
+        count=0;
         fp2=fopen(fn2, "w");
         while(!feof(fp)) {
             if(fscanf(fp, "%d %ld %s %d", &i, &j, id, &t)<=0) break;
