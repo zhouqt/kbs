@@ -555,7 +555,7 @@ int igetch()
     case Ctrl('L'):
         redoscr();
         icurrchar++;
-#ifdef NINE_BUILD
+#if defined(NINE_BUILD) || defined(ALLOW_CTRL_L_ANTIIDLE) //Ctrl+L 是 CTerm 的默认防发呆字符
 	now = time(0);
 	uinfo.freshtime = now;
 	if (now - old > 60) {
