@@ -1780,15 +1780,10 @@ static PHP_FUNCTION(bbs_getboards)
         RETURN_FALSE;
     }
     yank_flag = yank;
- #ifndef HAVE_WFORUM
     if (strcmp(currentuser->userid, "guest") == 0)
         yank_flag = 1;          /* see all boards including zapped boards. */
     if (yank_flag != 0)
         yank_flag = 1;
- #else
-    if (yank_flag !=1 )
-	yank_flag =0 ;
- #endif
     brdnum = 0;
 
     /*
