@@ -262,18 +262,23 @@ static int choose_file_show(struct _select_def *conf, int ii)
         fsize = fread(buf, 1, 10*1024, fp);
         fclose(fp);
         memset(out, 0, fsize);
+        for(i=0;i<fsize;i++) {
+            if(buf[i]==0x1b) {
+                j=i;
+                while(!(buf[j]>='a'&&buf[j]<='z'||buf[j]>='A'&&buf[j]<='Z')&&j<fsize) {
+                    buf[j] = ' ';
+                    j++;
+                }
+                if(j<fsize)
+                    buf[j] = ' ';
+            }
+        }
         i=0;
         if(qn[i]=='=') {
             while(i<strlen(qn)&&qn[i]!=' ') i++;
             if(i>=strlen(qn)) i=0;
         }
         while(i<strlen(qn)) {
-            if(qn[i]==0x1b) {
-                j=i;
-                while(!(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z')&&qn[j]) j++;
-                i=j;
-                continue;
-            }
             if(qn[i]>='a'&&qn[i]<='z'||qn[i]>='A'&&qn[i]<='Z') {
                 j=i;
                 while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
