@@ -200,6 +200,7 @@ find_rm_lost(struct boardheader *bhp,void* arg)
 		nfile[i] = 0;
 	}
 	otherfile[0] = 0;
+	printf("~~~starting board: %s\n", bhp->filename);
 	sprintf(buf, "boards/%s", bhp->filename);
 	if (getallpost(buf, NULL) < 0)
 		return -1;
