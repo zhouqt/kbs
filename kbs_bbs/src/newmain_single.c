@@ -760,11 +760,11 @@ void notepad_init()
 void showsysinfo(char * fn)
 {
     FILE* fp;
-    char buf[200];
+    char buf[500];
     int count=1,i,j;
     fp=fopen(fn, "r");
     while(!feof(fp)) {
-        if(!fgets(buf, 200, fp)) break;
+        if(!fgets(buf, 500, fp)) break;
         if(strstr(buf, "@systeminfo@")) count++;
     }
     fclose(fp);
@@ -773,7 +773,7 @@ void showsysinfo(char * fn)
     clear();
     fp=fopen(fn, "r");
     while(!feof(fp)) {
-        if(!fgets(buf, 200, fp)) break;
+        if(!fgets(buf, 500, fp)) break;
         if(strstr(buf, "@systeminfo@")) count++;
         else {
             if(count==i) prints("%s", buf);
