@@ -29,7 +29,8 @@ if (bbs_checkpostperm($usernum, $boardID) == 0) {
 <script src="inc/browser.js"  language="javascript"></script>
 <script language="javascript">
 function disableEdit(){
-	oSubmit=getParentRawObject("oSubmit");
+	oSubmit=getRawObject("Submit");
+	oSubmit.value='上载中...';
 	oSubmit.disabled=true;
 }
 </script>
@@ -38,7 +39,7 @@ function disableEdit(){
 <tr><td class=TableBody2 valign=middle height=28>
 <input type="hidden" name="MAX_FILE_SIZE" value="<?php echo ATTACHMAXSIZE; ?>">
 <input type="file" name="upfile">
-<input type="submit" name="Submit" value="上传">
+<input type="submit" name="Submit" id="Submit" value="上传">
 <font color=#FF0000 >还可上传<?php   echo ATTACHMAXCOUNT-getAttachmentCount(); ?>个，总大小<?php   echo intval((ATTACHMAXTOTALSIZE-$totalsize)/1024) ;?>K</font>；
   限制：一篇文章<?php   echo ATTACHMAXCOUNT; ?>个，<!--一天<?php   echo $GroupSetting[50]; ?>个,-->每个<?php   echo intval(ATTACHMAXSIZE/1024); ?>K，附件总大小<?php   echo intval(ATTACHMAXTOTALSIZE/1024); ?>K
 </td></tr>

@@ -45,7 +45,7 @@ function board_online($board) {
 <table cellpadding=4 cellspacing=1 align=center class=TableBorder1 width="97%"><tr><th>版面</th><th>在线 ID</th><th>来源</th></tr>
 <?php
     if ($board != "") {
-        show_onlines($board, true);
+        show_onlines($board, true, 1);
     } else {
     	for ($i=0;$i<$sectionCount;$i++){
     		$boards = bbs_getboards($section_nums[$i], 0, $yank | 2 | 4);
