@@ -463,6 +463,13 @@ int pc_add_visitcount(unsigned long nid);
 int pc_add_user();
 int import_to_pc(int ent, struct fileheader *fileinfo, char *direct);
 
+int pc_read(char *userid);
+int pc_selusr(char prefix);
+int pc_read_dir(int first);
+int pc_sec();
+int pc_read_comment();
+
+
 #endif
 /* site.c */
     char *ModeType(int mode);

@@ -17,12 +17,6 @@ int pc_dirmode=0;
 //收藏夹当前路径,0表示未进入收藏夹
 unsigned long pc_fav_dir = 0;
 
-int pc_read();
-int pc_selusr();
-int pc_read_dir();
-int pc_sec();
-int pc_read_comment();
-
 int pc_choose_user()
 {
 
@@ -372,7 +366,7 @@ static int pc_sec_select(struct _select_def *conf)
 
 }
 
-static int pc_sec()
+int pc_sec()
 {
 	struct _select_def group_conf;
 	POINT *pts;
@@ -470,7 +464,7 @@ static int pc_selusr_select(struct _select_def *conf)
 	return SHOW_REFRESH;
 }
 
-static int pc_selusr( char prefix)
+int pc_selusr( char prefix)
 {
 	struct _select_def group_conf;
 	POINT *pts;
@@ -616,7 +610,7 @@ static int pc_seldir_select(struct _select_def *conf)
 	return SHOW_REFRESH;
 }
 
-static int pc_read(char *userid)
+int pc_read(char *userid)
 {
 	struct userec *lookupuser;
 	struct _select_def group_conf;
@@ -1352,7 +1346,7 @@ static int pc_dir_prekey(struct _select_def *conf,int *key)
 	return SHOW_CONTINUE;
 }
 	
-static int pc_read_dir(int first)
+int pc_read_dir(int first)
 {
 	struct _select_def group_conf;
 	POINT *pts;
@@ -1725,7 +1719,7 @@ static int pc_com_select(struct _select_def *conf)
 	return SHOW_REFRESH;
 }
 
-static int pc_read_comment()
+int pc_read_comment()
 {
 	struct _select_def group_conf;
 	POINT *pts;
