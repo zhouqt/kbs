@@ -137,7 +137,7 @@ char *argv[];
   {
         strcpy(buf,"/home0/bbs/0Announce/bbslists/board1");
   }
-  if ((fp = fopen("/home0/bbs/use_board", "r")) == NULL)
+  if ((fp = fopen("/home0/bbs/boardusage.log", "r")) == NULL)
   {
     printf("cann't open use_board\n");
     return 1;

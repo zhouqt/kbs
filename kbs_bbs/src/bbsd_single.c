@@ -266,7 +266,8 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
         exit(0);
 
     sin.sin_family = AF_INET;
-    sin.sin_addr.s_addr = INADDR_ANY;
+    sin.sin_addr.s_addr = htonl(INADDR_ANY);
+//    sin.sin_addr.s_addr = htonl(INADDR_LOOPBACK);
 
     /*  if (port <= 0)  Thor.981206: port 0 代表没有参数
       {
@@ -314,7 +315,7 @@ int port; /* Thor.981206: 取 0 代表 *没有参数* */
     setuid(BBSUID);
 
     sprintf(buf,"reclog/bbsd.pid.%d",port);
-    if ((lock_pid=fopen(buf,"w+"))==-1) {
+    if ((lock_pid=fopen(buf,"w+"))==NULL) {
         cat(PID_FILE,strerror(errno));
         exit(0);
     }
@@ -537,7 +538,20 @@ char *argv[];
     /* Thor.981207: usage,  bbsd, or bbsd 1234, or bbsd -i 1234 */
     /*  start_daemon(argc > 2, atoi(argv[argc-1]));
      KCN change it for not port parm */
-    start_daemon(argc > 2, atoi(argv[argc-1]));
+    int inetd,port,listprocess;
+
+    inetd = 0;
+    if (!strcmp(argv[1],"-i") )
+       inetd=1;
+    else {
+       if (argc<=1) port = 23;
+       else
+         port = atoi(argv[1]);
+       if (argc<=2) listprocess = 1;
+       else
+         listprocess = atoi(argv[2]);
+    }
+    start_daemon(inetd,port);
     main_signals();
 
     /* --------------------------------------------------- */
@@ -545,7 +559,9 @@ char *argv[];
     /* --------------------------------------------------- */
 
     server_pid=getpid();
-    if (argc<=2)
+    if (!inetd) {
+        for (;listprocess>0;listprocess--)
+          fork();
         for (;;)
         {
             value = 1;
@@ -568,6 +584,8 @@ char *argv[];
                 continue;
             }
 
+            getpeername(csock,&sin,sizeof(sin));
+            log("1connect","connect from %s(%d) in port %d",inet_ntoa(sin.sin_addr),htons(sin.sin_port),port);
             setsid();
 
             dup2(csock, 0);
@@ -581,6 +599,7 @@ char *argv[];
             close(csock);
             break;
         }
+    }
     else {
         int sinlen = sizeof (struct sockaddr_in);
         getpeername (0,(struct sockaddr *) &sin,(void *) &sinlen);
