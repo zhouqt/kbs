@@ -478,9 +478,9 @@ int m_editbrd()
 #endif
         ,
         (fh.level & PERM_POSTMASK) ? "POST" : "READ", 
-        (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限",
+        (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限"
 #ifdef HAVE_CUSTOM_USER_TITLE
-        fh.title_level? get_user_title(fh.title_level):"无",fh.title_level
+        ,fh.title_level? get_user_title(fh.title_level):"无",fh.title_level
 #endif
         );
     getdata(10, 0, "是否更改以上资讯? (Yes or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
