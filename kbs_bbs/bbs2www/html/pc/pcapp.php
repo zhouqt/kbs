@@ -82,12 +82,12 @@ else
 	$appbody  = "(1) BLOG名称：".$_POST["appname"]."\n\n\n".
 		    "(2) 申请人 ID 及简要自我介绍\n".
 		    "    ID：".$currentuser["userid"]."\n".
-		    "    注册时间：".date("Y年m月d日",$currentuser["firstlogin"])."\n\n".
-		    "        ".$_POST["appself"]."\n\n\n".
+		 //   "    注册时间：".date("Y年m月d日",$currentuser["firstlogin"])."\n".
+		    "        \n".$_POST["appself"]."\n\n\n".
 		    "(3) 经营方向：(您对您个人Blog的初步规划)\n        ".$_POST["appdirect"]."\n\n";
 	
 	$appself =  "ID：".$currentuser["userid"]."\n".
-		    "注册时间：".date("Y年m月d日",$currentuser["firstlogin"])."\n".
+		   // "注册时间：".date("Y年m月d日",$currentuser["firstlogin"])."\n".
 		    "自我介绍：\n".$_POST["appself"];
 	$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
 	 	 "VALUES ('', '".$currentuser["userid"]."', '".addslashes($_POST["appname"])."', '".addslashes($appself)."', '".addslashes($_POST["appdirect"])."', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , NULL , '1');";
