@@ -619,7 +619,7 @@ int n;
 		slp = &big_picture[(cur_ln + roll)%scr_lns];
 
               if (*str == ''&&*(str+1)=='[') {
-                     register int i=0;
+                     register int i=1;
                      while(!isalpha(*(str+i))&&(*(str+i)!='')&&*(str+i)) i++;
                      if(*(str+i)=='H') {
                         register int j=0;
