@@ -1240,7 +1240,7 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     sel = (struct _select_item*)malloc(sizeof(struct _select_item)*(mail_list_t+1));
     for(i=0;i<mail_list_t;i++) {
     	sel[i].x=3;
-    	sel[i].y=i+5;
+    	sel[i].y=i+6;
     	sel[i].hotkey=-1;
     	sel[i].type=SIT_SELECT;
     	sel[i].data=(void*) mail_list[i];
