@@ -1579,7 +1579,7 @@ void vedit_key(int ch)
             break;
             /* Leeward 98.07.30 Change hot key for msgX */
             /*case Ctrl('Z'):  call help screen */
-        case Ctrl('P'):
+        case Ctrl('N'):
             show_eof = !show_eof;
             break;
         case Ctrl('Q'):        /* call help screen */
@@ -1626,7 +1626,6 @@ void vedit_key(int ch)
                 process_ESC_action('M', '2');
             clear();
             break;
-        case Ctrl('V'):
         case KEY_RIGHT:        /* forward character */
             if (currline->len != currpnt) {
                 currpnt++;
@@ -1653,7 +1652,6 @@ void vedit_key(int ch)
             }
 #endif
             break;
-        case Ctrl('P'):
         case KEY_UP:           /* Previous line */
             if (currline->prev) {
                 currln--;
@@ -1673,7 +1671,6 @@ void vedit_key(int ch)
             }
 #endif
             break;
-        case Ctrl('N'):
         case KEY_DOWN:         /* Next line */
             if (currline->next) {
                 currline = currline->next;
