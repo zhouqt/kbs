@@ -51,7 +51,7 @@ int main()
             buf3 = " checked";
         if (i % 3 == 0)
             printf("<tr>");
-        printf("<td><input type=\"checkbox\" name=\"%s\" %s><a href=\"bbsdoc?board=%s\">%s(%s)</a></td>\n", data[i].filename, buf3, data[i].filename, data[i].filename, data[i].title + 13);
+        printf("<td><input type=\"checkbox\" name=\"%s\" %s><a href=\"/bbsdoc.php?board=%s\">%s(%s)</a></td>\n", data[i].filename, buf3, data[i].filename, data[i].filename, data[i].title + 13);
         if (i % 3 == 0)
             printf("</tr>\n");
     }

@@ -43,7 +43,7 @@ int main()
     fclose(fp);
     printf("</pre></table><hr>\n");
     encode_url(buf, board, sizeof(buf));
-    printf("[<a href=bbsdoc?board=%s>本讨论区</a>] ", buf);
+    printf("[<a href=/bbsdoc.php?board=%s>本讨论区</a>] ", buf);
     if (has_BM_perm(currentuser, board))
         printf("[<a href=bbsmnote?board=%s>编辑进版画面</a>]", buf);
     printf("</center>\n");

@@ -25,7 +25,7 @@ int main()
             if (!has_read_perm(currentuser, board1))
                 continue;
             if (!strcasecmp(board, board1)) {
-                sprintf(buf, "bbsdoc?board=%s", board1);
+                sprintf(buf, "/bbsdoc.php?board=%s", board1);
                 redirect(buf);
                 http_quit();
             }
@@ -42,7 +42,7 @@ int main()
             if (strcasestr(board1, board) || strcasestr(title, board)) {
                 total++;
                 printf("<tr><td>%d", total);
-                printf("<td><a href=bbsdoc?board=%s>%s</a><td>%s<br>\n", board1, board1, title + 7);
+                printf("<td><a href=/bbsdoc.php?board=%s>%s</a><td>%s<br>\n", board1, board1, title + 7);
             }
         }
         printf("</table><br>\n");

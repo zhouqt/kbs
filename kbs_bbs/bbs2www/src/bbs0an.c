@@ -101,7 +101,7 @@ void ann_show_directory(char *path)
         }
         printf("</table><br>[<a href=\"javascript:history.go(-1)\">返回上一页</a>] ");
         if (board[0])
-            printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]\n", encode_url(buf, board, sizeof(buf)));
+            printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]\n", encode_url(buf, board, sizeof(buf)));
         printf("</center>\n");
     }
     ann_free_items(its, MAXITEMS);

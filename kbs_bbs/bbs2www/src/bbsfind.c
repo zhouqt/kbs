@@ -86,7 +86,7 @@ int search(char *id, char *pat, char *pat2, char *pat3, int dt)
         printf("</table>\n");
         if (total == 0)
             continue;
-        printf("<br>以上%d篇来自 <a href=bbsdoc?board=%s>%s</a><br><br>\n", total, board, board);
+        printf("<br>以上%d篇来自 <a href=/bbsdoc.php?board=%s>%s</a><br><br>\n", total, board, board);
     }
     printf("一共找到%d篇文章符合查找条件<br>\n", sum);
 }

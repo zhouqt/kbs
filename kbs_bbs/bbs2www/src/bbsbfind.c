@@ -84,7 +84,7 @@ int main()
     if (total > 999)
         printf("(匹配结果过多, 省略第1000以后的查询结果)");
     printf("<br>\n");
-    printf("[<a href=\"bbsdoc?board=%s\">返回本讨论区</a>] [<a href=\"javascript:history.go(-1)\">返回上一页</a>]", brdencode);
+    printf("[<a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>] [<a href=\"javascript:history.go(-1)\">返回上一页</a>]", brdencode);
     http_quit();
     return 0;
 }
@@ -105,6 +105,6 @@ int show_form(char *board)
     printf("不含跟贴: <input type=\"checkbox\" name=\"og\"><br><br>\n");
     printf("<tr><td><input type=\"submit\" value=\"递交查询结果\">\n");
     printf("</form></table>");
-    printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>] [<a href=\"bbsfind\">全站文章查询</a>]", brdencode);
+    printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>] [<a href=\"bbsfind\">全站文章查询</a>]", brdencode);
     http_quit();
 }

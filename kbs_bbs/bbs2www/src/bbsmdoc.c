@@ -68,7 +68,7 @@ int main()
     if (start < total - 20) {
         printf("<a href=bbsmdoc?board=%s&start=%d>下一页</a> ", brdencode, start + 20);
     }
-    printf("<a href=bbsdoc?board=%s>一般模式</a> ", brdencode);
+    printf("<a href=/bbsdoc.php?board=%s>一般模式</a> ", brdencode);
     printf("<a href=bbsdenyall?board=%s>封人名单</a> ", brdencode);
     printf("<a href=bbsmnote?board=%s>编辑进版画面</a> ", brdencode);
     fclose(fp);

@@ -19,7 +19,7 @@ int main()
     brc_update(currentuser->userid);
     strcpy(buf, board);
     encode_url(board, buf, sizeof(board));
-    sprintf(buf, "bbsdoc?board=%s&start=%s", board, start);
+    sprintf(buf, "/bbsdoc.php?board=%s&start=%s", board, start);
     refreshto(buf, 0);
     http_quit();
 }

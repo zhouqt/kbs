@@ -23,7 +23,7 @@ int main()
             continue;
         r = sscanf(buf, "%s %s %s %s %s %s", tmp, tmp, name, tmp, cname, cc);
         if (r == 6) {
-            printf("<tr><td>%d</td><td><a href=\"bbsdoc?board=%s\">%s</a></td><td width=\"200\"><a href=\"bbsdoc?board=%s\">%s</a></td><td>%s</td></tr>\n", i, name, name, name, cname, cc);
+            printf("<tr><td>%d</td><td><a href=\"/bbsdoc.php?board=%s\">%s</a></td><td width=\"200\"><a href=\"/bbsdoc.php?board=%s\">%s</a></td><td>%s</td></tr>\n", i, name, name, name, cname, cc);
         }
     }
     printf("</table>\n</center>\n");

@@ -58,7 +58,7 @@ int main()
     if (!can_reply_post(board, file))
         printf("[<a href=\"bbspst?board=%s&file=%s&userid=%s&title=%s\">回文章</a>] ", brdencode, file, x.owner, http_encode_string(title, sizeof(title)));
     printf("[<a href=\"javascript:history.go(-1)\">返回上一页</a>]");
-    printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", brdencode);
+    printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", brdencode);
     ptr = x.title;
     if (!strncmp(ptr, "Re: ", 4))
         ptr += 4;

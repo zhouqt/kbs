@@ -64,7 +64,7 @@ int main()
     if(oldx)
     free(oldx);
     unlink(filename);
-    sprintf(buf, "bbsdoc?board=%s", board);
+    sprintf(buf, "/bbsdoc.php?board=%s", board);
     if (!junkboard(board)) {
         currentuser->numposts++;
         write_posts(currentuser->userid, board, title);

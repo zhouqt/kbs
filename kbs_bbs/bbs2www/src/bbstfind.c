@@ -55,7 +55,7 @@ int main()
     }
     fclose(fp);
     printf("</table><hr>\n共找到 %d 篇 \n", total);
-    printf("<a href=\"bbsdoc?board=%s\">本讨论区</a> ", brdencode);
+    printf("<a href=\"/bbsdoc.php?board=%s\">本讨论区</a> ", brdencode);
     if (total > 0) {
         printf("<a href=\"bbstcon?board=%s&file=%s\">本主题全部展开</a> ", brdencode, first_file);
         if (has_BM_perm(currentuser, board))

@@ -80,7 +80,7 @@ int main()
                 http_fatal("你无权删除该文");
                 break;
             default:
-                printf("删除成功.<br><a href=\"bbsdoc?board=%s\">返回本讨论区</a>", board);
+                printf("删除成功.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
             }
             http_quit();
         }
@@ -88,6 +88,6 @@ int main()
     }
     fclose(fp);
     printf("文件不存在, 删除失败.<br>\n");
-    printf("<a href=\"bbsdoc?board=%s\">返回本讨论区</a>", board);
+    printf("<a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
     http_quit();
 }

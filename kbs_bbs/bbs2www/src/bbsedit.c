@@ -104,7 +104,7 @@ int update_form(char *board, char *file)
     fclose(fout);
     f_mv(outfile, infile);
 
-    printf("修改文章成功.<br><a href=\"bbsdoc?board=%s\">返回本讨论区</a>", board);
+    printf("修改文章成功.<br><a href=\"/bbsdoc.php?board=%s\">返回本讨论区</a>", board);
     return 0;
 }
 

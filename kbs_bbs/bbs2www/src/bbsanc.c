@@ -42,7 +42,7 @@ void ann_show_file(char *path)
     printf("</pre></table><hr>\n");
     printf("[<a href=\"javascript:history.go(-1)\">返回上一页</a>] ");
     if (board[0])
-        printf("[<a href=\"bbsdoc?board=%s\">本讨论区</a>]", encode_url(buf, board, sizeof(buf)));
+        printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]", encode_url(buf, board, sizeof(buf)));
     printf("</center>\n");
 }
 

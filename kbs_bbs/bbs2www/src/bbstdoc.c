@@ -64,7 +64,7 @@ int main()
     if (start < total2 - 19)
         printf("<a href=\"bbstdoc?board=%s&start=%d\">下一页</a> ", brdencode, start + 19);
     printf("<a href=\"bbsnot?board=%s\">进版画面</a> ", brdencode);
-    printf("<a href=\"bbsdoc?board=%s\">一般模式</a> ", brdencode);
+    printf("<a href=\"/bbsdoc.php?board=%s\">一般模式</a> ", brdencode);
     printf("<a href=\"bbsgdoc?board=%s\">文摘区</a> ", brdencode);
     ann_get_path(board, buf, sizeof(buf));
     printf("<a href=\"bbs0an?path=%s\">精华区</a> ", http_encode_string(buf, sizeof(buf)));

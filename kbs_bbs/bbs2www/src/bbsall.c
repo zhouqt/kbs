@@ -35,9 +35,9 @@ int main()
     printf("<tr><td>序号<td>讨论区名称<td>类别<td>中文描述<td>版主\n");
     for (i = 0; i < total; i++) {
         printf("<tr><td>%d", i + 1);
-        printf("<td><a href=bbsdoc?board=%s>%s</a>", data[i].filename, data[i].filename);
+        printf("<td><a href=/bbsdoc.php?board=%s>%s</a>", data[i].filename, data[i].filename);
         printf("<td>%6.6s", data[i].title + 1);
-        printf("<td><a href=bbsdoc?board=%s>%s</a>", data[i].filename, data[i].title + 7);
+        printf("<td><a href=/bbsdoc.php?board=%s>%s</a>", data[i].filename, data[i].title + 7);
         ptr = strtok(data[i].BM, " ,;");
         if (ptr == 0)
             ptr = "诚征版主中";

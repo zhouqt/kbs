@@ -52,7 +52,7 @@ int main()
     if (start < total - 20) {
         printf("<a href=\"bbsgdoc?board=%s&start=%d\">下一页</a> ", brdencode, start + 20);
     }
-    printf("<a href=\"bbsdoc?board=%s\">本讨论区</a> ", brdencode);
+    printf("<a href=\"/bbsdoc.php?board=%s\">本讨论区</a> ", brdencode);
     ann_get_path(board, buf, sizeof(buf));
     printf("<a href=\"bbs0an?path=%s\">精华区</a> ", http_encode_string(buf, sizeof(buf)));
     printf("<a href=\"bbspst?board=%s\">发表文章</a> ", brdencode);
