@@ -133,8 +133,8 @@ int get_keys_name(struct key_struct* key, char* buf)
 static int set_keydefine_show(struct _select_def *conf, int i)
 {
     char buf[120], buf2[20];
-    get_key_name(keymem[i].key, buf2);
-    get_keys_name(keymem+i, buf);
+    get_key_name(keymem[i-1].key, buf2);
+    get_keys_name(keymem+i-1, buf);
     prints(" %6s  %-36s  %-32s", buf2, buf, "");
     return SHOW_CONTINUE;
 }
@@ -192,7 +192,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
             do {
                 i = igetkey();
                 get_key_name(i, buf);
-            }while(buf[0]||i==KEY_ESC);
+            }while(!buf[0]&&i!=KEY_ESC);
             if(i==KEY_ESC) break;
             prints("%s\n", buf);
             k.key = i;
@@ -203,7 +203,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
                 do {
                     i = igetkey();
                     get_key_name(i, buf);
-                }while(buf[0]||i==KEY_ESC);
+                }while(!buf[0]&&i!=KEY_ESC);
                 if(i==KEY_ESC) break;
                 prints("%s ", buf);
                 k.mapped[j] = i;
