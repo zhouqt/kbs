@@ -138,7 +138,6 @@ int bbs_zrecvfile()
     unsigned int startup_delay = 0;
 
     Rxtimeout = 100;
-    setbuf(stderr, NULL);
     Restricted = 2;
 
     /* make temporary and unfinished files */
@@ -149,18 +148,9 @@ int bbs_zrecvfile()
 
     /* initialize zsendline tab */
     zsendline_init();
-#ifdef HAVE_SIGINTERRUPT
-    siginterrupt(SIGALRM, 1);
-#endif
 
     io_mode(0, 1);
     readline_setup(0, HOWMANY, MAX_BLOCK * 2);
-    if (signal(SIGINT, bibi) == SIG_IGN)
-        signal(SIGINT, SIG_IGN);
-    else
-        signal(SIGINT, bibi);
-    signal(SIGTERM, bibi);
-    signal(SIGPIPE, bibi);
     patts = &paths;
     if (wcreceive(npats, patts) == ERROR) {
         exitcode = 0200;
@@ -195,54 +185,27 @@ static int wcreceive(int argc, char **argp)
     zi.bytes_skipped = 0;
     zi.eof_seen = 0;
 
-    if (protocol != ZM_XMODEM || argc == 0) {
-        Crcflg = 1;
-        if ((c = tryz()) != 0) {
-            if (c == ZCOMPL)
-                return OK;
-            if (c == ERROR)
-                goto fubar;
-            c = rzfiles(&zi);
-
-            if (c)
-                goto fubar;
-        } else {
-            for (;;) {
-                if (wcrxpn(&zi, secbuf) == ERROR)
-                    goto fubar;
-                if (secbuf[0] == 0)
-                    return OK;
-                if (procheader(secbuf, &zi) == ERROR)
-                    goto fubar;
-                if (wcrx(&zi) == ERROR)
-                    goto fubar;
-
-            }
-        }
-    } else {
-        char dummy[128];
-
-        dummy[0] = '\0';        /* pre-ANSI HPUX cc demands this */
-        dummy[1] = '\0';        /* procheader uses name + 1 + strlen(name) */
-        zi.bytes_total = DEFBYTL;
-
-        procheader(dummy, &zi);
-
-        if (Pathname)
-            free(Pathname);
-        errno = 0;
-        Pathname = malloc(PATH_MAX + 1);
-        if (!Pathname)
-            zmodem_error(1, 0, "out of memory");
-
-        strcpy(Pathname, *argp);
-        checkpath(Pathname);
-
-        if ((fout = fopen(Pathname, "w")) == NULL) {
-            return ERROR;
-        }
-        if (wcrx(&zi) == ERROR) {
+    Crcflg = 1;
+    if ((c = tryz()) != 0) {
+        if (c == ZCOMPL)
+            return OK;
+        if (c == ERROR)
             goto fubar;
+        c = rzfiles(&zi);
+
+        if (c)
+            goto fubar;
+    } else {
+        for (;;) {
+            if (wcrxpn(&zi, secbuf) == ERROR)
+                goto fubar;
+            if (secbuf[0] == 0)
+                return OK;
+            if (procheader(secbuf, &zi) == ERROR)
+                goto fubar;
+            if (wcrx(&zi) == ERROR)
+                goto fubar;
+
         }
     }
     return OK;
