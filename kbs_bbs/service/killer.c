@@ -785,10 +785,10 @@ void join_room(struct room_struct * r)
                     }
                 }
             }
-            else if(ch<0&&!buf[0]) {
+            else if(ch<=0&&!buf[0]) {
                 if(do_com_menu()) goto quitgame;
             }
-            else if(ch<0){
+            else if(ch<=0){
                 break;
             }
         }while(1);
