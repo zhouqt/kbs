@@ -234,7 +234,7 @@ struct action condition_data[] = {
 
 void send_msg(int u, char* msg)
 {
-    int i, j, k;
+    int i, j, k, f;
     char buf[200], buf2[200], buf3[80];
 
     strcpy(buf, msg);
@@ -246,17 +246,25 @@ void send_msg(int u, char* msg)
         strcpy(buf2, buf+i+1);
         strcpy(buf, buf2);
     }
-    while(strlen(buf)>=54) {
-        k=0;
+    while(strlen(buf)>54) {
+        k=0; j = 0; f = 0;
         for(i=0;i<strlen(buf);i++) {
-            if(k==0&&i>=53) break;
+            if(buf[i]=='\x1b') f = 1;
+            if(f) {
+                if(isalpha(buf[i])) f=0;
+                continue;
+            }
+            if(k==0&&j>=53) break;
+            j++;
             if(k) k=0;
             else if(buf[i]<0) k=1;
         }
-        strcpy(buf2, buf);
-        buf[i]=0;
-        send_msg(u, buf);
-        strcpy(buf, buf2+i);
+        if(i<strlen(buf)) {
+            strcpy(buf2, buf);
+            buf[i]=0;
+            send_msg(u, buf);
+            strcpy(buf, buf2+i);
+        }
     }
     for(i=0;i<=6;i++) {
         buf3[0]='%'; buf3[1]=i+48; buf3[2]=0;
