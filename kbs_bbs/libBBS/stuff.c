@@ -471,7 +471,7 @@ void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 	return attach_shm1(shmstr,defaultkey, shmsize,iscreate,0,NULL);
 }
 
-void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate,int readonly, void*¡¡shmaddr)
+void *attach_shm1(char *shmstr,int defaultkey,int shmsize,int* iscreate,int readonly, void* shmaddr)
 {
     void        *shmptr;
     int         shmkey, shmid;
