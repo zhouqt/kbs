@@ -343,7 +343,7 @@ int do_send(char *userid, char *title, char *q_file)
     }
     if (!strchr(userid, '@')) {
         if (getuser(userid, &user) == 0)
-            return -4;
+            return -1;
         ret = chkreceiver(currentuser, user);
 
 	if (false == canIsend2(currentuser, userid)) {  /* Leeward 98.04.10 */
@@ -396,7 +396,7 @@ int do_send(char *userid, char *title, char *q_file)
 #endif
 
     if (ret == 3)
-        return -3;
+        return -4;
 
     setmailpath(filepath, userid);
     if (stat(filepath, &st) == -1) {
