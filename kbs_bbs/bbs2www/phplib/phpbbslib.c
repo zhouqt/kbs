@@ -198,7 +198,7 @@ static ZEND_FUNCTION(bbs_getonlineuser)
 	}
 }
 
-static ZEND_FUNCTION(bbs_getonelinenumber)
+static ZEND_FUNCTION(bbs_getonlinenumber)
 {
 	RETURN_LONG(get_utmp_number());
 }
@@ -314,17 +314,17 @@ static ZEND_FUNCTION(bbs_wwwlogin)
 		strncpy( ui.userid,   getcurrentuser()->userid,   20 );
 		strncpy( ui.realname, getcurrentuser()->realname, 20 );
 		strncpy( ui.username, getcurrentuser()->username, 40 );
-		utmpent = getnewutmpent2(&ui) ;
+		utmpent = getnewutmpent(&ui) ;
 		if (utmpent == -1)
 			ret=1;
 		else {
 			struct user_info* u;
 			int tmp;
-			u = get_user_info(utmpent);
+			u = get_utmpent(utmpent);
 			u->pid = 1;
 			tmp=rand()%100000000;
 			u->utmpkey=tmp;
-			if (addto_msglist(utmpent-1, getcurruserid()) < 0)
+			if (addto_msglist(utmpent-1, getcurrentuser()->userid) < 0)
 				ret=2;
 			else {
 				/*
