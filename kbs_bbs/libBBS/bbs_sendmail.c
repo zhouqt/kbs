@@ -312,7 +312,9 @@ char *email_domain()
 {
     char *domain;
 
-    domain = sysconf_str("BBSDOMAIN");
+    /* 将 MAIL_BBSDOMAIN 和 BBSDOMAIN 分开 czz 03.03.08 */
+    if (!(domain = sysconf_str("MAIL_BBSDOMAIN")))
+	domain = sysconf_str("BBSDOMAIN");
     if (domain == NULL)
         domain = "unknown.BBSDOMAIN";
     /*
