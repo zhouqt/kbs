@@ -2058,7 +2058,7 @@ int post_article(char *q_file, struct fileheader *re_file)
             sprintf(buf, "Re: %s", replytitle + 3);
         else
             sprintf(buf, "Re: %s", replytitle);
-        buf[50] = '\0';
+        buf[78] = '\0';
     } else
 #endif
     {
@@ -2082,7 +2082,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         clrtoeol();
         prints("[m·¢±íÎÄÕÂÓÚ %s ÌÖÂÛÇø     %s\n", currboard->filename, (anonyboard) ? (Anony == 1 ? "[1mÒª[mÊ¹ÓÃÄäÃû" : "[1m²»[mÊ¹ÓÃÄäÃû") : "");
         clrtoeol();
-        prints("Ê¹ÓÃ±êÌâ: %-50s\n", (buf[0] == '\0') ? "[ÕıÔÚÉè¶¨Ö÷Ìâ]" : buf);
+        prints("Ê¹ÓÃ±êÌâ: %s\n", (buf[0] == '\0') ? "[ÕıÔÚÉè¶¨Ö÷Ìâ]" : buf);
         clrtoeol();
         if (currentuser->signature < 0)
             prints("Ê¹ÓÃËæ»úÇ©Ãûµµ     %s", (replymode) ? buf3 : " ");
@@ -2093,7 +2093,7 @@ int post_article(char *q_file, struct fileheader *re_file)
             move(t_lines - 1, 0);
             clrtoeol();
             strcpy(buf4, buf);
-            getdata(t_lines - 1, 0, "±êÌâ: ", buf4, 50, DOECHO, NULL, false);
+            getdata(t_lines - 1, 0, "±êÌâ: ", buf4, 79, DOECHO, NULL, false);
             if ((buf4[0] == '\0' || buf4[0] == '\n')) {
                 if (buf[0] != '\0') {
                     buf4[0] = ' ';
