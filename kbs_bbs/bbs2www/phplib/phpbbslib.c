@@ -60,6 +60,7 @@ static PHP_FUNCTION(bbs_fillidinfo);
 static PHP_FUNCTION(bbs_delfile);
 static PHP_FUNCTION(bbs_delmail);
 static PHP_FUNCTION(bbs_normalboard);
+static PHP_FUNCTION(bbs_setmailreaded);
 
 
 /*
@@ -112,6 +113,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_delfile,NULL)
         PHP_FE(bbs_delmail,NULL)
         PHP_FE(bbs_normalboard,NULL)
+        PHP_FE(bbs_setmailreaded,NULL)
         {NULL, NULL, NULL}
 };
 
@@ -2333,3 +2335,48 @@ static PHP_FUNCTION(bbs_can_send_mail)
 {
 	RETURN_LONG(can_send_mail());
 }
+
+/*
+ * set a mail had readed
+ */
+static PHP_FUNCTION(bbs_setmailreaded)
+{
+	int ac = ZEND_NUM_ARGS();
+	int num;
+	char * dirname;
+	int dirname_len;
+	int total;
+	struct fileheader fh;
+	FILE *fp;
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &dirname, &dirname_len, &num) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	total = file_size(dirname) / sizeof(fh) ;
+
+	if(total <= 0)
+		RETURN_LONG(0);
+
+	if(num >=0 && num < total){
+		if((fp=fopen(dirname,"r+"))==NULL)
+			RETURN_LONG(0);
+		fseek(fp,sizeof(fh) * num,SEEK_SET);
+		if(fread(&fh,sizeof(fh),1,fp) > 0){
+			if(fh.accessed[0] & FILE_READ){
+				fclose(fp);
+				RETURN_LONG(0);
+			}
+			else{
+				fh.accessed[0] |= FILE_READ;
+				fseek(fp,sizeof(fh)*num,SEEK_SET);
+				fwrite(&fh,sizeof(fh),1,fp);
+				fclose(fp);
+				RETURN_LONG(1);
+			}
+		}
+		fclose(fp);
+	}
+	RETURN_LONG(0);
+}
+
