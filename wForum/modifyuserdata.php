@@ -89,7 +89,7 @@ function main(){
 高&nbsp;&nbsp;&nbsp;&nbsp;度： 
 <input type=TEXT name=height id=height size=3 value="<?php echo $currentuser['userface_height'];  ?>">
 0---120的整数<br>
-</td><td align="right"><?php echo get_myface($currentuser, "id=imgmyface"); ?></td></tr></table>
+</td><td align="right"><?php echo get_myface($currentuser, "id=\"imgmyface\""); ?></td></tr></table>
 </TD></TR>
 <tr>    
 <td width="40%" class=TableBody1><B>个人照片</B>：<BR>如果您有照片在网上，请输入网页地址。此项可选</td>   
