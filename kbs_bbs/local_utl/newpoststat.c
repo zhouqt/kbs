@@ -192,7 +192,7 @@ int get_top(int type)
 			row = mysql_fetch_row(res);
 			if(row==NULL)
 				break;
-printf("%s:%s:%s\n",row[0],row[1],row[2]);
+
 			/***检查是否该计算十大***/
 #ifdef BLESS_BOARD
 			bh = getbcache(row[0]);
