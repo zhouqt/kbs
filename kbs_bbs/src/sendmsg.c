@@ -481,6 +481,19 @@ void r_msg()
         if(head.mode==3||uin==NULL) canreply = 0;
         else canreply = 1;
         
+        if(first) {
+            int x,y;
+            getyx(&y,&x);
+            clrtoeol();
+            prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢", now+1, count);
+            refresh();
+            do{
+                ch = igetkey();
+            }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
+            first = 0;
+            move(y, x);
+        }
+        
         clrtoeol();
         if(canreply)
             prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢, »Ø¸´ %-12s\n", now+1, count, uid);
@@ -489,14 +502,6 @@ void r_msg()
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ¸ÃÏûÏ¢ÎŞ·¨»Ø¸´", now+1, count);
             else
                 prints("[m µÚ %d ÌõÏûÏ¢ / ¹² %d ÌõÏûÏ¢,¡ü¡ıÇĞ»»,Enter½áÊø, ÓÃ»§%sÒÑÏÂÕ¾,ÎŞ·¨»Ø¸´", now+1, count, uid);
-        if(first) {
-            refresh();
-            do{
-                ch = igetkey();
-            }while(!DEFINE(currentuser, DEF_IGNOREMSG)&&ch!=Ctrl('Z')&&ch!='r'&&ch!='R');
-            first = 0;
-        }
-        
         good_getyx(&oy, &ox);
         
         if(canreply)
