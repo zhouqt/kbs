@@ -35,7 +35,7 @@ int cmpvuid(userid, uv)
 char *userid;
 struct ballot *uv;
 {
-    return !strcmp(userid, uv->uid);
+    return !strncmp(userid, uv->uid,IDLEN);
 }
 int setvoteflag(char *bname, int flag)
 {

@@ -5,7 +5,7 @@
 #define VOTE_ASKING     (5)
 
 struct ballot {
-    char uid[IDLEN];            /* 投票人       */
+    char uid[IDLEN+2];            /* 投票人       */
     unsigned int voted;         /* 投票的内容   */
     char msg[3][STRLEN];        /* 建议事项     */
 };
