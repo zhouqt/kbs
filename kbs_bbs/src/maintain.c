@@ -1508,7 +1508,7 @@ if (ret==-2) {
                         fprintf(fout, "%s: %s\n", field[n], fdata[n]);
                     now = time(NULL);
                     fprintf(fout, "Date: %s\n", Ctime(now));
-                    fprintf(fout, "Approved: %s\n", uid);
+                    fprintf(fout, "Approved: %s\n", sender);
                     fprintf(fout, "----\n");
                     fclose(fout);
                 }
@@ -1531,7 +1531,7 @@ if (ret==-2) {
                     fprintf(fout, "真实 E-mail  : %s\n", ud.realemail);
                     fprintf(fout, "注册日期     : %s\n", ctime(&uinfo.firstlogin));
                     fprintf(fout, "注册时的机器 : %s\n", uinfo.lasthost);
-                    fprintf(fout, "Approved: %s\n", uid);
+                    fprintf(fout, "Approved: %s\n", sender);
                     fclose(fout);
                 }
 
