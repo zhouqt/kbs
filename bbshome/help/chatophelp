@@ -1,0 +1,10 @@
+谈天室管理员专用指令
+[/tog]gle <chatid>  - 设定/取消 <chatid> 的op权 (ChatOP专用)
+[/f]lag [+-][lse]   - 设定锁定、秘密、禁止动作状态
+[/i]nvite <chatid>  - 邀请 <chatid> 加入谈天室
+[/k] <chatid>       - 将 <chatid> 踢出谈天室(聊天ID)
+[/kid] <id>         - 将 <id> 踢出聊天室(真实ID)
+[/o]p <chatid>      - 将OP的权力转移给 <chatid>
+[/t]opic <text>     - 换个话题
+[/rname] <name>     - 更改聊天室名称
+[/w]all <text>      - 聊天室广播 (ChatOP专用)

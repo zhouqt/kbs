@@ -1,0 +1,390 @@
+#---------------------------------------------------------------------
+%S_MAIN
+
+
+
+
+
+
+[34m"" -[1;34m _ ..[0m[36m-- -"[1;36m ''- - -.[36m _. ._. ._.[0m[1;34m. _ _. _[34m.- --" [36m'- --._ _ _.[1;36m '. ._ [34m _ .-.-[0m[34m.."[m
+                                                                        
+                                                        O                      
+                 ,                                    o         ,/            
+              .//                                   o         ///         
+          ,.///;,   ,;/                                   ,,////.   ,/     [1;32m  )[m
+         o;;;;;:::;///                              '.  o:::::::;;///    [1;32m ( ([m
+        >;;...::::;\\\                                <::::::::;;\\\     [1;32m(  )[m
+          ''\\\\\'" ''\                                 ''::::::' \\     [1;32m )([0;32m\[1m([m  
+              '\\                                           '\\           [1;32m()[0;32m/[1;32m))[m
+                                                               '\         [1;32m\([0;32m|[1m/[m
+                                                                          [1;32m()[m[32m|[1m([m
+                                                                           [1;32m([m[32m|[1m)[m
+                                                                           [1;32m\[m[32m|[1m/[m
+%
+
+#---------------------------------------------------------------------
+%menu TOPMENU
+title        0, 0, "Ö÷Ñ¡µ¥"
+screen       3, 0, S_MAIN
+!M_EGROUP    11, 30, 0,         "EGroup",    "E) ·ÖÀàÌÖÂÛÇø"
+!M_MAIL      0, 0, 0,           "Mail",      "M) ´¦ÀíÐÅ¼ã
+!M_TALK      0, 0, 0,           "Talk",      "T) ÉÏÈµÇÅ    Talk  "
+!M_INFO      0, 0, PERM_BASIC,  "Info",      "I) ¹¤¾ßÏä   Xyz-1  "
+!M_SYSINFO   0, 0, 0,           "Config",    "C) ÏµÍ³×ÊÑ¶ Xyz-2  "
+@LeaveBBS    0, 0, 0,           "GoodBye",   "G) Ëµ°Ý°Ý          "
+@Announce    0, 0, 0,           "0Announce", "0) ¾«»ª¹«²¼À¸      "
+!M_TIN       0, 0, 0,           "1TIN"    ,  "1) ÎÄÕÂ»ãÕû   TIN  "
+!M_ExceMJ    0, 0, PERM_POST,   "Service",  "S) ÍøÂ·Ïà¹Ø·þÎñÓë Game"
+!M_ADMIN     0, 0, PERM_ADMENU,"Admin",      "A) ÏµÍ³¹ÜÀí¹¦ÄÜ±í  "
+%
+%menu TOPMENU2
+title        0, 0, "¾«¼òÄ£Ê½Ñ¡µ¥"
+#screen      3, 0, S_MAIN
+@BoardsNew   10, 30, 0,             "New",       "[1;32mN[m) ÔÄ¶ÁÐÂÎÄÕÂ"
+@ShowLogins  0, 0, 0,               "ListUsers", "L) »·¹ËËÄ·½  "
+@EnterChat   0, 0,      PERM_BASIC, "Chat",      "[1;32mC[m) Ò¹Ã¨×Ó¿ÍÕ»"
+@SetPager    0, 0,      PERM_BASIC, "Pager",     "P) Éè¶¨ºô½ÐÆ÷"
+@ReadMail    0, 0, 0,               "ReadMail",  "R) ÀÀÔÄÈ«²¿ÐÅ¼ã"
+@SendMail    0, 0, PERM_POST,       "SendMail",  "S) Í¶µÝÕ¾ÄÚÐÅ¼þ"
+@ExecTin     0, 0, PERM_POST,       "1TIN",      "1) ÎÄÕÂ»ãÕû   TIN  "
+@Announce    0, 0, 0,               "0Announce", "0) ¾«»ª¹«²¼À¸      "
+@UserDefine  0, 0,  PERM_BASIC,     "Userdefine","U) ¸öÈË²ÎÊýÉè¶¨ ([1;32mÑ¡ÕâÀï»»»ØÔ­À´µÄÑ¡µ¥[m)"
+@EditUFiles  0, 0,      PERM_POST,  "WriteFiles","W) ±àÐÞ¸öÈËµµ°¸"
+@MailAll     0, 0, PERM_SYSOP,      "MailAll",   "M) ¼ÄÐÅ¸øËùÓÐÈË      "
+!M_ADMIN     0, 0, PERM_ADMENU,     "Admin",     "A) ÏµÍ³¹ÜÀí¹¦ÄÜ±í  "
+@LeaveBBS    0, 0, 0,               "GoodBye",   "G) Ëµ°Ý°Ý          "
+%
+#---------------------------------------------------------------------
+%S_TIN
+
+
+
+                                                                        
+                                                                        
+                                                                       
+                                                                            
+                            [1;33mÈÃÄãÏíÊÜ×ÊÁÏ·á¸»µÄÊÀ½ç[m
+                          ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´
+                          ©¦¡õ                  ¡õ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦¡õ                  ¡õ©¦
+                          ©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼
+                                                                        
+                                                                
+                                                                
+%
+
+#---------------------------------------------------------------------
+%menu M_TIN
+title        0, 0, "Tin Ñ¡µ¥"
+screen       3, 0, S_TIN
+@ExecTin     14, 28, PERM_POST, "1TIN",       "1) ÎÄÕÂ»ãÕû   TIN  "
+@EGroups     0, 0, 0,           "TINinBBS",   "T) °Ñ Tin °áµ½ BBS"
+!..          0, 0, 0,           "Exit",       "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+
+
+#------------------------------------------------------------------
+%S_EGROUP
+
+
+
+
+
+
+                     ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+%
+#------------------------------------------------------------------
+%menu M_EGROUP
+title        0, 0, "·ÖÀàÌÖÂÛÇøÑ¡µ¥"
+screen       3, 0, S_EGROUP
+@EGroups     10, 25, 0, "0BBS",      "0) BBS ÏµÍ³ -- [Õ¾ÄÚ]"
+@EGroups     0, 0, 0,   "1CCU",      "1) ÖÐÕý´óÑ§ -- [±¾Ð£]"
+@EGroups     0, 0, 0,   "2Campus",   "2) Ð£Ô°×ÊÑ¶ -- [Ð£Ô°] [×ÊÑ¶]"
+@EGroups     0, 0, 0,   "3Computer", "3) µçÄÔ¼¼Êõ -- [µçÄÔ] [ÏµÍ³]"
+@EGroups     0, 0, 0,   "4Rec",      "4) ÐÝ¡õÓéÀÖ -- [ÐÝ¡õ] [ÒôÀÖ]"
+@EGroups     0, 0, 0,   "5Art",      "5) ÎÄÒÕÑ§Êõ -- [ÎÄÒÕ] [Éç½»]"
+#@EGroups    0, 0, 0,   "6Science",  "6) Ñ§Êõ¿ÆÑ§ -- [Ñ§¿Æ] [ÓïÑÔ]"
+@EGroups     0, 0, 0,   "6Sports",   "6) ÌåÓý½¡Éí -- [ÔË¶¯] [Ö°°ô]"
+@EGroups     0, 0, 0,   "7Talk",     "7) Ì¸ÌìÁÄµØ -- [Ì¸Ìì] [ÐÂÎÅ]"
+@EGroups     0, 0, 0,   "TINinBBS",  "T) °Ñ Tin °áµ½ BBS"
+@PostArticle 0, 0, PERM_POST,"Post", "P) ÎÄºÀ»Ó±Ê        "
+@BoardsAll   0, 0, 0,   "Boards",    "B) ËùÓÐÌÖÂÛÇø"
+@BoardsNew   0, 0, 0,   "New",       "N) ÔÄ¶ÁÐÂÎÄÕÂ  New"
+!..          0, 0, 0,   "Exit",      "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+EGROUP0 = "0"
+EGROUP1 = "C"
+EGROUP2 = "IE"
+EGROUP3 = "NR"
+EGROUP4 = "am"
+EGROUP5 = "enijS"
+EGROUP6 = "rs"
+EGROUP7 = "xf"
+EGROUPT = "*"
+#------------------------------------------------------------------
+%S_MAIL
+
+
+
+
+
+
+                          ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´
+                          ©¦¡õ                  ¡õ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦                      ©¦
+                          ©¦¡õ                  ¡õ©¦
+                          ©¸¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©¼
+%
+
+#------------------------------------------------------------------
+%menu M_MAIL
+title            0, 0, "´¦ÀíÐÅ¼ãÑ¡µ¥"
+screen           3, 0, S_MAIL
+@ReadNewMail     12, 29, 0,             "NewMail", "N) ÀÀÔÄÐÂÐÅ¼ã"
+@ReadMail        0, 0, 0,               "ReadMail","R) ÀÀÔÄÈ«²¿ÐÅ¼ã"
+@SendMail        0, 0, PERM_POST,       "SendMail","S) ¶ªÐ¡Ö½Ìõ"
+@GroupSend       0, 0, PERM_POST,       "Gsend",   "G) ¼ÄÐÅ¸øÒ»ÈºÈË"
+@SetFriends      0, 0, PERM_BASIC,      "Override","O)©°Éè¶¨ºÃÓÑÃûµ¥"
+@OverrideSend    0, 0, PERM_POST,       "Fsend",   "F)©¸¼ÄÐÅ¸øºÃÓÑÃûµ¥"
+@SendNetMail     0, 0, PERM_POST,       "Internet","I) ·É¸ë´«Êé"
+!..              0, 0, 0,               "Exit",    "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+#------------------------------------------------------------------
+%S_TALK
+
+
+
+
+
+
+  ,-*~,-*~''~*-,._.,-*~''~*-,._.,-*~''~*-,._.,-*~''~*-,._.,-*~''~*-,'~*-,._.,
+                                                
+                                                
+                                                
+                                                
+                                                
+                                        
+                                                
+                                                
+                                                
+                                                
+                                                
+                                                        
+                                                                        
+%
+
+#------------------------------------------------------------------
+%menu M_TALK
+title        0, 0, "ÉÏÈµÇÅÑ¡µ¥"
+screen       3, 0,   S_TALK
+@ShowFriends 10, 27,    PERM_BASIC, "Friends",  "F) Ò¹Ì½ºÃÓÑ   Friend"
+@ShowLogins  0, 0,      0,          "Users",    "U) »·¹ËËÄ·½    Users"
+@QueryUser   0, 0,      0,          "Query",    "Q) ²éÑ¯ÍøÓÑ    Query"
+@Talk        0, 0,      0,          "Talk",     "T) ÈµÇÅÏ¸Óï     Talk"
+@WaitFriend  0, 0,      PERM_POST,  "WaitFriend","W) Éè¶¨ºÃÓÑÉÏÕ¾Í¨Öª"
+@SetPager    0, 0,      PERM_BASIC, "Pager",    "P) Éè¶¨ºô½ÐÆ÷"
+@SendMsg     0, 0,      PERM_POST,  "SendMsg",  "S) ËÍÑ¶Ï¢¸ø±ðÈË"
+@ShowMsg     0, 0,      PERM_BASIC, "LookMsgs", "L) ²ì¿´ËùÓÐµÄÑ¶Ï¢"
+@EnterChat   0, 0,      PERM_BASIC, "1Chat",    "1) Ò¹Ã¨×Ó¿ÍÕ»"
+#@EnterChat   0, 0,      PERM_BASIC, "2Chat",    "2) Ò¹Ã¨×Ó¿ÍÕ»"
+#@EnterChat   0, 0,      PERM_BASIC, "3Relay",   "3) ¿ìÔÕÍ¤    "
+#@EnterChat   0, 0,      PERM_BASIC, "4Chat",    "4) ÀÏ´óÁÄÌìÊÒ"
+@ExecIrc     0, 0,      PERM_POST,  "IRC",      "I) ÐÇ¼Ê»áÌ¸      IRC"
+#@ListLogins 0, 0,      PERM_CHAT,  "List",     "L) ÉÏÕ¾Ê¹ÓÃÕß¼ò±í"
+@Monitor     0, 0,      PERM_CHAT,  "Monitor",  "M) Ì½ÊÓÃñÇé"
+@RealLogins  0, 0,      PERM_SYSOP, "Nameofreal","N) ÉÏÕ¾Ê¹ÓÃÕßÕæÊµÐÕÃû"
+!..          0, 0, 0,               "Exit",     "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+
+#------------------------------------------------------------------
+%S_INFO
+
+
+
+
+
+
+                          ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ
+                          ¡õ                        ¡õ
+                          ¡õ                        ¡õ
+                          ¡õ                        ¡õ
+                          ¡õ                        ¡õ
+                          ¡õ                        ¡õ
+                          ¡õ                        ¡õ
+                          ¡õ                        ¡õ
+                          ¡õ                        ¡õ                    ,--,/
+                          ¡õ                        ¡õ¡ª¡õ    ¡õ¡ª¡õ_ ___/ /\|
+                          ¡õ                        ¡õ  ¡õ¡ª¡ª¡õ ,:( )__,_)  ~
+                          ¡õ                        ¡õ         //  //   L==;
+                          ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ¡õ         '   \     | ^
+ ,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*
+%
+
+#------------------------------------------------------------------
+%menu M_INFO
+title        0, 0, "¹¤¾ßÏäÑ¡µ¥"
+screen       3, 0, S_INFO
+@FillForm    11, 29, 0,             "FillForm",  "F) ×¢²áÏêÏ¸¸öÈË×ÊÁÏ"
+@SetInfo     0, 0,      PERM_BASIC, "Info",      "I) Éè¶¨¸öÈË×ÊÁÏ"
+@UserDefine  0, 0,      PERM_BASIC, "Userdefine","U) ¸öÈË²ÎÊýÉè¶¨"
+@SetFriends  0, 0,      PERM_BASIC, "Override", "O) Éè¶¨ºÃÓÑÃûµ¥"
+#@OffLine     0, 0,      PERM_BASIC, "OffLine",   "O) ×ÔÉ±~~~~~"
+#@EditSig    0, 0,      PERM_POST,  "Signature", "S) ¿ÌÓ¡(Ç©Ãûµµ) Sig."
+#@EditPlan   0, 0,      PERM_POST,  "QueryEdit", "Q) Äâ¸öÈËËµÃ÷µµ Plan"
+@SetAlarm    0,0,       PERM_BASIC, "Alarm"    , "A) Éè¶¨Ð¡ÄÖÖÓ"
+@EditUFiles  0, 0,      PERM_POST,  "WriteFiles","W) ±àÐÞ¸öÈËµµ°¸"
+@SetCloak    0, 0,      PERM_SYSOP, "Cloak",     "C) ÒþÉíÊõ"
+@SetHelp     0, 0,      PERM_BASIC, "Help",      "H) ¸¨Öú»­ÃæÉè¶¨"
+!..          0, 0, 0,               "Exit",      "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+
+#------------------------------------------------------------------
+%S_SYSINFO
+
+
+
+
+
+
+         ¡ñ¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ñ
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ö                                                        ¡ö
+         ¡ñ¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ö¡ñ
+                                                                        
+%
+#------------------------------------------------------------------
+%menu M_SYSINFO
+title        0, 0, "ÏµÍ³×ÊÑ¶Ñ¡µ¥"
+screen       3, 0, S_SYSINFO
+@ShowLicense 10, 28, 0,        "License",   "L) Ê¹ÓÃÖ´ÕÕ      "
+@ShowVersion 0, 0, 0,          "Copyright", "C) ÖÇ»ÛÈ¨×ÊÑ¶    "
+@Notepad     0,0,0,            "Notepad",   "N) ¿´¿´ÁôÑÔ°å"    
+#@ShowDate    0, 0, 0,          "Date",      "D) Ä¿Ç°Ê±¿Ì     Date "
+@DoVote      0, 0, PERM_BASIC, "Vote",      "V) ÏµÍ³Í¶Æ±     Vote "
+@VoteResult  0, 0, PERM_BASIC, "Results",   "R) Ñ¡Çé±¨µ¼          "
+@MailAll     0, 0, PERM_SYSOP, "MailAll",   "M) ¼ÄÐÅ¸øËùÓÐÈË      "
+#@ExecBBSNet  0, 0, PERM_POST,  "BBSNet",    "B) ´©ËóÒøºÓ(ÀÏÂíÊ¶Í¾)"  
+@ShowWelcome 0, 0, 0,          "Welcome",   "W) ½øÕ¾»­Ãæ      "
+@SpecialUser 0, 0, PERM_POST,  "Users",     "U) ºÏ¸ñ¹«ÃñÁÐ±í  "
+#@ExecViewer  0, 0, 0,         "0Announce", "0) ±¾Õ¾¹«²¼À¸ (¾É°æÏµÍ³)"
+!..          0, 0, 0,          "Exit",      "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+
+#---------------------------------------------------------------------------
+%S_ExceMJ
+
+
+
+
+
+
+                     ©°¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©´
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+                     ©¦                                  ©¦
+ ,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*'"'*-._,_.-*
+%
+#------------------------------------------------------------------
+%menu M_ExceMJ
+title        0, 0, "ÍøÂ·Game´óÆ´ÅÌ  "
+screen       3, 0, S_ExceMJ
+@WWW        12,29, 0,           "WWW",         "W) ÎÄ×ÖÄ£Ê½µÄ WWW"
+@ExecGopher  0, 0, 0,           "Gopher",      "G) ×ÊÁÏ²éÑ¯ Gopher "
+@ExecMJ      0, 0, PERM_CLOAK, "Mujang",       "M) ÍøÂ·Âé½«"
+@ExecBIG2    0, 0,  0,          "Big2",        "B) ÀÏ¶þ×î´ó  "
+@ExecCHESS   0, 0,  0,          "Chess",       "C) ¾öÕ½ÏóÆå  "
+!..          0, 0,  0,          "Exit",        "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+
+#------------------------------------------------------------------
+%S_ADMIN
+
+
+
+
+
+
+                                                                        
+                                                                             
+                                                                             
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+                                                                        
+%
+
+#------------------------------------------------------------------
+%menu M_ADMIN
+title        0, 0, "ÏµÍ³Î¬»¤Ñ¡µ¥"
+screen       3, 0, S_ADMIN
+@CheckForm   9, 28,PERM_ACCOUNTS,"Register",    "R) Éè¶¨Ê¹ÓÃÕß×¢²á×ÊÁÏ"
+@ModifyInfo  0, 0, PERM_SYSOP,  "Info",        "I) ÐÞ¸ÄÊ¹ÓÃÕß×ÊÁÏ"
+@ModifyLevel 0, 0, PERM_SYSOP,  "Level",       "L) ¸ü¸ÄÊ¹ÓÃÕßµÄÈ¨ÏÞ"
+@KickUser    0, 0, PERM_SYSOP,  "Kick",        "K) ½«Ê¹ÓÃÕßÌß³ö±¾ÏµÍ³"
+@DelUser     0, 0, PERM_ACCOUNTS,"DeleteUser", "D) ¿³µôÊ¹ÓÃÕßÕÊºÅ"
+@OpenVote    0, 0, PERM_OVOTE,  "Vote",        "V) ¾ÙÐÐÏµÍ³Í¶Æ±"
+@NewBoard    0, 0, PERM_OBOARDS,"NewBoard",    "N) ¿ªÆôÒ»¸öÐÂµÄÌÖÂÛÇø"
+@EditBoard   0, 0, PERM_ANNOUNCE,"ChangeBoard","C) ÐÞ¸ÄÌÖÂÛÇøËµÃ÷ÓëÉè¶¨
+@DelBoard    0, 0, PERM_OBOARDS,"BoardDelete", "B) ¿³µôÒ»¸öÎÞÓÃµÄÌÖÂÛÇø"
+@SetTrace    0, 0, PERM_SYSOP,  "Trace",       "T) Éè¶¨ÊÇ·ñ¼ÇÂ¼³ý´í×ÊÑ¶"
+@CleanMail   0, 0, PERM_SYSOP,  "MailClean",   "M) Çå³ýËùÓÐ¶Á¹ýµÄË½ÈËÐÅ¼þ"
+@Announceall 0, 0, PERM_SYSOP,  "Announceall", "A) ¶ÔËùÓÐÈË¹ã²¥"
+@EditSFiles  0, 0, PERM_WELCOME,"Files",       "F) ±à¼­ÏµÍ³µµ°¸"
+!..          0, 0, 0,           "Exit",        "E) »Øµ½Ö÷Ñ¡µ¥"
+%
+
+#------------------------------------------------------------------
+
+

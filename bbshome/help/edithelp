@@ -1,0 +1,22 @@
+                               [37m±à¼­¹¦ÄÜÖ¸ÁîËµÃ÷[m
+[44m                                  Ò»°ãÃüÁî                                    [m
+ ^W,^X    ´æµµáá½áÊø±à¼­         ^L,^G    ÖØ»æÆÁÄ»
+ ^Q       ÏÔÊ¾¸¨Öú»­Ãæ           Ctrl+Z   ²é¿´»ò»ØÐÅÏ¢
+
+[44m                                 ÓÎ±êÒÆ¶¯Ö¸Áî                                 [m
+ ^P,¡ü   ÏòÉÏ    £ü ^N,¡ý   ÏòÏÂ    | ^R,¡û    Ïò×ó   | ^V,¡ú   ÏòÓÒ
+ ^A,Home ÖÁÐÐÊ×  £ü ^E, End ÖÁÐÐÄ©  | ^B,PgUp  ÉÏÒ»Ò³ | ^F,PgDn ÏÂÒ»Ò³
+ ^S      µµ°¸¿ªÍ·£ü ^T      µµ°¸½áÎ²| Esc-s    ËÑÑ°   | Esc-n    ¼ÌÐøËÑÑ°
+ Esc-g   Ìøµ½##ÐÐ©¦ 
+
+[44m                                  É¾³ýÃüÁî                                    [m
+ ^O,Ins ÇÐ»»²åÈë/ÖÃ»»Ä£Ê½ £ü ^H,BS   É¾³ý×ó·½×ÖÔª  £ü ^Y    É¾³ýÒ»ÐÐ
+ ^D,DEL É¾³ýÄ¿Ç°×ÖÔª      £ü ^K      É¾ÖÁÐÐÄ©      £ü
+
+[44m                                  Çø¿é´¦Àí                                    [m
+ ^U   Çø¿é±ê¶¨     ^C   ¸´ÖÆÇø¿é      Esc-d   Çå³ýÇø¿é    Esc-Q   Çå³ý±ê¶¨
+
+[44m                  ÌØÊâÃüÁî: (ÇëÏÈ°´ ESC, ÔÙÑ¡ÔñÒÔÏÂÏîÄ¿)                      [m
+ (I)»ãÈëµµ°¸     (E)»ã³öµµ°¸      (C)¹Û¿´²ÊÉ«±à¼­³É¹û
+ (B)Éè¶¨±³¾°É«²Ê (F)Éè¶¨Ç°¾°É«²Ê  (R)»¹Ô­É«²Ê
+ (ESC)²ÊÉ«¿ØÖÆÂë (M)Çø¿é´¦Àí      (L)¿ª»ò¹ØÑ¶Ï¢À¸

@@ -1,0 +1,19 @@
+  [//]            - MUD-like 社交动词     [/ignore] <id>   - 忽略<id>的聊天讯息
+  [/help] op      - 谈天室管理员专用指令  [/ignore]        - 列出忽略用户的名单
+  [/a] <msg>      - 做一个动作            [/listen] <id>   - 解除对<id>的忽略   
+  [/b] [msg]      - 道别                  [/d]             - 察看系统时间
+  [/c]            - 清除萤幕              [/mail]          - 查看未读信件标题  
+  [/j] <room>     - 建立或加入谈天室      [/alias] <emote> <string>
+  [/ca] Userid    - 邀请使用者加入聊天室                   - 自定义聊天emote
+  [/l] [room]     - 列出谈天室使用者      [/alias]         - 查看自定义emote
+  [/m] <chatid> <msg> - 跟<chatid>说悄悄话[/alias] <emote> - 删除自定义emote
+  [/n] <chatid>   - 将谈天代号换成 <chatid>
+  [/r]            - 列出一般谈天室
+  [/w]            - 列出本谈天室使用者
+  [/whoin] <room> - 列出某谈天室的使用者
+  [/p]            - 开/关 呼叫器          [/v]ersion       - 查询当前版本信息
+  [/s] <id> <msg> - 给 <id> 发送讯息
+  [/q] <id>       - 查询 <id>             [/qc] <chatid>   - 按 <chatid> 查询 
+  [/see]          - 查看讯息              [/setr]          - 启动/停止录音  
+  [/g]            - 查看线上好友          Ctrl+Z             查看或回信息
+  [/kn]ock <room> [msg] - 敲某个聊天室的门，将msg送至该聊天室

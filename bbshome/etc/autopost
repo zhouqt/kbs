@@ -1,0 +1,6 @@
+etc/local_utl/top_login   bbslists        上站次数排行榜
+etc/local_utl/top_post    bbslists        张贴文章次数排行榜
+etc/local_utl/top_stay    bbslists        上站总时间排行榜
+etc/local_utl/top_perm    bbslists        总积分排行榜
+etc/local_utl/today       bbslists        本站的上站人数图 
+etc/local_utl/countlogins bbslists        本站的上站人次统计图 
