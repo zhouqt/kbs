@@ -754,7 +754,7 @@ if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
 	bbs_setonlineuser($userid,$currentuinfo_num,$data["utmpkey"],$currentuinfo,$compat_telnet);
 	$currentuser_num=bbs_getcurrentuser($currentuser);
 	$path='';
-	setcookie("W_UTMPUSERID",$data["userid"],time()+360000,"",$path);
+	setcookie("W_UTMPUSERID",$data["userid"],time()+360000,$path);
 	setcookie("W_UTMPKEY",$data["utmpkey"],time()+360000,$path);
 	setcookie("W_UTMPNUM",$currentuinfo_num,time()+360000,$path);
 	setcookie("W_LOGINTIME",$data["logintime"],time()+360000,$path);
