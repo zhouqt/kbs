@@ -24,18 +24,21 @@ static ZEND_RSHUTDOWN_FUNCTION(bbs_request_shutdown);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry bbs_php_functions[] = {
-        ZEND_FE(bbs_getuser, NULL)
-        ZEND_FE(bbs_getonlineuser, NULL)
-        ZEND_FE(bbs_getonlinenumber, NULL)
-        ZEND_FE(bbs_countuser, NULL)
-        ZEND_FE(bbs_setfromhost, NULL)
-        ZEND_FE(bbs_checkpasswd, NULL)
-        ZEND_FE(bbs_getcurrentuser, NULL)
-        ZEND_FE(bbs_setonlineuser, NULL)
+	ZEND_FE(bbs_getuser, NULL)
+	ZEND_FE(bbs_getonlineuser, NULL)
+	ZEND_FE(bbs_getonlinenumber, NULL)
+	ZEND_FE(bbs_countuser, NULL)
+	ZEND_FE(bbs_setfromhost, NULL)
+	ZEND_FE(bbs_checkpasswd, NULL)
+	ZEND_FE(bbs_getcurrentuser, NULL)
+	ZEND_FE(bbs_setonlineuser, NULL)
 	ZEND_FE(bbs_getcurrentuinfo, NULL)
 	ZEND_FE(bbs_wwwlogin, NULL)
 	ZEND_FE(bbs_printansifile, NULL)
-        {NULL,NULL,NULL}
+	ZEND_FE(bbs_checkreadperm, NULL)
+	ZEND_FE(bbs_brcaddread, NULL)
+	ZEND_FE(bbs_getboard, NULL)
+	{NULL,NULL,NULL}
 };
 
 /*
@@ -68,8 +71,9 @@ static void setstrlen(pval * arg)
 	arg->value.str.len=strlen(arg->value.str.val);
 }
 
-static void assign_user(zval* array,struct userec* user)
+static void assign_user(zval* array,struct userec* user,int num)
 {
+	add_assoc_long(array,"index",num);
 	add_assoc_string(array,"userid",user->userid,1);
 	add_assoc_long(array,"firstlogin",user->firstlogin);
 	add_assoc_stringl(array,"lasthost",user->lasthost,IPLEN,1);
@@ -94,8 +98,9 @@ static void assign_user(zval* array,struct userec* user)
 	add_assoc_long(array,"notemode",user->notemode);
 }
 
-static void assign_userinfo(zval* array,struct user_info* uinfo)
+static void assign_userinfo(zval* array,struct user_info* uinfo,int num)
 {
+	add_assoc_long(array,"index",num);
 	add_assoc_long(array,"active",uinfo->active);
 	add_assoc_long(array,"uid",uinfo->uid);
 	add_assoc_long(array,"pid",uinfo->pid);
@@ -115,8 +120,9 @@ static void assign_userinfo(zval* array,struct user_info* uinfo)
 	add_assoc_string(array,"username",uinfo->username,1);
 }
 
-static void assign_board(zval* array,struct boardheader* board)
+static void assign_board(zval* array,struct boardheader* board,int num)
 {
+	add_assoc_long(array,"index",num);
 	add_assoc_string(array,"filename",board->filename,1);
 	add_assoc_string(array,"owner",board->owner,1);
 	add_assoc_string(array,"BM",board->BM,1);
@@ -210,7 +216,7 @@ static ZEND_FUNCTION(bbs_getuser)
 
 	if(array_init(user_array) != SUCCESS)
 		RETURN_LONG(0);
-	assign_user(user_array,lookupuser);
+	assign_user(user_array,lookupuser,v1);
 /*        RETURN_STRING(retbuf, 1);
  *        */
         RETURN_LONG(v1);
@@ -231,7 +237,7 @@ static ZEND_FUNCTION(bbs_getonlineuser)
 	  if(array_init(user_array) != SUCCESS)
 		ret=0;
 	  else {
-		  assign_userinfo(user_array,uinfo);
+		  assign_userinfo(user_array,uinfo,idx);
 		  ret=idx;
 	  }
 	}
@@ -445,7 +451,7 @@ static ZEND_FUNCTION(bbs_getcurrentuinfo)
           }
           else {
                 if (getcurrentuinfo()) {
-                  assign_userinfo(user_array,getcurrentuinfo());
+                  assign_userinfo(user_array,getcurrentuinfo(),getcurrentuinfo_num());
                 } else
                         ret=0;
           }
@@ -471,7 +477,7 @@ static ZEND_FUNCTION(bbs_getcurrentuser)
 	}
 	else {
 		if (getcurrentuser()) {
-		  assign_user(user_array,getcurrentuser());
+		  assign_user(user_array,getcurrentuser(),getcurrentuser_num());
 		  ret=getcurrentuser_num();
 		} else
 			ret=0;
@@ -516,7 +522,7 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 	if(array_init(user_array) != SUCCESS)
 		ret=7;
 	else {
-		assign_userinfo(user_array,pui);
+		assign_userinfo(user_array,pui,idx);
 		ret=0;
 	}
 	RETURN_LONG(ret);
@@ -532,16 +538,16 @@ static ZEND_FUNCTION(bbs_printansifile)
 	struct stat st;
 
 	if(ZEND_NUM_ARGS() == 1) {
-          if (zend_parse_parameters(1 TSRMLS_CC, "s" , 
-		&filename,&filename_len)!= SUCCESS) {
+    	if (zend_parse_parameters(1 TSRMLS_CC, "s" , 
+			&filename,&filename_len)!= SUCCESS) {
                 WRONG_PARAM_COUNT;
-	  } 
-	  linkmode=1;
-        } else {
-          if (zend_parse_parameters(2 TSRMLS_CC, "sl" , 
-		&filename,&filename_len,&linkmode)!= SUCCESS) {
+	  	} 
+		linkmode=1;
+    } else {
+		if (zend_parse_parameters(2 TSRMLS_CC, "sl" , 
+			&filename,&filename_len,&linkmode)!= SUCCESS) {
                 WRONG_PARAM_COUNT;
-	  }
+	  	}
 	}
 	fd = open(filename, O_RDONLY);
 	if (fd < 0)
@@ -653,6 +659,61 @@ static ZEND_FUNCTION(bbs_printansifile)
     signal(SIGBUS,SIG_IGN);
     signal(SIGSEGV,SIG_IGN);
 	RETURN_LONG(0);
+}
+
+static ZEND_FUNCTION(bbs_getboard)
+{
+	zval* array;
+	char* boardname;
+	int boardname_len;
+	const struct boardheader* bh;
+	int b_num;
+
+	if(ZEND_NUM_ARGS() == 1) {
+    	if (zend_parse_parameters(1 TSRMLS_CC, "s" , 
+			&boardname,&boardname_len)!= SUCCESS) 
+                WRONG_PARAM_COUNT;
+		array=NULL;
+	} else {
+		if(ZEND_NUM_ARGS() == 2) {
+    		if (zend_parse_parameters(2 TSRMLS_CC, "sa" , 
+				&boardname,&boardname_len,&array)!= SUCCESS) 
+                WRONG_PARAM_COUNT;
+		} else
+            WRONG_PARAM_COUNT;
+	}
+	if (boardname_len>BOARDNAMELEN)
+		boardname[BOARDNAMELEN]=0;
+	b_num=getbnum(boardname);
+	if (b_num==0) RETURN_LONG(0);
+	bh=getboard(b_num);
+	if (array) {
+		if(array_init(array) != SUCCESS)
+                WRONG_PARAM_COUNT;
+		assign_board(array,(struct boardheader*)bh,b_num);
+	}
+	RETURN_LONG(b_num);
+}
+
+static ZEND_FUNCTION(bbs_checkreadperm)
+{
+	long user_num,boardnum;
+	struct userec* user;
+	if (zend_parse_parameters(2 TSRMLS_CC, "ll" , 
+		&user_num,&boardnum)!= SUCCESS) 
+                WRONG_PARAM_COUNT;
+	user=getuserbynum(user_num);
+	if (user==NULL) RETURN_LONG(0);
+	RETURN_LONG(check_read_perm(user,boardnum));
+}
+
+static ZEND_FUNCTION(bbs_brcaddread)
+{
+	long posttime,boardnum;
+	if (zend_parse_parameters(2 TSRMLS_CC, "ll" , 
+		&boardnum,&posttime)!= SUCCESS) 
+                WRONG_PARAM_COUNT;
+	//TODO
 }
 
 static char old_pwd[1024];
