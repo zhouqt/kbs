@@ -28,26 +28,6 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 
-#ifdef SYSV
-int
-flock(fd, op)
-int fd, op;
-{
-    switch (op) {
-    case LOCK_EX:
-        return lockf( fd, F_LOCK, 0 );
-    case LOCK_UN:
-        return lockf( fd, F_ULOCK, 0 );
-/*
-    case F_TLOCK:
-        return lockf( fd, F_TLOCK, 0 );
-*/
-    default:
-        return -1;
-    }
-}
-#endif
-
 int
 safewrite(fd, buf, size)
 int fd;
