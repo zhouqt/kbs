@@ -992,6 +992,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
     char tmp[1024];
     extern int RMSG;
 
+    if(!RMSG)
+        ingetdata = true;
     if (clearlabel == true) {
         buf[0] = 0;
     }
@@ -1059,13 +1061,19 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
             break;
         for(i=starty;i<=y;i++)
             saveline(i, 1, savebuffer[i]);
-        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0]))
+        if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0])) {
+            ingetdata = false;
             return -ch;
-        if (true == UPDOWN && (KEY_UP == ch || KEY_DOWN == ch))
+        }
+        if (true == UPDOWN && (KEY_UP == ch || KEY_DOWN == ch)) {
+            ingetdata = false;
             return -ch;
+        }
 #ifdef NINE_BUILD
-        if (RMSG && (ch == Ctrl('Z')) && (!buf[0]))
+        if (RMSG && (ch == Ctrl('Z')) && (!buf[0])) {
+            ingetdata = false;
             return -ch;
+        }
 #endif
 #ifdef CHINESE_CHARACTER
         if (ch == Ctrl('R')) {
@@ -1344,6 +1352,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         }
     }
 
+    ingetdata = true;
     return y-starty+1;
 }
 
