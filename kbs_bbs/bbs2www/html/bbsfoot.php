@@ -61,6 +61,15 @@ echo "信箱[<a href=\"/bbsmailbox.php?path=.DIR&title=收件箱\" target=\"f3\" clas
 		    if (bbs_getmailnum($currentuser["userid"],$total,$unread, $oldtotal, $oldunread)) {
 			  if ($unread!=0) {
 		        echo $total . "封(新信" . $unread . ")</a>] ";
+?>
+<bgsound src="/sound/newmail.wav">
+<script language="javascript">
+if(confirm("您有新邮件，现在查收？"))
+{
+    top.f3.navigate("/bbsmailbox.php?path=.DIR&title=<?php echo urlencode("收件箱"); ?>");
+}
+</script>
+<?php
 			  }
 			  else {
 		        echo $total . "封</a>] ";
