@@ -245,15 +245,6 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
         ferr=18;
         return ;
     }
-    if (r-l>=6&&!strncmp("的长度", s+r-5, 6)) {
-        struct fvar_struct u;
-        u.p = 0;
-        feval(&u, s, l, r-6);
-        fmakesure(!u.num&&u.p, 3);
-        p->num=true;
-        p->s = strlen(u.p);
-        return;
-    }
     for(j=0;j<14;j++) {
         n=r;
         do{
@@ -329,10 +320,28 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
             n--;
         }while(n>=l);
     }
+    if (r-l>=6&&!strncmp("的长度", s+r-5, 6)) {
+        struct fvar_struct u;
+        u.p = 0;
+        feval(&u, s, l, r-6);
+        fmakesure(!u.num&&u.p, 3);
+        p->num=true;
+        p->s = strlen(u.p);
+        return;
+    }
     if(s[l]=='!') {
         struct fvar_struct m;
         m.p = 0;
         feval(&m, s, l+1, r);
+        fmakesure(m.num,1);
+        p->num=true;
+        p->s=!m.s;
+        return;
+    }
+    if(strncmp(s+l,"没有",4)) {
+        struct fvar_struct m;
+        m.p = 0;
+        feval(&m, s, l+4, r);
         fmakesure(m.num,1);
         p->num=true;
         p->s=!m.s;
