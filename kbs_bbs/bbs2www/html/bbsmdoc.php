@@ -142,15 +142,29 @@ else echo "box";
 <input type="button" value="切换不可Re" onclick="document.form1.mode.value=4; document.form1.submit();">
 <input type="button" value="切换置顶" onclick="document.form1.mode.value=5; document.form1.submit();">
 <input type="button" value="收录精华" onclick="document.form1.mode.value=6; document.form1.submit();">
-丝路序号:<select name="num" class="input"  style="WIDTH: 40px">
+丝路序号:<select name="num" class="input"  style="WIDTH: 36px">
 <?php
 		for($ii = 0; $ii < 40; $ii++){
 ?>
-<option value=<?php echo $ii;?>><?php echo $ii;?>
+<option <?php if($ii == 0) echo "selected";?> value=<?php echo $ii;?>><?php echo $ii;?>
 <?php
 		}
 ?>
-</option></select> 
+</option></select>
+<input type="button" name="silu" value="查看丝路" onclick="return GoImPathWindow()" />
+<script language="JavaScript">
+<!--
+	function GoImPathWindow(){
+		var hWnd = window.open("bbsmpath.php?action=select","_blank","width=600,height=300,scrollbars=yes");
+
+		if ((document.window != null) && (!hWnd.opener))
+			hWnd.opener = document.window;
+		hWnd.focus();
+
+		return false;
+	}
+-->
+</script>
 </form>
 <?php
 		if ($start > 0)

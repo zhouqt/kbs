@@ -58,6 +58,9 @@
 
 				$showform = 1;
 			}
+			else if(!strcmp($action,"select")){
+				$showform = 2;
+			}
 		}
 		else
 			$action = "show";
@@ -81,15 +84,37 @@
 丝路名:<input type="text" size="30" name="title" value="<?php echo $title?>">
 序号:<select name="num" class="input"  style="WIDTH: 40px">
 <?php
-		for($i = 0; $i < 40; $i++){
+			for($i = 0; $i < 40; $i++){
 ?>
 <option <?php if($i == $num) echo "selected";?> value=<?php echo $i;?>><?php echo $i;?>
 <?php
-		}
+			}
 ?>
 </option></select> 
 <input type="hidden" name="action" value="add">
 <input type="submit" value="添加">
+</form>
+<hr class="default"/>
+<?php
+		}else if($showform == 2){
+?>
+<script language=javascript>
+	function clickclose(){
+		opener.document.forms["form1"].elements["num"].value = document.forms["selectImPath"].elements["num"].value ;
+		return window.close();
+	}
+</script>
+<form name="selectImPath" method="post" action="">
+请选择丝路序号:<select name="num" class="input"  style="WIDTH: 40px">
+<?php
+			for($i = 0; $i < 40; $i++){
+?>
+<option <?php if($i == 0) echo "selected";?> value=<?php echo $i;?>><?php echo $i;?>
+<?php
+			}
+?>
+</option></select> 
+<input type="button" width="60" value="选择" onclick="return clickclose()">
 </form>
 <hr class="default"/>
 <?php
@@ -114,7 +139,13 @@
 		for($i = 0; $i < 40; $i ++){
 ?>
 <tr><td>
+<?php
+			if( $showform != 2 ){
+?>
 <a href="/bbsmpath.php?action=edit&num=<?php echo $i;?>">修改</a>
+<?php
+			}
+?>
 </td><td>
 <?php echo $i;?>
 </td><td>
