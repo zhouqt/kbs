@@ -643,7 +643,7 @@ void join_room(struct room_struct * r)
                                 t2=inrooms.peoples[i].vnum;
                             }
                         }
-                        if(j || t1-t2>t3) {
+                        if(j/* || t1-t2>t3*/) {
                             int max=0, ok=0, maxi, maxpid;
                             for(i=0;i<myroom->people;i++)
                                 inrooms.peoples[i].vnum = 0;
