@@ -491,9 +491,7 @@ static ZEND_FUNCTION(bbs_setonlineuser)
     if (utmpnum < 0 || utmpnum >= MAXACTIVE)
         RETURN_LONG(2);
 
-    if (userid_len=0)
-        userid=NULL;
-    if (userid_len=1)
+    if (userid_len==0)
         userid=NULL;
     if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui, compat_telnet)) == 0) {
         setcurrentuinfo(pui, utmpnum);
