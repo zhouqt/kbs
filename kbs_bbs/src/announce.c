@@ -43,22 +43,23 @@ int     a_fmode=1;
 int     t_search_down();
 int     t_search_up();
 
+
 void
-a_report(s)/* Haohmaru.99.12.06 */
+a_report(s) /* Haohmaru.99.12.06 */
 char *s ;
 {
     int fd ;
 
+	/* disable it because of none using it , KCN,2002.07.31 */
+	return ;
+/*	
     if((fd = open("a_trace",O_WRONLY|O_CREAT,0644)) != -1 ) {
         char buf[512] ;
-        /*char timestr[10], *thetime;*/ /* Leeward 98.04.27 */
         char timestr[24], *thetime;
         time_t dtime;
         time(&dtime);
         thetime = ctime(&dtime);
-        /*strncpy(timestr, &(thetime[11]), 8);*/
         strncpy(timestr, thetime, 20);
-        /*timestr[8] = '\0';*/
         timestr[20] = '\0';
         flock(fd,LOCK_EX) ;
         lseek(fd,0,SEEK_END) ;
@@ -68,6 +69,7 @@ char *s ;
         close(fd) ;
         return ;
     }
+*/
 }
 
 int
