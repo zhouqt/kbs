@@ -100,7 +100,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			if($tablestyle==1)
 			{
 				$tableclass = "f1";
-				if($i%2==0)
+				if($i%2==1)
 					$cellclass=array("t14","t14","t14");
 				else
 					$cellclass=array("t16","t16","t16");
@@ -108,12 +108,12 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			else
 			{
 				$tableclass = "t15";
-				if($i%2==0)
+				if($i%2==1)
 					$cellclass=array("t14","t11","t8");
 				else
 					$cellclass=array("t16","t13","t5");
 			}
-			echo "<table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
+			echo "<center><table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
 			"<tr><td class=\"".$cellclass[0]."\">".time_format_date($nodes[$i][created])."</td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
@@ -134,7 +134,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">评论[".$nodes[$i][commentcount]."]</a>";
 			if($nodes[$i][trackback])
 				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i][subject])."' , 460, 480)\">引用[".$nodes[$i][trackbackcount]."]</a>";
-			echo "</font></td></tr>\n</table>\n";
+			echo "</font></td></tr>\n</table></center>\n";
 		}
 	}
 	
@@ -488,6 +488,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		global $loginok,$currentuser,$pcconfig;
 		
 ?>
+<center>
 <table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
 <tr><td valign=middle align=center>
 <!--
@@ -498,15 +499,15 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
               <param name="quality" value="high">
               <embed src="images/SMTH2.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash" width="805" height="90"></embed>
 </object>
-</td></tr></table>
-<table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
+</td></tr></table></center>
+<center><table cellpadding=0 cellspacing=0 width=700 border=0 class=f1>
 <tr>
 	<td align="center">
 	<?php display_blog_area_links($sec,$pc); ?>
 	</td>
 </tr>
-</table>
-<table cellpadding=10 cellspacing=0 width=700 border=0 class=t1>
+</table></center>
+<center><table cellpadding=10 cellspacing=0 width=700 border=0 class=t1>
 	<tr>
 		<td align="center" class="t11" colspan="2">
 		<?php display_blog_intro(); ?>
@@ -540,11 +541,11 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		<?php display_blog_calendar(); ?>
 		</td>
 	</tr>
-</table>
+</table></center>
 <?php		
 		display_nodes($link,$pc,$nodes,700);
 ?>
-<table cellpadding=10 cellspacing=0 width=700 border=0 class=t15>
+<center><table cellpadding=10 cellspacing=0 width=700 border=0 class=t15>
 <tr>
 <td align="center" class="t14" width="50%" valign="top">
 <table cellpadding=3 cellspacing=0 width=100% border=0 class=t1>
@@ -598,7 +599,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 &nbsp;&nbsp;
 <?php echo pc_personal_domainname($pc["USER"]); ?>
 </td></tr>
-</table>	
+</table></center>	
 <?php		
 	}
 
@@ -656,11 +657,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	get_calendar_array($link,$pc,$pur);
 ?>
 <script src="bc.js"></script>
-<center>
 <?php
 	$pc["STYLE"]["INDEXFUNC"]($link,$pc,$sec,$nodes,$blogs,$pur);
-?>
-</center>
-<?php
 	pc_db_close($link);
 ?>
