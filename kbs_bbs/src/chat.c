@@ -923,7 +923,7 @@ static void query_user(chatcontext * pthis, const char *userid)
             compute_user_value(lookupuser),
             (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : " ");
     printchatline(pthis, genbuf);
-#else                           /* 
+#else                           /*
                                  */
     sprintf(genbuf, "%s (%s):   生命力[%d]%s   %s",
             lookupuser->userid, lookupuser->username,
@@ -939,11 +939,13 @@ static void query_user(chatcontext * pthis, const char *userid)
     if (apply_utmpuid((APPLY_UTMP_FUNC) chat_status, tuid, (char *) pthis)) {
         char buf[1024];
 
+	lookupuser->lasthost[IPLEN-1] = '\0';
         sprintf(buf, "目前正在线上: 来自 %s 上线时间 %s" /*\n" */ ,
                 (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : lookupuser->lasthost), inbuf);    /*Haohmaru.99.12.18 */
         printchatline(pthis, buf);
         printchatline(pthis, genbuf);
     } else {
+        lookupuser->lasthost[IPLEN-1] = '\0';  
         sprintf(genbuf, "上次上线来自  %s 时间为 %s " /*\n" */ ,
                 (lookupuser->lasthost[0] == '\0' /* || DEFINE(currentuser,DEF_HIDEIP) */ ? "(不详)" : lookupuser->lasthost), inbuf);    /* Haohmaru.99.12.18 */
         printchatline(pthis, genbuf);
