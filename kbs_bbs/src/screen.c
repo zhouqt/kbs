@@ -535,7 +535,7 @@ void outns(const char*str, int n)
              if(*(str+i)=='H') {
                 j=0;
                 while(j<i&&*(str+j)!=';') j++;
-                if(*(str+j)==';'&&j<=4&&j>=3&&i-j>=2&&i-j<=3) {
+                if(*(str+j)==';'&&j<=4&&j>=3&&i-j>=2&&i-j<=4) {
                     char s1[5],s2[5],x,y;
                     memcpy(s1,str+2,j-2);
                     s1[j-2]=0;
