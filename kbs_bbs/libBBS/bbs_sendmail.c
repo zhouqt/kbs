@@ -45,7 +45,7 @@ int chkusermail(struct userec *user)
             numlimit = 15;
         }
         setmailfile(recmaildir, user->userid, DOT_DIR);
-        if (getmailnum(user->userid) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
+        if (getmailnum(recmaildir) > numlimit || (sum = get_sum_records(recmaildir, sizeof(fileheader))) > sumlimit)
             return 1;
     }
     return 0;
