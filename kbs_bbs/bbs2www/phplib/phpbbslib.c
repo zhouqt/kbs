@@ -11,6 +11,7 @@ static ZEND_FUNCTION(bbs_getcurrentuser);
 static ZEND_FUNCTION(bbs_setonlineuser);
 static ZEND_FUNCTION(bbs_getcurrentuinfo);
 static ZEND_FUNCTION(bbs_wwwlogin);
+static ZEND_FUNCTION(bbs_printansifile);
 
 static ZEND_MINIT_FUNCTION(bbs_module_init);
 static ZEND_MSHUTDOWN_FUNCTION(bbs_module_shutdown);
@@ -30,6 +31,7 @@ static function_entry bbs_php_functions[] = {
         ZEND_FE(bbs_setonlineuser, NULL)
 	ZEND_FE(bbs_getcurrentuinfo, NULL)
 	ZEND_FE(bbs_wwwlogin, NULL)
+	ZEND_FE(bbs_printansifile, NULL)
         {NULL,NULL,NULL}
 };
 
@@ -505,6 +507,140 @@ static ZEND_FUNCTION(bbs_setonlineuser)
 		ret=0;
 	}
 	RETURN_LONG(ret);
+}
+
+static ZEND_FUNCTION(bbs_printansifile)
+{
+	char* filename;
+	long filename_len;
+	long linkmode;
+	char *ptr;
+	int fd;
+	struct stat st;
+
+	if(ZEND_NUM_ARGS() == 1) {
+          if (zend_parse_parameters(1 TSRMLS_CC, "s" , 
+		&filename,&filename_len)!= SUCCESS) {
+                WRONG_PARAM_COUNT;
+	  } 
+	  linkmode=1;
+        } else {
+          if (zend_parse_parameters(2 TSRMLS_CC, "sl" , 
+		&filename,&filename_len,&linkmode)!= SUCCESS) {
+                WRONG_PARAM_COUNT;
+	  }
+	}
+	fd = open(filename, O_RDONLY);
+	if (fd < 0)
+		RETURN_LONG(2);
+	if (fstat(fd, &st) < 0) {
+		close(fd);
+		RETURN_LONG(2);
+	}
+	if (!S_ISREG(st.st_mode)) {
+		close(fd);
+		RETURN_LONG(2);
+	}
+	if (st.st_size <= 0) {
+		close(fd);
+		RETURN_LONG(2);
+	}
+
+	ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+	close(fd);
+	if (ptr == NULL)
+		RETURN_LONG(-1);
+
+    if (!sigsetjmp(bus_jump,1)) {
+		signal(SIGBUS,sigbus);
+		signal(SIGSEGV,sigbus);
+		{
+		char* p=ptr;
+		int mode=0;
+		char outbuf[4096];
+		char* outp=outbuf;
+		int ansicolor,cal;
+		outbuf[sizeof(outbuf)-1]=0;
+#define FLUSHBUF { *outp=0;zend_printf("%s",outbuf); outp=outbuf; }
+#define OUTPUT(buf,len) { if ((outbuf-outp)<len) FLUSHBUF; strncpy(outp,buf,len); outp+=len; }
+		while ((*p)&&(p-ptr<st.st_size)) {
+			// TODO: need detect link
+			switch (mode)
+			{
+				case 0:
+					if (*p==0x1b) {//ESC
+							mode=1;
+							continue;
+					}
+					if (*p=='&') 
+						OUTPUT("&amp;",5)
+					else if (*p=='<') 
+						OUTPUT("&lt;",4)
+					else if (*p=='>') 
+						OUTPUT("&gt;",4)
+					else break;
+					continue;
+				case 1:
+					if ((*p)!='[') {
+						if (!isalpha(*p)) {
+								mode=4;
+								continue;
+						}
+						mode=0;
+						continue;
+					}
+					mode=2;
+					cal=0;
+					continue;
+				case 2:
+					// TODO: add more ansi colir support
+					if (*p==';') {
+						if (cal<=37&&cal>=30) ansicolor=cal;
+						continue;
+					}
+					if (*p=='m') {
+						char ansibuf[30];
+						if (cal<=37&&cal>=30) ansicolor=cal;
+						if (ansicolor<=37&&ansicolor>=30) {
+							sprintf(ansibuf,"<font class=\"c%d\">",ansicolor);
+							OUTPUT(ansibuf,strlen(ansibuf));
+							mode=0;
+							continue;
+						}
+					}
+					if (isdigit(*p)) {
+						cal=cal*10+(*p)-'0';
+						continue;
+					}
+					/* strange ansi escape,ignore it*/
+					if (!isalpha(*p)) {
+							mode=4;
+							continue;
+					}
+					mode=0;
+					continue;
+				case 4:
+					if (!isalpha(*p)) continue;
+					mode=0;
+					continue;
+			}
+			*outp=*p;
+			outp++;
+			p++;
+			if (outp-outbuf>=sizeof(outbuf)-1)
+				FLUSHBUF;
+		}
+		if (outp!=outbuf) {
+				*outp=0;
+				zend_printf("%s",outbuf);
+		}
+		}
+        } else {
+	}
+ 	munmap(ptr, st.st_size);
+        signal(SIGBUS,SIG_IGN);
+        signal(SIGSEGV,SIG_IGN);
+	RETURN_LONG(0);
 }
 
 static char old_pwd[1024];
