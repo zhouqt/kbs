@@ -28,6 +28,8 @@ time_t calltime=0;
 static int stuffmode = 0;
 
 static int rawmore(char    *filename, int     promptend, int     row, int     numlines);
+static int mem_show(char *ptr, int size, int row, int numlines, char *fn);
+extern int isblank(int c);
 
 
 /*struct FILESHM
@@ -737,7 +739,7 @@ measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
 			if (!db) {
 				if ((unsigned char) *p >= 128)
 					db = 1;
-				else if (isblank(*p))
+				else if (isblank((int)*p))
 					lastspace = i;
 			} else {
 				db = 0;
@@ -1008,8 +1010,7 @@ mem_printline(char *ptr, int len, char *fn, char ty)
 	outns("\n", 1);
 }
 
-int
-mem_show(char *ptr, int size, int row, int numlines, char *fn)
+static int mem_show(char *ptr, int size, int row, int numlines, char *fn)
 {
 	extern int t_lines;
 	struct MemMoreLines l;
