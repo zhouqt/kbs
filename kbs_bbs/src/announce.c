@@ -1371,11 +1371,11 @@ int linkto(char *path, char *fname, char *title)
     strcpy(pm.mtitle, title);
     a_loadnames(&pm);
     a_additem(&pm, title, fname, NULL, 0);
-    if (a_savenames(pm)==0) {
+    if (a_savenames(&pm)==0) {
         char buf[80],ans[40];
         sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
         a_prompt(-1, buf, ans);
-        a_loadnames(pm);
+        a_loadnames(&pm);
     }
     return 0;
 }
