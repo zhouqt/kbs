@@ -216,7 +216,7 @@ main(int argc, char ** argv)
 		    
 		    timed=2;
 		    total=0;
-		    if (!res.tm_mday) flag=3;
+		    if (res.tm_mday==1) flag=3;
 		    else flag=1;
 		    apply_users(query_BM, NULL);
 		    
