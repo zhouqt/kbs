@@ -374,6 +374,7 @@ int bbsnet(int n)
 	redoscr();
 	for (;;)
 	{
+	       refresh();
 		FD_ZERO(&readset);
 		FD_SET(0, &readset);
 		FD_SET(sockfd, &readset);
@@ -402,7 +403,7 @@ int bbsnet(int n)
 			goto on_error;
 		}
 
-		if (FD_ISSET(sockfd, &readset))
+		while (FD_ISSET(sockfd, &readset))
 		{
 			if ((rc = read(sockfd, buf, BUFSIZ)) < 0)
 			{
@@ -414,12 +415,9 @@ int bbsnet(int n)
 			else if (strchr(buf, 255))	/* ²éÕÒÊÇ·ñº¬ÓÐTELNETÃüÁîIAC */
 				telnetopt(sockfd, buf, rc);
 			else
-			{
-				output(buf, rc);
-				oflush();
-			}
+				outns(buf, rc);
 		}
-		if (FD_ISSET(0, &readset))
+		while (FD_ISSET(0, &readset))
 		{
 			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
 			{
