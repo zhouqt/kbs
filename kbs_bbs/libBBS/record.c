@@ -490,7 +490,7 @@ int size, id, number;
 
         if ((fd = open(filename1, O_RDONLY, 0)) == -1)
             return m;
-        if ((n = read(fd, rptr+n, size * (number-m))) == -1) {
+        if ((n = read(fd, rptr + m*size, size * (number-m))) == -1) {
             close(fd);
             return m;
         }
