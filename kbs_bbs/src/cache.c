@@ -1,8 +1,7 @@
 /* Written By Leeward@etang.com, Inc. 1999 */
 
 #include "cache.h"
-
-
+#include <sys/stat.h>
 #define CACHE_ROOT "/backup/www/htdocs"
 
 

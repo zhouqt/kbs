@@ -1,16 +1,6 @@
 #include "bbs.h"
-#include <sys/wait.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <netinet/in.h>
-#include <netinet/tcp.h>
 #include <arpa/telnet.h>
 #include <sys/resource.h>
-#include <varargs.h>
-
-#ifdef LINUX
-#include <arpa/inet.h>
-#endif
 
 #define	QLEN		50
 #define	PID_FILE	"reclog/bbs.pid"
@@ -80,15 +70,13 @@ time_t time;
     return 0;
 }
 
-
 void
-local_prints(va_alist)
-va_dcl
+local_prints(char* fmt,...)
 {
     va_list args;
-    char buf[512], *fmt;
+    char buf[512];
 
-    va_start(args);
+    va_start(args,fmt);
     fmt = va_arg(args, char *);
     vsprintf(buf, fmt, args);
     va_end(args);

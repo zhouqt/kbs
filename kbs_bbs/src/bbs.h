@@ -56,6 +56,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <sys/wait.h>
+#include <stdarg.h>
 
 /* System names.. by zixia.*/
 #include BBSSITE_H
