@@ -57,7 +57,7 @@ uleveltochar( char *buf, struct userec *lookupuser ) /* 取用户权限中文说明 Bigma
 	lvl = lookupuser->userlevel;
 	strncpy( userid, lookupuser->userid, IDLEN+2 );
 
-    if( !(lvl &  PERM_BASIC) ) {
+    if( !(lvl &  PERM_BASIC) && !(lookupuser->flags[0]&GIVEUP_FLAG)) {
 	strcpy( buf, "新人");
         return 0;
     }
