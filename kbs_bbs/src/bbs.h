@@ -257,6 +257,7 @@ O MaxMessageSize=32000
 #include "ansi.h"
 #include "output.h"
 #include "calltime.h"
+#include "tmpl.h"
 
 /* add by period , header for function prototypes */
 #include "prototype.h"
