@@ -81,7 +81,7 @@ int main()
     printf("[<a href=\"bbsfwd?board=%s&file=%s\">转寄/推荐</a>]", buf2, records[1].filename);
     printf("[<a href=\"bbsccc?board=%s&file=%s\">转贴</a>]", buf2, records[1].filename);
     if (can_delete_post(bp, &records[1], getcurrusr()))
-        printf("[<a onclick=\"return confirm('你真的要删除本文吗?')\" href=\"bbsdel?board=%s&file=%s\">删除文章</a>]", buf2, records[1].filename);
+        printf("[<a onclick=\"return confirm('你真的要删除本文吗?')\" href=\"/bbsdel.php?board=%s&file=%s\">删除文章</a>]", buf2, records[1].filename);
     if (can_edit_post(bp, &records[1], getcurrusr())) {
         printf("[<a href=\"bbsedit?board=%s&file=%s\">修改文章</a>]", buf2, records[1].filename);
     }
