@@ -72,6 +72,7 @@ int x_date();
 int x_userdefine();
 int x_userdefine1();
 int confirm_delete_id();        /* Added by Bigman 2001.7.14 */
+int get_favread();   /* stiger, 20050124 */
 
 /*Add by SmallPig*/
 int m_new(), m_read(), m_sendnull(), g_send();
@@ -265,6 +266,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"InnStop", inn_stop},      /* czz 2002.01.15 */
     {"SearchIP",search_ip},
     {"Kickalluser",kick_all_user},	/* stiger, 2003.7.30 */
+	{"GetFavRead", get_favread},   /* stiger, 20050124 */
     {"DefineKeys",define_key},
     {"SetACL",set_ip_acl},
 #ifdef SMS_SUPPORT

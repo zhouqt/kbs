@@ -534,6 +534,78 @@ int Xdeljunk()
     return 0;
 }
 
+/*得到别人的收藏夹和未度标记*/
+int get_favread()
+{
+	char destid[IDLEN+1];
+	char passwd[PASSLEN+1];
+    struct userec *destuser;
+	char dpath[PATHLEN];
+	char mypath[PATHLEN];
+	int id;
+
+	clear();
+	move(1,0);
+	prints("同步他人收藏夹和未读标记到本ID. 会导致本ID原来的收藏夹和未读标记丢失，慎用\n");
+    getdata(5, 0, "请输入对方ID:", destid, IDLEN, DOECHO, NULL, true);
+	if(destid[0] == '\0' || destid[0] == '\n'){
+		clear();
+		return 0;
+	}
+    if (!(id = getuser(destid, &destuser))) {
+		move(7,0);
+		prints("没有这个用户\n");
+		pressanykey();
+		return 0;
+	}
+    getdata(6, 0, "请输入对方密码:", passwd, PASSLEN, NOECHO, NULL, true);
+    if (passwd[0] == '\0' || !checkpasswd2(passwd, destuser)) {
+        logattempt(getCurrentUser()->userid, getSession()->fromhost);
+		move(8,0);
+		prints("密码错误\n");
+		pressanykey();
+		return 0;
+	}
+	move(8,0);
+	prints("\033[32m为了保证数据同步性，操作前请先退出本id其他登陆\033[m\n");
+	prints("\033[31m本次操作会覆盖本id原收藏夹和未读标记，无法恢复\033[m");
+	getdata(10,0,"确信要进行此操作吗? [y/N] ", passwd, 2, DOECHO, NULL, true);
+	if (passwd[0] != 'y' && passwd[0] != 'Y'){
+		clear();
+		return 0;
+	}
+
+	sethomefile(dpath, destuser->userid, "favboard");
+	sethomefile(mypath, getCurrentUser()->userid, "favboard");
+	f_cp(dpath, mypath, 0);
+	(*(getSession()->favbrd_list_count)) = 0;
+	load_favboard(1,1,getSession());
+
+#ifdef HAVE_BRC_CONTROL
+	sethomefile(dpath, destuser->userid, BRCFILE);
+	sethomefile(mypath, getCurrentUser()->userid, BRCFILE);
+	f_cp(dpath, mypath, 0);
+
+#if USE_TMPFS == 1
+    if (getSession()->brc_cache_entry!=NULL){
+#endif
+		memset(getSession()->brc_cache_entry, 0, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+		brc_initial(getCurrentUser()->userid, DEFAULTBOARD, getSession());
+		if(currboard)
+			brc_initial(getCurrentUser()->userid, currboard->filename, getSession());
+#if USE_TMPFS == 1
+	}
+#endif
+#endif
+
+	move(15,0);
+	prints("操作成功。您无需重新登陆即可使用新数据。\n");
+	pressanykey();
+	clear();
+
+	return 0;
+}
+
 #ifdef SMS_SUPPORT
 int x_usersmsdef()
 {
