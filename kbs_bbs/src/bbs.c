@@ -2692,7 +2692,7 @@ struct one_key  read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
 				   'T',        edit_title,
                                    's',        do_select,
                                    Ctrl('C'),  do_cross,
-                                   'Y',        XArticle, /* Leeward 98.05.18 */
+                                   'Y',        UndeleteArticle, /* Leeward 98.05.18 */
                                    Ctrl('P'),  do_post,
                                    'c',        clear_new_flag,
                                    'f', 	clear_all_new_flag, /* added by dong, 1999.1.25 */
