@@ -641,7 +641,7 @@ int choose_board(int newflag, char *boardprefix)
             }
             break;
         case 'S':
-            if (yank_flag==3) break;
+            if (yank_flag==3) goto hotkey;
             currentuser->flags[0] ^= BRDSORT_FLAG;      /*排序方式 */
             if (yank_flag != 2) {
                 qsort(nbrd, brdnum, sizeof(nbrd[0]), (int (*)(const void *, const void *)) cmpboard);   /*排序 */
@@ -663,7 +663,7 @@ int choose_board(int newflag, char *boardprefix)
              * }
              * else {
              */
-            if (yank_flag==3) break;
+            if (yank_flag==3) goto hotkey;
             modify_user_mode(SELECT);
             if (do_select(0, NULL, genbuf) == NEWDIRECT)
                 Read();
@@ -795,6 +795,24 @@ int choose_board(int newflag, char *boardprefix)
                     }
                 }
             }
+            else if (3 == yank_flag) {
+                if (nbrd[num].dir == 2 && nbrd[num].tag >= 0){
+                	int p=1,i,j;
+                     char bname[STRLEN];
+                     char ans[2];
+
+                     move(0, 0);
+                     clrtoeol();
+                     strcpy(bname, nbrd[num].title);
+                     getdata(0, 0, "输入信箱中文名: ", bname, 30, DOECHO, NULL, false);
+                     if (bname[0]) {
+                     	i = nbrd[num].tag;
+                     	strcpy(mail_list[i], bname);
+                     	save_mail_list();
+                     	brdnum = -1;
+                     }
+                }
+            }	
             break;
         case 'm':
             if (yank_flag == 2) {
@@ -972,6 +990,7 @@ int choose_board(int newflag, char *boardprefix)
         default:
             if (ch>='a'&&ch<='z'||ch>='A'&&ch<='Z'){
                 int i;
+hotkey:
                 for(i=0; i<brdnum; i++){
                     if(toupper(ch)==toupper(nbrd[i].title[0])) {
                         num=i;
