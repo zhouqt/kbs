@@ -645,6 +645,9 @@ int compute_user_value( struct userec *urec)
     * 在 smth.h/zixia.h 中定义 
     * */
     
+    if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
+        return LIFE_DAY_NODIE;
+
     if ( urec->userlevel & PERM_SYSOP) 
 	return LIFE_DAY_SYSOP;
 	/* 站务人员生命力不变 Bigman 2001.6.23 */
@@ -653,9 +656,6 @@ int compute_user_value( struct userec *urec)
     if( urec->userlevel & PERM_MM )
 	return LIFE_DAY_SYSOP;
 #endif
-
-    if( ((urec->userlevel & PERM_HORNOR)||(urec->userlevel & PERM_CHATCLOAK )) && (!(urec->userlevel & PERM_SUICIDE)))
-        return LIFE_DAY_NODIE;
 
 
     value = (time(0) - urec->lastlogin) / 60;    /* min */
@@ -807,7 +807,8 @@ char filename[STRLEN],seekstr[STRLEN];
 }
 
 
-static struct public_data *publicshm=NULL;
+static time_t* nowtime;
+static struct public_data *publicshm;
 void bbssettime(time_t now)
 {
     int iscreate;
@@ -821,8 +822,7 @@ void bbssettime(time_t now)
 int setpublicshmreadonly(int readonly)
 {
     int iscreate;
-    if (publicshm)
-	    shmdt(publicshm);
+    shmdt(publicshm);
     if (readonly)
         publicshm = (struct public_data*)attach_shm1( "PUBLIC_SHMKEY", 3700, sizeof( *publicshm ) ,&iscreate , 1, publicshm); 
     else
@@ -842,3 +842,53 @@ time_t bbstime(time_t* t)
     if (t) *t=publicshm->nowtime;
     return publicshm->nowtime;
 }
+
+int
+bad_user_id( userid )
+char    *userid;
+{
+    FILE        *fp;
+    char        buf[STRLEN];
+    char        *ptr, ch;
+    int         i;
+
+    i = 0;
+    ptr = userid;
+    while( (ch = *ptr++) != '\0' ) {
+        i++;
+        if( !isalnum( ch ) && ch != '_' )
+            return 1;
+    }
+    if (i<2) return 1;
+    if( (fp = fopen( ".badname", "r" )) != NULL ) {
+        while( fgets( buf, STRLEN, fp ) != NULL ) {
+            ptr = strtok( buf, " \n\t\r" );
+            if( ptr != NULL && *ptr != '#')
+            {
+                if( strcasecmp( ptr, userid ) == 0 ) {
+                    if(ptr[13]>47 && ptr[13]<58)/*Haohmaru.99.12.24*/
+                    {
+                        char timebuf[12];
+                        time_t	t,now;
+                        strcpy(timebuf,ptr+13);
+                        ptr = timebuf;
+                        while (isdigit(*ptr)) ptr++;
+			*ptr=0;
+                        t = atol(timebuf);
+                        now = time(0);
+                        if(now - t > 24*30*3600)
+                        {
+                            fclose( fp );
+                            return 0;
+                        }
+                    }
+                    fclose(fp);
+                    return 1;
+                }
+            }
+        }
+        fclose(fp);
+    }
+    return 0;
+}
+

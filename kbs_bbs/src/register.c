@@ -39,55 +39,6 @@ time_t          system_time;
 extern int convcode;  /* KCN,99.09.05 */
 extern int switch_code(); /* KCN,99.09.05 */
 
-int
-bad_user_id( userid )
-char    *userid;
-{
-    FILE        *fp;
-    char        buf[STRLEN];
-    char        *ptr, ch;
-    int         i;
-
-    i = 0;
-    ptr = userid;
-    while( (ch = *ptr++) != '\0' ) {
-        i++;
-        if( !isalnum( ch ) && ch != '_' )
-            return 1;
-    }
-    if (i<2) return 1;
-    if( (fp = fopen( ".badname", "r" )) != NULL ) {
-        while( fgets( buf, STRLEN, fp ) != NULL ) {
-            ptr = strtok( buf, " \n\t\r" );
-            if( ptr != NULL && *ptr != '#')
-            {
-                if( strcasecmp( ptr, userid ) == 0 ) {
-                    if(ptr[13]>47 && ptr[13]<58)/*Haohmaru.99.12.24*/
-                    {
-                        char timebuf[12];
-                        time_t	t,now;
-                        strncpy(timebuf,ptr+13,11);
-                        ptr = timebuf;
-                        while (isdigit(*ptr)) ptr++;
-			*ptr=0;
-                        t = atol(timebuf);
-                        now = time(0);
-                        if(now - t > 24*30*3600)
-                        {
-                            fclose( fp );
-                            return 0;
-                        }
-                    }
-                    fclose(fp);
-                    return 1;
-                }
-            }
-        }
-        fclose(fp);
-    }
-    return 0;
-}
-
 void
 new_register()
 {
