@@ -51,6 +51,7 @@ int s_msg()
 {
     return do_sendmsg(NULL, NULL, 0);
 }
+
 extern char msgerr[255];
 
 int do_sendmsg(uentp, msgstr, mode)
