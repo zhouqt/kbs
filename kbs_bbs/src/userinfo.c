@@ -249,26 +249,30 @@ int uinfo_query(struct userec *u, int real, int unum)
                     UPDATE_UTMP_STR(username, uinfo);
                 }
             }
-            if (strcmp(u->userid, newinfo.userid)) {
+	     if (strcmp(u->userid, newinfo.userid)) {
                 char src[STRLEN], dst[STRLEN];
-
-                setmailpath(src, u->userid);
-                setmailpath(dst, newinfo.userid);
+                if (id_invalid(newinfo.userid) == 1) {
+                    prints("帐号必须由英文字母或数字组成，并且第一个字符必须是英文字母!\n");
+                    pressanykey();
+                } else {
+                    setmailpath(src, u->userid);
+                    setmailpath(dst, newinfo.userid);
                 
                     /*
                        sprintf(genbuf,"mv %s %s",src, dst);
                      */ 
                     f_mv(src, dst);
-                sethomepath(src, u->userid);
-                sethomepath(dst, newinfo.userid);
+                    sethomepath(src, u->userid);
+                    sethomepath(dst, newinfo.userid);
                 
                     /*
                        sprintf(genbuf,"mv %s %s",src ,dst);
                      */ 
                     f_mv(src, dst);
-                sprintf(src, "tmp/email/%s", u->userid);
-                unlink(src);
-                setuserid(unum, newinfo.userid);
+                    sprintf(src, "tmp/email/%s", u->userid);
+                    unlink(src);
+                    setuserid(unum, newinfo.userid);
+                }
             }
             
                 /* added by netty to automatically send a mail to new user. */ 
