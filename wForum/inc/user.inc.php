@@ -50,43 +50,48 @@ function showSecs($secNum=0,$group,$isFold) {
 <?php
 	if ($isFold) {
 ?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N" title="关闭论坛列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?> </a>
+<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N" title="关闭版面列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
 </th></tr>
 <?php
 	} else {
 ?>
-<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开论坛列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类论坛><?php echo $section_names[$secNum][0]; ?> </a>
+<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开版面列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
 <?php
 	}
-	$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
-	if ($boards == FALSE) {
+	if (! $isFold && (BOARDLISTSTYLE=='simplest')) {
+?>
+		<TR><TD colspan="2" class=TableBody1>&nbsp;版面列表已关闭 [<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开版面列表">展开</a>]</td></tr>
+<?php
+	} else {
+		$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
+		if ($boards == FALSE) {
 ?>
 		<TR><TD colspan="2" class=TableBody1>&nbsp;本分区尚无版面</td></tr>
 <?php
-	} else {
-		$brd_name = $boards["NAME"]; // 英文名
-		$brd_desc = $boards["DESC"]; // 中文描述
-		$brd_class = $boards["CLASS"]; // 版分类名
-		$brd_bm = $boards["BM"]; // 版主
-		$brd_artcnt = $boards["ARTCNT"]; // 文章数
-		$brd_unread = $boards["UNREAD"]; // 未读标记
-		$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
-		$brd_flag = $boards["FLAG"]; //flag
-		$brd_bid = $boards["BID"]; //flag
-		$rows = sizeof($brd_name);
-		$isFirst=false;
-		for ($i = 0; $i < $rows; $i++)	{
-			$isFirst=!$isFirst;
-			if ($isFold){
+		} else {
+			$brd_name = $boards["NAME"]; // 英文名
+			$brd_desc = $boards["DESC"]; // 中文描述
+			$brd_class = $boards["CLASS"]; // 版分类名
+			$brd_bm = $boards["BM"]; // 版主
+			$brd_artcnt = $boards["ARTCNT"]; // 文章数
+			$brd_unread = $boards["UNREAD"]; // 未读标记
+			$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
+			$brd_flag = $boards["FLAG"]; //flag
+			$brd_bid = $boards["BID"]; //flag
+			$rows = sizeof($brd_name);
+			$isFirst=false;
+			for ($i = 0; $i < $rows; $i++)	{
+				$isFirst=!$isFirst;
+				if ($isFold){
 ?>
 			<TR><TD align=middle width="100%" class=TableBody1>
 		<table width="100%" cellspacing=0 cellpadding=0><TR><TD align=middle width=46 class=TableBody1>
 <?php	
-				if ( $brd_unread[$i] == 1) {
-					echo "<img src=pic/forum_isnews.gif alt=有新帖子>";
-				} else  {
-					echo "<img src=pic/forum_nonews.gif alt=无新帖子>";
-				}
+					if ( $brd_unread[$i] == 1) {
+						echo "<img src=pic/forum_isnews.gif alt=有新帖子>";
+					} else  {
+						echo "<img src=pic/forum_nonews.gif alt=无新帖子>";
+					}
 ?>
 		</TD>
 		<TD width=1 bgcolor=#7a437a>
@@ -95,70 +100,70 @@ function showSecs($secNum=0,$group,$isFold) {
 		<TABLE cellSpacing=0 cellPadding=2 width=100% border=0>
 		<tr><td class=TableBody1 width=*>
 <?php
-				echo '<a href="board.php?name='.$brd_name[$i].'">';
+					echo '<a href="board.php?name='.$brd_name[$i].'">';
 
 ?>		<font color=#000066><?php echo $brd_name[$i] ?> </font></a>
 				</td>
 		<td width=40 rowspan=2 align=center class=TableBody1></td><td width=200 rowspan=2 class=TableBody1><?php
-				if ($brd_flag[$i] & BBS_BOARD_GROUP) {
+					if ($brd_flag[$i] & BBS_BOARD_GROUP) {
 		?>
 				<B>本版为二级目录版</B>
 		<?php
-				} else {
-					if ($brd_artcnt[$i] <= 0) {
-		?>
-				<B>本版尚无文章</B>
-		<?php
 					} else {
-						$articles = bbs_getthreads($brd_name[$i], 0, 1,0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
-						if ($articles == FALSE) {
+						if ($brd_artcnt[$i] <= 0) {
 		?>
 				<B>本版尚无文章</B>
 		<?php
 						} else {
+							$articles = bbs_getthreads($brd_name[$i], 0, 1,0 ); //$brd_artcnt[$i], 1, $default_dir_mode);
+							if ($articles == FALSE) {
+		?>
+				<B>本版尚无文章</B>
+		<?php
+							} else {
 		?>
 				主题：<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['origin']['ID']; ?>"><?php echo htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES); ?> &nbsp;</a><BR>作者：<a href="userinfo.php?id=<?php echo $articles[0]['OWNER']; ?>" target=_blank><?php echo $articles[0]['origin']['OWNER']; ?> </a><BR>日期：<?php echo strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME'])) ; ?>&nbsp;<a href="disparticle.php?boardName=<?php echo $brd_name[$i]; ?>&ID=<?php echo $articles[0]['origin']['ID']; ?>&start=<?php echo $start?>"><IMG border=0 src="pic/lastpost.gif" title="转到：<?php echo htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES); ?> "> </a>
 	<?php
+							}
 						}
 					}
-				}
 	?>
 </TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> <?php echo $brd_desc[$i] ?></FONT>
 </TD></TR><TR><TD class=TableBody2 height=20 width=*>版主：<?php echo $brd_bm[$i]==''?'暂无':$brd_bm[$i] ; ?> </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>
 		<table width=100% border=0><tr><td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i]) ?></font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;<?php echo bbs_getthreadnum($brd_bid[$i]) ?></td><td width=45% vAlign=middle><img src=pic/forum_post.gif alt=文章 border=0 align=absmiddle>&nbsp;<?php echo $brd_artcnt[$i]; ?></td></tr>
 		</table></TD></TR></TBODY></TABLE></td></tr></table></td></tr>
 <?php
-			} else {
-				if ($isFirst) {
-					echo "<tr>";
-				}
+				} else {
+					if ($isFirst) {
+						echo "<tr>";
+					}
 ?>
 <td class=TableBody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" title="<?php echo $brd_desc[$i] ; ?>" colspan=2><a href="board.php?name=<?php echo $brd_name[$i]; ?>"><font color=#000066><?php echo $brd_name[$i] ; ?></font></a></td></tr><tr>
 <?php
-				if ($brd_flag[$i] & BBS_BOARD_GROUP) {
+					if ($brd_flag[$i] & BBS_BOARD_GROUP) {
 ?>
 <td> <b>本版为二级目录版</b></td>
 <?php
-				} else {
+					} else {
 ?>
 <td width="50%">今日：<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i])?></font></td><td width="50%">发贴：<?php echo $brd_artcnt[$i] ; ?></td>
 <?php
-				}
+					}
 ?>
 </tr></table></td>
 <?php
-				if (!$isFirst) {
-					echo "</tr>";
+					if (!$isFirst) {
+						echo "</tr>";
+					}
 				}
 			}
-		}
-		if ($isFirst) {
+			if ($isFirst) {
 ?>
 <td class=TableBody1 width="50%"></td></tr>
 <?php
+			}
 		}
 	}
-
 ?>
 </table><br>
 <?php

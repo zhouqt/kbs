@@ -14,7 +14,6 @@ if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
 	exit();
 } 
 
-
 function getmicrotime(){ 
    list($usec, $sec) = explode(" ",microtime()); 
    return ((float)$usec + (float)$sec); 
