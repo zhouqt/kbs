@@ -468,6 +468,11 @@ char    *name;
 
 void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 {
+	return attach_shm(shmstr,defaultkey, shmsize,iscreate,0)
+}
+
+void *attach_shm1( char    *shmstr,int     defaultkey, int shmsize,int* iscreate,int readonly)
+{
     void        *shmptr;
     int         shmkey, shmid;
 
@@ -477,13 +482,19 @@ void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
         shmid = shmget( shmkey, shmsize, IPC_CREAT | 0600 );
         if( shmid < 0 )
             attach_err( shmkey, "shmget" );
-        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if (readonly)
+            shmptr = (void *) shmat( shmid, NULL, SHM_RDONLY);
+        else
+            shmptr = (void *) shmat( shmid, NULL, 0 );
         if( shmptr == (void *)-1 )
             attach_err( shmkey, "shmat" );
         memset( shmptr, 0, shmsize );
         *iscreate=1;
     } else {
-        shmptr = (void *) shmat( shmid, NULL, 0 );
+        if (readonly)
+            shmptr = (void *) shmat( shmid, NULL, SHM_RDONLY);
+        else
+            shmptr = (void *) shmat( shmid, NULL, 0 );
         if( shmptr == (void *)-1 )
             attach_err( shmkey, "shmat" );
         *iscreate=0;
