@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2003/06/17 11:52:28  kcn
+ * :PPP  去和mm吃饭心切改错了
+ *
  * Revision 1.4  2003/06/17 10:40:00  kcn
  * 限制ip登陆，输入密码就失败
  *
@@ -166,14 +169,14 @@ int auth_password(const char *server_user, const char *password)
     resolve_ucache();
     resolve_utmp();
     strcpy(useridbuf, server_user);
-    if(check_ip_acl(currentuser->userid, fromhost)) {
-    	return 0;
-    }
     if (password[0] == '\0')
         return 0;
     if (*server_user == '\0' || !dosearchuser(useridbuf))
         return 0;
 
+    if(check_ip_acl(currentuser->userid, fromhost)) {
+    	return 0;
+    }
     if (!checkpasswd2(password, currentuser)) {
         logattempt(server_user, get_canonical_hostname());
         return 0;
