@@ -917,6 +917,7 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
 
     if (buffer)
         tmp = buffer;
+    line=(line+roll)%scr_lns;
     switch (mode) {
         case 0:
             memcpy(tmp, bp[line].data, LINELEN);
