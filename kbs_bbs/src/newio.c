@@ -761,7 +761,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
     curr = (clen >= len) ? len - 1 : clen;
     buf[curr] = '\0';
     strncpy(save, buf, STRLEN);
-    save[STRLEN]=0;
+    save[STRLEN-1]=0;
 
     if (!scrint) {
         prints("%s", buf);
