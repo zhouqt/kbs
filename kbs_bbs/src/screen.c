@@ -663,7 +663,7 @@ int n;
                                 }
                                 continue;
                              }
-                             else if(isalpha(*(str+i))) {
+/*                             else if(isalpha(*(str+i))) {
                                 register int j;
                                 for(j=scr_cols-i-2;j>=reg_col;j--)
                                     slp->data[j+i+1]=slp->data[j];
@@ -674,7 +674,7 @@ int n;
                                 slp->len+=i+1;
                                 DO_MODIFY;
                                 continue;
-                             }
+                             }*/
                       }
               
 			if (*str == '\n' || *str == '\r') {
@@ -683,7 +683,7 @@ int n;
 				str++;
 				break;
 			}
-                     if (slp->data[reg_col]=='') {
+/*                     if (slp->data[reg_col]=='') {
                         register int i,j;
                         i=1;
                         while(!isalpha(slp->data[reg_col+i])&&reg_col+i<scr_cols-1) i++;
@@ -693,7 +693,7 @@ int n;
                             if(reg_col+i<slp->len)
                                 slp->len-=i+1;
                         }
-                     }
+                     }*/
 			if (*str == '') {
         		        slp->data[reg_col++] = (unsigned char) '';
     			} else if (!isprint2(*str))
