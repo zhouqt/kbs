@@ -103,10 +103,6 @@ static PHP_FUNCTION(bbs_adduserscore);
 
 ////////////////////////  System info operation functions  /////////////////////
 static PHP_FUNCTION(bbs_getonline_user_list);
-#ifdef HAVE_WFORUM
-static PHP_FUNCTION(bbs_get_elite_num);
-static PHP_FUNCTION(bbs_get_elite_list);
-#endif
 static PHP_FUNCTION(bbs_getonlineuser);
 static PHP_FUNCTION(bbs_getonlinenumber);
 static PHP_FUNCTION(bbs_getonlineusernumber);
@@ -297,20 +293,16 @@ static PHP_FUNCTION(bbs_csv_to_al);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry smth_bbs_functions[] = {
-#ifdef HAVE_WFORUM
 #ifdef I_LOVE_ROY
 		PHP_FE(bbs_get_article, NULL)
 #endif
+#ifdef HAVE_WFORUM
 		PHP_FE(bbs_is_yank, NULL)
 		PHP_FE(bbs_alter_yank, NULL)
 #endif
 		PHP_FE(bbs_getuserparam, NULL)
 		PHP_FE(bbs_setuserparam, NULL)
 		PHP_FE(bbs_getonline_user_list, NULL)
-#ifdef HAVE_WFORUM
-		PHP_FE(bbs_get_elite_num, NULL)
-		PHP_FE(bbs_get_elite_list, NULL)
-#endif
 #ifdef HAVE_USERMONEY
 		PHP_FE(bbs_getusermoney, NULL)
 		PHP_FE(bbs_setusermoney, NULL)
@@ -579,15 +571,7 @@ static void assign_user(zval * array, struct userec *user, int num)
 #endif
 
 }
-static int foundInArray(unsigned int content, unsigned int array[], unsigned int len){
-	int i;
-	for (i=0;i<len;i++){
-		if (array[i]==content)	{
-			return i;
-		}
-	}
-	return -1;
-}
+
 static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
 {
     add_assoc_long(array, "index", num);
@@ -2808,31 +2792,6 @@ static PHP_FUNCTION(bbs_mailwebmsgs){
 }
 
 #ifdef HAVE_WFORUM
-/**
- * 获取版面精华主题数量
- * prototype:
- * int bbs_get_elite_num(char *board);
- *
- * @return elite top number
- *         < 0 on failure.
- * @author roy
- */
-static PHP_FUNCTION(bbs_get_elite_num){
-	RETURN_FALSE;
-}
-/**
- * 获取从start开始的num个精华主题
- * prototype:
- * array bbs_get_elite_list(char *board, int start, int num);
- *
- * @return array of loaded articles on success,
- *         FALSE on failure.
- * @author roy
- */
-static PHP_FUNCTION(bbs_get_elite_list){
-	RETURN_FALSE;
-}
-
 /**
  * 获取从start开始的num个版面主题
  * prototype:
@@ -6054,15 +6013,24 @@ static PHP_FUNCTION(bbs_saveuserdata)
 
 }
 
-#ifdef HAVE_WFORUM
 /**
  * Function: Create a registry form
- *  rototype:
+ *  prototype:
+ *
+ * #ifdef HAVE_WFORUM
+ *
  * int bbs_createregform(string userid ,string realname,string dept,string address,int gender,int year,int month,int day,
     string email,string phone,string mobile_phone,string OICQ, string ICQ, string MSN, string homepage, int userface_img,
 	string userface_url,int userface_width, int userface_height, int group, string country ,string province, string city,
 	int shengxiao, int bloodtype, int religion , int profession, int married, int education, string graduate_school,
 	int character,	bool bAuto)
+ *
+ * #else
+ *
+ * int bbs_createregform(string userid ,string realname,string dept,string address,int gender,int year,int month,int day,
+    string email,string phone,string mobile_phone,bool bAuto)
+ *
+ * #endif
  *
  *  bAuto : true -- 自动生成注册单,false -- 手工.
  *  @return the result
@@ -6083,7 +6051,7 @@ static PHP_FUNCTION(bbs_createregform)
         *   address,
 		*	email,
 		*	phone,
-		*   mobile_phone,
+#ifdef HAVE_WFORUM
 		* OICQ, 
 		* ICQ, 
 		* MSN, 
@@ -6092,7 +6060,9 @@ static PHP_FUNCTION(bbs_createregform)
 		* country,
 		* province,
 		* city,
-		* graduate_school;
+		* graduate_school,
+#endif
+		*   mobile_phone;
     int     userid_len,
 	        realname_len,
 	        dept_len,
@@ -6100,6 +6070,7 @@ static PHP_FUNCTION(bbs_createregform)
 			email_len,
 			phone_len,
 			mobile_phone_len,
+#ifdef HAVE_WFORUM
 			OICQ_len,
 			ICQ_len,
 			MSN_len,
@@ -6109,10 +6080,6 @@ static PHP_FUNCTION(bbs_createregform)
 			province_len,
 			city_len,
 			graduate_school_len,
-			gender,
-	        year,
-	        month,
-			day,
 			userface_img,
 			userface_width,
 			userface_height, 
@@ -6123,7 +6090,12 @@ static PHP_FUNCTION(bbs_createregform)
 			profession, 
 			married, 
 			education,
-			character;
+			character,
+#endif
+			gender,
+			year,
+	        month,
+			day;
     zend_bool   bAuto;
 	struct  userdata ud;
 	struct  userec* uc;
@@ -6136,12 +6108,17 @@ static PHP_FUNCTION(bbs_createregform)
     int ac = ZEND_NUM_ARGS();
 
 
+#ifdef HAVE_WFORUM
 	if (ac != 32 || zend_parse_parameters(32 TSRMLS_CC, "ssssllllssssssslslllsssllllllslb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
 	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&mobile_phone,&mobile_phone_len,
 		&OICQ, &OICQ_len, &ICQ, &ICQ_len, &MSN, &MSN_len, &homepage, &homepage_len, &userface_img,
 		&userface_url, &userface_url_len, &userface_width, &userface_height, &group, &country, &country_len,
 		&province, &province_len, &city, &city_len, &shengxiao, &bloodtype, &religion, &profession,
 		&married, &education, &graduate_school, &graduate_school_len, &character,&bAuto) == FAILURE)
+#else
+    if (ac != 12 || zend_parse_parameters(12 TSRMLS_CC, "ssssllllsssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
+	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&mobile_phone,&mobile_phone_len,&bAuto) == FAILURE)
+#endif
     {
 		WRONG_PARAM_COUNT;
 	}
@@ -6151,6 +6128,7 @@ static PHP_FUNCTION(bbs_createregform)
     usernum = getusernum(userid);
 	if(0 == usernum)RETURN_LONG(3);
 
+#ifdef HAVE_WFORUM
 	if ( (userface_width<0) || (userface_width>120) ){
 		RETURN_LONG(-1);
 	}
@@ -6160,6 +6138,7 @@ static PHP_FUNCTION(bbs_createregform)
 	if (userface_url_len!=0) {
 		userface_img=-1;
 	}
+#endif
 
         //检查用户是否已经通过注册或者还不到时间(先放到这里,最好放到php里面)
 	    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
@@ -6188,6 +6167,7 @@ static PHP_FUNCTION(bbs_createregform)
     strncpy(ud.realname, realname, NAMELEN);
     strncpy(ud.address, address, STRLEN);
 	strncpy(ud.reg_email,email,STRLEN);
+#ifdef HAVE_WFORUM
 	strncpy(ud.OICQ,OICQ,STRLEN);
 	strncpy(ud.ICQ,ICQ,STRLEN);
 	strncpy(ud.MSN,MSN,STRLEN);
@@ -6208,181 +6188,7 @@ static PHP_FUNCTION(bbs_createregform)
 	ud.province[STRLEN-1]=0;
 	ud.city[STRLEN-1]=0;
 	ud.graduateschool[STRLEN-1]=0;
-    ud.realname[NAMELEN-1] = '\0';
-	ud.address[STRLEN-1] = '\0';
-	ud.reg_email[STRLEN-1] = '\0';
-
-    if(strcmp(mobile_phone,"")){
-	    ud.mobileregistered = false;
-		strncpy(ud.mobilenumber,mobile_phone,MOBILE_NUMBER_LEN);
-		ud.mobilenumber[MOBILE_NUMBER_LEN-1] = '\0';
-	}
-    else{
-    	ud.mobileregistered = false;
-    	}
-    
-#ifdef HAVE_BIRTHDAY
-    ud.birthyear=(year > 1900 && year < 2050)?(year-1900):0;
-	ud.birthmonth=(month >=1 && month <=12)?month:0;
-	ud.birthday=(day>=1 && day <=31)?day:0;
-	if(gender==1)ud.gender='M';
-	else
-	    ud.gender='F';
 #endif
-	ud.userface_img=userface_img;
-	ud.userface_width=userface_width;
-	ud.userface_height=userface_height;
-	ud.group=group;
-	ud.shengxiao=shengxiao;
-	ud.bloodtype=bloodtype;
-	ud.religion=religion;
-	ud.profession=profession;
-	ud.married=married;
-	ud.education=education;
-	ud.character=character;
-	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
-	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
-	write_userdata(userid, &ud);
-
-#ifdef NEW_COMERS
-	{
-	FILE *fout;
-	char buf2[STRLEN],buf[STRLEN];
-	sprintf(buf, "tmp/newcomer.%s",uc->userid);
-		if ((fout = fopen(buf, "w")) != NULL)
-		{
-			fprintf(fout, "大家好,\n\n");
-			fprintf(fout, "我是 %s (%s), 来自 %s\n", uc->userid,
-					uc->username, SHOW_USERIP(getCurrentUser(), fromhost));
-			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
-#ifdef HAVE_BIRTHDAY
-					(ud.gender == 'M') ? "小弟" : "小女子");
-#else
-                                        "小弟");
-#endif
-			fprintf(fout, "\n\n我是www注册用户~~~\n\n");
-			fclose(fout);
-			sprintf(buf2, "新手上路: %s", uc->username);
-			post_file(uc, "", buf, "newcomers", buf2, 0, 2, getSession());
-			unlink(buf);
-		}
-	}
-#endif
-
-	sprintf(genbuf,"%d.%d.%d",year,month,day);
-	if(bAuto)
-        fn = fopen("pre_register", "a");
-	else
-	    fn = fopen("new_register", "a");
-
-    if (fn) {
-        now = time(NULL);
-        flock(fileno(fn),LOCK_EX);
-        fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));
-        fprintf(fn, "userid: %s\n", userid);
-        fprintf(fn, "realname: %s\n", realname);
-        fprintf(fn, "career: %s\n", dept);
-        fprintf(fn, "addr: %s\n", address);
-        fprintf(fn, "phone: %s\n", phone);
-        fprintf(fn, "birth: %s\n", genbuf);
-        fprintf(fn, "----\n");
-        flock(fileno(fn),LOCK_UN);
-        fclose(fn);
-        RETURN_LONG(0);
-    }
-	else
-        RETURN_LONG(10);
-}
-
-#else
-
-/**
- * Function: Create a registry form
- *  rototype:
- * int bbs_createregform(string userid ,string realname,string dept,string address,int gender,int year,int month,int day,
-    string email,string phone,string mobile_phone,bool bAuto)
- *
- *  bAuto : true -- 自动生成注册单,false -- 手工.
- *  @return the result
- *  	0 -- success,
- *      1 -- 注册单尚未处理
- *      2 -- 参数错误
- *      3 -- 用户不存在
- *      4 -- 用户已经通过注册
- *      5 -- 不到时间
- *  	10 -- system error
- *  @author binxun 2003.5
- */
-static PHP_FUNCTION(bbs_createregform)
-{
-    char*   userid,
-	    *   realname,
-        *   dept,
-        *   address,
-		*	email,
-		*	phone,
-		*   mobile_phone;
-    int     userid_len,
-	        realname_len,
-	        dept_len,
-			address_len,
-			email_len,
-			phone_len,
-			mobile_phone_len,
-			gender,
-	        year,
-	        month,
-			day;
-    zend_bool   bAuto;
-	struct  userdata ud;
-	struct  userec* uc;
-	FILE*   fn;
-	char    genbuf[STRLEN+1];
-	char*   ptr;
-	int     usernum;
-	long    now;
-
-    int ac = ZEND_NUM_ARGS();
-
-    if (ac != 12 || zend_parse_parameters(12 TSRMLS_CC, "ssssllllsssb", &userid,&userid_len,&realname,&realname_len,&dept,&dept_len,
-	    &address,&address_len,&gender,&year,&month,&day,&email,&email_len,&phone,&phone_len,&mobile_phone,&mobile_phone_len,&bAuto) == FAILURE)
-    {
-		WRONG_PARAM_COUNT;
-	}
-
-	if(userid_len > IDLEN)RETURN_LONG(2);
-
-    usernum = getusernum(userid);
-	if(0 == usernum)RETURN_LONG(3);
-
-
-        //检查用户是否已经通过注册或者还不到时间(先放到这里,最好放到php里面)
-	    if(getuser(userid,&uc) == 0)RETURN_LONG(3);
-		if(HAS_PERM(uc,PERM_LOGINOK))RETURN_LONG(4);
-	
-	if(!bAuto)
-	{
-		/* remed by roy 2003.7.17 
-		if(time(NULL) - uc->firstlogin < REGISTER_WAIT_TIME)RETURN_LONG(5);
-		*/
-	    //检查是否单子已经填过了
-		if ((fn = fopen("new_register", "r")) != NULL) {
-			while (fgets(genbuf, STRLEN, fn) != NULL) {
-				if ((ptr = strchr(genbuf, '\n')) != NULL)
-					*ptr = '\0';
-				if (strncmp(genbuf, "userid: ", 8) == 0 && strcmp(genbuf + 8, userid) == 0) {
-					fclose(fn);
-					RETURN_LONG(1);
-				}
-			}
-			fclose(fn);
-		}
-    }
-	if( read_user_memo(userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
-	read_userdata(userid, &ud);
-    strncpy(ud.realname, realname, NAMELEN);
-    strncpy(ud.address, address, STRLEN);
-	strncpy(ud.reg_email,email,STRLEN);
     ud.realname[NAMELEN-1] = '\0';
 	ud.address[STRLEN-1] = '\0';
 	ud.reg_email[STRLEN-1] = '\0';
@@ -6404,6 +6210,19 @@ static PHP_FUNCTION(bbs_createregform)
 	else
 	    ud.gender='F';
 #endif
+#ifdef HAVE_WFORUM
+	ud.userface_img=userface_img;
+	ud.userface_width=userface_width;
+	ud.userface_height=userface_height;
+	ud.group=group;
+	ud.shengxiao=shengxiao;
+	ud.bloodtype=bloodtype;
+	ud.religion=religion;
+	ud.profession=profession;
+	ud.married=married;
+	ud.education=education;
+	ud.character=character;
+#endif
 	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
 	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
 	write_userdata(userid, &ud);
@@ -6457,7 +6276,6 @@ static PHP_FUNCTION(bbs_createregform)
 	else
         RETURN_LONG(10);
 }
-#endif
 
 /**
  *  Function: 根据注册姓名和email生成新的密码.如果用户名为空,则生成一个密码.
