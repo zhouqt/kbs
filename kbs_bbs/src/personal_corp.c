@@ -575,9 +575,6 @@ static int pc_is_friend(char *userid)
 
 static int pc_perm(char *userid)
 {
-
-    struct user_info *uin;
-
     if (pc_is_owner(userid))
         return 5;
     if (pc_is_admin(userid))
@@ -819,7 +816,6 @@ int pc_conv_com_to_file(unsigned long nid, char *fname)
 
     ret = get_pc_a_com(&pn, nid);
     if (ret <= 0) {
-        close(fd);
         return 0;
     }
 
@@ -1220,8 +1216,6 @@ static int pc_dir_title(struct _select_def *conf)
 
 static int pc_dir_select(struct _select_def *conf)
 {
-    char ts[20];
-    int ret;
     char fpath[STRLEN];
     int ch;
 
@@ -1917,10 +1911,7 @@ static int pc_com_getdata(struct _select_def *conf, int pos, int len)
 
 static int pc_com_select(struct _select_def *conf)
 {
-    char ts[20];
-    int ret;
     char fpath[STRLEN];
-    int ch;
 
     clear();
 

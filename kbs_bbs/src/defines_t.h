@@ -44,6 +44,7 @@ void outline(char *s);
 
 
 /* newio.c */
+extern bool enableESC;
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel, int textmode);
 void ochar(char c);
 int ask(char *prompt);
@@ -71,7 +72,7 @@ void R_monitor(void *data);
 void printacbar();
 typedef void  (*generate_attach_link_t)(char* ,int,long ,void* );
 void register_attach_link(generate_attach_link_t fn,void* arg);
-
+int mmap_more(char *fn, int quit, char *keystr, char *title);
 
 /* namecomplete.c */
 void AddNameList(char *name);
@@ -180,6 +181,9 @@ int i_read(int cmdmode, char *direct, void (*dotitle) (), READ_FUNC doentry, str
 void u_exit();
 
 /* sendmsg.c */
+#ifdef SMS_SUPPORT
+int do_send_sms_func(char * dest, char * msgstr);
+#endif
 void r_msg();
 extern int msg_count;
 int s_msg();
@@ -270,4 +274,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
 
 /* definekey.c */
 int load_key(char * fn);
+
+/* newhelp.c */
+int newhelp(int mode);
 #endif

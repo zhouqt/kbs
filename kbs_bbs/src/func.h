@@ -489,8 +489,15 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc);
 int sign_smsmsg_read(int id );
 #endif
-#endif
+int DoReplyCheck(char * n, unsigned int sn, char isSucceed);
+int sms_init_memory();
+int DoUnReg(char * n);
+int DoSendSMS(char * n, char * d, char * c);
+int save_msgtext(char *uident, struct msghead * head,const char *msgbuf);
+int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed);
+int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_time, int type, int level, char *msgtxt );
 int chk_smsmsg(int force );
+#endif
 
 #if HAVE_MYSQL_SMTH == 1
 char * get_al_mobile( char *userid, char *mobile);

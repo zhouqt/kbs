@@ -1053,7 +1053,7 @@ void chat_setroom(unum, msg)
     int rnum = users[unum].room;
     int sign = 1;
     int flag;
-    char *fstr;
+    char *fstr="";
 
     modestr = getnextword(&msg);
     if (!ROOMOP(unum)) {
@@ -1587,7 +1587,7 @@ int alias_action(unum, cmd, party)
     char *party;
 {
     int i, len, chatlen, recunum;
-    char ch, *tmpbuf, *tmpbuf2, *party2, *party3;
+    char ch, *tmpbuf, *tmpbuf2, *party2="", *party3="";
 
     len = strlen(cmd);
     for (i = 0; i < MAX_EMOTES; i++) {
@@ -1806,8 +1806,8 @@ void view_action_verb(unum, verb)
     int unum;
     char *verb;
 {
-    int i, j, all, count;
-    char *p, *tmp;
+    int i, j=0, all, count;
+    char *p="", *tmp;
 
     /* add by KCN for list all emote */
     count = 1;

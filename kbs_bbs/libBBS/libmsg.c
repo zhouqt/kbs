@@ -750,6 +750,7 @@ int sms_init_memory()
     p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(struct sms_shm_head), &iscreate);
     head = (struct sms_shm_head *) p;
     smsbuf = p+sizeof(struct sms_shm_head);
+    return 0;
 }
 
 void sendtosms(void * n, int s)

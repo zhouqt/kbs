@@ -521,7 +521,6 @@ int Xdeljunk()
 int x_usersmsdef()
 {
     unsigned int newlevel;
-    struct userec *lookupuser;
 
     modify_user_mode(USERDEF);
 	clear();

@@ -254,7 +254,7 @@ void build_sysconf(char *configfile, char *imgfile)
     struct sysheader shead;
     int fh;
     char *imgfilename;
-    struct public_data *p;
+    struct public_data *p=NULL;
     char buf[255];
     int old_diff;
 

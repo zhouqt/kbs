@@ -135,7 +135,7 @@ static char fname[1024];
 char * bbs_zrecvfile()
 {
     register int npats = 0;
-    char **patts = NULL;        /* keep compiler quiet */
+    const char **patts = NULL;        /* keep compiler quiet */
     int exitcode = 0;
     const char* paths="tmp/";
     char* fn;

@@ -447,7 +447,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         struct stat st;
         char* p;
         char ffn[80];
-        int j;
+        int j=0;
         off_t fsize;
         libptr = libs;
         ferr = 0;

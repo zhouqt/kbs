@@ -16,6 +16,9 @@ extern char MsgDesUid[14];      /* 保存所发msg的目的uid 1998.7.5 by dong */
 static int RMSGCount = 0;       /* Leeward 98.07.30 supporting msgX */
 extern int i_timeout;
 
+#ifdef SMS_SUPPORT
+int do_send_sms_func(char * dest, char * msgstr);
+#endif
 
 int get_msg(char * uid, char * msg, int line, int sms)
 {
@@ -742,7 +745,6 @@ extern struct user_info * smsuin;
 int register_sms()
 {
     char ans[4];
-    char valid[20];
     char buf2[80];
     clear();
     prints("注册手机号\n\n注册你的手机号之后，你可在bbs上发送和接收手机短信\n");
@@ -818,7 +820,6 @@ int register_sms()
 int unregister_sms()
 {
     char ans[4];
-    char valid[20];
     char buf2[80];
     int rr;
     sms_init_memory();
@@ -874,16 +875,13 @@ int unregister_sms()
 int do_send_sms_func(char * dest, char * msgstr)
 {
     char uident[STRLEN];
-    struct user_info *uin;
     struct userdata udata;
-    char buf[MAX_MSG_SIZE], ans[4];
-	char buf1[MAX_MSG_SIZE];
+    char buf[MAX_MSG_SIZE];
     int oldmode;
-    int result, ret;
+    int ret;
     bool cansend=true;
     struct userec * ur;
 
-checksmsagain:
 //    if(!curruserdata.mobileregistered) {
     if(!currentmemo->ud.mobileregistered) {
         move(1, 0);
@@ -1009,6 +1007,7 @@ checksmsagain:
     }
     else {
         struct msghead h;
+        struct user_info *uin=NULL;
         h.frompid = uinfo.pid;
         h.topid = -1;
         if(!isdigit(uident[0])) {

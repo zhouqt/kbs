@@ -91,7 +91,7 @@ extern long Locbit;             /* Bit SUPPOSED to disable output translations *
 #endif
 #endif
 extern int raw_read(int fd, char *buf, int len);
-extern int raw_write(int fd, char *buf, int len);
+extern int raw_write(int fd,const char *buf, int len);
 extern void raw_ochar(char c);
 
 #include <unistd.h>

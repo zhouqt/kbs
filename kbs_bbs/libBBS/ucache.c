@@ -900,7 +900,6 @@ void init_cachedata(const char* userid,int unum)
     char path1[MAXPATH],path2[MAXPATH];
     int fd,logincount;
     int count;
-    struct stat st;
     struct flock ldata;
     setcachehomefile(path1, userid, -1, NULL);
     mkdir(path1,0700);
@@ -959,7 +958,7 @@ int clean_cachedata(const char* userid,int unum)
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
         bbslog("3error", "%s", "logincount err");
         close(fd);
-        return;              /* lock error*/
+        return -1;              /* lock error*/
     }
     count=read(fd,path2,MAXPATH);
     path2[count]=0;
@@ -980,6 +979,7 @@ int clean_cachedata(const char* userid,int unum)
         f_rm(path1);
 	}
     }
+    return 0;
 }
 #endif
 

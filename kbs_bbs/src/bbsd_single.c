@@ -727,7 +727,7 @@ int main(argc, argv)
      * use getopt instead
      * bbsd [-i] [-d] [-p port]
      */
-    int mode, port;
+    int mode, port=0;
     int c;
 
     mode = BBS_STANDALONE;

@@ -943,12 +943,12 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
 {
 //注意，如果是目录，nbrd的flag应该为-1
     int n, k;
-    struct boardheader *bptr;
+    struct boardheader *bptr=NULL;
     int brdnum;
     struct newpostdata *ptr;
     int curcount;
-    int* indexlist;
-    const char** namelist;
+    int* indexlist=NULL;
+    const char** namelist=NULL;
 
     brdnum = 0;
     curcount=0;

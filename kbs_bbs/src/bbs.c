@@ -566,7 +566,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 	/*add by stiger*/
 	if(conf->pos>arg->filecount) {
             struct fileheader xfh;
-            int i,fd;
+            int i=0,fd;
             if ((fd = open(arg->dingdirect, O_RDONLY, 0)) != -1) {
                 for (i = conf->pos-arg->filecount; i > 0; i--) {
                     if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
@@ -2543,7 +2543,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     /*
      * Leeward 99.07.12 added below 2 variables 
      */
-    long i;
+    long i=0;
     struct fileheader xfh;
     int fd;
     if (fileinfo==NULL)
@@ -3162,6 +3162,7 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 #ifdef FILTER
     else if(k==6) fflag=FILE_CENSOR_FLAG;
 #endif
+    else return FULLUPDATE;
     for(i=inum1;i<=inum2;i++) 
     if(i>=1&&i<=total) {
         struct write_dir_arg dirarg;
@@ -4188,7 +4189,7 @@ static int content_key(struct _select_def *conf, int key)
 
             getdata(t_lines - 1, 0, "È·ÊµÒªÉ¾³ýÂð(Y/N)? [N]: ", ans, sizeof(ans), DOECHO, NULL, true);
             if (ans[0] == 'Y' || ans[0] == 'y') {
-                int i;
+                int i=0;
 				struct s_content *ct;
 
 				if( ptemplate[t_now].tmpl->content_num == 1){

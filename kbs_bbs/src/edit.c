@@ -718,7 +718,7 @@ int valid_article(pmt, abort)
     struct textline *p = firstline;
     char ch;
     int total, lines, len, sig, y;
-    int temp;
+    int temp=0;
 
     if (uinfo.mode == POSTING) {
         total = lines = len = sig = 0;
@@ -780,12 +780,12 @@ int valid_article(pmt, abort)
 int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length)
 {
     struct textline *p = firstline;
-    FILE *fp;
+    FILE *fp=NULL;
     char abort[6];
     int aborted = 0;
     int temp;
     long sign_size;
-    int ret;
+    int ret=0;
     extern char quote_title[120], quote_board[120];
     extern int Anony;
     int long_flag; //for long line check

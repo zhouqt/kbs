@@ -283,7 +283,7 @@ int getutmprequest(int m_socket)
     struct sockaddr_in sin;
     int s;
     char *phdr = (char *) &utmpreq;
-    int totalread;
+    int totalread=0;
 
     len = sizeof(sin);
     for (s = accept(m_socket, (struct sockaddr*)&sin, &len);; s = accept(m_socket, (struct sockaddr *)&sin, &len)) {
@@ -407,7 +407,8 @@ void userd()
         if (!strcmp(cmd, "DEL")) {
             setuserid2(num, "");
             id = 0;
-        }
+        } else
+            continue;
         putrequest(sock, id);
     }
     return;
@@ -539,6 +540,9 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     struct sigaction act;
     char *commandline;
     char commbuf[10];
+#if USE_TMPFS==1
+    char ch;
+#endif
 
     if (load_ucache() != 0) {
         printf("ft,load ucache error!");

@@ -554,9 +554,9 @@ int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *
         if ((fsrc = open(filepath, O_RDONLY)) >= 0) {
             sprintf(genbuf,"tmp/bm.%s.attach",currentuser->userid);
             if ((fdst2=open(board,O_WRONLY | O_CREAT | mode, 0600)) >= 0) {
-                int ret;
+                int ret=0;
                 char *src = (char *) malloc(BLK_SIZ);
-                long saved=0,needsave;
+                long saved=0,needsave=0;
                 if ((fdst1=open(genbuf,O_WRONLY | O_CREAT | mode, 0600)) >= 0) {
                     do {
                         /* read content and save (fileinfo->attachment) bytes */
@@ -709,7 +709,7 @@ ITEM *pitem;
 int mode;
 {
     struct fileheader fhdr;
-    char fname[PATHLEN], *mesg;
+    char fname[PATHLEN], *mesg=NULL;
 
     bzero(&fhdr,sizeof(struct fileheader));/* clear,or have attachment. binxun */
     sprintf(fname, "%s/%s", path, pitem->fname);
@@ -734,7 +734,8 @@ int mode;
         default:
             mesg = "取消转寄动作.\n";
         }
-        prints(mesg);
+	if (mesg)
+            prints(mesg);
     } else {
         move(t_lines - 1, 0);
         prints("无法转寄此项目.\n");
@@ -749,7 +750,7 @@ int mode;
     char uident[STRLEN];
     char board[STRLEN], title[STRLEN];
     char fname[STRLEN], fpath[PATHLEN], fpath2[PATHLEN];
-    char *mesg;
+    char *mesg=NULL;
     FILE *pn;
     char ans[STRLEN];
     char buf[255];
@@ -772,6 +773,8 @@ int mode;
         }
         mesg = "请输入文件之英文名称(可含数字)：";
         break;
+    default:
+	return;
     }
     a_prompt(-2, mesg, fname);
     if (*fname == '\0')
@@ -996,7 +999,7 @@ int paste;
         /*
          * Leeward: 98.02.19: 对版主的多个窗口同步 C/P 操作 
          */
-        int iscut;
+        bool iscut=false;
 
         sprintf(genbuf, "home/%c/%s/.CP", toupper(currentuser->userid[0]), currentuser->userid);
         title[0] = 0;
@@ -1293,7 +1296,7 @@ int a_repair(MENU *pm)
 void a_manager(MENU *pm,int ch)
 {
     char uident[STRLEN];
-    ITEM *item;
+    ITEM *item=NULL;
     char fpath[PATHLEN], changed_T[STRLEN], ans[STRLEN];
 
     if (pm->num > 0) {
@@ -1387,6 +1390,7 @@ void a_manager(MENU *pm,int ch)
             }
             break;
         case 't':
+	    if (item) {
             strncpy(changed_T, item->title, 39);
             changed_T[38] = 0;
             {
@@ -1440,8 +1444,10 @@ void a_manager(MENU *pm,int ch)
                 }
             }
             pm->page = 9999;
+	    }
             break;
         case 'e':
+	    if (item) {
             if (dashf(fpath)) {
                 long attachpos;
                 modify_user_mode(EDITANN);
@@ -1468,6 +1474,7 @@ void a_manager(MENU *pm,int ch)
                 a_report(genbuf);
             }
             pm->page = 9999;
+            }
             break;
         case 'n':
             a_newname(pm);
@@ -1512,7 +1519,7 @@ int lastlevel, lastbmonly;
     int bmonly;
     int number = 0;
 #ifdef NEW_HELP
-	int oldhelpmode = helpmode;
+    int oldhelpmode = helpmode;
 #endif
 
     bzero(&me, sizeof(me));
@@ -1784,7 +1791,7 @@ int lastlevel, lastbmonly;
     }
     for (ch = 0; ch < me.num; ch++)
         free(me.item[ch]);
-#ifdef HELP_MODE
+#ifdef NEW_HELP
 	helpmode = oldhelpmode;
 #endif
 }

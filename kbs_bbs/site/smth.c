@@ -657,6 +657,7 @@ int ann_get_postfilename(char *filename, struct fileheader *fileinfo, MENU * pm)
             (*ip)++;
         sprintf(fname, "%s/%s", pm->path, filename);
     }
+    return 0;
 }
 
 /**
@@ -791,7 +792,7 @@ int auto_register(char *userid, char *email, int msize)
 {
     struct userdata ud;
     struct userec *uc;
-    char *item, *temp;
+    char *item;
     char fdata[7][STRLEN];
     char genbuf[STRLEN];
     char buf[STRLEN];

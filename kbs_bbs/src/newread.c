@@ -99,9 +99,9 @@ int find_nextnew(struct _select_def* conf,int begin)
     struct read_arg* arg=conf->arg;
     struct fileheader *pFh,*nowFh;
     off_t size;
-    bool found;
-    int i;
-    if (i<=0)
+    bool found=false;
+    int i=0;
+    if (begin<=0)
         return 0;
     BBS_TRY {
         if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &pFh, &size) ) {

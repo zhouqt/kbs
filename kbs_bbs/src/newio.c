@@ -86,7 +86,7 @@ void ochar(char c)
 
 #define ZMODEM_RATE 5000
 int ZmodemRateLimit = 1;
-int raw_write(int fd, char *buf, int len)
+int raw_write(int fd,const char *buf, int len)
 {
     static int lastcounter = 0;
     int nowcounter, i;
@@ -1027,6 +1027,8 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         saveline(i, 0, savebuffer[i]);
     strncpy(tmp, buf, 1024);
     tmp[1023]=0;
+    cursory = starty;
+    cursorx = startx;
 
     while (1) {
         y = starty; x = startx;

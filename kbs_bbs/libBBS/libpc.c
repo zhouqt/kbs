@@ -88,7 +88,6 @@ int pc_conv_file_to_body( char **body, char *fname)
                     	if (matched==ATTACHMENT_SIZE) {
                         	int d;
 							long attsize;
-							char *sstart = data;
                         	data++; not++;
                         	while(*data){
 								data++;
@@ -567,7 +566,6 @@ int count_pc_comments( unsigned long nid)
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char sql[300];
-	char qtmp[100];
 	int i;
 
 	mysql_init(&s);
@@ -707,7 +705,7 @@ int add_pc_users(struct pc_users *pn)
 	if( pn->uid <= 0 )
 		sprintf(sql,"INSERT INTO users VALUES (NULL, '%s', '%s', '%s', '%s', %d, %d, '%s', 0 ,NULL,0,0,NULL,'%s' , '' , '0');",pn->username, newcorp, newdesc, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), tt2timestamp(pn->createtime,newts) );
 	else
-		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%lu AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
+		sprintf(sql,"UPDATE users SET description='%s', corpusname='%s', theme='%s', nodelimit=%d, dirlimit=%d, createtime='%s' WHERE uid=%u AND username='%s' ;",newdesc, newcorp, newtheme, pn->nodelimit, pn->dirlimit, tt2timestamp(pn->createtime,newts), pn->uid, pn->username );
 	
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
@@ -729,7 +727,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 {
 	MYSQL s;
 	char *ql;
-	char *newbody;
+	char *newbody=NULL;
 	char newsource[21];
 	char newhostname[41];
 	char newsubject[401];
@@ -786,7 +784,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 	}
 	else
 	{
-		sprintf(ql,"UPDATE nodes SET pid=%lu, type=%d, source='%s', hostname='%s', uid=%d, comment=%d, commentcount=%d, subject='%s', body='%s', access=%d, visitcount=%d WHERE nid=%lu ;",pn->pid, pn->type, newsource, newhostname, pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount, pn->nid );
+		sprintf(ql,"UPDATE nodes SET pid=%lu, type=%d, source='%s', hostname='%s', uid=%d, comment=%d, commentcount=%ld, subject='%s', body='%s', access=%d, visitcount=%d WHERE nid=%lu ;",pn->pid, pn->type, newsource, newhostname, pn->uid, pn->comment, pn->commentcount, newsubject, pn->body?newbody:"", pn->access, pn->visitcount, pn->nid );
 	}
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
@@ -906,7 +904,7 @@ int del_pc_users(struct pc_users *pn)
 		return 0;
 	}
 
-	sprintf(sql,"DELETE FROM users WHERE uid=%lu AND username='%s' ;", pn->uid, pn->username );
+	sprintf(sql,"DELETE FROM users WHERE uid=%u AND username='%s' ;", pn->uid, pn->username );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
 #ifdef BBSMAIN
@@ -927,7 +925,9 @@ int del_pc_nodes( unsigned long nid , int access , int uid )
 {
 		char sql[100];
 		MYSQL s;
-		char ans[4];
+#ifdef BBSMAIN
+    char ans[4];
+#endif
 
 		if(nid <= 0)
 			return 0;
@@ -977,8 +977,6 @@ int pc_del_junk(int uid)
 {
 	MYSQL s;
 	char ql[200];
-	char ans[4];
-	struct pc_nodes pn;
 
 	mysql_init(&s);
 	if (! my_connect_mysql(&s) ){
@@ -1011,8 +1009,9 @@ int del_pc_node_junk(unsigned int nid , int access , int uid )
 {
 	MYSQL s;
 	char ql[200];
-	char ans[4];
-	struct pc_nodes pn;
+#ifdef BBSMAIN
+    char ans[4];
+#endif
 
 #ifdef BBSMAIN
         move(2,0);
@@ -1038,7 +1037,7 @@ int del_pc_node_junk(unsigned int nid , int access , int uid )
 			sprintf(ql,"UPDATE users SET `createtime` = `createtime` , nodescount = nodescount - 1 WHERE uid=%d ;",uid );	
 			mysql_real_query( &s, ql, strlen(ql) );
 		}
-	sprintf(ql,"UPDATE nodes SET access=4,pid=0,type=0 WHERE nid=%lu",nid);
+	sprintf(ql,"UPDATE nodes SET access=4,pid=0,type=0 WHERE nid=%u",nid);
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
 #ifdef BBSMAIN
@@ -1059,7 +1058,9 @@ int del_pc_comments( unsigned long nid, unsigned long cid )
 {
 		char sql[100];
 		MYSQL s;
-		char ans[4];
+#ifdef BBSMAIN
+    char ans[4];
+#endif
 
 		if(cid <= 0)
 			return 0;

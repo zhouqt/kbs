@@ -262,6 +262,8 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
 
     if (applycopy)
         buf2 = malloc(size);
+    else
+        buf2 = NULL;
     BBS_TRY {
         if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &buf, &file_size, NULL) == 0)
             BBS_RETURN(0);

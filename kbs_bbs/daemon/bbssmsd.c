@@ -65,8 +65,6 @@ void init_memory()
 
 void start_daemon()
 {
-    int n;
-
     setgid(BBSGID);
     setuid(BBSUID);
     chdir(BBSHOME);
@@ -182,7 +180,6 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
 {
     char * uident;
     char buf[200];
-    struct user_info * uin;
     struct usermemo *pum;
     struct userdata ud;
     int uid;
@@ -294,7 +291,7 @@ struct header head;
 head.Type=CMD_LINK;
 long2byte(0,head.BodyLength);
 write(sockfd,&head,sizeof(head));
-
+return 0;
 }
 
 void getbuf(void * h, int s)

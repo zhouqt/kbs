@@ -285,7 +285,7 @@ void cancelpost(const char *board,const char *userid,struct fileheader *fh, int 
     char oldpath[50];
     char newpath[50];
     struct fileheader *ph;
-    time_t now;
+    time_t now=time(NULL);
 
 #ifdef BBSMAIN
     if (uinfo.mode == RMAIL) {
@@ -360,7 +360,6 @@ void cancelpost(const char *board,const char *userid,struct fileheader *fh, int 
 		postfile.attachment=fh->attachment;
         set_posttime2(&postfile, fh);
     };
-    now = time(NULL);
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
     strncpy(ph->title, oldpath, STRLEN);
     ph->title[STRLEN - 1] = 0;
@@ -588,8 +587,8 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
         if (skip_attach_fgets(buf, 256, inf) != NULL) {
             for (count = 8; buf[count] != ' ' && count < 256; count++)
                 owner[count - 8] = buf[count];
-        }
-        owner[count - 8] = '\0';
+            owner[count - 8] = '\0';
+        } else strcpy(owner,"");
         if (in_mail == true)
             fprintf(of, "\033[1;37m【 以下文字转载自 \033[32m%s \033[37m的信箱 】\033[m\n", user->userid);
         else
@@ -1013,7 +1012,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     off_t filesize;
     int total;
     int low, high;
-    int ret;
+    int ret=0;
 
     if (flock(fd, LOCK_EX) == -1)
         return 0;
@@ -1057,7 +1056,7 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     int total;
     int low, high;
     int mid, comp;
-    int ret;
+    int ret=0;
 
     if (flock(fd, LOCK_EX) == -1)
         return 0;

@@ -204,50 +204,6 @@ void setcalltime()
 
 }
 
-int readln(int fd, char *buf, char *more_buf)
-{
-    int len, bytes, in_esc, ch;
-
-    len = bytes = in_esc = 0;
-    while (1) {
-        if (more_num >= more_size) {
-            more_size = read(fd, more_buf, MORE_BUFSIZE);
-            if (more_size == 0) {
-                break;
-            }
-            more_num = 0;
-        }
-        ch = more_buf[more_num++];
-        bytes++;
-        if (ch == '\n' || bytes > 255) {
-            break;
-        } else if (ch == '\t') {
-            do {
-                len++, *buf++ = ' ';
-            } while ((len % 8) != 0);
-        } else if (ch == '\033') {
-            if (showansi)
-                *buf++ = ch;
-            in_esc = 1;
-        } else if (in_esc) {
-            if (showansi)
-                *buf++ = ch;
-            if (strchr("[0123456789;,", ch) == NULL) {
-                in_esc = 0;
-            }
-        } else if (isprint2(ch)) {
-            /*
-             * if(len>79)
-             * break; 
-             */
-            len++, *buf++ = ch;
-        }
-    }
-    *buf++ = ch;
-    *buf = '\0';
-    return bytes;
-}
-
 int morekey()
 {
     while (1) {
@@ -692,7 +648,7 @@ int mmap_show(char *fn, int row, int numlines)
 {
     char *ptr;
     off_t size;
-    int retv;
+    int retv=0;
 
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
@@ -710,7 +666,7 @@ int mmap_more(char *fn, int quit, char *keystr, char *title)
 {
     char *ptr;
     off_t size;
-    int retv;
+    int retv=0;
 
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
@@ -1171,7 +1127,7 @@ int draw_content(char *fn, struct fileheader *fh)
 {
     char *ptr;
     off_t size;
-    int retv;
+    int retv=0;
 
     BBS_TRY {
         if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)

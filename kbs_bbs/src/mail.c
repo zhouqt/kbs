@@ -326,7 +326,6 @@ int do_send(char *userid, char *title, char *q_file)
     struct fileheader newmessage;
     struct stat st;
     char filepath[STRLEN], fname[STRLEN];
-    int sum, sumlimit;
     char buf2[256], buf3[STRLEN], buf4[STRLEN];
     int replymode = 1;          /* Post New UI */
     char ans[4], include_mode = 'Y';
@@ -362,7 +361,7 @@ int do_send(char *userid, char *title, char *q_file)
 
         if (ret == 2) {
             move(1, 0);
-            prints("你的信箱容量超出上限, 无法发送信件。", sum, sumlimit);
+            prints("你的信箱容量超出上限, 无法发送信件。");
             pressreturn();
             return -2;
         }
@@ -383,7 +382,7 @@ int do_send(char *userid, char *title, char *q_file)
          */
         if (chkusermail(currentuser)) {
             move(1, 0);
-            prints("你的信箱容量超出上限, 无法发送信件。", sum, sumlimit);
+            prints("你的信箱容量超出上限, 无法发送信件。");
             pressreturn();
             return -2;
         }
@@ -1779,7 +1778,7 @@ static int do_gsend(char *userid[], char *title, int num)
     char ans[4], include_mode = 'Y';
     char filepath[STRLEN], tmpfile[STRLEN];
     int cnt;
-    FILE *mp;
+    FILE *mp=NULL;
     extern char quote_title[120];
     int oldmode;
 
