@@ -2006,6 +2006,8 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 }
 
 #endif
+
+
 struct command_def {
     char *prompt;
     int permission;
@@ -2014,16 +2016,6 @@ struct command_def {
 };
 
 void t_override();
-
-const static struct command_def mail_cmds[] = {
-    {"N) 览阅新信件", 0, m_new, NULL},
-    {"R) 览阅全部信件", 0, m_read, NULL},
-    {"S) 寄信", 0, m_send, NULL},
-    {"G) 寄给 / 设定寄信名单", 0, g_send, NULL},
-    {"O)┌设定好友名单", 0, t_override, NULL},
-    {"F)└寄信给好友名单", 0, ov_send, NULL},
-    {"M) 寄信给所有人", PERM_SYSOP, mailall, NULL},
-};
 
 const static char *mail_sysbox[] = {
     ".DIR",
@@ -2035,6 +2027,47 @@ const static char *mail_sysboxtitle[] = {
     "I)收件箱",
     "T)发件箱",
     "J)垃圾箱",
+};
+
+static int m_clean()
+{
+    char buf[40];
+    int num;
+    move(0,0);
+	setmailfile(buf,currentuser->userid,mail_sysbox[1]);
+	num = get_num_records(buf, sizeof(struct fileheader)));
+    if (num&&askyn("清除发件箱么?")) 
+    	delete_range(buf, 1, , 2);
+    move(0,0);
+	setmailfile(buf,currentuser->userid,mail_sysbox[2]);
+	num = get_num_records(buf, sizeof(struct fileheader)));
+    if (num&&askyn("清除垃圾箱么?")) 
+    	delete_range(buf, 1, get_num_records(buf, sizeof(struct fileheader))), 2);
+    if (mail_list_t) {
+   		int i;
+   		for (i=0;i<mail_list_t;i++) {
+    		move(0,0);
+			setmailfile(buf,currentuser->userid,mail_list[i]+30);
+			num = get_num_records(buf, sizeof(struct fileheader)));
+    		if (num) {
+    			char prompt[80];
+    			sprintf(prompt,"清除自定义邮箱 %s 么?",mail_list[i]);
+    			if (askyn(prompt))
+    				delete_range(buf, 1, get_num_records(buf, sizeof(struct fileheader))), 2);
+    		}
+    	}
+    }
+}
+
+const static struct command_def mail_cmds[] = {
+    {"N) 览阅新信件", 0, m_new, NULL},
+    {"R) 览阅全部信件", 0, m_read, NULL},
+    {"S) 寄信", 0, m_send, NULL},
+    {"G) 寄给 / 设定寄信名单", 0, g_send, NULL},
+    {"O)┌设定好友名单", 0, t_override, NULL},
+    {"F)└寄信给好友名单", 0, ov_send, NULL},
+    {"C)清空备份的邮箱", 0, m_clean, NULL},
+    {"M) 寄信给所有人", PERM_SYSOP, mailall, NULL},
 };
 
 struct mail_proc_arg {

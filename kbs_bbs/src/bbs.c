@@ -2485,49 +2485,6 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
             bbslog("user", "%s", genbuf);       /*bbslog */
         }
         prints("É¾³ý%s\n", result ? "Ê§°Ü£¡" : "Íê³É"); /* Leeward: 97.12.15 */
-        if (result) {           /* prints("´íÎó´úÂë: %d;%s Çë±¨¸æÕ¾³¤£¬Ð»Ð»£¡", result,direct);
-                                 * added by Haohmaru,ÐÞ¸´Çø¶ÎÉ¾³ý´íÎó,98.9.12 */
-            prints("´íÎó´úÂë: %d;%s", result, direct);
-            getdata(8, 0, "Çø¶ÎÉ¾³ý´íÎó,Èç¹ûÏëÐÞ¸´,ÇëÈ·¶¨[35mÎÞÈËÔÚ±¾°æÖ´ÐÐÇø¶ÎÉ¾³ý²Ù×÷²¢°´'Y'[m (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
-            if (*num1 == 'Y' || *num1 == 'y') {
-                if (!mailmode) {
-                    sprintf(fullpath, "mail/%c/%s/.tmpfile", toupper(currentuser->userid[0]), currentuser->userid);
-                    unlink(fullpath);
-                    sprintf(fullpath, "mail/%c/%s/.deleted", toupper(currentuser->userid[0]), currentuser->userid);
-                    unlink(fullpath);
-                } else {
-                    if (true == checkreadonly(currboard)) {     /*Haohmaru,Ö»¶ÁÇé¿öÏÂ´íÎóÊÇ~bbsroot/boards/.°æÃûtmpfile ÎÄ¼þÒýÆð */
-                        sprintf(fullpath, "boards/.%stmpfile", currboard);
-                        unlink(fullpath);
-                        sprintf(fullpath, "boards/.%sdeleted", currboard);
-                        unlink(fullpath);
-                    } else {
-                        sprintf(fullpath, "boards/%s/.tmpfile", currboard);
-                        unlink(fullpath);
-                        sprintf(fullpath, "boards/%s/.deleted", currboard);
-                        unlink(fullpath);
-                        sprintf(fullpath, "boards/%s/.tmpfilD", currboard);
-                        unlink(fullpath);
-                        sprintf(fullpath, "boards/%s/.tmpfilJ", currboard);
-                        unlink(fullpath);
-                    }
-                }
-                prints("\n´íÎóÒÑ¾­Ïû³ý,ÇëÖØÐÂÖ´ÐÐÇø¶ÎÉ¾³ý!");
-            } else {
-                prints("²»ÄÜÈ·ÈÏ");
-            }
-        }
-        /*
-         * Haohamru.99.5.14.É¾³ý.deletedÎÄ¼þ 
-         */
-        if (!mailmode) {
-            sprintf(fullpath, "mail/%c/%s/.deleted", toupper(currentuser->userid[0]
-                    ), currentuser->userid);
-            unlink(fullpath);
-        } else {
-            sprintf(fullpath, "boards/%s/.deleted", currboard);
-            unlink(fullpath);
-        }
         pressreturn();
         return DIRCHANGED;
     }
