@@ -25,6 +25,9 @@ int main(int argc, char **argv)
             tt=(time_t) j;
             p = ctime(&tt);
             p[19]=0; p+=4;
+            if(t>=100000)
+                fprintf(fp2, "%s 来自 %d.%d.%d.%d 已被自动封禁一小时.\n", p, ip[0],ip[1],ip[2],ip[3]);
+            else
             if(i==0)
                 fprintf(fp2, "%s 来自 %d.%d.%d.%d 两次连接时间太短.一小时内共连接%d次.\n", p, ip[0],ip[1],ip[2],ip[3],t+1);
             else

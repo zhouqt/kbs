@@ -466,8 +466,8 @@ int check_IP_lists(unsigned int IP2)
             found=1;
             ips[i].last = now;
             ips[i].t++;
-            if(ret==0)
             if(ips[i].t>=10&&(ips[i].t/(double)(ips[i].last-ips[i].first)>=CON_THRESHOLD)) {
+                ips[i].t=100000;
                 fp=fopen(".IPdenys", "a");
                 if(fp){
                     fprintf(fp, "1 %ld %d.%d.%d.%d %d\n", (unsigned int)now, ip[0],ip[1],ip[2],ip[3], ips[i].t);
