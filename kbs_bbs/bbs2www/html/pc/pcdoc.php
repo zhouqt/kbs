@@ -209,7 +209,7 @@
 		    if ($pc['USER'] == '_filter' )
 		    {
 		        echo "<tr>\n<td class='t3'>".($start + $i)."</td>\n".
-		            "<td class='t4'>".($rows[nid]?'评论':'文章')."</td>".
+		            "<td class='t4'>".(($rows[nid]&&$tag<3)?'评论':'文章')."</td>".
 					"<td align=\"center\" class='t4'><a href=\"/bbsqry.php?userid=".$rows[username]."\">".html_format($rows[username])."</a></td>\n".
 					"<td class='t3'>".$c."</td>\n".
 					"<td class='t5'>";
