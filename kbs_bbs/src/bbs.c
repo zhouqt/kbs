@@ -1960,7 +1960,7 @@ int post_article(char *q_file, struct fileheader *re_file)
         sprintf(buf3, "ÒýÑÔÄ£Ê½ [%c]", include_mode);
         move(t_lines - 4, 0);
         clrtoeol();
-        prints("[m·¢±íÎÄÕÂì¶ %s ÌÖÂÛÇø     %s\n", currboard, (anonyboard) ? (Anony == 1 ? "[1mÒª[mÊ¹ÓÃÄäÃû" : "[1m²»[mÊ¹ÓÃÄäÃû") : "");
+        prints("[m·¢±íÎÄÕÂÓÚ %s ÌÖÂÛÇø     %s\n", currboard, (anonyboard) ? (Anony == 1 ? "[1mÒª[mÊ¹ÓÃÄäÃû" : "[1m²»[mÊ¹ÓÃÄäÃû") : "");
         clrtoeol();
         prints("Ê¹ÓÃ±êÌâ: %-50s\n", (buf[0] == '\0') ? "[ÕýÔÚÉè¶¨Ö÷Ìâ]" : buf);
         clrtoeol();
@@ -2181,7 +2181,7 @@ int add_edit_mark(char *fname, int mode, char *title)
              */
             if (Origin2(buf)) {
                 now = time(0);
-                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ì¶ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
+                fprintf(out, "[36m¡ù ÐÞ¸Ä:¡¤%s ÓÚ %15.15s ÐÞ¸Ä±¾ÎÄ¡¤[FROM: %15.15s][m\n", currentuser->userid, ctime(&now) + 4, fromhost);
                 step = 3;
             }
             fputs(buf, out);
