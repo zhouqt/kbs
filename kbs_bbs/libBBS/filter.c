@@ -11,7 +11,7 @@ static time_t badimg_time;
 static off_t badword_img_size;
 int build_badwordimage()
 {
-    int fp;
+    int fp,imgfp;
     void* pattern_buf;
     size_t pattern_imagesize;
     struct stat st;
@@ -26,17 +26,17 @@ int build_badwordimage()
     }
     prepf(fp,&pattern_buf,&pattern_imagesize);
 
-    flock(fp,LOCK_UN);
-    close(fp);
-    fp = open("etc/badwordv3.img", O_WRONLY|O_TRUNC|O_CREAT,0600);
-    if (fp==-1) {
+    imgfp = open(BADWORD_IMG_FILE, O_WRONLY|O_TRUNC|O_CREAT,0600);
+    if (imgfp==-1) {
         releasepf(pattern_buf);
     	return -1;
     }
-    write(fp,pattern_buf,pattern_imagesize);
-    close(fp);
-    stat("etc/badwordv2.img",&st);
+    write(imgfp,pattern_buf,pattern_imagesize);
+    stat(BADWORD_IMG_FILE,&st);
     badimg_time=st.st_mtime;
+    close(imgfp);
+    flock(fp,LOCK_UN);
+    close(fp);
     releasepf(pattern_buf);
     return 0;
 }

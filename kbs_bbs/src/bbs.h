@@ -242,7 +242,7 @@ extern long ti;
 
 #ifdef FILTER
 #define FILE_CENSOR 0x20        /* for accessed[1], flyriver, 2002.9.29 */
-#define BADWORD_IMG_FILE "etc/badwordv2.img"
+#define BADWORD_IMG_FILE "etc/badwordv3.img"
 #endif
 #define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
