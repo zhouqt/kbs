@@ -2,6 +2,8 @@ $Id$
 smthbbs 代码系统常见站务问题 (doc/README.SYSOP)
 
 0 ChangeLog 主要修改记录
+2004.10.7
+    atppp - miscd 和 bbslogd 使用说明，暂时放这里先（5.8 节）
 2004.9.22
     atppp - 加入分类讨论区修改说明。感谢 wuweixin @ 白山黑水 BBS
 2004.4.11
@@ -341,6 +343,29 @@ PERM_ACCOUNTS 企图让账号管理员拥有更改使用者权限的权利，这样做是不够的，因为
                         新注册用户默认的收藏版面，格式是每行一个版名。如果该文
                         件不存在，默认的收藏版面是 .BOARDS 里面的第一个版面。
 
+5.8 miscd 和 bbslogd 使用说明
+    这两个程序是保证系统正常运行的最重要的两个 daemon 程序。miscd 负责一些杂
+务，bbslogd 主要用于接收系统 log 并定时写入磁盘相应的文件。miscd 启动的参数说
+明：
+    miscd daemon: 运行为守护进程，一般都用这种方式启动 miscd。miscd 会自动产生
+                  多个进程分别负责下面的工作，一般这些工作都是一天自动执行一
+                  次。只有你需要强制立即执行某个工作的时候，才需要用下面的方式
+                  运行 miscd。
+    miscd killuser: 杀掉生命力小于 0 的帐号。
+    miscd giveup: 解开戒网到期的用户。
+    miscd killdir <BOARDNAME>: 删除指定版面回收站和废纸篓中的老文章。
+    miscd allboards: 删除所有版面回收站和废纸篓中的老文章。
+    miscd flush: 将 .PASSWDS 和 .BOARDS 两个文件的内容同步到磁盘。
+bbslogd 启动不带参数，但是可以给 bbslogd 进程发信号来指定需要的操作，有用的信
+号包括：
+    SIGALRM: 强制立即将收到的 log 写入磁盘相应文件。正常运行过程中 bbslogd 每
+             10 分钟进行一次这样的操作。调试程序的时候可以用这个方法立即看到
+             系统产生的新 log。信号可以这么发：killall -ALRM bbslogd
+    SIGUSR1: rotate log 文件。比如，usies 的文件内容可能会被移动到 usies.0（如
+             果这个文件已经存在那就把 0 改成更大的数字），而 usies 文件会被清
+             空。在 bbslogd 正常运行过程中直接删除或移动 log 文件的做法是极其
+             错误的，一定要使用发 SIGUSR1 信号的办法来缩减 log 文件大小！
+             
 
 6 修改分类讨论区
 
