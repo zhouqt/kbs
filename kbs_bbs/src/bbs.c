@@ -448,6 +448,30 @@ int do_cross(int ent, struct fileheader *fileinfo, char *direct)
     getdata(1, 0, "(S)转信 (L)本站 (A)取消? [A]: ", ispost, 9, DOECHO, NULL, true);
     if (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l') {
 	int olddigestmode;
+	/*add by stiger*/
+	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z'){
+            struct fileheader xfh;
+            int i,fd;
+            if ((fd = open(direct, O_RDONLY, 0)) != -1) {
+                for (i = ent; i > 0; i--) {
+                    if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
+                        if (0 == strcmp(xfh.filename, fileinfo->filename)) {
+                            ent = i;
+                            break;
+                        }
+                    }
+                }
+                close(fd);
+            }
+	    if (i==0){
+                move(2, 0);
+	        prints("文章列表发生变化，取消");
+		move(2,0);
+		pressreturn();
+		return FULLUPDATE;
+	    }
+	}
+	/*add old*/
 	olddigestmode=digestmode;
 	digestmode=0;
         if (post_cross(currentuser, bname, currboard, quote_title, q_file, Anony, in_mail, ispost[0], 0) == -1) { /* 转贴 */
