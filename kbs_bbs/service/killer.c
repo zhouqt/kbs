@@ -835,7 +835,7 @@ quitgame2:
     sprintf(buf, "home/%c/%s/.INROOMMSG%d", toupper(currentuser->userid[0]), currentuser->userid, uinfo.pid);
     if(toupper(buf[0])=='Y') {
         sprintf(buf2, "\"%s\"µÄÉ±ÈË¼ÇÂ¼", myroom->name);
-        mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_LINK, NULL);
+        mail_file(currentuser->userid, buf, currentuser->userid, buf2, BBSPOST_COPY, NULL);
     }
     unlink(buf);
     signal(SIGUSR1, talk_request);
