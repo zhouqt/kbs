@@ -29,7 +29,6 @@
 #include <sys/shm.h>
 
 extern char *getenv();
-extern char fromhost[];
 static const char *invalid[] = { "unknown@", "root@", "gopher@", "bbs@",
         "guest@", NULL };
 static char modestr[STRLEN];
@@ -713,31 +712,6 @@ int id_invalid(char* userid)
 }
 
 
-int Rename(char* srcPath,char* destPath)
-{
-   int ret;
-
-   ret = rename(srcPath,destPath);
-
-   if (ret == 0) return 0;
-
-   if (errno == EXDEV) {
-     int in,out;
-     char data[4096];
-     int readsize;
-
-     if ((in = open(srcPath,O_RDONLY)) == -1) return -1;
-     if ((out = open(destPath,O_WRONLY|O_CREAT| O_TRUNC)) == -1) { close(in);return -1;};
-     
-     while ( (readsize = read(in,data,4096)) >0) write(out,data,readsize);
-
-     close(out);
-     close(in);
-     return 0;
-   }
-   return -1;
-}
-
 int seek_in_file(char filename[STRLEN],char seekstr[STRLEN])
 {
     FILE *fp;
@@ -1024,4 +998,25 @@ void getuinfo(FILE *fn,struct userec *ptr_urec)
             ptr_urec->numposts);
 }
 
+
+int del_from_file(char filename[STRLEN],str[STRLEN])
+{
+    FILE *fp, *nfp;
+    int deleted = NA;
+    char fnnew[256/*STRLEN*/];
+
+    if ((fp = fopen(filename, "r")) == NULL) return -1;
+    sprintf( fnnew, "%s.%d", filename, getuid());
+    if ((nfp = fopen(fnnew, "w")) == NULL) return -1;
+    while(fgets(genbuf, 256/*STRLEN*/, fp) != NULL) {
+        if( strncasecmp(genbuf, str, strlen(str)) == 0 && genbuf[strlen(str)] <= 32)
+            deleted = YEA;
+        else if( *genbuf > ' ' )
+            fputs(genbuf, nfp);
+    }
+    fclose(fp);
+    fclose(nfp);
+    if (!deleted) return -1;
+    return(f_mv(fnnew, filename));
+}
 

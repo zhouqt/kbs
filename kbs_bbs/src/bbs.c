@@ -1666,7 +1666,7 @@ char *title;
     fclose(fp);
     fclose(out);
 
-        Rename(outname,fname);
+        f_mv(outname,fname);
         pressanykey();
    
         return 1;
@@ -2557,7 +2557,7 @@ notepad()
             fprintf(in,"[31m¡õ©Ð¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª¡ª©Ð¡õ[m\n");
             catnotepad( in, "etc/notepad");
             fclose(in);
-            Rename(tmpname,"etc/notepad");
+            f_mv(tmpname,"etc/notepad");
         }else
         {
             fclose(in);

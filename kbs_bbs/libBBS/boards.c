@@ -535,4 +535,54 @@ int chk_currBM(char BMstr[STRLEN-1],struct userec* user)
     return chk_BM_instr(BMstr, currentuser->userid);
 }
 
+int deldeny(struct userec* user,char* board,char* uident)  /* 删除 禁止POST用户 */
+{
+    char fn[STRLEN];
+    FILE* fn1;
+    char filename[STRLEN];
+    char buffer[STRLEN];
+    time_t now;
+    struct userec* lookupuser;
+
+    now=time(0);
+    setbfile( fn,board, "deny_users" );
+    /*Haohmaru.4.1.自动发信通知*/
+    sprintf(filename,"etc/%s.dny",user->userid);
+    fn1=fopen(filename,"w");
+    if (HAS_PERM(user,PERM_SYSOP)||HAS_PERM(user,PERM_OBOARDS))
+    {sprintf(buffer,"[通知]");
+        fprintf(fn1,"寄信人: %s \n",user->userid) ;
+        fprintf(fn1,"标  题: %s\n",buffer) ;
+        fprintf(fn1,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
+        fprintf(fn1,"来  源: %s \n",fromhost) ;
+        fprintf(fn1,"\n");
+        fprintf(fn1,"您被站务人员 %s 解除在 %s 板的封禁\n",user->userid,board);
+    }
+    else
+    {
+        sprintf(buffer,"[通知]",board,user->userid);
+        fprintf(fn1,"寄信人: %s \n",user->userid) ;
+        fprintf(fn1,"标  题: %s\n",buffer) ;
+        fprintf(fn1,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
+        fprintf(fn1,"来  源: %s \n",host) ;
+        fprintf(fn1,"\n");
+        fprintf(fn1,"您被 %s 板板主 %s 解除封禁\n",board,user->userid);
+    }
+    fclose(fn1);
+
+    /*解封同样发文到undenypost版  Bigman:2000.6.30*/ 
+    getuser(uident,&lookupuser); 
+    if (lookupuser==NULL) 
+    	sprintf(buffer,"%s 解封死掉的帐号 %s 在 %s ",user->userid,uident,board); 
+    else {
+      if (PERM_BOARDS & lookupuser->userlevel)
+    	sprintf(buffer,"%s 解封某板板主 %s 在 %s ",user->userid,lookupuser->userid,board); 
+      else
+        sprintf(buffer,"%s 解封 %s 在 %s",user->userid,lookupuser->userid,board);
+      mail_file(user->userid,filename,uident,buffer,0);
+    }
+    post_file(user,"",filename,"undenypost",buffer,0,1);
+    unlink(filename);
+    return del_from_file(fn,lookupuser?lookupuser->userid:uident);
+}
 

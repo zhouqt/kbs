@@ -1644,30 +1644,6 @@ char *uident;
 }
 
 int
-del_from_file(filename,str)
-char filename[STRLEN],str[STRLEN];
-{
-    FILE *fp, *nfp;
-    int deleted = NA;
-    char fnnew[256/*STRLEN*/];
-
-    if ((fp = fopen(filename, "r")) == NULL) return -1;
-    sprintf( fnnew, "%s.%d", filename, getuid());
-    if ((nfp = fopen(fnnew, "w")) == NULL) return -1;
-    while(fgets(genbuf, 256/*STRLEN*/, fp) != NULL) {
-        if( strncasecmp(genbuf, str, strlen(str)) == 0 && genbuf[strlen(str)] <= 32)
-            deleted = YEA;
-        else if( *genbuf > ' ' )
-            fputs(genbuf, nfp);
-    }
-    fclose(fp);
-    fclose(nfp);
-    if (!deleted) return -1;
-    return(Rename(fnnew, filename));
-}
-
-
-int
 deleteoverride(uident)
 char *uident;
 {

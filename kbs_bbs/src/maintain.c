@@ -596,10 +596,10 @@ enterbname:
                 a_mv = 1;
                 setbpath(old, fh.filename);
                 setbpath(tar, newfh.filename);
-                Rename(old, tar);
+                f_mv(old, tar);
                 sprintf(old, "vote/%s", fh.filename);
                 sprintf(tar, "vote/%s", newfh.filename);
-                Rename(old, tar);
+                f_mv(old, tar);
             }
             if (newfh.BM[0] != '\0')
                 sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
@@ -635,7 +635,7 @@ enterbname:
 			    */
                             f_rm(newpath);
                         }
-                        Rename(oldpath, newpath);
+                        f_mv(oldpath, newpath);
                         del_grp(tmp_grp, fh.filename, fh.title + 13);
                     }
                 }
@@ -859,7 +859,7 @@ int m_trace()
                 msg = "一般记录 ON";
             } else
             {
-                Rename("trace", "trace.old");
+                f_mv("trace", "trace.old");
                 msg = "一般记录 OFF";
             }
             break;
@@ -870,7 +870,7 @@ int m_trace()
                 msg = "聊天记录 ON";
             } else
             {
-                Rename("trace.chatd", "trace.chatd.old");
+                f_mv("trace.chatd", "trace.chatd.old");
                 msg = "聊天记录 OFF";
             }
             break;
@@ -974,7 +974,7 @@ char           *logfile, *regfile;
         pressreturn();
         return -1;
     }
-    Rename(regfile, fname);
+    f_mv(regfile, fname);
     if ((fn = fopen(fname, "r")) == NULL)
     {
         move(2, 0);

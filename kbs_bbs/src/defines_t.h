@@ -116,7 +116,6 @@ int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 
 /* talk.c */
 int servicepage(int     line,char    *mesg);
-int del_from_file(char filename[STRLEN],char str[STRLEN]);
 int addtooverride(char* uident);
 int t_query(char q_id[IDLEN]);
 int talkreply();

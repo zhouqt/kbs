@@ -985,7 +985,7 @@ MENU    *pm;
         mesg = "系统中已有此文件存在了.";
     } else {
         sprintf( genbuf, "%s/%s", pm->path, item->fname );
-        if( Rename( genbuf, fpath ) == 0 ) {
+        if( f_mv( genbuf, fpath ) == 0 ) {
             strcpy( item->fname, fname );
             sprintf(r_genbuf,"更改文件名: %s -> %s",genbuf+17,fpath+17);
             a_report(r_genbuf);
