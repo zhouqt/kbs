@@ -555,7 +555,7 @@ int pc_selusr(char prefix);
 int pc_read_dir(int first);
 int pc_sec(ARG_VOID);
 int pc_read_comment(ARG_VOID);
-
+int pc_logs(struct pc_logs *pn);
 
 #endif
 /* site.c */

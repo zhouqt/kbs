@@ -596,6 +596,30 @@ int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *
     return 1;
 }
 
+int a_chkbmfrmpath(path)
+char *path;
+{
+	int objectbid , pathnum;
+	char *pathslice , *pathdelim;
+    	struct boardheader* objectboard;
+	char *savept;
+	
+	pathnum = 0;
+	pathdelim = "/";
+	strtok_r( path , pathdelim , &savept);
+	while( pathnum < 3 )
+	{
+	    pathslice = strtok_r( NULL , pathdelim , &savept);
+	    pathnum ++ ;
+	}
+	objectbid = getbnum(pathslice);
+	objectboard = getboard(objectbid);
+	if (chk_currBM(objectboard->BM, currentuser))
+        	return 1;
+        else
+        	return 0;
+}
+
 /* added by netty to handle post saving into (0)Announce */
 int a_Import(path, key, fileinfo, nomsg, direct, ent)
 char *path, *key;
@@ -612,6 +636,7 @@ int ent;
     char ans[STRLEN];
     char importpath[MAXPATH];
     int ret;
+    char newpath[STRLEN];
 
     ret = 0;
     modify_user_mode(CSIE_ANNOUNCE);
@@ -637,7 +662,18 @@ int ent;
             }
         } else
             pm.path = path;
-        /*
+        
+        strcpy(newpath,pm.path);
+        if (!HAS_PERM(currentuser, PERM_SYSOP) ) 
+        {
+                if(!a_chkbmfrmpath(newpath))
+                {
+                	sprintf(buf, " a.o... 你已经不能再收录到这里了... ... ");
+                	a_prompt(-1, buf, ans);
+                	return 3;
+		}
+	}
+         /*
          * if (!nomsg) {
          * sprintf(buf, "将该文章放进 %s,确定吗?(Y/N) [N]: ", pm.path);
          * a_prompt(-1, buf, ans);
@@ -645,6 +681,7 @@ int ent;
          * return 2;
          * }
          */
+
         a_loadnames(&pm);
         ann_get_postfilename(fname, fileinfo, &pm);
         sprintf(bname, "%s/%s", pm.path, fname);

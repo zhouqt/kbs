@@ -210,6 +210,7 @@ void keep_fail_post();
 
 /* Announce.c */
 void a_prompt(int bot, char *pmt, char *buf);
+int a_chkbmfrmpath(char *path );
 int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent,int mode);
 int a_menusearch(char *path, char *key, int level);
 int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *direct, int ent);

@@ -403,6 +403,18 @@ struct pc_comments {
 	char *body;
 };
 
+//add by windinsn, add blog logs into table LOGS
+struct pc_logs {
+	unsigned long lid; //blog的log ID auto_increment
+	char username[IDLEN+2]; 
+	char hostname[21]; 
+	char action[100]; //操作
+	char pri_id[IDLEN+2]; //第一操作对象
+	char sec_id[IDLEN+2]; //第二操作对象
+	char comment[200]; //附注
+	time_t logtime;
+};
+
 #define PC_DEFAULT_NODELIMIT 300
 #define PC_DEFAULT_DIRLIMIT 300
 
