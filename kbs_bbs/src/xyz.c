@@ -708,4 +708,38 @@ ent_bnet()  /* Bill Schwartz */
 }
 
 #endif
+static void escape_filename(char *fn)
+{
+     static const  char invalid[] = {'/','\\','!','&','|','*','?','`','\'','\"',';','<','>',':'};
+     int i,j;
+     for (i=0;i<strlen(fn);i++)
+     	  for (j=0;j<sizeof(invalid);j++)
+     	  	  if (fn[i] == invalid[j]) fn[i] = '_';
+}
+int zsend_file( char *filename, char *title )
+{
+	char *t;
+	char buf[512];
+	int i;
+	ansimore("etc/zmodem",0);
+       move(t_lines-1, 0);
+       clrtoeol();
+       strcpy(buf,"N");
+       getdata( t_lines-1, 0, "您确定要使用Zmodem传输文件么?[y/N]", buf, 2, DOECHO, NULL ,YEA);
+       if (toupper(buf[0])  != 'Y') return FULLUPDATE;
+       strncpy(buf,title,80) ;
+       escape_filename(buf);
+       strcat(buf,".TXT");
+       move(t_lines-2, 0);
+       clrtoeol();
+       prints("请输入文件名，为空则放弃");
+       move(t_lines-1, 0);
+       clrtoeol();
+       getdata( t_lines-1, 0, "", buf, 78, DOECHO, NULL ,0);
+       if (buf[0] == '\0') return FULLUPDATE;
+       buf[78] = '\0';
+       escape_filename(buf);
+	bbs_zsendfile(filename,buf);
+	return FULLUPDATE;
+}
 
