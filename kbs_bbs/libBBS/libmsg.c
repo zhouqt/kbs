@@ -252,7 +252,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
         strcpy(msgerr, "对方正在穿梭银河，请稍候再发或给他(她)写信...\n");
         return -1;
 	}
-    if ((mode != 3) && (false == canIsend2(uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
+    if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
         strcpy(msgerr, "对方拒绝接受你的讯息...\n");
         return -1;
     }

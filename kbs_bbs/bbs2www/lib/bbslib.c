@@ -626,11 +626,20 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     }
     if (i >= 99)
         return -1;
+
+    if (false==canIsend2(currentuser,userid)) {
+        return -2;
+    }
+    
+    unum=getuser(userid,&touser);
+    if (!HAS_PERM(currentuser, PERM_SYSOP) && chkusermail(touser)) {        /*Haohamru.99.4.05 */
+    	return -3;
+    }
     sprintf(header.filename, "M.%d.A", t);
     strsncpy(header.title, title, 60);
     fp = fopen(buf3, "w");
     if (fp == NULL)
-        return -2;
+        return -4;
     fp2 = fopen(file, "r");
     fprintf(fp, "¼ÄÐÅÈË: %s (%s)\n", id, nickname);
     fprintf(fp, "±ê  Ìâ: %s\n", title);
@@ -646,12 +655,11 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     sig_append(fp, id, sig);
     fprintf(fp, "\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
     fclose(fp);
-    unum=getuser(userid,&touser);
     if (stat(buf3, &st) != -1)touser->usedspace+=st.st_size;
     sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
     fp = fopen(dir, "a");
     if (fp == NULL)
-        return -1;
+        return -5;
     fwrite(&header, sizeof(header), 1, fp);
     fclose(fp);
     return 0;
@@ -2172,8 +2180,11 @@ int can_send_mail()
 {
     if (HAS_PERM(currentuser, PERM_DENYMAIL))
         return 0;
-    else if (HAS_PERM(currentuser, PERM_LOGINOK))
+    else if (HAS_PERM(currentuser, PERM_LOGINOK)) {
+    	if (chkusermail(currentuser)) 
+			return 0;
         return 1;
+    }
     else
         return 0;
 }

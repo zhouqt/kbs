@@ -819,7 +819,7 @@ void chat_sendmsg(chatcontext * pthis, const char *arg)
                 sprintf(msg,
                         "\x1b[32m%s\x1b[37m已经关闭接受讯息的呼叫器.\n",
                         uin->userid);
-            else if (false == canIsend2(uin->userid))
+            else if (false == canIsend2(currentuser,uin->userid))
                 sprintf(msg, "\x1b[32m%s\x1b[37m拒绝接受你的讯息.\n", uin->userid);     /*Haohmaru.99.6.6,检查是否被ignore */
             else {
                 FILE *fp;

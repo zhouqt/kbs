@@ -849,24 +849,23 @@ int cmpfileinfoname(char *filename, struct fileheader *fi)
     return !strncmp(filename, fi->filename, FILENAME_LEN);
 }
 
-int canIsend2(userid)           /* Leeward 98.04.10 */
-char *userid;
-
-
+int canIsend2(struct userec* user,char* userid)           /* Leeward 98.04.10 */
 {
     char buf[IDLEN + 1];
     char path[256];
 
-    if (HAS_PERM(currentuser, PERM_SYSOP))
+    if (HAS_PERM(user, PERM_SYSOP))
         return true;
     sethomefile(path, userid, "/ignores");
     if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
         return false;
+    /*
     sethomefile(path, userid, "/bads");
     if (search_record(path, buf, IDLEN + 1, (RECORD_FUNC_ARG) cmpinames, currentuser->userid))
         return false;
 
     else
+    */
         return true;
 }
 

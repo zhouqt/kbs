@@ -595,7 +595,7 @@ int do_send(char *userid, char *title, char *q_file)
          * }
          */
 
-        if (false == canIsend2(userid)) {       /* Leeward 98.04.10 */
+        if (false == canIsend2(currentuser,userid)) {       /* Leeward 98.04.10 */
             prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎŞ·¨·¢³ö´ËĞÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®[m[m\n\n", userid);
             sprintf(save_title, "ÍËĞÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®", userid);
             mail_file(currentuser->userid, filepath, currentuser->userid, save_title, 1);
@@ -1749,7 +1749,7 @@ static int do_gsend(char *userid[], char *title, int num)
             prints("%s ĞÅÏäÒÑÂú,ÎŞ·¨ÊÕĞÅ,Çë°´ Enter ¼ü¼ÌĞøÏòÆäËûÈË·¢ĞÅ...", uid);
             pressreturn();
             clear();
-        } else /* ĞŞÕıºÃÓÑ·¢ĞÅµÄ´íÎó Bigman 2000.9.8 */ if (false == canIsend2(uid)) {  /* Leeward 98.04.10 */
+        } else /* ĞŞÕıºÃÓÑ·¢ĞÅµÄ´íÎó Bigman 2000.9.8 */ if (false == canIsend2(currentuser,uid)) {  /* Leeward 98.04.10 */
             char tmp_title[STRLEN], save_title_bak[STRLEN];
 
             prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎŞ·¨Ïò %s ·¢³ö´ËĞÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®\n\nÇë°´ Enter ¼ü¼ÌĞøÏòÆäËûÈË·¢ĞÅ...[m[m\n\n", uid, uid);
@@ -1966,7 +1966,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
                 return -4;
             }
 
-            if (false == canIsend2(receiver)) { /* Leeward 98.04.10 */
+            if (false == canIsend2(currentuser,receiver)) { /* Leeward 98.04.10 */
                 prints("[1m[33mºÜ±§Ç¸¡ÃÏµÍ³ÎŞ·¨×ª¼Ä´ËĞÅ£®ÒòÎª %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®[m[m\n\n", receiver);
                 sprintf(title, "ÍËĞÅ¡Ã %s ¾Ü¾ø½ÓÊÕÄúµÄĞÅ¼ş£®", receiver);
                 mail_file(currentuser->userid, fname, currentuser->userid, title, 0);

@@ -39,7 +39,20 @@ int main()
         http_fatal("发信失败");
     sprintf(title2, "{%s} %s", userid, title);
     title2[70] = 0;
-    post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig - 1);
+    
+    if ((i=post_mail(userid, title, filename, currentuser->userid, currentuser->username, fromhost, sig - 1))!=0)
+    {
+        switch (i) {
+        case -1:
+        	http_fatal("发信失败:无法创建文件");
+        case -2:
+        	http_fatal("发信失败:对方拒收你的邮件");
+        case -3:
+        	http_fatal("发信失败:对方信箱满");
+        default:
+        	http_fatal("发信失败");
+        }
+    }
     if (backup)
         post_mail(currentuser->userid, title2, filename, currentuser->userid, currentuser->username, fromhost, sig - 1);
     unlink(filename);

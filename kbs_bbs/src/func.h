@@ -127,7 +127,7 @@ extern "C" {
     int cmpfileinfoname(char *filename, struct fileheader *fi);
     int dodaemon(char* daemonname,bool single,bool closefd);
 
-    int canIsend2(char *userid);
+    int canIsend2(struct userec* user,char *userid);
     void sigbus(int signo);
     void encodestr(register char *str);
     int Isspace(char ch);

@@ -491,7 +491,7 @@ int ttt_talk(struct user_info *userinfo)
         clrtoeol();
         return -1;
     }
-    if (false == canIsend2(uin.userid)) {       /*Haohmaru.99.6.6.检查是否被ignore */
+    if (false == canIsend2(currentuser,uin.userid)) {       /*Haohmaru.99.6.6.检查是否被ignore */
         move(2, 0);
         prints("对方拒绝和你聊天\n");
         pressreturn();
