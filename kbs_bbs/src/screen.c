@@ -644,11 +644,12 @@ void outns(const char*str, int n)
                 continue;
              }
              else if(*(str+i)=='m') {
-                j=2;
+                j=1;
                 if(DEFINE(currentuser, DEF_COLOR)&&!disable_color)
                 while(*(str+j)!='m') {
                     int m;
                     char s[100];
+                    j++;
                     k=j;
                     while(*(str+j)!='m'&&*(str+j)!=';'&&*(str+j)>='0'&&*(str+j)<='9') j++;
                     if(*(str+j)!='m'&&*(str+j)!=';') break;
@@ -674,7 +675,6 @@ void outns(const char*str, int n)
                             cur_color = ((m-40)<<4)+(cur_color&0x0f);
                         }
                     }
-                    j++;
                 }
                 if(i==2) {
                     cur_mode=0;
