@@ -101,7 +101,7 @@ main()
 
     sprintf(path, "%s/lastcount", BONLINE_LOGDIR);
 
-    if((fp_forcount=fopen(path, "a"))==NULL){
+    if((fp_forcount=fopen(path, "w+"))==NULL){
         printf("cannot open log file\n");
         exit(0);
     }
