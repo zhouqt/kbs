@@ -5,6 +5,29 @@
 	 */
 $needlogin = 0;
 require("funcs.php");
+
+global $fromhost;
+global $fullfromhost;
+
+@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
+  if ($fullfromhost=="") {
+      @$fullfromhost=$_SERVER["REMOTE_ADDR"];
+      $fromhost=$fullfromhost;
+  }
+  else {
+	$str = strrchr($fullfromhost, ",");
+	if ($str!=FALSE)
+		$fromhost=substr($str,1);
+        else
+		$fromhost=$fullfromhost;
+  }
+if ($fromhost=="")  {
+  $fromhost="127.0.0.1"; 
+  $fullfromhost="127.0.0.1"; 
+}
+//sometimes,fromhost has strang space
+bbs_setfromhost(trim($fromhost),trim($fullfromhost));
+
 $data = array ();
 @$id = $_POST["id"];
 @$passwd = $_POST["passwd"];
