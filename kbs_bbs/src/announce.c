@@ -1478,7 +1478,8 @@ int edit_grp(char bname[STRLEN], char grp[STRLEN], char title[STRLEN], char newt
     strcpy(buf3, grp);
     sprintf(buf, "0Announce/.Search");
     sprintf(gpath, "0Announce/groups/%s", buf3);
-    sprintf(bpath, "%s/%s", gpath, bname);
+    sprintf(bpath, "%s/%s", gpath, bname); 
+
     if (!seek_in_file(buf, bname))
         return 0;
 

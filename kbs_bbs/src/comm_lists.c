@@ -77,6 +77,7 @@ int t_irc()
 #endif
 int kick_user();
 int x_deny();
+int set_BM();
 
 /* add by KCN */
 /* Modified by sanshao, sb KCN */
@@ -199,6 +200,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"DelBoard", d_board},
     {"SetTrace", m_trace},
     {"Xlevel", x_deny},
+    {"XBoardManager", set_BM},
 /*    
     {"CleanMail", m_mclean},
     */

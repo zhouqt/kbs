@@ -1656,3 +1656,188 @@ int x_deny()
     }
     return 0;
 }
+
+int set_BM()
+/* 直接任免版主 Bigman:2002.9.1 */
+{
+    
+    char bname[STRLEN],oldtitle[STRLEN],vbuf[256],*p;
+    int pos,flag=0,id,m,n,brd_num;
+    unsigned int newlevel;
+    struct boardheader fh,newfh;
+    struct userec *lookupuser,uinfo; 
+    struct boardheader *bptr;   
+    char lookgrp[30];
+
+      if (!HAS_PERM(currentuser, PERM_ADMIN) || !HAS_PERM(currentuser, PERM_SYSOP)) {
+        move(3, 0);
+        clrtobot();
+        prints("抱歉, 只有ADMIN权限的管理员才能修改其他用户权限");
+        pressreturn();
+        return 0;
+    }
+    
+    modify_user_mode(ADMIN);
+    if (!check_systempasswd()) {
+        return -1;
+    }
+    clear();
+    stand_title("任免版主");
+    move(1, 0);
+    make_blist();
+    namecomplete("输入讨论区名称: ", bname);
+    if (*bname == '\0') {
+        move(2, 0);
+        prints("错误的讨论区名称");
+        pressreturn();
+        clear();
+        return -1;
+    }
+    pos = getboardnum(bname, &fh);
+    memcpy(&newfh, &fh, sizeof(newfh));
+    if (!pos) {
+        move(2, 0);
+        prints("错误的讨论区名称");
+        pressreturn();
+        clear();
+        return -1;
+    }
+    while(1) {
+	    clear();
+	    stand_title("任免版主");
+	    move(1, 0);
+    prints("讨论区名称:   %s\n", fh.filename);
+    prints("讨论区说明:   %s\n", fh.title);
+    prints("讨论区管理员: %s\n", fh.BM);
+    strcpy(oldtitle, fh.title);
+    
+
+    getdata(6, 0, "(A)增加版主 (D)删除版主 (Q)退出?: [Q]", genbuf, 2, DOECHO, NULL, true);
+    if (*genbuf == 'a' || *genbuf == 'A') {
+    	flag=1;
+	}
+    else if  (*genbuf == 'd' || *genbuf == 'D')
+    {	flag=2;
+    	if (newfh.BM[0] == '\0')
+    	{	flag=0;
+    		prints("没有版主，不能删除版主!");
+    		pressreturn();	
+    	}	
+	}
+    else {
+    	clear();
+    	return 0;
+    }
+
+    if (flag>0) {
+    	usercomplete("请输入" NAME_USER_SHORT " ID: ", genbuf);
+    	if (genbuf[0] == '\0') {
+    		clear();
+    		flag=0;
+    		/*return 0;*/
+    		}  		
+    	else if (!(id = getuser(genbuf, &lookupuser))) {
+        	move(3, 0);
+        	prints("非法 ID");
+        	clrtoeol();
+        	pressreturn();
+        	clear();
+        	flag=0;
+        	/*return 0;*/
+    		}   	
+    	
+    	if (flag>0) {
+		uinfo = *lookupuser;
+    		disply_userinfo(&uinfo, 1);
+		brd_num=0;
+		    
+		move(18,0);
+		
+    		 if (!(lookupuser->userlevel & PERM_BOARDS)) 
+    		 {
+    		 	prints("用户%s不是版主!\n", lookupuser->userid);	
+    		 }
+    		 else
+   		{
+   			prints("用户 %s 为以下版的版主\n", lookupuser->userid);
+
+        		for (n = 0; n < get_boardcount(); n++) {
+            		bptr = (struct boardheader *) getboard(n + 1);
+            		if (chk_BM_instr(bptr->BM, lookupuser->userid) == true) {
+                		prints("%-32s%-32s\n", bptr->filename, bptr->title + 12);
+                		brd_num++;
+            			}
+        		}
+	    		 	
+    		 }
+    		 
+    		 getdata(23, 0, "确认任免该用户（Y/N)?: [N]", genbuf, 2, DOECHO, NULL, true);
+    		 
+    		 if (*genbuf == 'Y' || *genbuf == 'y') {    		 
+    		 	newlevel=lookupuser->userlevel;
+ 
+    		 	
+    		 	if (flag == 1) {
+    		 		strcat(newfh.BM," ");
+    		 		strcat(newfh.BM,lookupuser->userid);
+    		 		newlevel |= PERM_BOARDS;
+    		 		mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "新任" NAME_BM "必读", 0);	
+    		 	}
+    		 	else if (flag == 2) {
+    		 		m=0;
+    		 		newfh.BM[0]='\0';
+    		 		
+    		 		p = strtok(fh.BM, " ");
+    		 		if (p) { 
+    		 			if (strcmp(p, lookupuser->userid))
+    		 				{strncpy(newfh.BM,p,IDLEN+2);
+    		 				m++;
+    		 				}
+					else if (brd_num==1) newlevel &= ~PERM_BOARDS;
+    		 			}
+    		 		/* 如果增加版主数目请修改这里 */	
+    		 		for(n=1;n< (BM_LEN - 1)/(IDLEN +2);n++) {
+    		 			p = strtok(NULL, " ");
+    		 			if (p==NULL) break;
+    		 			else if (strcmp(p, lookupuser->userid))
+    		 				{
+    		 				if (m>0) {
+							strcat(newfh.BM," ");
+							strcat(newfh.BM,p);}
+    		 				else strncpy(newfh.BM,p,IDLEN+2);
+    		 				m++;
+    		 				}
+					else if (brd_num==1) newlevel &= ~PERM_BOARDS;
+    		 		}
+    		 		
+    		 		
+    		 		
+    		 	}
+    		 	
+    		 	if (newfh.BM[0] != '\0')
+    		 	sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
+    		 	else
+    		 	sprintf(vbuf, "%-38.38s", newfh.title + 13);
+
+			if (flag ==1 ) sprintf(genbuf, "任命 %s 的版主为 %s 的权限XPERM%d %d", newfh.filename, lookupuser->userid, lookupuser->userlevel, newlevel);
+			else if (flag ==2 ) sprintf(genbuf, "免去 %s 的版主 %s 的权限XPERM%d %d", newfh.filename, lookupuser->userid, lookupuser->userlevel, newlevel);
+        		securityreport(genbuf, lookupuser, NULL);
+        		lookupuser->userlevel = newlevel;
+
+    		 	ann_get_board(lookgrp, fh.filename, 29);
+    		 	edit_grp(fh.filename, lookgrp, oldtitle + 13, vbuf); 
+  			set_board(pos, &newfh);
+  			
+  			sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
+            		bbslog("user", "%s", genbuf);
+			strncpy(fh.BM,newfh.BM,IDLEN+2);
+    		 }
+    				
+    	}	
+    	
+	}
+    
+}
+    	
+    	
+}

@@ -148,7 +148,8 @@ int ann_get_board(char *path, char *board, size_t len)
     FILE *fp;
     char buf[256];
     char *ptr;
-    char *ptr2;
+    char *ptr1,*ptr2;
+    int i;
 
     ptr = path;
     if (ptr[0] == '\0')
@@ -160,12 +161,29 @@ int ann_get_board(char *path, char *board, size_t len)
         return -1;
     while (fgets(buf, sizeof(buf), fp) != NULL) {
         if ((ptr2 = strrchr(buf, '\n')) != NULL)
-            *ptr2 = '\0';
-        if ((ptr2 = strchr(buf, ':')) != NULL) {
-            *ptr2 = '\0';
-            if (strncmp(ptr2 + 2, ptr, strlen(ptr2 + 2)) == 0) {
+            *ptr2 = '\0'; 
+        if ((ptr2 = strrchr(buf, ':')) != NULL) {
+		*ptr2 = '\0';
+            
+/*	if (strncmp(ptr2 + 2, ptr, strlen(ptr2 + 2)) == 0) {
                 strncpy(board, buf, len - 1);
-                board[len - 1] = '\0';
+                board[len - 1] = '\0'; 
+*/
+
+/* 修正精华区不更新的错误 Bigman:2002.9.2 */
+            if (strstr(ptr2 + 2, board) != NULL) {
+                strncpy(ptr1, ptr2+2, strlen(ptr2+2));
+		*(ptr1+strlen(ptr2+2)-1-strlen(board))='\0';
+
+		ptr2=strchr(ptr1,'/');
+		i=0;
+		while(*(ptr2+1+i)!='\0')
+		{
+			*(ptr+i)=*(ptr2+i+1);
+			i++;
+		}
+		*(ptr+i)='\0';
+
                 fclose(fp);
                 return 0;
             }
