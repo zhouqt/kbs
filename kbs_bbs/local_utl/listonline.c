@@ -1,4 +1,4 @@
-#include "../bbs.h"
+#include "bbs.h"
 
 int do_userlist(struct user_info* uentp,char* arg,int t)
 {

@@ -9,7 +9,7 @@
 
 #include <stdio.h>
 #include <time.h>
-#include "../bbs.h"
+#include "bbs.h"
 #define	DELETE
 
 char *myfile[] = {"day", "week", "month", "year"};

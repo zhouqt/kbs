@@ -1,0 +1,5 @@
+bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend chlevel listonline \
+	showBM idx0Ann lazybm fixdir autoundeny
+EXTRA_PROGRAMS = 
+LDADD=../libBBS/libBBS.a ../libsystem/libsystem.a ../rzsz/libzmodem.a -lbsd -lesmtp -lltdl -ldl
+AM_CFLAGS=-DINVISIBLE -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME  -I$(top_builddir)/src

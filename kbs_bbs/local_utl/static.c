@@ -3,7 +3,7 @@
 #include <time.h>
 #include <stdio.h>
 #define MAX_LINE        15
-#include "../bbs.h"
+#include "bbs.h"
 struct
 {
   int no[24];                   /* ´ÎÊý */

@@ -1,5 +1,5 @@
 #include "bbs.h"
-#include "../permissions.h"
+#include "permissions.h"
 
 main()
 {
