@@ -238,9 +238,16 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
                     if (!strcmp(top[i].board, BoardName[n]))
                         m++;
                 }
+#ifdef BLESS_BOARD
+				if(mytype != 4){
+#endif
 
                 if (m >= 3)
                     continue;
+#ifdef BLESS_BOARD
+				}
+#endif
+
 #else
                 if (!strcmp(top[i].board, "test"))
                     continue;
