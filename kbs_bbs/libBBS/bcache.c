@@ -138,7 +138,7 @@ int setboardtitle(const char *board, int i)
 
 int get_nextid_bid(int bid)
 {
-    int fd,ret;
+    int fd,ret=0;
 
 	if (bid > 0)
 	{

@@ -228,7 +228,8 @@ function display_navigation_bar_out($brdarr, $articles, $num, $brdnum)
 			Header("Accept-Ranges: bytes");
 			Header("Content-Length: " . $attachsize);
 			Header("Content-Disposition: inline;filename=" . $attachname);
-			echo fread($file,$attachsize);
+                        if ($attachsize>=0)
+                            echo fread($file,$attachsize);
 			fclose($file);
 			exit;
 		} else

@@ -2138,7 +2138,7 @@ static int backup_mv(char *fname)
 	sprintf(cmd, "%s/%s", MYUNLINK_BACKUPDIR, fname);
 	if( cmd[strlen(cmd)-1] == '/' )
 		cmd[strlen(cmd)-1] = 0;
-	sprintf(buf, "%s_%d", cmd, time(0));
+	sprintf(buf, "%s_%ld", cmd, (long)time(0));
 
 	sprintf(cmd, "mv -f %s %s", fname, buf);
 	system(cmd);

@@ -251,6 +251,7 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
     int i;
     off_t file_size;
     int count;
+    
 
     if (applycopy)
         buf2 = malloc(size);

@@ -370,4 +370,5 @@ attach define
 
 #define BMSLOG
 
+#define USE_SEM_LOCK
 #endif

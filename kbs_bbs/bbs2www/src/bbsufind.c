@@ -34,6 +34,9 @@ int main()
         if (x->invisible && !HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
             continue;
         memcpy(&user[total], x, sizeof(uinfo_t));
+#ifdef SMTH
+	if (total>200) break;
+#endif
         total++;
     }
     search = toupper(getparm("search")[0]);

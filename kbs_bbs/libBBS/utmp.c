@@ -627,7 +627,7 @@ static void clear_utmp2(int uent)
 void clear_utmp(int uent, int useridx, int pid)
 {
     int lockfd;
-    int dokickuser;
+    int dokickuser=0;
     struct user_info ui;
 
 /* ulock todo: use user lock
