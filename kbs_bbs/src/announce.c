@@ -472,7 +472,7 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, int nomsg, char
 	memcpy(posttime,t,STRLEN);
 										
         fprintf(outf, "\033[0;1;32m☆─────────────────────────────────────☆\033[0;37m\n");
-        fprintf(outf, "  \033[0;1;32m %s \033[0;1;37m于 \033[0;1;36m %s \033[0;1;37m 提到:\n", userinfo,posttime);
+        fprintf(outf, "  \033[0;1;32m %s \033[0;1;37m于 \033[0;1;36m %s \033[0;1;37m 提到:\033[m\n", userinfo,posttime);
 
 	fprintf(outf,"\n");	
         while (fgets(buf, 256, inf) != NULL)
