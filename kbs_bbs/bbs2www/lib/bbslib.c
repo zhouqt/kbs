@@ -796,9 +796,9 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
 #endif
     write_file2(fp, fp2);
     fclose(fp2);
-#ifndef RAW_ARTICLE
     if (!anony)
         addsignature(fp, user, sig);
+#ifndef RAW_ARTICLE
     add_loginfo2(fp, board, user, anony);       /*添加最后一行 */
 #endif
 
@@ -2516,8 +2516,11 @@ static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
     for (i = 0; i < buflen; i++) {
         if (buf[i] == 0x1b)
             html_output("*", 1, output);
-        else
+        else if (buf[i]=='\n') {
+			output->output("<br />", 6, output);
+        } else {
             html_output(&buf[i], 1, output);
+		}
     }
 }
 
@@ -2561,30 +2564,47 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     char *ptr = buf;
     char *ansi_begin;
     char *ansi_end;
+	char *ubbstart_begin,*ubbmiddle_begin, *ubbfinish_begin;
     int attachmatched;
     char link[256];
+	long attachPos[MAXATTACHMENTCOUNT];
+	long attachLen[MAXATTACHMENTCOUNT];
+	char* attachFileName[MAXATTACHMENTCOUNT];
+	enum ATTACHMENTTYPE attachType[MAXATTACHMENTCOUNT];
+	int attachShowed[MAXATTACHMENTCOUNT];
+	char UBBCode[256];	
+	int UBBCodeLen;
+	enum UBBTYPE UBBCodeType;
+	int isUBBMiddleOutput; 
+	int UBBArg1, UBBArg2, UBBArg3;
+	char UBBStrArg[256];
+
 
     if (ptr == NULL)
         return;
     STATE_ZERO(ansi_state);
     bzero(ansi_val, sizeof(ansi_val));
+    bzero(attachShowed, sizeof(attachShowed));
     attachmatched = 0;
-    for (i = 0; i < buflen; i++) {
+	for (i = 0; i < buflen ; i++ ){
         long attach_len;
         char *attachptr, *attachfilename;
-
+		if (attachmatched>=MAXATTACHMENTCOUNT)	{
+			break;
+		}
         if (attachlink&&((attachfilename = checkattach(buf + i, buflen - i, &attach_len, &attachptr)) != NULL)) {
             char *extension;
             int type;
-            char outbuf[256];
-
             extension = attachfilename + strlen(attachfilename);
-            snprintf(link,255,"%s&amp;ap=%d",attachlink,attachfilename-buf,attachfilename,attach_len);
-	    link[255]=0;
-	    i+=(attachptr-buf-i)+attach_len-1;
-	    if (i>buflen) continue;
-            type = 0;
-	    extension--;
+			i+=(attachptr-buf-i)+attach_len-1;
+			if (i>buflen) continue;
+			attachPos[attachmatched]=attachfilename-buf;
+			attachLen[attachmatched]=attach_len;
+			attachFileName[attachmatched]=(char*)malloc(256);
+			strncpy(attachFileName[attachmatched],attachfilename,255);
+			attachFileName[attachmatched][255]=0;
+			attachType[attachmatched]=ATTACH_OTHERS;
+			extension--;
             while ((*extension != '.') && (*extension != NULL))
                 extension--;
             if (*extension == '.') {
@@ -2592,25 +2612,24 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 if (!strcasecmp(extension, "bmp") || !strcasecmp(extension, "jpg")
                     || !strcasecmp(extension, "png") || !strcasecmp(extension, "jpeg")
                     || !strcasecmp(extension, "pcx") || !strcasecmp(extension, "gif"))
-                    type = 1;
+                    attachType[attachmatched]=ATTACH_IMG;
                 else if (!strcasecmp(extension, "swf"))
-                    type = 2;
+                    attachType[attachmatched] = ATTACH_FLASH;
             }
-            switch (type) {
-            case 1:
-                snprintf(outbuf, 255, "图片:%s(%d)<br><img src='%s'></img><br />", attachfilename, attach_len, link);
-                break;
-            case 2:
-                snprintf(outbuf, 255, "Flash动画: "
-                        "<a href='%s'>%s</a> (%d 字节)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s'>" "<EMBED SRC='%s'></EMBED></OBJECT><br />", link, attachfilename, attach_len, link, link);
-            default:
-                snprintf(outbuf, 255, "附件: <a href='%s'>%s</a> (%d 字节)<br />\n", link, attachfilename, attach_len);
-                break;
-            }
-	    outbuf[255]=0;
-            output->output(outbuf, strlen(outbuf), output);
-	    continue;
+			attachmatched++;
+		}
+	}
+
+    for (i = 0; i < buflen; i++) {
+        long attach_len;
+        char *attachptr, *attachfilename;
+
+		/* skip attachments */
+        if (attachlink&&((attachfilename = checkattach(buf + i, buflen - i, &attach_len, &attachptr)) != NULL)) {
+		    i=(attachptr-buf)+attach_len-1;
+			continue;
         }
+		
         if (STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
             STATE_CLR(ansi_state, STATE_NEW_LINE);
             if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
@@ -2636,7 +2655,95 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
             } else
                 STATE_CLR(ansi_state, STATE_QUOTE_LINE);
         }
-        if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i + 1] == '[')) {
+		if ( buf[i] == '[' )	{ //UBB控制代码开始?
+			if (STATE_ISSET(ansi_state, STATE_UBB_START)){
+				size_t len;
+				STATE_CLR(ansi_state, STATE_UBB_START);
+				len=(&(buf[i]))-ubbstart_begin;
+				print_raw_ansi(ubbstart_begin,len,output);
+			}
+			if (STATE_ISSET(ansi_state, STATE_UBB_END))
+			{
+				STATE_CLR(ansi_state, STATE_UBB_END);
+				STATE_SET(ansi_state, STATE_UBB_MIDDLE);
+			}
+
+			if ( (i < (buflen-1) ) && (buf[i + 1] == '/') )	{ //UBB代码结束?
+				if (!STATE_ISSET(ansi_state, STATE_UBB_MIDDLE)){
+					print_raw_ansi(&buf[i], 1, output);
+					continue;
+				}
+				STATE_CLR(ansi_state,STATE_UBB_MIDDLE);
+				STATE_SET(ansi_state,STATE_UBB_END);
+				ubbfinish_begin=&buf[i];
+				i++;
+			} else {
+				if (STATE_ISSET(ansi_state,STATE_UBB_MIDDLE | STATE_UBB_START | STATE_UBB_END)){
+					size_t len;
+					len=(&(buf[i]))-ubbstart_begin;
+					print_raw_ansi(ubbstart_begin,len,output);
+					STATE_CLR(ansi_state, STATE_UBB_MIDDLE | STATE_UBB_START | STATE_UBB_END);
+				}
+				ubbstart_begin=&buf[i];
+				STATE_SET(ansi_state,STATE_UBB_START);
+			}
+			UBBCodeLen=0;
+			continue;
+
+		} else if ( buf[i] == ']' )	{ //UBB控制代码结束?
+			if (STATE_ISSET(ansi_state, STATE_UBB_START))	{
+				int num;
+				num=0;
+				UBBCode[UBBCodeLen]=0;
+				isUBBMiddleOutput=1;
+				sscanf(UBBCode, "upload=%d",&num);
+				if (num>0) {
+					UBBArg1=num;
+					UBBCodeType=UBB_TYPE_ATTACH;
+					isUBBMiddleOutput=0;
+				} else {
+					size_t len;
+					STATE_CLR(ansi_state, STATE_UBB_START);
+					len=(&(buf[i+1]))-ubbstart_begin;
+					print_raw_ansi(ubbstart_begin,len,output);
+					continue;
+				}
+				STATE_CLR(ansi_state, STATE_UBB_START);
+				STATE_SET(ansi_state, STATE_UBB_MIDDLE);
+				ubbmiddle_begin=&buf[i+1];
+				continue;
+			} else if (STATE_ISSET(ansi_state, STATE_UBB_END))	{
+				size_t len;
+				UBBCode[UBBCodeLen]=0;		
+				STATE_CLR(ansi_state, STATE_UBB_END);
+				switch (UBBCodeType){
+				case UBB_TYPE_ATTACH:
+					if (!strcasecmp(UBBCode,"upload")){
+						if ( (UBBArg1>0) && (UBBArg1<=attachmatched)) {
+							char outbuf[512];
+							switch(attachType[UBBArg1-1]) {
+							case ATTACH_IMG:
+								snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ", attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
+								break;
+							case ATTACH_FLASH:
+				                snprintf(outbuf, 511, "<br>Flash动画: " "<a href='%s&ap=%d'>%s</a> (%d 字节)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s&amp;ap=%d'>" "<EMBED SRC='%s&amp;ap=%d'></EMBED></OBJECT><br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1], attachlink, attachPos[UBBArg1-1], attachlink, attachPos[UBBArg1-1]);
+								break;
+							case ATTACH_OTHERS:
+								 snprintf(outbuf, 511, "<br>附件: <a href='%s&ap=%d'>%s</a> (%d 字节)<br />", attachlink, attachPos[UBBArg1-1], attachFileName[UBBArg1-1], attachLen[UBBArg1-1]);
+								 break;
+							}	
+							outbuf[511]=0;
+							output->output(outbuf, 511, output);
+							attachShowed[UBBArg1-1]=1;
+							continue;							
+						}	
+					} 
+					break;
+				}
+				STATE_SET(ansi_state, STATE_UBB_MIDDLE);
+			} 
+		}
+		if (i < (buflen - 1) && (buf[i] == 0x1b && buf[i + 1] == '[')) {
             if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 /*
                  *[*[ or *[13;24*[ */
@@ -2668,11 +2775,34 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 STYLE_CLR(font_style, FONT_STYLE_QUOTE);
                 STATE_CLR(ansi_state, STATE_FONT_SET);
             }
-            output->output("<br />\n", 7, output);
+		    if (!STATE_ISSET(ansi_state,STATE_UBB_MIDDLE) || isUBBMiddleOutput) {
+				output->output("<br />", 6, output);
+			}
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
         } else {
-            if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
+			if (STATE_ISSET(ansi_state, STATE_UBB_START|STATE_UBB_END))	{
+				if (UBBCodeLen>100)	{
+					if (STATE_ISSET(ansi_state, STATE_UBB_START)){
+						size_t len;
+						len=(&(buf[i+1]))-ubbstart_begin;
+						print_raw_ansi(ubbstart_begin,len,output);
+					}
+					if (STATE_ISSET(ansi_state, STATE_UBB_END)){
+						size_t len;
+						len=(&(buf[i+1]))-ubbfinish_begin;
+						print_raw_ansi(ubbfinish_begin,len,output);
+					}
+					STATE_CLR(ansi_state, STATE_UBB_START | STATE_UBB_END);
+					continue;
+				}
+				UBBCode[UBBCodeLen]=buf[i];
+				UBBCodeLen++;
+			} else if (STATE_ISSET(ansi_state, STATE_UBB_MIDDLE)){
+				if (isUBBMiddleOutput)	{
+	                		print_raw_ansi(&buf[i], 1, output);
+				}
+			} else if (STATE_ISSET(ansi_state, STATE_ESC_SET)) {
                 if (buf[i] == 'm') {
                     /*
                      *[0;1;4;31m */
@@ -2745,7 +2875,29 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
         output->output("</font>", 7, output);
         STATE_CLR(ansi_state, STATE_FONT_SET);
     }
+	for ( i = 0; i<attachmatched ; i++ ){
+		if (!attachShowed[i]) { 
+			char outbuf[512];
+			switch(attachType[UBBArg1-1]) {
+			case ATTACH_IMG:
+		 		snprintf(outbuf, 511, "<br><IMG SRC=\"images/files/img.gif\" border=0>此主题相关图片如下：<br><A HREF=\"%s&ap=%d\" TARGET=_blank><IMG SRC=\"%s&ap=%d\" border=0 alt=按此在新窗口浏览图片 onload=\"javascript:if(this.width>screen.width-333)this.width=screen.width-333\"></A> ",attachlink, attachPos[i],attachlink, attachPos[i]);
+				break;
+			case ATTACH_FLASH:
+		        snprintf(outbuf, 511, "<br>Flash动画: " "<a href='%s&ap=%d'>%s</a> (%d 字节)<br>" "<OBJECT><PARAM NAME='MOVIE' VALUE='%s&amp;ap=%d'>" "<EMBED SRC='%s&amp;ap=%d'></EMBED></OBJECT><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
+				break;
+			case ATTACH_OTHERS:
+				 snprintf(outbuf, 511, "<br>附件: <a href='%s&ap=%d'>%s</a> (%d 字节)<br />", attachlink, attachPos[i], attachFileName[i], attachLen[i]);
+				 break;
+			}	
+			outbuf[511]=0;
+			output->output(outbuf, 511, output);
+			attachShowed[i]=1;
+		}
+		free(attachFileName[i]);
+	}
+
     output->flush(output);
+
 }
 
 /* ent 是 1-based 的*/
@@ -2783,3 +2935,92 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     return DIRCHANGED;
 
 }
+
+int www_generateOriginIndex(char* board)
+/* added by roy 2003.7.17 generate .ORIGIN index file*/
+{
+    struct fileheader *ptr1;
+    struct flock ldata, ldata2;
+    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
+    char olddirect[PATHLEN];
+	char currdirect[PATHLEN];
+    char *ptr;
+    struct stat buf;
+    bool init;
+    size_t bm_search[256];
+
+    setbdir(DIR_MODE_NORMAL, olddirect, board);
+    setbdir(DIR_MODE_ORIGIN, currdirect, board);
+    if (!setboardorigin(board, -1)) {
+        return 0;
+    }
+    if ((fd = open(currdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
+        bbslog("user", "%s", "recopen err");
+        return -1;      /* 创建文件发生错误*/
+    }
+    ldata.l_type = F_WRLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
+        bbslog("user", "%s", "reclock err");
+        close(fd);
+        return -2;      /* lock error*/
+    }
+    /* 开始互斥过程*/
+    if (!setboardorigin(board, -1)) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return 0;
+    }
+
+    if ((fd2 = open(olddirect, O_RDONLY, 0664)) == -1) {
+        bbslog("user", "%s", "recopen err");
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -3;
+    }
+    fstat(fd2, &buf);
+    ldata2.l_type = F_RDLCK;
+    ldata2.l_whence = 0;
+    ldata2.l_len = 0;
+    ldata2.l_start = 0;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    total = buf.st_size / size;
+
+    init = false;
+    if ((i = safe_mmapfile_handle(fd2, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, (size_t*)&buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata2.l_type = F_UNLCK;
+        fcntl(fd2, F_SETLKW, &ldata2);
+        close(fd2);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        return -4;
+    }
+    ptr1 = (struct fileheader *) ptr;
+    for (i = 0; i < total; i++) {
+        if (ptr1->id == ptr1->groupid ) {
+            write(fd, ptr1, size);
+            count++;
+        }
+        ptr1++;
+    }
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata2.l_type = F_UNLCK;
+    fcntl(fd2, F_SETLKW, &ldata2);
+    close(fd2);
+    ftruncate(fd, count * size);
+
+    setboardorigin(board, 0);   /* 标记flag*/
+
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
+    close(fd);
+    return 0;
+}
+

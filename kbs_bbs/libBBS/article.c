@@ -1775,12 +1775,13 @@ int skip_attach_fgets(char* s,int size,FILE* stream)
      }
      *ptr=ch;
      ptr++;
+     *ptr=0;
      if ((ptr-s)==size-1) {
-	     *(ptr-1)=0;
+//	     *(ptr-1)=0;
 	     return 1;
      }
      if (ch=='\n') {
-        *ptr=0;
+//        *ptr=0;
         return 1;
      }
   }

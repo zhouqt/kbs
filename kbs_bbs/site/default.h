@@ -53,6 +53,10 @@
 #undef HAVE_REVERSE_DNS
 #endif
 
+#if HAVE_WFORUM != 1
+#undef HAVE_WFORUM /* wbbs 支持 */
+#endif
+
 #ifndef CHINESE_CHARACTER /*汉字整字处理,缺省使能*/
 #define CHINESE_CHARACTER
 #else
@@ -325,7 +329,6 @@
 #ifndef ANONYMOUS_DEFAULT /*缺省不匿名*/
 #define ANONYMOUS_DEFAULT 0
 #endif
-
 
 #ifndef NAME_MATTER
 #define NAME_MATTER		"站务"
@@ -654,6 +657,13 @@ attach define
 */
 #ifndef ATTACHTMPPATH
 #define ATTACHTMPPATH "boards/_attach"
+#endif
+
+/*
+ * max amount of attachments in one article
+ */
+#ifndef MAXATTACHMENTCOUNT
+#define MAXATTACHMENTCOUNT	20
 #endif
 
 #ifndef WWW_PAGE_SIZE //www的每页条目数

@@ -623,6 +623,9 @@ void ConveyID()
 		currentuser->stay = 0;
 		strncpy(currentuser->username,currentuser->userid,IDLEN);
 		currentuser->userdefine &= ~DEF_NOTMSGFRIEND;
+#ifdef HAVE_WFORUM
+		currentuser->userdefine &= ~DEF_SHOWREALUSERDATA;
+#endif
         if (convcode)
             currentuser->userdefine &= ~DEF_USEGB;
 

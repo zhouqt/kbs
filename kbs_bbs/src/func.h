@@ -348,6 +348,15 @@ int clean_cachedata(char* userid,int unum);
     time_t get_posttime(const struct fileheader *fileinfo);
     void set_posttime(struct fileheader *fileinfo);
     char* checkattach(char *buf, long size,long *len,char** attachptr);
+/* roy 2003.7.23 */
+#ifdef HAVE_USERMONEY
+    int get_score(struct userec *user);
+    int set_score(struct userec *user, int score);
+    int add_score(struct userec *user, int score_addition);
+    int get_money(struct userec *user);
+    int set_money(struct userec *user, int money);
+    int add_money(struct userec *user, int money_addition);
+#endif
 
 /**
  * 一个能检测attach的fgets

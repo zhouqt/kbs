@@ -189,6 +189,12 @@ extern long ti;
 #define FILE_REPLIED 0x20       /* in mail ,added by alex, 96.9.7 */
 #define FILE_FORWARDED 0x40     /* in mail ,added by alex, 96.9.7 */
 #define FILE_IMPORTED 0x80      /* Leeward 98.04.15 */
+
+/* roy 2003.07.21 */
+#define FILE_WWW_POST	0x1 /* post by www */
+#define FILE_ON_TOP	0x2 /* on top mode */
+#define FILE_VOTE	0x4 /* article with votes */
+
 #ifdef FILTER
 #define FILE_CENSOR 0x20        /* for accessed[1], flyriver, 2002.9.29 */
 #define BADWORD_IMG_FILE "etc/badwordv2.img"
@@ -196,6 +202,7 @@ extern long ti;
 #define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
 #define FILE_MAILBACK	0x4		/* reply articles mail to owner's mailbox, accessed[1] */
+
 
 /* Leeward 98.05.11:
 In /etc/sendmail.cf:
