@@ -5,7 +5,7 @@ require("inc/funcs.php");
 
 html_init();
 ?>
-<body>
+<body >
 <?php
 	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 	if ($ret!=0)  {

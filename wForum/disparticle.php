@@ -265,40 +265,42 @@ function showArticle($boardName,$boardID,$num, $threadID,$thread){
 <?php
 }
 
+
 function showArticleTree($boardName,$boardID,$articleID,$article,$threads,$threadNum,$start) {
 ?>
 <table cellpadding=3 cellspacing=1 class=tableborder1 align=center>
 <tr><th align=left width=90% valign=middle> &nbsp;*Ê÷ÐÎÄ¿Â¼</th>
 <th width=10% align=right valign=middle height=24 id=tabletitlelink> <a href=#top><img src=pic/gotop.gif border=0>¶¥¶Ë</a>&nbsp;</th></tr>
 <?php
-	$printed=array(); 
-	$nowID=array();
-	$t=array();
-	$p=0;
-	$nowID[0]=0;
-	$try[0]=-1;
-	for(;;) {
-		for ($i=$try[$p]+1;$i<$threadNum;$i++){
-			if ( (!isset($printed[$i])) && ( ($threads[$threadNum-$i-1]['REID']==$nowID[$p]) || $p==0) ) 
-				break;
+	$IDs=array();
+	$nodes=array();
+	$printed=array();
+	$level=array();
+	$head=0;
+	$bottom=0;
+	$IDs[$bottom]=intval($threads[$threadNum-1]['ID']);
+	$level[$bottom]=0;
+	$printed[0]=1;
+	$nodes[0]=0;
+	$bottom++;
+	while($head<$bottom) {
+		showTreeItem($boardName,$articleID,$threads[$threadNum-$nodes[$head]-1],$nodes[$head],$start, $level[$head]);
+		for ($i=0;$i<$threadNum;$i++){
+			if ( (!isset($printed[$i])) && ($threads[$threadNum-$i-1]['REID']==$IDs[$head]) ) {
+				$IDs[$bottom]=intval($threads[$threadNum-$i-1]['ID']);
+				$level[$bottom]=$level[$head]+1;
+				$printed[$i]=1;
+				$nodes[$bottom]=$i;
+				$bottom++;
+			}
 		}
-		if ($i<$threadNum) {
-			$try[$p]=$i;
-			$p++;
-			showTreeItem($boardName,$articleID,$threads[$threadNum-$i-1],$i,$start, $p);
-			$printed[$i]=1;
-			$nowID[$p]=intval($threads[$threadNum-$i-1]['ID']);
-			$try[$p]=-1;
-		} else {
-			$p--;
-			if ($p<0) 
-				break;
-		}
-	} 
+		$head++;
+	}
 ?>
 </table>
 <?php
 }
+
 
 function showTreeItem($boardName,$articleID,$thread,$threadID,$start,$level){
 

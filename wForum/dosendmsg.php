@@ -42,7 +42,7 @@ if (isErrFounded()) {
 ?>
          </tr>
 		<td width="100%" class=tablebody2 colspan=2 align="center">
-		<a href="#" onclick="closeWindow();"><?php	print_r($_POST);?>[¹Ø±Õ]</a>
+		<a href="#" onclick="closeWindow();">[¹Ø±Õ]</a>
 		</td></tr>
 		</table>
 <?php

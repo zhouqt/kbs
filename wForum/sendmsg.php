@@ -26,11 +26,7 @@ function main() {
 		$destutmp = 0;
 	settype($destutmp, "integer");
 ?>
-<div id="msgcontent" onkeydown="if(event.keyCode==13 && event.ctrlKey)messager.submit()">
-<script>
-function dosendmsg(){
-}
-</script>
+<div id="msgcontent" onkeydown="dosendmsg();">
 <form action="dosendmsg.php" method=post name=messager id=messager>
 <input type="hidden" name="destutmp" value="<?php echo $destutmp; ?>"/>
 <table cellpadding=3 cellspacing=1 align=center class=tableborder1>
@@ -40,17 +36,23 @@ function dosendmsg(){
           <tr> 
             <td class=tablebody1 valign=middle><b>送讯息给:</b></td>
             <td class=tablebody1 valign=middle>
-              <input name="destid" maxlength="12" value="<?php echo $destid; ?>" size="12"/>
+              <input id="odestid" name="destid" maxlength="12" value="<?php echo $destid; ?>" size="12" onchange="msg_idchange(this.value);"/>
+<?php
+		if (!isset($_GET["destid"])) {
+?>
               <SELECT name=font onchange=DoTitle(this.options[this.selectedIndex].value)>
               <OPTION selected value="">选择</OPTION>
 
 			  </SELECT>
+<?php
+}
+?>
             </td>
           </tr>
            <tr> 
             <td class=tablebody1 valign=top width=15%><b>内容：</b></td>
             <td  class=tablebody1 valign=middle>
-              <input name="msg" maxlength="50" size="50" />
+              <input id="oMsgText" name="msg" maxlength="50" size="50" onchange="msg_textchange(this.value);" />
             </td>
           </tr>
           <tr> 
@@ -82,6 +84,7 @@ function dosendmsg(){
 </div>
 	<script>
 	parent.document.all.floater.innerHTML=msgcontent.innerHTML;
+	parent.document.all.floater.style.visibility='visible';
 	</script>
 <?php
 

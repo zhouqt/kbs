@@ -607,11 +607,7 @@ function show_nav($boardName='')
   html_init();
   if ($loginok==1) {
 ?>
-<script language="Javascript">
-	var manage= '<a style=font-size:9pt;line-height:14pt; href="usermailbox.php?boxname=inbox">我的邮箱</a><br><a style=font-size:9pt;line-height:14pt; href="showmsgs.php">察看在线短信</a><br><a style=font-size:9pt;line-height:14pt; href="javascript:openScript(\'sendmsg.php?destid=<?php 
-echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>\',500,400)">发短信</a>';	
-</script>
+
 <?php 
   }
 ?>
@@ -737,19 +733,10 @@ function show_footer()
 function getMsg(){
 
 ?>
-<script>
-function closeWindow(){
-	document.all.floater.style.visibility='hidden';
-	window.setTimeout("document.frames('webmsg').document.location.href='getmsg.php';", 30000);
-}
-function replyMsg(id){
-	document.frames('webmsg').document.location.href='sendmsg.php?destid='+id;
-}
-</script>
 
 <div id="floater" style="position:absolute; width:502px; height:152px; z-index:2; left: 200px; top: 250px; visibility: hidden; background-color: transparent; layer-background-color: #FFFFFF; "> 
 </div>
-<iframe width="100%" height="0" border="0" scrolling=no src="getmsg.php" name="webmsg">
+<iframe width="100%" height="0" frameborder="0" scrolling=no src="getmsg.php" name="webmsg">
 </iframe>
 <script src="inc/floater.js"  language="javascript"></script>
 <?php
@@ -763,7 +750,6 @@ if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
 	exit(0);
 	return;
 }
-
 
 if (( ($loginok==1) || ($guestloginok==1) )&&($setboard==1)) bbs_set_onboard(0,0);
 
