@@ -161,7 +161,7 @@ struct wwwthreadheader{
 	unsigned int groupid; /* groupid */
 	unsigned int lastid;	/* id for last article */
 	unsigned int articlecount; /* number of articles */
-	unsigned int flag;
+	unsigned int flags;
 	unsigned int unused;   /* used for further index */
 };
 
