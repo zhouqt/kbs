@@ -1331,7 +1331,8 @@ char * get_al_mobile( char *userid, char *mobile)
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sql[100];
+	char sql[300];
+	char name1[2*STRLEN+1];
 
 	if(userid == NULL || *userid == 0 )
 		return NULL;
@@ -1352,7 +1353,8 @@ char * get_al_mobile( char *userid, char *mobile)
 		return NULL;
 	}
 
-	sprintf(sql,"SELECT mobile FROM addr WHERE userid=\"%s\"", userid );
+	mysql_escape_string(name1, userid, strlen(userid));
+	sprintf(sql,"SELECT mobile FROM addr WHERE userid=\"%s\" AND name=\"%s\"", currentuser->userid, name1 );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
