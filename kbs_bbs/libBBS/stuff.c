@@ -474,8 +474,8 @@ void *attach_shm( char    *shmstr,int     defaultkey, int shmsize,int* iscreate)
 #else
 void attach_err( int     shmkey,char    *name)
 {
-    sprintf( genbuf, "Error! %s error! key = %x.\n", name, shmkey );
-    write( 1, genbuf, strlen( genbuf ) );
+    prints( "Error! %s error! key = %x.\n", name, shmkey );
+    oflush();
     exit( 1 );
 }
 

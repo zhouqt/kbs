@@ -545,7 +545,7 @@ int n ;
             	if (!iscolor){
 	                while(*str&&(*str!='m'))
 	                    str++;
-	                str++;
+	                if(*str) str++;
 	                continue;
             	} else
 	            	slp->data[reg_col++]=(unsigned char)'';

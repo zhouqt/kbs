@@ -9,7 +9,7 @@
 
 extern int errno;
 
-extern "C" int flock(int&,int);
+extern "C" int flock(int,int);
 
 CRecordFile::CRecordFile(char* filename)
 {
