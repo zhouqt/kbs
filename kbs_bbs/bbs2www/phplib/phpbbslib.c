@@ -140,6 +140,7 @@ static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
     add_assoc_long(array, "in_chat", uinfo->in_chat);
     add_assoc_string(array, "chatid", uinfo->chatid, 1);
     add_assoc_string(array, "from", uinfo->from, 1);
+    add_assoc_long(array, "logintime", uinfo->logintime);
     add_assoc_long(array, "freshtime", uinfo->freshtime);
     add_assoc_long(array, "utmpkey", uinfo->utmpkey);
     add_assoc_string(array, "userid", uinfo->userid, 1);

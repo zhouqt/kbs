@@ -9,8 +9,9 @@
 <!--
 function Init() {
   servertime=new Date()
-  servertime.setTime(1032224076*1000)
-  staytime=0
+  servertime.setTime(<?php echo time(); ?>*1000)
+  staytime=<?php echo (time()-$currentuinfo["logintime"])/60; ?>
+
   localtime=new Date()
   Time()
 }
