@@ -10,6 +10,10 @@
 #
 # $Id$
 # $Log$
+# Revision 1.5  2002/05/17 14:20:05  kxn
+#
+# faint
+#
 # Revision 1.4  2002/05/12 01:44:13  kcn
 # add libzmodem in Makefile.in
 #
@@ -265,6 +269,9 @@
 # 	Added cvs log.
 #
 # $Endlog$
+
+all: sshbbsd
+
 include ../Makefile
 include ../Makefile.spec
 
