@@ -359,7 +359,7 @@
 				<a href='javascript:changemn("mail");'><img id="imgmail" src="/images/close.gif" border="0"></a>
 				</DIV>
 			</td>
-			<td><img src="/images/t5.gif" border="0" alt="处理信件" align="absmiddle"> 处理信件</td>
+			<td><a href="/bbsmailbox.php" target="f3"><img src="/images/t5.gif" border="0" alt="处理信件" align="absmiddle"> 处理信件</a></td>
 		</tr>
 		<tr>
 			<td> </td>
