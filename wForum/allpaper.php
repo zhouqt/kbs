@@ -91,21 +91,17 @@ function boardeven($boardID,$boardName){
 				echo $rs["Hits"];
 			} 
 
-			print "</td></tr>";
-			$page_count=$page_count+1;
-			$rs=mysql_fetch_array($rs_query);
-			$rs_BOF=0;
-
+			echo "</td></tr>";
+			$page_count++;
 	} 
 	if ($_REQUEST['action']=="batch")
 	{
-
-	  print "<tr><td class=tablebody2 colspan=4 align=right>请选择要删除的小字报，<input type=checkbox name=chkall value=on onclick=\"CheckAll(this.form)\">全选 <input type=submit name=Submit value=执行  onclick=\"{if(confirm('您确定执行的操作吗?')){this.document.paper.submit();return true;}return false;}\"></td></tr>";
+	  echo "<tr><td class=tablebody2 colspan=4 align=right>请选择要删除的小字报，<input type=checkbox name=chkall value=on onclick=\"CheckAll(this.form)\">全选 <input type=submit name=Submit value=执行  onclick=\"{if(confirm('您确定执行的操作吗?')){this.document.paper.submit();return true;}return false;}\"></td></tr>";
 	} 
 
-	print "</table>";
+	echo "</table>";
 	$Pcount=;
-	print "<table border=0 cellpadding=0 cellspacing=3 width=\"".$Forum_body[12]."\" align=center>".
+	print "<table border=0 cellpadding=0 cellspacing=3 width=\"97%\" align=center>".
 	"<tr><td valign=middle nowrap>".
 	"页次：<b>".$currentpage."</b>/<b>".$Pcount."</b>页".
 	"每页<b>".$Forum_Setting[11]."</b> 共有<b>".$totalrec."</b>条</td>".
@@ -234,7 +230,7 @@ function batch()
     return $function_ret;
   } 
 
-$conn->query("delete from smallpaper where s_boardid=".$Boardid." and s_id in (".$sid.")");
+$conn->query("delete from smallpaper_tb where boardID=".$boardID." and s_id in (".$sid.")");
   $sucmsg="<li>您选择的小字报已经删除。";
 dvbbs_suc();
   return $function_ret;
