@@ -3020,6 +3020,7 @@ static PHP_FUNCTION(bbs_get_threads_from_id)
 		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
 				(void*) &element, sizeof(zval*), NULL);
 	}
+	retnum = 1;
 threads_error:
 	efree(articles);
 	if (retnum == 0)
