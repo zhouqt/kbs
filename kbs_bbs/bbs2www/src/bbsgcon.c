@@ -9,7 +9,7 @@ int main()
     char buf[512], board[80], dir[80], file[80], filename[80], *ptr;
     struct fileheader x;
     int num, tmp, total;
-    struct boardheader* bh;
+    struct boardheader bh;
     char board_url[80];
 
     init_all();
@@ -17,7 +17,7 @@ int main()
     strsncpy(file, getparm("file"), 32);
     num = atoi(getparm("num"));
     printf("<center>\n");
-    if (getboardnum(board,&bh)==NULL||!check_read_perm(currentuser, bh))
+    if (getboardnum(board,&bh) == 0 || !check_read_perm(currentuser, &bh))
         http_fatal("错误的讨论区");
     strcpy(board, getbcache(board)->filename);
     printf("%s -- 文章阅读 [讨论区: %s]<hr class=\"default\">", BBSNAME, board);
