@@ -203,7 +203,7 @@ int add_help(int mode, int num)
 	bzero( &pn, sizeof(pn) );
 
 	clear();
-	prints("%s帮助,模式: %s\n", num==-1?"增加":"修改",helpmodestr[mode-1]);
+	prints("%s帮助,模式: %s\n", num==-1?"增加":"修改",mode==0?"菜单":helpmodestr[mode-1]);
 
 	pn.modeid = mode;
 
