@@ -86,4 +86,12 @@ default.php 里面定义了 SHOWREPLYTREE，如果为 1 就会支持树形回复结构。如果为 0
 
 4. 一些杂事
 
-一个主题，如果最后一个回复是未读的，自动认为这个主题未读
+a. 一个主题，如果最后一个回复是未读的，自动认为这个主题未读
+b. 版面搜索功能只搜索楼主，时间范围指定的是最后回复时间范围。
+c. query.php里面设置了window.onload，因为如果<select size不是1的话，IE和firefox有
+   时候不能正确highlight预选的版面。如果在funcs.js或类似地方全局性的设置window.onload
+   一定注意保证query.php的onload逻辑不变。DOM2加入了addEventListener可以用以避免这个
+   问题，不过IE6似乎不支持。
+d. queryresult.php 使用 javascript 来写页面。如果搜索结果过多，可能会提示是否取消
+   javascript 运行。另外搜索结果全都放在一个 table 里面，如果页面没有下完，就什么都不
+   会显示。这些暂时不管了吧，以后搜索做成分页的就好了。
