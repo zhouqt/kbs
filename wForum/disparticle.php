@@ -106,7 +106,7 @@ function article_bar($boardName,$boardID,$articleID,$article){
 ?>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center>
 	<tr>
-	<td align=left width="30%" valign=middle>&nbsp; 
+	<td align=left width="30%" valign=middle style="height:27">&nbsp; 
 	<a href="announce.asp?name=<?php echo $boardName; ?>"><span class="buttonclass1" border=0 alt=发表一个新主题></span></a>&nbsp;&nbsp;<a href="vote.php?name=<?php echo $boardName; ?>"><span class="buttonclass2" border=0 alt=发表一个新投票></span>&nbsp;&nbsp;<a href="reply?name=<?php echo $boardName; ?>&id=<?php echo $article['ID']; ?>"><span class="buttonclass4" border=0 alt=回复本主题></span></a>
 	</td>
 	<td align=right width="70%" valign=middle><a href="disparticle.php?boardName=<?php echo $boardName; ?>&ID=<?php echo $articleID>1?$articleID-1:1; ?>"><img src="pic/prethread.gif" border=0 alt=浏览上一篇主题 width=52 height=12></a>&nbsp;
@@ -231,7 +231,7 @@ function showArticle($boardName,$boardID,$threadID,$thread){
 	 if ($loginok) {
 		 bbs_brcaddread($boardName, $thread['ID']);
 	 };
-	 bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
+	 bbs_printansifile($filename,1,'bbscon?bid='.$boardID.'&id='.$thread['ID']);
 ?></blockquote></td></tr></table>
 </td>
 
