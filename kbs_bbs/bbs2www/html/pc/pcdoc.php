@@ -78,6 +78,7 @@
 	
 	function display_art_list($link,$pc,$tag,$pur,$tid=0,$order="",$pno)
 	{
+		global $currentuser;
 		if ($pc['USER'] == '_filter' )
 	    	$query = "SELECT `fid` , `pid` , `nid` , `state` , `username`, `uid` , `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
 	    		" FROM filter WHERE `state` = '".$tag."' ";
@@ -119,6 +120,7 @@
 				
 		$result = mysql_query($query,$link);
 		$i = 0;
+		$is_admin = pc_is_manager($currentuser);
 ?>
 <form action="pcmanage.php?userid=<?php echo $pc["USER"]; ?>" method="post">	
 <table cellspacing="0" cellpadding="3" border="0" width="99%" class="t1">
@@ -187,6 +189,11 @@
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=tb&tid=".$tid; ?>" class="f3">引用</td>
 <?php
 	}
+	if ($is_admin) {
+?>
+	<td class="t2" width="30">滤</td>
+<?php
+	}
 ?>
 </tr>
 <?php
@@ -251,6 +258,9 @@
 					echo "<td class='t3'>";
 					echo $rows[trackback]?$rows[trackbackcount]:"-";
 					echo "</td>\n";
+				}
+				if ($is_admin) {
+					echo "<td class='t4'><a href=\"#\" onclick=\"bbsconfirm('pcadmin_del.php?userid=".$pc["USER"]."&nid=".$rows[nid]."','确认过滤?')\">滤</a></td>\n";
 				}
 				echo	"</tr>\n";
 			}
@@ -834,7 +844,7 @@ Blog名
 <tr>
 <?php
 	if ($pc['USER']!='_filter')
-	    if($tag == 0 || $tag == 1 || $tag ==2 )
+	    if($tag == 0 || $tag == 1 || $tag == 2 || $tag == 4)
 	    {
 ?>
 	<td rowspan="2" align="middle" valign="top" width="150">

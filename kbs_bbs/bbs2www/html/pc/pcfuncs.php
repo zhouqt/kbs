@@ -700,9 +700,9 @@ function pc_get_user_permission($currentuser,$pc)
 	global $loginok;
 	if($pc['USER']=='_filter' && pc_is_manager($currentuser))
 	{
-		$sec = array("待处理","已通过","未通过");
+		$sec = array(0=>"待处理",1=>"已通过",2=>"未通过", 4=>"被删除");
 		$pur = 1;
-		$tags = array(1,1,1,0,0,0,0,0);	    
+		$tags = array(1,1,1,0,1,0,0,0);
 	}
 	elseif (pc_is_groupwork($pc)) //群体blog目录
 	{
