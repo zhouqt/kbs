@@ -272,7 +272,7 @@ static int choose_file_show(struct _select_def *conf, int ii)
                 j=i;
                 while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
                 for(k=0;k<fsize-(j-i);k++)
-                    if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='a'&&buf[k-1]<='z'||buf[k-1]>='A'&&buf[k-1]<='Z'))&&
+                    if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='a'&&buf[k-1]<='z'||buf[k-1]>='A'&&buf[k-1]<='Z'))&&
                         (k==fsize-1||!(buf[k+j-i]>='a'&&buf[k+j-i]<='z'||buf[k+j-i]>='A'&&buf[k+j-i]<='Z')))
                         for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
                 i=j-1;
@@ -322,15 +322,21 @@ static int choose_file_show(struct _select_def *conf, int ii)
                 if(out[k]||k>0&&out[k-1]||k<fsize-1&&out[k+1]) {
                     if(out[k]==1)
                         out2[k]=1;
-                    else
+                    else {
                         out2[k]=2;
+                        if(!out[k]&&buf[k]<0) {
+                            if(k>0&&out[k-1]) out2[k+1]=2;
+                            if(k<fsize-1&&out[k+1]) out2[k-1]=2;
+                            t++;
+                        }
+                    }
                     t++;
                 }
             }
             memcpy(out,out2,fsize);
         }
         prints("\n          ");
-        j=0;
+        j=0; t = 0;
         for(i=0;i<fsize;i++)
         if(out[i]) {
             if(i>0&&out[i-1]==0) {
@@ -344,6 +350,8 @@ static int choose_file_show(struct _select_def *conf, int ii)
             else prints("%c",buf[i]);
             j++;
             if(j>=69) {
+                t++;
+                if(t>=3) break;
                 prints("\n          ");
                 j=0;
             }
