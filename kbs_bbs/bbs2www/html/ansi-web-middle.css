@@ -1,6 +1,6 @@
-BODY {background-color: #e8f0e8; font-size:14px; line-height=14px}
-FONT {background-color: #e8f0e8}
-FONT.f000 {color: #e8f0e8 }
+BODY {color: #303230; background-color: #e8f0e8; font-size:14px; line-height=14px}
+FONT {color: #303230; background-color: #e8f0e8}
+FONT.f000 {}
 FONT.f001 {color: #e87874 }
 FONT.f002 {color: #00b400 }
 FONT.f003 {color: #aeb400 }
