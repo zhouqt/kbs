@@ -26,7 +26,7 @@
 #include <math.h>
 #include <sys/file.h>
 
-//#define BBSHOME "/home/system/bbs"
+#define BBSHOME "/home/system/bbs"
 
 char host1[100][40], host2[100][40], ip[100][40];
 int port[100], counts= 0;
@@ -188,7 +188,7 @@ syslog(char* s) {
         strncpy(timestr, &(thetime[4]), 15);
         timestr[15] = '\0';
         //sprintf(buf,"%s %s@%s %s\n", timestr, userid, ip, s) ;
-        snprintf(buf, 512, "%s %s %s\n", timestr, ip, s) ;
+        snprintf(buf, 512, "%s %-15s %-5d %s\n", timestr, ip, (int)getpid(), s) ;
         fd=open(BBSHOME "/reclog/bbsnet.log", O_CREAT | O_APPEND | O_WRONLY );
 	flock( fd, LOCK_EX );
         write( fd, buf, strlen(buf) );
