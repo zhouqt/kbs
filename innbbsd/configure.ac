@@ -1,23 +1,21 @@
 # Process this file with autoconf to produce a configure script.
 AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
-AM_INIT_AUTOMAKE([foreign dist-bzip2])
-
 AC_CANONICAL_SYSTEM
 case "${host}" in
-  i*86-*-freebsd4*)
+  i*86-*-freebsd*)
         CFLAGS="$CFLAGS -DFREEBSD"
 	;;
   *-*-linux*)        
-        CFLAGS="$CFLAGS -DLINUX"
+        CFLAGS="$CFLAGS -DLINUX -DPOSIX -DSYSV -DUSE_SYSV_UTMP"
         ;;  
   *-*-cygwin*)        
-        CFLAGS="$CFLAGS -DCYGWIN"
+        CFLAGS="$CFLAGS -DCYGWIN -DPOSIX -DSYSV -DUSE_SYSV_UTMP"
 	    LIBS="$LIBS -liconv"
         ;;  
   *)
 	;;
 esac
-AM_INIT_AUTOMAKE([innbbsd],1.0)
+AM_INIT_AUTOMAKE([smthinnbbsd],1.0)
 AC_CONFIG_SRCDIR([config.h.in])
 AM_CONFIG_HEADER(config.h)
 
@@ -30,6 +28,7 @@ AC_PROG_MAKE_SET
 AC_PROG_CPP
 AC_PROG_INSTALL
 AC_PROG_YACC
+AC_PROG_LIBTOOL
 
 # Checks for libraries.
 m4_include(../config.lib)
@@ -68,5 +67,5 @@ AC_FUNC_WAIT3
 AC_CHECK_FUNCS([bzero bcopy dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname getpagesize gettimeofday getwd inet_ntoa memchr mkdir munmap putenv select setenv socket strcasecmp strchr strdup strerror strncasecmp strrchr strspn strstr utime killpg])
 
 AC_CONFIG_FILES([Makefile
-                 convert/Makefile])
+                 libhztty/Makefile])
 AC_OUTPUT

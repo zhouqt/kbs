@@ -1,6 +1,9 @@
-SUBDIRS = convert
+SUBDIRS = libhztty
 bin_PROGRAMS = innbbsd makedbz mkhistory dbzserver bbsnnrp \
 		ctlinnbbsd dbz_query_sample bbslink
+EXTRA_DIST = AUTHORS INSTALL doc/* README
+CLEANFILES = @EXTRA_CLEAN@
+AM_MAKEFLAGS=-s
 innbbsd_SOURCES = nocem.c inndchannel.c innbbsd.c connectsock.c rfc931.c \
 		daemon.c file.c pmain.c parsdate.y his.c \
 		dbz.c closeonexec.c dbztool.c inntobbs.c echobbslib.c \
@@ -21,5 +24,4 @@ AM_CFLAGS = -DGETRUSAGE -DUSE_NCM_PATCH -DPGP5 -DFirebirdBBS -DDBZDEBUG -DFILTER
 innbbsd_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
 bbslink_CFLAGS = -DWITH_ECHOMAIL $(AM_CFLAGS)
 dbzserver_CFLAGS = -DDBZSERVER $(AM_CFLAGS)
-LDADD = -Lconvert/hztty-2.0 -lhztty -L../libBBS -lBBS  -L../libsystem -lsystem
-CLEANFILES = @EXTRA_CLEAN@
+LDADD=-L../libBBS -lBBS -L../libsystem -lsystem -Llibhztty -lhztty
