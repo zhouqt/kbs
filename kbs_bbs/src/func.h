@@ -436,6 +436,32 @@ int chk_smsmsg(int force );
 int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *group,int start, int num, int order, char *msgtxt);
 int add_sql_al(char *userid, struct addresslist *al, char *msgbuf);
 #endif
+
+#ifdef PERSONAL_CORP
+
+char * tt2timestamp( time_t tt, char *c);
+time_t timestamp2tt( char *row );
+int pc_conv_file_to_body( char **body, char *fname);
+int pc_load_usr( struct _pc_selusr **ps, char prefix);
+int get_pc_users( struct pc_users * pu, char * userid );
+int get_pc_a_node( struct pc_nodes * pn, unsigned long nid);
+int count_pc_nodes( int uid, unsigned long pid, int type, int access );
+int get_pc_nodes( struct pc_nodes * pn, int uid, unsigned long pid, int type, int access, int start, int num, int withbody);
+int get_pc_a_com( struct pc_comments * pn, unsigned long cid );
+int count_pc_comments( unsigned long nid);
+int get_pc_comments( struct pc_comments * pn, unsigned long nid, int start, int num, int withbody);
+int add_pc_users(struct pc_users *pn);
+int add_pc_nodes(struct pc_nodes *pn);
+int add_pc_comments(struct pc_comments *pn);
+int del_pc_users(struct pc_users *pn);
+int del_pc_nodes( unsigned long nid );
+int pc_del_junk(int uid);
+int del_pc_node_junk(unsigned int nid);
+int del_pc_comments( unsigned long nid, unsigned long cid );
+int pc_paste_node(unsigned long nid, int newuid, int newaccess, unsigned long newpid ) ;
+int pc_add_visitcount(unsigned long nid);
+
+#endif
 /* site.c */
     char *ModeType(int mode);
     char *email_domain();
