@@ -61,7 +61,6 @@ char  name[STRLEN];
 int do_del_post(struct userec* user,int ent ,struct fileheader *fileinfo ,char *direct ,char* board,int digestmode,int decpost)
 {
     char        buf[512];
-    char        usrid[STRLEN];
     char        *t ;
     int         owned, fail;
 
@@ -101,9 +100,9 @@ postreport(fileinfo->title, -1, currboard); added by alex, 96.9.12 */
                 {
                     user->numposts--;/*自己删除的文章，减少post数*/
                 }
-            } else if ( !strstr(usrid,".")&&BMDEL_DECREASE&&decpost/*版主删除,减少POST数*/){
+            } else if ( !strstr(fileinfo->owner,".")&&BMDEL_DECREASE&&decpost/*版主删除,减少POST数*/){
                 struct userec* lookupuser;
-                int id = getuser(usrid,&lookupuser);
+                int id = getuser(fileinfo->owner,&lookupuser);
                 if(id && (int)lookupuser->numposts > 0 && !junkboard(board) && strcmp(board, "sysmail") ) /* SYSOP MAIL版删文不减文章 Bigman: 2000.8.12*/
                 { /* Leeward 98.06.21 adds above later 2 conditions */
                     lookupuser->numposts--;
