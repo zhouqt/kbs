@@ -175,8 +175,8 @@ login_init();
   </tr>
   </table>
 <center>
-<form action=bbsfav.php>增加目录<input name=dname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>><input type=hidden name=up value=<?php echo $list_father;?>></form>
-<form action=bbsfav.php>增加版面<input name=bname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>><input type=hidden name=up value=<?php echo $list_father;?>></from>
+<form action=bbsfav.php>增加目录<input name=dname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></form>
+<form action=bbsfav.php>增加版面<input name=bname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></from>
 </center>
 
 
