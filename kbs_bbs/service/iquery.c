@@ -326,6 +326,7 @@ static int choose_file_key(struct _select_def *conf, int key)
             do_query_all(wh, qn);
             return SHOW_DIRCHANGE;
         }
+	break;
     case '[':
         if(wh>0) {
             move(t_lines-1, 0);
@@ -336,6 +337,7 @@ static int choose_file_key(struct _select_def *conf, int key)
             do_query_all(wh, qn);
             return SHOW_DIRCHANGE;
         }
+	break;
     case 'o':
     case 'O':
 	t_friends();
