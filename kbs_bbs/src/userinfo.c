@@ -42,6 +42,13 @@ void disply_userinfo(u, real)
     prints("真实姓名     : %s\n", ud.realname);
     prints("居住住址     : %s\n", ud.address);
     prints("电子邮件信箱 : %s\n", ud.email);
+
+	/*加入生日等显示 added by binxun 2003.5.20*/
+#ifdef HAVE_BIRTHDAY
+    prints("您的性别     : %s\n",(ud.gender=='M')?"男":"女");
+	prints("您的生日     : %d-%d-%d\n",ud.birthyear+1900,ud.birthmonth,ud.birthday);
+#endif
+
     if (real) {
         prints("真实 E-mail  : %s\n", ud.realemail);
     }
@@ -50,18 +57,18 @@ void disply_userinfo(u, real)
     if (real) {
         prints("最近光临机器 : %s\n", u->lasthost);
     }
-    
-    /*---	added by period		hide posts/logins	2000-11-02	---*/ 
-/*    if(HAS_PERM(currentuser,PERM_ADMINMENU)) { *//* removed to let user can see his own data */ 
+
+    /*---	added by period		hide posts/logins	2000-11-02	---*/
+/*    if(HAS_PERM(currentuser,PERM_ADMINMENU)) { *//* removed to let user can see his own data */
         prints("上站次数     : %d 次\n", u->numlogins);
     if (real)
         prints("文章数目     : %d 篇\n", u->numposts);
-    
+
         /*       if( real ) {
            prints("文章数目     : %d / %d (Board/1Discuss)\n",
            u->numposts, post_in_tin( u->userid ));
-           }  removed by stephen 2000-11-02 */ 
-        /*    } */ 
+           }  removed by stephen 2000-11-02 */
+        /*    } */
 #ifdef NINE_BUILD
            exp=countexp(u);
            prints("经验值       : %d(%s)\n",exp,cexp(exp));
@@ -105,6 +112,12 @@ int uinfo_query(struct userec *u, int real, int unum)
     FILE * fin, *fout, *dp;
     time_t code;
 	struct userdata ud;
+	
+	time_t now;
+	struct tm *tmnow;
+
+	now = time(0);
+	tmnow = localtime(&now);
 
     memcpy(&newinfo, u, sizeof(struct userec));
 	read_userdata(u->userid, &ud);
@@ -134,11 +147,63 @@ int uinfo_query(struct userec *u, int real, int unum)
         getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
         if (buf[0])
              {
-            
-                /*netty_check = 1; */ 
-                /* 取消email 认证, alex , 97.7 */ 
+
+                /*netty_check = 1; */
+                /* 取消email 认证, alex , 97.7 */
                 strncpy(ud.email, buf, STRLEN);
             }
+		/* 加入修改生日等 added by binxun 2003.5.20 */
+#ifdef  HAVE_BIRTHDAY
+        sprintf(genbuf, "您的性别: [1]男 [2]女 (1 or 2)[%d]",(ud.gender=='M')?1:2);
+	    do{
+            getdata(i, 0, genbuf,buf, 2, DOECHO, NULL, true);
+			if(buf[0]==0)break;
+        }while (buf[0] < '1' || buf[0] > '2');
+        i++;
+		switch (buf[0])
+		{
+		case '1':
+			ud.gender = 'M';
+			break;
+		case '2':
+			ud.gender = 'F';
+			break;
+		default:
+		    break;
+		}
+
+		prints("请输入您的出生日期");
+		i++;
+        do{
+			buf[0] = '\0';
+			sprintf(genbuf, "四位数公元年: [%d]: ", ud.birthyear+1900);
+			getdata(i, 0, genbuf, buf, 5, DOECHO, NULL, true);
+			if(buf[0]=='\0')break;
+			if (atoi(buf) < 1900)continue;
+			ud.birthyear = atoi(buf) - 1900;
+		}while (ud.birthyear < tmnow->tm_year - 98 || ud.birthyear > tmnow->tm_year - 3);
+		i++;
+
+        do{
+			buf[0] = '\0';
+			sprintf(genbuf, "出生月: (1-12) [%d]: ", ud.birthmonth);
+			getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
+			if(buf[0]=='\0')break;
+			ud.birthmonth = atoi(buf);
+		}while (ud.birthmonth < 1 || ud.birthmonth > 12);
+		i++;
+
+        do
+		{
+			buf[0] = '\0';
+			sprintf(genbuf, "出生日: (1-31) [%d]: ", ud.birthday);
+			getdata(i, 0, genbuf, buf, 3, DOECHO, NULL, true);
+			if(buf[0]=='\0')break;
+			ud.birthday = atoi(buf);
+		}while (ud.birthday < 1 || ud.birthday > 31);
+		i++;
+#endif
+
         if (real) {
             sprintf(genbuf, "真实Email[%s]: ", ud.realemail);
             getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
