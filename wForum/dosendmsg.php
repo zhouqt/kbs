@@ -78,9 +78,16 @@ function main(){
 		return false;
 */
 	}
-	if (bbs_sendwebmsg($destid, $msg, $destutmp, $errmsg)==FALSE){
-		foundErr($errmsg);
-		return false;
+	if (isset($_POST['isSMS'])) {
+		if (bbs_send_sms($destid, $msg)!=0){
+			foundErr("手机短信发送失败！");
+			return false;
+		}
+	} else {
+		if (bbs_sendwebmsg($destid, $msg, $destutmp, $errmsg)==FALSE){
+			foundErr($errmsg);
+			return false;
+		}
 	}
 	setSucMsg("消息已成功发送！");
 }

@@ -7,8 +7,6 @@ function getattachtmppath($userid,$utmpnum)
 
 }
 
-define('BOARDLISTSTYLE','simplest');
-
 define('ANNOUNCENUMBER',5);
 
 define('ARTICLESPERPAGE',30); //目录列表下每页显示的主题数
