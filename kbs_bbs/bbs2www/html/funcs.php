@@ -19,18 +19,6 @@ global $currentuinfo_num;
 global $currentuuser_num;
 $currentuinfo=array ();
 $currentuser=array ();
-$section_nums = array("0", "1", "3", "4", "5", "6", "7", "8", "9");
-$section_names = array(
-	array("BBS 系统", "[站内]"),
-	array("清华大学", "[本校]"),
-	array("电脑技术", "[电脑/系统]"),
-	array("休闲娱乐", "[休闲/音乐]"),
-	array("文化人文", "[文化/人文]"),
-	array("社会信息", "[社会/信息]"),
-	array("学术科学", "[学科/语言]"),
-	array("体育健身", "[运动/健身]"),
-	array("知性感性", "[谈天/感性]")
-);
 $dir_modes = array(
 	"NORMAL" => 0,
 	"DIGEST" => 1,
@@ -42,6 +30,7 @@ $dir_modes = array(
 	"AUTHOR" => 7,
 	"TITLE" => 8
 );
+require("site.php");
 
 $loginok=0;
 header("Cache-Control: no-cache");
