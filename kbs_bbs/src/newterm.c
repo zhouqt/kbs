@@ -33,7 +33,7 @@ void do_move(int destcol, int destline, void (*outc) (char))
     char buf[30];
     char *p;
 
-    sprintf(buf, "\033[%d;%dH", destline + 1, destcol + 1);
+    snprintf(buf,29, "\033[%d;%dH", destline + 1, destcol + 1);
     for (p = buf; *p != 0; p++)
         (*outc) (*p);
 }
