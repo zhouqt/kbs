@@ -115,7 +115,16 @@ extern long ti;
 
 #endif                          /* BBSIRC */
 
+#ifdef FRIEND_MULTI_GROUP
+#define MAXFRIENDS (500)
+#define MAXFRIENDSGROUP 20
+#else
 #define MAXFRIENDS (400)
+#endif
+
+#ifdef SMS_SUPPORT
+#define MOBILENUMBERLEN 21
+#endif
 /*#define NUMPERMS (31)*/
 
 #define MAX_SIGNATURES 20       /* 最大签名档个数 by flyriver, 2002.11.10 */
@@ -467,5 +476,11 @@ struct _brc_cache_entry {
     int changed;
 };
 
+#define FRIENDSGROUP_LIST 01
+#define FRIENDSGROUP_MSG 02
+#define FRIENDSGROUP_PAGER 04
+#define FRIENDSGROUP_MAIL 08
+#define FRIENDSGROUP_SEEME 010
+#define FRIENDSGROUP_UNUSE 020
 
 #endif                          /* of _BBS_H_ */

@@ -47,7 +47,11 @@ struct userdata
 	unsigned char   birthmonth;
 	unsigned char   birthday;
 #endif
-     char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
+    char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
+#ifdef SMS_SUPPORT
+    bool registered;
+    char mobilenumber[MOBILENUMBERLEN];
+#endif
 };
 
 struct user_info {              /* Structure used in UTMP file */
@@ -73,14 +77,24 @@ struct user_info {              /* Structure used in UTMP file */
     char username[40];
     int friendsnum;
     int friends_uid[MAXFRIENDS];
+#ifdef FRIEND_MULTI_GROUP
+    unsigned int friends_p[MAXFRIENDS];
+#endif
     int currentboard;
 };
 struct friends {
     char id[13];
     char exp[15];
+    int groupid;
 };
 struct friends_info {
     char exp[15];
+};
+struct friends_group {
+    char name[15];
+    unsigned int p;
+    char f;
+    char b;
 };
 
 struct boardheader {            /* This structure is used to hold data in */
