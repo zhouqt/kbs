@@ -36,13 +36,15 @@ login_init();
                 }
                 if (isset($_GET["dname"]))
                 {
-                        $add_dname=$_GET["dname"];
-                        bbs_add_favboarddir($add_dname);
+                        $add_dname=trim($_GET["dname"]);
+                        if ($add_dname)
+                            bbs_add_favboarddir($add_dname);
                 }
                 if (isset($_GET["bname"]))
                 {
-                        $add_bname=$_GET["bname"];
-                        $sssss=bbs_add_favboard($add_bname);
+                        $add_bname=trim($_GET["bname"]);
+                        if ($add_bname)
+                            $sssss=bbs_add_favboard($add_bname);
                 }
                 $boards = bbs_fav_boards($select, 1);
 				$list_father = bbs_get_father($select);
