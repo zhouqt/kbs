@@ -74,6 +74,7 @@ AC_FUNC_STRFTIME
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
 AC_CHECK_FUNCS([alarm atexit bzero dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname inet_ntoa isascii memchr memset mkdir munmap rmdir select socket strcasecmp strchr strdup strerror strncasecmp strpbrk strrchr strstr strtol utime])
+AC_CHECK_TYPES(bool)
 
 dnl Select Error language
 AC_ARG_ENABLE(site,

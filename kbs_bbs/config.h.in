@@ -34,6 +34,9 @@
 /* Define to 1 if you have the `atexit' function. */
 #undef HAVE_ATEXIT
 
+/* Define to 1 if the system has the type `bool'. */
+#undef HAVE_BOOL
+
 /* Define to 1 if you have the `bzero' function. */
 #undef HAVE_BZERO
 
