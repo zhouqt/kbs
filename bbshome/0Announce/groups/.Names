@@ -1,0 +1,27 @@
+#
+# Title=艺术文化
+#
+Name=电脑技术
+Path=~/comp.faq
+Numb=1
+#
+Name=本站系统
+Path=~/system.faq
+Numb=2
+#
+Name=休闲娱乐
+Path=~/rec.faq
+Numb=3
+#
+Name=谈天说地
+Path=~/talk.faq
+Numb=4
+#
+Name=其  他
+Path=~/other.faq
+Numb=5
+#
+Name=艺术文化
+Path=~/literal.faq
+Numb=6
+#
