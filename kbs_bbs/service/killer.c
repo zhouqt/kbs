@@ -285,7 +285,6 @@ char * get_msgs(int s)
         if(k==-1||k==uinfo.pid) {
             if(j==s) {
                 ss = inrooms[myroom].msgs[(i+inrooms[myroom].msgi)%MAX_MSG];
-                if(!strcmp(ss, "你被踢了")) kicked = 1;
                 return ss;
             }
             j++;
@@ -372,6 +371,7 @@ void refreshit()
     if(msgst-1-(t_lines-3-i)-jpage>=0)
     {
         char * ss=get_msgs(msgst-1-(t_lines-3-i)-jpage);
+        if(!strcmp(ss, "你被踢了")) kicked = 1;
         move(i,20);
         if(ss)
             prints(ss);
