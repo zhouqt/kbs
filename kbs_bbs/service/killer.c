@@ -87,7 +87,7 @@ void save_result(int w)
     r.peoplet = 0; j = 0;
     for(i=0;i<MAX_PEOPLE;i++)
     if(inrooms[myroom].peoples[i].style!=-1&&!(inrooms[myroom].peoples[i].flag&PEOPLE_SPECTATOR)) {
-        strcpy(r.id[j], inrooms[myroom].peoples[i].id[i]);
+        strcpy(r.id[j], inrooms[myroom].peoples[i].id);
         r.st[j] = 4;
         if(!(inrooms[myroom].peoples[i].flag&PEOPLE_KILLER)) {
             if(inrooms[myroom].peoples[i].flag&PEOPLE_ALIVE)
