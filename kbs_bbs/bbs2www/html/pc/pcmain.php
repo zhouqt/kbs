@@ -215,7 +215,7 @@ function  pcmain_blog_most_view()
 <?php
 	for($i = 0;$i < $num ;$i ++)
 	{
-		if( $i == intval( $num / 2 ) ) echo "</tr><td style=\"line-height:16px \" align=left width=\"50%\">";
+		if( $i == intval( $num / 2 ) ) echo "</td><td style=\"line-height:16px \" align=left width=\"50%\">";
 		$rows = $nodes[$i];
 		$pcinfor = pc_load_infor($link,"",$rows[uid]);
 		echo "<li><a href=\"pccon.php?id=".$rows[uid]."&nid=".$rows[nid]."&s=all\">";
