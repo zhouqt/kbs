@@ -257,7 +257,7 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 <table cellPadding="5" cellSpacing="1" align="center" class="TableBorder1" style=" table-layout:fixed;word-break:break-all">
 <?php
 	for($i=0;$i<$num;$i++) {
-		showArticle($boardName,$boardID,$i+$start,intval($articles[$i+$start]['ID']),$articles[$i+$start],$i%2);
+		showArticle($boardName,$boardID,$i+$start,$articles[$i+$start]['ID'],$articles[$i+$start],$i%2);
 	}
 ?>
 </table>
@@ -288,7 +288,7 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 	}
 }
 
-function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
+function showArticle($boardName,$boardID, $startNum, $articleID,$article,$type){
 	global $loginok;
 	global $isbm;
 
@@ -296,12 +296,12 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	$fgstyle='TableBody'.(2-$type);
 
 	/* 文章内容处理部分 */
-	$filename=bbs_get_board_filename($boardName, $thread["FILENAME"]);
+	$filename=bbs_get_board_filename($boardName, $article["FILENAME"]);
 	if ($loginok) {
-		bbs_brcaddread($boardName, $thread['ID']);
+		bbs_brcaddread($boardName, $articleID);
 	};
-	$is_tex = SUPPORT_TEX && $thread["IS_TEX"];
-	$articleContents = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$thread['ID'],$is_tex,0);
+	$is_tex = SUPPORT_TEX && $article["IS_TEX"];
+	$articleContents = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$articleID,$is_tex,0);
 	if (0) { /* 这部分各站点可以自行订制，下面给出一点示例 */
 		/* 去掉第一行 */
 		$chit = strpos( $articleContents, "标&nbsp;&nbsp;题:" );
@@ -318,7 +318,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
         $articleContents = preg_replace($search,$replace,$articleContents);
         
         /* 显示发文时间 */
-		$articleContents = "<b>发布于: ".strftime('%Y-%m-%d %H:%M:%S', intval($thread['POSTTIME']))."</b><br /><br />".$articleContents;
+		$articleContents = "<b>发布于: ".strftime('%Y-%m-%d %H:%M:%S', intval($article['POSTTIME']))."</b><br /><br />".$articleContents;
 	}
 	$articleContents = str_replace("&nbsp;", " ", $articleContents);
 	$articleContents = str_replace("  ", " &nbsp;", $articleContents);
@@ -326,22 +326,23 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	/* 文章内容处理结束，此时 $articleContents 应该是能够直接输出的内容 */
 
 	$user=array();
-	$user_num=bbs_getuser($thread['OWNER'],$user);
+	$user_num=bbs_getuser($article['OWNER'],$user);
 	if ($user_num == 0) {
 		$user = false;
-	} else if ($thread['POSTTIME'] < $user['firstlogin']) {
+	} else if ($article['POSTTIME'] < $user['firstlogin']) {
 		$user = false; //前人发的帖子
 	}
 ?>
 <tr><td class="<?php echo $bgstyle ;?>" valign="top" width="175" >
+<a name="a<?php echo $startNum; ?>"></a>
 <table width="100%" cellpadding="2" cellspacing="0" >
 <tr><td width="*" valign="middle" style="filter:glow(color=#9898BA,strength=2)" >&nbsp;
 <?php
-	$str = "<font color=\"#990000\"><b>" . $thread['OWNER'] . "</b></font>";
+	$str = "<font color=\"#990000\"><b>" . $article['OWNER'] . "</b></font>";
 	if ($user !== false) {
-		$str = "<a href=\"dispuser.php?id=" . $thread['OWNER']. "\" target=\"_blank\" title=\"查看" . $thread['OWNER'] . "的个人资料\" style=\"TEXT-DECORATION: none;\">" . $str . "</a>";
+		$str = "<a href=\"dispuser.php?id=" . $article['OWNER']. "\" target=\"_blank\" title=\"查看" . $article['OWNER'] . "的个人资料\" style=\"TEXT-DECORATION: none;\">" . $str . "</a>";
 		if ($isbm) {
-			$str .= "&nbsp;[<a href=\"bmdeny.php?board=".$boardName."&amp;userid=".$thread['OWNER']."\" title=\"封禁本文作者\"><font color=\"red\">封</font></a>]";
+			$str .= "&nbsp;[<a href=\"bmdeny.php?board=".$boardName."&amp;userid=".$article['OWNER']."\" title=\"封禁本文作者\"><font color=\"red\">封</font></a>]";
 		}
 	}
 	echo "<nobr>".$str."</nobr>";
@@ -350,7 +351,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <td width="25" valign="middle">
 <?php
 	if ($user !== false) {
-		$is_online = bbs_isonline($thread['OWNER']);
+		$is_online = bbs_isonline($article['OWNER']);
 		$show_detail = ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA);
 		if ($show_detail) {
 			if ( chr($user['gender'])=='M' ){
@@ -377,7 +378,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 			}
 		}
 		if ($loginok && $is_online) {
-			echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border="0" title="'.$c.'，在线，有人找我吗？"/></a>';
+			echo '<a href="javascript:replyMsg(\''.$article['OWNER'].'\')"><img src="'.$img.'" border="0" title="'.$c.'，在线，有人找我吗？"/></a>';
 		} else {
 			echo '<img src="'.$img.'" border="0" title="'.$c.'，'.($is_online?'在线':'离线').'"/>';
 		}
@@ -391,7 +392,7 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	if ($user !== false) {
 ?>
 &nbsp;&nbsp;<?php echo get_myface($user); ?><br/>
-&nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><br/>
+&nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($article['OWNER']); ?><br/>
 &nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br/>
 <?php
 		if (SHOW_REGISTER_TIME) {
@@ -415,21 +416,21 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <td class="<?php echo $bgstyle ;?>" valign="top" width="*">
 
 <table width="100%" ><tr><td width="*">
-<a href="queryresult.php?userid=<?php echo $thread['OWNER']; ?>&amp;boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border="0" title="搜索<?php echo $thread['OWNER']; ?>在本版的所有贴子"/></a>&nbsp;
-<a href="sendmail.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img title="点击这里发送信件给<?php echo $thread['OWNER']; ?>" border="0" src="pic/email.gif"/></a>&nbsp;
-<a href="editarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/edit.gif" border="0" title="编辑"/></a>&nbsp;
-<a href="deletearticle.php?board=<?php echo $boardName; ?>&amp;ID=<?php echo $thread['ID']; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border="0" title="删除"/></a>&nbsp;
+<a href="queryresult.php?userid=<?php echo $article['OWNER']; ?>&amp;boardNames=<?php echo $boardName; ?>"><img src="pic/find.gif" border="0" title="搜索<?php echo $article['OWNER']; ?>在本版的所有贴子"/></a>&nbsp;
+<a href="sendmail.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $articleID; ?>"><img title="点击这里发送信件给<?php echo $article['OWNER']; ?>" border="0" src="pic/email.gif"/></a>&nbsp;
+<a href="editarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $articleID; ?>"><img src="pic/edit.gif" border="0" title="编辑"/></a>&nbsp;
+<a href="deletearticle.php?board=<?php echo $boardName; ?>&amp;ID=<?php echo $articleID; ?>" onclick="return confirm('你真的要删除本文吗?')"><img src="pic/delete.gif" border="0" title="删除"/></a>&nbsp;
 <?php
 	if (!OLD_REPLY_STYLE && ENABLE_UBB) {
 ?>
-<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>&amp;quote=1"><img src="pic/reply.gif" border="0" title="引用回复这个贴子"/></a>&nbsp;
+<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $articleID; ?>&amp;quote=1"><img src="pic/reply.gif" border="0" title="引用回复这个贴子"/></a>&nbsp;
 <?php
 	}
 ?>
-<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $thread['ID']; ?>"><img src="pic/reply_a.gif" border="0" title="回复这个贴子"/></a>
+<a href="postarticle.php?board=<?php echo $boardName; ?>&amp;reID=<?php echo $articleID; ?>"><img src="pic/reply_a.gif" border="0" title="回复这个贴子"/></a>
 </td>
 <td width="50">
-<b><?php echo $num==0?'楼主':'第<font color="#ff0000">'.$num.'</font>楼'; ?></b></td></tr><tr><td bgcolor="#D8C0B1" height="1" colspan="2"></td></tr>
+<b><?php echo $startNum==0?'楼主':'第<font color="#ff0000">'.$startNum.'</font>楼'; ?></b></td></tr><tr><td bgcolor="#D8C0B1" height="1" colspan="2"></td></tr>
 </table>
 
 <table border="0" width="98%" style=" table-layout:fixed;word-break:break-all"><tr><td width="100%" style="font-size:9pt;line-height:12pt;padding: 0px 5px;"><?php echo $articleContents; ?></td></tr></table>
@@ -439,11 +440,11 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 <?php
 /*
 <tr>
-<td class=<?php echo $bgstyle ;?> valign=middle align=center width=175><a href=# onclick="alert('本功能尚未实现');" target=_blank><img align=absmiddle border=0 width=13 height=15 src="pic/ip.gif" title="点击查看用户来源及管理<br>发贴IP：*.*.*.*"></a> <?php echo strftime("%Y-%m-%d %H:%M:%S",$thread['POSTTIME']); ?></td>
+<td class=<?php echo $bgstyle ;?> valign=middle align=center width=175><a href=# onclick="alert('本功能尚未实现');" target=_blank><img align=absmiddle border=0 width=13 height=15 src="pic/ip.gif" title="点击查看用户来源及管理<br>发贴IP：*.*.*.*"></a> <?php echo strftime("%Y-%m-%d %H:%M:%S",$article['POSTTIME']); ?></td>
 <td class=<?php echo $bgstyle ;?> valign=middle width=*>
 <table width=100% cellpadding=0 cellspacing=0><tr>
   <td align=left valign=middle> &nbsp;&nbsp;<a href=# onclick="alert('本功能尚未实现');" title="同意该帖观点，给他一朵鲜花，将消耗您5点金钱"><img src=pic/xianhua.gif border=0>鲜花</a>(<font color=#FF0000>0</font>)&nbsp;&nbsp;<a href=# onclick="alert('本功能尚未实现');" title="不同意该帖观点，给他一个鸡蛋，将消耗您5点金钱"><img src=pic/jidan.gif border=0>鸡蛋</a>(<font color=#FF0000>0</font>)</td><td align=right nowarp valign=bottom width=200></td>
-  <td align=right valign=bottom width=4><a href="bmmanage.php?board=<?php echo $boardName; ?>&ID=<?php echo $thread['ID']; ?>"><img src="pic/jing.gif" border=0 title=切换精华</a></td>
+  <td align=right valign=bottom width=4><a href="bmmanage.php?board=<?php echo $boardName; ?>&ID=<?php echo $articleID; ?>"><img src="pic/jing.gif" border=0 title=切换精华</a></td>
 </tr></table>
 </td></tr>
 <?php
