@@ -151,7 +151,10 @@ struct _tmp_findboard {
 
 static int findboard(struct boardheader* bh,struct _tmp_findboard* arg)
 {
-    if (!strncmp(bh->ann_path,arg->path,strlen(arg->path)>128?128:strlen(arg->path))) {
+
+	if(! bh->ann_path || ! bh->ann_path[0] ) return 0;
+
+    if (!strncmp(bh->ann_path,arg->path,strlen(bh->ann_path))) {
         strncpy(arg->board,bh->filename,arg->len);
         arg->board[arg->len-1]=0;
         return QUIT;
