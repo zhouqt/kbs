@@ -556,7 +556,10 @@ int deldeny(struct userec* user,char* board,char* uident,int notice_only)  /* 删
         fprintf(fn1,"发信站: %s (%24.24s)\n","BBS "NAME_BBS_CHINESE"站",ctime(&now)) ;
         fprintf(fn1,"来  源: %s \n",fromhost) ;
         fprintf(fn1,"\n");
-        fprintf(fn1,"您被站务人员 %s 解除在 %s 板的封禁\n",user->userid,board);
+	if (!strcmp(user->userid,"deliver"))
+          fprintf(fn1,"您被自动解封系统解除在 %s 板的封禁\n",board);
+	else
+          fprintf(fn1,"您被站务人员 %s 解除在 %s 板的封禁\n",user->userid,board);
     }
     else
     {

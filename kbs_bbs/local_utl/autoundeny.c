@@ -102,6 +102,7 @@ int undenyboardy(struct boardheader* bh)
 										*p=0;
 										break;
 									}
+								printf("%s %s\n",bh->filename,uid);
 							        deldeny(&deliveruser,bh->filename,uid,0);
 							}
 						}
@@ -126,7 +127,9 @@ main()
 	resolve_ucache();
 	bzero(&deliveruser,sizeof(struct userec));
 	strcpy(deliveruser.userid,"deliver");
+	deliveruser.userlevel=-1;
 	strcpy(deliveruser.username,"自动发信系统");
+	currentuser=&deliveruser;
 	strcpy(fromhost,"天堂");
 	apply_boards(undenyboardy);
 }
