@@ -707,6 +707,7 @@ int ProtectID()
 	else
 		strncpy(protect.name,getSession()->currentmemo->ud.realname,NAMELEN);
 	
+#ifdef HAVE_BIRTHDAY
 	move(4,0);
 	prints("请输入您的出生日期: ");
 	
@@ -733,6 +734,7 @@ int ProtectID()
 		else
 			protect.birthday = getSession()->currentmemo->ud.birthday;
 	}
+#endif
 
 	sprintf(print_buf,"您的Email: ");
 	do {
