@@ -2490,8 +2490,8 @@ static PHP_FUNCTION(bbs_findpwd_check)
     struct userdata ud;
 	struct userec* uc;
 
-    chdir(BBSHOME);
 	int ac = ZEND_NUM_ARGS();
+    chdir(BBSHOME);
 
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid,&userid_len,&realname,&realname_len,&email,&email_len) == FAILURE) {
 		WRONG_PARAM_COUNT;

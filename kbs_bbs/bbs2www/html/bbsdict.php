@@ -13,7 +13,7 @@
                 html_init("gb2312");
 		check_php_setting("magic_quotes_gpc", 0);
         	//检查权限
-        	if($currentuser["userlevel"]&BBS_PERM_BMMANAGER)
+        	if($currentuser["userlevel"]&BBS_PERM_BMAMANGER)
         		$hasperm=true;
 		else
 			$hasperm=false;
@@ -112,24 +112,24 @@ function meaningofWord($arg){
 //显示查到的单词
 if(isset($_GET["inputword"]))
         {
-                $inputword=trim($_GET["inputword"]);
+                $inputword=addslashes(trim($_GET["inputword"]));
                 
                 if(ord($inputword{0})>128)
                         $tablename="cedict";
                 else
                         $tablename="ecdict";
-                $result=mysql_query(addslashes("select * from ".$tablename." where word='".$inputword."'")) or die(mysql_error());
+                $result=mysql_query("select * from ".$tablename." where word='".$inputword."'") or die(mysql_error());
                         
                 echo "辞典:".$tablename."<br>";
                 echo "查询结果<br>";
-                echo $inputword."的意思<br>";
+                echo trim($_GET["inputword"])."的意思<br>";
                 if(mysql_num_rows($result)==0)
                         echo "没有这个词<br>";
                 while($result_rows=mysql_fetch_array($result))
                 {                       
                         echo MeaningofWord($result_rows["meaning"]);
                         $dictname=$tablename."name";
-                        echo ">>>>";
+                        echo "<br />>>>>";
                         if($result_rows[3]>0)
                         {
                         $dictid=$result_rows[3];
