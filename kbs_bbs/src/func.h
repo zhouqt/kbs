@@ -395,6 +395,7 @@ extern "C" {
     void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos);    /* 产生ITEM object,并初始化 */
     int a_loadnames(MENU* pm);             /* 装入 .Names */
     int a_savenames(MENU* pm);             /*保存当前MENU到 .Names */
+    void a_freenames(MENU * pm);
 
 /* check the user's access for the path
   return < 0 deny access

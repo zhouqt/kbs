@@ -52,14 +52,6 @@ static char *import_title[ANNPATH_NUM];
 static int import_path_select = 0;
 static time_t import_path_time = 0;
 
-static void a_freenames(MENU * pm)
-{
-    int i;
-
-    for (i = 0; i < pm->num; i++)
-        free(pm->item[i]);
-}
-
 void a_prompt(bot, pmt, buf)    /* 精华区状态下 输入 */
 int bot;
 char *pmt, *buf;

@@ -278,6 +278,14 @@ int ann_traverse_check(char *path, struct userec *user)
     return ret;
 }
 
+void a_freenames(MENU * pm)
+{
+    int i;
+
+    for (i = 0; i < pm->num; i++)
+        free(pm->item[i]);
+}
+
 void a_additem(MENU* pm,char* title,char* fname,char* host,int port,long attachpos)    /* 产生ITEM object,并初始化 */
 {
     ITEM *newitem;
