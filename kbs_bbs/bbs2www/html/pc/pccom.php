@@ -36,21 +36,7 @@
 				
 		if($rows[access] != 0)
 		{
-			$query = "SELECT `username` FROM users WHERE uid = '".$rows[uid]."' LIMIT 0 , 1 ;";
-			$result = mysql_query($query,$link);
-			$rows1 = mysql_fetch_array($result);
-			if(!$rows1)
-			{
-				mysql_free_result($result);
-				html_error_quit("对不起，您要查看的个人文集不存在");
-				exit();
-			}
-			
-			$pc = array(
-					"USER" => $rows1[username],
-					"UID" => $rows[uid]
-					);
-			mysql_free_result($result);
+			$pc = pc_load_infor($link,"",$rows[uid]);
 			
 			if(strtolower($currentuser["userid"]) == strtolower($pc["USER"]))
 				$pur = 2;
@@ -74,9 +60,6 @@
 		if($act == "pst")
 		{
 ?>
-<script language="JavaScript1.2" defer>
-editor_generate('combody');
-</script>
 <br><center>		
 <form name="postform" action="pccom.php?act=add&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <table cellspacing="0" cellpadding="5" width="90%" border="0" class="t1">
@@ -99,12 +82,18 @@ editor_generate('combody');
 	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="combody" class="f1" cols="100" rows="20" id="combody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
 	<!--NoWrap-->
+	<!--
+		Loading HTMLArea Editor , Please Wait ... ...
+		正在加载 HTML编辑器 ， 请稍候 ……
+	-->
 	</textarea></td>
 </tr>
 <tr>
 	<td class="t2">
+	<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
+	<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
 	<input type="submit" value="发表评论" class="b1">
 	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
 </tr>
@@ -121,7 +110,7 @@ editor_generate('combody');
 			}
 			$emote = (int)($_POST["emote"]);
 			$query = "INSERT INTO `comments` ( `cid` , `nid` , `uid` , `emote` , `hostname` , `username` , `subject` , `created` , `changed` , `body` )". 
-				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".$_SERVER["REMOTE_ADDR"]."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes($_POST["combody"])."');";
+				"VALUES ('', '".$nid."', '".$uid."', '".$emote."' , '".$_SERVER["REMOTE_ADDR"]."', '".$currentuser["userid"]."', '".addslashes($_POST["subject"])."', '".date("YmdHis")."' , '".date("YmdHis")."', '".addslashes($_POST["blogbody"])."');";
 			mysql_query($query,$link);
 			$query = "UPDATE nodes SET commentcount = commentcount + 1 WHERE `nid` = '".$nid."' ; ";
 			mysql_query($query,$link);

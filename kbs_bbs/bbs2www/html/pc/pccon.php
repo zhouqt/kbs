@@ -106,31 +106,16 @@
 		$spr = FALSE;
 	
 	$link = pc_db_connect();
-	$query = "SELECT * FROM users WHERE uid = '".$id."' LIMIT 0 , 1 ;";
-	$result = mysql_query($query,$link);
-	$rows = mysql_fetch_array($result);
-	if(!$rows)
+	$pc = pc_load_infor($link,"",$id);
+	if(!$pc)
 	{
-		mysql_free_result($result);
 		pc_db_close($link);
-		html_init("gb2312","个人文集","",1);		
+		html_init("gb2312","个人文集");		
 		html_error_quit("对不起，您要查看的个人文集不存在");
 		exit();
 	}
 	
-	$pc = array(
-			"NAME" => html_format($rows[corpusname]),
-			"USER" => $rows[username],
-			"TIME" => $rows[createtime],
-			"DESC" => html_format($rows[description]),
-			"THEM" => html_format($rows[theme]),
-			"UID" => $id,
-			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
-			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage]))
-			);
-	mysql_free_result($result);
-	
-	pc_html_init("gb2312",stripslashes($rows[corpusname]),"","",$pc["BKIMG"]);
+	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 	
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 		$pur = 3;

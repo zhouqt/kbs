@@ -168,7 +168,7 @@
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
 				$query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `source` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` ) ".
-					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["nodebody"])."', '".$tag."', '0');";
+					"VALUES ( '".$pid."', '".(int)($_POST["tid"])."' , '0', '', '".$emote."' ,  '".$_SERVER["REMOTE_ADDR"]."','".date("YmdHis")."' , '".date("YmdHis")."', '".$pc["UID"]."', '".$c."', '0', '".addslashes($_POST["subject"])."', '".addslashes($_POST["blogbody"])."', '".$tag."', '0');";
 				mysql_query($query,$link);
 				if($tag == 0)
 					pc_update_record($link,$pc["UID"]," + 1");
@@ -181,9 +181,6 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			else
 			{
 ?>
-<script language="JavaScript1.2" defer>
-editor_generate('nodebody');
-</script>
 <br><center>
 <form name="postform" action="pcmanage.php?act=post&<?php echo "tag=".$tag."&pid=".$pid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
@@ -224,8 +221,12 @@ editor_generate('nodebody');
 	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="nodebody" class="f1" cols="100" rows="20" id="nodebody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
 	<!--NoWrap-->
+	<!--
+		Loading HTMLArea Editor , Please Wait ... ...
+		正在加载 HTML编辑器 ， 请稍候 ……
+	-->
 	</textarea></td>
 </tr>
 <!--
@@ -242,6 +243,8 @@ editor_generate('nodebody');
 -->
 <tr>
 	<td class="t2">
+		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
+		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
 		<input type="submit" value="发表本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
@@ -270,7 +273,7 @@ editor_generate('nodebody');
 				else
 					$c = 1;
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["nodebody"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
+				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes($_POST["blogbody"])."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' WHERE `nid` = '".$nid."' ; ";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 ?>
@@ -282,9 +285,6 @@ editor_generate('nodebody');
 			else
 			{
 ?>
-<script language="JavaScript1.2" defer>
-editor_generate('nodebody');
-</script>
 <br><center>			
 <form name="postform" action="pcmanage.php?act=edit&nid=<?php echo $nid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入文章主题!');return false;}">
 <table cellspacing="0" cellpadding="5" border="0" width="90%" class="t1">
@@ -355,13 +355,19 @@ editor_generate('nodebody');
 </tr>
 <tr>
 	<td class="t8">
-	<textarea name="nodebody" class="f1" cols="100" rows="20" id="nodebody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
 	<!--NoWrap-->
+	<!--
+		Loading HTMLArea Editor , Please Wait ... ...
+		正在加载 HTML编辑器 ， 请稍候 ……
+	-->
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
 <tr>
 	<td class="t2">
+		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
+		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
 		<input type="submit" value="修改本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>

@@ -41,10 +41,10 @@
 			"<tr><td class=\"".$cellclass[0]."\"><img src=\"icon/".$nodes[$i][emote].".gif\" border=0 align=absmiddle>\n".
 			"<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\" class=f2>".html_format($nodes[$i][subject])."</a></td>".
 			"<td class=\"".$cellclass[1]."\" align=right>[<a href=\"pccom.php?act=pst&nid=".$nodes[$i][nid]."\">评论</a>]\n[<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>]</td></tr>\n".
-                        "<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format(substr($nodes[$i][body],0,600),TRUE);
-                        if (strlen($nodes[$i][body])>600)
-                            echo " ......<A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>";
-                        echo "</td></tr>\n".
+			"<tr><td colspan=2 class=\"".$cellclass[1]."\">".html_format(substr($nodes[$i][body],0,600)." ",TRUE); 
+                        if (strlen($nodes[$i][body])>600) 
+                        	echo " ......<A href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">阅读全文</A>"; 
+                        echo "</td></tr>\n". 
 			"<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\nBy <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> at ".time_format($nodes[$i][created]).
 			"\n|\nViews[".$nodes[$i][visitcount]."]".
 			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&tid=".$nodes[$i][tid]."&nid=".$nodes[$i][nid]."&s=all\">Comments[".$nodes[$i][commentcount]."]</a>".
@@ -265,32 +265,15 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 	$uid = (int)($_GET["id"]);
 	
 	$link = pc_db_connect();
-	$query = "SELECT * FROM users WHERE `username`= '".$userid."' OR `uid` = '".$uid."';";
-	$result = mysql_query($query,$link);
-	$rows = mysql_fetch_array($result);
-	if(!$rows)
+	$pc = pc_load_infor($link,$userid,$uid);
+	if(!$pc)
 	{
-		mysql_free_result($result);
 		pc_db_close($link);
 		html_init("gb2312","个人文集");		
 		html_error_quit("对不起，您要查看的个人文集不存在");
 		exit();
 	}
 	
-	$pc = array(
-			"NAME" => html_format($rows[corpusname]),
-			"USER" => $rows[username],
-			"UID" => $rows[uid],
-			"DESC" => html_format($rows[description]),
-			"THEM" => html_format($rows[theme]),
-			"TIME" => $rows[createtime],
-			"VISIT" => $rows[visitcount],
-			"MODIFY" => $rows[modifytime],
-			"STYLE" => pc_style_array($rows[stype]),
-			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
-			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage]))
-			);
-	mysql_free_result($result);
 	
 	if(pc_is_admin($currentuser,$pc) && $loginok == 1)
 	{
@@ -328,7 +311,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 		}
 	}
 	/*visit count end*/	
-	pc_html_init("gb2312",stripslashes($rows[corpusname]),"","",$pc["BKIMG"]);
+	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
 	
 ?>
 <center>

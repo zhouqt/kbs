@@ -64,9 +64,6 @@
 				exit();
 			}
 ?>
-<script language="JavaScript1.2" defer>
-editor_generate('combody');
-</script>
 <br><center>
 <form name="postform" action="pceditcom.php?act=edit2&cid=<?php echo $cid; ?>" method="post" onsubmit="if(this.subject.value==''){alert('请输入评论主题!');return false;}">
 <table cellspacing="0" cellpadding="5" width="90%" border="0" class="t1">
@@ -89,13 +86,19 @@ editor_generate('combody');
 	<td class="t11">内容</td>
 </tr>
 <tr>
-	<td class="t8"><textarea name="combody" class="f1" cols="100" rows="20" id="combody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
+	<td class="t8"><textarea name="blogbody" class="f1" cols="100" rows="20" id="blogbody"  onkeydown='if(event.keyCode==87 && event.ctrlKey) {document.postform.submit(); return false;}'  onkeypress='if(event.keyCode==10) return document.postform.submit()' wrap="physical">
 	<!--NoWrap-->
+	<!--
+		Loading HTMLArea Editor , Please Wait ... ...
+		正在加载 HTML编辑器 ， 请稍候 ……
+	-->
 	<?php echo htmlspecialchars(stripslashes($rows[body]." ")); ?>
 	</textarea></td>
 </tr>
 <tr>
 	<td class="t2">
+	<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
+	<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
 	<input type="submit" value="修改评论" class="b1">
 	<input type="button" value="返回上页" class="b1" onclick="history.go(-1)">
 </tr>
@@ -106,7 +109,7 @@ editor_generate('combody');
 		elseif($act == "edit2")
 		{
 			$emote = (int)($_POST["emote"]);
-			$query = "UPDATE `comments` SET `subject` = '".addslashes($_POST["subject"])."',`changed` = '".date("YmdHis")."',`body` = '".addslashes($_POST["combody"])."' , `emote` = '".$emote."' WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 1 ;";
+			$query = "UPDATE `comments` SET `subject` = '".addslashes($_POST["subject"])."',`changed` = '".date("YmdHis")."',`body` = '".addslashes($_POST["blogbody"])."' , `emote` = '".$emote."' WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 1 ;";
 			mysql_query($query,$link);
 ?>
 <p align="center">

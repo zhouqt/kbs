@@ -37,14 +37,8 @@
 			exit();
 		}
 		
-		$query = "SELECT `username` FROM users WHERE `uid` = '".$node[uid]."' LIMIT 0 , 1 ; ";
-		$result = mysql_query($query,$link);
-		$rows = mysql_fetch_array($result);
-		$pc = array(
-				"USER" => $rows[username],
-				"UID" => $node[uid]
-				);
-		mysql_free_result($result);
+		$pc = pc_load_infor($link,"",$node[uid]);
+		
 		if( ( $node[access] == 1 && !pc_is_friend($currentuser["userid"],$pc["USER"])) || ( $node[access] > 1 && strtolower($pc["USER"]) != strtolower($currentuser["userid"]) ) )
 		{
 			html_error_quit("对不起，您不能查看本条记录!");

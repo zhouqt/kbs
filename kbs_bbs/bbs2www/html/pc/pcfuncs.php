@@ -73,18 +73,52 @@ function pc_html_init($charset,$title="",$otherheader="",$style="",$bkimg="",$lo
 	if($loadhtmlarea)
 	{
 ?>
-<script language="Javascript1.2"><!-- // load htmlarea
-_editor_url = "htmlarea/";                     // URL to htmlarea files
-var win_ie_ver = parseFloat(navigator.appVersion.split("MSIE")[1]);
-if (navigator.userAgent.indexOf('Mac')        >= 0) { win_ie_ver = 0; }
-if (navigator.userAgent.indexOf('Windows CE') >= 0) { win_ie_ver = 0; }
-if (navigator.userAgent.indexOf('Opera')      >= 0) { win_ie_ver = 0; }
-if (win_ie_ver >= 5.5) {
- document.write('<scr' + 'ipt src="' +_editor_url+ 'editor.js"');
- document.write(' language="Javascript1.2"></scr' + 'ipt>');  
-} else { document.write('<scr'+'ipt>function editor_generate() { return false; }</scr'+'ipt>'); }
-// -->
-</script> 
+<script type="text/javascript">
+_editor_url = "htmlarea/";
+</script>
+<!-- load the main HTMLArea files -->
+<script type="text/javascript" src="htmlarea/htmlarea.js"></script>
+<script type="text/javascript" src="htmlarea/lang/en.js"></script>
+<script type="text/javascript" src="htmlarea/dialog.js"></script>
+<script type="text/javascript" src="htmlarea/popupwin.js"></script>
+<style type="text/css">
+@import url(htmlarea/htmlarea.css);
+textarea { background-color: #fff; border: 1px solid 00f; }
+</style>
+<!-- load the plugins -->
+<script type="text/javascript">
+      // WARNING: using this interface to load plugin
+      // will _NOT_ work if plugins do not have the language
+      // loaded by HTMLArea.
+
+      // In other words, this function generates SCRIPT tags
+      // that load the plugin and the language file, based on the
+      // global variable HTMLArea.I18N.lang (defined in the lang file,
+      // in our case "lang/en.js" loaded above).
+
+      // If this lang file is not found the plugin will fail to
+      // load correctly and nothing will work.
+
+      HTMLArea.loadPlugin("TableOperations");
+      HTMLArea.loadPlugin("SpellChecker");
+</script>
+<script type="text/javascript" defer="1">
+var editor = null;
+function initEditor() {
+  // create an editor for the "ta" textbox
+  editor = new HTMLArea("blogbody");
+
+  // register the SpellChecker plugin
+  editor.registerPlugin("TableOperations");
+
+  // register the SpellChecker plugin
+  editor.registerPlugin("SpellChecker");
+
+  editor.generate();
+  return false;
+}
+    
+</script>
 <?php
 	}
 ?>
@@ -92,12 +126,20 @@ if (win_ie_ver >= 5.5) {
 </head>
 <body TOPMARGIN="0"
 <?php
+	if($loadhtmlarea)
+	{
+?>
+ onload="initEditor()"
+<?php
+	}
 	if($bkimg)
 		echo " background = \"".$bkimg."\" ";
 ?>
 >
 <?php
 }
+
+
 function undo_html_format($str)
 {
 	$str = str_replace("&nbsp;"," ",$str);
@@ -260,6 +302,33 @@ function pc_db_connect()
 function pc_db_close($link)
 {
 	@mysql_close($link);
+}
+
+function pc_load_infor($link,$userid,$uid=0)
+{
+	$query = "SELECT * FROM users WHERE `username`= '".$userid."' OR `uid` = '".$uid."' LIMIT 0,1;";
+	$result = mysql_query($query,$link);
+	$rows = mysql_fetch_array($result);
+	mysql_free_result($result);
+	if(!$rows)
+		return FALSE;
+	else
+	{
+		$pc = array(
+			"NAME" => html_format($rows[corpusname]),
+			"USER" => $rows[username],
+			"UID" => $rows[uid],
+			"DESC" => html_format($rows[description]),
+			"THEM" => html_format($rows[theme]),
+			"TIME" => $rows[createtime],
+			"VISIT" => $rows[visitcount],
+			"MODIFY" => $rows[modifytime],
+			"STYLE" => pc_style_array($rows[stype]),
+			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
+			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage]))
+			);
+		return $pc;
+	}
 }
 
 function pc_init_fav($link,$uid)
