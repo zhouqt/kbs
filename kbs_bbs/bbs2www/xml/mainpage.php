@@ -256,24 +256,15 @@ while($board = array_shift($boards))
 
 function gen_recommend_boards_html()
 {
-	$rcmd_boards = array(
-		"PieBridge",
-		"Movie",
-		"Love",
-		"Emprise",
-		"AdvancedEDU",
-		"Reader",
-		"MilitaryTech",
-		"Beauty",
-		"Travel",
-		"EStar",
-		"PopMusic",
-		"Shopping",
-		"Java",
-		"News",
-		"VisualC",
-		"Game"
-		);
+# load xml doc
+$boardrank_file = BBS_HOME . "/xml/rcmdbrd.xml";
+$doc = domxml_open_file($boardrank_file);
+	if (!$doc)
+		return;
+
+
+$root = $doc->document_element();
+$boards = $root->child_nodes();
 ?>
       <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
@@ -289,12 +280,17 @@ function gen_recommend_boards_html()
 <ul style="margin-top: 5px; margin-left: 20px">
 <?php
 	$brdarr = array();
-	for ($i = 0; $i < count($rcmd_boards); $i++)
+	# shift through the array
+	while($board = array_shift($boards))
 	{
-			$brdnum = bbs_getboard($rcmd_boards[$i], $brdarr);
-			if ($brdnum == 0)
-				continue;
-			$brd_encode = urlencode($brdarr["NAME"]);
+		if ($board->node_type() == XML_TEXT_NODE)
+			continue;
+
+		$ename = find_content($board, "EnglishName");
+		$brdnum = bbs_getboard($ename, $brdarr);
+		if ($brdnum == 0)
+			continue;
+		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <li class="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
