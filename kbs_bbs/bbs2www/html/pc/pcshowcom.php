@@ -10,7 +10,7 @@
 	
 	pc_html_init("gb2312","个人文集");
 	$link = pc_db_connect();
-	$query = "SELECT * FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ; ";
+	$query = "SELECT * FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	$comment = mysql_fetch_array($result);
 	if(!$comment)
@@ -19,7 +19,7 @@
 		html_error_quit("对不起，您要查看的评论不存在");
 		exit();
 	}
-	$query = "SELECT `access`,`uid`,`subject`,`emote`,`tid`,`pid` FROM nodes WHERE `nid` = '".$comment[nid]."' LIMIT 0 , 1 ; ";
+	$query = "SELECT `access`,`uid`,`subject`,`emote`,`tid`,`pid` FROM nodes WHERE `nid` = '".$comment[nid]."' LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	$node = mysql_fetch_array($result);
 	if(!$node)
@@ -97,13 +97,13 @@
 <tr>
 	<td class="t3">
 <?php
-	$query = "SELECT `cid` FROM comments WHERE `nid` = '".$comment[nid]."' AND `cid` < '".$cid."' ORDER BY `cid` DESC LIMIT 0 , 1 ; ";
+	$query = "SELECT `cid` FROM comments WHERE `nid` = '".$comment[nid]."' AND `cid` < '".$cid."' ORDER BY `cid` DESC LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	if($rows = mysql_fetch_array($result))
 		echo "<a href=\"pcshowcom.php?cid=".$rows[cid]."\">上一篇</a> \n";
 	else
 		echo "上一篇 \n";
-	$query = "SELECT `cid` FROM comments WHERE `nid` = '".$comment[nid]."' AND `cid` > '".$cid."' ORDER BY `cid` ASC LIMIT 0 , 1 ; ";
+	$query = "SELECT `cid` FROM comments WHERE `nid` = '".$comment[nid]."' AND `cid` > '".$cid."' ORDER BY `cid` ASC LIMIT 0 , 1 ;";
 	$result = mysql_query($query,$link);
 	if($rows = mysql_fetch_array($result))
 		echo "<a href=\"pcshowcom.php?cid=".$rows[cid]."\">下一篇</a> \n";

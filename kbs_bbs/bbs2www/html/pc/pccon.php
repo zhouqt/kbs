@@ -3,12 +3,19 @@
 	** this file display article  in personal corp.
 	** @id:windinsn  Nov 19,2003
 	*/
+	@session_start();
 	$needlogin=0;
 	require("pcfuncs.php");
 	
+	function pc_node_counter($link,$nid)
+	{
+		$query = "UPDATE nodes SET visitcount = visitcount + 1 , changed  = changed  WHERE `nid` = '".$nid."' ;";
+		mysql_query($query,$link);
+	}
+	
 	function display_navigation_bar($link,$pc,$nid,$pid,$tag,$spr,$order,$comment,$tid=0,$pur,$trackback , $subject)
 	{
-		$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;  ";
+		$query = "SELECT `nid` FROM nodes WHERE `nid` < ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` DESC LIMIT 0 , 1 ;";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		if($rows)
@@ -16,7 +23,7 @@
 		else
 			echo " ÉÏÒ»Æª\n";
 		mysql_free_result($result);
-		$query = "SELECT `nid` FROM nodes WHERE `nid` > ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` ASC LIMIT 0 , 1 ;  ";
+		$query = "SELECT `nid` FROM nodes WHERE `nid` > ".$nid." AND `uid` = '".$pc["UID"]."' AND `pid` = '".$pid."' AND `access` = '".$tag."' AND `tid` = '".$tid."' AND `type` != '1' ORDER BY `nid` ASC LIMIT 0 , 1 ;";
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		if($rows)
@@ -151,9 +158,20 @@
 	}
 	$nid = $rows[nid];
 	$tid = $rows[tid];
-	$query = "UPDATE nodes SET visitcount = visitcount + 1 WHERE `nid` = '".$nid."' ; ";
-	mysql_query($query,$link);
 	
+	if(!session_is_registered("readnodes"))
+	{
+		$readnodes = ",".$nid.",";
+		session_register("readnodes");
+		pc_node_counter($link,$nid);
+		$rows[visitcount] ++;
+	}
+	elseif(!stristr($_SESSION["readnodes"],",".$nid.","))
+	{
+		$_SESSION["readnodes"] .= $nid.",";
+		pc_node_counter($link,$nid);
+		$rows[visitcount] ++;
+	}
 ?>
 <a name="top"></a>
 <table cellspacing="0" cellpadding="0" border="0" width="100%">

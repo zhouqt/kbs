@@ -28,7 +28,7 @@ function getNewBlogs($link,$pno=1)
 			
 			);
 	
-	$query = "SELECT * FROM nodes WHERE `access` = 0 ORDER BY `nid` DESC LIMIT ".(($pno - 1) * $pcconfig["NEWS"])." , ".$pcconfig["NEWS"]." ; ";
+	$query = "SELECT * FROM nodes WHERE `access` = 0 ORDER BY `nid` DESC LIMIT ".(($pno - 1) * $pcconfig["NEWS"])." , ".$pcconfig["NEWS"]." ;";
 	$result = mysql_query($query,$link);
 	$j = 0;
 	$bloguser = array();

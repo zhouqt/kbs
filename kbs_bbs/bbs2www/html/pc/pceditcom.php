@@ -22,7 +22,7 @@
 		$link =	pc_db_connect();
 		if($act == "del")
 		{
-			$query = "SELECT `username` , `uid` ,`nid` FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ; ";
+			$query = "SELECT `username` , `uid` ,`nid` FROM comments WHERE `cid` = '".$cid."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -30,18 +30,18 @@
 			{
 				$query = "DELETE FROM comments WHERE `cid` = '".$cid."' ";
 				mysql_query($query,$link);
-				$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ; ";
+				$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ;";
 				mysql_query($query,$link);
 			}
 			else
 			{
-				$query = "SELECT `uid` FROM users WHERE `username` = '".$currentuser["userid"]."' AND `uid` = '".$rows[uid]."' LIMIT 0 , 1; ";
+				$query = "SELECT `uid` FROM users WHERE `username` = '".$currentuser["userid"]."' AND `uid` = '".$rows[uid]."' LIMIT 0 , 1;";
 				$result = mysql_query($query,$link);
 				if($rows1 = mysql_fetch_array($result))
 				{
 					$query = "DELETE FROM comments WHERE `cid` = '".$cid."' ";
 					mysql_query($query,$link);
-					$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ; ";
+					$query = "UPDATE nodes SET commentcount = commentcount - 1 WHERE `nid` = '".$rows[nid]."' ;";
 					mysql_query($query,$link);
 				}
 				@mysql_free_result($result);
@@ -54,7 +54,7 @@
 		}
 		elseif($act == "edit")
 		{
-			$query = "SELECT `subject`,`body`,`htmltag` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ; ";
+			$query = "SELECT `subject`,`body`,`htmltag` FROM comments WHERE `cid` = '".$cid."' AND `username` = '".$currentuser["userid"]."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);

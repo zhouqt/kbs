@@ -32,7 +32,7 @@
 	if($_GET["exact"]==0)
 	{
 		$keyword = explode(" ",$keyword);
-		$query .= " `".$key."` = '' ";
+		$query .= " `uid` = 0 ";
 		$keyword1 = "";
 		for($i=0;$i < count($keyword) ; $i++)
 		{

@@ -132,7 +132,7 @@
 			{
 				
 				$pid = (int)($_GET["pid"]);
-				$query = "SELECT `nid` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 3 AND `nid` = '".$pid."'; ";
+				$query = "SELECT `nid` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 3 AND `nid` = '".$pid."';";
 				$result = mysql_query($query,$link);
 				if($rows = mysql_fetch_array($result))
 				{
@@ -294,7 +294,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		elseif($act == "edit")
 		{
 			$nid = (int)($_GET["nid"]);
-			$query = "SELECT `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ; ";
+			$query = "SELECT `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -312,7 +312,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				$useHtmlTag = ($_POST["htmltag"]==1)?1:0;
 				$trackback = ($_POST["trackback"]==1)?1:0;
 				$emote = (int)($_POST["emote"]);
-				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' ; ";
+				$query = "UPDATE nodes SET `subject` = '".addslashes($_POST["subject"])."' , `body` = '".addslashes(html_editorstr_format($_POST["blogbody"]))."' , `changed` = '".date("YmdHis")."' , `comment` = '".$c."' , `tid` = '".(int)($_POST["tid"])."' , `emote` = '".$emote."' , `htmltag` = '".$useHtmlTag."' , `trackback` = '".$trackback."' WHERE `nid` = '".$nid."' ;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 ?>
@@ -424,7 +424,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		elseif($act == "del")
 		{
 			$nid = (int)($_GET["nid"]);	
-			$query = "SELECT `access`,`type` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `nid` = '".$nid."' ; ";
+			$query = "SELECT `access`,`type` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `nid` = '".$nid."' ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -476,7 +476,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "clear")
 		{
-			$query = "SELECT `nid` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = '4' ; ";	
+			$query = "SELECT `nid` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = '4' ;";	
 			$result = mysql_query($query,$link);
 			$query = "DELETE FROM comments WHERE `nid` = '0' ";
 			$query_tb = "DELETE FROM trackback WHERE `nid` = '0' ";
@@ -487,7 +487,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			mysql_query($query,$link);
 			mysql_query($query_tb,$link);
-			$query = "DELETE FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = '4' ; ";
+			$query = "DELETE FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = '4' ;";
 			mysql_query($query,$link);
 			pc_update_record($link,$pc["UID"]);
 ?>
@@ -498,7 +498,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "tedit")
 		{
-			$query = "SELECT * FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ; ";	
+			$query = "SELECT * FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ;";	
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -512,12 +512,12 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 				/*
 				if($_POST["access"] != $rows[access])
 				{
-					$query = "UPDATE nodes SET `access` = '".$_POST["access"]."' , `changed` = '".date("YmdHis")."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
+					$query = "UPDATE nodes SET `access` = '".$_POST["access"]."' , `changed` = '".date("YmdHis")."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ;";
 					mysql_query($query,$link);
 				}
 				*/
-				//$query = "UPDATE topics SET `topicname` = '".$_POST["topicname"]."' , `access` = '".$_POST["access"]."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
-				$query = "UPDATE topics SET `topicname` = '".addslashes($_POST["topicname"])."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ; ";
+				//$query = "UPDATE topics SET `topicname` = '".$_POST["topicname"]."' , `access` = '".$_POST["access"]."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ;";
+				$query = "UPDATE topics SET `topicname` = '".addslashes($_POST["topicname"])."' WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".$rows[tid]."' ;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 				
@@ -577,7 +577,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "tdel")
 		{
-			$query = "SELECT `nid` FROM nodes WHERE `tid` = '".(int)($_GET["tid"])."' ; ";
+			$query = "SELECT `nid` FROM nodes WHERE `tid` = '".(int)($_GET["tid"])."' ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -588,7 +588,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 			}
 			else
 			{
-				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ; ";
+				$query = "DELETE FROM topics WHERE `uid` = '".$pc["UID"]."' AND `tid` = '".(int)($_GET["tid"])."' ;";
 				mysql_query($query,$link);
 				pc_update_record($link,$pc["UID"]);
 ?>
@@ -695,11 +695,11 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=3&pid=<?ph
 			
 			if($favaction["ACT"] == "favcut")
 			{
-				$query = "UPDATE nodes SET `pid` = '".$pid."' WHERE `nid` = '".$favaction["NID"]."'; ";
+				$query = "UPDATE nodes SET `pid` = '".$pid."' WHERE `nid` = '".$favaction["NID"]."';";
 			}
 			else
 			{
-				$query = "SELECT * FROM nodes WHERE `nid` = '".$favaction["NID"]."' LIMIT 0 , 1 ; ";
+				$query = "SELECT * FROM nodes WHERE `nid` = '".$favaction["NID"]."' LIMIT 0 , 1 ;";
 				$result = mysql_query($query,$link);
 				$rows = mysql_fetch_array($result);
 				mysql_free_result($result);

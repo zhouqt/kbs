@@ -364,16 +364,16 @@ function pc_update_record($link,$uid,$addstr="+0")
 
 function pc_visit_counter($link,$uid)
 {
-	$query = "UPDATE users SET `createtime` = `createtime` , `visitcount` = `visitcount` + 1  WHERE `uid` = '".$uid."' ; ";
+	$query = "UPDATE users SET `createtime` = `createtime` , `visitcount` = `visitcount` + 1  WHERE `uid` = '".$uid."' ;";
 	mysql_query($query,$link);
 }
 
 function pc_used_space($link,$uid,$access,$pid=0)
 {
 	if($access == 3)
-		$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '3' AND `pid` = '".$pid."' AND `type` = 0 ; ";
+		$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '3' AND `pid` = '".$pid."' AND `type` = 0 ;";
 	else
-		$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '".$access."'  AND `type` = 0 ; ";
+		$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '".$access."'  AND `type` = 0 ;";
 	$result = mysql_query($query);
 	$rows = mysql_fetch_row($result);
 	mysql_free_result($result);
@@ -382,7 +382,7 @@ function pc_used_space($link,$uid,$access,$pid=0)
 
 function pc_dir_num($link,$uid,$pid=0)
 {
-	$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '3' AND `pid` = '".$pid."' AND `type` = 1 ; ";
+	$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '3' AND `pid` = '".$pid."' AND `type` = 1 ;";
 	$result = mysql_query($query);
 	$rows = mysql_fetch_row($result);
 	mysql_free_result($result);
@@ -391,7 +391,7 @@ function pc_dir_num($link,$uid,$pid=0)
 
 function pc_file_num($link,$uid,$pid=0)
 {
-	$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '3' AND `pid` = '".$pid."' AND `type` = 0 ; ";
+	$query = "SELECT COUNT(*) FROM nodes WHERE `uid` = '".$uid."' AND `access` = '3' AND `pid` = '".$pid."' AND `type` = 0 ;";
 	$result = mysql_query($query);
 	$rows = mysql_fetch_row($result);
 	mysql_free_result($result);
@@ -401,9 +401,9 @@ function pc_file_num($link,$uid,$pid=0)
 function pc_blog_menu($link,$uid,$tag=9)
 {
 	if($tag == 9)
-		$query = "SELECT * FROM topics WHERE `uid` = '".$uid." ' ORDER BY `sequen` ; ";
+		$query = "SELECT * FROM topics WHERE `uid` = '".$uid." ' ORDER BY `sequen` ;";
 	else
-		$query = "SELECT * FROM topics WHERE `uid` = '".$uid." ' AND ( `access` = '".$tag."' OR `access` = 9 ) ORDER BY `sequen` DESC ; ";
+		$query = "SELECT * FROM topics WHERE `uid` = '".$uid." ' AND ( `access` = '".$tag."' OR `access` = 9 ) ORDER BY `sequen` DESC ;";
 	$result = mysql_query($query,$link);
 	$i = 0;
 	while($rows = mysql_fetch_array($result))
