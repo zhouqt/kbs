@@ -1588,7 +1588,7 @@ int generate_mark(struct read_arg* arg)
     setbdir(DIR_MODE_MARK, direct, currboard->filename);
     setbdir(DIR_MODE_NORMAL, normaldirect, currboard->filename);
     if ((fd = open(direct, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("3user", "%s", "recopen err");
+        bbslog("3user", "recopen err %s:%s", direct,strerror(errno));
         return -1;              /* 创建文件发生错误*/
     }
     ldata.l_type = F_WRLCK;
@@ -1596,7 +1596,7 @@ int generate_mark(struct read_arg* arg)
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("3user", "%s", "reclock err");
+        bbslog("3user", "reclock err %s:%s", direct,strerror(errno));
         close(fd);
         return -1;              /* lock error*/
     }
@@ -1609,7 +1609,7 @@ int generate_mark(struct read_arg* arg)
     }
 
     if ((fd2 = open(normaldirect, O_RDONLY, 0664)) == -1) {
-        bbslog("3user", "%s", "recopen err");
+        bbslog("3user", "recopen err %s:%s", normaldirect,strerror(errno));
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
