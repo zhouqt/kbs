@@ -26,8 +26,8 @@ openssl		(下面是POP3S需要的)
   3)进入源码目录
   	cd smthbbs-x.x
   4)配置
-  ./configure --enable-site=dev --disable-www
-     注意在 site/ 字目录里面必须有名字为 dev.c和 dev.h 的文件
+  ./configure --enable-site=devel --disable-www
+     注意在 site/ 字目录里面必须有名字为 devel.c和 devel.h 的文件
      bbs缺省安装在/home/bbs，如果需要指定别的目录，使用--prefix指定。
      后面将使用$(BBSHOME)表示安装的BBS目录，在安装的时候请使用真正路径
 替代。
@@ -57,7 +57,7 @@ htdocs/ 必须是 web 服务器的虚拟 /, 后面的 html, php 脚本等文件将放在这个
 建议 apache 在 ./configure 时加上 --enable-module=so, php 在 ./configure
 时则加上 --with-apxs=/home/apache/bin/apxs. apache 进程必须用 bbs 用户跑.
 
-重新配置水木源码, ./configure --prefix=/home/system/bbs --enable-site=dev
+重新配置水木源码, ./configure --prefix=/home/system/bbs --enable-site=devel
 --with-www=/home/apache --with-php=/home/flyriver/download/php-4.2.1
 然后 make, 再用 root 用户 make install, 再在 /usr/lib 做如下文件链接:
 libbbslib.so -> $(BBSHOME)/lib/libbbslib.so
