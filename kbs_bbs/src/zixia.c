@@ -68,7 +68,7 @@ uleveltochar( char* buf, struct userec *lookupuser )
       	else if( lvl & PERM_MM ) strcpy(buf,"观音姐姐");
       	else  if( lvl & PERM_CHATCLOAK ) strcpy(buf,"无敌牛虱");
       	else if  ( lvl & PERM_BOARDS ) strcpy(buf,"二当家的");
-      	else strcpy(buf,"强盗");
+      	else strcpy(buf, NAME_USER_SHORT);
 
 	//中文说明，根据 level
     	if( !strcmp(lookupuser->userid,"SYSOP")

@@ -10,7 +10,7 @@
 #define SECNUM 10
 
 #define DEFAULTBOARD    	"zixia.net"//test
-#define MAXUSERS  		20000 //150,000
+#define MAXUSERS  		40000 //150,000
 #define MAXBOARD  		256 //400
 #define MAXACTIVE 		999  //3000
 #define MAX_GUEST_NUM		99
