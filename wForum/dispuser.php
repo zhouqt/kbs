@@ -39,7 +39,7 @@ function showQueryForm() {
 ?>
 <form method="GET" action="dispuser.php">
 <table align=center><tr><td>
-请输入用户名: <input type="text" name="id">&nbsp;<input type="submit" name="submit" value="查询用户">
+请输入用户名: <input type="text" name="id">&nbsp;<input type="submit" value="查询用户">
 </td></tr></table>
 </form>
 <?php

@@ -249,62 +249,85 @@ function showArticle($boardName,$boardID,$num, $startNum,$thread,$type){
 	global $loginok;
 	$user=array();
 	$user_num=bbs_getuser($thread['OWNER'],$user);
+	if ($user_num == 0) {
+		$user = false;
+	} else if ($thread['POSTTIME'] < $user['firstlogin']) {
+		$user = false; //前人发的帖子
+	}
 	$bgstyle='TableBody'.($type+1);
 	$fgstyle='TableBody'.(2-$type);
 ?>
 <tr><td class=<?php echo $bgstyle ;?> valign=top width=175 >
 <table width=100% cellpadding=4 cellspacing=0 >
-<tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;<a href="dispuser.php?id=<?php echo $thread['OWNER']; ?>" target=_blank title="查看<?php echo $thread['OWNER']; ?>的个人资料" style="TEXT-DECORATION: none;"><font color=#990000><B><?php echo $thread['OWNER']; ?></B></font></a></td>
+<tr><td width=* valign=middle style="filter:glow(color=#9898BA,strength=2)" >&nbsp;
+<?php
+	$str = "<font color=#990000><B>" . $thread['OWNER'] . "</B></font>";
+	if ($user !== false) $str = "<a href=\"dispuser.php?id=" . $thread['OWNER']. "\" target=\"_blank\" title=\"查看" . $thread['OWNER'] . "的个人资料\" style=\"TEXT-DECORATION: none;\">" . $str . "</a>";
+	echo $str;
+?>
+</td>
 <td width=25 valign=middle>
-<?php 
-	$is_online = bbs_isonline($thread['OWNER']);
-	$show_detail = ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA);
-	if ($show_detail) {
-		if ( chr($user['gender'])=='M' ){
-			$c = "帅哥哟";
-			if ($is_online) {
-				$img = "pic/Male.gif";
+<?php
+	if ($user !== false) {
+		$is_online = bbs_isonline($thread['OWNER']);
+		$show_detail = ($user['userdefine0'] & BBS_DEF_SHOWDETAILUSERDATA);
+		if ($show_detail) {
+			if ( chr($user['gender'])=='M' ){
+				$c = "帅哥哟";
+				if ($is_online) {
+					$img = "pic/Male.gif";
+				} else {
+					$img = "pic/ofmale.gif";
+				}
 			} else {
-				$img = "pic/ofmale.gif";
+				$c = "美女哟";
+				if ($is_online) {
+					$img = "pic/Female.gif";
+				} else {
+					$img = "pic/offemale.gif";
+				}
 			}
 		} else {
-			$c = "美女哟";
+			$c = "性别保密哟";
 			if ($is_online) {
-				$img = "pic/Female.gif";
+				$img = "pic/online1.gif";
 			} else {
-				$img = "pic/offemale.gif";
+				$img = "pic/offline1.gif";
 			}
 		}
-	} else {
-		$c = "性别保密哟";
-		if ($is_online) {
-			$img = "pic/online1.gif";
+		if ($loginok && $is_online) {
+			echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border=0 alt="'.$c.'，在线，有人找我吗？"/></a>';
 		} else {
-			$img = "pic/offline1.gif";
+			echo '<img src="'.$img.'" border=0 alt="'.$c.'，'.($is_online?'在线':'离线').'"/>';
 		}
-	}
-	if ($loginok && $is_online) {
-		echo '<a href="javascript:replyMsg(\''.$thread['OWNER'].'\')"><img src="'.$img.'" border=0 alt="'.$c.'，在线，有人找我吗？"/></a>';
 	} else {
-		echo '<img src="'.$img.'" border=0 alt="'.$c.'，'.($is_online?'在线':'离线').'"/>';
+		echo '<img src="pic/offline1.gif" border=0 alt="未知用户"/>';
 	}
 ?>
 </td>
 <td width=16 valign=middle></td></tr></table>
+<?php
+	if ($user !== false) {
+?>
 &nbsp;&nbsp;<?php echo get_myface($user, "align=absmiddle"); ?><br>
 &nbsp;&nbsp;<img src=pic/level10.gif><br>
 &nbsp;&nbsp;等级：<?php echo bbs_getuserlevel($thread['OWNER']); ?><BR>
 &nbsp;&nbsp;文章：<?php echo $user['numposts']; ?><br>
 &nbsp;&nbsp;积分：<?php echo $user['score']; ?><br>
 <?php
-	if (SHOW_REGISTER_TIME) {
+		if (SHOW_REGISTER_TIME) {
 ?>
 &nbsp;&nbsp;注册：<?php echo strftime('%Y-%m-%d',$user['firstlogin']); ?><BR>
 <?php
-	}
-	if ($show_detail) {
+		}
+		if ($show_detail) {
 ?>
 &nbsp;&nbsp;星座：<?php echo get_astro($user['birthmonth'],$user['birthday']); ?>
+<?php
+		}
+	} else {
+?>
+&nbsp;&nbsp;<img src="userface/image.gif" align=absmiddle title="未知用户">
 <?php
 	}
 ?>
