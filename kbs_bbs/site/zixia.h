@@ -11,6 +11,7 @@
  * 5. 进站不显示那个鬼一样的祝福榜/校内热点
  * 6. 信件列表按 s 显示每封信件的大小
  * 7. 离站选择不寄回讯息的话不要删除讯息
+ * 8. web 友情链接管理
  */
 
 #define USE_TMPFS           1   /*使用内存文件系统加速*/
@@ -38,7 +39,7 @@
 
 #define TELNET_WORD_WRAP 1 //Telnet下长行自动词间换行
 
-#define SMTH			1		/* SMTH专有代码 */
+#define SMTH			0		/* SMTH专有代码 */
 #define FILTER			1		/* 使用文章内容过滤 */
 
 #define MYUNLINK_BACKUPDIR "0Announce/backup"

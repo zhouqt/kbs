@@ -6,7 +6,7 @@
 
 #define USE_TMPFS 1
 #define TMPFSROOT "cache"
-#define SMTH    1 /*作为SMTH的测试站嘛*/
+#define SMTH    0 /*作为SMTH的测试站嘛*/
 #define HAVE_TSINGHUA_INFO_REGISTER 0
 int auto_register(char *userid, char *email, int msize);
 
