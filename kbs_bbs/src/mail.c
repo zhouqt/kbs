@@ -867,7 +867,7 @@ char *maildoent(char *buf, int num, struct fileheader *ent)
         strcpy(c1, "[33m");
         strcpy(c2, "[36m");
     }
-    if (!strcmp(ReadPost, ent->title) || !strcmp(ReplyPost, ent->title))
+    if (!strncmp(ReadPost, ent->title,STRLEN) || !strncmp(ReplyPost, ent->title,STRLEN))
         same = true;
     strncpy(b2, ent->owner, OWNER_LEN);
     ent->owner[OWNER_LEN - 1] = 0;

@@ -244,7 +244,8 @@ void setqtitle(char *stitle)
 {                               /* È¡ Reply ÎÄÕÂºóÐÂµÄ ÎÄÕÂtitle */
     FFLL = 1;
     if (strncmp(stitle, "Re: ", 4) != 0 && strncmp(stitle, "RE: ", 4) != 0) {
-        sprintf(ReplyPost, "Re: %s", stitle);
+        snprintf(ReplyPost,STRLEN, "Re: %s", stitle);
+        ReplyPost[STRLEN]=0;
         strncpy(ReadPost, stitle, STRLEN - 1);
         ReadPost[STRLEN - 1] = 0;
     } else {
@@ -634,7 +635,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
             sprintf(buf, " %4d %s%c%s %-12.12s %s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
     } else {                    /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
         if (!strncmp("Re:", ent->title, 3)) {   /*ReµÄÎÄÕÂ */
-            if (!strcmp(ReplyPost + 3, ent->title + 3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
+            if (!strncmp(ReplyPost + 3, ent->title + 3,STRLEN-3)) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
                 if (DEFINE(currentuser, DEF_HIGHCOLOR))
                     sprintf(buf, " [1;36m%4d[m %s%c%s %-12.12s %s[1;36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
                 else
@@ -724,13 +725,13 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 
     FFLL = 1;                   /* ReplyPostÖÐÎªReplyºóµÄÎÄÕÂÃû£¬ReadPostÎªÈ¥µôRe:µÄÎÄÕÂÃû */
     if (!strncmp(fileinfo->title, "Re:", 3)) {
-        strcpy(ReplyPost, fileinfo->title);
+        strncpy(ReplyPost, fileinfo->title,STRLEN);
         for (cou = 0; cou < STRLEN; cou++)
             ReadPost[cou] = ReplyPost[cou + 4];
     } else if (!strncmp(fileinfo->title, "©À ", 3) || !strncmp(fileinfo->title, "©¸ ", 3)) {
         strcpy(ReplyPost, "Re: ");
         strncat(ReplyPost, fileinfo->title + 3, STRLEN - 4);
-        for (cou = 0; cou < STRLEN; cou++)
+        for (cou = 0; cou < STRLEN-4; cou++)
             ReadPost[cou] = ReplyPost[cou + 4];
     } else {
         strcpy(ReplyPost, "Re: ");
