@@ -78,7 +78,7 @@ class Module{
         $this->logo = $array['logo'];
         $this->type = $array['type'];
         
-        $this->var = $this->havePerm (MODULE_ACCESS_PUBLIC);
+        $this->public = $this->havePerm (MODULE_ACCESS_PUBLIC);
         $this->kernel = $this->havePerm (MODULE_ACCESS_KERNEL);
         
         settype ($this->mid, 'integer');
@@ -94,7 +94,7 @@ class Module{
     }
 
 
-    function isvar () {
+    function isPublic () {
         return $this->public;    
     }
 
