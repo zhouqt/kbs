@@ -10,7 +10,7 @@ struct statf {
     int gtime;
     int gwtime;
     double score;
-}
+};
 
 struct killer_record {
     int w; //0 - 平民胜利 1 - 杀手胜利
