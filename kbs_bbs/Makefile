@@ -30,7 +30,7 @@ CC       = gcc
 AR	 = ar
 LD	 = ld
 #CC       = cc
-CFLAGS   = -W -g -Ilibesmtp
+CFLAGS   = -g -Ilibesmtp
 LDFLAGS  = -lc
 #CFLAGS   = -g -O3 -qstrict -qcompact -qarch=ppc
 #LIBS     = -L. -L/usr/local/lib -lesmtp

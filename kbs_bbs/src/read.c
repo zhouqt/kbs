@@ -54,7 +54,6 @@ static int search_thread(struct keeploc  *locmem,int offset,char *title);
 char            currdirect[ 255 ]; /*COMMAN: increased directory length to MAX_PATH */
 int             screen_len;
 int             last_line;
-extern int	m_read();
 
 /* COMMAN : use mmap to speed up searching */
 #include <unistd.h>
@@ -91,11 +90,7 @@ search_file(char *filename) /* Leeward 98.10.02 */
     return - 1;
 }
 
-struct keeploc *
-getkeep(s,def_topline,def_cursline)
-            char    *s;
-int     def_topline;
-int     def_cursline;
+struct keeploc * getkeep(char *s,int def_topline,int def_cursline)
 {
     static struct keeploc *keeplist = NULL ;
     struct keeploc *p ;

@@ -50,13 +50,11 @@ int line;
     }
 }
 
-void s_msg()
+int s_msg()
 {
-    do_sendmsg(NULL,NULL,0);
+    return do_sendmsg(NULL,NULL,0);
 }
 extern char msgerr[255];
-int
-sendmsgfunc(struct user_info *uentp,char msgstr[256],int mode);
 
 int
 do_sendmsg(uentp,msgstr,mode)
@@ -255,8 +253,7 @@ wall()
     return 0;
 }
 
-void
-r_msg()
+void r_msg(int signo)
 {
     FILE *fp;
     char buf[256] ;
@@ -565,5 +562,5 @@ struct user_info *pageinfo;
 void r_lastmsg()
 {
     f_offset=0;
-    r_msg();
+    r_msg(0);
 }

@@ -131,8 +131,7 @@ listcuent(struct user_info *uentp,char* arg,int pos)
     return 0 ;
 }
 
-void
-creat_list()
+void creat_list()
 {
     listcuent(NULL,0,0) ;
     apply_ulist_addr( (APPLY_UTMP_FUNC)listcuent ,0);

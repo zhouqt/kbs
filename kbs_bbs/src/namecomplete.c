@@ -420,10 +420,10 @@ char *prompt, *data ;
                     continue;
                 }
                 if (count<2) continue;
-	        cwlist = u_namearray( cwbuf, &cwnum, data );
+	        cwlist = u_namearray( (char (*)[13])cwbuf, &cwnum, data );
                 clearbot = YEA;
                 col = 0;
-                len = UserMaxLen( cwlist, cwnum, morenum, NUMLINES );
+                len = UserMaxLen( (char (*)[13])cwlist, cwnum, morenum, NUMLINES );
                 move( 2, 0 );
                 clrtobot();
                 printdash( " 所有使用者列表 " );
@@ -435,7 +435,7 @@ char *prompt, *data ;
                     }
                     col += len+2;
                     if( morenum >= cwnum )  break;
-                    len = UserMaxLen( cwlist, cwnum, morenum, NUMLINES );
+                    len = UserMaxLen( (char (*)[13])cwlist, cwnum, morenum, NUMLINES );
                 }
                 if( morenum < cwnum ) {
                     move( t_lines - 1, 0 );
@@ -465,7 +465,7 @@ char *prompt, *data ;
                     *temp++ = ch;
                     *temp = '\0';
                     if ((count>1)&&cwnum) {
-	                    n = UserSubArray( cwbuf, cwlist, cwnum, ch, count );
+	                    n = UserSubArray( (char (*)[13])cwbuf, (char (*)[13])cwlist, cwnum, ch, count );
 	                    if( n == 0 ) {
 	                        temp--;
                             *temp = '\0';

@@ -64,6 +64,7 @@ int namecomplete(char* prompt,char* data);
 int usercomplete(char* prompt,char* data);
 
 /* newmain_single.c */
+int count_user();
 int dosearchuser(char* userid);
 void showtitle(char* title,char* mid);
 void abort_bbs(int);
@@ -72,9 +73,12 @@ void update_endline();
 void set_numofsig();
 void docmdtitle( char    *title,char *prompt);
 /* bbs.c*/
+int get_a_boardname(char* bname,char* prompt); /* 输入一个版名 */
+int Read();
+void printutitle();  /* 屏幕显示 用户列表 title */
 int check_readonly(char *checked);/* Leeward 98.03.28 */
 void record_exit_time();   /* 记录离线时间  Luzi 1998/10/23 */
-void shownotepad();
+int shownotepad();
 int check_stuffmode();
 int do_reply(char* title);
 int do_select(int ent,struct fileheader* fileinfo,char* direct );  /* 输入讨论区名 选择讨论区 */
@@ -106,6 +110,7 @@ int  b_closepolls();
 int vote_flag(char* bname,char val,int mode);
 
 /* mail.c */
+int	m_read();
 int chkmail();
 int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
@@ -120,6 +125,7 @@ int del_grp(char grp[STRLEN],char bname[STRLEN],char title[STRLEN]);
 int securityreport(char* str,struct userec* lookupuser,char fdata[7][STRLEN]);
 
 /* talk.c */
+void creat_list();
 int deleteoverride( char *uident);
 int num_visible_users();
 int num_alcounter();
@@ -140,6 +146,7 @@ int kick_user(struct user_info *userinfo);
 int d_user(char cid[IDLEN]);
 
 /* read.c */
+struct keeploc * getkeep(char *s,int def_topline,int def_cursline);
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
 void fixkeep(char* s,int first,int last);
 typedef char *(*READ_FUNC)(void*,int,void*);
@@ -147,12 +154,13 @@ void i_read( int cmdmode,char *direct ,void (*dotitle)() ,READ_FUNC doentry,stru
 void u_exit();
 
 /* sendmsg.c */
-void s_msg();
+int s_msg();
 void r_lastmsg();
 int show_allmsgs();
 int do_sendmsg(struct user_info *uentp,const char msgstr[256],int mode);
 
 /* list.c */
+void show_message( char *msg);
 void setlistrange( int i);
 int t_friends();
 int fill_userlist();

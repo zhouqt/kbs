@@ -240,11 +240,7 @@ int store_msgfile(char *uident, char *msgbuf)
 	return 0;
 }
 
-int
-sendmsgfunc(uentp,msgstr,mode)
-struct user_info *uentp;
-char msgstr[256];
-int mode;
+int sendmsgfunc( struct user_info *uentp, const char* msgstr, int mode)
 {
     char uident[STRLEN] ,ret_str[20];
     FILE *fp;

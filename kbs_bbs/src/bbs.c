@@ -233,17 +233,15 @@ char filepath[];
 }
 
 /*Add by SmallPig*/
-void
-shownotepad()   /* 显示 notepad */
+int shownotepad()   /* 显示 notepad */
 {
     modify_user_mode( NOTEPAD );
     ansimore("etc/notepad", YEA);
     clear();
-    return;
+    return 1;
 }
 
-void
-printutitle()  /* 屏幕显示 用户列表 title */
+void printutitle()  /* 屏幕显示 用户列表 title */
 {
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
     int isadm;
@@ -312,9 +310,7 @@ Post()  /* 主菜单内的 在当前版 POST 文章 */
     return 0 ;
 }
 
-int
-get_a_boardname(bname,prompt)  /* 输入一个版名 */
-char *bname,*prompt;
+int get_a_boardname(char* bname,char* prompt)  /* 输入一个版名 */
 {
     /*    struct boardheader fh;*/
 
@@ -2429,8 +2425,7 @@ struct one_key  read_comms[] = { /*阅读状态，键定义 */
                                    '\0',       NULL
                                } ;
 
-int
-Read()
+int Read()
 {
     char        buf[ STRLEN ];
     char        notename[STRLEN];

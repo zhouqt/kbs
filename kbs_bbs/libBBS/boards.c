@@ -502,7 +502,7 @@ int haspostperm(struct userec* user,char *bname) /* 判断在 bname版 是否有post权 
     return (HAS_PERM(user,(bcache[i-1].level&~PERM_NOZAP) & ~PERM_POSTMASK));
 }
 
-int chk_BM_instr(char BMstr[STRLEN-1],char    bmname[IDLEN+2])
+int chk_BM_instr(const char BMstr[STRLEN-1],const char    bmname[IDLEN+2])
 {
     char *ptr;
     char BMstrbuf[STRLEN-1];
@@ -520,7 +520,7 @@ int chk_BM_instr(char BMstr[STRLEN-1],char    bmname[IDLEN+2])
 }
 
 
-int chk_currBM(char BMstr[STRLEN-1],struct userec* user)   
+int chk_currBM(const char BMstr[STRLEN-1],struct userec* user)   
 	/* 根据输入的版主名单 判断user是否有版主 权限*/
 {
     char *ptr;

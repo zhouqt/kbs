@@ -11,6 +11,7 @@ extern int     brdnum;
 extern int yank_flag;
 extern char    *boardprefix;
 static int choose_board(int  newflag ); /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
+static int check_newpost( struct newpostdata *ptr);
 
 void
 EGroup( cmd )
@@ -682,9 +683,7 @@ case 'n': case 'j': case KEY_DOWN:
     return -1 ;
 }
 
-int
-check_newpost( ptr )
-struct newpostdata *ptr;
+static int check_newpost( struct newpostdata *ptr)
 {
 	struct BoardStatus* bptr;
 	ptr->total = ptr->unread = 0;

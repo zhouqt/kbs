@@ -14,6 +14,8 @@ int range,page,readplan,num;
 struct user_info *user_record[USHM_SIZE];
 struct userec *user_data;
 extern char MsgDesUid[14]; /* 保存所发msg的目的uid 1998.7.5 by dong */
+int t_users();
+int Show_Users();
 
 int myfriend(int uid,char* fexp)
 {
@@ -101,8 +103,7 @@ print_user_info_title()
     return 0;
 }
 
-show_message(msg)
-char msg[];
+void show_message( char *msg)
 {
 
     move(BBS_PAGESIZE+3,0);
@@ -605,7 +606,7 @@ printuent(struct userec *uentp ,char* arg)
         else
             return 0;
     }
-    uleveltochar(&permstr,uentp);
+    uleveltochar(permstr,uentp);
     user_data[i-page]=*uentp;
     override=myfriend(searchuser(uentp->userid),fexp);
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
@@ -657,7 +658,7 @@ allusers()
     return count;
 }
 
-Show_Users()
+int Show_Users()
 {
 
     usercounter = 0;
@@ -756,8 +757,7 @@ t_friends()
     return 0;
 }
 
-int
-t_users()
+int t_users()
 {
     friendmode=NA;
     modify_user_mode(LUSERS);
