@@ -860,7 +860,12 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         && strcmp(currboard->filename, "sysmail")) { /* 新方法比较*/
             if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {      /*Re的文章 */
                 if ((readfh&&readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
+#ifdef FREE
+					if (1)
+#else
                     if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
+#endif
+
 #ifdef COLOR_ONLINE
                         sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%s%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
@@ -892,7 +897,12 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 #endif
             } else {
                 if (readfh&&(readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
+#ifdef FREE
+					if (1)
+#else
                     if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
+#endif
+
 #ifdef COLOR_ONLINE
                         sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
@@ -927,7 +937,12 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     } else                     /* 允许 相同主题标识 */
         if (!strncmp("Re:", ent->title, 3)) {   /*Re的文章 */
             if (readfh&&isThreadTitle(readfh->title, ent->title)) /* 当前阅读主题 标识 */
+#ifdef FREE
+					if (1)
+#else
                 if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
+#endif
+
 #ifdef COLOR_ONLINE
                     sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%s%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
@@ -959,7 +974,12 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 #endif
         } else {
             if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))      /* 当前阅读主题 标识 */
+#ifdef FREE
+					if (1)
+#else
                 if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
+#endif
+
 #ifdef COLOR_ONLINE
                     sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
 #else
