@@ -628,13 +628,13 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
 
     if (uinfo.mode != RMAIL&&digestmode!=1&&digestmode!=4&&digestmode!=5) { // ÐÂ·½·¨±È½Ï
 	if (FFLL == 0) {
-        if (ent->groupid!=ent->id&&(!strncmp("Re:", ent->title, 3)||digestmode==2))       /*ReµÄÎÄÕÂ */
+        if (ent->groupid!=ent->id&&(!strncmp("Re:", ent->title, 3)||(!strncmp("©¸", ent->title, 3)||!strncmp("©À ", ent->title, 3))&&digestmode==2))       /*ReµÄÎÄÕÂ */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  %-47.47s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
         else                    /* ·ÇReµÄÎÄÕÂ */
             sprintf(buf, " %4d %s%c%s %-12.12s %6.6s  ¡ñ %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
     } else {                    /* ÔÊÐí ÏàÍ¬Ö÷Ìâ±êÊ¶ */
         if (ent->groupid!=ent->id) { /*ReµÄÎÄÕÂ */
-            if (!strncmp("Re:", ent->title, 3)||digestmode==2)
+            if (!strncmp("Re:", ent->title, 3)||(!strncmp("©¸", ent->title, 3)||!strncmp("©À ", ent->title, 3))&&digestmode==2)
 	            if (ReadPostHeader.groupid==ent->groupid) /* µ±Ç°ÔÄ¶ÁÖ÷Ìâ ±êÊ¶ */
 	                sprintf(buf, " [36m%4d[m %s%c%s %-12.12s %6.6s[36m£®%-47.47s[m ", num, typeprefix, type, typesufix, ent->owner, date, TITLE);
 	            else
