@@ -118,7 +118,7 @@ bbs_board_header($brdarr);
     $i = 1;
     foreach ($denyusers as $user) {
         echo '<tbody><tr><td class="t3">'.$i.'</td><td class="t4"><a href="/bbsqry.php?userid='.$user['ID'].'">'.$user['ID'].'</a></td>'.
-             '<td class="t7">'.$user['EXP'].' </td>'.
+             '<td class="t7">'.htmlspecialchars($user['EXP']).' </td>'.
              '<td class="t5">'.htmlspecialchars($user['COMMENT']).'</td>'.
              '<td class="t4"><a onclick="return confirm(\'确实解封吗?\')" href="'.$_SERVER['PHP_SELF'].'?board='.$brd_encode.'&act=del&userid='.$user['ID'].'">解封</a></td>'.
              '</tr></tbody>';
