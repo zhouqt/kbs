@@ -324,6 +324,8 @@ int filter_telnet(char *s, int *len)
     return (*len = newlen);
 }
 
+static bool inremsg = false;
+
 int igetch()
 {
     time_t now;
@@ -355,9 +357,18 @@ int igetch()
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
                 return KEY_TALK;
-            while (msg_count) {
-                msg_count--;
-                r_msg();
+            if (!inremsg) {
+/*这种msg处理仍然有同步问题，如果while判断完msg_count==0,
+ * goto igetagain到select之间，发生了信号，那么，这个还是
+ * 会丢失
+ */
+                while (msg_count) {
+                    inremsg = true;
+                    msg_count--;
+                    r_msg();
+                    inremsg = false;
+                }
+                goto igetagain;
             }
         }
         if (sr < 0 && errno != EINTR)
@@ -401,8 +412,15 @@ int igetch()
                 if (sr < 0 && errno == EINTR) {
                     if (talkrequest)
                         return KEY_TALK;
-                    while (msg_count)
+                }
+                if (!inremsg) {
+                    while (msg_count) {
+                        inremsg = true;
+                        msg_count--;
                         r_msg();
+                        inremsg = false;
+                    }
+                    continue;
                 }
                 if (sr == 0 && alarm_timeout) {
                     i_timeout = 0;
