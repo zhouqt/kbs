@@ -362,6 +362,9 @@ int     mode;
         return "戒网中..";
     case SERVICES:    return "休闲娱乐..";
 	case FRIENDTEST:  return "心有灵犀";
+    case KILLER:        return "杀人游戏";
+    case CALENDAR:  return "日记日历";
+    case CALENEDIT: return "修编日记";
     default:
         return "去了那里!?";
     }
