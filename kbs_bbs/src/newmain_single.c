@@ -260,6 +260,7 @@ void abort_bbs(int signo)
 {
     time_t stay;
 
+    refresh();
     if (uinfo.mode == POSTING || uinfo.mode == SMAIL || uinfo.mode == EDIT || uinfo.mode == EDITUFILE || uinfo.mode == EDITSFILE || uinfo.mode == EDITANN)
         keep_fail_post();
     if (started) {
