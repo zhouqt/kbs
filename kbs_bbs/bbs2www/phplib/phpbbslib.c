@@ -2128,7 +2128,7 @@ static PHP_FUNCTION(bbs_createnewid)
 
 	setpasswd(passbuf,&newuser);
 
-	newuser.userlevel = PERM_BASIC;
+	newuser.userlevel = PERM_AUTOSET;
 	newuser.userdefine = -1;
 	newuser.userdefine &= ~DEF_NOTMSGFRIEND;
 	newuser.notemode = -1;

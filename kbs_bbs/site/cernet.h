@@ -180,6 +180,7 @@
 #define XPERMSTR "bTCPRp#@XWBA$VS!DEM1234567890%"
 /* means the rest is a post mask */
 
+#define PERM_AUTOSET   (PERM_BASIC | PERM_CHAT | PERM_PAGE | PERM_POST | PERM_LOGINOK)
 /* This is the default permission granted to all new accounts. */
 #define PERM_DEFAULT    (PERM_BASIC | PERM_CHAT | PERM_PAGE | PERM_POST | PERM_LOGINOK)
 

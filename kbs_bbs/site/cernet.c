@@ -98,7 +98,7 @@ const char    *groups[] = {
     "northwest.faq",
     "northeast.faq",
     "southeast.faq",
-    "privte.faq",
+    "private.faq",
     NULL
 };
 const char secname[SECNUM][2][20] = {
