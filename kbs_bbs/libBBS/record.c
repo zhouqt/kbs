@@ -131,7 +131,7 @@ long get_sum_records(char *fpath, int size)
     return ans;
 }
 
-long get_mail_sum_records(char *fpath, int size)
+static long get_mail_sum_records(char *fpath, int size)
 {                               
     struct stat st;
     long ans = 0;
@@ -243,14 +243,6 @@ int size;
     return 0;
 }
 
-void toobigmesg()
-{
-    /*
-     * change by KCN 1999.09.08
-     * fprintf( stderr, "record size too big!!\n" );
-     */
-}
-
 /* apply_record进行了预读优化,以减少系统调用次数,提高速度. ylsdd 2001.4.24 */
 /* COMMAN : use mmap to speed up searching */
 int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int applycopy, bool reverse)
@@ -345,35 +337,7 @@ int search_record_back(int fd,  /* file handle */
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) buf, filesize, -1);
-
     return 0;
-}
-
-//和search_record_back区别是最多搜num个
-int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_ARG fptr, void *farg, void *rptr, int sorted)
-{
-	char *buf, *buf1;
-	int i;
-	off_t filesize;
-
-	BBS_TRY {
-		if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &buf, &filesize) == 0)
-			BBS_RETURN(0);
-		if (start > filesize / size)
-			start = filesize / size;
-		for (i = start, buf1= buf + size * (start - 1); (i > 0 &&  i > start - num); i--, buf1 -= size) {
-			if ((*fptr) (farg, buf1)) {
-				if (rptr)
-					memcpy(rptr, buf1, size);
-				end_mmapfile((void *) buf, filesize, -1);
-				BBS_RETURN(i);
-			}
-		}
-	}
-	BBS_CATCH {
-	}
-	BBS_END end_mmapfile((void *) buf, filesize, -1);
-	return 0;
 }
 
 /*---   End of Addition     ---*/
@@ -514,7 +478,6 @@ int size, id;
      * add by KCN 
      */
     struct flock ldata;
-    int retval;
     int fd;
 
 #ifdef POSTBUG
@@ -533,7 +496,7 @@ int size, id;
     ldata.l_whence = 0;
     ldata.l_len = size;
     ldata.l_start = size * (id - 1);
-    if ((retval = fcntl(fd, F_SETLKW, &ldata)) == -1) {
+    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
         bbslog("user","%s","reclock error");
         close(fd);
                         /*---	period	2000-10-20	file should be closed	---*/

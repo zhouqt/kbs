@@ -20,6 +20,8 @@ int write_peer(bbsmsg_t * msgbuf)
     return write(msgbuf->sockfd, buf, strlen(buf));
 }
 */
+
+struct sms_shm_head* head;
 int canmsg(struct userec *fromuser, struct user_info *uin)
 {
     if ((uin->pager & ALLMSG_PAGER) || HAS_PERM(fromuser, PERM_SYSOP))

@@ -25,12 +25,16 @@
 #endif
 #endif
 
+#ifdef HAPPY_BBS
 #if HAPPY_BBS == 0 /* HAPPY BBS专有代码 */
 #undef HAPPY_BBS
 #endif
+#endif
 
+#ifdef DQPI
 #if DQPI == 0		/* 北极星(DQPI)专有代码 */
 #undef DQPI
+#endif
 #endif
 
 #if NEW_COMERS == 0
@@ -65,8 +69,10 @@
 //#define RAW_ARTICLE 1
 //#endif
 
+#ifdef RAW_ARTICLE
 #if RAW_ARTICLE == 0
 #undef RAW_ARTICLE
+#endif
 #endif
 
 #define HAVE_USERMONEY 1

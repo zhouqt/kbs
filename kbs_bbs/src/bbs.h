@@ -125,6 +125,9 @@ public shm,而attach shm又需要sysconf_eval,ft*/
 #define perror(x) prints(x)
 #endif
 
+//check need (void)
+#define ARG_VOID void
+
 #define VERSION_ID "Firebird BBS 2.5GB"
 #define ADD_EDITMARK 1
 
@@ -136,9 +139,9 @@ extern int errno;
 #define NOECHO (0)
 
 #ifndef strdup
-char *strdup();                 /* External function declarations */
+char *strdup(__const__ char*);                 /* External function declarations */
 #endif
-char *bfile();
+char *bfile(ARG_VOID);
 
 extern FILE *ufp;               /* External variable declarations */
 extern long ti;
@@ -594,7 +597,8 @@ struct sms_shm_head {
     int sem;
     int total;
     int length;
-} * head;
+};
+extern struct sms_shm_head* head;
 
 #endif
 
