@@ -1574,7 +1574,7 @@ int valid_filename(char *file)
 	return 0;
 }
 
-/* merge boardrc.c into bbslib.c */
+/* merge boardrc.c into bbslib.c 
 char *brc_getrecord(char *ptr, char *name, int *pnum, int *list) {
         int     num;
         char   *tmp;
@@ -1709,7 +1709,7 @@ int brc_clear() {
 int brc_has_read(char *file) {
 	return !brc_un_read(file);
 }
-/* End */
+ End */
 
 /* added by flyriver, 2001.12.17
  * using getcurrusr() instead of using currentuser directly
