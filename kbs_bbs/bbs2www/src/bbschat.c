@@ -516,7 +516,7 @@ int chatrefresh(int pid)
 				int i;
 				printf("<script>top.document.title='%s%s--ª∞Ã‚: ",
 					   BBS_FULL_NAME, CHAT_SERVER);
-				hprintf(genbuf+2);
+				hprintf("%s",genbuf+2);
 				printf("'</script>");
 				sprintf(buf2, "±æ%sµƒª∞Ã‚ «: [[1;33m%s[37m]",
 						CHAT_ROOM_NAME, genbuf+2);
@@ -542,7 +542,7 @@ int chatrefresh(int pid)
 			}
 			printf("<script>\n");   
 			printf("top.main.document.writeln('");
-			hhprintf(genbuf);
+			hhprintf("%s",genbuf);
 			printf(" <font class=\"c37\">");
 			printf("');");
 			printf("top.main.scrollBy(0, 99999);\n");

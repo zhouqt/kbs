@@ -332,13 +332,13 @@ int hhprintf(char *fmt, ...) {
 					printf("<img src=\"%s\">", nohtml(tmp));
 					tmp=strtok(0, "");
 					if(tmp==0) return -1;
-					return hhprintf(tmp);
+					return hhprintf("%s",tmp);
 				}
 			}*/
 			printf("<a target=\"_blank\" href=\"%s\">%s</a>", nohtml(tmp), nohtml(tmp));
 			tmp=strtok(0, "");
 			if(tmp==0) return printf("\n");
-			return hhprintf(tmp);
+			return hhprintf("%s",tmp);
 		} else {
 			buf0[len]=s[0];
 			if(len<1000) len++;

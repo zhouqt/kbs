@@ -131,7 +131,7 @@ void display_user(char *userid)
            permstr,(lookupuser->userlevel & PERM_SUICIDE)?" (×ÔÉ±ÖÐ)":"¡£");
 
 	if ((genbuf[0])&&seecount) {
-		hprintf(genbuf);
+		hprintf("%s",genbuf);
 		printf("\n");
 	}
     show_user_plan(planid);

@@ -24,7 +24,7 @@ int main()
 		printf("<body onkeypress=\"checkrmsg(event.keyCode)\" style=\"BACKGROUND-COLOR: #f0ffd0\">");
 		printf("<table width=\"100%%\">\n");
 		printf("<tr><td>");
-		hprintf(buf);
+		hprintf("%s",buf);
 		printf("</td>\n");
 		printf("<td align=\"right\"><a target=\"f3\" href=\"bbssendmsg?destid=%s&destutmp=%d\">[»ØÑ¶Ï¢]</a> <a href=\"bbsgetmsg\">[ºöÂÔ]</a></td></tr></table>\n", srcid, srcutmp);
 		http_quit();
