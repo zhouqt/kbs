@@ -110,6 +110,7 @@ static PHP_FUNCTION(bbs_checkbadword);
 #ifdef HAVE_BRC_CONTROL
 static PHP_FUNCTION(bbs_brcaddread);
 #endif
+static PHP_FUNCTION(bbs_brcclear);
 static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_doforward);
@@ -301,6 +302,7 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_updatearticle, NULL)
 #ifdef HAVE_BRC_CONTROL
         PHP_FE(bbs_brcaddread, NULL)
+        PHP_FE(bbs_brcclear, NULL)
 #endif
         PHP_FE(bbs_getboard, NULL)
 	PHP_FE(bbs_postarticle,NULL)
@@ -4409,6 +4411,42 @@ static PHP_FUNCTION(bbs_brcaddread)
     RETURN_NULL();
 }
 #endif
+
+/**
+ * 清除版面未读标记 
+ * bbs_brcclear(string board)
+ * windinsn
+ * return true/false
+ */
+static PHP_FUNCTION(bbs_brcclear)
+{
+    char *board;
+    int  board_len;
+    struct boardheader bh;
+    struct userec *u;
+        
+    int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &board, &board_len) == FAILURE)
+		WRONG_PARAM_COUNT;
+		
+    u = getCurrentUser();
+    if (!u)
+        RETURN_FALSE;
+        
+    if (getboardnum(board,&bh) == 0)
+        RETURN_FALSE;
+    if (!check_read_perm(u, &bh))
+        RETURN_FALSE;
+    if (!strcmp(u->userid,"guest"))
+        RETURN_TRUE;
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(u->userid, board, getSession());
+    brc_clear(getSession());
+    brc_update(u->userid, getSession());
+#endif
+    RETURN_TRUE;
+}
 
 static PHP_FUNCTION(bbs_ann_traverse_check)
 {

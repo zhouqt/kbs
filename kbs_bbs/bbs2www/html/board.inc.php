@@ -205,6 +205,12 @@ if (bbs_is_bm($brdnum, $usernum))
 [<a href="/bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>]
 <?php
     }
+    else {
+?>
+[<a href="/bbsclear.php?board=<?php echo $brd_encode; ?>">清除未读</a>]
+<?php        
+    }
+    
 }
 ?>
     </td>
