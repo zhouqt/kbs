@@ -312,7 +312,7 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 	return FALSE;
 }
 
-function html_init($charset="",$title="",$otherheader="")
+function html_init($charset="",$title="",$otherheader="",$is_mathml=false)
 {
 	global $cachemode;
 	global $HTMLTitle;
@@ -338,12 +338,25 @@ function html_init($charset="",$title="",$otherheader="")
 	if ($css_style==''){
 		$css_style=$DEFAULTStyle;
 	}
+	if ($is_mathml) {
+		header("Content-Type: application/xhtml+xml");
+?>
+<?xml version="1.0"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1 plus MathML 2.0//EN"
+               "http://www.w3.org/TR/MathML2/dtd/xhtml-math11-f.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+xmlns:math="http://www.w3.org/1998/Math/MathML">
+<?php
+	} else {
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
 	 PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
 	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
+<?php
+	}
+?>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
 <title><?php echo $title; ?></title>
@@ -518,7 +531,7 @@ function sizestring($size)
 	}
 }
 
-function show_nav($boardName='')
+function show_nav($boardName='',$is_mathml=false)
 {
 	global $Banner;
 	global $SiteName;
@@ -530,7 +543,7 @@ function show_nav($boardName='')
 	global $needloginok;
 	$showedbanner = true;
 
-  html_init();
+	html_init("","","",$is_mathml);
 ?>
 <script language="javascript">
 <!--
