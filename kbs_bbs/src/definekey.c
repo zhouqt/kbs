@@ -22,10 +22,10 @@ int load_key()
     char fname[STRLEN];
     struct stat st;
     release_key();
+    stat(fp, &st);
     sethomefile(fname, currentuser->userid, "definekey");
     fp=fopen(fname, "rb");
     if(fp==NULL) return -1;
-    fstat(fp, &st);
     keymem_total = st.st_size/sizeof(struct key_struct);
     keymem = malloc(MAX_KEY_DEFINE*sizeof(struct key_struct));
     fread(keymem, st.st_size, 1, fp);
@@ -42,8 +42,8 @@ int save_key()
     fp=fopen(fname, "wb");
     if(fp==NULL) return -1;
     fwrite(keymem, keymem_total*sizeof(struct key_struct), 1, fp);
-    ftruncate(fp, keymem_total*sizeof(struct key_struct));
     fclose(fp);
+    truncate(fname, keymem_total*sizeof(struct key_struct));
     return 0;
 }
 
