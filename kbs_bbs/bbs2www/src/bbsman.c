@@ -90,22 +90,22 @@ int do_del(char *board, int id)
 /* modified by stiger,20030414,使用二分法 */
 int do_set(char *board, int id, int flag)
 {
-    FILE *fp;
     int fd;
     char dir[256];
     struct fileheader f;
     int ent;
 
-    sprintf(dir, "boards/%s/.DIR", board);
-
+	setbdir(DIR_MODE_NORMAL, dir, board);
     fd = open(dir, O_RDWR, 0644);
-    if( get_records_from_id( fd, id, &f, 1, &ent) ){
+    if( fd >= 0 && get_records_from_id( fd, id, &f, 1, &ent) )
+	{
         close(fd);
-	if(change_post_flag(NULL, currentuser, 0, board, ent, &f, dir, flag, 0)!=DONOTHING)
-            printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
+		if(change_post_flag(NULL, currentuser, 0, board, ent, &f, dir, flag, 0)!=DONOTHING)
+			printf("<tr><td>%s</td><td>标题:%s</td><td>标记成功.</td></tr>\n", f.owner, nohtml(f.title));
+		else
+			printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
+    }
 	else
-            printf("<tr><td>%s</td><td>标题:%s</td><td>标记不成功.</td></tr>\n", f.owner, nohtml(f.title));
-    }else
         printf("<tr><td></td><td></td><td></td><td>文件不存在.</td></tr>\n");
 
     
