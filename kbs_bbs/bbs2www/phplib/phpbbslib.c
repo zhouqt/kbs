@@ -3772,6 +3772,9 @@ static PHP_FUNCTION(bbs_getwebmsg)
         RETURN_FALSE;
     }
 
+	if( currentuinfo==NULL || currentuinfo->mailcheck==0 )
+		RETURN_FALSE;
+
     if (receive_webmsg(currentuinfonum, currentuser->userid, &srcpid, srcid, &sndtime, buf) == 0) {
         ZVAL_STRING(retsrcid, srcid, 1);
         ZVAL_STRING(msgbuf, buf, 1);
@@ -3779,6 +3782,7 @@ static PHP_FUNCTION(bbs_getwebmsg)
         ZVAL_LONG(z_sndtime, sndtime);
         RETURN_TRUE;
     }
+	currentuinfo->mailcheck=0;
     /*
      * make changes to the parameter 
      */
