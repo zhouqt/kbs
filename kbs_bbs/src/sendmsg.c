@@ -350,7 +350,7 @@ void r_msg()
             refresh();
             oflush();
             if(canreply)
-                ch = -getdata(oy, ox, "", buf, 1024, DOECHO, NULL, true);
+                ch = -getdata(oy, ox, NULL, buf, 1024, DOECHO, NULL, true);
             else
                 ch = igetkey();
             for(i=0;i<=oy;i++)
