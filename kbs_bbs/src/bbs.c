@@ -2923,7 +2923,9 @@ int sequential_read(int ent, struct fileheader *fileinfo, char *direct)
 
 int clear_new_flag(int ent, struct fileheader *fileinfo, char *direct)
 {
-    brc_clear_new_flag(fileinfo->id);
+	/* add by stiger */
+	if(POSTFILE_BASENAME(fileinfo->filename)[0]=='Z') brc_clear();
+	else brc_clear_new_flag(fileinfo->id);
     return PARTUPDATE;
 }
 
