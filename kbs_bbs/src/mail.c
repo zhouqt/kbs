@@ -1232,24 +1232,31 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
     int i,j;
     char buf[PATHLEN];
     char* t;
+    char menu_char[3][10]={"收件箱", "垃圾箱", "退出"};
+
     load_mail_list();
     if (!mail_list_t) return DONOTHING;
     clear();
     move(5, 3);
     prints("请选择移动到哪个邮箱");
     sel = (struct _select_item*)malloc(sizeof(struct _select_item)*(mail_list_t+1));
+    sel[0].x = 3; sel[0].y = 6; sel[0].hotkey = -1; sel[0].type = SIT_SELECT; sel[0].data = menu_char[0];
+    sel[1].x = 3; sel[1].y = 7; sel[1].hotkey = -1; sel[1].type = SIT_SELECT; sel[1].data = menu_char[1];
     for(i=0;i<mail_list_t;i++) {
-    	sel[i].x=3;
-    	sel[i].y=i+6;
-    	sel[i].hotkey=-1;
-    	sel[i].type=SIT_SELECT;
-    	sel[i].data=(void*) mail_list[i];
+    	sel[i+2].x=3;
+    	sel[i+2].y=i+8;
+    	sel[i+2].hotkey=-1;
+    	sel[i+2].type=SIT_SELECT;
+    	sel[i+2].data=(void*) mail_list[i];
     }
-    sel[mail_list_t].x = -1; sel[mail_list_t].y = -1;
-    sel[mail_list_t].hotkey = -1; sel[mail_list_t].type = 0;
-    sel[mail_list_t].data = NULL;
-    i = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE, 0, 6, NULL)-1;
-    if(i>=0&&i<mail_list_t){
+    sel[mail_list_t+2].x = 3; sel[mail_list_t+2].y = mail_list_t+8;
+    sel[mail_list_t+2].hotkey = -1; sel[mail_list_t+2].type = SIT_SELECT;
+    sel[mail_list_t+2].data = menu_char[2];
+    sel[mail_list_t+3].x = -1; sel[mail_list_t+3].y = -1;
+    sel[mail_list_t+3].hotkey = -1; sel[mail_list_t+3].type = 0;
+    sel[mail_list_t+3].data = NULL;
+    i = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL)-1;
+    if(i>=0&&i<mail_list_t+2){
         strcpy(buf, direct);
         if ((t = strrchr(buf, '/')) != NULL)
             *t = '\0';
@@ -1259,7 +1266,12 @@ int mail_move(int ent, struct fileheader* fileinfo, char* direct)
             t = strrchr(buf, '/') + 1;
             *t = '.';
             t++;
-            strcpy(t, mail_list[i]+30);
+            if (i>=2)
+                strcpy(t, mail_list[i-2]+30);
+            else if (i==0)
+                strcpy(t, "DIR");
+            else if (i==1)
+                strcpy(t, "DELETED");
             append_record(buf, fileinfo, sizeof(*fileinfo));
         }
     }
@@ -1741,6 +1753,7 @@ static int do_gsend(char *userid[], char *title, int num)
             mail_file(currentuser->userid, tmpfile, uid, save_title, 0);
         }
     }
+    mail_file_sent(".group", tmpfile, currentuser->userid, save_title, 0);
     unlink(tmpfile);
     if (G_SENDMODE == 2)
         fclose(mp);
@@ -2031,15 +2044,15 @@ void add_mlist(char* s, char* t, int k)
 
 char mail_title[9][30]=
 {
-"览阅新信笺",
-"寄信给站上其它使用者",
+"N) 览阅新信笺",
+"S) 寄信给站上其它使用者",
 "收件箱",
 "已发送邮件",
-"已删除邮件",
-"寄给 / 设定寄信名单",
-"┌设定好友名单",
-"└寄信给好友名单",
-"寄信给所有人"
+"垃圾箱",
+"G) 寄给 / 设定寄信名单",
+"O)┌设定好友名单",
+"F)└寄信给好友名单",
+"M) 寄信给所有人"
 };
 
 char mail_mtitle[3][10]=
@@ -2087,16 +2100,16 @@ int load_mboards()
     brdnum = 0;
     add_list(mail_title[0], m_new);
     add_list(mail_title[1], m_send);
-    add_mlist(mail_title[2], mail_mtitle[0], -1);
-    add_mlist(mail_title[3], mail_mtitle[1], -1);
-    add_mlist(mail_title[4], mail_mtitle[2], -1);
-    for(n=0;n<mail_list_t;n++)
-    	add_mlist(mail_list[n], mail_list[n]+30, n);
     add_list(mail_title[5], g_send);
     add_list(mail_title[6], t_override);
     add_list(mail_title[7], ov_send);
     if(HAS_PERM(currentuser, PERM_SYSOP))
     	add_list(mail_title[8], mailall);
+    add_mlist(mail_title[2], mail_mtitle[0], -1);
+    add_mlist(mail_title[3], mail_mtitle[1], -1);
+    add_mlist(mail_title[4], mail_mtitle[2], -1);
+    for(n=0;n<mail_list_t;n++)
+    	add_mlist(mail_list[n], mail_list[n]+30, n);
     
     return 0;
 }

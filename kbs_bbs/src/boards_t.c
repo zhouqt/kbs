@@ -970,6 +970,15 @@ int choose_board(int newflag, char *boardprefix)
             show_brdlist(page, 1, newflag);
             break;
         default:
+            if (ch>='a'&&ch<='z'||ch>='A'&&ch<='Z'){
+                int i;
+                for(i=0; i<brdnum; i++){
+                    if(toupper(ch)==toupper(nbrd[i].title[0])) {
+                        num=i;
+                        break;
+                    }
+                }
+            }
             ;
         }
         if (ch >= '0' && ch <= '9') {
