@@ -645,10 +645,16 @@ int add_author_friend(int ent , struct fileheader *fileinfo,char *direct )
 extern int bbs_zsendfile(char *fn,char*remote);
 int zsend_post( int ent , struct fileheader *fileinfo , char *direct )
 {
+	char *t;
 	char buf[512];
+	char buf1[512];
 	if (strcmp(currboard,"sys_discuss") != 0) return FULLUPDATE;
+      strcpy(buf1,direct) ;
+      if( (t = strrchr(buf1,'/')) != NULL )
+       *t = '\0' ;
+	snprintf(genbuf,512,"%s/%s",buf1,fileinfo->filename);
 	snprintf(buf,512,"SMTH-%s-%s.TXT",currboard,fileinfo->filename);
-	bbs_zsendfile(fileinfo->filename,buf);
+	bbs_zsendfile(genbuf,buf);
 	return FULLUPDATE;
 }
 int read_post( int ent , struct fileheader *fileinfo , char *direct )
