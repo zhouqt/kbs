@@ -449,7 +449,7 @@ if( file_exists( $relatefile ) ){
 ?>
 <tr>
 <td colspan="2" align="center" class="b1">
-其他版面:
+来这个版的人常去的其他版面：
 <?php
 include($relatefile);
 ?>
