@@ -982,7 +982,7 @@ static int room_list_refresh(struct _select_def *conf)
     docmdtitle("[ÓÎÏ·ÊÒÑ¡µ¥]",
               "  ÍË³ö[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ý\x1b[0;37m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¼ÓÈë[\x1b[1;32mJ\x1b[0;37m] \x1b[m");
     move(2, 0);
-    prints("[0;1;37;44m    %4s %-40s %-12s %4s %4s", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÈËÊý", "ÀàÐÍ");
+    prints("[0;1;37;44m    %4s %-14 %-12s %4s %4s %4s %4s", "±àºÅ", "ÓÎÏ·ÊÒÃû³Æ", "´´½¨Õß", "ÀàÐÍ", "ÈËÊý", "×î¶à", "Ëø¶¨");
     clrtoeol();
     resetcolor();
     update_endline();
@@ -993,7 +993,7 @@ static int room_list_show(struct _select_def *conf, int i)
 {
     struct room_struct * r = room_get(i-1);
     if(r)
-        prints("  %3d  %-40s %-12s %3d  %4s", i, r->name, r->creator, r->people, "É±ÈË");
+        prints("  %3d  %-14 %-12s %4s %3d  %3d   %2s", i, r->name, r->creator, "É±ÈË", r->people, r->maxpeople, (r->flag&ROOM_LOCKED)?"ÊÇ":"·ñ");
     return SHOW_CONTINUE;
 }
 
