@@ -1042,8 +1042,9 @@ function pc_detect_trackbackpings($body,&$detecttbps,$tbpUrl)
 **         -7 :引用通告的url错误
 **         -8 :引用通告目标服务器连接超时
 **         -9 :被审核
+**         -10:群体Blog缺少发布者
 */
-function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$theme,$subject,$body,$nodeType,$autodetecttbp,$tbpUrl,$tbpArt,$convert_encoding,$filtered,$address)
+function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$trackback,$theme,$subject,$body,$nodeType,$autodetecttbp,$tbpUrl,$tbpArt,$convert_encoding,$filtered,$address,$publisher)
 {
 	global $pcconfig,$support_encodings,$sending_encoding;
 	
@@ -1104,6 +1105,13 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	    if (bbs_checkbadword($subject) || bbs_checkbadword($body))
 	        $into_filter = true;
 	
+	if (!pc_is_groupwork($pc))
+        $publisher = "";
+    elseif (!$publisher)
+        return -10;
+    else
+        ;
+	
 	if (!$into_filter) {
     	if($tbpUrl && pc_tbp_check_url($tbpUrl) && $tbpArt) //若有引用通告的相关文章，加上链接
     	{
@@ -1115,10 +1123,10 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
     		
     	}
     	if (pc_is_groupwork($pc)) { //群体BLOG文章要加一个头
-    	    $body = pc_groupwork_addhead($pc,$body,$htmlTag);
+    	    $body = pc_groupwork_addhead($pc,$body,$htmlTag,$publisher);
     	}
     }
-    
+        
     if (!$pcconfig["SECTION"][$theme])
         $theme = "others";
     
@@ -1127,11 +1135,11 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 	if (!$address) $address = $_SERVER["REMOTE_ADDR"];
 	//日志入库
 	if ($into_filter)
-	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`,`tbpencoding`,`theme`) ".
-	   	     "VALUES ( '".$pid."', 0 , '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."','".addslashes($convert_encoding)."','".$theme."');";
+	    $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`tbp_url`,`tbp_art`,`auto_tbp`,`tbpencoding`,`theme`,`publisher`) ".
+	   	     "VALUES ( '".$pid."', 0 , '".$tid."' , '0', '0' , '', '".$emote."' ,  '".addslashes($_SERVER["REMOTE_ADDR"])."',NOW( ) , NOW( ), '".$pc["UID"]."' , '".addslashes($pc["USER"])."' , '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".addslashes($tbpUrl)."','".addslashes($tbpArt)."','".intval($autodetecttbp)."','".addslashes($convert_encoding)."','".$theme."','".addslashes($publisher)."');";
 	else
-	    $query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`theme`) ".
-	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($address)."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".$theme."');";
+	    $query = "INSERT INTO `nodes` (  `pid` , `tid` , `type` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`theme`,`publisher`) ".
+	   	     "VALUES ( '".$pid."', '".$tid."' , '0', '', '".$emote."' ,  '".addslashes($address)."',NOW( ) , NOW( ), '".$pc["UID"]."', '".$comment."', '0', '".$subject."', '".$body."', '".$access."', '0' , '".$htmlTag."' ,'".$trackback."','0','".$nodeType."','".$theme."','".addslashes($publisher)."');";
 	
 	if(!mysql_query($query,$link))
 		return -5;
@@ -1203,18 +1211,17 @@ function pc_add_node($link,$pc,$pid,$tid,$emote,$comment,$access,$htmlTag,$track
 }
 
 //群体blog添加头
-function pc_groupwork_addhead($pc,$body,$htmltag) {
-    global $currentuser;
+function pc_groupwork_addhead($pc,$body,$htmltag,$publisher) {
     if ($htmltag)
-        $ret = '<p align="right"><a href="/bbsqry.php?userid='.$currentuser['userid'].'"><font class="f2">发布者: '.$currentuser['userid'].'</font></a>&nbsp;&nbsp;&nbsp;&nbsp;</p>';
+        $ret = '<p align="right"><a href="/bbsqry.php?userid='.$publisher.'"><font class="f2">发布者: '.$publisher.'</font></a>&nbsp;&nbsp;&nbsp;&nbsp;</p>';
     else
-        $ret = '                                 发布者: '.$currentuser['userid'].'   \n';
+        $ret = '                                 发布者: '.$publisher.'   \n';
     $ret .= $body;
     /*
     if ($htmltag)
-        $ret .= '<p align="center">[<a href="/bbsqry.php?userid='.$currentuser['userid'].'">'.$currentuser['userid'].'</a>@<a href="index.php?id='.$pc['USER'].'">'.html_format($pc['NAME']).'</a>]</p>';
+        $ret .= '<p align="center">[<a href="/bbsqry.php?userid='.$publisher.'">'.$publisher.'</a>@<a href="index.php?id='.$pc['USER'].'">'.html_format($pc['NAME']).'</a>]</p>';
     else
-        $ret .= '          '.$currentuser['userid'].'@'.$pc['NAME'].'   \n';
+        $ret .= '          '.$publisher.'@'.$pc['NAME'].'   \n';
     */
     return $ret;
 }

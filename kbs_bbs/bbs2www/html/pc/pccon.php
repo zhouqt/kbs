@@ -269,11 +269,19 @@
     	$nid = $rows[nid];
 	    $tid = $rows[tid];
 	    $author = $pc['USER'];
+
+        if (pc_is_groupwork($pc) && $rows[publisher])
+            $author = $rows[publisher];
+        else
+            $author = $pc["USER"];
 	}
 	else {
 	    $nid = $rows[fid];
 	    $tid = 0;
-	    $author = $rows[username];
+	    if (pc_is_groupwork($pc) && $rows[publisher])
+            $author = $rows[publisher];
+        else
+            $author = $rows[username];
 	}
 	
 	if($pur != 3 && $rows[nodetype] == 0)

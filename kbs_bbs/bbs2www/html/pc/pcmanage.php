@@ -213,7 +213,7 @@
 				else
 				    $convert_encoding = '';
 				    
-				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["theme"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"],$convert_encoding,0,0);
+				$ret = pc_add_node($link,$pc,$_GET["pid"],$_POST["tid"],$_POST["emote"],$_POST["comment"],$_GET["tag"],$_POST["htmltag"],$_POST["trackback"],$_POST["theme"],$_POST["subject"],$blogbody,0,$_POST["autodetecttbps"],$_POST["trackbackurl"],$_POST["trackbackname"],$convert_encoding,0,0,$currentuser["userid"]);
 				$error_alert = "";
 				switch($ret)
 				{
@@ -249,6 +249,10 @@
 				    case -9:
 				        $error_alert = "您的文章可能含有不当词汇，请等待管理员审核。";
 				        break;
+					case -10: // 群体blog的发布者未能传递... 
+					    html_error_quit("由于系统原因日志添加失败,请联系管理员");
+						exit();
+						break;
 					default:
 				}
 				
@@ -322,7 +326,7 @@
 	<select name="theme" class="f1">
 <?php
     while (list ($key,$val) = each ($pcconfig["SECTION"])) {
-        if ($key == $pc["THEM"])
+        if ($key == $pc["THEM"][0])
             echo "<option value=\"".$key."\" selected>".html_format($val)."</option>";
         else
             echo "<option value=\"".$key."\">".html_format($val)."</option>";
@@ -399,7 +403,7 @@
 	<td class="t2">
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
-		<input type="submit" value="发表本文" class="b1">
+		<input type="submit" onclick="submitwithcopy()" value="发表本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>
@@ -411,7 +415,7 @@
 		elseif($act == "edit")
 		{
 			$nid = (int)($_GET["nid"]);
-			$query = "SELECT `nodetype` , `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback`,`pid` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ;";
+			$query = "SELECT `theme`,`nodetype` , `subject` , `body` ,`comment`,`type`,`tid`,`access`,`htmltag`,`trackback`,`pid` FROM nodes WHERE `nid` = '".$nid."' AND `uid` = '".$pc["UID"]."' LIMIT 0 , 1 ;";
 			$result = mysql_query($query,$link);
 			$rows = mysql_fetch_array($result);
 			mysql_free_result($result);
@@ -420,12 +424,13 @@
 				html_error_quit("文章不存在!");
 				exit();
 			}
+			/*
 			if($rows[nodetype] != 0)
 			{
 				html_error_quit("该文不可编辑!");
 				exit();
 			}
-			
+			*/
 			if($_POST["subject"])
 			{
 				if($_POST["comment"]==1)
@@ -514,7 +519,7 @@
 	<select name="theme" class="f1">
 <?php
     while (list ($key,$val) = each ($pcconfig["SECTION"])) {
-        if ($key == $pc["THEM"])
+        if ($key == $rows[theme])
             echo "<option value=\"".$key."\" selected>".html_format($val)."</option>";
         else
             echo "<option value=\"".$key."\">".html_format($val)."</option>";
@@ -548,7 +553,7 @@
 	<td class="t2">
 		<input type="button" name="ins" value="插入HTML" class="b1" onclick="return insertHTML();" />
 		<input type="button" name="hil" value="高亮" class="b1" onclick="return highlight();" />
-		<input type="submit" value="修改本文" class="b1">
+		<input type="submit" onclick="submitwithcopy()" value="修改本文" class="b1">
 		<input type="button" value="返回上页" onclick="history.go(-1)" class="b1">
 	</td>
 </tr>

@@ -92,6 +92,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	
 	function display_nodes($link,$pc,$nodes,$tablewidth="100%",$tablestyle=0,$totalnodes,$pno)
 	{
+		global $pcconfig;
 		for($i=0;$i<min($pc["INDEX"]["nodeNum"],count($nodes));$i++)
 		{
 			$contentcss = ($nodes[$i][htmltag])?"indexcontentwithhtml":"indexcontent";
@@ -137,11 +138,19 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
                         		     "<strong><A href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\">>> 阅读全文</A></strong>".
                         		     "</font></td></tr>\n";; 
                         }
-                        echo "<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a> 发布于 ".time_format($nodes[$i][created]).
+            
+            if (pc_is_groupwork($pc) && $nodes[$i][publisher])
+                $publisher = $nodes[$i][publisher];
+            else
+                $publisher = $pc["USER"];
+                
+                        echo "<tr><td colspan=2 class=\"".$cellclass[2]."\"><font class=\"f7\">\n&nbsp; <a href=\"/bbsqry.php?userid=".$publisher."\">".$publisher."</a> 发布于 ".time_format($nodes[$i][created]).
 			"\n|\n浏览[".$nodes[$i][visitcount]."]".
 			"\n|\n<a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."&s=all\">评论[".$nodes[$i][commentcount]."]</a>";
-			if($nodes[$i][trackback])
+			if($nodes[$i][trackback]) {
 				echo "\n|\n<a href=\"javascript:openScript('pctb.php?nid=".$nodes[$i][nid]."&uid=".$pc["UID"]."&subject=".base64_encode($nodes[$i][subject])."' , 460, 480)\">引用[".$nodes[$i][trackbackcount]."]</a>";
+			    echo "&nbsp;<a href=\"#\" onClick=\"javascript: holdtext.innerText = 'http://".$pcconfig["SITE"]."/pc/tb.php?id=".$nodes[$i][nid]."'; Copied = holdtext.createTextRange(); Copied.execCommand('Copy'); alert('该引用地址已经复制到剪贴板'); return false; \">Trackback Ping URL</a>";
+			}
 			echo "</font></td></tr>\n</table></center>\n";
 		}
 		echo "<center><table cellspacing=0 cellpadding=10 width=\"".$tablewidth."\" class=".$tableclass.">\n".
@@ -688,6 +697,53 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 </table>	
 <?php		
 	}
+	
+	function display_blog_simple($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes)
+	{
+	    global $loginok,$currentuser,$pcconfig;
+	    
+?>
+<center>
+<table width="780" cellpadding="0" cellspacing="0">
+<tbody>
+<tr>
+    <td>
+        <table width="100%" cellspacing="0" cellpadding="3">
+            <tr>
+                <td align="right">
+                <font style="font size: 16px;color:#333333;font-weight:bold">:+:&nbsp;&nbsp;<?php echo $pc['NAME']; ?>&nbsp;&nbsp;:+:</font>
+                </td>
+                <td width="150">&nbsp;</td>
+            </tr>
+            <tr><td colspan="2" align="center">
+<?php
+    if ($pc['LOGO'])
+        echo '<img src="'.$pc['LOGO'].'" border="0" alt="'.$pc['DESC'].'" />';
+    else
+        echo '&nbsp;';
+?>
+            </td></tr>
+            <tr><td colspan="2" height="5"> </td></tr>
+            <tr><td colspan="2" align="center">
+<?php
+            $i = 0;
+            foreach ($blogs as $blog) {
+                if ($i!=0) echo '&nbsp;|&nbsp;';
+                echo '<a href="/pc/pcdoc.php?userid='.$pc['USER'].'&tag=0&tid='.$blog['TID'].'">'.html_format($blog['NAME']).'</a>';
+                $i ++;    
+            }
+?>            
+            </td></tr>
+            <tr><td colspan="2" height="5"> </td></tr>
+        </table>
+    </td>
+</tr>
+</tbody>
+</table>
+<?php	        
+	    
+	}
+	
 		
 	function display_blog_default($link,$pc,$sec,$nodes,$blogs,$pur,$tags,$pno,$totalnodes)
 	{

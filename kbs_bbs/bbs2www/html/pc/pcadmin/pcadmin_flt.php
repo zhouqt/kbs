@@ -17,7 +17,7 @@ if (strtolower($_GET['filter'])=='n') {
         if ($node[nid])//过滤的是评论
             $ret = pc_add_comment($link,$pc,$node[nid],$node[emote],$node[username],$node[subject],$node[body],$node[htmltag],true,$node[hostname]);
         else
-            $ret = pc_add_node($link,$pc,$node[pid],$node[tid],$node[emote],$node[comment],$node[access],$node[htmltag],$node[trackback],$node[theme],$node[subject],$node[body],$node[nodetype],$node[auto_tbp],$node[tbp_url],$node[tbp_art],$node[tbpencoding],true,$node[hostname]);
+            $ret = pc_add_node($link,$pc,$node[pid],$node[tid],$node[emote],$node[comment],$node[access],$node[htmltag],$node[trackback],$node[theme],$node[subject],$node[body],$node[nodetype],$node[auto_tbp],$node[tbp_url],$node[tbp_art],$node[tbpencoding],true,$node[hostname],$node[publisher]);
                 switch($ret)
 				{
 					case -1:
@@ -52,6 +52,9 @@ if (strtolower($_GET['filter'])=='n') {
 				    case -9:
 				        $error_alert = "您的文章可能含有不当词汇，请等待管理员审核。";
 				        break;
+					case -10:
+						$error_alert = "由于系统错误,引用通告发送失败!";
+						break;
 					default:
 				}
     }    

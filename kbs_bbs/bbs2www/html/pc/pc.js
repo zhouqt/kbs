@@ -23,6 +23,13 @@ function openScript(url, width, height)
 	var Win = window.open(url,"openScript",'width=' + width + ',height=' + height + ',resizable=1,scrollbars=yes,menubar=no,status=yes' );
 }
 
+function submitwithcopy() {
+    holdtext.innerText = document.postform.blogbody.value; 
+    Copied = holdtext.createTextRange(); 
+    Copied.execCommand('Copy'); 
+    alert('文章内容已复制到剪贴板，如果发表失败，请重新发表'); 
+    return true;    
+}
 
 <!--
 // bbCode control by
