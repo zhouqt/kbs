@@ -4,7 +4,7 @@ EXTRA_DIST = AUTHORS INSTALL doc/* README
 CLEANFILES = @EXTRA_CLEAN@
 AM_MAKEFLAGS=@MAKEFLAG@
 innbbsd_SOURCES = nocem.c inndchannel.c innbbsd.c connectsock.c rfc931.c \
-		daemon.c file.c pmain.c parsdate.y his.c \
+		daemon.c file.c pmain.c parsdate.c his.c \
 		dbz.c closeonexec.c dbztool.c inntobbs.c echobbslib.c \
 		receive_article.c qp_conv.c lang.c r_port.c filter.c \
 		wildmat.c
