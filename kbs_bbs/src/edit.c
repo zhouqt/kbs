@@ -1963,6 +1963,8 @@ void vedit_key(ch)
     }
 }
 
+extern int icurrchar, ibufsize;
+
 static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,long* pattachpos)
 {
     int newch, ch = 0, foo, shift;
