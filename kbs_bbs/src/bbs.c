@@ -45,6 +45,7 @@ char genbuf[1024];
 char quote_title[120], quote_board[120];
 char quote_user[120];
 struct friends_info *topfriend;
+extern char *currdirect;
 
 #ifndef NOREPLY
 char replytitle[STRLEN];
@@ -530,7 +531,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
         }
     }
 /*    if(HAS_PERM(currentuser,PERM_OBOARDS) && ent->accessed[1] & FILE_READ) *//*
- * °æÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7 
+ * * °æÎñ×Ü¹ÜÒÔÉÏµÄÄÜ¿´²»¿Ére±êÖ¾,Haohmaru.99.6.7 
  */
     if (manager & ent->accessed[1] & FILE_READ) {       /* °æÖ÷ÒÔÉÏÄÜ¿´²»¿Ére±êÖ¾, Bigman.2001.2.27 */
         switch (type) {
@@ -699,9 +700,9 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
     quote_user[IDLEN] = 0;
 
 #ifndef NOREPLY
-    ch = ansimore_withzmodem(genbuf, false, fileinfo->title);       /* ÏÔÊ¾ÎÄÕÂÄÚÈÝ */
+    ch = ansimore_withzmodem(genbuf, false, fileinfo->title);   /* ÏÔÊ¾ÎÄÕÂÄÚÈÝ */
 #else
-    ch = ansimore_withzmodem(genbuf, true, fileinfo->title );        /* ÏÔÊ¾ÎÄÕÂÄÚÈÝ */
+    ch = ansimore_withzmodem(genbuf, true, fileinfo->title);    /* ÏÔÊ¾ÎÄÕÂÄÚÈÝ */
 #endif
     brc_add_read(fileinfo->filename);
 #ifndef NOREPLY
@@ -732,7 +733,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 
     refresh();
 /* sleep(1); *//*
- * ????? 
+ * * ????? 
  */
     if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP))
         ch = igetkey();
@@ -920,8 +921,6 @@ int do_select(int ent, struct fileheader *fileinfo, char *direct)
 
 int digest_mode()
 {                               /* ÎÄÕªÄ£Ê½ ÇÐ»» */
-    extern char currdirect[STRLEN];
-
     if (digestmode == true) {
         digestmode = false;
         setbdir(digestmode, currdirect, currboard);
@@ -951,7 +950,6 @@ int isJury()
 
 int deleted_mode()
 {
-    extern char currdirect[STRLEN];
 
 /* Allow user in file "jury" to see deleted area. stephen 2001.11.1 */
     if (!chk_currBM(currBM, currentuser) && !isJury()) {
@@ -974,7 +972,6 @@ int deleted_mode()
 
 int generate_mark()
 {
-    extern char currdirect[STRLEN];
     struct fileheader mkpost;
     struct flock ldata, ldata2;
     int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
@@ -1058,8 +1055,6 @@ int generate_mark()
 
 int marked_mode()
 {
-    extern char currdirect[STRLEN];
-
     if (digestmode == 3) {
         digestmode = false;
         setbdir(digestmode, currdirect, currboard);
@@ -1084,7 +1079,6 @@ int marked_mode()
 int search_mode(int mode, char *index)
 // added by bad 2002.8.8 search mode
 {
-    extern char currdirect[STRLEN];
     struct fileheader mkpost;
     struct flock ldata, ldata2;
     int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
@@ -1160,7 +1154,6 @@ int search_mode(int mode, char *index)
 
 int change_mode(int ent, struct fileheader *fileinfo, char *direct)
 {
-    extern char currdirect[STRLEN];
     char ans[4];
     char buf[STRLEN], buf2[STRLEN];
     static char title[31] = "";
@@ -1220,8 +1213,6 @@ int change_mode(int ent, struct fileheader *fileinfo, char *direct)
 
 int junk_mode()
 {
-    extern char currdirect[STRLEN];
-
     if (!HAS_PERM(currentuser, PERM_SYSOP)) {
         return DONOTHING;
     }
@@ -1261,7 +1252,6 @@ int do_thread()
 
 int thread_mode()
 {
-    extern char currdirect[STRLEN];
     struct stat st;
 
     /*
@@ -1836,7 +1826,7 @@ int post_article(char *q_file)
 
     bbslog("1user", "posted '%s' on '%s'", post_file.title, currboard);
 /*      postreport(post_file.title, 1, currboard); *//*
- * added by alex, 96.9.12 
+ * * added by alex, 96.9.12 
  */
     if (!junkboard(currboard)) {
         currentuser->numposts++;
@@ -2345,18 +2335,18 @@ int sequent_messages(struct fileheader *fptr, int idc, int *continue_flag)
         }
         strncpy(quote_user, fptr->owner, IDLEN);
         quote_user[IDLEN] = 0;
-	setbfile(genbuf,currboard,fptr->filename);
+        setbfile(genbuf, currboard, fptr->filename);
         ansimore_withzmodem(genbuf, false, fptr->title);
-redo:
+      redo:
         move(t_lines - 1, 0);
         clrtoeol();
         prints("\033[1;44;31m[Á¬Ðø¶ÁÐÅ]  \033[33m»ØÐÅ R ©¦ ½áÊø Q,¡û ©¦ÏÂÒ»·â ' ',¡ý ©¦^R »ØÐÅ¸ø×÷Õß                \033[m");
         *continue_flag = 0;
         switch (igetkey()) {
-	case Ctrl('Y'):
-            zsend_post(0,fptr,currdirect);
-	    clear();
-	    goto redo;
+        case Ctrl('Y'):
+            zsend_post(0, fptr, currdirect);
+            clear();
+            goto redo;
         case Ctrl('Z'):
             r_lastmsg();        /* Leeward 98.07.30 support msgX */
             break;
@@ -2752,7 +2742,7 @@ int Goodbye()
              * i,sysoplist[i+4],syswork[i+4]);
              * prints("[[33m%1d[m] »¹ÊÇ×ßÁËÂÞ£¡\n",4); 
  *//*
- * ×îºóÒ»¸öÑ¡Ïî 
+ * * ×îºóÒ»¸öÑ¡Ïî 
  */
             /*
              * sprintf(spbuf,"ÄãµÄÑ¡ÔñÊÇ [[32m%1d[m]£º",4);
@@ -2900,7 +2890,7 @@ int Goodbye()
             if (!strcmp(uid, currentuser->userid))      /*É¾³ý±¾ÓÃ»§µÄ Ñ°ÈËÃûµ¥ */
                 del_from_file("friendbook", buf);       /*Ñ°ÈËÃûµ¥Ö»ÔÚ±¾´ÎÉÏÏßÓÐÐ§ */
         }
-        if (fp)                                                /*---	add by period 2000-11-11 fix null hd bug	---*/
+        if (fp)                                                    /*---	add by period 2000-11-11 fix null hd bug	---*/
             fclose(fp);
     }
     sleep(1);
@@ -2971,7 +2961,6 @@ void RemoveAppendedSpace(char *ptr)
 
 int i_read_mail()
 {
-    extern char currdirect[STRLEN];
     char savedir[STRLEN];
 
     /*

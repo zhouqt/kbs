@@ -53,6 +53,7 @@ int x_vote();
 int ShowWeather();              /* 2001.6.12 */
 int x_results();
 
+int search_ip();
 #ifdef CAN_EXEC
 int ent_bnet();
 #endif
@@ -206,6 +207,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"InnStart", inn_start},    /* czz 2002.01.15 */
     {"InnReload", inn_reload},  /* czz 2002.01.15 */
     {"InnStop", inn_stop},      /* czz 2002.01.15 */
+    {"SearchIP",search_ip},
     {NULL, NULL},
 };
 

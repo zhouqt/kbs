@@ -8,7 +8,7 @@ extern int iscolor;
 extern int switch_code();       /* KCN,99.09.05 */
 extern int convcode;            /* KCN,99.09.05 */
 int modify_user_mode(mode)
-    int mode;
+int mode;
 {
     if (uinfo.mode == mode)
         return 0;               /* ±ØÐë¼õÉÙupdate_ulistµÄ´ÎÊý. ylsdd 2001.4.27 */
@@ -208,13 +208,13 @@ int confirm_delete_id()
 
     sethomepath(buff, genbuf);
     /*
-       sprintf(commd,"rm -rf %s",buff);
+     * sprintf(commd,"rm -rf %s",buff);
      */
     f_rm(buff);
     setmailpath(buff, genbuf);
     f_rm(buff);
     /*
-       sprintf(commd,"rm -rf %s",buff);
+     * sprintf(commd,"rm -rf %s",buff);
      */
 
     report("delete confirmly dead id's directory");
@@ -237,7 +237,9 @@ int x_level()
     int s[10][2];
     FILE *fn;
 
-    /* add by alex, 97.7 , strict the power of sysop */
+    /*
+     * add by alex, 97.7 , strict the power of sysop 
+     */
     if (!HAS_PERM(currentuser, PERM_ADMIN) || !HAS_PERM(currentuser, PERM_SYSOP)) {
         move(3, 0);
         clrtobot();
@@ -321,15 +323,21 @@ int x_level()
         sprintf(secu, "ÐÞ¸Ä %s µÄÈ¨ÏÞXPERM%d %d", lookupuser->userid, lookupuser->userlevel, newlevel);
         securityreport(secu, lookupuser, NULL);
         lookupuser->userlevel = newlevel;
-        /* Leeward: 1997.12.02 : Modification stops */
+        /*
+         * Leeward: 1997.12.02 : Modification stops 
+         */
 
         prints(NAME_USER_SHORT " '%s' µÄÈ¨ÏÞÒÑ¸ü¸Ä\n", lookupuser->userid);
         sprintf(genbuf, "changed permissions for %s", lookupuser->userid);
         report(genbuf);
-        /*Haohmaru.98.10.03.¸øÐÂÈÎ°æÖ÷×Ô¶¯·¢ÐÅ */
+        /*
+         * Haohmaru.98.10.03.¸øÐÂÈÎ°æÖ÷×Ô¶¯·¢ÐÅ 
+         */
         if ((lookupuser->userlevel & PERM_BOARDS) && flag == 0)
             mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "ÐÂÈÎ" NAME_BM "±Ø¶Á", 0);
-        /* Bigman 2000.1.5 ÐÞ¸ÄÈ¨ÏÞ×Ô¶¯·¢ÐÅ */
+        /*
+         * Bigman 2000.1.5 ÐÞ¸ÄÈ¨ÏÞ×Ô¶¯·¢ÐÅ 
+         */
         if ((lookupuser->userlevel & PERM_CLOAK) && flag1 == 0)
             mail_file(currentuser->userid, "etc/forcloak", lookupuser->userid, NAME_SYSOP_GROUP "ÊÚÓèÄúÒþÉíÈ¨ÏÞ", 0);
         if ((lookupuser->userlevel & PERM_XEMPT) && flag2 == 0)
@@ -416,7 +424,9 @@ int XCheckLevel()
     move(2, 0);
     prints("ÇëÉè¶¨ÐèÒª¼ì²éµÄÈ¨ÏÞ\n");
     scanuser.userlevel = 0;
-    /* change showperminfoX to showperminfo */
+    /*
+     * change showperminfoX to showperminfo 
+     */
     newlevel = setperms(scanuser.userlevel, 0, "È¨ÏÞ", NUMPERMS, showperminfo, NULL);
     move(2, 0);
     if (newlevel == scanuser.userlevel)
@@ -472,7 +482,9 @@ int XCheckLevel()
                 report(genbuf);
                 pressanykey();
 
-                /*sprintf(secu, "ÁÐÊ¾¾ßÓÐÌØ¶¨È¨ÏÞµÄ %ld ¸öÓÃ»§µÄ×ÊÁÏ", count); */
+                /*
+                 * sprintf(secu, "ÁÐÊ¾¾ßÓÐÌØ¶¨È¨ÏÞµÄ %ld ¸öÓÃ»§µÄ×ÊÁÏ", count); 
+                 */
                 clear();
                 ansimore(buffer, false);
                 clear();
@@ -644,10 +656,18 @@ void a_edits()
     char ans[7], buf[STRLEN];
     int ch, num;
 
-    /* Leeward 98.04.01 added: sysconf.ini */
-    /* Leeward 98.07.31 added: .badIP */
-    /* stephen 2000.10.17 added: /usr/share/apache/htdocs/script/menucontext.js */
-    /* period  2000.10.17 link /backup/www/htdocs/script/menucontext.js --> /home0/bbs/etc/www_menu.js */
+    /*
+     * Leeward 98.04.01 added: sysconf.ini 
+     */
+    /*
+     * Leeward 98.07.31 added: .badIP 
+     */
+    /*
+     * stephen 2000.10.17 added: /usr/share/apache/htdocs/script/menucontext.js 
+     */
+    /*
+     * period  2000.10.17 link /backup/www/htdocs/script/menucontext.js --> /home0/bbs/etc/www_menu.js 
+     */
     static const char *e_file[] =
         { "../Welcome", "../vote/notes", "issue", "movie", "logout", "menu.ini", "proxyIP", "mailcheck", "s_fill", "f_fill.realname", "f_fill.unit", "f_fill.address", "f_fill.telephone",
         "f_fill.real", "f_fill.chinese", "f_fill.toomany", "f_fill.proxy", "smail", "f_fill", "../.badname", "../.badIP", "../.badword", "sysconf.ini", "www_menu.js", "../0Announce/hotinfo",
@@ -656,7 +676,9 @@ void a_edits()
         "forlongid", "../innd/newsfeeds.bbs", "deny_reason", NULL
     };
 
-    /* "/usr/share/apache/htdocs/script/menucontext.js", NULL};    */
+    /*
+     * "/usr/share/apache/htdocs/script/menucontext.js", NULL};    
+     */
     static const char *explain_file[] =
         { "Welcome", "¹«ÓÃ±¸ÍüÂ¼", "½øÕ¾»¶Ó­µµ", "»î¶¯¿´°æ", "ÀëÕ¾»­Ãæ", "menu.ini", "´©ËóIP", "Éí·ÝÈ·ÈÏµµ", "×¢²áµ¥Íê³Éµµ", "×¢²áµ¥Ê§°Üµµ(ÕæÊµÐÕÃû)", "×¢²áµ¥Ê§°Üµµ(·þÎñµ¥Î»)",
         "×¢²áµ¥Ê§°Üµµ(¾Ó×¡µØÖ·)", "×¢²áµ¥Ê§°Üµµ(ÁªÂçµç»°)", "×¢²áµ¥Ê§°Üµµ(ÕæÊµ×ÊÁÏ)", "×¢²áµ¥Ê§°Üµµ(ÖÐÎÄÌîÐ´)", "×¢²áµ¥Ê§°Üµµ(¹ý¶àµÄID)", "×¢²áµ¥Ê§°Üµµ(²»ÄÜ´©Ëó×¢²á)",
@@ -677,14 +699,22 @@ void a_edits()
     prints("±àÐÞÏµÍ³µµ°¸\n\n");
     for (num = 0; e_file[num] != NULL && explain_file[num] != NULL; num++) {
         prints("[[32m%2d[m] %s%s", num + 1, explain_file[num], (num + 1 >= 1 && num + 1 <= 28 && (num + 1) % 2) ? "      " : "\n");
-        /* Leeward 98.03.29 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°ÏµÍ³×Ô¶¯¹ýÂËµÄ´ÊÓï¡±Ò»Ïî */
-        /* Leeward 98.07.31 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°²»¿ÉµÇÂ¼µÄ IP¡±Ò»Ïî */
-        /* Bigman 2001.6.23 µ÷Õû²¼¾Ö£¬ Ôö¼ÓÆäËû¼¸ÏîÄÚÈÝ */
+        /*
+         * Leeward 98.03.29 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°ÏµÍ³×Ô¶¯¹ýÂËµÄ´ÊÓï¡±Ò»Ïî 
+         */
+        /*
+         * Leeward 98.07.31 µ÷ÕûÏÔÊ¾²¼¾Ö£¬ÒÔ±ã¼ÓÈë¡°²»¿ÉµÇÂ¼µÄ IP¡±Ò»Ïî 
+         */
+        /*
+         * Bigman 2001.6.23 µ÷Õû²¼¾Ö£¬ Ôö¼ÓÆäËû¼¸ÏîÄÚÈÝ 
+         */
     }
 
     prints("[[32m%2d[m] ¶¼²»Ïë¸Ä\n", num + 1);
 
-    /* ÏÂÃæµÄ21ÊÇÐÐºÅ£¬ÒÔºóÌí¼Ó£¬¿ÉÒÔÏàÓ¦µ÷Õû */
+    /*
+     * ÏÂÃæµÄ21ÊÇÐÐºÅ£¬ÒÔºóÌí¼Ó£¬¿ÉÒÔÏàÓ¦µ÷Õû 
+     */
     getdata(21, 0, "ÄãÒª±àÐÞÄÄÒ»ÏîÏµÍ³µµ°¸: ", ans, 3, DOECHO, NULL, true);
     ch = atoi(ans);
     if (!isdigit(ans[0]) || ch <= 0 || ch > num || ans[0] == '\n' || ans[0] == '\0')
@@ -732,6 +762,7 @@ void a_edits()
     }
     pressreturn();
 }
+
 #ifdef CAN_EXEC
 
 #ifdef BBSDOORS
@@ -743,10 +774,18 @@ void ent_bnet()
     uinfo.pager = -1;
     report("BBSNet Enter");
     modify_user_mode(BBSNET);
-    /* bbsnet.sh is a shell script that can be customized without */
-    /* having to recompile anything.  If you edit it while someone */
-    /* is in bbsnet they will be sent back to the xyz menu when they */
-    /* leave the system they are currently in. */
+    /*
+     * bbsnet.sh is a shell script that can be customized without 
+     */
+    /*
+     * having to recompile anything.  If you edit it while someone 
+     */
+    /*
+     * is in bbsnet they will be sent back to the xyz menu when they 
+     */
+    /*
+     * leave the system they are currently in. 
+     */
 
     do_exec("bbsnet.sh", NULL);
     uinfo.pager = save_pager;
@@ -802,56 +841,62 @@ int zsend_file(char *filename, char *title)
 int search_ip()
 {
     char ip[17];
-    FILE* fn;
-    fn=fopen("etc/ip_arrange.txt", "rt");
-    if (fn==NULL) {
-          prints("Ã»ÕÒµ½ip_arrange.txt");
-          pressanykey();
-          return 1;
+    FILE *fn;
+
+    fn = fopen("etc/ip_arrange.txt", "rt");
+    if (fn == NULL) {
+        prints("Ã»ÕÒµ½ip_arrange.txt");
+        pressanykey();
+        return 1;
     }
     clear();
     while (1) {
         char linebuf[256];
         struct in_addr queryip;
-        linebuf[255]=0;
-        getdata(t_lines/2,0,"ÊäÈë²éÑ¯µÄIP(Ö±½Ó»Ø³µÍË³ö):",ip,16,DOECHO,NULL,true);
-        if (ip[0]==0) return;
-        if (inet_aton(ip,&queryip)==-1) {
-	  outs("´íÎóµÄip");
-          pressanykey();
-          continue;
+
+        linebuf[255] = 0;
+        getdata(t_lines / 2, 0, "ÊäÈë²éÑ¯µÄIP(Ö±½Ó»Ø³µÍË³ö):", ip, 16, DOECHO, NULL, true);
+        if (ip[0] == 0)
+            return;
+        if (inet_aton(ip, &queryip) == -1) {
+            outs("´íÎóµÄip");
+            pressanykey();
+            continue;
         }
-        while (fgets(linebuf,254,fn)) {
-           char* p1,*p2;
-           struct in_addr host,mask;
-           
-           p2=p1=linebuf;
-           while ((*p2)&&(*p2!=' ')&&*p2!='\t')
-                     p2++;
-           if (!(*p2)) continue;
-           *p2=0;
-           if (inet_aton(p1,&host)==-1)
-		continue;
-           p1=p2+1;
-           while ((*p1)&&(*p1==' ')&&*p1=='\t')
-                     p1++;
-           if (!(*p1)) continue;
-           p2=p1;
+        while (fgets(linebuf, 254, fn)) {
+            char *p1, *p2;
+            struct in_addr host, mask;
 
-           while ((*p2)&&(*p2!=' ')&&*p2!='\t')
-                     p2++;
-           if (!(*p2)) continue;
-           *p2=0;
-           if (inet_aton(p1,&mask)==-1)
-		continue;
-           p1=p2+1;
-           while ((*p1)&&(*p1==' ')&&*p1=='\t')
-                     p1++;
-           if (!(*p1)) continue;
+            p2 = p1 = linebuf;
+            while ((*p2) && (*p2 != ' ') && *p2 != '\t')
+                p2++;
+            if (!(*p2))
+                continue;
+            *p2 = 0;
+            if (inet_aton(p1, &host) == -1)
+                continue;
+            p1 = p2 + 1;
+            while ((*p1) && (*p1 == ' ') && *p1 == '\t')
+                p1++;
+            if (!(*p1))
+                continue;
+            p2 = p1;
 
-	   if (queryip.s_addr&mask.s_addr==host.s_addr)
-               prints("%s\n",p1);
+            while ((*p2) && (*p2 != ' ') && *p2 != '\t')
+                p2++;
+            if (!(*p2))
+                continue;
+            *p2 = 0;
+            if (inet_aton(p1, &mask) == -1)
+                continue;
+            p1 = p2 + 1;
+            while ((*p1) && (*p1 == ' ') && *p1 == '\t')
+                p1++;
+            if (!(*p1))
+                continue;
+
+            if (queryip.s_addr & mask.s_addr == host.s_addr)
+                prints("%s\n", p1);
         }
     }
 }
-

@@ -865,7 +865,7 @@ char *maildoent(char *buf, int num, struct fileheader *ent)
      * else
      * reply_status = ' '; 
  *//*
- * added by alex, 96.9.7 
+ * * added by alex, 96.9.7 
  */
     if (!strncmp("Re:", ent->title, 3)) {
         sprintf(buf, " %s%3d[m %c%c %-12.12s %6.6s  %s%.50s[m", same ? c1 : "", num, reply_status, status, b2, date, same ? c1 : "", ent->title);
