@@ -134,7 +134,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 							$j_nArticles = $j_lastID = $j_lastTitle = $j_lastOwner = $j_lastPosttime = 0;
 						} else {
 							$j_lastID = $articles[0]['origin']['ID'];
-							$j_lastTitle = "'" . addslashes(htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES)) . "'";
+							$j_lastTitle = "'" . addslashes(htmlspecialchars($articles[0]['origin']['TITLE'],ENT_QUOTES)) . " '";
 							$j_lastOwner = "'" . $articles[0]['origin']['OWNER'] . "'";
 							$j_lastPosttime = "'" . strftime('%Y-%m-%d %H:%M:%S', intval($articles[0]['origin']['POSTTIME'])) . "'";
 						}
