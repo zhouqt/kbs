@@ -493,7 +493,7 @@ void brc_clear_new_flag(char* filename)
 
 int junkboard(char* currboard)  /* 判断当前版是否为 junkboards */
 {
-    struct boardheader* bh=getbcache(board);
+    struct boardheader* bh=getbcache(currboard);
     if (bh&&(bh->flag & BOARD_JUNK)) /* Checking if DIR access mode is "555" */
         return YEA;
     else
