@@ -152,7 +152,7 @@ int requiretouser(struct RequireBindPacket * h, unsigned int sn)
         if (strncmp(ud.mobilenumber, h->MobileNo, MOBILE_NUMBER_LEN-1)) {
             return 2;
         }
-        if(h->Bind) {
+        if(h->Bind==0) {
             pum->ud.mobileregistered=true;
             ud.mobileregistered=true;
             sprintf(buf, "你的帐号已经和%s绑定！",ud.mobilenumber);
