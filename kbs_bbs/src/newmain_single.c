@@ -989,6 +989,7 @@ void showtitle(title, mid)
     }
     note = boardmargin();
 
+#ifndef NINE_BUILD
    if (strstr(title,"版主")!=NULL)
 	/*为了多版主修改 Bigman:2002.9.7 */
 	{
@@ -997,7 +998,9 @@ void showtitle(title, mid)
     spc2 = 2;
 
 	}
-    else {
+    else 
+#endif
+    {
     spc1 = 39 - num_noans_chr(title) - strlen(mid) / 2;
     spc2 = 40 - strlen(note) - strlen(mid) / 2;
 	}
