@@ -11,7 +11,7 @@
 #define HASHSIZE 50
 
 #ifdef SMTH
-const char alphabet[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+extern const char alphabet[];
 #endif
 
 char *(spcname[]) = {
