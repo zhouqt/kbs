@@ -135,7 +135,7 @@ function get_mimetype($name)
 		Header("Content-Type: " . get_mimetype($attachname));
 		
 		Header("Accept-Ranges: bytes");
-		Header("Accept-Length: " . $attachsize);
+		Header("Content-Length: " . $attachsize);
 		Header("Content-Disposition: inline;filename=" . $attachname);
 		echo fread($file,$attachsize);
 		fclose($file);

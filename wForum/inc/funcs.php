@@ -613,9 +613,9 @@ function show_nav($boardName='')
 <?php echo MAINTITLE; ?>
 </td>
 <td align=right style="line-height: 15pt" width="10%">
-<nobr><a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</span></a></nobr>
-<br><nobr><a href="">联系我们</a></nobr>
-<br><nobr><a href="">论坛帮助</a></nobr>
+<nobr><a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</span></a></nobr><br>
+<nobr><a href="">联系我们</a></nobr><br>
+<nobr><a href="">论坛帮助</a></nobr>
 </td>
 </td></tr>
 </table>

@@ -40,7 +40,7 @@
 	
 	Header("Content-type: " . $f->filetype);
 	Header("Accept-Ranges: bytes");
-	Header("Accept-Length: " . filesize($f->filepath));
+	Header("Content-Length: " . filesize($f->filepath));
 	Header("Content-Disposition: inline;filename=" . $f->filename);
 	echo fread($file,filesize($f->filepath));
 	fclose($file);
