@@ -514,6 +514,7 @@ void readtitle()
         strcpy(title, bp->title + 13);
 
     showtitle(header, title);   /* ÏÔÊ¾ µÚÒ»ĞĞ */
+    update_endline();
     if (DEFINE(currentuser,DEF_HIGHCOLOR))
     	prints("Àë¿ª[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ı\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] ·¢±íÎÄÕÂ[\x1b[1;32mCtrl-P\x1b[m] ¿³ĞÅ[\x1b[1;32md\x1b[m] ±¸ÍüÂ¼[\x1b[1;32mTAB\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m][m\n");
     else

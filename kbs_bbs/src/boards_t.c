@@ -269,6 +269,7 @@ static int search_board(int *num, struct _select_def *conf, int key)
     int n, ch, tmpn = false;
     struct newpostdata* buffer;
 
+    *num=0;
     if (arg->find == true) {
         bzero(arg->bname, BOARDNAMELEN);
         arg->find = false;
@@ -294,12 +295,12 @@ static int search_board(int *num, struct _select_def *conf, int key)
         if (isprint2(ch)) {
             arg->bname[arg->bname_len++] = ch;
             for (n = 0; n < conf->item_count; n++) {
-                if (!strncasecmp(arg->namelist[n], arg->bname, arg->bname_len)) {
+                if ((!strncasecmp(arg->namelist[n], arg->bname, arg->bname_len))&&*num==0) {
                     tmpn = true;
                     *num = n;
-                    if (!strcmp(arg->namelist[n], arg->bname))
-                        return 1 /*ÕÒµ½ÀàËÆµÄ°æ£¬»­ÃæÖØ»­ */ ;
                 }
+                if (!strcmp(arg->namelist[n], arg->bname))
+                    return 1 /*ÕÒµ½ÀàËÆµÄ°æ£¬»­ÃæÖØ»­ */ ;
             }
             if (tmpn)
                 return 1;
@@ -447,7 +448,8 @@ static int fav_prekey(struct _select_def *conf, int *command)
     if (!isdigit(*command))
         arg->tmpnum = 0;
 
-    update_endline();
+    if (!arg->loop_mode)
+        update_endline();
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
     switch (*command) {
     case 'e':
@@ -866,13 +868,20 @@ static void fav_refresh(struct _select_def *conf)
         else
             docmdtitle("[ÌÖÂÛÇøÁÐ±í]",
                        "  [mÖ÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[m,\x1b[1;32me\x1b[m] ÔÄ¶Á[\x1b[1;32m¡ú\x1b[m,\x1b[1;32mr\x1b[m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[m,\x1b[1;32m¡ý\x1b[m] ÁÐ³ö[\x1b[1;32my\x1b[m] ÅÅÐò[\x1b[1;32mS\x1b[m] ËÑÑ°[\x1b[1;32m/\x1b[m] ÇÐ»»[\x1b[1;32mc\x1b[m] ÇóÖú[\x1b[1;32mh\x1b[m]\n");
-        prints("[1;44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ð ×ªÐÅ  %-24s °æ  Ö÷   %s   [m\n", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖÐ  ÎÄ  Ðð  Êö", arg->newflag ? "" : "   ");
+        prints("[1;44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ð ×ªÐÅ  %-24s °æ  Ö÷   %s   [m\n", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖÐ  ÎÄ  Ðð  Êö", arg->newflag ? "" : "   ",0);
     } else {
         if (arg->yank_flag == BOARD_FAV)
             docmdtitle("[¸öÈË¶¨ÖÆÇø]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] Ìí¼Ó[a,A] ÒÆ¶¯[m] É¾³ý[d] ÅÅÐò[S] ÇóÖú[h]\n");
         else
             docmdtitle("[ÌÖÂÛÇøÁÐ±í]", "  [mÖ÷Ñ¡µ¥[¡û,e] ÔÄ¶Á[¡ú,r] Ñ¡Ôñ[¡ü,¡ý] ÁÐ³ö[y] ÅÅÐò[S] ËÑÑ°[/] ÇÐ»»[c] ÇóÖú[h]\n");
         prints("[44m[37m %s ÌÖÂÛÇøÃû³Æ       V  Àà±ð ×ªÐÅ  %-24s °æ  Ö÷   %s   [m\n", arg->newflag ? "È«²¿ Î´¶Á" : "±àºÅ  ", "ÖÐ  ÎÄ  Ðð  Êö", arg->newflag ? "" : "   ");
+    }
+    if (!arg->loop_mode)
+        update_endline();
+    else {
+            move(t_lines - 1, 0);
+            clrtoeol();
+            prints("ÇëÊäÈëÒªÕÒÑ°µÄ board Ãû³Æ£º%s", arg->bname);
     }
 
 }
@@ -882,7 +891,7 @@ static int fav_getdata(struct _select_def *conf, int pos, int len)
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
 
     if (pos==-1) 
-        fav_loaddata(NULL, arg->fav_father,1, conf->item_count,0,arg->namelist);
+        fav_loaddata(NULL, arg->fav_father,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->namelist);
     else
         conf->item_count = fav_loaddata(arg->nbrd, arg->fav_father,pos, len,currentuser->flags[0] & BRDSORT_FLAG,NULL);
     return SHOW_CONTINUE;
@@ -893,7 +902,7 @@ static int boards_getdata(struct _select_def *conf, int pos, int len)
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
 
     if (pos==-1) 
-         load_boards(NULL, arg->boardprefix,1, conf->item_count,0,arg->yank_flag,arg->namelist);
+         load_boards(NULL, arg->boardprefix,1, conf->item_count,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,arg->namelist);
     else
          conf->item_count = load_boards(arg->nbrd, arg->boardprefix,pos, len,currentuser->flags[0] & BRDSORT_FLAG,arg->yank_flag,NULL);
     return SHOW_CONTINUE;

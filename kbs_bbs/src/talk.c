@@ -1277,6 +1277,7 @@ char *modestr;
             showtitle(modestr, "[ÄúÓÐÐÅ¼þ]");
         else
             showtitle(modestr, BBS_FULL_NAME);
+	update_endline();
     }
     move(2, 0);
     clrtoeol();

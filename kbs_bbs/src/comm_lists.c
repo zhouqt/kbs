@@ -340,6 +340,7 @@ static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
         case -2:
             if (strcmp(sysconf_relocate(pm.name), "title") == 0) {
                 docmdtitle(sysconf_relocate(pm.desc), cmdprompt);
+		update_endline();
             } else if (strcmp(sysconf_relocate(pm.name), "screen") == 0) {
                 if (DEFINE(currentuser, DEF_SHOWSCREEN)) {
                     if (help && (str = sysconf_str(sysconf_relocate(pm.desc))) != NULL) {

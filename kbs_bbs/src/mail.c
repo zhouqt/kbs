@@ -822,6 +822,7 @@ void mailtitle()
 
     get_mail_limit(currentuser,&MailSpace,&numlimit);
     showtitle("ÓÊ¼şÑ¡µ¥    ", BBS_FULL_NAME);
+    update_endline();
     prints("Àë¿ª[¡û,e]  Ñ¡Ôñ[¡ü,¡ı]  ÔÄ¶ÁĞÅ¼ş[¡ú,r]  »ØĞÅ[R]  ¿³ĞÅ£¯Çå³ı¾ÉĞÅ[d,D]  ÇóÖú[h][m\n");
     /*
      * prints("[44m±àºÅ    %-20s %-49s[m\n","·¢ĞÅÕß","±ê  Ìâ") ; 
@@ -2089,6 +2090,7 @@ static void maillist_refresh(struct _select_def *conf)
     clear();
     docmdtitle("[´¦ÀíĞÅ¼ãÑ¡µ¥]",
                "Ö÷Ñ¡µ¥[\x1b[1;32m¡û\x1b[0;37m,\x1b[1;32me\x1b[0;37m] ½øÈë[\x1b[1;32mEnter\x1b[0;37m] Ñ¡Ôñ[\x1b[1;32m¡ü\x1b[0;37m,\x1b[1;32m¡ı\x1b[0;37m] ×óÓÒÇĞ»»[\x1b[1;32mTab\x1b[m] Ìí¼Ó[\x1b[1;32ma\x1b[0;37m] ¸ÄÃû[\x1b[1;32mT\x1b[0;37m] É¾³ı[\x1b[1;32md\x1b[0;37m]\x1b[m");
+    update_endline();
 
     move(2, 0);
     prints("%s", "\x1b[1;44;37m©¤©¤¹¦ÄÜÑ¡µ¥©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©¤©Ğ©¤©¤©¤©¤×Ô¶¨ÒåÓÊÏä©¤©¤©¤©¤©¤©¤©¤\x1b[m");

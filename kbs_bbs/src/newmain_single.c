@@ -942,8 +942,7 @@ void update_endline()
 
 
 /*ReWrite by SmallPig*/
-void showtitle(title, mid)
-    char *title, *mid;
+void showtitle( char *title, char*mid)
 {
     char buf[STRLEN];
     char stitle[256];
@@ -1022,7 +1021,6 @@ void showtitle(title, mid)
     }
     sprintf(buf, "%*s", spc2, "");
     prints("%s[33m%s[m\n", buf, note);
-    update_endline();
     move(1, 0);
 }
 
