@@ -261,6 +261,7 @@ static PHP_FUNCTION(bbs_sendwebmsg);
 ////////////////////////   WWW special functions  /////////////////////////////
 
 static PHP_FUNCTION(bbs_wwwlogin);
+static PHP_FUNCTION(bbs_setguest_nologin);
 static PHP_FUNCTION(bbs_wwwlogoff);
 static PHP_FUNCTION(bbs_getwwwparameters);
 static PHP_FUNCTION(bbs_setwwwparameters);
@@ -356,6 +357,7 @@ static function_entry smth_bbs_functions[] = {
         PHP_FE(bbs_checkorigin, NULL)
         PHP_FE(bbs_getcurrentuinfo, NULL)
         PHP_FE(bbs_wwwlogin, NULL)
+        PHP_FE(bbs_setguest_nologin, NULL)
         PHP_FE(bbs_wwwlogoff, NULL)
         PHP_FE(bbs_getwwwparameters,one_arg_force_ref_1)
         PHP_FE(bbs_setwwwparameters,NULL)
@@ -1057,6 +1059,20 @@ static PHP_FUNCTION(bbs_wwwlogin)
     setcurrentuinfo(pu, utmpent);
     RETURN_LONG(ret);
 }
+
+/*
+ * 本函数设置 currentuser 为 guest 但不登录，这样做非常的危险!
+ * 除非你完全确定你自己在干什么，否则绝对不要调用这个函数! 目前只有极特殊的地方 wForum 需要调用这个函数
+ */
+static PHP_FUNCTION(bbs_setguest_nologin)
+{
+    struct userec *user;
+    int num;
+
+    num = getuser("guest", &user);
+    setcurrentuser(user, num);
+}
+    
 static PHP_FUNCTION(bbs_getuserlevel){
     struct userec* u;
 	char* user;
