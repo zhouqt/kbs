@@ -18,7 +18,7 @@ int main(int argc, char **argv)
     if(fp) {
         fp2=fopen(fn2, "w");
         while(!feof(fp)) {
-            if(fscanf(fp, "%d %ld %d.%d.%d.%d %d %d", &i, &j, &ip[0], &ip[1], &ip[2], &ip[3], &t, &k)<=0) break;
+            if(fscanf(fp, "%d %ld %d.%d.%d.%d %d", &i, &j, &ip[0], &ip[1], &ip[2], &ip[3], &t)<=0) break;
             tt=(time_t) j;
             p = ctime(&tt);
             p[19]=0; p+=4;
