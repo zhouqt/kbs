@@ -4,6 +4,7 @@
 
 #include "bbs.h"
 
+#ifdef HAVE_WFORUM
 #define OLD_PASSWDS_FILE ".PASSWDS.OLD"
 #define NEW_PASSWDS_FILE ".PASSWDS.NEW"
 #undef printf
@@ -48,12 +49,14 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
     memcpy(user,olduser,sizeof(struct olduserec));
     user->userdefine &= ~DEF_SHOWREALUSERDATA;
 }
+#endif /* HAVE_WFORUM */
 
 int main()
 {
 #ifndef HAVE_WFORUM
-#error shit!
-#endif
+	fprintf(stderr, "Warning: you had not defined HAVE_WFORUM in site.h!\n");
+	fprintf(stderr, "Exit.\n");
+#else
     struct olduserec *olduser = NULL;
     struct olduserec *ptr = NULL;
     struct userec user;
@@ -93,6 +96,7 @@ int main()
     }
     close(fd2);
     munmap(olduser, fs.st_size);
+#endif
 
     return 0;
 }
