@@ -55,7 +55,7 @@
 			$favlinks = array();
 			for($i = 0;$i < count($pc["LINKS"]);$i ++)
 			{
-				if($i != $_GET["linkid"])
+				if($i != $_GET["linkid"] - 1)
 					$favlinks[] = array("LINK" => $pc["LINKS"][$i]["LINK"] ,"URL" => $pc["LINKS"][$i]["URL"]  );
 			}
 			pc_edit_link($link,$favlinks,$pc["UID"]);
@@ -84,7 +84,7 @@
 			"<td class=t8><input size=30 name='link".$i."' value='".$favlinks[$i]["LINK"]."' class=f1></td>\n".
 			"<td class=t5><input size=50 name='url".$i."' value='".$favlinks[$i]["URL"]."' class=f1></td>\n";
 		if( $i != $favlinksnum - 1 )
-			echo "<td class=t3><a href='pclinks.php?act=del&linkid=".$i."'>É¾³ý</a>\n<a href='http://".$favlinks[$i]["URL"]."'>Á´½Ó</a></td>";
+			echo "<td class=t3><a href='pclinks.php?act=del&linkid=".($i+1)."'>É¾³ý</a>\n<a href='http://".$favlinks[$i]["URL"]."'>Á´½Ó</a></td>";
 		else
 			echo "<td class=t3>-</td>";
 		echo "</tr>\n";

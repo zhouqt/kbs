@@ -154,7 +154,8 @@ function html_format($str,$multi=FALSE,$useHtmlTag = FALSE,$defaultfg = "#000000
 		if(strstr($str,$pcconfig["NOWRAPSTR"]) || $useHtmlTag )
 			$str = str_replace("<?","&lt;?",stripslashes($str));
 		else
-			$str = nl2br(ansi_convert(stripslashes($str) , $defaultfg, $defaultbg));	
+			$str = nl2br(str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str))));
+			//$str = nl2br(ansi_convert(stripslashes($str) , $defaultfg, $defaultbg));	
 	}
 	else
 		$str = str_replace(" ","&nbsp;",htmlspecialchars(stripslashes($str)));	
