@@ -2868,22 +2868,22 @@ static void clearWWWThreadList(pwwwthreadheader_list p){
 }
 
 int www_generateOriginIndex(const char* board)
-/* added by roy 2003.7.17 generate .ORIGIN index file*/
+/* added by roy 2003.7.17 generate .WEBTHREAD index file*/
 {
-    struct fileheader *ptr1,*ptrtemp;
-    struct flock ldata, ldata2 , ldata3;
-    int fd, fd2, fd3,  size , total3, total, i;
+    struct fileheader *ptr1;
+    struct flock ldata, ldata2;
+    int fd, fd2, size, total, i;
     char olddirect[PATHLEN];
 	char currdirect[PATHLEN];
-	char dingdir[PATHLEN];
-    char *ptr,*ptr3;
-    struct stat buf,buf3;
+    char *ptr;
+    struct stat buf;
 	pwwwthreadheader_list tail,temp;
 	int found;
+    int bid;
+    struct BoardStatus* bs;
 
     setbdir(DIR_MODE_NORMAL, olddirect, board);
     setbdir(DIR_MODE_WEB_THREAD, currdirect, board);
-	setbdir(DIR_MODE_ZHIDING, dingdir, board);
     if ((fd = open(currdirect, O_WRONLY | O_CREAT | O_TRUNC, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
         return -1;      /* 创建文件发生错误*/
@@ -2946,44 +2946,22 @@ int www_generateOriginIndex(const char* board)
 
 	tail=temp=NULL;
 
-
-    if ((fd3 = open(dingdir, O_RDONLY, 0664)) != -1) {
-		fstat(fd3, &buf3);
-		ldata3.l_type = F_RDLCK;
-		ldata3.l_whence = 0;
-		ldata3.l_len = 0;
-		ldata3.l_start = 0;
-		if (fcntl(fd3, F_SETLKW, &ldata3) != -1) {
-			total3 = buf3.st_size / sizeof(fileheader);
-			if (total3>MAX_DING)
-				total3=MAX_DING;
-
-			if ((i = safe_mmapfile_handle(fd3, PROT_READ, MAP_SHARED, (void **) &ptr3, &buf3.st_size)) == 1) {
-				ptr1 = (struct fileheader *) ptr3;
-				ptrtemp = (struct fileheader *) ptr;
-
-				for (i=total3-1;i>=0;i--) {
-					if (ptr1[i].groupid!=ptr1[i].id) continue;
-					if (foundInWWWThreadList(ptr1[i].groupid,tail)!=NULL) continue;
-					temp=CreateNewWWWThreadListNode(tail);
-					if (temp==NULL) {
-						clearWWWThreadList(tail);
-						return -5;
-					}
-					temp->content.origin=ptr1[i];
-					temp->content.lastreply=ptr1[i];
-					temp->content.articlecount=1;
-					temp->content.flags=FILE_ON_TOP;
-					temp->content.unused=0;
-					tail=temp;
-				}
-			    end_mmapfile((void *) ptr3, buf3.st_size, -1);
-			} else if (i == 2)
-				end_mmapfile((void *) ptr3, buf3.st_size, -1);
-			ldata3.l_type = F_UNLCK;
-			fcntl(fd3, F_SETLKW, &ldata3);	
-		} 
-		close(fd3);
+    bid = getbnum(board);
+    bs = getbstatus(bid);
+    for (i=bs->toptitle-1;i>=0;i--) {
+        if (bs->topfh[i].groupid!=bs->topfh[i].id) continue;
+        if (foundInWWWThreadList(bs->topfh[i].groupid,tail)!=NULL) continue;
+        temp=CreateNewWWWThreadListNode(tail);
+        if (temp==NULL) {
+            clearWWWThreadList(tail);
+            return -5;
+        }
+        temp->content.origin=bs->topfh[i];
+        temp->content.lastreply=bs->topfh[i];
+        temp->content.articlecount=1;
+        temp->content.flags=FILE_ON_TOP;
+        temp->content.unused=0;
+        tail=temp;
     }
 
 
