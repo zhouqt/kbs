@@ -6,21 +6,13 @@ define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 
 define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
-define('SERVERTIMEZONE','北京时间');
-
 $SiteURL="http://172.16.50.79";
 
 $SiteName="大运村BBS";
 
-$HTMLTitle="大运村BBS";
-
-$HTMLCharset="GB2312";
-
 $DEFAULTStyle="defaultstyle";
 
 $Banner="pic/ws.jpg";
-
-$BannerURL="http://172.16.50.79";
 
 define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
 define("ATTACHMAXSIZE","5242880");
@@ -40,6 +32,12 @@ $sectionCount=count($section_names);
 define('SHOWTELNETPARAM', 0); //不允许配置 telnet 下专用的个人参数
 define('SHOWREPLYTREE', 1);  //用树图显示回复结构
 define('ALLOWMULTIQUERY', 1); //允许全站/多版面查询
+
+/* 数据库配置 */
+$dbhost='localhost';
+$dbuser='';
+$dbpasswd='';
+$dbname='';
 
 require "default.php";
 ?>

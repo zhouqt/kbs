@@ -237,7 +237,6 @@ function showBroadcast($boardID,$boardName,$is_ann=false){
 function board_head_var($boardDesc,$boardName,$secNum)
 {
   GLOBAL $SiteName;
-  GLOBAL $SiteURL;
   GLOBAL $stats;
   global $section_names;
   if ($URL=='') {

@@ -1,8 +1,4 @@
 <?php
-	/**
-	 * File included by all other php scripts.
-	 * $Id$
-	 */
 if (!defined('_BBS_FUNCS_PHP_'))
 {
 define('_BBS_FUNCS_PHP_', 1);
@@ -10,7 +6,7 @@ define('_BBS_FUNCS_PHP_', 1);
 if ( (!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''))
 {
 	setcookie('iscookies','0',time()+3650*24*3600);
-	print '<META http-equiv=Content-Type content=text/html; charset=gb2312><meta HTTP-EQUIV=REFRESH CONTENT=3>正在登陆论坛……<br><br>本系统要求使用COOKIES，假如您的浏览器禁用COOKIES，您将不能登录本系统……';
+	print '<META http-equiv=Content-Type content=text/html; charset=gb2312><meta HTTP-EQUIV=REFRESH CONTENT=3>正在登录论坛……<br><br>本系统要求使用COOKIES，假如您的浏览器禁用COOKIES，您将不能登录本系统……';
 	exit();
 } 
 
@@ -38,24 +34,26 @@ global $BBS_FULL_NAME;
 //$fromhost=$_SERVER["REMOTE_ADDR"];
 global $fromhost;
 global $fullfromhost;
-global $loginok;
+global $loginok; //是否以正式用户登录了
+global $guestloginok;
 //global $currentuinfo;
 global $currentuinfo_num;
 //global $currentuser;
 global $currentuuser_num;
 global $cachemode;
-global $errMsg;
-global $foundErr;
-global $stats;
-global $gusetloginok;
-global $sucmsg;
 $yank=1;
-$sucmsg='';
-$stats='';
-$errMsg='';
-$foundErr=false;
+
 $loginok=0;
 $guestloginok=0;
+
+/* 本文件内部变量 */
+$needloginok = false; //本页面是否必须正式用户才可以访问，
+$showedbanner = false; //是否已经显示过 banner
+$stats=''; //页面标题
+$errMsg=''; //错误信息
+$foundErr = false; //是否有错误
+$sucmsg=''; //成功信息
+
 
 if (!isset($nologin)) {
 	$nologin=0;
@@ -65,29 +63,8 @@ if (!isset($setboard)){
 	$setboard=0;
 }
 
-if (!isset($needlogin)){
+if (!isset($needlogin)){ //本页面是否需要设置cookie等登录变量，默认需要
 	$needlogin=1;
-}
-
-function setSucMsg($msg){
-	global $sucmsg;
-	$sucmsg.='<li>'.$msg.'</li>';
-}
-function setStat($stat){
-	GLOBAL $stats;
-	$stats=$stat;
-}
-
-function foundErr($msg){ //ToDo: non-standard HTML - atppp
-	global $errMsg;
-	global $foundErr;
-	$errMsg.='<li>'.$msg.'</li>';
-	$foundErr=true;
-}
-
-function isErrFounded(){
-	GLOBAL $foundErr;
-	return $foundErr;
 }
 
 $cachemode="";
@@ -208,7 +185,7 @@ if ($nologin==0) {
 						}
 
 					}else if ($ret==5) {
-						foundErr("请勿频繁登陆！");
+						foundErr("请勿频繁登录！");
 					}
 				} else {
 					$error = bbs_wwwlogin(0);
@@ -233,6 +210,22 @@ if  ( ($loginok || $guestloginok ) && ($setonlined==0) ){
 	setcookie("W_LOGINTIME",$data["logintime"],time()+360000,$path);
 }
 
+
+if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
+	show_nav();
+	foundErr("您尚未登录！");
+	html_error_quit();
+	show_footer();
+	exit(0);
+	return;
+}
+
+if ( ($loginok==1) || ($guestloginok==1) ) {
+	$yank=bbs_is_yank() ? 0 : 1;
+	if ($setboard==1) 
+		bbs_set_onboard(0,0);
+}
+
 function valid_filename($fn)
 {
 	if ((strstr($fn,"..")!=FALSE)||(strstr($fn,"/")!=FALSE))
@@ -252,6 +245,49 @@ function bbs_get_board_filename($boardname,$filename)
 function bbs_get_vote_filename($boardname, $filename)
 {
 	return "vote/" . $boardname . "/" . $filename;
+}
+
+function get_bbsfile($relative_name)
+{
+	return BBS_HOME . $relative_name;
+}
+
+function get_secname_index($secnum)
+{
+	global $section_nums;
+	$arrlen = sizeof($section_nums);
+	for ($i = 0; $i < $arrlen; $i++)
+	{
+		if (strcmp($section_nums[$i], $secnum) == 0)
+			return $i;
+	}
+	return -1;
+}
+
+function bbs_is_owner($article, $user)
+{
+	if ($article["OWNER"] == $user["userid"])
+		return 1;
+	else
+		return 0;
+}
+
+function bbs_can_delete_article($board, $article, $user)
+{
+	if (bbs_is_bm($board["NUM"], $user["index"]) 
+			|| bbs_is_owner($article, $user))
+		return 1;
+	else
+		return 0;
+}
+
+function bbs_can_edit_article($board, $article, $user)
+{
+	if (bbs_is_bm($board["NUM"], $user["index"]) 
+			|| bbs_is_owner($article, $user))
+		return 1;
+	else
+		return 0;
 }
 
 function cache_header($scope,$modifytime=0,$expiretime=300)
@@ -325,9 +361,9 @@ function showLogon($showBack = 0){
 ?>
 	<form action="logon.php" method=post> 
 	<input type="hidden" name="action" value="doLogon">
-	<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
+	<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 	<tr>
-	<th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登陆</td></tr>
+	<th valign=middle colspan=2 align=center height=25>请输入您的用户名、密码登录</td></tr>
 	<tr>
 	<td valign=middle class=TableBody1>请输入您的用户名</td>
 	<td valign=middle class=TableBody1><INPUT name=id type=text tabindex="1"> &nbsp; <a href="register.php">没有注册？</a></td></tr>
@@ -357,35 +393,69 @@ function showLogon($showBack = 0){
 <?php
 }
 
+function requireLoginok($msg = false, $directexit = true) {
+	global $loginok;
+	global $needloginok;
+	global $showedbanner;
+	$needloginok = 1;
+	if ($loginok == 1) return;
+	foundErr(($msg === false) ? "本页需要您以正式用户身份登录之后才能访问！" : $msg, $directexit, false);
+}
 
+function setSucMsg($msg){
+	global $sucmsg;
+	$sucmsg.='<li>'.$msg.'</li>';
+}
+function setStat($stat){
+	GLOBAL $stats;
+	$stats=$stat;
+}
+
+function foundErr($msg, $directexit = true, $showmsg = true){ //ToDo: non-standard HTML - atppp
+	global $errMsg;
+	global $foundErr;
+	global $showedbanner;
+	$errMsg.='<li>'.$msg.'</li>';
+	$foundErr=true;
+	if ($directexit) {
+		if (!$showedbanner) show_nav();
+		show_footer($showmsg, true);
+		exit;
+	}
+}
+
+function isErrFounded(){
+	GLOBAL $foundErr;
+	return $foundErr;
+}
 
 function html_error_quit()
 {
 	global $errMsg;
-	global $needlogin;
+	global $needloginok;
 	global $loginok;
 ?>
 <br>
-<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 width="75%">
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr align=center>
-<th width="100%" height=25 colspan=2>论坛错误信息
+<th height=25>论坛错误信息
 </td>
 </tr>
 <tr>
-<td width="100%" class=TableBody1 colspan=2>
+<td class=TableBody1>
 <b>产生错误的可能原因：</b>
 <ul>
-<li>您是否仔细阅读了<a href="boardhelp.php">帮助文件</a>，可能您还没有登陆或者不具有使用当前功能的权限。</li>
+<li>您是否仔细阅读了帮助文件，可能您还没有登录或者不具有使用当前功能的权限。</li>
 <?php   echo $errMsg; ?>
 </ul>
 </td></tr>
 <?php
-	if (($needlogin!=0)&&($loginok!=1)) {
+	if (($needloginok!=0)&&($loginok!=1)) {
   		showLogon(1);
   	} else {
 ?>
 	<tr>
-	<td class=TableBody2 valign=middle colspan=2 align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
+	<td class=TableBody2 valign=middle align=center><a href="<?php echo $_SERVER['HTTP_REFERER']; ?>"> <<返回上一页 </a></td></tr>
 <?php   } ?>
 </table>
 <?php 
@@ -396,7 +466,7 @@ function html_success_quit($Desc='',$URL='')
   global $sucmsg;
 ?>
 <br>
-<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 width="75%">
+<table cellpadding=3 cellspacing=1 align=center class=TableBorder1 style="width: 75%;">
 <tr align=center>
 <th width="100%">论坛成功信息
 </td>
@@ -447,166 +517,16 @@ function sizestring($size)
 	}
 }
 
-function get_bbsfile($relative_name)
-{
-	return BBS_HOME . $relative_name;
-}
-
-function get_secname_index($secnum)
-{
-	global $section_nums;
-	$arrlen = sizeof($section_nums);
-	for ($i = 0; $i < $arrlen; $i++)
-	{
-		if (strcmp($section_nums[$i], $secnum) == 0)
-			return $i;
-	}
-	return -1;
-}
-
-function ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, &$head,&$tail)
-{
-	$modify="";
-	if ($fgcolor==-1) 
-	  $modify=sprintf(" color=%s",$defaultfg);
-	else
-	if ($fgcolor==-2)
-	  $modify=sprintf(" color=%s",$defaultbg);
-	else
-	if ($highlight)
-	   $fgcolor+=8;
-	if ($fgcolor<0) $fgcolor=0;
-	if ($bgcolor==-1)
-	  $modify .= sprintf(" style='background-color:%s'",$defaultbg);
-	else
-	if ($bgcolor==-2)
-	  $modify .= sprintf(" style='background-color:%s'",$defaultfg);
-	if ($bgcolor<0) $bgcolor=0;
-	$head = sprintf("<font class=f%d%02d%s>",$bgcolor,$fgcolor,$modify);
-	if ($underlink) {
-	   $head .= "<u>";
-	   $tail = "</u>";
-	}
-	$tail .= "</font>";
-}
-
-function ansi_convert( $buf , $defaultfg, $defaultbg)
-{
-	$keyword = preg_split("/\x1b\[([^a-zA-Z]*)([a-zA-Z])/",$buf,-1,PREG_SPLIT_DELIM_CAPTURE);
-	$fgcolor=-1;
-	$bgcolor=-1;
-	$blink=false;
-	$underlink=false;
-	$highlight=false;
-	for ($i=1;$i<count($keyword);$i+=3) {
-		if ($keyword[$i+2]=="")
-			continue;
-		if ($keyword[$i+1]=='m') {
-			$head="";
-			$tail="";
-			if ($keyword[$i]=="") {
-					// *[;m
-				$fgcolor=-1;
-				$bgcolor=-1;
-				$blink=false;
-				$underlink=false;
-				$highlight=false;
-			} else {
-				$good=true;
-				$colorcodes=split(';',$keyword[$i]);
-				foreach ( $colorcodes as $code ) {
-					if (preg_match("/[\D]/",$code)) {
-						$good=false;
-						break;
-					}
-					if ($code=="") 
-						$value=0;
-					else
-						$value=intval($code);
-					if ($value<=8 && $value>=1) {
-						switch ($value) {
-						case 0:
-							$fgcolor=-1;
-							$bgcolor=-1;
-							$blink=false;
-							$underlink=false;
-							break;
-						case 1:
-							$highlight=1;
-							break;
-						case 4:
-							$underlink=1;
-							break;
-						case 5:
-							$blink=1;
-						case 7:
-							$savebg=$bgcolor;
-							if ($fgcolor==-1)
-								$bgcolor=-2;
-							else
-								$bgcolor=$fgcolor;
-							if ($bgcolor==-1)
-								$fgcolor=-2;
-							else
-								$fgcolor=$savebg;
-						}
-					} else
-					if ($value<=37 && $value>=30)
-						$fgcolor=$value-30;
-					else
-					if ($value<=47 && $value>=40)
-						$bgcolor=$value-40;
-					else {
-						// unsupport code
-						$good=false;
-						break;
-					}
-				}
-				if ($good)
-					ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, $head,$tail);
-			}
-			$final .= $head . htmlspecialchars($keyword[$i+2]) . $tail;
-		} else $final .= htmlspecialchars($keyword[$i+2]);
-	}
-	return $final;
-}
-
-function bbs_is_owner($article, $user)
-{
-	if ($article["OWNER"] == $user["userid"])
-		return 1;
-	else
-		return 0;
-}
-
-function bbs_can_delete_article($board, $article, $user)
-{
-	if (bbs_is_bm($board["NUM"], $user["index"]) 
-			|| bbs_is_owner($article, $user))
-		return 1;
-	else
-		return 0;
-}
-
-function bbs_can_edit_article($board, $article, $user)
-{
-	if (bbs_is_bm($board["NUM"], $user["index"]) 
-			|| bbs_is_owner($article, $user))
-		return 1;
-	else
-		return 0;
-}
-
 function show_nav($boardName='')
 {
 	global $Banner;
-	global $BannerURL;
 	global $SiteName;
 	global $SiteURL;
-	global $StartTime;
 	global $loginok;
 	global $currentuser;
 	global $currentuinfo;
+	global $showedbanner;
+	$showedbanner = true;
 
   html_init();
 ?>
@@ -622,7 +542,7 @@ function show_nav($boardName='')
 
 <TABLE border=0 width="100%" align=center>
 <TR>
-<TD align=left width="25%"><a href="<?php  echo  $BannerURL; ?>" target="_blank"><img border=0 src='<?php echo  $Banner; ?>'></a></TD>
+<TD align=left width="25%"><a href="<?php  echo  $SiteURL; ?>" target="_blank"><img border=0 src='<?php echo  $Banner; ?>'></a></TD>
 <TD Align=center width="65%">
 <?php echo MAINTITLE; ?>
 </td>
@@ -641,7 +561,7 @@ function show_nav($boardName='')
 <?php   
 	if ($loginok!=1)  {
 ?>
-<a href="logon.php">登陆</a> <img src=pic/navspacer.gif align=absmiddle> <a href="register.php">注册</a>
+<a href="logon.php">登录</a> <img src=pic/navspacer.gif align=absmiddle> <a href="register.php">注册</a>
 <?php  
 	}  else  {
 		echo '欢迎您 <b>'.$currentuser['userid'].'</b> ';
@@ -652,7 +572,7 @@ function show_nav($boardName='')
 <?php
 		}
 ?>
-<img src=pic/navspacer.gif align=absmiddle> <a href="logon.php">重登陆</a> 
+<img src=pic/navspacer.gif align=absmiddle> <a href="logon.php">重登录</a> 
 <img src=pic/navspacer.gif align=absmiddle> <a href="#" onMouseOver='ShowMenu(manage,100,event)'>用户功能菜单</a>
 <img src=pic/navspacer.gif align=absmiddle> <a href="#" onMouseOver='ShowMenu(talk,100,event)'>谈天说地菜单</a>
 <?php
@@ -676,7 +596,6 @@ function show_nav($boardName='')
 function head_var($Title='', $URL='',$showWelcome=0)
 {
   GLOBAL $SiteName;
-  GLOBAL $SiteURL;
   GLOBAL $stats;
   if ($URL=='') {
 	  $URL=$_SERVER['PHP_SELF'];
@@ -710,14 +629,20 @@ function head_var($Title='', $URL='',$showWelcome=0)
 <?php 
 } 
 
-function show_footer($showmsg = true)
+function show_footer($showmsg = true, $showerr = true)
 {
   global $Version;
   global $Copyright;
   global $StartTime;
   global $FooterBan;
   global $loginok;
+  global $conn;
 
+  if ($showerr) {
+  	if (isErrFounded()) {
+  		html_error_quit();
+  	}
+  }
   $endtime=getmicrotime();
 ?>
 <p>
@@ -758,8 +683,8 @@ function show_footer($showmsg = true)
 <br>
 </body>
 </html>
-<?php 
-
+<?php
+	if (isset($conn) && ($conn !== false)) CloseDatabase();
 } 
 
 function getMsg(){
@@ -772,21 +697,6 @@ function getMsg(){
 </iframe>
 <script src="inc/floater.js"  language="javascript"></script>
 <?php
-}
-
-if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
-	show_nav();
-	foundErr("您尚未登陆！");
-	html_error_quit();
-	show_footer();
-	exit(0);
-	return;
-}
-
-if ( ($loginok==1) || ($guestloginok==1) ) {
-	$yank=bbs_is_yank() ? 0 : 1;
-	if ($setboard==1) 
-		bbs_set_onboard(0,0);
 }
 
 } // !define ('_BBS_FUNCS_PHP_')

@@ -14,15 +14,11 @@ $SiteURL="http://bbs.stanford.edu/wForum/";
 
 $SiteName="牧场物语";
 
-$HTMLTitle="牧场物语";
-
-$HTMLCharset="GB2312";
-
 $DEFAULTStyle="defaultstyle";
 
 $Banner="/mcwy/bm3_08.jpg";
 
-$BannerURL="http://bbs.stanford.edu";
+$AnnounceBoard = "Announcement";
 
 define ("MAINTITLE","&nbsp;");
 define("ATTACHMAXSIZE","8388608");
@@ -46,6 +42,10 @@ define('SHOWTELNETPARAM',0);
 
 define('ALLOWMULTIQUERY', 1);
 
+$dbhost='localhost';
+$dbuser='wForum';
+$dbpasswd='fuckatp';
+$dbname='wForum';
+
 require "default.php";
-$AnnounceBoard = "Announcement"; //override what's in default.php
 ?>

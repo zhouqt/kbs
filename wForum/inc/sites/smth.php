@@ -1,23 +1,20 @@
 <?php
+
 define("ANNOUNCENUMBER",5);
 
 define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 
 define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
-$SiteName="水木清华";
-
 $SiteURL="http://www.smth.org/wForum/";
 
-$HTMLTitle="BBS 水木清华站";
+$SiteName="水木清华";
 
-$HTMLCharset="GB2312";
+$HTMLTitle="BBS 水木清华站";
 
 $DEFAULTStyle="defaultstyle";
 
 $Banner="bar/bar.jpg";
-
-$BannerURL="http://http://www.smth.org/";
 
 define ("MAINTITLE","<OBJECT classid=clsid:D27CDB6E-AE6D-11cf-96B8-444553540000 codebase=http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0 height=84 width=600> <PARAM NAME='MOVIE' VALUE='bar/smth2.swf' /><EMBED SRC=\"bar/smth2.swf\" height=84 width=600></EMBED></OBJECT>");
 

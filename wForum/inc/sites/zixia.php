@@ -12,15 +12,9 @@ $SiteName="大话西游";
 
 $SiteURL="http://wforum.zixia.net";
 
-$HTMLTitle="大话西游";
-
-$HTMLCharset="GB2312";
-
 $DEFAULTStyle="defaultstyle";
 
 $Banner="bar/bar.jpg";
-
-$BannerURL="http://wforum.zixia.net/";
 
 define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
 

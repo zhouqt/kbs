@@ -62,7 +62,6 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 	if ($loadFav == 0) {
 		if ( ($secNum<0)  || ($secNum>=$sectionCount)) {
 			foundErr("版面参数错误！");
-			return false;
 		}
 ?>
 <?php
@@ -104,7 +103,6 @@ function showSecs($secNum,$group,$isFold,$loadFav=0) {
 			$boards = bbs_fav_boards($select, 1);
 			if ($boards == FALSE) {
 	    		foundErr("读取版列表失败");
-	    		return false;
 			}
 		}
 		if ($boards == FALSE) {
@@ -283,14 +281,13 @@ arNews = [<?php
 
 function FastLogin()
 {
-extract($GLOBALS);
 ?>
 <table cellspacing=1 cellpadding=3 align=center class=TableBorder1>
 <form action="logon.php" method=post>
 <input type="hidden" name="action" value="doLogon">
 <tr>
 <th align=left id=TableTitleLink height=25 style="font-weight:normal">
-<b>-=> 快速登录入口</b>
+<b>-=&gt; 快速登录入口</b>
 [<a href=register.php>注册用户</a>]　<!--[<a href=lostpass.php style="CURSOR: help">忘记密码</a>]-->
 </th>
 </tr>
@@ -380,6 +377,4 @@ function showMailSampleIcon(){
 </table><br>
 <?php
 }
-
-
 ?>

@@ -1,11 +1,5 @@
 <?php
 
-function getattachtmppath($userid,$utmpnum)
-{
-  $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload";
-  return $attachdir;
-}
-
 define("ANNOUNCENUMBER",5);
 
 define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
@@ -16,15 +10,9 @@ $SiteURL="http://bbs.bjsing.net:8081/forum/";
 
 $SiteName="北极星BBS";
 
-$HTMLTitle="北极星BBS";
-
-$HTMLCharset="GB2312";
-
 $DEFAULTStyle="defaultstyle";
 
 $Banner="pic/ws.jpg";
-
-$BannerURL="http://bbs.bjsing.net:8081/forum/";
 
 define ("MAINTITLE","<IMG SRC=\"bar/title.jpg\">");
 define("ATTACHMAXSIZE","5242880");

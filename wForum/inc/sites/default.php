@@ -2,7 +2,16 @@
 $Version="Powered by wForum Version 0.9";
 $Copyright="<a href='http://www.aka.cn/' target=_blank>阿卡信息技术(北京)有限公司</a> & <a href='http://www.smth.cn'>水木清华BBS</a> 版权所有 1994 - 2008 <br><font face=Verdana, Arial, Helvetica, sans-serif size=1><b>Roy<font color=#CC0000>@zixia.net</font></b></font> ";
 
-$AnnounceBoard="Announce";
+if (!isset($AnnounceBoard)) { //公告版面
+	$AnnounceBoard="Announce";
+}
+
+$HTMLCharset = "GB2312"; //这个我觉得肯定是 gb2312 吧，以后要变的话再做成可自定义的参数
+
+if (!isset($HTMLTitle)) {
+	$HTMLTitle = $SiteName;
+}
+
 if (!defined('BOARDLISTSTYLE')) { 
 /* 版面列表方式
  * default 缺省

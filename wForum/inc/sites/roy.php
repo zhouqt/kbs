@@ -1,12 +1,5 @@
 <?php
 
-function getattachtmppath($userid,$utmpnum)
-{
-  $attachdir="cache/home/" . strtoupper(substr($userid,0,1)) . "/" . $userid . "/" . $utmpnum . "/upload";
-  return $attachdir;
-
-}
-
 define('ANNOUNCENUMBER',5);
 
 define('ARTICLESPERPAGE',30); //目录列表下每页显示的主题数
@@ -17,15 +10,9 @@ $SiteURL="http://172.16.50.79";
 
 $SiteName="大运村BBS";
 
-$HTMLTitle="大运村BBS";
-
-$HTMLCharset="GB2312";
-
 $DEFAULTStyle="defaultstyle";
 
 $Banner="pic/ws.jpg";
-
-$BannerURL="http://172.16.50.79";
 
 define ('MAINTITLE','<IMG SRC="bar/title.jpg">');
 define('ATTACHMAXSIZE','5242880');
