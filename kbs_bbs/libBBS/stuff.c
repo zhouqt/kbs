@@ -1496,7 +1496,18 @@ load_mailgroup(const char *userid, const char *group, mailgroup_t *mg, int num)
     if ((fd = open(fname, O_RDONLY, 0600)) < 0)
 		return -1;
 	if (read(fd, mg, sizeof(mailgroup_t) * num) == sizeof(mailgroup_t) * num)
+	{
+		int i;
+		int len;
+
+		for (i = 0; i < num; i++)
+		{
+			len = strlen(mg[i].id);
+			if (mg[i].id[len - 1] == '\n')
+				mg[i].id[len - 1] = '\0';
+		}
 		ret = num;
+	}
 	close(fd);
 
 	return ret; /* return zero on failure or no users,
@@ -1549,8 +1560,8 @@ import_old_mailgroup(const char *userid, mailgroup_list_t *mgl)
 	while (num < MAX_MAILGROUP_USERS && fgets(buf, sizeof(buf), fp) != NULL)
 	{
 		len = strlen(buf);
-		if (buf[len] == '\n')
-			buf[len] = '\0';
+		if (buf[len - 1] == '\n')
+			buf[len - 1] = '\0';
 		strncpy(mg.id, buf, sizeof(mg.id) - 1);
 		mg.id[sizeof(mg.id) - 1] = '\0';
 		mg.exp[0] = '\0';
