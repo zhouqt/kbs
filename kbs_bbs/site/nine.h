@@ -308,4 +308,8 @@ typedef struct fileheader fileheader_t;
 #define MAX_MAILGROUP_NUM 30
 #define MAX_MAILGROUP_USERS 300
 
+/**
+attach define
+*/
+#define ATTACHTMPPATH "boards/_attach"
 #endif
