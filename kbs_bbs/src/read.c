@@ -799,7 +799,7 @@ int SR_BMfunc(int ent, struct fileheader *fileinfo, char *direct)
     char *SR_BMitems[] = { "删除", "保留", "文摘", "放入精华区", "放入暂存档", "标记删除",
         "设为不可回复"
     };
-    char linebuffer[256];
+    char linebuffer[256*3];
 
     if (!chk_currBM(currBM, currentuser)) {
         return DONOTHING;
@@ -883,7 +883,7 @@ int SR_BMfuncX(int ent, struct fileheader *fileinfo, char *direct)
     char *SR_BMitems[] = { "删除", "保留", "文摘", "放入精华区", "放入暂存档", "标记删除",
         "设为不可回复"
     };
-    char linebuffer[256];
+    char linebuffer[256*3];
 
     if (!chk_currBM(currBM, currentuser)) {
         return DONOTHING;

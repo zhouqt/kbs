@@ -918,7 +918,7 @@ int getdata(int line, int col, char *prompt, char *buf, int len, int echo, void 
 int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int len, int maxline, int clearlabel)
 {
     int ch, clen = 0, curr = 0, x, y, startx, starty, now, i, j, k, i0, chk, cursorx, cursory;
-    char savebuffer[25][256];
+    char savebuffer[25][256*3];
     char tmp[STRLEN];
     extern int RMSG;
 

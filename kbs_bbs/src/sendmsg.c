@@ -407,7 +407,7 @@ void r_msg_sig(int signo)
 void r_msg()
 {
     int y, x, ch, i, ox, oy, tmpansi, pid, oldi;
-    char savebuffer[25][256];
+    char savebuffer[25][256*3];
     char buf[MAX_MSG_SIZE+100], outmsg[MAX_MSG_SIZE*2], buf2[STRLEN], uid[14];
     struct user_info * uin;
     struct msghead head;
