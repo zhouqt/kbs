@@ -106,7 +106,11 @@ function main(){
 </td>
 <td class=TableBody1 align=left style="font-weight:normal"><a href="usermail.php?boxname=inbox&num=<?php echo $i+$startNum; ?>" > <?php       echo htmlspecialchars($maildata[$i]['TITLE'],ENT_QUOTES); ?></a>	</td>
 <td class=TableBody1 style="font-weight:normal"><?php echo strftime("%Y-%m-%d %H:%M:%S", $maildata[$i]['POSTTIME']); ?></td>
-<td class=TableBody1 style="font-weight:normal"> N/A Byte</td>
+<td class=TableBody1 style="font-weight:normal"><?php
+	$roy = $maildata[$i]['EFFSIZE'];
+	if ($roy) echo sizestring($roy);
+	else echo "N/A Byte";
+?></td>
 </tr>
 <?php
 		}

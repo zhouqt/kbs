@@ -175,9 +175,10 @@ function main() {
 					$prefix = ": ";
 				}
 				while (1) {
+					if (($buf = fgets($fp,5000)) == FALSE)
+						break;
+
 					if ($action != 4) {
-						if (($buf = fgets($fp,5000)) == FALSE)
-							break;
 						if (strncmp($buf, ": ¡¾", 4) == 0)
 							continue;
 						if (strncmp($buf, ": : ", 4) == 0)
