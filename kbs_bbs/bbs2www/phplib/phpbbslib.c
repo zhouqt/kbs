@@ -6598,7 +6598,11 @@ static PHP_FUNCTION(bbs_denyadd)
 #else
     autofree = true;
 #endif
-    
+
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(getCurrentUser()->userid, board, getSession());
+#endif
+
     now = time(0);
     undenytime = now + denyday * 24 * 60 * 60;
     tmtime = gmtime(&undenytime);
