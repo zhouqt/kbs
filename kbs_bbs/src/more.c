@@ -127,6 +127,7 @@ int check_calltime()
     if ( calltime != 0 && time(0) >= calltime ) {
     	int line;
 		int ch;
+		int y,x;
         /*
          * if (uinfo.mode != MMENU)
          * {
@@ -141,6 +142,7 @@ int check_calltime()
          * pressreturn();
          * R_monitor(NULL);
          */
+		good_getyx(&y, &x);
         if (uinfo.mode == TALK)
             line = t_lines / 2 - 1;
         else
@@ -158,6 +160,7 @@ int check_calltime()
         clrtoeol();
         saveline(line, 1, NULL);
         calltime = 0;
+		good_move(y,x);
 		return 1;
     }
 	return 0;
