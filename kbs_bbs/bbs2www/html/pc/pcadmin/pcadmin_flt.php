@@ -66,6 +66,29 @@ if (strtolower($_GET['filter'])=='y') {
         mysql_query($query);
     }
 }
+if (strtolower($_GET['filter'])=='r') {
+    if ($node[state]==4) {
+    	$nid = $node[nid];
+    	$query = 'SELECT * FROM nodes WHERE nid = ' . $nid . ' LIMIT 1;';
+		$result = mysql_query($query);
+		$node_o = mysql_fetch_array($result);
+		if (!$node_o)
+    		html_error_quit("作者已经将文章删除");
+    	if (($node_o[changed] != $node[changed]) && (!isset($_GET["or"])))
+    		html_error_quit("原文已经被修改过<br/><a href='pcadmin_flt.php?filter=r&or=1&fid=".$fid."'>强行恢复</a>");
+    	$body = addslashes($node[body]);
+    	$query = "UPDATE nodes SET `body` = '".$body."' where `nid` = " . $nid . ";";
+		if (!mysql_query($query)) {
+			html_error_quit("修改原文出错");
+		}
+		pc_update_record($link,$node[uid]);
+		$query = "DELETE FROM filter WHERE `fid` = '".$fid."' ";
+		if (!mysql_query($query)) {
+			html_error_quit("从过滤表删除出错，但是文章已经恢复...");
+		}
+    }
+}
+
 
 pc_db_close($link);
 pc_return("pcdoc.php?userid=_filter&tag=".$node[state]);

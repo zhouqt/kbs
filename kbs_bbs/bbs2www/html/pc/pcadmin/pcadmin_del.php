@@ -18,7 +18,7 @@ if (!$node)
 $uid = $node[uid];
 
 $query = "INSERT INTO `filter` (  `pid` , `nid` , `tid` , `type` , `state` , `recuser` , `emote` , `hostname` , `changed` , `created` , `uid` , `username` , `comment` , `commentcount` , `subject` , `body` , `access` , `visitcount` , `htmltag`,`trackback` ,`trackbackcount`,`nodetype`,`theme`,`publisher`) ".
-	   	     "VALUES ( '".$node[pid]."' , '".$node[nid]."' , '".$node[tid]."' , '".$node[type]."' , 4 , '".$node[recuser]."' , '".$node[emote]."' , '".$node[hostname]."' , '".$node[changed]."' , '".$node[created]."' , '".$node[uid]."' , '".addslashes($_GET["userid"])."' , '".$node[comment]."' , '".$node[commentcount]."' , '".$node[subject]."' , '".$node[body]."' , '".$node[access]."' , '".$node[visitcount]."' , '".$node[htmltag]."','".$node[trackback]."' ,'".$node[trackbackcount]."','".$node[nodetype]."','".$node[theme]."','".$node[publisher]."');";
+	   	     "VALUES ( '".$node[pid]."' , '".$node[nid]."' , '".$node[tid]."' , '".$node[type]."' , 4 , '".$currentuser["userid"]."' , '".$node[emote]."' , '".$node[hostname]."' , '".$node[changed]."' , '".$node[created]."' , '".$node[uid]."' , '".addslashes($_GET["userid"])."' , '".$node[comment]."' , '".$node[commentcount]."' , '".$node[subject]."' , '".$node[body]."' , '".$node[access]."' , '".$node[visitcount]."' , '".$node[htmltag]."','".$node[trackback]."' ,'".$node[trackbackcount]."','".$node[nodetype]."','".$node[theme]."','".$node[publisher]."');";
 if (!mysql_query($query)) {
 	html_error_quit("插入过滤表出错");
 }

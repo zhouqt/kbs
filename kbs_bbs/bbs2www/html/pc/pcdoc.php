@@ -80,7 +80,7 @@
 	{
 		global $currentuser;
 		if ($pc['USER'] == '_filter' )
-	    	$query = "SELECT `fid` , `pid` , `nid` , `state` , `username`, `uid` , `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
+	    	$query = "SELECT `fid` , `pid` , `nid` , `state` , `username`, `uid` , `recuser`, `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
 	    		" FROM filter WHERE `state` = '".$tag."' ";
 		else
 	    	$query = "SELECT `nid` , `pid` ,  `created` , `emote` , `changed` , `comment` , `commentcount` , `subject` , `visitcount` , `htmltag` ,`trackbackcount` , `trackback` ".
@@ -138,8 +138,19 @@
 	<a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=c&tid=".$tid; ?>" class="f3">´´½¨</a>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=v&tid=".$tid; ?>" class="f3">ä¯ÀÀ</a></td>
 	<td class="t2" width="30"><a href="pcdoc.php?<?php echo "userid=".$pc["USER"]."&tag=".$tag."&order=r&tid=".$tid; ?>" class="f3">ÆÀÂÛ</a></td>
+<?php
+		if ($tag < 3) {
+?>
 	<td class="t2" width="15">¹ý</td>
 	<td class="t2" width="15">ÂË</td>
+<?php
+		} else {
+?>
+	<td class="t2" width="30">»Ö¸´</td>
+	<td class="t2" width="80">É¾ÎÄÍÀ·ò</td>
+<?php
+		}
+?>
 </tr>
 <?php
 		}
@@ -218,9 +229,14 @@
 					"<td class='t3'>\n".time_format($rows[created])."</td>\n".
 					"<td class='t4'>".$rows[visitcount]."</td>\n".
 					"<td class='t3'>".$rows[commentcount]."</td>\n";
-				echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=n\">¹ý</a></td>\n".
-					"<td class='t4'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=y\">ÂË</a></td>\n".
-					"</tr>\n";
+				if ($tag < 3) {
+					echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=n\">¹ý</a></td>\n".
+					"<td class='t4'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=y\">ÂË</a></td>\n";
+				} else {
+					echo	"<td class='t3'><a href=\"pcadmin_flt.php?fid=".$rows[fid]."&filter=r\">»Ö¸´</a></td>\n".
+					"<td class='t4'>".$rows[recuser]."</td>\n";
+				}
+				echo "</tr>\n";
 			}
 			elseif($pur > 2)
 			{
