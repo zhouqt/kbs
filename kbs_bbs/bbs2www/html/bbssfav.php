@@ -12,19 +12,20 @@ if (!strcmp ($currentuser['userid'],'guest')) {
     html_init('gb2312','','',1);
     html_error_quit('ÇëÏÈ×¢²áÕÊºÅ');
 }
+/*
 if (strcmp ($currentuser['userid'], $_GET['userid'])) {
     html_init('gb2312','','',1);
     html_error_quit('²ÎÊý´íÎó');
 }
-
+*/
 if (!($fav = new Favorite ($currentuser['userid']))) {
     html_init('gb2312','','',1);
     html_error_quit ($fav);
 }
-
+/*
 if (cache_header("public, must-revalidate",filemtime($fav->file),10))
     return;
-
+*/
 html_init('gb2312','','',1);
 if (isset ($_GET['pid']))
     $pid = intval ($_GET['pid']);
