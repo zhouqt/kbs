@@ -49,6 +49,7 @@ void makesize(struct var_struct * a, int h, int w)
 void del(struct var_struct * a)
 {
     int i;
+    makesure(1,0);
     if(a->p) {
         for(i=0;i<a->height;i++)
             free(a->p[i]);
@@ -64,6 +65,7 @@ int is_single_var(struct var_struct * a)
 void copy_var(struct var_struct * a, struct var_struct * b)
 {
     int i,j;
+    makesure(1,0);
     makesize(b, a->height, a->width);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
@@ -134,6 +136,7 @@ void sub_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
 void mul_var(struct var_struct * a, struct var_struct * b, struct var_struct * c)
 {
     int i,j,k;
+    makesure(1,0);
     if(is_single_var(a)) {
         makesize(c, b->height, b->width);
         for(i=0;i<b->height;i++)
@@ -161,6 +164,7 @@ void mul_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
 void setzero(struct var_struct * a)
 {
     int i,j;
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             a->p[i][j]=0;
@@ -242,6 +246,7 @@ void multcol(struct var_struct * s, int a, double r)
 void reverse(struct var_struct * s, struct var_struct * t)
 {
     int i,j;
+    makesure(1,0);
     makesize(t, s->width, s->height);
     for(i=0;i<s->width;i++)
         for(j=0;j<s->height;j++)
@@ -253,6 +258,7 @@ double envalue(struct var_struct * s)
     int i,j,flag;
     double result,ration;
     struct var_struct temp;
+    if(calcerr) return 0;
     if(s->height!=s->width) {
         calcerr=8;
         return 0;
@@ -339,6 +345,7 @@ void inverse(struct var_struct * s, struct var_struct * A)
 int get_var(char * name)
 {
     int i;
+    if(calcerr) return 0;
     if(!name[0]||strlen(name)>6) {
         calcerr=14;
         return 0;
