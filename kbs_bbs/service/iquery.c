@@ -268,6 +268,12 @@ static int choose_file_show(struct _select_def *conf, int ii)
             if(i>=strlen(qn)) i=0;
         }
         while(i<strlen(qn)) {
+            if(qn[i]==0x1b) {
+                j=i;
+                while(!(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z')&&qn[j]) j++;
+                i=j;
+                continue;
+            }
             if(qn[i]>='a'&&qn[i]<='z'||qn[i]>='A'&&qn[i]<='Z') {
                 j=i;
                 while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
