@@ -90,7 +90,8 @@ function preprocess(){
 	}
 
 	bbs_set_onboard($boardID,1);
-	$articles = bbs_getthreads($boardName, $articleID, 1,1);
+	$articles = bbs_get_article($boardName, $articleID);
+
 	@$article=$articles[0];
 	if ($article==NULL) {
 		foundErr("您指定的文章不存在！");
