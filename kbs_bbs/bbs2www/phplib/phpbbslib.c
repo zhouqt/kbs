@@ -6827,18 +6827,18 @@ static PHP_FUNCTION(bbs_x_search)
     int ac = ZEND_NUM_ARGS();
     int char_len;   
     int pos;
-    char *char_dname;
+    char *qn;
     zval* element;
     struct sockaddr_in addr;
     FILE* sockfp;
-    int sockfd, i, j, k;
+    int sockfd, i, j, k, t;
     char buf[256];
     char ip[20], s1[30], s2[30], *pp;
     #define MAX_KEEP 100
-    char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200];
+    char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200],res_content[MAX_KEEP][1024];
     int res_flag[MAX_KEEP];
 
-    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"sl",&char_dname,&char_len,&pos) ==FAILURE){
+    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"sl",&qn,&char_len,&pos) ==FAILURE){
         WRONG_PARAM_COUNT;
     }
     if (array_init(return_value) == FAILURE)
@@ -6852,7 +6852,7 @@ static PHP_FUNCTION(bbs_x_search)
     addr.sin_port=htons(4875);
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
     sockfp=fdopen(sockfd, "r+");
-    fprintf(sockfp, "\n%d\n%s\n", pos, char_dname);
+    fprintf(sockfp, "\n%d\n%s\n", pos, qn);
     fflush(sockfp);
     fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
     for(i=0;i<res_total;i++) {
@@ -6939,6 +6939,133 @@ static PHP_FUNCTION(bbs_x_search)
 	}
     }
 
+    for (t=0; t < res_total; t++) {
+        char buf[10*1024],out[10*1024],out2[10*1024];
+        FILE* fp;
+        int i,j,k,l,fsize=0,t=0,p=0,inc=0;
+        res_content[i][0] = 0;
+        fp = fopen(res_filename[ii-1], "rb");
+        if(!fp) continue;
+        fsize = fread(buf, 1, 10*1024, fp);
+        fclose(fp);
+        memset(out, 0, fsize);
+        for(i=0;i<fsize;i++) {
+            if(buf[i]==0x1b) {
+                j=i;
+                while(!(buf[j]>='a'&&buf[j]<='z'||buf[j]>='A'&&buf[j]<='Z')&&j<fsize) {
+                    buf[j] = 0;
+                    j++;
+                }
+                if(j<fsize)
+                    buf[j] = 0;
+            }
+        }
+        i=0;
+        if(qn[i]=='=') {
+            while(i<strlen(qn)&&qn[i]!=' ') i++;
+            if(i>=strlen(qn)) i=0;
+        }
+        while(i<strlen(qn)) {
+            if(qn[i]>='a'&&qn[i]<='z'||qn[i]>='A'&&qn[i]<='Z') {
+                j=i;
+                while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
+                for(k=0;k<fsize-(j-i)+1;k++)
+                    if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='a'&&buf[k-1]<='z'||buf[k-1]>='A'&&buf[k-1]<='Z'))&&
+                        (k+j-i==fsize||!(buf[k+j-i]>='a'&&buf[k+j-i]<='z'||buf[k+j-i]>='A'&&buf[k+j-i]<='Z')))
+                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                i=j-1;
+            }
+            if(qn[i]>='0'&&qn[i]<='9') {
+                j=i;
+                while(qn[j]>='0'&&qn[j]<='9') j++;
+                for(k=0;k<fsize-(j-i)+1;k++)
+                    if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='0'&&buf[k-1]<='9'))&&
+                        (k+j-i==fsize||!(buf[k+j-i]>='0'&&buf[k+j-i]<='9')))
+                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                i=j-1;
+            }
+            if(qn[i]<0&&qn[i+1]<0) {
+                j=i+2;
+                for(k=0;k<fsize-(j-i)+1;k++)
+                    if(!strncmp(qn+i,buf+k,j-i))
+                        for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
+                i=j-1;
+            }
+            i++;
+        }
+        if(t>=20) {
+            for(k=0;k<fsize-4;k++) {
+                if(out[k]==0&&out[k+1]==1&&out[k+2]==0) {
+                    out[k+1]=0;
+                    t--;
+                }
+                if(out[k]==0&&out[k+1]==1&&out[k+2]==1&&out[k+3]==0) {
+                    out[k+1]=0;
+                    out[k+2]=0;
+                    t-=2;
+                }
+                if(t<10) break;
+            }
+        }
+        if(t==0) {
+            continue;
+        }
+        while(t<180&&t<fsize) {
+            memset(out2, 0, fsize);
+            t=0;
+            for(k=0;k<fsize;k++) 
+            if(!out2[k]) {
+                if(out[k]||k>0&&out[k-1]||k<fsize-1&&out[k+1]) {
+                    if(out[k]==1)
+                        out2[k]=1;
+                    else {
+                        out2[k]=2;
+                        if(!out[k]&&buf[k]<0) {
+                            if(k>0&&out[k-1]&&k<fsize-1) out2[k+1]=2;
+                            if(k>0&&k<fsize-1&&out[k+1]) out2[k-1]=2;
+                            t++;
+                        }
+                    }
+                    t++;
+                }
+            }
+            memcpy(out,out2,fsize);
+        }
+        pp = res_content[i];
+        j=0; t = 0;
+        for(i=0;i<fsize;i++)
+        if(out[i]) {
+            if(i>0&&out[i-1]==0) {
+                sprintf(pp, "...");
+                pp+=3;
+                j+=3;
+            }
+            if(out[i]==1&&!inc) {
+                sprintf(pp, "<font color=\"#BB0808\">");
+                pp += 22;
+            }
+            else if(inc) {
+                sprintf(pp, "</font>");
+                pp += 7;
+            }
+            if(buf[i]=='\n') *(pp++) = ' ';
+            else if(buf[i]) *(pp++) = buf[i];
+            if(p) p=0;
+            else if(buf[i]<0) p=1;
+            j++;
+            if(j>=69&&p==0) {
+                t++;
+                if(t>=3) break;
+                j=0;
+            }
+        }
+        if(inc) {
+            sprintf(pp, "</font>");
+            pp += 7;
+        }
+        *pp = 0;
+    }
+
 
     for ( i=0; i < res_total; i++ ) {
         MAKE_STD_ZVAL ( element );
@@ -6947,6 +7074,7 @@ static PHP_FUNCTION(bbs_x_search)
         add_assoc_string ( element, "title", res_title[i], 1 );
         add_assoc_string ( element, "filename", res_filename[i], 1 );
         add_assoc_string ( element, "path", res_path[i], 1 );
+        add_assoc_string ( element, "content", res_content[i], 1 );
 
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
