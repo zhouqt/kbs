@@ -129,6 +129,7 @@ static PHP_FUNCTION(bbs_make_tmpl_file);
 static PHP_FUNCTION(bbs_send_sms);
 static PHP_FUNCTION(bbs_register_sms_sendcheck);
 static PHP_FUNCTION(bbs_register_sms_docheck);
+static PHP_FUNCTION(bbs_unregister_sms);
 #endif
 static PHP_FUNCTION(bbs_printoriginfile);
 static PHP_FUNCTION(bbs_caneditfile);
@@ -255,6 +256,7 @@ static function_entry smth_bbs_functions[] = {
 #ifdef SMS_SUPPORT
 		PHP_FE(bbs_send_sms,NULL)
 		PHP_FE(bbs_register_sms_sendcheck,NULL)
+		PHP_FE(bbs_unregister_sms,NULL)
 		PHP_FE(bbs_register_sms_docheck,NULL)
 #endif
         {NULL, NULL, NULL}
@@ -6646,6 +6648,15 @@ static PHP_FUNCTION(bbs_register_sms_docheck)
 	}
 
 	ret = web_register_sms_docheck( dest );
+
+	RETURN_LONG(ret);
+}
+
+static PHP_FUNCTION(bbs_unregister_sms)
+{
+	int ret;
+
+	ret = web_unregister_sms();
 
 	RETURN_LONG(ret);
 }

@@ -3332,4 +3332,42 @@ int web_register_sms_docheck(char *valid)
 	return 0;
 }
 
+int web_unregister_sms()
+{
+    char ans[4];
+    char valid[20];
+    char buf2[80];
+    int rr;
+
+	if( read_user_memo(currentuser->userid, &currentmemo) < 0) return -1;
+    sms_init_memory();
+    smsuin = u_info;
+
+    if(!currentmemo->ud.mobileregistered) {
+        shmdt(head);
+        smsbuf=NULL;
+        return -1;
+    }
+
+        rr = DoUnReg(currentmemo->ud.mobilenumber);
+        if(rr&&rr!=CMD_ERR_NO_SUCHMOBILE) {
+            shmdt(head);
+	    	currentmemo->ud.mobileregistered = 0;
+	    	write_userdata(currentuser->userid, &(currentmemo->ud));
+			end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+            smsbuf=NULL;
+            return -1;
+        }
+
+        currentmemo->ud.mobilenumber[0]=0;
+        currentmemo->ud.mobileregistered = 0;
+        write_userdata(currentuser->userid, &(currentmemo->ud));
+		end_mmapfile(currentmemo, sizeof(struct usermemo), -1);
+
+    shmdt(head);
+    smsbuf=NULL;
+
+	return 0;
+}
+
 #endif
