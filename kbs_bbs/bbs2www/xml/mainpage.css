@@ -46,13 +46,11 @@ a.MenuLeftHead:visited { font-size: 12px ; color: #FFFFFF ; 	text-decoration: no
 .MainContentTitle {
 	font-size: 16px;
 	font-weight: bold;
-
-
 }
 .MainContentText {
 	font-size: 12px;
 	color: #333333;
-
+	padding-left: 5px;
 }
 .MainContentTJTitle {
 	font-size: 14px;
@@ -133,8 +131,6 @@ td.title {
 	height: 16px;
 	font-size: 12px;
 	color: #FFFFFF;
-
-
 }
 table.title {
 	font-size: 12px;
@@ -143,7 +139,8 @@ table.title {
 	padding: 0px;
 	height: 18px;
 	border: 1px solid #0066CC;
-
+    background-repeat: no-repeat;
+    background-color: #DEF3FF;
 }
 table.helper {
 	font-size: 12px;
@@ -164,5 +161,12 @@ td.smth {
 	font-size: 12px;
 }
 li.default{
-margin-bottom: 5px; vertical-align: top
+	margin-bottom: 5px;
+	padding: 0px;
+	vertical-align: top;
+}
+li.rec {
+	margin: 0px 0px 5px 5px;
+	padding: 0px;
+	vertical-align: top;
 }

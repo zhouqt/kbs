@@ -40,7 +40,7 @@ $brdarr = array();
 	<table border="0" cellpadding="0" cellspacing="0" width="97%">
               <tr> 
                 <td class="MainContentText">
-<ul style="margin-top: 15px; margin-left: 25px">
+<ul style="margin: 5px 0px 20px 20px; padding: 0px;">
 <?php
 # shift through the array
 while($board = array_shift($boards))
@@ -61,7 +61,7 @@ while($board = array_shift($boards))
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <li class="default">
-<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a> &nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 }
 ?>
@@ -83,7 +83,7 @@ function gen_sec_hot_subjects_html($secid)
 	$root = $doc->document_element();
 	$boards = $root->child_nodes();
 ?>
-<ul style="margin-top: 15px; margin-left: 25px">
+<ul style="margin: 10px 0px 0px 40px; padding: 0px;">
 <?php
 	$brdarr = array();
 	# shift through the array
@@ -104,7 +104,7 @@ function gen_sec_hot_subjects_html($secid)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default"><a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
@@ -171,7 +171,7 @@ while($board = array_shift($boards))
 	{
 ?>
 <tr> 
-  <td valign="top" class="MainContentText"> 
+  <td valign="top" class="MainContentText" style="padding-top: 5px;"> 
 ★<strong>[<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong>&nbsp;&nbsp;
 <?php
 		$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
@@ -235,7 +235,7 @@ $boards = $root->child_nodes();
       <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
               <tr> 
                 <td width="100%" class="MainContentText">
-<ul style="margin-top: 5px; margin-left: 20px">
+<ul style="margin: 5px 0px 0px 15px; padding: 0px;">
 <?php
 	$brdarr = array();
 	$j = 0;
@@ -297,7 +297,7 @@ $boards = $root->child_nodes();
       <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
               <tr> 
                 <td width="100%" class="MainContentText">
-<ul style="margin-top: 5px; margin-left: 20px">
+<ul style="margin: 5px 0px 0px 15px; padding: 0px;">
 <?php
 	$brdarr = array();
 	# shift through the array
@@ -369,7 +369,7 @@ while($board = array_shift($boards))
 
 ?>
 <tr>
-<td valign="top" class="MainContentText"><LI class=default><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?></a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
+<td valign="top" class="MainContentText"><li class=rec><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?> </a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
 &nbsp;&nbsp;[<a href="/bbstcon.php?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原版原文</a>]
 <dl style="MARGIN-TOP: 1px;MARGIN-BOTTOM: 5px; MARGIN-LEFT: 25px;"><dt>
 <?php echo htmlspecialchars($commend_brief);?>
@@ -455,7 +455,7 @@ $boards = $root->child_nodes();
       <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helper">
 <tr> 
 <td class="MainContentText">
-<ul style="margin-top: 5px; margin-left: 20px">
+<ul style="margin: 5px 0px 0px 15px; padding: 0px;">
 <?php
 # shift through the array
 while($board = array_shift($boards))
@@ -467,7 +467,7 @@ while($board = array_shift($boards))
     $hot_board = find_content($board, "board");
     $hot_groupid = find_content($board, "groupid");
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?></a></li>
+<li class="default"><a href="/bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a></li>
 <?php
 }
 ?>
@@ -502,11 +502,6 @@ while($board = array_shift($boards))
 ?>   
     <td colspan="2" height="77"><img src="images/logo.gif" width="144" height="71"></td>
     <td colspan="7" >
-     <object classid="clsid:D27CDB6E-AE6D-11cf-96B8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=6,0,29,0" width="100%" height="100%">
-      <param name="movie" value="ad.swf">
-      <param name="quality" value="high">
-      <embed src="ad.swf" quality="high" pluginspage="http://www.macromedia.com/go/getflashplayer" type="application/x-shockwave-flash"></embed>
-    </object>
 <?php
 	}
 ?>    
