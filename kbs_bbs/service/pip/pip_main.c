@@ -155,7 +155,7 @@ pip_new_game()
 		/*
 		 * 小鸡命名
 		 */
-		strcpy(buf, "贝贝");
+		strcpy(buf, "毒中之毒");
 #ifdef MAPLE
 		getdata(2, 3, "帮小鸡取个好听的名字吧(请不要有空格):", buf, 11,
 			1, 0);
