@@ -514,7 +514,7 @@ while($board = array_shift($boards))
   </tr>
   <form action="/cgi-bin/bbs/bbssel">
   <tr> 
-    <td height="18" width="84" class="header" align="center">系统公告</td>
+    <td height="18" width="84" class="header" align="center"><a href="/bbsdoc.php?board=Announce">系统公告</a></td>
     <td width="84" class="header" align="center"><a href="/bbsrecommend.php">推荐文章</a></td>
     <td width="80" class="header" align="center"><a href="/bbssec.php">分类讨论区</a></td>
     <td width="80" class="header" align="center"><a href="/bbsrecbrd.php">推荐版面</a></td>
