@@ -637,11 +637,24 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     filtered = 0;
     bh = getbcache(boardname);
     if (strcmp(fh->owner, "deliver")) {
-        if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)) {
-            if (check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath)) {
+        if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)) 
+        {
+#ifdef SMTH
+            int isnews;
+            isnews=!strcmp(boardname,"News");
+            if (isnews||check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
+#else
+            if (check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
+#endif
+            {
                 /*
                  * FIXME: There is a potential bug here. 
                  */
+#ifdef SMTH
+                if (isnews)
+                    setbfile(newpath, "NewsClub", fh->filename);
+                else
+#endif
                 setbfile(newpath, FILTER_BOARD, fh->filename);
                 f_mv(oldpath, newpath);
                 strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
@@ -654,6 +667,11 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                     fh->o_groupid = re->groupid;
                     fh->o_reid = re->id;
                 }
+#ifdef SMTH
+                if (isnews)
+                    boardname = "NewsClub";
+                else
+#endif
                 boardname = FILTER_BOARD;
                 filtered = 1;
             };
@@ -1030,6 +1048,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
     struct fileheader mkpost, mkpost2;
     struct flock ldata;
     int fd, size = sizeof(fileheader), orgent;
+    int isbm;
 
 #ifdef FILTER
     int filedes;
@@ -1040,7 +1059,14 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 
     /*---	---*/
 
-    if (!chk_currBM(currBM, currentuser))
+    isbm=chk_currBM(currBM, currentuser);
+#ifdef FILTER
+#ifdef SMTH
+    if (!strcmp(currboard,"NewsClub")&&haspostperm(currentuser, currboard)) 
+        isbm=true;
+#endif
+#endif
+    if (!isbm)
         return DONOTHING;
 
     if (flag == FILE_DIGEST_FLAG && (digestmode == 1 || digestmode == 4 || digestmode == 5))
@@ -1376,8 +1402,14 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
     } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
 #ifdef FILTER
+#ifdef SMTH
+    } else if ((HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD))
+    ||(!strcmp(boardname,"NewsClub")&&is_bm)) {
+        type = '@';
+#else
     } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
         type = '@';
+#endif
 #endif
     }
 
