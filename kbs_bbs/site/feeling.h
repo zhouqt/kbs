@@ -11,10 +11,14 @@
 #define HAVE_FRIENDS_NUM	1
 #define HAVE_REVERSE_DNS	1
 #define CHINESE_CHARACTER	1
-#define ANTISPAM_MAILADDR	"feeling-NOsmthSPAM-org"	/* 转信后的文章隐藏真实 MAIL */
+#define ANTISPAM_MAILADDR	1	/* 转信后的文章隐藏真实 MAIL */
+#if ANTISPAM_MAILADDR == 1
+#define	ANTISPAM_MAILDN		"feeling-NOsmthSPAM-org"
+#endif
 #define CNBBS_TOPIC		1	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		1	/* 是否允许直接 mail to any board */
 #define MAILOUT			1	/* 是否允许向站外主动发信 */
+#define MANUAL_DENY		0	/*是否允许手动解封*/
 #define BBS_SERVICE_DICT	1
 
 #define SMTH			1
@@ -51,6 +55,9 @@
 #define MAXCLUB			128
 #define MAXBOARD  		600
 #define MAXACTIVE 		256
+/* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
+    make the number of session char from 3 to 4
+    */
 #define MAX_GUEST_NUM		256
 
 #define POP3PORT		1100
@@ -75,6 +82,9 @@
 #define	REGISTER_WAIT_TIME	(0)
 #define	REGISTER_WAIT_TIME_NAME	"1 分钟"
 
+#ifdef SMTH
+#define REGISTER_TSINGHUA_WAIT_TIME (240*60)
+#endif
 #define MAIL_BBSDOMAIN      "feeling.smth.org"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
