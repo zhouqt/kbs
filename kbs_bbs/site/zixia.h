@@ -2,6 +2,10 @@
 #define __SYSNAME_H_
 
 #define ZIXIA		1
+/*
+ * 目前 ZIXIA 这个参数带入的功能变化
+ * 1. 批注册单的时候显示详细信息
+ */
 
 #define USE_TMPFS           1   /*使用内存文件系统加速*/
 #define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
@@ -80,8 +84,8 @@
 #define DAY_DELETED_CLEAN	20	//20
 #define SEC_DELETED_OLDHOME	0 	/*  3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
-#define	REGISTER_WAIT_TIME	(30*60) // (72*60*60)
-#define	REGISTER_WAIT_TIME_NAME	"30分钟" //72 小时
+#define	REGISTER_WAIT_TIME	(1) // (72*60*60)
+#define	REGISTER_WAIT_TIME_NAME	"1秒钟" //72 小时
 
 #define MAIL_BBSDOMAIN      "bbs.zixia.net"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
