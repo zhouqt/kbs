@@ -6,6 +6,7 @@ $needlogin=1;
 require("inc/funcs.php");
 require("inc/user.inc.php");
 require("inc/board.inc.php");
+require("inc/ubbcode.php");
 
 global $boardArr;
 global $boardID;
@@ -126,6 +127,7 @@ function article_bar($boardName,$boardID,$articleID,$article,$threadID,$listType
 }
 
 function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
+	global $SiteURL, $SiteName;
 ?>
 <TABLE cellPadding=0 cellSpacing=1 align=center class=tableborder1>
 	<tr align=middle> 
@@ -135,13 +137,13 @@ function dispArticleTitle($boardName,$boardID,$articleID,$article, $threadID){
 		<th align=left valign=middle width="73%" height=25>
 		&nbsp;* 文章主题</B>： <?php echo htmlspecialchars($article['TITLE'],ENT_QUOTES); ?></th>
 		<th width=37% align=right>
-		<a href=# onclick="javascript:WebBrowser.ExecWB(4,1)"><img src="pic/saveas.gif" border=0 width=16 height=16 alt=保存该页为文件 align=absmiddle></a>&nbsp;<object id="WebBrowser" width=0 height=0 classid="CLSID:8856F961-340A-11D0-A96B-00C04FD705A2"></object>
-		<a href="report.asp?BoardID=1&id=1"><img src=pic/report.gif alt=报告本帖给版主 border=0></a>&nbsp;
-		<a href="printpage.asp?BoardID=1&id=1"><img src="pic/printpage.gif" alt=显示可打印的版本 border=0></a>&nbsp;
-		<a href="pag.asp?BoardID=1&id=1"><img src="pic/pag.gif" border=0 alt=把本贴打包邮递></a>&nbsp;
-		<a href="favadd.asp?BoardID=1&id=1"><IMG SRC="pic/fav_add.gif" BORDER=0 alt=把本贴加入论坛收藏夹></a>&nbsp;
-		<a href="sendpage.asp?BoardID=1&id=1"><img src="pic/emailtofriend.gif" border=0 alt=发送本页面给朋友></a>&nbsp;
-		<a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('http://www.dvbbs.net//dispbbs.asp?BoardID=1&id=1', ' 动网先锋论坛 - 2341')"><IMG SRC="pic/fav_add1.gif" BORDER=0 width=15 height=15 alt=把本贴加入IE收藏夹></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/saveas.gif" border=0 width=16 height=16 alt=保存该页为文件 align=absmiddle></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src=pic/report.gif alt=报告本帖给版主 border=0></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/printpage.gif" alt=显示可打印的版本 border=0></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/pag.gif" border=0 alt=把本贴打包邮递></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><IMG SRC="pic/fav_add.gif" BORDER=0 alt=把本贴加入论坛收藏夹></a>&nbsp;
+		<a href=# onclick="alert('本功能尚未实现');"><img src="pic/emailtofriend.gif" border=0 alt=发送本页面给朋友></a>&nbsp;
+		<a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite(location.href, document.title);"><IMG SRC="pic/fav_add1.gif" BORDER=0 width=15 height=15 alt=把本贴加入IE收藏夹></a>&nbsp;
 		</th>
 		</tr>
 		</table>
@@ -250,7 +252,7 @@ function showArticle($boardName,$boardID,$num, $threadID,$thread){
 	 if ($loginok) {
 		 bbs_brcaddread($boardName, $thread['ID']);
 	 };
-	 echo bbs_printansifile($filename,1,'bbscon?bid='.$boardID.'&id='.$thread['ID']);
+	 echo dvbcode(bbs_printansifile($filename,1,'bbscon?bid='.$boardID.'&id='.$thread['ID']),0);
 
 ?></blockquote></td></tr></table>
 </td>

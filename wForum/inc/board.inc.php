@@ -89,7 +89,7 @@ function bbs_is_readonly_board($board)
 
 function showBoardStaticsTop($boardArr){
 ?>
-<TABLE cellpadding=3 cellspacing=1 class=tableborder1 align=center><TR><Th height=25 width=100% align=left id=tabletitlelink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线 </Th></TR></td></tr></TABLE>
+<TABLE cellpadding=3 cellspacing=1 class=tableborder1 align=center><TR><Th height=25 width=100% align=left id=tabletitlelink style="font-weight:normal">本版当前共有<b><?php echo $boardArr['CURRENTUSERS'];?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?></Th></TR></td></tr></TABLE>
 <BR>
 <table cellpadding=0 cellspacing=0 border=0 width=97% align=center valign=middle><tr><td align=center width=2> </td><td align=left style="height:27" valign="center"><a href=postarticle.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass1" border=0 alt=发新帖></span></a>&nbsp;&nbsp;<a href=vote.php?board=2><span class="buttonclass2" border=0 alt=发起新投票></span>&nbsp;&nbsp;<a href=smallpaper.php?board=<?php echo $boardArr['NAME']; ?>><span class="buttonclass3" border=0 alt=发布小字报></span></a></td><td align=right><img src=pic/team2.gif align=absmiddle>
 <?php 
@@ -304,8 +304,9 @@ function boardSearchAndJump($boardName, $boardID){
 ?>
 <table border=0 cellpadding=0 cellspacing=3 width=97% align=center>
 <tr>
-<FORM METHOD=POST ACTION="boardsearch.php?name=<?php echo $boardName; ?>">
-<td width=50% valign=middle nowrap height=40>快速搜索：<input type=text name=keyword>&nbsp;<input type=submit name=submit value=搜索></td>
+<FORM METHOD=POST ACTION="queryresult.php">
+<input type="hidden" name="boardName" value="<?php echo $boardName; ?>">
+<td width=50% valign=middle nowrap height=40>快速搜索：<input type=text name=title>&nbsp;<input type=submit name=submit value=搜索></td>
 </FORM>
 <td valign=middle nowrap width=50% > 
 <?php

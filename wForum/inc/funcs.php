@@ -626,7 +626,7 @@ function show_nav($boardName='')
 <!-- banner -->
 </td>
 <td align=right style="line-height: 15pt" width="10%">
-<a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>')">加入收藏</span></a>
+<a href=#><span style="CURSOR: hand" onClick="window.external.AddFavorite('<?php   echo $SiteURL; ?>', '<?php   echo $SiteName; ?>');">加入收藏</span></a>
 <br><a href="">联系我们</a>
 <br><a href="">论坛帮助</a>
 </td>
