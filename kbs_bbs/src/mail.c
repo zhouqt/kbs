@@ -553,7 +553,7 @@ int do_send(userid, title)
         }
     }
 
-    do_quote(filepath, include_mode);
+    do_quote(filepath, include_mode,quote_file,quote_user);
     strcpy(quote_title, newmessage.title);
 
 #ifdef INTERNET_PRIVATE_EMAIL
