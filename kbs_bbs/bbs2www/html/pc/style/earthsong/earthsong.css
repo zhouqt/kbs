@@ -26,7 +26,8 @@ scrollbar-base-color:#170708;
 scrollbar-darkshadow-color:#ffffff;
 scrollbar-face-color:#EEEAEB;
 scrollbar-highlight-color:#FBFDFC;
-scrollbar-shadow-color:#170708
+scrollbar-shadow-color:#170708;
+font-family: ËÎÌו;
 }
 
 
@@ -36,6 +37,7 @@ border-top-style:solid;
 border-left-style:solid;
 border-color:#999999;
 font-size:12px;
+text-align:center;
 }
 .t2{
 font-weight:bold;
@@ -186,7 +188,8 @@ border-width:1px;
 border-bottom-style:solid;
 border-color:#999999;
 background-color:#F4D972;
-}.t11{
+}
+.t11{
 border-width:1px;
 border-right-style:solid;
 border-color:#999999;
@@ -225,7 +228,8 @@ border-width:1px;
 border-bottom-style:solid;
 border-color:#999999;
 background-color:#FFFFFF;
-}.t13{
+}
+.t13{
 border-width:1px;
 border-right-style:solid;
 border-color:#999999;
@@ -308,19 +312,18 @@ MARGIN-BOTTOM: 10px;
 FONT-SIZE: 18px;
 COLOR: #891004;
 FONT-FAMILY: palatino, georgia, times new roman, serif
-}.bloglists {
+}
+.bloglists {
 	background-color: #FF6600;
 	text-align: center;
 	vertical-align: top;
 	font-size: 12px;
-	color: #FDD689;
 }
 .bloglists2 {
 	background-color: #FF6600;
 	text-align: left;
 	vertical-align: top;
 	font-size: 12px;
-	color: #FDD689;
 }
 a:link {
 	color: #000000;
@@ -333,4 +336,15 @@ a:visited {
 a:hover {
 	color: #FC2700;
 	text-decoration: underline ;
+}
+
+ul {
+	margin: 0px 0px 0px 5px;
+	padding: 0px;
+	text-align: left;
+}
+li {
+	padding: 0px;
+	margin-left: 10px;
+	text-align: left;
 }

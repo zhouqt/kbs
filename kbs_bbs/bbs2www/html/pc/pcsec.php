@@ -27,7 +27,7 @@
 			$query = "SELECT username , corpusname , description , createtime  FROM users WHERE theme LIKE '".addslashes($sec)."%' ORDER BY modifytime DESC LIMIT ".($pcconfig["THEMLIST"]*($pno - 1)).",".$pcconfig["THEMLIST"].";";
 		$result = mysql_query($query,$link);
 		$numRows = mysql_num_rows($result);
-?><ul><?php		
+?><ul style="margin-left: 20px;"><?php		
 		for($i = 0 ; $i < $numRows ; $i ++)
 		{
 			$rows = mysql_fetch_array($result);

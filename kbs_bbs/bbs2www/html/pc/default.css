@@ -8,7 +8,8 @@ scrollbar-base-color:#170708;
 scrollbar-darkshadow-color:#ffffff;
 scrollbar-face-color:#EEEAEB;
 scrollbar-highlight-color:#FBFDFC;
-scrollbar-shadow-color:#170708
+scrollbar-shadow-color:#170708;
+font-family: ËÎÌו;
 }
 
 
@@ -387,3 +388,9 @@ INPUT.ubbbutton {
 	FONT-SIZE: 12px; COLOR: #000000; FONT-FAMILY: Verdana, Arial, Helvetica, sans-serif; BACKGROUND-COLOR: #efefef
 }
 
+ul {
+	margin: 0px 0px 0px 5px; padding: 0px;
+}
+li {
+	padding: 0px; margin-left: 10px;
+}

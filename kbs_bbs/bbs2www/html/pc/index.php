@@ -11,6 +11,7 @@
 		$thisYear = date("Y");
 		$thisMonth = date("m");
 		$i = 0;
+		if ($wrap) echo "<ul>";
 		for($yy=$thisYear ; $yy >= $startYear ; $yy --)
 		{
 			$firstMonth = ($yy == $startYear)?$startMonth:1;
@@ -24,6 +25,7 @@
 			$thisMonth = 12;	
 		}
 		if ($wrap && $i==1) echo "</li>";
+		if ($wrap) echo "</ul>";
 	}
 	
 	function get_calendar_array($link,$pc,$pur,&$totalnodes)
@@ -162,10 +164,12 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	
 	function display_newnodes_list($link,$pc,$nodes)
 	{
+		echo "<ul>";
 		for($i=0;$i< count($nodes);$i++)
 		{
 			echo "<li><a href=\"pccon.php?id=".$pc["UID"]."&nid=".$nodes[$i][nid]."\">".html_format($nodes[$i][subject])."</a>(".time_format($nodes[$i][created]).")</li>\n";
 		}
+		echo "</ul>";
 		
 ?>
 <p class="f1" align="right">
@@ -309,11 +313,13 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 	
 	function display_blog_list($pc,$blogs)
 	{
+		echo "<ul>";
 		for($i=0;$i<( count($blogs));$i++)
 		{
 			echo "<li><a href=\"pcdoc.php?userid=".$pc["USER"]."&tag=0&tid=".$blogs[$i]["TID"]."\">".html_format($blogs[$i]["NAME"])."</a></li>\n";	
 			
 		}
+		echo "</ul>";
 	}
 	
 	function display_blog_calendar()
@@ -328,7 +334,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	
 	function display_blog_friend_links($pc,$wrap=FALSE)
 	{
-
+		if($wrap) echo "<ul>";
 			for($i = 0 ; $i < count($pc["LINKS"]) ; $i ++)
 			{
 				if($wrap) echo "<li>";
@@ -338,6 +344,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 					echo "<a href='http://".htmlspecialchars($pc["LINKS"][$i]["URL"])."'>".htmlspecialchars($pc["LINKS"][$i]["LINK"])."</a>\n";
 				if($wrap) echo "</li>";
 			}
+		if($wrap) echo "</ul>";
 	}
 
 	function display_blog_out_rss($pc)
@@ -360,11 +367,13 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	{
 		$query = "SELECT * FROM trackback WHERE uid = '".$pc["UID"]."' GROUP BY url ORDER BY tbid DESC LIMIT 0 , 10;";	
 		$result = mysql_query($query,$link);
+		echo "<ul>";
 		while($rows = mysql_fetch_array($result))
 		{
 			echo "<li><a href=\"".htmlspecialchars(stripslashes($rows[url]))."\">".html_format($rows[title])."</a>"
 				."\n(".time_format($rows[time]).")</li>";
 		}
+		echo "</ul>";
 		mysql_free_result($result);
 	}
 	
@@ -379,11 +388,13 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		//	$query .= " AND ( `access` = 0 OR `access` = 1 OR `access` = 2 ) ";
 		$query .= " AND comments.uid = ".$pc["UID"]." AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
 		$result = mysql_query($query,$link);
+		echo "<ul>";
 		for($i = 0;$i < mysql_num_rows($result) ; $i++)
 		{
 			$rows = mysql_fetch_array($result);
 			echo "<li>[<a href=\"/bbsqry.php?userid=".$rows[username]."\">".$rows[username]."</a>]<a href=\"pcshowcom.php?cid=".$rows[cid]."\">".html_format($rows[subject])."</a>(".time_format($rows[created]).")</li>";
 		}
+		echo "</ul>";
 		mysql_free_result($result);
 	}
 	
@@ -402,14 +413,14 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 	<td width=366 height=232><img src="style/earthsong/es_r2_c2.jpg" border=0></td>
 	</tr>
 	<tr>
-	<td colspan=2 class="blogarea">
+	<td colspan=2 class="blogarea"><center>
 	<table cellspacing=0 cellpadding=0 border=0 class=f1>
 	<tr><td class="blogarea" align="center">
 	<?php echo $pc["NAME"]; ?>&nbsp;&gt;&gt;
 	</td><td class="blogarea">
 	<?php display_blog_area_links($sec,$pc,$tags); ?></td>
 	</tr>
-	</table></td></tr>
+	</table></center></td></tr>
 </table>
 </tbody>
 <tbody>

@@ -10,6 +10,7 @@ function pcmain_html_init()
 <title><?php echo $pcconfig["BBSNAME"]; ?>BLOG</title>
 <style type="text/css">
 <!--
+body {font-family: ËÎÌו;}
 .table {border-top-width: 1px;border-left-width: 1px;border-top-style: solid;border-left-style: solid;border-top-color: #999999;border-left-color: #999999;}
 .channel {font-size: 12px;font-weight: bold;color: #FFFFFF;text-align: left;text-indent: 3pt;}
 .more {font-size: 11px;color: #ffffff;}
