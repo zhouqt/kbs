@@ -170,7 +170,7 @@
 <?php
 			if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
 ?>
-<TD colspan="2" align="center"><strong>[÷√∂•]</strong></TD>
+<TD colspan="2" align="center"><strong>[Ã· æ]</strong></TD>
 <?php
 
 			} else {
