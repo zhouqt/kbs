@@ -340,9 +340,6 @@ Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>
 /* Define to 1 if you have the <memory.h> header file. */
 #undef HAVE_MEMORY_H
 
-/* */
-#undef HAVE_MYSQL
-
 /* Define to 1 if you have the <ndir.h> header file, and it defines `DIR'. */
 #undef HAVE_NDIR_H
 
