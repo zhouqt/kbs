@@ -4,6 +4,7 @@
 #include "bbslib.h"
 
 int ret=0;
+int ann_is_bm = 0;
 
 void ann_show_item(MENU * pm, ITEM * it)
 {
@@ -58,25 +59,25 @@ void ann_show_item(MENU * pm, ITEM * it)
         printf("<td>&nbsp;</td>");
     }
     printf("<td>%6.6s %s</td>\n", wwwCTime(file_time(buf)) + 4, wwwCTime(file_time(buf)) + 20);
-    snprintf(pathbuf, sizeof(pathbuf), "%s", ptr == NULL ? "" : ptr);
-	printf("<td><a href=\"bbs0an?path=%s&action=del&dpath=%s\">删除</a></tr>",
+
+	if(ann_is_bm){
+
+	    snprintf(pathbuf, sizeof(pathbuf), "%s", ptr == NULL ? "" : ptr);
+		printf("<td><a onclick=\"return confirm('你真的要删除本目录或者文章吗?  请慎重')\" href=\"bbs0an?path=%s&action=del&dpath=%s\">删除</a></td>",
 				http_encode_string(pathbuf, sizeof(pathbuf)),it->fname);
+	}
+
+	printf("</tr>");
 }
 
 void ann_show_toolbar(char * path, char * board)
 {
-    struct boardheader *bp;
     char buf[STRLEN];
 
 		printf("<br>[<a href=\"javascript:history.go(-1)\">返回上一页</a>] ");
         if (board[0]){
             printf("[<a href=\"/bbsdoc.php?board=%s\">本讨论区</a>]\n", encode_url(buf, board, sizeof(buf)));
-			if((bp=getbcache(board))!=NULL){
-    			char BM[STRLEN];
-
-			    strncpy(BM, bp->BM, sizeof(BM) - 1);
-			    BM[sizeof(BM) - 1] = '\0';
-    			if(chk_currBM(BM,currentuser)){
+    			if(ann_is_bm){
 					printf("[<a href=\"/bbsmpath.php?action=add&path=%s\">加为丝路</a>]<br>",encode_url(buf,path,sizeof(buf)));
 					printf("<form action=\"bbs0an\" method=\"post\">");
 					printf("<input type=\"hidden\" name=\"action\" value=\"add\">");
@@ -86,7 +87,6 @@ void ann_show_toolbar(char * path, char * board)
 					printf("<input type=\"submit\" name=\"submit\" value=\"添加目录\">");
 					printf("</form>");
 				}
-			}
 		}
 }
 
@@ -121,7 +121,8 @@ void ann_show_directory(char *path,char * pathbuf)
             http_quit();
         }
         printf("<table class=\"default\" border=\"1\" width=\"610\">\n");
-        printf("<tr><td>编号</td><td>类别</td><td>标题</td><td>整理</td><td>日期</td><td></td></tr>\n");
+        printf("<tr><td>编号</td><td>类别</td><td>标题</td><td>整理</td><td>日期</td>%s</tr>\n",
+						ann_is_bm?"<td>删除</td>":"");
         me.now = 0;
         for (i = 0; i < me.num; i++) {
             trim(me.item[i]->title);
@@ -170,6 +171,7 @@ int ann_check_bm(char *buf)
 	if(!has_BM_perm(currentuser, board))
 		return 0;
 
+	ann_is_bm = 1;
 	return 1;
 }
 
@@ -182,7 +184,7 @@ int ann_del_dir(char *path,char *pathbuf,char *fname)
 	FILE *fp;
 	int n,m;
 
-	if(ann_check_bm(pathbuf) == 0)
+	if(! ann_is_bm )
 		return -1;
 
 	sprintf(fpath, "%s/%s", pathbuf, fname);
@@ -232,7 +234,7 @@ int ann_add_dir(char *path,char *pathbuf,char *fname,char *title)
 	MENU pm;
 	FILE *fp;
 
-	if(ann_check_bm(pathbuf) == 0)
+	if(! ann_is_bm)
 		return -1;
 
 	if(!valid_fname(fname))
@@ -288,6 +290,8 @@ int main()
 
 	if(! ann_check_dir(path,pathbuf))
         http_fatal("此目录不存在");
+
+	ann_check_bm(pathbuf);
 
 	c = getparm("action");
 
