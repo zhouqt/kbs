@@ -697,3 +697,118 @@ void ConveyID()
 
     return;
 }
+
+/*设定ID密码保护 by binxun 2003.10 */
+int ProtectID()
+{
+	char buf[STRLEN],print_buf[STRLEN];
+	struct protect_id_passwd protect;
+	FILE* fp;
+	
+	clear();
+	if(!HAS_PERM(currentuser,PERM_LOGINOK)) {
+        	move(11, 28);
+		prints("\033[1;33m你尚未通过身份认证,不能设定密码保护!\033[m");
+        	pressanykey();
+		return -1;
+        }
+	
+	sethomefile(buf,currentuser->userid,"protectID");
+	if(dashf(buf)) {
+        	move(11, 28);
+		prints("\033[1;33m你已经设定密码保护功能,不能再更改设定!\033[m");
+        	pressanykey();
+		return -1;
+	}
+	    
+	move(1, 0);
+    	prints("选择密码保护功能后,可以在遗忘密码或者密码被盗用的情况下,根据事先设定的信息");
+	move(2, 0);
+	prints("重新找回自己的密码.");
+    	move(4, 0);
+    	prints("这些设定的信息包括:\033[1;31m 姓名/生日/Email/密码提示问题/问题答案\033[m");
+    	move(6,0);
+	//prints("上面的信息设置完成, 密码保护功能一旦成功打开后, 将不能再更改这些信息,切记,切记!");
+	//move(7,0);
+	prints("找回密码时,需要 姓名/生日/问题答案 和设定完全一致,才会将新密码发往 Email .");
+
+	move(8,0);
+    	if (askyn("你确定要打开密码保护功能吗？", 0) == 0) {
+		return -1;
+	}
+	
+	clear();
+	memset(&protect, 0 , sizeof(struct protect_id_passwd));
+	//输入相关设置信息
+
+	move(1,0);
+	prints("请逐项修改,直接按 <ENTER> 代表使用 [] 内的资料。\n");
+	
+	sprintf(print_buf,"请输入您的真实姓名: [%s]",currentmemo->ud.realname);
+	getdata(3, 0, print_buf, buf, NAMELEN, DOECHO, NULL, true);
+	if(buf[0])
+		strncpy(protect.name,buf,NAMELEN);
+	else
+		strncpy(protect.name,currentmemo->ud.realname,NAMELEN);
+	
+	move(4,0);
+	prints("请输入您的出生日期: ");
+	
+	sprintf(print_buf,"四位数公元年: [%d]",currentmemo->ud.birthyear);
+	while (protect.birthyear > 2010 || protect.birthyear < 1900) {
+		getdata(5, 0, print_buf, buf, 5, DOECHO, NULL, true);
+		if(buf[0]) protect.birthyear = atoi(buf);
+		else
+			protect.birthyear = currentmemo->ud.birthyear;
+	}
+
+	sprintf(print_buf,"出生月: [%d]",currentmemo->ud.birthmonth);
+	while (protect.birthmonth < 1 || protect.birthmonth > 12) {
+		getdata(6, 0, print_buf, buf, 3, DOECHO, NULL, true);
+		if(buf[0]) protect.birthmonth = atoi(buf);
+		else
+			protect.birthmonth = currentmemo->ud.birthmonth;
+	}
+	
+	sprintf(print_buf,"出生日: [%d]",currentmemo->ud.birthday);
+	while (protect.birthday < 1 || protect.birthday > 31) {
+		getdata(7, 0, print_buf, buf, 3, DOECHO, NULL, true);
+		if(buf[0]) protect.birthday = atoi(buf);
+		else
+			protect.birthday = currentmemo->ud.birthday;
+	}
+
+	sprintf(print_buf,"您的Email: ");
+	do {
+		getdata(8, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
+	} while(!strchr(buf,'@'));
+	strncpy(protect.email, buf, STRLEN);
+	
+	sprintf(print_buf,"密码提示问题: ");
+	do {
+		getdata(9, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
+	} while(!buf[0]);
+	strncpy(protect.question, buf, STRLEN);
+	
+	sprintf(print_buf,"问题答案(至少四个字符): ");
+	do {
+		getdata(10, 0, print_buf, buf, STRLEN, DOECHO, NULL, true);
+	} while(strlen(buf) < 4);
+	strncpy(protect.answer, buf, STRLEN);
+
+	if (askyn("你确定要设定吗？", 0) == 1) {	
+		move(12,0);
+		sethomefile(buf,currentuser->userid,"protectID");	
+		
+		fp = fopen(buf,"w");
+		if(!fp) {
+			prints("不能打开文件,请与SYSOP联系.");	
+			return 0;
+		}
+		fwrite(&protect,sizeof(struct protect_id_passwd),1,fp);
+		fclose(fp);
+		
+		prints("密码保护已经设定");
+		pressanykey();
+	}
+}
