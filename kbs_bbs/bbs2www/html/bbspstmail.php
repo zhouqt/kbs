@@ -64,8 +64,8 @@
 <center>
 <table border="0" width="750" cellspacing="0" cellpadding="0">
 	<tr>
-	<td align="center" valign="middle" background="/images/m2.gif" width="80" height="26">
-	<a href="bbspstmail.php" class="mb1">ะดำสผþ</a>
+	<td align="center" valign="middle" background="/images/m2.gif" width="80" height="26" class="mb2">
+	ะดำสผþ
 	</td>
 <?php
 	for($i=0;$i<$mailboxnum;$i++){

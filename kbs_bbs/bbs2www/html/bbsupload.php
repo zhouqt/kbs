@@ -183,7 +183,9 @@ function addsubmit() {
  	return false;
   } else {
         e2="bbsupload.php?act=add";
-        document.forms[0].action=e2;  
+        document.forms[0].action=e2;
+        document.forms[0].paste.value='附件上载中，请稍候...';
+        document.forms[0].paste.disabled=true;
         document.forms[0].submit();
   }
 }
@@ -242,7 +244,7 @@ function clickclose() {
             <td width="420" class="txt02">2、选定一个文件后，点“<font color="#FF0000">粘贴</font>”按钮，将该文件贴到文章上:</td>
             <td width="80"> 
               <input type="button" width="61"
-          height="21" value="粘贴" border="0" onclick="addsubmit()" class="form01" >
+          height="21" value="粘贴" name="paste" border="0" onclick="addsubmit();" class="form01" >
             </td>
           </tr>
         </table>
