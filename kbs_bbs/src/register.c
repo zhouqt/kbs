@@ -46,7 +46,8 @@ void new_register()
 {
     struct userec newuser;
     int allocid, do_try, flag;
-    char buf[STRLEN];
+    FILE* fn;
+    char buf[STRLEN], fname[PATHLEN], title[STRLEN];
 
 /* temp !!!!!*/
 /*    prints("Sorry, we don't accept newusers due to system problem, we'll fixit ASAP\n");
@@ -161,6 +162,25 @@ void new_register()
         exit(1);
     }
     bbslog("user","%s","new account");
+
+#ifdef NINE_BUILD
+    sprintf(title, "新手上路 : %s", newuser.userid);
+    fname = "tmp/newuser";
+    fn = fopen(fname, "w");
+    fprintf(fn, "大家好,\n\n");
+    fprintf(fn, "我是 %s (%s), 来自 %s\n");
+    fprintf(fn, "今天小弟初来此站报到, 请大家多多指教。\n\n\n");
+    fprintf(fn, "自我介绍:\n\n");
+    getdata(0, 0, "\n请写几句简短的自我介绍:\n: ", buf, 50, NOECHO, NULL, true);
+    fprintf(fn, buf);
+    getdata(0, 0, ": ", buf, 50, NOECHO, NULL, true);
+    fprintf(fn, buf);
+    getdata(0, 0, ": ", buf, 50, NOECHO, NULL, true);
+    fprintf(fn, buf);
+    fclose(fn);
+    post_file(&newuser, "", fname, "newcomers", title, 0, 2);
+#endif
+	
 }
 
 int invalid_realmail(userid, email, msize)
