@@ -2520,7 +2520,7 @@ static void print_raw_ansi(char *buf, size_t buflen, buffered_output_t * output)
         if (buf[i] == 0x1b)
             html_output("*", 1, output);
         else if (buf[i]=='\n') {
-			output->output("<br />", 6, output);
+			output->output(" <br /> ", 6, output);
         } else {
             html_output(&buf[i], 1, output);
 		}
@@ -2779,7 +2779,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                 STATE_CLR(ansi_state, STATE_FONT_SET);
             }
 		    if (!STATE_ISSET(ansi_state,STATE_UBB_MIDDLE) || isUBBMiddleOutput) {
-				output->output("<br />", 6, output);
+				output->output(" <br /> ", 6, output);
 			}
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
