@@ -391,7 +391,7 @@ struct ip_struct{
 } ips[MAXLIST];
 bool initIP=false;
 
-int check_IP_lists(unsigned int IP)
+int check_IP_lists(unsigned int IP2)
 {
     int i,j,k;
     FILE* fp;
@@ -399,10 +399,10 @@ int check_IP_lists(unsigned int IP)
     int found=0,min=0,ret=0;
     time_t now;
     now = time(0);
-    ip[0]=IP&0xff;
-    ip[1]=(IP&0xff00)>>8;
-    ip[2]=(IP&0xff0000)>>16;
-    ip[3]=(IP&0xff000000)>>24;
+    ip[0]=IP2&0xff;
+    ip[1]=(IP2&0xff00)>>8;
+    ip[2]=(IP2&0xff0000)>>16;
+    ip[3]=(IP2&0xff000000)>>24;
     if(ip[0]==0) return 0;
     if(!initIP) {
         memset(ips, 0, sizeof(struct ip_struct)*MAXLIST);
