@@ -708,8 +708,8 @@ void mail_msg(struct userec* user)
 
 #ifdef SMS_SUPPORT
 
-void * buf=NULL;
-int result=0;
+void * smsbuf=NULL;
+int smsresult=0;
 
 inline unsigned int byte2long(byte arg[4]) {
     unsigned int tmp;
@@ -729,18 +729,18 @@ int init_memory()
 {
     void * p;
     int iscreate;
-    if(buf) return 0;
+    if(smsbuf) return 0;
 
     iscreate = 0;
     p = attach_shm("SMS_SHMKEY", 8914, SMS_SHM_SIZE+sizeof(struct sms_shm_head), &iscreate);
     head = (struct sms_shm_head *) p;
-    buf = p+sizeof(struct sms_shm_head);
+    smsbuf = p+sizeof(struct sms_shm_head);
 }
 
 void sendtosms(void * n, int s)
 {
     if(head->length+s>=SMS_SHM_SIZE) return;
-    memcpy(buf+head->length, n, s);
+    memcpy(smsbuf+head->length, n, s);
     head->length+=s;
 }
 
@@ -750,7 +750,7 @@ void SMS_request(int signo)
     struct stat st;
     sprintf(fn, "tmp/%d.res", uinfo.pid);
     if(stat(fn, &st)!=-1)
-        result=1;
+        smsresult=1;
 }
 
 int wait_for_result()
@@ -762,11 +762,11 @@ int wait_for_result()
     signal(SIGUSR1, SMS_request);
     sprintf(fn, "tmp/%d.res", uinfo.pid);
     unlink(fn);
-    result = 0;
+    smsresult = 0;
     head->sem=0;
 
     count=0;
-    while(!result) {
+    while(!smsresult) {
         move(t_lines-1, 0);
         clrtoeol();
         prints("·¢ËÍÖÐ....%d%%", count*100/30);

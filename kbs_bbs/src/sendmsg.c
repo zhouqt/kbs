@@ -654,6 +654,8 @@ int friend_wall()
 
 #ifdef SMS_SUPPORT
 
+extern void * smsbuf;
+
 int register_sms()
 {
     char ans[4];
@@ -667,7 +669,7 @@ int register_sms()
         prints("你已经注册手机号了。每一个账号只能注册一个手机号。\n");
         pressreturn();
         shmdt(head);
-        buf=NULL;
+        smsbuf=NULL;
         return -1;
     }
     if(curruserdata.mobilenumber[0]&&strlen(curruserdata.mobilenumber)==11) {
@@ -682,7 +684,7 @@ int register_sms()
             prints("错误的手机号");
             pressreturn();
             shmdt(head);
-            buf=NULL;
+            smsbuf=NULL;
             return -1;
         }
         if(DoReg(curruserdata.mobilenumber)) {
@@ -691,7 +693,7 @@ int register_sms()
             prints("发送注册码失败");
             pressreturn();
             shmdt(head);
-            buf=NULL;
+            smsbuf=NULL;
             return -1;
         }
         signal(SIGUSR1, talk_request);
@@ -706,7 +708,7 @@ int register_sms()
         prints("注册码检查失败");
         pressreturn();
         shmdt(head);
-        buf=NULL;
+        smsbuf=NULL;
         return -1;
     }
     signal(SIGUSR1, talk_request);
@@ -716,7 +718,7 @@ int register_sms()
     prints("手机注册成功！ 你可以在bbs上发送短信啦！");
     pressreturn();
     shmdt(head);
-    buf=NULL;
+    smsbuf=NULL;
 }
 
 int unregister_sms()
@@ -732,7 +734,7 @@ int unregister_sms()
         prints("你尚未注册手机号");
         pressreturn();
         shmdt(head);
-        buf=NULL;
+        smsbuf=NULL;
         return -1;
     }
     sprintf(buf2, "你输入的手机号是%s，是否取消注册？[y/N]", curruserdata.mobilenumber);
@@ -744,7 +746,7 @@ int unregister_sms()
             prints("取消注册失败");
             pressreturn();
             shmdt(head);
-            buf=NULL;
+            smsbuf=NULL;
             return -1;
         }
         signal(SIGUSR1, talk_request);
@@ -755,7 +757,7 @@ int unregister_sms()
         write_userdata(currentuser->userid, &curruserdata);
     }
     shmdt(head);
-    buf=NULL;
+    smsbuf=NULL;
 }
 
 int do_send_sms_func(char * dest, char * msgstr)
