@@ -5,6 +5,8 @@
 /*
  * 目前 ZIXIA 这个参数带入的功能变化
  * 1. 批注册单的时候显示详细信息
+ * 2. 版面文章列表按 ~ 显示帖子 URL
+ * 3. 防发呆字符方面的问题
  */
 
 #define USE_TMPFS           1   /*使用内存文件系统加速*/
@@ -26,6 +28,8 @@
 #define HAVE_TSINGHUA_INFO_REGISTER 0 /* 允许从清华信息系统注册 */
 
 #define BUILD_PHP_EXTENSION 1   /*将php lib编成php extension */
+
+#define ALLOW_CTRL_L_ANTIIDLE 1 /* 允许 Ctrl+L 挂线 */
 
 #define HAVE_WFORUM 1
 
