@@ -147,8 +147,6 @@
 #define LOGIN_PROMPT		"\033[s代号\033[4D\033[u报上名来"
 #define PASSWD_PROMPT		"\033[s密码\033[4D\033[u接头暗号"
 
-#define RAW_ARTICLE 0
-
 /* 权限位定义 */
 /*
    These are the 16 basic permission bits. 

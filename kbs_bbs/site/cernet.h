@@ -22,7 +22,6 @@
 #define HAVE_CUSTOM_USER_TITLE	1
 #define BUILD_PHP_EXTENSION 1 
 #define HAVE_WFORUM		0
-#define RAW_ARTICLE		0
 #define SMTH			1
 #define FILTER			1
 #define HAVE_BRC_CONTROL	0

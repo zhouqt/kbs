@@ -33,7 +33,6 @@
 #define HAVE_REVERSE_DNS	0
 #define BUILD_PHP_EXTENSION	1 /*½«php lib±à³Éphp extension*/
 #define HAVE_WFORUM		1
-#undef RAW_ARTICLE		
 
 #define HAVE_USERMONEY 		1
 #define CHINESE_CHARACTER	0

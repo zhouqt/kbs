@@ -34,7 +34,6 @@
 
 #define HAVE_WFORUM 1
 
-#define RAW_ARTICLE 0
 #define HAVE_USERMONEY 1
 
 #define CHECK_CONNECT 0

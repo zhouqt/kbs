@@ -29,7 +29,6 @@
 #endif
 
 #define HAVE_WFORUM	1
-#define RAW_ARTICLE 0
 #define FB2000			1
 #define SMTH			1
 #define FILTER			1
