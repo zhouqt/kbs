@@ -914,6 +914,11 @@ int cmpinames(const char *userid,const  char *uv)       /* added by Luzi 1997.11
     return !strcasecmp(userid, uv);
 }
 
+int cmpfnames(char    *userid, struct friends *uv)
+{       
+	    return !strcasecmp(userid, uv->id);
+}       
+  
 int
 canIsend2(userid) /* Leeward 98.04.10 */
 char *userid;

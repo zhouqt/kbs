@@ -47,6 +47,8 @@ static int search_articles(struct keeploc  *locmem,char *query,int offset,int af
 static int search_author(struct keeploc  *locmem,int offset,char *powner);
 static int search_post(struct keeploc  *locmem,int  offset);
 static int search_title(struct keeploc  *locmem,int  offset);
+static int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,int ch, int ssize, char * pnt);
+static int cursor_pos(struct keeploc *locmem,int val,int from_top);
 
 /*struct fileheader *files = NULL;*/
 char            currdirect[ 255 ]; /*COMMAN: increased directory length to MAX_PATH */
@@ -272,7 +274,7 @@ void i_read( int     cmdmode,char    *direct ,int (*dotitle)() ,
             getdata(t_lines-1, 0, "没有任何好友 (A)新增好友 (Q)离开？[Q] ",
                     genbuf, 4, DOECHO,NULL,YEA);
             if (genbuf[0] == 'a'||genbuf[0] == 'A')
-                friend_add();
+                friend_add(0,NULL,0);
         }
         else
         {
@@ -456,8 +458,7 @@ struct one_key  *rcmdlist ;
 struct keeploc  *locmem;
 int     ch,ssize;
  *---		---*/
-int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,
-               int ch, int ssize, char * pnt)
+static int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,int ch, int ssize, char * pnt)
 {
     int         i, mode = DONOTHING;
     char buf[STRLEN];
@@ -1486,7 +1487,7 @@ int             offset, aflag;
     return match;	
 }
 /* calc cursor pos and show cursor correctly -cuteyu */
-int cursor_pos( locmem, val, from_top )
+static int cursor_pos( locmem, val, from_top )
 struct keeploc *locmem;
 int val;
 int from_top;

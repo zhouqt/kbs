@@ -95,9 +95,6 @@ int d_user(char cid[IDLEN]);
 /* read.c */
 int sread(int passonly,int readfirst,int auser,int pnum,struct fileheader *ptitle);
 void fixkeep(char* s,int first,int last);
-int cursor_pos(struct keeploc *locmem,int val,int from_top);
-int i_read_key(struct one_key * rcmdlist, struct keeploc * locmem,
-               int ch, int ssize, char * pnt);
 
 /* sendmsg.c */
 void s_msg();

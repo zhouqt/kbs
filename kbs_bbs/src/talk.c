@@ -82,7 +82,6 @@ char save_page_requestor[STRLEN];
 /* end - jjyang */
 char npage_requestor[STRLEN];
 
-int cmpfnames();
 /*---	changed to isidhidden by period	2000-10-20	---*
 int
 ishidden(user)
@@ -394,14 +393,6 @@ num_visible_users()
 	count = 0;
     apply_ulist_addr( (APPLY_UTMP_FUNC)count_visible_active,(char*)&count) ;
     return count;
-}
-
-int
-cmpfnames(userid, uv)
-char    *userid;
-struct friends *uv;
-{
-    return !strcasecmp(userid, uv->id);
 }
 
 int
