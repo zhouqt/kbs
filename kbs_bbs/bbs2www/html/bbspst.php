@@ -232,6 +232,7 @@ function dosubmit() {
 <center>
 <input class="sb1" type="button" onclick="dosubmit();" name="post" value="发表" />
 <input class="sb1" type="reset" value="清除" />
+<input class="sb1" type="reset" value="返回" onclick="history.go(-1)" />
 <?php
 		if (bbs_is_attach_board($brdarr))
 		{
