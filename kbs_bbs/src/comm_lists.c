@@ -55,6 +55,7 @@ int x_vote();
 int ShowWeather();              /* 2001.6.12 */
 int x_results();
 int ConveyID();             /* Added by binxun 2003.5.3 */
+int ProtectID();             /* set the protection of user password. Added by binxun 2003.10 */
 
 int search_ip();
 int kick_all_user();
