@@ -140,6 +140,8 @@ function showBoardContents($boardID,$boardName,$page){
 ?>
 <script language="JavaScript">
 <!--
+	boardName = '<?php echo $boardName; ?>';
+	THREADSPERPAGE = <?php echo THREADSPERPAGE; ?>;
 <?php
 		print_file_display_javascript($boardName);
 		for($i=0;$i<$articleNum;$i++){
