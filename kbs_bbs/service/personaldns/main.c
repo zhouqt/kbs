@@ -8,6 +8,8 @@
 extern int update_dns(const char *server, const char *zone, const char *keyname,
     const char *key, const char *host, const char *ip, int ttl); 
 
+#define MAX_COUNT 100
+#define MAX_REQUEST 100000 //after MAX_REQUEST times,fork a new nsupdate
 char update_key[100];
 char update_keyname[20];
 char dns_server[50];
@@ -17,6 +19,7 @@ unsigned int dns_ttl;
 FILE* nsupdate_pipe=NULL;
 
 int reread;
+bool doflush;
 int getconf(char* key,char* value,int len) {
     char* data;
     data=sysconf_str(key);
@@ -67,7 +70,14 @@ int readconfig() {
 
 static void reconfig(int signo)
 {
+    doflush=1;
     reread=1;
+}
+
+static void flush_buffer(int signo)
+{
+    doflush=1;
+    alarm(60); // 1 minutes flush
 }
 
 static void reaper()
@@ -80,7 +90,7 @@ static void reaper()
 int main()
 {
 #ifdef HAVE_PERSONAL_DNS
-    int msqid, i;
+    int msqid, dnscount,requestcount;
 
     struct sigaction act;
     struct msqid_ds msqds;
@@ -91,10 +101,15 @@ int main()
     chdir(BBSHOME);
     reread=0; 
 
+    dnscount=0;
+    act.sa_handler = reconfig;
     sigaction(SIGHUP, &act, NULL);
+
     act.sa_handler = reconfig;
     sigaction(SIGPIPE, &act, NULL);
-    act.sa_handler = reconfig;
+    
+    act.sa_handler = flush_buffer;
+    sigaction(SIGALRM, &act, NULL);
 #ifdef AIX
     act.sa_handler = NULL;
     act.sa_flags = SA_RESTART | SA_NOCLDWAIT;
@@ -109,8 +124,8 @@ int main()
     setreuid(BBSUID, BBSUID);
     setgid(BBSGID);
     setregid(BBSGID, BBSGID);
-    if (readconfig()!=0) return -1;
     dodaemon("bbsnsupdated", true, false);
+    if (readconfig()!=0) return -1;
     
     msqid = msgget(sysconf_eval("BBSDNS_MSG", 0x999), IPC_CREAT | 0664);
     if (msqid < 0)
@@ -118,24 +133,34 @@ int main()
     msgctl(msqid, IPC_STAT, &msqds);
     msqds.msg_qbytes = 50 * 1024;
     msgctl(msqid, IPC_SET, &msqds);
+    alarm(60); // 1 minutes flush
     while (1) {
         int retv;
         retv = msgrcv(msqid, &msg, sizeof(msg)-sizeof(msg.mtype), 0, MSG_NOERROR);
         if (retv < 0) {
-            if (errno==EINTR)
-                continue;
-            else {
+            if (errno!=EINTR) {
                 bbslog("3error","bbsupdated(rcvlog):%s",strerror(errno));
                 exit(0);
             }
+        } else {
+            fprintf(nsupdate_pipe,"update delete %s A\n",msg.userid);
+            fprintf(nsupdate_pipe,"update add %s %d A %s\n",msg.userid,dns_ttl,msg.ip);
+            dnscount++;
+            requestcount++;
+            if (dnscount>=MAX_COUNT)
+                doflush=true;
+	     bbslog("3error","update dns %s %s",msg.userid,msg.ip);
         }
 
-        fprintf(nsupdate_pipe,"update delete %s A\n",msg.userid);
-        fprintf(nsupdate_pipe,"update add %s %d A %s\n",msg.userid,dns_ttl,msg.ip);
-        fprintf(nsupdate_pipe,"send\n");
-        fflush(nsupdate_pipe);
-	bbslog("3error","update dns %s %s",msg.userid,msg.ip);
-
+        if (doflush&&dnscount) {
+            dnscount=0;
+            fprintf(nsupdate_pipe,"send\n");
+            fflush(nsupdate_pipe);
+        }
+        if (requestcount>MAX_REQUEST) {
+            reread=true;
+            requestcount=0;
+        }
         if (reread) 
             if (readconfig()!=0) {
             	bbslog("3error","bbsupdated config error");
