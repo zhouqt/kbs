@@ -996,8 +996,23 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #endif
     newbbslog(BBSLOG_USER, "%s", buf);
 
-    if (fh->id == fh->groupid)
-        setboardorigin(boardname, 1);
+    if (fh->id == fh->groupid){
+		if( setboardorigin(boardname, -1) ){
+			board_regenspecial(boardname,DIR_MODE_ORIGIN,NULL);
+		}else{
+    		setbdir(DIR_MODE_ORIGIN, buf, boardname);
+    		if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) >= 0) {
+        		flock(fd, LOCK_EX);
+        		lseek(fd, 0, SEEK_END);
+        		if (safewrite(fd, fh, sizeof(fileheader)) == -1) {
+            		bbslog("user", "%s", "apprec origin write err!");
+        		}
+        		flock(fd, LOCK_UN);
+        		close(fd);
+    		}
+		}
+	}
+
     setboardtitle(boardname, 1);
     if (fh->accessed[0] & FILE_MARKED)
         setboardmark(boardname, 1);
