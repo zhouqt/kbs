@@ -70,18 +70,13 @@
 #undef HAVE_REVERSE_DNS
 #endif
 
+#if HAVE_WFORUM == 0
+#undef HAVE_WFORUM
+#endif
+
 #ifdef HAVE_WFORUM
 #if RAW_ARTICLE == 0
 #undef RAW_ARTICLE
-#endif
-//#ifndef RAW_ARTICLE
-//#define RAW_ARTICLE 1
-//#endif
-
-#ifdef RAW_ARTICLE
-#if RAW_ARTICLE == 0
-#undef RAW_ARTICLE
-#endif
 #endif
 
 #define HAVE_USERMONEY 1
