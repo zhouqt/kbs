@@ -330,7 +330,7 @@ void clrtoeol()
     }
     ln = (cur_ln + roll)%scr_lns;
     slp = &big_picture[ln];
-    for(k=0;k<t_columns;k++) {
+    for(k=cur_col;k<t_columns;k++) {
         if((slp->data[k]==32||slp->data[k]==0)&&slp->mode[k]==cur_mode&&slp->color[k]/16==cur_color/16)
             slp->mode[k]=SCREEN_MODIFIED;
         else
@@ -378,7 +378,7 @@ void outc(unsigned char c)
         if (c == '\n' || c == '\r') {	/* do the newline thing */
             clrtoeol();
             cur_col=0; 
-            if(cur_ln<scr_lns) cur_ln++;
+            if(cur_ln<scr_lns-1) cur_ln++;
         }
         return;
     }
