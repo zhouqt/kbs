@@ -867,7 +867,8 @@ void init_cachedata(char* userid,int unum)
     setcachehomefile(path1, userid, -1, NULL);
     mkdir(path1,0700);
     setcachehomefile(path1, userid, unum, NULL);
-    mkdir(path1,0700);
+    if (mkdir(path1,0700)==-1)
+      bbslog("3error","mkdir %s errorno %d",path1,errno);
     setcachehomefile(path1, userid, -1, "logincount");
     if ((fd = open(path1, O_RDWR, 0664)) != -1) {
     ldata.l_type = F_RDLCK;
