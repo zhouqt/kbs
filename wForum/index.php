@@ -81,7 +81,7 @@ function showTitle() {
 	$user=bbs_getarticles("newcomers",$num,1,$dir_modes['normal']);
 ?>
 <TR><TD style="line-height: 20px;">
-欢迎新加入会员 <a href=dispuser.php?id=<?php echo $user[0]['OWNER']; ?> target=_blank><b><?php echo $user[0]['OWNER']; ?></b></a>&nbsp;[<a href="board.php?name=newcomers">新进来宾</a>]<BR>论坛共有 <B><?php  ?></B> 位注册会员 , 主题总数：<b><?php echo $rs[0]; ?></b> , 帖子总数：<b><?php echo $rs[1]; ?></b><BR>今日论坛共发贴：<FONT COLOR="<?php echo $Forum_body[8]; ?>"><B><?php echo $rs[2]; ?></B></FONT> , 昨日发贴：<B><?php echo $rs[5]; ?></B> , 最高日发贴：<B><?php echo $rs[6]; ?></B></td><TD valign=bottom align=right style="line-height: 20px;"><a href=# onclick="alert('本功能尚在开发中！');">查看新贴</a> , <a href=topten.php>热门话题</a> , <a href=# onclick="alert('本功能尚在开发中！');">发贴排行</a> , <a href="/onlineuser.php">在线用户</a><BR>您最后一次访问是在：<?php echo strftime("%Y-%m-%d %H:%M:%S"); ?>
+欢迎新加入会员 <a href=dispuser.php?id=<?php echo $user[0]['OWNER']; ?> target=_blank><b><?php echo $user[0]['OWNER']; ?></b></a>&nbsp;[<a href="board.php?name=newcomers">新进来宾</a>]<BR>论坛共有 <B><?php  ?></B> 位注册会员 , 主题总数：<b><?php echo $rs[0]; ?></b> , 帖子总数：<b><?php echo $rs[1]; ?></b><BR>今日论坛共发贴：<FONT COLOR="<?php echo $Forum_body[8]; ?>"><B><?php echo $rs[2]; ?></B></FONT> , 昨日发贴：<B><?php echo $rs[5]; ?></B> , 最高日发贴：<B><?php echo $rs[6]; ?></B></td><TD valign=bottom align=right style="line-height: 20px;"><a href=# onclick="alert('本功能尚在开发中！');">查看新贴</a> , <a href=topten.php>热门话题</a> , <a href=# onclick="alert('本功能尚在开发中！');">发贴排行</a> , <a href="/showonlineuser.php">在线用户</a><BR>您最后一次访问是在：<?php echo strftime("%Y-%m-%d %H:%M:%S"); ?>
 </TD></TR>
 <?php
 }
