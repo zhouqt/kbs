@@ -323,6 +323,12 @@ extern "C" {
     void set_posttime(struct fileheader *fileinfo);
     char* checkattach(char *buf, long size,long *len,char** attachptr);
 
+/**
+ * 一个能检测attach的fgets
+ * 发现attach返回1
+ * 文件尾返回-1
+ */
+    int attach_fgets(char* s,int size,FILE* stream);
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);
     typedef int (*RECORD_FUNC_ARG) (void *, void *);

@@ -1636,3 +1636,34 @@ char* checkattach(char *buf, long size,long *len,char** attachptr)
     *attachptr=buf+sizeof(long);
     return ptr;
 }
+
+/**
+ * 一个能检测attach的fgets
+ * 发现attach返回1
+ * 文件尾返回-1
+ */
+int attach_fgets(char* s,int size,FILE* stream)
+{
+  int matchpos=0;
+  int ch;
+  char* ptr;
+  ptr=s;
+  while ((ch=fgetc(stream))!=EOF) {
+     if (ch==ATTACHMENT_PAD[matchpos]) {
+        matchpos++;
+        if (matchpos==ATTACHMENT_SIZE) {
+            fseek(stream,-ATTACHMENT_SIZE,SEEK_CUR);
+            *(ptr-ATTACHMENT_SIZE)=0;
+            return 1;
+        }
+     }
+     if (ch=='\n') {
+        *ptr=0;
+        return 0;
+     }
+     *ptr=ch;
+     ptr++;
+  }
+  return -1;
+}
+
