@@ -709,6 +709,7 @@
 		echo "/frames.html";
 ?>	
 	" class=f1 target="_top"><?php echo BBS_FULL_NAME; ?>Ê×Ò³</a>]
+	<a href="rss.php?userid=<?php echo $pc["USER"]; ?>" target="_blank"><img src="images/xml.gif" border="0" alt="XML" align="absmiddle"></a>
 	</td>
 </tr>
 </table>

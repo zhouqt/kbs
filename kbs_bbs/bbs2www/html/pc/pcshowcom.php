@@ -120,4 +120,6 @@
 </table>
 </center>
 <?php	
+	pc_db_close($link);
+	html_normal_quit();	
 ?>
