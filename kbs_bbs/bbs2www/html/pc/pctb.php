@@ -17,6 +17,7 @@
 	
 	
 	$nid = (int)($_GET["nid"]);
+	$uid = (int)($_GET["uid"]);
 	$subject = html_format(base64_decode($_GET["subject"]));
 	$link = pc_db_connect();
 	$tbarr = pc_get_trackback($link,$nid);
@@ -30,7 +31,10 @@
 		<td class=t8><font class=content>
 		<strong>TrackBack Ping URL:</strong><br />
 		http://<?php echo $pcconfig["SITE"]; ?>/pc/tb.php?id=<?php echo $nid; ?><br /><br />
-		<strong>Subject:</strong><br />
+		<strong>文章链接:</strong><br />
+		<a href="http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>&s=all">
+		http://<?php echo $pcconfig["SITE"]; ?>/pc/pccon.php?id=<?php echo $uid; ?>&nid=<?php echo $nid; ?>&s=all</a><br /><br />
+		<strong>主题:</strong><br />
 		<?php echo $subject; ?>
 		</font></td>
 	</tr>

@@ -36,7 +36,7 @@
 		if($pur == 3)
 			echo "<a href=\"pcmanage.php?act=edit&nid=".$nid."\">修改</a>\n";
 		if($trackback)
-			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
+			echo 	"<a href=\"javascript:openScript('pctb.php?nid=".$nid."&uid=".$pc["UID"]."&subject=".base64_encode($subject)."',460 , 480)\">引用</a>\n";
 		echo 	"<a href=\"/bbspstmail.php?userid=".$pc["USER"]."&title=问候\">写信问候</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转寄</a>\n".
 			//"<a href=\"pccon.php?id=".$id."&nid=".$nid."\">转载</a>\n".
