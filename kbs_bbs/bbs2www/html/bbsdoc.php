@@ -240,6 +240,7 @@
 			$default_dir_mode = $dir_modes["NORMAL"];
                 $isnormalboard=bbs_normalboard($board);
 
+        	bbs_set_onboard($brdnum,1);
 		if ($isnormalboard&&($default_dir_mode == $dir_modes["NORMAL"])) {
                         $dotdirname=BBS_HOME . "/boards/" . $brdarr["NAME"] . "/.DIR";
        			if (cache_header("public, must-revalidate",filemtime($dotdirname),10))
@@ -256,7 +257,6 @@
 			html_error_quit("本讨论区目前没有文章");
 			$board_list_error=TRUE;
 			}
-        	bbs_set_onboard($brdnum,1);
 
 		$artcnt = 20;
 		if (isset($_GET["page"]))
