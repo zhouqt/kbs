@@ -158,7 +158,7 @@ function display_navigation_bar($brdarr, $articles, $num)
             			if (cache_header("public",filemtime($filename),300))
                 			return;
                 	}
-			Header("Cache-control: nocache");
+//			Header("Cache-control: nocache");
 			@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 			if ($attachpos!=0) {
 				$file = fopen($filename, "rb");
