@@ -13,8 +13,8 @@ MAILTO=bbs
 # 更新版主统计
 1 0 * * * /home/bbs/bin/statBM update
 # 每小时记录每版在线人数和在线人数
-2 0 * * * /home/bbs/bin/bonlinelog
-2 0 * * * /home/bbs/bin/uonlinelog
+2 * * * * /home/bbs/bin/bonlinelog
+2 * * * * /home/bbs/bin/uonlinelog
 # 每小时 59 分更新版主统计排行
 59 * * * * /home/bbs/bin/stat.day
 10 0 * * * /home/bbs/bin/stat.other
