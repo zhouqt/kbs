@@ -343,7 +343,8 @@ function pc_load_infor($link,$userid=FALSE,$uid=0)
 			"STYLE" => pc_style_array($rows[stype]),
 			"LOGO" => str_replace("<","&lt;",stripslashes($rows[logoimage])),
 			"BKIMG" => str_replace("<","&lt;",stripslashes($rows[backimage])),
-			"LINKS" => pc_get_links(stripslashes($rows[links]))
+			"LINKS" => pc_get_links(stripslashes($rows[links])),
+			"EDITOR" => $rows[htmleditor]
 			);
 	return $pc;
 	}

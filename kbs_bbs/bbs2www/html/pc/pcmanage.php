@@ -27,9 +27,12 @@
 			exit();
 		}
 		
+		if($pc["EDITOR"] != 0)
+			$pcconfig["EDITORALERT"] = NULL;
+			
 		$act = $_GET["act"]?$_GET["act"]:$_POST["act"];
 		
-		if(($act == "post" || $act == "edit") && !$_POST["subject"])
+		if(($act == "post" || $act == "edit") && !$_POST["subject"] && $pc["EDITOR"] == 0)
 			pc_html_init("gb2312",stripslashes($pc["NAME"]),"","","",TRUE);
 		else
 			pc_html_init("gb2312",stripslashes($pc["NAME"]));
@@ -213,7 +216,13 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t11">内容
+<?php
+	if($pc["EDITOR"] == 0){
+?>
 	<input type="checkbox" name="htmltag" value=1 checked>使用HTML标记
+<?php
+	}
+?>
 	</td>
 </tr>
 <tr>
@@ -345,7 +354,13 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 </tr>
 <tr>
 	<td class="t11">内容
+<?php
+	if($pc["EDITOR"] == 0){
+?>
 	<input type="checkbox" name="htmltag" value=1 <?php if(strstr($rows[body],$pcconfig["NOWRAPSTR"]) || $rows[htmltag] == 1) echo "checked"; ?> >使用HTML标记
+<?php
+	}
+?>
 	</td>
 </tr>
 <tr>
@@ -560,7 +575,7 @@ window.location.href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=<?php echo
 		}
 		elseif($act == "sedit" && $_POST["pcname"])
 		{
-			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = '".date("YmdHis")."' WHERE `uid` = '".$pc["UID"]."' LIMIT 1 ;";	
+			$query = "UPDATE `users` SET `createtime` = `createtime` , `corpusname` = '".addslashes(undo_html_format($_POST["pcname"]))."',`description` = '".addslashes(undo_html_format($_POST["pcdesc"]))."',`theme` = '".addslashes(undo_html_format($_POST["pcthem"]))."' , `backimage` = '".addslashes(undo_html_format($_POST["pcbkimg"]))."' , `logoimage` = '".addslashes(undo_html_format($_POST["pclogo"]))."' , `modifytime` = '".date("YmdHis")."' , `htmleditor` = '".(int)($_POST["htmleditor"])."' WHERE `uid` = '".$pc["UID"]."' LIMIT 1 ;";	
 			mysql_query($query,$link);
 			
 ?>

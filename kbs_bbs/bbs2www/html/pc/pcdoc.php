@@ -540,6 +540,13 @@
 	</td>
 </tr>
 <tr>
+	<td class="t3">HTML编辑器</td>
+	<td class="t5">
+	<input type="radio" name="htmleditor" value="0" <?php if($pc["EDITOR"]==0) echo "checked"; ?>>HTMLArea编辑器
+	<input type="radio" name="htmleditor" value="9" <?php if($pc["EDITOR"]==9) echo "checked"; ?>>不使用编辑器
+	</td>
+</tr>
+<tr>
 	<td class="t4" colspan="2">
 	<input type="submit" value="修改文集参数" class="b1">
 	<input type="reset" value="恢复原始参数" class="b1">
