@@ -148,11 +148,11 @@ else echo "box";
 <?php
 		for($ii = 0; $ii < 40; $ii++){
 ?>
-<option <?php if($ii == 0) echo "selected";?> value=<?php echo $ii;?>><?php echo $ii;?>
+<option <?php if($ii == 0) echo "selected";?> value=<?php echo $ii;?>><?php echo $ii;?></option>
 <?php
 		}
 ?>
-</option></select>
+</select>
 <input type="button" name="silu" value="�鿴˿·" onclick="return GoImPathWindow()" />
 <script language="JavaScript">
 <!--
