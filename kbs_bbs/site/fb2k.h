@@ -22,7 +22,9 @@
 #define HAVE_TSINGHUA_INFO_REGISTER 0
 
 #define BUILD_PHP_EXTENSION 1   /*½«php lib±à³Éphp extension */
+#define USE_SEM_LOCK 1
 
+#define PERSONAL_CORP
 #define HAVE_WFORUM	1
 #define RAW_ARTICLE 0
 #define FB2000			1
