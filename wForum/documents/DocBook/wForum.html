@@ -46,7 +46,7 @@
 <dt>3. <a href="#tech_details">技术细节</a>
 </dt>
 <dd><dl>
-<dt>3.1. <a href="#mozilla_compatibility">wForum 兼容 mozilla 需要注意的主要问题</a>
+<dt>3.1. <a href="#javascript">Javascript 方面的一些说明</a>
 </dt>
 <dt>3.2. <a href="#thread_notes">wForum 对文章列表部分的处理</a>
 </dt>
@@ -75,7 +75,9 @@
 <div class="itemizedlist"><ul type="disc">
 <li>wForum 是基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统；</li>
 <li>主页：<a href="http://wforum.aka.cn/" target="_blank">http://wforum.aka.cn/</a>；</li>
-<li>推荐使用 linux 系统 (redhat)。</li>
+<li>推荐使用 linux 系统 (redhat)；</li>
+<li>讨论区：<a href="http://bbs.zixia.net/board.php?name=wForum" target="_blank">http://bbs.zixia.net/board.php?name=wForum</a>
+</li>
 </ul></div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
@@ -143,7 +145,7 @@ create table smallpaper_tb(
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
 <a name="install_uploadface"></a>2.4. 自定义头像功能</h3></div></div>
-<p>如果开启自定义头像功能，确认一下 wForum 主目录下面有 uploadFace/ 目录，如果没有的话就建立一下。</p>
+<p>如果开启自定义头像功能，确认一下 wForum 主目录下面有 uploadFace/ 目录，如果没有的话就建立一下。注意这个目录必须是 httpd 运行身份的用户（一般建议用 bbs 用户）可写的。</p>
 <div class="note" style="margin-left: 0.5in; margin-right: 0.5in;">
 <h3 class="title">自定义头像的更多细节</h3>
 <p>自定义头像的存放位置是 wForum 主目录下面的 uploadFace/ 目录。在备份和转移 BBS 数据的时候也要备份这个目录。有人可能会希望 BBS 的数据全部都在 ~bbs/ 目录下面以方便备份，这是可行的。下面提供一个方法：
@@ -177,7 +179,7 @@ create table smallpaper_tb(
 <div class="titlepage"><div><h3 class="title">
 <a name="install_tex2mathml"></a>2.5. 加入 itex2mathml 支持</h3></div></div>
 <p>现在 wForum 支持 itex（数学公式排版语言 tex 的一种衍生形式） 到 mathml （浏览器显示数学公式的推荐标准）的自动转化。这部分功能参考 ythtbbs 系统完成，部分使用 ythtbbs 代码的站点有这个功能的介绍可以参考，比如 <a href="http://bbs.qxntc.edu.cn/" target="_blank">笔山书院 BBS</a> web 下的用户帮助里面就有。</p>
-<p>wForum 支持 itex2mathml 对客户端和服务器端都有要求。客户端的要求是最新版的 Mozilla Firefox，Netscape 等使用 Mozilla 内核的浏览器。如果是 MSIE 浏览器的话，必须是 5.5 版以上，而且需要预装 <a href="http://www.dessci.com/en/products/mathplayer/download.htm" target="_blank">MathPlayer 2.0</a> 插件，wForum 不会提示用户安装。服务器端要求 <a href="http://pear.math.pitt.edu/mathzilla/itex2mml.html" target="_blank">itex2mml</a> 转换程序，请下载后将 itex2MML 可执行文件放在 ~bbs/bin/ 目录下面，并且在 site.php 里面加入：</p>
+<p>wForum 支持 itex2mathml 对客户端和服务器端都有要求。客户端的要求是最新版的 Mozilla Firefox，Netscape 等支持 MathML 的浏览器。如果是 MSIE 浏览器的话，必须是 5.5 版以上，而且需要预装 <a href="http://www.dessci.com/en/products/mathplayer/download.htm" target="_blank">MathPlayer 2.0</a> 插件，wForum 不会提示用户安装。服务器端要求 <a href="http://pear.math.pitt.edu/mathzilla/itex2mml.html" target="_blank">itex2mml</a> 转换程序，请下载后将 itex2MML 可执行文件放在 ~bbs/bin/ 目录下面，并且在 site.php 里面加入：</p>
 <pre class="programlisting">define(&quot;SUPPORT_TEX&quot;, true);</pre>
 <p>用户发表需要 itex2mathml 支持的帖子的时候要选择“使用 tex 发表”选项。关于 itex2mml 支持的 tex 格式可以在其主页上找到文档。目前这部分功能还有很多问题，但是基本功能已经可以使用。具体的技术细节可以参考下面的 <a href="#itex2mathml_details">itex2mathml 的一些技术细节</a>。</p>
 </div>
@@ -249,7 +251,7 @@ short_open_tag = off</pre>
 <a name="upgrade_smthbbs"></a>2.7. smthbbs 系统升级安装 wForum 说明</h3></div></div>
 <div class="orderedlist"><ol type="1">
 <li>
-<p>原 smthbbs 系统要使用 wForum，首先需要在 site.h 中定义 HAVE_WFORUM：
+<p>原 smthbbs 系统要新加入 wForum 支持，首先需要在 site.h 中定义 HAVE_WFORUM：
 					</p>
 <pre class="programlisting">#define HAVE_WFORUM 1</pre>
 <p>
@@ -257,16 +259,8 @@ short_open_tag = off</pre>
 				</p>
 </li>
 <li>
-<p>停掉所有的 BBS 服务，重新编译安装所有的 BBS 程序。备份 ~bbs/.PASSWDS 文件,拷贝一份为 ~bbs/.PASSWDS.OLD，到 contrib/smth2wforum/ 下编译 convpasswd 文件
-					</p>
-<pre class="programlisting">gcc -o convpasswd convpasswd.c -lBBS -lsystem</pre>
-<p>
-					运行之：
-					</p>
-<pre class="programlisting">./convpasswd</pre>
-<p>
-					然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序实质上只是设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</p>
-<p>全部转换工作就此完成。</p>
+<p>这里的升级说明比较简略，因为假设读者已经相当熟悉 smthbbs 系统。升级系统需要停掉所有的 BBS 服务（包括共享内存），重新编译安装所有的 BBS 程序。接下来，需要转换 ~bbs/.PASSWDS 文件：拷贝一份为 ~bbs/.PASSWDS.OLD，打开转换程序 contrib/smth2wforum/convpasswd.c 看老的 userec 结构是否正确，然后编译运行之（这个程序如果编译有困难可以覆盖掉 local_utl/ 下面某个无用程序来编译）。然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序除了可能的结构转换还会设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</p>
+<p>全部转换工作就此完成。此时按正常方式启动系统。</p>
 </li>
 </ol></div>
 </div>
@@ -287,16 +281,9 @@ define('COOKIE_PATH', '/');
 <a name="tech_details"></a>3. 技术细节</h2></div></div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="mozilla_compatibility"></a>3.1. wForum 兼容 mozilla 需要注意的主要问题</h3></div></div>
+<a name="javascript"></a>3.1. Javascript 方面的一些说明</h3></div></div>
 <div class="orderedlist"><ol type="1">
 <li><p>mozilla 对 class、ID 等属性是大小写敏感的；而 IE 是大小写不敏感的。在设置和应用样式单时要注意 class 的大小写。</p></li>
-<li>
-<p>设置 html 对象的 id 时应同时设定 name 属性，且两个属性的值应完全相同。如：
-					</p>
-<pre class="programlisting">&lt;div id=&quot;menuDiv&quot; name=&quot;menuDiv&quot;&gt;....&lt;/div&gt;</pre>
-<p>
-				</p>
-</li>
 <li>
 <p>browser.js 文件主要函数、变量及功能:
 					</p>
@@ -379,6 +366,18 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 <dd><p>隐藏/显示ID为obj的对象。</p></dd>
 <dt>函数: getObjectLeft(obj) getObjectTop(obj) getObjectWidth(obj) getObjectHeight(obj)</dt>
 <dd><p>获取ID为obj的对象的坐标和长宽等。</p></dd>
+</dl></div>
+<p>
+				</p>
+</li>
+<li>
+<p>目前 wForum 的 javascript 事件处理比较混乱，不同的 .js 文件都会设置全局的事件监听。比方，inc/floater.js 里面设置了 onmouseup onmousedown onmousemove 事件监听，inc/funcs.js 则会设置 onmouseover，而页面头也带有 &lt;body ... onmouseover=&quot;HideMenu(event);&quot;&gt;。这些在以后开发中如果不注意，很容易产生冲突。现在这部分标准尚未统一，所以只在 inc/funcs.js 写了一个变通处理多个监听 window.onload 事件的方法作示范，别的地方切莫再自己设置 window.onload 事件监听，只需调用下列函数。
+					</p>
+<div class="glosslist"><dl>
+<dt>函数: addOnLoadListener(listener)</dt>
+<dd><p>添加 window.onload 事件监听的语句，listener 是一个字符串，是具体的 javascript 代码，而不是函数指针。</p></dd>
+<dt>函数: registerFocusOnLoad(ele)</dt>
+<dd><p>将 id 为 ele 的元素注册成页面载入完毕时设置的焦点元素。注意 ele 是字符串，不是具体控件的引用。</p></dd>
 </dl></div>
 <p>
 				</p>
@@ -585,7 +584,6 @@ menuDivStyle.visible=&quot;hidden&quot;;</pre>
 <div class="itemizedlist"><ul type="disc">
 <li><p>一个主题，如果最后一个回复是未读的，自动认为这个主题未读。</p></li>
 <li><p>版面搜索功能只搜索楼主，时间范围指定的是最后回复时间范围。</p></li>
-<li><p>query.php 里面设置了 window.onload，因为如果 &lt;select size 不是 1 的话，IE 和 firefox 有时候不能正确 highlight 预选的版面。如果在 funcs.js 或类似地方全局性的设置 window.onload 一定注意保证 query.php 的 onload 逻辑不变。比方 fader.js 就设置了 window.onload，所以 query.php 如果直接加系统公告就会出问题。DOM2 加入了 addEventListener 可以用以避免这个问题，不过 IE6 似乎不支持。</p></li>
 <li><p>queryresult.php 使用 javascript 来写页面。如果搜索结果过多，可能会提示是否取消 javascript 运行。另外搜索结果全都放在一 table 里面，如果页面没有下完，就什么都不会显示。这些暂时不管了吧，以后搜索做成分页的就好了。</p></li>
 <li><p>目前使用 php session 的只有注册页的图片识别。register.php 和 img_rand/img_rand.php 自己调用 session_start(), inc/funcs.php 不调用 session_start()。这个以后有必要的话可以改。比方浏览器 cookie 标准是有个数上限的，可以考虑把 cookie 全都放到 session 里面。当然那样的话 php session_tmp 那个目录要弄成 tmpfs。另外需要注意新的 php 版本，session_start() 不能被调用两次。</p></li>
 </ul></div>
