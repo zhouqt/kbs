@@ -336,6 +336,10 @@ int do_send(char *userid, char *title, char *q_file)
     extern char quote_title[120];
     int ret;
 
+    if (HAS_PERM(currentuser, PERM_DENYMAIL)) {
+        prints("[1m[33mºÜ±§Ç¸¡ÃÄúÎŞ·¨¸ø %s ·¢ĞÅ£®ÒòÎª Äú±»·â½ûÁËMailÈ¨ÏŞ¡£\n[m");
+        return -2;
+    }
     if (!strchr(userid, '@')) {
         if (getuser(userid, &user) == 0)
             return -4;
