@@ -715,6 +715,8 @@ static int fav_key(struct _select_def *conf, int command)
             CreateNameList();   /*  free list memory. */
             if (*bname)
                 i = getbnum(bname);
+            if (i==0)
+            	return SHOW_REFRESH;
             if (i > 0 && !IsFavBoard(i - 1)) {
                 addFavBoard(i - 1);
                 save_favboard();
