@@ -335,6 +335,7 @@ int do_send(char *userid, char *title, char *q_file)
     struct userec *user;
     extern char quote_title[120];
     int ret;
+    char* upload = NULL;
 
     if (HAS_PERM(currentuser, PERM_DENYMAIL)) {
         prints("[1m[33mºÜ±§Ç¸¡ÃÄúÎÞ·¨¸ø %s ·¢ÐÅ£®ÒòÎª Äú±»·â½ûÁËMailÈ¨ÏÞ¡£\n[m");
@@ -489,7 +490,16 @@ int do_send(char *userid, char *title, char *q_file)
                 clear();
                 ansimore2(buf2, false, 0, 18);
             }
-        } else {
+        } 
+        else if (ans[0] == 'U'&&HAS_PERM(currentuser, PERM_SYSOP)) {
+            struct boardheader* b=getbcache(currboard);
+            if(b->flag&BOARD_ATTACH) {
+                chdir("tmp");
+                upload = bbs_zrecvfile();
+                chdir("..");
+            }
+        }
+        else {
             strcpy(newmessage.title, title);
             strncpy(save_title, newmessage.title, STRLEN);
             break;
@@ -576,6 +586,14 @@ int do_send(char *userid, char *title, char *q_file)
             clear();
             return -2;
         }
+
+    if(upload) {
+        char sbuf[PATHLEN];
+        strcpy(sbuf,"tmp/");
+        strcpy(sbuf+strlen(sbuf), upload);
+        post_file.attachment = add_attach(filepath, sbuf, upload);
+    }
+    
         clear();
         /*
          * if(!chkreceiver(userid))
@@ -983,6 +1001,10 @@ char *direct;
         case KEY_PGDN:
             done = true;
             readnext = true;
+            break;
+        case Ctrl('D'):
+            zsend_attach(ent, fileinfo, direct);
+            done=true;
             break;
         case 'D':
         case 'd':

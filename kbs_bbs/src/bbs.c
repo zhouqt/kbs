@@ -2247,6 +2247,8 @@ int post_article(char *q_file, struct fileheader *re_file)
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard);
 
+    aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
+
     if(upload) {
         char sbuf[PATHLEN];
         strcpy(sbuf,"tmp/");
@@ -2254,8 +2256,6 @@ int post_article(char *q_file, struct fileheader *re_file)
         post_file.attachment = add_attach(filepath, sbuf, upload);
     }
     
-    aborted = vedit(filepath, true, &eff_size, NULL);    /* 进入编辑状态 */
-
     add_loginfo(filepath, currentuser, currboard, Anony);       /*添加最后一行 */
 
     strncpy(post_file.title, save_title, STRLEN);
