@@ -18,11 +18,12 @@
 			{
 				if($wrap && $i==0) echo "<li>";
 				echo "<a href=\"pcarch.php?userid=".$pc["USER"]."&y=".$yy."&m=".$mm."\" target=\"_blank\">".$yy."Äê".$mm."ÔÂ</a>\n";
-				if($wrap && $i==0) echo "</li>";
+				if($wrap && $i==1) echo "</li>";
 				$i = 1 - $i ;
 			}
 			$thisMonth = 12;	
 		}
+		if ($wrap && $i==1) echo "</li>";
 	}
 	
 	function get_calendar_array($link,$pc,$pur,&$totalnodes)
