@@ -1293,7 +1293,6 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
             } else {
                 digest.accessed[0] = 0;
                 sprintf(&genbuf[512], "%s%s", buf, fileinfo->filename);
-                link(&genbuf[512], genbuf);
                 strcpy(ptr, DIGEST_DIR);
                 if (get_num_records(buf, sizeof(digest)) > MAX_DIGEST) {
                     ldata.l_type = F_UNLCK;
@@ -1308,6 +1307,7 @@ int change_post_flag(char *currBM, struct userec *currentuser, int digestmode, c
 #endif
                     return PARTUPDATE;
                 }
+		link(&genbuf[512], genbuf);
                 append_record(buf, &digest, sizeof(digest));    /* 文摘目录下添加 .DIR */
                 fileinfo->accessed[0] = fileinfo->accessed[0] | FILE_DIGEST;
             }
