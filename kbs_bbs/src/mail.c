@@ -370,6 +370,8 @@ int do_send(char *userid, char *title, char *q_file)
             pressreturn();
             return -2;
         }
+        if (ret == 3)
+            return -4;
     }
 #ifdef INTERNET_PRIVATE_EMAIL
     /*
@@ -400,9 +402,6 @@ int do_send(char *userid, char *title, char *q_file)
      * end of kludge for internet mail
      */
 #endif
-
-    if (ret == 3)
-        return -4;
 
     setmailpath(filepath, userid);
     if (stat(filepath, &st) == -1) {
@@ -498,22 +497,23 @@ int do_send(char *userid, char *title, char *q_file)
             }
         } 
         else if (ans[0] == 'U'&&HAS_PERM(currentuser, PERM_SYSOP)) {
-            if(currboard->flag&BOARD_ATTACH) {
-                int i;
-                chdir("tmp");
-                upload = bbs_zrecvfile();
-                chdir("..");
-            }
-        }
+            int i;
+            chdir("tmp");
+            upload = bbs_zrecvfile();
+            chdir("..");
+         }
         else {
-            strcpy(newmessage.title, title);
+            strncpy(newmessage.title, title, STRLEN);
+            newmessage.title[STRLEN-1] = 0;
             strncpy(save_title, newmessage.title, STRLEN);
+            save_title[STRLEN-1] = 0;
             break;
         }
     }
 
     do_quote(filepath, include_mode, q_file, quote_user);
-    strcpy(quote_title, newmessage.title);
+    strncpy(quote_title, newmessage.title, STRLEN);
+    quote_title[STRLEN-1] = 0;
 
 #ifdef INTERNET_PRIVATE_EMAIL
     if (internet_mail) {
@@ -1101,7 +1101,7 @@ char *direct;
     default:
         prints("信件已寄出\n");
         fileinfo->accessed[0] |= FILE_REPLIED;  /*added by alex, 96.9.7 */
-        substitute_record(currmaildir, fileinfo, sizeof(*fileinfo), ent);
+        substitute_record(q_file, fileinfo, sizeof(*fileinfo), ent);
     }
     pressreturn();
     return FULLUPDATE;

@@ -153,8 +153,10 @@ int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int u
 
     memset(&newmessage, 0, sizeof(newmessage));
     strcpy(buf, fromid);        /* Leeward 98.04.14 */
-    strncpy(newmessage.owner, buf, STRLEN);
+    strncpy(newmessage.owner, buf, OWNER_LEN);
+    newmessage.owner[OWNER_LEN-1] = 0;
     strncpy(newmessage.title, title, STRLEN);
+    newmessage.title[STRLEN-1] = 0;
     setmailpath(filepath, userid);
     if (stat(filepath, &st) == -1) {
         if (mkdir(filepath, 0755) == -1)
