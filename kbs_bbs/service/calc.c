@@ -68,6 +68,7 @@ void copy_var(struct var_struct * a, struct var_struct * b)
     makesure(1,0);
     if(a==b) return;
     makesize(b, a->height, a->width);
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             b->p[i][j]=a->p[i][j];
@@ -78,6 +79,7 @@ void link_h(struct var_struct * a, struct var_struct * b, struct var_struct * c)
     int i,j;
     makesure(a->width==b->width,3);
     makesize(c, a->height+b->height, a->width);
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             c->p[i][j]=a->p[i][j];
@@ -91,6 +93,7 @@ void link_w(struct var_struct * a, struct var_struct * b, struct var_struct * c)
     int i,j;
     makesure(a->height==b->height,4);
     makesize(c, a->height, a->width+b->width);
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             c->p[i][j]=a->p[i][j];
@@ -104,6 +107,7 @@ void domatrix(struct var_struct * a, struct var_struct * b, struct var_struct * 
     int i,j;
     makesure((a->height==b->height&&a->width==b->width),5);
     makesize(c, a->height, a->width);
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++) {
             switch(op) {
@@ -119,6 +123,7 @@ void add_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
     int i,j;
     makesure((a->height==b->height)&&(a->width==b->width),5);
     makesize(c, a->height, a->width);
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             c->p[i][j]=a->p[i][j]+b->p[i][j];
@@ -129,6 +134,7 @@ void sub_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
     int i,j;
     makesure((a->height==b->height)&&(a->width==b->width),5);
     makesize(c, a->height, a->width);
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<a->width;j++)
             c->p[i][j]=a->p[i][j]-b->p[i][j];
@@ -154,6 +160,7 @@ void mul_var(struct var_struct * a, struct var_struct * b, struct var_struct * c
     }
     makesure(a->width==b->height,5);
     makesize(c, a->height, b->width);
+    makesure(1,0);
     for(i=0;i<a->height;i++)
         for(j=0;j<b->width;j++) {
             c->p[i][j]=0;
@@ -249,6 +256,7 @@ void reverse(struct var_struct * s, struct var_struct * t)
     int i,j;
     makesure(1,0);
     makesize(t, s->width, s->height);
+    makesure(1,0);
     for(i=0;i<s->width;i++)
         for(j=0;j<s->height;j++)
             t->p[i][j]=s->p[j][i];
@@ -266,6 +274,7 @@ double envalue(struct var_struct * s)
     }
     temp.p = 0;  
     copy_var(s, &temp);
+    if(calcerr) return 0;
     result=1;
     for (i=0;i<temp.height;i++) {
         if (temp.p[i][i]==0) {
@@ -304,6 +313,7 @@ void inverse(struct var_struct * s, struct var_struct * A)
     makesize(&temp, A->height, A->height);
     setunit(&temp);
     copy_var(A, &tempA);
+    makesure(1,0);
     for (i=0;i<temp.height;i++) {
         if (tempA.p[i][i]==0) {
             for (j=i+1;j<temp.height;j++) {
@@ -369,6 +379,7 @@ void set_var(struct var_struct * a, double f)
 {
     makesure(1,0);
     makesize(a, 1, 1);
+    makesure(1,0);
     (**(a->p)) = f;
 }
 
@@ -406,11 +417,13 @@ void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct *
     makesure(1,0);
     if(!u->p) {
         makesize(u, 1, s->height);
+        makesure(1,0);
         for(i=0;i<s->height;i++)
             u->p[0][i]=(double)i+1;
     }
     if(!v->p) {
         makesize(v, 1, s->width);
+        makesure(1,0);
         for(i=0;i<s->width;i++)
             v->p[0][i]=(double)i+1;
     }
@@ -424,6 +437,7 @@ void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct *
         makesure(j>=1&&j<=s->width,9);
     }
     makesize(p, u->width, v->width);
+    makesure(1,0);
     for(i=0;i<u->width;i++) {
         i0=(int)(u->p[0][i]+0.5);
         for(j=0;j<v->width;j++) {
@@ -486,6 +500,7 @@ void take_func(struct var_struct * p, struct var_struct * q, int kind)
     makesure(1,0);
     if(kind<23) {
         makesize(p, q->height, q->width);
+        makesure(1,0);
         for(i=0;i<q->height;i++)
             for(j=0;j<q->width;j++) {
                 switch(kind) {
