@@ -1784,7 +1784,7 @@ int set_BM()
  
     		 	
     		 	if (flag == 1) {
-    		 		strcat(newfh.BM," ");
+    		 		if (newfh.BM[0]!='\0') strcat(newfh.BM," ");
     		 		strcat(newfh.BM,lookupuser->userid);
     		 		newlevel |= PERM_BOARDS;
     		 		mail_file(currentuser->userid, "etc/forbm", lookupuser->userid, "пбхн" NAME_BM "╠ь╤а", 0);	

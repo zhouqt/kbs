@@ -249,7 +249,8 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode)
     }
 	if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
 	{
-        sprintf(msgerr, "对方正在%s，请稍候再发或给他(她)写信...\n",ModeType(BBSNET));
+        /*sprintf(msgerr, "对方正在%s，请稍候再发或给他(她)写信...\n",ModeType(BBSNET));*/
+		strcpy(msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...\n");
         return -1;
 	}
     if ((mode != 3) && (false == canIsend2(currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
