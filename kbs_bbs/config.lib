@@ -83,6 +83,9 @@ if test "$MYSQL_DIR" != "no"; then
   fi
 fi
 
+# Check pthread support
+AC_CHECK_LIB([pthread], [pthread_create], [LIBS="$LIBS -lpthread"])
+
 AC_ARG_WITH(libesmtp,
 [  --with-libesmtp[=DIR]
        Specify libesmtp library directory.],
