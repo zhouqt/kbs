@@ -381,6 +381,7 @@ int igetch()
                 hifd = i_newfd + 1;
         }
 	//TODO: igetkey重入问题
+        if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(currentuser, DEF_LOGININFORM))
         if (scrint&&!inremsg) {
             while (msg_count) {
                 inremsg = true;
@@ -395,11 +396,8 @@ int igetch()
         if (sr < 0 && errno == EINTR) {
             if (talkrequest)
                 return KEY_TALK;
+            if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(currentuser, DEF_LOGININFORM))
             if (scrint&&!inremsg) {
-/*这种msg处理仍然有同步问题，如果while判断完msg_count==0,
- * goto igetagain到select之间，发生了信号，那么，这个还是
- * 会丢失
- */
                 while (msg_count) {
                     inremsg = true;
                     msg_count--;
@@ -458,6 +456,7 @@ int igetch()
                         return KEY_TALK;
                 }
                 if(kicked) return KEY_TIMEOUT;
+                if ((uinfo.mode != POSTING && uinfo.mode != SMAIL) || DEFINE(currentuser, DEF_LOGININFORM))
                 if (!inremsg) {
 		      int saveerrno=errno;
                     while (msg_count) {
