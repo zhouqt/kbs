@@ -390,8 +390,11 @@
 					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/pc/pcnsearch.php" target="f3">文章搜索</a><br>
 					&nbsp;
-					<img src="/images/line1.gif" border="0" align="absmiddle">
+					<img src="/images/line.gif" border="0" align="absmiddle">
 					<a href="/bbsdoc.php?board=SMTH_blog" target="f3">Blog论坛</a><br>
+					&nbsp;
+					<img src="/images/line1.gif" border="0" align="absmiddle">
+					<a href="/pc/index.php?id=SYSOP" target="f3">帮助主题</a><br>
 				</DIV>
 			</td>
 		</tr>

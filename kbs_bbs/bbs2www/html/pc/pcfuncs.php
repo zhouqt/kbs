@@ -649,7 +649,7 @@ function pc_main_navigation_bar()
 <?php
 	if( $pcconfig["ADMIN"] ){
 ?>
-[<a href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">°ïÖú</a>]
+[<a href="index.php?id=<?php echo $pcconfig["ADMIN"]; ?>">°ïÖúÖ÷Ìâ</a>]
 <?php
 	}	
 }
