@@ -615,8 +615,10 @@ int igetkey()
         if (mode == 0) {
             if (ch == KEY_ESC)
                 mode = 1;
-            else
-                return ch;      /* Normal Key */
+            else {
+                ret = ch;
+                break;      /* Normal Key */
+            }
         } else if (mode == 1) { /* Escape sequence */
             if (ch == '[' || ch == 'O')
                 mode = 2;
@@ -627,8 +629,10 @@ int igetkey()
                 return KEY_ESC;
             }
         } else if (mode == 2) { /* Cursor key */
-            if (ch >= 'A' && ch <= 'D')
-                return KEY_UP + (ch - 'A');
+            if (ch >= 'A' && ch <= 'D') {
+               ret = KEY_UP + (ch - 'A');
+               break;
+            }
             else if (ch >= '1' && ch <= '6')
                 mode = 3;
             else {
