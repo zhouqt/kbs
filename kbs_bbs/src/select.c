@@ -115,13 +115,13 @@ static int select_change(struct _select_def *conf, int new_pos)
     int ret = SHOW_CONTINUE;
     int old_pos;
 
+    if (conf->item_count==0)
+        return SHOW_CONTINUE;
     if (conf->on_selchange) {
         ret = (*conf->on_selchange) (conf, new_pos);
         if (ret != SHOW_CONTINUE)
             return ret;
     }
-    if (conf->item_count==0)
-        return SHOW_CONTINUE;
     if (new_pos <= 0 || new_pos > conf->item_count) {
         if ((new_pos == 0) && (conf->flag & LF_LOOP)) {
             new_pos = conf->item_count;
