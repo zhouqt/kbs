@@ -264,6 +264,7 @@ void refresh()
     int i, j, k, ii, p, s;
     struct screenline *bp = big_picture;
     int chc;
+    bool flagc;
     int count=0;
     int stack[10],stackt=0;
 
@@ -315,11 +316,12 @@ void refresh()
         p=ii+1;
 
         chc = 0;
+        flagc = false;
         for (k = 0; k < scr_cols; k++) {
             if(chc==1) chc=2;
             else if(bp[j].data[k]&0x80) chc=1;
             else chc=0;
-            if((chc==1)&&(k<scr_cols-1)&&(!ndiff(j,k+1))||!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
+            if(flagc||(chc==1)&&(k<scr_cols-1)&&(!ndiff(j,k+1))||!ndiff(j,k)&&(isprint2(bp[j].data[k]))||(k>=p&&(count>=3||count>0&&i==scr_lns-1))) {
                 stackt=0;
                 rel_move(tc_col, tc_line, k, i);
                 s = bp[j].mode[k];
@@ -388,6 +390,7 @@ void refresh()
                     ochar('?');
                 else
                     ochar(bp[j].data[k]);
+                if(chc==1) flagc=true;
                 bp[j].ldata[k]=bp[j].data[k];
                 bp[j].lmode[k]=bp[j].mode[k];
                 bp[j].lcolor[k]=bp[j].color[k];
