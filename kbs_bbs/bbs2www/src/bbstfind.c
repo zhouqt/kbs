@@ -3,6 +3,24 @@
  */
 #include "bbslib.h"
 
+int my_strncmp (
+        const char * first,
+        const char * last,
+        size_t count
+        )
+{
+        if (!count)
+                return(0);
+
+        while (--count && *first && *first == *last)
+        {
+                first++;
+                last++;
+        }
+
+        return( *(unsigned char *)first - *(unsigned char *)last );
+}
+
 int main()
 {
 	FILE *fp;
@@ -35,8 +53,8 @@ int main()
 		if(fread(&x, sizeof(x), 1, fp)==0)
 			break;
 		sum++;
-		if(!strncmp(title, x.title, 40) || 
-		  (!strncmp(title, x.title+4, 40) && !strncmp(x.title, "Re: ", 4)))
+		if(!my_strncmp(title, x.title, 40) || 
+		  (!my_strncmp(title, x.title+4, 40) && !my_strncmp(x.title, "Re: ", 4)))
 		{
 			if(total==0)
 				strcpy(first_file, x.filename);
