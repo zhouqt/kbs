@@ -8041,7 +8041,7 @@ static PHP_FUNCTION(bbs_load_favboard)
                 WRONG_PARAM_COUNT;
         }
         load_favboard(0,1, getSession());
-        if(select<favbrd_list_t)
+        if(select>=0 && select<favbrd_list_t)
         {
                 SetFav(select, getSession());
                 RETURN_LONG(0);
@@ -8201,12 +8201,12 @@ static PHP_FUNCTION(bbs_fav_boards)
 
 	if (mode==2){
         load_favboard(0,2, getSession());
-        if(select<favbrd_list_t)
+        if(select>=0 && select<favbrd_list_t)
             SetFav(select, getSession());
 	}
 	else if(mode==3){
         load_favboard(0,3, getSession());
-        if(select<favbrd_list_t)
+        if(select>=0 && select<favbrd_list_t)
             SetFav(select, getSession());
 	}
 
