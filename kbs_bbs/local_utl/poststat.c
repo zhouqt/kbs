@@ -198,7 +198,7 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
     if (fp = fopen(curfile, "w")) {
 #ifdef BLESS_BOARD
         if (mytype==4)
-        fprintf(fp,"\x1b[1;33m©¤©¤ \x1b[31m¡î\x1b[33m¡î\x1b[32m¡î \x1b[41;32m  \x1b[33m±¾ÈÕÊ®´óÖÔÐÄ×£¸£  \x1b[40m \x1b[32m¡î\x1b[31m¡î\x1b[33m¡î ©¤©¤\x1b[m\n\n");
+        fprintf(fp,"              \x1b[1;33m©¤©¤ \x1b[31m¡î\x1b[33m¡î\x1b[32m¡î \x1b[41;32m  \x1b[33m±¾ÈÕÊ®´óÖÔÐÄ×£¸£  \x1b[40m \x1b[32m¡î\x1b[31m¡î\x1b[33m¡î ©¤©¤\x1b[m\n\n");
         else
 #endif
         fprintf(fp, "                [34m-----[37m=====[41m ±¾%s [40m=====[34m-----[m\n\n", mytitle[mytype]);
@@ -250,7 +250,7 @@ void writestat(int mytype,struct postrec* dobucket[HASHSIZE])
 	     if (mytype==4)
             fprintf(fp,
                     "                                            %s \x1b[1;31m%4d\x1b[0;37mÈË      %s\x1b[m\n"
-                    "\x1b[1mµÚ \x1b[31m%3d\x1b[37mÃû \x1b[4%dm%-60.60s\x1b[40m \x1b[33m%-12s%s\x1b[m\n", 
+                    "\x1b[1mµÚ\x1b[31m%2d \x1b[37mÃû \x1b[4%dm %-51.51s\x1b[40m \x1b[33m%-12s%s\x1b[m\n", 
                     p , top[i].number, surfix_bless[(real-1)*2], real,  (real-1)/2+1, top[i].title, top[i].author,surfix_bless[(real-1)*2+1]);
             else
 #endif
