@@ -265,7 +265,7 @@ function bbs_ann_updirs($path,&$board,&$up_dirs) {
     $dirs = explode('/',$path);
     $j = 0;
     foreach($dirs as $dir) {
-        if ($dir) {
+        if (($dir)&&($dir!='.')) {
             if (!strcmp('0Announce',$dir))
                 continue;
             $buf .= '/'.$dir;
