@@ -613,7 +613,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     }
 #ifdef FILTER
     sprintf(oldpath, "%s/boards/%s/%s", BBSHOME, boardname, fh->filename);
-	    if(check_badword(oldpath)) {
+	    if(check_badword(oldpath)||(boardname == "News")) {
 		    sprintf(newpath, "%s/boards/Filter/%s", BBSHOME, fh->filename);
 	            f_mv(oldpath, newpath);
 		    strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
