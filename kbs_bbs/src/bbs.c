@@ -2674,7 +2674,7 @@ char *direct ;
             /* change by KCN 1999.10.26
                     if(strcmp( fileinfo->owner, currentuser->userid))
             */
-            if (!isowner(&currentuser,fileinfo))
+            if (!isowner(currentuser,fileinfo))
                 return DONOTHING ;
 
     if(deny_me()&&!HAS_PERM(PERM_SYSOP))     /* °æÖ÷½ûÖ¹POST ¼ì²é */
@@ -2753,7 +2753,7 @@ char *direct;
             /* change by KCN 1999.10.26
               if(strcmp( fileinfo->owner, currentuser->userid))
             */
-            if(!isowner(&currentuser,fileinfo))
+            if(!isowner(currentuser,fileinfo))
             {
                 return DONOTHING ;
             }
@@ -3141,7 +3141,7 @@ char *direct ;
         clear();
         return FULLUPDATE;
     }
-    owned = isowner(&currentuser,fileinfo);
+    owned = isowner(currentuser,fileinfo);
     /* change by KCN  ! strcmp( fileinfo->owner, currentuser->userid ); */
     strcpy(usrid,fileinfo->owner);
     if( !(owned) && !HAS_PERM(PERM_SYSOP) )

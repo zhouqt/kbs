@@ -265,7 +265,7 @@ resolve_ucache()
 			log("4system","Can't open " PASSFILE "file %s",strerror(errno));
         	exit(-1);
 		}
-		ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));
+		/*ftruncate(passwdfd,MAXUSERS*sizeof(struct userec));*/
     	passwd = (struct userec*) mmap(NULL,
     			MAXUSERS*sizeof(struct userec),
     			PROT_READ|PROT_WRITE,MAP_SHARED,passwdfd,0);

@@ -957,7 +957,7 @@ user_login()
     move( t_lines - 2/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */
     clrtoeol();
     prints( "[1;36m¡î ÕâÊÇÄúµÚ [33m%d[36m ´ÎÉÏÕ¾£¬ÉÏ´ÎÄúÊÇ´Ó [33m%s[36m Á¬Íù±¾Õ¾¡£\n", currentuser->numlogins + 1, currentuser->lasthost );
-    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(&currentuser->lastlogin) );
+    prints( "¡î ÉÏ´ÎÁ¬ÏßÊ±¼äÎª [33m%s[m ", Ctime(&(currentuser->lastlogin)) );
     igetkey();
     ansimore("0Announce/hotinfo",NA);
     move( t_lines - 1/*1*/, 0 ); /* Leeward: 98.09.24 Alter below message */

@@ -694,7 +694,7 @@ post_article( usermail )
                 unlink(WWW_DEL);
                 ptr = strrchr(WWW_DEL, '/') - 5;
                 if(strncmp(ptr, "/test", 5))
-                    Xuserec(&currentuser, userid, -1); /* Decrease article number */
+                    Xuserec(currentuser, userid, -1); /* Decrease article number */
             }
         }
 
@@ -746,7 +746,7 @@ post_article( usermail )
 
         append_record(".post.X", &postlog, sizeof(postlog));
 
-        Xuserec( &currentuser, userid, 1); /* Increase article number */
+        Xuserec( currentuser, userid, 1); /* Increase article number */
     }
 }
 
@@ -885,7 +885,7 @@ char    *argv[];
     homepath = argv[2];
 
     resolve_ucache();/* modified by dong , 1998.11.2 */
-    bzero(&currentuser,sizeof(struct userec));
+    bzero(currentuser,sizeof(struct userec));
 
     /* Leeward: 97.12.20: 让 3W 发文能影响生命力 */
     if (argc < 5)/*Haohmaru.99.11.24.原来为4*/

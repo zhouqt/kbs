@@ -45,6 +45,7 @@
 #define BADLOGINFILE "logins.bad"
 
 struct fileheader currentmail;
+struct userec alluser;
 
 char LowUserid[20];
 char genbuf[BUFSIZE];
@@ -620,6 +621,8 @@ char *user;
 	uid = getuser(user,&currentuser);
 	if (uid) 
 		return 1;
+	alluser=*currentuser;
+	currentuser=&alluser;
 	return -1;
 /*    FILE *rec;
     int found=0;
@@ -630,7 +633,7 @@ char *user;
         return -1;
     while(1)
     {
-        if(fread(&currentuser,sizeof(currentuser),1,rec)<=0) break;
+        if(fread(currentuser,sizeof(currentuser),1,rec)<=0) break;
         if(currentuser->numlogins<=0)
             continue;
         if(strcasecmp(user,currentuser->userid))
@@ -968,7 +971,7 @@ Pass()
         return;
     }
 
-    if (!checkpasswd2(cmd, &currentuser)) {
+    if (!checkpasswd2(cmd, currentuser)) {
         sprintf(genbuf, "-ERR Password supplied for \"%s.bbs\" is incorrect.", LowUserid);
         outs(genbuf);
         LowUserid[0] = '\0';
