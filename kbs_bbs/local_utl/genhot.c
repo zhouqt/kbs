@@ -60,6 +60,7 @@ void gen_commend_xml()
     fclose(fp);
 }
 
+#endif
 int main(int argc, char **argv)
 {
     time_t now;
@@ -68,8 +69,9 @@ int main(int argc, char **argv)
 
     chdir(BBSHOME);
 
+#ifdef COMMEND_ARTICLE
 	gen_commend_xml();
+#endif
 
     return 0;
 }
-#endif
