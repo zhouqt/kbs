@@ -210,7 +210,7 @@ double envalue(struct var_struct * s)
             flag=0;
             for (j=i+1;j<temp.height;j++) {
                 if (temp.p[j][i]!=0) {
-                    swaprow(temp,i,j);
+                    swaprow(&temp,i,j);
                     result*=-1;
                     flag=1;
                     break;
@@ -224,7 +224,7 @@ double envalue(struct var_struct * s)
         //保证对角线元素不为零
         for (j=i+1;j<temp.height;j++) {
             ration=-temp.p[j][i]/temp.p[i][i];
-            plusrow(temp,i,j,ration);
+            plusrow(&temp,i,j,ration);
         }
         result*=temp.p[i][i];
     }
@@ -276,7 +276,7 @@ void inverse(struct var_struct * s, struct var_struct * A)
             plusrow(&temp,i,j,ration);
         }
     }
-    copy_var(s, &temp);
+    copy_var(&temp,s);
     del(&temp);
     del(&tempA);
 }
@@ -436,8 +436,8 @@ void take_func(struct var_struct * p, struct var_struct * q, int kind)
     }
     else {
         switch(kind) {
-            23: set_var(p, envalue(q)); break;
-            24: inverse(p, q); break;
+            case 23: set_var(p, envalue(q)); break;
+            case 24: inverse(p, q); break;
         }
     }
 }
@@ -534,8 +534,8 @@ void eval(struct var_struct * p, char * s, int l, int r)
                 del(&m2);
                 return;
             }
-            if(s[n]==')') n=get_rl(s,r,l);
-            if(s[n]==']') n=get_rl2(s,r,l);
+            if(s[n]==')') n=get_rl(s,n,l);
+            if(s[n]==']') n=get_rl2(s,n,l);
             n--;
         }while(n>=l);
     }
@@ -544,7 +544,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
         m.p = 0;
         eval(&m, s, l, r-1);
         makesure(1);
-        reverse(p, &m);
+        reverse(&m,p);
         del(&m);
         return;
     }
