@@ -942,6 +942,9 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                             x = col;
                             y++;
                         }
+#ifdef CHINESE_CHARACTER
+                        if (!DEFINE(currentuser, DEF_CHCHAR)||!chk)
+#endif
                         if(y==cursory-1&&x<=cursorx)
                             now=i+1;
                     }
@@ -969,6 +972,9 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                             x = col;
                             y++;
                         }
+#ifdef CHINESE_CHARACTER
+                        if (!DEFINE(currentuser, DEF_CHCHAR)||!chk)
+#endif
                         if(y==cursory+1&&x<=cursorx)
                             now=i+1;
                     }
@@ -1062,6 +1068,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
                 if(j<0) j=0;
                 for(k=0;k<j+1;k++)
                     buf[i+k]=buf[i+j+k];
+                if(now>strlen(buf)) now=strlen(buf);
                 break;
             default:
                 if(isprint2(ch)&&strlen(buf)<len-1) {
