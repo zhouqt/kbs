@@ -377,7 +377,7 @@ int bbs_main(argv)
         local_Net_Sleep(20);
         shutdown(csock, 2);
         close(csock);
-        exit(-1);
+        return -1;
     }
 #endif
 #ifdef LOAD_LIMIT
@@ -401,7 +401,7 @@ int bbs_main(argv)
                 shutdown(csock, 2);
                 close(csock);
 
-                exit(-1);
+                return -1;
             }
 #ifdef AIX
             {                   /* Leeward 98.06.11 For AIX only. Please man psdanger */
@@ -423,7 +423,7 @@ int bbs_main(argv)
                     shutdown(csock, 2);
                     close(csock);
 
-                    exit(-1);
+                    return -1;
                 }
                 if ((server_pid != -1) && (heavy_load))
                     kill(server_pid, SIGUSR2);
@@ -438,7 +438,7 @@ int bbs_main(argv)
     sprintf(bbs_prog_path, "/bin/bbs", BBSHOME);
     if (chroot(BBSHOME) != 0) {
         local_prints("Cannot chroot, exit!\r\n");
-        exit(-1);
+        return -1;
     }
 #else
     sprintf(bbs_prog_path, "%s/bin/bbs", BBSHOME);
@@ -450,7 +450,7 @@ int bbs_main(argv)
         shutdown(csock, 2);
         close(csock);
 
-        exit(-1);
+        return -1;
     }
 
 
@@ -476,9 +476,9 @@ int bbs_main(argv)
     }
 
     main_bbs(0, argv);
-    exit(-1);
+    return -1;
     write(0, "execl failed\r\n", 12);
-    exit(-1);
+    return -1;
 }
 
 #ifndef SSHBBS
@@ -609,6 +609,6 @@ int bbs_entry(void)
         strncpy(fromhost, host, IPLEN);
         fromhost[IPLEN] = 0;
     }
-    bbs_main(saved_argv[0]);
+    return bbs_main(saved_argv[0]);
 }
 #endif
