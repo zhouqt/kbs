@@ -2243,6 +2243,7 @@ char* argv[];
 
     if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0)
     {
+	perror("socket:");
         return -1;
     }
     nFlag = 1;
@@ -2261,6 +2262,7 @@ char* argv[];
 
     if (bind(sock, (struct sockaddr *) & sin, sizeof(sin)) < 0)
     {
+	perror("bind:");
         return -1;
     }
 
