@@ -1,0 +1,332 @@
+/* define all function that need to by used in whole project */
+#ifndef __FUNC_H__
+#define __FUNC_H__
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+/* defined in pass.c */
+    int checkpasswd(const char *passwd, const char *test);
+    int checkpasswd2(const char *passwd, const struct userec *user);
+    int setpasswd(const char *passwd, struct userec *user);
+
+
+    char *Cdate(time_t clock);  /* 时间 --> 英文 */
+    char *Ctime(time_t clock);  /* 时间 转换 成 英文 */
+    char *nextword(const char **str, char *buf, int sz);
+
+
+/* defined in ucache.c */
+    struct userec *getuserbynum(int num);
+    int getnewuserid2(char *userid);
+    unsigned int ucache_hash(const char *userid);       /* hash function export for utmp usage */
+
+    void resolve_ucache();
+
+    int getuserid(char *userid, int uid);
+    void setuserid(int num, const char *userid);        /* 设置user num的id为user id */
+    int setuserid2(int num, const char *userid);        /* 设置user num的id为user id,userd使用 */
+    int searchuser(const char *userid);
+    int getuser(const char *userid, struct userec **lookupuser);        /* 取用户信息 ，返回值在lookupuser里面 */
+    char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag);
+    char *getuserid2(int uid);
+    int update_user(struct userec *user, int num, int all);
+    int apply_users(int (*fptr) (struct userec *, char *), char *arg);
+    int getnewuserid(char *userid);
+
+    int flush_ucache();
+    int load_ucache();
+	int get_giveupinfo(int* basicperm,int s[10][2]);
+/* 根据tag ,生成 匹配的user id 列表 (针对所有注册用户)*/
+
+
+/* 
+   in bbslog.c 
+   
+   如果from[0]是一个数字，那么表明这个log的优先级。缺省优先级是 0
+
+*/
+#define report(x)        bbslog("user","%s",x)
+#define msgreport(x)     bbslog("usermsg","%s",x)
+#define board_usage(x,y) bbslog("boardusage", "%-20s Stay: %5ld",x,y)
+
+    int bbslog(const char *from, const char *fmt, ...);
+
+/* defined in utmp.c */
+    typedef int (*APPLY_UTMP_FUNC) (struct user_info *, void *, int pos);
+    void resolve_utmp();
+    void detach_utmp();
+    int getnewutmpent(struct user_info *up);
+    int real_getnewutmpent(struct user_info *up);
+#define CHECK_UENT(uident) ((utmpent > 0 && utmpent <= USHM_SIZE ) && \
+			(utmpshm->uinfo[ utmpent - 1 ].uid==(uident)))
+#define UPDATE_UTMP(field,entp) { if (CHECK_UENT((entp).uid)) \
+			utmpshm->uinfo[ utmpent- 1 ].field=(entp).field; }
+#define UPDATE_UTMP_STR(field,entp) { if (CHECK_UENT((entp).uid)) \
+			strcpy(utmpshm->uinfo[ utmpent- 1 ].field,(entp).field); }
+    int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg); /* ulist 中 search 符合fptr函数的 user */
+#if 0
+    void clear_utmp2(struct user_info *uentp);
+#endif
+    void clear_utmp2(int uentp);
+    void clear_utmp(int uentp, int useridx, int pid);   /*先锁住utmp调用clear_utmp2,并校验useridx */
+    int apply_ulist(APPLY_UTMP_FUNC fptr, void *arg);
+    int apply_utmpuid(APPLY_UTMP_FUNC fptr, int uid, void *arg);
+    int apply_ulist_addr(APPLY_UTMP_FUNC fptr, void *arg);      /* apply func on user list */
+    int get_utmp_number();      /* return active user */
+    struct user_info *get_utmpent(int utmpnum);
+    int get_utmpent_num(struct user_info *uent);        /* return utmp number */
+
+    int t_cmpuids(int uid, struct user_info *up);
+    int apply_utmp(APPLY_UTMP_FUNC fptr, int maxcount, char *userid, void *arg);
+
+/* defined in list.c */
+    int myfriend(int uid, char *fexp);
+
+/* defined in newio.c */
+    void output(char *s, int len);
+
+/* defined in stuff.c */
+    int multilogin_user(struct userec *user, int usernum);
+    time_t get_exit_time(char *id, char *exittime);
+    int dashf(char *fname);
+    int dashd(char *fname);
+    int seek_in_file(char filename[STRLEN], char seekstr[STRLEN]);
+    char *setbdir(int digestmode, char *buf, char *boardname);
+    int my_system(const char *cmdstring);
+    char *modestring(int mode, int towho, int complete, char *chatid);
+    int countexp(struct userec *udata);
+    int countperf(struct userec *udata);
+    int compute_user_value(struct userec *urec);
+    void *attach_shm(char *shmstr, int defaultkey, int shmsize, int *iscreate);
+    void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr);
+    void attach_err(int shmkey, char *name);
+    int id_invalid(char *userid);
+    int addtofile(char filename[STRLEN], char str[STRLEN]);
+    void bbssettime(time_t t);
+    time_t bbstime(time_t * t);
+    int getwwwguestcount();
+    int del_from_file(char filename[STRLEN], char str[STRLEN]);
+    int setpublicshmreadonly(int readonly);
+    struct public_data *get_publicshm();        /*获得public shm指针 */
+    char *sethomefile(char *buf, char *userid, char *filename); /*取某用户文件 路径 */
+    char *sethomepath(char *buf, char *userid); /* 取 某用户 的home */
+
+    char *setmailfile(char *buf, char *userid, char *filename); /* 取某用户mail文件 路径 */
+    char *setmailpath(char *buf, char *userid); /* 取 某用户 的mail */
+    char *setbpath(char *buf, char *boardname); /* 取某版 路径 */
+    char *setbfile(char *buf, char *boardname, char *filename); /* 取某版下文件 */
+    void RemoveMsgCountFile(char *userID);
+    int bad_user_id(char *userid);      /* 检查.badname是否允许注册的 */
+    int valid_ident(char *ident);       /* 检查合法的ident */
+    struct user_info *t_search();
+    int getunifopid();
+    int cmpinames(const char *userid, const char *uv);
+    int cmpfnames(char *userid, struct friends *uv);
+    int cmpfileinfoname(char *filename, struct fileheader *fi);
+
+    int canIsend2(char *userid);
+    void sigbus(int signo);
+    void encodestr(register char *str);
+    int Isspace(char ch);
+    char *idle_str(struct user_info *uent);
+    void getuinfo(FILE * fn, struct userec *ptr_urec);
+    int simplepasswd(char *str);
+    void logattempt(char *uid, char *frm);
+    int check_ban_IP(char *IP, char *buf);
+
+#define time(x) bbstime(x)
+
+#define BBS_TRY \
+    	if (!sigsetjmp(bus_jump, 1)) { \
+        	signal(SIGBUS, sigbus);
+
+#define BBS_CATCH \
+	} \
+	else { \
+
+#define BBS_END } \
+	signal(SIGBUS, SIG_IGN);
+
+#define BBS_RETURN(x) {signal(SIGBUS, SIG_IGN);return (x);}
+#define BBS_RETURN_VOID {signal(SIGBUS, SIG_IGN);return;}
+
+    int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, size_t * size, int *ret_fd);
+    int safe_mmapfile_handle(int fd, int openflag, int prot, int flag, void **ret_ptr, size_t * size);
+    void end_mmapfile(void *ptr, int size, int fd);
+
+/* define in bcache.c */
+    int getbnum(char *bname);
+    void resolve_boards();
+    int get_boardcount();
+    struct boardheader *getbcache(char *bname);
+    int normal_board(char *bname);
+    int getboardnum(char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
+
+    int add_board(struct boardheader *newboard);
+    int apply_boards(int (*func) ());   /* 对所有版 应用 func函数 */
+    int delete_board(char *boardname, char *title);     /* delete board entry */
+    struct boardheader const *getboard(int num);
+    int set_board(int bid, struct boardheader *board);
+    struct BoardStatus *getbstatus(int index);  /* 获得版面的发文状态结构 */
+    int updatelastpost(char *board);
+    int setboardmark(char *board, int i);
+    int setboardorigin(char *board, int i);
+    int setboardtitle(char *board, int i);
+    int board_setreadonly(char *board, int readonly);   /* 设置版面只读属性 */
+    int get_nextid(char *boardname);    /*生成文章索引号并自动加一 */
+
+/* define in boards.c */
+    int anonymousboard(char *board);
+    int load_boards(char *boardprefix);
+    void brc_clear_new_flag(char *filename);    /* 清除版面的到这篇文章未读标记 */
+
+    int getfavnum();
+    void save_zapbuf();
+    void addFavBoard(int);
+    void addFavBoardDir(int, char *);
+    void release_favboard();
+    int changeFavBoardDir(int i, char *s);
+    int ExistFavBoard(int idx);
+    void load_favboard(int dohelp);
+    void save_favboard();
+    void save_userfile(char *fname, int blknum, char *buf);
+    int IsFavBoard(int idx);
+    void MoveFavBoard(int p, int q);
+    int DelFavBoard(int i);
+    int SetFav(int i);
+    int cmpboard(struct newpostdata *brd, struct newpostdata *tmp);
+
+    int brc_initial(char *userid, char *boardname);
+    char *brc_putrecord(char *ptr, char *name, int num, int *list);
+    /*
+     * 保存一个版的brclist 
+     */
+    void brc_update(char *userid);      /* 保存当前的brclist到用户的.boardrc */
+    void brc_add_read(char *filename);
+    void brc_addreaddirectly(char *userid, int bnum, int posttime);
+    void brc_clear();
+    int brc_unread(int ftime);
+    int junkboard(char *currboard);     /* 判断是否为 junkboards */
+    int checkreadonly(char *board);     /* 判断是不是只读版面 */
+    int deny_me(char *user, char *board);       /* 判断用户 是否被禁止在当前版发文章 */
+    int haspostperm(struct userec *user, char *bname);  /* 判断在 bname版 是否有post权 */
+    int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2]);       /*查询字符串中是否包含 bmname */
+    int chk_currBM(const char BMstr[STRLEN - 1], struct userec *user);  /* 根据输入的版主名单 判断user是否有版主 权限 */
+    int deldeny(struct userec *user, char *board, char *uident, int notice_only);       /* 删除 禁止POST用户 */
+    int check_read_perm(struct userec *user, int num);
+
+/* define in article.c */
+    int get_postfilename(char *filename, char *direct);
+    int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink);
+    int isowner(struct userec *user, struct fileheader *fileinfo);
+    int do_del_post(struct userec *user, int ent, struct fileheader *fileinfo, char *direct, char *board, int digestmode, int decpost);
+    /*
+     * 删除文章，digestmode定义阅读模式，decpost表示斑竹删除是否减文章数 
+     */
+
+    int cmpname(struct fileheader *fhdr, char name[STRLEN]);
+/* Haohmaru.99.3.30.比较 某文件名是否和 当前文件 相同 */
+
+    void addsignature(FILE * fp, struct userec *user, int sig); /*增加User的签名挡 */
+
+/*添加  POST 最后一行 的来源*/
+    void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony);
+
+/* 把quote_file复制到filepath (转贴或自动发信)*/
+    void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, char *sourceboard);
+
+    void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode);
+
+/*写入.post文件供分析*/
+    int write_posts(char *id, char *board, char *title);
+    void cancelpost(char *board, char *userid, struct fileheader *fh, int owned, int autoappend);
+    int outgo_post(struct fileheader *fh, char *board, char *title);
+    int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re);
+    int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode);
+    int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode);   /* (自动生成文件名) 转贴或自动发信 */
+
+/* define in record.c */
+    int safewrite(int fd, char *buf, int size);
+    typedef int (*RECORD_FUNC_ARG) (void *, void *);
+    typedef int (*APPLY_FUNC_ARG) (void *, int, void *);
+    int delete_record(char *dirname, int size, int ent, RECORD_FUNC_ARG filecheck, void *arg);
+    int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int applycopy, bool reverse);
+    int append_record(char *filename, void *record, int size);
+    int substitute_record(char *filename, void *rptr, int size, int id);
+    int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, void *farg);
+    long get_num_records(char *filename, int size);
+    long get_sum_records(char *fpath, int size);        /*获得.DIR里面文件大小总数 */
+    int get_record_handle(int fd, void *rptr, int size, int id);
+    int get_record(char *filename, void *rptr, int size, int id);
+    int delete_range(char *filename, int id1, int id2, int del_mode);
+    int get_records(char *filename, void *rptr, int size, int id, int number);
+    int search_record_back(int fd,      /* idx file handle */
+                           int size,    /* record size */
+                           int start,   /* where to start reverse search */
+                           RECORD_FUNC_ARG fptr,        /* compare function */
+                           void *farg,  /* additional param to call fptr() / original record */
+                           void *rptr,  /* record data buffer to be used for reading idx file */
+                           int sorted); /* if records in file are sorted */
+    int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode);
+
+
+/* define in sysconf.c */
+    char *sysconf_str(char *key);
+    int sysconf_eval(char *key);
+    struct smenuitem *sysconf_getmenu(char *menu_name);
+    void build_sysconf(char *configfile, char *imgfile);
+    void load_sysconf();
+    char *sysconf_relocate(char *data); /*重新定位menuitem里面的字符串 */
+    int check_sysconf();
+
+/* libmsg.c */
+    int addto_msglist(int utmpnum, char *userid);
+    int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode);
+    int canmsg(struct userec *fromuser, struct user_info *uin);
+    int can_override(char *userid, char *whoasks);
+    int delfrom_msglist(int utmpnum, char *userid);
+
+/* site.c */
+    char *ModeType(int mode);
+    char *email_domain();
+    int get_shmkey(char *s);
+    int uleveltochar(char *buf, struct userec *lookupuser);
+
+    int safe_kill(int x, int y);
+
+    void main_bbs(int convit, char *argv);
+
+/* bbs_sendmail.c */
+    int chkusermail(struct userec *user);
+    int chkreceiver(struct userec *fromuser, struct userec *touser);
+    int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5, int noansi);
+    int check_query_mail(char qry_mail_dir[STRLEN]);
+/* convcode.c */
+    void conv_init();
+
+/* libann.c */
+    void ann_add_item(MENU * pm, ITEM * it);
+    int ann_load_directory(MENU * pm);
+    ITEM *ann_alloc_items(size_t num);
+    void ann_free_items(ITEM * it, size_t num);
+    void ann_set_items(MENU * pm, ITEM * it, size_t num);
+    int ann_get_board(char *path, char *board, size_t len);
+    int ann_get_path(char *board, char *path, size_t len);
+
+/* check the user's access for the path
+  return < 0 deny access
+  return ==0 has access and it can be access by any body
+  return >0 need some extra permission to access it
+*/
+    int ann_traverse_check(char *path, struct userec *user);
+
+
+/* zmodem */
+    int zsend_file(char *filename, char *title);
+#define FILENAME2POSTTIME(x) (atoi(((char*)x)+2))
+#ifdef __cplusplus
+}
+#endif
+#endif
