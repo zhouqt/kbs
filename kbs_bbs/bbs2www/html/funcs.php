@@ -112,12 +112,10 @@ function set_fromhost()
 	else {
 		$ips = explode(",", $fullfromhost);
 		$c = count($ips);
-		if ($c > 0) {
+		if ($c > 1) {
 			$fromhost = trim($ips[$c - 1]);
-			if (isset($proxyIPs)) {
-				if (in_array($fromhost, $proxyIPs) && $c > 1) {
-					$fromhost = $ips[$c - 2];
-				}
+			if (isset($proxyIPs) && in_array($fromhost, $proxyIPs)) {
+				$fromhost = $ips[$c - 2];
 			}
 		} else $fromhost = $fullfromhost;
 	}
