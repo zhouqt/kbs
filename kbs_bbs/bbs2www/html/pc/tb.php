@@ -76,9 +76,9 @@
 	}
 	
 	if ($pcconfig["ENCODINGTBP"]) {
-	    $title = mb_convert_encoding ($title,$default_encoding,$support_encodings);
-        $excerpt = mb_convert_encoding ($excerpt,$default_encoding,$support_encodings);
-	    $blog_name = mb_convert_encoding ($blog_name,$default_encoding,$support_encodings);
+	    $title = mb_convert_encoding ($title,$default_encoding,mb_detect_encoding ($title,$support_encodings));
+        $excerpt = mb_convert_encoding ($excerpt,$default_encoding,mb_detect_encoding ($excerpt,$support_encodings));
+	    $blog_name = mb_convert_encoding ($blog_name,$default_encoding,mb_detect_encoding ($blog_name,$support_encodings));
 	}
 	
 	$tbarr = array(
