@@ -116,7 +116,7 @@
 </center>
 <?php
 		$descdir = "vote/".$board."/desc.".$votearr[0]["DATE"] ;
-		bbs_printansifile($descdir);
+		echo bbs_printansifile($descdir);
 ?>
 <center>
 <hr class="default"/>

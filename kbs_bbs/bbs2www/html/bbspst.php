@@ -86,7 +86,7 @@
         else
 		{
 		    fclose($fp);
-			bbs_printansifile($notes_file);
+			echo bbs_printansifile($notes_file);
 		}
 ?>
 </td>

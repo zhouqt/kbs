@@ -22,7 +22,7 @@
 <hr>
 <pre>
 <?php 
-	bbs_printansifile($top_file);
+	echo bbs_printansifile($top_file);
 ?>
 </pre>
 </center>

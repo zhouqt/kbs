@@ -55,7 +55,7 @@
 ?>
 <hr class="default"/>
 <?php
-		bbs_printansifile($tmpfile);
+		echo bbs_printansifile($tmpfile);
 ?>
 <hr class="default"/>
 <form name="postform" method="post" action="/cgi-bin/bbs/bbssnd?board=<?php echo $board; ?>">
@@ -85,7 +85,7 @@
 正文格式如下:<br>
 </center>
 <?php
-			bbs_printansifile($votearr[0]["FILENAME"]);
+			echo bbs_printansifile($votearr[0]["FILENAME"]);
 ?>
 <center>
 <hr class="default"/>

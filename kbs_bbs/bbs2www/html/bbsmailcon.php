@@ -125,7 +125,7 @@ function get_mimetype($name)
 <table width="610" border="1">
 <tr><td>
 <?php
-				bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
+				echo bbs_printansifile($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
 ?>
 </td></tr></table>
 <hr>

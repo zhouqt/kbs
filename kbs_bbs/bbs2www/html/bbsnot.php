@@ -35,7 +35,7 @@
 <hr class="default">
 <table border=1 width=610><tr><td>
 <?php
-	bbs_printansifile($top_file);
+	echo bbs_printansifile($top_file);
 ?></tr></td>
 </table>
 [<a href=bbsdoc.php?board=<?php echo $brd_encode; ?>>╠╬лжбшгЬ</a>]
