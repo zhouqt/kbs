@@ -55,6 +55,8 @@ function preprocess(){
 	}
 	if (isset($_GET["reID"])) {
 		$reID = $_GET["reID"];
+	    if (bbs_is_noreply_board($brdArr))
+			foundErr("本版只可发表文章,不可回复文章!");
 	}else {
 		$reID = 0;
 	}

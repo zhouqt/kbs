@@ -88,6 +88,13 @@ function bbs_is_readonly_board($board)
 }
 
 
+function bbs_is_noreply_board($board)
+{
+	global $BOARD_FLAGS;
+	return bbs_check_board_flag($board, $BOARD_FLAGS["NOREPLY"]);
+}
+
+
 function showBoardStaticsTop($boardArr, $is_bm, $is_ann=false){
 	global $conn;
 	global $loginok;
