@@ -26,7 +26,7 @@
 		
 		if (!isset($_POST["title"])) html_error_quit("没有指定文章标题!");
 		if (!isset($_POST["text"])) html_error_quit("没有指定文章内容!");
-		if (isset($_POST["reid"])) $reID = $_GET["reid"];   
+		if (!isset($_POST["reid"])) $reID = $_GET["reid"];   
 		else
 			$reID = 0;
 		
