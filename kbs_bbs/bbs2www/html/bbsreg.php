@@ -7,6 +7,7 @@
 	require("funcs.php");
 	html_init("gb2312");
 
+	@$num_auth=$_POST["num_auth"];
 	@$userid=$_POST["userid"];
 	@$nickname=$_POST["username"];
 	@$realname=$_POST["realname"];
@@ -20,6 +21,12 @@
 	@$gender=$_POST["gender"];
 	@$m_register=$_POST["m_register"];
 	@$mobile_phone=$_POST["mobile_phone"];
+
+	session_start();
+	if(!isset($_SESSION['num_auth']))
+  	    html_error_quit("请等待识别的图片显示完毕!");
+	if($_SESSION['num_auth']!=$num_auth)
+	    html_error_quit("图片上的字符串识别错误!难道你是机器人？");
 
 	if(!strchr($reg_email,'@'))
 	    html_error_quit("错误的注册 email 地址!");
