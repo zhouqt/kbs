@@ -994,7 +994,7 @@ void showtitle(title, mid)
 	/*为了多版主修改 Bigman:2002.9.7 */
 	{
     note = note + 7 ;
-    spc1 = 78 - strlen(title) - strlen(mid) - strlen(note);
+    spc1 = 78 - num_noans_chr(title) - strlen(mid) - strlen(note);
     spc2 = 2;
 
 	}
