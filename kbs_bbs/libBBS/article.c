@@ -605,10 +605,32 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     char buf[256];
     int fd, err = 0, nowid = 0;
     char* p;
+#ifdef FILTER
+    char f[256];
+    char oldpath[50];
+    char newpath[50];
+    FILE *fp;
+#endif
 
     if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
         strncpy(fh->title, fh->title + 4, STRLEN);
     }
+#ifdef FILTER
+    /* 关键字过滤 added by Czz 020927 */
+    sprintf(oldpath, "%s/boards/%s/%s", BBSHOME, boardname, fh->filename);
+    if ((fp = fopen(oldpath, "r")) == NULL)
+	    return;
+    while (fgets(f, sizeof(f), fp) != NULL) {
+	    if(strstr(f,"法轮功")) {
+		    sprintf(newpath, "%s/boards/Filter/%s", BBSHOME, fh->filename);
+	            symlink(oldpath, newpath);
+		    boardname = "Filter";
+		    break;
+	    }
+    }
+    fclose(fp);
+    /* added end */
+#endif
     setbfile(buf, boardname, DOT_DIR);
 
     if ((fd = open(buf, O_WRONLY | O_CREAT, 0664)) == -1) {
