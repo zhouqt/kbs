@@ -5,7 +5,6 @@ $needlogin=1;
 
 require("inc/funcs.php");
 require("inc/user.inc.php");
-require("inc/userdatadefine.inc.php");
 require("inc/ubbcode.php");
 
 preprocess();
@@ -48,8 +47,7 @@ function preprocess() {
 }
 
 function showUserData($user, $user_num) {
-	extract($GLOBALS);
-	print_r($user);
+require("inc/userdatadefine.inc.php");
 ?>
 <table width=97% border=0 cellspacing=0 cellpadding=3 align=center>
   <tr> 
@@ -202,31 +200,31 @@ function showUserData($user, $user_num) {
 
   <tr> 
     <td class=tablebody1 width=20% align=right>生　　肖：</td>
-    <td class=tablebody1><?php echo $shengxiao[$user['shengxiao']]; ?> </td>
+    <td class=tablebody1><?php echo showIt($shengxiao[$user['shengxiao']]); ?> </td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>血　　型：</td>
-    <td class=tablebody2><?php   echo $blood; ?></td>
+    <td class=tablebody2><?php    echo showIt($bloodtype[$user['bloodtype']]); ?></td>
   </tr>
   <tr> 
     <td class=tablebody1 width=20% align=right>信　　仰：</td>
-    <td class=tablebody1><?php   echo $belief; ?></td>
+    <td class=tablebody1><?php    echo showIt($religion[$user['religion']]) ?></td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>职　　业：</td>
-    <td class=tablebody2><?php   echo $occupation; ?></td>
+    <td class=tablebody2><?php    echo showIt($profession[$user['profession']]); ?></td>
   </tr>
   <tr> 
     <td class=tablebody1 width=20% align=right>婚姻状况：</td>
-    <td class=tablebody1><?php   echo $marital; ?></td>
+    <td class=tablebody1><?php    echo showIt($married[$user['married']]); ?></td>
   </tr>
   <tr> 
     <td class=tablebody2 width=20% align=right>最高学历：</td>
-    <td class=tablebody2><?php   echo $education; ?></td>
+    <td class=tablebody2><?php    echo showIt($education[$user['education']]); ?></td>
   </tr>
   <tr> 
     <td class=tablebody1 width=20% align=right>毕业院校：</td>
-    <td class=tablebody1><?php   echo $college; ?></td>
+    <td class=tablebody1><?php    echo showIt($user['graduateschool']); ?></td>
   </tr></table>
 <br>
 
@@ -235,48 +233,48 @@ function showUserData($user, $user_num) {
     <th align=left colspan=6> 论坛属性</th>
   </tr>
   <tr>
-    <td class=tablebody1 width=15% align=right>经验值：</td>
+    <td class=tablebody1 width=15% align=right>积分：</td>
 
-    <td  width=35%  class=tablebody1><b>94023 </b></td>
+    <td  width=35%  class=tablebody1><b><?php echo $user['score']; ?> </b></td>
     <td width=15% align=right class=tablebody1>精华帖子：</td>
-    <td width=35%  class=tablebody1> <b>0</b>篇</td>
+    <td width=35%  class=tablebody1> <b>N/A</b>篇</td>
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>魅力值：</td>
-    <td  width=35%  class=tablebody1><b>94023 </b></td>
+    <td  width=35%  class=tablebody1><b>N/A </b></td>
     <td width=15% align=right class=tablebody1>帖子总数：</td>
-    <td width=35%  class=tablebody1><b>47</b> 篇</td>
+    <td width=35%  class=tablebody1><b><?php echo $user['numposts']; ?></b> 篇</td>
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>论坛等级：</td>
-    <td  width=35%  class=tablebody1><b>管理员 </b></td>
+    <td  width=35%  class=tablebody1><b><?php echo bbs_getuserlevel($user['userid']); ?> </b></td>
     <td width=15% align=right class=tablebody1>被删主题：</td>
-    <td width=35%  class=tablebody1><b><font color=#FF0000>-2</font></b> 
+    <td width=35%  class=tablebody1><b><font color=#FF0000>N/A</font></b> 
       篇</td>
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>威望值：</td>
-    <td  width=35%  class=tablebody1><b><font color=#FF0000>1000</font> </b></td>
+    <td  width=35%  class=tablebody1><b><font color=#FF0000>N/A</font> </b></td>
     <td width=15% align=right class=tablebody1>被删除率：</td>
 <td width=35%  class=tablebody1><b></b> <font color=#FF0000><b>
-4.26%
+N/A
 </b></font> 
     </td>
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>门  派：</td>
     <td  width=35%  class=tablebody1><b>
-无门无派
+<?php echo showIt($groups[$user['group']]); ?>
  </b></td>
     <td class=tablebody1 width=15% align=right>登陆次数：</td>
-    <td width=35%  class=tablebody1><b>18</b> 
+    <td width=35%  class=tablebody1><b><?php echo $user['numlogins']; ?></b> 
     </td>
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>注册日期：</td>
-    <td  width=35%  class=tablebody1><b>2002-5-19 1:19:38</b></td>
+    <td  width=35%  class=tablebody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['firstlogin']); ?></b></td>
     <td width=15% align=right class=tablebody1>上次登录：</td>
-    <td width=35%  class=tablebody1><b>2003-7-31 11:14:03</b></td>
+    <td width=35%  class=tablebody1><b><?php echo strftime("%Y-%m-%d %H:%M:%S", $user['lastlogin']); ?></b></td>
   </tr>
 </table>
 <br>
@@ -287,115 +285,39 @@ function showUserData($user, $user_num) {
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>现金货币：</td>
-    <td width=35%  class=tablebody1><b>15340</b></td>
+    <td width=35%  class=tablebody1><b><?php echo $user['money']; ?></b></td>
     <td colspan=2 valign=top rowspan=4 class=tablebody1>论坛职务：
       <hr size=1 width=100 align=left>
-管理员<br>
+<?php echo bbs_getuserlevel($user['userid']); ?><br>
       </td>
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>股票市值：</td>
-    <td  width=35%  class=tablebody1><b>0</b></td>
+    <td  width=35%  class=tablebody1><b>N/A</b></td>
   </tr>
 
   <tr> 
     <td class=tablebody1 width=15% align=right>银行存款：</td>
-    <td width=35%  class=tablebody1><b>0</b></td>
+    <td width=35%  class=tablebody1><b>N/A</b></td>
   </tr>
   <tr> 
     <td class=tablebody1 width=15% align=right>总 资 产：</td>
-    <td width=35%  class=tablebody1><b>15340</b></td>
+    <td width=35%  class=tablebody1><b>N/A</b></td>
   </tr>
 </table>
 <br>
-<table cellspacing=1 cellpadding=3 align=center class=tableborder1>
-  <tr> 
-    <th align=left id=tabletitlelink>
-      最近活动－－<a href="queryResult.asp?stype=1&nSearch=3&keyword=admin&SearchDate=ALL&boardid=0">搜索该用户所有帖子</a></th>
-  </tr>
-<tr> 
-    <td class=tablebody1 align=left>
-&nbsp;<img src=face/face1.gif width=14 height=14>&nbsp;<a href=dispbbs.asp?boardid=1&replyid=15&id=7&skin=1>jkhkh...</a>&nbsp;--&nbsp;2003-7-25 17:19:56<br>&nbsp;<img src=face/face1.gif width=14 height=14>&nbsp;<a href=dispbbs.asp?boardid=1&replyid=14&id=7&skin=1>khjklj...</a>&nbsp;--&nbsp;2003-7-25 17:19:12<br>&nbsp;<img src=face/face1.gif width=14 height=14>&nbsp;<a href=dispbbs.asp?boardid=1&replyid=13&id=7&skin=1>jkhj,...</a>&nbsp;--&nbsp;2003-7-25 17:18:44<br>&nbsp;<img src=face/face1.gif width=14 height=14>&nbsp;<a href=dispbbs.asp?boardid=1&replyid=12&id=7&skin=1>kjkj...</a>&nbsp;--&nbsp;2003-7-25 17:18:35<br>&nbsp;<img src=face/face1.gif width=14 height=14>&nbsp;<a href=dispbbs.asp?boardid=1&replyid=11&id=7&skin=1>nmhjhjk...</a>&nbsp;--&nbsp;2003-7-25 17:18:25<br>
-</td>
-  </tr>
-</table>
-<BR>
 
 <table class=tableborder1 cellspacing=1 cellpadding=3 align=center>
 <tr><th height="25" align=left colspan=2>快捷管理选项</th></tr>
 
 <tr><td class=tablebody1 height=25 colspan=2>
-<B>用户管理选项</B>：   『 <a href=admin_lockuser.asp?action=lock_1&name=admin title=锁定该用户不允许登陆和发言>锁定</a> | <a href=admin_lockuser.asp?action=lock_2&name=admin title=屏蔽该用户在论坛的发言>屏蔽</a> | <a href=admin_lockuser.asp?action=lock_3&name=admin title=解除该用户在论坛的锁定和屏蔽>解除</a> | <a href="admin_lockuser.asp?action=power&name=admin" title=对用户进行分值奖励>奖励</a> | <a href="admin_lockuser.asp?action=getpermission&name=admin&userid=1">编辑该用户论坛权限</a> 』
+<B>用户管理选项</B>：   『 <a href=# onclick="alert('该功能尚在开发中。');" title=锁定该用户不允许登陆和发言>锁定</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=屏蔽该用户在论坛的发言>屏蔽</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=解除该用户在论坛的锁定和屏蔽>解除</a> | <a href=# onclick="alert('该功能尚在开发中。');" title=对用户进行分值奖励>奖励</a> | <a href=# onclick="alert('该功能尚在开发中。');">编辑该用户论坛权限</a> 』
 </td></tr>
 
-<tr>
-<FORM METHOD=POST ACTION="admin_lockuser.asp?action=DelTopic">
-<td class=tablebody1 valign=middle width="50%">
-<B>帖子管理选项</B>：   删除该用户&nbsp;
-<input type="hidden" value="1" name="SetUserID">
-<input type="hidden" value="admin" name="name">
-<select name="delTopicDate" size=1>
 
-<option value="1">1</option>
-
-<option value="2">2</option>
-
-<option value="3">3</option>
-
-<option value="4">4</option>
-
-<option value="5">5</option>
-
-<option value="6">6</option>
-
-<option value="7">7</option>
-
-<option value="8">8</option>
-
-<option value="9">9</option>
-
-<option value="10">10</option>
-
-</select>&nbsp;天内的主题&nbsp;<input type="submit" name="submit" value="执行">
-</td>
-</form>
-<FORM METHOD=POST ACTION="admin_lockuser.asp?action=DelUserReply">
-<td class=tablebody1 width="50%">
-   删除该用户&nbsp;
-<input type="hidden" value="1" name="SetUserID">
-<input type="hidden" value="admin" name="name">
-<select name="delTopicDate" size=1>
-
-<option value="1">1</option>
-
-<option value="2">2</option>
-
-<option value="3">3</option>
-
-<option value="4">4</option>
-
-<option value="5">5</option>
-
-<option value="6">6</option>
-
-<option value="7">7</option>
-
-<option value="8">8</option>
-
-<option value="9">9</option>
-
-<option value="10">10</option>
-
-</select>&nbsp;天内的回复在 
-<select size=1 name="delbbs">
-<option value="bbs1" selected >数据表1</option>
-</select>
- 中&nbsp;<input type="submit" name="submit" value="执行">
-</td>
-</FORM></tr>
 
 <tr><td class=tablebody1 valign=middle height=25 colspan=2>
-<B>用户最后来访IP</B>：   <a href="look_ip.asp?action=lookip&ip=127.0.0.1">127.0.0.1</a>&nbsp;&nbsp;点击IP查看用户来源及操作
+<B>用户最后来访IP</B>：   <a href=# onclick="alert('该功能尚在开发中。');"><?php echo $user['lasthost']; ?></a>&nbsp;&nbsp;点击IP查看用户来源及操作
 </td></tr>
 
 </table>
