@@ -50,7 +50,7 @@ int do_userlist(struct user_info *uentp, char *arg, int t)
 
     return COUNT;
 }
-#if HAVE_WWW == -1
+#if HAVE_WWW == 1
 int show_wwwguest()
 {
 	int i;
