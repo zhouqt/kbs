@@ -1,5 +1,6 @@
 #include "types.h"
 #include "bbslib.h"
+#include <assert.h>
 
 time_t update_time=0;
 int showexplain=0,freshmode=0;
@@ -1257,8 +1258,9 @@ char *exittime;
  */
 int valid_filename(char *file)
 {
-	if (file == NULL)
-		return -1;
+	/*if (file == NULL)
+		return -1;*/
+	assert(file);
 	if(strncmp(file, "M.", 2) && strncmp(file, "G.", 2))
 		/*http_fatal("´íÎóµÄ²ÎÊý1");*/
 		return -1;
