@@ -545,10 +545,8 @@ int apply_utmp(APPLY_UTMP_FUNC fptr,int maxcount,char* userid,void* arg)
 }
 
 int
-search_ulist( uentp, fptr, farg ) /* ulist 中 search 符合fptr函数的 user */
-struct user_info *uentp;
-int (*fptr)(int,struct user_info*)
-int farg;
+search_ulist(struct user_info *uentp, int (*fptr)(int,struct user_info*), int farg)
+ /* ulist 中 search 符合fptr函数的 user */
 {
     int         i;
 

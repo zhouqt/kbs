@@ -45,7 +45,6 @@ int     SR_author();
 int     SR_authorX(); /* Leeward 98.10.03 */
 int     G_SENDMODE=NA;
 extern int     add_author_friend();
-void 	m_init();
 
 int cmpinames(); /* added by Leeward 98.04.10 */
 

@@ -146,9 +146,9 @@ new_register()
 		sleep(2);
 	    exit(1) ;
     }
-	bbslog( "1system", "APPLY: uid %d from %s", result, fromhost );
+    bbslog( "1system", "APPLY: uid %d from %s", allocid, fromhost );
 
-	update_user(&newuser,allocid,1);
+    update_user(&newuser,allocid,1);
 
     if( !dosearchuser(newuser.userid) ) {
         /* change by KCN 1999.09.08

@@ -38,7 +38,7 @@ int modify_user_mode(int mode);
 int ansimore(char* filename,int promptend);
 int ansimore2(char* filename,int promptend,int row,int numlines);
 int NNread_init();
-int m_init();
+void m_init();
 int countln(char* fname);
 
 /* namecomplete.c */
@@ -150,7 +150,7 @@ int fill_shmfile(int mode,char* shmkey,char* fname);
 /* newterm.c */
 int term_init();
 
- record_exit_time();
+void  record_exit_time();
 
 #endif
 

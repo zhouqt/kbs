@@ -55,7 +55,6 @@ int ent_bnet();
 int a_edits();
 int x_edits();
 int x_date();
-int shownotepad();
 int x_userdefine();
 int confirm_delete_id();	/* Added by Bigman 2001.7.14 */
 /*Add by SmallPig*/
