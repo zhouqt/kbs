@@ -8,14 +8,19 @@
 	$needlogin=0;
 	require("pcfuncs.php");
 
-	function get_calendar_array($link,$pc)
+	function get_calendar_array($link,$pc,$pur)
 	{
 ?>
 <script language="javascript">
 var blogCalendarArray = new Array();
 var blogNodeUrl = "pccon.php?id=<?php echo $pc["UID"]; ?>&s=all";
 <?php	
-		$query = "SELECT `nid` , `created` FROM nodes WHERE `uid` = '".$pc["UID"]."' AND `access` = 0 ORDER BY `nid` DESC;";
+		$query = "SELECT `nid` , `created` FROM nodes WHERE `uid` = '".$pc["UID"]."' ";
+		if($pur == 0)
+			$query .= " AND `access` = 0 ";
+		elseif($pur == 1)
+			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
+		$query .= " ORDER BY `nid` DESC;";
 		$result = mysql_query($query,$link);
 		$bc = array();
 		while($rows = mysql_fetch_array($result))
@@ -37,9 +42,14 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 		mysql_free_result($result);
 	}
 	
-	function pc_load_nodes($link,$pc)
+	function pc_load_nodes($link,$pc,$pur=0)
 	{
-		$query = "SELECT * FROM `nodes` WHERE `uid` = '".$pc["UID"]."' AND `access` = 0 ORDER BY `nid` DESC LIMIT 0 , 10 ;";
+		$query = "SELECT * FROM `nodes` WHERE `uid` = '".$pc["UID"]."' AND type = 0 ";
+		if($pur == 0)
+			$query .= " AND `access` = 0 ";
+		elseif($pur == 1)
+			$query .= " AND ( `access` = 0 OR `access` = 1 ) ";
+		$query .= " ORDER BY `nid` DESC LIMIT 0 , 10 ;";
 		$result = mysql_query($query,$link);
 		$nodes = array();
 		$i = 0;
@@ -294,12 +304,17 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 <?php
 	}
 	
-	function display_new_comments($link,$pc)
+	function display_new_comments($link,$pc,$pur=0)
 	{
 ?>
 <ul>
 <?php
-		$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid AND access = 0 AND comments.uid = ".$pc["UID"]." AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
+		$query = "SELECT cid , comments.subject , comments.created , comments.username FROM comments, nodes WHERE comments.nid = nodes.nid ";
+		if($pur == 0)
+			$query .= " AND access = 0 ";
+		elseif($pur == 1)
+			$query .= " AND ( access = 0 OR access = 1 ) ";
+		$query .= " AND comments.uid = ".$pc["UID"]." AND comment = 1 ORDER BY cid DESC LIMIT 0 , 10 ;";
 		$result = mysql_query($query,$link);
 		for($i = 0;$i < mysql_num_rows($result) ; $i++)
 		{
@@ -364,7 +379,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				<tr>
 					<td align=middle class=t14>
 					<table cellspacing=0 cellpadding=3 width=100% border=0 style="line-height:20px;font-size:12px"><tr><td>
-					<?php display_new_comments($link,$pc); ?>
+					<?php display_new_comments($link,$pc,$pur); ?>
 					</td></tr></table>
 					</td>
 				</tr>
@@ -393,9 +408,9 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 				<tr><td style="text-align:center;color:#FF6600;font-weight:bolder;background-color:#F6F6F6;font-family: Verdana, Arial, Helvetica, sans-serif;font-size: 14px;font-style: italic;line-height: 22px;">
 				<?php echo $pc["VISIT"]; ?>
 				</td></tr>
-				<tr><td class=t17>
+				<tr><td class=t17><center>
 				<?php display_blog_out_rss($pc); ?>
-				<?php display_klip_out($pc); ?>
+				<?php display_klip_out($pc); ?></center>
 				</td></tr>
 			</table>
 		</td>
@@ -484,7 +499,7 @@ blogCalendar(<?php echo date("Y,m,d"); ?>);
 		.: 最近收到的评论 :. 
 		</td></tr>
 		<tr><td class="t8">
-<?php display_new_comments($link,$pc); ?>
+<?php display_new_comments($link,$pc,$pur); ?>
 </td></tr></table>
 </td>
 <td align="center" class="t11" width="50%" valign="top">
@@ -555,7 +570,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 		$sec = array("公开区");
 		$pur = 0;
 	}
-	$nodes = pc_load_nodes($link,$pc);
+	$nodes = pc_load_nodes($link,$pc,$pur);
 	$blogs = pc_blog_menu($link,$pc["UID"],0);
 	/*visit count start*/
 	if($pur != 3)//文集所有者的访问不进行计数  windinsn dec 10,2003
@@ -577,7 +592,7 @@ http://<?php echo $pc["USER"]; ?>.mysmth.net
 	}
 	/*visit count end*/	
 	pc_html_init("gb2312",$pc["NAME"],"","",$pc["BKIMG"]);
-	get_calendar_array($link,$pc);
+	get_calendar_array($link,$pc,$pur);
 ?>
 <script src="bc.js"></script>
 <center>
