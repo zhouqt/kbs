@@ -35,7 +35,7 @@ int main()
         printf("<table>");
         for (i = 0; i < MAXBOARD; i++) {
             board1 = bc[i].filename;
-            title = bc[i].title;
+            title = bc[i].title + 13;
             if (!check_read_perm(currentuser, &bc[i]))
                 continue;
             if (strcasestr(board1, board) || strcasestr(title, board) || strcasestr(bc[i].des, board)) {
