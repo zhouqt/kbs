@@ -132,28 +132,41 @@ void initscr()
 
 void rel_move(int was_col, int was_ln, int new_col, int new_ln)
 {
-	if (new_ln >= t_lines || new_col >= t_columns)
-		return;
-       if(was_col==new_col&&was_ln==new_ln) return;
-	tc_col = new_col;
-	tc_line = new_ln;
-	if ((new_col == 0) && (new_ln == was_ln + 1)) {
-		ochar('\n');
-		if (was_col != 0)
-			ochar('\r');
-		return;
-	}
-	if ((new_col == 0) && (new_ln == was_ln)) {
-		if (was_col != 0)
-			ochar('\r');
-		return;
-	}
-	if (new_col == was_col - 1 && new_ln == was_ln) {
-		ochar(Ctrl('H'));
-		return;
-	}
+    register int i;
+    register struct screenline *bp = big_picture;
+    if (new_ln >= t_lines || new_col >= t_columns)
+        return;
+    if(was_col==new_col&&was_ln==new_ln) return;
+    tc_col = new_col;
+    tc_line = new_ln;
+    if ((new_col == 0) && (new_ln == was_ln + 1)) {
+        ochar('\n');
+        if (was_col != 0)
+            ochar('\r');
+        return;
+    }
+    if ((new_col == 0) && (new_ln == was_ln)) {
+        if (was_col != 0)
+            ochar(char c)('\r');
+        return;
+    }
+    if (new_col <= was_col - 1 && new_col>=was_col-5 && new_ln == was_ln) {
+        for(i=0;i<was_col-new_col;i++)
+            ochar(Ctrl('H'));
+        return;
+    }
+    if (new_ln == was_ln && new_col>=was_col+1&&new_col<=was_col+5) {
+        int p=1, q=(new_ln+scroll)%scr_lns;
+        for(i=was_ln;i<new_col;i++)
+            p=p&&(bp[q].color[i]==cur_color)&&(bp[q].mode[i]==cur_mode);
+        if(p) {
+            for(i=was_ln;i<new_col;i++)
+                ochar(bp[q].data[i]);
+            return;
+        }
+    }
 
-	do_move(new_col, new_ln, ochar);
+    do_move(new_col, new_ln, ochar);
 }
 
 #define push(x) stack[stackt++]=x
@@ -202,10 +215,10 @@ void refresh()
     }
     for (i=0; i < scr_lns; i++)
         for(j=0;j<scr_cols;j++)
-            if((bp[i].data[j]==0||bp[i].data[j]==32)&&bp[i].mode[j]&SCREEN_MODIFIED&&
-                bp[i].mode[j]&(SCREEN_BACK|SCREEN_LINE)==0&&bp[i].color[j]/16==0)
+            if((bp[i].data[j]==0||bp[i].data[j]==32)&&(bp[i].mode[j]&SCREEN_MODIFIED)&&
+                (bp[i].mode[j]&(SCREEN_BACK|SCREEN_LINE)==0)&&(bp[i].color[j]/16==0))
                 count++;
-    if(count>scr_lns*scr_cols) {
+    if(count>scr_lns*scr_cols/2) {
         o_clear();
         for (i=0; i < scr_lns; i++)
             for(j=0;j<scr_cols;j++)
