@@ -1368,7 +1368,7 @@ strncpy(regform.career,fdata[3],99);
 strncpy(regform.addr,fdata[4],99);
 strncpy(regform.phone,fdata[5],99);
 strncpy(regform.birth,fdata[6],99);
-ret=checkreg(&regform, errorstr);
+ret=checkreg(regform, errorstr);
 saveret=ret;
 ret=2;
 if (ret==2) {
