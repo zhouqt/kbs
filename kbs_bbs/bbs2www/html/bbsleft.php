@@ -316,7 +316,7 @@
 
 ?>
 <script src="bbsleft.js"></script>
-<body>
+<body  TOPMARGIN="0" leftmargin="0">
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
 <tr>
 	<td>
@@ -337,7 +337,7 @@
 			<img src="/images/u1.gif" border="0" alt="登录用户名" align="absmiddle" width="54" height="21">
 			</td>
 			<td align="left" class="t2">
-			<INPUT TYPE=text STYLE="width:100px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
+			<INPUT TYPE=text STYLE="width:80px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" >
 			</td>
 </tr>
 <tr>
@@ -346,7 +346,7 @@
 			<img src="/images/u3.gif" border="0" alt="用户密码" align="absmiddle" width="54" height="21">
 			</td>
 			<td align="left" class="t2">
-			<INPUT TYPE=password  STYLE="width:100px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" name="passwd" maxlength="39">
+			<INPUT TYPE=password  STYLE="width:80px;height:18px;font-size: 12px;color: #000D3C;border-color: #718BD6;border-style: solid;border-width: 1px;background-color:  #D2E1FE;" LENGTH="10" name="passwd" maxlength="39">
 			</td>
 </tr>
 <tr>
@@ -667,7 +667,7 @@
 			<td>
 			<img src="/images/t8.gif" border="0" alt="选择讨论区" align="absmiddle">
 			<input name="board" type="text" class="f2" value="选择讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
-<input name="submit" type="submit" value="GO" />
+<input name="submit" type="submit" value=">>GO" style="width:30px;height:20px;font-size: 12px;color: #ffffff;border-style: none;background-color: #718BD6;" />
 			</td>
 			</form>
 		</tr>
