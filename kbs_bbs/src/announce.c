@@ -158,7 +158,7 @@ void a_showmenu(pm)             /* ¾«»ªÇø ²Ëµ¥ ×´Ì¬ */
     clrtobot();
     move(t_lines - 1, 0);
     prints("%s", (pm->level & PERM_BOARDS) ?
-           "[31m[44m[°æ  Ö÷]  [33mËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ÐÂÔöÎÄÕÂ a ©¦ ÐÂÔöÄ¿Â¼ g ©¦ ±à¼­µµ°¸ e        [m" :
+           "[31m[44m[°æ  Ö÷]  [33mËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ÐÂÔöÎÄÕÂ a ©¦ ÐÂÔöÄ¿Â¼ g ©¦ ÐÞ¸Äµµ°¸ e        [m" :
            "[31m[44m[¹¦ÄÜ¼ü] [33m ËµÃ÷ h ©¦ Àë¿ª q,¡û ©¦ ÒÆ¶¯ÓÎ±ê k,¡ü,j,¡ý ©¦ ¶ÁÈ¡×ÊÁÏ Rtn,¡ú         [m");
 }
 
