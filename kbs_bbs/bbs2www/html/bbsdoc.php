@@ -100,7 +100,7 @@ login_init();
 <table width="98%" border="0" cellspacing="0" cellpadding="3" class="t1">
 <tbody><tr><td class="t2" width="50">序号</td><td class="t2" width="30">标记</td><td class="t2" width="85">作者</td><td class="t2" width="50">日期</td><td class="t2">标题</td></tr>
 </tbody>
-<?php
+<?php    
 		$ding_cnt = 0;
 		foreach ($articles as $article)
 		{
@@ -336,6 +336,13 @@ login_init();
 	{		
 		bbs_board_header($brdarr,$total);
 		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles );
+    if (defined('BBS_NEWPOSTSTAT')) {
+        if (!isset($_GET['start']) && !isset($_GET['page'])) {
+?>
+<script src="/bbshot.php?board=<?php echo $brd_encode; ?>"></script>
+<?php        
+        }    
+    }
 		display_articles($brdarr, $articles, $start, $order_articles );
 		display_navigation_bar($brdarr, $brdnum, $start, $total, $page,$order_articles);
 		bbs_board_foot($brdarr,"NORMAL");

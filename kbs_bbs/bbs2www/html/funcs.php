@@ -297,6 +297,28 @@ function cache_header($scope,$modifytime=0,$expiretime=300)
 	return FALSE;
 }
 
+function update_cache_header($updatetime = 10,$expiretime = 300)
+{
+	global $cachemode;
+	$scope = "public, must-revalidate";
+	$modifytime=time();
+	session_cache_limiter($scope);
+	$cachemode=$scope;
+	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
+	if ($oldmodified!="") {
+                $oldtime=strtotime($oldmodified);
+	} else $oldtime=0;
+	if ($modifytime - $oldtime < 60 * $updatetime ) {
+		header("HTTP/1.1 304 Not Modified");
+	        header("Cache-Control: max-age=" . "$expiretime");
+		return TRUE;
+	}
+	header("Last-Modified: " . gmdate("D, d M Y H:i:s", $modifytime) . "GMT");
+	header("Expires: " . gmdate("D, d M Y H:i:s", $modifytime+$expiretime) . "GMT");
+	header("Cache-Control: max-age=" . "$expiretime");
+	return FALSE;
+}
+
 function html_init($charset,$title="",$otherheader="",$new_style=0)
 {
 	global $cachemode;

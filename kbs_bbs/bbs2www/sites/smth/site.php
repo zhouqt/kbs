@@ -15,6 +15,7 @@ define("ACTIVATIONLEN",15); //激活码长度
 define("ENABLE_ABOARDS" , 1);//web首页使用活动看板
 define("SERVICE_QUIZ" , 1); //www开心辞典
 define("SITE_SMTH",1);
+define('BBS_NEWPOSTSTAT',1);
 
 $domain_name = explode(":",trim($_SERVER["HTTP_HOST"]));
 define("BBS_DOMAIN_NAME" , $domain_name[0]); //域名

@@ -107,5 +107,48 @@ function bbs_is_noreply_board($board)
 	return bbs_check_board_flag($board, $BOARD_FLAGS["NOREPLY"]);
 }
 
+//if (defined('BBS_NEWPOSTSTAT')) {
+    
+if (defined('BBS_STAT_HOT')) {
+include ('db.php');  // include the database class
+if (!($db = new BbsDb)) {
+    html_error_quit($db->err);    
+}
+/**
+ * get hot threads of a borad
+ * bbs_get_hot_threads(string board)
+ * @author: windinsn
+ */
+function bbs_get_hot_threads($board,$num,&$threads,&$err) 
+{
+    global $db;
+    $brdarr = array();
+    $bid = bbs_getboard($board,$brdarr);
+    if (!$bid) {
+        $err = '°æÃæ '.$board.' ²»´æÔÚ';
+        return false;
+    }
+    $board = $brdarr['NAME'];
+    $now = date('YmdHis');
+    $sql = 'SELECT threadid,userid,title,time AS created,MAX(time) AS changed,count(DISTINCT userid) AS count FROM postlog WHERE YEAR(time)=YEAR('.$now.') AND MONTH(time)=MONTH('.$now.') AND DAYOFMONTH(time)=DAYOFMONTH('.$now.') AND bname = \''.addslashes($board).'\' GROUP BY threadid ORDER BY count DESC , id DESC LIMIT 0 , '.intval($num).';';
+    if (!$db->query($sql,1)) {
+        $err = $db->err;
+        return false;    
+    }
+    $threads = array();
+    for ($i = 0 ; $i < $db->nums ; $i ++ ) {
+        $threads[] = array(
+                'gid' => $db->arrays[$i]['threadid'],
+                'userid' => $db->arrays[$i]['userid'],
+                'created' => $db->arrays[$i]['created'],
+                'changed' => $db->arrays[$i]['changed'],
+                'count'  => $db->arrays[$i]['count'],
+                'title' => $db->arrays[$i]['title']
+            );    
+    }
+    return true;
+}
+} // defined('BBS_STAT_HOT')
+//} // defined('BBS_NEWPOSTSTAT')
 } // !define ('_BBS_BOARDS_PHP_')
 ?>
