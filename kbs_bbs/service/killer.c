@@ -316,7 +316,8 @@ void refreshit()
             setfcolor(RED, 1);
             prints("*");
         }
-        if(inrooms.status!=INROOM_STOP&&!(inrooms.peoples[j].flag&PEOPLE_ALIVE)) {
+        if(inrooms.status!=INROOM_STOP&&!(inrooms.peoples[j].flag&PEOPLE_ALIVE)&&
+            !(inrooms.peoples[j].flag&PEOPLE_SPECTATOR)) {
             resetcolor();
             move(i,3);
             setfcolor(BLUE, 1);
@@ -325,7 +326,7 @@ void refreshit()
         else if(!(inrooms.peoples[j].flag&PEOPLE_SPECTATOR)) {
             resetcolor();
             move(i,3);
-            setfcolor(GREEN, 1);
+            setfcolor(GREEN, 0);
             prints("O");
         }
         resetcolor();
