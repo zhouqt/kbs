@@ -414,7 +414,6 @@ void split(line, pos)
     }
         
     if (pos > line->len) {
-        free(p);
         return;
     }
     p = alloc_line();
@@ -774,6 +773,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
     int ret;
     extern char quote_title[120], quote_board[120];
     extern int Anony;
+    int long_flag; //for long line check
 #ifdef FILTER
     int filter = 0;
 #endif
@@ -932,6 +932,7 @@ static int write_file(char* filename,int saveheader,long* effsize,long* pattachp
         struct textline *v = p->next;
 
         if (!aborted)
+            long_flag = (strlen(p->data) >= WRAPMARGIN -2 );
             if (p->next != NULL || p->data[0] != '\0') {
                 if (!strcmp(p->data,"--"))
                     temp=1;
@@ -955,7 +956,8 @@ fsdfa
                 if (!temp&&(abort[0] == 'f' || abort[0] == 'F')) {       /* Leeward 98.07.27 支持自动换行 */
                     unsigned char *ppt = (unsigned char *) p->data;     /* 折行处 */
                     unsigned char *pp = (unsigned char *) ppt;  /* 行首 */
-                    unsigned int LLL = 78;      /* 折行位置 */
+                    unsigned const int LINE_LEN=78;
+                    unsigned int LLL = LINE_LEN;      /* 折行位置 */
                     unsigned char *ppx, cc;
                     int ich, lll;
 
@@ -976,10 +978,10 @@ fsdfa
                                 ppx += 2;
                                 ich = 0;
                             }
-                        } while (ppx);
-                        ppt += LLL + lll;
+                        } while (ppx); //计算颜色字符，字节数放入lll
+                        ppt += LLL + lll; //应该折行的地方
 
-                        if ((*ppt) > 127) {     /* 避免在汉字中间折行 */
+                        if ((*ppt) > 127) {     /* 避免在汉字中间折行 ,KCN:看不懂faint*/
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx--)
                                 if ((*ppx) < 128)
                                     break;
@@ -997,19 +999,26 @@ fsdfa
                                 ppt -= ich;
                         }
 
-                        cc = *ppt;
+                        cc = *ppt; //保存一下字符
                         *ppt = 0;
                         if (':' == p->data[0] && ':' != *pp)
                             fprintf(fp, ": ");
                         fprintf(fp, "%s", pp);
-                        if (cc)
+                        if (cc) //换行拉
                             fprintf(fp, "\n");
                         *ppt = cc;
                         pp = ppt;
+                        LLL = LINE_LEN;
                     }
-                    if (':' == p->data[0] && ':' != *pp)
+                    LLL = LINE_LEN ;
+                    if (':' == p->data[0] && ':' != *pp) //处理剩余的字符
                         fprintf(fp, ": ");
-                    fprintf(fp, "%s\n", pp);
+                    fprintf(fp, "%s", pp);
+                    if (long_flag){	/* 如果当前串是系统自动截断的一个超长串 */
+                    	    LLL = LLL - strlen(pp); //将下一行的允许长度减短
+			}else{
+			    fprintf(fp,"\n");
+			}
                 } else
                     fprintf(fp, "%s\n", p->data);
             }
