@@ -195,7 +195,7 @@ int UndeleteArticle(int ent, struct fileheader *fileinfo, char *direct)
 
     sprintf(buf, "boards/%s/.DIR", currboard);
     if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
-        if (mmap_search_apply(fd, &UFile, insert_func) == 0) {
+        if ((UFile.id == 0) || mmap_search_apply(fd, &UFile, insert_func) == 0) {
             flock(fd, LOCK_EX);
             if (UFile.id == 0) {
                 UFile.id = get_nextid(currboard);
@@ -715,7 +715,7 @@ int read_post(int ent, struct fileheader *fileinfo, char *direct)
 
     refresh();
 /* sleep(1); *//*
- * * * * * * ????? 
+ * * * * * * * ????? 
  */
     if (!(ch == KEY_RIGHT || ch == KEY_UP || ch == KEY_PGUP))
         ch = igetkey();
@@ -3001,7 +3001,7 @@ int Goodbye()
              * i,sysoplist[i+4],syswork[i+4]);
              * prints("[[33m%1d[m] »¹ÊÇ×ßÁËÂÞ£¡\n",4); 
  *//*
- * * * * * * ×îºóÒ»¸öÑ¡Ïî 
+ * * * * * * * ×îºóÒ»¸öÑ¡Ïî 
  */
             /*
              * sprintf(spbuf,"ÄãµÄÑ¡ÔñÊÇ [[32m%1d[m]£º",4);
@@ -3149,7 +3149,7 @@ int Goodbye()
             if (!strcmp(uid, currentuser->userid))      /*É¾³ý±¾ÓÃ»§µÄ Ñ°ÈËÃûµ¥ */
                 del_from_file("friendbook", buf);       /*Ñ°ÈËÃûµ¥Ö»ÔÚ±¾´ÎÉÏÏßÓÐÐ§ */
         }
-        if (fp)                                                                    /*---	add by period 2000-11-11 fix null hd bug	---*/
+        if (fp)                                                                        /*---	add by period 2000-11-11 fix null hd bug	---*/
             fclose(fp);
     }
     sleep(1);

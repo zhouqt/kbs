@@ -218,6 +218,7 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) buf, file_size, -1);
+
     if (applycopy)
         free(buf2);
     return 0;
@@ -269,6 +270,7 @@ int search_record_back(int fd,  /* file handle */
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) buf, filesize, -1);
+
     return 0;
 }
 
@@ -296,6 +298,7 @@ int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, vo
     BBS_CATCH {
     }
     BBS_END end_mmapfile((void *) buf, filesize, -1);
+
     return 0;
 }
 
@@ -481,6 +484,7 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
         ret = -3;
     }
     BBS_END end_mmapfile(ptr, filesize, fdr);
+
     return ret;
 }
 
