@@ -483,7 +483,10 @@ static int set_al_key(struct _select_def *conf, int key)
 				return SHOW_REFRESH;
 			while(fread(&fh, sizeof(fh), 1, fp)){
 				bzero(&al,sizeof(al));
-				strncpy(al.name, fh.exp, 15);
+				if( fh.exp[0] )
+					strncpy(al.name, fh.exp, 15);
+				else
+					strncpy(al.name, fh.id, 15);
 				al.name[14]=0;
 				strncpy(al.bbsid, fh.id, 15);
 				al.bbsid[14]=0;
