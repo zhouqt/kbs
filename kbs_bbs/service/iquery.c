@@ -27,7 +27,7 @@ char qn[60];
 int get_word()
 {
     clear();
-    prints("Áîºü³åËÑË÷ Power Bye Aka coreSearch");
+    prints("Áîºü³åËÑË÷ Powered By Aka coreSearch");
     move(6, 0);
     prints("    ÎÒÏë²é                    ¹Ø¼ü×Ö");
     move(7, 0);
