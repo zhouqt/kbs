@@ -187,7 +187,6 @@ rm_lost(char *path)
 					continue;
 				}
 				sprintf(buf, "%s/%s", path, allpost[h][i]);
-				printf("--%s\n", buf);
 				unlink(buf);
 			}
 		}
