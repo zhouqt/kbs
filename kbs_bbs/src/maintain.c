@@ -1644,10 +1644,10 @@ int x_deny()
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel - 1];
                     securityreport(reportbuf, lookupuser, NULL);
+            		save_giveupinfo(lookupuser, lcount, s);
                     break;
                 }
             }
-            save_giveupinfo(lookupuser, lcount, s);
         }
     }
     return 0;
