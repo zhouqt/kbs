@@ -171,6 +171,8 @@ function pc_is_admin($currentuser,$pc)
 function pc_friend_list($uid)
 {
 	$file = pc_friend_file_open($uid,"r");
+	if(!$file)
+		return NULL;
 	$fp = $file["FP"];
 	$i = 0;
 	while(!feof($fp))
