@@ -1207,3 +1207,13 @@ int m_register()
     clear();
     return 0;
 }
+
+int m_stoplogin()
+{
+    getdata(t_lines - 1, 0, "½ûÖ¹µÇÂ½Âð (Y/N)? [N]: ", ans, 2, DOECHO, NULL, YEA);
+    if (ans[0] == 'Y' || ans[0] == 'y')
+    {
+        if( vedit("NOLOGIN",YEA)==-1))
+            unlink("NOLOGIN");
+    }
+}

@@ -76,6 +76,7 @@ int     lock_scr(); /* Leeward 98.02.22 */
 int     FavBoard(); /* period  2000-09-11 */
 int 	searchtrace(); 	/* stephen 2000.12.15 */
 int	badlist();	/* Bigman 2000.12.26 */
+int	m_stoplogin();
 
 /*Add By Excellent */
 struct scommandlist {
@@ -161,6 +162,7 @@ struct scommandlist {
     "Announceall",  wall,
     "Setsyspass",   setsystempasswd,
     "SearchTrace",	searchtrace,	/*stephen 2000.12.15*/
+    "StopLogin",	m_stoplogin,	/*stephen 2000.12.15*/
     NULL,           NULL
 };
 
