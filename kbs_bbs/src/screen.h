@@ -24,6 +24,8 @@
 
 /* Maximum Screen width in chars */
 /*#define LINELEN (220) */
+#ifndef _SCREEN_H_
+#define _SCREEN_H_
 #define LINELEN 132
 #define LINEHEIGHT 50
 
@@ -43,3 +45,4 @@ struct screenline {
     unsigned char lmode[LINELEN];
     unsigned char lcolor[LINELEN];
 };
+#endif
