@@ -1083,7 +1083,10 @@ char get_article_flag(struct fileheader *ent, struct userec *user, int is_bm)
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? '*' : 'N');
     char type;
 
-    type = brc_unread(ent->id) ? unread_mark : ' ';
+    if (strcmp(user->userid,"guest"))
+        type = brc_unread(ent->id) ? unread_mark : ' ';
+    else
+        type = ' ';
     if ((ent->accessed[0] & FILE_DIGEST)) {
         if (type == ' ')
             type = 'g';
