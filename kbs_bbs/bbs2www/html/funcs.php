@@ -284,8 +284,8 @@ function ansi_convert( $buf , $defaultfg, $defaultbg)
                 if ($good)
                     ansi_getfontcode($fgcolor,$bgcolor,$defaultfg,$defaultbg,$highlight,$blink,$underlink, $head,$tail);
             }
-            $final .= $head . $keyword[$i+2] . $tail;
-        } else $final .= $keyword[$i+2];
+            $final .= $head . htmlspecialchars($keyword[$i+2]) . $tail;
+        } else $final .= htmlspecialchars($keyword[$i+2]);
     }
     return $final;
 }
