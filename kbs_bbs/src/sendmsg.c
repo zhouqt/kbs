@@ -511,7 +511,7 @@ void r_msg()
             } while(ch!=KEY_UP&&ch!=KEY_DOWN&&ch!='\r'&&ch!='\n');
         }
         for(i=0;i<=oy;i++)
-            norefresh_saveline(i, 1, savebuffer[i]);
+            saveline(i, 1, savebuffer[i]);
         switch(ch) {
             case KEY_UP:
                 now--;
@@ -554,7 +554,7 @@ void r_msg()
 
 outhere:
     for(i=0;i<=23;i++)
-        norefresh_saveline(i, 1, savebuffer[i]);
+        saveline(i, 1, savebuffer[i]);
     showansi = tmpansi;
     good_move(y,x);
     if(oldi)

@@ -219,6 +219,7 @@ int num_in_buf()
 
 int telnet_state = 0;
 char lastch;
+int naw_col, naw_ln, naw_changed = 0;
 
 static int telnet_machine(unsigned char ch)
 {
@@ -245,54 +246,34 @@ static int telnet_machine(unsigned char ch)
         break;
     case 2:                    /* the telnet suboption */
         if (ch == 31)
-            telnet_state = 5;   /* wait for windows size */
+            telnet_state = 4;   /* wait for windows size */
         else if (ch == IAC)
             telnet_state = 3;   /* wait for SE */
-        else
-            telnet_state = 4;   /* filter telnet SB data */
         break;
     case 3:                    /* wait for se */
         if (ch == SE)
             telnet_state = 0;
-        else
-            telnet_state = 4;
+        if (naw_changed) {
+            naw_changed = 0;
+            do_naws(naw_ln, naw_col);
+        }
+        else 
+            telnet_state = 2;
         break;
     case 4:                    /* telnet SB data */
-        if (ch == IAC)
-            telnet_state = 3;   /* wait for SE */
+        naw_changed = 1;
+        telnet_state = 5;
         break;
     case 5:
+        naw_col = ch;
         telnet_state = 6;
         break;
     case 6:
-        /*
-         * if (ch<120&&ch>=80)
-         * t_columns=ch;
-         * else
-         * t_columns=80;
-         */
-        if (ch == IAC)
-            telnet_state = 4;
-        else
-            telnet_state = 7;
+        telnet_state = 7;
         break;
     case 7:
-        if (ch == IAC)
-            telnet_state = 4;
-        else
-            telnet_state = 8;
-        break;
-    case 8:
-        /*
-         * if (ch<35&&ch>=24)
-         * t_lines=ch;
-         * else
-         * t_lines=24;
-         */
-        if (ch == IAC)
-            telnet_state = 4;
-        else
-            telnet_state = 4;
+        naw_ln = ch;
+        telnet_state = 2;
         break;
     }
     return 0;
@@ -974,7 +955,7 @@ int multi_getdata(int line, int col, int maxcol, char *prompt, char *buf, int le
         if (ch == '\n' || ch == '\r')
             break;
         for(i=starty;i<=y;i++)
-            norefresh_saveline(i, 1, savebuffer[i]);
+            saveline(i, 1, savebuffer[i]);
         if (true == RMSG && (KEY_UP == ch || KEY_DOWN == ch) && (!buf[0]))
             return -ch;
 #ifdef CHINESE_CHARACTER

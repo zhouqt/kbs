@@ -84,18 +84,21 @@ void init_screen(int slns, int scols)
     register struct screenline *slp;
     register int j;
 
-	scr_lns = slns;
-	scr_cols = Min(scols, LINELEN);
-	if (!big_picture)
-		big_picture =
-		    (struct screenline *) calloc(scr_lns,
-						 sizeof (struct screenline));
-	for (slns = 0; slns < scr_lns; slns++) {
-		slp = &big_picture[slns];
-              for(j=0;j<LINELEN;j++)
-                { slp->data[j]=0; slp->mode[j]=0; slp->color[j]=7; }
-	}
-	roll = 0;
+    scr_lns = slns;
+    scr_cols = Min(scols, LINELEN);
+    
+    if (big_picture) {
+        free(big_picture);
+        big_picture = (struct screenline *) calloc(scr_lns, sizeof (struct screenline));
+        return;
+    }
+    big_picture = (struct screenline *) calloc(scr_lns, sizeof (struct screenline));
+    for (slns = 0; slns < scr_lns; slns++) {
+        slp = &big_picture[slns];
+        for(j=0;j<LINELEN;j++)
+        { slp->data[j]=0; slp->mode[j]=0; slp->color[j]=7; }
+    }
+    roll = 0;
 }
 
 void clear()
@@ -121,13 +124,7 @@ void clear()
 
 void initscr()
 {
-//	if (!big_picture)
-//		t_columns = WRAPMARGIN;
-//	init_screen(t_lines, WRAPMARGIN);
     init_screen(t_lines, t_columns);
-    clear();
-    tc_col = 0;
-    tc_line = t_lines-1;
 }
 
 void rel_move(int was_col, int was_ln, int new_col, int new_ln)
@@ -762,27 +759,16 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
     }
 };
 
-void norefresh_saveline(int line, int mode, char*buffer)	/* 0 : save, 1 : restore */
+void do_naws(int ln, int col)
 {
-    register struct screenline *bp = big_picture;
-    char *tmp = tmpbuffer;
-    int i;
-
-    if (buffer)
-        tmp = buffer;
-    switch (mode) {
-        case 0:
-            memcpy(tmp, bp[line].data, LINELEN);
-            memcpy(tmp+LINELEN, bp[line].mode, LINELEN);
-            memcpy(tmp+LINELEN*2, bp[line].color, LINELEN);
-            break;
-        case 1:
-            memcpy(bp[line].data, tmp, LINELEN);
-            memcpy(bp[line].mode, tmp+LINELEN, LINELEN);
-            memcpy(bp[line].color, tmp+LINELEN*2, LINELEN);
-            for(i=0;i<scr_cols;i++)
-                bp[line].mode[i]|=SCREEN_MODIFIED;
-            break;
-    }
-};
-
+#ifndef SSHBBS
+    t_lines = ln;
+    t_columns = col;
+    if(t_lines<24||t_lines>100)
+        t_lines=24;
+    if(t_columns<80||t_columns>240)
+        t_columns = 80;
+    initscr();
+    refresh();
+#endif
+}
