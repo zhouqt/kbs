@@ -294,10 +294,12 @@ void r_msg(int signo)
         move(line,0); clrtoeol(); refresh();
         if(msg_count){
             prints("[1m[33mÄãÓĞĞÂµÄÑ¶Ï¢£¬Çë·¢±íÍêÎÄÕÂºó°´ Ctrl+Z »ØÑ¶Ï¢[0m");
+    		move(y,x);
             refresh(); sleep(1);
         }
         else{
             prints("[1mÃ»ÓĞÈÎºÎĞÂµÄÑ¶Ï¢´æÔÚ![0m");
+    		move(y,x);
             refresh();sleep(1);
         }
         saveline(line, 1, savebuffer);
@@ -308,6 +310,7 @@ void r_msg(int signo)
         saveline(line, 0, savebuffer);
         move(line,0); clrtoeol(); refresh();
         prints("[1mÃ»ÓĞÈÎºÎµÄÑ¶Ï¢´æÔÚ£¡£¡[0m");
+    	move(y,x);
         refresh(); sleep(1);
         saveline(line, 1, savebuffer); /* restore line */
         return;
