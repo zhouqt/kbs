@@ -1,5 +1,9 @@
 #include "bbs.h"
 
+#include <sys/ipc.h>
+#include <sys/msg.h>
+#include <signal.h>
+
 #ifdef HAVE_PERSONAL_DNS
 extern int update_dns(const char *server, const char *zone, const char *keyname,
     const char *key, const char *host, const char *ip, int ttl); 
