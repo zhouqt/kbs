@@ -28,7 +28,7 @@
 ?>
 <style type="text/css">A {color: #0000f0}</style>
 <body>
-<center><?php echo $BBS_FULL_NAME; ?> -- 分类讨论区 [<?php echo $section_names[$group]; ?>]
+<center><?php echo $BBS_FULL_NAME; ?> -- 分类讨论区 [<?php echo $section_names[$group][0]; ?>]
 <?php
 		if ($yank == 0)
 		{
