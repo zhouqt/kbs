@@ -51,7 +51,10 @@
 			
 			for ($j = 0; $j < $rows; $j++)
 			{
-				if ($brd_flag[$j]==-1)
+				if( $brd_bid[$j] == -1) { //¿ÕÊÕ²ØÄ¿Â¼
+					echo "-¿ÕÄ¿Â¼-";
+				}
+				else if ($brd_flag[$j]==-1)
 				{
 ?>
 <div class="fi">
