@@ -577,11 +577,45 @@ int user_init(struct userec **x, struct user_info **y)
     return 0;
 }
 
+int del_mail(int ent, struct fileheader* fh, char* direct)
+{
+    char buf[PATHLEN];
+    char* t;
+    struct stat st;
+
+    if(strstr(direct, ".DELETED")) {
+        strcpy(buf, direct);    
+        t = strrchr(buf, '/') + 1;
+        strcpy(t, fh->filename);
+        if (stat(buf, &st) !=-1) currentuser->usedspace-=st.st_size;
+    }
+     
+    strcpy(buf, direct);
+    if ((t = strrchr(buf, '/')) != NULL)
+        *t = '\0';
+    if (!delete_record(direct, sizeof(*fh), ent, (RECORD_FUNC_ARG) cmpname, fh->filename)) {
+        sprintf(genbuf, "%s/%s", buf, fh->filename);
+        if(strstr(direct, ".DELETED"))
+            unlink(genbuf);
+        else {
+            strcpy(buf, direct);    
+            t = strrchr(buf, '/') + 1;
+            strcpy(t, ".DELETED");
+            append_record(buf, fh, sizeof(*fh));
+        }
+        return 0;
+    }
+    return 1;
+}
+
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig)
 {
     FILE *fp, *fp2;
     char buf3[256], dir[256];
     struct fileheader header;
+    struct stat st;
+    struct userec *touser;/*peregrine for updating used space*/
+    int unum;
     int t, i;
 
     bzero(&header, sizeof(header));
@@ -614,6 +648,8 @@ int post_mail(char *userid, char *title, char *file, char *id, char *nickname, c
     sig_append(fp, id, sig);
     fprintf(fp, "\n[1;%dm¡ù À´Ô´:£®%s %s£®[FROM: %.20s][m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, ip);
     fclose(fp);
+    unum=getuser(userid,&touser);
+    if (stat(buf3, &st) != -1)touser->usedspace+=st.st_size;
     sprintf(dir, "mail/%c/%s/.DIR", toupper(userid[0]), userid);
     fp = fopen(dir, "a");
     if (fp == NULL)
