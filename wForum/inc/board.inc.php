@@ -145,18 +145,11 @@ function board_head_var($boardDesc,$boardName,$secNum)
 <br>
 <?php 
 } 
-
-function boardSearchAndJump($boardName, $boardID){
+function boardJump(){
 	global $section_names;
 	global $sectionCount;
 	global $section_nums;
 ?>
-<table border=0 cellpadding=0 cellspacing=3 width=97% align=center>
-<tr>
-<FORM METHOD=POST ACTION="boardsearch.php?name=<?php echo $boardName; ?>">
-<td width=50% valign=middle nowrap height=40>快速搜索：<input type=text name=keyword>&nbsp;<input type=submit name=submit value=搜索></td>
-</FORM>
-<td valign=middle nowrap width=50% > 
 <div align=right><select onchange="if(this.options[this.selectedIndex].value!=''){location=this.options[this.selectedIndex].value;}">
 <option selected>跳转论坛至...</option>
 <?php
@@ -173,7 +166,22 @@ function boardSearchAndJump($boardName, $boardID){
 		}
 	}
 ?>
-</select></div></td></tr></table><BR>
+</select></div>
+<?php
+}
+function boardSearchAndJump($boardName, $boardID){
+
+?>
+<table border=0 cellpadding=0 cellspacing=3 width=97% align=center>
+<tr>
+<FORM METHOD=POST ACTION="boardsearch.php?name=<?php echo $boardName; ?>">
+<td width=50% valign=middle nowrap height=40>快速搜索：<input type=text name=keyword>&nbsp;<input type=submit name=submit value=搜索></td>
+</FORM>
+<td valign=middle nowrap width=50% > 
+<?php
+	boardJump();
+?>
+</td></tr></table><BR>
 <?php
 }
 

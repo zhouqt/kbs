@@ -638,7 +638,9 @@ function show_nav()
 </td></tr>
 </table>
 <?php 
-
+	if ($loginok==1) {
+		getMsg();
+	}
 } 
 
 function head_var($Title, $URL='',$showWelcome=1)
@@ -702,6 +704,27 @@ function show_footer()
 <?php 
 
 } 
+
+function getMsg(){
+	$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
+	if ($ret==0) 
+		return false;
+?>
+<div >
+<bgsound src="/sound/msg.wav">
+<body style="BACKGROUND-COLOR: #f0ffd0">
+<table width="97%">
+  <tr>
+    <td valign="top" nowrap="nowrap"><font color="green"><?php echo $srcid; ?></font> (<?php echo strftime("%b %e %H:%M", $sndtime); ?>): </td>
+    <td align="left" valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
+    <td align="right" valign="top" nowrap="nowrap"><a target="f3" href="/bbssendmsg.php?destid=<?php 
+echo $srcid; ?>&destutmp=<?php 
+echo $srcutmpnum; ?>" target="_blank">[»ØÑ¶Ï¢]</a> <a href="bbsgetmsg.php">[ºöÂÔ]</a></td>
+  </tr>
+</table>
+</div>
+<?php
+}
 
 if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
 	show_nav();

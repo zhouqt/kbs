@@ -62,6 +62,7 @@ function preprocess(){
 	global $article;
 	global $articleID;
 	global $dir_modes;
+	global $page;
 	if (!isset($_GET['boardName'])) {
 		foundErr("未指定版面。");
 		return false;
@@ -150,8 +151,12 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$page) {
 <TABLE cellPadding=5 cellSpacing=1 align=center class=tableborder1 style=" table-layout:fixed;word-break:break-all">
 <?php
 	$threads=bbs_get_threads_from_id($boardID, intval($article['ID']), $dir_modes["NORMAL"], 100000);
-	$total=count($threads);
-	$totalPages=ceil($total/THREADSPERPAGE);
+	if ($threads!=NULL) {
+		$total=count($threads)+1;
+	} else {
+		$total=1;
+	}
+	$totalPages=ceil(($total)/THREADSPERPAGE);
 	if (($page>$totalPages)) {
 		$page=$totalPages;
 	} else if ($page<1) {
@@ -162,17 +167,49 @@ function showArticleThreads($boardName,$boardID,$articleID,$article,$page) {
 	if (($start+$num)>$total) {
 		$num=$total-$start;
 	}
-	if ($start==0) {
-		showArticle($boardName,$boardID,intval($article['ID']), $article);
-		if ($num==THREADSPERPAGE){
-			$num--;
-		}
-	}
+	print_r($threads);
 	for($i=0;$i<$num;$i++) {
-		showArticle($boardName,$boardID,intval($threads[$start+$i]['ID']),$threads[$start+$i]);
+		if (($i+$start)==0) {
+			showArticle($boardName,$boardID,intval($article['ID']), $article);
+		} else {
+			showArticle($boardName,$boardID,intval($threads[$start+$i-1]['ID']),$threads[$start+$i-1]);
+		}
 	}
 ?>
 </table>
+<table cellpadding=0 cellspacing=3 border=0 width=97% align=center><tr><td valign=middle nowrap>本主题贴数<b><?php echo $total+1 ?></b>，分页： 
+<?php
+	if ($page>4) {
+		echo "<a href=\"?boardName=".$boardName."&ID=".$articleID."&page=1\">[1]</a> ";
+		if ($page>5) {
+			echo "...";
+		}
+	} 
+
+	if ($totalPages>$page+3){
+		$endpage=$page+3;
+	}  else{
+		$endpage=$totalPages;
+	} 
+
+	for ($i=($page-3>0)?($page-3):1; $i<=$endpage; $i++){
+		if ($i==$page)   {
+			echo " <font color=#ff0000>[".$i."]</font>";
+		} else {
+			echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&page=".$i."\">[".$i."]</a>";
+		} 
+	} 
+
+	if ($endpage<$totalPages) {
+		if ($endpage<$totalPages-1){
+			echo "...";
+		}
+		echo " <a href=\"?boardName=".$boardName."&ID=".$articleID."&page=".$i."\">[".$totalPages."]</a>";
+} 
+?></td><td valign=middle nowrap align=right>
+<?php 
+	boardJump();
+?></td></tr></table>
 <?php
 }
 
