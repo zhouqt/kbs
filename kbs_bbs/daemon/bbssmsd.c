@@ -4,6 +4,7 @@
 #include <unistd.h>
 #include <stdio.h>
 #include <assert.h>
+#include <time.h>
 
 #include "bbs.h"
 
@@ -23,6 +24,11 @@ int running;
 #if HAVE_MYSQL == 1
 MYSQL mysql_s;
 #endif
+
+#define THRESHHOLE 10
+
+time_t lastsendtime;
+time_t lastrcvtime;
 
 void do_exit_sig(int sig)
 {
@@ -242,6 +248,15 @@ void processremote()
     }
 }
 
+int keepLink(){
+struct header head;
+head.Type=CMD_LINK;
+long2byte(0,head.BodyLength);
+printf("send CMD_LINK\n");
+write(sockfd,&head,sizeof(head));
+
+}
+
 void getbuf(void * h, int s)
 {
     if(head->length<s) return;
@@ -300,8 +315,12 @@ void processbbs()
                 write(sockfd, buf, byte2long(h4.MsgTxtLen));
                 getbuf(NULL, byte2long(h4.MsgTxtLen));
                 break;
+	    default:
+		head->sem=0;
+		return;
         }
     }
+    time(lastsendtime);
 
     head->sem=0;
 }
@@ -324,6 +343,7 @@ int main()
     struct timeval to;
     int rc,remain=0,retr;
     struct sigaction act;
+    time_t now;
 
     start_daemon();
 #if HAVE_MYSQL == 1
@@ -371,6 +391,8 @@ int main()
 	*/
     }
     loginas(sysconf_str("SMS_USERNAME"),sysconf_str("SMS_PASSWORD"));
+    time(&lastsendtime);
+    time(&lastrcvtime);
 
     while(1) {
 	FD_ZERO(&readset);
@@ -390,10 +412,20 @@ int main()
                 if(remain==sizeof(h)) {
                     remain=0;
                     processremote();
+		    time(&lastrcvtime);
                 }
             }
-        }
+        } 
         processbbs();
+	time(&now);
+	if ((now-lastrcvtime)> 3 * THRESHHOLE) {
+		break;
+	}
+	if ((now-lastsendtime)>=THRESHHOLE) {
+		keepLink();
+		time(&lastsendtime);
+	}
+	
     }
     
     close(sockfd);

@@ -537,6 +537,7 @@ struct header{
 #define CMD_REPLY 7
 #define CMD_BBSSEND 8
 #define CMD_GWSEND 9
+#define CMD_LINK 20
 
 #define USER_LEN 20
 #define PASS_LEN 50
