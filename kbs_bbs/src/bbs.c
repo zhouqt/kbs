@@ -651,7 +651,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent)
     }
 
     if (uinfo.mode != RMAIL && digestmode != 1 && digestmode != 4 && digestmode != 5
-        && strcmp(currboard, "sysmail")) { /* 新方法比较*/
+        && strcmp(currboard->filename, "sysmail")) { /* 新方法比较*/
             if ((ent->groupid != ent->id)&&(digestmode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {      /*Re的文章 */
                 if (ReadPostHeader.groupid == ent->groupid)     /* 当前阅读主题 标识 */
                     if (DEFINE(currentuser, DEF_HIGHCOLOR))
@@ -751,9 +751,18 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     char* server=sysconf_str("BBS_WEBDOMAIN");
     if (server==NULL)
         server=sysconf_str("BBSDOMAIN");
-    snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d",
+    /*
+     *if (normal_board(currboard->filename)) {
+     * @todo: generate temp sid
+     */
+    if (1) {
+      snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d",
         server,getbnum(currboard->filename),fh->id,attachpos);
-    //get_telnet_sessionid(buf+strlen(buf), utmpent);
+    } else {
+      snprintf(buf,buf_len-SESSIONLEN,"http://%s/bbscon.php?bid=%d&id=%d&ap=%d&sid=%s",
+        server,getbnum(currboard->filename),fh->id,attachpos);
+        get_telnet_sessionid(buf+strlen(buf), utmpent);
+    }
 }
 
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
@@ -2177,7 +2186,7 @@ int post_article(char *q_file, struct fileheader *re_file)
      * strcpy(post_file.owner,"SYSOP");
      */
 
-    if ((!strcmp(currboard, "Announce")) && (!strcmp(post_file.owner, currboard->filename)))
+    if ((!strcmp(currboard->filename, "Announce")) && (!strcmp(post_file.owner, currboard->filename)))
         strcpy(post_file.owner, "SYSOP");
 
     setbfile(filepath, currboard->filename, post_file.filename);
@@ -2569,7 +2578,7 @@ int del_range(int ent, struct fileheader *fileinfo, char *direct, int mailmode)
         else
             fixkeep(direct, 1, 1);
         if (uinfo.mode != RMAIL) {
-            updatelastpost(currboard);
+            updatelastpost(currboard->filename);
             bmlog(currentuser->userid, currboard->filename, 8, inum2-inum1);
             newbbslog(BBSLOG_USER, "del %d-%d on %s", inum1, inum2, currboard->filename);
         }
