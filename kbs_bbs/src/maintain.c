@@ -365,7 +365,7 @@ int m_newbrd()
     memset(&newboard, 0, sizeof(newboard));
     prints("开启新讨论区:");
     while (1) {
-        getdata(3, 0, "讨论区名称:   ", newboard.filename, 18, DOECHO, NULL, true);
+        getdata(3, 0, "讨论区名称:   ", newboard.filename, BOARDNAMELEN, DOECHO, NULL, true);
         if (newboard.filename[0] == '\0')
             return -1;
         if (valid_brdname(newboard.filename))
@@ -509,7 +509,7 @@ int m_editbrd()
         move(9, 0);
         prints("直接按 <Return> 不修改此栏资讯\n");
       enterbname:
-        getdata(10, 0, "新讨论区名称: ", genbuf, 18, DOECHO, NULL, true);
+        getdata(10, 0, "新讨论区名称: ", genbuf, BOARDNAMELEN, DOECHO, NULL, true);
         if (*genbuf != 0) {
             if (getboardnum(genbuf, NULL) > 0) {
                 move(3, 0);
