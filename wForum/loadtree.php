@@ -121,21 +121,26 @@ function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
 	echo '<TR><TD class=TableBody1 width="100%" height=25>';
 	for ($i=0;$i<$level;$i++) {
 		if ($lastflag[$i]) {
-			if ($i == $level - 1) echo '<img src="pic/line2.gif">'; // |-
-			else echo '<img src="pic/line.gif">';                   // |
+			if ($i == $level - 1) echo '<img src="pic/treenode2.gif">'; // |-
+			else echo '<img src="pic/treenode.gif">';                   // |
 		} else {
-			if ($i == $level - 1) echo '<img src="pic/line1.gif">'; // \
+			if ($i == $level - 1) echo '<img src="pic/treenode1.gif">'; // \
 			else echo "&nbsp;&nbsp;";                               // nothing
 		}
 	}
-	echo '<img src="pic/nofollow.gif"><a href="disparticle.php?boardName='.$boardName.'&ID='.$groupID.'&start='.$startNum.'&listType=1">';
-	/* 再多也多不过 ARTICLE_TITLE_LEN，别省略了吧 - atppp */
-/*	if (strLen($article['TITLE'])>22) { 
-		echo htmlspecialchars(substr($article['TITLE'],0,22),ENT_QUOTES).'...';
+	if ($article == null) {
+		echo ' ... <span style="color:red">还有更多</span> ...';
 	} else {
+		echo '<img src="pic/nofollow.gif"><a href="disparticle.php?boardName='.$boardName.'&ID='.$groupID.'&start='.$startNum.'&listType=1">';
+		/* 再多也多不过 ARTICLE_TITLE_LEN，别省略了吧 - atppp */
+	/*	if (strLen($article['TITLE'])>22) { 
+			echo htmlspecialchars(substr($article['TITLE'],0,22),ENT_QUOTES).'...';
+		} else {
+			echo htmlspecialchars($article['TITLE'],ENT_QUOTES);
+		} */
 		echo htmlspecialchars($article['TITLE'],ENT_QUOTES);
-	} */
-	echo htmlspecialchars($article['TITLE'],ENT_QUOTES);
-	echo '</a> -- <a href="dispuser.php?id='.$article['OWNER'].'">'.$article['OWNER'].'</a></td></tr>';
+		echo '</a> -- <a href="dispuser.php?id='.$article['OWNER'].'">'.$article['OWNER'].'</a>';
+	}
+	echo '</td></tr>';
 }
 ?>

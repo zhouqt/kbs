@@ -8,6 +8,7 @@ require("inc/user.inc.php");
 require("inc/board.inc.php");
 require("inc/ubbcode.php");
 require("inc/userdatadefine.inc.php");
+require("inc/treeview.inc.php");
 require_once("inc/myface.inc.php");
 
 global $boardArr;
@@ -234,7 +235,15 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 <br>
 <?php
 	if ($listType==1) {
-		showArticleTree($boardName,$boardID,$groupID,$articles[0],$articles,$total-1,$start);
+?>
+<table cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
+<tr><th align=left width=90% valign=middle> &nbsp;*树形目录</th>
+<th width=10% align=right valign=middle height=24 id=TableTitleLink> <a href=#top><img src=pic/gotop.gif border=0>顶端</a>&nbsp;</th></tr>
+<?php
+		showTree($boardName,$groupID,$articles,"showTreeItem", 51, $start);
+?>
+</table>
+<?php
 	}
 }
 
@@ -314,70 +323,36 @@ if ( chr($user['gender'])=='M' ){
 <?php
 }
 
-
-function showArticleTree($boardName,$boardID,$groupID,$article,$threads,$threadNum,$start) {
-?>
-<table cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
-<tr><th align=left width=90% valign=middle> &nbsp;*树形目录</th>
-<th width=10% align=right valign=middle height=24 id=TableTitleLink> <a href=#top><img src=pic/gotop.gif border=0>顶端</a>&nbsp;</th></tr>
-<?php
-	$IDs=array();
-	$nodes=array();
-	$printed=array();
-	$level=array();
-	$head=0;
-	$bottom=0;
-	$IDs[$bottom]=intval($article['ID']);
-	$level[$bottom]=0;
-	$printed[0]=1;
-	$nodes[0]=0;
-	$bottom++;
-	while($head<$bottom) {
-		if ($head==0) 
-			showTreeItem($boardName,$groupID,$article,0,$start, 0);
-		else 
-			showTreeItem($boardName,$groupID,$threads[$nodes[$head]],$nodes[$head],$start, $level[$head]);
-		for ($i=1;$i<=$threadNum;$i++){
-			if ( (!isset($printed[$i])) && ($threads[$i]['REID']==$IDs[$head]) ) {
-				$IDs[$bottom]=intval($threads[$i]['ID']);
-				$level[$bottom]=$level[$head]+1;
-				$printed[$i]=1;
-				$nodes[$bottom]=$i;
-				$bottom++;
-			}
-		}
-		$head++;
-	}
-?>
-</table>
-<?php
-}
-
-
-function showTreeItem($boardName,$groupID,$thread,$startNum,$start,$level){
-
+function showTreeItem($boardName,$groupID,$article,$startNum,$level, $lastflag){
+	global $start; //不好意思，搞个全局变量 - atppp
 	echo '<TR><td class=TableBody2 width="100%" height=22 colspan=2>';
 	for ($i=0;$i<$level;$i++) {
-		echo "&nbsp;&nbsp;";
+		if ($lastflag[$i]) {
+			if ($i == $level - 1) echo '<img src="pic/treenode2.gif">'; // |-
+			else echo '<img src="pic/treenode.gif">';                   // |
+		} else {
+			if ($i == $level - 1) echo '<img src="pic/treenode1.gif">'; // \
+			else echo "&nbsp;&nbsp;";                               // nothing
+		}
 	}
-	if ($startNum==0) {
-		echo '主题';
+	if ($article == null) {
+		echo ' ... <a href="disparticle.php?boardName='.$boardName.'&ID='.$groupID.'&start='.$startNum.'&listType=1"><span style="color:red">还有更多</span></a> ...';
 	} else {
-		echo '回复';
+		echo '<img src=face/face1.gif height=16 width16>  <a href="disparticle.php?boardName='.$boardName.'&ID='.$groupID.'&start='.$startNum.'&listType=1">';
+		if ($start==$startNum) {
+			echo "<font color=#FF0000>";
+		}
+		echo htmlspecialchars($article['TITLE'],ENT_QUOTES).' </a><I><font color=gray>(';
+		if ($article["EFFSIZE"] < 1000) echo $article["EFFSIZE"];
+		else {
+			printf("%.1f",$article["EFFSIZE"]/1000.0); echo "k";
+		}
+		echo '字) － <a href=dispuser.php?id='.$article['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$article['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$article['POSTTIME']);
+		if ($start==$startNum) {
+			echo "</font>";
+		}
+		echo '</I>';
 	}
-	echo '：&nbsp;<img src=face/face1.gif height=16 width16>  <a href="disparticle.php?boardName='.$boardName.'&ID='.$groupID.'&start='.$startNum.'&listType=1">';
-	if ($start==$startNum) {
-		echo "<font color=#FF0000>";
-	}
-	echo htmlspecialchars($thread['TITLE'],ENT_QUOTES).' </a><I><font color=gray>(';
-	if ($thread["EFFSIZE"] < 1000) echo $thread["EFFSIZE"];
-	else {
-		printf("%.1f",$thread["EFFSIZE"]/1000.0); echo "k";
-	}
-	echo '字) － <a href=dispuser.php?id='.$thread['OWNER'].' target=_blank title="作者资料"><font color=gray>'.$thread['OWNER'].'</font></a>，'.strftime("%Y年%m月%d日",$thread['POSTTIME']);
-	if ($start==$startNum) {
-		echo "</font>";
-	}
-	echo '</I></td></tr>';	
+	echo '</td></tr>';	
 }
 ?>
