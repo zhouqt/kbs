@@ -29,7 +29,7 @@
 #include <sys/shm.h>
 extern char *getenv();
 static const char *invalid[] = {
-    "unknown@",
+   /* "unknown@",*/
     "root@",
     "gopher@",
     "bbs@",
