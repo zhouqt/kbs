@@ -270,8 +270,7 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 #endif
     char innflag[2];
     char owner[OWNER_LEN];
-    char unused2[46-sizeof(time_t)];
-	time_t posttime;
+    char unused2[46];
     long attachment;
     char title[STRLEN];
     unsigned level;
@@ -280,9 +279,9 @@ typedef struct fileheader {     /* This structure is used to hold data in */
 
 typedef struct fileheader fileheader_t;
 
-#define GET_POSTFILENAME(x,y) get_postfilename(x,y,1)
+#define GET_POSTFILENAME(x,y) get_postfilename(x,y,0)
 #define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
-#define VALID_FILENAME(x) valid_filename(x,1)
+#define VALID_FILENAME(x) valid_filename(x,0)
 
 // WWW²¿·Ö
 
