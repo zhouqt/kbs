@@ -345,7 +345,7 @@ check_register_info()
     }
     if ( strlen( currentuser->address ) < 6 ) {
         move( 5, 0 );
-        prints( "ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", strlen( urec->address ) > 0 ? urec->address : "¿ÕµØÖ·" ); /* Leeward 98.04.26 */
+        prints( "ÄúÄ¿Ç°ÌîĞ´µÄµØÖ·ÊÇ¡®%s¡¯£¬³¤¶ÈĞ¡ÓÚ [1m[37m6[m£¬ÏµÍ³ÈÏÎªÆä¹ıÓÚ¼ò¶Ì¡£\n", currentuser->address[0] ? currentuser->address : "¿ÕµØÖ·" ); /* Leeward 98.04.26 */
         getdata( 6, 0, "ÇëÏêÏ¸ÌîĞ´ÄúµÄ×¡Ö·£º", buf, NAMELEN,DOECHO,NULL,YEA);
         strcpy(currentuser->address,buf);
     }
