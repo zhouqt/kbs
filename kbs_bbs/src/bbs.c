@@ -30,7 +30,7 @@
 /*#include "../SMTH2000/cache/cache.h"*/
 
 int scrint = 0;
-int local_article;
+int local_article = 0;  //0:转信版面默认转信，1:非转信版面，2:转信版面默认不转信 - atppp
 int readpost;
 int helpmode = 0;
 int usernum;
@@ -486,6 +486,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     char ispost[10];
     char q_file[STRLEN];
     struct read_arg* arg=(struct read_arg*)conf->arg;
+    int outgo_board = true, proceed = false;
 
     if (fileinfo==NULL)
         return DONOTHING;
@@ -562,14 +563,21 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 		if (true == check_readonly(bname)) { /* Leeward 98.03.28 */
             return FULLUPDATE;
         }
+        outgo_board = (bh->flag & BOARD_OUTFLAG);
     }
 
     move(0, 0);
     prints("转贴 ' %s ' 到 %s 版 ", quote_title, bname);
     clrtoeol();
     move(1, 0);
-    getdata(1, 0, "(S)转信 (L)本站 (A)取消? [A]: ", ispost, 9, DOECHO, NULL, true);
-    if (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l') {
+    if (outgo_board) {
+        getdata(1, 0, "(S)转信 (L)本站 (A)取消? [A]: ", ispost, 9, DOECHO, NULL, true);
+        proceed = (ispost[0] == 's' || ispost[0] == 'S' || ispost[0] == 'L' || ispost[0] == 'l');
+    } else {
+        getdata(1, 0, "(L)本站 (A)取消? [A]: ", ispost, 9, DOECHO, NULL, true);
+        proceed = (ispost[0] == 'L' || ispost[0] == 'l');
+    }
+    if (proceed) {
         /*add by stiger
         if(conf->pos<=arg->filecount) {
             int i=0;
@@ -2483,13 +2491,15 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     setbfile(filepath, currboard->filename, post_file.filename);
 
     bp=currboard;
-    if (bp->flag & BOARD_OUTFLAG)
+    if (bp->flag & BOARD_OUTFLAG) {
         local_article = 0;
-    else
+        /* 回复 local_save 的文章默认 local_save - atppp */
+        if (re_file) local_article = (re_file->innflag[0]=='L' && re_file->innflag[1]=='L')?2:0;
+    } else
         local_article = 1;
     if (!strcmp(post_file.title, buf) && q_file[0] != '\0')
         if (q_file[119] == 'L') /* FIXME */
-            local_article = 1;
+            local_article = 1; //这个地方太诡异了，完全看不懂，不知道对 local_save 有什么影响。
 
     modify_user_mode(POSTING);
 

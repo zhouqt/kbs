@@ -8,10 +8,9 @@
 #include "edit.h"
 
 #define MAX_EDIT_LINE 20000
-#define LOCAL_ARTICLE_DEFAULT 0
 
 extern int temp_numposts;       /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
-extern int local_article;
+extern int local_article; //0:转信版面默认转信，1:非转信版面，2:转信版面默认不转信 - atppp
 char save_title[STRLEN];
 int in_mail;
 
@@ -753,20 +752,18 @@ int valid_article(pmt, abort)
             /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
             y += 3;
             temp = 1;
+            if (local_article == 0)
+                local_article = 2; /* 灌水的文章就不要转出去了吧 :P by flyriver */
         }
 
-        // local_article 没有初始化 by zixia
-        local_article = LOCAL_ARTICLE_DEFAULT; // 缺省的转信设置
-
-        if (temp){
-            local_article = 1; /* 灌水的文章就不要转出去了吧 :P by flyriver */
-        }
-
-        if (local_article == 1)
+        if (local_article == 2)
             strcpy(pmt, "(L)站内, (S)转信, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
-        else
+        else if (local_article == 0)
             strcpy(pmt, "(S)转信, (L)站内, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [S]: ");
+        else //local_article == 1
+            strcpy(pmt, "(L)站内, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [L]: ");
     }
+
 
     getdata(0, 0, pmt, abort, 3, DOECHO, NULL, true);
     switch (abort[0]) {
@@ -830,10 +827,10 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
             strcpy(p_buf, "(S)储存档案, (F)自动换行存储, (A)放弃编辑, (E)继续编辑? [S]: ");
         ret = valid_article(p_buf, abort);
         if (abort[0] == '\0') {
-            if (local_article == 1)
-                abort[0] = 'l';
-            else
+            if (local_article == 0)
                 abort[0] = 's';
+            else
+                abort[0] = 'l';
         }
         /* Removed by flyriver, 2002.7.1, no need to modify abort[0] here. */
         /*if(abort[0]!='T' && abort[0]!='t' && abort[0]!='F' && abort[0]!='f' && abort[0]!='A' && abort[0]!='a' &&abort[0]!='E' &&abort[0]!='e' && abort[0] != 'L' && abort[0] != 'l')
@@ -886,18 +883,21 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
         prints("旧标题: %s", save_title);
 		strcpy(buf,save_title);
         getdata(2, 0, "新标题: ", buf, STRLEN, DOECHO, NULL, 0);
-    if (buf[0]!=0) {
-            if (strcmp(save_title, buf))
-                local_article = 0;
+        if (buf[0]!=0) {
+            /* if (strcmp(save_title, buf))
+                local_article = 0; */ // 没必要了吧，保持默认设定 - atppp
             strncpy(save_title, buf, STRLEN);
             strncpy(quote_title, buf, STRLEN);
-    }
-    } else if (abort[0] == 's' || abort[0] == 'S' || abort[0] == 'f' || abort[0] == 'F') {
+        }
+    } else if ((local_article != 1) && (abort[0] == 's' || abort[0] == 'S')) {
         local_article = 0;
+    } else if (abort[0] == 'f' || abort[0] == 'F') {
+        // 保持默认 - atppp
     } else {                    /* Added by flyriver, 2002.7.1, local save */
         abort[0] = 'l';
         local_article = 1;
     }
+    if (local_article == 2) local_article = 1; // 到了这一步 2 和 1 已经没有区别了，但是下面的程序要求 1。atppp
     firstline = NULL;
     if (!aborted) {
         if (pattachpos && *pattachpos) {
@@ -984,7 +984,7 @@ fsdfa
                         do {
                             if ((ppx = (unsigned char *) strstr((char *) ppx, "\033[")) != NULL) {
                                 int ich=0;
-				if (ppx-pp-lll>LLL) break; //已经到了足够换行的位置，不用继续找\033
+                                if (ppx-pp-lll>LLL) break; //已经到了足够换行的位置，不用继续找\033
                                 while (!isalpha(*(ppx+ich))&&(*(ppx+ich)!=0))
                                     ich++;
                                 if (ich > 0)
@@ -998,7 +998,7 @@ fsdfa
                         } while (ppx); //计算颜色字符，字节数放入lll
                         ppt += LLL + lll; //应该折行的地方
 
-		        if (ppt - pp > strlen(pp)) break; //断行位置超过了字符串长度
+                        if (ppt - pp > strlen(pp)) break; //断行位置超过了字符串长度
                         if ((*ppt) > 127) {     /* 避免在汉字中间折行 ,KCN:看不懂faint*/
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx--)
                                 if ((*ppx) < 128)

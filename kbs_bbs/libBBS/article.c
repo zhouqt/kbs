@@ -613,7 +613,7 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
 
 }
 
-void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, char *sourceboard)
+void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, int local_article, char *sourceboard)
 {                               /* 把quote_file复制到filepath (转贴或自动发信) */
     FILE *inf, *of;
     char buf[256];
@@ -643,7 +643,7 @@ void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail
 
         normal_file = 1;
 
-        write_header(of, user, in_mail, sourceboard, title, Anony, 1 /*不写入 .posts */ );
+        write_header(of, user, in_mail, sourceboard, title, Anony, (local_article?1:2) /*不写入 .posts */ );
         if (skip_attach_fgets(buf, 256, inf) != NULL) {
             for (count = 8; buf[count] != ' ' && count < 256; count++)
                 owner[count - 8] = buf[count];
@@ -836,7 +836,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     oldmode = uinfo.mode;
     modify_user_mode(POSTING);
 #endif
-    getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, toboard);        /*根据fname完成 文件复制 */
+    getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, local_article, toboard);        /*根据fname完成 文件复制 */
 
     postfile.eff_size=get_effsize_attach(filepath, &postfile.attachment); /* FreeWizard: get effsize & attachment */
     /*

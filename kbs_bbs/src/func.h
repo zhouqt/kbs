@@ -412,7 +412,7 @@ void unlock_sem_check(int lockid);
     void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony);
 
 /* 把quote_file复制到filepath (转贴或自动发信)*/
-    void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, char *sourceboard);
+    void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, int local_article, char *sourceboard);
 
     void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode);
 
