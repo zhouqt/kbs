@@ -37,33 +37,60 @@ function showAllSecs(){
 	return false;
 }
 
-function showSecs($secNum=0,$group,$isFold) {
+/*
+ * $loadFav = 1 的时候表示载入收藏夹，参数说明：$secNum 相当于 bbs2www/html/bbsfav.php 里头的 $select, $group 参数此时没有作用 - atppp
+ */
+function showSecs($secNum,$group,$isFold,$loadFav=0) {
 	global $yank;
 	extract($GLOBALS);
-	if ( ($secNum<0)  || ($secNum>=$sectionCount)) {
-		foundErr("版面参数错误！");
-		return false;
-	}
 ?>
 <table cellspacing=1 cellpadding=0 align=center width="97%" class=TableBorder1>
 <TR><Th colSpan=2 height=25 align=left id=TableTitleLink>&nbsp;
 <?php
-	if ($isFold) {
+	if ($loadFav == 0) {
+		if ( ($secNum<0)  || ($secNum>=$sectionCount)) {
+			foundErr("版面参数错误！");
+			return false;
+		}
+?>
+<?php
+		if ($isFold) {
 ?>
 <a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=N" title="关闭版面列表"><img src="pic/nofollow.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
-</th></tr>
 <?php
-	} else {
+		} else {
 ?>
 <a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开版面列表"><img src="pic/plus.gif" border=0></a><a href="section.php?sec=<?php echo $secNum ; ?>" title=进入本分类讨论区><?php echo $section_names[$secNum][0]; ?> </a>
 <?php
+		}
+	} else {
+?>
+用户收藏夹
+<?php
+		if ($secNum != 0) {
+			$list_father = bbs_get_father($secNum);
+?>
+&nbsp;[<a href="favboard.php?select=<?php echo $list_father; ?>">回到上一级</a>]
+<?php
+			}
 	}
+?>
+</th></tr>
+<?php
 	if (! $isFold && (BOARDLISTSTYLE=='simplest')) {
 ?>
 		<TR><TD colspan="2" class=TableBody1>&nbsp;版面列表已关闭 [<a href="<?php echo $_SERVER['PHP_SELF'] ; ?>?sec=<?php echo $secNum; ?>&ShowBoards=Y" title="展开版面列表">展开</a>]</td></tr>
 <?php
 	} else {
-		$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
+		if ($loadFav == 0) {
+			$boards = bbs_getboards($section_nums[$secNum], $group, $yank);
+		} else {
+			$boards = bbs_fav_boards($secNum, 1);
+			if ($boards == FALSE) {
+	    		foundErr("读取版列表失败");
+	    		return false;
+			}
+		}
 		if ($boards == FALSE) {
 ?>
 		<TR><TD colspan="2" class=TableBody1>&nbsp;本分区尚无版面</td></tr>
@@ -76,6 +103,10 @@ function showSecs($secNum=0,$group,$isFold) {
 			$brd_artcnt = $boards["ARTCNT"]; // 文章数
 			$brd_unread = $boards["UNREAD"]; // 未读标记
 			$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
+			if ($loadFav == 1) {
+                $brd_position= $boards["POSITION"];//位置
+                $brd_npos= $boards["NPOS"];//位置
+            }
 			$brd_flag = $boards["FLAG"]; //flag
 			$brd_bid = $boards["BID"]; //flag
 			$rows = sizeof($brd_name);
@@ -83,6 +114,7 @@ function showSecs($secNum=0,$group,$isFold) {
 			for ($i = 0; $i < $rows; $i++)	{
 				flush();
 				$isFirst=!$isFirst;
+				$isGroup = (($loadFav == 0) && ($brd_flag[$i] & BBS_BOARD_GROUP)) || (($loadFav == 1) && ($brd_flag[$i] == -1));
 				if ($isFold){
 					if ($brd_name[$i]=='Registry')
 						continue;
@@ -107,12 +139,16 @@ function showSecs($secNum=0,$group,$isFold) {
 		<TABLE cellSpacing=0 cellPadding=2 width=100% border=0>
 		<tr><td class=TableBody1 width=*>
 <?php
-					echo '<a href="board.php?name='.$brd_name[$i].'">';
+					if ($loadFav == 0 || !$isGroup) { //ToDo: 这个地方有必要用htmlspecialchars? - atppp
+						echo '<a href="board.php?name='.$brd_name[$i].'"><font color=#000066>'.$brd_name[$i].'</font></a>';
+					} else {
+						echo '<a href="favboard.php?select='.$brd_bid[$i].'"><font color=#000066>[目录]'.$brd_desc[$i].'</font></a>';
+					}
 
-?>		<font color=#000066><?php echo $brd_name[$i] ?> </font></a>
+?>
 				</td>
 		<td width=40 rowspan=2 align=center class=TableBody1></td><td width=200 rowspan=2 class=TableBody1><?php
-					if ($brd_flag[$i] & BBS_BOARD_GROUP) {
+					if ($isGroup) {
 		?>
 				<B>本版为二级目录版</B>
 		<?php
@@ -138,7 +174,7 @@ function showSecs($secNum=0,$group,$isFold) {
 </TD></TR><TR><TD width=*><FONT face=Arial><img src=pic/forum_readme.gif align=middle> <?php echo $brd_desc[$i] ?></FONT>
 </TD></TR><TR><TD class=TableBody2 height=20 width=*>版主：<?php echo $brd_bm[$i]==''?'暂无':$brd_bm[$i] ; ?> </TD><td width=40 align=center class=TableBody2>&nbsp;</td><TD vAlign=middle class=TableBody2 width=200>
 <?php
-if (!($brd_flag[$i] & BBS_BOARD_GROUP)) {
+if (!$isGroup) {
 ?>
 		<table width=100% border=0><tr>
 <td width=25% vAlign=middle><img src=pic/forum_today.gif alt=今日帖 align=absmiddle>&nbsp;<font color=#FF0000><?php echo bbs_get_today_article_num($brd_name[$i]) ?></font></td><td width=30% vAlign=middle><img src=pic/forum_topic.gif alt=主题 border=0  align=absmiddle>&nbsp;<?php echo bbs_getthreadnum($brd_bid[$i]) ?></td>
@@ -156,7 +192,7 @@ if (!($brd_flag[$i] & BBS_BOARD_GROUP)) {
 ?>
 <td class=TableBody1 width="50%"><TABLE cellSpacing=2 cellPadding=2 width=100% border=0><tr><td width="100%" title="<?php echo $brd_desc[$i] ; ?>" colspan=2><a href="board.php?name=<?php echo $brd_name[$i]; ?>"><font color=#000066><?php echo $brd_name[$i] ; ?></font></a></td></tr><tr>
 <?php
-					if ($brd_flag[$i] & BBS_BOARD_GROUP) {
+					if ($isGroup) {
 ?>
 <td> <b>本版为二级目录版</b></td>
 <?php
