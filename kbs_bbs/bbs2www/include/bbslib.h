@@ -324,4 +324,8 @@ do {\
 		sleep(1); \
 } while(0)
 
+void output_ansi_text(char *buf, size_t buflen, 
+							buffered_output_t * output, char* attachlink);
+#define output_ansi_javascript output_ansi_text
+
 #endif                          /* BBSLIB_H */
