@@ -3,7 +3,6 @@
 /**
  * Xiaoying Hu<xyhu@mtech.cn>
  */
-if (!defined ('_IN_SYSTEM_')) header ('Location: /');
 if (!function_exists ('setlocale')){
     function setlocale ($category, $locale) {
             
