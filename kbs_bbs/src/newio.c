@@ -396,7 +396,6 @@ igetkey()
 {
     int  mode;
     int  ch, last;
-    extern int RMSG;
 
     mode = last = 0;
     while( 1 ) {
@@ -458,11 +457,7 @@ ask( char *prompt)
     return( ch );
 }
 
-int
-getdata(line, col, prompt, buf, len, echo,nouse,clearlabel)
-int     line,   col,    len,    echo, clearlabel;
-int     nouse;
-char    *prompt,        *buf;
+int getdata(int line,int col,char* prompt,char* buf,int len,int echo,void* nouse,int clearlabel)
 {
     int     ch,clen = 0,curr = 0,x,y;
     char    tmp[STRLEN];

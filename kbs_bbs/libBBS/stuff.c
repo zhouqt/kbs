@@ -66,7 +66,6 @@ int my_system(const char *cmdstring)
 
 char *idle_str( struct user_info *uent )
 {
-    struct stat buf;
     time_t      now, diff;
     int         hh, mm;
 
@@ -257,13 +256,14 @@ char *com, *wd ;
                 break ;
             continue ;
         }
-        if(pmode == LOOKFIRST)
+        if(pmode == LOOKFIRST) {
             if(pcom[i] != ' ') {
                 arglist[argptr++] = &pcom[i] ;
                 if(argptr+1 == MAXARGS)
                     break ;
                 pmode = LOOKLAST ;
             } else continue ;
+        }
         if(pcom[i] == ' ') {
             pmode = LOOKFIRST ;
             pcom[i] = '\0' ;
@@ -346,7 +346,7 @@ char * Ctime(time_t  clock) /* 时间 转换 成 英文 */
     char *foo;
     char *ptr = ctime(&clock);
 
-    if (foo = strchr(ptr, '\n')) *foo = '\0';
+    if ((foo = strchr(ptr, '\n'))!=NULL) *foo = '\0';
     return (ptr);
 }
 
@@ -358,8 +358,6 @@ int Isspace(char ch)
 
 char * nextword(const char * * str, char *buf, int sz)
 {
-    const char *p;
-    
     while (Isspace(**str))(*str)++;
     
     while (**str && !Isspace(**str)){
@@ -772,6 +770,7 @@ int setpublicshmreadonly(int readonly)
         publicshm = (struct public_data*)attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm ) ,&iscreate , 1, publicshm); 
     else
         publicshm = (struct public_data*)attach_shm1( NULL, PUBLIC_SHMKEY, sizeof( *publicshm ) ,&iscreate , 0, publicshm); 
+    return (publicshm==NULL);
 }
 
 time_t bbstime(time_t* t)
@@ -867,12 +866,8 @@ int _t_search(struct user_info* uentp,struct _tag_t_search* data,int pos)
 	return 0;
 }
 
-struct user_info *
-            t_search(sid,pid)
-            char *sid;
-int  pid;
+struct user_info * t_search(char *sid,int  pid)
 {
-    int         i;
     struct _tag_t_search data;
 
     data.pid=pid;

@@ -138,7 +138,7 @@ int UndeleteArticle(int ent,struct fileheader *fileinfo,char *direct)
 
 
     strcpy(UTitle, fileinfo->title);
-    if (p = strrchr(UTitle, '-'))
+    if ((p = strrchr(UTitle, '-'))!=NULL)
     { /* create default article title */
       *p = 0;
       for (i = strlen(UTitle) - 1; i >= 0; i --)
@@ -163,7 +163,7 @@ int UndeleteArticle(int ent,struct fileheader *fileinfo,char *direct)
       {
         i ++;
         strcpy(UTitle, buf + 8);
-        if (p = strchr(UTitle, '\n'))
+        if ((p = strchr(UTitle, '\n'))!=NULL)
           *p = 0;
       }
     }

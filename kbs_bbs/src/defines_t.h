@@ -36,7 +36,7 @@ void rscroll();
 /* newio.c */
 int ask( char *prompt);
 void oflush();
-int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,int nouse,int clearlabel);
+int getdata(int line, int col,char* prompt,char* buf,int  len,int  echo,void* nouse,int clearlabel);
 void set_alarm(int set_timeout,void (*timeout_func)(void*),void* data);
 int igetkey();
 void check_calltime();

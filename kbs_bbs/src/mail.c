@@ -1180,12 +1180,12 @@ mail_forward_internal(int ent,struct fileheader *fileinfo,char *direct ,int isuu
 
 int mail_uforward(int ent,struct fileheader *fileinfo,char *direct )
 {
-	mail_forward_internal(ent,fileinfo,direct,1);
+	return mail_forward_internal(ent,fileinfo,direct,1);
 }
 
 int mail_forward(int ent,struct fileheader *fileinfo ,char *direct )
 {
-	mail_forward_internal(ent,fileinfo,direct,0);
+	return mail_forward_internal(ent,fileinfo,direct,0);
 }
 
 #endif
@@ -1216,40 +1216,40 @@ char *direct ;
 extern int mailreadhelp();
 
 struct one_key  mail_comms[] = {
-                                   'd',        mail_del,
-                                   'D',        mail_del_range,
-                                   'r',        mail_read,
-                                   'R',        mail_reply,
-                                   'm',        mail_mark,
-                                   'i',        mail_to_tmp,
+                                   {'d',        mail_del},
+                                   {'D',        mail_del_range},
+                                   {'r',        mail_read},
+                                   {'R',        mail_reply},
+                                   {'m',        mail_mark},
+                                   {'i',        mail_to_tmp},
 #ifdef INTERNET_EMAIL
-                                   'F',        mail_forward,
-                                   'U',        mail_uforward,
+                                   {'F',        mail_forward},
+                                   {'U',        mail_uforward},
 #endif
                                    /* Added by ming, 96.10.9 */
-                                   'a',        auth_search_down,
-                                   'A',        auth_search_up,
-                                   '/',        t_search_down,
-                                   '?',        t_search_up,
-                                   ']',        thread_down,
-                                   '[',        thread_up,
-                                   Ctrl('A'),  show_author,
-                                   Ctrl('Q'),  show_authorinfo,/*Haohmaru.98.12.19*/
-                                   Ctrl('W'),  show_authorBM,/*cityhunter 00.10.18*/
-                                   Ctrl('N'),  SR_first_new,
-                                   '\\',       SR_last,
-                                   '=',        SR_first,
-                                   Ctrl('C'),  do_cross,
-                                   Ctrl('S'),  SR_read,
-                                   'n',        SR_first_new,
-                                   'p',        SR_read,
-                                   Ctrl('X'),  SR_readX, /* Leeward 98.10.03 */
-                                   Ctrl('U'),  SR_author,
-                                   Ctrl('H'),  SR_authorX, /* Leeward 98.10.03 */
-                                   'h',        mailreadhelp,
-                                   Ctrl('J'),  mailreadhelp,
-                                   Ctrl('O'),  add_author_friend,
-                                   '\0',       NULL
+                                   {'a',        auth_search_down},
+                                   {'A',        auth_search_up},
+                                   {'/',        t_search_down},
+                                   {'?',        t_search_up},
+                                   {']',        thread_down},
+                                   {'[',        thread_up},
+                                   {Ctrl('A'),  show_author},
+                                   {Ctrl('Q'),  show_authorinfo},/*Haohmaru.98.12.19*/
+                                   {Ctrl('W'),  show_authorBM},/*cityhunter 00.10.18*/
+                                   {Ctrl('N'),  SR_first_new},
+                                   {'\\',       SR_last},
+                                   {'=',        SR_first},
+                                   {Ctrl('C'),  do_cross},
+                                   {Ctrl('S'),  SR_read},
+                                   {'n',        SR_first_new},
+                                   {'p',        SR_read},
+                                   {Ctrl('X'),  SR_readX}, /* Leeward 98.10.03 */
+                                   {Ctrl('U'),  SR_author},
+                                   {Ctrl('H'),  SR_authorX}, /* Leeward 98.10.03 */
+                                   {'h',        mailreadhelp},
+                                   {Ctrl('J'),  mailreadhelp},
+                                   {Ctrl('O'),  add_author_friend},
+                                   {'\0',       NULL},
                                } ;
 
 int
@@ -1495,7 +1495,7 @@ static int do_gsend(char *userid[],char *title,int num)
     char        buf2[256],buf3[STRLEN],buf4[STRLEN];
     int         replymode=1; /* Post New UI*/
     char        ans[4],include_mode='Y';
-    char        filepath[STRLEN], tmpfile[STRLEN], fname[STRLEN];
+    char        filepath[STRLEN], tmpfile[STRLEN];
     int         cnt;
     FILE        *mp;
     extern char quote_title[120];
@@ -1880,7 +1880,7 @@ doforward(char *direct,struct fileheader*fh,int isuu)
             return -22;
         }
 
-    sprintf(fname,"tmp/forward/%s.%05d",currentuser->userid,currentuser->userid,getpid());
+    sprintf(fname,"tmp/forward/%s.%05d",currentuser->userid,getpid());
     /*
     sprintf( tmp_buf, "cp %s/%s %s",
              direct, fh->filename, fname);
