@@ -7,6 +7,8 @@
 /* for bbs2www, by flyriver, 2001.3.9 */
 #define SECNUM 9
 
+#define SQUID_ACCL
+
 #define DEFAULTBOARD    	"test"
 #define MAXUSERS  		200000
 #define MAXBOARD  		400
