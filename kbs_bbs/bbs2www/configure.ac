@@ -2,7 +2,7 @@
 AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
 AC_CANONICAL_SYSTEM
 case "${host}" in
-  i*86-*-freebsd4*)
+  i*86-*-freebsd*)
 	CFLAGS="$CFLAGS -DFREEBSD"
 	;;
   *)

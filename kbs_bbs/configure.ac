@@ -5,7 +5,7 @@ AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
 AC_CANONICAL_TARGET
 case "${host}" in
-  i*86-*-freebsd4*)
+  i*86-*-freebsd*)
         OSTYPE="FREEBSD"
         ;;      
   *-*-solaris*) 
