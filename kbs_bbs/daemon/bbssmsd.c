@@ -25,7 +25,7 @@ int running;
 MYSQL mysql_s;
 #endif
 
-#define THRESHHOLE 10
+#define THRESHHOLE 30
 
 time_t lastsendtime;
 time_t lastrcvtime;
