@@ -1,8 +1,7 @@
 $Id$
-              smthbbs 代码系统常见问题及解答 (smthbbs FAQ)
+              kbsbbs 代码系统常见问题及解答 (kbsbbs FAQ)
 
-    本 FAQ 由 BBS 水木清华站(http://www.smth.org)系统维护组负责维护，
-如有问题，欢迎来 BBS 水木清华站的 BBSMan_Dev 版参与讨论。
+    本 FAQ 由 KBS 开发组 (http://dev.kcn.cn)负责维护，
 
 1. ChangeLog
 2004.5.29
@@ -29,11 +28,11 @@ $Id$
 
 2.2. 我启动 bbsd 时出现“can't lock pid file:var/bbsd.2500.pid”，怎么回事？
 [答复]
-  这个问题在比较老的 smthbbs 版本里面会出现，是个 bug，但在最新的 smthbbs
+  这个问题在比较老的 kbsbbs 版本里面会出现，是个 bug，但在最新的 kbsbbs
   snapshot 版本里面已经被修正了。
   解决办法如下：
-    a) 下载并安装最新的 smthbbs snapshot，我们建议您这么做；
-    b) 如果您确实想用老的 smthbbs 版本，那么可以参照以下步骤：
+    a) 下载并安装最新的 kbsbbs snapshot，我们建议您这么做；
+    b) 如果您确实想用老的 kbsbbs 版本，那么可以参照以下步骤：
          cd $(BBSHOME)
          mkdir var
     c) 如果已经存在 var/ 目录，确认它的属主为 bbs 用户；
@@ -50,18 +49,18 @@ $Id$
      /usr/local 的情况，可以在 configure 的时候用 --with-libesmtp=DIR 指定
      libesmtp 的安装目录；
   b) 如果您的 libesmtp 包是自己编译安装的，您一定要在 configure libesmtp 的
-     加上 --disable-pthreads 参数。这个限制在未来的 smthbbs 版本里会被去除。
-(注：在最新版的 smthbbs 代码中已经没有这个限制了)
+     加上 --disable-pthreads 参数。这个限制在未来的 kbsbbs 版本里会被去除。
+(注：在最新版的 kbsbbs 代码中已经没有这个限制了)
   c) 如果 libesmtp 是用操作系统自带的软件包安装的，请检查一下您是否安装了相关
      的开发包 (一般会有 libesmtp-devel 或 libesmtp-dev 之类的名字)。
 
-2.4. 我用的是 smthbbs-1.0.1，configure 通过，但 make 时出错，提示：
+2.4. 我用的是 kbsbbs-1.0.1，configure 通过，但 make 时出错，提示：
   “bbs_sendmail.c:5:22: libesmtp.h: No such file or directory”
   后面还有很多出错信息，看样子都是跟 libesmtp 有关。
 [答复]
-  smthbbs-1.0.1 及更早版本的 configure 脚本有 bug，检查 libesmtp 时没有给出
-  足够的出错信息，这个问题在最新的 smthbbs snapshot 版本已经解决。建议您下载
-  并安装最新的 smthbbs snapshot，或者参考问题 2.3 的答复。
+  kbsbbs-1.0.1 及更早版本的 configure 脚本有 bug，检查 libesmtp 时没有给出
+  足够的出错信息，这个问题在最新的 kbsbbs snapshot 版本已经解决。建议您下载
+  并安装最新的 kbsbbs snapshot，或者参考问题 2.3 的答复。
 
 2.5. 我执行了 ./bbsd -p 23，但 telnet 127.0.0.1 时却告诉我：
    “telnet: connect to address 127.0.0.1: Connection refused”。
@@ -70,7 +69,7 @@ $Id$
   才可能使 bbsd 成功运行于 23 端口。另外还要保证执行 ./bbsd -p 23 命令之前，
   23 端口没有被占用。
 
-2.6. 编译 smthbbs 都通过了，打开 bbsd 后，一连就断开。
+2.6. 编译 kbsbbs 都通过了，打开 bbsd 后，一连就断开。
 [答复]
   a) 首先检查 .BOARDS 和 .PASSWDS 文件的权限是否正确，如果文件属主不是 bbs
      用户，用 chown 进行修改。另外，要注意不能直接在 $BBSHOME 目录里面执行
@@ -101,7 +100,7 @@ $Id$
 
 2.9. 登陆WWW的时候，报告找不到bbsguestleft.html，bbsguestfoot.html之类的页面
 [答复]
-  smth的代码为了效率考虑，对于guest的页面采用生成静态页面的方式。bbsguestXX.html
+  kbs的代码为了效率考虑，对于guest的页面采用生成静态页面的方式。bbsguestXX.html
 等都是用bbsXXX.php生成的。你可以用
   wget http://www/bbsXXX.php -O tmp.html; mv -f tmp.html bbsguestXXX.html
 来生成。假如编译了php的cli版本，也可以用
@@ -111,7 +110,7 @@ tmp.html bbsguestXXX.html
 2.10. 为什么我编译的 phpbbslib 没有 .so 后缀？
 [答复]
   这个问题常见于 Redhat Fedora 和 Debain Sarge 上，由某些 1.5.x 版本的 libtool
-  引起，解决办法是分别在 smthbbs 的主目录、bbs2www 子目录、sshbbsd 子目录和
+  引起，解决办法是分别在 kbsbbs 的主目录、bbs2www 子目录、sshbbsd 子目录和
   innbbsd 子目录下分别执行：
       libtoolize -c --force;autoheader;aclocal;automake -a;autoconf
 
@@ -141,8 +140,8 @@ tmp.html bbsguestXXX.html
 3.2. 刚安装完毕，建立新版的时候断线，怎么回事？
 [答复]
   这个是1.0.1版以前的bug，解决办法：
-    a) 下载并安装最新的 smthbbs snapshot，我们建议您这么做；
-    b) 如果您确实想用老的 smthbbs 版本，那么可以参照以下步骤：
+    a) 下载并安装最新的 kbsbbs snapshot，我们建议您这么做；
+    b) 如果您确实想用老的 kbsbbs 版本，那么可以参照以下步骤：
 将bcache.c里面的
             ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
 这一行，移动到上面几行。
