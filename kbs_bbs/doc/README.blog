@@ -1,9 +1,8 @@
 $Id$
-			SMTH.Blog README
+			KBS.Blog README
 	
-    本文由 BBS 水木清华站(http://www.smth.org)系统维护组负责维护，介绍了
-SMTH.Blog 的安装、功能、使用等。欢迎到 BBS水木清华站的BBSMan_Dev 版参与
-SMTH.Blog 的讨论。
+    本文由 KBS(http://dev.kcn.cn)系统维护组负责维护，介绍了 KBS.Blog 的安装、功能、
+使用等。
 
 0. ChangeLog
 2004.5.26
@@ -13,17 +12,17 @@ SMTH.Blog 的讨论。
 2004.1.6
   windinsn v1.0  初始版本
 
-1. 安装SMTH.Blog
-    关于SMTH.Blog的升级、安装事宜，请参考 INSTALL.blog 文档。
+1. 安装KBS.Blog
+    关于KBS.Blog的升级、安装事宜，请参考 INSTALL.blog 文档。
 
 2. 主要功能
-    SMTH.Blog是基于smthbbs的Blog系统，同时兼顾telnet下个人文集的部分功能。
+    KBS.Blog是基于kbs_bbs的Blog系统，同时兼顾telnet下个人文集的部分功能。
     2.1 系统结构
-    SMTH.Blog分为WWW,telnet,定时任务,cache系统和后端支持的数据库几部分。
+    KBS.Blog分为WWW,telnet,定时任务,cache系统和后端支持的数据库几部分。
 www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
 控制的模式，并在收藏区支持目录方式。
     2.2 WWW部分
-    1) WWW下，使用http://userid.mysmth.net(域名格式可更改)可以访问该用户的blog。
+    1) WWW下，使用http://userid.mykbs.net(域名格式可更改)可以访问该用户的blog。
     2) 采用分区管理模式，每个用户的Blog均含公开、好友、私人、收藏、删除5个分区：
     公开区：所有用户均可见，提供分类功能和标准的RSS输出(RSS 1.0)； 
     好友区：只有授权用户才可见、可写，提供分类功能； 
@@ -44,7 +43,7 @@ www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
     14) BLOG黑名单功能，含单个BLOG黑名单和全站BLOG黑名单；
     15) BLOG分类推荐；
     16) BLOG用户、日志、分类的按时间统计；
-    17) SMTH.Blog类日志的引用通告自动挖掘；
+    17) KBS.Blog类日志的引用通告自动挖掘；
     18) BLOG用户屏蔽功能；
     19) 支持OPML频道群组；
     20) BLOG用户的申请、审批系统；
@@ -61,7 +60,7 @@ www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
     6) Blog用户搜索。
     
 3. 使用时的配置。
-    SMTH.Blog的WWW部分要求进行配置，请按照需要更改 pcconf.php 文件：
+    KBS.Blog的WWW部分要求进行配置，请按照需要更改 pcconf.php 文件：
     $pcconfig["LIST"] :Blog首页上每页显示的用户数;
     $pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
     $pcconfig["BBSNAME"] :站点名称,默认为BBS_FULL_NAME;
@@ -85,4 +84,4 @@ www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
     pc_personal_domainname($userid)函数 :用户Blog的域名;
 	
 4. 功能建议和BugReport
-    欢迎到BBS水木清华站 BBSMan_Dev 版或 SMTH_Blog 版提交、讨论。
+    欢迎发信给 dev@dev.kcn.cn讨论。
