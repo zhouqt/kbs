@@ -26,7 +26,7 @@
 <dt>2. <a href="#install">wForum 安装说明</a>
 </dt>
 <dd><dl>
-<dt>2.1. <a href="#install_smthbbs">smthbbs 安装</a>
+<dt>2.1. <a href="#install_kbsbbs">kbsbbs 安装</a>
 </dt>
 <dt>2.2. <a href="#install_wforum">安装 wForum</a>
 </dt>
@@ -40,9 +40,9 @@
 </dt>
 <dt>2.6. <a href="#install_append">附加说明</a>
 </dt>
-<dt>2.7. <a href="#upgrade_smthbbs">smthbbs 系统升级安装 wForum 说明</a>
+<dt>2.7. <a href="#upgrade_kbsbbs">KBS 系统升级安装 wForum 说明</a>
 </dt>
-<dt>2.8. <a href="#bbs2www">wForum 和 smthbbs 的 web 界面配合</a>
+<dt>2.8. <a href="#bbs2www">wForum 和 kbsbbs 的 web 界面配合</a>
 </dt>
 </dl></dd>
 <dt>3. <a href="#tech_details">技术细节</a>
@@ -79,10 +79,10 @@
 <div class="titlepage"><div><h2 class="title" style="clear: both">
 <a name="intro"></a>1. wForum 简介</h2></div></div>
 <div class="itemizedlist"><ul type="disc">
-<li>wForum 是基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统；</li>
+<li>wForum 是基于高性能的 KBS 系统源码（一万五千人同时在线）的高性能论坛系统；</li>
 <li>主页：<a href="http://wforum.aka.cn/" target="_blank">http://wforum.aka.cn/</a>；</li>
 <li>推荐使用 linux 系统 (redhat)；</li>
-<li>讨论区：<a href="http://bbs.zixia.net/board.php?name=wForum" target="_blank">http://bbs.zixia.net/board.php?name=wForum</a>
+<li>讨论区：<a href="http://wforum.zixia.net/board.php?name=wForum" target="_blank">http://wforum.zixia.net/board.php?name=wForum</a>
 </li>
 </ul></div>
 <div class="section" lang="zh_cn">
@@ -90,7 +90,7 @@
 <a name="intro_copyright"></a>1.1. 版权声明</h3></div></div>
 <div class="itemizedlist"><ul type="disc">
 <li>这份软件基于 GPL 版本发布。请参考 COPYING.GPL 文件。任何对本软件代码的修改需要同样遵循 GPL 许可。</li>
-<li>版权归属 阿卡信息技术(北京)有限公司 和 水木清华 BBS 共同所有。</li>
+<li>版权归属 阿卡信息技术(北京)有限公司 和 <a href="http://dev.kcn.cn/" target="_blank">KBS 开发组</a>共同所有。</li>
 <li>额外声明：未经北京阿卡公司书面许可，不允许将本软件作商业应用。</li>
 </ul></div>
 </div>
@@ -98,12 +98,12 @@
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h2 class="title" style="clear: both">
 <a name="install"></a>2. wForum 安装说明</h2></div></div>
-<p>首先到 <a href="http://dev.smth.org/" target="_blank">smthbbs 开发主页</a> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 主分支或者其打包 snapshot 版本使用，比如下载同一天的 smthbbs-snapshot 和 wForum-snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.x 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom。</p>
+<p>首先到 <a href="http://dev.kcn.cn/" target="_blank">KBS 开发组主页</a> 下载最新的 kbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 kbs 的 CVS 主分支或者其打包 snapshot 版本使用，比如下载同一天的 kbsbbs-snapshot 和 wForum-snapshot 就不会有问题，如果最新 wForum snapshot 配合 kbsbbs 1.2.x 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom。</p>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="install_smthbbs"></a>2.1. smthbbs 安装</h3></div></div>
-<p>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</p>
-<p>原先安装了 smthbbs 系统的站点需要升级 .PASSWDS 文件。请参考 <a href="#upgrade_smthbbs">smthbbs 系统升级安装 wForum 说明</a>。</p>
+<a name="install_kbsbbs"></a>2.1. kbsbbs 安装</h3></div></div>
+<p>kbsbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</p>
+<p>原先安装了 kbsbbs 系统的站点需要升级 .PASSWDS 文件。请参考 <a href="#upgrade_kbsbbs">KBS 系统升级安装 wForum 说明</a>。</p>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
@@ -260,10 +260,10 @@ short_open_tag = off</pre>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="upgrade_smthbbs"></a>2.7. smthbbs 系统升级安装 wForum 说明</h3></div></div>
+<a name="upgrade_kbsbbs"></a>2.7. KBS 系统升级安装 wForum 说明</h3></div></div>
 <div class="orderedlist"><ol type="1">
 <li>
-<p>原 smthbbs 系统要新加入 wForum 支持，首先需要在 site.h 中定义 HAVE_WFORUM：
+<p>原 kbsbbs 系统要新加入 wForum 支持，首先需要在 site.h 中定义 HAVE_WFORUM：
 					</p>
 <pre class="programlisting">#define HAVE_WFORUM 1</pre>
 <p>
@@ -271,15 +271,15 @@ short_open_tag = off</pre>
 				</p>
 </li>
 <li>
-<p>这里的升级说明比较简略，因为假设读者已经相当熟悉 smthbbs 系统。升级系统需要停掉所有的 BBS 服务（包括共享内存），重新编译安装所有的 BBS 程序。接下来，需要转换 ~bbs/.PASSWDS 文件：拷贝一份为 ~bbs/.PASSWDS.OLD，打开转换程序 contrib/smth2wforum/convpasswd.c 看老的 userec 结构是否正确，然后编译运行之（这个程序如果编译有困难可以覆盖掉 local_utl/ 下面某个无用程序来编译）。然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序除了可能的结构转换还会设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</p>
+<p>这里的升级说明比较简略，因为假设读者已经相当熟悉 kbsbbs 系统。升级系统需要停掉所有的 BBS 服务（包括共享内存），重新编译安装所有的 BBS 程序。接下来，需要转换 ~bbs/.PASSWDS 文件：拷贝一份为 ~bbs/.PASSWDS.OLD，打开转换程序 contrib/smth2wforum/convpasswd.c 看老的 userec 结构是否正确，然后编译运行之（这个程序如果编译有困难可以覆盖掉 local_utl/ 下面某个无用程序来编译）。然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序除了可能的结构转换还会设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</p>
 <p>全部转换工作就此完成。此时按正常方式启动系统。</p>
 </li>
 </ol></div>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
-<a name="bbs2www"></a>2.8. wForum 和 smthbbs 的 web 界面配合</h3></div></div>
-<p>wForum 和 smthbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/site.php 中定义：</p>
+<a name="bbs2www"></a>2.8. wForum 和 kbsbbs 的 web 界面配合</h3></div></div>
+<p>wForum 和 kbsbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/site.php 中定义：</p>
 <pre class="programlisting">
 define('COOKIE_PREFIX', '');
 define('COOKIE_PATH', '/');
@@ -433,7 +433,7 @@ menuDivStyle.visible = &quot;hidden&quot;;</pre>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
 <a name="reply_tree"></a>3.3. 关于树形回复结构</h3></div></div>
-<p>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，smthbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</p>
+<p>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，kbsbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</p>
 <p>default.php 里面定义了 SHOWREPLYTREE，如果为 1 就会支持树形回复结构。如果为 0 就是平级显示所有回复。这里也有文章可做，SHOWREPLYTREE 其实定义成用户自定义参数或者 cookie 参数可能更好。</p>
 </div>
 <div class="section" lang="zh_cn">
@@ -595,7 +595,7 @@ menuDivStyle.visible = &quot;hidden&quot;;</pre>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">
 <a name="bbsleft"></a>3.8. wForum 框架结构支持</h3></div></div>
-<p>wForum 支持类似 smthbbs 系统 web 界面的框架结构，也就是左边有一个树状功能目录。要实现这个只要从 wForum/frames.php 进入即可。目前这个支持只是实现功能，左边的功能目录并不漂亮。另外，有一个 bug 是当用户收藏版面发生变化的时候左边的功能目录不会自动刷新，没有加这个的原因是希望在这种情况下不要刷新整个页面，而只是刷新收藏夹那棵树，这个日后会完善。</p>
+<p>wForum 支持类似 kbsbbs 系统 web 界面的框架结构，也就是左边有一个树状功能目录。要实现这个只要从 wForum/frames.php 进入即可。目前这个支持只是实现功能，左边的功能目录并不漂亮。另外，有一个 bug 是当用户收藏版面发生变化的时候左边的功能目录不会自动刷新，没有加这个的原因是希望在这种情况下不要刷新整个页面，而只是刷新收藏夹那棵树，这个日后会完善。</p>
 </div>
 <div class="section" lang="zh_cn">
 <div class="titlepage"><div><h3 class="title">

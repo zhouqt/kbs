@@ -6,27 +6,27 @@
 	<section id="intro">
 		<title>wForum 简介</title>
 		<itemizedlist>
-			<listitem>wForum 是基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统；</listitem>
+			<listitem>wForum 是基于高性能的 KBS 系统源码（一万五千人同时在线）的高性能论坛系统；</listitem>
 			<listitem>主页：<ulink url="http://wforum.aka.cn/">http://wforum.aka.cn/</ulink>；</listitem>
 			<listitem>推荐使用 linux 系统 (redhat)；</listitem>
-			<listitem>讨论区：<ulink url="http://bbs.zixia.net/board.php?name=wForum">http://bbs.zixia.net/board.php?name=wForum</ulink></listitem>
+			<listitem>讨论区：<ulink url="http://wforum.zixia.net/board.php?name=wForum">http://wforum.zixia.net/board.php?name=wForum</ulink></listitem>
 		</itemizedlist>
 		<section id="intro_copyright">
 			<title>版权声明</title>
 			<itemizedlist>
 				<listitem>这份软件基于 GPL 版本发布。请参考 COPYING.GPL 文件。任何对本软件代码的修改需要同样遵循 GPL 许可。</listitem>
-				<listitem>版权归属 阿卡信息技术(北京)有限公司 和 水木清华 BBS 共同所有。</listitem>
+				<listitem>版权归属 阿卡信息技术(北京)有限公司 和 <ulink url="http://dev.kcn.cn/">KBS 开发组</ulink>共同所有。</listitem>
 				<listitem>额外声明：未经北京阿卡公司书面许可，不允许将本软件作商业应用。</listitem>
 			</itemizedlist>
 		</section>
 	</section>
 	<section id="install">
 		<title>wForum 安装说明</title>
-		<para>首先到 <ulink url="http://dev.smth.org/">smthbbs 开发主页</ulink> 下载最新的 smthbbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 smthbbs 的 CVS 主分支或者其打包 snapshot 版本使用，比如下载同一天的 smthbbs-snapshot 和 wForum-snapshot 就不会有问题，如果最新 wForum snapshot 配合 smthbbs 1.2.x 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom。</para>
-		<section id="install_smthbbs">
-			<title>smthbbs 安装</title>
-			<para>smthbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</para>
-			<para>原先安装了 smthbbs 系统的站点需要升级 .PASSWDS 文件。请参考 <xref linkend="upgrade_smthbbs" endterm="upgrade_smthbbs_title"/>。</para>
+		<para>首先到 <ulink url="http://dev.kcn.cn/">KBS 开发组主页</ulink> 下载最新的 kbs 和 wForum 代码。请一定注意 wForum 必须配合同一个时间点 kbs 的 CVS 主分支或者其打包 snapshot 版本使用，比如下载同一天的 kbsbbs-snapshot 和 wForum-snapshot 就不会有问题，如果最新 wForum snapshot 配合 kbsbbs 1.2.x 使用就会有这样那样的小问题。另外，wForum 需要 PHP 支持 gd、dom。</para>
+		<section id="install_kbsbbs">
+			<title>kbsbbs 安装</title>
+			<para>kbsbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</para>
+			<para>原先安装了 kbsbbs 系统的站点需要升级 .PASSWDS 文件。请参考 <xref linkend="upgrade_kbsbbs" endterm="upgrade_kbsbbs_title"/>。</para>
 		</section>
 		<section id="install_wforum">
 			<title>安装 wForum</title>
@@ -125,21 +125,21 @@ short_open_tag = off</programlisting>
 				</para></listitem>
 			</orderedlist>
 		</section>
-		<section id="upgrade_smthbbs">
-			<title id="upgrade_smthbbs_title">smthbbs 系统升级安装 wForum 说明</title>
+		<section id="upgrade_kbsbbs">
+			<title id="upgrade_kbsbbs_title">KBS 系统升级安装 wForum 说明</title>
 			<orderedlist>
-				<listitem><para>原 smthbbs 系统要新加入 wForum 支持，首先需要在 site.h 中定义 HAVE_WFORUM：
+				<listitem><para>原 kbsbbs 系统要新加入 wForum 支持，首先需要在 site.h 中定义 HAVE_WFORUM：
 					<programlisting>#define HAVE_WFORUM 1</programlisting>
 					如果您的系统原来就已经定义了这个，那么，恭喜你，你的系统已经支持 wForum 了，不需要进行下面的操作。
 				</para></listitem>
-				<listitem><para>这里的升级说明比较简略，因为假设读者已经相当熟悉 smthbbs 系统。升级系统需要停掉所有的 BBS 服务（包括共享内存），重新编译安装所有的 BBS 程序。接下来，需要转换 ~bbs/.PASSWDS 文件：拷贝一份为 ~bbs/.PASSWDS.OLD，打开转换程序 contrib/smth2wforum/convpasswd.c 看老的 userec 结构是否正确，然后编译运行之（这个程序如果编译有困难可以覆盖掉 local_utl/ 下面某个无用程序来编译）。然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序除了可能的结构转换还会设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</para>
+				<listitem><para>这里的升级说明比较简略，因为假设读者已经相当熟悉 kbsbbs 系统。升级系统需要停掉所有的 BBS 服务（包括共享内存），重新编译安装所有的 BBS 程序。接下来，需要转换 ~bbs/.PASSWDS 文件：拷贝一份为 ~bbs/.PASSWDS.OLD，打开转换程序 contrib/smth2wforum/convpasswd.c 看老的 userec 结构是否正确，然后编译运行之（这个程序如果编译有困难可以覆盖掉 local_utl/ 下面某个无用程序来编译）。然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序除了可能的结构转换还会设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</para>
 					<para>全部转换工作就此完成。此时按正常方式启动系统。</para>
 				</listitem>
 			</orderedlist>
 		</section>
 		<section id="bbs2www">
-			<title>wForum 和 smthbbs 的 web 界面配合</title>
-			<para>wForum 和 smthbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/site.php 中定义：<programlisting>
+			<title>wForum 和 kbsbbs 的 web 界面配合</title>
+			<para>wForum 和 kbsbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/site.php 中定义：<programlisting>
 define('COOKIE_PREFIX', '');
 define('COOKIE_PATH', '/');
 </programlisting>
@@ -277,7 +277,7 @@ menuDivStyle.visible = "hidden";</programlisting>
 		</section>
 		<section id="reply_tree">
 			<title>关于树形回复结构</title>
-			<para>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，smthbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</para>
+			<para>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，kbsbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</para>
 			<para>default.php 里面定义了 SHOWREPLYTREE，如果为 1 就会支持树形回复结构。如果为 0 就是平级显示所有回复。这里也有文章可做，SHOWREPLYTREE 其实定义成用户自定义参数或者 cookie 参数可能更好。</para>
 		</section>
 		<section id="section_list">
@@ -430,7 +430,7 @@ menuDivStyle.visible = "hidden";</programlisting>
 		</section>
 		<section id="bbsleft">
 			<title>wForum 框架结构支持</title>
-			<para>wForum 支持类似 smthbbs 系统 web 界面的框架结构，也就是左边有一个树状功能目录。要实现这个只要从 wForum/frames.php 进入即可。目前这个支持只是实现功能，左边的功能目录并不漂亮。另外，有一个 bug 是当用户收藏版面发生变化的时候左边的功能目录不会自动刷新，没有加这个的原因是希望在这种情况下不要刷新整个页面，而只是刷新收藏夹那棵树，这个日后会完善。</para>
+			<para>wForum 支持类似 kbsbbs 系统 web 界面的框架结构，也就是左边有一个树状功能目录。要实现这个只要从 wForum/frames.php 进入即可。目前这个支持只是实现功能，左边的功能目录并不漂亮。另外，有一个 bug 是当用户收藏版面发生变化的时候左边的功能目录不会自动刷新，没有加这个的原因是希望在这种情况下不要刷新整个页面，而只是刷新收藏夹那棵树，这个日后会完善。</para>
 		</section>
 		<section id="misc">
 			<title>一些杂事</title>
