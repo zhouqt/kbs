@@ -4,7 +4,15 @@ if (!defined('_BBS_FUNCS_PHP_'))
 define('_BBS_FUNCS_PHP_', 1);
 
 $Version="Powered by wForum Version 0.9";
-$Copyright="<a href=\"http://www.aka.cn/\" target=\"_blank\">阿卡信息技术(北京)有限公司</a> &amp; <a href=\"http://www.smth.cn\" target=\"_blank\">水木清华BBS</a> 版权所有 1994 - 2008 <br/><a href=\"http://wforum.zixia.net/\" target=\"_blank\"><font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\" color=\"#6000CC\"><b>@zixia.net</b></font></a>";
+$Copyright=
+"<a href=\"http://www.aka.cn/\" target=\"_blank\">阿卡信息技术(北京)有限公司</a> &amp; "
+. "<a href=\"http://dev.kcn.cn/\" target=\"_blank\">KBS 开发组</a> 版权所有 2005 <br/>"
+. "<a href=\"http://wforum.zixia.net/\" target=\"_blank\">"
+. "<font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\" color=\"#6000CC\">"
+. "<b>wForum</b></font></a> "
+. "<a href=\"http://www.zixia.net/\" target=\"_blank\">"
+. "<font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\" color=\"#6000CC\">"
+. "<b>@zixia.net</b></font></a>";
 
 if (!isset($needlogin)){ //本页面是否需要设置cookie等登录变量，默认需要
 	$needlogin=1;
@@ -18,7 +26,7 @@ if ($needlogin && ((!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
 <meta HTTP-EQUIV="REFRESH" CONTENT="3">
-<META NAME="DESCRIPTION" CONTENT="wForum，基于高性能的水木清华BBS源码（一万五千人同时在线）的高性能论坛系统">
+<META NAME="DESCRIPTION" CONTENT="wForum，基于高性能的KBS系统源码（一万五千人同时在线）的高性能论坛系统">
 <META NAME="KEYWORDS" CONTENT="wForum,aka,阿卡信息技术(北京)有限公司,zixia,论坛">
 </head>
 <body>
