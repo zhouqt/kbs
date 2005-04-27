@@ -33,7 +33,7 @@ define("TREEVIEW_MAXITEM", 201);
 /* 附件相关 */
 define("ATTACHMAXSIZE", "4194304");
 define("ATTACHMAXTOTALSIZE", "4194304");
-define("ATTACHMAXCOUNT", "20");
+define("ATTACHMAXCOUNT", "10");
 
 /* 自定义头像相关 */
 
