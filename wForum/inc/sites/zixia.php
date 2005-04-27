@@ -2,7 +2,7 @@
 
 $SiteName="大话西游 紫霞BBS";
 
-$SiteURL = "http://bbs.zixia.net/";
+$SiteURL = "http://wforum.zixia.net/";
 
 $Banner="bar/bar.jpg";
 
