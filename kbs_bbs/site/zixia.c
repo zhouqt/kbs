@@ -191,17 +191,14 @@ uleveltochar( char* buf, struct userec *lookupuser )
         strcpy(buf, get_user_title(lookupuser->title));
     }
 #endif
-
+#if 0
 	//中文说明，根据 level
-    	if( !strcmp(lookupuser->userid,"SYSOP")
-		    || !strcmp(lookupuser->userid,"Rama") )
+    	if( !strcmp(lookupuser->userid,"SYSOP"))
 	    strcpy( buf, "强盗头" );
     	else if( !strcmp(lookupuser->userid,"netterm") )
 	    strcpy( buf, "老帮主" );
     	else if( !strcmp(lookupuser->userid,"zixia") )
 	    strcpy( buf, "旺财" );
-    	else if( !strcmp(lookupuser->userid,"windtear") )
-	    	strcpy( buf, "清华总代" );
     	else if( !strcmp(lookupuser->userid,"click") )
 	    	strcpy( buf, "小白龙马" );
     	else if( !strcmp(lookupuser->userid,"wuhu") )
@@ -215,8 +212,6 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	    strcpy( buf, "观音姐姐" );
     	else if( !strcmp(lookupuser->userid,"Bison") )
 	    strcpy( buf, "淫贼" );
-    	else if( !strcmp(lookupuser->userid,"CIE") )
-	    strcpy( buf, "福布斯" );
     	else if( !strcmp(lookupuser->userid,"Roy") )
 	    strcpy( buf, "大饼" );
     	else if( !strcmp(lookupuser->userid,"dwd") )
@@ -225,8 +220,6 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	    strcpy( buf, "持国天王" );
     	else if( !strcmp(lookupuser->userid,"KCN") )
 	    strcpy( buf, "上帝" );
-        else if( !strcmp(lookupuser->userid,"bad") )
-        strcpy( buf, "唐僧" );
     	else if( !strcmp(lookupuser->userid,"cityhunter") 
 		    || !strcmp(lookupuser->userid,"soso")
 		    || !strcmp(lookupuser->userid,"Czz")
@@ -234,7 +227,7 @@ uleveltochar( char* buf, struct userec *lookupuser )
 	    strcpy( buf, "牛魔王" );
     	else if( !strcmp(lookupuser->userid,"guest") )
 	    strcpy( buf, "葡萄" );
-
+#endif
     	return 1;
 }
 
@@ -306,7 +299,27 @@ int     mode;
 	case FRIENDTEST:  return "心有灵犀";
     case CHICKEN:
 	return "星空战斗鸡";
-	case KILLER:        return "杀人游戏";
+    case KILLER:        return "杀人游戏";
+    case CALENDAR:
+        return "万年历";
+    case CALENEDIT:
+        return "日记本";
+    case DICT:
+        return "查字典";
+    case CALC:
+        return "计算器";
+    case SETACL:
+        return "登录控制";
+    case EDITOR:
+        return "编辑器";
+    case HELP:
+        return "帮助";
+    case POSTTMPL:
+        return "模板发文";
+    case TETRIS:
+                return "俄罗斯方块";
+    case WINMINE:
+                return "扫雷";
     default: return "去了那里!?" ;
     }
 }
@@ -337,7 +350,7 @@ int multilogin_user(struct userec *user, int usernum,int mode)
     if (logincount < 1)
         RemoveMsgCountFile(user->userid);
 
-#ifdef FILTER
+#if 0 //#ifdef FILTER
     if (!strcmp(user->userid,"menss")&&logincount<2)
         return 0;
 #endif
@@ -440,12 +453,13 @@ int compute_user_value(struct userec *urec)
         return LIFE_DAY_LONG;
 
 
-    if (((urec->userlevel & PERM_HORNOR) || (urec->userlevel & PERM_CHATCLOAK)) && (!(urec->userlevel & PERM_SUICIDE)))
-        return LIFE_DAY_NODIE;
-
     if ((urec->userlevel & PERM_ANNOUNCE) && (urec->userlevel & PERM_OBOARDS))
         return LIFE_DAY_SYSOP;
     /* 站务人员生命力不变 Bigman 2001.6.23 */
+
+
+    if (((urec->userlevel & PERM_HORNOR) || (urec->userlevel & PERM_CHATCLOAK)) && (!(urec->userlevel & PERM_SUICIDE)))
+        return LIFE_DAY_NODIE;
 
 
     value = (time(0) - urec->lastlogin) / 60;   /* min */
@@ -585,6 +599,13 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
             return 0;
     } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
         return 0;
+//asing add 4.20
+if(!strcmp(board->filename,"Hate") ){
+	if(user==NULL)
+		return 0;
+	if(user->numposts<500)
+		return 0;
+}
 
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*俱乐部*/
@@ -612,6 +633,13 @@ int check_see_perm(struct userec* user,const struct boardheader* board)
             return 0;
     } else if (!HAS_PERM(user, PERM_OBOARDS) && board->title_level && (board->title_level != user->title))
         return 0;
+//asing add 4.20
+if(!strcmp(board->filename,"Hate") ){
+	if(user==NULL)
+		return 0;
+	if(user->numposts<500)
+		return 0;
+}
 
     if (board->level & PERM_POSTMASK
     	|| ((user==NULL)&&(board->level==0))

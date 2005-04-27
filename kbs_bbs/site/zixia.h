@@ -14,10 +14,13 @@
  * 8. web 友情链接管理
  */
 
+#define ACBOARD_BNAME "notepad"
+
 #define USE_TMPFS           1   /*使用内存文件系统加速*/
 #define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
 #define NINE_BUILD 		0
 #define NEW_COMERS 		1	/* 注册后在 newcomers 版自动发文 */
+#define OWNSENDMAIL "/usr/sbin/sendmail"
 #define HAPPY_BBS		0
 #define HAVE_COLOR_DATE		1
 #define HAVE_TEMPORARY_NICK	1
@@ -71,15 +74,15 @@
 #define DEFAULTBOARD    	"zixia.net"//test
 #define FILTER_BOARD        "Filter"
 #define SYSMAIL_BOARD       "sysmail"
-#define MAXUSERS  		40000 //150,000
-#define MAXBOARD  		400//400
+#define MAXUSERS  		150000 //150,000
+#define MAXBOARD  		1024//400
 #define MAXCLUB                 128
-#define MAXACTIVE 		999  //3000
+#define MAXACTIVE 		10000  //3000
 /* remeber: if MAXACTIVE>46656 need change get_telnet_sessionid,
     make the number of session char from 3 to 4
     */
-#define MAX_GUEST_NUM		99
-#define WWW_MAX_LOGIN		300 /* 最大www用户数量 */
+#define MAX_GUEST_NUM		1000
+#define WWW_MAX_LOGIN		5000 /* 最大www用户数量 */
 
 #define POP3PORT		3110	//110
 #define POP3SPORT		995
@@ -87,7 +90,7 @@
 /* ASCIIArt, by czz, 2002.7.5 */
 #define	LENGTH_SCREEN_LINE	256	//220
 #define	LENGTH_FILE_BUFFER 	260	//160
-#define	LENGTH_ACBOARD_BUFFER	200	//150
+#define	LENGTH_ACBOARD_BUFFER	300	//150
 #define	LENGTH_ACBOARD_LINE 	300	//80
 
 #define LIFE_DAY_USER		365	//120
@@ -106,7 +109,7 @@
 #define MAIL_BBSDOMAIN      "bbs.zixia.net"
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
-#define NAME_BBS_ENGLISH	"bbs.zixia.net" //smth.org
+#define NAME_BBS_ENGLISH	"wforum.zixia.net" //smth.org
 #define	NAME_BBS_CHINESE	"大话西游" //水木清华
 #define NAME_BBS_NICK		"斧头帮" // BBS 站
 #define BBS_FULL_NAME		"BBS 大话西游站"
@@ -344,7 +347,7 @@ typedef struct fileheader fileheader_t;
 #define HAVE_OWN_USERIP
 #define SHOW_USERIP(user,x) showuserip(user,x)
 
-#define SMS_SUPPORT
+//#define SMS_SUPPORT
 
 /**
 attach define
