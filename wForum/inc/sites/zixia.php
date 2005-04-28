@@ -24,6 +24,9 @@ define('ALLOW_SELF_MULTIQUERY', true);
 define('SUPPORT_TEX', true);
 define("ONBOARD_USERS", true);
 
+define('SHOW_POST_UNREAD', false);
+define('ARTICLE_USE_JS', true);
+
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9");
 $section_names = array(
     array("¸« Í· °ï", "[ºÚ°ï/ÏµÍ³]"),

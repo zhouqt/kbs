@@ -8,6 +8,11 @@ require("inc/userdatadefine.inc.php");
 require("inc/treeview.inc.php");
 require_once("inc/myface.inc.php");
 
+if (isset($_GET["js"])) {
+    output_js();
+    exit;
+}
+
 global $boardArr;
 global $boardID;
 global $boardName;
@@ -288,15 +293,41 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 	}
 }
 
-function showArticle($boardName,$boardID, $startNum, $articleID,$article,$type){
-	global $loginok;
-	global $isbm;
+function output_js() {
+    global $loginok;
 
-	$bgstyle='TableBody'.($type+1);
-	$fgstyle='TableBody'.(2-$type);
+	if (!isset($_GET["bid"])) die;
+	$brdnum = $_GET["bid"] ;
+    settype($brdnum,"integer");
+   	if (!isset($_GET["id"])) die;
+	$id = $_GET["id"];
+	settype($id, "integer");
+
+	if ( $brdnum == 0 ) die;
+	$board = bbs_getbname($brdnum);
+	if( !$board ) die;
+	$brdarr = array();
+	if ( $brdnum != bbs_getboard($board, $brdarr) ) die;
+
+    $isnormalboard=bbs_normalboard($board);
+	if($loginok == 1) $usernum = $currentuser["index"];
+	if (!$isnormalboard && bbs_checkreadperm($usernum, $brdnum) == 0) die;
+
+	$articles = array ();
+	$num = bbs_get_records_from_id($brdarr["NAME"], $id, $dir_modes["NORMAL"], $articles);
+    if ($num == 0) die;
+	$filename = bbs_get_board_filename($brdarr["NAME"], $articles[1]["FILENAME"]);
+    if ($isnormalboard) {
+        if (cache_header("public",filemtime($filename),300)) return;
+    }
+    $articleContents = getArticleContents($brdnum, $filename, $articles[1], '');
+    echo "document.write('" . addslashes($articleContents) . "');";
+}
+
+function getArticleContents($boardID, $filename, $article, $fgstyle) {
+    global $loginok;
 
 	/* 文章内容处理部分 */
-	$filename=bbs_get_board_filename($boardName, $article["FILENAME"]);
 	if ($loginok) {
 		bbs_brcaddread($boardName, $articleID);
 	};
@@ -324,6 +355,22 @@ function showArticle($boardName,$boardID, $startNum, $articleID,$article,$type){
 	$articleContents = str_replace("  ", " &nbsp;", $articleContents);
 	$articleContents = DvbTexCode($articleContents,0,$fgstyle,$is_tex);
 	/* 文章内容处理结束，此时 $articleContents 应该是能够直接输出的内容 */
+	return $articleContents;
+}
+
+function showArticle($boardName,$boardID, $startNum, $articleID,$article,$type){
+	global $loginok;
+	global $isbm;
+
+	$bgstyle='TableBody'.($type+1);
+	$fgstyle='TableBody'.(2-$type);
+
+    if (ARTICLE_USE_JS) {
+        $articleContents = "<script language=\"JavaScript\" src=\"disparticle.php?js=1&amp;bid=$boardID&amp;id=$articleID\"></script>";
+    } else {
+        $filename = bbs_get_board_filename($boardName, $article["FILENAME"]);
+        $articleContents = getArticleContents($boardID, $filename, $article, $fgstyle);
+    }
 
 	$user=array();
 	$user_num=bbs_getuser($article['OWNER'],$user);
