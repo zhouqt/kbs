@@ -33,7 +33,7 @@
 			<para>解压 wForum 到 web 根目录下面的 wForum 目录。给你的站点取个名字，比方叫 kcn。进入 wForum 目录，执行下面几个命令：
 				<programlisting>
 cp inc/sites/site-example.php inc/sites/kcn.php
-ln -s inc/sites/kcn.php inc/site.php</programlisting>
+ln -s sites/kcn.php inc/site.php</programlisting>
 				inc/site.php 就是你的站点定义文件。请注意，inc/site.php 必须是一个指向 inc/sites/ 目录下某个文件的符号连接，否则程序会找不到系统默认参数配置文件 default.php。修改 inc/site.php 里面的各类参数，特别是分类讨论区。另外，inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
 			</para>
 			<section id="feature_notes">
