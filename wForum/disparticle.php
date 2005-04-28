@@ -320,11 +320,11 @@ function output_js() {
     if ($isnormalboard) {
         if (cache_header("public",filemtime($filename),300)) return;
     }
-    $articleContents = getArticleContents($brdnum, $filename, $articles[1], '');
-    echo "document.write('" . addslashes($articleContents) . "');";
+    $articleContents = getArticleContents($brdnum, $filename, $articles[1], $id, '');
+    echo "document.write('" . addcslashes($articleContents, "\'\\") . "');";
 }
 
-function getArticleContents($boardID, $filename, $article, $fgstyle) {
+function getArticleContents($boardID, $filename, $article, $articleID, $fgstyle) {
     global $loginok;
 
 	/* 文章内容处理部分 */
@@ -369,7 +369,7 @@ function showArticle($boardName,$boardID, $startNum, $articleID,$article,$type){
         $articleContents = "<script language=\"JavaScript\" src=\"disparticle.php?js=1&amp;bid=$boardID&amp;id=$articleID\"></script>";
     } else {
         $filename = bbs_get_board_filename($boardName, $article["FILENAME"]);
-        $articleContents = getArticleContents($boardID, $filename, $article, $fgstyle);
+        $articleContents = getArticleContents($boardID, $filename, $article, $articleID, $fgstyle);
     }
 
 	$user=array();
