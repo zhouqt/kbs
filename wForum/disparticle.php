@@ -295,6 +295,7 @@ function showArticleThreads($boardName,$boardID,$groupID,$articles,$start,$listT
 
 function output_js() {
     global $loginok;
+    global $currentuser;
 
 	if (!isset($_GET["bid"])) die;
 	$brdnum = $_GET["bid"] ;
@@ -325,12 +326,7 @@ function output_js() {
 }
 
 function getArticleContents($boardID, $filename, $article, $articleID, $fgstyle) {
-    global $loginok;
-
 	/* 文章内容处理部分 */
-	if ($loginok) {
-		bbs_brcaddread($boardName, $articleID);
-	};
 	$is_tex = SUPPORT_TEX && $article["IS_TEX"];
 	$articleContents = bbs_printansifile($filename,1,'bbscon.php?bid='.$boardID.'&amp;id='.$articleID,$is_tex,0);
 	if (0) { /* 这部分各站点可以自行订制，下面给出一点示例 */
@@ -365,6 +361,9 @@ function showArticle($boardName,$boardID, $startNum, $articleID,$article,$type){
 	$bgstyle='TableBody'.($type+1);
 	$fgstyle='TableBody'.(2-$type);
 
+	if ($loginok) {
+		bbs_brcaddread($boardName, $articleID);
+	}
     if (ARTICLE_USE_JS) {
         $articleContents = "<script language=\"JavaScript\" src=\"disparticle.php?js=1&amp;bid=$boardID&amp;id=$articleID\"></script>";
     } else {
