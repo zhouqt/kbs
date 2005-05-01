@@ -20,7 +20,7 @@ html_init();
 	</th></tr></thead>
 	<tbody>
 	  <tr>
-		<td height=110 align="left" valign="top" class=TableBody1><?php echo htmlspecialchars($msgbuf); ?></td>
+		<td height=110 align="left" valign="top" class=TableBody1><?php echo htmlspecialchars($msgbuf); ?> </td>
 	  </tr>
 	  <tr>
 		<td height=20 align="right" valign="top" nowrap="nowrap" class=TableBody2><a  href="javascript:replyMsg('<?php 
