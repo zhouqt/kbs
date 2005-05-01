@@ -12,8 +12,7 @@ html_init();
 <form method="GET" action="checkid.php">
 <table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
 	<TR><Th height=25>¼ì²â ID<?php if ($id != "") echo ": " . htmlspecialchars($id); ?></Th></TR>
-	<TR><TD class=TableBody1 
-height=24 align="center">
+	<TR><TD class=TableBody1 height=24 align="center">
 <?php
 	
 	if ($id == "") echo "Ìî¸ö ID ÏÈ°É¡£";
@@ -42,8 +41,7 @@ height=24 align="center">
 	}
 ?>
 	</TD></TR>
-	<TR><TD class=TableBody2 
-height=24 align="center">
+	<TR><TD class=TableBody2 height=24 align="center">
 		¼ì²â±ðµÄ ID: <input type="text" name="id">&nbsp;<input type="submit" value="¼ì²â ID">
 	</td></tr>
 </TABLE></form>

@@ -59,8 +59,7 @@ function board_online($board) {
 <body>
 <table cellpadding="3" cellspacing="1" align="center" class="TableBorder1">
 <tr><th height="25"><?php echo $board; ?> 版在线用户<?php if ($nUsers > 0) echo " [共 $nUsers 位用户在线]"; ?></th></tr>
-<tr><td 
-class="TableBody1">
+<tr><td class="TableBody1">
 <?php
     if ($nUsers > 0) {
     	$id = 0;

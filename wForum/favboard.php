@@ -1,6 +1,5 @@
 <?php
 require("inc/funcs.php");
-
 require("inc/user.inc.php");
 
 setStat("用户收藏版面");
