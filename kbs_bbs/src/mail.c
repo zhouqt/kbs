@@ -1285,8 +1285,12 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
     unsigned int i;
     int ent=conf->pos;
     struct read_arg* arg=conf->arg;
+    struct stat st;
 
     if (fileinfo==NULL)
+        return DONOTHING;
+    setmailfile(genbuf,getCurrentUser()->userid,fileinfo->filename);
+    if(lstat(genbuf,&st)==-1||S_ISLNK(st.st_mode))
         return DONOTHING;
 	strcpy(buf,fileinfo->title);
 	getdata(t_lines-1,0,"新信件标题:",buf,50,DOECHO,NULL,false);
@@ -1474,60 +1478,69 @@ int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     struct _select_item *sel;
     int i;
     char buf[PATHLEN];
-    char *t;
-    char menu_char[3][10] = { "I) 收件箱", "J) 垃圾箱", "Q) 退出" };
+    char menu_char[4][10] = {"I) 收件箱","P) 发件箱","J) 垃圾箱","Q) 退出"};//etnlegend,2005.03.27,加上发件箱&修正显示
     int ent=conf->pos;
     struct read_arg* arg=conf->arg;
 
     if (fileinfo==NULL)
         return DONOTHING;
     clear();
-    move(5, 3);
-    prints("请选择移动到哪个邮箱");
-    sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (user_mail_list.mail_list_t + 4));
-    sel[0].x = 3;
-    sel[0].y = 6;
-    sel[0].hotkey = 'I';
-    sel[0].type = SIT_SELECT;
-    sel[0].data = menu_char[0];
-    sel[1].x = 3;
-    sel[1].y = 7;
-    sel[1].hotkey = 'J';
-    sel[1].type = SIT_SELECT;
-    sel[1].data = menu_char[1];
-    for (i = 0; i < user_mail_list.mail_list_t; i++) {
-        sel[i + 2].x = 3;
-        sel[i + 2].y = i + 8;
-        sel[i + 2].hotkey = user_mail_list.mail_list[i][0];
-        sel[i + 2].type = SIT_SELECT;
-        sel[i + 2].data = (void *) user_mail_list.mail_list[i];
+    move(4,4);
+    prints("\033[1;32m请选择移动到哪个邮箱\033[m");
+    sel=(struct _select_item*)malloc(sizeof(struct _select_item)*(user_mail_list.mail_list_t+5));
+    sel[0].x=4;
+    sel[0].y=5;
+    sel[0].hotkey='I';
+    sel[0].type=SIT_SELECT;
+    sel[0].data=menu_char[0];//收件箱
+    sel[1].x=4;
+    sel[1].y=6;
+    sel[1].hotkey='P';
+    sel[1].type=SIT_SELECT;
+    sel[1].data=menu_char[1];//发件箱
+    sel[2].x=4;
+    sel[2].y=7;
+    sel[2].hotkey='J';
+    sel[2].type=SIT_SELECT;
+    sel[2].data=menu_char[2];//垃圾箱
+    for(i=0;i<((user_mail_list.mail_list_t>12)?(user_mail_list.mail_list_t-1)/2:user_mail_list.mail_list_t);i++){//分栏判断
+        sel[i+3].x=4;
+        sel[i+3].y=i+8;
+        sel[i+3].hotkey=user_mail_list.mail_list[i][0];
+        sel[i+3].type=SIT_SELECT;
+        sel[i+3].data=(void*)user_mail_list.mail_list[i];//自定义邮箱
     }
-    sel[user_mail_list.mail_list_t + 2].x = 3;
-    sel[user_mail_list.mail_list_t + 2].y = user_mail_list.mail_list_t + 8;
-    sel[user_mail_list.mail_list_t + 2].hotkey = 'Q';
-    sel[user_mail_list.mail_list_t + 2].type = SIT_SELECT;
-    sel[user_mail_list.mail_list_t + 2].data = menu_char[2];
-    sel[user_mail_list.mail_list_t + 3].x = -1;
-    sel[user_mail_list.mail_list_t + 3].y = -1;
-    sel[user_mail_list.mail_list_t + 3].hotkey = -1;
-    sel[user_mail_list.mail_list_t + 3].type = 0;
-    sel[user_mail_list.mail_list_t + 3].data = NULL;
-    i = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
-    if (i >= 0 && i < user_mail_list.mail_list_t + 2) {
-        strcpy(buf, arg->direct);
-        t = strrchr(buf, '/') + 1;
-        *t = '.';
-        t++;
-        if (i >= 2)
-            strcpy(t, user_mail_list.mail_list[i - 2] + 30);
-        else if (i == 0)
-            strcpy(t, "DIR");
-        else if (i == 1)
-            strcpy(t, "DELETED");
-        if (strcmp(buf, arg->direct))
-            if (!delete_record(arg->direct, sizeof(*fileinfo), ent, (RECORD_FUNC_ARG) cmpname, fileinfo->filename)) {
-                append_record(buf, fileinfo, sizeof(*fileinfo));
-            }
+    if(i!=user_mail_list.mail_list_t)//需要分栏
+        for(;i<user_mail_list.mail_list_t;i++){
+            sel[i+3].x=44;
+            sel[i+3].y=5+(i-(user_mail_list.mail_list_t-1)/2);
+            sel[i+3].hotkey=user_mail_list.mail_list[i][0];
+            sel[i+3].type=SIT_SELECT;
+            sel[i+3].data=(void*)user_mail_list.mail_list[i];
+        }
+    sel[user_mail_list.mail_list_t+3].x=((i>12)?44:4);//i=user_mail_list.mail_list_t
+    sel[user_mail_list.mail_list_t+3].y=((i>12)?(6+i/2):(i+8));
+    sel[user_mail_list.mail_list_t+3].hotkey='Q';
+    sel[user_mail_list.mail_list_t+3].type=SIT_SELECT;
+    sel[user_mail_list.mail_list_t+3].data=menu_char[3];//退出...
+    sel[user_mail_list.mail_list_t+4].x=-1;
+    sel[user_mail_list.mail_list_t+4].y=-1;
+    sel[user_mail_list.mail_list_t+4].hotkey=-1;
+    sel[user_mail_list.mail_list_t+4].type=0;
+    sel[user_mail_list.mail_list_t+4].data=NULL;
+    i=simple_select_loop(sel,SIF_NUMBERKEY|SIF_SINGLE|SIF_ESCQUIT,0,6,NULL)-1;
+    if(!(i<0)&&i<user_mail_list.mail_list_t+3){
+        switch(i){
+            case 0:setmailfile(buf,getCurrentUser()->userid,".DIR");break;
+            case 1:setmailfile(buf,getCurrentUser()->userid,".SENT");break;
+            case 2:setmailfile(buf,getCurrentUser()->userid,".DELETED");break;
+            default:
+                setmailpath(buf,getCurrentUser()->userid);
+                strcat(strcat(buf,"/."),user_mail_list.mail_list[i-3]+30);
+        }
+        if(strcmp(buf,arg->direct))
+            if(!delete_record(arg->direct,sizeof(*fileinfo),ent,(RECORD_FUNC_ARG)cmpname,fileinfo->filename))
+                append_record(buf,fileinfo,sizeof(*fileinfo));
     }
     free(sel);
     return (DIRCHANGED);
