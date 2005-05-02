@@ -770,7 +770,7 @@ int searchtrace()
 {
     int id;
     char tmp_command[80];
-    char tmp_id[20];
+    char *tmp_id;
     char buf[8192];
     struct userec *lookupuser;
 	char buffile[256];
@@ -782,8 +782,7 @@ int searchtrace()
     stand_title("查询使用者发文记录");
     move(1, 0);
     usercomplete("请输入使用者帐号:", genbuf);
-    strcpy(tmp_id, genbuf);
-    if (tmp_id[0] == '\0') {
+    if (genbuf[0] == '\0') {
         clear();
         return -1;
     }
@@ -796,6 +795,7 @@ int searchtrace()
         clear();
         return -1;
     }
+    tmp_id = lookupuser->userid;
 
     sprintf(buffile, "tmp/searchresult.%d", getpid());
 #ifdef NEWPOSTLOG
