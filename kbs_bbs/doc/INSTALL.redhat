@@ -61,7 +61,7 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
                        需要把系统的 telnet 服务关闭)
         ./newpop3d (提供 POP3/POP3S 方式取信)
     
-    如果还想提供 ssh 方式的连接，请阅读 doc/sshbbsd-howto 文件。
+    如果还想提供 ssh 方式的连接，请阅读 doc/INSTALL.ssh 文件。
 
 4. 初始化 kbsbbs
     首先登录到 bbs 上，用 telnet 127.0.0.1 命令，如果 bbsd 不是运行在 23

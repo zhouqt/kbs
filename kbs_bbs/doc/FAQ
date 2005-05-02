@@ -21,10 +21,12 @@ $Id$
 
 2. 编译和安装
 
-2.1. make install的时候是否会覆盖原来的bbshome？
+2.1. make install 的时候是否会覆盖原来的 bbs 数据？
 [答复]
-  我们没有做文件存在检查，所以对 make install 没有做对 bbshome 的拷贝。
-在一开始安装的时候手动拷贝一次 bbshome 下的文件到你的 bbs 目录下吧。
+  make install 不会覆盖 bbs 数据。但请注意第一次安装新站的时候在执行
+  make install 之后请执行一次 make install-home 以便将初始 bbs 数据
+  （包括一些目录和 bbshome 目录中的数据）安装到指定位置。今后不要再
+  执行 make install-home 以免 bbs 数据被覆盖。
 
 2.2. 我启动 bbsd 时出现“can't lock pid file:var/bbsd.2500.pid”，怎么回事？
 [答复]
@@ -110,8 +112,7 @@ tmp.html bbsguestXXX.html
 2.10. 为什么我编译的 phpbbslib 没有 .so 后缀？
 [答复]
   这个问题常见于 Redhat Fedora 和 Debain Sarge 上，由某些 1.5.x 版本的 libtool
-  引起，解决办法是分别在 kbsbbs 的主目录、bbs2www 子目录、sshbbsd 子目录和
-  innbbsd 子目录下分别执行：
+  引起，解决办法是分别在 kbsbbs 的主目录、sshbbsd 子目录下分别执行：
       libtoolize -c --force;autoheader;aclocal;automake -a;autoconf
 
   然后重新 configure 和 make 一遍。
@@ -122,7 +123,7 @@ tmp.html bbsguestXXX.html
   a) 如果修改了 php.ini，需要重新启动 apache 才能生效(假设是 mod_php 的方式)。
   b) 这个问题也可能是 libphpbbslib 没有 so 后缀引起的，参考 2.10 的答复。
   c) 检查 php.ini 里面设定的 extension_dir 参数指向一个 apache 可以访问的目录，
-     而且该目录中有 libphpbbslib.so 这个问文件。
+     而且该目录中有 libphpbbslib.so 这个文件，如果没有可以建一个符号链接。
 
 3. 管理维护
 
@@ -136,6 +137,7 @@ tmp.html bbsguestXXX.html
     miscd daemon
     bbslogd就好了
   不知道为啥。
+  另外一个可能的原因是防火墙拦掉了对 localhost 60001 端口的连接。将其打开。
 
 3.2. 刚安装完毕，建立新版的时候断线，怎么回事？
 [答复]

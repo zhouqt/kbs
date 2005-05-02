@@ -1,9 +1,9 @@
 $Id$
-smthbbs安装转信 (innbbsd/INSTALL)
+kbsbbs 系统安装转信 (innbbsd/INSTALL)
 
     安装转信可以参考 cn.bbs.* 每个月 1 号自动张贴在 cn.bbs.admin 新闻组的
 cn.bbs.* HOWTO，该文档也可以在 cn-bbs.org 的网站找到（域名及转信申请 ->
-F.A.Q.）。本文档是专门针对 smthbbs 系统写的一个安装过程参考。
+F.A.Q.）。本文档是专门针对 kbsbbs 系统写的一个安装过程参考。
 
 0. ChangeLog
 2004.4.10
@@ -13,7 +13,7 @@ F.A.Q.）。本文档是专门针对 smthbbs 系统写的一个安装过程参考。
 
 
 
-1 重新编译 smthbbs
+1 重新编译 kbsbbs
 1.1 代码简介
     转信的代码都在源代码的 innbbsd/ 目录。innbbsd/doc/tw/ 下面有一些比较好的
 文档可以看看。程序基本功能介绍：
@@ -28,8 +28,8 @@ F.A.Q.）。本文档是专门针对 smthbbs 系统写的一个安装过程参考。
     加上
 #define CNBBS_TOPIC 1   /*1就是进站显示 cn-bbs 十大，0就是不显示*/
 
-1.3 重新编译安装 smthbbs
-    在 smthbbs 源代码根目录 configure 的时候加上 --enable-innbbsd 参数。
+1.3 重新编译安装 kbsbbs
+    在 kbsbbs 源代码根目录 configure 的时候加上 --enable-innbbsd 参数。
 如果要偷懒，可以直接在 innbbsd/ 目录里面运行 ./configure --prefix=你的bbs主目录。
 然后
     make

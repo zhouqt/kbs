@@ -1,26 +1,25 @@
 cvs服务器: cvs.kcn.cn
 用户：     bbsdev
 密码：     无
-CVSROOT:   :pserver:bbsdev@cvs.smth.org:/home/cvs
+CVSROOT:   :pserver:bbsdev@cvs.kcn.cn:/home/cvs
 
 目前水木代码主要有两个分支：
-v1_2：1.2发布的代码，主要是对发布的1.2版本的补充和bug fix
+v1_2：1.2 发布的代码，主要是对发布的 1.2 版本的补充和 bug fix
 main：主分支，kbsbbs-2.0 的开发版本。
 
-相关的module:
-kbs_bbs: 主程序代码
+相关的 modules:
+kbs_bbs:  主程序代码
 sshbbsd:  ssh接口的代码
-bbshome:  一个bbs站点例子。
+bbshome:  一个bbs站点例子，特别注意这个模块是建新站必须的
 innbbsd:  转信程序
-sites:    各个站点定制文件
 
-其中，sshbbsd，bbshome,innbbsd,sites都应该在kbs_bbs目录下checkout
+其中 sshbbsd, bbshome, innbbsd 都应该在 kbs_bbs 目录下 checkout
 
-获得代码之后生成configure文件：
+获得代码之后生成 configure 文件：
 
-在kbs_bbs,sshbbsd目录下分别
-aclocal;libtoolize;autoheader;automake -a;autoconf
+在 kbs_bbs, sshbbsd 目录下分别
+aclocal; libtoolize; autoheader; automake -a; autoconf;
 
-之后，就可以按照正常方式安装使用BBS 代码了。
+之后，就可以按照正常方式安装使用 BBS 代码了。
 
 

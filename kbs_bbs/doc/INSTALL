@@ -145,7 +145,7 @@ phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 和 2.7 就是必须执行的
     本节主要说明 ssh 方式和 web 方式的配置。
 
 3.1 ssh 方式
-    请参考 doc/sshbbsd-howto 文件。
+    请参考 doc/INSTALL.ssh 文件。
 
 3.2 web 方式
     apache 的配置文件为 /usr/local/www/conf/httpd.conf，编辑该文件，加入
