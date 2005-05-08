@@ -1,0 +1,2 @@
+源代码中，除了lib部分（源码kbs_bbs模块中libsystem，libBBS目录相关源代码），WWW部分（源码kbs_bbs模块中bbs2www目录下相关源代码及文档）之外的部分遵循GPL版权。
+lib部分，WWW部分版权归KBS开发组所有，除个人学习使用外，使用该部分代码均需得到KBS开发组的授权。
