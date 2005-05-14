@@ -741,7 +741,7 @@ int m_editbrd()
                             /*
                              * sprintf(genbuf, "/bin/rm -fr %s", newpath);
                              */
-                            f_rm(newpath);
+                            my_f_rm(newpath);
                         }
                         f_mv(oldpath, newpath);
                         del_grp(fh.filename, fh.title + 13);
