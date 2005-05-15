@@ -14,11 +14,9 @@ int page, readplan, num;
 */
 
 time_t set_idle_time(struct user_info * uentp, time_t t);
+int write_file2(FILE * fp, FILE * fp2);
 
 struct user_info *u_info;
-
-char parm_name[256][80], *parm_val[256];
-int parm_num = 0;
 
 /*
 char fromhost[IPLEN + 1];
@@ -81,39 +79,17 @@ char *wwwCTime(time_t t)
     return s;
 }
 
-char *nohtml(char *s)
-{
-    char *buf = calloc(strlen(s) + 1, 1);
-    int i = 0, mode = 0;
-
-    while (s[0] && i < 1023) {
-        if (mode == 0) {
-            if (s[0] == '<') {
-                mode = 1;
-            } else {
-                buf[i] = s[0];
-                i++;
-            }
-        } else {
-            if (s[0] == '>')
-                mode = 0;
-        }
-        s++;
-    }
-    buf[i] = 0;
-    return buf;
-}
-
 int strsncpy(char *s1, char *s2, int n)
 {
     int l = strlen(s2);
 
     if (n < 0)
-        return;
+        return 0;
     if (n > l + 1)
         n = l + 1;
     strncpy(s1, s2, n - 1);
     s1[n - 1] = 0;
+    return 0;
 }
 
 char *ltrim(char *s)
@@ -167,349 +143,6 @@ char *rtrim(char *s)
     }
 
     return s;
-}
-
-char *getsenv(char *s)
-{
-    char *t = getenv(s);
-
-    if (t)
-        return t;
-    return "";
-}
-
-int http_quit()
-{
-    printf("\n</html>\n");
-    exit(0);
-}
-
-int http_fatal(char *fmt, ...)
-{
-    char buf[1024];
-    va_list ap;
-
-    va_start(ap, fmt);
-    vsnprintf(buf, 1023, fmt, ap);
-    va_end(ap);
-    buf[1023] = 0;
-    printf("错误! %s! <br><br>\n", buf);
-    printf("<a href=\"javascript:history.go(-1)\">快速返回</a>");
-    http_quit();
-}
-
-int strnncpy(char *s, int *l, char *s2)
-{
-    strncpy(s + (*l), s2, strlen(s2));
-    (*l) += strlen(s2);
-}
-
-int hsprintf(char *s, char *fmt, ...)
-{
-    char buf[1024], ansibuf[80], buf2[80];
-    char *tmp;
-    int c, bold, m, i, l, len;
-    va_list ap;
-
-    va_start(ap, fmt);
-    vsnprintf(buf, 1023, fmt, ap);
-    va_end(ap);
-    s[0] = 0;
-    l = strlen(buf);
-    len = 0;
-    bold = 0;
-    for (i = 0; i < l; i++) {
-        c = buf[i];
-        if (c == '&') {
-            strnncpy(s, &len, "&amp;");
-        } else if (c == '<') {
-            strnncpy(s, &len, "&lt;");
-        } else if (c == '>') {
-            strnncpy(s, &len, "&gt;");
-        } else if (c == 27) {
-            if (buf[i + 1] != '[')
-                continue;
-            for (m = i + 2; m < l && m < i + 24; m++)
-                if (strchr("0123456789;", buf[m]) == 0)
-                    break;
-            strsncpy(ansibuf, &buf[i + 2], m - (i + 2) + 1);
-            i = m;
-            if (buf[i] != 'm')
-                continue;
-            if (strlen(ansibuf) == 0) {
-                bold = 0;
-                strnncpy(s, &len, "<font class=\"c37\">");
-            }
-            tmp = strtok(ansibuf, ";");
-            while (tmp) {
-                c = atoi(tmp);
-                tmp = strtok(0, ";");
-                if (c == 0) {
-                    strnncpy(s, &len, "<font class=\"c37\">");
-                    bold = 0;
-                }
-                if (c >= 30 && c <= 37) {
-                    if (bold == 1)
-                        sprintf(buf2, "<font class=\"d%d\">", c);
-                    if (bold == 0)
-                        sprintf(buf2, "<font class=\"c%d\">", c);
-                    strnncpy(s, &len, buf2);
-                }
-            }
-        } else {
-            s[len] = c;
-            len++;
-        }
-    }
-    s[len] = 0;
-}
-
-int hprintf(char *fmt, ...)
-{
-    char buf[8096], buf2[1024];
-    va_list ap;
-
-    va_start(ap, fmt);
-    vsnprintf(buf2, 1023, fmt, ap);
-    va_end(ap);
-    hsprintf(buf, "%s", buf2);
-    printf("%s", buf);
-}
-
-int hhprintf(char *fmt, ...)
-{
-    char buf0[1024], buf[1024], *s, *getparm();
-    int len = 0;
-    int my_link_mode;
-    va_list ap;
-
-    va_start(ap, fmt);
-    vsnprintf(buf, 1023, fmt, ap);
-    va_end(ap);
-    buf[1023] = 0;
-    s = buf;
-    my_link_mode = atoi(getparm("my_link_mode"));
-    if (my_link_mode == 1)
-        return hprintf("%s", buf);
-    if (!strcasestr(s, "http://") && !strcasestr(s, "ftp://") && !strcasestr(s, "mailto:"))
-        return hprintf("%s", buf);
-    while (s[0]) {
-        if (!strncasecmp(s, "http://", 7) || !strncasecmp(s, "mailto:", 7) || !strncasecmp(s, "ftp://", 6)) {
-            char *tmp;
-
-            if (len > 0) {
-                buf0[len] = 0;
-                hprintf("%s", buf0);
-                len = 0;
-            }
-            tmp = strtok(s, "\'\" \r\t)(,;\n");
-            if (tmp == 0)
-                break;
-            /*
-             * if(1) {
-             * if(strstr(tmp, ".gif") || strstr(tmp, ".jpg") || strstr(tmp, ".bmp")) {
-             * printf("<img src=\"%s\">", nohtml(tmp));
-             * tmp=strtok(0, "");
-             * if(tmp==0) return -1;
-             * return hhprintf("%s",tmp);
-             * }
-             * } 
-             */
-            printf("<a target=\"_blank\" href=\"%s\">%s</a>", nohtml(tmp), nohtml(tmp));
-            tmp = strtok(0, "");
-            if (tmp == 0)
-                return printf("\n");
-            return hhprintf("%s", tmp);
-        } else {
-            buf0[len] = s[0];
-            if (len < 1000)
-                len++;
-            s++;
-        }
-    }
-    return 0;
-}
-
-int parm_add(char *name, char *val)
-{
-    int len = strlen(val);
-
-    if (parm_num >= 255)
-        http_fatal("too many parms.");
-    parm_val[parm_num] = calloc(len + 1, 1);
-    if (parm_val[parm_num] == 0)
-        http_fatal("memory overflow2 %d %d", len, parm_num);
-    strsncpy(parm_name[parm_num], name, 78);
-    strsncpy(parm_val[parm_num], val, len + 1);
-    parm_num++;
-}
-
-void html_init()
-{
-    int style;
-
-    printf("Content-type: text/html; charset=%s\n\n\n", CHARSET);
-    printf("<html>\n");
-    printf("<head>\n");
-    printf("<meta http-equiv=\"Content-Type\" content=\"text/html; charset=%s\">\n", CHARSET);
-    style = atoi(getparm("STYLE"));
-    switch (style) {
-    case 0:                    /* default color, big font */
-        printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE_BIGFONT);
-        printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"/ansi-web-middle.css\">\n");
-        break;
-    case 1:
-    default:                   /* default color, small font */
-        printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"%s\">\n", CSS_FILE);
-        printf("<link rel=\"stylesheet\" type=\"text/css\" href=\"/ansi-web-small.css\">\n");
-    }
-    printf("</head>");
-}
-
-int http_init()
-{
-    char *buf, buf2[1024], *t2, *t3;
-    int n;
-
-    n = atoi(getsenv("CONTENT_LENGTH"));
-    if (n > 5000000)
-        n = 5000000;
-    buf = calloc(n + 1, 1);
-    if (buf == 0)
-        http_fatal("memory overflow");
-    fread(buf, 1, n, stdin);
-    buf[n] = 0;
-    t2 = strtok(buf, "&");
-    while (t2) {
-        t3 = strchr(t2, '=');
-        if (t3 != 0) {
-            t3[0] = 0;
-            t3++;
-            __unhcode(t3);
-            __unhcode(trim(t2));
-            parm_add(t2, t3);
-        }
-        t2 = strtok(0, "&");
-    }
-    strsncpy(buf2, getsenv("QUERY_STRING"), 1024);
-    t2 = strtok(buf2, "&");
-    while (t2) {
-        t3 = strchr(t2, '=');
-        if (t3 != 0) {
-            t3[0] = 0;
-            t3++;
-            __unhcode(t3);
-            __unhcode(trim(t2));
-            parm_add(t2, t3);
-        }
-        t2 = strtok(0, "&");
-    }
-    strsncpy(buf2, getsenv("HTTP_COOKIE"), 1024);
-    /*
-     * printf("HTTP_COOKIE = %s\n", buf2); 
-     */
-    t2 = strtok(buf2, ";");
-    while (t2) {
-        t3 = strchr(t2, '=');
-        if (t3 != 0) {
-            t3[0] = 0;
-            t3++;
-            parm_add(trim(t2), t3);
-        }
-        t2 = strtok(0, ";");
-    }
-/*#ifdef SQUID_ACCL*/
-    {
-        char *ptr, *p;
-
-        ptr = getsenv("HTTP_X_FORWARDED_FOR");
-        p = strrchr(ptr, ',');
-        if (p != NULL) {
-            while (!isdigit(*p) && *p)
-                p++;
-            if (*p)
-                strncpy(getSession()->fromhost, p, IPLEN);
-            else
-                strncpy(getSession()->fromhost, ptr, IPLEN);
-        } else
-            strncpy(getSession()->fromhost, ptr, IPLEN);
-        getSession()->fromhost[IPLEN] = 0;
-    }
-    if (getSession()->fromhost[0] == '\0')
-/*#endif*/
-        strsncpy(getSession()->fromhost, getsenv("REMOTE_ADDR"), IPLEN);
-}
-
-int __to16(char c)
-{
-    if (c >= 'a' && c <= 'f')
-        return c - 'a' + 10;
-    if (c >= 'A' && c <= 'F')
-        return c - 'A' + 10;
-    if (c >= '0' && c <= '9')
-        return c - '0';
-    return 0;
-}
-
-int __unhcode(char *s)
-{
-    int m, n;
-
-    for (m = 0, n = 0; s[m] != 0; m++, n++) {
-        if (s[m] == '+') {
-            s[n] = ' ';
-            continue;
-        }
-        if (s[m] == '%') {
-            s[n] = __to16(s[m + 1]) * 16 + __to16(s[m + 2]);
-            m += 2;
-            continue;
-        }
-        s[n] = s[m];
-    }
-    s[n] = 0;
-}
-
-char *getparm(char *var)
-{
-    int n;
-
-    for (n = 0; n < parm_num; n++)
-        if (!strcasecmp(parm_name[n], var))
-            return parm_val[n];
-    return "";
-}
-
-/* smh_init() 需要修改 */
-int shm_init()
-{
-    resolve_ucache();
-    resolve_utmp();
-    resolve_boards();
-    www_data_init();
-}
-
-int user_init(struct userec **x, struct user_info **y)
-{
-    char id[20], num[20];
-    int key;
-
-    strsncpy(id, getparm("UTMPUSERID"), 13);
-    strsncpy(num, getparm("UTMPNUM"), 12);
-    /*
-     * printf("utmpuserid = %s\n", id); 
-     */
-    /*
-     * printf("utmpnum = %s\n", num); 
-     */
-    key = atoi(getparm("UTMPKEY"));
-    getSession()->utmpent = atoi(num);
-    if (id[0] == '\0')
-        return -1;
-
-    if (www_user_init(getSession()->utmpent, id, key, x, y, 0) == 0 && strcasecmp("guest", (*x)->userid))
-        return 1;
-    return 0;
 }
 
 int del_mail(int ent, struct fileheader *fh, char *direct)
@@ -641,10 +274,11 @@ int outgo_post2(struct fileheader *fh, char *board, char *userid, char *username
 {
     FILE *foo;
 
-    if (foo = fopen("innd/out.bntp", "a")) {
+    if ((foo = fopen("innd/out.bntp", "a")) != NULL) {
         fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board, fh->filename, userid, username, title);
         fclose(foo);
     }
+    return 0;
 }
 
 void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
@@ -707,6 +341,7 @@ int write_file2(FILE * fp, FILE * fp2)
 //        fprintf2(fp, buf3);
 		fputs(buf3,fp);
     }
+    return 0;
 }
 
 /* return value:
@@ -799,7 +434,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
             fputs("\n", fp);
             while (!feof(fp2)) {
                 char *name;
-                long begin;
+                long begin = 0;
                 unsigned int save_size;
                 char *ptr;
                 off_t size;
@@ -920,7 +555,7 @@ int has_BM_perm(struct userec *user, char *board)
     x = getbcache(board);
     if (x == 0)
         return 0;
-    if (user_perm(user, PERM_BLEVELS) || user_perm(user,PERM_SYSOP))
+    if (user_perm(user, PERM_OBOARDS) || user_perm(user,PERM_SYSOP))
         return 1;
     if (!user_perm(user, PERM_BOARDS))
         return 0;
@@ -969,87 +604,6 @@ int isfriend(char *id)
     return myfriend(searchuser(id), NULL, getSession());
 }
 
-void http_redirect(char *url)
-{
-    printf("Status: 302 Found\n");
-    printf("Location: %s\n", url);
-    printf("Content-type: text/html; charset=%s\n\n", CHARSET);
-}
-
-int initwww_all() //这个函数应该是没用了 - atppp
-{
-	struct userec * user;
-        int loginok = 0;
-    srand(time(0) * 2 + getpid());
-    chdir(BBSHOME);
-    init_sessiondata(getSession());
-    http_init();
-    /*
-     * seteuid(BBSUID);
-     * if(geteuid()!=BBSUID) http_fatal("uid error."); 
-     */
-    shm_init();
-    loginok = user_init(&user, &u_info);
-	setCurrentUser(user);
-    if (loginok < 0) {
-        /*
-         * http_redirect(NOLOGIN_PAGE);
-         * exit(0);
-         */
-        printf("Content-type: text/html; charset=%s\n\n", CHARSET);
-        /*
-         * redirect(NOLOGIN_PAGE); 
-         */
-        printf("<script>top.window.location='/nologin.html';</script>\n");
-        exit(0);
-    }
-    html_init();
-    init_bbslog();
-}
-
-char *void1(unsigned char *s)
-{
-    int i;
-    int flag = 0;
-
-    for (i = 0; s[i]; i++) {
-        if (flag == 0) {
-            if (s[i] >= 128)
-                flag = 1;
-            continue;
-        }
-        flag = 0;
-        if (s[i] < 32)
-            s[i - 1] = 32;
-    }
-    if (flag)
-        s[strlen(s) - 1] = 0;
-    return s;
-}
-
-char *userid_str(char *s)
-{
-    static char buf[512];
-    char buf2[256], tmp[256], *ptr, *ptr2;
-
-    strsncpy(tmp, s, 255);
-    buf[0] = 0;
-    ptr = strtok(tmp, " ,();\r\n\t");
-    while (ptr && strlen(buf) < 400) {
-        if (ptr2 = strchr(ptr, '.')) {
-            ptr2[1] = 0;
-            strcat(buf, ptr);
-            strcat(buf, " ");
-        } else {
-            ptr = nohtml(ptr);
-            sprintf(buf2, "<a href=\"/bbsqry.php?userid=%s\">%s</a> ", ptr, ptr);
-            strcat(buf, buf2);
-        }
-        ptr = strtok(0, " ,();\r\n\t");
-    }
-    return buf;
-}
-
 int fprintf2(FILE * fp, char *s)
 {
     int i, tail = 0, sum = 0;
@@ -1057,7 +611,7 @@ int fprintf2(FILE * fp, char *s)
     if (s[0] == ':' && s[1] == ' ' && strlen(s) > 79) {
         sprintf(s + 76, "..\n");
         fprintf(fp, "%s", s);
-        return;
+        return 0;
     }
     for (i = 0; s[i]; i++) {
         fprintf(fp, "%c", s[i]);
@@ -1072,6 +626,7 @@ int fprintf2(FILE * fp, char *s)
             sum = 0;
         }
     }
+    return 0;
 }
 
 int get_file_ent(char *board, char *file, struct fileheader *x)
@@ -1118,46 +673,6 @@ int count_online()
     return get_utmp_number();
 }
 
-typedef struct _frienduserlistarg{
-    int count;
-    uinfo_t** user_record;
-} frienduserlistarg;
-
-int full_utmp_friend(struct user_info *uentp, frienduserlistarg *pful)
-{
-    if (!uentp->active || !uentp->pid) {
-        return 0;
-    }
-    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid, getcurruserid())) {  /*Haohmaru.99.4.24.让隐身者能看见自己 */
-        return 0;
-    }
-    if (!myfriend(uentp->uid, NULL, getSession())) {
-        return 0;
-    }
-    if (pful->count < MAXFRIENDS) {
-        pful->user_record[pful->count] = uentp;
-        pful->count++;
-    }
-    return COUNT;
-}
-
-int fill_friendlist(int* range, uinfo_t** user_record)
-{
-    int i;
-    frienduserlistarg ful;
-    struct user_info *u;
-
-    ful.count = 0;
-    ful.user_record = user_record;
-    u = u_info;
-    for (i = 0; i < u->friendsnum; i++) {
-        if (u->friends_uid[i])
-            apply_utmpuid((APPLY_UTMP_FUNC) full_utmp_friend, u->friends_uid[i], &ful);
-    }
-    *range = ful.count;
-    return ful.count == 0 ? -1 : 1;
-}
-
 int add_favboard(char *brdname)
 {
     int i;
@@ -1168,6 +683,7 @@ int add_favboard(char *brdname)
         return -3;              /* err brdname */
     i--;
     addFavBoard(i, getSession());
+    return 0;
 }
 
 static int printstatusstr(struct user_info *uentp, char *arg, int pos)
@@ -1181,11 +697,11 @@ static int printstatusstr(struct user_info *uentp, char *arg, int pos)
     if (arg[1]==0)
         strcat(arg, "目前在站上，状态如下：\n");
     if (uentp->invisible)
-        strcat(arg, "\033[32m隐身中   \033[m");
+        strcat(arg, "<font class=\"c32\">隐身中</font>   ");
     else {
         char buf[80];
 
-        sprintf(buf, "\033[1m%s\033[m ", modestring(modebuf,uentp->mode, uentp->destuid, 0, 
+        sprintf(buf, "%s ", modestring(modebuf,uentp->mode, uentp->destuid, 0, 
                                               (uentp->in_chat ? uentp->chatid : NULL)));
         strcat(arg, buf);
     }
@@ -1245,7 +761,7 @@ return:
 static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
 {
     struct public_data *pub;
-    int oldidx, num, fd, i, j;
+    int oldidx, num, fd, i, j = 0;
     time_t now;
     struct userec *user;
 	int hashkey;
@@ -1531,8 +1047,6 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         int utmpent;
         time_t t;
         int multi_ret = 1;
-		char genbuf[STRLEN];
-		struct userec* uc;
  
         while (multi_ret != 0) {
             int lres;
@@ -2449,7 +1963,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
     unsigned int ansi_val[STRLEN];
     int ival = 0;
     size_t i;
-    char *ansi_begin;
+    char *ansi_begin = 0;
     char *ansi_end;
     int attachmatched;
     long attachPos[MAXATTACHMENTCOUNT];
@@ -2659,7 +2173,7 @@ void output_ansi_html(char *buf, size_t buflen, buffered_output_t * output,char*
                     continue;
                 }
 atppp_never_use_goto:
-                NULL;
+                ;
             }
         } else if (is_tex && (buf[i] == ']') && (i > 0) && (buf[i-1] == '\\')) {
             STATE_CLR(ansi_state, STATE_TEX_SET);
@@ -2912,6 +2426,9 @@ static wwwthread_treenode *AVL_RightBalance(wwwthread_treenode * r)
         x = AVL_RotateRight(x);
         r->Rchild = x;
         r = AVL_RotateLeft(r);
+        break;
+    default:
+        break;
     }
     return r;
 }
@@ -2948,6 +2465,9 @@ static wwwthread_treenode *AVL_LeftBalance(wwwthread_treenode * r)
         x = AVL_RotateLeft(x);
         r->Lchild = x;
         r = AVL_RotateRight(r);
+        break;
+    default:
+        break;
     }
     return r;
 }
@@ -2967,7 +2487,7 @@ static wwwthread_treenode *AVL_LeftBalance(wwwthread_treenode * r)
 static bool AVL_Insert(wwwthread_treenode ** proot, struct fileheader *fh, int flags, wwwthread_treenode** previous)
 {
     bool tallersubtree;
-    bool taller;
+    bool taller = false;
     wwwthread_treenode *root;
     int cmp;
     

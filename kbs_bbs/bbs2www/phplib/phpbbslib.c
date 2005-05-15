@@ -610,11 +610,13 @@ static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
 }
 
 //char* maillist, 40 bytes long, 30 bytes for the mailbox name,10 bytes for the mailbox path file name.
+#if 0
 static void asssign_maillist(zval * array, char *boxname, char *pathname)
 {
     add_assoc_string(array, "boxname", boxname, 1);
     add_assoc_string(array, "pathname", pathname, 1);
 }
+#endif
 
 static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
 {
@@ -721,7 +723,6 @@ static PHP_FUNCTION(bbs_getusermode)
 	char *userid;
 	int userid_len;
 	char buf[1024];
-	char buf2[2048];
 
     if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
         WRONG_PARAM_COUNT;
@@ -733,9 +734,7 @@ static PHP_FUNCTION(bbs_getusermode)
 	if( get_userstatusstr(userid, buf) == 0 )
 		RETURN_LONG(0);
 
-	hsprintf(buf2, "%s", buf);
-
-	RETURN_STRING(buf2,1);
+	RETURN_STRING(buf,1);
 }
 
 static PHP_FUNCTION(bbs_user_level_char)
@@ -873,7 +872,6 @@ static PHP_FUNCTION(bbs_setuserpasswd){
     int s_len;
     char *pw;
     int pw_len;
-    long ret;
     int unum;
     struct userec *user;
 
@@ -902,7 +900,6 @@ static PHP_FUNCTION(bbs_checkuserpasswd){
     int s_len;
     char *pw;
     int pw_len;
-    long ret;
     int unum;
     struct userec *user;
 
@@ -935,7 +932,7 @@ static PHP_FUNCTION(bbs_checkpasswd)
     char *pw;
     int pw_len;
     long ret;
-    int unum;
+    int unum = 0;
     long ismd5 = 0;
     struct userec *user;
     int ac = ZEND_NUM_ARGS();
@@ -1339,14 +1336,13 @@ static int get_output_buffer_len(){
 	return len;
 }
 
+#if 0
 static int new_buffered_output(char *buf, size_t buflen, void *arg)
 {
 	output_printf(buf,buflen);
 	return 0;
 }
-
-static void new_flush_buffer(buffered_output_t *output){
-}
+#endif
 
 static int new_write(const char *buf, size_t buflen)
 {
@@ -2061,7 +2057,6 @@ static PHP_FUNCTION(bbs_printoriginfile)
 	i=0;    
 	skip=0;
     while (skip_attach_fgets(buf, sizeof(buf), fp) != 0) {
-        char tmp[256];
 		i++;
         if (Origin2(buf))
             break;
@@ -2117,20 +2112,6 @@ static PHP_FUNCTION(bbs_getboard)
     RETURN_LONG(b_num);
 }
 
-static int bbs_cmpboard(const struct newpostdata *brd, const struct newpostdata *tmp)
-{
-    register int type = 0;
-
-    if (!(getCurrentUser()->flags & BRDSORT_FLAG)) {
-        type = brd->title[0] - tmp->title[0];
-        if (type == 0)
-            type = strncasecmp(brd->title + 1, tmp->title + 1, 6);
-    }
-    if (type == 0)
-        type = strcasecmp(brd->name, tmp->name);
-    return type;
-}
-
 /* TODO: move this function into bbslib. */
 /* no_brc added by atppp 20040706 */
 static int check_newpost(struct newpostdata *ptr, bool no_brc)
@@ -2184,6 +2165,7 @@ char *brd_col_names[BOARD_COLUMNS] = {
 /* added by caltary */
 #define favbrd_list_t (*(getSession()->favbrd_list_count))
 
+#if 0
 static void bbs_make_board_columns(zval ** columns)
 {
     int i;
@@ -2193,6 +2175,7 @@ static void bbs_make_board_columns(zval ** columns)
         ZVAL_STRING(columns[i], brd_col_names[i], 1);
     }
 }
+#endif
 
 static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata *brd)
 {
@@ -2282,7 +2265,6 @@ static PHP_FUNCTION(bbs_getboards)
     char *prefix;
     int plen;
     long flag, group;
-    int rows = 0;
     struct newpostdata newpost_buffer;
     struct newpostdata *ptr;
     zval **columns;
@@ -2303,7 +2285,7 @@ static PHP_FUNCTION(bbs_getboards)
         WRONG_PARAM_COUNT;
     }
 
-	if (plen=0) {
+	if (plen == 0) {
 		RETURN_FALSE;
 	}
     if (getCurrentUser() == NULL) {
@@ -2491,9 +2473,7 @@ static PHP_FUNCTION(bbs_domailforward)
     char *fname, *tit, *target1;
 	char target[128];
     int filename_len,tit_len,target_len;
-    bcache_t bh;
 	long big5,noansi;
-    struct boardheader *bp;
 	char title[512];
 	struct userec *u;
     
@@ -2786,13 +2766,9 @@ static PHP_FUNCTION(bbs_getarticles)
 }
 
 static PHP_FUNCTION(bbs_getwebmsgs){
-    char *user;
-    int user_len;
-    char buf[MAX_MSG_SIZE], showmsg[MAX_MSG_SIZE*2], chk[STRLEN];
+    char buf[MAX_MSG_SIZE];
     int count,i;
-    char title[STRLEN];
     struct msghead head;
-    char fname[STRLEN];
 	zval *element;
 
     if (ZEND_NUM_ARGS()!=0 ) {
@@ -2861,9 +2837,7 @@ static PHP_FUNCTION(bbs_getthreads)
 	struct flock ldata;
 	struct wwwthreadheader *ptr1=NULL;
 	char* ptr;
-	unsigned int long found;
 	long includeTop;
-	int skip;
     int ac = ZEND_NUM_ARGS();
 	int begin,end;
 	zval* columns[3];
@@ -3508,7 +3482,6 @@ static PHP_FUNCTION(bbs_countarticles)
 static PHP_FUNCTION(bbs_getthreadnum)
 {
     long brdnum;
-    int mode;
     const struct boardheader *bp = NULL;
     char dirpath[STRLEN];
     int total;
@@ -3616,14 +3589,12 @@ static PHP_FUNCTION(bbs_get_records_from_num)
 	char *dirpath;
 	int dlen;
 	fileheader_t articles;
-	int i;
 	zval *element,*articlearray;
 	char flags[3]; /* flags[0]: flag character
 					* flags[1]: imported flag
 					* flags[2]: no reply flag
 					*/
     int ac = ZEND_NUM_ARGS();
-    int retnum;
     if (ac != 3
         ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sla", &dirpath, &dlen, &num, &articlearray) == FAILURE)
     {
@@ -3711,6 +3682,7 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 	{
 		RETURN_LONG(0);
 	}
+    is_bm = is_BM(bp, getCurrentUser());
 	/*if (array_init(return_value) == FAILURE)
 	{
 		RETURN_LONG(0);
@@ -3976,14 +3948,13 @@ static PHP_FUNCTION(bbs_getattachtmppath)
  */
 static PHP_FUNCTION(bbs_postarticle)
 {
-	FILE *fp;
 	char *boardName, *title, *content;
-    char filename[80], dir[80], buf[MAXPATH], buf2[80],path[80],board[80];
+    char filename[80], dir[80], buf[MAXPATH], path[80],board[80];
 	int blen, tlen, clen;
     int r, i;
     long sig, mailback, is_tex;
 	long reid;
-    struct fileheader x, *oldx;
+    struct fileheader *oldx;
     bcache_t *brd;
     long local, anony;
     sigjmp_buf bus_jump;
@@ -4327,7 +4298,6 @@ static PHP_FUNCTION(bbs_checkbadword)
  */
 static PHP_FUNCTION(bbs_updatearticle)
 {
-	FILE *fp;
 	char *boardName, *filename, *content;
 	int blen, flen, clen;
     FILE *fin;
@@ -4733,7 +4703,7 @@ static PHP_FUNCTION(bbs_getmails)
 {
     char *mailpath;
     int mailpath_len;
-    int total, rows, i,j ;
+    int total, rows, i;
 	long start,num;
 
     struct fileheader *mails;
@@ -4887,7 +4857,6 @@ static PHP_FUNCTION(bbs_changemaillist)
     struct userec *user;
     int i;
     struct stat st;
-    zval *element;
 
     int ac = ZEND_NUM_ARGS();
 
@@ -5034,7 +5003,6 @@ static PHP_FUNCTION(bbs_sendwebmsg)
     long destutmp;
     zval *z_errmsg;
     int result;
-    int i;
     int ac = ZEND_NUM_ARGS();
 
     if (ac != 4 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sslz", &destid, &destid_len, &msg, &msg_len, &destutmp, &z_errmsg) == FAILURE) {
@@ -5757,10 +5725,7 @@ static PHP_FUNCTION(bbs_recalc_sig)
 {
 	struct userec newinfo;
 	int unum;
-    char signame[STRLEN];
 	int sign;
-
-	int ac = ZEND_NUM_ARGS();
 
     if( (unum = getusernum(getCurrentUser()->userid))==0)
 		RETURN_LONG(-1);
@@ -5820,19 +5785,19 @@ static PHP_FUNCTION(bbs_modify_info)
     }
 
 	for( m=0; m<strlen(username); m++){
-		if( username[m] < 32 && username[m] > 0 || username[m]==-1)
+		if( (username[m] < 32 && username[m] > 0) || username[m]==-1)
 			username[m]=' ';
 	}
 	for( m=0; m<strlen(realname); m++){
-		if( realname[m] < 32 && realname[m] > 0 || realname[m]==-1)
+		if( (realname[m] < 32 && realname[m] > 0) || realname[m]==-1)
 			realname[m]=' ';
 	}
 	for( m=0; m<strlen(address); m++){
-		if( address[m] < 32 && address[m] > 0 || address[m]==-1)
+		if( (address[m] < 32 && address[m] > 0) || address[m]==-1)
 			address[m]=' ';
 	}
 	for( m=0; m<strlen(email); m++){
-		if( email[m] < 32 && email[m] > 0 || email[m]==-1)
+		if( (email[m] < 32 && email[m] > 0) || email[m]==-1)
 			email[m]=' ';
 	}
 
@@ -5980,12 +5945,7 @@ static PHP_FUNCTION(bbs_saveuserdata)
 			character;
     zend_bool   bAuto;
 	struct  userdata ud;
-	struct  userec* uc;
-	FILE*   fn;
-	char    genbuf[STRLEN+1];
-	char*   ptr;
 	int     usernum;
-	long    now;
 
     int ac = ZEND_NUM_ARGS();
 
@@ -6323,7 +6283,7 @@ static PHP_FUNCTION(bbs_createregform)
 	}
 #endif
 
-	sprintf(genbuf,"%d.%d.%d",year,month,day);
+	sprintf(genbuf,"%ld.%ld.%ld",year,month,day);
 	if(bAuto)
         fn = fopen("pre_register", "a");
 	else
@@ -6406,6 +6366,47 @@ static int cmpuser(a, b)
     sprintf(id2, "%d%s", !isfriend(b->userid), b->userid);
     return strcasecmp(id1, id2);
 }
+
+typedef struct _frienduserlistarg{
+    int count;
+    uinfo_t** user_record;
+} frienduserlistarg;
+
+static int full_utmp_friend(struct user_info *uentp, frienduserlistarg *pful)
+{
+    if (!uentp->active || !uentp->pid) {
+        return 0;
+    }
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid, getcurruserid())) {  /*Haohmaru.99.4.24.让隐身者能看见自己 */
+        return 0;
+    }
+    if (!myfriend(uentp->uid, NULL, getSession())) {
+        return 0;
+    }
+    if (pful->count < MAXFRIENDS) {
+        pful->user_record[pful->count] = uentp;
+        pful->count++;
+    }
+    return COUNT;
+}
+
+static int fill_friendlist(int* range, uinfo_t** user_record)
+{
+    int i;
+    frienduserlistarg ful;
+    struct user_info *u;
+
+    ful.count = 0;
+    ful.user_record = user_record;
+    u = u_info;
+    for (i = 0; i < u->friendsnum; i++) {
+        if (u->friends_uid[i])
+            apply_utmpuid((APPLY_UTMP_FUNC) full_utmp_friend, u->friends_uid[i], &ful);
+    }
+    *range = ful.count;
+    return ful.count == 0 ? -1 : 1;
+}
+
 /**
  *  Function: 返回当前在线好友名单
  *   user_info bbs_getonlinefriends();
@@ -6430,7 +6431,7 @@ static PHP_FUNCTION(bbs_getonlinefriends)
     }
 
     getSession()->utmpent = get_curr_utmpent();    //I hate the global variable!!
-    fill_friendlist(&range, &usr);
+    fill_friendlist(&range, usr);
     
     if (array_init(return_value) == FAILURE) {
         RETURN_FALSE;
@@ -6778,7 +6779,7 @@ static PHP_FUNCTION(bbs_denyadd)
             fprintf(fn, "来  源: %s\n", NAME_BBS_ENGLISH);
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", board, exp);
-            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天", denyday);
+            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%ld\x1b[m 天", denyday);
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
@@ -6794,7 +6795,7 @@ static PHP_FUNCTION(bbs_denyadd)
             fprintf(fn, "来  源: %s \n", SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", board, exp);
-            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天", denyday);
+            fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%ld\x1b[m 天", denyday);
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
@@ -6805,7 +6806,7 @@ static PHP_FUNCTION(bbs_denyadd)
         mail_file(getCurrentUser()->userid, path, userid, buffer, 0, NULL);
         fn = fopen(path, "w+");
         fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", userid, board, exp);
-        fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%d\x1b[m 天。\n", denyday);
+        fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%ld\x1b[m 天。\n", denyday);
         
         if (my_flag == 0) {
             fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", saveptr->userid);
@@ -7187,12 +7188,11 @@ static PHP_FUNCTION(bbs_add_import_path)
 
 static PHP_FUNCTION(bbs_get_import_path)
 {
-    zval *element,*ret_path;
+    zval *element;
 	char *im_path[ANNPATH_NUM];
 	char *im_title[ANNPATH_NUM];
 	time_t im_time=0;
 	int im_select=0;
-	FILE *fp;
 	int i;
 
     if (array_init(return_value) == FAILURE) {
@@ -7220,7 +7220,6 @@ static int bbs_bm_change(char *board, struct boardheader *newbh, struct boardhea
 	struct userec *lookupuser;
 	unsigned int newlevel;
 	char *p;
-	char oldbm[BM_LEN];
 	char obm[10][IDLEN+2];
 	int obmnum=0,nbmnum=0;
 	char nbm[10][IDLEN+2];
@@ -7312,6 +7311,7 @@ static int bbs_bm_change(char *board, struct boardheader *newbh, struct boardhea
 		//securityreport(buf, lookupuser, NULL);
 		lookupuser->userlevel = newlevel;
 	}
+    return 0;
 }
 
 
@@ -7345,7 +7345,6 @@ static PHP_FUNCTION(bbs_new_board)
 
 	char* bgroup;
 	int bgroup_len;
-	char explainn[100];
 	
 	int i;
 	struct boardheader newboard;
@@ -7531,7 +7530,7 @@ static PHP_FUNCTION(bbs_set_onboard)
 	int ac = ZEND_NUM_ARGS();
 	long boardnum,count;
 	int oldboard;
-        struct WWW_GUEST_S *guestinfo;
+    struct WWW_GUEST_S *guestinfo = NULL;
 
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &count) == FAILURE) {
 		WRONG_PARAM_COUNT;
@@ -7669,9 +7668,6 @@ static void bbs_make_detail_vote_array(zval * array, struct votebal *vbal)
 
 static void bbs_make_user_vote_array(zval * array, struct ballot *vbal)
 {
-	int i;
-	char tmp[10];
-
 	if(vbal && vbal->uid[0]){
 	    add_assoc_string(array, "USERID", vbal->uid, 1);
     	add_assoc_long(array, "VOTED", vbal->voted);
@@ -7788,7 +7784,7 @@ static PHP_FUNCTION(bbs_vote_num)
 	char controlfile[STRLEN];
 	struct boardheader *bp=NULL;
 	FILE *fp;
-	int vnum,i,pos;
+	int vnum,pos;
 	char lmsg[3][STRLEN];
 	char *c,*cc;
 	int llen;
@@ -8511,7 +8507,6 @@ static PHP_FUNCTION(bbs_make_tmpl_file)
 				while(fgets(buf,255,fpsrc)){
 					int l;
 					int linex = 0;
-					int ischinese=0;
 					char *pn,*pe;
 
 					for(pn = buf; *pn!='\0'; pn++){
@@ -8983,7 +8978,7 @@ int get_pos(char * s)
     struct stat st;
     FILE* fp;
     char buf[240],buf2[100],tt[100];
-    int i,j,k;
+    int i,j;
     if(stat(s, &st)==-1) return -1;
     strcpy(buf, s);
     i=strlen(buf)-1;
@@ -9065,9 +9060,6 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
  */
 static PHP_FUNCTION(bbs_getonline_user_list)
 {
-
-    int i;
-    uinfo_t **user;
     struct fulluserlistarg arg;
     int ac = ZEND_NUM_ARGS();
     getSession()->utmpent = get_curr_utmpent();    //I hate the global variable!!
@@ -9128,7 +9120,7 @@ static PHP_FUNCTION(bbs_x_search)
     addr.sin_port=htons(4875);
     if(connect(sockfd, (struct sockaddr*)&addr, sizeof(addr))<0) return;
     sockfp=fdopen(sockfd, "r+");
-    fprintf(sockfp, "\n%d\n%s\n", pos, qn);
+    fprintf(sockfp, "\n%ld\n%s\n", pos, qn);
     fflush(sockfp);
     fscanf(sockfp, "%d %d %d\n", &toomany, &i, &res_total);
     for(i=0;i<res_total;i++) {
@@ -9228,7 +9220,7 @@ static PHP_FUNCTION(bbs_x_search)
         for(i=0;i<fsize;i++) {
             if(buf[i]==0x1b) {
                 j=i;
-                while(!(buf[j]>='a'&&buf[j]<='z'||buf[j]>='A'&&buf[j]<='Z')&&j<fsize) {
+                while(!((buf[j]>='a'&&buf[j]<='z')||(buf[j]>='A'&&buf[j]<='Z'))&&j<fsize) {
                     buf[j] = 0;
                     j++;
                 }
@@ -9242,12 +9234,12 @@ static PHP_FUNCTION(bbs_x_search)
             if(i>=strlen(qn)) i=0;
         }
         while(i<strlen(qn)) {
-            if(qn[i]>='a'&&qn[i]<='z'||qn[i]>='A'&&qn[i]<='Z') {
+            if((qn[i]>='a'&&qn[i]<='z')||(qn[i]>='A'&&qn[i]<='Z')) {
                 j=i;
-                while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
+                while((qn[j]>='a'&&qn[j]<='z')||(qn[j]>='A'&&qn[j]<='Z')||(qn[j]>='0'&&qn[j]<='9')) j++;
                 for(k=0;k<fsize-(j-i)+1;k++)
-                    if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='a'&&buf[k-1]<='z'||buf[k-1]>='A'&&buf[k-1]<='Z'))&&
-                        (k+j-i==fsize||!(buf[k+j-i]>='a'&&buf[k+j-i]<='z'||buf[k+j-i]>='A'&&buf[k+j-i]<='Z')))
+                    if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!((buf[k-1]>='a'&&buf[k-1]<='z')||(buf[k-1]>='A'&&buf[k-1]<='Z')))&&
+                        (k+j-i==fsize||!((buf[k+j-i]>='a'&&buf[k+j-i]<='z')||(buf[k+j-i]>='A'&&buf[k+j-i]<='Z'))))
                         for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
                 i=j-1;
             }
@@ -9291,7 +9283,7 @@ static PHP_FUNCTION(bbs_x_search)
             t=0;
             for(k=0;k<fsize;k++) 
             if(!out2[k]) {
-                if(out[k]||k>0&&out[k-1]||k<fsize-1&&out[k+1]) {
+                if(out[k]||(k>0&&out[k-1])||(k<fsize-1&&out[k+1])) {
                     if(out[k]==1)
                         out2[k]=1;
                     else {
