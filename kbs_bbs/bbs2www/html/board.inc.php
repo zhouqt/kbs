@@ -313,8 +313,8 @@ function bbs_ann_xsearch($board) {
     if ($board) {
 ?>
 ËÑË÷·¶Î§
-<input class="b1" type="radio" name="board" value="" />È«Õ¾
-<input class="b1" type="radio" name="board" checked value="<?php echo urlencode($board); ?>" /><?php echo $board; ?>°æ
+<input class="b1" type="radio" name="b" value="" />È«Õ¾
+<input class="b1" type="radio" name="b" checked value="<?php echo urlencode($board); ?>" /><?php echo $board; ?>°æ
 <?php        
     }
 ?>	     
