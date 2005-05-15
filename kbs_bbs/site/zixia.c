@@ -239,7 +239,7 @@ int     mode;
 {
     switch(mode) {
     case IDLE:      return "^@^zz..ZZ" ;
-    case NEW:       return "新" NAME_USER_SHORT "注册" ;
+    case NEW:       return "新帮众注册" ;
     case LOGIN:     return "进入" NAME_BBS_NICK;
     case CSIE_ANNOUNCE:     return "汲取精华";
     case CSIE_TIN:          return "使用TIN";
@@ -258,15 +258,15 @@ int     mode;
     case  LUSERS:   return "看谁在线上";
     case  FRIEND:   return "找线上好友";
     case  MONITOR:  return "监看中";
-    case  QUERY:    return "查询" NAME_USER_SHORT;
+    case  QUERY:    return "查询帮众";
     case  TALK:     return "聊天" ;
-    case  PAGE:     return "呼叫" NAME_USER_SHORT;
+    case  PAGE:     return "呼叫帮众";
     case  CHAT2:    return "梦幻国度";
     case  CHAT1:    return CHAT_SERVER "中";
     case  CHAT3:    return "快哉亭";
     case  CHAT4:    return "老大聊天室";
     case  IRCCHAT:  return "会谈IRC";
-    case LAUSERS:   return "探视" NAME_USER_SHORT;
+    case LAUSERS:   return "探视帮众";
     case XMENU:     return "系统资讯";
     case  VOTING:   return "投票";
     case  BBSNET:   return "波若波罗蜜";
