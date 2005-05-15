@@ -16,6 +16,7 @@ login_init();
 <?php
  } else {
 	bbs_wwwlogoff();
+	cache_header("nocache");
     setcookie("UTMPKEY","",time()-3600,"/");
     setcookie("UTMPNUM","",time()-3600,"/");
     setcookie("UTMPUSERID","",time()-3600,"/");

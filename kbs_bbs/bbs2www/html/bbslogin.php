@@ -33,6 +33,7 @@ if ($id!="") {
         $loginok=0;
         $num=bbs_getcurrentuinfo($data);
         
+        cache_header("nocache");
         setcookie("UTMPKEY",$data["utmpkey"],0,"");
         setcookie("UTMPNUM",$num,0,"");
         setcookie("UTMPUSERID",$data["userid"],0,"");
