@@ -1189,10 +1189,9 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
     return 0;
 }
 
-#ifdef ZIXIA
 int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
-    char slink[256];      
+    char slink[256];
     if (fileinfo==NULL) return DONOTHING;
     board_attach_link(slink,255,-1,fileinfo);
     clear();
@@ -1209,6 +1208,7 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
 
+    if (arg->mode != DIR_MODE_NORMAL) return DONOTHING;
     if (fileinfo->reid == fileinfo->id) return DONOTHING;
 
     BBS_TRY {
@@ -1236,7 +1236,6 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     }
     return DONOTHING;
 }
-#endif
 
 int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
@@ -5935,10 +5934,8 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'B', (READ_KEY_FUNC)SR_BMFunc,(void*)false},
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
     {'!', (READ_KEY_FUNC)Goodbye,NULL},
-#ifdef ZIXIA
     {'~', (READ_KEY_FUNC)showinfo,NULL},
     {'^', (READ_KEY_FUNC)jumpReID,NULL},
-#endif
     {'\0', NULL},
 };
 
