@@ -683,7 +683,7 @@ void check_users(int u)
 		}
 	if (rooms[myroom].op>=0 && PINFO(rooms[myroom].op).style==-1)
 	{
-		for (k = 0; k < MAX_PLAYER; k++)
+		for (k = 0; k < MAX_PEOPLE; k++)
 			if (PINFO(k).style != -1)
 			{
 				rooms[myroom].op=k;
@@ -692,7 +692,7 @@ void check_users(int u)
 				kill_msg(-1);
 				break;
 			}
-		if (k>=MAX_PLAYER)
+		if (k>=MAX_PEOPLE)
 		{
 			rooms[myroom].op=-1;
 			rooms[myroom].style = -1;
@@ -764,7 +764,7 @@ void clear_room()
 	int i;
 
 	for (i = 0; i < MAX_ROOM; i++)
-		if ((rooms[i].style != -1) && (rooms[i].numplayer == 0))
+		if ((rooms[i].style != -1) && (rooms[i].numplayer + rooms[i].numspectator == 0))
 			rooms[i].style = -1;
 }
 
@@ -1536,6 +1536,12 @@ void start_game()
 			PINFO(i).flag=PEOPLE_ALIVE;
 			PINFO(i).vote = -1;
 		}
+		
+	if (RINFO.killernum<1)
+		RINFO.killernum=1;
+	if (RINFO.policenum<1)
+	  RINFO.policenum=1;
+		
 	totalk = RINFO.killernum;
 	totalc = RINFO.policenum;
 	for (i = 0; i < MAX_PLAYER; i++)
@@ -1549,11 +1555,6 @@ void start_game()
 		return;
 	}
 
-	if (totalk<1)
-		totalk=1;
-	if (totalc<1)
-		totalc=1;
-	
 	if (totalk > total-totalk-totalc)
 	{
 		send_msg(me, "\x1b[31;1m平民数少于坏人人数,无法开始游戏\x1b[m");
@@ -1637,7 +1638,7 @@ void start_game()
 	kill_msg(-1);
 }
 
-#define menust 9
+#define menust 10
 
 int do_com_menu()
 {
@@ -1646,16 +1647,20 @@ int do_com_menu()
 		"1-退出", 
 		"2-改名", 
 		"3-列表", 
-		"4-话题", 
-		"5-设置", 
-		"6-踢玩家", 
-/*		"7-发言权", */
+		"4-加入",
+		"5-话题", 
+		"6-设置", 
+		"7-踢玩家", 
 		"8-换房主", 
 		"9-开始"
 	};
 	int menupos[menust], i, j, k, sel = 0, ch, max = 0, me, offset = 0;
 	char buf[80],disp[256];
  
+  me=mypos;
+  if (me<MAX_PLAYER)
+    strcpy(menus[4],"4-旁观");
+  
 	if (RINFO.status != INROOM_STOP)
 		strcpy(menus[menust-1], "9-结束");
 	menupos[0] = 0;
@@ -1792,6 +1797,100 @@ int do_com_menu()
 				kill_msg(me);
 				return 0;
 			case '4':
+				if (me<MAX_PLAYER
+					&& (PINFO(me).flag & PEOPLE_ALIVE)
+					&& RINFO.status != INROOM_STOP)
+				{
+					send_msg (me, "游戏中，不能离开");
+					kill_msg(me);
+					return 0;
+				}
+				else
+				if (me>=MAX_PLAYER && 
+					(rooms[myroom].numplayer>=rooms[myroom].maxplayer
+					||rooms[myroom].numplayer>=MAX_PLAYER)
+					|| me<MAX_PLAYER
+					&& rooms[myroom].numspectator>=MAX_PEOPLE-MAX_PLAYER)
+				{
+					send_msg(me, "人员已满");
+					kill_msg(me);
+					return 0;
+				}
+				else
+				if (me>=MAX_PLAYER)
+				{
+					// 变成游戏者
+					int i;
+					for(i=0;i<MAX_PLAYER;i++)
+					{
+						if (PINFO(i).style==-1)
+							break;
+					}
+					if (i<MAX_PLAYER)
+					{
+						start_change_inroom();
+						PINFO(me).style=-1;
+						mypos = i;
+						PINFO(i).style = 0;
+						PINFO(i).flag = 0;
+						strcpy(PINFO(i).id, CURRENTUSER->userid);
+						strcpy(PINFO(i).nick, CURRENTUSER->userid);
+						PINFO(i).pid = uinfo.pid;
+					
+						rooms[myroom].numplayer++;
+						rooms[myroom].numspectator--;
+					
+						if (rooms[myroom].op==me || rooms[myroom].op==-1 || PINFO(rooms[myroom].op).style==-1)
+						{
+							rooms[myroom].op=mypos;
+						}
+					
+						end_change_inroom();
+					
+						kill_msg(-1);
+					
+						room_refresh(0);
+						
+					}
+				}
+				else
+				{
+					// 变成旁观者
+					int i;
+					for(i=MAX_PLAYER;i<MAX_PEOPLE;i++)
+					{
+						if (PINFO(i).style==-1)
+							break;
+					}
+					if (i<MAX_PEOPLE)
+					{
+						start_change_inroom();
+						PINFO(me).style=-1;
+						mypos = i;
+						PINFO(i).style = 0;
+						PINFO(i).flag = 0;
+						strcpy(PINFO(i).id, CURRENTUSER->userid);
+						strcpy(PINFO(i).nick, CURRENTUSER->userid);
+						PINFO(i).pid = uinfo.pid;
+					
+						rooms[myroom].numspectator++;
+						rooms[myroom].numplayer--;
+					
+						if (rooms[myroom].op==me || rooms[myroom].op==-1 || PINFO(rooms[myroom].op).style==-1)
+						{
+							rooms[myroom].op=mypos;
+						}
+					
+						end_change_inroom();
+					
+						kill_msg(-1);
+					
+						room_refresh(0);
+						
+					}
+				}
+				return 0;
+			case '5':
 				move(t_lines - 1, 0);
 				k_resetcolor();
 				clrtoeol();
@@ -1806,7 +1905,7 @@ int do_com_menu()
 					kill_msg(-1);
 				}
 				return 0;
-			case '5':
+			case '6':
 				move(t_lines - 1, 0);
 				k_resetcolor();
 				clrtoeol();
@@ -1917,7 +2016,7 @@ int do_com_menu()
 				}
 				kill_msg(-1);
 				return 0;
-			case '6':
+			case '7':
 				move(t_lines - 1, 0);
 				k_resetcolor();
 				clrtoeol();
@@ -1941,8 +2040,8 @@ int do_com_menu()
 					}
 				}
 				return 0;
-			case '7':
-/*
+/*			case '7':
+
 				move(t_lines - 1, 0);
 				k_resetcolor();
 				clrtoeol();
@@ -1963,8 +2062,9 @@ int do_com_menu()
 						kill_msg(-1);
 						return 0;
 					}
-				}*/
+				}
 				return 0;
+*/				
 			case '8':
 				move(t_lines - 1, 0);
 				k_resetcolor();
@@ -1993,6 +2093,7 @@ int do_com_menu()
 				{
 					RINFO.status = INROOM_STOP;
 					send_msg(-1, "游戏被屋主强制结束");
+					show_killerpolice();
 					kill_msg(-1);
 				}
 				end_change_inroom();
@@ -2930,7 +3031,7 @@ void join_room(int w, int spec)
 	if (rooms[myroom].op==me)
 	{
 		int k;
-		for (k = 0; k < MAX_PLAYER; k++)
+		for (k = 0; k < MAX_PEOPLE; k++)
 			if (PINFO(k).style != -1)
 				if (k != me)
 				{
@@ -2940,7 +3041,7 @@ void join_room(int w, int spec)
 					kill_msg(-1);
 					break;
 				}
-		if (k>=MAX_PLAYER)
+		if (k>=MAX_PEOPLE)
 		{
 			rooms[myroom].op=-1;
 			send_msg(-1, "房间解散了");
@@ -3315,3 +3416,4 @@ int killer_main()
 	shmdt(shm);
 	shmdt(shm2);
 }
+
