@@ -644,7 +644,8 @@ function show_footer($showmsg = true, $showerr = true)
 <table cellSpacing="0" cellPadding="0" border="0" align="center">
 <tr>
 	<td align="center">
-		<a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="images/wforum.gif"/></a><br/>
+	    <a href="http://wforum.aka.cn/" target="_blank"><img border="0" src="images/wforum.gif"/></a>
+		<a href="http://dev.kcn.cn/" target="_blank"><img border="0" src="images/poweredby.gif"/></a>&nbsp;&nbsp;<br/>
 		<nobr><?php   echo $Version; ?></nobr>
 	</td>
 	<td>
