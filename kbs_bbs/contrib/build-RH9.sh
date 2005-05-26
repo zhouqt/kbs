@@ -19,7 +19,7 @@ fi
 
 if [ -d CVS ]; then
   cvs up -d
-  aclocal; autoheader; automake -a; autoconf
+  aclocal; libtoolize -c --force; autoheader; automake -a; autoconf
 fi
 
 if [ -d bbs2www ]; then
@@ -31,7 +31,7 @@ fi
 if [ -d sshbbsd ]; then
   if [ -d CVS ]; then
     cd sshbbsd
-    aclocal; autoheader; automake -a; autoconf
+    aclocal; libtoolize -c --force; autoheader; automake -a; autoconf
     cd ..
   fi
   SSHCONFIG=--enable-ssh
