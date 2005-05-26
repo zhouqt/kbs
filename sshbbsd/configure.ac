@@ -36,21 +36,21 @@ fi
 AC_PROG_CC
 AC_ISC_POSIX
 
-AC_DEFINE_UNQUOTED(HOSTTYPE, "$host")
+AC_DEFINE_UNQUOTED(HOSTTYPE, "$host", [ ])
 
 case "$host" in
   *-*-sunos4.1.1*)
     os_sunos=yes
     # Tim Adam <tma@osa.com.au> says speed_t is defined in stdtypes.h
-    AC_DEFINE(SPEED_T_IN_STDTYPES_H)
+    AC_DEFINE(SPEED_T_IN_STDTYPES_H, 1, [ ])
     ;;
   *-*-solaris*)
     # solaris stuff. appro@fy.chalmers.se
-    AC_DEFINE(SECURE_RPC)
-    AC_DEFINE(SECURE_NFS)
+    AC_DEFINE(SECURE_RPC, 1, [ ])
+    AC_DEFINE(SECURE_NFS, 1, [ ])
     # NIS+ is forced so that we don't have to recompile
     # if we move to NIS+. appro@fy.chalmers.se
-    AC_DEFINE(NIS_PLUS)
+    AC_DEFINE(NIS_PLUS, 1, [ ])
 	CFLAGS="$CFLAGS -DSOLARIS"
     ;;
   *-*-sunos*)
@@ -64,7 +64,7 @@ case "$host" in
     no_libnsl=yes
     # force /etc/shadow support. they can run /sbin/pwconv at any time.
     # if they do so, don't let sshd down:-) appro@fy.chalmers.se
-    AC_DEFINE(HAVE_ETC_SHADOW)
+    AC_DEFINE(HAVE_ETC_SHADOW, 1, [ ])
     no_shadows_password_checking=yes
     ;;
   *-sgi-irix6*)
@@ -83,12 +83,12 @@ case "$host" in
     fi
     # force /etc/shadow support. they can run /sbin/pwconv at any time.
     # if they do so, don't let sshd down:-) appro@fy.chalmers.se
-    AC_DEFINE(HAVE_ETC_SHADOW)
+    AC_DEFINE(HAVE_ETC_SHADOW, 1, [ ])
     no_shadows_password_checking=yes
     # We want support for <proj.h> eivind@ii.uib.no
     AC_TRY_COMPILE([#include <proj.h>],
 		[int foo = MAXPROJNAMELEN; ],
-		AC_DEFINE(HAVE_SGI_PROJ_H))
+		AC_DEFINE(HAVE_SGI_PROJ_H, 1, [ ]) )
     ;;
   *-ibm-aix3.2|*-ibm-aix3.2.0|*-ibm-aix3.2.1|*-ibm-aix3.2.2|*-ibm-aix3.2.3|*-ibm-aix3.2.4)
     os_aix=yes
@@ -111,8 +111,8 @@ case "$host" in
   *-dec-ultrix*)
     # Ultrix stuff from dmckilli@qc.bell.ca, jbotz@orixa.mtholyoke.edu,
     # corey@cac.washington.edu
-    AC_DEFINE(O_NONBLOCK_BROKEN)
-    AC_DEFINE(HAVE_ULTRIX_SHADOW_PASSWORDS)
+    AC_DEFINE(O_NONBLOCK_BROKEN, 1, [ ])
+    AC_DEFINE(HAVE_ULTRIX_SHADOW_PASSWORDS, 1, [ ])
     no_vhangup=yes
     no_utmpx=yes
     no_termios=yes
@@ -122,17 +122,17 @@ case "$host" in
     AC_TRY_COMPILE([#include <syslog.h>],
 		   [int foo = LOG_DAEMON; ],
 		   ,
-		   AC_DEFINE(NEED_SYS_SYSLOG_H))
+		   AC_DEFINE(NEED_SYS_SYSLOG_H, 1, [ ]) )
     ;;
   *-*-hpux7.*)
     # Kludge for ancient HPUX 7.x (from Nenad Babajic <saca@uis0.uis.kg.ac.yu>)
-    AC_DEFINE(HPSUX7_KLUDGES)
+    AC_DEFINE(HPSUX7_KLUDGES, 1, [ ])
     # HPUX flags from jgotts@engin.umich.edu
     if test -z "$GCC"; then
       CFLAGS="$CFLAGS -Aa -D_HPUX_SOURCE"
     fi
-    AC_DEFINE(NONSTANDARD_IP_ADDRESS_X11_KLUDGE)
-    AC_DEFINE(HPSUX_NONSTANDARD_X11_KLUDGE)
+    AC_DEFINE(NONSTANDARD_IP_ADDRESS_X11_KLUDGE, 1, [ ])
+    AC_DEFINE(HPSUX_NONSTANDARD_X11_KLUDGE, 1, [ ])
     ;;
   *-*-hpux*)
     # HPUX flags from jgotts@engin.umich.edu
@@ -142,7 +142,7 @@ case "$host" in
     AC_MSG_CHECKING(for HPUX tcb auth option)
     if test -f /tcb/files/auth/system/pw_id_map; then
       AC_MSG_RESULT(yes)
-      AC_DEFINE(HAVE_HPUX_TCB_AUTH)
+      AC_DEFINE(HAVE_HPUX_TCB_AUTH, 1, [ ])
       LIBS="$LIBS -lsec"
     else
       AC_MSG_RESULT(no)
@@ -150,17 +150,17 @@ case "$host" in
     AC_MSG_CHECKING(for keyserv)
     if test -f /usr/sbin/keyserv; then
       AC_MSG_RESULT(yes)
-      AC_DEFINE(SECURE_RPC)
+      AC_DEFINE(SECURE_RPC, 1, [ ])
       LIBS="$LIBS -lrpcsvc"
     else
       AC_MSG_RESULT(no)
     fi
-    AC_DEFINE(NONSTANDARD_IP_ADDRESS_X11_KLUDGE)
-    AC_DEFINE(HPSUX_NONSTANDARD_X11_KLUDGE)
+    AC_DEFINE(NONSTANDARD_IP_ADDRESS_X11_KLUDGE, 1, [ ])
+    AC_DEFINE(HPSUX_NONSTANDARD_X11_KLUDGE, 1, [ ])
     no_utmpx=yes
     ;;
   alpha-dec-osf*)
-    AC_DEFINE(TTY_GROUP, "terminal")
+    AC_DEFINE(TTY_GROUP, "terminal", 1, [ ])
     # The man page says that we need -lsecurity -ldb -laud -lm to quickstart
     # programs using enchanced security. 
     AC_CHECK_LIB(security, set_auth_parameters)
@@ -169,7 +169,7 @@ case "$host" in
     AC_CHECK_LIB(m, sin)
     AC_CHECK_FUNCS(setluid)
     no_utmpx=yes
-    AC_DEFINE(HAVE_SIA)
+    AC_DEFINE(HAVE_SIA, 1, [ ])
     SSHDCONFOBJS="$SSHDCONFOBJS sshsia.o"
     OLD_CFLAGS="$CFLAGS"
     CFLAGS="$CFLAGS -I."
@@ -187,7 +187,7 @@ Making a local copy of prot.h and patching it.])
     # Nextstep support from a person who wants to remain anonymous
     no_termios=yes
     if test -f /usr/include/bsd/sys/termios.h; then
-      AC_DEFINE(SPEED_T_IN_STDTYPES_H)
+      AC_DEFINE(SPEED_T_IN_STDTYPES_H, 1, [ ])
     fi
     ;;
   *-*-linux*|*-*-mklinux*)
@@ -197,7 +197,7 @@ Making a local copy of prot.h and patching it.])
        AC_CHECK_LIB(shadow, getspnam)
     fi
     if test $ac_cv_func_getspnam = yes; then
-      AC_DEFINE(HAVE_ETC_SHADOW)
+      AC_DEFINE(HAVE_ETC_SHADOW, 1, [ ])
     fi
     no_shadows_password_checking=yes
     AC_CHECK_FUNCS(pw_encrypt, pwencrypt=yes)
@@ -213,7 +213,7 @@ Making a local copy of prot.h and patching it.])
 [     if test -z "$pwencrypt"; then
 	AC_MSG_RESULT(no)
       else
-	AC_DEFINE(crypt,pw_encrypt)
+	AC_DEFINE(crypt,pw_encrypt, 1, [ ])
 	AC_MSG_RESULT(no)
 	if test -n "$pwencryptlib"; then
 	  LIBS="$LIBS $pwencryptlib"
@@ -230,11 +230,11 @@ Making a local copy of prot.h and patching it.])
     ;;
   i*86-unknown-bsd*)
     # Assume 386BSD.  pgut01@cs.auckland.ac.nz reported this makes it compile.
-    AC_DEFINE(__FreeBSD__)
+    AC_DEFINE(__FreeBSD__, 1, [ ])
 	CFLAGS="$CFLAGS -DFREEBSD"
     ;;
   mips-sony-newsos6)
-    AC_DEFINE(HAVE_NO_TZ_IN_GETTIMEOFDAY)
+    AC_DEFINE(HAVE_NO_TZ_IN_GETTIMEOFDAY, 1, [ ])
     ;;
   m68k-sony-newsos*)
     # From snabb@niksula.hut.fi
@@ -247,10 +247,10 @@ Making a local copy of prot.h and patching it.])
     # Macintosh A/UX tweaks - prune LIB = -L/usr/local/lib, exceeds ld capacity
     #   add -lposix to it, needed for termio stuff
     LIBS="$LIBS -lposix"
-    AC_DEFINE(_POSIX_SOURCE)
+    AC_DEFINE(_POSIX_SOURCE, 1, [ ])
     ;;
   m88k-dg-dgux*)
-    AC_DEFINE(BROKEN_INET_ADDR)
+    AC_DEFINE(BROKEN_INET_ADDR, 1, [ ])
     ;;
   t3e-*-*)
     CFLAGS="$CFLAGS -I."
@@ -261,29 +261,29 @@ Making a local copy of prot.h and patching it.])
     LIBS="$LIBS -lrsc"
     ;;
   i386-sni-sysv4*)
-    AC_DEFINE(NONSTANDARD_IP_ADDRESS_X11_KLUDGE)
+    AC_DEFINE(NONSTANDARD_IP_ADDRESS_X11_KLUDGE, 1, [ ])
     AC_CHECK_LIB(gen, openlog)
     ;;
   *-*-sysv4*)
     AC_CHECK_LIB(gen, openlog)
     ;;
   *-*-machten*)
-    AC_DEFINE(USE_STRLEN_FOR_AF_UNIX)
+    AC_DEFINE(USE_STRLEN_FOR_AF_UNIX, 1, [ ])
     no_vhangup=yes
     ;;
   i*86-unknown-sco3.2v4*)
     # From moi@dio.com
-    AC_DEFINE(HAVE_SCO_ETC_SHADOW)
-    AC_DEFINE(SCO)
+    AC_DEFINE(HAVE_SCO_ETC_SHADOW, 1, [ ])
+    AC_DEFINE(SCO, 1, [ ])
     no_ranlib=yes
     LIBS="-L/usr/lib/libp -lprot -lx $LIBS"
     CFLAGS="$CFLAGS -UM_I86SM"
     ;;
   i*86-unknown-sco3.2v5*)
     # From brian@ilinx.com
-    AC_DEFINE(HAVE_SCO_ETC_SHADOW)
-    AC_DEFINE(SCO)
-    AC_DEFINE(SCO5)
+    AC_DEFINE(HAVE_SCO_ETC_SHADOW, 1, [ ])
+    AC_DEFINE(SCO, 1, [ ])
+    AC_DEFINE(SCO5, 1, [ ])
     no_ranlib=yes
     LIBS="-L/usr/lib/libp -lprot -lx $LIBS"
     CFLAGS="$CFLAGS -UM_I86SM"
@@ -324,15 +324,15 @@ export CFLAGS CC
 
 # Socket pairs appear to be broken on several systems.  I don't know exactly
 # where, so I'll use pipes everywhere for now.
-#AC_DEFINE(USE_PIPES)
+#AC_DEFINE(USE_PIPES, 1, [ ])
 
-AC_MSG_CHECKING([that the compiler works])
-AC_TRY_RUN([ main(int ac, char **av) { return 0; } ],
-    AC_MSG_RESULT(yes),
-    AC_MSG_RESULT(no)
-    AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.),
-    AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.))
-
+dnl AC_MSG_CHECKING([that the compiler works])
+dnl AC_TRY_RUN([ main(int ac, char **av) { return 0; } ],
+dnl     AC_MSG_RESULT(yes),
+dnl     AC_MSG_RESULT(no)
+dnl     AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.),
+dnl     AC_MSG_ERROR(Could not compile and run even a trivial ANSI C program - check CC.))
+dnl 
 if test -z "$no_pipe"; then
 if test -n "$GCC"; then
   AC_MSG_CHECKING([if the compiler understands -pipe])
@@ -374,7 +374,7 @@ fi
 if test -z "$no_utmpx"; then
   AC_CHECK_HEADERS(utmpx.h)
   AC_MSG_CHECKING([whether utmpx have ut_syslen field])
-  AC_EGREP_HEADER(ut_syslen, utmpx.h, [ AC_DEFINE(HAVE_SYSLEN_IN_UTMPX)
+  AC_EGREP_HEADER(ut_syslen, utmpx.h, [ AC_DEFINE(HAVE_SYSLEN_IN_UTMPX, 1, [ ])
     AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 fi
 
@@ -390,24 +390,24 @@ AC_HEADER_DIRENT
 AC_HEADER_STAT
 AC_HEADER_MAJOR
 AC_MSG_CHECKING([whether utmp have ut_pid field])
-AC_EGREP_HEADER(ut_pid, utmp.h, [ AC_DEFINE(HAVE_PID_IN_UTMP)
+AC_EGREP_HEADER(ut_pid, utmp.h, [ AC_DEFINE(HAVE_PID_IN_UTMP, 1, [ ])
   AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 AC_MSG_CHECKING([whether utmp have ut_name field])
-AC_EGREP_HEADER(ut_name, utmp.h, [ AC_DEFINE(HAVE_NAME_IN_UTMP)
+AC_EGREP_HEADER(ut_name, utmp.h, [ AC_DEFINE(HAVE_NAME_IN_UTMP, 1, [ ])
   AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 AC_MSG_CHECKING([whether utmp have ut_id field])
-AC_EGREP_HEADER(ut_id, utmp.h, [ AC_DEFINE(HAVE_ID_IN_UTMP)
+AC_EGREP_HEADER(ut_id, utmp.h, [ AC_DEFINE(HAVE_ID_IN_UTMP, 1, [ ])
   AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 AC_MSG_CHECKING([whether utmp have ut_host field])
-AC_EGREP_HEADER(ut_host, utmp.h, [ AC_DEFINE(HAVE_HOST_IN_UTMP)
+AC_EGREP_HEADER(ut_host, utmp.h, [ AC_DEFINE(HAVE_HOST_IN_UTMP, 1, [ ])
   AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 AC_MSG_CHECKING([whether utmp have ut_addr field])
-AC_EGREP_HEADER(ut_addr, utmp.h, [ AC_DEFINE(HAVE_ADDR_IN_UTMP)
+AC_EGREP_HEADER(ut_addr, utmp.h, [ AC_DEFINE(HAVE_ADDR_IN_UTMP, 1, [ ])
   AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
 AC_MSG_CHECKING([whether you have incompatible SIGINFO macro])
 AC_EGREP_CPP([p_siginfo], [#include <sys/siginfo.h>
 SIGINFO(p,1)], 
-[ AC_DEFINE(HAVE_INCOMPATIBLE_SIGINFO)
+[ AC_DEFINE(HAVE_INCOMPATIBLE_SIGINFO, 1, [ ])
   AC_MSG_RESULT(yes)] , AC_MSG_RESULT(no))
 
 AC_CHECK_LIB(c, crypt, [true], AC_CHECK_LIB(crypt, crypt))
@@ -429,7 +429,7 @@ fi
 if test -z "$no_libbsd"; then
   AC_CHECK_LIB(bsd, openpty)
 fi
-AC_CHECK_LIB(util, login, AC_DEFINE(HAVE_LIBUTIL_LOGIN)
+AC_CHECK_LIB(util, login, AC_DEFINE(HAVE_LIBUTIL_LOGIN, 1, [ ])
 			  LIBS="$LIBS -lutil")
 
 if test -z "$no_vhangup"; then
@@ -455,18 +455,19 @@ if test -z "$no_ranlib"; then
 else
   RANLIB=":"
 fi
+AC_PROG_LIBTOOL
 AC_PROGRAMS_CHECK(MAKEDEP, makedepend makedep, makedepend)
 
 AC_PATH_XTRA
 
 AC_PATH_PROG(PASSWD_PATH, passwd)
 if test -n "$PASSWD_PATH"; then
-  AC_DEFINE_UNQUOTED(PASSWD_PATH, "$PASSWD_PATH")
+  AC_DEFINE_UNQUOTED(PASSWD_PATH, "$PASSWD_PATH", [ ])
 fi
 
 AC_PATH_PROG(XAUTH_PATH, xauth)
 if test -n "$XAUTH_PATH"; then
-  AC_DEFINE_UNQUOTED(XAUTH_PATH, "$XAUTH_PATH")
+  AC_DEFINE_UNQUOTED(XAUTH_PATH, "$XAUTH_PATH", [ ])
 fi
 
 if test "$no_x" = yes; then
@@ -481,11 +482,11 @@ AC_MSG_CHECKING(for X11 unix domain socket directory)
 AC_SUBST(X_PROGRAMS)
 if test '!' -d /tmp/.X11-unix; then
   if test -d /var/X/.X11-unix; then
-    AC_DEFINE(X11_DIR, "/var/X/.X11-unix")
+    AC_DEFINE(X11_DIR, "/var/X/.X11-unix", 1, [ ])
     AC_MSG_RESULT(/var/X/.X11-unix)
   else
     if test -d /tmp/.X11-pipe; then
-      AC_DEFINE(X11_DIR, "/tmp/.X11-pipe")
+      AC_DEFINE(X11_DIR, "/tmp/.X11-pipe", 1, [ ])
       AC_MSG_RESULT(/tmp/.X11-pipe)
     else
       AC_MSG_RESULT(/tmp/.X11-unix)
@@ -506,22 +507,22 @@ AC_CHECK_FUNCS(getpseudotty)
 AC_MSG_CHECKING(for pseudo ttys)
 if test -c /dev/getpty && test $ac_cv_func_getpseudotty = yes
 then
-  AC_DEFINE(HAVE_GETPSEUDOTTY)
+  AC_DEFINE(HAVE_GETPSEUDOTTY, 1, [ ])
   AC_MSG_RESULT(getpseudotty)
 else
 if test -c /dev/ptmx && test -c /dev/pts/0
 then
-  AC_DEFINE(HAVE_DEV_PTMX)
+  AC_DEFINE(HAVE_DEV_PTMX, 1, [ ])
   AC_MSG_RESULT(streams ptys)
 else
 if test -c /dev/ptc && test -c /dev/pts || test -d /dev/pts
 then
-  AC_DEFINE(HAVE_DEV_PTS_AND_PTC)
+  AC_DEFINE(HAVE_DEV_PTS_AND_PTC, 1, [ ])
   AC_MSG_RESULT(/dev/pts and /dev/ptc)
 else
 if test -c /dev/ptyp10
 then
-  AC_DEFINE(HAVE_DEV_PTYP10)
+  AC_DEFINE(HAVE_DEV_PTYP10, 1, [ ])
   AC_MSG_RESULT(sco-style ptys)
 else
   AC_MSG_RESULT(bsd-style ptys)
@@ -532,7 +533,7 @@ fi
 
 AC_MSG_CHECKING(for /etc/default/login)
 if test -f /etc/default/login; then
-  AC_DEFINE(HAVE_ETC_DEFAULT_LOGIN)
+  AC_DEFINE(HAVE_ETC_DEFAULT_LOGIN, 1, [ ])
   AC_MSG_RESULT(yes)
 else
   AC_MSG_RESULT(no)
@@ -544,26 +545,26 @@ if test -z "$no_shadows_password_checking"; then
       # If we don't have shadow.h, this might be some nonstandard
       # kludging... So better check it out.
     if test "x$ac_cv_header_shadow_h" = "xyes"; then
-      AC_DEFINE(HAVE_ETC_SHADOW)
+      AC_DEFINE(HAVE_ETC_SHADOW, 1, [ ])
       AC_MSG_RESULT(/etc/shadow)
       # SunOS C2 security uses this style of shadow passwords, but does not
       # have getspent in a system library.  However, a libshadow.a library
       # contaning these is publicly available.
       AC_CHECK_LIB(shadow, getspent)
       AC_MSG_CHECKING([whether spwd have sp_expire field])
-      AC_EGREP_HEADER(sp_expire, shadow.h, [ AC_DEFINE(HAVE_STRUCT_SPWD_EXPIRE)
+      AC_EGREP_HEADER(sp_expire, shadow.h, [ AC_DEFINE(HAVE_STRUCT_SPWD_EXPIRE, 1, [ ])
       	AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
       AC_MSG_CHECKING([whether spwd have sp_inact field])
-      AC_EGREP_HEADER(sp_inact, shadow.h, [ AC_DEFINE(HAVE_STRUCT_SPWD_INACT)
+      AC_EGREP_HEADER(sp_inact, shadow.h, [ AC_DEFINE(HAVE_STRUCT_SPWD_INACT, 1, [ ])
       	AC_MSG_RESULT(yes)], AC_MSG_RESULT(no))
     else
       AC_MSG_RESULT(no)
     fi
   elif test -n "$os_aix"; then
-    AC_DEFINE(HAVE_ETC_SECURITY_PASSWD)
+    AC_DEFINE(HAVE_ETC_SECURITY_PASSWD, 1, [ ])
     AC_MSG_RESULT(/etc/security/passwd)
   elif test -n "$os_sunos"; then
-    AC_DEFINE(HAVE_ETC_SECURITY_PASSWD_ADJUNCT)
+    AC_DEFINE(HAVE_ETC_SECURITY_PASSWD_ADJUNCT, 1, [ ])
     AC_MSG_RESULT(/etc/security/passwd.adjunct)
   else
     AC_MSG_RESULT(no)
@@ -576,21 +577,21 @@ do
   if test "$dir" = "FILE"; then
     if test -f $HOME/.MailBox; then
       AC_MSG_WARN(mail spool directory was not found: assuming you use \$HOME/.MailBox)
-      AC_DEFINE_UNQUOTED(MAIL_SPOOL_FILE, ".MailBox")
+      AC_DEFINE_UNQUOTED(MAIL_SPOOL_FILE, ".MailBox", [ ])
       AC_MSG_RESULT(\$HOME/.MailBox)
     else
       if test -f $HOME/Mailbox; then
           AC_MSG_WARN(mail spool directory was not found: assuming you use \$HOME/Mailbox)
-          AC_DEFINE_UNQUOTED(MAIL_SPOOL_FILE, "Mailbox")
+          AC_DEFINE_UNQUOTED(MAIL_SPOOL_FILE, "Mailbox", [ ])
           AC_MSG_RESULT(\$HOME/Mailbox)
       else
           AC_MSG_WARN(mail spool directory was not found: assuming you use \$HOME/newmail)
-          AC_DEFINE_UNQUOTED(MAIL_SPOOL_FILE, "newmail")
+          AC_DEFINE_UNQUOTED(MAIL_SPOOL_FILE, "newmail", [ ])
           AC_MSG_RESULT(\$HOME/newmail)
       fi
     fi
   elif test -d $dir; then
-    AC_DEFINE_UNQUOTED(MAIL_SPOOL_DIRECTORY, "$dir")
+    AC_DEFINE_UNQUOTED(MAIL_SPOOL_DIRECTORY, "$dir", [ ])
     AC_MSG_RESULT($dir)
     break
   fi
@@ -598,19 +599,19 @@ done
 
 AC_MSG_CHECKING(location of utmp)
 if test -f /var/run/utmp; then
-  AC_DEFINE(SSH_UTMP, "/var/run/utmp")
+  AC_DEFINE(SSH_UTMP, "/var/run/utmp", 1, [ ])
   AC_MSG_RESULT(/var/run/utmp)
 elif test -f /var/log/utmp; then
-  AC_DEFINE(SSH_UTMP, "/var/log/utmp")
+  AC_DEFINE(SSH_UTMP, "/var/log/utmp", 1, [ ])
   AC_MSG_RESULT(/var/log/utmp)
 elif test -f /var/adm/utmp; then
-  AC_DEFINE(SSH_UTMP, "/var/adm/utmp")
+  AC_DEFINE(SSH_UTMP, "/var/adm/utmp", 1, [ ])
   AC_MSG_RESULT(/var/adm/utmp)
 elif test -f /usr/adm/utmp; then
-  AC_DEFINE(SSH_UTMP, "/usr/adm/utmp")
+  AC_DEFINE(SSH_UTMP, "/usr/adm/utmp", 1, [ ])
   AC_MSG_RESULT(/usr/adm/utmp)
 elif test -f /etc/utmp; then
-  AC_DEFINE(SSH_UTMP, "/etc/utmp")
+  AC_DEFINE(SSH_UTMP, "/etc/utmp", 1, [ ])
   AC_MSG_RESULT(/etc/utmp)
 else
   AC_MSG_RESULT(not found)
@@ -618,46 +619,46 @@ fi
 
 AC_MSG_CHECKING(location of wtmp)
 if test -f /var/log/wtmp; then
-  AC_DEFINE(SSH_WTMP, "/var/log/wtmp")
+  AC_DEFINE(SSH_WTMP, "/var/log/wtmp", 1, [ ])
   AC_MSG_RESULT(/var/log/wtmp)
 elif test -f /var/adm/wtmp; then
-  AC_DEFINE(SSH_WTMP, "/var/adm/wtmp")
+  AC_DEFINE(SSH_WTMP, "/var/adm/wtmp", 1, [ ])
   AC_MSG_RESULT(/var/adm/wtmp)
 elif test -f /usr/adm/wtmp; then
-  AC_DEFINE(SSH_WTMP, "/usr/adm/wtmp")
+  AC_DEFINE(SSH_WTMP, "/usr/adm/wtmp", 1, [ ])
   AC_MSG_RESULT(/usr/adm/wtmp)
 elif test -f /etc/wtmp; then
-  AC_DEFINE(SSH_WTMP, "/etc/wtmp")
+  AC_DEFINE(SSH_WTMP, "/etc/wtmp", 1, [ ])
   AC_MSG_RESULT(/etc/wtmp)
 else
-  AC_DEFINE(SSH_WTMP, "/var/adm/wtmp")
+  AC_DEFINE(SSH_WTMP, "/var/adm/wtmp", 1, [ ])
   AC_MSG_RESULT(not found)
 fi
 
 AC_MSG_CHECKING(location of lastlog)
 if test -f /var/log/lastlog || test -d /var/log/lastlog; then
-  AC_DEFINE(SSH_LASTLOG, "/var/log/lastlog")
-  AC_DEFINE(HAVE_LASTLOG)
+  AC_DEFINE(SSH_LASTLOG, "/var/log/lastlog", 1, [ ])
+  AC_DEFINE(HAVE_LASTLOG, 1, [ ])
   LASTLOG=/var/log/lastlog
   AC_MSG_RESULT(/var/log/lastlog)
 elif test -f /var/adm/lastlog || test -d /var/adm/lastlog; then
-  AC_DEFINE(SSH_LASTLOG, "/var/adm/lastlog")
-  AC_DEFINE(HAVE_LASTLOG)
+  AC_DEFINE(SSH_LASTLOG, "/var/adm/lastlog", 1, [ ])
+  AC_DEFINE(HAVE_LASTLOG, 1, [ ])
   LASTLOG=/var/adm/lastlog
   AC_MSG_RESULT(/var/adm/lastlog)
 elif test -f /usr/adm/lastlog || test -d /usr/adm/lastlog; then
-  AC_DEFINE(SSH_LASTLOG, "/usr/adm/lastlog")
-  AC_DEFINE(HAVE_LASTLOG)
+  AC_DEFINE(SSH_LASTLOG, "/usr/adm/lastlog", 1, [ ])
+  AC_DEFINE(HAVE_LASTLOG, 1, [ ])
   LASTLOG=/usr/adm/lastlog
   AC_MSG_RESULT(/usr/adm/lastlog)
 elif test -f /etc/lastlog || test -d /etc/lastlog; then
-  AC_DEFINE(SSH_LASTLOG, "/etc/lastlog")
-  AC_DEFINE(HAVE_LASTLOG)
+  AC_DEFINE(SSH_LASTLOG, "/etc/lastlog", 1, [ ])
+  AC_DEFINE(HAVE_LASTLOG, 1, [ ])
   LASTLOG=/etc/lastlog
   AC_MSG_RESULT(/etc/lastlog)
 else
   AC_MSG_RESULT(not found)
-  AC_DEFINE(SSH_LASTLOG, "/var/log/lastlog")
+  AC_DEFINE(SSH_LASTLOG, "/var/log/lastlog", 1, [ ])
   LASTLOG=/var/log/lastlog
 fi
 
@@ -665,7 +666,7 @@ AC_MSG_CHECKING(whether $LASTLOG is a directory)
 if test -d $LASTLOG
 then
   AC_MSG_RESULT(yes)
-  AC_DEFINE(LASTLOG_IS_DIR)
+  AC_DEFINE(LASTLOG_IS_DIR, 1, [ ])
 else
   AC_MSG_RESULT(no)
 fi
@@ -680,13 +681,13 @@ AC_ARG_WITH(idea,
     ;;
   *)
     AC_MSG_RESULT(yes)
-    AC_DEFINE(WITH_IDEA)
+    AC_DEFINE(WITH_IDEA, 1, [ ])
     CONFOBJS="$CONFOBJS idea.o"
     ;;
   esac ],
 #ifndef F_SECURE_COMMERCIAL
   AC_MSG_RESULT(yes)
-  AC_DEFINE(WITH_IDEA)
+  AC_DEFINE(WITH_IDEA, 1, [ ])
   CONFOBJS="$CONFOBJS idea.o"
 #endif F_SECURE_COMMERCIAL
 #ifdef F_SECURE_COMMERCIAL
@@ -704,11 +705,11 @@ AC_ARG_WITH(blowfish,
     ;;
   *)
     AC_MSG_RESULT(yes)
-    AC_DEFINE(WITH_BLOWFISH)
+    AC_DEFINE(WITH_BLOWFISH, 1, [ ])
     ;;
   esac ],
   AC_MSG_RESULT(yes)
-  AC_DEFINE(WITH_BLOWFISH)
+  AC_DEFINE(WITH_BLOWFISH, 1, [ ])
 )
 
 AC_MSG_CHECKING(whether to include the DES encryption algorithm)
@@ -718,7 +719,7 @@ AC_ARG_WITH(des,
 [ case "$withval" in
   yes)
     AC_MSG_RESULT(yes)
-    AC_DEFINE(WITH_DES)
+    AC_DEFINE(WITH_DES, 1, [ ])
     ;;
   *)
     AC_MSG_RESULT(no)
@@ -734,7 +735,7 @@ AC_ARG_WITH(arcfour,
 [ case "$withval" in
   yes)
     AC_MSG_RESULT(yes)
-    AC_DEFINE(WITH_ARCFOUR)
+    AC_DEFINE(WITH_ARCFOUR, 1, [ ])
     ;;
   *)
     AC_MSG_RESULT(no)
@@ -750,7 +751,7 @@ AC_ARG_WITH(none,
 [ case "$withval" in
   yes)
     AC_MSG_RESULT(yes)
-    AC_DEFINE(WITH_NONE)
+    AC_DEFINE(WITH_NONE, 1, [ ])
     ;;
   *)
     AC_MSG_RESULT(no)
@@ -769,17 +770,49 @@ AC_ARG_WITH(login,
     yes)
 	AC_MSG_RESULT(yes)
 	AC_PATH_PROGS(PATH_LOGIN, login)
-	AC_DEFINE(USELOGIN)
-	AC_DEFINE_UNQUOTED(PATH_LOGIN, "$PATH_LOGIN")
+	AC_DEFINE(USELOGIN, 1, [ ])
+	AC_DEFINE_UNQUOTED(PATH_LOGIN, "$PATH_LOGIN", [ ])
 	;;
     *)
 	AC_MSG_RESULT($withval)
-	AC_DEFINE(USELOGIN)
-	AC_DEFINE_UNQUOTED(PATH_LOGIN, "$withval")
+	AC_DEFINE(USELOGIN, 1, [ ])
+	AC_DEFINE_UNQUOTED(PATH_LOGIN, "$withval", [ ])
 	;;
   esac ],
   [ AC_MSG_RESULT(no) ]
 )
+
+AC_MSG_CHECKING(whether to use rsh)
+AC_ARG_WITH(rsh, 
+[  --with-rsh=PATH         Specify where to find rsh.
+  --without-rsh           Do not use rsh under any conditions. ],
+[ case "$withval" in
+    no) 
+        AC_MSG_RESULT(no)
+	;;
+    yes) 
+	 AC_MSG_RESULT(yes)
+	 AC_PATH_PROGS(RSH_PATH, remsh resh rsh)
+         AC_DEFINE_UNQUOTED(RSH_PATH, "$RSH_PATH", [ ])
+	;;
+    *) 
+       AC_MSG_RESULT($withval)
+       AC_DEFINE_UNQUOTED(RSH_PATH, "$withval", [ ])
+       RSH_PATH="$withval"
+       ;;
+  esac ],
+  [ AC_MSG_RESULT(yes)
+    AC_PATH_PROGS(RSH_PATH, remsh resh rsh)
+    AC_DEFINE_UNQUOTED(RSH_PATH, "$RSH_PATH", [ ]) ]
+)
+
+# Check that we didn't accidentally get ssh as rsh.
+if test -n "$RSH_PATH"; then
+  if test -n "`$RSH_PATH </dev/null 2>&1 | grep listen-port:host:port`"; then
+    AC_MSG_WARN(Found rsh in $RSH_PATH but it appears to actually be ssh.)
+    AC_MSG_ERROR(Probably forgot to specify --with-rsh=PATH-TO-REAL-RSH.)
+  fi
+fi
 
 # Code to permit setting default path for users (alden@math.ohio-state.edu)
 AC_MSG_CHECKING(default path)
@@ -791,7 +824,7 @@ AC_ARG_WITH(path,
     ;;
   *)
     AC_MSG_RESULT($withval)
-    AC_DEFINE_UNQUOTED(DEFAULT_PATH, "$withval")
+    AC_DEFINE_UNQUOTED(DEFAULT_PATH, "$withval", [ ])
     ;;
   esac ],
   AC_MSG_RESULT(use system default)
@@ -826,11 +859,11 @@ AC_ARG_WITH(nologin-allow,
 	;;
     yes)
 	AC_MSG_RESULT(yes)
-	AC_DEFINE_UNQUOTED(NOLOGIN_ALLOW, "/etc/nologin.allow")
+	AC_DEFINE_UNQUOTED(NOLOGIN_ALLOW, "/etc/nologin.allow", [ ])
 	;;
     *)
 	AC_MSG_RESULT($withval)
-	AC_DEFINE_UNQUOTED(NOLOGIN_ALLOW, "$withval")
+	AC_DEFINE_UNQUOTED(NOLOGIN_ALLOW, "$withval", [ ])
 	;;
   esac ],
   [ AC_MSG_RESULT(no) ]
@@ -850,7 +883,7 @@ AC_ARG_WITH(securid,
     fi
     AC_MSG_RESULT(yes)
     AC_MSG_RESULT(Assuming SecurID headers and libraries are in /usr/ace.)
-    AC_DEFINE(HAVE_SECURID)
+    AC_DEFINE(HAVE_SECURID, 1, [ ])
     CFLAGS="$CFLAGS -I/usr/ace"
     LIBS="/usr/ace/sdiclient.a $LIBS"
     ;;
@@ -860,7 +893,7 @@ AC_ARG_WITH(securid,
       AC_ERROR(SecurID sdiclient.a not found in $withval: please supply the correct path.)
     fi
     AC_MSG_RESULT(Assuming SecurID headers and libraries are in $withval.)
-    AC_DEFINE(HAVE_SECURID)
+    AC_DEFINE(HAVE_SECURID, 1, [ ])
     CFLAGS="$CFLAGS -I$withval"
     LIBS="$withval/sdiclient.a $LIBS"
     ;;
@@ -881,7 +914,7 @@ AC_ARG_WITH(tis,
       AC_ERROR(TIS libauth.a or libfwall.a or firewall.h not found in $withval: please supply the correct path.)
     fi
     AC_MSG_RESULT(Assuming TIS headers and libraries are in $withval.)
-    AC_DEFINE(HAVE_TIS)
+    AC_DEFINE(HAVE_TIS, 1, [ ])
     CFLAGS="$CFLAGS -I$withval -DHAVE_TIS"
     LIBS="-L$withval -lauth -lfwall $LIBS"
     AC_MSG_WARN(Remember to read README.TIS. The connection between sshd and TIS authentication
@@ -907,8 +940,8 @@ no)
   ;;
 *)
   AC_MSG_RESULT(yes)
-  AC_DEFINE(KERBEROS)
-  AC_DEFINE(KRB5)
+  AC_DEFINE(KERBEROS, 1, [ ])
+  AC_DEFINE(KRB5, 1, [ ])
   KERBEROS_ROOT="$with_kerberos5"
   KERBEROS_INCS="-I${KERBEROS_ROOT}/include"
   KERBEROS_LIBS="-L${KERBEROS_ROOT}/lib -lgssapi_krb5 -lkrb5 -lcrypto -lcom_err"
@@ -934,7 +967,7 @@ AC_ARG_ENABLE(kerberos-tgt-passing,
       AC_MSG_WARN("Passing Kerberos TGT requires Kerberos5 support.")
     else
       AC_MSG_RESULT(yes)
-      AC_DEFINE(KERBEROS_TGT_PASSING)
+      AC_DEFINE(KERBEROS_TGT_PASSING, 1, [ ])
     fi
     ;;
   esac ],
@@ -951,13 +984,13 @@ AC_ARG_WITH(libwrap,
   yes)
     AC_MSG_RESULT(yes)
     AC_CHECK_LIB(wrap, request_init, [
-	AC_DEFINE(LIBWRAP)
+	AC_DEFINE(LIBWRAP, 1, [ ])
         WRAPLIBS="-lwrap"
-        AC_DEFINE(HAVE_LIBWRAP) ])
+        AC_DEFINE(HAVE_LIBWRAP, 1, [ ]) ])
     ;;
   *)
     AC_MSG_RESULT(yes)
-    AC_DEFINE(LIBWRAP)
+    AC_DEFINE(LIBWRAP, 1, [ ])
     if test -d "$withval"; then
     	WRAPLIBS="-L$withval -lwrap"
     else
@@ -1074,34 +1107,34 @@ fi
 
 
 if test "x$socks" = "x4"; then
-    AC_DEFINE(SOCKS)
-    AC_DEFINE(SOCKS4)
+    AC_DEFINE(SOCKS, 1, [ ])
+    AC_DEFINE(SOCKS4, 1, [ ])
 fi
 
 if test "x$socks" = "x5"; then
-    AC_DEFINE(SOCKS)
-    AC_DEFINE(SOCKS5)
-    AC_DEFINE(Rconnect,SOCKSconnect)
-    AC_DEFINE(Rgetsockname,SOCKSgetsockname)
-    AC_DEFINE(Rgetpeername,SOCKSgetpeername)
-    AC_DEFINE(Rbind,SOCKSbind)
-    AC_DEFINE(Raccept,SOCKSaccept)
-    AC_DEFINE(Rlisten,SOCKSlisten)
-    AC_DEFINE(Rselect,SOCKSselect)
-    AC_DEFINE(Rrecvfrom,SOCKSrecvfrom)
-    AC_DEFINE(Rsendto,SOCKSsendto)
-    AC_DEFINE(Rrecv,SOCKSrecv)
-    AC_DEFINE(Rsend,SOCKSsend)
-    AC_DEFINE(Rread,SOCKSread)
-    AC_DEFINE(Rwrite,SOCKSwrite)
-    AC_DEFINE(Rrresvport,SOCKSrresvport)
-    AC_DEFINE(Rshutdown,SOCKSshutdown)
-    AC_DEFINE(Rlisten,SOCKSlisten)
-    AC_DEFINE(Rclose,SOCKSclose)
-    AC_DEFINE(Rdup,SOCKSdup)
-    AC_DEFINE(Rdup2,SOCKSdup2)
-    AC_DEFINE(Rfclose,SOCKSfclose)
-    AC_DEFINE(Rgethostbyname,SOCKSgethostbyname)
+    AC_DEFINE(SOCKS, 1, [ ])
+    AC_DEFINE(SOCKS5, 1, [ ])
+    AC_DEFINE(Rconnect,SOCKSconnect, 1, [ ])
+    AC_DEFINE(Rgetsockname,SOCKSgetsockname, 1, [ ])
+    AC_DEFINE(Rgetpeername,SOCKSgetpeername, 1, [ ])
+    AC_DEFINE(Rbind,SOCKSbind, 1, [ ])
+    AC_DEFINE(Raccept,SOCKSaccept, 1, [ ])
+    AC_DEFINE(Rlisten,SOCKSlisten, 1, [ ])
+    AC_DEFINE(Rselect,SOCKSselect, 1, [ ])
+    AC_DEFINE(Rrecvfrom,SOCKSrecvfrom, 1, [ ])
+    AC_DEFINE(Rsendto,SOCKSsendto, 1, [ ])
+    AC_DEFINE(Rrecv,SOCKSrecv, 1, [ ])
+    AC_DEFINE(Rsend,SOCKSsend, 1, [ ])
+    AC_DEFINE(Rread,SOCKSread, 1, [ ])
+    AC_DEFINE(Rwrite,SOCKSwrite, 1, [ ])
+    AC_DEFINE(Rrresvport,SOCKSrresvport, 1, [ ])
+    AC_DEFINE(Rshutdown,SOCKSshutdown, 1, [ ])
+    AC_DEFINE(Rlisten,SOCKSlisten, 1, [ ])
+    AC_DEFINE(Rclose,SOCKSclose, 1, [ ])
+    AC_DEFINE(Rdup,SOCKSdup, 1, [ ])
+    AC_DEFINE(Rdup2,SOCKSdup2, 1, [ ])
+    AC_DEFINE(Rfclose,SOCKSfclose, 1, [ ])
+    AC_DEFINE(Rgethostbyname,SOCKSgethostbyname, 1, [ ])
 fi
 
 AC_MSG_CHECKING(whether to use rsaref)
@@ -1123,7 +1156,7 @@ AC_ARG_WITH(rsaref,
 	     withval="-L$withval -lrsaref"
 	  fi
        fi
-       AC_DEFINE(RSAREF)
+       AC_DEFINE(RSAREF, 1, [ ])
        LIBS="$withval $LIBS"
        ;;
   esac ],
@@ -1135,7 +1168,7 @@ AC_MSG_CHECKING(whether to allow group writeability)
 AC_ARG_ENABLE(group-writeability,
   [  --enable-group-writeability   Allow group writeability in auth-rsa. ],
   [ AC_MSG_RESULT(yes)
-    AC_DEFINE(ALLOW_GROUP_WRITEABILITY) ],
+    AC_DEFINE(ALLOW_GROUP_WRITEABILITY, 1, [ ]) ],
   [ AC_MSG_RESULT(no) ]
 )
 
@@ -1145,13 +1178,13 @@ AC_ARG_ENABLE(server-port-forwardings,
                           Disable all port forwardings in server (except X11)],
 [ case "$enableval" in
   no)
-       AC_DEFINE(SSHD_NO_PORT_FORWARDING)
+       AC_DEFINE(SSHD_NO_PORT_FORWARDING, 1, [ ])
        AC_MSG_RESULT(yes)
        ;;
   *)   AC_MSG_RESULT(no)
        ;;
   esac ],
-  AC_DEFINE(SSHD_NO_PORT_FORWARDING)
+  AC_DEFINE(SSHD_NO_PORT_FORWARDING, 1, [ ])
   AC_MSG_RESULT(no)
 )
 
@@ -1161,13 +1194,13 @@ AC_ARG_ENABLE(client-port-forwardings,
                           Disable all port forwardings in client (except X11)],
 [ case "$enableval" in
   no)
-       AC_DEFINE(SSH_NO_PORT_FORWARDING)
+       AC_DEFINE(SSH_NO_PORT_FORWARDING, 1, [ ])
        AC_MSG_RESULT(yes)
        ;;
   *)   AC_MSG_RESULT(no)
        ;;
   esac ],
-  AC_DEFINE(SSH_NO_PORT_FORWARDING)
+  AC_DEFINE(SSH_NO_PORT_FORWARDING, 1, [ ])
   AC_MSG_RESULT(no)
 )
 
@@ -1177,13 +1210,13 @@ AC_ARG_ENABLE(server-x11-forwarding,
                           Disable X11 forwarding in server],
 [ case "$enableval" in
   no)
-       AC_DEFINE(SSHD_NO_X11_FORWARDING)
+       AC_DEFINE(SSHD_NO_X11_FORWARDING, 1, [ ])
        AC_MSG_RESULT(yes)
        ;;
   *)   AC_MSG_RESULT(no)
        ;;
   esac ],
-  AC_DEFINE(SSHD_NO_X11_FORWARDING)
+  AC_DEFINE(SSHD_NO_X11_FORWARDING, 1, [ ])
   AC_MSG_RESULT(no)
 )
 
@@ -1193,11 +1226,11 @@ AC_ARG_ENABLE(client-x11-forwarding,
                           Disable X11 forwarding in client],
 [ case "$enableval" in
   no)
-       AC_DEFINE(SSH_NO_X11_FORWARDING)
+       AC_DEFINE(SSH_NO_X11_FORWARDING, 1, [ ])
        AC_MSG_RESULT(yes)
        ;;
   esac ],
-  AC_DEFINE(SSH_NO_X11_FORWARDING)
+  AC_DEFINE(SSH_NO_X11_FORWARDING, 1, [ ])
   AC_MSG_RESULT(no)
 )
 
@@ -1226,11 +1259,11 @@ AC_ARG_ENABLE(tcp-nodelay,
        AC_MSG_RESULT(no)
        ;;
   *)
-       AC_DEFINE(ENABLE_TCP_NODELAY)
+       AC_DEFINE(ENABLE_TCP_NODELAY, 1, [ ])
        AC_MSG_RESULT(yes)
   esac ],
   AC_MSG_RESULT(yes)
-  AC_DEFINE(ENABLE_TCP_NODELAY)
+  AC_DEFINE(ENABLE_TCP_NODELAY, 1, [ ])
 )
 
 AC_MSG_CHECKING(whether to enable SO_LINGER)
@@ -1239,7 +1272,7 @@ AC_ARG_ENABLE(so-linger,
 [ case "$enableval" in
   yes)
        AC_MSG_RESULT(yes)
-       AC_DEFINE(ENABLE_SO_LINGER)
+       AC_DEFINE(ENABLE_SO_LINGER, 1, [ ])
        ;;
   *)
        AC_MSG_RESULT(no)
@@ -1301,8 +1334,6 @@ AC_MSG_RESULT($PIDDIR)
 
 AC_CONFIG_SUBDIRS(gmp-2.0.2-ssh-2)
 
-AC_ARG_PROGRAM
-
 if test '!' -d ../src && '!' -d ../libBBS; then
 	AC_MSG_ERROR([can't find bbs source directory])
 fi
@@ -1343,14 +1374,12 @@ cd $OLDPWD
 
 if test -f "../wrapper.sh"; then
 abssrcdir=`cd $srcdir && pwd`
-CC="$abssrcdir/../wrapper.sh"
 LIBTOOL="$abssrcdir/../wrapper.sh"
 MAKEFLAG="-s"
 else
 MAKEFLAG=""
 fi
 AC_SUBST(MAKEFLAG)
-
 AC_SUBST(ETCDIR)
 AC_SUBST(PIDDIR)
 AC_SUBST(RSAREFDEP)
