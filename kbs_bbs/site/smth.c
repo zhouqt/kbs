@@ -465,10 +465,6 @@ int multilogin_user(struct userec *user, int usernum, int mode)
     if (logincount < 1)
         RemoveMsgCountFile(user->userid);
 
-#ifdef FILTER
-    if (!strcmp(user->userid, "menss") && logincount < 2)
-        return 0;
-#endif
     if (HAS_PERM(user, PERM_MULTILOG))
         return 0;               /* don't check sysops */
     curr_login_num = get_utmp_number();
@@ -911,8 +907,6 @@ char *showuserip(struct userec *user, char *ip)
     static char sip[25];
     char *c;
 
-    if ((getCurrentUser() != NULL) && (getCurrentUser()->title == 10))
-        return ip;
     if (user != NULL && (!DEFINE(user, DEF_HIDEIP)))
         return ip;
     strncpy(sip, ip, 24);
