@@ -1,9 +1,10 @@
 # Process this file with autoconf to produce a configure script.
 #AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
 AC_INIT(kbsbbs, 2.0dev, dev@dev.kcn.cn)
-AM_INIT_AUTOMAKE([foreign dist-bzip2])
 
 AC_CANONICAL_TARGET
+AM_INIT_AUTOMAKE([foreign dist-bzip2])
+
 case "${host}" in
   i*86-*-freebsd*)
         OSTYPE="FREEBSD"
@@ -43,6 +44,7 @@ AC_ARG_ENABLE(innbbsd,
 [
 	if test "$enableval" = "yes" ; then
 	        if test -d innbbsd; then
+                    BBS_LIB_ICONV
                     AC_CONFIG_FILES(innbbsd/Makefile
                                     innbbsd/linkinnd.sh)
                     BBSSUBDIRS="$BBSSUBDIRS innbbsd"
@@ -168,7 +170,6 @@ AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 AC_PROG_LN_S
 AC_PROG_MAKE_SET
-AC_PROG_RANLIB
 AC_PROG_YACC
 m4_include(config.lib)
 
