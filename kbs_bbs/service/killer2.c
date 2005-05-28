@@ -1676,7 +1676,7 @@ int do_com_menu()
 			offset++;
 		j = mypos;
 		for (i = 0; i < menust; i++)
-			if (rooms[myroom].op==j || i <= 3)
+			if (rooms[myroom].op==j || i <= 4)
 				if (menupos[i] - menupos[offset] >= 0)
 				{
 					if (i == sel)
