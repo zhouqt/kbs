@@ -688,13 +688,13 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
             }
         }
         else if(*ans=='I'||*ans=='i'){
+            int currline,currpage,count_add,count_skip,count_err;
+            FILE *fp_add,*fp_skip,*fp_err,*fp_mail;
+            struct userec *user;
             sprintf(genbuf,"附加说明:[导入名单]\n");
             getdata(2,0,genbuf,comment,STRLEN,DOECHO,NULL,true);
             if(!comment[0])
                 sprintf(comment,"导入名单");
-            int currline,currpage,count_add,count_skip,count_err;
-            FILE *fp_add,*fp_skip,*fp_err,*fp_mail;
-            struct userec *user;
             currline=4;currpage=1;count_add=0;count_skip=0;count_err=0;
             if(!(fp_add=tmpfile())||!(fp_skip=tmpfile())||!(fp_err=tmpfile()))
                 break;
