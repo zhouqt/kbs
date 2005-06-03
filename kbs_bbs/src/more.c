@@ -736,15 +736,20 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     int len=l->currlen;
     int ty=l->currty;
     if (ty == LINE_ATTACHMENT) {
-        char attachname[41], *p;
-        strncpy(attachname, ptr + ATTACHMENT_SIZE, 40);
-        attachname[40] = '\0';
+        char attachname[STRLEN], *p;
+        unsigned int attlen; char attlenbuf[16];
+        strncpy(attachname, ptr + ATTACHMENT_SIZE, STRLEN);
+        attachname[STRLEN - 1] = '\0';
+
+        attlen = ntohl(*(int *) (ptr + ATTACHMENT_SIZE + strlen(attachname) + 1));
+        snprintf(attlenbuf, 16, "%d %s",(attlen>8192)?attlen/1024:attlen,(attlen>8192)?"KB":"Bytes");
+
         p = strrchr(attachname, '.');
         if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
                           || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))
-            prints("\033[m¸½Í¼: %s Á´½Ó:\n", attachname);
+            prints("\033[m¸½Í¼: %s (%s) Á´½Ó:\n",attachname,attlenbuf);
         else
-            prints("\033[m¸½¼þ: %s Á´½Ó:\n", attachname);
+            prints("\033[m¸½¼þ: %s (%s) Á´½Ó:\n",attachname,attlenbuf);
 	return;
     } else if (ty == LINE_ATTACHLINK) {
         char slink[256];

@@ -10,6 +10,8 @@ extern "C" {
 #endif
 
 	char *showuserip(struct userec *user, char *ip);
+    char *c_exp(int exp);
+    char *c_perf(int perf);
 	int def_list(long long XX);
 	char *get_my_webdomain(int force);
 

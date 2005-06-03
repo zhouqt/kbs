@@ -121,10 +121,10 @@ char buf[256];
 #ifdef _DETAIL_UEXP_
     tmpnum = countexp(getCurrentUser());
     sprintf(exp, "%d", tmpnum);
-    strcpy(ccexp, cexp(tmpnum));
+    strcpy(ccexp, c_exp(tmpnum));
     tmpnum = countperf(getCurrentUser());
     sprintf(perf, "%d", tmpnum);
-    strcpy(ccperf, cperf(tmpnum));
+    strcpy(ccperf, c_perf(tmpnum));
 
 #endif                          /*  */
     sprintf(alltime, "%lu–° ±%lu∑÷÷”", douser.stay / 3600, (douser.stay / 60) % 60);

@@ -80,9 +80,9 @@ void disply_userinfo(u, real)
         {
            int exp;
            exp=countexp(u);
-           prints("经验值       : %d(%s)\n",exp,cexp(exp));
+           prints("经验值       : %d(%s)\n",exp,c_exp(exp));
            exp=countperf(u);
-           prints("表现值       : %d(%s)\n",exp,cperf(exp));
+           prints("表现值       : %d(%s)\n",exp,c_perf(exp));
         }
 #endif
         prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);

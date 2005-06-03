@@ -2040,9 +2040,9 @@ int set_BM(void){
         }
         if(flag>0){
             if(flag==1)
-                getdata(7,0,"请输入"NAME_USER_SHORT"ID: ",genbuf,IDLEN,DOECHO,NULL,true);
+                getdata(7,0,"请输入"NAME_USER_SHORT"ID: ",genbuf,IDLEN+1,DOECHO,NULL,true);
             else if(flag==2)
-                getdata(7,0,"请输入"NAME_BM"ID或序号: ",genbuf,IDLEN,DOECHO,NULL,true);
+                getdata(7,0,"请输入"NAME_BM"ID或序号: ",genbuf,IDLEN+1,DOECHO,NULL,true);
             /*为以后增加flag==3之类的做准备吧,省得还得改...*/
             if(genbuf[0]=='\0'){
                 clear();
