@@ -83,9 +83,6 @@ static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BY
 static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE , BYREF_FORCE};
 #endif
 
-#ifdef I_LOVE_ROY // 这个 I_LOVE_ROY 包括 roy 写的专门用于 wforum 的函数，结果被我换掉了，代码还是暂时留着吧。roy 不要打我 pp - atppp
-static PHP_FUNCTION(bbs_get_article);
-#endif
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_is_yank);
 static PHP_FUNCTION(bbs_alter_yank); 
@@ -153,10 +150,6 @@ static PHP_FUNCTION(bbs_is_bm);
 static PHP_FUNCTION(bbs_searchtitle);
 #endif
 static PHP_FUNCTION(bbs_search_articles);
-#ifdef I_LOVE_ROY
-static PHP_FUNCTION(bbs_get_thread_article_num);
-static PHP_FUNCTION(bbs_get_thread_articles);
-#endif
 static PHP_FUNCTION(bbs_checkorigin);
 static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
@@ -300,9 +293,6 @@ static PHP_FUNCTION(bbs_csv_to_al);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry smth_bbs_functions[] = {
-#ifdef I_LOVE_ROY
-		PHP_FE(bbs_get_article, NULL)
-#endif
 #ifdef HAVE_WFORUM
 		PHP_FE(bbs_is_yank, NULL)
 		PHP_FE(bbs_alter_yank, NULL)
@@ -328,10 +318,6 @@ static function_entry smth_bbs_functions[] = {
 		PHP_FE(bbs_postmail, NULL)
 		PHP_FE(bbs_mailwebmsgs, NULL)
 		PHP_FE(bbs_getwebmsgs, NULL)
-#ifdef I_LOVE_ROY
-		PHP_FE(bbs_get_thread_article_num,NULL)
-		PHP_FE(bbs_get_thread_articles, NULL)
-#endif
 #ifdef HAVE_WFORUM
 		PHP_FE(bbs_get_today_article_num, NULL)
 		PHP_FE(bbs_getthreadnum, NULL)
@@ -2965,264 +2951,7 @@ static PHP_FUNCTION(bbs_getthreads)
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
 }
-#endif //HAVE_WFORUM
 
-#ifdef I_LOVE_ROY
-static PHP_FUNCTION(bbs_get_article)
-{
-    char *board;
-    int blen;
-    long groupid;
-    int total;
-    struct fileheader *articles;
-    struct boardheader *bp;
-	char dirpath[STRLEN];
-    zval *element;
-    int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
-    int ac = ZEND_NUM_ARGS();
-	unsigned int articlesFounded;
-	int fd;
-	int i;
-
-	struct stat buf;
-	struct flock ldata;
-	struct fileheader *ptr1;
-	char* ptr;
-	int found;
-
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &groupid) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-	if (groupid<0){
-		RETURN_LONG(-3);
-	}
-    /*
-     * checking arguments 
-     */
-    if (getCurrentUser() == NULL) {
-        RETURN_LONG(-4);
-    }
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_LONG(-5);
-    }
-    is_bm = is_BM(bp, getCurrentUser());
-    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
-
-    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
-        RETURN_LONG(-6);   
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf)==-1) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-		RETURN_LONG(-201);
-	}
-    total = buf.st_size / sizeof(struct fileheader);
-
-    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        RETURN_LONG(-7);
-    }
-    ptr1 = (struct fileheader *) ptr;
-    /*
-     * fetching articles 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_LONG(-8);
-    }
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, bp->filename, getSession());
-#endif
-
-	articlesFounded=0;
-
-	if ( (found=Search_Bin((struct fileheader *)ptr,groupid,0,total-1))>=0) {
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		flags[0] = get_article_flag(ptr1+found, getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (ptr1[found].accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (ptr1[found].accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-		if (ptr1[found].attachment)
-			flags[3] = '@';
-		else
-			flags[3] = ' ';
-		bbs_make_article_array(element, ptr1+found, flags, sizeof(flags));
-		zend_hash_index_update(Z_ARRVAL_P(return_value), 0 , (void *) &element, sizeof(zval *), NULL);
-	}else 
-		RETURN_FALSE;
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-}
-
-/**
- * 反序获取从start开始的num个同主题文章
- * prototype:
- * array bbs_get_thread_articles(char *board, int groupID, int start, int num);
- *
- * @return array of loaded articles on success,
- *         FALSE on failure.
- * @author roy
- */
-static PHP_FUNCTION(bbs_get_thread_articles)
-{
-    char *board;
-    int blen;
-    long start,num,groupid;
-    int total;
-    struct fileheader *articles;
-    struct boardheader *bp;
-	char dirpath[STRLEN];
-    int i;
-    zval *element;
-    int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
-    int ac = ZEND_NUM_ARGS();
-	unsigned int articlesFounded;
-	int fd;
-	struct stat buf;
-	struct flock ldata;
-	struct fileheader *ptr1;
-	char* ptr;
-	unsigned int found;
-
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &groupid, &start, &num) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-	if (start<0){
-		RETURN_LONG(-1);
-	}
-	if (num<0){
-		RETURN_LONG(-2);
-	}
-	if (groupid<0){
-		RETURN_LONG(-3);
-	}
-    /*
-     * checking arguments 
-     */
-    if (getCurrentUser() == NULL) {
-        RETURN_LONG(-4);
-    }
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_LONG(-5);
-    }
-    is_bm = is_BM(bp, getCurrentUser());
-    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
-
-    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
-        RETURN_LONG(-6);   
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf)==-1) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-		RETURN_LONG(-200);
-	}
-    total = buf.st_size / sizeof(struct fileheader);
-
-    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        RETURN_LONG(-7);
-    }
-    ptr1 = (struct fileheader *) ptr;
-    /*
-     * fetching articles 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_LONG(-8);
-    }
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, bp->filename, getSession());
-#endif
-
-	articlesFounded=0;
-
-	for (i=total-1;i>=0;i--) {
-		if (ptr1[i].id<=groupid)
-			break;
-		if (ptr1[i].groupid==groupid)	{
-			articlesFounded++;
-			if ((articlesFounded-1)>=start){
-				MAKE_STD_ZVAL(element);
-				array_init(element);
-				flags[0] = get_article_flag(ptr1+i, getCurrentUser(), bp->filename, is_bm, getSession());
-				if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
-					flags[1] = 'y';
-				else
-					flags[1] = 'n';
-				if (ptr1[i].accessed[1] & FILE_READ)
-					flags[2] = 'y';
-				else
-					flags[2] = 'n';
-				if (ptr1[i].attachment)
-					flags[3] = '@';
-				else
-					flags[3] = ' ';
-				bbs_make_article_array(element, ptr1+i, flags, sizeof(flags));
-				zend_hash_index_update(Z_ARRVAL_P(return_value), articlesFounded-1-start, (void *) &element, sizeof(zval *), NULL);
-				if (articlesFounded>=num+start){
-					break;
-				}
-			}
-		}
-	}
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-}
-#endif //I_LOVE_ROY
-
-#ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_get_today_article_num){
     char *board;
     int blen;
@@ -3307,116 +3036,6 @@ static PHP_FUNCTION(bbs_get_today_article_num){
 	RETURN_LONG(articleNums);
 }
 #endif //HAVE_WFORUM
-
-#ifdef I_LOVE_ROY
-/**
- * 获取同主题的文章个数
- * prototype:
- * array bbs_get_thread_article_num(char *board,  int groupID);
- *
- * @return array of loaded articles on success,
- *         FALSE on failure.
- * @author roy
- */
-static PHP_FUNCTION(bbs_get_thread_article_num)
-{
-    char *board;
-    int blen;
-    long groupid;
-    int total;
-    struct boardheader *bp;
-	char dirpath[STRLEN];
-    int i;
-    zval *element;
-    int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
-    int ac = ZEND_NUM_ARGS();
-	unsigned int articleNums;
-	int fd;
-	struct stat buf;
-	struct flock ldata;
-	struct fileheader *ptr1;
-	char* ptr;
-	unsigned int found;
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &groupid) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-	if (groupid<0){
-		RETURN_LONG(-1);
-	}
-    /*
-     * checking arguments 
-     */
-    if (getCurrentUser() == NULL) {
-        RETURN_LONG(-2);
-    }
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_LONG(-3);
-    }
-    is_bm = is_BM(bp, getCurrentUser());
-    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
-
-    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
-        RETURN_LONG(-4);   
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf)==-1) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-		RETURN_LONG(-201);
-	}
-    total = buf.st_size / sizeof(struct fileheader);
-
-    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        RETURN_LONG(-5);
-    }
-    ptr1 = (struct fileheader *) ptr;
-    /*
-     * fetching articles 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_LONG(-6);
-    }
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, bp->filename, getSession());
-#endif
-
-	articleNums=0;
-
-	for (i=total-1;i>=0;i--) {
-		if (ptr1[i].id<=groupid)
-			break;
-		if (ptr1[i].groupid==groupid)
-			articleNums++;
-	}
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-	RETURN_LONG(articleNums);
-}
-#endif //I_LOVE_ROY
 
 /**
  * Count articles in a board with specific .DIR mode.
