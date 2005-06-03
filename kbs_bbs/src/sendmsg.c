@@ -354,7 +354,10 @@ reenter:
                 break;
             case 'c':
             case 'C':
-                clear_msg(getCurrentUser()->userid);
+                move(t_lines-1, 0);
+                clrtoeol();
+                if (askyn("确认删除所有讯息？", false))
+                    clear_msg(getCurrentUser()->userid);
                 goto outofhere;
             case 'a':
             case 'A':
