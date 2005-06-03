@@ -609,15 +609,6 @@ static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
     add_assoc_string(array, "username", uinfo->username, 1);
 }
 
-//char* maillist, 40 bytes long, 30 bytes for the mailbox name,10 bytes for the mailbox path file name.
-#if 0
-static void asssign_maillist(zval * array, char *boxname, char *pathname)
-{
-    add_assoc_string(array, "boxname", boxname, 1);
-    add_assoc_string(array, "pathname", pathname, 1);
-}
-#endif
-
 static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
 {
     add_assoc_long(array, "NUM", num); // kept for back compatible
@@ -5593,7 +5584,11 @@ static PHP_FUNCTION(bbs_createnewid)
 	    bbslog("3error","create id %s home dir error:%s",userid,strerror(errno));
 	    RETURN_LONG(10);
 	}
-	
+
+#if defined(SMTH) || defined(ZIXIA)
+    mail_file(DELIVER,"etc/tonewuser",userid,"致新注册用户的信",0,NULL);
+#endif
+
 	RETURN_LONG(0);
 }
 
