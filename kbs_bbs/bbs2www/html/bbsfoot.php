@@ -77,9 +77,16 @@ echo "信箱[<a href=\"/bbsmailbox.php?path=.DIR&title=收件箱\" target=\"f3\" clas
 ?>
 <bgsound src="/sound/newmail.wav">
 <script language="javascript">
+if (typeof top.hasMsgBox == "undefined") {
+    top.hasMsgBox = false;
+}
+if (!top.hasMsgBox) {
+top.hasMsgBox = true;
 if(confirm("您有新邮件，现在查收？"))
 {
     top.f3.location.href = "/bbsmailbox.php?path=.DIR&title=<?php echo urlencode("收件箱"); ?>";
+}
+top.hasMsgBox = false;
 }
 </script>
 <?php
