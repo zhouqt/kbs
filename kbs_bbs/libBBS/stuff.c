@@ -483,7 +483,7 @@ void remove_shm(char *shmstr, int defaultkey, int shmsize)
     shmctl(shmid,IPC_RMID,NULL);
 }
 
-char *cexp(exp)
+char *c_exp(exp)
 int exp;
 {
     int expbase = 0;
@@ -507,7 +507,7 @@ int exp;
     return "开国大老";
 }
 
-char *cperf(int perf)
+char *c_perf(int perf)
 {
 
     if (perf == -9999)
