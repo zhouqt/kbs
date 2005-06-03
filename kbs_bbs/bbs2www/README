@@ -4,7 +4,7 @@
 1.bbslib模块
   该模块提供www和bbslib之间的数据转换以及web特定的一些数据管理.
 2.phplib模块
-  为php提供底层的bbs函数支持.是smthbbs的web php的重要支持部分.
+  为php提供底层的bbs函数支持.是kbsbbs的web php的重要支持部分.
 3.html模块
   web页面,包括php页面和一些静态页面.
 4.cgi模块
@@ -19,6 +19,6 @@ phplib以及php页面）不再遵循GPL，正在考虑使用其他开放源码的版
 权声明（BSD或者MPL之类）。
 
 三.关于使用水木WEB代码的站点
-    希望使用水木代码的Web站点加上powered by smth的图标.该图标
-位于html/images/poweredby.gif目录,链接指向http://dev.smth.org
-    使用水木代码的站点可以通过dev.smth.org获得代码的最新信息.
+    希望使用水木代码的Web站点加上powered by kbs的图标.该图标
+位于html/images/poweredby.gif目录,链接指向http://dev.kcn.cn/
+    使用水木代码的站点可以通过dev.kcn.cn获得代码的最新信息.
