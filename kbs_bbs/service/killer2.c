@@ -1085,10 +1085,10 @@ void refreshit()
 		{
 			char *ss = get_msgs(msgst - 1 - (t_lines - 3 - i) - jpage);
 
-			if (!strcmp(ss, "你被踢了"))
-				kicked = 1;
 			if (ss)
 			{
+				if (!strcmp(ss, "你被踢了"))
+					kicked = 1;
 				strcat(disp, ss);
 				col+=strlen2(ss);
 			}
@@ -1340,7 +1340,7 @@ void goto_dark()
 				else
 					tc++;
 			}
-		if (tk==0 || tp==0 || tc==0)
+		if (tk==0 || tp==0 || tc==0 || tp+tc<=tk)
 		{
 			sprintf(buf,"\33[31;1m%d %s 被法官处决了\33[m",RINFO.victim+1,PINFO(RINFO.victim).nick);
 			PINFO(RINFO.victim).flag&=~PEOPLE_ALIVE;
@@ -1730,6 +1730,12 @@ int do_com_menu()
 				k_resetcolor();
 				clrtoeol();
 				k_getdata(t_lines - 1, 0, "确认退出？ [y/N] ", buf, 3, 1, 0, 1);
+				if (me<MAX_PLAYER
+					&& (PINFO(me).flag & PEOPLE_ALIVE)
+					&& RINFO.status != INROOM_STOP)
+				{
+					return 0;
+				}
 				if (kicked)
 					return 0;
 				if (toupper(buf[0]) != 'Y')
@@ -1746,7 +1752,7 @@ int do_com_menu()
 				k_resetcolor();
 				clrtoeol();
 				k_getdata(t_lines - 1, 0, "请输入名字:", buf, 13, 1, 0, 1);
-				if (kicked)
+				if (kicked || RINFO.status != INROOM_STOP)
 					return 0;
 				if (buf[0])
 				{
