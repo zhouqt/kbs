@@ -154,6 +154,10 @@ int main(int argc,char** argv)
             printf("%s:Too many arguments.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
             return 0;
         }
+        if(strchr(name,'/') || name[0] == '.') {
+            printf("arguments must be boardname\n");
+            return -1;
+        }
     	strncpy(bh.filename,name,STRLEN);
     	generate_board_title(&bh,NULL);
     }
