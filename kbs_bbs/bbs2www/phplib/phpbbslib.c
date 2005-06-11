@@ -3076,7 +3076,7 @@ static PHP_FUNCTION(bbs_countarticles)
 
     total = get_num_records(dirpath, sizeof(struct fileheader));
     /* add by stiger */
-	if( mode == DIR_MODE_NORMAL || mode == DIR_MODE_ORIGIN || mode == DIR_MODE_TITLE ){
+	if( mode == DIR_MODE_NORMAL ){
     	sprintf(dirpath,"boards/%s/%s",bp->filename, DING_DIR);
     	total += get_num_records(dirpath, sizeof(struct fileheader));
 	}
