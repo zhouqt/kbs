@@ -63,7 +63,7 @@ function get_items($filename) {
 		$r_board = $boardArr["NAME"];
 		
 		$item = array();
-		$item["title"] = htmlspecialchars($r_title, ENT_QUOTES);
+		$item["title"] = htmlspecialchars($r_title, ENT_QUOTES)." ";
 		$item["link"] = $SiteURL."bbscon.php?bid=".$boardID."&amp;id=".$r_groupid."&amp;lw=1";
 		$item["author"] = $r_author;
 		$item["pubDate"] = gmdate("D, d M Y H:i:s", $r_time) . " GMT";

@@ -122,7 +122,7 @@ function generate_rss_contents($boardID, $boardName, $includeDesc, $lw) {
 		for ($i = count($articles) - 1; $i >= 0; $i--) {
 			$origin = $articles[$i];
 			$item = array();
-			$item["title"] = htmlspecialchars($origin['TITLE'], ENT_QUOTES);
+			$item["title"] = htmlspecialchars($origin['TITLE'], ENT_QUOTES)." ";
 			if ($ftype != $dir_modes["ORIGIN"]) {
 				$conurl .= "boardcon.php?bid=".$boardID."&amp;id=".$origin['ID']."&amp;num=".($i+$start)."&amp;ftype=".$ftype;
 			} else {
