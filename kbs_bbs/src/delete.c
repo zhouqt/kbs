@@ -246,7 +246,8 @@ PERM_DENYRELAX娱乐
     char buf[STRLEN], genbuf[PATHLEN];
     FILE *fn;
     char ans[3], day[10];
-    int i, j, k, lcount, tcount;
+    int i, j, k, lcount, tcount, iDays;
+    char *desc[] = {"上站权限", "发表权限", "聊天权限", "呼叫权限", "发信权限", "休闲娱乐权限"};
 
     modify_user_mode(GIVEUPNET);
     if (!HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
@@ -278,26 +279,7 @@ PERM_DENYRELAX娱乐
         while (!feof(fn)) {
             if (fscanf(fn, "%d %d", &i, &j) <= 0)
                 break;
-            switch (i) {
-            case 1:
-                prints("上站权限");
-                break;
-            case 2:
-                prints("发表权限");
-                break;
-            case 3:
-                prints("聊天权限");
-                break;
-            case 4:
-                prints("呼叫权限");
-                break;
-            case 5:
-                prints("发信权限");
-                break;
-            case 6:
-                prints("休闲娱乐权限");
-                break;
-            }
+            if (i >= 1 && i <= 6) prints(desc[i - 1]);
             sprintf(buf, "        还有%ld天\n", j - time(0) / 3600 / 24);
             prints(buf);
             lcount++;
@@ -312,18 +294,10 @@ PERM_DENYRELAX娱乐
     prints("请选择戒网种类:");
     move(3, 0);
     prints("(0) - 结束");
-    move(4, 0);
-    prints("(1) - 上站权限");
-    move(5, 0);
-    prints("(2) - 发表权限");
-    move(6, 0);
-    prints("(3) - 聊天室权限");
-    move(7, 0);
-    prints("(4) - 发送消息和呼叫聊天权限");
-    move(8, 0);
-    prints("(5) - 发信权限");
-    move(9, 0);
-    prints("(6) - 休闲娱乐权限");
+    for(i=0; i<6; i++) {
+        move(i + 4, 0);
+        prints("(%d) - %s", i + 1, desc[i]);
+    }
 
     getdata(12, 0, "请选择 [0]", ans, 2, DOECHO, NULL, true);
     if (ans[0] < '1' || ans[0] > '6') {
@@ -373,6 +347,7 @@ PERM_DENYRELAX娱乐
         pressanykey();
         return -1;
     }
+    iDays = j;
     j = time(0) / 3600 / 24 + j;
 
     move(13, 0);
@@ -434,6 +409,16 @@ PERM_DENYRELAX娱乐
             getCurrentUser()->flags |= GIVEUP_FLAG;
         else
             getCurrentUser()->flags &= ~GIVEUP_FLAG;
+
+        gettmpfilename( genbuf, "giveup" );
+        if ((fn = fopen(genbuf, "w")) != NULL) {
+            fprintf(fn, "\033[1m%s\033[m 戒 %s %d 天", getCurrentUser()->userid, desc[ans[0] - '1'], iDays);
+            getuinfo(fn, getCurrentUser());
+            fclose(fn);
+            sprintf(buf, "%s 的戒网通知", getCurrentUser()->userid);
+            post_file(getCurrentUser(), "", genbuf, "GiveupNotice", buf, 0,  2, getSession());
+            unlink(genbuf);
+        }
 
         prints("\n\n你已经开始戒网了");
         pressanykey();
