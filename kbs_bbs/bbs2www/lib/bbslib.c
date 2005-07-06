@@ -1099,7 +1099,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                  * user->userlevel &= ~PERM_POST;
                  */
             }
-#ifdef HAVE_TSINGHUA_INFO_REGISTER
+#if 0
 	    else if(strlen(ud.realemail) >=3){
 		 strncpy(genbuf,ud.realemail+strlen(ud.realemail)-3,3);
 		 if(!strncasecmp(genbuf,"#TH",3))
