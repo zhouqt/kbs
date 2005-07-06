@@ -54,8 +54,8 @@ static unsigned Txwindow;              /* Control the size of the transmitted wi
 static unsigned Txwspac;               /* Spacing between zcrcq requests */
 static unsigned Txwcnt;                /* Counter used to space ack requests */
 static size_t Lrxpos;                  /* Receiver's last reported offset */
-static int errors;
-static enum zm_type_enum protocol;
+int errors;
+enum zm_type_enum protocol;
 extern int turbo_escape;
 static int no_unixmode;
 
