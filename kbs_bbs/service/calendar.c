@@ -177,11 +177,12 @@ void Lunar(int day, int * lmonth, int * lday)
         offset -= temp;
     }
 
-    if(offset==0 && leap>0 && i==leap+1)
+    if(offset==0 && leap>0 && i==leap+1) {
         if(isLeap)
             { isLeap = false; }
         else
             { isLeap = true; --i; }
+    }
 
     if(offset<0){ offset += temp; --i; }
 
@@ -199,7 +200,7 @@ int sTerm(int y, int n, int day)
 {
     double k=
        (31556925974.7*(double)(y-1900) + (double)sTermInfo[n]*60000)/86400000 + 6 + 1.0/24*2 + 1.0/24/60*5;
-    int pass, i, j;
+    int pass, i;
     pass = (int) k;
     for(i=1900;i<year;i++) pass-=get_day2(i);
     for(i=1;i<month;i++) pass-=get_day(year, i);
@@ -477,6 +478,7 @@ int newfile(char * s)
 
 #define IV1         0x12345678
 #define IV2         0xabcdef44
+unsigned int secret_k[4];
 void tea_encipher(unsigned int* v, unsigned int* k)  
 {              
     register unsigned int y=v[0],z=v[1], sum=0, delta=0x9e3779b9, n=32;
@@ -544,13 +546,9 @@ void decipher(char* buf,size_t len,unsigned int *k)
 void encode_file(char * s, char * s2)
 {
     char buf[1024*16];
-    unsigned int k[4];
+    
     int o, i;
     FILE *fp1, *fp2;
-    k[0] = sysconf_eval("CALENDAR_KEY0", 0x234251);
-    k[1] = sysconf_eval("CALENDAR_KEY1", 0x1234251);
-    k[2] = sysconf_eval("CALENDAR_KEY2", 0x2234251);
-    k[3] = sysconf_eval("CALENDAR_KEY3", 0x3234251);
     fp1 = fopen(s, "rb");
     fp2 = fopen(s2, "wb");
     while((o=fread(buf, 1, 1024*16, fp1))>0) {
@@ -559,42 +557,97 @@ void encode_file(char * s, char * s2)
                 buf[i]=32;
             o=(o/8+1)*8;
         }
-        encipher(buf, o, k);
+        encipher(buf, o, secret_k);
         fwrite(buf, 1, o, fp2);
     }
     fclose(fp1);
     fclose(fp2);
+}
+
+void decode_file_stream(FILE *fp1, FILE *fp2) {
+    char buf[1024*16];
+    int o, i;
+    while((o=fread(buf, 1, 1024*16, fp1))>0) {
+        if(o%8!=0) {
+            for(i=o;i<(o/8+1)*8;i++)
+                buf[i]=32;
+            o=(o/8+1)*8;
+        }
+        decipher(buf, o, secret_k);
+        fwrite(buf, 1, o, fp2);
+    }
 }
 
 void decode_file(char * s, char * s2)
 {
-    char buf[1024*16];
-    char fn[80];
-    unsigned int k[4];
-    int o, i;
     FILE *fp1, *fp2;
-    k[0] = sysconf_eval("CALENDAR_KEY0", 0x234251);
-    k[1] = sysconf_eval("CALENDAR_KEY1", 0x1234251);
-    k[2] = sysconf_eval("CALENDAR_KEY2", 0x2234251);
-    k[3] = sysconf_eval("CALENDAR_KEY3", 0x3234251);
     fp1 = fopen(s, "rb");
     fp2 = fopen(s2, "wb");
-    while((o=fread(buf, 1, 1024*16, fp1))>0) {
-        if(o%8!=0) {
-            for(i=o;i<(o/8+1)*8;i++)
-                buf[i]=32;
-            o=(o/8+1)*8;
-        }
-        decipher(buf, o, k);
-        fwrite(buf, 1, o, fp2);
-    }
+    decode_file_stream(fp1, fp2);
     fclose(fp1);
     fclose(fp2);
 }
 
+int check_diary(char *filename) {
+    if (strlen(filename) != 14) return 0;
+    if (filename[4] != '-' || filename[7] != '-') return 0;
+    if (strncmp(filename + 10, ".txt", 4)) return 0;
+    return (isdigit(filename[0]) && isdigit(filename[1]) && isdigit(filename[2]) && isdigit(filename[3])
+         && isdigit(filename[5]) && isdigit(filename[6]) && isdigit(filename[8]) && isdigit(filename[9]));
+}
+
+int mail_all_diary() {
+    char homedir[PATHLEN], mailfile[PATHLEN], title[80];
+
+    DIR *dirp;
+    struct dirent *de;
+    char buf[256], *fname;
+
+    FILE *fp1, *fp2;
+    sethomepath(homedir, getCurrentUser()->userid);
+    gettmpfilename(mailfile, "all_diary");
+    if (!(fp2 = fopen(mailfile, "wb"))) return -1;
+    sprintf(title, "%s 所有日记回寄", getCurrentUser()->userid);
+    write_header(fp2, getCurrentUser(), 1, NULL, title, 0, 0, getSession());
+
+    strcpy(buf, homedir);
+    fname = buf + strlen(buf);
+    *fname++ = '/';
+    
+    if (!(dirp = opendir(homedir))) {
+        fclose(fp2);
+        return -1;
+    }
+
+    while ((de = readdir(dirp))!=NULL) {
+        char* name;
+        name = de->d_name;
+        if (*name) {
+            if (name[0] == '.') continue;
+            
+            if (!check_diary(name)) continue;
+
+            fprintf(fp2, "\n================================%-10.10s================================\n", name);
+
+            strcpy(fname, name);
+            /* now buf is the full filename */
+            if ((fp1 = fopen(buf, "rb")) != NULL) {
+                decode_file_stream(fp1, fp2);
+                fclose(fp1);
+            }
+        }
+    }
+    closedir(dirp);
+
+    fclose(fp2);    
+    mail_file(getCurrentUser()->userid, mailfile, getCurrentUser()->userid, title, BBSPOST_MOVE, NULL);
+
+    return 0;
+}
+
 int calendar_main()
 {
-    int i,j,ch,oldmode,cc;
+    int i,ch,oldmode,cc;
     struct tm nowr;
     struct stat st;
     char buf[80], buf2[80], title[80];
@@ -612,6 +665,11 @@ int calendar_main()
     day = nowr.tm_mday;
     month = nowr.tm_mon+1;
     year = nowr.tm_year+1900;
+
+    secret_k[0] = sysconf_eval("CALENDAR_KEY0", 0x234251);
+    secret_k[1] = sysconf_eval("CALENDAR_KEY1", 0x1234251);
+    secret_k[2] = sysconf_eval("CALENDAR_KEY2", 0x2234251);
+    secret_k[3] = sysconf_eval("CALENDAR_KEY3", 0x3234251);
     
     while(1){
         draw_main();
@@ -673,6 +731,28 @@ int calendar_main()
                     unlink(buf2);
                 }
                 break;
+            case 'm':
+                if (!(HAS_PERM(getCurrentUser(), PERM_READMAIL)&&!HAS_PERM(getCurrentUser(), PERM_DENYMAIL) && !chkusermail(getCurrentUser())))
+                    break;
+                sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, year, month, day);
+                sprintf(buf2, "tmp/%s.%d.cal", getCurrentUser()->userid, rand());
+                if(stat(buf, &st)!=-1) {
+                    getdata(13, 48, "  确认寄回该日日记[y/N]", title, 3, 1, 0, 1);
+                    if(toupper(title[0])=='Y') {
+                        decode_file(buf, buf2);
+                        sprintf(title, "[%d-%02d-%02d] 日记", year, month, day);
+                        mail_file(getCurrentUser()->userid, buf2, getCurrentUser()->userid, title, BBSPOST_MOVE, NULL);
+                    }
+                }
+                break;
+            case 'M':
+                if (!(HAS_PERM(getCurrentUser(), PERM_READMAIL)&&!HAS_PERM(getCurrentUser(), PERM_DENYMAIL) && !chkusermail(getCurrentUser())))
+                    break;
+                getdata(13, 48, "  确认寄回所有日记[y/N]", title, 3, 1, 0, 1);
+                if(toupper(title[0])=='Y') {
+                    mail_all_diary();
+                }
+                break;
             case KEY_HOME:
             case 'h':
             case 'H':
@@ -702,4 +782,5 @@ int calendar_main()
     modify_user_mode(oldmode);
     incalendar = 0;
     resetcolor();
+    return 0;
 }
