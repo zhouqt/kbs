@@ -596,26 +596,31 @@ int check_diary(char *filename) {
          && isdigit(filename[5]) && isdigit(filename[6]) && isdigit(filename[8]) && isdigit(filename[9]));
 }
 
+int cmpFilename(void *s1, void* s2) {
+    char *p1 = *((char **)s1);
+    char *p2 = *((char **)s2);
+    return (strcmp(p1, p2));
+}
+
 int mail_all_diary() {
     char homedir[PATHLEN], mailfile[PATHLEN], title[80];
-
+    char **szFilenames;
+    int iFilenames, nFilenames;
+    
     DIR *dirp;
     struct dirent *de;
     char buf[256], *fname;
 
     FILE *fp1, *fp2;
     sethomepath(homedir, getCurrentUser()->userid);
-    gettmpfilename(mailfile, "all_diary");
-    if (!(fp2 = fopen(mailfile, "wb"))) return -1;
-    sprintf(title, "%s 所有日记回寄", getCurrentUser()->userid);
-    write_header(fp2, getCurrentUser(), 1, NULL, title, 0, 0, getSession());
 
     strcpy(buf, homedir);
     fname = buf + strlen(buf);
     *fname++ = '/';
-    
+
+    iFilenames = 0; nFilenames = 100;
+    szFilenames = malloc(sizeof(char *) * nFilenames);
     if (!(dirp = opendir(homedir))) {
-        fclose(fp2);
         return -1;
     }
 
@@ -627,22 +632,45 @@ int mail_all_diary() {
             
             if (!check_diary(name)) continue;
 
-            fprintf(fp2, "\n================================%-10.10s================================\n", name);
-
-            strcpy(fname, name);
-            /* now buf is the full filename */
-            if ((fp1 = fopen(buf, "rb")) != NULL) {
-                decode_file_stream(fp1, fp2);
-                fclose(fp1);
+            if (iFilenames >= nFilenames) {
+                nFilenames *= 2;
+                szFilenames = realloc(szFilenames, sizeof(char *) * nFilenames);
             }
+            szFilenames[iFilenames] = malloc(strlen(name) + 1);
+            strcpy(szFilenames[iFilenames], name);
+            iFilenames++;
         }
     }
     closedir(dirp);
 
-    fclose(fp2);    
+    if (iFilenames == 0) return 0;
+
+    qsort(szFilenames, iFilenames, sizeof(char *), cmpFilename);
+
+    gettmpfilename(mailfile, "all_diary");
+    if (!(fp2 = fopen(mailfile, "wb"))) return -1;
+    sprintf(title, "%s 所有日记回寄", getCurrentUser()->userid);
+    write_header(fp2, getCurrentUser(), 1, NULL, title, 0, 0, getSession());
+
+    for (nFilenames = 0; nFilenames < iFilenames; nFilenames++) {
+        fprintf(fp2, "\n================================%-10.10s================================\n", szFilenames[nFilenames]);
+
+        strcpy(fname, szFilenames[nFilenames]);
+        /* now buf is the full filename */
+        if ((fp1 = fopen(buf, "rb")) != NULL) {
+            decode_file_stream(fp1, fp2);
+            fclose(fp1);
+        }
+        free(szFilenames[nFilenames]);
+    }
+
+    fclose(fp2);
+
+    free(szFilenames);
+    
     mail_file(getCurrentUser()->userid, mailfile, getCurrentUser()->userid, title, BBSPOST_MOVE, NULL);
 
-    return 0;
+    return iFilenames;
 }
 
 int calendar_main()
