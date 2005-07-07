@@ -257,6 +257,7 @@ void record_exit_time();
 
 /* announce.c */
 int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100]);
+int edit_group(struct boardheader*,struct boardheader*);
 
 /* boards_t.c */
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);

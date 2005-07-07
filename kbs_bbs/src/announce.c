@@ -2151,6 +2151,175 @@ int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100])
     return 0;                   /* FIXME: return value */
 }
 
+/*etnlegend,2005.06.28,修改精华区*/
+int ann_show_board(struct boardheader *bh){
+    if(bh->title_level||bh->flag&(BOARD_CLUB_READ|BOARD_CLUB_HIDE))
+        return 0;
+    if(!(bh->level)||bh->level&PERM_POSTMASK||bh->level&PERM_DEFAULT)
+        return 1;
+    return 0;
+}
+int add_group(struct boardheader *bh){
+    MENU m;
+    FILE *fp;
+    char gpath[256],bpath[256],*p;
+    char genbuf[1024];
+    int ret,i;
+    if(!bh)
+        return 0;
+    bzero(&m,sizeof(MENU));
+    ret=0;
+    if(!dashd("0Announce")){
+        mkdir("0Announce",0755);
+        chmod("0Announce",0755);
+        if(!(fp=fopen("0Announce/.Names","w")))
+            return -1;
+        fprintf(fp,"#\n# Title=%s 精华区公布栏\n#\n",BBS_FULL_NAME);
+        fclose(fp);
+    }
+    if(!dashd("0Announce/groups")){
+        mkdir("0Announce/groups",0755);
+        chmod("0Announce/groups",0755);
+        m.path="0Announce";
+        a_loadnames(&m,getSession());
+        a_additem(&m,"讨论区精华","groups",NULL,0,0);
+        if(a_savenames(&m))
+            ret|=(1<<0);
+    }
+    sprintf(gpath,"0Announce/groups/%s",bh->ann_path);
+    p=strrchr(gpath,'/');
+    *p++=0;
+    if(!dashd(gpath)){
+        mkdir(gpath,0755);
+        chmod(gpath,0755);
+        for(i=0;groups[i];i++)
+            if(!strcmp(&gpath[17],groups[i]))
+                break;
+        m.path="0Announce/groups";
+        a_loadnames(&m,getSession());
+        a_additem(&m,(groups[i]?secname[i][0]:&gpath[17]),&gpath[17],NULL,0,0);
+        if(a_savenames(&m))
+            ret|=(1<<1);
+    }
+    sprintf(bpath,"0Announce/groups/%s",bh->ann_path);
+    if(!dashd(bpath)){
+        char buf[128];
+        mkdir(bpath,0755);
+        chmod(bpath,0755);
+        sprintf(buf,"%s/.Names",bpath);
+        if(!(fp=fopen(buf,"w")))
+            return -1;
+        fprintf(fp,"#\n# Title=%-32.32s",&bh->title[13]);
+        if(bh->BM[0])
+            fprintf(fp,"(BM: %s)",bh->BM);
+        fprintf(fp,"\n#\n");
+        fclose(fp);
+        m.path=gpath;
+        a_loadnames(&m,getSession());
+        sprintf(genbuf,"%s/%s",bh->filename,&bh->title[13]);
+        if(!ann_show_board(bh))
+            sprintf(buf,"%-38.38s(BM: SYSOPS)",genbuf);
+        else
+            sprintf(buf,"%-38.38s",genbuf);
+        a_additem(&m,buf,p,NULL,0,0);
+        if(a_savenames(&m))
+            ret|=(1<<3);
+    }
+    return ret;
+}
+int del_group(struct boardheader *bh){
+    MENU m;
+    char path[256],*p;
+    int ret,i;
+    if(!bh)
+        return 0;
+    bzero(&m,sizeof(MENU));
+    ret=0;
+    sprintf(path,"0Announce/groups/%s",bh->ann_path);
+    my_f_rm(path);
+    m.path=path;
+    p=strrchr(path,'/');
+    *p++=0;
+    a_loadnames(&m,getSession());
+    for(i=0;i<m.num;i++)
+        if(!strcmp(m.item[i]->fname,p)){
+            free(m.item[i]);
+            m.num--;
+            memmove(&m.item[i],&m.item[i+1],(m.num-i)*sizeof(ITEM));
+        }
+    if(a_savenames(&m))
+        ret|=(1<<0);
+    a_freenames(&m);
+    return ret;
+}
+int edit_group(struct boardheader *oldbh,struct boardheader *newbh){
+    MENU m;
+    char path[256],*p;
+    char genbuf[1024];
+    int ret,i;
+    /*无效参数*/
+    if(!oldbh&&!newbh)
+        return 0;
+    /*目的精华区位置检测*/
+    sprintf(path,"0Announce/groups/%s",newbh->ann_path);
+    if((!oldbh||strcmp(oldbh->ann_path,newbh->ann_path))&&dashd(path))
+        del_group(newbh);
+    /*增加*/
+    if(!oldbh)
+        return add_group(newbh);
+    /*删除*/
+    if(!newbh)
+        return del_group(oldbh);
+    /*源精华区位置检测*/
+    sprintf(path,"0Announce/groups/%s",oldbh->ann_path);
+    if(!dashd(path)){
+        del_group(oldbh);
+        return add_group(newbh);
+    }
+    /*修改*/
+    bzero(&m,sizeof(MENU));
+    ret=0;
+    if(strcmp(&oldbh->title[13],&newbh->title[13])||strcmp(oldbh->BM,newbh->BM)){/*需要更新标题和版主*/
+        /*对精华区标题的修改*/
+        m.path=path;
+        a_loadnames(&m,getSession());
+        sprintf(genbuf,"%-32.32s",&newbh->title[13]);
+        if(newbh->BM[0])
+            sprintf(&genbuf[32],"(BM: %s)",newbh->BM);
+        snprintf(m.mtitle,MTITLE_LEN,"%s",genbuf);
+        if(a_savenames(&m))
+            ret|=(1<<0);
+        /*对精华公布栏的修改*/
+        p=strrchr(path,'/');
+        *p++=0;
+        a_loadnames(&m,getSession());
+        for(i=0;i<m.num;i++)
+            if(!strcmp(m.item[i]->fname,p)){
+                sprintf(genbuf,"%s/%s",newbh->filename,&newbh->title[13]);
+                if((strlen(m.item[i]->title)>38&&!strncmp(&m.item[i]->title[38],"(BM: SYSOPS)",12)&&ann_show_board(oldbh))
+                    ||!ann_show_board(newbh))
+                    sprintf(m.item[i]->title,"%-38.38s(BM: SYSOPS)",genbuf);
+                else
+                    sprintf(m.item[i]->title,"%-38.38s",genbuf);
+            }
+        if(a_savenames(&m))
+            ret|=(1<<1);
+        a_freenames(&m);
+    }
+    if(strcmp(oldbh->ann_path,newbh->ann_path)){/*需要更新路径*/
+        char oldpath[256],newpath[256];
+        sprintf(oldpath,"0Announce/groups/%s",oldbh->ann_path);
+        sprintf(newpath,"0Announce/groups/%s",newbh->ann_path);
+        add_group(newbh);
+        f_rm(newpath);
+        if(rename(oldpath,newpath)==-1)
+            ret|=(1<<2);
+        else if(del_group(oldbh))
+            ret|=(1<<3);
+    }
+    return ret;
+}
+
 void Announce()
 {
     sprintf(genbuf, "%s 精华区公布栏", BBS_FULL_NAME);

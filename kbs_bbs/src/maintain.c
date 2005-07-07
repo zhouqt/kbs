@@ -1980,17 +1980,19 @@ int x_deny()
 
 int set_BM(void){
 //etnlegend 重写, 2005.05.26 提交
-    char bname[STRLEN],oldtitle[STRLEN],vbuf[256],*p;
+    char bname[STRLEN],vbuf[256],*p;
+    char genbuf[1024];
     int pos,flag=0,id,n,brd_num;
     unsigned int newlevel;
     struct boardheader fh,newfh;
     struct userec *lookupuser,uinfo;
     struct boardheader *bptr;
 #ifdef FREE
-    if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)&&!HAS_PERM(getCurrentUser(),PERM_SYSOP)&&!HAS_PERM(getCurrentUser(),PERM_OBOARDS)){
+    if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)&&!HAS_PERM(getCurrentUser(),PERM_SYSOP)&&!HAS_PERM(getCurrentUser(),PERM_OBOARDS))
 #else
-    if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)||!HAS_PERM(getCurrentUser(),PERM_SYSOP)){
+    if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)||!HAS_PERM(getCurrentUser(),PERM_SYSOP))
 #endif
+    {
         move(3,0);clrtobot();
         prints("抱歉,只有ADMIN权限的管理员才能修改其他用户权限");
         pressreturn();
@@ -2028,7 +2030,6 @@ int set_BM(void){
         prints("讨论区名称  : %s\n",fh.filename);
         prints("讨论区说明  : %s\n",fh.title);
         prints("讨论区管理员: %s\n",fh.BM);
-        strcpy(oldtitle, fh.title);
         getdata(6,0,"(A)增加版主 (D)删除版主 (Q)退出?: [Q]",genbuf,2,DOECHO,NULL,true);
         if(*genbuf=='a'||*genbuf=='A')
             flag=1;
@@ -2073,17 +2074,7 @@ int set_BM(void){
                                 (p==newfh.BM)?(newfh.BM[0]=NULL):(*--p=NULL);
                             else
                                 memmove(p,p+strlen(genbuf)+1,strlen(p)-strlen(genbuf));
-                            if(newfh.BM[0]){
-                                if (strlen(newfh.BM)<=30)
-                                    sprintf(vbuf,"%-38.38s(BM: %s)",newfh.title+13,newfh.BM);
-                                else
-                                    sprintf(vbuf,"%-28.28s(BM: %s)",newfh.title+13,newfh.BM);
-                            }
-                            else
-                                sprintf(vbuf,"%-38.38s",newfh.title+13);
-                            sprintf(genbuf,"0Announce/groups/%s",newfh.ann_path);
-                            if(dashd(genbuf))
-                                edit_grp(newfh.filename,oldtitle+13,vbuf);
+                            edit_group(&fh,&newfh);
                             set_board(pos,&newfh,NULL);
                             sprintf(genbuf,"更改讨论区 %s 的资料 --> %s",fh.filename,newfh.filename);
                             bbslog("user", "%s", genbuf);
@@ -2177,23 +2168,13 @@ int set_BM(void){
 #endif
 #endif
                     }
-                    if(newfh.BM[0]){
-                        if(strlen(newfh.BM)<=30)
-                            sprintf(vbuf,"%-38.38s(BM: %s)",newfh.title+13,newfh.BM);
-                        else
-                            sprintf(vbuf,"%-28.28s(BM: %s)",newfh.title+13,newfh.BM);
-                    }
-                    else
-                        sprintf(vbuf,"%-38.38s",newfh.title+13);
                     if(flag==1)
                         sprintf(genbuf,"任命 %s 的版主 %s ",newfh.filename,lookupuser->userid);
                     else if(flag==2)
                         sprintf(genbuf,"免去 %s 的版主 %s ",newfh.filename,lookupuser->userid);
                     securityreport(genbuf,lookupuser,NULL);
                     lookupuser->userlevel=newlevel;
-                    sprintf(genbuf,"0Announce/groups/%s",newfh.ann_path);
-                    if(dashd(genbuf))
-                        edit_grp(newfh.filename,oldtitle+13,vbuf);
+                    edit_group(&fh,&newfh);
                     set_board(pos,&newfh,NULL);
                     sprintf(genbuf,"更改讨论区 %s 的资料 --> %s",fh.filename,newfh.filename);
                     bbslog("user","%s",genbuf);

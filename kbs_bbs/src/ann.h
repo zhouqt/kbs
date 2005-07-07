@@ -3,6 +3,7 @@
 
 #define MAXITEMS        1024
 #define PATHLEN         256
+#define MTITLE_LEN      100
 
 typedef struct {
     /* changed by period from 72 to 84 2000-10-17 (%38s + "(BM:   )" + 12*3) */
@@ -15,7 +16,7 @@ typedef struct {
 
 typedef struct {
     ITEM *item[MAXITEMS];
-    char mtitle[STRLEN];
+    char mtitle[MTITLE_LEN];
     char *path;
     int num, page, now;
     int level;
