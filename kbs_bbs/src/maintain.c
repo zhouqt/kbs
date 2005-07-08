@@ -766,6 +766,1020 @@ int m_editbrd()
     return 0;
 }
 
+
+
+
+
+
+/*etnlegend,2005.07.01,修改讨论区属性*/
+#define KEY_CANCEL '~'
+#define EDITBRD_WAIT while(igetkey()!=13);
+extern int in_do_sendmsg;
+static int lastkey=0;
+/*生成权限字符串*/
+char* gen_permstr(unsigned int level,char* buf){
+    int i;
+    /*参数buf应该具有足够的大小*/
+    sprintf(buf,"%s","bTCPRp#@XWBA$VS!DEM1234567890%");
+    for(i=0;i<30;i++)
+        if(!(level&(1<<i)))
+            buf[i]='-';
+    return buf;
+}
+/*严格检查精华区路径的合法性*/
+unsigned int check_ann(struct boardheader* bh){
+    char buf[256],*ptr;
+    unsigned int ret,i;
+    ret=0;
+    sprintf(buf,"%s",bh->ann_path);
+    ptr=strrchr(buf,'/');
+    *ptr++=0;
+    /*精华区路径与讨论区名称不符*/
+    if(strcmp(bh->filename,ptr))
+        ret|=0x010000;
+    /*精华区分区错误*/
+    for(i=0;groups[i];i++)
+        if(!strcmp(groups[i],buf))
+            break;
+    if(!groups[i])
+        ret|=0x020000;
+    else
+        ret|=(i&0xFFFF);
+    /*精华区目录不存在*/
+    sprintf(buf,"0Announce/groups/%s",bh->ann_path);
+    if(!dashd(buf))
+        ret|=0x040000;
+    return ret;
+}
+/*构造list_select_loop所需结构*/
+struct _simple_select_arg{
+    const struct _select_item* items;
+    int flag;
+};
+static int editbrd_on_select(struct _select_def* conf){
+    return SHOW_SELECT;
+}
+static int editbrd_show(struct _select_def* conf,int i){
+    struct _simple_select_arg* arg=(struct _simple_select_arg*)conf->arg;
+    outs((char*)((arg->items[i-1]).data));
+    return SHOW_CONTINUE;
+}
+static int editbrd_key(struct _select_def* conf,int key){
+    struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
+    int i;
+    lastkey=key;
+    if(key==KEY_ESC)
+        return SHOW_QUIT;
+    if(key==KEY_CANCEL)
+        return SHOW_QUIT;
+    for(i=0;i<conf->item_count;i++)
+        if(toupper(key)==toupper(arg->items[i].hotkey)){
+            conf->new_pos=i+1;
+            return SHOW_SELCHANGE;
+        }
+    return SHOW_CONTINUE;
+}
+/*选择讨论区分区或精华区分区*/
+int select_group(int pos){
+    /*使用了SECNUM宏*/
+    struct _select_item sel[SECNUM+1];
+    struct _select_def conf;
+    struct _simple_select_arg arg;
+    POINT pts[SECNUM];
+    char menustr[SECNUM][64];
+    int i;
+    /*构造菜单显示*/
+    for(i=0;i<SECNUM;i++){
+        sel[i].x=4;
+        sel[i].y=i+4;
+        sel[i].hotkey=((i<10)?('0'+i):('A'+i-10));
+        sel[i].type=SIT_SELECT;
+        sel[i].data=menustr[i];
+        sprintf(menustr[i],"[%c] %-24s%-24s",sel[i].hotkey,secname[i][0],groups[i]);
+        pts[i].x=sel[i].x;
+        pts[i].y=sel[i].y;
+    }
+    sel[i].x=-1;sel[i].y=-1;sel[i].hotkey=-1;sel[i].type=0;sel[i].data=NULL;
+    /*特殊显示当前分区*/
+    if(!(pos<0)&&pos<SECNUM)
+        sprintf(menustr[pos],"\033[1;36m[%c] %-24s%-24s\033[m",sel[pos].hotkey,secname[pos][0],groups[pos]);
+    /*构造select结构*/
+    arg.items=sel;
+    arg.flag=SIF_SINGLE;
+    bzero(&conf,sizeof(struct _select_def));
+    conf.item_count=SECNUM;
+    conf.item_per_page=SECNUM;
+    conf.flag=LF_LOOP;
+    conf.prompt="◆";
+    conf.item_pos=pts;
+    conf.arg=&arg;
+    conf.title_pos.x=-1;
+    conf.title_pos.y=-1;
+    /*初始位置*/
+    conf.pos=(!(pos<0)&&pos<SECNUM)?(pos+1):0;
+    conf.on_select=editbrd_on_select;
+    conf.show_data=editbrd_show;
+    conf.key_command=editbrd_key;
+    /*选择分区*/
+    move(1,0);clrtobot();
+    move(2,4);prints("\033[1;33m请选择精华区所在分区\033[m");
+    list_select_loop(&conf);
+    return conf.pos-1;
+}
+/*修改讨论区属性维护主函数*/
+int new_m_editbrd(void){
+    struct _select_item sel[24];
+    struct _select_def conf;
+    struct _simple_select_arg arg;
+    POINT pts[23];
+    struct boardheader bh,newbh;
+    char buf[256],src[256],dst[256],menustr[23][256],orig[23][256],*ptr;
+    int i,pos,loop,section,currpos,ret;
+    unsigned int annstat,change,error;
+    const struct boardheader *bhptr=NULL;
+    const char menuldr[23][16]={
+        "[1]讨论区名称:","[2]讨论区管理:","[3]讨论区说明:","[4]讨论区分区:","[5]讨论区分类:",
+        "[6]转信标签  :","[7]讨论区描述:","[8]匿名讨论区:","[9]统计文章数:","[A]统计十大  :",
+        "[B]目录讨论区:","[C]所属目录  :","[D]向外转信  :","[E]上传附件  :","[F]E-mail发文:",
+        "[G]不可回复  :","[H]读限制Club:","[I]写限制Club:","[J]隐藏Club  :","[K]精华区位置:",
+        "[L]权限限制  :","[M]身份限制  :","[Q][退出]    :"
+    };
+    pos=0;change=0;loop=1;
+    /*检测系统密码并修改状态*/
+    if(!check_systempasswd())
+        return -1;
+    modify_user_mode(ADMIN);
+    /*选择讨论区*/
+    clear();
+    move(0,0);prints("\033[1;32m修改讨论区说明与设定\033[m");
+    move(1,0);clrtobot();
+    make_blist(0);
+    in_do_sendmsg=1;
+    i = namecomplete("请输入讨论区名称: ",buf);
+    in_do_sendmsg=0;
+    if(i=='#'){
+        if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)){
+            move(2,0);prints("使用救援模式修改讨论区属性需要ADMIN权限...");
+            EDITBRD_WAIT;clear();
+            return -1;
+        }
+        /*救援模式*/
+        getdata(2,0,"请输入讨论区顺序号(若不详请直接回车): ",buf,8,DOECHO,NULL,true);
+        pos=atoi(buf);
+        if(!pos){
+            getdata(3,0,"请输入完整的讨论区名称: ",buf,128,DOECHO,NULL,true);
+            if(!*buf){
+                move(4,0);prints("取消...");
+                EDITBRD_WAIT;clear();
+                return -1;
+            }
+            pos=getboardnum(buf,&bh);
+            if(!pos){
+                move(4,0);prints("错误的讨论区名称!");
+                EDITBRD_WAIT;clear();
+                return -1;
+            }
+        }
+        else{
+            bhptr=getboard(pos);
+            if(!(bhptr&&bhptr->filename[0])){
+                move(3,0);prints("错误的讨论区顺序号!");
+                EDITBRD_WAIT;clear();
+                return -1;
+            }
+            memcpy(&bh,bhptr,sizeof(struct boardheader));
+        }
+    }
+    else{
+        /*常规模式*/
+        if(!*buf){
+            move(2,0);prints("取消...");
+            EDITBRD_WAIT;clear();
+            return -1;
+        }
+        pos=getboardnum(buf,&bh);
+        if(!pos){
+            move(2,0);prints("错误的讨论区名称!");
+            EDITBRD_WAIT;clear();
+            return -1;
+        }
+    }
+    sprintf(buf,"\033[1;33mbid=%4.4d clubnum=%3.3d\033[m",pos,bh.clubnum);
+    move(0,40);prints(buf);
+    /*获取讨论区数据并构造菜单显式*/
+    memcpy(&newbh,&bh,sizeof(struct boardheader));
+    /*菜单定位*/
+    for(i=0;i<23;i++){
+        if(i<13){
+            sel[i].x=2;
+            sel[i].y=i+2;
+        }
+        else if(i<19){
+            sel[i].x=42;
+            sel[i].y=i-4;
+        }
+        else{
+            sel[i].x=2;
+            sel[i].y=i-4;
+        }
+        sel[i].type=SIT_SELECT;
+        sel[i].data=menustr[i];
+        pts[i].x=sel[i].x;
+        pts[i].y=sel[i].y;
+    }
+    /*菜单内容*/
+    /*讨论区名称*/
+    sel[0].hotkey='1';
+    sprintf(menustr[0],"%-15s%s",menuldr[0],bh.filename);
+    /*讨论区管理*/
+    sel[1].hotkey='2';
+    sprintf(menustr[1],"%-15s%s",menuldr[1],bh.BM);
+    /*讨论区说明*/
+    sel[2].hotkey='3';
+    sprintf(menustr[2],"%-15s%s",menuldr[2],&bh.title[13]);
+    /*讨论区分区*/
+    sel[3].hotkey='4';
+    sprintf(menustr[3],"%-15s<%c>",menuldr[3],bh.title[0]);
+    /*讨论区分类*/
+    sel[4].hotkey='5';
+    sprintf(menustr[4],"%-15s<%-6.6s>",menuldr[4],&bh.title[1]);
+    /*转信标签*/
+    sel[5].hotkey='6';
+    sprintf(menustr[5],"%-15s<%-6.6s>",menuldr[5],&bh.title[7]);
+    /*讨论区描述*/
+    sel[6].hotkey='7';
+    sprintf(buf,"%s",bh.des);
+    for(ptr=&buf[0];*ptr;ptr++)
+        if(*ptr==10)
+            *ptr=32;
+    sprintf(menustr[6],"%-15s%s",menuldr[6],buf[0]?buf:"<无>");
+    if(strlen(menustr[6])>76)
+        sprintf(&menustr[6][73],"...");
+    /*匿名讨论区*/
+    sel[7].hotkey='8';
+    sprintf(menustr[7],"%-15s%s",menuldr[7],(bh.flag&BOARD_ANNONY)?"是":"否");
+    /*统计文章数*/
+    sel[8].hotkey='9';
+    sprintf(menustr[8],"%-15s%s",menuldr[8],(bh.flag&BOARD_JUNK)?"否":"是");
+    /*统计十大*/
+    sel[9].hotkey='A';
+    sprintf(menustr[9],"%-15s%s",menuldr[9],(bh.flag&BOARD_POSTSTAT)?"否":"是");
+    /*目录讨论区*/
+    sel[10].hotkey='B';
+    sprintf(menustr[10],"%-15s%s",menuldr[10],(bh.flag&BOARD_GROUP)?"是":"否");
+    /*所属目录*/
+    sel[11].hotkey='C';
+    sprintf(menustr[11],"%-15s%s",menuldr[11],
+        bh.group?(!(bhptr=getboard(bh.group))?"异常":bhptr->filename):"无");
+    /*向外转信*/
+    sel[12].hotkey='D';
+    sprintf(menustr[12],"%-15s%s",menuldr[12],(bh.flag&BOARD_OUTFLAG)?"是":"否");
+    /*上传附件*/
+    sel[13].hotkey='E';
+    sprintf(menustr[13],"%-15s%s",menuldr[13],(bh.flag&BOARD_ATTACH)?"是":"否");
+    /*E-mail发文*/
+    sel[14].hotkey='F';
+    sprintf(menustr[14],"%-15s%s",menuldr[14],(bh.flag&BOARD_EMAILPOST)?"是":"否");
+    /*不可回复*/
+    sel[15].hotkey='G';
+    sprintf(menustr[15],"%-15s%s",menuldr[15],(bh.flag&BOARD_NOREPLY)?"是":"否");
+    /*读限制Club*/
+    sel[16].hotkey='H';
+    sprintf(menustr[16],"%-15s%s",menuldr[16],(bh.flag&BOARD_CLUB_READ)?"是":"否");
+    /*写限制Club*/
+    sel[17].hotkey='I';
+    sprintf(menustr[17],"%-15s%s",menuldr[17],(bh.flag&BOARD_CLUB_WRITE)?"是":"否");
+    /*隐藏Club*/
+    sel[18].hotkey='J';
+    sprintf(menustr[18],"%-15s%s",menuldr[18],
+        (bh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))?((bh.flag&BOARD_CLUB_HIDE)?"是":"否"):"无效选项");
+    /*精华区位置*/
+    sel[19].hotkey='K';
+    annstat=check_ann(&bh);
+    section=(annstat&0x020000)?-1:(annstat&0xFFFF);
+    sprintf(menustr[19],"%-15s%s <%s>",menuldr[19],
+        !(annstat&~0xFFFF)?"有效":(annstat&0x040000?"无效":"异常"),bh.ann_path);
+    if(strlen(menustr[19])>76)
+        sprintf(&menustr[19][72],"...>");
+    /*权限限制*/
+    sel[20].hotkey='L';
+    sprintf(menustr[20],"%-15s%s <%s>",menuldr[20],
+        (bh.level&~PERM_POSTMASK)?((bh.level&PERM_POSTMASK)?"发表限制":"读取限制"):"无限制",
+        gen_permstr(bh.level,buf));
+    /*身份限制*/
+    sel[21].hotkey='M';
+    sprintf(menustr[21],"%-15s%s <%d>",menuldr[21],
+#ifdef HAVE_CUSTOM_USER_TITLE
+        bh.title_level?get_user_title(bh.title_level):"无限制",
+#else
+        "无效选项",
+#endif
+        bh.title_level);
+    /*退出*/
+    sel[22].hotkey='Q';
+    sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m":"未修改");
+    sel[23].x=-1;sel[23].y=-1;sel[23].type=0;sel[23].hotkey=-1;sel[23].data=NULL;
+    /*备份*/
+    memcpy(orig,menustr,23*256);
+    currpos=23;
+    /*修改版面属性*/
+    while(loop){
+        move(1,0);clrtobot();
+        /*构造select结构*/
+        arg.items=sel;
+        arg.flag=SIF_SINGLE;
+        bzero(&conf,sizeof(struct _select_def));
+        conf.item_count=23;
+        conf.item_per_page=23;
+        conf.flag=LF_LOOP;
+        conf.prompt="◆";
+        conf.item_pos=pts;
+        conf.arg=&arg;
+        conf.title_pos.x=-1;
+        conf.title_pos.y=-1;
+        /*当前位置*/
+        conf.pos=currpos;
+        conf.on_select=editbrd_on_select;
+        conf.show_data=editbrd_show;
+        conf.key_command=editbrd_key;
+        /*选择*/
+        sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m":"未修改");
+        ret=list_select_loop(&conf);
+        currpos=conf.pos;
+        /*返回SHOW_QUIT时*/
+        if(ret==SHOW_QUIT){
+            /*取消单项修改*/
+            if(lastkey==KEY_CANCEL&&((change&(1<<(currpos-1)))||currpos==23)){
+                switch(currpos-1){
+                    /*讨论区名称或精华区位置*/
+                    case 0:
+                    case 19:
+                        sprintf(newbh.filename,"%s",bh.filename);
+                        sprintf(newbh.ann_path,"%s",bh.ann_path);
+                        sprintf(menustr[0],"%s",orig[0]);
+                        sprintf(menustr[19],"%s",orig[19]);
+                        section=(annstat&0x020000)?-1:(annstat&0xFFFF);
+                        change&=~(1<<0);
+                        change&=~(1<<19);
+                        break;
+                    /*讨论区管理*/
+                    case 1:
+                        sprintf(newbh.BM,"%s",bh.BM);
+                        sprintf(menustr[1],"%s",orig[1]);
+                        change&=~(1<<1);
+                        break;
+                    /*讨论区说明*/
+                    case 2:
+                        sprintf(&newbh.title[13],"%s",&bh.title[13]);
+                        sprintf(menustr[2],"%s",orig[2]);
+                        change&=~(1<<2);
+                        break;
+                    /*讨论区分区*/
+                    case 3:
+                        newbh.title[0]=bh.title[0];
+                        sprintf(menustr[3],"%s",orig[3]);
+                        change&=~(1<<3);
+                        break;
+                    /*讨论区分类*/
+                    case 4:
+                        memcpy(&newbh.title[1],&bh.title[1],6);
+                        sprintf(menustr[4],"%s",orig[4]);
+                        change&=~(1<<4);
+                        break;
+                    /*转信标签*/
+                    case 5:
+                        memcpy(&newbh.title[7],&bh.title[7],6);
+                        sprintf(menustr[5],"%s",orig[5]);
+                        change&=~(1<<5);
+                        break;
+                    /*讨论区描述*/
+                    case 6:
+                        sprintf(newbh.des,"%s",bh.des);
+                        sprintf(menustr[6],"%s",orig[6]);
+                        change&=~(1<<6);
+                        break;
+                    /*所属目录*/
+                    case 11:
+                        newbh.group=bh.group;
+                        sprintf(menustr[11],"%s",orig[11]);
+                        change&=~(1<<11);
+                        break;
+                    /*权限限制*/
+                    case 20:
+                        newbh.level=bh.level;
+                        sprintf(menustr[20],"%s",orig[20]);
+                        change&=~(1<<20);
+                        break;
+                    /*身份限制*/
+                    case 21:
+#ifdef HAVE_CUSTOM_USER_TITLE
+                        newbh.title_level=bh.title_level;
+                        sprintf(menustr[21],"%s",orig[21]);
+                        change&=~(1<<21);
+#endif
+                        break;
+                    /*全部重置*/
+                    case 22:
+                        memcpy(&newbh,&bh,sizeof(struct boardheader));
+                        memcpy(menustr,orig,23*256);
+                        section=(annstat&0x020000)?-1:(annstat&0xFFFF);
+                        change=0;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            /*放弃修改退出*/
+            if(lastkey==KEY_ESC){
+                if(change){
+                    move(20,0);clrtoeol();
+                    getdata(20,2,"\033[1;31m放弃修改退出? [N]: \033[m",buf,2,DOECHO,NULL,true);
+                    if(buf[0]!='y'&&buf[0]!='Y')
+                        continue;
+                }
+                return -1;
+            }
+            continue;
+        }
+        /*返回SHOW_SELECT时*/
+        switch(currpos-1){
+            /*讨论区名称*/
+            case 0:
+                move(2,0);clrtoeol();getdata(2,2,"请输入讨论区名称: ",buf,BOARDNAMELEN,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf||!strcmp(buf,newbh.filename))
+                    break;
+                /*目的讨论区已经存在*/
+                if(strcasecmp(buf,bh.filename)&&getboardnum(buf,NULL)>0){
+                    move(2,0);clrtoeol();getdata(2,2,"\033[1;31m错误: 此讨论区已经存在!\033[m",buf,1,NOECHO,NULL,true);
+                    break;
+                }
+                /*输入讨论区名称含有非法字符*/
+                if(strchr(buf,'/')||strchr(buf,' ')){
+                    move(2,0);clrtoeol();getdata(2,2,"\033[1;31m错误: 讨论区名称中含有非法字符!\033[m",buf,1,NOECHO,NULL,true);
+                    break;
+                }
+                sprintf(newbh.filename,"%s",buf);
+                /*标记修改状态*/
+                if(strcmp(bh.filename,newbh.filename)){
+                    sprintf(menustr[0],"%-15s\033[1;32m%s\033[m",menuldr[0],newbh.filename);
+                    change|=(1<<0);
+                }
+                else{
+                    sprintf(menustr[0],"%s",orig[0]);
+                    change&=~(1<<0);
+                }
+                /*修改精华区位置*/
+                if((annstat&0x020000)&&!strcmp(bh.ann_path,newbh.ann_path))
+                    section=select_group(section);
+                sprintf(newbh.ann_path,"%s/%s",groups[section],newbh.filename);
+                newbh.ann_path[127]='\0';
+                /*标记修改状态*/
+                if(strcmp(bh.ann_path,newbh.ann_path)){
+                    sprintf(menustr[19],"%-15s\033[1;32m%s\033[m <%s>",menuldr[19],
+                        (annstat&0x020000)?"待建":"待移",newbh.ann_path);
+                    if(strlen(menustr[19])>86)
+                        sprintf(&menustr[19][82],"...>");
+                    change|=(1<<19);
+                }
+                else{
+                    sprintf(menustr[19],"%s",orig[19]);
+                    change&=~(1<<19);
+                }
+                break;
+            /*讨论区管理*/
+            case 1:
+                move(3,0);clrtoeol();getdata(3,2,"请输入管理员列表: ",buf,BM_LEN,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                if(*buf==' ')
+                    newbh.BM[0]='\0';
+                else
+                    sprintf(newbh.BM,"%s",buf);
+                /*标记修改状态*/
+                if(strcmp(bh.BM,newbh.BM)){
+                    sprintf(menustr[1],"%-15s\033[1;32m%s\033[m",menuldr[1],newbh.BM);
+                    change|=(1<<1);
+                }
+                else{
+                    sprintf(menustr[1],"%s",orig[1]);
+                    change&=~(1<<1);
+                }
+                break;
+            /*讨论区说明*/
+            case 2:
+                move(4,0);clrtoeol();getdata(4,2,"请输入讨论区说明: ",buf,48,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                if(*buf==' ')
+                    newbh.title[13]='\0';
+                else
+                    sprintf(&newbh.title[13],"%s",buf);
+                /*标记修改状态*/
+                if(strcmp(&bh.title[13],&newbh.title[13])){
+                    sprintf(menustr[2],"%-15s\033[1;32m%s\033[m",menuldr[2],&newbh.title[13]);
+                    change|=(1<<2);
+                }
+                else{
+                    sprintf(menustr[2],"%s",orig[2]);
+                    change&=~(1<<2);
+                }
+                break;
+            /*讨论区分区*/
+            case 3:
+                move(5,0);clrtoeol();getdata(5,2,"请输入讨论区分区(1字符长度): ",buf,2,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                newbh.title[0]=buf[0];
+                /*标记修改状态*/
+                if(bh.title[0]!=newbh.title[0]){
+                    sprintf(menustr[3],"%-15s\033[1;32m<%c>\033[m",menuldr[3],newbh.title[0]);
+                    change|=(1<<3);
+                }
+                else{
+                    sprintf(menustr[3],"%s",orig[3]);
+                    change&=~(1<<3);
+                }
+                break;
+            /*讨论区分类*/
+            case 4:
+                move(6,0);clrtoeol();getdata(6,2,"请输入讨论区分类(4字符长度): ",buf,5,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                /*长度不足时补足*/
+                if((i=strlen(buf))<4)
+                    while(i!=4)
+                        buf[i++]=' ';
+                newbh.title[1]='[';newbh.title[6]=']';memcpy(&newbh.title[2],buf,4);
+                /*标记修改状态*/
+                if(strncmp(&bh.title[1],&newbh.title[1],6)){
+                    sprintf(menustr[4],"%-15s\033[1;32m<%-6.6s>\033[m",menuldr[4],&newbh.title[1]);
+                    change|=(1<<4);
+                }
+                else{
+                    sprintf(menustr[4],"%s",orig[4]);
+                    change&=~(1<<4);
+                }
+                break;
+            /*转信标签*/
+            case 5:
+                move(7,0);clrtoeol();getdata(7,2,"请输入转信标签(6字符长度;<#1>双向转信,<#2>单向转信): ",buf,7,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                /*预定义转信标记*/
+                if(buf[0]=='#'){
+                    switch(buf[1]){
+                        /*双向转信标记*/
+                        case '1':
+                            sprintf(buf," ●   ");
+                            break;
+                        /*单向转信标记*/
+                        case '2':
+                            sprintf(buf," ⊙   ");
+                            break;
+                        /*无转信标记*/
+                        default:
+                            sprintf(buf,"      ");
+                            break;
+                    }
+                }
+                /*长度不足时补足*/
+                if((i=strlen(buf))<6)
+                    while(i!=6)
+                        buf[i++]=' ';
+                memcpy(&newbh.title[7],buf,6);
+                /*标记修改状态*/
+                if(strncmp(&bh.title[7],&newbh.title[7],6)){
+                    sprintf(menustr[5],"%-15s\033[1;32m<%-6.6s>\033[m",menuldr[5],&newbh.title[7]);
+                    change|=(1<<5);
+                }
+                else{
+                    sprintf(menustr[5],"%s",orig[5]);
+                    change&=~(1<<5);
+                }
+                break;
+            /*讨论区描述*/
+            case 6:
+                move(1,0);clrtobot();sprintf(buf,"%s",newbh.des);
+                /*多行输入*/
+                multi_getdata(8,0,72,"请输入讨论区描述: \n",buf,195,8,false,0);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                if(*buf==' ')
+                    buf[0]=0;
+                else
+                    for(ptr=&buf[0];*ptr;ptr++)
+                        if(*ptr==10)
+                            *ptr=32;
+                sprintf(newbh.des,"%s",buf);
+                /*标记修改状态*/
+                if(strcmp(bh.des,newbh.des)){
+                    sprintf(menustr[6],"%-15s\033[1;32m%s\033[m",menuldr[6],newbh.des[0]?newbh.des:"<无>");
+                    if(strlen(menustr[6])>86)
+                        sprintf(&menustr[6][80],"...\033[m");
+                    change|=(1<<6);
+                }
+                else{
+                    sprintf(menustr[6],"%s",orig[6]);
+                    change&=~(1<<6);
+                }
+                break;
+            /*匿名讨论区*/
+            case 7:
+                newbh.flag^=BOARD_ANNONY;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_ANNONY)^(newbh.flag&BOARD_ANNONY)){
+                    sprintf(menustr[7],"%-15s\033[1;32m%s\033[m",menuldr[7],(newbh.flag&BOARD_ANNONY)?"是":"否");
+                    change|=(1<<7);
+                }
+                else{
+                    sprintf(menustr[7],"%s",orig[7]);
+                    change&=~(1<<7);
+                }
+                break;
+            /*统计文章数*/
+            case 8:
+                newbh.flag^=BOARD_JUNK;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_JUNK)^(newbh.flag&BOARD_JUNK)){
+                    sprintf(menustr[8],"%-15s\033[1;32m%s\033[m",menuldr[8],(newbh.flag&BOARD_JUNK)?"否":"是");
+                    change|=(1<<8);
+                }
+                else{
+                    sprintf(menustr[8],"%s",orig[8]);
+                    change&=~(1<<8);
+                }
+                break;
+            /*统计十大*/
+            case 9:
+                newbh.flag^=BOARD_POSTSTAT;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_POSTSTAT)^(newbh.flag&BOARD_POSTSTAT)){
+                    sprintf(menustr[9],"%-15s\033[1;32m%s\033[m",menuldr[9],(newbh.flag&BOARD_POSTSTAT)?"否":"是");
+                    change|=(1<<9);
+                }
+                else{
+                    sprintf(menustr[9],"%s",orig[9]);
+                    change&=~(1<<9);
+                }
+                break;
+            /*目录讨论区*/
+            case 10:
+                newbh.flag^=BOARD_GROUP;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_GROUP)^(newbh.flag&BOARD_GROUP)){
+                    sprintf(menustr[10],"%-15s\033[1;32m%s\033[m",menuldr[10],(newbh.flag&BOARD_GROUP)?"是":"否");
+                    change|=(1<<10);
+                }
+                else{
+                    sprintf(menustr[10],"%s",orig[10]);
+                    change&=~(1<<10);
+                }
+                break;
+            /*所属目录*/
+            case 11:
+                move(13,0);clrtoeol();getdata(13,2,"请输入所属目录: ",buf,BOARDNAMELEN,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                if(*buf==' ')
+                    newbh.group=0;
+                else{
+                    i=getbnum(buf);
+                    if(!i){
+                        move(13,0);clrtoeol();getdata(13,2,"\033[1;31m错误: 输入的讨论区不存在!\033[m",buf,1,NOECHO,NULL,true);
+                        break;
+                    }
+                    else if(!(getboard(i)->flag&BOARD_GROUP)){
+                        move(13,0);clrtoeol();getdata(13,2,"\033[1;31m错误: 输入的讨论区不是目录!\033[m",buf,1,NOECHO,NULL,true);
+                        break;
+                    }
+                    else
+                        newbh.group=i;
+                }
+                /*标记修改状态*/
+                if(bh.group!=newbh.group){
+                    sprintf(menustr[11],"%-15s\033[1;32m%s\033[m",menuldr[11],
+                        newbh.group?(!(bhptr=getboard(newbh.group))?"异常":bhptr->filename):"无");
+                    change|=(1<<11);
+                }
+                else{
+                    sprintf(menustr[11],"%s",orig[11]);
+                    change&=~(1<<11);
+                }
+                break;
+            /*向外转信*/
+            case 12:
+                newbh.flag^=BOARD_OUTFLAG;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_OUTFLAG)^(newbh.flag&BOARD_OUTFLAG)){
+                    sprintf(menustr[12],"%-15s\033[1;32m%s\033[m",menuldr[12],(newbh.flag&BOARD_OUTFLAG)?"是":"否");
+                    change|=(1<<12);
+                }
+                else{
+                    sprintf(menustr[12],"%s",orig[12]);
+                    change&=~(1<<12);
+                }
+                break;
+            /*上传附件*/
+            case 13:
+                newbh.flag^=BOARD_ATTACH;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_ATTACH)^(newbh.flag&BOARD_ATTACH)){
+                    sprintf(menustr[13],"%-15s\033[1;32m%s\033[m",menuldr[13],(newbh.flag&BOARD_ATTACH)?"是":"否");
+                    change|=(1<<13);
+                }
+                else{
+                    sprintf(menustr[13],"%s",orig[13]);
+                    change&=~(1<<13);
+                }
+                break;
+            /*E-mail发文*/
+            case 14:
+                newbh.flag^=BOARD_EMAILPOST;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_EMAILPOST)^(newbh.flag&BOARD_EMAILPOST)){
+                    sprintf(menustr[14],"%-15s\033[1;32m%s\033[m",menuldr[14],(newbh.flag&BOARD_EMAILPOST)?"是":"否");
+                    change|=(1<<14);
+                }
+                else{
+                    sprintf(menustr[14],"%s",orig[14]);
+                    change&=~(1<<14);
+                }
+                break;
+            /*不可回复*/
+            case 15:
+                newbh.flag^=BOARD_NOREPLY;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_NOREPLY)^(newbh.flag&BOARD_NOREPLY)){
+                    sprintf(menustr[15],"%-15s\033[1;32m%s\033[m",menuldr[15],(newbh.flag&BOARD_NOREPLY)?"是":"否");
+                    change|=(1<<15);
+                }
+                else{
+                    sprintf(menustr[15],"%s",orig[15]);
+                    change&=~(1<<15);
+                }
+                break;
+            /*读限制Club*/
+            case 16:
+                newbh.flag^=BOARD_CLUB_READ;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_CLUB_READ)^(newbh.flag&BOARD_CLUB_READ)){
+                    sprintf(menustr[16],"%-15s\033[1;32m%s\033[m",menuldr[16],(newbh.flag&BOARD_CLUB_READ)?"是":"否");
+                    change|=(1<<16);
+                }
+                else{
+                    sprintf(menustr[16],"%s",orig[16]);
+                    change&=~(1<<16);
+                }
+                /*非俱乐部时取消隐藏俱乐部标签*/
+                if(!(newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE)))
+                    newbh.flag&=~BOARD_CLUB_HIDE;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_CLUB_HIDE)^(newbh.flag&BOARD_CLUB_HIDE)){
+                    sprintf(menustr[18],"%-15s\033[1;32m%s\033[m",menuldr[18],
+                        (newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))?((newbh.flag&BOARD_CLUB_HIDE)?"是":"否"):"无效选项");
+                    change|=(1<<18);
+                }
+                else{
+                    sprintf(menustr[18],"%-15s%s",menuldr[18],
+                        (newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))?((newbh.flag&BOARD_CLUB_HIDE)?"是":"否"):"无效选项");
+                    change&=~(1<<18);
+                }
+                break;
+            /*写限制Club*/
+            case 17:
+                newbh.flag^=BOARD_CLUB_WRITE;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_CLUB_WRITE)^(newbh.flag&BOARD_CLUB_WRITE)){
+                    sprintf(menustr[17],"%-15s\033[1;32m%s\033[m",menuldr[17],(newbh.flag&BOARD_CLUB_WRITE)?"是":"否");
+                    change|=(1<<17);
+                }
+                else{
+                    sprintf(menustr[17],"%s",orig[17]);
+                    change&=~(1<<17);
+                }
+                /*非俱乐部时取消隐藏俱乐部标签*/
+                if(!(newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE)))
+                    newbh.flag&=~BOARD_CLUB_HIDE;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_CLUB_HIDE)^(newbh.flag&BOARD_CLUB_HIDE)){
+                    sprintf(menustr[18],"%-15s\033[1;32m%s\033[m",menuldr[18],
+                        (newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))?((newbh.flag&BOARD_CLUB_HIDE)?"是":"否"):"无效选项");
+                    change|=(1<<18);
+                }
+                else{
+                    sprintf(menustr[18],"%-15s%s",menuldr[18],
+                        (newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))?((newbh.flag&BOARD_CLUB_HIDE)?"是":"否"):"无效选项");
+                    change&=~(1<<18);
+                }
+                break;
+            /*隐藏Club*/
+            case 18:
+                /*非俱乐部*/
+                if(!(newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE)))
+                    break;
+                newbh.flag^=BOARD_CLUB_HIDE;
+                /*标记修改状态*/
+                if((bh.flag&BOARD_CLUB_HIDE)^(newbh.flag&BOARD_CLUB_HIDE)){
+                    sprintf(menustr[18],"%-15s\033[1;32m%s\033[m",menuldr[18],(newbh.flag&BOARD_CLUB_HIDE)?"是":"否");
+                    change|=(1<<18);
+                }
+                else{
+                    sprintf(menustr[18],"%-15s%s",menuldr[18],
+                        (newbh.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))?((newbh.flag&BOARD_CLUB_HIDE)?"是":"否"):"无效选项");
+                    change&=~(1<<18);
+                }
+                break;
+            /*精华区位置*/
+            case 19:
+                section=select_group(section);
+                sprintf(newbh.ann_path,"%s/%s",groups[section],newbh.filename);
+                newbh.ann_path[127]='\0';
+                /*标记修改状态*/
+                if(strcmp(bh.ann_path,newbh.ann_path)){
+                    sprintf(menustr[19],"%-15s\033[1;32m%s\033[m <%s>",menuldr[19],
+                        (annstat&0x020000)?"待建":"待移",newbh.ann_path);
+                    if(strlen(menustr[19])>86)
+                        sprintf(&menustr[19][82],"...>");
+                    change|=(1<<19);
+                }
+                else{
+                    sprintf(menustr[19],"%s",orig[19]);
+                    change&=~(1<<19);
+                }
+                break;
+            /*权限限制*/
+            case 20:
+                move(16,0);clrtoeol();getdata(16,2,"设定{读取(R)|发表(P)}权限限制或放弃设定(C): ",buf,2,DOECHO,NULL,true);
+                i=0;
+                switch(buf[0]){
+                    case 'r':
+                    case 'R':
+                        newbh.level&=~PERM_POSTMASK;
+                        break;
+                    case 'p':
+                    case 'P':
+                        newbh.level|=PERM_POSTMASK;
+                        break;
+                    case 0:
+                        break;
+                    default:
+                        i=1;
+                        break;
+                }
+                /*取消修改*/
+                if(i)
+                    break;
+                move(1,0);clrtobot();
+                move(2,0);prints("设定%s权限",newbh.level&PERM_POSTMASK?"发表":"读取");
+                newbh.level=setperms(newbh.level,0,"权限",NUMPERMS,showperminfo,NULL);
+                /*标记修改状态*/
+                if(bh.level!=newbh.level){
+                    sprintf(menustr[20],"%-15s\033[1;32m%s\033[m <%s>",menuldr[20],
+                        (newbh.level&~PERM_POSTMASK)?((newbh.level&PERM_POSTMASK)?"发表限制":"读取限制"):"无限制",
+                        gen_permstr(newbh.level,buf));
+                    change|=(1<<20);
+                }
+                else{
+                    sprintf(menustr[20],"%s",orig[20]);
+                    change&=~(1<<20);
+                }
+                break;
+            /*身份限制*/
+            case 21:
+#ifdef HAVE_CUSTOM_USER_TITLE
+                move(17,0);clrtoeol();getdata(17,2,"设定身份限制{(序号)|(#职务)}: ",buf,USER_TITLE_LEN+2,DOECHO,NULL,true);
+                /*取消修改*/
+                if(!*buf)
+                    break;
+                if(buf[0]!='#'){
+                    i=atoi(buf);
+                    sprintf(&buf[128],"%d",i);
+                    if(i>255||strcmp(buf,&buf[128])){
+                        move(17,0);clrtoeol();getdata(17,2,"\033[1;31m错误: 输入序号越界或非法!\033[m",buf,1,NOECHO,NULL,true);
+                        break;
+                    }
+                    if(i&&!*get_user_title(i)){
+                        move(17,0);clrtoeol();
+                        getdata(17,2,"\033[1;33m提示: 目前输入序号所对应的用户身份不存在,{确认(Y)|取消(N)}? [N]: \033[m",
+                            buf,2,DOECHO,NULL,true);
+                        if(buf[0]!='y'&&buf[0]!='Y')
+                            break;
+                    }
+                }
+                else{
+                    if(!buf[1])
+                        i=0;
+                    else{
+                        for(i=0;i<255;i++)
+                            if(!strcmp(get_user_title(i+1),&buf[1]))
+                                break;
+                        if(i==255){
+                            move(17,0);clrtoeol();getdata(17,2,"\033[1;31m错误: 目前尚未定制此用户身份!\033[m",
+                                buf,1,NOECHO,NULL,true);
+                            break;
+                        }
+                        i++;
+                    }
+                }
+                newbh.title_level=i;
+                /*标记修改状态*/
+                if(bh.title_level!=newbh.title_level){
+                    sprintf(menustr[21],"%-15s\033[1;32m%s\033[m <%d>",menuldr[21],
+                        newbh.title_level?get_user_title(newbh.title_level):"无限制",newbh.title_level);
+                    change|=(1<<21);
+                }
+                else{
+                    sprintf(menustr[21],"%s",orig[21]);
+                    change&=~(1<<21);
+                }
+#endif
+                break;
+            /*退出*/
+            case 22:
+                if(change){
+                    /*冲突检测及确认*/
+                    if(change&(1<<0)){
+                        sprintf(src,"boards/%s",bh.filename);
+                        sprintf(dst,"boards/%s",newbh.filename);
+                        if(!dashd(src)){
+                            move(20,0);clrtoeol();
+                            getdata(20,2,"\033[1;36m确认: 源讨论区目录不存在,是否创建? [Y]: \033[m",buf,2,DOECHO,NULL,true);
+                            if(buf[0]=='n'||buf[0]=='N')
+                                break;
+                        }
+                        if(dashd(dst)){
+                            move(20,0);clrtoeol();
+                            getdata(20,2,"\033[1;36m确认: 目的讨论区目录已存在,是否覆盖? [Y]: \033[m",buf,2,DOECHO,NULL,true);
+                            if(buf[0]=='n'||buf[0]=='N')
+                                break;
+                        }
+                    }
+                    if(change&(1<<19)){
+                        sprintf(dst,"0Announce/groups/%s",newbh.ann_path);
+                        if(dashd(dst)){
+                            move(20,0);clrtoeol();
+                            getdata(20,2,"\033[1;36m确认: 目的精华区目录已存在,是否覆盖? [Y]: \033[m",buf,2,DOECHO,NULL,true);
+                            if(buf[0]=='n'||buf[0]=='N')
+                                break;
+                        }
+                    }
+                    move(20,0);clrtoeol();
+                    getdata(20,2,"\033[1;31m确认修改讨论区属性? [N]: \033[m",buf,2,DOECHO,NULL,true);
+                    if(buf[0]!='y'&&buf[0]!='Y')
+                        break;
+                    loop=0;
+                }
+                else{
+                    clear();
+                    return -1;
+                }
+                break;
+            default:
+                break;
+        }
+    }
+    /*执行修改操作*/
+    error=0;
+    if(change&(1<<0)){
+        sprintf(src,"boards/%s",bh.filename);
+        sprintf(dst,"boards/%s",newbh.filename);
+        if(dashd(dst))
+            error|=my_f_rm(dst);
+        if(dashd(src))
+            error|=rename(src,dst);
+        else{
+            error|=mkdir(dst,0755);
+            build_board_structure(newbh.filename);
+        }
+        sprintf(src,"vote/%s",bh.filename);
+        sprintf(dst,"vote/%s",newbh.filename);
+        if(dashd(dst))
+            my_f_rm(dst);
+        if(dashd(src))
+            rename(src,dst);
+    }
+    error|=edit_group(&bh,&newbh);
+    set_board(pos,&newbh,&bh);
+    /*生成安全审核和日志*/
+    sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",pos,change,bh.filename,change&(1<<0)?32:0,newbh.filename);
+    securityreport(buf,NULL,NULL);
+    bbslog("user","%s",buf);
+    move(20,0);clrtoeol();
+    move(20,2);prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
+    EDITBRD_WAIT;clear();
+    return 0;
+}
+/*END - etnlegend,2005.07.01,修改讨论区属性*/
+
+
 int searchtrace()
 {
     int id;
