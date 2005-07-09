@@ -36,7 +36,6 @@ struct _mail_list user_mail_list;
 
 static int mail_reply(int ent,struct fileheader* fileinfo,char* direct);
 static int mail_del(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg);
-static int do_gsend(char *userid[], char *title, int num);
 static int do_mail_reply(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg);
 extern int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 
@@ -1856,8 +1855,7 @@ int g_send()
 }
 
 /*Add by SmallPig*/
-
-static int do_gsend(char *userid[], char *title, int num)
+int do_gsend(char *userid[], char *title, int num)
 {
     struct stat st;
     char buf2[256], buf3[STRLEN], buf4[STRLEN];
