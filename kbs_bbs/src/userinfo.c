@@ -227,27 +227,35 @@ int uinfo_query(struct userec *u, int real, int unum)
         if (real) {
 #ifdef HAVE_CUSTOM_USER_TITLE
 	usertitle:
-	     sprintf(genbuf, "当前职务: %s[%d](直接输入职务): ", get_user_title(u->title),u->title);
-            getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
-	     if (buf[0])
-		{
-			unsigned char ititle,tflag;
-			ititle=0;tflag=0;
-			do{
-				ititle++;
-			if(!strcmp(buf,get_user_title(ititle))){
-				newinfo.title=ititle;
-				tflag=1;
-				break;
-				}
-				}while(ititle<255);
-			if(!tflag){
-				prints("职务表内没有此职务，请先修改用户职务表\n");
-				pressreturn();
-				i--;
-				goto usertitle;
-			}
-		}
+	     sprintf(genbuf, "当前职务: %s[%d](可以直接输入职务，输入0除去职务): ", get_user_title(u->title),u->title);
+         getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
+         if (buf[0]) {
+            if (!strcmp(buf, "0")) {
+                newinfo.title = 0;
+            } else {
+                unsigned char ititle,tflag;
+                ititle = atoi(buf);
+                if (ititle > 0) {
+                    newinfo.title = ititle;
+                } else {
+                    ititle=0;tflag=0;
+                    do{
+                        ititle++;
+                        if(!strcmp(buf,get_user_title(ititle))){
+                            newinfo.title=ititle;
+                            tflag=1;
+                            break;
+                        }
+                    }while(ititle<255);
+                    if(!tflag){
+                        prints("职务表内没有此职务，请先修改用户职务表\n");
+                        pressreturn();
+                        i--;
+                        goto usertitle;
+                    }
+                }
+            }
+        }
 #endif
             sprintf(genbuf, "真实Email[%s]: ", ud.realemail);
             getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
