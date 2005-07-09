@@ -472,6 +472,9 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         if (chk_currBM(currBM, getCurrentUser())) {
             set_vard(fvars+fget_var("noreply"), ptr1->accessed[1]&FILE_READ); set_vard(fvars+fget_var("不可回复"), ptr1->accessed[1]&FILE_READ);
             set_vard(fvars+fget_var("sign"), ptr1->accessed[0]&FILE_SIGN); set_vard(fvars+fget_var("标记"), ptr1->accessed[0]&FILE_SIGN);
+#ifdef PERCENT_SIGN_SUPPORT
+	     set_vard(fvars+fget_var("percent"), ptr1->accessed[0]&FILE_PERCENT); set_vard(fvars+fget_var("百分号"), ptr1->accessed[0]&FILE_PERCENT);
+#endif
 #ifdef FILTER
             set_vard(fvars+fget_var("censor"), ptr1->accessed[1]&FILE_CENSOR); set_vard(fvars+fget_var("审核"), ptr1->accessed[1]&FILE_CENSOR);
 #endif

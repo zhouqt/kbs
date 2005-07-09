@@ -52,6 +52,9 @@ void disply_userinfo(u, real)
     prints("您的性别     : %s\n",(ud.gender=='M')?"男":"女");
 	prints("您的生日     : %d-%d-%d\n",ud.birthyear+1900,ud.birthmonth,ud.birthday);
 #endif
+#ifdef ZIXIA
+    prints("您的修炼道行 : %d\n",u->altar);
+#endif
 #ifdef HAVE_CUSTOM_USER_TITLE
     prints("您的职务: %s\n",get_user_title(u->title));
 #endif
@@ -223,10 +226,28 @@ int uinfo_query(struct userec *u, int real, int unum)
 
         if (real) {
 #ifdef HAVE_CUSTOM_USER_TITLE
-            sprintf(genbuf, "当前职务%s[%d](填数字序号): ", get_user_title(u->title),u->title);
+	usertitle:
+	     sprintf(genbuf, "当前职务: %s[%d](直接输入职务): ", get_user_title(u->title),u->title);
             getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
-            if (buf[0])
-                newinfo.title=atoi(buf);
+	     if (buf[0])
+		{
+			unsigned char ititle,tflag;
+			ititle=0;tflag=0;
+			do{
+				ititle++;
+			if(!strcmp(buf,get_user_title(ititle))){
+				newinfo.title=ititle;
+				tflag=1;
+				break;
+				}
+				}while(ititle<255);
+			if(!tflag){
+				prints("职务表内没有此职务，请先修改用户职务表\n");
+				pressreturn();
+				i--;
+				goto usertitle;
+			}
+		}
 #endif
             sprintf(genbuf, "真实Email[%s]: ", ud.realemail);
             getdata(i++, 0, genbuf, buf, STRLEN, DOECHO, NULL, true);
@@ -583,5 +604,4 @@ void x_fillform()
         fclose(fn);
     }
 }
-
 

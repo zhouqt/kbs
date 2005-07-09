@@ -217,7 +217,30 @@ int addtodeny(char *uident)
         else if ((HAS_PERM(getCurrentUser(), PERM_SYSOP) || HAS_PERM(getCurrentUser(), PERM_OBOARDS)) && !denyday && !autofree)
             break;
     }
-
+#ifdef ZIXIA
+	int ndenypic,dpcount;
+	clear();
+	dpcount=CountDenyPic(DENYPIC);
+	sprintf(filebuf, "选择封禁附图(1-%d)(0为随机选择,V为看图片)[0]:",dpcount);
+	ndenypic=-1;
+	while(ndenypic>dpcount || ndenypic<0)
+	{
+		getdata(0,0,filebuf,buf2,4, DOECHO, NULL, true);
+		if(buf2[0]=='v' ||buf2[0]=='V' )
+		{
+			ansimore(DENYPIC, 0);
+			continue;
+		}
+		if(buf2[0]=='\0')
+		{
+			ndenypic=0;
+			break;
+		}
+		if ((buf2[0] < '0') || (buf2[0] > '9'))
+		       continue; 
+		ndenypic = atoi(buf2);
+	}
+#endif
     if (denyday && autofree) {
         struct tm *tmtime;
         time_t undenytime = now + denyday * 24 * 60 * 60;
@@ -258,13 +281,16 @@ int addtodeny(char *uident)
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard->filename, denymsg);
             if (denyday)
-                fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天", denyday);
+                fprintf(fn, DENY_DESC_AUTOFREE " \x1b[4m%d\x1b[m 天", denyday);
             else
-                fprintf(fn, "您被暂时取消在该版的发文权力");
+                fprintf(fn, DENY_DESC_NOAUTOFREE);
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
-            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
+#ifdef ZIXIA
+            ndenypic=GetDenyPic(fn, DENYPIC, ndenypic, dpcount);
+#endif
+            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP DENY_NAME_SYSOP "：\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
             strcpy(getCurrentUser()->userid, "SYSOP");
             strcpy(getCurrentUser()->username, NAME_SYSOP);
@@ -278,12 +304,15 @@ int addtodeny(char *uident)
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard->filename, denymsg);
             if (denyday)
-                fprintf(fn, "您被暂时取消在该版的发文权力 \x1b[4m%d\x1b[m 天", denyday);
+                fprintf(fn, DENY_DESC_AUTOFREE " \x1b[4m%d\x1b[m 天", denyday);
             else
-                fprintf(fn, "您被暂时取消在该版的发文权力");
+                fprintf(fn, DENY_DESC_NOAUTOFREE);
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
+#ifdef ZIXIA
+            ndenypic=GetDenyPic(fn, DENYPIC, ndenypic, dpcount);
+#endif
             fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
         }
@@ -292,12 +321,14 @@ int addtodeny(char *uident)
         fn = fopen(filename, "w+");
         fprintf(fn, "由于 \x1b[4m%s\x1b[m 在 \x1b[4m%s\x1b[m 版的 \x1b[4m%s\x1b[m 行为，\n", uident, currboard->filename, denymsg);
         if (denyday)
-            fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%d\x1b[m 天。\n", denyday);
+            fprintf(fn, DENY_BOARD_AUTOFREE " \x1b[4m%d\x1b[m 天。\n", denyday);
         else
-            fprintf(fn, "您被暂时取消在该版的发文权力，到期后请回复\n");
-
+            fprintf(fn, DENY_BOARD_NOAUTOFREE "\n");
+#ifdef ZIXIA
+	GetDenyPic(fn, DENYPIC, ndenypic, dpcount);
+#endif
         if (my_flag == 0) {
-            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", saveptr->userid);
+            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP DENY_NAME_SYSOP "：\x1b[4m%s\x1b[m\n", saveptr->userid);
         } else {
             fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
         }
@@ -391,7 +422,12 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             /*
              * windinsn.04.5.17,不准封禁 guest 和 SYSOP
              */
-            if (!strcasecmp(uident,"guest") || !strcasecmp(uident,"SYSOP")) {
+            if (!strcasecmp(uident,"guest") 
+                || !strcasecmp(uident,"SYSOP")
+#ifdef ZIXIA
+                || !strcasecmp(uident,"SuperMM")
+#endif
+            ) {
                 move(3, 0);
                 prints("不能封禁 %s", uident);
                 clrtoeol();
@@ -608,9 +644,9 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         count = listfilecontent(buf);
         //etnlegend,2005.02.27,清理俱乐部版面人员↓
         if(count&&HAS_PERM(getCurrentUser(),PERM_OBOARDS))
-            getdata(1,0,"(A)增加 (I)导入 (D)删除 (C)清理 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
+             getdata(1,0,"(A)增加 (I)导入 (D)删除 (C)清理 (M)Mail所有成员 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
         else if(count)
-            getdata(1,0,"(A)增加 (I)导入 (D)删除 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
+             getdata(1,0,"(A)增加 (I)导入 (D)删除 (M)Mail所有成员 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
         else
             getdata(1,0,"(A)增加 (I)导入 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
         //etnlegend↑
@@ -811,11 +847,65 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
             fclose(fp_add);fclose(fp_skip);fclose(fp_err);
         }
         //etnlegend↑
-        /*
-         * else if ((*ans == 'M' || *ans == 'm') && count) {
-         * club_send();
-         * }
-         */
+ 	else if((*ans=='M'||*ans=='m') && count) {
+		FILE *fpMail;
+		int i;
+		int usercount=-1;
+		char *ptemp,*rc;
+		char **puser;
+		char buf4[STRLEN-38],mtitle[STRLEN];
+
+ 		if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
+                	||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
+                    break;
+			
+		if ((fpMail= fopen(buf, "r")) == NULL)
+			break;
+		ptemp=(char *)malloc(14*sizeof(char));
+		flock(fileno(fpMail), LOCK_EX);
+		do{
+			rc = fgets(ptemp,14,fpMail);
+			usercount++;
+		}while(rc!=NULL);
+		free(ptemp);
+		puser=(char **) malloc(usercount * sizeof(char *));
+		if (puser == NULL){
+			flock(fileno(fpMail), LOCK_UN);
+                	break;
+		}
+		fseek(fpMail,0,SEEK_SET);
+		for(i=0;i<usercount;i++)
+		{
+			puser[i]=(char *)malloc(14*sizeof(char));
+			fgets(puser[i],14,fpMail);
+			strtok(puser[i],"\n");
+		}
+		
+		flock(fileno(fpMail), LOCK_UN);
+		clear();
+		move(1, 0);
+            	clrtoeol();
+            	getdata(1, 0, "设定群信标题: ", buf4, 40, DOECHO, NULL, true);
+		snprintf(mtitle,FILENAME_LEN+17,"【来自%s版的群信】",currboard->filename);
+		strcat(mtitle,buf4);
+		switch (do_gsend(puser, mtitle, usercount)) {
+		case -1:
+                	prints("信件目录错误\n");
+	                break;
+		case -2:
+                	prints("取消发信\n");
+                	break;
+		case -4:
+                	prints("信箱已经超出限额\n");
+			break;
+		default:
+                	prints("信件已寄出\n");
+            	}
+		for(i=0;i<usercount;i++)
+			free(puser[i]);
+            	free(puser);
+            	pressreturn();
+ 	}
         else
             break;
 
@@ -823,3 +913,4 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     clear();
     return FULLUPDATE;
 }
+

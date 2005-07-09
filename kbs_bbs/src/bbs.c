@@ -397,7 +397,10 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
             {FILE_MARK_FLAG,0,FILE_MARKED,"标记m"},
             {FILE_NOREPLY_FLAG,1,FILE_READ,"不可Re"},
             {FILE_SIGN_FLAG,0,FILE_SIGN,"标记#"},
-            {FILE_DELETE_FLAG,1,FILE_DEL,"标记#"},
+#ifdef PERCENT_SIGN_SUPPORT
+            {FILE_PERCENT_FLAG,0,FILE_PERCENT,"标记%"},
+#endif
+            {FILE_DELETE_FLAG,1,FILE_DEL,"标记X"},
             {FILE_DIGEST_FLAG,0,FILE_DIGEST,"文摘"},
             {FILE_TITLE_FLAG,0,0,"原文"},
             {FILE_IMPORT_FLAG,0,FILE_IMPORTED,"收入精华区"},
@@ -540,7 +543,11 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         return DONOTHING;
     }
 #if !defined(NINE_BUILD) && !defined(FREE)
-    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+    if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)
+#ifdef ZIXIA
+	&& !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
+#endif
+	) {
         clear();
         move(1, 0);
         prints("本文章已经转贴过一次，无法再次转贴");
@@ -2458,7 +2465,8 @@ int add_attach(char* file1, char* file2, char* filename)
     fp=fopen(file1, "ab");
     fwrite(o,1,8,fp);
     for(i=0;i<strlen(filename);i++)
-        if(!isalnum(filename[i])&&filename[i]!='.'&&filename[i]>0) filename[i]='A';
+        if(!isalnum(filename[i])&&filename[i]!='.'&&filename[i]>0
+            &&filename[i]!='_'&&filename[i]!='-') filename[i]='A';
     fwrite(filename, 1, strlen(filename)+1, fp);
     fwrite(&size,1,4,fp);
     while((i=fread(buf,1,1024*16,fp2))) {
@@ -2470,6 +2478,8 @@ int add_attach(char* file1, char* file2, char* filename)
     unlink(file2);
     return st.st_size;
 }
+
+#define MAXATTACH 10
 
 int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_file)
 {                               /*用户 POST 文章 */
@@ -2484,6 +2494,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
     char* upload = NULL;
+    char uploadfiles[MAXATTACH][STRLEN];
+    int nUpload = 0;
     int mailback = 0;		/* stiger,回复到信箱 */
 
     char direct[PATHLEN];
@@ -2676,10 +2688,14 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             }
         } else if (ans[0] == 'U') {
             struct boardheader* b=currboard;
-            if(b->flag&BOARD_ATTACH && use_tmpl<=0) {
+            if(b->flag&BOARD_ATTACH && use_tmpl<=0 && nUpload<MAXATTACH) {
                 chdir("tmp");
-                if (upload != NULL) unlink(upload);
                 upload = bbs_zrecvfile();
+                if (upload != NULL) {
+                    strncpy(uploadfiles[nUpload], upload, 60);
+                    uploadfiles[nUpload][60] = '\0';
+                    nUpload++;
+                }
                 chdir("..");
 //				use_tmpl = -1;
             }
@@ -2868,15 +2884,18 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         after_post(getCurrentUser(), &post_file, currboard->filename, re_file, !(Anony && anonyboard),getSession());
     Anony = 0;                  /*Inital For ShowOut Signature */
 
-    if(upload) {
+    if(nUpload > 0) {
         char sbuf[PATHLEN];
-        strcpy(sbuf,"tmp/");
-        strcpy(sbuf+strlen(sbuf), upload);
+        int i;
+        for (i=0;i<nUpload; i++) {
+            strcpy(sbuf,"tmp/");
+            strcpy(sbuf+strlen(sbuf), uploadfiles[i]);
 #ifdef FILTER
-        if(returnvalue==2)
-            setbfile(filepath, FILTER_BOARD, post_file.filename);
+            if(returnvalue==2)
+                setbfile(filepath, FILTER_BOARD, post_file.filename);
 #endif
-        add_attach(filepath, sbuf, upload);
+            add_attach(filepath, sbuf, uploadfiles[i]);
+        }
     }
     
     if (!junkboard(currboard->filename)) {
@@ -5577,7 +5596,11 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
     }
     switch (func_arg->action) {
         case BM_DELETE:
-            if (!(fh->accessed[0] & FILE_MARKED)) {
+            if (!(fh->accessed[0] & (FILE_MARKED
+#ifdef PERCENT_SIGN_SUPPORT
+		| FILE_PERCENT
+#endif
+               ))) {
                 if (del_post(conf,fh,(void*)(ARG_BMFUNC_FLAG|ARG_NOPROMPT_FLAG|ARG_BMFUNC_FLAG))==DIRCHANGED)
                     ret=APPLY_REAPPLY;
             }
@@ -5598,7 +5621,11 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
             break;
         case BM_MARKDEL:
 	    if (func_arg->setflag) {
-            if (!(fh->accessed[0] & FILE_MARKED)) {
+            if (!(fh->accessed[0] & (FILE_MARKED
+#ifdef PERCENT_SIGN_SUPPORT
+                | FILE_PERCENT
+#endif
+               ))) {
                 fh->accessed[1] |= FILE_DEL;
             }
 	    } else
@@ -5829,6 +5856,9 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'m', (READ_KEY_FUNC)set_article_flag,(void*)FILE_MARK_FLAG},
     {';', (READ_KEY_FUNC)noreply_post,(void*)NULL},        /*Haohmaru.99.01.01,设定不可re模式 */
     {'#', (READ_KEY_FUNC)set_article_flag,(void*)FILE_SIGN_FLAG},           /* Bigman: 2000.8.12  设定文章标记模式 */
+#ifdef PERCENT_SIGN_SUPPORT
+    {'%', (READ_KEY_FUNC)set_article_flag,(void*)FILE_PERCENT_FLAG},           /* asing: 2004.4.16  设定文章标记模式 */
+#endif
 #ifdef FILTER
     {'@', (READ_KEY_FUNC)set_article_flag,(void*)FILE_CENSOR_FLAG},         /* czz: 2002.9.29 审核被过滤文章 */
 #endif

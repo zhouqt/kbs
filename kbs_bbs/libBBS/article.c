@@ -966,6 +966,14 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                     fh->o_groupid = re->groupid;
                     fh->o_reid = re->id;
                 }
+#ifdef ZIXIA
+                {
+                    char newtitle[STRLEN];
+                    snprintf(newtitle, ARTICLE_TITLE_LEN, "[请等候审核]%s", fh->title);
+                    mail_file(session->currentuser->userid, newpath, session->currentuser->userid, newtitle, 0, fh);
+                }
+#endif
+
 #ifdef SMTH
 #if  0
                 if (isnews)
@@ -1496,6 +1504,10 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         }
     } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
+#ifdef PERCENT_SIGN_SUPPORT
+    } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_PERCENT)) {
+        type = '%';
+#endif
 #ifdef FILTER
 #ifdef SMTH
     } else if ((ent->accessed[1] & FILE_CENSOR)
@@ -2003,7 +2015,11 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
                 if (count > id2)
                     break;      /*del end */
                 if (del_mode == 0) {
+#ifdef PERCENT_SIGN_SUPPORT
+                    if (!((savefhdr[i].accessed[0] & FILE_MARKED)||(savefhdr[i].accessed[0] & FILE_PERCENT)))
+#else
                     if (!(savefhdr[i].accessed[0] & FILE_MARKED))
+#endif
                         savefhdr[i].accessed[1] |= FILE_DEL;
                 } else {
                     savefhdr[i].accessed[1] &= ~FILE_DEL;
@@ -2033,9 +2049,12 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
                 break;          /*del end */
             if (((savefhdr[i].accessed[0] & FILE_MARKED
 #ifdef FREE
-				|| savefhdr[i].accessed[0] & FILE_DIGEST
+                || savefhdr[i].accessed[0] & FILE_DIGEST
 #endif
-											) && del_mode != 2)
+#ifdef PERCENT_SIGN_SUPPORT
+                || savefhdr[i].accessed[0] & FILE_PERCENT
+#endif
+               ) && del_mode != 2)
                 || ((id1 == 0) && (!(savefhdr[i].accessed[1] & FILE_DEL)))) {
                 memcpy(&readfhdr[keepcount], &savefhdr[i], sizeof(struct fileheader));
                 readfhdr[keepcount].accessed[1] &= ~FILE_DEL;
@@ -2397,7 +2416,14 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         else
             originFh->accessed[0] &= ~FILE_SIGN;
     }
-
+#ifdef PERCENT_SIGN_SUPPORT
+    if (flag & FILE_PERCENT_FLAG) {
+        if (data->accessed[0] & FILE_PERCENT)
+            originFh->accessed[0] |= FILE_PERCENT;
+        else
+            originFh->accessed[0] &= ~FILE_PERCENT;
+    }
+#endif
     /*
      * 标记删除 处理
      */
@@ -2446,6 +2472,15 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
 #ifdef FILTER
         if (flag & FILE_CENSOR_FLAG) {
             ret = pass_filter(originFh, board, session);
+#ifdef ZIXIA
+	if (!strcmp(board->filename, FILTER_BOARD)){
+	char ans[STRLEN];
+
+            snprintf(ans, STRLEN, "〖%s〗处理: %s", session->currentuser->userid, fileinfo->title);
+            strncpy(originFh->title, ans, ARTICLE_TITLE_LEN - 1);
+            originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
+		}
+#endif
         }
 #endif
         if (flag & FILE_ATTACHPOS_FLAG) {
