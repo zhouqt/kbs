@@ -147,7 +147,7 @@ static void convert_article_flag(struct oldfileheader *oldfh, struct fileheader 
     if (oldflag & MY_FILE_OWND)
         flag1 |= FILE_OWND;
     if (oldflag & MY_FILE_VISIT)
-        flag1 |= FILE_VISIT;
+        flag1 |= FILE_IMPORTED;
     if (oldflag & MY_FILE_MARKED)
         flag1 |= FILE_MARKED;
     if (oldflag & MY_FILE_DIGEST)
