@@ -231,6 +231,9 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ClearAllNew", clear_all_board_read_flag}, /* kcn 2002.07.18 */
     {"CheckForm", m_register},
     {"ModifyInfo", m_info},
+#ifdef ZIXIA
+    {"ModifyAltar", m_altar},	 /*asing 2005.4.25*/
+#endif
     {"ModifyLevel", x_level},
     {"QueryBUser", query_bm},
     {"ConveyID", ConveyID},    /* added by binxun 2003.5.3 */

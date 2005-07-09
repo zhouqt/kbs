@@ -1537,7 +1537,12 @@ void a_manager(MENU *pm,int ch)
             pm->page = 9999;
             break;
         case 'V':
-            if (HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+#ifndef ZIXIA
+            if (HAS_PERM(getCurrentUser(), PERM_SYSOP))
+#else
+            if (HAS_PERM(getCurrentUser(), PERM_ANNOUNCE))
+#endif
+            {
                 sprintf(fpath, "%s/.Names", pm->path);
 
                 if (dashf(fpath)) {

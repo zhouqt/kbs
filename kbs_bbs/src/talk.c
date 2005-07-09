@@ -343,7 +343,7 @@ int t_query(char* q_id)
     uinfo.destuid = tuid;
 /*    UPDATE_UTMP(destuid,uinfo);  I think it is not very importance.KCN*/
 /*    search_ulist( &uin, t_cmpuids, tuid );*/
-#ifdef FREE
+#if defined(FREE) || defined(ZIXIA)
 	move(0, 0);
 #else
     move(1, 0);
@@ -431,12 +431,18 @@ int t_query(char* q_id)
     uleveltochar(permstr, lookupuser);
     prints("生命力：[%d] 身份: [%s]%s\n",
             compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
+#elif defined(ZIXIA)
+    uleveltochar(permstr, lookupuser);
+    prints(" 信箱：[\033[5m%2s\033[m]  生命力：[%d] \n",
+           (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ", compute_user_value(lookupuser));
+    prints("修炼道行[\033[1;32m%d点\033[m]    身份: [\033[1;32m%s\033[m]%s\n",
+		//(lookupuser->userlevel & (PERM_OBOARDS | PERM_SYSOP | PERM_ADMIN))? 9999 : lookupuser->altar, 
+		lookupuser->altar,permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #else
     uleveltochar(permstr, lookupuser);
     prints("信箱：[\033[5m%2s\033[m] 生命力：[%d] 身份: [%s]%s\n",
            (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #endif
-
 
 #if defined(QUERY_REALNAMES)
     if (HAS_PERM(getCurrentUser(), PERM_BASIC))

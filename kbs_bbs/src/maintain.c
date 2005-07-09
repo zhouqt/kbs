@@ -354,7 +354,17 @@ int m_newbrd()
             break;
         prints("不合法名称...");
     }
+#ifndef ZIXIA
     getdata(4, 0, "讨论区说明:   ", newboard.title, 60, DOECHO, NULL, true);
+#else
+    while(1){
+        getdata(4, 0, "讨论区说明:   ", newboard.title, 60, DOECHO, NULL, true);
+        if (newboard.title[0] != '\0')
+        if(NoSpaceBdT(newboard.title))
+                break;
+                prints("请输入合法讨论区说明...");
+                }
+#endif
     strcpy(vbuf, "vote/");
     strcat(vbuf, newboard.filename);
     setbpath(genbuf, newboard.filename);
@@ -540,6 +550,14 @@ int m_editbrd()
                 clrtobot();
                 goto enterbname;
             }
+	    if (!valid_brdname(genbuf))
+	     	{
+	     	  move(3, 0);
+                prints("错误!非法的讨论区名称\n");
+                move(11, 0);
+                clrtobot();
+                goto enterbname;
+	     	}
             strncpy(newfh.filename, genbuf, sizeof(newfh.filename));
             strcpy(bname, genbuf);
         }
@@ -694,7 +712,11 @@ int m_editbrd()
             char secu[STRLEN];
 
             sprintf(secu, "修改讨论区：%s(%s)", fh.filename, newfh.filename);
+#ifndef ZIXIA
             securityreport(secu, NULL, NULL);
+#else
+            board_change_report(secu, &fh, &newfh);
+#endif	
             if (strcmp(fh.filename, newfh.filename)) {
                 char old[256], tar[256];
 
@@ -3001,7 +3023,8 @@ int set_BM(void){
     struct boardheader fh,newfh;
     struct userec *lookupuser,uinfo;
     struct boardheader *bptr;
-#ifdef FREE
+
+#if defined(FREE) || defined(ZIXIA)
     if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)&&!HAS_PERM(getCurrentUser(),PERM_SYSOP)&&!HAS_PERM(getCurrentUser(),PERM_OBOARDS))
 #else
     if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)||!HAS_PERM(getCurrentUser(),PERM_SYSOP))
