@@ -644,9 +644,9 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         count = listfilecontent(buf);
         //etnlegend,2005.02.27,清理俱乐部版面人员↓
         if(count&&HAS_PERM(getCurrentUser(),PERM_OBOARDS))
-             getdata(1,0,"(A)增加 (I)导入 (D)删除 (C)清理 (M)Mail所有成员 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
+             getdata(1,0,"(A)增加 (I)导入 (D)删除 (C)清理 (M)群信 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
         else if(count)
-             getdata(1,0,"(A)增加 (I)导入 (D)删除 (M)Mail所有成员 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
+             getdata(1,0,"(A)增加 (I)导入 (D)删除 (M)群信 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
         else
             getdata(1,0,"(A)增加 (I)导入 or (E)离开 [E]:",ans,7,DOECHO,NULL,true);
         //etnlegend↑
@@ -847,7 +847,7 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
             fclose(fp_add);fclose(fp_skip);fclose(fp_err);
         }
         //etnlegend↑
- 	else if((*ans=='M'||*ans=='m') && count) {
+		else if((*ans=='M'||*ans=='m') && count) {
 		FILE *fpMail;
 		int i;
 		int usercount=-1;
@@ -856,7 +856,7 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 		char buf4[STRLEN-38],mtitle[STRLEN];
 
  		if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)
-                	||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
+ 			||!HAS_PERM(getCurrentUser(), PERM_LOGINOK))
                     break;
 			
 		if ((fpMail= fopen(buf, "r")) == NULL)
@@ -871,7 +871,7 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 		puser=(char **) malloc(usercount * sizeof(char *));
 		if (puser == NULL){
 			flock(fileno(fpMail), LOCK_UN);
-                	break;
+			break;
 		}
 		fseek(fpMail,0,SEEK_SET);
 		for(i=0;i<usercount;i++)
@@ -884,31 +884,29 @@ int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 		flock(fileno(fpMail), LOCK_UN);
 		clear();
 		move(1, 0);
-            	clrtoeol();
-            	getdata(1, 0, "设定群信标题: ", buf4, 40, DOECHO, NULL, true);
+		clrtoeol();
+		getdata(1, 0, "设定群信标题: ", buf4, 40, DOECHO, NULL, true);
 		snprintf(mtitle,FILENAME_LEN+17,"【来自%s版的群信】",currboard->filename);
 		strcat(mtitle,buf4);
 		switch (do_gsend(puser, mtitle, usercount)) {
 		case -1:
-                	prints("信件目录错误\n");
-	                break;
+			prints("信件目录错误\n");
+			break;
 		case -2:
-                	prints("取消发信\n");
-                	break;
+			prints("取消发信\n");
+			break;
 		case -4:
-                	prints("信箱已经超出限额\n");
+			prints("信箱已经超出限额\n");
 			break;
 		default:
-                	prints("信件已寄出\n");
-            	}
+			prints("信件已寄出\n");
+		}
 		for(i=0;i<usercount;i++)
 			free(puser[i]);
-            	free(puser);
-            	pressreturn();
- 	}
-        else
-            break;
-
+		free(puser);
+		pressreturn();
+ 		} else
+			break;
     }
     clear();
     return FULLUPDATE;
