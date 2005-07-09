@@ -762,3 +762,232 @@ int auto_register(char* userid,char* email,int msize)
 	return 0;
 }
 
+
+
+
+/* zixia addon */
+#ifdef BBSMAIN
+/*asing add*/
+int NoSpaceBdT(char *title)
+{
+	char ch;
+	ch =*title++;
+	if (!isalnum(ch))
+		return 0;
+	title+=12;
+
+	while ((ch = *title) != '\0') {
+		if(ch ==' ')
+			*title='_';
+		title++;
+		}
+	return 1;
+}
+
+int GetDenyPic(FILE* denyfile,char * fn,unsigned int i,int count)
+{
+    FILE* fp;
+    char buf[500];
+
+    if (!(count>0))
+        return 0;
+    if(i==0)
+         i=rand()%count;
+        else i--;
+    count=0;
+
+    fp=fopen(fn, "r");
+    while(!feof(fp)) {
+        if(!fgets(buf, 500, fp)) break;
+        if(strstr(buf, "@denypic@")) count++;
+        else {
+            if(count==i) fprintf(denyfile,"%s", buf);
+        }
+        if(count>i) break;
+    }
+    fclose(fp);
+        return ++i;
+}
+int CountDenyPic(char *fn)
+{
+    FILE* fp;
+    char buf[500];
+    int count=1;
+    fp=fopen(fn, "r");
+    if(!fp) return 0;
+    while(!feof(fp)) {
+        if(!fgets(buf, 500, fp)) break;
+        if(strstr(buf, "@denypic@")) count++;
+    }
+    fclose(fp);
+        return count;
+}
+
+int m_altar()  //asing 05.06.21
+{
+    int id;
+    struct userec *lookupuser;
+    char genbuf[1024];
+
+    clear();
+    stand_title("修改使用者修炼道行");
+    move(1, 0);
+    usercomplete("请输入使用者代号: ", genbuf);
+    if (*genbuf == '\0') {
+        clear();
+        return -1;
+    }
+    if (!(id = getuser(genbuf, &lookupuser))) {
+        move(3, 0);
+        prints(MSG_ERR_USERID);
+        clrtoeol();
+        pressreturn();
+        clear();
+        return -1;
+    }
+
+    move(1, 0);
+    clrtobot();
+    uinfo_altar(lookupuser) ;
+    return 0;
+}
+
+int uinfo_altar(struct userec *u) //asing 05.06.21
+{
+int lalt,i,oldalt;
+char ans[3],buf[STRLEN],genbuf[STRLEN];
+char secu[STRLEN];
+
+ clear();
+ i = 3;
+move(i++, 0);
+prints("使用者代号: %s\n", u->userid);
+i++;
+sprintf(genbuf,"用户当前修炼道行[%d点]\n请输入道行增加的点数(输入负表示减少): ",u->altar);
+        getdata(i++, 0, genbuf, buf, 16, DOECHO, NULL, true);
+        i++;
+       lalt = atoi(buf);
+if (lalt > 0 || ('\0' == buf[1] && '0' == *buf) || lalt<0)
+    for (;;)
+        {
+        getdata(i+1, 0, "确定要改变吗?  (Yes or No): ", ans, 2, DOECHO, NULL, true);
+        if (*ans == 'n' || *ans == 'N')
+            break;
+        if (*ans == 'y' || *ans == 'Y') {
+                oldalt=u->altar;
+                 u->altar += lalt;
+                 sprintf(secu, "修改 %s 的道行,%d->%d", u->userid,oldalt,u->altar);
+                securityreport(secu, u, NULL);
+                break;
+                }
+        }
+        clear();
+        return 0;
+}
+
+int board_change_report(char *log, struct boardheader *oldbh, struct boardheader *newbh)
+{
+                //详细显示修改内容asing add 2005.4.12
+                //由于fileheader比较大，现有结构下也无法传到
+                //securityreport函数，因此单独处理之
+                FILE *se;
+                char fname[STRLEN];
+
+	/* quick and dirty way... */
+	struct boardheader fh = *oldbh;
+	struct boardheader newfh = *newbh;
+	char vbuf[256];
+	const struct boardheader *bh = NULL;
+	const char *groupname = "";
+
+                gettmpfilename( fname, "security" );
+         if ((se = fopen(fname, "w")) != NULL) {
+                 fprintf(se, "系统安全记录系统\n\033[32m原因：%s\033[m\n", log);
+                fprintf(se,"\033[31m以下是版面的原先设定\033[m\n");
+        //if(strcmp(fh.filename,newfh.filename) || strcmp(fh.BM,newfh.BM))
+    fprintf(se,"讨论区名称:   %s ; 管理员:%s\n", fh.filename, fh.BM);
+        //if(strcmp(fh.title,newfh.title))
+        fprintf(se,"讨论区说明:   %s\n", fh.title);
+
+        //if(strcmp(fh.des,newfh.des))
+        //      {
+        strncpy(vbuf, fh.des, 60);
+        vbuf[60]=0;
+        if(strlen(fh.des) > strlen(vbuf)) strcat(vbuf, "...");
+        fprintf(se,"讨论区描述: %s\n", vbuf);
+        //      }
+    fprintf(se,"匿名讨论区: %s  不记文章数: %s  不统计十大: %s  是否是目录: %s\n",
+        ((fh.flag & BOARD_ANNONY)) ? "Yes" : "No", (fh.flag & BOARD_JUNK) ? "Yes" : "No", (fh.flag & BOARD_POSTSTAT) ? "Yes" : "No", (fh.flag & BOARD_GROUP) ? "Yes" : "No");
+    if (fh.group) {
+        bh=getboard(fh.group);
+        if (bh) groupname=bh->filename;
+    }
+    fprintf(se,"所属目录：%s\n",bh?groupname:"无");
+    fprintf(se,"可向外转信: %s  可粘贴附件: %s 允许Email发文: %s 不可re文: %s\n",
+                        (fh.flag & BOARD_OUTFLAG) ? "Yes" : "No",
+                        (fh.flag & BOARD_ATTACH) ? "Yes" : "No",
+                        (fh.flag & BOARD_EMAILPOST) ? "Yes" : "No",
+                        (fh.flag & BOARD_NOREPLY) ? "Yes" : "No");
+    if (fh.flag & BOARD_CLUB_READ || fh.flag & BOARD_CLUB_WRITE)
+        fprintf(se,"俱乐部:   %s %s %s  序号: %d\n", fh.flag & BOARD_CLUB_READ ? "阅读限制" : "", fh.flag & BOARD_CLUB_WRITE ? "发表限制" : "", fh.flag & BOARD_CLUB_HIDE ? "隐藏" : "", fh.clubnum);
+    else
+        fprintf(se,"%s", "俱乐部:   无\n");
+    fprintf(se,"限制 %s 权力: %s"
+#ifdef HAVE_CUSTOM_USER_TITLE
+        "      需要的用户职务: %s(%d)"
+#endif
+        ,
+        (fh.level & PERM_POSTMASK) ? "POST" : "READ",
+        (fh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限"
+#ifdef HAVE_CUSTOM_USER_TITLE
+        ,fh.title_level? get_user_title(fh.title_level):"无",fh.title_level
+#endif
+        );
+
+                fprintf(se,"\n\033[31m以下是版面被修改后的属性\033[m\n");
+
+        fprintf(se,"讨论区名称:   %s ; 管理员:%s\n", newfh.filename, newfh.BM);
+    fprintf(se,"讨论区说明:   %s\n", newfh.title);
+
+        strncpy(vbuf, newfh.des, 60);
+        vbuf[60]=0;
+        if(strlen(newfh.des) > strlen(vbuf)) strcat(vbuf, "...");
+    fprintf(se,"讨论区描述: %s\n", vbuf);
+
+    fprintf(se,"匿名讨论区: %s  不记文章数: %s  不统计十大: %s  是否是目录: %s\n",
+        (newfh.flag & BOARD_ANNONY) ? "Yes" : "No", (newfh.flag & BOARD_JUNK) ? "Yes" : "No", (newfh.flag & BOARD_POSTSTAT) ? "Yes" : "No", (newfh.flag & BOARD_GROUP) ? "Yes" : "No");
+    if (newfh.group) {
+        bh=getboard(newfh.group);
+        if (bh) groupname=bh->filename;
+    }
+    fprintf(se,"所属目录：%s\n",bh?groupname:"无");
+    fprintf(se,"可向外转信: %s  可粘贴附件: %s 允许Email发文: %s 不可re文: %s\n",
+                        (newfh.flag & BOARD_OUTFLAG) ? "Yes" : "No",
+                        (newfh.flag & BOARD_ATTACH) ? "Yes" : "No",
+                        (newfh.flag & BOARD_EMAILPOST) ? "Yes" : "No",
+                        (newfh.flag & BOARD_NOREPLY) ? "Yes" : "No");
+    if (newfh.flag & BOARD_CLUB_READ || newfh.flag & BOARD_CLUB_WRITE)
+        fprintf(se,"俱乐部:   %s %s %s  序号: %d\n", newfh.flag & BOARD_CLUB_READ ? "阅读限制" : "", newfh.flag & BOARD_CLUB_WRITE ? "发表限制" : "", newfh.flag & BOARD_CLUB_HIDE ? "隐藏" : "", newfh.clubnum);
+    else
+        fprintf(se,"%s", "俱乐部:   无\n");
+    fprintf(se,"限制 %s 权力: %s"
+#ifdef HAVE_CUSTOM_USER_TITLE
+        "      需要的用户职务: %s(%d)"
+#endif
+        ,
+        (newfh.level & PERM_POSTMASK) ? "POST" : "READ",
+        (newfh.level & ~PERM_POSTMASK) == 0 ? "不设限" : "有设限"
+#ifdef HAVE_CUSTOM_USER_TITLE
+        ,newfh.title_level? get_user_title(newfh.title_level):"无",newfh.title_level
+#endif
+        );
+
+                fprintf(se, "\n\n\033[32m以下是修改者个人资料\033[m");
+                getuinfo(se, getCurrentUser());
+                fclose(se);
+                post_file(getCurrentUser(), "", fname, "syssecurity", log, 0, 2, getSession());
+                }
+                unlink(fname);
+	return 0;
+}
+#endif

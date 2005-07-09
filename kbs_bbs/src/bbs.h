@@ -237,7 +237,7 @@ extern long ti;
 
 #define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
 #define FILE_OWND  0x2          /* accessed array */
-#define FILE_VISIT 0x4
+#define FILE_PERCENT 0x4	/*%±Íº«*/
 #define FILE_MARKED 0x8
 #define FILE_DIGEST 0x10      /* Digest Mode*/  /*For SmallPig Digest Mode */
 #define FILE_REPLIED 0x20       /* in mail ,added by alex, 96.9.7 */
@@ -441,7 +441,7 @@ typedef size_t socklen_t;
 #define FILE_DING_FLAG 0x200	/* stiger,÷√∂• */
 #define FILE_EFFSIZE_FLAG 0x400
 #define FILE_COMMEND_FLAG 0x800
-
+#define FILE_PERCENT_FLAG 0x1000
 /* 
   0-1 locks used sem count
   @author kxn

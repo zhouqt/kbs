@@ -48,6 +48,7 @@ void scroll();
 void rscroll();
 void outline(char *s);
 
+int do_gsend(char *userid[], char *title, int num);
 
 /* newio.c */
 extern bool enableESC;

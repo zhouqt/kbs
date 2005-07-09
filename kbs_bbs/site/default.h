@@ -441,6 +441,13 @@
 #define PASSWD_PROMPT		"请输入密码"
 #endif
 
+#ifndef DENY_NAME_SYSOP
+#define DENY_DESC_AUTOFREE	"您被暂时取消在该版的发文权力"
+#define DENY_DESC_NOAUTOFREE	DENY_DESC_AUTOFREE
+#define DENY_BOARD_AUTOFREE	"被暂时取消在本版的发文权力"
+#define DENY_BOARD_NOAUTOFREE	"被暂时取消在该版的发文权力，到期后请回复"
+#define DENY_NAME_SYSOP		"值班站务"
+#endif
 
 #ifndef NUMPERMS
 /* 权限位定义 */

@@ -100,7 +100,7 @@
 #define LIFE_DAY_NEW		30	//15
 #define LIFE_DAY_SUICIDE	15	//15
 
-#define DAY_DELETED_CLEAN	20	//20
+#define DAY_DELETED_CLEAN	97	//20
 #define SEC_DELETED_OLDHOME	0 	/*  3600*24*30，注册新用户如果存在这个用户的目录，保留时间*/
 
 #define	REGISTER_WAIT_TIME	(1) // (72*60*60)
@@ -353,4 +353,28 @@ typedef struct fileheader fileheader_t;
 attach define
 */
 #define ATTACHTMPPATH "boards/_attach"
+
+/* zixia addon */
+/*asing add*/
+
+#define PERCENT_SIGN_SUPPORT
+
+int NoSpaceBdT(char *title);
+
+#define DENYPIC "0Announce/groups/AxFaction/heaven/denypic"
+#define DENY_DESC_AUTOFREE      "您被放入炼丹炉火炼"
+#define DENY_DESC_NOAUTOFREE  	"您被压入五行山下"
+#define DENY_BOARD_AUTOFREE     "被剥夺唧唧歪歪权利，放入炼丹炉火炼"
+#define DENY_BOARD_NOAUTOFREE   "被压入五行山下"
+#define DENY_NAME_SYSOP         "云游神仙"
+
+int CountDenyPic(char *fn);
+int GetDenyPic(FILE* denyfile,char * fn,unsigned int i,int count);
+
+int m_altar();
+struct userec;
+int uinfo_altar(struct userec *u);
+struct boardheader;
+int board_change_report(char *log, struct boardheader *old, struct boardheader *new);
+
 #endif
