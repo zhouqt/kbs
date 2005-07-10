@@ -347,6 +347,7 @@ int x_level()
     return 0;
 }
 
+#if 0
 int XCheckLevel()
 {                               /* Leeward 98.06.05 */
     unsigned int newlevel;
@@ -455,6 +456,95 @@ int XCheckLevel()
     clear();
     return 0;
 }
+#endif
+
+
+
+
+
+/*etnlegend,2005.07.10*/
+struct check_level_arg{
+    int check_mode;
+    int count;
+    unsigned int check_level;
+    FILE *log_file;
+};
+static int check_level_func(struct userec *user,struct check_level_arg* arg){
+    char perm[32];
+    if(!user->userid[0])
+        return 0;
+    if(!arg->check_mode){
+        if((user->userlevel&arg->check_level)^arg->check_level)
+            return 0;
+    }
+    else{
+        if(!(user->userlevel&arg->check_level))
+            return 0;
+    }
+    fprintf(arg->log_file,"%-24.24s%s\n",user->userid,gen_permstr(user->userlevel,perm));
+    arg->count++;
+    return 0;
+}
+int XCheckLevel(void){
+    struct check_level_arg arg;
+    char buf[40],perm[32];
+    int i;
+    modify_user_mode(ADMIN);
+    if(!check_systempasswd())
+        return -1;
+    clear();
+    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||!HAS_PERM(getCurrentUser(),PERM_ADMIN)){
+        move(2,0);
+        prints("查阅用户权限需要同时具有SYSOP权限和ADMIN权限...");
+        pressreturn();
+        return -1;
+    }
+    move(0,0);prints("\033[1;32m查阅具有特定权限的用户\033[m");
+    move(2,0);prints("设定需要查阅的权限:");
+    arg.check_level=setperms(0,0,"权限",NUMPERMS,showperminfo,NULL);
+    for(arg.count=0,i=0;i<NUMPERMS;i++)
+        if(arg.check_level&(1<<i))
+            arg.count++;
+    if(!arg.count){
+        move(2,0);clrtoeol();
+        prints("未设定需要查阅的权限,放弃操作...");
+        pressreturn();
+        return -1;
+    }
+    arg.check_mode=0;
+    if(arg.count>1){
+        do{
+            move(2,0);clrtoeol();
+            getdata(2,0,"已设定多个需要查阅的权限,请选择逻辑关系{与(And)|或(Or)} [A]: ",buf,2,DOECHO,NULL,true);
+        }
+        while(buf[0]&&!(buf[0]=='a'||buf[0]=='o'||buf[0]=='A'||buf[0]=='O'));
+        arg.check_mode=(buf[0]=='o'||buf[0]=='O')?1:0;
+    }
+    sprintf(buf,"tmp/check_level_%ld_%d",time(NULL),getpid());
+    if(!(arg.log_file=fopen(buf,"w"))){
+        move(2,0);clrtoeol();
+        prints("创建临时文件错误,操作中断...");
+        pressreturn();
+        return -1;
+    }
+    fprintf(arg.log_file,"\033[1;32m查阅具有特定权限的用户·查询结果\033[m\n\n");
+    fprintf(arg.log_file,"权限设定 \033[1;33m%s\033[m <%s>\n\n",gen_permstr(arg.check_level,perm),arg.check_mode?"OR":"AND");
+    arg.count=0;
+    apply_users((int (*)(struct userec*,char*))check_level_func,(char*)&arg);
+    fprintf(arg.log_file,"\n共 \033[1;33m%d\033[m 位用户符合查询条件\n",arg.count);
+    fclose(arg.log_file);
+    move(2,0);clrtoeol();
+    prints("\033[1;36m查阅具有特定权限的用户·查询结果 已回寄, 请检查信件...\033[m");
+    mail_file(getCurrentUser()->userid,buf,getCurrentUser()->userid,"查阅具有特定权限的用户·查询结果",BBSPOST_MOVE,NULL);
+    securityreport("查阅具有特定权限的用户",NULL,NULL);
+    bbslog("user","%s","查阅具有特定权限的用户");
+    pressreturn();clear();
+    return 0;
+}
+
+
+
+
 
 int Xdelipacl()
 {

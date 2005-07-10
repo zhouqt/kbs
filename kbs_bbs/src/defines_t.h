@@ -150,6 +150,7 @@ int set_mailgroup_list();
 /* maintain.c */
 int check_systempasswd();
 void stand_title(char *title);
+char* gen_permstr(unsigned int,char*);
 int del_grp(char bname[STRLEN], char title[STRLEN]);
 void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN]);
 void deliverreport(char *title,char *str);
