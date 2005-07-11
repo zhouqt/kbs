@@ -835,24 +835,22 @@ unsigned int check_ann(struct boardheader* bh){
 }
 /*构造list_select_loop所需结构*/
 struct _simple_select_arg{
-    const struct _select_item* items;
+    const struct _select_item *items;
     int flag;
 };
-static int editbrd_on_select(struct _select_def* conf){
+static int editbrd_on_select(struct _select_def *conf){
     return SHOW_SELECT;
 }
-static int editbrd_show(struct _select_def* conf,int i){
-    struct _simple_select_arg* arg=(struct _simple_select_arg*)conf->arg;
+static int editbrd_show(struct _select_def *conf,int i){
+    struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
     outs((char*)((arg->items[i-1]).data));
     return SHOW_CONTINUE;
 }
-static int editbrd_key(struct _select_def* conf,int key){
+static int editbrd_key(struct _select_def *conf,int key){
     struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
     int i;
     lastkey=key;
-    if(key==KEY_ESC)
-        return SHOW_QUIT;
-    if(key==KEY_CANCEL)
+    if(key==KEY_ESC||key==KEY_CANCEL)
         return SHOW_QUIT;
     for(i=0;i<conf->item_count;i++)
         if(toupper(key)==toupper(arg->items[i].hotkey)){
@@ -861,8 +859,12 @@ static int editbrd_key(struct _select_def* conf,int key){
         }
     return SHOW_CONTINUE;
 }
+static int editbrd_refresh(struct _select_def *conf){
+    move(3,0);clrtobot();
+    return SHOW_CONTINUE;
+}
 /*选择讨论区分区或精华区分区*/
-int select_group(int pos){
+int select_group(int pos,int force){
     /*使用了SECNUM宏*/
     struct _select_item sel[SECNUM+1];
     struct _select_def conf;
@@ -890,8 +892,9 @@ int select_group(int pos){
     arg.flag=SIF_SINGLE;
     bzero(&conf,sizeof(struct _select_def));
     conf.item_count=SECNUM;
-    conf.item_per_page=SECNUM;
-    conf.flag=LF_LOOP;
+    conf.item_per_page=18;
+    conf.page_pos=1;
+    conf.flag=LF_LOOP|LF_MULTIPAGE;
     conf.prompt="◆";
     conf.item_pos=pts;
     conf.arg=&arg;
@@ -902,11 +905,69 @@ int select_group(int pos){
     conf.on_select=editbrd_on_select;
     conf.show_data=editbrd_show;
     conf.key_command=editbrd_key;
+    conf.show_title=editbrd_refresh;
     /*选择分区*/
     move(1,0);clrtobot();
     move(2,4);prints("\033[1;33m请选择精华区所在分区\033[m");
-    list_select_loop(&conf);
-    return conf.pos-1;
+    do
+        i=list_select_loop(&conf);
+    while(force&&i!=SHOW_SELECT);
+    return i==SHOW_SELECT?conf.pos-1:-1;
+}
+int select_user_title(char *prefix){
+    struct _select_item sel[257];
+    struct _select_def conf;
+    struct _simple_select_arg arg;
+    POINT pts[256];
+    char menustr[256][32],*user_title;
+    unsigned char title_buf[256];
+    int i,pos;
+    /*构造菜单显示*/
+    pos=0;
+    sel[pos].x=4;sel[pos].y=4;sel[pos].hotkey=-1;sel[pos].type=SIT_SELECT;sel[pos].data=menustr[pos];
+    sprintf(menustr[pos],"[ %3d ] 无身份定义",pos);title_buf[pos]=0;
+    pts[pos].x=sel[pos].x;pts[pos].y=sel[pos].y;
+    for(pos++,i=0;i<255;i++){
+        user_title=get_user_title(i+1);
+        if(!*user_title)
+            continue;
+        if(prefix&&strcmp(user_title,prefix))
+            continue;
+        sel[pos].x=(pos%36<18?4:44);
+        sel[pos].y=pos%18+4;
+        sel[pos].hotkey=-1;
+        sel[pos].type=SIT_SELECT;
+        sel[pos].data=menustr[pos];
+        sprintf(menustr[pos],"[ %3d ] <%s>",i+1,user_title);
+        title_buf[pos]=i+1;
+        pts[pos].x=sel[pos].x;
+        pts[pos].y=sel[pos].y;
+        pos++;
+    }
+    sel[pos].x=-1;sel[pos].y=-1;sel[pos].hotkey=-1;sel[pos].type=0;sel[pos].data=NULL;
+    /*构造select结构*/
+    arg.items=sel;
+    arg.flag=SIF_SINGLE;
+    bzero(&conf,sizeof(struct _select_def));
+    conf.item_count=pos;
+    conf.item_per_page=36;
+    conf.page_pos=1;
+    conf.flag=LF_LOOP|LF_MULTIPAGE;
+    conf.prompt="◆";
+    conf.item_pos=pts;
+    conf.arg=&arg;
+    conf.title_pos.x=-1;
+    conf.title_pos.y=-1;
+    /*初始位置*/
+    conf.pos=(!prefix?1:2);
+    conf.on_select=editbrd_on_select;
+    conf.show_data=editbrd_show;
+    conf.key_command=editbrd_key;
+    conf.show_title=editbrd_refresh;
+    /*选择用户身份*/
+    move(1,0);clrtobot();
+    move(2,4);prints("\033[1;33m请选择用户身份\033[m");
+    return (list_select_loop(&conf)==SHOW_SELECT?title_buf[conf.pos-1]:-1);
 }
 /*修改讨论区属性维护主函数*/
 int new_m_editbrd(void){
@@ -1096,7 +1157,7 @@ int new_m_editbrd(void){
 #else
         "无效选项",
 #endif
-        bh.title_level);
+        (unsigned char)bh.title_level);
     /*退出*/
     sel[22].hotkey='Q';
     sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m":"未修改");
@@ -1253,7 +1314,7 @@ int new_m_editbrd(void){
                 }
                 /*修改精华区位置*/
                 if((annstat&0x020000)&&!strcmp(bh.ann_path,newbh.ann_path))
-                    section=select_group(section);
+                    section=select_group(section,1);
                 sprintf(newbh.ann_path,"%s/%s",groups[section],newbh.filename);
                 newbh.ann_path[127]='\0';
                 /*标记修改状态*/
@@ -1621,7 +1682,10 @@ int new_m_editbrd(void){
                 break;
             /*精华区位置*/
             case 19:
-                section=select_group(section);
+                if((i=select_group(section,0))==-1)
+                    break;
+                else
+                    section=i;
                 sprintf(newbh.ann_path,"%s/%s",groups[section],newbh.filename);
                 newbh.ann_path[127]='\0';
                 /*标记修改状态*/
@@ -1677,11 +1741,11 @@ int new_m_editbrd(void){
             /*身份限制*/
             case 21:
 #ifdef HAVE_CUSTOM_USER_TITLE
-                move(17,0);clrtoeol();getdata(17,2,"设定身份限制{(序号)|(#职务)}: ",buf,USER_TITLE_LEN+2,DOECHO,NULL,true);
+                move(17,0);clrtoeol();getdata(17,2,"设定身份限制{(序号)|(#职务)|(*)}: ",buf,USER_TITLE_LEN+2,DOECHO,NULL,true);
                 /*取消修改*/
                 if(!*buf)
                     break;
-                if(buf[0]!='#'){
+                if(buf[0]!='#'&&buf[0]!='*'){
                     i=atoi(buf);
                     sprintf(&buf[128],"%d",i);
                     if(i>255||strcmp(buf,&buf[128])){
@@ -1696,26 +1760,34 @@ int new_m_editbrd(void){
                             break;
                     }
                 }
+                else if(buf[0]=='*'){
+                    i=select_user_title(NULL);
+                    if(i==-1)
+                        break;
+                }
                 else{
                     if(!buf[1])
                         i=0;
                     else{
-                        for(i=0;i<255;i++)
-                            if(!strcmp(get_user_title(i+1),&buf[1]))
-                                break;
-                        if(i==255){
+                        unsigned char count,first;
+                        for(count=0,first=0,i=0;i<255;i++)
+                            if(!strcmp(get_user_title(i+1),&buf[1])&&!count++)
+                                first=i+1;
+                        if(!count){
                             move(17,0);clrtoeol();getdata(17,2,"\033[1;31m错误: 目前尚未定制此用户身份!\033[m",
                                 buf,1,NOECHO,NULL,true);
                             break;
                         }
-                        i++;
+                        i=(count==1?first:select_user_title(&buf[1]));
+                        if(i==-1)
+                            break;
                     }
                 }
                 newbh.title_level=i;
                 /*标记修改状态*/
                 if(bh.title_level!=newbh.title_level){
                     sprintf(menustr[21],"%-15s\033[1;32m%s\033[m <%d>",menuldr[21],
-                        newbh.title_level?get_user_title(newbh.title_level):"无限制",newbh.title_level);
+                        newbh.title_level?get_user_title(newbh.title_level):"无限制",(unsigned char)newbh.title_level);
                     change|=(1<<21);
                 }
                 else{
@@ -2465,9 +2537,7 @@ char *logfile, *regfile;
             move(1, 0);
             prints("帐号位置     : %d   共有 %d 张注册单，当前为第 %d 张，还剩 %d 张\n", unum, total_num, count, sum - count + 1);    /*Haohmaru.2000.3.9.计算还有多少单子没处理 */
             count++;
-#if defined(AUTO_CHECK_REGISTER_FORM) || defined(ZIXIA)
             disply_userinfo(&uinfo, 2);
-#endif
 			
 			read_userdata(lookupuser->userid, &ud);
 			useproxy = check_proxy_IP(uinfo.lasthost, buf);
