@@ -17,8 +17,8 @@ innbbsd:  转信程序
 
 获得代码之后生成 configure 文件：
 
-在 kbs_bbs, sshbbsd 目录下分别
-aclocal; libtoolize; autoheader; automake -a; autoconf;
+在 kbs_bbs, sshbbsd 目录下分别运行
+	./autogen.sh
 
 之后，就可以按照正常方式安装使用 BBS 代码了。
 
