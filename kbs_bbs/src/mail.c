@@ -1259,7 +1259,7 @@ static int mail_edit(struct _select_def* conf, struct fileheader *fileinfo,void*
 
         if(stat(genbuf,&st) != -1) {
             int diff = before - st.st_size;
-            if (getCurrentUser()->usedspace > diff)
+            if (diff <= 0 || getCurrentUser()->usedspace > diff)
                 getCurrentUser()->usedspace -= diff;
             else
                 getCurrentUser()->usedspace = 0;
