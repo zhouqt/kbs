@@ -33,15 +33,16 @@ extern int selboard;            /* THis flag is true if above is active */
 
 extern char genbuf[1024];       /* generally used global buffer */
 
-extern struct commands cmdlist[];       /* main menu command list */
-
 extern jmp_buf byebye;          /* Used for exception condition like I/O error */
 
+#if 0
+extern struct commands cmdlist[];       /* main menu command list */
 extern struct commands xyzlist[];       /* These are command lists for all the */
 extern struct commands talklist[];      /* sub-menus */
 extern struct commands maillist[];
 extern struct commands dellist[];
 extern struct commands maintlist[];
+#endif
 
 extern char save_title[];       /* These are used by the editor when inserting */
 extern int in_mail;
