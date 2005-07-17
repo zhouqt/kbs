@@ -71,7 +71,7 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
 然后再新建一个 guest 帐号(kbsbbs 的 www 模块要求系统中必须有 guest 用户)。
 
     其他的管理功能比如开版操作可以用 SYSOP 帐号进行，可以参考 kbsbbs 中
-doc/ 目录的文件及 BBS 水木清华站 (http://www.kbs.org) BBSMan_Dev 版的文章。
+doc/ 目录的文件及 水木社区 (http://newsmth.net/) BBSMan_Dev 版的文章。
 
 5. 配置 apache 和 php
     下面这些步骤同样用 root 用户进行。
