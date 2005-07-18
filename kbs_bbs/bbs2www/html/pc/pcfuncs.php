@@ -44,7 +44,7 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 <?php
         if ( func_num_args() > 1) {
 ?>
-<title><?php echo $title; ?></title>
+<title><?php echo $title; ?> </title>
 <?php   }
 	if($cssfile!="" )
 	{
