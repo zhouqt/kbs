@@ -141,6 +141,7 @@ function bbsconfirm(url,infor){
 		<td class="mt2" width="100"><?php echo ($mail_path==".SENT"?"收信者":"发信者"); ?></td>
 		<td class="mt2">标题</td>
 		<td class="mt2" width="100">时间</td>
+		<td class="mt2" width="50">大小</td>
 		<td class="mt2" width="40">删除</td>
 	</tr>
 <?php
@@ -177,6 +178,7 @@ else
     echo htmlspecialchars($maildata[$i]["TITLE"]);
 ?> </a></td>
 	<td class="mt3"><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?></td>
+      <td class="mt3" style="text-align:right;padding-right:10pt;"><?php echo sizestring($maildata[$i]['EFFSIZE']); ?></td>
 	<td class="mt4"><input type="button" name="del" value="删除" class="bt1" onclick="bbsconfirm('bbsmailact.php?act=del&<?php echo "dir=".urlencode($mail_path)."&file=".urlencode($maildata[$i]["FILENAME"])."&title=".$mail_title_encode; ?>','确认删除该邮件吗?')"></td>
 </tr>
 <?php
