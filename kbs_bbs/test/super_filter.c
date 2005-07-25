@@ -1,13 +1,11 @@
 #include "bbs.h"
-#include "read.h"
-#include <math.h>
 
 #define MAX_FVAR 100
 #define LIBLEN 1000
 
 int ferr=0;
 
-struct fvar_struct {
+static struct fvar_struct {
     bool num;
     char name[12];
     int s;
@@ -21,9 +19,7 @@ char * libs, * libptr;
 #define fmakesure(o,p) if(ferr) return;\
     if(!(o)) {ferr=p; return;}
 
-extern struct boardheader* currboard;
-
-int fget_var(char * name)
+static int fget_var(char * name)
 {
     int i;
     if(ferr) return 0;
@@ -46,7 +42,7 @@ int fget_var(char * name)
     return (fvart-1);
 }
 
-int fexist_var(char * name)
+static int fexist_var(char * name)
 {
     int i;
     if(ferr) return 0;
@@ -60,19 +56,19 @@ int fexist_var(char * name)
     return -1;
 }
 
-void set_vard(struct fvar_struct * a, int f)
+static void set_vard(struct fvar_struct * a, int f)
 {
     a->num = true;
     a->s = f;
 }
 
-void set_vars(struct fvar_struct * a, char * f)
+static void set_vars(struct fvar_struct * a, char * f)
 {
     a->num = false;
     a->p = f;
 }
 
-int fcheck_var_name(char * s, int l)
+static int fcheck_var_name(char * s, int l)
 {
     int i,p=1;
     for(i=0;i<l;i++)
@@ -80,7 +76,7 @@ int fcheck_var_name(char * s, int l)
     return p;
 }
 
-int check_var_int(char * s, int l)
+static int check_var_int(char * s, int l)
 {
     int i,p=1;
     for(i=0;i<l;i++)
@@ -88,7 +84,7 @@ int check_var_int(char * s, int l)
     return p;
 }
 
-int get_rl(char * s, int r, int l)
+static int get_rl(char * s, int r, int l)
 {
     int n=r,i=0;
     do{
@@ -100,7 +96,7 @@ int get_rl(char * s, int r, int l)
     else return -1;
 }
 
-int get_rl2(char * s, int r, int l)
+static int get_rl2(char * s, int r, int l)
 {
     int n=r,i=0;
     do{
@@ -112,7 +108,7 @@ int get_rl2(char * s, int r, int l)
     return -1;
 }
 
-void feval(struct fvar_struct * p, char * s, int l, int r)
+static void feval(struct fvar_struct * p, char * s, int l, int r)
 {
     int i,j,n;
     char op[14][4]={"||","&&","==","!=",">=","<=",">","<","+","-","*","/","%","<<"};
@@ -352,8 +348,7 @@ void feval(struct fvar_struct * p, char * s, int l, int r)
     libptr+=r-l+2;
 }
 
-int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extraarg)
-{
+int gen_super_filter_index2(char *index, struct fileheader* fileinfo, char * boardname, int isbm) {
     struct fileheader *ptr1;
     struct flock ldata, ldata2;
     int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
@@ -363,47 +358,15 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
     struct stat buf;
     int load_content=0, found=0, load_stat=0;
     int gid = fileinfo->groupid;
-    extern int scr_cols;
-    struct read_arg* arg=(struct read_arg*)conf->arg;
 
     //TODO: 这么大的index!
-    static char index[1024]="";
-
-    clear();
-    prints("                  超强文章选择\n\n");
-    move(5,0);
-    prints("变量: no(文章号) m(保留) g(文摘) b(m&&g) noreply(不可回复) sign(标记)\n"
-           "      del(删除) attach(附件) unread(未读)\n"
-           "      title(标题) author(作者)\n"
-           "函数: sub(s1,s2)第一个字符串在第二个中的位置,如果不存在返回0\n"
-           "      len(s)字符串长度\n"
-           "举例: 我要查询所有bad写的标记是b的文章:\n"
-           "              author=='bad'&&b                   作者是bad且b\n"
-           "      我要查询所有不可回复并且未读的文章:\n"
-           "              noreply&&unread                    不可回复且未读\n"
-           "      我要查询所有1000-2000范围内带附件的文章:\n"
-           "              (no>=1000)&&(no<=2000)&&attach     文章号大等于1000 且 文章号小等于2000 且 附件\n"
-           "      我要查询标题长度在5-10之间的文章:\n"
-           "              len(title)>=5&&len(title)<=10      标题的长度大等于5 且 标题的长度小等于10\n"
-           "      我要查询标题里含有faint的文章:\n"
-           "              sub('faint',title)                 标题包含faint\n"
-           "      我要查询标题里包含hehe并且位置在最后的文章:\n"
-           "              sub('hehe',title)==len(title)-3    标题包含faint是标题的长度减3\n"
-           "      我要查询......自己动手查吧,hehe"
-    );
-    multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", index, 1020, 20, 0, 0);
-    if(!index[0]) 
-        return FULLUPDATE;
     load_content = (strstr(index, "content")!=NULL||strstr(index, "文章内容")!=NULL);
     load_stat = (strstr(index, "asize")!=NULL||strstr(index, "总长度")!=NULL);
-    if (arg->mode==DIR_MODE_AUTHOR||arg->mode==DIR_MODE_TITLE) {
-        unlink(arg->direct);
-    }
-    setbdir(DIR_MODE_NORMAL, direct, currboard->filename);
-    setbdir(DIR_MODE_SUPERFITER, newdirect, currboard->filename);
+    setbdir(DIR_MODE_NORMAL, direct, boardname);
+    setbdir(DIR_MODE_SUPERFITER, newdirect, boardname);
     if ((fd = open(newdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
         bbslog("user", "%s", "recopen err");
-        return FULLUPDATE;      /* 创建文件发生错误*/
+        return -9999;
     }
     ldata.l_type = F_WRLCK;
     ldata.l_whence = 0;
@@ -412,7 +375,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
         bbslog("user", "%s", "reclock err");
         close(fd);
-        return FULLUPDATE;      /* lock error*/
+        return -9999;
     }
 
     if ((fd2 = open(direct, O_RDONLY, 0664)) == -1) {
@@ -420,7 +383,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-        return FULLUPDATE;
+        return -9999;
     }
     fstat(fd2, &buf);
     ldata2.l_type = F_RDLCK;
@@ -439,7 +402,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
-        return FULLUPDATE;
+        return -9999;
     }
     ptr1 = (struct fileheader *) ptr;
     libs = (char*)malloc(LIBLEN);
@@ -469,7 +432,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
         set_vard(fvars+fget_var("m"), ptr1->accessed[0]&FILE_MARKED); set_vard(fvars+fget_var("保留"), ptr1->accessed[0]&FILE_MARKED);
         set_vard(fvars+fget_var("g"), ptr1->accessed[0]&FILE_DIGEST); set_vard(fvars+fget_var("文摘"), ptr1->accessed[0]&FILE_DIGEST);
         set_vard(fvars+fget_var("b"), (ptr1->accessed[0]&FILE_MARKED)&&(ptr1->accessed[0]&FILE_DIGEST));
-        if (chk_currBM(currBM, getCurrentUser())) {
+        if (isbm) {
             set_vard(fvars+fget_var("noreply"), ptr1->accessed[1]&FILE_READ); set_vard(fvars+fget_var("不可回复"), ptr1->accessed[1]&FILE_READ);
             set_vard(fvars+fget_var("sign"), ptr1->accessed[0]&FILE_SIGN); set_vard(fvars+fget_var("标记"), ptr1->accessed[0]&FILE_SIGN);
 #ifdef PERCENT_SIGN_SUPPORT
@@ -489,7 +452,7 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
 #ifdef HAVE_BRC_CONTROL
         set_vard(fvars+fget_var("unread"), brc_unread(ptr1->id, getSession())); set_vard(fvars+fget_var("未读"), brc_unread(ptr1->id, getSession()));
 #endif
-        setbfile(ffn, currboard->filename, ptr1->filename);
+        setbfile(ffn, boardname, ptr1->filename);
         set_vard(fvars+fget_var("ftime"), get_posttime(ptr1)); set_vard(fvars+fget_var("时间"), get_posttime(ptr1));
         set_vard(fvars+fget_var("effsize"), ptr1->eff_size); set_vard(fvars+fget_var("有效长度"), ptr1->eff_size);
         if(load_stat) {
@@ -534,43 +497,9 @@ int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extr
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
     close(fd);
     if(ferr) {
-        move(3, 0);
-        clrtoeol();
-        prints("表达式错误");
-        refresh();
-        sleep(1);
-        return FULLUPDATE;
+        return -ferr;
     }
-    else if(count==0) {
-        move(3, 0);
-        clrtoeol();
-        prints("一个都没有找到....");
-        refresh();
-        sleep(1);
-        return FULLUPDATE;
+    else {
+        return count;
     }
-/*    else if (chk_currBM(currBM, getCurrentUser())) {
-        char ans[4];
-        int i,j,k;
-        int fflag;
-        int y,x;
-        move(3, 0);
-        clrtoeol();
-        prints("找到 %d 篇文章(0-退出, 1-保留标记m, 2-删除标记t, 3-不可回复标记;) [0]", count);
-        getyx(&y, &x);
-        getdata(y, x, 0, ans, 3, 1, 0, 1);
-        if(ans[0]>='1'&&ans[0]<='3') {
-            struct fileheader f;
-            k=ans[0]-'0';
-            if(ans[0]=='1') fflag=FILE_MARK_FLAG;
-            else if(ans[0]=='2') fflag=FILE_DELETE_FLAG;
-            else if(ans[0]=='3') fflag=FILE_NOREPLY_FLAG;
-            for(i=0;i<count;i++)
-                change_post_flag(currBM, getCurrentUser(), digestmode, currboard, i+1, &f, currdirect, fflag, 0);
-        }
-    }*/
-    strcpy(arg->direct, newdirect);
-    arg->newmode=DIR_MODE_SUPERFITER;
-    return NEWDIRECT;
 }
-
