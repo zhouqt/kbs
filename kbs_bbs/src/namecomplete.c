@@ -529,7 +529,7 @@ char *prompt, *data;
                 move(y, x);
                 continue;
             } else if (isprint2(ch)) {
-                if (count < STRLEN) {
+                if (count <= IDLEN) {
                     int n;
 
                     *temp++ = ch;
