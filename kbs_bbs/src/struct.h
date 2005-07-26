@@ -519,3 +519,19 @@ struct protect_id_passwd {
 	char answer[STRLEN];    //问题答案
 };
 
+struct fileheader_num {
+    struct fileheader fh;
+    int num;
+};
+
+struct super_filter_query_arg {
+    char *query;
+    struct fileheader* curfh; /* 当前帖子 WARNING: curfh MUST NOT BE NULL */
+    char * boardname;
+    int isbm;
+    struct fileheader_num* array; /* 符合条件的 fh 写入的数组，可以为 NULL */
+    size_t array_size;        /* array 的大小 */
+    int detectmore;
+    char *write_file;          /* 符合条件的 fh 写入的文件，可以为 NULL */
+};
+

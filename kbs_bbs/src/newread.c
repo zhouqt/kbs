@@ -904,6 +904,61 @@ int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     return DONOTHING;
 }
 
+int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo, bool down, char* query)
+{
+    int now; // 1-based
+    off_t size;
+    struct read_arg *arg = (struct read_arg *) conf->arg;
+    struct fileheader *pFh;
+    struct fileheader_num fhn;
+    int count;
+    struct super_filter_query_arg q_arg;
+
+    if (arg->mode != DIR_MODE_NORMAL) return DONOTHING;
+    if (*query == '\0') return DONOTHING;
+
+    BBS_TRY {
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, (void **) &pFh, &size) == 0)
+            BBS_RETURN(0);
+        arg->filecount = size/sizeof(struct fileheader);
+        now = conf->pos;
+
+        q_arg.array = &fhn;
+        q_arg.array_size = 1;
+        q_arg.boardname = currboard->filename;
+        q_arg.curfh = &pFh[now - 1];
+        q_arg.detectmore = false;
+        q_arg.isbm = chk_currBM(currBM, getCurrentUser());
+        q_arg.query = query;
+        q_arg.write_file = NULL;
+        count = query_super_filter_mmap(pFh, now + (down ? 0 : -2), arg->filecount, down, &q_arg);
+        if (count == 1) {
+            now = fhn.num;
+        } else {
+            now = -1;
+            if (count < 0) {
+                move(t_lines - 1, 0);
+                prints("表达式错误 [%d]", -count);
+                clrtoeol();
+                refresh();
+                sleep(1);
+            }
+        }
+    }
+    BBS_CATCH {
+        now = -1;
+    }
+    BBS_END
+    end_mmapfile((void *) pFh, size, -1);
+    move(t_lines - 1, 0);
+    clrtoeol();
+    if(now > 0) {
+        conf->new_pos = now;
+        return SELCHANGE;
+    }
+    return DONOTHING;
+}
+
 int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
     static char title[STRLEN];
@@ -911,12 +966,19 @@ int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg
     bool up=(bool)extraarg;
 
     strncpy(ans, title, STRLEN);
-    snprintf(pmt, STRLEN, "%s搜寻标题 [%s]: ", up ? "往前" : "往后", ans);
+    snprintf(pmt, STRLEN, "%s搜寻标题: ", up ? "↑" : "↓");
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, true);
+    getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, false);
     if (*ans != '\0')
         strcpy(title, ans);
+    if (!strncmp(title, "@@$$", 4)) {
+        int ret = jumpSuperFilter(conf, fh, !up, title + 4);
+        if (ret == DONOTHING) {
+            conf->show_endline(conf);
+        }
+        return ret;
+    }
     switch (read_search_articles(conf, title, up, 0)) {
         case 1:
             return SELCHANGE;

@@ -280,7 +280,7 @@ char* bbs_zrecvfile();
 int exec_mbem(char *s);
 
 /* super_filter.c */
-int super_filter(struct _select_def* conf,struct fileheader* fileinfo,void* extraarg);
+int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraarg);
 
 /* definekey.c */
 int load_key(char * fn);

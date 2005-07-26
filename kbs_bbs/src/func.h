@@ -15,6 +15,9 @@ extern "C" {
 	int def_list(long long XX);
 	char *get_my_webdomain(int force);
 
+int query_super_filter_mmap(struct fileheader *allfh, int start, int total, int down, struct super_filter_query_arg *q_arg);
+int query_super_filter(int fd, struct super_filter_query_arg *q_arg);
+
 char *gb2big(char *s, int *plen, int inst, session_t* session);
 char *big2gb( char *s, int *plen, int inst, session_t* session);
 
