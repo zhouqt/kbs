@@ -854,57 +854,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     return 0;
 }
 
-int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
-{
-    static char query[STRLEN];
-    char ans[IDLEN + 1], pmt[STRLEN];
-    char currauth[STRLEN];
-    bool up=(bool)extraarg;
-    
-    strncpy(currauth, fh->owner, STRLEN);
-    snprintf(pmt, STRLEN, "搜寻%s的文章 [%s]: ", up ? "往先前":"往后来", query);
-    move(t_lines - 1, 0);
-    clrtoeol();
-    getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, NULL, true);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
-    if (ans[0] != '\0')
-        strncpy(query, ans, IDLEN);
-    switch (read_search_articles(conf, query, up, -1)) {
-        case 1:
-            return SELCHANGE;
-        default:
-            conf->show_endline(conf);
-    }
-    return DONOTHING;
-}
-
-int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
-{
-    static char author[IDLEN + 1];
-    char ans[IDLEN + 1], pmt[STRLEN];
-    char currauth[STRLEN];
-    bool up=(bool)extraarg;
-    
-    if (fh==NULL) return DONOTHING;
-    strncpy(currauth, fh->owner, STRLEN);
-    snprintf(pmt, STRLEN, "%s的文章搜寻作者 [%s]: ", up ? "往先前" : "往后来", currauth);
-    move(t_lines - 1, 0);
-    clrtoeol();
-    getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, NULL, true);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
-    if (ans[0] != '\0')
-        strncpy(author, ans, IDLEN);
-
-    else
-        strcpy(author, currauth);
-    switch (read_search_articles(conf, author, up, 1)) {
-        case 1:
-            return SELCHANGE;
-        default:
-            conf->show_endline(conf);
-    }
-    return DONOTHING;
-}
-
-int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo, bool down, char* query)
+static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo, bool down, char* query)
 {
     int now; // 1-based
     off_t size;
@@ -959,6 +909,62 @@ int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo, bool d
     return DONOTHING;
 }
 
+int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+{
+    static char query[STRLEN];
+    char ans[STRLEN], pmt[STRLEN];
+    bool up=(bool)extraarg;
+
+    strncpy(ans, query, STRLEN);
+    snprintf(pmt, STRLEN, "%s搜寻内容: ", up ? "↑" : "↓");
+    move(t_lines - 1, 0);
+    clrtoeol();
+    getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, false);
+    if (ans[0] != '\0')
+        strncpy(query, ans, STRLEN);
+    if (!strncmp(query, "@@$$", 4)) {
+        int ret = jumpSuperFilter(conf, fh, !up, query + 4);
+        if (ret == DONOTHING) {
+            conf->show_endline(conf);
+        }
+        return ret;
+    }
+    switch (read_search_articles(conf, query, up, -1)) {
+        case 1:
+            return SELCHANGE;
+        default:
+            conf->show_endline(conf);
+    }
+    return DONOTHING;
+}
+
+int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+{
+    static char author[IDLEN + 1];
+    char ans[IDLEN + 1], pmt[STRLEN];
+    char currauth[STRLEN];
+    bool up=(bool)extraarg;
+    
+    if (fh==NULL) return DONOTHING;
+    strncpy(currauth, fh->owner, STRLEN);
+    snprintf(pmt, STRLEN, "%s的文章搜寻作者 [%s]: ", up ? "往先前" : "往后来", currauth);
+    move(t_lines - 1, 0);
+    clrtoeol();
+    getdata(t_lines - 1, 0, pmt, ans, IDLEN + 1, DOECHO, NULL, true);   /*Haohmaru.98.09.29.修正作者查找只能11位ID的错误 */
+    if (ans[0] != '\0')
+        strncpy(author, ans, IDLEN);
+
+    else
+        strcpy(author, currauth);
+    switch (read_search_articles(conf, author, up, 1)) {
+        case 1:
+            return SELCHANGE;
+        default:
+            conf->show_endline(conf);
+    }
+    return DONOTHING;
+}
+
 int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
     static char title[STRLEN];
@@ -972,13 +978,6 @@ int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg
     getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, false);
     if (*ans != '\0')
         strcpy(title, ans);
-    if (!strncmp(title, "@@$$", 4)) {
-        int ret = jumpSuperFilter(conf, fh, !up, title + 4);
-        if (ret == DONOTHING) {
-            conf->show_endline(conf);
-        }
-        return ret;
-    }
     switch (read_search_articles(conf, title, up, 0)) {
         case 1:
             return SELCHANGE;
