@@ -1,2 +1,166 @@
 $Id$
-See Also: innbbsd/INSTALL (If you use CVS, you have to checkout innbbsd module)
+kbsbbs 系统安装转信 (doc/INSTALL)
+
+    安装转信可以参考 cn.bbs.* 每个月 1 号自动张贴在 cn.bbs.admin 新闻组的
+cn.bbs.* HOWTO，该文档也可以在 cn-bbs.org 的网站找到（域名及转信申请 ->
+F.A.Q.）。本文档是专门针对 kbsbbs 系统写的一个安装过程参考。
+
+0. ChangeLog
+2004.4.10
+    atppp    小修改。参考 tian@TJUBBS 的 BBS转信管理员轻松做
+2004.4.1
+    houzl    编写本文档
+
+
+
+1 重新编译 kbsbbs
+1.1 代码简介
+    转信的代码都在源代码的 innbbsd/ 目录。如果你使用 CVS，需要在 kbs_bbs 
+源代码目录下 checkout innbbsd 模块。innbbsd/doc/tw/ 下面有一些比较好的
+文档可以看看。程序基本功能介绍：
+    innbbsd 这个是接收文章的程序。程序默认监听 internet 7777 端口接受被动转
+            信，还监听一个 unix-socket 接受后面 bbsnnrp 程序的请求。
+    bbsnnrp 这个是主动转信程序，主动去新闻组服务器查看是否有新贴并将新贴发送
+            给 innbbsd 程序处理。
+    bbslink 这个是发送文章的程序，处理转信出去的文章。一般在 crontab 里面设置
+            每 5 分钟执行一次。
+
+1.2 修改站点定制文件 site.h
+    加上
+#define CNBBS_TOPIC 1   /*1就是进站显示 cn-bbs 十大，0就是不显示*/
+
+1.3 重新编译安装 kbsbbs
+    在 kbsbbs 源代码根目录 configure 的时候加上 --enable-innbbsd 参数。
+如果要偷懒，可以直接在 innbbsd/ 目录里面运行 ./configure --prefix=你的bbs主目录。
+然后
+    make
+    make install
+这样就安装完了~:0 现在开始配置。
+
+
+
+2 开版 <cn.bbs.* HOWTO Q5>
+    进入你的 bbs 开设以下版面（特别注意讨论区设定设置这些版面“可向外转信”）：
+cnAdmin         [转信]  ●  cn.bbs.*管理及发展事务
+cnAnnounce      [转信]  ●  cn.bbs.*重要公告(只读)
+cnBM            [转信]  ●  cn.bbs.*版(组)务交流
+cnLists         [转信]  ●  cn.bbs.*各类统计列表与记录(只读)
+cnTest          [转信]  ●  cn.bbs.*测试区
+    部分版面可以设置限制阅读/发表。比如 cnBM 就可以限制只有版主才可以发文。
+
+
+
+3 配置 innbbsd <cn.bbs.* HOWTO Q6,Q8>
+    innbbsd 的所有配置文件默认都在 ~bbs/innd 目录，如果没有这个目录就建立一
+下。下面都假设当前已经在这个目录下面。相关的文件在 innbbsd/contrib/ 目录里
+都有示例可以参考。
+
+3.1 补上缺少的 filter.ctl
+    touch filter.ctl
+    这个是字符转换过滤控制，如果你没有 TW 组，暂设为空就可以。
+
+3.2 配置 bbsname.bbs
+    在 bbsname.bbs 里面写上你的 bbs 的英文名称。
+    
+3.3 配置 newsfeeds.bbs
+    写入：（格式：新闻组，版名，新闻组服务器名称。null 表示不转出）
+    cn.bbs.admin            cnAdmin     cnnews
+    cn.bbs.admin.announce   cnAnnounce  null
+    cn.bbs.admin.lists      cnLists     null
+    cn.bbs.admin.test       cnTest      cnnews
+    cnbbs.admin.manager     cnBM        cnnews
+
+3.4 配置nodelist.bbs
+    写入：（格式：新闻组服务器名称，地址，协议，注释。）
+    Fantasy    bbs.fancysky.net     IHAVE(7777)     草堂茗香
+    cnnews     news.zixia.net       POST(119)       cn.bbs.*新闻组
+    
+    注意把
+    Fantasy    bbs.fancysky.net     IHAVE(7777)     草堂茗香
+    修改成你自己的信息:)
+    Fantasy 就是你 bbs 的英文名,要和 bbsname.bbs 里面的严格一致！
+    bbs.fancysky.net 就是你 innbbsd 所运行机器的地址。
+    IHAVE(7777) 表示 innbbsd 监听端口 7777，这是默认的设置。
+    草堂茗香 是你的 bbs 的中文名，后面在 cn-bbs.org 申请必须严格一致，否则
+cn.bbs.* 的部分自动统计程序就不能正确给出你站点的统计信息。
+
+3.5 配置cnnews.active
+    这个文件是主动转信程序 bbsnnrp 用来记录当前已经转入过的贴子 ID。在该文件
+中写入：（格式不要管了，注意每行有十个0，后面是九个0一个1）
+    cn.bbs.admin            0000000000      0000000001      y
+    cn.bbs.admin.announce   0000000000      0000000001      y
+    cn.bbs.admin.lists      0000000000      0000000001      y
+    cn.bbs.admin.test       0000000000      0000000001      y
+    cnbbs.admin.manager     0000000000      0000000001      y
+
+3.6 进站显示 cn.bbs.* 十大
+    参见 <cn.bbs.* HOWTO Q8>。
+
+
+
+4. 启动 <cn.bbs.* HOWTO Q7>
+    以上已经配置完成主动转信。以下启动命令都需要在 bbs 用户下进行。首先运行
+~bbs/bin/innbbsd
+
+转入是
+~bbs/bin/bbsnnrp -v news.zixia.net cnnews.active
+
+转出是
+~bbs/bin/bbslink -v ~bbs
+
+以上命令可以添加到 crontab 定时执行。参考 <cn.bbs.* HOWTO Q7>。
+
+
+
+5. 在 http://cn-bbs.org/ 申请成为测试成员
+    在成为测试成员之前，只有 cn.bbs.admin.test 是可以转出的，但是所有上面设置
+的组都可以转入。成为测试成员后，就可以进行所有上面五个组的主动转信。
+
+
+
+6. 在 http://cn-bbs.org/ 申请成为正式成员 <cn.bbs.* HOWTO Q10>
+    如果申请通过的话就可以使用被动转信，请修改 nodelist.bbs，将 cnnews 对应
+行改成:
+
+     cnnews     166.111.160.80  IHAVE(119)       cn.bbs.*新闻组
+
+    其中 166.111.160.80 将根据具体情况进行分配，具体 IP 请参考转信配置提示。
+重新运行 innbbsd （或者reload一次），就可以了。bbslink 设置不变。同时别忘了从
+crontab 中删掉 bbsnnrp，bbsnnrp 和 cnnews.active 已经可以不再使用了。
+
+
+
+7. 一些 FAQ
+
+7.1 被动转信进不来。
+    可以 tail 一下 ~bbs/innd/bbslog 会看到有用的信息。一般可能的原因有：上游
+没有喂信给你（联系你上游服务器的管理员）；你禁止了上游给你喂信（检查你的
+nodelist.bbs 里面上游服务器的地址对不对；另外 ~bbs/innd/ 下面如果有个文件叫
+ncmperm.bbs，把它删掉 - 除非你知道这文件是干嘛用的）；你的转信对应版面不对
+（检查 newsfeeds.bbs，改了版名没改这个文件也会出这个问题）；还有可能是你重新
+配置了某些文件但是没有重新启动 innbbsd（执行 ctlinnbbsd reload 即可）。
+
+7.2 最开始主动转信的时候，我不想要新闻组上面以前的文章。
+    执行一次 bbsnnrp -c news.zixia.net cnnews.active。注意，只要执行一次即可，
+不要把带 -c 参数的 bbsnnrp 命令放入 crontab。这个 -c 参数的意思是重置记录文件
+cnnews.active 使得好像已经转入过以前的所有贴子。一般新闻组上面保留最近几个月
+的文章，如果以一般方式执行主动转信的 bbsnnrp 程序，就会按时间顺序每次收 100 
+篇文章下来。
+
+7.3 我怎么看得到 cn.bbs.admin 新闻组上面的文章啊！
+    有几个办法。可以去新闻组网页版 http://webnews.cn-bbs.org/；也可以去
+http://groups.google.com/ 查找。或者你也可以去各大加入转信的 BBS 站点找相关版
+面，一般叫做 cnAdmin 版。
+
+7.4 配置 newsfeeds.bbs 的一些技巧
+7.4.1 将两个新闻组文章转入同一个只读讨论区
+    cn.bbs.admin.announce   cnAnnounce  null
+    cn.bbs.admin.lists      cnAnnounce  null
+
+7.4.2 将两个新闻组文章转入同一个讨论区，在该讨论区发文则转出到其中一个新闻组
+    cn.bbs.admin            cnAdmin     cnnews
+    cn.bbs.admin.announce   cnAdmin,    null
+    这里表示这两个新闻组的文章将都转入 cnAdmin 新闻组，但是在 cnAdmin 版发文
+则转出到 cn.bbs.admin 新闻组。注意第二行 cnAdmin 后面有个逗号。
+
+更多技巧可以参考 innbbsd/doc/tw/ 下面 man page。
