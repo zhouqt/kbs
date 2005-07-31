@@ -107,7 +107,7 @@ V      Filter       出现了系统自动过滤词语的文章将出现在这个版面。站务按 @ 审核
 V      Goodbye      ID 自杀记录。
 X      newcomers    新手上路，这个最古老了。新 ID 注册会自动在这个版面发文。
 X      notepad      留言版记录。
-V      Recommend    推荐文章。
+V      Recommend    推荐文章，文摘区文章会进入首页推荐。
 L      Registry     帐号管理员审核 ID 的记录。
 V      syssecurity  系统安全记录，包括任免版主、用户权限更改、版面设置更改等。
 V      undenypost   各版面解封记录。
