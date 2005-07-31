@@ -2084,7 +2084,7 @@ int badlist()
 
     modify_user_mode(EDITUFILE);
     clear();
-    sethomefile(path, getCurrentUser()->userid, "/ignores");
+    sethomefile(path, getCurrentUser()->userid, "ignores");
     while (1) {
         cnt = list_ignore(path);
         if (cnt >= MAX_IGNORE) {

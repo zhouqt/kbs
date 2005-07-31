@@ -211,14 +211,6 @@ int confirm_delete_id()
 {
     char buff[STRLEN];
 
-    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
-        move(3, 0);
-        clrtobot();
-        prints("抱歉, 只有总管理员才能修改");
-        pressreturn();
-        return 1;
-    }
-
     modify_user_mode(ADMIN);
     clear();
     move(8, 0);
@@ -268,10 +260,10 @@ int x_level()
     /*
      * add by alex, 97.7 , strict the power of sysop 
      */
-    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN) || !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
         move(3, 0);
         clrtobot();
-        prints("抱歉, 只有ADMIN权限的管理员才能修改其他用户权限");
+        prints("抱歉, 您没有 ADMIN 权限!");
         pressreturn();
         return 0;
     }
@@ -493,12 +485,6 @@ int XCheckLevel(void){
     if(!check_systempasswd())
         return -1;
     clear();
-    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)||!HAS_PERM(getCurrentUser(),PERM_ADMIN)){
-        move(2,0);
-        prints("查阅用户权限需要同时具有SYSOP权限和ADMIN权限...");
-        pressreturn();
-        return -1;
-    }
     move(0,0);prints("\033[1;32m查阅具有特定权限的用户\033[m");
     move(2,0);prints("设定需要查阅的权限:");
     arg.check_level=setperms(0,0,"权限",NUMPERMS,showperminfo,NULL);
@@ -551,14 +537,6 @@ int Xdelipacl()
     int id;
     struct userec *lookupuser;
 
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
-        move(3, 0);
-        clrtobot();
-        prints("抱歉, 只有SYSOP权限的管理员才能修改其他用户权限");
-        pressreturn();
-        return 0;
-    }
-
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
         return 0;
@@ -590,14 +568,6 @@ int Xdelipacl()
 int Xdeljunk()
 {
     char buf[256];
-
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
-        move(3, 0);
-        clrtobot();
-        prints("抱歉, 只有SYSOP权限的管理员才能删除版面垃圾箱");
-        pressreturn();
-        return 0;
-    }
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -930,7 +900,7 @@ void x_edits()
     pressreturn();
 }
 
-void a_edits()
+int a_edits()
 {
     int aborted;
     char ans[7], buf[STRLEN];
@@ -999,9 +969,17 @@ void a_edits()
         NULL
     };
 
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
+        move(3, 0);
+        clrtobot();
+        prints("抱歉, 您没有 ADMIN 权限!");
+        pressreturn();
+        return 0;
+    }
+
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
-        return;
+        return 0;
     }
     clear();
     move(0, 0);
@@ -1027,7 +1005,7 @@ void a_edits()
     getdata(21, 0, "你要编修哪一项系统档案: ", ans, 3, DOECHO, NULL, true);
     ch = atoi(ans);
     if (!isdigit(ans[0]) || ch <= 0 || ch > num || ans[0] == '\n' || ans[0] == '\0')
-        return;
+        return 0;
     ch -= 1;
     sprintf(genbuf, "etc/%s", e_file[ch]);
     move(2, 0);
@@ -1048,7 +1026,7 @@ void a_edits()
         bbslog("user","%s",buf);
         pressreturn();
         clear();
-        return;
+        return 0;
     }
     modify_user_mode(EDITSFILE);
     aborted = vedit(genbuf, false, NULL, NULL, 0);
@@ -1099,6 +1077,7 @@ void a_edits()
 #endif
     }
     pressreturn();
+    return 0;
 }
 
 #ifdef CAN_EXEC

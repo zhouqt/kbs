@@ -267,6 +267,13 @@ int m_info()
     int id;
     struct userec *lookupuser;
 
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
+        move(3, 0);
+        clrtobot();
+        prints("抱歉, 您没有 ADMIN 权限!");
+        pressreturn();
+        return 0;
+    }
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {        /* Haohmaru.98.12.19 */
@@ -2918,8 +2925,6 @@ int m_stoplogin()
     if (!check_systempasswd()) {
         return -1;
     }
-    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN))
-        return -1;
     getdata(t_lines - 1, 0, "禁止登陆吗 (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         if (vedit("NOLOGIN", false, NULL, NULL, 0) == -1)
@@ -3094,17 +3099,6 @@ int set_BM(void){
     struct userec *lookupuser,uinfo;
     struct boardheader *bptr;
 
-#if defined(FREE) || defined(ZIXIA)
-    if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)&&!HAS_PERM(getCurrentUser(),PERM_SYSOP)&&!HAS_PERM(getCurrentUser(),PERM_OBOARDS))
-#else
-    if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)||!HAS_PERM(getCurrentUser(),PERM_SYSOP))
-#endif
-    {
-        move(3,0);clrtobot();
-        prints("抱歉,只有ADMIN权限的管理员才能修改其他用户权限");
-        pressreturn();
-        return 0;
-    }
     modify_user_mode(ADMIN);
     if(!check_systempasswd()){
         return -1;

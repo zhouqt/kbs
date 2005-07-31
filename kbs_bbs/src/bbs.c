@@ -2527,7 +2527,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     {
         move(3, 0);
         clrtobot();
-        prints("\n\n     目前是文摘或主题模式, 所以不能发表文章.(按左键离开文摘模式)\n");
+        prints("\n\n     目前是文摘或主题模式, 所以不能发表文章.(按回车离开)\n");
         pressreturn();
         clear();
         return FULLUPDATE;

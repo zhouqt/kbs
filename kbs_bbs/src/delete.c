@@ -470,6 +470,13 @@ int d_user(cid)
 	/*struct userdata ud;*/
 
     if (uinfo.mode != OFFLINE) {
+        if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
+            move(3, 0);
+            clrtobot();
+            prints("抱歉, 您没有 ADMIN 权限!");
+            pressreturn();
+            return 0;
+        }
         modify_user_mode(ADMIN);
         if (!check_systempasswd()) {
             return 0;

@@ -558,20 +558,21 @@ int igetch()
     c = inbuf[icurrchar];
 
     switch (c) {
-#ifdef ZIXIA
     case Ctrl('@'):
-#endif
     case Ctrl('L'):
         redoscr();
         icurrchar++;
-#if defined(NINE_BUILD) || defined(ALLOW_CTRL_L_ANTIIDLE) //Ctrl+L 是 CTerm 的默认防发呆字符
-    	now = time(0);
-        uinfo.freshtime = now;
-        if (now - old > 60) {
-           UPDATE_UTMP(freshtime, uinfo);
-           old = now;
-        }   
+#if !defined(NINE_BUILD) && !defined(ALLOW_CTRL_L_ANTIIDLE) //Ctrl+L 是 CTerm 的默认防发呆字符
+        if (c == Ctrl('@'))
 #endif
+        {
+        	now = time(0);
+            uinfo.freshtime = now;
+            if (now - old > 60) {
+               UPDATE_UTMP(freshtime, uinfo);
+               old = now;
+            }
+        }
         goto igetagain;
     case Ctrl('Z'):
         if(scrint&&uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&uinfo.mode!=WINMINE&&!inremsg) {
