@@ -36,7 +36,7 @@ F.A.Q.）。本文档是专门针对 kbsbbs 系统写的一个安装过程参考。
     make
     make install
 这样就安装完了~:0 现在开始配置。
-
+    以下假设bbs主目录就是~bbs。
 
 
 2 开版 <cn.bbs.* HOWTO Q5>
