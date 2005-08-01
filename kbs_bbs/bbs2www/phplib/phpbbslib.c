@@ -279,14 +279,11 @@ static PHP_FUNCTION(bbs_send_sms);
 static PHP_FUNCTION(bbs_register_sms_sendcheck);
 static PHP_FUNCTION(bbs_register_sms_docheck);
 static PHP_FUNCTION(bbs_unregister_sms);
-
-
 #endif
+
 #if HAVE_MYSQL_SMTH == 1
 static PHP_FUNCTION(bbs_csv_to_al);
 #endif
-
-
 
 
 /*
@@ -294,172 +291,172 @@ static PHP_FUNCTION(bbs_csv_to_al);
  */
 static function_entry smth_bbs_functions[] = {
 #ifdef HAVE_WFORUM
-		PHP_FE(bbs_is_yank, NULL)
-		PHP_FE(bbs_alter_yank, NULL)
+    PHP_FE(bbs_is_yank, NULL)
+    PHP_FE(bbs_alter_yank, NULL)
 #endif
-		PHP_FE(bbs_getuserparam, NULL)
-		PHP_FE(bbs_setuserparam, NULL)
-		PHP_FE(bbs_getonline_user_list, NULL)
+    PHP_FE(bbs_getuserparam, NULL)
+    PHP_FE(bbs_setuserparam, NULL)
+    PHP_FE(bbs_getonline_user_list, NULL)
 #ifdef HAVE_USERMONEY
-		PHP_FE(bbs_getusermoney, NULL)
-		PHP_FE(bbs_setusermoney, NULL)
-		PHP_FE(bbs_addusermoney, NULL)
-		PHP_FE(bbs_getuserscore, NULL)
-		PHP_FE(bbs_setuserscore, NULL)
-		PHP_FE(bbs_adduserscore, NULL)
+    PHP_FE(bbs_getusermoney, NULL)
+    PHP_FE(bbs_setusermoney, NULL)
+    PHP_FE(bbs_addusermoney, NULL)
+    PHP_FE(bbs_getuserscore, NULL)
+    PHP_FE(bbs_setuserscore, NULL)
+    PHP_FE(bbs_adduserscore, NULL)
 #endif
-		PHP_FE(bbs_checkuserpasswd, NULL)
-		PHP_FE(bbs_setuserpasswd, NULL)
-		PHP_FE(bbs_getuserlevel, NULL)
+    PHP_FE(bbs_checkuserpasswd, NULL)
+    PHP_FE(bbs_setuserpasswd, NULL)
+    PHP_FE(bbs_getuserlevel, NULL)
 #ifdef HAVE_WFORUM
-		PHP_FE(bbs_searchtitle, NULL)
+    PHP_FE(bbs_searchtitle, NULL)
 #endif
-		PHP_FE(bbs_search_articles, NULL)
-		PHP_FE(bbs_postmail, NULL)
-		PHP_FE(bbs_mailwebmsgs, NULL)
-		PHP_FE(bbs_getwebmsgs, NULL)
+    PHP_FE(bbs_search_articles, NULL)
+    PHP_FE(bbs_postmail, NULL)
+    PHP_FE(bbs_mailwebmsgs, NULL)
+    PHP_FE(bbs_getwebmsgs, NULL)
 #ifdef HAVE_WFORUM
-		PHP_FE(bbs_get_today_article_num, NULL)
-		PHP_FE(bbs_getthreadnum, NULL)
-		PHP_FE(bbs_getthreads, NULL)
+    PHP_FE(bbs_get_today_article_num, NULL)
+    PHP_FE(bbs_getthreadnum, NULL)
+    PHP_FE(bbs_getthreads, NULL)
 #endif
-        PHP_FE(bbs_getuser, NULL)
-        PHP_FE(bbs_getusermode, NULL)
-		PHP_FE(bbs_compute_user_value, NULL)
-		PHP_FE(bbs_checknewmail, NULL)
-		PHP_FE(bbs_user_level_char, NULL)
-        PHP_FE(bbs_getonlineuser, NULL)
-        PHP_FE(bbs_getonlinenumber, NULL)
-	PHP_FE(bbs_getonlineusernumber,NULL)
-	PHP_FE(bbs_getwwwguestnumber,NULL)
-        PHP_FE(bbs_countuser, NULL)
-        PHP_FE(bbs_setfromhost, NULL)
-        PHP_FE(bbs_checkpasswd, NULL)
+    PHP_FE(bbs_getuser, NULL)
+    PHP_FE(bbs_getusermode, NULL)
+    PHP_FE(bbs_compute_user_value, NULL)
+    PHP_FE(bbs_checknewmail, NULL)
+    PHP_FE(bbs_user_level_char, NULL)
+    PHP_FE(bbs_getonlineuser, NULL)
+    PHP_FE(bbs_getonlinenumber, NULL)
+PHP_FE(bbs_getonlineusernumber,NULL)
+PHP_FE(bbs_getwwwguestnumber,NULL)
+    PHP_FE(bbs_countuser, NULL)
+    PHP_FE(bbs_setfromhost, NULL)
+    PHP_FE(bbs_checkpasswd, NULL)
 #ifdef HAVE_WFORUM
-		PHP_FE(bbs_saveuserdata, NULL)
-		PHP_FE(bbs_isonline, NULL)
+    PHP_FE(bbs_saveuserdata, NULL)
+    PHP_FE(bbs_isonline, NULL)
 #endif
-        PHP_FE(bbs_getcurrentuser, one_arg_force_ref_1)
-        PHP_FE(bbs_setonlineuser, fifth_arg_force_ref_00011)
-        PHP_FE(bbs_checkorigin, NULL)
-        PHP_FE(bbs_getcurrentuinfo, NULL)
-        PHP_FE(bbs_wwwlogin, NULL)
-        PHP_FE(bbs_setguest_nologin, NULL)
-        PHP_FE(bbs_wwwlogoff, NULL)
-        PHP_FE(bbs_getwwwparameters,one_arg_force_ref_1)
-        PHP_FE(bbs_setwwwparameters,NULL)
-        PHP_FE(bbs_printansifile, NULL)
-        PHP_FE(bbs_print_article, NULL)
-        PHP_FE(bbs_print_article_js, NULL)
-		PHP_FE(bbs_printoriginfile, NULL)
-		PHP_FE(bbs_caneditfile,NULL)
-        PHP_FE(bbs_checkreadperm, NULL)
-        PHP_FE(bbs_getbname, NULL)
-        PHP_FE(bbs_getbdes, NULL)
-        PHP_FE(bbs_checkpostperm, NULL)
-		PHP_FE(bbs_updatearticle, NULL)
-        PHP_FE(bbs_brcaddread, NULL)
-        PHP_FE(bbs_brcclear, NULL)
-        PHP_FE(bbs_getboard, NULL)
-    	PHP_FE(bbs_postarticle,NULL)
-    	PHP_FE(bbs_getattachtmppath, NULL)
-        PHP_FE(bbs_edittitle, NULL)
-        PHP_FE(bbs_checkbadword, NULL)
-        PHP_FE(bbs_ann_traverse_check, NULL)
-        PHP_FE(bbs_ann_get_board, NULL)
-        PHP_FE(bbs_getboards, NULL)
-        PHP_FE(bbs_getarticles, NULL)
-        PHP_FE(bbs_getfriends, NULL)
-        PHP_FE(bbs_countfriends, NULL)
-        PHP_FE(bbs_delete_friend, NULL)
-        PHP_FE(bbs_add_friend, NULL)
-        PHP_FE(bbs_doforward, NULL)
-        PHP_FE(bbs_domailforward, NULL)
-        PHP_FE(bbs_get_records_from_id, NULL)
-        PHP_FE(bbs_get_records_from_num, NULL)
-        PHP_FE(bbs_get_filename_from_num, NULL)
-        PHP_FE(bbs_get_threads_from_id, NULL)
-        PHP_FE(bbs_get_threads_from_gid, fifth_arg_force_ref_00011)
-        PHP_FE(bbs_countarticles, NULL)
-        PHP_FE(bbs_is_bm, NULL)
-        PHP_FE(bbs_getannpath, NULL)
-        PHP_FE(bbs_getmailnum, third_arg_force_ref_011)
-        PHP_FE(bbs_getmailnum2, NULL)
-        PHP_FE(bbs_getmails, NULL)
-        PHP_FE(bbs_getmailusedspace, NULL)
-        PHP_FE(bbs_is_save2sent, NULL)
-        PHP_FE(bbs_valid_filename, NULL)
-        PHP_FE(bbs_can_send_mail, NULL)
-        PHP_FE(bbs_loadmaillist, NULL)
-        PHP_FE(bbs_changemaillist, NULL)
-        PHP_FE(bbs_checkwebmsg, NULL)
-        PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
-        PHP_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
-        PHP_FE(bbs_sethomefile, NULL)
-        PHP_FE(bbs_setmailfile, NULL)
-        PHP_FE(bbs_mail_file, NULL)
-        PHP_FE(bbs_update_uinfo, NULL)
-        PHP_FE(bbs_setpassword,NULL)
-        PHP_FE(bbs_createnewid,NULL)
-        PHP_FE(bbs_is_invalid_id,NULL)
-        PHP_FE(bbs_setactivation,NULL)
-        PHP_FE(bbs_getactivation,two_arg_force_ref_01)
-	PHP_FE(bbs_createregform,NULL)
-	PHP_FE(bbs_findpwd_check,NULL)
-        PHP_FE(bbs_fillidinfo,NULL)
-	PHP_FE(bbs_getonlinefriends,NULL)
-        PHP_FE(bbs_modify_info,NULL)
-        PHP_FE(bbs_recalc_sig,NULL)
-        PHP_FE(bbs_modify_nick,NULL)
-        PHP_FE(bbs_delfile,NULL)
-        PHP_FE(bbs_delmail,NULL)
-        PHP_FE(bbs_normalboard,NULL)
-        PHP_FE(bbs_denyusers,two_arg_force_ref_01)
-        PHP_FE(bbs_denyadd,NULL)
-        PHP_FE(bbs_denydel,NULL)
-        PHP_FE(bbs_searchboard,third_arg_force_ref_001)
-        PHP_FE(bbs_useronboard,two_arg_force_ref_01)
-        PHP_FE(bbs_setmailreaded,NULL)
-	PHP_FE(bbs_add_import_path,NULL)
-	PHP_FE(bbs_get_import_path,NULL)
-	PHP_FE(bbs_new_board,NULL)
-	PHP_FE(bbs_set_onboard,NULL)
-	PHP_FE(bbs_get_votes,NULL)
-	PHP_FE(bbs_get_vote_from_num,NULL)
-	PHP_FE(bbs_vote_num,NULL)
-	PHP_FE(bbs_get_explain,NULL)
-	PHP_FE(bbs_start_vote,NULL)
-	/* favboard operation. by caltary  */
-	PHP_FE(bbs_load_favboard,NULL)
-	PHP_FE(bbs_fav_boards,NULL)
-	PHP_FE(bbs_is_favboard,NULL)
-	PHP_FE(bbs_add_favboarddir,NULL)
-	PHP_FE(bbs_add_favboard,NULL)
-	PHP_FE(bbs_del_favboard,NULL)
-	PHP_FE(bbs_get_father,NULL)
-	PHP_FE(bbs_get_dirname,NULL)
-	PHP_FE(bbs_del_favboarddir,NULL)
-       PHP_FE(bbs_sysconf_str,NULL)
-		PHP_FE(bbs_get_tmpls,NULL)
-		PHP_FE(bbs_get_tmpl_from_num,NULL)
-		PHP_FE(bbs_make_tmpl_file,NULL)
-		PHP_FE(bbs_docross,NULL)
-		PHP_FE(bbs_docommend,NULL)
-		PHP_FE(bbs_bmmanage,NULL)
+    PHP_FE(bbs_getcurrentuser, one_arg_force_ref_1)
+    PHP_FE(bbs_setonlineuser, fifth_arg_force_ref_00011)
+    PHP_FE(bbs_checkorigin, NULL)
+    PHP_FE(bbs_getcurrentuinfo, NULL)
+    PHP_FE(bbs_wwwlogin, NULL)
+    PHP_FE(bbs_setguest_nologin, NULL)
+    PHP_FE(bbs_wwwlogoff, NULL)
+    PHP_FE(bbs_getwwwparameters,one_arg_force_ref_1)
+    PHP_FE(bbs_setwwwparameters,NULL)
+    PHP_FE(bbs_printansifile, NULL)
+    PHP_FE(bbs_print_article, NULL)
+    PHP_FE(bbs_print_article_js, NULL)
+    PHP_FE(bbs_printoriginfile, NULL)
+    PHP_FE(bbs_caneditfile,NULL)
+    PHP_FE(bbs_checkreadperm, NULL)
+    PHP_FE(bbs_getbname, NULL)
+    PHP_FE(bbs_getbdes, NULL)
+    PHP_FE(bbs_checkpostperm, NULL)
+    PHP_FE(bbs_updatearticle, NULL)
+    PHP_FE(bbs_brcaddread, NULL)
+    PHP_FE(bbs_brcclear, NULL)
+    PHP_FE(bbs_getboard, NULL)
+    PHP_FE(bbs_postarticle,NULL)
+    PHP_FE(bbs_getattachtmppath, NULL)
+    PHP_FE(bbs_edittitle, NULL)
+    PHP_FE(bbs_checkbadword, NULL)
+    PHP_FE(bbs_ann_traverse_check, NULL)
+    PHP_FE(bbs_ann_get_board, NULL)
+    PHP_FE(bbs_getboards, NULL)
+    PHP_FE(bbs_getarticles, NULL)
+    PHP_FE(bbs_getfriends, NULL)
+    PHP_FE(bbs_countfriends, NULL)
+    PHP_FE(bbs_delete_friend, NULL)
+    PHP_FE(bbs_add_friend, NULL)
+    PHP_FE(bbs_doforward, NULL)
+    PHP_FE(bbs_domailforward, NULL)
+    PHP_FE(bbs_get_records_from_id, NULL)
+    PHP_FE(bbs_get_records_from_num, NULL)
+    PHP_FE(bbs_get_filename_from_num, NULL)
+    PHP_FE(bbs_get_threads_from_id, NULL)
+    PHP_FE(bbs_get_threads_from_gid, fifth_arg_force_ref_00011)
+    PHP_FE(bbs_countarticles, NULL)
+    PHP_FE(bbs_is_bm, NULL)
+    PHP_FE(bbs_getannpath, NULL)
+    PHP_FE(bbs_getmailnum, third_arg_force_ref_011)
+    PHP_FE(bbs_getmailnum2, NULL)
+    PHP_FE(bbs_getmails, NULL)
+    PHP_FE(bbs_getmailusedspace, NULL)
+    PHP_FE(bbs_is_save2sent, NULL)
+    PHP_FE(bbs_valid_filename, NULL)
+    PHP_FE(bbs_can_send_mail, NULL)
+    PHP_FE(bbs_loadmaillist, NULL)
+    PHP_FE(bbs_changemaillist, NULL)
+    PHP_FE(bbs_checkwebmsg, NULL)
+    PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
+    PHP_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
+    PHP_FE(bbs_sethomefile, NULL)
+    PHP_FE(bbs_setmailfile, NULL)
+    PHP_FE(bbs_mail_file, NULL)
+    PHP_FE(bbs_update_uinfo, NULL)
+    PHP_FE(bbs_setpassword,NULL)
+    PHP_FE(bbs_createnewid,NULL)
+    PHP_FE(bbs_is_invalid_id,NULL)
+    PHP_FE(bbs_setactivation,NULL)
+    PHP_FE(bbs_getactivation,two_arg_force_ref_01)
+    PHP_FE(bbs_createregform,NULL)
+    PHP_FE(bbs_findpwd_check,NULL)
+    PHP_FE(bbs_fillidinfo,NULL)
+    PHP_FE(bbs_getonlinefriends,NULL)
+    PHP_FE(bbs_modify_info,NULL)
+    PHP_FE(bbs_recalc_sig,NULL)
+    PHP_FE(bbs_modify_nick,NULL)
+    PHP_FE(bbs_delfile,NULL)
+    PHP_FE(bbs_delmail,NULL)
+    PHP_FE(bbs_normalboard,NULL)
+    PHP_FE(bbs_denyusers,two_arg_force_ref_01)
+    PHP_FE(bbs_denyadd,NULL)
+    PHP_FE(bbs_denydel,NULL)
+    PHP_FE(bbs_searchboard,third_arg_force_ref_001)
+    PHP_FE(bbs_useronboard,two_arg_force_ref_01)
+    PHP_FE(bbs_setmailreaded,NULL)
+    PHP_FE(bbs_add_import_path,NULL)
+    PHP_FE(bbs_get_import_path,NULL)
+    PHP_FE(bbs_new_board,NULL)
+    PHP_FE(bbs_set_onboard,NULL)
+    PHP_FE(bbs_get_votes,NULL)
+    PHP_FE(bbs_get_vote_from_num,NULL)
+    PHP_FE(bbs_vote_num,NULL)
+    PHP_FE(bbs_get_explain,NULL)
+    PHP_FE(bbs_start_vote,NULL)
+    /* favboard operation. by caltary  */
+    PHP_FE(bbs_load_favboard,NULL)
+    PHP_FE(bbs_fav_boards,NULL)
+    PHP_FE(bbs_is_favboard,NULL)
+    PHP_FE(bbs_add_favboarddir,NULL)
+    PHP_FE(bbs_add_favboard,NULL)
+    PHP_FE(bbs_del_favboard,NULL)
+    PHP_FE(bbs_get_father,NULL)
+    PHP_FE(bbs_get_dirname,NULL)
+    PHP_FE(bbs_del_favboarddir,NULL)
+    PHP_FE(bbs_sysconf_str,NULL)
+    PHP_FE(bbs_get_tmpls,NULL)
+    PHP_FE(bbs_get_tmpl_from_num,NULL)
+    PHP_FE(bbs_make_tmpl_file,NULL)
+    PHP_FE(bbs_docross,NULL)
+    PHP_FE(bbs_docommend,NULL)
+    PHP_FE(bbs_bmmanage,NULL)
 #ifdef SMS_SUPPORT
-		PHP_FE(bbs_send_sms,NULL)
-		PHP_FE(bbs_register_sms_sendcheck,NULL)
-		PHP_FE(bbs_unregister_sms,NULL)
-		PHP_FE(bbs_register_sms_docheck,NULL)
+    PHP_FE(bbs_send_sms,NULL)
+    PHP_FE(bbs_register_sms_sendcheck,NULL)
+    PHP_FE(bbs_unregister_sms,NULL)
+    PHP_FE(bbs_register_sms_docheck,NULL)
 #endif
 #if HAVE_MYSQL_SMTH == 1
-		PHP_FE(bbs_csv_to_al, NULL)
+    PHP_FE(bbs_csv_to_al, NULL)
 #endif
-		PHP_FE(bbs_ext_initialized, NULL)
-		PHP_FE(bbs_init_ext, NULL)
-	PHP_FE(bbs_x_search,third_arg_force_ref_001)
-	PHP_FE(bbs_read_ann_dir,fourth_arg_force_ref_0111)
-        {NULL, NULL, NULL}
+    PHP_FE(bbs_ext_initialized, NULL)
+    PHP_FE(bbs_init_ext, NULL)
+    PHP_FE(bbs_x_search,third_arg_force_ref_001)
+    PHP_FE(bbs_read_ann_dir,fourth_arg_force_ref_0111)
+    {NULL, NULL, NULL}
 };
 
 /*
@@ -6932,6 +6929,7 @@ static int bbs_bm_change(char *board, struct boardheader *newbh, struct boardhea
 /*
  * new a board
  * 修改版面不允许重新修改精华区路径
+ * - atppp 20050801 modify: 修改精华区路径通过编译了，不过我没测试！
  */
 static PHP_FUNCTION(bbs_new_board)
 {
@@ -7058,21 +7056,9 @@ static PHP_FUNCTION(bbs_new_board)
 
 		bbs_bm_change(newboard.filename, &newboard, &oldboard);
 
-		if(newboard.BM[0]!='\0' && strcmp(oldboard.BM, newboard.BM)){
-			if(newboard.BM[0] != '\0'){
-				if(strlen(newboard.BM) <= 30)
-					sprintf(vbuf,"%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
-				else
-					snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newboard.title + 13, newboard.BM);
-			}else
-				sprintf(vbuf,"%-38.38s", newboard.title+13);
-
-			//edit_grp(oldboard.filename, oldboard.title + 13, vbuf);
-			//精华区更改
-		}
-
 		strncpy(newboard.ann_path, oldboard.ann_path, 128);
 		newboard.ann_path[127]='\0';
+		edit_group(&oldboard, &newboard);
 		//精华区移动
 		
 		if(oldboard.flag | BOARD_ANNONY)
@@ -7109,27 +7095,9 @@ static PHP_FUNCTION(bbs_new_board)
 		bbs_bm_change(newboard.filename, &newboard, NULL);
 
 		if(bgroup && bgroup_len > 0){
-			for(i=0; groups[i] && explain[i]; i++){
-				if( ! strncmp(groups[i], bgroup, strlen(groups[i])) )
-					break;
-			}
-
-			if( groups[i]==NULL || explain[i]==NULL )
-				RETURN_LONG( -13);
-
-			if(newboard.BM[0] != '\0'){
-				if(strlen(newboard.BM) <= 30)
-					sprintf(vbuf,"%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
-				else
-					snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newboard.title + 13, newboard.BM);
-			}else
-				sprintf(vbuf,"%-38.38s", newboard.title+13);
-
-			if(add_grp(bgroup, newboard.filename, vbuf, explain[i], getSession()) == -1)
-				RETURN_LONG( -12);
-
 			snprintf(newboard.ann_path,127,"%s/%s",bgroup, newboard.filename);
 			newboard.ann_path[127]=0;
+			edit_group(NULL, &newboard);
 		}
 
 		if( add_board( &newboard ) == -1 )
@@ -9047,7 +9015,7 @@ static PHP_FUNCTION(bbs_read_ann_dir)
         me.now = 0;
         j = 0;
         for (i = 0; i < me.num; i++) {
-            trim(me.item[i]->title);
+            //trim(me.item[i]->title);
             strncpy(r_title, me.item[i]->title, sizeof(r_title) - 1);
             r_title[sizeof(r_title) - 1] = '\0';
             if (strlen(r_title) <= 39) {
