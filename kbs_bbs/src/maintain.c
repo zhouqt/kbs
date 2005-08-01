@@ -23,6 +23,8 @@
 
 char cexplain[STRLEN];
 char *Ctime();
+int modify_board(char *boardname);
+
 static int sysoppassed = 0;
 
 /* modified by wwj, 2001/5/7, for new md5 passwd */
@@ -341,10 +343,7 @@ const char *chgrp()
 int m_newbrd()
 {
     struct boardheader newboard;
-    char ans[5];
-    char vbuf[100];
-    const char *group;
-
+    char vbuf[PATHLEN], buf[PATHLEN];
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -361,78 +360,27 @@ int m_newbrd()
             break;
         prints("不合法名称...");
     }
-#ifndef ZIXIA
-    getdata(4, 0, "讨论区说明:   ", newboard.title, 60, DOECHO, NULL, true);
-#else
-    while(1){
-        getdata(4, 0, "讨论区说明:   ", newboard.title, 60, DOECHO, NULL, true);
-        if (newboard.title[0] != '\0')
-        if(NoSpaceBdT(newboard.title))
-                break;
-                prints("请输入合法讨论区说明...");
-                }
-#endif
+    strcpy(newboard.title, "0[待定]      版面中文名称待定");
     strcpy(vbuf, "vote/");
     strcat(vbuf, newboard.filename);
-    setbpath(genbuf, newboard.filename);
-    if (getbnum(newboard.filename) > 0 || mkdir(genbuf, 0755) == -1 || mkdir(vbuf, 0755) == -1) {
-        prints("\n错误：错误的讨论区名称\n");
+    setbpath(buf, newboard.filename);
+    if (getbnum(newboard.filename) > 0) {
+        prints("\n错误：讨论区已经存在\n");
         pressreturn();
         clear();
         return -1;
     }
-    newboard.flag = 0;
-    getdata(5, 0, "讨论区管理员: ", newboard.BM, BM_LEN - 1, DOECHO, NULL, true);
-    getdata(6, 0, "是否限制存取权力 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
-    if (*ans == 'y' || *ans == 'Y') {
-        getdata(6, 0, "限制 Read/Post? [R]: ", ans, 4, DOECHO, NULL, true);
-        if (*ans == 'P' || *ans == 'p')
-            newboard.level = PERM_POSTMASK;
-        else
-            newboard.level = 0;
-        move(1, 0);
-        clrtobot();
-        move(2, 0);
-        prints("设定 %s 权力. 讨论区: '%s'\n", (newboard.level & PERM_POSTMASK ? "POST" : "READ"), newboard.filename);
-        newboard.level = setperms(newboard.level, 0, "权限", NUMPERMS, showperminfo, NULL);
+    if (mkdir(buf, 0755) == -1 || mkdir(vbuf, 0755) == -1) {
+        prints("\n错误：创建目录失败，请联系技术站务处理...\n");
+        pressreturn();
         clear();
-    } else
-        newboard.level = 0;
-    getdata(7, 0, "是否加入匿名版 (Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
-    if (ans[0] == 'Y' || ans[0] == 'y') {
-        newboard.flag |= BOARD_ANNONY;
-        addtofile("etc/anonymous", newboard.filename);
+        return -1;
     }
-    getdata(8, 0, "是否不记文章数(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
-    if (ans[0] == 'Y' || ans[0] == 'y')
-        newboard.flag |= BOARD_JUNK;
-    getdata(9, 0, "是否不统计十大(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
-    if (ans[0] == 'Y' || ans[0] == 'y')
-        newboard.flag |= BOARD_POSTSTAT;
-    getdata(10, 0, "是否可向外转信(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
-    if (ans[0] == 'Y' || ans[0] == 'y')
-        newboard.flag |= BOARD_OUTFLAG;
-    getdata(11, 0, "是否不可re文章(Y/N)? [N]: ", ans, 4, DOECHO, NULL, true);
-    if (ans[0] == 'Y' || ans[0] == 'y')
-        newboard.flag |= BOARD_NOREPLY;
+    newboard.level = PERM_SYSOP;
     build_board_structure(newboard.filename);
-    group = chgrp();
-    if (group != NULL) {
-        if (newboard.BM[0] != '\0')
-            if (strlen(newboard.BM) <= 30)
-                sprintf(vbuf, "%-38.38s(BM: %s)", newboard.title + 13, newboard.BM);
-            else
-                snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newboard.title + 13, newboard.BM);
-        else
-            sprintf(vbuf, "%-38.38s", newboard.title + 13);
-
-        if (add_grp(group, newboard.filename, vbuf, cexplain, getSession()) == -1)
-            prints("\n成立精华区失败....\n");
-        else
-            prints("已经置入精华区...\n");
-        snprintf(newboard.ann_path,127,"%s/%s",group, newboard.filename);
-        newboard.ann_path[127]=0;
-    }
+    snprintf(newboard.ann_path,127,"%s/%s", groups[0], newboard.filename);
+    newboard.ann_path[127]=0;
+    
     if (add_board(&newboard) == -1) {
 		currboard = bcache;
         move(t_lines - 1, 0);
@@ -441,8 +389,9 @@ int m_newbrd()
         clear();
         return -1;
     }
+    edit_group(NULL, &newboard);
 	currboard = bcache;
-    prints("\n新讨论区成立\n");
+    prints("\n新讨论区成立，回车后请具体设定版面各类参数。\n");
     sprintf(genbuf, "add brd %s", newboard.filename);
     bbslog("user", "%s", genbuf);
     {
@@ -453,7 +402,7 @@ int m_newbrd()
     }
     pressreturn();
     clear();
-    return 0;
+    return modify_board(newboard.filename);
 }
 
 int m_editbrd()
@@ -915,7 +864,7 @@ int select_group(int pos,int force){
     conf.show_title=editbrd_refresh;
     /*选择分区*/
     move(1,0);clrtobot();
-    move(2,4);prints("\033[1;33m请选择精华区所在分区\033[m");
+    move(2,4);prints("\033[1;33m请选择精华区所在分区\033[m，按\033[1;32mESC\033[0m取消");
     do
         i=list_select_loop(&conf);
     while(force&&i!=SHOW_SELECT);
@@ -973,37 +922,24 @@ int select_user_title(char *prefix){
     conf.show_title=editbrd_refresh;
     /*选择用户身份*/
     move(1,0);clrtobot();
-    move(2,4);prints("\033[1;33m请选择用户身份\033[m");
+    move(2,4);prints("\033[1;33m请选择用户身份\033[m，按\033[1;32mESC\033[0m取消");
     return (list_select_loop(&conf)==SHOW_SELECT?title_buf[conf.pos-1]:-1);
 }
 /*修改讨论区属性维护主函数*/
 int new_m_editbrd(void){
-    struct _select_item sel[24];
-    struct _select_def conf;
-    struct _simple_select_arg arg;
-    POINT pts[23];
-    struct boardheader bh,newbh;
-    char buf[256],src[256],dst[256],menustr[23][256],orig[23][256],*ptr;
-    int i,pos,loop,section,currpos,ret;
-    unsigned int annstat,change,error;
+    char buf[256];
+    int pos = 0, i;
     const struct boardheader *bhptr=NULL;
-    const char menuldr[23][16]={
-        "[1]讨论区名称:","[2]讨论区管理:","[3]讨论区说明:","[4]讨论区分区:","[5]讨论区分类:",
-        "[6]转信标签  :","[7]讨论区描述:","[8]匿名讨论区:","[9]统计文章数:","[A]统计十大  :",
-        "[B]目录讨论区:","[C]所属目录  :","[D]向外转信  :","[E]上传附件  :","[F]E-mail发文:",
-        "[G]不可回复  :","[H]读限制Club:","[I]写限制Club:","[J]隐藏Club  :","[K]精华区位置:",
-        "[L]权限限制  :","[M]身份限制  :","[Q][退出]    :"
-    };
-    pos=0;change=0;loop=1;
+    
     /*检测系统密码并修改状态*/
     if(!check_systempasswd())
         return -1;
     modify_user_mode(ADMIN);
-    /*选择讨论区*/
     clear();
     move(0,0);prints("\033[1;32m修改讨论区说明与设定\033[m");
     move(1,0);clrtobot();
     make_blist(0);
+    
     in_do_sendmsg=1;
     i = namecomplete("请输入讨论区名称: ",buf);
     in_do_sendmsg=0;
@@ -1023,12 +959,6 @@ int new_m_editbrd(void){
                 EDITBRD_WAIT;clear();
                 return -1;
             }
-            pos=getboardnum(buf,&bh);
-            if(!pos){
-                move(4,0);prints("错误的讨论区名称!");
-                EDITBRD_WAIT;clear();
-                return -1;
-            }
         }
         else{
             bhptr=getboard(pos);
@@ -1037,7 +967,7 @@ int new_m_editbrd(void){
                 EDITBRD_WAIT;clear();
                 return -1;
             }
-            memcpy(&bh,bhptr,sizeof(struct boardheader));
+            strcpy(buf, bhptr->filename);
         }
     }
     else{
@@ -1047,13 +977,39 @@ int new_m_editbrd(void){
             EDITBRD_WAIT;clear();
             return -1;
         }
-        pos=getboardnum(buf,&bh);
-        if(!pos){
-            move(2,0);prints("错误的讨论区名称!");
-            EDITBRD_WAIT;clear();
-            return -1;
-        }
     }
+    return modify_board(buf);
+}
+int modify_board(char *boardname) {
+    struct _select_item sel[24];
+    struct _select_def conf;
+    struct _simple_select_arg arg;
+    POINT pts[23];
+    struct boardheader bh,newbh;
+    char buf[256],src[256],dst[256],menustr[23][256],orig[23][256],*ptr;
+    int i,pos,loop,section,currpos,ret;
+    unsigned int annstat,change,error;
+    const struct boardheader *bhptr=NULL;
+    const char menuldr[23][16]={
+        "[1]讨论区名称:","[2]讨论区管理:","[3]讨论区说明:","[4]讨论区分区:","[5]讨论区分类:",
+        "[6]转信标签  :","[7]讨论区描述:","[8]匿名讨论区:","[9]统计文章数:","[A]统计十大  :",
+        "[B]目录讨论区:","[C]所属目录  :","[D]向外转信  :","[E]上传附件  :","[F]E-mail发文:",
+        "[G]不可回复  :","[H]读限制Club:","[I]写限制Club:","[J]隐藏Club  :","[K]精华区位置:",
+        "[L]权限限制  :","[M]身份限制  :","[Q][退出]    :"
+    };
+    pos=0;change=0;loop=1;
+    /*选择讨论区*/
+    clear();
+    move(0,0);prints("\033[1;32m修改讨论区说明与设定\033[m");
+    move(1,0);clrtobot();
+
+    pos=getboardnum(boardname,&bh);
+    if(!pos){
+        move(2,0);prints("错误的讨论区名称!");
+        EDITBRD_WAIT;clear();
+        return -1;
+    }
+
     sprintf(buf,"\033[1;33mbid=%4.4d clubnum=%3.3d\033[m",pos,bh.clubnum);
     move(0,40);prints(buf);
     /*获取讨论区数据并构造菜单显式*/
@@ -1175,6 +1131,8 @@ int new_m_editbrd(void){
     /*修改版面属性*/
     while(loop){
         move(1,0);clrtobot();
+        move(23,0);
+        prints("  单项恢复老设定[选项前按\033[1;32m~\033[m]    删除设定[\033[1;32m输入单个空格\033[m]    取消[\033[1;32mESC\033[m]");
         /*构造select结构*/
         arg.items=sel;
         arg.flag=SIF_SINGLE;
@@ -1193,7 +1151,7 @@ int new_m_editbrd(void){
         conf.show_data=editbrd_show;
         conf.key_command=editbrd_key;
         /*选择*/
-        sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m":"未修改");
+        sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m (按 \033[1;32m~\033[m 恢复所有老设定)":"未修改");
         ret=list_select_loop(&conf);
         currpos=conf.pos;
         /*返回SHOW_QUIT时*/

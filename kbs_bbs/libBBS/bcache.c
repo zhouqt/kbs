@@ -314,7 +314,8 @@ const struct boardheader *getboard(int num)
     }
     return NULL;
 }
-int delete_board(char *boardname, char *title,session_t* session)
+
+int delete_board(char *boardname, session_t* session)
 {
     int bid, i;
     char buf[1024];
@@ -334,7 +335,6 @@ int delete_board(char *boardname, char *title,session_t* session)
     }
     bid--;
     strcpy(boardname, bcache[bid].filename);
-    strcpy(title, bcache[bid].title);
 #ifdef BBSMAIN
     move(1, 0);
     prints("删除讨论区 '%s'.", bcache[bid].filename);
@@ -347,18 +347,18 @@ int delete_board(char *boardname, char *title,session_t* session)
         clear();
         return -1;
     }
-    sprintf(buf, "删除讨论区：%s", bcache[bid].filename);
-    securityreport(buf, NULL, NULL);
-#endif                          /* 
-                                 */
-    sprintf(buf, " << '%s'被 %s 删除 >>", bcache[bid].filename, session->currentuser->userid);
-#ifdef BBSMAIN
+
     getdata(3, 0, "移除精华区 (Yes, or No) [Y]: ", genbuf, 4, DOECHO, NULL, true);
     if (genbuf[0] != 'N' && genbuf[0] != 'n')
     {
-            del_grp(boardname, title + 13);
+            edit_group(&bcache[bid], NULL);
     }
+
+    sprintf(buf, "删除讨论区：%s", bcache[bid].filename);
+    securityreport(buf, NULL, NULL);
 #endif
+    sprintf(buf, " << '%s'被 %s 删除 >>", bcache[bid].filename, session->currentuser->userid);
+
     fd = bcache_lock();
     bid = getbnum(boardname);
     if (bid == 0)

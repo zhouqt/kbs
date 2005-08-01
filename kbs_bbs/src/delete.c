@@ -45,7 +45,6 @@ static void mail_info()
 int d_board()
 {
     char bname[STRLEN];
-    char title[STRLEN];
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -59,32 +58,14 @@ int d_board()
     if (genbuf[0] == '\0')
         return 0;
     strcpy(bname, genbuf);
-    if (delete_board(bname, title,getSession()) != 0)
+    if (delete_board(bname, getSession()) != 0)
         return 0;
-    if (seek_in_file("0Announce/.Search", bname)) {
-#ifdef BBSMAIN
-        getdata(3, 0, "移除精华区 (Yes, or No) [Y]: ", genbuf, 4, DOECHO, NULL, true);
-        if (genbuf[0] != 'N' && genbuf[0] != 'n') {
-#endif
-
-            del_grp(bname, title + 13);
-        }
-    }
-    if (!bname[0]) {
-        if (anonymousboard(bname))
-            del_from_file("etc/anonymous", bname);
-        sprintf(genbuf, "deleted board %s", bname);
-        bbslog("user","%s",genbuf);
-        /*
-           sprintf(genbuf,"/bin/rm -fr boards/%s",bname) ;
-           sprintf(genbuf,"/bin/rm -fr vote/%s",bname) ;
-         */
+#if 0
         sprintf(genbuf, "boards/%s", bname);
-        f_rm(bname);
+        f_rm(genbuf);
         sprintf(genbuf, "vote/%s", bname);
-        f_rm(bname);
-    }
-
+        f_rm(genbuf);
+#endif
     move(4, 0);
     prints("本讨论区已经删除...\n");
     pressreturn();

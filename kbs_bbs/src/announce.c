@@ -2266,9 +2266,11 @@ int edit_group(struct boardheader *oldbh,struct boardheader *newbh){
     if(!oldbh&&!newbh)
         return 0;
     /*目的精华区位置检测*/
-    sprintf(path,"0Announce/groups/%s",newbh->ann_path);
-    if((!oldbh||strcmp(oldbh->ann_path,newbh->ann_path))&&dashd(path))
-        del_group(newbh);
+    if (newbh) {
+        sprintf(path,"0Announce/groups/%s",newbh->ann_path);
+        if((!oldbh||strcmp(oldbh->ann_path,newbh->ann_path))&&dashd(path))
+            del_group(newbh);
+    }
     /*增加*/
     if(!oldbh)
         return add_group(newbh);
