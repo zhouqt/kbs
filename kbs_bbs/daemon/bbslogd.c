@@ -275,7 +275,7 @@ static void flushBBSlog_exit()
 {
     flushlog(-1);
 }
-bool trunc;
+bool gb_trunclog;
 bool truncboard;
 static void trunclog(int signo)
 {
@@ -303,7 +303,7 @@ static void trunclog(int signo)
         }
     }
     openbbslog(0);
-    trunc=true;
+    gb_trunclog=true;
 }
 
 static void truncboardlog(int signo)
@@ -344,7 +344,7 @@ static void do_truncboardlog()
 
 static void do_trunclog()
 {
-    trunc=false;
+    gb_trunclog=false;
 }
 
 int main()
@@ -381,13 +381,13 @@ int main()
     if (msqid < 0)
         return -1;
 
-    trunc=false;
+    gb_trunclog=false;
     truncboard=false;
     openbbslog(1);
     while (1) {
         if ((msg = rcvlog(msqid)) != NULL)
             writelog(msg);
-        if (trunc)
+        if (gb_trunclog)
         	do_trunclog();
 		else if(truncboard)
 			do_truncboardlog();
