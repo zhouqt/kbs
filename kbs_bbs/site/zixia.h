@@ -219,6 +219,8 @@ bigger mailbox. --stephen 2001.10.31*/
 #define PERM_READMAIL   PERM_BASIC
 #define PERM_VOTE       PERM_BASIC
 
+#define PERM_NEWBOARD   PERM_OBOARDS
+
 /* These are used only in Internet Mail Forwarding */
 /* You may want to be more restrictive than the default, especially for an
    open access BBS. */
