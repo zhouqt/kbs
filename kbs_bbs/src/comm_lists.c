@@ -99,7 +99,7 @@ int WwwBoard();
 
 
 int x_level(), XCheckLevel(), Xdelipacl(), Xdeljunk(), m_info(), d_user(), m_register(), m_newbrd(), setsystempasswd();
-int d_board(), m_editbrd(), new_m_editbrd(), m_trace(), m_vote(), wall();
+int d_board(), m_editbrd(), toooooooooooooold_m_editbrd(), m_trace(), m_vote(), wall();
 /*
 int m_mclean();*/
 /* inserted by cityhunter */
@@ -249,7 +249,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"OpenVote", m_vote},
     {"NewBoard", m_newbrd},
     {"EditBoard", m_editbrd},
-    {"NewEditBoard", new_m_editbrd},
+    {"OldEditBoard", toooooooooooooold_m_editbrd},
     {"DelBoard", d_board},
     {"SetTrace", m_trace},
     {"Xlevel", x_deny},

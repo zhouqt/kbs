@@ -650,7 +650,7 @@ int pc_logs(struct pc_logs *pn);
     void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select, session_t* session);
     void free_import_path(char ** i_path,char ** i_title,time_t* i_path_time);
 	int linkto(char *path,const char *fname,const char *title, session_t* session);
-	int add_grp(const char group[STRLEN],const char bname[STRLEN],const char title[STRLEN],const char gname[STRLEN], session_t* session);
+    int edit_group(struct boardheader* oldbh,struct boardheader* newbh);
 
 /* check the user's access for the path
   return < 0 deny access

@@ -151,7 +151,6 @@ int set_mailgroup_list();
 int check_systempasswd();
 void stand_title(char *title);
 char* gen_permstr(unsigned int,char*);
-int del_grp(char bname[STRLEN], char title[STRLEN]);
 void securityreport(char *str, struct userec *lookupuser, char fdata[7][STRLEN]);
 void deliverreport(char *title,char *str);
 
@@ -256,10 +255,6 @@ int do_exec(char *com, char *wd);
 int showperminfo(struct _select_def *conf, int i);
 unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int numbers, int (*show) (struct _select_def *, int), int (*select) (struct _select_def *));
 void record_exit_time();
-
-/* announce.c */
-int edit_grp(char bname[STRLEN], char title[STRLEN], char newtitle[100]);
-int edit_group(struct boardheader*,struct boardheader*);
 
 /* boards_t.c */
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);

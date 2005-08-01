@@ -410,7 +410,7 @@ int m_newbrd()
     return modify_board(newboard.filename);
 }
 
-int m_editbrd()
+int toooooooooooooold_m_editbrd()
 {
     char bname[STRLEN], buf[STRLEN], oldtitle[STRLEN], vbuf[256];
     char oldpath[STRLEN], newpath[STRLEN];
@@ -500,28 +500,8 @@ int m_editbrd()
 		}
 	}else if (*genbuf == 'y' || *genbuf == 'Y') {
         move(9, 0);
-        prints("直接按 <Return> 不修改此栏资讯\n");
-      enterbname:
-        getdata(10, 0, "新讨论区名称: ", genbuf, BOARDNAMELEN, DOECHO, NULL, true);
-        if (*genbuf != 0) {
-            if (getboardnum(genbuf, NULL) > 0) {
-                move(3, 0);
-                prints("错误! 此讨论区已经存在\n");
-                move(11, 0);
-                clrtobot();
-                goto enterbname;
-            }
-	    if (!valid_brdname(genbuf))
-	     	{
-	     	  move(3, 0);
-                prints("错误!非法的讨论区名称\n");
-                move(11, 0);
-                clrtobot();
-                goto enterbname;
-	     	}
-            strncpy(newfh.filename, genbuf, sizeof(newfh.filename));
-            strcpy(bname, genbuf);
-        }
+        prints("直接按 <Return> 不修改此栏资讯                                                          \n");
+        prints("老的讨论区修改界面不让改讨论区名称了!                                                   ");
         line=11;
         getdata(line++, 0, "新讨论区说明: ", genbuf, 60, DOECHO, NULL, true);
         if (*genbuf != 0)
@@ -590,11 +570,6 @@ int m_editbrd()
             else
                 newfh.flag &= ~BOARD_NOREPLY;
         };
-        getdata(line++, 0, "是否移动精华区的位置 (Y/N)? [N]: ", genbuf, 4, DOECHO, NULL, true);
-        if (*genbuf == 'Y' || *genbuf == 'y')
-            a_mv = 2;           /* 表示移动精华区目录 */
-        else
-            a_mv = 0;
         sprintf(buf, "是否为读限制俱乐部: (Y/N)? [%c]", (newfh.flag & BOARD_CLUB_READ) ? 'Y' : 'N');
         getdata(line++, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (*genbuf == 'Y' || *genbuf == 'y')
@@ -688,57 +663,6 @@ int m_editbrd()
                 sprintf(old, "vote/%s", fh.filename);
                 sprintf(tar, "vote/%s", newfh.filename);
                 f_mv(old, tar);
-            }
-            if (newfh.BM[0] != '\0')
-                if (strlen(newfh.BM) <= 30)
-                    sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
-                else
-                    snprintf(vbuf, STRLEN, "%-28.28s(BM: %s)", newfh.title + 13, newfh.BM);
-            else
-                sprintf(vbuf, "%-38.38s", newfh.title + 13);
-            edit_grp(fh.filename, oldtitle + 13, vbuf);
-            if (a_mv >= 1) {
-                const char *group;
-                group = chgrp();
-                /*
-                 * 获取该版对应的 group 
-                 */
-                ann_get_path(fh.filename, newpath, sizeof(newpath));
-                snprintf(oldpath, sizeof(oldpath), "0Announce/%s", newpath);
-                sprintf(newpath, "0Announce/groups/%s/%s", group, newfh.filename);
-                if (strcmp(oldpath, newpath) || a_mv != 2) {
-                    if (group != NULL) {
-                        if (newfh.BM[0] != '\0')
-                            if (strlen(newfh.BM) <= 30)
-                                sprintf(vbuf, "%-38.38s(BM: %s)", newfh.title + 13, newfh.BM);
-                            else
-                                sprintf(vbuf, "%-28.28s(BM: %s)", newfh.title + 13, newfh.BM);
-                        else
-                            sprintf(vbuf, "%-38.38s", newfh.title + 13);
-
-                        if (add_grp(group, newfh.filename, vbuf, cexplain, getSession()) == -1)
-                            prints("\n成立精华区失败....\n");
-                        else
-                            prints("已经置入精华区...\n");
-                        if (dashd(oldpath)) {
-                            /*
-                             * sprintf(genbuf, "/bin/rm -fr %s", newpath);
-                             */
-                            my_f_rm(newpath);
-                        }
-                        f_mv(oldpath, newpath);
-                        del_grp(fh.filename, fh.title + 13);
-                        snprintf(newfh.ann_path,127,"%s/%s",group, newfh.filename);
-                        newfh.ann_path[127]=0;
-                    }
-                }
-            }
-            if (noidboard == 1 && !anonymousboard(newfh.filename)) {
-                newfh.flag |= BOARD_ANNONY;
-                addtofile("etc/anonymous", newfh.filename);
-            } else if (noidboard == 0) {
-                newfh.flag &= ~BOARD_ANNONY;
-                del_from_file("etc/anonymous", newfh.filename);
             }
             set_board(pos, &newfh, &fh);
             sprintf(genbuf, "更改讨论区 %s 的资料 --> %s", fh.filename, newfh.filename);
@@ -931,7 +855,7 @@ int select_user_title(char *prefix){
     return (list_select_loop(&conf)==SHOW_SELECT?title_buf[conf.pos-1]:-1);
 }
 /*修改讨论区属性维护主函数*/
-int new_m_editbrd(void){
+int m_editbrd(void){
     char buf[256];
     int pos = 0, i;
     const struct boardheader *bhptr=NULL;
@@ -1834,7 +1758,11 @@ int modify_board(char *boardname) {
     set_board(pos,&newbh,&bh);
     /*生成安全审核和日志*/
     sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",pos,change,bh.filename,change&(1<<0)?32:0,newbh.filename);
+#ifndef ZIXIA
     securityreport(buf,NULL,NULL);
+#else
+    board_change_report(buf, &bh, &newbh);
+#endif	
     bbslog("user","%s",buf);
     move(20,0);clrtoeol();
     move(20,2);prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
