@@ -376,7 +376,12 @@ int m_newbrd()
         clear();
         return -1;
     }
+#ifndef PERM_NEWBOARD
     newboard.level = PERM_SYSOP;
+#else
+    newboard.level = PERM_NEWBOARD;
+#endif
+    if (!HAS_PERM(getCurrentUser(), newboard.level)) newboard.level = 0;
     build_board_structure(newboard.filename);
     snprintf(newboard.ann_path,127,"%s/%s", groups[0], newboard.filename);
     newboard.ann_path[127]=0;
