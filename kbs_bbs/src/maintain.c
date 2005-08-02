@@ -306,40 +306,6 @@ int m_info()
     return 0;
 }
 
-extern int cmpbnames();
-
-const char *chgrp()
-{
-    int i, ch;
-    char buf[STRLEN], ans[6];
-
-    clear();
-    move(2, 0);
-    prints("选择精华区的目录\n");
-    oflush();
-
-    for (i = 0;; i++) {
-        if (secname[i][0] == NULL || groups[i] == NULL)
-            break;
-        prints("\033[32m%2d\033[m. %-20s%-20s\n", i, secname[i][0], groups[i]);
-    }
-    sprintf(buf, "请输入你的选择(0~%d): ", i - 1);
-    while (1) {
-        getdata(i + 3, 0, buf, ans, 4, DOECHO, NULL, true);
-        if (!isdigit(ans[0]))
-            continue;
-        ch = atoi(ans);
-        if (ch < 0 || ch >= i || ans[0] == '\r' || ans[0] == '\0')
-            continue;
-        else
-            break;
-    }
-    sprintf(cexplain, "%s", secname[ch][0]);
-
-    return groups[ch];
-}
-
-
 int m_newbrd()
 {
     struct boardheader newboard;
@@ -413,7 +379,6 @@ int m_newbrd()
 int toooooooooooooold_m_editbrd()
 {
     char bname[STRLEN], buf[STRLEN], oldtitle[STRLEN], vbuf[256];
-    char oldpath[STRLEN], newpath[STRLEN];
     int pos, noidboard, a_mv;
     struct boardheader fh, newfh;
     int line;

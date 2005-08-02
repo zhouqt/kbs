@@ -68,7 +68,6 @@ int Goodbye();
 
 void RemoveAppendedSpace();     /* Leeward 98.02.13 */
 extern time_t login_start_time;
-extern int cmpbnames();
 
 extern struct screenline *big_picture;
 extern struct userec *user_data;
@@ -4344,14 +4343,6 @@ int Welcome()
     ansimore("Welcome", true);
     clear();
     return 0;
-}
-
-int cmpbnames(char *bname, struct fileheader *brec)
-{
-    if (!strncasecmp(bname, brec->filename, sizeof(brec->filename)))
-        return 1;
-    else
-        return 0;
 }
 
 void RemoveAppendedSpace(char *ptr)
