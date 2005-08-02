@@ -596,9 +596,9 @@ int check_diary(char *filename) {
          && isdigit(filename[5]) && isdigit(filename[6]) && isdigit(filename[8]) && isdigit(filename[9]));
 }
 
-int cmpFilename(void *s1, void* s2) {
-    char *p1 = *((char **)s1);
-    char *p2 = *((char **)s2);
+int cmpFilename(const void *s1, const void* s2) {
+    const char *p1 = *((char **)s1);
+    const char *p2 = *((char **)s2);
     return (strcmp(p1, p2));
 }
 
