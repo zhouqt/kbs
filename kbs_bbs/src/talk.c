@@ -1748,12 +1748,12 @@ int addtooverride(uident)
 char *uident;
 {
     struct friends tmp;
-    int n;
+    int n, uid;
     char buf[STRLEN];
 
     memset(&tmp, 0, sizeof(tmp));
     sethomefile(buf, getCurrentUser()->userid, "friends");
-    if ((!HAS_PERM(getCurrentUser(), PERM_ACCOUNTS) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
+    if ((!HAS_PERM(getCurrentUser(), PERM_SYSOP)) && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
         move(t_lines - 2, 0);
         clrtoeol();
         prints("抱歉，本站目前仅可以设定 %d 个好友, 请按任何键继续...", MAXFRIENDS);
@@ -1763,7 +1763,10 @@ char *uident;
         clrtoeol();
         return -1;
     }
-    if (myfriend(searchuser(uident), NULL,getSession()))
+    uid = searchuser(uident);
+    if (uid == 0)
+        return -1;
+    if (myfriend(uid, NULL,getSession()))
         return -1;
     if (uinfo.mode != LUSERS && uinfo.mode != LAUSERS && uinfo.mode != FRIEND) {
         strcpy(tmp.id, uident);

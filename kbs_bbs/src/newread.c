@@ -922,8 +922,8 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, false);
     if (ans[0] != '\0')
         strncpy(query, ans, STRLEN);
-    if (!strncmp(query, "@@$$", 4)) {
-        int ret = jumpSuperFilter(conf, fh, !up, query + 4);
+    if (query[0] == '$') {
+        int ret = jumpSuperFilter(conf, fh, !up, query + 1);
         if (ret == DONOTHING) {
             conf->show_endline(conf);
         }
@@ -1147,11 +1147,7 @@ int read_sendmsgtoauthor(struct _select_def* conf, struct fileheader* fh, void* 
 
 int read_showauthor(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-    if ( /*strchr(fileinfo->owner,'.')|| */ !strcmp(fh->owner, "Anonymous") || !strcmp(fh->owner, "deliver"))       /* Leeward 98.04.14 */
-        return DONOTHING;
-
-    else
-        t_query(fh->owner);
+    t_query(fh->owner);
     return FULLUPDATE;
 }
 
@@ -1162,12 +1158,9 @@ int read_showauthorinfo(struct _select_def* conf, struct fileheader* fh, void* e
     struct userec *lookupuser;
     int id;
 
-    if (!HAS_PERM(getCurrentUser(), PERM_ACCOUNTS)
-        || !strcmp(fh->owner, "Anonymous")
-        || !strcmp(fh->owner, "deliver"))
+    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
         return DONOTHING;
-
-    else {
+    } else {
         if (0 == (id = getuser(fh->owner, &lookupuser))) {
             move(2, 0);
             prints("不正确的使用者代号");
@@ -1189,9 +1182,9 @@ int read_showauthorBM(struct _select_def* conf, struct fileheader* fh, void* ext
     int tuid = 0;
     int n;
 
-    if (!HAS_PERM(getCurrentUser(), PERM_ACCOUNTS) || !strcmp(fh->owner, "Anonymous") || !strcmp(fh->owner, "deliver"))
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         return DONOTHING;
-    else {
+    } else {
         struct userec *lookupuser;
 
         if (!(tuid = getuser(fh->owner, &lookupuser))) {
@@ -1239,12 +1232,8 @@ int read_addauthorfriend(struct _select_def* conf, struct fileheader* fh, void* 
     if (!strcmp("guest", getCurrentUser()->userid))
         return DONOTHING;;
 
-    if (!strcmp(fh->owner, "Anonymous") || !strcmp(fh->owner, "deliver"))
-        return DONOTHING;
-    else {
-        clear();
-        addtooverride(fh->owner);
-    }
+    clear();
+    addtooverride(fh->owner);
     return FULLUPDATE;
 }
 
