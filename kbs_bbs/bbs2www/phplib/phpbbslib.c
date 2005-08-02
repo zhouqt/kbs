@@ -2565,7 +2565,7 @@ static PHP_FUNCTION(bbs_add_friend)
     memset(&fh, 0, sizeof(fh));
     sethomefile(buf, getCurrentUser()->userid, "friends");
 
-    if ((!HAS_PERM(getCurrentUser(), PERM_ACCOUNTS) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
+    if ((!HAS_PERM(getCurrentUser(), PERM_SYSOP))
         && (get_num_records(buf, sizeof(struct friends)) >= MAXFRIENDS)) {
 		RETURN_LONG(-1);
     }
