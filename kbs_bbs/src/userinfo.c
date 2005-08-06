@@ -97,7 +97,7 @@ void disply_userinfo(u, real)
         num = 0;
     prints("ÀΩ»À–≈œ‰     : %d ∑‚\n", num);
     if (real) {
-        strcpy(genbuf, "bTCPRp#@XWBA$VS!DEM1234567890%");
+        strcpy(genbuf, XPERMSTR);
         for (num = 0; num < (int) strlen(genbuf); num++)
             if (!(u->userlevel & (1 << num)))
                 genbuf[num] = '-';

@@ -451,6 +451,7 @@ int d_user(cid)
 	/*struct userdata ud;*/
 
     if (uinfo.mode != OFFLINE) {
+#ifdef SOURCE_PERM_CHECK
         if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
             move(3, 0);
             clrtobot();
@@ -458,6 +459,7 @@ int d_user(cid)
             pressreturn();
             return 0;
         }
+#endif
         modify_user_mode(ADMIN);
         if (!check_systempasswd()) {
             return 0;

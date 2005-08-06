@@ -250,7 +250,7 @@ int invalid_realmail(userid, email, msize)
 void check_register_info()
 {
     char *newregfile;
-    int perm;
+    //int perm;
     char buf[STRLEN];
 	char career[STRLEN];
 	char phone[40];
@@ -262,7 +262,7 @@ void check_register_info()
         return;
     }
     /*urec->userlevel |= PERM_DEFAULT; */
-    perm = PERM_DEFAULT & sysconf_eval("AUTOSET_PERM",PERM_DEFAULT);
+    //perm = PERM_DEFAULT & sysconf_eval("AUTOSET_PERM",PERM_DEFAULT);
 
 //    invalid_realmail(getCurrentUser()->userid,curruserdata.realemail,STRLEN - 16);
     invalid_realmail(getCurrentUser()->userid,getSession()->currentmemo->ud.realemail,STRLEN - 16);

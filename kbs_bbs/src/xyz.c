@@ -260,6 +260,7 @@ int x_level()
     /*
      * add by alex, 97.7 , strict the power of sysop 
      */
+#ifdef SOURCE_PERM_CHECK
     if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
         move(3, 0);
         clrtobot();
@@ -267,7 +268,7 @@ int x_level()
         pressreturn();
         return 0;
     }
-
+#endif
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
         return 0;
@@ -338,119 +339,6 @@ int x_level()
     clear();
     return 0;
 }
-
-#if 0
-int XCheckLevel()
-{                               /* Leeward 98.06.05 */
-    unsigned int newlevel;
-    struct userec scanuser;
-
-    if (!HAS_PERM(getCurrentUser(), PERM_ADMIN) || !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
-        move(3, 0);
-        clrtobot();
-        prints("抱歉, 您没有此权限");
-        pressreturn();
-        return -1;
-    }
-
-    modify_user_mode(ADMIN);
-    if (!check_systempasswd()) {
-        return -1;
-    }
-    clear();
-    move(0, 0);
-    prints("列示具有特定权限的" NAME_USER_SHORT "的资料\n");
-    clrtoeol();
-    move(2, 0);
-    prints("请设定需要检查的权限\n");
-    scanuser.userlevel = 0;
-    /*
-     * change showperminfoX to showperminfo 
-     */
-    newlevel = setperms(scanuser.userlevel, 0, "权限", NUMPERMS, showperminfo, NULL);
-    move(2, 0);
-    if (newlevel == scanuser.userlevel)
-        prints("你没有设定任何权限\n");
-    else {
-        char secu[STRLEN];
-        char buffer[256];
-        int fhp;
-        FILE *fpx;
-        long count = 0L;
-
-		gettmpfilename( buffer, "XCL" );
-        //sprintf(buffer, "tmp/XCL.%s%d", getCurrentUser()->userid, getpid());
-        if (-1 == (fhp = open(".PASSWDS", O_RDONLY))) {
-            prints("系统错误: 无法打开口令文件\n");
-        } else if (NULL == (fpx = fopen(buffer, "w"))) {
-            close(fhp);
-            prints("系统错误: 无法打开临时文件\n");
-        } else {
-            prints("列示操作可能需要较长时间才能完成, 请耐心等待. ");
-            clrtoeol();
-            if (askyn("你确定要进行列示吗", 0)) {
-                while (read(fhp, &scanuser, sizeof(struct userec)) > 0) {
-                    if ((scanuser.userlevel & newlevel) == newlevel && strcmp("SYSOP", scanuser.userid)) {
-						struct userdata ud;
-
-						read_userdata(scanuser.userid, &ud);
-                        count++;
-                        fprintf(fpx, "\033[1m\033[33m请保持这一行位于屏幕第一行，此时按 X 键可给下列用户发信要求其补齐个人注册资料\033[m\n\n");
-                        fprintf(fpx, "用户代号(昵称) : %s(%s)\n\n", scanuser.userid, scanuser.username);
-                        fprintf(fpx, "真  实  姓  名 : %s\n\n", ud.realname);
-                        fprintf(fpx, "居  住  住  址 : %s\n\n", ud.address);
-                        fprintf(fpx, "电  子  邮  件 : %s\n\n", ud.email);
-                        fprintf(fpx, "单位$电话@认证 : %s\n\n", ud.realemail);
-                        fprintf(fpx, "注  册  日  期 : %s\n", ctime(&scanuser.firstlogin));
-                        fprintf(fpx, "最后的登录日期 : %s\n", ctime(&scanuser.lastlogin));
-                        fprintf(fpx, "最后的登录机器 : %s\n\n", scanuser.lasthost);
-                        fprintf(fpx, "上  站  次  数 : %d 次\n\n", scanuser.numlogins);
-                        fprintf(fpx, "文  章  数  目 : %d 篇\n\n", scanuser.numposts);
-                    }
-                }
-                fprintf(fpx, "\033[1m\033[33m一共列出了 %ld 项具有此权限的用户资料\033[m\n\n*** 这是列示结果的最后一行．如果检查完毕，请按 q 键结束 *** (以下均为空行)", count);
-                {
-                    int dummy;  /* process the situation of a too high screen :PP */
-
-                    for (dummy = 0; dummy < t_lines * 4; dummy++)
-                        fputs("\n", fpx);
-                }
-                close(fhp);
-                fclose(fpx);
-
-                sprintf(secu, "\033[1m\033[33m一共列出了 %ld 项具有此权限的用户资料\033[m", count);
-                move(2, 0);
-                prints(secu);
-                clrtoeol();
-                sprintf(genbuf, "listed %ld userlevel of %d", count, newlevel);
-                bbslog("user","%s",genbuf);
-                pressanykey();
-
-                /*
-                 * sprintf(secu, "列示具有特定权限的 %ld 个用户的资料", count); 
-                 */
-                clear();
-                ansimore(buffer, false);
-                clear();
-                move(2, 0);
-                prints("列示操作完成");
-                clrtoeol();
-
-                unlink(buffer);
-            } else {
-                move(2, 0);
-                prints("取消列示操作");
-                clrtoeol();
-            }
-        }
-    }
-    pressreturn();
-    clear();
-    return 0;
-}
-#endif
-
-
 
 
 
@@ -968,7 +856,7 @@ int a_edits()
 #endif
         NULL
     };
-
+#ifdef SOURCE_PERM_CHECK
     if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
         move(3, 0);
         clrtobot();
@@ -976,7 +864,7 @@ int a_edits()
         pressreturn();
         return 0;
     }
-
+#endif
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
         return 0;

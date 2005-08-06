@@ -268,7 +268,7 @@ int m_info()
     struct userec uinfo;
     int id;
     struct userec *lookupuser;
-
+#ifdef SOURCE_PERM_CHECK
     if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
         move(3, 0);
         clrtobot();
@@ -276,7 +276,7 @@ int m_info()
         pressreturn();
         return 0;
     }
-
+#endif
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {        /* Haohmaru.98.12.19 */
         return -1;
@@ -652,7 +652,7 @@ static int lastkey=0;
 char* gen_permstr(unsigned int level,char* buf){
     int i;
     /*参数buf应该具有足够的大小*/
-    sprintf(buf,"%s","bTCPRp#@XWBA$VS!DEM1234567890%");
+    sprintf(buf,"%s",XPERMSTR);
     for(i=0;i<30;i++)
         if(!(level&(1<<i)))
             buf[i]='-';
