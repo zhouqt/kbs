@@ -1,13 +1,12 @@
 CC="@LIBTOOL@"
 CCLD="@CC@"
-bin_PROGRAMS = poststat static usage Xclean Xhtml Bhtml refriend listonline \
+bin_PROGRAMS = poststat static usage Xhtml Bhtml listonline \
 	showBM idx0Ann lazybm fixdir autoundeny login statBM gen_title \
-	resetMailTotal cnv_brdflag find_rm_lost \
-	cnv_bh statguy cnv_bh2 autoclear ch_brdflag statkiller showipdeny \
-	convpass356 scanIP scanMODE listMODE cnv_register calc_effsize smth_usage change_tmpl \
+	resetMailTotal find_rm_lost statguy autoclear statkiller showipdeny \
+	scanIP scanMODE listMODE smth_usage \
 	mailall settoptitle genhot bonlinelog uonlinelog dayuserlog alluserlog \
-	cnv_passwd strip_fh gennewboard recalc_signum find_lost_user outdaybm \
-	cnv_brddir post_brdlog mailbirth post_buse newpoststat genbplot sync_mailsize
+	gennewboard find_lost_user outdaybm \
+	post_brdlog mailbirth post_buse newpoststat genbplot sync_mailsize
 
 EXTRA_DIST = urlencode.c
 EXTRA_PROGRAMS = 
