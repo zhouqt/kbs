@@ -331,8 +331,8 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_user_level_char, NULL)
     PHP_FE(bbs_getonlineuser, NULL)
     PHP_FE(bbs_getonlinenumber, NULL)
-PHP_FE(bbs_getonlineusernumber,NULL)
-PHP_FE(bbs_getwwwguestnumber,NULL)
+    PHP_FE(bbs_getonlineusernumber,NULL)
+    PHP_FE(bbs_getwwwguestnumber,NULL)
     PHP_FE(bbs_countuser, NULL)
     PHP_FE(bbs_setfromhost, NULL)
     PHP_FE(bbs_checkpasswd, NULL)
@@ -513,7 +513,7 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "firstlogin", user->firstlogin);
     add_assoc_long(array, "exittime", user->exittime);
 //    add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
-    add_assoc_string(array, "lasthost", (!strcmp(user->userid , getcurruserid()) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? user->lasthost: SHOW_USERIP(user, user->lasthost), 1);
+    add_assoc_string(array, "lasthost", (!strcmp(user->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? user->lasthost: SHOW_USERIP(user, user->lasthost), 1);
     add_assoc_long(array, "numlogins", user->numlogins);
     add_assoc_long(array, "numposts", user->numposts);
     add_assoc_long(array, "flag1", user->flags);
@@ -3626,7 +3626,7 @@ static PHP_FUNCTION(bbs_postarticle)
         RETURN_LONG(-6); // 两次发文间隔过密, 请休息几秒后再试
     }
     *(int *) (u_info->from + 36) = time(0);
-    sprintf(filename, "tmp/%s.%d.tmp", getcurruserid(), getpid());
+    sprintf(filename, "tmp/%s.%d.tmp", getCurrentUser()->userid, getpid());
     if (!sigsetjmp(bus_jump, 1)) {
         signal(SIGBUS, sigbus);
         signal(SIGSEGV, sigbus);
@@ -3940,7 +3940,7 @@ static PHP_FUNCTION(bbs_updatearticle)
 	}		
 
     setbfile(infile, bp->filename, filename);
-    sprintf(outfile, "tmp/%s.%d.editpost", getcurruserid(), getpid());
+    sprintf(outfile, "tmp/%s.%d.editpost", getCurrentUser()->userid, getpid());
     if ((fin = fopen(infile, "r")) == NULL)
         RETURN_LONG(-10);
     if ((fout = fopen(outfile, "w")) == NULL) {
@@ -5326,7 +5326,7 @@ static PHP_FUNCTION(bbs_modify_nick)
        RETURN_LONG(-1);
 
     if (!bTmp) {
-        if( (unum = getusernum(getCurrentUser()->userid))==0)
+        if( (unum = searchuser(getCurrentUser()->userid))==0)
             RETURN_LONG(-1);
         memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
         if (strcmp(newinfo.username, username)) {
@@ -5347,7 +5347,7 @@ static PHP_FUNCTION(bbs_recalc_sig)
 	int unum;
 	int sign;
 
-    if( (unum = getusernum(getCurrentUser()->userid))==0)
+    if( (unum = searchuser(getCurrentUser()->userid))==0)
 		RETURN_LONG(-1);
 	memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
     
@@ -5438,7 +5438,7 @@ static PHP_FUNCTION(bbs_modify_info)
 
     if(write_userdata(getCurrentUser()->userid,&ud) < 0)RETURN_LONG(-2);
 
-                if( (unum = getusernum(getCurrentUser()->userid))==0)
+                if( (unum = searchuser(getCurrentUser()->userid))==0)
        				RETURN_LONG(-1);
 				memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
                 if (strcmp(newinfo.username, username)) {
@@ -5582,7 +5582,7 @@ static PHP_FUNCTION(bbs_saveuserdata)
 
 	if(userid_len > IDLEN)RETURN_LONG(2);
 
-    usernum = getusernum(userid);
+    usernum = searchuser(userid);
 	if(0 == usernum)RETURN_LONG(3);
 
 	if (userface_url_len!=0) {
@@ -5771,7 +5771,7 @@ static PHP_FUNCTION(bbs_createregform)
 
 	if(userid_len > IDLEN)RETURN_LONG(2);
 
-    usernum = getusernum(userid);
+    usernum = searchuser(userid);
 	if(0 == usernum)RETURN_LONG(3);
 
 #ifdef HAVE_WFORUM
@@ -5997,7 +5997,7 @@ static int full_utmp_friend(struct user_info *uentp, frienduserlistarg *pful)
     if (!uentp->active || !uentp->pid) {
         return 0;
     }
-    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid, getcurruserid())) {  /*Haohmaru.99.4.24.让隐身者能看见自己 */
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && uentp->invisible && strcmp(uentp->userid, getCurrentUser()->userid)) {  /*Haohmaru.99.4.24.让隐身者能看见自己 */
         return 0;
     }
     if (!myfriend(uentp->uid, NULL, getSession())) {
@@ -6517,7 +6517,7 @@ static PHP_FUNCTION(bbs_searchboard)
     if (array_init(boards) != SUCCESS)
         RETURN_FALSE;
     
-    bc = getbcacheaddr();
+    bc = bcache;
     if (exact) { //精确查找
         for (i = 0; i < MAXBOARD; i++) {
             board1 = bc[i].filename;
@@ -8617,7 +8617,7 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     if (!userinfo.active || !userinfo.pid) {
         return 0;
     }
-    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && userinfo.invisible && strcmp(userinfo.userid, getcurruserid())) {
+    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && userinfo.invisible && strcmp(userinfo.userid, getCurrentUser()->userid)) {
         /*Haohmaru.99.4.24.让隐身者能看见自己 */
         return 0;
     }
@@ -9191,8 +9191,8 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 
 PHP_FUNCTION(bbs2_readfile)
 {
-	char *filename;
-	int filename_len;
+    char *filename;
+    int filename_len;
     char *output_buffer;
     int output_buffer_len, output_buffer_size, j;
     char c;
@@ -9207,9 +9207,9 @@ PHP_FUNCTION(bbs2_readfile)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
     
     fd = open(filename, O_RDONLY);
     if (fd < 0)
@@ -9280,7 +9280,7 @@ PHP_FUNCTION(bbs2_readfile)
         j = ptrlen;
         if (j > chunk_size) j = chunk_size;
         output_buffer_size += 2 * j;
-   		output_buffer = (char*)erealloc(output_buffer, output_buffer_size);
+        output_buffer = (char*)erealloc(output_buffer, output_buffer_size);
         if (output_buffer == NULL) RETURN_LONG(3);
     }
     if (in_chinese) {
@@ -9312,13 +9312,13 @@ PHP_FUNCTION(bbs2_readfile)
             bufptr = startbufptr;
             while(*attachfilename != '\0') {
                 switch(*attachfilename) {
-    				case '\'':
-    				case '\"':
-    				case '\\':
-    					*bufptr++ = '\\';
-    					/* break is missing *intentionally* */
-    				default:
-    					*bufptr++ = *attachfilename++;
+                    case '\'':
+                    case '\"':
+                    case '\\':
+                        *bufptr++ = '\\';
+                        /* break is missing *intentionally* */
+                    default:
+                        *bufptr++ = *attachfilename++;
                 }
             }
             sprintf(bufptr, "', %ld, %ld);", attach_len, attach_pos);
@@ -9326,7 +9326,7 @@ PHP_FUNCTION(bbs2_readfile)
             l = strlen(buf);
             if (output_buffer_len + l > output_buffer_size) {
                 output_buffer_size = output_buffer_size + sizeof(buf) * 10;
-           		output_buffer = (char*)erealloc(output_buffer, output_buffer_size);
+                output_buffer = (char*)erealloc(output_buffer, output_buffer_size);
                 if (output_buffer == NULL) RETURN_LONG(3);
             }
             strcpy(output_buffer + output_buffer_len, buf);
@@ -9340,8 +9340,8 @@ PHP_FUNCTION(bbs2_readfile)
 
 PHP_FUNCTION(bbs2_readfile_text)
 {
-	char *filename;
-	int filename_len;
+    char *filename;
+    int filename_len;
     long maxchar;
     long double_escape;
     char *output_buffer;
@@ -9358,9 +9358,9 @@ PHP_FUNCTION(bbs2_readfile_text)
     chdir(BBSHOME);
     old_pwd[1023] = 0;
 
-	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &filename, &filename_len, &maxchar, &double_escape) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &filename, &filename_len, &maxchar, &double_escape) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
     
     fd = open(filename, O_RDONLY);
     if (fd < 0)
@@ -9445,7 +9445,7 @@ PHP_FUNCTION(bbs2_readfile_text)
 
     munmap(ptr, st.st_size);
 
-	RETVAL_STRINGL(output_buffer, last_return, 0);
+    RETVAL_STRINGL(output_buffer, last_return, 0);
 }
 #endif
 

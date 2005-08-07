@@ -3,7 +3,6 @@
  */
 #include "types.h"
 #include "bbslib.h"
-#include <assert.h>
 
 /*
 time_t update_time = 0;
@@ -369,7 +368,7 @@ int post_article(char *board, char *title, char *file, struct userec *user, char
     setbfile(filepath, board, post_file.filename);
 
     anony = anonyboard && anony;
-    strncpy(post_file.owner, anony ? board : getcurruserid(), OWNER_LEN);
+    strncpy(post_file.owner, anony ? board : getCurrentUser()->userid, OWNER_LEN);
     post_file.owner[OWNER_LEN - 1] = 0;
 
     if ((!strcmp(board, "Announce")) && (!strcmp(post_file.owner, board)))
@@ -555,9 +554,9 @@ int has_BM_perm(struct userec *user, char *board)
     x = getbcache(board);
     if (x == 0)
         return 0;
-    if (user_perm(user, PERM_OBOARDS) || user_perm(user,PERM_SYSOP))
+    if (HAS_PERM(user, PERM_OBOARDS) || HAS_PERM(user,PERM_SYSOP))
         return 1;
-    if (!user_perm(user, PERM_BOARDS))
+    if (!HAS_PERM(user, PERM_BOARDS))
         return 0;
     strcpy(buf, x->BM);
     bm = strtok(buf, ",: ;&()\n");
@@ -587,16 +586,6 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
         return -1;
     strcpy(getSession()->MsgDesUid, uin->userid);
     return sendmsgfunc(uin, msg, 2, getSession());
-}
-
-int user_perm(struct userec *x, int level)
-{
-    return (x->userlevel & level);
-}
-
-int getusernum(char *id)
-{
-    return searchuser(id);
 }
 
 int isfriend(char *id)
@@ -637,54 +626,11 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
     return search_record(dir, x, sizeof(struct fileheader), (RECORD_FUNC_ARG)cmpname, file);
 }
 
-/* added by flyriver, 2001.12.17
- * using getcurrusr() instead of using getCurrentUser() directly
- */
-struct userec *getcurrusr()
-{
-    return getCurrentUser();
-}
-
-char *getcurruserid()
-{
-    return getCurrentUser()->userid;
-}
-
 time_t get_idle_time(struct user_info * uentp)
 {
     return uentp->freshtime;
 }
 
-
-bcache_t *getbcacheaddr()
-{
-    return bcache;
-}
-
-uinfo_t *setcurruinfo(uinfo_t * ui)
-{
-    u_info = ui;
-
-    return u_info;
-}
-
-int count_online()
-{
-    return get_utmp_number();
-}
-
-int add_favboard(char *brdname)
-{
-    int i;
-
-    if (brdname != NULL && *brdname)
-        i = getbnum(brdname);
-    else
-        return -3;              /* err brdname */
-    i--;
-    addFavBoard(i, getSession());
-    return 0;
-}
 
 static int printstatusstr(struct user_info *uentp, char *arg, int pos)
 {
@@ -1288,110 +1234,6 @@ time_t set_idle_time(struct user_info * uentp, time_t t)
     return t;
 }
 
-int can_enter_chatroom()
-{
-    if (HAS_PERM(getCurrentUser(), PERM_CHAT))
-        return 1;
-    else
-        return 0;
-}
-
-int can_send_mail()
-{
-    if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL))
-        return 0;
-    else if (HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
-        if (chkusermail(getCurrentUser()))
-            return 0;
-        return 1;
-    } else
-        return 0;
-}
-
-char bin2hex(int val)
-{
-    int i;
-
-    i = val & 0x0F;
-    if (i >= 0 && i < 10)
-        return '0' + i;
-    else
-        return 'A' + (i - 10);
-}
-
-char *encode_url(char *buf, const char *str, size_t buflen)
-{
-    int i, j;
-    int len;
-    unsigned char c;
-    int buflenm1;
-
-    len = strlen(str);
-    buf[buflen - 1] = '\0';
-    buflenm1 = buflen - 1;
-    for (i = 0, j = 0; i < len && j < buflenm1; i++) {
-        c = (unsigned char) str[i];
-        if (!isalnum(c)) {
-            buf[j++] = '%';
-            if (j < buflenm1)
-                buf[j++] = bin2hex((c >> 4) & 0x0F);
-            if (j < buflenm1)
-                buf[j++] = bin2hex(c & 0x0F);
-        } else {
-            buf[j] = str[i];
-            j++;
-        }
-    }
-    buf[j] = '\0';
-
-    return buf;
-}
-
-char *encode_html(char *buf, const char *str, size_t buflen)
-{
-    size_t i, j, k;
-    size_t len;
-
-    bzero(buf, buflen);
-    len = strlen(str);
-    for (i = 0, j = 0; i < len && j < buflen; i++) {
-        switch (str[i]) {
-        case '\"':
-            k = buflen - j;
-            string_copy(&buf[j], "&quot;", &k);
-            j += k;
-            break;
-        case '&':
-            k = buflen - j;
-            string_copy(&buf[j], "&amp;", &k);
-            j += k;
-            break;
-            /*
-             * case ' ':
-             * snprintf(&buf[j], buflen-j, "&nbsp;");
-             * j = strlen(buf);
-             * break; 
-             */
-        case '>':
-            k = buflen - j;
-            string_copy(&buf[j], "&gt;", &k);
-            j += k;
-            break;
-        case '<':
-            k = buflen - j;
-            string_copy(&buf[j], "&lt;", &k);
-            j += k;
-            break;
-        default:
-            buf[j] = str[i];
-            j++;
-        }
-    }
-    buf[buflen - 1] = '\0';
-
-    return buf;
-}
-
 int is_BM(const struct boardheader *board,const struct userec *user)
 {
     char BM[STRLEN];
@@ -1399,23 +1241,6 @@ int is_BM(const struct boardheader *board,const struct userec *user)
     strncpy(BM, board->BM, sizeof(BM) - 1);
     BM[sizeof(BM) - 1] = '\0';
     return chk_currBM(BM, (struct userec *)user);
-}
-
-char *http_encode_string(char *str, size_t len)
-{
-    char *buf;
-
-    if (len == 0)
-        return NULL;
-    buf = (char *) malloc(len);
-    if (buf == NULL)
-        return NULL;
-    encode_url(buf, str, len);
-    strncpy(str, buf, len - 1);
-    str[len - 1] = '\0';
-    free(buf);
-
-    return str;
 }
 
 /* Convert string to Unix format */

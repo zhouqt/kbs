@@ -132,13 +132,7 @@ int countexp(struct userec *x);
 
 int countperf(struct userec *x);
 
-int user_perm(struct userec *x, int level);
-
-int getusernum(char *id);
-
 int checkuser(char *id, char *pw);
-
-int count_online();
 
 int isfriend(char *id);
 
@@ -146,17 +140,10 @@ int fprintf2(FILE * fp, char *s);
 
 int get_file_ent(char *board, char *file, struct fileheader *x);
 
-bcache_t *getbcacheaddr();
-
 char *crypt1(char *buf, char *salt);
 
 int full_utmp(struct user_info *uentp, int *count);
 struct user_info **get_ulist_addr();
-
-char *getcurruserid();
-
-struct userec *getcurrusr();
-
 
 //board manage
 int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board);
@@ -178,13 +165,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
 int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y, long compat_telnet);
 int www_data_init();
 void www_data_detach();
-int can_enter_chatroom();
-int can_send_mail();
-char bin2hex(int val);
-char *encode_url(char *buf, const char *str, size_t buflen);
-char *encode_html(char *buf, const char *str, size_t buflen);
 int is_BM(const struct boardheader *board,const struct userec *user);
-char *http_encode_string(char *str, size_t len);
 char *unix_string(char *str);
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* attachlink, int is_tex, char* preview_attach_dir);
 int www_generateOriginIndex(const char* board);
