@@ -3,19 +3,12 @@
  */
 #include "bbslib.h"
 
-time_t set_idle_time(struct user_info * uentp, time_t t);
-int write_file2(FILE * fp, FILE * fp2);
-
 struct user_info *u_info;
 
-int f_append(char *file, char *buf)
+void f_append(FILE *fp, char *buf)
 {
-    FILE *fp;
     char *ptr;
 
-    fp = fopen(file, "a");
-    if (fp == 0)
-        return -1;
     ptr = buf;
     while (*ptr != '\0') {
         if (*ptr == '\x09')     /* horizontal tab */
@@ -24,93 +17,15 @@ int f_append(char *file, char *buf)
             fputc(*ptr, fp);
         ptr++;
     }
-    fclose(fp);
-
-    return 0;
 }
 
-struct stat *f_stat(char *file)
+int file_exist(char *file)
 {
     static struct stat buf;
 
-    bzero(&buf, sizeof(buf));
-    if (stat(file, &buf) == -1)
-        bzero(&buf, sizeof(buf));
-    return &buf;
-}
-
-char *wwwCTime(time_t t)
-{
-    static char s[80];
-
-    sprintf(s, "%24.24s", ctime(&t));
-    return s;
-}
-
-int strsncpy(char *s1, char *s2, int n)
-{
-    int l = strlen(s2);
-
-    if (n < 0)
-        return 0;
-    if (n > l + 1)
-        n = l + 1;
-    strncpy(s1, s2, n - 1);
-    s1[n - 1] = 0;
-    return 0;
-}
-
-char *ltrim(char *s)
-{
-    char *ptr;
-    char *ptr2;
-
-    if (s[0] == '\0')
-        return s;
-    ptr = ptr2 = s;
-    while (*ptr != '\0') {
-        if ((*ptr != ' ') && (*ptr != '\t') && (*ptr != '\r')
-            && (*ptr != '\n')) {
-            break;
-        }
-        ptr++;
-    }
-    if (ptr == s)
-        return s;
-    if (*ptr == '\0') {
-        s[0] = '\0';
-        return s;
-    }
-    while (*ptr != '\0') {
-        *ptr2 = *ptr;
-        ptr++;
-        ptr2++;
-    }
-    *ptr2 = '\0';
-
-    return s;
-}
-
-char *rtrim(char *s)
-{
-    char *ptr;
-    char *ptr2;
-
-    if (s[0] == '\0')
-        return s;
-    ptr = s;
-    ptr2 = s + strlen(s) - 1;
-    while (ptr2 != ptr) {
-        if ((*ptr2 == ' ') || (*ptr2 == '\t') || (*ptr2 == '\r')
-            || (*ptr2 == '\n')) {
-            *ptr2 = '\0';
-            ptr2--;
-            continue;
-        }
-        break;
-    }
-
-    return s;
+    if (stat(file, &buf) == -1) return 0;
+    if (!S_ISREG(buf.st_mode)) return 0;
+    return 1;
 }
 
 int del_mail(int ent, struct fileheader *fh, char *direct)
@@ -150,391 +65,34 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
     return 1;
 }
 
-int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int backup)
-/* @parm backup - whether save this mail to sent box - atppp */
+int is_BM(const struct boardheader *board,const struct userec *user)
 {
-    FILE *fp, *fp2;
-    char buf3[256];
-    char fname[STRLEN], filepath[STRLEN], sent_filepath[STRLEN];
-    struct fileheader header;
-    struct stat st;
-    struct userec *touser;      /*peregrine for updating used space */
-    int unum;
-    
-    if (false == canIsend2(getCurrentUser(), userid)) {
-        return -2;
-    }
+    char BM[STRLEN];
 
-    unum = getuser(userid, &touser);
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
-        return -3;
-    }
+    strncpy(BM, board->BM, sizeof(BM) - 1);
+    BM[sizeof(BM) - 1] = '\0';
+    return chk_currBM(BM, (struct userec *)user);
+}
 
-    bzero(&header, sizeof(header));
-    strcpy(header.owner, id);
-    strncpy(header.title, title, ARTICLE_TITLE_LEN - 1);
-	header.title[ARTICLE_TITLE_LEN - 1] = '\0';
-    setmailpath(filepath, userid);
-    if (stat(filepath, &st) == -1) {
-        if (mkdir(filepath, 0755) == -1)
-            return -1;
-    } else {
-        if (!(st.st_mode & S_IFDIR))
-            return -1;
-    }
-    if (GET_MAILFILENAME(fname, filepath) < 0)
-        return -1;
-    strcpy(header.filename, fname);
-    setmailfile(filepath, userid, fname);
+/* Convert string to Unix format */
+char *unix_string(char *str)
+{
+    char *ptr1, *ptr2;
 
-    fp = fopen(filepath, "w");
-    if (fp == NULL)
-        return -1;
-    fp2 = fopen(file, "r");
-    fprintf(fp, "寄信人: %s (%s)\n", id, nickname);
-    fprintf(fp, "标  题: %s\n", title);
-    fprintf(fp, "发信站: %s (%s)\n", BBSNAME, wwwCTime(time(0)));
-    fprintf(fp, "来  源: %s\n\n", ip);
-    if (fp2) {
-        write_file2(fp, fp2);
-        fclose(fp2);
-    }
-    fprintf(fp, "\n--\n");
-    sig_append(fp, id, sig);
-    fprintf(fp, "\n\033[1;%dm※ 来源:．%s %s．[FROM: %s]\033[m\n", 31 + rand() % 7, BBSNAME, NAME_BBS_ENGLISH, SHOW_USERIP(getCurrentUser(), ip));
-    fclose(fp);
-    
-    if (stat(filepath, &st) != -1)
-        header.eff_size = st.st_size;
-    setmailfile(buf3, userid, ".DIR");
-    if (append_record(buf3, &header, sizeof(header)) == -1)
-        return -5;
-    touser->usedspace += header.eff_size;
-	setmailcheck(userid);
-	    
-   /* 添加Log Bigman: 2003.4.7 */
-    newbbslog(BBSLOG_USER, "mailed(www) %s %s", userid,title);
-
-    if (backup) {
-        strcpy(header.owner, userid);
-        setmailpath(sent_filepath, id);
-        if (GET_MAILFILENAME(fname, sent_filepath) < 0) return -6;
-        strcpy(header.filename, fname);
-        setmailfile(sent_filepath, id, fname);
-
-        f_cp(filepath, sent_filepath, 0);
-        if (stat(sent_filepath, &st) != -1) {
-            getCurrentUser()->usedspace += st.st_size;
-            header.eff_size = st.st_size;
-        } else {
-            return -6;
+    ptr1 = ptr2 = str;
+    while (*ptr1 != '\0') {
+        if (*ptr1 == '\r' && *(ptr1 + 1) == '\n') {
+            ptr1++;
+            continue;
         }
-        header.accessed[0] |= FILE_READ;
-        setmailfile(buf3, id, ".SENT");
-        if (append_record(buf3, &header, sizeof(header)) == -1)
-            return -6;
-        newbbslog(BBSLOG_USER, "mailed(www) %s ", id);
+        if (ptr1 != ptr2)
+            *ptr2 = *ptr1;
+        ptr1++;
+        ptr2++;
     }
-    return 0;
-}
+    *ptr2 = '\0';
 
-int outgo_post2(struct fileheader *fh, char *board, char *userid, char *username, char *title)
-{
-    FILE *foo;
-
-    if ((foo = fopen("innd/out.bntp", "a")) != NULL) {
-        fprintf(foo, "%s\t%s\t%s\t%s\t%s\n", board, fh->filename, userid, username, title);
-        fclose(foo);
-    }
-    return 0;
-}
-
-void add_loginfo2(FILE * fp, char *board, struct userec *user, int anony)
-{
-    FILE *fp2;
-    int color;
-    char fname[STRLEN];
-
-    color = (user->numlogins % 7) + 31; /* 颜色随机变化 */
-    sethomefile(fname, getCurrentUser()->userid, "signatures");
-    if ((fp2 = fopen(fname, "r")) == NULL ||    /* 判断是否已经 存在 签名档 */
-        user->signature == 0 || anony == 1) {
-        fputs("\n--\n", fp);
-    } else {                    /*Bigman 2000.8.10修改,减少代码 */
-        fprintf(fp, "\n");
-    }
-    /*
-     * 由Bigman增加:2000.8.10 Announce版匿名发文问题 
-     */
-    if (!strcmp(board, "Announce"))
-        fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME, NAME_BBS_CHINESE " BBS站");
-    else
-        fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(getCurrentUser(), user->lasthost));
-
-    if (fp2)
-        fclose(fp2);
-    return;
-}
-
-void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony, int local)
-{
-    if (!strcmp(board, "Announce"))
-        fprintf(fp, "发信人: %s (%s), 信区: %s\n", "SYSOP", NAME_SYSOP, board);
-    else
-        fprintf(fp, "发信人: %s (%s), 信区: %s\n", anony ? board : userid, anony ? NAME_ANONYMOUS : username, board);
-    if (local == 1)
-        fprintf(fp, "标  题: %s\n发信站: %s (%24.24s), 站内\n\n", title, "BBS " NAME_BBS_CHINESE "站", Ctime(time(0)));
-    else
-        fprintf(fp, "标  题: %s\n发信站: %s (%24.24s), 转信\n\n", title, "BBS " NAME_BBS_CHINESE "站", Ctime(time(0)));
-}
-
-/* fp 		for destfile*/
-/* fp2		for srcfile*/
-int write_file2(FILE * fp, FILE * fp2)
-{
-    char buf3[1024];
-    char *ptr;
-
-    while (1) {
-        if (fgets(buf3, sizeof(buf3), fp2) == NULL)
-            break;
-		buf3[1023]='\0';
-        ptr = strrchr(buf3, '\r');
-        if (ptr != NULL) {
-            if (*(ptr + 1) == '\n') {
-                *ptr = '\n';
-                *(ptr + 1) = '\0';
-            }
-        }
-//        fprintf2(fp, buf3);
-		fputs(buf3,fp);
-    }
-    return 0;
-}
-
-/* return value:
-   >0		success
-   -1		write .DIR failed*/
-int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader *oldx, char *attach_dir, int mailback, int is_tex)
-{
-    struct fileheader post_file;
-    char filepath[MAXPATH];
-    char buf[256];
-    int fd, anonyboard;
-	int retvalue;
-    FILE *fp, *fp2;
-
-    memset(&post_file, 0, sizeof(post_file));
-    anonyboard = anonymousboard(board); /* 是否为匿名版 */
-
-    /*
-     * 自动生成 POST 文件名 
-     */
-    setbfile(filepath, board, "");
-    if (GET_POSTFILENAME(post_file.filename, filepath) != 0) {
-        return -1;
-    }
-    setbfile(filepath, board, post_file.filename);
-
-    anony = anonyboard && anony;
-    strncpy(post_file.owner, anony ? board : getCurrentUser()->userid, OWNER_LEN);
-    post_file.owner[OWNER_LEN - 1] = 0;
-
-    if ((!strcmp(board, "Announce")) && (!strcmp(post_file.owner, board)))
-        strcpy(post_file.owner, "SYSOP");
-    fp = fopen(filepath, "w");
-    fp2 = fopen(file, "r");
-#ifndef RAW_ARTICLE
-    write_header2(fp, board, title, user->userid, user->username, anony, local_save);
-#endif
-    write_file2(fp, fp2);
-    fclose(fp2);
-    if (!anony)
-        addsignature(fp, user, sig);
-#ifndef RAW_ARTICLE
-    add_loginfo2(fp, board, user, anony);       /*添加最后一行 */
-#endif
-
-    strncpy(post_file.title, title, ARTICLE_TITLE_LEN - 1);
-	post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
-    if (local_save == 1) {      /* local save */
-        post_file.innflag[1] = 'L';
-        post_file.innflag[0] = 'L';
-    } else {
-        post_file.innflag[1] = 'S';
-        post_file.innflag[0] = 'S';
-        outgo_post2(&post_file, board, user->userid, user->username, title);
-    }
-
-    if (mailback) post_file.accessed[1] |= FILE_MAILBACK;
-    if (is_tex) post_file.accessed[1] |= FILE_TEX;
-    
-    setbfile(buf, board, DOT_DIR);
-
-    /*
-     * 在boards版版主发文自动添加文章标记 Bigman:2000.8.12 
-     */
-    if (!strcmp(board, "Board") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
-        && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
-        post_file.accessed[0] |= FILE_SIGN;
-    }
-
-	if (attach_dir != NULL) {
-		char tmp[STRLEN];
-    	struct stat st;
-        snprintf(tmp, MAXPATH, "%s/.index", attach_dir);
-    	if (stat(tmp, &st) >= 0 && st.st_size > 0)
-			post_file.attachment = 1;
-	}
-    fclose(fp);
-    post_file.eff_size = get_effsize(filepath);
-	retvalue = after_post(getCurrentUser(), &post_file, board, oldx, !(anonyboard && anony), getSession());
-
-    if (attach_dir != NULL) {
-
-#ifdef FILTER
-		if(retvalue == 2)
-    		setbfile(filepath, FILTER_BOARD, post_file.filename);
-#endif
-	  if( (fp = fopen(filepath, "a")) != NULL){
-        snprintf(filepath, MAXPATH, "%s/.index", attach_dir);
-        if ((fp2 = fopen(filepath, "r")) != NULL) {
-            fputs("\n", fp);
-            while (!feof(fp2)) {
-                char *name;
-                long begin = 0;
-                unsigned int save_size;
-                char *ptr;
-                off_t size;
-
-                fgets(buf, 256, fp2);
-                name = strchr(buf, ' ');
-                if (name == NULL)
-                    continue;
-                *name = 0;
-                name++;
-                ptr = strchr(name, '\n');
-                if (ptr)
-                    *ptr = 0;
-
-                if (-1 == (fd = open(buf, O_RDONLY)))
-                    continue;
-                if (post_file.attachment == 0) {
-                    /*
-                     * log the attachment begin 
-                     */
-                    post_file.attachment = ftell(fp) + 1;
-                }
-                fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fp);
-                fwrite(name, strlen(name) + 1, 1, fp);
-                BBS_TRY {
-                    if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, & size) == 0) {
-                        size = 0;
-                        save_size = htonl(size);
-                        fwrite(&save_size, sizeof(save_size), 1, fp);
-                    } else {
-                        save_size = htonl(size);
-                        fwrite(&save_size, sizeof(save_size), 1, fp);
-                        begin = ftell(fp);
-                        fwrite(ptr, size, 1, fp);
-                    }
-                }
-                BBS_CATCH {
-                    ftruncate(fileno(fp), begin + size);
-                    fseek(fp, begin + size, SEEK_SET);
-                }
-                BBS_END end_mmapfile((void *) ptr, size, -1);
-
-                close(fd);
-            }
-			fclose(fp2);
-        }
-	  fclose(fp);
-	  }
-    }
-    if (retvalue == 0) {
-#ifdef WWW_GENERATE_STATIC
-        generate_static(DIR_MODE_NORMAL,&post_file,board,oldx);
-#endif
-    }
-
-    return post_file.id;
-}
-
-int sig_append(FILE * fp, char *id, int sig)
-{
-    FILE *fp2;
-    char path[256];
-    char buf[256];
-    int i = 0, skip_lines = 0;
-    struct userec *x = NULL;
-
-    if (sig <= 0 || sig > MAX_SIGNATURES)
-        return -1;
-    getuser(id, &x);
-    if (x == 0)
-        return -1;
-    sethomefile(path, x->userid, "signatures");
-    fp2 = fopen(path, "r");
-    if (fp2 == NULL)
-        return -1;
-    /*
-     * 跳过前面的 (sig - 1)*6 行  
-     */
-    do {
-        if (skip_lines == (sig - 1) * 6)
-            break;
-        skip_lines++;
-    } while ((fgets(buf, sizeof(buf), fp2)) != NULL);
-    /*
-     * 检查是否可以读入第 sig 个签名档 
-     */
-    if (skip_lines == (sig - 1) * 6) {
-        /*
-         * 读入签名档并写入 fp 对应的文件中 
-         */
-        for (i = skip_lines; i < skip_lines + 6; i++) {
-            if (fgets(buf, sizeof(buf), fp2) == NULL)
-                break;
-            unix_string(buf);
-            if (buf[0] != '\n')
-                fprintf(fp, "%s", buf);
-        }
-        /*
-         * 读入签名档成功，设置默认签名档为当前使用的签名档 
-         * 改成由 phpbbslib 来设置这个，因为随机签名档在这里判断不出来 - atppp
-         */
-        /*
-        if (i > skip_lines)
-            x->signature = sig;
-        */
-    }
-    fclose(fp2);
-    if (i > skip_lines)
-        return sig;
-    return 0;
-}
-
-int has_BM_perm(struct userec *user, char *board)
-{
-    bcache_t *x;
-    char buf[256], *bm;
-
-    x = getbcache(board);
-    if (x == 0)
-        return 0;
-    if (HAS_PERM(user, PERM_OBOARDS) || HAS_PERM(user,PERM_SYSOP))
-        return 1;
-    if (!HAS_PERM(user, PERM_BOARDS))
-        return 0;
-    strcpy(buf, x->BM);
-    bm = strtok(buf, ",: ;&()\n");
-    while (bm) {
-        if (!strcasecmp(bm, user->userid))
-            return 1;
-        bm = strtok(0, ",: ;&()\n");
-    }
-    return 0;
+    return str;
 }
 
 int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
@@ -562,31 +120,6 @@ int isfriend(char *id)
     return myfriend(searchuser(id), NULL, getSession());
 }
 
-int fprintf2(FILE * fp, char *s)
-{
-    int i, tail = 0, sum = 0;
-
-    if (s[0] == ':' && s[1] == ' ' && strlen(s) > 79) {
-        sprintf(s + 76, "..\n");
-        fprintf(fp, "%s", s);
-        return 0;
-    }
-    for (i = 0; s[i]; i++) {
-        fprintf(fp, "%c", s[i]);
-        sum++;
-        if (tail) {
-            tail = 0;
-        } else if (s[i] < 0) {
-            tail = s[i];
-        }
-        if (sum >= 78 && tail == 0) {
-            fprintf(fp, "\n");
-            sum = 0;
-        }
-    }
-    return 0;
-}
-
 int get_file_ent(char *board, char *file, struct fileheader *x)
 {
     char dir[80];
@@ -594,12 +127,6 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
     sprintf(dir, "boards/%s/.DIR", board);
     return search_record(dir, x, sizeof(struct fileheader), (RECORD_FUNC_ARG)cmpname, file);
 }
-
-time_t get_idle_time(struct user_info * uentp)
-{
-    return uentp->freshtime;
-}
-
 
 static int printstatusstr(struct user_info *uentp, char *arg, int pos)
 {
@@ -882,6 +409,20 @@ int www_data_init()
     if (resolve_guest_table() != 0)
         return -1;
     return 0;
+}
+
+
+static void set_idle_time(struct user_info * uentp, time_t t)
+{
+    if (strcasecmp(uentp->userid, "guest"))
+        uentp->freshtime = t;
+    else {
+        int idx;
+
+        idx = uentp->destuid;
+        if (idx >= 1 && idx < MAX_WWW_GUEST)
+            wwwguest_shm->guest_entry[uentp->destuid].freshtime = t;
+    }
 }
 
 int www_user_init(int useridx, char *userid, int key, struct userec **x, struct user_info **y,long compat_telnet)
@@ -1186,51 +727,6 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
         www_free_guest_entry(puinfo->destuid);
     }
     return 0;
-}
-
-time_t set_idle_time(struct user_info * uentp, time_t t)
-{
-    if (strcasecmp(uentp->userid, "guest"))
-        uentp->freshtime = t;
-    else {
-        int idx;
-
-        idx = uentp->destuid;
-        if (idx >= 1 && idx < MAX_WWW_GUEST)
-            wwwguest_shm->guest_entry[uentp->destuid].freshtime = t;
-    }
-
-    return t;
-}
-
-int is_BM(const struct boardheader *board,const struct userec *user)
-{
-    char BM[STRLEN];
-
-    strncpy(BM, board->BM, sizeof(BM) - 1);
-    BM[sizeof(BM) - 1] = '\0';
-    return chk_currBM(BM, (struct userec *)user);
-}
-
-/* Convert string to Unix format */
-char *unix_string(char *str)
-{
-    char *ptr1, *ptr2;
-
-    ptr1 = ptr2 = str;
-    while (*ptr1 != '\0') {
-        if (*ptr1 == '\r' && *(ptr1 + 1) == '\n') {
-            ptr1++;
-            continue;
-        }
-        if (ptr1 != ptr2)
-            *ptr2 = *ptr1;
-        ptr1++;
-        ptr2++;
-    }
-    *ptr2 = '\0';
-
-    return str;
 }
 
 static void print_font_style(unsigned int style, buffered_output_t * output)

@@ -6,7 +6,7 @@
     
 #include "php.h"
 #include "php_ini.h"
-#include "ext/standard/info.h"  
+#include "ext/standard/info.h"
 #include "php_smth_bbs.h"  
 
 /* 简单粗暴法去掉重复定义 Warning */
@@ -20,6 +20,15 @@
 #include "bbs.h"
 #include "bbslib.h"
 #include "vote.h"
+
+
+/* remember to remove these implicit declaration of function warnings!!! - atppp */
+output_write_func_t override_default_write(buffered_output_t *out, output_write_func_t write_func);
+void free_output(buffered_output_t *out);
+int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, time_t *sndtime, char *msg);
+int conv_csv_to_al(char *fname,session_t * session);
+/* end atppp warnings */
+
 
 #if PHP_MAJOR_VERSION == 5
 static
@@ -89,14 +98,6 @@ static PHP_FUNCTION(bbs_alter_yank);
 #endif
 static PHP_FUNCTION(bbs_getuserparam);
 static PHP_FUNCTION(bbs_setuserparam);
-#ifdef HAVE_USERMONEY
-static PHP_FUNCTION(bbs_getusermoney);
-static PHP_FUNCTION(bbs_setusermoney);
-static PHP_FUNCTION(bbs_addusermoney);
-static PHP_FUNCTION(bbs_getuserscore);
-static PHP_FUNCTION(bbs_setuserscore);
-static PHP_FUNCTION(bbs_adduserscore);
-#endif
 
 ////////////////////////  System info operation functions  /////////////////////
 static PHP_FUNCTION(bbs_getonline_user_list);
@@ -301,14 +302,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_getuserparam, NULL)
     PHP_FE(bbs_setuserparam, NULL)
     PHP_FE(bbs_getonline_user_list, NULL)
-#ifdef HAVE_USERMONEY
-    PHP_FE(bbs_getusermoney, NULL)
-    PHP_FE(bbs_setusermoney, NULL)
-    PHP_FE(bbs_addusermoney, NULL)
-    PHP_FE(bbs_getuserscore, NULL)
-    PHP_FE(bbs_setuserscore, NULL)
-    PHP_FE(bbs_adduserscore, NULL)
-#endif
     PHP_FE(bbs_checkuserpasswd, NULL)
     PHP_FE(bbs_setuserpasswd, NULL)
     PHP_FE(bbs_getuserlevel, NULL)
@@ -534,10 +527,6 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "notedate", user->notedate);
     add_assoc_long(array, "noteline", user->noteline);
     add_assoc_long(array, "notemode", user->notemode);
-	#ifdef HAVE_USERMONEY
-	add_assoc_long(array,"money", user->money);
-	add_assoc_long(array,"score", user->score);
-	#endif
 
 	#ifdef HAVE_BIRTHDAY
 	add_assoc_long(array,"gender",ud.gender);
@@ -1079,100 +1068,7 @@ static PHP_FUNCTION(bbs_getuserlevel){
 	title[USER_TITLE_LEN-1]=0;
 	RETURN_STRINGL(title,strlen(title),1);
 }
-#ifdef HAVE_USERMONEY
-static PHP_FUNCTION(bbs_getusermoney){
-    struct userec* u;
-	char* user;
-	int uLen;
-    if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &user, &uLen) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (getuser(user, &u)==0) {
-		RETURN_LONG(-1);
-	}
-	RETURN_LONG(get_money(u));
-}
 
-static PHP_FUNCTION(bbs_setusermoney){
-    struct userec* u;
-	char* user;
-	int uLen;
-    long money;
-    if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &money) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (getuser(user, &u)==0) {
-		RETURN_LONG(-1);
-	}
-	if (money<0) {
-		RETURN_LONG(-2);
-	}
-	RETURN_LONG(set_money(u,money));
-}
-
-static PHP_FUNCTION(bbs_addusermoney){
-    struct userec* u;
-	char* user;
-	int uLen;
-    long money;
-    if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &money) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (getuser(user, &u)==0) {
-		RETURN_LONG(-1);
-	}
-	if (money<0) {
-		RETURN_LONG(-2);
-	}
-	RETURN_LONG(add_money(u,money));
-}
-
-static PHP_FUNCTION(bbs_getuserscore){
-    struct userec* u;
-	char* user;
-	int uLen;
-    if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &user, &uLen) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (getuser(user, &u)==0) {
-		RETURN_LONG(-1);
-	}
-	RETURN_LONG(get_score(u));
-}
-
-static PHP_FUNCTION(bbs_setuserscore){
-    struct userec* u;
-	char* user;
-	int uLen;
-    long score;
-    if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &score) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (getuser(user, &u)==0) {
-		RETURN_LONG(-1);
-	}
-	if (score<0) {
-		RETURN_LONG(-2);
-	}
-	RETURN_LONG(set_score(u,score));
-}
-static PHP_FUNCTION(bbs_adduserscore){
-    struct userec* u;
-	char* user;
-	int uLen;
-    long score;
-    if (ZEND_NUM_ARGS() != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &user, &uLen, &score) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (getuser(user, &u)==0) {
-		RETURN_LONG(-1);
-	}
-	if (score<0) {
-		RETURN_LONG(-2);
-	}
-	RETURN_LONG(add_score(u,score));
-}
-#endif
 static PHP_FUNCTION(bbs_getcurrentuinfo)
 {
     zval *user_array;
@@ -1347,7 +1243,6 @@ static PHP_FUNCTION(bbs_printansifile)
     buffered_output_t *out;
     char* attachlink;
     int attachlink_len;
-    sigjmp_buf bus_jump;
     char attachdir[MAXPATH];
 
     getcwd(old_pwd, 1023);
@@ -1416,15 +1311,8 @@ static PHP_FUNCTION(bbs_printansifile)
 	override_default_flush(out, new_flush_buffer);*/
 	override_default_write(out, new_write);
 
-    if (!sigsetjmp(bus_jump, 1)) 
-	{
-        signal(SIGBUS, sigbus);
-        signal(SIGSEGV, sigbus);
-		output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview ? attachdir : NULL);
-		free_output(out);
-    }
-    signal(SIGBUS, SIG_IGN);
-    signal(SIGSEGV, SIG_IGN);
+	output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview ? attachdir : NULL);
+	free_output(out);
     if (!is_preview) munmap(ptr, st.st_size);
 	RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
 }
@@ -1441,7 +1329,6 @@ static PHP_FUNCTION(bbs_print_article)
     buffered_output_t *out;
     char* attachlink;
     int attachlink_len;
-    sigjmp_buf bus_jump;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -1489,18 +1376,8 @@ static PHP_FUNCTION(bbs_print_article)
 
 	override_default_write(out, zend_write);
 
-    if (!sigsetjmp(bus_jump, 1)) 
-	{
-        signal(SIGBUS, sigbus);
-        signal(SIGSEGV, sigbus);
-		output_ansi_text(ptr, st.st_size, out, attachlink);
-		free_output(out);
-		out = NULL;
-    }
-	if (out != NULL)
-		free_output(out);
-    signal(SIGBUS, SIG_IGN);
-    signal(SIGSEGV, SIG_IGN);
+	output_ansi_text(ptr, st.st_size, out, attachlink);
+	free_output(out);
     munmap(ptr, st.st_size);
 }
 
@@ -1516,7 +1393,6 @@ static PHP_FUNCTION(bbs_print_article_js)
     buffered_output_t *out;
     char* attachlink;
     int attachlink_len;
-    sigjmp_buf bus_jump;
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -1564,18 +1440,8 @@ static PHP_FUNCTION(bbs_print_article_js)
 
 	override_default_write(out, zend_write);
 
-    if (!sigsetjmp(bus_jump, 1)) 
-	{
-        signal(SIGBUS, sigbus);
-        signal(SIGSEGV, sigbus);
-		output_ansi_javascript(ptr, st.st_size, out, attachlink);
-		free_output(out);
-		out = NULL;
-    }
-	if (out != NULL)
-		free_output(out);
-    signal(SIGBUS, SIG_IGN);
-    signal(SIGSEGV, SIG_IGN);
+	output_ansi_javascript(ptr, st.st_size, out, attachlink);
+	free_output(out);
     munmap(ptr, st.st_size);
 }
 
@@ -2583,8 +2449,9 @@ static PHP_FUNCTION(bbs_add_friend)
     if (n > 0)
 		RETURN_LONG(-2);
 
-    strsncpy(fh.id, lookupuser->userid, sizeof(fh.id));
-    strsncpy(fh.exp, exp, sizeof(fh.exp));
+    strcpy(fh.id, lookupuser->userid);
+    strncpy(fh.exp, exp, sizeof(fh.exp)-1);
+    fh.exp[sizeof(fh.exp)-1] = '\0';
 
     n = append_record(buf, &fh, sizeof(friends_t));
     getfriendstr(getCurrentUser(),getcurrentuinfo(),getSession());
@@ -3555,23 +3422,25 @@ static PHP_FUNCTION(bbs_getattachtmppath)
 }
 
 
-/*  function bbs_postarticle(string boardName, string title,string text, long signature, long reid, long outgo,long anony)  
- *
- *
- */
 static PHP_FUNCTION(bbs_postarticle)
 {
 	char *boardName, *title, *content;
-    char filename[80], dir[80], buf[MAXPATH], path[80],board[80];
+    char path[80],board[80];
 	int blen, tlen, clen;
-    int r, i;
+    int i;
     long sig, mailback, is_tex;
 	long reid;
-    struct fileheader *oldx;
+    struct fileheader *oldx = NULL;
     bcache_t *brd;
-    long local, anony;
-    sigjmp_buf bus_jump;
-    /*int filtered = 0;*/
+    long local_save, outgo, anony;
+    struct fileheader post_file, oldxx;
+    char filepath[MAXPATH];
+    char buf[256];
+    int fd, anonyboard, color;
+	int retvalue;
+    FILE *fp, *fp2;
+    char attachdir[MAXPATH], attachfile[MAXPATH];
+
 
 	int ac = ZEND_NUM_ARGS();
 
@@ -3580,14 +3449,14 @@ static PHP_FUNCTION(bbs_postarticle)
      */
     
     if (ac == 7) {
-        if (zend_parse_parameters(7 TSRMLS_CC, "ss/s/llll", &boardName, &blen, &title, &tlen, &content, &clen, &sig, &reid, &local,&anony) == FAILURE) {
-		WRONG_PARAM_COUNT;
+        if (zend_parse_parameters(7 TSRMLS_CC, "ss/s/llll", &boardName, &blen, &title, &tlen, &content, &clen, &sig, &reid, &outgo,&anony) == FAILURE) {
+            WRONG_PARAM_COUNT;
         }
         mailback = 0;
         is_tex = 0;
     } else if (ac == 9) {
-        if (zend_parse_parameters(9 TSRMLS_CC, "ss/s/llllll", &boardName, &blen, &title, &tlen, &content, &clen, &sig, &reid, &local,&anony,&mailback,&is_tex) == FAILURE) {
-		WRONG_PARAM_COUNT;
+        if (zend_parse_parameters(9 TSRMLS_CC, "ss/s/llllll", &boardName, &blen, &title, &tlen, &content, &clen, &sig, &reid, &outgo,&anony,&mailback,&is_tex) == FAILURE) {
+            WRONG_PARAM_COUNT;
         }
     } else {
         WRONG_PARAM_COUNT;
@@ -3595,9 +3464,7 @@ static PHP_FUNCTION(bbs_postarticle)
 
     brd = getbcache(boardName);
     if (getCurrentUser() == NULL) {
-
-		RETURN_FALSE;
-  //用户未初始化
+        RETURN_FALSE;
 	} 
     if (brd == 0)
         RETURN_LONG(-1); //错误的讨论区名称
@@ -3609,115 +3476,180 @@ static PHP_FUNCTION(bbs_postarticle)
         if (title[i] <= 27 && title[i] >= -1)
             title[i] = ' ';
     }
-    local = local ? 0 : 1;
-    anony = anony ? 1 : 0;
     if (tlen == 0)
         RETURN_LONG(-3); //标题为NULL
-    sprintf(dir, "boards/%s/.DIR", board);
     if (true == checkreadonly(board) || !haspostperm(getCurrentUser(), board))
         RETURN_LONG(-4); //此讨论区是唯读的, 或是您尚无权限在此发表文章.
     if (deny_me(getCurrentUser()->userid, board) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
         RETURN_LONG(-5); //很抱歉, 你被版务人员停止了本版的post权利.
+
+
+    /* FIXME: this is a stupid design... */
     if (abs(time(0) - *(int *) (u_info->from + 36)) < 6) {
         *(int *) (u_info->from + 36) = time(0);
         RETURN_LONG(-6); // 两次发文间隔过密, 请休息几秒后再试
     }
     *(int *) (u_info->from + 36) = time(0);
-    sprintf(filename, "tmp/%s.%d.tmp", getCurrentUser()->userid, getpid());
-    if (!sigsetjmp(bus_jump, 1)) {
-        signal(SIGBUS, sigbus);
-        signal(SIGSEGV, sigbus);
-        f_append(filename, (clen>0) ? unix_string(content) : "");
-    } else {
-		RETURN_LONG(-9);
-	}
-    signal(SIGBUS, SIG_IGN);
-    signal(SIGSEGV, SIG_IGN);
+    /* stupid design END */
+
 
     if(reid > 0){
         int pos;int fd;
-        oldx = (struct fileheader*)emalloc(sizeof(struct fileheader));
-
-		if (oldx==NULL) {
-			RETURN_FALSE;
-		}	
-
 		setbfile(path,board,DOT_DIR);
-		fd =open(path,O_RDWR);
+		fd = open(path,O_RDWR);
 		if(fd < 0) RETURN_LONG(-7); //索引文件不存在
-		get_records_from_id(fd,reid,oldx,1,&pos);
+		get_records_from_id(fd,reid,&oldxx,1,&pos);
 
 		close(fd);
-        if (pos < 0) {
-    		efree(oldx);
-    		oldx = NULL;
+        if (pos >= 0) {
+            oldx = &oldxx;
+            if (oldx->accessed[1] & FILE_READ) {
+                RETURN_LONG(-8); //本文不能回复
+            }
         }
-        else
-        if (oldx->accessed[1] & FILE_READ)
-           RETURN_LONG(-8); //本文不能回复
     }
-    else {
-        oldx = NULL;
+    local_save = (is_outgo_board(board) && outgo) ? 0 : 1;
+
+    memset(&post_file, 0, sizeof(post_file));
+    anonyboard = anonymousboard(board); /* 是否为匿名版 */
+
+    /*
+     * 自动生成 POST 文件名 
+     */
+    setbfile(filepath, board, "");
+    if (GET_POSTFILENAME(post_file.filename, filepath) != 0) {
+        RETURN_LONG(-9);
+    }
+    setbfile(filepath, board, post_file.filename);
+
+    anony = anonyboard && anony;
+    strncpy(post_file.owner, anony ? board : getCurrentUser()->userid, OWNER_LEN);
+    post_file.owner[OWNER_LEN - 1] = 0;
+
+    if ((!strcmp(board, "Announce")) && (!strcmp(post_file.owner, board)))
+        strcpy(post_file.owner, "SYSOP");
+    fp = fopen(filepath, "w");
+    write_header(fp, getCurrentUser(), 0, board, title, anony, (local_save ? 1 : 2), getSession());
+    if (clen > 0) {
+        f_append(fp, unix_string(content));
+    }
+    if (!anony) {
+        getCurrentUser()->signature = sig;
+        if (sig < 0) {
+            struct userdata ud;
+            read_userdata(getCurrentUser()->userid, &ud);
+            if (ud.signum > 0) {
+                sig = 1 + (int) (((double)ud.signum) * rand() / (RAND_MAX + 1.0)); //(rand() % ud.signum) + 1;
+            } else sig = 0;
+        }
+
+        addsignature(fp, getCurrentUser(), sig);
+    }
+    if (sig == 0) {
+        fputs("\n--\n", fp);
+    } else {
+        fprintf(fp, "\n");
+    }
+    color = (getCurrentUser()->numlogins % 7) + 31; /* 颜色随机变化 */
+    if (!strcmp(board, "Announce"))
+        fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME, NAME_BBS_CHINESE " BBS站");
+    else
+        fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
+
+    if (brd->flag&BOARD_ATTACH) {
+        getattachtmppath(attachdir, MAXPATH);
+        snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
+        if ((fp2 = fopen(attachfile, "r")) != NULL) {
+            fputs("\n", fp);
+            while (!feof(fp2)) {
+                char *name;
+                long begin = 0;
+                unsigned int save_size;
+                char *ptr;
+                off_t size;
+
+                fgets(buf, 256, fp2);
+                name = strchr(buf, ' ');
+                if (name == NULL)
+                    continue;
+                *name = 0;
+                name++;
+                ptr = strchr(name, '\n');
+                if (ptr)
+                    *ptr = 0;
+
+                if (-1 == (fd = open(buf, O_RDONLY)))
+                    continue;
+                if (post_file.attachment == 0) {
+                    /*
+                     * log the attachment begin 
+                     */
+                    post_file.attachment = ftell(fp) + 1;
+                }
+                fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fp);
+                fwrite(name, strlen(name) + 1, 1, fp);
+                BBS_TRY {
+                    if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, & size) == 0) {
+                        size = 0;
+                        save_size = htonl(size);
+                        fwrite(&save_size, sizeof(save_size), 1, fp);
+                    } else {
+                        save_size = htonl(size);
+                        fwrite(&save_size, sizeof(save_size), 1, fp);
+                        begin = ftell(fp);
+                        fwrite(ptr, size, 1, fp);
+                    }
+                }
+                BBS_CATCH {
+                    ftruncate(fileno(fp), begin + size);
+                    fseek(fp, begin + size, SEEK_SET);
+                }
+                BBS_END end_mmapfile((void *) ptr, size, -1);
+
+                close(fd);
+            }
+			fclose(fp2);
+        }
+        f_rm(attachdir);
+	}
+    fclose(fp);
+    post_file.eff_size = get_effsize(filepath);
+
+    strncpy(post_file.title, title, ARTICLE_TITLE_LEN - 1);
+	post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    if (local_save) {      /* local save */
+        post_file.innflag[1] = 'L';
+        post_file.innflag[0] = 'L';
+    } else {
+        post_file.innflag[1] = 'S';
+        post_file.innflag[0] = 'S';
+        outgo_post(&post_file, board, title, getSession());
+    }
+
+    if (mailback) post_file.accessed[1] |= FILE_MAILBACK;
+    if (is_tex) post_file.accessed[1] |= FILE_TEX;
+    
+    /*
+     * 在boards版版主发文自动添加文章标记 Bigman:2000.8.12 
+     */
+    if (!strcmp(board, "Board") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS)
+        && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
+        post_file.accessed[0] |= FILE_SIGN;
+    }
+
+	retvalue = after_post(getCurrentUser(), &post_file, board, oldx, !anony, getSession());
+
+    if (retvalue == 0) {
+#ifdef WWW_GENERATE_STATIC
+        generate_static(DIR_MODE_NORMAL,&post_file,board,oldx);
+#endif
     }
 #ifdef HAVE_BRC_CONTROL
     brc_initial(getCurrentUser()->userid, board, getSession());
-#endif
-    if (is_outgo_board(board) && local == 0)
-        local = 0;
-    else
-        local = 1;
-    getCurrentUser()->signature = sig;
-    if (sig < 0) {
-        struct userdata ud;
-        read_userdata(getCurrentUser()->userid, &ud);
-        if (ud.signum > 0) {
-            sig = 1 + (int) (((double)ud.signum) * rand() / (RAND_MAX + 1.0)); //(rand() % ud.signum) + 1;
-        } else sig = 0;
-    }
-    if (brd->flag&BOARD_ATTACH) {
-        getattachtmppath(buf, MAXPATH);
-        if (!sigsetjmp(bus_jump, 1)) {
-            signal(SIGBUS, sigbus);
-            signal(SIGSEGV, sigbus);
-        	r = post_article(board, title, filename, getCurrentUser(), getSession()->fromhost, sig, local, anony, oldx,buf,mailback,is_tex);
-        } else {
-			RETURN_LONG(-9);
-		}
-		signal(SIGBUS, SIG_IGN);
-    	signal(SIGSEGV, SIG_IGN);
-        f_rm(buf);
-	} else {
-        if (!sigsetjmp(bus_jump, 1)) {
-            signal(SIGBUS, sigbus);
-            signal(SIGSEGV, sigbus);
-        	r = post_article(board, title, filename, getCurrentUser(), getSession()->fromhost, sig, local, anony, oldx,NULL,mailback,is_tex);
-        } else {
-			RETURN_LONG(-9);
-		}
-    
-		signal(SIGBUS, SIG_IGN);
-    	signal(SIGSEGV, SIG_IGN);
-    }
-    if (r < 0)
-        RETURN_LONG(-9) ; //"内部错误，无法发文";
-#ifdef HAVE_BRC_CONTROL
     brc_update(getCurrentUser()->userid, getSession());
 #endif
-    if(oldx)
-    	efree(oldx);
-    unlink(filename);
     if (!junkboard(board)) {
         getCurrentUser()->numposts++;
-        if (!sigsetjmp(bus_jump, 1)) {
-            signal(SIGBUS, sigbus);
-            signal(SIGSEGV, sigbus);
-			/*
-stiger: 在 post_article 里处理
-        	write_posts(getCurrentUser()->userid, board, title);
-			*/
-        }
-        signal(SIGBUS, SIG_IGN);
-        signal(SIGSEGV, SIG_IGN);
     }
     RETURN_LONG(0);
 }
@@ -3919,7 +3851,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     char buf2[256];
     int i;
     bcache_t *bp;
-    sigjmp_buf bus_jump;
+    time_t now;
     int asize;
     /*int filtered = 0;*/
 
@@ -3952,9 +3884,8 @@ static PHP_FUNCTION(bbs_updatearticle)
         fprintf(fout, "%s", buf2);
     }
     if (clen>0) fprintf(fout, "%s", unix_string(content));
-#ifndef RAW_ARTICLE
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, wwwCTime(time(0)) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
-#endif
+    now = time(0);
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, ctime(&now) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
     while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
         if (asize <= 0) {
             if (Origin2(buf2)) {
@@ -3973,15 +3904,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     else {
 #endif
-        if (!sigsetjmp(bus_jump, 1)) {
-            signal(SIGBUS, sigbus);
-            signal(SIGSEGV, sigbus);
-       		f_mv(outfile, infile);
-        } else {
-			RETURN_LONG(-1);
-		}
-        signal(SIGBUS, SIG_IGN);
-        signal(SIGSEGV, SIG_IGN);
+        f_mv(outfile, infile);
 #ifdef FILTER
     }
 #endif
@@ -4019,18 +3942,13 @@ static PHP_FUNCTION(bbs_getwwwparameters)
     	}
 	
 	sethomefile(buf,getCurrentUser()->userid,"www");
-	if(!file_exist(buf))
-	{
-		if ((fn=fopen(buf,"w"))==NULL)
-		RETURN_LONG(-10);
-		fprintf(fn,"0");
-		fclose(fn);
-	}
-	if ((fn=fopen(buf,"r"))==NULL)
-		RETURN_LONG(-1);
-	fgets(buf,1024,fn);
+    if ((fn=fopen(buf,"r"))==NULL) {
+        strcpy(buf, "0");
+    } else {
+        fgets(buf,1024,fn);
+        fclose(fn);
+    }
 	ZVAL_STRING(wwwparameters,buf,1);
-	fclose(fn);
 	RETURN_LONG(0);
 }
 
@@ -5003,11 +4921,13 @@ static PHP_FUNCTION(bbs_postmail){
 	int  idLen, tLen,cLen;
     long backup,sig;
 	int ac = ZEND_NUM_ARGS();
-	char filename[STRLEN+1];
-	char title2[80],title3[80];
-	int ret;
-	struct userec *u = NULL;
+	char mail_title[80];
 	int i;
+    FILE *fp;
+    char fname[PATHLEN], filepath[PATHLEN], sent_filepath[PATHLEN];
+    struct fileheader header;
+    struct stat st;
+    struct userec *touser;      /*peregrine for updating used space */
 
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -5016,27 +4936,53 @@ static PHP_FUNCTION(bbs_postmail){
 	{
 		WRONG_PARAM_COUNT;
 	}
-	getuser(targetID, &u);
-	if (u==NULL) 
+    
+    getuser(targetID, &touser);
+    if (touser == NULL) 
 		RETURN_LONG(-100);//can't find user
-	strcpy(targetID, u->userid);
-    for (i = 0; i < strlen(title); i++)
+
+    if (!canIsend2(getCurrentUser(), targetID)) {
+        RETURN_LONG(-3);
+    }
+
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
+        RETURN_LONG(-4);
+    }
+
+	strcpy(targetID, touser->userid);
+    for (i = 0; i < tLen; i++)
         if (title[i] < 27 && title[i] >= -1)
             title[i] = ' ';
 	if (title[0] == 0)
-        strcpy(title3,"没主题");
+        strcpy(mail_title,"没主题");
 	else 
-		strncpy(title3,title,79);
-	title3[79]=0;
-	snprintf(filename, STRLEN, "tmp/%s.%d.tmp", targetID, getpid());
-	filename[STRLEN]=0;
-    if (cLen>0) {
-        if (f_append(filename, unix_string(content)) < 0)
-                RETURN_LONG(-1); //"无法创建临时文件";
-    }
-    snprintf(title2,ARTICLE_TITLE_LEN-1, "{%s} %s", targetID, title);
-    title2[ARTICLE_TITLE_LEN-1] = 0;
+		strncpy(mail_title,title,79);
+	mail_title[79]=0;
     
+    bzero(&header, sizeof(header));
+    strcpy(header.owner, getCurrentUser()->userid);
+    strncpy(header.title, mail_title, ARTICLE_TITLE_LEN - 1);
+	header.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    setmailpath(filepath, targetID);
+    if (stat(filepath, &st) == -1) {
+        if (mkdir(filepath, 0755) == -1)
+            RETURN_LONG(-2);
+    } else {
+        if (!(st.st_mode & S_IFDIR))
+            RETURN_LONG(-2);
+    }
+    if (GET_MAILFILENAME(fname, filepath) < 0)
+        RETURN_LONG(-2);
+    strcpy(header.filename, fname);
+    setmailfile(filepath, targetID, fname);
+
+    fp = fopen(filepath, "w");
+    if (fp == NULL)
+        RETURN_LONG(-2);
+    write_header(fp, getCurrentUser(), 1, NULL, mail_title, 0, 0, getSession());
+    if (cLen>0) {
+        f_append(fp, unix_string(content));
+    }
     getCurrentUser()->signature = sig;
     if (sig < 0) {
         struct userdata ud;
@@ -5045,22 +4991,42 @@ static PHP_FUNCTION(bbs_postmail){
             sig = 1 + (int) (((double)ud.signum) * rand() / (RAND_MAX + 1.0)); //(rand() % ud.signum) + 1;
         } else sig = 0;
     }
-    if ((ret=post_mail(targetID, title3, filename, getCurrentUser()->userid, getCurrentUser()->username, getSession()->fromhost, sig, backup))!=0)
-    {
-		RETURN_LONG(ret-1);
-		/*
-        case -1:
-        	http_fatal("发信失败:无法创建文件");
-        case -2:
-        	http_fatal("发信失败:对方拒收你的邮件");
-        case -3:
-        	http_fatal("发信失败:对方信箱满");
-        default:
-        	http_fatal("发信失败");
+    addsignature(fp, getCurrentUser(), sig);
+    fclose(fp);
+    
+    if (stat(filepath, &st) != -1)
+        header.eff_size = st.st_size;
+    setmailfile(fname, targetID, ".DIR");
+    if (append_record(fname, &header, sizeof(header)) == -1)
+        RETURN_LONG(-6);
+    touser->usedspace += header.eff_size;
+	setmailcheck(targetID);
+	    
+   /* 添加Log Bigman: 2003.4.7 */
+    newbbslog(BBSLOG_USER, "mailed(www) %s %s", targetID, mail_title);
+
+    if (backup) {
+        strcpy(header.owner, targetID);
+        setmailpath(sent_filepath, getCurrentUser()->userid);
+        if (GET_MAILFILENAME(fname, sent_filepath) < 0) {
+            RETURN_LONG(-7);
         }
-		*/
+        strcpy(header.filename, fname);
+        setmailfile(sent_filepath, getCurrentUser()->userid, fname);
+
+        f_cp(filepath, sent_filepath, 0);
+        if (stat(sent_filepath, &st) != -1) {
+            getCurrentUser()->usedspace += st.st_size;
+            header.eff_size = st.st_size;
+        } else {
+            RETURN_LONG(-7);
+        }
+        header.accessed[0] |= FILE_READ;
+        setmailfile(fname, getCurrentUser()->userid, ".SENT");
+        if (append_record(fname, &header, sizeof(header)) == -1)
+            RETURN_LONG(-7);
+        newbbslog(BBSLOG_USER, "mailed(www) %s ", getCurrentUser()->userid);
     }
-    unlink(filename);
 	RETURN_LONG(0);
 }
 
@@ -6074,7 +6040,7 @@ static PHP_FUNCTION(bbs_getonlinefriends)
         array_init(element);
         add_assoc_bool ( element, "invisible", user[i].invisible );
         add_assoc_bool ( element, "isfriend", isfriend(user[i].userid) );
-        add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&user[i]))/60 );
+        add_assoc_long ( element, "idle", (long)(time(0) - user[i].freshtime)/60 );
         add_assoc_string ( element, "userid", user[i].userid, 1 );       
         add_assoc_string ( element, "username", user[i].username, 1 );   
         if( getuser(user[i].userid, &lookupuser) == 0 ) lookupuser=NULL;
@@ -6257,7 +6223,7 @@ static PHP_FUNCTION(bbs_denyusers)
     if (!check_read_perm(getCurrentUser(), &brd))
         RETURN_LONG(-2);
     strcpy(board,brd.filename);
-    if (!has_BM_perm(getCurrentUser(), board))
+    if (!is_BM(&brd, getCurrentUser()))
         RETURN_LONG(-3);
     
     sprintf(path, "boards/%s/deny_users", board);
@@ -6334,7 +6300,7 @@ static PHP_FUNCTION(bbs_denyadd)
     if (!check_read_perm(getCurrentUser(), &brd))
         RETURN_LONG(-1);
     strcpy(board,brd.filename);
-    if (!has_BM_perm(getCurrentUser(), board))
+    if (!is_BM(&brd, getCurrentUser()))
         RETURN_LONG(-2);
     if (getuser(userid,&lookupuser)==0)
         RETURN_LONG(-3);
@@ -6475,7 +6441,7 @@ static PHP_FUNCTION(bbs_denydel)
     if (!check_read_perm(getCurrentUser(), &brd))
         RETURN_LONG(-1);
     strcpy(board,brd.filename);
-    if (!has_BM_perm(getCurrentUser(), board))
+    if (!is_BM(&brd, getCurrentUser()))
         RETURN_LONG(-2);
         
     if (deny_me(userid, board)) {
@@ -6506,9 +6472,7 @@ static PHP_FUNCTION(bbs_searchboard)
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sla", &keyword, &keyword_len, &exact ,&boards) == FAILURE)
 		WRONG_PARAM_COUNT;
 	
-	strcpy(keyword,trim(keyword));
-	
-	if (!keyword)
+	if (!*keyword)
         RETURN_FALSE;
     
     if (array_init(boards) != SUCCESS)
@@ -6650,7 +6614,17 @@ static PHP_FUNCTION(bbs_valid_filename)
  */
 static PHP_FUNCTION(bbs_can_send_mail)
 {
-	RETURN_LONG(can_send_mail());
+    if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
+        RETURN_LONG(0);
+    } else if (HAS_PERM(getCurrentUser(), PERM_LOGINOK)) { 	 
+        if (chkusermail(getCurrentUser())) {
+            RETURN_LONG(0);
+        } else {
+            RETURN_LONG(1);
+        }
+    } else {
+        RETURN_LONG(0);
+    }
 }
 
 /*
@@ -6670,7 +6644,7 @@ static PHP_FUNCTION(bbs_setmailreaded)
 		WRONG_PARAM_COUNT;
 	}
 
-	total = file_size(dirname) / sizeof(fh) ;
+	total = get_num_records(dirname, sizeof(fh));
 
 	if(total <= 0)
 		RETURN_LONG(0);
@@ -8298,11 +8272,12 @@ static PHP_FUNCTION(bbs_docross)
  */
 static PHP_FUNCTION(bbs_docommend)
 {
+#ifdef COMMEND_ARTICLE
     char *board;
     int  board_len;
     long  id,confirmed;
     struct userec *u;
-    struct boardheader *src_bp;
+    struct boardheader *src_bp, *commend_bp;
     struct fileheader fileinfo;
     int  ent;
     int  fd;
@@ -8313,7 +8288,6 @@ static PHP_FUNCTION(bbs_docommend)
         WRONG_PARAM_COUNT;
     }
 
-#ifdef COMMEND_ARTICLE
     u = getCurrentUser();
 
     src_bp = getbcache(board);
@@ -8332,9 +8306,16 @@ static PHP_FUNCTION(bbs_docommend)
     }
     close(fd);
 
-    if (!has_BM_perm(u, COMMEND_ARTICLE) && !is_BM(src_bp, u)) {
+    commend_bp = getbcache(COMMEND_ARTICLE);
+    if (commend_bp == NULL) {
+        RETURN_LONG(-7);
+    }
+    if (!is_BM(commend_bp, u) && !is_BM(src_bp, u)) {
         if (strcmp(u->userid, fileinfo.owner))
             RETURN_LONG(-1);
+    }
+    if (!HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
+        RETURN_LONG(-1);
     }
     if ((fileinfo.accessed[1] & FILE_COMMEND) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         RETURN_LONG(-4);
@@ -8402,7 +8383,7 @@ static PHP_FUNCTION(bbs_bmmanage)
     bh = getbcache(board);
     if (!bh) RETURN_LONG(-1);
     strcpy(board,bh->filename);
-    if (!has_BM_perm(getCurrentUser(), board))
+    if (!is_BM(bh, getCurrentUser()))
         RETURN_LONG(-2);
     
     if (zhiding) {
@@ -8555,7 +8536,7 @@ static PHP_FUNCTION(bbs_csv_to_al)
 		WRONG_PARAM_COUNT;
 	}
 
-	ret = conv_csv_to_al( dest );
+	ret = conv_csv_to_al( dest, getSession() );
 
 	RETURN_LONG(ret);
 }
@@ -8632,7 +8613,7 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     if( getuser(userinfo.userid, &lookupuser) == 0 ) lookupuser=NULL;
     add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)? userinfo.from: SHOW_USERIP(lookupuser, userinfo.from), 1 );
     add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
-    add_assoc_long ( element, "idle", (long)(time(0) - get_idle_time(&userinfo))/60 );
+    add_assoc_long ( element, "idle", (long)(time(0) - userinfo.freshtime)/60 );
     
     zend_hash_index_update(Z_ARRVAL_P(arg->return_value), count+1-arg->start, (void *) &element, sizeof(zval *), NULL);
     return COUNT;
@@ -9022,7 +9003,6 @@ static PHP_FUNCTION(bbs_read_ann_dir)
         me.now = 0;
         j = 0;
         for (i = 0; i < me.num; i++) {
-            //trim(me.item[i]->title);
             strncpy(r_title, me.item[i]->title, sizeof(r_title) - 1);
             r_title[sizeof(r_title) - 1] = '\0';
             if (strlen(r_title) <= 39) {
@@ -9038,33 +9018,32 @@ static PHP_FUNCTION(bbs_read_ann_dir)
                 } else if ((ptr = strchr(r_title + 38, ' ')) != NULL) {
                     *ptr = '\0';
                     id = ptr + 1;
-                    trim(id);
                 } else
                     id = "";
             }
             snprintf(buf, sizeof(buf), "%s/%s", me.path,me.item[i]->fname);
             ptr = strchr(me.path, '/');
             
-            if (!file_exist(buf)) 
+            if (stat(buf, &st) == -1) {
+                r_time = 0;
                 r_flag = 0;
-            else if (file_isdir(buf))
-                r_flag = 1;
-            else 
-                r_flag = me.item[i]->attachpos?3:2;
-
+            } else {
+                r_time = st.st_mtime;
+                if (S_ISDIR(st.st_mode))
+                    r_flag = 1;
+                else 
+                    r_flag = me.item[i]->attachpos?3:2;
+            }
+            
             snprintf(r_path, sizeof(r_path), "%s/%s", ptr == NULL ? "" : ptr, me.item[i]->fname);
             strncpy(r_bm,id[0]?id:"",sizeof(r_bm)-1);
             r_bm[sizeof(r_bm)-1] = '\0';
             
-            if (stat(buf, &st) == -1) r_time = 0;
-            else r_time = st.st_mtime;
-
             if (strcmp(r_bm,"BMS") && strcmp(r_bm,"SYSOPS")) { // only display common articles
                 MAKE_STD_ZVAL(element);
                 array_init(element);
                 add_assoc_string(element,"TITLE",r_title,1);
                 add_assoc_string(element,"PATH",r_path,1);
-                trim(r_bm);
                 add_assoc_string(element,"BM",r_bm,1);
                 add_assoc_long(element,"FLAG",r_flag);
                 add_assoc_long(element,"TIME",r_time);

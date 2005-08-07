@@ -81,8 +81,6 @@
 #define HAVE_BIRTHDAY 1
 #endif
 
-#undef RAW_ARTICLE /* 如果要定义为 1，请先参考 wForum 的文档 - atppp 20041204 */
-
 /* 默认情况下加入 HAVE_BIRTHDAY 支持 - atppp 20040819 */
 #ifdef HAVE_BIRTHDAY
 #if HAVE_BIRTHDAY == 0
