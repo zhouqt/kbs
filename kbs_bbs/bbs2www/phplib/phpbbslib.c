@@ -1989,9 +1989,6 @@ static PHP_FUNCTION(bbs_searchtitle)
         if (!isowner(getCurrentUser(), &x)) {
             RETURN_LONG(-5); //不能修改他人文章!
         }
-        else if (file_time(path) < getCurrentUser()->firstlogin) {
-            RETURN_LONG(-6); //同名ID不能修改老ID的文章
-        }
     }
     /* 版主禁止POST 检查 */
     if (deny_me(getCurrentUser()->userid, brd->filename) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
@@ -8976,6 +8973,7 @@ static PHP_FUNCTION(bbs_read_ann_dir)
     char buf[256];
     char r_title[STRLEN],r_path[256],r_bm[256];
     int  r_flag,r_time;
+    struct stat st;
     
     int ac = ZEND_NUM_ARGS();
     if(ac != 4 || zend_parse_parameters(4 TSRMLS_CC,"szza",&path,&path_len,&board,&path2,&articles) ==FAILURE) {
@@ -9057,7 +9055,10 @@ static PHP_FUNCTION(bbs_read_ann_dir)
             snprintf(r_path, sizeof(r_path), "%s/%s", ptr == NULL ? "" : ptr, me.item[i]->fname);
             strncpy(r_bm,id[0]?id:"",sizeof(r_bm)-1);
             r_bm[sizeof(r_bm)-1] = '\0';
-            r_time = file_time(buf);
+            
+            if (stat(buf, &st) == -1) r_time = 0;
+            else r_time = st.st_mtime;
+
             if (strcmp(r_bm,"BMS") && strcmp(r_bm,"SYSOPS")) { // only display common articles
                 MAKE_STD_ZVAL(element);
                 array_init(element);

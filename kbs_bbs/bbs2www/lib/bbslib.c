@@ -1,35 +1,13 @@
 /*
  * $Id$
  */
-#include "types.h"
 #include "bbslib.h"
-
-/*
-time_t update_time = 0;
-int showexplain = 0, freshmode = 0;
-int mailmode, numf;
-int usercounter, real_user_names = 0;
-int page, readplan, num;
-*/
 
 time_t set_idle_time(struct user_info * uentp, time_t t);
 int write_file2(FILE * fp, FILE * fp2);
 
 struct user_info *u_info;
 
-/*
-char fromhost[IPLEN + 1];
-int badnum = 0;
-int loginok = 0;
-friends_t bbb[MAXREJECTS];
-struct UTMPFILE *shm_utmp;
-struct UCACHE *shm_ucache;
-extern struct favbrd_struct favbrd_list[FAVBOARDNUM];
-extern int favbrd_list_t;
-extern int favnow;
-friends_t fff[200];
-*/
-        
 int f_append(char *file, char *buf)
 {
     FILE *fp;
@@ -49,15 +27,6 @@ int f_append(char *file, char *buf)
     fclose(fp);
 
     return 0;
-}
-
-time_t file_time(char *file)
-{
-    struct stat st;
-
-    if (stat(file, &st) == -1)
-        return 0;
-    return st.st_mtime;
 }
 
 struct stat *f_stat(char *file)

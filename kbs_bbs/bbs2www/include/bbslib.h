@@ -5,85 +5,24 @@
 #define BBSLIB_H
 
 #include "bbs.h"
-#include "chat.h"
-#include <sys/ipc.h>
-#include <sys/shm.h>
-#include <stdarg.h>
-/*#include "crypt.h"*/
-#include "types.h"
-/*#include "crypt.h"*/
 
-#define report(x)        bbslog("user","%s",x)
+typedef struct user_info uinfo_t;
 
-#define FIRST_PAGE	"/index.html"
-#define MAIN_PAGE   "/frames.html"
-#define NOLOGIN_PAGE "/nologin.html"
-#define CSS_FILE 	"/bbs.css"
-#define CSS_FILE_BIGFONT 	"/bbs-bf.css"
-#define CHARSET		"gb2312"
-#define UCACHE_SHMKEY	get_shmkey("UCACHE_SHMKEY")
-#define UTMP_SHMKEY	get_shmkey("UTMP_SHMKEY")
-#define BCACHE_SHMKEY	get_shmkey("BCACHE_SHMKEY")
+typedef struct boardheader bcache_t;
+typedef struct friends friends_t;
 
-#ifndef MAXREJECTS
-#define MAXREJECTS	(0xff)
-#endif
-
-#ifndef BBSHOST
-#define BBSHOST NAME_BBS_ENGLISH
-#endif
-
-#ifndef BBSNAME
-#define BBSNAME NAME_BBS_CHINESE
-#endif
-
-/*
-extern char seccode[SECNUM][5];
-*/
 extern struct user_info *u_info;
-/*
-extern char parm_name[256][80], *parm_val[256];
-extern int parm_num;
-
-extern char fromhost[IPLEN + 1];
-extern int badnum;
-extern int loginok;
-extern struct UTMPFILE *shm_utmp;
-extern struct UCACHE *shm_ucache;
-extern friends_t fff[200];
-extern friends_t bbb[MAXREJECTS];
-
-struct post_log {
-    char author[IDLEN + 1];
-    char board[18];
-    char title[66];
-    time_t date;
-    int number;
-};
-
-struct _shmkey {
-	char key[20];
-	int value;
-};*/
-
-char *ModeType();
 
 int f_append(char *file, char *buf);
 
 struct stat *f_stat(char *file);
 
 #define file_size(x) f_stat(x)->st_size
-/*#define file_time(x) f_stat(x)->st_mtime*/
-#define file_rtime(x) f_stat(x)->st_atime
-#define file_exist(x) (file_time(x)!=0)
+#define file_exist(x) (f_stat(x)->st_mtime!=0)
 #define file_isdir(x) ((f_stat(x)->st_mode & S_IFDIR)!=0)
 #define file_isfile(x) ((f_stat(x)->st_mode & S_IFREG)!=0)
 
 int get_userstatusstr(char *userid, char *buf);
-
-int put_record(void *buf, int size, int num, char *file);
-
-int del_record(char *file, int size, int num);
 
 char *wwwCTime(time_t t);
 
@@ -97,42 +36,17 @@ char *rtrim(char *s);
 
 #define trim(s) ltrim(rtrim(s))
 
-#define setcookie(a, b)	printf("<script>document.cookie='%s=%s'</script>\n", a, b)
-#define redirect(x)	printf("<meta http-equiv='Refresh' content='0; url=%s'>\n", x)
-#define refreshto(x, t)	printf("<meta http-equiv='Refresh' content='%d; url=%s'>\n", t, x)
-#define cgi_head()	printf("Content-type: text/html; charset=%s\n\n", CHARSET)
-
-int get_shmkey(char *s);
-
 int post_mail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig, int backup);
 
 int del_mail(int ent, struct fileheader* fh, char* direct);
-
-int post_imail(char *userid, char *title, char *file, char *id, char *nickname, char *ip, int sig);
 
 int post_article(char *board, char *title, char *file, struct userec *user, char *ip, int sig, int local_save, int anony, struct fileheader* oldx,char* attach_dir, int mailback, int is_tex);
 
 int sig_append(FILE * fp, char *id, int sig);
 
-char *anno_path_of(char *board);
-
 int has_BM_perm(struct userec *user, char *board);
 
-int has_read_perm(struct userec *user, char *board);
-
-int findnextutmp(char *id, int from);
-
 int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]);
-
-char *horoscope(int month, int day);
-
-char *ModeType(int mode);
-
-int countexp(struct userec *x);
-
-int countperf(struct userec *x);
-
-int checkuser(char *id, char *pw);
 
 int isfriend(char *id);
 
@@ -140,23 +54,12 @@ int fprintf2(FILE * fp, char *s);
 
 int get_file_ent(char *board, char *file, struct fileheader *x);
 
-char *crypt1(char *buf, char *salt);
-
-int full_utmp(struct user_info *uentp, int *count);
-struct user_info **get_ulist_addr();
-
 //board manage
 int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board);
-
-int isowner(struct userec *user, struct fileheader *fileinfo);
 
 void write_header2(FILE * fp, char *board, char *title, char *userid, char *username, int anony, int local);
 
 int outgo_post2(struct fileheader *fh, char *board, char *userid, char *username, char *title);
-
-char *setmailpath(char *buf, char *userid);
-
-time_t file_time(char *file);
 
 int get_curr_utmpent();
 
