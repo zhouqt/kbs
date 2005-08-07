@@ -33,12 +33,12 @@
 			<para>解压 wForum 到 web 根目录下面的 wForum 目录。给你的站点取个名字，比方叫 kcn。进入 wForum 目录，执行下面几个命令：
 				<programlisting>
 cp inc/sites/site-example.php inc/sites/kcn.php
-ln -s sites/kcn.php inc/site.php</programlisting>
-				inc/site.php 就是你的站点定义文件。请注意，inc/site.php 必须是一个指向 inc/sites/ 目录下某个文件的符号连接，否则程序会找不到系统默认参数配置文件 default.php。修改 inc/site.php 里面的各类参数，特别是分类讨论区。另外，inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
+ln -s sites/kcn.php inc/wForum.site.php</programlisting>
+				inc/wForum.site.php 就是你的站点定义文件。请注意，inc/wForum.site.php 必须是一个指向 inc/sites/ 目录下某个文件的符号连接，否则程序会找不到系统默认参数配置文件 default.php。修改 inc/wForum.site.php 里面的各类参数，特别是分类讨论区。另外，inc/reg_txt.php 是注册用户的时候看到的网站协议，可以换成站点站规。
 			</para>
 			<section id="feature_notes">
 				<title>default.php 内部分参数的附加说明</title>
-					<para>inc/sites/default.php 列举了可以在 inc/site.php 里定义的参数。大多数参数说明已经足够明确，下面对个别参数作附加说明。
+					<para>inc/sites/default.php 列举了可以在 inc/wForum.site.php 里定义的参数。大多数参数说明已经足够明确，下面对个别参数作附加说明。
 						<itemizedlist>
 							<listitem><para>$SiteURL: 这个变量用于一些需要输出绝对路径的地方，应该定义为 wForum 安装的根的 URL，最后一个字符必须是 '/'。</para></listitem>
 							<listitem><para>MAINTITLE: 站点标题可以包含 html，打开 mathml 支持的站点千万注意 html 必须符合 xhtml 标准。</para></listitem>
@@ -71,7 +71,7 @@ ln -s sites/kcn.php inc/site.php</programlisting>
 		</section>
 		<section id="install_mysql">
 			<title>加入 mysql 支持和小字报功能</title>
-			<para>目前 wForum 的 mysql 支持仅用于版面的小字报功能，默认是关闭的。正确加入 mysql 支持之后小字报功能就会自动打开。mysql 支持首先要求 PHP 支持 mysql。在 site.php 加入：<programlisting>define("DB_ENABLED", true);</programlisting>以打开 mysql 支持，同时配置 mysql 用户、密码和数据库名。用如下语句在 mysql 中建立一个数据表来支持小字报功能：
+			<para>目前 wForum 的 mysql 支持仅用于版面的小字报功能，默认是关闭的。正确加入 mysql 支持之后小字报功能就会自动打开。mysql 支持首先要求 PHP 支持 mysql。在 wForum.site.php 加入：<programlisting>define("DB_ENABLED", true);</programlisting>以打开 mysql 支持，同时配置 mysql 用户、密码和数据库名。用如下语句在 mysql 中建立一个数据表来支持小字报功能：
 				<programlisting>
 create table smallpaper_tb(
  ID int    not null auto_increment primary key,
@@ -87,7 +87,7 @@ create table smallpaper_tb(
 		<section id="install_tex2mathml">
 			<title>加入 itex2mathml 支持</title>
 			<para>现在 wForum 支持 itex（数学公式排版语言 tex 的一种衍生形式） 到 mathml （浏览器显示数学公式的推荐标准）的自动转化。这部分功能参考 ythtbbs 系统完成，部分使用 ythtbbs 代码的站点有这个功能的介绍可以参考，比如 <ulink url="http://bbs.qxntc.edu.cn/">笔山书院 BBS</ulink> web 下的用户帮助里面就有。</para>
-			<para>wForum 支持 itex2mathml 对客户端和服务器端都有要求。客户端的要求是最新版的 Mozilla Firefox，Netscape 等支持 MathML 的浏览器。如果是 MSIE 浏览器的话，必须是 5.5 版以上，而且需要预装 <ulink url="http://www.dessci.com/en/products/mathplayer/download.htm">MathPlayer 2.0</ulink> 插件，wForum 不会提示用户安装。服务器端要求 <ulink url="http://pear.math.pitt.edu/mathzilla/itex2mml.html">itex2mml</ulink> 转换程序，请下载后将 itex2MML 可执行文件放在 ~bbs/bin/ 目录下面，并且在 site.php 里面加入：<programlisting>define("SUPPORT_TEX", true);</programlisting>用户发表需要 itex2mathml 支持的帖子的时候要选择“使用 tex 发表”选项。关于 itex2mml 支持的 tex 格式可以在其主页上找到文档。目前这部分功能还有很多问题，但是基本功能已经可以使用。具体的技术细节可以参考下面的 <xref linkend="itex2mathml_details" endterm="itex2mathml_details_title"/>。</para>
+			<para>wForum 支持 itex2mathml 对客户端和服务器端都有要求。客户端的要求是最新版的 Mozilla Firefox，Netscape 等支持 MathML 的浏览器。如果是 MSIE 浏览器的话，必须是 5.5 版以上，而且需要预装 <ulink url="http://www.dessci.com/en/products/mathplayer/download.htm">MathPlayer 2.0</ulink> 插件，wForum 不会提示用户安装。服务器端要求 <ulink url="http://pear.math.pitt.edu/mathzilla/itex2mml.html">itex2mml</ulink> 转换程序，请下载后将 itex2MML 可执行文件放在 ~bbs/bin/ 目录下面，并且在 wForum.site.php 里面加入：<programlisting>define("SUPPORT_TEX", true);</programlisting>用户发表需要 itex2mathml 支持的帖子的时候要选择“使用 tex 发表”选项。关于 itex2mml 支持的 tex 格式可以在其主页上找到文档。目前这部分功能还有很多问题，但是基本功能已经可以使用。具体的技术细节可以参考下面的 <xref linkend="itex2mathml_details" endterm="itex2mathml_details_title"/>。</para>
 		</section>
 		<section id="install_append">
 			<title>附加说明</title>
@@ -139,7 +139,7 @@ short_open_tag = off</programlisting>
 		</section>
 		<section id="bbs2www">
 			<title>wForum 和 kbsbbs 的 web 界面配合</title>
-			<para>wForum 和 kbsbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/site.php 中定义：<programlisting>
+			<para>wForum 和 kbsbbs 源代码 bbs2www/html/ 下那个 web 界面可以配合使用，互为补充。特别说明的两点是：第一，bbs2www/html/bbslogin.php 和 wForum/logon.php 所接受的登录表单格式是完全兼容的，所以可以在 web 首页放一个 checkbox，用同一个用户名/密码输入表单就可以让用户选择是登录到哪一个 web 界面。第二，两个 web 界面允许共享登录 cookie，这样可以在两个界面之间跳转而不必重新登录（可以在两个界面适当的地方加跳转链接）。要实现这个功能需要将两个 web 界面装在同一个域名下，wForum 可以放在 web 主目录的 wForum/ 目录下，然后在 wForum 的 inc/wForum.site.php 中定义：<programlisting>
 define('COOKIE_PREFIX', '');
 define('COOKIE_PATH', '/');
 </programlisting>
@@ -277,7 +277,7 @@ menuDivStyle.visible = "hidden";</programlisting>
 		</section>
 		<section id="reply_tree">
 			<title>关于树形回复结构</title>
-			<para>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，kbsbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</para>
+			<para>loadtree.php (版面文章列表点击 + 会显示回复结构) 和 disparticle.php (单篇文章阅读底部会显示回复结构) 已经加入了树形回复结构的支持。基础代码在 inc/treeview.inc.php 里面。产生回复树结构再递归显示其实是一件比较耗时间的操作，这部分代码以后可能还需要再优化。现在如果回复超过一定的数量(默认 51，可以在 wForum.site.php 里面配置)，就不显示回复树结构而直接显示平板式回复结构。另外，kbsbbs 现在设置的一个主题可以返回的最大回复数量是 512。这里其实还是有文章可做，比方回复树里面显示每一个帖子是否已读，不过暂时先不考虑了。</para>
 			<para>default.php 里面定义了 SHOWREPLYTREE，如果为 1 就会支持树形回复结构。如果为 0 就是平级显示所有回复。这里也有文章可做，SHOWREPLYTREE 其实定义成用户自定义参数或者 cookie 参数可能更好。</para>
 		</section>
 		<section id="section_list">
@@ -412,7 +412,7 @@ menuDivStyle.visible = "hidden";</programlisting>
 							<glossdef><para>如果 Referer 有设置，跳到 Referer，否则跳到首页。</para></glossdef>
 						</glossentry>
 						<glossentry><glossterm>get_secname_index($secnum)</glossterm>
-							<glossdef><para>在 inc/site.php 里面用 $section_nums 数组定义了分类讨论区代号。这个函数中的 $secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</para></glossdef>
+							<glossdef><para>在 inc/wForum.site.php 里面用 $section_nums 数组定义了分类讨论区代号。这个函数中的 $secnum 参数是某个分类讨论区的代号（可能会是字母），该函数的返回值是这个分类讨论区在 $section_nums 数组中的位置。在 wForum 和 phpbbslib.c 程序中，secNum 是一个被混用的变量名，一般从 phpbbslib.c 中出来的 secNum 表示分类讨论区代号；而在 wForum 页面之间传递的 secNum 参数，又一般是 $section_nums 数组元素的下标。在 wForum 的后续开发中，这个问题需要特别注意。</para></glossdef>
 						</glossentry>
 					</glosslist>
 				</listitem>

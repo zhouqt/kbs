@@ -133,7 +133,7 @@ $filename_trans = array(" " => "_",
 	"\"" => "_",
 	"'" => "_"
 	);
-require("site.php");
+require("wForum.site.php");
 
 
 function valid_filename($fn)

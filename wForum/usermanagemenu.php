@@ -37,10 +37,6 @@ if (!($currentuser["userlevel"] & BBS_PERM_LOGINOK )) {
 用户昵称： <?php echo htmlspecialchars($currentuser['username'],ENT_QUOTES); ?><br>
 用户等级： <?php echo bbs_getuserlevel($currentuser['userid']); ?><br>
 用户门派： <?php echo showIt($groups[$currentuser['group']]); ?><br>
-用户财富： <?php echo $currentuser['money']; ?><br>
-用户经验： <?php echo $currentuser['score']; ?><br>
-用户魅力： N/A<br>
-精华帖数： N/A<br>
 帖数总数： <?php echo $currentuser['numposts']; ?><br>
 注册时间： <?php echo strftime("%Y-%m-%d %H:%M:%S", $currentuser['firstlogin']); ?><br>
 登录次数： <?php echo $currentuser['numlogins']; ?><br>

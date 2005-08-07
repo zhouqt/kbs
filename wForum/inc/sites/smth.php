@@ -6,15 +6,15 @@ define("ARTICLESPERPAGE",30); //目录列表下每页显示的主题数
 
 define("THREADSPERPAGE",10); //文章阅读时每页显示的文章数
 
-$SiteURL="http://www.smth.org/wForum/";
+$SiteURL="http://192.168.0.11:8080/wForum/";
 
-$SiteName="水木清华";
+$SiteName="测试站";
 
-$HTMLTitle="BBS 水木清华站";
+$HTMLTitle="BBS 测试站站";
 
 $Banner="bar/bar.jpg";
 
-define('SMS_SUPPORT', 1);
+define('SMS_SUPPORT', 0);
 
 define ("MAINTITLE","<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" height=\"84\" width=\"600\"> <param name=\"MOVIE\" value=\"bar/smth2.swf\" /><embed SRC=\"bar/smth2.swf\" height=\"84\" width=\"600\"></embed></object>");
 
@@ -36,6 +36,9 @@ $section_names = array(
     array("操作系统", "[系统/内核]"),
     array("电脑技术", "[专项技术]")
 );
+
+define('COOKIE_PREFIX', '');
+define('COOKIE_PATH', '/');
 
 require "default.php";
 ?>
