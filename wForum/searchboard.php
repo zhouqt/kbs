@@ -44,7 +44,7 @@ function preprocess(){
 		$exact = 0;
 	}
 	$boards = array();
-	if (!bbs_searchboard($keywords,$exact,$boards)) $boards = false;
+	if (!bbs_searchboard(trim($keywords),$exact,$boards)) $boards = false;
 	
 }
 

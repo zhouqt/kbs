@@ -42,7 +42,7 @@ function bbs_ann_display_articles($articles) {
             echo '<a href="'.$url.'">'.htmlformat($article['TITLE']).'</a>';
         else
             echo htmlformat($article['TITLE']);
-        $bm = explode(' ',$article['BM']);
+        $bm = explode(' ',trim($article['BM']));
         $bm = $bm[0];
         echo '</td><td class="t4">'.($bm?'<a href="/bbsqry.php?userid='.$bm.'">'.$bm.'</a>':'&nbsp;').'</td><td class="t3">'.date('Y-m-d',$article['TIME']).'</td></tr></tbody>';
         $i ++;

@@ -221,7 +221,7 @@ function ann_display_folder($articles, $parent) {
 	            echo '&nbsp;';
 	        $title = htmlformat(trim($article['TITLE']))." ";
 	        echo '<a href="'.$url.'">'.$title.'</a>';
-	        $bm = explode(' ',$article['BM']);
+	        $bm = explode(' ',trim($article['BM']));
 	        $bm = $bm[0];
 	        echo '</td><td align="center" class="TableBody2">'.($bm?'<a target="_blank" href="dispuser.php?id='.$bm.'">'.$bm.'</a>':'&nbsp;').'</td><td align="center" class="TableBody1">'.date('Y-m-d',$article['TIME']).'</td></tr>';
 	        $i ++;

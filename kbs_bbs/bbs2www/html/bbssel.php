@@ -40,7 +40,7 @@ $boards = array();
         <td align="center">
 <?php
 
-if (bbs_searchboard($keyword,$exact,$boards)) {
+if (bbs_searchboard(trim($keyword),$exact,$boards)) {
     if (sizeof($boards)==1) {
 ?>
 <script language="javascript">
