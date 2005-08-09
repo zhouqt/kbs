@@ -25,6 +25,9 @@ function undo_html_format($str)
 	return $str;
 }
 
+if (version_compare(PHP_VERSION,'5','>='))
+	require_once('domxml-php4-to-php5.inc.php'); //Load the PHP5 converter
+
 # iterate through an array of nodes
 # looking for a text node
 # return its content
