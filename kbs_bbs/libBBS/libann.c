@@ -750,7 +750,7 @@ int del_group(struct boardheader *bh){
         if(!strcmp(m.item[i]->fname,p)){
             free(m.item[i]);
             m.num--;
-            memmove(&m.item[i],&m.item[i+1],(m.num-i)*sizeof(ITEM));
+            memmove(&m.item[i],&m.item[i+1],(m.num-i)*sizeof(ITEM*));
         }
     if(a_savenames(&m))
         ret|=(1<<0);
