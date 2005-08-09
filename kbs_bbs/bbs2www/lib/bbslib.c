@@ -3,8 +3,6 @@
  */
 #include "bbslib.h"
 
-struct user_info *u_info;
-
 void f_append(FILE *fp, char *buf)
 {
     char *ptr;
@@ -21,7 +19,7 @@ void f_append(FILE *fp, char *buf)
 
 int file_exist(char *file)
 {
-    static struct stat buf;
+    struct stat buf;
 
     if (stat(file, &buf) == -1) return 0;
     if (!S_ISREG(buf.st_mode)) return 0;
@@ -35,26 +33,20 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
     char genbuf[PATHLEN];
     struct stat st;
 
-    if (strstr(direct, ".DELETED") || HAS_MAILBOX_PROP(u_info, MBP_FORCEDELETEMAIL)) {
-        strcpy(buf, direct);
-        t = strrchr(buf, '/') + 1;
-        strcpy(t, fh->filename);
-        if (lstat(buf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
-            if (getCurrentUser()->usedspace > st.st_size)
-                getCurrentUser()->usedspace -= st.st_size;
-            else
-                getCurrentUser()->usedspace = 0;
-        }
-    }
-
     strcpy(buf, direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
     if (!delete_record(direct, sizeof(*fh), ent, (RECORD_FUNC_ARG) cmpname, fh->filename)) {
         sprintf(genbuf, "%s/%s", buf, fh->filename);
-        if (strstr(direct, ".DELETED") || HAS_MAILBOX_PROP(u_info, MBP_FORCEDELETEMAIL))
+        if (strstr(direct, ".DELETED") || HAS_MAILBOX_PROP(getSession()->currentuinfo, MBP_FORCEDELETEMAIL)) {
+            if (lstat(genbuf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
+                if (getCurrentUser()->usedspace > st.st_size)
+                    getCurrentUser()->usedspace -= st.st_size;
+                else
+                    getCurrentUser()->usedspace = 0;
+            }
             unlink(genbuf);
-        else {
+        } else {
             strcpy(buf, direct);
             t = strrchr(buf, '/') + 1;
             strcpy(t, ".DELETED");
@@ -97,15 +89,12 @@ char *unix_string(char *str)
 
 int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
 {
-    int i;
     uinfo_t *uin;
 
     /*
      * 滤掉特殊字符，应该写成一个函数 
      */
-    for (i = 0; i < (int) strlen(msg); i++)
-        if ((0 < msg[i] && msg[i] <= 27) || msg[i] == -1)
-            msg[i] = 32;
+    filter_control_char(msg);
     uin = t_search(destid, destpid);
     if (uin == NULL)
         return -1;
@@ -165,13 +154,6 @@ int get_userstatusstr(char *userid, char *buf)
 
 	return apply_utmp((APPLY_UTMP_FUNC) printstatusstr, 10, lookupuser->userid, buf);
 }
-
-/* 获得当前用户的 utmp 号 */
-int get_curr_utmpent()
-{
-    return get_utmpent_num(u_info);
-}
-
 
 /* 以下的代码是cgi和php都使用的*/
 static struct user_info www_guest_uinfo;
@@ -714,7 +696,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
     user->stay += stay;
     user->exittime = time(0);
     if (strcasecmp(user->userid, "guest")) {
-        newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, get_curr_utmpent(), useridx);
+        newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, getSession()->utmpent, useridx);
         if (!puinfo->active)
             return 0;
         setflags(user, PAGER_FLAG, (puinfo->pager & ALL_PAGER));
@@ -2028,7 +2010,7 @@ int web_send_sms(char *dest,char *msgstr){
 		return -3;
 
 	sms_init_memory(getSession());
-	getSession()->smsuin = u_info;
+	getSession()->smsuin = getSession()->currentuinfo;
 
 	if(isdigit(dest[0])){
 		int i;
@@ -2090,7 +2072,7 @@ int web_send_sms(char *dest,char *msgstr){
 	}else{
 		struct msghead h;
 		struct user_info *uin;
-		h.frompid = u_info->pid;
+		h.frompid = getSession()->currentuinfo->pid;
 		h.topid = -1;
 		if( !isdigit(dest[0]) ){
 			uin = t_search(destid, false);
@@ -2133,7 +2115,7 @@ int web_register_sms_sendcheck(char *mnumber)
 	memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
 
     sms_init_memory(getSession());
-    getSession()->smsuin = u_info;
+    getSession()->smsuin = getSession()->currentuinfo;
 
     if(ud.mobileregistered) {
 		shmdt(getSession()->head);
@@ -2181,7 +2163,7 @@ int web_register_sms_docheck(char *valid)
 	memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
 
     sms_init_memory(getSession());
-    getSession()->smsuin = u_info;
+    getSession()->smsuin = getSession()->currentuinfo;
 
     if(ud.mobileregistered) {
 		shmdt(getSession()->head);
@@ -2221,7 +2203,7 @@ int web_unregister_sms()
 
 	if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
     sms_init_memory(getSession());
-    getSession()->smsuin = u_info;
+    getSession()->smsuin = getSession()->currentuinfo;
 
     if(!getSession()->currentmemo->ud.mobileregistered) {
         shmdt(getSession()->head);

@@ -64,6 +64,7 @@ struct _sigjmp_stack {
 
 typedef struct {
     struct userec *currentuser;
+    int currentuid;
     struct usermemo *currentmemo;
     struct friends_info* topfriend;
     
@@ -109,6 +110,7 @@ typedef struct {
 	char strbuf[STRLEN];
 
 	int utmpent;
+    struct user_info *currentuinfo;
 } session_t;
 
 #ifndef THREADSAFE

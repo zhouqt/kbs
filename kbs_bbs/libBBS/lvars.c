@@ -37,6 +37,7 @@ void init_sessiondata(session_t * session)
     session->favbrd_list = NULL;
 
     session->currentuser=NULL;
+    session->currentuid=0;
     session->currentmemo=NULL;
     session->topfriend=NULL;
 
@@ -50,6 +51,7 @@ void init_sessiondata(session_t * session)
 #endif
 
     session->utmpent=-1;
+    session->currentuinfo=NULL;
 }
 
 

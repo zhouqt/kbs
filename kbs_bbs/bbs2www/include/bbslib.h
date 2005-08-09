@@ -8,10 +8,8 @@
 
 typedef struct user_info uinfo_t;
 
-typedef struct boardheader bcache_t;
+typedef struct boardheader boardheader_t;
 typedef struct friends friends_t;
-
-extern struct user_info *u_info;
 
 void f_append(FILE *fp, char *buf);
 
@@ -29,8 +27,6 @@ int get_file_ent(char *board, char *file, struct fileheader *x);
 
 //board manage
 int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board);
-
-int get_curr_utmpent();
 
 int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromhost, char *fullfrom, struct user_info **ppuinfo, int *putmpent);
 int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, int userinfoidx);

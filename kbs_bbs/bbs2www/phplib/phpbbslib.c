@@ -30,6 +30,9 @@ int conv_csv_to_al(char *fname,session_t * session);
 /* end atppp warnings */
 
 
+static char fullfrom[255];
+static char old_pwd[1024];
+
 #if PHP_MAJOR_VERSION == 5
 static
      ZEND_BEGIN_ARG_INFO(one_arg_force_ref_1, 0)
@@ -608,37 +611,17 @@ static void assign_board(zval * array, const struct boardheader *board, const st
     add_assoc_long(array, "TOTAL", bstatus->total);
 }
 
-static int currentusernum;
-static char fullfrom[255];
-static char php_fromhost[IPLEN + 1];
-static struct user_info *currentuinfo;
-static int currentuinfonum;
-
-static inline struct user_info *getcurrentuinfo()
-{
-    return currentuinfo;
-}
 
 static inline void setcurrentuinfo(struct user_info *uinfo, int uinfonum)
 {
-    currentuinfo = uinfo;
-    currentuinfonum = uinfonum;
+    getSession()->currentuinfo = uinfo;
+    getSession()->utmpent = uinfonum;
 }
 
 static inline void setcurrentuser(struct userec *user, int usernum)
 {
 	setCurrentUser(user);
-    currentusernum = usernum;
-}
-
-static inline int getcurrentuser_num()
-{
-    return currentusernum;
-}
-
-static inline int getcurrentuinfo_num()
-{
-    return currentuinfonum;
+    getSession()->currentuid = usernum;
 }
 
 static int getattachtmppath(char *buf, size_t buf_len)
@@ -646,9 +629,9 @@ static int getattachtmppath(char *buf, size_t buf_len)
 #if USE_TMPFS==1 && ! defined(FREE)
     /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
     snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
-			getCurrentUser()->userid,getcurrentuinfo_num());
+			getCurrentUser()->userid, getSession()->utmpent);
 #else
-    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,getcurrentuinfo_num());
+    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,  getSession()->utmpent);
 #endif
     buf[buf_len-1] = '\0';
     return 0;
@@ -656,11 +639,11 @@ static int getattachtmppath(char *buf, size_t buf_len)
 
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_is_yank){
-	RETURN_LONG(currentuinfo->yank);
+	RETURN_LONG(getSession()->currentuinfo->yank);
 }
 static PHP_FUNCTION(bbs_alter_yank){
-	currentuinfo->yank=currentuinfo->yank?0:1;
-	RETURN_LONG(currentuinfo->yank);
+	getSession()->currentuinfo->yank=getSession()->currentuinfo->yank?0:1;
+	RETURN_LONG(getSession()->currentuinfo->yank);
 };
 #endif
 
@@ -669,7 +652,6 @@ static PHP_FUNCTION(bbs_alter_yank){
  */
 
 /* arguments: userid, username, ipaddr, operation */
-static char old_pwd[1024];
 static PHP_FUNCTION(bbs_setfromhost)
 {
     char *s;
@@ -686,7 +668,6 @@ static PHP_FUNCTION(bbs_setfromhost)
         fullfromhostptr[80] = 0;
     strcpy(fullfrom, fullfromhostptr);
     strcpy(getSession()->fromhost, s);
-    strcpy(php_fromhost, s);
     RETURN_NULL();
 }
 
@@ -761,9 +742,6 @@ static PHP_FUNCTION(bbs_getuser)
     zval *user_array;
 
     MAKE_STD_ZVAL(user_array);
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "sa", &s, &s_len, &user_array) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
@@ -790,9 +768,6 @@ static PHP_FUNCTION(bbs_getonlineuser)
     zval *user_array;
 
     MAKE_STD_ZVAL(user_array);
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "la", &idx, &user_array) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
@@ -830,9 +805,6 @@ static PHP_FUNCTION(bbs_countuser)
 {
     long idx;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "l", &idx) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
@@ -847,9 +819,6 @@ static PHP_FUNCTION(bbs_setuserpasswd){
     int unum;
     struct userec *user;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
@@ -875,9 +844,6 @@ static PHP_FUNCTION(bbs_checkuserpasswd){
     int unum;
     struct userec *user;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
@@ -909,9 +875,6 @@ static PHP_FUNCTION(bbs_checkpasswd)
     struct userec *user;
     int ac = ZEND_NUM_ARGS();
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
         if (ac!= 3 || zend_parse_parameters(3 TSRMLS_CC, "ssl", &s, &s_len, &pw, &pw_len, &ismd5) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -937,7 +900,7 @@ static PHP_FUNCTION(bbs_checkpasswd)
                 setcurrentuser(user, unum);
         } else {
             ret = 1;
-            logattempt(user->userid, php_fromhost);
+            logattempt(user->userid, getSession()->fromhost);
         }
     }
     RETURN_LONG(ret);
@@ -995,7 +958,7 @@ static PHP_FUNCTION(bbs_setuserparam){
 	}
 	getCurrentUser()->userdefine[0] = userparam0;
     getCurrentUser()->userdefine[1] = userparam1;
-    currentuinfo->mailbox_prop = update_mailbox_prop(getCurrentUser()->userid, mailboxprop); //ToDo: global variable!!! - atppp
+    getSession()->currentuinfo->mailbox_prop = update_mailbox_prop(getCurrentUser()->userid, mailboxprop);
     store_mailbox_prop(getCurrentUser()->userid);
 	RETURN_LONG(0);
 }
@@ -1007,9 +970,6 @@ static PHP_FUNCTION(bbs_wwwlogin)
     struct user_info *pu = NULL;
     int utmpent;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
         if (zend_parse_parameters(1 TSRMLS_CC, "l", &kick_multi) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -1018,15 +978,15 @@ static PHP_FUNCTION(bbs_wwwlogin)
         WRONG_PARAM_COUNT;
     
     if (getCurrentUser() != NULL && strcasecmp(getCurrentUser()->userid, "guest") != 0) {
-        if (check_ip_acl(getCurrentUser()->userid, php_fromhost)) 
+        if (check_ip_acl(getCurrentUser()->userid, getSession()->fromhost)) 
             RETURN_LONG(7);
     }
     
-    ret = www_user_login(getCurrentUser(), getcurrentuser_num(), kick_multi, php_fromhost,
+    ret = www_user_login(getCurrentUser(), getSession()->currentuid, kick_multi, getSession()->fromhost,
 #ifdef SQUID_ACCL
                          fullfrom,
 #else
-                         php_fromhost,
+                         getSession()->fromhost,
 #endif
                          &pu, &utmpent);
     if (getCurrentUser() == NULL) {
@@ -1075,9 +1035,6 @@ static PHP_FUNCTION(bbs_getcurrentuinfo)
     long ret = 1;
 
     MAKE_STD_ZVAL(user_array);
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
         if (zend_parse_parameters(1 TSRMLS_CC, "a", &user_array) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -1085,15 +1042,15 @@ static PHP_FUNCTION(bbs_getcurrentuinfo)
         if (array_init(user_array) != SUCCESS) {
             ret = 0;
         } else {
-            if (getcurrentuinfo()) {
-                assign_userinfo(user_array, getcurrentuinfo(), getcurrentuinfo_num());
+            if (getSession()->currentuinfo) {
+                assign_userinfo(user_array, getSession()->currentuinfo, getSession()->utmpent);
             } else
                 ret = 0;
         }
     } else if (ZEND_NUM_ARGS() != 0)
         WRONG_PARAM_COUNT;
     if (ret)
-        ret = getcurrentuinfo_num();
+        ret = getSession()->utmpent;
 
     RETURN_LONG(ret);
 }
@@ -1103,9 +1060,6 @@ static PHP_FUNCTION(bbs_getcurrentuser)
     zval *user_array;
     long ret;
     MAKE_STD_ZVAL(user_array);
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(1 TSRMLS_CC, "a", &user_array) != SUCCESS) {
         WRONG_PARAM_COUNT;
     }
@@ -1114,8 +1068,8 @@ static PHP_FUNCTION(bbs_getcurrentuser)
         ret = 0;
     } else {
         if (getCurrentUser()) {
-            assign_user(user_array, getCurrentUser(), getcurrentuser_num());
-            ret = getcurrentuser_num();
+            assign_user(user_array, getCurrentUser(), getSession()->currentuid);
+            ret = getSession()->currentuid;
         } else
             ret = 0;
     }
@@ -1130,7 +1084,7 @@ static PHP_FUNCTION(bbs_setonlineuser)
     long utmpnum;
     long utmpkey;
     long ret;
-    struct user_info *pui;
+    struct user_info *pui = NULL;
     int idx;
     struct userec *user;
     long compat_telnet;
@@ -1167,7 +1121,7 @@ static PHP_FUNCTION(bbs_setonlineuser)
             ret = 0;
         }
     }
-    u_info=pui;
+    getSession()->currentuinfo=pui;
     RETURN_LONG(ret);
 }
 
@@ -1245,9 +1199,6 @@ static PHP_FUNCTION(bbs_printansifile)
     int attachlink_len;
     char attachdir[MAXPATH];
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
         if (zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &filename_len) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -1330,9 +1281,6 @@ static PHP_FUNCTION(bbs_print_article)
     char* attachlink;
     int attachlink_len;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
         if (zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &filename_len) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -1394,9 +1342,6 @@ static PHP_FUNCTION(bbs_print_article_js)
     char* attachlink;
     int attachlink_len;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ZEND_NUM_ARGS() == 1) {
         if (zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &filename_len) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -1473,7 +1418,7 @@ static PHP_FUNCTION(bbs_search_articles)
     char *board,*title, *title2, *title3,*author;
     int bLen,tLen,tLen2,tLen3,aLen;
     long date,mmode,origin,attach;
-    bcache_t bh;
+    boardheader_t bh;
 	char dirpath[STRLEN];
 	int fd;
 	struct stat buf;
@@ -1649,7 +1594,7 @@ static PHP_FUNCTION(bbs_searchtitle)
     char *board,*title, *title2, *title3,*author;
     int bLen,tLen,tLen2,tLen3,aLen;
     long date,mmode,attach,maxreturn; /* date < 0 search for threads whose original post time is within (-date) days. - atppp 20040727 */
-    bcache_t bh;
+    boardheader_t bh;
     char dirpath[STRLEN];
     int fd;
     struct stat buf;
@@ -1824,12 +1769,9 @@ static PHP_FUNCTION(bbs_searchtitle)
     int boardLen,filenameLen;
 	char path[512];
     struct fileheader x;
-    bcache_t *brd;
+    boardheader_t *brd;
 
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &boardLen,&filename,&filenameLen) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
     } 
@@ -1877,11 +1819,8 @@ static PHP_FUNCTION(bbs_printoriginfile)
     buffered_output_t *out;
 	int i;
 	int skip;
-	bcache_t* bp;
+	boardheader_t* bp;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board,&boardLen, &filename,&filenameLen) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
     } 
@@ -2121,9 +2060,6 @@ static PHP_FUNCTION(bbs_getboards)
     int brdnum, yank, no_brc, all_boards;
     int total;   
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-
     /*
      * getting arguments 
      */
@@ -2304,7 +2240,7 @@ static PHP_FUNCTION(bbs_delete_friend)
 
     if (deleted > 0) {
         if (delete_record(buf, sizeof(fh), deleted, NULL, NULL) != -1){
-			getfriendstr(getCurrentUser(),getcurrentuinfo(),getSession());
+			getfriendstr(getCurrentUser(),getSession()->currentuinfo,getSession());
 			RETURN_LONG(0);
 		} else {
 			RETURN_LONG(3);
@@ -2366,7 +2302,7 @@ static PHP_FUNCTION(bbs_doforward)
 {
     char *board,*filename, *tit, *target;
     int board_len,filename_len,tit_len,target_len;
-    bcache_t bh;
+    boardheader_t bh;
 	char fname[STRLEN];
 	long big5,noansi;
     struct boardheader *bp;
@@ -2454,7 +2390,7 @@ static PHP_FUNCTION(bbs_add_friend)
     fh.exp[sizeof(fh.exp)-1] = '\0';
 
     n = append_record(buf, &fh, sizeof(friends_t));
-    getfriendstr(getCurrentUser(),getcurrentuinfo(),getSession());
+    getfriendstr(getCurrentUser(),getSession()->currentuinfo,getSession());
     if (n != -1)
 		RETURN_LONG(0);
 
@@ -2690,10 +2626,6 @@ static PHP_FUNCTION(bbs_getthreads)
 	zval* columns[3];
 	char* thread_col_names[]={"origin","lastreply","articlenum"};
 
-
-
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
     /*
      * getting arguments 
      */
@@ -2925,8 +2857,6 @@ static PHP_FUNCTION(bbs_countarticles)
     int total;
     int ac = ZEND_NUM_ARGS();
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
     /*
      * getting arguments 
      */
@@ -3377,9 +3307,6 @@ static PHP_FUNCTION(bbs_checkreadperm)
     long user_num, boardnum;
     struct userec *user;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ll", &user_num, &boardnum) != SUCCESS)
         WRONG_PARAM_COUNT;
     user = getuserbynum(user_num);
@@ -3394,9 +3321,6 @@ static PHP_FUNCTION(bbs_checkpostperm)
     struct userec *user;
     const struct boardheader *bh;
 
-	getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ll", &user_num, &boardnum) != SUCCESS)
         WRONG_PARAM_COUNT;
     user = getuserbynum(user_num);
@@ -3427,11 +3351,10 @@ static PHP_FUNCTION(bbs_postarticle)
 	char *boardName, *title, *content;
     char path[80],board[80];
 	int blen, tlen, clen;
-    int i;
     long sig, mailback, is_tex;
 	long reid;
     struct fileheader *oldx = NULL;
-    bcache_t *brd;
+    boardheader_t *brd;
     long local_save, outgo, anony;
     struct fileheader post_file, oldxx;
     char filepath[MAXPATH];
@@ -3471,11 +3394,8 @@ static PHP_FUNCTION(bbs_postarticle)
     if (brd->flag&BOARD_GROUP)
         RETURN_LONG(-2); //二级目录版
     strcpy(board, brd->filename);
-    
-    for (i = 0; i < tlen; i++) {
-        if (title[i] <= 27 && title[i] >= -1)
-            title[i] = ' ';
-    }
+
+    filter_control_char(title);
     if (tlen == 0)
         RETURN_LONG(-3); //标题为NULL
     if (true == checkreadonly(board) || !haspostperm(getCurrentUser(), board))
@@ -3485,11 +3405,11 @@ static PHP_FUNCTION(bbs_postarticle)
 
 
     /* FIXME: this is a stupid design... */
-    if (abs(time(0) - *(int *) (u_info->from + 36)) < 6) {
-        *(int *) (u_info->from + 36) = time(0);
+    if (abs(time(0) - *(int *) (getSession()->currentuinfo->from + 36)) < 6) {
+        *(int *) (getSession()->currentuinfo->from + 36) = time(0);
         RETURN_LONG(-6); // 两次发文间隔过密, 请休息几秒后再试
     }
-    *(int *) (u_info->from + 36) = time(0);
+    *(int *) (getSession()->currentuinfo->from + 36) = time(0);
     /* stupid design END */
 
 
@@ -3682,7 +3602,7 @@ static PHP_FUNCTION(bbs_edittitle)
 	struct fileheader f;
 	struct fileheader xfh;
 	struct boardheader brd;
-	int bid,i,ent;
+	int bid,ent,i=0;
 	int fd;
 	
 	int ac = ZEND_NUM_ARGS();
@@ -3730,13 +3650,10 @@ static PHP_FUNCTION(bbs_edittitle)
 		            RETURN_LONG(-6); //他人文章
 		}
 	}
-	
-	for (i = 0; (i < title_len)&&(i < ARTICLE_TITLE_LEN - 1); i++)
-	{
-		if (title[i] <= 27 && title[i] >= -1)
-			title[i] = ' ';
-    	}
-    	title[i] = 0;
+    if (title_len >= ARTICLE_TITLE_LEN) {
+        title[ARTICLE_TITLE_LEN - 1] = '\0';
+    }
+    filter_control_char(title);
 	if (!strcmp(title,f.title)) //无需修改
 		RETURN_LONG(0);
 #ifdef FILTER
@@ -3850,7 +3767,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     char infile[80], outfile[80];
     char buf2[256];
     int i;
-    bcache_t *bp;
+    boardheader_t *bp;
     time_t now;
     int asize;
     /*int filtered = 0;*/
@@ -3885,7 +3802,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     if (clen>0) fprintf(fout, "%s", unix_string(content));
     now = time(0);
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, ctime(&now) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %15.15s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, ctime(&now) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
     while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
         if (asize <= 0) {
             if (Origin2(buf2)) {
@@ -3915,8 +3832,8 @@ static PHP_FUNCTION(bbs_updatearticle)
 static PHP_FUNCTION(bbs_wwwlogoff)
 {
     if (getCurrentUser()) {
-        int ret = (www_user_logoff(getCurrentUser(), getcurrentuser_num(),
-                                   getcurrentuinfo(), getcurrentuinfo_num()));
+        int ret = (www_user_logoff(getCurrentUser(), getSession()->currentuid,
+                                   getSession()->currentuinfo, getSession()->utmpent));
 
         RETURN_LONG(ret);
     } else
@@ -3981,11 +3898,8 @@ static PHP_FUNCTION(bbs_brcaddread)
 	char *board;
 	int blen;
     long fid;
-	bcache_t* bp;
+	boardheader_t* bp;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &fid) != SUCCESS)
         WRONG_PARAM_COUNT;
 	if ((bp=getbcache(board))==0){
@@ -4042,9 +3956,6 @@ static PHP_FUNCTION(bbs_ann_traverse_check)
     int path_len,userid_len;
     struct userec *user;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &userid, &userid_len) != SUCCESS)
         WRONG_PARAM_COUNT;
     
@@ -4151,7 +4062,7 @@ static PHP_FUNCTION(bbs_getmailnum)
         RETURN_FALSE;
     }
 
-	if( !strcmp(userid, getCurrentUser()->userid) && oldtotal && currentuinfo && !(currentuinfo->mailcheck & CHECK_MAIL) ){
+	if( !strcmp(userid, getCurrentUser()->userid) && oldtotal && getSession()->currentuinfo && !(getSession()->currentuinfo->mailcheck & CHECK_MAIL) ){
 		totalcount = oldtotal;
 		unreadcount = oldunread;
     	ZVAL_LONG(total, totalcount);
@@ -4174,8 +4085,8 @@ static PHP_FUNCTION(bbs_getmailnum)
      */
     ZVAL_LONG(total, totalcount);
     ZVAL_LONG(unread, unreadcount);
-	if( currentuinfo )
-		currentuinfo->mailcheck |= CHECK_MAIL;
+	if( getSession()->currentuinfo )
+		getSession()->currentuinfo->mailcheck |= CHECK_MAIL;
     RETURN_TRUE;
 }
 
@@ -4216,7 +4127,7 @@ static PHP_FUNCTION(bbs_getmailusedspace)
  */
 static PHP_FUNCTION(bbs_is_save2sent)
 {
-	RETURN_LONG(HAS_MAILBOX_PROP(u_info, MBP_SAVESENTMAIL));
+	RETURN_LONG(HAS_MAILBOX_PROP(getSession()->currentuinfo, MBP_SAVESENTMAIL));
 }
 
 /**
@@ -4298,8 +4209,8 @@ static PHP_FUNCTION(bbs_getmails)
 	}
     efree(mails);
 
-	if( currentuinfo )
-		currentuinfo->mailcheck &= ~CHECK_MAIL;
+	if( getSession()->currentuinfo )
+		getSession()->currentuinfo->mailcheck &= ~CHECK_MAIL;
 }
 
 /**
@@ -4444,8 +4355,8 @@ static PHP_FUNCTION(bbs_changemaillist)
         maillist.mail_list_t--;
         save_mail_list(&maillist, getSession());
     }
-	if( currentuinfo )
-		currentuinfo->mailcheck &= ~CHECK_MAIL;
+	if( getSession()->currentuinfo )
+		getSession()->currentuinfo->mailcheck &= ~CHECK_MAIL;
     RETURN_LONG(-1);
 }
 
@@ -4460,7 +4371,7 @@ static PHP_FUNCTION(bbs_changemaillist)
  */
 static PHP_FUNCTION(bbs_checkwebmsg)
 {
-	if( currentuinfo==NULL || !(currentuinfo->mailcheck & CHECK_MSG))
+	if( getSession()->currentuinfo==NULL || !(getSession()->currentuinfo->mailcheck & CHECK_MSG))
 		RETURN_FALSE;
 
     RETURN_TRUE;
@@ -4498,17 +4409,17 @@ static PHP_FUNCTION(bbs_getwebmsg)
         RETURN_FALSE;
     }
 
-	if( currentuinfo==NULL || !(currentuinfo->mailcheck & CHECK_MSG))
+	if( getSession()->currentuinfo==NULL || !(getSession()->currentuinfo->mailcheck & CHECK_MSG))
 		RETURN_FALSE;
 
-    if (receive_webmsg(currentuinfonum, getCurrentUser()->userid, &srcpid, srcid, &sndtime, buf) == 0) {
+    if (receive_webmsg(getSession()->utmpent, getCurrentUser()->userid, &srcpid, srcid, &sndtime, buf) == 0) {
         ZVAL_STRING(retsrcid, srcid, 1);
         ZVAL_STRING(msgbuf, buf, 1);
         ZVAL_LONG(srcutmpent, srcpid);
         ZVAL_LONG(z_sndtime, sndtime);
         RETURN_TRUE;
     }
-	currentuinfo->mailcheck &= ~CHECK_MSG;
+	getSession()->currentuinfo->mailcheck &= ~CHECK_MSG;
     /*
      * make changes to the parameter 
      */
@@ -4555,7 +4466,7 @@ static PHP_FUNCTION(bbs_sendwebmsg)
         ZVAL_STRING(z_errmsg, "你不能给自己发讯息", 1);
         RETURN_FALSE;
     }
-    if ((result = send_msg(getCurrentUser()->userid, get_utmpent_num(u_info), destid, destutmp, msg)) == 1) {
+    if ((result = send_msg(getCurrentUser()->userid, getSession()->utmpent, destid, destutmp, msg)) == 1) {
         ZVAL_STRING(z_errmsg, "已经帮你送出讯息", 1);
         RETURN_TRUE;
     } else if (result == -1) {
@@ -4686,7 +4597,7 @@ static PHP_FUNCTION(bbs_update_uinfo)
     if (!strcmp(field, "invisible")) {
 /*	    conver_to_boolean_ex(&value);
  *	    */
-        currentuinfo->invisible = Z_LVAL_P(value);
+        getSession()->currentuinfo->invisible = Z_LVAL_P(value);
     }
     RETURN_LONG(0);
 }
@@ -4732,15 +4643,12 @@ static int get_initialized()
 
 static int initialize_ext()
 {
-    getcwd(old_pwd, 1023);
-    old_pwd[1023] = 0;
     chdir(BBSHOME);
     resolve_ucache();
     resolve_utmp();
     resolve_boards();
     init_bbslog();
     www_data_init();
-    chdir(old_pwd);
 	ext_init = 1;
 
 	return ext_init;
@@ -4865,10 +4773,10 @@ PHP_RINIT_FUNCTION(smth_bbs)
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
     old_pwd[1023] = 0;
-    setCurrentUser(NULL);
-    currentusernum = 0;
+    setcurrentuser(NULL, 0);
+    setcurrentuinfo(NULL, -1);
 #ifdef DEBUG
-    zend_error(E_WARNING, "request init:%d %x", getpid(), getcurrentuinfo);
+    zend_error(E_WARNING, "request init:%d %x", getpid(), getSession()->currentuinfo);
 #endif
 	getSession()->zapbuf=NULL;
 	output_buffer=NULL;
@@ -4892,8 +4800,8 @@ PHP_RSHUTDOWN_FUNCTION(smth_bbs)
     //if (getCurrentUser() && getCurrentUser()->userid && (getCurrentUser()->userid[0]) )
 	//free_brc_cache( getCurrentUser()->userid );
 #endif
-
-    setCurrentUser(NULL);
+    setcurrentuser(NULL, 0);
+    setcurrentuinfo(NULL, -1);
     return SUCCESS;
 }
 
@@ -4922,16 +4830,12 @@ static PHP_FUNCTION(bbs_postmail){
     long backup,sig;
 	int ac = ZEND_NUM_ARGS();
 	char mail_title[80];
-	int i;
     FILE *fp;
     char fname[PATHLEN], filepath[PATHLEN], sent_filepath[PATHLEN];
     struct fileheader header;
     struct stat st;
     struct userec *touser;      /*peregrine for updating used space */
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
     if (ac != 5 || zend_parse_parameters(5 TSRMLS_CC, "ss/s/ll", &targetID, &idLen,&title,&tLen,&content,&cLen,&sig,&backup) == FAILURE)
 	{
 		WRONG_PARAM_COUNT;
@@ -4950,9 +4854,7 @@ static PHP_FUNCTION(bbs_postmail){
     }
 
 	strcpy(targetID, touser->userid);
-    for (i = 0; i < tLen; i++)
-        if (title[i] < 27 && title[i] >= -1)
-            title[i] = ' ';
+    filter_control_char(title);
 	if (title[0] == 0)
         strcpy(mail_title,"没主题");
 	else 
@@ -4992,6 +4894,7 @@ static PHP_FUNCTION(bbs_postmail){
         } else sig = 0;
     }
     addsignature(fp, getCurrentUser(), sig);
+    fputc('\n', fp);
     fclose(fp);
     
     if (stat(filepath, &st) != -1)
@@ -5050,8 +4953,6 @@ static PHP_FUNCTION(bbs_is_invalid_id)
 	int userid_len;
 	int ac = ZEND_NUM_ARGS();
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) == FAILURE)
 	{
 		WRONG_PARAM_COUNT;
@@ -5097,8 +4998,6 @@ static PHP_FUNCTION(bbs_createnewid)
 	
 	int ac = ZEND_NUM_ARGS();
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
     if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid, &userid_len,&passbuf,&passbuf_len,&nickname,&nickname_len) == FAILURE)
 	{
 		WRONG_PARAM_COUNT;
@@ -5124,7 +5023,7 @@ static PHP_FUNCTION(bbs_createnewid)
 	}
 
 	memset(&newuser,0,sizeof(newuser));
-	strncpy(newuser.lasthost,php_fromhost,IPLEN);
+	strncpy(newuser.lasthost,getSession()->fromhost,IPLEN);
 	newuser.lasthost[IPLEN]=0;
 	strncpy(newuser.userid ,userid,IDLEN);
 	strncpy(newuser.username,nickname,NAMELEN-1);
@@ -5273,7 +5172,6 @@ static PHP_FUNCTION(bbs_modify_nick)
     char* username;
     int username_len;
     int ac = ZEND_NUM_ARGS();
-    int m;
     long bTmp = 1;
 
     if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &username, &username_len) == FAILURE)
@@ -5281,11 +5179,8 @@ static PHP_FUNCTION(bbs_modify_nick)
     {
             WRONG_PARAM_COUNT;
     }
-	for( m=0; username[m]; m++){
-		if( username[m] < 32 && username[m] >= -1)
-			username[m]=' ';
-	}
-	if( strlen(username) >= NAMELEN)
+    filter_control_char(username);
+	if( username_len >= NAMELEN)
        RETURN_LONG(-1);
 
     if (!bTmp) {
@@ -5298,8 +5193,8 @@ static PHP_FUNCTION(bbs_modify_nick)
         }
     }
 
-	strcpy(currentuinfo->username, username);
-    UPDATE_UTMP_STR(username, (*currentuinfo));
+	strcpy(getSession()->currentuinfo->username, username);
+    UPDATE_UTMP_STR(username, (*(getSession()->currentuinfo)));
 
 	RETURN_LONG(0);
 }
@@ -5356,35 +5251,19 @@ static PHP_FUNCTION(bbs_modify_info)
     struct userdata ud;
 	struct userec newinfo;
 	int unum;
-
     int ac = ZEND_NUM_ARGS();
-
-	int m;
-
 
     if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &username, &username_len,&realname,&realname_len,&address,&address_len,&email,&email_len) == FAILURE)
     {
             WRONG_PARAM_COUNT;
     }
 
-	for( m=0; m<strlen(username); m++){
-		if( (username[m] < 32 && username[m] > 0) || username[m]==-1)
-			username[m]=' ';
-	}
-	for( m=0; m<strlen(realname); m++){
-		if( (realname[m] < 32 && realname[m] > 0) || realname[m]==-1)
-			realname[m]=' ';
-	}
-	for( m=0; m<strlen(address); m++){
-		if( (address[m] < 32 && address[m] > 0) || address[m]==-1)
-			address[m]=' ';
-	}
-	for( m=0; m<strlen(email); m++){
-		if( (email[m] < 32 && email[m] > 0) || email[m]==-1)
-			email[m]=' ';
-	}
+    filter_control_char(username);
+    filter_control_char(realname);
+    filter_control_char(address);
+    filter_control_char(email);
 
-    if(strlen(username) >= NAMELEN || strlen(realname) >= NAMELEN || strlen(address) >= STRLEN || strlen(email)>= STRLEN)
+    if(username_len >= NAMELEN || realname_len >= NAMELEN || address_len >= STRLEN || email_len>= STRLEN)
        RETURN_LONG(-1);
 
     memset(&ud,0,sizeof(ud));
@@ -5409,8 +5288,8 @@ static PHP_FUNCTION(bbs_modify_info)
                     strcpy(newinfo.username, username);
 					update_user(&newinfo, unum, 1);
 
-					strcpy(currentuinfo->username, username);
-                    UPDATE_UTMP_STR(username, (*currentuinfo));
+					strcpy(getSession()->currentuinfo->username, username);
+                    UPDATE_UTMP_STR(username, (*(getSession()->currentuinfo)));
                 }
 
 	bbslog("user","%s","change user info from www");
@@ -5981,7 +5860,7 @@ static int fill_friendlist(int* range, uinfo_t** user_record)
 
     ful.count = 0;
     ful.user_record = user_record;
-    u = u_info;
+    u = getSession()->currentuinfo;
     for (i = 0; i < u->friendsnum; i++) {
         if (u->friends_uid[i])
             apply_utmpuid((APPLY_UTMP_FUNC) full_utmp_friend, u->friends_uid[i], &ful);
@@ -6013,7 +5892,6 @@ static PHP_FUNCTION(bbs_getonlinefriends)
         WRONG_PARAM_COUNT;
     }
 
-    getSession()->utmpent = get_curr_utmpent();    //I hate the global variable!!
     fill_friendlist(&range, usr);
     
     if (array_init(return_value) == FAILURE) {
@@ -6062,7 +5940,7 @@ static PHP_FUNCTION(bbs_getonlinefriends)
 static PHP_FUNCTION(bbs_delfile)
 {
 	FILE *fp;
-    bcache_t *brd;
+    boardheader_t *brd;
     struct fileheader f;
     struct userec *u = NULL;
     char dir[80], path[80];
@@ -6286,7 +6164,6 @@ static PHP_FUNCTION(bbs_denyadd)
     struct boardheader brd;
     struct userec *lookupuser;
     char buf[256];
-	int i;
     struct tm *tmtime;
     time_t now,undenytime;
     char path[STRLEN];
@@ -6307,14 +6184,11 @@ static PHP_FUNCTION(bbs_denyadd)
     strcpy(userid,lookupuser->userid);
     if (deny_me(userid, board))
 	    RETURN_LONG(-4);  
+
+    if (exp_len >= 28) exp[27] = '\0';
+    filter_control_char(exp);
 	
-	for (i = 0; (i < exp_len)&&(i < 28); i++) {
-		if (exp[i] <= 27 && exp[i] >= -1)
-			exp[i] = ' ';
-    }
-    exp[i] = 0;
-	
-	if (!exp)
+	if (!*exp)
 	    RETURN_LONG(-6);
 	
 	if (denyday < 1 || denyday > (HAS_PERM(getCurrentUser(), PERM_SYSOP)?70:14) )
@@ -6464,7 +6338,7 @@ static PHP_FUNCTION(bbs_searchboard)
     int keyword_len;
     long exact;
     zval *element,*boards;
-    bcache_t *bc;
+    boardheader_t *bc;
     int i;
     char *board1,*title;
 
@@ -6649,8 +6523,8 @@ static PHP_FUNCTION(bbs_setmailreaded)
 	if(total <= 0)
 		RETURN_LONG(0);
 
-	if( currentuinfo )
-		setmailcheck(currentuinfo->userid);
+	if( getSession()->currentuinfo )
+		setmailcheck(getSession()->currentuinfo->userid);
 
 	if(num >=0 && num < total){
 		if((fp=fopen(dirname,"r+"))==NULL)
@@ -7098,12 +6972,12 @@ static PHP_FUNCTION(bbs_set_onboard)
 		WRONG_PARAM_COUNT;
 	}
     if (getCurrentUser()==NULL) RETURN_FALSE;
-    if (currentuinfo==NULL) RETURN_FALSE;
+    if (getSession()->currentuinfo==NULL) RETURN_FALSE;
     if (!strcmp(getCurrentUser()->userid,"guest")) {
-        guestinfo=www_get_guest_entry(currentuinfonum);
+        guestinfo=www_get_guest_entry(getSession()->utmpent);
         oldboard=guestinfo->currentboard;
     } else
-        oldboard=currentuinfo->currentboard;
+        oldboard=getSession()->currentuinfo->currentboard;
     if (oldboard)
         board_setcurrentuser(oldboard, -1);
     
@@ -7116,9 +6990,9 @@ static PHP_FUNCTION(bbs_set_onboard)
     }
     else {
         if (count>0)
-            currentuinfo->currentboard = boardnum;
+            getSession()->currentuinfo->currentboard = boardnum;
         else
-            currentuinfo->currentboard = 0;
+            getSession()->currentuinfo->currentboard = 0;
     }
     RETURN_TRUE;
 }
@@ -8421,7 +8295,7 @@ static PHP_FUNCTION(bbs_bmmanage)
         ret = delete_record(dir, sizeof(struct fileheader), ent,(RECORD_FUNC_ARG) cmpname, f.filename);
         if (ret == 0) {
             char buf[128];
-            bcache_t bc;
+            boardheader_t bc;
             snprintf(buf,100,"boards/%s/%s",board,f.filename);
             my_unlink(buf);
             board_update_toptitle(getboardnum(board,&bc), true);
@@ -8631,7 +8505,6 @@ static PHP_FUNCTION(bbs_getonline_user_list)
 {
     struct fulluserlistarg arg;
     int ac = ZEND_NUM_ARGS();
-    getSession()->utmpent = get_curr_utmpent();    //I hate the global variable!!
 
     if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"ll",&arg.start,&arg.num) ==FAILURE){
         WRONG_PARAM_COUNT;
@@ -8661,9 +8534,6 @@ static PHP_FUNCTION(bbs_x_search)
     #define MAX_KEEP 100
     char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200],res_content[MAX_KEEP][1024];
     int res_flag[MAX_KEEP];
-
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
 
     if(ac != 3 || zend_parse_parameters(3 TSRMLS_CC,"slz",&qn,&char_len,&pos,&total_records) ==FAILURE){
         WRONG_PARAM_COUNT;
@@ -9183,10 +9053,6 @@ PHP_FUNCTION(bbs2_readfile)
     int chunk_size = 51200;
     struct stat st;
 
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
-
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
@@ -9333,10 +9199,6 @@ PHP_FUNCTION(bbs2_readfile_text)
     int fd;
     char escape_seq[4][16];
     struct stat st;
-
-    getcwd(old_pwd, 1023);
-    chdir(BBSHOME);
-    old_pwd[1023] = 0;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &filename, &filename_len, &maxchar, &double_escape) == FAILURE) {
         WRONG_PARAM_COUNT;

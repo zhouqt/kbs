@@ -2543,3 +2543,14 @@ int check_ip_acl(char * id, char * sip)
     }
     return 0;
 }
+
+char * filter_control_char(char *s) {
+    char *ptr = s;
+    while (*ptr) {
+        if ((*ptr >= -1) && (*ptr < 32))
+            *ptr = ' ';
+        ptr++;
+    }
+    return s;
+}
+
