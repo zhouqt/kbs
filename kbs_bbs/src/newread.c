@@ -920,21 +920,18 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
     move(t_lines - 1, 0);
     clrtoeol();
     getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, false);
-    if (ans[0] != '\0')
+    if (ans[0] != '\0') {
         strncpy(query, ans, STRLEN);
-    if (query[0] == '$') {
-        int ret = jumpSuperFilter(conf, fh, !up, query + 1);
-        if (ret == DONOTHING) {
-            conf->show_endline(conf);
+        if (query[0] == '$') {
+            int ret = jumpSuperFilter(conf, fh, !up, query + 1);
+            if (ret != DONOTHING)
+                return ret;
+        } else {
+            if (read_search_articles(conf, query, up, -1) == 1)
+                return SELCHANGE;
         }
-        return ret;
     }
-    switch (read_search_articles(conf, query, up, -1)) {
-        case 1:
-            return SELCHANGE;
-        default:
-            conf->show_endline(conf);
-    }
+    conf->show_endline(conf);
     return DONOTHING;
 }
 
@@ -976,14 +973,12 @@ int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg
     move(t_lines - 1, 0);
     clrtoeol();
     getdata(t_lines - 1, 0, pmt, ans, STRLEN - 1, DOECHO, NULL, false);
-    if (*ans != '\0')
+    if (*ans != '\0') {
         strcpy(title, ans);
-    switch (read_search_articles(conf, title, up, 0)) {
-        case 1:
+        if (read_search_articles(conf, title, up, 0) == 1)
             return SELCHANGE;
-        default:
-            conf->show_endline(conf);
     }
+    conf->show_endline(conf);
     return DONOTHING;
 }
 
