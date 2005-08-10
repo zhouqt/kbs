@@ -5638,7 +5638,7 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
                 true, 
                 arg->direct, 
                 ent)==0) {
-                fh->accessed[0]=FILE_IMPORTED;
+                fh->accessed[0]|=FILE_IMPORTED;
             }            
             break;
         case BM_TOTAL:
