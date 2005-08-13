@@ -1360,6 +1360,7 @@ int a_repair(MENU *pm)
 	DIR *dirp;
 	struct dirent *direntp;
 	int i,changed;
+	char title[84];
 
 	changed=0;
 	
@@ -1378,7 +1379,8 @@ int a_repair(MENU *pm)
 			}
 		}
 		if(i!=-1){
-			a_additem(pm, direntp->d_name, direntp->d_name, NULL, 0, 0);
+			sprintf(title, "%-38.38s(BM: SYSOPS)", direntp->d_name);
+			a_additem(pm, title, direntp->d_name, NULL, 0, 0);
 			changed++;
 		}
 	}
