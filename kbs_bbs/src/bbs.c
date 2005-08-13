@@ -2690,7 +2690,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             if(b->flag&BOARD_ATTACH && use_tmpl<=0 && nUpload<MAXATTACH) {
                 chdir("tmp");
                 upload = bbs_zrecvfile();
-                if (upload != NULL) {
+                if (upload != NULL && *upload) {
                     strncpy(uploadfiles[nUpload], upload, 60);
                     uploadfiles[nUpload][60] = '\0';
                     nUpload++;
@@ -2874,7 +2874,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     if (!strcmp(currboard->filename, "BM_Apply") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS) && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
-    if(upload) {
+    if(nUpload > 0) {
         post_file.attachment = 1;
     }
 #ifdef FILTER
