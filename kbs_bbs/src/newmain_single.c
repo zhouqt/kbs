@@ -1099,7 +1099,7 @@ void main_bbs(int convit, char *argv)
 
     /*chk_friend_book(); */
     /* Leeward 98.12.03 */
-    if (chk_friend_book()) {
+    if (!uinfo.invisible && chk_friend_book()) {
         pressreturn();
     }
     clear();
