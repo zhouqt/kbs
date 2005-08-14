@@ -95,6 +95,8 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
                 ./configure --prefix=/home/www --enable-so
         php 的 configure 命令里面的 --with-apxs=/home/www/bin/apxs 改成：
                 --with-apxs2=/home/www/bin/apxs
+    [补充] php5 不默认编译 mysql 支持，所以如果需要 mysql 支持的话，应该
+           在 php 的 configure 命令中加入 --with-mysql
 
 2.5 安装 kbsbbs
     同样切换到 $(SRCDIR) 目录，进入 kbsbbs 的源代码目录。
