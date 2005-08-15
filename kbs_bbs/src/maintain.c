@@ -23,7 +23,7 @@
 
 char cexplain[STRLEN];
 char *Ctime();
-int modify_board(char *boardname);
+int modify_board(int bid);
 
 static int sysoppassed = 0;
 
@@ -310,6 +310,7 @@ int m_newbrd()
 {
     struct boardheader newboard;
     char vbuf[PATHLEN], buf[PATHLEN];
+    int bid;
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -330,7 +331,7 @@ int m_newbrd()
     strcpy(vbuf, "vote/");
     strcat(vbuf, newboard.filename);
     setbpath(buf, newboard.filename);
-    if (getbnum(newboard.filename) > 0) {
+    if (getboardnum(newboard.filename, NULL) > 0) {
         prints("\n错误：讨论区已经存在\n");
         pressreturn();
         clear();
@@ -360,6 +361,13 @@ int m_newbrd()
         clear();
         return -1;
     }
+    bid = getboardnum(newboard.filename, NULL);
+    if (bid == 0) {
+        prints("\n系统错误：请联系技术站务处理...\n");
+        pressreturn();
+        clear();
+        return -1;
+    }
     edit_group(NULL, &newboard);
 	currboard = bcache;
     prints("\n新讨论区成立，回车后请具体设定版面各类参数。\n");
@@ -373,7 +381,7 @@ int m_newbrd()
     }
     pressreturn();
     clear();
-    return modify_board(newboard.filename);
+    return modify_board(bid);
 }
 
 int toooooooooooooold_m_editbrd()
@@ -853,6 +861,12 @@ int m_editbrd(void){
                 EDITBRD_WAIT;clear();
                 return -1;
             }
+            pos=getboardnum(buf,NULL);
+            if(!pos){
+                move(4,0);prints("错误的讨论区名称!");
+                EDITBRD_WAIT;clear();
+                return -1;
+            }
         }
         else{
             bhptr=getboard(pos);
@@ -861,7 +875,6 @@ int m_editbrd(void){
                 EDITBRD_WAIT;clear();
                 return -1;
             }
-            strcpy(buf, bhptr->filename);
         }
     }
     else{
@@ -871,17 +884,23 @@ int m_editbrd(void){
             EDITBRD_WAIT;clear();
             return -1;
         }
+        pos = getbnum(buf);
+        if(!pos){
+            move(2,0);prints("错误的讨论区名称!");
+            EDITBRD_WAIT;clear();
+            return -1;
+        }
     }
-    return modify_board(buf);
+    return modify_board(pos);
 }
-int modify_board(char *boardname) {
+int modify_board(int bid) {
     struct _select_item sel[24];
     struct _select_def conf;
     struct _simple_select_arg arg;
     POINT pts[23];
     struct boardheader bh,newbh;
     char buf[256],src[256],dst[256],menustr[23][256],orig[23][256],*ptr;
-    int i,pos,loop,section,currpos,ret;
+    int i,loop,section,currpos,ret;
     unsigned int annstat,change,error;
     const struct boardheader *bhptr=NULL;
     const char menuldr[23][16]={
@@ -891,20 +910,20 @@ int modify_board(char *boardname) {
         "[G]不可回复  :","[H]读限制Club:","[I]写限制Club:","[J]隐藏Club  :","[K]精华区位置:",
         "[L]权限限制  :","[M]身份限制  :","[Q][退出]    :"
     };
-    pos=0;change=0;loop=1;
+    change=0;loop=1;
     /*选择讨论区*/
     clear();
     move(0,0);prints("\033[1;32m修改讨论区说明与设定\033[m");
     move(1,0);clrtobot();
 
-    pos=getboardnum(boardname,&bh);
-    if(!pos){
+    bhptr = getboard(bid);
+    if(!bhptr){
         move(2,0);prints("错误的讨论区名称!");
         EDITBRD_WAIT;clear();
         return -1;
     }
-
-    sprintf(buf,"\033[1;33mbid=%4.4d clubnum=%3.3d\033[m",pos,bh.clubnum);
+    memcpy(&bh,bhptr,sizeof(struct boardheader));
+    sprintf(buf,"\033[1;33mbid=%4.4d clubnum=%3.3d\033[m",bid,bh.clubnum);
     move(0,40);prints(buf);
     /*获取讨论区数据并构造菜单显式*/
     memcpy(&newbh,&bh,sizeof(struct boardheader));
@@ -1720,9 +1739,9 @@ int modify_board(char *boardname) {
             rename(src,dst);
     }
     error|=edit_group(&bh,&newbh);
-    set_board(pos,&newbh,&bh);
+    set_board(bid,&newbh,&bh);
     /*生成安全审核和日志*/
-    sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",pos,change,bh.filename,change&(1<<0)?32:0,newbh.filename);
+    sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,change&(1<<0)?32:0,newbh.filename);
 #ifndef ZIXIA
     securityreport(buf,NULL,NULL);
 #else
