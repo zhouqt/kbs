@@ -3556,7 +3556,9 @@ static PHP_FUNCTION(bbs_postarticle)
         && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
-
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(getCurrentUser()->userid, board, getSession());
+#endif
 	retvalue = after_post(getCurrentUser(), &post_file, board, oldx, !anony, getSession());
 
     if (retvalue == 0) {
@@ -3565,7 +3567,6 @@ static PHP_FUNCTION(bbs_postarticle)
 #endif
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, board, getSession());
     brc_update(getCurrentUser()->userid, getSession());
 #endif
     if (!junkboard(board)) {
