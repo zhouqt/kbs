@@ -327,7 +327,7 @@ blogCalendarArray[<?php echo substr($rows[created],0,8); ?>] = <?php echo (int)(
 ?>
 <span id='bc'></span>
 <script language=javascript>
-blogCalendar(<?php echo date("Y,m,d"); ?>);
+blogCalendar(<?php echo date("Y,n,j"); ?>);
 </script>
 <?php		
 	}
