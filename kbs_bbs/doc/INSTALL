@@ -51,6 +51,25 @@ mysql                  可选      选择个人文集等功能支持才需要
     $(SRCDIR)          表示存放 kbsbbs、apache 和 php 源代码的目录，可自己设
                        定一个，例如放在自己 home 目录的某个子目录下
 
+    注意，这里提到的 $(BBSHOME) 等单词并不是 Makefile 或其他脚本语言的变量，
+仅仅是一种命名约定。在后面出现 $(BBSHOME) 等单词的地方，应把它们替换成对应的
+实际名字，而不是直接输入 $(BBSHOME)。
+
+    例 1：
+    如果本文中有一个命令是这样的：
+          ./configure --prefix=$(BBSHOME)
+
+    那么你不能直接在 shell 里面原封不动的输入上述命令，而应该根据你的实际情
+况，比如你想把 kbsbbs 安装在 /home/bbs 目录，那么 $(BBSHOME) 就被约定为 
+/home/bbs，于是在实际执行上述命令时，应把 $(BBSHOME) 替换为 /home/bbs，上述
+命令变成：
+          ./configure --prefix=/home/bbs
+
+    例 2：
+    如果本文中有一句话是这样的：把文件复制到 $(BBSHOME)/bin 目录。假设 
+$(BBSHOME) 还是被约定为 /home/bbs，那么“把文件复制到 $(BBSHOME)/bin 目录”
+的意思是“把文件复制到 /home/bbs/bin 目录”。
+
     在开始安装以前，需要在系统内创建 bbs 用户和组，上述相关目录如果没有的话应
 该手工创建，并设置 bbs 用户为目录属主并可以读写。
 
@@ -73,16 +92,24 @@ libesmtp 的话，则系统中必须安装有 sendmail 程序。
 BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
 一致。
 
+    用如下命令可以验证这些 ID 是否一致：
+          grep "^#define.*BBSUID" fb2k-v2.h
+          grep "^#define.*BBSGID" fb2k-v2.h
+          grep "^bbs:" /etc/passwd
+
+    注：如果看不懂命令执行的结果，请先阅读 C 语言及 Unix 方面的书籍，再尝试安
+装 kbsbbs。
+
 2.4 安装 apache 和 php
     首先切换目录到 $(SRCDIR)。为了节省篇幅，下面直接以命令表示。
           cd apache_1.3.X
-          ./configure --prefix=/home/www --enable-module=so
+          ./configure --prefix=$(WWWHOME) --enable-module=so
           make
           make install
           
           cd ../php-4.3.X
-          ./configure --prefix=/home/www/php \
-             --with-apxs=/home/www/bin/apxs --disable-debug \
+          ./configure --prefix=$(PHPHOME) \
+             --with-apxs=$(WWWHOME)/bin/apxs --disable-debug \
              --enable-pic --disable-rpath --enable-inline-optimization \
              --with-dom --with-gd --with-freetype-dir=/usr/lib \
              --with-png-dir --with-iconv --with-jpeg-dir --with-zlib \
@@ -92,9 +119,9 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
 
     [补充] 如果使用 apache2，以上步骤中需要修改的地方是：
         apache 的 configure 命令改成：
-                ./configure --prefix=/home/www --enable-so
-        php 的 configure 命令里面的 --with-apxs=/home/www/bin/apxs 改成：
-                --with-apxs2=/home/www/bin/apxs
+                ./configure --prefix=$(WWWHOME) --enable-so
+        php 的 configure 命令里面的 --with-apxs=$(WWWHOME)/bin/apxs 改成：
+                --with-apxs2=$(WWWHOME)/bin/apxs
     [补充] php5 不默认编译 mysql 支持，所以如果需要 mysql 支持的话，应该
            在 php 的 configure 命令中加入 --with-mysql
 
@@ -102,17 +129,17 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
     同样切换到 $(SRCDIR) 目录，进入 kbsbbs 的源代码目录。
 
     然后执行下面的一系列命令：
-          ./configure --prefix=/home/bbs --enable-site=fb2k-v2 \
-              --with-www=/home/www --with-php=/home/www/php/include/php \
+          ./configure --prefix=$(BBSHOME) --enable-site=fb2k-v2 \
+              --with-www=$(WWWHOME) --with-php=$(PHPHOME)/include/php \
               --with-mysql --enable-ssh --enable-ssl
           make
           make install
           
           make install-home
-          chown -R bbs:bbs /home/bbs （最好用 root 执行）
+          chown -R bbs:bbs $(BBSHOME) （最好用 root 执行）
     
     注意，这里最后两个命令的作用是把源代码 bbshome 目录下的重要数据文件复制到
-/home/bbs 下去，创建必要的子目录并确保设置正确的权限。以后更改源代码的话，只
+$(BBSHOME) 下去，创建必要的子目录并确保设置正确的权限。以后更改源代码的话，只
 需要在源代码目录下执行 make; make install; 即可，千万不要执行
 make install-home，因为执行的话就会丢失 bbs 数据！
 
@@ -151,11 +178,11 @@ phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 就是必须执行的步骤了。
 3.1 ssh 方式
     请参考 doc/INSTALL.ssh 文件。
     懒人可以用如下命令产生最简单的可用的配置文件（不推荐）：
-        touch /home/bbs/etc/sshd_config
-        ssh-keygen -t rsa1 -f /home/bbs/etc/ssh_host_key
+        touch $(BBSHOME)/etc/sshd_config
+        ssh-keygen -t rsa1 -f $(BBSHOME)/etc/ssh_host_key
 
 3.2 web 方式
-    apache 的配置文件为 /home/www/conf/httpd.conf，编辑该文件，加入
+    apache 的配置文件为 $(WWWHOME)/conf/httpd.conf，编辑该文件，加入
         AddType application/x-httpd-php .php
 
     修改 Port 参数为 80，把 User 和 Group 参数都修改为 bbs。
@@ -163,20 +190,20 @@ phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 就是必须执行的步骤了。
     如果使用 apache2，建议加入 AddDefaultCharset gb2312.
 
     将 kbsbbs 源代码目录 bbs2www/xml 和 bbs2www/html 下的文件复制到
-    /home/www/htdocs。
+    $(WWWHOME)/htdocs。
 
     php 的配置文件可以从 php 源代码目录得到，将 php.ini-dist 复制为
-/home/www/php/lib/php.ini，然后编辑 php.ini 文件，将 short_open_tag 
+$(PHPHOME)/lib/php.ini，然后编辑 php.ini 文件，将 short_open_tag 
 的值修改为 off，magic_quotes_gpc 也应该设置成 off。
 
     如果没有执行上面的 2.6 步骤，那么再执行下面两个操作：
     (1) 执行命令
-        cd /home/www/libexec
+        cd $(WWWHOME)/libexec
         ln -s bbs/libphpbbslib.so
     (2) 修改 php.ini 文件，将
             extension_dir = ./
         修改为
-            extension_dir = /home/www/libexec
+            extension_dir = $(WWWHOME)/libexec
         加入一行
             extension=libphpbbslib.so
 
@@ -186,7 +213,7 @@ phpbbslib 编译成可以动态执行的模块比较困难，则 2.6 就是必须执行的步骤了。
 bbsd (23端口)，sshbbsd (22端口)，apachectl (80端口) 需要用 root 身份来启动。
 
 4.1 运行 kbsbbs
-          cd /home/bbs/bin
+          cd $(BBSHOME)/bin
           ./miscd daemon
           ./bbslogd
           ./bbsd -p 23
@@ -195,14 +222,14 @@ bbsd (23端口)，sshbbsd (22端口)，apachectl (80端口) 需要用 root 身份来启动。
     然后 telnet localhost，注册 SYSOP 和 guest 两个帐号。
 
 4.2 运行 apache
-          /home/www/bin/apachectl start
+          $(WWWHOME)/bin/apachectl start
     
 5. 其他
     pop3s的支持在 configure 的时候加上 --with-openssl[=path]，生成的 newpop3d
 将自动包含 pop3 和 pop3s 的支持。pop3s 支持需要一个证书，可以用 openssl 生成
 并放在 $(BBSHOME)/etc/bbs.crt 和 $(BBSHOME)/etc/bbs.key，比如：
-    openssl genrsa -out /home/bbs/etc/bbs.key
-    openssl req -x509 -days 3650 -new -key bbs.key -out /home/bbs/etc/bbs.crt
+    openssl genrsa -out $(BBSHOME)/etc/bbs.key
+    openssl req -x509 -days 3650 -new -key bbs.key -out $(BBSHOME)/etc/bbs.crt
 
     转信支持请参考 doc/INSTALL.innbbsd 文档。
 
