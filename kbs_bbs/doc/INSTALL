@@ -6,6 +6,9 @@ FreeBSD、Solaris 8/9 for X86/SPARC 等)上的编译和安装，主要讨论用完全定制的方
 式进行安装。
 
 0. ChangeLog
+2005.8.19
+  flyriver 使命名约定前后一致，另外加入一些婆婆妈妈的说明
+
 2004.7.20
   flyriver v1.2.1 更新 libesmtp 的说明，加入常用 configure 参数说明
 
@@ -62,7 +65,7 @@ mysql                  可选      选择个人文集等功能支持才需要
     那么你不能直接在 shell 里面原封不动的输入上述命令，而应该根据你的实际情
 况，比如你想把 kbsbbs 安装在 /home/bbs 目录，那么 $(BBSHOME) 就被约定为 
 /home/bbs，于是在实际执行上述命令时，应把 $(BBSHOME) 替换为 /home/bbs，上述
-命令变成：
+命令实际是指：
           ./configure --prefix=/home/bbs
 
     例 2：
