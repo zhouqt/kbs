@@ -620,7 +620,7 @@ int toooooooooooooold_m_editbrd()
         if (*genbuf == 'Y' || *genbuf == 'y') {
             char secu[STRLEN];
 
-            sprintf(secu, "修改讨论区：%s(%s)", fh.filename, newfh.filename);
+            sprintf(secu, "土人修改讨论区：%s(%s)", fh.filename, newfh.filename);
 #ifndef ZIXIA
             securityreport(secu, NULL, NULL);
 #else
@@ -3136,6 +3136,13 @@ int set_BM(void){
                             }
                             memmove(p,p+strlen(lookupuser->userid)+1,strlen(p)-strlen(lookupuser->userid));
                         }while(chk_BM_instr(newfh.BM,lookupuser->userid));
+						if(newfh.BM[0] <= ' '){
+						/* add by stiger, 20050905, no bm warning */
+							char fbuf[256];
+							sprintf(fbuf, "%s版面目前没有斑竹", newfh.filename);
+							post_file(getCurrentUser(), "", "etc/nobms", newfh.filename, "请版面尽快产生一名或多名版主", 0, 2, getSession());
+							post_file(getCurrentUser(), "", "etc/nobms", "BD_Discuss", fbuf, 0, 2, getSession());
+						}
                         if(!--brd_num)
                             newlevel&=~(PERM_BOARDS|PERM_CLOAK);
 #if HAVE_MYSQL_SMTH == 1
