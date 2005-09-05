@@ -60,7 +60,7 @@ A:active {COLOR: #006699; TEXT-DECORATION: underline}
 A:visited {COLOR: #5493b4; TEXT-DECORATION: none}
 A:hover {COLOR: #dd6900; TEXT-DECORATION: underline}
 
-.content{font-size:13px;line-height:20px;}
+.content{font-size:13px;line-height:20px;word-wrap:break-word;word-break:break-all;}
 .sb1 { /* 这名字没人用吧 single-border */
     padding: 1px;
     border: 1px solid #808080;
