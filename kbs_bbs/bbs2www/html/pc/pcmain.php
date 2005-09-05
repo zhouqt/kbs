@@ -3,7 +3,7 @@
 require_once("pcstat.php");
 require_once("pcmainfuncs.php");
 if(defined("_PCMAIN_RECOMMEND_QUEUE_"))
-	include(_PCMAIN_RECOMMEND_QUEUE_);
+	@include(_PCMAIN_RECOMMEND_QUEUE_);
 
 if(pc_update_cache_header())
 	return;
