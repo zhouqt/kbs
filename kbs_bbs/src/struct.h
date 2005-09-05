@@ -37,8 +37,8 @@ struct userec {                 /* Structure used to hold information in */
 	/* 生日数据转移到 userdata 结构中 */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */
 #ifdef HAVE_USERMONEY
-    int unused2;
-    int unused3;
+     int money;
+     int score;
 #ifdef ZIXIA
     int altar;
     char unused[16];
