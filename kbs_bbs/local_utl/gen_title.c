@@ -131,7 +131,7 @@ int main(int argc,char** argv)
 	char* name;
     while (1) {
     	int c;
-    	c = getopt(argc, argv, "a");
+    	c = getopt(argc, argv, "ah");
     	if (c == -1)
             break;
         switch (c) {
@@ -139,7 +139,7 @@ int main(int argc,char** argv)
         	allflag = 1;
         	break;
         case 'h':
-        	printf("%s [-a|boardname]\n  generatate board thread index",argv[0]);
+        	printf("%s [-a|boardname]\n  generatate board thread index.\n",argv[0]);
         	return 0;
         case '?':
         	printf("%s:Unknown argument.\nTry `%s -h' for more information.\n", argv[0], argv[0]);
