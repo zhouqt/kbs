@@ -310,7 +310,7 @@ static void sff_sub(struct super_filter_expression *exp) {
     feval_expression(exp->arg2);
     res = strcasestr(exp->arg1->p, exp->arg2->p);
     if(res==NULL) exp->s=0;
-    else exp->s=res-exp->arg2->p+1;
+    else exp->s=res-exp->arg1->p+1;
 }
 
 static void sff_len(struct super_filter_expression *exp) {
