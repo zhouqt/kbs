@@ -864,7 +864,7 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
     int count;
     struct super_filter_query_arg q_arg;
 
-    if (arg->mode != DIR_MODE_NORMAL) return DONOTHING;
+    //if (arg->mode != DIR_MODE_NORMAL) return DONOTHING;
     if (*query == '\0') return DONOTHING;
 
     BBS_TRY {

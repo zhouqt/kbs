@@ -584,6 +584,16 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     {                           /* Leeward 98.01.13 检查转贴者在其欲转到的版面是否被禁止了 POST 权 */
         struct boardheader* bh;
 
+        if (normal_board(bname) && !normal_board(currboard->filename)) {
+            move(3, 0);
+            clrtobot();
+            prints("\n\n        注意，您打算将文章从内部版面(%s)转载到公开版面(%s)...\n", currboard->filename, bname);
+            if (!askyn("        您确认这个操作吗？", false)) {
+                pressreturn();
+                clear();
+                return FULLUPDATE;
+            }
+        }
         bh=getbcache(bname);
         if ((fileinfo->attachment!=0)&&!(bh->flag&BOARD_ATTACH)) {
             move(3, 0);

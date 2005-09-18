@@ -1814,13 +1814,15 @@ int searchtrace(void){
             fclose(fp);
         }
 #else
-        sprintf(buf,"grep -a '^\\[.*\\] %s posted' user.log > %s",user->userid,fn_buf);
+        sprintf(buf,"grep -aw '^\\[.*\\] %s posted' user.log > %s",user->userid,fn_buf);
         system(buf);
 #endif
         sprintf(buf,"查询用户 %s 近期发文记录",user->userid);
     }
     else if(ans[0]=='m'||ans[0]=='M'){
-        sprintf(buf,"grep -a '^\\[.*\\] %s mailed' user.log > %s",user->userid,fn_buf);
+        sprintf(buf,
+            "grep -awE '^\\[.*\\] %s mailed(\\(www\\))?' user.log | grep -awEv '^\\[.*\\] %s mailed(\\(www\\))? %s.?$' > %s",
+            user->userid,user->userid,user->userid,fn_buf);
         system(buf);
         sprintf(buf,"查询用户 %s 近期发信记录",user->userid);
     }
