@@ -249,7 +249,7 @@ int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title, 
     touser->usedspace +=  newmessage.eff_size;
 	setmailcheck( userid );
 
-    newbbslog(BBSLOG_USER, "%s mailed %s ", fromuser->userid,userid);
+    newbbslog(BBSLOG_USER,"mailed %s %s",userid,title);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost(SYSMAIL_BOARD);
     return 0;
@@ -318,7 +318,7 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     touser->usedspace += newmessage.eff_size;
 	setmailcheck( userid );
 
-    newbbslog(BBSLOG_USER, "%s mailed %s ", fromid,userid);
+    newbbslog(BBSLOG_USER,"mailed %s %s",userid,title);
     if (!strcasecmp(userid, "SYSOP"))
         updatelastpost(SYSMAIL_BOARD);
     return 0;
