@@ -1755,117 +1755,87 @@ int modify_board(int bid) {
 }
 /*END - etnlegend,2005.07.01,修改讨论区属性*/
 
-
-int searchtrace()
-{
-    int id;
-    char tmp_command[80];
-    char *tmp_id;
-    char buf[8192];
-    struct userec *lookupuser;
-	char buffile[256];
-
-    if (check_systempasswd() == false)
+//etnlegend,2005.09.18,查询系统记录分为发文查询和发信查询两个功能
+#define WAIT_RETURN while(igetkey()!=13)
+int searchtrace(void){
+    struct userec *user;
+    char buf[256],fn_buf[256],ans[4];
+    if(!check_systempasswd())
         return -1;
+    clear();move(0,0);prints("\033[1;32m查询系统记录\033[m");
     modify_user_mode(ADMIN);
-    clear();
-    stand_title("查询使用者发文记录");
-    move(1, 0);
-    usercomplete("请输入使用者帐号:", genbuf);
-    if (genbuf[0] == '\0') {
-        clear();
+    move(1,0);usercomplete("查询用户: ",buf);
+    if(!buf[0]){
+        move(2,0);prints("取消...");
+        WAIT_RETURN;clear();
         return -1;
     }
-
-    if (!(id = getuser(genbuf, &lookupuser))) {
-        move(3, 0);
-        prints("不正确的使用者代号\n");
-        clrtoeol();
-        pressreturn();
-        clear();
+    if(!getuser(buf,&user)){
+        move(2,0);prints("非法用户...");
+        WAIT_RETURN;clear();
         return -1;
     }
-    tmp_id = lookupuser->userid;
-
-    sprintf(buffile, "tmp/searchresult.%d", getpid());
+    sprintf(fn_buf,"tmp/searchtrace_%ld_%d",time(NULL),getpid());
+    sprintf(buf,"查询 %s 发文(P)/发信(M)记录 [P]: ",user->userid);
+    move(2,0);clrtobot();
+    getdata(2,0,buf,ans,2,DOECHO,NULL,true);
+    if(!ans[0]||ans[0]=='p'||ans[0]=='P'){
 #ifdef NEWPOSTLOG
-{
-	FILE *fp;
-	MYSQL s;
-	MYSQL_RES *res;
-	MYSQL_ROW row;
-	char sqlbuf[256];
-
-	if((fp=fopen(buffile,"w"))==NULL){
-        move(3, 0);
-        prints("无法打开临时文件\n");
-        clrtoeol();
-        pressreturn();
-        clear();
-		return -1;
-	}
-
-	mysql_init (&s);
-
-	if (! my_connect_mysql(&s) ){
-        move(3, 0);
-        prints("%s\n",mysql_error(&s));
-        clrtoeol();
-        pressreturn();
-        clear();
-		fclose(fp);
-		return -1;
-	}
-
-	sprintf(sqlbuf,"SELECT * FROM postlog WHERE userid='%s' ORDER BY time;",lookupuser->userid);
-
-	if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
-        move(3, 0);
-        prints("%s\n",mysql_error(&s));
-        clrtoeol();
-        pressreturn();
-        clear();
-		mysql_close(&s);
-		fclose(fp);
-		return -1;
-	}
-
-	fprintf(fp,"%s  最近的发文记录\n",lookupuser->userid);
-
-	res = mysql_store_result(&s);
-	while(1){
-		row = mysql_fetch_row(res);
-		if(row==NULL)
-			break;
-
-		fprintf(fp,"%s: %-20s %s\n", row[4], row[2], row[3]);
-	}
-	mysql_free_result(res);
-
-	mysql_close(&s);
-
-	fclose(fp);
-
-}
+        {
+            FILE *fp;
+            MYSQL s;
+            MYSQL_RES *res;
+            MYSQL_ROW row;
+            if(!(fp=fopen(fn_buf,"w"))){
+                move(3,0);prints("创建临时文件错误...");
+                WAIT_RETURN;clear();
+                return -1;
+            }
+            mysql_init(&s);
+            if(!my_connect_mysql(&s)){
+                fclose(fp);unlink(fn_buf);
+                move(3,0);prints("MySQL 错误: %s",mysql_error(&s));
+                WAIT_RETURN;clear();
+                return -1;
+            }
+            sprintf(buf,"SELECT * FROM postlog WHERE userid='%s' ORDER BY time;",user->userid);
+            if(mysql_real_query(&s,buf,strlen(buf))){
+                fclose(fp);unlink(fn_buf);mysql_close(&s);
+                move(3,0);prints("MySQL 错误: %s",mysql_error(&s));
+                WAIT_RETURN;clear();
+                return -1;
+            }
+            fprintf(fp,"\033[1;32m用户 \033[1;33m%s\033[1;32m 近期发文记录\033[m\n",user->userid);
+            res=mysql_store_result(&s);
+            while(!!(row=mysql_fetch_row(res)))
+                fprintf(fp,"%s: %-20s %s\n",row[4],row[2],row[3]);
+            mysql_free_result(res);
+            mysql_close(&s);
+            fclose(fp);
+        }
 #else
-    sprintf(tmp_command, "grep -a -w %s user.log | grep posted > %s", tmp_id, buffile);
-    system(tmp_command);
+        sprintf(buf,"grep -a '^\\[.*\\] %s posted' user.log > %s",user->userid,fn_buf);
+        system(buf);
 #endif
-    sprintf(tmp_command, "%s 的发文查询结果", tmp_id);
-    mail_file(getCurrentUser()->userid, buffile, getCurrentUser()->userid, tmp_command, BBSPOST_MOVE, NULL);
-
-    sprintf(buf, "查询用户 %s 的发文情况", tmp_id);
-    securityreport(buf, lookupuser, NULL);      /*写入syssecurity版, stephen 2000.12.21 */
-    sprintf(buf, "Search the posts by %s in the trace", tmp_id);
-    bbslog("user", "%s", buf);  /*写入trace, stephen 2000.12.21 */
-
-    move(3, 0);
-    prints("查询结果已经寄到您的信箱！ \n");
-    pressreturn();
-    clear();
+        sprintf(buf,"查询用户 %s 近期发文记录",user->userid);
+    }
+    else if(ans[0]=='m'||ans[0]=='M'){
+        sprintf(buf,"grep -a '^\\[.*\\] %s mailed' user.log > %s",user->userid,fn_buf);
+        system(buf);
+        sprintf(buf,"查询用户 %s 近期发信记录",user->userid);
+    }
+    else{
+        move(3,0);prints("取消...");
+        WAIT_RETURN;clear();
+        return -1;
+    }
+    mail_file(getCurrentUser()->userid,fn_buf,getCurrentUser()->userid,&buf[4],BBSPOST_MOVE,NULL);
+    securityreport(buf,user,NULL);
+    bbslog("user","%s",buf);
+    move(3,0);prints("\033[1;36m%s 已回寄, 请检查信件...\033[m",&buf[4]);
+    WAIT_RETURN;clear();
     return 0;
-}                               /* stephen 2000.12.15 let sysop search in trace */
-
+}
 
 /*
 char curruser[IDLEN + 2];
