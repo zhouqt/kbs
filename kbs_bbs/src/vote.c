@@ -1223,7 +1223,7 @@ int allnum, pagenum;
         }
         mk_result(allnum + 1);
         sprintf(buf, "提早结束投票 %s", currvote.title);
-        securityreport(buf, NULL, NULL);
+        /* securityreport(buf, NULL, NULL); */
         bbslog("user","%s",buf);
         break;
     case '@':
@@ -1256,7 +1256,7 @@ int allnum, pagenum;
             break;
         }
         sprintf(buf, "强制关闭投票 %s", currvote.title);
-        securityreport(buf, NULL, NULL);
+        /* securityreport(buf, NULL, NULL); */
         bbslog("user","%s",buf);
         dele_vote(allnum + 1);
         break;
