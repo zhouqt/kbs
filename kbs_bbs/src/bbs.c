@@ -2914,7 +2914,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     if (returnvalue == 2) {
         clear();
         move(3, 0);
-        prints("\n\n            很抱歉，本文可能含有不适当的内容，需经审核方可发\n表，请耐心等待...\n");
+        prints("\n\n        很抱歉，本文可能含有不当内容，需经审核方可发表。\n\n"
+                   "        根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待\n"
+                   "    站务人员的审核，不要多次尝试发表此文章。\n\n"
+                   "        如有疑问，请致信 SYSOP 咨询。");
         pressreturn();
         return FULLUPDATE;
     }
