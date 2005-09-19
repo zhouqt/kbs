@@ -585,14 +585,12 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         struct boardheader* bh;
 
         if (normal_board(bname) && !normal_board(currboard->filename)) {
-            move(3, 0);
-            clrtobot();
-            prints("\n\n        注意，您打算将文章从内部版面(%s)转载到公开版面(%s)...\n", currboard->filename, bname);
-            if (!askyn("        您确认这个操作吗？", false)) {
-                pressreturn();
-                clear();
+            char ans[4];
+            move(2,0);clrtobot();
+            move(4,4);prints("\033[1;31m注意:\033[m 您试图将内部版面(%s)的文章转载到公开版面，",currboard->filename);
+            getdata(5,4,"这种做法通常是\033[1;33m不允许\033[m的或\033[1;33m不建议\033[m的, 您确认转载操作? [y/N]: ",ans,2,DOECHO,NULL,true);
+            if(!(ans[0]=='y'||ans[0]=='Y'))
                 return FULLUPDATE;
-            }
         }
         bh=getbcache(bname);
         if ((fileinfo->attachment!=0)&&!(bh->flag&BOARD_ATTACH)) {
