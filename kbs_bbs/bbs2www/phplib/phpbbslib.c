@@ -9092,12 +9092,13 @@ PHP_FUNCTION(bbs2_readfile)
         for (; j >= 0 ; j--) {
             c = *cur_ptr;
             if (c == '\0') { //assume ATTACHMENT_PAD[0] is '\0'
-               if (ptrlen >= ATTACHMENT_SIZE + sizeof(int) + 2) {
+                if (ptrlen >= ATTACHMENT_SIZE + sizeof(int) + 2) {
                     if (!memcmp(cur_ptr, ATTACHMENT_PAD, ATTACHMENT_SIZE)) {
                         ptrlen = -ptrlen;
                         break;
                     }
                 }
+                ptrlen--; cur_ptr++;
                 continue;
             }
             if (c < 0) {
