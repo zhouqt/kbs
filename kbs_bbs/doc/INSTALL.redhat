@@ -47,8 +47,7 @@ BBSUID 和 BBSGID 与本地系统的 bbs 用户的 uid gid 是否一致，如果不一致请调整到
     编译成功后，用下列命令进行安装。
         make install
         make install-home
-    然后将 kbsbbs 源代码目录 bbs2www/xml 和 bbs2www/html 下的文件复制到
-    /var/www/html/。
+    然后将 kbsbbs 源代码目录 bbs2www/html 下的文件复制到 /var/www/html/。
 
 3. 运行 kbsbbs
     下面这些步骤有些需要 root 权限，为方便起见，直接切换到 root 用户。
