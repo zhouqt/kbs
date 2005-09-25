@@ -3,21 +3,8 @@ require("funcs.php");
 login_init();
 
 function bbs_pwd_form() {
-	if (!defined("PWD_HTTP")) {
-?>  
-<script language="JavaScript">
-<!--
-document.write("<form action='https://"+window.location.hostname+"/bbspwd.php?do' method='post'>");
--->
-</script>
-<?php
-	} else {
-	// 注：未使用HTTPS的站点
 ?>
 <form action='/bbspwd.php?do' method='post'>
-<?php
-	}
-?>
 <center>
 <table class="t1" width="500" cellspacing="0" cellpadding="5" border="0">
     <tr>

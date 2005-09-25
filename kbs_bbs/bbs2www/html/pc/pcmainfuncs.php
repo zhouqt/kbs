@@ -55,7 +55,7 @@ li {padding: 0px; margin-left: 10px;}
   <tr>
     <td><table width="100%" border="0" cellspacing="0" cellpadding="5">
       <tr>
-        <td width="180"><img src="/images/logo.gif" width="180" height="77" /></td>
+        <td width="180"><img src="/images/logo.gif" /></td>
         
         <td>
       	&nbsp;

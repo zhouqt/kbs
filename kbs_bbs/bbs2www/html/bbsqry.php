@@ -14,9 +14,10 @@ else{
 		$lookupuser=array ();
 		if( $userid=="" || bbs_getuser($userid, $lookupuser) == 0 )
 			html_error_quit("该用户不存在");
-
+		
 		$usermodestr = bbs_getusermode($userid);
 ?>
+<link rel="stylesheet" type="text/css" href="./ansi.css" />
 <center><?php echo BBS_FULL_NAME; ?> -- 查询网友<hr color=green>
 </center><pre>
 <?php echo $lookupuser["userid"];?> (<?php echo htmlspecialchars($lookupuser["username"]);?>) 共上站 <?php echo $lookupuser["numlogins"];?> 次，发表过 <?php echo $lookupuser["numposts"];?> 篇文章
@@ -31,9 +32,7 @@ else
 	echo date("D M j H:i:s Y", $lookupuser["exittime"]); 
 
 ?>] <?php
-	if (!defined("SITE_SMTH")) {
-		echo "信箱：[" . (bbs_checknewmail($lookupuser["userid"]) ? "信" : "  ") . "] " ;
-	}
+	echo "信箱：[" . (bbs_checknewmail($lookupuser["userid"]) ? "信" : "  ") . "] " ;
 ?>生命力：[<?php echo bbs_compute_user_value($lookupuser["userid"]); ?>] 身份: [<?php echo bbs_user_level_char($lookupuser["userid"]); ?>]。
 <?php if( $usermodestr!="" && $usermodestr{1} != "") echo substr($usermodestr, 1); ?>
 </pre>

@@ -31,13 +31,13 @@ $pcconfig["BBSNAME"] = BBS_FULL_NAME;
 $pcconfig["ETEMS"] = 20;
 $pcconfig["NEWS"] = 100;
 $pcconfig["THEMLIST"] = 50;
-$pcconfig["SITE"] = "www.smth.edu.cn";
-$pcconfig["BOARD"] = "SMTH_blog";
-$pcconfig["APPBOARD"] = "BlogApply";
+$pcconfig["SITE"] = "www.newsmth.net";
+$pcconfig["BOARD"] = "blogassistant";
+$pcconfig["APPBOARD"] = "Blog_Apply";
 $pcconfig["SEARCHFILTER"] = " µÄ";
 $pcconfig["SEARCHNUMBER"] = 10;
 $pcconfig["ADMIN"] = "SYSOP";
-$pcconfig["MINREGTIME"] = 6;
+$pcconfig["MINREGTIME"] = 1;
 $pcconfig["TMPSAVETIME"] = 300;
 $pcconfig["ALLCHARS"] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 $pcconfig["USERFILES"] = true;
@@ -102,16 +102,12 @@ define('_USER_FILE_ROOT_' , BBS_HOME.'/blogs'); //¸öÈË¿Õ¼ä¸ùÄ¿Â¼Î»ÖÃ ÐèÒªÊÖ¹¤½¨Á
 */
 $accept_hosts = array(
                 '127.0.0.1',
-                '166.111.8.238',
-                '202.112.58.200',
-                '166.111.8.237',
-                '166.111.8.235',
-                '211.157.101.233',
-                '202.112.3.143',
-                '211.151.89.113',
-                '210.76.98.69',
-                '61.135.151.13',
-                '61.135.158.153'
+				'61.182.213.237',
+				'10.0.4.237',
+				'61.182.213.238',
+				'10.0.4.238',
+				'61.182.213.215',
+				'61.182.213.217'
                 );
                 
 /* Trackback Ping String Encoding Configure Start */

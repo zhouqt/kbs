@@ -77,8 +77,6 @@ function pc_file_showfiles($pc,$c_dir,$root_pid)
 	            echo '<tr><td class="t3">'.$start.'</td>';
 	            $start ++;
 	            $link_url = '<a href="';
-	            if (defined ('SITE_SMTH'))
-	                $link_url .= 'http://download.smth.edu.cn/';
 	            $link_url .= 'pcdownload.php?fid='.$file->fid.'" title="'.htmlspecialchars($file->remark).'" target="_blank">';
 	        }
 	        

@@ -227,8 +227,8 @@ function dosubmit() {
                     echo ": ...................\n";
                     break;
                 }
-                if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-                    echo ": ". $buf;
+                //if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+                    echo ": ". htmlspecialchars($buf);
             }
 			echo "\n\n";
             fclose($fp);

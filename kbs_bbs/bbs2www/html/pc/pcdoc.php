@@ -727,7 +727,7 @@ Blog名
 	<td class="t3">Blog模板</td>
 	<td class="t5">
 	<input type="radio" name="template" value="0" <?php if($pc["STYLE"]["SID"]==0) echo "checked"; ?>>默认模板
-	<input type="radio" name="template" value="1" <?php if($pc["STYLE"]["SID"]==1) echo "checked"; ?>>水木清华
+	<input type="radio" name="template" value="1" <?php if($pc["STYLE"]["SID"]==1) echo "checked"; ?>>水木社区
 	<input type="radio" name="template" value="2" <?php if($pc["STYLE"]["SID"]==2) echo "checked"; ?>>Earth Song
 	<input type="radio" name="template" value="9" <?php if($pc["STYLE"]["SID"]==9) echo "checked"; ?>>自定义模板
 	<a href="pcstyle.php?userid=<?php echo $pc["USER"]; ?>">管理自定义模板(XML/XSL/CSS)</a>

@@ -12,8 +12,8 @@ var defaultHeader = '<table cellpadding="5" cellspacing="0" border="0" width="'+
 var defaultBody;
 var defaultFooter = '</td></tr></table>';
 activeBoards = new Array(
-			'欢迎光临BBS水木清华站',
-			'Welcome to SMTH BBS'
+			'欢迎光临水木社区',
+			'Welcome to newsmth'
 			);
 var totalBoards = activeBoards.length;
 // active board information end
@@ -24,7 +24,7 @@ function display_active_boards()
 	(i >= totalBoards - 1)?(i=0):(i++);
 	defaultBody = defaultHeader + activeBoards[i] + defaultFooter;
 	//document.write(defaultBody);
-	aboards.innerHTML = defaultBody;
+	document.getElementById('aboards').innerHTML = defaultBody;
 	setTimeout('display_active_boards()',delayTime);
 }
 

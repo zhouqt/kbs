@@ -140,6 +140,7 @@ function login_init()
 	global $currentuser;
 	global $utmpnum;
 	global $setboard;
+	global $fromhost;
 	$currentuinfo_tmp = array();
 	
 	set_fromhost();
