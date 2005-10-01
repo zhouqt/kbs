@@ -130,6 +130,17 @@ int show_boardinfo(const char *bname)
 			(bp->flag & BOARD_ATTACH) ? "" : "不",
 			(bp->flag & BOARD_NOREPLY) ? "不" : "");
 
+    if(HAS_PERM(getCurrentUser(),PERM_SYSOP)){
+        move(16,0);
+        prints("\033[1;33m权限限制\033[m: %s <%s>",
+            (bp->level&~PERM_POSTMASK)?((bp->level&PERM_POSTMASK)?"发表限制":"读取限制"):"无限制",
+            gen_permstr(bp->level,genbuf));
+#ifdef HAVE_CUSTOM_USER_TITLE
+        move(17,0);
+        prints("\033[1;33m身份限制\033[m: %s <%d>",bp->title_level?get_user_title(bp->title_level):"无限制",
+            (unsigned char)bp->title_level);
+#endif
+    }
 	pressanykey();
 
 	return 1;
