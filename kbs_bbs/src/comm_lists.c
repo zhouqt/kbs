@@ -407,10 +407,10 @@ int exec_mbem(char *s)
 				strcpy(sshsvc, s+5);
 				strcat(sshsvc, ".ssh");
 			}
-			hdll=dlopen(sshsvc,RTLD_LAZY);      
+			hdll=dlopen(sshsvc,RTLD_NOW);      
 		}
 #else
-        hdll=dlopen(s+5,RTLD_LAZY);      
+        hdll=dlopen(s+5,RTLD_NOW);
 #endif
         if(hdll)      
         {         

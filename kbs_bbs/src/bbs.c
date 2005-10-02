@@ -2025,7 +2025,7 @@ int search_x(char * b, char * s)
 
     oldmode = uinfo.mode;
     modify_user_mode(SERVICES);
-    hdll=dlopen("service/libiquery.so",RTLD_LAZY);
+    hdll=dlopen("service/libiquery.so",RTLD_NOW);
     if(hdll)
     {
         __const__ char* error;
