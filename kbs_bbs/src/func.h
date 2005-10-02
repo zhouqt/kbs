@@ -291,6 +291,10 @@ void unlock_sem_check(int lockid);
     int get_nextid(char *boardname);    /*生成文章索引号并自动加一 */
 	int get_nextid_bid(int bid);
     void board_update_toptitle(int bid,bool needlock); /*改变置顶个数*/
+
+    int add_bm(struct userec *user,struct boardheader *bh,int pos,int bms_log);
+    int del_bm(struct userec *user,struct boardheader *bh,int pos,int concurrent);
+
 #if HAVE_WWW==1
     int resolve_guest_table(ARG_VOID); /* www guest shm */
     int www_guest_lock(ARG_VOID);

@@ -631,3 +631,75 @@ int board_regenspecial(char *board, int mode, char *index)
 
     return count;
 }
+
+
+/* by etnlegend 20051002 */
+int add_bm(struct userec *user,struct boardheader *bh,int pos,int bms_log){
+/*
+ *  pos 为版面的 bid, 指定 pos 为 0 或负值的时候将自动根据 bh 获取 pos 的值
+ *  bms_log 为标志是否记录版主数据库的参数, 指定为 0 时不记录, 指定为正值时记录, 指定为负值时根据 bh 是否为公开版面判断是否记录(默认)
+ */
+#define BM_FILE "etc/forbm"
+    struct boardheader newbh;
+    char buf[256];
+    memcpy(&newbh,bh,sizeof(struct boardheader));
+    sprintf(buf,"%s %s",newbh.BM,user->userid);
+    if(!(pos>0)&&!(pos=getboardnum(newbh.filename,NULL)))
+        return 1;
+    if(strlen(buf)<BM_LEN){
+        sprintf(newbh.BM,"%s",buf+((buf[0]==' ')?1:0));
+        sprintf(buf,"新任"NAME_BM"必读[%s]",bh->filename);
+        mail_file(getCurrentUser()->userid,BM_FILE,user->userid,buf,BBSPOST_LINK,NULL);
+#if HAVE_MYSQL_SMTH==1
+#ifdef BMSLOG
+        if(bms_log>0||(bms_log&&normal_board(newbh.filename)))
+            bms_add(user->userid,newbh.filename,time(0),2,NULL);
+#endif
+#endif
+        user->userlevel|=PERM_BOARDS;
+        edit_group(bh,&newbh);
+        set_board(pos,&newbh,NULL);
+    }
+    else
+        return 2;
+    return 0;
+#undef BM_FILE
+}
+int del_bm(struct userec *user,struct boardheader *bh,int pos,int concurrent){
+/*
+ *  concurrent 为当前该用户兼任版主数量, 设置为负值时自动检测
+ */
+    struct boardheader newbh;
+    char buf[256],*p;
+    memcpy(&newbh,bh,sizeof(struct boardheader));
+    sprintf(buf," %s ",user->userid);
+    if(!(pos>0)&&!(pos=getboardnum(newbh.filename,NULL)))
+        return 1;
+    do{
+        if(!(p=strstr(newbh.BM,buf))&&!((p=strstr(newbh.BM,buf+1))==newbh.BM)){
+            !(p=strrchr(newbh.BM,' '))?(newbh.BM[0]=NULL):(*p=NULL);
+            continue;
+        }
+        memmove(p,p+strlen(user->userid)+1,strlen(p)-strlen(user->userid));
+    }
+    while(chk_BM_instr(newbh.BM,user->userid));
+#if HAVE_MYSQL_SMTH==1
+#ifdef BMSLOG
+    bms_del(user->userid,newbh.filename);
+#endif
+#endif
+    if(concurrent<0){
+        const struct boardheader *ptr;
+        register int i;
+        for(concurrent=0,i=0;i<get_boardcount();i++){
+            ptr=getboard(i+1);
+            if(ptr&&ptr->filename[0]&&chk_BM_instr(ptr->BM,user->userid))
+                concurrent++;
+        }
+    }
+    if(concurrent<2)
+        user->userlevel&=~(PERM_BOARDS|PERM_CLOAK);
+    edit_group(bh,&newbh);
+    set_board(pos,&newbh,NULL);
+    return 0;
+}
