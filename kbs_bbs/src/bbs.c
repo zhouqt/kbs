@@ -584,7 +584,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     {                           /* Leeward 98.01.13 检查转贴者在其欲转到的版面是否被禁止了 POST 权 */
         struct boardheader* bh;
 
-        if (normal_board(bname) && !normal_board(currboard->filename)) {
+        if (normal_board(bname) && !normal_board(currboard->filename) && (uinfo.mode != RMAIL)) {
             char ans[4];
             move(2,0);clrtobot();
             move(4,4);prints("\033[1;31m注意:\033[m 您试图将内部版面(%s)的文章转载到公开版面，",currboard->filename);
