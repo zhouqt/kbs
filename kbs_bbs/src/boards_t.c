@@ -131,12 +131,16 @@ int show_boardinfo(const char *bname)
 			(bp->flag & BOARD_NOREPLY) ? "不" : "");
 
     if(HAS_PERM(getCurrentUser(),PERM_SYSOP)){
-        move(16,0);
-        prints("\033[1;33m权限限制\033[m: %s <%s>",
+        move(15,0);
+        prints("\033[1;33m邀请限制\033[m: %s%s\n",
+            ((bp->flag&BOARD_CLUB_HIDE)&&(bp->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE)))?"隐藏":"",
+            ((bp->flag&BOARD_CLUB_READ)&&(bp->flag&BOARD_CLUB_WRITE))?"读写限制俱乐部":
+            ((bp->flag&BOARD_CLUB_READ)?"读限制俱乐部":
+            ((bp->flag&BOARD_CLUB_WRITE)?"写限制俱乐部":"无")));
+        prints("\033[1;33m权限限制\033[m: %s <%s>\n",
             (bp->level&~PERM_POSTMASK)?((bp->level&PERM_POSTMASK)?"发表限制":"读取限制"):"无限制",
             gen_permstr(bp->level,genbuf));
 #ifdef HAVE_CUSTOM_USER_TITLE
-        move(17,0);
         prints("\033[1;33m身份限制\033[m: %s <%d>",bp->title_level?get_user_title(bp->title_level):"无限制",
             (unsigned char)bp->title_level);
 #endif
