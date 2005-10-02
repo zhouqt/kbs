@@ -38,6 +38,20 @@ AC_PREFIX_DEFAULT(/home/bbs)
 m4_include(config.icc)
 
 
+AC_ARG_ENABLE(admin,
+[  --enable-admin
+                enable admin  support(need admin package)],
+[
+	if test "$enableval" = "yes" ; then
+	        if test -d admin; then
+                    AC_CONFIG_FILES(admin/Makefile)
+                    BBSSUBDIRS="$BBSSUBDIRS admin"
+	        else
+        	        AC_MSG_ERROR([can't find admin package,please get it first!])
+	        fi
+	fi
+])
+
 AC_ARG_ENABLE(innbbsd,
 [  --enable-innbbsd
                 enable innbbsd  support(need innbbsd package)],
