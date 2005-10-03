@@ -772,9 +772,9 @@ int update_user(struct userec *user, int num, int all)
             return -1;
         tmpuser = *user;
 #ifdef CONV_PASS
-        memcpy(tmpuser.passwd, uidshm->passwd[num - 1].passwd, IDLEN + 2);
+        memcpy(tmpuser.passwd, uidshm->passwd[num - 1].passwd, sizeof(tmpuser.passwd));
 #endif
-        memcpy(tmpuser.md5passwd, uidshm->passwd[num - 1].md5passwd, IDLEN + 2);
+        memcpy(tmpuser.md5passwd, uidshm->passwd[num - 1].md5passwd, sizeof(tmpuser.md5passwd));
     } else {
         tmpuser = *user;
         memcpy(tmpuser.userid, uidshm->passwd[num - 1].userid, IDLEN + 2);
