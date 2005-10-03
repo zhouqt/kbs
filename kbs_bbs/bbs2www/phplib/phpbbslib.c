@@ -95,10 +95,6 @@ static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BY
 static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE , BYREF_FORCE};
 #endif
 
-#ifdef HAVE_WFORUM
-static PHP_FUNCTION(bbs_is_yank);
-static PHP_FUNCTION(bbs_alter_yank); 
-#endif
 static PHP_FUNCTION(bbs_getuserparam);
 static PHP_FUNCTION(bbs_setuserparam);
 
@@ -298,10 +294,6 @@ static PHP_FUNCTION(bbs2_readfile_text);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry smth_bbs_functions[] = {
-#ifdef HAVE_WFORUM
-    PHP_FE(bbs_is_yank, NULL)
-    PHP_FE(bbs_alter_yank, NULL)
-#endif
     PHP_FE(bbs_getuserparam, NULL)
     PHP_FE(bbs_setuserparam, NULL)
     PHP_FE(bbs_getonline_user_list, NULL)
@@ -636,16 +628,6 @@ static int getattachtmppath(char *buf, size_t buf_len)
     buf[buf_len-1] = '\0';
     return 0;
 }
-
-#ifdef HAVE_WFORUM
-static PHP_FUNCTION(bbs_is_yank){
-	RETURN_LONG(getSession()->currentuinfo->yank);
-}
-static PHP_FUNCTION(bbs_alter_yank){
-	getSession()->currentuinfo->yank=getSession()->currentuinfo->yank?0:1;
-	RETURN_LONG(getSession()->currentuinfo->yank);
-};
-#endif
 
 /*
  * Here goes the real functions
