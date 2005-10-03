@@ -826,7 +826,7 @@ if (($needlogin!=0)&&($loginok!=1)&& ($guestloginok!=1) ){
 }
 
 if ( ($loginok==1) || ($guestloginok==1) ) {
-	$yank=bbs_is_yank() ? 0 : 1;
+	$yank = 0;
 	if ($setboard==1) 
 		bbs_set_onboard(0,0);
 }

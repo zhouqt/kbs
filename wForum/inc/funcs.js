@@ -263,7 +263,6 @@ function defineMenus() {
 	manage += '<a class=\"MItem\" href="userparam.php">用户自定义参数</a><br>';
 	manage += '<a class=\"MItem\" href="bbssig.php">用户签名档</a><br>';
 	manage += '<a class=\"MItem\" href="changepasswd.php">修改昵称密码</a><br>';
-	manage += '<a class=\"MItem\" href="alteryank.php">切换版面列表方式</a>';
 
 	talk = '<a class=\"MItem\" href="showmsgs.php">察看在线短信</a><br>';
 	talk += '<a class=\"MItem\" href="javascript:sendMsg()">发短信</a><br>';
