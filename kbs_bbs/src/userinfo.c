@@ -56,7 +56,7 @@ void disply_userinfo(u, real)
     prints("您的修炼道行 : %d\n",u->altar);
 #endif
 #ifdef HAVE_CUSTOM_USER_TITLE
-    prints("您的职务: %s\n",get_user_title(u->title));
+    prints("您的职务     : %s\n",get_user_title(u->title));
 #endif
 
     if (real) {
