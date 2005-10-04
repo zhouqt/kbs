@@ -1692,7 +1692,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	if( extraarg ) addfav = * ( (int *) extraarg ) ;
 
     move(0, 0);
-    prints("选择一个讨论区 (英文字母大小写皆可,按#进入版面搜索)");
+    prints("选择一个讨论区 (英文字母大小写皆可, 按\033[1;32m#\033[0m进入\033[1;31m关键字或版面名称\033[0m搜索)");
     clrtoeol();
     prints("\n输入讨论区名 (按空白键自动补齐): ");
     clrtoeol();
