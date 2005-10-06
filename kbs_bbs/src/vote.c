@@ -777,11 +777,10 @@ char *bname;
             post_file(getCurrentUser(), "", votename, bname, buf, 0, 1);
             post_file(getCurrentUser(), "", votename, "vote", buf, 0, 1);
 #else
-            if (!normal_board(bname)) {
-                post_file(getCurrentUser(), "", votename, bname, buf, 0, 1, getSession());
-            } else {
+            if (normal_board(bname)) {
                 post_file(getCurrentUser(), "", votename, "vote", buf, 0, 1, getSession());
             }
+            post_file(getCurrentUser(), "", votename, bname, buf, 0, 1, getSession());
 #endif
             unlink(votename);
         }
