@@ -4017,7 +4017,7 @@ int Goodbye()
     extern int started;
     time_t stay;
     char fname[STRLEN], notename[STRLEN];
-    char sysoplist[20][STRLEN], syswork[20][STRLEN], spbuf[STRLEN], buf[STRLEN];
+    char sysoplist[20][STRLEN], syswork[20][STRLEN], spbuf[STRLEN], buf[STRLEN], *tmp, *pbuf;
     int i, num_sysop, choose, logouts, mylogout = false;
     FILE *sysops;
     long Time = 10;             /*Haohmaru */
@@ -4045,8 +4045,21 @@ int Goodbye()
     i = 0;
     if ((sysops = fopen("etc/sysops", "r")) != NULL) {
         while (fgets(buf, STRLEN, sysops) != NULL && i < 20) {
-            strcpy(sysoplist[i], (char *) strtok(buf, " \n\r\t"));
-            strcpy(syswork[i], (char *) strtok(NULL, " \n\r\t"));
+            if(NULL == (tmp = strtok_r(buf," \n\r\t",&pbuf) ) ) {                
+                continue;
+            }else{
+                if(tmp[0]=='#' || tmp[0]==';'){
+                        continue;
+                }
+                strncpy(sysoplist[i], tmp, STRLEN);
+                sysoplist[i][STRLEN-1] = '\0';
+            }
+            if(NULL == (tmp = strtok_r(NULL," \n\r\t",&pbuf) ) ) {
+                continue;
+            }else{
+                strncpy(syswork[i], tmp, STRLEN);
+                syswork[i][STRLEN-1] = '\0';
+            }
             i++;
         }
         fclose(sysops);
