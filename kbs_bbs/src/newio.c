@@ -615,6 +615,8 @@ int keybuffer_count=0;
 int skip_key=0;
 bool ingetdata=false;
 
+extern void mailscr();
+
 int igetkey()
 {
     int mode;
@@ -718,6 +720,13 @@ int igetkey()
         	    auto_chinese();
         	    continue;
         	}
+            else if (scrint&&ret==KEY_F9){
+                mode=0;
+                if (getCurrentUser()&&HAS_PERM(getCurrentUser(), PERM_READMAIL)&&!HAS_PERM(getCurrentUser(), PERM_DENYMAIL) && !chkusermail(getCurrentUser()))
+                    mailscr();
+                continue;
+            }
+
                 break;
             }
             else {

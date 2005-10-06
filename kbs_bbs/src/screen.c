@@ -1042,3 +1042,111 @@ void do_naws(int ln, int col)
         list_select_add_key(conf, KEY_ONSIZE);
     }
 }
+
+void mailscr()
+{
+    char fname[STRLEN];
+    FILE *fp;
+    int i, k, j, ii, p, s, chc;
+    bool flagc;
+    int stack[10],stackt=0;     int count = 0;     struct screenline *bp = big_picture;
+    int my_mode = 0, my_color = 7;
+    time_t now;
+    char mytitle[STRLEN];
+                                                                                
+    now = time(0);
+    if( !scrint || !strcmp(getCurrentUser()->userid, "guest") )
+        return;
+                                                                                
+    sprintf(fname, "tmp/%s.%d.scr",getCurrentUser()->userid, getpid());
+                                                                                
+    if( ( fp=fopen(fname, "w"))== NULL)
+        return;
+                                                                                
+    for (i = 0; i < scr_lns; i++) {
+        j = (i + roll) % scr_lns;
+                                                                                
+        ii = scr_cols - 1;
+        count = 0;
+        while(ii>=0&&(bp[j].data[ii]==0||bp[j].data[ii]==32)&&(bp[j].color[ii]>>4)==(bp[j].color[scr_cols-1]>>4)&&((bp[j].mode[ii]&~SCREEN_BRIGHT)==(bp[j].mode[scr_cols-1]&~SCREEN_BRIGHT))) {
+            if(count<3&&!ndiff(j,ii)) count++;
+            ii--;
+        }
+                                                                                
+        p=ii+1;
+        chc = 0;
+        flagc = false;
+        for (k = 0; k < scr_cols; k++){
+            if (chc == 1)
+                chc = 2;
+            else if (bp[j].data[k]&0x80)
+                chc = 1;
+            else
+                chc = 0;
+            if (1){                 stackt = 0;                 s = bp[j].mode[k];
+                if(((!(s&SCREEN_BRIGHT)&&my_mode&SCREEN_BRIGHT&&bp[j].data[k]!=' ')
+                    ||(!(s&SCREEN_LINE)&&my_mode&SCREEN_LINE)
+                    ||(!(s&SCREEN_BLINK)&&my_mode&SCREEN_BLINK&&bp[j].data[k]!=' ')
+                    ||(!(s&SCREEN_BACK)&&my_mode&SCREEN_BACK))
+                    ||(((my_color>>4)!=0&&(bp[j].color[k]>>4)==0))) {
+                    my_mode = 0;
+                    my_color = 7;
+                    fputs("\x1b[m", fp);
+                }
+                if(!(my_mode&SCREEN_BRIGHT)&&s&SCREEN_BRIGHT&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
+                    my_mode|=SCREEN_BRIGHT;
+                    stack[stackt++]=1;
+                }
+                if(!(my_mode&SCREEN_LINE)&&s&SCREEN_LINE) {
+                    my_mode|=SCREEN_LINE;
+                    stack[stackt++]=4;
+                }
+                if(!(my_mode&SCREEN_BLINK)&&s&SCREEN_BLINK&&bp[j].data[k]!=' '&&bp[j].data[k]!=0) {
+                    my_mode|=SCREEN_BLINK;
+                    stack[stackt++]=5;
+                }
+                if(!(my_mode&SCREEN_BACK)&&s&SCREEN_BACK) {
+                    my_mode|=SCREEN_BACK;
+                    stack[stackt++]=7;
+                }
+                if((my_color&0x0f)!=(bp[j].color[k]&0x0f)&&(bp[j].data[k]!=' '||bp[j].mode[k]&SCREEN_LINE||bp[j].mode[k]&SCREEN_BACK)) {
+                    my_color=(my_color&0xf0)+(bp[j].color[k]&0x0f);
+                    stack[stackt++]=30+(bp[j].color[k]&0x0f);
+                }
+                if((my_color>>4)!=(bp[j].color[k]>>4)) {
+                    my_color=(bp[j].color[k]&0xf0)+(my_color&0x0f);
+                    if((bp[j].color[k]>>4)==8)
+                        stack[stackt++]=40;
+                    else
+                        stack[stackt++]=40+(bp[j].color[k]>>4);
+                }
+                if(stackt>0) {                     fprintf(fp, "\x1b[");
+                    if(stackt!=1||stack[0]!=0)
+                        for(ii=0;ii<stackt;ii++) {
+                            if(ii==0) fprintf(fp, "%d", stack[ii]);
+                            else {fprintf(fp, ";%d", stack[ii]);}
+                        }
+                    fputc('m', fp);
+                    stackt=0;
+                }                 if(k>=p&&(p<=scr_cols-4||i==scr_lns-1)) {
+                    break;
+                }
+                if(chc==1&&(k==scr_cols-1||(bp[j].data[k+1]<0x40)))
+                    fputc('?', fp);
+                else
+                    fputc(bp[j].data[k],fp);
+                if(chc==1)
+                    flagc=true;
+            }
+        }
+        if (i == scr_lns -1)            //有没有必要
+            fputs("\x1b[m", fp);
+        fputs("\n",fp);
+    }
+    fclose(fp);
+                                                                                
+    sprintf(mytitle, "[%24.24s] 屏幕记录 - %s", ctime(&now), getCurrentUser()->userid);
+    mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid, mytitle, 0, NULL);
+    unlink(fname);
+}
+
