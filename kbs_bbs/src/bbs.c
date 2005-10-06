@@ -5850,6 +5850,86 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     return DIRCHANGED;
 }
 
+#define SPLIT_THREAD_MAXNUM 1000
+struct split_thread_arg{
+       int num;
+       int oldid[SPLIT_THREAD_MAXNUM];
+};
+
+static int split_thread_me(struct _select_def* conf, struct fileheader* fh,int ent, void* extraarg)
+{
+    struct read_arg* arg=(struct read_arg*)conf->arg;
+    struct split_thread_arg* func_arg=(struct split_thread_arg*)extraarg;
+    int ret=APPLY_CONTINUE;
+       int i;
+
+    conf->pos=ent;
+    if (arg->writearg) {
+        arg->writearg->ent=ent;
+    }
+       if( func_arg->num >= SPLIT_THREAD_MAXNUM ) return ret;
+       for(i=0;i<func_arg->num; i++){
+               if(fh->reid == func_arg->oldid[i]){
+                       break;
+               }
+       }
+       if(i>0 && i==func_arg->num) return ret;
+
+       func_arg->oldid[func_arg->num] = fh->id;
+       func_arg->num ++;
+
+       fh->groupid = func_arg->oldid[0];
+       if(func_arg->num == 1){
+               char buf[256];
+               fh->reid = func_arg->oldid[0];
+               if(!strncmp(fh->title, "Re: ", 4)){
+                       strncpy(buf, fh->title+4, 256);
+                       if(*buf)
+                               strcpy(fh->title, buf);
+               }
+       }
+
+    return ret;
+}
+
+static int split_thread(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+{
+       int ent;
+    struct split_thread_arg func_arg;
+    struct read_arg* arg=(struct read_arg*)conf->arg;
+    struct write_dir_arg dirarg;
+
+    if (fh==NULL)
+        return DONOTHING;
+    if (!chk_currBM(currBM, getCurrentUser())) {
+        return DONOTHING;
+    }
+    if (arg->mode != DIR_MODE_NORMAL)     /* KCN:暂不允许 */
+        return DONOTHING;
+    if (conf->pos>arg->filecount) /*置顶*/
+        return DONOTHING;
+       if (fh->id == fh->groupid)
+               return DONOTHING;
+
+       func_arg.num = 0;
+
+    ent=conf->pos;
+    init_write_dir_arg(&dirarg);
+    dirarg.fd=arg->fd;
+    dirarg.needlock=false;
+    arg->writearg=&dirarg;
+
+    flock(arg->fd,LOCK_EX);
+    apply_thread(conf,fh,split_thread_me,true,true,(void*)&func_arg);
+    flock(arg->fd,LOCK_UN);
+    free_write_dir_arg(&dirarg);
+    arg->writearg=NULL;
+    conf->pos=ent; /*恢复原来的ent*/
+
+    return DIRCHANGED;
+}
+
+
 #ifdef FB2KPC
 int read_my_pc(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {	
@@ -5882,7 +5962,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 #endif
     {'g', (READ_KEY_FUNC)set_article_flag,(void*)FILE_DIGEST_FLAG},
     {'t', (READ_KEY_FUNC)set_article_flag,(void*)FILE_DELETE_FLAG},     /*KCN 2001 */
-    {'|', (READ_KEY_FUNC)set_article_flag,(void*)FILE_TITLE_FLAG},
+    {'|', (READ_KEY_FUNC)split_thread,NULL},
 
     {'G', (READ_KEY_FUNC)range_flag,(void*)FILE_TITLE_FLAG},
         
