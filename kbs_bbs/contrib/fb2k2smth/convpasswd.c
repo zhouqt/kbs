@@ -145,9 +145,6 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
     user->notemode = -1;
     user->exittime = olduser->lastlogout;
     user->usedspace = 0;
-#ifdef HAVE_USERMONEY
-//    user->money = olduser->money;
-#endif
     if (strcasecmp(user->userid, "new") == 0)
         return;
     create_userdata(olduser);
