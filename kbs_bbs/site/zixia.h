@@ -40,45 +40,6 @@
 
 #define HAVE_WFORUM 1
 
-#define OWN_USEREC 1
-struct userec {                 /* Structure used to hold information in */
-    char userid[IDLEN + 2];     /* PASSFILE */
-    char flags; /*一些标志，戒网，版面排序之类的*/
-    unsigned char title; /*用户级别*/
-    time_t firstlogin;
-    char lasthost[IPLEN];
-    unsigned int numlogins;
-    unsigned int numposts;
-#ifdef CONV_PASS
-    char passwd[OLDPASSLEN];
-	char unused_padding[2];
-#endif
-    char username[NAMELEN];
-    unsigned int club_read_rights[MAXCLUB>>5];
-    unsigned int club_write_rights[MAXCLUB>>5];
-    unsigned char md5passwd[MD5PASSLEN];
-#ifndef OS_64BIT
-    unsigned int userlevel;
-#endif
-    time_t lastlogin;
-    time_t stay;
-#ifdef OS_64BIT /*  align 8 bytes... */
-    unsigned int userlevel;
-#endif
-    int signature;
-    unsigned int userdefine[2];
-    time_t notedate;
-    int noteline;
-    int notemode;
-    time_t exittime;
-	/* 生日数据转移到 userdata 结构中 */
-    unsigned int usedspace;     /* used space of user's mailbox, in bytes */
-    int unused[2];
-    int alter;
-    int unused[3];
-};
-
-
 #define TELNET_WORD_WRAP 1 //Telnet下长行自动词间换行
 
 #define SMTH			0		/* SMTH专有代码 */
@@ -328,6 +289,47 @@ bigger mailbox. --stephen 2001.10.31*/
 #define UL_CHANGE_NICK_LOWER   'c'
 #define UL_SWITCH_FRIEND_UPPER 'F'
 #define UL_SWITCH_FRIEND_LOWER 'f'
+
+
+#define OWN_USEREC 1
+struct userec {                 /* Structure used to hold information in */
+    char userid[IDLEN + 2];     /* PASSFILE */
+    char flags; /*一些标志，戒网，版面排序之类的*/
+    unsigned char title; /*用户级别*/
+    time_t firstlogin;
+    char lasthost[IPLEN];
+    unsigned int numlogins;
+    unsigned int numposts;
+#ifdef CONV_PASS
+    char passwd[OLDPASSLEN];
+	char unused_padding[2];
+#endif
+    char username[NAMELEN];
+    unsigned int club_read_rights[MAXCLUB>>5];
+    unsigned int club_write_rights[MAXCLUB>>5];
+    unsigned char md5passwd[MD5PASSLEN];
+#ifndef OS_64BIT
+    unsigned int userlevel;
+#endif
+    time_t lastlogin;
+    time_t stay;
+#ifdef OS_64BIT /*  align 8 bytes... */
+    unsigned int userlevel;
+#endif
+    int signature;
+    unsigned int userdefine[2];
+    time_t notedate;
+    int noteline;
+    int notemode;
+    time_t exittime;
+	/* 生日数据转移到 userdata 结构中 */
+    unsigned int usedspace;     /* used space of user's mailbox, in bytes */
+    int unused[2];
+    int alter;
+    int unused2[3];
+};
+
+
 
 /**
  * 文章相关部分。
