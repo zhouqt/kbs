@@ -1,6 +1,6 @@
 # include "innbbsconf.h"
 # include "bbslib.h"
-# include "site.h"
+# include "bbs.h"
 # include <stdarg.h>
 
 #include <sys/mman.h>

@@ -1,7 +1,6 @@
 #include "innbbsconf.h"
 #include "daemon.h"
 #include "bbslib.h"
-#include "site.h"
 #include "bbs.h"
 #undef VERSION
 #include "version.h"
