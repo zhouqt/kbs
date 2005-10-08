@@ -326,7 +326,7 @@ struct userec {                 /* Structure used to hold information in */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */
     int unused[2];
     int altar;
-    int unused2[3];
+    int unused2[4];
 };
 
 
