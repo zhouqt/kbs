@@ -76,10 +76,13 @@
 #undef HAVE_WFORUM
 #endif
 
+
+/* 这个是由于历史原因添加在这里的，主要是因为一些转换程序仍旧需要这个定义 - atppp 20051004 */
 #ifdef HAVE_WFORUM
 #define HAVE_USERMONEY 1
-#define HAVE_BIRTHDAY 1
 #endif
+
+
 
 /* 默认情况下加入 HAVE_BIRTHDAY 支持 - atppp 20040819 */
 #ifdef HAVE_BIRTHDAY
