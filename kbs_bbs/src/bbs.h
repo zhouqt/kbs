@@ -121,6 +121,23 @@ typedef enum { false = 0, true = 1 } bool;
 #endif
 #endif
 
+#ifdef HAVE_IPV6_SMTH
+#define IPLEN   46              /* Length of most string data */
+#else
+#define IPLEN   16
+#endif
+#define IDLEN    12             /* Length of userids */
+#define OLDPASSLEN  14          /* Length of encrypted passwd field */
+#define STRLEN   80             /* Length of most string data */
+#define NAMELEN  40             /* Length of username/realname */
+#define BOARDNAMELEN 30         /* max length of board */
+#define PASSLEN 39
+#define MD5PASSLEN 16
+
+
+#include "site.h"
+#include "default.h"
+
 #define PUBLIC_SHMKEY	3700
 /*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要
 public shm,而attach shm又需要sysconf_eval,ft*/
@@ -190,23 +207,6 @@ extern long ti;
 /*#define ACBOARD_MAXLINE      80     max. lines of  activity board  */
 #define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER      /* max. length of each line for activity board  */
 #define ACBOARD_MAXLINE      LENGTH_ACBOARD_LINE        /* max. lines of  activity board  */
-#define STRLEN   80             /* Length of most string data */
-#ifdef HAVE_IPV6_SMTH
-#define IPLEN   46              /* Length of most string data */
-#else
-#define IPLEN   16
-#endif
-#define NAMELEN  40             /* Length of username/realname */
-#define IDLEN    12             /* Length of userids */
-#define BOARDNAMELEN 30         /* max length of board */
-#define PASSLEN 39
-#define MD5PASSLEN 16
-
-#ifdef FREE
-#define OLDPASSLEN  35          /* Length of encrypted passwd field */
-#else
-#define OLDPASSLEN  14          /* Length of encrypted passwd field */
-#endif
 
 #define MAXGOPHERITEMS 9999     /*max of gopher items */
 #define PASSFILE   ".PASSWDS"   /* Name of file User records stored in */
@@ -246,16 +246,12 @@ extern long ti;
 #define FILE_ON_TOP	0x2 /* on top mode */
 #define FILE_VOTE	0x4 /* article with votes */
 
-#ifdef FILTER
 #define FILE_CENSOR 0x20        /* for accessed[1], flyriver, 2002.9.29 */
 #define BADWORD_IMG_FILE "etc/badwordv3.img"
-#endif
 #define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
 #define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
 #define FILE_MAILBACK	0x4		/* reply articles mail to owner's mailbox, accessed[1] */
-#ifdef COMMEND_ARTICLE
 #define FILE_COMMEND 0x8		/* 推荐文章,stiger , in accessed[1], */
-#endif
 #define FILE_TEX 0x80       /* tex article, in accessed[1], added by atppp 20040729 */
 
 /* Leeward 98.05.11:
@@ -316,8 +312,6 @@ O MaxMessageSize=32000
 
 #endif                          /* BBSIRC */
 
-#include "site.h"
-#include "default.h"
 #include "struct.h"
 #include "screen.h"
 #include "webmsg.h"
