@@ -4560,7 +4560,7 @@ static int set_acl_list_key(struct _select_def *conf, int key)
 static int set_acl_list_refresh(struct _select_def *conf)
 {
     clear();
-    docmdtitle("[登陆IP控制列表]",
+    docmdtitle("[登录IP控制列表]",
                "退出[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 添加[\x1b[1;32ma\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
     prints("\033[0;1;37;44m  %4s  %-40s %-31s", "级别", "IP地址范围", "允许/拒绝");

@@ -608,7 +608,7 @@ void login_query()
     multi_user_check();
 
 	if( read_user_memo( getCurrentUser()->userid, & getSession()->currentmemo ) <= 0 ){
-		prints("由于程序更新，请先退出此帐号所有连接再重新登陆\n");
+		prints("由于程序更新，请先退出此帐号所有连接再重新登录\n");
 	 	oflush();
 		sleep(1);
 		igetkey();
@@ -837,8 +837,8 @@ void user_login()
    if(uinfo.invisible == true && HAS_PERM(getCurrentUser(), PERM_SYSOP)){
 		clear();
 		move(3,0);
-		prints("帮助:如果输入n回车,那么这次登陆不会增加登陆次数,不会更改上次上站时间,隐身更彻底\n     如果直接回车,那么跟以前还是一样的\n");
-        getdata(t_lines - 1, 0, "您正隐身中,这次登陆需要增加登陆次数吗 (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
+		prints("帮助:如果输入n回车,那么这次登录不会增加登录次数,不会更改上次上站时间,隐身更彻底\n     如果直接回车,那么跟以前还是一样的\n");
+        getdata(t_lines - 1, 0, "您正隐身中,这次登录需要增加登录次数吗 (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
         if (*ans != 'N' && *ans != 'n'){
 		    getCurrentUser()->lastlogin = time(NULL);
 		    getCurrentUser()->numlogins++;

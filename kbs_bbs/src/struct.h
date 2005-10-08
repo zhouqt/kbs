@@ -4,6 +4,7 @@
    this is a waste but allows you to add/remove UL/DL support without
    rebuilding the PASSWDS file (and it's only a lil ole int anyway).
 */
+#ifndef OWN_USEREC
 struct userec {                 /* Structure used to hold information in */
     char userid[IDLEN + 2];     /* PASSFILE */
     char flags; /*一些标志，戒网，版面排序之类的*/
@@ -36,17 +37,10 @@ struct userec {                 /* Structure used to hold information in */
     time_t exittime;
 	/* 生日数据转移到 userdata 结构中 */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */
-#ifdef HAVE_USERMONEY
-     int money;
-     int score;
-#ifdef ZIXIA
-    int altar;
-    char unused[16];
-#else
-    char unused[20];
-#endif
-#endif
+
+    int unused[7];
 };
+#endif //OWN_USEREC
 
 struct userdata
 {
@@ -111,12 +105,9 @@ struct user_info {              /* Structure used in UTMP file */
     char chatid[16];            /* chat id, if in chat mode */
     char from[IPLEN + 4];       /* machine name the user called in from */
     time_t logintime;
-#ifdef HAVE_WFORUM
-	char fill[35];
-	unsigned char yank;
-#else 
-    char fill[36];
-#endif
+
+    char unused[36];
+
     time_t freshtime;
     int utmpkey;
     unsigned int mailbox_prop;  /* properties of getCurrentUser()'s mailbox */
@@ -431,7 +422,7 @@ struct pc_nodes {
 
 	//是否允许评论
 	// 0: 不允许
-	// 1: 允许登陆用户
+	// 1: 允许登录用户
 	// 2: 允许guest
 	int comment;
 	long commentcount;

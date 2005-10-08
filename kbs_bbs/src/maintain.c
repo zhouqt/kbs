@@ -2772,7 +2772,7 @@ int m_stoplogin()
     if (!check_systempasswd()) {
         return -1;
     }
-    getdata(t_lines - 1, 0, "½ûÖ¹µÇÂ½Âð (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
+    getdata(t_lines - 1, 0, "½ûÖ¹µÇÂ¼Âð (Y/N)? [N]: ", ans, 2, DOECHO, NULL, true);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         if (vedit("NOLOGIN", false, NULL, NULL, 0) == -1)
             unlink("NOLOGIN");

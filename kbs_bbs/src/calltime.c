@@ -191,7 +191,7 @@ static time_t get_realcalltime(struct clock_struct * ck)
 }
 
 /*
- * mode:  1: 登陆第一次运行
+ * mode:  1: 登录第一次运行
  *        2: 增加/减少 闹铃时重新计算,不用old_calltime
  *        0: 闹铃过后重新计算
  */
@@ -283,7 +283,7 @@ static int add_new_clock()
 	prints("3. 每日闹铃\n");
 	prints("4. 每周闹铃\n");
 	prints("5. 每月闹铃\n");
-	prints("6. 重要闹铃 (闹铃时未在线下次登陆时自动提示)\n");
+	prints("6. 重要闹铃 (闹铃时未在线下次登录时自动提示)\n");
 	prints("7. 停留闹铃 (在BBS上停留到达几分钟时提醒)");
 	getdata(10,0,"请选择闹铃种类(1-7)? [0]:",ans,sizeof(ans),DOECHO,NULL,true);
 

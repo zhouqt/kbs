@@ -521,7 +521,7 @@ int get_favread()
 		return 0;
 	}
 	move(8,0);
-	prints("\033[32m为了保证数据同步性，操作前请先退出本id其他登陆\033[m\n");
+	prints("\033[32m为了保证数据同步性，操作前请先退出本id其他登录\033[m\n");
 	prints("\033[31m本次操作会覆盖本id原收藏夹和未读标记，无法恢复\033[m");
 	getdata(10,0,"确信要进行此操作吗? [y/N] ", passwd, 2, DOECHO, NULL, true);
 	if (passwd[0] != 'y' && passwd[0] != 'Y'){
@@ -553,7 +553,7 @@ int get_favread()
 #endif
 
 	move(15,0);
-	prints("操作成功。您无需重新登陆即可使用新数据。\n");
+	prints("操作成功。您无需重新登录即可使用新数据。\n");
 	pressanykey();
 	clear();
 
@@ -720,7 +720,7 @@ void x_edits()
 			"autoremail",
 #endif
 			NULL };
-    char *explain_file[] = { "个人说明档", "签名档", "自己的备忘录", "离站的画面", "www url",
+    char *explain_file[] = { "个人说明档", "签名档", "自己的备忘录", "离站的画面", "附件链接所使用的域名",
 #ifdef AUTOREMAIL
 			"站内信件自动回复",
 #endif
