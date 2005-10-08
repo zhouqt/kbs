@@ -354,10 +354,12 @@ reenter:
                 break;
             case 'c':
             case 'C':
-                move(t_lines-1, 0);
-                clrtoeol();
-                if (askyn("确认删除所有讯息？", false))
-                    clear_msg(getCurrentUser()->userid);
+                if (count!=0) {
+					move(t_lines-1, 0);
+                	clrtoeol();
+                	if (askyn("确认删除所有讯息？", false))
+                    	clear_msg(getCurrentUser()->userid);
+				}
                 goto outofhere;
             case 'a':
             case 'A':
@@ -603,6 +605,20 @@ void r_msg()
                         if((uin==NULL || uin->mode == BBSNET || uin->mode==TETRIS || uin->mode==WINMINE) && head.mode!=6) {
                             i=-1;
                             strcpy(getSession()->msgerr, "对方已经离线....");
+							/* stiger, 20051008, mail msg to local mailbox */
+							{
+								char tmpfname[256];
+								FILE *tfp;
+
+								sprintf(tmpfname, "tmp/%s.mailmsg.%d", getCurrentUser()->userid, getpid());
+								if((tfp = fopen(tmpfname, "w"))!=NULL){
+    								write_header(tfp, getCurrentUser(),1,NULL,"发送失败的信息",0,0,getSession());
+									fprintf(tfp, "\n你给%s的信息由于对方已经离线或者屏幕锁定无法送达,以下是信息内容:\n\n%s\n", uid, buf);
+									fclose(tfp);
+
+									mail_file(getCurrentUser()->userid, tmpfname, getCurrentUser()->userid, "发送失败的信息", BBSPOST_MOVE, NULL);
+								}
+							}
                         }
                         else {
 #ifdef SMS_SUPPORT
