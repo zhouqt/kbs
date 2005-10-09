@@ -109,7 +109,7 @@ void Net_Sleep(int times)
 {                               /* KCN 1999.9.15 */
     struct timeval tv;
     int sr;
-    fd_set fd, efd;
+    fd_set efd;
     int old;
 
     int csock = 0;
