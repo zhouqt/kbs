@@ -554,6 +554,25 @@ int load_msgtext(char *uident, struct msghead *head, char *msgbuf)
     return 0;
 }
 
+void msgmail(char *did, char *buf)
+							{
+								char tmpfname[256];
+								FILE *tfp;
+
+								if(!getCurrentUser() || getCurrentUser()->userid[0]=='\0') return;
+
+								sprintf(tmpfname, "tmp/%s.mailmsg.%d", getCurrentUser()->userid, getpid());
+								if((tfp = fopen(tmpfname, "w"))!=NULL){
+    								write_header(tfp, getCurrentUser(),1,NULL,"发送失败的信息",0,0,getSession());
+									fprintf(tfp, "\n你给%s的信息由于对方已经离线或者屏幕锁定无法送达,以下是信息内容:\n\n%s\n", did, buf);
+									fclose(tfp);
+
+									mail_file(getCurrentUser()->userid, tmpfname, getCurrentUser()->userid, "发送失败的信息", BBSPOST_MOVE, NULL);
+								}
+
+								return ;
+							}
+
 int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t* session)
 {
     char uident[STRLEN];
@@ -567,6 +586,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
         return -2;
     if ((mode != 3) && (LOCKSCREEN == uin->mode)) {     /* Leeward 98.02.28 */
         strcpy(session->msgerr, "对方已经锁定屏幕，请稍候再发或给他(她)写信...");
+		msgmail(uident, msgstr);
         return -1;
     }
 //    if ((mode != 3) && (uin->mode == BBSNET)) /* flyriver, 2002.9.12 */
@@ -576,11 +596,13 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
 //    }
     if ((mode != 3) && (false == canIsend2(session->currentuser,uin->userid))) {     /*Haohmaru.06.06.99.检查自己是否被ignore */
         strcpy(session->msgerr, "对方拒绝接受你的讯息...");
+		msgmail(uident, msgstr);
         return -1;
     }
     if (mode != 3 && uin->mode != WEBEXPLORE) {
         if (get_unreadcount(uident) > MAXMESSAGE) {
             strcpy(session->msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
+			msgmail(uident, msgstr);
             return -1;
         }
     }
@@ -620,6 +642,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
         if (mode == 0)
             return -2;
         strcpy(session->msgerr, "对方已经离线....");
+		msgmail(uident, msgstr);
         return -1;
     }
 
@@ -637,6 +660,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
 	}
     if (uentp->pid != 1 && kill(uin->pid, SIGUSR2) == -1) {
         strcpy(session->msgerr, "对方已经离线.....");
+		msgmail(uident, msgstr);
         return -1;
     }
     return 1;
