@@ -606,19 +606,7 @@ void r_msg()
                             i=-1;
                             strcpy(getSession()->msgerr, "对方已经离线....");
 							/* stiger, 20051008, mail msg to local mailbox */
-							{
-								char tmpfname[256];
-								FILE *tfp;
-
-								sprintf(tmpfname, "tmp/%s.mailmsg.%d", getCurrentUser()->userid, getpid());
-								if((tfp = fopen(tmpfname, "w"))!=NULL){
-    								write_header(tfp, getCurrentUser(),1,NULL,"发送失败的信息",0,0,getSession());
-									fprintf(tfp, "\n你给%s的信息由于对方已经离线或者屏幕锁定无法送达,以下是信息内容:\n\n%s\n", uid, buf);
-									fclose(tfp);
-
-									mail_file(getCurrentUser()->userid, tmpfname, getCurrentUser()->userid, "发送失败的信息", BBSPOST_MOVE, NULL);
-								}
-							}
+							msgmail(uid, buf);
                         }
                         else {
 #ifdef SMS_SUPPORT
