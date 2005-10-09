@@ -396,7 +396,7 @@ function getRecommendNodesByTopic($link,$topic,&$nodes)
         return false;
     $nodes = array();
     
-    $query = 'SELECT * FROM recommend WHERE topic = \''.addslashes($topic).'\' ORDER BY state DESC , rid DESC LIMIT 0 , 10;  ';
+    $query = 'SELECT * FROM recommend WHERE topic = \''.addslashes($topic).'\' ORDER BY state DESC , rid DESC LIMIT 0 , 10;';
     $result = mysql_query($query,$link);
     if (!mysql_num_rows($result))
         return false;
