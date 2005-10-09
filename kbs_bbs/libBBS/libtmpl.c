@@ -34,7 +34,7 @@ int orig_tmpl_init(char * nboard, int mode, struct a_template ** pptemp){
 #ifdef BBSMAIN
 			clear();
 			move(3,0);
-			prints("模板程序已经更新过，请您重新登陆，谢谢");
+			prints("模板程序已经更新过，请您重新登录，谢谢");
 			pressreturn();
 #endif
 			close(fd);
