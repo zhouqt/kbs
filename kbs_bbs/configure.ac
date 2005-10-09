@@ -163,16 +163,16 @@ AC_ARG_ENABLE(site,
                           select site special files (see site dir) ],
 [
     BBSSITE=$enableval
-],[BBSSITE="smth"
+],[BBSSITE="fb2k-v2"
 SITEDIR=site])
 if test -f $srcdir/site/$BBSSITE.c; then
 	SITEDIR=site
 else
-  if test -f $srcdir/sites/$BBSSITE.c; then
-	SITEDIR=sites
-  else
+#  if test -f $srcdir/sites/$BBSSITE.c; then
+#	SITEDIR=sites
+#  else
         AC_MSG_ERROR([ERROR! Unknown site $BBSSITE, see site/])
-  fi
+#  fi
 fi
 AC_SUBST(BBSSITE)
 
