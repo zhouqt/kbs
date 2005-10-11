@@ -3285,6 +3285,10 @@ static int set_mailgroup_list_key(struct _select_def *conf, int key)
             int cnt;
             int i;
 
+			if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
+				break;
+			}
+
             cnt = arg->mail_group.groups[conf->pos - 1].users_num;
             mg_users = (char **) malloc(cnt * sizeof(char *));
             if (mg_users == NULL)
