@@ -559,7 +559,7 @@ void msgmail(char *did, char *buf)
 								char tmpfname[256];
 								FILE *tfp;
 
-								if(!getCurrentUser() || getCurrentUser()->userid[0]=='\0') return;
+								if(!getCurrentUser() || getCurrentUser()->userid[0]=='\0' || !buf || !buf[0] ) return;
 
 								sprintf(tmpfname, "tmp/%s.mailmsg.%d", getCurrentUser()->userid, getpid());
 								if((tfp = fopen(tmpfname, "w"))!=NULL){
