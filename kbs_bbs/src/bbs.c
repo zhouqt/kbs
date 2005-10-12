@@ -2437,12 +2437,15 @@ int post_reply(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     return FULLUPDATE;
 }
 
-int show_board_notes(char bname[30])
+static int show_board_notes(char bname[30], int all)
 {                               /* 显示版主的话 */
     char buf[256];
 
     sprintf(buf, "vote/%s/notes", bname);       /* 显示本版的版主的话 vote/版名/notes */
     if (dashf(buf)) {
+		if(all)
+        	ansimore2(buf, false, 0, 0);
+		else
         ansimore2(buf, false, 0, 23 /*19 */ );
         return 1;
     } else if (dashf("vote/notes")) {   /* 显示系统的话 vote/notes */
@@ -2570,7 +2573,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     memset(&post_file, 0, sizeof(post_file));
 //	tmplate[0]='\0';
     clear();
-    show_board_notes(currboard->filename);        /* 版主的话 */
+    show_board_notes(currboard->filename, 0);        /* 版主的话 */
 #ifndef NOREPLY                 /* title是否不用Re: */
     if (replytitle[0] != '\0') {
         buf4[0] = ' ';
@@ -3617,7 +3620,7 @@ int Import_post(struct _select_def* conf,struct fileheader *fileinfo,void* extra
 int show_b_note(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     clear();
-    if (show_board_notes(currboard->filename) == -1) {
+    if (show_board_notes(currboard->filename, 1) == -1) {
         move(3, 30);
         prints("此讨论区尚无「备忘录」。");
     }
