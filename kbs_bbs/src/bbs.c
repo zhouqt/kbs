@@ -2972,6 +2972,14 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
              */
             if (!isowner(getCurrentUser(), fileinfo))
                 return DONOTHING;
+	if ((fileinfo->accessed[0] & FILE_MARKED) || (fileinfo->accessed[0] & FILE_DIGEST)){
+		move(3,0);
+		clrtobot();
+		prints("\n\n                很抱歉，被m或者被g的文章无法编辑，请先取消标记...\n");
+		pressreturn();
+        clear();
+        return FULLUPDATE;
+	}
         }
         else dobmlog=true;
 	}
