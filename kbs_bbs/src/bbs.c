@@ -2964,7 +2964,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
     modify_user_mode(EDIT);
 
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))     /* SYSOP、当前版主、原发信人 可以编辑 */
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)){     /* SYSOP、当前版主、原发信人 可以编辑 */
         if (!chk_currBM(currBM, getCurrentUser())) {
             /*
              * change by KCN 1999.10.26
@@ -2972,8 +2972,9 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
              */
             if (!isowner(getCurrentUser(), fileinfo))
                 return DONOTHING;
-            else dobmlog=true;
         }
+        else dobmlog=true;
+	}
 
     if (deny_me(getCurrentUser()->userid, currboard->filename) && (!HAS_PERM(getCurrentUser(), PERM_SYSOP))) {        /* 版主禁止POST 检查 */
         move(3, 0);
