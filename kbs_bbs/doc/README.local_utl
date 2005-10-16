@@ -6,16 +6,12 @@ $Id$
 “官方”说明文档。
 
 
-cnv和ch打头的一般都是一些版本转换所用到的程序
-
-getadmin.c      获取系统管理员权限
 usage.c         各板使用状况统计
 static.c        上站人数图、累计人数统计
 autoundeny.c    自动解封系统
 poststat.c      十大热门和祝福
 mailall.c       符号链接方式发送全站信件
 listonline.c    列出在线用户
-refriend.c      某个版本的好友名单转行程序
 lazybm.c        版主上站考勤
 listMODE.c      列出在线用户状态
 login.c         无需密码创建一个显示为web方式的ID登陆，分配
@@ -33,19 +29,11 @@ autoclear.c     这个程序本意是用来删除过期的旧文章,当版内文章数超过‘规定’，
 gen_title       升级为kbs系统需要用到的，调整版面列表里面所有的版面文章都是文章
                 数为0的错误（其实不用也行，过段时间bbs系统会自动修复的）
 
-cnv_bh2         升级代码用到，把 .Search 放入 .BOARDS 文件
-resetMailTotal.c 校正usedspace /* used space of user's mailbox, in bytes */ 错误
+resetMailTotal  校正usedspace /* used space of user's mailbox, in bytes */ 错误
 idx0Ann.c       制作精华区索引需要用到的程序，脚本在cn.bbs.smth组里。
-Xclean          清理某些文件的 (这个程序有问题，大家不要用！！- atppp)
 find_rm_lost    查找和删除丢失到board目录下的文章
 statkiller.c    杀手游戏的排行榜，可惜我执行的时候Segmentation fault :(
 fixdir.c        修复.DIR文件的错误
-cnv_register.c  水木的48小时延迟注册制度的伴生物。将pre_register(web注册产生)中
-                满了等待时间的用户注册单放到new_register中去.
-fixwebmsg.c     fixwebmsg 用来修正 webmsg 的一些错误
 showipdeny.c    查看因为短时间重复上站被封ID IP记录，修改里面的"surrender"为任
                 意已有的版名就可以用了
-calc_effsize    计算文章实际大小的，就是除去开头结尾的垃圾信息(作用不大)
 settoptitle     同步共享内存里面的版面置顶数目，如果版面置顶消失就运行一下这个程序
-recalc_signum	现在每个用户的签名档个数是编辑的时候自动修改，以前的系统升级需要
-                运行这个程序同步所有用户的签名档个数
