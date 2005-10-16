@@ -528,6 +528,11 @@ int addclubmember(char *uident, int readperm)
         return 0;
     }
     strcpy(uident, lookupuser->userid);
+    if(!strcmp(uident,"guest")){
+        move(3,0);prints("\033[1;33m不得添加 guest 用户!\033[m");
+        clrtoeol();pressreturn();
+        return -1;
+    }
     if (readperm)
         setbfile(genbuf, currboard->filename, "read_club_users");
     else

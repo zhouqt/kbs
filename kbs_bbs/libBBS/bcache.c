@@ -632,6 +632,23 @@ int board_regenspecial(char *board, int mode, char *index)
     return count;
 }
 
+void process_no_bm(struct boardheader *bh){
+//stiger, 2005.09.05, 版面无版主时进行系统通知
+#ifdef SMTH
+#define NO_BM_FILE "etc/nobms"
+    struct userec *user_sysop;
+    char buf[80];
+    if(!(bh->filename[0])||bh->BM[0]||!normal_board(bh->filename))
+        return;
+    if(!getuser("SYSOP",&user_sysop))
+        user_sysop=getCurrentUser();
+    sprintf(buf,"%s 版面目前没有斑竹",bh->filename);
+    post_file(user_sysop,"",NO_BM_FILE,"BD_Discuss",buf,0,2,getSession());
+    post_file(user_sysop,"",NO_BM_FILE,bh->filename,"请版面尽快产生一名或多名版主",0,2,getSession());
+#undef NO_BM_FILE
+#endif //SMTH
+    return;
+}
 
 /* by etnlegend 20051002 */
 int add_bm(struct userec *user,struct boardheader *bh,int pos,int bms_log){

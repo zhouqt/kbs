@@ -2936,22 +2936,6 @@ int x_deny()
     return 0;
 }
 
-void process_no_bm(struct boardheader *bh){
-//stiger, 2005.09.05, 版面无版主时进行系统通知
-#ifdef SMTH
-#define NO_BM_FILE "etc/nobms"
-    struct userec *user_sysop;
-    if(!(bh->filename[0])||bh->BM[0]||!normal_board(bh->filename))
-        return;
-    if(!getuser("SYSOP",&user_sysop))
-        user_sysop=getCurrentUser();
-    sprintf(genbuf,"%s 版面目前没有斑竹",bh->filename);
-    post_file(user_sysop,"",NO_BM_FILE,"BD_Discuss",genbuf,0,2,getSession());
-    post_file(user_sysop,"",NO_BM_FILE,bh->filename,"请版面尽快产生一名或多名版主",0,2,getSession());
-#undef NO_BM_FILE
-#endif //SMTH
-    return;
-}
 int set_BM(void){
 //etnlegend 重写, 2005.05.26 提交
     char bname[STRLEN],genbuf[1024],*p;

@@ -294,6 +294,7 @@ void unlock_sem_check(int lockid);
 
     int add_bm(struct userec *user,struct boardheader *bh,int pos,int bms_log);
     int del_bm(struct userec *user,struct boardheader *bh,int pos,int concurrent);
+    void process_no_bm(struct boardheader *bh);
 
 #if HAVE_WWW==1
     int resolve_guest_table(ARG_VOID); /* www guest shm */
@@ -400,6 +401,7 @@ void unlock_sem_check(int lockid);
     int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg);
     int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func);
     int get_effsize(char * ffn);
+    int get_effsize_attach(char *ffn, unsigned int *att);
 	
 
 /**
