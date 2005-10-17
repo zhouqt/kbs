@@ -12,6 +12,8 @@
 
 #define	DELETE
 
+#undef SMTH //by atppp 20051016
+
 char *myfile[] = { "day", "week", "month", "year", "bless" };
 int mytop[] = { 10, 50, 100, 100, 10 };
 char *mytitle[] = { "日十大热门话题",
@@ -499,7 +501,8 @@ void writestat(int mytype)
 
 #ifdef BLESS_BOARD
         if (mytype == 4)
-            fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日十大衷心祝福  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m\n\n");
+            fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日十大衷心祝福  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m\n"
+                        "                                                                         %s\n", surfix_bless[1]);
         else
 #endif
             fprintf(fp, "                \033[34m-----\033[37m=====\033[41m 本%s \033[m=====\033[34m-----\033[m\n\n", mytitle[mytype]);
@@ -516,7 +519,7 @@ void writestat(int mytype)
                 fprintf(fp,
                         "                                            %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
                         "\x1b[1m第\x1b[31m%2d \x1b[37m名 \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
-                        p, top[i].number, surfix_bless[(i) * 2], i+1, (i) / 2 + 1, top[i].title, top[i].userid, surfix_bless[(i) * 2 + 1]);
+                        p, top[i].number, surfix_bless[(i+1) * 2], i+1, (i) / 2 + 1, top[i].title, top[i].userid, surfix_bless[(i+1) * 2 + 1]);
             else
 #endif
                 fprintf(fp,
@@ -526,7 +529,7 @@ void writestat(int mytype)
 
 #ifdef BLESS_BOARD
         if (mytype == 4)
-            fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[20]);
+            fprintf(fp, "                                                                         %s\x1b[m", surfix_bless[22]);
 #endif
         fclose(fp);
     }
