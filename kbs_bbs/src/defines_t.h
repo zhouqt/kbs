@@ -15,6 +15,9 @@ void load_site_banner(int init);
 void load_board_banner(const char * board);
 #endif
 
+/*etnlegend*/
+#define WAIT_RETURN do{continue;}while(igetkey()!=13)
+
 /*screen.c*/
 void do_naws(int ln, int col);
 void auto_chinese();
@@ -257,6 +260,7 @@ unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int 
 void record_exit_time();
 
 /* boards_t.c */
+int query_bm_core(const char *userid,int limited);
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);
 int choose_board(int newflag, char *boardprefix,int group,int yank_flag);
 /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */

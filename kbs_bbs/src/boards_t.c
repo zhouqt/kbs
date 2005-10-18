@@ -150,65 +150,76 @@ int show_boardinfo(const char *bname)
 	return 1;
 }
 
-/* inserted by cityhunter to query BM */
-int query_bm()
-{
-    const struct boardheader *bptr;
-    int n;
-    char uident[STRLEN];
-    int tuid = 0;
-    struct userec *lookupuser;
-
-    modify_user_mode(QUERY);
-    move(2, 0);
-    clrtobot();
-    prints("<输入使用者代号, 按空白键可列出符合字串>\n");
-    move(1, 0);
-    clrtoeol();
-    prints("查询谁: ");
-    usercomplete(NULL, uident);
-    if (uident[0] == '\0') {
+/* etnlegend, 2005.10.16, 查询版主更新 */
+int query_bm_core(const char *userid,int limited){
+    struct userec *user;
+    const struct boardheader *bh;
+    char buf[16];
+    int line,count,n;
+    clear();
+    move(0,0);
+    prints("\033[1;32m[查询任职版面]\033[m");
+    if(!userid||!*userid){
+        move(1,0);
+        usercomplete("查询用户: ",buf);
+        move(1,0);
+        clrtobot();
+    }
+    else
+        sprintf(buf,"%s",userid);
+    if(!*buf||!getuser(buf,&user)){
+        move(1,0);
+        prints("\033[1;31m取消查询或非法用户...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;
         clear();
         return FULLUPDATE;
     }
-    if (!(tuid = getuser(uident, &lookupuser))) {
-        move(2, 0);
-        clrtoeol();
-        prints("\033[1m不正确的使用者代号\033[m\n");
-        pressanykey();
-        move(2, 0);
-        clrtoeol();
-        return FULLUPDATE;
-    }
-
-    move(3, 0);
-    if (!(lookupuser->userlevel & PERM_BOARDS)) {
-        prints("用户%s不是版主!\n", lookupuser->userid);
-        pressanykey();
-        move(2, 0);
-        clrtoeol();
-        return FULLUPDATE;
-    }
-    prints("用户%s为以下版的版主\n\n", lookupuser->userid);
-
-    prints("┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓\n");
-    prints("┃            版英文名            ┃            版中文名            ┃\n");
-
-    for (n = 0; n < get_boardcount(); n++) {
-        bptr = getboard(n + 1);
-        if (chk_BM_instr(bptr->BM, lookupuser->userid) == true) {
-            prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");
-            prints("┃%-32s┃%-32s┃\n", bptr->filename, bptr->title + 12);
+    sprintf(buf,"%s",user->userid);
+    move(1,0);
+    prints("\033[1;37m用户 \033[1;33m%s\033[m %s\033[1;37m并出现于下列版面的版主列表中\033[m",
+        buf,HAS_PERM(user,PERM_BOARDS)?"\033[1;37m有版主权限":"\033[1;31m无版主权限");
+    for(line=3,count=0,n=0;n<get_boardcount();n++){
+        if(!(bh=getboard(n+1))||!*(bh->filename))
+            continue;
+        if(limited&&!check_read_perm(getCurrentUser(),bh))
+            continue;
+        if(chk_BM_instr(bh->BM,buf)){
+            count++;
+            if(!(line<t_lines-3)){
+                int key;
+                move(line+1,0);
+                prints("\033[1;32m按 \033[1;33m<Enter>/<Space>\033[1;32m 继续查询或者 \033[1;33m<Esc>/<Q>\033[1;32m 结束查询: \033[m");
+                do{
+                    key=igetch();
+                }
+                while(key!=13&&key!=32&&key!=27&&key!=113&&key!=81);
+                if(key==13||key==32){
+                    line=2;
+                    move(line++,0);
+                    clrtobot();
+                }
+                else
+                    break;
+            }
+            move(line++,0);
+            sprintf(genbuf,"\033[1;37m[%02d] %s %-32s %-32s\033[m",count,
+                (line%2)?"\033[1;33m":"\033[1;36m",bh->filename,bh->title+13);
+            prints("%s",genbuf);
         }
     }
-    prints("┗━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━┛\n");
-    pressanykey();
-    move(2, 0);
+    move(line+1,0);
     clrtoeol();
+    prints("\033[1;32m查询%s\033[1;32m完成: 查询到 \033[1;33m%d\033[1;32m 个任职版面...\033[1;37m<Enter>\033[m",
+        (n<get_boardcount())?"\033[1;33m未":"已",count-((n<get_boardcount())?1:0));
+    WAIT_RETURN;
+    clear();
     return FULLUPDATE;
 }
 
-/* end of insertion */
+int query_bm(void){
+    return query_bm_core(NULL,!HAS_PERM(getCurrentUser(),PERM_SYSOP));
+}
+/* END - etnlegend, 2005.10.16, 查询版主更新 */
 
 static int check_newpost(struct newpostdata *ptr)
 {

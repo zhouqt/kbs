@@ -653,7 +653,6 @@ int toooooooooooooold_m_editbrd()
 
 /*etnlegend,2005.07.01,修改讨论区属性*/
 #define KEY_CANCEL '~'
-#define EDITBRD_WAIT while(igetkey()!=13);
 extern int in_do_sendmsg;
 static int lastkey=0;
 /*生成权限字符串*/
@@ -848,7 +847,7 @@ int m_editbrd(void){
     if(i=='#'){
         if(!HAS_PERM(getCurrentUser(),PERM_ADMIN)){
             move(2,0);prints("使用救援模式修改讨论区属性需要ADMIN权限...");
-            EDITBRD_WAIT;clear();
+            WAIT_RETURN;clear();
             return -1;
         }
         /*救援模式*/
@@ -858,13 +857,13 @@ int m_editbrd(void){
             getdata(3,0,"请输入完整的讨论区名称: ",buf,128,DOECHO,NULL,true);
             if(!*buf){
                 move(4,0);prints("取消...");
-                EDITBRD_WAIT;clear();
+                WAIT_RETURN;clear();
                 return -1;
             }
             pos=getboardnum(buf,NULL);
             if(!pos){
                 move(4,0);prints("错误的讨论区名称!");
-                EDITBRD_WAIT;clear();
+                WAIT_RETURN;clear();
                 return -1;
             }
         }
@@ -872,7 +871,7 @@ int m_editbrd(void){
             bhptr=getboard(pos);
             if(!(bhptr&&bhptr->filename[0])){
                 move(3,0);prints("错误的讨论区顺序号!");
-                EDITBRD_WAIT;clear();
+                WAIT_RETURN;clear();
                 return -1;
             }
         }
@@ -881,13 +880,13 @@ int m_editbrd(void){
         /*常规模式*/
         if(!*buf){
             move(2,0);prints("取消...");
-            EDITBRD_WAIT;clear();
+            WAIT_RETURN;clear();
             return -1;
         }
         pos = getbnum(buf);
         if(!pos){
             move(2,0);prints("错误的讨论区名称!");
-            EDITBRD_WAIT;clear();
+            WAIT_RETURN;clear();
             return -1;
         }
     }
@@ -919,7 +918,7 @@ int modify_board(int bid) {
     bhptr = getboard(bid);
     if(!bhptr){
         move(2,0);prints("错误的讨论区名称!");
-        EDITBRD_WAIT;clear();
+        WAIT_RETURN;clear();
         return -1;
     }
     memcpy(&bh,bhptr,sizeof(struct boardheader));
@@ -1750,13 +1749,12 @@ int modify_board(int bid) {
     bbslog("user","%s",buf);
     move(20,0);clrtoeol();
     move(20,2);prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
-    EDITBRD_WAIT;clear();
+    WAIT_RETURN;clear();
     return 0;
 }
 /*END - etnlegend,2005.07.01,修改讨论区属性*/
 
 //etnlegend,2005.09.18,查询系统记录分为发文查询和发信查询两个功能
-#define WAIT_RETURN while(igetkey()!=13)
 int searchtrace(void){
     struct userec *user;
     char buf[256],fn_buf[256],ans[4];

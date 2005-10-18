@@ -1171,56 +1171,14 @@ int read_showauthorinfo(struct _select_def* conf, struct fileheader* fh, void* e
     return FULLUPDATE;
 }
 
-int read_showauthorBM(struct _select_def* conf, struct fileheader* fh, void* extraarg)
-{
-    struct boardheader *bptr;
-    int tuid = 0;
-    int n;
+/* etnlegend, 2005.10.16, 查询版主更新 */
 
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+int read_showauthorBM(struct _select_def *conf,struct fileheader *fh,void *arg){
+    if(!HAS_PERM(getCurrentUser(),PERM_SYSOP))
         return DONOTHING;
-    } else {
-        struct userec *lookupuser;
-
-        if (!(tuid = getuser(fh->owner, &lookupuser))) {
-            clrtobot();
-            prints("不正确的使用者代号\n");
-            pressanykey();
-            move(2, 0);
-            clrtobot();
-            return FULLUPDATE;
-        }
-
-        move(3, 0);
-        if (!(lookupuser->userlevel & PERM_BOARDS)) {
-            clrtobot();
-            prints("用户%s不是版主!\n", lookupuser->userid);
-            pressanykey();
-            move(2, 0);
-            clrtobot();
-            return FULLUPDATE;
-        }
-        clrtobot();
-        prints("用户%s为以下版的版主\n\n", lookupuser->userid);
-
-        prints("┏━━━━━━━━━━━━━━━━┳━━━━━━━━━━━━━━━━┓\n");
-        prints("┃            版英文名            ┃            版中文名            ┃\n");
-
-        for (n = 0; n < get_boardcount(); n++) {
-            bptr = (struct boardheader *) getboard(n + 1);
-            if (chk_BM_instr(bptr->BM, lookupuser->userid) == true) {
-                prints("┣━━━━━━━━━━━━━━━━╋━━━━━━━━━━━━━━━━┫\n");
-                prints("┃%-32s┃%-32s┃\n", bptr->filename, bptr->title + 12);
-            }
-        }
-        prints("┗━━━━━━━━━━━━━━━━┻━━━━━━━━━━━━━━━━┛\n");
-        pressanykey();
-        move(2, 0);
-        clrtobot();
-        return FULLUPDATE;
-    }
+    return query_bm_core(fh->owner,false);
 }
-
+/* END - etnlegend, 2005.10.16, 查询版主更新 */
 
 int read_addauthorfriend(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
