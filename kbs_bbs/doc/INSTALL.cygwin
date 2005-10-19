@@ -15,7 +15,7 @@ automake-1.6.X         可选
 libtool-1.4.3          可选
 apache_1.3.X           可选      选择 web 界面支持才需要
   or apache2
-php > 4.2.0            可选      选择 web 界面支持才需要
+php >= 4.3.0           可选      选择 web 界面支持才需要
 libxml2                可选      选择 web 界面支持才需要
 libiconv               可选      选择 web 界面支持才需要
 zlib                   可选      选择 web 界面支持才需要

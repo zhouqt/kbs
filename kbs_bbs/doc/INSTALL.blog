@@ -47,7 +47,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     kbsbbs 1.1.1 版本或更高(支持web)；
     MySQL 3.x 或更高版本，建议使用 MySQL 4.x 版本；
     apache 1.3.x 或 apache 2.x；
-    php 4.2.0 或更高版本；
+    php 4.3.0 或更高版本；
 
 3. 全新安装
     通过 cvs 获得最新的kbsbbs代码(方法见 README.cvs 文档)，或是从 http://cvs.kcn.cn
