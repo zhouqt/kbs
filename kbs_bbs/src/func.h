@@ -375,6 +375,7 @@ void unlock_sem_check(int lockid);
     int malloc_write_dir_arg(struct write_dir_arg*filearg);
     void free_write_dir_arg(struct write_dir_arg*filearg);
 
+    
     /*加入置顶*/
     int add_top(struct fileheader* fileinfo,char* boardname,int flag);
     /*推荐文章*/
@@ -491,6 +492,13 @@ void unlock_sem_check(int lockid);
     int skip_attach_fgets(char* s,int size,FILE* stream);
     int put_attach(FILE* in, FILE* out, int size);
     int get_attachment_type(char *attachfilename);
+
+    /* etnlegend - 附件修改核心 */
+    long ea_dump(int fd_src,int fd_dst,long offset);
+    long ea_locate(int fd,struct ea_attach_info *ai);
+    long ea_append(int fd,struct ea_attach_info *ai,const char *fn);
+    long ea_delete(int fd,struct ea_attach_info *ai,int pos);
+    
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);
     typedef int (*RECORD_FUNC_ARG) (void *, void *);

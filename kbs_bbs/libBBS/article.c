@@ -2510,3 +2510,207 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         flock(dirarg->fd, LOCK_UN);
     return ret;
 }
+
+/* etnlegend - 修改附件核心 */
+long ea_dump(int fd_src,int fd_dst,long offset){
+    char buf[2048];
+    long length,ret,len;
+    void *p;
+    if(fd_src==fd_dst||offset<0)
+        return -1;
+    if(ftruncate(fd_dst,offset)==-1)
+        return -1;
+    lseek(fd_src,offset,SEEK_SET);
+    lseek(fd_dst,offset,SEEK_SET);
+    length=0;
+    do{                                             //复制文件
+        if((ret=read(fd_src,buf,2048*sizeof(char)))>0)
+            for(p=buf,len=ret;len>0&&ret!=-1;p+=ret,len-=ret)
+                length+=(ret=write(fd_dst,p,len));
+    }while(ret>0);
+    if(ret==-1)
+        return -1;
+    return length;
+}
+static long ea_parse(int fd,struct ea_attach_info *ai){
+    char buf[8],c;
+    int count,n;
+    long ret,length,end;
+    unsigned int size;
+    if(!ai)
+        return -2;
+    bzero(ai,MAXATTACHMENTCOUNT*sizeof(struct ea_attach_info));
+    count=0;length=lseek(fd,0,SEEK_CUR);
+    end=lseek(fd,0,SEEK_END);lseek(fd,length,SEEK_SET);
+    do{
+        if((ret=read(fd,buf,ATTACHMENT_SIZE*sizeof(char)))>0){
+            if(ret==ATTACHMENT_SIZE*sizeof(char)){
+                if(!memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE*sizeof(char))){
+                    ai[count].offset=length;        //当前附件段起始位置
+                    n=0;
+                    do{                             //当前附件文件名称
+                        if((ret=read(fd,&c,sizeof(char)))>0){
+                            if(ret==sizeof(char)){
+                                ai[count].name[n++]=c;
+                                if(!c||n>60)        //结束或达到附件文件名称长度限制 /* TODO: filenamename length - atppp*/
+                                    break;
+                            }
+                            else{
+                                if(lseek(fd,0,SEEK_CUR)==end)
+                                    break;
+                                else
+                                    lseek(fd,-ret,SEEK_CUR);
+                            }
+                        }
+                    }while(ret>0);
+                    if(ret==-1||!ret)
+                        break;
+                    do{                             //当前附件文件长度
+                        if((ret=read(fd,&size,sizeof(unsigned int)))>0){
+                            if(ret==sizeof(unsigned int)){
+                                ai[count].size=ntohl(size);
+                                ai[count].length=((ATTACHMENT_SIZE+n)*sizeof(char)+
+                                    sizeof(unsigned int)+ai[count].size);
+                                break;
+                            }
+                            else{
+                                if(lseek(fd,0,SEEK_CUR)==end)
+                                    break;
+                                else
+                                    lseek(fd,-ret,SEEK_CUR);
+                            }
+                        }
+                    }while(ret>0);
+                    if(ret==-1||(length+ai[count].length)>end||!(count<MAXATTACHMENTCOUNT))
+                        break;
+                    length=lseek(fd,ai[count].size,SEEK_CUR);count++;
+                }
+                else
+                    break;
+            }
+            else{
+                if(lseek(fd,0,SEEK_CUR)==end)
+                    break;
+                else
+                    lseek(fd,-ret,SEEK_CUR);
+            }
+        }
+    }while(ret>0);
+    if(ret==-1)
+        return -1;
+    return length;
+}
+long ea_locate(int fd,struct ea_attach_info *ai){
+    char c;
+    int n;
+    long ret,offset,end;
+    end=lseek(fd,0,SEEK_END);
+    n=0;lseek(fd,0,SEEK_SET);
+    do{                                             //定位附件标识 ATTACHMENT_PAD
+        if((ret=read(fd,&c,sizeof(char)))>0){
+            if(ret==sizeof(char)){
+                if(c==ATTACHMENT_PAD[n])
+                    n++;
+                else
+                    n=0;
+            }
+            else{
+                if(lseek(fd,0,SEEK_CUR)==end)
+                    break;
+                else
+                    lseek(fd,-ret,SEEK_CUR);
+            }
+        }
+    }while(ret>0&&n<ATTACHMENT_SIZE*sizeof(char));
+    if(ret==-1)
+        return -1;
+    offset=lseek(fd,-(n*sizeof(char)),SEEK_CUR);
+    ret=ea_parse(fd,ai);
+    if(ret==-1)
+        return -1;
+    if(!(ret<0)&&ret!=end&&ftruncate(fd,ret)==-1)
+        return -1;
+    return offset;
+}
+long ea_append(int fd,struct ea_attach_info *ai,const char *fn){
+    char buf[2048];
+    const char *base;
+    int fd_recv,count;
+    unsigned int size;
+    long ret,len,end;
+    void *p;
+    if(!ai)
+        return -1;
+    for(count=0;count<MAXATTACHMENTCOUNT&&ai[count].name[0];count++)
+        continue;
+    if(count==MAXATTACHMENTCOUNT)                         //已达到数量上限
+        return -1;
+    if((fd_recv=open(fn,O_RDONLY,0644))==-1)
+        return -1;
+    flock(fd_recv,LOCK_SH);
+    if(!(base=strrchr(fn,'/')))
+        base=fn;
+    else
+        base++;
+    sprintf(ai[count].name,"%-.60s",base);
+    end=lseek(fd_recv,0,SEEK_END);ai[count].size=(unsigned int)end;
+    ai[count].length=((ATTACHMENT_SIZE+strlen(ai[count].name)+1)*sizeof(char)
+        +sizeof(unsigned int)+ai[count].size);
+    lseek(fd_recv,0,SEEK_SET);ai[count].offset=lseek(fd,0,SEEK_END);
+    ret=0;
+    for(p=ATTACHMENT_PAD,len=ATTACHMENT_SIZE*sizeof(char);len>0&&ret!=-1;p+=ret,len-=ret)
+        ret=write(fd,p,len);                        //写入附件标识 ATTACHMENT_PAD
+    for(p=ai[count].name,len=(strlen(ai[count].name)+1)*sizeof(char);len>0&&ret!=-1;p+=ret,len-=ret)
+        ret=write(fd,p,len);                        //写入附件文件名称
+    for(size=htonl(end),p=&size,len=sizeof(unsigned int);len>0&&ret!=-1;p+=ret,len-=ret)
+        ret=write(fd,p,len);                        //写入附件文件大小(网络字节序)
+    while(ret>0){                                   //写入附件文件内容
+        if((ret=read(fd_recv,buf,2048*sizeof(char)))>0)
+            for(p=buf,len=ret;len>0&&ret!=-1;p+=ret,len-=ret)
+                ret=write(fd,p,len);
+    }
+    len=lseek(fd_recv,0,SEEK_CUR);
+    close(fd_recv);
+    if(ret==-1||len!=end){
+        bzero(&ai[count],sizeof(struct ea_attach_info));
+        if(ftruncate(fd,ai[count].offset)==-1)
+            return -2;
+        return -1;
+    }
+    return end;
+}
+long ea_delete(int fd,struct ea_attach_info *ai,int pos){
+    int count,n;
+    long ret,end;
+    void *p;
+    if(!ai)
+        return -1;
+    for(count=0;count<MAXATTACHMENTCOUNT&&ai[count].name[0];count++)
+        continue;
+    if(!count)                                      //无附件
+        return -1;
+    if(!(pos>0)||pos>count)                         //参数错误
+        return -1;
+    ret=ai[pos-1].size;
+    if(pos==count){                                 //最后位置的附件
+        if(ftruncate(fd,ai[pos-1].offset)==-1)
+            return -1;
+        bzero(&ai[pos-1],sizeof(struct ea_attach_info));
+    }
+    else{                                           //其它位置的附件
+        end=lseek(fd,0,SEEK_END);
+        p=mmap(NULL,end,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
+        if(p==(void*)-1)
+            return -1;
+        memmove(p+ai[pos-1].offset,p+ai[pos].offset,end-ai[pos].offset);
+        munmap(p,end);
+        if(ftruncate(fd,end-ai[pos-1].length)==-1)
+            return -2;
+        for(n=pos;n<count;n++)
+            ai[n].offset-=ai[pos-1].length;
+        memmove(&ai[pos-1],&ai[pos],(count-pos)*sizeof(struct ea_attach_info));
+        bzero(&ai[count-1],sizeof(struct ea_attach_info));
+    }
+    return ret;
+}
+/* 修改附件核心结束 */

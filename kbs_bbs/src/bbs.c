@@ -2465,7 +2465,7 @@ int add_attach(char* file1, char* file2, char* filename)
     int i;
     if(stat(file2, &st)==-1)
         return 0;
-    if(st.st_size>=2*1024*1024&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+    if(st.st_size>=MAXATTACHMENTSIZE&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
         unlink(file2);
         return 0;
     }
@@ -2997,7 +2997,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     strcpy(buf, arg->direct);
     if ((t = strrchr(buf, '/')) != NULL)
         *t = '\0';
-#ifndef LEEWARD_X_FILTER
+#if 0 /* #ifndef LEEWARD_X_FILTER removed by atppp */
     sprintf(genbuf, "/bin/cp -f %s/%s tmp/%d.editpost.bak", buf, fileinfo->filename, getpid()); /* Leeward 98.03.29 */
     system(genbuf);
 #endif
@@ -5829,6 +5829,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     flock(arg->fd,LOCK_EX);
     if (fromfirst) {
         /*走到第一篇*/
+        conf->new_pos=0; /* atppp 20051019 */
         apply_thread(conf,fh,fileheader_thread_read,false,false,(void*)SR_FIRST);
         if (conf->new_pos!=0)
             conf->pos=conf->new_pos;

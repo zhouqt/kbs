@@ -798,6 +798,227 @@ void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Ano
     return;
 }
 
+/*etnlegend, 2005.09.26, 编辑文章时提供操作附件接口*/
+#define EA_PER_PAGE 10                              //显示附件列表时分页大小
+#define EA_TMP_DIR "tmp"                            //临时文件目录
+static long edit_attach(char *fn){
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+    struct stat st;
+    char buf[256],fn_tmp[64],ans[4],*filename;
+    unsigned char loop,b_attach,u_sysop,changed;
+    int fd,fd_origin,count,page,n,choice;
+    long ret,size,offset;
+    if(!fn||!*fn)
+        return -1;
+    clear();
+    move(0,0);prints("\033[1;32m[操作附件]\033[m");
+    if(stat(fn,&st)||!S_ISREG(st.st_mode)){         //获取文件信息
+        move(3,0);prints("\033[1;31m获取文件信息时发生错误...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;clear();
+        return -2;
+    }
+    sprintf(fn_tmp,"%s/edit_attach.%d",EA_TMP_DIR,getpid());
+    if((fd=open(fn_tmp,O_RDWR|O_CREAT|O_TRUNC,0644))==-1){
+        move(3,0);prints("\033[1;31m创建临时文件时发生错误...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;clear();
+        return -3;
+    }
+    flock(fd,LOCK_EX);
+    if((fd_origin=open(fn,O_RDWR,0644))==-1){
+        close(fd);unlink(fn_tmp);
+        move(3,0);prints("\033[1;31m打开文件时发生错误...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;clear();
+        return -4;
+    }
+    flock(fd_origin,LOCK_SH);                       //共享锁定
+    ret=ea_dump(fd_origin,fd,0);                    //复制文件
+    flock(fd_origin,LOCK_UN);                       //解除锁定
+    if(ret==-1){                                    //发生错误
+        close(fd);close(fd_origin);unlink(fn_tmp);
+        move(3,0);prints("\033[1;31m复制文件时发生错误...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;clear();
+        return -5;
+    }
+    ret=ea_locate(fd,ai);                           //获取附件信息
+    if(ret==-1){
+        close(fd);close(fd_origin);unlink(fn_tmp);
+        move(3,0);prints("\033[1;31m读取文件时发生错误...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;clear();
+        return -6;
+    }
+    offset=ret;                                     //附件起始位置
+    for(size=0,count=0;count<MAXATTACHMENTCOUNT&&ai[count].name[0];count++)
+        size+=ai[count].size;
+    b_attach=((currboard->flag&BOARD_ATTACH)?1:0);  //当前版面是否允许上传附件
+    u_sysop=((getCurrentUser()->userlevel&PERM_SYSOP)?1:0);
+    if(!count&&!b_attach&&!u_sysop){
+        close(fd);close(fd_origin);unlink(fn_tmp);
+        move(3,0);prints("\033[1;33m当前文章无附件且当前版面不允许上传附件...\033[1;37m<Enter>\033[m");
+        WAIT_RETURN;clear();
+        return -7;
+    }
+    page=0;loop=1;changed=0;
+    while(loop){                                    //主循环
+        move(3,0);clrtobot();
+        if(!(count>EA_PER_PAGE))
+            sprintf(buf,
+                "\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%ld\033[1;36m 字节\033[m",
+                count,size);
+        else
+            sprintf(buf,
+                "\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%ld\033[1;36m 字节/第 \033[1;37m%d\033[1;36m 页\033[m",
+                count,size,page+1);
+        prints("\033[1;36m[当前文章附件列表: %s\033[1;36m]\033[m",buf);
+        for(n=0;n<EA_PER_PAGE&&(page*EA_PER_PAGE+n)<count;n++){
+            sprintf(buf,"\033[1;37m[%02d]: %-60.60s %7dB\033[m",page*EA_PER_PAGE+n+1,
+                ai[page*EA_PER_PAGE+n].name,ai[page*EA_PER_PAGE+n].size);
+            move(5+n,0);prints("%s",buf);           //显示当前分页的附件信息
+        }
+        sprintf(buf,                                //高亮显示可用选项
+            "\033[%d;33m(A)增加 \033[%d;33m(D)删除 \033[%d;33m(P|N)翻页 \033[1;33m(E)结束 \033[1;37m[E]: \033[m",
+            (!(count<MAXATTACHMENTCOUNT&&(b_attach||u_sysop))?0:1),(!count?0:1),(!(count>EA_PER_PAGE)?0:1));
+        getdata(6+n,0,buf,ans,2,DOECHO,NULL,true);
+        switch(ans[0]){
+            case 'a':                               //增加附件
+            case 'A':
+                if(!(count<MAXATTACHMENTCOUNT&&(b_attach||u_sysop))){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;36m当前文章无法增加附件...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                if(chdir(EA_TMP_DIR)==-1){          //切换工作目录到临时目录
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m切换到临时目录失败...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                filename=bbs_zrecvfile();           //上传附件
+                if(chdir(BBSHOME)==-1){             //切换工作目录回 BBS 主目录
+                    close(fd);close(fd_origin);
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m致命错误: 切换到 BBS 主目录失败...\033[m");
+                    abort_bbs(0);                   //断线
+                }
+                if(!filename||!*filename){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;33m取消...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                sprintf(buf,"%s/%s",EA_TMP_DIR,filename);
+                *filename=0;                        //解决一个显示问题
+                if(stat(buf,&st)||!S_ISREG(st.st_mode)){
+                    unlink(buf);
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m附件文件上传失败...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                if((size+st.st_size)>MAXATTACHMENTSIZE&&!u_sysop){
+                    unlink(buf);
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;33m该附件超出当前文章附件大小限制...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                ret=ea_append(fd,ai,buf);unlink(buf);
+                if(ret==-2){
+                    close(fd);close(fd_origin);unlink(fn_tmp);
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m致命错误: 截取文件失败...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;clear();
+                    return -8;
+                }
+                if(ret==-1||ret!=st.st_size){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m写入文件时发生错误...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                move(6+n,0);clrtoeol();
+                prints("\033[1;32m上载附件 %s 成功!\033[1;37m<Enter>\033[m",ai[count].name);
+                WAIT_RETURN;
+                size+=ret;count++;
+                changed++;
+                break;
+            case 'd':                               //删除附件
+            case 'D':
+                if(!count){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;36m当前文章无法删除附件...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                sprintf(buf,
+                    "\033[1;33m请输入欲删除的附件序号 \033[1;31m[%02d]: \033[m",
+                    count);                         //默认为删除最后一个附件
+                getdata(6+n,0,buf,ans,3,DOECHO,NULL,true);
+                choice=(!ans[0]?count:atoi(ans));
+                if(!(choice>0)||choice>count){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m输入非法...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                sprintf(buf,
+                    "\033[1;33m删除 \033[1;31m[%02d] %s \033[1;37m[N]: \033[m",
+                    choice,ai[choice-1].name);
+                getdata(6+n,0,buf,ans,2,DOECHO,NULL,true);
+                if(!(ans[0]=='y'||ans[0]=='Y'))     //取消
+                    break;
+                ret=ea_delete(fd,ai,choice);
+                if(ret==-2){
+                    close(fd);close(fd_origin);unlink(fn_tmp);
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m致命错误: 截取文件失败...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;clear();
+                    return -9;
+                }
+                if(ret==-1){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;31m写入文件时发生错误...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                move(6+n,0);clrtoeol();
+                prints("\033[1;32m删除成功!\033[1;37m<Enter>\033[m");
+                WAIT_RETURN;
+                size-=ret;count--;
+                if(page>0&&!(count>page*EA_PER_PAGE))
+                    page--;                         //自动调整分页
+                changed++;
+                break;
+            case 'p':                               //向前翻页
+            case 'P':
+                if(!page){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;36m当前位置无法向前翻页...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                page--;
+                break;
+            case 'n':                               //向后翻页
+            case 'N':
+                if(!(count>(page+1)*EA_PER_PAGE)){
+                    move(6+n,0);clrtoeol();
+                    prints("\033[1;36m当前位置无法向后翻页...\033[1;37m<Enter>\033[m");
+                    WAIT_RETURN;break;
+                }
+                page++;
+                break;
+            default:                                //结束操作
+                loop=0;
+                break;
+        }
+    }
+    if(changed){
+        flock(fd_origin,LOCK_EX);                   //独享锁定
+        ret=ea_dump(fd,fd_origin,0);                //回写
+        if(ret==-1){
+            close(fd);close(fd_origin);unlink(fn_tmp);
+            move(8+n,0);prints("\033[1;31m写入文件时发生错误...\033[1;37m<Enter>\033[m");
+            WAIT_RETURN;clear();
+            return -10;
+        }
+    }
+    close(fd);close(fd_origin);unlink(fn_tmp);clear();
+    return (!count?0:offset);
+}
+#undef EA_PER_PAGE
+#undef EA_TMP_DIR
+
 int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, long attach_length, int add_loginfo)
 {
     struct textline *p = firstline;
@@ -805,6 +1026,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
     char abort[6];
     int aborted = 0;
     int temp;
+    int do_edit_attach=0;
     long sign_size;
     int ret=0;
     extern char quote_title[120], quote_board[120];
@@ -844,9 +1066,21 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
             strcpy(p_buf, NAME_BBS_NICK " Internet 信笺：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");      /* Leeward 98.01.17 Prompt whom you are writing to */
         /*    sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser->userid ); 
            Leeward 98.01.17 Prompt whom you are writing to */
+        else if(uinfo.mode==EDIT)
+            sprintf(p_buf,"%s","(S)储存档案, (F)自动换行发表, (A)放弃编辑, (E)继续编辑, (C)操作附件? [S]: ");
+            /*
+             *  etnlegend, 2005.09.26, 编辑文章时提供操作附件接口
+             *  输入 C 的情况在本函数其后的处理中完全等同于输入 S 的情况
+             *  即对文章的文本内容的修改将保存并产生修改标记(如果定义了的话)
+             *  仅在函数末尾时调用 edit_attach 函数来实现附件的操作
+             */
         else
             strcpy(p_buf, "(S)储存档案, (F)自动换行存储, (A)放弃编辑, (E)继续编辑? [S]: ");
         ret = valid_article(p_buf, abort);
+        if((uinfo.mode==EDIT)&&(abort[0]=='c'||abort[0]=='C')){
+            do_edit_attach=1;
+            abort[0]=0;
+        }
         if (abort[0] == '\0') {
             if (local_article == 0)
                 abort[0] = 's';
@@ -1104,6 +1338,12 @@ fsdfa
             temp_numposts++;
         if (temp_numposts > 20)
             Net_Sleep((temp_numposts - 20) * 1 + 1);
+    }
+    if(do_edit_attach){
+        long offset;
+        offset=edit_attach(filename);
+        if(!(offset<0)&&pattachpos)
+            *pattachpos=offset;
     }
     return aborted;
 }

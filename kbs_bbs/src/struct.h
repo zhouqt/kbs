@@ -526,3 +526,12 @@ struct super_filter_query_arg {
     char *write_file;          /* 符合条件的 fh 写入的文件，可以为 NULL */
 };
 
+/* 修改附件接口 etnlegend */
+struct ea_attach_info{
+    char name[64];                                  //附件文件名称(应不超过 60 字符)
+    long offset;                                    //附件段起始位置(相对于 SEEK_SET)
+    long length;                                    //附件段长度
+    unsigned int size;                              //附件文件长度
+};
+
+
