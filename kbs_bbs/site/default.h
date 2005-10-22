@@ -774,6 +774,11 @@ attach define
 #define MAXATTACHMENTCOUNT	20
 #endif
 
+#ifndef MAXATTACHMENTSIZE
+#define MAXATTACHMENTSIZE 5*1024*1024                     //文章附件文件长度上限
+#endif
+
+
 #ifndef WWW_PAGE_SIZE //www的每页条目数
 #define WWW_PAGE_SIZE 20
 #endif
