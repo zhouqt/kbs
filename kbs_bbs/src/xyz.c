@@ -1321,7 +1321,7 @@ int show_fhselect(struct _select_def *conf, int i)
     if (i == conf->item_count - 1) {
         prints("%c. 退出 ", 'A' + i);
     } else if (!(arg->basic & (1 << i))) {
-    	prints("%c. \033[36;1m%-27s\033[m", 'A' + i, fh_select[i].desc);
+    	prints("%c. \033[30;1m%-27s:DENY\033[m", 'A' + i, fh_select[i].desc);
     } else if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
         prints("%c. %-27s \033[31;1m%3s\033[m", 'A' + i, fh_select[i].desc, ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
     } else {
@@ -1343,6 +1343,8 @@ int fhselect_select(struct _select_def *conf)
     return SHOW_REFRESHSELECT;
 }
 
+#include "read.h"
+
 int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
 {
     int i;
@@ -1357,6 +1359,8 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
 	if (arg->mode!=DIR_MODE_NORMAL) {
         return DONOTHING;
     }
+	if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
+        return DONOTHING;
     
 	oldmode = uinfo.mode;
     modify_user_mode(USERDEF);
@@ -1373,8 +1377,9 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
     move(1, 0);
     clrtobot();
     move(2, 0);
+	prints("\033[1;31m修改文章属性:\033[m \033[1;33m%s\033[m", fh->title);
     newlevel = setperms(oldlevel, perms, "参数", FH_SELECT_NUM, show_fhselect, fhselect_select);
-    move(2, 0);
+    move(22, 0);
     if ((newlevel & perms) == (oldlevel & perms))
         prints("参数没有修改...\n");
     else {
@@ -1387,9 +1392,13 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
     init_write_dir_arg(&dirarg);
     dirarg.fd=arg->fd;
     dirarg.ent = conf->pos;
-    if (prepare_write_dir(&dirarg, fh, currmode) == 0){
+    if (prepare_write_dir(&dirarg, fh, arg->mode) == 0){
     	originFh = dirarg.fileptr + (dirarg.ent - 1);
     	memcpy(originFh, fh, sizeof(struct fileheader));
+
+    	if (dirarg.needlock)
+        	flock(dirarg.fd, LOCK_UN);
+
     	free_write_dir_arg(&dirarg);
         prints("新的参数设定完成...\n\n");
     }else{
