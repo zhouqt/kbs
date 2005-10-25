@@ -1276,3 +1276,130 @@ int kick_all_user()
 	pressanykey();
     return 1;
 }
+
+static int perm_mailback(struct fileheader *fh)
+{
+	if (!isowner(getCurrentUser(), fh)) {
+		return 0;
+	}else
+		return 1;
+}
+static int set_mailback(struct fileheader *fh, int i)
+{
+	if(i==0){
+		fh->accessed[1] &= ~FILE_MAILBACK;
+	}else{
+		fh->accessed[1] |= FILE_MAILBACK;
+	}
+	return 1;
+}
+static int get_mailback(struct fileheader *fh)
+{
+	if(fh->accessed[1] & FILE_MAILBACK)
+		return 1;
+	else
+		return 0;
+}
+
+#define FH_SELECT_NUM 1
+static struct _fh_select
+{
+	char *desc;
+	int (*have_perm) (struct fileheader *);
+	int (*set) (struct fileheader *, int);
+	int (*get) (struct fileheader *);
+} fh_select[FH_SELECT_NUM] = 
+{
+	{"回文转寄到信箱", perm_mailback, set_mailback, get_mailback}
+};
+
+int show_fhselect(struct _select_def *conf, int i)
+{
+	struct _setperm_select *arg = (struct _setperm_select *) conf->arg;
+
+    i = i - 1;
+    if (i == conf->item_count - 1) {
+        prints("%c. 退出 ", 'A' + i);
+    } else if (!(arg->basic & (1 << i))) {
+    	prints("%c. \033[36;1m%-27s\033[m", 'A' + i, fh_select[i].desc);
+    } else if ((arg->pbits & (1 << i)) != (arg->oldbits & (1 << i))) {
+        prints("%c. %-27s \033[31;1m%3s\033[m", 'A' + i, fh_select[i].desc, ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+    } else {
+        prints("%c. %-27s \x1b[37;0m%3s\x1b[m", 'A' + i, fh_select[i].desc, ((arg->pbits >> i) & 1 ? "ON" : "OFF"));
+    }
+    return SHOW_CONTINUE;
+}
+
+int fhselect_select(struct _select_def *conf)
+{
+    struct _setperm_select *arg = (struct _setperm_select *) conf->arg;
+
+    if (conf->pos == conf->item_count)
+        return SHOW_QUIT;
+    if (!(arg->basic & ( 1 << (conf->pos - 1)))){
+    	return SHOW_CONTINUE;
+    }
+    arg->pbits ^= (1 << (conf->pos - 1));
+    return SHOW_REFRESHSELECT;
+}
+
+int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
+{
+    int i;
+    unsigned int oldlevel=0;
+    unsigned int perms=0;
+    unsigned int newlevel;
+    int oldmode;
+    struct write_dir_arg dirarg;
+    struct read_arg* arg=(struct read_arg*)conf->arg;
+    struct fileheader *originFh;
+    
+	if (arg->mode!=DIR_MODE_NORMAL) {
+        return DONOTHING;
+    }
+    
+	oldmode = uinfo.mode;
+    modify_user_mode(USERDEF);
+    
+    for(i=0; i<FH_SELECT_NUM; i++){
+    	if(fh_select[i].have_perm==NULL || fh_select[i].have_perm(fh)){
+    		perms |= (1<<i);
+    		if(fh_select[i].get(fh)){
+    			oldlevel |= (1<<i);
+    		}
+    	}
+    }
+    
+    move(1, 0);
+    clrtobot();
+    move(2, 0);
+    newlevel = setperms(oldlevel, perms, "参数", FH_SELECT_NUM, show_fhselect, fhselect_select);
+    move(2, 0);
+    if ((newlevel & perms) == (oldlevel & perms))
+        prints("参数没有修改...\n");
+    else {
+        for(i=0; i<FH_SELECT_NUM; i++){
+        	if((perms & (1<<i)) && ( (oldlevel & (1<<i)) != (newlevel & (1<<i)) ) ){
+        		fh_select[i].set(fh, newlevel & (1<<i));
+        	}
+        }
+        
+    init_write_dir_arg(&dirarg);
+    dirarg.fd=arg->fd;
+    dirarg.ent = conf->pos;
+    if (prepare_write_dir(&dirarg, fh, currmode) == 0){
+    	originFh = dirarg.fileptr + (dirarg.ent - 1);
+    	memcpy(originFh, fh, sizeof(struct fileheader));
+    	free_write_dir_arg(&dirarg);
+        prints("新的参数设定完成...\n\n");
+    }else{
+		free_write_dir_arg(&dirarg);
+		prints("系统错误，失败...\n");
+	}
+
+    }
+    pressreturn();
+    modify_user_mode(oldmode);
+    return FULLUPDATE;
+}
+
