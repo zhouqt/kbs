@@ -385,7 +385,7 @@ outofhere:
         unlink(buf);
     }
     clear();
-    uinfo.mode = oldmode;
+    modify_user_mode(oldmode);
 //    R_monitor(NULL);
     return 0;
 }
