@@ -871,18 +871,22 @@ static PHP_FUNCTION(bbs_checkpasswd)
     else {
         if (s[0] == 0)
             user = getCurrentUser();
-        if (ismd5) {
-            ismd5 = !(memcmp(pw, user->md5passwd, MD5PASSLEN));
-        } else {
-            ismd5 = checkpasswd2(pw, user);
-        }
-        if (ismd5) {
-            ret = 0;
-            if (s[0] != 0)
-                setcurrentuser(user, unum);
+        if (user) {
+            if (ismd5) {
+                ismd5 = !(memcmp(pw, user->md5passwd, MD5PASSLEN));
+            } else {
+                ismd5 = checkpasswd2(pw, user);
+            }
+            if (ismd5) {
+                ret = 0;
+                if (s[0] != 0)
+                    setcurrentuser(user, unum);
+            } else {
+                ret = 1;
+                logattempt(user->userid, getSession()->fromhost);
+            }
         } else {
             ret = 1;
-            logattempt(user->userid, getSession()->fromhost);
         }
     }
     RETURN_LONG(ret);
