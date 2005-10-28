@@ -7,7 +7,7 @@ show_nav();
 function getAllBoards() {
 	global $yank;
 	$allBoards = array();
-	$boards = bbs_getboards("*", $group, $yank | 2 | 4);
+	$boards = bbs_getboards("*", 0, $yank | 2 | 4);
 	if ($boards != FALSE) {
 		$brd_desc = $boards["DESC"];
 		$brd_name = $boards["NAME"];

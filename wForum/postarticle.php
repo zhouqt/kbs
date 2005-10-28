@@ -32,6 +32,7 @@ function preprocess(){
 	global $loginok;
 	global $reID;
 	global $reArticles;
+	global $dir_modes;
 	if (!isset($_GET['board'])) {
 		foundErr("未指定版面。");
 	}
@@ -167,7 +168,7 @@ function showPostArticles($boardID,$boardName,$boardArr,$reID,$reArticles){
 ?>
 <textarea class=smallarea cols=95 name=Content id="oArticleContent" rows=12 wrap=VIRTUAL title="IE中可以使用Ctrl+Enter直接提交贴子" class=FormClass onkeydown=ctlent()>
 <?php
-    if (($reID > 0) && ($_GET['quote']==1 || OLD_REPLY_STYLE)){
+    if (($reID > 0) && (@$_GET['quote']==1 || OLD_REPLY_STYLE)){
     	$isquote = ($_GET['quote']==1) && ENABLE_UBB;
 		$filename = $reArticles[1]["FILENAME"];
 		$filename = "boards/" . $boardName. "/" . $filename;

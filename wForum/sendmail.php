@@ -174,6 +174,7 @@ function main() {
 					}
 					$prefix = ": ";
 				}
+				$lines = 0;
 				while (1) {
 					if (($buf = fgets($fp,5000)) == FALSE)
 						break;

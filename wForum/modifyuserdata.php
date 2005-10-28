@@ -104,9 +104,9 @@ function main(){
 <?php 
 	for($i=0;$i<count($groups);$i++) {
 		echo "<option value=\"".$i."\"";
-		if ($currentuser['groups']==$i){
+/*		if ($currentuser['groups']==$i){
 			echo " selected ";
-		}
+		} TODO: ?? */
 		echo ">".$groups[$i]."</option>";
 	}
 ?>

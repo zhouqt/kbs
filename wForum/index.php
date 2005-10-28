@@ -50,8 +50,8 @@ function showAllSecs(){
 function showTitle() {
 	global $dir_modes;
 	$boardID=bbs_getboard('newcomers');
-	$num=bbs_countarticles($boardID, $dir_modes['normal']);
-	$user=bbs_getarticles("newcomers",$num,1,$dir_modes['normal']);
+	$num=bbs_countarticles($boardID, $dir_modes['NORMAL']);
+	$user=bbs_getarticles("newcomers",$num,1,$dir_modes['NORMAL']);
 ?>
 <TR><TD style="line-height: 20px;">
 欢迎新加入会员 <a href=dispuser.php?id=<?php echo $user[0]['OWNER']; ?> target=_blank><b><?php echo $user[0]['OWNER']; ?></b></a>&nbsp;[<a href="board.php?name=newcomers">新进来宾</a>]

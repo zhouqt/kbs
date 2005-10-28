@@ -32,6 +32,7 @@ function preprocess(){
 	global $loginok;
 	global $reID;
 	global $reArticles;
+	global $dir_modes;
 	if (!isset($_GET['board'])) {
 		foundErr("Œ¥÷∏∂®∞Ê√Ê°£");
 	}

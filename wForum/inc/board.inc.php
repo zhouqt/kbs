@@ -198,9 +198,6 @@ function board_head_var($boardDesc,$boardName,$secCode)
   GLOBAL $SiteName;
   GLOBAL $stats;
   global $section_names;
-  if ($URL=='') {
-	  $URL=$_SERVER['PHP_SELF'];
-  }
   $secIndex = get_secname_index($secCode);
 ?>
 <table cellspacing="1" cellpadding="3" align="center" class="TableBorder2">
