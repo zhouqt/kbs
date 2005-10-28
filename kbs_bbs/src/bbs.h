@@ -121,11 +121,6 @@ typedef enum { false = 0, true = 1 } bool;
 #endif
 #endif
 
-#ifdef HAVE_IPV6_SMTH
-#define IPLEN   46              /* Length of most string data */
-#else
-#define IPLEN   16
-#endif
 #define IDLEN    12             /* Length of userids */
 #define OLDPASSLEN  14          /* Length of encrypted passwd field */
 #define STRLEN   80             /* Length of most string data */
@@ -137,6 +132,14 @@ typedef enum { false = 0, true = 1 } bool;
 
 #include "site.h"
 #include "default.h"
+
+#ifndef IPLEN
+#ifdef HAVE_IPV6_SMTH
+#define IPLEN   46              /* Length of most string data */
+#else
+#define IPLEN   16
+#endif
+#endif
 
 #define PUBLIC_SHMKEY	3700
 /*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要

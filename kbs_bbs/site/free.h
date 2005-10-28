@@ -277,6 +277,7 @@ bigger mailbox. --stephen 2001.10.31*/
 #define UL_SWITCH_FRIEND_LOWER 'f'
 
 #define OWN_USEREC 1
+#define IPLEN 16
 struct userec {                 /* Structure used to hold information in */
     char userid[IDLEN + 2];     /* PASSFILE */
     char flags; /*一些标志，戒网，版面排序之类的*/
