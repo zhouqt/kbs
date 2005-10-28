@@ -1,0 +1,333 @@
+body {
+	padding: 0 0.3em 1em 0;
+	margin: 0;
+	text-align: center;
+}
+
+body, textarea, input, td {
+   font-size: 14px;
+   font-family: ËÎÌו;
+}
+
+a:link, .clickable {
+	color: #006699;
+	text-decoration: none;
+	cursor: pointer;
+}
+a:active {
+	color: #006699;
+	text-decoration: underline;
+}
+a:visited {
+	color: #5493b4;
+	text-decoration: none;
+}
+a:hover {
+	color: #dd6900;
+	text-decoration: underline;
+}
+
+img {
+	border: 0;
+}
+
+pre {
+	margin: 0;
+}
+
+form {
+	margin: 0 auto;
+}
+
+input:focus {
+	background-color: #80FFFF;
+}
+textarea, input[type="text"], input[type="password"] {
+	border: 1px solid black;
+	padding: 0.1em 0.2em;
+}
+input[type="button"], input[type="submit"], input[type="reset"] {
+	/* border: 1px solid black; */
+	padding: 0 0.5em;
+}
+textarea {
+	width: 40em;
+	height: 20em;
+}
+textarea.shorter {
+	height: 5em;
+}
+
+
+fieldset {
+	border-color: black;
+	border: 1px solid #8080FF;
+	padding: 0 0.5em 0.5em 0.5em;
+	margin: 0.5em auto 0 auto;
+}
+fieldset legend {
+	padding: 0.5em;
+}
+
+.center {
+	text-align: center;
+}
+.right {
+	text-align: right;
+}
+.left {
+	text-align: left;
+}
+.wide {
+	width: 98%;
+}
+.fleft {
+	float: left;
+}
+.fright {
+	float: right;
+}
+.flimg {
+	float: left;
+	margin: 0 0.5em 0 0;
+}
+.smaller {
+	font-size: 85%;
+}
+.clear {
+	clear: both;
+}
+.strong {
+	font-weight: bold;
+}
+.normal {
+	font-weight: normal;
+}
+.red {
+	color: red;
+}
+.green {
+	color: green;
+}
+.gray {
+	color: gray;
+}
+
+h1.bt { /* board title */
+	font-size: 150%;
+	margin: -0.2em auto -0.2em auto;
+	padding: 0;
+	width: 100%;
+	text-align: center;
+}
+
+#postimg {
+	position: absolute;
+	top: 2.2em;
+	left: 1%;
+}
+
+#divNav { /* navigation bar on the top */
+	font-size: 85%;
+	padding: 0 0 0 1em;
+	margin: 0.2em 0 0.4em 0;
+/*
+	border-bottom: 2px solid #6487DC;
+	border-left: 1px solid #6487DC;
+*/
+	background-color: #eeeeee;
+	text-align: left;
+	height: 1.1em;
+}
+
+#msgs {
+	width: 100%;
+	text-align: left;
+	background-color: #f0ffd0;
+	height: 100%;
+}
+
+div.warning {
+	text-align: center;
+	padding-top: 3em;
+	width: 100%;
+	color: red;
+	font-weight: bold;
+}
+div.main { /* main content area */
+	text-align: left;
+	padding: 5px;
+	margin: 0px auto;
+	display: table;
+}
+table.main {
+	text-align: left;
+	margin: 5px auto;
+	border: 1px solid black;
+	border-collapse: collapse;
+	display: table;
+}
+table.main caption {
+	margin: 0 auto;
+	font-weight: bold;
+}
+table.main td {
+	border: 1px solid gray;
+	padding: 0.15em 0.5em;
+}
+table.main tr.odd {
+    background-color: #f0f0f0;
+}
+table.main tr.even {
+    background-color: white;
+}
+table.main th {
+	text-align: center;
+	background-color: #8080FF;
+	color: white;
+	font-weight: normal;
+	font-size: 85%;
+	border: 1px solid gray;
+	padding: 0.2em 0.5em;
+}
+table.main col {
+	text-align: left;
+}
+
+
+div.oper { /* operation link area */
+	text-align: center;
+	padding: 1em 0;
+	line-height: 1.5em;
+}
+div.boper { /* board operation */
+	text-align: right;
+	width: 98%;
+	font-size: 85%;
+	margin-top: 0.5em;
+	margin-bottom: -0.4em;
+}
+div.bpage { /* board page/post/reply control */
+	width: 98%;
+	font-size: 85%;
+	margin: 0 auto;
+	padding: 0;
+	text-align: right;
+	display: table;
+}
+div.toper { /* bbstcon.php */
+	width: 98%;
+	border: 1px solid #8080FF;
+	margin: 0.1em auto -0.1em auto;
+	text-align: left;
+	padding: 0.2em 0.5em;
+	font-size: 85%;
+	background-color: #8080FF;
+	color: white;
+	position: relative;
+}
+div.toper a, div.toper a:active, div.toper a:visited, div.toper a:hover {
+	color: white;
+}
+div.toper .tnum {
+	font-weight: bold;
+	position: absolute;
+	top: 0.2em;
+	right: 0.5em;
+}
+div.tnav {
+	background-color: #E0E0E0;
+	padding: 0.2em 0.5em;
+	margin: 0.9em 0 0 -0.3em;
+	text-align: left;
+	font-size: 85%;
+}
+
+span.bpagetext { /* bbscon.php adjustment. img always sucks */
+	position: relative;
+	top: 0.5em;
+}
+
+form.small, div.small {
+	text-align: left;
+	margin: 0px auto;
+	width: 20em;
+}
+form.large, div.large {
+	text-align: left;
+	margin: 0px auto;
+	width: 42em;
+}
+form.medium, div.medium {
+	text-align: left;
+	margin: 0px auto;
+	width: 30em;
+}
+
+
+form div.inputs {
+	line-height: 2em;
+}
+form div.inputs label {
+	text-align: right;
+	padding-right: 2em;
+}
+form div.inputs br {
+	clear: both;
+}
+form.align div.inputs label {
+	width: 50%;
+	float: left;
+}
+
+
+body.footer { /* bbsfoot.php */
+	padding: 0.2em 0.5em;
+	margin: 0;
+	text-align: left;
+}
+
+div.article {
+	width: 98%;
+	border: 1px solid #8080FF;
+	margin: 0.1em auto;
+	text-align: left;
+	line-height:1.2em;
+	word-wrap:break-word;
+	word-break:break-all;
+	padding: 0.2em 0.5em;
+	background-color: #F7F7F7;
+}
+div.article h2 {
+	background-color: #8080FF;
+	width: 100%;
+	color: white;
+	text-align: center;
+	margin: 0;
+	font-size: 100%;
+	line-height: 1.4em;
+}
+
+div.float {
+	position: absolute;
+	border: 3px outset #8080FF;
+}
+
+
+font.f006 {color: #00b4ae;}
+font.f001 {color: #e87874;} /* bbsxsearch.php might use it */
+.b3 {font-weight: bolder;color: #CC3300;text-decoration: none;} /* /brelated/ */
+
+#checkframe {
+	position: fixed !important;
+	position: absolute;
+	top: 1.2em;
+	right: 0;
+	z-index: 10;
+	font-weight: bold;
+	background-color: yellow;
+	padding: 0.2em 0.5em;
+	border: 1px solid blue;
+	filter: alpha(opacity=60);
+	-moz-opacity:.60;
+}
