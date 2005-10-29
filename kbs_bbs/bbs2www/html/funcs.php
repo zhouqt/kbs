@@ -268,6 +268,7 @@ function gmt_date_format($t) {
 
 function error_alert($msg)
 {
+	cache_header("nocache");
 ?>
 <SCRIPT language="javascript">
 window.alert(<?php echo "\"$msg\""; ?>);
@@ -283,6 +284,7 @@ function error_nologin()
 	setcookie("UTMPUSERID","",time() - 3600,"");
 	setcookie("LOGINTIME","",time() - 3600,"");
 	setcookie("WWWPARAMS","",time() - 3600,"");
+	cache_header("nocache");
 ?>
 <SCRIPT language="javascript">
 window.location="/nologin.html";

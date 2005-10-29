@@ -7,7 +7,7 @@ if ($loginok != 1)
 	html_nologin();
 	exit();
 }
-
+cache_header("nocache");
 if(!strcmp($currentuser["userid"],"guest"))
 {
 	header("Location: ".MAINPAGE_FILE);
