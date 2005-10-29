@@ -140,7 +140,7 @@ function generate_rss_contents($boardID, $boardName, $includeDesc, $lw) {
 			$item["author"] = $origin['OWNER'];
 			$item["pubDate"] = gmdate("D, d M Y H:i:s", $origin['POSTTIME']) . " GMT";
 			$item["guid"] = $SiteURL."bbscon.php?bid=".$boardID."&amp;id=".$origin['ID'];
-			$item["comments"] = $SiteURL."disparticle.php?boardName=".$boardname."&amp;ID=".$origin['ID'];
+			$item["comments"] = $SiteURL."disparticle.php?boardName=".$boardName."&amp;ID=".$origin['ID'];
 			if ($includeDesc) {
 				$filename = bbs_get_board_filename($boardName, $origin["FILENAME"]);
 				$contents = bbs_printansifile($filename,1,$conurl, 0, 0);
