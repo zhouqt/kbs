@@ -30,9 +30,7 @@ F.A.Q.）。本文档是专门针对 kbsbbs 系统写的一个安装过程参考。
 #define CNBBS_TOPIC 1   /*1就是进站显示 cn-bbs 十大，0就是不显示*/
 
 1.3 重新编译安装 kbsbbs
-    在 kbsbbs 源代码根目录 configure 的时候加上 --enable-innbbsd 参数。
-如果要偷懒，可以直接在 innbbsd/ 目录里面运行 ./configure --prefix=你的bbs主目录。
-然后
+    在 kbsbbs 源代码根目录 configure 的时候加上 --enable-innbbsd 参数。然后
     make
     make install
 这样就安装完了~:0 现在开始配置。
