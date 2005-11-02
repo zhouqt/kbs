@@ -285,10 +285,8 @@ static PHP_FUNCTION(bbs_unregister_sms);
 static PHP_FUNCTION(bbs_csv_to_al);
 #endif
 
-#ifdef AJAX
 static PHP_FUNCTION(bbs2_readfile);
 static PHP_FUNCTION(bbs2_readfile_text);
-#endif
 
 /*
  * define what functions can be used in the PHP embedded script
@@ -449,10 +447,9 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_x_search,third_arg_force_ref_001)
     PHP_FE(bbs_read_ann_dir,fourth_arg_force_ref_0111)
 
-#ifdef AJAX
     PHP_FE(bbs2_readfile, NULL)
     PHP_FE(bbs2_readfile_text, NULL)
-#endif
+
     {NULL, NULL, NULL}
 };
 
@@ -3829,21 +3826,8 @@ static PHP_FUNCTION(bbs_wwwlogoff)
 
 static PHP_FUNCTION(bbs_getwwwparameters)
 {
-	zval *wwwparameters;
 	FILE* fn;
 	char  buf[1024];
-	
-	int ac = ZEND_NUM_ARGS();
-	
-	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "z" , &wwwparameters ) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	if (!PZVAL_IS_REF(wwwparameters))
-	{
-        	zend_error(E_WARNING, "Parameter wasn't passed by reference");
-        	RETURN_FALSE;
-    	}
 	
 	sethomefile(buf,getCurrentUser()->userid,"www");
     if ((fn=fopen(buf,"r"))==NULL) {
@@ -3852,8 +3836,7 @@ static PHP_FUNCTION(bbs_getwwwparameters)
         fgets(buf,1024,fn);
         fclose(fn);
     }
-	ZVAL_STRING(wwwparameters,buf,1);
-	RETURN_LONG(0);
+	RETURN_STRING(buf,1);
 }
 
 static PHP_FUNCTION(bbs_setwwwparameters)
@@ -9013,7 +8996,6 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 	RETURN_LONG(retnum);
 }
 
-#ifdef AJAX
 /*
  * refer Ecma-262 
  * '\033'  -> \r (not exactly the same thing, but borrow...)
@@ -9277,5 +9259,5 @@ PHP_FUNCTION(bbs2_readfile_text)
 
     RETVAL_STRINGL(output_buffer, last_return, 0);
 }
-#endif
+
 
