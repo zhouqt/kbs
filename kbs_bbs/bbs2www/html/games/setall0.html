@@ -1,0 +1,229 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
+<link rel="stylesheet" type="text/css" href="/bbs.css">
+<style type="text/css">
+.intro { text-align:center font-size:10pt; font-style:italic }
+.heading { font-size:14pt; font-weight:bold; font-family:sans-serif }
+.title { font-size:18pt; font-weight:bold; background-color:navy; color:white; text-align:center; font-family:sans-serif }
+</style>
+<title>休闲娱乐－清零游戏</title>
+
+<!-- THREE STEPS TO INSTALL BUTTON MANIA:
+
+
+
+  1.  Copy the coding into the HEAD of your HTML document
+
+  2.  Add the onLoad event handler into the BODY tag
+
+  3.  Put the last coding into the BODY of your HTML document  -->
+
+
+
+<!-- STEP ONE: Paste this code into the HEAD of your HTML document  -->
+
+
+
+<HEAD>
+
+
+
+<style type="text/css">
+
+<!--
+
+body { background-color: #EEEEEE; color: black }
+
+a { font-weight: bold }
+
+a:link { background-color: #EEEEEE; color: blue }
+
+a:visited { background-color: #EEEEEE; color: blue }
+
+a:active { background-color: #EEEEEE; color: blue }
+
+a:hover { background-color: white; color: maroon}
+
+input { font-family: monospace; font-size: 24px; border-left: 10px; border-right: 10px; border-color: silver; border-style: double }
+
+-->
+
+</style>
+
+<SCRIPT LANGUAGE="JavaScript">
+
+
+
+<!-- This script and many more are available free online at -->
+
+<!-- The JavaScript Source!! http://javascript.internet.com -->
+
+<!-- Original:  http://webplaza.pt.lu/dostert/ -->
+
+<!-- Begin
+
+var Size = new Number(6);
+
+var Moves = new Array();
+
+function NewGame()
+
+{
+
+	for(i = 0; i < Size * Size; document.forms[0].elements[i++].value = 0);
+
+	for(i = 0; i < 3 + 3 * document.forms[0].Difficulty.selectedIndex; i++)
+
+		NewValue(Math.floor(Math.random() * Size),Math.floor(Math.random() * Size),1);
+
+	Moves.length = document.forms[0].Score.value = 0;
+
+}
+
+function TakeBack(flag)
+
+{
+
+	while(flag-- && (i = Moves.pop()))
+
+		NewValue(parseInt(i.split("-")[0]),parseInt(i.split("-")[1]),1);
+
+	document.forms[0].Score.value = Moves.length;
+
+}
+
+function Clicked(x,y)
+
+{
+
+	NewValue(x,y,3);
+
+	document.forms[0].Score.value = Moves.push(x + "-" + y);
+
+	for(i = 0; i < Size * Size; i++)
+
+		if(parseInt(document.forms[0].elements[i].value))
+
+			return;
+
+	alert((Moves.length <= 3 + 3 * document.forms[0].Difficulty.selectedIndex ? "不错!\n" : "") + "用了 " + Moves.length + " 步");
+
+	NewGame();
+
+}
+
+function NewValue(x,y,c)
+
+{
+
+	ChangeValue(x,y,c);
+
+	ChangeValue(x - 1,y,c);
+
+	ChangeValue(x + 1,y,c);
+
+	ChangeValue(x,y - 1,c);
+
+	ChangeValue(x,y + 1,c);
+
+}
+
+function ChangeValue(x,y,c)
+
+{
+
+	if(x >= 0 && x < Size && y >= 0 && y < Size)
+
+		with(document.forms[0].elements[x + Size * y]) value = (parseInt(value) + c) & 3;
+
+}
+
+//  End -->
+
+</script>
+
+
+
+</HEAD>
+
+
+
+<!-- STEP TWO: Insert the onLoad event handler into your BODY tag  -->
+
+
+
+<BODY onLoad="NewGame()">
+<p><a href="" onClick="NewGame(); return false;" onMouseOver="window.status='Start a new game'; return true;" onMouseOut="window.status=''; return true;" title="开始新游戏">新游戏</a> - <a href="" onClick="TakeBack(-1); return false;" onMouseOver="window.status='Restart the board'; return true;" onMouseOut="window.status=''; return true;" title="重来这一盘">重来</a> - <a href="" onClick="TakeBack(1); return false;" onMouseOver="window.status='Undo last move'; return true;" onMouseOut="window.status=''; return true;" title="反悔上一步">悔棋</a></p>
+
+<form action="" method="get" enctype="application/x-www-form-urlencoded">
+
+<script type="text/javascript">
+
+<!--
+
+for(y = 0; y < Size; y++,window.document.write("<br>"))
+
+	for(x = 0; x < Size; x++)
+
+		window.document.write('<input type="button" value="" onClick="Clicked(' + x + ',' + y + ')">');
+
+// -->
+
+</script>
+
+  <p> 难度: 
+    <select name="Difficulty" onChange="NewGame()">
+
+<option>白痴</option>
+
+<option>容易</option>
+
+<option>一般简单</option>
+
+<option>一般</option>
+
+<option selected>普普通通</option>
+
+<option>难</option>
+
+<option>太难了！</option>
+
+<option>专家</option>
+
+<option>不可能</option>
+
+</select>
+
+</p>
+
+  <p>点击次数: 
+    <input type="text" name="Score" value="0" size="3" disabled></p>
+
+</form>
+
+<dl>
+
+<dt>玩法</dt>
+
+<dd>点击一个格子，它和他周围的4个格子的数都会减一，如果为0，则变为3。</dd>
+
+<dt>目标：</dt>
+
+<dd>把所有的格子都变成0</dd>
+
+</dl>   
+
+
+
+<p><center>
+
+<font face="arial, helvetica" size"-2">Free JavaScripts provided<br>
+
+by <a href="http://javascriptsource.com">The JavaScript Source</a></font>
+
+</center><p>
+
+<a href="./">返回休闲娱乐菜单</a>
+</body>
+</html>
