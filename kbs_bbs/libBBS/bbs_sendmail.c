@@ -343,6 +343,7 @@ struct mail_option {
     int isbig5;
     int noansi;
     int bfirst;
+    int attach;
     char* from;
     char* to;
 };
@@ -362,6 +363,10 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
     if (len == NULL) {
         rewind(pmo->fin);
         pmo->bfirst = 1;
+        return NULL;
+    }
+    if (pmo->attach) {
+        *len = 0;
         return NULL;
     }
     *len = fread(getbuf, 1, MAILBUFLEN / 2, pmo->fin);
@@ -387,6 +392,9 @@ char *bbs_readmailfile(char **buf, int *len, void *arg)
         if ((*p == '\n') && ((i == 0) || (*(p - 1) != '\r'))) {
             *pout = '\r';
             pout++;
+        } else if (*p == 0) { /* ASSUME attachment starts with '\0' !!! - atppp */
+            pmo->attach = 1;
+            break;
         }
         *pout = *p;
         pout++;
@@ -457,7 +465,7 @@ static char* encodestring(const char* string,char* encode)
     char* encodestr;
 	int len;
     len = strlen(string);
-	encodestr=malloc((len+1)*2+8+strlen(encode)); //for gb2big5 +1,for base64 *2,for padding "=?GBK?B?" "=?BIG5?B?" "?=" +12
+	encodestr=malloc((len+1)*2+8+strlen(encode)); //for gb2big5 +1,for base64 *2,for padding "=?GB2312?B?" "=?BIG5?B?" "?=" +12
 	sprintf(encodestr,"=?%s?B?",encode);
 	to64frombits(encodestr+5+strlen(encode),string,len);
 	strcat(encodestr,"?=");
@@ -469,7 +477,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     struct mail_option mo;
     FILE *fin;
     char uname[STRLEN];
-    char from[STRLEN];
+    char from[257];
     int len;
     smtp_session_t smtpsession;
     smtp_message_t message;
@@ -520,12 +528,12 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
        encodestr=gb2big(newbuf,&len,1, getSession());
        encodestr=encodestring(encodestr,"BIG5");
     } else {
-       encodestr=encodestring(newbuf,"GBK");
+       encodestr=encodestring(newbuf,"GB2312");
     }
-	strncpy(newbuf,encodestr,STRLEN-1);
-    newbuf[STRLEN-1]=0;
-    snprintf(from, STRLEN, "\"%s\" <%s@%s>",newbuf, session->currentuser->userid, email_domain());
-    from[STRLEN-1]=0;
+	strncpy(newbuf,encodestr,sizeof(newbuf)-1);
+    newbuf[sizeof(newbuf)-1]=0;
+    snprintf(from, sizeof(from)-1, "\"%s\" <%s@%s>",newbuf, session->currentuser->userid, email_domain());
+    from[sizeof(from)-1]=0;
 	free(encodestr);
     sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
     smtp_set_reverse_path(message, newbuf);
@@ -535,7 +543,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
 		encodestr=gb2big(title,&len,1, getSession());
 		encodestr=encodestring(encodestr,"BIG5");
     } else {
-		encodestr=encodestring(title,"GBK");
+		encodestr=encodestring(title,"GB2312");
     }
     smtp_set_header(message, "Subject", encodestr);
 	free(encodestr);
@@ -547,6 +555,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     mo.noansi = noansi;
     mo.fin = fin;
     mo.bfirst = 1;
+    mo.attach = 0;
     mo.from = from;
     mo.to = receiver;
     smtp_set_messagecb(message, (smtp_messagecb_t) bbs_readmailfile, (void *) &mo);
