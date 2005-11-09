@@ -290,7 +290,7 @@ int addtodeny(char *uident)
 #ifdef ZIXIA
             ndenypic=GetDenyPic(fn, DENYPIC, ndenypic, dpcount);
 #endif
-            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP DENY_NAME_SYSOP "：\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
+            fprintf(fn, "                            %s" NAME_SYSOP_GROUP DENY_NAME_SYSOP "：\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, getCurrentUser()->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
             strcpy(getCurrentUser()->userid, "SYSOP");
             strcpy(getCurrentUser()->username, NAME_SYSOP);
@@ -299,7 +299,7 @@ int addtodeny(char *uident)
             my_flag = 1;
             fprintf(fn, "寄信人: %s \n", getCurrentUser()->userid);
             fprintf(fn, "标  题: %s\n", buffer);
-            fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
+            fprintf(fn, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
             fprintf(fn, "来  源: %s \n", SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", currboard->filename, denymsg);
@@ -328,7 +328,7 @@ int addtodeny(char *uident)
 	GetDenyPic(fn, DENYPIC, ndenypic, dpcount);
 #endif
         if (my_flag == 0) {
-            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP DENY_NAME_SYSOP "：\x1b[4m%s\x1b[m\n", saveptr->userid);
+            fprintf(fn, "                            %s" NAME_SYSOP_GROUP DENY_NAME_SYSOP "：\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, saveptr->userid);
         } else {
             fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
         }

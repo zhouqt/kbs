@@ -2241,6 +2241,7 @@ static PHP_FUNCTION(bbs_domailforward)
 	long big5,noansi;
 	char title[512];
 	struct userec *u;
+	char mail_domain[STRLEN];
     
 	if (ZEND_NUM_ARGS() != 5 || zend_parse_parameters(5 TSRMLS_CC, "sssll", &fname, &filename_len, &tit, &tit_len, &target1, &target_len, &big5, &noansi) != SUCCESS) {
             WRONG_PARAM_COUNT;
@@ -2252,7 +2253,8 @@ static PHP_FUNCTION(bbs_domailforward)
     if( target[0] == 0 )
         RETURN_LONG(-3);
 
-	if( strstr(target, "@" MAIL_BBSDOMAIN) )
+	snprintf(mail_domain, sizeof(mail_domain), "@%s", MAIL_BBSDOMAIN);
+	if( strstr(target, mail_domain) )
 		strcpy(target, getCurrentUser()->userid);
     if( !strchr(target, '@') ){
         if( HAS_PERM(getCurrentUser(), PERM_DENYMAIL) )
@@ -3455,7 +3457,7 @@ static PHP_FUNCTION(bbs_postarticle)
     }
     color = (getCurrentUser()->numlogins % 7) + 31; /* 颜色随机变化 */
     if (!strcmp(board, "Announce"))
-        fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME, NAME_BBS_CHINESE " BBS站");
+        fprintf(fp, "\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, BBS_FULL_NAME, BBS_FULL_NAME);
     else
         fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
 
@@ -4677,6 +4679,9 @@ PHP_MINIT_FUNCTION(smth_bbs)
     PHP_SET_SYMBOL(&EG(symbol_table), "BBS_HOME", bbs_home);
     PHP_SET_SYMBOL(&EG(symbol_table), "BBS_FULL_NAME", bbs_full_name);
     */
+	char old_cwd[256];
+	getcwd(old_cwd, sizeof(old_cwd));
+	chdir(BBSHOME);
     REGISTER_STRINGL_CONSTANT("BBS_HOME",BBSHOME,strlen(BBSHOME),CONST_CS | CONST_PERSISTENT);
     REGISTER_STRINGL_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,strlen(BBS_FULL_NAME),CONST_CS | CONST_PERSISTENT);
 #ifdef SQUID_ACCL
@@ -4715,6 +4720,7 @@ PHP_MINIT_FUNCTION(smth_bbs)
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_WRITE", BOARD_CLUB_WRITE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_HIDE", BOARD_CLUB_HIDE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_GROUP", BOARD_GROUP, CONST_CS | CONST_PERSISTENT);
+	chdir(old_cwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");
 #endif
@@ -6210,7 +6216,7 @@ static PHP_FUNCTION(bbs_denyadd)
             if (!autofree)
                 fprintf(fn, "，到期后请回复\n此信申请恢复权限。\n");
             fprintf(fn, "\n");
-            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
+            fprintf(fn, "                            %s" NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, getCurrentUser()->userid);
             fprintf(fn, "                              %s\n", ctime(&now));
             strcpy(getCurrentUser()->userid, "SYSOP");
             strcpy(getCurrentUser()->username, NAME_SYSOP);
@@ -6218,7 +6224,7 @@ static PHP_FUNCTION(bbs_denyadd)
             my_flag = 1;
             fprintf(fn, "寄信人: %s \n", getCurrentUser()->userid);
             fprintf(fn, "标  题: %s\n", buffer);
-            fprintf(fn, "发信站: %s (%24.24s)\n", "BBS " NAME_BBS_CHINESE "站", ctime(&now));
+            fprintf(fn, "发信站: %s (%24.24s)\n", BBS_FULL_NAME, ctime(&now));
             fprintf(fn, "来  源: %s \n", SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
             fprintf(fn, "\n");
             fprintf(fn, "由于您在 \x1b[4m%s\x1b[m 版 \x1b[4m%s\x1b[m，我很遗憾地通知您， \n", board, exp);
@@ -6236,7 +6242,7 @@ static PHP_FUNCTION(bbs_denyadd)
         fprintf(fn, "被暂时取消在本版的发文权力 \x1b[4m%ld\x1b[m 天。\n", denyday);
         
         if (my_flag == 0) {
-            fprintf(fn, "                            " NAME_BBS_CHINESE NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", saveptr->userid);
+            fprintf(fn, "                            %s" NAME_SYSOP_GROUP "值班站务：\x1b[4m%s\x1b[m\n", NAME_BBS_CHINESE, saveptr->userid);
         } else {
             fprintf(fn, "                              " NAME_BM ":\x1b[4m%s\x1b[m\n", getCurrentUser()->userid);
         }

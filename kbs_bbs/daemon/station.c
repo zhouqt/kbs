@@ -615,7 +615,7 @@ int print_user_counts(unsigned int unum)
             userc++;
         }
     }
-    sprintf(chatbuf, "★ 欢迎光临【" NAME_BBS_CHINESE "】" CHAT_SERVER "，目前已经有 %d 间" CHAT_ROOM_NAME "有客人 ★ ", roomc + 1);
+    sprintf(chatbuf, "★ 欢迎光临【%s】" CHAT_SERVER "，目前已经有 %d 间" CHAT_ROOM_NAME "有客人 ★ ", NAME_BBS_CHINESE, roomc + 1);
     send_to_unum(unum, chatbuf);
     sprintf(chatbuf, "★ 本聊" CHAT_SERVER "内共有 %d 人 ", userc + 1);
     if (suserc)

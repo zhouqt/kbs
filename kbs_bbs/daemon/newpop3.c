@@ -64,10 +64,12 @@ int use_ssl = 0;
 /*#define POP3PORT 110 remote to sysname.h*/
 
 /* 将 MAIL_BBSDOMAIN 和 NAME_BBS_ENGLISH 分开 czz 03.03.08 */
+/*
 #ifdef BBSNAME
 #undef BBSNAME
 #endif
 #define BBSNAME "@"MAIL_BBSDOMAIN
+*/
 
 struct fileheader currentmail;
 struct userec alluser;
@@ -903,6 +905,7 @@ void Retr()
     struct stat st;
 
     char *ptr;
+	char mail_domain[STRLEN];
 
     if (State != S_LOGIN) {
         outs("-ERR Unknown command: \"retr\".");
@@ -939,15 +942,16 @@ void Retr()
     outs(genbuf);
     sprintf(genbuf, "Date: %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
     outs(genbuf);
+	snprintf(mail_domain, sizeof(mail_domain), "@%s", MAIL_BBSDOMAIN);
     if (index(fcache[num].owner, '@') == NULL) {
         if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
             *ptr = '\0';
-        sprintf(genbuf,"%s: %s%s", ownerTag, fcache[num].owner, BBSNAME);
+        sprintf(genbuf,"%s: %s%s", ownerTag, fcache[num].owner, mail_domain);
     }
     else
     	sprintf(genbuf, "%s: %s", ownerTag, fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "%s: %s%s", selfTag, getCurrentUser()->userid, BBSNAME);
+    sprintf(genbuf, "%s: %s%s", selfTag, getCurrentUser()->userid, mail_domain);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);
@@ -1032,6 +1036,7 @@ void Top()
     struct stat st;
 
     char *ptr;
+	char mail_domain[STRLEN];
 
 
     if (State != S_LOGIN) {
@@ -1085,15 +1090,16 @@ void Top()
     outs(genbuf);
     sprintf(genbuf, "Date: %3.3s, %2.2s %3.3s %4.4s %8.8s +0800", ptr + 0, ptr + 8, ptr + 4, ptr + 20, ptr + 11);
     outs(genbuf);
+	snprintf(mail_domain, sizeof(mail_domain), "@%s", MAIL_BBSDOMAIN);
     if (index(fcache[num].owner, '@') == NULL) {
         if ((ptr = strchr(fcache[num].owner, ' ')) != NULL)
             *ptr = '\0';
-        sprintf(genbuf,"%s: %s%s", ownerTag, fcache[num].owner, BBSNAME);
+        sprintf(genbuf,"%s: %s%s", ownerTag, fcache[num].owner, mail_domain);
     }
     else
     	sprintf(genbuf, "%s: %s", ownerTag, fcache[num].owner);
     outs(genbuf);
-    sprintf(genbuf, "%s: %s%s", selfTag, getCurrentUser()->userid, BBSNAME);
+    sprintf(genbuf, "%s: %s%s", selfTag, getCurrentUser()->userid, mail_domain);
     outs(genbuf);
     sprintf(genbuf, "Subject: %s", fcache[num].title);
     outs(genbuf);

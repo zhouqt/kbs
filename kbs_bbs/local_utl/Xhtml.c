@@ -18,8 +18,6 @@
 #include <time.h>
 #define DOTNAMES ".Names"
 #define INDEXHTML "index.htm"
-#define HEADER BBS_FULL_NAME "∶精华区"
-#define FOOTER BBS_FULL_NAME "∶精华区"
 #define MAX_PATH 512
 #define MAXLINELEN 512
 #ifdef AIX
@@ -198,7 +196,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
             fprintf(pdstFile, "<a href=\"%08d.htm\">下一篇</a>\n", index);
             fputs("</h1></center>\n", pdstFile);
             fputs("<center><h1>", pdstFile);
-            fputs(FOOTER, pdstFile);
+            fprintf(pdstFile, "%s∶精华区", BBS_FULL_NAME);
             fputs("</h1></center>\n", pdstFile);
             fputs("</body></html>", pdstFile);
             fclose(pdstFile);
@@ -217,7 +215,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
         fputs("<title>", pdstFile);
         fputs(title, pdstFile);
         fputs("</title>\n</head>\n<body>\n<center><h1>", pdstFile);
-        fputs(HEADER, pdstFile);
+		fprintf(pdstFile, "%s∶精华区", BBS_FULL_NAME);
         fputs("</h1></center>\n", pdstFile);
         fputs("<a name=\"top\"></a>\n", pdstFile);
 
@@ -462,7 +460,7 @@ void DealDirectory(char *directory)
 */
             fputs(ptr + 6, IndexHtmlFile);
             fputs("</title>\n</head>\n\n<body>\n\n<center><h1>", IndexHtmlFile);
-            fputs(HEADER, IndexHtmlFile);
+			fprintf(IndexHtmlFile, "%s∶精华区", BBS_FULL_NAME);
             fputs("</h1></center>\n\n", IndexHtmlFile);
             fputs("<center>\n", IndexHtmlFile);
             fputs("<table>", IndexHtmlFile);
@@ -524,7 +522,7 @@ void DealDirectory(char *directory)
         fputs("<a href=\"#top\">回到页首</a>\n", pdstFile);
         fputs("</center>\n", pdstFile);
         fputs("<center><h1>", pdstFile);
-        fputs(FOOTER, pdstFile);
+		fprintf(pdstFile, "%s∶精华区", BBS_FULL_NAME);
         fputs("</h1></center>\n", pdstFile);
         fputs("</body></html>", pdstFile);
         fclose(pdstFile);
@@ -536,7 +534,7 @@ void DealDirectory(char *directory)
     fputs("<a href=\"../index.htm\">回到上一级目录</a>\n", IndexHtmlFile);
     fputs("</center>\n", IndexHtmlFile);
     fputs("<center><h1>", IndexHtmlFile);
-    fputs(FOOTER, IndexHtmlFile);
+	fprintf(IndexHtmlFile, "%s∶精华区", BBS_FULL_NAME);
     fputs("</h1></center>\n", IndexHtmlFile);
     fputs("</body></html>", IndexHtmlFile);
 

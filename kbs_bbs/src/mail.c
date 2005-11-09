@@ -2160,7 +2160,8 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 //        strncpy(address, curruserdata.email, STRLEN);
         strncpy(address, getSession()->currentmemo->ud.email, STRLEN);
 //        if (strstr(curruserdata.email, "@" MAIL_BBSDOMAIN) || strlen(curruserdata.email) == 0) {
-        if (strstr(getSession()->currentmemo->ud.email, "@" MAIL_BBSDOMAIN) || strlen(getSession()->currentmemo->ud.email) == 0) {
+		snprintf(tmp_buf, sizeof(tmp_buf), "@%s", MAIL_BBSDOMAIN);
+        if (strstr(getSession()->currentmemo->ud.email, tmp_buf) || strlen(getSession()->currentmemo->ud.email) == 0) {
             strcpy(address, getCurrentUser()->userid);
         }
     }

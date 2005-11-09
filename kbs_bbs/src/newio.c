@@ -1419,7 +1419,7 @@ int lock_scr()
     while (1) {
         move(19, 32);
         clrtobot();
-        prints("\033[1m\033[32mBBS " NAME_BBS_CHINESE "站\033[m");
+        prints("\033[1m\033[32m%s\033[m", BBS_FULL_NAME);
         move(21, 0);
         clrtobot();
         getdata(21, 0, "屏幕现在已经锁定，要解除锁定，请输入密码：", passbuf, 39, NOECHO, NULL, true);

@@ -1234,7 +1234,7 @@ void update_endline()
 
 
 /*ReWrite by SmallPig*/
-void showtitle( char *title, char*mid)
+void showtitle( char *title, const char *mid)
 {
     int spc1;
     int colour;

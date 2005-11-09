@@ -510,7 +510,7 @@ void check_register_info()
             clear();            /* Leeward 98.05.14 */
             move(12, 0);
             prints("您现在还没有通过身份认证，没有talk,mail,message,post等权限。\n");
-            prints("如果你要成为" BBS_FULL_NAME "的注册" NAME_USER_SHORT "，");
+            prints("如果你要成为%s的注册" NAME_USER_SHORT "，", BBS_FULL_NAME);
             prints("请到\033[33;1m个人工具箱\033[m中详细真实地填写\033[32m 注册单,\033[m\n");
             prints("经" NAME_SYSOP_GROUP "审核通过以后，就可以成为本站的注册" NAME_USER_SHORT ".\n");
             prints("\n主菜单  -->  I) 个人工具箱  -->  F) 填写注册单\n");

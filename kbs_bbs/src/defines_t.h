@@ -95,7 +95,7 @@ void showsysinfo(char * fn);
 extern int talkrequest;
 int count_user();
 int dosearchuser(char *userid);
-void showtitle(char *title, char *mid);
+void showtitle(char *title, const char *mid);
 void abort_bbs(int);
 void update_endline();
 void docmdtitle(char *title, char *prompt);
