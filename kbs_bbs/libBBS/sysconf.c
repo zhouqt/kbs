@@ -37,7 +37,7 @@ static void *sysconf_addstr(char *str)
     return buf;
 }
 
-char *sysconf_str(char *key)
+const char *sysconf_str(const char *key)
 {
     int n;
 
@@ -47,6 +47,15 @@ char *sysconf_str(char *key)
         if (strcmp(key, sysvar[n].key + sysconf_diff) == 0)
             return (sysvar[n].str + sysconf_diff);
     return NULL;
+}
+
+const char *sysconf_str_default(const char *key, const char *default_value)
+{
+	const char *val = sysconf_str(key);
+	if (val != NULL)
+		return val;
+	else
+		return default_value;
 }
 
 int sysconf_eval(char *key,int defaultval)

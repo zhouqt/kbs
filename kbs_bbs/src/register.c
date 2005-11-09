@@ -35,7 +35,6 @@
 #define  BADEMAIL       0x0020
 #define  NEWREG         0x0040
 
-char *sysconf_str();
 char *Ctime();
 
 extern struct user_info uinfo;
@@ -183,7 +182,8 @@ int invalid_realmail(userid, email, msize)
     int msize;
 {
     FILE *fn;
-    char *emailfile, ans[4], fname[STRLEN];
+    const char *emailfile;
+    char ans[4], fname[STRLEN];
     char genbuf[STRLEN];
 #ifdef HAVE_TSINGHUA_INFO_REGISTER
     struct userec* uc;
@@ -249,7 +249,7 @@ int invalid_realmail(userid, email, msize)
 
 void check_register_info()
 {
-    char *newregfile;
+    const char *newregfile;
     //int perm;
     char buf[STRLEN];
 	char career[STRLEN];

@@ -1120,7 +1120,7 @@ char *get_my_webdomain(int force)
 			fclose(fp);
 		}
 		if(!urlinit){
-			c=sysconf_str("BBS_WEBDOMAIN");
+			const char *c=sysconf_str("BBS_WEBDOMAIN");
 			if(c!=NULL){
 				urlinit=1;
 				strncpy(myurl, c, 80);

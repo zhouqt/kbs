@@ -306,7 +306,7 @@ void unlock_sem_check(int lockid);
 	int valid_brdname(char *brd);
     void detach_boards(ARG_VOID);
     int anonymousboard(const char *board);
-    int load_boards(struct newpostdata *nbrd, char *boardprefix, int group, int pos, int len, bool sort, bool yank_flag, const char **input_namelist,session_t* session);
+    int load_boards(struct newpostdata *nbrd, const char *boardprefix, int group, int pos, int len, bool sort, bool yank_flag, const char **input_namelist,session_t* session);
 #if USE_TMPFS==1
     void init_brc_cache(const char* userid,bool replace, session_t* session);
     void free_brc_cache(char* userid, session_t* session);
@@ -530,7 +530,8 @@ void unlock_sem_check(int lockid);
 
 
 /* define in sysconf.c */
-    char *sysconf_str(char *key);
+    const char *sysconf_str(const char *key);
+    const char *sysconf_str_default(const char *key, const char *default_value);
     int sysconf_eval(char *key, int defaultval);
     struct smenuitem *sysconf_getmenu(char *menu_name);
     void build_sysconf(char *configfile, char *imgfile);
@@ -616,7 +617,7 @@ int pc_logs(struct pc_logs *pn);
 /* site.c */
     void set_posttime2(struct fileheader *dest, struct fileheader *src);
     char *ModeType(int mode);
-    char *email_domain(ARG_VOID);
+    const char *email_domain(ARG_VOID);
     int get_shmkey(char *s);
     int uleveltochar(char *buf, struct userec *lookupuser);
 

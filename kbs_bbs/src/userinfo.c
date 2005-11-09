@@ -24,7 +24,6 @@
 
 #include "bbs.h"
 extern time_t login_start_time;
-char *sysconf_str();
 
 void disply_userinfo(u, real)
 	struct userec *u;
@@ -120,7 +119,8 @@ void disply_userinfo(u, real)
 int uinfo_query(struct userec *u, int real, int unum) 
 {
     struct userec newinfo;
-    char ans[3], buf[STRLEN], *emailfile, genbuf[STRLEN];
+	const char *emailfile;
+    char ans[3], buf[STRLEN], genbuf[STRLEN];
     int i, fail = 0, netty_check = 0, tmpchange = 0;
     FILE * fin, *fout, *dp;
     time_t code;

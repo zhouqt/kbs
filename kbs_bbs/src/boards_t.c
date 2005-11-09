@@ -16,7 +16,7 @@ void EGroup(cmd)
 char *cmd;
 {
     char buf[STRLEN];
-    char *boardprefix;
+    const char *boardprefix;
 
     sprintf(buf, "EGROUP%c", *cmd);
     boardprefix = sysconf_str(buf);
@@ -272,7 +272,7 @@ struct favboard_proc_arg {
 					                       或者i=-1-select_group 是 favboard_list[i]
 	*/
 
-    char* boardprefix;
+    const char* boardprefix;
     /*用于search_board得时候缓存*/
     int loop_mode;
     int find;
@@ -1177,7 +1177,7 @@ static int boards_getdata(struct _select_def *conf, int pos, int len)
          conf->item_count = load_boards(arg->nbrd, arg->boardprefix,arg->father,pos, len,getCurrentUser()->flags & BRDSORT_FLAG,arg->yank_flag,NULL, getSession());
     return SHOW_CONTINUE;
 }
-int choose_board(int newflag, char *boardprefix,int group,int favmode)
+int choose_board(int newflag, const char *boardprefix,int group,int favmode)
 {
 /* 选择 版， readnew或readboard */
     struct _select_def favboard_conf;

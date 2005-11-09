@@ -299,7 +299,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {NULL, NULL},
 };
 
-void decodestr(register char *str)
+void decodestr(register const char *str)
 {
     register char ch;
     int n, i=0;
@@ -439,7 +439,7 @@ int exec_mbem(char *s)
 
 static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
 {
-    char *str;
+    const char *str;
     int help, line, col, num;
     struct smenuitem pm;
 

@@ -36,7 +36,6 @@
 
 int bmonly = 0;
 int a_fmode = 1;
-char *email_domain();
 void a_menu();
 void a_report();                /*Haohmaru.99.12.06.版主精华区操作记录，作为考查工作的依据 */
 

@@ -53,7 +53,6 @@ int temp_numposts;              /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
 int nettyNN = 0;
 int count_friends, count_users; /*Add by SmallPig for count users and Friends */
 char *getenv();
-char *sysconf_str();
 char *Ctime();
 void r_msg_sig(int signo);
 int friend_login_wall();
@@ -394,7 +393,8 @@ static int strallalpha(char *uid)
 
 void login_query()
 {
-    char uid[STRLEN], passbuf[40], *ptr;
+    char uid[STRLEN], passbuf[40];
+	const char *ptr;
     int curr_login_num, i, j;
     int curr_http_num;          /* Leeward 99.03.06 */
     int attempts;

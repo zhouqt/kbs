@@ -262,7 +262,7 @@ void record_exit_time();
 /* boards_t.c */
 int query_bm_core(const char *userid,int limited);
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);
-int choose_board(int newflag, char *boardprefix,int group,int yank_flag);
+int choose_board(int newflag, const char *boardprefix,int group,int yank_flag);
 /* Ñ¡Ôñ °æ£¬ readnew»òreadboard */
 
 /* bm.c*/

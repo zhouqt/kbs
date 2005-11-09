@@ -1281,7 +1281,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     return brdnum;
 }
 
-int load_boards(struct newpostdata *nbrd,char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,const char** input_namelist,session_t* session)
+int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,const char** input_namelist,session_t* session)
 {
     int n;
     const struct boardheader *bptr;

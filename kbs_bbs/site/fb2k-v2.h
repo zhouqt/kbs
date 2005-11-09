@@ -94,13 +94,24 @@
 #ifdef SMTH
 #define REGISTER_TSINGHUA_WAIT_TIME (24*60*60)
 #endif
-#define MAIL_BBSDOMAIN      "bbs.mysite.net"
+
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
-#define NAME_BBS_ENGLISH	"bbs.mysite.net"
-#define	NAME_BBS_CHINESE	"FB2000"
+#define BBSDOMAIN_DEFAULT "bbs.mysite.net"   /* 站点域名 */
+#define	SHORTNAME_DEFUALT "KBS"              /* 站名简称 */
+#define BBSNAME_DEFAULT   "KBS 试验站"       /* 站名全称 */
 
-#define BBS_FULL_NAME "smthbbs试验站"
+#ifdef ENABLE_CUSTOMIZING
+#define NAME_BBS_ENGLISH sysconf_str_default("BBSDOMAIN", BBSDOMAIN_DEFAULT)
+#define	NAME_BBS_CHINESE sysconf_str_default("SHORTNAME", SHORTNAME_DEFUALT)
+#define BBS_FULL_NAME    sysconf_str_default("BBSNAME", BBSNAME_DEFAULT)
+#else
+#define NAME_BBS_ENGLISH BBSDOMAIN_DEFAULT
+#define	NAME_BBS_CHINESE SHORTNAME_DEFUALT
+#define BBS_FULL_NAME    BBSNAME_DEFAULT
+#endif
+
+#define MAIL_BBSDOMAIN      NAME_BBS_ENGLISH
 
 #define FOOTER_MOVIE		"欢  迎  投  稿"
 /*#define ISSUE_LOGIN		"本站使用曙光公司曙光天演服务器"*/

@@ -1,5 +1,4 @@
 #include "bbs.h"
-extern char *sysconf_str();
 
 #ifdef HAVE_LIBESMTP
 #include <libesmtp.h>
@@ -324,9 +323,9 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     return 0;
 }
 
-char *email_domain()
+const char *email_domain()
 {
-    char *domain;
+    const char *domain;
 
     /* 将 MAIL_BBSDOMAIN 和 BBSDOMAIN 分开 czz 03.03.08 */
     if (!(domain = sysconf_str("MAIL_BBSDOMAIN")))
