@@ -4,7 +4,7 @@ BBSINCLUDE="$BBSINCLUDE -I$1"
 fi])
 AC_ARG_WITH(zlib,
 [  --with-zlib[=DIR]
-       Include ZLIB support (requires zlib >= 1.0.9).],
+                          Include ZLIB support (requires zlib >= 1.0.9).],
 ZLIB_DIR="$withval", ZLIB_DIR="yes")
 
 if test "$ZLIB_DIR" != "no"; then
@@ -42,7 +42,8 @@ LIBS="$LIBS $ZLIB_LIBS"
 
 AC_ARG_WITH(mysql,
 [  --with-mysql[=DIR]
-       Include MySQL support (online dictionary, quiz game required this).],
+                          Include MySQL support (online dictionary, quiz game 
+                          required this).],
 MYSQL_DIR="$withval", MYSQL_DIR="yes")
 
 if test "$MYSQL_DIR" != "no"; then
@@ -86,7 +87,7 @@ fi
 # Check pthread support
 AC_ARG_WITH(pthread,
 [  --with-pthread[=DIR]
-       Specify POSIX thread library directory.],
+                          Specify POSIX thread library directory.],
 PTHREAD_DIR="$withval", PTHREAD_DIR="yes")
 if test "$PTHREAD_DIR" != "no"; then
   if test "$PTHREAD_DIR" != "yes"; then
@@ -117,7 +118,7 @@ fi
 # Check libesmtp support.
 AC_ARG_WITH(libesmtp,
 [  --with-libesmtp[=DIR]
-       Specify libesmtp library directory.],
+                          Specify libesmtp library directory.],
 LIBESMTP_DIR="$withval", LIBESMTP_DIR="yes")
 if test "$LIBESMTP_DIR" != "no"; then
   if test "$LIBESMTP_DIR" != "yes"; then
@@ -156,7 +157,7 @@ AH_TEMPLATE([USE_SSL],
 
 AC_MSG_CHECKING(OpenSSL)
 AC_ARG_WITH(openssl,
-[  --with-openssl[=path],Build with OpenSSL [yes|no|path].
+[  --with-openssl[=path]     Build with OpenSSL [yes|no|path].
         ],
     use_openssl="$withval", use_openssl="no")
 case "$use_openssl" in

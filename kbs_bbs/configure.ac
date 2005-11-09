@@ -40,7 +40,7 @@ m4_include(config.icc)
 
 AC_ARG_ENABLE(admin,
 [  --enable-admin
-                enable admin  support(need admin package)],
+                          enable admin  support(need admin package)],
 [
 	if test "$enableval" = "yes" ; then
 	        if test -d admin; then
@@ -54,7 +54,7 @@ AC_ARG_ENABLE(admin,
 
 AC_ARG_ENABLE(innbbsd,
 [  --enable-innbbsd
-                enable innbbsd  support(need innbbsd package)],
+                          enable innbbsd  support(need innbbsd package)],
 [
 	if test "$enableval" = "yes" ; then
 	        if test -d innbbsd; then
@@ -70,16 +70,16 @@ AC_ARG_ENABLE(innbbsd,
 
 AC_ARG_ENABLE(ssh,
 [  --enable-ssh
-		enable ssh bbsd  support(need sshbbsd package)],
+                          enable ssh bbsd  support(need sshbbsd package)],
 [
-	if test "$enableval" = "yes" ; then
+  if test "$enableval" = "yes" ; then
 		if test -d sshbbsd; then
 			AC_CONFIG_SUBDIRS(sshbbsd)
             BBSSUBDIRS="$BBSSUBDIRS sshbbsd"
 		else
 			AC_MSG_ERROR([can't find sshbbsd package,please get it first!])
 		fi
-	fi
+  fi
 ])
 
 if [ test -z "$enable_www" ]; then
@@ -88,7 +88,7 @@ fi
 
 AC_ARG_ENABLE(www,
 [  --enable-www
-        enable web support(need bbs2www package)],
+                          enable web support(need bbs2www package)],
 [
 	if test "$enableval" = "yes" ; then
 		if test -d bbs2www; then
@@ -109,6 +109,15 @@ AC_SUBST(CONFIG_HAVE_WWW)
 AC_SUBST(BBSSUBDIRS)
 
 m4_include(bbs2www.in)
+
+AC_ARG_ENABLE(customizing,
+[  --enable-customizing
+                          enable customizing in INI file],
+[
+  if test "$enableval" = "yes" ; then
+    AC_DEFINE(ENABLE_CUSTOMIZING,1,[ Enable customizing in INI file ])
+  fi
+])
 
 
 # Checks for header files.
