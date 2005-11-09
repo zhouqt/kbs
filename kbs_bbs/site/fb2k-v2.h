@@ -99,7 +99,6 @@
 
 #define NAME_BBS_ENGLISH	"bbs.mysite.net"
 #define	NAME_BBS_CHINESE	"FB2000"
-#define NAME_BBS_NICK		"BBS ’æ"
 
 #define BBS_FULL_NAME "smthbbs ‘—È’æ"
 

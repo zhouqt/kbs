@@ -237,7 +237,7 @@ int main(int argc,char* argv[])
         }
         fprintf(fp, "\x1b[36m│\n");
     }
-    fprintf(fp, "   \x1b[36m" " └———\x1b[37m   " NAME_BBS_CHINESE NAME_BBS_NICK "  上站人次表   \x1b[36m———\x1b[37m%s\x1b[36m——┘\n"
+    fprintf(fp, "   \x1b[36m" " └———\x1b[37m   " BBS_FULL_NAME "  上站人次表   \x1b[36m———\x1b[37m%s\x1b[36m——┘\n"
 /*"    \x1b[34m  0  1  2  3  4  5  6  7  8  9  10 11 \x1b[31m12 13 14 15 16 17 18 19 20 21 22 23 \n\n" *//* Leeward 98.02.27 */
             "    \x1b[34m  1  2  3  4  5  6  7  8  9  10 11 12 \x1b[31m13 14 15 16 17 18 19 20 21 22 23 24\n\n" "               \x1b[36m 1 \x1b[33m▇\x1b[36m = \x1b[37m%-5d \x1b[36m总共上站人次：\x1b[37m%-9d\x1b[36m平均使用时间：\x1b[37m%d\x1b[m \n\n", 
             Ctime(now), item, total, total==0?0:(totaltime/total+1));    /* Leeward 98.09.24 add the 2nd \n for SHARE MEM in ../main.c */

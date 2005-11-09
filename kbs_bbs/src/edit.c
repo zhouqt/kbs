@@ -1063,7 +1063,7 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
         } else if (uinfo.mode == SMAIL)
             strcpy(p_buf, "(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");
         else if (uinfo.mode == IMAIL)
-            strcpy(p_buf, NAME_BBS_NICK " Internet 信笺：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");      /* Leeward 98.01.17 Prompt whom you are writing to */
+            strcpy(p_buf, BBS_FULL_NAME " Internet 信笺：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");      /* Leeward 98.01.17 Prompt whom you are writing to */
         /*    sprintf(p_buf,"给 %s 的信：(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ", lookupuser->userid ); 
            Leeward 98.01.17 Prompt whom you are writing to */
         else if(uinfo.mode==EDIT)

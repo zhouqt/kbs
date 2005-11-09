@@ -321,10 +321,6 @@
 #define	NAME_BBS_CHINESE	"水木清华"
 #endif
 
-#ifndef NAME_BBS_NICK
-#define NAME_BBS_NICK		"BBS 站"
-#endif
-
 #ifndef BBS_FULL_NAME
 #define BBS_FULL_NAME "BBS 水木清华站"
 #endif
