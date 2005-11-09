@@ -37,7 +37,7 @@ struct super_filter_expression {
     union {
         struct fvar_struct *value;
         struct super_filter_session *sess;
-    };
+    } data;
     bool str;
     int s;
     char * p;
@@ -297,9 +297,9 @@ static int get_rl2(char * s, int r, int l)
 static void feval_expression(struct super_filter_expression *exp) {
     if (exp->fn) {
         exp->fn(exp);
-    } else if (exp->value) {
-        exp->p = exp->value->p;
-        exp->s = exp->value->s;
+    } else if (exp->data.value) {
+        exp->p = exp->data.value->p;
+        exp->s = exp->data.value->s;
     }
     /* otherwise, use what was in exp->p,s */
 }
@@ -439,7 +439,7 @@ static void sff_content(struct super_filter_expression *exp) {
      * exp->arg1 points to str expression
      */
     char *res;
-    struct super_filter_session *sess = exp->sess;
+    struct super_filter_session *sess = exp->data.sess;
     if (!sess->content.mmap) {
         char ffn[PATHLEN];
         struct fileheader * fh = sess->arg.ptr;
@@ -482,13 +482,13 @@ static void feval(struct super_filter_expression *ret, char * s, int l, int r, s
         strncpy(buf, s+l, r-l+1);
         buf[r-l+1]=0;
         if (!strcmp(buf, "no")) {
-            ret->value = &sess->loop;
+            ret->data.value = &sess->loop;
         } else {
-            ret->value = fget_var(sess, buf);
+            ret->data.value = fget_var(sess, buf);
         }
-        if (ret->value) {
-            ret->str = ret->value->str;
-            ret->p = ret->value->p;
+        if (ret->data.value) {
+            ret->str = ret->data.value->str;
+            ret->p = ret->data.value->p;
             return;
         }
     }
@@ -555,7 +555,7 @@ static void feval(struct super_filter_expression *ret, char * s, int l, int r, s
             FMAKESURE(u->str&&u->p, TYPE_MISS);
             ret->arg1 = u;
             ret->fn = sff_content;
-            ret->sess = sess;
+            ret->data.sess = sess;
             return;
         } else if(!strcmp("date",buf)){
             int j=strchr(s+i+1, ',')-s, k;
@@ -582,7 +582,7 @@ static void feval(struct super_filter_expression *ret, char * s, int l, int r, s
             struct tm t;
             time_t tt;
             ret->fn = NULL;
-            ret->value = NULL;
+            ret->data.value = NULL;
             tt=time(0);
             gmtime_r(&tt, &t);
             t.tm_sec=0;
