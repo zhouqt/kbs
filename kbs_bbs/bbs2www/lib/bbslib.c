@@ -242,7 +242,7 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
 	oldidx = WWW_GUEST_HASHTAB(hashkey);
 
 	num=0;
-/* 如果已经有相同的登陆 */
+/* 如果已经有相同的登录 */
 if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip.s_addr ){
 
 	*idx = oldidx;
@@ -1127,7 +1127,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
             if (i < (buflen - 1) && (buf[i] == ':' && buf[i + 1] == ' ')) {
                 STATE_SET(ansi_state, STATE_QUOTE_LINE);
                 if (STATE_ISSET(ansi_state, STATE_FONT_SET))
-                    BUFFERED_OUTPUT(output, "</font>", 7);
+                    BUFFERED_OUTPUT(output, " </font>", 8);
                 /*
                  * set quoted line styles 
                  */
@@ -1171,11 +1171,11 @@ void output_ansi_javascript(char *buf, size_t buflen,
                 /*
                  * end of a quoted line 
                  */
-                BUFFERED_OUTPUT(output, "</font>", 7);
+                BUFFERED_OUTPUT(output, " </font>", 8);
                 STYLE_CLR(font_style, FONT_STYLE_QUOTE);
                 STATE_CLR(ansi_state, STATE_FONT_SET);
             }
-            BUFFERED_OUTPUT(output, "<br />');\n", 10);
+            BUFFERED_OUTPUT(output, " <br/>');\n", 10);
             STATE_CLR(ansi_state, STATE_QUOTE_LINE);
             STATE_SET(ansi_state, STATE_NEW_LINE);
         }
@@ -1183,11 +1183,11 @@ void output_ansi_javascript(char *buf, size_t buflen,
 			js_output(&buf[i], 1, output);
     }
     if (STATE_ISSET(ansi_state, STATE_FONT_SET)) {
-        BUFFERED_OUTPUT(output, "</font>", 7);
+        BUFFERED_OUTPUT(output, " </font>", 8);
         STATE_CLR(ansi_state, STATE_FONT_SET);
     }
 	if (!STATE_ISSET(ansi_state, STATE_NEW_LINE)) {
-		BUFFERED_OUTPUT(output, "<br />');\n", 10);
+		BUFFERED_OUTPUT(output, " <br/>');\n", 10);
 	}
 	for ( i = 0; i<attachmatched ; i++ ){
 		if (!attachShowed[i]) { 
