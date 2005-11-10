@@ -1,19 +1,17 @@
-#include "bbs.h"
 #include <windows.h>
 #include <sys/cygwin.h>
-
-typedef struct external_pinfo external_pinfo;
+#include "bbs.h"
 
 void kill_process(const char *prog_name)
 {
-	external_pinfo *p;
+	struct external_pinfo *p;
 	cygwin_getinfo_types query = CW_GETPINFO;
 	char *s;
 	char pname[MAX_PATH];
 	int pid;
 	
 	for (pid = 0;
-		(p = (external_pinfo *)cygwin_internal(query, pid | CW_NEXTPID));
+		(p = (struct external_pinfo *)cygwin_internal(query, pid | CW_NEXTPID));
 		pid = p->pid)
 	{
 		pname[0] = '\0';

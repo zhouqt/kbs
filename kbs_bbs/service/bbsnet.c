@@ -6,7 +6,7 @@
 #include <netdb.h>
 
 SMTH_API struct user_info uinfo;
-//SMTH_API char fromhost[IPLEN + 1];
+SMTH_API int msg_count;
 
 #define TIME_OUT	15
 #define MAX_PROCESS_BAR_LEN 30
@@ -28,8 +28,6 @@ char section[]="1234567890!@#%&*()";
 char user[21];
 int sockfd;
 jmp_buf jb;
-
-extern int msg_count;
 
 // added by flyriver, 2001.3.2
 // ¥©ÀÛ»’º«

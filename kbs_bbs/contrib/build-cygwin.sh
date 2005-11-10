@@ -13,6 +13,7 @@ export PATH CC CFLAGS DLLTOOL
 
 ./configure --prefix=$BBSHOME --enable-site=fb2k-v2 --disable-www \
 --without-mysql --enable-ssh --enable-innbbsd --without-pthread \
+--enable-customizing \
 --with-zlib=$CYGWINDIST \
 --with-libesmtp=$CYGWINDIST \
 --build=i686-pc-linux-gnu --host=i686-pc-cygwin
@@ -48,7 +49,7 @@ $CC -shared -o cygBBS.dll \
         -Wl,--whole-archive  \
         -Wl,--no-whole-archive \
 record.o log.o ucache.o stuff.o md5.o crypt.o pass.o bcache.o utmp.o \
-lvars.o site.o boards.o lvars.o bbs_sendmail.o libmsg.o article.o \
+lvars.o site.o boards.o bbs_sendmail.o libmsg.o article.o \
 convcode.o sysconf.o libann.o filter.o mgrep.o default.o output.o \
 libtmpl.o libpc.o xml.o \
 -L$CYGWINDIST/lib \
@@ -172,6 +173,12 @@ make
 cd ..
 
 cd mail2bbs
+
+make
+
+cd ..
+
+cd innbbsd
 
 make
 
@@ -337,11 +344,45 @@ killer.o \
 -L$CYGWINDIST/lib \
 -lcygipc -L$CYGWINDIST/lib -lsshbbsd -lz  -lesmtp
 
-cd ..
+$CC -shared -o tt.dll \
+        -Wl,--out-implib=tt.dll.a \
+        -Wl,--export-all-symbols \
+        -Wl,--enable-auto-import \
+        -Wl,--whole-archive  \
+        -Wl,--no-whole-archive \
+tt.o \
+-L$CYGWINDIST/lib \
+-lcygipc -L$CYGWINDIST/lib -lbbsd -lz  -lesmtp
 
-cd innbbsd
+$CC -shared -o sshtt.dll \
+        -Wl,--out-implib=sshtt.dll.a \
+        -Wl,--export-all-symbols \
+        -Wl,--enable-auto-import \
+        -Wl,--whole-archive  \
+        -Wl,--no-whole-archive \
+tt.o \
+-L$CYGWINDIST/lib \
+-lcygipc -L$CYGWINDIST/lib -lsshbbsd -lz  -lesmtp
 
-make
+$CC -shared -o tetris.dll \
+        -Wl,--out-implib=tetris.dll.a \
+        -Wl,--export-all-symbols \
+        -Wl,--enable-auto-import \
+        -Wl,--whole-archive  \
+        -Wl,--no-whole-archive \
+tetris.o \
+-L$CYGWINDIST/lib \
+-lcygipc -L$CYGWINDIST/lib -lbbsd -lz  -lesmtp
+
+$CC -shared -o sshtetris.dll \
+        -Wl,--out-implib=sshtetris.dll.a \
+        -Wl,--export-all-symbols \
+        -Wl,--enable-auto-import \
+        -Wl,--whole-archive  \
+        -Wl,--no-whole-archive \
+tetris.o \
+-L$CYGWINDIST/lib \
+-lcygipc -L$CYGWINDIST/lib -lsshbbsd -lz  -lesmtp
 
 cd ..
 

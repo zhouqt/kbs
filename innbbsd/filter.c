@@ -1,10 +1,4 @@
-#if defined( LINUX ) || defined(SOLARIS)
 #include "innbbsconf.h"
-#include <stdarg.h>
-#else
-#include <varargs.h>
-#include "innbbsconf.h"
-#endif
 
 #include "bbslib.h"
 

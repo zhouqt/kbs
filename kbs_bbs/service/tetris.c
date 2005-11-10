@@ -44,7 +44,7 @@ int delay, level, score;
 char topID[20][20];
 int topT[20],topS[20];
  
-extern struct user_info uinfo;
+SMTH_API struct user_info uinfo;
 
 int getch()
 {
@@ -57,8 +57,8 @@ int getch()
 	static time_t old=0;
 	time_t now;
 
-	extern int keymem_total;
-	extern struct key_struct *keymem;
+	SMTH_API int keymem_total;
+	SMTH_API struct key_struct *keymem;
 
 	if(retlen > 0){
 		ret = *retbuf;
@@ -116,8 +116,8 @@ int getch()
     return ret;
 }
 
-extern select_func x_select;
-extern read_func x_read;
+SMTH_API select_func x_select;
+SMTH_API read_func x_read;
 
 int getch0()
 {

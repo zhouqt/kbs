@@ -19,6 +19,11 @@ struct public_data *publicshm;
 
 #ifndef THREADSAFE
 session_t g_session;
+
+#ifdef CYGWIN
+session_t* getSession() { return &g_session; }
+#endif
+
 #endif
 void init_sessiondata(session_t * session)
 {

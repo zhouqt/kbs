@@ -11,6 +11,10 @@ struct UTMPHEAD {
     time_t uptime;
 };
 
+#ifndef SMTH_API
+#define SMTH_API extern
+#endif
+
 struct newpostdata {            
     char dir;    /* added by bad  0-board 1-board directory 2-mail 3-function */
     const char *name, *title, *BM;
@@ -23,10 +27,10 @@ struct newpostdata {
 };
 
 /* global unique variable */
-extern struct boardheader *bcache;
-extern struct BCACHE *brdshm;
+SMTH_API struct boardheader *bcache;
+SMTH_API struct BCACHE *brdshm;
 extern struct BDIRCACHE	*bdirshm;
-extern struct UTMPFILE *utmpshm;
+SMTH_API struct UTMPFILE *utmpshm;
 extern struct UTMPHEAD *utmphead;
 extern int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 extern int ONLYCOUNT;
@@ -114,7 +118,7 @@ typedef struct {
 } session_t;
 
 #ifndef THREADSAFE
-#define getCurrentUser() (g_session.currentuser)
-#define setCurrentUser(x) (g_session.currentuser=x)
+#define getCurrentUser() (getSession()->currentuser)
+#define setCurrentUser(x) (getSession()->currentuser=x)
 #endif
 #endif

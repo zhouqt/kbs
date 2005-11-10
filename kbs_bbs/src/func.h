@@ -716,8 +716,14 @@ void long2byte(unsigned int num, byte* arg);
 
 /* lvar.c*/
 #ifndef THREADSAFE
+
+#ifdef CYGWIN
+session_t* getSession();
+#else
 extern session_t g_session;
 #define getSession() (&g_session)
+#endif
+
 #else
 session_t * getSession();
 #endif
