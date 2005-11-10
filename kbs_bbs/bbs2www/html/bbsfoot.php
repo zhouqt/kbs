@@ -75,7 +75,7 @@ echo "信箱[<a href=\"/bbsmailbox.php?path=.DIR&title=收件箱\" target=\"f3\" clas
 			  if ($unread!=0) {
 		        echo $total . "封(新信" . $unread . ")</a>] ";
 ?>
-<bgsound src="/sound/newmail.wav">
+<bgsound src="/sound/newmail.mp3">
 <script language="javascript">
 if (typeof top.hasMsgBox == "undefined") {
     top.hasMsgBox = false;
