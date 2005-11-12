@@ -6,6 +6,19 @@
 
 #include "bbs.h"
 
+/* add by roy 2003.8.7 struct wwwthreadheader */
+/* used for .WWWTHREAD */
+struct wwwthreadheader{
+	struct fileheader origin; /* groupid */
+	struct fileheader lastreply;	/* id for last article */
+	unsigned int articlecount; /* number of articles */
+	unsigned int flags;
+	unsigned int unused;   /* used for further index */
+};
+#define FILE_ON_TOP	0x2 /* on top mode */
+
+
+
 typedef struct user_info uinfo_t;
 
 typedef struct boardheader boardheader_t;

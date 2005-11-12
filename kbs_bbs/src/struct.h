@@ -105,8 +105,8 @@ struct user_info {              /* Structure used in UTMP file */
     char chatid[16];            /* chat id, if in chat mode */
     char from[IPLEN + 4];       /* machine name the user called in from */
     time_t logintime;
-
-    char unused[36];
+    int lastpost;
+    char unused[32];
 
     time_t freshtime;
     int utmpkey;
@@ -167,16 +167,6 @@ struct boardheader {            /* This structure is used to hold data in */
 	int bannercount;
 	char banners[MAXBANNER][BANNERSIZE];
 #endif
-};
-
-/* add by roy 2003.8.7 struct wwwthreadheader */
-/* used for .WWWTHREAD */
-struct wwwthreadheader{
-	struct fileheader origin; /* groupid */
-	struct fileheader lastreply;	/* id for last article */
-	unsigned int articlecount; /* number of articles */
-	unsigned int flags;
-	unsigned int unused;   /* used for further index */
 };
 
 /* XXX: struct fileheader moved to site.h */

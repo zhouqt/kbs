@@ -3388,15 +3388,11 @@ static PHP_FUNCTION(bbs_postarticle)
     if (deny_me(getCurrentUser()->userid, board) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
         RETURN_LONG(-5); //很抱歉, 你被版务人员停止了本版的post权利.
 
-
-    /* FIXME: this is a stupid design... */
-    if (abs(time(0) - *(int *) (getSession()->currentuinfo->from + 36)) < 6) {
-        *(int *) (getSession()->currentuinfo->from + 36) = time(0);
+    if (abs(time(0) - getSession()->currentuinfo->lastpost) < 6) {
+        getSession()->currentuinfo->lastpost = time(0);
         RETURN_LONG(-6); // 两次发文间隔过密, 请休息几秒后再试
     }
-    *(int *) (getSession()->currentuinfo->from + 36) = time(0);
-    /* stupid design END */
-
+    getSession()->currentuinfo->lastpost = time(0);
 
     if(reid > 0){
         int pos;int fd;

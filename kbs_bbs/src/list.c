@@ -347,7 +347,7 @@ int do_userlist()
         sprintf(user_info_str, " %-16.16s %c %c %s%-10.10s\033[m%5.5s\n",  
                 (HAS_PERM(getCurrentUser(), PERM_SYSOP))? uentp.from : ( (pagec == ' ' || pagec == 'O')  ? SHOW_USERIP(lookupuser, uentp.from) : FROMSTR ),
                 pagec, msgchar(&uentp, &isfriend), 
-                (uentp.invisible == true)? "\033[34m" : "", modestring(modebuf,uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+                (uentp.invisible == true)? "\033[1;36m" : "", modestring(modebuf,uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                            (uentp.in_chat ? uentp.chatid : NULL)),            
 #ifdef SHOW_IDLE_TIME
                 idle_str(idlebuf,&uentp));
