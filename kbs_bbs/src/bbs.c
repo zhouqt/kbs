@@ -6022,7 +6022,7 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'[', (READ_KEY_FUNC)thread_read,(void*)SR_PREV},
 
     {Ctrl('A'), (READ_KEY_FUNC)read_showauthor,NULL},
-    {Ctrl('Q'), (READ_KEY_FUNC)read_showauthorinfo,NULL},     
+    {'~', (READ_KEY_FUNC)read_showauthorinfo,NULL},     
     {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
     {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
 #ifdef DENYANONY
@@ -6075,7 +6075,7 @@ static struct key_command read_comms[] = { /*ÔÄ¶Á×´Ì¬£¬¼ü¶¨Òå */
     {'B', (READ_KEY_FUNC)SR_BMFunc,(void*)false},
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
     {'!', (READ_KEY_FUNC)Goodbye,NULL},
-    {'~', (READ_KEY_FUNC)showinfo,NULL},
+    {Ctrl('Q'), (READ_KEY_FUNC)showinfo,NULL},
     {'^', (READ_KEY_FUNC)jumpReID,NULL},
     {'\0', NULL},
 };

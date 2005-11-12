@@ -1154,7 +1154,11 @@ int read_showauthorinfo(struct _select_def* conf, struct fileheader* fh, void* e
     int id;
 
     if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) {
-        return DONOTHING;
+        clear();
+        move(2,0);
+        prints("全文链接快捷键改拉 ! 现在用 Ctrl+Q ，谢谢适应 !");
+        pressanykey();
+        return FULLUPDATE;
     } else {
         if (0 == (id = getuser(fh->owner, &lookupuser))) {
             move(2, 0);
