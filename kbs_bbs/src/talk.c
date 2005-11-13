@@ -427,7 +427,7 @@ int t_query(char* q_id)
 	prints("文章数: [\033[1;32m%d\033[m] 银行存款: [\033[1;32m%d元\033[m] 奖章数: [\033[1;32m%d\033[m] 生命力: [\033[1;32m%d\033[m]\n",
 	      lookupuser->numposts,lookupuser->money, lookupuser->score,
 		  compute_user_value(lookupuser) );
-#elif defined(SMTH)
+#elif 0 //defined(SMTH) /* atppp 20050425 */
     uleveltochar(permstr, lookupuser);
     prints("生命力：[%d] 身份: [%s]%s\n",
             compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
