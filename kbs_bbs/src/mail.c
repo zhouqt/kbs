@@ -3074,6 +3074,10 @@ static int set_mailgroup_key(struct _select_def *conf, int key)
         s_msg();
         modify_user_mode(oldmode);
         return SHOW_REFRESH;
+    case Ctrl('A'):
+        clear();
+        t_query(arg->users[conf->pos - 1].id);
+        return SHOW_REFRESH;
     case 'u':
         oldmode = uinfo.mode;
         clear();
