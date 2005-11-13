@@ -98,18 +98,18 @@
 #define MAIL_MAILSERVER     "127.0.0.1:25"
 
 #define BBSDOMAIN_DEFAULT "bbs.mysite.net"   /* 站点域名 */
-#define	SHORTNAME_DEFUALT "KBS"              /* 站名简称 */
+#define	SHORTNAME_DEFAULT "KBS"              /* 站名简称 */
 #define BBSNAME_DEFAULT   "KBS 试验站"       /* 站名全称 */
 #define MAILDOMAIN_DEFAULT "mysite.net"      /* 发对外邮件的地址 */
 
 #ifdef ENABLE_CUSTOMIZING
 #define NAME_BBS_ENGLISH sysconf_str_default("BBSDOMAIN", BBSDOMAIN_DEFAULT)
-#define	NAME_BBS_CHINESE sysconf_str_default("SHORTNAME", SHORTNAME_DEFUALT)
+#define	NAME_BBS_CHINESE sysconf_str_default("SHORTNAME", SHORTNAME_DEFAULT)
 #define BBS_FULL_NAME    sysconf_str_default("BBSNAME", BBSNAME_DEFAULT)
 #define MAIL_BBSDOMAIN   sysconf_str_default("MAILDOMAIN", MAILDOMAIN_DEFAULT)
 #else
 #define NAME_BBS_ENGLISH BBSDOMAIN_DEFAULT
-#define	NAME_BBS_CHINESE SHORTNAME_DEFUALT
+#define	NAME_BBS_CHINESE SHORTNAME_DEFAULT
 #define BBS_FULL_NAME    BBSNAME_DEFAULT
 #define MAIL_BBSDOMAIN   MAILDOMAIN_DEFAULT
 #endif
