@@ -16,7 +16,11 @@ void load_board_banner(const char * board);
 #endif
 
 /*etnlegend*/
-#define WAIT_RETURN do{continue;}while(igetkey()!=13)
+#define WAIT_RETURN do{\
+    int ch = igetkey();\
+    if (ch=='\r'||ch=='\n') break;\
+}while(1)
+            
 
 /*screen.c*/
 void do_naws(int ln, int col);
