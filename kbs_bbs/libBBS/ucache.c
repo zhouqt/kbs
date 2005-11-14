@@ -813,9 +813,10 @@ int get_giveupinfo(char* userid,int* basicperm,int s[10][2])
     sethomefile(buf, userid, "giveup");
     fn = fopen(buf, "rt");
     if (fn) {
-        while (!feof(fn)) {
+        while (fgets(buf, 255, fn)) {
 	    int i,j;
-            if (fscanf(fn, "%d %d", &i, &j) <= 0)
+			buf[254]='\0';
+            if (sscanf(buf, "%d %d", &i, &j) <= 0)
                 break;
             s[lcount][0] = i;
             s[lcount][1] = j;
