@@ -1,7 +1,7 @@
 #ifndef __SYSNAME_H_
 #define __SYSNAME_H_
 
-#define USE_TMPFS           0   /*使用内存文件系统加速*/
+#define USE_TMPFS           1   /*使用内存文件系统加速*/
 #define TMPFSROOT   "cache" /*tmpfs的根在bbshome/cache */
 #define CONV_PASS		1
 #define NINE_BUILD		0
@@ -351,7 +351,7 @@ attach define
 
 #define CHECK_IP_LINK 1
 
-#define BOARD_SHOW_ONLINE 0
+#define BOARD_SHOW_ONLINE 1
 
 
 #define COMMEND_ARTICLE "Recommend"

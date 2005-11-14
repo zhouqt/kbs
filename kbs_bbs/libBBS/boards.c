@@ -1124,7 +1124,7 @@ int normal_board(const char *bname)
     return ret;
 }
 
-int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,const char** input_namelist,session_t* session)
+int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,int sort,const char** input_namelist,session_t* session)
 {
 //注意，如果是目录，nbrd的flag应该为0xffffffff
     int n;
@@ -1133,6 +1133,8 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
     struct newpostdata *ptr;
     int curcount;
     int* indexlist=NULL;
+	int *sort1list=NULL;
+	int thisonline;
     const char** namelist=NULL;
 
     brdnum = 0;
@@ -1141,7 +1143,9 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
         load_zapbuf(session);
     }
     if (sort) {
-    	if (input_namelist==NULL)
+		if(sort&BRDSORT1_FLAG)
+			sort1list=(int*)malloc(sizeof(int*)*(pos+len-1));
+		else if (input_namelist==NULL)
     	    namelist=(const char**)malloc(sizeof(char**)*(pos+len-1));
     	else
     	    namelist=input_namelist;
@@ -1205,21 +1209,39 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
             int i;
             const char* title;
             int j;
+			if(sort&BRDSORT1_FLAG){
+				struct BoardStatus *tpr;
+            	if (session->favbrd_list[favnow].bid[n] < 0)
+					thisonline=9999;
+    	        else{
+    				tpr = getbstatus(session->favbrd_list[favnow].bid[n]+1);
+					if(tpr) thisonline = tpr->currentusers;
+					else thisonline=0;
+				}
+			}else{
             if (session->favbrd_list[favnow].bid[n] < 0)
             	title=NullChar;
             else
             	title=bptr->filename;
+			}
             for (i=0;i<curcount;i++) {
-            	if (strcasecmp(namelist[i],title)>0) break;
+				if(sort&BRDSORT1_FLAG){
+					if(sort1list[i] < thisonline) break;
+				}
+				else{
+					if (strcasecmp(namelist[i],title)>0) break;
+				}
             }
             if ((i==curcount)&&curcount>=pos+len-1) /*已经在范围之外乐*/
             	continue;
             else
             	   for (j=(curcount>=pos+len-1)?pos+len-2:curcount;j>i;j--) {
-            			namelist[j]=namelist[j-1];
+						if(sort&BRDSORT1_FLAG) sort1list[j]=sort1list[j-1];
+						else namelist[j]=namelist[j-1];
             			indexlist[j]=indexlist[j-1];
              	   }
-            namelist[i]=title;
+			if(sort&BRDSORT1_FLAG) sort1list[i]=thisonline;
+			else namelist[i]=title;
             indexlist[i]=n;
             if (curcount<pos+len-1) curcount++;
         }
@@ -1274,14 +1296,16 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,bool sort,
         }
     }
     if (sort) {
-    	if (input_namelist==NULL)
+		if(sort&BRDSORT1_FLAG)
+			free(sort1list);
+		else if (input_namelist==NULL)
     	    free(namelist);
     	free(indexlist);
     }
     return brdnum;
 }
 
-int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int pos,int len,bool sort,bool yank_flag,const char** input_namelist,session_t* session)
+int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int pos,int len,int sort,bool yank_flag,const char** input_namelist,session_t* session)
 {
     int n;
     const struct boardheader *bptr;
@@ -1291,6 +1315,9 @@ int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int p
     const char** namelist;
     const char** titlelist;
     int* indexlist;
+    int* sortlist;
+    int thisonline;
+	struct BoardStatus *tpr;
 	time_t tnow;
 
 	tnow = time(0);
@@ -1305,6 +1332,7 @@ int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int p
     	namelist=input_namelist;
     titlelist=(const char**)malloc(sizeof(char**)*(pos+len-1));
     indexlist=(int*)malloc(sizeof(int*)*(pos+len-1));
+    sortlist=(int*)malloc(sizeof(int*)*(pos+len-1));
     for (n = 0; n < get_boardcount(); n++) {
         bptr = (struct boardheader *) getboard(n + 1);
         if (!bptr)
@@ -1325,12 +1353,19 @@ int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int p
             int i;
             int j;
             brdnum++;
+		    if (sort & BRDSORT1_FLAG){
+    				tpr = getbstatus(n+1);
+					if(tpr) thisonline = tpr->currentusers;
+					else thisonline=0;
+		    }
             /*都要排序*/
             for (i=0;i<curcount;i++) {
 		    int type;
 		    type = 0;
 
-		    if (!sort) {
+		    if (sort & BRDSORT1_FLAG){
+			type = thisonline - sortlist[i];
+		    }else if (!sort) {
 			type = titlelist[i][0] - bptr->title[0];
                         if (type == 0)
                             type = strncasecmp(&titlelist[i][1], bptr->title + 1, 6);
@@ -1345,10 +1380,12 @@ int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int p
                 for (j=(curcount>=pos+len-1)?pos+len-2:curcount;j>i;j--) {
                     namelist[j]=namelist[j-1];
                     titlelist[j]=titlelist[j-1];
+                    sortlist[j]=sortlist[j-1];
                     indexlist[j]=indexlist[j-1];
                 }
             namelist[i]=bptr->filename;
             titlelist[i]=bptr->title;
+            sortlist[i]=thisonline;
             indexlist[i]=n;
             if (curcount<pos+len-1) curcount++;
         }
@@ -1370,6 +1407,7 @@ int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int p
         }
     }
     free(titlelist);
+    free(sortlist);
     if (input_namelist==NULL)
         free(namelist);
     free(indexlist);

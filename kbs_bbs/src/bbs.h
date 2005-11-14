@@ -290,6 +290,9 @@ O MaxMessageSize=32000
 #define CURSOR_FLAG  0x80       /* true if the cursor mode open */
 #define GIVEUP_FLAG  0x4        /* true if the user is giving up  by bad 2002.7.6 */
 #define PCORP_FLAG	 0x40		/* true if have personalcorp */
+#define ACTIVATED_FLAG 0x8      /* true if email activated - atppp 20050405 */
+#define BRDSORT1_FLAG 0x10		/* true if sort by online */
+
 /* For All Kinds of Pagers */
 #define ALL_PAGER       0x1
 #define FRIEND_PAGER    0x2

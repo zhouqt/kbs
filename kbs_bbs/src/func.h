@@ -306,7 +306,7 @@ void unlock_sem_check(int lockid);
 	int valid_brdname(char *brd);
     void detach_boards(ARG_VOID);
     int anonymousboard(const char *board);
-    int load_boards(struct newpostdata *nbrd, const char *boardprefix, int group, int pos, int len, bool sort, bool yank_flag, const char **input_namelist,session_t* session);
+    int load_boards(struct newpostdata *nbrd, const char *boardprefix, int group, int pos, int len, int sort, bool yank_flag, const char **input_namelist,session_t* session);
 #if USE_TMPFS==1
     void init_brc_cache(const char* userid,bool replace, session_t* session);
     void free_brc_cache(char* userid, session_t* session);
@@ -337,7 +337,7 @@ void unlock_sem_check(int lockid);
 
     int brc_initial(const char *userid, const char *boardname,session_t* session);
     char *brc_putrecord(char *ptr, char *name, int num, int *list);
-    int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, bool sort,const char **input_namelist,session_t* session);
+    int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, int sort,const char **input_namelist,session_t* session);
     /*
      * 保存一个版的brclist 
      */

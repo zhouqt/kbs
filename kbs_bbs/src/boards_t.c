@@ -763,7 +763,17 @@ static int fav_key(struct _select_def *conf, int command)
             return SHOW_REFRESH;
         }
     case 'S':
-        getCurrentUser()->flags ^= BRDSORT_FLAG;  /*排序方式 */
+
+		if (!(getCurrentUser()->flags & BRDSORT_FLAG)){
+			getCurrentUser()->flags |= BRDSORT_FLAG;
+			getCurrentUser()->flags &= ~BRDSORT1_FLAG;
+		}else if(getCurrentUser()->flags & BRDSORT1_FLAG){
+			getCurrentUser()->flags &= ~BRDSORT_FLAG;
+			getCurrentUser()->flags &= ~BRDSORT1_FLAG;
+		}else{
+			getCurrentUser()->flags |= BRDSORT1_FLAG;
+		}
+        /*排序方式 */
         return SHOW_DIRCHANGE;
     case 's':                  /* sort/unsort -mfchen */
 	{
@@ -1145,6 +1155,7 @@ static int fav_refresh(struct _select_def *conf)
 static int fav_getdata(struct _select_def *conf, int pos, int len)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
+	int sort;
 
     if (arg->reloaddata) {
     	arg->reloaddata=false;
@@ -1153,16 +1164,23 @@ static int fav_getdata(struct _select_def *conf, int pos, int len)
     		arg->namelist=NULL;
     	}
     }
+
+	sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ( (getCurrentUser()->flags&BRDSORT1_FLAG)+1):0;
     if (pos==-1) 
-        fav_loaddata(NULL, arg->father,1, conf->item_count,getCurrentUser()->flags & BRDSORT_FLAG,arg->namelist, getSession());
-    else
-        conf->item_count = fav_loaddata(arg->nbrd, arg->father,pos, len,getCurrentUser()->flags & BRDSORT_FLAG,NULL, getSession());
+        fav_loaddata(NULL, arg->father,1, conf->item_count,sort,arg->namelist, getSession());
+    else{
+		if((arg->favmode==2 || arg->favmode==3)){
+    		if(!strcmp(getSession()->favbrd_list[arg->father].ename, "HotBoards")) sort=BRDSORT1_FLAG+1;
+		}
+        conf->item_count = fav_loaddata(arg->nbrd, arg->father,pos, len,sort,NULL, getSession());
+	}
     return SHOW_CONTINUE;
 }
 
 static int boards_getdata(struct _select_def *conf, int pos, int len)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
+	int sort;
 
     if (arg->reloaddata) {
     	arg->reloaddata=false;
@@ -1171,10 +1189,11 @@ static int boards_getdata(struct _select_def *conf, int pos, int len)
     		arg->namelist=NULL;
     	}
     }
+	sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ( (getCurrentUser()->flags&BRDSORT1_FLAG)+1):0;
     if (pos==-1) 
-         load_boards(NULL, arg->boardprefix,arg->father,1, conf->item_count,getCurrentUser()->flags & BRDSORT_FLAG,arg->yank_flag,arg->namelist, getSession());
+         load_boards(NULL, arg->boardprefix,arg->father,1, conf->item_count,sort,arg->yank_flag,arg->namelist, getSession());
     else
-         conf->item_count = load_boards(arg->nbrd, arg->boardprefix,arg->father,pos, len,getCurrentUser()->flags & BRDSORT_FLAG,arg->yank_flag,NULL, getSession());
+         conf->item_count = load_boards(arg->nbrd, arg->boardprefix,arg->father,pos, len,sort,arg->yank_flag,NULL, getSession());
     return SHOW_CONTINUE;
 }
 int choose_board(int newflag, const char *boardprefix,int group,int favmode)

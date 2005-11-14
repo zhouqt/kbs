@@ -727,9 +727,9 @@ int main(int argc, char **argv)
                setbuf(cfp, (char *) 0);
              */
 #ifdef USE_SSL
-            sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s starting.", NAME_BBS_ENGLISH);
+            sprintf(genbuf, "+OK KBS BBS POP3/POP3S server at %s starting.", NAME_BBS_ENGLISH);
 #else
-            sprintf(genbuf, "+OK SMTH BBS POP3 server at %s starting.", NAME_BBS_ENGLISH);
+            sprintf(genbuf, "+OK KBS BBS POP3 server at %s starting.", NAME_BBS_ENGLISH);
 #endif
             outs(genbuf);
 
@@ -1280,7 +1280,7 @@ void Quit()
         free(postlen);
     }
     BBSlog_usies("EXIT");
-    sprintf(genbuf, "+OK SMTH BBS POP3/POP3S server at %s signing off.", NAME_BBS_ENGLISH);
+    sprintf(genbuf, "+OK KBS BBS POP3/POP3S server at %s signing off.", NAME_BBS_ENGLISH);
     outs(genbuf);
     close(sock);
     exit(0);

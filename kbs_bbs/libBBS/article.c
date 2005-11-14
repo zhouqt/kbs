@@ -413,6 +413,8 @@ void cancelpost(const char *board, const char *userid, struct fileheader *fh, in
         postfile.reid = fh->reid;
         postfile.attachment = fh->attachment;
         set_posttime2(&postfile, fh);
+		postfile.accessed[0] = fh->accessed[0];
+		postfile.accessed[1] = fh->accessed[1];
     };
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
     strncpy(ph->title, oldpath, ARTICLE_TITLE_LEN - 1);
