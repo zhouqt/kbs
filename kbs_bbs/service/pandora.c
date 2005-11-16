@@ -19,7 +19,7 @@
 char host1[MAXSTATION][19], host2[MAXSTATION][40], ip[MAXSTATION][40];
 int port[MAXSTATION]; 
 
-char str[]= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+char str[]= "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234/";
 char ip_zdh[40]; 
 char user[21];
 int sockfd;
@@ -258,22 +258,19 @@ int bbsnet(int n)
 	sig_t oldsig;
 	int ret;
 
-    char buf1[40], buf2[39], c, buf3[2];        //增加的变量
+    char buf1[40], buf2[40], c, buf3[40];        //增加的变量
     int l;                      //判断是不是port
     int j, m;
 
     if (strcmp(host2[n], "般若波羅密") == 0) {  //如果是自定义站点，等待输入ip或域名
 
-        for (i = 0; i < 25; i++) {
-            buf1[i] = '\0';
-            buf2[i] = '\0';
-        }
+        memset(buf1, 0, sizeof(buf1));
 		move(22,2);
         prints("\033[1;32m连往: \033[m");
         refresh();
         j = 0;
         l = 0;
-        for (i = 0; i < 30; i++) {
+        for (i = 0; i < 30;) {
             c = igetch();
             if (c == ' ' || c == '\015' || c == '\0' || c == '\n')
                 break;
@@ -286,33 +283,27 @@ int bbsnet(int n)
                 refresh();
                 strncpy(ip_zdh, buf1, 40);
                 strncpy(ip[n], ip_zdh, 40);
-                for (m = 0; m < 20; m++) {
-                    buf1[m] = '\0';
-                    buf2[m] = '\0';
-                }
+                memset(buf1, 0, sizeof(buf1));
                 j = 0;
+                i++;
             }
-            if ((c >= '0' && c <= '9') || (c == '.') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+            if ((c >= '0' && c <= '9') || (((c == '.') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) && !l)) {
                 sprintf(buf3, "%c", c);
                 sprintf(buf2, "%s%c", buf1, c);
                 sprintf(buf1, "%s", buf2);
                 prints(buf3);
                 refresh();
-                j = j + 1;
+                j++;
+                i++;
             }
             if ((c == 8) && (j >= 1)) {
-                for (m = j - 1; m < 20; m++) {
-                    buf1[m] = '\0';
-                    buf2[m] = '\0';
-                }
-                sprintf(buf3, "%c", c);
+                buf1[j - 1] = '\0';
+                sprintf(buf3, "\033[D\033[1;33m_\033[%sm\033[D", l ? "1;33" : "0");
                 prints(buf3);
                 refresh();
                 i--;
                 j--;
             }
-
-            refresh();
         }
         if (l == 0) {
             strncpy(ip_zdh, buf1, 40);
@@ -522,12 +513,14 @@ static int bbsnet_refresh(struct _select_def *conf)
 
 int bbsnet_selchange(struct _select_def* conf,int new_pos)
 {
-    static oldn = -1;
+    static int oldn = -1;
 
     if (oldn >= 0) {
         locate(oldn);
         prints("\033[1;32m %c.\033[m%s", str[oldn], host2[oldn]);
     }
+    if (new_pos < 1) new_pos = conf->item_count;
+    if (new_pos > conf->item_count) new_pos = 1;
     oldn = new_pos-1;
     if (strcmp(host2[new_pos-1], "般若波羅密") == 0) {  //判断自定义站点
 		move(21,2);
