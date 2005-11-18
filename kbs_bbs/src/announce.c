@@ -637,6 +637,7 @@ char *path;
 	    pathnum ++ ;
 	}
 	objectbid = getbnum(pathslice);
+	if (!objectbid) return 0; //不可见版面 ? - atppp 20051118
 	objectboard = getboard(objectbid);
 	if (chk_currBM(objectboard->BM, getCurrentUser()))
         	return 1;
