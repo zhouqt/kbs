@@ -1210,7 +1210,7 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     board_attach_link(slink,255,-1,fileinfo);
     clear();
     move(3,0);
-    prints("全文连接：\n\033[4m%s\033[m\n",slink);
+    prints("全文链接：\n\033[4m%s\033[m\n",slink);
     pressanykey();
     return FULLUPDATE;
 }
@@ -1437,7 +1437,8 @@ reget:
             arg->oldpos=conf->pos;
             goto reget;
         } else return READ_NEXT;
-    case Ctrl('Q'):            /*Haohmaru.98.12.05,系统管理员直接查作者资料 */
+    case '~':            /*Haohmaru.98.12.05,系统管理员直接查作者资料 */
+        if (!HAS_PERM(getCurrentUser(), PERM_ADMIN)) break;
         clear();
         read_showauthorinfo(conf, fileinfo, NULL);
         return READ_NEXT;
@@ -1826,7 +1827,7 @@ int generate_mark(struct read_arg* arg)
     setbdir(DIR_MODE_MARK, direct, currboard->filename);
     setbdir(DIR_MODE_NORMAL, normaldirect, currboard->filename);
     if ((fd = open(direct, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("3user", "recopen err %s:%s", direct,strerror(errno));
+        bbslog("user", "recopen err %s:%s", direct,strerror(errno));
         return -1;              /* 创建文件发生错误*/
     }
     ldata.l_type = F_WRLCK;
@@ -1834,7 +1835,7 @@ int generate_mark(struct read_arg* arg)
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("3user", "reclock err %s:%s", direct,strerror(errno));
+        bbslog("user", "reclock err %s:%s", direct,strerror(errno));
         close(fd);
         return -1;              /* lock error*/
     }
@@ -1847,7 +1848,7 @@ int generate_mark(struct read_arg* arg)
     }
 
     if ((fd2 = open(normaldirect, O_RDONLY, 0664)) == -1) {
-        bbslog("3user", "recopen err %s:%s", normaldirect,strerror(errno));
+        bbslog("user", "recopen err %s:%s", normaldirect,strerror(errno));
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
@@ -2241,7 +2242,7 @@ void do_quote(char *filepath, char quote_mode, char *q_file, char *q_user)
     bflag = strncmp(qfile, "mail", 4);  /* 判断引用的是文章还是信 */
     outf = fopen(filepath, "a");
     if (outf==NULL) {
-    	bbslog("3user","do_quote() fopen(%s):%s",filepath,strerror(errno));
+    	bbslog("user","do_quote() fopen(%s):%s",filepath,strerror(errno));
     	return;
     }
     if (*qfile != '\0' && (inf = fopen(qfile, "rb")) != NULL) {  /* 打开被引用文件 */

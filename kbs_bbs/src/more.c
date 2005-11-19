@@ -765,7 +765,7 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
 
         if (current_attach_link) {
             (*current_attach_link)(slink,255,-1,current_attach_link_arg);
-	    prints("全文连接：\033[4m%s\033[m\n",slink);
+	    prints("全文链接：\033[4m%s\033[m\n",slink);
         }
 	 return;
     }

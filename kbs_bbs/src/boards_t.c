@@ -645,7 +645,7 @@ static int fav_key(struct _select_def *conf, int command)
                 sprintf(genbuf, "只读讨论区 %s ", ptr->name);
                 securityreport(genbuf, NULL, NULL);
                 sprintf(genbuf, " readonly board %s", ptr->name);
-                bbslog("1user", "%s", genbuf);
+                newbbslog(BBSLOG_USER, "%s", genbuf);
 
                 return SHOW_REFRESHSELECT;
             }
@@ -666,7 +666,7 @@ static int fav_key(struct _select_def *conf, int command)
             sprintf(genbuf, "解开只读讨论区 %s ", ptr->name);
             securityreport(genbuf, NULL, NULL);
             sprintf(genbuf, " readable board %s", ptr->name);
-            bbslog("1user", "%s", genbuf);
+            newbbslog(BBSLOG_USER, "%s", genbuf);
 
             return SHOW_REFRESHSELECT;
         }

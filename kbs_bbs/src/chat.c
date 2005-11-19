@@ -345,7 +345,7 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
         close(pthis->cfd);
         switch (ch = fork()) {
         case -1 /*fork failure */ :
-            bbslog("3chatd", "fork error");
+            bbslog("chatd", "fork error");
             break;
         case 0 /*fork success */ :
             bbslog("chatd", "fork success");
@@ -363,7 +363,7 @@ int ent_chat_conn(chatcontext * pthis, int chatnum)
         pthis->cfd = socket(sin.sin_family, SOCK_STREAM, 0);
         if ((connect(pthis->cfd, (struct sockaddr *) &sin, sizeof sin))) {
             close(pthis->cfd);
-            bbslog("3chatd", "connect2 failed %d", errno);
+            bbslog("chatd", "connect2 failed %d", errno);
             return -1;
         }
     }
