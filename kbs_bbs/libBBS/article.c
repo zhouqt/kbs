@@ -822,7 +822,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         strcpy(whopost, user->userid);
 
     strncpy(postfile.owner, whopost, OWNER_LEN);
-    postfile.owner[OWNER_LEN - 1] = 1;
+    postfile.owner[OWNER_LEN - 1] = '\0';
     setbfile(filepath, toboard, postfile.filename);
 
     local_article = 1;          /* default is local article */
@@ -2276,7 +2276,7 @@ int pass_filter(struct fileheader *fileinfo, struct boardheader *board, session_
             }
             lseek(filedes, 0, SEEK_END);
             if (safewrite(filedes, &newfh, sizeof(fileheader)) == -1) {
-                bbslog("3user", "apprec write err! %s", newfh.filename);
+                bbslog("user", "apprec write err! %s", newfh.filename);
             }
             flock(filedes, LOCK_UN);
             close(filedes);
