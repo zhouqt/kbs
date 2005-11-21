@@ -1527,6 +1527,7 @@ static int sb_show(struct _select_def *conf, int i)
 {
 	const struct boardheader *bp;
 	int *result = (int *) (conf->arg);
+    int dir = 0;
 	struct BoardStatus *bptr;
 
 	bp=getboard(result[i-1]);
@@ -1537,8 +1538,11 @@ static int sb_show(struct _select_def *conf, int i)
     bptr = getbstatus(result[i-1]);
 
 //	prints(" %2d %-20s %-40s", i, bp->filename, bp->title);
-	prints(" %4d%s ", bptr->total, bptr->total > 9999 ? " " : "  " ); 
-    prints("%-16s %s%-36s", bp->filename, (bp->flag & BOARD_VOTEFLAG) ? "\033[31;1mV\033[m" : " ",  bp->title+1); 
+    if (bp->flag&BOARD_GROUP) {
+        dir = 1;
+    }
+    prints(" %4d%s", dir?bp->board_data.group_total:bptr->total, !dir&&bptr->total>9999?"":" ");
+    prints("%2s %-16s %s%-36s", dir?"＋":"  ", bp->filename, (bp->flag & BOARD_VOTEFLAG) ? "\033[31;1mV\033[m" : " ",  bp->title+1); 
 
 	return SHOW_CONTINUE;
 }
@@ -1584,7 +1588,7 @@ static int sb_refresh(struct _select_def *conf)
     setfcolor(WHITE, DEFINE(getCurrentUser(), DEF_HIGHCOLOR));
     setbcolor(BLUE);
     clrtoeol();
-    prints("  %s 讨论区名称        V 类别 转信  %-24s            ", "全部 " , "中  文  叙  述");
+    prints("   %s   讨论区名称       V 类别 转信  %-24s            ", "全部 " , "中  文  叙  述");
     resetcolor();
     update_endline();
     return SHOW_CONTINUE;
