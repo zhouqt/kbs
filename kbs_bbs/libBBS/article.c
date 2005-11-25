@@ -1506,10 +1506,8 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         }
     } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_SIGN)) {
         type = '#';
-#ifdef PERCENT_SIGN_SUPPORT
     } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_PERCENT)) {
         type = '%';
-#endif
 #ifdef FILTER
 #ifdef SMTH
     } else if ((ent->accessed[1] & FILE_CENSOR)
@@ -2017,11 +2015,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
                 if (count > id2)
                     break;      /*del end */
                 if (del_mode == 0) {
-#ifdef PERCENT_SIGN_SUPPORT
                     if (!((savefhdr[i].accessed[0] & FILE_MARKED)||(savefhdr[i].accessed[0] & FILE_PERCENT)))
-#else
-                    if (!(savefhdr[i].accessed[0] & FILE_MARKED))
-#endif
                         savefhdr[i].accessed[1] |= FILE_DEL;
                 } else {
                     savefhdr[i].accessed[1] &= ~FILE_DEL;
@@ -2053,9 +2047,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
 #ifdef FREE
                 || savefhdr[i].accessed[0] & FILE_DIGEST
 #endif
-#ifdef PERCENT_SIGN_SUPPORT
                 || savefhdr[i].accessed[0] & FILE_PERCENT
-#endif
                ) && del_mode != 2)
                 || ((id1 == 0) && (!(savefhdr[i].accessed[1] & FILE_DEL)))) {
                 memcpy(&readfhdr[keepcount], &savefhdr[i], sizeof(struct fileheader));
@@ -2418,14 +2410,12 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
         else
             originFh->accessed[0] &= ~FILE_SIGN;
     }
-#ifdef PERCENT_SIGN_SUPPORT
     if (flag & FILE_PERCENT_FLAG) {
         if (data->accessed[0] & FILE_PERCENT)
             originFh->accessed[0] |= FILE_PERCENT;
         else
             originFh->accessed[0] &= ~FILE_PERCENT;
     }
-#endif
     /*
      * 标记删除 处理
      */

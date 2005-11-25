@@ -296,6 +296,7 @@ static int search_board(int *num, struct _select_def *conf, int key)
     }
     if (arg->namelist==NULL) {
     	arg->namelist=(const char**)malloc(MAXBOARD*sizeof(char*));
+        memset(arg->namelist, 0, MAXBOARD*sizeof(char*));
     	conf->get_data(conf,-1,-1);
     }
     while (1) {
@@ -314,6 +315,7 @@ static int search_board(int *num, struct _select_def *conf, int key)
         if (isprint2(ch)) {
             arg->bname[arg->bname_len++] = ch;
             for (n = 0; n < conf->item_count; n++) {
+                if (!(arg->namelist[n])) continue;
                 if ((!strncasecmp(arg->namelist[n], arg->bname, arg->bname_len))&&*num==0) {
                     tmpn = true;
                     *num = n;

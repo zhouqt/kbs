@@ -114,11 +114,9 @@ static int sffn_noreply(struct super_filter_args *arg) {
 static int sffn_sign(struct super_filter_args *arg) {
     return (arg->ptr->accessed[0]&FILE_SIGN);
 }
-#ifdef PERCENT_SIGN_SUPPORT
 static int sffn_percent(struct super_filter_args *arg) {
 	return (arg->ptr->accessed[0]&FILE_PERCENT);
 }
-#endif
 #ifdef FILTER
 static int sffn_censor(struct super_filter_args *arg) {
     return (arg->ptr->accessed[1]&FILE_CENSOR);
@@ -194,9 +192,7 @@ const static struct super_filter_vars varnames[] = {
 
     SUPER_FILTER_BM_PAIR(noreply),  {"不可回复", 1, sffn_noreply, NULL}, 
     SUPER_FILTER_BM_PAIR(sign),     {"标记", 1, sffn_sign, NULL}, 
-#ifdef PERCENT_SIGN_SUPPORT
     SUPER_FILTER_BM_PAIR(percent),  {"百分号", 1, sffn_percent, NULL}, 
-#endif
 #ifdef FILTER
     SUPER_FILTER_BM_PAIR(censor),   {"审核", 1, sffn_censor, NULL}, 
 #endif
@@ -877,7 +873,7 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
     prints("                  超强文章选择\n\n");
     move(5,0);
     prints("变量: no(文章号) m(保留) g(文摘) b(m&&g) noreply(不可回复) sign(标记)\n"
-           "      del(删除) \033[1;31ma(附件)\033[0m unread(未读)\n"
+           "      del(删除) \033[1;31ma(附件)\033[0m unread(未读) percent(百分号)\n"
            "      title(标题) author(作者)\n"
            "函数: sub(s1,s2)第一个字符串在第二个中的位置,如果不存在返回0\n"
            "      len(s)字符串长度\n"

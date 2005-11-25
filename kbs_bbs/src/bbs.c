@@ -396,9 +396,7 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
             {FILE_MARK_FLAG,0,FILE_MARKED,"标记m"},
             {FILE_NOREPLY_FLAG,1,FILE_READ,"不可Re"},
             {FILE_SIGN_FLAG,0,FILE_SIGN,"标记#"},
-#ifdef PERCENT_SIGN_SUPPORT
             {FILE_PERCENT_FLAG,0,FILE_PERCENT,"标记%"},
-#endif
             {FILE_DELETE_FLAG,1,FILE_DEL,"标记X"},
             {FILE_DIGEST_FLAG,0,FILE_DIGEST,"文摘"},
             {FILE_TITLE_FLAG,0,0,"原文"},
@@ -2858,7 +2856,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 	else{
     	struct stat st;
 		if(stat(filepath, &st)!=-1)
-			eff_size = st.st_size;
+			eff_size = st.st_size; /* TODO: BUG */
 		else
 			eff_size = 0;
 
@@ -3781,6 +3779,9 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     int i,k;
     int fflag;
     struct read_arg* arg=conf->arg;
+#ifdef FILTER
+    int is_filter = (HAS_PERM(getCurrentUser(), PERM_SYSOP)&&(!strcmp(currboard->filename,FILTER_BOARD)));
+#endif
     
     if (!chk_currBM(currBM, getCurrentUser())) return DONOTHING;
     if (arg->mode!=DIR_MODE_SUPERFITER) return DONOTHING;
@@ -3799,19 +3800,19 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         pressreturn();
         return FULLUPDATE;
     }
-    sprintf(buf, "1-保留标记m  2-删除标记t  3-文摘标记g  4-不可Re标记  5-标记#%s:[0]",
+    sprintf(buf, "1-保留m  2-标记删除t  3-文摘g  4-不可Re  5-标记#  6-标记%%%s:[0]",
 #ifdef FILTER
-        HAS_PERM(getCurrentUser(), PERM_SYSOP)?"  6-审查标记@":"");
+        is_filter?"  7-审查标记@":"");
 #else
         "");
 #endif
     getdata(4, 0, buf, ans, 4, DOECHO, NULL, true);
 #ifdef FILTER
-    if(ans[0]=='6'&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return FULLUPDATE;
+    if(ans[0]=='7'&&(!is_filter)) return FULLUPDATE;
 #else
-    if(ans[0]=='6') return FULLUPDATE;
+    if(ans[0]=='7') return FULLUPDATE;
 #endif
-    if(ans[0]<'1'||ans[0]>'6') return FULLUPDATE;
+    if(ans[0]<'1'||ans[0]>'7') return FULLUPDATE;
     if(askyn("请慎重考虑, 确认操作吗?", 0)==0) return FULLUPDATE;
     k=ans[0]-'0';
     if(k==1) fflag=FILE_MARK_FLAG;
@@ -3819,32 +3820,33 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     else if(k==3) fflag=FILE_DIGEST_FLAG;
     else if(k==4) fflag=FILE_NOREPLY_FLAG;
     else if(k==5) fflag=FILE_SIGN_FLAG;
+    else if(k==6) fflag=FILE_PERCENT_FLAG;
 #ifdef FILTER
-    else if(k==6) fflag=FILE_CENSOR_FLAG;
+    else if(k==7) fflag=FILE_CENSOR_FLAG;
 #endif
     else return FULLUPDATE;
-    for(i=inum1;i<=inum2;i++) 
-    if(i>=1&&i<=total) {
-        struct write_dir_arg dirarg;
-        struct fileheader data;
-        data.accessed[0]=0xff;
-        data.accessed[1]=0xff;
-
-        init_write_dir_arg(&dirarg);
-        dirarg.fd=arg->fd;
-        dirarg.filename=arg->direct;
-        dirarg.ent = i;
-        dirarg.needlock=false;
-        data.accessed[0]=FILE_IMPORTED;
-        flock(arg->fd,LOCK_EX);
-        malloc_write_dir_arg(&dirarg);
-        change_post_flag(&dirarg, 
-            arg->mode,
-            currboard, 
-            dirarg.fileptr+(i-1), 
-            fflag, &data, true,getSession());
-        flock(arg->fd,LOCK_UN);
-        free_write_dir_arg(&dirarg);
+    for(i=inum1;i<=inum2;i++) {
+        if(i>=1&&i<=total) {
+            struct write_dir_arg dirarg;
+            struct fileheader data;
+            data.accessed[0]=0xff;
+            data.accessed[1]=0xff; /* TODO: 是否根据首篇文章的标记来决定加上还是去掉标记? */
+            
+            init_write_dir_arg(&dirarg);
+            dirarg.fd=arg->fd;
+            dirarg.filename=arg->direct;
+            dirarg.ent = i;
+            dirarg.needlock=false;
+            flock(arg->fd,LOCK_EX);
+            malloc_write_dir_arg(&dirarg);
+            change_post_flag(&dirarg, 
+                arg->mode,
+                currboard, 
+                dirarg.fileptr+(i-1), 
+                fflag, &data, true,getSession());
+            flock(arg->fd,LOCK_UN);
+            free_write_dir_arg(&dirarg);
+        }
     }
     prints("\n完成标记\n");
     pressreturn();
@@ -5631,11 +5633,7 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
     }
     switch (func_arg->action) {
         case BM_DELETE:
-            if (!(fh->accessed[0] & (FILE_MARKED
-#ifdef PERCENT_SIGN_SUPPORT
-		| FILE_PERCENT
-#endif
-               ))) {
+            if (!(fh->accessed[0] & (FILE_MARKED | FILE_PERCENT))) {
                 if (del_post(conf,fh,(void*)(ARG_BMFUNC_FLAG|ARG_NOPROMPT_FLAG|ARG_BMFUNC_FLAG))==DIRCHANGED)
                     ret=APPLY_REAPPLY;
             }
@@ -5656,11 +5654,7 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
             break;
         case BM_MARKDEL:
 	    if (func_arg->setflag) {
-            if (!(fh->accessed[0] & (FILE_MARKED
-#ifdef PERCENT_SIGN_SUPPORT
-                | FILE_PERCENT
-#endif
-               ))) {
+            if (!(fh->accessed[0] & (FILE_MARKED | FILE_PERCENT))) {
                 fh->accessed[1] |= FILE_DEL;
             }
 	    } else
@@ -5972,9 +5966,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'m', (READ_KEY_FUNC)set_article_flag,(void*)FILE_MARK_FLAG},
     {';', (READ_KEY_FUNC)noreply_post,(void*)NULL},        /*Haohmaru.99.01.01,设定不可re模式 */
     {'#', (READ_KEY_FUNC)set_article_flag,(void*)FILE_SIGN_FLAG},           /* Bigman: 2000.8.12  设定文章标记模式 */
-#ifdef PERCENT_SIGN_SUPPORT
     {'%', (READ_KEY_FUNC)set_article_flag,(void*)FILE_PERCENT_FLAG},           /* asing: 2004.4.16  设定文章标记模式 */
-#endif
 #ifdef FILTER
     {'@', (READ_KEY_FUNC)set_article_flag,(void*)FILE_CENSOR_FLAG},         /* czz: 2002.9.29 审核被过滤文章 */
 #endif

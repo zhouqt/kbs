@@ -349,7 +349,7 @@ int exec_mbem(char *s)
     char buf[1024];   
     int oldmode;
     
-    if (HAS_PERM(getCurrentUser(),PERM_DENYRELAX)) {
+    if (HAS_PERM(getCurrentUser(),PERM_DENYRELAX) && !HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
 	clear();
         move(4,0);
 	prints("你被封禁了休闲娱乐权限或者自己戒了休闲娱乐功能！");
