@@ -77,6 +77,4 @@ if test "$PHP_DIR" != "no"; then
   AC_SUBST(PHPBBSLIBPATH)
   AC_SUBST(BBSSITE)
 
-  HTML_FILES=`cd bbs2www; find html -path '*/CVS/*' -prune -o -type f -print | xargs`
-  AC_SUBST(HTML_FILES)
 fi
