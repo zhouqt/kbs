@@ -1,9 +1,11 @@
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
 #ifdef BBS_SERVICE_QUIZ
 #if HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
 
+SMTH_API int t_lines;
 MYSQL s;
 MYSQL_RES *res;
 MYSQL_ROW row;
@@ -144,7 +146,7 @@ int init_quiz()
     }    
 }
 
-extern int kicked;
+SMTH_API int kicked;
 extern void ktimeout(void * data);
 
 int quiz_test()

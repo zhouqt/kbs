@@ -28,7 +28,11 @@ Modified by znight@smth, 01/14/2004
 ******************************************************/
 
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
+
+SMTH_API struct user_info uinfo;
+SMTH_API int t_lines;
 
 // ÊÇ·ñÄÏ¿ªBBS
 #undef NANKAI
@@ -47,7 +51,7 @@ Modified by znight@smth, 01/14/2004
 
 #define K_HAS_PERM HAS_PERM
 #define CURRENTUSER getCurrentUser()
-extern int kicked;
+SMTH_API int kicked;
 
 #define DEFAULT_SIGNAL talk_request
 
@@ -1105,7 +1109,7 @@ void refreshit()
 	inrefresh=0;
 }
 
-extern int RMSG;
+SMTH_API int RMSG;
 
 void room_refresh(int signo)
 {

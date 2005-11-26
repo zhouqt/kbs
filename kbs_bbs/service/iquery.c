@@ -7,6 +7,7 @@
 ******************************************************/
 
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
 
 #include <sys/types.h>
@@ -16,6 +17,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include <stdio.h>
+
+SMTH_API int t_lines;
 
 #define MAX_KEEP 100
 

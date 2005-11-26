@@ -1,8 +1,12 @@
 #define BBSMAIN
+#include "service.h"
 #include "bbs.h"
 #ifdef BBS_SERVICE_DICT
 #if HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
+
+SMTH_API struct user_info uinfo;
+SMTH_API int t_lines;
 
 #define WORDLEN 100
 char save_scr[LINEHEIGHT][LINELEN*3];

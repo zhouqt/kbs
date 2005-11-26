@@ -4,6 +4,7 @@
 // zixia bbsnet, Changed by zixia, zixia@zixia.net, 2002.12.25
 // zixia pandora, Changed by zixia, zixia@zixia.net, 2003.1.25
 // zixia pandora, Change by roy, roy@zixia.net 2003.6.08
+#include "service.h"
 #include "bbs.h"
 #include "select.h"
 #include "tcplib.h"
@@ -25,9 +26,9 @@ char user[21];
 int sockfd;
 jmp_buf jb;
 
-extern int msg_count;
-extern struct user_info uinfo;
-extern int utmpent;
+SMTH_API int msg_count;
+SMTH_API struct user_info uinfo;
+SMTH_API int utmpent;
 
 struct _select_def bbsnet_conf;
 

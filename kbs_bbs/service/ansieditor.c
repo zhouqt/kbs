@@ -20,9 +20,10 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <assert.h>
+#include "service.h"
 #include "bbs.h"
 
-extern int scr_lns, scr_cols;
+SMTH_API int scr_lns, scr_cols;
 
 #define EDITOR_NAME "Belle AnsiEditor"
 #define NUM_COLS LINELEN
