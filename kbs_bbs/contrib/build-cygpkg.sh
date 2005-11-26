@@ -343,5 +343,47 @@ install_service "tetris" "service" || exit 26
 build_service_dll "sshtetris.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 27
 install_service "sshtetris" "service" || exit 27
 
+OBJ_FILES="dict.o"
+build_service_dll "dict.dll" $OBJ_FILES $DLL_LD_FLAGS || exit 28
+install_service "dict" "service" || exit 28
+build_service_dll "sshdict.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 29
+install_service "sshdict" "service" || exit 29
+
+OBJ_FILES="quiz.o"
+build_service_dll "quiz.dll" $OBJ_FILES $DLL_LD_FLAGS || exit 30
+install_service "quiz" "service" || exit 30
+build_service_dll "sshquiz.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 31
+install_service "sshquiz" "service" || exit 31
+
+OBJ_FILES="iquery.o"
+build_service_dll "iquery.dll" $OBJ_FILES $DLL_LD_FLAGS || exit 32
+install_service "iquery" "service" || exit 32
+build_service_dll "sshiquery.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 33
+install_service "sshiquery" "service" || exit 33
+
+OBJ_FILES="killer2.o"
+build_service_dll "killer2.dll" $OBJ_FILES $DLL_LD_FLAGS || exit 34
+install_service "killer2" "service" || exit 34
+build_service_dll "sshkiller2.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 35
+install_service "sshkiller2" "service" || exit 35
+
+OBJ_FILES="ansieditor.o"
+build_service_dll "ansieditor.dll" $OBJ_FILES $DLL_LD_FLAGS || exit 36
+install_service "ansieditor" "service" || exit 36
+build_service_dll "sshansieditor.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 37
+install_service "sshansieditor" "service" || exit 37
+
+OBJ_FILES="winmine.o"
+build_service_dll "winmine.dll" $OBJ_FILES $DLL_LD_FLAGS || exit 38
+install_service "winmine" "service" || exit 38
+build_service_dll "sshwinmine.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 39
+install_service "sshwinmine" "service" || exit 39
+
+OBJ_FILES="pandora.o tcplib.o"
+build_service_dll "pandora.dll" $OBJ_FILES $DLL_LD_FLAGS || exit 40
+install_service "pandora" "service" || exit 40
+build_service_dll "sshpandora.dll" $OBJ_FILES $SSHDLL_LD_FLAGS || exit 40
+install_service "sshpandora" "service" || exit 40
+
 cd ..
 
