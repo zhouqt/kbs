@@ -57,8 +57,8 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
 
     int flush_ucache(ARG_VOID);
     int load_ucache(ARG_VOID);
-    int get_giveupinfo(char *userid, int *basicperm, int s[10][2]);
-    void save_giveupinfo(struct userec *lookupuser, int lcount, int s[10][2]);
+    int get_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]);
+    int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]);
 #ifdef DENYANONY
 	int giveup_addpost(char *userid);
 #endif

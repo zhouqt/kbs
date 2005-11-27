@@ -2852,6 +2852,8 @@ int x_deny()
         {3, 13, -1, SIT_SELECT, (void *) "8)ÍË³ö"},
         {-1, -1, -1, 0, NULL}
     };
+    static const unsigned int GIVEUP_PERM[GIVEUPINFO_PERM_COUNT]={
+        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX};
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -2861,10 +2863,7 @@ int x_deny()
     clear();
 
     while (1) {
-        int i;
-        int basicperm;
-        int s[10][2];
-        int lcount;
+        int i,basicperm,s[GIVEUPINFO_PERM_COUNT];
 
         move(1, 0);
 
@@ -2883,7 +2882,10 @@ int x_deny()
             clear();
             continue;
         }
-        lcount = get_giveupinfo(lookupuser->userid, &basicperm, s);
+        get_giveupinfo(lookupuser,s);
+        for(basicperm=0,i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+            if(s[i]>0)
+                basicperm|=GIVEUP_PERM[i];
         move(3, 0);
         clrtobot();
 
@@ -2925,7 +2927,7 @@ int x_deny()
                 if (askyn(buf, 0) != 0) {
                     lookupuser->userlevel ^= level[sel - 1];
                     securityreport(reportbuf, lookupuser, NULL);
-                    save_giveupinfo(lookupuser, lcount, s);
+                    save_giveupinfo(lookupuser,s);
                     break;
                 }
             }

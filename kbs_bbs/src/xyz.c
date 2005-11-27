@@ -249,13 +249,11 @@ int confirm_delete_id()
 
 int x_level()
 {
-    int id;
     unsigned int newlevel;
     int flag = 0;               /*Haohmaru,98.10.05 */
     int flag1 = 0, flag2 = 0;   /* bigman 2000.1.5 */
     struct userec *lookupuser;
-    int lcount = 0, basicperm;
-    int s[10][2];
+    int id,basicperm,s[GIVEUPINFO_PERM_COUNT];
 
     /*
      * add by alex, 97.7 , strict the power of sysop 
@@ -299,7 +297,7 @@ int x_level()
         flag2 = 1;
 
 /*Bad 2002.7.6 受限与戒网问题*/
-    lcount=get_giveupinfo(lookupuser->userid,&basicperm,s);
+    basicperm=get_giveupinfo(lookupuser,s);
     move(1, 0);
     clrtobot();
     move(2, 0);
@@ -333,7 +331,7 @@ int x_level()
             mail_file(getCurrentUser()->userid, "etc/forcloak", lookupuser->userid, NAME_SYSOP_GROUP "授予您隐身权限", BBSPOST_LINK, NULL);
         if ((lookupuser->userlevel & PERM_XEMPT) && flag2 == 0)
             mail_file(getCurrentUser()->userid, "etc/forlongid", lookupuser->userid, NAME_SYSOP_GROUP "授予您长期帐号权限", BBSPOST_LINK, NULL);
-		save_giveupinfo(lookupuser,lcount,s);
+		save_giveupinfo(lookupuser,s);
     }
     pressreturn();
     clear();

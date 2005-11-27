@@ -803,156 +803,91 @@ int apply_users(int (*fptr) (struct userec *, char *), char *arg)
     return count;
 }
 
-int get_giveupinfo(char* userid,int* basicperm,int s[10][2])
-{
-	int lcount;
-	FILE* fn;
-	char buf[255];
-    *basicperm = 0;
-    lcount=0;
-    sethomefile(buf, userid, "giveup");
-    fn = fopen(buf, "rt");
-    if (fn) {
-        while (fgets(buf, 255, fn)) {
-	    int i,j;
-			buf[254]='\0';
-            if (sscanf(buf, "%d %d", &i, &j) <= 0)
-                break;
-            s[lcount][0] = i;
-            s[lcount][1] = j;
-            switch (i) {
-            case 1:
-                *basicperm |= PERM_BASIC;
-                break;
+/* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
+int get_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
+    static const unsigned int GIVEUP_PERM[GIVEUPINFO_PERM_COUNT]={
+        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX};
+    static const unsigned int INV_MASK=(PERM_DENYMAIL|PERM_DENYRELAX);
+    FILE *fp;
+    char buf[256],deny[GIVEUPINFO_PERM_COUNT];
+    int i,j,k,perm;
+    bzero(s,GIVEUPINFO_PERM_COUNT*sizeof(int));
+    bzero(deny,GIVEUPINFO_PERM_COUNT*sizeof(char));
+    perm=0;
+    sethomefile(buf,user->userid,"giveup");
+    if(!(fp=fopen(buf,"r")))
+        return 0;
+    while(fgets(buf,256,fp)){
+        switch(sscanf(buf,"%d %d %d",&i,&j,&k)){
             case 2:
-                *basicperm |= PERM_POST;
-                break;
+                k=0;
             case 3:
-                *basicperm |= PERM_CHAT;
-                break;
-            case 4:
-                *basicperm |= PERM_PAGE;
-                break;
-            case 5:
-                *basicperm |= PERM_DENYMAIL;
-                break;
-            case 6:
-                *basicperm |= PERM_DENYRELAX;
-                break;
-            }
-            lcount++;
+                if(i>0&&i<GIVEUPINFO_PERM_COUNT+1)
+                    break;
+            default:
+                continue;
         }
-        fclose(fn);
+        deny[i-1]=k;
+        s[i-1]=(!s[i-1]?j:((j<s[i-1])?j:s[i-1]));
+        if((user->userlevel^INV_MASK)&GIVEUP_PERM[i-1])
+            s[i-1]=0;
+        else
+            perm|=GIVEUP_PERM[i-1];
     }
-    return lcount;
+    fclose(fp);
+    for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+        if(deny[i])
+            s[i]=(-s[i]);
+    return perm;
 }
-
-void save_giveupinfo(struct userec* lookupuser,int lcount,int s[10][2])
-{
-/*Bad 2002.7.6 受限与戒网问题*/
-	int kcount,tcount,i,j;
-	char buf[255];
-	FILE* fn;
-    sethomefile(buf, lookupuser->userid, "giveup");
-    kcount = lcount;
-    for (i = 0; i < lcount; i++) {
-        j = 0;
-        switch (s[i][0]) {
-        case 1:
-            j = lookupuser->userlevel & PERM_BASIC;
-            break;
-        case 2:
-            j = lookupuser->userlevel & PERM_POST;
-            break;
-        case 3:
-            j = lookupuser->userlevel & PERM_CHAT;
-            break;
-        case 4:
-            j = lookupuser->userlevel & PERM_PAGE;
-            break;
-        case 5:
-            j = !(lookupuser->userlevel & PERM_DENYMAIL);
-            break;
-        case 6:
-            j = !(lookupuser->userlevel & PERM_DENYRELAX);
-            break;
+int save_giveupinfo(struct userec *user,int s[GIVEUPINFO_PERM_COUNT]){
+    static const unsigned int GIVEUP_PERM[GIVEUPINFO_PERM_COUNT]={
+        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX};
+    static const unsigned int GIVEUP_MASK=(PERM_BASIC|PERM_POST|PERM_CHAT|PERM_PAGE|PERM_DENYMAIL|PERM_DENYRELAX);
+    static const unsigned int INV_MASK=(PERM_DENYMAIL|PERM_DENYRELAX);
+    FILE *fp;
+    char buf[256],deny[GIVEUPINFO_PERM_COUNT];
+    int i,g_perm,u_perm;
+    bzero(deny,GIVEUPINFO_PERM_COUNT*sizeof(char));
+    g_perm=0;
+    sethomefile(buf,user->userid,"giveup");
+    for(i=0;i<GIVEUPINFO_PERM_COUNT;i++){
+        if(!s[i])
+            continue;
+        if(s[i]<0){
+            deny[i]=1;
+            s[i]=(-s[i]);
         }
-        if (j) {
-            kcount--;
-            s[i][1] = 0;
-        }
+        if((user->userlevel^INV_MASK)&GIVEUP_PERM[i])
+            s[i]=0;
+        else if(!deny[i])
+            g_perm|=GIVEUP_PERM[i];
     }
-    if (kcount != lcount) {
-        if (kcount == 0)
-            unlink(buf);
-        else {
-            fn = fopen(buf, "wt");
-            for (i = 0; i < lcount; i++)
-                if (s[i][1] > 0)
-                    fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
-            fclose(fn);
-        }
-    }
-	tcount = 0;
-    if (lookupuser->userlevel & PERM_BASIC)
-        tcount++;
-    if (lookupuser->userlevel & PERM_POST)
-        tcount++;
-    if (lookupuser->userlevel & PERM_CHAT)
-        tcount++;
-    if (lookupuser->userlevel & PERM_PAGE)
-        tcount++;
-    if (!(lookupuser->userlevel & PERM_DENYMAIL))
-        tcount++;
-
-    if (!(lookupuser->userlevel & PERM_DENYRELAX))
-        tcount++;
-
-    if (kcount + tcount == 6 && kcount > 0)
-        lookupuser->flags |= GIVEUP_FLAG;
+    u_perm=((user->userlevel^INV_MASK)&GIVEUP_MASK);
+    if(g_perm&&((u_perm|g_perm)==GIVEUP_MASK))
+        user->flags|=GIVEUP_FLAG;
     else
-        lookupuser->flags &= ~GIVEUP_FLAG;
+        user->flags&=~GIVEUP_FLAG;
+    if(!(fp=fopen(buf,"w")))
+        return -1;
+    for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+        if(s[i])
+            fprintf(fp,"%d %d %d\n",i+1,s[i],deny[i]);
+    fclose(fp);
+    return 0;
 }
 
 #ifdef DENYANONY
 /* stiger,增加封禁某人的发文权限1天 */
-int giveup_addpost(char *userid)
-{
-
-	int s[10][2];
-	int gcount,i;
-	int basicperm;
-    struct userec *lookupuser;
-	FILE* fn;
-	char buf[255];
-
-    if (!(getuser(userid, &lookupuser)))
-		return 0;
-
-	gcount = get_giveupinfo(userid,& basicperm,s);
-	for(i=0;i<gcount;i++){
-		if(s[i][0] == 2)
-			break;
-	}
-	if(i<gcount)
-		s[i][1] ++;
-	else{
-		s[i][0] = 2;
-		s[i][1] = time(0) / 86400 + 1;
-		gcount++;
-	}
-    lookupuser->userlevel &= ~PERM_POST;
-
-    sethomefile(buf, lookupuser->userid, "giveup");
-    fn = fopen(buf, "wt");
-	if(fn!=NULL){
-        for (i = 0; i < gcount; i++)
-            if (s[i][1] > 0)
-                fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
-        fclose(fn);
-		return 1;
-	}
-	return 0;
+int giveup_addpost(char *userid){
+    struct userec *user;
+    int i,s[GIVEUPINFO_PERM_COUNT];
+    if(!(getuser(userid,user)))
+        return 0;
+    get_giveupinfo(user,s);
+    s[1]=-(1+(!s[1]?(time(NULL)/86400):((s[1]<0)?(-s[1]):s[1])));
+    user->userlevel&=~PERM_POST;
+    return (save_giveupinfo(user,s)+1);
 }
 #endif
 

@@ -613,6 +613,9 @@ extern struct sms_shm_head* head;
 
 #endif
 
+/* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
+#define GIVEUPINFO_PERM_COUNT 6
+
 #include "var.h"
 #ifdef BBSMAIN
 #include "vars.h"

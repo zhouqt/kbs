@@ -575,24 +575,17 @@ void login_query()
     clear();
     oflush();
     if (strcasecmp(getCurrentUser()->userid, "guest") && !HAS_PERM(getCurrentUser(), PERM_BASIC)) {
-        sethomefile(genbuf, getCurrentUser()->userid, "giveup");
-        fn = fopen(genbuf, "rt");
-        if (fn) {
-            while (!feof(fn)) {
-                if (fscanf(fn, "%d %d", &i, &j) <= 0)
-                    break;
-                if (i == 1) {
-                    fclose(fn);
-                    sprintf(genbuf, "\033[32m你已经戒网，离戒网结束还有%ld天\033[m\n", j - time(0) / 3600 / 24);
-                    prints(genbuf);
-                    oflush();
-                    sleep(1);
-                    exit(1);
-                }
-            }
-            fclose(fn);
+        int s[GIVEUPINFO_PERM_COUNT];
+        get_giveupinfo(getCurrentUser(),s);
+        if(!s[0])
+            prints("\033[1;33m系统错误或您已经被封禁登录权限, 请设法联系 \033[1;32mSYSOP\033[1;33m 获知原因...\033[m\n");
+        else{
+            i=(int)(((s[0]<0)?(-s[0]):s[0])-(time(NULL)/86400));
+            if(s[0]>0)
+                prints("\033[1;33m您已经处于戒网(登录)状态, 目前距离戒网结束 %d 天...\033[m\n",i);
+            else
+                prints("\033[1;33m你已经被封禁登录权限, 目前距离封禁结束 %d 天...\033[m\n",i);
         }
-        prints("\033[32m本帐号已停机。请向 \033[36mSYSOP\033[32m 查询原因\033[m\n");
         oflush();
         sleep(1);
         exit(1);

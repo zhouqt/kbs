@@ -183,69 +183,29 @@ int dokilluser()
 #endif
     return 0;
 }
-int updateauser(struct userec *theuser, char *data)
-{
-    FILE *fn;
-    char genbuf[255];
-    int lcount = 0, tcount, s[10][2], i, j;
-
-    if ((theuser->userlevel & PERM_BASIC) && (theuser->userlevel & PERM_POST)
-        && (theuser->userlevel & PERM_CHAT) && (theuser->userlevel & PERM_PAGE)
-        && !(theuser->userlevel & PERM_DENYMAIL)
-        && !(theuser->userlevel & PERM_DENYRELAX))
+int updateauser(struct userec *user,char *arg){
+    static const unsigned int GIVEUP_PERM[GIVEUPINFO_PERM_COUNT]={
+        PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX};
+    static const unsigned int GIVEUP_MASK=(PERM_BASIC|PERM_POST|PERM_CHAT|PERM_PAGE|PERM_DENYMAIL|PERM_DENYRELAX);
+    static const unsigned int INV_MASK=(PERM_DENYMAIL|PERM_DENYRELAX);
+    int i,mod,s[GIVEUPINFO_PERM_COUNT];
+    if(!(user->userlevel&PERM_LOGINOK))
         return 0;
-    if (!(theuser->userlevel & PERM_LOGINOK))
+    if(((user->userlevel^INV_MASK)&GIVEUP_MASK)==GIVEUP_MASK)
         return 0;
-    sethomefile(genbuf, theuser->userid, "giveup");
-    fn = fopen(genbuf, "rt");
-    if (fn) {
-        while (!feof(fn)) {
-            if (fscanf(fn, "%d %d", &i, &j) <= 0)
-                break;
-            s[lcount][0] = i;
-            s[lcount][1] = j;
-            lcount++;
-        }
-        fclose(fn);
-        tcount = lcount;
-        for (i = 0; i < lcount; i++) {
-            if (s[i][1] <= time(0) / 3600 / 24) {
-                tcount--;
-                switch (s[i][0]) {
-                case 1:
-                    theuser->userlevel |= PERM_BASIC;
-                    break;
-                case 2:
-                    theuser->userlevel |= PERM_POST;
-                    break;
-                case 3:
-                    theuser->userlevel |= PERM_CHAT;
-                    break;
-                case 4:
-                    theuser->userlevel |= PERM_PAGE;
-                    break;
-                case 5:
-                    theuser->userlevel &= ~PERM_DENYMAIL;
-                    break;
-                case 6:
-                    theuser->userlevel &= ~PERM_DENYRELAX;
-                    break;
-                }
-                s[i][1] = 0;
-            }
-        }
-        if (theuser->flags & GIVEUP_FLAG && tcount == 0)
-            theuser->flags &= ~GIVEUP_FLAG;
-        if (tcount == 0)
-            unlink(genbuf);
-        else {
-            fn = fopen(genbuf, "wt");
-            for (i = 0; i < lcount; i++)
-                if (s[i][1] > 0)
-                    fprintf(fn, "%d %d\n", s[i][0], s[i][1]);
-            fclose(fn);
+    get_giveupinfo(user,s);
+    for(mod=0,i=0;i<GIVEUPINFO_PERM_COUNT;i++){
+        if(!s[i])
+            continue;
+        if(!(((s[i]<0)?(-s[i]):s[i])>time(NULL)/86400)){
+            s[i]=0;
+            user->userlevel|=GIVEUP_PERM[i];
+            user->userlevel^=(INV_MASK&GIVEUP_PERM[i]);
+            mod++;
         }
     }
+    if(mod)
+        save_giveupinfo(user,s);
     return 0;
 }
 

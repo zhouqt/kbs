@@ -224,11 +224,12 @@ PERM_PAGE    呼叫
 PERM_DENYMAIL发信
 PERM_DENYRELAX娱乐
 */
-    char buf[STRLEN], genbuf[PATHLEN];
+    const char *desc[GIVEUPINFO_PERM_COUNT]={"登录上站权限","发表文章权限","聊天广场权限","站内信息权限", "站内信件权限","休闲娱乐权限"};
     FILE *fn;
+    char buf[STRLEN], genbuf[PATHLEN];
     char ans[3], day[10];
-    int i, j, k, lcount, tcount, iDays;
-    char *desc[] = {"上站权限", "发表权限", "聊天权限", "呼叫权限", "发信权限", "休闲娱乐权限"};
+    int i, j, k, iDays;
+    int s[GIVEUPINFO_PERM_COUNT];
 
     modify_user_mode(GIVEUPNET);
     if (!HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
@@ -249,26 +250,20 @@ PERM_DENYRELAX娱乐
         return -1;
     }
 
-    lcount = 0;
-    tcount = 0;
-    sethomefile(genbuf, getCurrentUser()->userid, "giveup");
-    fn = fopen(genbuf, "rt");
-    if (fn) {
-        clear();
-        move(1, 0);
-        prints("你现在的戒网情况：\n\n");
-        while (!feof(fn)) {
-            if (fscanf(fn, "%d %d", &i, &j) <= 0)
+    if(get_giveupinfo(getCurrentUser(),s)){
+        for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+            if(s[i]>0)
                 break;
-            if (i >= 1 && i <= 6) prints(desc[i - 1]);
-            sprintf(buf, "        还有%ld天\n", j - time(0) / 3600 / 24);
-            prints(buf);
-            lcount++;
+        if(i<GIVEUPINFO_PERM_COUNT){
+            clear();
+            move(0,0);
+            prints("\033[1;33m[当前戒网状态]\033[m\n\n");
+            for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
+                if(s[i]>0)
+                    prints("%s\t目前剩余 %d 天\n",desc[i],(int)(s[i]-time(NULL)/86400));
+            pressanykey();
         }
-        fclose(fn);
-        pressanykey();
     }
-
 
     clear();
     move(1, 0);
@@ -340,17 +335,6 @@ PERM_DENYRELAX娱乐
             pressanykey();
             return -1;
         }
-
-        sethomefile(genbuf, getCurrentUser()->userid, "giveup");
-        fn = fopen(genbuf, "at");
-        if (!fn) {
-            prints("\n\n由于系统问题，现在你不能戒网");
-            pressanykey();
-            return -1;
-        }
-        fprintf(fn, "%d %d\n", ans[0] - 48, j);
-        fclose(fn);
-
         switch (ans[0]) {
         case '1':
             getCurrentUser()->userlevel &= ~PERM_BASIC;
@@ -371,25 +355,9 @@ PERM_DENYRELAX娱乐
             getCurrentUser()->userlevel |= PERM_DENYRELAX;
             break;
         }
-        lcount++;
 
-        if (getCurrentUser()->userlevel & PERM_BASIC)
-            tcount++;
-        if (getCurrentUser()->userlevel & PERM_POST)
-            tcount++;
-        if (getCurrentUser()->userlevel & PERM_CHAT)
-            tcount++;
-        if (getCurrentUser()->userlevel & PERM_PAGE)
-            tcount++;
-        if (!(getCurrentUser()->userlevel & PERM_DENYMAIL))
-            tcount++;
-        if (!(getCurrentUser()->userlevel & PERM_DENYRELAX))
-            tcount++;
-
-        if (lcount + tcount == 6)
-            getCurrentUser()->flags |= GIVEUP_FLAG;
-        else
-            getCurrentUser()->flags &= ~GIVEUP_FLAG;
+        s[ans[0]-49]=j;
+        save_giveupinfo(getCurrentUser(),s);
 
         gettmpfilename( genbuf, "giveup" );
         if ((fn = fopen(genbuf, "w")) != NULL) {
