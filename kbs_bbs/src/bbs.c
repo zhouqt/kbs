@@ -604,7 +604,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 				char buf[3];
 
 				clear();
-            	getdata(3, 0, "您被版主停止了POST权力,强制转载吗？[y/N]: ", buf, 2, DOECHO, NULL, true);
+                getdata(3,0,"您已被取消在目的版面的发文权限, 是否强制转载? [y/N]: ",buf,2,DOECHO,NULL,true);
 				if( buf[0]!='y' && buf[0]!='Y' ){
 					clear();
 					return FULLUPDATE;
@@ -612,7 +612,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 			}else{
             	move(3, 0);
             	clrtobot();
-            	prints("\n\n                很抱歉，你在该版被其版主停止了 POST 的权力...\n");
+                prints("\n\n\t\t您已被管理人员取消在目的版面的发文权限...\n");
             	pressreturn();
             	clear();
             	return FULLUPDATE;
@@ -2590,13 +2590,13 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 		if( !HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
         	move(3, 0);
         	clrtobot();
-        	prints("\n\n                     很抱歉，你被版主停止了 POST 的权力...\n");
+            prints("\n\n\t\t您已被管理人员取消在当前版面的发文权限...\n");
         	pressreturn();
         	clear();
         	return FULLUPDATE;
 		}else{
 			clear();
-            getdata(3, 0, "您被版主停止了POST权力,强制发文吗？[y/N]: ", buf, 2, DOECHO, NULL, true);
+            getdata(3,0,"您已被取消在当前版面的发文权限, 是否强制发文? [y/N]: ",buf,2,DOECHO,NULL,true);
 			if( buf[0]!='y' && buf[0]!='Y' ){
 				clear();
 				return FULLUPDATE;
@@ -3021,7 +3021,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     if (deny_me(getCurrentUser()->userid, currboard->filename) && (!HAS_PERM(getCurrentUser(), PERM_SYSOP))) {        /* 版主禁止POST 检查 */
         move(3, 0);
         clrtobot();
-        prints("\n\n                     很抱歉，你被版主停止了 POST 的权力...\n");
+        prints("\n\n\t\t您已被管理人员取消在当前版面的发文权限...\n");
         pressreturn();
         clear();
         return FULLUPDATE;
@@ -3084,7 +3084,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     if (deny_me(getCurrentUser()->userid, currboard->filename) && (!HAS_PERM(getCurrentUser(), PERM_SYSOP))) {
         move(3, 0);
         clrtobot();
-        prints("\n\n                     很抱歉，你被版主停止了 POST 的权力...\n");
+        prints("\n\n\t\t您已被管理人员取消在当前版面的发文权限...\n");
         pressreturn();
         clear();
         return FULLUPDATE;
