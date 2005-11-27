@@ -636,7 +636,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
 
             if (argv1 == NULL) {
                 dokilluser();
-                doupdategiveupuser();
+                //doupdategiveupuser();
             } else {
                 switch (fork()) {
                 case -1:
@@ -644,7 +644,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
                     break;
                 case 0:
                     dokilluser();
-                    doupdategiveupuser();
+                    //doupdategiveupuser();
                     exit(0);
                     break;
                 default:
