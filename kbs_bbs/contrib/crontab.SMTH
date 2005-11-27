@@ -4,7 +4,7 @@ BBSHOME=/home/bbs
 # 清理垃圾文件
 #30 0 * * * sh $BBSHOME/bin/cleartitle
 # 解开戒网
-1 0 * * * /home/bbs/bin/miscd giveup
+15 12 * * * /home/bbs/bin/miscd giveup
 # 定时更新推荐文章
 0,10,20,30,40,50 * * * * /home/bbs/bin/genhot
 # 更新版主统计
