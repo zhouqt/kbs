@@ -730,6 +730,13 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
 {
     if (board == NULL)
         return 0;
+    if (user==NULL) {
+        if (board->title_level!=0) return 0;
+    } else 
+    if (!HAS_PERM(user, PERM_OBOARDS)&&board->title_level
+        &&(board->title_level!=user->title))
+        return 0;
+    
     if (board->level & PERM_POSTMASK || HAS_PERM(user, board->level) || (board->level & PERM_NOZAP)) {
         if (board->flag & BOARD_CLUB_READ) {    /*æ„¿÷≤ø*/
             if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
