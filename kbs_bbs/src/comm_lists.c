@@ -141,6 +141,9 @@ int pc_add_user();
 int pc_choose_user();
 #endif
 
+/* etnlegend, 2005.11.27, 设定特定用户具有访问特定版面回收站权限接口 */
+int edit_board_delete_read_perm(void);
+
 int t_query_null()
 {
     return t_query(NULL);
@@ -296,6 +299,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
 	{"AddFBPC", AddPCorpus},
 	{"Personal", Personal},
 #endif
+    {"DelView",edit_board_delete_read_perm},
     {NULL, NULL},
 };
 

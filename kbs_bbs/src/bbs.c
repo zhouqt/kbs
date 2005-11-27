@@ -682,6 +682,37 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     return FULLUPDATE;
 }
 
+/* etnlegend, 2005.11.27, 判断某一特定用户是否可以阅读某一特定版面的回收站 */
+int check_board_delete_read_perm(const struct userec *arg_user,const struct boardheader *arg_board){
+    FILE *fp;
+    const struct userec *user;
+    const struct boardheader *board;
+    char buf[256];
+    int bid,num,ret,i,ibuf[32];
+    user=(!arg_user?getCurrentUser():arg_user);
+    board=(!arg_board?currboard:arg_board);
+    if(!user||!board)
+        return 0;
+    if(!HAS_PERM(user,PERM_BOARDS)||!user->title)
+        return 0;
+    if(!(bid=getbnum(board->filename)))
+        return 0;
+    sethomefile(buf,user->userid,"board_delete_read");
+    if(!(fp=fopen(buf,"r")))
+        return 0;
+    ret=0;
+    while(!!(num=fread(ibuf,sizeof(int),32,fp))){
+        for(i=0;i<num;i++)
+            if(ibuf[i]==bid){
+                ret=1;
+                break;
+            }
+        if(ret)
+            break;
+    }
+    fclose(fp);
+    return ret;
+}
 
 void readtitle(struct _select_def* conf)
 {                               /* 版内 显示文章列表 的 title */
@@ -703,7 +734,7 @@ void readtitle(struct _select_def* conf)
 #ifdef OPEN_BMONLINE
 		if (1) {
 #else
-		if ( chk_currBM(currBM, getCurrentUser()) ) {
+        if(chk_currBM(currBM,getCurrentUser())||check_board_delete_read_perm(NULL,NULL)){
 #endif
             char *p1, *p2;
 
@@ -1798,7 +1829,7 @@ int deleted_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extr
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
 /* Allow user in file "jury" to see deleted area. stephen 2001.11.1 */
-    if (!chk_currBM(currBM, getCurrentUser()) && !isJury()) {
+    if(!chk_currBM(currBM,getCurrentUser())&&!check_board_delete_read_perm(NULL,NULL)&&!isJury()){
         return DONOTHING;
     }
 
