@@ -224,7 +224,8 @@ PERM_PAGE    呼叫
 PERM_DENYMAIL发信
 PERM_DENYRELAX娱乐
 */
-    const char *desc[GIVEUPINFO_PERM_COUNT]={"登录上站权限","发表文章权限","聊天广场权限","站内信息权限", "站内信件权限","休闲娱乐权限"};
+    static const char *desc[GIVEUPINFO_PERM_COUNT]={
+        "登录上站权限","发表文章权限","聊天广场权限","站内信息权限", "站内信件权限","休闲娱乐权限"};
     FILE *fn;
     char buf[STRLEN], genbuf[PATHLEN];
     char ans[3], day[10];
@@ -252,15 +253,20 @@ PERM_DENYRELAX娱乐
 
     if(get_giveupinfo(getCurrentUser(),s)){
         for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
-            if(s[i]>0)
+            if(s[i])
                 break;
         if(i<GIVEUPINFO_PERM_COUNT){
             clear();
             move(0,0);
-            prints("\033[1;33m[当前戒网状态]\033[m\n\n");
+            prints("\033[1;33m[当前戒网及有期封禁状态]\033[m\n\n");
             for(i=0;i<GIVEUPINFO_PERM_COUNT;i++)
-                if(s[i]>0)
-                    prints("%s\t目前剩余 %d 天\n",desc[i],(int)(s[i]-time(NULL)/86400));
+                if(!s[i])
+                    continue;
+                else{
+                    sprintf(genbuf,"%-16.16s%-8.8s目前剩余 %4d 天\n",desc[i],(s[i]>0?"戒网":"封禁"),
+                        (int)((s[i]>0?s[i]:(-s[i]))-(time(NULL)/86400)));
+                    prints("%s",genbuf);
+                }
             pressanykey();
         }
     }
