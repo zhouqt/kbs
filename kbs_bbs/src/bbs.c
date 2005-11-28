@@ -5606,7 +5606,7 @@ int b_results(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 enum {
     BM_DELETE=1,
     BM_MARK,
-    BM_DIGEST,
+    BM_DELMARKDEL,
     BM_IMPORT,
     BM_TMP,
     BM_MARKDEL,
@@ -5617,12 +5617,12 @@ enum {
 const char *SR_BMitems[] = {
     "删除",
     "保留",
-    "文摘",
+    "删除拟删文章",
     "放入精华区",
     "放入暂存档",
-    "标记删除",
-    "设为不可回复",
-    "做合集"
+    "设定拟删标记",
+    "设定不可回复",
+    "制作合集"
 };
 const int item_num = 8;
 
@@ -5658,12 +5658,14 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
 	    else
             fh->accessed[0] &= ~FILE_MARKED;
             break;
-        case BM_DIGEST: {
-            struct fileheader data;
-            data.accessed[0] = FILE_DIGEST;
-            change_post_flag(arg->writearg,
-                    arg->mode, currboard, 
-                    fh, FILE_DIGEST, &data, true,getSession());
+        case BM_DELMARKDEL: /* etnlegend, 2005.11.28, 同主题标记删除 */
+            if(fh->accessed[1]&FILE_DEL){
+                if(!(fh->accessed[0]&(FILE_MARKED|FILE_PERCENT))){
+                    if(del_post(conf,fh,(void*)(ARG_BMFUNC_FLAG|ARG_NOPROMPT_FLAG))==DIRCHANGED)
+                        ret=APPLY_REAPPLY;
+                }
+                else
+                    fh->accessed[1]&=~FILE_DEL;
             }
             break;
         case BM_MARKDEL:
@@ -5732,11 +5734,11 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     saveline(t_lines - 2, 0, NULL);
     move(t_lines - 3, 0);
     clrtoeol();
-    strcpy(buf, "相同主题 (0)取消  ");
+    strcpy(buf, "主题操作 (0)取消 ");
     for (i = 0; i < item_num; i++) {
         char t[40];
 
-        sprintf(t, "(%d)%s", i + 1, SR_BMitems[i]);
+        sprintf(t, "(%d)%s ", i + 1, SR_BMitems[i]);
         strcat(buf, t);
     };
     strcat(buf, "? [0]: ");
