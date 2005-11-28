@@ -616,6 +616,10 @@ extern struct sms_shm_head* head;
 /* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
 #define GIVEUPINFO_PERM_COUNT 6
 
+#define ARG_NOPROMPT_FLAG 1 /*操作不提示*/
+#define ARG_DELDECPOST_FLAG 2 /*删除操作要减文章数*/
+#define ARG_BMFUNC_FLAG 4 /*版主操作标志*/
+
 #include "var.h"
 #ifdef BBSMAIN
 #include "vars.h"

@@ -51,9 +51,6 @@ char replytitle[STRLEN];
 #endif
 
 char *filemargin();
-#define ARG_NOPROMPT_FLAG   1 /*操作不提示*/
-#define ARG_DELDECPOST_FLAG 2 /*删除操作要减文章数*/
-#define ARG_BMFUNC_FLAG 4 /*版主操作标志*/
 
 /* bad 2002.8.1 */
 
@@ -3486,7 +3483,7 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 	if (owned && !strcmp(currboard->filename, COMMEND_ARTICLE))
 		return DONOTHING;
 #endif
-    if (!(flag&&ARG_NOPROMPT_FLAG)) {
+    if (!(flag&ARG_NOPROMPT_FLAG)) {
         clear();
         prints("删除文章 '%s'.", fileinfo->title);
         getdata(1, 0, "(Y/N) [N]: ", genbuf, 3, DOECHO, NULL, true);
@@ -3508,10 +3505,10 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
             delarg.fd=arg->fd;
             delarg.ent=conf->pos;
         }
-        ret=do_del_post(getCurrentUser(), &delarg, fileinfo, currboard->filename, DIR_MODE_NORMAL, flag&ARG_DELDECPOST_FLAG,getSession());
+        ret=do_del_post(getCurrentUser(),&delarg,fileinfo,currboard->filename,DIR_MODE_NORMAL,flag,getSession());
         free_write_dir_arg(&delarg);
     } else
-        ret=do_del_post(getCurrentUser(), arg->writearg, fileinfo, currboard->filename, DIR_MODE_NORMAL, flag&ARG_DELDECPOST_FLAG,getSession());
+        ret=do_del_post(getCurrentUser(),arg->writearg,fileinfo,currboard->filename,DIR_MODE_NORMAL,flag,getSession());
     if (ret != 0) {
         if (!(flag&ARG_NOPROMPT_FLAG)) {
             move(2, 0);
@@ -5651,7 +5648,7 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
     switch (func_arg->action) {
         case BM_DELETE:
             if (!(fh->accessed[0] & (FILE_MARKED | FILE_PERCENT))) {
-                if (del_post(conf,fh,(void*)(ARG_BMFUNC_FLAG|ARG_NOPROMPT_FLAG|ARG_BMFUNC_FLAG))==DIRCHANGED)
+                if (del_post(conf,fh,(void*)(ARG_BMFUNC_FLAG|ARG_NOPROMPT_FLAG))==DIRCHANGED)
                     ret=APPLY_REAPPLY;
             }
             break;

@@ -254,8 +254,8 @@ int del_origin(char *board, struct fileheader *fileinfo)
     return 0;
 }
 
-int do_del_post(struct userec *user, struct write_dir_arg *dirarg, struct fileheader *fileinfo, char *board, int currmode, int decpost, session_t* session)
-{
+int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo,
+    char *board,int currmode,int flag,session_t* session){
     int owned;
     struct fileheader fh;
 
@@ -298,7 +298,7 @@ int do_del_post(struct userec *user, struct write_dir_arg *dirarg, struct filehe
     setboardtitle(board, 1);
 
 
-    owned = isowner(user, &fh);
+    owned=(!(flag&ARG_BMFUNC_FLAG)&&isowner(user,&fh));
     cancelpost(board, user->userid, &fh, owned, 1, session);
     updatelastpost(board);
     if (fh.accessed[0] & FILE_MARKED)
@@ -311,7 +311,7 @@ int do_del_post(struct userec *user, struct write_dir_arg *dirarg, struct filehe
             if ((int) user->numposts > 0 && !junkboard(board)) {
                 user->numposts--;       /*自己删除的文章，减少post数 */
             }
-        } else if (!strstr(fh.owner, ".") && BMDEL_DECREASE && decpost /*版主删除,减少POST数 */ ) {
+        } else if (!strstr(fh.owner, ".") && BMDEL_DECREASE && (flag&ARG_DELDECPOST_FLAG) /*版主删除,减少POST数 */ ) {
             struct userec *lookupuser;
             int id = getuser(fh.owner, &lookupuser);
 
