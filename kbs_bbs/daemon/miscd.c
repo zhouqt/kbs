@@ -7,11 +7,24 @@
 
 #include "bbs.h"
 
+static void flushdata()
+{
+    FILE *fp;
+
+    flush_ucache();
+    flush_bcache();
+
+    if (NULL != (fp = fopen("etc/maxuser", "w"))) {
+        fprintf(fp, "%d %d", publicshm->max_user,publicshm->max_wwwguest);
+        fclose(fp);
+    }
+
+    bbslog("4miscdaemon", "flush passwd file");
+}
+
 void do_exit()
 {
-    flush_ucache();
-	flush_bcache();
-    bbslog("4miscdaemon", "flush passwd file");
+    flushdata();
 }
 
 void do_exit_sig(int sig)
@@ -485,7 +498,6 @@ void utmpd()
     return;
 }
 
-
 void flushd()
 {
     struct sigaction act;
@@ -499,9 +511,7 @@ void flushd()
 
     while (1) {
         sleep(24 * 60 * 60);
-        flush_ucache();
-		flush_bcache();
-        bbslog("4miscdaemon", "flush passwd file");
+        flushdata();
     };
 }
 
@@ -720,9 +730,7 @@ int main(int argc, char *argv[])
             if (resolve_ucache() != 0)
 	              return -1;
             resolve_boards();
-            flush_ucache();
-            flush_bcache();
-			bbslog("4miscdaemon", "flush passwd file");
+            flushdata();
             return 0;
         }
         return miscd_dodaemon(NULL, argv[1]);

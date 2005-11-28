@@ -507,9 +507,7 @@ void unlock_sem_check(int lockid);
     int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int applycopy, bool reverse);
     int append_record(char *filename, void *record, int size);
     int substitute_record(char *filename, void *rptr, int size, int id);
-#ifdef TOP_MOVE
 	int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG filecheck, void *arg);
-#endif
     int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, void *farg);
     long get_num_records(char *filename, int size);
     long get_sum_records(char *fpath, int size);        /*获得.DIR里面文件大小总数 */

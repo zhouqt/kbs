@@ -720,14 +720,8 @@ int getwwwguestcount()
 
 void save_maxuser()
 {
-    FILE *fp;
-
     publicshm->max_user=get_utmp_number() + getwwwguestcount();
     publicshm->max_wwwguest= getwwwguestcount();
-    if (NULL != (fp = fopen("etc/maxuser", "w"))) {
-        fprintf(fp, "%d %d", publicshm->max_user,publicshm->max_wwwguest);
-        fclose(fp);
-    }
 }
 
 #ifdef FLOWBANNER

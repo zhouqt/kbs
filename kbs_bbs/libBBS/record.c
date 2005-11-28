@@ -639,7 +639,6 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
     return ret;
 }
 
-#ifdef TOP_MOVE
 int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG filecheck, void *arg)
 {
     int fdr;
@@ -688,4 +687,4 @@ int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG file
 	
 	return ret;
 }
-#endif
+

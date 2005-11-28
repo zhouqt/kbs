@@ -340,7 +340,6 @@ int get_a_boardname(char *bname, char *prompt)
     return 1;
 }
 
-#ifdef TOP_MOVE
 int top_move(struct _select_def* conf,struct fileheader *fileinfo)
 {
     struct read_arg* arg=(struct read_arg*)conf->arg;
@@ -376,7 +375,6 @@ int top_move(struct _select_def* conf,struct fileheader *fileinfo)
 	}
 	return ret;
 }
-#endif
 
 int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long flag)
 {
@@ -425,10 +423,8 @@ int set_article_flag(struct _select_def* conf,struct fileheader *fileinfo,long f
 #endif
 					)
         return DONOTHING;
-#ifdef TOP_MOVE
     if (conf->pos > arg->filecount && flag == FILE_MARK_FLAG)
         return top_move(conf, fileinfo);
-#endif
     data=*fileinfo;
     init_write_dir_arg(&dirarg);
     dirarg.fd=arg->fd;
