@@ -3767,7 +3767,8 @@ static PHP_FUNCTION(bbs_updatearticle)
    		RETURN_LONG(-1);
 	}		
 
-    content = unix_string(content);
+    if (clen == 0) content = "";
+    else content = unix_string(content);
 
 #ifdef FILTER
     if (check_badword_str(content, strlen(content),getSession())) {
