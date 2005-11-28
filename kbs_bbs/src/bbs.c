@@ -2882,18 +2882,12 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     strcpy(quote_title, save_title);
     strcpy(quote_board, currboard->filename);
 
-	if( use_tmpl <= 0 )
-	    aborted = vedit(filepath, true, &eff_size, NULL, 1);    /* ½øÈë±à¼­×´Ì¬ */
-	else{
-    	struct stat st;
-		if(stat(filepath, &st)!=-1)
-			eff_size = st.st_size; /* TODO: BUG */
-		else
-			eff_size = 0;
-
-		add_loginfo(filepath, getCurrentUser(), currboard->filename, Anony,getSession());
-
-	}
+    if( use_tmpl <= 0 )
+        aborted = vedit(filepath, true, &eff_size, NULL, 1);    /* ½øÈë±à¼­×´Ì¬ */
+    else{
+        add_loginfo(filepath, getCurrentUser(), currboard->filename, Anony,getSession());
+        eff_size = get_effsize(filepath);
+    }
 
     post_file.eff_size = eff_size;
 
@@ -2920,27 +2914,23 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         post_file.accessed[0] |= FILE_SIGN;
     }
     if(nUpload > 0) {
-        post_file.attachment = 1;
+        char sbuf[PATHLEN];
+        int i;
+        struct stat st;
+        if(stat(filepath, &st)!=-1)
+            post_file.attachment = st.st_size;
+
+        for (i=0;i<nUpload; i++) {
+            strcpy(sbuf,"tmp/");
+            strcpy(sbuf+strlen(sbuf), uploadfiles[i]);
+            add_attach(filepath, sbuf, uploadfiles[i]);
+        }
     }
 #ifdef FILTER
     returnvalue =
 #endif
         after_post(getCurrentUser(), &post_file, currboard->filename, re_file, !(Anony && anonyboard),getSession());
     Anony = 0;                  /*Inital For ShowOut Signature */
-
-    if(nUpload > 0) {
-        char sbuf[PATHLEN];
-        int i;
-        for (i=0;i<nUpload; i++) {
-            strcpy(sbuf,"tmp/");
-            strcpy(sbuf+strlen(sbuf), uploadfiles[i]);
-#ifdef FILTER
-            if(returnvalue==2)
-                setbfile(filepath, FILTER_BOARD, post_file.filename);
-#endif
-            add_attach(filepath, sbuf, uploadfiles[i]);
-        }
-    }
     
     if (!junkboard(currboard->filename)) {
         getCurrentUser()->numposts++;

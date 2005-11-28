@@ -25,23 +25,6 @@
 
 #include "bbs.h"
 
-static void mail_info()
-{
-    FILE *fn;
-    time_t now;
-    char filename[STRLEN];
-
-    now = time(0);
-    sprintf(filename, "etc/%s.tmp", getCurrentUser()->userid);
-    fn = fopen(filename, "w");
-    fprintf(fn, "\033[1m%s\033[m 已经在 \033[1m%24.24s\033[m 自杀了，以下是他(她)的资料，请保留...", getCurrentUser()->userid, ctime(&now));
-    getuinfo(fn, getCurrentUser());
-    fprintf(fn, "\n                      \033[1m 系统自动发信系统留\033[m\n");
-    fclose(fn);
-    mail_file(getCurrentUser()->userid, filename, "acmanager", "自杀通知....", BBSPOST_MOVE, NULL);
-}
-
-
 int d_board()
 {
     char bname[STRLEN];
@@ -383,7 +366,22 @@ PERM_DENYRELAX娱乐
     return 0;
 }
 
+#if 0
+static void mail_info()
+{
+    FILE *fn;
+    time_t now;
+    char filename[STRLEN];
 
+    now = time(0);
+    sprintf(filename, "etc/%s.tmp", getCurrentUser()->userid);
+    fn = fopen(filename, "w");
+    fprintf(fn, "\033[1m%s\033[m 已经在 \033[1m%24.24s\033[m 自杀了，以下是他(她)的资料，请保留...", getCurrentUser()->userid, ctime(&now));
+    getuinfo(fn, getCurrentUser());
+    fprintf(fn, "\n                      \033[1m 系统自动发信系统留\033[m\n");
+    fclose(fn);
+    mail_file(getCurrentUser()->userid, filename, "acmanager", "自杀通知....", BBSPOST_MOVE, NULL);
+}
 void offline()
 {
     modify_user_mode(OFFLINE);
@@ -403,6 +401,7 @@ void offline()
         }
     }
 }
+#endif
 
 int kickuser(struct user_info *uentp, char *arg, int count)
 {
@@ -624,3 +623,4 @@ int kick_user(struct user_info *userinfo)
     }
     return 1;
 }
+

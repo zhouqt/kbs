@@ -752,9 +752,9 @@ int cmp_title(char *title, struct fileheader *fh1)
 {
     char *p1;
 
-    if (!strncasecmp(fh1->title, "Re:", 3))
+    if (!strncasecmp(fh1->title, "Re: ", 4))
         p1 = fh1->title + 4;
-    else if (!strncasecmp(fh1->title, "»Ø¸´:", 5))
+    else if (!strncasecmp(fh1->title, "»Ø¸´: ", 6))
         p1 = fh1->title + 6;
     else
         p1 = fh1->title;

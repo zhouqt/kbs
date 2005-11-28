@@ -390,14 +390,18 @@ PERM_ACCOUNTS 企图让账号管理员拥有更改使用者权限的权利，这样做是不够的，因为
 务，bbslogd 主要用于接收系统 log 并定时写入磁盘相应的文件。miscd 启动的参数说
 明：
     miscd daemon: 运行为守护进程，一般都用这种方式启动 miscd。miscd 会自动产生
-                  多个进程分别负责下面的工作，一般这些工作都是一天自动执行一
+                  四个守护进程分别负责各项工作，大多数工作都是一天自动执行一
                   次。只有你需要强制立即执行某个工作的时候，才需要用下面的方式
                   运行 miscd。
     miscd killuser: 杀掉生命力小于等于 0 的帐号。
     miscd giveup: 解开戒网到期的用户。
     miscd killdir <BOARDNAME>: 删除指定版面回收站和废纸篓中的老文章。
     miscd allboards: 删除所有版面回收站和废纸篓中的老文章。
-    miscd flush: 将 .PASSWDS 和 .BOARDS 两个文件的内容同步到磁盘。
+    miscd flush: 将 .PASSWDS 和 .BOARDS 两个文件的内容从共享内存同步到磁盘。
+                 请特别注意，使用 KILL(9) 信号杀掉 miscd 守护进程将可能会导致
+                 用户和版面数据不同步甚至丢失，后果很严重！推荐关机前手动执行
+                 一次这个命令确保数据写回磁盘。如果服务器不稳定，可以在 crontab
+                 里面定时执行这个命令。
 bbslogd 启动不带参数，但是可以给 bbslogd 进程发信号来指定需要的操作，有用的信
 号包括：
     SIGALRM: 强制立即将收到的 log 写入磁盘相应文件。正常运行过程中 bbslogd 每

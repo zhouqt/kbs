@@ -2048,7 +2048,7 @@ int gen_title(const char *boardname )
                     ptr2 = (struct fileheader *) (ptr + j * size);
                     memcpy(&mkpost, ptr2, sizeof(mkpost));
                     t = ptr2->title;
-                    if (!strncmp(t, "Re:", 3))
+                    if (!strncmp(t, "Re: ", 4))
                         t += 4;
                     if (next[j] == 0)
                         snprintf(mkpost.title, ARTICLE_TITLE_LEN, "©¸ %s", t);

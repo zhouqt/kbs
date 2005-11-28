@@ -84,10 +84,11 @@ static void default_setting(session_t* session)
     session->num_of_matched = 0;
 }
 
-int check_badword(char *checkfile, session_t* session)
+int check_badword(char *checkfile, int len, session_t* session)
 {
     char *ptr;
     off_t size;
+    int check_size;
     int retv;
     int retrycount=0;
 
@@ -96,26 +97,28 @@ retry:
     session->CurrentFileName = checkfile;
     BBS_TRY {
         if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
-	{
+        {
             BBS_RETURN(0);
-	}
+        }
         if (check_badwordimg(0)!=0)
-	{
-	    end_mmapfile((void *) ptr, size, -1);
+        {
+            end_mmapfile((void *) ptr, size, -1);
             BBS_RETURN(0);
-	}
-        retv = mgrep_str(ptr, size,badword_img, session);
+        }
+        check_size = len;
+        if (check_size <= 0 || check_size > size) check_size = size;
+        retv = mgrep_str(ptr, check_size,badword_img, session);
     }
     BBS_CATCH {
         if (check_badwordimg(1)!=0)
-	{
-	    end_mmapfile((void *) ptr, size, -1);
+        {
+            end_mmapfile((void *) ptr, size, -1);
             BBS_RETURN(0);
-	}
-	retrycount++;
-	if (retrycount==0)
-	  goto retry;
-    	retv=-2;
+        }
+        retrycount++;
+        if (retrycount==0)
+            goto retry;
+        retv=-2;
     }
     BBS_END end_mmapfile((void *) ptr, size, -1);
     return retv;

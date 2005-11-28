@@ -680,7 +680,7 @@ int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board);
 #define FILENAME2POSTTIME(x) (atoi(((char*)x)+2))
 
 /* filter */
-    int check_badword(char *checkfile, session_t* session);
+    int check_badword(char *checkfile, int len, session_t* session);
     int check_filter(char *patternfile, char *checkfile, int defaultval, session_t* session);
     int check_badword_str(char *string, int str_len, session_t* session);
     

@@ -907,6 +907,13 @@ int post_file(struct userec *user, char *fromboard, char *filename, char *nboard
     return 0;
 }
 
+
+/*
+ * 注意：fh->attachment = 0           如果没有附件 (这个时候整个文件需要过滤)
+ *                      = 正文长度    如果有附件   (这个时候仅正文部分过滤)
+ * 调用一定保证 attachment 这个字段的正确，否则可能会漏过滤！！！
+ * atppp 20051127
+ */
 int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat, session_t* session)
 {
     char buf[256];
@@ -919,7 +926,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     struct boardheader *bh;
 #endif
 
-    if ((re == NULL) && (!strncmp(fh->title, "Re:", 3))) {
+    if ((re == NULL) && (!strncmp(fh->title, "Re: ", 4))) {
         strncpy(fh->title, fh->title + 4, ARTICLE_TITLE_LEN);
     }
 #ifdef FILTER
@@ -939,10 +946,10 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
             isnews = !strcmp(boardname, "News");
             if (isnews || check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
 #else
-            if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, session))
+            if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, fh->attachment, session))
 #endif
 #else
-            if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, session))
+            if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, fh->attachment, session))
 #endif
             {
                 /*

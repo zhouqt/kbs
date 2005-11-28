@@ -3767,6 +3767,14 @@ static PHP_FUNCTION(bbs_updatearticle)
    		RETURN_LONG(-1);
 	}		
 
+    content = unix_string(content);
+
+#ifdef FILTER
+    if (check_badword_str(content, strlen(content),getSession())) {
+        RETURN_LONG(-1); //修改文章失败，文章可能含有不恰当内容.
+    }
+#endif
+
     setbfile(infile, bp->filename, filename);
     sprintf(outfile, "tmp/%s.%d.editpost", getCurrentUser()->userid, getpid());
     if ((fin = fopen(infile, "r")) == NULL)
@@ -3782,7 +3790,7 @@ static PHP_FUNCTION(bbs_updatearticle)
 		}
         fprintf(fout, "%s", buf2);
     }
-    if (clen>0) fprintf(fout, "%s", unix_string(content));
+    if (clen>0) fprintf(fout, "%s", content);
     now = time(0);
     fprintf(fout, "\033[36m※ 修改:·%s 於 %15.15s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, ctime(&now) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
     while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
@@ -3796,17 +3804,7 @@ static PHP_FUNCTION(bbs_updatearticle)
     }
     fclose(fin);
     fclose(fout);
-#ifdef FILTER
-    if (check_badword(outfile, getSession()) !=0) {
-		unlink(outfile);
-        RETURN_LONG(-1); //修改文章失败，文章可能含有不恰当内容.
-    }
-    else {
-#endif
-        f_mv(outfile, infile);
-#ifdef FILTER
-    }
-#endif
+    f_mv(outfile, infile);
     RETURN_LONG(0);
 }
 
