@@ -311,7 +311,7 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
             if ((int) user->numposts > 0 && !junkboard(board)) {
                 user->numposts--;       /*自己删除的文章，减少post数 */
             }
-        } else if (!strstr(fh.owner, ".") && BMDEL_DECREASE && (flag&ARG_DELDECPOST_FLAG) /*版主删除,减少POST数 */ ) {
+        } else if ((flag&ARG_DELDECPOST_FLAG) /*版主删除,减少POST数 */ && !strstr(fh.owner, ".")) {
             struct userec *lookupuser;
             int id = getuser(fh.owner, &lookupuser);
 

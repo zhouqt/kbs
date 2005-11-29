@@ -3830,7 +3830,7 @@ int range_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     if(askyn("请慎重考虑, 确认操作吗?", 0)==0) return FULLUPDATE;
     k=ans[0]-'0';
     if (k==3) {
-        prints("\033[1;31m本功能被暗杀, 如有不服着找 atppp @ newsmth.net PK. \033[36m<ENTER>\033[0m");
+        prints("\033[1;31m本功能被暗杀, 如有不服者找 atppp @ newsmth.net PK. \033[36m<ENTER>\033[0m");
         WAIT_RETURN;
         return FULLUPDATE;
     }

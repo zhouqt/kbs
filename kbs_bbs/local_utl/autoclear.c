@@ -6,7 +6,7 @@
  * 	autoclear [day] [max] [min]
  * 
  * porting from Maple 2.36 by Nighthawk.bbs@www.cn.nctu.edu.tw
- * changed for smth_bbs
+ * changed for kbs_bbs
 
  自动清理过期文章的程序，
  * $Id$

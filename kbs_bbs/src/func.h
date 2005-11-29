@@ -438,10 +438,7 @@ void unlock_sem_check(int lockid);
     int update_user_usedspace(int delta, struct userec *user);
     int getmailnum(char *recmaildir);
     int isowner(struct userec *user, struct fileheader *fileinfo);
-    int do_del_post(struct userec *user, struct write_dir_arg* delarg,struct fileheader *fileinfo, char *board, int digestmode, int decpost, session_t* session);
-    /*
-     * 删除文章，digestmode定义阅读模式，decpost表示斑竹删除是否减文章数 
-     */
+    int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo, char *board,int currmode,int flag,session_t* session);
 
     int cmpname(struct fileheader *fhdr, char name[STRLEN]);
 /* Haohmaru.99.3.30.比较 某文件名是否和 当前文件 相同 */

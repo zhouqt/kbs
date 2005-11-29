@@ -1615,7 +1615,7 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
     setbdir(DIR_MODE_NORMAL, direct, bp->filename);
     delarg.filename=direct;
     delarg.ent=ent;
-    ret=do_del_post(getCurrentUser(),&delarg,fileinfo,board,DIR_MODE_NORMAL,ARG_DELDECPOST_FLAG,getSession());
+    ret=do_del_post(getCurrentUser(),&delarg,fileinfo,board,DIR_MODE_NORMAL,0,getSession());
     free_write_dir_arg(&delarg);
     if (ret != 0)
         return 3;

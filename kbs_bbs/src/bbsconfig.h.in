@@ -170,8 +170,7 @@ Define this to show real names in mail messages.
 Define this for Query to show real names. 
 */
 /* #define QUERY_REALNAMES      1 */
-/*如果 1 则板主砍 user 文章 , user post 数会减一，反之不减*/
-#define BMDEL_DECREASE 1
+
 /*Define this for Use Notepad.*/
 #define USE_NOTEPAD      1
 
