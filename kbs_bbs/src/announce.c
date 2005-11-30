@@ -1736,6 +1736,7 @@ int lastlevel, lastbmonly;
     char *bmstr;
     char buf[STRLEN];
     int bmonly;
+    int oldmode;
     int number = 0;
 #ifdef NEW_HELP
     int oldhelpmode = helpmode;
@@ -2021,6 +2022,14 @@ int lastlevel, lastbmonly;
                 }
             }
             break;
+          case 'w':                  /* by pig2532 on 2005.11.30 */
+          	oldmode = uinfo.mode;
+          	if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
+          	    break;
+         	 s_msg();
+          	modify_user_mode(oldmode);
+              me.page = 9999;
+		break;
         }
         if (ch >= '0' && ch <= '9') {
             number = number * 10 + (ch - '0');
