@@ -851,7 +851,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
     static char searchstr[30] = "";
     char buf[256];
     int i, ch = 0, curr_line, last_line, change;
-
+    int oldmode;
     displayflag = 0;
     shownflag = 1;
     init_MemMoreLines(&l, ptr, size);
@@ -1000,15 +1000,17 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                 curr_line += t_lines - 1;
                 change = 1 - t_lines;
                 break;
-            case 'W':
+            case 'w':	/* 原来是大W 改成小的 统一起见 by pig2532 on 2005-12-1 */
                 if (HAS_PERM(getCurrentUser(), PERM_PAGE)) {
+                    oldmode = uinfo.mode;
                     s_msg();
+                    modify_user_mode(oldmode);
                     curr_line += t_lines - 1;
                     change = 1 - t_lines;
                 }
                 break;
             case 'u':{
-                    int oldmode = uinfo.mode;
+                    oldmode = uinfo.mode;
 
                     clear();
                     modify_user_mode(QUERY);

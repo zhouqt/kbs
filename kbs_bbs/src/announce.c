@@ -241,12 +241,12 @@ static int a_select_path_key(struct _select_def *conf, int key)
         r_lastmsg();
         modify_user_mode(oldmode);
         return SHOW_REFRESH;
-    case 'L':
+    case 'l':		/* 原来是大L 改成小的了 统一起见 by pig2532 on 2005-12-1 */
         oldmode = uinfo.mode;
         show_allmsgs();
         modify_user_mode(oldmode);
         return SHOW_REFRESH;
-    case 'W':
+    case 'w':		/* 原来是大W 改成小的了 统一起见 by pig2532 on 2005-12-1 */
         oldmode = uinfo.mode;
         if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
             break;
@@ -2022,6 +2022,11 @@ int lastlevel, lastbmonly;
                 }
             }
             break;
+          case 'l':		/* by pig2532 on 2005.12.01 */
+ 	       oldmode = uinfo.mode;
+              show_allmsgs();
+      	       modify_user_mode(oldmode);
+      	       return SHOW_REFRESH;
           case 'w':                  /* by pig2532 on 2005.11.30 */
           	oldmode = uinfo.mode;
           	if (!HAS_PERM(getCurrentUser(), PERM_PAGE))

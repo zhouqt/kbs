@@ -4872,6 +4872,7 @@ static int content_getdata(struct _select_def *conf, int pos, int len)
 
 static int content_key(struct _select_def *conf, int key)
 {
+	int oldmode;
 	switch (key) {
 	case 'm':
 		{
@@ -4995,6 +4996,20 @@ static int content_key(struct _select_def *conf, int key)
 			return SHOW_REFRESH;
 		}
 		break;
+	case 'w':                  /* by pig2532 on 2005-12-1 */
+		oldmode = uinfo.mode;
+       	 if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
+       	     break;
+        	s_msg();
+		modify_user_mode(oldmode);
+       	return SHOW_REFRESH;
+    case 'u':                  /* by pig2532 on 2005-12-1 */
+        clear();
+        oldmode = uinfo.mode;
+        modify_user_mode(QUERY);
+        t_query(NULL);
+        modify_user_mode(oldmode);
+        return SHOW_REFRESH;
 	default:
 		break;
 	}
@@ -5004,6 +5019,7 @@ static int content_key(struct _select_def *conf, int key)
 
 static int tmpl_key(struct _select_def *conf, int key)
 {
+	int oldmode;
 	switch (key) {
 	case 'a' :
 		if( template_num >= MAX_TEMPLATE ){
@@ -5172,6 +5188,25 @@ static int tmpl_key(struct _select_def *conf, int key)
 			return SHOW_REFRESH;
 		}
 		*/
+	case 'l':	/* by pig2532 on 2005.12.01 */
+        oldmode = uinfo.mode;
+        show_allmsgs();
+        modify_user_mode(oldmode);
+        return SHOW_REFRESH;
+	case 'w':                  /* by pig2532 on 2005-12-1 */
+		oldmode = uinfo.mode;
+       	 if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
+       	     break;
+        	s_msg();
+		modify_user_mode(oldmode);
+       	return SHOW_REFRESH;
+	case 'u':                  /* by pig2532 on 2005-12-1 */
+        clear();
+        oldmode = uinfo.mode;
+        modify_user_mode(QUERY);
+        t_query(NULL);
+        modify_user_mode(oldmode);
+        return SHOW_REFRESH;
 	default :
 		break;
 	}
