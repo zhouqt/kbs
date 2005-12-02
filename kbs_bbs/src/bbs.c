@@ -2989,6 +2989,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
              */
             if (!isowner(getCurrentUser(), fileinfo))
                 return DONOTHING;
+#if 0
 	if ((fileinfo->accessed[0] & FILE_MARKED) || (fileinfo->accessed[0] & FILE_DIGEST)){
 		move(3,0);
 		clrtobot();
@@ -2997,6 +2998,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         clear();
         return FULLUPDATE;
 	}
+#endif
         }
         else dobmlog=true;
 	}
@@ -5972,6 +5974,22 @@ int read_my_pc(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 
 #endif
 
+static int prompt_newkey(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg) {
+    char *prompt = (char*)extraarg;
+
+    clear();
+    move(3,0);
+    prints("\t\t\033[1;4;31m%s快捷键回收第一号令\033[0m\n\n", BBS_FULL_NAME);
+    prints("\t\t同志们，朋友们！快捷键回收啦！\n\n\t\t您刚才按的键已经被技术站务私吞。\n\n");
+    prints("\t\t\033[1;32m%s\033[0m\n",prompt);
+    move(13,50); prints("\033[1;31m╭︿︿︿╮");
+	move(14,50); prints("{/-◎◎-\\}");
+ 	move(15,50); prints(" ( (oo) )");
+ 	move(16,50); prints("    ︶\033[0m");
+    pressanykey();
+    return FULLUPDATE;    
+}
+
 static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'r', (READ_KEY_FUNC)read_post,NULL},
     {'K', (READ_KEY_FUNC)skip_post,NULL},
@@ -6000,10 +6018,10 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'H', read_callfunc0, read_hot_info},   /* flyriver: 2002.12.21 增加热门信息显示 */
         
     {Ctrl('G'), (READ_KEY_FUNC)change_mode,(void*)0},   /* bad : 2002.8.8 add marked mode */
-    {'`', (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_DIGEST},
+    {'`', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 Ctrl+G 1 进入文摘区"},
     {'.', (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_DELETED},
     {'>', (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_JUNK},
-    {Ctrl('T'), (READ_KEY_FUNC)change_mode,(void*)DIR_MODE_THREAD},
+    {Ctrl('T'), (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 Ctrl+G 2 进入同主题阅读"},
 
     {'s', (READ_KEY_FUNC)do_select,NULL},
     {'x', (READ_KEY_FUNC)into_announce,NULL},
@@ -6015,20 +6033,15 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
 #ifdef INTERNET_EMAIL
     {'F', (READ_KEY_FUNC)mail_forward,NULL},
-    {'U', (READ_KEY_FUNC)mail_uforward,NULL},
+    {'U', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 F 转发信件"},
+#endif
     {Ctrl('R'), (READ_KEY_FUNC)post_reply,NULL},
-#endif
 
-#ifdef NINE_BUILD
-    {'c', read_callfunc0,show_t_friends},
-    {'C', (READ_KEY_FUNC)clear_new_flag,NULL},
-#else
     {'c', (READ_KEY_FUNC)clear_new_flag,NULL},
-#endif
     {'f', (READ_KEY_FUNC)clear_all_new_flag,NULL},
 
     {'n',  (READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
-    {Ctrl('N'), (READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
+    {Ctrl('N'), (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 n 跳转到本主题第一篇未读"},
     {'\\', (READ_KEY_FUNC)thread_read,(void*)SR_LAST},
     {'=', (READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
 
@@ -6068,16 +6081,11 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {KEY_TAB,  (READ_KEY_FUNC)show_b_note,NULL},
     {Ctrl('D'), (READ_KEY_FUNC)deny_user,NULL},
     {Ctrl('E'), (READ_KEY_FUNC)clubmember,NULL},
-#ifdef NINE_BUILD
-    {'z',  (READ_KEY_FUNC)show_sec_b_note,NULL},
-    {'Z',  (READ_KEY_FUNC)b_sec_notes_edit,NULL},
-#else
     {'z', (READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
-    {'Z', (READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
-#endif
+    {'Z', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 z 给作者发讯息"},
 
     {'p',  (READ_KEY_FUNC)thread_read,(void*)SR_READ},
-    {Ctrl('S'), (READ_KEY_FUNC)thread_read,(void*)SR_READ},
+    {Ctrl('S'), (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 p 进入同主题阅读"},
 #ifdef FB2KPC
     {Ctrl('X'), (READ_KEY_FUNC)into_PAnnounce,NULL},
 #else
@@ -6090,7 +6098,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'S', (READ_KEY_FUNC)sequential_read,NULL},
     
     {'b', (READ_KEY_FUNC)SR_BMFunc,(void*)true},
-    {'B', (READ_KEY_FUNC)SR_BMFunc,(void*)false},
+    {'B', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 b 进入同主题操作"},
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
     {'!', (READ_KEY_FUNC)Goodbye,NULL},
     {Ctrl('Q'), (READ_KEY_FUNC)showinfo,NULL},
