@@ -1,8 +1,5 @@
 <?php
-    require("funcs.php");
-login_init();
-
-    html_init("gb2312");
+    require("www2-funcs.php");
 
 	$nowyear = date("Y");
 	$nowmonth = date("m");
@@ -49,10 +46,9 @@ login_init();
 	else
 		$pngurl = "/bbsstat/".$year."/".$month."/".$day."_useronline.png";
 
-	html_init("gb2312");
+	page_header("用户在线统计");
 ?>
-<center><?php echo BBS_FULL_NAME; ?> -- 用户在线统计 <hr color=green>
-<form action="/bbsonline.php" method="get">
+<form action="bbsonline.php" method="get">
 
 <select name="year" class="input" style="WIDTH: 55px">
 <?php
@@ -113,5 +109,6 @@ login_init();
 对不起，暂时无此日统计图表
 <?php
 	}
+	page_footer();
 ?>
 

@@ -1,72 +1,43 @@
 <?php
-	/**
-	 * This file list online users.
-	 * $Id$
-	 */
-	 
-	require("funcs.php");
-	
-	if (defined("SITE_SMTH")) // Smth不提供在线用户列表 add by windinsn, May 5,2004
-	    exit ();
-	    
-login_init();
-	
-	if ($loginok != 1)
-		html_nologin();
-	else
-	{
-		html_init("gb2312");
-		if( isset( $_GET["start"] ) ){
-			$start=$_GET["start"];
-		} else {
-			$start=1;
-		}
-		if ($start<=0) $start=1;
-		$num=20;
-	 	$users = bbs_getonline_user_list($start,$num);
-		if ($users == 0)
-			$count = 0;
-		else
-			$count = count($users);
-?>
+	require("www2-funcs.php");
 
-<html>
-<head>
-<meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<link rel="stylesheet" type="text/css" href="/bbs-bf.css">
-<link rel="stylesheet" type="text/css" href="/ansi-web-middle.css">
-</head><center>
-<?php echo BBS_FULL_NAME; ?> -- 在线用户列表 [目前在线: <?php echo bbs_getonlinenumber(); ?>人]<hr>
-<?php
-    if ($count == 0) echo "目前没有用户在线";
-    else {
+	if (defined("SITE_SMTH")) // 不提供在线用户列表 add by windinsn, May 5,2004
+		exit ();
+
+	login_init();
+	page_header("在线用户列表");
+	
+	if( isset( $_GET["start"] ) ){
+		$start=$_GET["start"];
+	} else {
+		$start=1;
+	}
+	if ($start<=0) $start=1;
+	$num=20;
+	$users = bbs_getonline_user_list($start,$num);
+	if ($users == 0)
+		$count = 0;
+	else
+		$count = count($users);
+
 ?>
-<table border="1" width="610">
-<tr><td>序号</td><td>友</td><td>使用者代号</td><td>使用者昵称</td><td>来自</td><td>动态</td><td>发呆</td></tr>
+<table class="main adj">
+<col class="center"/><col/><col/><col/><col/><col/><col class="right"/>
+<tbody>
+<tr><th>序号</th><th>友</th><th>使用者代号</th><th>使用者昵称</th><th>来自</th><th>动态</th><th>发呆</th></tr>
 <?php
-        for($i = 0; $i < $count; $i++) {
-            echo "<tr><td>" . ($i+$start) . "</td>";
-            echo "<td>" . ($users[$i]["isfriend"]?"√" : "  ") . "</td>";
-            echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . $users[$i]["userid"] . "</a></td>";
-            echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . htmlspecialchars($users[$i]["username"]) . "</a></td>";
-            echo "<td>" . $users[$i]["userfrom"] . "</td>";
-            echo "<td>" . $users[$i]["mode"] . "</td>";
-            echo "<td>" . ($users[$i]["idle"]!=0?$users[$i]["idle"]:" ") . "</td></tr>\n";
-        }
+		for($i = 0; $i < $count; $i++) {
+			echo "<tr><td>" . ($i+$start) . "</td>";
+			echo "<td>" . ($users[$i]["isfriend"]?"√" : "  ") . "</td>";
+			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . $users[$i]["userid"] . "</a></td>";
+			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . htmlspecialchars($users[$i]["username"]) . "</a></td>";
+			echo "<td>" . $users[$i]["userfrom"] . "</td>";
+			echo "<td>" . $users[$i]["mode"] . "</td>";
+			echo "<td>" . ($users[$i]["idle"]!=0?$users[$i]["idle"]:" ") . "</td></tr>\n";
+		}
 ?>
-</table>
-<?php
-    } //$count==0   
-?>
-<hr>
-<?php
-/*
-    for ($i=0;$i<26;$i++) {
-      echo "[<a href=\"/cgi-bin/bbs/bbsufind?search=" . chr(ord('A')+$i) . "\">" . chr(ord('A')+$i) . "</a>]";
-    }
-*/
-?>
-<br>
+</tbody></table>
+<div class="oper">
 [<a href="bbsfriend.php">在线好友</a>]
 <?php
 	$prev = $start - $num;
@@ -82,12 +53,10 @@ login_init();
 <?php
 	}
 ?>
-<br><form method="GET">
-<input type="submit" value="跳转到第"> <input type="input" size="4" name="start"> 个使用者</form></center>
-
+</div>
+<form method="GET">
+<input type="submit" value="跳转到第"> <input type="input" size="4" name="start"> 个使用者
+</form>
 <?php 
-    } //nologinok
-
+	page_footer();
 ?>
-</html>
-

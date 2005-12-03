@@ -1,14 +1,7 @@
 <?php
-/*
- * edit article's title
- * @author: windinsn apr 28,2004
- */
-require("funcs.php");
+require("www2-funcs.php");
 login_init();
-
-html_init("gb2312","","",1);
-if ($loginok != 1)
-	html_nologin();
+assert_login();
 
 if (isset($_GET["board"]))
 	$board = $_GET["board"];
@@ -33,26 +26,16 @@ if (bbs_checkreadperm($usernum, $brdnum) == 0)
 	html_error_quit("错误的讨论区");
 
 if(bbs_checkpostperm($usernum, $brdnum) == 0) 
-{
-	if (!strcmp($currentuser["userid"],"guest"))
-		html_error_quit("请先注册帐号");
-	else 
-		html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
-}
+	html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
 
-if (!isset($_GET["mode"]))
-	$mode = $dir_modes["NORMAL"];
-else
-{
-	if($_GET["mode"] != $dir_modes["NORMAL"] && $_GET["mode"] != $dir_modes["ZHIDING"] && $_GET["mode"] != $dir_modes["DIGEST"])
-		html_error_quit("错误的阅读模式");
-	$mode = $_GET["mode"];
-}
+$mode = $dir_modes["NORMAL"]; /* TODO: support for other modes? */
 
 $articles = array ();
 $num = bbs_get_records_from_id($board, $id, $mode, $articles);
 if($num==0)
 	html_error_quit("错误的文章号,原文可能已经被删除");
+
+bbs_board_nav_header($brdarr, "修改文章标题");
 
 if(isset($_POST["title"]))
 {
@@ -94,32 +77,26 @@ if(isset($_POST["title"]))
 	}
 	else
 	{
-?>
-<br /><br /><br />
-<table cellpadding=3 cellspacing=1 align=center class=TableBorder1>
-<tr align=center><th width="100%">标题修改成功！</td>
-</tr><tr><td width="100%" class=TableBody1>
-本页面将在3秒后自动返回版面文章列表<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=bbsdoc.php?board=<?php echo $brd_encode; ?>' >，<b>您可以选择以下操作：</b><br><ul>
-<li><a href="<?php echo MAINPAGE_FILE; ?>">返回首页</a></li>
-<li><a href="/bbsdoc.php?board=<?php   echo $brd_encode; ?>">返回<?php   echo $brdarr['DESC']; ?></a></li>
-<li><a href="/bbscon.php?board=<?php   echo $brd_encode; ?>&id=<?php echo $id; ?>">返回《<?php  echo $_POST["title"]; ?>》</a></li>
-</ul></td></tr></table>
-<?php		
+		html_success_quit("标题修改成功！<br/>" . 
+			"本页面将在3秒后自动返回版面文章列表<meta http-equiv=refresh content='3; url=bbsdoc.php?board=" . $brd_encode . "'/>",
+			array("<a href='" . MAINPAGE_FILE . "'>返回首页</a>", 
+			"<a href='bbsdoc.php?board=" . $brd_encode . "'>返回 " . $brdarr['DESC'] . "</a>",
+			"<a href='bbscon.php?board=" . $brd_encode . "&id=" . $id . "'>返回《" . $_POST["title"] . "》</a>"));
 	}
-?>
-
-<?php
 }
 else
 {
 ?>	
-<br /><br /><br /><br /><center>
-<form action="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>&mode=<?php echo $mode; ?>" method="post" />
-新文章标题：
-<input type="text" name="title" id="title" size="40" value="<?php echo htmlspecialchars($articles[1]["TITLE"]); ?>" />
-<input type="submit" value="修改" />
-</form>	</center>
+<form action="<?php echo $_SERVER["PHP_SELF"]; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>" method="post" class="large"/>
+	<fieldset><legend>修改文章标题</legend>
+		<div class="inputs">
+			<label>新文章标题:</label>
+			<input type="text" name="title" id="sfocus" size="40" value="<?php echo htmlspecialchars($articles[1]["TITLE"]); ?>" />
+		</div>
+	</fieldset>
+	<div class="oper"><input type="submit" value="修改" /></div>
+</form>
 <?php	
 }
-html_normal_quit();
+page_footer();
 ?>

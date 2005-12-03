@@ -26,13 +26,10 @@
 	
 	page_header($xmltitle);
 ?>
-<table class="main wide">
-<caption><?php echo $xmltitle; ?></caption>
-<col width="2%" class="center"/><col width="2%"/><col width="24%"/><col width="10%" class="center"/><col width="47%"/><col class="center" width="15%"/>
-<tbody>
-<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th></tr>
+<script>
+var ta = new tabWriter(1,'main wide','<?php echo $xmltitle; ?>',
+[['#','2%','center'],[' ','2%',0],['讨论区名称','24%',0],['类别','10%','center'],['中文描述','47%',0],['版主','15%','center']]);
 <?php
-	# shift through the array
 	$i = 0;
 	while($board = array_shift($boards))
 	{
@@ -42,41 +39,29 @@
 		$brdnum = bbs_getboard($ename, $brdarr);
 		if ($brdnum == 0)
 			continue;
+		if ((++$i) > 100) break;
 		$brd_encode = urlencode($brdarr["NAME"]);
-		$i ++ ;
-?>
-<tr>
-<td><?php echo $i; ?></td>
-<td>
-	<img src="images/newgroup.gif" />
-</td>
-<td>
-	<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo $brdarr["NAME"]; ?></a>
-</td>
-<td><?php echo $brdarr["CLASS"]; ?></td>
-<td><a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo $brdarr["DESC"]; ?></a></td>
-<td>
-<?php
+		$col1 = '<img src="images/newgroup.gif" />';
+		$col2 = '<a href="bbsdoc.php?board=' . $brd_encode . '">' . $brdarr["NAME"] . '</a>';
+		$col3 = $brdarr["CLASS"];
+		$col4 = '<a href="bbsdoc.php?board=' . $brd_encode . '">' . htmlspecialchars($brdarr["DESC"], ENT_QUOTES) . '</a>';
 		$bms = explode(" ", trim($brdarr["BM"]));
 		if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
-			echo "诚征版主中";
+			$col5 = "诚征版主中";
 		else
 		{
 			if (!ctype_print($bms[0][0]))
-				echo $bms[0];
+				$col5 = $bms[0];
 			else
 			{
-?>
-<a href="bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
-<?php
+				$col5 = '<a href="bbsqry.php?userid=' . $bms[0] . '">' . $bms[0] . '</a>';
 			}
 		}
-?>
-</td></tr>
-<?php
+		echo "ta.r('$col1','$col2','$col3','$col4','$col5');\n";
 	} //end while
 ?>
-</tbody></table>
+ta.t();
+</script>
 <?php
 	bbs_boards_navigation_bar();
 	page_footer();

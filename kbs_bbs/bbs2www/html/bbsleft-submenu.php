@@ -1,5 +1,5 @@
 <?php
-require_once("funcs.php");
+require_once("www2-funcs.php");
 login_init();
 if(isset($_GET["fav"]))
 {
@@ -36,9 +36,9 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 		{
 			$innerHtml .= "<div class='fi'>".
 				"<a href='javascript:submenu(0,0,".$group.",".$brd_bid[$j].",0)' target='_self'>".
-				"<img id='submenuimg_brd_".$group."_".$brd_bid[$j]."' src='/images/close.gif' class='pm' alt='+'>".
-				"</a><a href='/bbsboa.php?group=".$group."&group2=".$brd_bid[$j]."'>".
-				"<img src='/images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
+				"<img id='submenuimg_brd_".$group."_".$brd_bid[$j]."' src='images/close.gif' class='pm' alt='+'>".
+				"</a><a href='bbsboa.php?group=".$group."&group2=".$brd_bid[$j]."'>".
+				"<img src='images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
 				"<div id='submenu_brd_".$group."_".$brd_bid[$j]."' class='lineback'></div>";
 			continue;
 		}
@@ -47,16 +47,16 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 		} elseif ($brd_flag[$j] == -1) { //收藏目录
 			$innerHtml .= "<div class='fi'>".
 				"<a href='javascript:submenu(1,".$brd_bid[$j].",0,0,0)' target='_self'>".
-				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='/images/close.gif' class='pm' alt='+'>".
-				"</a><a href='/bbsfav.php?select=".$brd_bid[$j]."&up=".$select."'>".
-				"<img src='/images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
+				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='images/close.gif' class='pm' alt='+'>".
+				"</a><a href='bbsfav.php?select=".$brd_bid[$j]."&up=".$select."'>".
+				"<img src='images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
 				"<div id='submenu_fav_".$brd_bid[$j]."' class='lineback'></div>";
 			continue;
-	    } else {
+		} else {
 			//普通目录版面！！
 		}
 	}
-	$brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$j]);
+	$brd_link="bbsdoc.php?board=" . urlencode($brd_name[$j]);
 	if( $j != $brd_num - 1 )
 		$innerHtml .= "<div class='lb'><div class='mi'><a href='".$brd_link."'>".$brd_desc[$j]."</a></div></div>";
 	else
@@ -70,7 +70,7 @@ cache_header("nocache");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
 </head>
-<script src="/bbsleft.js"></script>
+<script src="bbsleft.js"></script>
 <body>
 <script language="javascript">
 parent.document.getElementById('<?php echo $subMenu; ?>').innerHTML = "<?php echo $innerHtml; ?>" ; 

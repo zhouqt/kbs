@@ -1,7 +1,7 @@
 <?php
-        
-    require("funcs.php");
-login_init();
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
 
 	$hostname=bbs_sysconf_str("MYSQLHOST");
 	$username=bbs_sysconf_str("MYSQLUSER");
@@ -9,7 +9,6 @@ login_init();
 	$dbname=bbs_sysconf_str("MYSQLSMSDATABASE");
 
 function al_print_form($al){
-
 ?>
 <table border="0">
 <tr><td>姓名:</td><td><input name="t_name" maxlength=13 size=13 value=<?php echo htmlspecialchars($al[2]);?>></td></tr>
@@ -34,97 +33,88 @@ function al_print_form($al){
 </form>
 
 <?php
-
 }
-    if($loginok !=1)
-    	html_nologin(); 
-    else
-	{
-		html_init("gb2312");
+	if( $_GET["start"] ){
+		$startnum = $_GET["start"];
+	}else if( $_POST["start"] ){
+		$startnum = $_POST["start"];
+	}else
+		$startnum = 0;
+	settype($startnum,"integer");
 
-		if( $_GET["start"] ){
-			$startnum = $_GET["start"];
-		}else if( $_POST["start"] ){
-			$startnum = $_POST["start"];
-		}else
-			$startnum = 0;
-		settype($startnum,"integer");
+	if( $_GET["count"] ){
+		$count = $_GET["count"];
+	}else if( $_POST["count"] ){
+		$count = $_POST["count"];
+	}else
+		$count = 10;
+	settype($count,"integer");
 
-		if( $_GET["count"] ){
-			$count = $_GET["count"];
-		}else if( $_POST["count"] ){
-			$count = $_POST["count"];
-		}else
-			$count = 10;
-		settype($count,"integer");
+	if( $_GET["desc"] ){
+		$desc = $_GET["desc"];
+	}else if( $_POST["desc"] ){
+		$desc = $_POST["desc"];
+	}else
+		$desc = 0;
+	settype($desc, "integer");
+	if($desc == 1)
+		$descstr="DESC";
+	else
+		$descstr="ASC";
 
-		if( $_GET["desc"] ){
-			$desc = $_GET["desc"];
-		}else if( $_POST["desc"] ){
-			$desc = $_POST["desc"];
-		}else
-			$desc = 0;
-		settype($desc, "integer");
-		if($desc == 1)
-			$descstr="DESC";
-		else
-			$descstr="ASC";
+	if( $_GET["order"] ){
+		$order = $_GET["order"];
+	}else if( $_POST["order"] ){
+		$order = $_POST["order"];
+	}
+	if( $order != "bbsid" && $order != "name" )
+		$order="groupname";
 
-		if( $_GET["order"] ){
-			$order = $_GET["order"];
-		}else if( $_POST["order"] ){
-			$order = $_POST["order"];
+	$db = mysql_connect($hostname, $username, $password) or die(mysql_error());
+	mysql_select_db($dbname, $db) or die(mysql_error());
+
+	if( $_GET["action"] ){
+		$action = $_GET["action"];
+	}
+
+	if(isset($action) && $action == "del"){
+		if( $_GET["id"] ){
+			$id = $_GET["id"];
 		}
-		if( $order != "bbsid" && $order != "name" )
-			$order="groupname";
-
-		$db = mysql_connect($hostname, $username, $password) or die(mysql_error());
-		mysql_select_db($dbname, $db) or die(mysql_error());
-
-		if( $_GET["action"] ){
-			$action = $_GET["action"];
+		else{
+			html_error_quit("参数错误1");
 		}
+		settype($id, "integer");
+		if($id < 0)
+			html_error_quit("参数错误2");
 
-		if(isset($action) && $action == "del"){
-			if( $_GET["id"] ){
-				$id = $_GET["id"];
-			}
-			else{
-				html_error_quit("参数错误1");
-			}
-			settype($id, "integer");
-			if($id < 0)
-				html_error_quit("参数错误2");
+		$sqlstr = "DELETE FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$id;
+		$result = mysql_query($sqlstr) or die(mysql_error());
 
-			$sqlstr = "DELETE FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$id;
-			$result = mysql_query($sqlstr) or die(mysql_error());
+	}else if(isset($action) && $action=="detail"){
+		if( $_GET["id"] ){
+			$id = $_GET["id"];
+		}
+		else{
+			html_error_quit("参数错误1");
+		}
+		settype($id, "integer");
+		if($id < 0)
+			html_error_quit("参数错误2");
 
-		}else if(isset($action) && $action=="detail"){
-			if( $_GET["id"] ){
-				$id = $_GET["id"];
-			}
-			else{
-				html_error_quit("参数错误1");
-			}
-			settype($id, "integer");
-			if($id < 0)
-				html_error_quit("参数错误2");
+		$sqlstr = "SELECT * FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$id;
 
-			$sqlstr = "SELECT * FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$id;
+		$result = mysql_query($sqlstr) or die(mysql_error());
 
-			$result = mysql_query($sqlstr) or die(mysql_error());
-
-			if( ! $result ){
-				html_error_quit("数据错误");
-			}else{
-				$row = mysql_fetch_row($result);
-				if( ! $row )
-					html_error_quit("数据错误1");
+		if( ! $result ){
+			html_error_quit("数据错误");
+		}
+		$row = mysql_fetch_row($result);
+		if( ! $row )
+			html_error_quit("数据错误1");
+		page_header("通讯录条目显示");
 ?>
-<body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录条目显示 [用户: <?php echo $currentuser["userid"]; ?>]</p>
 <a href="javascript:location.reload()">刷新</a>
-</center>
 <hr class=default>
 <table border="1" width="613" align="center" cellpadding="0" cellspacing="0">
 <tr><td>姓名</td><td><?php echo htmlspecialchars($row[2]);?></td></tr>
@@ -146,10 +136,9 @@ function al_print_form($al){
 <a href="javascript:history.go(-1)">返回</a>
 </center>
 </body>
+</html>
 <?php
-				html_normal_quit();
-			}
-		}else if(isset($action) && ( $action=="add" || $action=="edit" ) ){
+	}else if(isset($action) && ( $action=="add" || $action=="edit" ) ){
 			if( $action == "edit" ){
 				if( $_GET["id"] ){
 					$edit_id = $_GET["id"];
@@ -325,20 +314,20 @@ function al_print_form($al){
 					html_error_quit("失败");
 				}else{
 ?>
-<a href="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>"><?php if($action == "add") echo "添加"; else echo "修改"; ?>成功，返回</a>
+<a href="bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>"><?php if($action == "add") echo "添加"; else echo "修改"; ?>成功，返回</a>
 <?php
-					html_normal_quit();
+					page_footer(FALSE);
 				}
 			}else if($action == "add"){
 ?>
 <center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录条目增加 [用户: <?php echo $currentuser["userid"]; ?>]</p>
 </center>
 <hr class=default>
-<form action="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add" method=post>
+<form action="bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add" method=post>
 <?php
 				al_print_form($al);
 
-				html_normal_quit();
+				page_footer(FALSE);
 			}else{
 
 				$sqlstr = "SELECT * FROM addr WHERE userid=\"".$currentuser["userid"]."\" AND id=".$edit_id;
@@ -355,10 +344,10 @@ function al_print_form($al){
 <center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录条目修改 [用户: <?php echo $currentuser["userid"]; ?>]</p>
 </center>
 <hr class=default>
-<form action="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=edit&id=<?php echo $edit_id;?>" method=post>
+<form action="bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=edit&id=<?php echo $edit_id;?>" method=post>
 <?php
 					al_print_form($row);
-					html_normal_quit();
+					page_footer(FALSE);
 				}
 			}
 		}
@@ -370,9 +359,8 @@ function al_print_form($al){
 		if( ! $result ){
 			html_error_quit("没有数据");
 		}else{
+			page_header("通讯录管理");
 ?>
-<body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- 通讯录管理 [用户: <?php echo $currentuser["userid"]; ?>]</p>
 <a href="javascript:location.reload()">刷新</a>
 </center>
 <hr class=default>
@@ -384,13 +372,13 @@ function al_print_form($al){
 ?>
 <tr>
 <td><?php echo $startnum+$i+1;?></td>
-<td><a href="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&action=detail&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>"><?php echo htmlspecialchars($row[2]);?></a></td>
+<td><a href="bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&action=detail&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>"><?php echo htmlspecialchars($row[2]);?></a></td>
 <td><?php echo htmlspecialchars($row[3]);?></td>
 <td><?php echo htmlspecialchars($row[15]);?></td>
 <td><pre><?php echo $row[14];?></pre></td>
 <td>
-<a onclick="return confirm('你真的要删除这条记录吗?')" href="/bbsal.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">删除</a>
-<a href="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&action=edit&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">编辑</a>
+<a onclick="return confirm('你真的要删除这条记录吗?')" href="bbsal.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">删除</a>
+<a href="bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&action=edit&id=<?php echo $row[0];?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">编辑</a>
 </td>
 </tr>
 <?php
@@ -406,7 +394,7 @@ function al_print_form($al){
 <?php
 		if( $startnum > 0 ){
 ?>
-<a href="/bbsal.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">上一页</a>
+<a href="bbsal.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">上一页</a>
 <?php	}else{
 ?>
 上一页
@@ -415,25 +403,25 @@ function al_print_form($al){
 
 		if( $i >= $count ){
 ?>
-<a href="/bbsal.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">下一页</a>
+<a href="bbsal.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>">下一页</a>
 <?php	}else{
 ?>
 下一页
 <?php
 		}
 ?>
-<a href="/bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add">增加条目</a>
+<a href="bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add">增加条目</a>
 
 <input type="button" name="csv" value="从csv文件导入" onclick="return GoAttachWindow()" />
 <script language="JavaScript">
 <!--
    function GoAttachWindow(){
 
-   	var hWnd = window.open("bbsloadcsv.php","_blank","width=300,height=100,scrollbars=yes");
+	var hWnd = window.open("bbsloadcsv.php","_blank","width=300,height=100,scrollbars=yes");
 
 	hWnd.focus();
 
-   	return false;
+	return false;
 
    }
 -->
@@ -446,11 +434,11 @@ function doOrder(){
 	var type=oSelectType.value;
 
 	if(type=="name")
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=name&desc=<?php echo $desc;?>";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=name&desc=<?php echo $desc;?>";
 	else if(type=="bbsid")
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=bbsid&desc=<?php echo $desc;?>";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=bbsid&desc=<?php echo $desc;?>";
 	else
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=groupname&desc=<?php echo $desc;?>";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=groupname&desc=<?php echo $desc;?>";
 
 	return;
 }
@@ -470,9 +458,9 @@ function doRefresh(){
 	var type=oSelectType.value;
 
 	if(type=="1")
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=0";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=0";
 	else
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=1";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=1";
 
 	return;
 }
@@ -491,13 +479,13 @@ function doCount(){
 	var type=oSelectType.value;
 
 	if(type=="10")
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=10&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=10&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
 	else if(type == "50")
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=50&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=50&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
 	else if(type == "30")
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=30&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=30&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
 	else
-		window.location="/bbsal.php?start=<?php echo ($startnum);?>&count=20&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
+		window.location="bbsal.php?start=<?php echo ($startnum);?>&count=20&order=<?php echo $order;?>&desc=<?php echo $desc;?>";
 
 	return;
 }
@@ -513,6 +501,4 @@ function doCount(){
 
 </center>
 </body>
-<?php
-	}
-?>
+</html>

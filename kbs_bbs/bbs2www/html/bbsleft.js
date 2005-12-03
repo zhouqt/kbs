@@ -29,20 +29,20 @@ function submenu( isfav , favselect , group , group2 , yank )
 {
 	if( isfav == 1 )
 	{
-		linkurl = "/bbsleft-submenu.php?select=" + favselect + "&fav=1";
+		linkurl = "bbsleft-submenu.php?select=" + favselect + "&fav=1";
 		submenuname = "submenu_fav_" + favselect ;
 		imgname = "submenuimg_fav_" + favselect ;
 	}
 	else
 	{
-		linkurl = "/bbsleft-submenu.php?group=" + group + "&group2=" + group2 + "&yank=" + yank;
+		linkurl = "bbsleft-submenu.php?group=" + group + "&group2=" + group2 + "&yank=" + yank;
 		submenuname = "submenu_brd_" + group + "_" + group2 ;
 		imgname = "submenuimg_brd_" + group + "_" + group2 ;
 	}
 	submenustatus = document.getElementById(submenuname).style.display;
 	if (submenustatus == "block")
 	{
-		document.getElementById(imgname).src="/images/close.gif";
+		document.getElementById(imgname).src="images/close.gif";
 		document.getElementById(submenuname).style.display = "none";
 	} else {
 		document.getElementById(imgname).src="images/open.gif";
@@ -57,7 +57,7 @@ function fillf3(form) {
 		url = f.document.location.toString();
 		uri = url.substr(7);
 		if ((pos = uri.indexOf("/")) != -1) {
-			url = uri.substr(pos + 1);
+			url = uri.substr(pos);
 		}
 		form.action += "?mainurl=" + escape(url);
 	}

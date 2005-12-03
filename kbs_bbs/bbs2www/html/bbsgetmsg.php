@@ -1,64 +1,39 @@
 <?php
-	/**
-	 * This file lists articles to user.
-	 * $Id$
-	 */
-    $setboard=0;
-    require("funcs.php");
-login_init();
-	if ($loginok != 1)
-		html_nologin();
-	else
-	{
-		html_init("gb2312");
-		if ($currentuser["userid"]=="guest")
-			$ret=0;
-		else
-			$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
+	require("www2-funcs.php");
+	login_init();
+	page_header("讯息", FALSE);
 ?>
-<meta http-equiv="pragma" content="no-cache"><style type="text/css">
-A {color: #0000FF}
-</style>
+<body class="msgs">
 <?php
-		if ($ret)
-		{
+	if (strcmp($currentuser["userid"], "guest")) {
+		$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
+		if ($ret) {
 ?>
 <bgsound src="/sound/msg.wav">
-<body style="BACKGROUND-COLOR: #f0ffd0">
-<table width="100%">
-<form action=/bbsgetmsg.php name=form0>
-  <tr>
-    <td valign="top" nowrap="nowrap"><font color="green"><?php echo $srcid; ?></font> (<?php echo strftime("%b %e %H:%M", $sndtime); ?>): </td>
-    <td align="left" valign="top"><?php echo htmlspecialchars($msgbuf); ?></td>
-    <td align="right" valign="top" nowrap="nowrap"><a target="f3" href="/bbssendmsg.php?destid=<?php 
-echo $srcid; ?>&destutmp=<?php 
-echo $srcutmpnum; ?>">[回讯息]</a> <a href="bbsgetmsg.php?refresh">[忽略]</a></td>
-  </tr>
-</form>
-</table>
+<div id="msgs">
+<?php echo $srcid; ?> (<?php echo strftime("%b %e %H:%M", $sndtime); ?>): <?php echo htmlspecialchars($msgbuf); ?> 
+(<a target="f3" href="bbssendmsg.php?destid=<?php echo $srcid; ?>&destutmp=<?php echo $srcutmpnum; ?>">[回讯息]</a> 
+<a href="bbsgetmsg.php?refresh">[忽略]</a>)
+</div>
 <?php
-			$frameheight = 54;
-	    } else {
+			$frameheight = 25;
+			$timeout = 540;
+		} else {
 			//no msg
 			$frameheight = 0;
-			if (isset($_GET["refresh"])) {
-?>
-<meta http-equiv="Refresh" content="60; url=/bbsgetmsg.php">
-<?php
-			} else {
-?>
-<meta http-equiv="Refresh" content="600; url=/bbsgetmsg.php">
-<?php	    
-			}
+			$timeout = (isset($_GET["refresh"])) ? 60 : 540;
 		}
-?>
-<script language="javascript">
-<!--
-if (ff = top.document.getElementById("viewfrm"))
-	ff.rows = "<?php echo $frameheight; ?>,*,20";
-//-->
-</script>
-<?php	
-		html_normal_quit();
+	} else {
+		$frameheight = 0;
+		$timeout = 0;
 	}
 ?>
+<script>
+if (ff = top.document.getElementById("viewfrm"))
+	ff.rows = "<?php echo $frameheight; ?>,*,20";
+<?php if ($timeout > 0) { ?>
+setTimeout("location.reload()", <?php echo $timeout*1000 ?>);
+<?php } ?>
+</script>
+</body>
+</html>

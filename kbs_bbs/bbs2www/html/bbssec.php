@@ -1,42 +1,25 @@
 <?php
-	/**
-	 * $Id$ 
-	 */
-	require("funcs.php");
-login_init();
-	require("board.inc.php");
-	if ($loginok !=1 )
-		html_nologin();
-	else
-	{
-		html_init("gb2312");
+	require("www2-funcs.php");
+	require("www2-board.php");
+	login_init();
+	page_header("分类讨论区");
 ?>
-<body>
-<center><?php echo BBS_FULL_NAME; ?> -- 分类讨论区<br />
-<?php
-	if( defined("ENABLE_ABOARDS") )
-		bbs_board_avtiveboards(); //活动看板
-?>
-<hr class="default">
-<table>
-<tr><td>区号</td><td>类别</td><td>描述</td></tr>
+<script>
+var ta = new tabWriter(0,'main','分类讨论区',[['区号',0,'center'],['类别',0,0],['描述',0,0]]);
 <?php
 		$i = 0;
 		foreach ($section_names as $secname)
 		{
 			$i++;
 ?>
-<tr><td><?php echo $i-1; ?></td>
-<td><a href="/bbsboa.php?group=<?php echo $i-1; ?>"><?php echo $secname[0]; ?></a></td>
-<td><a href="/bbsboa.php?group=<?php echo $i-1; ?>"><?php echo $secname[1]; ?></a></td></tr>
+ta.r('<?php echo $i-1; ?>','<a href="bbsboa.php?group=<?php echo $i-1; ?>"><?php echo $secname[0]; ?></a>','<a href="bbsboa.php?group=<?php echo $i-1; ?>"><?php echo $secname[1]; ?></a>');
 <?php
 		}
 ?>
-</table>
-<hr class="default">
-</center>
+ta.t();
+</script>
 <?php
 	bbs_boards_navigation_bar();
-	}
+	page_footer();
 ?>
-</html>
+

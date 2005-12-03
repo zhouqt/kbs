@@ -1,12 +1,7 @@
 <?php
-
-	require("funcs.php");
-login_init();
-	if ($loginok != 1 || ($currentuser["userid"] == "guest") )
-		html_nologin();
-	else
-	{
-		html_init("gb2312");
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
 
 		if(isset($_GET["board"]))
 			$board = $_GET["board"];
@@ -38,7 +33,7 @@ login_init();
 			$oldvote[$i] = 0;
 		}
 
-		if( $_POST["submit"] ){
+		if( isset($_POST["submit"] )){
 
 			if(isset($_GET["type"]))
 				$votetype = $_GET["type"];
@@ -94,45 +89,38 @@ login_init();
 			$retnum = bbs_vote_num($board,$num,$votevalueint,$msg);
 			if($retnum <= 0)
 				html_error_quit("投票错误".$retnum);
-			else{
-?>
-投票成功
-<br>
-<a href="javascript:history.go(-1)">快速返回</a>
-<?php
-				html_normal_quit();
-
+			else {
+				html_success_quit("投票成功");
 			}
 		}
 
-		$retnum = bbs_get_vote_from_num($board,$votearr,$num,$uservotearr);
+	$retnum = bbs_get_vote_from_num($board,$votearr,$num,$uservotearr);
 
-		if($retnum <= 0)
-			html_error_quit("该投票不存在");
+	if($retnum <= 0)
+		html_error_quit("该投票不存在");
+	
+	bbs_board_nav_header($brdarr, "投票");
+
+	$descdir = "vote/".$board."/desc.".$votearr[0]["DATE"] ;
 ?>
-<body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- [投票列表] [用户:<?php echo $currentuser["userid"];?>] 
-<?php echo $board; ?>版投票<br></p>
-<hr class="default"/>
-</center>
+<div class="article">
 <?php
-		$descdir = "vote/".$board."/desc.".$votearr[0]["DATE"] ;
-		echo bbs_printansifile($descdir);
+	echo @bbs_printansifile($descdir);
 ?>
-<center>
-<hr class="default"/>
-<table width="613">
+</div>
+<table class="main wide adj">
+<col class="right"/><col/>
+<tbody>
 <tr><td>序号</td><td><?php echo $num;?></tr>
 <tr><td>标题</td><td><?php echo $votearr[0]["TITLE"];?></tr>
 <tr><td>类型</td><td><?php echo $votearr[0]["TYPE"];?></tr>
 <tr><td>开启者</td><td><?php echo $votearr[0]["USERID"];?></tr>
 <tr><td>开启日期</td><td><?php echo date("r",$votearr[0]["DATE"]);?></tr>
 <tr><td>投票天数</td><td><?php echo $votearr[0]["MAXDAY"];?></tr>
-<tr><td><?php if($uservotearr[0]["USERID"]){?>您已经投票，现在可以更改<?php }else{?>您尚未投票<?php }?></td><td></td></tr>
-</table>
-<hr class="default"/>
-<form action="/bbsvote.php?board=<?php echo $board;?>&num=<?php echo $num?>" method="post">
-<table width="613">
+<tr><td><?php if($uservotearr[0]["USERID"]){?>您已经投票，现在可以更改<?php }else{?>您尚未投票<?php }?></td><td> </td></tr>
+</tbody></table>
+<form action="bbsvote.php?board=<?php echo $board;?>&num=<?php echo $num?>" method="post">
+<table class="large">
 <?php
 		if($uservotearr[0]["USERID"]){
 			if( $votearr[0]["TYPE"] != "数字" ){
@@ -183,18 +171,16 @@ login_init();
 ?>
 <tr><td></td><td></td><td>请留下您的建议(限制3行80列)</td></tr>
 <tr><td></td><td></td><td><textarea name="msg" rows="3" cols="79" wrap="physical">
-<?php echo $uservotearr[0]["MSG1"]; echo $uservotearr[0]["MSG2"]; echo $uservotearr[0]["MSG3"];?>
+<?php echo @$uservotearr[0]["MSG1"] . @$uservotearr[0]["MSG2"] . @$uservotearr[0]["MSG3"]; ?>
 </textarea></td></tr>
 </table>
-<input type="submit" name="submit" value="确认">
+<input type="submit" name="submit" value="确认"/>
 </form>
-<hr class="default"/>
-<a href="/bbsshowvote.php?board=<?php echo $board;?>">[查看本版所有投票]</a>
-<a href="/bbsdoc.php?board=<?php echo $board;?>">[返回本讨论区]</a>
+<div class="oper">
+<a href="bbsshowvote.php?board=<?php echo $board;?>">[查看本版所有投票]</a>
+<a href="bbsdoc.php?board=<?php echo $board;?>">[返回本讨论区]</a>
 <a href="javascript:history.go(-1)">[快速返回]</a>
-</center>
+</div>
 <?php
-		html_normal_quit();
-
-	}
+	page_footer();
 ?>

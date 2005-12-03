@@ -1,107 +1,48 @@
 <?php
     $setboard=0;
-    require("funcs.php");
-login_init();
-    if ($loginok != 1)
-        html_nologin();
-    else {
-        html_init("gb2312","","<meta http-equiv=\"Refresh\" content=\"600; url=/bbsfoot.php\">",1);
-        //html_init("gb2312","","",1);
-		if (isset($_GET["total"]))
-			$oldtotal = $_GET["total"];
-		else
-			$oldtotal = 0;
-		settype($oldtotal,"integer");
+    require("www2-funcs.php");
+	login_init();
+	page_header("状态", FALSE);
+	if (isset($_GET["total"]))
+		$oldtotal = $_GET["total"];
+	else
+		$oldtotal = 0;
+	settype($oldtotal,"integer");
 
-		if (isset($_GET["unread"]))
-			$oldunread = $_GET["unread"];
-		else
-			$oldunread = 0;
-		settype($oldunread,"integer");
-?>
-<script language="JavaScript">
-<!--
-function Init() {
-  servertime=new Date()
-  servertime.setTime(<?php echo time(); ?>*1000)
-  staytime=<?php echo (time()-$currentuinfo["logintime"])/60; ?>
-
-  localtime=new Date()
-  Time()
-}
-function Time(){
- var now=new Date()
- var Timer=new Date()
- Timer.setTime(servertime.getTime()+now.getTime()-localtime.getTime());
- var hours=Timer.getHours()
- var minutes=Timer.getMinutes()
- if (hours==0)
- hours=12
- if (minutes<=9)
- minutes="0"+minutes
- var year=Timer.getYear();
- if (year < 1900)   
-	 year = year + 1900; 
- myclock=year+"年"+(Timer.getMonth()+1)+"月"+Timer.getDate()+"日"+hours+":"+minutes
- var staysec=(now.getTime()-localtime.getTime())/60000+staytime;
- stayclock=parseInt(staysec/60)+"小时"+parseInt(staysec%60)+"分钟"
- document.clock.myclock.value=myclock
- document.clock.stay.value=stayclock
- setTimeout("Time()",58000)
-}
-//JavaScript End-->
-</script>
-<body class="b2"  onload="Init()">
-<form name="clock">时间[<input class="b8" TYPE="text" NAME="myclock" size="18" READONLY>] 在线[
-<?php
-    if (defined("SITE_SMTH")) {
-        echo bbs_getonlinenumber();
-    }
-    else {
-?>
-<a href="bbsuser.php" target="f3" class="b8">
-<?php   echo bbs_getonlinenumber(); ?>
-</a>
-<?php
-    }
-?>
-] 帐号[<a href=<?php
-echo "\"/bbsqry.php?userid=" . $currentuser["userid"] . "\""; ?> target="f3" class="b8"><?php
-echo $currentuser["userid"]; ?></a>] <?php
-		if (strcmp($currentuser["userid"], "guest") != 0)
-		{
-echo "信箱[<a href=\"/bbsmailbox.php?path=.DIR&title=收件箱\" target=\"f3\" class=\"b8\">";
-		    if (bbs_getmailnum($currentuser["userid"],$total,$unread, $oldtotal, $oldunread)) {
-			  if ($unread!=0) {
-		        echo $total . "封(新信" . $unread . ")</a>] ";
-?>
-<bgsound src="/sound/newmail.mp3">
-<script language="javascript">
-if (typeof top.hasMsgBox == "undefined") {
-    top.hasMsgBox = false;
-}
-if (!top.hasMsgBox) {
-top.hasMsgBox = true;
-if(confirm("您有新邮件，现在查收？"))
-{
-    top.f3.location.href = "/bbsmailbox.php?path=.DIR&title=<?php echo urlencode("收件箱"); ?>";
-}
-top.hasMsgBox = false;
-}
-</script>
-<?php
-			  }
-			  else {
-		        echo $total . "封</a>] ";
-			  }
-			}
-			else
-		      echo "0封</a>] ";
+	if (isset($_GET["unread"]))
+		$oldunread = $_GET["unread"];
+	else
+		$oldunread = 0;
+	settype($oldunread,"integer");
+	
+	if (strcmp($currentuser["userid"], "guest")) {
+		if (!bbs_getmailnum($currentuser["userid"],$total,$unread, $oldtotal, $oldunread)) {
+			$unread = $total = 0;
 		}
+	} else {
+		$unread = false;
+	}
 ?>
-停留[<input class="b8" TYPE="text" NAME="stay" size="10" READONLY>]
-</form>
+<script type="text/javascript">
+<!--
+	addBootFn(footerStart);
+	var stayTime = <?php echo (time()-$currentuinfo["logintime"]); ?>;
+	var serverTime = <?php echo (time() + intval(date("Z"))); ?>;
+	var hasMail = <?php echo $unread ? "1" : "0"; ?>;
+//-->
+</script>
+<body><div class="footer">时间[<span id="divTime"></span>] 在线[<?php echo bbs_getonlinenumber(); ?>]
+帐号[<a href="bbsqry.php?userid=<?php echo $currentuser["userid"]; ?>" target="f3"><?php echo $currentuser["userid"]; ?></a>]
 <?php
-        html_normal_quit();
-    }
+	if ($unread !== false) {
+echo "信箱[<a href=\"bbsmailbox.php?path=.DIR&title=收件箱\" target=\"f3\">";
+		if ($unread) {
+			echo $total . "封(新信" . $unread . ")</a>] <bgsound src='sound/newmail.mp3'>";
+		} else {
+			echo $total . "封</a>] ";
+		}
+	}
 ?>
+停留[<span id="divStay"></span>]
+</div></body>
+</html>

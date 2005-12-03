@@ -96,7 +96,7 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 <p align="center">
 激活码发送失败！请重新设置您的注册Email。
 </p><p align="center">
-<a href="/bbssendacode.php">[重新发送激活码]</a>
+<a href="bbssendacode.php">[重新发送激活码]</a>
 </p>
 <?php
 			}
@@ -106,7 +106,7 @@ style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-f
 <p align="center">
 激活码发送成功！请查收信件并激活您的帐号。
 </p><p align="center">
-<a href="/bbsfillform.html">[填写注册单]</a>
+<a href="bbsfillform.html">[填写注册单]</a>
 </p>
 <?php
 			}

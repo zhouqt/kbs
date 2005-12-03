@@ -1,17 +1,8 @@
 <?php
-/*
-define("ATTACHTMPPATH","boards/_attach");
-function getattachtmppath($userid,$utmpnum)
-{
-  return ATTACHTMPPATH . "/" . $userid . "_" . $utmpnum;
-}
-*/
-
 define("ATTACHMAXSIZE","1048576"); //附件总字节数的上限，单位 bytes
 define("ATTACHMAXCOUNT","20");     //附件数目的上限
-define("MAINPAGE_FILE","bbssec.php"); //首页导读的 URL
+define("MAINPAGE_FILE","mainpage.php"); //首页导读的 URL
 define("QUOTED_LINES", BBS_QUOTED_LINES);        //web 回文保留的引文行数
-define("PWD_HTTP", 1); //修改密码使用 http - atppp
 
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");
 $section_names = array(

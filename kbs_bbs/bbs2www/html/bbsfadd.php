@@ -1,50 +1,39 @@
 <?php
-	require("funcs.php");
-login_init();
-	if ($loginok != 1)
-		html_nologin();
-	else
+	require("www2-funcs.php");
+	login_init();
+	toolbox_header("好友编辑");
+	assert_login();
+	if (isset($_POST["userid"]))
 	{
-		html_init("gb2312");
-        if ($currentuser["userid"]=="guest")
-            html_error_quit("匆匆过客不能设定好友");
-?>
-<body>
-<center><?php echo BBS_FULL_NAME; ?> -- 增加好友 [使用者: <?php echo $currentuser["userid"]; ?>]<hr color="green">
-<?php
-		if (isset($_GET["userid"]))
-		{
-			$duserid = $_GET["userid"];
-			if( isset($_GET["exp"]))
-				$expp = $_GET["exp"];
-			else
-				$expp="";
-			$ret = bbs_add_friend( $duserid ,$expp );
-			if($ret == -1){
-				html_error_quit("您没有权限设定好友或者好友个数超出限制");
-			}else if($ret == -2){
-				html_error_quit("此人本来就在你的好友名单中");
-			}else if($ret == -3){
-				html_error_quit("系统出错");
-			}else if($ret == -4){
-				html_error_quit("用户不存在");
-			}else{
-?>
-[<?php echo $duserid; ?>]已增加到您的好友名单中.<br>
-<a href="/bbsfall.php">返回好友名单</a>
-<?php
-				html_normal_quit();
-			}
+		$duserid = $_POST["userid"];
+		@$expp = $_POST["exp"];
+		$ret = bbs_add_friend( $duserid ,$expp );
+		if($ret == -1){
+			html_error_quit("您没有权限设定好友或者好友个数超出限制");
+		}else if($ret == -2){
+			html_error_quit("此人本来就在你的好友名单中");
+		}else if($ret == -3){
+			html_error_quit("系统出错");
+		}else if($ret == -4){
+			html_error_quit("用户不存在");
 		}else{
-?>
-<form action="/bbsfadd.php">
-请输入欲增加的好友帐号:<input maxlength=12 name="userid" type="text"><br>
-请输入欲增加的好友备注:<input maxlength=14 name="exp" type="text"><br>
-<input type="submit" value="确定">
-</form>
-<a href="/bbsfall.php">返回好友名单</a>
-<?php
-			html_normal_quit();
+			html_success_quit($duserid . "已增加到您的好友名单中.");
 		}
+	}else{
+?>
+<form action="bbsfadd.php" method="post" class="medium">
+	<fieldset><legend>增加好友</legend>
+		<div class="inputs">
+			<label>请输入欲增加的好友帐号:</label>
+				<input maxlength=12 name="userid" type="text" id="sfocus"/><br/>
+			<label>请输入欲增加的好友备注:</label>
+				<input maxlength=14 name="exp" type="text"/>
+		</div>
+	</fieldset>
+	<div class="oper"><input type="submit" value="添加好友"></div>
+</form>
+<a href="bbsfall.php">返回好友名单</a>
+<?php
+		page_footer();
 	}
 ?>

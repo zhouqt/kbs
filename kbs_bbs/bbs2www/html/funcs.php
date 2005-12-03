@@ -10,7 +10,7 @@ define('_BBS_FUNCS_PHP_', 1);
 if (!isset($topdir))
 	$topdir=".";
 
-// NOTE: If you want to statically link smth_bbs phpbbslib into php,
+// NOTE: If you want to statically link kbs_bbs phpbbslib into php,
 //       you *MUST* set enable_dl variable to Off in php.ini file.
 if (BUILD_PHP_EXTENSION==0)
 	@dl("$topdir/../libexec/bbs/libphpbbslib.so");
@@ -176,11 +176,11 @@ function login_init()
 		if($error == 2 || $error == 0){
 			$data = array();
 			$num = bbs_getcurrentuinfo($data);
-			setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"");
-			setcookie("UTMPNUM",$num,time()+360000,"");
-			setcookie("UTMPUSERID",$data["userid"],time()+360000,"");
-			setcookie("LOGINTIME",$data["logintime"],time()+360000,"");
-			setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,time()+360000,""); 
+			setcookie("UTMPKEY",$data["utmpkey"],0,"/");
+			setcookie("UTMPNUM",$num,0,"/");
+			setcookie("UTMPUSERID",$data["userid"],0,"/");
+			setcookie("LOGINTIME",$data["logintime"],0,"/");
+			setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,0,"/"); 
 			@$utmpkey = $data["utmpkey"];
 			@$utmpnum = $num;
 			@$userid = $data["userid"];
@@ -268,7 +268,6 @@ function gmt_date_format($t) {
 
 function error_alert($msg)
 {
-	cache_header("nocache");
 ?>
 <SCRIPT language="javascript">
 window.alert(<?php echo "\"$msg\""; ?>);
@@ -279,12 +278,11 @@ history.go(-1);
 
 function error_nologin()
 {
-	setcookie("UTMPKEY","",time() - 3600,"");
-	setcookie("UTMPNUM","",time() - 3600,"");
-	setcookie("UTMPUSERID","",time() - 3600,"");
-	setcookie("LOGINTIME","",time() - 3600,"");
-	setcookie("WWWPARAMS","",time() - 3600,"");
-	cache_header("nocache");
+	setcookie("UTMPKEY","",time() - 3600,"/");
+	setcookie("UTMPNUM","",time() - 3600,"/");
+	setcookie("UTMPUSERID","",time() - 3600,"/");
+	setcookie("LOGINTIME","",time() - 3600,"/");
+	setcookie("WWWPARAMS","",time() - 3600,"/");
 ?>
 <SCRIPT language="javascript">
 window.location="/nologin.html";
@@ -344,7 +342,7 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=<?php echo $charset; ?>"/>
-<script src="/bbs.js"></script>
+<script src="bbs.js"></script>
 <?php
 		if ( func_num_args() > 1) {
 ?>
@@ -353,14 +351,14 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 		}
 	if($new_style==9 ){
 ?>
-<link rel="stylesheet" type="text/css" href="/bbsleft.css"/>
+<link rel="stylesheet" type="text/css" href="bbsleft.css"/>
 <?php		
 	}
 	else{
 ?>
 <script language="javascript">
 var cssFile = getBbsStyleFile();
-document.write('<link rel="stylesheet" type="text/css" href="/' + cssFile + '"/>');
+document.write('<link rel="stylesheet" type="text/css" href="' + cssFile + '"/>');
 </script>
 <?php			
 	}
@@ -392,11 +390,11 @@ function html_normal_quit()
 
 function html_nologin()
 {
-	setcookie("UTMPKEY","",time() - 3600,"");
-	setcookie("UTMPNUM","",time() - 3600,"");
-	setcookie("UTMPUSERID","",time() - 3600,"");
-	setcookie("LOGINTIME","",time() - 3600,"");
-	setcookie("WWWPARAMS","",time() - 3600,"");
+	setcookie("UTMPKEY","",time() - 3600,"/");
+	setcookie("UTMPNUM","",time() - 3600,"/");
+	setcookie("UTMPUSERID","",time() - 3600,"/");
+	setcookie("LOGINTIME","",time() - 3600,"/");
+	setcookie("WWWPARAMS","",time() - 3600,"/");
 ?>
 <html>
 <head></head>

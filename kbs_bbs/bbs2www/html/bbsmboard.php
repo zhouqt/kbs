@@ -1,8 +1,4 @@
 <?php
-	/**
-	 * This file manager boards.
-	 * $Id$
-	 */
 	require("funcs.php");
 login_init();
 	if ($loginok != 1)
@@ -185,7 +181,7 @@ login_init();
 <?php
 			if($bnum){
 ?>
-<a href="/bbsmboard.php">新增版面</a>
+<a href="bbsmboard.php">新增版面</a>
 <?php
 			}else{
 ?>

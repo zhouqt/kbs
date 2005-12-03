@@ -1,83 +1,51 @@
 <?php
-	/**
-	 * This file lists boards to user.
-	 * $Id$
-	 */
-	require("funcs.php");
-login_init();
-	require("board.inc.php");
-	if ($loginok !=1 )
-		html_nologin();
+	require("www2-funcs.php");
+	login_init();
+	require("www2-board.php");
+
+	if (isset($_GET["group"]))
+		$group = $_GET["group"];
 	else
-	{
-		html_init("gb2312");
-		if (isset($_GET["group"]))
-			$group = $_GET["group"];
-		else
-			$group = 0;
-		settype($group, "integer");
-		if (isset($_GET["yank"]))
-			$yank = $_GET["yank"];
-		else
-			$yank = 0;
-		settype($yank, "integer");
-		if (isset($_GET["group2"]))
-			$group2 = $_GET["group2"];
-		else
-			$group2 = 0;
-		settype($group, "integer");
-		if ($group < 0 || $group > sizeof($section_nums))
-			html_error_quit("错误的参数");
-		$boards = bbs_getboards($section_nums[$group], $group2, $yank);
-		//print_r($boards);
-		if ($boards == FALSE)
-			html_error_quit("该目录尚未有版面");
-	
+		$group = 0;
+	settype($group, "integer");
+	if (isset($_GET["yank"]))
+		$yank = $_GET["yank"];
+	else
+		$yank = 0;
+	settype($yank, "integer");
+	if (isset($_GET["group2"]))
+		$group2 = $_GET["group2"];
+	else
+		$group2 = 0;
+	settype($group, "integer");
+	if ($group < 0 || $group > sizeof($section_nums))
+		html_error_quit("错误的参数");
+	$boards = bbs_getboards($section_nums[$group], $group2, $yank);
+	//print_r($boards);
+	if ($boards == FALSE)
+		html_error_quit("该目录尚未有版面");
+
+	page_header($section_names[$group][0]);
 ?>
-<body topmargin="0">
-<table width="100%" border="0" cellspacing="0" cellpadding="3" >
-  <tr> 
-    <td colspan="2" class="kb2" colspan=2>
-	    <a class="kts1"  href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbssec.php">分类讨论区</a> - [<?php echo $section_names[$group][0]; ?>]    </td>
-  </tr>
-   <tr valign=bottom align=center> 
-    <td align="left" class="kb4">&nbsp;&nbsp;&nbsp;&nbsp; <?php echo $section_names[$group][0]; ?>分区</td>
-     <td align="right" class="kb1" >
+<h1><?php echo $section_names[$group][0]; ?>分区</h1>
+<div class="right smaller">
 <?php
 	if( $group2 != -2 ){
-		if ($yank == 0)
-		{
+		if ($yank == 0) {
 ?>
-	    <a class="kts1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?group=<?php echo $group; ?>&yank=1">本区所有看板</a> 
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?group=<?php echo $group; ?>&yank=1">本区所有看板</a> 
 <?php
-		}
-		else
-		{
+		} else {
 ?>
-	   <a class="kts1" href="<?php echo $_SERVER["PHP_SELF"]; ?>?group=<?php echo $group; ?>">本区已订阅看板</a>
+<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?group=<?php echo $group; ?>">本区已订阅看板</a>
 <?php
 		}
 	}
 ?>
-    </td>
-         
-  </tr>
-   <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
-   <tr><td colspan="2" align="center">
-    	<table width="100%" border="0" cellspacing="0" cellpadding="3" class="kt1">	
-<form name="form1" action="bbsdoc.php" method="get">
-<input type="hidden" name="board" value="Botany">
-<tr>
-<td class="kt2" width="2%"> </td>
-<td class="kt2" width="2%"> </td>
-<td class="kt2" width="24%">讨论区名称</td>
-<td class="kt2" width="10%">类别</td>
-<td class="kt2" width="41%">中文描述</td>
-<td class="kt2" width="15%">版主</td>
-<td class="kt2" width="6%">篇数</td>
-</tr>
+</div>
+<table class="main wide adj">
+<col width="2%" class="center"/><col width="2%"/><col width="24%"/><col width="10%" class="center"/><col width="39%"/><col class="center" width="15%"/><col class="right" width="8%"/>
+<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th></tr>
 <?php
 	$brd_name = $boards["NAME"]; // 英文名
 	$brd_desc = $boards["DESC"]; // 中文描述
@@ -89,15 +57,13 @@ login_init();
 	$brd_flag = $boards["FLAG"]; //flag
 	$brd_bid = $boards["BID"]; //flag
 	$rows = sizeof($brd_name);
-	if ($group2>0) 
-	{	
+	if ($group2>0) {	
 ?>
-	<tr>
-	<td class="kt3 c2" height="25"> </td>
-	<td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20" alt="up" title="回到上一级"></td>
-	<td class="kt3 c3" colspan="5" align="left"><a class="kts1"  href="bbsboa.php?group=<?php echo $group; ?>">回到上一级</a>
-	</td>
-	</TR>
+<tr>
+	<td> </td>
+	<td> <img src="images/groupgroup.gif" alt="up" title="回到上一级"></td>
+	<td colspan="5"><a href="bbsboa.php?group=<?php echo $group; ?>">回到上一级</a></td>
+</tr>
 <?php
 	}
 	
@@ -128,89 +94,73 @@ login_init();
 	{
 		$i = $board_list[$j];
 		if ($brd_flag[$i]&BBS_BOARD_GROUP)
-		  $brd_link="/bbsboa.php?group=" . $group . "&group2=" . $brd_bid[$i];
+		  $brd_link="bbsboa.php?group=" . $group . "&group2=" . $brd_bid[$i];
 		else
-		  $brd_link="/bbsdoc.php?board=" . urlencode($brd_name[$i]);
+		  $brd_link="bbsdoc.php?board=" . urlencode($brd_name[$i]);
 ?>
 <tr>
-<td class="kt3 c2" align=center height=25><?php echo $i+1; ?></td>
-
+<td><?php echo $i+1; ?></td>
 <?php
-			if ($brd_flag[$i]&BBS_BOARD_GROUP)
-			{
+		if ($brd_flag[$i]&BBS_BOARD_GROUP) {
 ?>
-<td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20"  alt="＋" title="版面组"></td><td class="kt3 c3">
+<td> <img src="images/groupgroup.gif" alt="＋" title="版面组"></td>
 <?php
-			}
-			else if ($brd_unread[$i] == 1)
-			{
+		} else if ($brd_unread[$i] == 1) {
 ?>
-<td class="kt4 c1"> <img src="images/newgroup.gif"  height="15" width="20" alt="◆" title="未读标志"></td><td class="kt3 c1">
+<td> <img src="images/newgroup.gif" alt="◆" title="未读标志"></td>
 <?php
-			}
+		} else {
+?>
+<td> <img src="images/oldgroup.gif" alt="◇" title="已读标志"></td>
+<?php
+		}
+?>
+<td>
+<?php
+		if ($yank == 1) {
+			if ($brd_zapped[$i] == 1)
+				echo "*";
 			else
-			{
+				echo "&nbsp;";
+		}	
 ?>
-<td class="kt4 c1" > <img src="images/oldgroup.gif" height="15" width="20"   alt="◇" title="已读标志"></td><td class="kt3 c1">
+<a href="<?php echo $brd_link; ?>"><?php echo $brd_name[$i]; ?></a></td>
 <?php
-			}
-			if ($yank == 1)
-				{
-				if ($brd_zapped[$i] == 1)
-					echo "*";
-				else
-					echo "&nbsp;";
-				}	
- ?><a class="kts1"  href="<?php echo $brd_link; ?>"><?php echo $brd_name[$i]; ?></a>
-</td>
-<?php
-if ($brd_flag[$i]&BBS_BOARD_GROUP)
-	{
+		if ($brd_flag[$i]&BBS_BOARD_GROUP) {
 ?>
-<td class="kt3 c3" align="center"><?php echo $brd_class[$i]?> </td>
-<td class="kt3 c3"  colspan="3" align="left">&nbsp;&nbsp;<a class="kts1"  href="<?php echo $brd_link; ?>"><?php echo $brd_desc[$i]; ?></a>[目录]</td>
+<td><?php echo $brd_class[$i]?> </td>
+<td colspan="3"><a href="<?php echo $brd_link; ?>"><?php echo $brd_desc[$i]; ?></a>[目录]</td>
 <?php
- 	}
-else
-	{
+		} else {
 ?>
-	<td class="kt3 c2" align="center"><?php echo $brd_class[$i]; ?></td>
-<td class="kt3 c1">&nbsp;&nbsp;<a class="kts1" href="<?php echo $brd_link; ?>"><?php echo $brd_desc[$i]; ?></a>
-</td>
-<td class="kt3 c2" align="center">
+<td><?php echo $brd_class[$i]; ?></td>
+<td><a href="<?php echo $brd_link; ?>"><?php echo $brd_desc[$i]; ?></a></td>
+<td>
 <?php
 			$bms = explode(" ", trim($brd_bm[$i]));
 			if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
 				echo "诚征版主中";
-			else
-			{
+			else {
 				if (!ctype_print($bms[0][0]))
 					echo $bms[0];
-				else
-				{
+				else {
 ?>
-<a class="kts1" href="/bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
+<a href="bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
 <?php
 				}
 			}
 ?>
 </td>
-<td class="kt3 c1"><?php echo $brd_artcnt[$i]; ?></td>
+<td><?php echo $brd_artcnt[$i]; ?></td>
 <?php
-	}
+		}
 ?>
 </tr>
 <?php
-		} //		for ($i = 0; $i < $rows; $i++)
+	} //for
 ?>
 </table>
-   <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
-  </table>
-</center>
 <?php
-		bbs_boards_navigation_bar();	
-		html_normal_quit();
-	}
+	bbs_boards_navigation_bar();	
+	page_footer();
 ?>

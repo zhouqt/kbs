@@ -1,18 +1,12 @@
 <?php
-        
-    require("funcs.php");
-login_init();
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
 
-    $hostname=bbs_sysconf_str("MYSQLHOST");
-    $username=bbs_sysconf_str("MYSQLUSER");
-    $password=bbs_sysconf_str("MYSQLPASSWORD");
-    $dbname=bbs_sysconf_str("MYSQLSMSDATABASE");
-
-    if($loginok !=1)
-    	html_nologin(); 
-    else
-	{
-		html_init("gb2312");
+	$hostname=bbs_sysconf_str("MYSQLHOST");
+	$username=bbs_sysconf_str("MYSQLUSER");
+	$password=bbs_sysconf_str("MYSQLPASSWORD");
+	$dbname=bbs_sysconf_str("MYSQLSMSDATABASE");
 
 		if( $_GET["start"] ){
 			$startnum = $_GET["start"];
@@ -71,12 +65,10 @@ login_init();
 
 		if( ! $result ){
 			html_error_quit("没有数据");
-		}else{
+		}
+		page_header("短信管理");
 ?>
-<body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- 短信管理 [用户: <?php echo $currentuser["userid"]; ?>]</p>
 <a href="javascript:location.reload()">刷新</a>
-</center>
 <hr class=default>
 <table border="1" width="613" align="center" cellpadding="0" cellspacing="0">
 <tr><td>序号</td><td>对象</td><td>类别</td><td>时间</td><td>内容</td><td></td></tr>
@@ -90,13 +82,12 @@ login_init();
 <td><?php if( $row[4]==1 ) echo "发"; else echo "收";?></td>
 <td><?php echo $row[3];?></td>
 <td><pre><?php echo $row[5];?></pre></td>
-<td><a onclick="return confirm('你真的要删除这条记录吗?')" href="/bbsrsmsmsg.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&desc=<?php echo $desc;?>">删除</a></td>
+<td><a onclick="return confirm('你真的要删除这条记录吗?')" href="bbsrsmsmsg.php?start=<?php if($i==0 && $startnum > 0) echo ($startnum-1); else echo $startnum;?>&count=<?php echo $count;?>&action=del&id=<?php echo $row[0];?>&desc=<?php echo $desc;?>">删除</a></td>
 </tr>
 <?php
 				$i++;
 			}
 			mysql_free_result($result);
-		}
 ?>
 </table>
 <center>
@@ -105,7 +96,7 @@ login_init();
 <?php
 		if( $startnum > 0 ){
 ?>
-<a href="/bbsrsmsmsg.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">上一页</a>
+<a href="bbsrsmsmsg.php?start=<?php if($startnum - $count > 0) echo ($startnum-$count); else echo "0";?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">上一页</a>
 <?php	}else{
 ?>
 上一页
@@ -114,7 +105,7 @@ login_init();
 
 		if( $i >= $count ){
 ?>
-<a href="/bbsrsmsmsg.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">下一页</a>
+<a href="bbsrsmsmsg.php?start=<?php echo ($startnum+$count-1);?>&count=<?php echo $count;?>&desc=<?php echo $desc;?>">下一页</a>
 <?php	}else{
 ?>
 下一页
@@ -129,9 +120,9 @@ function doRefresh(){
 	var type=oSelectType.value;
 
 	if(type=="1")
-		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=0";
+		window.location="bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=0";
 	else
-		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=1";
+		window.location="bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=<?php echo $count;?>&desc=1";
 
 	return;
 }
@@ -150,13 +141,13 @@ function doCount(){
 	var type=oSelectType.value;
 
 	if(type=="10")
-		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=10&desc=<?php echo $desc;?>";
+		window.location="bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=10&desc=<?php echo $desc;?>";
 	else if(type == "50")
-		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=50&desc=<?php echo $desc;?>";
+		window.location="bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=50&desc=<?php echo $desc;?>";
 	else if(type == "30")
-		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=30&desc=<?php echo $desc;?>";
+		window.location="bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=30&desc=<?php echo $desc;?>";
 	else
-		window.location="/bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=20&desc=<?php echo $desc;?>";
+		window.location="bbsrsmsmsg.php?start=<?php echo ($startnum);?>&count=20&desc=<?php echo $desc;?>";
 
 	return;
 }
@@ -171,7 +162,6 @@ function doCount(){
 </select>个
 
 </center>
-</body>
 <?php
-	}
+	page_footer();
 ?>

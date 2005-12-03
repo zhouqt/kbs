@@ -1,90 +1,55 @@
 <?php
-	/**
-	 * This file lists articles to user.
-	 * $Id$
-	 */
-	require("funcs.php");
-login_init();
-	require("boards.php");
-	if ($loginok != 1)
-		html_nologin();
-	else
-	{
-		html_init("gb2312","","",1);
-		if (isset($_GET["board"]))
-			$board = $_GET["board"];
-		else
-			html_error_quit("错误的讨论区");
-		// 检查用户能否阅读该版
-		$brdarr = array();
-		$brdnum = bbs_getboard($board, $brdarr);
-		if ($brdnum == 0)
-			html_error_quit("错误的讨论区");
-		bbs_set_onboard($brdnum,1);
-		$usernum = $currentuser["index"];
-		if (bbs_checkreadperm($usernum, $brdnum) == 0)
-			html_error_quit("错误的讨论区");
-		if(bbs_checkpostperm($usernum, $brdnum) == 0) {
-                    if (!strcmp($currentuser["userid"],"guest"))
-		      html_error_quit("请先注册帐号");
-                    else 
-		      html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
-                }
-		if (bbs_is_readonly_board($brdarr))
-			html_error_quit("不能在只读讨论区发表文章");
-		if (isset($_GET["reid"]))
-		{
-			$reid = $_GET["reid"];
-			if(bbs_is_noreply_board($brdarr))
-				html_error_quit("本版只可发表文章,不可回复文章!");
-		}
-		else {
-			$reid = 0;
-		}
-		settype($reid, "integer");
-		$articles = array();
-		if ($reid > 0)
-		{
-			$num = bbs_get_records_from_id($brdarr["NAME"], $reid,$dir_modes["NORMAL"],$articles);
-			if ($num == 0)
-			{
-				html_error_quit("错误的 Re 文编号");
-			}
-			if ($articles[1]["FLAGS"][2] == 'y')
-				html_error_quit("该文不可回复!");
-		}
-		$brd_encode = urlencode($brdarr["NAME"]);
-	}
-?>
-<link rel="stylesheet" type="text/css" href="/ansi.css"/>
-<script language=javascript>
-<!--
-function dosubmit() {
-    document.postform.post.value='发表中，请稍候...';
-    document.postform.post.disabled=true;
-    document.postform.submit();
-}
-//-->
-</script>
-<body topmargin="0">
-<table width="100%" border="0" cellspacing="0" cellpadding="3">
-  <tr> 
-    <td class="b2">
-	    <a href="bbssec.php" class="b2"><font class="b2"><?php echo BBS_FULL_NAME; ?></font></a>
-	    -
-	    <a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><font class="b2"><?php echo $board; ?></font></a> 版
-	    - 发表文章 [使用者: <?php echo $currentuser["userid"]; ?>]
-	 </td>
-  </tr>
-  <tr>
-    <td>&nbsp;</td>
-  </tr>
-  <tr><td align="center">
+	require("www2-funcs.php");
+	require("www2-board.php");
+	login_init();
+	assert_login();
 
-<form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>">
-<table border="0" cellspacing="5">
-<tr>
-<td class="b2 sb5">
+	if (isset($_GET["board"]))
+		$board = $_GET["board"];
+	else
+		html_error_quit("错误的讨论区");
+	// 检查用户能否阅读该版
+	$brdarr = array();
+	$brdnum = bbs_getboard($board, $brdarr);
+	if ($brdnum == 0)
+		html_error_quit("错误的讨论区");
+	bbs_set_onboard($brdnum,1);
+	$usernum = $currentuser["index"];
+	if (bbs_checkreadperm($usernum, $brdnum) == 0)
+		html_error_quit("错误的讨论区");
+	if(bbs_checkpostperm($usernum, $brdnum) == 0) {
+		html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
+	}
+	if (bbs_is_readonly_board($brdarr))
+		html_error_quit("不能在只读讨论区发表文章");
+	if (isset($_GET["reid"]))
+	{
+		$reid = $_GET["reid"];
+		if(bbs_is_noreply_board($brdarr))
+			html_error_quit("本版只可发表文章,不可回复文章!");
+	}
+	else {
+		$reid = 0;
+	}
+	settype($reid, "integer");
+	$articles = array();
+	if ($reid > 0)
+	{
+		$num = bbs_get_records_from_id($brdarr["NAME"], $reid,$dir_modes["NORMAL"],$articles);
+		if ($num == 0)
+		{
+			html_error_quit("错误的 Re 文编号");
+		}
+		if ($articles[1]["FLAGS"][2] == 'y')
+			html_error_quit("该文不可回复!");
+	}
+	$brd_encode = urlencode($brdarr["NAME"]);
+	
+	bbs_board_nav_header($brdarr, $reid ? "回复文章" : "发表文章");
+?>
+<link rel="stylesheet" type="text/css" href="ansi.css"/>
+<form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>" class="large">
+<div class="article smaller">
 <?php
 		$notes_file = bbs_get_vote_filename($brdarr["NAME"], "notes");
 		$fp = FALSE;
@@ -101,8 +66,8 @@ function dosubmit() {
 		if ($fp == FALSE)
     	{
 ?>
-<font color="green">发文注意事项: <br />
-发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。<br/></font>
+<div class="green">发文注意事项: <br/>
+发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。</div>
 <?php
 		}
         else
@@ -111,10 +76,9 @@ function dosubmit() {
 			echo bbs_printansifile($notes_file);
 		}
 ?>
-</td>
-</tr>
-<tr><td class="b2 sb5">
-发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br>
+</div>
+<fieldset><legend><?php echo $reid ? "回复文章" : "发表文章"; ?></legend>
+发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 <?php
 		if ($reid)
 		{
@@ -125,17 +89,17 @@ function dosubmit() {
 	        $nowtitle = "";
 	    }
 ?>
-标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo $nowtitle?htmlspecialchars($nowtitle,ENT_QUOTES)." ":""; ?>" /><br />
+标&nbsp;&nbsp;题: <input type="text" tabindex="1" name="title" size="40" maxlength="100" value="<?php echo $nowtitle?htmlspecialchars($nowtitle,ENT_QUOTES)." ":""; ?>" <?php if (!$reid) echo 'id="sfocus"'; ?>/><br/>
 <?php
 		if (bbs_is_attach_board($brdarr))
 		{
 ?>
-附&nbsp;&nbsp;件: <input class="sb1" type="text" name="attachname" size="50" value="" disabled="disabled" />
-<a href="#" onclick="return GoAttachWindow()" class="b2">操作附件</a><br />
+附&nbsp;&nbsp;件: <input type="text" name="attachname" size="50" value="" disabled="disabled" />
+<a href="#" onclick="return goAttachWindow()" class="b2">操作附件</a><br/>
 <?php
 		}
 ?>
-使用签名档 <select class="sb1" name="signature">
+使用签名档 <select name="signature">
 <?php
 		if ($currentuser["signum"] == 0)
 		{
@@ -191,7 +155,7 @@ function dosubmit() {
 	}
 ?>
 <br />
-<textarea class="sb1" name="text" onkeydown='return textarea_okd(dosubmit, event);' rows="20" cols="80" wrap="physical">
+<textarea name="text" tabindex="2" onkeydown='return textarea_okd(dosubmit, event);' wrap="physical" <?php if ($reid) echo 'id="sfocus"'; ?>>
 <?php
     if($reid > 0){
     $filename = $articles[1]["FILENAME"];
@@ -236,9 +200,9 @@ function dosubmit() {
     }
 }
 ?>
-</textarea><br>
-<center>
-<input class="sb1" type="button" onclick="dosubmit();" name="post" value="发表" />
+</textarea><br/>
+<div class="oper">
+<input type="button" onclick="dosubmit();" tabindex="3" name="post" value="发表" />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <input class="sb1" type="reset" value="返回" onclick="history.go(-1)" />
 <?php
@@ -246,33 +210,12 @@ function dosubmit() {
 		{
 ?>
 &nbsp;&nbsp;&nbsp;&nbsp;
-<input class="sb1" type="button" name="attach22" value="附件" onclick="return GoAttachWindow()" />
+<input class="sb1" type="button" name="attach22" value="附件" onclick="return goAttachWindow()" />
 <?php
 		}
 ?>
-</center>
-<script language="JavaScript">
-<!--
-   function GoAttachWindow(){
-
-   	var hWnd = window.open("bbsupload.php","_blank","width=600,height=300,scrollbars=yes");
-
-	if ((document.window != null) && (!hWnd.opener))
-
-		   hWnd.opener = document.window;
-
-	hWnd.focus();
-
-   	return false;
-
-   }
--->
-</script>
-</td></tr>
-</table></form>
-
-</td></tr>
-</table>
+</div>
+</fieldset></form>
 <?php
-html_normal_quit();
+page_footer();
 ?>

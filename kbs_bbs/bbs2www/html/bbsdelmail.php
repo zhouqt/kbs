@@ -1,64 +1,41 @@
 <?php
-	/* this file delete user mails  windinsn nov 15,2003*/
-	require("funcs.php");
-login_init();
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
+
+	$dirname = $_POST["dir"];
+	$title = urldecode($_POST["title"]);
+	$dstart = $_POST["dstart"];
+	$dend = $_POST["dend"];
+	$dtype = $_POST["dtype"];
 	
-	if ($loginok != 1)
-		html_nologin();
-	elseif(!strcmp($currentuser["userid"],"guest"))
+	if (strstr($dirname,'..'))
 	{
-		html_init("gb2312");
-		html_error_quit("guest 没有自己的邮箱!");
-		die();
+		html_error_quit("读取邮件数据失败!");
 	}
-	else
+	
+	$mail_fullpath = bbs_setmailfile($currentuser["userid"],$dirname);
+	$mail_num = bbs_getmailnum2($mail_fullpath);
+		
+	if( $dstart < 1 || $dstart > $mail_num  || $dend < 1 || $dend > $mail_num  || $dstart > $dend  )
 	{
-		html_init("gb2312","","",1);
-		$dirname = $_POST["dir"];
-		$title = urldecode($_POST["title"]);
-		$dstart = $_POST["dstart"];
-		$dend = $_POST["dend"];
-		$dtype = $_POST["dtype"];
-		
-		if (strstr($dirname,'..'))
-		{
-			html_error_quit("读取邮件数据失败!");
-                        die();
-                }
-		
-		$mail_fullpath = bbs_setmailfile($currentuser["userid"],$dirname);
-		$mail_num = bbs_getmailnum2($mail_fullpath);
-			
-		if( $dstart < 1 || $dstart > $mail_num  || $dend < 1 || $dend > $mail_num  || $dstart > $dend  )
-		{
-			html_error_quit("区段删信起始、结束序号有误，请重新输入！");
-			die();
-		}
-		
+		html_error_quit("区段删信起始、结束序号有误，请重新输入！");
+	}
+	mailbox_header("区段删信");
 ?>
-<p align="left" class="b2">
-<a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
--
-<a href="bbsmail.php">
-<?php echo $currentuser["userid"]; ?>的邮箱
-</a>
--
-区段删除邮件
-</p>
-<p align="left">
-您现在在 <font class="b3"><?php echo $title; ?></font> 中进行区段删除邮件，<br>
-起始邮件序号：<font class="b3"><?php echo $dstart; ?></font><br>
-结束邮件序号：<font class="b3"><?php echo $dend; ?></font><br>
-删除类型：<font class="b3">
+<form action="bbsmailact.php?act=move&<?php echo "dir=".urlencode($dirname)."&title=".urlencode($title); ?>" method="POST" class="small">
+<fieldset><legend>区段删信</legend>
+信箱名称：<b class="red"><?php echo $title; ?></b><br/>
+起始邮件序号：<b class="red"><?php echo $dstart; ?></b><br/>
+结束邮件序号：<b class="red"><?php echo $dend; ?></b><br/>
+删除类型：<b class="red">
 <?php 
 	if($dtype == 1)
 		echo "强制删除";
 	else
 		echo "普通删除";
 ?>
-</font><br>
-</p>
-<form action="/bbsmailact.php?act=move&<?php echo "dir=".urlencode($dirname)."&title=".urlencode($title); ?>" method="POST">
+</b><br/>
 <input type="hidden" name="act2" value="delarea">
 <?php			
 		$dnum = $dend - $dstart + 1;
@@ -70,7 +47,7 @@ login_init();
 		{
 			foreach( $maildata as $mail )
 			{
-				echo "<input type=\"hidden\" name=\"file".$j."\" value=\"".$mail["FILENAME"]."\">\n";
+				echo "<input type=\"hidden\" name=\"file".$j."\" value=\"".$mail["FILENAME"]."\"/>\n";
 				$j ++;
 			}
 		}
@@ -82,17 +59,18 @@ login_init();
 					continue;
 				else
 				{
-					echo "<input type=\"hidden\" name=\"file".$j."\" value=\"".$mail["FILENAME"]."\">\n";
+					echo "<input type=\"hidden\" name=\"file".$j."\" value=\"".$mail["FILENAME"]."\"/>\n";
 					$j ++;
 				}
 			}
 		}
 ?>
-<input type="hidden" name="mailnum" value="<?php echo $j; ?>">
-<input type="button" value="修改" class="bt1" onclick="history.go(-1)">
-<input type="submit" value="确认" class="bt1">
-</form>
+<input type="hidden" name="mailnum" value="<?php echo $j; ?>"/>
+<div class="oper">
+<input type="button" value="修改" onclick="history.go(-1)"/>
+<input type="submit" value="确认"/>
+</div>
+</fieldset></form>
 <?php	
-	}
-	
+	page_footer(FALSE);	
 ?>

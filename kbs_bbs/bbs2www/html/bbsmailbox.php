@@ -88,7 +88,7 @@ function bbsconfirm(url,infor){
 <center>
 <table border="0" width="750" cellspacing="0" cellpadding="0">
 	<tr>
-	<td align="center" valign="middle" background="/images/m1.gif" width="80" height="26">
+	<td align="center" valign="middle" background="images/m1.gif" width="80" height="26">
 	<a href="bbspstmail.php" class="mb1">写邮件</a>
 	</td>
 <?php
@@ -97,33 +97,33 @@ function bbsconfirm(url,infor){
 		if($mail_path==$mail_box[$i]&&$mail_title==$mail_boxtitle[$i]){
 			$current_i = $i;
 ?>
-<td align="center" valign="middle" background="/images/m2.gif" width="80" height="26" class="mb2">
+<td align="center" valign="middle" background="images/m2.gif" width="80" height="26" class="mb2">
 <?php echo htmlspecialchars($mail_boxtitle[$i]); ?>
 </td>
 <?php			
 			}
 		else{
 ?>
-<td align="center" valign="middle" background="/images/m1.gif" width="80" height="26">
+<td align="center" valign="middle" background="images/m1.gif" width="80" height="26">
 <a href="bbsmailbox.php?path=<?php echo $mail_box[$i];?>&title=<?php echo urlencode($mail_boxtitle[$i]);?>" class="mb1"><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></a>
 </td>
 <?php		
 			}
 		}
 ?>
-		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="/images/empty.gif"></td>
+		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="images/empty.gif"></td>
 	</tr>
 	<tr>
-		<td colspan="<?php echo $current_i + 1;	?>" align="left" background="/images/m10.gif"><img src="/images/m11.gif" align="top"></td>
-		<td background="/images/m6.gif"><img src="/images/empty.gif"></td>
-		<td colspan="<?php echo $mailboxnum - $current_i ;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif" align="top"></td>
+		<td colspan="<?php echo $current_i + 1;	?>" align="left" background="images/m10.gif"><img src="images/m11.gif" align="top"></td>
+		<td background="images/m6.gif"><img src="images/empty.gif"></td>
+		<td colspan="<?php echo $mailboxnum - $current_i ;	?>" align="right" background="images/m10.gif"><img src="images/m12.gif" align="top"></td>
 	</tr>
 	<tr>
 		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">
 		<table width="100%" cellspacing="0" cellpadding="0">
 			<tr>
-				<td width="7" background="/images/m3.gif"><img src="/images/empty.gif"></td>
-				<td background="/images/m6.gif" height="400" align="center" valign="top">
+				<td width="7" background="images/m3.gif"><img src="images/empty.gif"></td>
+				<td background="images/m6.gif" height="400" align="center" valign="top">
 <?php				
 	/*mail list start*/					
 ?>
@@ -131,7 +131,7 @@ function bbsconfirm(url,infor){
 您的 <font class="b3"><?php echo $mail_title; ?></font> 里共有 <font class="b3"><?php echo $mail_num; ?></font> 封邮件
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
 </p>
-<form action="/bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
+<form action="bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
 <table width="95%" cellspacing="0" cellpadding="5" class="mt1">
 	<tr>
 		<td class="mt2" width="30">已读</td>
@@ -160,9 +160,9 @@ function bbsconfirm(url,infor){
 	<td class="mt3">
 	<?php 
 		if(stristr($maildata[$i]["FLAGS"],"N"))
-			echo "<img src='/images/nmail.gif' alt='未读邮件' border='0'>";
+			echo "<img src='images/nmail.gif' alt='未读邮件' border='0'>";
 		else
-			echo "<img src='/images/omail.gif' alt='已读邮件' border='0'>";
+			echo "<img src='images/omail.gif' alt='已读邮件' border='0'>";
 	?>
 	</td>
 	<td class="mt4">
@@ -170,8 +170,8 @@ function bbsconfirm(url,infor){
 	</td>
 	<td class="mt3"><?php echo $start+$i+1;?></td>
 	<td class="mt4"><nobr>&nbsp;<?php echo $maildata[$i]["FLAGS"]; if ($maildata[$i]["ATTACHPOS"]>0) echo "<font color='red'>@</font>"; ?>&nbsp;</nobr></td>
-	<td class="mt3"><a href="/bbsqry.php?userid=<?php echo $maildata[$i]["OWNER"];?>"><?php echo $maildata[$i]["OWNER"];?></a></td>
-	<td class="mt5">&nbsp;<a href="/bbsmailcon.php?dir=<?php echo $mail_path;?>&num=<?php echo $i+$start;?>&title=<?php echo $mail_title_encode;?>"><?php
+	<td class="mt3"><a href="bbsqry.php?userid=<?php echo $maildata[$i]["OWNER"];?>"><?php echo $maildata[$i]["OWNER"];?></a></td>
+	<td class="mt5">&nbsp;<a href="bbsmailcon.php?dir=<?php echo $mail_path;?>&num=<?php echo $i+$start;?>&title=<?php echo $mail_title_encode;?>"><?php
 if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
 	echo "★" .  htmlspecialchars($maildata[$i]["TITLE"]);
 else
@@ -228,7 +228,7 @@ else
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
 &nbsp;&nbsp;</td></tr></table></form>
 <table cellpadding="3" cellspacing="0" width="95%" border="0" class="b9">
-<form action="/bbsdelmail.php?<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
+<form action="bbsdelmail.php?<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
 <input type="hidden" name="dir" value="<?php echo $mail_path; ?>">
 <input type="hidden" name="title" value="<?php echo $mail_title_encode; ?>">
 <tr><td class="b9">
@@ -240,7 +240,7 @@ else
 删除类型：
 <input type="radio" class="b9" name="dtype" value="0" checked>普通
 <input type="radio" class="b9" name="dtype" value="1">强制&nbsp;&nbsp;
-<input type="submit" value="区段删除邮件" class="bt1" onclick="if(confirm('区段删除指定邮件吗?')){submit();return true;}return false;">
+<input type="submit" value="区段删除邮件" class="bt1"/>
 </td></tr>
 </form></table>
 <?php				
@@ -249,7 +249,7 @@ else
 	/*mail list end*/			
 ?>				
 				</td>
-				<td width="7" background="/images/m4.gif"><img src="/images/empty.gif"></td>
+				<td width="7" background="images/m4.gif"><img src="images/empty.gif"></td>
 			</tr>
 		
 		</table>
@@ -258,9 +258,9 @@ else
 		
 		<td colspan="<?php echo $mailboxnum+2;	?>">
 		<table width="100%" cellspacing="0" cellpadding="0"><tr>
-			<td width="9" height="26"><img src="/images/m7.gif"></td>
-			<td background="/images/m5.gif" height="26"><img src="/images/empty.gif"></td>
-			<td width="9" height="26"><img src="/images/m8.gif"></td>
+			<td width="9" height="26"><img src="images/m7.gif"></td>
+			<td background="images/m5.gif" height="26"><img src="images/empty.gif"></td>
+			<td width="9" height="26"><img src="images/m8.gif"></td>
 		</tr></table>
 		</td>
 	</tr>

@@ -1,10 +1,6 @@
 <?php
-	/**
-	 * This file displays article as Javascript to user.
-	 * $Id$
-	 */
-	require("funcs.php");
-login_init();
+	require("www2-funcs.php");
+	login_init();
 
 	if( isset( $_GET["bid"] ) )
 	{
@@ -39,29 +35,40 @@ login_init();
 	settype($id, "integer");
 
 	if (isset($_GET["ftype"])){
-		$ftype = $_GET["ftype"];
-		if($ftype != $dir_modes["ZHIDING"])
-			$ftype = $dir_modes["NORMAL"];
-	}
-	else
+		$ftype = intval($_GET["ftype"]);
+	} else {
 		$ftype = $dir_modes["NORMAL"];
+	}
+	$dir_perm = bbs_is_permit_mode($ftype, 2);
+	if (!$dir_perm) {
+		exit;
+	}
+
 	$total = bbs_countarticles($brdnum, $ftype);
 	if ($total <= 0) {
 		exit;
 	}
 	$articles = array ();
-	$num = bbs_get_records_from_id($board, $id, $ftype, $articles);
-	if ($num == 0)
-	{
-		exit;
+
+    if ($dir_perm == 1) { //sorted
+        $articles = array ();
+        $num = bbs_get_records_from_id($board, $id, $ftype, $articles);
+        if ($num <= 0) exit;
+        $article = $articles[1]["FILENAME"];
+    } else {
+        $num = @intval($_GET["num"]);
+        if (($num <= 0) || ($num > $total)) exit;
+        if (($articles = bbs_getarticles($board, $num, 1, $ftype)) === false) exit;
+        if ($id != $articles[0]["ID"]) exit;
+        $article = $articles[0]["FILENAME"];
+    }
+	$filename = bbs_get_board_filename($board, $article);
+	if ($isnormalboard) {
+		if (cache_header("public",@filemtime($filename),300))
+			return;
+	} else {
+		cache_header("nocache");
 	}
-	else
-	{
-		$filename=bbs_get_board_filename($board, $articles[1]["FILENAME"]);
-		if ($isnormalboard) {
-       			if (cache_header("public",filemtime($filename),300))
-               			return;
-               	}
-		bbs_print_article_js($filename,1, "/bbscon.php?" . $_SERVER["QUERY_STRING"]);
-	}
+	//header("Content-Type: text/javascript; charset=gb2312");
+	bbs_print_article_js($filename,1, "bbscon.php?" . $_SERVER["QUERY_STRING"]);
 ?>

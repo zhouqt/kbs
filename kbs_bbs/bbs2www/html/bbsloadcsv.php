@@ -1,17 +1,22 @@
 <?php
-	/**
-	 * 
-	 * $Id$
-	 */
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
+
+$filename_trans = array(" " => "_", 
+	";" => "_", 
+	"|" => "_",
+	"&" => "_",
+	">" => "_",
+	"<" => "_",
+	"*" => "_",
+	"\"" => "_",
+	"'" => "_"
+	);
+
 	global $errno;
 	@$action=$_GET["act"];
-	require("funcs.php");
-login_init();
-	if ($loginok !=1 )
-		html_nologin();
-	else
-	{
-		html_init("gb2312","csv导入");
+
 		$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
 		@mkdir($attachdir);
 		if ($action=="add") {
@@ -23,74 +28,64 @@ login_init();
 				$act_attachname="";
 				while ($tok) {
 					$act_attachname=$tok;
-    					$tok = strtok("/\\");
+						$tok = strtok("/\\");
 				}
 				$act_attachname=strtr($act_attachname,$filename_trans);
 				$act_attachname=substr($act_attachname,-60);
 				if ($act_attachname!="") {
-			        	if ($_FILES['attachfile']['size']>ATTACHMAXSIZE) 
+						if ($_FILES['attachfile']['size']>ATTACHMAXSIZE) 
 							$errno=UPLOAD_ERR_FORM_SIZE;
 				} else
 					$errno=100;
 			}
 		}
+	
+	page_header("csv导入", FALSE);
 ?>
-<script language="JavaScript">
-<!--
-
-function SymError()
-{
-  return true;
-}
-
-window.onerror = SymError;
-
-//-->
-</script>
-
-<style type="text/css">.txt01 {  font-family: "宋体"; font-size: 12px}
+<style type="text/css">
+body { padding: 1em 0 0 1em; }
+.txt01 {  font-family: "宋体"; font-size: 12px}
 .form01 {  font-family: "宋体"; font-size: 12px; height: 20px; letter-spacing: 3px}
 .form02 {  font-size: 12px}
 </style>
-
-<body bgcolor="#FFFFFF"  background="/images/rback.gif">
+<body bgcolor="#FFFFFF"  background="images/rback.gif">
 <?php
-                if ($action=="add") {
-                	switch ($errno) {
-                	case UPLOAD_ERR_OK:
+				if ($action=="add") {
+					switch ($errno) {
+					case UPLOAD_ERR_OK:
 						$tmpfilename=tempnam($attachdir,"att");
 						if (is_uploaded_file($_FILES['attachfile']['tmp_name'])) {
-			    			if( move_uploaded_file($_FILES['attachfile']['tmp_name'], 
-			        			$tmpfilename) == FALSE ){
+							if( move_uploaded_file($_FILES['attachfile']['tmp_name'], 
+								$tmpfilename) == FALSE ){
 								echo "保存失败";
 							}else{
-               					echo "文件导入成功！";
+								echo "文件导入成功！";
 								$ret = bbs_csv_to_al($tmpfilename);
 								echo "共导入".$ret."项";
 								@unlink($tmpfilename);
-               					break;
+								break;
 							}
 						}
 						echo "保存文件失败！";
 						break;
-                	case UPLOAD_ERR_INI_SIZE:
-                	case UPLOAD_ERR_FORM_SIZE:
-                		echo "文件超过预定的大小" . sizestr(ATTACHMAXSIZE) . "字节";
-                		break;
-                	case UPLOAD_ERR_PARTIAL:
-                		echo "文件传输出错！";
-                		break;
-                	case UPLOAD_ERR_NO_FILE:
-                		echo "没有文件上传！";
-                		break;
-                	case 100:
-                		echo "无效的文件名！";
-                	default:
-                		echo "未知错误";
-                	}
-                	echo "<br />";
-					html_normal_quit();
-                }
+					case UPLOAD_ERR_INI_SIZE:
+					case UPLOAD_ERR_FORM_SIZE:
+						echo "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
+						break;
+					case UPLOAD_ERR_PARTIAL:
+						echo "文件传输出错！";
+						break;
+					case UPLOAD_ERR_NO_FILE:
+						echo "没有文件上传！";
+						break;
+					case 100:
+						echo "无效的文件名！";
+					default:
+						echo "未知错误";
+					}
+					echo "<br />";
+					page_footer(FALSE);
+				}
 ?>
 <script language=javascript>
 function addsubmit() {
@@ -101,11 +96,11 @@ function addsubmit() {
   if (!obj) return true;
   if (obj.value == ""){
 	alert('您还没选择上传的文件');
- 	return false;
+	return false;
   } else {
-        e2="bbsloadcsv.php?act=add";
-        document.forms[0].action=e2;  
-        document.forms[0].submit();
+		e2="bbsloadcsv.php?act=add";
+		document.forms[0].action=e2;  
+		document.forms[0].submit();
   }
 }
 
@@ -115,13 +110,10 @@ function clickclose() {
 </script>
 请选择要导入的csv文件:<br>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" align="left" action="">
-              <input type="hidden" name="MAX_FILE_SIZE" value=<?php echo(ATTACHMAXSIZE);?>>
-              <input type="file" name="attachfile" size="20" value class="form02">
-              <input type="button" width="61"
-          height="21" value="导入" border="0" onclick="addsubmit()" class="form01" >
+			  <input type="hidden" name="MAX_FILE_SIZE" value=<?php echo(ATTACHMAXSIZE);?>>
+			  <input type="file" name="attachfile" size="20" value class="form02">
+			  <input type="button" width="61"
+		  height="21" value="导入" border="0" onclick="addsubmit()" class="form01" >
 </form>
 </body>
 </html>
-<?php
-	} // nologin else
-?>

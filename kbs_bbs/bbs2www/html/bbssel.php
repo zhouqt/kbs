@@ -1,99 +1,64 @@
 <?php
-/**
- * search board
- * windinsn.04.05.17
- */
- 
-require('funcs.php');
-require('board.inc.php');
+require('www2-funcs.php');
 login_init();
-html_init('GB2312','','',1);
 
 if (isset($_GET['board']))
-    $keyword = trim(ltrim($_GET['board']));
-elseif (isset($_POST['text']))
-    $keyword = trim(ltrim($_POST['board']));
+	$keyword = trim(ltrim($_GET['board']));
+elseif (isset($_POST['board']))
+	$keyword = trim(ltrim($_POST['board']));
 else
-    html_error_quit('请输入关键字');
-
-if (!$keyword)
-    html_error_quit('请输入关键字');
+	$keyword = "";
 
 $exact = (!isset($_GET['exact']) && !isset($_POST['exact']))?0:1;
 
 $boards = array();
-
-?>
-<body topmargin="0">
-<table width="100%" border="0" cellspacing="0" cellpadding="3">
-  <tr> 
-    <td class="b2">
-	    <a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
-	    -
-	    搜索讨论区
-    </td>
-   </tr>
-   <tr>
-   <td height="30"> </td>
-   </tr>
-   <tr>
-        <td align="center">
-<?php
-
-if (bbs_searchboard(trim($keyword),$exact,$boards)) {
-    if (sizeof($boards)==1) {
-?>
-<script language="javascript">
-window.location.href="/bbsdoc.php?board=<?php echo urlencode($boards[0]['NAME']); ?>";
-</script>
-<?php        
-    }
-    else {
-?>
-<b>系统共为您找到 <font coor="red"><?php echo sizeof($boards); ?>个</font> 符合条件的讨论区</b><br /><hr>
-<table cellspacing="0" cellpadding="5" border="0" width="95%" class="t1">
-    <tr>
-        <td width="40" class="t2">序号</td>
-        <td width="120" class="t2">讨论区</td>
-        <td width="180" class="t2">说明</td>
-        <td class="t2">关键字</td>
-    </tr>
-<?php
-    $i = 1;
-    foreach ($boards as $board) {
-        echo '<tr><td class="t3">'.$i.'</td><td class="t4"><a href="/bbsdoc.php?board='.urlencode($board['NAME']).'">'.htmlspecialchars($board['NAME']).'</a></td>'.
-             '<td class="t8">'.htmlformat($board['TITLE']).'</td>'.
-             '<td class="t7">'.htmlformat($board['DESC']).'&nbsp;</td></tr>';    
-        $i ++;
-    }
-?>
-</table>
-<?php
-    }
+if ($keyword) {
+	if (bbs_searchboard(trim($keyword),$exact,$boards)) {
+		if (sizeof($boards)==1) {
+			cache_header("nocache");
+			header("Location: bbsdoc.php?board=" . urlencode($boards[0]['NAME']));
+			exit;
+		} else if (sizeof($boards)==0) {
+			$boards = false;
+		}
+	} else {
+		$boards = false;
+	}
 }
-else {
-?><br /><br /><br />
-<font color="red"><b>对不起，未找到符合条件的讨论区！</b></font>
+
+page_header("搜索讨论区");
+if ($boards) {
+?>
+<script>
+var ta = new tabWriter(1,'main wide','系统共为您找到 <?php echo sizeof($boards); ?> 个符合条件的讨论区',
+[['序号',0,'center'],['讨论区',0,'center'],['说明',0,'center'],['关键字',0,0]]);
+<?php
+	foreach ($boards as $board) {
+		if (!$board['NAME']) continue;
+		$col1 = '<a href="bbsdoc.php?board='.urlencode($board['NAME']).'">'.htmlspecialchars($board['NAME'],ENT_QUOTES).'</a>';
+		$col2 = htmlspecialchars($board['TITLE'],ENT_QUOTES);
+		$col3 = htmlspecialchars($board['DESC'],ENT_QUOTES).'&nbsp;';
+		echo "ta.r('$col1','$col2','$col3');\n";
+	}
+?>
+ta.t();
+</script>
+<?php
+} else {
+?>
+<div class="warning">对不起，未找到符合条件的讨论区！</div>
 <?php    
 }  
-
 ?>
-        </td>
-   </tr>
-   <tr>
-   <td height="30"> </td>
-   </tr>
-   <tr>
-        <td align="center">
-        <form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get">
-        ::搜索讨论区::
-        <input type="text" name="board" value="<?php echo htmlspecialchars($keyword); ?>" />
-        <input type="checkbox" name="exact" />精确查找讨论区名
-        <input type="submit" value="开始搜" />
-        </form>
-        </td>
-   </tr>
-</table>
+<form action="<?php echo $_SERVER['PHP_SELF']; ?>" method="get" class="medium">
+	<fieldset><legend>搜索讨论区</legend>
+		<div class="inputs">
+			<label>关键字:</label><input type="text" name="board" value="<?php echo htmlspecialchars($keyword); ?>"/>
+			<input type="checkbox" name="exact" id="exact" /><label for="exact" class="clickable">精确匹配</label>
+		</div>
+	</fieldset>
+	<div class="oper"><input type="submit" value="开始搜" /></div>
+</form>
 <?php     
-html_normal_quit();
+page_footer();
 ?>

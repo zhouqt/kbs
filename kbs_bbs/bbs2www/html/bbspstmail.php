@@ -1,8 +1,4 @@
 <?php
-	/**
-	 * send mail .
-	 * $Id$
-	 */
 	require("funcs.php");
 login_init();
 	if ($loginok != 1) {
@@ -14,10 +10,6 @@ login_init();
 			html_error_quit("您不能发送信件");
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
-		if (isset($_GET["file"]))
-			$file = $_GET["file"];
-		$title = isset($_GET["title"])?$_GET["title"].' ':'';
-	    $destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
 
 		if (isset( $board )){
 			$brdarr = array();
@@ -27,11 +19,24 @@ login_init();
 			$usernum = $currentuser["index"];
 			if (bbs_checkreadperm($usernum, $brdnum) == 0)
 				html_error_quit("错误的讨论区");
-			if (isset($file) && bbs_valid_filename($file) < 0)
+			$id = intval(@$_GET["id"]);
+			if ($id <= 0)
 				html_error_quit("错误的文章");
+			$articles = array ();
+			$num = bbs_get_records_from_id($brdarr["NAME"], $id,$dir_modes["NORMAL"],$articles);
+			if ($num <= 0) html_error_quit("错误的文章");
+			$article = $articles[1];
+			if(!strncmp($article["TITLE"],"Re: ",4)) $title = $article["TITLE"] . ' ';
+			else $title = "Re: " . $article["TITLE"] . ' ';
+			$destuserid = $article["OWNER"];
+			$file = $article["FILENAME"];
 		}else{
+			if (isset($_GET["file"]))
+				$file = $_GET["file"];
 			if (isset($file) && ( $file[0]!='M' || strstr($file,"..") ) )
 				html_error_quit("错误的文章..");
+			$title = isset($_GET["title"])?$_GET["title"].' ':'';
+			$destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
 		}
 
 		//system mailboxs
@@ -55,7 +60,7 @@ login_init();
 <script language=javascript>
 <!--
 function dosubmit() {
-    document.postform.submit();
+	document.postform.submit();
 }
 //-->
 </script>
@@ -69,32 +74,32 @@ function dosubmit() {
 <center>
 <table border="0" width="750" cellspacing="0" cellpadding="0">
 	<tr>
-	<td align="center" valign="middle" background="/images/m2.gif" width="80" height="26" class="mb2">
+	<td align="center" valign="middle" background="images/m2.gif" width="80" height="26" class="mb2">
 	写邮件
 	</td>
 <?php
 	for($i=0;$i<$mailboxnum;$i++){
 ?>
-<td align="center" valign="middle" background="/images/m1.gif" width="80" height="26">
+<td align="center" valign="middle" background="images/m1.gif" width="80" height="26">
 <a href="bbsmailbox.php?path=<?php echo $mail_box[$i];?>&title=<?php echo urlencode($mail_boxtitle[$i]);?>" class="mb1"><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></a>
 </td>
 <?php		
 	}
 ?>
-		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="/images/empty.gif"></td>
+		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="images/empty.gif"></td>
 	</tr>
 	<tr>
-		<td background="/images/m3.gif" style="background-repeat:repeat-y; background-color: #CEE3F8;"><img src="/images/empty.gif"></td>
-		<td colspan="<?php echo $mailboxnum + 1;	?>" align="right" background="/images/m10.gif"><img src="/images/m12.gif" align="top"></td>
+		<td background="images/m3.gif" style="background-repeat:repeat-y; background-color: #CEE3F8;"><img src="images/empty.gif"></td>
+		<td colspan="<?php echo $mailboxnum + 1;	?>" align="right" background="images/m10.gif"><img src="images/m12.gif" align="top"></td>
 	</tr>
 	<tr>
 		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">
 		<table width="100%" cellspacing="0" cellpadding="0">
 			<tr>
-				<td width="7" background="/images/m3.gif"><img src="/images/empty.gif"></td>
-				<td background="/images/m6.gif" height="400" align="center" valign="top">
+				<td width="7" background="images/m3.gif"><img src="images/empty.gif"></td>
+				<td background="images/m6.gif" height="400" align="center" valign="top">
 
-<form name="postform" method="post" action="/bbssendmail.php">
+<form name="postform" method="post" action="bbssendmail.php">
 <table>
 <tr>
 <td class="b9">
@@ -137,56 +142,56 @@ function dosubmit() {
 </select>
  [<a target="_balnk" href="bbssig.php">查看签名档</a>]
 <?php
-    $bBackup = (bbs_is_save2sent() != 0);
+	$bBackup = (bbs_is_save2sent() != 0);
 ?>
 <input type="checkbox" name="backup"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
 <textarea class="sb1" name="text" onkeydown='return textarea_okd(dosubmit, event);' rows="20" cols="80" wrap="physical">
 <?php
-    if(isset($file)){
+	if(isset($file)){
 		if(isset($board)){
-    		$filename = "boards/" . $board . "/" . $file;
-            echo "\n【 在 " . $destuserid . " 的大作中提到: 】\n";
+			$filename = "boards/" . $board . "/" . $file;
+			echo "\n【 在 " . $destuserid . " 的大作中提到: 】\n";
 		}else{
 			$filename = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$file;
-            echo "\n【 在 " . $destuserid . " 的来信中提到: 】\n";
+			echo "\n【 在 " . $destuserid . " 的来信中提到: 】\n";
 		}
 		if(file_exists($filename))
 		{
-		    $fp = fopen($filename, "r");
-	        if ($fp) {
-			    $lines = 0;
-	            $buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
+			$fp = fopen($filename, "r");
+			if ($fp) {
+				$lines = 0;
+				$buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
 				$end = strrpos($buf,")");
 				$start = strpos($buf,":");
 				if($start != FALSE && $end != FALSE)
-				    $quser=substr($buf,$start+2,$end-$start-1);
+					$quser=substr($buf,$start+2,$end-$start-1);
 
-		        for ($i = 0; $i < 3; $i++) {
-	                if (($buf = fgets($fp,500)) == FALSE)
-	   	                break;
-	            }
-	            while (1) {
-	                if (($buf = fgets($fp,500)) == FALSE)
-	                    break;
-	                if (strncmp($buf, ": 【", 4) == 0)
-	                    continue;
-	                if (strncmp($buf, ": : ", 4) == 0)
-	                    continue;
-	                if (strncmp($buf, "--\n", 3) == 0)
-	                    break;
-	                if (strncmp($buf,'\n',1) == 0)
-	                    continue;
-	                if (++$lines > 10) {
-	                    echo ": ...................\n";
-	                    break;
-	                }
-	                /* */
-	                if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-	                    echo ": ". $buf;
-	            }
-	            fclose($fp);
-	        }
-	    }
+				for ($i = 0; $i < 3; $i++) {
+					if (($buf = fgets($fp,500)) == FALSE)
+						break;
+				}
+				while (1) {
+					if (($buf = fgets($fp,500)) == FALSE)
+						break;
+					if (strncmp($buf, ": 【", 4) == 0)
+						continue;
+					if (strncmp($buf, ": : ", 4) == 0)
+						continue;
+					if (strncmp($buf, "--\n", 3) == 0)
+						break;
+					if (strncmp($buf,'\n',1) == 0)
+						continue;
+					if (++$lines > 10) {
+						echo ": ...................\n";
+						break;
+					}
+					/* */
+					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+						echo ": ". $buf;
+				}
+				fclose($fp);
+			}
+		}
 	}
 ?>
 </textarea><br><div align="center">
@@ -196,7 +201,7 @@ function dosubmit() {
 </div></table></form>
 
 				</td>
-				<td width="7" background="/images/m4.gif"><img src="/images/empty.gif"></td>
+				<td width="7" background="images/m4.gif"><img src="images/empty.gif"></td>
 			</tr>
 		
 		</table>
@@ -205,9 +210,9 @@ function dosubmit() {
 		
 		<td colspan="<?php echo $mailboxnum+2;	?>">
 		<table width="100%" cellspacing="0" cellpadding="0"><tr>
-			<td width="9" height="26"><img src="/images/m7.gif"></td>
-			<td background="/images/m5.gif" height="26"><img src="/images/empty.gif"></td>
-			<td width="9" height="26"><img src="/images/m8.gif"></td>
+			<td width="9" height="26"><img src="images/m7.gif"></td>
+			<td background="images/m5.gif" height="26"><img src="images/empty.gif"></td>
+			<td width="9" height="26"><img src="images/m8.gif"></td>
 		</tr></table>
 		</td>
 	</tr>

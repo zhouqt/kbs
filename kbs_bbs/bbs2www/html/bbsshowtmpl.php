@@ -1,63 +1,54 @@
 <?php
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
 
-	require("funcs.php");
-login_init();
-	if ($loginok != 1 || ($currentuser["userid"] == "guest") ){
-		html_init("gb2312");
-		html_error_quit("匿名用户没有发文权限");
-	}else
-	{
-		html_init("gb2312");
+	if(isset($_GET["board"]))
+		$board = $_GET["board"];
+	else
+		html_error_quit("讨论区错误");
 
-		if(isset($_GET["board"]))
-			$board = $_GET["board"];
-		else
-			html_error_quit("讨论区错误");
+	$brdarr = array();
+	$brdnum = bbs_getboard($board,$brdarr);
+	if($brdnum == 0)
+		html_error_quit("错误的讨论区");
 
-		$brdarr = array();
-		$brdnum = bbs_getboard($board,$brdarr);
-		if($brdnum == 0)
-			html_error_quit("错误的讨论区");
+	if(bbs_checkreadperm($currentuser["index"],$brdnum)==0)
+		html_error_quit("您没有权限");
 
-		if(bbs_checkreadperm($currentuser["index"],$brdnum)==0)
-			html_error_quit("您没有权限");
+	$votearr = array();
+	$retnum = bbs_get_tmpls($board,$votearr);
 
-		$votearr = array();
-		$retnum = bbs_get_tmpls($board,$votearr);
-
-		if( $retnum < 0 )
-			$retnum = 0;
+	if( $retnum < 0 )
+		$retnum = 0;
+	
+	bbs_board_nav_header($brdarr, "模板列表");
 ?>
-<body>
-<center><p><?php echo BBS_FULL_NAME; ?> -- [模板列表] [用户:<?php echo $currentuser["userid"];?>] 
-版面<?php echo $board; ?>共有<?php echo $retnum;?>个模板<br></p>
-<hr class="default"/>
-<table width="613">
-<tr><td>序号</td><td>标题</td><td>类型</td><td>问题个数</td><td></td></tr>
+<table class="main adj">
+<caption>版面 <?php echo $board; ?> 共有 <?php echo $retnum;?> 个模板</caption>
+<tr><th>序号</th><th>标题</th><th>类型</th><th>问题个数</th><th></th></tr>
 <?php
 		for($i = 0; $i < $retnum; $i++ ){
 ?>
 <tr><td>
 <?php echo $i+1;?>
 </td><td>
-<a href="/bbsatmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>"><?php echo $votearr[$i]["TITLE"];?></a>
+<a href="bbsatmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>"><?php echo $votearr[$i]["TITLE"];?></a>
 </td><td>
 <?php echo $votearr[$i]["TITLE"];?>
 </td><td>
 <?php echo $votearr[$i]["CONT_NUM"];?>
 </td><td>
-<a href="/bbspsttmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>">使用本模板发文</a>
+<a href="bbspsttmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>">使用本模板发文</a>
 </td></tr>
 <?php
-		}
+	}
 ?>
 </table>
-<hr class="default"/>
-<a href="/bbsdoc.php?board=<?php echo $board;?>">返回本讨论区</a>
+<div class="oper">
+<a href="bbsdoc.php?board=<?php echo $board;?>">返回本讨论区</a>
 <a href="javascript:history.go(-1)">快速返回</a>
-</center>
+</div>
 <?php
-		html_normal_quit();
-
-	}
+	page_footer();
 ?>

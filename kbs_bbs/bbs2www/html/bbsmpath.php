@@ -80,7 +80,7 @@ login_init();
 				$title = $pathret[$num]["TITLE"];
 			}
 ?>
-<form action="/bbsmpath.php" method="get">
+<form action="bbsmpath.php" method="get">
 路径:<input type="text" size="30" name="path" value="<?php echo $path;?>">
 丝路名:<input type="text" size="30" name="title" value="<?php echo $title?>">
 序号:<select name="num" class="input"  style="WIDTH: 40px">
@@ -143,7 +143,7 @@ login_init();
 <?php
 			if( $showform != 2 ){
 ?>
-<a href="/bbsmpath.php?action=edit&num=<?php echo $i;?>">修改</a>
+<a href="bbsmpath.php?action=edit&num=<?php echo $i;?>">修改</a>
 <?php
 			}
 ?>

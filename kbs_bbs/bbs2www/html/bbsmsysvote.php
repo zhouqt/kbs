@@ -136,12 +136,12 @@ function bbs_confirm(url,infor){
 				if($vote[active]==1)
 				{
 					echo "投票中";
-					$linkUrl = "/bbssysvote.php?svid=".$vote[svid];
+					$linkUrl = "bbssysvote.php?svid=".$vote[svid];
 				}
 				else
 				{
 					echo "已结束";
-					$linkUrl = "/bbsssysvote.php?svid=".$vote[svid];
+					$linkUrl = "bbsssysvote.php?svid=".$vote[svid];
 				}	
 				echo "</td>".
 				     "<td class=t5><span title=\"".$vote[desc]."\"><a href=\"".$linkUrl."\">".$vote[subject]."</a><span></td>".

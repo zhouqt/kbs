@@ -6,7 +6,7 @@ define('_BBS_WWW2_FUNCS_PHP_', 1);
 if (!isset($topdir))
 	$topdir=".";
 
-// NOTE: If you want to statically link smth_bbs phpbbslib into php,
+// NOTE: If you want to statically link kbs_bbs phpbbslib into php,
 //       you *MUST* set enable_dl variable to Off in php.ini file.
 if (BUILD_PHP_EXTENSION==0)
 	@dl("$topdir/../libexec/bbs/libphpbbslib.so");
@@ -31,6 +31,7 @@ $currentuser=array ();
 
 
 $dir_modes = array(
+	"ANNOUNCE" => -1,
 	"NORMAL" => 0,
 	"DIGEST" => 1,
 	"THREAD" => 2,
@@ -48,27 +49,34 @@ $dir_modes = array(
  * Checking whether the dir mode is permitted or not.
  * 
  * @param $ftype the mode
- * @return 0     the mode is not allowed
- *         1     the mode is allowed, and the index is sorted
- *         2     the mode is allowed, and the index is not sorted
+ * @param $caller
+ *         0 - bbsdoc
+ *         1 - bbscon
+ *         2 - jscon
+ * @return 0 - 不允许的模式
+ *         1 - 允许模式，索引是排序的
+ *         2 - 允许模式，索引是不排序的
  * @author atppp
  */
-function bbs_is_permit_mode($ftype) {
+function bbs_is_permit_mode($ftype, $caller) {
 	global $dir_modes;
 	switch($ftype) {
 		case $dir_modes["ZHIDING"]:
-			//zhiding mode is not sorted, but the only place we care is
-			//in bbscon.php, and there we can say it's sorted without problem
+			return ($caller == 0) ? 0 : 1; /* 置顶可以假设是排序的 */
 		case $dir_modes["NORMAL"]:
+			return 1;
 		case $dir_modes["ORIGIN"]:
-		/* case $dir_modes["SUPERFILTER"]: */ return 1; break;
+			return ($caller == 0) ? 1 : 0;
 		case $dir_modes["DIGEST"]:
-		/* case $dir_modes["MARK"]: */  return 2; break;
-		default: return 0; break;
+			return 2;
+		case $dir_modes["MARK"]:
+			return ($caller == 2) ? 0 : 2; /* 暂时当作不可排序 ... */
+		default: return 0;
 	}
 }
 
 $dir_name = array(
+	-1 => "(精华区)",
 	0 => "",
 	1 => "(文摘区)",
 	3 => "(保留区)",
@@ -101,7 +109,6 @@ function bbs_get_board_index($board, $ftype) {
 
 require("site.php");
 
-define("WWW_DEFAULT_PARAMS", 0);
 define("ACTIVATIONLEN",15); //激活码长度
 if (!defined ('FAVORITE_NAME'))
 	define ('FAVORITE_NAME', '百宝箱');
@@ -191,10 +198,9 @@ function login_init()
 		if($error == 2 || $error == 0){
 			$data = array();
 			$num = bbs_getcurrentuinfo($data);
-			setcookie("UTMPKEY",$data["utmpkey"],time()+360000,"/");
-			setcookie("UTMPNUM",$num,time()+360000,"/");
-			setcookie("UTMPUSERID",$data["userid"],time()+360000,"/");
-			setcookie("WWWPARAMS",WWW_DEFAULT_PARAMS,time()+360000,"/"); 
+			setcookie("UTMPKEY",$data["utmpkey"],0,"/");
+			setcookie("UTMPNUM",$num,0,"/");
+			setcookie("UTMPUSERID",$data["userid"],0,"/");
 			@$utmpkey = $data["utmpkey"];
 			@$utmpnum = $num;
 			@$userid = $data["userid"];
@@ -217,7 +223,7 @@ function login_init()
 		setcookie("UTMPKEY","",time() - 3600,"/");
 		setcookie("UTMPNUM","",time() - 3600,"/");
 		setcookie("UTMPUSERID","",time() - 3600,"/");
-		setcookie("WWWPARAMS","",time() - 3600,"/");
+		cache_header("nocache");
 ?>
 <html>
 	<head><meta http-equiv="Content-Type" content="text/html; charset=gb2312" /></head>
@@ -304,7 +310,7 @@ function bbs_board_nav_header($brdarr, $title) {
 	page_header($title, "<a href=\"bbsdoc.php?board=" . $brdarr["NAME"] . "\">" . htmlspecialchars($brdarr["DESC"]) . "</a>");
 }
 
-function page_header($title, $flag = "") {
+function page_header($title, $flag = "", $otherheaders = false) {
 	/*
 	 * $flag: FALSE  - no header
 	 *        string - parent
@@ -323,18 +329,19 @@ function page_header($title, $flag = "") {
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
 <title><?php echo $title; ?></title>
 <script src="www2-main.js" type="text/javascript"></script>
-<link rel="stylesheet" type="text/css" href="www2-default.css" />
+<script>writeCss();</script>
+<?php if ($otherheaders) echo $otherheaders; ?>
 </head>
 <?php
 	if ($flag === FALSE) return;
-	if($currentuser["userid"] != "guest" && bbs_checkwebmsg()) {
+	if (isset($currentuser["userid"]) && $currentuser["userid"] != "guest" && bbs_checkwebmsg()) {
 ?>
 <script type="text/javascript">alertmsg();</script>
 <?php
 	}
 ?>
 <body>
-<div id="divNav"><a href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a><?php if ($flag) echo " → " . $flag; ?> → <?php echo $title; ?></div>
+<div class="nav smaller"><a href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a><span id="idExp"></span><?php if ($flag) echo " → " . $flag; ?> → <?php echo $title; ?></div>
 <?php
 }
 
@@ -342,7 +349,7 @@ function page_header($title, $flag = "") {
 function page_footer($checkframe = TRUE) {
 	if ($checkframe) {
 ?>
-<script>checkFrame();</script>
+<script>checkFrame(<?php if (!defined("STATIC_FRAME")) echo "1"; ?>);</script>
 <?php
 	}
 ?>
@@ -367,7 +374,10 @@ function html_error_quit($err_msg)
 {
 	page_header("发生错误");
 ?>
-发生错误: <?php echo $err_msg; ?><br />
+<table class="error">
+<tr><th>发生错误</th></tr>
+<tr><td><?php echo $err_msg; ?></td></tr>
+</table>
 [<a href="javascript:history.go(-1)">快速返回</a>]
 <?php
 	page_footer(false);
@@ -433,10 +443,21 @@ function get_secname_index($secnum)
 	return -1;
 }
 
-function bbs_add_super_fav ($title, $url='', $type=0) {
-	global $currentuser;
+function bbs_get_super_fav ($title, $url='', $type=0) {
 	if (!$url) $url = $_SERVER['REQUEST_URI'];
-	echo '<a href="bbssfav.php?act=choose&title='.rawurlencode ($title).'&url='.rawurlencode ($url).'&type='.intval ($type).'">'.FAVORITE_NAME.'</a>';
+	return '<a href="bbssfav.php?act=choose&title='.rawurlencode ($title).'&url='.rawurlencode ($url).'&type='.intval ($type).'">'.FAVORITE_NAME.'</a>';
+}
+function bbs_add_super_fav ($title, $url='', $type=0) {
+	echo bbs_get_super_fav($title, $url, $type);
+}
+
+
+function htmlformat($str,$multi=false) {
+	$str = str_replace(' ','&nbsp;',htmlspecialchars($str,ENT_QUOTES));
+	if ($multi) {
+		$str = str_replace(array("\r\n","\n","\r")," <br/> ",$str);
+	}
+	return $str;    
 }
 
 } // !define ('_BBS_WWW2_FUNCS_PHP_')

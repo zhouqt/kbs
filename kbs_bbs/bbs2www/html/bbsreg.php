@@ -5,7 +5,7 @@
 	 */
 	require("funcs.php");
 	set_fromhost();
-	if (!defined("SITE_ZIXIA")) {
+	if (defined("HAVE_ACTIVATION")) {
 		require("reg.inc.php");
 	}
 
@@ -32,7 +32,7 @@
 	    html_error_quit("密码不规范, 密码长度应为 4-39 位! ");
 	
 	//generate activation code
-	if (!defined("SITE_ZIXIA")) {
+	if (defined("HAVE_ACTIVATION")) {
 		if(!($activation=bbs_create_activation()))
 			html_error_quit("生成激活码错误，请联系管理员!");
 	}
@@ -70,7 +70,7 @@
 			break;
 	}
 
-if (!defined("SITE_ZIXIA")) {	
+if (defined("HAVE_ACTIVATION")) {
 	$ret = bbs_setactivation($userid,"0".$activation.$reg_email);
 	if($ret != 0)
 		html_error_quit("设置激活码错误");
@@ -127,7 +127,7 @@ else
 <?php
 }
 
-} else { // defined("SITE_ZIXIA")
+} else { // !defined("HAVE_ACTIVATION")
 	@$realname=$_POST["realname"];
 	@$dept=$_POST["dept"];
 	@$address=$_POST["address"];

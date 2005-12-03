@@ -3,9 +3,9 @@ function get_mimetype($name)
 {
 	$dot = strrchr($name, '.');
 	if ($dot == $name)
-		return "text/plain; charset=gb2312";
+		return "text/plain";
 	if (strcasecmp($dot, ".html") == 0 || strcasecmp($dot, ".htm") == 0)
-		return "text/html; charset=gb2312";
+		return "text/html";
 	if (strcasecmp($dot, ".jpg") == 0 || strcasecmp($dot, ".jpeg") == 0)
 		return "image/jpeg";
 	if (strcasecmp($dot, ".gif") == 0)
@@ -35,7 +35,7 @@ function get_mimetype($name)
 	if (strcasecmp($dot, ".pac") == 0)
 		return "application/x-ns-proxy-autoconfig";
 	if (strcasecmp($dot, ".txt") == 0)
-		return "text/plain; charset=gb2312";
+		return "text/plain";
 	if (strcasecmp($dot, ".xht") == 0 || strcasecmp($dot, ".xhtml") == 0)
 		return "application/xhtml+xml";
 	if (strcasecmp($dot, ".xml") == 0)
@@ -43,7 +43,7 @@ function get_mimetype($name)
 	if (strcasecmp($dot, ".swf") == 0)
 		return "application/x-shockwave-flash";
 	if (strcasecmp($dot, ".pdf") == 0)
-	    return "application/pdf";
+		return "application/pdf";
 	return "application/octet-stream";
 }
 

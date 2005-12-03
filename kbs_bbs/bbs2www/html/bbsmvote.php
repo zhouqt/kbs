@@ -1,14 +1,8 @@
 <?php
 
-	require("funcs.php");
-login_init();
-	if ($loginok != 1 || ($currentuser["userid"] == "guest") )
-		html_nologin();
-	else
-	{
-		html_init("gb2312");
-
-		//check perm
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
 
 		if(isset($_POST["board"]))
 			$board = $_POST["board"];
@@ -141,18 +135,19 @@ login_init();
 			if($ret <= 0)
 				html_error_quit("开投票错误.".$ret);
 			else{
-?>
-开投票成功
-<a href="/bbsdoc.php?board=<?php echo $board;?>">返回本讨论区</a>
-<?php
-				html_normal_quit();
+				html_success_quit("开投票成功<br/><a href='bbsdoc.php?board=" . $board . "'>返回本讨论区</a>");
 			}
 		}
-	}
-
-
+		
+	$usernum = $currentuser["index"];
+	$brdarr = array();
+	$brdnum = bbs_getboard($board, $brdarr);
+	if ($brdnum == 0)
+		html_error_quit("错误的讨论区");
+	if (!bbs_is_bm($brdnum,$usernum))
+		html_error_quit("你不是版主");
+	bbs_board_nav_header($brdarr, "新开投票");
 ?>
-
 <script language="javascript">
 <!--//
 var maxitemnum=10;
@@ -213,10 +208,7 @@ function clearItem(){
 
 //-->
 </script>
-
-<center><?php echo BBS_FULL_NAME; ?> -- [新开投票] [用户:<?php echo $currentuser["userid"];?>] [<?php echo $board;?>版]
-</center>
-<form action="bbsmvote.php" method="post">
+<form action="bbsmvote.php" method="post" class="large">
 <input type="hidden" name="board" value="<?php echo $board;?>">
 选择投票种类:
 <select name="type" class="input"  style="WIDTH: 60px" id="oType" onChange="doGenerate();">

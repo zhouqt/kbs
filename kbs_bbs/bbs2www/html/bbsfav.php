@@ -1,189 +1,145 @@
 <?php
-        /**
-         * This file lists fav boards to user.  @author caltary
-         */
-        require("funcs.php");
-login_init();
-        if ($loginok !=1 )
-                html_nologin();
-        else
-        {
-                html_init("gb2312");
-                if (isset($_GET["select"]))
-                        $select = $_GET["select"];
-                else
-                        $select = 0;
-                settype($select, "integer");
+	require("www2-funcs.php");
+	login_init();
+	assert_login();
+	page_header($currentuser["userid"] . " 的收藏夹");
 
-                if (!strcmp($currentuser["userid"],"guest"))
-                    html_error_quit("请先注册帐号");
-                
-                if ($select < 0)// || $group > sizeof($section_nums))
-                        html_error_quit("错误的参数");
-                if(bbs_load_favboard($select)==-1)
-                        html_error_quit("错误的参数");
-                if (isset($_GET["delete"]))
-                {
-                        $delete_s=$_GET["delete"];
-                        settype($delete_s,"integer");
-                        bbs_del_favboard($select,$delete_s);
-                }
-                if (isset($_GET["deldir"]))
-                {
-                        $delete_s=$_GET["deldir"];
-                        settype($delete_s,"integer");
-                        bbs_del_favboarddir($select,$delete_s);
-                }
-                if (isset($_GET["dname"]))
-                {
-                        $add_dname=trim($_GET["dname"]);
-                        if ($add_dname)
-                            bbs_add_favboarddir($add_dname);
-                }
-                if (isset($_GET["bname"]))
-                {
-                        $add_bname=trim($_GET["bname"]);
-                        if ($add_bname)
-                            $sssss=bbs_add_favboard($add_bname);
-                }
-                $boards = bbs_fav_boards($select, 1);
-				$list_father = bbs_get_father($select);
-                if ($boards == FALSE)
-                        html_error_quit("读取版列表失败");
+	if (isset($_GET["select"]))
+		$select = $_GET["select"];
+	else
+		$select = 0;
+	settype($select, "integer");
+
+	if ($select < 0)// || $group > sizeof($section_nums))
+		html_error_quit("错误的参数");
+	if(bbs_load_favboard($select)==-1)
+		html_error_quit("错误的参数");
+	if (isset($_GET["delete"]))
+	{
+		$delete_s=$_GET["delete"];
+		settype($delete_s,"integer");
+		bbs_del_favboard($select,$delete_s);
+	}
+	if (isset($_GET["deldir"]))
+	{
+		$delete_s=$_GET["deldir"];
+		settype($delete_s,"integer");
+		bbs_del_favboarddir($select,$delete_s);
+	}
+	if (isset($_GET["dname"]))
+	{
+		$add_dname=trim($_GET["dname"]);
+		if ($add_dname)
+			bbs_add_favboarddir($add_dname);
+	}
+	if (isset($_GET["bname"]))
+	{
+		$add_bname=trim($_GET["bname"]);
+		if ($add_bname)
+			$sssss=bbs_add_favboard($add_bname);
+	}
+	$boards = bbs_fav_boards($select, 1);
+	$list_father = bbs_get_father($select);
+	if ($boards === FALSE)
+		html_error_quit("读取版列表失败");
 ?>
-<body topmargin="0">
-<table width="100%" border="0" cellspacing="0" cellpadding="3" >
-  <tr> 
-    <td colspan="2" class="kb2" colspan=2>
-	    <a class="kts1" href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a>  - <a class="kts1"  href="bbsfav.php">个人定制区</a></td>
-  </tr>
-   <tr valign=bottom align=center> 
-    <td align="left" class="kb4"><?php if( $select==0 ) echo "[根目录]"; ?></td>
-     <td align="right" class="kb1" >
-	   <a class="kts1" href="bbssec.php">分类讨论区</a>
-    </td>
-         
-  </tr>
-   <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
-   <tr><td colspan="2" align="center">
-
-<table width="100%" border="0" cellspacing="0" cellpadding="3" class="kt1">
+<table class="main wide adj">
+<col width="2%" class="center"/><col width="2%"/><col width="23%"/><col width="10%" class="center"/><col width="33%"/><col class="center" width="14%"/><col class="right" width="8%"/><col width="6%" class="center"/>
+<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th><th> </th></tr>
+<?php
+	$brd_name = $boards["NAME"]; // 英文名
+	$brd_desc = $boards["DESC"]; // 中文描述
+	$brd_class = $boards["CLASS"]; // 版分类名
+	$brd_bm = $boards["BM"]; // 版主
+	$brd_artcnt = $boards["ARTCNT"]; // 文章数
+	$brd_unread = $boards["UNREAD"]; // 未读标记
+	$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
+	$brd_position= $boards["POSITION"];//位置
+	$brd_npos= $boards["NPOS"];//位置
+	$brd_flag= $boards["FLAG"];//目录标识
+	$brd_bid= $boards["BID"];//目录标识
+	$rows = sizeof($brd_name);
+	if($select != 0)
+	{
+?>
 <tr>
-<td class="kt2" width="2%"> </td>
-<td class="kt2" width="2%"> </td>
-<td class="kt2" width="23%">讨论区名称</td>
-<td class="kt2" width="10%">类别</td>
-<td class="kt2" width="38%">中文描述</td>
-<td class="kt2" width="14%">版主</td>
-<td class="kt2" width="5%">篇数</td>
-<td class="kt2" width="6%"> </td>
+<td> </td>
+<td> <img src="images/groupgroup.gif" height="15" width="20" alt="up" title="回到上一级"></td>
+<td colspan="6"><a href="bbsfav.php?select=<?php echo $list_father; ?>">回到上一级</a></td>
 </tr>
 <?php
-                $brd_name = $boards["NAME"]; // 英文名
-                $brd_desc = $boards["DESC"]; // 中文描述
-                $brd_class = $boards["CLASS"]; // 版分类名
-                $brd_bm = $boards["BM"]; // 版主
-                $brd_artcnt = $boards["ARTCNT"]; // 文章数
-                $brd_unread = $boards["UNREAD"]; // 未读标记
-                $brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
-                $brd_position= $boards["POSITION"];//位置
-                $brd_npos= $boards["NPOS"];//位置
-                $brd_flag= $boards["FLAG"];//目录标识
-                $brd_bid= $boards["BID"];//目录标识
-                $rows = sizeof($brd_name);
-                if($select != 0)
-                {
-?>
-	<tr>
-	<td class="kt3 c2" height="25"> </td>
-	<td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20" alt="up" title="回到上一级"></td>
-	<td class="kt3 c3" colspan="6" align="left"><a class="kts1" href="bbsfav.php?select=<?php echo $list_father; ?>">回到上一级</a>
-	</td>
-	</tr>
-<?php
-                }
-                for ($i = 0; $i < $rows; $i++)  
-                {
-                if( $brd_unread[$i] ==-1 && $brd_artcnt[$i] ==-1)
-                        continue;
-                if ($brd_bid[$i] == -1) continue;
+	}
+	for ($i = 0; $i < $rows; $i++)  
+	{
+	if( $brd_unread[$i] ==-1 && $brd_artcnt[$i] ==-1) continue;
+	if ($brd_bid[$i] == -1) continue;
 ?>
 <tr>
-<td class="kt3 c2" align=center height=25><?php echo $i+1; ?></td>
+<td><?php echo $i+1; ?></td>
 <?php
-                        if ($brd_flag[$i] == -1 )
-                        {
+	if ($brd_flag[$i] == -1 ) {
 ?>
-        <td class="kt4 c2"> <img src="images/groupgroup.gif" height="15" width="20"  alt="＋" title="版面组"></td><td class="kt3 c3"><a class="kts1" href="bbsfav.php?select=<?php echo $brd_bid[$i];?>">
-        <?php echo $brd_desc[$i];?>
-        </a></td>
-        <td class="kt3 c2">[目录]</td>
-        <td class="kt3 c2" colspan="3">&nbsp;</td>
-        <td class="kt3 c2"><a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&deldir=<?php echo $brd_npos[$i];?>">删除</a></td>
-        </tr>   
+<td> <img src="images/groupgroup.gif" alt="＋" title="版面组"></td>
+<td><a href="bbsfav.php?select=<?php echo $brd_bid[$i];?>"><?php echo $brd_desc[$i];?></a></td>
+<td>[目录]</td>
+<td colspan="3"> </td>
+<td><a href="bbsfav.php?select=<?php echo $select;?>&deldir=<?php echo $brd_npos[$i];?>">删除</a></td>
+</tr>
 <?php
-                                continue;
-                        }
-                        if ($brd_unread[$i] == 1) {
+		continue;
+	}
+	if ($brd_unread[$i] == 1) {
 ?>
-<td class="kt4 c1"> <img src="images/newgroup.gif"  height="15" width="20" alt="◆" title="未读标志"></td><td class="kt3 c1">
+<td> <img src="images/newgroup.gif" alt="◆" title="未读标志"></td>
+<td>
 <?php                              
-                        } else {
+	} else {
 ?>
-<td class="kt4 c1" > <img src="images/oldgroup.gif" height="15" width="20"   alt="◇" title="已读标志"></td><td class="kt3 c1">
+<td> <img src="images/oldgroup.gif" alt="◇" title="已读标志"></td>
+<td>
 <?php
-                        }
-                        if ($brd_zapped[$i] == 1)
-                                echo "*";
-                        else
-                                echo "&nbsp;";
-?><a class="kts1" href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
+	}
+		if ($brd_zapped[$i] == 1)
+				echo "*";
+		else
+				echo "&nbsp;";
+?><a href="bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
 </td>
-<td class="kt3 c3" align="center"><?php echo $brd_class[$i]; ?></td>
-<td class="kt3 c1">&nbsp;&nbsp;
-<a class="kts1" href="/bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
+<td><?php echo $brd_class[$i]; ?></td>
+<td>&nbsp;&nbsp;
+<a href="bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
 </td>
-<td class="kt3 c2" align="center">
+<td>
 <?php
-                        $bms = explode(" ", trim($brd_bm[$i]));
-                        if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
-                                echo "诚征版主中";
-                        else
-                        {
-                                if (!ctype_print($bms[0][0]))
-                                        echo $bms[0];
-                                else
-                                {
+		$bms = explode(" ", trim($brd_bm[$i]));
+		if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
+				echo "诚征版主中";
+		else
+		{
+			if (!ctype_print($bms[0][0]))
+				echo $bms[0];
+			else
+			{
 ?>
-<a class="kts1" href="/bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
+<a href="bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
 <?php
-                                }
-                        }
+			}
+		}
 ?>
 </td>
-<td class="kt3 c1"><?php echo $brd_artcnt[$i]; ?></td>
-<td class="kt3 c2">
-<a class="kts1" href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo ($brd_npos[$i]);?>">
-删除</a>
-</td>
+<td><?php echo $brd_artcnt[$i]; ?></td>
+<td><a href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo ($brd_npos[$i]);?>">删除</a></td>
 </tr>
 <?php
-                }
+	}
 ?>
 </table>
-   <tr> 
-    <td colspan="2" height="9" background="images/dashed.gif"> </td>
-  </tr>
-  </table>
-<center>
-<form action=bbsfav.php>增加目录<input name=dname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></form>
-<form action=bbsfav.php>增加版面<input name=bname size=24 maxlength=20 type=text value=""><input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>></form>
-</center>
-
-
+<div class="oper"><form action=bbsfav.php>增加目录: <input name=dname size=24 maxlength=20 type=text value="">
+<input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>>
+</form></div>
+<div class="oper"><form action=bbsfav.php>增加版面: <input name=bname size=24 maxlength=20 type=text value="">
+<input type=submit value=确定><input type=hidden name=select value=<?php echo $select;?>>
+</form></div>
 <?php
-                html_normal_quit();
-        }
+	page_footer();
 ?>

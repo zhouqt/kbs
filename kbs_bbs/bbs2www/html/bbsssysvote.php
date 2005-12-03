@@ -54,7 +54,7 @@ login_init();
 </center>
 <p align=center>
 [<a href="/<?php echo MAINPAGE_FILE; ?>">首页导读</a>]
-[<a href="/bbssysvote.php">系统投票</a>]
+[<a href="bbssysvote.php">系统投票</a>]
 [<a href="javascript:history.go(-1)">快速返回</a>]
 </p>
 <?php	

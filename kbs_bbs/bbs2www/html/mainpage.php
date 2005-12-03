@@ -1,6 +1,6 @@
 <?php
 require("site.php");
-require("board.inc.php");
+require("www2-board.php");
 
 if (!bbs_ext_initialized())
 	bbs_init_ext();
@@ -61,7 +61,7 @@ while($board = array_shift($boards))
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <li class="default">
-<a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;[作者: <a href="/bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<a href="bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;[作者: <a href="bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 }
 ?>
@@ -104,7 +104,7 @@ function gen_sec_hot_subjects_html($secid)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default"><a href="bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
 <?php
 	}
 ?>
@@ -264,7 +264,7 @@ $boards = $root->child_nodes();
 	if($j > 9)
 	{
 ?>
-<p align="right"><a href="/bbsnewbrd.php">&gt;&gt;更多</a></p>
+<p align="right"><a href="bbsnewbrd.php">&gt;&gt;更多</a></p>
 <?php
 	}
 ?>
@@ -369,8 +369,8 @@ while($board = array_shift($boards))
 
 ?>
 <tr>
-<td valign="top" class="MainContentText"><li class=rec><a href="/bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?> </a>&nbsp;&lt;<a href="/bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
-&nbsp;&nbsp;[<a href="/bbstcon.php?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原版原文</a>]
+<td valign="top" class="MainContentText"><li class=rec><a href="bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?> </a>&nbsp;&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
+&nbsp;&nbsp;[<a href="bbstcon.php?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原版原文</a>]
 <dl style="MARGIN-TOP: 1px;MARGIN-BOTTOM: 5px; MARGIN-LEFT: 25px;"><dt>
 <?php echo htmlspecialchars($commend_brief);?>
 </dl>
@@ -379,7 +379,7 @@ while($board = array_shift($boards))
 <?php
 }
 ?>
-<tr><td width="100%" height=15 align="right"><a href="/bbsrecommend.php">>>>更多推荐文章>>></a></td></tr>
+<tr><td width="100%" height=15 align="right"><a href="bbsrecommend.php">>>>更多推荐文章>>></a></td></tr>
 </table>
 <?php
 }
@@ -467,7 +467,7 @@ while($board = array_shift($boards))
     $hot_board = find_content($board, "board");
     $hot_groupid = find_content($board, "groupid");
 ?>
-<li class="default"><a href="/bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a></li>
+<li class="default"><a href="bbstcon.php?board=<?php echo $hot_board; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a></li>
 <?php
 }
 ?>
@@ -486,34 +486,17 @@ while($board = array_shift($boards))
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr> 
-<?php
-	if(defined("ENABLE_ABOARDS"))
-	{
-?>
-<td colspan="9" >
-<?php
-		bbs_board_avtiveboards();
-?>
-</td>
-<?php
-	}
-	else
-	{	
-?>   
-    <td colspan="2" height="77"><img src="images/logo.gif" width="144" height="71"></td>
+    <td colspan="2" height="77"><img src="images/logo.gif"/></td>
     <td colspan="7" >
-<?php
-	}
-?>    
     </td>
   </tr>
-  <form action="/bbssel.php">
+  <form action="bbssel.php">
   <tr> 
-    <td height="18" width="84" class="header" align="center"><a href="/bbsdoc.php?board=Announce">系统公告</a></td>
-    <td width="84" class="header" align="center"><a href="/bbsrecommend.php">推荐文章</a></td>
-    <td width="80" class="header" align="center"><a href="/bbssec.php">分类讨论区</a></td>
-    <td width="80" class="header" align="center"><a href="/bbsrecbrd.php">推荐版面</a></td>
-    <td width="81" class="header" align="center"><a href="/bbsbrdran.php">人气排名</a></td>
+    <td height="18" width="84" class="header" align="center"><a href="bbsdoc.php?board=Announce">系统公告</a></td>
+    <td width="84" class="header" align="center"><a href="bbsrecommend.php">推荐文章</a></td>
+    <td width="80" class="header" align="center"><a href="bbssec.php">分类讨论区</a></td>
+    <td width="80" class="header" align="center"><a href="bbsrecbrd.php">推荐版面</a></td>
+    <td width="81" class="header" align="center"><a href="bbsbrdran.php">人气排名</a></td>
     <td width="79" class="header" align="center"><a href="#todaybless">本日祝福</a></td>
     <td width="79" class="header" align="center">
 <?php

@@ -54,10 +54,21 @@ function find_content($parent,$name)
 	return "";
 }
 
-function bbs_board_header($brdarr,$articles=0,$ftype=0) {
-	global $section_names, $currentuser, $dir_modes, $dir_name;
+function bbs_rss_link($board, $ftype) {
+	global $dir_modes;
+	$type = '';
+	switch($ftype) {
+		case $dir_modes["DIGEST"]: $type = 'g'; break;
+		case $dir_modes["MARK"]:   $type = 'm'; break;
+		//case $dir_modes["ORIGIN"]: $type = 'o'; break;
+		default: break;
+	}
+	return $type ? 'rss.php?' . $type . $board : '';
+}
+
+function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
+	global $section_names, $dir_modes, $dir_name;
 	$brd_encode = urlencode($brdarr["NAME"]);
-	$ann_path = bbs_getannpath($brdarr["NAME"]);
 	
 	/* TODO: use javascript completely */
 	$bms = explode(" ", trim($brdarr["BM"]));
@@ -72,137 +83,29 @@ function bbs_board_header($brdarr,$articles=0,$ftype=0) {
 			$bm_url = "['" . implode("','", $bms) . "']";
 		}
 	}
-	page_header($brdarr["NAME"] . " 版" . $dir_name[$ftype], FALSE);
+	$rsslink = $isnormalboard ? bbs_rss_link($brd_encode, $ftype) : "";
+	page_header($brdarr["NAME"] . " 版" . $dir_name[$ftype], FALSE, $rsslink ? '<link title="版面 RSS'
+	. $dir_name[$ftype] . '" type="application/rss+xml" rel="alternate" href="' . $rsslink . '"/>' : false);
 ?>
-<body><div id="divNav">
+<body><div class="nav smaller">
 <div class="fleft">
-<a href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a> → 
+<a href="<?php echo MAINPAGE_FILE; ?>"><?php echo BBS_FULL_NAME; ?></a><span id="idExp"></span> → 
 <?php
 	$sec_index = get_secname_index($brdarr["SECNUM"]);
 	if ($sec_index >= 0) {
 ?>
-<a href="bbsboa.php?group=<?php echo $sec_index; ?>" class="b2"><?php echo $section_names[$sec_index][0]; ?></a> → 
+<a href="bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo $section_names[$sec_index][0]; ?></a> → 
 <?php
 	}
 ?>
-<a href="bbsdoc.php?board=<?php echo $brdarr["NAME"]; ?>">
-<?php echo htmlspecialchars($brdarr["DESC"]). "(" . $brdarr["NAME"] . ")"; ?></a><?php echo $dir_name[$ftype]; ?>
-(<a href="bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=0">收藏</a> |
-<?php bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php?board='.$brdarr['NAME']); ?>
-)</div>
+<a href="bbsdoc.php?board=<?php echo $brdarr["NAME"]; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>
+(<a href="bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=0">收藏</a>)</div>
 <div class="fright">
-版主:<script>writeBMs(<?php echo $bm_url; ?>);</script>, 在线 <?php echo $brdarr["CURRENTUSERS"]+1; ?> 人<?php 
-	if($articles) {
-?>, 文章 <?php echo $articles; ?> 篇
-<?php
-	}
-?>
+版主:<script>writeBMs(<?php echo $bm_url; ?>);</script>, 在线 <?php echo $brdarr["CURRENTUSERS"]+1; ?> 人
 </div>
 </div>
-<?php if (!$ftype) { ?>
-<div id="postimg"><a href="bbspst.php?board=<?php echo $brd_encode; ?>"><img src="images/postnew.gif" alt="发表话题"></a></div>
-<?php }  /* TODO: remove following nobr. this is a workaround for fx under linux faint */ ?>
-<h1 class="bt"><nobr><?php echo $brdarr["NAME"]."(".htmlspecialchars($brdarr["DESC"]).")"; ?> 版 <?php echo $dir_name[$ftype]; ?></nobr></h1>
-<div class="boper">
-<a href="bbsnot.php?board=<?php echo $brd_encode; ?>">进版画面</a>
-| <a href="bbsdoc.php?board=<?php echo $brd_encode; ?>&ftype=<?php echo $dir_modes["DIGEST"] ?>">文摘区</a> 
+<h1 class="bt"><?php echo $brdarr["NAME"]."(".htmlspecialchars($brdarr["DESC"]).")"; ?> 版</h1>
 <?php
-	if ($ann_path != FALSE)	{
-		if (!strncmp($ann_path,"0Announce/",10))
-			$ann_path=substr($ann_path,9);
-?>
-| <a href="bbs0an.php?path=<?php echo urlencode($ann_path); ?>">精华区</a>
-<?php
-	}
-?>
-| <a href="bbsbfind.php?board=<?php echo $brd_encode; ?>" onclick="return showFindBox('<?php echo $brd_encode; ?>')">版内查询</a>
-<?php
-	if (strcmp($currentuser["userid"], "guest") != 0) {
-?>
-| <a href="bbsshowvote.php?board=<?php echo $brd_encode; ?>">本版投票</a>
-| <a href="bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文模板</a>
-<?php
-	}
-?>
-</div>
-<?php
-}
-
-function bbs_board_foot($brdarr,$listmode='') {
-	global $currentuser, $dir_modes;
-	$brd_encode = urlencode($brdarr["NAME"]);
-	$usernum = $currentuser["index"];
-	$brdnum  = $brdarr["NUM"];
-?>
-
-<div class="oper smaller">
-	[<a href="#listtop">返回顶部</a>]
-	[<a href="javascript:location.reload()">刷新</a>]
-<?php
-	if ($listmode != "ORIGIN") {
-?>
-[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>&ftype=<?php echo $dir_modes["ORIGIN"]; ?>">同主题模式</a>]
-<?php		
-	}
-	if ($listmode != "NORMAL") {
-?>
-[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>]
-<?php
-	}
-?>
-[<a href="bbsbfind.php?board=<?php echo $brd_encode; ?>">版内查询</a>]
-<?php
-if (bbs_is_bm($brdnum, $usernum)) {
-?>
-[<a href="bbsdeny.php?board=<?php echo $brd_encode; ?>">封禁名单</a>] 
-[<a href="bbsmnote.php?board=<?php echo $brd_encode; ?>">进版画面</a>]
-[<a href="bbsmvote.php?board=<?php echo $brd_encode;?>">管理投票</a>]
-<?php
-	if ($listmode != 'MANAGE') {
-?>
-[<a href="bbsmdoc.php?board=<?php echo $brd_encode; ?>">管理模式</a>]
-<?php
-	}
-	else {
-?>
-[<a href="bbsclear.php?board=<?php echo $brd_encode; ?>">清除未读</a>]
-<?php        
-	}
-}
-	$relatefile = $_SERVER["DOCUMENT_ROOT"]."/brelated/".$brdarr["NAME"].".html";
-	if( file_exists( $relatefile ) )
-	{
-?>
-<br/>来这个版的人常去的其他版面：
-<?php
-	include($relatefile);
-	}
-?>
-</div>
-<?php
-}
-
-function bbs_board_avtiveboards()
-{
-?>
-<table width="100%" cellpadding="3" cellspacing="0" border="0" />
-<tr>
-	<td width="150" height="77"><img src="images/logo.gif"></td>
-	<td><SPAN ID='aboards'>Active Boards</SPAN></td>
-</tr>
-</table>
-<SCRIPT SRC='abs.js'></SCRIPT>
-<script language='javascript'>
-display_active_boards();
-</script>
-<?php	
-}
-
-function htmlformat($str,$multi=false) {
-	$str = str_replace(' ','&nbsp;',htmlspecialchars($str));
-	if ($multi)
-		$str = nl2br($str);
-	return $str;    
 }
 
  
@@ -231,6 +134,7 @@ function bbs_ann_updirs($path,&$board,&$up_dirs) {
 function bbs_ann_header($board='') {
 	if ($board) {
 		page_header("精华公布栏", '<a href="bbsdoc.php?board='.$board.'">'.$board.'版</a>');
+		echo '<h1 class="bt">' . $board . ' 版精华公布栏</h1>';
 	} else {
 		page_header("精华公布栏");
 	}
@@ -258,7 +162,7 @@ function bbs_ann_xsearch($board) {
 
 function bbs_ann_foot($parent) {
 ?>   
-<div class="oper">
+<div class="oper smaller">
 [<?php bbs_add_super_fav ('精华区'); ?>]
 [<a href="<?php echo MAINPAGE_FILE; ?>">返回首页</a>]
 <?php   
