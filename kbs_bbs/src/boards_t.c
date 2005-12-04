@@ -969,6 +969,7 @@ static int fav_key(struct _select_def *conf, int command)
                 arg->reloaddata=true;
                 return SHOW_DIRCHANGE;
             }
+            return SHOW_REFRESH;	/* add by pig2532 on 2005.12.3 */
         }
         break;
     case 't':
