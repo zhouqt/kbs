@@ -2085,18 +2085,19 @@ MENU *father;
             }
             break;
           case 'l':		/* by pig2532 on 2005.12.01 */
- 	       oldmode = uinfo.mode;
-              show_allmsgs();
+               oldmode = uinfo.mode;
+               show_allmsgs();
       	       modify_user_mode(oldmode);
+               me.page = 9999;
       	       break;
           case 'w':                  /* by pig2532 on 2005.11.30 */
           	oldmode = uinfo.mode;
           	if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
           	    break;
-         	 s_msg();
+            s_msg();
           	modify_user_mode(oldmode);
-              me.page = 9999;
-		break;
+            me.page = 9999;
+            break;
         }
         if (ch >= '0' && ch <= '9') {
             number = number * 10 + (ch - '0');
