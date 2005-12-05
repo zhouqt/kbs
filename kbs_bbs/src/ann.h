@@ -18,6 +18,8 @@ typedef struct {
     ITEM *item[MAXITEMS];
     char mtitle[MTITLE_LEN];
     char *path;
+	void * nowmenu;
+	void * father; 
     int num, page, now;
     int level;
     time_t modified_time;

@@ -1299,7 +1299,27 @@ static int get_mailback(struct fileheader *fh)
 		return 0;
 }
 
-#define FH_SELECT_NUM 1
+static int perm_innflag(struct fileheader *fh){
+	if(!(currboard->flag & BOARD_OUTFLAG)) return 0;
+	if(isowner(getCurrentUser(), fh)) return 1;
+    return chk_currBM(currboard->BM,getCurrentUser());
+}
+static int set_innflag(struct fileheader *fh,int arg){
+    if(!arg){
+        fh->innflag[0]='L';
+        fh->innflag[1]='L';
+    }
+    else{
+        fh->innflag[0]='S';
+        fh->innflag[1]='S';
+    }
+    return 1;
+}
+static int get_innflag(struct fileheader *fh){
+    return (fh->innflag[0]==fh->innflag[1]&&fh->innflag[0]=='S')?1:0;
+}
+
+#define FH_SELECT_NUM 2
 static struct _fh_select
 {
 	char *desc;
@@ -1308,7 +1328,8 @@ static struct _fh_select
 	int (*get) (struct fileheader *);
 } fh_select[FH_SELECT_NUM] = 
 {
-	{"回文转寄到信箱", perm_mailback, set_mailback, get_mailback}
+	{"回文转寄到信箱", perm_mailback, set_mailback, get_mailback},
+	{"转信发表", perm_innflag, set_innflag, get_innflag}
 };
 
 int show_fhselect(struct _select_def *conf, int i)

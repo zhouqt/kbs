@@ -1628,17 +1628,6 @@ int m_read()
 #include <pwd.h>
 #include <time.h>
 #define BBSMAILDIR "/usr/spool/mqueue"
-int invalidaddr(char *addr)
-{
-    if (*addr == '\0')
-        return 1;               /* blank */
-    while (*addr) {
-        if (!isalnum(*addr) && strchr("[].%!@:-+_", *addr) == NULL)
-            return 1;
-        addr++;
-    }
-    return 0;
-}
 
 void spacestozeros(s)
 char *s;

@@ -767,7 +767,7 @@ int level;
         return 0;
 
     sprintf(bname,"0Announce/groups/%s",fhdr.ann_path);
-    a_menu("", bname, level, 0);
+    a_menu("", bname, level, 0, NULL);
     return 1;
 }
 
@@ -1655,6 +1655,61 @@ void a_manager(MENU *pm,int ch)
         }
 }
 
+void ann_attach_link_num(char* buf,int buf_len,long attachpos,void* arg)
+{
+	char board[STRLEN];
+    MENU *m=(MENU *)arg;
+	MENU *tmp;
+	int bid;
+	char bap[PATHLEN];
+	struct boardheader *fh;
+	int sz;
+
+	board[0]='\0';
+
+    ann_get_board(m->path, board, sizeof(board));
+	if(board[0] =='\0' || (bid=getbnum(board))==0){
+      snprintf(buf,buf_len-9,"http://%s/bbsanc.php?path=%s/%s&ap=%ld",
+        get_my_webdomain(0),m->path+10, m->item[m->now]->fname,attachpos);
+	  return;
+	}
+
+	strcpy(buf, "error\n");
+
+    if ((fh = getboard(bid)) == NULL)
+        return;
+
+    sprintf(bap,"0Announce/groups/%s",fh->ann_path);
+	sz = strlen(bap);
+
+	for(tmp=m; tmp; tmp = (MENU *)(tmp->father)){
+		if( !strncmp(bap, tmp->path, sz) && (tmp->path[sz]=='\0' || tmp->path[sz+1]=='\0') )
+			break;
+	}
+
+	if(tmp==NULL) return;
+
+    snprintf(buf,buf_len-9,"http://%s/bbsanc.php?p=%d",
+        get_my_webdomain(0),bid);
+
+	for(; tmp; tmp=(MENU *)(tmp->nowmenu)){
+		if(strlen(buf) < buf_len-9){
+			sprintf(bap, "-%d", tmp->now+1);
+			strcat(buf, bap);
+		}
+	}
+
+	if(attachpos!=-1){
+		if(strlen(buf) < buf_len-9){
+			sprintf(bap, "&ap=%ld", attachpos);
+			strcat(buf, bap);
+		}
+	}
+
+	return;
+
+}
+
 void ann_attach_link(char* buf,int buf_len,long attachpos,void* arg)
 {
     char *fname=(char *)arg;
@@ -1723,9 +1778,10 @@ int AddPCorpus()
 }
 #endif
 
-void a_menu(maintitle, path, lastlevel, lastbmonly)
+void a_menu(maintitle, path, lastlevel, lastbmonly, father)
 char *maintitle, *path;
 int lastlevel, lastbmonly;
+MENU *father;
 {
     MENU me;
     char fname[PATHLEN], tmp[STRLEN];
@@ -1757,6 +1813,10 @@ int lastlevel, lastbmonly;
     strcpy(me.mtitle, maintitle);
     me.level = lastlevel;
     bmonly = lastbmonly;
+	if(father){
+		father->nowmenu = &me;
+		me.father = father;
+	}
     a_loadnames(&me, getSession());           /* Load .Names */
 
     strcpy(buf, me.mtitle);
@@ -1932,7 +1992,8 @@ int lastlevel, lastbmonly;
                      * Leeward 98.09.13 新添功能∶
                      * ，用上／下箭头直接跳转到前／后一项 
                      */
-					register_attach_link(ann_attach_link, fname);
+					//register_attach_link(ann_attach_link, fname);
+					register_attach_link(ann_attach_link_num, &me);
                     ansimore_withzmodem(fname, false, me.item[me.now]->title);
 					register_attach_link(NULL,NULL);
                     move(t_lines - 1, 0);
@@ -1960,7 +2021,8 @@ int lastlevel, lastbmonly;
                         break;
                     }
                 } else if (dashd(fname)) {
-                    a_menu(me.item[me.now]->title, fname, me.level, bmonly);
+                    a_menu(me.item[me.now]->title, fname, me.level, bmonly, &me);
+					me.nowmenu = NULL;
                     a_loadnames(&me, getSession());   /* added by bad 03-2-10 */
                 }
                 me.page = 9999;
@@ -2026,7 +2088,7 @@ int lastlevel, lastbmonly;
  	       oldmode = uinfo.mode;
               show_allmsgs();
       	       modify_user_mode(oldmode);
-      	       return SHOW_REFRESH;
+      	       break;
           case 'w':                  /* by pig2532 on 2005.11.30 */
           	oldmode = uinfo.mode;
           	if (!HAS_PERM(getCurrentUser(), PERM_PAGE))
@@ -2059,7 +2121,7 @@ int lastlevel, lastbmonly;
 void Announce()
 {
     sprintf(genbuf, "%s 精华区公布栏", BBS_FULL_NAME);
-    a_menu(genbuf, "0Announce", HAS_PERM(getCurrentUser(), PERM_ANNOUNCE) ? PERM_BOARDS : 0, 0);
+    a_menu(genbuf, "0Announce", HAS_PERM(getCurrentUser(), PERM_ANNOUNCE) ? PERM_BOARDS : 0, 0, NULL);
     clear();
 }
 

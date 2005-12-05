@@ -67,6 +67,7 @@ static struct taglogconfig logconfig[] = {
 #if defined(NEWPOSTLOG) || defined(NEWBMLOG)
 static MYSQL s;
 static int postlog_start=0;
+static time_t mysqlclosetime=0;
 static int mysql_fail=0;
 
 static void opennewpostlog()
@@ -74,16 +75,20 @@ static void opennewpostlog()
 	mysql_init (&s);
 
 	if (! my_connect_mysql(&s) ){
+		bbslog("3system","mysql connect error:%s",mysql_error(&s));
 		return;
 	}
 	postlog_start = 1;
+	mysqlclosetime=0;
 	return;
 }
 
 static void closenewpostlog()
 {
+		bbslog("3system","mysql log closed");
 	mysql_close(&s);
 	postlog_start=0;
+	mysqlclosetime = time(0);
 }
 #endif
 
@@ -116,6 +121,11 @@ static void writelog(struct bbs_msgbuf *msg)
     struct tm *n;
     struct taglogconfig *pconf;
     char ch;
+
+#if defined(NEWPOSTLOG) || defined(NEWBMLOG)
+	if(!postlog_start && mysqlclosetime && time(0)-mysqlclosetime>600)
+		opennewpostlog();
+#endif
 
 #ifdef NEWBMLOG
 	if (msg->mtype == BBSLOG_BM){
@@ -173,6 +183,7 @@ static void writelog(struct bbs_msgbuf *msg)
 
 		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
 			mysql_fail ++;
+		bbslog("3system","mysql postlog error:%s",mysql_error(&s));
 			if(mysql_fail > 10)
 				closenewpostlog();
 		}else{

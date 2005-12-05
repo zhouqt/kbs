@@ -2534,6 +2534,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     char uploadfiles[MAXATTACH][STRLEN];
     int nUpload = 0;
     int mailback = 0;		/* stiger,»Ø¸´µ½ÐÅÏä */
+	int ret;
 
     char direct[PATHLEN];
     int cmdmode;
@@ -2942,12 +2943,14 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #endif
     switch (cmdmode) {
     case 2:
-        title_mode(conf,NULL,NULL);
+        ret=title_mode(conf,NULL,NULL);
         break;
     case 3:
-        marked_mode(conf,NULL,NULL);
+        ret=marked_mode(conf,NULL,NULL);
         break;
     }
+	if (ret==NEWDIRECT)
+		return ret;
     return DIRCHANGED;
 }
 
@@ -3220,8 +3223,30 @@ int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         board_update_toptitle(arg->bid, true);
         return FULLUPDATE;
     }else{
-        snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
-        my_unlink(tmpname);
+		char path[256];
+		struct fileheader postfile;
+//        snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
+//        my_unlink(tmpname);
+
+        bzero(&postfile, sizeof(postfile));
+        strcpy(postfile.filename, fileinfo->filename);
+        strncpy(postfile.owner, fileinfo->owner, OWNER_LEN - 1);
+        postfile.owner[OWNER_LEN - 1] = 0;
+        postfile.id = fileinfo->id;
+        postfile.groupid = fileinfo->groupid;
+        postfile.reid = fileinfo->reid;
+        postfile.attachment = fileinfo->attachment;
+        set_posttime2(&postfile, fileinfo);
+		postfile.accessed[0] = fileinfo->accessed[0];
+		postfile.accessed[1] = fileinfo->accessed[1];
+    	sprintf(path, "%-32.32s - %s", fileinfo->title, getCurrentUser()->userid);
+    	strncpy(postfile.title, path, ARTICLE_TITLE_LEN - 1);
+    	postfile.title[ARTICLE_TITLE_LEN - 1] = 0;
+    	postfile.accessed[sizeof(postfile.accessed) - 1] = time(0) / (3600 * 24) % 100;
+
+        setbdir(4, path, currboard->filename);
+        append_record(path, &postfile, sizeof(postfile));
+
         board_update_toptitle(arg->bid, true);
     }
     return DIRCHANGED;
@@ -3741,7 +3766,7 @@ int Personal(char *userid)
 	  sprintf(found,FB2KPC "/%s", buf);
    if(!dashd(found)) 
       strcpy(found,FB2KPC);
-   a_menu("",found,((HAS_PERM(getCurrentUser(),PERM_ANNOUNCE) || HAS_PERM(getCurrentUser(),PERM_SYSOP) || HAS_PERM(getCurrentUser(),PERM_OBOARDS)) ? PERM_BOARDS : 0),0);
+   a_menu("",found,((HAS_PERM(getCurrentUser(),PERM_ANNOUNCE) || HAS_PERM(getCurrentUser(),PERM_SYSOP) || HAS_PERM(getCurrentUser(),PERM_OBOARDS)) ? PERM_BOARDS : 0),0, NULL);
    return 1;
 }
 

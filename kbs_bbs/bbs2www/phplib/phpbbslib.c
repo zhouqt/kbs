@@ -219,6 +219,7 @@ static PHP_FUNCTION(bbs_start_vote);
 
 //////////////////////// Announce operation functions  ////////////////////
 static PHP_FUNCTION(bbs_ann_traverse_check);
+static PHP_FUNCTION(bbs_ann_num2path);
 static PHP_FUNCTION(bbs_ann_get_board);
 static PHP_FUNCTION(bbs_getannpath);
 static PHP_FUNCTION(bbs_add_import_path);
@@ -353,6 +354,7 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_edittitle, NULL)
     PHP_FE(bbs_checkbadword, NULL)
     PHP_FE(bbs_ann_traverse_check, NULL)
+    PHP_FE(bbs_ann_num2path, NULL)
     PHP_FE(bbs_ann_get_board, NULL)
     PHP_FE(bbs_getboards, NULL)
     PHP_FE(bbs_getarticles, NULL)
@@ -3912,6 +3914,30 @@ static PHP_FUNCTION(bbs_brcclear)
     brc_update(u->userid, getSession());
 #endif
     RETURN_TRUE;
+}
+
+static PHP_FUNCTION(bbs_ann_num2path)
+{
+    char *path,*userid;
+    int path_len,userid_len;
+    struct userec *user;
+	char buf[256];
+
+    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &userid, &userid_len) != SUCCESS)
+        WRONG_PARAM_COUNT;
+    
+    if (userid != 0) {
+        if (getuser(userid, &user) == 0)
+            RETURN_FALSE;
+    } else
+        user = getCurrentUser();
+
+	buf[0]='\0';
+	if(ann_numtopath(buf, path, user)==NULL){
+		RETURN_FALSE;
+	}else{
+	    RETURN_STRING(buf, 1);
+	}
 }
 
 static PHP_FUNCTION(bbs_ann_traverse_check)

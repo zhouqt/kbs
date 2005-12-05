@@ -107,7 +107,7 @@ if ($board) {
 				html_error_quit('ÏµÍ³´íÎó');
 			if ( $ret == 1 ) {
 				$dotnames = BBS_HOME . '/' . $path . '/.Names';
-				if (cache_header('public',filemtime($dotnames),10))
+				if (cache_header('public',filemtime($dotnames),300))
 					return;
 			}
 		}
@@ -117,7 +117,7 @@ if ($board) {
 			bbs_set_onboard($bid,1);
 			if (bbs_normalboard($board)) {
 				$dotnames = BBS_HOME . '/' . $path . '/.Names';
-				if (cache_header('public',filemtime($dotnames),10))
+				if (cache_header('public',filemtime($dotnames),300))
 					return;
 			}
 		}
@@ -137,7 +137,7 @@ var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',0,0,-1,0,0,0,
 }
 else {
 	$dotnames = BBS_HOME . '/' . $path . '/.Names';
-	if (cache_header('public, must-revalidate',filemtime($dotnames),10))
+	if (cache_header('public',filemtime($dotnames),300))
 		return;
 	$bid = 0;
 	bbs_ann_header();

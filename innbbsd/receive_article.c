@@ -777,7 +777,7 @@ int find_thread(struct fileheader *fh, char *board, char *title)
         p = title + 6;
     else
         p = title;
-    ret = search_record_back_lite(fd, sizeof(struct fileheader), 0X7FFFF, 200, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
+    ret = search_record_back_lite(fd, sizeof(struct fileheader), 0X7FFFF, 1000, (RECORD_FUNC_ARG) cmp_title, p, fh, 1);
     close(fd);
     return ret;
 }

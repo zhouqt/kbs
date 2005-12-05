@@ -301,6 +301,100 @@ int ann_traverse_check(char *path, struct userec *user)
     return ret;
 }
 
+char * ann_numtopath(char *path, char *numpath, struct userec *user)
+{
+	int bid=0;
+	char *c;
+	char *ptr;
+	struct boardheader *bh;
+    char filename[256];
+    FILE *fp;
+    char buf[256];
+	int endfile=0;
+    char currpath[256];
+    char title[STRLEN];
+	int ok;
+
+	path[0]='\0';
+	title[0]='\0';
+	currpath[0]='\0';
+
+	while(1){
+
+		if(path[0]=='\0'){
+			c=strchr(numpath, '-');
+			if(c==NULL) return NULL;
+			*c='\0';
+			bid = atoi(numpath);
+
+			if((bh=getboard(bid))==NULL) return NULL;
+
+    		if (check_read_perm(user, bh) == 0)
+		        return NULL;
+
+		    snprintf(path,255,"0Announce/groups/%s",bh->ann_path);
+
+			ptr = c + 1;
+
+			continue;
+		}else{
+			if(ptr[0]=='\0') break;
+			c = strchr(ptr, '-');
+			if(c==NULL) endfile=1;
+			else{
+				*c='\0';
+			}
+			bid = atoi(ptr);
+			if(c!=NULL) ptr = c+1;
+			if(bid <=0) return NULL;
+		}
+
+	    snprintf(filename, sizeof(filename), "%s/.Names", path);
+
+		ok = 0;
+        if ((fp = fopen(filename, "r")) == NULL)
+            return NULL;
+        while (fgets(buf, sizeof(buf), fp) != NULL) {
+            int t;
+
+            if ((c = strrchr(buf, '\n')) != NULL)
+                *c = '\0';
+            if (strncmp(buf, "Name=", 5) == 0) {
+                strncpy(title, buf + 5, sizeof(title) - 1);
+                title[sizeof(title) - 1] = '\0';
+                continue;
+            }else if (strncmp(buf, "Path=~/", 7) == 0){
+                snprintf(currpath, sizeof(currpath), "%s/%s", path, buf + 7);
+				continue;
+			}else if (strncmp(buf, "Path=", 5) == 0){
+                snprintf(currpath, sizeof(currpath), "%s/%s", path, buf + 5);
+				continue;
+			}else if(strncmp(buf, "Numb=", 5) == 0){
+				if(bid != atoi(buf+5)){
+					title[0]='\0';
+					currpath[0]='\0';
+					continue;
+				}
+            	if (ann_can_access(title, bh->filename, user) == 0) {
+					break;
+				}else{
+					ok = 1;
+					strcpy(path, currpath);
+					break;
+				}
+			}else
+				continue;
+        }
+        fclose(fp);
+		if(!ok)
+			return NULL;
+		if(endfile)
+			break;
+    }
+	if(path[0]=='/' || strncmp(path, "0Announce/groups/", 17) || strstr(path, "..") ) return NULL;
+    return path;
+}
+
 void a_freenames(MENU * pm)
 {
     int i;

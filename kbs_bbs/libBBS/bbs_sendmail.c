@@ -4,6 +4,18 @@
 #include <libesmtp.h>
 #endif
 
+int invalidaddr(char *addr)
+{
+    if (*addr == '\0')
+        return 1;               /* blank */
+    while (*addr) {
+        if (!isalnum(*addr) && strchr("[].%!@:-+_", *addr) == NULL)
+            return 1;
+        addr++;
+    }
+    return 0;
+}
+
 int getmailnum(char *recmaildir)
 {                               /*Haohmaru.99.4.5.查对方信件数 */
     struct fileheader fh;
@@ -569,6 +581,9 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     status = smtp_message_transfer_status(message);
 #ifdef BBSMAIN
     prints("return code:%d(%s)\n", status->code, status->text);
+#elif 0
+	if (status->code != 250)
+	bbslog("3error", "mail return code %d(%s)\n", status->code, status->text);
 #endif                          /* 
                                  */
     smtp_enumerate_recipients(message, print_recipient_status, NULL);

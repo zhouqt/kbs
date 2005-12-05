@@ -1,8 +1,4 @@
 <?php
-	/**
-	 * File included by all other php scripts.
-	 * $Id$
-	 */
 if (!defined('_BBS_FUNCS_PHP_'))
 {
 define('_BBS_FUNCS_PHP_', 1);
