@@ -33,7 +33,7 @@ struct userec {                 /* Structure used to hold information in */
     unsigned int userdefine[2];
     time_t notedate;
     int noteline;
-    int notemode;
+    int unused_atppp;
     time_t exittime;
 	/* 生日数据转移到 userdata 结构中 */
     unsigned int usedspace;     /* used space of user's mailbox, in bytes */

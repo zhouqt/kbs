@@ -182,7 +182,7 @@ int get_top(int type)
 	MYSQL_RES *res;
 	MYSQL_ROW row;
 	char sqlbuf[500];
-	char cmptime[100];
+	char cmptime[200];
 	int start=0;
 	int i,secid;
 	int threadid;

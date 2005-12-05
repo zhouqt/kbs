@@ -145,7 +145,6 @@ void new_register()
 	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
 #endif
 
-    newuser.notemode = -1;
     newuser.exittime = time(NULL) - 100;
     /*newuser.unuse2 = -1;*/
     newuser.flags = CURSOR_FLAG;
@@ -623,8 +622,6 @@ void ConveyID()
 #endif
         if (convcode)
             SET_UNDEFINE(getCurrentUser(),DEF_USEGB);
-
-        getCurrentUser()->notemode = -1;
 
         getCurrentUser()->flags = CURSOR_FLAG;
         getCurrentUser()->flags |= PAGER_FLAG;

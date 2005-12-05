@@ -516,9 +516,6 @@ static void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "signum", ud.signum);
     add_assoc_long(array, "userdefine0", user->userdefine[0]);
     add_assoc_long(array, "userdefine1", user->userdefine[1]);
-    add_assoc_long(array, "notedate", user->notedate);
-    add_assoc_long(array, "noteline", user->noteline);
-    add_assoc_long(array, "notemode", user->notemode);
 
 	#ifdef HAVE_BIRTHDAY
 	add_assoc_long(array,"gender",ud.gender);
@@ -5011,7 +5008,6 @@ static PHP_FUNCTION(bbs_createnewid)
 #ifdef HAVE_WFORUM
 	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
 #endif
-	newuser.notemode = -1;
 	newuser.exittime = time(NULL) - 100;
 	newuser.flags = CURSOR_FLAG;
 	newuser.flags |= PAGER_FLAG;

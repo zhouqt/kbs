@@ -142,7 +142,6 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
     
     user->notedate = olduser->notedate;
     user->noteline = olduser->noteline;
-    user->notemode = -1;
     user->exittime = olduser->lastlogout;
     user->usedspace = 0;
     if (strcasecmp(user->userid, "new") == 0)
