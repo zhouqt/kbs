@@ -526,7 +526,8 @@ void login_query()
 #endif
 
             if (!checkpasswd2(passbuf, getCurrentUser())) {
-                logattempt(getCurrentUser()->userid, getSession()->fromhost);
+                if(passbuf[0])
+                    logattempt(getCurrentUser()->userid, getSession()->fromhost);
                 prints("\033[32mÃÜÂëÊäÈë´íÎó...\033[m\n");
             } else {
                 if (id_invalid(uid)) {
