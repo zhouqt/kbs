@@ -136,7 +136,7 @@ function preprocess(){
 	    		foundErr('不存在该目录');
 	    	}
 	        bbs_set_onboard($boardID,1);
-	        if (!bbs_normalboard($board)) $cacheit = false;
+	        if (!bbs_normalboard($boardName)) $cacheit = false;
 	    }
 	    else {
 	        $boardName = '';
