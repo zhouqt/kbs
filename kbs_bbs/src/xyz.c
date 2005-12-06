@@ -511,7 +511,13 @@ int get_favread()
 		return 0;
 	}
     getdata(6, 0, "请输入对方密码:", passwd, PASSLEN+1, NOECHO, NULL, true);
-    if (passwd[0] == '\0' || !checkpasswd2(passwd, destuser)) {
+    if(!passwd[0]){
+        move(8,0);
+        prints("取消...");
+        pressanykey();
+        return 0;
+    }
+    if(!checkpasswd2(passwd,destuser)){
         logattempt(destuser->userid, getSession()->fromhost);
 		move(8,0);
 		prints("密码错误\n");
