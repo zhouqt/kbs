@@ -1,6 +1,6 @@
 #include "bbs.h"
 
-static int ann_can_access(char *title, char *board, struct userec *user)
+static int ann_can_access(char *title, const char *board, struct userec *user)
 {
     struct boardheader *bp;
     char BM[STRLEN];
@@ -231,19 +231,15 @@ int ann_traverse_check(char *path, struct userec *user)
     if ((ptr = strstr(path, "groups/")) != NULL)
         ann_get_board(ptr, board, sizeof(board));
     bzero(pathbuf, sizeof(pathbuf));
-#ifdef ZIXIA
     if (board[0] == '\0') {
-#endif
         ptr = path;
-#ifdef ZIXIA
     } else {
         if (check_read_perm(user, getbcache(board)) == 0) return -1;
         ann_get_path(board, filename, sizeof(filename));
-        sprintf(pathbuf, "0Announce%s", filename);
+        snprintf(pathbuf, sizeof(pathbuf), "0Announce%s", filename);
         ptr = path + strlen(pathbuf);
         i = strlen(pathbuf);
     }
-#endif
     while (*ptr != '\0') {
         if (*ptr == '/')
             snprintf(filename, sizeof(filename), "%s/.Names", pathbuf);
@@ -306,7 +302,7 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
 	int bid=0;
 	char *c;
 	char *ptr;
-	struct boardheader *bh;
+	const struct boardheader *bh;
     char filename[256];
     FILE *fp;
     char buf[256];

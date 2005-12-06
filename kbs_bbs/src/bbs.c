@@ -1841,98 +1841,6 @@ int deleted_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extr
     return NEWDIRECT;
 }
 
-int generate_mark(struct read_arg* arg)
-{
-    struct fileheader mkpost;
-    struct flock ldata, ldata2;
-    int fd, fd2, size = sizeof(fileheader), total, i, count = 0;
-    char direct[PATHLEN],normaldirect[PATHLEN];
-    char *ptr, *ptr1;
-    struct stat buf;
-
-    setbdir(DIR_MODE_MARK, direct, currboard->filename);
-    setbdir(DIR_MODE_NORMAL, normaldirect, currboard->filename);
-    if ((fd = open(direct, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("user", "recopen err %s:%s", direct,strerror(errno));
-        return -1;              /* 创建文件发生错误*/
-    }
-    ldata.l_type = F_WRLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("user", "reclock err %s:%s", direct,strerror(errno));
-        close(fd);
-        return -1;              /* lock error*/
-    }
-    /* 开始互斥过程*/
-    if (!setboardmark(currboard->filename, -1)) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        return -1;
-    }
-
-    if ((fd2 = open(normaldirect, O_RDONLY, 0664)) == -1) {
-        bbslog("user", "recopen err %s:%s", normaldirect,strerror(errno));
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        return -1;
-    }
-    fstat(fd2, &buf);
-    ldata2.l_type = F_RDLCK;
-    ldata2.l_whence = 0;
-    ldata2.l_len = 0;
-    ldata2.l_start = 0;
-    fcntl(fd2, F_SETLKW, &ldata2);
-    total = buf.st_size / size;
-
-    BBS_TRY {
-        if (safe_mmapfile_handle(fd2,  PROT_READ, MAP_SHARED, (void **) &ptr, & buf.st_size) == 0) {
-            ldata2.l_type = F_UNLCK;
-            fcntl(fd2, F_SETLKW, &ldata2);
-            close(fd2);
-            ldata.l_type = F_UNLCK;
-            fcntl(fd, F_SETLKW, &ldata);
-            close(fd);
-            BBS_RETURN(-1);
-        }
-        ptr1 = ptr;
-        for (i = 0; i < total; i++) {
-            memcpy(&mkpost, ptr1, size);
-            if (mkpost.accessed[0] & FILE_MARKED) {
-                write(fd, &mkpost, size);
-                count++;
-            }
-            ptr1 += size;
-        }
-    }
-    BBS_CATCH {
-        ldata2.l_type = F_UNLCK;
-        fcntl(fd2, F_SETLKW, &ldata2);
-        close(fd2);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        end_mmapfile((void *) ptr, buf.st_size, -1);
-        BBS_RETURN(-1);
-    }
-    BBS_END end_mmapfile((void *) ptr, buf.st_size, -1);
-
-    ldata2.l_type = F_UNLCK;
-    fcntl(fd2, F_SETLKW, &ldata2);
-    close(fd2);
-    ftruncate(fd, count * size);
-
-    setboardmark(currboard->filename, 0); /* 标记flag*/
-
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-    return 0;
-}
-
 int marked_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     struct read_arg* arg=NULL;
@@ -1940,7 +1848,7 @@ int marked_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extra
         arg=(struct read_arg*)conf->arg;
     if (arg==NULL||arg->mode!= DIR_MODE_MARK) {
         if (setboardmark(currboard->filename, -1)) {
-            if (generate_mark(arg) == -1) {
+            if (board_regenspecial(currboard->filename, DIR_MODE_MARK, NULL) == -1) {
                 return FULLUPDATE;
             }
         }

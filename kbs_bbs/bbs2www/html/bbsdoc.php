@@ -217,10 +217,14 @@ if (!$managemode && isset($_GET["ftype"])) {
 $isnormalboard = bbs_normalboard($board);
 
 bbs_set_onboard($brdnum,1);
+if ($ftype == $dir_modes["ORIGIN"]) {
+	bbs_checkorigin($board);
+} else if ($ftype == $dir_modes["MARK"]) {
+	bbs_checkmark($board);
+}
 if (!$managemode && $isnormalboard && (isset($_GET["page"]) || $ftype) ) {
 	$dotdirname = bbs_get_board_index($board, $ftype);
-	/* TODO: 文摘区和保留区的 cache 时间可以长一点吧？ */
-	if (cache_header("public",@filemtime($dotdirname),10))
+	if (cache_header("public",@filemtime($dotdirname),($ftype == $dir_modes["NORMAL"]) ? 10 : 300))
 		return;
 }
 

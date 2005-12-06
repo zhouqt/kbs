@@ -1662,7 +1662,7 @@ void ann_attach_link_num(char* buf,int buf_len,long attachpos,void* arg)
 	MENU *tmp;
 	int bid;
 	char bap[PATHLEN];
-	struct boardheader *fh;
+	const struct boardheader *fh;
 	int sz;
 
 	board[0]='\0';
@@ -2033,7 +2033,6 @@ MENU *father;
                 me.page = 9999;
             break;
         case 'F':
-        case 'U':
             if (me.now < me.num && HAS_PERM(getCurrentUser(), PERM_BASIC) && HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
                 a_forward(path, me.item[me.now], ch == 'U');
                 me.page = 9999;

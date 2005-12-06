@@ -151,6 +151,7 @@ static PHP_FUNCTION(bbs_searchtitle);
 #endif
 static PHP_FUNCTION(bbs_search_articles);
 static PHP_FUNCTION(bbs_checkorigin);
+static PHP_FUNCTION(bbs_checkmark);
 static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
 static PHP_FUNCTION(bbs_getbname);
@@ -330,6 +331,7 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_getcurrentuser, one_arg_force_ref_1)
     PHP_FE(bbs_setonlineuser, fifth_arg_force_ref_00011)
     PHP_FE(bbs_checkorigin, NULL)
+    PHP_FE(bbs_checkmark, NULL)
     PHP_FE(bbs_getcurrentuinfo, NULL)
     PHP_FE(bbs_wwwlogin, NULL)
     PHP_FE(bbs_setguest_nologin, NULL)
@@ -1561,6 +1563,29 @@ static PHP_FUNCTION(bbs_checkorigin)
 
    	RETURN_LONG(total);
 }
+
+static PHP_FUNCTION(bbs_checkmark)
+{
+	char *board;
+    int board_len;
+    int ac = ZEND_NUM_ARGS();
+	int total;
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    if (!setboardmark(board, -1)) {
+    	RETURN_LONG(0);
+    }
+	total = board_regenspecial(board,DIR_MODE_MARK,NULL);
+
+   	RETURN_LONG(total);
+}
+
 
 #ifdef HAVE_WFORUM
 static int cmp_original_date(const void *a, const void *b) {

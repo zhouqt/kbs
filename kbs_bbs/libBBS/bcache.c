@@ -572,7 +572,7 @@ int board_regenspecial(char *board, int mode, char *index)
         return -1;      /* lock error*/
     }
     /* 开始互斥过程*/
-    if (mode == DIR_MODE_ORIGIN && !setboardorigin(board, -1)) {
+    if ((mode == DIR_MODE_ORIGIN && !setboardorigin(board, -1)) || (mode == DIR_MODE_MARK && !setboardmark(board, -1))) {
         ldata.l_type = F_UNLCK;
         fcntl(fd, F_SETLKW, &ldata);
         close(fd);
@@ -609,6 +609,7 @@ int board_regenspecial(char *board, int mode, char *index)
     ptr1 = (struct fileheader *) ptr;
     for (i = 0; i < total; i++) {
         if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid ))
+            || ((mode == DIR_MODE_MARK) && (ptr1->accessed[0] & FILE_MARKED))
             || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index) )
             || ((mode == DIR_MODE_TITLE)  && bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
             write(fd, ptr1, size);
@@ -624,6 +625,8 @@ int board_regenspecial(char *board, int mode, char *index)
 
     if (mode == DIR_MODE_ORIGIN)
         setboardorigin(board, 0);   /* 标记flag*/
+    else if (mode == DIR_MODE_MARK)
+        setboardmark(board, 0);
 
     ldata.l_type = F_UNLCK;
     fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
