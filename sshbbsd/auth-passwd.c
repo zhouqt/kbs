@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.11  2005/12/06 19:55:05  etnlegend
+ * ssh guest
+ *
  * Revision 1.10  2005/03/16 06:36:32  atppp
  * id大小写不一致的ssh试密码不会被记录，大站最好更新下这个修改
  *
@@ -187,11 +190,10 @@ int auth_password(const char *server_user, const char *password)
     resolve_ucache();
     resolve_utmp();
     strcpy(useridbuf, server_user);
-    if (password[0] == '\0')
-        return 0;
     if (*server_user == '\0' || !dosearchuser(useridbuf))
         return 0;
-
+    if (password[0] == '\0')
+        return (!strcasecmp(useridbuf,"guest"));
 
     sinlen = sizeof(struct sockaddr_in);
     getpeername(packet_get_connection_in(), (struct sockaddr *) &sin, (void *) &sinlen);
