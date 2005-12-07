@@ -67,11 +67,11 @@
 <?php } ?>
 		</div>
 	</fieldset>
-	<div class="oper"><input type="submit" value="保存设置到服务器"/> &nbsp;<input type="button" onclick="history.go(-1);" value="快速返回"/></div>
+	<div class="oper"><input type="submit" value="保存设置"/> &nbsp;<input type="button" onclick="history.go(-1);" value="快速返回"/></div>
 </form>
 <div class="large left"><ul>
 	<li>修改立即生效。</li>
-	<li>如果您希望保证每次登录都使用这个设置，可以点 保存设置到服务器（必须先登录）。</li>
+	<li>如果您希望保证每次登录都使用这个设置，可以点 保存设置（必须先登录）。</li>
 </ul></div>
 <?php
 	page_footer();

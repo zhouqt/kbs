@@ -10,7 +10,7 @@
 			html_error_quit("新密码长度应为 4～39");
 		if ($pass != $_POST['pw3'])
 			html_error_quit("两次输入的密码不相同");
-		if (bbs_checkpasswd($currentuser["userid"],$_POST['pw1']) != 0)
+		if (bbs_checkuserpasswd($currentuser["userid"],$_POST['pw1']) != 0)
 			html_error_quit("密码不正确");
 		if (!bbs_setpassword($currentuser["userid"],$pass))
 			html_error_quit("系统错误，请联系管理员");
