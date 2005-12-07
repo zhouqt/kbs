@@ -66,12 +66,14 @@ INSTALL只写了bbsd等主要程序的安装方法
    需要: #define HAVE_MYSQL_SMTH 1 (这个在config.h里)
    mysql:
         CREATE TABLE bms (
-          userid varchar(15) NOT NULL default '',
+          `id` int(10) unsigned NOT NULL auto_increment,
           board varchar(20) NOT NULL default '',
-          in timestamp(14) NOT NULL,
+          `in` timestamp(14) NOT NULL,
           out int(11) NOT NULL default '3',
           sysop varchar(15) default NULL,
           memo varchar(255) default NULL,
+          userid varchar(15) NOT NULL default '',
+          KEY `id` (`id`),
           KEY userid (userid),
           KEY board (board)
         ) TYPE=MyISAM COMMENT='斑竹任期记录表';
