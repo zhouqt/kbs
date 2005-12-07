@@ -518,7 +518,7 @@ int get_favread()
         return 0;
     }
     if(!checkpasswd2(passwd,destuser)){
-        logattempt(destuser->userid, getSession()->fromhost);
+        logattempt(destuser->userid, getSession()->fromhost, "sync");
 		move(8,0);
 		prints("ÃÜÂë´íÎó\n");
 		pressanykey();

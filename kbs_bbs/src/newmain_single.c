@@ -395,7 +395,7 @@ void login_query()
 {
     char uid[STRLEN], passbuf[40];
 	const char *ptr;
-    int curr_login_num, i, j;
+    int curr_login_num, i;
     int curr_http_num;          /* Leeward 99.03.06 */
     int attempts;
     char fname[STRLEN], tmpstr[30], genbuf[PATHLEN];
@@ -527,7 +527,7 @@ void login_query()
 
             if (!checkpasswd2(passbuf, getCurrentUser())) {
                 if(passbuf[0])
-                    logattempt(getCurrentUser()->userid, getSession()->fromhost);
+                    logattempt(getCurrentUser()->userid, getSession()->fromhost, "telnet");
                 prints("\033[32m密码输入错误...\033[m\n");
             } else {
                 if (id_invalid(uid)) {
@@ -821,9 +821,13 @@ void user_login()
     move(t_lines - 1, 0);
     sethomefile(fname, getCurrentUser()->userid, BADLOGINFILE);
     if (ansimore(fname, false) != -1) {
-        getdata(t_lines - 1, 0, "您要删除以上密码输入错误的记录吗 (Y/N)? [Y] ", ans, 4, DOECHO, NULL, true);
-        if (*ans != 'N' && *ans != 'n')
+        getdata(t_lines - 1, 0, "如何处理以上密码输入错误记录  (m)邮回信箱  (y)清除  (n)继续  [n]: ", ans, 4, DOECHO, NULL, true);
+        ans[0] = toupper(ans[0]);
+        if (ans[0] == 'M') {
+            mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid, "密码输入错误记录", BBSPOST_MOVE, NULL);
+        } else if (ans[0] == 'Y') {
             my_unlink(fname);
+        }
     }
 
     strncpy(getCurrentUser()->lasthost, getSession()->fromhost, IPLEN);

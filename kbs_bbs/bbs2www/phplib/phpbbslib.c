@@ -864,7 +864,9 @@ static PHP_FUNCTION(bbs_checkpasswd)
         s[IDLEN] = 0;
     if (pw_len > PASSLEN)
         pw[PASSLEN] = 0;
-    if ((s[0] != 0) && !(unum = getuser(s, &user)))
+    if (pw[0] == '\0')
+        ret = 1;
+    else if ((s[0] != 0) && !(unum = getuser(s, &user)))
         ret = 2;
     else {
         if (s[0] == 0)
@@ -881,7 +883,7 @@ static PHP_FUNCTION(bbs_checkpasswd)
                     setcurrentuser(user, unum);
             } else {
                 ret = 1;
-                logattempt(user->userid, getSession()->fromhost);
+                logattempt(user->userid, getSession()->fromhost, "www");
             }
         } else {
             ret = 1;

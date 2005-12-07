@@ -187,31 +187,6 @@ static void do_ssl(int fd)
 
 #endif
 
-static void pop3_logattempt(uid, frm)        /* Leeward 98.07.25 */
-    char *uid, *frm;
-{
-    char fname[STRLEN];
-    int fd, len;
-    time_t now = time(0);
-    char *ptr = ctime(&now);
-    char *foo = strrchr(ptr, '\n');
-
-    if (foo)
-        *foo = 0;
-    sprintf(genbuf, "%-12.12s  %-30s %-20s pop3\n", uid, ptr, frm);
-    len = strlen(genbuf);
-    if ((fd = open(BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) > 0) {
-        write(fd, genbuf, len);
-        close(fd);
-    }
-    sprintf(fname, "home/%c/%s/%s", toupper(uid[0]), uid, BADLOGINFILE);
-    if ((fd = open(fname, O_WRONLY | O_CREAT | O_APPEND, 0644)) > 0) {
-        write(fd, genbuf, len);
-        close(fd);
-    }
-}
-
-
 static void abort_server(int signo)
 {
     BBSlog_usies("ABORT SERVER");
@@ -1174,7 +1149,7 @@ void Pass()
         outs(genbuf);
         LowUserid[0] = '\0';
         BBSlog_usies("ERROR PASSWD");
-        pop3_logattempt(getCurrentUser()->userid, getSession()->fromhost); /* Leeward 98.07.25 */
+        logattempt(getCurrentUser()->userid, getSession()->fromhost, "pop3"); /* Leeward 98.07.25 */
         return;
     }
 

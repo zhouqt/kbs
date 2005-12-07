@@ -205,7 +205,7 @@ typedef int (*read_func)(int fd, void *buf, size_t count);
     int write_userdata(const char *userid, struct userdata *ud);
     void getuinfo(FILE * fn, struct userec *ptr_urec);
     int simplepasswd(char *str);
-    void logattempt(char *uid, char *frm);
+    void logattempt(char *uid, char *frm, char *action);
     int check_ban_IP(char *IP, char *buf);
     int is_valid_date(int year, int month, int day);
     int valid_filename(char *file, int use_subdir);
@@ -660,6 +660,7 @@ int pc_logs(struct pc_logs *pn);
   return >0 need some extra permission to access it
 */
     int ann_traverse_check(char *path, struct userec *user);
+    char *ann_numtopath(char *path, char *numpath, struct userec *user);
     /*
      * in site.c 
      */

@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.12  2005/12/07 07:46:46  atppp
+ * 密码的一些问题
+ *
  * Revision 1.11  2005/12/06 19:55:05  etnlegend
  * ssh guest
  *
@@ -202,7 +205,7 @@ int auth_password(const char *server_user, const char *password)
     	return 0;
     }
     if (!checkpasswd2(password, getCurrentUser())) {
-        logattempt(getCurrentUser()->userid, (char *)get_canonical_hostname());
+        logattempt(getCurrentUser()->userid, (char *)get_canonical_hostname(), "ssh");
         return 0;
     }
     strcpy(useridbuf, server_user);

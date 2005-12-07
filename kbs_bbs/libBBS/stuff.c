@@ -1342,18 +1342,16 @@ int simplepasswd(char *str)
     return 1;
 }
 
-void logattempt(uid, frm)
-char *uid, *frm;
-
-
+void logattempt(char *uid, char *frm, char *action)
 {
     char fname[STRLEN];
     int fd, len;
     char buf[256];
+    char *act = action ? action : "";
 
     if (strcmp(uid, "guest") == 0) return;
 
-    snprintf(buf, sizeof(buf), "%-12.12s  %-30s %s\n", uid, Ctime(time(0)), frm);
+    snprintf(buf, sizeof(buf), "%-12.12s  %-30s %-20s %s\n", uid, Ctime(time(0)), frm, act);
     len = strlen(buf);
     if ((fd = open(BADLOGINFILE, O_WRONLY | O_CREAT | O_APPEND, 0644)) >= 0) {
         write(fd, buf, len);
