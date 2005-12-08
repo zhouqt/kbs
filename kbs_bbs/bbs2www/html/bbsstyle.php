@@ -15,11 +15,17 @@
 <script type="text/javascript">
 	var settings = {"sizer": 3, "pager": 4, "hot": 5}; /* faint IE5 */
 	function setInd(n, v) {
-		getObj(n + 'F').style.fontWeight = v ? 'normal' : 'bold';
-		getObj(n + 'T').style.fontWeight = v ? 'bold' : 'normal';
+		var ff = getObj(n + 'F');
+		var tt = getObj(n + 'T');
 		/* some users might not have bold font... that's why I add underline */
-		getObj(n + 'F').style.textDecoration = v ? 'none' : 'underline';
-		getObj(n + 'T').style.textDecoration = v ? 'underline' : 'none';
+		if (ff) {
+			ff.style.fontWeight = v ? 'normal' : 'bold';
+			ff.style.textDecoration = v ? 'none' : 'underline';
+		}
+		if (tt) {
+			tt.style.fontWeight = v ? 'bold' : 'normal';
+			tt.style.textDecoration = v ? 'underline' : 'none';
+		}
 	}
 	function adjSet(n, v) {
 		var idx = settings[n];

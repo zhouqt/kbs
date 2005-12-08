@@ -17,6 +17,8 @@
 	@$re_password = $_POST["pass2"];
 	
 	session_start();
+	html_init("gb2312");
+	
 	if(!isset($_SESSION['num_auth']))
   	    html_error_quit("请等待识别的图片显示完毕!");
 	if(strcasecmp($_SESSION['num_auth'],$num_auth))
@@ -107,7 +109,6 @@ $headers .= "Content-type: text/html; charset=gb2312\n";
 /* additional headers */
 $headers .= "From: ".BBS_FULL_NAME." <http://".BBS_DOMAIN_NAME.">\n";
 
-html_init("gb2312");
 if(!mail($reg_email, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
 {
 ?>
@@ -147,7 +148,7 @@ else
 
     	if(!$m_register)$mobile_phone="";
 
-	$ret=bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$reg_email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
+	$ret=@bbs_createregform($userid,$realname,$dept,$address,$gender,$year,$month,$day,$reg_email,$phone,$mobile_phone, $_POST['OICQ'], $_POST['ICQ'], $_POST['MSN'],  $_POST['homepage'], intval($_POST['face']), $_POST['myface'], intval($_POST['width']), intval($_POST['height']), intval($_POST['groupname']), $_POST['country'],  $_POST['province'], $_POST['city'], intval($_POST['shengxiao']), intval($_POST['blood']), intval($_POST['belief']), intval($_POST['occupation']), intval($_POST['marital']), intval($_POST['education']), $_POST['college'], intval($_POST['character']), FALSE);//自动生成注册单
 	switch($ret)
 	{
 	case 0:
@@ -167,7 +168,7 @@ else
 <body>
 <h1>申请ID成功</h1>
 申请<?php echo BBS_FULL_NAME; ?>ID成功,你现在还没有通过身份认证,只有最基本的权限,不能发文,发信,聊天等,系统已经自动生成注册单.<br>
-注册单通过站长审核后,你将获得合法用户权限！<br/><a href="/">现在登录进站</a>
+注册单通过站长审核后,你将获得合法用户权限！<br/><a href="index.html">现在登录进站</a>
 </body>
 <?php
 }

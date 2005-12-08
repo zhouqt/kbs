@@ -486,8 +486,9 @@ while($board = array_shift($boards))
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr> 
-    <td colspan="2" height="77"><img src="images/logo.gif"/></td>
-    <td colspan="7" >
+    <td colspan="9">
+    	<!--<img src="images/logo.gif"/>-->
+    	<center style="padding: 0.5em;font-weight:bold;font-size:150%;"><?php echo BBS_FULL_NAME; ?></center>
     </td>
   </tr>
   <form action="bbssel.php">
@@ -571,12 +572,6 @@ while($board = array_shift($boards))
 ?>
 	  </td>
     <td width="10">&nbsp;</td>
-  </tr>
-</table>
-<hr class="smth">
-<table width="100%" border="0" cellspacing="0" cellpadding="0">
-  <tr>
-    <td align="center" class="smth">版权所有 &copy; <?php echo BBS_FULL_NAME; ?> 1995-2004 <a href="certificate.html">京ICP备02002号</a></td>
   </tr>
 </table>
 <br>

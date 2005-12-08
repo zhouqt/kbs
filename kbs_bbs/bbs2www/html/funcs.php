@@ -363,7 +363,7 @@ document.write('<link rel="stylesheet" type="text/css" href="' + cssFile + '"/>'
 </head>
 <?php
 	if($_SERVER["PHP_SELF"] != "/bbsgetmsg.php" 
-			&& $currentuser["userid"] != "guest"
+			&& isset($currentuser["userid"]) && ($currentuser["userid"] != "guest")
 			&& bbs_checkwebmsg())
 	{
 ?>

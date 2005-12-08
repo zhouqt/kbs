@@ -158,7 +158,10 @@
 <base target="f3" />
 <body>
 <iframe id="hiddenframe" name="hiddenframe" width="0" height="0" src="" frameborder="0" scrolling="no"></iframe>
-<img src="images/t1.gif" class="pm">
+
+<!--站点标志-->
+<!--<img src="images/t1.gif" class="pm">-->
+<center style="padding: 0.3em;font-weight:bold;font-size:120%;"><?php echo BBS_FULL_NAME; ?></center>
 
 <div class="t2">
 <?php
@@ -187,7 +190,7 @@
 <?php
 		}
 ?>
-<img src="images/t2.gif" class="pm">
+<!--<img src="images/t2.gif" class="pm">-->
 </div>
 
 <div class="b1 m4">
@@ -322,7 +325,13 @@
 		{
 ?>
 		<div class="mi"><a href="bbsnew.php">新用户须知</a></div>
+<?php
+			if (defined("HAVE_ACTIVATION")) {
+?>
 		<div class="mi"><a href="bbssendacode.php">发送激活码</a></div>
+<?php
+			}
+?>
 		<div class="mi"><a href="bbsfillform.html">填写注册单</a></div>
 <?php
 		}
@@ -337,28 +346,6 @@
 		<div class="lmi"><a href="bbsfall.php">设定好友</a></div>
 	</div>
 <?php
-	}
-?>
-
-	<a href='javascript:changemn("ser");' target="_self"><img id="imgser" src="images/close.gif" class="pm" alt="+"
-	><img src="<?php echo $img_subdir; ?>m9.gif" class="sfolder">文件下载及其他</a><br/>
-
-	<div class="pp" id="divser">
-		<div class="mi"><a href="/games/index.html">休闲娱乐</a></div>
-<?php
-	if (defined("SERVICE_QUIZ")) {
-?>
-		<div class="mi"><a href="/games/quiztop.php">开心辞典</a></div>
-<?php
-	}
-?>
-		<div class="lmi"><a href="/data/fterm-2004memory.rar" target="_blank">Fterm下载</a></div>
-	</div>	
-<?php
-	if (defined("SITE_SMTH")) {
-		if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
-			include_once ('bbsleftmenu.php');
-		}
 	}
 	if($currentuser["userid"]!="guest"){
 ?>
