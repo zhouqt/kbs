@@ -82,19 +82,6 @@ const char * const user_definestr[] = {
     "隐藏ip"                    /* DEF_SHOWALLIP */
 };
 
-const char *const explain[] = {
-    "温馨小屋",
-    "校园生活",
-    "BBS 技术",
-    "电脑技术",
-    "学术科学",
-    "文化人文",
-    "休闲娱乐",
-    "知性感性",
-    "体育新闻",
-    NULL
-};
-
 const char *const groups[] = {
     "GROUP_0",
     "GROUP_1",

@@ -116,7 +116,7 @@
 
 #define FOOTER_MOVIE		"欢  迎  投  稿"
 /*#define ISSUE_LOGIN		"本站使用曙光公司曙光天演服务器"*/
-#define ISSUE_LOGIN		"smthbbs 系统试验站"
+#define ISSUE_LOGIN		"kbsbbs 系统试验站"
 #define ISSUE_LOGOUT		"还是走了罗"
 
 #define NAME_USER_SHORT		"用户"

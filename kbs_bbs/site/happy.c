@@ -80,19 +80,6 @@ const char *user_definestr[] = {
 	"显示底部浮动信息"
 };
 
-const char    *explain[] = {
-    "本站系统",
-    "网络服务",
-    "群体组织",
-    "个人空间",
-    "艺术文化",
-    "电脑技术",
-    "休闲娱乐",
-    "知性感性",
-    "其他版面",
-    NULL
-};
-
 const char    *groups[] = {
     "system.faq", /* GROUP_0 */
     "assoc.faq",  /* GROUP_1 */

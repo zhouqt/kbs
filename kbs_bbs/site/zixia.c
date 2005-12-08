@@ -83,20 +83,6 @@ const char * const user_definestr[] = {
     "隐藏ip"                    /* DEF_SHOWALLIP */
 };
 
-const char * const explain[] = {
-	"斧 头 帮",
-	"大话西游",
-	"大小分舵",
-        "吃喝玩乐",
-	"唧唧歪歪",
-	"吟风弄月",
-        "西游之路",
-        "豆腐西施",
-	"东成西就",
-        "大圣取经",
-         NULL
-};
- 
 const char * const groups[] = {
 	"AxFaction",
 	"zixia",

@@ -588,7 +588,6 @@ bigger mailbox. --stephen 2001.10.31*/
 
 extern const char * const permstrings[];
 extern const char    * const groups[];
-extern const char    * const explain[];
 extern const char * const user_definestr[];
 extern const char * const user_definestr1[];
 #ifdef NEW_HELP

@@ -41,24 +41,6 @@ const char secname[SECNUM][2][20] = {
     {"电脑技术", "[专项技术]"},
 };
 
-const char  * const explain[] = {
-    "本站系统",
-    "清华大学",
-    "校园信息",
-    "学术科学",
-    "休闲娱乐",
-    "文化人文",
-    "社会信息",
-    "游戏天地",
-    "体育健身",
-    "知性感性",
-    "电脑信息",
-    "软件开发",
-    "操作系统",
-    "电脑技术",
-    NULL
-};
-
 #endif
 
 #ifdef USE_DEFAULT_PERMSTRINGS
