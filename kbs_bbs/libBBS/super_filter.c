@@ -888,7 +888,7 @@ int super_filter(struct _select_def* conf,struct fileheader* curfh,void* extraar
            "      我要查询标题里含有faint的文章:\n"
            "              sub('faint',title)                 标题包含faint\n"
            "      我要查询标题里包含hehe并且位置在最后的文章:\n"
-           "              sub('hehe',title)==len(title)-3    标题包含faint是标题的长度减3\n"
+           "              sub('hehe',title)==len(title)-3    标题包含hehe是标题的长度减3\n"
            "      我要查询......自己动手查吧,hehe"
     );
     multi_getdata(2, 0, scr_cols-1, "请输入表达式: ", query, STRBUFLEN, 20, 0, 0);
