@@ -498,14 +498,6 @@ Numb=3
 const char seccode[SECNUM][5] = {"a", "b", "c"};
     这个是分区代号，部分统计程序需要用到。
 
-const char * const explain[] = {
-    "本站系统",
-    "人在美国",
-    "大话西游",
-    NULL
-};
-    分类讨论区的区名，web 下的站点管理会用到。最后的 NULL 不能漏！
-
 const char * const groups[] = {
     "GROUP_0",
     "GROUP_1",
