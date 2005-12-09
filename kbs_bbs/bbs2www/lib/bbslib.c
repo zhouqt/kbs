@@ -106,7 +106,11 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
 
 int isfriend(char *id)
 {
-    return myfriend(searchuser(id), NULL, getSession());
+    if (getCurrentUser() && strcmp(getCurrentUser()->userid, "guest")) {
+        return myfriend(searchuser(id), NULL, getSession());
+    } else {
+        return false;
+    }
 }
 
 int get_file_ent(char *board, char *file, struct fileheader *x)
