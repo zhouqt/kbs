@@ -19,13 +19,12 @@ noinst_HEADERS = cipher.h getput.h compress.h idea.h \
     mpaux.h servconf.h xmalloc.h buffer.h emulate.h packet.h ssh.h \
     deattack.h snprintf.h
 
-COMMON_OBJS = rsa.o randoms.o buffer.o emulate.o packet.o compress.o \
-	xmalloc.o bufaux.o authfile.o \
-	crc32.o rsaglue.o cipher.o des.o match.o mpaux.o \
-	userfile.o signals.o blowfish.o deattack.o
-SSHD_OBJS = sshd.o auth-passwd.o \
-	log-server.o canohost.o servconf.o tildexpand.o \
-	serverloop.o $(COMMON_OBJS) 
+SSHD_SRCS = sshd.c log-server.c canohost.c servconf.c tildexpand.c \
+            serverloop.c rsa.c randoms.c buffer.c emulate.c packet.c \
+            compress.c xmalloc.c bufaux.c authfile.c crc32.c rsaglue.c \
+            cipher.c des.c match.c mpaux.c userfile.c signals.c \
+            blowfish.c deattack.c idea.c auth-passwd.c
+
 EXTRA_SRCS = memmove.c snprintf.c strerror.c remove.c random.c \
 	putenv.c crypt.c socketpair.c
 
@@ -36,14 +35,25 @@ EXTRA_DIST= COPYING README README.SECURID README.TIS README.SECURERPC \
 	config.sample config.h.in install-sh ChangeLog \
 	idea.c
 
+BBSD_SRCS = bbs.c record.c delete.c stuff.c mail.c register.c \
+           xyz.c talk.c comm_lists.c namecomplete.c chat.c \
+           maintain.c edit.c more.c pass.c help.c bcache.c boards.c \
+           screen.c userinfo.c vote.c announce.c sendmsg.c boards_t.c\
+	   bm.c list.c goodbye.c bbsd_single.c lvars.c select.c libann.c\
+	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
+	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c site.c\
+	   filter.c mgrep.c definekey.c default.c calltime.c super_filter.c \
+	   libtmpl.c msg_manager.c addr_manage.c libpc.c personal_corp.c \
+	   newread.c newhelp.c
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
 CC="@LIBTOOL@"
 CCLD="@CC@"
 AM_MAKEFLAGS="@MAKEFLAG@"
-sshbbsd_LDADD = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
-sshbbsd_DEPENDENCIES = @BBSOBJS@ @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
-sshbbsd_SOURCES = $(SSHD_OBJS:.o=.c) $(KEYGEN_OBJS:.o=.c)
+sshbbsd_SOURCES = $(SSHD_SRCS) $(BBSD_SRCS)
+
+sshbbsd_LDADD = ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a $(GMPLIBS) $(WRAPLIBS) $(KERBEROS_LIBS) $(SSHLIBS) $(LIBS)
+#sshbbsd_DEPENDENCIES = @CONFOBJS@ @SSHDCONFOBJS@ ../libsystem/.libs/libsystem.a ../rzsz/.libs/libzmodem.a 
 AM_CFLAGS=-I. -I../src -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -DSSHBBS  -DSAFE_KILL -DBBSMAIN -DSSHBBS -DHOST_KEY_FILE=\"$(HOST_KEY_FILE)\" -DHOST_CONFIG_FILE=\"$(HOST_CONFIG_FILE)\" -I.. -DSERVER_CONFIG_FILE=\"$(SERVER_CONFIG_FILE)\" -DSSH_PROGRAM=\"$(SSH_PROGRAM)\" -DETCDIR=\"$(etcdir)\" -DPIDDIR=\"$(piddir)\" -DSSH_BINDIR=\"$(bindir)\"
 sshbbsd_LDFLAGS=-export-dynamic
 
