@@ -106,6 +106,11 @@ void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
 int read_hot_info();
+#ifdef NEWSMTH
+int set_board_rule(struct boardheader *bh, int flag);
+int b_rules_edit();
+#endif
+
 int i_read_mail();
 int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int add_attach(char* file1, char* file2, char* filename);
@@ -261,6 +266,7 @@ int find_ip( const char *ip, int flag, char *result);
 int do_exec(char *com, char *wd);
 int showperminfo(struct _select_def *conf, int i);
 unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int numbers, int (*show) (struct _select_def *, int), int (*select) (struct _select_def *));
+int fhselect(struct _select_def* conf,struct fileheader *fh,long flag);
 void record_exit_time();
 
 /* boards_t.c */

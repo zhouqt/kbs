@@ -84,6 +84,45 @@ void setcontrolfile()
     setvfile(controlfile, currboard->filename, "control");
 }
 
+#ifdef NEWSMTH
+int b_rules_edit()
+{
+    char buf[STRLEN];
+    char buf1[STRLEN];
+    char ans[4];
+    int aborted;
+    int oldmode;
+	struct stat st;
+
+    if (!chk_currBM(currBM, getCurrentUser())) {
+        return 0;
+    }
+    clear();
+    makevdir(currboard->filename);
+    setvfile(buf, currboard->filename, "rules");
+        oldmode = uinfo.mode;
+        modify_user_mode(EDITUFILE);
+        aborted = vedit(buf, false,NULL, NULL, 0);
+        modify_user_mode(oldmode);
+    if (aborted == -1) {
+        pressreturn();
+    } else {
+		if(currboard->flag & BOARD_RULES) set_board_rule(currboard, 0);
+		if(stat(buf, &st)==-1) return FULLUPDATE;
+		sprintf(buf1, "%s提交%s治版方针:%d", getCurrentUser()->userid, currboard->filename, st.st_mtime);
+		post_file(getCurrentUser(), "", buf, "BoardRules", buf1, 0, 2, getSession());
+		if(normal_board(currboard->filename))
+		post_file(getCurrentUser(), "", buf, "BoardManager", buf1, 0, 2, getSession());
+
+		clear();
+		move(3,0);
+		prints("已经提交新的治版方针,请等待批准\n");
+		pressreturn();
+    }
+    return FULLUPDATE;
+}
+#endif
+
 int b_notes_edit()
 {
     char buf[STRLEN];

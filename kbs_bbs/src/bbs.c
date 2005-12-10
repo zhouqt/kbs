@@ -2088,12 +2088,49 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
     return DIRCHANGED;
 }
 
+#ifdef NEWSMTH
+int set_board_rule(struct boardheader *bh, int flag)
+{
+	int pos;
+	struct boardheader newbh;
+
+	pos = getboardnum(bh->filename, NULL);
+	if(!pos) return -1;
+
+    memcpy(&newbh,bh,sizeof(struct boardheader));
+	if(flag) newbh.flag|=BOARD_RULES;
+	else newbh.flag&=~BOARD_RULES;
+
+    set_board(pos,&newbh,bh);
+
+	if(flag){
+		char buf[256];
+		char buf2[256];
+
+		setvfile(buf, bh->filename, "rules");
+		sprintf(buf2,"%s通过%s治版方针", getCurrentUser()->userid, bh->filename);
+		post_file(getCurrentUser(), "", buf, "BoardRules", buf2, 0, 2, getSession());
+		post_file(getCurrentUser(), "", buf, "BoardManager", buf2, 0, 2, getSession());
+		sprintf(buf2,"审核通过%s版治版方针", bh->filename);
+		post_file(getCurrentUser(), "", buf, bh->filename, buf2, 0, 2, getSession());
+	}
+	return 0;
+}
+#endif
+
 int read_hot_info()
 {
     char ans[4];
+	char *rule=NULL;
+	char prompt[80];
     move(t_lines - 1, 0);
     clrtoeol();
-    getdata(t_lines - 1, 0, "选择阅读: 1)本日十大新闻 2)十大祝福 3)近期热点 4)系统热点 5)日历日记[1]: ", ans, 3, DOECHO, NULL, true);
+#ifdef NEWSMTH
+	if (uinfo.mode == READING) rule = " 6)治版方针";
+#endif
+	snprintf(prompt, sizeof(prompt), "%s%s%s", "选择: 1)十大新闻 2)十大祝福 3)近期热点 4)系统热点 5)日历日记",
+			rule?rule:"", "[1]: ");
+    getdata(t_lines - 1, 0, prompt, ans, 3, DOECHO, NULL, true);
     switch (ans[0])
 	{
     case '2':
@@ -2110,7 +2147,53 @@ int read_hot_info()
             if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX))
             exec_mbem("@mod:service/libcalendar.so#calendar_main");
         break;
-    case '1':
+#ifdef NEWSMTH
+	case '6':
+	{
+		char fpath[256];
+		struct stat st;
+		if(!rule)
+			break;
+		if(!(currboard->flag & BOARD_RULES) && !HAS_PERM(getCurrentUser(),PERM_SYSOP) && (getCurrentUser()->title==0) && !chk_currBM(currBM, getCurrentUser()) ){
+			clear();
+			move(3,0);
+			prints("%s版尚未有通过审核的治版方针\n", currboard->filename);
+			pressanykey();
+			break;
+		}
+		setvfile(fpath, currboard->filename, "rules");
+    	if(stat(fpath, &st)==-1){
+			clear();
+			move(3,0);
+			prints("版主尚未提交治版方针\n");
+			pressanykey();
+       		break;
+		}
+		if(!(currboard->flag & BOARD_RULES)){
+			clear();
+			move(3,0);
+			prints("%s版治版方针尚未通过审核,批号:%d\n", currboard->filename, st.st_mtime);
+			pressanykey();
+		}
+		show_help(fpath);
+		if(!(currboard->flag & BOARD_RULES) && HAS_PERM(getCurrentUser(), PERM_SYSOP) ){
+			char ans[4];
+			clear();
+			move(3,0);
+			prints("%s版治版方针尚未通过审核,批号:%d\n", currboard->filename, st.st_mtime);
+        	getdata(t_lines - 1, 0, "您要通过该版的治版方针吗 (Y/N)? [N] ", ans, 3, DOECHO, NULL, true);
+			if(ans[0]=='y' || ans[0]=='Y'){
+				int ret;
+				ret = set_board_rule(currboard, 1);
+				move(6,0);
+				prints("通过%s:%d\n",(ret==0)?"成功":"失败",ret);
+				pressreturn();
+			}
+		}
+		break;
+	}
+#endif
+	case '1':
 	default:
 		show_help("etc/posts/day");
     }
@@ -3039,7 +3122,10 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
             *t = '\0';
         sprintf(genbuf, "%s/%s", tmp, fileinfo->filename);
 
-        if(strcmp(tmp2,buf)) add_edit_mark(genbuf, 2, buf,getSession());
+        if(strcmp(tmp2,buf)){
+			add_edit_mark(genbuf, 2, buf,getSession());
+			newbbslog(BBSLOG_USER,"edit_title %s %s %s",currboard->filename, tmp2 , buf);
+		}
         /*
          * Leeward 99.07.12 added below to fix a big bug
          */
@@ -3318,7 +3404,7 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             fixkeep(arg->direct, 1, 1);*/
         if (!mailmode) {
             updatelastpost(currboard->filename);
-            bmlog(getCurrentUser()->userid, currboard->filename, 8, inum2-inum1);
+            //bmlog(getCurrentUser()->userid, currboard->filename, 8, inum2-inum1);
             newbbslog(BBSLOG_USER, "del %d-%d on %s", inum1, inum2, currboard->filename);
         }
         prints("删除%s\n", result ? "失败！" : "完成"); /* Leeward: 97.12.15 */
@@ -3828,8 +3914,14 @@ int b_note_edit_new(struct _select_def* conf,struct fileheader *fileinfo,void* e
 #ifdef FLOWBANNER
 		" 3)底部流动信息"
 #endif
+#ifdef NEWSMTH
+		" 4)治版方针"
+#endif
 		" [0]: ", ans, 3, DOECHO, NULL, true);
     if (ans[0]=='1') return b_notes_edit();
+#ifdef NEWSMTH
+	else if (ans[0]=='4') return b_rules_edit();
+#endif
 	else if(ans[0]=='2'){
 		int ret;	
 #ifdef NEW_HELP
@@ -5969,6 +6061,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {Ctrl('P'), (READ_KEY_FUNC)do_post,NULL},
     {'E', (READ_KEY_FUNC)edit_post,NULL},
     {'T', (READ_KEY_FUNC)edit_title,NULL},
+    {':', (READ_KEY_FUNC)fhselect,NULL},
             
     {'m', (READ_KEY_FUNC)set_article_flag,(void*)FILE_MARK_FLAG},
     {';', (READ_KEY_FUNC)noreply_post,(void*)NULL},        /*Haohmaru.99.01.01,设定不可re模式 */

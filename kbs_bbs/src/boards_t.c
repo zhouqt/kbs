@@ -122,6 +122,9 @@ int show_boardinfo(const char *bname)
 	move(2,0);
 	prints("\033[1;33m版面名称\033[m: %s %s\n\n", bp->filename, bp->title+1);
 	prints("\033[1;33m版面版主\033[m: %s \n", bp->BM);
+#ifdef NEWSMTH
+	prints("\033[1;31m版面web地址\033[m: http://%s.board.newsmth.net/ \n", bp->filename);
+#endif
 	prints("\033[1;33m版面关键字\033[m: %s \n\n", bp->des);
     prints("\033[1;31m%s\033[m记文章数 \033[1;31m%s\033[m统计十大\n", 
         (bp->flag & BOARD_JUNK) ? "不" : "", (bp->flag & BOARD_POSTSTAT) ? "不" : "");
