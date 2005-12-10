@@ -322,6 +322,13 @@ esac
 
 export CFLAGS CC
 
+AC_ARG_ENABLE(site,
+[  --enable-site=sitename
+                          select site special files (see site dir) ],
+[
+    BBSSITE=$enableval
+],[BBSSITE="fb2k-v2"])
+
 # Socket pairs appear to be broken on several systems.  I don't know exactly
 # where, so I'll use pipes everywhere for now.
 #AC_DEFINE(USE_PIPES, 1, [ ])
@@ -1371,6 +1378,15 @@ for i in *.c; do
 	BBSOBJS="$BBSOBJS `echo $i|sed 's/.c$/.o/'`"
 done
 cd $OLDPWD
+
+cd ../libBBS
+for j in *.c; do
+	AC_CONFIG_LINKS($j:../libBBS/$j)
+done
+cd $OLDPWD
+
+AC_CONFIG_LINKS(site.c:../site/$BBSSITE.c)
+AC_CONFIG_LINKS(default.c:../site/default.c)
 
 if test -f "../wrapper.sh"; then
 abssrcdir=`cd $srcdir && pwd`
