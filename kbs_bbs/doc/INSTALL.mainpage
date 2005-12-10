@@ -14,17 +14,12 @@ $Id$
 1.一些约定的说明 
  $(BBSHOME)     表示 bbs 的安装目录，本文中指定为 /home/bbs 
  $(WWWHOME)     表示 apache 设定的 DocumentRoot，在本文中指定为 /var/www/html 
- $(SRCDIR)      表示存放 kbsbbs 源代码的目录，可自己设定一个， 例如放在
-                自己 home 目录的某个子目录下 
- $(SITE)        表示 configure 的时候， 
-                configure  --enable-site=后面的那个参数的 名字，也就是指定的站点
-                配置文件的名字 
+ $(SRCDIR)      表示存放 kbs_bbs 源代码的目录
 
 2.适用本文操作的对象 
 您的 KBS 系统的 telnet & www 方式已经安装成功，可以正常运行，通过 WWW 方式可以
-正常访问您的 bbs，只是您的 bbs 的首页导读没有内容或者出现
-Warning: domxml_open_file().....等警告。 如果您的 KBS 系统的 telnet 或者 www 
-方式安装有任何问题，请参考 KBS 源码包下的安装文档。
+正常访问您的 bbs，只是您的 bbs 的首页导读没有内容或者出现 Warning: 
+domxml_open_file().....等警告。
 
 3.首页导读安装步骤
 
@@ -35,7 +30,7 @@ Warning: domxml_open_file().....等警告。 如果您的 KBS 系统的 telnet 或者 www
 
 3.3  为首页导读生成必要的 xml 文件
 
-    3.3.1首页导读各元素和 xml 文件的对应关系简表
+    3.3.1 首页导读各元素和 xml 文件的对应关系简表
 
     所有需要的 xml 文件都是保存在 $(BBSHOME)/xml/ 目录的，如果您的站台没有此目录 
     请以 bbs 帐号在 $(BBSHOME) 建立此目录。
@@ -73,8 +68,8 @@ Warning: domxml_open_file().....等警告。 如果您的 KBS 系统的 telnet 或者 www
   
     # 定时更新推荐文章    
     8,18,28,38,48,58 * * * * /home/bbs/bin/genhot
-    # 每小时 59 分执行热门话题统计
-    59 * * * * /home/bbs/bin/poststat /home/bbs
+    # 每小时 43 分执行热门话题统计 -- 注意: 只能一小时一次, 不能再快
+    43 * * * * /home/bbs/bin/poststat /home/bbs
     # stiger:新的十大统计    
     59 23 * * * rm -f /home/bbs/tmp/Xpost/*
     59 23 * * * rm -f /home/bbs/.post.X
@@ -83,7 +78,7 @@ Warning: domxml_open_file().....等警告。 如果您的 KBS 系统的 telnet 或者 www
     # 新版
   	1 * * * * $BBSHOME/bin/gennewboard
   
-    推荐文章需要在站上开一个 Recommend 版，然后版主在版面上推荐的文章前面
+    推荐文章需要在站上开一个 Recommend 版，然后版主或者原作者在版面文章前面
     按 ;3，此文章进入 Recommand 版，站务在 Recommend 版需要推荐的文章前面按 g
     就可以使得此文章出现在 web 首页导读的推荐文章了。
   
@@ -110,17 +105,22 @@ Warning: domxml_open_file().....等警告。 如果您的 KBS 系统的 telnet 或者 www
      其含义为定义默认的首页导读页面为 mainpage.html。如果定义默认导读首页页面为
      mainpage.php，也可以得到正确的首页导读。但是考虑到 mainpage.php 为 php 脚
      本解释语言而且在每次客户端请求 mainpage.php 的时候，都需要解析各 xml 文
-     件，为了减少 IO 减少站台的负荷，提倡使用静态的 mainpage.html 作为默认的首
+     件，为了减少 IO 和站台的负荷，提倡使用静态的 mainpage.html 作为默认的首
      页导读页面，同时为了保证首页导读的实时性，应该用 wget 自动定时从
-     mainpage.php 更新 mainpage.html
+     mainpage.php 更新 mainpage.html。
      
-     4.2自动定时更新 mainpage.html
+     4.2 自动定时更新 mainpage.html
      
      将以下内容添加到 bbs 帐号的 crontab，即可自动从 mainpage.php 生成
      mainpage.html。间隔时间可以自行调整。以下命令为一行，不要折行。
+     
      #每 10 分钟自动更新一下/var/www/html/mainpage.html
      */10 * * * * /usr/bin/wget -Y off -t 0 -O /var/www/html/mainpage.html
      http://127.0.0.1/mainpage.php &>/dev/null
+     
+     注意生成 mainpage.html 的时间点应该避开 3.3.2 节提到的 crontab 中的程序
+     生成各个 xml 文件的时间点，否则可能造成 mainpage.php 读取到空的正在更新
+     的 xml 文件。
 
 5 FAQ
 
@@ -129,4 +129,4 @@ A：crontab 里面执行的程序有时候需要依赖超过一天的时间来生成，我自己的站台就是当
 天只有热门话题，睡了一觉起来，到了第二天，发现其他内容都出来了：），所以如果有
 问题，请耐心等待超过 24 小时。
 
-    其他问题请到水木社区 (newsmth.net) BBSMan_Dev 版讨论
+    其他问题请到水木社区 (newsmth.net) BBSMan_Dev 版讨论。
