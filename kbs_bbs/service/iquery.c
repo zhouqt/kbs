@@ -115,7 +115,8 @@ void do_query_all(int w, char * s)
     FILE* sockfp;
     int sockfd, i, j, k;
     char buf[256];
-    char ip[20], s1[30], s2[30], *pp;
+    char ip[20], s1[30], s2[30];
+    const char *pp;
     
     pp = sysconf_str("QUERY_SERVER");
     

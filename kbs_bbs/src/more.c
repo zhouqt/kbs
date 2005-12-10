@@ -227,6 +227,7 @@ void setcalltime()
 
 }
 
+#if 0
 int morekey()
 {
     while (1) {
@@ -281,6 +282,7 @@ int morekey()
         }
     }
 }
+#endif
 
 int seek_nth_line(int fd, int no, char *more_buf)
 {
@@ -1021,6 +1023,11 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     change = 1 - t_lines;
                 }
                 break;
+			case 'U':		/* pig2532 2005.12.10 */
+				board_query();
+				curr_line += t_lines - 1;
+				change = 1 - t_lines;
+				break;
             case 'H':
                 show_help("help/morehelp");
                 curr_line += t_lines - 1;

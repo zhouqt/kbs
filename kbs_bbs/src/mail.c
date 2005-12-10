@@ -1566,7 +1566,6 @@ struct key_command mail_comms[] = {
     {'i', (READ_KEY_FUNC)mail_to_tmp,NULL},
 #ifdef INTERNET_EMAIL
     {'F', (READ_KEY_FUNC)mail_forward,NULL},
-    {'U', (READ_KEY_FUNC)mail_uforward,NULL},
 #endif
     /*
      * Added by ming, 96.10.9

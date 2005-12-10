@@ -253,13 +253,16 @@ static int a_select_path_key(struct _select_def *conf, int key)
         s_msg();
         modify_user_mode(oldmode);
         return SHOW_REFRESH;
-    case 'U':
+    case 'u':
         oldmode = uinfo.mode;
         clear();
         modify_user_mode(QUERY);
         t_query(NULL);
         modify_user_mode(oldmode);
         clear();
+        return SHOW_REFRESH;
+	case 'U':		/* pig2532 2005.12.10 */
+		board_query();
         return SHOW_REFRESH;
     }
     return SHOW_CONTINUE;
@@ -2034,7 +2037,7 @@ MENU *father;
             break;
         case 'F':
             if (me.now < me.num && HAS_PERM(getCurrentUser(), PERM_BASIC) && HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
-                a_forward(path, me.item[me.now], ch == 'U');
+                a_forward(path, me.item[me.now], 0);
                 me.page = 9999;
             }
             break;
@@ -2053,6 +2056,10 @@ MENU *father;
             modify_user_mode(CSIE_ANNOUNCE);
             me.page = 9999;
             break;              /*Haohmaru.99.11.29 */
+		case 'U':		/* pig2532 2005.12.10 */
+			board_query();
+			me.page = 9999;
+			break;
         case '!':
             Goodbye();
             me.page = 9999;

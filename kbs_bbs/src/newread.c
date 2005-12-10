@@ -202,6 +202,10 @@ static int read_key(struct _select_def *conf, int command)
             t_query(NULL);
             mode= FULLUPDATE;
             break;
+		case 'U':		/* pig2532 2005.12.10 */
+			board_query();
+			mode=FULLUPDATE;
+			break;
         case 'O':
         case 'o':                  /* Luzi 1997.10.31 */
             {                       /* Leeward 98.10.26 fix a bug by saving old mode */
@@ -928,7 +932,10 @@ int post_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
                 return ret;
         } else {
             if (read_search_articles(conf, query, up, -1) == 1)
-                return SELCHANGE;
+			{
+				conf->show_endline(conf);	/* add by pig2532 on 2005.12.4 */
+			    return SELCHANGE;
+			}
         }
     }
     conf->show_endline(conf);
@@ -955,6 +962,7 @@ int auth_search(struct _select_def* conf, struct fileheader* fh, void* extraarg)
         strcpy(author, currauth);
     switch (read_search_articles(conf, author, up, 1)) {
         case 1:
+			conf->show_endline(conf);	/* add by pig2532 on 2005.12.4 */
             return SELCHANGE;
         default:
             conf->show_endline(conf);
@@ -976,7 +984,10 @@ int title_search(struct _select_def* conf, struct fileheader* fh, void* extraarg
     if (*ans != '\0') {
         strcpy(title, ans);
         if (read_search_articles(conf, title, up, 0) == 1)
+		{
+			conf->show_endline(conf);	/* add by pig2532 on 2005.12.4 */
             return SELCHANGE;
+		}
     }
     conf->show_endline(conf);
     return DONOTHING;

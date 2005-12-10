@@ -307,7 +307,7 @@ int t_query(char* q_id)
         modify_user_mode(QUERY);
         move(2, 0);
         clrtobot();
-        prints("<输入使用者代号, 按空白键可列出符合字串>\n");
+        prints("<输入使用者代号, 按空白键或Tab键可列出符合字串>\n");
         move(1, 0);
         clrtoeol();
         prints("查询谁: ");

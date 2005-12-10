@@ -89,7 +89,6 @@ int b_rules_edit()
 {
     char buf[STRLEN];
     char buf1[STRLEN];
-    char ans[4];
     int aborted;
     int oldmode;
 	struct stat st;
@@ -109,7 +108,7 @@ int b_rules_edit()
     } else {
 		if(currboard->flag & BOARD_RULES) set_board_rule(currboard, 0);
 		if(stat(buf, &st)==-1) return FULLUPDATE;
-		sprintf(buf1, "%s提交%s治版方针:%d", getCurrentUser()->userid, currboard->filename, st.st_mtime);
+		sprintf(buf1, "%s提交%s治版方针:%ld", getCurrentUser()->userid, currboard->filename, st.st_mtime);
 		post_file(getCurrentUser(), "", buf, "BoardRules", buf1, 0, 2, getSession());
 		if(normal_board(currboard->filename))
 		post_file(getCurrentUser(), "", buf, "BoardManager", buf1, 0, 2, getSession());

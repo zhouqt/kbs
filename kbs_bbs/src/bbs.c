@@ -1518,6 +1518,8 @@ reget:
         modify_user_mode(QUERY);
         t_query(NULL);
         break;
+	case 'U':		/* pig2532 2005.12.10 */
+		return(board_query());
     }
 #endif
     if ((ret==FULLUPDATE)&&(arg->oldpos!=0)) {
@@ -1721,7 +1723,7 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     move(0, 0);
     prints("选择一个讨论区 (英文字母大小写皆可, 按\033[1;32m#\033[0m进入\033[1;31m关键字或版面名称\033[0m搜索)");
     clrtoeol();
-    prints("\n输入讨论区名 (按空白键自动补齐): ");
+    prints("\n输入讨论区名 (按空白键或Tab键自动补齐): ");
     clrtoeol();
 
     make_blist(addfav);               /* 生成所有Board名 列表 */
@@ -1787,6 +1789,36 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     setbdir(arg->mode, arg->direct, currboard->filename);     /* direct 设定 为 当前board目录 */
     }
     return CHANGEMODE;
+}
+
+/* 查询版面信息 by pig2532 on 2005-12-10 */
+int board_query()
+{
+	char bname[STRLEN];
+	int bid;
+	clear();
+	move(2,0);
+	clrtobot();
+	prints("请输入您要查询的版面英文名称，按空格键或Tab键补齐。");
+	move(1,0);
+	prints("版面查询：");
+	make_blist(0);
+	namecomplete(NULL, bname);
+	if(*bname=='\0')
+	{
+		return FULLUPDATE;
+	}
+    bid = getbnum(bname);
+    if (bid == 0)
+	{
+        move(2, 0);
+        prints("不正确的讨论区.");
+        clrtoeol();
+        pressreturn();
+        return FULLUPDATE;
+    }
+	show_boardinfo(bname);
+	return FULLUPDATE;
 }
 
 int digest_mode(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
@@ -4617,6 +4649,9 @@ static int set_acl_list_key(struct _select_def *conf, int key)
         modify_user_mode(oldmode);
         clear();
         return SHOW_REFRESH;
+	case 'U':		/* pig2532 2005.12.10 */
+		board_query();
+        return SHOW_REFRESH;
     }
 
     return SHOW_CONTINUE;
@@ -5035,6 +5070,9 @@ static int content_key(struct _select_def *conf, int key)
         t_query(NULL);
         modify_user_mode(oldmode);
         return SHOW_REFRESH;
+	case 'U':		/* pig2532 2005.12.10 */
+		board_query();
+        return SHOW_REFRESH;
 	default:
 		break;
 	}
@@ -5231,6 +5269,9 @@ static int tmpl_key(struct _select_def *conf, int key)
         modify_user_mode(QUERY);
         t_query(NULL);
         modify_user_mode(oldmode);
+        return SHOW_REFRESH;
+	case 'U':		/* pig2532 2005.12.10 */
+		board_query();
         return SHOW_REFRESH;
 	default :
 		break;
@@ -6094,7 +6135,6 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
 #ifdef INTERNET_EMAIL
     {'F', (READ_KEY_FUNC)mail_forward,NULL},
-    {'U', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 F 转发信件"},
 #endif
     {Ctrl('R'), (READ_KEY_FUNC)post_reply,NULL},
 

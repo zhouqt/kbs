@@ -206,7 +206,7 @@ char *prompt, *data;
                 ClearSubList(cwlist);
                 break;
             }
-            if (ch == ' ') {
+            if ((ch == ' ')||(ch == '\t')) {	/* add TAB key by pig2532 on 2005.12.10 */
                 int col, len;
 
                 if (NumInList(cwlist) == 1) {
@@ -445,7 +445,7 @@ char *prompt, *data;
                     data[IDLEN] = 0;
                 }
                 break;
-            } else if (ch == ' ') {
+            } else if ((ch == ' ')||(ch == '\t')) {		/* add TAB key by pig2532 on 2005.12.10 */
                 int col, len;
 
                 if (cwnum == 1) {

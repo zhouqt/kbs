@@ -699,6 +699,9 @@ static int fav_key(struct _select_def *conf, int command)
             modify_user_mode(oldmode);
             return SHOW_REFRESH;
         }
+	case 'U':		/* pig2532 2005.12.10 */
+		board_query();
+        return SHOW_REFRESH;
 	/*add by stiger */
     case 'H':
 	{
@@ -855,7 +858,7 @@ static int fav_key(struct _select_def *conf, int command)
             }
                 move(0, 0);
                 clrtoeol();
-                prints("输入讨论区英文名 (大小写皆可，按空白键自动搜寻): ");
+                prints("输入讨论区英文名 (大小写皆可，按空白键或Tab键自动搜寻): ");
                 clrtoeol();
 
                 make_blist(0);

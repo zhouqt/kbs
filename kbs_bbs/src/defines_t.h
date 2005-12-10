@@ -106,6 +106,7 @@ void docmdtitle(char *title, char *prompt);
 
 /* bbs.c*/
 int read_hot_info();
+int board_query();
 #ifdef NEWSMTH
 int set_board_rule(struct boardheader *bh, int flag);
 int b_rules_edit();
@@ -270,6 +271,7 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag);
 void record_exit_time();
 
 /* boards_t.c */
+int show_boardinfo(const char *bname);
 int query_bm_core(const char *userid,int limited);
 int show_authorBM(int ent, struct fileheader *fileinfo, char *direct);
 int choose_board(int newflag, const char *boardprefix,int group,int yank_flag);

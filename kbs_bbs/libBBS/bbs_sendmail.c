@@ -495,7 +495,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5,
     smtp_recipient_t recipient;
     const smtp_status_t *status;
     enum notify_flags notify = Notify_NOTSET;
-    char *server;
+    const char *server;
     char newbuf[257];
 	char* encodestr;
 
