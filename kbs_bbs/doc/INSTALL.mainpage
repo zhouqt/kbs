@@ -11,26 +11,27 @@ $Id$
 
 
 
-1.一些约定的说明 
+1. 一些约定的说明 
  $(BBSHOME)     表示 bbs 的安装目录，本文中指定为 /home/bbs 
  $(WWWHOME)     表示 apache 设定的 DocumentRoot，在本文中指定为 /var/www/html 
  $(SRCDIR)      表示存放 kbs_bbs 源代码的目录
 
-2.适用本文操作的对象 
+2. 适用本文操作的对象 
 您的 KBS 系统的 telnet & www 方式已经安装成功，可以正常运行，通过 WWW 方式可以
 正常访问您的 bbs，只是您的 bbs 的首页导读没有内容或者出现 Warning: 
 domxml_open_file().....等警告。
 
-3.首页导读安装步骤
+3. 首页导读安装步骤
 
 3.1 确认 WWW 登录/发文等基本功能没有问题。确认 $(WWWHOME)/site.php 所有设置正确。
 
-3.2 修改 $(WWWHOME)/mainpage.php。主要是修改上面的 logo，其他内容尽量保持一致，
-当然页面的表格字体颜色背景等等尽可以发挥自己的能力进行美化：）
+3.2 修改 $(WWWHOME)/mainpage.php
+主要是修改上面的 logo，其他内容尽量保持一致，当然页面的表格字体颜色背景等等尽
+可以发挥自己的能力进行美化：）
 
 3.3  为首页导读生成必要的 xml 文件
 
-    3.3.1 首页导读各元素和 xml 文件的对应关系简表
+3.3.1 首页导读各元素和 xml 文件的对应关系简表
 
     所有需要的 xml 文件都是保存在 $(BBSHOME)/xml/ 目录的，如果您的站台没有此目录 
     请以 bbs 帐号在 $(BBSHOME) 建立此目录。
@@ -58,7 +59,7 @@ domxml_open_file().....等警告。
   
     今日祝福       bless.xml     gen_blessing_list_html()    poststat
   
-    3.3.2 crontab 当中有关首页导读的部分
+3.3.2 crontab 当中有关首页导读的部分
   
     参考 $(SRCDIR)/contrib/cron.SMTH，在 bbs 帐号的 crontab 里面调用各程序生
     成以上 xml 的部分如下所示。请添加到您的 bbs 帐号的 crontab 里面。注意以
@@ -82,7 +83,7 @@ domxml_open_file().....等警告。
     按 ;3，此文章进入 Recommand 版，站务在 Recommend 版需要推荐的文章前面按 g
     就可以使得此文章出现在 web 首页导读的推荐文章了。
   
-    3.3.3 手工生成 rcmdbrd.xml
+3.3.3 手工生成 rcmdbrd.xml
   
     编辑，$(BBSHOME)/xml/rcmdbrd.xml，按照以下格式，感谢 windinsn 提供
     <?xml version="1.0" encoding="GBK"?>
@@ -99,7 +100,7 @@ domxml_open_file().....等警告。
 
 4 mainpage.php vs mainpage.html
 
-     4.1 到底选择默认首页为 mainpage.html 还是 mainpage.php？
+4.1 到底选择默认首页为 mainpage.html 还是 mainpage.php？
      
      site.php 中定义 define("MAINPAGE_FILE","mainpage.html")
      其含义为定义默认的首页导读页面为 mainpage.html。如果定义默认导读首页页面为
@@ -109,7 +110,7 @@ domxml_open_file().....等警告。
      页导读页面，同时为了保证首页导读的实时性，应该用 wget 自动定时从
      mainpage.php 更新 mainpage.html。
      
-     4.2 自动定时更新 mainpage.html
+4.2 自动定时更新 mainpage.html
      
      将以下内容添加到 bbs 帐号的 crontab，即可自动从 mainpage.php 生成
      mainpage.html。间隔时间可以自行调整。以下命令为一行，不要折行。

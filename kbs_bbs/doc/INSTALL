@@ -24,7 +24,7 @@ FreeBSD、Solaris 8/9 for X86/SPARC 等)上的编译和安装，主要讨论用完全定制的方
 2002.6.29
   flyriver v1.0
 
-1. 需要的软件:
+1. 需要的软件
 zlib                   必须
 libesmtp > 0.8         可选
 autoconf-2.57          可选      如果从 cvs 下载源代码编译安装则必需
