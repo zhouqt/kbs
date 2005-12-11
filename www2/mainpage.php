@@ -31,7 +31,7 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan1.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;本日热点话题讨论&gt;&gt;</td>
@@ -159,7 +159,7 @@ while($board = array_shift($boards))
 	$sec_boards_num[$secid]++;
 }
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan3.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;分类精彩讨论区&gt;&gt;</td>
@@ -224,11 +224,11 @@ $doc = domxml_open_file($newboard_file);
 $root = $doc->document_element();
 $boards = $root->child_nodes();
 ?>
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">新开版面</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">新开版面</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -286,11 +286,11 @@ $doc = domxml_open_file($boardrank_file);
 $root = $doc->document_element();
 $boards = $root->child_nodes();
 ?>
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">推荐版面</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">推荐版面</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -338,7 +338,7 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan2.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;推荐文章&gt;&gt;</td>
@@ -397,11 +397,11 @@ $root = $doc->document_element();
 $boards = $root->child_nodes();
 
 ?>
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">人气排名</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">人气排名</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -444,11 +444,11 @@ $boards = $root->child_nodes();
 
 ?>
 <a name="#todaybless">
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">今日祝福</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">今日祝福</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -481,7 +481,8 @@ while($board = array_shift($boards))
 <head>
 <title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<link href="mainpage.css" rel="stylesheet" type="text/css">
+<script src="www2-main.js"></script>
+<script language="javascript">writeCssMainpage();</script>
 </head>
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
