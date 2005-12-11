@@ -546,8 +546,10 @@ char *port;
 /*#endif*/
 
     snprintf(pidfile, 30, "/usr/tmp/innbbsd-%s.pid", port);
+#ifdef DEBUG
     if (!inetdstart)
         fprintf(stderr, "PID file is in %s\n", pidfile);
+#endif
 
     {
         int s;
@@ -698,8 +700,10 @@ char **argv;
 
     initial_bbs("feed");
 
+#ifdef DEBUG
     if (!inetdstart)
         fprintf(stderr, "Try to listen in port %s and path %s\n", port, path);
+#endif
 
     HISmaint();
     HISsetup();
