@@ -4781,6 +4781,8 @@ PHP_MINIT_FUNCTION(smth_bbs)
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_WRITE", BOARD_CLUB_WRITE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_CLUB_HIDE", BOARD_CLUB_HIDE, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_BOARD_GROUP", BOARD_GROUP, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_MAXATTACHMENTCOUNT", MAXATTACHMENTCOUNT, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_MAXATTACHMENTSIZE", MAXATTACHMENTSIZE, CONST_CS | CONST_PERSISTENT);
 	chdir(old_cwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");
@@ -9197,13 +9199,13 @@ PHP_FUNCTION(bbs2_readfile)
                     case '\'':
                     case '\"':
                     case '\\':
-                        *bufptr++ = '\\';
+                        *bufptr++ = '\\'; /* TODO: boundary check */
                         /* break is missing *intentionally* */
                     default:
-                        *bufptr++ = *attachfilename++;
+                        *bufptr++ = *attachfilename++;  /* TODO: boundary check */
                 }
             }
-            sprintf(bufptr, "', %ld, %ld);", attach_len, attach_pos);
+            sprintf(bufptr, "', %ld, %ld);", attach_len, attach_pos);  /* TODO: boundary check */
 
             l = strlen(buf);
             if (output_buffer_len + l > output_buffer_size) {

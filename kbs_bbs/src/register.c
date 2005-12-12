@@ -223,7 +223,7 @@ int invalid_realmail(userid, email, msize)
         }
     }
 
-#ifdef HAVE_TSINGHUA_INFO_REGISTER
+#if 0
 
     if(len >= 3)
     {

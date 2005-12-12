@@ -40,6 +40,8 @@
  *             */
 #define DOTIMEOUT 1
 
+#define USE_DEFAULT_MODE
+
 /* 
  *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
  *    */
@@ -347,7 +349,9 @@ typedef struct fileheader fileheader_t;
 /**
 attach define
 */
-#define ATTACHTMPPATH "boards/_attach"
+#define MAXATTACHMENTCOUNT	20                            //文章附件个数上限
+#define MAXATTACHMENTSIZE 5*1024*1024                     //文章附件文件长度上限
+
 
 #define CHECK_IP_LINK 1
 

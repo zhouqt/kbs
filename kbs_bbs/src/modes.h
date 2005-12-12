@@ -100,3 +100,6 @@
 #define POSTTMPL 72
 #define TETRIS 73
 #define WINMINE 74
+#define PC 75
+#define QUERYBOARD 76
+

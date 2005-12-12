@@ -383,7 +383,8 @@ int pc_sec()
     struct _select_def group_conf;
     POINT *pts;
     int i;
-
+    
+    modify_user_mode(PC);
     clear();
 
     bzero(&group_conf, sizeof(struct _select_def));

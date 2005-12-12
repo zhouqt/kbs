@@ -681,11 +681,6 @@ int orig_tmpl_save(struct a_template * ptemp, int temp_num, char *board);
     int check_filter(char *patternfile, char *checkfile, int defaultval, session_t* session);
     int check_badword_str(char *string, int str_len, session_t* session);
     
-/* register */
-#ifdef HAVE_TSINGHUA_INFO_REGISTER
-int auto_register(char* userid,char* email,int msize, session_t* session);
-#endif
-
 /* libc */
 #ifndef HAVE_MEMMEM
 void *memmem(register const void *s, size_t slen, register const void *p, 

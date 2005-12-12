@@ -1796,6 +1796,9 @@ int board_query()
 {
 	char bname[STRLEN];
 	int bid;
+    int oldmode;
+    oldmode = uinfo.mode;
+    modify_user_mode(QUERYBOARD);
 	clear();
 	move(2,0);
 	clrtobot();
@@ -1804,20 +1807,19 @@ int board_query()
 	prints("版面查询：");
 	make_blist(0);
 	namecomplete(NULL, bname);
-	if(*bname=='\0')
-	{
-		return FULLUPDATE;
+	if(*bname!='\0') {
+        bid = getbnum(bname);
+        if (bid == 0)
+    	{
+            move(2, 0);
+            prints("不正确的讨论区.");
+            clrtoeol();
+            pressreturn();
+        } else {
+            show_boardinfo(bname);
+        }
 	}
-    bid = getbnum(bname);
-    if (bid == 0)
-	{
-        move(2, 0);
-        prints("不正确的讨论区.");
-        clrtoeol();
-        pressreturn();
-        return FULLUPDATE;
-    }
-	show_boardinfo(bname);
+    modify_user_mode(oldmode);
 	return FULLUPDATE;
 }
 

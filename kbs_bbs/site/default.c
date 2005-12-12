@@ -360,15 +360,36 @@ char *ModeType(mode)
         return "戒网中..";
     case SERVICES:
         return "休闲娱乐..";
-	case FRIENDTEST:  return "心有灵犀";
-	case TETRIS:  return "俄罗斯方块";
-	case WINMINE:  return "扫雷";
+	case FRIENDTEST:
+        return "心有灵犀";
     case CHICKEN:
-	return "星空战斗鸡";
+        return "星空战斗鸡";
+    case KILLER:
+        return "杀人游戏";
+    case CALENDAR:
+        return "万年历";
+    case CALENEDIT:
+        return "日记本";
+    case DICT:
+        return "查字典";
+    case CALC:
+        return "计算器";
+    case SETACL:
+        return "登录控制";
+    case EDITOR:
+        return "编辑器";
 	case HELP:
-	return "帮助";
+		return "帮助";
 	case POSTTMPL:
-	return "模版发文";
+		return "模板发文";
+	case TETRIS:
+        return "俄罗斯方块";
+	case WINMINE:
+        return "扫雷";
+    case PC:
+        return "个人文集";
+    case QUERYBOARD:
+        return "查询版面";
     default:
         return "去了那里!?";
     }
