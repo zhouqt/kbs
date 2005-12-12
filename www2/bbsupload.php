@@ -1,16 +1,5 @@
 <?php
 
-$filename_trans = array(" " => "_", 
-	";" => "_", 
-	"|" => "_",
-	"&" => "_",
-	">" => "_",
-	"<" => "_",
-	"*" => "_",
-	"\"" => "_",
-	"'" => "_"
-	);
-
 	$filenames=array();
 	$filesizes=array();
 	global $errno;
@@ -52,7 +41,7 @@ $filename_trans = array(" " => "_",
 				$act_attachname=$tok;
 					$tok = strtok("/\\");
 			}
-			$act_attachname=strtr($act_attachname,$filename_trans);
+			$act_attachname=bbs_filteruploadfilename($act_attachname);
 			$act_attachname=substr($act_attachname,-60);
 			if ($act_attachname!="") {
 					if ($_FILES['attachfile']['size']>ATTACHMAXSIZE) 

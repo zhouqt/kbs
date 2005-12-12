@@ -1,8 +1,8 @@
 <?php
-define("ATTACHMAXSIZE","1048576"); //附件总字节数的上限，单位 bytes
-define("ATTACHMAXCOUNT","20");     //附件数目的上限
-define("MAINPAGE_FILE","mainpage.html"); //首页导读的 URL
-define("QUOTED_LINES", BBS_QUOTED_LINES);        //web 回文保留的引文行数
+define("ATTACHMAXSIZE",BBS_MAXATTACHMENTSIZE);        //附件总字节数的上限，单位 bytes
+define("ATTACHMAXCOUNT",BBS_MAXATTACHMENTCOUNT);      //附件数目的上限
+define("MAINPAGE_FILE","mainpage.html");              //首页导读的 URL
+define("QUOTED_LINES", BBS_QUOTED_LINES);             //web 回文保留的引文行数
 
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");
 $section_names = array(
@@ -23,8 +23,8 @@ $section_names = array(
 
 // 界面方案的名称和缩略图路径
 $style_names = array(
-	array("默认方案（蓝色经典）","/images/0/thumb.jpg"),
-	array("乱七八糟（猪猪猪测试用）","/images/1/thumb.jpg")
+	array("默认方案（蓝色经典）","images/0/thumb.jpg"),
+	array("乱七八糟（猪猪猪测试用）","images/1/thumb.jpg")
 );
 
 ?>
