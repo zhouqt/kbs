@@ -7,10 +7,18 @@
 		if ($currentuser["userid"] == "guest")
 			html_error_quit("guest 不能保存设置！");
 		$new_wwwparams = @intval($_COOKIE["WWWPARAMS"]);
+		$new_styleid = $_POST["styleid"];
+		$stylecount = count($style_names);
+		if (($new_styleid < 0) | ($new_styleid >= $stylecount))
+		{
+			$new_styleid = 0;
+		}
+		$new_styleid = $new_styleid << 7;
+		$new_wwwparams = ($new_wwwparams & ~0xF80) | ($new_styleid & 0xF80);
 		bbs_setwwwparameters($new_wwwparams); /* TODO: return value ? */
 ?>
 <script language="javascript">
-	saveParaCookie(<?php print($_POST["styleid"]); ?> << 7, 0x780);
+	saveParaCookie(<?php print($_POST["styleid"]); ?> << 7, 0xF80);
 	parent.document.location.reload();
 </script>
 <?php
@@ -48,7 +56,7 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
-		stylenum = (c & 0x780) >>7;
+		stylenum = (c & 0xF80) >>7;
 		getObj('style'+stylenum).checked = true;
 	});
 	function KCNymsw() {

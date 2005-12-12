@@ -473,15 +473,9 @@ function sizer(flag) {
 }
 
 function writeCss() {
-	cssID = (readParaCookie() & 0x780) >> 7;
-	if (cssID == 0)
-	{
-		cssURL='www2-default.css';
-	}
-	else
-	{
-		cssURL='www2-style'+cssID+'.css';
-	}
+	var cssID,cssURL;
+	cssID = (readParaCookie() & 0xF80) >> 7;
+	cssURL = 'images/' + cssID + '/www2-default.css';
 	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
 	bfsI = readParaCookie() & 7;
 	if (bfsI <= 0 || bfsI >= bfsArr.length) bfsI = bfsD;
@@ -493,34 +487,23 @@ function writeCss() {
 }
 
 function writeCssLeft() {
-	cssID = (readParaCookie() & 0x780) >> 7;
-	if (cssID == 0)
-	{
-		cssURL='bbsleft.css';
-	}
-	else
-	{
-		cssURL='bbsleft'+cssID+'.css';
-	}
+	var cssID,cssURL;
+	cssID = (readParaCookie() & 0xF80) >> 7;
+	cssURL = 'images/' + cssID + '/bbsleft.css';
 	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
 }
 
 function writeCssMainpage() {
-	cssID = (readParaCookie() & 0x780) >> 7;
-	if (cssID == 0)
-	{
-		cssURL='mainpage.css';
-	}
-	else
-	{
-		cssURL='mainpage'+cssID+'.css';
-	}
+	var cssID,cssURL;
+	cssID = (readParaCookie() & 0xF80) >> 7;
+	cssURL = 'images/' + cssID + '/mainpage.css';
 	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
 }
 
 function putImageCode(filename,otherparam)
 {
-	cssID = (readParaCookie() & 0x780) >> 7;
+	var cssID;
+	cssID = (readParaCookie() & 0xF80) >> 7;
 	return('<img src="images/'+cssID+'/'+filename+'" '+otherparam+'>');
 }
 
@@ -600,7 +583,7 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 	var str = '<div class="doc"><div class="docTab">';
 	if (!ftype && isLogin()) {
 		url = 'bbspst.php?board=' + this.board;
-		str += '<div class="post"><a href="' + url + '"><script language="javascript">putImage(\'postnew.gif\',\'alt="发表话题" onclick="location.href=\\\'' + url + '\\\';"\');</script></a></div>';
+		str += '<div class="post"><a href="' + url + '">' + putImageCode('postnew.gif','alt="发表话题" onclick="location.href=\'' + url + '\';"') + '</a></div>';
 	}
 
 	var mls = [[ftype || man, "普通模式", "bbsdoc.php?board=" + this.board],
@@ -725,7 +708,7 @@ docWriter.prototype.t = function() {
 	if (!this.ftype) {
 		if (isLogin()) {
 			url = 'bbspst.php?board=' + this.board;
-			ret += '<a href="' + url + '" class="flimg"><script language="javascript">putImage(\'postnew.gif\',\'alt="发表话题" onclick="location.href=\\\'' + url + '\\\';"\');</script></a>';
+			ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" onclick="location.href=\'' + url + '\';"') + '</a>';
 		}
 	} else {
 		ret += '<input type="hidden" name="ftype" value="' + this.ftype + '"/>';
@@ -774,9 +757,9 @@ conWriter.prototype.h = function() {
 	var ret = '<div class="conPager smaller right">';
 	if (isLogin()) {
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
-		ret += '<a href="' + url + '" class="flimg"><script language="javascript">putImage(\'reply.gif\',\'alt="回复帖子" onclick="location.href=\\\'' + url + '\\\';"\');</script></a>';
+		ret += '<a href="' + url + '" class="flimg">' + putImageCode('reply.gif','alt="回复帖子" onclick="location.href=\'' + url + '\';"') + '</a>';
 		url = 'bbspst.php?board=' + this.board;
-		ret += '<a href="' + url + '" class="flimg"><script language="javascript">putImage(\'postnew.gif\',\'alt="发表话题" onclick="location.href=\\\'' + url + '\\\';"\');</script></a>';
+		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
 	if (this.ftype == 0) {
 		ret += '[<a href="' + this.baseurl + '&p=p">上一篇</a>] ';

@@ -1,0 +1,461 @@
+* {
+	font-family: ËÎÌו;
+	font-size: 100%;
+}
+body {
+/* this will be defined in writeCss() function
+	font-size: 14px; */
+	padding: 0 0.3em 1em 0;
+	margin: 0;
+	text-align: center;
+
+	scrollbar-3dlight-color: #170708;
+	scrollbar-arrow-color: #000000;
+	scrollbar-base-color: #170708;
+	scrollbar-darkshadow-color: #ffffff;
+	scrollbar-face-color: #EEEAEB;
+	scrollbar-highlight-color: #FBFDFC;
+	scrollbar-shadow-color: #170708;
+}
+
+
+/* general classes */
+/* move into writeCss()
+.smaller {
+	font-size: 85%;
+} */
+
+a:link, .clickable {
+	color: #FF6699;
+	text-decoration: none;
+	cursor: pointer;
+	cursor: hand; /* stupid IE */
+}
+a:active {
+	color: #FFFF99;
+	text-decoration: underline;
+}
+a:visited {
+	color: #000099;
+	text-decoration: none;
+}
+a:hover {
+	color: #008800;
+	text-decoration: underline;
+}
+
+img {
+	border: 0;
+	vertical-align: middle;
+}
+
+pre {
+	margin: 0;
+}
+
+form {
+	margin: 0 auto;
+}
+
+input:focus {
+	background-color: #2277BB;
+}
+textarea, input[type="text"], input[type="password"] {
+	border: 1px solid #808080;
+	padding: 0.1em 0.2em;
+}
+input[type="button"], input[type="submit"], input[type="reset"] {
+	padding: 0 0.5em;
+}
+textarea {
+	width: 40em;
+	height: 20em;
+}
+textarea.shorter {
+	height: 5em;
+}
+
+
+form.small, div.small {
+	text-align: left;
+	margin: 0px auto;
+	width: 20em;
+}
+form.large, div.large {
+	text-align: left;
+	margin: 0px auto;
+	width: 42em;
+}
+form.medium, div.medium {
+	text-align: left;
+	margin: 0px auto;
+	width: 30em;
+}
+
+form div.inputs {
+	line-height: 2em;
+}
+form div.inputs label {
+	text-align: right;
+	padding-right: 2em;
+}
+form div.inputs br {
+	clear: both;
+}
+form.align div.inputs label {
+	width: 50%;
+	float: left;
+	padding-right: 1em;
+}
+fieldset {
+	border: 1px solid #CC44CC;
+	padding: 0 0.5em 0.5em 0.5em;
+	margin: 0.5em auto 0 auto;
+}
+fieldset legend {
+	padding: 0.5em;
+	color: black;
+}
+
+.center {
+	text-align: center;
+}
+.right {
+	text-align: right;
+}
+.left {
+	text-align: left;
+}
+.wide {
+	width: 98%;
+}
+.fleft {
+	float: left;
+}
+.fright {
+	float: right;
+}
+.flimg {
+	float: left;
+	width: 72px; /* IE5 for Mac workaround */
+	margin: 0 0.5em 0 0;
+}
+.clear {
+	clear: both;
+}
+.strong {
+	font-weight: bold;
+}
+.normal {
+	font-weight: normal;
+}
+.red {
+	color: red;
+}
+.green {
+	color: green;
+}
+.gray {
+	color: gray;
+}
+.relative {
+	position: relative;
+}
+
+h1 {
+	margin: 0.4em auto;
+	font-size: 120%;
+	padding: 0;
+	display: table;
+}
+h1.bt { /* board title */
+	margin: -0.2em auto 0 auto;
+}
+
+
+/* navigation bar on the top */
+div.nav {
+	padding: 0 0 0 1em;
+	margin: 0.2em 0 0.4em 0;
+	background-color: #eeFFee;
+	text-align: left;
+	height: 1.1em;
+}
+
+
+div.warning {
+	text-align: center;
+	padding-top: 3em;
+	width: 100%;
+	color: red;
+	font-weight: bold;
+}
+
+
+/* main content area */
+div.main {
+	text-align: left;
+	padding: 5px;
+	margin: 0px auto;
+	display: table;
+}
+
+
+table.fixed {
+	table-layout:fixed;
+}
+
+/* default table style */
+table.main {
+	text-align: left;
+	margin: 5px auto;
+	border: 0;
+	border-collapse: collapse;
+	display: table;
+}
+table.main caption {
+	margin: 0 auto;
+	padding: 0.4em 0;
+	font-weight: bold;
+	font-size: 120%;
+}
+table.main td {
+	border: 1px solid #CCCCCC;
+	padding: 0.15em 0.5em;
+}
+table.main tr.odd {
+    background-color: #f6f6f6;
+}
+table.main tr.even {
+    background-color: white;
+}
+table.main th {
+	text-align: center;
+	background-color: #FFFBD6;
+	color: white;
+	font-weight: normal;
+	border-left: 1px solid #CCCCCC;
+	border-right: 1px solid #CCCCCC;
+	padding: 0.22em 0.4em;
+}
+table.main col {
+	text-align: left;
+}
+
+
+/* operation link area */
+div.oper {
+	text-align: center;
+	padding: 1em 0;
+	line-height: 1.5em;
+}
+
+
+
+/* bbsdoc.php bbs0an.php styles */
+div.doc {
+	position: relative;
+	padding-top: 1.5em;
+	width: 98%;
+	margin: 0.5em auto 0 auto;
+}
+div.doc table.main {
+	width: 100%;
+	margin-top: 0;
+}
+div.docTab {
+	position: absolute;
+	width: 100%;
+	top: 0;
+	right: 0;
+}
+div.docTab a, div.docTab b {
+	border: 0.1em solid #718BD6;
+	padding: 0.3em;
+	margin: 0 0 0 0.2em;
+	float: right;
+	/*
+	 * so what's the deal? I don't want images, and I don't want stupid rounded corner
+	 * javascript library ... then why not just promote Firefox here...
+	 */
+	-moz-border-radius: 0.5em 0.5em 0 0;
+}
+div.docTab b {
+	background-color: #718BD6;
+	color: white;
+}
+div.docTab a:hover {
+	background-color: #718BD6;
+	color: white;
+	text-decoration: none;
+}
+div.docTab div.post {
+	position: absolute;
+	text-align: left;
+	left: 0;
+	bottom: 0.5em;
+}
+div.docTab div.post a {
+	background-color: white;
+	float: none;
+	border: 0;
+	padding: 0;
+}
+form.docPager {
+	width: 100%;
+	text-align: right;
+}
+
+/* article area */
+div.article {
+	width: 98%;
+	border: 1px solid #CCCCCC;
+	margin: 0 auto;
+	text-align: left;
+	line-height:1.2em;
+	word-wrap:break-word;
+	word-break:break-all;
+	padding: 0.2em 0.3em;
+	background-color: #F997F7;
+}
+
+
+/* bbscon.php bbstcon.php */
+div.conPager {
+	width: 98%;
+	border: 1px solid #718BD6;
+	margin: -1px auto;
+	padding: 0.2em 0.3em;
+	line-height: 21px;
+	height: 21px;
+	background-color: #718BD6;
+	color: white;
+	position: relative;
+}
+div.conPager a, div.conPager a:active, div.conPager a:visited, div.conPager a:hover {
+	color: white;
+}
+
+/* bbstcon.php styles */
+div.conPager .tnum {
+	font-weight: bold;
+	position: absolute;
+	top: 0.2em;
+	right: 0.235em;
+}
+div.tnav {
+	background-color: #E0E0E0;
+	padding: 0.2em 0.5em;
+	margin: 0.9em 0 0 -0.3em;
+	text-align: left;
+}
+h1.ttit {
+	font-size: 120%;
+	text-align: left;
+	width: 95%;
+}
+
+
+/* bbsfoot.php */
+div.footer {
+	padding: 0.3em 0.5em;
+	margin: 0;
+	text-align: left;
+	font-size: 90%;
+}
+
+
+/* bbsgetmsg.php */
+div#msgs {
+	width: 100%;
+	text-align: left;
+	height: 100%;
+}
+body.msgs {
+	background-color: #f0ffd0;
+}
+
+
+
+/* board find box */
+div.float {
+	position: absolute;
+	border: 3px outset #718BD6;
+}
+
+
+/* bbsrecon.php */
+div.recnav {
+	float: right;
+	border-width: 0 0 1px 1px;
+	border-style: solid;
+	border-color: #CCCCCC;
+	padding: 0.5em;
+	margin: -0.2em;
+}
+
+
+/* some legacy styles */
+font.f006 {color: #00b4ae;}
+font.f001 {color: #e87874;} /* bbsxsearch.php might use it */
+.c32 {color: green;}
+.c36 {color: #33a0a0;}
+.b3 {font-weight: bolder;color: #CC3300;text-decoration: none;} /* /brelated/ */
+
+
+/* error message */
+table.error {
+	margin: 8em auto 1em auto;
+	text-align: center;
+	border: 1px solid #cccccc;
+	border-collapse: collapse;
+	display: table;
+}
+table.error th {
+	color: red;
+	background-color: #f6f6f6;
+	border: 1px solid #cccccc;
+	padding: 0.7em;
+}
+table.error td {
+	padding: 0.7em;
+}
+
+
+/* bbsdoc.php right top corner pager link */
+.pagerlink {
+	position: absolute;
+	top: 0.2em;
+	right: 0.2em;
+	color: gray;
+}
+.pagerlink a, .pagerlink a:active, .pagerlink a:visited {
+	color: white;
+	text-decoration: none;
+}
+.pagerlink a:hover {
+	color: red;
+	text-decoration: none;
+}
+
+
+@media screen {
+	#fontSizer {
+		position: fixed !important;
+		position: absolute;
+		top: 1.3em;
+		z-index: 10;
+		font-size: 85%;
+		padding: 0.1em 0.5em;
+		border: 2px solid #718BD6;
+		background-color: #f0f0f0;
+		filter: alpha(opacity=80);
+		opacity:.80;
+		right: 0;
+	}
+}
+@media print {
+	#fontSizer {
+		display: none;
+	}
+}
