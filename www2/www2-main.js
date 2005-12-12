@@ -471,8 +471,18 @@ function sizer(flag) {
 		}
 	}
 }
+
 function writeCss() {
-	document.write('<link rel="stylesheet" type="text/css" href="www2-default.css" />');
+	cssID = (readParaCookie() & 0x780) >> 7;
+	if (cssID == 0)
+	{
+		cssURL='www2-default.css';
+	}
+	else
+	{
+		cssURL='www2-style'+cssID+'.css';
+	}
+	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
 	bfsI = readParaCookie() & 7;
 	if (bfsI <= 0 || bfsI >= bfsArr.length) bfsI = bfsD;
 	var ret = '<style type="text/css" title="myStyle"><!--';
@@ -480,6 +490,43 @@ function writeCss() {
 	ret += '.smaller{font-size:' + bfsSma[bfsI] + '%;}';
 	ret += '--></style>';
 	document.write(ret);
+}
+
+function writeCssLeft() {
+	cssID = (readParaCookie() & 0x780) >> 7;
+	if (cssID == 0)
+	{
+		cssURL='bbsleft.css';
+	}
+	else
+	{
+		cssURL='bbsleft'+cssID+'.css';
+	}
+	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
+}
+
+function writeCssMainpage() {
+	cssID = (readParaCookie() & 0x780) >> 7;
+	if (cssID == 0)
+	{
+		cssURL='mainpage.css';
+	}
+	else
+	{
+		cssURL='mainpage'+cssID+'.css';
+	}
+	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
+}
+
+function putImageCode(filename,otherparam)
+{
+	cssID = (readParaCookie() & 0x780) >> 7;
+	return('<img src="images/'+cssID+'/'+filename+'" '+otherparam+'>');
+}
+
+function putImage(filename,otherparam)
+{
+	document.write(putImageCode(filename,otherparam));
 }
 
 var writeBM_str;
@@ -552,7 +599,8 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 
 	var str = '<div class="doc"><div class="docTab">';
 	if (!ftype && isLogin()) {
-		str += '<div class="post"><a href="bbspst.php?board=' + this.board + '"><img src="images/postnew.gif" alt="发表话题"></a></div>';
+		url = 'bbspst.php?board=' + this.board;
+		str += '<div class="post"><a href="' + url + '"><script language="javascript">putImage(\'postnew.gif\',\'alt="发表话题" onclick="location.href=\\\'' + url + '\\\';"\');</script></a></div>';
 	}
 
 	var mls = [[ftype || man, "普通模式", "bbsdoc.php?board=" + this.board],
@@ -677,7 +725,7 @@ docWriter.prototype.t = function() {
 	if (!this.ftype) {
 		if (isLogin()) {
 			url = 'bbspst.php?board=' + this.board;
-			ret += '<a href="' + url + '" class="flimg"><img src="images/postnew.gif" alt="发表话题" onclick="location.href=\'' + url + '\';"/></a>';
+			ret += '<a href="' + url + '" class="flimg"><script language="javascript">putImage(\'postnew.gif\',\'alt="发表话题" onclick="location.href=\\\'' + url + '\\\';"\');</script></a>';
 		}
 	} else {
 		ret += '<input type="hidden" name="ftype" value="' + this.ftype + '"/>';
@@ -709,12 +757,13 @@ docWriter.prototype.t = function() {
 };
 
 
-function conWriter(ftype, board, bid, id, gid, file, favtxt, num) {
+function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 	this.board = escape(board);
 	this.ftype = ftype;
 	this.bid = bid;
 	this.id = id;
 	this.gid = gid;
+	this.reid = reid;
 	this.file = file;
 	this.favtxt = favtxt;
 	this.num = num;
@@ -725,9 +774,9 @@ conWriter.prototype.h = function() {
 	var ret = '<div class="conPager smaller right">';
 	if (isLogin()) {
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
-		ret += '<a href="' + url + '" class="flimg"><img src="images/reply.gif" alt="回复帖子" onclick="location.href=\'' + url + '\';"/></a>';
+		ret += '<a href="' + url + '" class="flimg"><script language="javascript">putImage(\'reply.gif\',\'alt="回复帖子" onclick="location.href=\\\'' + url + '\\\';"\');</script></a>';
 		url = 'bbspst.php?board=' + this.board;
-		ret += '<a href="' + url + '" class="flimg"><img src="images/postnew.gif" alt="发表话题" onclick="location.href=\'' + url + '\';"/></a>';
+		ret += '<a href="' + url + '" class="flimg"><script language="javascript">putImage(\'postnew.gif\',\'alt="发表话题" onclick="location.href=\\\'' + url + '\\\';"\');</script></a>';
 	}
 	if (this.ftype == 0) {
 		ret += '[<a href="' + this.baseurl + '&p=p">上一篇</a>] ';
@@ -755,6 +804,7 @@ conWriter.prototype.t = function() {
 		ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '">同主题展开</a>] ';
 		ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.gid + '">同主题第一篇</a>] ';
 		ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.id + '">从此处展开</a>] ';
+		ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.reid + '" title="跳转到本文所回复的文章">溯源</a>] ';
 	}
 	ret += '[<a href="' + url + '">返回版面' + dir_name(this.ftype) + '</a>] ';
 	ret += '[<a href="javascript:history.go(-1)">快速返回</a>]<br/>';

@@ -141,7 +141,7 @@
 <h1><?php echo $brdarr["NAME"]; ?> °æ <?php echo $dir_name[$ftype]; ?></h1>
 <script>
 var o = new conWriter(<?php echo $ftype; ?>, '<?php echo addslashes($brdarr["NAME"]); ?>', <?php echo $brdnum; ?>, <?php
-echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, '<?php echo $article["FILENAME"];?>', '<?php
+echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php echo $article["FILENAME"];?>', '<?php
 echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>);
 o.h();
 </script>

@@ -8,7 +8,12 @@
 			html_error_quit("guest 不能保存设置！");
 		$new_wwwparams = @intval($_COOKIE["WWWPARAMS"]);
 		bbs_setwwwparameters($new_wwwparams); /* TODO: return value ? */
-		html_success_quit("自定义界面保存成功");
+?>
+<script language="javascript">
+	saveParaCookie(<?php print($_POST["styleid"]); ?> << 7, 0x780);
+	parent.document.location.reload();
+</script>
+<?php
 		exit;
 	}
 ?>
@@ -43,12 +48,18 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
+		stylenum = (c & 0x780) >>7;
+		getObj('style'+stylenum).checked = true;
 	});
 	function KCNymsw() {
 		alert('还没做这个功能呢... 需要吗？不需要吗？您去 sysop 版喊喊？');
 	}
+	function DoStyle()
+	{
+		return(true);
+	}
 </script>
-<form action="bbsstyle.php?do" method="post" class="small align">
+<form id="frmStyle" action="bbsstyle.php?do" method="post" class="small align" onSubmit="DoStyle();">
 	<fieldset><legend>自定义界面</legend>
 		<div class="inputs">
 			<label>字体大小:</label>
@@ -71,6 +82,21 @@
 				<span class="clickable" onclick="KCNymsw();">关闭</span>
 			<br/>
 <?php } ?>
+			<label>界面方案:</label><br>
+			<div align="center">
+<?php
+	// 这里显示每个界面方案的缩略图
+	$stylecount=count($style_names);
+	$ret = "";
+	for($i=0;$i<$stylecount;$i++)
+	{
+		$ret .= "<p><input type=\"radio\" id=\"style{$i}\" name=\"styleid\" value=\"{$i}\">";
+		$ret .= "<img src=\"{$style_names[$i][1]}\" onClick=\"getObj('style{$i}').checked=true;\"><br>{$style_names[$i][0]}</p>";
+	}
+	print($ret);
+?>
+			</div>
+			<br/>
 		</div>
 	</fieldset>
 	<div class="oper"><input type="submit" value="保存设置"/> &nbsp;<input type="button" onclick="history.go(-1);" value="快速返回"/></div>

@@ -9,6 +9,7 @@ body {
 	scrollbar-face-color:#EEEAEB; 
 	scrollbar-highlight-color:#FBFDFC; 
 	scrollbar-shadow-color:#170708;
+	overflow-x:hidden;
 	margin: 0px;
 	padding: 0px;
 }

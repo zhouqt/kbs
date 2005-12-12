@@ -76,12 +76,12 @@ function display_super_fav ($fav) {
 ?>
 <tr>
 <td> </td>
-<td> <img src="images/groupgroup.gif" alt="up" title="回到根目录"></td>
+<td> <script language="javascript">putImage('groupgroup.gif','alt="up" title="回到根目录"');</script></td>
 <td colspan="2"><a href="<?php echo $_SERVER['PHP_SELF'].'?userid='.$fav->userId; ?>">回到根目录</a></td>
 </tr>
 <tr>
 <td> </td>
-<td> <img src="images/groupgroup.gif" alt="up" title="回到上一级"></td>
+<td> <script language="javascript">putImage('groupgroup.gif','alt="up" title="回到上一级"');</script></td>
 <td colspan="2"><a href="<?php echo $_SERVER['PHP_SELF'].'?userid='.$fav->userId.'&pid='.$fav->info['PID']; ?>">回到上一级</a></td>
 </tr>
 <?php        
@@ -94,11 +94,11 @@ function display_super_fav ($fav) {
 <?php
 	if ($fav->is_dir ($fav->fav[$i]['ID'])) {
 ?>
-<img src="images/groupgroup.gif" alt="目录" title="目录">
+<script language="javascript">putImage('groupgroup.gif','alt="目录" title="目录"');</script>
 <?php
 	} else {
 ?>
-<img src="images/newgroup.gif" alt="条目" title="条目">
+<script language="javascript">putImage('newgroup.gif','alt="条目" title="条目"');</script>
 <?php
 	}
 ?>

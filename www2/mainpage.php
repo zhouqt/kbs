@@ -535,11 +535,11 @@ while($board = array_shift($boards))
     <td width="18">&nbsp;</td>
     <td align="left" valign="top"> 
 <!-- 系统公告开始 暂时屏蔽掉
-      <table width="150" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="150" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">系统公告</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left">&nbsp;</td>
+          <td class="helpert_middle">系统公告</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
