@@ -2652,6 +2652,7 @@ long ea_append(int fd,struct ea_attach_info *ai,const char *fn){
     else
         base++;
     sprintf(ai[count].name,"%-.60s",base);
+    filter_upload_filename(ai[count].name);
     end=lseek(fd_recv,0,SEEK_END);ai[count].size=(unsigned int)end;
     ai[count].length=((ATTACHMENT_SIZE+strlen(ai[count].name)+1)*sizeof(char)
         +sizeof(unsigned int)+ai[count].size);
