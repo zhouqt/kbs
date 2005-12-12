@@ -228,6 +228,7 @@ typedef int (*read_func)(int fd, void *buf, size_t count);
 #endif
     int check_ID_lists(char * id);
     int check_ip_acl(char * id, char * sip);
+    char * filter_upload_filename(char *s);
     char * filter_control_char(char *s);
 
 #ifndef CYGWIN

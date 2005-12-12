@@ -2524,9 +2524,7 @@ int add_attach(char* file1, char* file2, char* filename)
     if(!fp2) return 0;
     fp=fopen(file1, "ab");
     fwrite(o,1,8,fp);
-    for(i=0;i<strlen(filename);i++)
-        if(!isalnum(filename[i])&&filename[i]!='.'&&filename[i]>0
-            &&filename[i]!='_'&&filename[i]!='-') filename[i]='A';
+    filename = filter_upload_filename(filename);
     fwrite(filename, 1, strlen(filename)+1, fp);
     fwrite(&size,1,4,fp);
     while((i=fread(buf,1,1024*16,fp2))) {
@@ -2557,7 +2555,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     char uploadfiles[MAXATTACH][STRLEN];
     int nUpload = 0;
     int mailback = 0;		/* stiger,»Ø¸´µ½ÐÅÏä */
-	int ret;
+	int ret = DIRCHANGED;
 
     char direct[PATHLEN];
     int cmdmode;
@@ -3218,7 +3216,6 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     int failed;
-    char tmpname[100];
     struct read_arg* arg=(struct read_arg*)conf->arg;
 
     if (fileinfo==NULL)
@@ -3251,6 +3248,7 @@ int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     }else{
 		char path[256];
 		struct fileheader postfile;
+//        char tmpname[100];
 //        snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
 //        my_unlink(tmpname);
 

@@ -158,6 +158,7 @@ static PHP_FUNCTION(bbs_getbname);
 static PHP_FUNCTION(bbs_getbdes);
 static PHP_FUNCTION(bbs_checkpostperm);
 static PHP_FUNCTION(bbs_postarticle);
+static PHP_FUNCTION(bbs_filteruploadfilename);
 static PHP_FUNCTION(bbs_getattachtmppath);
 static PHP_FUNCTION(bbs_edittitle);
 static PHP_FUNCTION(bbs_checkbadword);
@@ -352,6 +353,7 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_brcclear, NULL)
     PHP_FE(bbs_getboard, NULL)
     PHP_FE(bbs_postarticle,NULL)
+    PHP_FE(bbs_filteruploadfilename,NULL)
     PHP_FE(bbs_getattachtmppath, NULL)
     PHP_FE(bbs_edittitle, NULL)
     PHP_FE(bbs_checkbadword, NULL)
@@ -3356,6 +3358,20 @@ static PHP_FUNCTION(bbs_getattachtmppath)
     RETURN_STRING(buf, 1);
 }
 
+
+static PHP_FUNCTION(bbs_filteruploadfilename)
+{
+    char *filename;
+    long flen;
+    if (zend_parse_parameters(1 TSRMLS_CC, "s/", &filename, &flen) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (!flen) {
+        RETURN_FALSE;
+    }
+    filename = filter_upload_filename(filename);
+    RETURN_STRING(filename, 1);
+}
 
 static PHP_FUNCTION(bbs_postarticle)
 {
@@ -8550,7 +8566,8 @@ static PHP_FUNCTION(bbs_x_search)
     FILE* sockfp;
     int sockfd, i, j, k, ttt;
     char buf[256];
-    char ip[20], s1[30], s2[30], *pp;
+    char s1[30], s2[30], *pp;
+    const char *ip;
     #define MAX_KEEP 100
     char res_title[MAX_KEEP][80],res_filename[MAX_KEEP][200],res_path[MAX_KEEP][200],res_content[MAX_KEEP][1024];
     int res_flag[MAX_KEEP];
@@ -8570,8 +8587,7 @@ static PHP_FUNCTION(bbs_x_search)
     if (array_init(return_value) == FAILURE)
         RETURN_FALSE;
 
-    if ((pp = sysconf_str("QUERY_SERVER")) == NULL) return;
-    strcpy(ip, pp);
+    if ((ip = sysconf_str("QUERY_SERVER")) == NULL) return;
     if((sockfd=socket(AF_INET, SOCK_STREAM, 0))==-1) return;
     memset(&addr, 0, sizeof(addr));
     addr.sin_family=AF_INET;    

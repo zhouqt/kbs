@@ -2536,6 +2536,37 @@ int check_ip_acl(char * id, char * sip)
     return 0;
 }
 
+char * filter_upload_filename(char *s) {
+    char *ptr = s;
+    for( ; *ptr != '\0'; ptr++) {
+        if (*ptr<0) continue;
+        if (*ptr<32) {
+            *ptr = '_';
+            continue;
+        }
+        switch(*ptr) {
+            case ' ':
+            case ':':
+            case ';':
+            case '|':
+            case '&':
+            case '>':
+            case '<':
+            case '*':
+            case '?':
+            case '"':
+            case '\'':
+            case '\\':
+            case '/':
+                *ptr = '_';
+                break;
+            default:
+                break;
+        }
+    }
+    return s;
+}
+
 char * filter_control_char(char *s) {
     char *ptr = s;
     while (*ptr) {
