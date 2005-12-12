@@ -745,10 +745,16 @@ static int fav_key(struct _select_def *conf, int command)
         show_help("help/boardreadhelp");
         return SHOW_REFRESH;
 	case Ctrl('A'):
-		if (ptr->dir)
-			break;
-		show_boardinfo(ptr->name);
-		return SHOW_REFRESH;
+        if (ptr->dir)
+            break;
+        {
+            int oldmode;
+            oldmode = uinfo.mode;
+            modify_user_mode(QUERYBOARD);
+            show_boardinfo(ptr->name);
+            modify_user_mode(oldmode);
+        }
+        return SHOW_REFRESH;
     case '/':                  /*ËÑË÷board */
         {
             int tmp, num;
