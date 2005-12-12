@@ -115,6 +115,9 @@ int generate_board_title(struct boardheader *bh,void* arg)
     bs=getbstatus(getbnum(bh->filename));
     bs->nowid=gen_threadid + 1;
     set_board(getbnum(bh->filename), &btmp,NULL);
+    setboardmark(bh->filename, 1);
+    setboardtitle(bh->filename, 1);
+    setboardorigin(bh->filename, 1);
     return 0;
 }
 
