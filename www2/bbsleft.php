@@ -169,11 +169,11 @@
 		if($currentuser["userid"]=="guest")
 		{
 ?>
-<form action="bbslogin.php" method="post" name="form1" target="_top" onsubmit="return fillf3(this);" class="m0">
-<nobr><script language="javascript">putImage('u1.gif','alt="登录用户名" class="pm" width="54" height="21"');</script>
+<form action="bbslogin.php" method="post" name="form1" target="_top" onSubmit="return fillf3(this);" class="m0">
+<nobr><script language="javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
 <input type="text" class="upinput" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" /></nobr><br/>
 
-<nobr><script language="javascript">putImage('u3.gif','alt="用户密码" class="pm" width="54" height="21"');</script>
+<nobr><script language="javascript">putImage('u3.gif','alt="用户密码" class="pm"');</script>
 <input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" /></nobr><br />
 
 <div class="m9">
@@ -186,7 +186,7 @@
 		else
 		{
 ?>
-<nobr><script language="javascript">putImage('u1.gif','alt="登录用户名" class="pm" width="54" height="21"');</script>
+<nobr><script language="javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
 &nbsp;&nbsp;<?php echo $currentuser["userid"]; ?></nobr><br/>
 <?php
 		}
@@ -211,7 +211,7 @@
 
 	<div><form action="bbssel.php" method="get" class="m0"><nobr
 		><img src="images/open.gif" class="pm" alt="-"><img src="<?php echo $img_subdir; ?>m5.gif" class="sfolder"
-		><input name="board" type="text" class="f2" value="搜索讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
+		><input name="board" type="text" class="f2" value="搜索讨论区" size="12" onMouseOver="this.focus()" onFocus="this.select()" /> 
 		<input name="submit" type="submit" value="GO" class="sgo" />
 		</nobr>
 	</form></div>

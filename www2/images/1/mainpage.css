@@ -93,25 +93,25 @@ a.MenuLeftHead:visited { font-size: 12px ; color: #FFFFFF ; 	text-decoration: no
 }
 td.header {
 	font-size: 12px;
-	background-color: #9900CC;
+	height: 25px;
+	background-color: #FFFFFF;
 	color: #FFFFFF;
+	background-image: url('mainheaderbg.gif');
 }
 .header a:link {
 	font-size: 12px;
-	background-color: #0066CC;
-	color: #FFFFFF;
+	color: #222222;
 	text-decoration: none;
 }
 .header a:visited {
 	font-size: 12px;
-	background-color: #0066CC;
-	color: #FFFFFF;
+	color: #222222;
 	text-decoration: none;
 }
 .header a:hover {
 	font-size: 12px;
-	background-color: #FFFFFF;
-	color: #0066CC;
+	background-color: #CCCCFF;
+	color: #222222;
 	text-decoration: none;
 }
 
@@ -128,17 +128,16 @@ input.text {
 td.recommend_title {
 	margin: 0px;
 	padding: 0px;
-	height: 16px;
+	height: 30px;
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 }
 table.recommend_title {
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 	margin: 0px;
 	padding: 0px;
-	height: 18px;
-	border: 1px solid #0066CC;
+	height: 30px;
     background-repeat: no-repeat;
     background-color: #DEF3FF;
     background: url('lan2.gif');
@@ -146,70 +145,66 @@ table.recommend_title {
 td.hot_title {
 	margin: 0px;
 	padding: 0px;
-	height: 16px;
+	height: 30px;
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 }
 table.hot_title {
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 	margin: 0px;
 	padding: 0px;
-	height: 18px;
-	border: 1px solid #0066CC;
+	height: 30px;
     background-repeat: no-repeat;
-    background-color: #DEF3FF;
+    background-color: #FFFFFF;
     background: url('lan1.gif');
 }
 td.type_title {
 	margin: 0px;
 	padding: 0px;
-	height: 16px;
+	height: 30px;
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 }
 table.type_title {
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 	margin: 0px;
 	padding: 0px;
-	height: 18px;
-	border: 1px solid #0066CC;
+	height: 30px;
     background-repeat: no-repeat;
-    background-color: #DEF3FF;
+    background-color: #FFFFFF;
     background: url('lan3.gif');
 }
 table.helper {
 	font-size: 12px;
 	color: #FFFFFF;
-	border: 1px solid #0066CC;
+	border: 1px solid #777777;
 }
 table.helpert {
 	font-size: 12px;
 	color: #FFFFFF;
 	border: 0px;
-	height: 18px;
+	height: 25px;
 }
 td.helpert_left {
 	font-size: 12px;
 	color: #FFFFFF;
 	border: 0px;
 	background: url('lt.gif');
-	width: 16px;
+	width: 25px;
 }
 td.helpert_middle {
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 	border: 0px;
-	background-color: #FF0000;
 	width: 66px;
 }
 td.helpert_right {
 	font-size: 12px;
 	color: #FFFFFF;
 	border: 0px;
-	background: url('rt.gif');
-	width: 16px;
+	width: 25px;
 }
 hr.smth {
 	color: #999999;

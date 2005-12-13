@@ -583,7 +583,7 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 	var str = '<div class="doc"><div class="docTab">';
 	if (!ftype && isLogin()) {
 		url = 'bbspst.php?board=' + this.board;
-		str += '<div class="post"><a href="' + url + '">' + putImageCode('postnew.gif','alt="发表话题" onclick="location.href=\'' + url + '\';"') + '</a></div>';
+		str += '<div class="post"><a href="' + url + '">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a></div>';
 	}
 
 	var mls = [[ftype || man, "普通模式", "bbsdoc.php?board=" + this.board],
@@ -708,7 +708,7 @@ docWriter.prototype.t = function() {
 	if (!this.ftype) {
 		if (isLogin()) {
 			url = 'bbspst.php?board=' + this.board;
-			ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" onclick="location.href=\'' + url + '\';"') + '</a>';
+			ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 		}
 	} else {
 		ret += '<input type="hidden" name="ftype" value="' + this.ftype + '"/>';
@@ -757,9 +757,9 @@ conWriter.prototype.h = function() {
 	var ret = '<div class="conPager smaller right">';
 	if (isLogin()) {
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
-		ret += '<a href="' + url + '" class="flimg">' + putImageCode('reply.gif','alt="回复帖子" onclick="location.href=\'' + url + '\';"') + '</a>';
+		ret += '<a href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 		url = 'bbspst.php?board=' + this.board;
-		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" onclick="location.href=\'' + url + '\';"') + '</a>';
+		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
 	if (this.ftype == 0) {
 		ret += '[<a href="' + this.baseurl + '&p=p">上一篇</a>] ';
