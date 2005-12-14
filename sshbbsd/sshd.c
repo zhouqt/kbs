@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.13  2005/12/14 07:29:27  atppp
+ * ipv6 fix by FreeWizard
+ *
  * Revision 1.12  2004/02/01 05:18:04  flyriver
  * ¼òµ¥´Ö±©·¨È¥³ý Warning.
  *
@@ -742,7 +745,11 @@ int main(int ac, char **av)
     int perm_denied = 0;
     int ret;
     fd_set fdset;
+#ifdef HAVE_IPV6_SMTH
+    struct sockaddr_in6 sin;
+#else
     struct sockaddr_in sin;
+#endif
     char buf[100];              /* Must not be larger than remote_version. */
     char remote_version[100];   /* Must be at least as big as buf. */
     char *comment;
@@ -959,7 +966,11 @@ int main(int ac, char **av)
         log_msg("RSA key generation complete.");
     } else {
         /* Create socket for listening. */
+#ifdef HAVE_IPV6_SMTH
+        listen_sock = socket(AF_INET6, SOCK_STREAM, 0);
+#else       
         listen_sock = socket(AF_INET, SOCK_STREAM, 0);
+#endif
         if (listen_sock < 0)
             fatal("socket: %.100s", strerror(errno));
 
@@ -975,10 +986,15 @@ int main(int ac, char **av)
 
         /* Initialize the socket address. */
         memset(&sin, 0, sizeof(sin));
+#ifdef HAVE_IPV6_SMTH
+        sin.sin6_family = AF_INET6;
+        /* sin.sin6_addr = options.listen_addr; // zero for any :P */
+        sin.sin6_port = htons(options.port);
+#else
         sin.sin_family = AF_INET;
         sin.sin_addr = options.listen_addr;
         sin.sin_port = htons(options.port);
-
+#endif
         /* Bind the socket to the desired port. */
         if (bind(listen_sock, (struct sockaddr *) &sin, sizeof(sin)) < 0) {
             error("bind: %.100s", strerror(errno));
