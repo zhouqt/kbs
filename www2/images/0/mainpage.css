@@ -141,7 +141,7 @@ table.recommend_title {
 	border: 1px solid #0066CC;
     background-repeat: no-repeat;
     background-color: #DEF3FF;
-    background: url('lan2.gif');
+    background-image: url('lan2.gif');
 }
 td.hot_title {
 	margin: 0px;
@@ -159,7 +159,7 @@ table.hot_title {
 	border: 1px solid #0066CC;
     background-repeat: no-repeat;
     background-color: #DEF3FF;
-    background: url('lan1.gif');
+    background-image: url('lan1.gif');
 }
 td.type_title {
 	margin: 0px;
@@ -177,7 +177,7 @@ table.type_title {
 	border: 1px solid #0066CC;
     background-repeat: no-repeat;
     background-color: #DEF3FF;
-    background: url('lan3.gif');
+    background-image: url('lan3.gif');
 }
 table.helper {
 	font-size: 12px;
@@ -194,7 +194,7 @@ td.helpert_left {
 	font-size: 12px;
 	color: #FFFFFF;
 	border: 0px;
-	background: url('lt.gif');
+	background-image: url('lt.gif');
 	width: 16px;
 }
 td.helpert_middle {
@@ -208,7 +208,7 @@ td.helpert_right {
 	font-size: 12px;
 	color: #FFFFFF;
 	border: 0px;
-	background: url('rt.gif');
+	background-image: url('rt.gif');
 	width: 16px;
 }
 hr.smth {
