@@ -18,6 +18,38 @@ function htmlize(s) {
 	return s;
 }
 
+function prints(s) {
+	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
+	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "<br/>&nbsp;");
+	s = s.replace(/\n(: .*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
+	document.write(s);
+}
+var attachURL = null;
+function attach(name, len, pos) {
+	var bImg = false;
+	var o = name.lastIndexOf(".");
+	var s = "";
+	if (!attachURL) return;
+	if (o != -1) {
+		var ext = name.substring(o + 1).toLowerCase();
+		bImg = (ext == "jpg" || ext == "jpeg" || ext == "gif"
+			 || ext == "ico" || ext == "png"  || ext == "pcx"
+			 || ext == "bmp");
+	}
+	if (bImg) {
+		s += "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下："
+		  + name + "(" + len + " 字节)<br /><a href=\"" + attachURL + "&amp;ap=" 
+		  + pos + "\" target=\"_blank\"><img src=\"" + attachURL + "&amp;ap=" 
+		  + pos + "\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ";
+	} else {
+		s += "<br />附件: <a href=\"" + attachURL + "&amp;ap=" + pos + "\">"
+		  + name + "</a> (" + len + " 字节)<br />";
+	}
+	document.write(s);
+}
+
+
 function getCookie(name, def){
 	var cname = name + "="; 
 	var dc = document.cookie; 
@@ -388,7 +420,7 @@ function setHots(h) {
 				}
 				if (hots.length > 1) {
 					ii += '<span class="clickable" onclick="hotFn(-1)" title="上一条">&lt;</span> '
-					    + '<span class="clickable" onclick="hotFn(1)" title="下一条">&gt;</span> ';
+						+ '<span class="clickable" onclick="hotFn(1)" title="下一条">&gt;</span> ';
 				}
 				ii += (index+1) + ": " + hots[index];
 			}
@@ -402,7 +434,7 @@ function setHots(h) {
 function hotTopic(board) { /* TODO: no table, use AJAX */
 	/* clear: both is for stupid Firefox */
 	var str = '<table cellspacing="0" cellpadding="5" border="0" width="100%" style="margin: 0.5em auto 0 auto;clear:both;"><tr>' +
-	          '<td width="100" align="center">[<span class="red">热门话题</span>]</td><td>';
+			  '<td width="100" align="center">[<span class="red">热门话题</span>]</td><td>';
 	if (gIE) {
 		str += '<marquee onmouseover="this.stop()" onmouseout="this.start()"><span id="hotTopics">载入中...</span></marquee>';
 	} else {
@@ -515,9 +547,9 @@ function putImage(filename,otherparam)
 var writeBM_str;
 
 function writeBM_getStr(start) {
-	var ret = '';
+	var ret = '', maxbm = 100;
 	for(var i = start; i < writeBM_str.length; i++) {
-		if (i > start + 3) {
+		if (i >= start + maxbm) {
 			break;
 		} else {
 			var bm = writeBM_str[i];
@@ -526,12 +558,12 @@ function writeBM_getStr(start) {
 	}
 	if (start > 0) {
 		ret += ' <a href="#" onclick="return writeBM_page(' + (start-1) + ')" title="版主前滚翻">&lt;&lt;</a>';
-	} else if (writeBM_str.length > 4) {
+	} else if (writeBM_str.length > maxbm) {
 		ret += ' <span class="gray">&lt;&lt;</span>';
 	}
-	if (start < writeBM_str.length - 4) {
+	if (start < writeBM_str.length - maxbm) {
 		ret += ' <a href="#" onclick="return writeBM_page(' + (start+1) + ')" title="版主后滚翻">&gt;&gt;</a>';
-	} else if (writeBM_str.length > 4) {
+	} else if (writeBM_str.length > maxbm) {
 		ret += ' <span class="gray">&gt;&gt;</span>';
 	}
 	return ret;
@@ -587,11 +619,11 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 	}
 
 	var mls = [[ftype || man, "普通模式", "bbsdoc.php?board=" + this.board],
-	           [ftype != dir_modes["DIGEST"], "文摘区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["DIGEST"]],
-	           [ftype != dir_modes["MARK"], "保留区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["MARK"]],
-	           [ftype != dir_modes["ORIGIN"], "同主题", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["ORIGIN"]],
-	           [apath && ftype != dir_modes["ANNOUNCE"], "精华区", "bbs0an.php?path=" + escape(apath)],
-	           [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board]];
+			   [ftype != dir_modes["DIGEST"], "文摘区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["DIGEST"]],
+			   [ftype != dir_modes["MARK"], "保留区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["MARK"]],
+			   [ftype != dir_modes["ORIGIN"], "同主题", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["ORIGIN"]],
+			   [apath && ftype != dir_modes["ANNOUNCE"], "精华区", "bbs0an.php?path=" + escape(apath)],
+			   [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board]];
 	for (var i = mls.length - 1; i >= 0; i--) {
 		links = mls[i];
 		if (links[0]) {

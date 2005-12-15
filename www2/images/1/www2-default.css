@@ -170,6 +170,7 @@ h1 {
 }
 h1.bt { /* board title */
 	margin: -0.2em auto 0 auto;
+    clear: both;
 }
 
 
@@ -396,8 +397,8 @@ div.recnav {
 
 
 /* some legacy styles */
-font.f006 {color: #00b4ae;}
-font.f001 {color: #e87874;} /* bbsxsearch.php might use it */
+.f006 {color: #00b4ae;}
+.f001 {color: #e87874;} /* bbsxsearch.php might use it */
 .c32 {color: green;}
 .c36 {color: #33a0a0;}
 .b3 {font-weight: bolder;color: #CC3300;text-decoration: none;} /* /brelated/ */
