@@ -4,8 +4,6 @@
 	toolbox_header("界面修改");
 
 	if (isset($_GET['do'])) {
-		if ($currentuser["userid"] == "guest")
-			html_error_quit("guest 不能保存设置！");
 		$new_wwwparams = @intval($_COOKIE["WWWPARAMS"]);
 		$new_styleid = $_POST["styleid"];
 		$stylecount = count($style_names);
@@ -15,7 +13,9 @@
 		}
 		$new_styleid = $new_styleid << 7;
 		$new_wwwparams = ($new_wwwparams & ~0xF80) | ($new_styleid & 0xF80);
-		bbs_setwwwparameters($new_wwwparams); /* TODO: return value ? */
+		if (strcmp($currentuser["userid"], "guest")) {
+			bbs_setwwwparameters($new_wwwparams); /* TODO: return value ? */
+		}
 ?>
 <script language="javascript">
 	saveParaCookie(<?php print($_POST["styleid"]); ?> << 7, 0xF80);
