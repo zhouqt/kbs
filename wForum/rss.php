@@ -10,9 +10,11 @@ global $boardArr;
 global $boardID;
 global $boardName;
 global $ftype;
+global $isUTF8;
 
 if (!RSS_SUPPORT) exit;
 
+$isUTF8 = isset($_GET["u"]);
 preprocess();
 main($boardID, $boardName, $boardArr, $modifytime);
 
@@ -75,14 +77,15 @@ function preprocess(){
 }
 
 function main($boardID, $boardName, $boardArr, $modifytime) {
-	global $HTMLCharset;
+	global $isUTF8;
+	$charset = !$isUTF8 ? "gb2312" : "UTF-8";
 	$includeDesc = isset($_GET["ic"]);
 	$lw = isset($_GET["lw"]);
 	$channel = generate_rss_header($boardName, htmlspecialchars($boardArr["DESC"], ENT_QUOTES), $modifytime);
 	$items = generate_rss_contents($boardID, $boardName, $includeDesc, $lw);
-	header("Content-Type: text/xml; charset=$HTMLCharset");
+	header("Content-Type: text/xml; charset=$charset");
 	header("Content-Disposition: inline;filename=rss.xml");
-	echo generate_rss($channel, $items);
+	echo generate_rss($channel, $items, $isUTF8);
 }
 
 function generate_rss_header($boardName, $htmlboardDesc, $modifytime) {
