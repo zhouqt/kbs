@@ -6,7 +6,7 @@ login_init();
 		exit;
 	}
 		html_init("gb2312","","",1);
-		if (! bbs_can_send_mail() )
+		if ( (!bbs_can_send_mail())&&(!isset($_GET["file"])) )
 			html_error_quit("您不能发送信件");
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
@@ -105,7 +105,9 @@ function dosubmit() {
 <td class="b9">
 寄信人: <?php echo $currentuser["userid"]; ?><br />
 标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo htmlspecialchars($title,ENT_QUOTES); ?>"><br />
-收信人: <input class="sb1" type="text" name="userid" value="<?php echo $destuserid; ?>"><br />
+收信人: <input class="sb1" type="text" name="userid" value="<?php echo $destuserid; ?>">
+<input class="sb1" type="hidden" name="file" value="<?php echo $file; ?>"><br />
+
 使用签名档 <select name="signature">
 <?php
 		if ($currentuser["signum"] == 0)

@@ -4,10 +4,20 @@ login_init();
 assert_login();
 mailbox_header("发送信件");
 
-if (! bbs_can_send_mail() )
-	html_error_quit("您不能发送信件");
+$mailfile = $_POST["file"];
+$maildir = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/.DIR";
 
-$incept = trim(ltrim(@$_POST['userid']));
+if($mailfile == "")		// if to send a new mail
+{
+	if (! bbs_can_send_mail() )
+		html_error_quit("您不能发送信件");
+	$incept = trim(ltrim(@$_POST['userid']));
+}
+else		// if to reply a mail
+{
+	$incept = bbs_getmailowner($maildir, $mailfile);
+}
+
 if (!$incept)
 	html_error_quit("请输入收件人ID");
 $lookupuser = array();
@@ -25,6 +35,12 @@ $sig = intval(@$_POST['signature']); //签名档
 $backup = isset($_POST['backup'])?strlen($_POST['backup']):0; //备份
 
 $ret = bbs_postmail($incept,$title,@$_POST["text"],$sig,$backup);
+
+if($mailfile != "")
+{
+	bbs_setmailreplied($maildir, $mailfile);
+}
+
 
 if ($ret < 0)  {
 	switch($ret) {
