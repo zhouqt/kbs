@@ -57,9 +57,10 @@
 .date{FONT-WEIGHT: bold;MARGIN-BOTTOM: 10px;FONT-SIZE: 18px;COLOR: #993366;FONT-FAMILY: palatino, georgia, times new roman, serif}
 .content{font-size:14px;line-height:24px;}
 </style>
+</head>
 <body>
 <?php
-	echo "<a name=\"top\"><p class=date>::Blog信息::<br />名称: ".$pc["NAME"]."<br />作者: <a href=\"http://".$pcconfig["SITE"]."/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a><br />域名: <a href=\"".pc_personal_domainname($pc["USER"])."\">".pc_personal_domainname($pc["USER"])."</a><br />站点: <a href=\"http://".$pcconfig["SITE"]."\">".$pcconfig["BBSNAME"]."</a><br /></p>";
+	echo "<a name=\"top\"></a><p class=date>::Blog信息::<br />名称: ".$pc["NAME"]."<br />作者: <a href=\"http://".$pcconfig["SITE"]."/bbsqry.php?userid=".$pc["USER"]."\">".$pc["USER"]."</a><br />域名: <a href=\"".pc_personal_domainname($pc["USER"])."\">".pc_personal_domainname($pc["USER"])."</a><br />站点: <a href=\"http://".$pcconfig["SITE"]."\">".$pcconfig["BBSNAME"]."</a><br /></p>";
 	echo "<p class=date>档案日期：".time_format($archDate[0])." ～ ".time_format($archDate[1])."</p><hr size=1>";
 	
 	$query = "SELECT * FROM nodes WHERE uid = '".$pc["UID"]."' AND type = 0 AND created >= ".$archDate[0]." AND created <= ".$archDate[1]." ";
