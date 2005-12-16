@@ -624,7 +624,7 @@ int ttt_talk(struct user_info *userinfo)
             clear();
             return 0;
         }
-        if (!(tuid = searchuser(uident)) || tuid == usernum) {
+        if (!(tuid = searchuser(uident)) || tuid == getSession()->currentuid) {
             move(2, 0);
             prints("错误代号\n");
             pressreturn();
@@ -676,7 +676,7 @@ int ttt_talk(struct user_info *userinfo)
     /*
      * check if pager on/off       --gtv 
      */
-    if (!canpage(hisfriend(usernum,&uin), uin.pager)) {
+    if (!canpage(hisfriend(getSession()->currentuid,&uin), uin.pager)) {
         move(2, 0);
         prints("对方呼叫器已关闭.\n");
         pressreturn();
@@ -908,9 +908,9 @@ int mode;
     int tuid;
 
     if (mode == 0)
-        tuid = search_ulist(&ui, cmpunums, usernum);
+        tuid = search_ulist(&ui, cmpunums, getSession()->currentuid);
     else
-        tuid = search_ulist(&ui, cmpmsgnum, usernum);
+        tuid = search_ulist(&ui, cmpmsgnum, getSession()->currentuid);
     if (tuid == 0)
         return 1;
     if (!ui.sockactive)
@@ -925,7 +925,7 @@ int servicepage(int line, char *mesg)
     static time_t last_check;
     time_t now;
     char buf[STRLEN];
-    int tuid = search_ulist(&ui, cmpunums, usernum);
+    int tuid = search_ulist(&ui, cmpunums, getSession()->currentuid);
 
     if (tuid == 0 || !ui.sockactive)
         talkrequest = false;

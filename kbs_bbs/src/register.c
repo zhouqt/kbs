@@ -45,7 +45,7 @@ extern int switch_code();       /* KCN,99.09.05 */
 void new_register()
 {
     struct userec newuser;
-    int allocid, do_try, flag;
+    int allocid, do_try, flag, usernum;
     char buf[STRLEN];
 
 /* temp !!!!!*/

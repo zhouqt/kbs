@@ -300,14 +300,6 @@ O MaxMessageSize=32000
 #define ALLMSG_PAGER    0x4
 #define FRIENDMSG_PAGER 0x8
 
-#define SHIFTMODE(usernum,mode) ((usernum<MAXUSERS)?mode:mode<<4)
-
-#define SETFILEMODE(array,usernum,mode) (array[usernum%MAXUSERS] |= ((usernum<MAXUSERS)?mode:mode<<4))
-
-#define CLRFILEMODE(array,usernum,mode) (array[usernum%MAXUSERS] &= ((usernum<MAXUSERS)?~mode:~(mode<<4)))
-
-#define CHECKFILEMODE(array,usernum,mode) (array[usernum%MAXUSERS] & ((usernum<MAXUSERS)?mode:mode<<4))
-
 #define USERIDSIZE (16)
 #define USERNAMESZ (24)
 #define TERMTYPESZ (10)

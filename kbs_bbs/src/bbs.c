@@ -33,8 +33,6 @@ int scrint = 0;
 int local_article = 0;  //0:转信版面默认转信，1:非转信版面，2:转信版面默认不转信 - atppp
 int readpost;
 int helpmode = 0;
-int usernum;
-//char currboard[STRLEN - BM_LEN];
 struct boardheader* currboard=NULL;
 int currboardent;
 char currBM[BM_LEN - 1];
@@ -4359,7 +4357,7 @@ int Goodbye()
         /*
          * sprintf( genbuf, "Stay:%3ld (%s)", stay / 60, getCurrentUser()->username ); 
          */
-        newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, getCurrentUser()->username, getSession()->utmpent, usernum);
+        newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, getCurrentUser()->username, getSession()->utmpent, getSession()->currentuid);
         u_exit();
         started = 0;
     }

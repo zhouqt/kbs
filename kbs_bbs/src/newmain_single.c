@@ -82,7 +82,7 @@ int canbemsged(uin)             /*Haohmaru.99.5.29 */
     if (uinfo.pager & ALLMSG_PAGER)
         return true;
     if (uinfo.pager & FRIENDMSG_PAGER) {
-        if (hisfriend(usernum, uin))
+        if (hisfriend(getSession()->currentuid, uin))
             return true;
     }
     return false;
@@ -162,7 +162,7 @@ void u_enter()
         uinfo.pager |= ALLMSG_PAGER;
         uinfo.pager |= FRIENDMSG_PAGER;
     }
-    uinfo.uid = usernum;
+    uinfo.uid = getSession()->currentuid;
     strncpy(uinfo.from, getSession()->fromhost, IPLEN);
 #ifdef SHOW_IDLE_TIME
     uinfo.freshtime = time(0);
@@ -225,7 +225,7 @@ void u_exit()
 #endif
 
     if (getSession()->utmpent > 0)
-        clear_utmp(getSession()->utmpent, usernum, getpid());
+        clear_utmp(getSession()->utmpent, getSession()->currentuid, getpid());
 }
 
 int cmpuids(uid, up)
@@ -241,8 +241,8 @@ int dosearchuser(userid)
     int id;
 
     if ((id = getuser(userid, &getCurrentUser())) != 0)
-        return usernum = id;
-    return usernum = 0;
+        return getSession()->currentuid = id;
+    return getSession()->currentuid = 0;
 }
 
 void talk_request(int signo)
@@ -273,7 +273,7 @@ void abort_bbs(int signo)
         record_exit_time();
         stay = time(0) - login_start_time;
 /*---	period	2000-10-20	4 debug	---*/
-        newbbslog(BBSLOG_USIES, "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, getCurrentUser()->username, getSession()->utmpent, usernum);
+        newbbslog(BBSLOG_USIES, "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, getCurrentUser()->username, getSession()->utmpent, getSession()->currentuid);
         u_exit();
     }
     shutdown(0, 2);
@@ -290,7 +290,7 @@ void multi_user_check()
     int kickmulti = -1;
 
     while (ret != 0) {
-        ret = multilogin_user(getCurrentUser(), usernum,0);
+        ret = multilogin_user(getCurrentUser(), getSession()->currentuid,0);
         if (ret == 3) {
             prints("\x1b[33m抱歉, 该IP有太多 \x1b[36mguest 在线, 请稍候再试。\x1b[m\n");
             pressreturn();
@@ -313,7 +313,7 @@ void multi_user_check()
                 int num;
 
                 kickmulti = 1;
-                if (!(num = search_ulist(&uin, cmpuids2, usernum)))
+                if (!(num = search_ulist(&uin, cmpuids2, getSession()->currentuid)))
                     return;     /* user isn't logged in */
                 if (uin.pid != 1) {
                     if (!uin.active || (kill(uin.pid, 0) == -1))
@@ -328,7 +328,7 @@ void multi_user_check()
                 sprintf(buffer, "kicked (multi-login)");
                 bbslog("user","%s",buffer);
 
-                clear_utmp(num, usernum, uin.pid);
+                clear_utmp(num, getSession()->currentuid, uin.pid);
                 continue;
             }
             oflush();
@@ -741,7 +741,7 @@ void user_login()
 
     bbslog("user","%s",genbuf);
 /*---	period	2000-10-19	4 debug	---*/
-    newbbslog(BBSLOG_USIES,"ALLOC: [%d %d]", getSession()->utmpent, usernum);
+    newbbslog(BBSLOG_USIES,"ALLOC: [%d %d]", getSession()->utmpent, getSession()->currentuid);
 /*---	---*/
     started = 1;
     if (USE_NOTEPAD == 1)
@@ -889,7 +889,7 @@ int chk_friend_book()
         ptr = strstr(uid, "\n");
         *ptr = '\0';
         idnum = atoi(buf);
-        if (idnum != usernum || idnum <= 0)
+        if (idnum != getSession()->currentuid || idnum <= 0)
             continue;
         uin = t_search(uid, false);
         sprintf(msg, "%s 已经上站。", getCurrentUser()->userid);

@@ -16,7 +16,6 @@ SMTH_API int scrint;              /* Set when screen has been initialized */
 extern struct user_info uinfo;  /* Ditto above...utmp entry is stored here
                                    and written back to the utmp file when
                                    necessary (pretty darn often). */
-SMTH_API int usernum;             /* Index into passwds file user record */
 extern int count_friends, count_users;  /*Add by SmallPig for count users and friends */
 
 extern int t_lines, t_columns;  /* Screen size / width */

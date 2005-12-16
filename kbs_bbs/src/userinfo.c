@@ -364,7 +364,7 @@ int uinfo_query(struct userec *u, int real, int unum)
             break;
         if (*ans == 'y' || *ans == 'Y') {
 			if (!real) {
-                update_user(&newinfo, usernum, 1);
+                update_user(&newinfo, getSession()->currentuid, 1);
                 if (strcmp(newinfo.username, uinfo.username)) {
                     strcpy(uinfo.username, newinfo.username);
                     UPDATE_UTMP_STR(username, uinfo);
@@ -481,7 +481,7 @@ void x_info()
         pressreturn();
         return;
     }
-    uinfo_query(getCurrentUser(), 0, usernum);
+    uinfo_query(getCurrentUser(), 0, getSession()->currentuid);
 }
     void getfield(line, info, desc, buf, len)  int line, len;
     char *info, *desc, *buf;
@@ -597,7 +597,7 @@ void x_fillform()
 	memcpy(&(getSession()->currentmemo->ud),&ud,sizeof(ud));
     if ((fn = fopen("new_register", "a")) != NULL) {
         now = time(NULL);
-        fprintf(fn, "usernum: %d, %s", usernum, ctime(&now));
+        fprintf(fn, "usernum: %d, %s", getSession()->currentuid, ctime(&now));
         fprintf(fn, "userid: %s\n", getCurrentUser()->userid);
         fprintf(fn, "realname: %s\n", rname);
         fprintf(fn, "career: %s\n", career);

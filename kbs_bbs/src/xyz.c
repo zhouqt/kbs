@@ -210,6 +210,7 @@ unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int 
 int confirm_delete_id()
 {
     char buff[STRLEN];
+    int usernum;
 
     modify_user_mode(ADMIN);
     clear();

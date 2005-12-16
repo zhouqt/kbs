@@ -831,7 +831,7 @@ int vote_flag(char *bname, char val, int mode)
     char buf[STRLEN], flag;
     int fd, num, size;
 
-    num = usernum - 1;
+    num = getSession()->currentuid - 1;
     switch (mode) {
     case 2:
         sprintf(buf, "Welcome.rec");    /*½øÕ¾µÄ Welcome »­Ãæ */

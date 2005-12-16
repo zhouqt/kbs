@@ -211,7 +211,7 @@ char msgchar(struct user_info *uin, int *isfriend)
     if ((uin->pager & ALLMSG_PAGER))
         return ' ';
     if (*isfriend == -1)
-        *isfriend = hisfriend(usernum, uin);
+        *isfriend = hisfriend(getSession()->currentuid, uin);
     if (*isfriend) {
         if ((uin->pager & FRIENDMSG_PAGER))
             return 'O';
@@ -316,7 +316,7 @@ int do_userlist()
         if (readplan == true) {
             return 0;
         }
-        pagec = pagerchar(usernum,&uentp, uentp.pager, &isfriend);
+        pagec = pagerchar(getSession()->currentuid,&uentp, uentp.pager, &isfriend);
         strncpy(tbuf, (real_user_names) ? uentp.realname : (showexplain && override) ? fexp : uentp.username, sizeof(tbuf));
 //昵称在列表中最后一字消除乱码，shiyao  2003.6.1
 //	j = 15;
