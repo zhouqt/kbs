@@ -147,7 +147,6 @@ void new_register()
 
     newuser.exittime = time(NULL) - 100;
     /*newuser.unuse2 = -1;*/
-    newuser.flags = CURSOR_FLAG;
     newuser.flags |= PAGER_FLAG;
     newuser.title = 0;
     newuser.firstlogin = newuser.lastlogin = time(NULL);
@@ -623,7 +622,6 @@ void ConveyID()
         if (convcode)
             SET_UNDEFINE(getCurrentUser(),DEF_USEGB);
 
-        getCurrentUser()->flags = CURSOR_FLAG;
         getCurrentUser()->flags |= PAGER_FLAG;
         getCurrentUser()->title = 0;
 		for(i = 0; i < MAXCLUB>>5 ; i++){

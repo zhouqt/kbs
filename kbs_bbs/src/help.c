@@ -54,8 +54,3 @@ int mainreadhelp(struct _select_def* conf,struct fileheader *fileinfo,void* extr
     return FULLUPDATE;
 }
 
-void Help()
-{
-    getCurrentUser()->flags ^= CURSOR_FLAG;
-    clear();
-}

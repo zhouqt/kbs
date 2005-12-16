@@ -288,7 +288,7 @@ O MaxMessageSize=32000
 #define PAGER_FLAG   0x1        /* true if pager was OFF last session */
 #define CLOAK_FLAG   0x2        /* true if cloak was ON last session */
 #define BRDSORT_FLAG 0x20       /* true if the boards sorted alphabetical */
-#define CURSOR_FLAG  0x80       /* true if the cursor mode open */
+#define USEREC_FLAGS_UNUSED_FLAG  0x80       /* ask atppp if you want to use this bit - 20051215 */
 #define GIVEUP_FLAG  0x4        /* true if the user is giving up  by bad 2002.7.6 */
 #define PCORP_FLAG	 0x40		/* true if have personalcorp */
 #define ACTIVATED_FLAG 0x8      /* true if email activated - atppp 20050405 */

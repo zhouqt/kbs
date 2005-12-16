@@ -95,7 +95,6 @@ static void convert_userec(struct olduserec *olduser, struct userec *user)
 
     if (user->userlevel & 0x0400000000)
 	user->flags |= PCORP_FLAG;
-    user->flags |= CURSOR_FLAG;
     user->flags &= ~CLOAK_FLAG;
     user->flags &= ~GIVEUP_FLAG;
 

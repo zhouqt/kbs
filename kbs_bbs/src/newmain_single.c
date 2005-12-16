@@ -505,7 +505,7 @@ void login_query()
             exit(1);
         } else if ( /*strcmp */ strcasecmp(uid, "guest") == 0) {
             getCurrentUser()->userlevel = PERM_DENYMAIL|PERM_DENYRELAX;
-            getCurrentUser()->flags = CURSOR_FLAG | PAGER_FLAG;
+            getCurrentUser()->flags = PAGER_FLAG;
             break;
         } else {
             if (!convcode)
@@ -845,8 +845,6 @@ void user_login()
     getCurrentUser()->lastlogin = time(NULL);
     getCurrentUser()->numlogins++;
    }
-
-    getCurrentUser()->flags |= CURSOR_FLAG;
 
     /* Leeward 98.06.20 adds below 3 lines */
     if ((int) getCurrentUser()->numlogins < 1)

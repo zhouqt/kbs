@@ -36,7 +36,6 @@ int EGroup();
 int ENewGroup();
 int Info();
 int Goodbye();
-int Help();
 int New();
 int Post();
 int ReadBoard();
@@ -169,7 +168,6 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"SelectBoard", Select},
     {"ReadBoard", ReadBoard},
     {"PostArticle", Post},
-    {"SetHelp", Help},
     {"SetAlarm", set_clock},
     {"MailAll", mailall},
     /*
@@ -444,7 +442,8 @@ int exec_mbem(char *s)
 static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
 {
     const char *str;
-    int help, line, col, num;
+    const int help = 1; //(getCurrentUser()->flags & CURSOR_FLAG);
+    int line, col, num;
     struct smenuitem pm;
 
     int n;
@@ -452,7 +451,6 @@ static int domenu_screen(struct smenuitem *dopm, char *cmdprompt)
 /*    if(!DEFINE(getCurrentUser(),DEF_NORMALSCR))
  */
     clear();
-    help = (getCurrentUser()->flags & CURSOR_FLAG);
     line = 3;
     col = 0;
     num = 0;
@@ -589,7 +587,7 @@ char *menu_name;
             if (now >= size)
                 now = 0;
         }
-        if (getCurrentUser()->flags & CURSOR_FLAG) {
+        { //if (getCurrentUser()->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
 #ifndef FREE
             prints("¡ô");
@@ -606,7 +604,7 @@ char *menu_name;
         clrtoeol();
 		}
         cmd = igetkey();
-        if (getCurrentUser()->flags & CURSOR_FLAG) {
+        { //if (getCurrentUser()->flags & CURSOR_FLAG) {
             move(menupos[base + now].line, menupos[base + now].col);
             prints("  ");
         }

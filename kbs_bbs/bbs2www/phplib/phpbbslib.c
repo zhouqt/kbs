@@ -5080,7 +5080,6 @@ static PHP_FUNCTION(bbs_createnewid)
 	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
 #endif
 	newuser.exittime = time(NULL) - 100;
-	newuser.flags = CURSOR_FLAG;
 	newuser.flags |= PAGER_FLAG;
 	newuser.title = 0;
 
