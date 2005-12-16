@@ -893,6 +893,7 @@ int m_editbrd(void){
     return modify_board(pos);
 }
 int modify_board(int bid) {
+    FILE *fp;
     struct _select_item sel[24];
     struct _select_def conf;
     struct _simple_select_arg arg;
@@ -922,8 +923,12 @@ int modify_board(int bid) {
         return -1;
     }
     memcpy(&bh,bhptr,sizeof(struct boardheader));
-    sprintf(buf,"\033[1;33mbid=%4.4d clubnum=%3.3d\033[m",bid,bh.clubnum);
+    sprintf(buf,"\033[1;33m讨论区序号: %-4.4d\033[m",bid);
     move(0,40);prints(buf);
+    if(bh.clubnum){
+        sprintf(buf,"\033[1;33m俱乐部序号: %-3.3d\033[m",bh.clubnum);
+        move(0,60);prints(buf);
+    }
     /*获取讨论区数据并构造菜单显式*/
     memcpy(&newbh,&bh,sizeof(struct boardheader));
     /*菜单定位*/
@@ -1740,13 +1745,29 @@ int modify_board(int bid) {
     error|=edit_group(&bh,&newbh);
     set_board(bid,&newbh,&bh);
     /*生成安全审核和日志*/
-    sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,change&(1<<0)?32:0,newbh.filename);
 #ifndef ZIXIA
-    securityreport(buf,NULL,NULL);
+    sprintf(src,"tmp/edit_board_log_%ld_%d",time(NULL),getpid());
+    if(!(fp=fopen(src,"w"))){
+        sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,(change&(1<<0))?32:0,newbh.filename);
+        securityreport(buf,NULL,NULL);
+    }
+    else{
+        sprintf(buf,"修改讨论区属性: %s%c-> %s",bh.filename,(change&(1<<0))?32:0,newbh.filename);
+        write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
+        fprintf(fp,"\033[1;33m[讨论区 <id=%d> 属性修改明细]\033[m\n\n",bid);
+        for(i=0;i<22;i++){
+            if(change&(1<<i))
+                fprintf(fp,"  %s\n  \033[1;32m%s\033[m\n\n",orig[i],menustr[i]);
+        }
+        fclose(fp);
+        post_file(getCurrentUser(),"",src,"syssecurity",buf,0,3,getSession());
+        unlink(src);
+    }
 #else
+    sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,(change&(1<<0))?32:0,newbh.filename);
     board_change_report(buf, &bh, &newbh);
 #endif	
-    bbslog("user","%s",buf);
+    newbbslog(BBSLOG_USER,"edit_board: %s <%4.4d,%#6.6x>",bh.filename,bid,change);
     move(20,0);clrtoeol();
     move(20,2);prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
     WAIT_RETURN;clear();
@@ -1818,6 +1839,13 @@ int searchtrace(void){
         sprintf(buf,"查询用户 %s 近期发文记录",user->userid);
     }
     else if(ans[0]=='m'||ans[0]=='M'){
+#ifdef NEWSMTH
+        if(!HAS_PERM(getCurrentUser(),PERM_SYSOP)){
+            move(3,0);prints("当前用户不具有查询用户近期发信记录的权限...\033[0;33m<Enter>\033[m");
+            WAIT_RETURN;clear();
+            return -1;
+        }
+#endif
         sprintf(buf,
             "grep -awE '^\\[.*\\] %s mailed(\\(www\\))?' user.log | grep -awEv '^\\[.*\\] %s mailed(\\(www\\))? %s.?$' > %s",
             user->userid,user->userid,user->userid,fn_buf);
@@ -1831,7 +1859,7 @@ int searchtrace(void){
     }
     mail_file(getCurrentUser()->userid,fn_buf,getCurrentUser()->userid,&buf[4],BBSPOST_MOVE,NULL);
     securityreport(buf,user,NULL);
-    bbslog("user","%s",buf);
+    newbbslog(BBSLOG_USER,"query_user_log: <%c> %s",(toupper(ans[0])=='M'?'M':'P'),user->userid);
     move(3,0);prints("\033[1;36m%s 已回寄, 请检查信件...\033[m",&buf[4]);
     WAIT_RETURN;clear();
     return 0;
