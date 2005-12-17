@@ -706,9 +706,12 @@ int check_board_delete_read_perm(const struct userec *arg_user,const struct boar
     lc.l_len=0;
     lc.l_pid=0;
     if(fcntl(fd,F_SETLK,&lc)!=-1){
-        p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
-        ret=(p==MAP_FAILED?0:(((unsigned char*)p)[bid>>3]&(1<<(bid&0x07))));
-        munmap(p,st.st_size);
+        if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED)
+            ret=0;
+        else{
+            ret=(((unsigned char*)p)[bid>>3]&(1<<(bid&0x07)));
+            munmap(p,st.st_size);
+        }
     }
     else
         ret=0;
