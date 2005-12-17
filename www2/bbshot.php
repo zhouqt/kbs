@@ -29,9 +29,9 @@ if (bbs_checkreadperm($usernum, $brdnum) == 0)
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) 
 	exit ();
 if (bbs_normalboard($board)) {
-	if (update_cache_header())
+	if (update_cache_header(30, 1200))
 		exit ();
-}
+} else die;
 
 
 
