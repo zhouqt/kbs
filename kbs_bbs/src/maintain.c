@@ -3134,12 +3134,15 @@ int set_BM(void){
 
 /* etnlegend, 2005.11.27, 设定特定用户具有访问特定版面回收站权限接口 */
 int edit_board_delete_read_perm(void){
-    FILE *fp,*fp_tmp;
+    FILE *fp;
     struct stat st;
+    struct flock lc;
     struct userec *user;
     const struct boardheader *board;
-    char buf[256],datafile[256],fn[256],userid[16],ans[4],*p;
-    int i,num,page,ibuf[18];
+    char buf[256],datafile[256],fn[256],userid[16],ans[4];
+    int i,count,off,fd,ret;
+    time_t mtime;
+    void *p,*ptr;
     modify_user_mode(ADMIN);
     if(!check_systempasswd())
         return -1;
@@ -3180,85 +3183,185 @@ int edit_board_delete_read_perm(void){
             "\033[1;37m选择操作 查阅[\033[1;33mV\033[1;37m]/清空[\033[1;33mC\033[1;37m]/修改[\033[1;33mE\033[1;37m]/结束[Q] [Q]: \033[m",
             ans,2,DOECHO,NULL,true);
         if(ans[0]=='v'||ans[0]=='V'){
-            if(!(fp=fopen(datafile,"r"))){
+            if(stat(datafile,&st)||!S_ISREG(st.st_mode)||(fd=open(datafile,O_RDONLY,0644))==-1){
                 move(4,0);
                 prints("\033[1;33m%s\033[0;33m<Enter>\033[m","所选择用户未设定为可访问特定版面回收站...");
                 WAIT_RETURN;
                 continue;
             }
-            page=0;
-            while(!!(num=fread(ibuf,sizeof(int),18,fp))){
+            lc.l_type=F_RDLCK;
+            lc.l_whence=SEEK_SET;
+            lc.l_start=0;
+            lc.l_len=0;
+            lc.l_pid=0;
+            if(fcntl(fd,F_SETLKW,&lc)==-1){
+                close(fd);
                 move(4,0);
-                clrtobot();
-                for(i=0;i<num;i++){
-                    move(i+4,0);
-                    if(!(board=getboard(ibuf[i])))
-                        prints("\033[1;34m>>>> %s <<<<\033[m","已经失效的设定");
-                    else{
-                        sprintf(buf,"\033[1;37m[%03d] \033[1;%dm%-32.32s%s\033[m",
-                            (page*18+i+1),(!(i%2)?36:33),board->filename,&(board->title[13]));
-                        prints("%s",buf);
-                    }
-                }
-                move(i+4,0);
-                prints("%s","\033[1;37m按 \033[1;32m<Space>\033[1;37m 键继续查阅或 \033[1;32m<Enter>\033[1;37m 键结束: \033[m");
-                do{
-                    switch(igetch()){
-                        case 10:
-                        case 13:
-                            i=-1;
-                            break;
-                        case 32:
-                            page++;
-                            break;
-                        default:
-                            continue;
-                    }
-                    break;
-                }
-                while(1);
-                if(i==-1)
-                    break;
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
+                WAIT_RETURN;
+                continue;
             }
-            fclose(fp);
+            if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED){
+                close(fd);
+                move(4,0);
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","映射文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            close(fd);
+            for(off=0,count=0,i=0;i<MAXBOARD;i++){
+                if(!((i>>3)<st.st_size))
+                    break;
+                if(((unsigned char*)p)[i>>3]&(1<<(i&0x07))){
+                    off=(count%(t_lines-7));
+                    if(!off){
+                        if(count){
+                            move(t_lines-2,0);
+                            prints("%s","\033[1;37m按 \033[1;32m<Space>\033[1;37m 键继续查阅或 \033[1;32m<Enter>\033[1;37m 键结束: \033[m");
+                            do{
+                                ans[0]=igetch();
+                                if(ans[0]==10||ans[0]==13){
+                                    ans[1]=0;
+                                    break;
+                                }
+                                if(ans[0]==32){
+                                    ans[1]=1;
+                                    break;
+                                }
+                            }
+                            while(1);
+                            if(!ans[1])
+                                break;
+                        }
+                        move(4,0);
+                        clrtobot();
+                    }
+                    if(!(board=getboard(i+1))||!(board->filename[0])||st.st_mtime<board->createtime)
+                        continue;
+                    move(4+off,0);
+                    sprintf(buf,"\033[1;37m[%03d] \033[1;%dm%-32.32s%s\033[m",count+1,(!(count%2)?36:33),
+                        board->filename,&(board->title[13]));
+                    prints("%s",buf);
+                    count++;
+                }
+            }
+            munmap(p,st.st_size);
+            move(t_lines-2,0);
+            prints("%s","\033[1;37m按 \033[1;32m<Enter>\033[1;37m 键结束: \033[m");
+            WAIT_RETURN;
         }
         else if(ans[0]=='c'||ans[0]=='C'){
             getdata(3,0,"\033[1;31m确认删除所选择用户访问特定版面回收站列表 [y/N]: \033[m",ans,2,DOECHO,NULL,true);
-            if(ans[0]=='y'||ans[0]=='Y'){
-                unlink(datafile);
-                move(5,0);
-                if(stat(datafile,&st)||!S_ISREG(st.st_mode))
-                    prints("\033[1;33m%s\033[0;33m<Enter>\033[m","删除成功!");
-                else
-                    prints("\033[1;31m%s\033[0;33m<Enter>\033[m","删除失败...");
-                sprintf(buf,"删除 %s 访问特定版面回收站列表",user->userid);
-                securityreport(buf,user,NULL);
-                newbbslog(BBSLOG_USER,"board_delete_read_perm: delete <%s>",user->userid);
+            if(!(ans[0]=='y'||ans[0]=='Y'))
+                continue;
+            if(stat(datafile,&st)||!S_ISREG(st.st_mode)||(fd=open(datafile,O_RDONLY,0644))==-1){
+                move(4,0);
+                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","所选择用户未设定为可访问特定版面回收站...");
                 WAIT_RETURN;
+                continue;
             }
+            lc.l_type=F_RDLCK;
+            lc.l_whence=SEEK_SET;
+            lc.l_start=0;
+            lc.l_len=0;
+            lc.l_pid=0;
+            if(fcntl(fd,F_SETLKW,&lc)==-1){
+                close(fd);
+                move(4,0);
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED){
+                close(fd);
+                move(4,0);
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","映射文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),getpid());
+            if(!(fp=fopen(fn,"w"))){
+                munmap(p,st.st_size);
+                move(4,0);
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","写入文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            sprintf(buf,"删除 %s 访问特定版面回收站列表",user->userid);
+            write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
+            fprintf(fp,"%s","\033[1;33m[原访问权限列表]\033[m\n\n");
+            for(i=0;i<MAXBOARD;i++){
+                if(!((i>>3)<st.st_size))
+                    break;
+                if(((unsigned char*)p)[i>>3]&(1<<(i&0x07))){
+                    if(!(board=getboard(i+1))||!(board->filename[0])||st.st_mtime<board->createtime)
+                        continue;
+                    fprintf(fp,"%s\n",board->filename);
+                }
+            }
+            fclose(fp);
+            munmap(p,st.st_size);
+            ftruncate(fd,0);
+            close(fd);
+            unlink(datafile);
+            newbbslog(BBSLOG_USER,"board_delete_read_perm: delete <%s>",user->userid);
+            post_file(getCurrentUser(),"",fn,"syssecurity",buf,0,2,getSession());
+            unlink(fn);
+            move(5,0);
+            if(stat(datafile,&st)||!S_ISREG(st.st_mode))
+                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","删除成功!");
+            else
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","删除失败...");
+            WAIT_RETURN;
         }
         else if(ans[0]=='e'||ans[0]=='E'){
-            sprintf(fn,"tmp/set_board_delete_read_perm.%d",getpid());
-            if(!!(fp=fopen(datafile,"r"))){
-                if(!(fp_tmp=fopen(fn,"w"))){
-                    fclose(fp);
+            sprintf(fn,"tmp/set_board_delete_read_perm_data_%ld_%d",time(NULL),getpid());
+            if(stat(datafile,&st)||!S_ISREG(st.st_mode)||(fd=open(datafile,O_RDONLY,0644))==-1)
+                unlink(fn);
+            else{
+                lc.l_type=F_RDLCK;
+                lc.l_whence=SEEK_SET;
+                lc.l_start=0;
+                lc.l_len=0;
+                lc.l_pid=0;
+                if(fcntl(fd,F_SETLKW,&lc)==-1){
+                    close(fd);
                     move(4,0);
-                    prints("\033[1;31m%s\033[0;33m\033[m","创建文件时发生错误...");
+                    prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
                     WAIT_RETURN;
                     continue;
                 }
-                while(!!(num=fread(ibuf,sizeof(int),18,fp))){
-                    for(i=0;i<num;i++){
-                        if(!(board=getboard(ibuf[i])))
+                if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED){
+                    close(fd);
+                    move(4,0);
+                    prints("\033[1;31m%s\033[0;33m<Enter>\033[m","映射文件时发生错误...");
+                    WAIT_RETURN;
+                    continue;
+                }
+                if(!(fp=fopen(fn,"w"))){
+                    munmap(p,st.st_size);
+                    move(4,0);
+                    prints("\033[1;31m%s\033[0;33m<Enter>\033[m","写入文件时发生错误...");
+                    WAIT_RETURN;
+                    continue;
+                }
+                for(i=0;i<MAXBOARD;i++){
+                    if(!((i>>3)<st.st_size))
+                        break;
+                    if(((unsigned char*)p)[i>>3]&(1<<(i&0x07))){
+                        if(!(board=getboard(i+1))||!(board->filename[0])||st.st_mtime<board->createtime)
                             continue;
-                        fprintf(fp_tmp,"%s\n",board->filename);
+                        fprintf(fp,"%s\n",board->filename);
                     }
                 }
-                fclose(fp_tmp);
                 fclose(fp);
+                munmap(p,st.st_size);
+                close(fd);
             }
             saveline(2,0,NULL);
+            modify_user_mode(EDITANN);
             vedit(fn,0,NULL,NULL,0);
+            modify_user_mode(ADMIN);
             clear();
             move(0,0);
             prints("\033[1;32m%s\033[m","[设定站务助理访问特定版面回收站权限]");
@@ -3266,57 +3369,84 @@ int edit_board_delete_read_perm(void){
             prints("\033[1;33m<%s>\033[m",user->userid);
             saveline(2,1,NULL);
             getdata(3,0,"\033[1;31m确认修改所选择用户访问特定版面回收站列表 [y/N]: \033[m",ans,2,DOECHO,NULL,true);
-            if(ans[0]=='y'||ans[0]=='Y'){
-                if(!(fp_tmp=fopen(fn,"r"))){
-                    move(5,0);
-                    prints("\033[1;31m%s\033[0;33m\033[m","打开文件时发生错误...");
-                    WAIT_RETURN;
-                    continue;
-                }
-                if(!(fp=fopen(datafile,"w"))){
-                    fclose(fp_tmp);
-                    move(5,0);
-                    prints("\033[1;31m%s\033[0;33m\033[m","写入文件时发生错误...");
-                    WAIT_RETURN;
-                    continue;
-                }
-                i=0;
-                while(fgets(buf,256,fp_tmp)){
-                    if(i==18){
-                        if(fwrite(ibuf,sizeof(int),18,fp)!=18){
-                            fclose(fp_tmp);
-                            fclose(fp);
-                            move(5,0);
-                            prints("\033[1;31m%s\033[0;33m\033[m","写入文件时发生错误...");
-                            WAIT_RETURN;
-                            continue;
-                        }
-                        i=0;
-                    }
-                    if(!!(p=strchr(buf,'\n')))
-                        *p=0;
-                    if(!!(ibuf[i]=getboardnum(buf,NULL)))
-                        i++;
-                }
-                fclose(fp_tmp);
-                if(i){
-                    if(fwrite(ibuf,sizeof(int),i,fp)!=i){
-                        fclose(fp);
-                        move(5,0);
-                        prints("\033[1;31m%s\033[0;33m\033[m","写入文件时发生错误...");
-                        WAIT_RETURN;
-                        continue;
-                    }
-                }
-                fclose(fp);
-                move(5,0);
-                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","修改成功!");
-                sprintf(buf,"修改 %s 访问特定版面回收站列表",user->userid);
-                securityreport(buf,user,NULL);
-                newbbslog(BBSLOG_USER,"board_delete_read_perm: edit <%s>",user->userid);
+            if(!(ans[0]=='y'||ans[0]=='Y')){
                 unlink(fn);
-                WAIT_RETURN;
+                continue;
             }
+            if(!(p=malloc(((MAXBOARD>>3)+1)*sizeof(unsigned char)))){
+                unlink(fn);
+                move(5,0);
+                prints("\033[1;31m%s\033[0;33m\033[m","申请内存空间时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            memset(p,0,((MAXBOARD>>3)+1)*sizeof(unsigned char));
+            if(!(fp=fopen(fn,"r"))){
+                free(p);
+                unlink(fn);
+                move(5,0);
+                prints("\033[1;31m%s\033[0;33m\033[m","打开文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            while(fgets(buf,256,fp)){
+                buf[strlen(buf)-1]=0;
+                if(!(i=getboardnum(buf,NULL)))
+                    continue;
+                i--;
+                ((unsigned char*)p)[i>>3]|=(1<<(i&0x07));
+            }
+            fclose(fp);
+            unlink(fn);
+            if((fd=open(datafile,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1){
+                free(p);
+                move(5,0);
+                prints("\033[1;31m%s\033[0;33m\033[m","写入文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            lc.l_type=F_WRLCK;
+            lc.l_whence=SEEK_SET;
+            lc.l_start=0;
+            lc.l_len=0;
+            lc.l_pid=0;
+            if(fcntl(fd,F_SETLKW,&lc)==-1){
+                close(fd);
+                free(p);
+                move(5,0);
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            for(ret=0,ptr=p,off=((MAXBOARD>>3)+1)*sizeof(unsigned char);off>0&&ret!=-1;ptr+=ret,off-=ret)
+                ret=write(fd,ptr,off);
+            close(fd);
+            sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),getpid());
+            if(!(fp=fopen(fn,"w"))){
+                free(p);
+                move(5,0);
+                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","写入文件时发生错误...");
+                WAIT_RETURN;
+                continue;
+            }
+            sprintf(buf,"修改 %s 访问特定版面回收站列表",user->userid);
+            write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
+            fprintf(fp,"%s","\033[1;33m[新访问权限列表]\033[m\n\n");
+            for(mtime=time(NULL),i=0;i<MAXBOARD;i++){
+                if(((unsigned char*)p)[i>>3]&(1<<(i&0x07))){
+                    if(!(board=getboard(i+1))||!(board->filename[0])||mtime<board->createtime)
+                        continue;
+                    fprintf(fp,"%s\n",board->filename);
+                }
+            }
+            fclose(fp);
+            free(p);
+            newbbslog(BBSLOG_USER,"board_delete_read_perm: edit <%s>",user->userid);
+            post_file(getCurrentUser(),"",fn,"syssecurity",buf,0,2,getSession());
+            unlink(fn);
+            move(5,0);
+            prints("\033[1;33m%s\033[0;33m<Enter>\033[m","修改成功!");
+            WAIT_RETURN;
         }
         else
             break;

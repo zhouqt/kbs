@@ -675,33 +675,44 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 
 /* etnlegend, 2005.11.27, 判断某一特定用户是否可以阅读某一特定版面的回收站 */
 int check_board_delete_read_perm(const struct userec *arg_user,const struct boardheader *arg_board){
-    FILE *fp;
     const struct userec *user;
     const struct boardheader *board;
+    struct stat st;
+    struct flock lc;
     char buf[256];
-    int bid,num,ret,i,ibuf[32];
+    int bid,fd,ret;
+    void *p;
     user=(!arg_user?getCurrentUser():arg_user);
     board=(!arg_board?currboard:arg_board);
     if(!user||!board)
         return 0;
     if(!HAS_PERM(user,PERM_BOARDS)||!user->title)
         return 0;
+    sethomefile(buf,user->userid,"board_delete_read");
+    if(stat(buf,&st)||!S_ISREG(st.st_mode))
+        return 0;
+    if(st.st_mtime<board->createtime)
+        return 0;
     if(!(bid=getbnum(board->filename)))
         return 0;
-    sethomefile(buf,user->userid,"board_delete_read");
-    if(!(fp=fopen(buf,"r")))
+    bid--;
+    if(!((bid>>3)<st.st_size))
         return 0;
-    ret=0;
-    while(!!(num=fread(ibuf,sizeof(int),32,fp))){
-        for(i=0;i<num;i++)
-            if(ibuf[i]==bid){
-                ret=1;
-                break;
-            }
-        if(ret)
-            break;
+    if((fd=open(buf,O_RDONLY,0644))==-1)
+        return 0;
+    lc.l_type=F_RDLCK;
+    lc.l_whence=SEEK_SET;
+    lc.l_start=0;
+    lc.l_len=0;
+    lc.l_pid=0;
+    if(fcntl(fd,F_SETLK,&lc)!=-1){
+        p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
+        ret=(p==MAP_FAILED?0:(((unsigned char*)p)[bid>>3]&(1<<(bid&0x07))));
+        munmap(p,st.st_size);
     }
-    fclose(fp);
+    else
+        ret=0;
+    close(fd);
     return ret;
 }
 
