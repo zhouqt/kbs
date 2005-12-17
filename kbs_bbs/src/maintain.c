@@ -3288,7 +3288,7 @@ int edit_board_delete_read_perm(void){
                 continue;
             }
             sprintf(buf,"删除 %s 访问特定版面回收站列表",user->userid);
-            write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
+            //write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
             fprintf(fp,"%s","\033[1;33m[原访问权限列表]\033[m\n\n");
             for(i=0;i<MAXBOARD;i++){
                 if(!((i>>3)<st.st_size))
@@ -3430,7 +3430,7 @@ int edit_board_delete_read_perm(void){
                 continue;
             }
             sprintf(buf,"修改 %s 访问特定版面回收站列表",user->userid);
-            write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
+            //write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
             fprintf(fp,"%s","\033[1;33m[新访问权限列表]\033[m\n\n");
             for(mtime=time(NULL),i=0;i<MAXBOARD;i++){
                 if(((unsigned char*)p)[i>>3]&(1<<(i&0x07))){
