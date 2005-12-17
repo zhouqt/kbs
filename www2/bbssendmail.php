@@ -14,29 +14,16 @@ if($mailfile == "")		// if to send a new mail
 	if (! bbs_can_send_mail() )
 		html_error_quit("您不能发送信件");
 	$incept = trim(ltrim(@$_POST['userid']));
+	if (!$incept)
+		html_error_quit("请输入收件人ID");
+	$lookupuser = array();
+	if (!bbs_getuser($incept,$lookupuser))
+		html_error_quit("错误的收件人ID");
+	$incept = $lookupuser['userid'];
+	
+	if (!strcasecmp($incept,'guest'))
+		html_error_quit("不能发信给guest");
 }
-else		// if to reply a mail
-{
-	$incept = bbs_getmailowner($maildir, $mailfile, $num);
-	if($incept == 1)
-	{
-		html_error_quit("无法读取信件目录文件。");
-	}
-	else if($incept == 2)
-	{
-		html_error_quit("您要回复的这封信已经没有了呀。");
-	}
-}
-
-if (!$incept)
-	html_error_quit("请输入收件人ID");
-$lookupuser = array();
-if (!bbs_getuser($incept,$lookupuser))
-	html_error_quit("错误的收件人ID");
-$incept = $lookupuser['userid'];
-
-if (!strcasecmp($incept,'guest'))
-	html_error_quit("不能发信给guest");
 
 $title = trim(@$_POST["title"]);
 if (!$title) $title = '无主题';
@@ -44,13 +31,14 @@ if (!$title) $title = '无主题';
 $sig = intval(@$_POST['signature']); //签名档
 $backup = isset($_POST['backup'])?strlen($_POST['backup']):0; //备份
 
-$ret = bbs_postmail($incept,$title,@$_POST["text"],$sig,$backup);
-
-if($mailfile != "")
+if($mailfile == "")
 {
-	bbs_setmailreplied($maildir, $mailfile, $num);
+	$ret = bbs_postmail($incept,$title,@$_POST["text"],$sig,$backup);
 }
-
+else
+{
+	$ret = bbs_postmail($maildir, $mailfile, $num, $title, @$_POST["text"], $sig, $bakup);
+}
 
 if ($ret < 0)  {
 	switch($ret) {
@@ -69,6 +57,9 @@ if ($ret < 0)  {
 			break;
 		case -7:
 			html_error_quit("邮件发送成功，但未能保存到发件箱");
+			break;
+		case -8:
+			html_error_quit("找不到所回复的原信。");
 			break;
 		default:
 			html_error_quit("系统错误，请联系管理员");
