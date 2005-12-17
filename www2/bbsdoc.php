@@ -2,7 +2,6 @@
 require("www2-funcs.php");
 require("www2-board.php");
 login_init();
-define('ARTCNT', 20);
 
 $bbsman_modes = array(
 	"DEL"   => 1,
@@ -202,6 +201,9 @@ $managemode = isset($_GET["manage"]);
 if ($managemode) {
 	if (!bbs_is_bm($brdnum, $usernum))
 		html_error_quit("Äã²»ÊÇ°æÖ÷");
+	define('ARTCNT', 50);
+} else {
+	define('ARTCNT', 20);
 }
 
 $brd_encode = urlencode($brdarr["NAME"]);
