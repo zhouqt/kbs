@@ -17,7 +17,7 @@ body {
 .b1 {
 	font-family: "Arial", "Helvetica", "sans-serif";
 	font-size: 12px;
-	color: #FFFFFF;
+	color: #222222;
 	text-decoration: none;
 }
 .b2 {
@@ -95,19 +95,19 @@ img.pm {
 	margin: 1px 0px;
 }
 div.lineback {
-	background-image: url(line2.gif);
+	background-image: url(/images/line2.gif);
 	background-repeat: repeat-y;
 	background-position: 4px 0px;
 	padding-left: 20px;
 	display: none;
 }
 div.lb {
-	background-image: url(line2.gif);
+	background-image: url(/images/line2.gif);
 	background-repeat: repeat-y;
 	background-position: 4px 0px;
 }
 div.mi { /* menu item */
-	background-image: url(line.gif);
+	background-image: url(/images/line.gif);
 	background-repeat: no-repeat;
 	background-position: 4px 0px;
 	font-size: 12px;
@@ -116,7 +116,7 @@ div.mi { /* menu item */
 	padding-bottom: 1px;
 }
 div.lmi { /* last menu item */
-	background-image: url(line1.gif);
+	background-image: url(/images/line1.gif);
 	background-repeat: no-repeat;
 	background-position: 4px 0px;
 	font-size: 12px;
@@ -125,7 +125,7 @@ div.lmi { /* last menu item */
 	padding-bottom: 3px;
 }
 div.fi { /* folder item */
-	background-image: url(line2.gif);
+	background-image: url(/images/line2.gif);
 	background-repeat: repeat-y;
 	background-position: 4px 0px;
 	font-size: 12px;
