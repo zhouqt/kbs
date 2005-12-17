@@ -672,7 +672,7 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
 	if (flag === false) { /* 置顶 */
-		str += '<td class="center red strong">提示</td><td class="center"><img src="images/istop.gif" alt="提示"/></td>';
+		str += '<td class="center red strong">提示</td><td class="center">' + putImageCode('istop.gif','alt="提示"') + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + id + '" /></td>';
 		}

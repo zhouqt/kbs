@@ -75,7 +75,7 @@
 <?php
 				}
 ?>
-[<a href="bbspstmail.php?userid=<?php echo $articles[0]["OWNER"]; ?>&file=<?php echo $articles[0]["FILENAME"]; ?>&title=<?php if(strncmp($articles[0]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[0]["TITLE"]); ?>">回信</a>]
+[<a href="bbspstmail.php?dir=<?php echo $dirname ?>&userid=<?php echo $articles[0]["OWNER"]; ?>&num=<?php echo $num; ?>&file=<?php echo $articles[0]["FILENAME"]; ?>&title=<?php if(strncmp($articles[0]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[0]["TITLE"]); ?>">回信</a>]
 </div>
 <form action="bbsmailfwd.php" method="post" class="medium">
 <input type="hidden" name="dir" value="<?php echo $dirname;?>"/>

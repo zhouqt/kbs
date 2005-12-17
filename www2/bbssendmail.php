@@ -5,7 +5,9 @@ assert_login();
 mailbox_header("发送信件");
 
 $mailfile = $_POST["file"];
-$maildir = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/.DIR";
+$dirfile = $_POST["dir"];
+$maildir = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$dirfile;
+$num = $_POST["num"];
 
 if($mailfile == "")		// if to send a new mail
 {
@@ -15,7 +17,15 @@ if($mailfile == "")		// if to send a new mail
 }
 else		// if to reply a mail
 {
-	$incept = bbs_getmailowner($maildir, $mailfile);
+	$incept = bbs_getmailowner($maildir, $mailfile, $num);
+	if($incept == 1)
+	{
+		html_error_quit("无法读取信件目录文件。");
+	}
+	else if($incept == 2)
+	{
+		html_error_quit("您要回复的这封信已经没有了呀。");
+	}
 }
 
 if (!$incept)
@@ -38,7 +48,7 @@ $ret = bbs_postmail($incept,$title,@$_POST["text"],$sig,$backup);
 
 if($mailfile != "")
 {
-	bbs_setmailreplied($maildir, $mailfile);
+	bbs_setmailreplied($maildir, $mailfile, $num);
 }
 
 
