@@ -422,12 +422,22 @@ int allnum, pagenum;
 
     switch (ch) {
 #ifdef HAVE_TEMPORARY_NICK
-    case UL_CHANGE_NICK_LOWER:
     case UL_CHANGE_NICK_UPPER:
+       if(!strcmp(getCurrentUser()->userid,"guest")) break;
+       strncpy(buf,getCurrentUser()->username, NAMELEN);
+       getdata( BBS_PAGESIZE+3, 0, "”¿æ√±‰ªªÍ«≥∆: ",buf,NAMELEN,DOECHO,NULL,false);
+       if(buf[0]!='\0')
+       {	       
+		   strncpy( getCurrentUser()->username, buf, NAMELEN );
+	    strncpy(uinfo.username,buf,NAMELEN);
+	    UPDATE_UTMP_STR(username,uinfo);
+       }	    
+        break;	    
+    case UL_CHANGE_NICK_LOWER:
        if(!strcmp(getCurrentUser()->userid,"guest")) break;
        strncpy(buf,uinfo.username,NAMELEN);
        enableESC = true;
-       getdata( BBS_PAGESIZE+3, 0, "±‰ªªÍ«≥∆: ",buf,NAMELEN,DOECHO,NULL,false);
+       getdata( BBS_PAGESIZE+3, 0, "¡Ÿ ±±‰ªªÍ«≥∆: ",buf,NAMELEN,DOECHO,NULL,false);
        enableESC = false;
        if(buf[0]!='\0')
        {	       

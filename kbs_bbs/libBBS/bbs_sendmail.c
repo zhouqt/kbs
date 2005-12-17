@@ -35,6 +35,11 @@ int getmailnum(char *recmaildir)
 /*
  * ¼ì²éĞÅÏäÊÇ·ñ³¬Èİ
  */
+/* return:
+1: warning
+2: no send
+3: no recv
+*/
 int chkusermail(struct userec *user)
 {
     char recmaildir[STRLEN], buf[STRLEN];
@@ -65,6 +70,10 @@ int chkusermail(struct userec *user)
          * else sum = get_sum_records(recmaildir, sizeof(fileheader)); 
          * if(user!=session->getCurrentUser())sum += get_sum_records(recmaildir, sizeof(fileheader));
          */
+		if (num > numlimit*3/2 || sum>sumlimit*3/2)
+			return 3;
+		if (num > numlimit *5/4 || sum>sumlimit*5/4)
+			return 2;
         if (num > numlimit || sum > sumlimit)
             return 1;
     }
@@ -100,9 +109,9 @@ int chkreceiver(struct userec *fromuser, struct userec *touser)
     if (!(touser->userlevel & PERM_READMAIL))
         return 1;
     if (fromuser)
-        if (chkusermail(fromuser))
+        if (chkusermail(fromuser) >= 2)
             return 2;
-    if (chkusermail(touser))
+    if (chkusermail(touser) >= 3)
         return 3;
     return 0;
 }

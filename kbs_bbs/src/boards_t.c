@@ -1122,6 +1122,7 @@ static int fav_refresh(struct _select_def *conf)
 {
     struct favboard_proc_arg *arg = (struct favboard_proc_arg *) conf->arg;
     struct newpostdata *ptr;
+	int sort;
 
     clear();
     ptr = &arg->nbrd[conf->pos - conf->page_pos];
@@ -1151,8 +1152,9 @@ static int fav_refresh(struct _select_def *conf)
     setfcolor(WHITE, DEFINE(getCurrentUser(), DEF_HIGHCOLOR));
     setbcolor(BLUE);
     clrtoeol();
+	sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ( (getCurrentUser()->flags&BRDSORT1_FLAG)+1):0;
 #ifdef BOARD_SHOW_ONLINE
-    prints("  %s 讨论区名称       V 类别 转信  %-20s 在线 版  主     ", arg->newflag ? "全部 未读" : "编号 未读", "中  文  叙  述");
+    prints("  %s %s讨论区名称%s       V 类别 转信  %-20s %s在线%s 版  主     ", arg->newflag ? "全部 未读" : "编号 未读", (sort==1)?"\033[36m":"", (sort==1)?"\033[44;37m":"", "中  文  叙  述", (sort & BRDSORT1_FLAG)?"\033[36m":"", (sort & BRDSORT1_FLAG)?"\033[44;37m":"");
 #else
     prints("  %s 讨论区名称        V 类别 转信  %-24s 版  主     ", arg->newflag ? "全部 未读" : "编号 未读", "中  文  叙  述");
 #endif

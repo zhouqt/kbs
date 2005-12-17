@@ -409,7 +409,7 @@ static int read_getdata(struct _select_def *conf, int pos, int len)
 		return SHOW_CONTINUE;
         }
         if (pos>count+dingcount) {
-            conf->new_pos=count+dingcount-100;
+            conf->new_pos=count+dingcount-conf->item_per_page+1;
 	    if (conf->new_pos<=0) conf->new_pos=1;
             list_select_add_key(conf,KEY_DIRCHANGE);
 	    newbbslog(BBSLOG_DEBUG,"%s pos %d count %d",arg->board->filename,pos,count+dingcount);

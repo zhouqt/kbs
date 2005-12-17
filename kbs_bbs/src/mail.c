@@ -380,7 +380,7 @@ int do_send(char *userid, char *title, char *q_file)
          * else
          * strcat(userid,".edu.tw");}
          */
-        if (chkusermail(getCurrentUser())) {
+        if (chkusermail(getCurrentUser()) >= 2) {
             move(1, 0);
             prints("你的信箱容量超出上限, 无法发送信件。");
             pressreturn();
@@ -646,7 +646,8 @@ int do_send(char *userid, char *title, char *q_file)
              */
             mail_file_sent(userid, filepath, getCurrentUser()->userid, save_title, 0, getSession());
         }
-        if (askyn("确定寄出？", true) == false)
+		sprintf(buf2,"确定寄给%s? ", userid);
+        if (askyn(buf2, true) == false)
             return -2;
 
         if (stat(filepath, &st) != -1) {
@@ -1858,7 +1859,7 @@ int do_gsend(char *userid[], char *title, int num)
     /*
      * 添加在好友寄信时的发信上限限制 Bigman 2000.12.11 
      */
-    if (chkusermail(getCurrentUser())) {
+    if (chkusermail(getCurrentUser()) >= 2) {
         move(1, 0);
         prints("你的信箱已经超出限额，无法转寄信件。\n");
         pressreturn();
@@ -2027,7 +2028,7 @@ int do_gsend(char *userid[], char *title, int num)
             prints("%s 没有收信的权力，不能收信，请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
-        } else if (chkusermail(user)) { /*Haohamru.99.4.05 */
+        } else if (chkusermail(user) >= 3) { /*Haohamru.99.4.05 */
             prints("%s 信箱已满,无法收信,请按 Enter 键继续向其他人发信...", uid);
             pressreturn();
             clear();
@@ -2154,7 +2155,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
         }
     }
 
-    if (chkusermail(getCurrentUser())) {
+    if (chkusermail(getCurrentUser()) >= 2) {
         move(1, 0);
         prints("你的信箱已经超出限额，无法转寄信件。\n");
         pressreturn();
@@ -2263,7 +2264,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
             }
 
 
-            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chkusermail(lookupuser)) {        /*Haohamru.99.4.05 */
+            if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chkusermail(lookupuser) >= 3) {        /*Haohamru.99.4.05 */
                 prints("%s 信箱已满,无法收信\n", receiver);
                 return -4;
             }
@@ -3278,7 +3279,7 @@ static int set_mailgroup_list_key(struct _select_def *conf, int key)
             int cnt;
             int i;
 
-			if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
+    		if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
 				break;
 			}
 

@@ -2675,13 +2675,14 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         prints("\033[m发表文章于 %s 讨论区  %s %s %s\n", currboard->filename, (anonyboard) ? (Anony == 1 ? "\033[1m要\033[m使用匿名" : "\033[1m不\033[m使用匿名") : "", mailback? "回复到信箱":"",use_tmpl?"使用模板":"");
         clrtoeol();
         prints("使用标题: %s\n", (buf[0] == '\0') ? "[正在设定主题]" : buf);
-        clrtoeol();
-        if (getCurrentUser()->signature < 0)
-            prints("使用随机签名档     %s", (replymode) ? buf3 : " ");
-        else
-            prints("使用第 %d 个签名档     %s", getCurrentUser()->signature, (replymode) ? buf3 : " ");
 
         if (buf4[0] == '\0' || buf4[0] == '\n') {
+        	clrtoeol();
+        	if (getCurrentUser()->signature < 0)
+            	prints("使用随机签名档     %s", (replymode) ? buf3 : " ");
+        	else
+            	prints("使用第 %d 个签名档     %s", getCurrentUser()->signature, (replymode) ? buf3 : " ");
+
             move(t_lines - 1, 0);
             clrtoeol();
             strcpy(buf4, buf);
@@ -2696,13 +2697,27 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
             strcpy(buf, buf4);
             continue;
         }
+
+       	clrtoeol();
+       	if (getCurrentUser()->signature < 0)
+			strcpy(buf2, "使用随机签名档");
+       	else
+           	sprintf(buf2, "使用第 %d 个签名档", getCurrentUser()->signature);
+		prints("%s  %s 按\033[1;32m0\033[m~\033[1;32m%d/V/" RAND_SIG_KEYS "\033[m选/看/随机签名档", buf2, (replymode) ? buf3 : " ", getSession()->currentmemo->ud.signum);
+
         move(t_lines - 1, 0);
         clrtoeol();
         /*
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
-        sprintf(buf2, "按\033[1;32m0\033[m~\033[1;32m%d/V/" RAND_SIG_KEYS "\033[m选/看/随机签名档%s，\033[1;32mT\033[m改标题，%s\033[1;32mEnter\033[m接受所有设定: ", getSession()->currentmemo->ud.signum,
-                (replymode) ? "，\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "，\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "");
+        sprintf(buf2, "%s，\033[1;32mT\033[m改标题，%s%s\033[1;32mEnter\033[m接受所有设定: ", 
+                (replymode) ? "\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "\033[1;32mP\033[m使用模板, \033[1;32mb\033[m回复到信箱", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
+#ifdef SSHBBS
+				"\033[1;32mu\033[m上传附件, "
+#else
+				""
+#endif
+				);
         if(replymode&&anonyboard) buf2[strlen(buf2)-10]=0;
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
@@ -3387,11 +3402,11 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     if ((arg->mode >= DIR_MODE_THREAD)&&(arg->mode <= DIR_MODE_WEB_THREAD))
         return DONOTHING;
     clear();
-    prints("区域删除\n");
+    prints("区域删除,请选择删除模式:\n");
     /*
      * Haohmaru.99.4.20.增加可以强制删除被mark文章的功能 
      */
-    getdata(1, 0, "删除模式 [0]标记删除 [1]普通删除 [2]强制删除 [3]取消删除标记 (0): ", del_mode, 10, DOECHO, NULL, true);
+    getdata(1, 0, "[0]标记删除 [1]普通删除 [2]强制删除 [3]取消删除标记 [4]删除标记文章 (0): ", del_mode, 10, DOECHO, NULL, true);
     idel_mode = atoi(del_mode);
     /*
      * if (idel_mode!=0 || idel_mode!=1)
@@ -5469,8 +5484,9 @@ static int choose_tmpl_post(char * title, char *fname){
     modify_user_mode(oldmode);
 
 	if( ptemplate[t_now-1].tmpl->filename[0] ){
+    	struct stat st;
 		setbfile( filepath,currboard->filename, ptemplate[t_now-1].tmpl->filename);
-		if( dashf( filepath )){
+		if( stat(filepath, &st) == 0 && S_ISREG(st.st_mode) && st.st_size>2){
 			if((fpsrc = fopen(filepath,"r"))!=NULL){
 				char buf[256];
 

@@ -1861,7 +1861,7 @@ int friend_help(struct _select_def* conf,struct friends *fh,void* extraarg)
 
 int friend_add()
 {
-    char uident[13];
+    char uident[STRLEN];
 
     clear();
     move(1, 0);

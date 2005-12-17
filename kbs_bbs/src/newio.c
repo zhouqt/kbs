@@ -575,7 +575,7 @@ int igetch()
         }
         goto igetagain;
     case Ctrl('Z'):
-        if(scrint&&uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&uinfo.mode!=WINMINE&&!inremsg) {
+        if(scrint&&uinfo.mode!=LOCKSCREEN&&uinfo.mode!=NEW&&uinfo.mode!=LOGIN&&uinfo.mode!=BBSNET &&uinfo.mode!=WINMINE&&!inremsg) {
             icurrchar++;
             inremsg = true;
             r_msg();
@@ -613,6 +613,8 @@ int igetch()
 int* keybuffer;
 int keybuffer_count=0;
 int skip_key=0;
+static int dicting=0;
+static int f1ing=0;
 bool ingetdata=false;
 
 extern void mailscr();
@@ -643,8 +645,11 @@ int igetkey()
 
 #if defined(SMTH) || defined(FREE)
 	if (scrint&&ch==Ctrl('V')) {
-            if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=DICT)
-            exec_mbem("@mod:service/libdict.so#dict_main");
+            if (getCurrentUser()&&!HAS_PERM(getCurrentUser(),PERM_DENYRELAX)&&uinfo.mode!=LOCKSCREEN&&!dicting){
+				dicting=1;
+	            exec_mbem("@mod:service/libdict.so#dict_main");
+				dicting=0;
+			}
             continue;
         }
 #endif
@@ -739,11 +744,13 @@ int igetkey()
     }
 
 #ifdef NEW_HELP
-	if(scrint && ret == KEY_F1 && uinfo.mode != HELP ){
+	if(scrint && ret == KEY_F1 && uinfo.mode != LOCKSCREEN && !f1ing){
 		int oldmode = uinfo.mode;
 
 		modify_user_mode(HELP);
+		f1ing=1;
 		newhelp(helpmode);
+		f1ing=0;
 		modify_user_mode(oldmode);
 
 		return igetkey();

@@ -1061,7 +1061,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                 char newtitle[STRLEN];
 
                 if (getuser(re->owner, &lookupuser) != 0) {
-                    if ((false != canIsend2(session->currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && !chkusermail(lookupuser)) {
+                    if ((false != canIsend2(session->currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && chkusermail(lookupuser)<3 ) {
                         setbfile(buf, boardname, fh->filename);
                         snprintf(newtitle, ARTICLE_TITLE_LEN, "[»ØÎÄ×ª¼Ä]%s", fh->title);
                         mail_file(session->currentuser->userid, buf, re->owner, newtitle, 0, fh);
@@ -2056,7 +2056,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
 #endif
                 || savefhdr[i].accessed[0] & FILE_PERCENT
                ) && del_mode != 2)
-                || ((id1 == 0) && (!(savefhdr[i].accessed[1] & FILE_DEL)))) {
+                || ((id1 == 0 || del_mode==4) && (!(savefhdr[i].accessed[1] & FILE_DEL)))) {
                 memcpy(&readfhdr[keepcount], &savefhdr[i], sizeof(struct fileheader));
                 readfhdr[keepcount].accessed[1] &= ~FILE_DEL;
                 keepcount++;

@@ -167,6 +167,7 @@ void u_enter()
 #ifdef SHOW_IDLE_TIME
     uinfo.freshtime = time(0);
 #endif
+	uinfo.logintime = time(0);
     strncpy(uinfo.userid, getCurrentUser()->userid, 20);
 
 //    strncpy(uinfo.realname, curruserdata.realname, 20);
@@ -281,13 +282,35 @@ void abort_bbs(int signo)
     exit(0);
 }
 
+struct aol {
+    int count;
+    int ent[10];
+	int mode[10];
+    char ip[10][IPLEN+4];
+    time_t login[10];
+};
+
+static int attach_online(struct user_info *uentp, int *arg, int pos){
+    struct aol *a = (struct aol *)arg;
+    a->ent[a->count] = pos;
+    strcpy(a->ip[a->count], uentp->from);
+    a->login[a->count] = uentp->logintime;
+	a->mode[a->count] = uentp->mode;
+    a->count++;
+    if(a->count >= 10) return QUIT;
+    return COUNT;
+}
+
 /* to be Continue to fix kick problem */
 void multi_user_check()
 {
-    struct user_info uin;
+	struct user_info *tmpinfo;
+	struct user_info curinfo;
     char buffer[40];
     int ret = 1;
-    int kickmulti = -1;
+	int i;
+	int num;
+	struct aol a;
 
     while (ret != 0) {
         ret = multilogin_user(getCurrentUser(), getSession()->currentuid,0);
@@ -306,33 +329,47 @@ void multi_user_check()
             exit(1);
         }
         if (ret == 1) {
-            if (kickmulti == -1)
-                getdata(0, 0, "你同时上线的窗口数过多，是否踢出本ID其它窗口(Y/N)? [N]", buffer, 4, DOECHO, NULL, true);
-            if (buffer[0] == 'Y' || buffer[0] == 'y' || kickmulti == 1) {
-                int lres;
-                int num;
+			memset(&a, 0, sizeof(a));
+		    apply_utmp((APPLY_UTMP_FUNC) attach_online, 10, getCurrentUser()->userid, &a);
 
-                kickmulti = 1;
-                if (!(num = search_ulist(&uin, cmpuids2, getSession()->currentuid)))
-                    return;     /* user isn't logged in */
-                if (uin.pid != 1) {
-                    if (!uin.active || (kill(uin.pid, 0) == -1))
-                        return; /* stale entry in utmp file */
-        /*---	modified by period	first try SIGHUP	2000-11-08	---*/
-                    lres = kill(uin.pid, SIGHUP);
-                    sleep(1);
-                    if (lres)
-        /*---	---*/
-                        kill(uin.pid, 9);
-                }
+		    if(a.count==0) break;
+
+			clear();
+			move(0,0);
+		    prints("你同时上线的窗口数过多，无法再登录。请选择踢除的窗口，回车断开本次连接\n");
+			for(i=0;i<a.count;i++){
+				move(i+2,0);
+				prints("  %d: ip:%-15s 登录时间:%s,  %s\n",i+1, a.ip[i], a.login[i]?ctime(&a.login[i]):"未知", modestring(buffer,a.mode[i], NULL, 0, NULL) );
+			}
+			buffer[0]='\0';
+			move(15,0);
+			getdata(0, 0, "请输入编号，回车忽略:", buffer, 3, DOECHO, NULL, true);
+			num = atoi(buffer);
+			if(num <1 || num >a.count){
+            	oflush();
+            	exit(1);
+			}
+
+			tmpinfo = get_utmpent(a.ent[num-1]);
+			if(tmpinfo==NULL) continue;
+			memcpy(&curinfo, tmpinfo, sizeof(curinfo));
+
+			if(curinfo.pid != 1 && curinfo.pid>0 && curinfo.active && !strcmp(getCurrentUser()->userid, curinfo.userid) ){
+
+                if ((kill(curinfo.pid, 0) == -1))
+                    continue;
+                i = kill(curinfo.pid, SIGHUP);
+                sleep(1);
+                if (i)
+                    kill(curinfo.pid, 9);
+
                 sprintf(buffer, "kicked (multi-login)");
                 bbslog("user","%s",buffer);
 
-                clear_utmp(num, getSession()->currentuid, uin.pid);
+                clear_utmp(a.ent[num-1], 0, curinfo.pid);
                 continue;
-            }
-            oflush();
-            exit(1);            /* 多窗口时踢掉一个，自己也断线 */
+            }else
+				continue;
         }
     }
 }

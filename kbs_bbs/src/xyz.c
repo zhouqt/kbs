@@ -1326,7 +1326,29 @@ static int get_innflag(struct fileheader *fh){
     return (fh->innflag[0]==fh->innflag[1]&&fh->innflag[0]=='S')?1:0;
 }
 
-#define FH_SELECT_NUM 2
+static int perm_cancelo(struct fileheader *fh)
+{
+	if(!(fh->accessed[0] & FILE_IMPORTED)) return 0;
+    return chk_currBM(currboard->BM,getCurrentUser());
+}
+static int set_cancelo(struct fileheader *fh, int i)
+{
+	if(i==0){
+		fh->accessed[0] &= ~FILE_IMPORTED;
+	}else{
+		fh->accessed[0] |= FILE_IMPORTED;
+	}
+	return 1;
+}
+static int get_cancelo(struct fileheader *fh)
+{
+	if(fh->accessed[0] & FILE_IMPORTED)
+		return 1;
+	else
+		return 0;
+}
+
+#define FH_SELECT_NUM 3
 static struct _fh_select
 {
 	char *desc;
@@ -1336,7 +1358,8 @@ static struct _fh_select
 } fh_select[FH_SELECT_NUM] = 
 {
 	{"回文转寄到信箱", perm_mailback, set_mailback, get_mailback},
-	{"转信发表", perm_innflag, set_innflag, get_innflag}
+	{"转信发表", perm_innflag, set_innflag, get_innflag},
+	{"收精华标记", perm_cancelo, set_cancelo, get_cancelo}
 };
 
 int show_fhselect(struct _select_def *conf, int i)
@@ -1385,9 +1408,10 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
 	if (arg->mode!=DIR_MODE_NORMAL) {
         return DONOTHING;
     }
+	/*
 	if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
         return DONOTHING;
-    
+    */
 	oldmode = uinfo.mode;
     modify_user_mode(USERDEF);
     
@@ -1403,7 +1427,7 @@ int fhselect(struct _select_def* conf,struct fileheader *fh,long flag)
     move(1, 0);
     clrtobot();
     move(2, 0);
-	prints("\033[1;31m修改文章属性:\033[m \033[1;33m%s\033[m", fh->title);
+	prints("\033[1;31m修改\033[1;32m%s\033[1;31m的文章属性:\033[m \033[1;33m%s\033[m", fh->owner, fh->title);
     newlevel = setperms(oldlevel, perms, "参数", FH_SELECT_NUM, show_fhselect, fhselect_select);
     move(22, 0);
     if ((newlevel & perms) == (oldlevel & perms))
