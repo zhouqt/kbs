@@ -717,7 +717,7 @@ int check_board_delete_read_perm(const struct userec *arg_user,const struct boar
         lc.l_start=0;
         lc.l_len=0;
         lc.l_pid=0;
-        fcntl(fd,F_SETLK,&lc);
+        fcntl(fd,F_SETLKW,&lc);
     }
     else
         ret=0;
