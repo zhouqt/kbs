@@ -66,6 +66,20 @@ ZEND_END_MODULE_GLOBALS(smth_bbs)
 #define SMTH_BBS_G(v) (smth_bbs_globals.v)
 #endif
 
+
+
+
+/* 简单粗暴法去掉重复定义 Warning */
+#undef PACKAGE_BUGREPORT
+#undef PACKAGE_NAME
+#undef PACKAGE_STRING
+#undef PACKAGE_TARNAME
+#undef PACKAGE_VERSION
+#undef MYSQL_UNIX_ADDR
+
+
+
+
 #endif	/* PHP_SMTH_BBS_H */
 
 
