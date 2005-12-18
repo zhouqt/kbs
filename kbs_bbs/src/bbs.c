@@ -712,6 +712,12 @@ int check_board_delete_read_perm(const struct userec *arg_user,const struct boar
             ret=(((unsigned char*)p)[bid>>3]&(1<<(bid&0x07)));
             munmap(p,st.st_size);
         }
+        lc.l_type=F_UNLCK;
+        lc.l_whence=SEEK_SET;
+        lc.l_start=0;
+        lc.l_len=0;
+        lc.l_pid=0;
+        fcntl(fd,F_SETLK,&lc);
     }
     else
         ret=0;
