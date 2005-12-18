@@ -76,5 +76,6 @@
 	}
 	
 	header("Content-Type: text/javascript; charset=gb2312");
-	bbs_print_article_js($filename,1, "bbscon.php?" . $_SERVER["QUERY_STRING"]);
+	echo "attachURL = '" . "bbscon.php?" . $_SERVER["QUERY_STRING"] . "';\n";
+	echo bbs2_readfile($filename);
 ?>
