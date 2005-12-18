@@ -3240,7 +3240,10 @@ int edit_board_delete_read_perm(void){
                 }
             }
             munmap(p,st.st_size);
+            if(!off&&count&&!ans[1])
+                continue;
             move(t_lines-2,0);
+            clrtoeol();
             prints("%s","\033[1;37m°´ \033[1;32m<Enter>\033[1;37m ¼ü½áÊø: \033[m");
             WAIT_RETURN;
         }
