@@ -3191,19 +3191,18 @@ int edit_board_delete_read_perm(void){
             lc.l_pid=0;
             if(fcntl(fd,F_SETLKW,&lc)==-1){
                 close(fd);
-                move(4,0);
-                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
-            if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED){
-                close(fd);
-                move(4,0);
-                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","映射文件时发生错误...");
-                WAIT_RETURN;
-                continue;
-            }
+            p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
+            lc.l_type=F_UNLCK;
+            lc.l_whence=SEEK_SET;
+            lc.l_start=0;
+            lc.l_len=0;
+            lc.l_pid=0;
+            fcntl(fd,F_SETLKW,&lc);
             close(fd);
+            if(p==MAP_FAILED)
+                continue;
             for(off=0,count=0,i=0;i<MAXBOARD;i++){
                 if(!((i>>3)<st.st_size))
                     break;
@@ -3262,28 +3261,24 @@ int edit_board_delete_read_perm(void){
             lc.l_pid=0;
             if(fcntl(fd,F_SETLKW,&lc)==-1){
                 close(fd);
-                move(4,0);
-                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
-            if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED){
-                close(fd);
-                move(4,0);
-                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","映射文件时发生错误...");
-                WAIT_RETURN;
+            p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
+            lc.l_type=F_UNLCK;
+            lc.l_whence=SEEK_SET;
+            lc.l_start=0;
+            lc.l_len=0;
+            lc.l_pid=0;
+            fcntl(fd,F_SETLKW,&lc);
+            close(fd);
+            if(p==MAP_FAILED)
                 continue;
-            }
             sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),getpid());
             if(!(fp=fopen(fn,"w"))){
                 munmap(p,st.st_size);
-                move(4,0);
-                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","写入文件时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
             sprintf(buf,"删除 %s 访问特定版面回收站列表",user->userid);
-            //write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
             fprintf(fp,"%s","\033[1;33m[原访问权限列表]\033[m\n\n");
             for(i=0;i<MAXBOARD;i++){
                 if(!((i>>3)<st.st_size))
@@ -3296,8 +3291,6 @@ int edit_board_delete_read_perm(void){
             }
             fclose(fp);
             munmap(p,st.st_size);
-            ftruncate(fd,0);
-            close(fd);
             unlink(datafile);
             newbbslog(BBSLOG_USER,"board_delete_read_perm: delete <%s>",user->userid);
             post_file(getCurrentUser(),"",fn,"syssecurity",buf,0,2,getSession());
@@ -3321,23 +3314,20 @@ int edit_board_delete_read_perm(void){
                 lc.l_pid=0;
                 if(fcntl(fd,F_SETLKW,&lc)==-1){
                     close(fd);
-                    move(4,0);
-                    prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
-                    WAIT_RETURN;
                     continue;
                 }
-                if((p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0))==MAP_FAILED){
-                    close(fd);
-                    move(4,0);
-                    prints("\033[1;31m%s\033[0;33m<Enter>\033[m","映射文件时发生错误...");
-                    WAIT_RETURN;
+                p=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
+                lc.l_type=F_UNLCK;
+                lc.l_whence=SEEK_SET;
+                lc.l_start=0;
+                lc.l_len=0;
+                lc.l_pid=0;
+                fcntl(fd,F_SETLKW,&lc);
+                close(fd);
+                if(p==MAP_FAILED)
                     continue;
-                }
                 if(!(fp=fopen(fn,"w"))){
                     munmap(p,st.st_size);
-                    move(4,0);
-                    prints("\033[1;31m%s\033[0;33m<Enter>\033[m","写入文件时发生错误...");
-                    WAIT_RETURN;
                     continue;
                 }
                 for(i=0;i<MAXBOARD;i++){
@@ -3351,7 +3341,6 @@ int edit_board_delete_read_perm(void){
                 }
                 fclose(fp);
                 munmap(p,st.st_size);
-                close(fd);
             }
             saveline(2,0,NULL);
             modify_user_mode(EDITANN);
@@ -3370,18 +3359,12 @@ int edit_board_delete_read_perm(void){
             }
             if(!(p=malloc(((MAXBOARD>>3)+1)*sizeof(unsigned char)))){
                 unlink(fn);
-                move(5,0);
-                prints("\033[1;31m%s\033[0;33m\033[m","申请内存空间时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
             memset(p,0,((MAXBOARD>>3)+1)*sizeof(unsigned char));
             if(!(fp=fopen(fn,"r"))){
                 free(p);
                 unlink(fn);
-                move(5,0);
-                prints("\033[1;31m%s\033[0;33m\033[m","打开文件时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
             while(fgets(buf,256,fp)){
@@ -3395,9 +3378,6 @@ int edit_board_delete_read_perm(void){
             unlink(fn);
             if((fd=open(datafile,O_WRONLY|O_CREAT|O_TRUNC,0644))==-1){
                 free(p);
-                move(5,0);
-                prints("\033[1;31m%s\033[0;33m\033[m","写入文件时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
             lc.l_type=F_WRLCK;
@@ -3408,24 +3388,23 @@ int edit_board_delete_read_perm(void){
             if(fcntl(fd,F_SETLKW,&lc)==-1){
                 close(fd);
                 free(p);
-                move(5,0);
-                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","锁定文件时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
             for(ret=0,ptr=p,off=((MAXBOARD>>3)+1)*sizeof(unsigned char);off>0&&ret!=-1;ptr+=ret,off-=ret)
                 ret=write(fd,ptr,off);
+            lc.l_type=F_UNLCK;
+            lc.l_whence=SEEK_SET;
+            lc.l_start=0;
+            lc.l_len=0;
+            lc.l_pid=0;
+            fcntl(fd,F_SETLKW,&lc);
             close(fd);
             sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),getpid());
             if(!(fp=fopen(fn,"w"))){
                 free(p);
-                move(5,0);
-                prints("\033[1;31m%s\033[0;33m<Enter>\033[m","写入文件时发生错误...");
-                WAIT_RETURN;
                 continue;
             }
             sprintf(buf,"修改 %s 访问特定版面回收站列表",user->userid);
-            //write_header(fp,getCurrentUser(),0,"syssecurity",buf,0,0,getSession());
             fprintf(fp,"%s","\033[1;33m[新访问权限列表]\033[m\n\n");
             for(mtime=time(NULL),i=0;i<MAXBOARD;i++){
                 if(((unsigned char*)p)[i>>3]&(1<<(i&0x07))){
