@@ -68,7 +68,7 @@
         $article = $articles[0]["FILENAME"];
     }
 	$filename = bbs_get_board_filename($board, $article);
-	if ($isnormalboard) {
+	if ($isnormalboard && ($ftype != $dir_modes["DELETED"])) {
 		if (cache_header("public",@filemtime($filename),300))
 			return;
 	} else {

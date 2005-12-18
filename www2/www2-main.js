@@ -625,17 +625,7 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot, isbm) 
 			   [apath && ftype != dir_modes["ANNOUNCE"], "精华区", "bbs0an.php?path=" + escape(apath)],
 			   [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board]];
 	var mls_bm = [[ftype != dir_modes["DELETED"], "回收站", "bbsdoc.php?manage=1&board=" + this.board + "&ftype=" + dir_modes["DELETED"]]];
-	if(isbm == 1)
-	{
-		for (var i = mls_bm.length - 1; i >= 0; i--) {
-			links = mls_bm[i];
-			if (links[0]) {
-				str += '<a href="' + links[2] + '" class="smaller">' + links[1] + '</a>';
-			} else {
-				str += '<b class="smaller">' + links[1] + '</b>';
-			}
-		}
-	}		
+	if(isbm == 1) mls = mls.concat(mls_bm);
 	for (var i = mls.length - 1; i >= 0; i--) {
 		links = mls[i];
 		if (links[0]) {
@@ -806,7 +796,7 @@ function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 conWriter.prototype.h = function() {
 	if (!isLogin() && this.ftype) return;
 	var ret = '<div class="conPager smaller right">';
-	if (isLogin()) {
+	if (isLogin()) { /* TODO: 某些模式应该禁止显示这两个链接 */
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
 		ret += '<a href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 		url = 'bbspst.php?board=' + this.board;

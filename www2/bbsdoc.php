@@ -243,7 +243,7 @@ else
 	$ftype = $dir_modes["NORMAL"];
 }
 
-if(($ftype == $dir_modes["DELETED"]) && !$isbm)
+if(($ftype == $dir_modes["DELETED"]) && !$managemode)  //非管理模式不让看回收站，同时也保证不会被cache
 {
 	html_error_quit("你不能看这个东西哦。");
 }
