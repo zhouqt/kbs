@@ -44,6 +44,11 @@
 		exit;
 	}
 
+	if(($ftype == $dir_modes["DELETED"]) && (!bbs_is_bm($brdnum, $usernum)))
+	{
+		exit;
+	}
+	
 	$total = bbs_countarticles($brdnum, $ftype);
 	if ($total <= 0) {
 		exit;
@@ -71,6 +76,5 @@
 	}
 	
 	header("Content-Type: text/javascript; charset=gb2312");
-	echo "attachURL = '" . "bbscon.php?" . $_SERVER["QUERY_STRING"] . "';\n";
-	echo bbs2_readfile($filename);
+	bbs_print_article_js($filename,1, "bbscon.php?" . $_SERVER["QUERY_STRING"]);
 ?>

@@ -583,7 +583,7 @@ function writeBMs(bmstr) {
 	}
 }
 
-var dir_modes = {"FIND": -2, "ANNOUNCE": -1, "NORMAL": 0, "DIGEST": 1, "MARK": 3, "ORIGIN": 6, "ZHIDING": 11};
+var dir_modes = {"FIND": -2, "ANNOUNCE": -1, "NORMAL": 0, "DIGEST": 1, "MARK": 3, "DELETED": 4, "ORIGIN": 6, "ZHIDING": 11};
 function dir_name(ftype) {
 	switch(ftype) {
 		case -1: return "(¾«»ªÇø)";
@@ -595,7 +595,7 @@ function dir_name(ftype) {
 }
 
 
-function docWriter(board, start, man, ftype, page, total, apath, showHot) {
+function docWriter(board, start, man, ftype, page, total, apath, showHot, isbm) {
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
 	this.start = start;
@@ -624,6 +624,18 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 			   [ftype != dir_modes["ORIGIN"], "Í¬Ö÷Ìâ", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["ORIGIN"]],
 			   [apath && ftype != dir_modes["ANNOUNCE"], "¾«»ªÇø", "bbs0an.php?path=" + escape(apath)],
 			   [ftype != dir_modes["FIND"], "²éÑ¯", "bbsbfind.php?board=" + this.board]];
+	var mls_bm = [[ftype != dir_modes["DELETED"], "»ØÊÕÕ¾", "bbsdoc.php?manage=1&board=" + this.board + "&ftype=" + dir_modes["DELETED"]]];
+	if(isbm == 1)
+	{
+		for (var i = mls_bm.length - 1; i >= 0; i--) {
+			links = mls_bm[i];
+			if (links[0]) {
+				str += '<a href="' + links[2] + '" class="smaller">' + links[1] + '</a>';
+			} else {
+				str += '<b class="smaller">' + links[1] + '</b>';
+			}
+		}
+	}		
 	for (var i = mls.length - 1; i >= 0; i--) {
 		links = mls[i];
 		if (links[0]) {
@@ -722,14 +734,21 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5};
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6};
 		ret += '<div class="oper">';
 		ret += '<input type="hidden" name="act" value=""/>';
-		ret += '<input type="button" value="É¾³ý" onclick="mansubmit(' + bbsman_modes['DEL'] + ');"/>';
-		ret += '<input type="button" value="ÇÐ»»M" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
-		ret += '<input type="button" value="ÇÐ»»G" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
-		ret += '<input type="button" value="ÇÐ»»²»¿ÉRe" onclick="mansubmit(' + bbsman_modes['NOREPLY'] + ');"/>';
-		ret += '<input type="button" value="ÇÐ»»ÖÃ¶¥" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/>';
+		if (this.ftype != dir_modes["DELETED"])
+		{
+			ret += '<input type="button" value="É¾³ý" onclick="mansubmit(' + bbsman_modes['DEL'] + ');"/>';
+			ret += '<input type="button" value="ÇÐ»»M" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
+			ret += '<input type="button" value="ÇÐ»»G" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
+			ret += '<input type="button" value="ÇÐ»»²»¿ÉRe" onclick="mansubmit(' + bbsman_modes['NOREPLY'] + ');"/>';
+			ret += '<input type="button" value="ÇÐ»»ÖÃ¶¥" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/>';
+		}
+		else
+		{
+			ret += '<input type="button" value="»Ö¸´µ½°æÃæ" onclick="mansubmit(' + bbsman_modes['UNDEL'] + ');"/>';
+		}
 		ret += '</div></form>';
 	}
 	ret += '<form action="bbsdoc.php" method="get" class="docPager smaller">';

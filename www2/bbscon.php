@@ -88,6 +88,11 @@
 		html_error_quit("错误的模式");
 	}
 
+	if(($ftype == $dir_modes["DELETED"]) && (!bbs_is_bm($brdnum, $usernum)))
+	{
+		html_error_quit("你不能看这个东西哟。");
+	}
+	
 	$total = bbs_countarticles($brdnum, $ftype);
 	if ($total <= 0) {
 		html_error_quit("错误的文章号,原文可能已经被删除");
@@ -134,7 +139,7 @@
 	}
 	page_header("阅读文章".$dir_name[$ftype], "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>");
 	$jsurl = "jscon.php?bid=" . $brdarr["BID"] . "&id=" . $article["ID"];
-	if ($ftype == $dir_modes["DIGEST"] || $ftype == $dir_modes["ZHIDING"]) {
+	if ($ftype == $dir_modes["DIGEST"] || $ftype == $dir_modes["ZHIDING"] || $ftype == $dir_modes["DELETED"]) {
 		$jsurl .= "&ftype=" . $ftype . "&num=" . $num; /* 别的模式仍旧用主索引，因为文章内容 jscon.php 可能已经被 cache */
 	}
 ?>

@@ -2,6 +2,7 @@
 require("www2-funcs.php");
 require("www2-board.php");
 login_init();
+define('ARTCNT', 20);
 
 $bbsman_modes = array(
 	"DEL"   => 1,
@@ -121,16 +122,25 @@ function bbs_board_foot($brdarr, $managemode, $ftype, $isnormalboard) {
 
 function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$total,$showHot)
 {
+	global $brdnum, $usernum;
 	$ann_path = bbs_getannpath($brdarr["NAME"]);
 	if ($ann_path != FALSE)	{
 		if (!strncmp($ann_path,"0Announce/",10))
 			$ann_path = substr($ann_path,9);
 	}
+	if(bbs_is_bm($brdnum, $usernum))
+	{
+		$isbm = 1;
+	}
+	else 
+	{
+		$isbm = 0;
+	}
 ?>
 <script>
 var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $start;
 ?>,<?php echo $managemode?"1":"0"; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
-?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>);
+?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>,<?php echo $isbm; ?>);
 <?php
 	foreach ($articles as $article)
 	{
@@ -197,25 +207,47 @@ if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
 	html_error_quit("错误的讨论区");
 }
 
+$isbm=bbs_is_bm($brdnum, $usernum);
+
 $managemode = isset($_GET["manage"]);
 if ($managemode) {
-	if (!bbs_is_bm($brdnum, $usernum))
+	if (!$isbm)
 		html_error_quit("你不是版主");
-	define('ARTCNT', 50);
-} else {
-	define('ARTCNT', 20);
 }
 
 $brd_encode = urlencode($brdarr["NAME"]);
 
-if (!$managemode && isset($_GET["ftype"])) {
+if($managemode)
+{
+	if(isset($_GET["ftype"]))
+	{
+		$ftype = intval($_GET["ftype"]);
+		if(($ftype != $dir_modes["NORMAL"]) && ($ftype != $dir_modes["DELETED"]))
+		{
+			$ftype = $dir_modes["NORMAL"];
+		}
+	}
+	else 
+	{
+		$ftype = $dir_modes["NORMAL"];
+	}
+}
+else if(isset($_GET["ftype"])) {
 	$ftype = intval($_GET["ftype"]);
 	if (!bbs_is_permit_mode($ftype, 0)) {
 		html_error_quit("错误的模式");
 	}
-} else {
+}
+else
+{
 	$ftype = $dir_modes["NORMAL"];
 }
+
+if(($ftype == $dir_modes["DELETED"]) && !$isbm)
+{
+	html_error_quit("你不能看这个东西哦。");
+}
+
 $isnormalboard = bbs_normalboard($board);
 
 bbs_set_onboard($brdnum,1);

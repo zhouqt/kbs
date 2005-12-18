@@ -71,6 +71,8 @@ function bbs_is_permit_mode($ftype, $caller) {
 			return 2;
 		case $dir_modes["MARK"]:
 			return ($caller == 2) ? 0 : 2; /* 暂时当作不可排序 ... */
+		case $dir_modes["DELETED"]:
+			return 1;
 		default: return 0;
 	}
 }
