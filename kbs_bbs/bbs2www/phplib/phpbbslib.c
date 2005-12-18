@@ -130,6 +130,8 @@ static PHP_FUNCTION(bbs_createnewid);
 static PHP_FUNCTION(bbs_is_invalid_id);
 static PHP_FUNCTION(bbs_setactivation);
 static PHP_FUNCTION(bbs_getactivation);
+static PHP_FUNCTION(bbs_doactivation);
+static PHP_FUNCTION(bbs_sendactivation);
 static PHP_FUNCTION(bbs_fillidinfo);
 static PHP_FUNCTION(bbs_modify_info);
 static PHP_FUNCTION(bbs_recalc_sig);
@@ -376,6 +378,8 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_createnewid,NULL)
     PHP_FE(bbs_is_invalid_id,NULL)
     PHP_FE(bbs_setactivation,NULL)
+    PHP_FE(bbs_doactivation,NULL)
+    PHP_FE(bbs_sendactivation,NULL)
     PHP_FE(bbs_getactivation,two_arg_force_ref_01)
     PHP_FE(bbs_createregform,NULL)
     PHP_FE(bbs_findpwd_check,NULL)
@@ -4641,6 +4645,7 @@ PHP_MINIT_FUNCTION(smth_bbs)
 #endif
     REGISTER_LONG_CONSTANT("BBS_QUOTED_LINES" , QUOTED_LINES, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_QUOTE_LEV" , QUOTELEV, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_ACTIVATED_FLAG" , ACTIVATED_FLAG, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_LOGINOK" , PERM_LOGINOK , CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_BASIC" , PERM_BASIC , CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);
@@ -4992,6 +4997,51 @@ static PHP_FUNCTION(bbs_createnewid)
 	RETURN_LONG(0);
 }
 
+
+static PHP_FUNCTION(bbs_sendactivation)
+{
+#ifdef HAVE_ACTIVATION
+    struct activation_info ai;
+	char* userid;
+	int   userid_len;
+    struct userec *uc;
+
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &userid , &userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+    getactivation(&ai, uc);
+    RETURN_LONG(sendactivation(&ai, uc, getSession()));
+#endif
+    RETURN_LONG(0);
+}
+
+static PHP_FUNCTION(bbs_doactivation)
+{
+#ifdef HAVE_ACTIVATION
+    struct activation_info ai;
+	char* userid;
+	int   userid_len;
+    struct userec *uc;
+
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &userid , &userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+    getactivation(&ai, uc);
+    doactivation(&ai, uc, getSession());
+#endif
+    RETURN_LONG(0);
+}
+
 /**
 * set user's activation file
 * function bbs_setactivation(string userid , string filebody)
@@ -5002,6 +5052,7 @@ static PHP_FUNCTION(bbs_createnewid)
 **/
 static PHP_FUNCTION(bbs_setactivation)
 {
+#ifdef HAVE_ACTIVATION
 	char* userid;
 	int   userid_len;
 	char* filebody;
@@ -5019,13 +5070,12 @@ static PHP_FUNCTION(bbs_setactivation)
 	
 	if(getuser(userid,&uc)==0)
 		RETURN_LONG(-1);
-	if(HAS_PERM(uc,PERM_LOGINOK))
-		RETURN_LONG(-2);
 	sethomefile(afile,uc->userid,"activation");
 	if ((fn=fopen(afile,"w"))==NULL)
 		RETURN_LONG(-10);
 	fprintf(fn,"%s",filebody);
 	fclose(fn);
+#endif
 	RETURN_LONG(0);
 }
 
@@ -5039,14 +5089,14 @@ static PHP_FUNCTION(bbs_setactivation)
 */
 static PHP_FUNCTION(bbs_getactivation)
 {
+#ifdef HAVE_ACTIVATION
 	char* userid;
 	int   userid_len;
 	zval *activation;
-	FILE* fn;
 	struct userec *uc;
 	char  buf[200];
-	char  afile[STRLEN];
-	
+	struct activation_info ai;
+    
 	int ac = ZEND_NUM_ARGS();
 	
 	if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sz" , &userid , &userid_len , &activation ) == FAILURE)
@@ -5060,20 +5110,12 @@ static PHP_FUNCTION(bbs_getactivation)
     	}
 	if(getuser(userid,&uc)==0)
 		RETURN_LONG(-1);
-	if(HAS_PERM(uc,PERM_LOGINOK))
-		RETURN_LONG(-2);
-	sethomefile(afile,uc->userid,"activation");
-	if ((fn=fopen(afile,"r"))==NULL)
-		RETURN_LONG(-3);
-	if(fgets(buf,200,fn)==NULL)
-	{
-		fclose(fn);
-		sprintf(buf,"rm -f %s",afile);
-		system(buf);
-		RETURN_LONG(-3);
-	}
+    if (!getactivation(&ai, uc)) RETURN_LONG(-1);
+    buf[0] = ai.activated ? '1' : '0';
+    memcpy(buf + 1, ai.activationcode, ACTIVATIONLEN);
+    strcpy(buf + 1 + ACTIVATIONLEN, ai.reg_email);
 	ZVAL_STRING(activation,buf,1);
-	fclose(fn);
+#endif
 	RETURN_LONG(0);
 }
 
