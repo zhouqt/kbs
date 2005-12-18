@@ -1745,7 +1745,6 @@ int modify_board(int bid) {
     error|=edit_group(&bh,&newbh);
     set_board(bid,&newbh,&bh);
     /*生成安全审核和日志*/
-#ifndef ZIXIA
     sprintf(src,"tmp/edit_board_log_%ld_%d",time(NULL),getpid());
     if(!(fp=fopen(src,"w"))){
         sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,(change&(1<<0))?32:0,newbh.filename);
@@ -1763,10 +1762,6 @@ int modify_board(int bid) {
         post_file(getCurrentUser(),"",src,"syssecurity",buf,0,3,getSession());
         unlink(src);
     }
-#else
-    sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,(change&(1<<0))?32:0,newbh.filename);
-    board_change_report(buf, &bh, &newbh);
-#endif	
     newbbslog(BBSLOG_USER,"edit_board: %s <%4.4d,%#6.6x>",bh.filename,bid,change);
     move(20,0);clrtoeol();
     move(20,2);prints(error?"\033[1;33m操作完成,请复查确认操作结果!\033m":"\033[1;32m操作成功!\033[m");
