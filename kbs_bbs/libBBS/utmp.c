@@ -597,6 +597,10 @@ void clear_utmp2(int uent)
         uent = getSession()->utmpent;
     }
 #endif
+    if (!utmpshm->uinfo[uent - 1].active) { //atppp 20051217
+        bbslog("3system", "UTMP:clear inactive entry [%d]", uent);
+        return;
+    }
     user=getuserbynum(utmpshm->uinfo[uent-1].uid);
     do_after_logout(user,get_utmpent(uent),uent,0,true);
     do_after_logout(user,get_utmpent(uent),uent,0,false);
@@ -641,7 +645,7 @@ void clear_utmp2(int uent)
     zeroinfo.sockaddr = 0;
     zeroinfo.destuid = 0;
 
-    if (utmpshm->uinfo[uent - 1].active != false)
+    //if (utmpshm->uinfo[uent - 1].active != false)
         utmphead->number--;
     utmpshm->uinfo[uent - 1] = zeroinfo;
 }
@@ -660,6 +664,45 @@ void clear_utmp(int uent, int useridx, int pid)
 
     utmp_setreadonly(1);
     utmp_unlock(lockfd);
+}
+
+
+struct kickuser_save {
+    int count;
+    struct user_info *entp[10];
+    int pid[10];
+};
+static int kickuser_count(struct user_info *uentp, int *arg, int pos){
+    struct kickuser_save *a = (struct kickuser_save *)arg;
+    a->entp[a->count] = uentp;
+    a->pid[a->count] = uentp->pid;
+    a->count++;
+    if(a->count >= 10) return QUIT;
+    return COUNT;
+}
+/* uentp == NULL means to kick all logins */
+int kick_user_utmp(int uid, struct user_info *uentp, int signal) {
+    int i;
+    struct kickuser_save s;
+    s.count = 0;
+    signal = signal ? signal: SIGHUP;
+    if (!uentp) {
+        struct userec *u = getuserbynum(uid);
+        apply_utmp((APPLY_UTMP_FUNC) kickuser_count, 0, u->userid, &s);
+    } else {
+        s.entp[0] = uentp;
+        s.pid[0] = uentp->pid;
+        s.count = 1;
+    }
+    for(i=0;i<s.count;i++) {
+        struct user_info *enp = s.entp[i];
+        if (enp->active) {
+            if (enp->mode != WEBEXPLORE)
+                kill(enp->pid, signal);
+            clear_utmp(get_utmpent_num(enp), uid , s.pid[i]);
+        }
+    }
+    return s.count;
 }
 
 int get_utmp_number()

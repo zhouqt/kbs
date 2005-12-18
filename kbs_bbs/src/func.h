@@ -112,8 +112,8 @@ int newbmlog(char *userid, char *boardname, int type, int value);
 			strcpy(utmpshm->uinfo[ getSession()->utmpent- 1 ].field,(entp).field); }
     int search_ulist(struct user_info *uentp, int (*fptr) (int, struct user_info *), int farg); /* ulist 中 search 符合fptr函数的 user */
     void clear_utmp2(int uent);
-    void kick_idle_user();
     void clear_utmp(int uentp, int useridx, int pid);   /*先锁住utmp调用clear_utmp2,并校验useridx */
+    int kick_user_utmp(int uid, struct user_info *uentp, int signal);
     int apply_ulist(APPLY_UTMP_FUNC fptr, void *arg);
     int apply_utmpuid(APPLY_UTMP_FUNC fptr, int uid, void *arg);
     int apply_ulist_addr(APPLY_UTMP_FUNC fptr, void *arg);      /* apply func on user list */

@@ -1264,16 +1264,7 @@ int kick_all_user()
 		prints("ÕıÔÚÌß  %s\n",uin->userid);
 		if( uin->pid == uinfo.pid )
 			continue;
-
-	    if (uin->mode == WEBEXPLORE)
-	        clear_utmp(i, uin->uid, uin->pid);
-
-	    if ( !uin->active || (kill(uin->pid, 0) == -1)) {
-	        continue;
-	    }
-	    if (kill(uin->pid, SIGHUP) == -1) {
-	        clear_utmp(i, uin->uid, uin->pid);
-	    }
+        kick_user_utmp(uin->uid, uin, 0);
 	}
 
 	move(13,0);

@@ -148,14 +148,6 @@ char *sethomepath(buf, userid)  /* 取 某用户 的home */
 #endif
 #ifndef SAVELIVE
 
-int kickuser(struct user_info *uentp, char *arg, int count)
-{
-    if (uentp->mode != WEBEXPLORE)
-        kill(uentp->pid, SIGKILL);
-    clear_utmp((uentp - utmpshm->uinfo) + 1, uentp->uid, uentp->pid);
-    return 0;
-}
-
 int killauser(struct userec *theuser, char *data)
 {
     int a;
@@ -166,7 +158,7 @@ int killauser(struct userec *theuser, char *data)
     a = compute_user_value(theuser);
     if ((a <= 0)&&strcmp(theuser->userid,"guest")) {
         newbbslog(BBSLOG_USIES, "kill user %s", theuser->userid);
-        apply_utmp((APPLY_UTMP_FUNC) kickuser, 0, theuser->userid, 0);
+        kick_user_utmp(getuser(theuser->userid, NULL), NULL, SIGKILL);
         a = getuser(theuser->userid, &ft);
         setmailpath(tmpbuf, theuser->userid);
         sprintf(genbuf1, "/bin/rm -rf %s", tmpbuf);

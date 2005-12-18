@@ -85,7 +85,6 @@ int t_talk(), t_pager(), t_override(), x_cloak();
 #ifdef IRC
 int t_irc()
 #endif
-int kick_user();
 int x_deny();
 int set_BM();
 
@@ -245,7 +244,7 @@ static const struct scommandlist sysconf_cmdlist[] = {
      * end of addin 
      */
     {"XCheckLevel", XCheckLevel},
-    {"KickUser", kick_user},
+    {"KickUser", kick_user_menu},
     {"DelUser", d_user},
     {"OpenVote", m_vote},
     {"NewBoard", m_newbrd},

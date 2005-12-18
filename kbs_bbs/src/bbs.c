@@ -2174,7 +2174,7 @@ int read_hot_info()
 #ifdef NEWSMTH
 	if (uinfo.mode == READING) rule = " 6)治版方针";
 #endif
-	snprintf(prompt, sizeof(prompt), "%s%s%s", "选择: 1)十大新闻 2)十大祝福 3)近期热点 4)系统热点 5)日历日记",
+	snprintf(prompt, sizeof(prompt), "%s%s%s", "选择: 1)十大话题 2)十大祝福 3)近期热点 4)系统热点 5)日历日记",
 			rule?rule:"", "[1]: ");
     getdata(t_lines - 1, 0, prompt, ans, 3, DOECHO, NULL, true);
     switch (ans[0])

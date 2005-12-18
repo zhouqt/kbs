@@ -502,21 +502,8 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
                 break;
             if (!(num = search_ulist(&uin, cmpuids2, useridx)))
                 continue;       /* user isn't logged in */
-            if (uin.pid == 1) {
-                clear_utmp(num, useridx, uin.pid);
-                continue;
-            }
-            if (!uin.active || (kill(uin.pid, 0) == -1)) {
-                clear_utmp(num, useridx, uin.pid);
-                continue;       /* stale entry in utmp file */
-            }
-        /*---	modified by period	first try SIGHUP	2000-11-08	---*/
-            lres = kill(uin.pid, SIGHUP);
+            kick_user_utmp(useridx, get_utmpent(num), 0);
             sleep(1);
-            if (lres)
-        /*---	---*/
-                kill(uin.pid, 9);
-            clear_utmp(num, useridx, uin.pid);
         }
 
         if (!HAS_PERM(user, PERM_BASIC))

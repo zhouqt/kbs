@@ -403,19 +403,10 @@ void offline()
 }
 #endif
 
-int kickuser(struct user_info *uentp, char *arg, int count)
-{
-    kill(uentp->pid, SIGHUP);
-    clear_utmp((uentp - utmpshm->uinfo) + 1, uentp->uid, uentp->pid);
-    UNUSED_ARG(arg);
-    UNUSED_ARG(count);
-    return 0;
-}
-
 int d_user(cid)
     char cid[IDLEN];
 {
-    int id, fd;
+    int uid, fd;
     char tmpbuf[30];
     char userid[IDLEN + 2];
     struct userec *lookupuser;
@@ -447,7 +438,7 @@ int d_user(cid)
         }
     } else
         strcpy(userid, cid);
-    if (!(id = getuser(userid, &lookupuser))) {
+    if (!(uid = getuser(userid, &lookupuser))) {
         move(3, 0);
         prints(MSG_ERR_USERID);
         clrtoeol();
@@ -487,8 +478,7 @@ int d_user(cid)
         sprintf(secu, "删除使用者：%s", lookupuser->userid);
         securityreport(secu, lookupuser, NULL);
     }
-    sprintf(genbuf, "%s deleted user %s", getCurrentUser()->userid, lookupuser->userid);
-    bbslog("user","%s",genbuf);
+    newbbslog(BBSLOG_USER,"%s deleted user %s", getCurrentUser()->userid, lookupuser->userid);
     /*Haohmaru.99.12.23.被删ID一个月内不得注册 */
     if ((fd = open(".badname", O_WRONLY | O_CREAT, 0644)) != -1) {
         char buf[STRLEN];
@@ -520,8 +510,8 @@ int d_user(cid)
     f_rm(tmpbuf);
     sprintf(genbuf, "tmp/email/%s", lookupuser->userid);
     f_rm(genbuf);
-    apply_utmp((APPLY_UTMP_FUNC) kickuser, 0, userid, 0);
-    setuserid(id, "");
+    kick_user_utmp(uid, NULL, SIGKILL);
+    setuserid(uid, "");
     lookupuser->userlevel = 0;
     /*strcpy(lookupuser->address, "");*/
     strcpy(lookupuser->username, "");
@@ -539,88 +529,54 @@ int d_user(cid)
     return 1;
 }
 
-/* to be Continue fix kick user problem */
-int kick_user(struct user_info *userinfo)
-{
-    int id, ind;
-    struct user_info uin;
-    char userid[40];
-
-    if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
-        modify_user_mode(ADMIN);
-        stand_title("Kick User");
-        move(1, 0);
-        usercomplete("Enter userid to be kicked: ", userid);
-        if (*userid == '\0') {
-            clear();
-            return 0;
-        }
-        if (!(id = searchuser(userid))) {       /* change getuser -> searchuser, by dong, 1999.10.26 */
-            move(3, 0);
-            prints("Invalid User Id");
-            clrtoeol();
-            pressreturn();
-            clear();
-            return 0;
-        }
-        move(1, 0);
-        prints("Kick User '%s'.", userid);
-        clrtoeol();
-        getdata(2, 0, "(Yes, or No) [N]: ", genbuf, 4, DOECHO, NULL, true);
-        if (genbuf[0] != 'Y' && genbuf[0] != 'y') {     /* if not yes quit */
-            move(2, 0);
-            prints("Aborting Kick User\n");
-            pressreturn();
-            clear();
-            return 0;
-        }
-        if (strcmp(getCurrentUser()->userid, userid)) {
-            char buf[STRLEN];
-            sprintf(buf, "%s 剔出使用者 %s", getCurrentUser()->userid, userid);
-            securityreport(buf, NULL, NULL);
-        }
-        return apply_utmp((APPLY_UTMP_FUNC) kickuser, 0, userid, 0);
-    } else {
-        uin = *userinfo;
-        strcpy(userid, uin.userid);
-        ind = true;
-    }
-    if (uin.mode == WEBEXPLORE)
-        clear_utmp((userinfo - utmpshm->uinfo) + 1, uin.uid, uin.pid);
-    if (!ind || !uin.active || (kill(uin.pid, 0) == -1)) {
-        if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
-            move(3, 0);
-            prints("User Has Logged Out");
-            clrtoeol();
-            pressreturn();
-            clear();
-        }
-        return 0;
-    }
-    if (kill(uin.pid, SIGHUP) == -1) {
-        clear_utmp((userinfo - utmpshm->uinfo) + 1, uin.uid, uin.pid);
-    }
+int kick_user(int uid, char *userid, struct user_info *userinfo) {
     newbbslog(BBSLOG_USER, "kicked %s", userid);
     if (strcmp(getCurrentUser()->userid, userid)) {
         char buf[STRLEN];
-        sprintf(buf, "%s 剔出使用者 %s", getCurrentUser()->userid, userid);
+        sprintf(buf, "%s 踢出使用者 %s", getCurrentUser()->userid, userid);
         securityreport(buf, NULL, NULL);
     }
-    /*sprintf( genbuf, "%s (%s)", kuinfo.userid, kuinfo.username );modified by dong, 1998.11.2 */
-    /*bbslog( "1system", "KICK %s (%s)", uin.userid, uin.username ); */
-    /*    uin.active = false;
-       uin.pid = 0;
-       uin.invisible = true;
-       uin.sockactive = 0;
-       uin.sockaddr = 0;
-       uin.destuid = 0;
-       update_ulist( &uin, ind ); 无意义而且参数有错，所以注释掉 dong 1998.7.7 */
-    move(2, 0);
-    if (uinfo.mode != LUSERS && uinfo.mode != OFFLINE && uinfo.mode != FRIEND) {
-        prints("User has been Kicked\n");
+    return kick_user_utmp(uid, userinfo, 0);
+}
+
+int kick_user_menu() {
+    char userid[STRLEN], ans[10];
+    int uid;
+    struct userec *u;
+
+    modify_user_mode(ADMIN);
+    stand_title("踢用户");
+    move(1, 0);
+    usercomplete("输入要踢出的用户名: ", userid);
+    if (*userid == '\0') {
+        clear();
+        return 0;
+    }
+    if (!(uid = getuser(userid, &u))) {       /* change getuser -> searchuser, by dong, 1999.10.26 */
+        move(3, 0);
+        prints("用户名错误");
+        clrtoeol();
         pressreturn();
         clear();
+        return 0;
     }
+    strcpy(userid, u->userid);
+    move(1, 0);
+    prints("踢出用户 '%s'.", userid);
+    clrtoeol();
+    getdata(2, 0, "(Yes, or No) [N]: ", ans, 4, DOECHO, NULL, true);
+    if (ans[0] != 'Y' && ans[0] != 'y') {     /* if not yes quit */
+        move(2, 0);
+        prints("取消\n");
+        pressreturn();
+        clear();
+        return 0;
+    }
+    kick_user(uid, userid, NULL);
+    move(4, 0);
+    prints("用户已被踢\n");
+    pressreturn();
+    clear();
     return 1;
 }
 

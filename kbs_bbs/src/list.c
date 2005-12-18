@@ -292,7 +292,7 @@ int do_userlist()
             exit(0);
         }
         uentp = *(user_record[i + page]);
-        if (!uentp.active || !uentp.pid) {
+        if (!uentp.active || !uentp.pid || uentp.logintime > update_time) {
             prints(" %4d 啊,我刚走\n", i + 1 + page);
             continue;
         }
@@ -417,7 +417,7 @@ int deal_key(ch, allnum, pagenum)
 char ch;
 int allnum, pagenum;
 {
-    char buf[STRLEN], genbuf[5];
+    char buf[STRLEN], genbuf[5], tmpid[20];
     int i, buflen;
 
     switch (ch) {
@@ -456,23 +456,27 @@ int allnum, pagenum;
 #endif
     case 'k':
     case 'K':
-        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && strcmp(getCurrentUser()->userid, user_record[allnum]->userid))
+        if (user_record[allnum]->logintime > update_time)
+            return 1;
+        strncpy(tmpid, user_record[allnum]->userid, sizeof(tmpid));
+        tmpid[sizeof(tmpid) - 1] = '\0';
+        if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && strcmp(getCurrentUser()->userid, tmpid))
             return 1;
         if (!strcmp(getCurrentUser()->userid, "guest"))
             return 1;           /* Leeward 98.04.13 */
-        sprintf(buf, "你要把 %s 踢出站外吗 (Yes/No) [N]: ", user_record[allnum]->userid);
+        sprintf(buf, "你要把 %s 踢出站外吗 (Yes/No) [N]: ", tmpid);
         move(BBS_PAGESIZE + 3, 0);
         clrtoeol();
         getdata(BBS_PAGESIZE + 3, 0, buf, genbuf, 4, DOECHO, NULL, true);
         if (genbuf[0] != 'Y' && genbuf[0] != 'y') {
             return 1;
         }
-        if (kick_user(user_record[allnum]) == 1) {
-            sprintf(buf, "%s 已被踢出站外", user_record[allnum]->userid);
-        }
-
-        else {
-            sprintf(buf, "%s 无法踢出站外", user_record[allnum]->userid);
+        if (user_record[allnum]->logintime > update_time || strcmp(user_record[allnum]->userid, tmpid) || !user_record[allnum]->active) {
+            sprintf(buf, "%s 已经下线", tmpid);
+        } else if (kick_user(user_record[allnum]->uid, user_record[allnum]->userid, user_record[allnum]) == 1) {
+            sprintf(buf, "%s 已被踢出站外", tmpid);
+        } else {
+            sprintf(buf, "%s 无法踢出站外", tmpid);
         }
         show_message(buf);
         break;

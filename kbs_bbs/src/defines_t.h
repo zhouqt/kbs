@@ -185,7 +185,8 @@ int m_send(char* userid);
 int m_sendnull(); /* m_send的一个封装*/
 
 /* delete.c */
-int kick_user(struct user_info *userinfo);
+int kick_user(int uid, char *userid, struct user_info *userinfo);
+int kick_user_menu();
 int d_user(char cid[IDLEN]);
 
 /* read.c */

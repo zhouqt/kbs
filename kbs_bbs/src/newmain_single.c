@@ -286,16 +286,24 @@ struct aol {
     int count;
     int ent[10];
 	int mode[10];
+    char idlemin[10][10];
     char ip[10][IPLEN+4];
     time_t login[10];
 };
 
 static int attach_online(struct user_info *uentp, int *arg, int pos){
     struct aol *a = (struct aol *)arg;
+    int min;
     a->ent[a->count] = pos;
     strcpy(a->ip[a->count], uentp->from);
     a->login[a->count] = uentp->logintime;
 	a->mode[a->count] = uentp->mode;
+    min = (time(0) - uentp->freshtime) / 60;
+    if (min) {
+        snprintf(a->idlemin[a->count], 10, "[%d]", min);
+    } else {
+        strcpy(a->idlemin[a->count], "");
+    }
     a->count++;
     if(a->count >= 10) return QUIT;
     return COUNT;
@@ -305,8 +313,7 @@ static int attach_online(struct user_info *uentp, int *arg, int pos){
 void multi_user_check()
 {
 	struct user_info *tmpinfo;
-	struct user_info curinfo;
-    char buffer[40];
+    char buffer[40], buf[10];
     int ret = 1;
 	int i;
 	int num;
@@ -335,11 +342,11 @@ void multi_user_check()
 		    if(a.count==0) break;
 
 			clear();
-			move(0,0);
-		    prints("你同时上线的窗口数过多，无法再登录。请选择踢除的窗口，回车断开本次连接\n");
+		    prints("你同时上线的窗口数过多，无法再登录。请选择希望踢除的窗口，回车断开本次连接\n");
 			for(i=0;i<a.count;i++){
 				move(i+2,0);
-				prints("  %d: ip:%-15s 登录时间:%s,  %s\n",i+1, a.ip[i], a.login[i]?ctime(&a.login[i]):"未知", modestring(buffer,a.mode[i], NULL, 0, NULL) );
+				prints("  %d: ip:%-15s 登录时间:%-24s,  %-12s %s\n",i+1, a.ip[i], a.login[i]?ctime(&a.login[i]):"未知",
+                    modestring(buffer,a.mode[i], NULL, 0, NULL) , a.idlemin[i]);
 			}
 			buffer[0]='\0';
 			move(15,0);
@@ -349,27 +356,10 @@ void multi_user_check()
             	oflush();
             	exit(1);
 			}
-
+            newbbslog(BBSLOG_USER,"%s","kicked (multi-login)");
 			tmpinfo = get_utmpent(a.ent[num-1]);
-			if(tmpinfo==NULL) continue;
-			memcpy(&curinfo, tmpinfo, sizeof(curinfo));
-
-			if(curinfo.pid != 1 && curinfo.pid>0 && curinfo.active && !strcmp(getCurrentUser()->userid, curinfo.userid) ){
-
-                if ((kill(curinfo.pid, 0) == -1))
-                    continue;
-                i = kill(curinfo.pid, SIGHUP);
-                sleep(1);
-                if (i)
-                    kill(curinfo.pid, 9);
-
-                sprintf(buffer, "kicked (multi-login)");
-                bbslog("user","%s",buffer);
-
-                clear_utmp(a.ent[num-1], 0, curinfo.pid);
-                continue;
-            }else
-				continue;
+            kick_user_utmp(getSession()->currentuid, tmpinfo, 0);
+            sleep(1);
         }
     }
 }

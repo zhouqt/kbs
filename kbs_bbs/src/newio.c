@@ -614,7 +614,9 @@ int* keybuffer;
 int keybuffer_count=0;
 int skip_key=0;
 static int dicting=0;
+#ifdef NEW_HELP
 static int f1ing=0;
+#endif
 bool ingetdata=false;
 
 extern void mailscr();
