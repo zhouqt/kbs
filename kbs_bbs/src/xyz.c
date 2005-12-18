@@ -454,7 +454,7 @@ int Xdelipacl()
 
 int Xdeljunk()
 {
-    char buf[256];
+    char buf[256], board[STRLEN];
 
     modify_user_mode(ADMIN);
     if (!check_systempasswd()) {
@@ -466,16 +466,18 @@ int Xdeljunk()
     clrtoeol();
     move(1, 0);
     make_blist(0);
-    namecomplete("ÊäÈëÌÖÂÛÇøÃû³Æ: ", genbuf);
-    if (genbuf[0] == '\0') {
+    namecomplete("ÊäÈëÌÖÂÛÇøÃû³Æ: ", board);
+    if (board[0] == '\0') {
         clear();
         return 0;
     }
-    sprintf(buf, "boards/%s/.DELETED", genbuf);
+    sprintf(buf, "È·ÈÏÉ¾³ý %s °æµÄÀ¬»øÏäºÍ·ÏÖ½Â¨Âð", board);
+    if (askyn(buf, false) == false) return 0;
+    sprintf(buf, "boards/%s/.DELETED", board);
     unlink(buf);
-    sprintf(buf, "boards/%s/.JUNK", genbuf);
+    sprintf(buf, "boards/%s/.JUNK", board);
     unlink(buf);
-    sprintf(buf, "%s Çå¿Õ %s °æÃæÀ¬»øÏä", getCurrentUser()->userid, genbuf);
+    sprintf(buf, "%s Çå¿Õ %s °æÃæÀ¬»øÏä", getCurrentUser()->userid, board);
     securityreport(buf, NULL, NULL);
     clear();
     return 0;
