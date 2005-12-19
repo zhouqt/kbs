@@ -440,6 +440,7 @@ void unlock_sem_check(int lockid);
     int getmailnum(char *recmaildir);
     int isowner(struct userec *user, struct fileheader *fileinfo);
     int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo, char *board,int currmode,int flag,session_t* session);
+	int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *fileinfo, char *title, session_t* session);
 
     int cmpname(struct fileheader *fhdr, char name[STRLEN]);
 /* Haohmaru.99.3.30.比较 某文件名是否和 当前文件 相同 */

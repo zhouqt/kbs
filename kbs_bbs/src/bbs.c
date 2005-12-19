@@ -92,134 +92,40 @@ int check_readonly(char *checked)
         return false;
 }
 
-int insert_func(int fd, struct fileheader *start, int ent, int total, struct fileheader *data, bool match)
+/* Undel an article   pig2532 2005.12.18 */
+int UndeleteArticle(struct _select_def* conf, struct fileheader *fileinfo, void *extraarg)
 {
-    int i;
-    struct fileheader UFile;
+	int ret;
+	struct read_arg* arg=(struct read_arg*)conf->arg;
+	char title[STRLEN];
 
-    if (match||!total)
-        return 0;
-    UFile = start[total - 1];
-    for (i = total - 1; i >= ent; i--)
-        start[i] = start[i - 1];
-    lseek(fd, 0, SEEK_END);
-    if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
-        bbslog("user", "%s", "apprec write err!");
-    start[ent - 1] = *data;
-    return ent;
-}
+	if (fileinfo==NULL)
+		return DONOTHING;
+	if ((arg->mode!= DIR_MODE_JUNK)&& (arg->mode != DIR_MODE_DELETED))
+		return DONOTHING;
+	if (!chk_currBM(currBM, getCurrentUser()))
+		return DONOTHING;
 
-/* undelete 一篇文章 Leeward 98.05.18 */
-/* modified by ylsdd */
-int UndeleteArticle(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
-{
-    char *p, buf[1024];
-    char UTitle[128];
-    struct fileheader UFile;
-    int i;
-    FILE *fp;
-    int fd;
-    struct read_arg* arg=(struct read_arg*)conf->arg;
-
-    if (fileinfo==NULL)
-        return DONOTHING;
-    if ((arg->mode!= DIR_MODE_JUNK)&& (arg->mode != DIR_MODE_DELETED))
-        return DONOTHING;
-    if (!chk_currBM(currBM, getCurrentUser()))
-        return DONOTHING;
-
-    sprintf(buf, "boards/%s/%s", currboard->filename, fileinfo->filename);
-    if (!dashf(buf)) {
-        clear();
-        move(2, 0);
-        prints("该文章不存在，已被恢复, 删除或列表出错");
-        pressreturn();
-        return FULLUPDATE;
-    }
-    fp = fopen(buf, "r");
-    if (!fp)
-        return DONOTHING;
-
-
-    strcpy(UTitle, fileinfo->title);
-    if ((p = strrchr(UTitle, '-')) != NULL) {   /* create default article title */
-        *p = 0;
-        for (i = strlen(UTitle) - 1; i >= 0; i--) {
-            if (UTitle[i] != ' ')
-                break;
-            else
-                UTitle[i] = 0;
-        }
-    }
-
-    i = 0;
-    while (!feof(fp) && i < 2) {
-        skip_attach_fgets(buf, 1024, fp);
-        if (feof(fp))
-            break;
-        if (strstr(buf, "发信人: ") && strstr(buf, "), 信区: ")) {
-            i++;
-        } else if (strstr(buf, "标  题: ")) {
-            i++;
-            strcpy(UTitle, buf + 8);
-            if ((p = strchr(UTitle, '\n')) != NULL)
-                *p = 0;
-        }
-    }
-    fclose(fp);
-
-    bzero(&UFile, sizeof(UFile));
-    strcpy(UFile.owner, fileinfo->owner);
-    strncpy(UFile.title, UTitle, ARTICLE_TITLE_LEN - 1);
-	UFile.title[ARTICLE_TITLE_LEN - 1] = '\0';
-    strcpy(UFile.filename, fileinfo->filename);
-    UFile.attachment=fileinfo->attachment;
-    UFile.accessed[0]=fileinfo->accessed[0];
-    UFile.accessed[1]=fileinfo->accessed[1]&(~FILE_DEL);
-
-    if (UFile.filename[1] == '/')
-        UFile.filename[2] = 'M';
-    else
-        UFile.filename[0] = 'M';
-    UFile.id = fileinfo->id;
-    UFile.groupid = fileinfo->groupid;
-    UFile.reid = fileinfo->reid;
-    set_posttime2(&UFile, fileinfo);
-
-    setbfile(genbuf, currboard->filename, fileinfo->filename);
-    setbfile(buf, currboard->filename, UFile.filename);
-    f_mv(genbuf, buf);
-
-    sprintf(buf, "boards/%s/.DIR", currboard->filename);
-    if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
-        if ((UFile.id == 0) || mmap_search_apply(fd, &UFile, insert_func) == 0) {
-            flock(fd, LOCK_EX);
-            if (UFile.id == 0) {
-                UFile.id = get_nextid(currboard->filename);
-                UFile.groupid = UFile.id;
-                UFile.reid = UFile.id;
-            }
-            lseek(fd, 0, SEEK_END);
-            if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
-                bbslog("user", "%s", "apprec write err!");
-            flock(fd, LOCK_UN);
-        }
-        close(fd);
-    }
-
-    updatelastpost(currboard->filename);
-    fileinfo->filename[0] = '\0';
-    substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
-    sprintf(buf, "undeleted %s's “%s” on %s", UFile.owner, UFile.title, currboard->filename);
-    bbslog("user", "%s", buf);
-
-    clear();
-    move(2, 0);
-    prints("'%s' 已恢复到版面 \n", UFile.title);
-    pressreturn();
-    bmlog(getCurrentUser()->userid, currboard->filename, 9, 1);
-
-    return FULLUPDATE;
+	ret = do_undel_post(currboard->filename, arg->direct, conf->pos, fileinfo, title, getSession());
+	switch(ret)
+	{
+	case -1:
+		clear();
+		move(2, 0);
+		prints("该文章不存在，已被恢复, 删除或列表出错");
+		pressreturn();
+		return FULLUPDATE;
+	case 0:
+		return DONOTHING;
+	case 1:
+		clear();
+		move(2, 0);
+		prints("'%s' 已恢复到版面 \n", title);
+		pressreturn();
+		return FULLUPDATE;
+	default:
+		return DONOTHING;
+	}
 }
 
 int check_stuffmode()

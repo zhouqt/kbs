@@ -326,6 +326,136 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     return 0;
 }
 
+static int insert_func(int fd, struct fileheader *start, int ent, int total, struct fileheader *data, bool match)
+{
+    int i;
+    struct fileheader UFile;
+
+    if (match||!total)
+        return 0;
+    UFile = start[total - 1];
+    for (i = total - 1; i >= ent; i--)
+        start[i] = start[i - 1];
+    lseek(fd, 0, SEEK_END);
+    if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
+        bbslog("user", "%s", "apprec write err!");
+    start[ent - 1] = *data;
+    return ent;
+}
+
+/* do undel an article to board
+	modified from original UndeleteArticle by pig2532 on 2005.12.18
+	parameters:
+		boardname: the board's name to undelete at
+		dirfname: index file name, usually boards/(boardname)/.DELETED
+		fileheader: the file header of which article to be undeleted
+		title: to RETURN the original article title
+	return:
+		-1: file not exists
+		0: unable to open file
+		1: success
+*/
+/* undelete 一篇文章 Leeward 98.05.18 */
+/* modified by ylsdd */
+int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *fileinfo, char *title, session_t* session)
+{
+    char *p, buf[1024], genbuf[1024];
+    char UTitle[128];
+    struct fileheader UFile;
+    int i;
+    FILE *fp;
+    int fd;
+
+    sprintf(buf, "boards/%s/%s", boardname, fileinfo->filename);
+    if (!dashf(buf)) {
+        return -1;
+    }
+    fp = fopen(buf, "r");
+    if (!fp)
+        return 0;
+
+    strcpy(UTitle, fileinfo->title);
+    if ((p = strrchr(UTitle, '-')) != NULL) {   /* create default article title */
+        *p = 0;
+        for (i = strlen(UTitle) - 1; i >= 0; i--) {
+            if (UTitle[i] != ' ')
+                break;
+            else
+                UTitle[i] = 0;
+        }
+    }
+
+    i = 0;
+    while (!feof(fp) && i < 2) {
+        skip_attach_fgets(buf, 1024, fp);
+        if (feof(fp))
+            break;
+        if (strstr(buf, "发信人: ") && strstr(buf, "), 信区: ")) {
+            i++;
+        } else if (strstr(buf, "标  题: ")) {
+            i++;
+            strcpy(UTitle, buf + 8);
+            if ((p = strchr(UTitle, '\n')) != NULL)
+                *p = 0;
+        }
+    }
+    fclose(fp);
+
+    bzero(&UFile, sizeof(UFile));
+    strcpy(UFile.owner, fileinfo->owner);
+    strncpy(UFile.title, UTitle, ARTICLE_TITLE_LEN - 1);
+	UFile.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    strcpy(UFile.filename, fileinfo->filename);
+    UFile.attachment=fileinfo->attachment;
+    UFile.accessed[0]=fileinfo->accessed[0];
+    UFile.accessed[1]=fileinfo->accessed[1]&(~FILE_DEL);
+
+    if (UFile.filename[1] == '/')
+        UFile.filename[2] = 'M';
+    else
+        UFile.filename[0] = 'M';
+    UFile.id = fileinfo->id;
+    UFile.groupid = fileinfo->groupid;
+    UFile.reid = fileinfo->reid;
+    set_posttime2(&UFile, fileinfo);
+
+    setbfile(genbuf, boardname, fileinfo->filename);
+    setbfile(buf, boardname, UFile.filename);
+    f_mv(genbuf, buf);
+
+    sprintf(buf, "boards/%s/.DIR", boardname);
+    if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
+        if ((UFile.id == 0) || mmap_search_apply(fd, &UFile, insert_func) == 0) {
+            flock(fd, LOCK_EX);
+            if (UFile.id == 0) {
+                UFile.id = get_nextid(boardname);
+                UFile.groupid = UFile.id;
+                UFile.reid = UFile.id;
+            }
+            lseek(fd, 0, SEEK_END);
+            if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
+                bbslog("user", "%s", "apprec write err!");
+            flock(fd, LOCK_UN);
+        }
+        close(fd);
+    }
+
+    updatelastpost(boardname);
+    fileinfo->filename[0] = '\0';
+    substitute_record(dirfname, fileinfo, sizeof(*fileinfo), num);
+    sprintf(buf, "undeleted %s's “%s” on %s", UFile.owner, UFile.title, boardname);
+    bbslog("user", "%s", buf);
+
+	if(title != NULL)
+	{
+		sprintf(title, "%s", UFile.title);
+	}
+
+    bmlog(session->currentuser->userid, boardname, 9, 1);
+
+    return 1;
+}
+
 /* by ylsdd 
    unlink action is taked within cancelpost if in mail mode,
    otherwise this item is added to the file '.DELETED' under
@@ -1086,7 +1216,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 			setbfile(anonybuf, boardname, ".ANONYDIR");
 			memcpy(&tmpf, fh, sizeof(tmpf));
 
-			strcpy(tmpf.owner, getCurrentUser()->userid);
+			strcpy(tmpf.owner, session->currentuser->userid);
 
 		    if ((fd = open(anonybuf, O_WRONLY | O_CREAT, 0664)) != -1) {
 		        flock(fd, LOCK_EX);
