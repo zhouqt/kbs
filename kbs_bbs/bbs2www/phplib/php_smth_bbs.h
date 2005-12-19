@@ -79,7 +79,6 @@ ZEND_END_MODULE_GLOBALS(smth_bbs)
 
 
 
-
 #endif	/* PHP_SMTH_BBS_H */
 
 

@@ -9,24 +9,6 @@
 #include "ext/standard/info.h"
 #include "php_smth_bbs.h"  
 
-#include "phpbbs.user.h"
-#include "phpbbs.announce.h"
-#include "phpbbs.vote.h"
-
-#include "bbs.h"
-#include "bbslib.h"
-
-
-/* remember to remove these implicit declaration of function warnings!!! - atppp */
-output_write_func_t override_default_write(buffered_output_t *out, output_write_func_t write_func);
-void free_output(buffered_output_t *out);
-int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, time_t *sndtime, char *msg);
-int conv_csv_to_al(char *fname,session_t * session);
-/* end atppp warnings */
-
-
-static char fullfrom[255];
-static char old_pwd[1024];
 
 #if PHP_MAJOR_VERSION == 5
 static
@@ -91,29 +73,36 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 #endif
 
 
+#include "phpbbs.user.h"
+#include "phpbbs.announce.h"
+#include "phpbbs.vote.h"
+#include "phpbbs.system.h"
 
-////////////////////////  System info operation functions  /////////////////////
-static PHP_FUNCTION(bbs_getonline_user_list);
-static PHP_FUNCTION(bbs_getonlineuser);
-static PHP_FUNCTION(bbs_getonlinenumber);
-static PHP_FUNCTION(bbs_getonlineusernumber);
-static PHP_FUNCTION(bbs_getwwwguestnumber);
-static PHP_FUNCTION(bbs_countuser);
-static PHP_FUNCTION(bbs_setfromhost);
-static PHP_FUNCTION(bbs_getcurrentuser);
-static PHP_FUNCTION(bbs_setonlineuser);
-static PHP_FUNCTION(bbs_getcurrentuinfo);
-static PHP_FUNCTION(bbs_get_explain);
+#include "bbs.h"
+#include "bbslib.h"
+
+
+/* remember to remove these implicit declaration of function warnings!!! - atppp */
+output_write_func_t override_default_write(buffered_output_t *out, output_write_func_t write_func);
+void free_output(buffered_output_t *out);
+int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, time_t *sndtime, char *msg);
+int conv_csv_to_al(char *fname,session_t * session);
+/* end atppp warnings */
+
+
+static char old_pwd[1024];
+
+
+PHP_FUNCTION(bbs_ext_initialized);
+PHP_FUNCTION(bbs_init_ext);
 
 ////////////////////////  User operation functions  ///////////////////////////
 static PHP_FUNCTION(bbs_checkuserpasswd);
 static PHP_FUNCTION(bbs_setuserpasswd);
 static PHP_FUNCTION(bbs_getuserlevel);
-static PHP_FUNCTION(bbs_getuser);
 static PHP_FUNCTION(bbs_getusermode);
 static PHP_FUNCTION(bbs_compute_user_value);
 static PHP_FUNCTION(bbs_user_level_char);
-static PHP_FUNCTION(bbs_checkpasswd);
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_saveuserdata);
 static PHP_FUNCTION(bbs_isonline);
@@ -170,7 +159,6 @@ static PHP_FUNCTION(bbs_get_filename_from_num);
 static PHP_FUNCTION(bbs_get_threads_from_id);
 static PHP_FUNCTION(bbs_get_threads_from_gid);
 static PHP_FUNCTION(bbs_countarticles);
-static PHP_FUNCTION(bbs_new_board);
 static PHP_FUNCTION(bbs_set_onboard);
 static PHP_FUNCTION(bbs_get_tmpls);
 static PHP_FUNCTION(bbs_get_tmpl_from_num);
@@ -239,11 +227,6 @@ static PHP_FUNCTION(bbs_sendwebmsg);
 
 ////////////////////////   WWW special functions  /////////////////////////////
 
-static PHP_FUNCTION(bbs_wwwlogin);
-static PHP_FUNCTION(bbs_setguest_nologin);
-static PHP_FUNCTION(bbs_wwwlogoff);
-static PHP_FUNCTION(bbs_getwwwparameters);
-static PHP_FUNCTION(bbs_setwwwparameters);
 static PHP_FUNCTION(bbs_printansifile);
 static PHP_FUNCTION(bbs_print_article);
 static PHP_FUNCTION(bbs_print_article_js);
@@ -254,9 +237,6 @@ static PHP_FUNCTION(bbs_print_article_js);
 static PHP_FUNCTION(bbs_valid_filename);
 static PHP_FUNCTION(bbs_sethomefile);
 static PHP_FUNCTION(bbs_setmailfile);
-static PHP_FUNCTION(bbs_sysconf_str);
-static PHP_FUNCTION(bbs_ext_initialized);
-static PHP_FUNCTION(bbs_init_ext);
 
 ////////////////////////   SMS functions  ///////////////////////////////////
 #ifdef SMS_SUPPORT
@@ -280,8 +260,11 @@ static function_entry smth_bbs_functions[] = {
     PHP_BBS_USER_EXPORT_FUNCTIONS
     PHP_BBS_ANNOUNCE_EXPORT_FUNCTIONS
     PHP_BBS_VOTE_EXPORT_FUNCTIONS
+    PHP_BBS_SYSTEM_EXPORT_FUNCTIONS
 
-    PHP_FE(bbs_getonline_user_list, NULL)
+    PHP_FE(bbs_ext_initialized, NULL)
+    PHP_FE(bbs_init_ext, NULL)
+
     PHP_FE(bbs_checkuserpasswd, NULL)
     PHP_FE(bbs_setuserpasswd, NULL)
     PHP_FE(bbs_getuserlevel, NULL)
@@ -297,32 +280,16 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_getthreadnum, NULL)
     PHP_FE(bbs_getthreads, NULL)
 #endif
-    PHP_FE(bbs_getuser, NULL)
     PHP_FE(bbs_getusermode, NULL)
     PHP_FE(bbs_compute_user_value, NULL)
     PHP_FE(bbs_checknewmail, NULL)
     PHP_FE(bbs_user_level_char, NULL)
-    PHP_FE(bbs_getonlineuser, NULL)
-    PHP_FE(bbs_getonlinenumber, NULL)
-    PHP_FE(bbs_getonlineusernumber,NULL)
-    PHP_FE(bbs_getwwwguestnumber,NULL)
-    PHP_FE(bbs_countuser, NULL)
-    PHP_FE(bbs_setfromhost, NULL)
-    PHP_FE(bbs_checkpasswd, NULL)
 #ifdef HAVE_WFORUM
     PHP_FE(bbs_saveuserdata, NULL)
     PHP_FE(bbs_isonline, NULL)
 #endif
-    PHP_FE(bbs_getcurrentuser, one_arg_force_ref_1)
-    PHP_FE(bbs_setonlineuser, fifth_arg_force_ref_00011)
     PHP_FE(bbs_checkorigin, NULL)
     PHP_FE(bbs_checkmark, NULL)
-    PHP_FE(bbs_getcurrentuinfo, NULL)
-    PHP_FE(bbs_wwwlogin, NULL)
-    PHP_FE(bbs_setguest_nologin, NULL)
-    PHP_FE(bbs_wwwlogoff, NULL)
-    PHP_FE(bbs_getwwwparameters,one_arg_force_ref_1)
-    PHP_FE(bbs_setwwwparameters,NULL)
     PHP_FE(bbs_printansifile, NULL)
     PHP_FE(bbs_print_article, NULL)
     PHP_FE(bbs_print_article_js, NULL)
@@ -395,9 +362,7 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_searchboard,third_arg_force_ref_001)
     PHP_FE(bbs_useronboard,two_arg_force_ref_01)
     PHP_FE(bbs_setmailreaded,NULL)
-    PHP_FE(bbs_new_board,NULL)
     PHP_FE(bbs_set_onboard,NULL)
-    PHP_FE(bbs_get_explain,NULL)
     /* favboard operation. by caltary  */
     PHP_FE(bbs_load_favboard,NULL)
     PHP_FE(bbs_fav_boards,NULL)
@@ -408,7 +373,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_get_father,NULL)
     PHP_FE(bbs_get_dirname,NULL)
     PHP_FE(bbs_del_favboarddir,NULL)
-    PHP_FE(bbs_sysconf_str,NULL)
     PHP_FE(bbs_get_tmpls,NULL)
     PHP_FE(bbs_get_tmpl_from_num,NULL)
     PHP_FE(bbs_make_tmpl_file,NULL)
@@ -424,8 +388,6 @@ static function_entry smth_bbs_functions[] = {
 #if HAVE_MYSQL_SMTH == 1
     PHP_FE(bbs_csv_to_al, NULL)
 #endif
-    PHP_FE(bbs_ext_initialized, NULL)
-    PHP_FE(bbs_init_ext, NULL)
 
     PHP_FE(bbs2_readfile, NULL)
     PHP_FE(bbs2_readfile_text, NULL)
@@ -468,96 +430,8 @@ static void setstrlen(pval * arg)
 }
  */
 
-static void assign_user(zval * array, struct userec *user, int num)
-{
-    struct userdata ud;
 
-    read_userdata(user->userid, &ud);
-    add_assoc_long(array, "index", num);
-    add_assoc_string(array, "userid", user->userid, 1);
-    add_assoc_long(array, "firstlogin", user->firstlogin);
-    add_assoc_long(array, "exittime", user->exittime);
-//    add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
-    add_assoc_string(array, "lasthost", (!strcmp(user->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? user->lasthost: SHOW_USERIP(user, user->lasthost), 1);
-    add_assoc_long(array, "numlogins", user->numlogins);
-    add_assoc_long(array, "numposts", user->numposts);
-    add_assoc_long(array, "flag1", user->flags);
-    add_assoc_long(array, "title", user->title);
-    add_assoc_string(array, "username", user->username, 1);
-    add_assoc_stringl(array, "md5passwd", (char *) user->md5passwd, 16, 1);
-    add_assoc_string(array, "realemail", ud.realemail, 1);
-    add_assoc_long(array, "userlevel", user->userlevel);
-    add_assoc_long(array, "lastlogin", user->lastlogin);
-    add_assoc_long(array, "stay", user->stay);
-    add_assoc_string(array, "realname", ud.realname, 1);
-    add_assoc_string(array, "address", ud.address, 1);
-    add_assoc_string(array, "email", ud.email, 1);
-    add_assoc_long(array, "signature", user->signature);
-    add_assoc_long(array, "signum", ud.signum);
-    add_assoc_long(array, "userdefine0", user->userdefine[0]);
-    add_assoc_long(array, "userdefine1", user->userdefine[1]);
 
-	#ifdef HAVE_BIRTHDAY
-	add_assoc_long(array,"gender",ud.gender);
-	add_assoc_long(array,"birthyear",ud.birthyear);
-    add_assoc_long(array,"birthmonth",ud.birthmonth);
-    add_assoc_long(array,"birthday", ud.birthday);
-	#endif
-
-    add_assoc_string(array,"reg_email",ud.reg_email,1);
-    add_assoc_long(array,"mobilderegistered", ud.mobileregistered);
-    add_assoc_string(array, "mobilenumber", ud.mobilenumber,1);
-
-#ifdef HAVE_WFORUM
-    add_assoc_string(array,"OICQ",ud.OICQ,1);
-    add_assoc_string(array,"ICQ",ud.ICQ,1);
-    add_assoc_string(array,"MSN", ud.MSN,1);
-    add_assoc_string(array,"homepage",ud.homepage,1);
-    add_assoc_long(array,"userface_img", ud.userface_img);
-	add_assoc_string(array,"userface_url", ud.userface_url,1);
-	add_assoc_long(array,"userface_width", ud.userface_width);
-	add_assoc_long(array,"userface_height", ud.userface_height);
-	add_assoc_long(array,"group",ud.group);
-    add_assoc_string(array,"country", ud.country,1);
-    add_assoc_string(array,"province", ud.province,1);
-    add_assoc_string(array,"city",ud.city,1);
-    add_assoc_long(array,"shengxiao",ud.shengxiao);
-    add_assoc_long(array,"bloodtype", ud.bloodtype);
-    add_assoc_long(array,"religion",ud.religion);
-    add_assoc_long(array,"profession",ud.profession);
-    add_assoc_long(array,"married",ud.married);
-    add_assoc_long(array,"education", ud.education);
-    add_assoc_string(array,"graduateschool",ud.graduateschool,1);
-    add_assoc_long(array,"character", ud.character);
-	add_assoc_string(array,"photo_url", ud.photo_url,1);
-	add_assoc_string(array,"telephone", ud.telephone,1);
-#endif
-
-}
-
-static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
-{
-    add_assoc_long(array, "index", num);
-    add_assoc_long(array, "active", uinfo->active);
-    add_assoc_long(array, "uid", uinfo->uid);
-    add_assoc_long(array, "pid", uinfo->pid);
-    add_assoc_long(array, "invisible", uinfo->invisible);
-    add_assoc_long(array, "sockactive", uinfo->sockactive);
-    add_assoc_long(array, "sockaddr", uinfo->sockaddr);
-    add_assoc_long(array, "destuid", uinfo->destuid);
-    add_assoc_long(array, "mode", uinfo->mode);
-    add_assoc_long(array, "pager", uinfo->pager);
-    add_assoc_long(array, "in_chat", uinfo->in_chat);
-    add_assoc_string(array, "chatid", uinfo->chatid, 1);
-    add_assoc_string(array, "from", uinfo->from, 1);
-    add_assoc_long(array, "logintime", uinfo->logintime);
-    add_assoc_long(array, "freshtime", uinfo->freshtime);
-    add_assoc_long(array, "utmpkey", uinfo->utmpkey);
-    add_assoc_long(array, "mailbox_prop", uinfo->mailbox_prop);
-    add_assoc_string(array, "userid", uinfo->userid, 1);
-    add_assoc_string(array, "realname", uinfo->realname, 1);
-    add_assoc_string(array, "username", uinfo->username, 1);
-}
 
 static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
 {
@@ -578,17 +452,7 @@ static void assign_board(zval * array, const struct boardheader *board, const st
 }
 
 
-static inline void setcurrentuinfo(struct user_info *uinfo, int uinfonum)
-{
-    getSession()->currentuinfo = uinfo;
-    getSession()->utmpent = uinfonum;
-}
 
-static inline void setcurrentuser(struct userec *user, int usernum)
-{
-	setCurrentUser(user);
-    getSession()->currentuid = usernum;
-}
 
 static int getattachtmppath(char *buf, size_t buf_len)
 {
@@ -606,26 +470,6 @@ static int getattachtmppath(char *buf, size_t buf_len)
 /*
  * Here goes the real functions
  */
-
-/* arguments: userid, username, ipaddr, operation */
-static PHP_FUNCTION(bbs_setfromhost)
-{
-    char *s;
-    int s_len;
-    int full_len;
-    char *fullfromhostptr;
-
-    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &fullfromhostptr, &full_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-    if (s_len > IPLEN)
-        s[IPLEN] = 0;
-    if (full_len > 80)
-        fullfromhostptr[80] = 0;
-    strcpy(fullfrom, fullfromhostptr);
-    strcpy(getSession()->fromhost, s);
-    RETURN_NULL();
-}
 
 static PHP_FUNCTION(bbs_getusermode)
 {
@@ -689,83 +533,6 @@ static PHP_FUNCTION(bbs_compute_user_value)
 
 }
 
-static PHP_FUNCTION(bbs_getuser)
-{
-    long v1;
-    struct userec *lookupuser;
-    char *s;
-    int s_len;
-    zval *user_array;
-
-    MAKE_STD_ZVAL(user_array);
-    if (zend_parse_parameters(2 TSRMLS_CC, "sa", &s, &s_len, &user_array) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-
-    if (s_len > IDLEN)
-        s[IDLEN] = 0;
-    v1 = getuser(s, &lookupuser);
-
-    if (v1 == 0)
-        RETURN_LONG(0);
-
-    if (array_init(user_array) != SUCCESS)
-        RETURN_LONG(0);
-    assign_user(user_array, lookupuser, v1);
-/*        RETURN_STRING(retbuf, 1);
- *        */
-    RETURN_LONG(v1);
-}
-
-static PHP_FUNCTION(bbs_getonlineuser)
-{
-    long idx, ret;
-    struct user_info *uinfo;
-    zval *user_array;
-
-    MAKE_STD_ZVAL(user_array);
-    if (zend_parse_parameters(2 TSRMLS_CC, "la", &idx, &user_array) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-    uinfo = get_utmpent(idx);
-    if (uinfo == NULL)
-        ret = 0;
-    else {
-        if (array_init(user_array) != SUCCESS)
-            ret = 0;
-        else {
-            assign_userinfo(user_array, uinfo, idx);
-            ret = idx;
-        }
-    }
-    RETURN_LONG(ret);
-}
-
-static PHP_FUNCTION(bbs_getonlinenumber)
-{
-    RETURN_LONG(get_utmp_number() + getwwwguestcount());
-}
-
-static PHP_FUNCTION(bbs_getonlineusernumber)
-{
-    RETURN_LONG(get_utmp_number());
-}
-
-static PHP_FUNCTION(bbs_getwwwguestnumber)
-{
-    RETURN_LONG(getwwwguestcount());
-}
-
-
-static PHP_FUNCTION(bbs_countuser)
-{
-    long idx;
-
-    if (zend_parse_parameters(2 TSRMLS_CC, "l", &idx) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-    RETURN_LONG(apply_utmpuid(NULL, idx, 0));
-}
 
 static PHP_FUNCTION(bbs_setuserpasswd){
     char *s;
@@ -819,55 +586,6 @@ static PHP_FUNCTION(bbs_checkuserpasswd){
     RETURN_LONG(0);
 }
 
-static PHP_FUNCTION(bbs_checkpasswd)
-{
-    char *s;
-    int s_len;
-    char *pw;
-    int pw_len;
-    long ret;
-    int unum = 0;
-    long ismd5 = 0;
-    struct userec *user;
-    int ac = ZEND_NUM_ARGS();
-
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
-        if (ac!= 3 || zend_parse_parameters(3 TSRMLS_CC, "ssl", &s, &s_len, &pw, &pw_len, &ismd5) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-    }
-    if (s_len > IDLEN)
-        s[IDLEN] = 0;
-    if (pw_len > PASSLEN)
-        pw[PASSLEN] = 0;
-    if (pw[0] == '\0')
-        ret = 1;
-    else if ((s[0] != 0) && !(unum = getuser(s, &user)))
-        ret = 2;
-    else {
-        if (s[0] == 0)
-            user = getCurrentUser();
-        if (user) {
-            if (ismd5) {
-                ismd5 = !(memcmp(pw, user->md5passwd, MD5PASSLEN));
-            } else {
-                ismd5 = checkpasswd2(pw, user);
-            }
-            if (ismd5) {
-                ret = 0;
-                if (s[0] != 0)
-                    setcurrentuser(user, unum);
-            } else {
-                ret = 1;
-                logattempt(user->userid, getSession()->fromhost, "www");
-            }
-        } else {
-            ret = 1;
-        }
-    }
-    RETURN_LONG(ret);
-}
-
 #ifdef HAVE_WFORUM
 int count_online(struct user_info *uentp, int *arg, int pos)
 {
@@ -900,55 +618,7 @@ static PHP_FUNCTION(bbs_isonline)
 }
 #endif
 
-static PHP_FUNCTION(bbs_wwwlogin)
-{
-    long ret;
-    long kick_multi = 0;
-    struct user_info *pu = NULL;
-    int utmpent;
 
-    if (ZEND_NUM_ARGS() == 1) {
-        if (zend_parse_parameters(1 TSRMLS_CC, "l", &kick_multi) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-    } else if (ZEND_NUM_ARGS() != 0)
-        WRONG_PARAM_COUNT;
-    
-    if (getCurrentUser() != NULL && strcasecmp(getCurrentUser()->userid, "guest") != 0) {
-        if (check_ip_acl(getCurrentUser()->userid, getSession()->fromhost)) 
-            RETURN_LONG(7);
-    }
-    
-    ret = www_user_login(getCurrentUser(), getSession()->currentuid, kick_multi, getSession()->fromhost,
-#ifdef SQUID_ACCL
-                         fullfrom,
-#else
-                         getSession()->fromhost,
-#endif
-                         &pu, &utmpent);
-    if (getCurrentUser() == NULL) {
-        struct userec *user;
-        int num;
-
-        num = getuser("guest", &user);
-        setcurrentuser(user, num);
-    }
-    setcurrentuinfo(pu, utmpent);
-    RETURN_LONG(ret);
-}
-
-/*
- * 本函数设置 currentuser 为 guest 但不登录，这样做非常的危险!
- * 除非你完全确定你自己在干什么，否则绝对不要调用这个函数! 目前只有极特殊的地方 wForum 需要调用这个函数
- */
-static PHP_FUNCTION(bbs_setguest_nologin)
-{
-    struct userec *user;
-    int num;
-
-    num = getuser("guest", &user);
-    setcurrentuser(user, num);
-}
     
 static PHP_FUNCTION(bbs_getuserlevel){
     struct userec* u;
@@ -966,101 +636,7 @@ static PHP_FUNCTION(bbs_getuserlevel){
 	RETURN_STRINGL(title,strlen(title),1);
 }
 
-static PHP_FUNCTION(bbs_getcurrentuinfo)
-{
-    zval *user_array;
-    long ret = 1;
 
-    MAKE_STD_ZVAL(user_array);
-    if (ZEND_NUM_ARGS() == 1) {
-        if (zend_parse_parameters(1 TSRMLS_CC, "a", &user_array) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-        if (array_init(user_array) != SUCCESS) {
-            ret = 0;
-        } else {
-            if (getSession()->currentuinfo) {
-                assign_userinfo(user_array, getSession()->currentuinfo, getSession()->utmpent);
-            } else
-                ret = 0;
-        }
-    } else if (ZEND_NUM_ARGS() != 0)
-        WRONG_PARAM_COUNT;
-    if (ret)
-        ret = getSession()->utmpent;
-
-    RETURN_LONG(ret);
-}
-
-static PHP_FUNCTION(bbs_getcurrentuser)
-{
-    zval *user_array;
-    long ret;
-    MAKE_STD_ZVAL(user_array);
-    if (zend_parse_parameters(1 TSRMLS_CC, "a", &user_array) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-
-    if (array_init(user_array) != SUCCESS) {
-        ret = 0;
-    } else {
-        if (getCurrentUser()) {
-            assign_user(user_array, getCurrentUser(), getSession()->currentuid);
-            ret = getSession()->currentuid;
-        } else
-            ret = 0;
-    }
-    RETURN_LONG(ret);
-}
-
-static PHP_FUNCTION(bbs_setonlineuser)
-{
-    zval *user_array;
-    char *userid;
-    int userid_len;
-    long utmpnum;
-    long utmpkey;
-    long ret;
-    struct user_info *pui = NULL;
-    int idx;
-    struct userec *user;
-    long compat_telnet;
-
-    MAKE_STD_ZVAL(user_array);
-    if (ZEND_NUM_ARGS() == 4) {
-        if (zend_parse_parameters(4 TSRMLS_CC, "slla", &userid, &userid_len, &utmpnum, &utmpkey, &user_array) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-        compat_telnet=false;
-    } else {
-        if (zend_parse_parameters(5 TSRMLS_CC, "sllal", &userid, &userid_len, &utmpnum, &utmpkey, &user_array,&compat_telnet) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-        }
-    }
-    if (userid_len > IDLEN)
-        RETURN_LONG(1);
-	/*
-    if (utmpnum < 0 || utmpnum >= MAXACTIVE)
-        RETURN_LONG(2);
-		*/
-    if (userid_len==0)
-        userid=NULL;
-    if ((ret = www_user_init(utmpnum, userid, utmpkey, &user, &pui, compat_telnet)) == 0) {
-        setcurrentuinfo(pui, utmpnum);
-        idx = getuser(pui->userid, &user);
-        setcurrentuser(user, idx);
-        if (user == NULL)
-            RETURN_LONG(6);
-        if (array_init(user_array) != SUCCESS)
-            ret = 7;
-        else {
-            assign_userinfo(user_array, pui, idx);
-            ret = 0;
-        }
-    }
-    getSession()->currentuinfo=pui;
-    RETURN_LONG(ret);
-}
 
 static char* output_buffer=NULL;
 static int output_buffer_len=0;
@@ -3801,55 +3377,6 @@ static PHP_FUNCTION(bbs_updatearticle)
 }
 
 
-static PHP_FUNCTION(bbs_wwwlogoff)
-{
-    if (getCurrentUser()) {
-        int ret = (www_user_logoff(getCurrentUser(), getSession()->currentuid,
-                                   getSession()->currentuinfo, getSession()->utmpent));
-
-        RETURN_LONG(ret);
-    } else
-        RETURN_LONG(-1);
-}
-
-static PHP_FUNCTION(bbs_getwwwparameters)
-{
-	FILE* fn;
-	char  buf[1024];
-	
-	sethomefile(buf,getCurrentUser()->userid,"www");
-    if ((fn=fopen(buf,"r"))==NULL) {
-        strcpy(buf, "0");
-    } else {
-        fgets(buf,1024,fn);
-        fclose(fn);
-    }
-	RETURN_STRING(buf,1);
-}
-
-static PHP_FUNCTION(bbs_setwwwparameters)
-{
-	char* wwwparameters;
-	int   wwwparameters_len;
-	FILE *fn;
-	char  buf[201];
-	
-	int ac = ZEND_NUM_ARGS();
-	
-	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &wwwparameters , &wwwparameters_len) == FAILURE)
-	{
-		WRONG_PARAM_COUNT;
-	}
-	
-	if(wwwparameters_len > 200)
-		RETURN_LONG(-1);
-	sethomefile(buf,getCurrentUser()->userid,"www");
-	if ((fn=fopen(buf,"w"))==NULL)
-		RETURN_LONG(-10);
-	fprintf(fn,"%s",wwwparameters);
-	fclose(fn);
-	RETURN_LONG(0);
-}
 
 static PHP_FUNCTION(bbs_brcaddread)
 {
@@ -4566,7 +4093,7 @@ static int initialize_ext()
  *       FALSE otherwise.
  * @author flyriver
  */
-static PHP_FUNCTION(bbs_ext_initialized)
+PHP_FUNCTION(bbs_ext_initialized)
 {
 	if (!get_initialized())
         RETURN_FALSE;
@@ -4582,7 +4109,7 @@ static PHP_FUNCTION(bbs_ext_initialized)
  *       FALSE on failure.
  * @author flyriver
  */
-static PHP_FUNCTION(bbs_init_ext)
+PHP_FUNCTION(bbs_init_ext)
 {
 	int ret = 0;
 	if (!get_initialized())
@@ -6495,289 +6022,6 @@ static PHP_FUNCTION(bbs_setmailreaded)
 }
 
 
-static int bbs_bm_change(char *board, struct boardheader *newbh, struct boardheader *oldbh)
-{
-	int id,m,brd_num,n,i;
-	int flag;
-	struct userec *lookupuser;
-	unsigned int newlevel;
-	char *p;
-	char obm[10][IDLEN+2];
-	int obmnum=0,nbmnum=0;
-	char nbm[10][IDLEN+2];
-	char buf[200];
-
-	for(i=0;i<10;i++){
-		obm[i][0]='\0';
-		nbm[i][0]='\0';
-	}
-
-	if(oldbh){
-		for(p = strtok(oldbh->BM, " "),obmnum=0; p && obmnum < 10; p=strtok(NULL," "),obmnum++){
-			strncpy(obm[obmnum], p, IDLEN+2);
-			obm[obmnum][IDLEN+1]='\0';
-		}
-	}
-
-	for(p = strtok(newbh->BM, " "),nbmnum=0; p && nbmnum < 10; p=strtok(NULL," "),nbmnum++){
-		strncpy(nbm[nbmnum], p, IDLEN+2);
-		nbm[nbmnum][IDLEN+1]='\0';
-	}
-
-	newbh->BM[0]='\0';
-
-	for( i=0; i<obmnum; i++ ){
-		flag = 2;
-
-		if(!(id = getuser(obm[i],&lookupuser))){
-			continue;
-		}
-
-		for(m=0;m<nbmnum;m++){
-			if(!strcmp(obm[i],nbm[m]))
-				flag = 0;
-		}
-		if(flag == 0) continue;
-
-		newlevel = lookupuser->userlevel;
-
-		brd_num = 0;
-
-		if( lookupuser->userlevel & PERM_BOARDS ){
-			for(n = 0; n < get_boardcount(); n++){
-				if(chk_BM_instr(getboard(n+1)->BM, lookupuser->userid) == true )
-					brd_num ++;
-			}
-		}
-
-		if( brd_num == 1){
-			newlevel &= ~PERM_BOARDS;
-			newlevel &= ~PERM_CLOAK;
-		}
-
-		sprintf(buf,"免去 %s 的斑竹 %s", board, lookupuser->userid);
-		//securityreport(buf, lookupuser, NULL);
-		lookupuser->userlevel = newlevel;
-	}
-
-	for( i=0; i<nbmnum; i++ ){
-		flag = 1;
-
-		if(!(id = getuser(nbm[i],&lookupuser))){
-			continue;
-		}
-
-		if( strlen(newbh->BM) + strlen(lookupuser->userid) >= BM_LEN - 2 )
-			continue;
-
-		for(m=0;m<obmnum;m++){
-			if(!strcmp(nbm[i],obm[m])){
-				flag = 0;
-				if( newbh->BM[0] != '\0' )
-					strcat(newbh->BM, " ");
-				strcat(newbh->BM, lookupuser->userid);
-			}
-		}
-		if(flag == 0) continue;
-
-		newlevel = lookupuser->userlevel;
-
-		if( newbh->BM[0] != '\0' )
-			strcat( newbh->BM, " " );
-		strcat(newbh->BM, lookupuser->userid);
-
-		newlevel |= PERM_BOARDS;
-		mail_file(getCurrentUser()->userid, "etc/forbm", lookupuser->userid, "新任斑竹必读", BBSPOST_LINK, NULL);
-
-		sprintf(buf,"任命 %s 的斑竹 %s", board, lookupuser->userid);
-		//securityreport(buf, lookupuser, NULL);
-		lookupuser->userlevel = newlevel;
-	}
-    return 0;
-}
-
-
-/*
- * new a board
- * 修改版面不允许重新修改精华区路径
- * - atppp 20050801 modify: 修改精华区路径通过编译了，不过我没测试！
- */
-static PHP_FUNCTION(bbs_new_board)
-{
-	int ac = ZEND_NUM_ARGS();
-
-	char *bname;
-	int bname_len;
-	char *btitle;
-	int btitle_len;
-	char *bbm;
-	int bbm_len;
-	char *section;
-	int section_len;
-	char *desp;
-	int desp_len;
-	long blevel;
-	long banony;
-	long bjunk;
-	long bout;
-	long battach;
-	long oldbnum;
-	long bclubread;
-	long bclubwrite;
-	long bclubhide;
-
-	char* bgroup;
-	int bgroup_len;
-	
-	int i;
-	struct boardheader newboard;
-	char vbuf[100];
-
-    if (ac != 15 || zend_parse_parameters(15 TSRMLS_CC, "lsssssllllsllll", &oldbnum, &bname, &bname_len, &section, &section_len, 
-        &desp, &desp_len, &btitle, &btitle_len, &bbm, &bbm_len, &blevel, &banony, &bjunk, &bout, &bgroup, &bgroup_len, &battach,
-        &bclubread, &bclubwrite, &bclubhide) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	bzero(&newboard,sizeof(newboard));
-	if(bname_len >= 18)
-		RETURN_LONG(-1);
-
-	if(! HAS_PERM(getCurrentUser(), PERM_SYSOP) )
-		RETURN_LONG(-7);
-
-	strncpy(newboard.filename,bname,18);
-	newboard.filename[17]='\0';
-
-	strncpy(newboard.title+13,btitle,47);
-	newboard.title[59]='\0';
-
-	if(section[0]=='\0' || ! isprint(section[0]))
-		RETURN_LONG(-10);
-	newboard.title[0]=section[0];
-
-	if(desp[0]=='\0')
-		RETURN_LONG(-11);
-
-	if(desp[0]=='['){
-		strncpy(newboard.title+1,desp,11);
-		for(i=desp_len+1; i<13; i++)
-			newboard.title[i]=' ';
-	}else{
-		newboard.title[1]='[';
-		strncpy(newboard.title+2,desp,10);
-		if(desp_len < 10){
-			newboard.title[2+desp_len]=']';
-			for(i=2+desp_len+1; i<13; i++)
-				newboard.title[i]=' ';
-		}
-		else
-			newboard.title[12]=']';
-	}
-
-	if( ! valid_brdname(newboard.filename) )
-		RETURN_LONG(-2);
-
-	strncpy(newboard.BM, bbm, BM_LEN - 1);
-	newboard.BM[BM_LEN-1] = '\0';
-
-	newboard.level = blevel;
-
-	if( banony )
-		newboard.flag |= BOARD_ANNONY;
-
-	if( bjunk )
-		newboard.flag |= BOARD_JUNK;
-
-	if( bout )
-		newboard.flag |= BOARD_OUTFLAG;
-
-	if( battach )
-		newboard.flag |= BOARD_ATTACH;
-
-	if(oldbnum < 0)
-		RETURN_LONG(-14);
-
-	if(oldbnum > 0)
-		if( getboard(oldbnum) == 0)
-			RETURN_LONG(-21);
-
-	if( (oldbnum==0 && getbnum(newboard.filename) > 0))
-		RETURN_LONG(-3);
-	if( oldbnum && getbnum(newboard.filename)!=oldbnum && getbnum(newboard.filename)>0 )
-		RETURN_LONG(-23);
-
-	if( oldbnum ){	//更改版面属性
-		struct boardheader oldboard;
-
-		memcpy(&oldboard, getboard(oldbnum), sizeof(oldboard) );
-		if(oldboard.filename[0]=='\0')
-			RETURN_LONG(-22);
-
-		if(strcmp(oldboard.filename,newboard.filename)){
-			char old[256],tar[256];
-			
-			setbpath(old, oldboard.filename);
-			setbpath(tar, newboard.filename);
-			f_mv(old,tar);
-			sprintf(old, "vote/%s", oldboard.filename);
-			sprintf(tar, "vote/%s", newboard.filename);
-			f_mv(old,tar);
-		}
-
-		bbs_bm_change(newboard.filename, &newboard, &oldboard);
-
-		strncpy(newboard.ann_path, oldboard.ann_path, 128);
-		newboard.ann_path[127]='\0';
-		edit_group(&oldboard, &newboard);
-		//精华区移动
-		
-		if(oldboard.flag | BOARD_ANNONY)
-			del_from_file("etc/anonymous",oldboard.filename);
-		if(newboard.flag | BOARD_ANNONY)
-			addtofile("etc/anonymous",newboard.filename);
-
-		if( bclubread )
-			newboard.flag |= BOARD_CLUB_READ;
-		
-		if( bclubwrite )
-			newboard.flag |= BOARD_CLUB_WRITE;
-		
-		if( bclubhide )
-			newboard.flag |= BOARD_CLUB_HIDE;
-		
-		set_board(oldbnum, &newboard, &oldboard);
-		sprintf(vbuf, "更改讨论区 %s 的资料 --> %s", oldboard.filename, newboard.filename);
-		bbslog("user","%s",vbuf);
-
-	}else{	//增加版面
-
-		if(newboard.flag | BOARD_ANNONY)
-			addtofile("etc/anonymous",newboard.filename);
-
-		sprintf(vbuf,"vote/%s",newboard.filename);
-		if( mkdir(vbuf,0755) == -1 )
-			RETURN_LONG( -4);
-
-		sprintf(vbuf,"boards/%s",newboard.filename);
-		if( mkdir(vbuf,0755) == -1 )
-			RETURN_LONG( -5);
-
-		bbs_bm_change(newboard.filename, &newboard, NULL);
-
-		if(bgroup && bgroup_len > 0){
-			snprintf(newboard.ann_path,127,"%s/%s",bgroup, newboard.filename);
-			newboard.ann_path[127]=0;
-			edit_group(NULL, &newboard);
-		}
-
-		if( add_board( &newboard ) == -1 )
-			RETURN_LONG( -6);
-	}
-
-	RETURN_LONG(1);
-}
-
 static PHP_FUNCTION(bbs_set_onboard)
 {
 	int ac = ZEND_NUM_ARGS();
@@ -6814,31 +6058,6 @@ static PHP_FUNCTION(bbs_set_onboard)
     RETURN_TRUE;
 }
 
-
-static PHP_FUNCTION(bbs_get_explain)
-{
-	int ac = ZEND_NUM_ARGS();
-	zval *element,*retarray;
-	int i;
-
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "a", &retarray) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	for(i=0; secname[i][0] && groups[i]; i++){
-
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-
-	    add_assoc_string(element, "EXPLAIN", (char*)secname[i][0], 1);
-	    add_assoc_string(element, "GROUPS", (char*)groups[i], 1);
-		zend_hash_index_update(Z_ARRVAL_P(retarray), i,
-				(void*) &element, sizeof(zval*), NULL);
-
-	}
-
-	RETURN_LONG(i);
-}
 
 
 /*
@@ -7068,30 +6287,6 @@ static PHP_FUNCTION(bbs_fav_boards)
         
     efree(columns);
     
-}
-
-/*
- * bbs_sysconf_str
- 获取系统参数
-*/
-static PHP_FUNCTION(bbs_sysconf_str)
-{
-         int ac = ZEND_NUM_ARGS();
-        int char_len;
-        char *char_conf;
-        char *char_result;
-		char *char_default="";
-		int default_len;
-        if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_conf,&char_len) ==FAILURE){
-            if(ac !=2 || zend_parse_parameters(2 TSRMLS_CC,"ss",&char_conf,&char_len,&char_default,&default_len) ==FAILURE){
-                WRONG_PARAM_COUNT;
-			}
-        }
-        char_result=sysconf_str(char_conf);//获取配制参数
-		if (char_result==NULL) {
-          RETURN_STRING(char_default,1);
-        }
-        RETURN_STRING(char_result,1);
 }
 
 /****
@@ -7780,67 +6975,6 @@ static PHP_FUNCTION(bbs_csv_to_al)
 #endif
 
 
-struct fulluserlistarg{
-    long start;
-    long num;
-    zval* return_value;
-};
-
-static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,int count)
-{
-    struct user_info userinfo=*uentp;
-    struct userec *lookupuser;
-    zval* element;
-    if (!userinfo.active || !userinfo.pid) {
-        return 0;
-    }
-    if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK) && userinfo.invisible && strcmp(userinfo.userid, getCurrentUser()->userid)) {
-        /*Haohmaru.99.4.24.让隐身者能看见自己 */
-        return 0;
-    }
-    if (count+1<arg->start)
-        return COUNT;
-    if (count+1-arg->start>=arg->num)
-        return QUIT;
-    MAKE_STD_ZVAL ( element );
-    array_init ( element );
-
-    add_assoc_bool ( element, "invisible", userinfo.invisible );
-    add_assoc_bool ( element, "isfriend", isfriend(userinfo.userid) );
-    add_assoc_string ( element, "userid", userinfo.userid, 1 );
-    add_assoc_string ( element, "username", userinfo.username, 1 );
-    if( getuser(userinfo.userid, &lookupuser) == 0 ) lookupuser=NULL;
-    add_assoc_string ( element, "userfrom", HAS_PERM(getCurrentUser(), PERM_SYSOP)? userinfo.from: SHOW_USERIP(lookupuser, userinfo.from), 1 );
-    add_assoc_string ( element, "mode", ModeType(userinfo.mode), 1 );
-    add_assoc_long ( element, "idle", (long)(time(0) - userinfo.freshtime)/60 );
-    
-    zend_hash_index_update(Z_ARRVAL_P(arg->return_value), count+1-arg->start, (void *) &element, sizeof(zval *), NULL);
-    return COUNT;
-}
-
-/*
- *  bbs_getonline_user_list
- *  获取再线用户列表
- *  @param start 开始位置
- *  @param num 获取的个数
- *  @return 在线用户数组
- *      格式：(invisible,isfriend,userid,username,userfrom,mode,idle(妙))
- */
-static PHP_FUNCTION(bbs_getonline_user_list)
-{
-    struct fulluserlistarg arg;
-    int ac = ZEND_NUM_ARGS();
-
-    if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC,"ll",&arg.start,&arg.num) ==FAILURE){
-        WRONG_PARAM_COUNT;
-    }
-    if (arg.start < 0 || arg.start > USHM_SIZE) RETURN_FALSE;
-    if (array_init(return_value) == FAILURE)
-        RETURN_FALSE;
-
-    arg.return_value=return_value;
-    apply_ulist_addr((APPLY_UTMP_FUNC) full_user_list, &arg);
-}
 
 
 /**
