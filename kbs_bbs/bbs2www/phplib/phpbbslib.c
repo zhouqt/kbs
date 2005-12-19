@@ -277,8 +277,10 @@ static PHP_FUNCTION(bbs2_readfile_text);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry smth_bbs_functions[] = {
-    PHP_FE(bbs_getuserparam, NULL)
-    PHP_FE(bbs_setuserparam, NULL)
+    PHP_BBS_USER_EXPORT_FUNCTIONS
+    PHP_BBS_ANNOUNCE_EXPORT_FUNCTIONS
+    PHP_BBS_VOTE_EXPORT_FUNCTIONS
+
     PHP_FE(bbs_getonline_user_list, NULL)
     PHP_FE(bbs_checkuserpasswd, NULL)
     PHP_FE(bbs_setuserpasswd, NULL)
@@ -339,9 +341,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_getattachtmppath, NULL)
     PHP_FE(bbs_edittitle, NULL)
     PHP_FE(bbs_checkbadword, NULL)
-    PHP_FE(bbs_ann_traverse_check, NULL)
-    PHP_FE(bbs_ann_num2path, NULL)
-    PHP_FE(bbs_ann_get_board, NULL)
     PHP_FE(bbs_getboards, NULL)
     PHP_FE(bbs_getarticles, NULL)
     PHP_FE(bbs_getfriends, NULL)
@@ -357,7 +356,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_get_threads_from_gid, fifth_arg_force_ref_00011)
     PHP_FE(bbs_countarticles, NULL)
     PHP_FE(bbs_is_bm, NULL)
-    PHP_FE(bbs_getannpath, NULL)
     PHP_FE(bbs_getmailnum, third_arg_force_ref_011)
     PHP_FE(bbs_getmailnum2, NULL)
     PHP_FE(bbs_getmails, NULL)
@@ -397,15 +395,9 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_searchboard,third_arg_force_ref_001)
     PHP_FE(bbs_useronboard,two_arg_force_ref_01)
     PHP_FE(bbs_setmailreaded,NULL)
-    PHP_FE(bbs_add_import_path,NULL)
-    PHP_FE(bbs_get_import_path,NULL)
     PHP_FE(bbs_new_board,NULL)
     PHP_FE(bbs_set_onboard,NULL)
-    PHP_FE(bbs_get_votes,NULL)
-    PHP_FE(bbs_get_vote_from_num,NULL)
-    PHP_FE(bbs_vote_num,NULL)
     PHP_FE(bbs_get_explain,NULL)
-    PHP_FE(bbs_start_vote,NULL)
     /* favboard operation. by caltary  */
     PHP_FE(bbs_load_favboard,NULL)
     PHP_FE(bbs_fav_boards,NULL)
@@ -434,8 +426,6 @@ static function_entry smth_bbs_functions[] = {
 #endif
     PHP_FE(bbs_ext_initialized, NULL)
     PHP_FE(bbs_init_ext, NULL)
-    PHP_FE(bbs_x_search,third_arg_force_ref_001)
-    PHP_FE(bbs_read_ann_dir,fourth_arg_force_ref_0111)
 
     PHP_FE(bbs2_readfile, NULL)
     PHP_FE(bbs2_readfile_text, NULL)
@@ -4646,6 +4636,7 @@ PHP_MINIT_FUNCTION(smth_bbs)
     REGISTER_LONG_CONSTANT("BBS_QUOTED_LINES" , QUOTED_LINES, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_QUOTE_LEV" , QUOTELEV, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_ACTIVATED_FLAG" , ACTIVATED_FLAG, CONST_CS | CONST_PERSISTENT);
+    REGISTER_LONG_CONSTANT("BBS_PCORP_FLAG" , PCORP_FLAG, CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_LOGINOK" , PERM_LOGINOK , CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_BASIC" , PERM_BASIC , CONST_CS | CONST_PERSISTENT);
     REGISTER_LONG_CONSTANT("BBS_PERM_POSTMASK", PERM_POSTMASK, CONST_CS | CONST_PERSISTENT);

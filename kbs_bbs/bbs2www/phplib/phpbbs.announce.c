@@ -3,8 +3,6 @@
 #include "ext/standard/info.h"
 #include "php_smth_bbs.h"  
 
-#include "phpbbs.user.h"
-
 #include "bbs.h"
 #include "bbslib.h"
 
