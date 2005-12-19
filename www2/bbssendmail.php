@@ -37,7 +37,7 @@ if($mailfile == "")
 }
 else
 {
-	$ret = bbs_postmail($maildir, $mailfile, $num, $title, @$_POST["text"], $sig, $bakup);
+	$ret = bbs_postmail($maildir, $mailfile, $num, $title, @$_POST["text"], $sig, $backup);
 }
 
 if ($ret < 0)  {
