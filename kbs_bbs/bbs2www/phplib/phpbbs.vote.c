@@ -461,3 +461,320 @@ PHP_FUNCTION(bbs_start_vote)
 
 	RETURN_LONG(1);
 }
+
+
+
+
+
+
+/****
+ * add by stiger, template, Ãþ°å
+ */
+static void bbs_make_tmpl_array(zval * array, struct a_template * ptemp, char *board)
+{
+    add_assoc_string(array, "TITLE", ptemp->tmpl->title, 1);
+    add_assoc_string(array, "TITLE_TMPL", ptemp->tmpl->title_tmpl, 1);
+    add_assoc_long(array, "CONT_NUM", ptemp->tmpl->content_num);
+	if( ptemp->tmpl->filename[0] ){
+		char path[STRLEN];
+		setbfile( path, board, ptemp->tmpl->filename );
+    	add_assoc_string(array, "FILENAME", path,1);
+	}else
+ 		add_assoc_string(array, "FILENAME", ptemp->tmpl->filename,1);
+}
+
+PHP_FUNCTION(bbs_get_tmpls)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *bname;
+	int bname_len;
+	char path[STRLEN];
+	struct a_template * ptemp = NULL;
+	int mode,tmpl_num,i;
+	struct boardheader *bp=NULL;
+	zval *element,*retarray;
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &bname, &bname_len, &retarray) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	if((bp=getbcache(bname))==NULL)
+		RETURN_LONG(-2);
+
+	setbfile(path, bname, TEMPLATE_DIR);
+
+	if(array_init(retarray) != SUCCESS)
+	{
+                RETURN_LONG(-5);
+	}
+
+    if(is_BM(bp, getCurrentUser()))
+		mode = 1;
+	else
+		mode = 0;
+
+	tmpl_num = orig_tmpl_init(bname, mode, & ptemp);
+	
+	if(tmpl_num < 0)
+		RETURN_LONG(-6);
+
+	if(tmpl_num == 0)
+		RETURN_LONG(0);
+
+	for(i=0; i < tmpl_num; i++){
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+
+		bbs_make_tmpl_array(element, ptemp + i,bname);
+		zend_hash_index_update(Z_ARRVAL_P(retarray), i,
+				(void*) &element, sizeof(zval*), NULL);
+	}
+
+	orig_tmpl_free( & ptemp, tmpl_num );
+
+	RETURN_LONG(i);
+}
+
+/**********
+ * get a detail tmpl, stiger
+ */
+
+static void bbs_make_detail_tmpl_array(zval * array, struct s_content * cont)
+{
+
+    add_assoc_string(array, "TEXT", cont->text, 1);
+    add_assoc_long(array, "LENGTH", cont->length);
+
+}
+
+PHP_FUNCTION(bbs_get_tmpl_from_num)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *bname;
+	int bname_len;
+	char path[STRLEN];
+	struct boardheader *bp=NULL;
+	struct a_template * ptemp = NULL;
+	zval *element,*retarray;
+	long ent;
+    int tmpl_num,i,mode;
+
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sla", &bname, &bname_len, &ent, &retarray) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	if((bp=getbcache(bname))==NULL)
+		RETURN_LONG(-2);
+
+	setbfile(path, bname, TEMPLATE_DIR);
+
+	if(array_init(retarray) != SUCCESS)
+	{
+                RETURN_LONG(-5);
+	}
+
+    if(is_BM(bp, getCurrentUser()))
+		mode = 1;
+	else
+		mode = 0;
+
+	tmpl_num = orig_tmpl_init(bname, mode, & ptemp);
+	
+	if(tmpl_num < 0)
+		RETURN_LONG(-6);
+
+	if(tmpl_num == 0)
+		RETURN_LONG(0);
+
+	if(ent <= 0 || ent > tmpl_num){
+		orig_tmpl_free( & ptemp, tmpl_num );
+		RETURN_LONG(-8);
+	}
+
+	MAKE_STD_ZVAL(element);
+	array_init(element);
+
+	bbs_make_tmpl_array(element, ptemp+ent-1, bname);
+	zend_hash_index_update(Z_ARRVAL_P(retarray), 0,
+				(void*) &element, sizeof(zval*), NULL);
+
+	for(i=0; i < ptemp[ent-1].tmpl->content_num; i++){
+
+		MAKE_STD_ZVAL(element);
+		array_init(element);
+
+		bbs_make_detail_tmpl_array(element, ptemp[ent-1].cont+i);
+		zend_hash_index_update(Z_ARRVAL_P(retarray), i+1,
+				(void*) &element, sizeof(zval*), NULL);
+	}
+
+	orig_tmpl_free( & ptemp, tmpl_num );
+
+	RETURN_LONG(ent);
+}
+
+PHP_FUNCTION(bbs_make_tmpl_file)
+{
+	int ac = ZEND_NUM_ARGS();
+	char *bname;
+	int bname_len;
+	char tmpfname[STRLEN];
+	char path[STRLEN];
+	struct boardheader *bp=NULL;
+	struct a_template * ptemp = NULL;
+	FILE *fp,*fpsrc;
+	int write_ok=0;
+	long ent;
+    int tmpl_num,i,mode;
+	char newtitle[STRLEN];
+
+	char *text[21];
+	int t_len[21];
+
+    if (ac != 23 || zend_parse_parameters(23 TSRMLS_CC, "slsssssssssssssssssssss", &bname, &bname_len, &ent, &text[0],&t_len[0],
+        &text[1],&t_len[1],&text[2],&t_len[2],&text[3],&t_len[3],&text[4],&t_len[4],&text[5],&t_len[5],&text[6],&t_len[6],&text[7],
+        &t_len[7],&text[8],&t_len[8],&text[9],&t_len[9],&text[10],&t_len[10],&text[11],&t_len[11],&text[12],&t_len[12],&text[13],
+        &t_len[13],&text[14],&t_len[14],&text[15],&t_len[15],&text[16],&t_len[16],&text[17],&t_len[17],&text[18],&t_len[18],&text[19],
+        &t_len[19],&text[20],&t_len[20]) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	if((bp=getbcache(bname))==NULL)
+		RETURN_LONG(0);
+
+	if( getCurrentUser() == NULL )
+		RETURN_LONG(0);
+
+	setbfile(path, bname, TEMPLATE_DIR);
+
+    if(is_BM(bp, getCurrentUser()))
+		mode = 1;
+	else
+		mode = 0;
+
+	tmpl_num = orig_tmpl_init(bname, mode, & ptemp);
+	
+	if(tmpl_num < 0)
+		RETURN_LONG(0);
+
+	if(tmpl_num == 0)
+		RETURN_LONG(0);
+
+	if(ent <= 0 || ent > tmpl_num){
+		orig_tmpl_free( & ptemp, tmpl_num );
+		RETURN_LONG(0);
+	}
+
+	sprintf(tmpfname, "tmp/%s.tmpl.tmp", getCurrentUser()->userid);
+	if((fp = fopen(tmpfname, "w"))==NULL){
+		RETURN_LONG(0);
+	}
+
+	if( ptemp[ent-1].tmpl->filename[0] ){
+		setbfile( path,bname, ptemp[ent-1].tmpl->filename);
+		if( dashf( path )){
+			if((fpsrc = fopen(path,"r"))!=NULL){
+				char buf[256];
+
+				while(fgets(buf,255,fpsrc)){
+					int l;
+					int linex = 0;
+					char *pn,*pe;
+
+					for(pn = buf; *pn!='\0'; pn++){
+						if( *pn != '[' || *(pn+1)!='$' ){
+							fputc(*pn, fp);
+							linex++;
+						}else{
+							pe = strchr(pn,']');
+							if(pe == NULL){
+								fputc(*pn, fp);
+								continue;
+							}
+							l = atoi(pn+2);
+							if( l<=0 || l > ptemp[ent-1].tmpl->content_num || l > 20){
+								fputc('[', fp);
+								continue;
+							}
+							fprintf(fp,"%s",text[l]);
+							pn = pe;
+							continue;
+						}
+					}
+				}
+				fclose(fpsrc);
+
+				write_ok = 1;
+			}
+		}
+	}
+	if(write_ok == 0){
+		for(i=0; i< ptemp[ent-1].tmpl->content_num && i<20; i++)
+			fprintf(fp,"\033[1;32m%s:\033[m\n%s\n\n",ptemp[ent-1].cont[i].text, text[i+1]);
+	}
+	fclose(fp);
+
+	if( ptemp[ent-1].tmpl->title_tmpl[0] ){
+		char *pn,*pe;
+		char *buf;
+		int l;
+		int newl = 0;
+
+		newtitle[0]='\0';
+		buf = ptemp[ent-1].tmpl->title_tmpl;
+
+		for(pn = buf; *pn!='\0' && newl < STRLEN-1; pn++){
+			if( *pn != '[' || *(pn+1)!='$' ){
+				if( newl < STRLEN - 1 ){
+					newtitle[newl] = *pn ;
+					newtitle[newl+1]='\0';
+					newl ++;
+				}
+			}else{
+				pe = strchr(pn,']');
+				if(pe == NULL){
+					if( newl < STRLEN - 1 ){
+						newtitle[newl] = *pn ;
+						newtitle[newl+1]='\0';
+						newl ++;
+					}
+					continue;
+				}
+				l = atoi(pn+2);
+				if( l<0 || l > ptemp[ent-1].tmpl->content_num || l > 20){
+					if( newl < STRLEN - 1 ){
+						newtitle[newl] = *pn ;
+						newtitle[newl+1]='\0';
+						newl ++;
+					}
+					continue;
+				}
+				if( l == 0 ){
+					int ti;
+					for( ti=0; text[0][ti]!='\0' && ti < t_len[0] && newl < ARTICLE_TITLE_LEN - 1; ti++, newl++ ){
+						newtitle[newl] = text[0][ti] ;
+						newtitle[newl+1]='\0';
+					}
+				}else{
+					int ti;
+					for( ti=0; text[l][ti]!='\0' && ti < t_len[l] && text[l][ti]!='\n' && text[l][ti]!='\r' && newl < STRLEN - 1; ti++, newl++ ){
+						newtitle[newl] = text[l][ti] ;
+						newtitle[newl+1]='\0';
+					}
+				}
+				pn = pe;
+				continue;
+			}
+		}
+	}else{
+		strncpy(newtitle, text[0], ARTICLE_TITLE_LEN );
+		newtitle[ARTICLE_TITLE_LEN -1]='\0';
+	}
+
+	orig_tmpl_free( & ptemp, tmpl_num );
+
+	//RETURN_LONG(1);
+	RETURN_STRING(newtitle,1);
+}
+
+

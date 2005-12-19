@@ -77,6 +77,8 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 #include "phpbbs.announce.h"
 #include "phpbbs.vote.h"
 #include "phpbbs.system.h"
+#include "phpbbs.board.h"
+#include "phpbbs.msg.h"
 
 #include "bbs.h"
 #include "bbslib.h"
@@ -85,8 +87,6 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 /* remember to remove these implicit declaration of function warnings!!! - atppp */
 output_write_func_t override_default_write(buffered_output_t *out, output_write_func_t write_func);
 void free_output(buffered_output_t *out);
-int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, time_t *sndtime, char *msg);
-int conv_csv_to_al(char *fname,session_t * session);
 /* end atppp warnings */
 
 
@@ -138,7 +138,6 @@ static PHP_FUNCTION(bbs_searchtitle);
 static PHP_FUNCTION(bbs_search_articles);
 static PHP_FUNCTION(bbs_checkorigin);
 static PHP_FUNCTION(bbs_checkmark);
-static PHP_FUNCTION(bbs_getboard);
 static PHP_FUNCTION(bbs_checkreadperm);
 static PHP_FUNCTION(bbs_getbname);
 static PHP_FUNCTION(bbs_getbdes);
@@ -150,7 +149,6 @@ static PHP_FUNCTION(bbs_edittitle);
 static PHP_FUNCTION(bbs_checkbadword);
 static PHP_FUNCTION(bbs_brcaddread);
 static PHP_FUNCTION(bbs_brcclear);
-static PHP_FUNCTION(bbs_getboards);
 static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_doforward);
 static PHP_FUNCTION(bbs_get_records_from_id);
@@ -160,9 +158,6 @@ static PHP_FUNCTION(bbs_get_threads_from_id);
 static PHP_FUNCTION(bbs_get_threads_from_gid);
 static PHP_FUNCTION(bbs_countarticles);
 static PHP_FUNCTION(bbs_set_onboard);
-static PHP_FUNCTION(bbs_get_tmpls);
-static PHP_FUNCTION(bbs_get_tmpl_from_num);
-static PHP_FUNCTION(bbs_make_tmpl_file);
 static PHP_FUNCTION(bbs_docross);
 static PHP_FUNCTION(bbs_docommend);
 static PHP_FUNCTION(bbs_bmmanage);
@@ -175,16 +170,6 @@ static PHP_FUNCTION(bbs_denydel);
 static PHP_FUNCTION(bbs_searchboard);
 static PHP_FUNCTION(bbs_useronboard);
 
-/* favboard operation. by caltary  */
-static PHP_FUNCTION(bbs_load_favboard);
-static PHP_FUNCTION(bbs_fav_boards);
-static PHP_FUNCTION(bbs_is_favboard);
-static PHP_FUNCTION(bbs_add_favboarddir);
-static PHP_FUNCTION(bbs_add_favboard);
-static PHP_FUNCTION(bbs_del_favboard);
-static PHP_FUNCTION(bbs_get_father);
-static PHP_FUNCTION(bbs_get_dirname);
-static PHP_FUNCTION(bbs_del_favboarddir);
 
 
 static PHP_FUNCTION(bbs_printoriginfile);
@@ -195,10 +180,6 @@ static PHP_FUNCTION(bbs_getthreadnum);
 static PHP_FUNCTION(bbs_get_today_article_num);
 static PHP_FUNCTION(bbs_getthreads);
 #endif
-
-
-
-
 
 ////////////////////////  Mail operation functions  ///////////////////////////
 static PHP_FUNCTION(bbs_postmail);
@@ -217,12 +198,6 @@ static PHP_FUNCTION(bbs_delmail);
 static PHP_FUNCTION(bbs_setmailreaded);
 static PHP_FUNCTION(bbs_domailforward);
 
-////////////////////////   Msg functions  ////////////////////////////////////
-static PHP_FUNCTION(bbs_getwebmsgs);
-static PHP_FUNCTION(bbs_mailwebmsgs);
-static PHP_FUNCTION(bbs_checkwebmsg);
-static PHP_FUNCTION(bbs_getwebmsg);
-static PHP_FUNCTION(bbs_sendwebmsg);
 
 
 ////////////////////////   WWW special functions  /////////////////////////////
@@ -231,20 +206,6 @@ static PHP_FUNCTION(bbs_printansifile);
 static PHP_FUNCTION(bbs_print_article);
 static PHP_FUNCTION(bbs_print_article_js);
 
-
-////////////////////////   Other helper functions  ////////////////////////////
-
-static PHP_FUNCTION(bbs_valid_filename);
-static PHP_FUNCTION(bbs_sethomefile);
-static PHP_FUNCTION(bbs_setmailfile);
-
-////////////////////////   SMS functions  ///////////////////////////////////
-#ifdef SMS_SUPPORT
-static PHP_FUNCTION(bbs_send_sms);
-static PHP_FUNCTION(bbs_register_sms_sendcheck);
-static PHP_FUNCTION(bbs_register_sms_docheck);
-static PHP_FUNCTION(bbs_unregister_sms);
-#endif
 
 #if HAVE_MYSQL_SMTH == 1
 static PHP_FUNCTION(bbs_csv_to_al);
@@ -261,7 +222,9 @@ static function_entry smth_bbs_functions[] = {
     PHP_BBS_ANNOUNCE_EXPORT_FUNCTIONS
     PHP_BBS_VOTE_EXPORT_FUNCTIONS
     PHP_BBS_SYSTEM_EXPORT_FUNCTIONS
-
+    PHP_BBS_BOARD_EXPORT_FUNCTIONS
+    PHP_BBS_MSG_EXPORT_FUNCTIONS
+    
     PHP_FE(bbs_ext_initialized, NULL)
     PHP_FE(bbs_init_ext, NULL)
 
@@ -273,8 +236,6 @@ static function_entry smth_bbs_functions[] = {
 #endif
     PHP_FE(bbs_search_articles, NULL)
     PHP_FE(bbs_postmail, NULL)
-    PHP_FE(bbs_mailwebmsgs, NULL)
-    PHP_FE(bbs_getwebmsgs, NULL)
 #ifdef HAVE_WFORUM
     PHP_FE(bbs_get_today_article_num, NULL)
     PHP_FE(bbs_getthreadnum, NULL)
@@ -302,13 +263,11 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_updatearticle, NULL)
     PHP_FE(bbs_brcaddread, NULL)
     PHP_FE(bbs_brcclear, NULL)
-    PHP_FE(bbs_getboard, NULL)
     PHP_FE(bbs_postarticle,NULL)
     PHP_FE(bbs_filteruploadfilename,NULL)
     PHP_FE(bbs_getattachtmppath, NULL)
     PHP_FE(bbs_edittitle, NULL)
     PHP_FE(bbs_checkbadword, NULL)
-    PHP_FE(bbs_getboards, NULL)
     PHP_FE(bbs_getarticles, NULL)
     PHP_FE(bbs_getfriends, NULL)
     PHP_FE(bbs_countfriends, NULL)
@@ -328,15 +287,9 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_getmails, NULL)
     PHP_FE(bbs_getmailusedspace, NULL)
     PHP_FE(bbs_is_save2sent, NULL)
-    PHP_FE(bbs_valid_filename, NULL)
     PHP_FE(bbs_can_send_mail, NULL)
     PHP_FE(bbs_loadmaillist, NULL)
     PHP_FE(bbs_changemaillist, NULL)
-    PHP_FE(bbs_checkwebmsg, NULL)
-    PHP_FE(bbs_getwebmsg, third_arg_force_ref_1111)
-    PHP_FE(bbs_sendwebmsg, fourth_arg_force_ref_0001)
-    PHP_FE(bbs_sethomefile, NULL)
-    PHP_FE(bbs_setmailfile, NULL)
     PHP_FE(bbs_mail_file, NULL)
     PHP_FE(bbs_update_uinfo, NULL)
     PHP_FE(bbs_setpassword,NULL)
@@ -363,28 +316,10 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_useronboard,two_arg_force_ref_01)
     PHP_FE(bbs_setmailreaded,NULL)
     PHP_FE(bbs_set_onboard,NULL)
-    /* favboard operation. by caltary  */
-    PHP_FE(bbs_load_favboard,NULL)
-    PHP_FE(bbs_fav_boards,NULL)
-    PHP_FE(bbs_is_favboard,NULL)
-    PHP_FE(bbs_add_favboarddir,NULL)
-    PHP_FE(bbs_add_favboard,NULL)
-    PHP_FE(bbs_del_favboard,NULL)
-    PHP_FE(bbs_get_father,NULL)
-    PHP_FE(bbs_get_dirname,NULL)
-    PHP_FE(bbs_del_favboarddir,NULL)
-    PHP_FE(bbs_get_tmpls,NULL)
-    PHP_FE(bbs_get_tmpl_from_num,NULL)
-    PHP_FE(bbs_make_tmpl_file,NULL)
     PHP_FE(bbs_docross,NULL)
     PHP_FE(bbs_docommend,NULL)
     PHP_FE(bbs_bmmanage,NULL)
-#ifdef SMS_SUPPORT
-    PHP_FE(bbs_send_sms,NULL)
-    PHP_FE(bbs_register_sms_sendcheck,NULL)
-    PHP_FE(bbs_unregister_sms,NULL)
-    PHP_FE(bbs_register_sms_docheck,NULL)
-#endif
+
 #if HAVE_MYSQL_SMTH == 1
     PHP_FE(bbs_csv_to_al, NULL)
 #endif
@@ -433,23 +368,6 @@ static void setstrlen(pval * arg)
 
 
 
-static void assign_board(zval * array, const struct boardheader *board, const struct BoardStatus* bstatus, int num)
-{
-    add_assoc_long(array, "NUM", num); // kept for back compatible
-    add_assoc_long(array, "BID", num);
-    add_assoc_string(array, "NAME", (char*)board->filename, 1);
-    /*
-     * add_assoc_string(array, "OWNER", board->owner, 1);
-     */
-    add_assoc_string(array, "BM", (char*)board->BM, 1);
-    add_assoc_long(array, "FLAG", board->flag);
-    add_assoc_string(array, "DESC", (char*)board->title + 13, 1);
-    add_assoc_stringl(array, "CLASS", (char*)board->title + 1, 6, 1);
-    add_assoc_stringl(array, "SECNUM", (char*)board->title, 1, 1);
-    add_assoc_long(array, "LEVEL", board->level);
-    add_assoc_long(array, "CURRENTUSERS", bstatus->currentusers);
-    add_assoc_long(array, "TOTAL", bstatus->total);
-}
 
 
 
@@ -1398,333 +1316,6 @@ static PHP_FUNCTION(bbs_printoriginfile)
     RETURN_LONG(0);
 }
 
-static PHP_FUNCTION(bbs_getboard)
-{
-    zval *array;
-    char *boardname;
-    int boardname_len;
-    const struct boardheader *bh;
-    const struct BoardStatus *bs;
-    int b_num;
-
-    if (ZEND_NUM_ARGS() == 1) {
-        if (zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &boardname_len) != SUCCESS)
-            WRONG_PARAM_COUNT;
-        array = NULL;
-    } else {
-        if (ZEND_NUM_ARGS() == 2) {
-            if (zend_parse_parameters(2 TSRMLS_CC, "sa", &boardname, &boardname_len, &array) != SUCCESS)
-                WRONG_PARAM_COUNT;
-        } else
-            WRONG_PARAM_COUNT;
-    }
-    if (boardname_len > BOARDNAMELEN)
-        boardname[BOARDNAMELEN] = 0;
-    b_num = getbnum(boardname);
-    if (b_num == 0)
-        RETURN_LONG(0);
-    bh = getboard(b_num);
-    bs = getbstatus(b_num);
-    if (array) {
-        if (array_init(array) != SUCCESS)
-            WRONG_PARAM_COUNT;
-        assign_board(array, bh, bs, b_num);
-    }
-    RETURN_LONG(b_num);
-}
-
-/* TODO: move this function into bbslib. */
-/* no_brc added by atppp 20040706 */
-static int check_newpost(struct newpostdata *ptr, bool no_brc)
-{
-    struct BoardStatus *bptr;
-
-    ptr->total = ptr->unread = 0;
-
-    bptr = getbstatus(ptr->pos+1);
-    if (bptr == NULL)
-        return 0;
-    ptr->total = bptr->total;
-    ptr->currentusers = bptr->currentusers;
-
-    if (!strcmp(getCurrentUser()->userid, "guest")) {
-        ptr->unread = 1;
-        return 1;
-    }
-
-    if (no_brc) return 1;
-
-#ifdef HAVE_BRC_CONTROL
-    if (!brc_initial(getCurrentUser()->userid, ptr->name, getSession())) {
-        ptr->unread = 1;
-    } else {
-        if (brc_unread(bptr->lastpost, getSession())) {
-            ptr->unread = 1;
-        }
-    }
-#endif
-    return 1;
-}
-
-#define BOARD_COLUMNS 12
-
-char *brd_col_names[BOARD_COLUMNS] = {
-    "NAME",
-    "DESC",
-    "CLASS",
-    "BM",
-    "ARTCNT",                   /* article count */
-    "UNREAD",
-    "ZAPPED",
-    "BID",
-    "POSITION",                  /* added by caltary */
-    "FLAG" ,          /* is group ?*/
-	"NPOS" ,
-	"CURRENTUSERS"      /* added by atppp */
-};
-
-/* added by caltary */
-#define favbrd_list_t (*(getSession()->favbrd_list_count))
-
-#if 0
-static void bbs_make_board_columns(zval ** columns)
-{
-    int i;
-
-    for (i = 0; i < BOARD_COLUMNS; i++) {
-        MAKE_STD_ZVAL(columns[i]);
-        ZVAL_STRING(columns[i], brd_col_names[i], 1);
-    }
-}
-#endif
-
-static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata *brd)
-{
-    int len = strlen(col_name);
-
-    if (strncmp(col_name, "ARTCNT", len) == 0) {
-        ZVAL_LONG(value, brd->total);
-    } else if (strncmp(col_name, "UNREAD", len) == 0) {
-        ZVAL_LONG(value, brd->unread);
-    } else if (strncmp(col_name, "ZAPPED", len) == 0) {
-        ZVAL_LONG(value, brd->zap);
-    } else if (strncmp(col_name, "CLASS", len) == 0) {
-        ZVAL_STRINGL(value, (char *)brd->title + 1, 6, 1);
-    } else if (strncmp(col_name, "DESC", len) == 0) {
-        ZVAL_STRING(value, (char *)brd->title + 13, 1);
-    } else if (strncmp(col_name, "NAME", len) == 0) {
-        ZVAL_STRING(value, (char *)brd->name, 1);
-    } else if (strncmp(col_name, "BM", len) == 0) {
-        ZVAL_STRING(value, (char *)brd->BM, 1);
-    /* added by caltary */
-    } else if (strncmp(col_name, "POSITION", len) == 0){
-        ZVAL_LONG(value, brd->pos);/*added end */
-    } else if (strncmp(col_name, "FLAG", len) == 0){
-        ZVAL_LONG(value, brd->flag);/*added end */
-    } else if (strncmp(col_name, "BID", len) == 0){
-        ZVAL_LONG(value, brd->pos+1);/*added end */
-    } else if (strncmp(col_name, "NPOS", len) == 0){
-        ZVAL_LONG(value, brd->pos);/*added end */
-    } else if (strncmp(col_name, "CURRENTUSERS", len) == 0){
-        ZVAL_LONG(value, brd->currentusers);
-    } else {
-        ZVAL_EMPTY_STRING(value);
-    }
-}
-
-static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdata *brd)
-{
-    int len = strlen(col_name);
-
-    if (strncmp(col_name, "DESC", len) == 0) {
-        ZVAL_STRING(value, (char *)brd->title, 1);
-    } else if (strncmp(col_name, "NAME", len) == 0) {
-        ZVAL_STRING(value, (char *)brd->name, 1);
-    } else if (strncmp(col_name, "POSITION", len) == 0){
-		/* 保存目录的上一级的索引值 */
-        ZVAL_LONG(value, getSession()->favbrd_list[brd->tag].father);
-    } else if (strncmp(col_name, "FLAG", len) == 0){
-        ZVAL_LONG(value, (brd->flag == 0xffffffff) ? -1L : brd->flag);/*added end */
-    } else if (strncmp(col_name, "BID", len) == 0){
-		/* 保存目录的索引值 */
-        ZVAL_LONG(value, brd->tag);/*added end */
-    } else if (strncmp(col_name, "NPOS", len) == 0){
-		/* 保存目录的索引值 */
-        ZVAL_LONG(value, brd->pos);/*added end */
-    } else {
-        ZVAL_EMPTY_STRING(value);
-    }
-}
-
-
-/**
- * Fetch all boards which have given prefix into an array.
- * prototype:
- * array bbs_getboards(char *prefix, int group, int flag);
- *
- * prefix: 分类讨论区代号
- * group: 当获得目录版面(二级版面)内的版面时这个传入目录版面 bid，否则设置为 0
- *        prefix = '*', group = 0 的时候返回所有版面
- * flag: bit 0 (LSB): yank
- *           1      : no_brc. set to 1 when you don't need BRC info. (will speedup)
- *           2      : all_boards 只在 group = 0 的时候有效，如果设置为 1，就返回
- *                    所有版面，包括目录版面内的版面。设置成 0 的时候，目录版面
- *                    内的版面是不返回的。
- *
- * @return array of loaded boards on success,
- *         FALSE on failure.
- * @author roy 
- *
- * original version by flyriver - removed by atppp
- */
-static PHP_FUNCTION(bbs_getboards)
-{
-    /*
-     * TODO: The name of "yank" must be changed, this name is totally
-     * shit, but I don't know which name is better this time.
-     */
-    char *prefix;
-    int plen;
-    long flag, group;
-    struct newpostdata newpost_buffer;
-    struct newpostdata *ptr;
-    zval **columns;
-    zval *element;
-    int i;
-    int j;
-    int ac = ZEND_NUM_ARGS();
-    int brdnum, yank, no_brc, all_boards;
-    int total;   
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &prefix, &plen, &group,&flag) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-	if (plen == 0) {
-		RETURN_FALSE;
-	}
-    if (getCurrentUser() == NULL) {
-        RETURN_FALSE;
-    }
-    /*
-     * setup column names 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
-    }
-    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
-	if (columns==NULL) {
-		RETURN_FALSE;
-	}
-    for (i = 0; i < BOARD_COLUMNS; i++) {
-        MAKE_STD_ZVAL(element);
-        array_init(element);
-        columns[i] = element;
-        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
-    }
-
-	total=get_boardcount();
-    
-	yank = flag & 1;
-    no_brc = flag & 2;
-    all_boards = (flag & 4) && (group == 0);
-
-    if  (getSession()->zapbuf==NULL)  {
-		char fname[STRLEN];
-		int fd, size;
-
-		size = total* sizeof(int);
-   		getSession()->zapbuf = (int *) emalloc(size);
-		if (getSession()->zapbuf==NULL) {
-			RETURN_FALSE;
-		}
-    	for (i = 0; i < total; i++)
-        	getSession()->zapbuf[i] = 1;
-	   	sethomefile(fname, getCurrentUser()->userid, ".lastread");       /*user的.lastread， zap信息 */
-        if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
-	        size = total * sizeof(int);
-	        read(fd, getSession()->zapbuf, size);
-	   	    close(fd);
-	    } 
-    }
-   		
-    brdnum = 0;
-    {
-	    int n;
-	    struct boardheader const *bptr;
-	    const char** namelist;
-        int* indexlist;
-		time_t tnow;
-
-		tnow = time(0);
-        namelist=(const char**)emalloc(sizeof(char**)*(total));
-		if (namelist==NULL) {
-			RETURN_FALSE;
-		}
-	    indexlist=(int*)emalloc(sizeof(int*)*(total));
-		if (indexlist==NULL) {
-			RETURN_FALSE;
-		}
-	    for (n = 0; n < total; n++) {
-	        bptr = getboard(n + 1);
-	        if (!bptr)
-	            continue;
-	        if (*(bptr->filename)==0)
-	            continue;
-			if ( group == -2 ){
-				if( ( tnow - bptr->createtime ) > 86400*30 || ( bptr->flag & BOARD_GROUP ) )
-					continue;
-			}else if (!all_boards && (bptr->group!=group))
-	            continue;
-	        if (!check_see_perm(getCurrentUser(),bptr)) {
-	            continue;
-	        }
-	        if ((group==0)&&( strchr(prefix, bptr->title[0]) == NULL && prefix[0] != '*'))
-	            continue;
-	        if (yank || getSession()->zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
-	            /*都要排序*/
-	            for (i=0;i<brdnum;i++) {
-				    if ( strcasecmp(namelist[i], bptr->filename)>0) 
-						break;
-				}
-				for (j=brdnum;j>i;j--) {
-						namelist[j]=namelist[j-1];
-					   	indexlist[j]=indexlist[j-1];
-				}
-			   	namelist[i]=bptr->filename;
-			   	indexlist[i]=n;
-			   	brdnum++;
-		   	}
-	   	}
-		for (i=0;i<brdnum;i++) {
-		  	ptr=&newpost_buffer;
-		   	bptr = getboard(indexlist[i]+1);
-		   	ptr->dir = bptr->flag&BOARD_GROUP?1:0;
-		   	ptr->name = (char*)bptr->filename;
-		   	ptr->title = (char*)bptr->title;
-		   	ptr->BM = (char*)bptr->BM;
-		   	ptr->flag = bptr->flag | ((bptr->level & PERM_NOZAP) ? BOARD_NOZAPFLAG : 0);
-		   	ptr->pos = indexlist[i];
-		   	if (bptr->flag&BOARD_GROUP) {
-			   	ptr->total = bptr->board_data.group_total;
-		   	} else ptr->total=-1;
-		   	ptr->zap = (getSession()->zapbuf[indexlist[i]] == 0);
-   			check_newpost(ptr, no_brc);
-	        for (j = 0; j < BOARD_COLUMNS; j++) {
-       		    MAKE_STD_ZVAL(element);
-	            bbs_make_board_zval(element, brd_col_names[j], ptr);
-	            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
-	        }
-		}
-		efree(namelist);
-	   	efree(indexlist);
-    }
-
-    efree(columns);
-}
 
  
 /*
@@ -2084,47 +1675,6 @@ static PHP_FUNCTION(bbs_getarticles)
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
     efree(articles);
-}
-
-static PHP_FUNCTION(bbs_getwebmsgs){
-    char buf[MAX_MSG_SIZE];
-    int count,i;
-    struct msghead head;
-	zval *element;
-
-    if (ZEND_NUM_ARGS()!=0 ) {
-        WRONG_PARAM_COUNT;
-    }
-
-
-    if(!HAS_PERM(getCurrentUser(), PERM_PAGE)) 
-		RETURN_LONG(-1);
-    if (array_init(return_value) == FAILURE) {
-        RETURN_LONG(-2);
-    }
-    count = get_msgcount(0, getCurrentUser()->userid);
-    if(count!=0) {
-  	    for(i=0;i<count;i++) {
-            load_msghead(0, getCurrentUser()->userid, i, &head);
-            load_msgtext(getCurrentUser()->userid, &head, buf);
-			MAKE_STD_ZVAL(element);
-			array_init(element);
-			add_assoc_string(element, "ID", head.id, 1);
-			add_assoc_long(element, "TIME", head.time);
-			add_assoc_string(element, "content", buf, 1);
-			add_assoc_long(element, "MODE", head.mode);
-			add_assoc_long(element, "SENT", head.sent?0:1);
-			zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
-        }
-    }
-}
-
-static PHP_FUNCTION(bbs_mailwebmsgs){
-    if (ZEND_NUM_ARGS()!=0 ) {
-        WRONG_PARAM_COUNT;
-    }
-	mail_msg(getCurrentUser(), getSession());
-	RETURN_TRUE;
 }
 
 #ifdef HAVE_WFORUM
@@ -3788,189 +3338,6 @@ static PHP_FUNCTION(bbs_changemaillist)
 	if( getSession()->currentuinfo )
 		getSession()->currentuinfo->mailcheck &= ~CHECK_MAIL;
     RETURN_LONG(-1);
-}
-
-/**
- * check webmsg.
- * prototype:
- * bool bbs_checkwegmsg();
- *
- * @return TRUE if has any webmsg,
- *       FALSE otherwise.
- * @author flyriver
- */
-static PHP_FUNCTION(bbs_checkwebmsg)
-{
-	if( getSession()->currentuinfo==NULL || !(getSession()->currentuinfo->mailcheck & CHECK_MSG))
-		RETURN_FALSE;
-
-    RETURN_TRUE;
-}
-
-/**
- * receive webmsg.
- * prototype:
- * bool bbs_getwegmsg(string &srcid,string &buf,long &srcutmpent,long &sndtime);
- *
- * @return TRUE on success,
- *       FALSE on failure.
- *       and return total and unread in argument
- * @author KCN
- */
-static PHP_FUNCTION(bbs_getwebmsg)
-{
-    zval *retsrcid, *msgbuf, *srcutmpent, *z_sndtime;
-    int ac = ZEND_NUM_ARGS();
-    int srcpid;
-	time_t sndtime;
-    char buf[MSG_LEN + 1];
-    char srcid[IDLEN + 1];
-
-    if (ac != 4 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "zzzz", &retsrcid, &msgbuf, &srcutmpent, &z_sndtime) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-    /*
-     * check for parameter being passed by reference 
-     */
-    if (!PZVAL_IS_REF(retsrcid) || !PZVAL_IS_REF(msgbuf) || !PZVAL_IS_REF(srcutmpent)
-		|| !PZVAL_IS_REF(z_sndtime)) {
-        zend_error(E_WARNING, "Parameter wasn't passed by reference");
-        RETURN_FALSE;
-    }
-
-	if( getSession()->currentuinfo==NULL || !(getSession()->currentuinfo->mailcheck & CHECK_MSG))
-		RETURN_FALSE;
-
-    if (receive_webmsg(getSession()->utmpent, getCurrentUser()->userid, &srcpid, srcid, &sndtime, buf) == 0) {
-        ZVAL_STRING(retsrcid, srcid, 1);
-        ZVAL_STRING(msgbuf, buf, 1);
-        ZVAL_LONG(srcutmpent, srcpid);
-        ZVAL_LONG(z_sndtime, sndtime);
-        RETURN_TRUE;
-    }
-	getSession()->currentuinfo->mailcheck &= ~CHECK_MSG;
-    /*
-     * make changes to the parameter 
-     */
-    RETURN_FALSE;
-}
-
-/**
- * send web message.
- * prototype:
- * bool bbs_sendwegmsg(string destid,string buf,long destutmp,
- *                     string &errmsg);
- *
- * @return TRUE on success,
- *       FALSE on failure.
- * @author flyriver
- */
-static PHP_FUNCTION(bbs_sendwebmsg)
-{
-    char *destid;
-    int destid_len;
-    char *msg;
-    int msg_len;
-    long destutmp;
-    zval *z_errmsg;
-    int result;
-    int ac = ZEND_NUM_ARGS();
-
-    if (ac != 4 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sslz", &destid, &destid_len, &msg, &msg_len, &destutmp, &z_errmsg) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-    /*
-     * check for parameter being passed by reference 
-     */
-    if (!PZVAL_IS_REF(z_errmsg)) {
-        zend_error(E_WARNING, "Parameter wasn't passed by reference");
-        RETURN_FALSE;
-    }
-    if (!msg_can_sendmsg(getSession()->currentuser, destid, destutmp)) {
-        ZVAL_STRING(z_errmsg, "无法发送讯息", 1);
-        RETURN_FALSE;
-    }
-    if (!strcasecmp(destid, getCurrentUser()->userid)) {
-        ZVAL_STRING(z_errmsg, "你不能给自己发讯息", 1);
-        RETURN_FALSE;
-    }
-    if ((result = send_msg(getCurrentUser()->userid, getSession()->utmpent, destid, destutmp, msg)) == 1) {
-        ZVAL_STRING(z_errmsg, "已经帮你送出讯息", 1);
-        RETURN_TRUE;
-    } else if (result == -1) {
-        char buf[STRLEN];
-
-        snprintf(buf, sizeof(buf), "发送讯息失败，%s", getSession()->msgerr);
-        ZVAL_STRING(z_errmsg, buf, 1);
-        RETURN_FALSE;
-    } else {
-        ZVAL_STRING(z_errmsg, "发送讯息失败，此人目前不在线或者无法接收讯息", 1);
-        RETURN_FALSE;
-    }
-}
-
-/**
- * get the user dir or file.
- * prototype:
- * string bbs_sethomefile(string userid[,string filename])
- *
- * @return TRUE on success,
- *       FALSE on failure.
- *       and return total and unread in argument
- * @author KCN
- */
-static PHP_FUNCTION(bbs_sethomefile)
-{
-    char *userid, *file;
-    int userid_len, file_len = 0;
-    char buf[60];
-    int ac = ZEND_NUM_ARGS();
-
-    if (ac == 2) {
-        if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
-            WRONG_PARAM_COUNT;
-    } else if (ac == 1) {
-        if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
-            WRONG_PARAM_COUNT;
-    } else
-        WRONG_PARAM_COUNT;
-    if (file_len != 0)
-        sethomefile(buf, userid, file);
-    else
-        sethomepath(buf, userid);
-    RETURN_STRING(buf, 1);
-}
-
-/**
- * get the user mail dir or file.
- * prototype:
- * string bbs_setmailfile(string userid[,string filename])
- *
- * @return path string
- * @author binxun
- */
-static PHP_FUNCTION(bbs_setmailfile)
-{
-    char *userid, *file;
-    int userid_len, file_len = 0;
-    char buf[60];
-    int ac = ZEND_NUM_ARGS();
-
-    if (ac == 2) {
-        if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
-            WRONG_PARAM_COUNT;
-    } else if (ac == 1) {
-        if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
-            WRONG_PARAM_COUNT;
-    } else
-        WRONG_PARAM_COUNT;
-    if (file_len != 0)
-        setmailfile(buf, userid, file);
-    else
-        setmailpath(buf, userid);
-    RETURN_STRING(buf, 1);
 }
 
 
@@ -5940,22 +5307,6 @@ static PHP_FUNCTION(bbs_useronboard)
 }
 
 /*
- * valid_filename()
- * @author stiger
- */
-static PHP_FUNCTION(bbs_valid_filename)
-{
-    int ac = ZEND_NUM_ARGS();
-	char * filename;
-	int name_len;
-
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &name_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-	RETURN_LONG(VALID_FILENAME(filename));
-}
-
-/*
  * bbs_can_send_mail ()
  * @author stiger
  */
@@ -6060,544 +5411,6 @@ static PHP_FUNCTION(bbs_set_onboard)
 
 
 
-/*
-  * bbs_load_favboard()
-*/
-static PHP_FUNCTION(bbs_load_favboard)
-{
-        int ac = ZEND_NUM_ARGS();
-        long select;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
-                WRONG_PARAM_COUNT;
-        }
-        load_favboard(0,1, getSession());
-        if(select>=0 && select<favbrd_list_t)
-        {
-                SetFav(select, getSession());
-                RETURN_LONG(0);
-        }
-        else 
-                RETURN_LONG(-1);
-}
-
-static PHP_FUNCTION(bbs_is_favboard)
-{
-        int ac = ZEND_NUM_ARGS();
-        long position;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-        RETURN_LONG(IsFavBoard(position-1, getSession())); //position是bid，但是fav数据结构里头的是-1的. - atppp
-}
-
-static PHP_FUNCTION(bbs_del_favboarddir)
-{
-        int ac = ZEND_NUM_ARGS();
-		long select;
-        long position;
-        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-
-			if(position < 0 || position>= getSession()->favbrd_list[select].bnum)
-				RETURN_LONG(-1);
-			if(getSession()->favbrd_list[select].bid[position]<0)
-				DelFavBoardDir(position,select, getSession());
-			else
-				RETURN_LONG(-1);
-        	save_favboard(1, getSession());
-			RETURN_LONG(0);
-
-}
-
-static PHP_FUNCTION(bbs_get_dirname)
-{
-        int ac = ZEND_NUM_ARGS();
-		long select;
-		char title[256];
-
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-	if(select < 0 || select >= favbrd_list_t )
-		RETURN_LONG(0);
-
-	FavGetTitle(select,title, getSession());
-
-    RETURN_STRING( title, 1);
-
-}
-
-static PHP_FUNCTION(bbs_get_father)
-{
-        int ac = ZEND_NUM_ARGS();
-		long select;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" , &select) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-
-		RETURN_LONG( FavGetFather(select, getSession()) );
-}
-
-static PHP_FUNCTION(bbs_del_favboard)
-{
-        int ac = ZEND_NUM_ARGS();
-		long select;
-        long position;
-        if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-        	DelFavBoard(position, getSession());
-        	save_favboard(1, getSession());
-			RETURN_LONG(0);
-}
-//add fav dir
-static PHP_FUNCTION(bbs_add_favboarddir)
-{
-        int ac = ZEND_NUM_ARGS();
-        int char_len;   
-        char *char_dname;
-        if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_dname,&char_len) ==FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-        if(char_len <= 20)
-        {
-                addFavBoardDir(char_dname, getSession());
-                save_favboard(1, getSession());
-        }
-        RETURN_LONG(char_len);
-}
-
-static PHP_FUNCTION(bbs_add_favboard)
-{
-        int ac = ZEND_NUM_ARGS();
-        int char_len;
-        char *char_bname;
-        int i;
-        if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_bname,&char_len) ==FAILURE){
-                WRONG_PARAM_COUNT;
-        }
-        i=getbnum(char_bname);
-        if(i >0 && ! IsFavBoard(i - 1, getSession()))
-        {
-                addFavBoard(i - 1, getSession());
-                save_favboard(1, getSession());
-        }
-}
-
-/**
- * Fetch all fav boards which have given prefix into an array.
- * prototype:
- * array bbs_fav_boards(char *prefix, int yank);
- *
- * @return array of loaded fav boards on success,
- *         FALSE on failure.
- * @
- */
-
-
-static PHP_FUNCTION(bbs_fav_boards)
-{
-    long select;
-    long mode;
-    int rows = 0;
-    struct newpostdata newpost_buffer[FAVBOARDNUM];
-    struct newpostdata *ptr;
-    zval **columns;
-    zval *element;
-    int i;
-    int j;
-    int ac = ZEND_NUM_ARGS();
-    int brdnum;
-    /*
-     * getting arguments 
-     */
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &select, &mode) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-
-    /*
-     * loading boards 
-     */
-    /*
-     * handle some global variables: getCurrentUser(), yank, brdnum, 
-     * * nbrd.
-     */
-    /*
-     * NOTE: getCurrentUser() SHOULD had been set in funcs.php, 
-     * * but we still check it. 
-     */
-
-	if (mode==2){
-        load_favboard(0,2, getSession());
-        if(select>=0 && select<favbrd_list_t)
-            SetFav(select, getSession());
-	}
-	else if(mode==3){
-        load_favboard(0,3, getSession());
-        if(select>=0 && select<favbrd_list_t)
-            SetFav(select, getSession());
-	}
-
-	if (getCurrentUser() == NULL) {
-        RETURN_FALSE;
-    }
-    brdnum = 0;
-    
-    if ((brdnum = fav_loaddata(newpost_buffer, select, 1, FAVBOARDNUM, 1, NULL, getSession())) <= -1) {
-        RETURN_FALSE;
-    }
-    /*
-     * fill data in output array. 
-     */
-    /*
-     * setup column names 
-     */
-    rows=brdnum;
-    if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
-    }
-    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
-
-	if (columns==NULL){
-		RETURN_FALSE;
-	}
-    for (i = 0; i < BOARD_COLUMNS; i++) {
-        MAKE_STD_ZVAL(element);
-        array_init(element);
-        columns[i] = element;
-        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
-    }
-   /*
-     * fill data for each column 
-     */
-   for (i = 0; i < rows; i++) {
-        ptr = &newpost_buffer[i];
-        check_newpost(ptr, false);
-        for (j = 0; j < BOARD_COLUMNS; j++) {
-            MAKE_STD_ZVAL(element);
-			if (ptr->flag == 0xffffffff) /* the item is a directory */
-            	bbs_make_favdir_zval(element, brd_col_names[j], ptr);
-			else
-            	bbs_make_board_zval(element, brd_col_names[j], ptr);
-            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
-        }       
-    }
-        
-    efree(columns);
-    
-}
-
-/****
- * add by stiger, template, 摸板
- */
-static void bbs_make_tmpl_array(zval * array, struct a_template * ptemp, char *board)
-{
-    add_assoc_string(array, "TITLE", ptemp->tmpl->title, 1);
-    add_assoc_string(array, "TITLE_TMPL", ptemp->tmpl->title_tmpl, 1);
-    add_assoc_long(array, "CONT_NUM", ptemp->tmpl->content_num);
-	if( ptemp->tmpl->filename[0] ){
-		char path[STRLEN];
-		setbfile( path, board, ptemp->tmpl->filename );
-    	add_assoc_string(array, "FILENAME", path,1);
-	}else
- 		add_assoc_string(array, "FILENAME", ptemp->tmpl->filename,1);
-}
-
-static PHP_FUNCTION(bbs_get_tmpls)
-{
-	int ac = ZEND_NUM_ARGS();
-	char *bname;
-	int bname_len;
-	char path[STRLEN];
-	struct a_template * ptemp = NULL;
-	int mode,tmpl_num,i;
-	struct boardheader *bp=NULL;
-	zval *element,*retarray;
-
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &bname, &bname_len, &retarray) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	if((bp=getbcache(bname))==NULL)
-		RETURN_LONG(-2);
-
-	setbfile(path, bname, TEMPLATE_DIR);
-
-	if(array_init(retarray) != SUCCESS)
-	{
-                RETURN_LONG(-5);
-	}
-
-    if(is_BM(bp, getCurrentUser()))
-		mode = 1;
-	else
-		mode = 0;
-
-	tmpl_num = orig_tmpl_init(bname, mode, & ptemp);
-	
-	if(tmpl_num < 0)
-		RETURN_LONG(-6);
-
-	if(tmpl_num == 0)
-		RETURN_LONG(0);
-
-	for(i=0; i < tmpl_num; i++){
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-
-		bbs_make_tmpl_array(element, ptemp + i,bname);
-		zend_hash_index_update(Z_ARRVAL_P(retarray), i,
-				(void*) &element, sizeof(zval*), NULL);
-	}
-
-	orig_tmpl_free( & ptemp, tmpl_num );
-
-	RETURN_LONG(i);
-}
-
-/**********
- * get a detail tmpl, stiger
- */
-
-static void bbs_make_detail_tmpl_array(zval * array, struct s_content * cont)
-{
-
-    add_assoc_string(array, "TEXT", cont->text, 1);
-    add_assoc_long(array, "LENGTH", cont->length);
-
-}
-
-static PHP_FUNCTION(bbs_get_tmpl_from_num)
-{
-	int ac = ZEND_NUM_ARGS();
-	char *bname;
-	int bname_len;
-	char path[STRLEN];
-	struct boardheader *bp=NULL;
-	struct a_template * ptemp = NULL;
-	zval *element,*retarray;
-	long ent;
-    int tmpl_num,i,mode;
-
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sla", &bname, &bname_len, &ent, &retarray) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	if((bp=getbcache(bname))==NULL)
-		RETURN_LONG(-2);
-
-	setbfile(path, bname, TEMPLATE_DIR);
-
-	if(array_init(retarray) != SUCCESS)
-	{
-                RETURN_LONG(-5);
-	}
-
-    if(is_BM(bp, getCurrentUser()))
-		mode = 1;
-	else
-		mode = 0;
-
-	tmpl_num = orig_tmpl_init(bname, mode, & ptemp);
-	
-	if(tmpl_num < 0)
-		RETURN_LONG(-6);
-
-	if(tmpl_num == 0)
-		RETURN_LONG(0);
-
-	if(ent <= 0 || ent > tmpl_num){
-		orig_tmpl_free( & ptemp, tmpl_num );
-		RETURN_LONG(-8);
-	}
-
-	MAKE_STD_ZVAL(element);
-	array_init(element);
-
-	bbs_make_tmpl_array(element, ptemp+ent-1, bname);
-	zend_hash_index_update(Z_ARRVAL_P(retarray), 0,
-				(void*) &element, sizeof(zval*), NULL);
-
-	for(i=0; i < ptemp[ent-1].tmpl->content_num; i++){
-
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-
-		bbs_make_detail_tmpl_array(element, ptemp[ent-1].cont+i);
-		zend_hash_index_update(Z_ARRVAL_P(retarray), i+1,
-				(void*) &element, sizeof(zval*), NULL);
-	}
-
-	orig_tmpl_free( & ptemp, tmpl_num );
-
-	RETURN_LONG(ent);
-}
-
-static PHP_FUNCTION(bbs_make_tmpl_file)
-{
-	int ac = ZEND_NUM_ARGS();
-	char *bname;
-	int bname_len;
-	char tmpfname[STRLEN];
-	char path[STRLEN];
-	struct boardheader *bp=NULL;
-	struct a_template * ptemp = NULL;
-	FILE *fp,*fpsrc;
-	int write_ok=0;
-	long ent;
-    int tmpl_num,i,mode;
-	char newtitle[STRLEN];
-
-	char *text[21];
-	int t_len[21];
-
-    if (ac != 23 || zend_parse_parameters(23 TSRMLS_CC, "slsssssssssssssssssssss", &bname, &bname_len, &ent, &text[0],&t_len[0],
-        &text[1],&t_len[1],&text[2],&t_len[2],&text[3],&t_len[3],&text[4],&t_len[4],&text[5],&t_len[5],&text[6],&t_len[6],&text[7],
-        &t_len[7],&text[8],&t_len[8],&text[9],&t_len[9],&text[10],&t_len[10],&text[11],&t_len[11],&text[12],&t_len[12],&text[13],
-        &t_len[13],&text[14],&t_len[14],&text[15],&t_len[15],&text[16],&t_len[16],&text[17],&t_len[17],&text[18],&t_len[18],&text[19],
-        &t_len[19],&text[20],&t_len[20]) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	if((bp=getbcache(bname))==NULL)
-		RETURN_LONG(0);
-
-	if( getCurrentUser() == NULL )
-		RETURN_LONG(0);
-
-	setbfile(path, bname, TEMPLATE_DIR);
-
-    if(is_BM(bp, getCurrentUser()))
-		mode = 1;
-	else
-		mode = 0;
-
-	tmpl_num = orig_tmpl_init(bname, mode, & ptemp);
-	
-	if(tmpl_num < 0)
-		RETURN_LONG(0);
-
-	if(tmpl_num == 0)
-		RETURN_LONG(0);
-
-	if(ent <= 0 || ent > tmpl_num){
-		orig_tmpl_free( & ptemp, tmpl_num );
-		RETURN_LONG(0);
-	}
-
-	sprintf(tmpfname, "tmp/%s.tmpl.tmp", getCurrentUser()->userid);
-	if((fp = fopen(tmpfname, "w"))==NULL){
-		RETURN_LONG(0);
-	}
-
-	if( ptemp[ent-1].tmpl->filename[0] ){
-		setbfile( path,bname, ptemp[ent-1].tmpl->filename);
-		if( dashf( path )){
-			if((fpsrc = fopen(path,"r"))!=NULL){
-				char buf[256];
-
-				while(fgets(buf,255,fpsrc)){
-					int l;
-					int linex = 0;
-					char *pn,*pe;
-
-					for(pn = buf; *pn!='\0'; pn++){
-						if( *pn != '[' || *(pn+1)!='$' ){
-							fputc(*pn, fp);
-							linex++;
-						}else{
-							pe = strchr(pn,']');
-							if(pe == NULL){
-								fputc(*pn, fp);
-								continue;
-							}
-							l = atoi(pn+2);
-							if( l<=0 || l > ptemp[ent-1].tmpl->content_num || l > 20){
-								fputc('[', fp);
-								continue;
-							}
-							fprintf(fp,"%s",text[l]);
-							pn = pe;
-							continue;
-						}
-					}
-				}
-				fclose(fpsrc);
-
-				write_ok = 1;
-			}
-		}
-	}
-	if(write_ok == 0){
-		for(i=0; i< ptemp[ent-1].tmpl->content_num && i<20; i++)
-			fprintf(fp,"\033[1;32m%s:\033[m\n%s\n\n",ptemp[ent-1].cont[i].text, text[i+1]);
-	}
-	fclose(fp);
-
-	if( ptemp[ent-1].tmpl->title_tmpl[0] ){
-		char *pn,*pe;
-		char *buf;
-		int l;
-		int newl = 0;
-
-		newtitle[0]='\0';
-		buf = ptemp[ent-1].tmpl->title_tmpl;
-
-		for(pn = buf; *pn!='\0' && newl < STRLEN-1; pn++){
-			if( *pn != '[' || *(pn+1)!='$' ){
-				if( newl < STRLEN - 1 ){
-					newtitle[newl] = *pn ;
-					newtitle[newl+1]='\0';
-					newl ++;
-				}
-			}else{
-				pe = strchr(pn,']');
-				if(pe == NULL){
-					if( newl < STRLEN - 1 ){
-						newtitle[newl] = *pn ;
-						newtitle[newl+1]='\0';
-						newl ++;
-					}
-					continue;
-				}
-				l = atoi(pn+2);
-				if( l<0 || l > ptemp[ent-1].tmpl->content_num || l > 20){
-					if( newl < STRLEN - 1 ){
-						newtitle[newl] = *pn ;
-						newtitle[newl+1]='\0';
-						newl ++;
-					}
-					continue;
-				}
-				if( l == 0 ){
-					int ti;
-					for( ti=0; text[0][ti]!='\0' && ti < t_len[0] && newl < ARTICLE_TITLE_LEN - 1; ti++, newl++ ){
-						newtitle[newl] = text[0][ti] ;
-						newtitle[newl+1]='\0';
-					}
-				}else{
-					int ti;
-					for( ti=0; text[l][ti]!='\0' && ti < t_len[l] && text[l][ti]!='\n' && text[l][ti]!='\r' && newl < STRLEN - 1; ti++, newl++ ){
-						newtitle[newl] = text[l][ti] ;
-						newtitle[newl+1]='\0';
-					}
-				}
-				pn = pe;
-				continue;
-			}
-		}
-	}else{
-		strncpy(newtitle, text[0], ARTICLE_TITLE_LEN );
-		newtitle[ARTICLE_TITLE_LEN -1]='\0';
-	}
-
-	orig_tmpl_free( & ptemp, tmpl_num );
-
-	//RETURN_LONG(1);
-	RETURN_STRING(newtitle,1);
-}
 
 /**
  * 转贴文章
@@ -6895,66 +5708,6 @@ static PHP_FUNCTION(bbs_bmmanage)
     RETURN_LONG(0);
 }
 
-#ifdef SMS_SUPPORT
-
-static PHP_FUNCTION(bbs_send_sms)
-{
-	int ac = ZEND_NUM_ARGS();
-	char *dest,*msgstr;
-	int dest_len,msgstr_len;
-	int ret;
-
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &dest, &dest_len, &msgstr, &msgstr_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ret = web_send_sms( dest, msgstr );
-
-	RETURN_LONG(ret);
-}
-
-static PHP_FUNCTION(bbs_register_sms_sendcheck)
-{
-	int ac = ZEND_NUM_ARGS();
-	char *dest;
-	int dest_len;
-	int ret;
-
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ret = web_register_sms_sendcheck( dest );
-
-	RETURN_LONG(ret);
-}
-
-static PHP_FUNCTION(bbs_register_sms_docheck)
-{
-	int ac = ZEND_NUM_ARGS();
-	char *dest;
-	int dest_len;
-	int ret;
-
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &dest, &dest_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	ret = web_register_sms_docheck( dest );
-
-	RETURN_LONG(ret);
-}
-
-static PHP_FUNCTION(bbs_unregister_sms)
-{
-	int ret;
-
-	ret = web_unregister_sms();
-
-	RETURN_LONG(ret);
-}
-
-#endif
 
 #if HAVE_MYSQL_SMTH == 1
 static PHP_FUNCTION(bbs_csv_to_al)

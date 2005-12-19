@@ -551,6 +551,8 @@ void unlock_sem_check(int lockid);
     int can_override(char *userid, char *whoasks);
     int delfrom_msglist(int utmpnum, char *userid);
     int msg_can_sendmsg(struct userec* user,char *userid, int utmpnum);
+    int receive_webmsg(int destutmp, char *destid, int *srcpid, char *srcid, time_t *sndtime, char *msg);
+    int conv_csv_to_al(char *fname,session_t * session);
 #ifdef SMS_SUPPORT
 #if HAVE_MYSQL_SMTH == 1
 int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t start_time, time_t end_time, int type, 					int level, int start, int num, char *msgtxt, int desc, session_t* session);

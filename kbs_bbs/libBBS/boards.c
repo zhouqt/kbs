@@ -84,12 +84,6 @@ void load_favboard(int dohelp,int mode,session_t* session)
     char fname[STRLEN];
     int fd, sign, i, j, k;
 
-	if(mode==2)
-		sprintf(fname,"etc/board.dir");
-	else if(mode==3)
-		sprintf(fname,"etc/wwwboard.dir");
-	else
-	    sethomefile(fname, session->currentuser->userid, "favboard");
     session->favnow = 0;
 	
 	if(mode==2){
@@ -109,6 +103,7 @@ void load_favboard(int dohelp,int mode,session_t* session)
 #endif
 	}
 
+    sethomefile(fname, session->currentuser->userid, "favboard");
 	bzero(session->favbrd_list, sizeof(struct favbrd_struct)*FAVBOARDNUM);
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
         read(fd, &sign, sizeof(int));
@@ -1051,7 +1046,7 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only,sess
     /*
      * Haohmaru.4.1.自动发信通知 
      */
-    sprintf(filename, "etc/%s.dny", user->userid);
+    gettmpfilename(filename, "deny");
     fn1 = fopen(filename, "w");
     if (HAS_PERM(user, PERM_SYSOP) || HAS_PERM(user, PERM_OBOARDS)) {
         sprintf(buffer, "[通知]");

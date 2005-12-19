@@ -491,7 +491,6 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         int multi_ret = 1;
  
         while (multi_ret != 0) {
-            int lres;
             int num;
             struct user_info uin;
 
@@ -1592,9 +1591,6 @@ int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
         || !strcmp(board, "deleted"))   /* Leeward : 98.01.22 */
         return 4;
 
-    if (fileinfo->owner[0] == '-') {
-        return 2;
-    }
     owned = isowner(user, fileinfo);
     /* change by KCN  ! strcmp( fileinfo->owner, getCurrentUser()->userid ); */
     strcpy(usrid, fileinfo->owner);

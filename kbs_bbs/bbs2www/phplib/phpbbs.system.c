@@ -341,3 +341,81 @@ PHP_FUNCTION(bbs_new_board)
 
 	RETURN_LONG(1);
 }
+
+
+/*
+ * valid_filename()
+ * @author stiger
+ */
+PHP_FUNCTION(bbs_valid_filename)
+{
+    int ac = ZEND_NUM_ARGS();
+	char * filename;
+	int name_len;
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &filename, &name_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	RETURN_LONG(VALID_FILENAME(filename));
+}
+
+
+/**
+ * get the user dir or file.
+ * prototype:
+ * string bbs_sethomefile(string userid[,string filename])
+ *
+ * @author KCN
+ */
+PHP_FUNCTION(bbs_sethomefile)
+{
+    char *userid, *file;
+    int userid_len, file_len = 0;
+    char buf[60];
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac == 2) {
+        if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else if (ac == 1) {
+        if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else
+        WRONG_PARAM_COUNT;
+    if (file_len != 0)
+        sethomefile(buf, userid, file);
+    else
+        sethomepath(buf, userid);
+    RETURN_STRING(buf, 1);
+}
+
+/**
+ * get the user mail dir or file.
+ * prototype:
+ * string bbs_setmailfile(string userid[,string filename])
+ *
+ * @return path string
+ * @author binxun
+ */
+PHP_FUNCTION(bbs_setmailfile)
+{
+    char *userid, *file;
+    int userid_len, file_len = 0;
+    char buf[60];
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac == 2) {
+        if (zend_parse_parameters(2 TSRMLS_CC, "ss", &userid, &userid_len, &file, &file_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else if (ac == 1) {
+        if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS)
+            WRONG_PARAM_COUNT;
+    } else
+        WRONG_PARAM_COUNT;
+    if (file_len != 0)
+        setmailfile(buf, userid, file);
+    else
+        setmailpath(buf, userid);
+    RETURN_STRING(buf, 1);
+}
+

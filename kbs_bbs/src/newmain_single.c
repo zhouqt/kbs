@@ -313,7 +313,7 @@ static int attach_online(struct user_info *uentp, int *arg, int pos){
 void multi_user_check()
 {
 	struct user_info *tmpinfo;
-    char buffer[40], buf[10];
+    char buffer[40];
     int ret = 1;
 	int i;
 	int num;
