@@ -112,7 +112,6 @@ inline void setcurrentuser(struct userec *user, int usernum)
 }
 
 
-/* arguments: userid, username, ipaddr, operation */
 PHP_FUNCTION(bbs_setfromhost)
 {
     char *s;
