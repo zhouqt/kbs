@@ -8,9 +8,10 @@ body {margin: 0px; background-color: #F6F6F6; }
 <!--
 var iniCols, noCols, o_mf, o_ms, s;
 function ini() {
-	var o_mf = parent.document.getElementById("mainframe");
-	var o_ms = document.getElementById("menuSwitch");
-	var pos, noCols = iniCols = o_mf.cols;
+	o_mf = parent.document.getElementById("mainframe");
+	o_ms = document.getElementById("menuSwitch");
+	noCols = iniCols = o_mf.cols;
+	var pos;
 	if ((pos = noCols.indexOf(",")) != -1) {
 		noCols = "0" + noCols.substring(pos);
 	}	
