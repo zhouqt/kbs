@@ -1,6 +1,6 @@
 <?php
 	require("funcs.php");
-login_init();
+	login_init();
 	if ($loginok != 1) {
 		html_nologin();
 		exit;
@@ -39,9 +39,12 @@ login_init();
 			$destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
 		}
 		
-		$lookupuser = array();
-		if (!bbs_getuser($destuserid, $lookupuser))
-			html_error_quit("错误的收件人ID");
+		if(isset($_GET["userid"]))
+		{
+			$lookupuser = array();
+			if (!bbs_getuser($destuserid, $lookupuser))
+				html_error_quit("错误的收件人ID");
+		}
 
 		//system mailboxs
 		$mail_box = array(".DIR",".SENT",".DELETED");
