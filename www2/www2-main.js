@@ -18,14 +18,15 @@ function htmlize(s) {
 	return s;
 }
 
+var attachURL = null, strArticle = "", divArtCon = null;
 function prints(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
 	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "<br/>&nbsp;");
 	s = s.replace(/\n(: .*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
-	document.write(s);
+	if (divArtCon) strArticle += s;
+	else document.write(s);
 }
-var attachURL = null;
 function attach(name, len, pos) {
 	var bImg = false;
 	var o = name.lastIndexOf(".");
@@ -37,16 +38,19 @@ function attach(name, len, pos) {
 			 || ext == "ico" || ext == "png"  || ext == "pcx"
 			 || ext == "bmp");
 	}
+	var url = attachURL + '&amp;ap=' + pos;
 	if (bImg) {
-		s += "<br /><img src=\"/images/files/img.gif\" border=\"0\" />此主题相关图片如下："
-		  + name + "(" + len + " 字节)<br /><a href=\"" + attachURL + "&amp;ap=" 
-		  + pos + "\" target=\"_blank\"><img src=\"" + attachURL + "&amp;ap=" 
-		  + pos + "\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ";
+		s += '<br /><img src="images/files/img.gif"/>此主题相关图片如下：'
+		  + name + '(' + len + ' 字节)<br /><a href="' + url + '" target="_blank">'
+		  + '<img src="' + url + '" title="按此在新窗口浏览图片" style="padding: 0.5em 0;" onload="resizeImg(this)" /></a> ';
 	} else {
-		s += "<br />附件: <a href=\"" + attachURL + "&amp;ap=" + pos + "\">"
-		  + name + "</a> (" + len + " 字节)<br />";
+		s += '<br />附件: <a href="' + url + '">' + name + '</a> (' + len + ' 字节)<br />';
 	}
-	document.write(s);
+	if (divArtCon) strArticle += s;
+	else document.write(s);
+}
+function writeArticle() {
+	divArtCon.innerHTML = strArticle;
 }
 
 
@@ -168,7 +172,7 @@ function addBootFn(fn) {
 
 window.onload = function() {
 	/* set focus */
-	var f = getObj("sfocus");
+	var i,f = getObj("sfocus");
 	if (f) {
 		f.focus();
 		setCursorPosition(f, 0, 0);
@@ -189,7 +193,7 @@ window.onload = function() {
 	 * Don't use this with long table, as IE runs it extremely slowly.
 	 */
 	var m = document.getElementsByTagName("table");
-	for(var i=0;i<m.length;i++) {
+	for(i=0;i<m.length;i++) {
 		var tab = m[i];
 		if (tab.className.indexOf("adj") == -1) continue;
 		var cols = tab.getElementsByTagName("col");
@@ -213,7 +217,7 @@ window.onload = function() {
 	
 	/* this is a workaround for some weird behavior... ask atppp if you are interested. BUGID 7629 */
 	if (gFx) {
-		var i, ll, links = document.getElementsByTagName("link");
+		var ll, links = document.getElementsByTagName("link");
 		for(i=0; i<links.length; i++) {
 			ll = links[i];
 			if((ll.getAttribute("rel") == "stylesheet")) {
@@ -390,8 +394,8 @@ function dosubmit() {
 
 var hotBoard = '', hotMove = true, hotFn = null;
 function setHots(h) {
-	var hots = new Array();
-	for(var i=0; i<h.length; i++) {
+	var i,hots = new Array();
+	for(i=0; i<h.length; i++) {
 		if (h[i]) {
 			hots.push('<a href="bbscon.php?board=' + hotBoard + '&id=' + h[i][0] + '">' + h[i][1] + '</a>' +
 			'[<a href="bbstcon.php?board=' + hotBoard + '&gid=' + h[i][0] + '">同主题</a>](' + h[i][2] + ')');
@@ -399,7 +403,7 @@ function setHots(h) {
 	}
 	if (gIE) {
 		var str = '';
-		for(var i=0; i<hots.length; i++) {
+		for(i=0; i<hots.length; i++) {
 			if (hots[i]) str+= hots[i] + '&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
 		getObj('hotTopics').innerHTML = str;
@@ -463,7 +467,7 @@ function checkFrame(isPHP) {
 	document.write(msg);
 	if (top == self) { /* TODO: use better way */
 		var url = document.location.toString();
-		var uri = url.substr(7);
+		var pos, uri = url.substr(7);
 		if ((pos = uri.indexOf("/")) != -1) {
 			url = uri.substr(pos);
 		}
@@ -614,7 +618,7 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot, isbm) 
 
 	var str = '<div class="doc"><div class="docTab">';
 	if (!ftype && isLogin()) {
-		url = 'bbspst.php?board=' + this.board;
+		var url = 'bbspst.php?board=' + this.board;
 		str += '<div class="post"><a href="' + url + '">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a></div>';
 	}
 
@@ -760,7 +764,7 @@ docWriter.prototype.t = function() {
 	}
 	if (!this.ftype) {
 		if (isLogin()) {
-			url = 'bbspst.php?board=' + this.board;
+			var url = 'bbspst.php?board=' + this.board;
 			ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 		}
 	} else {
@@ -804,9 +808,13 @@ function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 	this.favtxt = favtxt;
 	this.num = num;
 	this.baseurl = "bbscon.php?bid=" + bid + "&id=" + id;
-}
-conWriter.prototype.h = function() {
-	if (!isLogin() && this.ftype) return;
+
+	if (parent && (divArtCon = parent.document.getElementById("art" + id))) addBootFn(writeArticle);
+
+	if (!isLogin() && this.ftype) {
+		this.headers = "";
+		return;
+	}
 	var ret = '<div class="conPager smaller right">';
 	if (isLogin()) { /* TODO: 某些模式应该禁止显示这两个链接 */
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
@@ -823,6 +831,12 @@ conWriter.prototype.h = function() {
 		ret += '<span style="color:#CCCCCC">[上一篇] [下一篇] [同主题上篇] [同主题下篇]</span>';
 	}
 	ret += '</div>';
+	this.headers = ret;
+}
+conWriter.prototype.h = function(isTop) {
+	var ret = this.headers;
+	if (!isTop) ret = '</div>' + ret;
+	else ret += '<div class="article">';
 	document.write(ret);
 };
 conWriter.prototype.t = function() {
@@ -861,37 +875,17 @@ conWriter.prototype.t = function() {
 };
 
 
-function tconWriter(board, id, owner, num) {
-	this.board = escape(board);
-	this.id = id;
-	this.owner = owner;
-	this.num = num;
-}
-tconWriter.prototype.o = function() {
-	var ret = '<br/>';
-	ret += '<div class="conPager smaller left">';
-	ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.id + '">本篇全文</a>] ';
-	if (isLogin()) {
-		ret += '[<a href="bbspst.php?board=' + this.board + '&reid=' + this.id + '">回复文章</a>] ';
-		ret += '[<a href="bbspstmail.php?board=' + this.board + '&id=' + this.id + '">回信给作者</a>] ';
-	}
-	ret += '[本篇作者：<a href="bbsqry.php?userid=' + this.owner + '">' + this.owner + '</a>] ';
-	ret += '[<a href="bbsdoc.php?board=' + this.board + '">进入讨论区</a>] ';
-	ret += '[<a href="#top">返回顶部</a>]';
-	ret += '<div class="tnum">' + this.num + '</div>';
-	ret += '</div>';
-	document.write(ret);
-};
 
 
-function tconHeader(board, gid, start, tpage, pno) {
+function tconWriter(board, gid, start, tpage, pno, serial) {
 	this.board = escape(board);
 	this.gid = gid;
 	this.start = start;
+	this.serial = serial
 	this.tpage = tpage;
 	this.pno = pno;
 }
-tconHeader.prototype.h = function() {
+tconWriter.prototype.h = function() {
 	var ret = '<div class="tnav smaller">【分页： ';
 	for(var j = 1; j < this.tpage + 1; j ++ ) {
 		if (this.pno != j) {
@@ -902,6 +896,27 @@ tconHeader.prototype.h = function() {
 	}
 	ret += '】</div>';
 	document.write(ret);
+};
+tconWriter.prototype.o = function(arts) {
+	for (var i = 0; i < arts.length; i++) {
+		var id = arts[i][0];
+		var owner = arts[i][1];
+		var url = 'bbscon.php?board=' + this.board + '&id=' + id;
+		var ret = '<br/>';
+		ret += '<div class="conPager smaller left">';
+		ret += '[<a href="' + url + '">本篇全文</a>] ';
+		if (isLogin()) {
+			ret += '[<a href="bbspst.php?board=' + this.board + '&reid=' + id + '">回复文章</a>] ';
+			ret += '[<a href="bbspstmail.php?board=' + this.board + '&id=' + id + '">回信给作者</a>] ';
+		}
+		ret += '[本篇作者：<a href="bbsqry.php?userid=' + owner + '">' + owner + '</a>] ';
+		ret += '[<a href="bbsdoc.php?board=' + this.board + '">进入讨论区</a>] ';
+		ret += '[<a href="#top">返回顶部</a>]';
+		ret += '<div class="tnum">' + (this.serial+i+1) + '</div>';
+		ret += '</div><div class="article" id="art' + id + '"></div>';
+		ret += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
+		document.write(ret);
+	}
 };
 
 
@@ -925,7 +940,7 @@ function tabWriter(num, tabC, caption, header) {
 		ret += '/>';
 	}	
 	ret += '<tr>';
-	for(var i = 0; i < header.length; i++) {
+	for(i = 0; i < header.length; i++) {
 		ret += '<th>' + header[i][0] + '</th>';
 	}
 	ret += '</tr><tbody>';
@@ -942,12 +957,12 @@ tabWriter.prototype.pr = function(col, content) {
 };
 tabWriter.prototype.r = function() {
 	var ret = '<tr class="' + (((this.row++)%2)?'even':'odd') + '">';
-	var i = 0; j = 0;
+	var i = 0, j = 0;
 	if (this.num) {
 		ret += this.pr(0, this.row);
 		j++;
 	}
-	for(var i = 0; i < arguments.length; i++,j++) {
+	for(i = 0; i < arguments.length; i++,j++) {
 		ret += this.pr(j, arguments[i]);
 	}
 	ret += '</tr>';

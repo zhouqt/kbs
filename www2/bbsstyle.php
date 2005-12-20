@@ -56,7 +56,7 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
-		stylenum = (c & 0xF80) >>7;
+		var stylenum = (c & 0xF80) >>7;
 		getObj('style'+stylenum).checked = true;
 	});
 	function KCNymsw() {
