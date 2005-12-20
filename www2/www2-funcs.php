@@ -52,7 +52,6 @@ $dir_modes = array(
  * @param $caller
  *         0 - bbsdoc
  *         1 - bbscon
- *         2 - jscon
  * @return 0 - 不允许的模式
  *         1 - 允许模式，索引是排序的
  *         2 - 允许模式，索引是不排序的
@@ -68,9 +67,7 @@ function bbs_is_permit_mode($ftype, $caller) {
 		case $dir_modes["ORIGIN"]:
 			return ($caller == 0) ? 1 : 0;
 		case $dir_modes["DIGEST"]:
-			return 2;
-		case $dir_modes["MARK"]:
-			return ($caller == 2) ? 0 : 2; /* 暂时当作不可排序 ... */
+		case $dir_modes["MARK"]: /* 暂时当作不可排序 ... */
 		case $dir_modes["DELETED"]:
 			return 2;
 		default: return 0;

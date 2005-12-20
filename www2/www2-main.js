@@ -881,7 +881,7 @@ function tconWriter(board, gid, start, tpage, pno, serial) {
 	this.board = escape(board);
 	this.gid = gid;
 	this.start = start;
-	this.serial = serial
+	this.serial = serial;
 	this.tpage = tpage;
 	this.pno = pno;
 }

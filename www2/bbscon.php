@@ -138,12 +138,6 @@
 		exit;
 	}
 	page_header("阅读文章".$dir_name[$ftype], "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>");
-/*
-	$jsurl = "jscon.php?bid=" . $brdarr["BID"] . "&id=" . $article["ID"];
-	if ($ftype == $dir_modes["DIGEST"] || $ftype == $dir_modes["ZHIDING"] || $ftype == $dir_modes["DELETED"]) {
-		$jsurl .= "&ftype=" . $ftype . "&num=" . $num; // 别的模式仍旧用主索引，因为文章内容 jscon.php 可能已经被 cache
-	}
-*/
 ?>
 <h1><?php echo $brdarr["NAME"]; ?> 版 <?php echo $dir_name[$ftype]; ?></h1>
 <script>
