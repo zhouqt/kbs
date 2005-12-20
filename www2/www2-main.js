@@ -637,8 +637,11 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot, isbm) 
 	str += '</div>';
 
 	if (ftype >= 0) {
-		if (man) {
+		if (man == 1) {
 			str += '<form name="manage" id="manage" method="post" action="bbsdoc.php?manage=1&board=' + this.board + '&page=' + page + '">';
+		}
+		if (man == 2) {
+			str += '<form name="manage" id="manage" method="post" action="bbsdoc.php?manage=1&board=' + this.board + '&page=' + page + '&ftype=' + dir_modes["DELETED"] + '">';
 		}
 		str += '<table class="main wide">';
 		str += '<col width="50"/><col width="50"/>';
@@ -673,15 +676,24 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot, isbm) 
 }
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
+	var cb_value;
+	if (this.man == 2)	/* 回收站中以序号代替id */
+	{
+		cb_value = this.start + this.num;
+	}
+	else
+	{
+		cb_value = id;
+	}
 	if (flag === false) { /* 置顶 */
 		str += '<td class="center red strong">提示</td><td class="center">' + putImageCode('istop.gif','alt="提示"') + '</td>';
 		if (this.man) {
-			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + id + '" /></td>';
+			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + cb_value + '" /></td>';
 		}
 	} else {
 		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center">' + flag + '</td>';
 		if (this.man) {
-			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + id + '" /></td>';
+			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + cb_value + '" /></td>';
 		}
 	}
 	str += '<td class="center"><a href="bbsqry.php?userid=' + author + '">' + author + '</a></td>';

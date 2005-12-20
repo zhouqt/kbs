@@ -9,7 +9,8 @@ $bbsman_modes = array(
 	"MARK"  => 2,
 	"DIGEST"=> 3,
 	"NOREPLY" => 4,
-	"ZHIDING" => 5
+	"ZHIDING" => 5,
+	"UNDEL" => 6
 );
 
 function do_manage_function($board) {
@@ -31,8 +32,8 @@ function do_manage_function($board) {
             }
             else
                 continue;
-            
-            if ($zhiding) {
+                      
+            if ($zhiding && ($mode != 6)) {
                  if ($mode !=  $bbsman_modes['DEL'] && $mode != $bbsman_modes['ZHIDING'])
                     continue;   
                  $mode = $bbsman_modes['DEL'];
@@ -50,6 +51,9 @@ function do_manage_function($board) {
                     break;
                 case -4:
                     html_error_quit('文章ID错误');
+                    break;
+                case -5:
+                    html_error_quit('没有这个文件，可能该文件已经被恢复到版面。');
                     break;
                 default:    
             }
@@ -122,7 +126,7 @@ function bbs_board_foot($brdarr, $managemode, $ftype, $isnormalboard) {
 
 function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$total,$showHot)
 {
-	global $brdnum, $usernum;
+	global $brdnum, $usernum, $dir_modes;
 	$ann_path = bbs_getannpath($brdarr["NAME"]);
 	if ($ann_path != FALSE)	{
 		if (!strncmp($ann_path,"0Announce/",10))
@@ -136,10 +140,18 @@ function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$tot
 	{
 		$isbm = 0;
 	}
+	if($ftype == $dir_modes["DELETED"])
+	{
+		$mancode = "2";
+	}
+	else
+	{
+		$mancode = $managemode?"1":"0";
+	}
 ?>
 <script>
 var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $start;
-?>,<?php echo $managemode?"1":"0"; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
+?>,<?php echo $mancode; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
 ?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>,<?php echo $isbm; ?>);
 <?php
 	foreach ($articles as $article)

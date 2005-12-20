@@ -38,6 +38,10 @@ login_init();
 			$title = isset($_GET["title"])?$_GET["title"].' ':'';
 			$destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
 		}
+		
+		$lookupuser = array();
+		if (!bbs_getuser($destuserid, $lookupuser))
+			html_error_quit("错误的收件人ID");
 
 		//system mailboxs
 		$mail_box = array(".DIR",".SENT",".DELETED");
