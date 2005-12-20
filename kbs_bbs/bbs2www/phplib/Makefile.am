@@ -1,4 +1,5 @@
-EXTRA_DIST = php_smth_bbs.h
+EXTRA_DIST = php_smth_bbs.h phpbbs.user.h phpbbs.announce.h phpbbs.vote.h phpbbs.system.h \
+             phpbbs.board.h phpbbs.article.h phpbbs.msg.h
 libdir=@PHPBBSLIBPATH@
 lib_LTLIBRARIES = libphpbbslib.la
 phpdir=@PHPBBSLIBPATH@
