@@ -914,7 +914,7 @@ tconWriter.prototype.o = function(arts) {
 		ret += '[<a href="#top">·µ»Ø¶¥²¿</a>]';
 		ret += '<div class="tnum">' + (this.serial+i+1) + '</div>';
 		ret += '</div><div class="article" id="art' + id + '"></div>';
-		ret += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
+		ret += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe><br/>';
 		document.write(ret);
 	}
 };
