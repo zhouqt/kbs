@@ -52,9 +52,6 @@ function do_manage_function($board) {
                 case -4:
                     html_error_quit('文章ID错误');
                     break;
-                case -5:
-                    html_error_quit('没有这个文件，可能该文件已经被恢复到版面。');
-                    break;
                 default:    
             }
         }
