@@ -364,6 +364,122 @@ PHP_FUNCTION(bbs_getboards)
     efree(columns);
 }
 
+
+
+
+
+
+PHP_FUNCTION(bbs_checkorigin)
+{
+	char *board;
+    int board_len;
+    int ac = ZEND_NUM_ARGS();
+	int total;
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    if (!setboardorigin(board, -1)) {
+    	RETURN_LONG(0);
+    }
+	total = board_regenspecial(board,DIR_MODE_ORIGIN,NULL);
+
+   	RETURN_LONG(total);
+}
+
+PHP_FUNCTION(bbs_checkmark)
+{
+	char *board;
+    int board_len;
+    int ac = ZEND_NUM_ARGS();
+	int total;
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    if (!setboardmark(board, -1)) {
+    	RETURN_LONG(0);
+    }
+	total = board_regenspecial(board,DIR_MODE_MARK,NULL);
+
+   	RETURN_LONG(total);
+}
+
+PHP_FUNCTION(bbs_getbdes)
+{
+	char *board;
+	int board_len;
+	const struct boardheader *bp=NULL;
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &board_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_LONG(0);
+    }
+	RETURN_STRING(bp->des,1);
+}
+
+PHP_FUNCTION(bbs_getbname)
+{
+	long brdnum;
+	const struct boardheader *bp=NULL;
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &brdnum) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp = getboard(brdnum)) == NULL) {
+        RETURN_LONG(0);
+    }
+	RETURN_STRING(bp->filename,1);
+}
+
+PHP_FUNCTION(bbs_checkreadperm)
+{
+    long user_num, boardnum;
+    struct userec *user;
+
+    if (zend_parse_parameters(2 TSRMLS_CC, "ll", &user_num, &boardnum) != SUCCESS)
+        WRONG_PARAM_COUNT;
+    user = getuserbynum(user_num);
+    if (user == NULL)
+        RETURN_LONG(0);
+    RETURN_LONG(check_read_perm(user, getboard(boardnum)));
+}
+
+PHP_FUNCTION(bbs_checkpostperm)
+{
+    long user_num, boardnum;
+    struct userec *user;
+    const struct boardheader *bh;
+
+    if (zend_parse_parameters(2 TSRMLS_CC, "ll", &user_num, &boardnum) != SUCCESS)
+        WRONG_PARAM_COUNT;
+    user = getuserbynum(user_num);
+    if (user == NULL)
+        RETURN_LONG(0);
+	bh=getboard(boardnum);
+	if (bh==0) {
+		RETURN_LONG(0);
+	}
+    RETURN_LONG(haspostperm(user, bh->filename));
+}
+
+
+
+
+
+
 /*
   * bbs_load_favboard()
 */

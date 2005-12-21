@@ -600,3 +600,40 @@ PHP_FUNCTION(bbs_postarticle)
     }
     RETURN_LONG(0);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
+{
+    add_assoc_string(array, "FILENAME", fh->filename, 1);
+	if (fh->o_bid > 0)
+    	add_assoc_string(array, "O_BOARD", (char*)(getboard(fh->o_bid)->filename), 1); /* for compitible */
+	else
+    	add_assoc_string(array, "O_BOARD", "", 1); /* for compitible */
+    add_assoc_long(array, "O_BID", fh->o_bid);
+    add_assoc_long(array, "O_ID", fh->o_id);
+    add_assoc_long(array, "ID", fh->id);
+    add_assoc_long(array, "GROUPID", fh->groupid);
+    add_assoc_long(array, "REID", fh->reid);
+    add_assoc_long(array, "POSTTIME", get_posttime(fh));
+    add_assoc_stringl(array, "INNFLAG", fh->innflag, sizeof(fh->innflag), 1);
+    add_assoc_string(array, "OWNER", fh->owner, 1);
+    add_assoc_string(array, "TITLE", fh->title, 1);
+/*    add_assoc_long(array, "LEVEL", fh->level);*/
+    add_assoc_stringl(array, "FLAGS", flags, flags_len, 1);
+    add_assoc_long(array, "ATTACHPOS", fh->attachment);
+    add_assoc_long(array, "EFFSIZE", fh->eff_size);
+    add_assoc_long(array, "IS_TEX", fh->accessed[1] & FILE_TEX);
+}
+
+

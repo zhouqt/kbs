@@ -16,7 +16,5 @@ PHP_FUNCTION(bbs_postarticle);
     PHP_FE(bbs_getattachtmppath, NULL) \
     PHP_FE(bbs_postarticle,NULL)
 
-void reset_output_buffer();
-
 #endif //PHP_BBS_ARTICLE_H
 

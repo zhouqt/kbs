@@ -78,6 +78,17 @@ ZEND_END_MODULE_GLOBALS(smth_bbs)
 #undef MYSQL_UNIX_ADDR
 
 
+#include "bbs.h"
+
+
+/* phpbbs.article.c */
+void reset_output_buffer();
+void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len);
+
+/* phpbbs.user.c */
+void setcurrentuinfo(struct user_info *uinfo, int uinfonum);
+void setcurrentuser(struct userec *user, int usernum);
+
 
 #endif	/* PHP_SMTH_BBS_H */
 

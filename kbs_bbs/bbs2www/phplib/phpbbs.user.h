@@ -1,8 +1,6 @@
 #ifndef PHP_BBS_USER_H
 #define PHP_BBS_USER_H
 
-#include "bbs.h"
-
 PHP_FUNCTION(bbs_setfromhost);
 PHP_FUNCTION(bbs_getonline_user_list);
 PHP_FUNCTION(bbs_getonlineuser);
@@ -45,7 +43,4 @@ PHP_FUNCTION(bbs_setuserparam);
     PHP_FE(bbs_setuserparam, NULL)
 
 
-void setcurrentuinfo(struct user_info *uinfo, int uinfonum);
-void setcurrentuser(struct userec *user, int usernum);
-    
 #endif //PHP_BBS_USER_H
