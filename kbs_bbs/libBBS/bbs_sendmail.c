@@ -613,11 +613,13 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int unused, int isbig
 	}
     if (write_imail_file(fp2, fname, boundary, isbig5) != 0) {
         fclose(fp2);
+        unlink(tmpfile);
         return -1;
     }
 	fclose(fp2);
 
     if ((fin = fopen(tmpfile, "r")) == NULL) {
+        unlink(tmpfile);
         return -1;
     }
     smtpsession = smtp_create_session();
