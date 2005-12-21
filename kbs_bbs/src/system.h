@@ -1,11 +1,15 @@
 #ifndef BBS_SYSTEM_H_5423523
 #define BBS_SYSTEM_H_5423523
 #include "bbs.h"
+
+#define READ_BUFFER_SIZE 10240
+#undef BUFFER_IN_STACK
+
 int f_rm(char *fpath);
 int f_mv(char *src, char *dst);
 int f_cp(char *src, char *dst, int mode);
-void f_cat(char *fpath, char *msg);
-void f_catfile(char* srcpath,char* dstpath);
+int f_cat(char *fpath, char *msg);
+int f_catfile(char* srcpath,char* dstpath);
 int f_touch(char *filename);
 int f_ln(char *src, char *dst);
 typedef int(*OUTC_FUNC)(char);

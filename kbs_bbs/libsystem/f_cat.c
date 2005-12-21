@@ -1,34 +1,54 @@
-#include <fcntl.h>
 #include "system.h"
 
-#define BLK_SIZE 10240
-void f_cat(fpath, msg)
-    char *fpath;
-    char *msg;
+/**
+ *  cat string to file
+ *  Param:
+ *    file: file name
+ *    str: string for cat
+ *  Return: 0 - success,other - failed
+ **/
+
+int f_cat(char* file,char* str)
 {
     int fd;
-
-    if ((fd = open(fpath, O_WRONLY | O_CREAT | O_APPEND, 0600)) >= 0) {
-        write(fd, msg, strlen(msg));
+    int ret=0;
+    
+    if ((fd = open(file,O_WRONLY|O_CREAT|O_APPEND,0600)) >=0 ) {
+        write(fd , str ,strlen(str));
         close(fd);
-    }
+    } else ret=-1;
+    return ret;
 }
 
-void f_catfile(char* srcpath,char* dstpath)
+/**
+ *  append src file to file
+ *  Param:
+ *    src: source file name for cat
+ *    dst: destination file name
+ *  Return: 0 - success,other - failed
+ **/
+int f_catfile(char* src,char* dst)
 {
-    int fsrc,fdst;
-    if ((fsrc = open(srcpath, O_RDONLY)) != NULL) {
-        if ((fdst = open(dstpath, O_WRONLY | O_CREAT | O_APPEND , 0600)) >= 0) {
-            char* src=(char*)malloc(10240);
-            long ret;
+    int sfd,dfd;
+    int ret=0;
+
+    if ((sfd = open(src,O_RDONLY)) >= 0 ) {
+        if ((dfd = open(dst,O_WRONLY|O_CREAT|O_APPEND,0600)) >= 0 ) {
+#ifdef BUFFER_IN_STACK
+            char buffer[READ_BUFFER_SIZE];
+#else
+            char* buffer = (char*)malloc(READ_BUFFER_SIZE);
+#endif
             do {
-                ret = read(fsrc, src, 10240);
-                if (ret <= 0)
-                break;
-            } while (write(fdst, src, ret) > 0);
-            close(fdst);
-            free(src);
-        }
-        close(fsrc);
-    }
+                if ((ret = read(sfd, buffer, READ_BUFFER_SIZE)) <= 0)
+                    break;
+            } while (write(dfd, buffer, ret) > 0);
+#ifndef BUFFER_IN_STACK
+            free(buffer);
+#endif
+            close(dfd);
+        } else ret=-1;
+        close(sfd);
+    } else ret=-1;
+    return ret;
 }
