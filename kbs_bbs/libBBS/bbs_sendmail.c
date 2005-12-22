@@ -393,7 +393,7 @@ static int write_imail_file(FILE* fp2, char *oldfile, char *boundary, int isbig5
 				if (*start != 0) {
 					int length;
 					for(length=0,end=start;not<size && *end!=0;not++,end++,length++);
-					fprintf(fp2, "--%s\nContent-Type: text/plain; charset=%s\n", boundary, isbig5 ? "BIG5" : "gb2312");
+					fprintf(fp2, "--%s\nContent-Type: text/plain; charset=%s\nContent-Transfer-Encoding: 8bit\n\n", boundary, isbig5 ? "BIG5" : "gb2312");
 					fwrite(start, length, 1, fp2);
 					fprintf(fp2, "\n\n");
 					if(not >= size)
