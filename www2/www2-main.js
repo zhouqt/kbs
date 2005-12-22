@@ -971,3 +971,12 @@ tabWriter.prototype.r = function() {
 tabWriter.prototype.t = function() {
 	document.write("</tbody></table>");
 };
+
+
+function writeRelated(bs) {
+	var ret = '<br/>来这个版的人常去的其他版面：';
+	for(var i=0;i<bs.length;i++) {
+		ret += '[<a class="b3" href="bbsdoc.php?board=' + bs[i] + '"><font class="b3">' + bs[i] + '</font></a>]';
+	}
+	document.write(ret);
+}

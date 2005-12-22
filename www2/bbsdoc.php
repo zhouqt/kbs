@@ -61,6 +61,7 @@ function do_manage_function($board) {
 
 function bbs_board_foot($brdarr, $managemode, $ftype, $isnormalboard) {
 	global $currentuser, $dir_modes;
+	$boardname = $brdarr["NAME"];
 	$brd_encode = urlencode($brdarr["NAME"]);
 	$usernum = $currentuser["index"];
 	$brdnum  = $brdarr["NUM"];
@@ -89,13 +90,11 @@ function bbs_board_foot($brdarr, $managemode, $ftype, $isnormalboard) {
 <a href='<?php echo $rsslink; ?>' title='RSS'><img src='images/xml.gif'/></a>
 <?php
 	}
-	$relatefile = $_SERVER["DOCUMENT_ROOT"]."/brelated/".$brdarr["NAME"].".html";
-	if( file_exists( $relatefile ) )
-	{
-?>
-<br/>来这个版的人常去的其他版面：
-<?php
-		include($relatefile);
+	if( defined("SITE_SMTH") ) {
+		include ("boardrelated.inc.php");
+		if (isset($boardrelated[$boardname])) {
+			echo "<script>writeRelated(" . $boardrelated[$boardname] . ");</script>";
+		}
 	}
 	if (bbs_is_bm($brdnum, $usernum)) {
 ?>
