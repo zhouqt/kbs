@@ -561,19 +561,13 @@ int do_send(char *userid, char *title, char *q_file)
                  * uuencode or convert to big5 option -- Add by ming, 96.10.9 
                  */
                 char data[3];
-                int isuu, isbig5;
+                int isbig5;
 
                 prints("%c\n", 'Y');
                 if (askyn("是否备份给自己", false) == true)
                     mail_file(getCurrentUser()->userid, tmp_fname, getCurrentUser()->userid, save_title, 0, NULL);
 
-                prints("若您要转寄的地址无法处理中文请输入 Y 或 y\n");
-                getdata(5, 0, "Uuencode? [N]: ", data, 2, DOECHO, 0, 0);
-                if (data[0] == 'y' || data[0] == 'Y')
-                    isuu = 1;
-                else
-                    isuu = 0;
-
+                data[0] = '\0';
                 prints("若您要将信件转寄到台湾请输入 Y 或 y\n");
                 getdata(7, 0, "转成BIG5码? [N]: ", data, 2, DOECHO, 0, 0);
                 if (data[0] == 'y' || data[0] == 'Y')
@@ -581,17 +575,18 @@ int do_send(char *userid, char *title, char *q_file)
                 else
                     isbig5 = 0;
 
-                getdata(8, 0, "过滤ANSI控制符? [N]: ", data, 2, DOECHO, 0, 0);
-                if (data[0] == 'y' || data[0] == 'Y')
-                    noansi = 1;
-                else
+                data[0] = '\0';
+                getdata(8, 0, "过滤ANSI控制符? [Y]: ", data, 2, DOECHO, 0, 0);
+                if (data[0] == 'N' || data[0] == 'n')
                     noansi = 0;
+                else
+                    noansi = 1;
 
                 prints("请稍候, 信件传递中...\n");
                 /*
                  * res = bbs_sendmail( tmp_fname, title, userid );  
                  */
-                res = bbs_sendmail(tmp_fname, title, userid, isuu, isbig5, noansi,getSession());
+                res = bbs_sendmail(tmp_fname, title, userid, 0, isbig5, noansi,getSession());
 
                 newbbslog(BBSLOG_USER, "mailed %s %s", userid, title);
                 break;
@@ -2301,11 +2296,12 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
         else
             isbig5 = 0;
 
-        getdata(8, 0, "过滤ANSI控制符? [N]: ", data, 2, DOECHO, 0, 0);
-        if (data[0] == 'y' || data[0] == 'Y')
-            noansi = 1;
-        else
+        data[0] = 0;
+        getdata(8, 0, "过滤ANSI控制符? [Y]: ", data, 2, DOECHO, 0, 0);
+        if (data[0] == 'n' || data[0] == 'N')
             noansi = 0;
+        else
+            noansi = 1;
 
         prints("转寄信件给 %s, 请稍候....\n", receiver);
 
