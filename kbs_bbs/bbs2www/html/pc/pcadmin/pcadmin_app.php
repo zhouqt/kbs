@@ -64,7 +64,7 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="",$groupmanag
 		$query = "INSERT INTO `newapply` ( `naid` , `username` , `appname` , `appself` , `appdirect` , `hostname` , `apptime` , `manager` , `management` ) ".
 	 		 "VALUES ('', '".addslashes($userid)."', '".addslashes($corpusname)."', '', '', '".addslashes($_SERVER["REMOTE_ADDR"])."', NOW( ) , '".addslashes($currentuser["userid"])."' , '0');";
 	else
-		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($userid)."' ORDER BY naid DESC LIMIT 1 ;";
+		$query = "UPDATE newapply SET apptime = apptime ,manager = '".addslashes($currentuser["userid"])."',management = '0' WHERE username = '".addslashes($userid)."'";// ORDER BY naid DESC LIMIT 1 ;";
 	if(!mysql_query($query,$link))
 	{
 		$errstr = "MySQL Error: ".mysql_error($link);
@@ -112,6 +112,7 @@ function pc_add_users($link,$userid,$corpusname,$manual,$blogtype="",$groupmanag
 		
 	//发布公告
 	if ($blogtype=="normal") {
+		bbs_user_setflag($userid, BBS_PCORP_FLAG, 1);
     	$annTitle = "[公告] 批准 ".$userid." 的 Blog 申请";
     	$annBody =  "\n\n        根据用户 ".$userid." 申请，经审核、讨论后决定开通该用户\n".
     		    "    Blog ，Blog 名称“".$corpusname."”。\n\n".
