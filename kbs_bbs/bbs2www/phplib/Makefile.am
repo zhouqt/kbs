@@ -7,5 +7,5 @@ phpdir=@PHPBBSLIBPATH@
 libphpbbslib_la_SOURCES = phpbbslib.c phpbbs.user.c phpbbs.announce.c phpbbs.vote.c phpbbs.system.c \
                           phpbbs.board.c phpbbs.article.c phpbbs.msg.c phpbbs.mail.c phpbbs.bm.c
 libphpbbslib_la_LIBADD = -L../../libBBS -lBBS -L../../libsystem -lsystem -L../lib -lbbslib
-AM_CFLAGS  = -DNJU_WWWBBS -DBBS2WWW -I../include -I../../src -I@PHPBASE@ -I@PHPBASE@/main -I@PHPBASE@/Zend -I@PHPBASE@/TSRM -DSMTH -DCOMPILE_DL_SMTH_BBS -Wall
+AM_CFLAGS  = -I../include -I../../src -I@PHPBASE@ -I@PHPBASE@/main -I@PHPBASE@/Zend -I@PHPBASE@/TSRM -DCOMPILE_DL_SMTH_BBS -Wall
 CLEANFILES=@EXTRA_CLEAN@
