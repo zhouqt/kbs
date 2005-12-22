@@ -211,6 +211,7 @@ int main(int argc,char **argv){
         printf("[%s] 创建版面目录 %s 错误...\n",argv[0],path);
         return 0x31;
     }
+    build_board_structure(argv[3]);
     p=path+strlen(path);*p++='/';
     sprintf(p,".DIR");
     /*准备目标.DIR文件的写操作*/
