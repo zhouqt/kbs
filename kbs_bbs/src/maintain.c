@@ -3037,18 +3037,18 @@ int set_BM(void){
                     if(!(id=getuser(genbuf,&user))){
                         prints("\n\033[1;31m相应序号的版主id非法!\033[m");
                         if(askyn("是否清理",false)){
-                            struct boardheader newbh;
-                            memcpy(&newbh,&bh,sizeof(struct boardheader));
+                            struct boardheader oldbh;
+                            char title[80];
+                            memcpy(&oldbh,&bh,sizeof(struct boardheader));
                             if(strlen(p)==strlen(genbuf))
-                                (p==newbh.BM)?(newbh.BM[0]=NULL):(*--p=NULL);
+                                (p==bh.BM)?(bh.BM[0]=NULL):(*--p=NULL);
                             else
                                 memmove(p,p+strlen(genbuf)+1,strlen(p)-strlen(genbuf));
-                            edit_group(&bh,&newbh);
-                            set_board(pos,&newbh,NULL);
-                            sprintf(genbuf,"清理 %s 版非法版主 %s",bh.filename,genbuf);
-                            securityreport(genbuf,NULL,NULL);
-                            bbslog("user", "%s", genbuf);
-                            memcpy(bh.BM,cache_ptr->BM,BM_LEN);
+                            edit_group(&oldbh,&bh);
+                            set_board(pos,&bh,NULL);
+                            newbbslog(BBSLOG_USER,"setBM: clear invalid BM %s on %s",genbuf,bh.filename);
+                            snprintf(title,80,"清理 %s 版非法版主 %s",bh.filename,genbuf);
+                            securityreport(title,NULL,NULL);
                         }
                         else{
                             clrtoeol();pressreturn();clear();
@@ -3116,6 +3116,7 @@ int set_BM(void){
                     }
                     securityreport(genbuf,user,NULL);
                     bbslog("user","%s",genbuf);
+                    newbbslog(BBSLOG_USER,"setBM: %s <%c> %s",bh.filename,(flag==1?'+':'-'),user->userid);
                     memcpy(bh.BM,cache_ptr->BM,BM_LEN);
 #ifdef SMTH
                     if(flag==2)
