@@ -100,10 +100,8 @@ static PHP_FUNCTION(bbs_getusermode);
 static PHP_FUNCTION(bbs_compute_user_value);
 static PHP_FUNCTION(bbs_user_level_char);
 PHP_FUNCTION(bbs_user_setflag);
-#ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_saveuserdata);
 static PHP_FUNCTION(bbs_isonline);
-#endif
 
 //Friends
 static PHP_FUNCTION(bbs_getfriends);
@@ -216,10 +214,8 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_getusermode, NULL)
     PHP_FE(bbs_compute_user_value, NULL)
     PHP_FE(bbs_user_level_char, NULL)
-#ifdef HAVE_WFORUM
     PHP_FE(bbs_saveuserdata, NULL)
     PHP_FE(bbs_isonline, NULL)
-#endif
     PHP_FE(bbs_caneditfile,NULL)
     PHP_FE(bbs_updatearticle, NULL)
     PHP_FE(bbs_brcaddread, NULL)
@@ -460,8 +456,7 @@ PHP_FUNCTION(bbs_user_setflag)
 }
 
 
-#ifdef HAVE_WFORUM
-int count_online(struct user_info *uentp, int *arg, int pos)
+static int count_online(struct user_info *uentp, int *arg, int pos)
 {
      if (uentp->invisible == 1) {
          return COUNT;
@@ -472,6 +467,7 @@ int count_online(struct user_info *uentp, int *arg, int pos)
 }
 /*
  * bbs_isonline(userid), return if this userid is online. If cloak, return false
+ * 这个函数慎用，目前仅 wForum 用到 - atppp
  */
 static PHP_FUNCTION(bbs_isonline)
 {
@@ -490,7 +486,6 @@ static PHP_FUNCTION(bbs_isonline)
     if (can_see) RETURN_TRUE;
     RETURN_FALSE;
 }
-#endif
 
 
     
@@ -510,6 +505,23 @@ static PHP_FUNCTION(bbs_getuserlevel){
 	RETURN_STRINGL(title,strlen(title),1);
 }
 
+
+static void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, char *boardname, int is_bm)
+{
+    flags[0] = get_article_flag(ent, user, boardname, is_bm, getSession());
+    if (is_bm && (ent->accessed[0] & FILE_IMPORTED))
+        flags[1] = 'y';
+    else
+        flags[1] = 'n';
+    if (ent->accessed[1] & FILE_READ)
+        flags[2] = 'y';
+    else
+        flags[2] = 'n';
+    if (ent->attachment)
+        flags[3] = '@';
+    else
+        flags[3] = ' ';
+}
 
 
 
@@ -630,19 +642,7 @@ static PHP_FUNCTION(bbs_search_articles)
 
 			MAKE_STD_ZVAL(element);
 			array_init(element);
-			flags[0] = get_article_flag(ptr1+i, getCurrentUser(), board,is_bm, getSession());
-			if (is_bm && (ptr1[i].accessed[0] & FILE_IMPORTED))
-				flags[1] = 'y';
-			else
-				flags[1] = 'n';
-			if (ptr1[i].accessed[1] & FILE_READ)
-				flags[2] = 'y';
-			else
-				flags[2] = 'n';
-			if (ptr1[i].attachment)
-				flags[3] = '@';
-			else
-				flags[3] = ' ';
+            make_article_flag_array(flags, ptr1+i , getCurrentUser(), board, is_bm);
 			bbs_make_article_array(element, ptr1+i, flags, sizeof(flags));
 			add_assoc_long(element, "NUM",i);
 			zend_hash_index_update(Z_ARRVAL_P(return_value),found, (void *) &element, sizeof(zval *), NULL);
@@ -795,34 +795,11 @@ static PHP_FUNCTION(bbs_searchtitle)
 			MAKE_STD_ZVAL(columns[j] );
 			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
 		}
-		flags[0] = get_article_flag(&(resultList[i]->origin), getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (resultList[i]->origin.accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (resultList[i]->origin.accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-		if (resultList[i]->origin.attachment)
-			flags[3] = '@';
-		else
-			flags[3] = ' ';
+        make_article_flag_array(flags, &(resultList[i]->origin), getCurrentUser(), bp->filename, is_bm);
 		array_init(columns[0] );
 		bbs_make_article_array(columns[0], &(resultList[i]->origin), flags, sizeof(flags));
-		flags[0] = get_article_flag(&(resultList[i]->lastreply), getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (resultList[i]->lastreply.accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (resultList[i]->lastreply.accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-		if (resultList[i]->lastreply.attachment)
-			flags[3] = '@';
-		else
-			flags[3] = ' ';
+
+        make_article_flag_array(flags, &(resultList[i]->lastreply), getCurrentUser(), bp->filename, is_bm);
 		array_init(columns[1] );
 		bbs_make_article_array(columns[1], &(resultList[i]->lastreply), flags, sizeof(flags));
 		ZVAL_LONG(columns[2],resultList[i]->articlecount);
@@ -1176,19 +1153,7 @@ static PHP_FUNCTION(bbs_getarticles)
     for (i = 0; i < rows; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-        flags[0] = get_article_flag(articles + i, getCurrentUser(), bp->filename, is_bm, getSession());
-        if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
-            flags[1] = 'y';
-        else
-            flags[1] = 'n';
-        if (articles[i].accessed[1] & FILE_READ)
-            flags[2] = 'y';
-        else
-            flags[2] = 'n';
-        if (articles[i].attachment)
-            flags[3] = '@';
-        else
-            flags[3] = ' ';
+        make_article_flag_array(flags, articles + i, getCurrentUser(), bp->filename, is_bm);
         bbs_make_article_array(element, articles + i, flags, sizeof(flags));
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }
@@ -1320,34 +1285,11 @@ static PHP_FUNCTION(bbs_getthreads)
 			MAKE_STD_ZVAL(columns[j] );
 			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
 		}
-		flags[0] = get_article_flag(&(ptr1[i].origin), getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (ptr1[i].origin.accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (ptr1[i].origin.accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-		if (ptr1[i].origin.attachment)
-			flags[3] = '@';
-		else
-			flags[3] = ' ';
+        make_article_flag_array(flags, &(ptr1[i].origin), getCurrentUser(), bp->filename, is_bm);
 		array_init(columns[0] );
 		bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
-		flags[0] = get_article_flag(&(ptr1[i].lastreply), getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (ptr1[i].lastreply.accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (ptr1[i].lastreply.accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-		if (ptr1[i].lastreply.attachment)
-			flags[3] = '@';
-		else
-			flags[3] = ' ';
+
+        make_article_flag_array(flags, &(ptr1[i].lastreply), getCurrentUser(), bp->filename, is_bm);
 		array_init(columns[1] );
 		bbs_make_article_array(columns[1], &(ptr1[i].lastreply), flags, sizeof(flags));
 		ZVAL_LONG(columns[2],ptr1[i].articlecount);
@@ -1739,21 +1681,11 @@ static PHP_FUNCTION(bbs_get_records_from_id)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
-	  if(articles[i].id && getCurrentUser() ){
-		flags[0] = get_article_flag(articles + i, getCurrentUser(), bp->filename, is_bm, getSession());
-		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (articles[i].accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-	  }else{
-		flags[0]=0;
-		flags[1]=0;
-		flags[2]=0;
-	  }
+        if(articles[i].id && getCurrentUser() ){
+            make_article_flag_array(flags, articles + i, getCurrentUser(), bp->filename, is_bm);
+        }else{
+            memset(flags, 0, sizeof(flags));
+        }
 		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
 		zend_hash_index_update(Z_ARRVAL_P(articlearray), i,
 				(void*) &element, sizeof(zval*), NULL);
@@ -3028,8 +2960,6 @@ static PHP_FUNCTION(bbs_fillidinfo)
     RETURN_LONG(0);
 }
 
-#ifdef HAVE_WFORUM
-
 static PHP_FUNCTION(bbs_saveuserdata)
 {
     char*   userid,
@@ -3171,7 +3101,6 @@ static PHP_FUNCTION(bbs_saveuserdata)
     RETURN_LONG(0);
 
 }
-#endif
 
 /**
  * Function: Create a registry form
@@ -4522,21 +4451,11 @@ static PHP_FUNCTION(bbs_get_threads_from_gid)
 	{
 		MAKE_STD_ZVAL(element);
 		array_init(element);
-	  if(articles[i].id && getCurrentUser() ){
-		flags[0] = get_article_flag(articles + i, getCurrentUser(), (char *)(bp->filename), is_bm, getSession());
-		if (is_bm && (articles[i].accessed[0] & FILE_IMPORTED))
-			flags[1] = 'y';
-		else
-			flags[1] = 'n';
-		if (articles[i].accessed[1] & FILE_READ)
-			flags[2] = 'y';
-		else
-			flags[2] = 'n';
-	  }else{
-		flags[0]=0;
-		flags[1]=0;
-		flags[2]=0;
-	  }
+        if(articles[i].id && getCurrentUser() ){
+            make_article_flag_array(flags, articles + i, getCurrentUser(), (char*)bp->filename, is_bm);
+        }else{
+            memset(flags, 0, sizeof(flags));
+        }
 		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
 		zend_hash_index_update(Z_ARRVAL_P(z_threads), i,
 				(void*) &element, sizeof(zval*), NULL);
