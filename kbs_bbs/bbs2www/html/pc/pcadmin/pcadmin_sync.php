@@ -16,5 +16,5 @@ foreach ($allUsers as $userid) {
 	$ret = bbs_user_setflag($userid, BBS_PCORP_FLAG, 1);
 	echo $userid . ($ret ? "" : ": <font color='red'>FAILED</font>") . "\n";
 }
-echo "</pre>";
+echo count($allUsers) . " users.</pre>";
 ?>
