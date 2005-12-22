@@ -99,6 +99,7 @@ static PHP_FUNCTION(bbs_getuserlevel);
 static PHP_FUNCTION(bbs_getusermode);
 static PHP_FUNCTION(bbs_compute_user_value);
 static PHP_FUNCTION(bbs_user_level_char);
+PHP_FUNCTION(bbs_user_setflag);
 #ifdef HAVE_WFORUM
 static PHP_FUNCTION(bbs_saveuserdata);
 static PHP_FUNCTION(bbs_isonline);
@@ -201,6 +202,7 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_checkuserpasswd, NULL)
     PHP_FE(bbs_setuserpasswd, NULL)
     PHP_FE(bbs_getuserlevel, NULL)
+    PHP_FE(bbs_user_setflag, NULL)
 #ifdef HAVE_WFORUM
     PHP_FE(bbs_searchtitle, NULL)
 #endif
@@ -435,6 +437,28 @@ static PHP_FUNCTION(bbs_checkuserpasswd){
     }
     RETURN_LONG(0);
 }
+
+PHP_FUNCTION(bbs_user_setflag)
+{
+    struct userec *lookupuser;
+    char *s;
+    int s_len;
+    long flag, set;
+
+    if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &s, &s_len, &flag, &set) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+    if( ! getuser(s,&lookupuser) ) {
+        RETURN_FALSE;
+    }
+    if (set) {
+        lookupuser->flags |= flag;
+    } else {
+        lookupuser->flags &= ~flag;
+    }
+    RETURN_TRUE;
+}
+
 
 #ifdef HAVE_WFORUM
 int count_online(struct user_info *uentp, int *arg, int pos)
