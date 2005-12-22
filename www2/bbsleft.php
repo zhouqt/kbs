@@ -103,6 +103,7 @@
 		
 	function display_blog_menu($userid,$userfirstlogin)
 	{
+/*
 		$db["HOST"]=bbs_sysconf_str("MYSQLBLOGHOST");
 		$db["USER"]=bbs_sysconf_str("MYSQLBLOGUSER");
 		$db["PASS"]=bbs_sysconf_str("MYSQLBLOGPASSWORD");
@@ -116,6 +117,10 @@
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		@mysql_free_result($result);
+*/
+		global $currentuser;
+		$rows = ( $currentuser["flag1"] & BBS_PCORP_FLAG );
+
 		if(!$rows)
 		{
 ?>
