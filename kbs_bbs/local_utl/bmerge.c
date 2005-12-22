@@ -230,7 +230,7 @@ int main(int argc,char **argv){
         /*比较时间戳*/
         if(pos1<size1&&pos2<size2) {
             //ret=strcmp(&dir1[pos1].filename[2],&dir2[pos2].filename[2]);
-            ret = get_posttime(&dir1[pos1], &dir2[pos2]);
+            ret = get_posttime(&dir1[pos1]) - get_posttime(&dir2[pos2]);
         } else if(pos1<size1)/*源版面2已经处理完成*/
             ret=-1;
         else if(pos2<size2)/*源版面1已经处理完成*/
