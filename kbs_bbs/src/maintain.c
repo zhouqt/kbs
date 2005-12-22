@@ -3115,7 +3115,6 @@ int set_BM(void){
                         sprintf(genbuf,"ÃâÈ¥ %s µÄ°æÖ÷ %s ",bh.filename,user->userid);
                     }
                     securityreport(genbuf,user,NULL);
-                    bbslog("user","%s",genbuf);
                     newbbslog(BBSLOG_USER,"setBM: %s <%c> %s",bh.filename,(flag==1?'+':'-'),user->userid);
                     memcpy(bh.BM,cache_ptr->BM,BM_LEN);
 #ifdef SMTH
