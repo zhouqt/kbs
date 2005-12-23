@@ -3970,7 +3970,7 @@ static PHP_FUNCTION(bbs_bmmanage)
     int ret;
     char dir[STRLEN];
     int ent;
-    int fd;
+    int fd, bid;
     struct fileheader f;
     FILE *fp;
     
@@ -3980,8 +3980,9 @@ static PHP_FUNCTION(bbs_bmmanage)
 		WRONG_PARAM_COUNT;
 	}
 	
-    bh = getbcache(board);
-    if (!bh) RETURN_LONG(-1);
+    bid = getbnum(board);
+    if (!bid) RETURN_LONG(-1);
+    bh = getboard(bid);
     strcpy(board,bh->filename);
     if (!is_BM(bh, getCurrentUser()))
         RETURN_LONG(-2);
@@ -4052,14 +4053,7 @@ static PHP_FUNCTION(bbs_bmmanage)
         }
     }
     else if (zhiding) {
-        ret = delete_record(dir, sizeof(struct fileheader), ent,(RECORD_FUNC_ARG) cmpname, f.filename);
-        if (ret == 0) {
-            char buf[128];
-            boardheader_t bc;
-            snprintf(buf,100,"boards/%s/%s",board,f.filename);
-            my_unlink(buf);
-            board_update_toptitle(getboardnum(board,&bc), true);
-        }
+        ret = do_del_ding(board, bid, ent, &f, getSession());
     }
     else if (mode == 1) {
         ret = del_post(ent, &f, dir, board);
@@ -4077,9 +4071,10 @@ static PHP_FUNCTION(bbs_bmmanage)
             flag = FILE_DIGEST_FLAG;
         else if (mode == 4)
             flag = FILE_NOREPLY_FLAG;
-        else if (mode == 5)
+        else if (mode == 5) {
             flag = FILE_DING_FLAG;
-        else
+            data.accessed[0] = f.accessed[0]; // to reserve flags. hack! - atppp
+        } else
             RETURN_LONG(-3);
         
         dirarg.filename = dir;  

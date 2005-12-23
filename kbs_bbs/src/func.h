@@ -441,6 +441,7 @@ void unlock_sem_check(int lockid);
     int isowner(struct userec *user, struct fileheader *fileinfo);
     int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo, char *board,int currmode,int flag,session_t* session);
 	int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *fileinfo, char *title, session_t* session);
+    int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, session_t* session);
 
     int cmpname(struct fileheader *fhdr, char name[STRLEN]);
 /* Haohmaru.99.3.30.比较 某文件名是否和 当前文件 相同 */
@@ -629,7 +630,7 @@ int pc_logs(struct pc_logs *pn);
     int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title, session_t* session);
     int chkusermail(struct userec *user);
     int chkreceiver(struct userec *fromuser, struct userec *touser);
-    int bbs_sendmail(char *fname, char *title, char *receiver, int isuu, int isbig5, int noansi,session_t* session);
+    int bbs_sendmail(char *fname, char *title, char *receiver, int unused, int isbig5, int noansi,session_t* session);
     int check_query_mail(char qry_mail_dir[STRLEN]);
 /* convcode.c */
     void conv_init(session_t* session);

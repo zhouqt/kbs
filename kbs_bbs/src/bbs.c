@@ -649,10 +649,11 @@ void readtitle(struct _select_def* conf)
     } else {
         //if (HAS_PERM(getCurrentUser(), PERM_OBOARDS)) {
 #ifdef OPEN_BMONLINE
-		if (1) {
+		if (1)
 #else
-        if(chk_currBM(currBM,getCurrentUser())||check_board_delete_read_perm(NULL,NULL)){
+        if(chk_currBM(currBM,getCurrentUser())||check_board_delete_read_perm(NULL,NULL))
 #endif
+        {
             char *p1, *p2;
 
             strcpy(header, "∞Ê÷˜: ");
@@ -3153,18 +3154,17 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     return PARTUPDATE;
 }
 
-/* add by stiger,delete ÷√∂•Œƒ’¬ */
+/* new del_ding function modified by pig2532@newsmth */
 int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
-    int failed;
+    int ret;
     struct read_arg* arg=(struct read_arg*)conf->arg;
 
-    if (fileinfo==NULL)
-        return DONOTHING;
     if ( arg->mode != DIR_MODE_NORMAL) return DONOTHING;
 
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !chk_currBM(currBM, getCurrentUser()))
-            return DONOTHING;
+        return DONOTHING;
+
     clear();
     prints("…æ≥˝Œƒ’¬ '%s'.", fileinfo->title);
     getdata(1, 0, "(Y/N) [N]: ", genbuf, 3, DOECHO, NULL, true);
@@ -3176,47 +3176,21 @@ int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         return FULLUPDATE;
     }
 
-    failed=delete_record(arg->dingdirect, sizeof(struct fileheader), conf->pos-arg->filecount, 
-        (RECORD_FUNC_ARG) cmpname, fileinfo->filename);
+    ret = do_del_ding(currboard->filename, arg->bid, conf->pos-arg->filecount, fileinfo, getSession());
 
-    if(failed){
+    if(ret == -1)
+    {
         move(2, 0);
         prints("…æ≥˝ ß∞‹\n");
         pressreturn();
         clear();
-        board_update_toptitle(arg->bid, true);
         return FULLUPDATE;
-    }else{
-		char path[256];
-		struct fileheader postfile;
-//        char tmpname[100];
-//        snprintf(tmpname,100,"boards/%s/%s",currboard->filename,fileinfo->filename);
-//        my_unlink(tmpname);
-
-        bzero(&postfile, sizeof(postfile));
-        strcpy(postfile.filename, fileinfo->filename);
-        strncpy(postfile.owner, fileinfo->owner, OWNER_LEN - 1);
-        postfile.owner[OWNER_LEN - 1] = 0;
-        postfile.id = fileinfo->id;
-        postfile.groupid = fileinfo->groupid;
-        postfile.reid = fileinfo->reid;
-        postfile.attachment = fileinfo->attachment;
-        set_posttime2(&postfile, fileinfo);
-		postfile.accessed[0] = fileinfo->accessed[0];
-		postfile.accessed[1] = fileinfo->accessed[1];
-    	sprintf(path, "%-32.32s - %s", fileinfo->title, getCurrentUser()->userid);
-    	strncpy(postfile.title, path, ARTICLE_TITLE_LEN - 1);
-    	postfile.title[ARTICLE_TITLE_LEN - 1] = 0;
-    	postfile.accessed[sizeof(postfile.accessed) - 1] = time(0) / (3600 * 24) % 100;
-
-        setbdir(4, path, currboard->filename);
-        append_record(path, &postfile, sizeof(postfile));
-
-        board_update_toptitle(arg->bid, true);
     }
-    return DIRCHANGED;
+    else
+    {
+        return DIRCHANGED;
+    }
 }
-/* add end */
 
 /* stiger, ÷√∂• */
 int zhiding_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)

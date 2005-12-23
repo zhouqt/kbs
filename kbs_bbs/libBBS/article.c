@@ -326,6 +326,62 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     return 0;
 }
 
+/* del top article, by pig2532 on 2005.12.22
+this function is made from the original "del_ding"
+parameters:
+    boardname
+    ent: top article's number
+    fh: fileheader of which top article to be deleted
+    session: usually transfer the current session
+retuen:
+    -2: fileheader is NULL
+    -1: "delete_record" function return failed
+    0: success
+*/
+/* add by stiger,delete ÖÃ¶¥ÎÄÕÂ */
+int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, session_t* session)
+{
+    int failed;
+    char dingdirect[PATHLEN];
+
+    if (fh==NULL)
+        return -2;  /* nothing in fileheader */
+
+    setbdir(DIR_MODE_ZHIDING, dingdirect, boardname);
+    failed = delete_record(dingdirect, sizeof(struct fileheader), ent, (RECORD_FUNC_ARG) cmpname, fh->filename);
+
+    if(failed){
+        return -1;  /* failed to delete */
+    }
+    else
+    {
+		char buf[256];
+		struct fileheader postfile;
+
+        bzero(&postfile, sizeof(postfile));
+        strcpy(postfile.filename, fh->filename);
+        strncpy(postfile.owner, fh->owner, OWNER_LEN - 1);
+        postfile.owner[OWNER_LEN - 1] = 0;
+        postfile.id = fh->id;
+        postfile.groupid = fh->groupid;
+        postfile.reid = fh->reid;
+        postfile.attachment = fh->attachment;
+        set_posttime2(&postfile, fh);
+		postfile.accessed[0] = fh->accessed[0];
+		postfile.accessed[1] = fh->accessed[1];
+    	sprintf(buf, "%-32.32s - %s", fh->title, session->currentuser->userid);
+    	strncpy(postfile.title, buf, ARTICLE_TITLE_LEN - 1);
+    	postfile.title[ARTICLE_TITLE_LEN - 1] = 0;
+    	postfile.accessed[sizeof(postfile.accessed) - 1] = time(0) / (3600 * 24) % 100;
+
+        setbdir(DIR_MODE_DELETED, buf, boardname);
+        append_record(buf, &postfile, sizeof(postfile));
+        board_update_toptitle(bid, true);
+
+    }
+    return 0;   /* success */
+}
+
 static int insert_func(int fd, struct fileheader *start, int ent, int total, struct fileheader *data, bool match)
 {
     int i;
