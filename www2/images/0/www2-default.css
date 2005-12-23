@@ -453,6 +453,16 @@ table.error td {
 	text-decoration: none;
 }
 
+body.wtoogle {
+	margin: 0px;
+	background-color: #F6F6F6;
+}
+.wtoogle a, .wtoogle a:active, .wtoogle a:visited {
+	background-color:#718BD6;
+	font-size:10px;
+	color: #FFFFFF;
+	text-decoration:none;
+}
 
 @media screen {
 	#fontSizer {

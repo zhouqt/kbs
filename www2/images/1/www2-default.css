@@ -377,6 +377,7 @@ div.footer {
 	margin: 0;
 	text-align: left;
 	font-size: 90%;
+	background-color: #F6F6F6;
 }
 
 
@@ -453,6 +454,16 @@ table.error td {
 	text-decoration: none;
 }
 
+body.wtoogle {
+	margin: 0px;
+	background-color: #EEEEEE;
+}
+.wtoogle a, .wtoogle a:active, .wtoogle a:visited {
+	background-color:#CCCCCC;
+	font-size:10px;
+	color: #FFFFFF;
+	text-decoration:none;
+}
 
 @media screen {
 	#fontSizer {

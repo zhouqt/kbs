@@ -47,7 +47,10 @@ function do_manage_function($board) {
                 case -2:
                 case -3:
                 case -9:
-                    html_error_quit('系统错误'.$ret);
+                	if($mode != 6)
+                	{
+                    	html_error_quit('系统错误');
+                	}
                     break;
                 case -4:
                     html_error_quit('文章ID错误');
