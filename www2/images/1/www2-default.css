@@ -321,7 +321,7 @@ div.article {
 }
 
 
-/* bbscon.php bbstcon.php */
+/* bbscon.php */
 div.conPager {
 	width: 98%;
 	border: 1px solid #A8D0FD;
@@ -338,7 +338,21 @@ div.conPager a, div.conPager a:active, div.conPager a:visited, div.conPager a:ho
 }
 
 /* bbstcon.php styles */
-div.conPager .tnum {
+div.tconPager {
+	width: 98%;
+	border: 1px solid #A8D0FD;
+	margin: -1px auto;
+	padding: 0.2em 0.3em;
+	line-height: 1.5em;
+	height: 1.5em;
+	background-color: #A8D0FD;
+	color: #222222;
+	position: relative;
+}
+div.tconPager a, div.tconPager a:active, div.tconPager a:visited, div.tconPager a:hover {
+	color: #222288;
+}
+div.tconPager .tnum {
 	font-weight: bold;
 	position: absolute;
 	top: 0.2em;

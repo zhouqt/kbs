@@ -895,14 +895,17 @@ function tconWriter(board, gid, start, tpage, pno, serial) {
 }
 tconWriter.prototype.h = function() {
 	var ret = '<div class="tnav smaller">【分页： ';
+	var u = 'bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '&pno=';
 	for(var j = 1; j < this.tpage + 1; j ++ ) {
 		if (this.pno != j) {
-			ret += '<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '&pno=' + j + '"><u>' + j + '</u></a> ';
+			ret += '<a href="' + u + j + '"><u>' + j + '</u></a> ';
 		} else {
-			ret += j + ' ';
+			ret += '<b>' + j + '</b> ';
 		}
 	}
-	ret += '】</div>';
+	ret += '】';
+	if (this.pno < this.tpage) ret += '<a href="' + u + (this.pno+1) + '">下一页</a> ';
+	ret += '</div>';
 	document.write(ret);
 };
 tconWriter.prototype.o = function(arts) {
@@ -911,7 +914,7 @@ tconWriter.prototype.o = function(arts) {
 		var owner = arts[i][1];
 		var url = 'bbscon.php?board=' + this.board + '&id=' + id;
 		var ret = '<br/>';
-		ret += '<div class="conPager smaller left">';
+		ret += '<div class="tconPager smaller left">';
 		ret += '[<a href="' + url + '">本篇全文</a>] ';
 		if (isLogin()) {
 			ret += '[<a href="bbspst.php?board=' + this.board + '&reid=' + id + '">回复文章</a>] ';
@@ -921,7 +924,7 @@ tconWriter.prototype.o = function(arts) {
 		ret += '[<a href="bbsdoc.php?board=' + this.board + '">进入讨论区</a>] ';
 		ret += '[<a href="#top">返回顶部</a>]';
 		ret += '<div class="tnum">' + (this.serial+i+1) + '</div>';
-		ret += '</div><div class="article" id="art' + id + '"></div>';
+		ret += '</div><div class="article" id="art' + id + '"><div align="center">...载入中...</div></div>';
 		ret += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '" style="display:none;"></iframe>';
 		document.write(ret);
 	}
