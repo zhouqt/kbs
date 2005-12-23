@@ -276,6 +276,7 @@ void unlock_sem_check(int lockid);
     int normal_board(const char *bname);
     int getboardnum(const char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
+    int get_manageable_bids(struct userec *user, char *buf, int buflen);
 	int fill_super_board(struct userec* user,char *searchname, int result[], int max);
     int add_board(struct boardheader *newboard);
     void build_board_structure(const char *board);

@@ -267,6 +267,35 @@ int fill_super_board(struct userec* user,char *searchname, int result[], int max
 	return total;
 }
 
+
+
+/* return .-delimited manageable bid list */
+int get_manageable_bids(struct userec *user, char *buf, int buflen)
+{
+	register int i;
+	int total=0;
+    char *bufptr = buf;
+    
+    buf[0] = '\0';
+    for (i = 0; i < brdshm->numboards; i++){
+        if (bcache[i].filename[0] == '\0')
+            continue;
+        if (check_read_perm(user, &bcache[i])) {
+            if (chk_BM_instr(bcache[i].BM, user->userid)) {
+                total++;
+                sprintf(bufptr, "%d.", i+1);
+                bufptr += strlen(bufptr);
+                if (bufptr - buf > buflen - 10) break;
+            }
+        }
+    }
+    if (total) *(bufptr-1) = '\0';
+    return total;
+}
+
+
+
+
 int getbnum(const char *bname)
 {
     register int i;

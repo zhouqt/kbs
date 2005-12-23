@@ -301,3 +301,48 @@ PHP_FUNCTION(bbs_denydel)
     else
         RETURN_LONG(-3);
 }
+
+
+
+/**
+ * function bbs_bm_get_manageable_bids(string userid)
+ * @return a string
+ *         "A": can manage all visible boards
+ *         empty string:  not a bm
+ *         .-delimited bid list: all manageable board id list
+ * @author atppp
+ *
+ */
+PHP_FUNCTION(bbs_bm_get_manageable_bids)
+{
+#define MAX_MANAGEABLE_BIDS_LENGTH 1024 // note most browser set 4k as maximum bytes per cookie - atppp
+    char *userid;
+    int userid_len;
+    struct userec *user;
+    char buf[MAX_MANAGEABLE_BIDS_LENGTH];
+    int ac = ZEND_NUM_ARGS();
+    if (ac == 0) {
+        user = getCurrentUser();
+        if (user == NULL) {
+            RETURN_EMPTY_STRING();
+        }
+    } else {
+        if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &userid ,&userid_len) == FAILURE) {
+		    WRONG_PARAM_COUNT;
+    	}
+        if (!getuser(userid, &user)) {
+            RETURN_EMPTY_STRING();
+        }
+    }
+    if (HAS_PERM(user, PERM_OBOARDS) || HAS_PERM(user, PERM_SYSOP)) {
+        RETURN_STRING("A", 1);
+    }
+    if (!HAS_PERM(user, PERM_BOARDS)) {
+        RETURN_EMPTY_STRING();
+    }
+    get_manageable_bids(user, buf, MAX_MANAGEABLE_BIDS_LENGTH);
+    RETURN_STRING(buf, 1);
+#undef MAX_MANAGEABLE_BIDS_LENGTH
+}
+
+
