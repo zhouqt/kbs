@@ -44,6 +44,10 @@ if ($data["userid"] != "guest") {
 	if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK )) {
 		$mainurl = "bbsnew.php";
 	}
+	$mbids = bbs_bm_get_manageable_bids();
+	if ($mbids) {
+		setcookie("MANAGEBIDS", $mbids,0,"/");
+	}
 }
 setcookie("UTMPKEY",$data["utmpkey"],0,"/");
 setcookie("UTMPNUM",$num,0,"/");

@@ -587,6 +587,14 @@ function writeBMs(bmstr) {
 	}
 }
 
+function isBM(bid) {
+	var mbids = getCookie("MANAGEBIDS", "0");
+	if (mbids == "A") return 1;
+	mbids = "." + mbids + ".";
+	return (mbids.indexOf("." + bid + ".") != -1);
+}
+
+
 var dir_modes = {"FIND": -2, "ANNOUNCE": -1, "NORMAL": 0, "DIGEST": 1, "MARK": 3, "DELETED": 4, "ORIGIN": 6, "ZHIDING": 11};
 function dir_name(ftype) {
 	switch(ftype) {
@@ -599,7 +607,7 @@ function dir_name(ftype) {
 }
 
 
-function docWriter(board, start, man, ftype, page, total, apath, showHot, isbm) {
+function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
 	this.start = start;
@@ -629,7 +637,7 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot, isbm) 
 			   [apath && ftype != dir_modes["ANNOUNCE"], "精华区", "bbs0an.php?path=" + escape(apath)],
 			   [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board]];
 	var mls_bm = [[ftype != dir_modes["DELETED"], "回收站", "bbsdoc.php?manage=1&board=" + this.board + "&ftype=" + dir_modes["DELETED"]]];
-	if(isbm == 1) mls = mls.concat(mls_bm);
+	if (isBM(bid)) mls = mls.concat(mls_bm);
 	for (var i = mls.length - 1; i >= 0; i--) {
 		links = mls[i];
 		if (links[0]) {

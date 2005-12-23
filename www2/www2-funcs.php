@@ -120,6 +120,14 @@ function decodesessionchar($ch)
 
 $loginok=0;
 
+function delete_all_cookie() {
+	setcookie("UTMPKEY","",time()-3600,"/");
+	setcookie("UTMPNUM","",time()-3600,"/");
+	setcookie("UTMPUSERID","",time()-3600,"/");
+	setcookie("WWWPARAMS","",time()-3600,"/");
+	setcookie("MANAGEBIDS","",time()-3600,"/");
+}
+
 function set_fromhost()
 {
 	global $proxyIPs;
@@ -220,9 +228,7 @@ function login_init()
 	
 	settype($utmpnum,"integer");
 	if ($loginok!=1) {
-		setcookie("UTMPKEY","",time() - 3600,"/");
-		setcookie("UTMPNUM","",time() - 3600,"/");
-		setcookie("UTMPUSERID","",time() - 3600,"/");
+		delete_all_cookie();
 		cache_header("nocache");
 ?>
 <html>

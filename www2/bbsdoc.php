@@ -128,14 +128,6 @@ function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$tot
 		if (!strncmp($ann_path,"0Announce/",10))
 			$ann_path = substr($ann_path,9);
 	}
-	if(bbs_is_bm($brdnum, $usernum))
-	{
-		$isbm = 1;
-	}
-	else 
-	{
-		$isbm = 0;
-	}
 	if($ftype == $dir_modes["DELETED"])
 	{
 		$mancode = "2";
@@ -146,9 +138,9 @@ function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$tot
 	}
 ?>
 <script>
-var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $start;
+var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $brdarr["BID"]; ?>,<?php echo $start;
 ?>,<?php echo $mancode; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
-?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>,<?php echo $isbm; ?>);
+?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>);
 <?php
 	foreach ($articles as $article)
 	{

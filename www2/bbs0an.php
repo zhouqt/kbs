@@ -125,7 +125,7 @@ if ($board) {
 		$isBoard = true;
 ?>
 <script>
-var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',0,0,-1,0,0,0,0);
+var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $bid; ?>,0,0,-1,0,0,0,0);
 </script>
 <?php
 	}
