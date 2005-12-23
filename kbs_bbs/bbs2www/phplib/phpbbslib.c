@@ -3952,7 +3952,8 @@ static PHP_FUNCTION(bbs_docommend)
  *         2: mark;
  *         3: digest;
  *         4: noreplay;
- *         5: zhiding
+ *         5: zhiding;
+ *         6: undel		:: add by pig2532 on 2005.12.19 ::
  * return 0 : success;
  *        -1: board is NOT exist
  *        -2: do NOT have permission
@@ -3971,7 +3972,9 @@ static PHP_FUNCTION(bbs_bmmanage)
     int ent;
     int fd;
     struct fileheader f;
+    FILE *fp;
     
+    /* if in DELETED mode, num is transfered instead of id at parameter "id" */
     int ac = ZEND_NUM_ARGS();
     if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &board_len, &id, &mode, &zhiding) == FAILURE) {
 		WRONG_PARAM_COUNT;
@@ -3983,7 +3986,27 @@ static PHP_FUNCTION(bbs_bmmanage)
     if (!is_BM(bh, getCurrentUser()))
         RETURN_LONG(-2);
     
-    if (zhiding) {
+    if (mode == 6)  /* undel action, add by pig2532 */
+    {
+        int find = 0;
+        setbdir(DIR_MODE_DELETED, dir, board);
+        fp = fopen(dir, "r");
+        if(!fp)
+        {
+            RETURN_LONG(-9);    /* cannot open index file */
+        }
+        fseek(fp, sizeof(f) * (id - 1) , SEEK_SET);   /* here variable "id" is actually num */
+        if(fread(&f, sizeof(f), 1, fp) > 0)
+        {
+            find = 1;
+        }
+        fclose(fp);
+        if(find == 0)
+        {
+            RETURN_LONG(-4);    /* article index not found, maybe SYSOP cleared them */
+        }
+    }
+    else if (zhiding) {
         int find = 0;
         ent = 1;
         setbdir(DIR_MODE_ZHIDING, dir, board);
@@ -4014,7 +4037,21 @@ static PHP_FUNCTION(bbs_bmmanage)
         close(fd);
     }
         
-    if (zhiding) {
+    if (mode == 6)  /* undel action, add by pig2532 */
+    {
+        char buf[128];
+        snprintf(buf, 100, "boards/%s/.DELETED", board);
+        ret = do_undel_post(board, buf, id, &f, NULL, getSession());
+        if(ret == 1)
+        {
+            ret = 0;
+        }
+        else
+        {
+            ret = -1;
+        }
+    }
+    else if (zhiding) {
         ret = delete_record(dir, sizeof(struct fileheader), ent,(RECORD_FUNC_ARG) cmpname, f.filename);
         if (ret == 0) {
             char buf[128];
