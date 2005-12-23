@@ -420,3 +420,329 @@ PHP_FUNCTION(bbs_createregform)
 	else
         RETURN_LONG(10);
 }
+
+/**
+ * Function: Create a new user id
+ *  rototype:
+ * int bbs_createNewID(string smthid,string passwd,string nickname);
+ *
+ *  @return the result
+ *  	0 -- success, 1 -- specail char or first char not alpha
+ *  	2 -- at least two chars 3 -- system name or bad name
+ *  	4 -- have been used 5 -- length > IDLEN
+ *  	6 -- passwd is too long > 39
+ *  .	7 -- IP is baned
+ *  	10 -- system error
+ *  @author binxun
+ */
+PHP_FUNCTION(bbs_createnewid)
+{
+	char* userid;
+	int userid_len;
+	char* passbuf;
+	int passbuf_len;
+	char* nickname;
+	int nickname_len;
+	char buf[1024];
+	char tmpstr[30];
+	struct stat lst;
+	time_t lnow;
+	struct userec newuser;
+	int allocid;
+	
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid, &userid_len,&passbuf,&passbuf_len,&nickname,&nickname_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (userid_len > IDLEN)RETURN_LONG(5);
+	if (passbuf_len > 39)RETURN_LONG(6);
+
+	if (id_invalid(userid) == 1) RETURN_LONG(1);
+	if (strlen(userid) < 2) RETURN_LONG(2);
+	if (bad_user_id(userid)) RETURN_LONG(3);
+	if (searchuser(userid)) RETURN_LONG(4);
+
+	//if(check_ban_IP(getSession()->fromhost,buf) < 0)RETURN_LONG(7);
+
+	lnow = time(NULL);
+	sethomepath(buf,userid);
+	//存在前人的目录,并且还在保存期限以内
+	if (!stat(buf,&lst) && S_ISDIR(lst.st_mode) && (lnow-lst.st_ctime < SEC_DELETED_OLDHOME ))
+	{
+		//log?
+
+		RETURN_LONG(10);
+	}
+
+	memset(&newuser,0,sizeof(newuser));
+	strncpy(newuser.lasthost,getSession()->fromhost,IPLEN);
+	newuser.lasthost[IPLEN]=0;
+	strncpy(newuser.userid ,userid,IDLEN);
+	strncpy(newuser.username,nickname,NAMELEN-1);
+	newuser.username[NAMELEN-1] = '\0';
+
+	newuser.firstlogin = newuser.lastlogin = time(NULL);
+
+	setpasswd(passbuf,&newuser);
+
+	newuser.userlevel = PERM_AUTOSET;
+	newuser.userdefine[0] = -1;
+	newuser.userdefine[1] = -1;
+	SET_UNDEFINE(&newuser,DEF_NOTMSGFRIEND);
+#ifdef HAVE_WFORUM
+	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
+#endif
+	newuser.exittime = time(NULL) - 100;
+	newuser.flags |= PAGER_FLAG;
+	newuser.title = 0;
+
+	//分配ID号
+	allocid = getnewuserid2(newuser.userid);
+	if (allocid > MAXUSERS || allocid <= 0) RETURN_LONG(10);
+
+	//更新共享内存数据
+	update_user(&newuser,allocid,1);
+
+	if (!getuser(newuser.userid,&getCurrentUser()))RETURN_LONG(10);
+
+	newbbslog(BBSLOG_USIES,"%s","new account from www");
+
+	//检查是否有前人的信件
+	sethomepath(tmpstr,userid);
+	sprintf(buf,"/bin/mv -f %s " BBSHOME "/homeback/%s",tmpstr,userid);
+	system(buf);
+	setmailpath(tmpstr,userid);
+	sprintf(buf,"/bin/mv -f %s " BBSHOME "/mailback/%s",tmpstr,userid);
+	system(buf);
+
+	//创建新目录
+	sethomepath(tmpstr,userid);
+	if(mkdir(tmpstr,0755) < 0) {
+	    bbslog("3error","create id %s home dir error:%s",userid,strerror(errno));
+	    RETURN_LONG(10);
+	}
+
+#if defined(SMTH) || defined(ZIXIA)
+    mail_file(DELIVER,"etc/tonewuser",userid,"致新注册用户的信",0,NULL);
+#endif
+
+	RETURN_LONG(0);
+}
+
+
+/**
+ * Function: check if the id is invalid
+ *  rototype:
+ * int bbs_is_invalid_id(string smthid);
+ *
+ *  @return the result
+ *  	0 -- valid ID
+ *      1 -- specail char or first char not alpha
+ *  	2 -- at least two chars
+ *      3 -- system name or bad name
+ *  	4 -- have been used
+ *      5 -- length > IDLEN
+ *  @author atppp
+ */
+PHP_FUNCTION(bbs_is_invalid_id)
+{
+	char* userid;
+	int userid_len;
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (userid_len > IDLEN)RETURN_LONG(5);
+
+	if (id_invalid(userid) == 1) RETURN_LONG(1);
+	if (strlen(userid) < 2) RETURN_LONG(2);
+	if (bad_user_id(userid)) RETURN_LONG(3);
+	if (searchuser(userid)) RETURN_LONG(4);
+    RETURN_LONG(0);
+}
+
+
+
+
+PHP_FUNCTION(bbs_sendactivation)
+{
+#ifdef HAVE_ACTIVATION
+    struct activation_info ai;
+	char* userid;
+	int   userid_len;
+    struct userec *uc;
+
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &userid , &userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+    getactivation(&ai, uc);
+    RETURN_LONG(sendactivation(&ai, uc, getSession()));
+#endif
+    RETURN_LONG(0);
+}
+
+PHP_FUNCTION(bbs_doactivation)
+{
+#ifdef HAVE_ACTIVATION
+    struct activation_info ai;
+	char* userid;
+	int   userid_len;
+    struct userec *uc;
+
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &userid , &userid_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+    getactivation(&ai, uc);
+    doactivation(&ai, uc, getSession());
+#endif
+    RETURN_LONG(0);
+}
+
+/**
+* set user's activation file
+* function bbs_setactivation(string userid , string filebody)
+* return  0 : seccess
+*         -1: user not exist
+*         -2: registered
+*         -10:system error
+**/
+PHP_FUNCTION(bbs_setactivation)
+{
+#ifdef HAVE_ACTIVATION
+	char* userid;
+	int   userid_len;
+	char* filebody;
+	int   filebody_len;
+	struct userec *uc;
+	FILE *fn;
+	char  afile[STRLEN];
+	
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ss" , &userid , &userid_len , &filebody , &filebody_len) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+	sethomefile(afile,uc->userid,"activation");
+	if ((fn=fopen(afile,"w"))==NULL)
+		RETURN_LONG(-10);
+	fprintf(fn,"%s",filebody);
+	fclose(fn);
+#endif
+	RETURN_LONG(0);
+}
+
+/*
+** function bbs_getactivation(string userid,&string &activation)
+*  return  0 :seccess;
+*          -1:user not exist
+*          -2:registered
+*          -3:can not find activation file
+*          -10:system error
+*/
+PHP_FUNCTION(bbs_getactivation)
+{
+#ifdef HAVE_ACTIVATION
+	char* userid;
+	int   userid_len;
+	zval *activation;
+	struct userec *uc;
+	char  buf[200];
+	struct activation_info ai;
+    
+	int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sz" , &userid , &userid_len , &activation ) == FAILURE)
+	{
+		WRONG_PARAM_COUNT;
+	}
+	if (!PZVAL_IS_REF(activation))
+	{
+        	zend_error(E_WARNING, "Parameter wasn't passed by reference");
+        	RETURN_FALSE;
+    	}
+	if(getuser(userid,&uc)==0)
+		RETURN_LONG(-1);
+    if (!getactivation(&ai, uc)) RETURN_LONG(-1);
+    buf[0] = ai.activated ? '1' : '0';
+    memcpy(buf + 1, ai.activationcode, ACTIVATIONLEN);
+    strcpy(buf + 1 + ACTIVATIONLEN, ai.reg_email);
+	ZVAL_STRING(activation,buf,1);
+#endif
+	RETURN_LONG(0);
+}
+
+/**
+ * fill infomation of ID ,name, NO. dept, for tsinghua
+ * prototype:
+ * int bbs_fillIDInfo(string smthid,string name,string number,string dept);
+ *
+ *  @return the result
+ *  	0 -- success, -1 -- Invalid parameter
+ *  	-2 -- error
+ *  @author binxun
+ */
+PHP_FUNCTION(bbs_fillidinfo)
+{
+    char* userid;
+    int userid_len;
+    char* realname;
+    int realname_len;
+    char* number;
+    int number_len;
+    char* dept;
+    int dept_len;
+    char genbuf[STRLEN];
+
+    struct userdata ud;
+
+    int ac = ZEND_NUM_ARGS();
+
+
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &userid, &userid_len,&realname,&realname_len,&number,&number_len,&dept,&dept_len) == FAILURE)
+    {
+            WRONG_PARAM_COUNT;
+    }
+
+    if(userid_len > IDLEN || realname_len > NAMELEN || dept_len > STRLEN)
+       RETURN_LONG(-1);
+
+    memset(&ud,0,sizeof(ud));
+	if( read_user_memo(userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
+
+    if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
+
+    strncpy(ud.realname, realname, NAMELEN);
+    strncpy(ud.address,dept,STRLEN);
+    sprintf(genbuf,"%s#%s#%s#TH",realname,number,dept);
+    if(strlen(genbuf) >= STRLEN - 16) //too long
+		sprintf(genbuf,"%s#%s#TH",realname,number);//must < STRLEN - 16
+    strncpy(ud.realemail,genbuf,STRLEN-16);
+
+	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
+	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
+
+    if(write_userdata(userid,&ud) < 0)RETURN_LONG(-2);
+
+	bbslog("user","%s","new account from tsinghua www");
+
+    RETURN_LONG(0);
+}
+
