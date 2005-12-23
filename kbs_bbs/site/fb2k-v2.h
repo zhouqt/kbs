@@ -290,39 +290,8 @@ bigger mailbox. --stephen 2001.10.31*/
 #define UL_SWITCH_FRIEND_UPPER 'F'
 #define UL_SWITCH_FRIEND_LOWER 'f'
 
-/**
- * 文章相关部分。
- */
-#define STRLEN          80
-#define BM_LEN 60
-#define FILENAME_LEN 20
-#define OWNER_LEN 14
-#define ARTICLE_TITLE_LEN 60
-typedef struct fileheader {     /* This structure is used to hold data in */
-    char filename[FILENAME_LEN];      /* the DIR files */
-    unsigned int id, groupid, reid;
-#if defined(FILTER) || defined(COMMEND_ARTICLE)
-	int o_bid;
-    unsigned int o_id;
-    unsigned int o_groupid;
-    unsigned int o_reid;
-#else
-    char unused1[16];
-#endif
-    char innflag[2];
-    char owner[OWNER_LEN];
-    unsigned int eff_size;
-    int posttime;
-    unsigned int attachment;
-    char title[ARTICLE_TITLE_LEN];
-    unsigned char accessed[4];
-} fileheader;
-
-typedef struct fileheader fileheader_t;
-
-#define GET_POSTFILENAME(x,y) get_postfilename(x,y,0)
-#define GET_MAILFILENAME(x,y) get_postfilename(x,y,0)
-#define VALID_FILENAME(x) valid_filename(x,0)
+/** 使用缺省的FILEHeader结构*/
+#define HAVE_FILEHEADER_DEFINE
 
 /**
  * Mailbox properties.
