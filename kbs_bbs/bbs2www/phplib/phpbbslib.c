@@ -4054,6 +4054,21 @@ static PHP_FUNCTION(bbs_bmmanage)
     }
     else if (zhiding) {
         ret = do_del_ding(board, bid, ent, &f, getSession());
+         switch(ret)
+         {
+         case -1:
+             RETURN_LONG(-4);    /* del failed */
+             break;
+         case -2:
+             RETURN_LONG(-9);    /* null fileheader */
+             break;
+         case 0:
+             RETURN_LONG(0);     /* success */
+             break;
+         default:
+             RETURN_LONG(-9);
+             break;
+         }
     }
     else if (mode == 1) {
         ret = del_post(ent, &f, dir, board);
