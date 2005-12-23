@@ -371,31 +371,6 @@ PHP_FUNCTION(bbs_createregform)
 	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
 	write_userdata(userid, &ud);
 
-#ifdef NEW_COMERS
-	{
-	FILE *fout;
-	char buf2[STRLEN],buf[STRLEN];
-	sprintf(buf, "tmp/newcomer.%s",uc->userid);
-		if ((fout = fopen(buf, "w")) != NULL)
-		{
-			fprintf(fout, "大家好,\n\n");
-			fprintf(fout, "我是 %s (%s), 来自 %s\n", uc->userid,
-					uc->username, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
-			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
-#ifdef HAVE_BIRTHDAY
-					(ud.gender == 'M') ? "小弟" : "小女子");
-#else
-                                        "小弟");
-#endif
-			fprintf(fout, "\n\n我是www注册用户~~~\n\n");
-			fclose(fout);
-			sprintf(buf2, "新手上路: %s", uc->username);
-			post_file(uc, "", buf, "newcomers", buf2, 0, 2, getSession());
-			unlink(buf);
-		}
-	}
-#endif
-
 	sprintf(genbuf,"%ld.%ld.%ld",year,month,day);
 	if(bAuto)
         fn = fopen("pre_register", "a");
@@ -526,6 +501,31 @@ PHP_FUNCTION(bbs_createnewid)
 
 #if defined(SMTH) || defined(ZIXIA)
     mail_file(DELIVER,"etc/tonewuser",userid,"致新注册用户的信",0,NULL);
+#endif
+
+#ifdef NEW_COMERS
+	{
+	FILE *fout;
+	char buf2[STRLEN],buf[STRLEN];
+	sprintf(buf, "tmp/newcomer.%s",userid);
+		if ((fout = fopen(buf, "w")) != NULL)
+		{
+			fprintf(fout, "大家好,\n\n");
+			fprintf(fout, "我是 %s (%s), 来自 %s\n", userid,
+					nickname, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
+			fprintf(fout, "今天%s初来此站报到, 请大家多多指教。\n",
+#if 0 //TODO here
+					(ud.gender == 'M') ? "小弟" : "小女子");
+#else
+                                        "小弟");
+#endif
+			fprintf(fout, "\n\n我是www注册用户~~~\n\n");
+			fclose(fout);
+			sprintf(buf2, "新手上路: %s", nickname);
+			post_file(getCurrentUser(), "", buf, "newcomers", buf2, 0, 2, getSession());
+			unlink(buf);
+		}
+	}
 #endif
 
 	RETURN_LONG(0);
