@@ -146,7 +146,7 @@ echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["
 echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>);
 o.h(1);
 attachURL = 'bbscon.php?<?php echo $_SERVER["QUERY_STRING"]; ?>';
-<?php $s = bbs2_readfile($filename); if (is_string($s) echo $s; ?>
+<?php $s = bbs2_readfile($filename); if (is_string($s)) echo $s; ?>
 o.h(0);o.t();</script>
 <?php
 	if (($ftype==0) && ($loginok==1) && ($currentuser["userid"] != "guest"))
