@@ -397,6 +397,7 @@ void check_register_info()
 #else
                                         "小弟");
 #endif
+#ifndef NEWSMTH
 			move(9, 0);
 			prints("请作个简短的个人简介, 向本站其他使用者打个招呼\n");
 			prints("(最多三行, 写完可直接按 <Enter> 跳离)....");
@@ -416,6 +417,7 @@ void check_register_info()
 					}
 				}
 			}
+#endif
 			fclose(fout);
 			sprintf(buf2, "新手上路: %s", getCurrentUser()->username);
 			post_file(getCurrentUser(), "", buf, "newcomers", buf2, 0, 2, getSession());
