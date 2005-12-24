@@ -5,24 +5,9 @@
 
 	if (isset($_GET['do'])) {
 		$new_wwwparams = @intval($_COOKIE["WWWPARAMS"]);
-		$new_styleid = $_POST["styleid"];
-		$stylecount = count($style_names);
-		if (($new_styleid < 0) | ($new_styleid >= $stylecount))
-		{
-			$new_styleid = 0;
-		}
-		$new_styleid = $new_styleid << 7;
-		$new_wwwparams = ($new_wwwparams & ~0xF80) | ($new_styleid & 0xF80);
 		if (strcmp($currentuser["userid"], "guest")) {
 			bbs_setwwwparameters($new_wwwparams); /* TODO: return value ? */
 		}
-?>
-<script language="javascript">
-	saveParaCookie(<?php print($_POST["styleid"]); ?> << 7, 0xF80);
-	parent.document.location.reload();
-</script>
-<?php
-		exit;
 	}
 ?>
 <script type="text/javascript">
@@ -62,12 +47,18 @@
 	function KCNymsw() {
 		alert('还没做这个功能呢... 需要吗？不需要吗？您去 sysop 版喊喊？');
 	}
-	function DoStyle()
-	{
-		return(true);
+	function pvStyle(cssID) {
+		saveParaCookie(cssID << 7, 0xF80);
+		var ff = top.window["menu"]; if (ff) ff.resetCss();
+		ff = top.window["toogle"]; if (ff) ff.resetCss();
+		ff = top.window["f4"]; if (ff) ff.resetCss();
+	}
+	function chkStyle(cssID) {
+		getObj('style' + cssID).checked = true;
+		pvStyle(cssID);
 	}
 </script>
-<form id="frmStyle" action="bbsstyle.php?do" method="post" class="small align" onSubmit="DoStyle();">
+<form action="bbsstyle.php?do" class="small align">
 	<fieldset><legend>自定义界面</legend>
 		<div class="inputs">
 			<label>字体大小:</label>
@@ -98,8 +89,8 @@
 	$ret = "";
 	for($i=0;$i<$stylecount;$i++)
 	{
-		$ret .= "<p><input type=\"radio\" id=\"style{$i}\" name=\"styleid\" value=\"{$i}\">";
-		$ret .= "<img src=\"{$style_names[$i][1]}\" onClick=\"getObj('style{$i}').checked=true;\"><br>{$style_names[$i][0]}</p>";
+		$ret .= "<p><input type=\"radio\" id=\"style{$i}\" onclick=\"pvStyle($i)\" name=\"styleid\" value=\"{$i}\">";
+		$ret .= "<img src=\"{$style_names[$i][1]}\" onClick=\"chkStyle($i);\"><br/>{$style_names[$i][0]}</p>";
 	}
 	print($ret);
 ?>

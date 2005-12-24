@@ -386,9 +386,10 @@ function goAttachWindow(){
 }
 
 function dosubmit() {
-	document.postform.post.value='发表中，请稍候...';
-	document.postform.post.disabled=true;
-	document.postform.submit();
+	var p = document.postform;
+	p.post.value='发表中，请稍候...';
+	p.post.disabled=true;
+	p.submit();
 }
 
 
@@ -508,11 +509,32 @@ function sizer(flag) {
 	}
 }
 
+var cssFilename = null;
+function getCssFile(file) {
+	var cssID = (readParaCookie() & 0xF80) >> 7;
+	cssFilename = file;
+	return ('images/' + cssID + '/' + file + '.css');
+}
+
+function writeCssFile(file) {
+	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
+}
+
+function resetCss() {
+	var i, t = document.getElementsByTagName("link");
+	if (t) {
+		for(i = 0; i < t.length; i++) {
+			if (t[i].getAttribute("rel").indexOf("style") != -1 && t[i].getAttribute("href").indexOf("images/") != -1) {
+				t[i].setAttribute("href", getCssFile(cssFilename));
+				return;
+			}
+		}
+	}
+	location.reload();
+}
+
 function writeCss() {
-	var cssID,cssURL;
-	cssID = (readParaCookie() & 0xF80) >> 7;
-	cssURL = 'images/' + cssID + '/www2-default.css';
-	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
+	writeCssFile('www2-default');
 	bfsI = readParaCookie() & 7;
 	if (bfsI <= 0 || bfsI >= bfsArr.length) bfsI = bfsD;
 	var ret = '<style type="text/css" title="myStyle"><!--';
@@ -521,25 +543,13 @@ function writeCss() {
 	ret += '--></style>';
 	document.write(ret);
 }
+function writeCssLeft() { writeCssFile('bbsleft'); }
+function writeCssMainpage() { writeCssFile('mainpage'); }
 
-function writeCssLeft() {
-	var cssID,cssURL;
-	cssID = (readParaCookie() & 0xF80) >> 7;
-	cssURL = 'images/' + cssID + '/bbsleft.css';
-	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
-}
-
-function writeCssMainpage() {
-	var cssID,cssURL;
-	cssID = (readParaCookie() & 0xF80) >> 7;
-	cssURL = 'images/' + cssID + '/mainpage.css';
-	document.write('<link rel="stylesheet" type="text/css" href="'+cssURL+'" />');
-}
 
 function putImageCode(filename,otherparam)
 {
-	var cssID;
-	cssID = (readParaCookie() & 0xF80) >> 7;
+	var cssID = (readParaCookie() & 0xF80) >> 7;
 	return('<img src="images/'+cssID+'/'+filename+'" '+otherparam+'>');
 }
 
@@ -547,6 +557,7 @@ function putImage(filename,otherparam)
 {
 	document.write(putImageCode(filename,otherparam));
 }
+
 
 var writeBM_str;
 
@@ -606,7 +617,7 @@ function dir_name(ftype) {
 	}
 }
 
-
+/* man - 1: 普通管理模式，2: 回收站模式 */
 function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
@@ -649,11 +660,10 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 	str += '</div>';
 
 	if (ftype >= 0) {
-		if (man == 1) {
-			str += '<form name="manage" id="manage" method="post" action="bbsdoc.php?manage=1&board=' + this.board + '&page=' + page + '">';
-		}
-		if (man == 2) {
-			str += '<form name="manage" id="manage" method="post" action="bbsdoc.php?manage=1&board=' + this.board + '&page=' + page + '&ftype=' + dir_modes["DELETED"] + '">';
+		if (man) {
+			str += '<form name="manage" id="manage" method="post" action="bbsdoc.php?manage=1&board=' + this.board + '&page=' + page;
+			if (man == 2) str += '&ftype=' + dir_modes["DELETED"];
+			str += '">';
 		}
 		str += '<table class="main wide">';
 		str += '<col width="50"/><col width="50"/>';
@@ -688,15 +698,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 }
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
-	var cb_value;
-	if (this.man == 2)	/* 回收站中以序号代替id */
-	{
-		cb_value = this.start + this.num;
-	}
-	else
-	{
-		cb_value = id;
-	}
+	var cb_value = (this.man == 2) ? (this.start + this.num) : id; /* 回收站中以序号代替id */
 	if (flag === false) { /* 置顶 */
 		str += '<td class="center red strong">提示</td><td class="center">' + putImageCode('istop.gif','alt="提示"') + '</td>';
 		if (this.man) {

@@ -10,7 +10,7 @@
 <title>ª∂”≠›∞¡Ÿ<?php echo BBS_FULL_NAME; ?></title>
 </head>
 <frameset name=mainframe id=mainframe frameborder=0 border=0 cols="167,11,*">
-	<frame name=menu id=menu noresize="true" marginwidth=0 marginheight=0 src="bbsleft.php">
+	<frame name=menu noresize="true" marginwidth=0 marginheight=0 src="bbsleft.php">
 	<frame scrolling=no noresize="true" name=toogle marginwidth=0 marginheight=0 src="wtoogle.html">
 	<frameset name="viewfrm" rows="0,*,20" id="viewfrm">
 		<frame scrolling=no noresize="true" marginwidth=4 marginheight="0" name="fmsg" src="<?php if (!$isguest) echo "bbsgetmsg.php"; ?>">
