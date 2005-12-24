@@ -413,7 +413,7 @@ function al_print_form($al){
 <a href="bbsal.php?start=<?php echo $startnum;?>&count=<?php echo $count;?>&order=<?php echo $order;?>&desc=<?php echo $desc;?>&action=add">增加条目</a>
 
 <input type="button" name="csv" value="从csv文件导入" onclick="return GoAttachWindow()" />
-<script language="JavaScript">
+<script type="text/javascript">
 <!--
    function GoAttachWindow(){
 
@@ -427,7 +427,7 @@ function al_print_form($al){
 -->
 </script>
 
-<script language="javascript">
+<script type="text/javascript">
 <!--//
 function doOrder(){
 	var oSelectType=document.getElementById("oOrder");
@@ -451,7 +451,7 @@ function doOrder(){
 <option value="groupname"<?php if( $order=="groupname" ) { ?> selected="selected"<?php } ?>>分组</option>
 </select>
 
-<script language="javascript">
+<script type="text/javascript">
 <!--//
 function doRefresh(){
 	var oSelectType=document.getElementById("oType");
@@ -472,7 +472,7 @@ function doRefresh(){
 <option value="2"<?php if( $desc==1 ) { ?> selected="selected"<?php } ?>>倒序</option>
 </select>排列
 
-<script language="javascript">
+<script type="text/javascript">
 <!--//
 function doCount(){
 	var oSelectType=document.getElementById("oCount");

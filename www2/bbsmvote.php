@@ -148,7 +148,7 @@
 		html_error_quit("你不是版主");
 	bbs_board_nav_header($brdarr, "新开投票");
 ?>
-<script language="javascript">
+<script type="text/javascript">
 <!--//
 var maxitemnum=10;
 var defaultitem=3;

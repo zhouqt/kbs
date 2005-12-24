@@ -61,7 +61,7 @@ login_init();
 		$mailboxnum = $i + 1;
 		$mail_title_encode = rawurlencode($mail_title);
 ?>
-<script language="javascript">
+<script type="text/javascript">
 <!--
 function checkall(form)  {
   for (var i=0;i<form.elements.length;i++)    {

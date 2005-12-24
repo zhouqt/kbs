@@ -482,7 +482,7 @@ while($board = array_shift($boards))
 <title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
 <script src="www2-main.js"></script>
-<script language="javascript">writeCssMainpage();</script>
+<script type="text/javascript">writeCssMainpage();</script>
 </head>
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
 <table border="0" cellpadding="0" cellspacing="0" width="100%">

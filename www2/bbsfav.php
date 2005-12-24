@@ -72,7 +72,7 @@
 ?>
 <tr>
 <td> </td>
-<td> <script language="javascript">putImage('groupgroup.gif','alt="up" title="回到上一级"');</script></td>
+<td> <script type="text/javascript">putImage('groupgroup.gif','alt="up" title="回到上一级"');</script></td>
 <td colspan="6"><a href="bbsfav.php?select=<?php echo $list_father.$fix; ?>">回到上一级</a></td>
 </tr>
 <?php
@@ -87,7 +87,7 @@
 <?php
 	if ($brd_flag[$i] == -1 ) {
 ?>
-<td> <script language="javascript">putImage('groupgroup.gif','alt="＋" title="版面组"');</script></td>
+<td> <script type="text/javascript">putImage('groupgroup.gif','alt="＋" title="版面组"');</script></td>
 <td><a href="bbsfav.php?select=<?php echo $brd_bid[$i].$fix;?>"><?php echo $brd_desc[$i];?></a></td>
 <td>[目录]</td>
 <td colspan="3"> </td><td>
@@ -99,12 +99,12 @@
 	}
 	if ($brd_unread[$i] == 1) {
 ?>
-<td> <script language="javascript">putImage('newgroup.gif','alt="◆" title="未读标志"');</script></td>
+<td> <script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"');</script></td>
 <td>
 <?php                              
 	} else {
 ?>
-<td> <script language="javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"');</script></td>
+<td> <script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"');</script></td>
 <td>
 <?php
 	}

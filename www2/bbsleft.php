@@ -151,7 +151,7 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
 <script src="www2-main.js"></script>
-<script language="javascript">writeCssLeft();</script>
+<script type="text/javascript">writeCssLeft();</script>
 </head>
 <script src="bbsleft.js"></script>
 <!--[if IE]>
@@ -175,10 +175,10 @@
 		{
 ?>
 <form action="bbslogin.php" method="post" name="form1" target="_top" onSubmit="return fillf3(this);" class="m0">
-<nobr><script language="javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
+<nobr><script type="text/javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
 <input type="text" class="upinput" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" /></nobr><br/>
 
-<nobr><script language="javascript">putImage('u3.gif','alt="用户密码" class="pm"');</script>
+<nobr><script type="text/javascript">putImage('u3.gif','alt="用户密码" class="pm"');</script>
 <input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" /></nobr><br />
 
 <div class="m9">
@@ -191,7 +191,7 @@
 		else
 		{
 ?>
-<nobr><script language="javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
+<nobr><script type="text/javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
 &nbsp;&nbsp;<?php echo $currentuser["userid"]; ?></nobr><br/>
 <?php
 		}
