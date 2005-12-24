@@ -49,34 +49,8 @@
 ?>
 <link rel="stylesheet" type="text/css" href="ansi.css"/>
 <form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>" class="large">
-<div class="article smaller">
-<?php
-		$notes_file = bbs_get_vote_filename($brdarr["NAME"], "notes");
-		$fp = FALSE;
-		if(file_exists($notes_file))
-		{
-		    $fp = fopen($notes_file, "r");
-		    if ($fp == FALSE)
-		    {
-    	    	$notes_file = "vote/notes";
-                if(file_exists($notes_file))
-	    		    $fp = fopen($notes_file, "r");
-    		}
-		}
-		if ($fp == FALSE)
-    	{
-?>
-<div class="green">发文注意事项: <br/>
-发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。</div>
-<?php
-		}
-        else
-		{
-		    fclose($fp);
-			echo bbs_printansifile($notes_file);
-		}
-?>
-</div>
+<div class="article smaller" id="bbsnot">正在载入讨论区备忘录...</div>
+<iframe src="bbsnot.php?board=<?php echo $board; ?>" width=0 height=0 style="hidden"></iframe>
 <fieldset><legend><?php echo $reid ? "回复文章" : "发表文章"; ?></legend>
 发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 <?php
