@@ -4,7 +4,7 @@ set_time_limit(0);
 require("pcadmin_inc.php");
 pc_admin_check_permission();
 $link = pc_db_connect();
-$query = 'SELECT `username` FROM users WHERE pctype < 2;';
+$query = 'SELECT `username` FROM users;';
 $result = mysql_query($query);
 $allUsers = array();
 while($rows = mysql_fetch_array($result))
