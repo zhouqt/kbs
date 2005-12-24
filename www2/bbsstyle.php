@@ -4,8 +4,8 @@
 	toolbox_header("界面修改");
 
 	if (isset($_GET['do'])) {
-		$new_wwwparams = @intval($_COOKIE["WWWPARAMS"]);
-		if (strcmp($currentuser["userid"], "guest")) {
+		$new_wwwparams = @$_COOKIE["WWWPARAMS"];
+		if (strcmp($currentuser["userid"], "guest") && $new_wwwparams) {
 			bbs_setwwwparameters($new_wwwparams); /* TODO: return value ? */
 		}
 	}
@@ -58,7 +58,8 @@
 		pvStyle(cssID);
 	}
 </script>
-<form action="bbsstyle.php?do" class="small align">
+<form action="bbsstyle.php" class="small align" method="get">
+<input type="hidden" name="do" value="1" />
 	<fieldset><legend>自定义界面</legend>
 		<div class="inputs">
 			<label>字体大小:</label>
