@@ -50,7 +50,7 @@
 <link rel="stylesheet" type="text/css" href="ansi.css"/>
 <form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>" class="large">
 <div class="article smaller" id="bbsnot">正在载入讨论区备忘录...</div>
-<iframe src="bbsnot.php?board=<?php echo $board; ?>" width=0 height=0 style="hidden"></iframe>
+<iframe src="bbsnot.php?board=<?php echo $board; ?>" width=0 height=0 style="display:none;"></iframe>
 <fieldset><legend><?php echo $reid ? "回复文章" : "发表文章"; ?></legend>
 发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 <?php

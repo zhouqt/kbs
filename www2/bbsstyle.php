@@ -41,7 +41,7 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
-		var stylenum = (c & 0xF80) >>7;
+		var stylenum = (c & 0xF80) >> 7;
 		getObj('style'+stylenum).checked = true;
 	});
 	function KCNymsw() {
@@ -49,6 +49,7 @@
 	}
 	function pvStyle(cssID) {
 		saveParaCookie(cssID << 7, 0xF80);
+		resetCss();
 		var ff = top.window["menu"]; if (ff) ff.resetCss();
 		ff = top.window["toogle"]; if (ff) ff.resetCss();
 		ff = top.window["f4"]; if (ff) ff.resetCss();
