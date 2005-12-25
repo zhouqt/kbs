@@ -857,7 +857,10 @@ function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 	this.num = num;
 	this.baseurl = "bbscon.php?bid=" + bid + "&id=" + id;
 
-	if (parent && (divArtCon = parent.document.getElementById("art" + id))) addBootFn(writeArticle);
+	if (parent && (divArtCon = parent.document.getElementById("art" + id))) {
+		addBootFn(writeArticle);
+		return;
+	}
 
 	if (!isLogin() && this.ftype) {
 		this.headers = "";
@@ -882,12 +885,14 @@ function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 	this.headers = ret;
 }
 conWriter.prototype.h = function(isTop) {
+	if (divArtCon) return;
 	var ret = this.headers;
 	if (!isTop) ret = '</div>' + ret;
 	else ret += '<div class="article">';
 	document.write(ret);
 };
 conWriter.prototype.t = function() {
+	if (divArtCon) return;
 	var PAGE_SIZE = 20;
 	var url = "bbsdoc.php?board=" + this.board;
 	var zd = false;
