@@ -156,7 +156,7 @@ typedef int (*read_func)(int fd, void *buf, size_t count);
     void save_maxuser(ARG_VOID);
     void detach_publicshm(ARG_VOID);
     int multilogin_user(struct userec *user, int usernum, int mode);
-    time_t get_exit_time(char *id, char *exittime);
+    time_t get_exit_time(struct userec *lookupuser, char *exittime);
     int dashf(char *fname);
     int dashd(char *fname);
     int seek_in_file(const char* filename, const char* seekstr);

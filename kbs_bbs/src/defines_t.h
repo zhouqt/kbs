@@ -269,7 +269,6 @@ int do_exec(char *com, char *wd);
 int showperminfo(struct _select_def *conf, int i);
 unsigned int setperms(unsigned int pbits, unsigned int basic, char *prompt, int numbers, int (*show) (struct _select_def *, int), int (*select) (struct _select_def *));
 int fhselect(struct _select_def* conf,struct fileheader *fh,long flag);
-void record_exit_time();
 
 /* boards_t.c */
 int show_boardinfo(const char *bname);

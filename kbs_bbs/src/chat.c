@@ -993,7 +993,7 @@ static void query_user(chatcontext * pthis, const char *userid)
                 (lookupuser->lasthost[0] == '\0' /* || DEFINE(getCurrentUser(),DEF_HIDEIP) */ ? "(不详)" : SHOW_USERIP(lookupuser, lookupuser->lasthost)), inbuf);    /* Haohmaru.99.12.18 */
         printchatline(pthis, genbuf);
         /* 获得离线时间 Luzi 1998/10/23 */
-        exit_time = get_exit_time(lookupuser->userid, genbuf);
+        exit_time = get_exit_time(lookupuser, genbuf);
         if ((newline = strchr(genbuf, '\n')) != NULL)
             *newline = '\0';
         if (exit_time > lookupuser->lastlogin)

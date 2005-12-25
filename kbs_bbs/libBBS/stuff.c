@@ -1113,30 +1113,35 @@ char filename[STRLEN], str[STRLEN];
     return (rc == EOF ? -1 : 1);
 }
 
-time_t get_exit_time(char *id, char *exittime)
-{                               /* 获取离线时间，id:用户ID,
+time_t get_exit_time(struct userec *lookupuser, char *exittime)
+{                               /* 获取离线时间，lookupuser:用户,
                                  * exittime:保存返回的时间，结束符为\n
                                  * 建议定义为 char exittime[40]
                                  * Luzi 1998/10/23 */
+
+    time_t now = 1;             /* if fopen failed return 1 -- Leeward */
+
     /*
      * Leeward 98.10.26 add return value: time_t 
      */
-    char path[80];
 
-    FILE *fp;
-    time_t now = 1;             /* if fopen failed return 1 -- Leeward */
-    struct userec *lookupuser;
+#if 0
+    if (lookupuser->exittime == -1) {
+        char path[80];
 
-    exittime[0] = '\n';
-    if ((getuser(id, &lookupuser) == 0) || (lookupuser->exittime == -1)) {
-        sethomefile(path, id, "exit");
+        FILE *fp;
+        exittime[0] = '\0';
+        sethomefile(path, lookupuser->userid, "exit");
         fp = fopen(path, "rb");
         if (fp != NULL) {
             fread(&now, sizeof(time_t), 1, fp);
             fclose(fp);
             strcpy(exittime, ctime(&now));
         }
-    } else {
+    }
+    else
+#endif
+    {
         strcpy(exittime, ctime(&lookupuser->exittime));
         now = lookupuser->exittime;
     }

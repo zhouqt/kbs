@@ -390,7 +390,7 @@ int t_query(char* q_id)
     /*
      * 获得离线时间 Luzi 1998/10/23 
      */
-    exit_time = get_exit_time(lookupuser->userid, exittime);
+    exit_time = get_exit_time(lookupuser, exittime);
     if ((newline = strchr(exittime, '\n')) != NULL)
         *newline = '\0';
     if (exit_time <= lookupuser->lastlogin) {
