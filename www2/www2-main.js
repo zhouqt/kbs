@@ -747,8 +747,8 @@ function mansubmit(flag) {
 	document.manage.act.value = flag;
 	document.manage.submit();
 }
-docWriter.prototype.t = function(sfav,rss,related) {
-	var i,ret = '';
+docWriter.prototype.t = function() {
+	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
 		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6};
@@ -805,8 +805,8 @@ docWriter.prototype.t = function(sfav,rss,related) {
 	document.write(ret);
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board);
-
-	ret = '<div class="oper smaller">';
+docWriter.prototype.f = function(sfav,rss,related) {
+	var i,ret = '<div class="oper smaller">';
 	if (this.ftype != dir_modes["ORIGIN"]) {
 		ret += '[<a href="bbsdoc.php?board=' + this.board + '&ftype=' + dir_modes["ORIGIN"] + '">同主题模式</a>] ';
     } else if (this.ftype) {
