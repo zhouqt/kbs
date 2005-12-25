@@ -128,7 +128,7 @@ c.t('<?php echo addslashes(bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php?board
 	if( defined("SITE_SMTH") ) {
 		include ("boardrelated.inc.php");
 		if (isset($boardrelated[$board])) {
-			echo $boardrelated[$boardname];
+			echo $boardrelated[$board];
 			$s = FALSE;
 		}
 	}
