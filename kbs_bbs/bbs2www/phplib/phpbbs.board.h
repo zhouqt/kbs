@@ -6,10 +6,16 @@ PHP_FUNCTION(bbs_getboards);
 
 PHP_FUNCTION(bbs_checkorigin);
 PHP_FUNCTION(bbs_checkmark);
-PHP_FUNCTION(bbs_checkreadperm);
 PHP_FUNCTION(bbs_getbname);
 PHP_FUNCTION(bbs_getbdes);
+PHP_FUNCTION(bbs_checkreadperm);
 PHP_FUNCTION(bbs_checkpostperm);
+PHP_FUNCTION(bbs_normalboard);
+PHP_FUNCTION(bbs_searchboard);
+
+PHP_FUNCTION(bbs_useronboard);
+PHP_FUNCTION(bbs_set_onboard);
+
 
 /* favboard operation. by caltary  */
 PHP_FUNCTION(bbs_load_favboard);
@@ -28,10 +34,14 @@ PHP_FUNCTION(bbs_del_favboarddir);
     PHP_FE(bbs_getboards, NULL) \
     PHP_FE(bbs_checkorigin, NULL) \
     PHP_FE(bbs_checkmark, NULL) \
-    PHP_FE(bbs_checkreadperm, NULL) \
     PHP_FE(bbs_getbname, NULL) \
     PHP_FE(bbs_getbdes, NULL) \
+    PHP_FE(bbs_checkreadperm, NULL) \
     PHP_FE(bbs_checkpostperm, NULL) \
+    PHP_FE(bbs_normalboard,NULL) \
+    PHP_FE(bbs_searchboard,third_arg_force_ref_001) \
+    PHP_FE(bbs_useronboard,two_arg_force_ref_01) \
+    PHP_FE(bbs_set_onboard,NULL) \
     PHP_FE(bbs_load_favboard,NULL) \
     PHP_FE(bbs_fav_boards,NULL) \
     PHP_FE(bbs_is_favboard,NULL) \

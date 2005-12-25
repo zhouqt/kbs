@@ -136,16 +136,11 @@ static PHP_FUNCTION(bbs_get_filename_from_num);
 static PHP_FUNCTION(bbs_get_threads_from_id);
 static PHP_FUNCTION(bbs_get_threads_from_gid);
 static PHP_FUNCTION(bbs_countarticles);
-static PHP_FUNCTION(bbs_set_onboard);
 static PHP_FUNCTION(bbs_docross);
 static PHP_FUNCTION(bbs_docommend);
 static PHP_FUNCTION(bbs_bmmanage);
 
 static PHP_FUNCTION(bbs_delfile);
-static PHP_FUNCTION(bbs_normalboard);
-static PHP_FUNCTION(bbs_searchboard);
-static PHP_FUNCTION(bbs_useronboard);
-
 
 
 static PHP_FUNCTION(bbs_caneditfile);
@@ -233,10 +228,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_recalc_sig,NULL)
     PHP_FE(bbs_modify_nick,NULL)
     PHP_FE(bbs_delfile,NULL)
-    PHP_FE(bbs_normalboard,NULL)
-    PHP_FE(bbs_searchboard,third_arg_force_ref_001)
-    PHP_FE(bbs_useronboard,two_arg_force_ref_01)
-    PHP_FE(bbs_set_onboard,NULL)
     PHP_FE(bbs_docross,NULL)
     PHP_FE(bbs_docommend,NULL)
     PHP_FE(bbs_bmmanage,NULL)
@@ -2811,207 +2802,6 @@ static PHP_FUNCTION(bbs_delfile)
 }
 
 
-
-/**
- * check a board is normal board
- * prototype:
- * int bbs_normal(char* boardname);
- *
- *  @return the result
- *  	1 -- normal board
- *  	0 -- no
- *  @author kcn
- */
-static PHP_FUNCTION(bbs_normalboard)
-{
-    int ac = ZEND_NUM_ARGS();
-    char* boardname;
-    int name_len;
-
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &boardname, &name_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-	RETURN_LONG(normal_board(boardname));
-}
-
-/**
- * search board by keyword
- * function bbs_searchboard(string keyword,int exact,array boards)
- * @author: windinsn May 17,2004
- * return true/false
- */
-static PHP_FUNCTION(bbs_searchboard)
-{
-    char *keyword;
-    int keyword_len;
-    long exact;
-    zval *element,*boards;
-    boardheader_t *bc;
-    int i;
-    char *board1,*title;
-
-    int ac = ZEND_NUM_ARGS();
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sla", &keyword, &keyword_len, &exact ,&boards) == FAILURE)
-		WRONG_PARAM_COUNT;
-	
-	if (!*keyword)
-        RETURN_FALSE;
-    
-    if (array_init(boards) != SUCCESS)
-        RETURN_FALSE;
-    
-    bc = bcache;
-    if (exact) { //精确查找
-        for (i = 0; i < MAXBOARD; i++) {
-            board1 = bc[i].filename;
-            title = bc[i].title + 13;
-            if (!check_read_perm(getCurrentUser(), &bc[i]))
-                 continue;
-            if (!strcasecmp(keyword, board1)) {
-                MAKE_STD_ZVAL(element);
-                array_init(element);
-                add_assoc_string(element,"NAME",board1,1);
-                add_assoc_string(element,"DESC",bc[i].des,1);
-                add_assoc_string(element,"TITLE",title,1);
-                zend_hash_index_update(Z_ARRVAL_P(boards),0,(void*) &element, sizeof(zval*), NULL);
-                RETURN_TRUE;
-            }
-        }
-        RETURN_FALSE;
-    }
-    else { //模糊查找
-        int total = 0;
-        for (i = 0; i < MAXBOARD; i++) {
-            board1 = bc[i].filename;
-            title = bc[i].title + 13;
-            if (!check_read_perm(getCurrentUser(), &bc[i]))
-                continue;
-            if (strcasestr(board1,keyword) || strcasestr(title,keyword) || strcasestr(bc[i].des,keyword)) {
-                MAKE_STD_ZVAL(element);
-                array_init(element);
-                add_assoc_string(element,"NAME",board1,1);
-                add_assoc_string(element,"DESC",bc[i].des,1);
-                add_assoc_string(element,"TITLE",title,1);
-                zend_hash_index_update(Z_ARRVAL_P(boards),total,(void*) &element, sizeof(zval*), NULL);
-                total ++;
-            }
-        }
-        
-        RETURN_LONG(total);
-   }
-}
-
-/**
- * int bbs_useronboard(string baord,array users)
- * show users on board
- * $users = array(
- *              string 'USERID'  
- *              string 'HOST'
- *              );
- * return user numbers , less than 0 when failed
- * @author: windinsn
- *
- */
-static PHP_FUNCTION(bbs_useronboard)
-{
-    char *board;
-    int   board_len;
-    zval *element,*users;
-    int bid,i,j;
-    long seecloak=0;
-    
-    int ac = ZEND_NUM_ARGS();
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sz", &board, &board_len, &users) == FAILURE) {
-        if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "szl", &board, &board_len, &users, &seecloak) == FAILURE) {
-            WRONG_PARAM_COUNT;
-        }
-	}
-
-    
-    bid = getbnum(board);
-    if (bid == 0)
-        RETURN_LONG(-1);
-#ifndef ALLOW_PUBLIC_USERONBOARD
-    if(! HAS_PERM(getCurrentUser(), PERM_SYSOP))
-		RETURN_LONG(-1);
-    seecloak = 1;
-#endif
-    if (array_init(users) != SUCCESS)
-        RETURN_LONG(-1);
-    
-    j = 0;  
-	for (i=0;i<USHM_SIZE;i++) {
-        struct user_info* ui;
-        ui=get_utmpent(i+1);
-        if (ui->active&&ui->currentboard) {
-            if (!seecloak && ui->invisible==1) continue;
-            if (ui->currentboard == bid) {
-                MAKE_STD_ZVAL(element);
-                array_init(element);
-                add_assoc_string(element,"USERID",ui->userid,1);
-                add_assoc_string(element,"HOST",ui->from,1);
-                zend_hash_index_update(Z_ARRVAL_P(users),j,(void*) &element, sizeof(zval*), NULL);
-                j ++;
-            }
-        }
-    }
-    
-    resolve_guest_table();
-    for (i=0;i<MAX_WWW_GUEST;i++) {
-        if (wwwguest_shm->use_map[i / 32] & (1 << (i % 32)))
-            if (wwwguest_shm->guest_entry[i].currentboard) {
-                if (wwwguest_shm->guest_entry[i].currentboard == bid) {
-                    MAKE_STD_ZVAL(element);
-                    array_init(element);
-                    add_assoc_string(element,"USERID","_wwwguest",1);
-                    add_assoc_string(element,"HOST",inet_ntoa(wwwguest_shm->guest_entry[i].fromip),1);
-                    zend_hash_index_update(Z_ARRVAL_P(users),j,(void*) &element, sizeof(zval*), NULL);
-                    j ++;
-                }
-            }
-    }
-    
-    RETURN_LONG(j);  
-}
-
-
-
-
-static PHP_FUNCTION(bbs_set_onboard)
-{
-	int ac = ZEND_NUM_ARGS();
-	long boardnum,count;
-	int oldboard;
-    struct WWW_GUEST_S *guestinfo = NULL;
-
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &boardnum, &count) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-    if (getCurrentUser()==NULL) RETURN_FALSE;
-    if (getSession()->currentuinfo==NULL) RETURN_FALSE;
-    if (!strcmp(getCurrentUser()->userid,"guest")) {
-        guestinfo=www_get_guest_entry(getSession()->utmpent);
-        oldboard=guestinfo->currentboard;
-    } else
-        oldboard=getSession()->currentuinfo->currentboard;
-    if (oldboard)
-        board_setcurrentuser(oldboard, -1);
-    
-    board_setcurrentuser(boardnum, count);
-    if (!strcmp(getCurrentUser()->userid,"guest")) {
-        if (count>0)
-            guestinfo->currentboard = boardnum;
-        else
-            guestinfo->currentboard = 0;
-    }
-    else {
-        if (count>0)
-            getSession()->currentuinfo->currentboard = boardnum;
-        else
-            getSession()->currentuinfo->currentboard = 0;
-    }
-    RETURN_TRUE;
-}
 
 
 
