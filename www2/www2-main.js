@@ -805,6 +805,7 @@ docWriter.prototype.t = function() {
 	document.write(ret);
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board);
+};
 docWriter.prototype.f = function(sfav,rss,related) {
 	var i,ret = '<div class="oper smaller">';
 	if (this.ftype != dir_modes["ORIGIN"]) {
