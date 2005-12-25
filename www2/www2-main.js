@@ -621,6 +621,7 @@ function dir_name(ftype) {
 function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
+	this.bid = bid;
 	this.start = start;
 	this.page = page;
 	this.total = total;
@@ -746,8 +747,8 @@ function mansubmit(flag) {
 	document.manage.act.value = flag;
 	document.manage.submit();
 }
-docWriter.prototype.t = function() {
-	var ret = '';
+docWriter.prototype.t = function(sfav,rss,related) {
+	var i,ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
 		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6};
@@ -804,6 +805,42 @@ docWriter.prototype.t = function() {
 	document.write(ret);
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board);
+
+	ret = '<div class="oper smaller">';
+	if (this.ftype != dir_modes["ORIGIN"]) {
+		ret += '[<a href="bbsdoc.php?board=' + this.board + '&ftype=' + dir_modes["ORIGIN"] + '">同主题模式</a>] ';
+    } else if (this.ftype) {
+		ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
+	}
+	ret += '[<a href="bbsnot.php?board=' + this.board + '">进版画面</a>] ';
+	ret += '[<a href="bbsbfind.php?board=' + this.board + '" onclick="return showFindBox(\'' + this.board + '\')">版内查询</a>] ';
+	ret += '[<a href="bbsshowvote.php?board=' + this.board + '">版内投票</a>] ';
+	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
+	ret += '[' + sfav + '] ';
+	if (rss) {
+		ret += '<a href="' + rss + '" title="RSS"><img src="images/xml.gif"/></a>';
+	}
+	if (related) {
+		ret += '<br/>来这个版的人常去的其他版面：';
+		for (i=0;i<related.length;i++) {
+			ret += '[<a class="b3" href="bbsdoc.php?board=' + related[i] + '"><font class="b3">' + related[i] + '</font></a>]';
+		}
+	}
+	if (isBM(this.bid)) {
+		ret += '<br/>管理链接：';
+		ret += '[<a href="bbsdeny.php?board=' + this.board + '">封禁名单</a>] ';
+		ret += '[<a href="bbsmnote.php?board=' + this.board + '">进版画面</a>] ';
+		ret += '[<a href="bbsmvote.php?board=' + this.board + '">管理投票</a>] ';
+		if (this.man != 1) {
+			ret += '[<a href="bbsdoc.php?manage=1&board=' + this.board + '">管理模式</a>] ';
+		}
+		if (this.man) {
+			ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
+		}
+		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>]';
+	}
+	ret += '</div>';
+	document.write(ret);
 };
 
 
@@ -984,12 +1021,3 @@ tabWriter.prototype.r = function() {
 tabWriter.prototype.t = function() {
 	document.write("</tbody></table>");
 };
-
-
-function writeRelated(bs) {
-	var ret = '<br/>来这个版的人常去的其他版面：';
-	for(var i=0;i<bs.length;i++) {
-		ret += '[<a class="b3" href="bbsdoc.php?board=' + bs[i] + '"><font class="b3">' + bs[i] + '</font></a>]';
-	}
-	document.write(ret);
-}

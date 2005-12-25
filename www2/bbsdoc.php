@@ -62,71 +62,13 @@ function do_manage_function($board) {
 }
 
 
-function bbs_board_foot($brdarr, $managemode, $ftype, $isnormalboard) {
-	global $currentuser, $dir_modes;
-	$boardname = $brdarr["NAME"];
-	$brd_encode = urlencode($brdarr["NAME"]);
-	$usernum = $currentuser["index"];
-	$brdnum  = $brdarr["NUM"];
-?>
-<div class="oper smaller">
-<?php
-	if ($ftype != $dir_modes["ORIGIN"]) {
-?>
-[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>&ftype=<?php echo $dir_modes["ORIGIN"]; ?>">同主题模式</a>]
-<?php		
-    } else if ($ftype) {
-?>
-[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">普通模式</a>]
-<?php
-	}
-?>
-[<a href="bbsnot.php?board=<?php echo $brd_encode; ?>">进版画面</a>]
-[<a href="bbsbfind.php?board=<?php echo $brd_encode; ?>" onclick="return showFindBox('<?php echo $brd_encode; ?>')">版内查询</a>]
-[<a href="bbsshowvote.php?board=<?php echo $brd_encode; ?>">版内投票</a>]
-[<a href="bbsshowtmpl.php?board=<?php echo $brd_encode; ?>">发文模板</a>]
-[<?php bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php?board='.$brdarr['NAME']); ?>]
-<?php
-	$rsslink = $isnormalboard ? bbs_rss_link($brd_encode, $ftype) : "";
-	if ($rsslink) {
-?>
-<a href='<?php echo $rsslink; ?>' title='RSS'><img src='images/xml.gif'/></a>
-<?php
-	}
-	if( defined("SITE_SMTH") ) {
-		include ("boardrelated.inc.php");
-		if (isset($boardrelated[$boardname])) {
-			echo "<script>writeRelated(" . $boardrelated[$boardname] . ");</script>";
-		}
-	}
-	if (bbs_is_bm($brdnum, $usernum)) {
-?>
-<br/>管理链接：
-[<a href="bbsdeny.php?board=<?php echo $brd_encode; ?>">封禁名单</a>] 
-[<a href="bbsmnote.php?board=<?php echo $brd_encode; ?>">进版画面</a>]
-[<a href="bbsmvote.php?board=<?php echo $brd_encode;?>">管理投票</a>]
-<?php
-		if (!$managemode) {
-?>
-[<a href="bbsdoc.php?manage=1&board=<?php echo $brd_encode; ?>">管理模式</a>]
-<?php
-		} else {
-?>
-[<a href="bbsdoc.php?&board=<?php echo $brd_encode; ?>">普通模式</a>]
-[<a href="bbsclear.php?board=<?php echo $brd_encode; ?>">清除未读</a>]
-<?php
-		}
-	}
-?>
-</div>
-<?php
-}
 
 
-function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$total,$showHot)
+function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$total,$showHot,$isnormalboard)
 {
 	global $brdnum, $usernum, $dir_modes;
-	$ann_path = bbs_getannpath($brdarr["NAME"]);
+	$board = $brdarr["NAME"];
+	$ann_path = bbs_getannpath($board);
 	if ($ann_path != FALSE)	{
 		if (!strncmp($ann_path,"0Announce/",10))
 			$ann_path = substr($ann_path,9);
@@ -141,7 +83,7 @@ function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$tot
 	}
 ?>
 <script>
-var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $brdarr["BID"]; ?>,<?php echo $start;
+var c = new docWriter('<?php echo addslashes($board); ?>',<?php echo $brdarr["BID"]; ?>,<?php echo $start;
 ?>,<?php echo $mancode; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
 ?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>);
 <?php
@@ -179,7 +121,19 @@ c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo
 <?php
 	}
 ?>
-c.t();
+c.t('<?php echo addslashes(bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php?board='.$brdarr['NAME'])); ?>','<?php
+	echo $isnormalboard ? bbs_rss_link(urlencode($board), $ftype) : "";
+?>',<?php
+	$s = TRUE;
+	if( defined("SITE_SMTH") ) {
+		include ("boardrelated.inc.php");
+		if (isset($boardrelated[$board])) {
+			echo $boardrelated[$boardname];
+			$s = FALSE;
+		}
+	}
+	if ($s) echo "0";
+?>);
 </script>
 <?php
 }
@@ -217,8 +171,6 @@ if ($managemode) {
 	if (!$isbm)
 		html_error_quit("你不是版主");
 }
-
-$brd_encode = urlencode($brdarr["NAME"]);
 
 if($managemode)
 {
@@ -329,10 +281,7 @@ if ($articles == FALSE){
 		
 bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard);
 display_articles($brdarr, $articles, $start, $ftype, $managemode, $page, $total,
-	(defined('BBS_NEWPOSTSTAT') && !$managemode && $isnormalboard && !$ftype) );
+	(defined('BBS_NEWPOSTSTAT') && !$managemode && $isnormalboard && !$ftype), $isnormalboard );
 
-if (defined("SITE_SMTH")) { @include("tshirtlink.php"); }
-
-bbs_board_foot($brdarr, $managemode, $ftype, $isnormalboard);
 page_footer(/*$managemode ? FALSE : TRUE */);
 ?>
