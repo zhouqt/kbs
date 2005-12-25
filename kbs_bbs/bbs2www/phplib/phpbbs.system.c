@@ -419,3 +419,20 @@ PHP_FUNCTION(bbs_setmailfile)
     RETURN_STRING(buf, 1);
 }
 
+
+PHP_FUNCTION(bbs_checkbadword)
+{
+    char *str;
+    int  str_len;
+    
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &str, &str_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+#ifdef FILTER
+	if (check_badword_str(str, strlen(str),getSession()))
+		RETURN_TRUE;
+#endif    
+    RETURN_FALSE;
+}
+

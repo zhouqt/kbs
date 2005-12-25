@@ -125,7 +125,6 @@ static PHP_FUNCTION(bbs_searchtitle);
 static PHP_FUNCTION(bbs_search_articles);
 static PHP_FUNCTION(bbs_filteruploadfilename);
 static PHP_FUNCTION(bbs_edittitle);
-static PHP_FUNCTION(bbs_checkbadword);
 static PHP_FUNCTION(bbs_brcaddread);
 static PHP_FUNCTION(bbs_brcclear);
 static PHP_FUNCTION(bbs_getarticles);
@@ -207,7 +206,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_brcclear, NULL)
     PHP_FE(bbs_filteruploadfilename,NULL)
     PHP_FE(bbs_edittitle, NULL)
-    PHP_FE(bbs_checkbadword, NULL)
     PHP_FE(bbs_getarticles, NULL)
     PHP_FE(bbs_getfriends, NULL)
     PHP_FE(bbs_countfriends, NULL)
@@ -1927,22 +1925,6 @@ static PHP_FUNCTION(bbs_edittitle)
 	RETURN_LONG(0);
 }
 
-static PHP_FUNCTION(bbs_checkbadword)
-{
-    char *str;
-    int  str_len;
-    
-    int ac = ZEND_NUM_ARGS();
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &str, &str_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-#ifdef FILTER
-	if (check_badword_str(str, strlen(str),getSession()))
-		RETURN_TRUE;
-#endif    
-    RETURN_FALSE;
-}
-
 
 /*  function bbs_updatearticle(string boardName, string filename ,string text)  
  *  更新编辑文章
@@ -2322,6 +2304,7 @@ PHP_MINFO_FUNCTION(smth_bbs)
     php_info_print_table_header(2, "smth_bbs support", "enabled");
     php_info_print_table_end();
 }
+
 /**
  * Function: post a new mail
  *  rototype:
@@ -2332,11 +2315,11 @@ PHP_MINFO_FUNCTION(smth_bbs)
  *		<0 error
  *  @author roy
  */
- 
 static PHP_FUNCTION(bbs_postmail){
-	char* targetID, *title, *content;
+	char *recvID, *title, *content;
+	char targetID[IDLEN+1];
 	int  idLen, tLen,cLen;
-    long backup,sig;
+    long backup,sig,renum;
 	int ac = ZEND_NUM_ARGS();
 	char mail_title[80];
     FILE *fp;
@@ -2344,12 +2327,89 @@ static PHP_FUNCTION(bbs_postmail){
     struct fileheader header;
     struct stat st;
     struct userec *touser;      /*peregrine for updating used space */
+	char *refname,*dirfname;
+	int find=-1,fhcount=0,refname_len,dirfname_len;
 
-    if (ac != 5 || zend_parse_parameters(5 TSRMLS_CC, "ss/s/ll", &targetID, &idLen,&title,&tLen,&content,&cLen,&sig,&backup) == FAILURE)
+    if(ac == 5)		/* use this to send a new mail */
+	{
+		if(zend_parse_parameters(5 TSRMLS_CC, "ss/s/ll", &recvID, &idLen,&title,&tLen,&content,&cLen,&sig,&backup) == FAILURE)
+		{
+			WRONG_PARAM_COUNT;
+		}
+		strncpy(targetID, recvID, sizeof(targetID));
+		targetID[sizeof(targetID)-1] = '\0';
+	}
+    else if(ac == 7)		/* use this to reply a mail */
+	{
+		if(zend_parse_parameters(7 TSRMLS_CC, "ssls/s/ll", &dirfname, &dirfname_len, &refname, &refname_len, &renum, &title, &tLen, &content, &cLen, &sig, &backup) == FAILURE)
+		{
+			WRONG_PARAM_COUNT;
+		}
+	}
+	else
 	{
 		WRONG_PARAM_COUNT;
 	}
-    
+
+	/* read receiver's id from mail when replying, by pig2532 */
+	if(ac == 7)
+	{
+		if(stat(dirfname, &st)==-1)
+        {
+            RETURN_LONG(-1);    /* error reading stat */
+        }
+        if((renum<0)||(renum>=(st.st_size/sizeof(fileheader))))
+        {
+            RETURN_LONG(-8);    /* no such mail to reply */
+        }
+		if((fp = fopen(dirfname, "r+")) == NULL)
+		{
+			RETURN_LONG(-1);		/* error openning .DIR */
+		}
+		fseek(fp, sizeof(header) * renum, SEEK_SET);
+		if(fread(&header, sizeof(header), 1, fp) > 0 )	/* read fileheader by renum */
+		{
+			if(strcmp(header.filename, refname) == 0)
+			{
+				find = renum;
+			}
+		}
+		if(find == -1)
+		{
+			rewind(fp);
+			while(true)		/* find the fileheader */
+			{
+				if(fread(&header, sizeof(header), 1, fp) <= 0)
+				{
+					break;
+				}
+				if(strcmp(header.filename, refname) == 0)
+				{
+					find = fhcount;
+					break;
+				}
+				fhcount++;
+			}
+		}
+		if(find == -1)
+		{	/* file not found */
+			fclose(fp);
+			RETURN_LONG(-8);
+		}
+		else
+		{
+			strncpy(targetID, header.owner, sizeof(targetID));
+			targetID[sizeof(targetID)-1] = '\0';
+			if(!(header.accessed[0] & FILE_REPLIED))
+			{	/* set the replied flag */
+				header.accessed[0] |= FILE_REPLIED;
+				fseek(fp, sizeof(header) * find, SEEK_SET);
+				fwrite(&header, sizeof(header), 1, fp);
+			}
+			fclose(fp);
+		}
+	}
+
     getuser(targetID, &touser);
     if (touser == NULL) 
 		RETURN_LONG(-100);//can't find user
@@ -2362,7 +2422,8 @@ static PHP_FUNCTION(bbs_postmail){
         RETURN_LONG(-4);
     }
 
-	strcpy(targetID, touser->userid);
+	strncpy(targetID, touser->userid, sizeof(targetID));
+	targetID[sizeof(targetID)-1] = '\0';
     filter_control_char(title);
 	if (title[0] == 0)
         strcpy(mail_title,"没主题");
@@ -2441,7 +2502,6 @@ static PHP_FUNCTION(bbs_postmail){
     }
 	RETURN_LONG(0);
 }
-
 
 static PHP_FUNCTION(bbs_modify_nick)
 {
