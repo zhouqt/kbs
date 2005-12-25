@@ -15,8 +15,12 @@
 	if (bbs_checkreadperm($usernum,$brdnum)==0)
 		html_error_quit("错误的讨论区");
 	$top_file= bbs_get_vote_filename($brdarr["NAME"], "notes");
-	if (cache_header("public",@filemtime($top_file),1800))
-		return;
+	$isnormalboard = bbs_normalboard($board);
+	if ($isnormalboard) {
+		$mt = file_exists($top_file) ? @filemtime($top_file) : time();
+		if (cache_header("public",$mt,1800))
+			return;
+	}
 
 	bbs_board_nav_header($brdarr, "备忘录");
 	$brd_encode = urlencode($brdarr["NAME"]);
@@ -27,11 +31,16 @@ function writeNote()
 {
 	var bbsnote,notecontent,divbbsnot;
 <?php
-	if (!file_exists($top_file)) {
+	$s = false;
+	if (file_exists($top_file)) {
+		$s = bbs_printansifile($top_file);
+	}
+	if (!is_string($s))
+	{
 		echo "\tnotecontent='".addslashes("<br/><br/><br/>&nbsp; &nbsp; &nbsp; &nbsp; 此讨论区尚无「备忘录」。")."';\n";
 		echo "\tbbsnote='".addslashes("<div class=\"green\">发文注意事项: <br/>发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。</div>")."';\n";
 	} else {
-		echo "\tbbsnote=notecontent='".addslashes(bbs_printansifile($top_file))."';\n";
+		echo "\tbbsnote=notecontent='".addslashes($s)."';\n";
 	}
 ?>
 	if (parent && (divbbsnot = parent.document.getElementById('bbsnot')))

@@ -32,13 +32,14 @@ else
 </pre>
 <br/><span class="c36">
 <?php
-		$plansfile = "home/".strtoupper($lookupuser["userid"]{0})."/".$lookupuser["userid"]."/plans";
+		$plansfile = bbs_sethomefile($lookupuser["userid"], "plans");
 
 		if( file_exists( $plansfile ) ){
 ?>
 个人说明档如下: </span><br/>
 <?php
-			echo bbs_printansifile("home/".strtoupper($lookupuser["userid"]{0})."/".$lookupuser["userid"]."/plans");
+			$s = bbs_printansifile($plansfile);
+			if (is_string($s)) echo $s;
 		}else{
 ?>
 没有个人说明档</span>
