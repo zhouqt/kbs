@@ -138,6 +138,7 @@ fieldset legend {
 .flimg {
 	float: left;
 	width: 72px; /* IE5 for Mac workaround */
+	height: 21px;
 	margin: 0 0.5em 0 0;
 }
 .clear {
