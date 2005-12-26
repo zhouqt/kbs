@@ -193,7 +193,7 @@ function atomic_board() {
 		}
 		$html .= sprintf("%-12.12s ", $article["OWNER"]);
 		$html .= strftime("%b %e  ", $article["POSTTIME"]);
-		$html .= "<a href='?act=article&board=".$atomic_board."&id=".$article["ID"]."'>".htmlspecialchars($title)." </a>\n";
+		$html .= "<a href='?act=article&board=".$atomic_board."&id=".$article["ID"]."'>".htmlspecialchars($title)." </a><br/>";
 		$i++;
 	}
 	$html .= "</pre>";
