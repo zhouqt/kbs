@@ -3,9 +3,9 @@
 
 struct __buffered_output;
 
-typedef int (*output_handler_t)(char *buf, size_t buflen, void *arg);
-typedef void (*flush_handler_t)(struct __buffered_output *output);
-typedef int (*output_write_func_t)(const char *str, size_t len);
+//typedef int (*output_handler_t)(char *buf, size_t buflen, void *arg);
+//typedef void (*flush_handler_t)(struct __buffered_output *output);
+typedef int (*output_write_func_t)(const char *str, unsigned int len);
 
 typedef struct __buffered_output
 {
@@ -16,6 +16,12 @@ typedef struct __buffered_output
 	flush_handler_t flush;*/
 	output_write_func_t write;
 } buffered_output_t;
+
+
+buffered_output_t* alloc_output(size_t buflen);
+output_write_func_t override_default_write(buffered_output_t *out, output_write_func_t write_func);
+void free_output(buffered_output_t *out);
+
 
 #define BUFFERED_FLUSH(o) \
 { \

@@ -699,8 +699,6 @@ time_t calc_calltime(int mode);
 char *encode_xml(char *buf, const char *str, size_t buflen);
 char *string_copy(char *buf, const char *str, size_t * buflen);
 
-/* output.c */
-buffered_output_t* alloc_output(size_t buflen);
 
 #ifdef SMS_SUPPORT
 int smsid2uid(char* smsid);

@@ -6,12 +6,6 @@
 #include "bbs.h"
 #include "bbslib.h"
 
-/* remember to remove these implicit declaration of function warnings!!! - atppp */
-output_write_func_t override_default_write(buffered_output_t *out, output_write_func_t write_func);
-void free_output(buffered_output_t *out);
-/* end atppp warnings */
-
-
 
 
 static int getattachtmppath(char *buf, size_t buf_len)
@@ -40,7 +34,7 @@ void reset_output_buffer() {
     output_buffer_len=0;
 }
 
-static void output_printf(const char* buf, size_t len)
+static void output_printf(const char* buf, uint len)
 {
 	int bufLen;
 	int n,newsize;
@@ -88,7 +82,7 @@ static int new_buffered_output(char *buf, size_t buflen, void *arg)
 }
 #endif
 
-static int new_write(const char *buf, size_t buflen)
+static int new_write(const char *buf, uint buflen)
 {
 	output_printf(buf, buflen);
 	return 0;
