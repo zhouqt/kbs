@@ -146,6 +146,7 @@ function atomic_board() {
 	}
 	else
 		$page = ($start + ARTCNT - 1) / ARTCNT;
+	settype($page, "integer");
 	$articles = bbs_getarticles($atomic_board, $start, ARTCNT, $ftype);
 	if ($articles == FALSE)
 		atomic_error("读取文章列表失败");
