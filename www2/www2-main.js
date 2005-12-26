@@ -509,11 +509,16 @@ function sizer(flag) {
 	}
 }
 
-var cssFilename = null;
+function getCssID() { return ((readParaCookie() & 0xF80) >> 7); }
+function replaceCssFile(file) {
+	var reg = /images\/([0-9]+)\//;
+	if (file.match(reg)) {
+		return file.replace(reg, 'images/'+getCssID()+'/');
+	} return false;
+}
+
 function getCssFile(file) {
-	var cssID = (readParaCookie() & 0xF80) >> 7;
-	cssFilename = file;
-	return ('images/' + cssID + '/' + file + '.css');
+	return ('images/' + getCssID() + '/' + file + '.css');
 }
 
 function writeCssFile(file) {
@@ -521,11 +526,19 @@ function writeCssFile(file) {
 }
 
 function resetCss() {
-	var i, t = document.getElementsByTagName("link");
+	var i, h, t = document.getElementsByTagName("img");
 	if (t) {
 		for(i = 0; i < t.length; i++) {
-			if (t[i].getAttribute("rel").indexOf("style") != -1 && t[i].getAttribute("href").indexOf("images/") != -1) {
-				t[i].setAttribute("href", getCssFile(cssFilename));
+			h = replaceCssFile(t[i].src);
+			if (h) t[i].src = h;
+		}		
+	}
+	t = document.getElementsByTagName("link");
+	if (t) {
+		for(i = 0; i < t.length; i++) {
+			h = replaceCssFile(t[i].getAttribute("href"));
+			if (h) {
+				t[i].setAttribute("href", h);
 				return;
 			}
 		}
@@ -547,10 +560,8 @@ function writeCssLeft() { writeCssFile('bbsleft'); }
 function writeCssMainpage() { writeCssFile('mainpage'); }
 
 
-function putImageCode(filename,otherparam)
-{
-	var cssID = (readParaCookie() & 0xF80) >> 7;
-	return('<img src="images/'+cssID+'/'+filename+'" '+otherparam+'>');
+function putImageCode(filename,otherparam) {
+	return('<img src="images/'+getCssID()+'/'+filename+'" '+otherparam+'>');
 }
 
 function putImage(filename,otherparam)
