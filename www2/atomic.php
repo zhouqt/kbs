@@ -45,6 +45,7 @@ function atomic_header() {
 		cache_header("nocache");
 	}
 	$atomic_header_shown = true;
+	header("Content-Type: text/html; charset=".(UTF8?"UTF-8":"gb2312"));
 	echo '<html><head><meta http-equiv="content-type" content="text/html; charset=' . (UTF8?"UTF-8":"gb2312") . '"></head><body>';
 }
 
@@ -55,8 +56,9 @@ function atomic_footer() {
 function atomic_error($msg) {
 	global $atomic_header_shown;
 	if (!$atomic_header_shown) atomic_header();
-	echo $msg . " [<a href='atomic.php'>回首页</a>]";
+	echo $msg . " <a href='atomic.php'>回首页</a>";
 	atomic_footer();
+	exit;
 }
 
 function atomic_get_input($str) {
@@ -67,7 +69,7 @@ function atomic_get_input($str) {
 function atomic_show_boardjump() {
 		echo <<<END
 <form action="" method="get"><input type="hidden" name="act" value="board"/>
-去讨论区: <input type="text" name="board" /> <input type="submit" value="Go"/>
+去讨论区: <input type="text" name="board" /> <input type="submit" value="Go"/> <a href='atomic.php'>回首页</a>
 </form>
 END;
 }
@@ -244,6 +246,7 @@ function atomic_article() {
 	if ($currentuser["userid"] != "guest") bbs_brcaddread($atomic_board, $article["ID"]);
 	atomic_header();
 	$html = '<p><a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
+	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).'">回版面</a> ';
 	$url .= $article["ID"];
 	$html .= '<a href="' . $url . '&p=p">上一篇</a> ';
 	$html .= '<a href="' . $url . '&p=n">下一篇</a> ';
