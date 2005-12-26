@@ -91,6 +91,7 @@ int mmap_more(char *fn, int quit, char *keystr, char *title);
 /* namecomplete.c */
 void AddNameList(char *name);
 void CreateNameList();
+void ApplyToNameList(int (*)(char*,void*),void*);
 int namecomplete(char *prompt, char *data);
 int usercomplete(char *prompt, char *data);
 

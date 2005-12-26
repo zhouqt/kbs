@@ -69,13 +69,14 @@ register struct word *list;
     return i;
 }
 
-void ApplyToNameList(fptr)
-int ((*fptr) ());
-{
+/* etnlegend, 2005.12.26, 遍历 NameList 时可传递附加参数 */
+void ApplyToNameList(int (*fptr)(char*,void*),void *arg){
     struct word *p;
-
-    for (p = toplev; p != NULL; p = p->next)
-        (*fptr) (p->word);
+    if(fptr){
+        for(p=toplev;p;p=p->next)
+            (*fptr)(p->word,arg);
+    }
+    return;
 }
 
 int chkstr(otag, tag, name)
