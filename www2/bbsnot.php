@@ -43,7 +43,7 @@ function writeNote()
 		echo "\tbbsnote=notecontent='".addslashes($s)."';\n";
 	}
 ?>
-	if (parent && (divbbsnot = parent.document.getElementById('bbsnot')))
+	if (parent != self && parent && (divbbsnot = parent.document.getElementById('bbsnot')))
 	{
 		divbbsnot.innerHTML = bbsnote;
 	}

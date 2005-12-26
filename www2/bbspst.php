@@ -13,6 +13,7 @@
 	$brdnum = bbs_getboard($board, $brdarr);
 	if ($brdnum == 0)
 		html_error_quit("错误的讨论区");
+	$board = $brdarr["NAME"];
 	bbs_set_onboard($brdnum,1);
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $brdnum) == 0)
@@ -35,7 +36,7 @@
 	$articles = array();
 	if ($reid > 0)
 	{
-		$num = bbs_get_records_from_id($brdarr["NAME"], $reid,$dir_modes["NORMAL"],$articles);
+		$num = bbs_get_records_from_id($board, $reid,$dir_modes["NORMAL"],$articles);
 		if ($num == 0)
 		{
 			html_error_quit("错误的 Re 文编号");
@@ -43,14 +44,24 @@
 		if ($articles[1]["FLAGS"][2] == 'y')
 			html_error_quit("该文不可回复!");
 	}
-	$brd_encode = urlencode($brdarr["NAME"]);
+	$brd_encode = urlencode($board);
 	
 	bbs_board_nav_header($brdarr, $reid ? "回复文章" : "发表文章");
 ?>
 <link rel="stylesheet" type="text/css" href="ansi.css"/>
 <form name="postform" method="post" action="bbssnd.php?board=<?php echo $brd_encode; ?>&reid=<?php echo $reid; ?>" class="large">
+<?php
+	if (bbs_normalboard($board)) {
+?>
 <div class="article smaller" id="bbsnot">正在载入讨论区备忘录...</div>
 <iframe src="bbsnot.php?board=<?php echo $board; ?>" width=0 height=0 style="display:none;"></iframe>
+<?php
+	} else {
+?>
+<div class="article smaller"><a href="bbsnot.php?board=<?php echo $brd_encode; ?>" target="_blank">查看讨论区备忘录</a></div>
+<?php
+	}
+?>
 <fieldset><legend><?php echo $reid ? "回复文章" : "发表文章"; ?></legend>
 发信人: <?php echo $currentuser["userid"]; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 <?php
