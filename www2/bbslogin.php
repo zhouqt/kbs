@@ -55,9 +55,12 @@ setcookie("UTMPUSERID",$data["userid"],0,"/");
 
 if (!defined("STATIC_FRAME")) $target = "frames.php";
 else $target = "frames.html";
-if ($mainurl!="")
-	header("Location: $target?mainurl=" . $mainurl);
-else
+if ($mainurl!="") {
+	if (!strcmp($mainurl,"atomic.php"))
+		header("Location: atomic.php");
+	else
+		header("Location: $target?mainurl=" . $mainurl);
+} else
 	header("Location: $target");
 
 

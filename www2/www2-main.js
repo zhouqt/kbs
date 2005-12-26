@@ -320,7 +320,7 @@ function getFindBox(board) { /* TODO: sfocus here might conflict with others */
 				<input type="checkbox" name="og" id="og"><label for="og" class="clickable">不含跟贴</label>\
 			</div>\
 		</fieldset>\
-		<div class="oper"><input type="submit" value="递交查询结果"/></div>\
+		<div class="oper"><input type="submit" value="查询"/></div>\
 	</form>';
 	return s;
 }
