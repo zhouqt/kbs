@@ -176,7 +176,7 @@ PHP_FUNCTION(bbs2_readfile_text)
     char c;
     char *ptr, *cur_ptr;
     long ptrlen;
-    int in_escape = false, in_space = false;
+    int in_escape = false, is_last_space = false;
     int fd, i;
     char escape_seq[4][16], escape_seq_len[4];
     struct stat st;
@@ -234,10 +234,19 @@ PHP_FUNCTION(bbs2_readfile_text)
             break;
         } else if (c == '\033') {
             in_escape = true;
+        } else if (escape_flag == 2 && c == ' ') {
+            if (!is_last_space) {
+                output_buffer[output_buffer_len++] = ' ';
+            } else {
+                strcpy(output_buffer + output_buffer_len, "&nbsp;");
+                output_buffer_len += 6;
+            }
+            is_last_space = !is_last_space;
         } else if (!in_escape) {
             if (output_buffer_len + 16 > output_buffer_size) {
                 output_buffer = (char*)erealloc(output_buffer, output_buffer_size += 128);
             }
+            is_last_space = false;
             switch(c) {
                 case '&':
                     strcpy(output_buffer + output_buffer_len, escape_seq[0]);
@@ -255,19 +264,7 @@ PHP_FUNCTION(bbs2_readfile_text)
                     strcpy(output_buffer + output_buffer_len, escape_seq[3]);
                     output_buffer_len += escape_seq_len[3];
                     last_return = output_buffer_len;
-                    break;
-                case ' ':
-                    if (escape_flag == 2) {
-                        if (in_space) {
-                            output_buffer[output_buffer_len++] = ' ';
-                        } else {
-                            strcpy(output_buffer + output_buffer_len, "&nbsp;");
-                            output_buffer_len += 6;
-                        }
-                        in_space = !in_space;
-                    } else {
-                        output_buffer[output_buffer_len++] = ' ';
-                    }
+                    is_last_space = true;
                     break;
                 default:
                     if (c < 0 || c >= 32)
