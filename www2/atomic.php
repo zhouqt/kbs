@@ -1,6 +1,11 @@
 <?php
-define('UTF8', TRUE);
+/*
+ * 精简版 web，atppp 制造。
+ * Suppports UTF8. Absolutely NO javascript!
+ */
+define('UTF8', FALSE);
 define('ARTCNT', 20);
+define('MAXCHAR', 20000);
 
 require("www2-funcs.php");
 require("www2-board.php");
@@ -29,10 +34,20 @@ switch($act) {
 	case "board":
 		atomic_board();
 		break;
+	case "mail":
+		atomic_mail();
+		break;
+	case "mailread":
+		atomic_mailread();
+		break;
+	case "mailpost":
+		atomic_mailpost();
+		break;
 	case "logout":
 		bbs_wwwlogoff();
 		delete_all_cookie();
-		$currentuser["userid"] = "guest"; //hack
+		header("Location: atomic.php");
+		exit;
 	default:
 		atomic_mainpage();
 		break;
@@ -67,8 +82,11 @@ function atomic_get_input($str) {
 }
 
 function atomic_show_boardjump() {
+	global $atomic_board;
+	if ($atomic_board) $bb = "当前讨论区: " . $atomic_board . ". ";
+	else $bb = "";
 		echo <<<END
-<form action="" method="get"><input type="hidden" name="act" value="board"/>
+<form action="" method="get"><input type="hidden" name="act" value="board"/>$bb
 去讨论区: <input type="text" name="board" /> <input type="submit" value="Go"/> <a href='atomic.php'>回首页</a>
 </form>
 END;
@@ -86,6 +104,25 @@ function atomic_get_board($checkpost = false) {
 	$atomic_brdnum = bbs_getboard($atomic_board, $brdarr);
 	$atomic_brdarr = $brdarr;
 	if ($atomic_brdnum == 0){
+		$boards = array();
+		if (bbs_searchboard($atomic_board,0,$boards)) {
+			if (sizeof($boards)==1) {
+				cache_header("nocache");
+				header("Location: atomic.php?act=board&board=" . urlencode($boards[0]['NAME']));
+				exit;
+			}
+			if (sizeof($boards) > 1) {
+				atomic_header();
+				$html = "多个匹配的讨论区: ";
+				foreach ($boards as $board) {
+					if (!$board['NAME']) continue;
+					$html .= '<a href="?act=board&board=' . $board['NAME'] . '">' . $board['NAME'] . '</a> ';
+				}
+				echo $html;
+				atomic_footer();
+				exit;
+			}
+		}
 		atomic_error("错误的讨论区");
 	}
 	$atomic_board = $atomic_brdarr["NAME"];
@@ -169,7 +206,7 @@ function atomic_board() {
 	$html .= '<input type="submit" value="跳转到"/> 第 <input type="text" name="start" size="3" /> 篇</form>';
 
 
-	$html .= "<pre>  编号   刊 登 者      日  期   文章标题\n";
+	$html .= "<pre> 编号   刊 登 者     日  期  文章标题<br/>";
 	$i = 0;
 	foreach ($articles as $article)	{
 		$title = $article["TITLE"];
@@ -179,7 +216,7 @@ function atomic_board() {
 		$flags = $article["FLAGS"];
 
 		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
-			$html .= " [提示]  ";
+			$html .= " [提示] ";
 		} else {
 			$html .= sprintf("%5d ", ($start+$i));
 			if ($flags[1] == 'y') {
@@ -247,15 +284,17 @@ function atomic_article() {
 	if ($currentuser["userid"] != "guest") bbs_brcaddread($atomic_board, $article["ID"]);
 	atomic_header();
 	$html = '<p><a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
-	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).'">回版面</a> ';
-	$url .= $article["ID"];
-	$html .= '<a href="' . $url . '&p=p">上一篇</a> ';
-	$html .= '<a href="' . $url . '&p=n">下一篇</a> ';
-	$html .= '<a href="' . $url . '&p=tp">主题上篇</a> ';
-	$html .= '<a href="' . $url . '&p=tn">主题下篇</a> ';
+	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).'">回版</a> ';
+	$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
+	$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
+	$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
+	$html .= '<a href="' . $url . $article["ID"] . '&p=tn">主题下篇</a> ';
+	$html .= '<a href="' . $url . $article["GROUPID"] . '">楼主</a> ';
+	$html .= '<a href="' . $url . $article["REID"] . '">溯源</a> ';
+	$html .= '<a href="bbscon.php?board=' . $atomic_board . '&id=' . $article["ID"] . '">原文</a> ';
 	$html .= '</p>';
 	echo $html;
-	echo bbs2_readfile_text($filename, 0, 0);
+	echo bbs2_readfile_text($filename, MAXCHAR, 2);
 	atomic_footer();
 }
 
@@ -383,12 +422,140 @@ function atomic_post() {
 	atomic_footer();
 }
 
+function atomic_mail_header() {
+	global $currentuser;
+	if ( ! strcmp($currentuser["userid"], "guest") ) {
+		atomic_error("游客没有信箱");
+	}
+	atomic_header();
+	$html = "<p>" . $currentuser["userid"] . " 的信箱 <a href='?'>回首页</a></p>";
+	echo $html;
+}
+
+function atomic_mail() {
+	global $currentuser;
+	atomic_mail_header();
+	$mail_fullpath = bbs_setmailfile($currentuser["userid"],".DIR");
+	$mail_num = bbs_getmailnum2($mail_fullpath);
+	if($mail_num <= 0 || $mail_num > 30000) atomic_error("读取邮件数据失败!");
+	$start = (isset($_GET["start"])) ? @intval($_GET["start"]) : 999999;
+	$num = ARTCNT;
+	if ($start > $mail_num - ARTCNT + 1) $start = $mail_num - ARTCNT + 1;
+	if ($start <= 0)	{
+		$start = 1;
+		if ($num > $mail_num) $num = $mail_num;
+	}
+	$maildata = bbs_getmails($mail_fullpath, $start - 1, $num);
+	if ($maildata == FALSE) atomic_error("读取邮件数据失败!");
+	
+	$html = '<form action="?" method="get"><input type="hidden" name="act" value="mail"/>';
+	$html .= '<a href="?act=mailpost">写信</a> ';
+	if ($start > 1) {
+		$i = $start - ARTCNT;
+		if ($i < 1) $i = 1;
+		$html .= '<a href="?act=mail&start=1">第一页</a> ';
+		$html .= '<a href="?act=mail&start='.$i.'">上一页</a> ';
+	} else {
+		$html .= '第一页 上一页 ';
+	}
+	if ($start <= $mail_num - ARTCNT) {
+		$i = $start + ARTCNT;
+		if ($i > $mail_num) $i = $mail_num;
+		$html .= '<a href="?act=mail&start='.$i.'">下一页</a> ';
+		$html .= '<a href="?act=mail">最后一页</a> ';
+	} else {
+		$html .= '下一页 最后一页 ';
+	}
+	$html .= '<input type="submit" value="跳转到"/> 第 <input type="text" name="start" size="3" /> 篇</form>';
+	$html .= '<pre> 编号    发信者       日  期  标  题<br/>';
+	for ($i = 0; $i < count($maildata); $i++) {
+		$article = $maildata[$i];
+		$title = $article["TITLE"];
+		if (strncmp($title, "Re: ", 4) != 0)
+			$title = "★ " . $title;
+
+		$html .= sprintf("%5d ", ($start+$i));
+		$html .= $maildata[$i]["FLAGS"];
+
+		$html .= sprintf(" %-12.12s ", $article["OWNER"]);
+		$html .= strftime("%b %e ", $article["POSTTIME"]);
+		$html .= ($maildata[$i]["ATTACHPOS"]>0) ? "@" : " ";
+		$html .= "<a href='?act=mailread&num=".($start+$i)."'>".htmlspecialchars($title)." </a><br/>";
+	}
+	$html .= "</pre>";
+	echo $html;
+	atomic_footer();
+}
+
+function atomic_mailread() {
+	global $currentuser;
+	atomic_mail_header();
+	$mail_fullpath = bbs_setmailfile($currentuser["userid"],".DIR");
+	$mail_num = bbs_getmailnum2($mail_fullpath);
+	if($mail_num <= 0 || $mail_num > 30000) atomic_error("读取邮件数据失败!");
+	if (isset($_GET["num"]))
+		$num = @intval($_GET["num"]);
+	else {
+		atomic_error("错误的参数");
+	}
+	$articles = array ();
+	if( bbs_get_records_from_num($mail_fullpath, $num-1, $articles) ) {
+		$filename = bbs_setmailfile($currentuser["userid"], $articles[0]["FILENAME"]);
+	}else{
+		atomic_error("错误的参数");
+	}	
+
+	$html = "<p>";
+	$html .= '<a href="?act=mailpost">写信</a> <a href="?act=mailpost&num='.$num.'">回信</a> ';
+	if($num > 1){
+		$html .= '<a href="?act=mailread&num=' . ($num-1) . '">上一篇</a> ';
+	}
+	$html .= '<a href="?act=mail&start=' . ($num-10) . '">收件箱</a> ';
+	if($num < $mail_num){
+		$html .= '<a href="?act=mailread&num=' . ($num+1) . '">下一篇</a> ';
+	}
+	$html .= "</p>";
+	echo $html;
+	echo bbs2_readfile_text($filename, 0, 2);
+	atomic_footer();
+}
+
+function atomic_mailpost() {
+	global $currentuser;
+	atomic_mail_header();
+	if (!bbs_can_send_mail()) atomic_error("您不能发送信件");
+	atomic_error("写信功能由于 atppp 太懒所以没有写。");
+}
 
 function atomic_mainpage() {
 	global $currentuser;
 	atomic_header();
 	if ( strcmp($currentuser["userid"], "guest") ) {
-		echo "欢迎 " . $currentuser["userid"] . ". <a href='?act=logout'>注销</a><br/>";
+		$html = "<p>欢迎 " . $currentuser["userid"] . ". <a href='?act=logout'>注销</a></p>";
+		$select = 0;
+		if(bbs_load_favboard($select)!=-1) {
+			$boards = bbs_fav_boards($select, 1);
+			if ($boards) {
+				$html .= "<p>顶层收藏夹: ";
+				$brd_name = $boards["NAME"];
+				$brd_flag= $boards["FLAG"];
+				$brd_bid= $boards["BID"];
+				$rows = sizeof($brd_name);
+				for ($i = 0; $i < $rows; $i++) {
+					if ($brd_bid[$i] == -1) continue;
+					if ($brd_flag[$i] == -1 ) continue;
+					if ($brd_flag[$i] & BBS_BOARD_GROUP) continue;
+					$html .= '<a href="?act=board&board=' . $brd_name[$i] . '">' . $brd_name[$i] . '</a> ';
+				}
+				$html .= '</p>';
+			}
+		}
+		$oldtotal = 0; $oldunread = 0;
+		if (!bbs_getmailnum($currentuser["userid"],$total,$unread, $oldtotal, $oldunread)) {
+			$unread = $total = 0;
+		}
+		$html .= "<p><a href='?act=mail'>信箱</a>: $total 封, 新信: $unread 封. <a href='?act=mailpost'>写信</a></p>";
+		echo $html;
 	} else {
 		echo <<<END
 <form action="bbslogin.php?mainurl=atomic.php" method="post">
@@ -398,6 +565,7 @@ function atomic_mainpage() {
 END;
 	}
 	atomic_show_boardjump();
+	echo "UTF8: " . (UTF8 ? "ON" : "OFF") . ". 文章显示长度限制: " . MAXCHAR . ". [ atppp 制造 ]";
 	atomic_footer();
 }
 
