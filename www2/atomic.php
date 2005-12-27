@@ -2,6 +2,7 @@
 /*
  * 精简版 web，atppp 制造。
  * Suppports UTF8. Absolutely NO javascript!
+ * BUG: 没有完善处理版名含有特殊字符的情形
  */
 define('UTF8', FALSE);
 define('ARTCNT', 20);
@@ -62,7 +63,8 @@ function atomic_header() {
 	}
 	$atomic_header_shown = true;
 	header("Content-Type: text/html; charset=".(UTF8?"UTF-8":"gb2312"));
-	echo '<html><head><meta http-equiv="content-type" content="text/html; charset=' . (UTF8?"UTF-8":"gb2312") . '"></head><body>';
+	echo '<html><head><meta http-equiv="content-type" content="text/html; charset=' . (UTF8?"UTF-8":"gb2312") . '">'.
+	     '<title>'.BBS_FULL_NAME.'</title></head><body>';
 }
 
 function atomic_footer() {
@@ -70,8 +72,7 @@ function atomic_footer() {
 }
 
 function atomic_error($msg) {
-	global $atomic_header_shown;
-	if (!$atomic_header_shown) atomic_header();
+	atomic_header();
 	echo $msg . " <a href='atomic.php'>回首页</a>";
 	atomic_footer();
 	exit;
@@ -246,9 +247,7 @@ function atomic_board() {
 			$html .= " [提示] ";
 		} else {
 			$html .= sprintf("%5d ", ($start+$i));
-			if ($flags[1] == 'y') {
-				$html .= $flags[0];
-			} elseif ($flags[0] == 'N' || $flags[0] == '*'){
+			if ($flags[0] == 'N' || $flags[0] == '*'){
 				$html .= " "; //$flags[0];  //不要未读标记 windinsn
 			} else{
 				$html .= $flags[0];
@@ -275,6 +274,7 @@ function atomic_article() {
 	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes, $atomic_ftype;
 	atomic_get_board();
 	$id = @intval($_GET["id"]);
+	if ($id <= 0) atomic_error("错误的文章号");
 
 	$url = "?act=article&board=" . $atomic_board . "&id=";
 	@$ptr=$_GET["p"];
@@ -313,16 +313,15 @@ function atomic_article() {
 			return;
 	}
 
-	if (!$atomic_ftype && $ptr == 'p' && $articles[0]["ID"] != 0) {
-		header("Location: atomic.php" . $url . $articles[0]["ID"]);
-		exit;
-	}
-	if (!$atomic_ftype && $ptr == 'n' && $articles[2]["ID"] != 0) {
-		header("Location: atomic.php" . $url . $articles[2]["ID"]);
-		exit;
+	if (!$atomic_ftype) {
+		$idx = ($ptr == 'p') ? 0 : (($ptr == 'n') ? 2 : -1);
+		if (($idx != -1) && $articles[$idx]["ID"] != 0) {
+			header("Location: atomic.php" . $url . $articles[$idx]["ID"]);
+			exit;
+		}
+		if ($currentuser["userid"] != "guest") bbs_brcaddread($atomic_board, $article["ID"]);
 	}
 
-	if (!$atomic_ftype && $currentuser["userid"] != "guest") bbs_brcaddread($atomic_board, $article["ID"]);
 	atomic_header();
 	$html = '<p>';
 	if (!$atomic_ftype) {
@@ -349,24 +348,14 @@ function atomic_post() {
 	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes;
 	atomic_get_board(TRUE);
 
-	if (isset($_GET["reid"]))
-	{
-		$reid = $_GET["reid"];
+	$reid = (isset($_GET["reid"])) ? @intval($_GET["reid"]) : 0;
+	if ($reid > 0) {
 		if(bbs_is_noreply_board($atomic_brdarr))
 			atomic_error("本版只可发表文章,不可回复文章!");
-	}
-	else {
-		$reid = 0;
-	}
-	settype($reid, "integer");
-	$articles = array();
-	if ($reid > 0)
-	{
+
+		$articles = array();
 		$num = bbs_get_records_from_id($atomic_board, $reid, $dir_modes["NORMAL"], $articles);
-		if ($num == 0)
-		{
-			atomic_error("错误的 Re 文编号");
-		}
+		if ($num == 0) atomic_error("错误的 Re 文编号");
 		if ($articles[1]["FLAGS"][2] == 'y')
 			atomic_error("该文不可回复!");
 	}
@@ -375,7 +364,7 @@ function atomic_post() {
 		if (!isset($_POST["text"])) atomic_error("没有指定文章内容!");
 		$title = atomic_get_input(trim($_POST["title"]));
 		$text = atomic_get_input($_POST["text"]);
-		if (isset($_GET["reid"])) $reID = $_GET["reid"];
+		if (isset($_GET["reid"])) $reID = @intval($_GET["reid"]);
 		else $reID = 0;
 		$outgo = bbs_is_outgo_board($atomic_brdarr) ? 1 : 0;
 		$anony = 0;
@@ -411,7 +400,15 @@ function atomic_post() {
 		}
 		atomic_header();
 		$url = "?act=board&board=" . $atomic_board;
-		echo "发文成功！本页面将在3秒后自动返回<a href='$url'>版面文章列表</a><meta http-equiv='refresh' content='3; url=" . $url . "'/>";
+		if ($ret == 2) {
+			echo "<p>很抱歉，本文可能含有不当内容，需经审核方可发表。<br/><br/>" .
+                  "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
+                  "站务人员的审核，不要多次尝试发表此文章。<br/><br/>" .
+                  "如有疑问，请致信 SYSOP 咨询。</p>";
+            echo "返回<a href='$url'>版面文章列表</a>";
+		} else {
+			echo "发文成功！本页面将在3秒后自动返回<a href='$url'>版面文章列表</a><meta http-equiv='refresh' content='3; url=" . $url . "'/>";
+		}
 		atomic_footer();
 		return;
 	}
@@ -423,20 +420,20 @@ function atomic_post() {
 	$html = "<p><a href='?act=board&board=" . $atomic_board . "'>" . $atomic_board . " 版</a>发表文章</p>";
 	$html .= "<form action='?act=post&board=" . $atomic_board . "&reid=" . $reid . "&post=1' method='post'>";
 	$html .= '标题: <input type="text" name="title" size="40" maxlength="100" value="' . ($nowtitle?htmlspecialchars($nowtitle,ENT_QUOTES)." ":"") . '"/><br/>';
-	$html .= '<textarea name="text" rows="20" cols="80" wrap="physical">'."\n";
+	$html .= '<textarea name="text" rows="20" cols="80" wrap="physical">';
 	if($reid > 0){
-		$filename = $articles[1]["FILENAME"];
-		$filename = "boards/" . $atomic_board . "/" . $filename;
+		$filename = bbs_get_board_filename($atomic_board, $articles[1]["FILENAME"]);
 		$fp = @fopen($filename, "r");
 		if ($fp) {
 			$lines = 0;
+			$quser = "未知";
 			$buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
 			$end = strrpos($buf,")");
 			$start = strpos($buf,":");
 			if($start != FALSE && $end != FALSE)
 				$quser=substr($buf,$start+2,$end-$start-1);
 
-			$html .= "\n【 在 " . $quser . " 的大作中提到: 】\n";
+			$html .= "\n\n【 在 " . $quser . " 的大作中提到: 】\n";
 			for ($i = 0; $i < 3; $i++) {
 				if (($buf = fgets($fp,500)) == FALSE)
 					break;
@@ -458,12 +455,10 @@ function atomic_post() {
 				}
 				$html .= ": ". htmlspecialchars($buf);
 			}
-			$html .= "\n\n";
 			fclose($fp);
 		}
 	}
 	$html .= '</textarea><br/><input type="submit" value="发表" /></form>';
-	$html .= "</form>";
 	echo $html;
 	atomic_footer();
 }
@@ -487,7 +482,7 @@ function atomic_mail() {
 	$start = (isset($_GET["start"])) ? @intval($_GET["start"]) : 999999;
 	$num = ARTCNT;
 	if ($start > $mail_num - ARTCNT + 1) $start = $mail_num - ARTCNT + 1;
-	if ($start <= 0)	{
+	if ($start <= 0) {
 		$start = 1;
 		if ($num > $mail_num) $num = $mail_num;
 	}
@@ -544,6 +539,7 @@ function atomic_mailread() {
 	else {
 		atomic_error("错误的参数");
 	}
+	if ($num <= 0 || $num > $mail_num) atomic_error("错误的参数");
 	$articles = array ();
 	if( bbs_get_records_from_num($mail_fullpath, $num-1, $articles) ) {
 		$filename = bbs_setmailfile($currentuser["userid"], $articles[0]["FILENAME"]);
@@ -556,7 +552,7 @@ function atomic_mailread() {
 	if($num > 1){
 		$html .= '<a href="?act=mailread&num=' . ($num-1) . '">上一篇</a> ';
 	}
-	$html .= '<a href="?act=mail&start=' . ($num-10) . '">收件箱</a> ';
+	$html .= '<a href="?act=mail&start=' . $num . '">收件箱</a> ';
 	if($num < $mail_num){
 		$html .= '<a href="?act=mailread&num=' . ($num+1) . '">下一篇</a> ';
 	}
@@ -587,13 +583,14 @@ function atomic_mailpost() {
 		
 	}
 	if (isset($_GET["post"])) {
-		$title = trim(@$_POST["title"]);
+		$title = atomic_get_input(trim(@$_POST["title"]));
 		if (!$title) $title = '无主题';
+		$content = atomic_get_input(@$_POST["text"]);
 		$sig = $currentuser["signature"];
 		$backup = (bbs_is_save2sent() != 0);
 		
 		if ($num > 0) {
-			$ret = bbs_postmail($mail_fullpath, $shortfilename, $num-1, $title, @$_POST["text"], $sig, $backup);
+			$ret = bbs_postmail($mail_fullpath, $shortfilename, $num-1, $title, $content, $sig, $backup);
 		} else {
 			$incept = trim(@$_POST['userid']);
 			if (!$incept)
@@ -605,7 +602,7 @@ function atomic_mailpost() {
 		
 			if (!strcasecmp($incept,'guest')) atomic_error("不能发信给guest");
 			
-			$ret = bbs_postmail($incept,$title,@$_POST["text"],$sig,$backup);
+			$ret = bbs_postmail($incept,$title,$content,$sig,$backup);
 		}
 
 		if ($ret < 0)  {
@@ -628,6 +625,9 @@ function atomic_mailpost() {
 					break;
 				case -8:
 					atomic_error("找不到所回复的原信。");
+					break;
+				case -100:
+					atomic_error("错误的收件人ID");
 					break;
 				default:
 					atomic_error("系统错误，请联系管理员");
@@ -658,9 +658,9 @@ function atomic_mailpost() {
 	} else {
 		$html .= '收件人: <input type="text" name="userid"/><br/>';
 	}
-	$html .= '<textarea name="text" rows="20" cols="80" wrap="physical">'."\n";
+	$html .= '<textarea name="text" rows="20" cols="80" wrap="physical">';
 	if ($num > 0) {
-		$html .= "\n【 在 " . $receiver . " 的来信中提到: 】\n";
+		$html .= "\n\n【 在 " . $receiver . " 的来信中提到: 】\n";
 		$fp = fopen($filename, "r");
 		if ($fp) {
 			$lines = 0;
@@ -732,7 +732,7 @@ function atomic_mainpage() {
 END;
 	}
 	atomic_show_boardjump();
-	echo "UTF8: " . (UTF8 ? "ON" : "OFF") . ". 文章显示长度限制: " . MAXCHAR . ". [ atppp 制造 ]";
+	echo "UTF8: " . (UTF8 ? "ON" : "OFF") . ". 文章显示长度限制: " . MAXCHAR . ". &lt;精简歪脖 atppp 制造&gt;";
 	atomic_footer();
 }
 

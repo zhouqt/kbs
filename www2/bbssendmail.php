@@ -62,6 +62,9 @@ if ($ret < 0)  {
 		case -8:
 			html_error_quit("找不到所回复的原信。");
 			break;
+		case -100:
+			html_error_quit("错误的收件人ID");
+			break;
 		default:
 			html_error_quit("系统错误，请联系管理员");
 	}
