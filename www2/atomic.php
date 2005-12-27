@@ -337,11 +337,13 @@ function atomic_article() {
 	}
 	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).
 	         ($atomic_ftype?"&ftype=".$atomic_ftype:"").'">回版面</a> ';
-	$html .= '<a href="bbscon.php?board=' . $atomic_board . '&id=' . $article["ID"] . 
-	         ($atomic_ftype?"&ftype=".$atomic_ftype."&num=".$num:"").'">原文</a> ';
+	$ourl = 'bbscon.php?board=' . $atomic_board . '&id=' . $article["ID"];
+	if ($atomic_ftype) $ourl .= "&ftype=".$atomic_ftype."&num=".$num;
+	$html .= '<a href="' . $ourl . '">原文</a> ';
 	$html .= '</p>';
 	echo $html;
 	echo bbs2_readfile_text($filename, MAXCHAR, 2);
+	if ($article["ATTACHPOS"]) echo '<p>本文含有附件: <a href="' . $ourl . '">原文链接</a></p>';
 	atomic_footer();
 }
 
