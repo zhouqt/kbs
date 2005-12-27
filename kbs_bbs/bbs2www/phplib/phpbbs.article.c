@@ -592,7 +592,7 @@ PHP_FUNCTION(bbs_postarticle)
     if (!junkboard(board)) {
         getCurrentUser()->numposts++;
     }
-    RETURN_LONG(0);
+    RETURN_LONG(retvalue);
 }
 
 
