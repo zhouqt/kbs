@@ -689,7 +689,6 @@ function atomic_mailpost() {
 		}
 	}
 	$html .= '</textarea><br/><input type="submit" value="·¢ËÍ" /></form>';
-	$html .= "</form>";
 	echo $html;
 	atomic_footer();
 }
