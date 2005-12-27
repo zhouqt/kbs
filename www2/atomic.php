@@ -256,7 +256,8 @@ function atomic_board() {
 			$html .= " ";
 		}
 		$html .= sprintf("%-12.12s ", $article["OWNER"]);
-		$html .= strftime("%b %e  ", $article["POSTTIME"]);
+		$html .= strftime("%b %e ", $article["POSTTIME"]);
+		$html .= $flags[3];
 		$articleurl = "?act=article&board=".$atomic_board."&id=".$article["ID"];
 		if ($atomic_ftype) {
 			$articleurl .= "&ftype=" . $atomic_ftype . "&num=" . ($start+$i);
