@@ -48,6 +48,7 @@ switch($act) {
 	case "logout":
 		bbs_wwwlogoff();
 		delete_all_cookie();
+		cache_header("nocache");
 		header("Location: atomic.php");
 		exit;
 	default:
