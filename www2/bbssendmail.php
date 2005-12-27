@@ -4,11 +4,11 @@ login_init();
 assert_login();
 mailbox_header("·¢ËÍÐÅ¼þ");
 
-$mailfile = $_POST["file"];
-$dirfile = $_POST["dir"];
+$mailfile = @$_POST["file"];
+$dirfile = @$_POST["dir"];
 if (strstr($dirfile,'..')) die;
 $maildir = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$dirfile;
-$num = $_POST["num"];
+$num = @intval($_POST["num"]);
 
 if($mailfile == "")		// if to send a new mail
 {

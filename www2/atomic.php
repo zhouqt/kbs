@@ -503,7 +503,7 @@ function atomic_mailread() {
 		$filename = bbs_setmailfile($currentuser["userid"], $articles[0]["FILENAME"]);
 	}else{
 		atomic_error("错误的参数");
-	}	
+	}
 
 	$html = "<p>";
 	$html .= '<a href="?act=mailpost">写信</a> <a href="?act=mailpost&num='.$num.'">回信</a> ';
@@ -517,6 +517,7 @@ function atomic_mailread() {
 	$html .= "</p>";
 	echo $html;
 	echo bbs2_readfile_text($filename, 0, 2);
+	bbs_setmailreaded($mail_fullpath,$num-1);
 	atomic_footer();
 }
 
@@ -524,7 +525,127 @@ function atomic_mailpost() {
 	global $currentuser;
 	atomic_mail_header();
 	if (!bbs_can_send_mail()) atomic_error("您不能发送信件");
-	atomic_error("写信功能由于 atppp 太懒所以没有写。");
+
+	$num = (isset($_GET["num"])) ? @intval($_GET["num"]) : 0;
+	$mail_fullpath = bbs_setmailfile($currentuser["userid"],".DIR");
+	if ($num > 0) {
+		$articles = array ();
+		if( bbs_get_records_from_num($mail_fullpath, $num-1, $articles) ) {
+			$title = $articles[0]["TITLE"];
+			$receiver = $articles[0]["OWNER"];
+			$shortfilename = $articles[0]["FILENAME"];
+			$filename = bbs_setmailfile($currentuser["userid"], $shortfilename);
+		}else{
+			atomic_error("错误的参数");
+		}
+		
+	}
+	if (isset($_GET["post"])) {
+		$title = trim(@$_POST["title"]);
+		if (!$title) $title = '无主题';
+		$sig = $currentuser["signature"];
+		$backup = (bbs_is_save2sent() != 0);
+		
+		if ($num > 0) {
+			$ret = bbs_postmail($mail_fullpath, $shortfilename, $num-1, $title, @$_POST["text"], $sig, $backup);
+		} else {
+			$incept = trim(@$_POST['userid']);
+			if (!$incept)
+				atomic_error("请输入收件人ID");
+			$lookupuser = array();
+			if (!bbs_getuser($incept,$lookupuser))
+				atomic_error("错误的收件人ID");
+			$incept = $lookupuser['userid'];
+		
+			if (!strcasecmp($incept,'guest')) atomic_error("不能发信给guest");
+			
+			$ret = bbs_postmail($incept,$title,@$_POST["text"],$sig,$backup);
+		}
+
+		if ($ret < 0)  {
+			switch($ret) {
+				case -1:
+				case -2:
+					atomic_error("无法创建文件");
+					break;
+				case -3:
+					atomic_error($incept." 拒收您的邮件");
+					break;
+				case -4:
+					atomic_error($incept." 的信箱已满");
+					break;
+				case -6:
+					atomic_error("添加邮件列表出错");
+					break;
+				case -7:
+					atomic_error("邮件发送成功，但未能保存到发件箱");
+					break;
+				case -8:
+					atomic_error("找不到所回复的原信。");
+					break;
+				default:
+					atomic_error("系统错误，请联系管理员");
+			}
+		}
+		
+		if ($num > 0) {
+			$url = "?act=mailread&num=".$num;
+			echo "发送成功！本页面将在3秒后自动返回<a href='$url'>原信件</a><meta http-equiv='refresh' content='3; url=" . $url . "'/>";
+		} else {
+			$url = "?act=mail";
+			echo "发送成功！本页面将在3秒后自动返回<a href='$url'>信件列表</a><meta http-equiv='refresh' content='3; url=" . $url . "'/>";
+		}
+		atomic_footer();
+		return;
+	}
+	
+	if ($num > 0) {
+		if(!strncmp($title,"Re: ",4)) $nowtitle = $title;
+		else $nowtitle = "Re: " . $title;
+	} else {
+		$nowtitle = "";
+	}
+	$html = "<form action='?act=mailpost&num=".$num."&post=1' method='post'>";
+	$html .= '标题: <input type="text" name="title" size="40" maxlength="100" value="' . ($nowtitle?htmlspecialchars($nowtitle,ENT_QUOTES)." ":"") . '"/><br/>';
+	if ($num > 0) {
+		$html .= "收件人: " . $receiver . "<br/>";
+	} else {
+		$html .= '收件人: <input type="text" name="userid"/><br/>';
+	}
+	$html .= '<textarea name="text" rows="20" cols="80" wrap="physical">'."\n";
+	if ($num > 0) {
+		$html .= "\n【 在 " . $receiver . " 的来信中提到: 】\n";
+		$fp = fopen($filename, "r");
+		if ($fp) {
+			$lines = 0;
+			for ($i = 0; $i < 4; $i++) {
+				if (($buf = fgets($fp,500)) == FALSE)
+					break;
+			}
+			while (1) {
+				if (($buf = fgets($fp,500)) == FALSE)
+					break;
+				if (strncmp($buf, ": 【", 4) == 0)
+					continue;
+				if (strncmp($buf, ": : ", 4) == 0)
+					continue;
+				if (strncmp($buf, "--\n", 3) == 0)
+					break;
+				if (strncmp($buf,'\n',1) == 0)
+					continue;
+				if (++$lines > 10) {
+					$html .= ": ...................\n";
+					break;
+				}
+				$html .= ": ". htmlspecialchars($buf);
+			}
+			fclose($fp);
+		}
+	}
+	$html .= '</textarea><br/><input type="submit" value="发送" /></form>';
+	$html .= "</form>";
+	echo $html;
+	atomic_footer();
 }
 
 function atomic_mainpage() {
