@@ -21,6 +21,7 @@ $atomic_header_shown = false;
 $atomic_board = false;
 $atomic_brdarr = array();
 $atomic_brdnum = false;
+$atomic_ftype = 0;
 
 
 $act = @$_GET["act"];
@@ -94,7 +95,7 @@ END;
 
 
 function atomic_get_board($checkpost = false) {
-	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum;
+	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $atomic_ftype, $dir_modes;
 	if (isset($_GET["board"]))
 		$atomic_board = $_GET["board"];
 	else{
@@ -143,21 +144,33 @@ function atomic_get_board($checkpost = false) {
 			atomic_error("不能在只读讨论区发表文章");
 		}
 	}
+	if (isset($_GET["ftype"])) {
+		$atomic_ftype = @intval($_GET["ftype"]);
+		switch($atomic_ftype) {
+			case $dir_modes["DIGEST"]:
+			case $dir_modes["MARK"]:
+			case $dir_modes["NORMAL"]:
+				break;
+			default:
+				atomic_error("错误的模式");
+		}
+	} else {
+		$atomic_ftype = $dir_modes["NORMAL"];
+	}
 }
 
 function atomic_board() {
-	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes;
+	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes, $atomic_ftype;
 	atomic_get_board();
-	$ftype = $dir_modes["NORMAL"];
 	$isnormalboard = bbs_normalboard($atomic_board);
-	if ($isnormalboard && isset($_GET["page"])) {
-		$dotdirname = bbs_get_board_index($atomic_board, $ftype);
-		if (cache_header("public",@filemtime($dotdirname),10)) return;
+	if ($isnormalboard && (isset($_GET["page"])||$atomic_ftype) ) {
+		$dotdirname = bbs_get_board_index($atomic_board, $atomic_ftype);
+		if (cache_header("public",@filemtime($dotdirname),$atomic_ftype?300:10)) return;
 	}
 	atomic_header();
 	atomic_show_boardjump();
 	
-	$total = bbs_countarticles($atomic_brdnum, $ftype);
+	$total = bbs_countarticles($atomic_brdnum, $atomic_ftype);
 	if ($total <= 0) {
 		atomic_error("本讨论区目前没有文章");
 	}
@@ -184,27 +197,41 @@ function atomic_board() {
 	else
 		$page = ($start + ARTCNT - 1) / ARTCNT;
 	settype($page, "integer");
-	$articles = bbs_getarticles($atomic_board, $start, ARTCNT, $ftype);
+	$articles = bbs_getarticles($atomic_board, $start, ARTCNT, $atomic_ftype);
 	if ($articles == FALSE)
 		atomic_error("读取文章列表失败");
 	
 	$html = '<form action="?" method="get"><input type="hidden" name="act" value="board"/>';
+	if ($atomic_ftype) {
+		$html .= '<input type="hidden" name="ftype" value="' . $atomic_ftype . '"/>';
+	}
 	$html .= '<input type="hidden" name="board" value="'.$atomic_board.'"/>';
 	$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> ';
+	$bl = '?act=board&board='.$atomic_board;
+	if ($atomic_ftype) $bl .= '&ftype=' . $atomic_ftype;
 	if ($page > 1) {
-		$html .= '<a href="?act=board&board='.$atomic_board.'&page=1">第一页</a> ';
-		$html .= '<a href="?act=board&board='.$atomic_board.'&page='.($page - 1).'">上一页</a> ';
+		$html .= '<a href="' . $bl .'&page=1">第一页</a> ';
+		$html .= '<a href="' . $bl .'&page='.($page - 1).'">上页</a> ';
 	} else {
-		$html .= '第一页 上一页 ';
+		$html .= '第一页 上页 ';
 	}
 	if ($start <= $total - 20) {
-		$html .= '<a href="?act=board&board='.$atomic_board.'&page='.($page + 1).'">下一页</a> ';
-		$html .= '<a href="?act=board&board='.$atomic_board.'">最后一页</a> ';
+		$html .= '<a href="' . $bl .'&page='.($page + 1).'">下页</a> ';
+		$html .= '<a href="' . $bl .'">最后一页</a> ';
 	} else {
-		$html .= '下一页 最后一页 ';
+		$html .= '下页 最后一页 ';
 	}
-	$html .= '<input type="submit" value="跳转到"/> 第 <input type="text" name="start" size="3" /> 篇</form>';
-
+	$html .= '<input type="submit" value="跳转到"/> 第 <input type="text" name="start" size="3" /> 篇 ';
+	if ($atomic_ftype != $dir_modes["NORMAL"]) {
+		$html .= "<a href='?act=board&board=".$atomic_board."'>版面</a> ";
+	}
+	if ($atomic_ftype != $dir_modes["DIGEST"]) {
+		$html .= "<a href='?act=board&board=".$atomic_board."&ftype=".$dir_modes["DIGEST"]."'>文摘</a> ";
+	}
+	if ($atomic_ftype != $dir_modes["MARK"]) {
+		$html .= "<a href='?act=board&board=".$atomic_board."&ftype=".$dir_modes["MARK"]."'>保留</a> ";
+	}
+	$html .= "</form>";
 
 	$html .= "<pre> 编号   刊 登 者     日  期  文章标题<br/>";
 	$i = 0;
@@ -230,26 +257,30 @@ function atomic_board() {
 		}
 		$html .= sprintf("%-12.12s ", $article["OWNER"]);
 		$html .= strftime("%b %e  ", $article["POSTTIME"]);
-		$html .= "<a href='?act=article&board=".$atomic_board."&id=".$article["ID"]."'>".htmlspecialchars($title)." </a><br/>";
+		$articleurl = "?act=article&board=".$atomic_board."&id=".$article["ID"];
+		if ($atomic_ftype) {
+			$articleurl .= "&ftype=" . $atomic_ftype . "&num=" . ($start+$i);
+		}
+		$html .= "<a href='".$articleurl."'>".htmlspecialchars($title)." </a><br/>";
 		$i++;
 	}
 	$html .= "</pre>";
+
 	echo $html;
 	atomic_footer();
 }
 
 
 function atomic_article() {
-	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes;
+	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes, $atomic_ftype;
 	atomic_get_board();
-	$ftype = $dir_modes["NORMAL"];
 	$id = @intval($_GET["id"]);
 
 	$url = "?act=article&board=" . $atomic_board . "&id=";
 	@$ptr=$_GET["p"];
 	// 同主题的指示在这里处理
 	if ($ptr == "tn" || $ptr == "tp") {
-		$articles = bbs_get_threads_from_id($atomic_brdnum, $id, $ftype,($ptr == "tp")?-1:1);
+		$articles = bbs_get_threads_from_id($atomic_brdnum, $id, $dir_modes["NORMAL"],($ptr == "tp")?-1:1);
 		if ($articles == FALSE)
 			$redirt_id = $id;
 		else
@@ -258,40 +289,55 @@ function atomic_article() {
 		exit;
 	}
 
-	$total = bbs_countarticles($atomic_brdnum, $ftype);
+	$total = bbs_countarticles($atomic_brdnum, $atomic_ftype);
 	if ($total <= 0) {
 		atomic_error("错误的文章号,原文可能已经被删除");
 	}
-	$articles = array ();
-	$num = bbs_get_records_from_id($atomic_board, $id, $ftype, $articles);
-	if ($num <= 0) atomic_error("错误的文章号,原文可能已经被删除");
 
-	if ($ptr == 'p' && $articles[0]["ID"] != 0) {
+    if (!$atomic_ftype) {
+        $articles = array ();
+        $num = bbs_get_records_from_id($atomic_board, $id, $atomic_ftype, $articles);
+        if ($num <= 0) atomic_error("错误的文章号,原文可能已经被删除");
+        $article = $articles[1];
+    } else {
+        $num = @intval($_GET["num"]);
+        if (($num <= 0) || ($num > $total)) atomic_error("错误的文章号,原文可能已经被删除");
+        if (($articles = bbs_getarticles($atomic_board, $num, 1, $atomic_ftype)) === false) atomic_error("错误的文章号,原文可能已经被删除");
+        if ($id != $articles[0]["ID"]) atomic_error("错误的文章号,原文可能已经被删除");
+        $article = $articles[0];
+    }
+	$filename = bbs_get_board_filename($atomic_board, $article["FILENAME"]);
+	$isnormalboard = bbs_normalboard($atomic_board);
+	if ($isnormalboard) {
+		if (cache_header("public",@filemtime($filename),300))
+			return;
+	}
+
+	if (!$atomic_ftype && $ptr == 'p' && $articles[0]["ID"] != 0) {
 		header("Location: atomic.php" . $url . $articles[0]["ID"]);
 		exit;
 	}
-	if ($ptr == 'n' && $articles[2]["ID"] != 0) {
+	if (!$atomic_ftype && $ptr == 'n' && $articles[2]["ID"] != 0) {
 		header("Location: atomic.php" . $url . $articles[2]["ID"]);
 		exit;
 	}
 
-	$article = $articles[1];
-	$filename = bbs_get_board_filename($atomic_board, $article["FILENAME"]);
-	$isnormalboard = bbs_normalboard($atomic_board);
-	if ($isnormalboard) {
-		if (cache_header("public",@filemtime($filename),300)) return;
-	}
-	if ($currentuser["userid"] != "guest") bbs_brcaddread($atomic_board, $article["ID"]);
+	if (!$atomic_ftype && $currentuser["userid"] != "guest") bbs_brcaddread($atomic_board, $article["ID"]);
 	atomic_header();
-	$html = '<p><a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
-	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).'">回版</a> ';
-	$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
-	$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
-	$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
-	$html .= '<a href="' . $url . $article["ID"] . '&p=tn">主题下篇</a> ';
-	$html .= '<a href="' . $url . $article["GROUPID"] . '">楼主</a> ';
-	$html .= '<a href="' . $url . $article["REID"] . '">溯源</a> ';
-	$html .= '<a href="bbscon.php?board=' . $atomic_board . '&id=' . $article["ID"] . '">原文</a> ';
+	$html = '<p>';
+	if (!$atomic_ftype) {
+		$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
+		$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
+		$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
+		$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
+		$html .= '<a href="' . $url . $article["ID"] . '&p=tn">主题下篇</a> ';
+		$html .= '<a href="' . $url . $article["GROUPID"] . '">楼主</a> ';
+		$html .= '<a href="' . $url . $article["REID"] . '">溯源</a> ';
+	}
+	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).
+	         ($atomic_ftype?"&ftype=".$atomic_ftype:"").'">回版面</a> ';
+	$html .= '<a href="bbscon.php?board=' . $atomic_board . '&id=' . $article["ID"] . 
+	         ($atomic_ftype?"&ftype=".$atomic_ftype."&num=".$num:"").'">原文</a> ';
 	$html .= '</p>';
 	echo $html;
 	echo bbs2_readfile_text($filename, MAXCHAR, 2);
