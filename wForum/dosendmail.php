@@ -47,9 +47,15 @@ function main() {
 		case -4:
 			foundErr("对方信箱满。");
 		case -5:
-			foundErr("发信失败。");
+			foundErr("两次发文/信间隔过密,请休息几秒再试!");	
+		case -6:
+			foundErr("添加邮件列表出错");
+		case -7:
+			foundErr("邮件发送成功，但未能保存到发件箱");
+		case -8:
+			foundErr("找不到所回复的原信。");
 		case -100:
-			foundErr("收信人账号错误。");
+			foundErr("错误的收件人ID");
 	}
 	setSucMsg("信件已成功发送！");
 	return html_success_quit('返回收件箱', 'usermailbox.php?boxname=inbox');

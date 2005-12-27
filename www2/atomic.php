@@ -390,7 +390,7 @@ function atomic_post() {
 			atomic_error("很抱歉, 你被版务人员停止了本版的post权利!");
 			break;	
 		case -6:
-			atomic_error("两次发文间隔过密,请休息几秒再试!");	
+			atomic_error("两次发文/信间隔过密,请休息几秒再试!");	
 			break;
 		case -7: 
 			atomic_error("无法读取索引文件! 请通知站务人员, 谢谢! ");
@@ -620,6 +620,9 @@ function atomic_mailpost() {
 					break;
 				case -4:
 					atomic_error($incept." 的信箱已满");
+					break;
+				case -5:
+					atomic_error("两次发文/信间隔过密,请休息几秒再试!");	
 					break;
 				case -6:
 					atomic_error("添加邮件列表出错");

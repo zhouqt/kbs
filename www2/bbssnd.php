@@ -71,7 +71,7 @@
 			html_error_quit("很抱歉, 你被版务人员停止了本版的post权利!");
 			break;	
 		case -6:
-			html_error_quit("两次发文间隔过密,请休息几秒再试!");	
+			html_error_quit("两次发文/信间隔过密,请休息几秒再试!");	
 			break;
 		case -7: 
 			html_error_quit("无法读取索引文件! 请通知站务人员, 谢谢! ");

@@ -53,6 +53,9 @@ if ($ret < 0)  {
 		case -4:
 			html_error_quit($incept." 的信箱已满");
 			break;
+		case -5:
+			html_error_quit("两次发文/信间隔过密,请休息几秒再试!");	
+			break;
 		case -6:
 			html_error_quit("添加邮件列表出错");
 			break;

@@ -98,7 +98,7 @@ function doPostAritcles($boardID,$boardName,$boardArr,$reID){
 		case -5:
 			foundErr("很抱歉, 你被版务人员停止了本版的post权力。");
 		case -6:
-			foundErr("两次发文间隔过密, 请休息几秒后再试。");
+			foundErr("两次发文/信间隔过密, 请休息几秒后再试。");
 		case -7:
 			foundErr("无法读取索引文件！请迅速通知站务人员，谢谢！");
 		case -8:
