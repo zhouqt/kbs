@@ -224,13 +224,13 @@ function atomic_board() {
 	$html .= '<input type="submit" value="跳转到"/> 第 <input type="text" name="start" size="3" /> 篇 ';
 	if ($atomic_ftype != $dir_modes["NORMAL"]) {
 		$html .= "<a href='?act=board&board=".$atomic_board."'>版面</a> ";
-	}
+	} else $html .= "<b>版面</b> ";
 	if ($atomic_ftype != $dir_modes["DIGEST"]) {
 		$html .= "<a href='?act=board&board=".$atomic_board."&ftype=".$dir_modes["DIGEST"]."'>文摘</a> ";
-	}
+	} else $html .= "<b>文摘</b> ";
 	if ($atomic_ftype != $dir_modes["MARK"]) {
 		$html .= "<a href='?act=board&board=".$atomic_board."&ftype=".$dir_modes["MARK"]."'>保留</a> ";
-	}
+	} else $html .= "<b>保留</b> ";
 	$html .= "</form>";
 
 	$html .= "<pre> 编号   刊 登 者     日  期  文章标题<br/>";
