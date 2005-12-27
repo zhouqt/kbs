@@ -415,6 +415,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
             int i,j;
             struct key_struct k;
             char buf[120];
+            memmove(&k,keymem+conf->pos-1,sizeof(struct key_struct));
             clear();
             move(1, 0);
             prints("请键入自定义键: ");
@@ -442,9 +443,62 @@ static int set_keydefine_key(struct _select_def *conf, int key)
             if(j<10) k.mapped[j]=0;
             if(j==0) return SHOW_DIRCHANGE;
 
-            k.status[0] = -1;
             memcpy(keymem+conf->pos-1, &k, sizeof(struct key_struct));
             
+            return SHOW_DIRCHANGE;
+        }
+        break;
+    case 'x':
+        {
+            struct key_struct k;
+            int i;
+            char buf[128];
+            memmove(&k,keymem+conf->pos-1,sizeof(struct key_struct));
+            clear();
+            move(1,0);
+            prints("请键入自定义键: ");
+            do{
+                i=igetkey();
+                get_key_name(i,buf);
+            }
+            while(!buf[0]&&i!=KEY_ESC);
+            if(i==KEY_ESC)
+                return SHOW_DIRCHANGE;
+            k.key=i;
+            prints("%s",buf);
+            memmove(keymem+conf->pos-1,&k,sizeof(struct key_struct));
+            prints("\n\n\033[1;33m%s\033[0;33m<Enter>\033[m","已更新!");
+            WAIT_RETURN;
+            return SHOW_DIRCHANGE;
+        }
+        break;
+    case 't':
+        {
+            struct key_struct k;
+            int i,j;
+            char buf[128];
+            memmove(&k,keymem+conf->pos-1,sizeof(struct key_struct));
+            clear();
+            move(1,0);
+            prints("请输入替换序列(最多10个), 按一次ESC结束: ");
+            for(j=0;j<10;j++){
+                do{
+                    i=igetkey();
+                    get_key_name(i,buf);
+                }
+                while(!buf[0]&&i!=KEY_ESC);
+                if(i==KEY_ESC)
+                    break;
+                prints("%s ",buf);
+                k.mapped[j]=i;
+            }
+            if(!j)
+                return SHOW_DIRCHANGE;
+            if(j<10)
+                k.mapped[j]=0;
+            memmove(keymem+conf->pos-1,&k,sizeof(struct key_struct));
+            prints("\n\n\033[1;33m%s\033[0;33m<Enter>\033[m","已更新!");
+            WAIT_RETURN;
             return SHOW_DIRCHANGE;
         }
         break;
