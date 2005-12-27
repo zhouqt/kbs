@@ -190,7 +190,7 @@ void get_modes_name(struct key_struct* key, char* buf)
     }
     while(i<10&&key->status[i]) {
         strcat(buf, ModeType(key->status[i]));
-        strcat(buf, "\x1b[m ");
+        strcat(buf, " ");
         i++;
     }
     buf[strlen(buf)-1] = 0;
@@ -412,7 +412,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
         return SHOW_DIRCHANGE;
     case 's':
         {
-            int i,j;
+            int i,j,x,y;
             struct key_struct k;
             char buf[120];
             memmove(&k,keymem+conf->pos-1,sizeof(struct key_struct));
@@ -435,7 +435,8 @@ static int set_keydefine_key(struct _select_def *conf, int key)
                     get_key_name(i, buf);
                 }while(!buf[0]&&i!=KEY_ESC);
                 if(i==KEY_ESC) break;
-                prints("%s ", buf);
+                getyx(&y,&x);
+                prints((x+strlen(buf)<t_columns-1)?"%s ":"\n%s ",buf);
                 k.mapped[j] = i;
                 j++;
                 if(j>=10) break;
@@ -475,7 +476,7 @@ static int set_keydefine_key(struct _select_def *conf, int key)
     case 't':
         {
             struct key_struct k;
-            int i,j;
+            int i,j,x,y;
             char buf[128];
             memmove(&k,keymem+conf->pos-1,sizeof(struct key_struct));
             clear();
@@ -489,7 +490,8 @@ static int set_keydefine_key(struct _select_def *conf, int key)
                 while(!buf[0]&&i!=KEY_ESC);
                 if(i==KEY_ESC)
                     break;
-                prints("%s ",buf);
+                getyx(&y,&x);
+                prints((x+strlen(buf)<t_columns-1)?"%s ":"\n%s ",buf);
                 k.mapped[j]=i;
             }
             if(!j)
