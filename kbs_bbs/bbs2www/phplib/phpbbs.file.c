@@ -234,42 +234,44 @@ PHP_FUNCTION(bbs2_readfile_text)
             break;
         } else if (c == '\033') {
             in_escape = true;
-        } else if (escape_flag == 2 && c == ' ') {
-            if (!is_last_space) {
-                output_buffer[output_buffer_len++] = ' ';
-            } else {
-                strcpy(output_buffer + output_buffer_len, "&nbsp;");
-                output_buffer_len += 6;
-            }
-            is_last_space = !is_last_space;
         } else if (!in_escape) {
             if (output_buffer_len + 16 > output_buffer_size) {
                 output_buffer = (char*)erealloc(output_buffer, output_buffer_size += 128);
             }
-            is_last_space = false;
-            switch(c) {
-                case '&':
-                    strcpy(output_buffer + output_buffer_len, escape_seq[0]);
-                    output_buffer_len += escape_seq_len[0];
-                    break;
-                case '<':
-                    strcpy(output_buffer + output_buffer_len, escape_seq[1]);
-                    output_buffer_len += escape_seq_len[1];
-                    break;
-                case '>':
-                    strcpy(output_buffer + output_buffer_len, escape_seq[2]);
-                    output_buffer_len += escape_seq_len[2];
-                    break;
-                case '\n':
-                    strcpy(output_buffer + output_buffer_len, escape_seq[3]);
-                    output_buffer_len += escape_seq_len[3];
-                    last_return = output_buffer_len;
-                    is_last_space = true;
-                    break;
-                default:
-                    if (c < 0 || c >= 32)
-                        output_buffer[output_buffer_len++] = c;
-                    break;
+            if (escape_flag == 2 && c == ' ') {
+                if (!is_last_space) {
+                    output_buffer[output_buffer_len++] = ' ';
+                } else {
+                    strcpy(output_buffer + output_buffer_len, "&nbsp;");
+                    output_buffer_len += 6;
+                }
+                is_last_space = !is_last_space;
+            } else {
+                is_last_space = false;
+                switch(c) {
+                    case '&':
+                        strcpy(output_buffer + output_buffer_len, escape_seq[0]);
+                        output_buffer_len += escape_seq_len[0];
+                        break;
+                    case '<':
+                        strcpy(output_buffer + output_buffer_len, escape_seq[1]);
+                        output_buffer_len += escape_seq_len[1];
+                        break;
+                    case '>':
+                        strcpy(output_buffer + output_buffer_len, escape_seq[2]);
+                        output_buffer_len += escape_seq_len[2];
+                        break;
+                    case '\n':
+                        strcpy(output_buffer + output_buffer_len, escape_seq[3]);
+                        output_buffer_len += escape_seq_len[3];
+                        last_return = output_buffer_len;
+                        is_last_space = true;
+                        break;
+                    default:
+                        if (c < 0 || c >= 32)
+                            output_buffer[output_buffer_len++] = c;
+                        break;
+                }
             }
         } else if (isalpha(c)) {
             in_escape = false;
