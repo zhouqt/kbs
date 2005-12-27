@@ -551,8 +551,8 @@ static int set_keydefine_key(struct _select_def *conf, int key)
 static int set_keydefine_refresh(struct _select_def *conf)
 {
     clear();
-    docmdtitle("[设置自定义键]",
-               "预定义[\x1b[1;32mTab\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 添加[\x1b[1;32ma\x1b[0;37m] 修改模式[\x1b[1;32me\x1b[0;37m] 修改键定义[\x1b[1;32ms\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m");
+    docmdtitle("[设置自定义键]","预定义[\x1b[1;32mTab\x1b[0;37m] 添加[\x1b[1;32ma\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m "
+        "修改 { 模式[\x1b[1;32me\x1b[0;37m] 键名[\x1b[1;32mx\x1b[0;37m] 序列[\x1b[1;32mt\x1b[0;37m] 键名及序列[\x1b[1;32ms\x1b[0;37m] }");
     move(2, 0);
     prints("\033[0;1;37;44m  %-6s  %-36s  %-32s", "按键", "替换序列", "模式");
     clrtoeol();
