@@ -170,18 +170,18 @@ PHP_FUNCTION(bbs2_readfile_text)
     char *filename;
     int filename_len;
     long maxchar;
-    long double_escape;
+    long escape_flag; /* 0(default) - escape <>&, 1 - double escape <>&, 2 - escape <>& and space */
     char *output_buffer;
     int output_buffer_len, output_buffer_size, last_return = 0;
     char c;
     char *ptr, *cur_ptr;
     long ptrlen;
-    int in_escape = false;
-    int fd;
-    char escape_seq[4][16];
+    int in_escape = false, in_space = false;
+    int fd, i;
+    char escape_seq[4][16], escape_seq_len[4];
     struct stat st;
 
-    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &filename, &filename_len, &maxchar, &double_escape) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &filename, &filename_len, &maxchar, &escape_flag) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
     
@@ -216,7 +216,7 @@ PHP_FUNCTION(bbs2_readfile_text)
     output_buffer = (char* )emalloc(output_buffer_size);
     output_buffer_len = 0;
     cur_ptr = ptr;
-    if (double_escape) {
+    if (escape_flag == 1) {
         strcpy(escape_seq[0], "&amp;amp;");
         strcpy(escape_seq[1], "&amp;lt;");
         strcpy(escape_seq[2], "&amp;gt;");
@@ -227,6 +227,7 @@ PHP_FUNCTION(bbs2_readfile_text)
         strcpy(escape_seq[2], "&gt;");
         strcpy(escape_seq[3], "<br/>");
     }
+    for (i=0;i<4;i++) escape_seq_len[i] = strlen(escape_seq[i]);
     while (ptrlen > 0) {
         c = *cur_ptr;
         if (c == '\0') { //assume ATTACHMENT_PAD[0] is '\0'
@@ -240,20 +241,33 @@ PHP_FUNCTION(bbs2_readfile_text)
             switch(c) {
                 case '&':
                     strcpy(output_buffer + output_buffer_len, escape_seq[0]);
-                    output_buffer_len += strlen(escape_seq[0]);
+                    output_buffer_len += escape_seq_len[0];
                     break;
                 case '<':
                     strcpy(output_buffer + output_buffer_len, escape_seq[1]);
-                    output_buffer_len += strlen(escape_seq[1]);
+                    output_buffer_len += escape_seq_len[1];
                     break;
                 case '>':
                     strcpy(output_buffer + output_buffer_len, escape_seq[2]);
-                    output_buffer_len += strlen(escape_seq[2]);
+                    output_buffer_len += escape_seq_len[2];
                     break;
                 case '\n':
                     strcpy(output_buffer + output_buffer_len, escape_seq[3]);
-                    output_buffer_len += strlen(escape_seq[3]);
+                    output_buffer_len += escape_seq_len[3];
                     last_return = output_buffer_len;
+                    break;
+                case ' ':
+                    if (escape_flag == 2) {
+                        if (in_space) {
+                            output_buffer[output_buffer_len++] = ' ';
+                        } else {
+                            strcpy(output_buffer + output_buffer_len, "&nbsp;");
+                            output_buffer_len += 6;
+                        }
+                        in_space = !in_space;
+                    } else {
+                        output_buffer[output_buffer_len++] = ' ';
+                    }
                     break;
                 default:
                     if (c < 0 || c >= 32)
