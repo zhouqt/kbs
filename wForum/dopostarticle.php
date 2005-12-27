@@ -85,6 +85,8 @@ function doPostAritcles($boardID,$boardName,$boardArr,$reID){
 	                     intval($_POST['signature']), $reID,$outgo,intval($_POST['anonymous']),
 	                     ($reID>0)?0:intval($_POST['emailflag']),SUPPORT_TEX?intval($_POST['texflag']):0);
 	switch ($ret) {
+		case 2:
+			foundErr("发文成功，但本文可能含有不当内容，需经审核方可发表。请耐心等待站务人员的审核，不要多次尝试发表此文章。");
 		case -1:
 			foundErr("错误的讨论区名称。");
 		case -2:
