@@ -378,7 +378,7 @@ int delete_board(char *boardname, session_t* session)
     }
 
     getdata(3, 0, "ÒÆ³ý¾«»ªÇø [y/N]: ", genbuf, 4, DOECHO, NULL, true);
-    if (genbuf[0] == 'Y' && genbuf[0] == 'y')
+    if (genbuf[0] == 'Y' || genbuf[0] == 'y')
     {
             edit_group(&bcache[bid], NULL);
     }
