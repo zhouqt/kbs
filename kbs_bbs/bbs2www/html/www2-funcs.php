@@ -52,7 +52,6 @@ $dir_modes = array(
  * @param $caller
  *         0 - bbsdoc
  *         1 - bbscon
- *         2 - jscon
  * @return 0 - 不允许的模式
  *         1 - 允许模式，索引是排序的
  *         2 - 允许模式，索引是不排序的
@@ -68,9 +67,9 @@ function bbs_is_permit_mode($ftype, $caller) {
 		case $dir_modes["ORIGIN"]:
 			return ($caller == 0) ? 1 : 0;
 		case $dir_modes["DIGEST"]:
+		case $dir_modes["MARK"]: /* 暂时当作不可排序 ... */
+		case $dir_modes["DELETED"]:
 			return 2;
-		case $dir_modes["MARK"]:
-			return ($caller == 2) ? 0 : 2; /* 暂时当作不可排序 ... */
 		default: return 0;
 	}
 }
@@ -80,6 +79,7 @@ $dir_name = array(
 	0 => "",
 	1 => "(文摘区)",
 	3 => "(保留区)",
+	4 => "(回收站)",
 	6 => "(主题模式)",
 	11 => ""
 );
@@ -119,6 +119,14 @@ function decodesessionchar($ch)
 }
 
 $loginok=0;
+
+function delete_all_cookie() {
+	setcookie("UTMPKEY","",time()-3600,"/");
+	setcookie("UTMPNUM","",time()-3600,"/");
+	setcookie("UTMPUSERID","",time()-3600,"/");
+	setcookie("WWWPARAMS","",time()-3600,"/");
+	setcookie("MANAGEBIDS","",time()-3600,"/");
+}
 
 function set_fromhost()
 {
@@ -220,9 +228,7 @@ function login_init()
 	
 	settype($utmpnum,"integer");
 	if ($loginok!=1) {
-		setcookie("UTMPKEY","",time() - 3600,"/");
-		setcookie("UTMPNUM","",time() - 3600,"/");
-		setcookie("UTMPUSERID","",time() - 3600,"/");
+		delete_all_cookie();
 		cache_header("nocache");
 ?>
 <html>
