@@ -671,7 +671,8 @@ unsigned int check_ann(struct boardheader* bh){
     unsigned int ret,i;
     ret=0;
     sprintf(buf,"%s",bh->ann_path);
-    ptr=strrchr(buf,'/');
+    if(!(ptr=strrchr(buf,'/')))
+        return 0x080000;
     *ptr++=0;
     /*精华区路径与讨论区名称不符*/
     if(strcmp(bh->filename,ptr))
