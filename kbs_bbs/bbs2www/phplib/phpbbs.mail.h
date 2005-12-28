@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_MAIL_H
 #define PHP_BBS_MAIL_H
 
+/* 信件相关 */
+
 PHP_FUNCTION(bbs_checknewmail);
 PHP_FUNCTION(bbs_getmailnum);
 PHP_FUNCTION(bbs_getmailnum2);

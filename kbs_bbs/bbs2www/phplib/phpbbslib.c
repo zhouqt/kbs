@@ -84,6 +84,7 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 #include "phpbbs.bm.h"
 #include "phpbbs.reg.h"
 #include "phpbbs.file.h"
+#include "phpbbs.post.h"
 
 #include "bbs.h"
 #include "bbslib.h"
@@ -124,17 +125,12 @@ static PHP_FUNCTION(bbs_setpassword);
 static PHP_FUNCTION(bbs_searchtitle);
 #endif
 static PHP_FUNCTION(bbs_search_articles);
-static PHP_FUNCTION(bbs_filteruploadfilename);
 static PHP_FUNCTION(bbs_edittitle);
 static PHP_FUNCTION(bbs_brcaddread);
 static PHP_FUNCTION(bbs_brcclear);
 static PHP_FUNCTION(bbs_getarticles);
 static PHP_FUNCTION(bbs_doforward);
-static PHP_FUNCTION(bbs_get_records_from_id);
-static PHP_FUNCTION(bbs_get_records_from_num);
-static PHP_FUNCTION(bbs_get_filename_from_num);
-static PHP_FUNCTION(bbs_get_threads_from_id);
-static PHP_FUNCTION(bbs_get_threads_from_gid);
+
 static PHP_FUNCTION(bbs_countarticles);
 static PHP_FUNCTION(bbs_docross);
 static PHP_FUNCTION(bbs_docommend);
@@ -179,6 +175,7 @@ static function_entry smth_bbs_functions[] = {
     PHP_BBS_BM_EXPORT_FUNCTIONS
     PHP_BBS_REG_EXPORT_FUNCTIONS
     PHP_BBS_FILE_EXPORT_FUNCTIONS
+    PHP_BBS_POST_EXPORT_FUNCTIONS
     
     PHP_FE(bbs_ext_initialized, NULL)
     PHP_FE(bbs_init_ext, NULL)
@@ -205,7 +202,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_updatearticle, NULL)
     PHP_FE(bbs_brcaddread, NULL)
     PHP_FE(bbs_brcclear, NULL)
-    PHP_FE(bbs_filteruploadfilename,NULL)
     PHP_FE(bbs_edittitle, NULL)
     PHP_FE(bbs_getarticles, NULL)
     PHP_FE(bbs_getfriends, NULL)
@@ -213,11 +209,6 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_delete_friend, NULL)
     PHP_FE(bbs_add_friend, NULL)
     PHP_FE(bbs_doforward, NULL)
-    PHP_FE(bbs_get_records_from_id, NULL)
-    PHP_FE(bbs_get_records_from_num, NULL)
-    PHP_FE(bbs_get_filename_from_num, NULL)
-    PHP_FE(bbs_get_threads_from_id, NULL)
-    PHP_FE(bbs_get_threads_from_gid, fifth_arg_force_ref_00011)
     PHP_FE(bbs_countarticles, NULL)
     PHP_FE(bbs_update_uinfo, NULL)
     PHP_FE(bbs_setpassword,NULL)
@@ -471,22 +462,7 @@ static PHP_FUNCTION(bbs_getuserlevel){
 }
 
 
-static void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, char *boardname, int is_bm)
-{
-    flags[0] = get_article_flag(ent, user, boardname, is_bm, getSession());
-    if (is_bm && (ent->accessed[0] & FILE_IMPORTED))
-        flags[1] = 'y';
-    else
-        flags[1] = 'n';
-    if (ent->accessed[1] & FILE_READ)
-        flags[2] = 'y';
-    else
-        flags[2] = 'n';
-    if (ent->attachment)
-        flags[3] = '@';
-    else
-        flags[3] = ' ';
-}
+
 
 
 
@@ -1442,322 +1418,10 @@ static PHP_FUNCTION(bbs_getthreadnum)
 
 #endif
 
-/**
- * Get filename from num in the DIR
- * @param sll
- * 		s: board
- * 		l: num
- * 		l: mode
- * @return error: 0
- * 		   success: s: filename
- * @author: stiger
- */
-static PHP_FUNCTION(bbs_get_filename_from_num)
-{
-
-	char *board;
-	int blen;
-	long num;
-	long mode;
-	struct boardheader *bp;
-	char dirpath[STRLEN];
-	fileheader_t fh;
-	FILE *fp;
-
-    int ac = ZEND_NUM_ARGS();
-    if (ac != 3
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &board, &blen, &num, &mode) == FAILURE)
-    {
-        WRONG_PARAM_COUNT;
-    }
-    /* check for parameter being passed by reference */
-	if (getCurrentUser() == NULL)
-	{
-		RETURN_LONG(0);
-	}
-	if ((bp = getbcache(board)) == NULL)
-	{
-		RETURN_LONG(0);
-	}
-
-	setbdir(mode, dirpath, bp->filename);
-	if ((fp=fopen(dirpath,"r"))==NULL)
-	{
-		RETURN_LONG(0);
-	}
-	fseek(fp, sizeof(fh) * (num-1), SEEK_SET);
-	if( fread(&fh, sizeof(fh), 1, fp) < 1 )
-	{
-		fclose(fp);
-		RETURN_LONG(0);
-	}
-	fclose(fp);
-
-	RETURN_STRING(fh.filename,1);
-}
-
-/**
- * Get a article records from the article num.
- * prototype:
- * int bbs_get_records_from_num(string dirpath, long num, arrary articles);
- *
- * @return Record index on success,
- *       0 on failure.
- * @author stiger
- */
-static PHP_FUNCTION(bbs_get_records_from_num)
-{
-	long num;
-	FILE *fp;
-	char *dirpath;
-	int dlen;
-	fileheader_t articles;
-	zval *element,*articlearray;
-	char flags[3]; /* flags[0]: flag character
-					* flags[1]: imported flag
-					* flags[2]: no reply flag
-					*/
-    int ac = ZEND_NUM_ARGS();
-    if (ac != 3
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sla", &dirpath, &dlen, &num, &articlearray) == FAILURE)
-    {
-        WRONG_PARAM_COUNT;
-    }
-
-	if (getCurrentUser() == NULL)
-	{
-		RETURN_LONG(0);
-	}
-
-	if ((fp = fopen(dirpath, "r")) == NULL )
-	{
-		RETURN_LONG(0);
-	}
-	fseek(fp, sizeof(articles) * num, SEEK_SET);
-	if( fread(&articles, sizeof(articles), 1, fp) < 1 )
-	{
-		fclose(fp);
-		RETURN_LONG(0);
-	}
-	fclose(fp);
-
-	if(array_init(articlearray) != SUCCESS)
-	{
-                RETURN_LONG(0);
-	}
-
-	MAKE_STD_ZVAL(element);
-	array_init(element);
-	flags[0]=0;
-	flags[1]=0;
-	flags[2]=0;
-	bbs_make_article_array(element, &articles, flags, sizeof(flags));
-	zend_hash_index_update(Z_ARRVAL_P(articlearray), 0,
-				(void*) &element, sizeof(zval*), NULL);
-
-	RETURN_LONG(1);
-}
-
-/**
- * Get some article records from the article id.
- * prototype:
- * int bbs_get_records_from_id(string board, long id, long mode, arrary articles);
- *
- * @return Record index on success,
- *       0 on failure.
- * @author flyriver
- */
-static PHP_FUNCTION(bbs_get_records_from_id)
-{
-	char *board;
-	int blen;
-	long id;
-	int num;
-	long mode;
-	int fd;
-	char dirpath[STRLEN];
-#define record_cnt 3
-	fileheader_t articles[record_cnt];
-	struct boardheader *bp;
-	int i;
-	zval *element,*articlearray;
-	int is_bm;
-	char flags[3]; /* flags[0]: flag character
-					* flags[1]: imported flag
-					* flags[2]: no reply flag
-					*/
-    int ac = ZEND_NUM_ARGS();
-    int retnum;
-
-    if (ac != 4
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "slla", &board, &blen, &id, &mode, &articlearray) == FAILURE)
-    {
-        WRONG_PARAM_COUNT;
-    }
-
-    /* check for parameter being passed by reference 
-	if (getCurrentUser() == NULL)
-	{
-		RETURN_LONG(0);
-	}
-	*/
-	if ((bp = getbcache(board)) == NULL)
-	{
-		RETURN_LONG(0);
-	}
-    is_bm = is_BM(bp, getCurrentUser());
-	/*if (array_init(return_value) == FAILURE)
-	{
-		RETURN_LONG(0);
-	}*/
-    setbdir(mode, dirpath, bp->filename);
-    if(mode == DIR_MODE_ZHIDING){
-        struct BoardStatus* bs=getbstatus(getboardnum(bp->filename,NULL));
-	num=0;
-        for (i=0;i<bs->toptitle;i++) {
-            if (bs->topfh[i].id==id) {
-                memcpy(&articles[1],&bs->topfh[i],sizeof(struct fileheader));
-                num=i+1;
-                break;
-            }
-        }
-	if(num == 0) RETURN_LONG(0);
-	memset(articles,0,sizeof(struct fileheader));
-	memset(articles+2,0,sizeof(struct fileheader));
-    }else{
-
-	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
-	{
-		RETURN_LONG(0);
-	}
-	if ((retnum=get_records_from_id(fd, id, articles, record_cnt, &num)) == 0)
-	{
-		close(fd);
-		RETURN_LONG(0);
-	}
-	close(fd);
-  }
-	//MAKE_STD_ZVAL(articlearray);
-	if(array_init(articlearray) != SUCCESS)
-	{
-                RETURN_LONG(0);
-	}
-	for (i = 0; i < record_cnt; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-        if(articles[i].id && getCurrentUser() ){
-            make_article_flag_array(flags, articles + i, getCurrentUser(), bp->filename, is_bm);
-        }else{
-            memset(flags, 0, sizeof(flags));
-        }
-		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
-		zend_hash_index_update(Z_ARRVAL_P(articlearray), i,
-				(void*) &element, sizeof(zval*), NULL);
-	}
-	RETURN_LONG(num);
-}
-
-/**
- * Get some thread records from an article id.
- * prototype:
- * int bbs_get_threads_from_id(long boardid, long id, long mode, long num);
- *
- * @return Records on success,
- *         FALSE on failure.
- * @author flyriver
- */
-static PHP_FUNCTION(bbs_get_threads_from_id)
-{
-	long bid;
-	long id;
-	long num;
-	long mode;
-	char dirpath[STRLEN];
-	fileheader_t *articles;
-	const struct boardheader *bp;
-	int rc;
-	int i;
-	zval *element;
-	char flags[3] = {0x00}; /* flags[0]: flag character
-							 * flags[1]: imported flag
-							 * flags[2]: no reply flag
-							 */
-    int ac = ZEND_NUM_ARGS();
-    int retnum;
-
-    if (ac != 4
-        ||zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "llll", &bid, &id, &mode, &num) == FAILURE)
-    {
-        WRONG_PARAM_COUNT;
-    }
-
-    /* check for parameter being passed by reference 
-	*/
-	if ((bp = getboard(bid)) == NULL)
-	{
-		RETURN_FALSE;
-	}
-	if (num == 0)
-	{
-		RETURN_FALSE;
-	}
-	if (num < 0)
-	{
-		if ((articles = emalloc((-num)*sizeof(fileheader_t))) == NULL)
-		{
-			RETURN_FALSE;
-		}
-	}
-	else
-	{
-		if ((articles = emalloc(num*sizeof(fileheader_t))) == NULL)
-		{
-			RETURN_FALSE;
-		}
-	}
-	if (array_init(return_value) == FAILURE)
-	{
-		retnum = 0;
-		goto threads_error;
-	}
-	setbdir(mode, dirpath, bp->filename);
-	if ((rc = get_threads_from_id(dirpath, id, articles, num)) == 0)
-	{
-		retnum = 0;
-		goto threads_error;
-	}
-	for (i = 0; i < rc; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i,
-				(void*) &element, sizeof(zval*), NULL);
-	}
-	retnum = 1;
-threads_error:
-	efree(articles);
-	if (retnum == 0)
-		RETURN_FALSE;
-}
 
 
 
 
-static PHP_FUNCTION(bbs_filteruploadfilename)
-{
-    char *filename;
-    long flen;
-    if (zend_parse_parameters(1 TSRMLS_CC, "s/", &filename, &flen) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-    if (!flen) {
-        RETURN_FALSE;
-    }
-    filename = filter_upload_filename(filename);
-    RETURN_STRING(filename, 1);
-}
 
 
 /*
@@ -3243,90 +2907,7 @@ static PHP_FUNCTION(bbs_csv_to_al)
 
 
 
-/**
- * get a full threads of articles from a groupid.
- * prototype:
- * int bbs_get_threads_from_gid(int bid, int gid, int start , array &articles , int haveprev);
- *
- * @return Record index on success,
- *       0 on failure.
- * @author flyriver
- */
-static PHP_FUNCTION(bbs_get_threads_from_gid)
-{
-#define MAX_THREADS_NUM 512
-	long bid;
-	long gid;
-	long start;
-    zval *z_threads;
-    zval *retprev;
-    int i;
-	const struct boardheader *bp;
-	int is_bm;
-	char dirpath[STRLEN];
-	struct fileheader *articles;
-	int retnum;
-	int haveprev;
-	zval *element;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
-    int ac = ZEND_NUM_ARGS();
-	if( start < 0 )
-		start = 0;
-    
 
-    if (ac != 5 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "lllzz", &bid , &gid, &start , &z_threads , &retprev) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-    /*
-     * check for parameter being passed by reference 
-     */
-    if (!PZVAL_IS_REF(z_threads) || !PZVAL_IS_REF(retprev)) {
-        zend_error(E_WARNING, "Parameter wasn't passed by reference");
-        RETURN_LONG(0);
-    }
-    
-        if ((bp = getboard(bid)) == NULL)
-	{
-        RETURN_LONG(0);
-	}
-        is_bm = is_BM(bp, getCurrentUser());
-	setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
-
-	articles = (struct fileheader *)emalloc(MAX_THREADS_NUM * sizeof(struct fileheader));
-	if (articles == NULL)
-	{
-        RETURN_LONG(0);
-	}
-	if ((retnum=get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM , start , &haveprev)) == 0)
-	{
-		efree(articles);
-        RETURN_LONG(0);
-	}
-	
-	ZVAL_LONG(retprev , haveprev);
-	zval_dtor(z_threads);
-	array_init(z_threads);
-	for (i = 0; i < retnum; i++)
-	{
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-        if(articles[i].id && getCurrentUser() ){
-            make_article_flag_array(flags, articles + i, getCurrentUser(), (char*)bp->filename, is_bm);
-        }else{
-            memset(flags, 0, sizeof(flags));
-        }
-		bbs_make_article_array(element, articles + i, flags, sizeof(flags));
-		zend_hash_index_update(Z_ARRVAL_P(z_threads), i,
-				(void*) &element, sizeof(zval*), NULL);
-	}
-	efree(articles);
-	RETURN_LONG(retnum);
-}
 
 
 

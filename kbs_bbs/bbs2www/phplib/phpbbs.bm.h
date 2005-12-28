@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_BM_H
 #define PHP_BBS_BM_H
 
+/* 版主版面管理相关 */
+
 PHP_FUNCTION(bbs_is_bm);
 PHP_FUNCTION(bbs_denyusers);
 PHP_FUNCTION(bbs_denyadd);

@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_FILE_H
 #define PHP_BBS_FILE_H
 
+/* 具体到一个帖子文件的操作 */
+
 PHP_FUNCTION(bbs2_readfile);
 PHP_FUNCTION(bbs2_readfile_text);
 PHP_FUNCTION(bbs_printansifile);

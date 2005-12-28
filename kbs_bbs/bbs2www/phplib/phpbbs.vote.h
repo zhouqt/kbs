@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_VOTE_H
 #define PHP_BBS_VOTE_H
 
+/* 投票相关，模版发文相关 */
+
 PHP_FUNCTION(bbs_get_votes);
 PHP_FUNCTION(bbs_get_vote_from_num);
 PHP_FUNCTION(bbs_vote_num);

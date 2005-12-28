@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_SYSTEM_H
 #define PHP_BBS_SYSTEM_H
 
+/* 一些系统函数 */
+
 PHP_FUNCTION(bbs_get_explain);
 PHP_FUNCTION(bbs_sysconf_str);
 PHP_FUNCTION(bbs_new_board);

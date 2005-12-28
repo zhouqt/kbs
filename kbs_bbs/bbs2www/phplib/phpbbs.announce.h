@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_ANNOUNCE_H
 #define PHP_BBS_ANNOUNCE_H
 
+/* 精华区读取 */
+
 PHP_FUNCTION(bbs_ann_traverse_check);
 PHP_FUNCTION(bbs_ann_num2path);
 PHP_FUNCTION(bbs_ann_get_board);

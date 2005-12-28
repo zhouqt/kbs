@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_MSG_H
 #define PHP_BBS_MSG_H
 
+/* 讯息及手机短信相关 */
+
 PHP_FUNCTION(bbs_getwebmsgs);
 PHP_FUNCTION(bbs_mailwebmsgs);
 PHP_FUNCTION(bbs_checkwebmsg);

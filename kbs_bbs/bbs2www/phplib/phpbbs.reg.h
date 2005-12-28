@@ -1,6 +1,7 @@
 #ifndef PHP_BBS_REG_H
 #define PHP_BBS_REG_H
 
+/* 用户注册相关，包括用户信息读取和写入 */
 PHP_FUNCTION(bbs_saveuserdata);
 PHP_FUNCTION(bbs_createregform);
 

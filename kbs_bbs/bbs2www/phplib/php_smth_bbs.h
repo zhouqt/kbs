@@ -83,13 +83,15 @@ ZEND_END_MODULE_GLOBALS(smth_bbs)
 
 /* phpbbs.article.c */
 void reset_output_buffer();
-int getattachtmppath(char *buf, size_t buf_len);
 void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len);
+void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, char *boardname, int is_bm);
 
 /* phpbbs.user.c */
 void setcurrentuinfo(struct user_info *uinfo, int uinfonum);
 void setcurrentuser(struct userec *user, int usernum);
 
+/* phpbbs.post.c */
+int getattachtmppath(char *buf, size_t buf_len);
 
 #endif	/* PHP_SMTH_BBS_H */
 
