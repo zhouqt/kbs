@@ -86,12 +86,15 @@ void reset_output_buffer();
 void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len);
 void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, char *boardname, int is_bm);
 
-/* phpbbs.user.c */
-void setcurrentuinfo(struct user_info *uinfo, int uinfonum);
-void setcurrentuser(struct userec *user, int usernum);
-
 /* phpbbs.post.c */
 int getattachtmppath(char *buf, size_t buf_len);
+
+/* phpbbs.user.c */
+void assign_user(zval * array, struct userec *user, int num);
+
+/* phpbbs.session.c */
+void setcurrentuinfo(struct user_info *uinfo, int uinfonum);
+void setcurrentuser(struct userec *user, int usernum);
 
 #endif	/* PHP_KBS_BBS_H */
 

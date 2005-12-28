@@ -1,14 +1,38 @@
-EXTRA_DIST = php_kbs_bbs.h phpbbs.user.h phpbbs.announce.h phpbbs.vote.h phpbbs.system.h \
-             phpbbs.board.h phpbbs.article.h phpbbs.msg.h phpbbs.mail.h phpbbs.bm.h \
-             phpbbs.reg.h phpbbs.file.h phpbbs.post.h phpbbs.friend.h \
+EXTRA_DIST = php_kbs_bbs.h \
+             phpbbs.announce.h \
+             phpbbs.article.h \
+             phpbbs.bm.h \
+             phpbbs.board.h \
+             phpbbs.file.h \
+             phpbbs.friend.h \
+             phpbbs.mail.h \
+             phpbbs.msg.h \
+             phpbbs.post.h \
+             phpbbs.reg.h \
+             phpbbs.session.h \
+             phpbbs.system.h \
+             phpbbs.user.h  \
+             phpbbs.vote.h \
              phpbbs.wforum.h 
 libdir=@PHPBBSLIBPATH@
 lib_LTLIBRARIES = libphpbbslib.la
 phpdir=@PHPBBSLIBPATH@
 #php_DATA=funcs.php
-libphpbbslib_la_SOURCES = phpbbslib.c phpbbs.user.c phpbbs.announce.c phpbbs.vote.c phpbbs.system.c \
-                          phpbbs.board.c phpbbs.article.c phpbbs.msg.c phpbbs.mail.c phpbbs.bm.c \
-                          phpbbs.reg.c phpbbs.file.c phpbbs.post.c phpbbs.friend.c \
+libphpbbslib_la_SOURCES = phpbbslib.c \
+                          phpbbs.announce.c \
+                          phpbbs.article.c \
+                          phpbbs.bm.c \
+                          phpbbs.board.c \
+                          phpbbs.file.c \
+                          phpbbs.friend.c \
+                          phpbbs.mail.c \
+                          phpbbs.msg.c \
+                          phpbbs.post.c \
+                          phpbbs.reg.c \
+                          phpbbs.session.c \
+                          phpbbs.system.c \
+                          phpbbs.user.c  \
+                          phpbbs.vote.c \
                           phpbbs.wforum.c 
 libphpbbslib_la_LIBADD = -L../../libBBS -lBBS -L../../libsystem -lsystem -L../lib -lbbslib
 AM_CFLAGS  = -I../include -I../../src -I@PHPBASE@ -I@PHPBASE@/main -I@PHPBASE@/Zend -I@PHPBASE@/TSRM -DCOMPILE_DL_KBS_BBS -Wall

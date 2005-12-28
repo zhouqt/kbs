@@ -1,6 +1,8 @@
 #ifndef PHP_BBS_BOARD_H
 #define PHP_BBS_BOARD_H
 
+/* 版面读取和查询 */
+
 PHP_FUNCTION(bbs_getboard);
 PHP_FUNCTION(bbs_getboards);
 

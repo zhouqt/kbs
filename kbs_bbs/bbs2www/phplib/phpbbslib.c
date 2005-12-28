@@ -75,20 +75,20 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 #include "bbs.h"
 #include "bbslib.h"
 
-#include "phpbbs.user.h"
 #include "phpbbs.announce.h"
-#include "phpbbs.vote.h"
-#include "phpbbs.system.h"
-#include "phpbbs.board.h"
 #include "phpbbs.article.h"
-#include "phpbbs.msg.h"
-#include "phpbbs.mail.h"
 #include "phpbbs.bm.h"
-#include "phpbbs.reg.h"
+#include "phpbbs.board.h"
 #include "phpbbs.file.h"
-#include "phpbbs.post.h"
 #include "phpbbs.friend.h"
-
+#include "phpbbs.mail.h"
+#include "phpbbs.msg.h"
+#include "phpbbs.post.h"
+#include "phpbbs.reg.h"
+#include "phpbbs.session.h"
+#include "phpbbs.system.h"
+#include "phpbbs.user.h"
+#include "phpbbs.vote.h"
 #ifdef HAVE_WFORUM
 #include "phpbbs.wforum.h"
 #endif
@@ -100,29 +100,8 @@ static char old_pwd[1024];
 PHP_FUNCTION(bbs_ext_initialized);
 PHP_FUNCTION(bbs_init_ext);
 
-////////////////////////  User operation functions  ///////////////////////////
-static PHP_FUNCTION(bbs_checkuserpasswd);
-static PHP_FUNCTION(bbs_setuserpasswd);
-static PHP_FUNCTION(bbs_getuserlevel);
-static PHP_FUNCTION(bbs_getusermode);
-static PHP_FUNCTION(bbs_compute_user_value);
-static PHP_FUNCTION(bbs_user_level_char);
-PHP_FUNCTION(bbs_user_setflag);
-static PHP_FUNCTION(bbs_isonline);
-
-
-static PHP_FUNCTION(bbs_modify_info);
-static PHP_FUNCTION(bbs_recalc_sig);
-static PHP_FUNCTION(bbs_modify_nick);
-static PHP_FUNCTION(bbs_findpwd_check);
-static PHP_FUNCTION(bbs_update_uinfo);
-static PHP_FUNCTION(bbs_setpassword);
-
-
-////////////////////////   WWW special functions  /////////////////////////////
-
 #if HAVE_MYSQL_SMTH == 1
-static PHP_FUNCTION(bbs_csv_to_al);
+PHP_FUNCTION(bbs_csv_to_al);
 #endif
 
 
@@ -131,40 +110,26 @@ static PHP_FUNCTION(bbs_csv_to_al);
  * define what functions can be used in the PHP embedded script
  */
 static function_entry kbs_bbs_functions[] = {
-    PHP_BBS_USER_EXPORT_FUNCTIONS
     PHP_BBS_ANNOUNCE_EXPORT_FUNCTIONS
-    PHP_BBS_VOTE_EXPORT_FUNCTIONS
-    PHP_BBS_SYSTEM_EXPORT_FUNCTIONS
-    PHP_BBS_BOARD_EXPORT_FUNCTIONS
     PHP_BBS_ARTICLE_EXPORT_FUNCTIONS
-    PHP_BBS_MSG_EXPORT_FUNCTIONS
-    PHP_BBS_MAIL_EXPORT_FUNCTIONS
     PHP_BBS_BM_EXPORT_FUNCTIONS
-    PHP_BBS_REG_EXPORT_FUNCTIONS
-    PHP_BBS_FILE_EXPORT_FUNCTIONS
-    PHP_BBS_POST_EXPORT_FUNCTIONS
+    PHP_BBS_BOARD_EXPORT_FUNCTIONS
     PHP_BBS_FRIEND_EXPORT_FUNCTIONS
+    PHP_BBS_FILE_EXPORT_FUNCTIONS
+    PHP_BBS_MAIL_EXPORT_FUNCTIONS
+    PHP_BBS_MSG_EXPORT_FUNCTIONS
+    PHP_BBS_POST_EXPORT_FUNCTIONS
+    PHP_BBS_REG_EXPORT_FUNCTIONS
+    PHP_BBS_SESSION_EXPORT_FUNCTIONS
+    PHP_BBS_SYSTEM_EXPORT_FUNCTIONS
+    PHP_BBS_USER_EXPORT_FUNCTIONS
+    PHP_BBS_VOTE_EXPORT_FUNCTIONS
 #ifdef HAVE_WFORUM
     PHP_BBS_WFORUM_EXPORT_FUNCTIONS
 #endif
 
     PHP_FE(bbs_ext_initialized, NULL)
     PHP_FE(bbs_init_ext, NULL)
-
-    PHP_FE(bbs_checkuserpasswd, NULL)
-    PHP_FE(bbs_setuserpasswd, NULL)
-    PHP_FE(bbs_getuserlevel, NULL)
-    PHP_FE(bbs_user_setflag, NULL)
-    PHP_FE(bbs_getusermode, NULL)
-    PHP_FE(bbs_compute_user_value, NULL)
-    PHP_FE(bbs_user_level_char, NULL)
-    PHP_FE(bbs_isonline, NULL)
-    PHP_FE(bbs_update_uinfo, NULL)
-    PHP_FE(bbs_setpassword,NULL)
-    PHP_FE(bbs_findpwd_check,NULL)
-    PHP_FE(bbs_modify_info,NULL)
-    PHP_FE(bbs_recalc_sig,NULL)
-    PHP_FE(bbs_modify_nick,NULL)
 
 #if HAVE_MYSQL_SMTH == 1
     PHP_FE(bbs_csv_to_al, NULL)
@@ -207,276 +172,6 @@ static void setstrlen(pval * arg)
     arg->value.str.len = strlen(arg->value.str.val);
 }
  */
-
-
-
-
-
-
-
-
-/*
- * Here goes the real functions
- */
-
-static PHP_FUNCTION(bbs_getusermode)
-{
-	char *userid;
-	int userid_len;
-	char buf[1024];
-
-    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-	
-	if( userid_len > IDLEN )
-		userid[IDLEN]=0;
-
-	if( get_userstatusstr(userid, buf) == 0 )
-		RETURN_LONG(0);
-
-	RETURN_STRING(buf,1);
-}
-
-static PHP_FUNCTION(bbs_user_level_char)
-{
-	char *userid;
-	int userid_len;
-    struct userec *lookupuser;
-	char permstr[USER_TITLE_LEN];
-
-    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-	
-	if( userid_len > IDLEN )
-		userid[IDLEN]=0;
-
-	if( getuser(userid, &lookupuser) == 0 )
-		RETURN_LONG(0);
-
-	permstr[0]=0;
-	uleveltochar(permstr, lookupuser);
-	RETURN_STRING(permstr, 1);
-
-}
-
-static PHP_FUNCTION(bbs_compute_user_value)
-{
-	char *userid;
-	int userid_len;
-    struct userec *lookupuser;
-
-    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-	
-	if( userid_len > IDLEN )
-		userid[IDLEN]=0;
-
-	if( getuser(userid, &lookupuser) == 0 )
-		RETURN_LONG(0);
-
-	RETURN_LONG( compute_user_value(lookupuser) );
-
-}
-
-
-static PHP_FUNCTION(bbs_setuserpasswd){
-    char *s;
-    int s_len;
-    char *pw;
-    int pw_len;
-    int unum;
-    struct userec *user;
-
-    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-    if (s_len > IDLEN)
-        s[IDLEN] = 0;
-    if (pw_len > PASSLEN)
-        pw[PASSLEN] = 0;
-	if (pw_len < 2) {
-		RETURN_LONG(-1);
-	}
-    if ( !(unum = getuser(s, &user))) {
-        RETURN_LONG(-2);
-    }
-	setpasswd(pw, user);
-    RETURN_LONG(0);
-}
-
-static PHP_FUNCTION(bbs_checkuserpasswd){
-    char *s;
-    int s_len;
-    char *pw;
-    int pw_len;
-    int unum;
-    struct userec *user;
-
-    if (zend_parse_parameters(2 TSRMLS_CC, "ss", &s, &s_len, &pw, &pw_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-    if (s_len > IDLEN)
-        s[IDLEN] = 0;
-    if (pw_len > PASSLEN)
-        pw[PASSLEN] = 0;
-	if (pw_len < 2) {
-		RETURN_LONG(-1);
-	}
-    if ( !(unum = getuser(s, &user))) {
-        RETURN_LONG(-2);
-    }
-	   if ( !checkpasswd2(pw, user)) {
-        RETURN_LONG(-3);
-    }
-    RETURN_LONG(0);
-}
-
-PHP_FUNCTION(bbs_user_setflag)
-{
-    struct userec *lookupuser;
-    char *s;
-    int s_len;
-    long flag, set;
-
-    if (ZEND_NUM_ARGS() != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &s, &s_len, &flag, &set) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-    if( ! getuser(s,&lookupuser) ) {
-        RETURN_FALSE;
-    }
-    if (set) {
-        lookupuser->flags |= flag;
-    } else {
-        lookupuser->flags &= ~flag;
-    }
-    RETURN_TRUE;
-}
-
-
-static int count_online(struct user_info *uentp, int *arg, int pos)
-{
-     if (uentp->invisible == 1) {
-         return COUNT;
-     }
-     (*arg) = 1;
-     UNUSED_ARG(pos);
-     return QUIT;
-}
-/*
- * bbs_isonline(userid), return if this userid is online. If cloak, return false
- * 这个函数慎用，目前仅 wForum 用到 - atppp
- */
-static PHP_FUNCTION(bbs_isonline)
-{
-    int can_see = 0;
-    struct userec *lookupuser;
-    char *s;
-    int s_len;
-
-    if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &s, &s_len) != SUCCESS) {
-        WRONG_PARAM_COUNT;
-    }
-    if( ! getuser(s,&lookupuser) ) {
-        RETURN_FALSE;
-    }
-    apply_utmp((APPLY_UTMP_FUNC) count_online, 0, lookupuser->userid, &can_see);
-    if (can_see) RETURN_TRUE;
-    RETURN_FALSE;
-}
-
-
-    
-static PHP_FUNCTION(bbs_getuserlevel){
-    struct userec* u;
-	char* user;
-	int uLen;
-	char title[USER_TITLE_LEN];
-    if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &user, &uLen) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (getuser(user, &u)==0) {
-		RETURN_LONG(-1);
-	}
-	uleveltochar(title,u);
-	title[USER_TITLE_LEN-1]=0;
-	RETURN_STRINGL(title,strlen(title),1);
-}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
- * set currentuinfo for user.
- * prototype:
- * string bbs_update_uinfo(string field, value)
- * @return TRUE on success,
- *       FALSE on failure.
- * @author kcn
- */
-static PHP_FUNCTION(bbs_update_uinfo)
-{
-    zval *value;
-    char *field;
-    int field_len;
-    int ac = ZEND_NUM_ARGS();
-
-    if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "sz", &field, &field_len, &value) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-    if (!strcmp(field, "invisible")) {
-/*	    conver_to_boolean_ex(&value);
- *	    */
-        getSession()->currentuinfo->invisible = Z_LVAL_P(value);
-    }
-    RETURN_LONG(0);
-}
-
-/**
- * set password for user.
- * prototype:
- * string bbs_setpassword(string userid, string password)
- * @if userid=="" then user=getCurrentUser()
- * @return TRUE on success,
- *       FALSE on failure.
- * @author kcn
- */
-static PHP_FUNCTION(bbs_setpassword)
-{
-    char *userid;
-    int userid_len;
-    char *password;
-    int password_len;
-    int ac = ZEND_NUM_ARGS();
-    struct userec *user;
-
-    if (ac != 2 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "ss", &userid, &userid_len, &password, &password_len) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-    if (userid != 0) {
-        if (getuser(userid, &user) == 0)
-            RETURN_FALSE;
-    } else
-        user = getCurrentUser();
-    if (setpasswd(password, user) != 1)
-        RETURN_FALSE;
-    RETURN_TRUE;
-}
 
 static int ext_init = 0; /* Don't access this variable directly, 
 						  use the following helper routines */
@@ -670,196 +365,6 @@ PHP_MINFO_FUNCTION(kbs_bbs)
 
 
 
-static PHP_FUNCTION(bbs_modify_nick)
-{
-    struct userec newinfo;
-    int unum;
-
-    char* username;
-    int username_len;
-    int ac = ZEND_NUM_ARGS();
-    long bTmp = 1;
-
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &username, &username_len) == FAILURE)
-        if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &username, &username_len, &bTmp) == FAILURE)
-    {
-            WRONG_PARAM_COUNT;
-    }
-    filter_control_char(username);
-	if( username_len >= NAMELEN)
-       RETURN_LONG(-1);
-
-    if (!bTmp) {
-        if( (unum = searchuser(getCurrentUser()->userid))==0)
-            RETURN_LONG(-1);
-        memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
-        if (strcmp(newinfo.username, username)) {
-            strcpy(newinfo.username, username);
-        	update_user(&newinfo, unum, 1);
-        }
-    }
-
-	strcpy(getSession()->currentuinfo->username, username);
-    UPDATE_UTMP_STR(username, (*(getSession()->currentuinfo)));
-
-	RETURN_LONG(0);
-}
-
-static PHP_FUNCTION(bbs_recalc_sig)
-{
-	struct userec newinfo;
-	int unum;
-	int sign;
-
-    if( (unum = searchuser(getCurrentUser()->userid))==0)
-		RETURN_LONG(-1);
-	memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
-    
-	if( read_user_memo(getCurrentUser()->userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
-
-    (getSession()->currentmemo)->ud.signum = calc_numofsig(getCurrentUser()->userid);
-	sign = (getSession()->currentmemo)->ud.signum;
-
-    write_userdata(getCurrentUser()->userid,&((getSession()->currentmemo)->ud) );
-	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
-
-
-	if(sign>0 && newinfo.signature>0)
-		RETURN_LONG(1);
-
-	if(sign<=0 && newinfo.signature==0)
-		RETURN_LONG(2);
-
-	if(sign > 0)
-    	newinfo.signature = 1;
-	else
-		newinfo.signature = 0;
-
-	update_user(&newinfo, unum, 1);
-
-	RETURN_LONG(3);
-
-}
-
-
-/* bbsinfo.php, stiger */
-static PHP_FUNCTION(bbs_modify_info)
-{
-    char* username;
-    int username_len;
-    char* realname;
-    int realname_len;
-    char* address;
-    int address_len;
-    char* email;
-    int email_len;
-
-    struct userdata ud;
-	struct userec newinfo;
-	int unum;
-    int ac = ZEND_NUM_ARGS();
-
-    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &username, &username_len,&realname,&realname_len,&address,&address_len,&email,&email_len) == FAILURE)
-    {
-            WRONG_PARAM_COUNT;
-    }
-
-    filter_control_char(username);
-    filter_control_char(realname);
-    filter_control_char(address);
-    filter_control_char(email);
-
-    if(username_len >= NAMELEN || realname_len >= NAMELEN || address_len >= STRLEN || email_len>= STRLEN)
-       RETURN_LONG(-1);
-
-    memset(&ud,0,sizeof(ud));
-	if( read_user_memo(getCurrentUser()->userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
-
-    if(read_userdata(getCurrentUser()->userid,&ud) < 0)RETURN_LONG(-2);
-
-    strncpy(ud.realname, realname, NAMELEN);
-    strncpy(ud.address,address,STRLEN);
-    strncpy(ud.email,email,STRLEN);
-
-	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
-	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
-
-    if(write_userdata(getCurrentUser()->userid,&ud) < 0)RETURN_LONG(-2);
-
-                if( (unum = searchuser(getCurrentUser()->userid))==0)
-       				RETURN_LONG(-1);
-				memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
-                if (strcmp(newinfo.username, username)) {
-
-                    strcpy(newinfo.username, username);
-					update_user(&newinfo, unum, 1);
-
-					strcpy(getSession()->currentuinfo->username, username);
-                    UPDATE_UTMP_STR(username, (*(getSession()->currentuinfo)));
-                }
-
-	bbslog("user","%s","change user info from www");
-
-    RETURN_LONG(0);
-}
-
-
-
-
-/**
- *  Function: 根据注册姓名和email生成新的密码.如果用户名为空,则生成一个密码.
- *   string bbs_findpwd_check(string userid,string realname,string email);
- *
- *   if failed. reaturn NULL string; or return new password.
- *              by binxun
- */
-static PHP_FUNCTION(bbs_findpwd_check)
-{
-    char*   userid,
-	        *realname,
-            *email;
-	int     userid_len,
-	        realname_len,
-			email_len;
-	char    pwd[30];
-    struct userdata ud;
-	struct userec* uc;
-
-	int ac = ZEND_NUM_ARGS();
-    chdir(BBSHOME);
-
-    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss", &userid,&userid_len,&realname,&realname_len,&email,&email_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	pwd[0] = 0;
-    if(userid_len > IDLEN)RETURN_LONG(1);
-
-	//生成新密码
-	srand(time(NULL));
-	sprintf(pwd,"%d",rand());
-
-	if(userid_len > 0){
-        if(getuser(userid,&uc) == 0)RETURN_LONG(3);
-	    if(read_userdata(userid,&ud)<0)RETURN_LONG(4);
-
-	    if(!strncmp(userid,ud.userid,IDLEN) && !strncmp(email,ud.email,STRLEN))
-	    {
-		    setpasswd(pwd,uc);
-	    }
-	    else
-	        RETURN_LONG(5);
-	}
-
-    RETURN_STRING(pwd,1);
-}
-
-
-
-	
-
-
-
 
 
 
@@ -869,7 +374,7 @@ static PHP_FUNCTION(bbs_findpwd_check)
 
 
 #if HAVE_MYSQL_SMTH == 1
-static PHP_FUNCTION(bbs_csv_to_al)
+PHP_FUNCTION(bbs_csv_to_al)
 {
 	int ac = ZEND_NUM_ARGS();
 	char *dest;

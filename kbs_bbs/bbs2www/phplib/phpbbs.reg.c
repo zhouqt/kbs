@@ -396,6 +396,131 @@ PHP_FUNCTION(bbs_createregform)
         RETURN_LONG(10);
 }
 
+
+
+/**
+ * fill infomation of ID ,name, NO. dept, for tsinghua
+ * prototype:
+ * int bbs_fillIDInfo(string smthid,string name,string number,string dept);
+ *
+ *  @return the result
+ *  	0 -- success, -1 -- Invalid parameter
+ *  	-2 -- error
+ *  @author binxun
+ */
+PHP_FUNCTION(bbs_fillidinfo)
+{
+    char* userid;
+    int userid_len;
+    char* realname;
+    int realname_len;
+    char* number;
+    int number_len;
+    char* dept;
+    int dept_len;
+    char genbuf[STRLEN];
+
+    struct userdata ud;
+
+    int ac = ZEND_NUM_ARGS();
+
+
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &userid, &userid_len,&realname,&realname_len,&number,&number_len,&dept,&dept_len) == FAILURE)
+    {
+            WRONG_PARAM_COUNT;
+    }
+
+    if(userid_len > IDLEN || realname_len > NAMELEN || dept_len > STRLEN)
+       RETURN_LONG(-1);
+
+    memset(&ud,0,sizeof(ud));
+	if( read_user_memo(userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
+
+    if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
+
+    strncpy(ud.realname, realname, NAMELEN);
+    strncpy(ud.address,dept,STRLEN);
+    sprintf(genbuf,"%s#%s#%s#TH",realname,number,dept);
+    if(strlen(genbuf) >= STRLEN - 16) //too long
+		sprintf(genbuf,"%s#%s#TH",realname,number);//must < STRLEN - 16
+    strncpy(ud.realemail,genbuf,STRLEN-16);
+
+	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
+	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
+
+    if(write_userdata(userid,&ud) < 0)RETURN_LONG(-2);
+
+	bbslog("user","%s","new account from tsinghua www");
+
+    RETURN_LONG(0);
+}
+
+
+
+/* bbsinfo.php, stiger */
+PHP_FUNCTION(bbs_modify_info)
+{
+    char* username;
+    int username_len;
+    char* realname;
+    int realname_len;
+    char* address;
+    int address_len;
+    char* email;
+    int email_len;
+
+    struct userdata ud;
+	struct userec newinfo;
+	int unum;
+    int ac = ZEND_NUM_ARGS();
+
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &username, &username_len,&realname,&realname_len,&address,&address_len,&email,&email_len) == FAILURE)
+    {
+            WRONG_PARAM_COUNT;
+    }
+
+    filter_control_char(username);
+    filter_control_char(realname);
+    filter_control_char(address);
+    filter_control_char(email);
+
+    if(username_len >= NAMELEN || realname_len >= NAMELEN || address_len >= STRLEN || email_len>= STRLEN)
+       RETURN_LONG(-1);
+
+    memset(&ud,0,sizeof(ud));
+	if( read_user_memo(getCurrentUser()->userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
+
+    if(read_userdata(getCurrentUser()->userid,&ud) < 0)RETURN_LONG(-2);
+
+    strncpy(ud.realname, realname, NAMELEN);
+    strncpy(ud.address,address,STRLEN);
+    strncpy(ud.email,email,STRLEN);
+
+	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
+	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
+
+    if(write_userdata(getCurrentUser()->userid,&ud) < 0)RETURN_LONG(-2);
+
+                if( (unum = searchuser(getCurrentUser()->userid))==0)
+       				RETURN_LONG(-1);
+				memcpy(&newinfo, getCurrentUser(), sizeof(struct userec));
+                if (strcmp(newinfo.username, username)) {
+
+                    strcpy(newinfo.username, username);
+					update_user(&newinfo, unum, 1);
+
+					strcpy(getSession()->currentuinfo->username, username);
+                    UPDATE_UTMP_STR(username, (*(getSession()->currentuinfo)));
+                }
+
+	bbslog("user","%s","change user info from www");
+
+    RETURN_LONG(0);
+}
+
+
+
+
 /**
  * Function: Create a new user id
  *  rototype:
@@ -689,60 +814,4 @@ PHP_FUNCTION(bbs_getactivation)
 	RETURN_LONG(0);
 }
 
-/**
- * fill infomation of ID ,name, NO. dept, for tsinghua
- * prototype:
- * int bbs_fillIDInfo(string smthid,string name,string number,string dept);
- *
- *  @return the result
- *  	0 -- success, -1 -- Invalid parameter
- *  	-2 -- error
- *  @author binxun
- */
-PHP_FUNCTION(bbs_fillidinfo)
-{
-    char* userid;
-    int userid_len;
-    char* realname;
-    int realname_len;
-    char* number;
-    int number_len;
-    char* dept;
-    int dept_len;
-    char genbuf[STRLEN];
-
-    struct userdata ud;
-
-    int ac = ZEND_NUM_ARGS();
-
-
-    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssss", &userid, &userid_len,&realname,&realname_len,&number,&number_len,&dept,&dept_len) == FAILURE)
-    {
-            WRONG_PARAM_COUNT;
-    }
-
-    if(userid_len > IDLEN || realname_len > NAMELEN || dept_len > STRLEN)
-       RETURN_LONG(-1);
-
-    memset(&ud,0,sizeof(ud));
-	if( read_user_memo(userid, &(getSession()->currentmemo)) <= 0) RETURN_LONG(-2);
-
-    if(read_userdata(userid,&ud) < 0)RETURN_LONG(-2);
-
-    strncpy(ud.realname, realname, NAMELEN);
-    strncpy(ud.address,dept,STRLEN);
-    sprintf(genbuf,"%s#%s#%s#TH",realname,number,dept);
-    if(strlen(genbuf) >= STRLEN - 16) //too long
-		sprintf(genbuf,"%s#%s#TH",realname,number);//must < STRLEN - 16
-    strncpy(ud.realemail,genbuf,STRLEN-16);
-
-	memcpy(&((getSession()->currentmemo)->ud), &ud, sizeof(ud));
-	end_mmapfile((getSession()->currentmemo), sizeof(struct usermemo), -1);
-
-    if(write_userdata(userid,&ud) < 0)RETURN_LONG(-2);
-
-	bbslog("user","%s","new account from tsinghua www");
-
-    RETURN_LONG(0);
-}
 
