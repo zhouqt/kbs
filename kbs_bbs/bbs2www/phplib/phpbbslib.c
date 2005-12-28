@@ -7,7 +7,7 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
-#include "php_smth_bbs.h"  
+#include "php_kbs_bbs.h"  
 
 
 #if PHP_MAJOR_VERSION == 5
@@ -158,7 +158,7 @@ static PHP_FUNCTION(bbs_csv_to_al);
 /*
  * define what functions can be used in the PHP embedded script
  */
-static function_entry smth_bbs_functions[] = {
+static function_entry kbs_bbs_functions[] = {
     PHP_BBS_USER_EXPORT_FUNCTIONS
     PHP_BBS_ANNOUNCE_EXPORT_FUNCTIONS
     PHP_BBS_VOTE_EXPORT_FUNCTIONS
@@ -222,29 +222,29 @@ static function_entry smth_bbs_functions[] = {
 /*
  * This is the module entry structure, and some properties
  */
-zend_module_entry smth_bbs_module_entry = {
+zend_module_entry kbs_bbs_module_entry = {
     STANDARD_MODULE_HEADER,
-    "smth_bbs",
-    smth_bbs_functions,
-    PHP_MINIT(smth_bbs),
-    PHP_MSHUTDOWN(smth_bbs),
-    PHP_RINIT(smth_bbs),        /* Replace with NULL if there's nothing to do at request start */
-    PHP_RSHUTDOWN(smth_bbs),    /* Replace with NULL if there's nothing to do at request end */
-    PHP_MINFO(smth_bbs),
+    "kbs_bbs",
+    kbs_bbs_functions,
+    PHP_MINIT(kbs_bbs),
+    PHP_MSHUTDOWN(kbs_bbs),
+    PHP_RINIT(kbs_bbs),        /* Replace with NULL if there's nothing to do at request start */
+    PHP_RSHUTDOWN(kbs_bbs),    /* Replace with NULL if there's nothing to do at request end */
+    PHP_MINFO(kbs_bbs),
     "1.0", /* Replace with version number for your extension */
     STANDARD_MODULE_PROPERTIES
 };
 /* }}} */
 
-#ifdef COMPILE_DL_SMTH_BBS
-ZEND_GET_MODULE(smth_bbs)
+#ifdef COMPILE_DL_KBS_BBS
+ZEND_GET_MODULE(kbs_bbs)
 #endif
 
 /*
  * Here is the function require when the module loaded
 DLEXPORT zend_module_entry *get_module()
 {
-    return &smth_bbs_module_entry;
+    return &kbs_bbs_module_entry;
 };
 
 
@@ -1354,6 +1354,7 @@ static int get_initialized()
 static int initialize_ext()
 {
     chdir(BBSHOME);
+    get_publicshm();
     resolve_ucache();
     resolve_utmp();
     resolve_boards();
@@ -1375,9 +1376,11 @@ static int initialize_ext()
  */
 PHP_FUNCTION(bbs_ext_initialized)
 {
-	if (!get_initialized())
+	if (!get_initialized()) {
         RETURN_FALSE;
-    RETURN_TRUE;
+	} else {
+        RETURN_TRUE;
+	}
 }
 
 /**
@@ -1404,7 +1407,7 @@ PHP_FUNCTION(bbs_init_ext)
 	}
 }
 
-PHP_MINIT_FUNCTION(smth_bbs)
+PHP_MINIT_FUNCTION(kbs_bbs)
 {
     /*
     zval *bbs_home;
@@ -1469,7 +1472,7 @@ PHP_MINIT_FUNCTION(smth_bbs)
     return SUCCESS;
 }
 
-PHP_MSHUTDOWN_FUNCTION(smth_bbs)
+PHP_MSHUTDOWN_FUNCTION(kbs_bbs)
 {
 	if (get_initialized())
 	{
@@ -1486,7 +1489,7 @@ PHP_MSHUTDOWN_FUNCTION(smth_bbs)
     return SUCCESS;
 }
 
-PHP_RINIT_FUNCTION(smth_bbs)
+PHP_RINIT_FUNCTION(kbs_bbs)
 {
     getcwd(old_pwd, 1023);
     chdir(BBSHOME);
@@ -1505,7 +1508,7 @@ PHP_RINIT_FUNCTION(smth_bbs)
     return SUCCESS;
 }
 
-PHP_RSHUTDOWN_FUNCTION(smth_bbs)
+PHP_RSHUTDOWN_FUNCTION(kbs_bbs)
 {
 #ifdef DEBUG
     zend_error(E_WARNING, "request shutdown");
@@ -1523,10 +1526,10 @@ PHP_RSHUTDOWN_FUNCTION(smth_bbs)
 
 /* {{{ PHP_MINFO_FUNCTION
  *  */
-PHP_MINFO_FUNCTION(smth_bbs)
+PHP_MINFO_FUNCTION(kbs_bbs)
 {
     php_info_print_table_start();
-    php_info_print_table_header(2, "smth_bbs support", "enabled");
+    php_info_print_table_header(2, "kbs_bbs support", "enabled");
     php_info_print_table_end();
 }
 

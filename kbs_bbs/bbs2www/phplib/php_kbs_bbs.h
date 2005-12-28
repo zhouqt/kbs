@@ -18,52 +18,52 @@
   $Id$ 
 */
 
-#ifndef PHP_SMTH_BBS_H
-#define PHP_SMTH_BBS_H
+#ifndef PHP_KBS_BBS_H
+#define PHP_KBS_BBS_H
 
-extern zend_module_entry smth_bbs_module_entry;
-#define phpext_smth_bbs_ptr &smth_bbs_module_entry
+extern zend_module_entry kbs_bbs_module_entry;
+#define phpext_kbs_bbs_ptr &kbs_bbs_module_entry
 
 #ifdef PHP_WIN32
-#define PHP_SMTH_BBS_API __declspec(dllexport)
+#define PHP_KBS_BBS_API __declspec(dllexport)
 #else
-#define PHP_SMTH_BBS_API
+#define PHP_KBS_BBS_API
 #endif
 
 #ifdef ZTS
 #include "TSRM.h"
 #endif
 
-PHP_MINIT_FUNCTION(smth_bbs);
-PHP_MSHUTDOWN_FUNCTION(smth_bbs);
-PHP_RINIT_FUNCTION(smth_bbs);
-PHP_RSHUTDOWN_FUNCTION(smth_bbs);
-PHP_MINFO_FUNCTION(smth_bbs);
+PHP_MINIT_FUNCTION(kbs_bbs);
+PHP_MSHUTDOWN_FUNCTION(kbs_bbs);
+PHP_RINIT_FUNCTION(kbs_bbs);
+PHP_RSHUTDOWN_FUNCTION(kbs_bbs);
+PHP_MINFO_FUNCTION(kbs_bbs);
 
 /* 
   	Declare any global variables you may need between the BEGIN
 	and END macros here:     
 
-ZEND_BEGIN_MODULE_GLOBALS(smth_bbs)
+ZEND_BEGIN_MODULE_GLOBALS(kbs_bbs)
 	int   global_value;
 	char *global_string;
-ZEND_END_MODULE_GLOBALS(smth_bbs)
+ZEND_END_MODULE_GLOBALS(kbs_bbs)
 */
 
 /* In every utility function you add that needs to use variables 
-   in php_smth_bbs_globals, call TSRM_FETCH(); after declaring other 
+   in php_kbs_bbs_globals, call TSRM_FETCH(); after declaring other 
    variables used by that function, or better yet, pass in TSRMLS_CC
    after the last function argument and declare your utility function
    with TSRMLS_DC after the last declared argument.  Always refer to
-   the globals in your function as SMTH_BBS_G(variable).  You are 
+   the globals in your function as KBS_BBS_G(variable).  You are 
    encouraged to rename these macros something shorter, see
    examples in any other php module directory.
 */
 
 #ifdef ZTS
-#define SMTH_BBS_G(v) TSRMG(smth_bbs_globals_id, zend_smth_bbs_globals *, v)
+#define KBS_BBS_G(v) TSRMG(kbs_bbs_globals_id, zend_kbs_bbs_globals *, v)
 #else
-#define SMTH_BBS_G(v) (smth_bbs_globals.v)
+#define KBS_BBS_G(v) (kbs_bbs_globals.v)
 #endif
 
 
@@ -93,7 +93,7 @@ void setcurrentuser(struct userec *user, int usernum);
 /* phpbbs.post.c */
 int getattachtmppath(char *buf, size_t buf_len);
 
-#endif	/* PHP_SMTH_BBS_H */
+#endif	/* PHP_KBS_BBS_H */
 
 
 /*

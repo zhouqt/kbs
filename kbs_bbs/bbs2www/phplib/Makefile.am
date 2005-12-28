@@ -1,4 +1,4 @@
-EXTRA_DIST = php_smth_bbs.h phpbbs.user.h phpbbs.announce.h phpbbs.vote.h phpbbs.system.h \
+EXTRA_DIST = php_kbs_bbs.h phpbbs.user.h phpbbs.announce.h phpbbs.vote.h phpbbs.system.h \
              phpbbs.board.h phpbbs.article.h phpbbs.msg.h phpbbs.mail.h phpbbs.bm.h \
              phpbbs.reg.h phpbbs.file.h phpbbs.post.h phpbbs.wforum.h
 libdir=@PHPBBSLIBPATH@
@@ -9,5 +9,5 @@ libphpbbslib_la_SOURCES = phpbbslib.c phpbbs.user.c phpbbs.announce.c phpbbs.vot
                           phpbbs.board.c phpbbs.article.c phpbbs.msg.c phpbbs.mail.c phpbbs.bm.c \
                           phpbbs.reg.c phpbbs.file.c phpbbs.post.c phpbbs.wforum.c
 libphpbbslib_la_LIBADD = -L../../libBBS -lBBS -L../../libsystem -lsystem -L../lib -lbbslib
-AM_CFLAGS  = -I../include -I../../src -I@PHPBASE@ -I@PHPBASE@/main -I@PHPBASE@/Zend -I@PHPBASE@/TSRM -DCOMPILE_DL_SMTH_BBS -Wall
+AM_CFLAGS  = -I../include -I../../src -I@PHPBASE@ -I@PHPBASE@/main -I@PHPBASE@/Zend -I@PHPBASE@/TSRM -DCOMPILE_DL_KBS_BBS -Wall
 CLEANFILES=@EXTRA_CLEAN@
