@@ -377,8 +377,8 @@ int delete_board(char *boardname, session_t* session)
         return -1;
     }
 
-    getdata(3, 0, "移除精华区 (Yes, or No) [Y]: ", genbuf, 4, DOECHO, NULL, true);
-    if (genbuf[0] != 'N' && genbuf[0] != 'n')
+    getdata(3, 0, "移除精华区 [y/N]: ", genbuf, 4, DOECHO, NULL, true);
+    if (genbuf[0] == 'Y' && genbuf[0] == 'y')
     {
             edit_group(&bcache[bid], NULL);
     }

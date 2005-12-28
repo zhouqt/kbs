@@ -1671,12 +1671,13 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
         }
     }
 #ifdef FREE
-	if (0) {
+	if (0)
 #elif defined(OPEN_NOREPLY)
-    if (ent->accessed[1] & FILE_READ) {
+    if (ent->accessed[1] & FILE_READ)
 #else
-    if (is_bm && (ent->accessed[1] & FILE_READ)) {
+    if (is_bm && (ent->accessed[1] & FILE_READ))
 #endif
+    {
         switch (type) {
         case 'g':
         case 'G':
@@ -1702,13 +1703,13 @@ char get_article_flag(struct fileheader *ent, struct userec *user, char *boardna
     } else if ((is_bm || HAS_PERM(user, PERM_OBOARDS)) && (ent->accessed[0] & FILE_PERCENT)) {
         type = '%';
 #ifdef FILTER
-#ifdef SMTH
+#ifdef NEWSMTH
     } else if ((ent->accessed[1] & FILE_CENSOR)
-               && ((!strcmp(boardname, FILTER_BOARD) && HAS_PERM(user, PERM_OBOARDS))
+               && ((!strcmp(boardname, FILTER_BOARD) && is_bm)
                    || (!strcmp(boardname, "NewsClub") && (haspostperm(user, "NewsClub") || HAS_PERM(user, PERM_OBOARDS))))) {
         type = '@';
 #else
-    } else if (HAS_PERM(user, PERM_OBOARDS) && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
+    } else if (is_bm && (ent->accessed[1] & FILE_CENSOR) && !strcmp(boardname, FILTER_BOARD)) {
         type = '@';
 #endif
 #endif
@@ -2467,8 +2468,10 @@ int pass_filter(struct fileheader *fileinfo, struct boardheader *board, session_
             close(filedes);
 
             updatelastpost(getboard(fileinfo->o_bid)->filename);
+#if 0 /* 这个看起来是错误的 - atppp 20051228 */
 #ifdef HAVE_BRC_CONTROL
             brc_add_read(newfh.id, session);
+#endif
 #endif
             if (newfh.id == newfh.groupid)
                 setboardorigin(getboard(fileinfo->o_bid)->filename, 1);
@@ -2657,15 +2660,13 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
 #ifdef FILTER
         if (flag & FILE_CENSOR_FLAG) {
             ret = pass_filter(originFh, board, session);
-#ifdef ZIXIA
-	if (!strcmp(board->filename, FILTER_BOARD)){
-	char ans[STRLEN];
 
-            snprintf(ans, STRLEN, "〖%s〗处理: %s", session->currentuser->userid, fileinfo->title);
-            strncpy(originFh->title, ans, ARTICLE_TITLE_LEN - 1);
-            originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
-		}
-#endif
+            if (!ret && !strcmp(board->filename, FILTER_BOARD)){
+                char ans[STRLEN];
+                snprintf(ans, STRLEN, "〖%s〗处理: %s", session->currentuser->userid, fileinfo->title);
+                strncpy(originFh->title, ans, ARTICLE_TITLE_LEN - 1);
+                originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
+            }
         }
 #endif
         if (flag & FILE_ATTACHPOS_FLAG) {
