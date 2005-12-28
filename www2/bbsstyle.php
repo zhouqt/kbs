@@ -92,7 +92,7 @@
 	for($i=0;$i<$stylecount;$i++)
 	{
 		$ret .= "<p><input type=\"radio\" id=\"style{$i}\" onclick=\"pvStyle($i)\" name=\"styleid\" value=\"{$i}\">";
-		$ret .= "<img src=\"{$style_names[$i][1]}\" onClick=\"chkStyle($i);\"><br/>{$style_names[$i][0]}</p>";
+		$ret .= "<img id=\"stylethumb{$i}\" src=\"{$style_names[$i][1]}\" onClick=\"chkStyle($i);\"><br/>{$style_names[$i][0]}</p>";
 	}
 	print($ret);
 ?>

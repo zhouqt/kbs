@@ -529,8 +529,11 @@ function resetCss() {
 	var i, h, t = document.getElementsByTagName("img");
 	if (t) {
 		for(i = 0; i < t.length; i++) {
-			h = replaceCssFile(t[i].src);
-			if (h) t[i].src = h;
+			if(t[i].id.substr(0,10) != "stylethumb")
+			{
+				h = replaceCssFile(t[i].src);
+				if (h) t[i].src = h;
+			}
 		}		
 	}
 	t = document.getElementsByTagName("link");
