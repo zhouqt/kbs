@@ -565,6 +565,7 @@ static int func_dump_users(char *userid,void *varg){
     return 0;
 }
 static int func_send_mail(char *userid,void *varg){
+    char genbuf[256];
     sprintf(genbuf,"%s 被 %s 取消 %s 俱乐部%s权限",userid,getCurrentUser()->userid,currboard->filename,
         (!(*(int*)(((void**)varg)[1]))?"读取":"发表"));
     mail_buf(getCurrentUser(),(char*)(((void**)varg)[0]),userid,genbuf,getSession());
@@ -595,6 +596,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
     FILE *fp;
     struct userec *user;
     char buf[256],line[256],fn[256],userid[16],ans[4],**p_users;
+    char genbuf[1024];
     int i,j,k,write_perm;
     void *arg[2];
     if(!chk_currBM(currBM,getCurrentUser()))

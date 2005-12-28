@@ -942,11 +942,11 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
     }
 
     if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR)) {
-        strcpy(c1, "\033[1;33m");
-        strcpy(c2, "\033[1;36m");
+        strcpy(c1, "\033[1;36m");
+        strcpy(c2, "\033[1;33m");
     } else {
-        strcpy(c1, "\033[33m");
-        strcpy(c2, "\033[36m");
+        strcpy(c1, "\033[36m");
+        strcpy(c2, "\033[33m");
     }
     if (readfh&&isThreadTitle(readfh->title, ent->title))
         same = true;

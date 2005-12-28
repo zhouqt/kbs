@@ -2027,6 +2027,7 @@ int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
     char fpath[STRLEN];
     int ret;
     char buf1[512];
+    char ans[4];
     char *t;
 
     if (!(getCurrentUser()->flags & PCORP_FLAG))
@@ -2035,6 +2036,13 @@ int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
     bzero(&pu, sizeof(pu));
     if (get_pc_users(&pu, getCurrentUser()->userid) <= 0)
         return FULLUPDATE;
+
+    move(t_lines - 1, 0);
+    clrtoeol();
+    getdata(t_lines - 1, 0, "收录到个人文集私人区，确认？(y/n) [N]", ans, 3, DOECHO, NULL, true);
+    if (toupper(ans[0]) != 'Y') {
+        return FULLUPDATE;
+    }
 
     bzero(&pn, sizeof(pn));
 
@@ -2065,16 +2073,12 @@ int import_to_pc(int ent, struct fileheader *fileinfo, char *direct)
     if (pn.body)
         free(pn.body);
 
-    {
-        char buf[4];
-
-        move(t_lines - 1, 0);
-        clrtoeol();
-        if (ret)
-            getdata(t_lines - 1, 0, "收录到个人文集成功，按回车继续<<", buf, 3, NOECHO, NULL, true);
-        else
-            getdata(t_lines - 1, 0, "收录到个人文集失败，按回车继续<<", buf, 3, NOECHO, NULL, true);
-    }
+    move(t_lines - 1, 0);
+    clrtoeol();
+    if (ret)
+        getdata(t_lines - 1, 0, "收录到个人文集成功，按回车继续<<", ans, 3, NOECHO, NULL, true);
+    else
+        getdata(t_lines - 1, 0, "收录到个人文集失败，按回车继续<<", ans, 3, NOECHO, NULL, true);
 
     return FULLUPDATE;
 }
