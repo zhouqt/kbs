@@ -6,19 +6,6 @@
 
 #include "bbs.h"
 
-/* add by roy 2003.8.7 struct wwwthreadheader */
-/* used for .WWWTHREAD */
-struct wwwthreadheader{
-	struct fileheader origin; /* groupid */
-	struct fileheader lastreply;	/* id for last article */
-	unsigned int articlecount; /* number of articles */
-	unsigned int flags;
-	unsigned int unused;   /* used for further index */
-};
-#define FILE_ON_TOP	0x2 /* on top mode */
-
-
-
 typedef struct user_info uinfo_t;
 
 typedef struct boardheader boardheader_t;
@@ -49,7 +36,6 @@ void www_data_detach();
 int is_BM(const struct boardheader *board,const struct userec *user);
 char *unix_string(char *str);
 void output_ansi_html(char *buf, size_t buflen, buffered_output_t *output,char* attachlink, int is_tex, char* preview_attach_dir);
-int www_generateOriginIndex(const char* board);
 
 struct WWW_GUEST_S* www_get_guest_entry(int idx);
 

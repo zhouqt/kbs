@@ -72,6 +72,8 @@ static unsigned char third_arg_force_ref_001[] = { 3, BYREF_NONE, BYREF_NONE, BY
 static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, BYREF_NONE, BYREF_FORCE , BYREF_FORCE};
 #endif
 
+#include "bbs.h"
+#include "bbslib.h"
 
 #include "phpbbs.user.h"
 #include "phpbbs.announce.h"
@@ -86,8 +88,9 @@ static unsigned char fifth_arg_force_ref_00011[] = { 5, BYREF_NONE, BYREF_NONE, 
 #include "phpbbs.file.h"
 #include "phpbbs.post.h"
 
-#include "bbs.h"
-#include "bbslib.h"
+#ifdef HAVE_WFORUM
+#include "phpbbs.wforum.h"
+#endif
 
 
 static char old_pwd[1024];
@@ -121,9 +124,6 @@ static PHP_FUNCTION(bbs_update_uinfo);
 static PHP_FUNCTION(bbs_setpassword);
 
 //////////////////////// Board/Article operation functions  ////////////////////
-#ifdef HAVE_WFORUM
-static PHP_FUNCTION(bbs_searchtitle);
-#endif
 static PHP_FUNCTION(bbs_search_articles);
 static PHP_FUNCTION(bbs_edittitle);
 static PHP_FUNCTION(bbs_brcaddread);
@@ -141,11 +141,6 @@ static PHP_FUNCTION(bbs_delfile);
 
 static PHP_FUNCTION(bbs_caneditfile);
 static PHP_FUNCTION(bbs_updatearticle);
-#ifdef HAVE_WFORUM
-static PHP_FUNCTION(bbs_getthreadnum);
-static PHP_FUNCTION(bbs_get_today_article_num);
-static PHP_FUNCTION(bbs_getthreads);
-#endif
 
 ////////////////////////  Mail operation functions  ///////////////////////////
 static PHP_FUNCTION(bbs_postmail);
@@ -176,7 +171,10 @@ static function_entry smth_bbs_functions[] = {
     PHP_BBS_REG_EXPORT_FUNCTIONS
     PHP_BBS_FILE_EXPORT_FUNCTIONS
     PHP_BBS_POST_EXPORT_FUNCTIONS
-    
+#ifdef HAVE_WFORUM
+    PHP_BBS_WFORUM_EXPORT_FUNCTIONS
+#endif
+
     PHP_FE(bbs_ext_initialized, NULL)
     PHP_FE(bbs_init_ext, NULL)
 
@@ -184,16 +182,8 @@ static function_entry smth_bbs_functions[] = {
     PHP_FE(bbs_setuserpasswd, NULL)
     PHP_FE(bbs_getuserlevel, NULL)
     PHP_FE(bbs_user_setflag, NULL)
-#ifdef HAVE_WFORUM
-    PHP_FE(bbs_searchtitle, NULL)
-#endif
     PHP_FE(bbs_search_articles, NULL)
     PHP_FE(bbs_postmail, NULL)
-#ifdef HAVE_WFORUM
-    PHP_FE(bbs_get_today_article_num, NULL)
-    PHP_FE(bbs_getthreadnum, NULL)
-    PHP_FE(bbs_getthreads, NULL)
-#endif
     PHP_FE(bbs_getusermode, NULL)
     PHP_FE(bbs_compute_user_value, NULL)
     PHP_FE(bbs_user_level_char, NULL)
@@ -599,162 +589,6 @@ static PHP_FUNCTION(bbs_search_articles)
     close(fd);
 }
 
-#ifdef HAVE_WFORUM
-static int cmp_original_date(const void *a, const void *b) {
-    struct wwwthreadheader * pa;
-    struct wwwthreadheader * pb;
-    pa = *((struct wwwthreadheader **)a);
-    pb = *((struct wwwthreadheader **)b);
-    return get_posttime(&(pb->origin)) - get_posttime(&(pa->origin));
-}
-
-static PHP_FUNCTION(bbs_searchtitle)
-{
-    char *board,*title, *title2, *title3,*author;
-    int bLen,tLen,tLen2,tLen3,aLen;
-    long date,mmode,attach,maxreturn; /* date < 0 search for threads whose original post time is within (-date) days. - atppp 20040727 */
-    boardheader_t bh;
-    char dirpath[STRLEN];
-    int fd;
-    struct stat buf;
-    struct flock ldata;
-    struct wwwthreadheader *ptr1=NULL;
-    int threads;
-    char* ptr;
-    int total,i,j;
-    zval * element;
-    int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
-    struct boardheader *bp;
-    zval* columns[3];
-    bool is_original_date=false;
-    struct wwwthreadheader** resultList;
-    char* thread_col_names[]={"origin","lastreply","articlenum"};
-
-
-    if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&maxreturn) != SUCCESS) {
-            WRONG_PARAM_COUNT;
-    }
-    if (date < 0) {
-        is_original_date = true;
-        date = -date;
-    } else if (date == 0) {
-        date = 9999;
-    }
-    if (date > 9999)
-        date = 9999;
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_FALSE;
-    }
-    resultList  = emalloc(maxreturn * sizeof(struct wwwthreadheader *));
-    if (resultList == NULL) {   
-        RETURN_LONG(-211);   
-    } 
-
-    is_bm = is_BM(bp, getCurrentUser());
-    if (getboardnum(board, &bh) == 0)
-        RETURN_LONG(-1); //"错误的讨论区";
-    if (!check_read_perm(getCurrentUser(), &bh))
-        RETURN_LONG(-2); //您无权阅读本版;
-    setbdir(DIR_MODE_WEB_THREAD, dirpath, bh.filename);
-    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
-        RETURN_LONG(-3);   
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata)== -1) {
-        close(fd);
-        RETURN_LONG(-200);
-    }
-    if (fstat(fd, &buf) == -1) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        RETURN_LONG(-201);
-    }
-    total = buf.st_size / sizeof(struct wwwthreadheader);
-
-    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        RETURN_LONG(-4);
-    }
-    /*
-     * fetching articles 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_LONG(-210);
-    }
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, board, getSession());
-#endif
-    ptr1 = (struct wwwthreadheader *) ptr;
-
-    threads = 0;
-    for (i=total-1;i>=0;i--) {
-        if (title[0] && !strcasestr(ptr1[i].origin.title, title))
-            continue;
-        if (title2[0] && !strcasestr(ptr1[i].origin.title, title2))
-            continue;
-        if (author[0] && strcasecmp(ptr1[i].origin.owner, author))
-            continue;
-        if (title3[0] && strcasestr(ptr1[i].origin.title, title3))
-            continue;
-        if (abs(time(0) - get_posttime(&(ptr1[i].lastreply))) > date * 86400) {
-            /* why abs? and should cache time(0) locally to speed up - atppp */
-            if (ptr1[i].flags & FILE_ON_TOP) continue;
-            else break; //normal article, lastreply out of range, so we can break
-        }
-        if (mmode && !(ptr1[i].origin.accessed[0] & FILE_MARKED) && !(ptr1[i].origin.accessed[0] & FILE_DIGEST))
-            continue;
-        if (attach && ptr1[i].origin.attachment==0)
-            continue;
-
-        resultList[threads] = &(ptr1[i]);
-        threads++;
-        if (threads>=maxreturn) 
-            break;
-    }
-
-    if (is_original_date) {
-        qsort(resultList, threads, sizeof(struct wwwthreadheader *), cmp_original_date);
-    }
-
-    for (i = 0; i < threads; i++) {
-
-                MAKE_STD_ZVAL(element);
-		array_init(element);
-		for (j = 0; j < 3; j++) {
-			MAKE_STD_ZVAL(columns[j] );
-			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
-		}
-        make_article_flag_array(flags, &(resultList[i]->origin), getCurrentUser(), bp->filename, is_bm);
-		array_init(columns[0] );
-		bbs_make_article_array(columns[0], &(resultList[i]->origin), flags, sizeof(flags));
-
-        make_article_flag_array(flags, &(resultList[i]->lastreply), getCurrentUser(), bp->filename, is_bm);
-		array_init(columns[1] );
-		bbs_make_article_array(columns[1], &(resultList[i]->lastreply), flags, sizeof(flags));
-		ZVAL_LONG(columns[2],resultList[i]->articlecount);
-
-		zend_hash_index_update(Z_ARRVAL_P(return_value), i + 1, (void *) &element, sizeof(zval *), NULL);
-
-    }
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-    efree(resultList);
-}
-#endif
 
 /* function bbs_caneditfile(string board, string filename);
  * 判断当前用户是否有权编辑某文件
@@ -1101,232 +935,6 @@ static PHP_FUNCTION(bbs_getarticles)
     efree(articles);
 }
 
-#ifdef HAVE_WFORUM
-/**
- * 获取从start开始的num个版面主题
- * prototype:
- * array bbs_getthreads(char *board, int start, int num,int includeTop);
- *
- * @return array of loaded articles on success,
- *         FALSE on failure.
- * @author roy
- */
-static PHP_FUNCTION(bbs_getthreads)
-{
-    char *board;
-    int blen;
-    long start,num;
-    int total;
-    struct boardheader *bp=NULL;
-	char dirpath[STRLEN];
-    int i,j;
-    zval *element;
-    int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
-	int fd;
-	struct stat buf;
-	struct flock ldata;
-	struct wwwthreadheader *ptr1=NULL;
-	char* ptr;
-	long includeTop;
-    int ac = ZEND_NUM_ARGS();
-	int begin,end;
-	zval* columns[3];
-	char* thread_col_names[]={"origin","lastreply","articlenum"};
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &start, &num, &includeTop) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-	if (start<0){
-		RETURN_FALSE;
-	}
-	if (num<0){
-		RETURN_FALSE;
-	}
-    /*
-     * checking arguments 
-     */
-    if (getCurrentUser() == NULL) {
-        RETURN_FALSE;
-    }
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_FALSE;
-    }
-
-    is_bm = is_BM(bp, getCurrentUser());
-
-    if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
-    }
-#ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, bp->filename, getSession());
-#endif
-
-
-    setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
-
-    if ((fd = open(dirpath, O_RDONLY, 0)) == -1) {
-        RETURN_LONG(-1);   
-	}
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf)==-1) {
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-		RETURN_LONG(-201);
-	}
-    total = buf.st_size / sizeof(struct wwwthreadheader);
-
-    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        RETURN_LONG(-2);
-    }
-
-
-    ptr1 = (struct wwwthreadheader *) ptr;
-    /*
-     * fetching articles 
-     */
-	 total--;
-	if (!includeTop) {
-		for (i=total;i>=0;i--) {
-			if (!( ptr1[i].flags & FILE_ON_TOP )) 
-				break;
-		}
-		total=i;
-	} 
-	begin=total-start;
-	end=total-start-num+1;
-	if (end<0)
-		end=0;
-
-	for (i=begin;i>=end;i--) {
-		MAKE_STD_ZVAL(element);
-		array_init(element);
-		for (j = 0; j < 3; j++) {
-			MAKE_STD_ZVAL(columns[j] );
-			zend_hash_update(Z_ARRVAL_P(element), thread_col_names[j], strlen(thread_col_names[j]) + 1, (void *) &columns[j] , sizeof(zval *), NULL);
-		}
-        make_article_flag_array(flags, &(ptr1[i].origin), getCurrentUser(), bp->filename, is_bm);
-		array_init(columns[0] );
-		bbs_make_article_array(columns[0], &(ptr1[i].origin), flags, sizeof(flags));
-
-        make_article_flag_array(flags, &(ptr1[i].lastreply), getCurrentUser(), bp->filename, is_bm);
-		array_init(columns[1] );
-		bbs_make_article_array(columns[1], &(ptr1[i].lastreply), flags, sizeof(flags));
-		ZVAL_LONG(columns[2],ptr1[i].articlecount);
-
-		zend_hash_index_update(Z_ARRVAL_P(return_value), begin-i, (void *) &element, sizeof(zval *), NULL);
-	}
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-}
-
-static PHP_FUNCTION(bbs_get_today_article_num){
-    char *board;
-    int blen;
-    int total;
-    struct boardheader *bp;
-	char dirpath[STRLEN];
-    int i;
-    int ac = ZEND_NUM_ARGS();
-	unsigned int articleNums;
-	int fd;
-	struct stat buf;
-	struct flock ldata;
-	struct fileheader *ptr1;
-	char* ptr;
-	time_t now;
-	struct tm nowtm;
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &board, &blen) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-
-    /*
-     * checking arguments 
-     */
-    if (getCurrentUser() == NULL) {
-        RETURN_LONG(-2);
-    }
-    if ((bp = getbcache(board)) == NULL) {
-        RETURN_LONG(-3);
-    }
-    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
-
-    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
-        RETURN_LONG(-4);   
-    ldata.l_type = F_RDLCK;
-    ldata.l_whence = 0;
-    ldata.l_len = 0;
-    ldata.l_start = 0;
-    if (fcntl(fd, F_SETLKW, &ldata)==-1) {
-		close(fd);
-		RETURN_LONG(-200);
-	}
-	if (fstat(fd, &buf) == -1 ){
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-		RETURN_LONG(-201);
-	}
-    total = buf.st_size / sizeof(struct fileheader);
-
-    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
-        if (i == 2)
-            end_mmapfile((void *) ptr, buf.st_size, -1);
-        ldata.l_type = F_UNLCK;
-        fcntl(fd, F_SETLKW, &ldata);
-        close(fd);
-        RETURN_LONG(-5);
-    }
-    ptr1 = (struct fileheader *) ptr;
-
-	articleNums=0;
-
-	now=time(NULL);
-	localtime_r(&now,&nowtm);
-	nowtm.tm_sec=0;
-	nowtm.tm_min=0;
-	nowtm.tm_hour=0;
-	now=mktime(&nowtm);
-
-	for (i=total-1;i>=0;i--) {
-		if (get_posttime(ptr1+i)<now)
-			break;
-		articleNums++;
-	}
-    end_mmapfile((void *) ptr, buf.st_size, -1);
-    ldata.l_type = F_UNLCK;
-    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
-    close(fd);
-	RETURN_LONG(articleNums);
-}
-#endif //HAVE_WFORUM
 
 /**
  * Count articles in a board with specific .DIR mode.
@@ -1372,51 +980,6 @@ static PHP_FUNCTION(bbs_countarticles)
     /* add end */
     RETURN_LONG(total);
 }
-
-#ifdef HAVE_WFORUM
-
-/* long bbs_getthreadnum(long boardNum)
- * get number of threads
- */
-static PHP_FUNCTION(bbs_getthreadnum)
-{
-    long brdnum;
-    const struct boardheader *bp = NULL;
-    char dirpath[STRLEN];
-    int total;
-    int ac = ZEND_NUM_ARGS();
-	struct stat normalStat,originStat;
-	char dirpath1[STRLEN];
-
-    /*
-     * getting arguments 
-     */
-    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &brdnum) == FAILURE) {
-        WRONG_PARAM_COUNT;
-    }
-    if ((bp = getboard(brdnum)) == NULL) {
-        RETURN_LONG(-1);
-    }
-    setbdir(DIR_MODE_WEB_THREAD, dirpath, bp->filename);
-	if (!stat(dirpath,&originStat))	{
-		setbdir(DIR_MODE_NORMAL,dirpath1,bp->filename);
-		if (!stat(dirpath1,&normalStat)){
-			if (normalStat.st_mtime>originStat.st_mtime){
-				www_generateOriginIndex(bp->filename);
-			}
-		} else {
-			www_generateOriginIndex(bp->filename);
-		}
-	} else {
-		www_generateOriginIndex(bp->filename);
-	}
-   total = get_num_records(dirpath, sizeof(struct wwwthreadheader));
-
-
-    RETURN_LONG(total);
-}
-
-#endif
 
 
 
