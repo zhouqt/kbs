@@ -447,3 +447,292 @@ PHP_FUNCTION(bbs_get_threads_from_gid)
 	efree(articles);
 	RETURN_LONG(retnum);
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+ * Count articles in a board with specific .DIR mode.
+ * prototype:
+ * int bbs_countarticles(int brdnum, int mode);
+ *
+ * @return non-negative value on success,
+ *         negative value on failure.
+ * @author flyriver
+ */
+PHP_FUNCTION(bbs_countarticles)
+{
+    long brdnum;
+    long mode;
+    const struct boardheader *bp = NULL;
+    char dirpath[STRLEN];
+    int total;
+    int ac = ZEND_NUM_ARGS();
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &brdnum, &mode) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if ((bp = getboard(brdnum)) == NULL) {
+        RETURN_LONG(-1);
+    }
+    setbdir(mode, dirpath, bp->filename);
+
+	if(mode == DIR_MODE_THREAD){
+//		if(setboardtitle(board, -1)){
+			gen_title(bp->filename);
+//		}
+	}
+
+    total = get_num_records(dirpath, sizeof(struct fileheader));
+    /* add by stiger */
+	if( mode == DIR_MODE_NORMAL ){
+    	sprintf(dirpath,"boards/%s/%s",bp->filename, DING_DIR);
+    	total += get_num_records(dirpath, sizeof(struct fileheader));
+	}
+    /* add end */
+    RETURN_LONG(total);
+}
+
+
+/**
+ * Fetch a list of articles in a board into an array.
+ * prototype:
+ * array bbs_getarticles(char *board, int start, int num, int mode);
+ *
+ * @return array of loaded articles on success,
+ *         FALSE on failure.
+ * @author flyriver
+ */
+PHP_FUNCTION(bbs_getarticles)
+{
+    char *board;
+    int blen;
+    long start;
+    long num;
+    long mode;
+    char dirpath[STRLEN];
+    char dirpath1[STRLEN];	/* add by stiger */
+    int total;
+    struct fileheader *articles;
+    struct boardheader *bp;
+    int rows;
+    int i;
+    zval *element;
+    int is_bm;
+    char flags[4];              /* flags[0]: flag character
+                                 * flags[1]: imported flag
+                                 * flags[2]: no reply flag
+                                 * flags[3]: attach flag
+                                 */
+    int ac = ZEND_NUM_ARGS();
+
+    /*
+     * getting arguments 
+     */
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &blen, &start, &num, &mode) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    /*
+     * checking arguments 
+     */
+    if (getCurrentUser() == NULL) {
+        RETURN_FALSE;
+    }
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_FALSE;
+    }
+    is_bm = is_BM(bp, getCurrentUser());
+
+    setbdir(mode, dirpath, bp->filename);
+    total = get_num_records(dirpath, sizeof(struct fileheader));
+    /* add by stiger */
+	if(mode == DIR_MODE_NORMAL){
+    	sprintf(dirpath1,"boards/%s/" DING_DIR,bp->filename);
+    	total += get_num_records(dirpath1, sizeof(struct fileheader));
+	}
+    /* add end */
+    if (start > (total - num + 1))
+        start = (total - num + 1);
+    if (start <= 0)
+        start = 1;
+
+    /*
+     * fetching articles 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(getCurrentUser()->userid, bp->filename, getSession());
+#endif
+    articles = emalloc(num * sizeof(struct fileheader));
+	if (articles==NULL) {
+		RETURN_FALSE;
+	}
+    /* modified by stiger */
+	if(mode == DIR_MODE_NORMAL)
+    	rows = read_get_records(dirpath, dirpath1, (char *)articles, sizeof(struct fileheader), start, num);
+	else
+    	rows = get_records(dirpath, articles, sizeof(struct fileheader), start, num);
+    for (i = 0; i < rows; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        make_article_flag_array(flags, articles + i, getCurrentUser(), bp->filename, is_bm);
+        bbs_make_article_array(element, articles + i, flags, sizeof(flags));
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+    }
+    efree(articles);
+}
+
+
+
+
+
+PHP_FUNCTION(bbs_search_articles)
+{
+    char *board,*title, *title2, *title3,*author;
+    int bLen,tLen,tLen2,tLen3,aLen;
+    long date,mmode,origin,attach;
+    boardheader_t bh;
+	char dirpath[STRLEN];
+	int fd;
+	struct stat buf;
+	struct flock ldata;
+	struct fileheader *ptr1;
+	char* ptr;
+	int total,i;
+	zval * element;
+	int is_bm;
+    char flags[4];              /* flags[0]: flag character
+                                 * flags[1]: imported flag
+                                 * flags[2]: no reply flag
+                                 * flags[3]: attach flag
+                                 */
+    struct boardheader *bp;
+	int found;
+	int i1,i2;
+	time_t timeLimit;
+
+
+    if (ZEND_NUM_ARGS() != 9 || zend_parse_parameters(9 TSRMLS_CC, "sssssllll", &board, &bLen,&title,&tLen, &title2, &tLen2, &title3, &tLen3,&author, &aLen, &date,&mmode,&attach,&origin) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+    }
+    if (date <= 0)
+        date = 9999;
+    if (date > 9999)
+        date = 9999;
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_FALSE;
+    }
+    is_bm = is_BM(bp, getCurrentUser());
+    if (getboardnum(board, &bh) == 0)
+        RETURN_LONG(-1); //"错误的讨论区";
+    if (!check_read_perm(getCurrentUser(), &bh))
+        RETURN_LONG(-2); //您无权阅读本版;
+    setbdir(DIR_MODE_NORMAL, dirpath, bh.filename);
+    if ((fd = open(dirpath, O_RDONLY, 0)) == -1)
+        RETURN_LONG(-3);   
+    ldata.l_type = F_RDLCK;
+    ldata.l_whence = 0;
+    ldata.l_len = 0;
+    ldata.l_start = 0;
+    if (fcntl(fd, F_SETLKW, &ldata)== -1) {
+		close(fd);
+		RETURN_LONG(-200);
+	}
+	if (fstat(fd, &buf) == -1) {
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+		RETURN_LONG(-201);
+	}
+    total = buf.st_size / sizeof(struct fileheader);
+
+    if ((i = safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+        if (i == 2)
+            end_mmapfile((void *) ptr, buf.st_size, -1);
+        ldata.l_type = F_UNLCK;
+        fcntl(fd, F_SETLKW, &ldata);
+        close(fd);
+        RETURN_LONG(-4);
+    }
+    /*
+     * fetching articles 
+     */
+    if (array_init(return_value) == FAILURE) {
+        RETURN_LONG(-210);
+    }
+    ptr1 = (struct fileheader *) ptr;
+
+	i1=0;
+	i2=total-1;
+	timeLimit = time(0) - date*86400;
+	if (total > 1) {
+		while( i1 < i2 ){
+			i=(i1+i2)/2;
+			if( timeLimit > get_posttime(ptr1+i) ){
+				i1=i+1;
+			}else if(timeLimit < get_posttime(ptr1+i) ){
+				i2=i-1;
+			}else
+				break;
+		}
+		while( i>=0 && timeLimit <= get_posttime(ptr1+i) )
+			i--;
+
+		i++;
+	} else {
+		i = 0;
+	}
+
+	for (found=0;i<total;i++) {
+		if (title[0] && !strcasestr(ptr1[i].title, title))
+	        continue;
+	    if (title2[0] && !strcasestr(ptr1[i].title, title2))
+	        continue;
+	    if (author[0] && strcasecmp(ptr1[i].owner, author))
+	        continue;
+		if (title3[0] && strcasestr(ptr1[i].title, title3))
+			continue;
+		if (timeLimit > get_posttime(ptr1+i))
+			continue;
+		if (mmode && !(ptr1[i].accessed[0] & FILE_MARKED) && !(ptr1[i].accessed[0] & FILE_DIGEST))
+			continue;
+		if (origin && (ptr1[i].groupid!=ptr1[i].id) )
+			continue;
+		if (attach && ptr1[i].attachment==0)
+			continue;
+
+			MAKE_STD_ZVAL(element);
+			array_init(element);
+            make_article_flag_array(flags, ptr1+i , getCurrentUser(), board, is_bm);
+			bbs_make_article_array(element, ptr1+i, flags, sizeof(flags));
+			add_assoc_long(element, "NUM",i);
+			zend_hash_index_update(Z_ARRVAL_P(return_value),found, (void *) &element, sizeof(zval *), NULL);
+			found++;
+			if (found>=999){
+				break;
+			}
+
+	}
+    end_mmapfile((void *) ptr, buf.st_size, -1);
+    ldata.l_type = F_UNLCK;
+    fcntl(fd, F_SETLKW, &ldata);        /* 退出互斥区域*/
+    close(fd);
+}
+

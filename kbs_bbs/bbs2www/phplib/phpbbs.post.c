@@ -276,3 +276,592 @@ PHP_FUNCTION(bbs_postarticle)
 
 
 
+/* function bbs_caneditfile(string board, string filename);
+ * 判断当前用户是否有权编辑某文件
+ */
+PHP_FUNCTION(bbs_caneditfile)
+{
+    char *board,*filename;
+    int boardLen,filenameLen;
+	char path[512];
+    struct fileheader x;
+    boardheader_t *brd;
+
+
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &boardLen,&filename,&filenameLen) != SUCCESS)) {
+		WRONG_PARAM_COUNT;
+    } 
+    brd = getbcache(board);
+    if (brd == NULL) {
+        RETURN_LONG(-1); //讨论区名称错误
+    }
+	if (getCurrentUser()==NULL)
+		RETURN_FALSE;
+    if (!strcmp(brd->filename, "syssecurity")
+        || !strcmp(brd->filename, "junk")
+        || !strcmp(brd->filename, "deleted"))   /* Leeward : 98.01.22 */
+         RETURN_LONG(-2);  //本版不能修改文章
+    if (checkreadonly(brd->filename) == true) {
+		RETURN_LONG(-3); //本版已被设置只读
+    }
+    if (get_file_ent(brd->filename, filename, &x) == 0) {
+        RETURN_LONG(-4); //无法取得文件记录
+    }
+	setbfile(path, brd->filename, filename);
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)     /* SYSOP、当前版主、原发信人 可以编辑 */
+        &&!chk_currBM(brd->BM, getCurrentUser())) {
+        if (!isowner(getCurrentUser(), &x)) {
+            RETURN_LONG(-5); //不能修改他人文章!
+        }
+    }
+    /* 版主禁止POST 检查 */
+    if (deny_me(getCurrentUser()->userid, brd->filename) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+        RETURN_LONG(-7); //您的POST权被封
+    }
+    RETURN_LONG(0);
+}
+
+
+/*  function bbs_updatearticle(string boardName, string filename ,string text)  
+ *  更新编辑文章
+ *
+ */
+PHP_FUNCTION(bbs_updatearticle)
+{
+	char *boardName, *filename, *content;
+	int blen, flen, clen;
+    FILE *fin;
+    FILE *fout;
+    char infile[80], outfile[80];
+    char buf2[256];
+    int i;
+    boardheader_t *bp;
+    time_t now;
+    int asize;
+    /*int filtered = 0;*/
+
+	int ac = ZEND_NUM_ARGS();
+
+    /*
+     * getting arguments 
+     */
+    
+	if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sss/", &boardName, &blen, &filename, &flen, &content, &clen) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+   if ( (bp=getbcache(boardName))==0) {
+   		RETURN_LONG(-1);
+	}		
+
+    if (clen == 0) content = "";
+    else content = unix_string(content);
+
+#ifdef FILTER
+    if (check_badword_str(content, strlen(content),getSession())) {
+        RETURN_LONG(-1); //修改文章失败，文章可能含有不恰当内容.
+    }
+#endif
+
+    setbfile(infile, bp->filename, filename);
+    sprintf(outfile, "tmp/%s.%d.editpost", getCurrentUser()->userid, getpid());
+    if ((fin = fopen(infile, "r")) == NULL)
+        RETURN_LONG(-10);
+    if ((fout = fopen(outfile, "w")) == NULL) {
+        fclose(fin);
+        RETURN_LONG(-10);
+    }
+    for (i = 0; i < 4; i++) {
+        fgets(buf2, sizeof(buf2), fin);
+		if ((i==0) && (strncmp(buf2,"发信人",6)!=0)) {
+			break;
+		}
+        fprintf(fout, "%s", buf2);
+    }
+    if (clen>0) fprintf(fout, "%s", content);
+    now = time(0);
+    fprintf(fout, "\033[36m※ 修改:·%s 於 %15.15s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, ctime(&now) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
+    while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
+        if (asize <= 0) {
+            if (Origin2(buf2)) {
+                fprintf(fout, "%s", buf2);
+            }
+        } else {
+            put_attach(fin, fout, asize);
+        }
+    }
+    fclose(fin);
+    fclose(fout);
+    f_mv(outfile, infile);
+    RETURN_LONG(0);
+}
+
+
+
+/*
+ * function bbs_edittitle(string boardName , int id , string newTitle , int dirMode)
+ * 修改文章标题
+ * @author: windinsn apr 28,2004
+ * return 0 : 成功
+ *        -1: 版面错误
+ *        -2: 该版不能修改文章
+ *        -3: 只读讨论区
+ *        -4: 文件错误
+ *        -5: 封禁中
+ *        -6: 无权修改
+ *        -7: 被过滤掉
+ *	  -8: 当前模式不能编辑标题
+ *        -9: 标题过长或为空
+ *        -10:system error
+ */
+
+PHP_FUNCTION(bbs_edittitle)
+{
+	char *board,*title;
+	int  board_len,title_len;
+	long  id , mode;
+	char path[STRLEN];
+	char dirpath[STRLEN];
+	struct userec *u = NULL;
+	struct fileheader f;
+	struct fileheader xfh;
+	struct boardheader brd;
+	int bid,ent,i=0;
+	int fd;
+	
+	int ac = ZEND_NUM_ARGS();
+	if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sls/l", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
+		WRONG_PARAM_COUNT;
+	
+	if ((mode>= DIR_MODE_THREAD) && (mode<= DIR_MODE_WEB_THREAD))
+        	RETURN_LONG(-8);
+	if (title_len > ARTICLE_TITLE_LEN || title_len == 0)
+		RETURN_LONG(-9);
+	bid = getboardnum(board, &brd);
+	if (bid==0) 
+		RETURN_LONG(-1); //版面名称错误
+	if (brd.flag&BOARD_GROUP)
+	        RETURN_LONG(-1); //二级目录版
+	if (!strcmp(brd.filename, "syssecurity") || !strcmp(brd.filename, "junk") || !strcmp(brd.filename, "deleted"))  
+		RETURN_LONG(-2); //不允许修改文章
+	if (true == checkreadonly(brd.filename))
+		RETURN_LONG(-3); //只读讨论区
+	if ((u = getCurrentUser())==NULL)
+		RETURN_LONG(-10); //无法获得当前登录用户
+	
+	if (mode == DIR_MODE_DIGEST)
+		setbdir(DIR_MODE_DIGEST, dirpath, brd.filename);
+	else
+		setbdir(DIR_MODE_NORMAL, dirpath, brd.filename);
+	
+	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
+		RETURN_LONG(-10);
+	if (!get_records_from_id(fd,id,&f,1,&ent))
+	{
+		close(fd);
+		RETURN_LONG(-4); //无法取得文件记录
+	}
+	close(fd);
+	if (!HAS_PERM(u,PERM_SYSOP)) //权限检查
+	{
+		if (!haspostperm(u, brd.filename))
+	        	RETURN_LONG(-6);
+	        if (deny_me(u->userid, brd.filename))
+	        	RETURN_LONG(-5);
+	        if (!chk_currBM(brd.BM, u))
+	        {
+	        	if (!isowner(u, &f))
+		            RETURN_LONG(-6); //他人文章
+		}
+	}
+    if (title_len >= ARTICLE_TITLE_LEN) {
+        title[ARTICLE_TITLE_LEN - 1] = '\0';
+    }
+    filter_control_char(title);
+	if (!strcmp(title,f.title)) //无需修改
+		RETURN_LONG(0);
+#ifdef FILTER
+	if (check_badword_str(title, strlen(title), getSession()))
+		RETURN_LONG(-7);
+#endif
+	setbfile(path, brd.filename, f.filename);
+	if (add_edit_mark(path, 2, title, getSession()) != 1)
+		RETURN_LONG(-10);
+	/* update .DIR START */
+	strcpy(f.title, title);
+	if (mode == DIR_MODE_ZHIDING)
+	{
+		setbdir(DIR_MODE_ZHIDING, dirpath, brd.filename);
+		ent = get_num_records(dirpath,sizeof(struct fileheader));
+        	fd = open(dirpath, O_RDONLY, 0);
+        }
+	else
+	{
+		if (mode == DIR_MODE_DIGEST)
+			setbdir(DIR_MODE_DIGEST, dirpath, brd.filename);
+		else
+			setbdir(DIR_MODE_NORMAL, dirpath, brd.filename);
+		fd = open(dirpath, O_RDONLY, 0);
+	}
+	if (fd!=-1) 
+	{
+		for (i = ent; i > 0; i--)
+		{
+			if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) 
+			{
+                		if (0 == strcmp(xfh.filename, f.filename)) 
+                		{
+                			ent = i;
+                			break;
+                		}
+                	}
+		}
+		if (mode == DIR_MODE_ZHIDING)
+		{
+                	if (i!=0) 
+                    		substitute_record(dirpath, &f, sizeof(f), ent);
+               		board_update_toptitle(bid, true);
+        	}
+        	else
+        	{
+        		if (i!=0) 
+                		substitute_record(dirpath, &f, sizeof(f), ent);
+		}
+	}
+	close(fd);
+	if (0 == i)
+            RETURN_LONG(-10);
+        if(mode != DIR_MODE_ORIGIN && f.id == f.groupid)
+        {
+		if( setboardorigin(board, -1) )
+		{
+			board_regenspecial(brd.filename,DIR_MODE_ORIGIN,NULL);
+		}
+		else
+		{
+			char olddirect[PATHLEN];
+	    		setbdir(DIR_MODE_ORIGIN, olddirect, brd.filename);
+			if ((fd = open(olddirect, O_RDWR, 0644)) >= 0)
+			{
+				struct fileheader tmpfh;
+				if (get_records_from_id(fd, f.id, &tmpfh, 1, &ent) == 0)
+				{
+					close(fd);
+				}
+				else
+				{
+					close(fd);
+   	                		substitute_record(olddirect, &f, sizeof(f), ent);
+				}
+			}
+		}
+	}
+	setboardtitle(brd.filename, 1);	
+	/* update .DIR END   */
+	RETURN_LONG(0);
+}
+
+
+PHP_FUNCTION(bbs_doforward)
+{
+    char *board,*filename, *tit, *target;
+    int board_len,filename_len,tit_len,target_len;
+    boardheader_t bh;
+	char fname[STRLEN];
+	long big5,noansi;
+    struct boardheader *bp;
+	char title[512];
+	struct userec *u;
+    
+	if (ZEND_NUM_ARGS() != 6 || zend_parse_parameters(6 TSRMLS_CC, "ssssll", &board, &board_len,&filename, &filename_len, &tit, &tit_len, &target, &target_len, &big5, &noansi) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+    }
+
+    if( target[0] == 0 )
+        RETURN_LONG(-3);
+    if( !strchr(target, '@') ){
+        if( HAS_PERM(getCurrentUser(), PERM_DENYMAIL) )
+            RETURN_LONG(-5);
+        if( getuser(target,&u) == 0)
+            RETURN_LONG(-6);
+        big5=0;
+        noansi=0;
+    }
+
+    if ((bp = getbcache(board)) == NULL) {
+        RETURN_LONG(-4);
+    }
+    if (getboardnum(board, &bh) == 0)
+        RETURN_LONG(-1); //"错误的讨论区";
+    if (!check_read_perm(getCurrentUser(), &bh))
+        RETURN_LONG(-2); //您无权阅读本版;
+
+    setbfile(fname, bp->filename, filename);
+
+    if( !file_exist(fname) )
+        RETURN_LONG(-7);
+
+    snprintf(title, 511, "%.50s(转寄)", tit);
+
+    if( !strchr(target, '@') ){
+        mail_file(getCurrentUser()->userid, fname, u->userid, title,0, NULL);
+		RETURN_LONG(1);
+	}else{
+		if( big5 == 1)
+			conv_init(getSession());
+		if( bbs_sendmail(fname, title, target, 0, big5, noansi, getSession()) == 0){
+			RETURN_LONG(1);
+		}else
+			RETURN_LONG(-10);
+	}
+}
+
+/**
+ * 转贴文章
+ * int bbs_docross(string board,int id,string target,int out_go);
+ * return  0 :seccess
+ *         -1:源版面不存在
+ *         -2:目标版面不存在
+ *         -3:目标版面只读
+ *         -4:无发文权限
+ *         -5:被封禁
+ *         -6:文件记录不存在
+ *         -7:已经被转载过了
+ *         -8:不能在板内转载
+ *         -9:目标版面不支持附件
+ *         -10:system error
+ * @author: windinsn
+ */
+PHP_FUNCTION(bbs_docross)
+{
+    char *board,*target;
+    int  board_len,target_len;
+    long  id,out_go;
+    struct boardheader *src_bp;
+	struct boardheader *dst_bp;
+	struct fileheader f;
+    int  ent;
+    int  fd;
+    struct userec *u = NULL;
+    char path[256],ispost[10];
+    
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slsl", &board, &board_len, &id, &target, &target_len, &out_go) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	
+	u = getCurrentUser();
+	src_bp = getbcache(board);
+	if (src_bp == NULL)
+	    RETURN_LONG(-1);
+	strcpy(board, src_bp->filename);
+	if(!check_read_perm(u, src_bp))
+		RETURN_LONG(-1);
+    
+    dst_bp = getbcache(target);
+    if (dst_bp == NULL)
+        RETURN_LONG(-2);
+    strcpy(target, dst_bp->filename);
+
+#ifndef NINE_BUILD    
+    if (!strcmp(board,target))
+        RETURN_LONG(-8);
+#endif
+    
+    if(!check_read_perm(u, dst_bp))
+		RETURN_LONG(-2);
+    if (true == checkreadonly(target))
+		RETURN_LONG(-3); //只读讨论区
+    if (!HAS_PERM(u,PERM_SYSOP)) { //权限检查
+	    if (!haspostperm(u, target))
+	        	RETURN_LONG(-4);
+	    if (deny_me(u->userid, target))
+	        	RETURN_LONG(-5);
+	}
+	
+	setbdir(DIR_MODE_NORMAL, path, board);
+	if ((fd = open(path, O_RDWR, 0644)) < 0)
+		RETURN_LONG(-10);
+    if (!get_records_from_id(fd,id,&f,1,&ent)) {
+		close(fd);
+		RETURN_LONG(-6); //无法取得文件记录
+	}
+	close(fd);
+#ifndef NINE_BUILD
+    if ((f.accessed[0] & FILE_FORWARDED) && !HAS_PERM(u, PERM_SYSOP)) 
+        RETURN_LONG(-7);
+#endif	
+	
+	if ((f.attachment!=0)&&!(dst_bp->flag&BOARD_ATTACH)) 
+        RETURN_LONG(-9);
+	
+	strcpy(ispost ,((dst_bp->flag & BOARD_OUTFLAG) && out_go)?"s":"l");
+	setbfile(path, board, f.filename);
+	if (post_cross(u, target, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
+	    RETURN_LONG(-10);
+    RETURN_LONG(0);
+}
+
+/**
+ * int bbs_docommend(string board, int id, int confirmed);
+ *
+ * @param confirmed: when set false, only test if can recommend
+ *
+ * return 0: no error
+ *       -1: 无权限
+ *       -2: 源版面不存在
+ *       -3: 文件记录不存在
+ *       -4: 本文章已经推荐过
+ *       -5: 内部版面文章
+ *       -6: 被停止了推荐的权力
+ *       -7: 推荐出错
+ *       -10: system err
+ *
+ * @author atppp
+ */
+PHP_FUNCTION(bbs_docommend)
+{
+#ifdef COMMEND_ARTICLE
+    char *board;
+    int  board_len;
+    long  id,confirmed;
+    struct userec *u;
+    struct boardheader *src_bp, *commend_bp;
+    struct fileheader fileinfo;
+    int  ent;
+    int  fd;
+    char path[256];
+
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &board, &board_len, &id, &confirmed) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+
+    u = getCurrentUser();
+
+    src_bp = getbcache(board);
+    if (src_bp == NULL)
+        RETURN_LONG(-1);
+    strcpy(board, src_bp->filename);
+    if(!check_read_perm(u, src_bp))
+        RETURN_LONG(-2);
+
+    setbdir(DIR_MODE_NORMAL, path, board);
+    if ((fd = open(path, O_RDWR, 0644)) < 0)
+        RETURN_LONG(-10);
+    if (!get_records_from_id(fd,id,&fileinfo,1,&ent)) {
+        close(fd);
+        RETURN_LONG(-3); //无法取得文件记录
+    }
+    close(fd);
+
+    commend_bp = getbcache(COMMEND_ARTICLE);
+    if (commend_bp == NULL) {
+        RETURN_LONG(-7);
+    }
+    if (!is_BM(commend_bp, u) && !is_BM(src_bp, u)) {
+        if (strcmp(u->userid, fileinfo.owner))
+            RETURN_LONG(-1);
+    }
+    if (!HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
+        RETURN_LONG(-1);
+    }
+    if ((fileinfo.accessed[1] & FILE_COMMEND) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+        RETURN_LONG(-4);
+    }
+    if( ! normal_board(board) ){
+        RETURN_LONG(-5);
+    }
+    if ( deny_me(u->userid, COMMEND_ARTICLE) ) {
+        RETURN_LONG(-6);
+    }
+    if (confirmed) {
+        if (post_commend(u, board, &fileinfo ) == -1) {
+            RETURN_LONG(-7);
+        } else {
+            struct write_dir_arg dirarg;
+            struct fileheader data;
+            data.accessed[1] = FILE_COMMEND;
+            init_write_dir_arg(&dirarg);
+            dirarg.filename = path;  
+            dirarg.ent = ent;
+            change_post_flag(&dirarg,DIR_MODE_NORMAL,src_bp, &fileinfo, FILE_COMMEND_FLAG, &data,false,getSession());
+            free_write_dir_arg(&dirarg);
+        }
+    }
+    RETURN_LONG(0);
+#else
+    RETURN_LONG(-1);
+#endif
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+PHP_FUNCTION(bbs_brcaddread)
+{
+	char *board;
+	int blen;
+    long fid;
+	boardheader_t* bp;
+
+    if (zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &fid) != SUCCESS)
+        WRONG_PARAM_COUNT;
+	if ((bp=getbcache(board))==0){
+		RETURN_NULL();
+	}
+#ifdef HAVE_BRC_CONTROL
+	brc_initial(getCurrentUser()->userid, bp->filename, getSession());
+	brc_add_read(fid, getSession());
+	brc_update(getCurrentUser()->userid, getSession());
+    /*brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);*/
+#endif
+    RETURN_NULL();
+}
+
+/**
+ * 清除版面未读标记 
+ * bbs_brcclear(string board)
+ * windinsn
+ * return true/false
+ */
+PHP_FUNCTION(bbs_brcclear)
+{
+    char *board;
+    int  board_len;
+    struct boardheader bh;
+    struct userec *u;
+        
+    int ac = ZEND_NUM_ARGS();
+	
+	if (ac != 1 || zend_parse_parameters(ZEND_NUM_ARGS()TSRMLS_CC, "s" , &board, &board_len) == FAILURE)
+		WRONG_PARAM_COUNT;
+		
+    u = getCurrentUser();
+    if (!u)
+        RETURN_FALSE;
+        
+    if (getboardnum(board,&bh) == 0)
+        RETURN_FALSE;
+    if (!check_read_perm(u, &bh))
+        RETURN_FALSE;
+    if (!strcmp(u->userid,"guest"))
+        RETURN_TRUE;
+#ifdef HAVE_BRC_CONTROL
+    brc_initial(u->userid, board, getSession());
+    brc_clear(getSession());
+    brc_update(u->userid, getSession());
+#endif
+    RETURN_TRUE;
+}
