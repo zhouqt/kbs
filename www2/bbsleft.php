@@ -182,8 +182,10 @@
 <input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" /></nobr><br />
 
 <div class="m9">
-<nobr><input type="image" name="login" src="images/l1.gif" alt="登录进站" class="m10">
-<a href="bbsreg0.html" target="_top"><img src="images/l3.gif" border="0" alt="注册新用户" class="m10"></a></nobr>
+<nobr><a href="javascript:form1.submit();">
+<script type="text/javascript">putImage('l1.gif','alt="登录进站" class="m10" onClick="form1.submit();"');</script></a>
+<a href="bbsreg0.html" target="_top">
+<script type="text/javascript">putImage('l3.gif','alt="注册新用户" class="m10"');</script></a></nobr>
 </div>
 </form>
 <?php
