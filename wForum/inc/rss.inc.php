@@ -1,7 +1,7 @@
 <?php
 
 function convert($str, $isUTF8) {
-	if ($isUTF8) return (iconv("gb2312", "UTF-8", $str));
+	if ($isUTF8) return (iconv("gb18030", "UTF-8", $str));
 	return $str;
 }
 

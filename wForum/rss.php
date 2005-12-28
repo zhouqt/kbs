@@ -128,7 +128,7 @@ function generate_rss_contents($boardID, $boardName, $includeDesc, $lw) {
 			$item = array();
 			$item["title"] = htmlspecialchars($origin['TITLE'], ENT_QUOTES)." ";
 			if ($ftype != $dir_modes["ORIGIN"]) {
-				$conurl .= "boardcon.php?bid=".$boardID."&amp;id=".$origin['ID']."&amp;num=".($i+$start)."&amp;ftype=".$ftype;
+				$conurl = "boardcon.php?bid=".$boardID."&amp;id=".$origin['ID']."&amp;num=".($i+$start)."&amp;ftype=".$ftype;
 			} else {
 				$conurl = "bbscon.php?bid=".$boardID."&amp;id=".$origin['ID'];
 			}
@@ -147,8 +147,10 @@ function generate_rss_contents($boardID, $boardName, $includeDesc, $lw) {
 			$item["comments"] = $SiteURL."disparticle.php?boardName=".$boardName."&amp;ID=".$origin['ID'];
 			if ($includeDesc) {
 				$filename = bbs_get_board_filename($boardName, $origin["FILENAME"]);
-				$contents = bbs_printansifile($filename,1,$conurl, 0, 0);
-				$item["description"] = htmlspecialchars($contents, ENT_QUOTES);
+				$contents = bbs2_readfile_text($filename, 1000, 0);
+				if (is_string($contents)) {
+					$item["description"] = "<![CDATA[" . $contents . "]]>";
+				}
 			}
 			$re[] = $item;
 		}
