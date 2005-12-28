@@ -96,6 +96,7 @@ function generate_rss_header($boardName, $htmlboardDesc, $modifytime) {
 	if ($ftype == $dir_modes["ORIGIN"]) {
 		$re["title"] = $htmlboardDesc;
 		$re["description"] = "$htmlboardDesc 版面主题索引";
+		bbs_checkorigin($boardName);
 	} else {
 		$re["title"] = "$htmlboardDesc 文摘区";
 		$re["description"] = "$htmlboardDesc 文摘区索引";

@@ -40,6 +40,7 @@ if ($type == "g") {
 } else if ($type == "m") {
 	$ftype = $dir_modes["MARK"];
 	$title = $desc = "±£ÁôÇø";
+	bbs_checkmark($board);
 /*
 } else if ($type == "o") {
 	$ftype = $dir_modes["ORIGIN"];
