@@ -129,6 +129,22 @@ function cancelEvent(ev) {
 	}
 }
 
+function input_okd(obj, ev) {
+	var evt = (ev) ? ev : ((window.event) ? event : null);
+	if (evt == null) return true;
+	var key = evt.keyCode ? evt.keyCode : evt.charCode;
+	if (key == 13) {
+		cancelEvent(evt);
+		if (typeof obj == "function")  {
+			obj();
+		} else {
+			obj.form.submit();
+		}
+		return false;
+	}
+	return true;
+}
+
 /* textarea onkeydown event handler. to submit form with ctrl+W(IE only) or ctrl+ENTER */
 function textarea_okd(func, ev) {
 	var evt = (ev) ? ev : ((window.event) ? event : null);
