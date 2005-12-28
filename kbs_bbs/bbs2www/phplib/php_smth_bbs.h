@@ -83,6 +83,7 @@ ZEND_END_MODULE_GLOBALS(smth_bbs)
 
 /* phpbbs.article.c */
 void reset_output_buffer();
+int getattachtmppath(char *buf, size_t buf_len);
 void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len);
 
 /* phpbbs.user.c */
