@@ -40,6 +40,169 @@ PHP_FUNCTION(bbs_is_bm)
 
 
 
+/**
+ * int bbs_bmmanage(string board,int id,int mode,int zhiding)
+ * which is used to switch article's flag
+ * $mode defined in funcs.php
+ * $mode = 0: do nth;
+ *         1: del;
+ *         2: mark;
+ *         3: digest;
+ *         4: noreplay;
+ *         5: zhiding;
+ *         6: undel		:: add by pig2532 on 2005.12.19 ::
+ * return 0 : success;
+ *        -1: board is NOT exist
+ *        -2: do NOT have permission
+ *        -3: can NOT load dir file
+ *        -4: can NOT find article
+ *        -9: system error
+ */
+PHP_FUNCTION(bbs_bmmanage)
+{
+    char *board;
+    int  board_len;
+    long  id,mode,zhiding;
+    struct boardheader* bh;
+    int ret;
+    char dir[STRLEN];
+    int ent;
+    int fd, bid;
+    struct fileheader f;
+    FILE *fp;
+    
+    /* if in DELETED mode, num is transfered instead of id at parameter "id" */
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slll", &board, &board_len, &id, &mode, &zhiding) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+	
+    bid = getbnum(board);
+    if (!bid) RETURN_LONG(-1);
+    bh = getboard(bid);
+    strcpy(board,bh->filename);
+    if (!is_BM(bh, getCurrentUser()))
+        RETURN_LONG(-2);
+    
+    if (mode == 6)  /* undel action, add by pig2532 */
+    {
+        int find = 0;
+        setbdir(DIR_MODE_DELETED, dir, board);
+        fp = fopen(dir, "r");
+        if(!fp)
+        {
+            RETURN_LONG(-9);    /* cannot open index file */
+        }
+        fseek(fp, sizeof(f) * (id - 1) , SEEK_SET);   /* here variable "id" is actually num */
+        if(fread(&f, sizeof(f), 1, fp) > 0)
+        {
+            find = 1;
+        }
+        fclose(fp);
+        if(find == 0)
+        {
+            RETURN_LONG(-4);    /* article index not found, maybe SYSOP cleared them */
+        }
+    }
+    else if (zhiding) {
+        int find = 0;
+        ent = 1;
+        setbdir(DIR_MODE_ZHIDING, dir, board);
+        fd = open(dir, O_RDWR, 0644);
+        if (fd < 0) 
+            RETURN_LONG(-3);
+        while (1) {
+    	    if (read(fd,&f, sizeof(struct fileheader)) <= 0)
+    		    break;               
+    	    if (f.id==id) {
+    		    find=1;
+    		    break;
+    	    }
+    	    ent++;
+        }
+        close(fd);
+        if (!find)
+            RETURN_LONG(-4);
+    }
+    else {
+        setbdir(DIR_MODE_NORMAL, dir, board);
+        fd = open(dir, O_RDWR, 0644);
+        if ( fd < 0) RETURN_LONG(-3);
+        if (!get_records_from_id( fd, id, &f, 1, &ent)) {
+            close(fd);
+            RETURN_LONG(-4);
+        }
+        close(fd);
+    }
+        
+    if (mode == 6)  /* undel action, add by pig2532 */
+    {
+        char buf[128];
+        snprintf(buf, 100, "boards/%s/.DELETED", board);
+        ret = do_undel_post(board, buf, id, &f, NULL, getSession());
+        if(ret == 1)
+        {
+            ret = 0;
+        }
+        else
+        {
+            ret = -1;
+        }
+    }
+    else if (zhiding) {
+        ret = do_del_ding(board, bid, ent, &f, getSession());
+         switch(ret)
+         {
+         case -1:
+             RETURN_LONG(-4);    /* del failed */
+             break;
+         case -2:
+             RETURN_LONG(-9);    /* null fileheader */
+             break;
+         case 0:
+             RETURN_LONG(0);     /* success */
+             break;
+         default:
+             RETURN_LONG(-9);
+             break;
+         }
+    }
+    else if (mode == 1) {
+        ret = del_post(ent, &f, dir, board);
+    }
+    else {
+        struct write_dir_arg dirarg;
+        struct fileheader data;
+        int flag;
+        data.accessed[0] = ~(f.accessed[0]);
+        data.accessed[1] = ~(f.accessed[1]);
+        init_write_dir_arg(&dirarg);
+        if (mode == 2)
+            flag = FILE_MARK_FLAG;
+        else if (mode == 3)
+            flag = FILE_DIGEST_FLAG;
+        else if (mode == 4)
+            flag = FILE_NOREPLY_FLAG;
+        else if (mode == 5) {
+            flag = FILE_DING_FLAG;
+            data.accessed[0] = f.accessed[0]; // to reserve flags. hack! - atppp
+        } else
+            RETURN_LONG(-3);
+        
+        dirarg.filename = dir;  
+        dirarg.ent = ent;
+        if(change_post_flag(&dirarg,DIR_MODE_NORMAL,bh, &f, flag, &data,true,getSession())!=0)
+            ret = 1;
+        else
+            ret = 0;
+        free_write_dir_arg(&dirarg);
+    }
+    
+    if (ret != 0)
+        RETURN_LONG(-9); 
+
+    RETURN_LONG(0);
+}
 
 
 /**

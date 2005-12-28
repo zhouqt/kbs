@@ -386,6 +386,222 @@ PHP_FUNCTION(bbs_changemaillist)
 }
 
 
+
+
+
+/**
+ * Function: post a new mail
+ *  rototype:
+ * int bbs_postmail(string targetid,string title,string content,long sig, long backup);
+ *
+ *  @return the result
+ *  	0 -- success
+ *		-1   index file failed to open
+ *      -2   file/dir creation failed
+ *      -3   receiver refuses
+ *      -4   receiver reaches mail limit
+ *      -5   send too frequently
+ *      -6   receiver index append failed
+ *      -7   sender index append failed
+ *      -8   invalid renum
+ *      -100 invalid user
+ *  @author roy
+ */
+PHP_FUNCTION(bbs_postmail){
+	char *recvID, *title, *content;
+	char targetID[IDLEN+1];
+	int  idLen, tLen,cLen;
+    long backup,sig,renum;
+	int ac = ZEND_NUM_ARGS();
+	char mail_title[80];
+    FILE *fp;
+    char fname[PATHLEN], filepath[PATHLEN], sent_filepath[PATHLEN];
+    struct fileheader header;
+    struct stat st;
+    struct userec *touser;      /*peregrine for updating used space */
+	char *refname,*dirfname;
+	int find=-1,fhcount=0,refname_len,dirfname_len;
+
+    if(ac == 5)		/* use this to send a new mail */
+	{
+		if(zend_parse_parameters(5 TSRMLS_CC, "ss/s/ll", &recvID, &idLen,&title,&tLen,&content,&cLen,&sig,&backup) == FAILURE)
+		{
+			WRONG_PARAM_COUNT;
+		}
+		strncpy(targetID, recvID, sizeof(targetID));
+		targetID[sizeof(targetID)-1] = '\0';
+	}
+    else if(ac == 7)		/* use this to reply a mail */
+	{
+		if(zend_parse_parameters(7 TSRMLS_CC, "ssls/s/ll", &dirfname, &dirfname_len, &refname, &refname_len, &renum, &title, &tLen, &content, &cLen, &sig, &backup) == FAILURE)
+		{
+			WRONG_PARAM_COUNT;
+		}
+	}
+	else
+	{
+		WRONG_PARAM_COUNT;
+	}
+
+    if (abs(time(0) - getSession()->currentuinfo->lastpost) < 6) {
+        getSession()->currentuinfo->lastpost = time(0);
+        RETURN_LONG(-5); // 两次发文间隔过密, 请休息几秒后再试
+    }
+    getSession()->currentuinfo->lastpost = time(0);
+
+	/* read receiver's id from mail when replying, by pig2532 */
+	if(ac == 7)
+	{
+		if(stat(dirfname, &st)==-1)
+        {
+            RETURN_LONG(-1);    /* error reading stat */
+        }
+        if((renum<0)||(renum>=(st.st_size/sizeof(fileheader))))
+        {
+            RETURN_LONG(-8);    /* no such mail to reply */
+        }
+		if((fp = fopen(dirfname, "r+")) == NULL)
+		{
+			RETURN_LONG(-1);		/* error openning .DIR */
+		}
+		fseek(fp, sizeof(header) * renum, SEEK_SET);
+		if(fread(&header, sizeof(header), 1, fp) > 0 )	/* read fileheader by renum */
+		{
+			if(strcmp(header.filename, refname) == 0)
+			{
+				find = renum;
+			}
+		}
+		if(find == -1)
+		{
+			rewind(fp);
+			while(true)		/* find the fileheader */
+			{
+				if(fread(&header, sizeof(header), 1, fp) <= 0)
+				{
+					break;
+				}
+				if(strcmp(header.filename, refname) == 0)
+				{
+					find = fhcount;
+					break;
+				}
+				fhcount++;
+			}
+		}
+		if(find == -1)
+		{	/* file not found */
+			fclose(fp);
+			RETURN_LONG(-8);
+		}
+		else
+		{
+			strncpy(targetID, header.owner, sizeof(targetID));
+			targetID[sizeof(targetID)-1] = '\0';
+			if(!(header.accessed[0] & FILE_REPLIED))
+			{	/* set the replied flag */
+				header.accessed[0] |= FILE_REPLIED;
+				fseek(fp, sizeof(header) * find, SEEK_SET);
+				fwrite(&header, sizeof(header), 1, fp);
+			}
+			fclose(fp);
+		}
+	}
+
+    getuser(targetID, &touser);
+    if (touser == NULL) 
+		RETURN_LONG(-100);//can't find user
+
+    if (!canIsend2(getCurrentUser(), targetID)) {
+        RETURN_LONG(-3);
+    }
+
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
+        RETURN_LONG(-4);
+    }
+
+	strncpy(targetID, touser->userid, sizeof(targetID));
+	targetID[sizeof(targetID)-1] = '\0';
+    filter_control_char(title);
+	if (title[0] == 0)
+        strcpy(mail_title,"没主题");
+	else 
+		strncpy(mail_title,title,79);
+	mail_title[79]=0;
+    
+    bzero(&header, sizeof(header));
+    strcpy(header.owner, getCurrentUser()->userid);
+    strncpy(header.title, mail_title, ARTICLE_TITLE_LEN - 1);
+	header.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    setmailpath(filepath, targetID);
+    if (stat(filepath, &st) == -1) {
+        if (mkdir(filepath, 0755) == -1)
+            RETURN_LONG(-2);
+    } else {
+        if (!(st.st_mode & S_IFDIR))
+            RETURN_LONG(-2);
+    }
+    if (GET_MAILFILENAME(fname, filepath) < 0)
+        RETURN_LONG(-2);
+    strcpy(header.filename, fname);
+    setmailfile(filepath, targetID, fname);
+
+    fp = fopen(filepath, "w");
+    if (fp == NULL)
+        RETURN_LONG(-2);
+    write_header(fp, getCurrentUser(), 1, NULL, mail_title, 0, 0, getSession());
+    if (cLen>0) {
+        f_append(fp, unix_string(content));
+    }
+    getCurrentUser()->signature = sig;
+    if (sig < 0) {
+        struct userdata ud;
+        read_userdata(getCurrentUser()->userid, &ud);
+        if (ud.signum > 0) {
+            sig = 1 + (int) (((double)ud.signum) * rand() / (RAND_MAX + 1.0)); //(rand() % ud.signum) + 1;
+        } else sig = 0;
+    }
+    addsignature(fp, getCurrentUser(), sig);
+    fputc('\n', fp);
+    fclose(fp);
+    
+    if (stat(filepath, &st) != -1)
+        header.eff_size = st.st_size;
+    setmailfile(fname, targetID, ".DIR");
+    if (append_record(fname, &header, sizeof(header)) == -1)
+        RETURN_LONG(-6);
+    touser->usedspace += header.eff_size;
+	setmailcheck(targetID);
+	    
+   /* 添加Log Bigman: 2003.4.7 */
+    newbbslog(BBSLOG_USER, "mailed(www) %s %s", targetID, mail_title);
+
+    if (backup) {
+        strcpy(header.owner, targetID);
+        setmailpath(sent_filepath, getCurrentUser()->userid);
+        if (GET_MAILFILENAME(fname, sent_filepath) < 0) {
+            RETURN_LONG(-7);
+        }
+        strcpy(header.filename, fname);
+        setmailfile(sent_filepath, getCurrentUser()->userid, fname);
+
+        f_cp(filepath, sent_filepath, 0);
+        if (stat(sent_filepath, &st) != -1) {
+            getCurrentUser()->usedspace += st.st_size;
+            header.eff_size = st.st_size;
+        } else {
+            RETURN_LONG(-7);
+        }
+        header.accessed[0] |= FILE_READ;
+        setmailfile(fname, getCurrentUser()->userid, ".SENT");
+        if (append_record(fname, &header, sizeof(header)) == -1)
+            RETURN_LONG(-7);
+        newbbslog(BBSLOG_USER, "mailed(www) %s ", getCurrentUser()->userid);
+    }
+	RETURN_LONG(0);
+}
+
+
 /**
  * mail a file from a user to another user.
  * prototype:

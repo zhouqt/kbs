@@ -13,6 +13,7 @@ PHP_FUNCTION(bbs_can_send_mail);
 PHP_FUNCTION(bbs_loadmaillist);
 PHP_FUNCTION(bbs_changemaillist);
 
+PHP_FUNCTION(bbs_postmail);
 PHP_FUNCTION(bbs_mail_file);
 PHP_FUNCTION(bbs_delmail);
 PHP_FUNCTION(bbs_setmailreaded);
@@ -29,6 +30,7 @@ PHP_FUNCTION(bbs_domailforward);
     PHP_FE(bbs_can_send_mail, NULL) \
     PHP_FE(bbs_loadmaillist, NULL) \
     PHP_FE(bbs_changemaillist, NULL) \
+    PHP_FE(bbs_postmail, NULL) \
     PHP_FE(bbs_mail_file, NULL) \
     PHP_FE(bbs_delmail,NULL) \
     PHP_FE(bbs_setmailreaded,NULL) \

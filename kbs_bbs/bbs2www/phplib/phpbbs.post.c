@@ -274,6 +274,72 @@ PHP_FUNCTION(bbs_postarticle)
 }
 
 
+/**
+ * del board article
+ * prototype:
+ * int bbs_delfile(char* board, char* filename);
+ *
+ *  @return the result
+ *  	0 -- success, -1 -- no perm
+ *  	-2 -- wrong parameter
+ *  @author binxun
+ */
+PHP_FUNCTION(bbs_delfile)
+{
+	FILE *fp;
+    boardheader_t *brd;
+    struct fileheader f;
+    struct userec *u = NULL;
+    char dir[80], path[80];
+	long result = 0;
+
+	char* board;
+	char* file;
+	int board_len,file_len;
+    int num = 0;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &board_len,&file,&file_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	u = getCurrentUser();
+	brd = getbcache(board);
+
+	if (VALID_FILENAME(file) < 0)
+        RETURN_LONG(-2);
+    if (brd == 0)
+        RETURN_LONG(-2);
+    if (!haspostperm(u, board))
+        RETURN_LONG(-2);
+
+	setbdir(DIR_MODE_NORMAL, dir, brd->filename);
+	setbfile(path, brd->filename, file);
+	/*
+	 * TODO: Improve the following block of codes.
+	 */
+    fp = fopen(dir, "r");
+    if (fp == 0)
+        RETURN_LONG(-2);
+	while (1) {
+		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
+			break;
+		if (!strcmp(f.filename, file)) {
+                        if(del_post(num + 1, &f, dir, brd->filename) != 0)
+				result = -1;
+			else
+				result = 0;
+			break;
+		}
+		num++;
+    }
+    fclose(fp);
+
+	RETURN_LONG(result);
+}
+
+
 
 
 /* function bbs_caneditfile(string board, string filename);

@@ -7,6 +7,7 @@ PHP_FUNCTION(bbs_getattachtmppath);
 PHP_FUNCTION(bbs_filteruploadfilename);
 PHP_FUNCTION(bbs_postarticle);
 
+PHP_FUNCTION(bbs_delfile);
 PHP_FUNCTION(bbs_caneditfile);
 PHP_FUNCTION(bbs_updatearticle);
 PHP_FUNCTION(bbs_edittitle);
@@ -23,6 +24,7 @@ PHP_FUNCTION(bbs_brcclear);
     PHP_FE(bbs_getattachtmppath, NULL) \
     PHP_FE(bbs_filteruploadfilename,NULL) \
     PHP_FE(bbs_postarticle,NULL) \
+    PHP_FE(bbs_delfile,NULL) \
     PHP_FE(bbs_caneditfile,NULL) \
     PHP_FE(bbs_updatearticle, NULL) \
     PHP_FE(bbs_edittitle, NULL) \
