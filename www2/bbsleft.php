@@ -176,16 +176,15 @@
 ?>
 <form action="bbslogin.php" method="post" name="form1" target="_top" onSubmit="return fillf3(this);" class="m0">
 <nobr><script type="text/javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
-<input type="text" class="upinput" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" /></nobr><br/>
+<input type="text" class="upinput" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" onKeyPress="if(event.keyCode==13){form1.submit();}" /></nobr><br/>
 
 <nobr><script type="text/javascript">putImage('u3.gif','alt="用户密码" class="pm"');</script>
-<input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" /></nobr><br />
+<input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" onKeyPress="if(event.keyCode==13){form1.submit();}" /></nobr><br />
 <div class="m9">
 <nobr><a href="javascript:form1.submit();">
 <script type="text/javascript">putImage('l1.gif','alt="登录进站" class="m10" onClick="form1.submit();"');</script></a>
 <a href="bbsreg0.html" target="_top">
 <script type="text/javascript">putImage('l3.gif','alt="注册新用户" class="m10"');</script></a></nobr>
-<input type="submit" style="width:0px;height:0px">
 </div>
 </form>
 <?php
