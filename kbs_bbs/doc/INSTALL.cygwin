@@ -81,20 +81,20 @@ gmp-4.1.2              可选      选择 ssh 方式支持才需要
 
 2.6 将 phpbbslib 放入 php
     同样切换到 $(SRCDIR) 目录，进入 php 的源代码目录。
-          mkdir ext/smth_bbs
+          mkdir ext/kbs_bbs
 
-    然后将 smthbbs 源代码目录 bbs2www/phplib/ 下的 config.m4、php_smth_bbs.h
-和 phpbbslib.c 三个文件复制到 ext/smth_bbs 目录，然后执行：
+    然后将 kbsbbs 源代码目录 bbs2www/phplib/ 下的 config.m4、php_kbs_bbs.h
+和 phpbbslib.c 三个文件复制到 ext/kbs_bbs 目录，然后执行：
           ./buildconf --force
 
 2.7 再次编译安装 apache 和 php
     重复 2.4 节中的步骤即可，但 php 的 configure 命令应改为：
           ./configure --disable-debug -enable-track-vars \
               --with-apache=../apache_1.3.X --enable-mime-magic \
-              --with-zlib-dir --enable-smth_bbs --with-dom --with-iconv
+              --with-zlib-dir --enable-kbs_bbs --with-dom --with-iconv
 
 
-    如果一切顺利，至此 smthbbs、apache 和 php 都已经安装完毕。
+    如果一切顺利，至此 kbsbbs、apache 和 php 都已经安装完毕。
 
 3. 运行之前的配置
     本节主要说明 ssh 方式和 web 方式的配置。

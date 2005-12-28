@@ -164,7 +164,7 @@ make install-home，因为执行的话就会丢失 bbs 数据！
     同样切换到 $(SRCDIR) 目录，进入 php 的源代码目录。
           mkdir ext/kbs_bbs
 
-    然后将 kbsbbs 源代码目录 bbs2www/phplib/ 下的 config.m4、php_smth_bbs.h
+    然后将 kbsbbs 源代码目录 bbs2www/phplib/ 下的 config.m4、php_kbs_bbs.h
 和 phpbbslib.c 三个文件复制到 ext/kbs_bbs 目录，然后执行：
           ./buildconf --force
 

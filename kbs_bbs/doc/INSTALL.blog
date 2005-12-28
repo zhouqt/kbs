@@ -56,8 +56,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
     1) 在 MySQL 中建立 KBS.Blog 所需要的数据库结构，见 DB.Blog.Strucure.sql 文档；
     2) 必须选择支持 web 和 MySQL 数据库；
     3) 站点配置文件中必须含有对 KBS.Blog 的定义。
-    如果 configure 选择 --enable-site=smth 则已经定义了 KBS.Blog ，
-    否则请改动相应的配置文件：
+    请改动相应的配置文件：
     在 $BBSSRC/site/***.h 中加入
     	#define PERSONAL_CORP
     在 $BBSSRC/bbs2www/sites/***/site.php 中加入
