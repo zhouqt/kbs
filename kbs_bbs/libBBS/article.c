@@ -38,7 +38,8 @@ int get_postfilename(char *filename, char *direct, int use_subdir)
             rn = 0 + (int) (len * 1.0 * rand() / (RAND_MAX + 1.0));
             sprintf(filename, "%c/M.%lu.%c%c", alphabet[rn], now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
         } else
-            sprintf(filename, "M.%lu.%c%c", now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
+//            sprintf(filename, "M.%lu.%c%c", now, post_sufix[(pid + i) % 62], post_sufix[(pid * i) % 62]);
+            sprintf(filename,"M.%lu.%c%c",now,post_sufix[rand()%62],post_sufix[rand()%62]);
         sprintf(fname, "%s/%s", direct, filename);
         if ((fp = open(fname, O_CREAT | O_EXCL | O_WRONLY, 0644)) != -1) {
             break;
