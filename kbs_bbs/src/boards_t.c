@@ -848,6 +848,8 @@ static int fav_key(struct _select_def *conf, int command)
         {
             char bname[STRLEN];
             int i = 0;
+            extern int in_do_sendmsg;
+            extern int super_select_board(char*);
 
             if (BOARD_FAV == arg->yank_flag) {
 
@@ -868,7 +870,11 @@ static int fav_key(struct _select_def *conf, int command)
                 clrtoeol();
 
                 make_blist(0);
-                namecomplete((char *) NULL, bname);
+                in_do_sendmsg=1;
+                if(namecomplete(NULL,bname)=='#')
+                    super_select_board(bname);
+                in_do_sendmsg=0;
+
                 CreateNameList();   /*  free list memory. */
                 if (*bname)
                     i = getbnum(bname);
