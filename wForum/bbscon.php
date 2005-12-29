@@ -25,7 +25,8 @@
 		}
 	} else if (isset($_GET["board"])) {
 		$board = $_GET["board"];
-		if( $boardID != bbs_getboard($board, $brdarr) ){
+		$boardID = bbs_getboard($board, $brdarr);
+		if( !$boardID ){
 			echo 24;
 			exit(0);
 		}
