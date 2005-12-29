@@ -49,13 +49,10 @@
 	$endnum = $startnum + $pagesize;
 	if( $endnum > $num )
 		$endnum = $num;
-	/*
-	 ** Cache只判断了同主题的最后一篇文章，没有顾及前面文章的修改  windinsn jan 26 , 2004
-	 */ 
-	if ($isnormalboard)
-	{
-		$lastfilename = bbs_get_board_filename($board , $articles[$num - 1]["FILENAME"]);
-		if (cache_header("public",@filemtime($lastfilename),300))
+
+	if ($isnormalboard) { /* cache 判断索引修改时间 - atppp */
+		$dotdirname = bbs_get_board_index($board, $dir_modes["NORMAL"]);
+		if (cache_header("public",@filemtime($dotdirname),300))
 			return;
 	}
 	page_header("同主题阅读", "<a href=\"bbsdoc.php?board=".$brd_encode."\">".htmlspecialchars($brdarr["DESC"])."</a>");
