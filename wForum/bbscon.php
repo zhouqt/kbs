@@ -23,6 +23,13 @@
 			echo 4;
 			exit(0);
 		}
+	} else if (isset($_GET["board"])) {
+		$board = $_GET["board"];
+		if( $boardID != bbs_getboard($board, $brdarr) ){
+			echo 24;
+			exit(0);
+		}
+		$board = $brdarr["NAME"];
 	} else {
 		echo 5;
 		exit(0);
