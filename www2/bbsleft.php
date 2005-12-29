@@ -348,6 +348,14 @@
 		<div class="mi"><a href="bbssig.php">改签名档</a></div>
 		<div class="mi"><a href="bbspwd.php">修改密码</a></div>
 		<div class="mi"><a href="bbsparm.php">修改个人参数</a></div>
+<?php
+		if($currentuser["userlevel"]&BBS_PERM_CLOAK)
+		{
+?>
+		<div class="mi"><a href="bbscloak.php">隐身术</a></div>
+<?php
+		}
+?>
 		<div class="mi"><a href="bbsal.php">通讯录</a></div>
 		<div class="mi"><a href="bbsnick.php">临时改昵称</a></div>
 		<div class="lmi"><a href="bbsfall.php">设定好友</a></div>
