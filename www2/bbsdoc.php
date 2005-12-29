@@ -126,10 +126,10 @@ c.t();c.f('<?php echo addslashes(bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php
 ?>',<?php
 	$s = TRUE;
 	if( defined("SITE_SMTH") ) {
-		include ("boardrelated.inc.php");
-		if (isset($boardrelated[$board])) {
-			echo $boardrelated[$board];
-			$s = FALSE;
+		 $relatefile = $_SERVER["DOCUMENT_ROOT"]."/brelated/".$brdarr["NAME"].".js";
+		 if ( file_exists( $relatefile ) ) {
+		 	if (@readfile( $relatefile ))
+				$s = FALSE;
 		}
 	}
 	if ($s) echo "0";
