@@ -15,6 +15,14 @@ chdir(BBS_HOME);
 if (!bbs_ext_initialized())
 	bbs_init_ext();
 
+define("RUNNINGTIME", TRUE);
+
+function getmicrotime(){ 
+   list($usec, $sec) = explode(" ",microtime()); 
+   return ((float)$usec + (float)$sec); 
+} 
+if (RUNNINGTIME) $StartTime=getmicrotime();
+
 global $fromhost;
 global $fullfromhost;
 global $loginok;
@@ -353,6 +361,12 @@ function page_header($title, $flag = "", $otherheaders = false) {
 
 /* 特别注意：POST 递交生成的页面，不应该出现 展开完整界面 的链接，所以调用本函数必须用 FALSE 参数 */
 function page_footer($checkframe = TRUE) {
+	global $StartTime;
+	if (RUNNINGTIME) {
+		$endtime = getmicrotime();
+		echo "<center>页面执行时间：".sprintf(number_format(($endtime-$StartTime)*1000,3))."毫秒</center>";
+	}
+
 	if ($checkframe) {
 ?>
 <script>checkFrame(<?php if (!defined("STATIC_FRAME")) echo "1"; ?>);</script>
