@@ -21,6 +21,17 @@ int getattachtmppath(char *buf, size_t buf_len)
 }
 
 
+int check_last_post_time(struct user_info *uinfo) {
+    int lastpost = uinfo->lastpost;
+    int now = time(0);
+    uinfo->lastpost = now;
+    if (abs(now - lastpost) < 6) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
 PHP_FUNCTION(bbs_getattachtmppath)
 {
     char buf[MAXPATH];
@@ -105,11 +116,9 @@ PHP_FUNCTION(bbs_postarticle)
     if (deny_me(getCurrentUser()->userid, board) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
         RETURN_LONG(-5); //很抱歉, 你被版务人员停止了本版的post权利.
 
-    if (abs(time(0) - getSession()->currentuinfo->lastpost) < 6) {
-        getSession()->currentuinfo->lastpost = time(0);
+    if (check_last_post_time(getSession()->currentuinfo)) {
         RETURN_LONG(-6); // 两次发文间隔过密, 请休息几秒后再试
     }
-    getSession()->currentuinfo->lastpost = time(0);
 
     if(reid > 0){
         int pos;int fd;
@@ -743,7 +752,11 @@ PHP_FUNCTION(bbs_docross)
 	    if (deny_me(u->userid, target))
 	        	RETURN_LONG(-5);
 	}
-	
+
+    if (check_last_post_time(getSession()->currentuinfo)) {
+        RETURN_LONG(-10);
+    }
+
 	setbdir(DIR_MODE_NORMAL, path, board);
 	if ((fd = open(path, O_RDWR, 0644)) < 0)
 		RETURN_LONG(-10);
@@ -752,7 +765,7 @@ PHP_FUNCTION(bbs_docross)
 		RETURN_LONG(-6); //无法取得文件记录
 	}
 	close(fd);
-#ifndef NINE_BUILD
+#if 0 //disabled by atppp 20051228
     if ((f.accessed[0] & FILE_FORWARDED) && !HAS_PERM(u, PERM_SYSOP)) 
         RETURN_LONG(-7);
 #endif	

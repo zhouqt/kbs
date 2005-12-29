@@ -88,6 +88,7 @@ void make_article_flag_array(char flags[4], struct fileheader *ent, struct usere
 
 /* phpbbs.post.c */
 int getattachtmppath(char *buf, size_t buf_len);
+int check_last_post_time(struct user_info *uinfo);
 
 /* phpbbs.user.c */
 void assign_user(zval * array, struct userec *user, int num);

@@ -443,11 +443,9 @@ PHP_FUNCTION(bbs_postmail){
 		WRONG_PARAM_COUNT;
 	}
 
-    if (abs(time(0) - getSession()->currentuinfo->lastpost) < 6) {
-        getSession()->currentuinfo->lastpost = time(0);
+    if (check_last_post_time(getSession()->currentuinfo)) {
         RETURN_LONG(-5); // 两次发文间隔过密, 请休息几秒后再试
     }
-    getSession()->currentuinfo->lastpost = time(0);
 
 	/* read receiver's id from mail when replying, by pig2532 */
 	if(ac == 7)
