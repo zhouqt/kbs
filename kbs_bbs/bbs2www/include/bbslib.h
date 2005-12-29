@@ -15,8 +15,6 @@ void f_append(FILE *fp, char *buf);
 
 int file_exist(char *file);
 
-int get_userstatusstr(char *userid, char *buf);
-
 int del_mail(int ent, struct fileheader* fh, char* direct);
 
 int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]);

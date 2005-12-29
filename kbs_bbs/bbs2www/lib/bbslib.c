@@ -118,44 +118,6 @@ int get_file_ent(char *board, char *file, struct fileheader *x)
     return search_record(dir, x, sizeof(struct fileheader), (RECORD_FUNC_ARG)cmpname, file);
 }
 
-static int printstatusstr(struct user_info *uentp, char *arg, int pos)
-{
-    char modebuf[80];
-    if (uentp->invisible == 1) {
-		arg[0] = '1';
-        if (!HAS_PERM(getCurrentUser(), PERM_SEECLOAK))
-            return COUNT;
-    }
-    if (arg[1]==0)
-        strcat(arg, "目前在站上，状态如下：\n");
-    if (uentp->invisible)
-        strcat(arg, "<font class=\"c32\">隐身中</font>   ");
-    else {
-        char buf[80];
-
-        sprintf(buf, "%s ", modestring(modebuf,uentp->mode, uentp->destuid, 0, 
-                                              (uentp->in_chat ? uentp->chatid : NULL)));
-        strcat(arg, buf);
-    }
-    UNUSED_ARG(pos);
-    return COUNT;
-}
-
-/* stiger: 获得一个用户的在线状态string */
-int get_userstatusstr(char *userid, char *buf)
-{
-	int tuid=0;
-	struct userec *lookupuser;
-
-	if(!(tuid = getuser(userid, &lookupuser)))
-		return 0;
-
-	buf[0]='0';
-	buf[1]=0;
-
-	return apply_utmp((APPLY_UTMP_FUNC) printstatusstr, 10, lookupuser->userid, buf);
-}
-
 /* 以下的代码是cgi和php都使用的*/
 static struct user_info www_guest_uinfo;
 
