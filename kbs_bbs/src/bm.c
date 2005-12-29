@@ -951,8 +951,10 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             prints("\033[1;32m%s\033[0;33m<Enter>\033[m","已完成清理!");
             WAIT_RETURN;
         }
-        else
+        else{
+            CreateNameList();
             break;
+        }
     }
     clear();
     return FULLUPDATE;
