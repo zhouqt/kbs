@@ -298,7 +298,7 @@ int getnewutmpent(struct user_info *up)
             for (n = 0; n < USHM_SIZE; n++) {
                 utmphead->uptime = now;
                 uentp = &(utmpshm->uinfo[n]);
-                if ((uentp->mode == WEBEXPLORE)
+                if ((uentp->pid == 1)
                     && ((now - uentp->freshtime) < IDLE_TIMEOUT)) {
                     continue;
                 }
@@ -635,7 +635,7 @@ void clear_utmp2(int uent)
     /* Delete the user's msglist entry from webmsgd,
      * if the user is login from web. */
 	/*
-    if (utmpshm->uinfo[uent - 1].mode == WEBEXPLORE)
+    if (utmpshm->uinfo[uent - 1].pid == 1)
         delfrom_msglist(uent, utmpshm->uinfo[uent - 1].userid);
 		*/
     zeroinfo.active = false;
@@ -697,7 +697,7 @@ int kick_user_utmp(int uid, struct user_info *uentp, int signal) {
     for(i=0;i<s.count;i++) {
         struct user_info *enp = s.entp[i];
         if (enp->active) {
-            if (enp->mode != WEBEXPLORE)
+            if (enp->pid != 1)
                 kill(enp->pid, signal);
             clear_utmp(get_utmpent_num(enp), uid , s.pid[i]);
         }

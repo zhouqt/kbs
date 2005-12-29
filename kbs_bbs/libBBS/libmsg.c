@@ -599,7 +599,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
 		msgmail(uident, msgstr);
         return -1;
     }
-    if (mode != 3 && uin->mode != WEBEXPLORE) {
+    if (mode != 3 && uin->pid != 1) {
         if (get_unreadcount(uident) > MAXMESSAGE) {
             strcpy(session->msgerr, "对方尚有一些讯息未处理，请稍候再发或给他(她)写信...");
 			msgmail(uident, msgstr);
@@ -619,7 +619,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
     head2.sent = 1;
     strncpy(head2.id, uident, IDLEN+2);
     /*
-    if (uin->mode == WEBEXPLORE) {
+    if (uin->pid == 1) {
         if (send_webmsg(get_utmpent_num(uin), uident, getSession()->utmpent, 
 						session->getCurrentUser()->userid, head.time, msgstr) < 0) {
             strcpy(msgerr, "无法发送Web消息...");
@@ -654,7 +654,7 @@ int sendmsgfunc(struct user_info *uentp, const char *msgstr, int mode,session_t*
             return -2;
         //save_smsmsg(session->getCurrentUser()->userid, &head2, msgstr, 1) ;
     }
-	if( uin->mode == WEBEXPLORE){
+	if( uin->pid == 1){
 		uin->mailcheck |= CHECK_MSG;
 		return 1;
 	}

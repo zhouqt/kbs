@@ -317,7 +317,7 @@ struct count_arg {
 
 int countuser(struct user_info* uinfo,struct count_arg* arg,int pos)
 {
-    if (uinfo->mode==WEBEXPLORE)
+    if (uinfo->pid==1)
         arg->www_count++;
     else
         arg->telnet_count++;

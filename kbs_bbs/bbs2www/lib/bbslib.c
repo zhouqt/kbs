@@ -91,9 +91,6 @@ int send_msg(char *srcid, int srcutmp, char *destid, int destpid, char *msg)
 {
     uinfo_t *uin;
 
-    /*
-     * 滤掉特殊字符，应该写成一个函数 
-     */
     filter_control_char(msg);
     uin = t_search(destid, destpid);
     if (uin == NULL)
@@ -435,7 +432,7 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
             return -2;
 
         if ((((*y)->active == 0)) || ((*y)->userid[0] == 0)
-            || ((compat_telnet==0)&&((*y)->mode != WEBEXPLORE)))
+            || ((compat_telnet==0)&&((*y)->pid != 1)))
             return -3;
 
         if (userid&&strcmp((*y)->userid, userid))
