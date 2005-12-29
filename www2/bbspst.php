@@ -54,7 +54,7 @@
 	if (bbs_normalboard($board)) {
 ?>
 <div class="article smaller" id="bbsnot">正在载入讨论区备忘录...</div>
-<iframe src="bbsnot.php?board=<?php echo $board; ?>" width=0 height=0 style="display:none;"></iframe>
+<iframe src="bbsnot.php?board=<?php echo $board; ?>" width="0" height="0" frameborder="0" scrolling="no"></iframe>
 <?php
 	} else {
 ?>

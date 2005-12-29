@@ -984,6 +984,7 @@ tconWriter.prototype.h = function() {
 	document.write(ret);
 };
 tconWriter.prototype.o = function(arts) {
+	var ifs = "";
 	for (var i = 0; i < arts.length; i++) {
 		var id = arts[i][0];
 		var owner = arts[i][1];
@@ -1000,9 +1001,10 @@ tconWriter.prototype.o = function(arts) {
 		ret += '[<a href="#top">返回顶部</a>]';
 		ret += '<div class="tnum">' + (this.serial+i+1) + '</div>';
 		ret += '</div><div class="article" id="art' + id + '"><div align="center">...载入中...</div></div>';
-		ret += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '" style="display:none;"></iframe>';
+		ifs += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
 		document.write(ret);
 	}
+	document.write(ifs);
 };
 
 
