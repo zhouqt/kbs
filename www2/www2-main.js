@@ -874,6 +874,11 @@ docWriter.prototype.f = function(sfav,rss,related) {
 	document.write(ret);
 };
 
+function clearArticleDiv(id) {
+	if (parent && (divArtCon = parent.document.getElementById("art" + id))) {
+		divArtCon.innerHTML = "";
+	}
+}
 
 function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 	this.board = escape(board);
