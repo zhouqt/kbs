@@ -18,6 +18,7 @@ PHP_FUNCTION(bbs_wwwlogin);
 PHP_FUNCTION(bbs_setguest_nologin);
 PHP_FUNCTION(bbs_wwwlogoff);
 PHP_FUNCTION(bbs_update_uinfo);
+PHP_FUNCTION(bbs_session_modify_user_mode);
 
 PHP_FUNCTION(bbs_getusermode);
 PHP_FUNCTION(bbs_isonline);
@@ -40,6 +41,7 @@ PHP_FUNCTION(bbs_isonline);
     PHP_FE(bbs_update_uinfo, NULL) \
     PHP_FE(bbs_getusermode, NULL) \
     PHP_FE(bbs_isonline, NULL) \
+    PHP_FE(bbs_session_modify_user_mode, NULL) \
 
 #endif //PHP_BBS_SESSION_H
 

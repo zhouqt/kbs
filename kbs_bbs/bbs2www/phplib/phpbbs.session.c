@@ -92,6 +92,7 @@ static int full_user_list(struct user_info *uentp, struct fulluserlistarg* arg,i
     array_init ( element );
 
     add_assoc_bool ( element, "invisible", userinfo.invisible );
+    add_assoc_long ( element, "pid", userinfo.pid );
     add_assoc_bool ( element, "isfriend", isfriend(userinfo.userid) );
     add_assoc_string ( element, "userid", userinfo.userid, 1 );
     add_assoc_string ( element, "username", userinfo.username, 1 );
@@ -369,6 +370,24 @@ PHP_FUNCTION(bbs_update_uinfo)
 }
 
 
+
+
+PHP_FUNCTION(bbs_session_modify_user_mode)
+{
+    long mode;
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &mode) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (getSession() && getSession()->currentuinfo) {
+        getSession()->currentuinfo->mode = mode;
+        RETURN_LONG(0);
+    }
+    RETURN_LONG(-1);
+}
+
+
+
 static int printstatusstr(struct user_info *uentp, char *arg, int pos)
 {
     if (uentp->invisible == 1) {
@@ -382,8 +401,11 @@ static int printstatusstr(struct user_info *uentp, char *arg, int pos)
         strcat(arg, "<font class=\"c32\">вўЩэжа</font>   ");
     else {
         char buf[80];
-
-        sprintf(buf, "%s ", ModeType(uentp->mode));
+        if (uentp->pid == 1) {
+            sprintf(buf, "<span class='blue'>%s</span> ", ModeType(uentp->mode));
+        } else {
+            sprintf(buf, "%s ", ModeType(uentp->mode));
+        }
         strcat(arg, buf);
     }
     UNUSED_ARG(pos);

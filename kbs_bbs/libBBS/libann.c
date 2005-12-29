@@ -270,6 +270,7 @@ int ann_traverse_check(char *path, struct userec *user)
                 continue;
             if (strncmp(currpath, path, strlen(currpath)) != 0)
                 continue;
+			if (path[strlen(currpath)] != '/' && path[strlen(currpath)]!='\0' ) continue;
             /*if ((!strstr(title,"(BM: BMS)")||HAS_PERM(session->getCurrentUser(),PERM_BOARDS))&&
                (!strstr(title,"(BM: SYSOPS)")||HAS_PERM(session->getCurrentUser(),PERM_SYSOP))&&
                (!strstr(title,"(BM: ZIXIAs)")||HAS_PERM(session->getCurrentUser(),PERM_SECANC))) */

@@ -173,7 +173,9 @@ int t_printstatus(struct user_info *uentp, int *arg, int pos)
     p = idle_str(buf3,uentp);
     if(p[0]==' '&&p[1]==' ') buf2[0]=0;
     else sprintf(buf2, "[%s]", p);
-    sprintf(buf, "%s\033[1m%s\033[m%s ", uentp->invisible?"\033[32m":"", modestring(buf3,uentp->mode, uentp->destuid, 0,   /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
+    sprintf(buf, "%s\033[1m%s\033[m%s ", 
+			uentp->invisible?(uentp->pid==1?"\033[33m":"\033[32m"):(uentp->pid==1?"\033[36m":""), 
+			modestring(buf3,uentp->mode, uentp->destuid, 0,   /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                           (uentp->in_chat ? uentp->chatid : NULL)), buf2);
     strcat(genbuf, buf);
 
@@ -1459,7 +1461,8 @@ struct user_info *uentp;
             ovv = true;
         else
             ovv = false;
-        sprintf(ubuf, "%s%-12.12s %s%-10.10s\033[m", (ovv) ? "\033[32m．" : "  ", user_record[i]->userid, (user_record[i]->invisible == true) ? "\033[34m" : "",
+        sprintf(ubuf, "%s%-12.12s %s%-10.10s\033[m", (ovv) ? "\033[32m．" : "  ", user_record[i]->userid, 
+                (user_record[i]->invisible == true)? (user_record[i]->pid==1?"\033[33m":"\033[34m") : (user_record[i]->pid==1?"\033[1;36m":""), 
                 modestring(buf,user_record[i]->mode, user_record[i]->destuid, 0, NULL));
         prints("%s", ubuf);
         if ((i + 1) % 3 == 0)

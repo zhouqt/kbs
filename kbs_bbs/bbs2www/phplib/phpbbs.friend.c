@@ -266,6 +266,7 @@ PHP_FUNCTION(bbs_getonlinefriends)
         MAKE_STD_ZVAL(element);
         array_init(element);
         add_assoc_bool ( element, "invisible", user[i].invisible );
+        add_assoc_long ( element, "pid", user[i].pid );
         add_assoc_bool ( element, "isfriend", isfriend(user[i].userid) );
         add_assoc_long ( element, "idle", (long)(time(0) - user[i].freshtime)/60 );
         add_assoc_string ( element, "userid", user[i].userid, 1 );       
