@@ -18,13 +18,22 @@
     Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
 */
 #include "bbs.h"
-struct word {
-    char *word;
-    struct word *next;
-};
 struct word *toplev = NULL, *current = NULL;
-void FreeNameList()
-{
+struct word* GetNameListHead(void){
+    return toplev;
+}
+int GetNameListCount(void){
+    struct word *p;
+    int ret;
+    for(ret=0,p=toplev;p;p=p->next)
+        ret++;
+    return ret;
+}
+static void FreeNameList(void){
+    /*
+     * 加上 static, 显式释放 NameList 应该使用 CreateNameList 函数, 
+     * 不应该在本文件外有对 FreeNameList 的调用... 
+    */
     struct word *p, *temp;
 
     for (p = toplev; p != NULL; p = temp) {

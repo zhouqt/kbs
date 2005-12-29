@@ -94,6 +94,9 @@ void CreateNameList();
 void ApplyToNameList(int (*)(char*,void*),void*);
 int namecomplete(char *prompt, char *data);
 int usercomplete(char *prompt, char *data);
+struct word* GetNameListHead(void);
+int GetNameListCount(void);
+int MaxLen(struct word*,int);
 
 /* newmain_single.c */
 void showsysinfo(char * fn);

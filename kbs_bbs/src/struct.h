@@ -524,4 +524,9 @@ struct ea_attach_info{
     unsigned int size;                              //附件文件长度
 };
 
+/* NameList 链表节点 */
+typedef struct word{
+    char *word;
+    struct word *next;
+}NLNode;
 

@@ -555,22 +555,33 @@ static int func_remove_club_users(struct userec *user,void *varg){
     }
     return 0;
 }
-static int func_count(char *userid,void *varg){
-    (*(int*)varg)++;
-    return 0;
-}
 static int func_dump_users(char *userid,void *varg){
     ((char**)(((void**)varg)[0]))[(*(int*)(((void**)varg)[1]))]=userid;
     (*(int*)(((void**)varg)[1]))++;
     return 0;
 }
-static int func_send_mail(char *userid,void *varg){
-    char genbuf[256];
-    sprintf(genbuf,"%s 被 %s 取消 %s 俱乐部%s权限",userid,getCurrentUser()->userid,currboard->filename,
-        (!(*(int*)(((void**)varg)[1]))?"读取":"发表"));
-    mail_buf(getCurrentUser(),(char*)(((void**)varg)[0]),userid,genbuf,getSession());
-    deliverreport(genbuf,(char*)(((void**)varg)[0]));
+static int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm){
+    FILE *fp;
+    char fn[256],title[256];
+    sprintf(fn,"tmp/club_notify_%ld_%d",time(NULL),getpid());
+    if(!(fp=fopen(fn,"w")))
+        return -1;
+    if(!type)
+        sprintf(title,"%s 由 %s 授予 %s 俱乐部%s权限",userid,getCurrentUser()->userid,
+            currboard->filename,(!write_perm?"读取":"发表"));
+    else
+        sprintf(title,"%s 被 %s 取消 %s 俱乐部%s权限",userid,getCurrentUser()->userid,
+            currboard->filename,(!write_perm?"读取":"发表"));
+    write_header(fp,getCurrentUser(),0,currboard->filename,title,0,0,getSession());
+    fprintf(fp,"附加说明: %s\n",comment);
+    fclose(fp);
+    post_file(getCurrentUser(),"",fn,currboard->filename,title,0,3,getSession());
+    mail_file(getCurrentUser()->userid,fn,(char*)userid,title,BBSPOST_MOVE,NULL);
+    unlink(fn);
     return 0;
+}
+static int func_clear_send_mail(char *userid,void *varg){
+    return club_maintain_send_mail(userid,(char*)(((void**)varg)[0]),1,(*(int*)(((void**)varg)[1])));
 }
 static void trimstr(char *s){
     char *p;
@@ -587,17 +598,17 @@ static void trimstr(char *s){
 typedef int (*APPLY_USERS_FUNC) (int(*)(struct userec*,void*),void*);
 int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
     static const char *title="\033[1;32m[设定俱乐部授权用户]\033[m";
-    static const char *echo="\033[1;37m查阅[\033[1;36mV\033[1;37m]/增加[\033[1;36mA\033[1;37m]"
+    static const char *echo="\033[1;37m翻页[\033[1;36m<SP>\033[1;37m]/增加[\033[1;36mA\033[1;37m]"
         "/删除[\033[1;36mD\033[1;37m]/批量[\033[1;36mI\033[1;37m]/清理[\033[1;36mC\033[1;37m]"
-        "/群信[\033[1;36mM\033[1;37m]/退出[E] [E]: \033[m";
+        "/群信[\033[1;36mM\033[1;37m]/退出[\033[1;36m<ESC>\033[1;37m/\033[1;36m<CR>\033[1;37m]: \033[m";
     static const char *choice="\033[1;37m操作读取[R]/发表[\033[1;36mP\033[1;37m]权限列表 [R]: \033[m";
     static char comment[128]="";
     APPLY_USERS_FUNC func=(APPLY_USERS_FUNC)apply_users;
+    NLNode *head,*start,*curr;
     FILE *fp;
     struct userec *user;
-    char buf[256],line[256],fn[256],userid[16],ans[4],**p_users;
-    char genbuf[1024];
-    int i,j,k,write_perm;
+    char genbuf[1024],buf[256],line[256],fn[256],userid[16],ans[4],**p_users;
+    int i,j,k,l,write_perm,need_refresh,count,page;
     void *arg[2];
     if(!chk_currBM(currBM,getCurrentUser()))
         return DONOTHING;
@@ -616,28 +627,90 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
     }
     else
         write_perm=(currboard->flag&BOARD_CLUB_WRITE);
+    need_refresh=1;
+    count=0;
+    page=0;
     while(1){
-        move(1,0);
-        clrtobot();
-        getdata(1,0,(char*)echo,ans,2,DOECHO,NULL,true);
-        ans[0]=toupper(ans[0]);
-        if(ans[0]=='V'){
+        if(need_refresh){
             CreateNameList();
             func(func_query_club_users,&write_perm);
-            i=0;
-            ApplyToNameList(func_count,&i);
-            move(1,0);
-            clrtoeol();
-            if(!i){
-                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","尚无授权用户...");
-                WAIT_RETURN;
-                continue;
+            count=GetNameListCount();
+            head=GetNameListHead();
+            start=head;
+            curr=head;
+            page=0;
+            need_refresh=0;
+        }
+        else
+            curr=start;
+        move(1,0);
+        clrtobot();
+        move(3,0);
+        if(!count)
+            prints("\033[1;33m%s\033[m","尚无授权用户...");
+        else{
+            j=0;
+            k=0;
+            do{
+                if(!((j+MaxLen(curr,t_lines-4))<t_columns))
+                    break;
+                for(i=3;i<t_lines-1;i++){
+                    move(i,j);
+                    prints("%s",curr->word);
+                    l=strlen(curr->word);
+                    k=((k<l)?l:k);
+                    if(!(curr=curr->next))
+                        break;
+                }
+                j+=(k+2);
             }
-            namecomplete("按 \033[1;33m<Space>\033[m 列示, 可输入前缀查询: ",buf);
+            while(curr);
+            if(curr||page){
+                move(t_lines-1,(t_columns/2));
+                prints("\033[1;%dm- %d -\033[m",(!curr?33:32),page+1);
+            }
+        }
+        move(1,0);
+        prints("%s",echo);
+        do{
+            ans[1]=0;
+            switch(ans[0]=igetkey()){
+                case 10:
+                case 13:
+                case 27:
+                case 32:
+                case 'a':
+                case 'A':
+                case 'd':
+                case 'D':
+                case 'i':
+                case 'I':
+                case 'c':
+                case 'C':
+                case 'm':
+                case 'M':
+                    ans[1]=1;
+                    break;
+                default:
+                    continue;
+            }
+        }
+        while(!ans[1]);
+        ans[0]=toupper(ans[0]);
+        if(ans[0]==32){
+            need_refresh=1;
+            if(!curr){
+                curr=head;
+                page=0;
+            }
+            else{
+                start=curr;
+                page++;
+            }
         }
         else if(ans[0]=='A'){
             move(1,0);
-            clrtoeol();
+            clrtobot();
             usercomplete("增加俱乐部授权用户: ",buf);
             move(1,0);
             clrtobot();
@@ -658,34 +731,30 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 continue;
             }
             prints("\033[1;37m增加俱乐部授权用户: \033[1;32m%s\033[m",user->userid);
-            sprintf(genbuf,"附加说明 [%s]: ",comment);
+            sprintf(genbuf,"\033[1;37m附加说明 [\033[1;36m%s\033[1;37m]: \033[m",comment);
             getdata(2,0,genbuf,buf,64,DOECHO,NULL,true);
             if(buf[0]){
                 trimstr(buf);
                 snprintf(comment,128,"%s",buf);
             }
-            sprintf(genbuf,"确认授予 %s 本俱乐部%s权限 [y/N]: ",user->userid,(!write_perm?"读取":"发表"));
+            sprintf(genbuf,"\033[1;33m确认授予 \033[1;32m%s\033[1;33m 本俱乐部%s权限 [y/N]: \033[m",
+                user->userid,(!write_perm?"读取":"发表"));
             getdata(3,0,genbuf,ans,2,DOECHO,NULL,true);
             ans[0]=toupper(ans[0]);
             if(ans[0]!='Y')
                 continue;
+            need_refresh=1;
             move(4,0);
             if(set_user_club_perm(user,currboard,write_perm)){
                 prints("\033[1;33m%s\033[0;33m<Enter>\033[m","操作过程中发生错误...");
                 WAIT_RETURN;
                 continue;
             }
-            sprintf(buf,"附加说明: %s",comment);
-            sprintf(genbuf,"%s 由 %s 授予 %s 俱乐部%s权限",user->userid,getCurrentUser()->userid,
-                currboard->filename,(!write_perm?"读取":"发表"));
-            mail_buf(getCurrentUser(),buf,user->userid,genbuf,getSession());
-            deliverreport(genbuf,buf);
+            club_maintain_send_mail(user->userid,comment,0,write_perm);
             prints("\033[1;32m%s\033[0;33m<Enter>\033[m","增加成功!");
             WAIT_RETURN;
         }
         else if(ans[0]=='D'){
-            CreateNameList();
-            func(func_query_club_users,&write_perm);
             move(1,0);
             clrtoeol();
             namecomplete("删除俱乐部授权用户: ",buf);
@@ -703,35 +772,33 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 continue;
             }
             prints("\033[1;37m删除俱乐部授权用户: \033[1;32m%s\033[m",user->userid);
-            sprintf(genbuf,"附加说明 [%s]: ",comment);
+            sprintf(genbuf,"\033[1;37m附加说明 [\033[1;36m%s\033[1;37m]: \033[m",comment);
             getdata(2,0,genbuf,buf,64,DOECHO,NULL,true);
             if(buf[0]){
                 trimstr(buf);
                 snprintf(comment,128,"%s",buf);
             }
-            sprintf(genbuf,"确认取消 %s 本俱乐部%s权限 [y/N]: ",user->userid,(!write_perm?"读取":"发表"));
+            sprintf(genbuf,"\033[1;33m确认取消 \033[1;32m%s\033[1;33m 本俱乐部%s权限 [y/N]: \033[m",
+                user->userid,(!write_perm?"读取":"发表"));
             getdata(3,0,genbuf,ans,2,DOECHO,NULL,true);
             ans[0]=toupper(ans[0]);
             if(ans[0]!='Y')
                 continue;
+            need_refresh=1;
             move(4,0);
             if(del_user_club_perm(user,currboard,write_perm)){
                 prints("\033[1;33m%s\033[0;33m<Enter>\033[m","操作过程中发生错误...");
                 WAIT_RETURN;
                 continue;
             }
-            sprintf(buf,"附加说明: %s",comment);
-            sprintf(genbuf,"%s 被 %s 取消 %s 俱乐部%s权限",user->userid,getCurrentUser()->userid,
-                currboard->filename,(!write_perm?"读取":"发表"));
-            mail_buf(getCurrentUser(),buf,user->userid,genbuf,getSession());
-            deliverreport(genbuf,buf);
+            club_maintain_send_mail(user->userid,comment,1,write_perm);
             prints("\033[1;32m%s\033[0;33m<Enter>\033[m","删除成功!");
             WAIT_RETURN;
         }
         else if(ans[0]=='I'){
             move(1,0);
-            clrtoeol();
-            sprintf(genbuf,"附加说明 [%s]: ",comment);
+            clrtobot();
+            sprintf(genbuf,"\033[1;37m附加说明 [\033[1;36m%s\033[1;37m]: \033[m",comment);
             getdata(1,0,genbuf,buf,64,DOECHO,NULL,true);
             if(buf[0]){
                 trimstr(buf);
@@ -739,13 +806,13 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             }
             move(3,0);
             prints("%s",
-                "    [批量操作俱乐部授权列表信息文件格式]\n\n"
-                "    以行为单位, 每行操作一位用户, 附加前缀如下:\n"
-                "    # 起始的行为注释行, 无作用;\n"
-                "    - 起始的行表示删除其后的用户;\n"
-                "    + 起始的行表示增加其后的用户;\n"
-                "    无前缀时默认操作为增加...\n\n"
-                "按 \033[0;33m<Enter>\033[m 键后开始编辑批量修改列表: ");
+                "    \033[1;33m[批量操作俱乐部授权列表信息文件格式]\033[m\n\n"
+                "    \033[1;37m以行为单位, 每行操作一位用户, 附加前缀如下:\033[m\n"
+                "    \033[1;33m#\033[1;37m 起始的行为注释行, 无作用;\033[m\n"
+                "    \033[1;31m-\033[1;37m 起始的行表示删除其后的用户;\033[m\n"
+                "    \033[1;32m+\033[1;37m 起始的行表示增加其后的用户;\033[m\n"
+                "    \033[1;37m无前缀时默认操作为增加...\033[m\n\n"
+                "\033[1;37m按 \033[1;32m<Enter>\033[1;37m 键后开始编辑批量修改列表: \033[m");
             WAIT_RETURN;
             saveline(0,0,NULL);
             j=uinfo.mode;
@@ -771,9 +838,9 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             }
             if(!(fp=fopen(fn,"r")))
                 continue;
+            need_refresh=1;
             i=0;
             j=0;
-            sprintf(buf,"附加说明: %s",comment);
             while(fgets(line,256,fp)){
                 k=strlen(line);
                 if(line[k-1]==10||line[k-1]==13)
@@ -790,10 +857,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         if(!getuser(&line[1],&user)||!get_user_club_perm(user,currboard,write_perm))
                             continue;
                         if(!del_user_club_perm(user,currboard,write_perm)){
-                            sprintf(genbuf,"%s 被 %s 取消 %s 俱乐部%s权限",user->userid,getCurrentUser()->userid,
-                                currboard->filename,(!write_perm?"读取":"发表"));
-                            mail_buf(getCurrentUser(),buf,user->userid,genbuf,getSession());
-                            deliverreport(genbuf,buf);
+                            club_maintain_send_mail(user->userid,comment,1,write_perm);
                             j++;
                         }
                         break;
@@ -804,10 +868,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         if(!getuser(line,&user)||get_user_club_perm(user,currboard,write_perm))
                             continue;
                         if(!set_user_club_perm(user,currboard,write_perm)){
-                            sprintf(genbuf,"%s 由 %s 授予 %s 俱乐部%s权限",user->userid,getCurrentUser()->userid,
-                                currboard->filename,(!write_perm?"读取":"发表"));
-                            mail_buf(getCurrentUser(),buf,user->userid,genbuf,getSession());
-                            deliverreport(genbuf,buf);
+                            club_maintain_send_mail(user->userid,comment,0,write_perm);
                             i++;
                         }
                         break;
@@ -824,13 +885,9 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             /* 注: 俱乐部群信部分原作者为 asing@zixia */
             if(HAS_PERM(getCurrentUser(),PERM_DENYMAIL)||!HAS_PERM(getCurrentUser(),PERM_LOGINOK))
                 continue;
-            CreateNameList();
-            func(func_query_club_users,&write_perm);
-            i=0;
-            ApplyToNameList(func_count,&i);
             move(1,0);
-            clrtoeol();
-            if(!i){
+            clrtobot();
+            if(!(i=GetNameListCount())){
                 prints("\033[1;33m%s\033[0;33m<Enter>\033[m","尚无授权用户...");
                 WAIT_RETURN;
                 continue;
@@ -841,7 +898,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             arg[0]=p_users;
             arg[1]=&i;
             ApplyToNameList(func_dump_users,arg);
-            getdata(1,0,"设定群信标题: ",buf,40,DOECHO,NULL,true);
+            getdata(1,0,"\033[1;37m设定群信标题: \033[m",buf,40,DOECHO,NULL,true);
             sprintf(genbuf,"[俱乐部 %s 群信] %s",currboard->filename,buf);
             snprintf(buf,ARTICLE_TITLE_LEN,"%s",genbuf);
             saveline(0,0,NULL);
@@ -851,7 +908,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             saveline(0,1,NULL);
             move(1,0);
             if(j){
-                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","发送群信过程中发生错误...");
+                prints("\033[1;33m%s\033[0;33m<Enter>\033[m","操作取消或发送群信过程中发生错误...");
                 WAIT_RETURN;
                 continue;
             }
@@ -860,13 +917,13 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
         }
         else if(ans[0]=='C'){
             move(1,0);
-            clrtoeol();
+            clrtobot();
             if(!HAS_PERM(getCurrentUser(),(PERM_OBOARDS|PERM_SYSOP))){
                 prints("\033[1;33m\033[0;33m<Enter>\033[m","当前用户不具有清理俱乐部授权列表的权限...");
                 WAIT_RETURN;
                 continue;
             }
-            sprintf(genbuf,"附加说明 [%s]: ",comment);
+            sprintf(genbuf,"\033[1;37m附加说明 [\033[1;36m%s\033[1;37m]: \033[m",comment);
             getdata(1,0,genbuf,buf,64,DOECHO,NULL,true);
             if(buf[0]){
                 trimstr(buf);
@@ -877,12 +934,12 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             ans[0]=toupper(ans[0]);
             if(ans[0]!='Y')
                 continue;
+            need_refresh=1;
             CreateNameList();
             func(func_remove_club_users,&write_perm);
-            sprintf(buf,"附加说明: %s",comment);
-            arg[0]=buf;
+            arg[0]=comment;
             arg[1]=&write_perm;
-            ApplyToNameList(func_send_mail,&arg);
+            ApplyToNameList(func_clear_send_mail,&arg);
             move(3,0);
             prints("\033[1;32m%s\033[0;33m<Enter>\033[m","已完成清理!");
             WAIT_RETURN;
