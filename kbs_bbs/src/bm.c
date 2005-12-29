@@ -650,11 +650,10 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
             prints("\033[1;33m%s\033[m","尚无授权用户...");
         else{
             j=0;
-            k=0;
             do{
                 if(!((j+MaxLen(curr,t_lines-4))<t_columns))
                     break;
-                for(i=3;i<t_lines-1;i++){
+                for(k=0,i=3;i<t_lines-1;i++){
                     move(i,j);
                     prints("%s",curr->word);
                     l=strlen(curr->word);
@@ -665,10 +664,19 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 j+=(k+2);
             }
             while(curr);
-            if(curr||page){
-                move(t_lines-1,(t_columns/2));
-                prints("\033[1;%dm- %d -\033[m",(!curr?33:32),page+1);
+            move(t_lines-1,0);
+            if(!curr){
+                if(!page)
+                    sprintf(genbuf,"当前第 %d 页, 共 1 页, 查阅结束 ...",page+1);
+                else
+                    sprintf(genbuf,"当前第 %d 页, 为列表的最后一页, 按 <SPACE> 键回到第 1 页 ...",page+1);
             }
+            else
+                sprintf(genbuf,"当前第 %d 页, 按 <SPACE> 键查阅下一页 ...",page+1);
+            for(i=strlen(genbuf);i<t_columns;i++)
+                genbuf[i]=32;
+            genbuf[i]=0;
+            prints("\033[1;32;42m%s\033[m",genbuf);
         }
         move(1,0);
         prints("%s",echo);
@@ -698,9 +706,8 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
         while(!ans[1]);
         ans[0]=toupper(ans[0]);
         if(ans[0]==32){
-            need_refresh=1;
             if(!curr){
-                curr=head;
+                start=head;
                 page=0;
             }
             else{
