@@ -167,7 +167,7 @@
 
 <!--Õ¾µã±êÖ¾-->
 <?php if (defined("SITE_NEWSMTH")) { ?>
-<img src="images/t1.gif" class="pm">
+<script type="text/javascript">putImage('t1.gif','class="pm"');</script>
 <?php } else { ?>
 <center style="padding: 0.3em;font-weight:bold;font-size:120%;"><?php echo BBS_FULL_NAME; ?></center>
 <?php } ?>
