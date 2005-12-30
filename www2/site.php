@@ -3,6 +3,7 @@ define("ATTACHMAXSIZE",BBS_MAXATTACHMENTSIZE);        //附件总字节数的上限，单位
 define("ATTACHMAXCOUNT",BBS_MAXATTACHMENTCOUNT);      //附件数目的上限
 define("MAINPAGE_FILE","mainpage.html");              //首页导读的 URL
 define("QUOTED_LINES", BBS_QUOTED_LINES);             //web 回文保留的引文行数
+define("SITE_NEWSMTH", 1);
 
 $section_nums = array("0", "1", "2", "3", "4", "5", "6", "7", "8", "9","A","B","C");
 $section_names = array(
