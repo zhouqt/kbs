@@ -26,8 +26,6 @@
 
 #include "bbs.h"
 #include "read.h"
-#include <time.h>
-#include <ctype.h>
 
 /*Add by SmallPig*/
 
@@ -608,7 +606,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
     FILE *fp;
     struct userec *user;
     char genbuf[1024],buf[256],line[256],fn[256],userid[16],ans[4],**p_users;
-    int i,j,k,l,write_perm,need_refresh,count,page;
+    int i,j,k,write_perm,need_refresh,count,page;
     void *arg[2];
     if(!chk_currBM(currBM,getCurrentUser()))
         return DONOTHING;
@@ -651,13 +649,12 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
         else{
             j=0;
             do{
-                if(!((j+MaxLen(curr,t_lines-4))<t_columns))
+                k=MaxLen(curr,t_lines-4);
+                if(!((j+k)<t_columns))
                     break;
-                for(k=0,i=3;i<t_lines-1;i++){
+                for(i=3;i<t_lines-1;i++){
                     move(i,j);
                     prints("%s",curr->word);
-                    l=strlen(curr->word);
-                    k=((k<l)?l:k);
                     if(!(curr=curr->next))
                         break;
                 }
