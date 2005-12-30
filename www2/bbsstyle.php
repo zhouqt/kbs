@@ -41,14 +41,16 @@
 		for (var i=0; i<32; i++) {
 			var o = getObj("stylediv" + i);
 			if (o) {
-				o.style.border = (i!=cssID) ? '0px' : '3px solid blue';
+				o.style.borderColor = (i!=cssID) ? 'white' : 'blue';
 				getObj("stylethumb" + i).src = "images/" + i + "/thumb.jpg";
 			} else break;
 		}
 	}
 	function chkStyle(cssID) {
 		saveParaCookie(cssID << 7, 0xF80);
-		setStyleDiv(cssID, 0);
+		setStyleDiv(getCssID(), 0);
+	}
+	function applyStyle() {
 		resetCss();
 		var ff = top.window["menu"]; if (ff) ff.resetCss();
 		ff = top.window["toogle"]; if (ff) ff.resetCss();
@@ -61,19 +63,26 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
-		setStyleDiv((c & 0xF80) >> 7, 1);
+		setStyleDiv(getCssID(), 1);
 	});
 </script>
 <style type="text/css">
+form.stylesel {
+	text-align: center;
+	margin: 0px auto 10px auto;
+	width: 500px;
+}
 div.stylesel {
 	float:left;
-	margin: 0.5em 2em;
-	padding: 0.5em;
+	margin: 10px;
+	padding: 7px;
 	cursor: pointer;
+	border: 3px solid white;
 }
 div.stylesel img {
 	width: 200px;
 	height: 150px;
+	margin-bottom: 10px;
 	border: 0;
 }
 </style>
@@ -105,7 +114,7 @@ div.stylesel img {
 	</fieldset>
 	<div class="oper"><input type="submit" value="保存设置"/> &nbsp;<input type="button" onclick="history.go(-1);" value="快速返回"/></div>
 </form>
-<form action="?" class="large" method="get">
+<form action="?" class="stylesel" method="get">
 <input type="hidden" name="do" value="1" />
 	<fieldset><legend>界面方案:</legend>
 		<div align="center">
@@ -121,8 +130,8 @@ div.stylesel img {
 	print($ret);
 ?>
 		</div>
+		<div class="oper clear"><input type="button" onclick="applyStyle();" value="应用界面方案"/></div>
 	</fieldset>
-	<div class="oper clear"></div>
 </form>
 
 <div class="large left"><ul>
