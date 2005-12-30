@@ -19,10 +19,10 @@ $section_names = array(
     array("电脑技术", "[电脑/技术]")
 );
 
-// 界面方案的名称和缩略图路径
+// 界面方案的名称
 $style_names = array(
-	array("默认方案（蓝色经典）","images/0/thumb.jpg"),
-	array("白的（猪猪猪测试用）","images/1/thumb.jpg")
+	"默认方案（蓝色经典）",
+	"白的（猪猪猪测试用）"
 );
 
 ?>

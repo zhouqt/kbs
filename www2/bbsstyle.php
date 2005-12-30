@@ -37,17 +37,18 @@
 	function KCNymsw() {
 		alert('还没做这个功能呢... 需要吗？不需要吗？您去 sysop 版喊喊？');
 	}
-	function setStyleDiv(cssID) {
+	function setStyleDiv(cssID, setImg) {
 		for (var i=0; i<32; i++) {
 			var o = getObj("stylediv" + i);
 			if (o) {
 				o.style.border = (i!=cssID) ? '0px' : '3px solid blue';
+				getObj("stylethumb" + i).src = "images/" + i + "/thumb.jpg";
 			} else break;
 		}
 	}
 	function chkStyle(cssID) {
 		saveParaCookie(cssID << 7, 0xF80);
-		setStyleDiv(cssID);
+		setStyleDiv(cssID, 0);
 		resetCss();
 		var ff = top.window["menu"]; if (ff) ff.resetCss();
 		ff = top.window["toogle"]; if (ff) ff.resetCss();
@@ -60,7 +61,7 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
-		setStyleDiv((c & 0xF80) >> 7);
+		setStyleDiv((c & 0xF80) >> 7, 1);
 	});
 </script>
 <style type="text/css">
@@ -69,6 +70,11 @@ div.stylesel {
 	margin: 0.5em 2em;
 	padding: 0.5em;
 	cursor: pointer;
+}
+div.stylesel img {
+	width: 200px;
+	height: 150px;
+	border: 0;
 }
 </style>
 <form action="?" class="small align" method="get">
@@ -110,13 +116,13 @@ div.stylesel {
 	for($i=0;$i<$stylecount;$i++)
 	{
 		$ret .= "<div id='stylediv{$i}' class='stylesel' onClick='chkStyle($i);'>";
-		$ret .= "<img id='stylethumb{$i}' src='{$style_names[$i][1]}' /><br/>{$style_names[$i][0]}</div>";
+		$ret .= "<img id='stylethumb{$i}' src='' /><br/>{$style_names[$i]}</div>";
 	}
 	print($ret);
 ?>
 		</div>
 	</fieldset>
-	<div class="oper"></div>
+	<div class="oper clear"></div>
 </form>
 
 <div class="large left"><ul>
