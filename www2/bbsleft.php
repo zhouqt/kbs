@@ -156,7 +156,7 @@
 <script src="bbsleft.js"></script>
 <!--[if IE]>
 <style type="text/css">
-.t2 {
+.t2,.logo {
 	width: 167px;
 }
 </style>
