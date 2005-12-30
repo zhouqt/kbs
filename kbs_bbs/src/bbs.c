@@ -1153,11 +1153,28 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
 int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     char slink[256];
+    bool isbm;
+    char unread_mark;
     if (fileinfo==NULL) return DONOTHING;
     board_attach_link(slink,255,-1,fileinfo);
     clear();
     move(3,0);
     prints("全文链接：\n\033[4m%s\033[m\n",slink);
+
+    isbm=chk_currBM(currboard->BM, getCurrentUser());
+    unread_mark = (DEFINE(getCurrentUser(), DEF_UNREADMARK) ? UNREAD_SIGN : 'N');
+    move(6,0);
+    prints("文章标记: %c%c%c%c%c%c%c%s%c",
+        (strcmp(getCurrentUser()->userid, "guest") && brc_unread(fileinfo->id, getSession())) ? unread_mark : ' ',
+        (fileinfo->accessed[0] & FILE_DIGEST) ? 'g' : ' ',
+        (fileinfo->accessed[0] & FILE_MARKED) ? 'm' : ' ',
+        (isbm && (fileinfo->accessed[1] & FILE_READ)) ? ';' : ' ', /* TODO: OPEN_NOREPLY */
+        (isbm && (fileinfo->accessed[0] & FILE_SIGN)) ? '#' : ' ',
+        (isbm && (fileinfo->accessed[0] & FILE_PERCENT)) ? '%' : ' ',
+        (isbm && (fileinfo->accessed[1] & FILE_DEL)) ? 'X' : ' ',
+        (isbm && (fileinfo->accessed[0] & FILE_IMPORTED)) ? "\x1b[42m \x1b[0m" : " ",
+        (isbm && (fileinfo->accessed[1] & FILE_CENSOR)) ? '@' : ' '
+        );
     pressanykey();
     return FULLUPDATE;
 }
