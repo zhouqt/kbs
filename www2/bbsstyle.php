@@ -34,6 +34,25 @@
 		var mask = 1 << idx;
 		saveParaCookie(v ? mask : 0, mask);
 	}
+	function KCNymsw() {
+		alert('还没做这个功能呢... 需要吗？不需要吗？您去 sysop 版喊喊？');
+	}
+	function setStyleDiv(cssID) {
+		for (var i=0; i<32; i++) {
+			var o = getObj("stylediv" + i);
+			if (o) {
+				o.style.border = (i!=cssID) ? '0px' : '3px solid blue';
+			} else break;
+		}
+	}
+	function chkStyle(cssID) {
+		saveParaCookie(cssID << 7, 0xF80);
+		setStyleDiv(cssID);
+		resetCss();
+		var ff = top.window["menu"]; if (ff) ff.resetCss();
+		ff = top.window["toogle"]; if (ff) ff.resetCss();
+		ff = top.window["f4"]; if (ff) ff.resetCss();
+	}
 	addBootFn(function() {
 		var c = readParaCookie();
 		for (var n in settings) {
@@ -41,27 +60,20 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
-		var stylenum = (c & 0xF80) >> 7;
-		getObj('style'+stylenum).checked = true;
+		setStyleDiv((c & 0xF80) >> 7);
 	});
-	function KCNymsw() {
-		alert('还没做这个功能呢... 需要吗？不需要吗？您去 sysop 版喊喊？');
-	}
-	function pvStyle(cssID) {
-		saveParaCookie(cssID << 7, 0xF80);
-		resetCss();
-		var ff = top.window["menu"]; if (ff) ff.resetCss();
-		ff = top.window["toogle"]; if (ff) ff.resetCss();
-		ff = top.window["f4"]; if (ff) ff.resetCss();
-	}
-	function chkStyle(cssID) {
-		getObj('style' + cssID).checked = true;
-		pvStyle(cssID);
-	}
 </script>
-<form action="bbsstyle.php" class="small align" method="get">
+<style type="text/css">
+div.stylesel {
+	float:left;
+	margin: 0.5em 2em;
+	padding: 0.5em;
+	cursor: pointer;
+}
+</style>
+<form action="?" class="small align" method="get">
 <input type="hidden" name="do" value="1" />
-	<fieldset><legend>自定义界面</legend>
+	<fieldset><legend>界面选项</legend>
 		<div class="inputs">
 			<label>字体大小:</label>
 				<span class="clickable" onclick="sizer(1)">放大</span>
@@ -83,25 +95,30 @@
 				<span class="clickable" onclick="KCNymsw();">关闭</span>
 			<br/>
 <?php } ?>
-			<label>界面方案:</label><br>
-			<div align="center">
+		</div>
+	</fieldset>
+	<div class="oper"><input type="submit" value="保存设置"/> &nbsp;<input type="button" onclick="history.go(-1);" value="快速返回"/></div>
+</form>
+<form action="?" class="large" method="get">
+<input type="hidden" name="do" value="1" />
+	<fieldset><legend>界面方案:</legend>
+		<div align="center">
 <?php
 	// 这里显示每个界面方案的缩略图
 	$stylecount=count($style_names);
 	$ret = "";
 	for($i=0;$i<$stylecount;$i++)
 	{
-		$ret .= "<p><input type=\"radio\" id=\"style{$i}\" onclick=\"pvStyle($i)\" name=\"styleid\" value=\"{$i}\">";
-		$ret .= "<img id=\"stylethumb{$i}\" src=\"{$style_names[$i][1]}\" onClick=\"chkStyle($i);\"><br/>{$style_names[$i][0]}</p>";
+		$ret .= "<div id='stylediv{$i}' class='stylesel' onClick='chkStyle($i);'>";
+		$ret .= "<img id='stylethumb{$i}' src='{$style_names[$i][1]}' /><br/>{$style_names[$i][0]}</div>";
 	}
 	print($ret);
 ?>
-			</div>
-			<br/>
 		</div>
 	</fieldset>
-	<div class="oper"><input type="submit" value="保存设置"/> &nbsp;<input type="button" onclick="history.go(-1);" value="快速返回"/></div>
+	<div class="oper"></div>
 </form>
+
 <div class="large left"><ul>
 	<li>修改立即生效。</li>
 	<li>如果您希望保证每次登录都使用这个设置，可以点 保存设置（必须先登录）。</li>
