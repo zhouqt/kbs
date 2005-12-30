@@ -76,7 +76,6 @@ div.stylesel {
 	float:left;
 	margin: 10px;
 	padding: 7px;
-	cursor: pointer;
 	border: 3px solid white;
 }
 div.stylesel img {
@@ -124,7 +123,7 @@ div.stylesel img {
 	$ret = "";
 	for($i=0;$i<$stylecount;$i++)
 	{
-		$ret .= "<div id='stylediv{$i}' class='stylesel' onClick='chkStyle($i);'>";
+		$ret .= "<div id='stylediv{$i}' class='stylesel clickable' onClick='chkStyle($i);'>";
 		$ret .= "<img id='stylethumb{$i}' src='' /><br/>{$style_names[$i]}</div>";
 	}
 	print($ret);
