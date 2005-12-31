@@ -58,7 +58,7 @@
 </div>
 <form method="GET">
 <input type="submit" value="跳转到第"> <input type="input" size="4" name="start"> 个使用者
-</form>
+</form><br />
 <?php 
 	page_footer();
 ?>

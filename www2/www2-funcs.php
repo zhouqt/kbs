@@ -397,7 +397,7 @@ function html_error_quit($err_msg)
 <tr><th>发生错误</th></tr>
 <tr><td><?php echo $err_msg; ?></td></tr>
 </table>
-[<a href="javascript:history.go(-1)">快速返回</a>]
+[<a href="javascript:history.go(-1)">快速返回</a>]<br /><br />
 <?php
 	page_footer(false);
 	exit;
@@ -418,6 +418,7 @@ function html_success_quit($msg, $operations = FALSE)
 </ul>
 <?php
 	}
+	echo "<br /><br />";
 	page_footer(false);
 	exit;
 }
