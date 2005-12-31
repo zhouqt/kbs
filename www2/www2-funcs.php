@@ -15,13 +15,13 @@ chdir(BBS_HOME);
 if (!bbs_ext_initialized())
 	bbs_init_ext();
 
-define("RUNNINGTIME", TRUE);
+require("site.php");
 
 function getmicrotime(){ 
    list($usec, $sec) = explode(" ",microtime()); 
    return ((float)$usec + (float)$sec); 
 } 
-if (RUNNINGTIME) $StartTime=getmicrotime();
+if (defined("RUNNINGTIME")) $StartTime=getmicrotime();
 
 global $fromhost;
 global $fullfromhost;
@@ -114,8 +114,6 @@ function bbs_get_board_index($board, $ftype) {
 }
 
 
-
-require("site.php");
 
 define("ACTIVATIONLEN",15); //激活码长度
 if (!defined ('FAVORITE_NAME'))
@@ -363,9 +361,9 @@ function page_header($title, $flag = "", $otherheaders = false) {
 /* 特别注意：POST 递交生成的页面，不应该出现 展开完整界面 的链接，所以调用本函数必须用 FALSE 参数 */
 function page_footer($checkframe = TRUE) {
 	global $StartTime;
-	if (RUNNINGTIME) {
+	if (defined("RUNNINGTIME")) {
 		$endtime = getmicrotime();
-		echo "<center>页面执行时间：".sprintf(number_format(($endtime-$StartTime)*1000,3))."毫秒</center>";
+		echo "<center>Powered by KBS BBS 2.0 (<a href='http://dev.kcn.cn/'>http://dev.kcn.cn</a>)<br/>页面执行时间：".sprintf(number_format(($endtime-$StartTime)*1000,3))."毫秒</center>";
 	}
 
 	if ($checkframe) {
