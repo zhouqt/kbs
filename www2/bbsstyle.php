@@ -127,7 +127,7 @@ div.stylesel img {
 	for($i=0;$i<$stylecount;$i++)
 	{
 		$ret .= "<div id='stylediv{$i}' class='stylesel clickable' onClick='chkStyle($i);'>";
-		$ret .= "<img id='stylethumb{$i}' src='' /><br/>{$style_names[$i]}</div>";
+		$ret .= "<img id='stylethumb{$i}' title='ÔØÈëÖÐ...' src='' /><br/>{$style_names[$i]}</div>";
 	}
 	print($ret);
 ?>
