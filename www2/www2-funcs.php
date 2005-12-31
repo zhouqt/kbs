@@ -363,7 +363,7 @@ function page_footer($checkframe = TRUE) {
 	global $StartTime;
 	if (defined("RUNNINGTIME")) {
 		$endtime = getmicrotime();
-		echo "<center>Powered by KBS BBS 2.0 (<a href='http://dev.kcn.cn/'>http://dev.kcn.cn</a>)<br/>页面执行时间：".sprintf(number_format(($endtime-$StartTime)*1000,3))."毫秒</center>";
+		echo "<span style='font-size:12px'><center>Powered by KBS BBS 2.0 (<a href='http://dev.kcn.cn/' target='_blank'>http://dev.kcn.cn</a>)<br/>页面执行时间：".sprintf(number_format(($endtime-$StartTime)*1000,3))."毫秒</center></span>";
 	}
 
 	if ($checkframe) {
