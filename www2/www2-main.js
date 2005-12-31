@@ -135,11 +135,10 @@ function input_okd(obj, ev) {
 	var key = evt.keyCode ? evt.keyCode : evt.charCode;
 	if (key == 13) {
 		cancelEvent(evt);
-		if (typeof obj == "function")  {
-			obj();
-		} else {
-			obj.form.submit();
+		if (obj.form.onsubmit && !obj.form.onsubmit()) {
+			return true;
 		}
+		obj.form.submit();
 		return false;
 	}
 	return true;

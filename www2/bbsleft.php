@@ -2,7 +2,7 @@
 	require("www2-funcs.php");
 	login_init();
 	
-	$img_subdir = defined("SITE_NEWSMTH") ? "images/newsmth/" : "images/newstyle/";
+	$img_subdir = /* defined("SITE_NEWSMTH") ? "images/newsmth/" : */ "images/newstyle/";
 	$blog_index = defined("SITE_NEWSMTH") ? "index.html" : "pcmain.php";
 
 	function display_board_list($section_names,$section_nums)
@@ -177,7 +177,7 @@
 		{
 ?>
 <div class="t2">
-<form action="bbslogin.php" method="post" name="form1" target="_top" onSubmit="return fillf3(this);" class="m0">
+<form action="bbslogin.php" method="post" name="form1" target="_top" onsubmit="return fillf3(this);" class="m0">
 <nobr><script type="text/javascript">putImage('u1.gif','alt="µÇÂ¼ÓÃ»§Ãû" class="pm"');</script>
 <input type="text" class="upinput" LENGTH="10" onmouseover="this.focus()" onfocus="this.select()" name="id" onkeypress="return input_okd(this, event);" /></nobr><br/>
 

@@ -64,6 +64,10 @@
 			setInd(n, v);
 		}
 		setStyleDiv(getCssID(), 1);
+		if (!isLogin()) {
+			getObj("cmdSave").disabled = true;
+			getObj("idpsave").style.visibility = "hidden";
+		}
 	});
 </script>
 <style type="text/css">
@@ -85,7 +89,7 @@ div.stylesel img {
 	border: 0;
 }
 </style>
-<form action="?" class="small align" method="get">
+<form action="?" class="medium align" method="get">
 <input type="hidden" name="do" value="1" />
 	<fieldset><legend>界面选项</legend>
 		<div class="inputs">
@@ -111,7 +115,6 @@ div.stylesel img {
 <?php } ?>
 		</div>
 	</fieldset>
-	<div class="oper"><input type="submit" value="保存设置"/> &nbsp;<input type="button" onclick="history.go(-1);" value="快速返回"/></div>
 </form>
 <form action="?" class="stylesel" method="get">
 <input type="hidden" name="do" value="1" />
@@ -129,14 +132,12 @@ div.stylesel img {
 	print($ret);
 ?>
 		</div>
-		<div class="oper clear"><input type="button" onclick="applyStyle();" value="应用界面方案"/></div>
+		<div class="oper clear"><input type="button" onclick="applyStyle();" value="立即应用界面方案"/><br/>
+			[ 如果不点这个按钮，修改对下一个浏览的的页面生效。]</div>
 	</fieldset>
+	<div class="oper"><input id="cmdSave" type="submit" value="保存设置"/> &nbsp; <input type="button" onclick="history.go(-1);" value="快速返回"/><br/>
+		<span id="idpsave">[ 点 保存设置 以保证每次登录都使用这个设置。]</span></div>
 </form>
-
-<div class="large left"><ul>
-	<li>修改立即生效。</li>
-	<li>如果您希望保证每次登录都使用这个设置，可以点 保存设置（必须先登录）。</li>
-</ul></div>
 <?php
 	page_footer();
 ?>
