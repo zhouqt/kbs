@@ -739,7 +739,7 @@ int valid_article(pmt, abort)
         y = 2;
         if (total > 20 + lines * 3) {
             move(y, 0);
-            prints("本篇文章的引言与签名档行数远超过本文长度.\n");
+            prints("\t本篇文章的引言与签名档行数远超过本文长度.\n");
             y += 3;
         }
         if (total!=lines) 
@@ -747,7 +747,7 @@ int valid_article(pmt, abort)
         temp = 0;
         if (len < 8 || lines==0 || (lines<=2 && (len/lines) < 16)) {
             move(y, 0);
-            prints("本篇文章非常简短, 系统认为灌水文章.\n");
+            prints("\t本篇文章非常简短, 系统认为灌水文章.\n");
             /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
             y += 3;
             temp = 1;
@@ -1057,8 +1057,15 @@ int write_file(char* filename,int saveheader,long* effsize,long* pattachpos, lon
             /*strcpy(p_buf,"(S)发表, (F)自动换行发表, (A)取消, (T)更改标题 or (E)再编辑? [S]: "); */
 #ifndef NINE_BUILD        
             move(4, 0);         /* Haohmaru 99.07.17 */
+#ifdef NEWSMTH
+            prints("        请注意，本站规定，同样或相近内容文章一周内不得在本站各版面\n"
+                   "    张贴转载 5 次或 5 次以上，违犯者将视情况给予提醒或封禁部分权限。\n"
+                   "    详细规定请参照 sysop 版精华区《水木社区帐号管理办法》。\n\n"
+                   "        请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。");
+#else
             prints
                 ("请注意：本站站规规定：同样内容的文章严禁在 5 (含)个以上讨论区内重复张贴。\n\n违反者除所贴文章会被删除之外，还将被剥夺继续发表文章的权力。详细规定请参照：\n\n    Announce 版的站规：“关于转贴和张贴文章的规定”。\n\n请大家共同维护 BBS 的环境，节省系统资源。谢谢合作。\n\n");
+#endif
 #endif
         } else if (uinfo.mode == SMAIL)
             strcpy(p_buf, "(S)寄出, (F)自动换行寄出, (A)取消, or (E)再编辑? [S]: ");

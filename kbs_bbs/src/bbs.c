@@ -436,6 +436,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (!HAS_PERM(getCurrentUser(), PERM_POST)) {    /* 判断是否有POST权 */
         return DONOTHING;
     }
+#if 0 //atppp 20051230
 #if !defined(NINE_BUILD) && !defined(FREE)
     if ((fileinfo->accessed[0] & FILE_FORWARDED) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)
 #ifdef ZIXIA
@@ -450,6 +451,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         return FULLUPDATE;
     }
 #endif
+#endif //atppp 20051230
     if (uinfo.mode != RMAIL)
         sprintf(q_file, "boards/%s/%s", currboard->filename, fileinfo->filename);
     else
@@ -563,13 +565,15 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         }
         move(2, 0);
         prints("' %s ' 已转贴到 %s 版 \n", quote_title, bname);
+#if 0 //atppp 20051230
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.10.3 */
-	if(conf->pos<=arg->filecount)
+        if(conf->pos<=arg->filecount)
             substitute_record(arg->direct, fileinfo, sizeof(*fileinfo), conf->pos);
     /* 置顶贴可以多次转载应该没有问题吧...
         else
             substitute_record(arg->dingdirect, fileinfo, sizeof(*fileinfo), conf->new_pos);
     */
+#endif //atppp 20051230
         conf->new_pos=0;
     } else {
         prints("取消");
