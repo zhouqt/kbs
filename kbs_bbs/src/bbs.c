@@ -1172,7 +1172,7 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         (strcmp(getCurrentUser()->userid, "guest") && brc_unread(fileinfo->id, getSession())) ? unread_mark : ' ',
         (fileinfo->accessed[0] & FILE_DIGEST) ? 'g' : ' ',
         (fileinfo->accessed[0] & FILE_MARKED) ? 'm' : ' ',
-        (isbm && (fileinfo->accessed[1] & FILE_READ)) ? ';' : ' ', /* TODO: OPEN_NOREPLY */
+        (fileinfo->accessed[1] & FILE_READ) ? ';' : ' ',
         (isbm && (fileinfo->accessed[0] & FILE_SIGN)) ? '#' : ' ',
         (isbm && (fileinfo->accessed[0] & FILE_PERCENT)) ? '%' : ' ',
         (isbm && (fileinfo->accessed[1] & FILE_DEL)) ? 'X' : ' ',
