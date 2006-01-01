@@ -34,38 +34,63 @@ static void FreeNameList(void){
      * 加上 static, 显式释放 NameList 应该使用 CreateNameList 函数, 
      * 不应该在本文件外有对 FreeNameList 的调用... 
     */
-    struct word *p, *temp;
-
-    for (p = toplev; p != NULL; p = temp) {
-        temp = p->next;
+    struct word *p,*temp;
+    for(p=toplev;p;p=temp){
+        temp=p->next;
         free(p->word);
         free(p);
     }
 }
-void CreateNameList()
-{
-    if (toplev)
+void CreateNameList(void){
+    if(toplev)
         FreeNameList();
-    toplev = NULL;
-    current = NULL;
+    toplev=NULL;
+    current=NULL;
+}
+void AddNameList(const char *name){
+    struct word *node;
+    if(!name)
+        return;
+    if(!(node=(struct word*)malloc(sizeof(struct word))))
+        return;
+    if(!(node->word=strdup(name))){
+        free(node);
+        return;
+    }
+    node->next=NULL;
+    if(!current)
+        toplev=node;
+    else{
+        while(current->next)
+            current=current->next;
+        current->next=node;
+    }
+    current=node;
+    return;
+}
+static int CompareName(const void *v1,const void *v2){
+    return strcmp((*((const char**)v1)),(*((const char**)v2)));
+}
+static int CompareNameCase(const void *v1,const void *v2){
+    return strcasecmp((*((const char**)v1)),(*((const char**)v2)));
+}
+void SortNameList(int case_sensitive){
+    struct word *p;
+    const char **array,**t;
+    int count;
+    if(!(count=GetNameListCount()))
+        return;
+    if(!(array=(const char**)malloc(count*sizeof(const char*))))
+        return;
+    for(p=toplev,t=array;p;p=p->next,t++)
+        (*t)=p->word;
+    qsort(array,count,sizeof(const char*),(case_sensitive?CompareName:CompareNameCase));
+    for(p=toplev,t=array;p;p=p->next,t++)
+        p->word=(char*)(*t);
+    free(array);
+    return;
 }
 
-void AddNameList(name)
-char *name;
-{
-    struct word *node;
-    node = (struct word *) malloc(sizeof(struct word));
-    node->next = NULL;
-    node->word = (char *) malloc(strlen(name) + 1);
-    strcpy(node->word, name);
-    if (toplev == NULL) {
-        toplev = node;
-        current = node;
-    } else {
-        current->next = node;
-        current = node;
-    }
-}
 int NumInList(list)
 register struct word *list;
 {

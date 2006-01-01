@@ -89,14 +89,15 @@ void register_attach_link(generate_attach_link_t fn,void* arg);
 int mmap_more(char *fn, int quit, char *keystr, char *title);
 
 /* namecomplete.c */
-void AddNameList(char *name);
-void CreateNameList();
+void AddNameList(const char *name);
+void CreateNameList(void);
 void ApplyToNameList(int (*)(char*,void*),void*);
 int namecomplete(char *prompt, char *data);
 int usercomplete(char *prompt, char *data);
 struct word* GetNameListHead(void);
 int GetNameListCount(void);
 int MaxLen(struct word*,int);
+void SortNameList(int);
 
 /* newmain_single.c */
 void showsysinfo(char * fn);

@@ -632,6 +632,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
         if(need_refresh){
             CreateNameList();
             func(func_query_club_users,&write_perm);
+            SortNameList(0);
             count=GetNameListCount();
             head=GetNameListHead();
             start=head;
@@ -869,7 +870,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         line[0]=32;
                         trimstr(line);
                     default:
-                        if(!getuser(line,&user)||get_user_club_perm(user,currboard,write_perm))
+                        if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,currboard,write_perm))
                             continue;
                         if(!set_user_club_perm(user,currboard,write_perm)){
                             club_maintain_send_mail(user->userid,comment,0,write_perm);
