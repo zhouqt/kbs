@@ -740,7 +740,7 @@ int valid_article(pmt, abort)
         if (total > 20 + lines * 3) {
             move(y, 0);
             prints("\t本篇文章的引言与签名档行数远超过本文长度.\n");
-            y += 3;
+            y += 1;
         }
         if (total!=lines) 
             lines--; /*如果是re文和签名档，应该减掉一行*/
