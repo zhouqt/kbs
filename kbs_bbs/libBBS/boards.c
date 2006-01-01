@@ -988,6 +988,8 @@ int haspostperm(const struct userec *user,const char *bname)
     }                           /* stephen 2000.10.27 */
     if (HAS_PERM(user, (bcache[i - 1].level & ~PERM_NOZAP) & ~PERM_POSTMASK)) {
         if (bcache[i - 1].flag & BOARD_CLUB_WRITE) {    /*æ„¿÷≤ø */
+            if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
+                return 1;
             if (bcache[i - 1].clubnum <= 0 || bcache[i - 1].clubnum >= MAXCLUB)
                 return 0;
             if (user->club_write_rights[(bcache[i - 1].clubnum - 1) >> 5] & (1 << ((bcache[i - 1].clubnum - 1) & 0x1f)))
@@ -998,7 +1000,7 @@ int haspostperm(const struct userec *user,const char *bname)
         return 1;
     } else
         return 0;
-    if (bcache[i-1].title_level&&(bcache[i-1].title_level!=user->title)) return 0;
+    //if (bcache[i-1].title_level&&(bcache[i-1].title_level!=user->title)) return 0;
 }
 
 int chk_BM_instr(const char BMstr[STRLEN - 1], const char bmname[IDLEN + 2])
