@@ -491,7 +491,7 @@ int get_favread()
     struct userec *destuser;
 	char dpath[PATHLEN];
 	char mypath[PATHLEN];
-	int id;
+	int count;
 
 	clear();
 	move(1,0);
@@ -501,7 +501,7 @@ int get_favread()
 		clear();
 		return 0;
 	}
-    if (!(id = getuser(destid, &destuser))) {
+    if(!getuser(destid,&destuser)){
 		move(7,0);
 		prints("没有这个用户\n");
 		pressanykey();
@@ -536,39 +536,54 @@ int get_favread()
 		return 0;
 	}
 
-	sethomefile(dpath, destuser->userid, "favboard");
-	sethomefile(mypath, getCurrentUser()->userid, "favboard");
-	f_cp(dpath, mypath, 0);
-	getSession()->mybrd_list_t = 0;
-	load_favboard(1,1,getSession());
+    count=0;
+    getdata(12,0,"同步个人定制? [Y]: ",passwd,2,DOECHO,NULL,true);
+    if(toupper(passwd[0])!='N'){
+        sethomefile(dpath,destuser->userid,"favboard");
+        sethomefile(mypath,getCurrentUser()->userid,"favboard");
+        f_cp(dpath,mypath,0);
+        getSession()->mybrd_list_t=0;
+        load_favboard(1,1,getSession());
+        count++;
+    }
 
 #ifdef HAVE_BRC_CONTROL
-	sethomefile(dpath, destuser->userid, BRCFILE);
-	sethomefile(mypath, getCurrentUser()->userid, BRCFILE);
-	f_cp(dpath, mypath, 0);
+    getdata(13,0,"同步未读标记? [Y]: ",passwd,2,DOECHO,NULL,true);
+    if(toupper(passwd[0])!='N'){
+	    sethomefile(dpath,destuser->userid,BRCFILE);
+	    sethomefile(mypath,getCurrentUser()->userid,BRCFILE);
+	    f_cp(dpath,mypath,0);
 
 #if USE_TMPFS == 1
-    if (getSession()->brc_cache_entry!=NULL){
+        if(getSession()->brc_cache_entry){
+#else
+        if(1){
 #endif
-		memset(getSession()->brc_cache_entry, 0, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
-		brc_initial(getCurrentUser()->userid, DEFAULTBOARD, getSession());
-		if(currboard)
-			brc_initial(getCurrentUser()->userid, currboard->filename, getSession());
-#if USE_TMPFS == 1
-	}
-#endif
+		    memset(getSession()->brc_cache_entry,0,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+		    brc_initial(getCurrentUser()->userid,DEFAULTBOARD,getSession());
+		    if(currboard)
+			    brc_initial(getCurrentUser()->userid,currboard->filename,getSession());
+	    }
+        count++;
+    }
 #endif
 
-    sethomefile(dpath, destuser->userid, "friends");
-    sethomefile(mypath, getCurrentUser()->userid, "friends");
-    f_cp(dpath, mypath, 0);
-    getfriendstr(getCurrentUser(),get_utmpent(getSession()->utmpent),getSession());
+    getdata(14,0,"同步好友名单? [Y]: ",passwd,2,DOECHO,NULL,true);
+    if(toupper(passwd[0])!='N'){
+        sethomefile(dpath,destuser->userid,"friends");
+        sethomefile(mypath,getCurrentUser()->userid,"friends");
+        f_cp(dpath,mypath,0);
+        getfriendstr(getCurrentUser(),get_utmpent(getSession()->utmpent),getSession());
+        count++;
+    }
 
-	move(15,0);
-	prints("操作成功。您无需重新登录即可使用新数据。\n");
-	pressanykey();
+    if(count){
+	    move(16,0);
+	    prints("操作成功, 您无需重新登录即可使用新数据!");
+    }
+
+    pressanykey();
 	clear();
-
 	return 0;
 }
 
