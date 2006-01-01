@@ -2658,15 +2658,14 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         /*
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
-        sprintf(buf2, "%s，\033[1;32mT\033[m改标题，%s%s\033[1;32mEnter\033[m接受所有设定: ", 
-                (replymode) ? "\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "\033[1;32mP\033[m使用模板, \033[1;32mb\033[m回复到信箱", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
+        sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s\033[1;32mEnter\033[m继续: ", 
+                (replymode) ? "\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
 #ifdef SSHBBS
 				"\033[1;32mu\033[m上传附件, "
 #else
 				""
 #endif
 				);
-        if(replymode&&anonyboard) buf2[strlen(buf2)-10]=0;
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
         ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
@@ -2689,7 +2688,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 				}
 			}*/
 		} else if (ans[0] == 'B') {
-			if( replymode == 0 )
+			/* if( replymode == 0 ) */
 				mailback = mailback ? 0 : 1;
         } else if (ans[0] == ANONY_KEY) {
             Anony = (Anony == 1) ? 0 : 1;
