@@ -346,7 +346,6 @@ function page_header($title, $flag = "", $otherheaders = false) {
 </head>
 <?php
 	if ($flag === FALSE) return;
-	bbs_session_modify_user_mode(BBS_MODE_WEBEXPLORE);
 	if (isset($currentuser["userid"]) && $currentuser["userid"] != "guest" && bbs_checkwebmsg()) {
 ?>
 <script type="text/javascript">alertmsg();</script>
