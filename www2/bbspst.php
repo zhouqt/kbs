@@ -133,12 +133,8 @@
 <input type="checkbox" name="outgo" value="1"<?php if (!$local_save) echo " checked=\"checked\""; ?> />转信
 <?php
     }
-    if ($reid == 0) {
 ?>
 <input type="checkbox" name="mailback" value="1" />re文抄送信箱
-<?php
-	}
-?>
 <br />
 <textarea name="text" tabindex="2" onkeydown='return textarea_okd(dosubmit, event);' wrap="physical" <?php if ($reid) echo 'id="sfocus"'; ?>>
 <?php

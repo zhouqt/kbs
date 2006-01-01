@@ -53,7 +53,7 @@
 
 	$ret = bbs_postarticle($boardName, trim($_POST["title"]), 
 		($tmpl ? $contents :$_POST["text"]), intval(@$_POST["signature"]), $reID, 
-		$outgo, $anony, $reID?0:intval(@$_POST["mailback"]), 0);
+		$outgo, $anony, @intval($_POST["mailback"]), 0);
 	switch ($ret) {
 		case -1:
 			html_error_quit("错误的讨论区名称!");
