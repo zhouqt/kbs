@@ -1,8 +1,7 @@
 #define BBSMAIN
 #include "service.h"
 #include "bbs.h"
-#ifdef BBS_SERVICE_DICT
-#if HAVE_MYSQL_SMTH == 1
+#if defined(BBS_SERVICE_DICT) && HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
 
 SMTH_API struct user_info uinfo;
@@ -226,5 +225,8 @@ exit_dict:
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
 }
-#endif /* HAVE_MSYQL == 1*/
+#else
+int dict_main() {
+    return 0;
+}
 #endif
