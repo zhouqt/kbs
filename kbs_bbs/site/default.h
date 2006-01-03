@@ -600,6 +600,8 @@ extern const char * const helpmodestr[];
 extern const char * const user_smsdefstr[];
 #endif
 extern const char * const mailbox_prop_str[];
+
+extern const char seccode[SECNUM][5];
 extern const char secname[SECNUM][2][20];
 
 /**
