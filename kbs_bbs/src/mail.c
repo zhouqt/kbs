@@ -338,35 +338,31 @@ int do_send(char *userid, char *title, char *q_file)
     char* upload = NULL;
     int savesent = HAS_MAILBOX_PROP(&uinfo, MBP_SAVESENTMAIL);
 
-    if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
-        prints("\033[1m\033[33m很抱歉∶您无法给 %s 发信．因为 您被封禁了Mail权限。\n\033[m");
-        return -2;
-    }
     if (!strchr(userid, '@')) {
         if (getuser(userid, &user) == 0)
             return -1;
-        ret = chkreceiver(getCurrentUser(), user);
+        ret = check_mail_perm(getCurrentUser(), user);
 
-	if (false == canIsend2(getCurrentUser(), userid)) {  /* Leeward 98.04.10 */
-            prints("\033[1m\033[33m很抱歉∶您无法给 %s 发信．因为 %s 拒绝接收您的信件．\033[m\033[m\n\n", userid,userid);
-            return -2;
+        switch(ret) {
+            case 1:
+                return -3;
+            case 2:
+                move(1, 0);
+                prints("你的信箱容量超出上限, 无法发送信件。");
+                pressreturn();
+                return -2;
+            case 3:
+                return -4;
+            case 4:  /* Leeward 98.04.10 */
+                prints("\033[1m\033[33m很抱歉∶您无法给 %s 发信．因为 %s 拒绝接收您的信件．\033[m\033[m\n\n", userid,userid);
+                return -2;
+            case 5:
+                prints("\033[1m\033[33m很抱歉∶您无法发信．因为 您被封禁了Mail权限。\n\033[m");
+                return -2;
+            case 6:
+                /* 新人 */
+                break;
         }
-
-        if (ret == 1)
-            return -3;
-        /*
-         * SYSOP也能给自杀的人发信
-         */
-
-
-        if (ret == 2) {
-            move(1, 0);
-            prints("你的信箱容量超出上限, 无法发送信件。");
-            pressreturn();
-            return -2;
-        }
-        if (ret == 3)
-            return -4;
     }
 #ifdef INTERNET_PRIVATE_EMAIL
     /*
@@ -380,11 +376,16 @@ int do_send(char *userid, char *title, char *q_file)
          * else
          * strcat(userid,".edu.tw");}
          */
-        if (chkusermail(getCurrentUser()) >= 2) {
-            move(1, 0);
-            prints("你的信箱容量超出上限, 无法发送信件。");
-            pressreturn();
-            return -2;
+        switch(check_mail_perm(getCurrentUser(), NULL)) {
+            case 5:
+            case 6:
+                prints("\033[1m\033[33m很抱歉∶您无法发信．因为 您被封禁了Mail权限。\n\033[m");
+                return -2;
+            case 2:
+                move(1, 0);
+                prints("你的信箱容量超出上限, 无法发送信件。");
+                pressreturn();
+                return -2;
         }
         internet_mail = 1;
         modify_user_mode(IMAIL);

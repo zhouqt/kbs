@@ -224,16 +224,27 @@ PHP_FUNCTION(bbs_is_save2sent)
  */
 PHP_FUNCTION(bbs_can_send_mail)
 {
-    if (HAS_PERM(getCurrentUser(), PERM_DENYMAIL)) {
-        RETURN_LONG(0);
-    } else if (HAS_PERM(getCurrentUser(), PERM_LOGINOK)) { 	 
-        if (chkusermail(getCurrentUser())) {
-            RETURN_LONG(0);
-        } else {
-            RETURN_LONG(1);
+    long is_reply = 0;
+    int ret;
+    int ac = ZEND_NUM_ARGS();
+    if (ac == 1) {
+        if (zend_parse_parameters(1 TSRMLS_CC, "l", &is_reply) == FAILURE) {
+            WRONG_PARAM_COUNT;
         }
     } else {
-        RETURN_LONG(0);
+        if (ac != 0) {
+            WRONG_PARAM_COUNT;
+        }
+    }
+    ret = check_mail_perm(getCurrentUser(), NULL);
+    if (ret > 0) {
+        if (is_reply) {
+            RETURN_LONG(ret == 6 ? 1 : 0);
+        } else {
+            RETURN_LONG(0);
+        }
+    } else {
+        RETURN_LONG(1);
     }
 }
 
@@ -404,6 +415,7 @@ PHP_FUNCTION(bbs_changemaillist)
  *      -6   receiver index append failed
  *      -7   sender index append failed
  *      -8   invalid renum
+ *      -9   sender no permission
  *      -100 invalid user
  *  @author roy
  */
@@ -420,7 +432,7 @@ PHP_FUNCTION(bbs_postmail){
     struct stat st;
     struct userec *touser;      /*peregrine for updating used space */
 	char *refname,*dirfname;
-	int find=-1,fhcount=0,refname_len,dirfname_len;
+	int find=-1,fhcount=0,refname_len,dirfname_len,ret;
 
     if(ac == 5)		/* use this to send a new mail */
 	{
@@ -510,12 +522,32 @@ PHP_FUNCTION(bbs_postmail){
     if (touser == NULL) 
 		RETURN_LONG(-100);//can't find user
 
-    if (!canIsend2(getCurrentUser(), targetID)) {
-        RETURN_LONG(-3);
-    }
-
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chkusermail(touser)) {    /*Haohamru.99.4.05 */
-        RETURN_LONG(-4);
+    ret = check_mail_perm(getCurrentUser(), touser);
+    switch(ret) {
+        case 1:
+            RETURN_LONG(-4);
+            break;
+        case 2:
+            RETURN_LONG(-9);
+            break;
+        case 3:
+            RETURN_LONG(-4);
+            break;
+        case 4:
+            RETURN_LONG(-3);
+            break;
+        case 5:
+            RETURN_LONG(-9);
+            break;
+        case 6:
+            if (ac != 7) {
+                RETURN_LONG(-9);
+            }
+            break;
+        default:
+            if (ret > 0) {
+                RETURN_LONG(-10);
+            }            
     }
 
 	strncpy(targetID, touser->userid, sizeof(targetID));
@@ -737,7 +769,7 @@ PHP_FUNCTION(bbs_domailforward)
 {
     char *fname, *tit, *target1;
 	char target[128];
-    int filename_len,tit_len,target_len;
+    int ret,filename_len,tit_len,target_len;
 	long big5,noansi;
 	char title[512];
 	struct userec *u;
@@ -751,16 +783,18 @@ PHP_FUNCTION(bbs_domailforward)
 	target[127]=0;
 
     if( target[0] == 0 )
-        RETURN_LONG(-3);
+        RETURN_LONG(-8);
 
 	snprintf(mail_domain, sizeof(mail_domain), "@%s", MAIL_BBSDOMAIN);
 	if( strstr(target, mail_domain) )
 		strcpy(target, getCurrentUser()->userid);
     if( !strchr(target, '@') ){
-        if( HAS_PERM(getCurrentUser(), PERM_DENYMAIL) )
-            RETURN_LONG(-5);
         if( getuser(target,&u) == 0)
-            RETURN_LONG(-6);
+            RETURN_LONG(-9);
+        ret = check_mail_perm(getCurrentUser(), u);
+        if (ret) {
+            RETURN_LONG(-ret);
+        }
         big5=0;
         noansi=0;
     }

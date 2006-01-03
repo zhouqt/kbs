@@ -80,41 +80,60 @@ int chkusermail(struct userec *user)
     return 0;
 }
 
-/**
- * 检查可否发信给 receiver.
- * 
- * @return 0 可以发信
+
+/*
+ * 检查发信权限。
+ *
+ * fromuser == NULL: 检查 touser 是否可以收信
+ * touser == NULL:   检查 fromuser 是否可以发信
+ * 两个都不是 NULL:  检查 fromuser 是否可以给 touser 发信
+ * 两个都是 NULL:    faint，见鬼去吧！不过这种情况返回 0
+ *
+ * @return 0 没有问题
  *         1 不能发信，收信人已经自杀或被封禁 mail 权限
  *         2 不能发信，发信人信箱超容
  *         3 不能发信，收信人信箱超容
+ *         4 不能发信，收信人拒收
+ *         5 不能发信，发信人被封禁 mail 权限
+ *         6 不能发信，发信人没有通过注册
  */
-int chkreceiver(struct userec *fromuser, struct userec *touser)
-
-/*Haohmaru.99.4.4.检查收信者信箱是否满,改动下面的数字时请同时改动do_send do_gsend doforward doforward函数*/
+int check_mail_perm(struct userec *fromuser, struct userec *touser)
 {
-    /*
-     * Bigman 2000.9.8 : 修正没有用户的话,返回0 
-     */
-    /*
-     * 修正PERM_SYSOP给自杀用户发信后的错误 
-     */
-    if (fromuser)
-        if ((HAS_PERM(fromuser, PERM_SYSOP)) || (!strcmp(fromuser->userid, "Arbitrator")))
-            /*
-             * Leeward 99.07.28 , Bigman 2002.6.5: Arbitrator can send any mail to user 
-             */
-            return 0;
-    if (touser->userlevel & PERM_SUICIDE)
-        return 1;
-    if (!(touser->userlevel & PERM_READMAIL))
-        return 1;
-    if (fromuser)
-        if (chkusermail(fromuser) >= 2)
+    if (fromuser) {
+        if (HAS_PERM(fromuser, PERM_DENYMAIL)) {
+            return 5;
+        } else if (chkusermail(fromuser)>=2) {
             return 2;
-    if (chkusermail(touser) >= 3)
-        return 3;
+        } else if (!HAS_PERM(fromuser, PERM_LOGINOK)) { 	 
+            return 6;
+        }
+        if ((HAS_PERM(fromuser, PERM_SYSOP)) || (!strcmp(fromuser->userid, "Arbitrator"))) {
+            return 0;
+        }
+    }
+    if (touser) {
+        if (touser->userlevel & PERM_SUICIDE)
+            return 1;
+        if (!(touser->userlevel & PERM_READMAIL))
+            return 1;
+        if (chkusermail(touser) >= 3)
+            return 3;
+    }
+    if (fromuser && touser && (fromuser!=touser)) {
+        if (!canIsend2(fromuser, touser->userid)) {
+            return 4;
+        }
+    }
+    if (!fromuser && !touser) {
+        // so what?
+    }
     return 0;
 }
+
+
+
+
+
 int check_query_mail(char qry_mail_dir[STRLEN])
 {
     struct fileheader fh;

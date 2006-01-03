@@ -304,10 +304,7 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     updatelastpost(board);
     if (fh.accessed[0] & FILE_MARKED)
         setboardmark(board, 1);
-    if ((DIR_MODE_NORMAL == currmode)   /* 不可以用 “NA ==” 判断：digestmode 三值 */
-        &&!((fh.accessed[0] & FILE_MARKED)
-            && (fh.accessed[1] & FILE_READ)
-            && (fh.accessed[0] & FILE_FORWARDED))) {    /* Leeward 98.06.17 在文摘区删文不减文章数目 */
+    if (DIR_MODE_NORMAL == currmode) {    /* Leeward 98.06.17 在文摘区删文不减文章数目 */
         if (owned) {
             if ((int) user->numposts > 0 && !junkboard(board)) {
                 user->numposts--;       /*自己删除的文章，减少post数 */
@@ -1064,7 +1061,6 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
          */
         postfile.accessed[1] |= FILE_READ;
 #endif
-        postfile.accessed[0] |= FILE_FORWARDED;
     }
 #ifdef HAVE_BRC_CONTROL
     { //added by atppp, 防止转载等破坏BRC 20070719
@@ -1248,7 +1244,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                 char newtitle[STRLEN];
 
                 if (getuser(re->owner, &lookupuser) != 0) {
-                    if ((false != canIsend2(session->currentuser, re->owner)) && !(lookupuser->userlevel & PERM_SUICIDE) && (lookupuser->userlevel & PERM_READMAIL) && chkusermail(lookupuser)<3 ) {
+                    if ((false != canIsend2(session->currentuser, re->owner)) && (check_mail_perm(NULL, lookupuser) == 0)) {
                         setbfile(buf, boardname, fh->filename);
                         snprintf(newtitle, ARTICLE_TITLE_LEN, "[回文转寄]%s", fh->title);
                         mail_file(session->currentuser->userid, buf, re->owner, newtitle, 0, fh);

@@ -760,7 +760,7 @@ int calendar_main()
                 }
                 break;
             case 'm':
-                if (!(HAS_PERM(getCurrentUser(), PERM_READMAIL)&&!HAS_PERM(getCurrentUser(), PERM_DENYMAIL) && !chkusermail(getCurrentUser())))
+                if (check_mail_perm(getCurrentUser(), NULL))
                     break;
                 sprintf(buf, "home/%c/%s/%d-%02d-%02d.txt", toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, year, month, day);
                 sprintf(buf2, "tmp/%s.%d.cal", getCurrentUser()->userid, rand());
@@ -774,7 +774,7 @@ int calendar_main()
                 }
                 break;
             case 'M':
-                if (!(HAS_PERM(getCurrentUser(), PERM_READMAIL)&&!HAS_PERM(getCurrentUser(), PERM_DENYMAIL) && !chkusermail(getCurrentUser())))
+                if (check_mail_perm(getCurrentUser(), NULL))
                     break;
                 getdata(13, 48, "  确认寄回所有日记[y/N]", title, 3, 1, 0, 1);
                 if(toupper(title[0])=='Y') {

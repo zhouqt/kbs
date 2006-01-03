@@ -34,3 +34,4 @@ define("IPV6_LEGACY_IPV4_DISPLAY", 1);
 启动bbsd
 
 注意：当前补丁不支持ipv6的地址黑名单
+

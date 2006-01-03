@@ -729,7 +729,7 @@ int igetkey()
         	}
             else if (scrint&&ret==KEY_F9){
                 mode=0;
-                if (getCurrentUser()&&HAS_PERM(getCurrentUser(), PERM_READMAIL)&&!HAS_PERM(getCurrentUser(), PERM_DENYMAIL) && !chkusermail(getCurrentUser()))
+                if (getCurrentUser()&& (check_mail_perm(getCurrentUser(),NULL) == 0))
                     mailscr();
                 continue;
             }

@@ -630,7 +630,7 @@ int pc_logs(struct pc_logs *pn);
 /* bbs_sendmail.c */
     int mail_buf(struct userec*fromuser, char *mail_buf, char *userid, char *title, session_t* session);
     int chkusermail(struct userec *user);
-    int chkreceiver(struct userec *fromuser, struct userec *touser);
+    int check_mail_perm(struct userec *fromuser, struct userec *touser);
     int bbs_sendmail(char *fname, char *title, char *receiver, int unused, int isbig5, int noansi,session_t* session);
     int check_query_mail(char qry_mail_dir[STRLEN]);
 /* convcode.c */

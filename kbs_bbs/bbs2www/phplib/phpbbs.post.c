@@ -646,29 +646,32 @@ PHP_FUNCTION(bbs_doforward)
     struct boardheader *bp;
 	char title[512];
 	struct userec *u;
+    int ret;
     
 	if (ZEND_NUM_ARGS() != 6 || zend_parse_parameters(6 TSRMLS_CC, "ssssll", &board, &board_len,&filename, &filename_len, &tit, &tit_len, &target, &target_len, &big5, &noansi) != SUCCESS) {
             WRONG_PARAM_COUNT;
     }
 
     if( target[0] == 0 )
-        RETURN_LONG(-3);
+        RETURN_LONG(-8);
     if( !strchr(target, '@') ){
-        if( HAS_PERM(getCurrentUser(), PERM_DENYMAIL) )
-            RETURN_LONG(-5);
         if( getuser(target,&u) == 0)
-            RETURN_LONG(-6);
+            RETURN_LONG(-8);
+        ret = check_mail_perm(getCurrentUser(), u);
+        if (ret) {
+            RETURN_LONG(-ret);
+        }
         big5=0;
         noansi=0;
     }
 
     if ((bp = getbcache(board)) == NULL) {
-        RETURN_LONG(-4);
+        RETURN_LONG(-9);
     }
     if (getboardnum(board, &bh) == 0)
-        RETURN_LONG(-1); //"错误的讨论区";
+        RETURN_LONG(-11); //"错误的讨论区";
     if (!check_read_perm(getCurrentUser(), &bh))
-        RETURN_LONG(-2); //您无权阅读本版;
+        RETURN_LONG(-11); //您无权阅读本版;
 
     setbfile(fname, bp->filename, filename);
 
