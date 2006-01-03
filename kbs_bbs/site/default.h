@@ -803,6 +803,13 @@ attach define
 #endif
 #endif
 
+#ifndef ZMODEM_RATE
+#define ZMODEM_RATE 5000
+#endif
+#if ZMODEM_RATE == 0
+#undef ZMODEM_RATE
+#endif
+
 #ifndef QUOTED_LINES
 #define QUOTED_LINES 10
 #endif

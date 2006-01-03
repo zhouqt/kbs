@@ -303,4 +303,11 @@ int load_key(char * fn);
 
 /* newhelp.c */
 int newhelp(int mode);
+
+/* stuff.c */
+#ifdef HAVE_IPV6_SMTH
+void * ip_len2mask (int bitlen, void *vmask);
+struct in6_addr * ip_mask(const struct in6_addr * addr, const struct in6_addr * mask, struct in6_addr * out);
+#endif
+
 #endif

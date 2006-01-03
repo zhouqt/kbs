@@ -2108,7 +2108,11 @@ int read_hot_info()
 #ifdef NEWSMTH
 	if (uinfo.mode == READING) rule = " 6)治版方针";
 #endif
+#ifdef HAPPY_BBS
+	snprintf(prompt, sizeof(prompt), "%s%s%s", "选择: 1)十大话题 2)系内热点 3)近期热点 4)系统热点 5)日历日记",
+#else
 	snprintf(prompt, sizeof(prompt), "%s%s%s", "选择: 1)十大话题 2)十大祝福 3)近期热点 4)系统热点 5)日历日记",
+#endif
 			rule?rule:"", "[1]: ");
     getdata(t_lines - 1, 0, prompt, ans, 3, DOECHO, NULL, true);
     switch (ans[0])
@@ -2528,6 +2532,10 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         return FULLUPDATE;
 #endif
 
+#ifdef HAPPY_BBS
+    anonyboard = anonymousboard(currboard->filename);
+    if (!anonyboard)
+#endif
     modify_user_mode(POSTING);
     setbdir(DIR_MODE_NORMAL, direct, currboard->filename);
     if (!((cmdmode == DIR_MODE_MARK)||( cmdmode == DIR_MODE_THREAD)||( cmdmode == DIR_MODE_NORMAL)))
@@ -2658,10 +2666,15 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         /*
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
-        sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s\033[1;32mEnter\033[m继续: ", 
+        sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s%s\033[1;32mEnter\033[m继续: ", 
                 (replymode) ? "\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
 #ifdef SSHBBS
-				"\033[1;32mu\033[m上传附件, "
+				"\033[1;32mu\033[m上传附件, ",
+#else
+				"",
+#endif
+#ifdef POST_QUIT
+				"\033[1;32mQ\033[m放弃, "
 #else
 				""
 #endif
@@ -2789,6 +2802,9 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         if (q_file[119] == 'L') /* FIXME */
             local_article = 1; //这个地方太诡异了，完全看不懂，不知道对 local_save 有什么影响。
 
+#ifdef HAPPY_BBS
+    if (!anonyboard)
+#endif
     modify_user_mode(POSTING);
 
 	if( use_tmpl > 0 ){
@@ -3465,6 +3481,10 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         if (!chk_currBM(currboard->BM, getCurrentUser())) {
             return DONOTHING;
         }
+#ifdef HAPPY_BBS
+   if (owned && !strcmp(currboard->filename, "newcomers"))
+       return DONOTHING;
+#endif
 #ifdef COMMEND_ARTICLE
 	if (owned && !strcmp(currboard->filename, COMMEND_ARTICLE))
 		return DONOTHING;
@@ -4428,9 +4448,20 @@ int i_read_mail()
 
 #define ACL_MAX 10
 
+#ifndef HAVE_IPV6_SMTH
+#define IPBITS 32
+#else
+#define IPBITS 128
+#endif
+
 struct acl_struct {
+#ifndef HAVE_IPV6_SMTH
     unsigned int ip;
     char len;
+#else
+    struct in6_addr ip;
+    int len;
+#endif
     char deny;
 } * acl;
 int aclt=0;
@@ -4438,13 +4469,28 @@ int aclt=0;
 static int set_acl_list_show(struct _select_def *conf, int i)
 {
     char buf[80];
+#ifndef HAVE_IPV6_SMTH
     unsigned int ip,ip2;
     ip = acl[i-1].ip;
+#else
+    struct in6_addr ip;
+    memcpy(&ip, &acl[i-1].ip, sizeof(struct in6_addr));
+#endif
     if(i-1<aclt) {
+#ifndef HAVE_IPV6_SMTH
         if(acl[i-1].len==0) ip2=ip+0xffffffff;
         else ip2=ip+((1<<(32-acl[i-1].len))-1);
         sprintf(buf, "%d.%d.%d.%d--%d.%d.%d.%d", ip>>24, (ip>>16)%0x100, (ip>>8)%0x100, ip%0x100, ip2>>24, (ip2>>16)%0x100, (ip2>>8)%0x100, ip2%0x100);
-        prints("  %2d  %-40s  %4s", i, buf, acl[i-1].deny?"拒绝":"允许");
+#else
+        if (ISV4ADDR(acl[i-1].ip)) { 
+            inet_ntop(AF_INET, &ip.s6_addr[12], buf, 80);
+            sprintf(&buf[strlen(buf)], "/%d", acl[i-1].len+32-128);
+        } else {
+            inet_ntop(AF_INET6, &ip, buf, 80);
+            sprintf(&buf[strlen(buf)], "/%d", acl[i-1].len);
+        }
+#endif
+        prints("  %2d  %-50s %4s", i, buf, acl[i-1].deny?"拒绝":"允许");
     }
     return SHOW_CONTINUE;
 }
@@ -4479,9 +4525,15 @@ static int set_acl_list_key(struct _select_def *conf, int key)
     switch (key) {
     case 'a':
         if (aclt<ACL_MAX) {
-            char buf[20];
+            char buf[IPLEN+4];
+#ifndef HAVE_IPV6_SMTH
             int ip[4], i, k=0, err=0;
-            getdata(0, 0, "请输入IP地址: ", buf, 18, 1, 0, 1);
+#else
+            struct in6_addr ip, mask;
+            int k=0, err=0;
+#endif
+            getdata(0, 0, "请输入IP地址: ", buf, IPLEN+2, 1, 0, 1);
+#ifndef HAVE_IPV6_SMTH
             for(i=0;i<strlen(buf);i++) if(buf[i]=='.') k++;
             if(k!=3) err=1;
             else {
@@ -4491,6 +4543,15 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                     for(i=0;i<4;i++) if(ip[i]<0||ip[i]>=256) err=1;
                 }
             }
+#else
+            if ((!strchr(buf, ':')) && (strchr(buf, '.'))) {
+                memset(&ip, 0, sizeof(ip));
+                ip.s6_addr[10]=0xff;
+                ip.s6_addr[11]=0xff;
+                err = inet_pton(AF_INET, buf, &ip.s6_addr[12])<=0;
+                k = 128-32;
+			} else err = inet_pton(AF_INET6, buf, &ip)<=0;
+#endif
             if(err) {
                 move(0, 0);
                 prints("IP输入错误!");
@@ -4500,7 +4561,10 @@ static int set_acl_list_key(struct _select_def *conf, int key)
             else {
                 getdata(0, 0, "请输入长度(单位:bit): ", buf, 4, 1, 0, 1);
                 acl[aclt].len = atoi(buf);
-                if(acl[aclt].len<0 || acl[aclt].len>32) err=1;
+#ifdef HAVE_IPV6_SMTH
+                acl[aclt].len+= k;
+#endif
+                if(acl[aclt].len<0 || acl[aclt].len>IPBITS) err=1;
                 if(err) {
                     move(0, 0);
                     prints("长度输入错误!");
@@ -4511,9 +4575,13 @@ static int set_acl_list_key(struct _select_def *conf, int key)
                     getdata(0, 0, "允许/拒绝(0-允许,1-拒绝): ", buf, 4, 1, 0, 1);
                     if(buf[0]=='0') acl[aclt].deny=0;
                     else acl[aclt].deny=1;
+#ifndef HAVE_IPV6_SMTH
                     acl[aclt].ip = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
                     if(acl[aclt].len<32)
                         acl[aclt].ip = acl[aclt].ip&(((1<<acl[aclt].len)-1)<<(32-acl[aclt].len));
+#else
+                    ip_mask(&ip, ip_len2mask(acl[aclt].len, &mask), &acl[aclt].ip);
+#endif
                     aclt++;
                     return SHOW_DIRCHANGE;
                 }
@@ -4596,7 +4664,7 @@ static int set_acl_list_refresh(struct _select_def *conf)
     docmdtitle("[登录IP控制列表]",
                "退出[\x1b[1;32m←\x1b[0;37m,\x1b[1;32me\x1b[0;37m] 选择[\x1b[1;32m↑\x1b[0;37m,\x1b[1;32m↓\x1b[0;37m] 添加[\x1b[1;32ma\x1b[0;37m] 删除[\x1b[1;32md\x1b[0;37m]\x1b[m");
     move(2, 0);
-    prints("\033[0;1;37;44m  %4s  %-40s %-31s", "级别", "IP地址范围", "允许/拒绝");
+    prints("\033[0;1;37;44m  %4s  %-50s %-31s", "级别", "IP地址范围", "允许/拒绝");
     clrtoeol();
     update_endline();
     return SHOW_CONTINUE;
@@ -4615,7 +4683,12 @@ int set_ip_acl()
 {
     struct _select_def grouplist_conf;
     POINT *pts;
+#ifndef HAVE_IPV6_SMTH
     int i,rip[4];
+#else
+    int i;
+    struct in6_addr rip;
+#endif
     int oldmode;
     FILE* fp;
     char fn[80],buf[80];
@@ -4637,10 +4710,18 @@ int set_ip_acl()
         i=0;
         while(!feof(fp)) {
             int len,deny;
+#ifndef HAVE_IPV6_SMTH
             if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &len, &deny)<=0) break;
-            acl[i].len=(char)len;
-            acl[i].deny=(char)deny;
             acl[i].ip = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
+#else
+            if(fscanf(fp, "%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX %d %d",
+                &rip.s6_addr[0], &rip.s6_addr[1], &rip.s6_addr[2], &rip.s6_addr[3], &rip.s6_addr[4], &rip.s6_addr[5],
+                &rip.s6_addr[6], &rip.s6_addr[7], &rip.s6_addr[8], &rip.s6_addr[9], &rip.s6_addr[10], &rip.s6_addr[11], 
+                &rip.s6_addr[12], &rip.s6_addr[13], &rip.s6_addr[14], &rip.s6_addr[15], &len, &deny)<=0) break;
+            memcpy(&acl[i].ip, &rip, IPBITS/8);
+#endif
+            acl[i].len=len;
+            acl[i].deny=(char)deny;
             i++;
             if(i>=ACL_MAX) break;
         }
@@ -4684,7 +4765,16 @@ int set_ip_acl()
     fp=fopen(fn, "w");
     if(fp){
         for(i=0;i<aclt;i++)
+#ifndef HAVE_IPV6_SMTH
             fprintf(fp, "%d.%d.%d.%d %d %d\n", acl[i].ip>>24, (acl[i].ip>>16)%0x100, (acl[i].ip>>8)%0x100, acl[i].ip%0x100, acl[i].len, acl[i].deny);
+#else
+            fprintf(fp, "%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX %d %d\n",
+                acl[i].ip.s6_addr[0], acl[i].ip.s6_addr[1], acl[i].ip.s6_addr[2], acl[i].ip.s6_addr[3], 
+                acl[i].ip.s6_addr[4], acl[i].ip.s6_addr[5], acl[i].ip.s6_addr[6], acl[i].ip.s6_addr[7],
+                acl[i].ip.s6_addr[8], acl[i].ip.s6_addr[9], acl[i].ip.s6_addr[10], acl[i].ip.s6_addr[11], 
+                acl[i].ip.s6_addr[12], acl[i].ip.s6_addr[13], acl[i].ip.s6_addr[14], acl[i].ip.s6_addr[15], 
+                acl[i].len, acl[i].deny);
+#endif
         fclose(fp);
     }
 
@@ -6024,6 +6114,36 @@ static int prompt_newkey(struct _select_def* conf,struct fileheader *fileinfo,vo
     pressanykey();
     return FULLUPDATE;    
 }
+
+#ifdef HAPPY_BBS
+/* ipv1: Let a bm modify his board's title freely. */
+static int b_modify_title(struct _select_def* conf, struct fileheader* fh, void* extraarg)
+{   
+    char ans[STRLEN],pmt[STRLEN];
+    char *buf;
+    struct boardheader newfh;
+    int pos;
+    if (!chk_currBM(currBM, getCurrentUser())) {
+        return DONOTHING;
+    }
+    buf=&currboard->title[13];
+    strcpy(ans, buf);
+    move(t_lines - 1, 0);    
+    getdata(t_lines - 1, 0, "修改本版中文名：", ans, STRLEN - 1, DOECHO, NULL, false);
+    if(!strcmp(ans,"")) return FULLUPDATE;
+    if(!strcmp(ans,buf)) return FULLUPDATE;
+    if (!(currboard->flag & BOARD_SUPER_CLUB) && !((currboard->title[0]=='P')&&(currboard->title[1]=='_'))) {
+        sprintf(pmt, "修改 %s 版中文名", currboard->filename); 
+    	securityreport(pmt, NULL,NULL);
+    }
+    ans[STRLEN-14]='\0';
+    pos = getboardnum(currboard->filename,&newfh);
+    newfh.title[13]='\0';
+    strcat(newfh.title,ans);
+    set_board(pos, &newfh, NULL);
+    return FULLUPDATE;
+}
+#endif
 
 static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'r', (READ_KEY_FUNC)read_post,NULL},

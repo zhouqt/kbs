@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.14  2006/01/03 02:33:09  atppp
+ * 更多 ipv6 patch 来自 FreeWizard
+ *
  * Revision 1.13  2005/12/14 07:29:27  atppp
  * ipv6 fix by FreeWizard
  *
@@ -1102,7 +1105,11 @@ int main(int ac, char **av)
                 break;
             } else {
 #ifdef CHECK_IP_LINK
+#ifdef HAVE_IPV6_SMTH
+                if (check_IP_lists(sin.sin6_addr)==0)
+#else
                 if (check_IP_lists(sin.sin_addr.s_addr)==0) 
+#endif
 #endif
                 /* Normal production daemon.  Fork, and have the child process
                    the connection.  The parent continues listening. */

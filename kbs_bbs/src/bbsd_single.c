@@ -16,17 +16,6 @@ int max_load = 79;              /* ԭֵ39 , modified by KCN,1999.09.07 */
 
 int proxy_getpeername(int csock,struct sockaddr* psaddr,int* plen)
 {
-#ifdef HAPPY_BBS
-    int ret=getpeername(csock,psaddr,plen);
-    struct sockaddr_in* psin=(struct sockaddr_in*)psaddr;
-    if (psin->sin_addr.s_addr==0x01001E0A) {
-        int buf;
-        read(csock,&buf,4);
-        if (buf==0x330123) {
-            read(csock,&psin->sin_addr.s_addr,4);
-        }
-    }
-#else
     int ret=getpeername(csock,psaddr,plen);
 #ifdef SMTH
     struct sockaddr_in* psin=(struct sockaddr_in*)psaddr;
@@ -39,7 +28,6 @@ int proxy_getpeername(int csock,struct sockaddr* psaddr,int* plen)
         }
     }
 #endif
-#endif /* HAPPY_BBS */
     return ret;
 }
 
@@ -433,6 +421,7 @@ static void getremotehost(int sockfd, char *rhost, int buf_len)
 #define CON_THRESHOLD 1000.0/60/60
 #define CON_THRESHOLD2 1.0
 
+#ifndef HAVE_IPV6_SMTH
 struct ip_struct{
     unsigned char ip[4];
     time_t first,last;
@@ -540,6 +529,111 @@ int check_IP_lists(unsigned int IP2)
 
     return ret;
 }
+#else
+struct ip_struct{
+    struct in6_addr ip;
+    time_t first,last;
+    int t;
+} * ips, * bads, * proxys;
+bool initIP=false;
+
+int check_IP_lists(struct in6_addr sip)
+{
+    int i;
+    FILE* fp;
+    struct in6_addr rip;
+    int found=0,min=0,ret=0;
+    time_t now;
+    if(!initIP) {
+        ips = (struct ip_struct *) malloc(sizeof(struct ip_struct)*MAXLIST);
+        bads = (struct ip_struct *) malloc(sizeof(struct ip_struct)*MAXLIST);
+        proxys = (struct ip_struct *) malloc(sizeof(struct ip_struct)*MAXLIST);
+        memset(ips, 0, sizeof(struct ip_struct)*MAXLIST);
+        memset(bads, 0, sizeof(struct ip_struct)*MAXLIST);
+        memset(proxys, 0, sizeof(struct ip_struct)*MAXLIST);
+        fp=fopen(".denyIP", "r");
+        if(fp) {
+            i=0;
+            while(!feof(fp)) {
+                if(fscanf(fp, "%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX",
+                    &rip.s6_addr[0], &rip.s6_addr[1], &rip.s6_addr[2], &rip.s6_addr[3], &rip.s6_addr[4], &rip.s6_addr[5],
+                    &rip.s6_addr[6], &rip.s6_addr[7], &rip.s6_addr[8], &rip.s6_addr[9], &rip.s6_addr[10], &rip.s6_addr[11], 
+                    &rip.s6_addr[12], &rip.s6_addr[13], &rip.s6_addr[14], &rip.s6_addr[15])<=0) break;
+                ip_cpy(bads[i].ip, rip);
+                i++;
+            }
+            fclose(fp);
+        }
+        fp=fopen(".proxyIP", "r");
+        if(fp) {
+            i=0;
+            while(!feof(fp)) {
+                if(fscanf(fp, "%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX",
+                    &rip.s6_addr[0], &rip.s6_addr[1], &rip.s6_addr[2], &rip.s6_addr[3], &rip.s6_addr[4], &rip.s6_addr[5],
+                    &rip.s6_addr[6], &rip.s6_addr[7], &rip.s6_addr[8], &rip.s6_addr[9], &rip.s6_addr[10], &rip.s6_addr[11], 
+                    &rip.s6_addr[12], &rip.s6_addr[13], &rip.s6_addr[14], &rip.s6_addr[15])<=0) break;
+                ip_cpy(proxys[i].ip, rip);
+                i++;
+            }
+            fclose(fp);
+        }
+        initIP=true;
+    }
+    now = time(0);
+    memset(&rip, 0, sizeof(struct in6_addr));
+    for(i=0;i<MAXLIST;i++) {
+        if(!ip_cmp(rip, bads[i].ip)) break;
+        if(!ip_cmp(sip, bads[i].ip)) return 1;
+    }
+    for(i=0;i<MAXLIST;i++) {
+        if(!ip_cmp(rip, proxys[i].ip)) break;
+        if(!ip_cmp(sip, proxys[i].ip)) return 0;
+    }
+    for(i=0;i<MAXLIST;i++) {
+        if((double)(now-ips[i].last)>60*60) {
+            memset(&ips[i].ip, 0, sizeof(struct in6_addr));
+        }
+        if(!ip_cmp(ips[i].ip, sip)){
+            if((double)(now-ips[i].last)<=CON_THRESHOLD2) {
+                fp=fopen(".IPdenys", "a");
+                if(fp){
+                    fprintf(fp, "0 %ld %02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX %d\n", now, 
+                    rip.s6_addr[0], rip.s6_addr[1], rip.s6_addr[2], rip.s6_addr[3], rip.s6_addr[4], rip.s6_addr[5],
+                    rip.s6_addr[6], rip.s6_addr[7], rip.s6_addr[8], rip.s6_addr[9], rip.s6_addr[10], rip.s6_addr[11], 
+                    rip.s6_addr[12], rip.s6_addr[13], rip.s6_addr[14], rip.s6_addr[15], ips[i].t);
+                    fclose(fp);
+                }
+                ret = 1;
+            }
+            found=1;
+            ips[i].last = now;
+            ips[i].t++;
+            if(ips[i].t>=10&&(ips[i].t/(double)(ips[i].last-ips[i].first)>=CON_THRESHOLD)) {
+                ips[i].t=100000;
+                fp=fopen(".IPdenys", "a");
+                if(fp){
+                    fprintf(fp, "1 %ld %02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX %d\n", now, 
+                    rip.s6_addr[0], rip.s6_addr[1], rip.s6_addr[2], rip.s6_addr[3], rip.s6_addr[4], rip.s6_addr[5],
+                    rip.s6_addr[6], rip.s6_addr[7], rip.s6_addr[8], rip.s6_addr[9], rip.s6_addr[10], rip.s6_addr[11], 
+                    rip.s6_addr[12], rip.s6_addr[13], rip.s6_addr[14], rip.s6_addr[15], ips[i].t);
+                    fclose(fp);
+                }
+                ret = 1;
+            }
+            break;
+        }
+        if(ips[i].last<ips[min].last) min = i;
+    }
+    if(!found) {
+        ip_cpy(ips[min].ip, rip);
+        ips[min].first = now;
+        ips[min].last = now;
+        ips[min].t = 1;
+    }
+
+    return ret;
+}
+#endif
 
 select_func x_select;
 read_func x_read;
@@ -753,9 +847,37 @@ static int bbs_standalone_main(char* argv)
     }
     /* COMMAN :do not fork in debugging mode */
     proxy_getpeername(csock, (struct sockaddr *) &sin, (socklen_t *) & value);
+#ifdef HAPPY_BBS
+{
+	static const char happyproxy[] = {0,0,0,0,0,0,0,0,0,0,255,255,10,30,0,1};
+#ifdef HAVE_IPV6_SMTH
+	if (!memcmp((void *)&sin.sin6_addr, (void *)happyproxy, 16)) {
+       	int buf;
+       	read(csock,&buf,4);
+       	if (buf==0x330123) {
+           	read(csock, (void *)&sin.sin6_addr + 12, 4);
+		}
+	}
+#else
+    int ret=getpeername(csock,psaddr,plen);
+    struct sockaddr_in* psin=(struct sockaddr_in*)psaddr;
+    if (psin->sin_addr.s_addr==0x01001E0A) {
+        int buf;
+        read(csock,&buf,4);
+        if (buf==0x330123) {
+            read(csock,&psin->sin_addr.s_addr,4);
+        }
+    }
+#endif
+}
+#endif
 
 #ifdef CHECK_IP_LINK
+#ifdef HAVE_IPV6_SMTH
+    if (check_IP_lists(sin.sin6_addr)) {
+#else
     if (check_IP_lists(sin.sin_addr.s_addr)) {
+#endif
         close(csock);
         continue;
     }

@@ -17,6 +17,9 @@ the password is valid for the user.
 /*
  * $Id$
  * $Log$
+ * Revision 1.13  2006/01/03 02:33:09  atppp
+ * 更多 ipv6 patch 来自 FreeWizard
+ *
  * Revision 1.12  2005/12/07 07:46:46  atppp
  * 密码的一些问题
  *
@@ -187,8 +190,13 @@ char useridbuf[255];
 int auth_password(const char *server_user, const char *password)
 {
     int sinlen;
+#ifdef HAVE_IPV6_SMTH
+    struct sockaddr_in6 sin;
+    char host[IPLEN];
+#else
     struct sockaddr_in sin;
     char *host;
+#endif
     load_sysconf();
     resolve_ucache();
     resolve_utmp();
@@ -198,9 +206,21 @@ int auth_password(const char *server_user, const char *password)
     if (password[0] == '\0')
         return (!strcasecmp(useridbuf,"guest"));
 
+#ifdef HAVE_IPV6_SMTH
+    sinlen = sizeof(struct sockaddr_in6);
+    getpeername(packet_get_connection_in(), (struct sockaddr *) &sin, (void *) &sinlen);
+	host[0]='\0';
+#ifdef LEGACY_IPV4_DISPLAY
+	if (ISV4ADDR(sin.sin6_addr)) 
+	    inet_ntop(AF_INET, &sin.sin6_addr.s6_addr[12], host, IPLEN); 
+	else
+#endif
+	inet_ntop(AF_INET6, &sin.sin6_addr, host, IPLEN);
+#else
     sinlen = sizeof(struct sockaddr_in);
     getpeername(packet_get_connection_in(), (struct sockaddr *) &sin, (void *) &sinlen);
     host = (char *) inet_ntoa(sin.sin_addr);
+#endif /* IPV6 */
     if(check_ip_acl(getCurrentUser()->userid, host)) {
     	return 0;
     }

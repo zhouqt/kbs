@@ -82,8 +82,6 @@ void ochar(char c)
     }
 }
 
-#define ZMODEM_RATE 5000
-int ZmodemRateLimit = 1;
 int raw_write(int fd,const char *buf, int len)
 {
     static int lastcounter = 0;
@@ -91,7 +89,7 @@ int raw_write(int fd,const char *buf, int len)
     static int bufcounter;
     int retlen=0;
 #ifndef NINE_BUILD
-    if (ZmodemRateLimit) {
+#ifdef ZMODEM_RATE
         nowcounter = time(0);
         if (lastcounter == nowcounter) {
             if (bufcounter >= ZMODEM_RATE) {
@@ -107,7 +105,7 @@ int raw_write(int fd,const char *buf, int len)
             bufcounter = len;
         }
         lastcounter = nowcounter;
-    }
+#endif    
 #endif    
 #ifdef SSHBBS
     return ssh_write(fd, buf, len);

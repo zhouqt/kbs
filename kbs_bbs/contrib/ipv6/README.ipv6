@@ -31,7 +31,9 @@ define("IPV6_LEGACY_IPV4_DISPLAY", 1);
 备份然后转换.PASSWDS
 [提供了 cnv_ipv6.c，请特别对照 userec1 结构，如果和当前系统的不同则需要修改这个转换程序。]
 
+备份并转换.denyIP .proxyIP home/_userid_/ipacl为完整的v6地址格式
+[这一步骤可选，如果不做，那么这几个限制文件自动失效]
+
 启动bbsd
 
-注意：当前补丁不支持ipv6的地址黑名单
 

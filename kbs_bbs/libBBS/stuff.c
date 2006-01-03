@@ -2516,18 +2516,52 @@ int check_ID_lists(char * id)
     return ret;
 }
 
+#ifdef HAVE_IPV6_SMTH
+void * ip_len2mask (int bitlen, void *vmask)
+{
+    int i;
+    u_char *mask = vmask;
+
+    if (bitlen>128) bitlen = 128;
+    if (bitlen <= 0) {
+		memset (mask, 0, 128/8);
+		return (mask);
+    }
+    for (i = 0; i < (bitlen / 8); i++)
+		mask[i] = 0xff;
+    if (bitlen < 128)
+		mask[i++] = 0xff << (8 - (bitlen & 7));
+    for (; i < 128/8; i++)
+		mask[i] = 0;
+    return (mask);
+}
+
+struct in6_addr * ip_mask(const struct in6_addr * addr, const struct in6_addr * mask, struct in6_addr * out)
+{
+    int i;
+    for (i=0;i<128/8;i++) out->s6_addr[i] = addr->s6_addr[i] & mask->s6_addr[i];
+    return out;
+}
+
+#endif
 
 int check_ip_acl(char * id, char * sip)
 {
     char fn[160];
+#ifndef HAVE_IPV6_SMTH
     int ip[4],rip[4],l,a;
     unsigned int ips, rips;
+#else
+    int l,a;
+    struct in6_addr ip, mask, rip, tmp;
+#endif
     FILE* fp;
     sprintf(fn, BBSHOME "/home/%c/%s/ipacl", toupper(id[0]), id);
-    sscanf(sip, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
-    ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
     fp = fopen(fn, "r");
     if(fp) {
+#ifndef HAVE_IPV6_SMTH
+        sscanf(sip, "%d.%d.%d.%d", &ip[0], &ip[1], &ip[2], &ip[3]);
+        ips = (ip[0]<<24)+(ip[1]<<16)+(ip[2]<<8)+ip[3];
         while(!feof(fp)) {
             if(fscanf(fp, "%d.%d.%d.%d %d %d", &rip[0], &rip[1], &rip[2], &rip[3], &l, &a)<=0) break;
             rips = (rip[0]<<24)+(rip[1]<<16)+(rip[2]<<8)+rip[3];
@@ -2536,6 +2570,25 @@ int check_ip_acl(char * id, char * sip)
                 return a;
             }
         }        
+#else
+        if ((!strchr(sip, ':')) && (strchr(sip, '.'))) {
+            memset(&ip, 0, sizeof(ip));
+            ip.s6_addr[10]=0xff;
+            ip.s6_addr[11]=0xff;
+            inet_pton(AF_INET, sip, &ip.s6_addr[12]);
+        } else inet_pton(AF_INET6, sip, &ip);
+        while(!feof(fp)) {
+            if(fscanf(fp, "%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX:%02hhX%02hhX %d %d",
+                &rip.s6_addr[0], &rip.s6_addr[1], &rip.s6_addr[2], &rip.s6_addr[3], &rip.s6_addr[4], &rip.s6_addr[5],
+                &rip.s6_addr[6], &rip.s6_addr[7], &rip.s6_addr[8], &rip.s6_addr[9], &rip.s6_addr[10], &rip.s6_addr[11], 
+                &rip.s6_addr[12], &rip.s6_addr[13], &rip.s6_addr[14], &rip.s6_addr[15], &l, &a)<=0) break;
+            ip_mask(&ip, ip_len2mask(l, &mask), &tmp);
+            if (!ip_cmp(rip, tmp)) {
+                fclose(fp);
+                return a;
+            }
+        }
+#endif
         fclose(fp);
     }
     return 0;

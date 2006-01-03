@@ -135,10 +135,20 @@ typedef enum { false = 0, true = 1 } bool;
 
 #ifndef IPLEN
 #ifdef HAVE_IPV6_SMTH
-#define IPLEN   46              /* Length of most string data */
+#define IPLEN   46
 #else
 #define IPLEN   16
 #endif
+#endif
+
+#ifdef HAVE_IPV6_SMTH
+#define IPBITS   128
+#define ip_cmp(x, y) memcmp(&(struct in6_addr)x, &(struct in6_addr)y, sizeof(struct in6_addr))
+#define ip_cpy(x, y) memcpy(&(struct in6_addr)x, &(struct in6_addr)y, sizeof(struct in6_addr))
+#else
+#define IPBITS   32
+#define ip_cmp(x, y) ((uint32_t)x!=(uint32_t)y)
+#define ip_cpy(x, y) ((uint32_t)x=(uint32_t)y)
 #endif
 
 #define PUBLIC_SHMKEY	3700
