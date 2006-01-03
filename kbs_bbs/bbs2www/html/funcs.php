@@ -265,7 +265,7 @@ function gmt_date_format($t) {
 function error_alert($msg)
 {
 ?>
-<SCRIPT language="javascript">
+<SCRIPT type="text/javascript">
 window.alert(<?php echo "\"$msg\""; ?>);
 history.go(-1);
 </SCRIPT>
@@ -280,7 +280,7 @@ function error_nologin()
 	setcookie("LOGINTIME","",time() - 3600,"/");
 	setcookie("WWWPARAMS","",time() - 3600,"/");
 ?>
-<SCRIPT language="javascript">
+<SCRIPT type="text/javascript">
 window.location="/nologin.html";
 </SCRIPT>
 <?php
@@ -352,7 +352,7 @@ function html_init($charset,$title="",$otherheader="",$new_style=0)
 	}
 	else{
 ?>
-<script language="javascript">
+<script type="text/javascript">
 var cssFile = getBbsStyleFile();
 document.write('<link rel="stylesheet" type="text/css" href="' + cssFile + '"/>');
 </script>
@@ -367,7 +367,7 @@ document.write('<link rel="stylesheet" type="text/css" href="' + cssFile + '"/>'
 			&& bbs_checkwebmsg())
 	{
 ?>
-<script language="javascript">
+<script type="text/javascript">
 if (top.fmsg && !top.fmsg.form0)
 	top.fmsg.location.reload();
 </script>
@@ -395,7 +395,7 @@ function html_nologin()
 <html>
 <head></head>
 <body>
-<script language="Javascript">
+<script type="text/javascript">
 top.window.location='/nologin.html';
 </script>
 </body>

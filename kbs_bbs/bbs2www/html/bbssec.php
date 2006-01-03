@@ -4,7 +4,7 @@
 	login_init();
 	page_header("分类讨论区");
 ?>
-<script>
+<script type="text/javascript"><!--
 var ta = new tabWriter(0,'main','分类讨论区',[['区号',0,'center'],['类别',0,0],['描述',0,0]]);
 <?php
 		$i = 0;
@@ -17,6 +17,7 @@ ta.r('<?php echo $i-1; ?>','<a href="bbsboa.php?group=<?php echo $i-1; ?>"><?php
 		}
 ?>
 ta.t();
+//-->
 </script>
 <?php
 	bbs_boards_navigation_bar();

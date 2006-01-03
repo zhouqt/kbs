@@ -72,7 +72,8 @@ cache_header("nocache");
 </head>
 <script src="bbsleft.js"></script>
 <body>
-<script language="javascript">
+<script type="text/javascript"><!--
 parent.document.getElementById('<?php echo $subMenu; ?>').innerHTML = "<?php echo $innerHtml; ?>" ; 
+//-->
 </script>
 </body></html>

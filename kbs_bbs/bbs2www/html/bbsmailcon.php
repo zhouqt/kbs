@@ -24,12 +24,12 @@
 	if (strstr($dirname, "..") || strstr($dirname, "/")){
 		html_error_quit("错误的参数");
 	}
-	$dir = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$dirname ;
 
-	$total = filesize( $dir ) / 140 ;  /* TODO: BUG */
-	if( $total <= 0 ){
-		html_error_quit("信笺不存在");
-	}
+	$dir = bbs_setmailfile($currentuser["userid"], $dirname);
+	
+	$total = bbs_getmailnum2($dir);
+	if($total <= 0 || $total > 30000) html_error_quit("读取邮件数据失败!");
+	if ($num < 0 || $num >= $total) html_error_quit("错误的参数");
 
 	$articles = array ();
 	if( bbs_get_records_from_num($dir, $num, $articles) ) {
@@ -38,7 +38,7 @@
 		html_error_quit("错误的参数");
 	}
 
-	$filename = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$file ;
+	$filename = bbs_setmailfile($currentuser["userid"], $file);
 	if(! file_exists($filename)){
 		html_error_quit("信件不存在...");
 	}
@@ -75,7 +75,7 @@
 <?php
 				}
 ?>
-[<a href="bbspstmail.php?userid=<?php echo $articles[0]["OWNER"]; ?>&file=<?php echo $articles[0]["FILENAME"]; ?>&title=<?php if(strncmp($articles[0]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[0]["TITLE"]); ?>">回信</a>]
+[<a href="bbspstmail.php?dir=<?php echo $dirname ?>&userid=<?php echo $articles[0]["OWNER"]; ?>&num=<?php echo $num; ?>&file=<?php echo $articles[0]["FILENAME"]; ?>&title=<?php if(strncmp($articles[0]["TITLE"],"Re:",3)) echo "Re: "; ?><?php echo urlencode($articles[0]["TITLE"]); ?>">回信</a>]
 </div>
 <form action="bbsmailfwd.php" method="post" class="medium">
 <input type="hidden" name="dir" value="<?php echo $dirname;?>"/>

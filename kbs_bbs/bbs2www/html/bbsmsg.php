@@ -10,7 +10,7 @@
 
 	$i=0;
 ?>
-<script>
+<script type="text/javascript"><!--
 var ta = new tabWriter(1,'main wide fixed',0,[['序号','6%','center'],['时间','20%',0],['类型','6%','center'],['对象','10%',0],['内容',0,0]]);
 <?php
 	foreach( $msgs as $msg ){
@@ -22,6 +22,7 @@ echo htmlformat($msg["content"],true);?> ');
 	}
 ?>
 ta.t();
+//-->
 </script>
 <div class="oper">
 <a onclick="return confirm('你真的要清除所有讯息吗?')" href="bbsdelmsg.php">清除所有讯息</a> <a href="bbsmailmsg.php">寄回所有信息</a>

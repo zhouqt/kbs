@@ -97,7 +97,7 @@
 <label>新建文件夹:</label>
 <input name="boxname" size="24" maxlength="20" type="text" class="req"/>
 <input type="submit" value="添加"/>
-</form>	
+</form><br />	
 <?php
 	page_footer();
 ?>

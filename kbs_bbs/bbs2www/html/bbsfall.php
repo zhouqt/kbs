@@ -64,8 +64,10 @@
 ?>
 [<a href="bbsfall.php?start=<?php echo $start + 20; ?>">下一页</a>]
 [<a href="bbsfall.php?start=-1">最后一页</a>]
-</div>
 <?php
 		}
+?>
+</div>
+<?php
 		page_footer();
 ?>

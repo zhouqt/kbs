@@ -15,6 +15,14 @@ chdir(BBS_HOME);
 if (!bbs_ext_initialized())
 	bbs_init_ext();
 
+require("site.php");
+
+function getmicrotime(){ 
+   list($usec, $sec) = explode(" ",microtime()); 
+   return ((float)$usec + (float)$sec); 
+} 
+if (defined("RUNNINGTIME")) $StartTime=getmicrotime();
+
 global $fromhost;
 global $fullfromhost;
 global $loginok;
@@ -68,7 +76,7 @@ function bbs_is_permit_mode($ftype, $caller) {
 			return ($caller == 0) ? 1 : 0;
 		case $dir_modes["DIGEST"]:
 		case $dir_modes["MARK"]: /* 暂时当作不可排序 ... */
-		//case $dir_modes["DELETED"]:
+		case $dir_modes["DELETED"]:
 			return 2;
 		default: return 0;
 	}
@@ -106,8 +114,6 @@ function bbs_get_board_index($board, $ftype) {
 }
 
 
-
-require("site.php");
 
 define("ACTIVATIONLEN",15); //激活码长度
 if (!defined ('FAVORITE_NAME'))
@@ -340,6 +346,7 @@ function page_header($title, $flag = "", $otherheaders = false) {
 </head>
 <?php
 	if ($flag === FALSE) return;
+	bbs_session_modify_user_mode(BBS_MODE_WEBEXPLORE);
 	if (isset($currentuser["userid"]) && $currentuser["userid"] != "guest" && bbs_checkwebmsg()) {
 ?>
 <script type="text/javascript">alertmsg();</script>
@@ -353,6 +360,12 @@ function page_header($title, $flag = "", $otherheaders = false) {
 
 /* 特别注意：POST 递交生成的页面，不应该出现 展开完整界面 的链接，所以调用本函数必须用 FALSE 参数 */
 function page_footer($checkframe = TRUE) {
+	global $StartTime;
+	if (defined("RUNNINGTIME")) {
+		$endtime = getmicrotime();
+		echo "<span style='font-size:12px'><center>Powered by KBS BBS 2.0 (<a href='http://dev.kcn.cn/' target='_blank'>http://dev.kcn.cn</a>)<br/>页面执行时间：".sprintf(number_format(($endtime-$StartTime)*1000,3))."毫秒</center></span>";
+	}
+
 	if ($checkframe) {
 ?>
 <script>checkFrame(<?php if (!defined("STATIC_FRAME")) echo "1"; ?>);</script>
@@ -367,9 +380,10 @@ function error_alert($msg)
 {
 	page_header("发生错误");
 ?>
-<script type="text/javascript">
+<script type="text/javascript"><!--
 window.alert(<?php echo "\"$msg\""; ?>);
 history.go(-1);
+//-->
 </script>
 </body></html>
 <?php
@@ -384,7 +398,7 @@ function html_error_quit($err_msg)
 <tr><th>发生错误</th></tr>
 <tr><td><?php echo $err_msg; ?></td></tr>
 </table>
-[<a href="javascript:history.go(-1)">快速返回</a>]
+[<a href="javascript:history.go(-1)">快速返回</a>]<br /><br />
 <?php
 	page_footer(false);
 	exit;
@@ -405,6 +419,7 @@ function html_success_quit($msg, $operations = FALSE)
 </ul>
 <?php
 	}
+	echo "<br /><br />";
 	page_footer(false);
 	exit;
 }

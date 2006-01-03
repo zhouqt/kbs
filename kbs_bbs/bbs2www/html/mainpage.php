@@ -31,7 +31,7 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan1.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;本日热点话题讨论&gt;&gt;</td>
@@ -159,7 +159,7 @@ while($board = array_shift($boards))
 	$sec_boards_num[$secid]++;
 }
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan3.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;分类精彩讨论区&gt;&gt;</td>
@@ -169,6 +169,7 @@ while($board = array_shift($boards))
 <?php
 	for ($i = 0; $i < $sec_count; $i++)
 	{
+		if (defined("SITE_NEWSMTH") && ($t[$i]==0 || $t[$i]==1)) continue;
 ?>
 <tr> 
   <td valign="top" class="MainContentText" style="padding-top: 5px;"> 
@@ -223,12 +224,24 @@ $doc = domxml_open_file($newboard_file);
 
 $root = $doc->document_element();
 $boards = $root->child_nodes();
+	if (defined("SITE_NEWSMTH")) {
 ?>
       <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+        <tr>
+          <td width="100%"><a href="http://gceclub.sun.com.cn/chinese_java_docs.html" target="_blank"><img src="/guangg/200510/sun/sdn_china_logo.gif" border="0" /></a></td>
+        </tr>
+          <td>&nbsp;</td>
+        <tr>
+          <td width="100%"><a href="http://gceclub.sun.com.cn/download.html" target="_blank">Java API文档中文版</a></td>
+        </tr>
+          <td>&nbsp;</td>
+      </table>
+<?php } ?>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">新开版面</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">新开版面</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -286,11 +299,11 @@ $doc = domxml_open_file($boardrank_file);
 $root = $doc->document_element();
 $boards = $root->child_nodes();
 ?>
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">推荐版面</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">推荐版面</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -338,7 +351,7 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" background="images/lan2.gif" class="title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title">
         <tr> 
 		  <td width="23">&nbsp;</td>
           <td>&gt;&gt;推荐文章&gt;&gt;</td>
@@ -397,11 +410,11 @@ $root = $doc->document_element();
 $boards = $root->child_nodes();
 
 ?>
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">人气排名</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">人气排名</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -443,12 +456,12 @@ $root = $doc->document_element();
 $boards = $root->child_nodes();
 
 ?>
-<a name="#todaybless">
-      <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+<a name="todaybless"></a>
+      <table width="100%" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">今日祝福</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left"></td>
+          <td class="helpert_middle">今日祝福</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -473,7 +486,6 @@ while($board = array_shift($boards))
 ?>
 </ul></td></tr>
       </table>
-	  <br>
 <?php
 }
 ?>
@@ -481,21 +493,22 @@ while($board = array_shift($boards))
 <head>
 <title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<link href="mainpage.css" rel="stylesheet" type="text/css">
+<script src="www2-main.js"></script>
+<script type="text/javascript">writeCssMainpage();</script>
 </head>
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
+<?php if (defined("SITE_NEWSMTH")) { ?>
+<script src="images/randomad.js" type="text/javascript"></script>
+<table><tr><td valign=top width=154><img id="bottom"  src="images/ad/1.gif" onload=notifyLoad(this.src); name=bottom></td></tr></table>
+<?php } else { ?>
+<center style="padding: 0.5em;font-weight:bold;font-size:150%;"><?php echo BBS_FULL_NAME; ?></center>
+<?php } ?>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
-  <tr> 
-    <td colspan="9">
-    	<!--<img src="images/logo.gif"/>-->
-    	<center style="padding: 0.5em;font-weight:bold;font-size:150%;"><?php echo BBS_FULL_NAME; ?></center>
-    </td>
-  </tr>
   <form action="bbssel.php">
   <tr> 
     <td height="18" width="84" class="header" align="center"><a href="bbsdoc.php?board=Announce">系统公告</a></td>
     <td width="84" class="header" align="center"><a href="bbsrecommend.php">推荐文章</a></td>
-    <td width="80" class="header" align="center"><a href="bbssec.php">分类讨论区</a></td>
+    <td width="100" class="header" align="center"><a href="bbssec.php">分类讨论区</a></td>
     <td width="80" class="header" align="center"><a href="bbsrecbrd.php">推荐版面</a></td>
     <td width="81" class="header" align="center"><a href="bbsbrdran.php">人气排名</a></td>
     <td width="79" class="header" align="center"><a href="#todaybless">本日祝福</a></td>
@@ -512,8 +525,8 @@ while($board = array_shift($boards))
     <td class="header"></td>
     <td class="header" align="right" width="315"> <input type="text" name="board" size="12" maxlength="30" value="版面搜索" class="text"> 
       <input type="submit" size="15" value="GO" class="button"> 
-    </td></form>
-  </tr>
+    </td>
+  </tr></form>
 </table>
 <table border="0" cellpadding="0" cellspacing="0" width="100%">
   <tr>
@@ -534,11 +547,11 @@ while($board = array_shift($boards))
     <td width="18">&nbsp;</td>
     <td align="left" valign="top"> 
 <!-- 系统公告开始 暂时屏蔽掉
-      <table width="150" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
+      <table width="150" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr> 
-          <td width="16" background="images/lt.gif">&nbsp;</td>
-          <td width="66" bgcolor="#0066CC">系统公告</td>
-          <td width="16" background="images/rt.gif"></td>
+          <td class="helpert_left">&nbsp;</td>
+          <td class="helpert_middle">系统公告</td>
+          <td class="helpert_right"></td>
           <td>&nbsp;</td>
         </tr>
       </table>
@@ -574,6 +587,14 @@ while($board = array_shift($boards))
     <td width="10">&nbsp;</td>
   </tr>
 </table>
+<?php if (defined("SITE_NEWSMTH")) { ?>
+<hr class="smth">
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+    <td align="center" class="smth">版权所有 <span style="font-family: Arial,sans-serif;">&copy;</span> <?php echo BBS_FULL_NAME; ?> 2005 [<a href="mailto:passed@263.net">合作联系</a>]</td>
+  </tr>
+</table>
+<?php } ?>
 <br>
 </body>
 </html>

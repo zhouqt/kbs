@@ -1,6 +1,6 @@
 function changemn(mn) {
-	o = document.getElementById("div" + mn);
-	m = document.getElementById("img" + mn);
+	var o = document.getElementById("div" + mn);
+	var m = document.getElementById("img" + mn);
 	if (o == null) return;
 	if (o.style.display == 'block') {
 		o.style.display = 'none';
@@ -11,22 +11,9 @@ function changemn(mn) {
 	}
 }
 
-function openchat()
-{
-	url='bbschat';
-	chatWidth=screen.availWidth;
-	chatHeight=screen.availHeight;
-	winPara='toolbar=no,location=no,status=no,menubar=no,scrollbars=auto,resizable=yes,left=0,top=0,'+'width='+(chatWidth-10)+',height='+(chatHeight-27);
-	window.open(url,'_blank',winPara);
-}
-
-function openreg()
-{
-	open('bbsreg', '', 'width=600,height=460,resizable=yes,scrollbars=yes');
-}
-
 function submenu( isfav , favselect , group , group2 , yank )
 {
+	var linkurl, submenuname, imgname;
 	if( isfav == 1 )
 	{
 		linkurl = "bbsleft-submenu.php?select=" + favselect + "&fav=1";
@@ -39,7 +26,7 @@ function submenu( isfav , favselect , group , group2 , yank )
 		submenuname = "submenu_brd_" + group + "_" + group2 ;
 		imgname = "submenuimg_brd_" + group + "_" + group2 ;
 	}
-	submenustatus = document.getElementById(submenuname).style.display;
+	var submenustatus = document.getElementById(submenuname).style.display;
 	if (submenustatus == "block")
 	{
 		document.getElementById(imgname).src="images/close.gif";
@@ -53,9 +40,10 @@ function submenu( isfav , favselect , group , group2 , yank )
 }
 
 function fillf3(form) {
-	if (f = top.f3) {
-		url = f.document.location.toString();
-		uri = url.substr(7);
+	var f = top.f3;
+	if (f) {
+		var url = f.document.location.toString();
+		var pos, uri = url.substr(7);
 		if ((pos = uri.indexOf("/")) != -1) {
 			url = uri.substr(pos);
 		}

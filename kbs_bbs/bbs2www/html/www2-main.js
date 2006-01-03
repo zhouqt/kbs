@@ -18,6 +18,42 @@ function htmlize(s) {
 	return s;
 }
 
+var attachURL = null, strArticle = "", divArtCon = null;
+function prints(s) {
+	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
+	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "<br/>&nbsp;");
+	s = s.replace(/\n(: .*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
+	if (divArtCon) strArticle += s;
+	else document.write(s);
+}
+function attach(name, len, pos) {
+	var bImg = false;
+	var o = name.lastIndexOf(".");
+	var s = "";
+	if (!attachURL) return;
+	if (o != -1) {
+		var ext = name.substring(o + 1).toLowerCase();
+		bImg = (ext == "jpg" || ext == "jpeg" || ext == "gif"
+			 || ext == "ico" || ext == "png"  || ext == "pcx"
+			 || ext == "bmp");
+	}
+	var url = attachURL + '&amp;ap=' + pos;
+	if (bImg) {
+		s += '<br /><img src="images/files/img.gif"/>此主题相关图片如下：'
+		  + name + '(' + len + ' 字节)<br /><a href="' + url + '" target="_blank">'
+		  + '<img src="' + url + '" title="按此在新窗口浏览图片" style="margin: 0.2em 0 0.5em 0;" onload="resizeImg(this)" /></a> ';
+	} else {
+		s += '<br />附件: <a href="' + url + '">' + name + '</a> (' + len + ' 字节)<br />';
+	}
+	if (divArtCon) strArticle += s;
+	else document.write(s);
+}
+function writeArticle() {
+	divArtCon.innerHTML = strArticle;
+}
+
+
 function getCookie(name, def){
 	var cname = name + "="; 
 	var dc = document.cookie; 
@@ -93,6 +129,21 @@ function cancelEvent(ev) {
 	}
 }
 
+function input_okd(obj, ev) {
+	var evt = (ev) ? ev : ((window.event) ? event : null);
+	if (evt == null) return true;
+	var key = evt.keyCode ? evt.keyCode : evt.charCode;
+	if (key == 13) {
+		cancelEvent(evt);
+		if (obj.form.onsubmit && !obj.form.onsubmit()) {
+			return true;
+		}
+		obj.form.submit();
+		return false;
+	}
+	return true;
+}
+
 /* textarea onkeydown event handler. to submit form with ctrl+W(IE only) or ctrl+ENTER */
 function textarea_okd(func, ev) {
 	var evt = (ev) ? ev : ((window.event) ? event : null);
@@ -136,7 +187,7 @@ function addBootFn(fn) {
 
 window.onload = function() {
 	/* set focus */
-	var f = getObj("sfocus");
+	var i,f = getObj("sfocus");
 	if (f) {
 		f.focus();
 		setCursorPosition(f, 0, 0);
@@ -157,7 +208,7 @@ window.onload = function() {
 	 * Don't use this with long table, as IE runs it extremely slowly.
 	 */
 	var m = document.getElementsByTagName("table");
-	for(var i=0;i<m.length;i++) {
+	for(i=0;i<m.length;i++) {
 		var tab = m[i];
 		if (tab.className.indexOf("adj") == -1) continue;
 		var cols = tab.getElementsByTagName("col");
@@ -181,7 +232,7 @@ window.onload = function() {
 	
 	/* this is a workaround for some weird behavior... ask atppp if you are interested. BUGID 7629 */
 	if (gFx) {
-		var i, ll, links = document.getElementsByTagName("link");
+		var ll, links = document.getElementsByTagName("link");
 		for(i=0; i<links.length; i++) {
 			ll = links[i];
 			if((ll.getAttribute("rel") == "stylesheet")) {
@@ -284,7 +335,7 @@ function getFindBox(board) { /* TODO: sfocus here might conflict with others */
 				<input type="checkbox" name="og" id="og"><label for="og" class="clickable">不含跟贴</label>\
 			</div>\
 		</fieldset>\
-		<div class="oper"><input type="submit" value="递交查询结果"/></div>\
+		<div class="oper"><input type="submit" value="查询"/></div>\
 	</form>';
 	return s;
 }
@@ -350,16 +401,17 @@ function goAttachWindow(){
 }
 
 function dosubmit() {
-	document.postform.post.value='发表中，请稍候...';
-	document.postform.post.disabled=true;
-	document.postform.submit();
+	var p = document.postform;
+	p.post.value='发表中，请稍候...';
+	p.post.disabled=true;
+	p.submit();
 }
 
 
 var hotBoard = '', hotMove = true, hotFn = null;
 function setHots(h) {
-	var hots = new Array();
-	for(var i=0; i<h.length; i++) {
+	var i,hots = new Array();
+	for(i=0; i<h.length; i++) {
 		if (h[i]) {
 			hots.push('<a href="bbscon.php?board=' + hotBoard + '&id=' + h[i][0] + '">' + h[i][1] + '</a>' +
 			'[<a href="bbstcon.php?board=' + hotBoard + '&gid=' + h[i][0] + '">同主题</a>](' + h[i][2] + ')');
@@ -367,7 +419,7 @@ function setHots(h) {
 	}
 	if (gIE) {
 		var str = '';
-		for(var i=0; i<hots.length; i++) {
+		for(i=0; i<hots.length; i++) {
 			if (hots[i]) str+= hots[i] + '&nbsp;&nbsp;&nbsp;&nbsp;';
 		}
 		getObj('hotTopics').innerHTML = str;
@@ -388,7 +440,7 @@ function setHots(h) {
 				}
 				if (hots.length > 1) {
 					ii += '<span class="clickable" onclick="hotFn(-1)" title="上一条">&lt;</span> '
-					    + '<span class="clickable" onclick="hotFn(1)" title="下一条">&gt;</span> ';
+						+ '<span class="clickable" onclick="hotFn(1)" title="下一条">&gt;</span> ';
 				}
 				ii += (index+1) + ": " + hots[index];
 			}
@@ -402,7 +454,7 @@ function setHots(h) {
 function hotTopic(board) { /* TODO: no table, use AJAX */
 	/* clear: both is for stupid Firefox */
 	var str = '<table cellspacing="0" cellpadding="5" border="0" width="100%" style="margin: 0.5em auto 0 auto;clear:both;"><tr>' +
-	          '<td width="100" align="center">[<span class="red">热门话题</span>]</td><td>';
+			  '<td width="100" align="center">[<span class="red">热门话题</span>]</td><td>';
 	if (gIE) {
 		str += '<marquee onmouseover="this.stop()" onmouseout="this.start()"><span id="hotTopics">载入中...</span></marquee>';
 	} else {
@@ -431,7 +483,7 @@ function checkFrame(isPHP) {
 	document.write(msg);
 	if (top == self) { /* TODO: use better way */
 		var url = document.location.toString();
-		var uri = url.substr(7);
+		var pos, uri = url.substr(7);
 		if ((pos = uri.indexOf("/")) != -1) {
 			url = uri.substr(pos);
 		}
@@ -471,8 +523,49 @@ function sizer(flag) {
 		}
 	}
 }
+
+function getCssID() { return ((readParaCookie() & 0xF80) >> 7); }
+function replaceCssFile(file) {
+	var reg = /images\/([0-9]+)\//;
+	if (file.match(reg)) {
+		return file.replace(reg, 'images/'+getCssID()+'/');
+	} return false;
+}
+
+function getCssFile(file) {
+	return ('images/' + getCssID() + '/' + file + '.css');
+}
+
+function writeCssFile(file) {
+	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
+}
+
+function resetCss() {
+	var i, h, t = document.getElementsByTagName("img");
+	if (t) {
+		for(i = 0; i < t.length; i++) {
+			if(t[i].id.substr(0,10) != "stylethumb")
+			{
+				h = replaceCssFile(t[i].src);
+				if (h) t[i].src = h;
+			}
+		}		
+	}
+	t = document.getElementsByTagName("link");
+	if (t) {
+		for(i = 0; i < t.length; i++) {
+			h = replaceCssFile(t[i].getAttribute("href"));
+			if (h) {
+				t[i].setAttribute("href", h);
+				return;
+			}
+		}
+	}
+	location.reload();
+}
+
 function writeCss() {
-	document.write('<link rel="stylesheet" type="text/css" href="www2-default.css" />');
+	writeCssFile('www2-default');
 	bfsI = readParaCookie() & 7;
 	if (bfsI <= 0 || bfsI >= bfsArr.length) bfsI = bfsD;
 	var ret = '<style type="text/css" title="myStyle"><!--';
@@ -481,13 +574,26 @@ function writeCss() {
 	ret += '--></style>';
 	document.write(ret);
 }
+function writeCssLeft() { writeCssFile('bbsleft'); }
+function writeCssMainpage() { writeCssFile('mainpage'); }
+
+
+function putImageCode(filename,otherparam) {
+	return('<img src="images/'+getCssID()+'/'+filename+'" '+otherparam+'>');
+}
+
+function putImage(filename,otherparam)
+{
+	document.write(putImageCode(filename,otherparam));
+}
+
 
 var writeBM_str;
 
 function writeBM_getStr(start) {
-	var ret = '';
+	var ret = '', maxbm = 100;
 	for(var i = start; i < writeBM_str.length; i++) {
-		if (i > start + 3) {
+		if (i >= start + maxbm) {
 			break;
 		} else {
 			var bm = writeBM_str[i];
@@ -496,12 +602,12 @@ function writeBM_getStr(start) {
 	}
 	if (start > 0) {
 		ret += ' <a href="#" onclick="return writeBM_page(' + (start-1) + ')" title="版主前滚翻">&lt;&lt;</a>';
-	} else if (writeBM_str.length > 4) {
+	} else if (writeBM_str.length > maxbm) {
 		ret += ' <span class="gray">&lt;&lt;</span>';
 	}
-	if (start < writeBM_str.length - 4) {
+	if (start < writeBM_str.length - maxbm) {
 		ret += ' <a href="#" onclick="return writeBM_page(' + (start+1) + ')" title="版主后滚翻">&gt;&gt;</a>';
-	} else if (writeBM_str.length > 4) {
+	} else if (writeBM_str.length > maxbm) {
 		ret += ' <span class="gray">&gt;&gt;</span>';
 	}
 	return ret;
@@ -521,7 +627,15 @@ function writeBMs(bmstr) {
 	}
 }
 
-var dir_modes = {"FIND": -2, "ANNOUNCE": -1, "NORMAL": 0, "DIGEST": 1, "MARK": 3, "ORIGIN": 6, "ZHIDING": 11};
+function isBM(bid) {
+	var mbids = getCookie("MANAGEBIDS", "0");
+	if (mbids == "A") return 1;
+	mbids = "." + mbids + ".";
+	return (mbids.indexOf("." + bid + ".") != -1);
+}
+
+
+var dir_modes = {"FIND": -2, "ANNOUNCE": -1, "NORMAL": 0, "DIGEST": 1, "MARK": 3, "DELETED": 4, "ORIGIN": 6, "ZHIDING": 11};
 function dir_name(ftype) {
 	switch(ftype) {
 		case -1: return "(精华区)";
@@ -532,10 +646,11 @@ function dir_name(ftype) {
 	}
 }
 
-
-function docWriter(board, start, man, ftype, page, total, apath, showHot) {
+/* man - 1: 普通管理模式，2: 回收站模式 */
+function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
+	this.bid = bid;
 	this.start = start;
 	this.page = page;
 	this.total = total;
@@ -552,15 +667,18 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 
 	var str = '<div class="doc"><div class="docTab">';
 	if (!ftype && isLogin()) {
-		str += '<div class="post"><a href="bbspst.php?board=' + this.board + '"><img src="images/postnew.gif" alt="发表话题"></a></div>';
+		var url = 'bbspst.php?board=' + this.board;
+		str += '<div class="post"><a href="' + url + '">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a></div>';
 	}
 
 	var mls = [[ftype || man, "普通模式", "bbsdoc.php?board=" + this.board],
-	           [ftype != dir_modes["DIGEST"], "文摘区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["DIGEST"]],
-	           [ftype != dir_modes["MARK"], "保留区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["MARK"]],
-	           [ftype != dir_modes["ORIGIN"], "同主题", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["ORIGIN"]],
-	           [apath && ftype != dir_modes["ANNOUNCE"], "精华区", "bbs0an.php?path=" + escape(apath)],
-	           [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board]];
+			   [ftype != dir_modes["DIGEST"], "文摘区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["DIGEST"]],
+			   [ftype != dir_modes["MARK"], "保留区", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["MARK"]],
+			   [ftype != dir_modes["ORIGIN"], "同主题", "bbsdoc.php?board=" + this.board + "&ftype=" + dir_modes["ORIGIN"]],
+			   [apath && ftype != dir_modes["ANNOUNCE"], "精华区", "bbs0an.php?path=" + escape(apath)],
+			   [ftype != dir_modes["FIND"], "查询", "bbsbfind.php?board=" + this.board]];
+	var mls_bm = [[ftype != dir_modes["DELETED"], "回收站", "bbsdoc.php?manage=1&board=" + this.board + "&ftype=" + dir_modes["DELETED"]]];
+	if (isBM(bid)) mls = mls.concat(mls_bm);
 	for (var i = mls.length - 1; i >= 0; i--) {
 		links = mls[i];
 		if (links[0]) {
@@ -573,7 +691,9 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 
 	if (ftype >= 0) {
 		if (man) {
-			str += '<form name="manage" id="manage" method="post" action="bbsdoc.php?manage=1&board=' + this.board + '&page=' + page + '">';
+			str += '<form name="manage" id="manage" method="post" action="bbsdoc.php?manage=1&board=' + this.board + '&page=' + page;
+			if (man == 2) str += '&ftype=' + dir_modes["DELETED"];
+			str += '">';
 		}
 		str += '<table class="main wide">';
 		str += '<col width="50"/><col width="50"/>';
@@ -608,15 +728,16 @@ function docWriter(board, start, man, ftype, page, total, apath, showHot) {
 }
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
+	var cb_value = (this.man == 2) ? (this.start + this.num) : id; /* 回收站中以序号代替id */
 	if (flag === false) { /* 置顶 */
-		str += '<td class="center red strong">提示</td><td class="center"><img src="images/istop.gif" alt="提示"/></td>';
+		str += '<td class="center red strong">提示</td><td class="center">' + putImageCode('istop.gif','alt="提示"') + '</td>';
 		if (this.man) {
-			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + id + '" /></td>';
+			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + cb_value + '" /></td>';
 		}
 	} else {
 		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center">' + flag + '</td>';
 		if (this.man) {
-			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + id + '" /></td>';
+			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + cb_value + '" /></td>';
 		}
 	}
 	str += '<td class="center"><a href="bbsqry.php?userid=' + author + '">' + author + '</a></td>';
@@ -659,14 +780,21 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5};
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6};
 		ret += '<div class="oper">';
 		ret += '<input type="hidden" name="act" value=""/>';
-		ret += '<input type="button" value="删除" onclick="mansubmit(' + bbsman_modes['DEL'] + ');"/>';
-		ret += '<input type="button" value="切换M" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
-		ret += '<input type="button" value="切换G" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
-		ret += '<input type="button" value="切换不可Re" onclick="mansubmit(' + bbsman_modes['NOREPLY'] + ');"/>';
-		ret += '<input type="button" value="切换置顶" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/>';
+		if (this.ftype != dir_modes["DELETED"])
+		{
+			ret += '<input type="button" value="删除" onclick="mansubmit(' + bbsman_modes['DEL'] + ');"/>';
+			ret += '<input type="button" value="切换M" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
+			ret += '<input type="button" value="切换G" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
+			ret += '<input type="button" value="切换不可Re" onclick="mansubmit(' + bbsman_modes['NOREPLY'] + ');"/>';
+			ret += '<input type="button" value="切换置顶" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/>';
+		}
+		else
+		{
+			ret += '<input type="button" value="恢复到版面" onclick="mansubmit(' + bbsman_modes['UNDEL'] + ');"/>';
+		}
 		ret += '</div></form>';
 	}
 	ret += '<form action="bbsdoc.php" method="get" class="docPager smaller">';
@@ -676,8 +804,8 @@ docWriter.prototype.t = function() {
 	}
 	if (!this.ftype) {
 		if (isLogin()) {
-			url = 'bbspst.php?board=' + this.board;
-			ret += '<a href="' + url + '" class="flimg"><img src="images/postnew.gif" alt="发表话题" onclick="location.href=\'' + url + '\';"/></a>';
+			var url = 'bbspst.php?board=' + this.board;
+			ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 		}
 	} else {
 		ret += '<input type="hidden" name="ftype" value="' + this.ftype + '"/>';
@@ -707,27 +835,77 @@ docWriter.prototype.t = function() {
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board);
 };
+docWriter.prototype.f = function(sfav,rss,related) {
+	var i,ret = '<div class="oper smaller">';
+	if (this.ftype != dir_modes["ORIGIN"]) {
+		ret += '[<a href="bbsdoc.php?board=' + this.board + '&ftype=' + dir_modes["ORIGIN"] + '">同主题模式</a>] ';
+    } else if (this.ftype) {
+		ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
+	}
+	ret += '[<a href="bbsnot.php?board=' + this.board + '">进版画面</a>] ';
+	ret += '[<a href="bbsbfind.php?board=' + this.board + '" onclick="return showFindBox(\'' + this.board + '\')">版内查询</a>] ';
+	ret += '[<a href="bbsshowvote.php?board=' + this.board + '">版内投票</a>] ';
+	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
+	ret += '[' + sfav + '] ';
+	if (rss) {
+		ret += '<a href="' + rss + '" title="RSS"><img src="images/xml.gif"/></a>';
+	}
+	if (related) {
+		ret += '<br/>来这个版的人常去的其他版面：';
+		for (i=0;i<related.length;i++) {
+			ret += '[<a class="b3" href="bbsdoc.php?board=' + related[i] + '"><font class="b3">' + related[i] + '</font></a>]';
+		}
+	}
+	if (isBM(this.bid)) {
+		ret += '<br/>管理链接：';
+		ret += '[<a href="bbsdeny.php?board=' + this.board + '">封禁名单</a>] ';
+		ret += '[<a href="bbsmnote.php?board=' + this.board + '">进版画面</a>] ';
+		ret += '[<a href="bbsmvote.php?board=' + this.board + '">管理投票</a>] ';
+		if (this.man != 1) {
+			ret += '[<a href="bbsdoc.php?manage=1&board=' + this.board + '">管理模式</a>] ';
+		}
+		if (this.man) {
+			ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
+		}
+		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>]';
+	}
+	ret += '</div>';
+	document.write(ret);
+};
 
+function clearArticleDiv(id) {
+	if (parent && (divArtCon = parent.document.getElementById("art" + id))) {
+		divArtCon.innerHTML = "";
+	}
+}
 
-function conWriter(ftype, board, bid, id, gid, file, favtxt, num) {
+function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 	this.board = escape(board);
 	this.ftype = ftype;
 	this.bid = bid;
 	this.id = id;
 	this.gid = gid;
+	this.reid = reid;
 	this.file = file;
 	this.favtxt = favtxt;
 	this.num = num;
 	this.baseurl = "bbscon.php?bid=" + bid + "&id=" + id;
-}
-conWriter.prototype.h = function() {
-	if (!isLogin() && this.ftype) return;
+
+	if (parent && (divArtCon = parent.document.getElementById("art" + id))) {
+		addBootFn(writeArticle);
+		return;
+	}
+
+	if (!isLogin() && this.ftype) {
+		this.headers = "";
+		return;
+	}
 	var ret = '<div class="conPager smaller right">';
-	if (isLogin()) {
+	if (isLogin()) { /* TODO: 某些模式应该禁止显示这两个链接 */
 		var url = 'bbspst.php?board=' + this.board + '&reid=' + this.id ;
-		ret += '<a href="' + url + '" class="flimg"><img src="images/reply.gif" alt="回复帖子" onclick="location.href=\'' + url + '\';"/></a>';
+		ret += '<a href="' + url + '">' + putImageCode('reply.gif','alt="回复帖子" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 		url = 'bbspst.php?board=' + this.board;
-		ret += '<a href="' + url + '" class="flimg"><img src="images/postnew.gif" alt="发表话题" onclick="location.href=\'' + url + '\';"/></a>';
+		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
 	if (this.ftype == 0) {
 		ret += '[<a href="' + this.baseurl + '&p=p">上一篇</a>] ';
@@ -738,9 +916,17 @@ conWriter.prototype.h = function() {
 		ret += '<span style="color:#CCCCCC">[上一篇] [下一篇] [同主题上篇] [同主题下篇]</span>';
 	}
 	ret += '</div>';
+	this.headers = ret;
+}
+conWriter.prototype.h = function(isTop) {
+	if (divArtCon) return;
+	var ret = this.headers;
+	if (!isTop) ret = '</div>' + ret;
+	else ret += '<div class="article">';
 	document.write(ret);
 };
 conWriter.prototype.t = function() {
+	if (divArtCon) return;
 	var PAGE_SIZE = 20;
 	var url = "bbsdoc.php?board=" + this.board;
 	var zd = false;
@@ -755,6 +941,7 @@ conWriter.prototype.t = function() {
 		ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '">同主题展开</a>] ';
 		ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.gid + '">同主题第一篇</a>] ';
 		ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.id + '">从此处展开</a>] ';
+		ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.reid + '" title="跳转到本文所回复的文章">溯源</a>] ';
 	}
 	ret += '[<a href="' + url + '">返回版面' + dir_name(this.ftype) + '</a>] ';
 	ret += '[<a href="javascript:history.go(-1)">快速返回</a>]<br/>';
@@ -775,47 +962,53 @@ conWriter.prototype.t = function() {
 };
 
 
-function tconWriter(board, id, owner, num) {
-	this.board = escape(board);
-	this.id = id;
-	this.owner = owner;
-	this.num = num;
-}
-tconWriter.prototype.o = function() {
-	var ret = '<br/>';
-	ret += '<div class="conPager smaller left">';
-	ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.id + '">本篇全文</a>] ';
-	if (isLogin()) {
-		ret += '[<a href="bbspst.php?board=' + this.board + '&reid=' + this.id + '">回复文章</a>] ';
-		ret += '[<a href="bbspstmail.php?board=' + this.board + '&id=' + this.id + '">回信给作者</a>] ';
-	}
-	ret += '[本篇作者：<a href="bbsqry.php?userid=' + this.owner + '">' + this.owner + '</a>] ';
-	ret += '[<a href="bbsdoc.php?board=' + this.board + '">进入讨论区</a>] ';
-	ret += '[<a href="#top">返回顶部</a>]';
-	ret += '<div class="tnum">' + this.num + '</div>';
-	ret += '</div>';
-	document.write(ret);
-};
 
 
-function tconHeader(board, gid, start, tpage, pno) {
+function tconWriter(board, gid, start, tpage, pno, serial) {
 	this.board = escape(board);
 	this.gid = gid;
 	this.start = start;
+	this.serial = serial;
 	this.tpage = tpage;
 	this.pno = pno;
 }
-tconHeader.prototype.h = function() {
+tconWriter.prototype.h = function() {
 	var ret = '<div class="tnav smaller">【分页： ';
+	var u = 'bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '&pno=';
 	for(var j = 1; j < this.tpage + 1; j ++ ) {
 		if (this.pno != j) {
-			ret += '<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '&pno=' + j + '"><u>' + j + '</u></a> ';
+			ret += '<a href="' + u + j + '"><u>' + j + '</u></a> ';
 		} else {
-			ret += j + ' ';
+			ret += '<b>' + j + '</b> ';
 		}
 	}
-	ret += '】</div>';
+	ret += '】';
+	if (this.pno < this.tpage) ret += '<a href="' + u + (this.pno+1) + '">下一页</a> ';
+	ret += '</div>';
 	document.write(ret);
+};
+tconWriter.prototype.o = function(arts) {
+	var ifs = "";
+	for (var i = 0; i < arts.length; i++) {
+		var id = arts[i][0];
+		var owner = arts[i][1];
+		var url = 'bbscon.php?board=' + this.board + '&id=' + id;
+		var ret = '<br/>';
+		ret += '<div class="tconPager smaller left">';
+		ret += '[<a href="' + url + '">本篇全文</a>] ';
+		if (isLogin()) {
+			ret += '[<a href="bbspst.php?board=' + this.board + '&reid=' + id + '">回复文章</a>] ';
+			ret += '[<a href="bbspstmail.php?board=' + this.board + '&id=' + id + '">回信给作者</a>] ';
+		}
+		ret += '[本篇作者：<a href="bbsqry.php?userid=' + owner + '">' + owner + '</a>] ';
+		ret += '[<a href="bbsdoc.php?board=' + this.board + '">进入讨论区</a>] ';
+		ret += '[<a href="#top">返回顶部</a>]';
+		ret += '<div class="tnum">' + (this.serial+i+1) + '</div>';
+		ret += '</div><div class="article" id="art' + id + '"><div align="center">...载入中...</div></div>';
+		ifs += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
+		document.write(ret);
+	}
+	document.write(ifs);
 };
 
 
@@ -839,7 +1032,7 @@ function tabWriter(num, tabC, caption, header) {
 		ret += '/>';
 	}	
 	ret += '<tr>';
-	for(var i = 0; i < header.length; i++) {
+	for(i = 0; i < header.length; i++) {
 		ret += '<th>' + header[i][0] + '</th>';
 	}
 	ret += '</tr><tbody>';
@@ -856,12 +1049,12 @@ tabWriter.prototype.pr = function(col, content) {
 };
 tabWriter.prototype.r = function() {
 	var ret = '<tr class="' + (((this.row++)%2)?'even':'odd') + '">';
-	var i = 0; j = 0;
+	var i = 0, j = 0;
 	if (this.num) {
 		ret += this.pr(0, this.row);
 		j++;
 	}
-	for(var i = 0; i < arguments.length; i++,j++) {
+	for(i = 0; i < arguments.length; i++,j++) {
 		ret += this.pr(j, arguments[i]);
 	}
 	ret += '</tr>';

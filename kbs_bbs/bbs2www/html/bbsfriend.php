@@ -30,8 +30,11 @@
 <td><?php echo $friends[$i]["userfrom"];?></td>
 <?php
 		if($friends[$i]["invisible"]) echo "<td>вўЩэжа...</td>";
-		else
-			echo "<td>" . $friends[$i]["mode"] . "</td>";
+		else {
+			$mode = $friends[$i]["mode"];
+			if ($friends[$i]["pid"] == 1) $mode = "<span class='blue'>" . $mode . "</span>";
+			echo "<td>" . $mode . "</td>";
+		}
 		if($friends[$i]["idle"] == 0) echo "<td> </td>";
 		else
 			echo "<td>" . $friends[$i]["idle"] . "</td>";

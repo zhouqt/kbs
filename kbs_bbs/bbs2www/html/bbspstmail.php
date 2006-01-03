@@ -1,12 +1,12 @@
 <?php
 	require("funcs.php");
-login_init();
+	login_init();
 	if ($loginok != 1) {
 		html_nologin();
 		exit;
 	}
 		html_init("gb2312","","",1);
-		if (! bbs_can_send_mail() )
+		if ( !bbs_can_send_mail(isset($_GET["file"]) ? 1 : 0) )
 			html_error_quit("您不能发送信件");
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
@@ -37,6 +37,13 @@ login_init();
 				html_error_quit("错误的文章..");
 			$title = isset($_GET["title"])?$_GET["title"].' ':'';
 			$destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
+		}
+		
+		if(isset($_GET["userid"]))
+		{
+			$lookupuser = array();
+			if (!bbs_getuser($destuserid, $lookupuser))
+				html_error_quit("错误的收件人ID");
 		}
 
 		//system mailboxs
@@ -105,7 +112,11 @@ function dosubmit() {
 <td class="b9">
 寄信人: <?php echo $currentuser["userid"]; ?><br />
 标&nbsp;&nbsp;题: <input class="sb1" type="text" name="title" size="40" maxlength="100" value="<?php echo htmlspecialchars($title,ENT_QUOTES); ?>"><br />
-收信人: <input class="sb1" type="text" name="userid" value="<?php echo $destuserid; ?>"><br />
+收信人: <input class="sb1" type="text" name="userid" value="<?php echo $destuserid; ?>"<?php if(!isset($board) && isset($file) && $file!=""){echo " readonly";} ?>>
+<input type="hidden" name="num" value="<?php echo @$_GET["num"] ?>">
+<input type="hidden" name="dir" value="<?php echo @$_GET["dir"] ?>">
+<input type="hidden" name="file" value="<?php if (!isset($board) && isset($file)) echo $file; ?>"><br />
+
 使用签名档 <select name="signature">
 <?php
 		if ($currentuser["signum"] == 0)
@@ -140,19 +151,19 @@ function dosubmit() {
 		}
 ?>
 </select>
- [<a target="_balnk" href="bbssig.php">查看签名档</a>]
+ [<a target="_blank" href="bbssig.php">查看签名档</a>]
 <?php
 	$bBackup = (bbs_is_save2sent() != 0);
 ?>
-<input type="checkbox" name="backup"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
+<input type="checkbox" name="backup" value="1"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
 <textarea class="sb1" name="text" onkeydown='return textarea_okd(dosubmit, event);' rows="20" cols="80" wrap="physical">
 <?php
 	if(isset($file)){
 		if(isset($board)){
-			$filename = "boards/" . $board . "/" . $file;
+			$filename = bbs_get_board_filename($board, $file);
 			echo "\n【 在 " . $destuserid . " 的大作中提到: 】\n";
 		}else{
-			$filename = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$file;
+			$filename = bbs_setmailfile($currentuser["userid"], $file);
 			echo "\n【 在 " . $destuserid . " 的来信中提到: 】\n";
 		}
 		if(file_exists($filename))
@@ -186,8 +197,8 @@ function dosubmit() {
 						break;
 					}
 					/* */
-					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-						echo ": ". $buf;
+					//if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+						echo ": ". htmlspecialchars($buf);
 				}
 				fclose($fp);
 			}

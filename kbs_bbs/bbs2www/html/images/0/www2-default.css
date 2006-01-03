@@ -138,6 +138,7 @@ fieldset legend {
 .flimg {
 	float: left;
 	width: 72px; /* IE5 for Mac workaround */
+	height: 21px;
 	margin: 0 0.5em 0 0;
 }
 .clear {
@@ -155,6 +156,9 @@ fieldset legend {
 .green {
 	color: green;
 }
+.blue {
+	color: blue;
+}
 .gray {
 	color: gray;
 }
@@ -170,6 +174,7 @@ h1 {
 }
 h1.bt { /* board title */
 	margin: -0.2em auto 0 auto;
+    clear: both;
 }
 
 
@@ -320,7 +325,7 @@ div.article {
 }
 
 
-/* bbscon.php bbstcon.php */
+/* bbscon.php */
 div.conPager {
 	width: 98%;
 	border: 1px solid #718BD6;
@@ -337,7 +342,21 @@ div.conPager a, div.conPager a:active, div.conPager a:visited, div.conPager a:ho
 }
 
 /* bbstcon.php styles */
-div.conPager .tnum {
+div.tconPager {
+	width: 98%;
+	border: 1px solid #718BD6;
+	margin: -1px auto;
+	padding: 0.2em 0.3em;
+	line-height: 1.5em;
+	height: 1.5em;
+	background-color: #718BD6;
+	color: white;
+	position: relative;
+}
+div.tconPager a, div.tconPager a:active, div.tconPager a:visited, div.tconPager a:hover {
+	color: white;
+}
+div.tconPager .tnum {
 	font-weight: bold;
 	position: absolute;
 	top: 0.2em;
@@ -396,8 +415,8 @@ div.recnav {
 
 
 /* some legacy styles */
-font.f006 {color: #00b4ae;}
-font.f001 {color: #e87874;} /* bbsxsearch.php might use it */
+.f006 {color: #00b4ae;}
+.f001 {color: #e87874;} /* bbsxsearch.php might use it */
 .c32 {color: green;}
 .c36 {color: #33a0a0;}
 .b3 {font-weight: bolder;color: #CC3300;text-decoration: none;} /* /brelated/ */
@@ -438,6 +457,16 @@ table.error td {
 	text-decoration: none;
 }
 
+body.wtoogle {
+	margin: 0px;
+	background-color: #F6F6F6;
+}
+.wtoogle a, .wtoogle a:active, .wtoogle a:visited {
+	background-color:#718BD6;
+	font-size:10px;
+	color: #FFFFFF;
+	text-decoration:none;
+}
 
 @media screen {
 	#fontSizer {

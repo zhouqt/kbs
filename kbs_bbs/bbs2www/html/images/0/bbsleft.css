@@ -9,6 +9,7 @@ body {
 	scrollbar-face-color:#EEEAEB; 
 	scrollbar-highlight-color:#FBFDFC; 
 	scrollbar-shadow-color:#170708;
+	overflow-x:hidden;
 	margin: 0px;
 	padding: 0px;
 }
@@ -92,19 +93,19 @@ img.pm {
 	margin: 1px 0px;
 }
 div.lineback {
-	background-image: url(/images/line2.gif);
+	background-image: url(line2.gif);
 	background-repeat: repeat-y;
 	background-position: 4px 0px;
 	padding-left: 20px;
 	display: none;
 }
 div.lb {
-	background-image: url(/images/line2.gif);
+	background-image: url(line2.gif);
 	background-repeat: repeat-y;
 	background-position: 4px 0px;
 }
 div.mi { /* menu item */
-	background-image: url(/images/line.gif);
+	background-image: url(line.gif);
 	background-repeat: no-repeat;
 	background-position: 4px 0px;
 	font-size: 12px;
@@ -113,7 +114,7 @@ div.mi { /* menu item */
 	padding-bottom: 1px;
 }
 div.lmi { /* last menu item */
-	background-image: url(/images/line1.gif);
+	background-image: url(line1.gif);
 	background-repeat: no-repeat;
 	background-position: 4px 0px;
 	font-size: 12px;
@@ -122,7 +123,7 @@ div.lmi { /* last menu item */
 	padding-bottom: 3px;
 }
 div.fi { /* folder item */
-	background-image: url(/images/line2.gif);
+	background-image: url(line2.gif);
 	background-repeat: repeat-y;
 	background-position: 4px 0px;
 	font-size: 12px;
@@ -146,6 +147,7 @@ div.pp {
 }
 .m10 {
 	margin: 5px 0px 0px 3px;
+	border: 0px;
 }
 .upinput {
 	width:80px;
@@ -163,4 +165,8 @@ div.pp {
 	color: #ffffff;
 	border-style: none;
 	background-color: #718BD6;
+}
+.logo {
+	background-color: #F4F8FF;
+	padding: 5px;
 }

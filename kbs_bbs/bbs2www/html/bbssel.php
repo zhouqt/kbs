@@ -29,7 +29,7 @@ if ($keyword) {
 page_header("搜索讨论区");
 if ($boards) {
 ?>
-<script>
+<script type="text/javascript"><!--
 var ta = new tabWriter(1,'main wide','系统共为您找到 <?php echo sizeof($boards); ?> 个符合条件的讨论区',
 [['序号',0,'center'],['讨论区',0,'center'],['说明',0,'center'],['关键字',0,0]]);
 <?php
@@ -42,6 +42,7 @@ var ta = new tabWriter(1,'main wide','系统共为您找到 <?php echo sizeof($boards);
 	}
 ?>
 ta.t();
+//-->
 </script>
 <?php
 } else {

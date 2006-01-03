@@ -1,29 +1,29 @@
 <?php
 function bbs_ann_display_articles($articles, $isBoard) {
 ?>
-<script>
+<script type="text/javascript"><!--
 var ta = new tabWriter(1,'main wide',0,[['#','5%','center'],['类型','7%','center'],['标题',0,0],['整理','12%','center'],['编辑日期','12%','center']]);
 <?php
 	foreach ($articles as $article) {
 		switch($article['FLAG']) {
 			case 0:
-				$img = '/images/oldgroup.gif';
+				$img = 'oldgroup.gif';
 				$alt = '错误';
 				$url = '';
 				break;
 			case 1:
-				$img = '/images/groupgroup.gif';
+				$img = 'groupgroup.gif';
 				$alt = '目录';
 				$url = 'bbs0an.php?path='.rawurlencode($article['PATH']);
 				break;
 			case 2:
 			case 3:
 			default:
-				$img = '/images/newgroup.gif';
+				$img = 'newgroup.gif';
 				$alt = '文件';
 				$url = 'bbsanc.php?path='.rawurlencode($article['PATH']);
 		}
-		$col1 = '<img src="'.$img.'" alt="'.$alt.'" />';
+		$col1 = 'putImageCode(\''.$img.'\',\'alt="'.$alt.'"\')';
 		if ($article['FLAG']==3)
 			$col2 = '<font color="red">@</font>';
 		else
@@ -36,10 +36,11 @@ var ta = new tabWriter(1,'main wide',0,[['#','5%','center'],['类型','7%','center
 		$bm = $bm[0];
 		$col3 = $bm?'<a href="bbsqry.php?userid='.$bm.'">'.$bm.'</a>':'&nbsp;';
 		$col4 = date('Y-m-d',$article['TIME']);
-		echo "ta.r('$col1','$col2','$col3','$col4');\n";
+		echo "ta.r($col1,'$col2','$col3','$col4');\n";
 	}
 ?>
 ta.t();
+//-->
 </script>
 <?php
 	if ($isBoard) echo "</div>"; //dirty way ... for class="doc"
@@ -125,7 +126,7 @@ if ($board) {
 		$isBoard = true;
 ?>
 <script>
-var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',0,0,-1,0,0,0,0);
+var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $bid; ?>,0,0,-1,0,0,0,0);
 </script>
 <?php
 	}

@@ -2,19 +2,6 @@
 	require("www2-funcs.php");
 	login_init();
 	
-	function show_file( $board , $board , $bid , $article , $articlenum)
-	{
-?>
-<script>
-var o = new tconWriter('<?php echo addslashes($board); ?>',<?php echo $article["ID"]; ?>,'<?php echo $article["OWNER"]; ?>',<?php echo $articlenum; ?>);
-o.o();
-</script>
-<div class="article">
-<script type="text/javascript" src="jscon.php?bid=<?php echo $bid; ?>&id=<?php echo $article["ID"]; ?>"></script>
-</div>
-<?php
-	}
-	
 	$gid = $_GET["gid"];
 	settype($gid, "integer");
 	$start = isset($_GET["start"])?$_GET["start"]:0;
@@ -62,32 +49,34 @@ o.o();
 	$endnum = $startnum + $pagesize;
 	if( $endnum > $num )
 		$endnum = $num;
-	/*
-	 ** Cache只判断了同主题的最后一篇文章，没有顾及前面文章的修改  windinsn jan 26 , 2004
-	 */ 
-	if ($isnormalboard)
-	{
-		$lastfilename = bbs_get_board_filename($board , $articles[$num - 1]["FILENAME"]);
-		if (cache_header("public",@filemtime($lastfilename),300))
+
+	if ($isnormalboard) { /* cache 判断索引修改时间 - atppp */
+		$dotdirname = bbs_get_board_index($board, $dir_modes["NORMAL"]);
+		if (cache_header("public",@filemtime($dotdirname),300))
 			return;
 	}
 	page_header("同主题阅读", "<a href=\"bbsdoc.php?board=".$brd_encode."\">".htmlspecialchars($brdarr["DESC"])."</a>");
 ?>
 <a name="top"></a>
 <h1 class="ttit">同主题阅读：<?php echo htmlspecialchars($articles[0]["TITLE"]); ?> </h1>
-<script>
-var header = new tconHeader('<?php echo addslashes($board); ?>',<?php echo $gid; ?>,<?php echo $start; ?>,<?php echo $totalpage; ?>,<?php echo $pno; ?>);
-header.h();
-</script>
+<script type="text/javascript"><!--
+var o = new tconWriter('<?php echo addslashes($board); ?>',<?php echo $gid; ?>,<?php echo $start; ?>,<?php echo $totalpage; ?>,<?php echo $pno; ?>,<?php echo $startnum; ?>);
+o.h();
 <?php
+	$strs = array();
+	$addbrc = ($loginok==1&&($currentuser["userid"] != "guest"));
 	for( $i = $startnum ; $i < $endnum ; $i ++ )
 	{
-		show_file( $board , $board , $bid , $articles[$i] , $i + 1);	
-		if ($loginok==1&&($currentuser["userid"] != "guest"))
-			bbs_brcaddread($board , $articles[$i]["ID"]);
+		$article = $articles[$i];
+		$strs[] = "[" . $article["ID"] . ",'" . $article["OWNER"] . "']";
+		if ($addbrc)
+			bbs_brcaddread($board , $article["ID"]);
 	}
+	$arts = "[" . implode(",", $strs) . "]";
 ?>
-<script>header.h();</script>
+o.o(<?php echo $arts; ?>);o.h();
+//-->
+</script>
 <div class="oper">
 <?php bbs_add_super_fav ('[同主题] '.$articles[0]['TITLE'], 'bbstcon.php?board='.$board.'&gid='.$gid); ?>
 | <a href="javascript:history.go(-1)">后退</a>

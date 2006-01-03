@@ -88,6 +88,11 @@
 		html_error_quit("错误的模式");
 	}
 
+	if(($ftype == $dir_modes["DELETED"]) && (!bbs_is_bm($brdnum, $usernum)))
+	{
+		html_error_quit("你不能看这个东西哟。");
+	}
+	
 	$total = bbs_countarticles($brdnum, $ftype);
 	if ($total <= 0) {
 		html_error_quit("错误的文章号,原文可能已经被删除");
@@ -97,7 +102,7 @@
     if ($dir_perm == 1) { //sorted
         $articles = array ();
         $num = bbs_get_records_from_id($brdarr["NAME"], $id, $ftype, $articles);
-        if ($num <= 0) html_error_quit("错误的文章号,原文可能已经被删除");
+        if ($num <= 0) html_error_quit("错误的文章号,原文可能已经被删除<script>clearArticleDiv(".$id.");</script>");
         $article = $articles[1];
     } else {
         $num = @intval($_GET["num"]);
@@ -107,9 +112,8 @@
         $article = $articles[0];
     }
 	$filename = bbs_get_board_filename($board, $article["FILENAME"]);
-	if ($isnormalboard) {
-		if (cache_header("public",@filemtime($filename),300))
-			return;
+	if ($isnormalboard && ($ftype != $dir_modes["DELETED"])) {
+		if (cache_header("public",@filemtime($filename),300)) return;
 	}
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
@@ -133,22 +137,18 @@
 		exit;
 	}
 	page_header("阅读文章".$dir_name[$ftype], "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>");
-	$jsurl = "jscon.php?bid=" . $brdarr["BID"] . "&id=" . $article["ID"];
-	if ($ftype == $dir_modes["DIGEST"] || $ftype == $dir_modes["ZHIDING"]) {
-		$jsurl .= "&ftype=" . $ftype . "&num=" . $num; /* 别的模式仍旧用主索引，因为文章内容 jscon.php 可能已经被 cache */
-	}
 ?>
 <h1><?php echo $brdarr["NAME"]; ?> 版 <?php echo $dir_name[$ftype]; ?></h1>
-<script>
+<script type="text/javascript"><!--
 var o = new conWriter(<?php echo $ftype; ?>, '<?php echo addslashes($brdarr["NAME"]); ?>', <?php echo $brdnum; ?>, <?php
-echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, '<?php echo $article["FILENAME"];?>', '<?php
+echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php echo $article["FILENAME"];?>', '<?php
 echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>);
-o.h();
+o.h(1);
+attachURL = 'bbscon.php?<?php echo $_SERVER["QUERY_STRING"]; ?>';
+<?php $s = bbs2_readfile($filename); if (is_string($s)) echo $s; ?>
+o.h(0);o.t();
+//-->
 </script>
-<div class="article">
-<script type="text/javascript" src="<?php echo $jsurl; ?>"></script>
-</div>
-<script>o.h();o.t();</script>
 <?php
 	if (($ftype==0) && ($loginok==1) && ($currentuser["userid"] != "guest"))
 		bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);

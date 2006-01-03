@@ -2,8 +2,8 @@
 	require("www2-funcs.php");
 	login_init();
 	
-	$img_subdir = "images/newstyle/";
-	$blog_index = defined("SITE_SMTH") ? "index.html" : "pcmain.php";
+	$img_subdir = /* defined("SITE_NEWSMTH") ? "images/newsmth/" : */ "images/newstyle/";
+	$blog_index = defined("SITE_NEWSMTH") ? "index.html" : "pcmain.php";
 
 	function display_board_list($section_names,$section_nums)
 	{
@@ -38,7 +38,7 @@
 <?php
 		$select = 0; 
 		$yank = 0;
-				
+
 		if( bbs_load_favboard($select)!=-1 && $boards = bbs_fav_boards($select, 1)) 
 		{
 			$brd_name = $boards["NAME"]; // 英文名
@@ -103,6 +103,7 @@
 		
 	function display_blog_menu($userid,$userfirstlogin)
 	{
+/*
 		$db["HOST"]=bbs_sysconf_str("MYSQLBLOGHOST");
 		$db["USER"]=bbs_sysconf_str("MYSQLBLOGUSER");
 		$db["PASS"]=bbs_sysconf_str("MYSQLBLOGPASSWORD");
@@ -116,6 +117,10 @@
 		$result = mysql_query($query,$link);
 		$rows = mysql_fetch_array($result);
 		@mysql_free_result($result);
+*/
+		global $currentuser;
+		$rows = ( $currentuser["flag1"] & BBS_PCORP_FLAG );
+
 		if(!$rows)
 		{
 ?>
@@ -139,18 +144,19 @@
 <?php		
 		}	
 	}
-	
+
 	cache_header("nocache");
 ?>
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
-<link rel="stylesheet" type="text/css" href="bbsleft.css"/>
+<script type="text/javascript" src="www2-main.js"></script>
+<script type="text/javascript">writeCssLeft();</script>
+<script type="text/javascript" src="bbsleft.js"></script>
 </head>
-<script src="bbsleft.js"></script>
 <!--[if IE]>
 <style type="text/css">
-.t2 {
+.t2,.logo {
 	width: 167px;
 }
 </style>
@@ -160,37 +166,44 @@
 <iframe id="hiddenframe" name="hiddenframe" width="0" height="0" src="" frameborder="0" scrolling="no"></iframe>
 
 <!--站点标志-->
-<!--<img src="images/t1.gif" class="pm">-->
+<?php if (defined("SITE_NEWSMTH")) { ?>
+<script type="text/javascript">putImage('t1.gif','class="pm"');</script>
+<?php } else { ?>
 <center style="padding: 0.3em;font-weight:bold;font-size:120%;"><?php echo BBS_FULL_NAME; ?></center>
+<?php } ?>
 
-<div class="t2">
 <?php
 		if($currentuser["userid"]=="guest")
 		{
 ?>
+<div class="t2">
 <form action="bbslogin.php" method="post" name="form1" target="_top" onsubmit="return fillf3(this);" class="m0">
-<nobr><img src="images/u1.gif" alt="登录用户名" class="pm" width="54" height="21">
-<input type="text" class="upinput" LENGTH="10" onMouseOver="this.focus()" onFocus="this.select()" name="id" /></nobr><br/>
+<nobr><script type="text/javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
+<input type="text" class="upinput" LENGTH="10" onmouseover="this.focus()" onfocus="this.select()" name="id" onkeypress="return input_okd(this, event);" /></nobr><br/>
 
-<nobr><img src="images/u3.gif" alt="用户密码" class="pm" width="54" height="21">
-<input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" /></nobr><br />
-
+<nobr><script type="text/javascript">putImage('u3.gif','alt="用户密码" class="pm"');</script>
+<input type="password" class="upinput" LENGTH="10" name="passwd" maxlength="39" onkeypress="return input_okd(this, event);" /></nobr><br />
 <div class="m9">
-<nobr><input type="image" name="login" src="images/l1.gif" alt="登录进站" class="m10">
-<a href="bbsreg0.html" target="_top"><img src="images/l3.gif" border="0" alt="注册新用户" class="m10"></a></nobr>
+<nobr><a href="javascript:form1.submit();">
+<script type="text/javascript">putImage('l1.gif','alt="登录进站" class="m10" onClick="form1.submit();"');</script></a>
+<a href="bbsreg0.html" target="_top">
+<script type="text/javascript">putImage('l3.gif','alt="注册新用户" class="m10"');</script></a></nobr>
 </div>
 </form>
 <?php
 		}
 		else
 		{
+			if (defined("SITE_NEWSMTH")) {
 ?>
-<nobr><img src="images/u1.gif" alt="登录用户名" class="pm" width="54" height="21">
+<div class="logo"><img src="images/left_logo.gif" /></div>
+<?php       } ?>
+<div class="t2">
+<nobr><script type="text/javascript">putImage('u1.gif','alt="登录用户名" class="pm"');</script>
 &nbsp;&nbsp;<?php echo $currentuser["userid"]; ?></nobr><br/>
 <?php
 		}
 ?>
-<!--<img src="images/t2.gif" class="pm">-->
 </div>
 
 <div class="b1 m4">
@@ -235,7 +248,7 @@
 	{
 ?>
 	<a href='javascript:changemn("pc");' target="_self"><img id="imgpc" src="images/close.gif" class="pm" alt="+"
-	></a><a href='/pc/<?php echo $blog_index; ?>'><img src="<?php echo $img_subdir; ?>m3.gif" class="sfolder"
+	></a><a href='pc/<?php echo $blog_index; ?>'><img src="<?php echo $img_subdir; ?>m3.gif" class="sfolder"
 	>水木Blog</a><br/>
 
 	<div class="pp" id="divpc">
@@ -252,20 +265,24 @@
 		<div class="mi"><a href="pc/pcnew.php?t=c">最新评论</a></div>
 		<div class="mi"><a href="pc/pcsearch2.php">博客搜索</a></div>
 		<div class="mi"><a href="pc/pcnsearch.php">日志搜索</a></div>
-		<div class="mi"><a href="bbsdoc.php?board=SMTH_blog">Blog论坛</a></div>
 <?php
+		@include("pc/pcconf.php");
+		if (isset($pcconfig["BOARD"])) {
+?>
+		<div class="mi"><a href="bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">Blog论坛</a></div>
+<?php
+		}
 		if ($currentuser && $currentuser["index"]) { //blog manage menu
-			@include("pc/pcconf.php");
 			if (isset($pcconfig["BOARD"])) {
 				$brdarr = array();
 				$pcconfig["BRDNUM"] = bbs_getboard($pcconfig["BOARD"], $brdarr);
 				if (bbs_is_bm($pcconfig["BRDNUM"], $currentuser["index"])) {
 ?>
-		<div class="mi"><a href="/pc/pcadmin_rec.php">Blog管理</a></div>
+		<div class="mi"><a href="pc/pcadmin_rec.php">Blog管理</a></div>
 <?php
 		}}} //blog manage menu
 ?>
-		<div class="lmi"><a href="/pc/index.php?id=SYSOP">帮助主题</a></div>
+		<div class="lmi"><a href="pc/index.php?id=SYSOP">帮助主题</a></div>
 		</div>
 <?php
 	} // defined(HAVE_PC)
@@ -308,10 +325,9 @@
 ?>	
 	</div>
 
- 	 
 	<img src="images/open.gif" class="pm" alt="-" 	 
 	><a href="bbsstyle.php"><img src="<?php echo $img_subdir; ?>m2.gif" class="sfolder">自定义界面</a><br/> 	 
- 
+
 <?php
 	if($currentuser["userid"]!="guest")
 	{
@@ -321,32 +337,54 @@
 
 	<div class="pp" id="divtool">
 <?php
-		if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK) )
+		if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK) ||
+			((defined("SITE_NEWSMTH")) && (!($currentuser["flag1"]&BBS_ACTIVATED_FLAG))) )
 		{
 ?>
 		<div class="mi"><a href="bbsnew.php">新用户须知</a></div>
-<?php
-			if (defined("HAVE_ACTIVATION")) {
-?>
 		<div class="mi"><a href="bbssendacode.php">发送激活码</a></div>
 <?php
-			}
+			if(!($currentuser["userlevel"]&BBS_PERM_LOGINOK)) {
 ?>
 		<div class="mi"><a href="bbsfillform.html">填写注册单</a></div>
 <?php
-		}
+		}}
 ?>
 		<div class="mi"><a href="bbsinfo.php">个人资料</a></div>
 		<div class="mi"><a href="bbsplan.php">改说明档</a></div>
 		<div class="mi"><a href="bbssig.php">改签名档</a></div>
 		<div class="mi"><a href="bbspwd.php">修改密码</a></div>
 		<div class="mi"><a href="bbsparm.php">修改个人参数</a></div>
+<?php
+		if($currentuser["userlevel"]&BBS_PERM_CLOAK)
+		{
+?>
+		<div class="mi"><a href="bbscloak.php">隐身术</a></div>
+<?php
+		}
+?>
 		<div class="mi"><a href="bbsal.php">通讯录</a></div>
 		<div class="mi"><a href="bbsnick.php">临时改昵称</a></div>
 		<div class="lmi"><a href="bbsfall.php">设定好友</a></div>
 	</div>
 <?php
 	}
+	if (defined("SITE_NEWSMTH")) {
+?>
+	<a href='javascript:changemn("ser");' target="_self"><img id="imgser" src="images/close.gif" class="pm" alt="+"
+	><img src="<?php echo $img_subdir; ?>m9.gif" class="sfolder">文件下载及其他</a><br/>
+
+	<div class="pp" id="divser">
+		<div class="mi"><a href="games/index.html">休闲娱乐</a></div>
+		<div class="mi"><a href="games/quiztop.php">开心辞典</a></div>
+		<div class="lmi"><a href="data/fterm-2004memory.rar" target="_blank">Fterm下载</a></div>
+	</div>
+<?php
+		if ($currentuser["userlevel"]&BBS_PERM_SYSOP) {
+			@include_once ('bbsleftmenu.php');
+		}
+	}
+
 	if($currentuser["userid"]!="guest"){
 ?>
 	<img src="images/open.gif" class="pm" alt="-"
@@ -355,8 +393,10 @@
 	}
 ?>
 </div>
+<?php if (!defined("SITE_NEWSMTH")) { ?>
 <p align="center">
 <a href="http://dev.kcn.cn/" target="_blank"><img src="/images/poweredby.gif" border="0" alt="Powered by KBS" /></a>
 </p>
+<?php } ?>
 </body>
 </html>

@@ -61,7 +61,7 @@
 ?>
 <tr>
 	<td> </td>
-	<td> <img src="images/groupgroup.gif" alt="up" title="回到上一级"></td>
+	<td> <script type="text/javascript">putImage('groupgroup.gif','alt="up" title="回到上一级"');</script></td>
 	<td colspan="5"><a href="bbsboa.php?group=<?php echo $group; ?>">回到上一级</a></td>
 </tr>
 <?php
@@ -103,15 +103,15 @@
 <?php
 		if ($brd_flag[$i]&BBS_BOARD_GROUP) {
 ?>
-<td> <img src="images/groupgroup.gif" alt="＋" title="版面组"></td>
+<td> <script type="text/javascript">putImage('groupgroup.gif','alt="＋" title="版面组"');</script></td>
 <?php
 		} else if ($brd_unread[$i] == 1) {
 ?>
-<td> <img src="images/newgroup.gif" alt="◆" title="未读标志"></td>
+<td> <script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"');</script></td>
 <?php
 		} else {
 ?>
-<td> <img src="images/oldgroup.gif" alt="◇" title="已读标志"></td>
+<td> <script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"');</script></td>
 <?php
 		}
 ?>

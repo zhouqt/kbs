@@ -113,7 +113,7 @@
 		}
 ?>
 
-<script language="javascript">
+<script type="text/javascript">
 <!--//
 function doRefresh(){
 	var oSelectType=document.getElementById("oType");
@@ -134,7 +134,7 @@ function doRefresh(){
 <option value="2"<?php if( $desc==1 ) { ?> selected="selected"<?php } ?>>µ¹Ðò</option>
 </select>
 
-<script language="javascript">
+<script type="text/javascript">
 <!--//
 function doCount(){
 	var oSelectType=document.getElementById("oCount");

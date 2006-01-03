@@ -29,9 +29,9 @@ if (bbs_checkreadperm($usernum, $brdnum) == 0)
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) 
 	exit ();
 if (bbs_normalboard($board)) {
-	if (update_cache_header())
+	if (update_cache_header(30, 1200))
 		exit ();
-}
+} else die;
 
 
 
@@ -84,7 +84,7 @@ if (!bbs_get_hot_threads($board,BOARD_HOT_THREADS,$threads,$err))
 
 page_header("热门话题", FALSE);
 ?>
-<body><script>
+<body><script type="text/javascript"><!--
 parent.setHots([<?php
 if (sizeof($threads)>0) {
 	foreach ($threads as $thread) {
@@ -95,4 +95,5 @@ if (sizeof($threads)>0) {
 }
 ?>
 0]);
+//-->
 </script></body></html>

@@ -29,8 +29,8 @@
 	}
 ?>
 <script>
-if (ff = top.document.getElementById("viewfrm"))
-	ff.rows = "<?php echo $frameheight; ?>,*,20";
+var ff = top.document.getElementById("viewfrm");
+if (ff) ff.rows = "<?php echo $frameheight; ?>,*,20";
 <?php if ($timeout > 0) { ?>
 setTimeout("location.reload()", <?php echo $timeout*1000 ?>);
 <?php } ?>
