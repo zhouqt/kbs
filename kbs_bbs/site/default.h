@@ -830,6 +830,11 @@ attach define
 #define BONLINE_LOGDIR "bonlinelog"
 #endif
 
+
+#ifndef USERD_PORT
+#define USERD_PORT  60001
+#endif
+
 #define ISV4ADDR(addr) ((addr.s6_addr[0]==0)&&(addr.s6_addr[1]==0)&& \
 	(addr.s6_addr[2]==0)&&(addr.s6_addr[3]==0)&&(addr.s6_addr[4]==0)&& \
 	(addr.s6_addr[5]==0)&&(addr.s6_addr[6]==0)&&(addr.s6_addr[7]==0)&& \

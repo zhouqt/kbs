@@ -470,11 +470,11 @@ void setuserid(int num, const char *userid)
         return;
 #ifdef HAVE_IPV6_SMTH
     sin.sin6_family = AF_INET6;
-    sin.sin6_port = htons(60001);
+    sin.sin6_port = htons(USERD_PORT);
     inet_pton(AF_INET6, "::1", &sin.sin6_addr);
 #else /* IPV6 */
     sin.sin_family = AF_INET;
-    sin.sin_port = htons(60001);
+    sin.sin_port = htons(USERD_PORT);
 #ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
 #elif defined HAVE_INET_PTON
@@ -672,11 +672,11 @@ int getnewuserid3(char *userid)
         return -1;
 #ifdef HAVE_IPV6_SMTH
     sin.sin6_family = AF_INET6;
-    sin.sin6_port = htons(60001);
+    sin.sin6_port = htons(USERD_PORT);
     inet_pton(AF_INET6, "::1", &sin.sin6_addr);
 #else /* IPV6 */
     sin.sin_family = AF_INET;
-    sin.sin_port = htons(60001);
+    sin.sin_port = htons(USERD_PORT);
 #ifdef HAVE_INET_ATON
     inet_aton("127.0.0.1", &sin.sin_addr);
 #elif defined HAVE_INET_PTON
