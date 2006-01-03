@@ -353,10 +353,11 @@ void userd()
 
     bzero(&sin, sizeof(sin));
 #ifdef HAVE_IPV6_SMTH
-    if ((m_socket = socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+    if ((m_socket = socket(PF_INET6, SOCK_STREAM, IPPROTO_TCP)) < 0)
 #else
-    if ((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
+    if ((m_socket = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
 #endif
+    {
         bbslog("3system", "userd:socket %s", strerror(errno));
         exit(-1);
     }
