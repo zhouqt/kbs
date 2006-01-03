@@ -1,0 +1,16 @@
+#ifndef PHP_BBS_ERRORNO_H
+#define PHP_BBS_ERRORNO_H
+
+/* ´íÎóÂë */
+
+#define PHPBBS_ERROR_BOARD_NONEXIST    -101
+#define PHPBBS_ERROR_BOARD_NOSEEPERM      -102
+
+#define PHPBBS_ERROR_USER_NONEXIST     -201
+
+
+#define RETURN_ERROR(name)  RETURN_LONG(PHPBBS_ERROR_##name)
+
+#endif //PHP_BBS_ERRORNO_H
+
+

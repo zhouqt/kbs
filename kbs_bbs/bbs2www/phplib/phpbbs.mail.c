@@ -6,6 +6,8 @@
 #include "bbs.h"
 #include "bbslib.h"
 
+#include "phpbbs.errorno.h"
+
 PHP_FUNCTION(bbs_checknewmail)
 {
 	char *userid;
@@ -782,15 +784,18 @@ PHP_FUNCTION(bbs_domailforward)
 	strncpy(target, target1, 128);
 	target[127]=0;
 
-    if( target[0] == 0 )
-        RETURN_LONG(-8);
+    if( target[0] == 0 ) {
+        RETURN_ERROR(USER_NONEXIST);
+    }
+        
 
 	snprintf(mail_domain, sizeof(mail_domain), "@%s", MAIL_BBSDOMAIN);
 	if( strstr(target, mail_domain) )
 		strcpy(target, getCurrentUser()->userid);
     if( !strchr(target, '@') ){
-        if( getuser(target,&u) == 0)
-            RETURN_LONG(-9);
+        if( getuser(target,&u) == 0) {
+            RETURN_ERROR(USER_NONEXIST);
+        }
         ret = check_mail_perm(getCurrentUser(), u);
         if (ret) {
             RETURN_LONG(-ret);

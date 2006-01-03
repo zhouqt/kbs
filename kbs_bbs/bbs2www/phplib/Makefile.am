@@ -1,4 +1,5 @@
 EXTRA_DIST = php_kbs_bbs.h \
+             phpbbs.errorno.h \
              phpbbs.announce.h \
              phpbbs.article.h \
              phpbbs.bm.h \
