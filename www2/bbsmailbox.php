@@ -2,6 +2,7 @@
 	/*this file display mailbox to user	windinsn nov 7,2003*/
 	require("funcs.php");
 login_init();
+	bbs_session_modify_user_mode(BBS_MODE_MAIL);
 	
 	if ($loginok != 1)
 		html_nologin();

@@ -2,6 +2,7 @@
 require("www2-funcs.php");
 require("www2-board.php");
 login_init();
+bbs_session_modify_user_mode(BBS_MODE_READING);
 define('ARTCNT', 20);
 
 $bbsman_modes = array(

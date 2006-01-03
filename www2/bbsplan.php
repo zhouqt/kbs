@@ -1,6 +1,7 @@
 <?php
     require("www2-funcs.php");
     login_init();
+    bbs_session_modify_user_mode(BBS_MODE_EDITUFILE);
     toolbox_header("ËµÃ÷µµÐÞ¸Ä");
     assert_login();
     

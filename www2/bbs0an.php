@@ -53,7 +53,7 @@ if (defined ("USE_ROAM")) {
 }
 else
 	login_init();
-
+bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
 if (isset($_GET['path']))
 	$path = trim($_GET['path']);
 else 

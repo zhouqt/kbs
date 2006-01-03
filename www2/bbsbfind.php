@@ -1,7 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
-
+	bbs_session_modify_user_mode(BBS_MODE_READING);
 	if( !isset($_GET["board"]) && !isset($_POST["board"]))
 		html_error_quit("´íÎóµÄÌÖÂÛÇø");
 	if( isset($_GET["board"]) )

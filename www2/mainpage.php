@@ -1,9 +1,12 @@
 <?php
-require("site.php");
 require("www2-board.php");
+require("www2-funcs.php");
 
 if (!bbs_ext_initialized())
 	bbs_init_ext();
+	
+login_init();
+bbs_session_modify_user_mode(BBS_MODE_MMENU);
 
 # get an attribute from a particular node
 function find_attr($parent,$name,$attr)

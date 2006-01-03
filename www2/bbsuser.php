@@ -5,6 +5,7 @@
 		exit ();
 
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_LUSERS);
 	page_header("在线用户列表");
 	
 	if( isset( $_GET["start"] ) ){

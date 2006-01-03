@@ -1,6 +1,7 @@
 <?php
     require("www2-funcs.php");
     login_init();
+    bbs_session_modify_user_mode(BBS_MODE_LOOKMSGS);
 	page_header("察看所有讯息");
 	assert_login();
 

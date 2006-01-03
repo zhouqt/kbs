@@ -1,6 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_SELECT);
 	require("www2-board.php");
 
 	if (isset($_GET["group"]))

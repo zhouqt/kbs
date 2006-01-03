@@ -6,7 +6,7 @@
 		roam_login_init();
 	} else
 		login_init();
-
+bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
 if (isset($_GET["p"])) {
 	$numpath = $_GET["p"];
 

@@ -1,7 +1,7 @@
 <?php
 require('www2-funcs.php');
 login_init();
-
+bbs_session_modify_user_mode(BBS_MODE_SELECT);
 if (isset($_GET['board']))
 	$keyword = trim(ltrim($_GET['board']));
 elseif (isset($_POST['board']))

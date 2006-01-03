@@ -1,7 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
-
+	bbs_session_modify_user_mode(BBS_MODE_READING);
 	$brdarr = array();
 	if( isset( $_GET["bid"] ) ){
 		$brdnum = $_GET["bid"] ;

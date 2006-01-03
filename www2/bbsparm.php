@@ -2,6 +2,7 @@
 /* 修改个人参数，从 wForum 偷来的。atppp 20040524 */
 require("www2-funcs.php");
 login_init();
+bbs_session_modify_user_mode(BBS_MODE_USERDEF);
 toolbox_header("个人参数修改");
 assert_login();
 
