@@ -94,7 +94,7 @@ void disply_userinfo(u, real)
     
     else
         num = 0;
-    prints("私人信箱     : %d 封\n", num);
+    prints("收件箱       : %d 封\n", num);
     if (real) {
         strcpy(genbuf, XPERMSTR);
         for (num = 0; num < (int) strlen(genbuf); num++)
