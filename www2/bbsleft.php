@@ -5,23 +5,18 @@
 	$img_subdir = /* defined("SITE_NEWSMTH") ? "images/newsmth/" : */ "images/newstyle/";
 	$blog_index = defined("SITE_NEWSMTH") ? "index.html" : "pcmain.php";
 
-	function display_board_list($section_names,$section_nums)
+	function display_board_list()
 	{
 ?>
 <div class="b1">
 <?php
-		$i = 0;
-		foreach ($section_names as $secname)
+		for($i = 0; $i < BBS_SECNUM; $i++)
 		{
-			$i++;
-			$group=$i-1;
-			$group2 = $yank = 0;
-			$level = 0;
 ?>
-<a href="javascript:submenu(0,0,<?php echo $group; ?>,0,0)" target="_self">
-<img id="submenuimg_brd_<?php echo $group; ?>_0" src="images/close.gif" class="pm" alt="+"
-></a><a href="bbsboa.php?group=<?php echo $group; ?>"><img src="images/kfolder1.gif" class="s16x16"><?php echo $secname[0]; ?></a><br/>
-<div id="submenu_brd_<?php echo $group; ?>_0" class="lineback"></div>
+<a href="javascript:submenu(0,0,<?php echo $i; ?>,0,0)" target="_self">
+<img id="submenuimg_brd_<?php echo $i; ?>_0" src="images/close.gif" class="pm" alt="+"
+></a><a href="bbsboa.php?group=<?php echo $i; ?>"><img src="images/kfolder1.gif" class="s16x16"><?php echo constant("BBS_SECNAME".$i."_0"); ?></a><br/>
+<div id="submenu_brd_<?php echo $i; ?>_0" class="lineback"></div>
 <?php
 		}
 ?>
@@ -37,7 +32,6 @@
 <div class="b1">
 <?php
 		$select = 0; 
-		$yank = 0;
 
 		if( bbs_load_favboard($select)!=-1 && $boards = bbs_fav_boards($select, 1)) 
 		{
@@ -217,7 +211,7 @@
 	></a><a href="bbssec.php"><img src="<?php echo $img_subdir; ?>mfolder0.gif" class="sfolder">分类讨论区</a><br/>
 	<div class="pp" id="divboard">
 <?php
-	display_board_list($section_names,$section_nums);
+	display_board_list();
 ?>
 	</div>
 

@@ -19,16 +19,16 @@
 	else
 		$group2 = 0;
 	settype($group, "integer");
-	if ($group < 0 || $group > sizeof($section_nums))
+	if ($group < 0 || $group >= BBS_SECNUM)
 		html_error_quit("错误的参数");
-	$boards = bbs_getboards($section_nums[$group], $group2, $yank);
+	$boards = bbs_getboards(constant("BBS_SECCODE".$group), $group2, $yank);
 	//print_r($boards);
 	if ($boards == FALSE)
 		html_error_quit("该目录尚未有版面");
 
-	page_header($section_names[$group][0]);
+	page_header(constant("BBS_SECNAME".$group."_0"));
 ?>
-<h1><?php echo $section_names[$group][0]; ?>分区</h1>
+<h1><?php echo constant("BBS_SECNAME".$group."_0"); ?>分区</h1>
 <div class="right smaller">
 <?php
 	if( $group2 != -2 ){

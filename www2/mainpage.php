@@ -117,8 +117,6 @@ function gen_sec_hot_subjects_html($secid)
 
 function gen_sections_html()
 {
-global $section_nums;
-global $section_names;
 
 # load xml doc
 $boardrank_file = BBS_HOME . "/xml/board.xml";
@@ -130,16 +128,15 @@ $doc = domxml_open_file($boardrank_file);
 $root = $doc->document_element();
 $boards = $root->child_nodes();
 
-$sec_count = count($section_nums);
 $sec_boards = array();
 $sec_boards_num = array();
-for ($i = 0; $i < $sec_count; $i++)
+for ($i = 0; $i < BBS_SECNUM; $i++)
 {
 	$sec_boards[$i] = array();
 	$sec_boards_num[$i] = 0;
 }
 $t = array(); // 分区序号变换表
-for ($i = 0; $i < $sec_count - 2; $i++)
+for ($i = 0; $i < BBS_SECNUM - 2; $i++)
 	$t[$i] = $i + 2;
 $t[$i] = 0;
 $t[$i+1] = 1;
@@ -170,13 +167,13 @@ while($board = array_shift($boards))
 	</table>
 		<table border="0" cellpadding="0" cellspacing="0" width="97%">
 <?php
-	for ($i = 0; $i < $sec_count; $i++)
+	for ($i = 0; $i < BBS_SECNUM; $i++)
 	{
 		if (defined("SITE_NEWSMTH") && ($t[$i]==0 || $t[$i]==1)) continue;
 ?>
 <tr> 
   <td valign="top" class="MainContentText" style="padding-top: 5px;"> 
-★<strong>[<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars($section_names[$t[$i]][0]); ?></a>]</strong>&nbsp;&nbsp;
+★<strong>[<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars(constant("BBS_SECNAME".$t[$i]."_0")); ?></a>]</strong>&nbsp;&nbsp;
 <?php
 		$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
 		for ($k = 0; $k < $brd_count; $k++)
@@ -193,7 +190,7 @@ while($board = array_shift($boards))
 </td>
 </tr>
 <?php
-		if ($sec_count - $i > 1)
+		if (BBS_SECNUM - $i > 1)
 		{
 ?>
         <tr> 

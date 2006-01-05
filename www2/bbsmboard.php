@@ -1,4 +1,6 @@
 <?php
+	die; /* this script has to be carefully checked before using - atppp */
+
 	require("funcs.php");
 login_init();
 	if ($loginok != 1)
@@ -11,6 +13,14 @@ login_init();
 		if(0){
 			html_error_quit("您没有权限");
 		}
+
+$section_nums = array();
+$section_names = array();
+for($i=0;$i<BBS_SECNUM;$i++) {
+	$section_nums[] = constant("BBS_SECCODE".$i);
+	$section_names[] = array(constant("BBS_SECNAME".$i."_0"),constant("BBS_SECNAME".$i."_1"));
+}
+
 
 		if(isset($_GET["submit"])){
 

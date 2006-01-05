@@ -67,7 +67,7 @@ function bbs_rss_link($board, $ftype) {
 }
 
 function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
-	global $section_names, $dir_modes, $dir_name;
+	global $dir_modes, $dir_name;
 	$brd_encode = urlencode($brdarr["NAME"]);
 	
 	/* TODO: use javascript completely */
@@ -94,7 +94,7 @@ function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
 	$sec_index = get_secname_index($brdarr["SECNUM"]);
 	if ($sec_index >= 0) {
 ?>
-<a href="bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo $section_names[$sec_index][0]; ?></a> ¡ú 
+<a href="bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo constant("BBS_SECNAME".$sec_index."_0"); ?></a> ¡ú 
 <?php
 	}
 ?>

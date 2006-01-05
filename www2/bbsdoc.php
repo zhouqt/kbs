@@ -156,11 +156,10 @@ if (bbs_checkreadperm($usernum, $brdnum) == 0){
 	html_error_quit("错误的讨论区");
 }
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
-	for ($i=0;$i<sizeof($section_nums);$i++) {
-		if (!strcmp($section_nums[$i],$brdarr["SECNUM"])) {
-			 Header("Location: bbsboa.php?group=" . $i . "&group2=" . $brdnum);
-			 return;
-		}
+	$i = get_secname_index($brdarr["SECNUM"]);
+	if ($i >= 0) {
+		 Header("Location: bbsboa.php?group=" . $i . "&group2=" . $brdnum);
+		 return;
 	}
 	html_error_quit("错误的讨论区");
 }

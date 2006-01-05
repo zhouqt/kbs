@@ -17,9 +17,9 @@ else
 	$yank = intval($_GET["yank"]);
 	if ($yank) $yank = 1;
 	$subMenu = "submenu_brd_".$group."_".$group2;
-	if($group < 0 || $group > sizeof($section_nums) )
+	if($group < 0 || $group >= BBS_SECNUM )
 		exit();
-	$boards = bbs_getboards($section_nums[$group], $group2, $yank | 2);
+	$boards = bbs_getboards(constant("BBS_SECCODE".$group), $group2, $yank | 2);
 }
 $brd_name = $boards["NAME"]; // 英文名
 $brd_desc = $boards["DESC"]; // 中文描述
