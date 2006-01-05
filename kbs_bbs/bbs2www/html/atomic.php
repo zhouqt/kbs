@@ -4,6 +4,12 @@
  * Suppports UTF8. Absolutely NO javascript!
  * BUG: 没有完善处理版名含有特殊字符的情形
  */
+if (isset($_GET['utf8'])) {
+	define('UTF8', (bool)$_GET['utf8']);
+	setcookie("UTF8", (int)UTF8, 0, "/");
+} else if (isset($_COOKIE['UTF8'])){
+	define('UTF8', (bool)$_COOKIE["UTF8"]);
+} else
 define('UTF8', FALSE);
 define('ARTCNT', 20);
 define('MAXCHAR', 20000);
@@ -14,7 +20,7 @@ login_init();
 
 if (UTF8) {
 	iconv_set_encoding("internal_encoding", "gb18030");
-	iconv_set_encoding("output_encoding", "UTF-8");
+	iconv_set_encoding("output_encoding", "UTF-8//IGNORE");
 	ob_start("ob_iconv_handler");
 }
 
@@ -209,6 +215,7 @@ function atomic_board() {
 	}
 	$html .= '<input type="hidden" name="board" value="'.$atomic_board.'"/>';
 	$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> ';
+	if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&upload=1">带附件发表</a> ';
 	$bl = '?act=board&board='.$atomic_board;
 	if ($atomic_ftype) $bl .= '&ftype=' . $atomic_ftype;
 	if ($page > 1) {
@@ -328,6 +335,7 @@ function atomic_article() {
 	$html = '<p>';
 	if (!$atomic_ftype) {
 		$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
+	    if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&upload=1">带附件回复</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
@@ -372,6 +380,60 @@ function atomic_post() {
 		else $reID = 0;
 		$outgo = bbs_is_outgo_board($atomic_brdarr) ? 1 : 0;
 		$anony = 0;
+	if (bbs_is_attach_board($atomic_brdarr) && isset($_FILES['attachfile'])) {
+		if ($_FILES['attachfile']['size']>ATTACHMAXSIZE) {
+			$errno=UPLOAD_ERR_FORM_SIZE;
+		}
+		switch ($errno) {
+		case UPLOAD_ERR_OK:
+			$buf=$_FILES['attachfile']['name'];
+			$tok = strtok($buf,"/\\");
+			$act_attachname="";
+			while ($tok) {
+				$act_attachname=$tok;
+					$tok = strtok("/\\");
+			}
+			$act_attachname=strtr($act_attachname,array(" " => "_", ";" => "_", "|" => "_", "&" => "_", ">" => "_", "<" => "_", "*" => "_", "\"" => "_", "'" => "_"));
+			$act_attachname=substr($act_attachname,-60);
+			if ($act_attachname=="") {
+				echo "无效文件名";
+			} else {
+				$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
+				@mkdir($attachdir);
+				$tmpfilename=tempnam($attachdir,"att");
+				if (is_uploaded_file($_FILES['attachfile']['tmp_name'])) {
+					move_uploaded_file($_FILES['attachfile']['tmp_name'], 
+						$tmpfilename);
+					 /* 填写 .index*/
+					if (($fp=@fopen($attachdir . "/.index", "w"))==FALSE) {
+							unlink($attachdir . "/" . $act_attachname);
+					} else {
+						fputs($fp,$tmpfilename . " " . $act_attachname . "\n");
+						fclose($fp);
+						echo "文件上载成功！";
+						break;
+					}
+				}
+				echo "保存附件文件失败！";
+			}
+			break;
+		case UPLOAD_ERR_INI_SIZE:
+		case UPLOAD_ERR_FORM_SIZE:
+			echo "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
+			break;
+		case UPLOAD_ERR_PARTIAL:
+			echo "文件传输出错！";
+			break;
+		case UPLOAD_ERR_NO_FILE:
+			echo "没有文件上传！";
+			break;
+		case 100:
+			echo "无效的文件名！";
+		default:
+			echo "未知错误";
+		}
+		echo "<br />";
+	}
 		$ret = bbs_postarticle($atomic_board, $title, $text, $currentuser["signature"], $reID, $outgo, $anony, 0, 0);
 		switch ($ret) {
 		case -1:
@@ -422,7 +484,7 @@ function atomic_post() {
 	} else $nowtitle = "";
 	atomic_header();
 	$html = "<p><a href='?act=board&board=" . $atomic_board . "'>" . $atomic_board . " 版</a>发表文章</p>";
-	$html .= "<form action='?act=post&board=" . $atomic_board . "&reid=" . $reid . "&post=1' method='post'>";
+	$html .= "<form action='?act=post&board=" . $atomic_board . "&reid=" . $reid . "&post=1' method='post'" .(isset($_GET['upload']) ? " enctype='multipart/form-data'>" : ">");
 	$html .= '标题: <input type="text" name="title" size="40" maxlength="100" value="' . ($nowtitle?htmlspecialchars($nowtitle,ENT_QUOTES)." ":"") . '"/><br/>';
 	$html .= '<textarea name="text" rows="20" cols="80" wrap="physical">';
 	if($reid > 0){
@@ -462,7 +524,9 @@ function atomic_post() {
 			fclose($fp);
 		}
 	}
-	$html .= '</textarea><br/><input type="submit" value="发表" /></form>';
+	$html .= '</textarea><br/>';
+	if (isset($_GET['upload'])) $html .= '<input name="attachfile" type="file"/><br/>';
+	$html .= '<input type="submit" value="发表" /></form>';
 	echo $html;
 	atomic_footer();
 }
@@ -738,7 +802,10 @@ function atomic_mainpage() {
 END;
 	}
 	atomic_show_boardjump();
-	echo "UTF8: " . (UTF8 ? "ON" : "OFF") . ". 文章显示长度限制: " . MAXCHAR . ". &lt;精简歪脖 atppp 制造&gt;";
+	$url = $_SERVER['REQUEST_URI'];
+	if (strstr($url, 'utf8=')) $url = substr($url, 0, strlen($url)-1);
+    else if (!strstr($url, '?')) $url.= '?utf8=';
+	echo "UTF8: <a href='" . $url . (UTF8 ? "0" : "1") . "'>" . (UTF8 ? "ON" : "OFF") . "</a>. 文章显示长度限制: " . MAXCHAR . ".";
 	atomic_footer();
 }
 
