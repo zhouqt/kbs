@@ -85,7 +85,7 @@ static void opennewpostlog()
 
 static void closenewpostlog()
 {
-		bbslog("3system","mysql log closed");
+	bbslog("3system","mysql log closed");
 	mysql_close(&s);
 	postlog_start=0;
 	mysqlclosetime = time(0);
@@ -145,8 +145,9 @@ static void writelog(struct bbs_msgbuf *msg)
 
 		if( mysql_real_query(&s,sqlbuf,strlen(sqlbuf)) || (affect=(int)mysql_affected_rows(&s))<0 ){
 			mysql_fail ++;
+			bbslog("3system","mysql postlog error:%s",mysql_error(&s));
 			if(mysql_fail > 10)
-				postlog_start = 0;
+				closenewpostlog();
 			return;
 		}
 
@@ -155,8 +156,9 @@ static void writelog(struct bbs_msgbuf *msg)
 
 			if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
 				mysql_fail ++;
+				bbslog("3system","mysql postlog error:%s",mysql_error(&s));
 				if(mysql_fail > 10)
-					postlog_start = 0;
+					closenewpostlog();
 			}else
 				mysql_fail = 0;
 		}else{
@@ -183,7 +185,7 @@ static void writelog(struct bbs_msgbuf *msg)
 
 		if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
 			mysql_fail ++;
-		bbslog("3system","mysql postlog error:%s",mysql_error(&s));
+			bbslog("3system","mysql postlog error:%s",mysql_error(&s));
 			if(mysql_fail > 10)
 				closenewpostlog();
 		}else{
