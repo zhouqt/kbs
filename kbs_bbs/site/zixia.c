@@ -860,10 +860,17 @@ if (lalt > 0 || ('\0' == buf[1] && '0' == *buf) || lalt<0)
         if (*ans == 'n' || *ans == 'N')
             break;
         if (*ans == 'y' || *ans == 'Y') {
+                FILE *fn;
                 oldalt=u->altar;
-                 u->altar += lalt;
-                 sprintf(secu, "修改 %s 的道行,%d->%d", u->userid,oldalt,u->altar);
-                securityreport(secu, u, NULL);
+                u->altar += lalt;
+                gettmpfilename( genbuf, "alter" );
+                if ((fn = fopen(genbuf, "w")) != NULL) {
+                    sprintf(secu, "修改 %s 的道行: %d -> %d", u->userid,oldalt,u->altar);
+                    fprintf(fn, "%s\n", secu);
+                    fclose(fn);
+                    post_file(getCurrentUser(), "", genbuf, "ExpLists", secu, 0,  2, getSession());
+                    unlink(genbuf);
+                }
                 break;
                 }
         }
