@@ -40,7 +40,7 @@ function attach(name, len, pos) {
 	}
 	var url = attachURL + '&amp;ap=' + pos;
 	if (bImg) {
-		s += '<br /><img src="images/files/img.gif"/>此主题相关图片如下：'
+		s += '<br /><img src="images/img.gif"/>此主题相关图片如下：'
 		  + name + '(' + len + ' 字节)<br /><a href="' + url + '" target="_blank">'
 		  + '<img src="' + url + '" title="按此在新窗口浏览图片" style="margin: 0.2em 0 0.5em 0;" onload="resizeImg(this)" /></a> ';
 	} else {
