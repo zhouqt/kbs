@@ -1345,7 +1345,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
             mid = (high + low) / 2;
             comp = (buf->id) - ((data + mid)->id);
             if (comp == 0) {
-                ret = (*func) (fd, data, mid + 1, total, data, true);
+                ret = (*func) (fd, data, mid + 1, total, buf, true);
                 end_mmapfile((void *) data, filesize, -1);
                 flock(fd, LOCK_UN);
                 BBS_RETURN(ret);
