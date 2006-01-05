@@ -145,7 +145,7 @@ static void writelog(struct bbs_msgbuf *msg)
 
 		if( mysql_real_query(&s,sqlbuf,strlen(sqlbuf)) || (affect=(int)mysql_affected_rows(&s))<0 ){
 			mysql_fail ++;
-			bbslog("3system","mysql postlog error:%s",mysql_error(&s));
+			bbslog("3system","mysql bmlog error:%s",mysql_error(&s));
 			if(mysql_fail > 10)
 				closenewpostlog();
 			return;
@@ -156,7 +156,7 @@ static void writelog(struct bbs_msgbuf *msg)
 
 			if( mysql_real_query( &s, sqlbuf, strlen(sqlbuf) )){
 				mysql_fail ++;
-				bbslog("3system","mysql postlog error:%s",mysql_error(&s));
+				bbslog("3system","mysql bmlog error:%s",mysql_error(&s));
 				if(mysql_fail > 10)
 					closenewpostlog();
 			}else
