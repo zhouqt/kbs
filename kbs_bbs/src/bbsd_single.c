@@ -457,11 +457,12 @@ int check_IP_lists(unsigned int IP2)
             }
             fclose(fp);
         }
-        fp=fopen(".proxyIP", "r");
+        fp=fopen("etc/proxyIP", "r");
         if(fp) {
+			char buf[256];
             i=0;
-            while(!feof(fp)) {
-                if(fscanf(fp, "%d.%d.%d.%d",&ip[0],&ip[1],&ip[2],&ip[3])<=0) break;
+            while(fgets(buf, 255,fp)) {
+                if(sscanf(buf, "%d.%d.%d.%d",&ip[0],&ip[1],&ip[2],&ip[3])<=0) break;
                 proxys[i].ip[0]=ip[0];
                 proxys[i].ip[1]=ip[1];
                 proxys[i].ip[2]=ip[2];
