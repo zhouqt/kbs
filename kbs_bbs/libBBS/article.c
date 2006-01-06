@@ -356,20 +356,8 @@ int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, sessio
 		char buf[256];
 		struct fileheader postfile;
 
-        bzero(&postfile, sizeof(postfile));
-        strcpy(postfile.filename, fh->filename);
-        strncpy(postfile.owner, fh->owner, OWNER_LEN - 1);
-        postfile.owner[OWNER_LEN - 1] = 0;
-        postfile.id = fh->id;
-        postfile.groupid = fh->groupid;
-        postfile.reid = fh->reid;
-        postfile.attachment = fh->attachment;
-        set_posttime2(&postfile, fh);
-		postfile.accessed[0] = fh->accessed[0];
-		postfile.accessed[1] = fh->accessed[1];
-    	sprintf(buf, "%-32.32s - %s", fh->title, session->currentuser->userid);
-    	strncpy(postfile.title, buf, ARTICLE_TITLE_LEN - 1);
-    	postfile.title[ARTICLE_TITLE_LEN - 1] = 0;
+        memcpy(&postfile, fh, sizeof(postfile));
+    	snprintf(postfile.title, ARTICLE_TITLE_LEN, "%-32.32s - %s", fh->title, session->currentuser->userid);
     	postfile.accessed[sizeof(postfile.accessed) - 1] = time(0) / (3600 * 24) % 100;
 
         setbdir(DIR_MODE_DELETED, buf, boardname);
@@ -448,44 +436,37 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
             i++;
         } else if (strstr(buf, "Бъ  Ьт: ")) {
             i++;
-            strcpy(UTitle, buf + 8);
+            strncpy(UTitle, buf + 8, sizeof(UTitle));
+            UTitle[sizeof(UTitle)-1] = '\0';
             if ((p = strchr(UTitle, '\n')) != NULL)
                 *p = 0;
         }
     }
     fclose(fp);
 
-    bzero(&UFile, sizeof(UFile));
-    strcpy(UFile.owner, fileinfo->owner);
+    memcpy(&UFile, fileinfo, sizeof(UFile));
     strncpy(UFile.title, UTitle, ARTICLE_TITLE_LEN - 1);
 	UFile.title[ARTICLE_TITLE_LEN - 1] = '\0';
-    strcpy(UFile.filename, fileinfo->filename);
-    UFile.attachment=fileinfo->attachment;
-    UFile.accessed[0]=fileinfo->accessed[0];
-    UFile.accessed[1]=fileinfo->accessed[1]&(~FILE_DEL);
-
+    UFile.accessed[1] &= ~FILE_DEL;
     if (UFile.filename[1] == '/')
         UFile.filename[2] = 'M';
     else
         UFile.filename[0] = 'M';
-    UFile.id = fileinfo->id;
-    UFile.groupid = fileinfo->groupid;
-    UFile.reid = fileinfo->reid;
-    set_posttime2(&UFile, fileinfo);
 
     setbfile(genbuf, boardname, fileinfo->filename);
     setbfile(buf, boardname, UFile.filename);
+    if (dashf(buf)) {
+        return -1;
+    }
     f_mv(genbuf, buf);
 
     sprintf(buf, "boards/%s/.DIR", boardname);
     if ((fd = open(buf, O_RDWR | O_CREAT, 0644)) != -1) {
         if ((UFile.id == 0) || mmap_search_apply(fd, &UFile, insert_func) == 0) {
             flock(fd, LOCK_EX);
-            if (UFile.id == 0) {
-                UFile.id = get_nextid(boardname);
-                UFile.groupid = UFile.id;
-                UFile.reid = UFile.id;
-            }
+            UFile.id = get_nextid(boardname);
+            UFile.groupid = UFile.id;
+            UFile.reid = UFile.id;
             lseek(fd, 0, SEEK_END);
             if (safewrite(fd, &UFile, sizeof(UFile)) == -1)
                 bbslog("user", "%s", "apprec write err!");
@@ -519,10 +500,8 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
 */
 void cancelpost(const char *board, const char *userid, struct fileheader *fh, int owned, int autoappend, session_t* session)
 {
-    struct fileheader postfile;
-    char oldpath[50];
-    char newpath[50];
-    struct fileheader *ph;
+    char oldpath[PATHLEN];
+    char newpath[PATHLEN];
     time_t now = time(NULL);
 
 #ifdef BBSMAIN
@@ -532,10 +511,7 @@ void cancelpost(const char *board, const char *userid, struct fileheader *fh, in
         return;
     }
 #endif
-    if (autoappend)
-        ph = &postfile;
-    else
-        ph = fh;
+
 /*
     sprintf(oldpath, "/board/%s/%s.html", board, fh->filename);
     ca_expire_file(oldpath);*/
@@ -579,34 +555,21 @@ void cancelpost(const char *board, const char *userid, struct fileheader *fh, in
         }
     }
 
-    strcpy(postfile.filename, fh->filename);
+    setbfile(oldpath, board, fh->filename);
     if (fh->filename[1] == '/')
         fh->filename[2] = (owned) ? 'J' : 'D';
     else
         fh->filename[0] = (owned) ? 'J' : 'D';
-    setbfile(oldpath, board, postfile.filename);
     setbfile(newpath, board, fh->filename);
     f_mv(oldpath, newpath);
-    if (autoappend) {
-        bzero(&postfile, sizeof(postfile));
-        strcpy(postfile.filename, fh->filename);
-        strncpy(postfile.owner, fh->owner, OWNER_LEN - 1);
-        postfile.owner[OWNER_LEN - 1] = 0;
-        postfile.id = fh->id;
-        postfile.groupid = fh->groupid;
-        postfile.reid = fh->reid;
-        postfile.attachment = fh->attachment;
-        set_posttime2(&postfile, fh);
-		postfile.accessed[0] = fh->accessed[0];
-		postfile.accessed[1] = fh->accessed[1];
-    };
+
     sprintf(oldpath, "%-32.32s - %s", fh->title, userid);
-    strncpy(ph->title, oldpath, ARTICLE_TITLE_LEN - 1);
-    ph->title[ARTICLE_TITLE_LEN - 1] = 0;
-    ph->accessed[sizeof(ph->accessed) - 1] = now / (3600 * 24) % 100;
+    strncpy(fh->title, oldpath, ARTICLE_TITLE_LEN - 1);
+    fh->title[ARTICLE_TITLE_LEN - 1] = 0;
+    fh->accessed[sizeof(fh->accessed) - 1] = now / (3600 * 24) % 100;
     if (autoappend) {
-        setbdir((owned) ? 5 : 4, oldpath, board);
-        append_record(oldpath, &postfile, sizeof(postfile));
+        setbdir((owned) ? DIR_MODE_JUNK : DIR_MODE_DELETED, oldpath, board);
+        append_record(oldpath, fh, sizeof(struct fileheader));
     }
 }
 
