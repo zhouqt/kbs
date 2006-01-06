@@ -10,7 +10,7 @@
 		}
 	}
 ?>
-<script type="text/javascript">
+<script type="text/javascript"><!--
 	var settings = {"sizer": 3, "pager": 4, "hot": 5}; /* faint IE5 */
 	function setInd(n, v) {
 		var ff = getObj(n + 'F');
@@ -37,20 +37,24 @@
 	function KCNymsw() {
 		alert('还没做这个功能呢... 需要吗？不需要吗？您去 sysop 版喊喊？');
 	}
+	var oldCssID = null, nowCssID = null;
 	function setStyleDiv(cssID, setImg) {
 		for (var i=0; i<32; i++) {
 			var o = getObj("stylediv" + i);
 			if (o) {
 				o.style.borderColor = (i!=cssID) ? 'white' : 'blue';
-				getObj("stylethumb" + i).src = "images/" + i + "/thumb.jpg";
+				if (setImg) getObj("stylethumb" + i).src = "images/" + i + "/thumb.jpg";
 			} else break;
 		}
 	}
 	function chkStyle(cssID) {
-		saveParaCookie(cssID << 7, 0xF80);
-		setStyleDiv(getCssID(), 0);
+		setStyleDiv(cssID, 0);
+		nowCssID = cssID;
 	}
 	function applyStyle() {
+		if (nowCssID == oldCssID) return;
+		oldCssID = nowCssID;
+		saveParaCookie(nowCssID << 7, 0xF80);
 		resetCss();
 		var ff = top.window["menu"]; if (ff) ff.resetCss();
 		ff = top.window["toogle"]; if (ff) ff.resetCss();
@@ -63,12 +67,14 @@
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
-		setStyleDiv(getCssID(), 1);
+		oldCssID = nowCssID = getCssID();
+		setStyleDiv(nowCssID, 1);
 		if (!isLogin()) {
 			getObj("cmdSave").disabled = true;
 			getObj("idpsave").style.visibility = "hidden";
 		}
 	});
+//-->
 </script>
 <style type="text/css">
 form.stylesel {
@@ -116,24 +122,23 @@ div.stylesel img {
 		</div>
 	</fieldset>
 </form>
-<form action="?" class="stylesel" method="get">
+<form action="?" class="stylesel" method="get" onsubmit="applyStyle()"">
 <input type="hidden" name="do" value="1" />
 	<fieldset><legend>界面方案:</legend>
 		<div align="center">
 <?php
 	// 这里显示每个界面方案的缩略图
-	$stylecount=count($style_names);
+	$stylecount = count($style_names);
 	$ret = "";
 	for($i=0;$i<$stylecount;$i++)
 	{
 		$ret .= "<div id='stylediv{$i}' class='stylesel clickable' onClick='chkStyle($i);'>";
-		$ret .= "<img id='stylethumb{$i}' title='载入中...' src='' /><br/>{$style_names[$i]}</div>";
+		$ret .= "<img id='stylethumb{$i}' alt='预览图' src='' /><br/>{$style_names[$i]}</div>";
 	}
 	print($ret);
 ?>
 		</div>
-		<div class="oper clear"><input type="button" onclick="applyStyle();" value="立即应用界面方案"/><br/>
-			[ 如果不点这个按钮，修改对下一个浏览的的页面生效。]</div>
+		<div class="oper clear"><input type="button" onclick="applyStyle();" value="应用界面方案"/></div>
 	</fieldset>
 	<div class="oper"><input id="cmdSave" type="submit" value="保存设置"/> &nbsp; <input type="button" onclick="history.go(-1);" value="快速返回"/><br/>
 		<span id="idpsave">[ 点 保存设置 以保证每次登录都使用这个设置。]</span></div>

@@ -139,14 +139,16 @@
 	page_header("тд╤андуб".$dir_name[$ftype], "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>");
 ?>
 <h1><?php echo $brdarr["NAME"]; ?> ╟Ф <?php echo $dir_name[$ftype]; ?></h1>
-<script>
+<script type="text/javascript"><!--
 var o = new conWriter(<?php echo $ftype; ?>, '<?php echo addslashes($brdarr["NAME"]); ?>', <?php echo $brdnum; ?>, <?php
 echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php echo $article["FILENAME"];?>', '<?php
 echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>);
 o.h(1);
 attachURL = 'bbscon.php?<?php echo $_SERVER["QUERY_STRING"]; ?>';
 <?php $s = bbs2_readfile($filename); if (is_string($s)) echo $s; ?>
-o.h(0);o.t();</script>
+o.h(0);o.t();
+//-->
+</script>
 <?php
 	if (($ftype==0) && ($loginok==1) && ($currentuser["userid"] != "guest"))
 		bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);

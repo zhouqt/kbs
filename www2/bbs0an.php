@@ -1,7 +1,7 @@
 <?php
 function bbs_ann_display_articles($articles, $isBoard) {
 ?>
-<script>
+<script type="text/javascript"><!--
 var ta = new tabWriter(1,'main wide',0,[['#','5%','center'],['类型','7%','center'],['标题',0,0],['整理','12%','center'],['编辑日期','12%','center']]);
 <?php
 	foreach ($articles as $article) {
@@ -40,6 +40,7 @@ var ta = new tabWriter(1,'main wide',0,[['#','5%','center'],['类型','7%','center
 	}
 ?>
 ta.t();
+//-->
 </script>
 <?php
 	if ($isBoard) echo "</div>"; //dirty way ... for class="doc"

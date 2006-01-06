@@ -3,7 +3,7 @@
 		var ie5 = (browserName == "Microsoft Internet Explorer") && navigator.appVersion.indexOf('MSIE 5')>0;
 		var ie6 = (browserName == "Microsoft Internet Explorer") && navigator.appVersion.indexOf('MSIE 6')>0;
 		var ns6 = (navigator.vendor == "Netscape6");
-		navigator.userAgent.indexOf("Netscape/7")>=0 ? ns7=true:ns7=false;
+		var ns7 = (navigator.userAgent.indexOf("Netscape/7")>=0);
 		var mac  = (agt.indexOf('mac') != -1);
 		var images_num = 4;
 		var delay = 3000;
@@ -53,7 +53,7 @@
 				action = setInterval('fadeOut()',1);
 			}
 			else{
-				which = Math.floor(Math.random()*images_num);
+				var which = Math.floor(Math.random()*images_num);
 				var bottomImage = getImage(bottomImageName);
 				bottomImage.src = image_root+which+suffix;						
 			}						
@@ -72,7 +72,7 @@
 			}
 		}
 		
-		count = 100;
+		var count = 100;
 		//FadeOut avant le notifyLoad de l'image
 		function fadeOut(){
 			if(count > 10){
@@ -81,7 +81,7 @@
 			}
 			else if(count == 10){
 				clearInterval(action);
-				which = Math.floor(Math.random()*images_num);
+				var which = Math.floor(Math.random()*images_num);
 				var bottomImage = getImage(bottomImageName);
 				bottomImage.src = image_root+which+suffix;			
 			}

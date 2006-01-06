@@ -18,6 +18,10 @@ function htmlize(s) {
 	return s;
 }
 
+function getMirror() {
+	return "";
+}
+
 var attachURL = null, strArticle = "", divArtCon = null;
 function prints(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -38,7 +42,7 @@ function attach(name, len, pos) {
 			 || ext == "ico" || ext == "png"  || ext == "pcx"
 			 || ext == "bmp");
 	}
-	var url = attachURL + '&amp;ap=' + pos;
+	var url = getMirror() + attachURL + '&amp;ap=' + pos;
 	if (bImg) {
 		s += '<br /><img src="images/img.gif"/>此主题相关图片如下：'
 		  + name + '(' + len + ' 字节)<br /><a href="' + url + '" target="_blank">'

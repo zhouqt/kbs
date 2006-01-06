@@ -144,10 +144,10 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
-<script src="www2-main.js"></script>
+<script type="text/javascript" src="www2-main.js"></script>
 <script type="text/javascript">writeCssLeft();</script>
+<script type="text/javascript" src="bbsleft.js"></script>
 </head>
-<script src="bbsleft.js"></script>
 <!--[if IE]>
 <style type="text/css">
 .t2,.logo {

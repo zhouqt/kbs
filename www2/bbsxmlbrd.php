@@ -26,7 +26,7 @@
 	
 	page_header($xmltitle);
 ?>
-<script>
+<script type="text/javascript"><!--
 var ta = new tabWriter(1,'main wide','<?php echo $xmltitle; ?>',
 [['#','2%','center'],[' ','2%',0],['讨论区名称','24%',0],['类别','10%','center'],['中文描述','47%',0],['版主','15%','center']]);
 <?php
@@ -61,6 +61,7 @@ var ta = new tabWriter(1,'main wide','<?php echo $xmltitle; ?>',
 	} //end while
 ?>
 ta.t();
+//-->
 </script>
 <?php
 	bbs_boards_navigation_bar();

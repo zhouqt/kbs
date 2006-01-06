@@ -7,7 +7,7 @@
 		exit;
 	}
 		html_init("gb2312","","",1);
-		if ( (!bbs_can_send_mail())&&(!isset($_GET["file"])) )
+		if ( !bbs_can_send_mail(isset($_GET["file"]) ? 1 : 0) )
 			html_error_quit("您不能发送信件");
 		if (isset($_GET["board"]))
 			$board = $_GET["board"];
@@ -152,19 +152,19 @@ function dosubmit() {
 		}
 ?>
 </select>
- [<a target="_balnk" href="bbssig.php">查看签名档</a>]
+ [<a target="_blank" href="bbssig.php">查看签名档</a>]
 <?php
 	$bBackup = (bbs_is_save2sent() != 0);
 ?>
-<input type="checkbox" name="backup"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
+<input type="checkbox" name="backup" value="1"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
 <textarea class="sb1" name="text" onkeydown='return textarea_okd(dosubmit, event);' rows="20" cols="80" wrap="physical">
 <?php
 	if(isset($file)){
 		if(isset($board)){
-			$filename = "boards/" . $board . "/" . $file;
+			$filename = bbs_get_board_filename($board, $file);
 			echo "\n【 在 " . $destuserid . " 的大作中提到: 】\n";
 		}else{
-			$filename = "mail/".strtoupper($currentuser["userid"]{0})."/".$currentuser["userid"]."/".$file;
+			$filename = bbs_setmailfile($currentuser["userid"], $file);
 			echo "\n【 在 " . $destuserid . " 的来信中提到: 】\n";
 		}
 		if(file_exists($filename))
@@ -198,8 +198,8 @@ function dosubmit() {
 						break;
 					}
 					/* */
-					if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
-						echo ": ". $buf;
+					//if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+						echo ": ". htmlspecialchars($buf);
 				}
 				fclose($fp);
 			}

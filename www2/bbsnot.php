@@ -26,7 +26,7 @@
 	$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <link rel="stylesheet" type="text/css" href="ansi.css"/>
-<script type="text/javascript">
+<script type="text/javascript"><!--
 function writeNote()
 {
 	var bbsnote,notecontent,divbbsnot;
@@ -54,6 +54,7 @@ function writeNote()
 
 }
 addBootFn(writeNote);
+//-->
 </script>
 <div class="article smaller" id="bbsnot">
 </div>

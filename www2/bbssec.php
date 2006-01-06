@@ -5,7 +5,7 @@
 	bbs_session_modify_user_mode(BBS_MODE_MMENU);
 	page_header("分类讨论区");
 ?>
-<script>
+<script type="text/javascript"><!--
 var ta = new tabWriter(0,'main','分类讨论区',[['区号',0,'center'],['类别',0,0],['描述',0,0]]);
 <?php
 		for($i = 0; $i < BBS_SECNUM; $i++) {
@@ -15,6 +15,7 @@ ta.r('<?php echo constant("BBS_SECCODE".$i); ?>','<a href="bbsboa.php?group=<?ph
 		}
 ?>
 ta.t();
+//-->
 </script>
 <?php
 	bbs_boards_navigation_bar();

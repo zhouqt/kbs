@@ -39,7 +39,7 @@
 	} else {
 		bbs_sendwebmsg($destid, $msg, $destutmp, $errmsg);
 ?>
-<script>top.fmsg.location="bbsgetmsg.php?refresh"</script>
+<script>top.fmsg.location="bbsgetmsg.php?refresh";</script>
 <?php
 		html_success_quit($errmsg);
 	}

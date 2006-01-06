@@ -318,8 +318,6 @@ div.article {
 	margin: 0 auto;
 	text-align: left;
 	line-height:1.2em;
-	word-wrap:break-word;
-	word-break:break-all;
 	padding: 0.2em 0.3em;
 	background-color: #F7F7F7;
 }

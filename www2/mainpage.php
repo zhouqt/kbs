@@ -498,7 +498,7 @@ while($board = array_shift($boards))
 </head>
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">
 <?php if (defined("SITE_NEWSMTH")) { ?>
-<script src="images/randomad.js" type=text/javascript></script>
+<script src="images/randomad.js" type="text/javascript"></script>
 <table><tr><td valign=top width=154><img id="bottom"  src="images/ad/1.gif" onload=notifyLoad(this.src); name=bottom></td></tr></table>
 <?php } else { ?>
 <center style="padding: 0.5em;font-weight:bold;font-size:150%;"><?php echo BBS_FULL_NAME; ?></center>

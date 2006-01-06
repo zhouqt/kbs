@@ -84,7 +84,7 @@ if (!bbs_get_hot_threads($board,BOARD_HOT_THREADS,$threads,$err))
 
 page_header("热门话题", FALSE);
 ?>
-<body><script>
+<body><script type="text/javascript"><!--
 parent.setHots([<?php
 if (sizeof($threads)>0) {
 	foreach ($threads as $thread) {
@@ -95,4 +95,5 @@ if (sizeof($threads)>0) {
 }
 ?>
 0]);
+//-->
 </script></body></html>
