@@ -59,18 +59,20 @@
 		ff = top.window["toogle"]; if (ff) ff.resetCss();
 		ff = top.window["f4"]; if (ff) ff.resetCss();
 	}
-	addBootFn(function() {
+	function bootFn() {
 		var c = readParaCookie();
 		for (var n in settings) {
 			var i = settings[n];
 			var v = c & (1 << i);
 			setInd(n, v);
 		}
+		oldCssID = nowCssID = getCssID();
+		setStyleDiv(nowCssID);
 		if (!isLogin()) {
 			getObj("cmdSave").disabled = true;
 			getObj("idpsave").style.visibility = "hidden";
 		}
-	});
+	}
 //-->
 </script>
 <style type="text/css">
@@ -141,8 +143,7 @@ div.stylesel img {
 		<span id="idpsave">[ 点 保存设置 以保证每次登录都使用这个设置。]</span></div>
 </form>
 <script type="text/javascript">
-	oldCssID = nowCssID = getCssID();
-	setStyleDiv(nowCssID);
+	bootFn();
 </script>
 <?php
 	page_footer();
