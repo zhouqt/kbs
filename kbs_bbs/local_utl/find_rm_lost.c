@@ -94,8 +94,7 @@ testPOWERJUNK(char *path, char *fn)
 	char buf[1024];
 	struct stat st;
 	sprintf(buf, "%s/%s", path, fn);
-	if (strncmp(fn, ".AUTHOR", 7) && strncmp(fn, ".TITLE", 6) && strncmp(fn, ".Search", 7)
-	    &&strncmp(fn,".ORIGIN",6))
+	if (strncmp(fn, ".AUTHOR", 7) && strncmp(fn, ".TITLE", 6) && strncmp(fn, ".Search", 7))
 		return 0;
 	if (stat(buf,&st)!=0)
 		return 0;
