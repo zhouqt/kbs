@@ -883,7 +883,7 @@ function clearArticleDiv(id) {
 	}
 }
 
-function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
+function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num, previd, nextid, tprevid, tnextid) {
 	this.board = escape(board);
 	this.ftype = ftype;
 	this.bid = bid;
@@ -893,7 +893,7 @@ function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 	this.file = file;
 	this.favtxt = favtxt;
 	this.num = num;
-	this.baseurl = "bbscon.php?bid=" + bid + "&id=" + id;
+	this.baseurl = "bbscon.php?bid=" + bid + "&id=";
 
 	if (parent && (divArtCon = parent.document.getElementById("art" + id))) {
 		addBootFn(writeArticle);
@@ -912,10 +912,10 @@ function conWriter(ftype, board, bid, id, gid, reid, file, favtxt, num) {
 		ret += '<a href="' + url + '" class="flimg">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a>';
 	}
 	if (this.ftype == 0) {
-		ret += '[<a href="' + this.baseurl + '&p=p">上一篇</a>] ';
-		ret += '[<a href="' + this.baseurl + '&p=n">下一篇</a>] ';
-		ret += '[<a href="' + this.baseurl + '&p=tp">同主题上篇</a>] ';
-		ret += '[<a href="' + this.baseurl + '&p=tn">同主题下篇</a>]';
+		ret += '[<a href="' + this.baseurl + previd + '">上一篇</a>] ';
+		ret += '[<a href="' + this.baseurl + nextid + '">下一篇</a>] ';
+		ret += '[<a href="' + this.baseurl + tprevid + '">同主题上篇</a>] ';
+		ret += '[<a href="' + this.baseurl + tnextid + '">同主题下篇</a>]';
 	} else {
 		ret += '<span style="color:#CCCCCC">[上一篇] [下一篇] [同主题上篇] [同主题下篇]</span>';
 	}
