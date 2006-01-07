@@ -13,6 +13,7 @@ if (isset($_GET['utf8'])) {
 define('UTF8', FALSE);
 define('ARTCNT', 20);
 define('MAXCHAR', 20000);
+define('SSSS', $_SERVER["PHP_SELF"]);
 
 require("www2-funcs.php");
 require("www2-board.php");
@@ -357,7 +358,7 @@ function atomic_article() {
 
 
 function atomic_post() {
-	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes;
+	global $currentuser, $atomic_board, $atomic_brdarr, $atomic_brdnum, $dir_modes, $utmpnum;
 	atomic_get_board(TRUE);
 
 	$reid = (isset($_GET["reid"])) ? @intval($_GET["reid"]) : 0;
@@ -381,6 +382,7 @@ function atomic_post() {
 		$outgo = bbs_is_outgo_board($atomic_brdarr) ? 1 : 0;
 		$anony = 0;
 	if (bbs_is_attach_board($atomic_brdarr) && isset($_FILES['attachfile'])) {
+		@$errno=$_FILES['attachfile']['error'];
 		if ($_FILES['attachfile']['size']>ATTACHMAXSIZE) {
 			$errno=UPLOAD_ERR_FORM_SIZE;
 		}
@@ -393,10 +395,10 @@ function atomic_post() {
 				$act_attachname=$tok;
 					$tok = strtok("/\\");
 			}
-			$act_attachname=strtr($act_attachname,array(" " => "_", ";" => "_", "|" => "_", "&" => "_", ">" => "_", "<" => "_", "*" => "_", "\"" => "_", "'" => "_"));
+			$act_attachname=bbs_filteruploadfilename($act_attachname);
 			$act_attachname=substr($act_attachname,-60);
 			if ($act_attachname=="") {
-				echo "无效文件名";
+				$attmsg = "无效文件名";
 			} else {
 				$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
 				@mkdir($attachdir);
@@ -410,29 +412,28 @@ function atomic_post() {
 					} else {
 						fputs($fp,$tmpfilename . " " . $act_attachname . "\n");
 						fclose($fp);
-						echo "文件上载成功！";
+						$attmsg = "文件上载成功！";
 						break;
 					}
 				}
-				echo "保存附件文件失败！";
+				$attmsg = "保存附件文件失败！";
 			}
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
-			echo "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
+			$attmsg = "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
 			break;
 		case UPLOAD_ERR_PARTIAL:
-			echo "文件传输出错！";
+			$attmsg = "文件传输出错！";
 			break;
 		case UPLOAD_ERR_NO_FILE:
-			echo "没有文件上传！";
+			$attmsg = "没有文件上传！";
 			break;
 		case 100:
-			echo "无效的文件名！";
+			$attmsg = "无效的文件名！";
 		default:
-			echo "未知错误";
+			$attmsg = "未知错误";
 		}
-		echo "<br />";
 	}
 		$ret = bbs_postarticle($atomic_board, $title, $text, $currentuser["signature"], $reID, $outgo, $anony, 0, 0);
 		switch ($ret) {
@@ -466,6 +467,7 @@ function atomic_post() {
 		}
 		atomic_header();
 		$url = "?act=board&board=" . $atomic_board;
+		if (isset($attmsg)) echo $attmsg . "<br/>";
 		if ($ret == 2) {
 			echo "<p>很抱歉，本文可能含有不当内容，需经审核方可发表。<br/><br/>" .
                   "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
