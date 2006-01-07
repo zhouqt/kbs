@@ -1,7 +1,6 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
-	bbs_session_modify_user_mode(BBS_MODE_READING);
 	$usernum = $currentuser["index"];
 	if (isset($_GET["board"]))
 		$board = $_GET["board"];
