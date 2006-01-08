@@ -4224,7 +4224,7 @@ int Goodbye()
         }
     }
     if (choose == 2)            /*返回BBS */
-        return 0;
+        return FULLUPDATE;
     if (strcmp(getCurrentUser()->userid, "guest") != 0) {
         if (choose == 3)        /*留言簿 */
             if (USE_NOTEPAD == 1 && HAS_PERM(getCurrentUser(), PERM_POST))
@@ -6255,7 +6255,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'b', (READ_KEY_FUNC)SR_BMFunc,(void*)true},
     {'B', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 b 进入同主题操作"},
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
-    {'!', (READ_KEY_FUNC)Goodbye,NULL},
+    {'!', read_callfunc0,Goodbye},
     {Ctrl('Q'), (READ_KEY_FUNC)showinfo,NULL},
     {'^', (READ_KEY_FUNC)jumpReID,NULL},
     {'\0', NULL},
