@@ -90,7 +90,7 @@ var c = new docWriter('<?php echo addslashes($board); ?>',<?php echo $brdarr["BI
 	if($show_none)
 	{
 ?>
-document.write('<tr><td align="center" colspan="5">本区没有文章。</td></tr>');
+document.write('<tr><td align="center" colspan="<?php echo ($managemode?6:5); ?>">本区没有文章。</td></tr>');
 <?php
 	}
 	else foreach ($articles as $article)
