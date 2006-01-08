@@ -15,13 +15,13 @@
 ?>
 <a href="javascript:submenu(0,0,<?php echo $i; ?>,0,0)" target="_self">
 <img id="submenuimg_brd_<?php echo $i; ?>_0" src="images/close.gif" class="pm" alt="+"
-></a><a href="bbsboa.php?group=<?php echo $i; ?>"><img src="images/kfolder1.gif" class="s16x16"><?php echo constant("BBS_SECNAME".$i."_0"); ?></a><br/>
+></a><a href="bbsboa.php?group=<?php echo $i; ?>"><script type="text/javascript">putImage('kfolder1.gif','class="s16x16"');</script><?php echo constant("BBS_SECNAME".$i."_0"); ?></a><br/>
 <div id="submenu_brd_<?php echo $i; ?>_0" class="lineback"></div>
 <?php
 		}
 ?>
 <img src="images/open.gif" class="pm" alt="-"
-><a href="bbsnewbrd.php"><img src="images/kfolder1.gif" class="s16x16">新开讨论区</a>
+><a href="bbsnewbrd.php"><script type="text/javascript">putImage('kfolder1.gif','class="s16x16"');</script>新开讨论区</a>
 </div>
 <?php
 	}
@@ -52,7 +52,7 @@
 <div class="fi">
 <a href="javascript:submenu(1,<?php echo $brd_bid[$j]; ?>,0,0,0)" target="_self">
 <img id="submenuimg_fav_<?php echo $brd_bid[$j]; ?>" src="images/close.gif" class="pm" alt="+"
-></a><a href="bbsfav.php?select=<?php echo $brd_bid[$j]; ?>&up=-1"><img src="images/kfolder1.gif" class="s16x16"><?php echo $brd_desc[$j]; ?></a></div>
+></a><a href="bbsfav.php?select=<?php echo $brd_bid[$j]; ?>&up=-1"><script type="text/javascript">putImage('kfolder1.gif','class="s16x16"');</script><?php echo $brd_desc[$j]; ?></a></div>
 <div id="submenu_fav_<?php echo $brd_bid[$j]; ?>" class="lineback"></div>
 <?php
 				}
@@ -202,13 +202,13 @@
 
 <div class="b1 m4">
 	<img src="images/open.gif" class="pm" alt="-"
-	><a href="<?php echo MAINPAGE_FILE; ?>"><img src="<?php echo $img_subdir; ?>m0.gif" class="sfolder">首页导读</a><br/>
+	><a href="<?php echo MAINPAGE_FILE; ?>"><script type="text/javascript">putImage('i_main.gif','class="sfolder"');</script>首页导读</a><br/>
 	
 	<img src="images/open.gif" class="pm" alt="-"
-	><a href="bbs0an.php"><img src="<?php echo $img_subdir; ?>m1.gif" class="sfolder">精华区</a><br/>
+	><a href="bbs0an.php"><script type="text/javascript">putImage('i_ann.gif','class="sfolder"');</script>精华区</a><br/>
 	
 	<a href='javascript:changemn("board");' target="_self"><img id="imgboard" src="images/close.gif" class="pm" alt="+"
-	></a><a href="bbssec.php"><img src="<?php echo $img_subdir; ?>mfolder0.gif" class="sfolder">分类讨论区</a><br/>
+	></a><a href="bbssec.php"><script type="text/javascript">putImage('i_board.gif','class="sfolder"');</script>分类讨论区</a><br/>
 	<div class="pp" id="divboard">
 <?php
 	display_board_list();
@@ -216,8 +216,7 @@
 	</div>
 
 	<div><form action="bbssel.php" method="get" class="m0"><nobr
-		><img src="images/open.gif" class="pm" alt="-"><img src="<?php echo $img_subdir; ?>m5.gif" class="sfolder"
-		><input name="board" type="text" class="f2" value="搜索讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
+		><img src="images/open.gif" class="pm" alt="-"><script type="text/javascript">putImage('i_search.gif','class="sfolder"');</script><input name="board" type="text" class="f2" value="搜索讨论区" size="12" onmouseover="this.focus()" onfocus="this.select()" /> 
 		<input name="submit" type="submit" value="GO" class="sgo" />
 		</nobr>
 	</form></div>
@@ -225,7 +224,7 @@
 	if($currentuser["userid"]!="guest"){
 ?>
 	<a href='javascript:changemn("fav");' target="_self"><img id="imgfav" src="images/close.gif" class="pm" alt="+"></a
-	><a href="bbsfav.php?select=0"><img src="<?php echo $img_subdir; ?>mfolder3.gif" class="sfolder">我的收藏夹</a><br/>
+	><a href="bbsfav.php?select=0"><script type="text/javascript">putImage('i_fav.gif','class="sfolder"');</script>我的收藏夹</a><br/>
 
 	<div class="pp" id="divfav">
 <?php
@@ -234,7 +233,7 @@
 	</div>
 
 	<img src="images/open.gif" class="pm" alt="-"
-	><a href="bbssfav.php?userid=<?php echo $currentuser['userid']; ?>"><img src="<?php echo $img_subdir; ?>m18.gif" class="sfolder"><?php echo FAVORITE_NAME; ?></a><br/>
+	><a href="bbssfav.php?userid=<?php echo $currentuser['userid']; ?>"><script type="text/javascript">putImage('i_sfav.gif','class="sfolder"');</script><?php echo FAVORITE_NAME; ?></a><br/>
 
 <?php
 	}
@@ -242,8 +241,7 @@
 	{
 ?>
 	<a href='javascript:changemn("pc");' target="_self"><img id="imgpc" src="images/close.gif" class="pm" alt="+"
-	></a><a href='pc/<?php echo $blog_index; ?>'><img src="<?php echo $img_subdir; ?>m3.gif" class="sfolder"
-	>水木Blog</a><br/>
+	></a><a href='pc/<?php echo $blog_index; ?>'><script type="text/javascript">putImage('i_blog.gif','class="sfolder"');</script>水木Blog</a><br/>
 
 	<div class="pp" id="divpc">
 <?php
@@ -284,7 +282,7 @@
 	if($currentuser["userid"]!="guest"){
 ?>
 	<a href='javascript:changemn("mail");' target="_self"><img id="imgmail" src="images/close.gif" class="pm" alt="+"
-	></a><a href="bbsmail.php"><img src="<?php echo $img_subdir; ?>m4.gif" class="sfolder">我的信箱</a><br/>
+	></a><a href="bbsmail.php"><script type="text/javascript">putImage('i_mail.gif','class="sfolder"');</script>我的信箱</a><br/>
 
 	<div class="pp" id="divmail">
 <?php
@@ -295,7 +293,7 @@
 	}
 ?>
 	<a href='javascript:changemn("chat");' target="_self"><img id="imgchat" src="images/close.gif" class="pm" alt="+"
-	><img src="<?php echo $img_subdir; ?>m10.gif" class="sfolder">谈天说地</a><br/>
+	><script type="text/javascript">putImage('i_talk.gif','class="sfolder"');</script>谈天说地</a><br/>
 	<div class="pp" id="divchat">
 <?php
 	if (!defined("SITE_SMTH")) { // Smth不提供在线用户列表 add by windinsn, May 5,2004
@@ -320,14 +318,14 @@
 	</div>
 
 	<img src="images/open.gif" class="pm" alt="-" 	 
-	><a href="bbsstyle.php"><img src="<?php echo $img_subdir; ?>m2.gif" class="sfolder">自定义界面</a><br/> 	 
+	><a href="bbsstyle.php"><script type="text/javascript">putImage('i_style.gif','class="sfolder"');</script>自定义界面</a><br/> 	 
 
 <?php
 	if($currentuser["userid"]!="guest")
 	{
 ?>
 	<a href='javascript:changemn("tool");' target="_self"><img id="imgtool" src="images/close.gif" class="pm" alt="+"
-	><img src="<?php echo $img_subdir; ?>m11.gif" class="sfolder">个人参数设置</a><br/>
+	><script type="text/javascript">putImage('i_config.gif','class="sfolder"');</script>个人参数设置</a><br/>
 
 	<div class="pp" id="divtool">
 <?php
@@ -366,7 +364,7 @@
 	if (defined("SITE_NEWSMTH")) {
 ?>
 	<a href='javascript:changemn("ser");' target="_self"><img id="imgser" src="images/close.gif" class="pm" alt="+"
-	><img src="<?php echo $img_subdir; ?>m9.gif" class="sfolder">文件下载及其他</a><br/>
+	><script type="text/javascript">putImage('i_down.gif','class="sfolder"');</script>文件下载及其他</a><br/>
 
 	<div class="pp" id="divser">
 		<div class="mi"><a href="games/index.html">休闲娱乐</a></div>
@@ -382,7 +380,7 @@
 	if($currentuser["userid"]!="guest"){
 ?>
 	<img src="images/open.gif" class="pm" alt="-"
-	><a href="bbslogout.php" target="_top"><img src="<?php echo $img_subdir; ?>m7.gif" class="sfolder">离开本站</a><br/>
+	><a href="bbslogout.php" target="_top"><script type="text/javascript">putImage('i_exit.gif','class="sfolder"');</script>离开本站</a><br/>
 <?php
 	}
 ?>
