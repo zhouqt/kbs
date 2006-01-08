@@ -61,9 +61,9 @@ $htmlboardDesc = BBS_FULL_NAME . " " . $board . "/" . htmlspecialchars($brdarr["
 $channel["title"] = $htmlboardDesc . $title;
 $channel["description"] = $htmlboardDesc . " °æÃæ" . $desc . "Ë÷Òý";
 
-$channel["link"] = SiteURL."bbsdoc.php?board=".$board; /* TODO: ftype? */
+$channel["link"] = SiteURL."frames.html?mainurl=".urlencode("bbsdoc.php?board=".$board); /* TODO: ftype? */
 $channel["language"] = "zh-cn";
-$channel["generator"] = "WWW2 RSS Generator";
+$channel["generator"] = "KBS RSS Generator";
 $channel["lastBuildDate"] = gmt_date_format($modifytime);
 
 $total = bbs_countarticles($brdnum, $ftype);
