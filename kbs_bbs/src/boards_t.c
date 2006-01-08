@@ -110,9 +110,94 @@ struct newpostdata *ptr;
 #endif
 }
 
+/* Select the fav path
+seperated by pig2532@newsmth */
+static int fav_select_path(const char *brdname, int *i)
+{
+    struct boardheader bh;
+    int k;
+
+    load_favboard(0,1, getSession());
+
+    *i=getboardnum(brdname, &bh);
+    if (*i<=0)
+        return SHOW_REFRESH;
+    if(favbrd_list_t < 2) {
+        SetFav(0, getSession());
+        if (IsFavBoard(*i - 1, getSession())) {
+            move(2, 0); 
+            clrtoeol();
+            prints("已存在该讨论区.");
+            clrtoeol();
+            pressreturn();
+            return SHOW_REFRESH;
+        }
+        move(2,0);
+        if (askyn("加入个人定制区？",0)!=1)
+            return SHOW_REFRESH;
+    }
+    else {
+        struct _select_item *sel;
+        char root[18]="定制区主目录";
+        clear();
+        move(3, 3);
+        prints("请选择加入到定制区哪个目录");
+        sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (favbrd_list_t+1));
+        sel[0].x = 3;
+        sel[0].y = 6;
+        sel[0].hotkey = '0';
+        sel[0].type = SIT_SELECT;
+        sel[0].data = root;
+        for(k=1;k<favbrd_list_t;k++){
+                sel[k].x = 3;
+                sel[k].y = 6+k;
+                sel[k].hotkey = '0'+k;
+                sel[k].type = SIT_SELECT;
+                sel[k].data = getSession()->favbrd_list[k].title;
+        }
+        sel[k].x = -1;
+        sel[k].y = -1;
+        sel[k].hotkey = -1;
+        sel[k].type = 0;
+        sel[k].data = NULL;
+        k = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
+        free(sel);
+        if(k>=0&&k<favbrd_list_t) {
+            SetFav(k, getSession());
+        }
+        else
+            return SHOW_REFRESH;
+    }
+    return DONOTHING;
+}
+
+/* Add board to fav
+seperated by pig2532@newsmth
+parameters:
+    i: board id
+return:
+    0: success
+    1: fav board exists
+    2: error board
+*/
+static int fav_add_board(int i, int favmode)
+{
+    if (i > 0 && !IsFavBoard(i - 1, getSession())) {
+        addFavBoard(i - 1, getSession());
+	save_favboard(favmode, getSession());
+        return 0;
+    } else if (IsFavBoard(i - 1, getSession())) {
+        return 1;
+    } else {
+        return 2;
+    }
+}
+
 int show_boardinfo(const char *bname)
 {
     const struct boardheader *bp = getbcache(bname);
+    char ch;
+    int ret, bid;
 
 	if(bp==NULL)
 		return 0;
@@ -148,9 +233,40 @@ int show_boardinfo(const char *bname)
             (unsigned char)bp->title_level);
 #endif
     }
-	pressanykey();
-
-	return 1;
+    move(t_lines - 1, 0);
+    prints("\033[m\033[44m        添加到个人定制区[\033[1;32ma\033[m\033[44m]");
+    clrtoeol();
+    resetcolor();
+    ch = igetkey();
+    switch(toupper(ch)) {
+    case 'A':
+        if(fav_select_path(bname, &bid) == DONOTHING)
+        {
+            ret = fav_add_board(bid, 1);
+            switch(ret) {
+            case 0:
+                move(2, 0);
+                prints("已经将 %s 讨论区添加到个人定制区.", bname);
+                clrtoeol();
+                pressreturn();
+                return 2;
+            case 1:
+                move(2, 0);
+                prints("已存在该讨论区.");
+                clrtoeol();
+                pressreturn();
+		break;
+            case 2:
+                move(2, 0);
+                prints("不正确的讨论区.");
+                clrtoeol();
+                pressreturn();
+		break;
+            }
+        }
+        break;
+    }
+    return 1;
 }
 
 /* etnlegend, 2005.10.16, 查询版主更新 */
@@ -701,7 +817,10 @@ static int fav_key(struct _select_def *conf, int command)
         }
 	case 'U':		/* pig2532 2005.12.10 */
 		board_query();
-        return SHOW_REFRESH;
+		if (BOARD_FAV == arg->yank_flag)
+			return SHOW_DIRCHANGE;
+		else
+			return SHOW_REFRESH;
 	/*add by stiger */
     case 'H':
 	{
@@ -847,7 +966,7 @@ static int fav_key(struct _select_def *conf, int command)
     case 'a':
         {
             char bname[STRLEN];
-            int i = 0;
+            int i = 0, ret;
             extern int in_do_sendmsg;
             extern int super_select_board(char*);
 
@@ -881,80 +1000,35 @@ static int fav_key(struct _select_def *conf, int command)
                 if (i==0)
                     return SHOW_REFRESH;
             } else {
-                struct boardheader bh;
-                int k;
-
-               // if (favbrd_list_t <= 0)
-                    load_favboard(0,1, getSession());
-
-                i=getboardnum(ptr->name, &bh);
-                if (i<=0)
-                    return SHOW_REFRESH;
-                if(favbrd_list_t < 2) {
-                    SetFav(0, getSession());
-                    if (IsFavBoard(i - 1, getSession())) {
-                        move(2, 0); 
-                        clrtoeol();
-                        prints("已存在该讨论区.");
-                        clrtoeol();
-                        pressreturn();
-                        return SHOW_REFRESH;
-                    }
-                    move(2,0);
-                    if (askyn("加入个人定制区？",0)!=1)
-                        return SHOW_REFRESH;
-                }
-                else {
-                    struct _select_item *sel;
-                    char root[18]="定制区主目录";
-                    clear();
-                    move(3, 3);
-                    prints("请选择加入到定制区哪个目录");
-                    sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (favbrd_list_t+1));
-                    sel[0].x = 3;
-                    sel[0].y = 6;
-                    sel[0].hotkey = '0';
-                    sel[0].type = SIT_SELECT;
-                    sel[0].data = root;
-                    for(k=1;k<favbrd_list_t;k++){
-                            sel[k].x = 3;
-                            sel[k].y = 6+k;
-                            sel[k].hotkey = '0'+k;
-                            sel[k].type = SIT_SELECT;
-                            sel[k].data = getSession()->favbrd_list[k].title;
-                    }
-                    sel[k].x = -1;
-                    sel[k].y = -1;
-                    sel[k].hotkey = -1;
-                    sel[k].type = 0;
-                    sel[k].data = NULL;
-                    k = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
-                    free(sel);
-                    if(k>=0&&k<favbrd_list_t) {
-                        SetFav(k, getSession());
-                    }
-                    else
-                        return SHOW_REFRESH;
+                ret = fav_select_path(ptr->name, &i);
+                if(ret != DONOTHING)
+                {
+                    return(ret);
                 }
             }
-            if (i > 0 && !IsFavBoard(i - 1, getSession())) {
-                addFavBoard(i - 1, getSession());
-            	if (BOARD_FAV == arg->yank_flag)
-					save_favboard(arg->favmode, getSession());
-				else
-                	save_favboard(1, getSession());
+	    if (BOARD_FAV == arg->yank_flag)
+	    {
+	        ret = fav_add_board(i, arg->favmode);
+	    }
+	    else
+	    {
+	        ret = fav_add_board(i, 1);
+	    }
+            switch(ret) {
+            case 0:
                 arg->reloaddata=true;
                 if (BOARD_FAV == arg->yank_flag)
                     return SHOW_DIRCHANGE;
                 else
                     return SHOW_REFRESH;
-            } else if (IsFavBoard(i - 1, getSession())) {
+                break;
+            case 1:
                 move(2, 0);
                 prints("已存在该讨论区.");
                 clrtoeol();
                 pressreturn();
                 return SHOW_REFRESH;
-            } else {
+            case 2:
                 move(2, 0);
                 prints("不正确的讨论区.");
                 clrtoeol();
