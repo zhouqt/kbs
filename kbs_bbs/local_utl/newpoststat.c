@@ -171,6 +171,19 @@ int log_top()
 	return 1;
 }
 
+/* etnlegend, 兼容 mysql 较高版本时间格式变化带来的问题, 有点 dirty ... */
+static time_t convert_to_time_t(const char *s){
+    char buf[16];
+    int i,j;
+    if(!s)
+        return (time_t)0;
+    for(i=0,j=0;s[i]&&(j<15);i++)
+        if(isdigit(s[i]))
+            buf[j++]=s[i];
+    buf[j]=0;
+    return timestamp2tt(buf);
+}
+
 /***********
   根据type得到十大列表,已经经过排序等一系列检查,可以直接输出
   type!=4的时候还得到分区十大
@@ -351,7 +364,7 @@ int get_top(int type)
 			top[5+topnum1].title[80]='\0';
 			strncpy(top[5+topnum1].userid, userid, IDLEN);
 			top[5+topnum1].userid[IDLEN]='\0';
-			top[5+topnum1].date = timestamp2tt(row[2]);
+			top[5+topnum1].date=convert_to_time_t(row[2]);
 			top[5+topnum1].number = atoi(row[3]);
 
 			topnum1++;
@@ -368,7 +381,7 @@ int get_top(int type)
 			top[topnum].title[80]='\0';
 			strncpy(top[topnum].userid, userid, IDLEN);
 			top[topnum].userid[IDLEN]='\0';
-			top[topnum].date = timestamp2tt(row[2]);
+			top[topnum].date=convert_to_time_t(row[2]);
 			top[topnum].number = atoi(row[3]);
 
 			topnum++;
@@ -392,7 +405,7 @@ int get_top(int type)
 			sectop[i][sectopnum[i]].title[80]='\0';
 			strncpy(sectop[i][sectopnum[i]].userid, userid, IDLEN);
 			sectop[i][sectopnum[i]].userid[IDLEN]='\0';
-			sectop[i][sectopnum[i]].date = timestamp2tt(row[2]);
+			sectop[i][sectopnum[i]].date=convert_to_time_t(row[2]);
 			sectop[i][sectopnum[i]].number = atoi(row[3]);
 
 					sectopnum[i]++;
