@@ -474,8 +474,7 @@ function hotTopic(board) { /* TODO: no table, use AJAX */
 
 
 
-function checkFrame(isPHP) {
-	if (arguments.length == 0) isPHP = 0;
+function checkFrame() {
 	var msg = '<div id="fontSizer"';
 	if (!(readParaCookie() & 8)) {
 		msg += ' style="display:none"';
@@ -491,7 +490,7 @@ function checkFrame(isPHP) {
 		if ((pos = uri.indexOf("/")) != -1) {
 			url = uri.substr(pos);
 		}
-		var ex = '(<a href="frames.' + (isPHP?"php":"html") + '?mainurl=' + escape(url) + '">展开完整界面</a>)';
+		var ex = '(<a href="frames.html?mainurl=' + escape(url) + '">展开完整界面</a>)';
 		var o = getObj("idExp");
 		if (o) o.innerHTML = ex;
 	}

@@ -145,9 +145,12 @@
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
 <script type="text/javascript" src="www2-main.js"></script>
-<script type="text/javascript">writeCssLeft();</script>
+<script type="text/javascript"><!--
+	writeCssLeft();
+	top.document.title = '欢迎莅临<?php echo BBS_FULL_NAME; ?>';
+//-->
+</script>
 <script type="text/javascript" src="bbsleft.js"></script>
-</head>
 <!--[if IE]>
 <style type="text/css">
 .t2,.logo {
@@ -156,6 +159,7 @@
 </style>
 <![endif]-->
 <base target="f3" />
+</head>
 <body>
 <iframe id="hiddenframe" name="hiddenframe" width="0" height="0" src="" frameborder="0" scrolling="no"></iframe>
 

@@ -53,8 +53,8 @@ setcookie("UTMPKEY",$data["utmpkey"],0,"/");
 setcookie("UTMPNUM",$num,0,"/");
 setcookie("UTMPUSERID",$data["userid"],0,"/");
 
-if (!defined("STATIC_FRAME")) $target = "frames.php";
-else $target = "frames.html";
+$target = "frames.html";
+
 if ($mainurl!="") {
 	if (!strcmp($mainurl,"atomic.php"))
 		header("Location: atomic.php");
