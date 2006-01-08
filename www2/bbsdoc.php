@@ -233,15 +233,7 @@ if (isset($_POST['act'])) {
 $show_none = 0;
 $total = bbs_countarticles($brdnum, $ftype);
 if ($total <= 0) {
-	if ($ftype) {
-		$show_none = 1;
-	} else {
-		if (strcmp($currentuser["userid"], "guest") != 0){
-			html_error_quit("本讨论区目前没有文章<br /><a href=\"bbspst.php?board=" . $board . "\">发表文章</a>");
-		} else{
-			html_error_quit("本讨论区目前没有文章");
-		}
-	}
+	$show_none = 1;
 }
 
 if(!$show_none)
