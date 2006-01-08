@@ -84,7 +84,6 @@ switch ($ret) {
 		html_error_quit('无法加载目录文件');
 		break;
 	case -3:
-		//html_error_quit('该目录尚无文章');
 		$show_none = 1;
 		break;
 	case -9:
