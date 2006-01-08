@@ -1,5 +1,6 @@
 <?php
-	require("www2-funcs.php");
+	require_once("www2-funcs.php");
+	require_once('www2-board.php');
 	login_init();
 	bbs_session_modify_user_mode(BBS_MODE_READING);
 	if( !isset($_GET["board"]) && !isset($_POST["board"]))
@@ -26,12 +27,25 @@
 		if (cache_header("public",@filemtime($dotdirname),300))
 			return;
 	}
-	bbs_board_nav_header($brdarr, "°æÄÚÎÄÕÂËÑË÷");
+	bbs_board_header($brdarr,-2,0);
+	$ann_path = bbs_getannpath($board);
+	if ($ann_path != FALSE)	{
+		if (!strncmp($ann_path,"0Announce/",10))
+			$ann_path = substr($ann_path,9);
+	}
+?>
+<script type="text/javascript">
+<!--
+var c = new docWriter('<?php echo addslashes($board); ?>',<?php echo $brdarr["BID"]; ?>,0,0,-2,0,0,'<?php echo addslashes($ann_path); ?>',0);
+//-->
+</script>
+<?php
 	if(!isset($_GET["q"])){
 ?>
 <script type="text/javascript">
 <!--
-	document.write(getFindBox('<?php echo $brdarr["NAME"]; ?>'));
+var str = '<table class="main wide"><tr height="5"><th></th></tr></table></div>';<?php /* </div>: dirty way ... for closing <div class="doc"> */ ?>
+document.write(str + getFindBox('<?php echo $brdarr["NAME"]; ?>'));
 //-->
 </script>
 <?php
@@ -123,13 +137,12 @@ function log_it($id, $ip, $board, $title, $title2, $title3, $userid, $dt, $mgon,
 //	log_it($currentuser["userid"], $_SERVER["REMOTE_ADDR"], $board, $title, $title2, $title3, $userid, $dt, $mgon, $agon, $ogon, count($articles));
 ?>
 <script>
-var ta = new tabWriter(0,'main wide','²éÕÒÌÖÂÛÇø"<?php echo $brdarr["NAME"];?>"ÄÚ, ±êÌâº¬: "<?php echo htmlspecialchars($title,ENT_QUOTES);?>"<?php if($title2!="") echo ' ºÍ"'.htmlspecialchars($title2,ENT_QUOTES).'"';?><?php if($title3!="") echo ',²»º¬"'.htmlspecialchars($title3,ENT_QUOTES).'"';?> ×÷ÕßÎª: "<?php if($userid!="") echo $userid; else echo "ËùÓĞÕß";?>", "<?php echo $dt;?>"ÌìÒÔÄÚµÄ <?php if($mgon) echo "¾«»ª"; if($agon) echo "¸½¼ş"; if($ogon) echo "Ö÷Ìâ";?>ÎÄÕÂ',
-[['±àºÅ','6%','center'],['±ê¼Ç','6%','center'],['×÷Õß','12%','center'],['ÈÕÆÚ','8%','center'],['±êÌâ',0,0]]);
+var ta = new tabWriter(0,'main wide',0,[['±àºÅ','6%','center'],['±ê¼Ç','6%','center'],['×÷Õß','12%','center'],['ÈÕÆÚ','8%','center'],['±êÌâ',0,0]]);
 <?php
 	foreach ($articles as $article)
 	{
 		$flags = $article["FLAGS"];
-		$col1 = $article["NUM"];
+		$col1 = $article["NUM"]+1;
 		$col2 = $flags[0] . $flags[3];
 		$col3 = '<a href="bbsqry.php?userid=' . $article["OWNER"] . '">' . $article["OWNER"] . '</a>';
 		$col4 = strftime("%b&nbsp;%e", $article["POSTTIME"]);
@@ -140,7 +153,9 @@ var ta = new tabWriter(0,'main wide','²éÕÒÌÖÂÛÇø"<?php echo $brdarr["NAME"];?>"Ä
 ?>
 ta.t();
 </script>
+</div><?php /* </div>: dirty way ... for closing <div class="doc"> */ ?>
 <div class="oper">
+²éÕÒÌÖÂÛÇø"<?php echo $brdarr["NAME"];?>"ÄÚ, ±êÌâº¬: "<?php echo htmlspecialchars($title,ENT_QUOTES);?>"<?php if($title2!="") echo ' ºÍ"'.htmlspecialchars($title2,ENT_QUOTES).'"';?><?php if($title3!="") echo ',²»º¬"'.htmlspecialchars($title3,ENT_QUOTES).'"';?> ×÷ÕßÎª: "<?php if($userid!="") echo $userid; else echo "ËùÓĞÕß";?>", "<?php echo $dt;?>"ÌìÒÔÄÚµÄ <?php if($mgon) echo "¾«»ª"; if($agon) echo "¸½¼ş"; if($ogon) echo "Ö÷Ìâ";?>ÎÄÕÂ<br/>
 ¹²ÕÒµ½ <?php echo $i;?> ÆªÎÄÕÂ·ûºÏÌõ¼ş <?php if($i>=999) echo "(Æ¥Åä½á¹û¹ı¶à, Ê¡ÂÔµÚ1000ÒÔºóµÄ²éÑ¯½á¹û)";?>
 [<a href="bbsdoc.php?board=<?php echo $brdarr["NAME"];?>">·µ»Ø±¾ÌÖÂÛÇø</a>] [<a href="javascript:history.go(-1)">·µ»ØÉÏÒ»Ò³</a>]
 </div>

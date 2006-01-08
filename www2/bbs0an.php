@@ -50,7 +50,7 @@ ta.t();
 //-->
 </script>
 <?php
-	if ($isBoard) echo "</div>"; //dirty way ... for class="doc"
+	if ($isBoard) echo "</div>"; /* </div>: dirty way ... for closing <div class="doc"> */
 }
 
 require_once('www2-funcs.php');

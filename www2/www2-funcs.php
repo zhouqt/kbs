@@ -83,6 +83,7 @@ function bbs_is_permit_mode($ftype, $caller) {
 }
 
 $dir_name = array(
+	-2 => "(查询模式)",
 	-1 => "(精华区)",
 	0 => "",
 	1 => "(文摘区)",

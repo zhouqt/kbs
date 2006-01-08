@@ -686,8 +686,10 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 		links = mls[i];
 		if (links[0]) {
 			str += '<a href="' + links[2] + '" class="smaller">' + links[1] + '</a>';
-		} else {
+		} else if (ftype != dir_modes["FIND"]) {
 			str += '<b class="smaller">' + links[1] + '</b>';
+		} else {
+			str += '<b class="smaller clickable" onclick="javascript:location.href=\''+links[2]+'\';">' + links[1] + '</b>';
 		}
 	}
 	str += '</div>';
