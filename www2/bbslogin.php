@@ -29,6 +29,8 @@ switch($error) {
 		error_alert("该 ID 不欢迎来自该 IP 的用户");
 	case 5:
 		error_alert("登录过于频繁");
+	case 1:
+		error_alert("对不起，系统忙碌，请稍候再尝试登录");
 	default:
 		error_alert("登录错误，错误号：" . $error);
 }
