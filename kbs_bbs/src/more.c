@@ -503,7 +503,7 @@ int measure_line(char *p0, int size, int *l, int *s, char oldty, char *ty)
                     }
                     if ((unsigned char) *p >= 128)
                         db = 1;
-                    else if (isblank(*p))
+                    else if (strchr(" >)]},;'", *p))
                         lastspace = i;
                 } else {
                     db = 0;
