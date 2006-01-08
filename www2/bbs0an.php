@@ -1,10 +1,17 @@
 <?php
 function bbs_ann_display_articles($articles, $isBoard) {
+	global $show_none;
 ?>
 <script type="text/javascript"><!--
 var ta = new tabWriter(1,'main wide',0,[['#','5%','center'],['类型','7%','center'],['标题',0,0],['整理','12%','center'],['编辑日期','12%','center']]);
 <?php
-	foreach ($articles as $article) {
+	if($show_none)
+	{
+?>
+document.write('<tr><td align="center" colspan="5">该精华区目录没有文章。</td></tr>');
+<?php
+	}
+	else foreach ($articles as $article) {
 		switch($article['FLAG']) {
 			case 0:
 				$img = 'oldgroup.gif';
@@ -68,6 +75,7 @@ $articles = array();
 $path_tmp = '';
 $ret = bbs_read_ann_dir($path,$board,$path_tmp,$articles);
 
+$show_none = 0;
 switch ($ret) {
 	case -1:
 		html_error_quit('精华区目录不存在');
@@ -76,7 +84,8 @@ switch ($ret) {
 		html_error_quit('无法加载目录文件');
 		break;
 	case -3:
-		html_error_quit('该目录尚无文章');
+		//html_error_quit('该目录尚无文章');
+		$show_none = 1;
 		break;
 	case -9:
 		html_error_quit('系统错误');

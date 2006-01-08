@@ -66,7 +66,7 @@ function do_manage_function($board) {
 
 function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$total,$showHot,$isnormalboard)
 {
-	global $brdnum, $usernum, $dir_modes;
+	global $brdnum, $usernum, $dir_modes, $show_none;
 	$board = $brdarr["NAME"];
 	$ann_path = bbs_getannpath($board);
 	if ($ann_path != FALSE)	{
@@ -87,7 +87,13 @@ var c = new docWriter('<?php echo addslashes($board); ?>',<?php echo $brdarr["BI
 ?>,<?php echo $mancode; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
 ?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>);
 <?php
-	foreach ($articles as $article)
+	if($show_none)
+	{
+?>
+document.write('<tr><td align="center" colspan="5">本区没有文章。</td></tr>');
+<?php
+	}
+	else foreach ($articles as $article)
 	{
 ?>
 c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo $article["OWNER"]; ?>',<?php
@@ -224,10 +230,11 @@ if (isset($_POST['act'])) {
 	do_manage_function($board);
 }
 
+$show_none = 0;
 $total = bbs_countarticles($brdnum, $ftype);
 if ($total <= 0) {
 	if ($ftype) {
-		html_error_quit("本讨论区".$dir_name[$ftype]."目前没有文章");
+		$show_none = 1;
 	} else {
 		if (strcmp($currentuser["userid"], "guest") != 0){
 			html_error_quit("本讨论区目前没有文章<br /><a href=\"bbspst.php?board=" . $board . "\">发表文章</a>");
@@ -237,51 +244,60 @@ if ($total <= 0) {
 	}
 }
 
-if (isset($_GET["page"]))
-	$page = $_GET["page"];
-elseif (isset($_POST["page"]))
-	$page = $_POST["page"];
-else
+if(!$show_none)
 {
-	if (isset($_GET["start"]))
-	{ /* TODO: 去掉这个参数，递交之前用 javascript 算出 page 来 */
-		$start = $_GET["start"];
-		settype($start, "integer");
+	if (isset($_GET["page"]))
+		$page = $_GET["page"];
+	elseif (isset($_POST["page"]))
+		$page = $_POST["page"];
+	else
+	{
+		if (isset($_GET["start"]))
+		{ /* TODO: 去掉这个参数，递交之前用 javascript 算出 page 来 */
+			$start = $_GET["start"];
+			settype($start, "integer");
+			$page = ($start + ARTCNT - 1) / ARTCNT;
+		}
+		else
+			$page = 0;
+	}
+	settype($page, "integer");
+	if ($page > 0)
+		$start = ($page - 1) * ARTCNT + 1;
+	else
+		$start = 0;
+	/*
+	 * 这里存在一个时间差的问题，可能会导致序号变乱。
+	 * 原因在于两次调用 bbs_countarticles() 和 bbs_getarticles()。
+	 */
+	if ($start == 0 || $start > ($total - ARTCNT + 1))
+	{
+		if ($total <= ARTCNT)
+		{
+			$start = 1;
+			$page = 1;
+		}
+		else
+		{
+			$start = ($total - ARTCNT + 1);
+			$page = ($start + ARTCNT - 1) / ARTCNT + 1;
+		}
+	}
+	else
 		$page = ($start + ARTCNT - 1) / ARTCNT;
+	settype($page, "integer");
+	$articles = bbs_getarticles($brdarr["NAME"], $start, ARTCNT, $ftype);
+	if ($articles == FALSE){
+		html_error_quit("读取文章列表失败");
 	}
-	else
-		$page = 0;
 }
-settype($page, "integer");
-if ($page > 0)
-	$start = ($page - 1) * ARTCNT + 1;
 else
-	$start = 0;
-/*
- * 这里存在一个时间差的问题，可能会导致序号变乱。
- * 原因在于两次调用 bbs_countarticles() 和 bbs_getarticles()。
- */
-if ($start == 0 || $start > ($total - ARTCNT + 1))
 {
-	if ($total <= ARTCNT)
-	{
-		$start = 1;
-		$page = 1;
-	}
-	else
-	{
-		$start = ($total - ARTCNT + 1);
-		$page = ($start + ARTCNT - 1) / ARTCNT + 1;
-	}
+	$articles = 0;
+	$start = 1;
+	$page = 1;
 }
-else
-	$page = ($start + ARTCNT - 1) / ARTCNT;
-settype($page, "integer");
-$articles = bbs_getarticles($brdarr["NAME"], $start, ARTCNT, $ftype);
-if ($articles == FALSE){
-	html_error_quit("读取文章列表失败");
-}
-		
+
 bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard);
 display_articles($brdarr, $articles, $start, $ftype, $managemode, $page, $total,
 	(defined('BBS_NEWPOSTSTAT') && !$managemode && $isnormalboard && !$ftype), $isnormalboard );
