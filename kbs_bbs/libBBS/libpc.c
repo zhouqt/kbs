@@ -235,7 +235,7 @@ int get_pc_users( struct pc_users * pu, char * userid )
 		return 0;
 	}
 
-	sprintf(sql, "SELECT `uid`,`usernmae`,`corpusname`,`description`,`theme`,`nodelimit`,`dirlimit`,UNIX_TIMESTAMP(`createtime`) FROM users WHERE pctype != 9 AND username=\"%s\"", userid);
+	sprintf(sql, "SELECT `uid`,`username`,`corpusname`,`description`,`theme`,`nodelimit`,`dirlimit`,UNIX_TIMESTAMP(`createtime`) FROM users WHERE pctype != 9 AND username=\"%s\"", userid);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
