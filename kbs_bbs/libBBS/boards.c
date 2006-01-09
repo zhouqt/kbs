@@ -624,6 +624,7 @@ static int brc_getcache(const char *userid,session_t* session)
     return 0;
 }
 
+#if 0 //atppp 20060106
 void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
 {
     char dirfile[MAXPATH];
@@ -671,6 +672,7 @@ void brc_addreaddirectly(char *userid, int bnum, unsigned int postid)
     gzclose(fd);
     return;
 }
+#endif
 
 #if USE_TMPFS==1
 void free_brc_cache(char *userid,session_t* session){
@@ -680,9 +682,7 @@ void free_brc_cache(char *userid,session_t* session){
             munmap(session->brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
     }
 }
-#endif
 
-#if USE_TMPFS==1
 void init_brc_cache(const char* userid,bool replace,session_t* session) {
     if ((session->brc_cache_entry==NULL)||(replace)) {
         char dirfile[MAXPATH];

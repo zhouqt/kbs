@@ -345,7 +345,6 @@ void unlock_sem_check(int lockid);
      */
     void brc_update(const char *userid,session_t* session);      /* 保存当前的brclist到用户的.boardrc */
     void brc_add_read(unsigned int fid,session_t* session);
-    void brc_addreaddirectly(char *userid, int bnum, unsigned int fid);
     void brc_clear(session_t* session);
     int brc_unread(unsigned int fid,session_t* session);
     int junkboard(const char *currboard);     /* 判断是否为 junkboards */
@@ -581,7 +580,6 @@ MYSQL * my_connect_mysql_dict(MYSQL *s);
 #endif
 
 char * tt2timestamp( time_t tt, char *c);
-time_t timestamp2tt( char *row );
 
 #ifdef PERSONAL_CORP
 int pc_conv_file_to_body( char **body, char *fname);

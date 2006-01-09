@@ -5,6 +5,7 @@
 #include <mysql.h>
 #endif
 
+#if 0 //buggy unless mysql ver < 4.1
 time_t timestamp2tt( char *row )
 {
 
@@ -44,6 +45,7 @@ time_t timestamp2tt( char *row )
 	return mktime(&tetime);
 
 }
+#endif
 
 char * tt2timestamp( time_t tt, char *c)
 {
@@ -177,7 +179,7 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 		return 0;
 	}
 
-	sprintf(sql, "SELECT username,corpusname,createtime FROM users WHERE pctype != 9 AND username LIKE \"%c%%\" LIMIT %d", prefix,ret);
+	sprintf(sql, "SELECT username,corpusname,UNIX_TIMESTAMP(createtime) FROM users WHERE pctype != 9 AND username LIKE \"%c%%\" LIMIT %d", prefix,ret);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
@@ -201,7 +203,7 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 		(*ps)[i-1].userid[IDLEN+1]=0;
 		strncpy( (*ps)[i-1].corpusname, row[1], 40);
 		(*ps)[i-1].corpusname[40]=0;
-		(*ps)[i-1].createtime = timestamp2tt(row[2]);
+		(*ps)[i-1].createtime = atol(row[2]);
 
 		row = mysql_fetch_row(res);
 	}
@@ -217,7 +219,7 @@ int get_pc_users( struct pc_users * pu, char * userid )
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sql[100];
+	char sql[256];
 
 	if(userid == NULL || *userid == 0 || pu==NULL)
 		return 0;
@@ -233,7 +235,7 @@ int get_pc_users( struct pc_users * pu, char * userid )
 		return 0;
 	}
 
-	sprintf(sql, "SELECT * FROM users WHERE pctype != 9 AND username=\"%s\"", userid);
+	sprintf(sql, "SELECT `uid`,`usernmae`,`corpusname`,`description`,`theme`,`nodelimit`,`dirlimit`,UNIX_TIMESTAMP(`createtime`) FROM users WHERE pctype != 9 AND username=\"%s\"", userid);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
@@ -259,7 +261,7 @@ int get_pc_users( struct pc_users * pu, char * userid )
 		pu->theme[10]=0;
 		pu->nodelimit = atoi(row[5]);
 		pu->dirlimit = atoi(row[6]);
-		pu->createtime = timestamp2tt( row[7] );
+		pu->createtime = atol( row[7] );
 
 		mysql_free_result(res);
 		mysql_close(&s);
@@ -279,7 +281,7 @@ int get_pc_a_node( struct pc_nodes * pn, unsigned long nid)
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sql[100];
+	char sql[256];
 	int i;
 
 	mysql_init(&s);
@@ -293,7 +295,7 @@ int get_pc_a_node( struct pc_nodes * pn, unsigned long nid)
 		return -1;
 	}
 
-	sprintf(sql,"SELECT * FROM nodes WHERE nid=%lu", nid );
+	sprintf(sql,"SELECT `nid`,`pid`,`type`,`source`,`hostname`,UNIX_TIMESTAMP(`changed`),UNIX_TIMESTAMP(`created`),`uid`,`comment`,`commentcount`,`subject`,`body`,`access`,`visitcount`,`tid`,`emote`,`htmltag` FROM nodes WHERE nid=%lu", nid );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
@@ -324,8 +326,8 @@ int get_pc_a_node( struct pc_nodes * pn, unsigned long nid)
 			pn[i-1].hostname[20]=0;
 		}else
 			pn[i-1].hostname[0]=0;
-		pn[i-1].changed = timestamp2tt( row[5]);
-		pn[i-1].created = timestamp2tt( row[6]);
+		pn[i-1].changed = atol( row[5]);
+		pn[i-1].created = atol( row[6]);
 		pn[i-1].uid = atoi(row[7]);
 		pn[i-1].comment = atoi(row[8]);
 		pn[i-1].commentcount = atol(row[9]);
@@ -426,7 +428,7 @@ int get_pc_nodes( struct pc_nodes * pn, int uid, unsigned long pid, int type, in
 		return -1;
 	}
 
-	sprintf(sql,"SELECT * FROM nodes WHERE uid=%d", uid );
+	sprintf(sql,"SELECT `nid`,`pid`,`type`,`source`,`hostname`,UNIX_TIMESTAMP(`changed`),UNIX_TIMESTAMP(`created`),`uid`,`comment`,`commentcount`,`subject`,`body`,`access`,`visitcount`,`tid`,`emote`,`htmltag` FROM nodes WHERE uid=%d", uid );
 
 	snprintf(qtmp, 99, " AND pid=%lu", pid);
 	strcat(sql, qtmp);
@@ -473,8 +475,8 @@ int get_pc_nodes( struct pc_nodes * pn, int uid, unsigned long pid, int type, in
 			pn[i-1].hostname[20]=0;
 		}else
 			pn[i-1].hostname[0]=0;
-		pn[i-1].changed = timestamp2tt( row[5]);
-		pn[i-1].created = timestamp2tt( row[6]);
+		pn[i-1].changed = atol( row[5]);
+		pn[i-1].created = atol( row[6]);
 		pn[i-1].uid = atoi(row[7]);
 		pn[i-1].comment = atoi(row[8]);
 		pn[i-1].commentcount = atol(row[9]);
@@ -506,7 +508,7 @@ int get_pc_a_com( struct pc_comments * pn, unsigned long cid )
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sql[100];
+	char sql[256];
 	int i;
 
 	mysql_init(&s);
@@ -520,7 +522,7 @@ int get_pc_a_com( struct pc_comments * pn, unsigned long cid )
 		return -1;
 	}
 
-	sprintf(sql,"SELECT * FROM comments WHERE cid=\"%lu\"", cid );
+	sprintf(sql,"SELECT `cid`,`nid`,`uid`,`hostname`,`username`,`subject`,UNIX_TIMESTAMP(`created`),UNIX_TIMESTAMP(`changed`),`body` FROM comments WHERE cid=\"%lu\"", cid );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
 #ifdef BBSMAIN
@@ -547,8 +549,8 @@ int get_pc_a_com( struct pc_comments * pn, unsigned long cid )
 		pn[i-1].username[20]=0;
 		strncpy(pn[i-1].subject, row[5], 200);
 		pn[i-1].subject[200]=0;
-		pn[i-1].created = timestamp2tt( row[6]);
-		pn[i-1].changed = timestamp2tt( row[7]);
+		pn[i-1].created = atol( row[6]);
+		pn[i-1].changed = atol( row[7]);
 
 		pn[i-1].body = (char *)malloc( strlen(row[8]) + 1);
 		if( pn[i-1].body )
@@ -626,7 +628,7 @@ int get_pc_comments( struct pc_comments * pn, unsigned long nid, int start, int 
 		return -1;
 	}
 
-	sprintf(sql,"SELECT * FROM comments WHERE nid=\"%lu\"", nid );
+	sprintf(sql,"SELECT `cid`,`nid`,`uid`,`hostname`,`username`,`subject`,UNIX_TIMESTAMP(`created`),UNIX_TIMESTAMP(`changed`),`body` FROM comments WHERE nid=\"%lu\"", nid );
 
 	snprintf(qtmp, 99, " ORDER BY created LIMIT %d,%d", start, num);
 	strcat(sql, qtmp);
@@ -658,8 +660,8 @@ int get_pc_comments( struct pc_comments * pn, unsigned long nid, int start, int 
 		pn[i-1].username[20]=0;
 		strncpy(pn[i-1].subject, row[5], 200);
 		pn[i-1].subject[200]=0;
-		pn[i-1].created = timestamp2tt( row[6]);
-		pn[i-1].changed = timestamp2tt( row[7]);
+		pn[i-1].created = atol( row[6]);
+		pn[i-1].changed = atol( row[7]);
 
 		if(withbody){
 			pn[i-1].body = (char *)malloc( strlen(row[8]) + 1);
