@@ -131,7 +131,7 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sql[100];
+	char sql[256];
 	int ret=0;
 	int i;
 
@@ -281,7 +281,7 @@ int get_pc_a_node( struct pc_nodes * pn, unsigned long nid)
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sql[256];
+	char sql[300];
 	int i;
 
 	mysql_init(&s);
@@ -413,7 +413,7 @@ int get_pc_nodes( struct pc_nodes * pn, int uid, unsigned long pid, int type, in
 	MYSQL s;
 	MYSQL_RES *res;
 	MYSQL_ROW row;
-	char sql[300];
+	char sql[500];
 	char qtmp[100];
 	int i;
 
