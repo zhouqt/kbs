@@ -2669,7 +2669,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s%s\033[1;32mEnter\033[m继续: ", 
                 (replymode) ? "\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
 #ifdef SSHBBS
-				"\033[1;32mu\033[m上传附件, ",
+				"\033[1;32mu\033[m传附件, ",
 #else
 				"",
 #endif
