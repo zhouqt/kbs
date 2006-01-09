@@ -2252,9 +2252,10 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
     currln = 0;
     currpnt = 0;
     display_buffer();
-    while (ch != EOF) {
+    while (1) {
         newch = '\0';
         switch (ch) {
+        case EOF:
         case Ctrl('W'):
         case Ctrl('X'):        /* Save and exit */
             if (headlines) {
