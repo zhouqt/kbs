@@ -194,7 +194,7 @@
 		{
 			if (defined("SITE_NEWSMTH")) {
 ?>
-<div class="logo"><img src="images/left_logo.gif" /></div>
+<div class="logo"><img src="images/logo.gif" /></div>
 <?php       } ?>
 <div class="t2">
 <nobr><script type="text/javascript">putImage('u1.gif','alt="µÇÂ¼ÓÃ»§Ãû" class="pm"');</script>
