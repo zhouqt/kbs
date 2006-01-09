@@ -112,8 +112,8 @@ c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo
 					$str .= " "; 
 				else if ($managemode)
 					$str .= $flags[0];
-				else
-					$str .= ""; //$flags[0];  //不要未读标记 windinsn
+				//else
+				//	$str .= $flags[0];  //不要未读标记 windinsn
 			} else{
 				if ($flags[0] == ' ')
 					$str .=  " "; 
