@@ -3193,6 +3193,7 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 /* new del_ding function modified by pig2532@newsmth */
 int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
+    char buf[STRLEN];
     int ret;
     struct read_arg* arg=(struct read_arg*)conf->arg;
 
@@ -3201,14 +3202,8 @@ int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !chk_currBM(currBM, getCurrentUser()))
         return DONOTHING;
 
-    clear();
-    prints("É¾³ýÎÄÕÂ '%s'.", fileinfo->title);
-    getdata(1, 0, "(Y/N) [N]: ", genbuf, 3, DOECHO, NULL, true);
-    if (genbuf[0] != 'Y' && genbuf[0] != 'y') {     /* if not yes quit */
-        move(2, 0);
-        prints("È¡Ïû\n");
-        pressreturn();
-        clear();
+    a_prompt(-1, "É¾³ýÖÃ¶¥£¬È·ÈÏÂð£¿(Y/N) [N] ", buf);
+    if (buf[0] != 'Y' && buf[0] != 'y') {     /* if not yes quit */
         return FULLUPDATE;
     }
 
@@ -3216,10 +3211,7 @@ int del_ding(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 
     if(ret == -1)
     {
-        move(2, 0);
-        prints("É¾³ýÊ§°Ü\n");
-        pressreturn();
-        clear();
+        a_prompt(-1, "É¾³ýÊ§°Ü, Çë°´ Enter ¼ÌÐø << ", buf);
         return FULLUPDATE;
     }
     else
@@ -3490,14 +3482,9 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 		return DONOTHING;
 #endif
     if (!(flag&ARG_NOPROMPT_FLAG)) {
-        clear();
-        prints("É¾³ýÎÄÕÂ '%s'.", fileinfo->title);
-        getdata(1, 0, "(Y/N) [N]: ", genbuf, 3, DOECHO, NULL, true);
-        if (genbuf[0] != 'Y' && genbuf[0] != 'y') {     /* if not yes quit */
-            move(2, 0);
-            prints("È¡Ïû\n");
-            pressreturn();
-            clear();
+        char buf[STRLEN];
+        a_prompt(-1, "É¾³ýÎÄÕÂ£¬È·ÈÏÂð£¿(Y/N) [N] ", buf);
+        if (buf[0] != 'Y' && buf[0] != 'y') {     /* if not yes quit */
             return FULLUPDATE;
         }
     }
@@ -3517,10 +3504,8 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         ret=do_del_post(getCurrentUser(),arg->writearg,fileinfo,currboard->filename,DIR_MODE_NORMAL,flag,getSession());
     if (ret != 0) {
         if (!(flag&ARG_NOPROMPT_FLAG)) {
-            move(2, 0);
-            prints("É¾³ýÊ§°Ü\n");
-            pressreturn();
-            clear();
+            char buf[STRLEN];
+            a_prompt(-1, "É¾³ýÊ§°Ü, Çë°´ Enter ¼ÌÐø << ", buf);
             return FULLUPDATE;
         }
     }
