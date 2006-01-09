@@ -6039,7 +6039,8 @@ static int split_thread_me(struct _select_def* conf, struct fileheader* fh,int e
 
 static int split_thread(struct _select_def* conf, struct fileheader* fh, void* extraarg)
 {
-       int ent;
+    int ent;
+    char buf[STRLEN];
     struct split_thread_arg func_arg;
     struct read_arg* arg=(struct read_arg*)conf->arg;
     struct write_dir_arg dirarg;
@@ -6053,10 +6054,15 @@ static int split_thread(struct _select_def* conf, struct fileheader* fh, void* e
         return DONOTHING;
     if (conf->pos>arg->filecount) /*置顶*/
         return DONOTHING;
-       if (fh->id == fh->groupid)
-               return DONOTHING;
+    if (fh->id == fh->groupid)
+        return DONOTHING;
 
-       func_arg.num = 0;
+    a_prompt(-1, "切分主题，操作后无法复原，确认吗？(Y/N) [N] ", buf);
+    if (buf[0] != 'Y' && buf[0] != 'y') {     /* if not yes quit */
+        return FULLUPDATE;
+    }
+
+    func_arg.num = 0;
 
     ent=conf->pos;
     init_write_dir_arg(&dirarg);
