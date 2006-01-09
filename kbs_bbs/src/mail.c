@@ -1328,9 +1328,8 @@ int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extr
     strncpy(buf, arg->direct, sizeof(buf));
     if ((p = strrchr(buf, '/')) != NULL)
         *p = '\0';
-    clear();
     sprintf(fname, "%s/%s", buf, fileinfo->filename);
-    sprintf(genbuf, "将--%s--存入暂存档,确定吗?(Y/N) [N]: ", fileinfo->title);
+    sprintf(genbuf, "将信件存入暂存档,确定吗?(Y/N) [N]: ");
     a_prompt(-1, genbuf, ans);
     if (ans[0] == 'Y' || ans[0] == 'y') {
         sprintf(board, "tmp/bm.%s", getCurrentUser()->userid);
