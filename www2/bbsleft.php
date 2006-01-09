@@ -2,7 +2,6 @@
 	require("www2-funcs.php");
 	login_init();
 	
-	$img_subdir = /* defined("SITE_NEWSMTH") ? "images/newsmth/" : */ "images/newstyle/";
 	$blog_index = defined("SITE_NEWSMTH") ? "index.html" : "pcmain.php";
 
 	function display_board_list()
