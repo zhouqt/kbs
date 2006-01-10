@@ -102,23 +102,13 @@ c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo
 			echo "false";
 		} else {
 			$str = "'";
-			if ($flags[1] == 'y') {
-				if ($flags[0] == ' ')
-					$str .= " ";
-				else
+			if ($managemode) {
+				$str .= $flags[0];
+			} else {
+				if ($flags[0] != 'N' && $flags[0] != '*') // 不要未读标记
+				{
 					$str .= $flags[0];
-			} elseif ($flags[0] == 'N' || $flags[0] == '*'){
-				if ($flags[0] == ' ') 
-					$str .= " "; 
-				else if ($managemode)
-					$str .= $flags[0];
-				else
-					$str .= "";  //不要未读标记 windinsn
-			} else{
-				if ($flags[0] == ' ')
-					$str .=  " "; 
-				else
-					$str .= $flags[0];
+				}
 			}
 			$str .= $flags[3] . "'";
 			echo $str;
