@@ -85,7 +85,7 @@ function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$tot
 <script type="text/javascript"><!--
 var c = new docWriter('<?php echo addslashes($board); ?>',<?php echo $brdarr["BID"]; ?>,<?php echo $start;
 ?>,<?php echo $mancode; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
-?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>);
+?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>,<?php echo $isnormalboard?"1":"0"; ?>);
 <?php
 	if($show_none)
 	{

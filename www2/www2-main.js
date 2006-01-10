@@ -650,7 +650,7 @@ function dir_name(ftype) {
 }
 
 /* man - 1: 普通管理模式，2: 回收站模式 */
-function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
+function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, normalB) {
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
 	this.bid = bid;
@@ -662,6 +662,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 	this.num = 0;
 	this.baseurl = "bbsdoc.php?board=" + this.board;
 	this.showHot = showHot;
+	this.normalB = normalB;
 	this.hotOpt = (readParaCookie() & 0x60) >> 5;
 	if (this.man) this.baseurl += "&manage=1";
 	if (this.ftype) this.baseurl += "&ftype=" + this.ftype;
@@ -741,7 +742,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + cb_value + '" /></td>';
 		}
 	} else {
-		if (!this.man && (bf == 'N' || bf == '*')) flag = ' ' + flag.charAt(1);
+		if (!this.man && this.normalB && (bf == 'N' || bf == '*')) flag = ' ' + flag.charAt(1);
 		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center">' + flag + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + cb_value + '" /></td>';
