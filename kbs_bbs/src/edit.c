@@ -1340,7 +1340,7 @@ fsdfa
         if (aborted != -1)
             aborted = 1;        /* aborted = 1 means local save */
     }
-    if ((uinfo.mode == POSTING) && strcmp(currboard->filename, "test")) { /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
+    if ((uinfo.mode == POSTING) /* && strcmp(currboard->filename, "test") */) { /*Haohmaru.99.4.02.让爱灌水的人哭去吧//grin */
         if (ret)
             temp_numposts++;
         if (temp_numposts > 20)
