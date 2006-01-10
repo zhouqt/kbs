@@ -768,7 +768,7 @@ void mail_msg(struct userec* user,session_t* session)
     if (!fn) return;
 
     now = time(0);
-    sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
+    sprintf(title, "[%20.20s] 所有讯息备份", ctime(&now) + 4);
 
     write_header(fn, user,1,NULL,title,0,0,session);
     count = get_msgcount(0, user->userid);
