@@ -734,12 +734,14 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
 	var cb_value = (this.man == 2) ? (this.start + this.num) : id; /* 回收站中以序号代替id */
-	if (flag === false) { /* 置顶 */
+	var bf = flag.charAt(0);
+	if (bf.toLowerCase() == 'd') { /* 置顶 */
 		str += '<td class="center red strong">提示</td><td class="center">' + putImageCode('istop.gif','alt="提示"') + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + cb_value + '" /></td>';
 		}
 	} else {
+		if (!this.man && (bf == 'N' || bf == '*')) flag = ' ' + flag.charAt(1);
 		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center">' + flag + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + cb_value + '" /></td>';

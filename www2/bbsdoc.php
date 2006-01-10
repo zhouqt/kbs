@@ -98,21 +98,7 @@ document.write('<tr><td align="center" colspan="<?php echo ($managemode?6:5); ?>
 ?>
 c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo $article["OWNER"]; ?>',<?php
 		$flags = $article["FLAGS"];
-		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
-			echo "false";
-		} else {
-			$str = "'";
-			if ($managemode) {
-				$str .= $flags[0];
-			} else {
-				if ($flags[0] != 'N' && $flags[0] != '*') // 不要未读标记
-				{
-					$str .= $flags[0];
-				}
-			}
-			$str .= $flags[3] . "'";
-			echo $str;
-		}
+		echo "'" . $flags[0] . $flags[3] . "'";
 ?>,<?php echo $article["POSTTIME"]; ?>,'<?php echo addslashes($article["TITLE"]); ?> ',<?php echo $article["EFFSIZE"]; ?>);
 <?php
 	}
