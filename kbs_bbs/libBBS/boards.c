@@ -33,6 +33,7 @@ char *brd;
     return 1;
 }
 
+/***20060110, stiger, 代码整理*********/
 void load_wwwboard(struct favbrd_struct *brdlist, int * brdlist_t)
 {
 	int fd, sign=0;
@@ -79,32 +80,18 @@ void load_allboard(struct favbrd_struct *brdlist, int * brdlist_t)
 	}	
 }
 
-void load_favboard(int dohelp,int mode,session_t* session)
-{
+void save_favboard1(char *name,struct favbrd_struct *brdlist, int * brdlist_t);
+
+void load_myboard1(struct userec *user, struct favbrd_struct *brdlist, int * brdlist_t, int force){
     char fname[STRLEN];
     int fd, sign, i, j, k;
 
-    session->favnow = 0;
-	
-	if(mode==2){
-		session->favbrd_list=bdirshm->allbrd_list;
-		session->favbrd_list_count = &bdirshm->allbrd_list_t;
-		return;
-	}else if(mode==3){
-		session->favbrd_list=bdirshm->wwwbrd_list;
-		session->favbrd_list_count = &bdirshm->wwwbrd_list_t;
-		return;
-	}else{
-		session->favbrd_list=session->mybrd_list;
-		session->favbrd_list_count=&session->mybrd_list_t;
-#ifdef BBSMAIN
-		if(favbrd_list_t > 0)
-			return;
-#endif
+	if(!force){
+		if(*brdlist_t > 0) return;
 	}
 
-    sethomefile(fname, session->currentuser->userid, "favboard");
-	bzero(session->favbrd_list, sizeof(struct favbrd_struct)*FAVBOARDNUM);
+    sethomefile(fname, user->userid, "favboard");
+	bzero(brdlist, sizeof(struct favbrd_struct)*FAVBOARDNUM);
     if ((fd = open(fname, O_RDONLY, 0600)) != -1) {
         read(fd, &sign, sizeof(int));
         if (sign != 0x8080 && sign!=0x8081 ) {      /* We can consider the 0x8080 magic number as a 
@@ -112,15 +99,15 @@ void load_favboard(int dohelp,int mode,session_t* session)
             /*
              * We handle old version here. 
              */
-            favbrd_list_t = 1;
-            session->favbrd_list[0].father = -1;
+            *brdlist_t = 1;
+            brdlist[0].father = -1;
             for (k=0; k<MAXBOARDPERDIR; k++) {
                 if( read(fd, &j, sizeof(int)) <= 0)
 					break;
 				if(j<0) j=0;
-                session->favbrd_list[0].bid[k] = j;
+                brdlist[0].bid[k] = j;
             }
-			session->favbrd_list[0].bnum = k;
+			brdlist[0].bnum = k;
         } else if(sign==0x8080) {
             /*
              * We handle new version here. 
@@ -150,14 +137,14 @@ void load_favboard(int dohelp,int mode,session_t* session)
                 favbrd_list_tmp[i].father = j;
             }
 
-			favbrd_list_t=1;
-			session->favbrd_list[0].father=-1;
+			*brdlist_t=1;
+			brdlist[0].father=-1;
 			for(i=0;i<k;i++){
 				if( favbrd_list_tmp[i].flag == -1 ){
-					favbrd_list_tmp[i].flag = 0 - favbrd_list_t;
-					strncpy(session->favbrd_list[favbrd_list_t].title, favbrd_list_tmp[i].buf, 80);
-					session->favbrd_list[favbrd_list_t].title[80]=0;
-					favbrd_list_t++;
+					favbrd_list_tmp[i].flag = 0 - *brdlist_t;
+					strncpy(brdlist[*brdlist_t].title, favbrd_list_tmp[i].buf, 80);
+					brdlist[*brdlist_t].title[80]=0;
+					*brdlist_t++;
 				}
 			}
 			for(i=0;i<k;i++){
@@ -166,85 +153,120 @@ void load_favboard(int dohelp,int mode,session_t* session)
 					newfather = 0;
 				else
 					newfather = 0-favbrd_list_tmp[favbrd_list_tmp[i].father].flag;
-				if (newfather >= favbrd_list_t) continue;	
+				if (newfather >= *brdlist_t) continue;	
 
 				if( favbrd_list_tmp[i].flag < 0 ){
-					if(newfather >= 0 && session->favbrd_list[newfather].bnum < MAXBOARDPERDIR
-					   && ( -favbrd_list_tmp[i].flag < favbrd_list_t )){
-						session->favbrd_list[newfather].bid[session->favbrd_list[newfather].bnum]=favbrd_list_tmp[i].flag;
-						session->favbrd_list[newfather].bnum++;
-						session->favbrd_list[0-favbrd_list_tmp[i].flag].father = newfather;
+					if(newfather >= 0 && brdlist[newfather].bnum < MAXBOARDPERDIR
+					   && ( -favbrd_list_tmp[i].flag < *brdlist_t )){
+						brdlist[newfather].bid[brdlist[newfather].bnum]=favbrd_list_tmp[i].flag;
+						brdlist[newfather].bnum++;
+						brdlist[0-favbrd_list_tmp[i].flag].father = newfather;
 					}
 				}else{
-					if(newfather >= 0 && session->favbrd_list[newfather].bnum < MAXBOARDPERDIR){
-						session->favbrd_list[newfather].bid[session->favbrd_list[newfather].bnum]=favbrd_list_tmp[i].flag;
-						session->favbrd_list[newfather].bnum++;
+					if(newfather >= 0 && brdlist[newfather].bnum < MAXBOARDPERDIR){
+						brdlist[newfather].bid[brdlist[newfather].bnum]=favbrd_list_tmp[i].flag;
+						brdlist[newfather].bnum++;
 					}
 				}
 			}
 		}else{
-            read(fd, &favbrd_list_t, sizeof(int));
-			read(fd, session->favbrd_list, sizeof(struct favbrd_struct) * favbrd_list_t);
+            read(fd, brdlist_t, sizeof(int));
+			read(fd, brdlist, sizeof(struct favbrd_struct) * (*brdlist_t));
         }
         close(fd);
     }
-#ifdef BBSMAIN
-    else if (dohelp) {
-        int savmode;
 
-        savmode = uinfo.mode;
-        modify_user_mode(CSIE_ANNOUNCE);        /* 没合适的mode.就先用"汲取精华"吧. */
-        show_help("help/favboardhelp");
-        modify_user_mode(savmode);
-    }
-#endif
-    if ((favbrd_list_t <= 0)) {
+    if ((*brdlist_t <= 0)) {
         char bn[40];
         FILE* fp=fopen("etc/initial_favboard", "r");
         if(!fp) {
-            favbrd_list_t = 1;      /*  favorate board count    */
-            session->favbrd_list[0].bnum = 1;
-            session->favbrd_list[0].bid[0] = 0;
-			session->favbrd_list[0].father = -1;
+            *brdlist_t = 1;      /*  favorate board count    */
+            brdlist[0].bnum = 1;
+            brdlist[0].bid[0] = 0;
+			brdlist[0].father = -1;
         } else {
-            favbrd_list_t = 1;      /*  favorate board count    */
-			session->favbrd_list[0].father = -1;
+            *brdlist_t = 1;      /*  favorate board count    */
+			brdlist[0].father = -1;
             while(!feof(fp)) {
                 int k;
                 if(fscanf(fp, "%s", bn)<1) break;
                 k=getbnum(bn);
                 if(k) {
-					if(session->favbrd_list[0].bnum < MAXBOARDPERDIR){
-						session->favbrd_list[0].bid[session->favbrd_list[0].bnum]=k-1;
-						session->favbrd_list[0].bnum++;
+					if(brdlist[0].bnum < MAXBOARDPERDIR){
+						brdlist[0].bid[brdlist[0].bnum]=k-1;
+						brdlist[0].bnum++;
 					}
                 }
             }
             fclose(fp);
         }
-    } else if(mode!=2 && mode!=3){
+    //} else if(mode!=2 && mode!=3){
+    } else {
         int change=0;
 		struct boardheader *bh;
 
-		for(i=0;i<favbrd_list_t;i++){
-			for(j=0;j<session->favbrd_list[i].bnum;j++){
-				fd = session->favbrd_list[i].bid[j];
+		for(i=0;i<*brdlist_t;i++){
+			for(j=0;j<brdlist[i].bnum;j++){
+				fd = brdlist[i].bid[j];
 				if (fd < 0)
 					continue;
 				bh = (struct boardheader *) getboard(fd + 1);
-				if (fd <= get_boardcount() && (bh && bh->filename[0] && (check_see_perm(session->currentuser,bh)) ) )
+				if (fd <= get_boardcount() && (bh && bh->filename[0] && (check_see_perm(user,bh)) ) )
 				    continue;
-				for(k=j;k<session->favbrd_list[i].bnum-1;k++){
-					session->favbrd_list[i].bid[k]=session->favbrd_list[i].bid[k+1];
+				for(k=j;k<brdlist[i].bnum-1;k++){
+					brdlist[i].bid[k]=brdlist[i].bid[k+1];
 				}
-				session->favbrd_list[i].bid[k]=0;
-				session->favbrd_list[i].bnum--;
+				brdlist[i].bid[k]=0;
+				brdlist[i].bnum--;
 				j--;
 				change=1;
 			}
 		}
 		if(change)
-            save_favboard(mode,session);
+            save_favboard1(fname, brdlist, brdlist_t);
+    }
+}
+
+void load_myboard(session_t *session, int force){
+	load_myboard1(session->currentuser, session->mybrd_list, &session->mybrd_list_t, force);
+}
+
+void load_favboard(int mode,session_t* session)
+{
+    session->favnow = 0;
+	session->nowfavmode = mode;
+	
+	if(mode==2){
+		session->favbrd_list=bdirshm->allbrd_list;
+		session->favbrd_list_count = &bdirshm->allbrd_list_t;
+		return;
+	}else if(mode==3){
+		session->favbrd_list=bdirshm->wwwbrd_list;
+		session->favbrd_list_count = &bdirshm->wwwbrd_list_t;
+		return;
+	}else{
+		session->favbrd_list=session->mybrd_list;
+		session->favbrd_list_count=&session->mybrd_list_t;
+
+		load_myboard(session, 0);
+	}
+
+
+	return ;
+}
+
+void save_favboard1(char *fname,struct favbrd_struct *brdlist, int * brdlist_t)
+{
+    int fd, i;
+
+    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
+        i = 0x8081;
+        write(fd, &i, sizeof(int));
+        write(fd, brdlist_t, sizeof(int));
+        for (i = 0; i < *brdlist_t; i++) {
+            write(fd, &(brdlist[i]), sizeof(struct favbrd_struct));
+        }
+        close(fd);
     }
 }
 
@@ -253,25 +275,20 @@ void save_favboard(int mode,session_t* session)
     int fd, i;
     char fname[MAXPATH];
 
-	if(mode==2)
-		sprintf(fname,"etc/board.dir");
-	else if(mode==3)
-		sprintf(fname,"etc/wwwboard.dir");
-	else
-		sethomefile(fname, session->currentuser->userid, "favboard");
-
 	if( (mode==2 || mode==3 ) && !HAS_PERM(session->currentuser,PERM_SYSOP))
 		return;
 
-    if ((fd = open(fname, O_WRONLY | O_CREAT, 0600)) != -1) {
-        i = 0x8081;
-        write(fd, &i, sizeof(int));
-        write(fd, &favbrd_list_t, sizeof(int));
-        for (i = 0; i < favbrd_list_t; i++) {
-            write(fd, &session->favbrd_list[i], sizeof(struct favbrd_struct));
-        }
-        close(fd);
-    }
+	if(mode==2){
+		sprintf(fname,"etc/board.dir");
+		save_favboard1(fname, bdirshm->allbrd_list, &bdirshm->allbrd_list_t);
+	} else if(mode==3) {
+		sprintf(fname,"etc/wwwboard.dir");
+		save_favboard1(fname, bdirshm->wwwbrd_list, &bdirshm->wwwbrd_list_t);
+	} else {
+		sethomefile(fname, session->currentuser->userid, "favboard");
+		save_favboard1(fname, session->mybrd_list, &session->mybrd_list_t);
+	}
+
 }
 
 int EnameInFav(char *ename,session_t* session)
@@ -289,14 +306,42 @@ int EnameInFav(char *ename,session_t* session)
     return 0;
 }
 
-int IsFavBoard(int idx,session_t* session)
+int IsFavBoard1(int idx,struct favbrd_struct *brdlist, int favnow)
 {
     int i;
 
-    for (i = 0; i < session->favbrd_list[session->favnow].bnum ; i++)
-        if (idx == session->favbrd_list[session->favnow].bid[i])
+    for (i = 0; i < brdlist[favnow].bnum ; i++)
+        if (idx == brdlist[favnow].bid[i])
             return i + 1;
     return 0;
+}
+
+int IsFavBoard(int idx,session_t* session, int favmode, int favnow)
+{
+    int fn;
+	struct favbrd_struct *brdlist;
+
+	if(favnow < 0 || favmode <= 0){
+		fn = session->favnow;
+		brdlist = session->favbrd_list;
+	} else {
+		fn = favnow;
+		if(favmode == 2)
+			brdlist = bdirshm->allbrd_list;
+		else if(favmode == 3)
+			brdlist = bdirshm->wwwbrd_list;
+		else
+			brdlist = session->mybrd_list;
+	}
+
+	return IsFavBoard1(idx, brdlist, fn);
+}
+
+/*
+
+int IsMyFavBoard(int idx,session_t* session, int favnow)
+{
+	return IsFavBoard1(idx, session->mybrd_list, favnow);
 }
 
 int ExistFavBoard(int idx,session_t* session)
@@ -308,6 +353,7 @@ int ExistFavBoard(int idx,session_t* session)
             return i + 1;
     return 0;
 }
+*/
 
 int changeFavBoardDirEname(int i, char *s,session_t* session)
 {
@@ -333,13 +379,41 @@ int getfavnum(session_t* session)
 }
 
 /* i是bid */
-void addFavBoard(int i,session_t* session)
+void addFavBoard1(int i,struct favbrd_struct *brdlist, int favnow)
 {
-    if (session->favbrd_list[session->favnow].bnum < MAXBOARDPERDIR) {
-        session->favbrd_list[session->favnow].bid[session->favbrd_list[session->favnow].bnum] = i;
-		session->favbrd_list[session->favnow].bnum++;
+    if (brdlist[favnow].bnum < MAXBOARDPERDIR) {
+        brdlist[favnow].bid[brdlist[favnow].bnum] = i;
+		brdlist[favnow].bnum++;
     };
 }
+
+void addFavBoard(int i,session_t* session, int favmode, int favnow)
+{
+    int fn;
+	struct favbrd_struct *brdlist;
+
+	if(favnow < 0 || favmode <= 0){
+		fn = session->favnow;
+		brdlist = session->favbrd_list;
+	} else {
+		fn = favnow;
+		if(favmode == 2)
+			brdlist = bdirshm->allbrd_list;
+		else if(favmode == 3)
+			brdlist = bdirshm->wwwbrd_list;
+		else
+			brdlist = session->mybrd_list;
+	}
+
+	return addFavBoard1(i, brdlist, fn);
+}
+
+/*
+void addMyFavBoard(int idx,session_t* session, int favnow)
+{
+	return addFavBoard1(idx, session->mybrd_list, favnow);
+}
+*/
 
 void addFavBoardDir(char *s,session_t* session)
 {

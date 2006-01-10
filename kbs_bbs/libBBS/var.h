@@ -79,6 +79,7 @@ typedef struct {
     struct favbrd_struct mybrd_list[FAVBOARDNUM];
     int mybrd_list_t;
     int favnow;
+	int nowfavmode; //used by web
     
     int *zapbuf;
     int zapbuf_changed;

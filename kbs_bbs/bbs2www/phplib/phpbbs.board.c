@@ -694,7 +694,7 @@ PHP_FUNCTION(bbs_load_favboard)
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
                 WRONG_PARAM_COUNT;
         }
-        load_favboard(0,1, getSession());
+        load_favboard(1, getSession());
         if(select>=0 && select<favbrd_list_t)
         {
                 SetFav(select, getSession());
@@ -711,7 +711,7 @@ PHP_FUNCTION(bbs_is_favboard)
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l" ,&position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
-        RETURN_LONG(IsFavBoard(position-1, getSession())); //position是bid，但是fav数据结构里头的是-1的. - atppp
+        RETURN_LONG(IsFavBoard(position-1, getSession(), 1, getSession()->favnow)); //position是bid，但是fav数据结构里头的是-1的. - atppp
 }
 
 PHP_FUNCTION(bbs_del_favboarddir)
@@ -722,10 +722,15 @@ PHP_FUNCTION(bbs_del_favboarddir)
         if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
-
-			if(position < 0 || position>= getSession()->favbrd_list[select].bnum)
+		if(select < 0 || select >= FAVBOARDNUM)
 				RETURN_LONG(-1);
-			if(getSession()->favbrd_list[select].bid[position]<0)
+		if(getSession()->nowfavmode != 1)
+				RETURN_LONG(-1);
+
+			if(position < 0 || position>= getSession()->mybrd_list[select].bnum)
+				RETURN_LONG(-1);
+
+			if(getSession()->mybrd_list[select].bid[position]<0)
 				DelFavBoardDir(position,select, getSession());
 			else
 				RETURN_LONG(-1);
@@ -771,6 +776,8 @@ PHP_FUNCTION(bbs_del_favboard)
         if(ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll" , &select, &position) == FAILURE){
                 WRONG_PARAM_COUNT;
         }
+		if(getSession()->nowfavmode != 1)
+				RETURN_LONG(-1);
         	DelFavBoard(position, getSession());
         	save_favboard(1, getSession());
 			RETURN_LONG(0);
@@ -786,6 +793,8 @@ PHP_FUNCTION(bbs_add_favboarddir)
         }
         if(char_len <= 20)
         {
+				if(getSession()->nowfavmode != 1)
+					RETURN_LONG(-1);
                 addFavBoardDir(char_dname, getSession());
                 save_favboard(1, getSession());
         }
@@ -801,10 +810,12 @@ PHP_FUNCTION(bbs_add_favboard)
         if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_bname,&char_len) ==FAILURE){
                 WRONG_PARAM_COUNT;
         }
+				if(getSession()->nowfavmode != 1)
+					RETURN_LONG(-1);
         i=getbnum(char_bname);
-        if(i >0 && ! IsFavBoard(i - 1, getSession()))
+        if(i >0 && ! IsFavBoard(i - 1, getSession(), -1, -1))
         {
-                addFavBoard(i - 1, getSession());
+                addFavBoard(i - 1, getSession(), -1, -1);
                 save_favboard(1, getSession());
         }
 }
@@ -854,12 +865,12 @@ PHP_FUNCTION(bbs_fav_boards)
      */
 
 	if (mode==2){
-        load_favboard(0,2, getSession());
+        load_favboard(2, getSession());
         if(select>=0 && select<favbrd_list_t)
             SetFav(select, getSession());
 	}
 	else if(mode==3){
-        load_favboard(0,3, getSession());
+        load_favboard(3, getSession());
         if(select>=0 && select<favbrd_list_t)
             SetFav(select, getSession());
 	}

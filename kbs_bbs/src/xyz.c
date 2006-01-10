@@ -543,7 +543,7 @@ int get_favread()
         sethomefile(mypath,getCurrentUser()->userid,"favboard");
         f_cp(dpath,mypath,0);
         getSession()->mybrd_list_t=0;
-        load_favboard(1,1,getSession());
+        load_favboard(1,getSession());
         count++;
     }
 

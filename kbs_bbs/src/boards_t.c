@@ -112,29 +112,18 @@ struct newpostdata *ptr;
 
 /* Select the fav path
 seperated by pig2532@newsmth */
-static int fav_select_path(const char *brdname, int *i)
+static int fav_select_path()
 {
     struct boardheader bh;
     int k;
 
-    load_favboard(0,1, getSession());
+	load_myboard(getSession(), 0);
 
-    *i=getboardnum(brdname, &bh);
-    if (*i<=0)
-        return SHOW_REFRESH;
-    if(favbrd_list_t < 2) {
-        SetFav(0, getSession());
-        if (IsFavBoard(*i - 1, getSession())) {
-            move(2, 0); 
-            clrtoeol();
-            prints("已存在该讨论区.");
-            clrtoeol();
-            pressreturn();
-            return SHOW_REFRESH;
-        }
+    if( getSession()->mybrd_list_t < 2) {
         move(2,0);
         if (askyn("加入个人定制区？",0)!=1)
-            return SHOW_REFRESH;
+            return -1;
+		return 0;
     }
     else {
         struct _select_item *sel;
@@ -142,18 +131,18 @@ static int fav_select_path(const char *brdname, int *i)
         clear();
         move(3, 3);
         prints("请选择加入到定制区哪个目录");
-        sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (favbrd_list_t+1));
+        sel = (struct _select_item *) malloc(sizeof(struct _select_item) * (getSession()->mybrd_list_t +1));
         sel[0].x = 3;
         sel[0].y = 6;
         sel[0].hotkey = '0';
         sel[0].type = SIT_SELECT;
         sel[0].data = root;
-        for(k=1;k<favbrd_list_t;k++){
+        for(k=1;k< getSession()->mybrd_list_t ;k++){
                 sel[k].x = 3;
                 sel[k].y = 6+k;
                 sel[k].hotkey = '0'+k;
                 sel[k].type = SIT_SELECT;
-                sel[k].data = getSession()->favbrd_list[k].title;
+                sel[k].data = getSession()->mybrd_list[k].title;
         }
         sel[k].x = -1;
         sel[k].y = -1;
@@ -162,13 +151,14 @@ static int fav_select_path(const char *brdname, int *i)
         sel[k].data = NULL;
         k = simple_select_loop(sel, SIF_NUMBERKEY | SIF_SINGLE | SIF_ESCQUIT, 0, 6, NULL) - 1;
         free(sel);
-        if(k>=0&&k<favbrd_list_t) {
-            SetFav(k, getSession());
+        if(k>=0 && k < getSession()->mybrd_list_t ) {
+			return k;
+            //SetFav(k, getSession());
         }
         else
-            return SHOW_REFRESH;
+            return -1;
     }
-    return DONOTHING;
+    return 0;
 }
 
 /* Add board to fav
@@ -180,17 +170,17 @@ return:
     1: fav board exists
     2: error board
 */
-static int fav_add_board(int i, int favmode)
+static int fav_add_board(int i, int favmode, int favnow)
 {
-    if (i > 0 && !IsFavBoard(i - 1, getSession())) {
-        addFavBoard(i - 1, getSession());
-	save_favboard(favmode, getSession());
-        return 0;
-    } else if (IsFavBoard(i - 1, getSession())) {
-        return 1;
-    } else {
-        return 2;
-    }
+	if(i<=0){
+		return 2;
+	}else if(IsFavBoard(i-1, getSession(), favmode, favnow)){
+		return 1;
+	}else{
+       	addFavBoard(i - 1, getSession(), favmode, favnow);
+		save_favboard(favmode, getSession());
+		return 0;
+	}
 }
 
 int show_boardinfo(const char *bname)
@@ -240,9 +230,15 @@ int show_boardinfo(const char *bname)
     ch = igetkey();
     switch(toupper(ch)) {
     case 'A':
-        if(fav_select_path(bname, &bid) == DONOTHING)
+	{
+   		struct boardheader bh;
+		int i,ret;
+   		i=getboardnum(bname, &bh);
+   		if (i<=0)
+            return 1;
+        if((ret=fav_select_path()) >= 0)
         {
-            ret = fav_add_board(bid, 1);
+            ret = fav_add_board(i, 1, ret);
             switch(ret) {
             case 0:
                 move(2, 0);
@@ -264,6 +260,8 @@ int show_boardinfo(const char *bname)
 		break;
             }
         }
+	}
+	default:
         break;
     }
     return 1;
@@ -963,64 +961,106 @@ static int fav_key(struct _select_def *conf, int command)
 
 		}
     case Ctrl('O'):
+        if (BOARD_FAV == arg->yank_flag && (arg->favmode==2 || arg->favmode==3) && (HAS_PERM(getCurrentUser(),PERM_SYSOP)) ){
+            char bname[STRLEN];
+            int i = 0, ret;
+            extern int in_do_sendmsg;
+            extern int super_select_board(char*);
+    		struct boardheader bh;
+
+           	if (getSession()->favbrd_list[getSession()->favnow].bnum >= MAXBOARDPERDIR) {
+               	move(2, 0);
+               	clrtoeol();
+               	prints("已经达上限(%d)！", FAVBOARDNUM);
+               	pressreturn();
+               	return SHOW_REFRESH;
+           	}
+
+            move(0, 0);
+            clrtoeol();
+            prints("输入讨论区英文名 (大小写皆可，按空白键或Tab键自动搜寻): ");
+            clrtoeol();
+
+            make_blist(0);
+            in_do_sendmsg=1;
+            if(namecomplete(NULL,bname)=='#')
+                super_select_board(bname);
+            in_do_sendmsg=0;
+
+            CreateNameList();   /*  free list memory. */
+            if (*bname)
+                i = getbnum(bname);
+            if (i==0)
+                return SHOW_REFRESH;
+        	ret = fav_add_board(i, arg->favmode, getSession()->favnow);
+
+            switch(ret) {
+            case 0:
+                arg->reloaddata=true;
+                return SHOW_DIRCHANGE;
+                break;
+            case 1:
+                move(2, 0);
+                prints("已存在该讨论区.");
+                clrtoeol();
+                pressreturn();
+                return SHOW_REFRESH;
+            case 2:
+                move(2, 0);
+                prints("不正确的讨论区.");
+                clrtoeol();
+                pressreturn();
+                return SHOW_REFRESH;
+            }
+        }
+        break;
     case 'a':
         {
             char bname[STRLEN];
             int i = 0, ret;
             extern int in_do_sendmsg;
             extern int super_select_board(char*);
+    		struct boardheader bh;
 
-            if (BOARD_FAV == arg->yank_flag) {
+        	if (BOARD_FAV == arg->yank_flag && arg->favmode==1) {
+            	move(0, 0);
+            	clrtoeol();
+            	prints("输入讨论区英文名 (大小写皆可，按空白键或Tab键自动搜寻): ");
+            	clrtoeol();
 
-			if ((arg->favmode == 2 || arg->favmode == 3) && !HAS_PERM(getCurrentUser(),PERM_SYSOP))
-				return SHOW_REFRESH;
+            	make_blist(0);
+            	in_do_sendmsg=1;
+            	if(namecomplete(NULL,bname)=='#')
+                	super_select_board(bname);
+            	in_do_sendmsg=0;
 
+            	CreateNameList();   /*  free list memory. */
+            	if (*bname)
+                	i = getbnum(bname);
+            	if (i==0)
+					return SHOW_REFRESH;
 
-            if (getSession()->favbrd_list[getSession()->favnow].bnum >= MAXBOARDPERDIR) {
-                move(2, 0);
-                clrtoeol();
-                prints("个人热门版数已经达上限(%d)！", FAVBOARDNUM);
-                pressreturn();
-                return SHOW_REFRESH;
-            }
-                move(0, 0);
-                clrtoeol();
-                prints("输入讨论区英文名 (大小写皆可，按空白键或Tab键自动搜寻): ");
-                clrtoeol();
+				ret = getSession()->favnow;
+			}else{
+				if(!ptr->name || !ptr->name[0])
+					return SHOW_CONTINUE;
+    			i=getboardnum(ptr->name, &bh);
+    			if (i<=0)
+                	return SHOW_CONTINUE;
 
-                make_blist(0);
-                in_do_sendmsg=1;
-                if(namecomplete(NULL,bname)=='#')
-                    super_select_board(bname);
-                in_do_sendmsg=0;
-
-                CreateNameList();   /*  free list memory. */
-                if (*bname)
-                    i = getbnum(bname);
-                if (i==0)
-                    return SHOW_REFRESH;
-            } else {
-                ret = fav_select_path(ptr->name, &i);
-                if(ret != DONOTHING)
+                ret = fav_select_path();
+                if(ret < 0)
                 {
-                    return(ret);
+                    return SHOW_REFRESH;
                 }
-            }
-	    if (BOARD_FAV == arg->yank_flag)
-	    {
-	        ret = fav_add_board(i, arg->favmode);
-	    }
-	    else
-	    {
-	        ret = fav_add_board(i, 1);
-	    }
+			}
+
+	       	ret = fav_add_board(i, 1, ret);
+
             switch(ret) {
             case 0:
                 arg->reloaddata=true;
-                if (BOARD_FAV == arg->yank_flag)
-                    return SHOW_DIRCHANGE;
-                else
-                    return SHOW_REFRESH;
+                return SHOW_DIRCHANGE;
                 break;
             case 1:
                 move(2, 0);
@@ -1355,7 +1395,7 @@ int choose_board(int newflag, const char *boardprefix,int group,int favmode)
         arg.loop_mode = 0;
 		arg.select_group =0;
 		if (favmode != 0 && lastloadfavmode != favmode){
- 			load_favboard(1,favmode, getSession());
+ 			load_favboard(favmode, getSession());
 			lastloadfavmode = favmode;
 		}
 		arg.favmode = favmode;
@@ -1492,18 +1532,18 @@ extern int mybrd_list_t;
 
 void FavBoard()
 {
- 	load_favboard(1,1, getSession());
+ 	load_favboard(1, getSession());
     choose_board(1, NULL,0,1);
 }
 
 void AllBoard()
 {
-	load_favboard(1,2, getSession());
+	load_favboard(2, getSession());
 	choose_board(1, NULL,0,2);
 }
 
 void WwwBoard()
 {
-	load_favboard(1,3, getSession());
+	load_favboard(3, getSession());
 	choose_board(1, NULL,0,3);
 }
