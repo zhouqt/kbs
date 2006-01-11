@@ -329,7 +329,7 @@ function atomic_article() {
 			header("Location: atomic.php" . $url . $articles[$idx]["ID"]);
 			exit;
 		}
-		if ($currentuser["userid"] != "guest") bbs_brcaddread($atomic_board, $article["ID"]);
+		bbs_brcaddread($atomic_board, $article["ID"]);
 	}
 
 	atomic_header();

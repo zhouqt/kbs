@@ -60,8 +60,7 @@
 			$redirt_id = $id;
 		else
 			$redirt_id = $articles[0]["ID"];
-		if (($loginok == 1) && $currentuser["userid"] != "guest")
-			bbs_brcaddread($brdarr["NAME"], $redirt_id);
+		bbs_brcaddread($brdarr["NAME"], $redirt_id);
 		header("Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id);
 		exit;
 	}
@@ -72,8 +71,7 @@
 			$redirt_id = $id;
 		else
 			$redirt_id = $articles[0]["ID"];
-		if (($loginok == 1) && $currentuser["userid"] != "guest")
-			bbs_brcaddread($brdarr["NAME"], $redirt_id);
+		bbs_brcaddread($brdarr["NAME"], $redirt_id);
 		header("Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $redirt_id);
 		exit;
 	}
@@ -124,15 +122,13 @@
 	}
 
 	if (!$ftype && $ptr == 'p' && $articles[0]["ID"] != 0) {
-		if ($currentuser["userid"] != "guest")
-			bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
+		bbs_brcaddread($brdarr["NAME"], $articles[0]["ID"]);
 		header("Location: " . "bbscon.php?bid=" . $brdnum . "&id=" . $articles[0]["ID"]);
 		exit;
 	}
 	if (!$ftype && $ptr == 'n' && $articles[2]["ID"] != 0)
 	{
-		if ($currentuser["userid"] != "guest")
-			bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
+		bbs_brcaddread($brdarr["NAME"], $articles[2]["ID"]);
 		header("Location: " ."bbscon.php?bid=" . $brdnum . "&id=" . $articles[2]["ID"]);
 		exit;
 	}
@@ -150,7 +146,6 @@ o.h(0);o.t();
 //-->
 </script>
 <?php
-	if (($ftype==0) && ($loginok==1) && ($currentuser["userid"] != "guest"))
-		bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
+	if ($ftype==0) bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
 	page_footer();
 ?>

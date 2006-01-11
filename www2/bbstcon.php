@@ -64,13 +64,11 @@ var o = new tconWriter('<?php echo addslashes($board); ?>',<?php echo $gid; ?>,<
 o.h();
 <?php
 	$strs = array();
-	$addbrc = ($loginok==1&&($currentuser["userid"] != "guest"));
 	for( $i = $startnum ; $i < $endnum ; $i ++ )
 	{
 		$article = $articles[$i];
 		$strs[] = "[" . $article["ID"] . ",'" . $article["OWNER"] . "']";
-		if ($addbrc)
-			bbs_brcaddread($board , $article["ID"]);
+		bbs_brcaddread($board , $article["ID"]);
 	}
 	$arts = "[" . implode(",", $strs) . "]";
 ?>
