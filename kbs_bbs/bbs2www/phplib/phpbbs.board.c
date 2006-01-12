@@ -275,7 +275,7 @@ PHP_FUNCTION(bbs_getboards)
 		int fd, size;
 
 		size = total* sizeof(int);
-   		getSession()->zapbuf = (int *) emalloc(size);
+   		getSession()->zapbuf = (int *) malloc(size);
 		if (getSession()->zapbuf==NULL) {
 			RETURN_FALSE;
 		}

@@ -405,6 +405,7 @@ PHP_RSHUTDOWN_FUNCTION(kbs_bbs)
     }
 #endif
 
+    if (getSession()->zapbuf) free(getSession()->zapbuf);
 
     setcurrentuser(NULL, 0);
     setcurrentuinfo(NULL, -1);
