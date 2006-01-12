@@ -636,19 +636,19 @@ void brc_update(const char *userid,session_t* session)
         if (errno == Z_ERRNO)
             errstr = strerror(errno);
 //        bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
-	f_rm(dirfile);
+        f_rm(dirfile);
 //        return;
     } else {
-    count = 0;
-    while (count < BRC_FILESIZE) {
-        int ret;
+        count = 0;
+        while (count < BRC_FILESIZE) {
+            int ret;
 
-        ret = gzread(fd, (char *) (&data) + count, BRC_FILESIZE - count);
-        if (ret <= 0)
-            break;
-        count += ret;
-    }
-    gzclose(fd);
+            ret = gzread(fd, (char *) (&data) + count, BRC_FILESIZE - count);
+            if (ret <= 0)
+                break;
+            count += ret;
+        }
+        gzclose(fd);
     }
 
     if ((fd = gzopen(dirfile, "w+b6")) == NULL) {
@@ -660,20 +660,21 @@ void brc_update(const char *userid,session_t* session)
             errstr = strerror(errno);
 //        bbslog("3error", "can't %s open to write:%s", dirfile, errstr);
         f_rm(dirfile);
+        return;
     }
-//        return;
-//            } else {
 
     for (i = 0; i < BRC_CACHE_NUM; i++) {
-        if (session->brc_cache_entry[i].changed)
+        if (session->brc_cache_entry[i].changed) {
             memcpy(data[session->brc_cache_entry[i].bid - 1], &session->brc_cache_entry[i].list, BRC_ITEMSIZE);
+            session->brc_cache_entry[i].changed = 0;
+        }
     }
     count = 0;
     while (count < BRC_FILESIZE) {
         int ret;
 
         ret = gzwrite(fd, (char *) (&data) + count, BRC_FILESIZE - count);
-        if (ret == 0)
+        if (ret <= 0)
             break;
         count += ret;
     }
@@ -760,15 +761,13 @@ void free_brc_cache(char *userid,session_t* session){
 void init_brc_cache(const char* userid,bool replace,session_t* session) {
     if ((session->brc_cache_entry==NULL)||(replace)) {
         char dirfile[MAXPATH];
-        char temp[MAXPATH];
         int brcfdr;
-	struct stat st;
-	if (session->brc_cache_entry)
-		munmap(session->brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
-        setcachehomefile(temp, userid, -1, NULL);
-        mkdir(temp, 0700);
-        setcachehomefile(temp, userid, -1, "entry");
-	sprintf(dirfile,BBSHOME "/%s",temp);
+        struct stat st;
+        if (session->brc_cache_entry)
+            munmap(session->brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+        setcachehomefile(dirfile, userid, -1, NULL);
+        mkdir(dirfile, 0700);
+        setcachehomefile(dirfile, userid, -1, "entry");
         if(stat(dirfile, &st)<0) {
             char brc[BRC_CACHE_NUM*sizeof(struct _brc_cache_entry)];
             brcfdr = open(dirfile, O_RDWR|O_CREAT, 0600);
@@ -777,11 +776,11 @@ void init_brc_cache(const char* userid,bool replace,session_t* session) {
             close(brcfdr);
         }
         brcfdr = open(dirfile, O_RDWR, 0600);
-	if (brcfdr==-1) bbslog("3error","can't open %s errno %d",dirfile,errno);
+        if (brcfdr==-1) bbslog("3error","can't open %s errno %d",dirfile,errno);
         session->brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
         if (session->brc_cache_entry==MAP_FAILED) {
-                bbslog("3error","can't mmap %s errno %d",dirfile,errno);
-                session->brc_cache_entry = NULL; //added by atppp 20040724
+            bbslog("3error","can't mmap %s errno %d",dirfile,errno);
+            session->brc_cache_entry = NULL; //added by atppp 20040724
         }
         session->brc_currcache = -1; //added by atppp 20040719
         close(brcfdr);
@@ -798,13 +797,14 @@ int brc_initial(const char *userid, const char *boardname,session_t* session)
     const struct boardheader *bptr;
     int count;
 
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(userid,"guest")) return 0;
+
     if (boardname == NULL)
         return 0;
     bid = getbnum(boardname);
     if (bid == 0)
         return 0;
-    /*干脆不搞guest的这个算了*/
-    if (!strcmp(userid,"guest")) return 0;
 #if USE_TMPFS==1
     init_brc_cache(userid,false,session);
     if (session->brc_cache_entry==NULL) return 0;

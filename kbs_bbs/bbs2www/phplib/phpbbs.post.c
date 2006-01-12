@@ -273,9 +273,6 @@ PHP_FUNCTION(bbs_postarticle)
         generate_static(DIR_MODE_NORMAL,&post_file,board,oldx);
 #endif
     }
-#ifdef HAVE_BRC_CONTROL
-    brc_update(getCurrentUser()->userid, getSession());
-#endif
     if (!junkboard(board)) {
         getCurrentUser()->numposts++;
     }
@@ -898,6 +895,9 @@ PHP_FUNCTION(bbs_brcaddread)
     long fid;
 	boardheader_t* bp;
 
+    if (!strcmp(getCurrentUser()->userid, "guest")) {
+        RETURN_NULL();
+    }
     if (zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &fid) != SUCCESS)
         WRONG_PARAM_COUNT;
 	if ((bp=getbcache(board))==0){
@@ -906,8 +906,6 @@ PHP_FUNCTION(bbs_brcaddread)
 #ifdef HAVE_BRC_CONTROL
 	brc_initial(getCurrentUser()->userid, bp->filename, getSession());
 	brc_add_read(fid, getSession());
-	brc_update(getCurrentUser()->userid, getSession());
-    /*brc_addreaddirectly(getcurrentuser()->userid, boardnum, fid);*/
 #endif
     RETURN_NULL();
 }
@@ -943,7 +941,6 @@ PHP_FUNCTION(bbs_brcclear)
 #ifdef HAVE_BRC_CONTROL
     brc_initial(u->userid, board, getSession());
     brc_clear(getSession());
-    brc_update(u->userid, getSession());
 #endif
     RETURN_TRUE;
 }

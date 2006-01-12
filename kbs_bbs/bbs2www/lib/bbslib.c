@@ -641,7 +641,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
         stay = 7200;
     user->stay += stay;
     user->exittime = time(0);
-    if (strcasecmp(user->userid, "guest")) {
+    if (strcmp(user->userid, "guest")) {
         newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d](www)", stay / 60, user->username, getSession()->utmpent, useridx);
         if (!puinfo->active)
             return 0;
@@ -649,7 +649,12 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
 
         if ((HAS_PERM(user, PERM_CHATCLOAK) || HAS_PERM(user, PERM_CLOAK)))
             setflags(user, CLOAK_FLAG, puinfo->invisible);
+#if defined(HAVE_BRC_CONTROL) && USE_TMPFS == 1
+        brc_update(user->userid, getSession());
+#endif
+
         clear_utmp(userinfoidx, useridx, 1);
+
     } else {
         newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (guest)[%d %d](www)", stay / 60, puinfo->destuid, useridx);
         www_free_guest_entry(puinfo->destuid);

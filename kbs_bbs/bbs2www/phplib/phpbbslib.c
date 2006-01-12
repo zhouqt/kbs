@@ -368,6 +368,18 @@ PHP_RINIT_FUNCTION(kbs_bbs)
     zend_error(E_WARNING, "request init:%d %x", getpid(), getSession()->currentuinfo);
 #endif
 	getSession()->zapbuf=NULL;
+
+
+#ifdef HAVE_BRC_CONTROL
+#if USE_TMPFS == 1
+    getSession()->brc_cache_entry=NULL;
+#else
+    bzero(getSession()->brc_cache_entry, sizeof(struct _brc_cache_entry)*BRC_CACHE_NUM);
+#endif
+    getSession()->brc_currcache=-1;
+#endif
+
+
 	reset_output_buffer();
 #ifdef SMS_SUPPORT
 	getSession()->smsbuf=NULL;
@@ -383,10 +395,17 @@ PHP_RSHUTDOWN_FUNCTION(kbs_bbs)
 #endif
     chdir(old_pwd);
 
-#if defined(HAVE_BRC_CONTROL) && USE_TMPFS == 1
-    //if (getCurrentUser() && getCurrentUser()->userid && (getCurrentUser()->userid[0]) )
-	//free_brc_cache( getCurrentUser()->userid );
+#ifdef HAVE_BRC_CONTROL
+    if (getCurrentUser() && getCurrentUser()->userid && (getCurrentUser()->userid[0]) ) {
+#if USE_TMPFS == 1
+        free_brc_cache( getCurrentUser()->userid, getSession() );
+#else
+        brc_update( getCurrentUser()->userid, getSession() );
 #endif
+    }
+#endif
+
+
     setcurrentuser(NULL, 0);
     setcurrentuinfo(NULL, -1);
     return SUCCESS;
