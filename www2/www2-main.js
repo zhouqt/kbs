@@ -962,7 +962,7 @@ conWriter.prototype.t = function() {
 		ret += '[<a href="bbsedit.php' + qry + '">修改</a>] ';
 		if (!zd) {
 			ret += '[<a href="bbsedittitle.php' + qry + '">修改标题</a>] ';
-			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&file=' + this.file + '">删除</a>] ';
+			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&id=' + this.id + '">删除</a>] ';
 		}
 	}
 	ret += '</div>';
