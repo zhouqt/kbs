@@ -694,6 +694,7 @@ PHP_FUNCTION(bbs_load_favboard)
         if(ac != 1 || zend_parse_parameters(1 TSRMLS_CC, "l", &select) ==FAILURE) {
                 WRONG_PARAM_COUNT;
         }
+		getSession()->mybrd_list_t = 0;
         load_favboard(1, getSession());
         if(select>=0 && select<favbrd_list_t)
         {
