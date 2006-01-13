@@ -18,6 +18,7 @@ if (!isset($needlogin)){ //本页面是否需要设置cookie等登录变量，默认需要
 	$needlogin=1;
 }
 
+/*
 if ($needlogin && ((!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']=='')))
 {
 	setcookie('iscookies','0',time()+3650*24*3600);
@@ -37,6 +38,7 @@ if ($needlogin && ((!isset($_COOKIE['iscookies'])) || ($_COOKIE['iscookies']==''
 <?php
 	exit();
 } 
+*/
 
 function getmicrotime(){ 
    list($usec, $sec) = explode(" ",microtime()); 
