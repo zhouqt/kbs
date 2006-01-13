@@ -2635,3 +2635,18 @@ char * filter_control_char(char *s) {
     return s;
 }
 
+
+/*
+ * 将 src 中不超过 (n-1) 个字符复制到 dest 中
+ * dest 保证在 dest[n-1] 或之前有字符串结束符 '\0'
+ * src 和 dest 内存区域有重叠的情况下，当 dest < src 的时候保证没有问题
+ * 保证最后不截断在汉字半字
+ * 返回 dest
+ */
+char *strnzhcpy(char *dest, const char *src, size_t n) {
+    /* 先用这个狗肉卖一下 */
+    strncpy(dest, src, n);
+    dest[n-1] = '\0';
+    return dest;
+}
+

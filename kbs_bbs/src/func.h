@@ -230,6 +230,7 @@ typedef int (*read_func)(int fd, void *buf, size_t count);
     int check_ip_acl(char * id, char * sip);
     char * filter_upload_filename(char *s);
     char * filter_control_char(char *s);
+    char *strnzhcpy(char *dest, const char *src, size_t n);
 
 #ifndef CYGWIN
 #define time(x) bbstime(x)
@@ -273,6 +274,7 @@ void unlock_sem_check(int lockid);
     void resolve_boards(ARG_VOID);
     int get_boardcount(ARG_VOID);
     struct boardheader *getbcache(const char *bname);
+    int getbid(const char *bname, struct boardheader **pbh);
     int normal_board(const char *bname);
     int getboardnum(const char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
@@ -345,7 +347,7 @@ void unlock_sem_check(int lockid);
      * 保存一个版的brclist 
      */
     void brc_update(const char *userid,session_t* session);      /* 保存当前的brclist到用户的.boardrc */
-    void brc_add_read(unsigned int fid,session_t* session);
+    void brc_add_read(unsigned int fid, int bid, session_t* session);
     void brc_clear(session_t* session);
     int brc_unread(unsigned int fid,session_t* session);
     int junkboard(const char *currboard);     /* 判断是否为 junkboards */

@@ -40,43 +40,6 @@ const char * const permstrings[] = {
 
 };
 
-/* You might want to put more descriptive strings for SPECIAL1 and SPECIAL2
-   depending on how/if you use them. */
-const char * const user_definestr[] = {
-    "活动看版",                 /* DEF_ACBOARD */
-    "使用彩色",                 /* DEF_COLOR */
-    "编辑时显示状态栏",         /* DEF_EDITMSG */
-    "分类讨论区以 New 显示",    /* DEF_NEWPOST */
-    "选单的讯息栏",             /* DEF_ENDLINE */
-    "上站时显示好友名单",       /* DEF_LOGFRIEND */
-    "让好友呼叫",               /* DEF_FRIENDCALL */
-    "使用自己的离站画面",       /* DEF_LOGOUT */
-    "进站时显示备忘录",         /* DEF_INNOTE */
-    "离站时显示备忘录",         /* DEF_OUTNOTE */
-    "讯息栏模式：呼叫器/人数",  /* DEF_NOTMSGFRIEND */
-    "菜单模式选择：一般/精简",  /* DEF_NORMALSCR */
-    "阅读文章是否使用绕卷选择", /* DEF_CIRCLE */
-    "阅读文章游标停於第一篇未读",       /* DEF_FIRSTNEW */
-    "屏幕标题色彩：一般/变换",  /* DEF_TITLECOLOR */
-    "接受所有人的讯息",         /* DEF_ALLMSG */
-    "接受好友的讯息",           /* DEF_FRIENDMSG */
-    "收到讯息发出声音",         /* DEF_SOUNDMSG */
-    "离站后寄回所有讯息",       /* DEF_MAILMSG */
-    "发文章时实时显示讯息",     /*"所有好友上站均通知",    DEF_LOGININFORM */
-    "菜单上显示帮助信息",       /* DEF_SHOWSCREEN */
-    "进站时显示十大新闻",       /* DEF_SHOWHOT */
-    "进站时观看留言版",         /* DEF_NOTEPAD */
-    "忽略讯息功能键: Enter/Esc",        /* DEF_IGNOREMSG */
-    "使用高亮界面",                   /* DEF_HIGHCOLOR */
-    "观看人数统计和祝福榜", /* DEF_SHOWSTATISTIC Haohmaru 98.09.24 */
-    "未读标记使用 *",           /* DEF_UNREADMARK Luzi 99.01.12 */
-    "使用GB码阅读",             /* DEF_USEGB KCN 99.09.03 */
-    "对汉字进行整字处理",       /* DEF_SPLITSCREEN 2002.9.1 */
-    "显示详细用户数据",         /*DEF_SHOWDETAILUSERDATA 2003.7.31 */
-    "显示真实用户数据",          /*DEF_REALDETAILUSERDATA 2003.7.31 */
-	"",
-    "隐藏ip"                 /* DEF_SHOWALLIP */
-};
 
 const char * const groups[] = {
     "system.faq",

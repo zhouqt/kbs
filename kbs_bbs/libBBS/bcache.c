@@ -332,6 +332,19 @@ struct boardheader *getbcache(const char *bname)
     return &bcache[i - 1];
 }
 
+int getbid(const char *bname, struct boardheader **pbh)
+{
+    register int i;
+
+    for (i = 0; i < brdshm->numboards; i++)
+        if (!strncasecmp(bname, bcache[i].filename, STRLEN)) {
+            if (pbh)
+                *pbh = &bcache[i];
+            return i + 1;
+        }
+    return 0;
+}
+
 int get_boardcount()
 {
     return brdshm->numboards;

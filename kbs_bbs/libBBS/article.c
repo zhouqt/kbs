@@ -984,22 +984,9 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
     getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, local_article, toboard, session); /*根据fname完成 文件复制 */
 
     postfile.eff_size = get_effsize_attach(filepath, &postfile.attachment);     /* FreeWizard: get effsize & attachment */
-    /*
-     * Changed by KCN,disable color title 
-     */
-    if (mode != 1) {
-        int i;
 
-        for (i = 0; (i < strlen(save_title)) && (i < ARTICLE_TITLE_LEN - 1); i++)
-            if (save_title[i] == 0x1b)
-                postfile.title[i] = ' ';
-            else
-                postfile.title[i] = save_title[i];
-        postfile.title[i] = 0;
-    } else {
-        strncpy(postfile.title, save_title, ARTICLE_TITLE_LEN - 1);
-        postfile.title[ARTICLE_TITLE_LEN - 1] = '\0';
-    }
+    strnzhcpy(postfile.title, save_title, ARTICLE_TITLE_LEN);
+
     if (local_article == 1) {   /* local save */
         postfile.innflag[1] = 'L';
         postfile.innflag[0] = 'L';
@@ -1025,17 +1012,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
         postfile.accessed[1] |= FILE_READ;
 #endif
     }
-#ifdef HAVE_BRC_CONTROL
-    { //added by atppp, 防止转载等破坏BRC 20070719
-        int save;
-        save = session->brc_currcache;
-        session->brc_currcache = -1;
-#endif
-        after_post(user, &postfile, toboard, NULL, !(Anony), session);
-#ifdef HAVE_BRC_CONTROL
-        session->brc_currcache = save;
-    }
-#endif
+    after_post(user, &postfile, toboard, NULL, !(Anony), session);
 #ifdef BBSMAIN
     modify_user_mode(oldmode);
 #endif
@@ -1069,16 +1046,17 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
 #ifdef FILTER
     char oldpath[50], newpath[50];
     int filtered;
-    struct boardheader *bh;
 #endif
+    struct boardheader *bh = NULL;
+    int bid;
 
     if ((re == NULL) && (!strncmp(fh->title, "Re: ", 4))) {
         strncpy(fh->title, fh->title + 4, ARTICLE_TITLE_LEN);
     }
+    bid = getbid(boardname, &bh);
 #ifdef FILTER
     setbfile(oldpath, boardname, fh->filename);
     filtered = 0;
-    bh = getbcache(boardname);
     if (strcmp(fh->owner, DELIVER)) {
         if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)
 #if 0
@@ -1108,11 +1086,11 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                 else
 #endif
 #endif
-                    setbfile(newpath, FILTER_BOARD, fh->filename);
+                setbfile(newpath, FILTER_BOARD, fh->filename);
                 f_mv(oldpath, newpath);
-                fh->o_bid = getboardnum(boardname, NULL);
+                fh->o_bid = bid;
                 //strncpy(fh->o_board, boardname, STRLEN - BM_LEN);
-                nowid = get_nextid(boardname);
+                nowid = get_nextid_bid(bid);
                 fh->o_id = nowid;
                 if (re == NULL) {
                     fh->o_groupid = fh->o_id;
@@ -1194,7 +1172,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     else {
 #endif
 #ifdef HAVE_BRC_CONTROL
-        brc_add_read(fh->id, session);
+        brc_add_read(fh->id, bid, session);
 #endif
 
         /*

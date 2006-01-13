@@ -1259,7 +1259,7 @@ int read_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 #endif
     register_attach_link(NULL,NULL);
 #ifdef HAVE_BRC_CONTROL
-    brc_add_read(fileinfo->id,getSession());
+    brc_add_read(fileinfo->id,currboardent,getSession());
 #endif
 #ifndef NOREPLY
     move(t_lines - 1, 0);
@@ -1481,7 +1481,7 @@ reget:
 int skip_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
 #ifdef HAVE_BRC_CONTROL
-    brc_add_read(fileinfo->id,getSession());
+    brc_add_read(fileinfo->id,currboardent,getSession());
 #endif
     return GOTO_NEXT;
 }

@@ -894,18 +894,19 @@ PHP_FUNCTION(bbs_brcaddread)
 	int blen;
     long fid;
 	boardheader_t* bp;
+    int bid;
 
     if (!strcmp(getCurrentUser()->userid, "guest")) {
         RETURN_NULL();
     }
     if (zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &blen, &fid) != SUCCESS)
         WRONG_PARAM_COUNT;
-	if ((bp=getbcache(board))==0){
+	if ((bid=getbid(board, &bp))==0){
 		RETURN_NULL();
 	}
 #ifdef HAVE_BRC_CONTROL
 	brc_initial(getCurrentUser()->userid, bp->filename, getSession());
-	brc_add_read(fid, getSession());
+	brc_add_read(fid, bid, getSession());
 #endif
     RETURN_NULL();
 }

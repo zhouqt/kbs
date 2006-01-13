@@ -883,7 +883,7 @@ int brc_has_read(char *file) {
 }
 */
 
-void brc_add_read(unsigned int fid,session_t* session)
+void brc_add_read(unsigned int fid, int bid, session_t* session)
 {
     int n, i;
 
@@ -892,6 +892,7 @@ void brc_add_read(unsigned int fid,session_t* session)
     if (session->brc_cache_entry==NULL) return;
     /*干脆不搞guest的这个算了*/
     if (!strcmp(session->currentuser->userid,"guest")) return;
+    if (session->brc_cache_entry[session->brc_currcache].bid != bid) return;
     for (n = 0; (n < BRC_MAXNUM) && session->brc_cache_entry[session->brc_currcache].list[n]; n++) {
         if (fid == session->brc_cache_entry[session->brc_currcache].list[n]) {
             return;

@@ -147,7 +147,7 @@ const char * const user_definestr[] = {
     "显示真实用户数据(wForum)", /*DEF_SHOWREALUSERDATA 2003.7.31 */
 	"",
     "隐藏ip",                 /* DEF_HIDEIP */
-    "显示底部流动信息"		/* DEF_BANNER */
+    "不显示文章字节数"        /* DEF_SHOWSIZE */
 };
 #endif
 
