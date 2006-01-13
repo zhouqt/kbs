@@ -3,6 +3,7 @@
 $needlogin=0;
 
 require("inc/funcs.php"); 
+cache_header("nocache");
 setStat("ÓÃ»§µÇÂ¼");
 
 global $comeurl;
