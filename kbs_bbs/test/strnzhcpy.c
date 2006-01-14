@@ -4,9 +4,14 @@
 #include <string.h>
 #include "bbs.h"
 
-#define LEN (ARTICLE_TITLE_LEN-2)
+#define LEN (ARTICLE_TITLE_LEN-10)
 #define PER_TEST 10000
+
+#ifdef NEWSMTH
+const char *boards[] = {"newexpress", "trafficinfo", "pielove", "joke", "picture", "advancededu", "newsoftware"};
+#else
 const char *boards[] = {"SYSOP"};
+#endif
 
 typedef char* (*STRNZHCPY_FUNC)(char *dest, const char *src, size_t n);
 
@@ -17,26 +22,39 @@ char* original_strnzhcpy(char *dest, const char *src, size_t n)
 	return dest;
 }
 
+char* originalNP_strnzhcpy(char *dest, const char *src, size_t n)
+{
+	int l = strlen(src);
+	if (n > l + 1)
+	n = l + 1;
+	memcpy(dest, src, n - 1);
+	dest[n - 1] = 0;
+	return dest;
+}
+
 char* flyriver_strnzhcpy(char *dest, const char *src, size_t n)
 {
 	register unsigned char is_zh = 0;
 	register char c;
-	const char *ptr = src;
-	char *ptr2 = dest;
+	register const char *ptr = src;
+	register char *ptr2 = dest;
 
 	if (dest == NULL || src == NULL || n == 0)
-		return NULL;
+		return dest;
 
 	dest[--n] = '\0';
 	while ((ptr - src) < n && (c = *ptr) != '\0')
 	{
 		*ptr2 = c;
-		is_zh += ((c & 0x80));
+		//is_zh += ((c & 0x80));
+		is_zh = (((c) & 0x80) & (is_zh ^ 0x80) ); 
 		ptr2++;
 		ptr++;
 	}
 	if ((is_zh & 0x80) != 0)
 		*(ptr2 - 1) = '\0';
+	else
+		*ptr2 = 0;
 
 	return dest;
 }
@@ -47,7 +65,7 @@ char *dvlt_strnzhcpy(char *dest, const char *src, size_t n)
 	char flag = 0;
 
 	if (n == 0)
-		return NULL;
+		return dest;
 
 	for ( ; --n > 0; dest++, src++) {
 		if (!(*dest = *src))
@@ -63,22 +81,42 @@ char *dvlt_strnzhcpy(char *dest, const char *src, size_t n)
 	return d;
 }
 
-char* etnlegend_strnzhcpy(char *to,const char *from,size_t size){
+char* etn_strnzhcpy(char *to,const char *from,size_t size){
 	char *p;
 	unsigned int i;
 	size_t len;
-	if((len=strlen(from))<size)
-		return strcpy(to,from);
-	memcpy(to,from,size*sizeof(char));
-	for(p=to+size,p--,p--,i=1;!(p<to)&&((*p)&0x80);p--)
+	if((len=strlen(from))<size) {
+		strcpy(to,from);
+		len++;
+	} else {
+		strncpy(to,from,size*sizeof(char));
+		len = size;
+	}
+	for(p=to+len,p--,p--,i=1;!(p<to)&&((*p)&0x80);p--)
 		i^=0x03;
-	to[size-i]=0;
+	to[len-i]=0;
 	return to;
 }
+
+char* etnlegend_strnzhcpy(char *to,const char *from,size_t size){
+		register char *p;
+		register unsigned int i;
+		size_t len;
+		if (size==0) return to;
+		len=strnlen(from,--size);
+		memcpy(to,from,len);
+		for(p=to+len,p--,i=0;!(p<to)&&((*p)&0x80);p--)
+				i^=0x01;
+		to[len-i]=0;
+		return to;
+}
+
 
 char *at3p_strnzhcpy(char *dest, const char *src, size_t n) {
 	register int c = 0, i = 0;
 	register char *dst = dest;
+	if (n==0) return dest;
+	n--;
 	while(i < n && *src != '\0') {
 		char ch = *src;
 		*dest = ch;
@@ -91,9 +129,38 @@ char *at3p_strnzhcpy(char *dest, const char *src, size_t n) {
 	return dst;
 }
 
+char *atppp_strnzhcpy(char *dest, const char *src, size_t n) {
+#define COPY_ONE_BYTE \
+		if (*src == '\0') { n = 0; break; } \
+		c = (((*src) & 0x80) & (c ^ 0x80) ); \
+		*dest = *src; \
+		dest++; src++; \
+		n--;
+	register int c = 0;
+	register char *dst = dest;
+	if (n==0) return dest;
+	n--;
+	while( n > 8 ) {
+		COPY_ONE_BYTE
+		COPY_ONE_BYTE
+		COPY_ONE_BYTE
+		COPY_ONE_BYTE
+		COPY_ONE_BYTE
+		COPY_ONE_BYTE
+		COPY_ONE_BYTE
+		COPY_ONE_BYTE
+	}
+	while (n > 0) {
+		COPY_ONE_BYTE
+	}
+	*(dest - (c>>7) )='\0';
+	return dst;
+}
 char *stiger_strnzhcpy(char *dest, const char *src, size_t n) {
 	register int c = 0;
 	register char *dst = dest;
+	if (n==0) return dest;
+	n--;
 	while( n > 0 && *src != '\0') {
 		c = (((*src) & 0x80) & (c ^ 0x80) );
 		*dest = *src;
@@ -105,8 +172,11 @@ char *stiger_strnzhcpy(char *dest, const char *src, size_t n) {
 }
 
 
-
 #define TEST_FUNC(name) test_func(name##_strnzhcpy, #name)
+		
+static int range_rand(double range){
+	return (int)(range*rand()/((double)RAND_MAX+1));
+}
 
 void test_func(STRNZHCPY_FUNC fn, const char *func_name)
 {
@@ -122,11 +192,40 @@ void test_func(STRNZHCPY_FUNC fn, const char *func_name)
 	fileheader_t *fh;
 	struct boardheader *bh;
 	size_t fsize;
+#define OOPREFIX "original"
+	if (strncmp(func_name, OOPREFIX, strlen(OOPREFIX))) {
+		char ss[80], dd[80], dds[80];
+		char * ret;
+		for (j=-128;j<128;j++) {
+			dd[0] = j;
+			ret = fn(dd, ss, 0);
+			if (ret != dd || dd[0] != j) {
+				printf("%s: failed boundary test.\n", func_name);
+				return;
+			}
+		}
+		srand(time(NULL));
+		for (j=0;j<10000;j++){
+			int ll;
+			for(i=0;i<79;i++) ss[i]= range_rand(256) - 128;
+			ss[79] = 0;
+			ll = range_rand(60) + 1;
+			stiger_strnzhcpy(dds, ss, ll);
+			ret = fn(dd, ss, ll);
+			if (ret != dd || strlen(dd) > 59 || strcmp(dd, dds)) {
+				printf("%s: failed correctness test.\n", func_name);
+				return;
+			}
+		}
+	}
 
 	for(i=0;i<sizeof(boards)/sizeof(char *);i++)
 	{
 		bh = getbcache(boards[i]);
-		if (!bh) continue;
+		if (!bh) {
+			printf("%s: shit, no board!\n", boards[i]);
+			exit(0);
+		}
 		setbfile(path, bh->filename, DOT_DIR);
 		if ((fd = open(path, O_RDONLY, 0644)) < 0) {
 			continue;
@@ -162,11 +261,14 @@ int main(int argc, char *argv[])
 {
 	init_all();
 	TEST_FUNC(original);
+	TEST_FUNC(originalNP);
 	TEST_FUNC(flyriver);
 	TEST_FUNC(dvlt);
+	TEST_FUNC(etn);
 	TEST_FUNC(etnlegend);
 	TEST_FUNC(at3p);
 	TEST_FUNC(stiger);
+	TEST_FUNC(atppp);
 	
 	return 0;
 }
