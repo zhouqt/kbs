@@ -22,6 +22,13 @@ char* original_strnzhcpy(char *dest, const char *src, size_t n)
 	return dest;
 }
 
+inline char * originalIL_strnzhcpy(char *dest, const char *src, size_t n)
+{
+	strncpy(dest, src, n);
+	dest[n-1] = '\0';
+	return dest;
+}
+
 char* originalNP_strnzhcpy(char *dest, const char *src, size_t n)
 {
 	int l = strlen(src);
@@ -192,6 +199,8 @@ void test_func(STRNZHCPY_FUNC fn, const char *func_name)
 	fileheader_t *fh;
 	struct boardheader *bh;
 	size_t fsize;
+	int isInline = (fn == originalIL_strnzhcpy);
+
 #define OOPREFIX "original"
 	if (strncmp(func_name, OOPREFIX, strlen(OOPREFIX))) {
 		char ss[80], dd[80], dds[80];
@@ -212,7 +221,7 @@ void test_func(STRNZHCPY_FUNC fn, const char *func_name)
 			ll = range_rand(60) + 1;
 			stiger_strnzhcpy(dds, ss, ll);
 			ret = fn(dd, ss, ll);
-			if (ret != dd || strlen(dd) > 59 || strcmp(dd, dds)) {
+			if (ret != dd || strcmp(dd, dds)) {
 				printf("%s: failed correctness test.\n", func_name);
 				return;
 			}
@@ -243,10 +252,17 @@ void test_func(STRNZHCPY_FUNC fn, const char *func_name)
 		count = fsize / sizeof(fileheader_t);
 		for (j=0; j<count; j++) {
 			src = fh[j].title;
-			gettimeofday(&tv1, NULL);
-			for (i = 0; i < PER_TEST; i++)
-				fn(dest, src, LEN);
-			gettimeofday(&tv2, NULL);
+			if (isInline) {
+				gettimeofday(&tv1, NULL);
+				for (i = 0; i < PER_TEST; i++)
+					originalIL_strnzhcpy(dest, src, LEN);
+				gettimeofday(&tv2, NULL);
+			} else {				
+				gettimeofday(&tv1, NULL);
+				for (i = 0; i < PER_TEST; i++)
+					fn(dest, src, LEN);
+				gettimeofday(&tv2, NULL);
+			}
 			t = (tv2.tv_sec - tv1.tv_sec) * 1000000 + (tv2.tv_usec - tv1.tv_usec);
 			tt += t;
 			tt2 += t*t;
@@ -261,7 +277,8 @@ int main(int argc, char *argv[])
 {
 	init_all();
 	TEST_FUNC(original);
-	TEST_FUNC(originalNP);
+	TEST_FUNC(originalIL); /* inline */
+	TEST_FUNC(originalNP); /* no tail padding */
 	TEST_FUNC(flyriver);
 	TEST_FUNC(dvlt);
 	TEST_FUNC(etn);
