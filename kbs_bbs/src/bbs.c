@@ -1971,7 +1971,11 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
         prints("切换模式到: 0)取消 1)文摘 2)同主题 3)被m文章 4)原作 5)同作者 6)标题关键字 ");
         move(t_lines - 1, 0);
         clrtoeol();
-        getdata(t_lines - 1, 12, "7)超级文章选择 8)本版精华区搜索 [1]: ", ans, 3, DOECHO, NULL, true);
+        getdata(t_lines - 1, 12, "7)超级文章选择"
+#ifdef NEWSMTH
+            " 8)本版精华区搜索"
+#endif
+            " [1]: ", ans, 3, DOECHO, NULL, true);
         if (ans[0] == ' ') {
             ans[0] = ans[1];
             ans[1] = 0;
@@ -2024,6 +2028,7 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
         case '7':
             newmode=DIR_MODE_SUPERFITER;
             break;
+#ifdef NEWSMTH
         case '8':
             move(t_lines - 1, 0);
             clrtoeol();
@@ -2036,6 +2041,7 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
             strcpy(buf, title);
             if(buf[0]) search_x(currboard->filename, buf);
             return FULLUPDATE;
+#endif
         default:
             newmode=0;
         }
