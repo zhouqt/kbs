@@ -141,6 +141,7 @@ function bbs_ann_header($board='') {
 }
 
 function bbs_ann_xsearch($board) {
+	if (!defined("SITE_NEWSMTH")) return;
 ?>
 <form action="bbsxsearch.php" class="right wide smaller">
 	<label><a href="bbsxsearch.php">令狐冲精华区搜索引擎</a></label>
@@ -173,7 +174,13 @@ function bbs_ann_foot($parent) {
 	}
 ?>
 [<a href="bbs0an.php">根目录</a>]
+<?php
+	if (defined("SITE_NEWSMTH")) {
+?>
 [<a href="bbsxsearch.php">令狐冲精华区搜索</a>]
+<?php
+	}
+?>
 [<a href="#listtop">返回顶部</a>]
 [<a href="javascript:location.reload()">刷新</a>] 
 [<a href="javascript:history.go(-1)">返回</a>] 
