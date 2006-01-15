@@ -785,27 +785,34 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 {                               /* 在文章列表中 显示 一篇文章标题 */
     time_t filetime;
     char date[20];
-    char *TITLE;
+    char TITLE[ARTICLE_TITLE_LEN+30];
 //	char TITLE[256];
     int type;
     int manager;
-    char *typeprefix;
+    char typeprefix[20];
     char *typesufix;
     char attachch[20];
     struct read_arg * arg=(struct read_arg*)conf->arg;
+	int isreply=0;
+	int isthread=0;
+	char highstr[10];
+	char threadprefix[20];
+	char threadprefix1[20];
+	char threadsufix[20];
 
    /* typesufix = typeprefix = "";*/
-   typesufix = typeprefix = ""; 
+   typesufix = ""; 
+   typeprefix[0]='\0';
 
     manager = chk_currBM(currBM, getCurrentUser());
 
     type = get_article_flag(ent, getCurrentUser(), currboard->filename, manager,getSession());
     if (manager && (ent->accessed[0] & FILE_IMPORTED)) {        /* 文件已经被收入精华区 */
         if (type == ' ') {
-            typeprefix = "\x1b[42m";
+            strcpy(typeprefix ,"\x1b[42m");
             typesufix = "\x1b[m";
         } else {
-            typeprefix = "\x1b[32m";
+            strcpy(typeprefix ,"\x1b[32m");
             typesufix = "\x1b[m";
         }
     }
@@ -856,167 +863,73 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         attachch[0]=' ';
 	attachch[1]='\0';
 #endif
-    TITLE = ent->title;         /*文章标题TITLE */
+    if (! DEFINE(getCurrentUser(), DEF_SHOWSIZE)){
+		strnzhcpy(TITLE, ent->title, 38);
+		char sizebuf[30];
+		if(ent->eff_size < 1000)
+			sprintf(sizebuf,"(%d)", ent->eff_size);
+		else if(ent->eff_size < 1000000){
+			sprintf(sizebuf,"\033[1;33m(%dk)\033[m", ent->eff_size/1000);
+		}else{
+			sprintf(sizebuf, "\033[1;31m(%dm)\033[m", (ent->eff_size/1000000)%1000 );
+		}
+		strcat(TITLE, sizebuf);
+	}else {
+		strnzhcpy(TITLE, ent->title, 45);
+	}
+//    TITLE = ent->title;         /*文章标题TITLE */
 //	sprintf(TITLE,"%s(%d)",ent->title,ent->eff_size);
     if ((type=='d')||(type=='D')) { //置顶文章
-        sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %-44.44s ", ent->owner, date, attachch, TITLE);
+        sprintf(buf, " \x1b[1;33m[提示]\x1b[m %-12.12s %s %s" FIRSTARTICLE_SIGN " %s ", ent->owner, date, attachch, TITLE);
         return buf;
     }
 
     if (uinfo.mode != RMAIL && arg->mode != DIR_MODE_DIGEST && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK
         && strcmp(currboard->filename, "sysmail")) { /* 新方法比较*/
-            if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {      /*Re的文章 */
-                if ((readfh&&readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
-#ifdef FREE
-					if (1)
+        if ((ent->groupid != ent->id)&&(arg->mode==DIR_MODE_THREAD||!strncasecmp(TITLE,"Re:",3)||!strncmp(TITLE,"回复:",5))) {
+			isreply=1;
+		}
+        if ((readfh&&readfh->groupid == ent->groupid))
+			isthread=1;
+	}else {
+        if (!strncmp("Re:", ent->title, 3)) {
+			isreply=1;
+            if (readfh&&isThreadTitle(readfh->title, ent->title))
+				isthread=1;
+		}else
+            if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))
+				isthread=1;
+	}
+
+    if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
+		strcpy(highstr,"1;");
+	else
+		highstr[0]='\0';
+
+	if(isthread){
+		if(isreply){
+			sprintf(threadprefix,"\033[%s36m", highstr);
+			sprintf(threadprefix1,"\033[%s36m.", highstr);
+			strcpy(threadsufix,"\033[m");
+		}else{
+			sprintf(threadprefix,"\033[%s33m", highstr);
+			sprintf(threadprefix1,"\033[%s33m.", highstr);
+			strcpy(threadsufix,"\033[m");
+		}
+	}else{
+		threadprefix[0]='\0';
+		strcpy(threadprefix1," ");
+		threadsufix[0]='\0';
+	}
+
+#if defined(COLOR_ONLINE)
+                        sprintf(buf, " %s%4d%s %s%c%s \033[1;3%dm%-12.12s\033[m %s%s%c%s%-44.44s%s ", threadprefix, num, threadsufix, typeprefix, type, typesufix, ent->owner, date, threadprefix1, attachch[0], isreply?"":FIRSTARTICLE_SIGN" ", TITLE, threadsufix);
+#elif defined(LOWCOLOR_ONLINE)
+                        sprintf(buf, " %s%4d%s %s%c%s \033[3%dm%-12.12s\033[m %s%s%c%s%-44.44s%s ", threadprefix, num, threadsufix, typeprefix, type, typesufix, ent->owner, date, threadprefix1, attachch[0], isreply?"":FIRSTARTICLE_SIGN" ", TITLE, threadsufix);
 #else
-                    if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
+                        sprintf(buf, " %s%4d%s %s%c%s %-12.12s %s%s%c%s%s%s ", threadprefix, num, threadsufix, typeprefix, type, typesufix, ent->owner, date, threadprefix1, attachch[0], isreply?"":FIRSTARTICLE_SIGN" ", TITLE, threadsufix);
 #endif
 
-#ifdef COLOR_ONLINE
-                        sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%s%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                        sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;36m%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                        sprintf(buf, " \033[1;36m%4d\033[m %s%c%s %-12.12s %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-                    else
-#ifdef COLOR_ONLINE
-                        sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[36m.%s%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                        sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[36m%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                        sprintf(buf, " \033[36m%4d\033[m %s%c%s %-12.12s %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-                else
-#ifdef COLOR_ONLINE
-                    sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-44.44s", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-            } else {
-                if (readfh&&(readfh->groupid == ent->groupid))     /* 当前阅读主题 标识 */
-#ifdef FREE
-					if (1)
-#else
-                    if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
-#endif
-
-#ifdef COLOR_ONLINE
-                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                        sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-                    else
-#ifdef COLOR_ONLINE
-                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                        sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                        sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-                else
-#ifdef COLOR_ONLINE
-                    sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                    sprintf(buf, " %4d %s%c%s %-12.12s %s %c"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-            }
-
-    } else                     /* 允许 相同主题标识 */
-        if (!strncmp("Re:", ent->title, 3)) {   /*Re的文章 */
-            if (readfh&&isThreadTitle(readfh->title, ent->title)) /* 当前阅读主题 标识 */
-#ifdef FREE
-					if (1)
-#else
-                if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
-#endif
-
-#ifdef COLOR_ONLINE
-                    sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;36m.%s%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " \033[1;36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;36m%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                    sprintf(buf, " \033[1;36m%4d\033[m %s%c%s %-12.12s %s\033[1;36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-                else
-#ifdef COLOR_ONLINE
-                    sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[36m.%s%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " \033[36m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[36m%-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                    sprintf(buf, " \033[36m%4d\033[m %s%c%s %-12.12s %s\033[36m.%c%-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-            else
-#ifdef COLOR_ONLINE
-                sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s%-44.44s", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                sprintf(buf, " %4d %s%c%s %-12.12s %s %c%-44.44s", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-        } else {
-            if ((readfh!=NULL)&&!strcmp(readfh->title, ent->title))      /* 当前阅读主题 标识 */
-#ifdef FREE
-					if (1)
-#else
-                if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
-#endif
-
-#ifdef COLOR_ONLINE
-                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[1;33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[1;33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                    sprintf(buf, " \033[1;33m%4d\033[m %s%c%s %-12.12s %s\033[1;33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-                else
-#ifdef COLOR_ONLINE
-                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[1;3%dm%-12.12s\033[m %s\033[33m.%s"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                    sprintf(buf, " \033[33m%4d\033[m %s%c%s \033[3%dm%-12.12s\033[m %s.%s\033[33m"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                    sprintf(buf, " \033[33m%4d\033[m %s%c%s %-12.12s %s\033[33m.%c"FIRSTARTICLE_SIGN" %-44.44s\033[m ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-            else
-#ifdef COLOR_ONLINE
-                sprintf(buf, " %4d %s%c%s \033[1;3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-#ifdef LOWCOLOR_ONLINE
-                sprintf(buf, " %4d %s%c%s \033[3%dm%-12.12s\033[m %s %s"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, isonline(ent->owner), ent->owner, date, attachch, TITLE);
-#else
-                sprintf(buf, " %4d %s%c%s %-12.12s %s %c"FIRSTARTICLE_SIGN" %-44.44s ", num, typeprefix, type, typesufix, ent->owner, date, attachch[0], TITLE);
-#endif
-#endif
-        }
     return buf;
 }
 
@@ -3032,23 +2945,25 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 	buf[511]=0;
 	attachpos = fileinfo->attachment;
     if (vedit_post(buf, false, &eff_size,&attachpos) != -1) {
-		if( fileinfo->eff_size != eff_size ){
-        	fileinfo->eff_size = eff_size;
-			//fileinfo->eff_size = calc_effsize(genbuf);
-            //change_post_flag(currBM, getCurrentUser(), arg->mode, currboard->filename, ent, 
-                //fileinfo, direct, FILE_EFFSIZE_FLAG, 0);
-		}
-        if (ADD_EDITMARK)
-            add_edit_mark(buf, 0, /*NULL*/ fileinfo->title,getSession());
-        if (attachpos!=fileinfo->attachment) {
-            struct write_dir_arg dirarg;
+		int changemark=0;
+		if (attachpos != fileinfo->attachment){
             fileinfo->attachment=attachpos;
+			changemark |= FILE_ATTACHPOS_FLAG;
+		}
+        if (eff_size!=fileinfo->eff_size) {
+        	fileinfo->eff_size = eff_size;
+			changemark |= FILE_EFFSIZE_FLAG;
+		}
+		if (changemark){
+            struct write_dir_arg dirarg;
             init_write_dir_arg(&dirarg);
             dirarg.fd=arg->fd;
             dirarg.ent = conf->pos;
             change_post_flag(&dirarg, arg->mode, currboard,  
-                fileinfo,FILE_ATTACHPOS_FLAG|FILE_EFFSIZE_FLAG, fileinfo,dobmlog,getSession());
+                fileinfo,changemark, fileinfo,dobmlog,getSession());
         }
+        if (ADD_EDITMARK)
+            add_edit_mark(buf, 0, /*NULL*/ fileinfo->title,getSession());
     }
     newbbslog(BBSLOG_USER, "edited post '%s' on %s", fileinfo->title, currboard->filename);
     return FULLUPDATE;
