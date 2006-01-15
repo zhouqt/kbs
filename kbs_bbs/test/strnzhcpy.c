@@ -178,6 +178,72 @@ char *stiger_strnzhcpy(char *dest, const char *src, size_t n) {
 	return dst;
 }
 
+/*
+ * although this is the fastest, but: 
+ * it only works on little-endian
+ * it might read beyond the end of src string
+ */
+char *crazyatppp_strnzhcpy(char *dest, const char *src, size_t n) {
+	register char *dd = dest;
+	register int c, m;
+	register unsigned int si;
+	if (n==0) return dest;
+	--n;
+	m = n % 16;
+	n = n >> 4;
+	c = 0;
+	while( n > 0 ) {
+#define CDW \
+		si = *((unsigned int*) src); \
+		*((unsigned int*) dest) = si; \
+		dest+=4; src+=4; \
+		if ((si & 0xff) == 0) { dest-=4; goto outofhere;} \
+		c = ((si & 0x80) & (c ^ 0x80) ); \
+		si = si >> 8; \
+		if ((si & 0xff) == 0) { dest-=3; goto outofhere;} \
+		c = ((si & 0x80) & (c ^ 0x80) ); \
+		si = si >> 8; \
+		if ((si & 0xff) == 0) { dest-=2; goto outofhere;} \
+		c = ((si & 0x80) & (c ^ 0x80) ); \
+		si = si >> 8; \
+		if ((si & 0xff) == 0) { dest-=1; goto outofhere;} \
+		c = ((si & 0x80) & (c ^ 0x80) ); \
+
+		n--;
+		CDW
+		CDW
+		CDW
+		CDW
+	}
+#define COB \
+		if ((*src) == 0) goto outofhere; \
+		c = (((*src) & 0x80) & (c ^ 0x80) ); \
+		*dest = *src; \
+		dest++; src++;
+	switch(m) {
+		case 15: COB
+		case 14: COB
+		case 13: COB
+		case 12: COB
+		case 11: COB
+		case 10: COB
+		case 9: COB
+		case 8: COB
+		case 7: COB
+		case 6: COB
+		case 5: COB
+		case 4: COB
+		case 3: COB
+		case 2: COB
+		case 1: COB
+	}
+outofhere:
+	*(dest - (c>>7) )='\0';
+	return dd;
+}
+
+
+
 
 #define TEST_FUNC(name) test_func(name##_strnzhcpy, #name)
 		
@@ -286,6 +352,8 @@ int main(int argc, char *argv[])
 	TEST_FUNC(at3p);
 	TEST_FUNC(stiger);
 	TEST_FUNC(atppp);
+	TEST_FUNC(crazyatppp);
 	
 	return 0;
 }
+
