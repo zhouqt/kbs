@@ -788,7 +788,7 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6};
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9};
 		ret += '<div class="oper">';
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])
@@ -797,7 +797,10 @@ docWriter.prototype.t = function() {
 			ret += '<input type="button" value="ÇÐ»»M" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
 			ret += '<input type="button" value="ÇÐ»»G" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
 			ret += '<input type="button" value="ÇÐ»»²»¿ÉRe" onclick="mansubmit(' + bbsman_modes['NOREPLY'] + ');"/>';
-			ret += '<input type="button" value="ÇÐ»»ÖÃ¶¥" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/>';
+			ret += '<input type="button" value="ÇÐ»»ÖÃ¶¥" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/><br>';
+			ret += '<input type="button" value="ÇÐ»»%" onclick="mansubmit(' + bbsman_modes['PERCENT'] + ');"/>';
+			ret += '<input type="button" value="ÇÐ»»X" onclick="mansubmit(' + bbsman_modes["TODEL"] + ');"/>';
+			ret += '<input type="button" value="ÇÐ»»#" onclick="mansubmit(' + bbsman_modes["SHARP"] + ');"/>';
 		}
 		else
 		{

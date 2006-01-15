@@ -10,7 +10,10 @@ $bbsman_modes = array(
 	"DIGEST"=> 3,
 	"NOREPLY" => 4,
 	"ZHIDING" => 5,
-	"UNDEL" => 6
+	"UNDEL" => 6,
+	"PERCENT" => 7,
+	"TODEL" => 8,
+	"SHARP" => 9
 );
 
 function do_manage_function($board) {
