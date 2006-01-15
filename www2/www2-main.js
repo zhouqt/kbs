@@ -1,3 +1,13 @@
+/**
+ * Part of the KBS BBS Code
+ * Copyright (c) 2005-2006 KBS Development Team. (http://dev.kcn.cn/)
+ * Source file is subject to the pending KBS License.
+ *
+ * You may use and/or modify the source code only for pure personal
+ * purpose (e.g. using it in a public website is not acceptable), unless
+ * you get explicit permission by the KBS Development Team.
+ */
+
 /* TODO: obfuscate this file... */
 var agt = navigator.userAgent.toLowerCase();
 var gIE = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
@@ -792,7 +802,7 @@ docWriter.prototype.t = function() {
 		ret += '<div class="oper">';
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])
-		{
+		{ /* TODO: ’‚∂ŒÀ∆∫ıø…“‘ºÚªØ“ªµ„... */
 			ret += '<input type="button" value="…æ≥˝" onclick="mansubmit(' + bbsman_modes['DEL'] + ');"/>';
 			ret += '<input type="button" value="«–ªªM" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
 			ret += '<input type="button" value="«–ªªG" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
