@@ -186,7 +186,14 @@ PHP_FUNCTION(bbs_bmmanage)
         else if (mode == 5) {
             flag = FILE_DING_FLAG;
             data.accessed[0] = f.accessed[0]; // to reserve flags. hack! - atppp
-        } else
+        }
+	else if (mode == 7)
+	    flag = FILE_PERCENT_FLAG;
+	else if (mode == 8)
+	    flag = FILE_DELETE_FLAG;
+	else if (mode == 9)
+	    flag = FILE_SIGN_FLAG;
+	else
             RETURN_LONG(-3);
         
         dirarg.filename = dir;  
