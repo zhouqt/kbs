@@ -445,8 +445,7 @@ int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *f
     fclose(fp);
 
     memcpy(&UFile, fileinfo, sizeof(UFile));
-    strncpy(UFile.title, UTitle, ARTICLE_TITLE_LEN - 1);
-	UFile.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    strnzhcpy(UFile.title, UTitle, ARTICLE_TITLE_LEN);
     UFile.accessed[1] &= ~FILE_DEL;
     if (UFile.filename[1] == '/')
         UFile.filename[2] = 'M';
@@ -2517,8 +2516,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
             char ans[STRLEN];
 
             snprintf(ans, STRLEN, "〖%s〗 处理: %s", session->currentuser->userid, fileinfo->title);
-            strncpy(originFh->title, ans, ARTICLE_TITLE_LEN - 1);
-            originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
+            strnzhcpy(originFh->title, ans, ARTICLE_TITLE_LEN);
         }
         if (data->accessed[1] & FILE_READ) {
             originFh->accessed[1] |= FILE_READ;
@@ -2602,8 +2600,7 @@ int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardhea
             if (!ret && !strcmp(board->filename, FILTER_BOARD)){
                 char ans[STRLEN];
                 snprintf(ans, STRLEN, "〖%s〗处理: %s", session->currentuser->userid, fileinfo->title);
-                strncpy(originFh->title, ans, ARTICLE_TITLE_LEN - 1);
-                originFh->title[ARTICLE_TITLE_LEN - 1] = 0;
+                strnzhcpy(originFh->title, ans, ARTICLE_TITLE_LEN);
             }
         }
 #endif

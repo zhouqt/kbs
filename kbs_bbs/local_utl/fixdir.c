@@ -107,8 +107,7 @@ int addfile(char* filename)
             if (p = strchr(buf2 + 8, '\r'))
                 *p = 0;
             strcpy(fh.filename, filename);
-            strncpy(fh.title, buf2 + 8, ARTICLE_TITLE_LEN - 1);
-			fh.title[ARTICLE_TITLE_LEN - 1] = '\0';
+            strnzhcpy(fh.title, buf2 + 8, ARTICLE_TITLE_LEN);
             if (mailmode) {
                 fh.accessed[0] |= FILE_READ;
             }

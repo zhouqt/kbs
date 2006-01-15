@@ -519,8 +519,7 @@ int do_send(char *userid, char *title, char *q_file)
             if (titlebuf[0] == '\0') {
                 strcpy(titlebuf, "Ã»Ö÷Ìâ");
             }
-            strncpy(newmessage.title, titlebuf, ARTICLE_TITLE_LEN - 1);
-            newmessage.title[ARTICLE_TITLE_LEN -1] = 0;
+            strnzhcpy(newmessage.title, titlebuf, ARTICLE_TITLE_LEN);
             strncpy(save_title, newmessage.title, ARTICLE_TITLE_LEN - 1);
             save_title[ARTICLE_TITLE_LEN-1] = 0;
             break;
@@ -1293,12 +1292,8 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
 
 	if(strcmp(buf,fileinfo->title))
 	{
-		for(i = 0; (i < strlen(buf)) && (i < ARTICLE_TITLE_LEN -1); i++)  /* disable color title */
-			if(buf[i] == 0x1b)
-				fileinfo->title[i]=' ';
-			else
-				fileinfo->title[i] = buf[i];
-		fileinfo->title[i] = 0;
+	    filter_control_char(buf);
+        strnzhcpy(fileinfo->title, buf, ARTICLE_TITLE_LEN);
 
 		strcpy(tmp,arg->direct);
 		if((t = strrchr(tmp,'/')) != NULL)*t='\0';

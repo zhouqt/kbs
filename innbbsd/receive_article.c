@@ -863,8 +863,7 @@ char *pathname, *firstpath;
        big2gb(conv_buf,&len,0,getSession());
     }
 
-    strncpy(header.title, conv_buf, ARTICLE_TITLE_LEN);
-    header.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    strnzhcpy(header.title, conv_buf, ARTICLE_TITLE_LEN);
     header.innflag[1] = 'M';
 	set_posttime(&header);
     /*

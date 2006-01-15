@@ -563,8 +563,7 @@ PHP_FUNCTION(bbs_postmail){
     
     bzero(&header, sizeof(header));
     strcpy(header.owner, getCurrentUser()->userid);
-    strncpy(header.title, mail_title, ARTICLE_TITLE_LEN - 1);
-	header.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    strnzhcpy(header.title, mail_title, ARTICLE_TITLE_LEN);
     setmailpath(filepath, targetID);
     if (stat(filepath, &st) == -1) {
         if (mkdir(filepath, 0755) == -1)

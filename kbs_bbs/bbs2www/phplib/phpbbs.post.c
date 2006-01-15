@@ -108,6 +108,7 @@ PHP_FUNCTION(bbs_postarticle)
         RETURN_LONG(-2); //二级目录版
     strcpy(board, brd->filename);
 
+    if (tlen > 256) title[256] = '\0';
     filter_control_char(title);
     if (tlen == 0)
         RETURN_LONG(-3); //标题为NULL
@@ -242,8 +243,7 @@ PHP_FUNCTION(bbs_postarticle)
     fclose(fp);
     post_file.eff_size = get_effsize(filepath);
 
-    strncpy(post_file.title, title, ARTICLE_TITLE_LEN - 1);
-	post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    strnzhcpy(post_file.title, title, ARTICLE_TITLE_LEN);
     if (local_save) {      /* local save */
         post_file.innflag[1] = 'L';
         post_file.innflag[0] = 'L';
@@ -506,7 +506,7 @@ PHP_FUNCTION(bbs_edittitle)
 	
 	if ((mode>= DIR_MODE_THREAD) && (mode<= DIR_MODE_WEB_THREAD))
         	RETURN_LONG(-8);
-	if (title_len > ARTICLE_TITLE_LEN || title_len == 0)
+	if (title_len == 0)
 		RETURN_LONG(-9);
 	bid = getboardnum(board, &brd);
 	if (bid==0) 
@@ -545,8 +545,8 @@ PHP_FUNCTION(bbs_edittitle)
 		            RETURN_LONG(-6); //他人文章
 		}
 	}
-    if (title_len >= ARTICLE_TITLE_LEN) {
-        title[ARTICLE_TITLE_LEN - 1] = '\0';
+    if (title_len > 256) {
+        title[256] = '\0';
     }
     filter_control_char(title);
 	if (!strcmp(title,f.title)) //无需修改
@@ -559,7 +559,7 @@ PHP_FUNCTION(bbs_edittitle)
 	if (add_edit_mark(path, 2, title, getSession()) != 1)
 		RETURN_LONG(-10);
 	/* update .DIR START */
-	strcpy(f.title, title);
+	strnzhcpy(f.title, title, ARTICLE_TITLE_LEN);
 	if (mode == DIR_MODE_ZHIDING)
 	{
 		setbdir(DIR_MODE_ZHIDING, dirpath, brd.filename);

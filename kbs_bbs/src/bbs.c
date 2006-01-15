@@ -2854,8 +2854,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 							snprintf(save_title, ARTICLE_TITLE_LEN , "%s", title_prefix );
 
 						save_title[ARTICLE_TITLE_LEN-1]='\0';
-            			strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN - 1);
-						post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
+            			strnzhcpy(post_file.title, save_title, ARTICLE_TITLE_LEN);
 					}
 
 					write_header(fp, getCurrentUser(), 0, currboard->filename, post_file.title, Anony, 0,getSession());
@@ -2878,7 +2877,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 
 	do_quote(filepath, include_mode, q_file, quote_user);       /*引用原文章 */
 
-    strcpy(quote_title, save_title);
+    strnzhcpy(quote_title, save_title, sizeof(quote_title));
     strcpy(quote_board, currboard->filename);
 
     if( use_tmpl <= 0 )
@@ -2890,8 +2889,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 
     post_file.eff_size = eff_size;
 
-    strncpy(post_file.title, save_title, ARTICLE_TITLE_LEN - 1);
-	post_file.title[ARTICLE_TITLE_LEN - 1] = '\0';
+    strnzhcpy(post_file.title, save_title, ARTICLE_TITLE_LEN);
     if (aborted == 1 || !(bp->flag & BOARD_OUTFLAG)) {  /* local save */
         post_file.innflag[1] = 'L';
         post_file.innflag[0] = 'L';
@@ -3118,19 +3116,9 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
         }
 #endif
         strcpy(tmp2, fileinfo->title);  /* Do a backup */
-        /*
-         * Changed by KCN,disable color title
-         */
-        {
-            unsigned int i;
+        filter_control_char(buf);
+        strnzhcpy(fileinfo->title, buf, ARTICLE_TITLE_LEN);
 
-            for (i = 0; (i < strlen(buf)) && (i < ARTICLE_TITLE_LEN - 1); i++)
-                if (buf[i] == 0x1b)
-                    fileinfo->title[i] = ' ';
-                else
-                    fileinfo->title[i] = buf[i];
-            fileinfo->title[i] = 0;
-        }
         strcpy(tmp, arg->direct);
         if ((t = strrchr(tmp, '/')) != NULL)
             *t = '\0';

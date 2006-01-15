@@ -609,7 +609,7 @@ int a_Save(char *path, char *key, struct fileheader *fileinfo, int nomsg, char *
     sprintf(buf, "将 boards/%s/%s 存入暂存档", key, fileinfo->filename);
     a_report(buf);
     if (!nomsg) {
-        sprintf(buf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
+        sprintf(buf, " 已将该文章存入暂存档, 请按回车键继续 << ");
         a_prompt(-1, buf, ans);
     }
     return 1;
@@ -785,8 +785,7 @@ int mode;
     bzero(&fhdr,sizeof(struct fileheader));/* clear,or have attachment. binxun */
     sprintf(fname, "%s/%s", path, pitem->fname);
     if (dashf(fname)) {
-        strncpy(fhdr.title, pitem->title, ARTICLE_TITLE_LEN - 1);
-		fhdr.title[ARTICLE_TITLE_LEN - 1] = '\0';
+        strnzhcpy(fhdr.title, pitem->title, ARTICLE_TITLE_LEN);
         strncpy(fhdr.filename, pitem->fname, FILENAME_LEN - 1);
 		fhdr.filename[FILENAME_LEN - 1] = '\0';
         switch (doforward(path, &fhdr, mode)) {
