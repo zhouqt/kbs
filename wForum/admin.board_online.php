@@ -48,7 +48,7 @@ function board_online($board) {
         show_onlines($board, true, 1);
     } else {
     	for ($i=0;$i<$sectionCount;$i++){
-    		$boards = bbs_getboards($section_nums[$i], 0, $yank | 2 | 4);
+    		$boards = bbs_getboards($section_nums[$i], 0, 2 | 4);
     		if ($boards != FALSE) {
     			$brd_desc = $boards["DESC"]; // ÖÐÎÄÃèÊö
     			$brd_name = $boards["NAME"];
