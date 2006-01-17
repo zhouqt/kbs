@@ -986,16 +986,21 @@ conWriter.prototype.t = function() {
 
 
 
-function tconWriter(board, gid, start, tpage, pno, serial) {
+function tconWriter(board, gid, start, tpage, pno, serial, prevgid, nextgid) {
 	this.board = escape(board);
 	this.gid = gid;
 	this.start = start;
 	this.serial = serial;
 	this.tpage = tpage;
 	this.pno = pno;
+	this.prevgid = (prevgid==0)?gid:prevgid;
+	this.nextgid = (nextgid==0)?gid:nextgid;
 }
 tconWriter.prototype.h = function() {
-	var ret = '<div class="tnav smaller">【分页： ';
+	var ret = '<div class="tnav smaller"><span style="float:right">';
+	ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.prevgid + '">上一主题</a>] ';
+	ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.nextgid + '">下一主题</a>]';
+	ret += '</span>【分页： ';
 	var u = 'bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '&pno=';
 	for(var j = 1; j < this.tpage + 1; j ++ ) {
 		if (this.pno != j) {
