@@ -173,6 +173,7 @@ static void setstrlen(pval * arg)
 }
  */
 
+static int phpbbs_zap_buf[MAXBOARD];
 static int ext_init = 0; /* Don't access this variable directly, 
 						  use the following helper routines */
 
@@ -333,6 +334,9 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     DEFINE_MODE_CONSTANT(WEBEXPLORE);
     DEFINE_MODE_CONSTANT(PC);
 
+    for (i=0; i<MAXBOARD; i++) phpbbs_zap_buf[i] = 1;
+
+
 	chdir(old_cwd);
 #ifdef DEBUG
     zend_error(E_WARNING, "module init");
@@ -367,7 +371,8 @@ PHP_RINIT_FUNCTION(kbs_bbs)
 #ifdef DEBUG
     zend_error(E_WARNING, "request init:%d %x", getpid(), getSession()->currentuinfo);
 #endif
-	getSession()->zapbuf=NULL;
+	getSession()->zapbuf = phpbbs_zap_buf;
+    getSession()->fromhost[0] = '\0';
 
 
 #ifdef HAVE_BRC_CONTROL
@@ -404,8 +409,6 @@ PHP_RSHUTDOWN_FUNCTION(kbs_bbs)
 #endif
     }
 #endif
-
-    if (getSession()->zapbuf) free(getSession()->zapbuf);
 
     setcurrentuser(NULL, 0);
     setcurrentuinfo(NULL, -1);

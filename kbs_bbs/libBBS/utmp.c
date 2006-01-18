@@ -25,7 +25,7 @@ static void longlock(int signo)
 }
 
 #ifndef USE_SEM_LOCK
-static int utmp_lock()
+int utmp_lock()
 {
     int utmpfd = 0;
 
@@ -42,7 +42,7 @@ static int utmp_lock()
     return utmpfd;
 }
 
-static void utmp_unlock(int fd)
+void utmp_unlock(int fd)
 {
     flock(fd, LOCK_UN);
     close(fd);
@@ -599,7 +599,7 @@ void clear_utmp2(int uent)
 #endif
     if (!utmpshm->uinfo[uent - 1].active) { //atppp 20051217
         bbslog("3system", "UTMP:clear inactive entry [%d]", uent);
-        return;
+    //    return;
     }
     user=getuserbynum(utmpshm->uinfo[uent-1].uid);
     do_after_logout(user,get_utmpent(uent),uent,0,true);
@@ -645,7 +645,7 @@ void clear_utmp2(int uent)
     zeroinfo.sockaddr = 0;
     zeroinfo.destuid = 0;
 
-    //if (utmpshm->uinfo[uent - 1].active != false)
+    if (utmpshm->uinfo[uent - 1].active != false)
         utmphead->number--;
     utmpshm->uinfo[uent - 1] = zeroinfo;
 }

@@ -184,13 +184,15 @@ const static struct super_filter_vars varnames[] = {
     SUPER_FILTER_PAIR(ftime),       {"时间", 0, sffn_ftime, NULL}, 
     SUPER_FILTER_PAIR(effsize),     {"有效长度", 0, sffn_effsize, NULL}, 
     SUPER_FILTER_PAIR(asize),       {"总长度", 0, sffn_asize, NULL}, 
+
+    /* 开放 noreply 搜索 - atppp 20060117 */
+    SUPER_FILTER_PAIR(noreply),     {"不可回复", 0, sffn_noreply, NULL},
     
     SUPER_FILTER_STRING_PAIR(cauthor), 
     SUPER_FILTER_STRING_PAIR(title),    {"标题", 0, NULL, sffn_title}, 
     SUPER_FILTER_STRING_PAIR(author),   {"作者", 0, NULL, sffn_author},  
     SUPER_FILTER_STRING_PAIR(fname),    {"文件名", 0, NULL, sffn_fname},
 
-    SUPER_FILTER_BM_PAIR(noreply),  {"不可回复", 1, sffn_noreply, NULL}, 
     SUPER_FILTER_BM_PAIR(sign),     {"标记", 1, sffn_sign, NULL}, 
     SUPER_FILTER_BM_PAIR(percent),  {"百分号", 1, sffn_percent, NULL}, 
 #ifdef FILTER

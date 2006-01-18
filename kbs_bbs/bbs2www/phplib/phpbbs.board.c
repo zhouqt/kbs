@@ -203,7 +203,7 @@ PHP_FUNCTION(bbs_getboard)
  * prefix: 分类讨论区代号
  * group: 当获得目录版面(二级版面)内的版面时这个传入目录版面 bid，否则设置为 0
  *        prefix = '*', group = 0 的时候返回所有版面
- * flag: bit 0 (LSB): yank
+ * flag: bit 0 (LSB): yank (no use now)
  *           1      : no_brc. set to 1 when you don't need BRC info. (will speedup)
  *           2      : all_boards 只在 group = 0 的时候有效，如果设置为 1，就返回
  *                    所有版面，包括目录版面内的版面。设置成 0 的时候，目录版面
@@ -270,6 +270,7 @@ PHP_FUNCTION(bbs_getboards)
     no_brc = flag & 2;
     all_boards = (flag & 4) && (group == 0);
 
+#if 0
     if  (getSession()->zapbuf==NULL)  {
 		char fname[STRLEN];
 		int fd, size;
@@ -288,7 +289,8 @@ PHP_FUNCTION(bbs_getboards)
 	   	    close(fd);
 	    } 
     }
-   		
+#endif
+
     brdnum = 0;
     {
 	    int n;
@@ -322,7 +324,7 @@ PHP_FUNCTION(bbs_getboards)
 	        }
 	        if ((group==0)&&( strchr(prefix, bptr->title[0]) == NULL && prefix[0] != '*'))
 	            continue;
-	        if (yank || getSession()->zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) {
+	        /* if (yank || getSession()->zapbuf[n] != 0 || (bptr->level & PERM_NOZAP)) */ {
 	            /*都要排序*/
 	            for (i=0;i<brdnum;i++) {
 				    if ( strcasecmp(namelist[i], bptr->filename)>0) 
@@ -628,10 +630,12 @@ PHP_FUNCTION(bbs_useronboard)
         if (wwwguest_shm->use_map[i / 32] & (1 << (i % 32)))
             if (wwwguest_shm->guest_entry[i].currentboard) {
                 if (wwwguest_shm->guest_entry[i].currentboard == bid) {
+                    char buf[IPLEN+4];
                     MAKE_STD_ZVAL(element);
                     array_init(element);
                     add_assoc_string(element,"USERID","_wwwguest",1);
-                    add_assoc_string(element,"HOST",inet_ntoa(wwwguest_shm->guest_entry[i].fromip),1);
+                    inet_ntop(AF_INET, &wwwguest_shm->guest_entry[i].fromip, buf, IPLEN);
+                    add_assoc_string(element,"HOST",buf,1);
                     zend_hash_index_update(Z_ARRVAL_P(users),j,(void*) &element, sizeof(zval*), NULL);
                     j ++;
                 }

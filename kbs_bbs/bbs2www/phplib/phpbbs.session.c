@@ -6,9 +6,6 @@
 #include "bbs.h"
 #include "bbslib.h"
 
-static char fullfrom[255];
-
-
 static void assign_userinfo(zval * array, struct user_info *uinfo, int num)
 {
     add_assoc_long(array, "index", num);
@@ -58,9 +55,6 @@ PHP_FUNCTION(bbs_setfromhost)
     }
     if (s_len > IPLEN)
         s[IPLEN] = 0;
-    if (full_len > 80)
-        fullfromhostptr[80] = 0;
-    strcpy(fullfrom, fullfromhostptr);
     strcpy(getSession()->fromhost, s);
     RETURN_NULL();
 }
@@ -285,26 +279,32 @@ PHP_FUNCTION(bbs_wwwlogin)
     long kick_multi = 0;
     struct user_info *pu = NULL;
     int utmpent;
+    char *fromhost, *fullfrom;
+    int fromhostlen, fullfromlen;
+    int ac = ZEND_NUM_ARGS();
 
-    if (ZEND_NUM_ARGS() == 1) {
+    if (ac == 3) {
+        if (zend_parse_parameters(3 TSRMLS_CC, "lss", &kick_multi, &fromhost, &fromhostlen, &fullfrom, &fullfromlen) != SUCCESS) {
+            WRONG_PARAM_COUNT;
+        }
+        if (fullfromlen > 256) fullfrom[256] = '\0';
+        if (fromhostlen > IPLEN) fromhost[IPLEN] = '\0';
+        strcpy(getSession()->fromhost, fromhost);
+    } else if (ac == 1) {
         if (zend_parse_parameters(1 TSRMLS_CC, "l", &kick_multi) != SUCCESS) {
             WRONG_PARAM_COUNT;
         }
-    } else if (ZEND_NUM_ARGS() != 0)
+        fromhost = fullfrom = getSession()->fromhost;
+    } else {
         WRONG_PARAM_COUNT;
+    }
     
     if (getCurrentUser() != NULL && strcasecmp(getCurrentUser()->userid, "guest") != 0) {
         if (check_ip_acl(getCurrentUser()->userid, getSession()->fromhost)) 
             RETURN_LONG(7);
     }
     
-    ret = www_user_login(getCurrentUser(), getSession()->currentuid, kick_multi, getSession()->fromhost,
-#ifdef SQUID_ACCL
-                         fullfrom,
-#else
-                         getSession()->fromhost,
-#endif
-                         &pu, &utmpent);
+    ret = www_user_login(getCurrentUser(), getSession()->currentuid, kick_multi, fromhost, fullfrom, &pu, &utmpent);
     if (getCurrentUser() == NULL) {
         struct userec *user;
         int num;

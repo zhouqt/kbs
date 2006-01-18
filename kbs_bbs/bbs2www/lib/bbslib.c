@@ -403,11 +403,9 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
 
         if (*x == 0)
             return -5;
-#ifdef HAVE_BRC_CONTROL
-#if USE_TMPFS==1
-	    init_brc_cache((*x)->userid,true,getSession());
-#endif
-#endif
+
+        strncpy(getSession()->fromhost, (*y)->from, IPLEN);
+        getSession()->fromhost[IPLEN] = '\0';
     } else {
         /*
          * guest用户处理 
@@ -421,7 +419,8 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
             return -2;
         }
 
-        strncpy(www_guest_uinfo.from, getSession()->fromhost, IPLEN);
+        inet_ntop(AF_INET, inet_ntoa(guest_info->fromip), getSession()->fromhost, IPLEN);
+        strcpy(www_guest_uinfo.from, getSession()->fromhost);
         www_guest_uinfo.freshtime = guest_info->freshtime;
         www_guest_uinfo.utmpkey = key;
         www_guest_uinfo.destuid = useridx;
