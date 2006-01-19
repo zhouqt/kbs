@@ -3670,8 +3670,8 @@ int clear_new_flag(struct _select_def* conf,struct fileheader *fileinfo,void* ex
     struct read_arg* arg=conf->arg;
     /* add by stiger */
     if (conf->pos>arg->filecount||!arg->filecount)
-        brc_clear(getSession());
-    else brc_clear_new_flag(fileinfo->id,getSession());
+        brc_clear(currboardent,getSession());
+    else brc_clear_new_flag(fileinfo->id,currboardent,getSession());
 #endif
     return PARTUPDATE;
 }
@@ -3679,7 +3679,7 @@ int clear_new_flag(struct _select_def* conf,struct fileheader *fileinfo,void* ex
 int clear_all_new_flag(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
 #ifdef HAVE_BRC_CONTROL
-    brc_clear(getSession());
+    brc_clear(currboardent,getSession());
 #endif
     return FULLUPDATE;
 }

@@ -921,8 +921,9 @@ PHP_FUNCTION(bbs_brcclear)
 {
     char *board;
     int  board_len;
-    struct boardheader bh;
+    struct boardheader *pbh;
     struct userec *u;
+    int bid;
         
     int ac = ZEND_NUM_ARGS();
 	
@@ -932,16 +933,17 @@ PHP_FUNCTION(bbs_brcclear)
     u = getCurrentUser();
     if (!u)
         RETURN_FALSE;
-        
-    if (getboardnum(board,&bh) == 0)
+
+    bid = getbid(board, &pbh);
+    if (bid == 0)
         RETURN_FALSE;
-    if (!check_read_perm(u, &bh))
+    if (!check_read_perm(u, pbh))
         RETURN_FALSE;
     if (!strcmp(u->userid,"guest"))
         RETURN_TRUE;
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(u->userid, board, getSession());
-    brc_clear(getSession());
+    brc_initial(u->userid, pbh->filename, getSession());
+    brc_clear(bid, getSession());
 #endif
     RETURN_TRUE;
 }

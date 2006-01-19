@@ -33,7 +33,7 @@ static int clear_all_board_read_flag_func(struct boardheader *bh,void* arg)
 {
 #ifdef HAVE_BRC_CONTROL
     if (brc_initial(getCurrentUser()->userid, bh->filename, getSession()) != 0)
-        brc_clear(getSession());
+        brc_clear(0, getSession());
 #endif
     return 0;
 }
@@ -357,7 +357,7 @@ static int check_newpost(struct newpostdata *ptr)
     if (!brc_initial(getCurrentUser()->userid, ptr->name, getSession())) {
         ptr->unread = 1;
     } else {
-        if (brc_unread(bptr->lastpost, getSession())) {
+        if (brc_board_unread(ptr->pos+1, getSession())) {
             ptr->unread = 1;
         }
     }

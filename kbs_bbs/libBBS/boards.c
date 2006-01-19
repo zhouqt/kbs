@@ -854,45 +854,77 @@ int brc_initial(const char *userid, const char *boardname,session_t* session)
     return 1;
 }
 
+inline static int valid_brc(int bid, session_t* session) {
+    if (!session->currentuser) return 0;
+    if (session->brc_currcache==-1) return 0;
+    if (session->brc_cache_entry==NULL) return 0;
+    /*干脆不搞guest的这个算了*/
+    if (!strcmp(session->currentuser->userid,"guest")) return 0;
+    if (bid && (session->brc_cache_entry[session->brc_currcache].bid != bid)) return 0;
+    return 1;
+}
 
+
+/* 这个函数没有写入操作，所以不传入 bid 的话，即使出错也不会有危害 */
 int brc_unread(unsigned int fid,session_t* session)
 {
     int n;
+    unsigned int thisid;
 
-    /*干脆不搞guest的这个算了*/
-    if (!strcmp(session->currentuser->userid,"guest")) return 1;
-    if (session->brc_currcache == -1) return 1;
+    if (!valid_brc(0, session)) return 1;
     for (n = 0; n < BRC_MAXNUM; n++) {
-        if (session->brc_cache_entry[session->brc_currcache].list[n] == 0) {
+        thisid = session->brc_cache_entry[session->brc_currcache].list[n];
+        if (thisid == 0) {
             if (n == 0)
                 return 1;
             return 0;
         }
-        if (fid > session->brc_cache_entry[session->brc_currcache].list[n]) {
+        if (fid > thisid) {
             return 1;
-        } else if (fid == session->brc_cache_entry[session->brc_currcache].list[n]) {
+        } else if (fid == thisid) {
             return 0;
         }
     }
     return 0;
 }
 
-/*
-int brc_has_read(char *file) {
-	return !brc_unread(FILENAME2POSTTIME( file));
+int brc_board_unread(int bid, session_t* session)
+{
+    int n;
+    unsigned int thisid, fid, nowid;
+    struct BoardStatus const *bs;
+
+    if (!valid_brc(bid, session)) return 1;
+
+    bs = getbstatus(bid);
+    fid = bs->lastpost;
+    nowid = bs->nowid;
+    for (n = 0; n < BRC_MAXNUM; n++) {
+        thisid = session->brc_cache_entry[session->brc_currcache].list[n];
+        if (thisid == 0) {
+            if (n == 0)
+                return 1;
+            return 0;
+        }
+        if (thisid > nowid) {
+            brc_clear(bid, session);
+            return 0;
+        }
+        if (fid > thisid) {
+            return 1;
+        } else if (fid == thisid) {
+            return 0;
+        }
+    }
+    return 0;
 }
-*/
+
 
 void brc_add_read(unsigned int fid, int bid, session_t* session)
 {
     int n, i;
 
-    if (!session->currentuser) return;
-    if (session->brc_currcache==-1) return;
-    if (session->brc_cache_entry==NULL) return;
-    /*干脆不搞guest的这个算了*/
-    if (!strcmp(session->currentuser->userid,"guest")) return;
-    if (session->brc_cache_entry[session->brc_currcache].bid != bid) return;
+    if (!valid_brc(bid, session)) return;
     for (n = 0; (n < BRC_MAXNUM) && session->brc_cache_entry[session->brc_currcache].list[n]; n++) {
         if (fid == session->brc_cache_entry[session->brc_currcache].list[n]) {
             return;
@@ -925,26 +957,23 @@ void brc_add_read(unsigned int fid, int bid, session_t* session)
     }
 }
 
-void brc_clear(session_t* session)
+void brc_clear(int bid, session_t* session)
 {
     struct BoardStatus const *bs;
-    /*干脆不搞guest的这个算了*/
-    if (!strcmp(session->currentuser->userid,"guest")) return;
-    if (session->brc_currcache==-1) return;
-    if (session->brc_cache_entry==NULL) return;
+
+    if (!valid_brc(bid, session)) return;
+
     bs=getbstatus(session->brc_cache_entry[session->brc_currcache].bid);
     session->brc_cache_entry[session->brc_currcache].list[0] = bs->nowid;
     session->brc_cache_entry[session->brc_currcache].list[1] = 0;
     session->brc_cache_entry[session->brc_currcache].changed = 1;
 }
 
-void brc_clear_new_flag(unsigned int fid,session_t* session)
+void brc_clear_new_flag(unsigned int fid, int bid, session_t* session)
 {
     int n;
-    /*干脆不搞guest的这个算了*/
-    if (!strcmp(session->currentuser->userid,"guest")) return;
-    if (session->brc_currcache==-1) return;
-    if (session->brc_cache_entry==NULL) return;
+
+    if (!valid_brc(bid, session)) return;
 
     for (n = 0; (n < BRC_MAXNUM) && session->brc_cache_entry[session->brc_currcache].list[n]; n++)
         if (fid >= session->brc_cache_entry[session->brc_currcache].list[n])

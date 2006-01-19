@@ -311,12 +311,7 @@ void unlock_sem_check(int lockid);
     void detach_boards(ARG_VOID);
     int anonymousboard(const char *board);
     int load_boards(struct newpostdata *nbrd, const char *boardprefix, int group, int pos, int len, int sort, bool yank_flag, const char **input_namelist,session_t* session);
-#if USE_TMPFS==1
-    void init_brc_cache(const char* userid,bool replace, session_t* session);
-    void free_brc_cache(char* userid, session_t* session);
-#endif
 
-    void brc_clear_new_flag(unsigned fid,session_t* session);      /* 清除版面的到这篇文章未读标记 */
 
     int getfavnum(session_t* session);
     void save_zapbuf(session_t* session);
@@ -343,13 +338,18 @@ void unlock_sem_check(int lockid);
     int brc_initial(const char *userid, const char *boardname,session_t* session);
     char *brc_putrecord(char *ptr, char *name, int num, int *list);
     int fav_loaddata(struct newpostdata *nbrd, int favnow, int pos, int len, int sort,const char **input_namelist,session_t* session);
-    /*
-     * 保存一个版的brclist 
-     */
+
+#if USE_TMPFS==1
+    void init_brc_cache(const char* userid,bool replace, session_t* session);
+    void free_brc_cache(char* userid, session_t* session);
+#endif
+    void brc_clear_new_flag(unsigned fid, int bid, session_t* session);      /* 清除版面的到这篇文章未读标记 */
     void brc_update(const char *userid,session_t* session);      /* 保存当前的brclist到用户的.boardrc */
     void brc_add_read(unsigned int fid, int bid, session_t* session);
-    void brc_clear(session_t* session);
-    int brc_unread(unsigned int fid,session_t* session);
+    void brc_clear(int bid, session_t* session);
+    int brc_unread(unsigned int fid, session_t* session);
+    int brc_board_unread(int bid, session_t* session);
+
     int junkboard(const char *currboard);     /* 判断是否为 junkboards */
     int checkreadonly(const char *board);     /* 判断是不是只读版面 */
     int deny_me(const char *user,const char *board);       /* 判断用户 是否被禁止在当前版发文章 */
