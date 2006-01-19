@@ -6,7 +6,7 @@
 	$board = $_GET["board"];
 	$id = $_GET["id"];
 
-	$ret = bbs_delfile($board,$id); // 0 success -1 no perm  -2 wrong parameter
+	$ret = bbs_delpost($board,$id); // 0 success -1 no perm  -2 wrong parameter
 	switch($ret)
 	{
 	case -1:

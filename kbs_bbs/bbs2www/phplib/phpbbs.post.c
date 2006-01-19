@@ -346,6 +346,68 @@ PHP_FUNCTION(bbs_delfile)
 }
 
 
+/**
+ * del board article
+ * prototype:
+ * int bbs_delpost(string board, int id);
+ *
+ *  @return the result
+ *  	 0 -- success
+ *      -1 -- no perm
+ *  	-2 -- failed     
+ *  @author pig2532
+ */
+PHP_FUNCTION(bbs_delpost)
+{
+    boardheader_t *brd;
+    struct fileheader f;
+    struct userec *u = NULL;
+    char dir[80];
+
+    char* board;
+    int ent,fd;
+    long id;
+    int board_len;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &board_len,&id) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	u = getCurrentUser();
+	brd = getbcache(board);
+
+    if (brd == 0)
+        RETURN_LONG(-2);
+    if (!haspostperm(u, board))
+        RETURN_LONG(-2);
+
+	setbdir(DIR_MODE_NORMAL, dir, brd->filename);
+    
+    /* 用文件名定位太土了 改用ID -- pig2532 */
+    fd = open(dir, O_RDWR, 0644);
+    if(fd < 0)
+    {
+        RETURN_LONG(-2);
+    }
+    if(!get_records_from_id(fd, id, &f, 1, &ent))
+    {
+        close(fd);
+	    RETURN_LONG(-2);
+    }
+    close(fd);
+    if(del_post(ent, &f, dir, brd->filename) != 0)
+    {
+        RETURN_LONG(-2);
+    }
+    else
+    {
+        RETURN_LONG(0);
+    }
+}
+
+
 
 
 /* function bbs_caneditfile(string board, string filename);
