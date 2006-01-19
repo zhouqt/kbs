@@ -420,12 +420,12 @@ int t_query(char* q_id)
 
 #if defined(NINE_BUILD)
      prints("\n信箱：[\033[5m%2s\033[m]，经验值：[%d](%s) 表现值：[%d](%s) 生命力：[%d]%s\n"
-       ,(check_query_mail(qry_mail_dir)==1)? "信":"  ",exp,c_exp(exp),perf,
+       ,(check_query_mail(qry_mail_dir, NULL))? "信":"  ",exp,c_exp(exp),perf,
        c_perf(perf),compute_user_value(lookupuser),
        (lookupuser->userlevel & PERM_SUICIDE)?" (自杀中)":" ");
 #elif defined(FREE)
 	prints("经验值：[\033[1;32m%d\033[m](\033[1;33m%s\033[m) 信箱：[\033[1;5;32m%2s\033[m]\n"
-	      , exp,c_exp(exp), (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ");
+	      , exp,c_exp(exp), (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ");
 	prints("文章数: [\033[1;32m%d\033[m] 银行存款: [\033[1;32m%d元\033[m] 奖章数: [\033[1;32m%d\033[m] 生命力: [\033[1;32m%d\033[m]\n",
 	      lookupuser->numposts,lookupuser->money, lookupuser->score,
 		  compute_user_value(lookupuser) );
@@ -436,14 +436,14 @@ int t_query(char* q_id)
 #elif defined(ZIXIA)
     uleveltochar(permstr, lookupuser);
     prints(" 信箱：[\033[5m%2s\033[m]  生命力：[%d] \n",
-           (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ", compute_user_value(lookupuser));
+           (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser));
     prints("修炼道行[\033[1;32m%d点\033[m]    身份: [\033[1;32m%s\033[m]%s\n",
 		//(lookupuser->userlevel & (PERM_OBOARDS | PERM_SYSOP | PERM_ADMIN))? 9999 : lookupuser->altar, 
 		lookupuser->altar,permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #else
     uleveltochar(permstr, lookupuser);
     prints("信箱：[\033[5m%2s\033[m] 生命力：[%d] 身份: [%s]%s\n",
-           (check_query_mail(qry_mail_dir) == 1) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
+           (check_query_mail(qry_mail_dir, NULL)) ? "信" : "  ", compute_user_value(lookupuser), permstr, (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : "。");
 #endif
 
 #if defined(QUERY_REALNAMES)

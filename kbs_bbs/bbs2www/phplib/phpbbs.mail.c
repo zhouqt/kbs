@@ -23,8 +23,32 @@ PHP_FUNCTION(bbs_checknewmail)
 
 	setmailfile(qry_mail_dir, userid, DOT_DIR);
 
-	RETURN_LONG( check_query_mail(qry_mail_dir) );
+	RETURN_LONG( check_query_mail(qry_mail_dir, NULL) );
 
+}
+
+PHP_FUNCTION(bbs_mail_get_num)
+{
+	char *userid;
+	int userid_len, total, newmail;
+	char qry_mail_dir[STRLEN];
+
+    if (zend_parse_parameters(1 TSRMLS_CC, "s", &userid, &userid_len) != SUCCESS) {
+        WRONG_PARAM_COUNT;
+    }
+	
+	if( userid_len > IDLEN )
+		userid[IDLEN]=0;
+
+	setmailfile(qry_mail_dir, userid, DOT_DIR);
+
+	newmail = check_query_mail(qry_mail_dir, &total);
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    add_assoc_long_ex(return_value, "total", sizeof("total"), total);
+    add_assoc_bool_ex(return_value, "newmail", sizeof("newmail"), newmail);
 }
 
 /**

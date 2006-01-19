@@ -959,7 +959,7 @@ static void query_user(chatcontext * pthis, const char *userid)
 #ifdef _DETAIL_UINFO_
     sprintf(genbuf, "%s (%s):      %s", lookupuser->userid,
             lookupuser->username,
-            (check_query_mail(qry_mail_dir) == 1) ? "有新信" : "    ");
+            (check_query_mail(qry_mail_dir, NULL)) ? "有新信" : "    ");
     printchatline(pthis, genbuf);
     sprintf(genbuf, "共上站 %d 次，发表过 %d 篇文章，生命力[%d]%s",
             lookupuser->numlogins, lookupuser->numposts,
@@ -972,7 +972,7 @@ static void query_user(chatcontext * pthis, const char *userid)
             lookupuser->userid, lookupuser->username,
             compute_user_value(lookupuser),
             (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : " ",
-            (check_query_mail(qry_mail_dir) == 1) ? "有新信" : "    ");
+            (check_query_mail(qry_mail_dir, NULL)) ? "有新信" : "    ");
     printchatline(pthis, genbuf);
 #endif  /*_DETAIL_UINFO_*/
     strcpy(inbuf, ctime(&(lookupuser->lastlogin)));

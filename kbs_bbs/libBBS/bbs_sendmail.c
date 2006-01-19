@@ -134,7 +134,7 @@ int check_mail_perm(struct userec *fromuser, struct userec *touser)
 
 
 
-int check_query_mail(char qry_mail_dir[STRLEN])
+int check_query_mail(char *qry_mail_dir, int *total_mail)
 {
     struct fileheader fh;
     struct stat st;
@@ -149,6 +149,7 @@ int check_query_mail(char qry_mail_dir[STRLEN])
     fstat(fd, &st);
     numfiles = st.st_size;
     numfiles = numfiles / sizeof(fh);
+    if (total_mail) *total_mail = numfiles;
     if (numfiles <= 0) {
         close(fd);
         return 0;

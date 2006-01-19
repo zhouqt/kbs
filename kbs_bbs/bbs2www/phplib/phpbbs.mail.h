@@ -4,6 +4,7 @@
 /* 信件相关 */
 
 PHP_FUNCTION(bbs_checknewmail);
+PHP_FUNCTION(bbs_mail_get_num);
 PHP_FUNCTION(bbs_getmailnum);
 PHP_FUNCTION(bbs_getmailnum2);
 PHP_FUNCTION(bbs_getmails);
@@ -22,6 +23,7 @@ PHP_FUNCTION(bbs_domailforward);
 
 #define PHP_BBS_MAIL_EXPORT_FUNCTIONS \
     PHP_FE(bbs_checknewmail, NULL) \
+    PHP_FE(bbs_mail_get_num, NULL) \
     PHP_FE(bbs_getmailnum, third_arg_force_ref_011) \
     PHP_FE(bbs_getmailnum2, NULL) \
     PHP_FE(bbs_getmails, NULL) \
