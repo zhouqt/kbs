@@ -76,40 +76,11 @@ if (defined("HAVE_ACTIVATION")) {
 	$ret = bbs_setactivation($userid,"0".$activation.$reg_email);
 	if($ret != 0)
 		html_error_quit("设置激活码错误");
+
+html_init("gb2312");
 	
-$mailbody="
-<?xml version=\"1.0\" encoding=\"gb2312\">
-<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01 Transitional//EN\">
-<html>
-<body><P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">  " . $realname  . "欢迎您来到</SPAN><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">" . BBS_FULL_NAME . "。</SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">您的注册信息是：</SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">用户名：" . $userid . "</SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">昵称：" . $nickname . "<SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">密码：" . $password . "</SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><SPAN lang=EN-US>email</SPAN><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">：" . $reg_email . "</SPAN></FONT></P>
-<P class=MsoNormal><FONT size=2><A href=\"http://".BBS_DOMAIN_NAME."/bbsact.php?userid=".$userid."&acode=".$activation."\"><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\">点击这里激活您在" . BBS_FULL_NAME . "的新帐号</SPAN></A>
-<br /></p>
-<P class=MsoNormal><FONT size=2><SPAN 
-style=\"FONT-FAMILY: 宋体; mso-ascii-font-family: 'Times New Roman'; mso-hansi-font-family: 'Times New Roman'\"></SPAN></FONT></P>
-</body>
-</html>
-";
-/* To send HTML mail, you can set the Content-type header. */
-$headers  = "MIME-Version: 1.0\n";
-$headers .= "Content-type: text/html; charset=gb2312\n";
-
-/* additional headers */
-$headers .= "From: ".BBS_FULL_NAME." <http://".BBS_DOMAIN_NAME.">\n";
-
-if(!mail($reg_email, "welcome to " . BBS_FULL_NAME, $mailbody,$headers))
+	$ret=bbs_sendactivation($userid);
+    if($ret)
 {
 ?>
 <body>
