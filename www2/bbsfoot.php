@@ -3,7 +3,8 @@
     require("www2-funcs.php");
 	login_init();
 	page_header("״̬", FALSE);
-	
+
+	$unread = false;	
 	if (strcmp($currentuser["userid"], "guest")) {
 		$tn = bbs_mail_get_num($currentuser["userid"]);
 		if ($tn) {

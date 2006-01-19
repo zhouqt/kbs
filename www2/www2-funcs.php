@@ -180,8 +180,6 @@ function login_init()
 	global $fromhost;
 	$currentuinfo_tmp = array();
 	
-	set_fromhost();
-	
 	$compat_telnet=0;
 	@$sessionid = $_GET["sid"];
 	
@@ -209,6 +207,7 @@ function login_init()
 	
 	// add by stiger, 如果登录失败就继续用guest登录
 	if ($utmpkey == "") {
+		set_fromhost();
 		$error = bbs_wwwlogin(0);
 		if($error == 2 || $error == 0){
 			$data = array();
