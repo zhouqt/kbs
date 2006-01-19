@@ -34,16 +34,13 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title" align="center">
         <tr> 
 		  <td width="23">&nbsp;</td>
-          <td>&gt;&gt;本日热点话题讨论&gt;&gt;</td>
+          <td>&nbsp;&nbsp;本日热点话题讨论</td>
         </tr>
 	</table>
-	<table border="0" cellpadding="0" cellspacing="0" width="97%">
-              <tr> 
-                <td class="MainContentText">
-<ul style="margin: 5px 0px 20px 20px; padding: 0px;">
+	<table border="0" cellpadding="0" cellspacing="0" class="HotTable" align="center">
 <?php
 # shift through the array
 while($board = array_shift($boards))
@@ -62,14 +59,12 @@ while($board = array_shift($boards))
 	if ($brdnum == 0)
 		continue;
 	$brd_encode = urlencode($brdarr["NAME"]);
-?>
-<li class="default">
-<a href="bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;[作者: <a href="bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>]&nbsp;&nbsp;&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+?><tr><td class="HotTitle">
+[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>]
+<a href="bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a></td><td class="HotAuthor"><a href="bbsqry.php?userid=<?php echo $hot_author; ?>"><?php  echo $hot_author; ?></a>&nbsp;&nbsp;</td></tr>
 <?php
 }
 ?>
-</ul></td>
-              </tr>
 		</table>
 <?php
 }
@@ -86,7 +81,6 @@ function gen_sec_hot_subjects_html($secid)
 	$root = $doc->document_element();
 	$boards = $root->child_nodes();
 ?>
-<ul style="margin: 10px 0px 0px 40px; padding: 0px;">
 <?php
 	$brdarr = array();
 	# shift through the array
@@ -107,12 +101,10 @@ function gen_sec_hot_subjects_html($secid)
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li class="default"><a href="bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<tr><td class="SectionItem">[<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php  echo htmlspecialchars($brdarr["DESC"]); ?></a>]
+<a href="bbstcon.php?board=<?php echo $brd_encode; ?>&gid=<?php echo $hot_groupid; ?>"><?php echo htmlspecialchars($hot_title); ?> </a>&nbsp;&nbsp;</td></tr>
 <?php
 	}
-?>
-</ul>
-<?php
 }
 
 function gen_sections_html()
@@ -159,21 +151,20 @@ while($board = array_shift($boards))
 	$sec_boards_num[$secid]++;
 }
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title" align="center">
         <tr> 
 		  <td width="23">&nbsp;</td>
-          <td>&gt;&gt;分类精彩讨论区&gt;&gt;</td>
+          <td>&nbsp;&nbsp;分类精彩讨论区</td>
         </tr>
 	</table>
-		<table border="0" cellpadding="0" cellspacing="0" width="97%">
+		<table border="0" cellpadding="0" cellspacing="0" class="SecTable" align="center">
 <?php
 	for ($i = 0; $i < BBS_SECNUM; $i++)
 	{
 		if (defined("SITE_NEWSMTH") && ($t[$i]==0 || $t[$i]==1)) continue;
 ?>
 <tr> 
-  <td valign="top" class="MainContentText" style="padding-top: 5px;"> 
-★<strong>[<a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars(constant("BBS_SECNAME".$t[$i]."_0")); ?></a>]</strong>&nbsp;&nbsp;
+  <td valign="top" class="SectionTitle"><script type="text/javascript">putImage("section.gif","");</script>&nbsp;<span class="SectionName"><a href="bbsboa.php?group=<?php echo $t[$i]; ?>"><?php echo htmlspecialchars(constant("BBS_SECNAME".$t[$i]."_0")); ?></a></span>&nbsp;&nbsp;<span class="SectionList">
 <?php
 		$brd_count = $sec_boards_num[$t[$i]] > 5 ? 5 : $sec_boards_num[$t[$i]];
 		for ($k = 0; $k < $brd_count; $k++)
@@ -183,18 +174,18 @@ while($board = array_shift($boards))
 <?php
 		}
 ?>
-<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">更多&gt;&gt;</a>
+<a href="bbsboa.php?group=<?php echo $t[$i]; ?>">&lt;更多&gt;</a></span></td></tr>
 <?php
 		gen_sec_hot_subjects_html($t[$i]);
 ?>
-</td>
+
 </tr>
 <?php
 		if (BBS_SECNUM - $i > 1)
 		{
 ?>
         <tr> 
-          <td height="1" bgcolor="CCCCCC"></td>
+          <td height="1" class="SecLine"></td>
         </tr>
 <?php
 		}
@@ -268,7 +259,7 @@ $boards = $root->child_nodes();
 		$brd_encode = urlencode($brdarr["NAME"]);
 		$j ++ ;
 ?>
-<li class="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default"><a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a></li>
 <?php
 	}
 ?>
@@ -325,7 +316,7 @@ $boards = $root->child_nodes();
 			continue;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
-<li class="default">&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>&gt;</li>
+<li class="default"><a href="bbsdoc.php?board=<?php echo $brd_encode; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a></li>
 <?php
 	}
 ?>
@@ -351,15 +342,15 @@ $boards = $root->child_nodes();
 
 $brdarr = array();
 ?>
-	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title">
+	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title" align="center">
         <tr> 
 		  <td width="23">&nbsp;</td>
-          <td>&gt;&gt;推荐文章&gt;&gt;</td>
+          <td>&nbsp;&nbsp;推荐文章</td>
         </tr>
 	</table>
 
-	<table border="0" cellpadding="0" cellspacing="0" width="97%">
-	<tr><td height=10></td></tr>
+	<table border="0" cellpadding="0" cellspacing="0" class="RecommendTable" align="center">
+	<tr><td height=10 colspan=2></td></tr>
 <?php
 # shift through the array
 while($board = array_shift($boards))
@@ -382,9 +373,8 @@ while($board = array_shift($boards))
 
 ?>
 <tr>
-<td valign="top" class="MainContentText"><li class=rec><a href="bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?> </a>&nbsp;&lt;<a href="bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>&gt;
-&nbsp;&nbsp;[<a href="bbstcon.php?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原版原文</a>]
-<dl style="MARGIN-TOP: 1px;MARGIN-BOTTOM: 5px; MARGIN-LEFT: 25px;"><dt>
+<td class="RecommendTitle"><script type="text/javascript">putImage("recommend.gif","");</script>&nbsp;<a href="bbsrecon.php?id=<?php echo $commend_id;?>"><?php echo htmlspecialchars($commend_title);?> </a></td><td class="RecommendLink"><div align="right">[<a href="bbsdoc.php?board=<?php echo $brd_encode;?>"><?php echo htmlspecialchars($brdarr["DESC"]);?></a>] [<a href="bbstcon.php?board=<?php echo $brd_encode;?>&gid=<?php echo $commend_o_groupid;?>">同主题阅读原文</a>]</div>
+</td></tr><tr><td colspan=2><dl style="MARGIN-TOP: 1px;MARGIN-BOTTOM: 5px; MARGIN-LEFT: 25px;"><dt>
 <?php echo htmlspecialchars($commend_brief);?>
 </dl>
 </td>
@@ -392,7 +382,7 @@ while($board = array_shift($boards))
 <?php
 }
 ?>
-<tr><td width="100%" height=15 align="right"><a href="bbsrecommend.php">>>>更多推荐文章>>></a></td></tr>
+<tr><td width="100%" height=15 align="right" colspan=2><a href="bbsrecommend.php">更多推荐文章</a></td></tr>
 </table>
 <?php
 }
@@ -543,7 +533,7 @@ while($board = array_shift($boards))
 	gen_sections_html();
 ?>
 </td>
-    <td width="1" bgcolor="0066CC"></td>
+    <td width="1" class="vline"></td>
     <td width="18">&nbsp;</td>
     <td align="left" valign="top"> 
 <!-- 系统公告开始 暂时屏蔽掉
