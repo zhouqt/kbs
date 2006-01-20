@@ -15,7 +15,7 @@ function treeWriter(board, gid, arts) {
 	var i, tI = new Array();
 	for (i = 0; i < arts.length; i++) {
 		var node = {"id": arts[i][0], "reid": arts[i][1], "owner": arts[i][2], 
-			"first_child": -1, "last_child": -1, "next_sibling": -1};
+			"first_child": -1, "last_child": -1, "next_sibling": -1, "showed": false};
 		gTreeArts[i] = node;
 		tI[node.id] = i + 1;
 		if (i > 0 && tI[node.reid]) {
@@ -27,12 +27,21 @@ function treeWriter(board, gid, arts) {
 	}
 	this.ifs = "";
 }
-treeWriter.prototype.s = function(idx) {
+treeWriter.prototype.s = function(idx, flag) { /* flag: -1: root, 1: last */
+	if (gTreeArts[idx].showed) return;
+	gTreeArts[idx].showed = true;
 	var id = gTreeArts[idx].id;
 	var owner = gTreeArts[idx].owner;
 	var url = 'bbscon.php?board=' + this.board + '&id=' + id;
 	var ret = '<br/>';
-	ret += '<div style="border: 2px solid red; padding: 5px; margin: 5px;">';
+	var c = "treeFold";
+	if (flag == -1) c = "treeFoldRoot";
+	else if (flag == 1) c = "treeFoldLast";
+	
+	ret += '<div class="' + c + '">';
+	if (flag == 0) {
+		ret += '<div class="treeFoldLeaf"> </div>';
+	}
 	ret += '<div class="tconPager smaller left">';
 	ret += '[<a href="' + url + '">本篇全文</a>] ';
 	if (isLogin()) {
@@ -43,23 +52,22 @@ treeWriter.prototype.s = function(idx) {
 	ret += '[<a href="bbsdoc.php?board=' + this.board + '">进入讨论区</a>] ';
 	ret += '[<a href="#top">返回顶部</a>]';
 	ret += '<div class="tnum">' + (idx+1) + '</div>';
-	//ret += '</div><div class="article" id="art' + id + '"><div align="center">...载入中...</div></div>';
-	ret += '</div>';
-	//this.ifs += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
+	ret += '</div><div class="article" id="art' + id + '"><div align="center">...载入中...</div></div>';
+	this.ifs += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
 	document.write(ret);
 
 	var cur = gTreeArts[idx].first_child;
 	while(cur != -1) {
-		this.s(cur);
+		this.s(cur, (cur == gTreeArts[idx].last_child) ? 1 : 0);
 		cur = gTreeArts[cur].next_sibling;
 	}
 	
 	document.write("</div>");
 };
 treeWriter.prototype.o = function() {
-	document.write("<pre>");
-	this.s(0);
-	document.write("</pre>");
+	var i;
+	this.s(0, -1);
+	for(i=1;i<gTreeArts.length;i++) this.s(i, -1); //没连上根的那些枝条
 	document.write(this.ifs);
 };
 

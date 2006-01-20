@@ -1,0 +1,28 @@
+.treeFoldRoot {
+	position: relative;
+}
+.treeFold {
+	position: relative;
+	margin-top: -15px;
+	padding-top: 15px;
+	padding-left: 20px;
+	background-image: url('images/1/line2.gif');
+	background-repeat: repeat-y;
+	background-position: 12px 0;
+}
+.treeFoldLast {
+	position: relative;
+	padding-left: 20px;
+	background-image: url('images/1/line1.gif');
+	background-repeat: no-repeat;
+	background-position: 12px 0;
+}
+.treeFoldLeaf {
+	position: absolute;
+	left: 12px;
+	top: 16px;
+	width: 11px;
+	height: 16px;
+	background-image: url('images/1/line.gif');
+	background-repeat: no-repeat;
+}
