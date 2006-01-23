@@ -36,7 +36,6 @@ $brdarr = array();
 ?>
 	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="hot_title" align="center">
         <tr> 
-		  <td width="23">&nbsp;</td>
           <td>&nbsp;&nbsp;本日热点话题讨论</td>
         </tr>
 	</table>

@@ -173,6 +173,9 @@ table.hot_title {
     background-color: #DEF3FF;
     background-image: url('lan1.gif');
 }
+table.hot_title td {
+	padding-left: 23px;
+}
 td.type_title {
 	margin: 0px;
 	padding: 0px;

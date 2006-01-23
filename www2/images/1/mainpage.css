@@ -166,8 +166,12 @@ table.hot_title {
 	font-size: 12px;
 	color: #222222;
 	height: 30px;
-    background-repeat: no-repeat;
-    background-image: url('lan1.gif');
+    background-image: url('lan.gif');
+}
+table.hot_title td {
+	padding-left: 23px;
+	background-repeat: no-repeat;
+	background-image: url('lan1.gif');
 }
 td.type_title {
 	margin: 0px;
