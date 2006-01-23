@@ -471,9 +471,13 @@ int t_query(char* q_id)
             t1 = "       ";
             t2 = "         ";
         }
+#ifdef PERSONAL_CORP
         if (lookupuser->flags & PCORP_FLAG) {
             t3 = "BLOG[\x1b[1;32mx\x1b[m\x1b[0;44m]";
-        } else {
+        }
+        else
+#endif
+        {
             t3 = "       ";
         }
         prints("\x1b[m\x1b[44m%s 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] %s 加,减朋友[\x1b[1;32mo,d\x1b[m\x1b[0;44m] %s 其它键继续", t1, t2, t3);
@@ -482,12 +486,14 @@ int t_query(char* q_id)
         resetcolor();
         ch = igetkey();
         switch(toupper(ch)) {
+#ifdef PERSONAL_CORP
             case 'X':
                 if (lookupuser->flags & PCORP_FLAG) {
                     modify_user_mode(PC);
                     pc_read(lookupuser->userid);
                 }
                 break;
+#endif
             case 'T':
                 if (!((genbuf[0]) && seecount)) break;
                 if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))
