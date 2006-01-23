@@ -300,6 +300,7 @@ int t_query(char* q_id)
     time_t exit_time, temp /*Haohmaru.98.12.04 */ ;
     int logincount, seecount, oldmode;
     struct userec *lookupuser;
+    static int pcing = 0;
 
     if (q_id==NULL) {
         /*
@@ -488,9 +489,11 @@ int t_query(char* q_id)
         switch(toupper(ch)) {
 #ifdef PERSONAL_CORP
             case 'X':
-                if (lookupuser->flags & PCORP_FLAG) {
+                if (!pcing && (lookupuser->flags & PCORP_FLAG)) {
+                    pcing = 1;
                     modify_user_mode(PC);
                     pc_read(lookupuser->userid);
+                    pcing = 0;
                 }
                 break;
 #endif
