@@ -459,24 +459,35 @@ int t_query(char* q_id)
     if (oldmode != LUSERS && oldmode != LAUSERS && oldmode != FRIEND && oldmode != GMENU) {
         int ch;
         char buf[STRLEN];
+        char bline[512];
+        char *t1, *t2, *t3;
         struct user_info *uin;
         move(t_lines - 1, 0);
         if ((genbuf[0]) && seecount) {
-            if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
-                prints("\x1b[m\x1b[44m聊天[\x1b[1;32mt\x1b[m\x1b[0;44m] 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] 送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m] 加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续");
-            else
-                prints("\x1b[44m聊天[t] 寄信[m] 送讯息[s] 加,减朋友[o,d] 其它键继续");
+            t1 = "聊天[\x1b[1;32mt\x1b[m\x1b[0;44m]";
+            t2 = "送讯息[\x1b[1;32ms\x1b[m\x1b[0;44m]";
         }
         else {
-            if (DEFINE(getCurrentUser(), DEF_HIGHCOLOR))
-                prints("\x1b[m\x1b[44m        寄信[\x1b[1;32mm\x1b[m\x1b[0;44m]           加,减朋友[\x1b[1;32mo\x1b[m\x1b[0;44m,\x1b[1;32md\x1b[m\x1b[0;44m] 其它键继续");
-            else
-                prints("\x1b[44m        寄信[m]           加,减朋友[o,d] 其它键继续");
+            t1 = "       ";
+            t2 = "         ";
         }
+        if (lookupuser->flags & PCORP_FLAG) {
+            t3 = "BLOG[\x1b[1;32mx\x1b[m\x1b[0;44m]";
+        } else {
+            t3 = "       ";
+        }
+        prints("\x1b[m\x1b[44m%s 寄信[\x1b[1;32mm\x1b[m\x1b[0;44m] %s 加,减朋友[\x1b[1;32mo,d\x1b[m\x1b[0;44m] %s 其它键继续", t1, t2, t3);
+
         clrtoeol();
         resetcolor();
         ch = igetkey();
         switch(toupper(ch)) {
+            case 'X':
+                if (lookupuser->flags & PCORP_FLAG) {
+                    modify_user_mode(PC);
+                    pc_read(lookupuser->userid);
+                }
+                break;
             case 'T':
                 if (!((genbuf[0]) && seecount)) break;
                 if (strcmp(uident, "guest") && !HAS_PERM(getCurrentUser(), PERM_PAGE))

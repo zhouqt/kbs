@@ -601,7 +601,7 @@ int board_regenspecial(char *board, int mode, char *index)
     setbdir(mode,newdirect, board);
 
     if ((fd = open(newdirect, O_WRONLY | O_CREAT, 0664)) == -1) {
-        bbslog("3user", "recopen err %s:%s", newdirect,strerror(errno));
+        bbslog("user", "recopen err %s:%s", newdirect,strerror(errno));
         return -1;      /* 创建文件发生错误*/
     }
     ldata.l_type = F_WRLCK;
@@ -609,7 +609,7 @@ int board_regenspecial(char *board, int mode, char *index)
     ldata.l_len = 0;
     ldata.l_start = 0;
     if (fcntl(fd, F_SETLKW, &ldata) == -1) {
-        bbslog("3user", "%s", "reclock err");
+        bbslog("user", "%s", "reclock err");
         close(fd);
         return -1;      /* lock error*/
     }

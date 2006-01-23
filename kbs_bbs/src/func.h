@@ -501,6 +501,12 @@ void unlock_sem_check(int lockid);
     long ea_locate(int fd,struct ea_attach_info *ai);
     long ea_append(int fd,struct ea_attach_info *ai,const char *fn);
     long ea_delete(int fd,struct ea_attach_info *ai,int pos);
+
+    int getattachtmppath(char *buf, size_t buf_len, session_t *session);
+    int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *session);
+    int upload_read_fileinfo(struct ea_attach_info *ai, session_t *session);
+    int upload_add_file(char *filename, char *original_filename, session_t *session);
+
     
 /* define in record.c */
     int safewrite(int fd, void *buf, int size);

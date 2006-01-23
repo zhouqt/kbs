@@ -2408,6 +2408,7 @@ int mail_birth()
 	struct tm t;
 	int i;
 	char filename[256];
+    char title[STRLEN];
 
 	now = time(0);
 	localtime_r(&now,&t);
@@ -2422,7 +2423,8 @@ int mail_birth()
 
 	sprintf(filename, "%s/%d", BIRTHFILEPATH, i);
 
-    mail_file("SYSOP", filename, getCurrentUser()->userid, NAME_BBS_CHINESE "恭祝您生日快乐", BBSPOST_LINK, NULL);
+    snprintf(title, sizeof(title), "%s%s", NAME_BBS_CHINESE, "恭祝您生日快乐");
+    mail_file("SYSOP", filename, getCurrentUser()->userid, title, BBSPOST_LINK, NULL);
 
 	return 1;
 }

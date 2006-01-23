@@ -2836,3 +2836,167 @@ long ea_delete(int fd,struct ea_attach_info *ai,int pos){
     return ret;
 }
 /* 修改附件核心结束 */
+
+
+
+
+int getattachtmppath(char *buf, size_t buf_len, session_t *session)
+{
+#if USE_TMPFS==1 && ! defined(FREE)
+    /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
+    snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(session->currentuser->userid[0]),
+			session->currentuser->userid, session->utmpent);
+#else
+    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,session->currentuser->userid,  session->utmpent);
+#endif
+    buf[buf_len-1] = '\0';
+    return 0;
+}
+
+int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *session)
+{
+    char buf[256];
+    char attachdir[MAXPATH], attachfile[MAXPATH];
+    FILE *fp2;
+    int fd, n=0;
+
+    getattachtmppath(attachdir, MAXPATH, session);
+    snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
+    if ((fp2 = fopen(attachfile, "r")) != NULL) {
+        fputs("\n", fp);
+        while (!feof(fp2)) {
+            char *name;
+            long begin = 0;
+            unsigned int save_size;
+            char *ptr;
+            off_t size;
+
+            fgets(buf, 256, fp2);
+            name = strchr(buf, ' ');
+            if (name == NULL)
+                continue;
+            *name = 0;
+            name++;
+            ptr = strchr(name, '\n');
+            if (ptr)
+                *ptr = 0;
+
+            if (-1 == (fd = open(buf, O_RDONLY)))
+                continue;
+            if (post_file->attachment == 0) {
+                post_file->attachment = ftell(fp) + 1;
+            }
+            fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fp);
+            fwrite(name, strlen(name) + 1, 1, fp);
+            BBS_TRY {
+                if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, & size) == 0) {
+                    size = 0;
+                    save_size = htonl(size);
+                    fwrite(&save_size, sizeof(save_size), 1, fp);
+                } else {
+                    save_size = htonl(size);
+                    fwrite(&save_size, sizeof(save_size), 1, fp);
+                    begin = ftell(fp);
+                    fwrite(ptr, size, 1, fp);
+                    n++;
+                }
+            }
+            BBS_CATCH {
+                ftruncate(fileno(fp), begin + size);
+                fseek(fp, begin + size, SEEK_SET);
+            }
+            BBS_END end_mmapfile((void *) ptr, size, -1);
+
+            close(fd);
+        }
+		fclose(fp2);
+    }
+    f_rm(attachdir);
+    return n;
+}
+
+int upload_read_fileinfo(struct ea_attach_info *ai, session_t *session) {
+    char buf[256];
+    char attachdir[MAXPATH], attachfile[MAXPATH];
+    FILE *fp2;
+    int n=0;
+    struct stat stat_buf;
+
+    getattachtmppath(attachdir, MAXPATH, session);
+    snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
+    if ((fp2 = fopen(attachfile, "r")) != NULL) {
+        while (!feof(fp2)) {
+            char *name;
+            char *ptr;
+
+            fgets(buf, 256, fp2);
+            name = strchr(buf, ' ');
+            if (name == NULL)
+                continue;
+            *name = 0;
+            name++;
+            ptr = strchr(name, '\n');
+            if (ptr)
+                *ptr = 0;
+
+            strncpy(ai[n].name, name, 60);
+            ai[n].name[60] = '\0';
+
+            if (stat(buf, &stat_buf) != -1 && S_ISREG(stat_buf.st_mode)) {
+                ai[n].size = stat_buf.st_size;
+            } else {
+                ai[n].size = 0;
+            }
+
+            n++;
+            if (n >= MAXATTACHMENTCOUNT) break;
+        }
+		fclose(fp2);
+    }
+    return n;
+
+}
+
+int upload_add_file(char *filename, char *original_filename, session_t *session) {
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+    char attachdir[MAXPATH], attachfile[MAXPATH];
+    FILE *fp;
+    char buf[256];
+    int i, n;
+    int totalsize=0;
+    n = upload_read_fileinfo(ai, session);
+    if (n >= MAXATTACHMENTCOUNT)
+        return -1;
+
+    filter_upload_filename(original_filename);
+    if (strlen(original_filename) > 60)
+        original_filename[60] = '\0';
+
+    for (i=0;i<n;i++) {
+        if (strcmp(ai[i].name, original_filename) == 0) return -2;
+        totalsize+=ai[i].size;
+    }
+    struct stat stat_buf;
+    if (stat(filename, &stat_buf) != -1 && S_ISREG(stat_buf.st_mode)) {
+        totalsize += stat_buf.st_size;
+    } else {
+        return -4;
+    }
+    if (totalsize > MAXATTACHMENTSIZE) return -3;
+    
+    getattachtmppath(attachdir, MAXPATH, session);
+    mkdir(attachdir, 0700);
+
+    snprintf(attachfile, MAXPATH, "%s/%d_%d", attachdir, (int)(time(NULL)%10000), rand()%10000);
+    f_mv(filename, attachfile);
+
+    snprintf(buf, sizeof(buf), "%s %s\n", attachfile, original_filename);
+
+    snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
+    if ((fp = fopen(attachfile, "a")) == NULL)
+        return -1;
+    fprintf(fp, "%s", buf);
+    fclose(fp);
+    return(0);
+}
+

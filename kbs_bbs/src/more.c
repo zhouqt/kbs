@@ -1058,6 +1058,7 @@ int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char *title)
                     mem_printline(&l, fn, ptr);
                     if ((ch == KEY_PGDN || ch == ' ' || ch == Ctrl('f')
                          || ch == KEY_RIGHT || ch == KEY_DOWN || ch == 'j' || ch == '\n')
+                        && (l.ty[last_line % 100] != LINE_ATTACHLINK) // 防止一直往下按会不显示全文链接 atppp 20060122
                         && l.line[last_line % 100] - ptr + l.s[last_line % 100] == size) {
                         move(t_lines - 1, 0);
                         clrtoeol();

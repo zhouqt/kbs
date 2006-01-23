@@ -2408,8 +2408,6 @@ int add_attach(char* file1, char* file2, char* filename)
     return st.st_size;
 }
 
-#define MAXATTACH 10
-
 int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_file)
 {                               /*用户 POST 文章 */
     struct fileheader post_file;
@@ -2423,8 +2421,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
     char* upload = NULL;
-    char uploadfiles[MAXATTACH][STRLEN];
     int nUpload = 0;
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
     int mailback = 0;		/* stiger,回复到信箱 */
 	int ret = DIRCHANGED;
 
@@ -2586,7 +2584,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
          * Leeward 98.09.24 add: viewing signature(s) while setting post head 
          */
         sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s%s\033[1;32mEnter\033[m继续: ", 
-                (replymode) ? "\033[1;32mS/Y\033[m/\033[1;32mN\033[m/\033[1;32mR\033[m/\033[1;32mA\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
+                (replymode) ? "\033[1;32mS/Y/N/R/A\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
 #ifdef SSHBBS
 				"\033[1;32mu\033[m传附件, ",
 #else
@@ -2599,7 +2597,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #endif
 				);
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
-        ans[0] = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
+        ans[0] = toupper(ans[1] = ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
             if (atoi(ans) <= getSession()->currentmemo->ud.signum)
                 getCurrentUser()->signature = atoi(ans);
@@ -2640,36 +2638,51 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                 ansimore2(buf2, false, 0, 18);
             }
         } else if (ans[0] == 'U') {
-            struct boardheader* b=currboard;
-            if(b->flag&BOARD_ATTACH && use_tmpl<=0 && nUpload<MAXATTACH) {
-                chdir("tmp");
-                upload = bbs_zrecvfile();
-                if (upload != NULL && *upload) {
-                    strncpy(uploadfiles[nUpload], upload, 60);
-                    uploadfiles[nUpload][60] = '\0';
-                    nUpload++;
+            if(currboard->flag&BOARD_ATTACH) {
+                char buf[256], ses[20];
+                int i, totalsize = 0;
+
+                if (ans[1] == 'u' && nUpload<MAXATTACHMENTCOUNT) {
+                    chdir("tmp");
+                    upload = bbs_zrecvfile();
+                    chdir("..");
+                    if (upload != NULL && *upload) {
+                        char uploaded_file[PATHLEN];
+                        snprintf(uploaded_file, PATHLEN, "tmp/%s", upload);
+                        if (upload_add_file(uploaded_file, upload, getSession())) {
+                            unlink(uploaded_file);
+                        }
+                    }
                 }
-                chdir("..");
-//				use_tmpl = -1;
+
+                get_telnet_sessionid(ses, getSession()->utmpent);
+                snprintf(buf, sizeof(buf), "附件上传地址: http://%s/bbsupload.php?sid=%s\n", get_my_webdomain(0), ses);
+                clear();
+                prints(buf);
+                nUpload = upload_read_fileinfo(ai, getSession());
+                prints("%s", "已上传附件列表 (按 \033[1;32mU\033[m 刷新):\n");
+                for(i=0;i<nUpload;i++) {
+                    if (i>=nUpload-10) {
+                        snprintf(buf, sizeof(buf), "[%02d] %-60.60s (%7d 字节)\n", i+1, ai[i].name, ai[i].size);
+                        prints("%s", buf);
+                    }
+                    totalsize += ai[i].size;
+                }
+                if (nUpload > 10) {
+                    prints("%s", "附件数量超过 10 个，前面的不显示了！\n");
+                }
+                snprintf(buf, sizeof(buf), "\n\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%d\033[1;36m 字节\033[m"
+                         " \033[1;36m(上限 \033[1;37m%d\033[1;36m 附件/ \033[1;37m%d\033[1;36m 字节)\033[m\n",
+                         nUpload, totalsize, MAXATTACHMENTCOUNT, MAXATTACHMENTSIZE);
+                prints("%s", buf);
             }
         } else {
             /*
              * Changed by KCN,disable color title 
              */
-            {
-                unsigned int i;
-
-                for (i = 0; (i < strlen(buf)) && (i < ARTICLE_TITLE_LEN - 1); i++)
-                    if (buf[i] == 0x1b)
-                        post_file.title[i] = ' ';
-                    else
-                        post_file.title[i] = buf[i];
-                post_file.title[i] = 0;
-            }
-            /*
-             * strcpy(post_file.title, buf); 
-             */
-            strncpy(save_title, post_file.title, ARTICLE_TITLE_LEN );
+            filter_control_char(buf);
+            strnzhcpy(post_file.title, buf, ARTICLE_TITLE_LEN);
+            strcpy(save_title, post_file.title);
             if (save_title[0] == '\0') {
                 return FULLUPDATE;
             }
@@ -2747,20 +2760,6 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 					aborted = -1;
 				}else{
 					if( title_prefix[0] ){
-							/*
-						i = strlen( title_prefix ) + strlen(post_file.title) ;
-						if( i >= STRLEN )
-							i = STRLEN - 1 ;
-						post_file.title[i]='\0';
-
-						for (i-- ; i >= strlen(title_prefix); i--)
-							post_file.title[i] = post_file.title[i-strlen(title_prefix)];
-						for (; i>=0 ; i--)
-                 		    if (title_prefix[i] == 0x1b || title_prefix[i] == '\n')
-                       			post_file.title[i] = ' ';
-                    		else
-                        		post_file.title[i] = title_prefix[i];
-								*/
 						if( ! strncmp(post_file.title, "Re: ",4) )
 							snprintf(save_title, ARTICLE_TITLE_LEN, "Re: %s", title_prefix );
 						else
@@ -2824,17 +2823,11 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         post_file.accessed[0] |= FILE_SIGN;
     }
     if(nUpload > 0) {
-        char sbuf[PATHLEN];
-        int i;
-        struct stat st;
-        if(stat(filepath, &st)!=-1)
-            post_file.attachment = st.st_size;
-
-        for (i=0;i<nUpload; i++) {
-            strcpy(sbuf,"tmp/");
-            strcpy(sbuf+strlen(sbuf), uploadfiles[i]);
-            add_attach(filepath, sbuf, uploadfiles[i]);
+        FILE *fp;
+        if ((fp = fopen(filepath, "ab")) != NULL) {
+            upload_post_append(fp, &post_file, getSession());
         }
+        fclose(fp);
     }
 #ifdef FILTER
     returnvalue =

@@ -7,20 +7,6 @@
 #include "bbslib.h"
 
 
-int getattachtmppath(char *buf, size_t buf_len)
-{
-#if USE_TMPFS==1 && ! defined(FREE)
-    /* setcachehomefile() 不接受 buf_len 参数，先直接这么写吧 */
-    snprintf(buf,buf_len,"%s/home/%c/%s/%d/upload",TMPFSROOT,toupper(getCurrentUser()->userid[0]),
-			getCurrentUser()->userid, getSession()->utmpent);
-#else
-    snprintf(buf,buf_len,"%s/%s_%d",ATTACHTMPPATH,getCurrentUser()->userid,  getSession()->utmpent);
-#endif
-    buf[buf_len-1] = '\0';
-    return 0;
-}
-
-
 int check_last_post_time(struct user_info *uinfo) {
     int lastpost = uinfo->lastpost;
     int now = time(0);
@@ -39,7 +25,7 @@ PHP_FUNCTION(bbs_getattachtmppath)
         RETURN_FALSE;
         //用户未初始化
     }
-    getattachtmppath(buf, MAXPATH);
+    getattachtmppath(buf, MAXPATH, getSession());
     RETURN_STRING(buf, 1);
 }
 
@@ -71,11 +57,9 @@ PHP_FUNCTION(bbs_postarticle)
     long local_save, outgo, anony;
     struct fileheader post_file, oldxx;
     char filepath[MAXPATH];
-    char buf[256];
-    int fd, anonyboard, color;
+    int anonyboard, color;
 	int retvalue;
-    FILE *fp, *fp2;
-    char attachdir[MAXPATH], attachfile[MAXPATH];
+    FILE *fp;
 
 
 	int ac = ZEND_NUM_ARGS();
@@ -185,60 +169,7 @@ PHP_FUNCTION(bbs_postarticle)
         fprintf(fp, "\n\033[m\033[%2dm※ 来源:·%s http://%s·[FROM: %s]\033[m\n", color, BBS_FULL_NAME, NAME_BBS_ENGLISH, (anony) ? NAME_ANONYMOUS_FROM : SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
 
     if (brd->flag&BOARD_ATTACH) {
-        getattachtmppath(attachdir, MAXPATH);
-        snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
-        if ((fp2 = fopen(attachfile, "r")) != NULL) {
-            fputs("\n", fp);
-            while (!feof(fp2)) {
-                char *name;
-                long begin = 0;
-                unsigned int save_size;
-                char *ptr;
-                off_t size;
-
-                fgets(buf, 256, fp2);
-                name = strchr(buf, ' ');
-                if (name == NULL)
-                    continue;
-                *name = 0;
-                name++;
-                ptr = strchr(name, '\n');
-                if (ptr)
-                    *ptr = 0;
-
-                if (-1 == (fd = open(buf, O_RDONLY)))
-                    continue;
-                if (post_file.attachment == 0) {
-                    /*
-                     * log the attachment begin 
-                     */
-                    post_file.attachment = ftell(fp) + 1;
-                }
-                fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fp);
-                fwrite(name, strlen(name) + 1, 1, fp);
-                BBS_TRY {
-                    if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, & size) == 0) {
-                        size = 0;
-                        save_size = htonl(size);
-                        fwrite(&save_size, sizeof(save_size), 1, fp);
-                    } else {
-                        save_size = htonl(size);
-                        fwrite(&save_size, sizeof(save_size), 1, fp);
-                        begin = ftell(fp);
-                        fwrite(ptr, size, 1, fp);
-                    }
-                }
-                BBS_CATCH {
-                    ftruncate(fileno(fp), begin + size);
-                    fseek(fp, begin + size, SEEK_SET);
-                }
-                BBS_END end_mmapfile((void *) ptr, size, -1);
-
-                close(fd);
-            }
-			fclose(fp2);
-        }
-        f_rm(attachdir);
+        upload_post_append(fp, &post_file, getSession());
 	}
     fclose(fp);
     post_file.eff_size = get_effsize(filepath);

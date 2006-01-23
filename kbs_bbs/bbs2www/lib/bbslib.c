@@ -419,7 +419,7 @@ int www_user_init(int useridx, char *userid, int key, struct userec **x, struct 
             return -2;
         }
 
-        inet_ntop(AF_INET, inet_ntoa(guest_info->fromip), getSession()->fromhost, IPLEN);
+        inet_ntop(AF_INET, &guest_info->fromip, getSession()->fromhost, IPLEN);
         strcpy(www_guest_uinfo.from, getSession()->fromhost);
         www_guest_uinfo.freshtime = guest_info->freshtime;
         www_guest_uinfo.utmpkey = key;

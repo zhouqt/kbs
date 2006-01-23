@@ -418,7 +418,7 @@ PHP_FUNCTION(bbs_printansifile)
     } else {
         ptr = filename;
         ptrlen = filename_len;
-        getattachtmppath(attachdir, MAXPATH);
+        getattachtmppath(attachdir, MAXPATH, getSession());
     }
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{

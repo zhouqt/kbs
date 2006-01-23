@@ -87,7 +87,6 @@ void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, si
 void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, char *boardname, int is_bm);
 
 /* phpbbs.post.c */
-int getattachtmppath(char *buf, size_t buf_len);
 int check_last_post_time(struct user_info *uinfo);
 
 /* phpbbs.user.c */

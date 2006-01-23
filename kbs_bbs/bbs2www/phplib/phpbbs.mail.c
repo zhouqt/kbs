@@ -47,8 +47,8 @@ PHP_FUNCTION(bbs_mail_get_num)
         RETURN_FALSE;
     }
 
-    add_assoc_long_ex(return_value, "total", sizeof("total"), total);
-    add_assoc_bool_ex(return_value, "newmail", sizeof("newmail"), newmail);
+    add_assoc_long(return_value, "total", total);
+    add_assoc_bool(return_value, "newmail", newmail);
 }
 
 /**
