@@ -116,14 +116,8 @@ function bbs_get_board_index($board, $ftype) {
 
 
 
-define("ACTIVATIONLEN",15); //激活码长度
 if (!defined ('FAVORITE_NAME'))
 	define ('FAVORITE_NAME', '百宝箱');
-
-function decodesessionchar($ch)
-{
-	return strpos(ENCODESTRING,$ch);
-}
 
 $loginok=0;
 
@@ -168,7 +162,13 @@ function set_fromhost()
 	bbs_setfromhost(trim($fromhost),trim($fullfromhost));
 }
 
-function login_init()
+define("ENCODESTRING","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
+function decodesessionchar($ch)
+{
+	return strpos(ENCODESTRING,$ch);
+}
+
+function login_init($sid=FALSE)
 {
 	global $currentuinfo;
 	global $loginok;
@@ -178,13 +178,16 @@ function login_init()
 	global $utmpnum;
 	global $setboard;
 	global $fromhost;
+	global $fullfromhost;
 	$currentuinfo_tmp = array();
 	
 	$compat_telnet=0;
-	@$sessionid = $_GET["sid"];
-	
-	//TODO: add the check of telnet compat
-	if (($sessionid!='')&&($_SERVER['PHP_SELF']=='/bbscon.php')) {
+	$sessionid = "";
+	if ($sid) {
+		@$sessionid = $_GET["sid"];
+		if (!$sessionid) @$sessionid = $_POST["sid"];
+	}
+	if ($sid && $sessionid) {
 		$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
 		$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
 			+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
@@ -206,9 +209,9 @@ function login_init()
 	}
 	
 	// add by stiger, 如果登录失败就继续用guest登录
-	if ($utmpkey == "") {
+	if (!$sid && $utmpkey == "") {
 		set_fromhost();
-		$error = bbs_wwwlogin(0);
+		$error = bbs_wwwlogin(0, $fromhost, $fullfromhost);
 		if($error == 2 || $error == 0){
 			$data = array();
 			$num = bbs_getcurrentuinfo($data);
@@ -246,7 +249,7 @@ function login_init()
 	}
 	
 	if (($loginok==1)&&(isset($setboard)&&($setboard==1))) bbs_set_onboard(0,0);
-	//add end
+	return $sessionid;
 }
 
 

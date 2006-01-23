@@ -4,12 +4,12 @@
 	$filesizes=array();
 	global $errno;
 	@$action=$_GET["act"];
-		$totalsize=0;
+	$totalsize=0;
 	$allnames="";
 	require("www2-funcs.php");
-	login_init();
+	$sessionid = login_init(TRUE);
 	assert_login();
-
+	
 	$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
 	@mkdir($attachdir);
 	if ($action=="delete") {
@@ -190,6 +190,7 @@ function clickclose() {
 opener.document.forms["postform"].elements["attachname"].value = <?php echo "\"$allnames\""; ?>;
 </script>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" align="left" action="">
+<?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
   <table border="0" cellspacing="2" class="txt-b03">
 	<tr> 
 	  <td height="2"> 
@@ -250,7 +251,9 @@ opener.document.forms["postform"].elements["attachname"].value = <?php echo "\"$
 	  </td>
 	</tr>
   </table>
-</form><form name="deleteattach" ENCTYPE="multipart/form-data" method="post" align="left" action=""> 
+</form>
+<form name="deleteattach" ENCTYPE="multipart/form-data" method="post" align="left" action=""> 
+<?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
 <table border="0" width="500" cellspacing="2">
   <tr> 
 	<td width="423"><font color="#804040"> 
