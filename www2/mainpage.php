@@ -152,7 +152,6 @@ while($board = array_shift($boards))
 ?>
 	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="type_title" align="center">
         <tr> 
-		  <td width="23">&nbsp;</td>
           <td>&nbsp;&nbsp;分类精彩讨论区</td>
         </tr>
 	</table>
@@ -343,7 +342,6 @@ $brdarr = array();
 ?>
 	<table width="97%" border="0" cellpadding="0" cellspacing="0" class="recommend_title" align="center">
         <tr> 
-		  <td width="23">&nbsp;</td>
           <td>&nbsp;&nbsp;推荐文章</td>
         </tr>
 	</table>

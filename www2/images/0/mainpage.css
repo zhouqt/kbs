@@ -137,13 +137,7 @@ input.text {
 	height: 19px;
 
 }
-td.recommend_title {
-	margin: 0px;
-	padding: 0px;
-	height: 16px;
-	font-size: 12px;
-	color: #FFFFFF;
-}
+
 table.recommend_title {
 	font-size: 12px;
 	color: #FFFFFF;
@@ -155,13 +149,10 @@ table.recommend_title {
     background-color: #DEF3FF;
     background-image: url('lan2.gif');
 }
-td.hot_title {
-	margin: 0px;
-	padding: 0px;
-	height: 16px;
-	font-size: 12px;
-	color: #FFFFFF;
+table.recommend_title td {
+	padding-left: 23px;
 }
+
 table.hot_title {
 	font-size: 12px;
 	color: #FFFFFF;
@@ -176,13 +167,7 @@ table.hot_title {
 table.hot_title td {
 	padding-left: 23px;
 }
-td.type_title {
-	margin: 0px;
-	padding: 0px;
-	height: 16px;
-	font-size: 12px;
-	color: #FFFFFF;
-}
+
 table.type_title {
 	font-size: 12px;
 	color: #FFFFFF;
@@ -194,6 +179,10 @@ table.type_title {
     background-color: #DEF3FF;
     background-image: url('lan3.gif');
 }
+table.type_title td {
+	padding-left: 23px;
+}
+
 table.helper {
 	font-size: 12px;
 	color: #FFFFFF;
