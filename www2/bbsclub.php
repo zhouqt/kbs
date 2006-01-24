@@ -117,8 +117,8 @@ function submitclub()
 	$ret .= "&nbsp;&nbsp;&nbsp;当前第" . ($page+1) . "页/共{$pagecount}页";
 	if($clubmode == 3)
 		$ret .= " [<a href=\"bbsclub.php?board={$board}&mode=".($mode?"0":"1")."\">查看" . ($mode?"读":"写") . "权限名单</a>]";
-	$ret .= " [<a href=\"bbsclub.php?board={$board}&mode={$mode}&action=clear\">清空</a>]";
-	$ret .= " [<a href=\"#\">群信</a>]";
+	//$ret .= " [<a href=\"bbsclub.php?board={$board}&mode={$mode}&action=clear\">清空</a>]";
+	//$ret .= " [<a href=\"#\">群信</a>]";
 	$ret .= "&nbsp;&nbsp;";
 	print($ret);
 ?>
