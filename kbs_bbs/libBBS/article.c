@@ -2864,14 +2864,13 @@ int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *sessio
     snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
     if ((fp2 = fopen(attachfile, "r")) != NULL) {
         fputs("\n", fp);
-        while (!feof(fp2)) {
+        while (fgets(buf, 256, fp2)) {
             char *name;
             long begin = 0;
             unsigned int save_size;
             char *ptr;
             off_t size;
 
-            fgets(buf, 256, fp2);
             name = strchr(buf, ' ');
             if (name == NULL)
                 continue;
@@ -2925,11 +2924,10 @@ int upload_read_fileinfo(struct ea_attach_info *ai, session_t *session) {
     getattachtmppath(attachdir, MAXPATH, session);
     snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
     if ((fp2 = fopen(attachfile, "r")) != NULL) {
-        while (!feof(fp2)) {
+        while (fgets(buf, 256, fp2)) {
             char *name;
             char *ptr;
 
-            fgets(buf, 256, fp2);
             name = strchr(buf, ' ');
             if (name == NULL)
                 continue;
@@ -2957,7 +2955,50 @@ int upload_read_fileinfo(struct ea_attach_info *ai, session_t *session) {
 
 }
 
-int upload_add_file(char *filename, char *original_filename, session_t *session) {
+int upload_del_file(const char *original_file, session_t *session) {
+    char buf[256];
+    char attachdir[MAXPATH], attachfile[MAXPATH], attachfile2[MAXPATH];
+    FILE *fp, *fp2;
+    int ret = -2;
+
+    getattachtmppath(attachdir, MAXPATH, session);
+    snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
+    snprintf(attachfile2, MAXPATH, "%s/.index2", attachdir);
+    if ((fp = fopen(attachfile2, "w")) == NULL) {
+        return -1;
+    }
+    if ((fp2 = fopen(attachfile, "r")) == NULL) {
+        fclose(fp);
+        return -1;
+    }
+    while (fgets(buf, 256, fp2)) {
+        char *name;
+        char *ptr;
+
+        name = strchr(buf, ' ');
+        if (name == NULL)
+            continue;
+        *name = 0;
+        name++;
+        ptr = strchr(name, '\n');
+        if (ptr)
+            *ptr = 0;
+
+        if (strcmp(original_file, name)) {
+            fprintf(fp, "%s %s\n", buf, name);
+            continue;
+        }
+
+        ret = 0;
+        unlink(buf);
+    }
+	fclose(fp2);
+    fclose(fp);
+    f_mv(attachfile2, attachfile);
+    return ret;
+}
+
+int upload_add_file(const char *filename, char *original_filename, session_t *session) {
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
     char attachdir[MAXPATH], attachfile[MAXPATH];
     FILE *fp;

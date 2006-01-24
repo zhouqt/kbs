@@ -1515,3 +1515,54 @@ int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int p
     return brdnum;
 }
 
+/* club functions */
+int set_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm){
+    if(!user||!board||!(board->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))
+        ||!(board->clubnum>0)||(board->clubnum>MAXCLUB))
+        return -1;
+    if(!write_perm)
+        user->club_read_rights[(board->clubnum-1)>>5]|=(1<<((board->clubnum-1)&0x1F));
+    else
+        user->club_write_rights[(board->clubnum-1)>>5]|=(1<<((board->clubnum-1)&0x1F));
+    return 0;
+}
+int del_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm){
+    if(!user||!board||!(board->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))
+        ||!(board->clubnum>0)||(board->clubnum>MAXCLUB))
+        return -1;
+    if(!write_perm)
+        user->club_read_rights[(board->clubnum-1)>>5]&=~(1<<((board->clubnum-1)&0x1F));
+    else
+        user->club_write_rights[(board->clubnum-1)>>5]&=~(1<<((board->clubnum-1)&0x1F));
+    return 0;
+}
+int get_user_club_perm(const struct userec *user,const struct boardheader *board,int write_perm){
+    if(!user||!board||!(board->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))
+        ||!(board->clubnum>0)||(board->clubnum>MAXCLUB))
+        return 0;
+    if(!write_perm)
+        return (user->club_read_rights[(board->clubnum-1)>>5]&(1<<((board->clubnum-1)&0x1F)));
+    else
+        return (user->club_write_rights[(board->clubnum-1)>>5]&(1<<((board->clubnum-1)&0x1F)));
+}
+int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm,struct boardheader *bh,session_t *session){
+    FILE *fp;
+    char fn[256],title[256];
+    sprintf(fn,"tmp/club_notify_%ld_%d",time(NULL),getpid());
+    if(!(fp=fopen(fn,"w")))
+        return -1;
+    if(!type)
+        sprintf(title,"%s 由 %s 授予 %s 俱乐部%s权限",userid,session->currentuser->userid,
+            bh->filename,(!write_perm?"读取":"发表"));
+    else
+        sprintf(title,"%s 被 %s 取消 %s 俱乐部%s权限",userid,session->currentuser->userid,
+            bh->filename,(!write_perm?"读取":"发表"));
+    write_header(fp,session->currentuser,0,bh->filename,title,0,0,session);
+    fprintf(fp,"附加说明: %s\n",comment);
+    fclose(fp);
+    post_file(session->currentuser,"",fn,bh->filename,title,0,3,session);
+    mail_file(session->currentuser->userid,fn,(char*)userid,title,BBSPOST_MOVE,NULL);
+    unlink(fn);
+    return 0;
+}
+

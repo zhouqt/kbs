@@ -510,35 +510,6 @@ int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 }
 
 /* etnlegend, 2005.12.26, 俱乐部授权管理接口结构更新 */
-static int set_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm){
-    if(!user||!board||!(board->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))
-        ||!(board->clubnum>0)||(board->clubnum>MAXCLUB))
-        return -1;
-    if(!write_perm)
-        user->club_read_rights[(board->clubnum-1)>>5]|=(1<<((board->clubnum-1)&0x1F));
-    else
-        user->club_write_rights[(board->clubnum-1)>>5]|=(1<<((board->clubnum-1)&0x1F));
-    return 0;
-}
-static int del_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm){
-    if(!user||!board||!(board->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))
-        ||!(board->clubnum>0)||(board->clubnum>MAXCLUB))
-        return -1;
-    if(!write_perm)
-        user->club_read_rights[(board->clubnum-1)>>5]&=~(1<<((board->clubnum-1)&0x1F));
-    else
-        user->club_write_rights[(board->clubnum-1)>>5]&=~(1<<((board->clubnum-1)&0x1F));
-    return 0;
-}
-static int get_user_club_perm(const struct userec *user,const struct boardheader *board,int write_perm){
-    if(!user||!board||!(board->flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))
-        ||!(board->clubnum>0)||(board->clubnum>MAXCLUB))
-        return 0;
-    if(!write_perm)
-        return (user->club_read_rights[(board->clubnum-1)>>5]&(1<<((board->clubnum-1)&0x1F)));
-    else
-        return (user->club_write_rights[(board->clubnum-1)>>5]&(1<<((board->clubnum-1)&0x1F)));
-}
 static int func_query_club_users(struct userec *user,void *varg){
     if(user->userid[0]&&get_user_club_perm(user,currboard,*(int*)varg))
         AddNameList(user->userid);
@@ -558,28 +529,8 @@ static int func_dump_users(char *userid,void *varg){
     (*(int*)(((void**)varg)[1]))++;
     return 0;
 }
-static int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm){
-    FILE *fp;
-    char fn[256],title[256];
-    sprintf(fn,"tmp/club_notify_%ld_%d",time(NULL),getpid());
-    if(!(fp=fopen(fn,"w")))
-        return -1;
-    if(!type)
-        sprintf(title,"%s 由 %s 授予 %s 俱乐部%s权限",userid,getCurrentUser()->userid,
-            currboard->filename,(!write_perm?"读取":"发表"));
-    else
-        sprintf(title,"%s 被 %s 取消 %s 俱乐部%s权限",userid,getCurrentUser()->userid,
-            currboard->filename,(!write_perm?"读取":"发表"));
-    write_header(fp,getCurrentUser(),0,currboard->filename,title,0,0,getSession());
-    fprintf(fp,"附加说明: %s\n",comment);
-    fclose(fp);
-    post_file(getCurrentUser(),"",fn,currboard->filename,title,0,3,getSession());
-    mail_file(getCurrentUser()->userid,fn,(char*)userid,title,BBSPOST_MOVE,NULL);
-    unlink(fn);
-    return 0;
-}
 static int func_clear_send_mail(char *userid,void *varg){
-    return club_maintain_send_mail(userid,(char*)(((void**)varg)[0]),1,(*(int*)(((void**)varg)[1])));
+    return club_maintain_send_mail(userid,(char*)(((void**)varg)[0]),1,(*(int*)(((void**)varg)[1])),currboard,getSession());
 }
 static void trimstr(char *s){
     char *p;
@@ -755,7 +706,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 WAIT_RETURN;
                 continue;
             }
-            club_maintain_send_mail(user->userid,comment,0,write_perm);
+            club_maintain_send_mail(user->userid,comment,0,write_perm,currboard,getSession());
             prints("\033[1;32m%s\033[0;33m<Enter>\033[m","增加成功!");
             WAIT_RETURN;
         }
@@ -796,7 +747,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                 WAIT_RETURN;
                 continue;
             }
-            club_maintain_send_mail(user->userid,comment,1,write_perm);
+            club_maintain_send_mail(user->userid,comment,1,write_perm,currboard,getSession());
             prints("\033[1;32m%s\033[0;33m<Enter>\033[m","删除成功!");
             WAIT_RETURN;
         }
@@ -862,7 +813,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         if(!getuser(&line[1],&user)||!get_user_club_perm(user,currboard,write_perm))
                             continue;
                         if(!del_user_club_perm(user,currboard,write_perm)){
-                            club_maintain_send_mail(user->userid,comment,1,write_perm);
+                            club_maintain_send_mail(user->userid,comment,1,write_perm,currboard,getSession());
                             j++;
                         }
                         break;
@@ -873,7 +824,7 @@ int clubmember(struct _select_def *conf,struct fileheader *fh,void *varg){
                         if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,currboard,write_perm))
                             continue;
                         if(!set_user_club_perm(user,currboard,write_perm)){
-                            club_maintain_send_mail(user->userid,comment,0,write_perm);
+                            club_maintain_send_mail(user->userid,comment,0,write_perm,currboard,getSession());
                             i++;
                         }
                         break;

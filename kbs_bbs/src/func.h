@@ -364,6 +364,11 @@ void unlock_sem_check(int lockid);
     int is_emailpost_board(const char *board);
 	int board_regenspecial(char *board, int mode, char *index);
 
+    int set_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm);
+    int del_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm);
+    int get_user_club_perm(const struct userec *user,const struct boardheader *board,int write_perm);
+    int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm,struct boardheader *bh,session_t *session);
+
 /* define in article.c */
 
     struct write_dir_arg {
@@ -505,7 +510,8 @@ void unlock_sem_check(int lockid);
     int getattachtmppath(char *buf, size_t buf_len, session_t *session);
     int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *session);
     int upload_read_fileinfo(struct ea_attach_info *ai, session_t *session);
-    int upload_add_file(char *filename, char *original_filename, session_t *session);
+    int upload_del_file(const char *original_file, session_t *session);
+    int upload_add_file(const char *filename, char *original_filename, session_t *session);
 
     
 /* define in record.c */

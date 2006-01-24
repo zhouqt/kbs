@@ -2417,7 +2417,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 	int use_tmpl=0;
     int aborted, anonyboard;
     int replymode = 1;          /* Post New UI */
-    char ans[4], ooo, include_mode = 'S';
+    char ans[8], ooo, include_mode = 'S';
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
     char* upload = NULL;
@@ -2585,22 +2585,20 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
          */
         sprintf(buf2, "%s，\033[1;32mb\033[m回复到信箱，\033[1;32mT\033[m改标题，%s%s%s\033[1;32mEnter\033[m继续: ", 
                 (replymode) ? "\033[1;32mS/Y/N/R/A\033[m 改引言模式" : "\033[1;32mP\033[m使用模板", (anonyboard) ? "\033[1;32m" ANONY_KEYS "\033[m匿名，" : "",
-#ifdef SSHBBS
 				"\033[1;32mu\033[m传附件, ",
-#else
-				"",
-#endif
 #ifdef POST_QUIT
 				"\033[1;32mQ\033[m放弃, "
 #else
 				""
 #endif
 				);
-        getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
+        getdata(t_lines - 1, 0, buf2, ans, 4, DOECHO, NULL, true);
         ans[0] = toupper(ooo = ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
-            if (atoi(ans) <= getSession()->currentmemo->ud.signum)
-                getCurrentUser()->signature = atoi(ans);
+            int ii = atoi(ans);
+            if (ii > 99) ii = 0;
+            if (ii <= getSession()->currentmemo->ud.signum)
+                getCurrentUser()->signature = ii;
         } else if ((ans[0] == 'S' || ans[0] == 'Y' || ans[0] == 'N' || ans[0] == 'A' || ans[0] == 'R') && replymode) {
             include_mode = ans[0];
         } else if (ans[0] == 'T') {
@@ -2642,7 +2640,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                 char buf[256], ses[20];
                 int i, totalsize = 0;
 
-                if (ooo == 'u' && nUpload<MAXATTACHMENTCOUNT) {
+                if (ooo == 'U' && nUpload<MAXATTACHMENTCOUNT) {
                     chdir("tmp");
                     upload = bbs_zrecvfile();
                     chdir("..");
@@ -2653,6 +2651,11 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                             unlink(uploaded_file);
                         }
                     }
+                } else if (ooo == 'u' && ans[1]) {
+                    int att = atoi(ans+1);
+                    if (att > 0 && att <= nUpload) {
+                        upload_del_file(ai[att-1].name, getSession());
+                    }
                 }
 
                 get_telnet_sessionid(ses, getSession()->utmpent);
@@ -2660,7 +2663,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                 clear();
                 prints(buf);
                 nUpload = upload_read_fileinfo(ai, getSession());
-                prints("%s", "已上传附件列表 (按 \033[1;32mU\033[m 刷新):\n");
+                prints("%s", "已上传附件列表 (按 \033[1;32mu\033[m 刷新, \033[1;32mu<数字>\033[m 删除相应序号附件, \033[1;32mU\033[m zmodem 上传):\n");
                 for(i=0;i<nUpload;i++) {
                     if (i>=nUpload-10) {
                         snprintf(buf, sizeof(buf), "[%02d] %-60.60s (%7d 字节)\n", i+1, ai[i].name, ai[i].size);
