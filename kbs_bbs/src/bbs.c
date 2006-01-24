@@ -2663,7 +2663,11 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                 clear();
                 prints(buf);
                 nUpload = upload_read_fileinfo(ai, getSession());
-                prints("%s", "已上传附件列表 (按 \033[1;32mu\033[m 刷新, \033[1;32mu<数字>\033[m 删除相应序号附件, \033[1;32mU\033[m zmodem 上传):\n");
+                prints("%s", "已上传附件列表: (按 \033[1;32mu\033[m 刷新, \033[1;32mu<序号>\033[m 删除相应序号附件"
+#ifdef SSHBBS
+                    ", \033[1;32mU\033[m zmodem 上传"
+#endif
+                    ")\n");
                 for(i=0;i<nUpload;i++) {
                     if (i>=nUpload-10) {
                         snprintf(buf, sizeof(buf), "[%02d] %-60.60s (%7d 字节)\n", i+1, ai[i].name, ai[i].size);
