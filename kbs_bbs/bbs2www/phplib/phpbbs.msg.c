@@ -174,7 +174,260 @@ PHP_FUNCTION(bbs_sendwebmsg)
 
 
 
+
+
+
+
+
+
+
+
 #ifdef SMS_SUPPORT
+
+static int web_send_sms(char *dest,char *msgstr){
+	struct userdata ud;
+	char uident[STRLEN];
+	char destid[STRLEN];
+	bool cansend = true;
+	struct userec *ur;
+	int ret;
+	char buf[MAX_MSG_SIZE];
+
+	read_userdata(getCurrentUser()->userid, &ud);
+	if(!ud.mobileregistered)
+		return -1;
+
+	if(!msgstr || !msgstr[0])
+		return -3;
+
+	sms_init_memory(getSession());
+	getSession()->smsuin = getSession()->currentuinfo;
+
+	if(isdigit(dest[0])){
+		int i;
+		cansend = cansend && (strlen(dest) == 11);
+		for(i=0;i<strlen(dest);i++)
+			cansend = cansend && (isdigit(dest[i]));
+		if(cansend)
+			strcpy(uident,dest);
+	}else{
+		struct userdata destud;
+		return -2;
+		getuser(dest, &ur);
+		if(ur)
+			strcpy(destid, ur->userid);
+		if(read_userdata(destid, &destud))
+			cansend = false;
+		else
+			cansend = destud.mobileregistered && (strlen(destud.mobilenumber)==11);
+		if(cansend)
+			strcpy(uident, destud.mobilenumber);
+	}
+
+	if(!cansend){
+		shmdt(getSession()->head);
+		return -2;
+	}
+
+	strncpy(buf, msgstr, MAX_MSG_SIZE);
+	buf[MAX_MSG_SIZE-1]=0;
+
+	if( strlen(buf) + strlen(ud.smsprefix) + strlen(ud.smsend) < MAX_MSG_SIZE ){
+		int i,i1,j;
+
+		i=strlen(buf);
+		i1=strlen(ud.smsprefix);
+		for(j= i+i1; j>=i1; j--){
+			buf[j] = buf[j-i1];
+		}
+		for(j=0;j<i1;j++)
+			buf[j] = ud.smsprefix[j];
+		strcat(buf, ud.smsend);
+
+	}
+
+	ret = DoSendSMS(ud.mobilenumber, uident, buf,getSession());
+
+	if( ret == CMD_ERR_SMS_VALIDATE_FAILED){
+		if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
+		ud.mobilenumber[0]=0;
+		ud.mobileregistered=0;
+		memcpy(&(getSession()->currentmemo->ud), &ud, sizeof(ud));
+		end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+		write_userdata(getCurrentUser()->userid, &ud);
+	}
+
+	if( ret ){
+		shmdt(getSession()->head);
+		return 1;
+	}else{
+		struct msghead h;
+		struct user_info *uin;
+		h.frompid = getSession()->currentuinfo->pid;
+		h.topid = -1;
+		if( !isdigit(dest[0]) ){
+			uin = t_search(destid, false);
+			if(uin) h.topid = uin->pid;
+			strcpy(h.id, destid);
+		}else
+			strcpy(h.id, uident);
+		h.mode = 6;
+		h.sent = 1;
+		h.time = time(0);
+		save_msgtext(getCurrentUser()->userid, &h, buf,getSession());
+#if HAVE_MYSQL_SMTH == 1
+        save_smsmsg(getCurrentUser()->userid, &h, buf, 1, getSession());
+#endif
+		if( !isdigit(dest[0]) ){
+			h.sent = 0;
+			strcpy(h.id, getCurrentUser()->userid);
+			save_msgtext(destid, &h, buf,getSession());
+#if HAVE_MYSQL_SMTH == 1
+        	save_smsmsg(uident, &h, buf, 1, getSession());
+#endif
+			if(uin) kill(uin->pid, SIGUSR2);
+		}
+	}
+
+	shmdt(getSession()->head);
+	return 0;
+
+}
+
+static int web_register_sms_sendcheck(char *mnumber)
+{
+    char ans[4];
+    char valid[20];
+    char buf2[80];
+	struct userdata ud;
+	int i;
+
+	if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
+	memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
+
+    sms_init_memory(getSession());
+    getSession()->smsuin = getSession()->currentuinfo;
+
+    if(ud.mobileregistered) {
+		shmdt(getSession()->head);
+        return -1;
+    }
+
+	if( mnumber == NULL ){
+		shmdt(getSession()->head);
+		return -2;
+	}
+
+	if( strlen(mnumber) != 11 ){
+		shmdt(getSession()->head);
+		return -3;
+	}
+
+	for(i=0;i <11; i++){
+		if( ! isdigit( mnumber[i] ) ){
+			shmdt(getSession()->head);
+			return -4;
+		}
+	}
+
+    if(DoReg(mnumber)) {
+		shmdt(getSession()->head);
+        return -5;
+    }
+
+	strcpy(ud.mobilenumber, mnumber);
+	memcpy(&(getSession()->currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+	write_userdata(getCurrentUser()->userid, &ud);
+    
+	shmdt(getSession()->head);
+	return 0;
+}
+
+static int web_register_sms_docheck(char *valid)
+{
+    char ans[4];
+    char buf2[80];
+	struct userdata ud;
+
+	if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
+	memcpy(&ud, &(getSession()->currentmemo->ud), sizeof(ud));
+
+    sms_init_memory(getSession());
+    getSession()->smsuin = getSession()->currentuinfo;
+
+    if(ud.mobileregistered) {
+		shmdt(getSession()->head);
+        return -1;
+    }
+
+    if(! ud.mobilenumber[0] || strlen(ud.mobilenumber)!=11 ) {
+		shmdt(getSession()->head);
+		return -2;
+    }
+
+    if(valid == NULL || !valid[0]){
+		shmdt(getSession()->head);
+		return -3;
+	}
+
+    if(DoCheck(ud.mobilenumber, valid)) {
+		shmdt(getSession()->head);
+        return -4;
+    }
+
+    ud.mobileregistered = 1;
+	memcpy(&(getSession()->currentmemo->ud), &ud, sizeof(ud));
+	end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+    write_userdata(getCurrentUser()->userid, &ud);
+    
+	shmdt(getSession()->head);
+	return 0;
+}
+
+static int web_unregister_sms()
+{
+    char ans[4];
+    char valid[20];
+    char buf2[80];
+    int rr;
+
+	if( read_user_memo(getCurrentUser()->userid, &getSession()->currentmemo) <= 0) return -1;
+    sms_init_memory(getSession());
+    getSession()->smsuin = getSession()->currentuinfo;
+
+    if(!getSession()->currentmemo->ud.mobileregistered) {
+        shmdt(getSession()->head);
+        getSession()->smsbuf=NULL;
+        return -1;
+    }
+
+        rr = DoUnReg(getSession()->currentmemo->ud.mobilenumber,getSession());
+        if(rr&&rr!=CMD_ERR_NO_SUCHMOBILE) {
+            shmdt(getSession()->head);
+	    	getSession()->currentmemo->ud.mobileregistered = 0;
+	    	write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+			end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+            getSession()->smsbuf=NULL;
+            return -1;
+        }
+
+        getSession()->currentmemo->ud.mobilenumber[0]=0;
+        getSession()->currentmemo->ud.mobileregistered = 0;
+        write_userdata(getCurrentUser()->userid, &(getSession()->currentmemo->ud));
+		end_mmapfile(getSession()->currentmemo, sizeof(struct usermemo), -1);
+
+    shmdt(getSession()->head);
+    getSession()->smsbuf=NULL;
+
+	return 0;
+}
+
+
+
+
+
+
 
 PHP_FUNCTION(bbs_send_sms)
 {
