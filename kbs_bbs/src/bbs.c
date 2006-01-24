@@ -2417,7 +2417,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 	int use_tmpl=0;
     int aborted, anonyboard;
     int replymode = 1;          /* Post New UI */
-    char ans[4], include_mode = 'S';
+    char ans[4], ooo, include_mode = 'S';
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
     char* upload = NULL;
@@ -2597,7 +2597,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #endif
 				);
         getdata(t_lines - 1, 0, buf2, ans, 3, DOECHO, NULL, true);
-        ans[0] = toupper(ans[1] = ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
+        ans[0] = toupper(ooo = ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
         if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
             if (atoi(ans) <= getSession()->currentmemo->ud.signum)
                 getCurrentUser()->signature = atoi(ans);
@@ -2642,7 +2642,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                 char buf[256], ses[20];
                 int i, totalsize = 0;
 
-                if (ans[1] == 'u' && nUpload<MAXATTACHMENTCOUNT) {
+                if (ooo == 'u' && nUpload<MAXATTACHMENTCOUNT) {
                     chdir("tmp");
                     upload = bbs_zrecvfile();
                     chdir("..");
@@ -5885,7 +5885,7 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
         //post file to the board
         if(post_file(getCurrentUser(),"",annpath,currboard->filename,title,0,2,getSession()) < 0) {//fail
             sprintf(buf,"发表文章到版面出错!请按任意键退出 << ");
-            a_prompt(-1,buf,annpath); //annpath no use
+            a_prompt(-1,buf,title);
             saveline(t_lines - 2, 1, NULL);
             saveline(t_lines - 3, 1, linebuffer);
         }
