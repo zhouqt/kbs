@@ -856,7 +856,7 @@ docWriter.prototype.t = function() {
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board);
 };
-docWriter.prototype.f = function(sfav,rss,related) {
+docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	var i,ret = '<div class="oper smaller">';
 	if (this.ftype != dir_modes["ORIGIN"]) {
 		ret += '[<a href="bbsdoc.php?board=' + this.board + '&ftype=' + dir_modes["ORIGIN"] + '">同主题模式</a>] ';
@@ -889,6 +889,9 @@ docWriter.prototype.f = function(sfav,rss,related) {
 			ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
 		}
 		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>]';
+		if (isclub) {
+			ret += ' [<a href="bbsclub.php?board=' + this.board + '">俱乐部成员</a>]';
+		}
 	}
 	ret += '</div>';
 	document.write(ret);

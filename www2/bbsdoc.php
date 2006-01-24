@@ -69,7 +69,7 @@ function do_manage_function($board) {
 
 function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$total,$showHot,$isnormalboard)
 {
-	global $brdnum, $usernum, $dir_modes, $show_none;
+	global $brdnum, $usernum, $dir_modes, $show_none, $isclub;
 	$board = $brdarr["NAME"];
 	$ann_path = bbs_getannpath($board);
 	if ($ann_path != FALSE)	{
@@ -118,7 +118,7 @@ c.t();c.f('<?php echo addslashes(bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php
 		}
 	}
 	if ($s) echo "0";
-?>);
+?>,<?php echo $isclub; ?>);
 //-->
 </script>
 <?php
@@ -192,6 +192,10 @@ if(($ftype == $dir_modes["DELETED"]) && !$managemode)  //·Ç¹ÜÀíÄ£Ê½²»ÈÃ¿´»ØÊÕÕ¾£
 }
 
 $isnormalboard = bbs_normalboard($board);
+if (bbs_club_flag($board) > 0)
+	$isclub = 1;
+else
+	$isclub = 0;
 
 bbs_set_onboard($brdnum,1);
 if ($ftype == $dir_modes["ORIGIN"]) {
