@@ -28,11 +28,15 @@ function htmlize(s) {
 	return s;
 }
 
-function getMirror() {
-	return "";
-}
 
-var attachURL = null, strArticle = "", divArtCon = null;
+var attachURL = null, strArticle = "", divArtCon = null, pubBoard = true;
+function getMirror() {
+	if (pubBoard) {
+		if (window.location.hostname == "www.newsmth.net")
+			return "www.smth.cc";
+		return "";
+	} else return "";
+}
 function prints(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
