@@ -530,6 +530,7 @@ function do_save($refill = false){
     		foundErr("Î´ÖªµÄ´íÎó!");
     		break;
     	}
+    	$_SESSION['num_auth'] = "";
     }
 	if (!$refill) {
     	$signature=trim($_POST["Signature"]);
