@@ -33,7 +33,7 @@ var attachURL = null, strArticle = "", divArtCon = null, pubBoard = true;
 function getMirror() {
 	if (pubBoard) {
 		if (window.location.hostname == "www.newsmth.net")
-			return "www.smth.cc";
+			return "http://www.smth.cc/";
 		return "";
 	} else return "";
 }
