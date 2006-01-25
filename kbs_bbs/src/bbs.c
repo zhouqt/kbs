@@ -2421,7 +2421,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
     char* upload = NULL;
-    int nUpload = 0;
+    int nUpload = 0, pressed_u = false;
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
     int mailback = 0;		/* stiger,回复到信箱 */
 	int ret = DIRCHANGED;
@@ -2682,6 +2682,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                          " \033[1;36m(上限 \033[1;37m%d\033[1;36m 附件/ \033[1;37m%d\033[1;36m 字节)\033[m\n",
                          nUpload, totalsize, MAXATTACHMENTCOUNT, MAXATTACHMENTSIZE);
                 prints("%s", buf);
+                pressed_u = true;
             }
         } else {
             /*
@@ -2829,7 +2830,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     if (!strcmp(currboard->filename, "BM_Apply") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS) && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
-    if(nUpload > 0) {
+    if(nUpload > 0 || pressed_u) {
         FILE *fp;
         if ((fp = fopen(filepath, "ab")) != NULL) {
             upload_post_append(fp, &post_file, getSession());
