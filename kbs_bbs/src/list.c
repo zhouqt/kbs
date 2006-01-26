@@ -543,6 +543,22 @@ int allnum, pagenum;
 #endif
         do_sendmsg(user_record[allnum], NULL, 0);
         break;
+#ifdef PERSONAL_CORP
+    case 'x':
+    case 'X':
+        {
+            struct userec *u;
+            if (getuser(user_record[allnum]->userid, &u)) {
+                if (u->flags & PCORP_FLAG) {
+                    int oldmode = uinfo.mode;
+                    modify_user_mode(PC);
+                    pc_read(u->userid);
+                    modify_user_mode(oldmode);
+                }
+            }
+        }
+        break;
+#endif
     case 'o':
     case 'O':
         if (!strcmp("guest", getCurrentUser()->userid))

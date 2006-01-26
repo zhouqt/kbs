@@ -33,7 +33,7 @@ PHP_FUNCTION(bbs_getattachtmppath)
 PHP_FUNCTION(bbs_filteruploadfilename)
 {
     char *filename;
-    long flen;
+    int flen;
     if (zend_parse_parameters(1 TSRMLS_CC, "s/", &filename, &flen) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
@@ -44,6 +44,51 @@ PHP_FUNCTION(bbs_filteruploadfilename)
     RETURN_STRING(filename, 1);
 }
 
+PHP_FUNCTION(bbs_upload_read_fileinfo)
+{
+    int i, nUpload;
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+    zval *element;
+    
+    nUpload = upload_read_fileinfo(ai, getSession());
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    for (i = 0; i < nUpload; i++) {
+        MAKE_STD_ZVAL(element);
+        array_init(element);
+        add_assoc_string(element, "name", ai[i].name, 1);
+        add_assoc_long(element, "size", ai[i].size);
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+    }
+}
+
+PHP_FUNCTION(bbs_upload_del_file)
+{
+    char *ofilename;
+    int oflen;
+    if (zend_parse_parameters(1 TSRMLS_CC, "s", &ofilename, &oflen) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (!oflen) {
+        RETURN_LONG(-1);
+    }
+    RETURN_LONG(upload_del_file(ofilename, getSession()));
+}
+
+PHP_FUNCTION(bbs_upload_add_file)
+{
+    char *filename, *ofilename;
+    int flen, oflen;
+    if (zend_parse_parameters(2 TSRMLS_CC, "ss/", &filename, &flen, &ofilename, &oflen) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    if (!flen || !oflen) {
+        RETURN_LONG(-1);
+    }
+    RETURN_LONG(upload_add_file(filename, ofilename, getSession()));
+}
 
 PHP_FUNCTION(bbs_postarticle)
 {

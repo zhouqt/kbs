@@ -3003,27 +3003,40 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
     char attachdir[MAXPATH], attachfile[MAXPATH];
     FILE *fp;
     char buf[256];
-    int i, n;
+    int i, n, len;
     int totalsize=0;
+    char *pos1, *pos2;
     n = upload_read_fileinfo(ai, session);
     if (n >= MAXATTACHMENTCOUNT)
-        return -1;
+        return -2;
 
+    pos1 = strrchr(original_filename, '\\');
+    pos2 = strrchr(original_filename, '/');
+    if (pos1 && pos2) {
+        if (pos1 < pos2) pos1 = pos2;
+        original_filename = pos1 + 1;
+    } else {
+        pos1 = pos1 ? pos1 : pos2;
+        if (pos1) original_filename = pos1 + 1;
+    }
     filter_upload_filename(original_filename);
-    if (strlen(original_filename) > 60)
-        original_filename[60] = '\0';
+    len = strlen(original_filename);
+    if (!len)
+        return -3;
+    if (len > 60)
+        original_filename += (len-60);
 
     for (i=0;i<n;i++) {
-        if (strcmp(ai[i].name, original_filename) == 0) return -2;
+        if (strcmp(ai[i].name, original_filename) == 0) return -4;
         totalsize+=ai[i].size;
     }
     struct stat stat_buf;
     if (stat(filename, &stat_buf) != -1 && S_ISREG(stat_buf.st_mode)) {
         totalsize += stat_buf.st_size;
     } else {
-        return -4;
+        return -5;
     }
-    if (totalsize > MAXATTACHMENTSIZE) return -3;
+    if (totalsize > MAXATTACHMENTSIZE) return -6;
     
     getattachtmppath(attachdir, MAXPATH, session);
     mkdir(attachdir, 0700);

@@ -19,6 +19,12 @@ int pc_dirmode = 0;
 //收藏夹当前路径,0表示未进入收藏夹
 unsigned long pc_fav_dir = 0;
 
+static int pc_sec();
+static int pc_selusr(char prefix);
+static int pc_read_dir(int first);
+static int pc_read_comment();
+
+
 int pc_choose_user()
 {
 
@@ -378,7 +384,7 @@ static int pc_sec_select(struct _select_def *conf)
 
 }
 
-int pc_sec()
+static int pc_sec()
 {
     struct _select_def group_conf;
     POINT *pts;
@@ -477,7 +483,7 @@ static int pc_selusr_select(struct _select_def *conf)
     return SHOW_REFRESH;
 }
 
-int pc_selusr(char prefix)
+static int pc_selusr(char prefix)
 {
     struct _select_def group_conf;
     POINT *pts;
@@ -641,6 +647,9 @@ int pc_read(char *userid)
     POINT *pts = NULL;
     int i;
 
+    if (pc_u)
+        return 0; //reentry
+    
     pc_u = (struct pc_users *) malloc(sizeof(struct pc_users));
     if (pc_u == NULL)
         return 0;
@@ -656,7 +665,8 @@ int pc_read(char *userid)
         prints("此用户不存在");
         pressanykey();
         free(pc_u);
-        free(pts);
+        if (pts) free(pts);
+        pc_u = NULL;
         return 0;
     }
 
@@ -668,7 +678,7 @@ int pc_read(char *userid)
         move(7, 0);
         prints("没有此用户个人文集存在");
         free(pc_u);
-        free(pts);
+        if (pts) free(pts);
         pc_u = NULL;
         pressanykey();
         return 0;
@@ -707,7 +717,7 @@ int pc_read(char *userid)
     if (pc_select_user[0])
         goto startuser;
 
-    free(pts);
+    if (pts) free(pts);
     free(pc_u);
     pc_u = NULL;
 
@@ -736,7 +746,7 @@ int pc_now_node_ent = 0;
 /* 复制粘贴的东西，保存临时node nid */
 unsigned long pc_pasteboard = 0;
 
-int pc_get_fav_root(unsigned long *nid)
+static int pc_get_fav_root(unsigned long *nid)
 {
     struct pc_nodes pn;
     int ret;
@@ -749,7 +759,7 @@ int pc_get_fav_root(unsigned long *nid)
     return 1;
 }
 
-int pc_add_fav_root()
+static int pc_add_fav_root()
 {
     struct pc_nodes pn;
 
@@ -769,7 +779,7 @@ int pc_add_fav_root()
 
 }
 
-int pc_conv_body_to_file(char *body, char *fname)
+static int pc_conv_body_to_file(char *body, char *fname)
 {
     int fd;
     unsigned long size;
@@ -804,7 +814,7 @@ int pc_conv_body_to_file(char *body, char *fname)
     return 1;
 }
 
-int pc_conv_com_to_file(unsigned long nid, char *fname)
+static int pc_conv_com_to_file(unsigned long nid, char *fname)
 {
     int fd;
     struct pc_comments pn;
@@ -906,7 +916,7 @@ static const char TAG_LINK[6][2][8] = {
 #define PUTS(str)  temp=str; while(*temp) { PUTC(*temp); temp++; }
 #define GET_TAG(condi) tagp=0; tag[0]=0; while ((condi)&&(*ptr)&&(tagp<255)) { tag[tagp] = *ptr; tagp++; ptr++; } tag[tagp]=0;
 
-int pc_conv_node_to_file(unsigned long nid, char *fname)
+static int pc_conv_node_to_file(unsigned long nid, char *fname)
 {
     char *ptr, *temp;
     char tag[256];
@@ -1051,7 +1061,7 @@ int pc_conv_node_to_file(unsigned long nid, char *fname)
  * num >=0: 修改
  *          num为序号
  */
-int pc_add_a_dir(unsigned long nid)
+static int pc_add_a_dir(unsigned long nid)
 {
     struct pc_nodes pn;
     char ans[201];
@@ -1104,7 +1114,7 @@ int pc_add_a_dir(unsigned long nid)
  * nid >=0: 修改
  *          num为序号
  */
-int pc_add_a_node(unsigned long nid)
+static int pc_add_a_node(unsigned long nid)
 {
     struct pc_nodes pn;
     char ans[201];
@@ -1553,7 +1563,7 @@ static int pc_dir_prekey(struct _select_def *conf, int *key)
     return SHOW_CONTINUE;
 }
 
-int pc_read_dir(int first)
+static int pc_read_dir(int first)
 {
     struct _select_def group_conf;
     POINT *pts;
@@ -1935,7 +1945,7 @@ static int pc_com_select(struct _select_def *conf)
     return SHOW_REFRESH;
 }
 
-int pc_read_comment()
+static int pc_read_comment()
 {
     struct _select_def group_conf;
     POINT *pts;

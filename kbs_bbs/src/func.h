@@ -621,10 +621,6 @@ int pc_add_user(ARG_VOID);
 int import_to_pc(int ent, struct fileheader *fileinfo, char *direct);
 
 int pc_read(char *userid);
-int pc_selusr(char prefix);
-int pc_read_dir(int first);
-int pc_sec(ARG_VOID);
-int pc_read_comment(ARG_VOID);
 int pc_logs(struct pc_logs *pn);
 
 #endif
