@@ -979,7 +979,7 @@ conWriter.prototype.t = function() {
 		if (!zd) ret += '[<a href="bbscommend.php' + qry + '">推荐</a>] ';
 		ret += '[' + this.favtxt + '] ';
 		ret += '[<a href="bbspstmail.php' + qry + '">回信</a>] ';
-		ret += '[<a href="bbsedit.php' + qry + '">修改</a>] ';
+		ret += '[<a href="bbsedit.php' + qry + '&ftype=' + this.ftype + '">修改</a>] ';
 		if (!zd) {
 			ret += '[<a href="bbsedittitle.php' + qry + '">修改标题</a>] ';
 			//ret += '[<a href="bbsprop.php' + qry + '">属性</a>] ';

@@ -120,7 +120,7 @@
 			case 0:
 				html_success_quit("文章修改成功",
 				array("<a href='bbsdoc.php?board=" . $brd_encode . "'>返回 " . $brdarr['DESC'] . "</a>",
-				"<a href='bbscon.php?board=" . $brd_encode . "&id=" . $id . "&ftype='" . $ftype . "'>返回《" . htmlspecialchars($_POST["title"]) . "》</a>"));
+				"<a href='bbscon.php?board=" . $brd_encode . "&id=" . $id . "&ftype=" . $ftype . "'>返回《" . htmlspecialchars($_POST["title"]) . "》</a>"));
 				break;
 			default:
 		}
