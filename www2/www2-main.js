@@ -778,7 +778,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 			break;
 		case dir_modes["NORMAL"]:
 			str += '<a href="bbscon.php?board=' + this.board + '&id=' + id;
-			if (flag === false) str += "&ftype=" + dir_modes["ZHIDING"]
+			if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"]
 			str += '">' + title + '</a>';
 			if (size >= 1000) {
 				str += '<span class="red">(' + (Math.floor(size / 100) / 10.0) + 'k)</span>';
