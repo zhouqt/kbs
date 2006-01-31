@@ -6,10 +6,10 @@ dist-hook:
 	rm -rf `find $(distdir) -name CVS`
 	rm -rf `find $(distdir) -name config.status`
 	rm -rf `find $(distdir) -name .deps`
-	cd $(distdir);find . -path "./sshbbsd/gmp-2.0.2-ssh-2" -prune -o \
+#	cd $(distdir);find . -path "./sshbbsd/gmp-2.0.2-ssh-2" -prune -o \
         -name "./sshbbsd/acconfig.h" -prune -o -name "*.[c|h]" \
 	-exec indent -kr -l200 -i4 -bad -bap -cdb -sc -ip0 -nut {} -o {} \;
-	find $(distdir) -name "*.[c|h]" \
+#	find $(distdir) -name "*.[c|h]" \
         -exec $(srcdir)/filter.sh {} \;
 
 install-home:
