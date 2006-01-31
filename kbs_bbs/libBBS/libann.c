@@ -352,8 +352,6 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
         if ((fp = fopen(filename, "r")) == NULL)
             return NULL;
         while (fgets(buf, sizeof(buf), fp) != NULL) {
-            int t;
-
             if ((c = strrchr(buf, '\n')) != NULL)
                 *c = '\0';
             if (strncmp(buf, "Name=", 5) == 0) {

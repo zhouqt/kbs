@@ -37,6 +37,7 @@ struct boardheader* currboard=NULL;
 int currboardent;
 char currBM[BM_LEN - 1];
 int selboard = 0;
+int check_upload = 0; //发表文章时是否要检查添加附件
 
 int Anony;
 char genbuf[1024];
@@ -2408,6 +2409,57 @@ int add_attach(char* file1, char* file2, char* filename)
     return st.st_size;
 }
 
+int process_upload(int nUpload, int maxShow, char *ans, struct ea_attach_info* ai)
+{
+    char buf[256], ses[20];
+    char *upload = NULL;
+    int i, totalsize = 0;
+
+    if (ans[0] == 'U' && nUpload<MAXATTACHMENTCOUNT) {
+        chdir("tmp");
+        upload = bbs_zrecvfile();
+        chdir("..");
+        if (upload != NULL && *upload) {
+            char uploaded_file[PATHLEN];
+            snprintf(uploaded_file, PATHLEN, "tmp/%s", upload);
+            upload_add_file(uploaded_file, upload, getSession());
+        }
+    } else if (ans[0] == 'u' && ans[1]) {
+        int att = atoi(ans+1);
+        if (att > 0 && att <= nUpload) {
+            upload_del_file(ai[att-1].name, getSession());
+        }
+    }
+
+    get_telnet_sessionid(ses, getSession()->utmpent);
+    snprintf(buf, sizeof(buf), "附件上传地址: http://%s/bbsupload.php?sid=%s\n", get_my_webdomain(0), ses);
+    clear();
+    prints(buf);
+    nUpload = upload_read_fileinfo(ai, getSession());
+    prints("%s", "已上传附件列表: (按 \033[1;32mu\033[m 刷新, \033[1;32mu<序号>\033[m 删除相应序号附件"
+#ifdef SSHBBS
+        ", \033[1;32mU\033[m zmodem 上传"
+#endif
+        ")\n");
+    for(i=0;i<nUpload;i++) {
+        if (i>=nUpload-maxShow) {
+            snprintf(buf, sizeof(buf), "[%02d] %-60.60s (%7d 字节)\n", i+1, ai[i].name, ai[i].size);
+            prints("%s", buf);
+        }
+        totalsize += ai[i].size;
+    }
+    if (nUpload > maxShow) {
+        snprintf(buf, sizeof(buf), "附件数量超过 %d 个，前面的不显示了！\n", maxShow);
+        prints("%s", buf);
+    }
+    snprintf(buf, sizeof(buf), "\n\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%d\033[1;36m 字节\033[m"
+             " \033[1;36m(上限 \033[1;37m%d\033[1;36m 附件/ \033[1;37m%d\033[1;36m 字节)\033[m\n",
+             nUpload, totalsize, MAXATTACHMENTCOUNT, MAXATTACHMENTSIZE);
+    prints("%s", buf);
+    check_upload = 1;
+    return nUpload;
+}
+
 int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_file)
 {                               /*用户 POST 文章 */
     struct fileheader post_file;
@@ -2420,8 +2472,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     char ans[8], ooo, include_mode = 'S';
     struct boardheader *bp;
     long eff_size;/*用于统计文章的有效字数*/
-    char* upload = NULL;
-    int nUpload = 0, pressed_u = false;
+    int nUpload = 0;
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
     int mailback = 0;		/* stiger,回复到信箱 */
 	int ret = DIRCHANGED;
@@ -2431,6 +2482,8 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #ifdef FILTER
     int returnvalue;
 #endif
+
+    check_upload = 0;
 
     if (conf!=NULL)  {
         struct read_arg* arg;
@@ -2593,17 +2646,17 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 #endif
 				);
         getdata(t_lines - 1, 0, buf2, ans, 4, DOECHO, NULL, true);
-        ans[0] = toupper(ooo = ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
-        if ((ans[0] - '0') >= 0 && ans[0] - '0' <= 9) {
+        ooo = toupper(ans[0]);       /* Leeward 98.09.24 add; delete below toupper */
+        if ((ooo - '0') >= 0 && ooo - '0' <= 9) {
             int ii = atoi(ans);
             if (ii > 99) ii = 0;
             if (ii <= getSession()->currentmemo->ud.signum)
                 getCurrentUser()->signature = ii;
-        } else if ((ans[0] == 'S' || ans[0] == 'Y' || ans[0] == 'N' || ans[0] == 'A' || ans[0] == 'R') && replymode) {
-            include_mode = ans[0];
-        } else if (ans[0] == 'T') {
+        } else if ((ooo == 'S' || ooo == 'Y' || ooo == 'N' || ooo == 'A' || ooo == 'R') && replymode) {
+            include_mode = ooo;
+        } else if (ooo == 'T') {
             buf4[0] = '\0';
-		} else if (ans[0] == 'P') {
+		} else if (ooo == 'P') {
 			if( use_tmpl >= 0)
 				use_tmpl = use_tmpl ? 0 : 1;
 				/*
@@ -2615,18 +2668,18 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
 					ansimore2(buf2, false, 0, 18);
 				}
 			}*/
-		} else if (ans[0] == 'B') {
+		} else if (ooo == 'B') {
 			/* if( replymode == 0 ) */
 				mailback = mailback ? 0 : 1;
-        } else if (ans[0] == ANONY_KEY) {
+        } else if (ooo == ANONY_KEY) {
             Anony = (Anony == 1) ? 0 : 1;
-        } else if (ans[0] == RAND_SIG_KEY) {
+        } else if (ooo == RAND_SIG_KEY) {
             getCurrentUser()->signature = -1;
 #ifdef POST_QUIT
-		} else if (ans[0] == 'Q') {
+		} else if (ooo == 'Q') {
         	return FULLUPDATE;
 #endif
-        } else if (ans[0] == 'V') {     /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
+        } else if (ooo == 'V') {     /* Leeward 98.09.24 add: viewing signature(s) while setting post head */
             sethomefile(buf2, getCurrentUser()->userid, "signatures");
             move(t_lines - 1, 0);
             if (askyn("预设显示前三个签名档, 要显示全部吗", false) == true)
@@ -2635,54 +2688,9 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
                 clear();
                 ansimore2(buf2, false, 0, 18);
             }
-        } else if (ans[0] == 'U') {
-            if(currboard->flag&BOARD_ATTACH) {
-                char buf[256], ses[20];
-                int i, totalsize = 0;
-
-                if (ooo == 'U' && nUpload<MAXATTACHMENTCOUNT) {
-                    chdir("tmp");
-                    upload = bbs_zrecvfile();
-                    chdir("..");
-                    if (upload != NULL && *upload) {
-                        char uploaded_file[PATHLEN];
-                        snprintf(uploaded_file, PATHLEN, "tmp/%s", upload);
-                        if (upload_add_file(uploaded_file, upload, getSession())) {
-                            unlink(uploaded_file);
-                        }
-                    }
-                } else if (ooo == 'u' && ans[1]) {
-                    int att = atoi(ans+1);
-                    if (att > 0 && att <= nUpload) {
-                        upload_del_file(ai[att-1].name, getSession());
-                    }
-                }
-
-                get_telnet_sessionid(ses, getSession()->utmpent);
-                snprintf(buf, sizeof(buf), "附件上传地址: http://%s/bbsupload.php?sid=%s\n", get_my_webdomain(0), ses);
-                clear();
-                prints(buf);
-                nUpload = upload_read_fileinfo(ai, getSession());
-                prints("%s", "已上传附件列表: (按 \033[1;32mu\033[m 刷新, \033[1;32mu<序号>\033[m 删除相应序号附件"
-#ifdef SSHBBS
-                    ", \033[1;32mU\033[m zmodem 上传"
-#endif
-                    ")\n");
-                for(i=0;i<nUpload;i++) {
-                    if (i>=nUpload-10) {
-                        snprintf(buf, sizeof(buf), "[%02d] %-60.60s (%7d 字节)\n", i+1, ai[i].name, ai[i].size);
-                        prints("%s", buf);
-                    }
-                    totalsize += ai[i].size;
-                }
-                if (nUpload > 10) {
-                    prints("%s", "附件数量超过 10 个，前面的不显示了！\n");
-                }
-                snprintf(buf, sizeof(buf), "\n\033[1;36m共 \033[1;37m%d\033[1;36m 附件/计 \033[1;37m%d\033[1;36m 字节\033[m"
-                         " \033[1;36m(上限 \033[1;37m%d\033[1;36m 附件/ \033[1;37m%d\033[1;36m 字节)\033[m\n",
-                         nUpload, totalsize, MAXATTACHMENTCOUNT, MAXATTACHMENTSIZE);
-                prints("%s", buf);
-                pressed_u = true;
+        } else if (ooo == 'U') {
+            if(currboard->flag&BOARD_ATTACH || HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
+                nUpload = process_upload(nUpload, 10, ans, ai);
             }
         } else {
             /*
@@ -2830,7 +2838,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
     if (!strcmp(currboard->filename, "BM_Apply") && !HAS_PERM(getCurrentUser(), PERM_OBOARDS) && HAS_PERM(getCurrentUser(), PERM_BOARDS)) {
         post_file.accessed[0] |= FILE_SIGN;
     }
-    if(nUpload > 0 || pressed_u) {
+    if(check_upload) {
         FILE *fp;
         if ((fp = fopen(filepath, "ab")) != NULL) {
             upload_post_append(fp, &post_file, getSession());

@@ -70,7 +70,7 @@ char buf[256];
 
 
 #endif                          /*  */
-    char *stuffstr[ST_END];
+    const char *stuffstr[ST_END];
     char *ptr, *ptr2;
 
     time_t now;

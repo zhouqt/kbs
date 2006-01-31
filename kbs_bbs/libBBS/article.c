@@ -2998,7 +2998,7 @@ int upload_del_file(const char *original_file, session_t *session) {
     return ret;
 }
 
-int upload_add_file(const char *filename, char *original_filename, session_t *session) {
+static int upload_add_file_helper(const char *filename, char *original_filename, session_t *session) {
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
     char attachdir[MAXPATH], attachfile[MAXPATH];
     FILE *fp;
@@ -3036,7 +3036,7 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
     } else {
         return -5;
     }
-    if (totalsize > MAXATTACHMENTSIZE) return -6;
+    if (!HAS_PERM(session->currentuser, PERM_SYSOP) && totalsize > MAXATTACHMENTSIZE) return -6;
     
     getattachtmppath(attachdir, MAXPATH, session);
     mkdir(attachdir, 0700);
@@ -3054,3 +3054,8 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
     return(0);
 }
 
+int upload_add_file(const char *filename, char *original_filename, session_t *session) {
+    int ret = upload_add_file_helper(filename, original_filename, session);
+    if (ret) unlink(filename);
+    return(ret);
+}

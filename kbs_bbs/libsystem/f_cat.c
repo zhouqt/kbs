@@ -8,7 +8,7 @@
  *  Return: 0 - success,other - failed
  **/
 
-int f_cat(char* file,char* str)
+int f_cat(const char* file, const char* str)
 {
     int fd;
     int ret=0;
@@ -27,7 +27,7 @@ int f_cat(char* file,char* str)
  *    dst: destination file name
  *  Return: 0 - success,other - failed
  **/
-int f_catfile(char* src,char* dst)
+int f_catfile(const char* src, const char* dst)
 {
     int sfd,dfd;
     int ret=0;

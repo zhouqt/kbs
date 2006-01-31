@@ -272,7 +272,6 @@ void save_favboard1(char *fname,struct favbrd_struct *brdlist, int * brdlist_t)
 
 void save_favboard(int mode,session_t* session)
 {
-    int fd, i;
     char fname[MAXPATH];
 
 	if( (mode==2 || mode==3 ) && !HAS_PERM(session->currentuser,PERM_SYSOP))

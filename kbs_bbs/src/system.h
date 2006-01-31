@@ -5,15 +5,15 @@
 #define READ_BUFFER_SIZE 10240
 #undef BUFFER_IN_STACK
 
-int f_rm(char *fpath);
-int f_mv(char *src, char *dst);
-int f_cp(char *src, char *dst, int mode);
-int f_cat(char *fpath, char *msg);
-int f_catfile(char* srcpath,char* dstpath);
-int f_touch(char *filename);
-int f_ln(char *src, char *dst);
+int f_rm(const char *fpath);
+int f_mv(const char *src, const char *dst);
+int f_cp(const char *src, const char *dst, int mode);
+int f_cat(const char *fpath, const char *msg);
+int f_catfile(const char* srcpath, const char* dstpath);
+int f_touch(const char *filename);
+int f_ln(const char *src, const char *dst);
 typedef int(*OUTC_FUNC)(char);
-void uuencode(char* inbuf, int size, char *filename, OUTC_FUNC fn);
+void uuencode(const char* inbuf, int size, const char *filename, OUTC_FUNC fn);
 
 
 /* ×Ö·û´®Æ¥Åäº¯Êý*/

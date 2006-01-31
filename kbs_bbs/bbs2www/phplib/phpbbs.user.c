@@ -6,6 +6,8 @@
 #include "bbs.h"
 #include "bbslib.h"
 
+//暂时放这里
+#define MANAGERSHIP(user) (getCurrentUser() && (HAS_PERM(getCurrentUser(), PERM_SYSOP) || !strcmp((user)->userid , getCurrentUser()->userid)))
 
 void assign_user(zval * array, struct userec *user, int num)
 {
@@ -17,7 +19,7 @@ void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "firstlogin", user->firstlogin);
     add_assoc_long(array, "exittime", user->exittime);
 //    add_assoc_stringl(array, "lasthost", user->lasthost, IPLEN, 1);
-    add_assoc_string(array, "lasthost", (!strcmp(user->userid , getCurrentUser()->userid) || HAS_PERM(getCurrentUser(), PERM_SYSOP)) ? user->lasthost: SHOW_USERIP(user, user->lasthost), 1);
+    add_assoc_string(array, "lasthost", MANAGERSHIP(user) ? user->lasthost: SHOW_USERIP(user, user->lasthost), 1);
     add_assoc_long(array, "numlogins", user->numlogins);
     add_assoc_long(array, "numposts", user->numposts);
     add_assoc_long(array, "flag1", user->flags);
@@ -36,12 +38,12 @@ void assign_user(zval * array, struct userec *user, int num)
     add_assoc_long(array, "userdefine0", user->userdefine[0]);
     add_assoc_long(array, "userdefine1", user->userdefine[1]);
 
-	#ifdef HAVE_BIRTHDAY
+#ifdef HAVE_BIRTHDAY
 	add_assoc_long(array,"gender",ud.gender);
 	add_assoc_long(array,"birthyear",ud.birthyear);
     add_assoc_long(array,"birthmonth",ud.birthmonth);
     add_assoc_long(array,"birthday", ud.birthday);
-	#endif
+#endif
 
     add_assoc_string(array,"reg_email",ud.reg_email,1);
     add_assoc_long(array,"mobilderegistered", ud.mobileregistered);
@@ -72,6 +74,9 @@ void assign_user(zval * array, struct userec *user, int num)
 	add_assoc_string(array,"telephone", ud.telephone,1);
 #endif
 
+#ifdef NEWSMTH
+    if (MANAGERSHIP(user)) add_assoc_long(array,"score_user",user->score_user);
+#endif
 }
 
 

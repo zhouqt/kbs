@@ -1416,6 +1416,28 @@ int vedit_process_ESC(arg)
 #define CHOOSE_ERROR    "选项错误"
 
     switch (arg) {
+    case 'Z':
+    case 'z':
+        if (uinfo.mode == POSTING && (currboard->flag&BOARD_ATTACH || HAS_PERM(getCurrentUser(),PERM_SYSOP))) {
+            struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+            int nUpload = 0;
+            char ans[8];
+            ans[0]='\0';
+            nUpload = process_upload(nUpload, 20, ans, ai);
+            while(1) {
+                getdata(t_lines - 1, 0, "请输入操作：", ans, 4, DOECHO, NULL, true);
+                switch(ans[0]) {
+                    case 'u':
+                    case 'U':
+                        nUpload = process_upload(nUpload, 20, ans, ai);
+                        continue;
+                    default:
+                        break;
+                }
+                break;
+            }
+        }
+        return 0;
     case 'A':
     case 'a':
         show_eof = !show_eof;

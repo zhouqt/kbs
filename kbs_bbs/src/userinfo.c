@@ -25,11 +25,8 @@
 #include "bbs.h"
 extern time_t login_start_time;
 
-void disply_userinfo(u, real)
-	struct userec *u;
-    int real;
+void disply_userinfo(struct userec *u, int real)
 {
-    struct stat st;
     int num, diff;
 	struct userdata ud;
 
@@ -88,13 +85,11 @@ void disply_userinfo(u, real)
         }
 #endif
         prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);
-    setmailfile(genbuf, u->userid, DOT_DIR);
-    if (stat(genbuf, &st) >= 0)
-        num = st.st_size / (sizeof(struct fileheader));
-    
-    else
-        num = 0;
-    prints("收件箱       : %d 封\n", num);
+#ifdef NEWSMTH
+    prints("积分         : %d\n", u->score_user);
+#else
+    prints("\n");
+#endif
     if (real) {
         strcpy(genbuf, XPERMSTR);
         for (num = 0; num < (int) strlen(genbuf); num++)

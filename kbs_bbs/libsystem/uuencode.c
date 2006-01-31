@@ -13,10 +13,10 @@ static const char uu_conv[64] = {
 
 #define ENCODE(ch) (uu_conv[(ch) & 077])
 
-void uuencode(char *inbuf, int size, char *filename, OUTC_FUNC fn)
+void uuencode(const char *inbuf, int size, const char *filename, OUTC_FUNC fn)
 {
     register int ch, left;
-    register char *p = NULL, *ptr;
+    register const char *p = NULL, *ptr;
     int n;
     char buf[80];
 

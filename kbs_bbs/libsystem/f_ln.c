@@ -7,8 +7,7 @@
 #include <errno.h>
 #include "system.h"
 
-int f_ln(src, dst)
-    char *src, *dst;
+int f_ln(const char *src, const char *dst)
 {
     int ret;
 

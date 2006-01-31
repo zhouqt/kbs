@@ -114,7 +114,6 @@ struct newpostdata *ptr;
 seperated by pig2532@newsmth */
 static int fav_select_path()
 {
-    struct boardheader bh;
     int k;
 
 	load_myboard(getSession(), 0);
@@ -187,7 +186,6 @@ int show_boardinfo(const char *bname)
 {
     const struct boardheader *bp = getbcache(bname);
     char ch;
-    int ret, bid;
 
 	if(bp==NULL)
 		return 0;
@@ -966,7 +964,6 @@ static int fav_key(struct _select_def *conf, int command)
             int i = 0, ret;
             extern int in_do_sendmsg;
             extern int super_select_board(char*);
-    		struct boardheader bh;
 
            	if (getSession()->favbrd_list[getSession()->favnow].bnum >= MAXBOARDPERDIR) {
                	move(2, 0);

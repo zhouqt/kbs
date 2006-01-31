@@ -10,7 +10,7 @@
  **/
 #define READ_BUFFER_SIZE 10240
 
-int f_cp(char* src,char* dst,int mode)
+int f_cp(const char* src, const char* dst, int mode)
 {
     int sfd,dfd;
     int ret=0;

@@ -7,7 +7,7 @@
 #ifndef O_LARGEFILE
 #define O_LARGEFILE 0
 #endif
-int f_touch(char *filename)
+int f_touch(const char *filename)
 {
     int fd;
 

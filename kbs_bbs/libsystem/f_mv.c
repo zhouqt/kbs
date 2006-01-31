@@ -2,8 +2,7 @@
 #include "system.h"
 
 
-int f_mv(src, dst)
-    char *src, *dst;
+int f_mv(const char *src, const char *dst)
 {
     int ret;
 

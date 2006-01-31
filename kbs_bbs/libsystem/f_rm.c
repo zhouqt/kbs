@@ -3,11 +3,10 @@
 #include "system.h"
 
 
-static int rm_dir();
+static int rm_dir(const char *fpath);
 
 
-int f_rm(fpath)
-    char *fpath;
+int f_rm(const char *fpath)
 {
     struct stat st;
 
@@ -21,8 +20,7 @@ int f_rm(fpath)
 }
 
 
-static int rm_dir(fpath)
-    char *fpath;
+static int rm_dir(const char *fpath)
 {
     struct stat st;
     DIR *dirp;

@@ -1277,7 +1277,6 @@ static int mail_edit_title(struct _select_def* conf, struct fileheader *fileinfo
     char tmp[STRLEN*2];
     char genbuf[1024];
     char * t = NULL;
-    unsigned int i;
     int ent=conf->pos;
     struct read_arg* arg=conf->arg;
     struct stat st;
