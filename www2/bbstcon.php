@@ -50,8 +50,9 @@
 	if( $endnum > $num )
 		$endnum = $num;
 
+	bbs_checkorigin($board);
 	$origins = array();
-	$origin_num = bbs_get_records_from_id($brdarr["NAME"], $gid, $dir_modes["ORIGIN"], $origins);
+	$origin_num = bbs_get_records_from_id($board, $gid, $dir_modes["ORIGIN"], $origins);
 	
 	if ($isnormalboard) { /* cache 判断索引修改时间 - atppp */
 		$dotdirname = bbs_get_board_index($board, $dir_modes["NORMAL"]);
