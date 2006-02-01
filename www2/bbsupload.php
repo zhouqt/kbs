@@ -44,7 +44,7 @@
 						pclose($h);
 						if (strncasecmp("BMP", $read, 3) == 0) {
 							$tp = tempnam("/tmp", "BMP2JPG");
-							exec("convert -quality 90 $ofile jpg:$tp");
+							exec("convert -quality 100 $ofile jpg:$tp");
 							if (file_exists($tp)) {
 								unlink($ofile);
 								$ofile = $tp;
