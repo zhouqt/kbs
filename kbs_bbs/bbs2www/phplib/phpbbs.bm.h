@@ -9,6 +9,9 @@ PHP_FUNCTION(bbs_denyusers);
 PHP_FUNCTION(bbs_denyadd);
 PHP_FUNCTION(bbs_denydel);
 PHP_FUNCTION(bbs_bm_get_manageable_bids);
+PHP_FUNCTION(bbs_club_read);
+PHP_FUNCTION(bbs_club_flag);
+PHP_FUNCTION(bbs_club_write);
 
 
 #define PHP_BBS_BM_EXPORT_FUNCTIONS \
@@ -17,7 +20,10 @@ PHP_FUNCTION(bbs_bm_get_manageable_bids);
     PHP_FE(bbs_denyusers,two_arg_force_ref_01) \
     PHP_FE(bbs_denyadd,NULL) \
     PHP_FE(bbs_denydel,NULL) \
-    PHP_FE(bbs_bm_get_manageable_bids,NULL)
+    PHP_FE(bbs_bm_get_manageable_bids,NULL) \
+    PHP_FE(bbs_club_read,NULL) \
+    PHP_FE(bbs_club_flag,NULL) \
+    PHP_FE(bbs_club_write,NULL)
 
 #endif //PHP_BBS_BM_H
 

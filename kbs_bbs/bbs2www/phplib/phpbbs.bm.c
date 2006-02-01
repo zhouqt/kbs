@@ -6,6 +6,17 @@
 #include "bbs.h"
 #include "bbslib.h"
 
+struct usernode {
+    char *userid;
+    struct usernode *next;
+};
+    
+struct clubarg {
+    struct boardheader *brd;
+    int mode;
+    struct usernode *ulheader, *ulcurrent;
+};
+
 /**
  * Checking whether a user is a BM of a board or not.
  * prototype:
@@ -516,3 +527,260 @@ PHP_FUNCTION(bbs_bm_get_manageable_bids)
 }
 
 
+
+/* club functions below, by pig2532 */
+
+static int func_load_club_users(struct userec *user,void *varg)
+{
+    struct clubarg *clubflag = (struct clubarg *)varg;
+    if(user->userid[0]&&get_user_club_perm(user,clubflag->brd,clubflag->mode))
+    {
+        struct usernode *untmp;
+        untmp = (struct usernode *)emalloc(sizeof(struct usernode));
+        if(untmp != NULL)
+        {
+            untmp->userid = estrdup(user->userid);
+            untmp->next = NULL;
+            if(clubflag->ulheader == NULL)
+            {
+                clubflag->ulheader = clubflag->ulcurrent = untmp;
+            }
+            else
+            {
+                clubflag->ulcurrent->next = untmp;
+                clubflag->ulcurrent = untmp;
+            }
+        }
+        return COUNT;
+    }
+    return 0;
+}
+
+static int CompareNameCase(const void *v1,const void *v2){
+    return strcasecmp((*((const char**)v1)),(*((const char**)v2)));
+}
+
+static void clubread_FreeAll(struct usernode *ulheader, char **userarray)
+{
+    struct usernode *ulcurrent;
+    ulcurrent = ulheader->next;
+    while(ulheader)
+    {
+    	if(ulheader->userid)
+    	    efree(ulheader->userid);
+        efree(ulheader);
+        ulheader = ulcurrent;
+        if(ulheader)
+            ulcurrent = ulheader->next;
+    }
+    if(userarray)
+        efree(userarray);
+}
+
+/* read club member, by pig2532
+parameters:
+    bname: board name
+    clubmode: 0-read_prem_club, 1-write_prem_club
+    start: read user list from
+    num: how many user names to read
+    userlist: array to save the name list
+return:
+    >=0: [success] record count total
+    -1: system error
+    -2: board not found
+    -3: no BM perm
+    -4: this is not a club
+*/
+PHP_FUNCTION(bbs_club_read)
+{
+    char *bname;
+    long clubmode, start, num;
+    zval *userlist;
+    struct boardheader brd;
+    int i, bname_len, count;
+    struct clubarg clubflag;
+    char **userarray, **t;
+    struct usernode *ulheader, *ulcurrent;
+    
+    if (ZEND_NUM_ARGS() != 5 || zend_parse_parameters(5 TSRMLS_CC, "sllla", &bname, &bname_len, &clubmode, &start, &num, &userlist) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    
+    if(start < 0)
+        RETURN_LONG(0);
+    if(array_init(userlist) != SUCCESS)
+        RETURN_LONG(-1);
+    if (getboardnum(bname, &brd) == 0)
+        RETURN_LONG(-2);
+    if (!check_read_perm(getCurrentUser(), &brd))
+        RETURN_LONG(-2);
+    strcpy(bname, brd.filename);
+    if (!is_BM(&brd, getCurrentUser()))
+        RETURN_LONG(-3);
+    if(!(brd.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd.clubnum>0)||(brd.clubnum>MAXCLUB))
+        RETURN_LONG(-4);
+    if( !((brd.flag & BOARD_CLUB_READ) && (brd.flag & BOARD_CLUB_WRITE)) )
+        clubmode = brd.flag & BOARD_CLUB_WRITE;
+    
+    userarray = NULL;
+    ulheader = ulcurrent = NULL;
+    clubflag.brd = &brd;
+    clubflag.mode = clubmode;
+    clubflag.ulheader = ulheader;
+    clubflag.ulcurrent = ulcurrent;
+    count = apply_users(func_load_club_users, &clubflag);
+    ulheader = clubflag.ulheader;
+    ulcurrent = clubflag.ulcurrent;
+    if (start >= count)
+    {
+        clubread_FreeAll(ulheader, userarray);
+        RETURN_LONG(0);
+    }
+        
+    userarray = (char **)emalloc(count * sizeof(char *));
+    if (userarray == NULL)
+    {
+        clubread_FreeAll(ulheader, userarray);
+        RETURN_LONG(-1);
+    }
+    for(ulcurrent=ulheader,t=userarray;ulcurrent;ulcurrent=ulcurrent->next,t++)
+        (*t)=ulcurrent->userid;
+    qsort(userarray, count, sizeof(const char*), CompareNameCase);
+    
+    num = (num>count-start) ? (count-start) : num;
+    t = userarray + start;
+    for(i=0; i<num; i++)
+    {
+        add_next_index_string(userlist, *t, 1);
+        t++;
+    }
+    
+    clubread_FreeAll(ulheader, userarray);
+    RETURN_LONG(count);
+}
+
+/* read club flag, by pig2532
+parameters:
+    bname: board name
+return:
+    -1: board not found
+    0: not a club
+    1: read perm club
+    2: write perm club
+    3: both perm club
+*/
+PHP_FUNCTION(bbs_club_flag)
+{
+    char *bname;
+    int bname_len;
+    struct boardheader brd;
+    
+    if (ZEND_NUM_ARGS() != 1 || zend_parse_parameters(1 TSRMLS_CC, "s", &bname, &bname_len) != SUCCESS)
+        WRONG_PARAM_COUNT;
+        
+    if (getboardnum(bname, &brd) == 0)
+        RETURN_LONG(-1);
+    if (!check_read_perm(getCurrentUser(), &brd))
+        RETURN_LONG(-1);
+    strcpy(bname, brd.filename);
+    if(!(brd.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd.clubnum>0)||(brd.clubnum>MAXCLUB))
+        RETURN_LONG(0);
+    if (brd.flag & BOARD_CLUB_READ)
+    {
+        if (brd.flag & BOARD_CLUB_WRITE)
+        {
+            RETURN_LONG(3);
+        }
+        else
+        {
+            RETURN_LONG(1);
+        }
+    }
+    else if (brd.flag & BOARD_CLUB_WRITE)
+    {
+        RETURN_LONG(2);
+    }
+    else
+    {
+        RETURN_LONG(0);
+    }
+}
+
+static void trimstr(char *s){
+    char *p;
+    if(s){
+        for(p=s+strlen(s)-1;!(p<s)&&(*p==32);p--)
+            continue;
+        *(p+1)=0;
+        for(p=s;*p==32;p++)
+            continue;
+        memmove(s,p,(strlen(p)+1)*sizeof(char));
+    }
+    return;
+}
+
+/* modify user's club perm, by pig2532
+parameters:
+    bname: board name
+    clubop: club operate string, start with '+' to add, '-' to remove
+    mode: 0-read_perm, 1-write_perm
+    info: operation comment
+return:
+    0: success
+    -1: board not found
+    -2: permission denied
+    -3: this is not a club
+*/
+PHP_FUNCTION(bbs_club_write)
+{
+    char *bname, *clubop, *line, *info;
+    int bname_len, clubop_len, info_len;
+    long mode;
+    struct userec *user;
+    struct boardheader brd;
+    
+    if (ZEND_NUM_ARGS() != 4 || zend_parse_parameters(4 TSRMLS_CC, "ssls", &bname, &bname_len, &clubop, &clubop_len, &mode, &info, &info_len) != SUCCESS)
+        WRONG_PARAM_COUNT;
+        
+    if (getboardnum(bname, &brd) == 0)
+        RETURN_LONG(-1);
+    if (!check_read_perm(getCurrentUser(), &brd))
+        RETURN_LONG(-1);
+    strcpy(bname, brd.filename);
+    if (!is_BM(&brd, getCurrentUser()))
+        RETURN_LONG(-2);
+    if(!(brd.flag&(BOARD_CLUB_READ|BOARD_CLUB_WRITE))||!(brd.clubnum>0)||(brd.clubnum>MAXCLUB))
+        RETURN_LONG(-3);
+    if( !((brd.flag & BOARD_CLUB_READ) && (brd.flag & BOARD_CLUB_WRITE)) )
+        mode = brd.flag & BOARD_CLUB_WRITE;
+        
+    line = &clubop[1];
+    switch(clubop[0])
+    {
+    case 0:
+    case 10:
+    case 13:
+    case '#':
+        RETURN_LONG(0);
+    case '-':
+        trimstr(line);
+        if(!getuser(line,&user)||!get_user_club_perm(user,&brd,mode))
+            RETURN_LONG(0);
+        if(!del_user_club_perm(user,&brd,mode)){
+            club_maintain_send_mail(user->userid,info,1,mode,&brd,getSession());
+        }
+        break;
+    case '+':
+        line++;
+    default:
+        line--;
+        trimstr(line);
+        if(!getuser(line,&user)||!strcmp(user->userid,"guest")||get_user_club_perm(user,&brd,mode))
+            RETURN_LONG(0);
+        if(!set_user_club_perm(user,&brd,mode)){
+            club_maintain_send_mail(user->userid,info,0,mode,&brd,getSession());
+        }
+        break;
+    }
+    RETURN_LONG(0);
+}
