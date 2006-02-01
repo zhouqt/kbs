@@ -30,10 +30,31 @@
 		}
 		switch ($errno) {
 		case UPLOAD_ERR_OK:
-			if (!is_uploaded_file($_FILES['attachfile']['tmp_name'])) {
+			$ofile = $_FILES['attachfile']['tmp_name'];
+			$oname = $_FILES['attachfile']['name'];
+			if (!is_uploaded_file($ofile)) {
 				die;
 			}
-			$ret = bbs_upload_add_file($_FILES['attachfile']['tmp_name'], $_FILES['attachfile']['name']);
+			if (defined("AUTO_BMP2JPG_THRESHOLD")) {
+				$oname = basename($oname);
+				if (strcasecmp(".bmp", substr($oname, -4)) == 0 && (filesize($ofile) > AUTO_BMP2JPG_THRESHOLD)) {
+					$h = popen("identify -format \"%m\" ".$ofile, "r");
+					if ($h) {
+						$read = fread($h, 1024);
+						pclose($h);
+						if (strncasecmp("BMP", $read, 3) == 0) {
+							$tp = tempnam("/tmp", "BMP2JPG");
+							exec("convert $ofile jpg:$tp");
+							if (file_exists($tp)) {
+								unlink($ofile);
+								$ofile = $tp;
+								$oname = substr($oname, 0, -4) . ".jpg";
+							}
+						}
+					}
+				}
+			}
+			$ret = bbs_upload_add_file($ofile, $oname);
 			switch($ret) {
 				case 0:
 					$msg = "文件上载成功！";

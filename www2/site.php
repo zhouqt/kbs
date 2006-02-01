@@ -5,6 +5,7 @@ define("MAINPAGE_FILE","mainpage.php");              //首页导读的 URL
 define("QUOTED_LINES", BBS_QUOTED_LINES);             //web 回文保留的引文行数
 define("SITE_NEWSMTH", 1);
 define("RUNNINGTIME", 1);                             //底部显示页面运行时间
+define("AUTO_BMP2JPG_THRESHOLD", 100000); // requires ImageMagick and safe_mode off
 
 // 界面方案的名称
 $style_names = array(
