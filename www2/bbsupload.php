@@ -84,7 +84,7 @@
 	$allnames=implode(",",$allnames);
 	page_header("粘贴附件", FALSE);
 ?>
-<body style="padding: 1em;">
+<body>
 <script type="text/javascript">
 <!--
 function addsubmit() {
@@ -95,6 +95,7 @@ function addsubmit() {
 		return false;
 	} else {
 		var e2="bbsupload.php?act=add";
+		getObj("winclose").style.display = "none";
 		document.forms[0].action=e2;
 		document.forms[0].paste.value='附件上载中，请稍候...';
 		document.forms[0].paste.disabled=true;
@@ -115,9 +116,14 @@ function clickclose() {
 	return false;
 }
 
-opener.document.forms["postform"].elements["attachname"].value = <?php echo "\"$allnames\""; ?>;
+if (opener) {
+	opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
+} else {
+	addBootFn(function() { getObj("winclose").style.display = "none"; });
+}
 //-->
 </script>
+<div style="width: 550px; margin: 1em auto;">
 <?php if ($msg) echo "<font color='red'> 提示：".$msg."</font>"; ?>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" class="left" action="">
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
@@ -127,7 +133,7 @@ opener.document.forms["postform"].elements["attachname"].value = <?php echo "\"$
 ?>
 		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo(BBS_MAXATTACHMENTSIZE);?>" />
 		<input type="file" name="attachfile" size="20" />
-		<input type="button" width="61" height="21" value="粘贴" name="paste" onclick="addsubmit();" />
+		<input type="button" value="粘贴" name="paste" onclick="addsubmit();" />
 <?php
 	} else {
 ?>
@@ -136,17 +142,17 @@ opener.document.forms["postform"].elements["attachname"].value = <?php echo "\"$
 <?php
 	}
 ?>
-<p>附件文件总量为：<font color="#FF0000"><b><?php echo sizestring($totalsize); ?>字节</b></font>,
-上限：<font color="#FF0000"><b><?php echo sizestring(BBS_MAXATTACHMENTSIZE); ?>字节</b></font>,
+&nbsp;&nbsp;&nbsp;<input type="button" id="winclose" value="上传完成, 关闭窗口" onclick="return clickclose()" />
+<p>附件文件总量：<?php echo sizestring($totalsize); ?> 字节,
+上限：<?php echo sizestring(BBS_MAXATTACHMENTSIZE); ?> 字节,
 还能上传：<font color="#FF0000"><b><?php $rem = BBS_MAXATTACHMENTSIZE-$totalsize; 
-	if ($rem < 0) $rem = 0; echo sizestring($rem); ?>字节</b></font>.
-<input type="button" width="61" height="21" value="完成" onclick="return clickclose()" /></p>
+	if ($rem < 0) $rem = 0; echo sizestring($rem); ?> 字节</b></font>.</p>
 </form>
 
 <form name="deleteattach" ENCTYPE="multipart/form-data" method="post" class="left" action=""> 
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
 <ol style="padding-left: 2em; margin-left: 0em;">已经上传的附件列表: (最多能上传 <?php echo BBS_MAXATTACHMENTCOUNT; ?>
- 个, 还能上传 <?php echo (BBS_MAXATTACHMENTCOUNT-$filecount); ?> 个)
+ 个, 还能上传 <font color="#FF0000"><b><?php echo (BBS_MAXATTACHMENTCOUNT-$filecount); ?></b></font> 个)
 <?php
 	for($i=0;$i<$filecount;$i++) {
 		$f = $attachments[$i];
@@ -155,5 +161,6 @@ opener.document.forms["postform"].elements["attachname"].value = <?php echo "\"$
 ?>
 </ol>
 </form>
+</div>
 </body>
 </html>
