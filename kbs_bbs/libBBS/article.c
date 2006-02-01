@@ -2779,8 +2779,8 @@ long ea_append(int fd,struct ea_attach_info *ai,const char *fn){
         return -1;
     if (len > 60)
         base += (len-60);
-    filter_upload_filename(base);
     strcpy(ai[count].name,base);
+    filter_upload_filename(ai[count].name);
 
     end=lseek(fd_recv,0,SEEK_END);ai[count].size=(unsigned int)end;
     ai[count].length=((ATTACHMENT_SIZE+strlen(ai[count].name)+1)*sizeof(char)
