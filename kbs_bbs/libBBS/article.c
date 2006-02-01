@@ -2773,8 +2773,15 @@ long ea_append(int fd,struct ea_attach_info *ai,const char *fn){
         base=fn;
     else
         base++;
-    sprintf(ai[count].name,"%-.60s",base);
-    filter_upload_filename(ai[count].name);
+
+    len = strlen(base);
+    if (!len)
+        return -1;
+    if (len > 60)
+        base += (len-60);
+    filter_upload_filename(base);
+    strcpy(ai[count].name,base);
+
     end=lseek(fd_recv,0,SEEK_END);ai[count].size=(unsigned int)end;
     ai[count].length=((ATTACHMENT_SIZE+strlen(ai[count].name)+1)*sizeof(char)
         +sizeof(unsigned int)+ai[count].size);
@@ -3019,12 +3026,12 @@ static int upload_add_file_helper(const char *filename, char *original_filename,
         pos1 = pos1 ? pos1 : pos2;
         if (pos1) original_filename = pos1 + 1;
     }
-    filter_upload_filename(original_filename);
     len = strlen(original_filename);
     if (!len)
         return -3;
     if (len > 60)
         original_filename += (len-60);
+    filter_upload_filename(original_filename);
 
     for (i=0;i<n;i++) {
         if (strcmp(ai[i].name, original_filename) == 0) return -4;
