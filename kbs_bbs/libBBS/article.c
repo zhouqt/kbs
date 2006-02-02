@@ -255,6 +255,34 @@ int del_origin(char *board, struct fileheader *fileinfo)
     return 0;
 }
 
+int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int mode, session_t* session)
+{
+    if (session->currentuser==NULL) {
+        return -1;
+    }
+
+    if (deny_me(session->currentuser->userid, bh->filename) && (!HAS_PERM(session->currentuser, PERM_SYSOP))) {
+        return -2;
+    }
+
+    if (!strcmp(bh->filename, "syssecurity")) {
+        return -3;
+    }
+
+    if ((mode>= DIR_MODE_THREAD) && (mode<= DIR_MODE_WEB_THREAD)) /*非源direct不能修改*/
+        return -4;
+    if (checkreadonly(bh->filename))      /* Leeward 98.03.28 */
+        return -5;
+
+    if (fileinfo && !HAS_PERM(session->currentuser, PERM_SYSOP)
+        && !chk_currBM(bh->BM, session->currentuser)
+        && !isowner(session->currentuser, fileinfo)) {
+        return -6;
+    }
+    return 0;
+}
+
+
 int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo,
     char *board,int currmode,int flag,session_t* session){
     int owned;

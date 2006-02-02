@@ -2890,17 +2890,30 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     long attachpos;
     bool dobmlog=false;
     struct read_arg* arg=(struct read_arg*) conf->arg;
-
+    int ret;
+    
     if (fileinfo==NULL)
         return DONOTHING;
-    if (!strcmp(currboard->filename, "syssecurity")
-        || !strcmp(currboard->filename, "junk")
-        || !strcmp(currboard->filename, "deleted"))       /* Leeward : 98.01.22 */
-        return DONOTHING;
-    if ((arg->mode== DIR_MODE_DELETED) || (arg->mode== DIR_MODE_JUNK))
-        return DONOTHING;       /* no edit in dustbin as requested by terre */
-    if (true == check_readonly(currboard->filename))      /* Leeward 98.03.28 */
-        return FULLUPDATE;
+    ret = deny_modify_article(currboard, fileinfo, arg->mode, getSession());
+    if (ret) {
+        switch(ret) {
+        case -2:
+            move(3, 0);
+            clrtobot();
+            prints("\n\n\t\t您已被管理人员取消在当前版面的发文权限...\n");
+            pressreturn();
+            clear();
+            return FULLUPDATE;
+            break;
+        case -5:
+            check_readonly(currboard->filename);
+            return FULLUPDATE;
+            break;
+        default:
+            return DONOTHING;
+            break;
+        }
+    }
 
 #ifdef AIX_CANCELLED_BY_LEEWARD
     if (true == check_RAM_lack())       /* Leeward 98.06.16 */
@@ -2909,36 +2922,8 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 
     modify_user_mode(EDIT);
 
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)){     /* SYSOP、当前版主、原发信人 可以编辑 */
-        if (!chk_currBM(currBM, getCurrentUser())) {
-            /*
-             * change by KCN 1999.10.26
-             * if(strcmp( fileinfo->owner, getCurrentUser()->userid))
-             */
-            if (!isowner(getCurrentUser(), fileinfo))
-                return DONOTHING;
-#if 0
-	if ((fileinfo->accessed[0] & FILE_MARKED) || (fileinfo->accessed[0] & FILE_DIGEST)){
-		move(3,0);
-		clrtobot();
-		prints("\n\n                很抱歉，被m或者被g的文章无法编辑，请先取消标记...\n");
-		pressreturn();
-        clear();
-        return FULLUPDATE;
-	}
-#endif
-        }
-        else dobmlog=true;
-	}
-
-    if (deny_me(getCurrentUser()->userid, currboard->filename) && (!HAS_PERM(getCurrentUser(), PERM_SYSOP))) {        /* 版主禁止POST 检查 */
-        move(3, 0);
-        clrtobot();
-        prints("\n\n\t\t您已被管理人员取消在当前版面的发文权限...\n");
-        pressreturn();
-        clear();
-        return FULLUPDATE;
-    }
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && chk_currBM(currBM, getCurrentUser()))
+        dobmlog=true;
 
     clear();
     strcpy(buf, arg->direct);
@@ -2992,38 +2977,31 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
      */
     long i=0;
     struct fileheader xfh;
-    int fd;
+    int fd, ret;
     if (fileinfo==NULL)
         return DONOTHING;
 
-    if (deny_me(getCurrentUser()->userid, currboard->filename) && (!HAS_PERM(getCurrentUser(), PERM_SYSOP))) {
-        move(3, 0);
-        clrtobot();
-        prints("\n\n\t\t您已被管理人员取消在当前版面的发文权限...\n");
-        pressreturn();
-        clear();
-        return FULLUPDATE;
+    ret = deny_modify_article(currboard, fileinfo, arg->mode, getSession());
+    if (ret) {
+        switch(ret) {
+        case -2:
+            move(3, 0);
+            clrtobot();
+            prints("\n\n\t\t您已被管理人员取消在当前版面的发文权限...\n");
+            pressreturn();
+            clear();
+            return FULLUPDATE;
+            break;
+        case -5:
+            check_readonly(currboard->filename);
+            return FULLUPDATE;
+            break;
+        default:
+            return DONOTHING;
+            break;
+        }
     }
 
-    if (!strcmp(currboard->filename, "syssecurity")
-        || !strcmp(currboard->filename, "junk")
-        || !strcmp(currboard->filename, "deleted"))       /* Leeward : 98.01.22 */
-        return DONOTHING;
-
-    if ((arg->mode>= DIR_MODE_THREAD) && (arg->mode<= DIR_MODE_WEB_THREAD)) /*非源direct不能修改*/
-        return DONOTHING;
-    if (true == check_readonly(currboard->filename))      /* Leeward 98.03.28 */
-        return FULLUPDATE;
-
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))     /* 权限检查 */
-        if (!chk_currBM(currBM, getCurrentUser()))
-            /*
-             * change by KCN 1999.10.26
-             * if(strcmp( fileinfo->owner, getCurrentUser()->userid))
-             */
-            if (!isowner(getCurrentUser(), fileinfo)) {
-                return DONOTHING;
-            }
     strcpy(buf, fileinfo->title);
     getdata(t_lines - 1, 0, "新文章标题: ", buf, 78, DOECHO, NULL, false);      /*输入标题 */
     if (buf[0] != '\0'&&strcmp(buf,fileinfo->title)) {

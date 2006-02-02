@@ -447,6 +447,7 @@ void unlock_sem_check(int lockid);
     int update_user_usedspace(int delta, struct userec *user);
     int getmailnum(char *recmaildir);
     int isowner(struct userec *user, struct fileheader *fileinfo);
+    int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int mode, session_t* session);
     int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo, char *board,int currmode,int flag,session_t* session);
 	int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *fileinfo, char *title, session_t* session);
     int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, session_t* session);

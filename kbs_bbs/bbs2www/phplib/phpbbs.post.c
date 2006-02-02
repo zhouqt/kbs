@@ -90,6 +90,19 @@ PHP_FUNCTION(bbs_upload_add_file)
     RETURN_LONG(upload_add_file(filename, ofilename, getSession()));
 }
 
+PHP_FUNCTION(bbs_attachment_add)
+{
+}
+
+PHP_FUNCTION(bbs_attachment_del)
+{
+}
+
+PHP_FUNCTION(bbs_attachment_list)
+{
+}
+
+
 PHP_FUNCTION(bbs_postarticle)
 {
 	char *boardName, *title, *content;
@@ -384,6 +397,13 @@ PHP_FUNCTION(bbs_delpost)
 }
 
 
+PHP_FUNCTION(bbs_article_can_modify)
+{
+}
+
+PHP_FUNCTION(bbs_article_modify)
+{
+}
 
 
 /* function bbs_caneditfile(string board, string filename);
@@ -393,10 +413,9 @@ PHP_FUNCTION(bbs_caneditfile)
 {
     char *board,*filename;
     int boardLen,filenameLen;
-	char path[512];
     struct fileheader x;
     boardheader_t *brd;
-
+    int ret;
 
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &boardLen,&filename,&filenameLen) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
@@ -407,26 +426,30 @@ PHP_FUNCTION(bbs_caneditfile)
     }
 	if (getCurrentUser()==NULL)
 		RETURN_FALSE;
-    if (!strcmp(brd->filename, "syssecurity")
-        || !strcmp(brd->filename, "junk")
-        || !strcmp(brd->filename, "deleted"))   /* Leeward : 98.01.22 */
-         RETURN_LONG(-2);  //本版不能修改文章
-    if (checkreadonly(brd->filename) == true) {
-		RETURN_LONG(-3); //本版已被设置只读
-    }
+
     if (get_file_ent(brd->filename, filename, &x) == 0) {
         RETURN_LONG(-4); //无法取得文件记录
     }
-	setbfile(path, brd->filename, filename);
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)     /* SYSOP、当前版主、原发信人 可以编辑 */
-        &&!chk_currBM(brd->BM, getCurrentUser())) {
-        if (!isowner(getCurrentUser(), &x)) {
+
+    ret = deny_modify_article(brd, &x, DIR_MODE_NORMAL, getSession());
+    switch(ret) {
+        case -3:
+            RETURN_LONG(-2);  //本版不能修改文章
+            break;
+        case -5:
+            RETURN_LONG(-3); //本版已被设置只读
+            break;
+        case -6:
             RETURN_LONG(-5); //不能修改他人文章!
-        }
+            break;
+        case -2:
+            RETURN_LONG(-7); //您的POST权被封
+            break;
+        default:
+            break;
     }
-    /* 版主禁止POST 检查 */
-    if (deny_me(getCurrentUser()->userid, brd->filename) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
-        RETURN_LONG(-7); //您的POST权被封
+    if (ret) {
+        RETURN_LONG(-1);
     }
     RETURN_LONG(0);
 }
@@ -537,6 +560,7 @@ PHP_FUNCTION(bbs_edittitle)
 	struct boardheader brd;
 	int bid,ent,i=0;
 	int fd;
+	bool find;
 	
 	int ac = ZEND_NUM_ARGS();
 	if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sls/l", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
@@ -560,12 +584,35 @@ PHP_FUNCTION(bbs_edittitle)
 	
 	if (mode == DIR_MODE_DIGEST)
 		setbdir(DIR_MODE_DIGEST, dirpath, brd.filename);
+	else if (mode == DIR_MODE_ZHIDING)
+		setbdir(DIR_MODE_ZHIDING, dirpath, brd.filename);
 	else
 		setbdir(DIR_MODE_NORMAL, dirpath, brd.filename);
 	
 	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
 		RETURN_LONG(-10);
-	if (!get_records_from_id(fd,id,&f,1,&ent))
+	if (mode == DIR_MODE_ZHIDING)	/* find "zhiding" record, by pig2532 */
+	{
+		ent = 0;
+		find = 0;
+		while (1)
+		{
+			if (read(fd, &f, sizeof(struct fileheader)) <= 0)
+				break;
+			ent++;
+			if(f.id == id)
+			{
+				find = 1;
+				break;
+			}
+		}
+		if (!find)
+		{
+			close(fd);
+			RETURN_LONG(-4);
+		}
+	}
+	else if (!get_records_from_id(fd,id,&f,1,&ent))
 	{
 		close(fd);
 		RETURN_LONG(-4); //无法取得文件记录

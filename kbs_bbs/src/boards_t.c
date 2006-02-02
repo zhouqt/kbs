@@ -746,9 +746,7 @@ static int fav_key(struct _select_def *conf, int command)
             if (!HAS_PERM(getCurrentUser(), PERM_SYSOP) && !HAS_PERM(getCurrentUser(), PERM_OBOARDS))
                 break;
             if (!strcmp(ptr->name, "syssecurity")
-                || !strcmp(ptr->name, "Filter")
-                || !strcmp(ptr->name, "junk")
-                || !strcmp(ptr->name, "deleted"))
+                || !strcmp(ptr->name, "Filter"))
                 break;          /* Leeward 98.04.01 */
             if (ptr->dir)
                 break;
