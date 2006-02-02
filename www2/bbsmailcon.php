@@ -89,6 +89,16 @@
 		<input type="submit" value="转寄"/>
 	</div></fieldset>
 </form>
+<form action="bbsmailcross.php" method="post" class="medium">
+<input type="hidden" name="filename" value="<?php echo $articles[0]["FILENAME"];?>"/>
+<input type="hidden" name="title" value="<?php echo urlencode($articles[0]["TITLE"]);?>"/>
+	<fieldset><legend>转贴到版面</legend>
+		<div class="inputs">
+		<label>版面名称:</label><input type="text" name="target" size="20" maxlength="69" value=""/>
+		<input type="checkbox" name="outgo" checked />转信
+		<input type="submit" value="转贴"/>
+	</div></fieldset>
+</form><br /><br />
 <?php
 	bbs_setmailreaded($dir,$num);
 	page_footer();
