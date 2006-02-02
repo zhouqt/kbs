@@ -7,6 +7,8 @@
 		$filename = $_POST["filename"];
 	else
 		html_error_quit("找不到信件");
+	if (strstr($filename, "..") || strstr($filename, "/"))
+		html_error_quit("错误的参数");
 	if(isset($_POST["title"]))
 		$title = urldecode($_POST["title"]);
 	else
