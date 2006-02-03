@@ -668,7 +668,8 @@ PHP_FUNCTION(bbs_updatearticle)
     }
     fclose(fin);
     fclose(fout);
-    f_mv(outfile, infile);
+    f_cp(outfile, infile, O_TRUNC);
+    unlink(outfile);
     RETURN_LONG(0);
 }
 
