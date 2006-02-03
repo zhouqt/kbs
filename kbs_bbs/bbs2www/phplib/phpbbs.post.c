@@ -613,7 +613,6 @@ PHP_FUNCTION(bbs_updatearticle)
     char buf2[256];
     int i;
     boardheader_t *bp;
-    time_t now;
     int asize;
     /*int filtered = 0;*/
 
@@ -655,8 +654,6 @@ PHP_FUNCTION(bbs_updatearticle)
         fprintf(fout, "%s", buf2);
     }
     if (clen>0) fprintf(fout, "%s", content);
-    now = time(0);
-    fprintf(fout, "\033[36m※ 修改:·%s 於 %15.15s 修改本文·[FROM: %s]\033[m\n", getCurrentUser()->userid, ctime(&now) + 4, SHOW_USERIP(getCurrentUser(), getSession()->fromhost));
     while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
         if (asize <= 0) {
             if (Origin2(buf2)) {
@@ -670,6 +667,7 @@ PHP_FUNCTION(bbs_updatearticle)
     fclose(fout);
     f_cp(outfile, infile, O_TRUNC);
     unlink(outfile);
+    add_edit_mark(infile, 0, NULL, getSession());
     RETURN_LONG(0);
 }
 

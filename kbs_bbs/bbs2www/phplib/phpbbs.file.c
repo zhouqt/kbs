@@ -607,6 +607,9 @@ PHP_FUNCTION(bbs_printoriginfile)
 		if ((skip) && (i<=4) ){
 			continue;
 		}
+        if (strstr(buf,"\033[36m¡ù ÐÞ¸Ä:¡¤")==buf) {
+            continue;
+        }
         if (!strcasestr(buf, "</textarea>"))
 		{
 			int len = strlen(buf);
