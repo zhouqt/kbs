@@ -132,7 +132,7 @@ int check_BM(struct boardheader *bptr,void* arg)
     return 0;
 }
 
-int query_BM(struct userec *user, char *arg)
+int query_BM(struct userec *user, void *arg)
 {
     if (!(user->userlevel & PERM_BOARDS))
         return 0;

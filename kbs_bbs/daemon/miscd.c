@@ -148,7 +148,7 @@ char *sethomepath(buf, userid)  /* 取 某用户 的home */
 #endif
 #ifndef SAVELIVE
 
-int killauser(struct userec *theuser, char *data)
+int killauser(struct userec *theuser, void *data)
 {
     int a;
     struct userec *ft;
@@ -188,7 +188,7 @@ int dokilluser()
 #endif
     return 0;
 }
-int updateauser(struct userec *user,char *arg){
+int updateauser(struct userec *user,void *arg){
     static const unsigned int GIVEUP_PERM[GIVEUPINFO_PERM_COUNT]={
         PERM_BASIC,PERM_POST,PERM_CHAT,PERM_PAGE,PERM_DENYMAIL,PERM_DENYRELAX};
     static const unsigned int GIVEUP_MASK=(PERM_BASIC|PERM_POST|PERM_CHAT|PERM_PAGE|PERM_DENYMAIL|PERM_DENYRELAX);

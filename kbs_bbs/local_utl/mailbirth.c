@@ -12,7 +12,7 @@ struct userdata ud;
 unsigned char birthmonth;
 unsigned char birthday;
 
-int mailuser(struct userec* user,char* arg)
+int mailuser(struct userec* user,void* arg)
 {
 	int i;
 

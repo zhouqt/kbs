@@ -43,7 +43,7 @@ int show()
     return 0;
 }
 
-int statit(struct userec *user, char *arg)
+int statit(struct userec *user, void *arg)
 {
     int i,j,d;
     if(!strcmp(user->userid,"guest")) return 0;

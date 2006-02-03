@@ -1548,36 +1548,30 @@ atppp_never_use_goto:
 }
 
 /* ent ÊÇ 1-based µÄ*/
-int del_post(int ent, struct fileheader *fileinfo, char *direct, char *board)
+int del_post(int ent, struct fileheader *fileinfo, struct boardheader *bh)
 {
-    char usrid[STRLEN];
-    int owned;
-    struct userec *user;
-    char bm_str[BM_LEN - 1];
-    struct boardheader *bp;
     struct write_dir_arg delarg;
     int ret;
+    char direct[PATHLEN];
 
-    user = getCurrentUser();
-    bp = getbcache(board);
-    memcpy(bm_str, bp->BM, BM_LEN - 1);
-    if (!strcmp(board, "syssecurity")
-        || !strcmp(board, "junk")
-        || !strcmp(board, "deleted"))   /* Leeward : 98.01.22 */
-        return 4;
-
-    owned = isowner(user, fileinfo);
-    /* change by KCN  ! strcmp( fileinfo->owner, getCurrentUser()->userid ); */
-    strcpy(usrid, fileinfo->owner);
-    if (!(owned) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
-        if (!chk_currBM(bm_str, getCurrentUser())) {
+    ret = deny_del_article(bh, fileinfo, getSession());
+    switch(ret) {
+        case -3:
+            return 4;
+            break;
+        case -6:
             return 1;
-        }
+            break;
+        default:
+            if (ret)
+                return 1;
+            break;
+    }
     init_write_dir_arg(&delarg);
-    setbdir(DIR_MODE_NORMAL, direct, bp->filename);
+    setbdir(DIR_MODE_NORMAL, direct, bh->filename);
     delarg.filename=direct;
     delarg.ent=ent;
-    ret=do_del_post(getCurrentUser(),&delarg,fileinfo,board,DIR_MODE_NORMAL,0,getSession());
+    ret=do_del_post(getCurrentUser(),&delarg,fileinfo,bh->filename,DIR_MODE_NORMAL,0,getSession());
     free_write_dir_arg(&delarg);
     if (ret != 0)
         return 3;

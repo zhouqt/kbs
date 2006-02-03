@@ -2892,8 +2892,6 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     struct read_arg* arg=(struct read_arg*) conf->arg;
     int ret;
     
-    if (fileinfo==NULL)
-        return DONOTHING;
     ret = deny_modify_article(currboard, fileinfo, arg->mode, getSession());
     if (ret) {
         switch(ret) {
@@ -2978,8 +2976,6 @@ int edit_title(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
     long i=0;
     struct fileheader xfh;
     int fd, ret;
-    if (fileinfo==NULL)
-        return DONOTHING;
 
     ret = deny_modify_article(currboard, fileinfo, arg->mode, getSession());
     if (ret) {
@@ -3211,20 +3207,18 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     struct read_arg* arg=(struct read_arg*)conf->arg;
     bool mailmode=(arg->mode==DIR_MODE_MAIL);
 
-    if (!strcmp(currboard->filename, "syssecurity")
-        || !strcmp(currboard->filename, "junk")
-        || !strcmp(currboard->filename, "deleted")
-        || strstr(arg->direct, ".THREAD") /*Haohmaru.98.10.16 */ )   /* Leeward : 98.01.22 */
-        return DONOTHING;
-
-    if (arg->mode!=DIR_MODE_MAIL&&!HAS_PERM(getCurrentUser(), PERM_SYSOP))
-        if (!chk_currBM(currBM, getCurrentUser())) {
+    if (!mailmode) {
+        int ret;
+        ret = deny_del_article(currboard, NULL, getSession());
+        if (ret) 
             return DONOTHING;
-        }
 
-/*除了正常模式,主体模式,邮件模式,都不应该能区段*/
-    if ((arg->mode >= DIR_MODE_THREAD)&&(arg->mode <= DIR_MODE_WEB_THREAD))
-        return DONOTHING;
+
+        /*除了正常模式,主体模式,邮件模式,都不应该能区段*/
+        if ((arg->mode >= DIR_MODE_THREAD)&&(arg->mode <= DIR_MODE_WEB_THREAD))
+            return DONOTHING;
+    }
+    
     clear();
     prints("区域删除,请选择删除模式:\n");
     /*
@@ -3339,8 +3333,7 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 
 int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
-    char usrid[STRLEN],direct[MAXPATH];
-    int owned;
+    char direct[MAXPATH];
     struct read_arg* arg=conf->arg;
     int ent,ret;
     int flag=(POINTDIFF)extraarg;
@@ -3353,30 +3346,13 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (ent>arg->filecount)
         return del_ding(conf,fileinfo,extraarg);
 
-    if (!strcmp(currboard->filename, "syssecurity")
-        || !strcmp(currboard->filename, "junk")
-        || !strcmp(currboard->filename, "deleted"))       /* Leeward : 98.01.22 */
-        return DONOTHING;
-
     if (arg->mode== DIR_MODE_DELETED|| arg->mode== DIR_MODE_JUNK)
         return DONOTHING;
-    owned = isowner(getCurrentUser(), fileinfo);
-    /*
-     * change by KCN  ! strcmp( fileinfo->owner, getCurrentUser()->userid ); 
-     */
-    strcpy(usrid, fileinfo->owner);
-    if (!(owned) && !HAS_PERM(getCurrentUser(), PERM_SYSOP))
-        if (!chk_currBM(currboard->BM, getCurrentUser())) {
-            return DONOTHING;
-        }
-#ifdef HAPPY_BBS
-   if (owned && !strcmp(currboard->filename, "newcomers"))
-       return DONOTHING;
-#endif
-#ifdef COMMEND_ARTICLE
-	if (owned && !strcmp(currboard->filename, COMMEND_ARTICLE))
-		return DONOTHING;
-#endif
+
+    if (deny_del_article(currboard, fileinfo, getSession())) {
+        return DONOTHING;
+    }
+
     if (!(flag&ARG_NOPROMPT_FLAG)) {
         char buf[STRLEN];
         a_prompt(-1, "删除文章，确认吗？(Y/N) [N] ", buf);

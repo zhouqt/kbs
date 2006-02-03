@@ -403,7 +403,7 @@ int XCheckLevel(void){
     fprintf(arg.log_file,"\033[1;32m查阅具有特定权限的用户·查询结果\033[m\n\n");
     fprintf(arg.log_file,"权限设定 \033[1;33m%s\033[m <%s>\n\n",gen_permstr(arg.check_level,perm),arg.check_mode?"OR":"AND");
     arg.count=0;
-    apply_users((int (*)(struct userec*,char*))check_level_func,(char*)&arg);
+    apply_users((int (*)(struct userec*,void*))check_level_func,&arg);
     fprintf(arg.log_file,"\n共 \033[1;33m%d\033[m 位用户符合查询条件\n",arg.count);
     fclose(arg.log_file);
     move(2,0);clrtoeol();

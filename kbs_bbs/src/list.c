@@ -714,7 +714,7 @@ int allnum, pagenum;
     }
     return 1;
 }
-int printuent(struct userec *uentp, char *arg)
+int printuent(struct userec *uentp, void *arg)
 {
     static int i;
     char permstr[USER_TITLE_LEN];
@@ -770,7 +770,7 @@ int printuent(struct userec *uentp, char *arg)
     usercounter++;
     return 0;
 }
-int countusers(struct userec *uentp, char *arg)
+int countusers(struct userec *uentp, void *arg)
 {
     if (uentp->userid[0]!=0)
         return COUNT;
@@ -781,7 +781,7 @@ int allusers()
 {
     int count;
 
-    if ((count = apply_users(countusers, 0)) <= 0) {
+    if ((count = apply_users(countusers, NULL)) <= 0) {
         return 0;
     }
     return count;
@@ -792,7 +792,7 @@ int Show_Users()
     usercounter = 0;
     modify_user_mode(LAUSERS);
     printuent((struct userec *) NULL, 0);
-    apply_users(printuent, 0);
+    apply_users(printuent, NULL);
     clrtobot();
     return 0;
 }

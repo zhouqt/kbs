@@ -119,7 +119,7 @@ int get_mailnum(char* direct)
 }
 
 
-static int mailto(struct userec *uentp, char *arg)
+static int mailto(struct userec *uentp, void *arg)
 {
     char filename[STRLEN];
     int mailmode = (POINTDIFF) arg;
@@ -135,7 +135,7 @@ static int mailto(struct userec *uentp, char *arg)
 static int mailtoall(POINTDIFF mode)
 {
 
-    return apply_users(mailto, (char *) mode);
+    return apply_users(mailto, (void *) mode);
 }
 
 int mailall()

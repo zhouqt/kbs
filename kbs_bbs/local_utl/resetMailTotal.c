@@ -7,7 +7,7 @@
  */
 #include "bbs.h"
 
-int query_BM(struct userec *user, char *arg)
+int query_BM(struct userec *user, void *arg)
 {
     if (!user->userid[0]) return 0;
     user->usedspace = 0xffff;

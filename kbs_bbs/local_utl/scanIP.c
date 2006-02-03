@@ -2,7 +2,7 @@
 
 char IP[20];
 
-int check(struct userec *uentp, char *arg)
+int check(struct userec *uentp, void *arg)
 {
     if(strstr(uentp->lasthost, IP)!=NULL) {
         printf("%s\t%s\n", uentp->userid, uentp->lasthost);

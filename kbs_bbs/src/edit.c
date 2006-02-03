@@ -917,7 +917,7 @@ static long edit_attach(char *fn){
                     prints("\033[1;33m该附件超出当前文章附件大小限制...\033[1;37m<Enter>\033[m");
                     WAIT_RETURN;break;
                 }
-                ret=ea_append(fd,ai,buf);unlink(buf);
+                ret=ea_append(fd,ai,buf,buf);
                 if(ret==-2){
                     close(fd);close(fd_origin);unlink(fn_tmp);
                     move(6+n,0);clrtoeol();

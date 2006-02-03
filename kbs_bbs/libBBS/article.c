@@ -1453,6 +1453,26 @@ int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index)
     return ret;
 }
 
+int get_ent_from_id_ext(int mode, int id, char *bname, fileheader_t *fh)
+{
+    char dir[PATHLEN];
+    int fd, index;
+	setbdir(mode, dir, bname);
+    
+    fd = open(dir, O_RDWR, 0644);
+    if(fd < 0)
+    {
+        return(-1);
+    }
+    if(!get_records_from_id(fd, id, fh, 1, &index))
+    {
+        close(fd);
+	    return(-2);
+    }
+    close(fd);
+    return(index);
+}
+
 static int get_ent_id(int fd, fileheader_t * base, int ent, int total, bool match, void *arg)
 {
 	if(match){
@@ -2836,9 +2856,9 @@ long ea_locate(int fd,struct ea_attach_info *ai){
         return -1;
     return offset;
 }
-long ea_append(int fd,struct ea_attach_info *ai,const char *fn){
+static long ea_append_helper(int fd,struct ea_attach_info *ai,const char *fn,const char *original_filename){
     char buf[2048];
-    const char *base;
+    const char *pos1, *pos2;
     int fd_recv,count;
     unsigned int size;
     long ret,len,end;
@@ -2852,17 +2872,23 @@ long ea_append(int fd,struct ea_attach_info *ai,const char *fn){
     if((fd_recv=open(fn,O_RDONLY,0644))==-1)
         return -1;
     flock(fd_recv,LOCK_SH);
-    if(!(base=strrchr(fn,'/')))
-        base=fn;
-    else
-        base++;
 
-    len = strlen(base);
+
+    pos1 = strrchr(original_filename, '\\');
+    pos2 = strrchr(original_filename, '/');
+    if (pos1 && pos2) {
+        if (pos1 < pos2) pos1 = pos2;
+        original_filename = pos1 + 1;
+    } else {
+        pos1 = pos1 ? pos1 : pos2;
+        if (pos1) original_filename = pos1 + 1;
+    }
+    len = strlen(original_filename);
     if (!len)
         return -1;
     if (len > 60)
-        base += (len-60);
-    strcpy(ai[count].name,base);
+        original_filename += (len-60);
+    strcpy(ai[count].name,original_filename);
     filter_upload_filename(ai[count].name);
 
     end=lseek(fd_recv,0,SEEK_END);ai[count].size=(unsigned int)end;
@@ -2890,6 +2916,11 @@ long ea_append(int fd,struct ea_attach_info *ai,const char *fn){
         return -1;
     }
     return end;
+}
+long ea_append(int fd,struct ea_attach_info *ai,const char *fn,const char *original_filename){
+    long ret = ea_append_helper(fd,ai,fn,original_filename);
+    unlink(fn);
+    return(ret);
 }
 long ea_delete(int fd,struct ea_attach_info *ai,int pos){
     int count,n;

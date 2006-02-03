@@ -52,7 +52,7 @@ char *big2gb( char *s, int *plen, int inst, session_t* session);
     char *u_namearray(char buf[][IDLEN + 1], int *pnum, char *tag);
     char *getuserid2(int uid);
     int update_user(struct userec *user, int num, int all);
-    int apply_users(int (*fptr) (struct userec *, char *), char *arg);
+    int apply_users(int (*fptr) (struct userec *, void *), void *arg);
     int getnewuserid(char *userid);
 
     int flush_ucache(ARG_VOID);
@@ -434,6 +434,7 @@ void unlock_sem_check(int lockid);
  * @author flyriver
  */
     int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index);
+    int get_ent_from_id_ext(int mode, int id, char *bname, fileheader_t *fh);
 
 	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
 	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num, int start, int * haveprev);
@@ -448,6 +449,7 @@ void unlock_sem_check(int lockid);
     int getmailnum(char *recmaildir);
     int isowner(struct userec *user, struct fileheader *fileinfo);
     int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int mode, session_t* session);
+    int deny_del_article(struct boardheader *bh, struct fileheader *fileinfo, session_t* session);
     int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo, char *board,int currmode,int flag,session_t* session);
 	int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *fileinfo, char *title, session_t* session);
     int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, session_t* session);
@@ -505,7 +507,7 @@ void unlock_sem_check(int lockid);
     /* etnlegend - ¸½¼þÐÞ¸ÄºËÐÄ */
     long ea_dump(int fd_src,int fd_dst,long offset);
     long ea_locate(int fd,struct ea_attach_info *ai);
-    long ea_append(int fd,struct ea_attach_info *ai,const char *fn);
+    long ea_append(int fd,struct ea_attach_info *ai,const char *fn, const char *original_filename);
     long ea_delete(int fd,struct ea_attach_info *ai,int pos);
 
     int getattachtmppath(char *buf, size_t buf_len, session_t *session);

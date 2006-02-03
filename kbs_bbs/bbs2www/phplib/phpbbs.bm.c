@@ -179,7 +179,7 @@ PHP_FUNCTION(bbs_bmmanage)
          }
     }
     else if (mode == 1) {
-        ret = del_post(ent, &f, dir, board);
+        ret = del_post(ent, &f, bh);
     }
     else {
         struct write_dir_arg dirarg;

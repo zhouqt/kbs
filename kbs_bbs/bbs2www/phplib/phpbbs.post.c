@@ -44,23 +44,32 @@ PHP_FUNCTION(bbs_filteruploadfilename)
     RETURN_STRING(filename, 1);
 }
 
-PHP_FUNCTION(bbs_upload_read_fileinfo)
-{
-    int i, nUpload;
-    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
-    zval *element;
-    
-    nUpload = upload_read_fileinfo(ai, getSession());
-    if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
-    }
 
-    for (i = 0; i < nUpload; i++) {
+static int dump_attachment_info(zval *ret, struct ea_attach_info *ai)
+{
+    zval *element;
+    int count;
+
+    if (array_init(ret) == FAILURE) {
+        return -1;
+    }
+    
+    for(count=0; count<MAXATTACHMENTCOUNT&&ai[count].name[0]; count++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-        add_assoc_string(element, "name", ai[i].name, 1);
-        add_assoc_long(element, "size", ai[i].size);
-        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
+        add_assoc_string(element, "name", ai[count].name, 1);
+        add_assoc_long(element, "size", ai[count].size);
+        zend_hash_index_update(Z_ARRVAL_P(ret), count, (void *) &element, sizeof(zval *), NULL);
+    }
+    return 0;
+}
+
+PHP_FUNCTION(bbs_upload_read_fileinfo)
+{
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+    upload_read_fileinfo(ai, getSession());
+    if (dump_attachment_info(return_value, ai)) {
+        RETURN_FALSE;
     }
 }
 
@@ -90,16 +99,143 @@ PHP_FUNCTION(bbs_upload_add_file)
     RETURN_LONG(upload_add_file(filename, ofilename, getSession()));
 }
 
+
 PHP_FUNCTION(bbs_attachment_add)
 {
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+    boardheader_t *brd;
+    struct fileheader f;
+    char dir[PATHLEN];
+
+    char* board;
+    int ent,fd,ret;
+    long id;
+    int board_len;
+    char *filename, *ofilename;
+    int flen, oflen;
+    
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slss", &board, &board_len,&id, &filename, &flen, &ofilename, &oflen) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	brd = getbcache(board);
+    if (!brd)
+        RETURN_LONG(-1);
+
+    ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
+    if (ent < 0)
+    {
+        RETURN_LONG(-2);
+    }
+    ret = deny_modify_article(brd, &f, DIR_MODE_NORMAL, getSession());
+    if (ret) {
+        RETURN_LONG(-ret);
+    }
+
+    setbfile(dir, brd->filename, f.filename);
+    fd = open(dir, O_RDWR);
+    if (fd < 0)
+        RETURN_LONG(-4);
+
+    ret = ea_locate(fd, ai);
+    if (ret>=0) {
+        ret = ea_append(fd, ai, filename, ofilename);
+    }
+    close(fd);
+
+    if (ret<0 || dump_attachment_info(return_value, ai)) {
+        RETURN_FALSE;
+    }
 }
 
 PHP_FUNCTION(bbs_attachment_del)
 {
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+    boardheader_t *brd;
+    struct fileheader f;
+    char dir[PATHLEN];
+
+    char* board;
+    int ent,fd,ret;
+    long id,pos;
+    int board_len;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 3 || zend_parse_parameters(3 TSRMLS_CC, "sll", &board, &board_len,&id,&pos) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	brd = getbcache(board);
+    if (!brd)
+        RETURN_LONG(-1);
+
+    ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
+    if (ent < 0)
+    {
+        RETURN_LONG(-2);
+    }
+    ret = deny_modify_article(brd, &f, DIR_MODE_NORMAL, getSession());
+    if (ret) {
+        RETURN_LONG(-ret);
+    }
+
+    setbfile(dir, brd->filename, f.filename);
+    fd = open(dir, O_RDWR);
+    if (fd < 0)
+        RETURN_LONG(-4);
+
+    ret = ea_locate(fd, ai);
+    if (ret>=0) {
+        ret = ea_delete(fd, ai, pos);
+    }
+    close(fd);
+
+    if (ret<0 || dump_attachment_info(return_value, ai)) {
+        RETURN_FALSE;
+    }
 }
 
 PHP_FUNCTION(bbs_attachment_list)
 {
+    struct ea_attach_info ai[MAXATTACHMENTCOUNT];
+    boardheader_t *brd;
+    struct fileheader f;
+    char dir[PATHLEN];
+
+    char* board;
+    int ent,fd,ret;
+    long id;
+    int board_len;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &board_len,&id) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	brd = getbcache(board);
+    if (!brd)
+        RETURN_LONG(-1);
+
+    ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
+    if (ent < 0)
+    {
+        RETURN_LONG(-2);
+    }
+    setbfile(dir, brd->filename, f.filename);
+    fd = open(dir, O_RDONLY);
+    if (fd < 0)
+        RETURN_LONG(-4);
+
+    ret = ea_locate(fd, ai);
+    close(fd);
+
+    if (ret<0 || dump_attachment_info(return_value, ai)) {
+        RETURN_FALSE;
+    }
 }
 
 
@@ -306,8 +442,6 @@ PHP_FUNCTION(bbs_delfile)
         RETURN_LONG(-2);
     if (brd == 0)
         RETURN_LONG(-2);
-    if (!haspostperm(u, board))
-        RETURN_LONG(-2);
 
 	setbdir(DIR_MODE_NORMAL, dir, brd->filename);
 	setbfile(path, brd->filename, file);
@@ -321,7 +455,7 @@ PHP_FUNCTION(bbs_delfile)
 		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
 			break;
 		if (!strcmp(f.filename, file)) {
-                        if(del_post(num + 1, &f, dir, brd->filename) != 0)
+            if(del_post(num + 1, &f, brd) != 0)
 				result = -1;
 			else
 				result = 0;
@@ -350,11 +484,9 @@ PHP_FUNCTION(bbs_delpost)
 {
     boardheader_t *brd;
     struct fileheader f;
-    struct userec *u = NULL;
-    char dir[80];
 
     char* board;
-    int ent,fd;
+    int ent;
     long id;
     int board_len;
 
@@ -364,29 +496,16 @@ PHP_FUNCTION(bbs_delpost)
 		WRONG_PARAM_COUNT;
 	}
 
-	u = getCurrentUser();
 	brd = getbcache(board);
-
     if (brd == 0)
         RETURN_LONG(-2);
-    if (!haspostperm(u, board))
-        RETURN_LONG(-2);
 
-	setbdir(DIR_MODE_NORMAL, dir, brd->filename);
-    
-    /* 用文件名定位太土了 改用ID -- pig2532 */
-    fd = open(dir, O_RDWR, 0644);
-    if(fd < 0)
+    ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
+    if(ent < 0)
     {
         RETURN_LONG(-2);
     }
-    if(!get_records_from_id(fd, id, &f, 1, &ent))
-    {
-        close(fd);
-	    RETURN_LONG(-2);
-    }
-    close(fd);
-    if(del_post(ent, &f, dir, brd->filename) != 0)
+    if(del_post(ent, &f, brd) != 0)
     {
         RETURN_LONG(-2);
     }
@@ -397,8 +516,33 @@ PHP_FUNCTION(bbs_delpost)
 }
 
 
-PHP_FUNCTION(bbs_article_can_modify)
+PHP_FUNCTION(bbs_article_deny_modify)
 {
+    boardheader_t *brd;
+    struct fileheader f;
+
+    char* board;
+    int ent,ret;
+    long id;
+    int board_len;
+
+	int ac = ZEND_NUM_ARGS();
+
+    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sl", &board, &board_len,&id) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+
+	brd = getbcache(board);
+    if (!brd)
+        RETURN_LONG(-1);
+
+    ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
+    if (ent < 0)
+    {
+        RETURN_LONG(-2);
+    }
+    ret = deny_modify_article(brd, &f, DIR_MODE_NORMAL, getSession());
+    RETURN_LONG(-ret);
 }
 
 PHP_FUNCTION(bbs_article_modify)
@@ -549,172 +693,154 @@ PHP_FUNCTION(bbs_updatearticle)
 
 PHP_FUNCTION(bbs_edittitle)
 {
-	char *board,*title;
-	int  board_len,title_len;
-	long  id , mode;
-	char path[STRLEN];
-	char dirpath[STRLEN];
-	struct userec *u = NULL;
-	struct fileheader f;
-	struct fileheader xfh;
-	struct boardheader brd;
-	int bid,ent,i=0;
-	int fd;
-	bool find;
-	
-	int ac = ZEND_NUM_ARGS();
-	if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sls/l", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
-		WRONG_PARAM_COUNT;
-	
-	if ((mode>= DIR_MODE_THREAD) && (mode<= DIR_MODE_WEB_THREAD))
-        	RETURN_LONG(-8);
-	if (title_len == 0)
-		RETURN_LONG(-9);
-	bid = getboardnum(board, &brd);
-	if (bid==0) 
-		RETURN_LONG(-1); //版面名称错误
-	if (brd.flag&BOARD_GROUP)
-	        RETURN_LONG(-1); //二级目录版
-	if (!strcmp(brd.filename, "syssecurity") || !strcmp(brd.filename, "junk") || !strcmp(brd.filename, "deleted"))  
-		RETURN_LONG(-2); //不允许修改文章
-	if (true == checkreadonly(brd.filename))
-		RETURN_LONG(-3); //只读讨论区
-	if ((u = getCurrentUser())==NULL)
-		RETURN_LONG(-10); //无法获得当前登录用户
-	
-	if (mode == DIR_MODE_DIGEST)
-		setbdir(DIR_MODE_DIGEST, dirpath, brd.filename);
-	else if (mode == DIR_MODE_ZHIDING)
-		setbdir(DIR_MODE_ZHIDING, dirpath, brd.filename);
-	else
-		setbdir(DIR_MODE_NORMAL, dirpath, brd.filename);
-	
-	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
-		RETURN_LONG(-10);
-	if (mode == DIR_MODE_ZHIDING)	/* find "zhiding" record, by pig2532 */
-	{
-		ent = 0;
-		find = 0;
-		while (1)
-		{
-			if (read(fd, &f, sizeof(struct fileheader)) <= 0)
-				break;
-			ent++;
-			if(f.id == id)
-			{
-				find = 1;
-				break;
-			}
-		}
-		if (!find)
-		{
-			close(fd);
-			RETURN_LONG(-4);
-		}
-	}
-	else if (!get_records_from_id(fd,id,&f,1,&ent))
-	{
-		close(fd);
-		RETURN_LONG(-4); //无法取得文件记录
-	}
-	close(fd);
-	if (!HAS_PERM(u,PERM_SYSOP)) //权限检查
-	{
-		if (!haspostperm(u, brd.filename))
-	        	RETURN_LONG(-6);
-	        if (deny_me(u->userid, brd.filename))
-	        	RETURN_LONG(-5);
-	        if (!chk_currBM(brd.BM, u))
-	        {
-	        	if (!isowner(u, &f))
-		            RETURN_LONG(-6); //他人文章
-		}
-	}
+    char *board,*title;
+    int  board_len,title_len;
+    long  id , mode;
+    char path[STRLEN];
+    char dirpath[STRLEN];
+    struct fileheader f;
+    struct fileheader xfh;
+    struct boardheader *brd;
+    int bid,ent,i=0;
+    int fd,ret;
+    bool find;
+    
+    int ac = ZEND_NUM_ARGS();
+    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "sls/l", &board, &board_len, &id , &title, &title_len , &mode) == FAILURE) 
+        WRONG_PARAM_COUNT;
+    
+    if (title_len == 0)
+        RETURN_LONG(-9);
+    bid = getbid(board, &brd);
+    if (bid==0) 
+        RETURN_LONG(-1); //版面名称错误
+    if (brd->flag&BOARD_GROUP)
+        RETURN_LONG(-1); //二级目录版
+
+    if (mode != DIR_MODE_ZHIDING)
+        mode = DIR_MODE_NORMAL;
+    setbdir(mode, dirpath, brd->filename);
+    
+    if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
+        RETURN_LONG(-10);
+    if (mode == DIR_MODE_ZHIDING)   /* find "zhiding" record, by pig2532 */
+    {
+        ent = 0;
+        find = 0;
+        while (1)
+        {
+            if (read(fd, &f, sizeof(struct fileheader)) <= 0)
+                break;
+            ent++;
+            if(f.id == id)
+            {
+                find = 1;
+                break;
+            }
+        }
+        if (!find)
+        {
+            close(fd);
+            RETURN_LONG(-4);
+        }
+    }
+    else if (!get_records_from_id(fd,id,&f,1,&ent))
+    {
+        close(fd);
+        RETURN_LONG(-4); //无法取得文件记录
+    }
+    close(fd);
+
+    ret = deny_modify_article(brd, &f, mode, getSession());
+    if (ret) {
+        switch(ret) {
+        case -1:
+            RETURN_LONG(-10);
+            break;
+        case -4:
+            RETURN_LONG(-8);
+            break;
+        case -3:
+            RETURN_LONG(-2); //不允许修改文章
+            break;
+        case -5:
+            RETURN_LONG(-3); //只读讨论区
+            break;
+        case -2:
+            RETURN_LONG(-5);
+            break;
+        case -6:
+            RETURN_LONG(-6); //他人文章
+            break;
+        default:
+            RETURN_LONG(-10);
+            break;
+        }
+    }
     if (title_len > 256) {
         title[256] = '\0';
     }
     filter_control_char(title);
-	if (!strcmp(title,f.title)) //无需修改
-		RETURN_LONG(0);
+    if (!strcmp(title,f.title)) //无需修改
+        RETURN_LONG(0);
 #ifdef FILTER
-	if (check_badword_str(title, strlen(title), getSession()))
-		RETURN_LONG(-7);
+    if (check_badword_str(title, strlen(title), getSession()))
+        RETURN_LONG(-7);
 #endif
-	setbfile(path, brd.filename, f.filename);
-	if (add_edit_mark(path, 2, title, getSession()) != 1)
-		RETURN_LONG(-10);
-	/* update .DIR START */
-	strnzhcpy(f.title, title, ARTICLE_TITLE_LEN);
-	if (mode == DIR_MODE_ZHIDING)
-	{
-		setbdir(DIR_MODE_ZHIDING, dirpath, brd.filename);
-		ent = get_num_records(dirpath,sizeof(struct fileheader));
-        	fd = open(dirpath, O_RDONLY, 0);
+    setbfile(path, brd->filename, f.filename);
+    if (add_edit_mark(path, 2, title, getSession()) != 1)
+        RETURN_LONG(-10);
+    
+    /* update .DIR START */
+    strnzhcpy(f.title, title, ARTICLE_TITLE_LEN);
+    setbdir(mode, dirpath, brd->filename);
+    fd = open(dirpath, O_RDONLY, 0);
+    if (fd!=-1) {
+        for (i = ent; i > 0; i--) {
+            if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) {
+                if (0 == strcmp(xfh.filename, f.filename)) {
+                    ent = i;
+                    break;
+                }
+            }
         }
-	else
-	{
-		if (mode == DIR_MODE_DIGEST)
-			setbdir(DIR_MODE_DIGEST, dirpath, brd.filename);
-		else
-			setbdir(DIR_MODE_NORMAL, dirpath, brd.filename);
-		fd = open(dirpath, O_RDONLY, 0);
-	}
-	if (fd!=-1) 
-	{
-		for (i = ent; i > 0; i--)
-		{
-			if (0 == get_record_handle(fd, &xfh, sizeof(xfh), i)) 
-			{
-                		if (0 == strcmp(xfh.filename, f.filename)) 
-                		{
-                			ent = i;
-                			break;
-                		}
-                	}
-		}
-		if (mode == DIR_MODE_ZHIDING)
-		{
-                	if (i!=0) 
-                    		substitute_record(dirpath, &f, sizeof(f), ent);
-               		board_update_toptitle(bid, true);
-        	}
-        	else
-        	{
-        		if (i!=0) 
-                		substitute_record(dirpath, &f, sizeof(f), ent);
-		}
-	}
-	close(fd);
-	if (0 == i)
-            RETURN_LONG(-10);
-        if(mode != DIR_MODE_ORIGIN && f.id == f.groupid)
+        if (i!=0) {
+            substitute_record(dirpath, &f, sizeof(f), ent);
+            if (mode == DIR_MODE_ZHIDING)
+                board_update_toptitle(bid, true);
+        }
+        close(fd);
+    }
+    if (0 == i)
+        RETURN_LONG(-10);
+
+    if (f.id == f.groupid) {
+        if( setboardorigin(board, -1) )
         {
-		if( setboardorigin(board, -1) )
-		{
-			board_regenspecial(brd.filename,DIR_MODE_ORIGIN,NULL);
-		}
-		else
-		{
-			char olddirect[PATHLEN];
-	    		setbdir(DIR_MODE_ORIGIN, olddirect, brd.filename);
-			if ((fd = open(olddirect, O_RDWR, 0644)) >= 0)
-			{
-				struct fileheader tmpfh;
-				if (get_records_from_id(fd, f.id, &tmpfh, 1, &ent) == 0)
-				{
-					close(fd);
-				}
-				else
-				{
-					close(fd);
-   	                		substitute_record(olddirect, &f, sizeof(f), ent);
-				}
-			}
-		}
-	}
-	setboardtitle(brd.filename, 1);	
-	/* update .DIR END   */
-	RETURN_LONG(0);
+            board_regenspecial(brd->filename,DIR_MODE_ORIGIN,NULL);
+        }
+        else
+        {
+            char olddirect[PATHLEN];
+            setbdir(DIR_MODE_ORIGIN, olddirect, brd->filename);
+            if ((fd = open(olddirect, O_RDWR, 0644)) >= 0)
+            {
+                struct fileheader tmpfh;
+                if (get_records_from_id(fd, f.id, &tmpfh, 1, &ent) == 0)
+                {
+                    close(fd);
+                }
+                else
+                {
+                    close(fd);
+                    substitute_record(olddirect, &f, sizeof(f), ent);
+                }
+            }
+        }
+    }
+    setboardtitle(brd->filename, 1);    
+    /* update .DIR END   */
+    RETURN_LONG(0);
 }
 
 

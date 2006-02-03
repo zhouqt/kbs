@@ -1,5 +1,5 @@
 #include "bbs.h"
-int mailuser(struct userec* user,char* arg)
+int mailuser(struct userec* user,void* arg)
 {
     mail_file("Arbitrator", "tekan/JuryMail01", user->userid, "[公告]BBS 水木清华站仲裁委员会集中招新", BBSPOST_LINK, NULL);
     return 0;
