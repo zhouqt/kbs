@@ -18,7 +18,7 @@ typedef struct __buffered_output
 } buffered_output_t;
 
 
-buffered_output_t* alloc_output(size_t buflen);
+buffered_output_t* alloc_output(unsigned int buflen);
 output_write_func_t override_default_write(buffered_output_t *out, output_write_func_t write_func);
 void free_output(buffered_output_t *out);
 

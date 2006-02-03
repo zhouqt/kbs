@@ -1,13 +1,13 @@
 #include "bbs.h"
 #include "output.h"
 
-static int default_write_func(const char *str, size_t len)
+static int default_write_func(const char *str, unsigned int len)
 {
 	fwrite(str, 1, len, stdout);
 	return len;
 }
 
-buffered_output_t* alloc_output(size_t buflen)
+buffered_output_t* alloc_output(unsigned int buflen)
 {
 	buffered_output_t *ptr;
 
