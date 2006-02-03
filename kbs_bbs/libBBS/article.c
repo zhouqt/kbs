@@ -219,7 +219,7 @@ int del_origin(char *board, struct fileheader *fileinfo)
 {
     struct write_dir_arg dirarg;
     char olddirect[PATHLEN];
-    struct fileheader fh;
+//    struct fileheader fh;
 
     if (setboardorigin(board, -1)) {
         board_regenspecial(board, DIR_MODE_ORIGIN, NULL);
@@ -237,7 +237,7 @@ int del_origin(char *board, struct fileheader *fileinfo)
     }
 
     BBS_TRY {
-        fh = *(dirarg.fileptr + (dirarg.ent - 1));
+//        fh = *(dirarg.fileptr + (dirarg.ent - 1));
         memmove(dirarg.fileptr + (dirarg.ent - 1), dirarg.fileptr + dirarg.ent, dirarg.size - sizeof(struct fileheader) * dirarg.ent);
     }
     BBS_CATCH {
@@ -257,7 +257,7 @@ int del_origin(char *board, struct fileheader *fileinfo)
 
 int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int mode, session_t* session)
 {
-    if (session->currentuser==NULL) {
+    if (fileinfo==NULL || session->currentuser==NULL) {
         return -1;
     }
 
@@ -274,7 +274,7 @@ int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int
     if (checkreadonly(bh->filename))      /* Leeward 98.03.28 */
         return -5;
 
-    if (fileinfo && !HAS_PERM(session->currentuser, PERM_SYSOP)
+    if (!HAS_PERM(session->currentuser, PERM_SYSOP)
         && !chk_currBM(bh->BM, session->currentuser)
         && !isowner(session->currentuser, fileinfo)) {
         return -6;
@@ -282,6 +282,34 @@ int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int
     return 0;
 }
 
+int deny_del_article(struct boardheader *bh, struct fileheader *fileinfo, session_t* session)
+{
+    if (session->currentuser==NULL) {
+        return -1;
+    }
+    if (!strcmp(bh->filename, "syssecurity"))
+        return -3;
+
+    if (HAS_PERM(session->currentuser, PERM_SYSOP) || chk_currBM(bh->BM, session->currentuser))
+        return 0;
+
+    if (fileinfo) {
+        int owned;
+        owned = isowner(session->currentuser, fileinfo);
+        if (!owned)
+            return -6;
+#ifdef HAPPY_BBS
+        if (!strcmp(bh->filename, "newcomers"))
+            return -6;
+#endif
+#ifdef COMMEND_ARTICLE
+        if (!strcmp(bh->filename, COMMEND_ARTICLE))
+            return -6;
+#endif
+        return 0;
+    }
+    return -6;
+}
 
 int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo,
     char *board,int currmode,int flag,session_t* session){
@@ -322,7 +350,7 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
         flock(dirarg->fd, LOCK_UN);     /*这个是需要赶紧做的 */
 
     if (fh.id == fh.groupid) {
-        del_origin(board, fileinfo);
+        del_origin(board, &fh);
     }
     setboardtitle(board, 1);
 
@@ -1422,6 +1450,33 @@ int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index)
     if (index != NULL)
         *index = rs.rec_no;
 
+    return ret;
+}
+
+static int get_ent_id(int fd, fileheader_t * base, int ent, int total, bool match, void *arg)
+{
+	if(match){
+		return ent;
+	}else
+		return 0;
+}
+
+int get_ent_from_id(int mode, int id, char *bname)
+{
+	char direct[PATHLEN];
+	int fd;
+	int ret=0;
+	fileheader_t key;
+
+    setbdir(mode, direct, bname);
+	if ((fd = open(direct, O_RDWR, 0)) == -1){
+		return 0;
+	}
+
+	key.id = id;
+    ret = mmap_dir_search(fd, &key, get_ent_id, NULL);
+
+	close(fd);
     return ret;
 }
 
@@ -2956,6 +3011,7 @@ int upload_read_fileinfo(struct ea_attach_info *ai, session_t *session) {
     int n=0;
     struct stat stat_buf;
 
+    bzero(ai,MAXATTACHMENTCOUNT*sizeof(struct ea_attach_info));
     getattachtmppath(attachdir, MAXPATH, session);
     snprintf(attachfile, MAXPATH, "%s/.index", attachdir);
     if ((fp2 = fopen(attachfile, "r")) != NULL) {

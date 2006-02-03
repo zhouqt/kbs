@@ -462,13 +462,13 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
     	char buf[100];
     	if ((board->flag&BOARD_CLUB_READ)^(oldbh->flag&BOARD_CLUB_READ)) {
     	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
-    	        apply_users((int (*)(struct userec*,char*))clearclubreadright,(void*)oldbh);
+    	        apply_users((int (*)(struct userec*,void*))clearclubreadright,oldbh);
 	    setbfile(buf, board->filename, "read_club_users");
 	    unlink(buf);
     	}
     	if ((board->flag&BOARD_CLUB_WRITE)^(oldbh->flag&BOARD_CLUB_WRITE)) {
     	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
-    	         apply_users((int (*)(struct userec*,char*))clearclubwriteright,(void*)oldbh);
+    	         apply_users((int (*)(struct userec*,void*))clearclubwriteright,oldbh);
 	    setbfile(buf, board->filename, "write_club_users");
 	    unlink(buf);
     	}

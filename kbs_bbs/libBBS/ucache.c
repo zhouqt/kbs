@@ -783,7 +783,7 @@ int update_user(struct userec *user, int num, int all)
     return 0;
 }
 
-int apply_users(int (*fptr) (struct userec *, char *), char *arg)
+int apply_users(int (*fptr) (struct userec *, void *), void *arg)
 {
     int i;
     int count;
