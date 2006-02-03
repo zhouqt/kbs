@@ -127,36 +127,7 @@
 		html_error_quit("系统错误");
 	}
 ?>
-<link rel="stylesheet" type="text/css" href="ansi.css"/>
 <form name="postform" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>&ftype=<?php echo $ftype; ?>&do" class="large">
-<div class="article">
-<?php
-	$notes_file = bbs_get_vote_filename($brdarr["NAME"], "notes");
-	$fp = FALSE;
-	if(file_exists($notes_file))
-	{
-	    $fp = fopen($notes_file, "r");
-	    if ($fp == FALSE)
-	    {
-	    	$notes_file = "vote/notes";
-            if(file_exists($notes_file))
-    		    $fp = fopen($notes_file, "r");
-		}
-	}
-	if ($fp == FALSE)
-	{
-?>
-<div class="green">发文注意事项: <br/>
-发文时应慎重考虑文章内容是否适合公开场合发表，请勿肆意灌水。谢谢您的合作。</div>
-<?php
-	}
-    else
-	{
-	    fclose($fp);
-		echo bbs_printansifile($notes_file);
-	}
-?>
-</div>
 <fieldset><legend>修改文章</legend>
 发信人: <?php echo $articles[1]['OWNER']; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 标&nbsp;&nbsp;题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $articles[1]['TITLE']; ?>" />
@@ -169,7 +140,7 @@
 <input type="button" onclick="dosubmit();" name="post" value="修改" />
 <input type="reset" value="复原" />
 <input type="button" value="返回" onclick="history.go(-1)" />
-</div>
+</div></fieldset>
 </form>
 <?php
 page_footer();
