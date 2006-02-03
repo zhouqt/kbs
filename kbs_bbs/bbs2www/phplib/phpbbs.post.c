@@ -920,8 +920,8 @@ PHP_FUNCTION(bbs_doforward)
  */
 PHP_FUNCTION(bbs_docross)
 {
-    char *board,*target;
-    int  board_len,target_len;
+    char *board,*target,*filename,*title;
+    int  board_len,target_len,filename_len,title_len;
     long  id,out_go;
     struct boardheader *src_bp;
 	struct boardheader *dst_bp;
@@ -932,17 +932,28 @@ PHP_FUNCTION(bbs_docross)
     char path[256],ispost[10];
     
     int ac = ZEND_NUM_ARGS();
-    if (ac != 4 || zend_parse_parameters(4 TSRMLS_CC, "slsl", &board, &board_len, &id, &target, &target_len, &out_go) == FAILURE) {
+    if (ac == 4) {
+        if (zend_parse_parameters(4 TSRMLS_CC, "slsl", &board, &board_len, &id, &target, &target_len, &out_go) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
-	
+    }
+    else if (ac == 6) {
+        if (zend_parse_parameters(6 TSRMLS_CC, "slslss", &board, &board_len, &id, &target, &target_len, &out_go, &filename, &filename_len, &title, &title_len) == FAILURE) {
+		WRONG_PARAM_COUNT;
+	}
+    }
+    else {
+        WRONG_PARAM_COUNT;
+    }
 	u = getCurrentUser();
+    if (ac == 4) {
 	src_bp = getbcache(board);
 	if (src_bp == NULL)
 	    RETURN_LONG(-1);
 	strcpy(board, src_bp->filename);
 	if(!check_read_perm(u, src_bp))
 		RETURN_LONG(-1);
+    }
     
     dst_bp = getbcache(target);
     if (dst_bp == NULL)
@@ -953,6 +964,8 @@ PHP_FUNCTION(bbs_docross)
     if (!strcmp(board,target))
         RETURN_LONG(-8);
 #endif
+
+    strcpy(ispost ,((dst_bp->flag & BOARD_OUTFLAG) && out_go)?"s":"l");
     
     if(!check_read_perm(u, dst_bp))
 		RETURN_LONG(-2);
@@ -969,6 +982,7 @@ PHP_FUNCTION(bbs_docross)
         RETURN_LONG(-10);
     }
 
+    if (ac == 4) {
 	setbdir(DIR_MODE_NORMAL, path, board);
 	if ((fd = open(path, O_RDWR, 0644)) < 0)
 		RETURN_LONG(-10);
@@ -977,6 +991,7 @@ PHP_FUNCTION(bbs_docross)
 		RETURN_LONG(-6); //无法取得文件记录
 	}
 	close(fd);
+	
 #if 0 //disabled by atppp 20051228
     if ((f.accessed[0] & FILE_FORWARDED) && !HAS_PERM(u, PERM_SYSOP)) 
         RETURN_LONG(-7);
@@ -985,10 +1000,16 @@ PHP_FUNCTION(bbs_docross)
 	if ((f.attachment!=0)&&!(dst_bp->flag&BOARD_ATTACH)) 
         RETURN_LONG(-9);
 	
-	strcpy(ispost ,((dst_bp->flag & BOARD_OUTFLAG) && out_go)?"s":"l");
 	setbfile(path, board, f.filename);
 	if (post_cross(u, target, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
-	    RETURN_LONG(-10);
+	    RETURN_LONG(-10);	
+    }
+    else if (ac == 6)
+    {
+	setmailfile(path, getCurrentUser()->userid, filename);
+        if (post_cross(u, target, target, title, path, 0, 1, ispost[0], 0, getSession()) == -1)
+            RETURN_LONG(-10);
+    }
     RETURN_LONG(0);
 }
 
