@@ -709,7 +709,7 @@ struct public_data *get_publicshm()
 
 void detach_publicshm()
 {
-    shmdt(publicshm);
+    shmdt((void *)publicshm);
     publicshm = NULL;
 }
 
@@ -805,7 +805,7 @@ int setpublicshmreadonly(int readonly)
 {
     int iscreate;
 
-    shmdt(publicshm);
+    shmdt((void *)publicshm);
     if (readonly)
         publicshm = (struct public_data *) attach_shm1(NULL, PUBLIC_SHMKEY, sizeof(*publicshm), &iscreate, 1, publicshm);
 

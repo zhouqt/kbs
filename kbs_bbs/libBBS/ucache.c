@@ -372,7 +372,7 @@ int resolve_ucache()
 
 void detach_ucache()
 {
-    shmdt(uidshm);
+    shmdt((void *)uidshm);
     uidshm=NULL;
 }
 

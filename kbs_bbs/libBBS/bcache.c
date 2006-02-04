@@ -42,7 +42,7 @@ static void bcache_setreadonly(int readonly)
 {
     int boardfd;
 	void *oldptr = bcache;
-    munmap(bcache, MAXBOARD * sizeof(struct boardheader));
+    munmap((void *)bcache, MAXBOARD * sizeof(struct boardheader));
     if ((boardfd = open(BOARDS, O_RDWR | O_CREAT, 0644)) == -1) {
         bbslog("3system", "Can't open " BOARDS "file %s", strerror(errno));
         exit(-1);
@@ -226,9 +226,9 @@ void resolve_boards()
 
 void detach_boards()
 {
-    munmap(bcache, MAXBOARD * sizeof(struct boardheader));
+    munmap((void *)bcache, MAXBOARD * sizeof(struct boardheader));
     bcache=NULL;
-    shmdt(brdshm);
+    shmdt((void *)brdshm);
     brdshm=NULL;
 }
 
@@ -580,7 +580,7 @@ void flush_bcache()
 	bcache_setreadonly(0);
     for (i = 0; i < MAXBOARD; i++)
 	    bcache[i].idseq=brdshm->bstatus[i].nowid;
-    msync(bcache,MAXBOARD * sizeof(struct boardheader),MS_SYNC);
+    msync((void *)bcache,MAXBOARD * sizeof(struct boardheader),MS_SYNC);
 	bcache_setreadonly(1);
 }
 

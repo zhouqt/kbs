@@ -75,8 +75,8 @@ static void utmp_setreadonly(int readonly)
 
 void detach_utmp()
 {
-    shmdt(utmphead);
-    shmdt(utmpshm);
+    shmdt((void *)utmphead);
+    shmdt((void *)utmpshm);
     utmphead = NULL;
     utmpshm = NULL;
 }
