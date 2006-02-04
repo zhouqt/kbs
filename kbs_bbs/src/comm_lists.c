@@ -416,7 +416,7 @@ int exec_mbem(char *s)
         if(hdll)      
         {         
 	    char* error;
-            if((func=(void *())(dlsym(hdll,c ? c : "mod_main")))!=NULL)
+            if((func=(dlsym(hdll,c ? c : "mod_main")))!=NULL)
             func();         
 	    else
             if ((error = dlerror()) != NULL)  {
