@@ -1,7 +1,6 @@
 #include "bbs.h"
 
 #ifdef NEW_HELP
-
 #include "mysql.h"
 
 struct helps * s_help=NULL;
@@ -498,3 +497,4 @@ int newhelp(int mode){
 	return 1;
 }
 #endif
+

@@ -81,7 +81,7 @@ void savePos(int mode,char* direct,int pos,struct boardheader* bh)
     ptr->pos=pos;
 }
 
-static void read_setusermode(cmdmode)
+static void read_setusermode(enum BBS_DIR_MODE cmdmode)
 {
     if (cmdmode==DIR_MODE_MAIL) {
         modify_user_mode(RMAIL);
