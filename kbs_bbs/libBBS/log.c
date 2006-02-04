@@ -221,7 +221,7 @@ type - meaning
 
 #ifdef NEWBMLOG
 	return newbmlog(id, boardname, type, value);
-#endif
+#else
 
     sprintf(direct, "boards/%s/.bm.%s", boardname, id);
     if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
@@ -247,6 +247,7 @@ type - meaning
     fcntl(fd, F_SETLKW, &ldata);
     close(fd);
     return 0;
+#endif
 }
 
 int init_bbslog()

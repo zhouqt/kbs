@@ -7,7 +7,7 @@ typedef struct des_ks_struct {
         unsigned long pad[2];
     } ks;
 #define _	ks._
-} des_key_schedule[16];;
+} des_key_schedule[16];
 
 #define ITERATIONS 	16
 
