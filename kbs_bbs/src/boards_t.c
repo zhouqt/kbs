@@ -157,7 +157,6 @@ static int fav_select_path()
         else
             return -1;
     }
-    return 0;
 }
 
 /* Add board to fav
@@ -608,7 +607,6 @@ static int fav_prekey(struct _select_def *conf, int *command)
             conf->new_pos = num + 1;
             return SHOW_REFRESH;
         }
-        return SHOW_REFRESH;
     }
 
     if (!arg->loop_mode) {
@@ -728,7 +726,6 @@ static int fav_onselect(struct _select_def *conf)
         }
         return SHOW_REFRESH;
     }
-    return SHOW_CONTINUE;
 }
 
 static int fav_key(struct _select_def *conf, int command)
@@ -887,7 +884,6 @@ static int fav_key(struct _select_def *conf, int command)
                 conf->new_pos = num + 1;
                 return SHOW_REFRESH;
             }
-            return SHOW_REFRESH;
         }
     case 'S':
 

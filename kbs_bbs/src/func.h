@@ -310,7 +310,7 @@ void unlock_sem_check(int lockid);
 	int valid_brdname(char *brd);
     void detach_boards(ARG_VOID);
     int anonymousboard(const char *board);
-    int load_boards(struct newpostdata *nbrd, const char *boardprefix, int group, int pos, int len, int sort, bool yank_flag, const char **input_namelist,session_t* session);
+    int load_boards(struct newpostdata *nbrd, const char *boardprefix, int group, int pos, int len, int sort, int yank_flag, const char **input_namelist,session_t* session);
 
 
     int getfavnum(session_t* session);
