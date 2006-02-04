@@ -14,7 +14,7 @@ int csock;                      /* socket for Master and Child */
 
 int max_load = 79;              /* ԭֵ39 , modified by KCN,1999.09.07 */
 
-int proxy_getpeername(int csock,struct sockaddr* psaddr,int* plen)
+int proxy_getpeername(int csock,struct sockaddr* psaddr,socklen_t* plen)
 {
     int ret=getpeername(csock,psaddr,plen);
 #ifdef SMTH
@@ -149,7 +149,7 @@ static void telnet_init()
 {
     int n, len;
     char *cmd;
-    char svr[] = {
+    unsigned char svr[] = {
         IAC, DO, TELOPT_TTYPE,   
         IAC, SB, TELOPT_TTYPE, TELQUAL_SEND, IAC, SE, 
         IAC, WILL, TELOPT_ECHO,
@@ -164,7 +164,7 @@ static void telnet_init()
     /* init telnet protocol                              */
     /* --------------------------------------------------- */
 
-    cmd = svr;
+    cmd = (char *)svr;
 
     for (n = 0; n < 7; n++) {
         len = (n == 1 ? 6 : 3);
@@ -769,8 +769,6 @@ int bbs_main(argv)
     }
 
     main_bbs(0, argv);
-    return -1;
-    write(0, "execl failed\r\n", 12);
     return -1;
 }
 

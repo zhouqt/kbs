@@ -130,7 +130,7 @@ int newbmlog(char *userid, char *boardname, int type, int value);
 /* defined in newio.c */
     void output(const char *s, int len);
 typedef int (*select_func)(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds,struct timeval *timeout);
-typedef int (*read_func)(int fd, void *buf, size_t count);
+typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
 
 /* defined in stuff.c */
 	int calc_numofsig();
