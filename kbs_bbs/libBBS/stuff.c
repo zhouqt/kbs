@@ -1334,7 +1334,7 @@ void sigbus(int signo)
     if (getSession()->sigjmp_stack) {
         siglongjmp(getSession()->sigjmp_stack->bus_jump, 1);
     }
-};
+}
 
 int simplepasswd(char *str)
 {

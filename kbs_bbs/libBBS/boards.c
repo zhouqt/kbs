@@ -378,7 +378,7 @@ int getfavnum(session_t* session)
 }
 
 /* iÊÇbid */
-void addFavBoard1(int i,struct favbrd_struct *brdlist, int favnow)
+static void addFavBoard1(int i,struct favbrd_struct *brdlist, int favnow)
 {
     if (brdlist[favnow].bnum < MAXBOARDPERDIR) {
         brdlist[favnow].bid[brdlist[favnow].bnum] = i;
@@ -404,7 +404,9 @@ void addFavBoard(int i,session_t* session, int favmode, int favnow)
 			brdlist = session->mybrd_list;
 	}
 
-	return addFavBoard1(i, brdlist, fn);
+	addFavBoard1(i, brdlist, fn);
+
+	return;
 }
 
 /*
