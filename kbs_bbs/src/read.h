@@ -174,4 +174,7 @@ bool isThreadTitle(char* a,char* b);
 #ifdef PERSONAL_CORP
 int read_importpc(struct _select_def* conf, struct fileheader* fh, void* extraarg);
 #endif
+
+int prepare_write_dir(struct write_dir_arg *filearg, struct fileheader *fileinfo, int mode);
+
 #endif  //__READ_H__
