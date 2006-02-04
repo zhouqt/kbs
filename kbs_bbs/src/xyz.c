@@ -1252,7 +1252,6 @@ int search_ip()
 		}
 
 	}
-	return(0);
 }
 
 int kick_all_user()
