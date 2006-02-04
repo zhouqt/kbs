@@ -6034,7 +6034,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
     {'G', (READ_KEY_FUNC)range_flag,(void*)FILE_TITLE_FLAG},
         
-    {'H', read_callfunc0, read_hot_info},   /* flyriver: 2002.12.21 增加热门信息显示 */
+    {'H', (READ_KEY_FUNC)read_callfunc0, read_hot_info},   /* flyriver: 2002.12.21 增加热门信息显示 */
         
     {Ctrl('G'), (READ_KEY_FUNC)change_mode,(void*)0},   /* bad : 2002.8.8 add marked mode */
     {'`', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 Ctrl+G 1 进入文摘区"},
@@ -6044,7 +6044,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
 
     {'s', (READ_KEY_FUNC)do_select,NULL},
     {'x', (READ_KEY_FUNC)into_announce,NULL},
-    {'v', read_callfunc0,i_read_mail},         /* period 2000-11-12 read mail in article list */
+    {'v', (READ_KEY_FUNC)read_callfunc0,i_read_mail},         /* period 2000-11-12 read mail in article list */
 
     {'i', (READ_KEY_FUNC)Save_post,NULL},
     {'J', (READ_KEY_FUNC)Semi_save,NULL},
@@ -6118,7 +6118,7 @@ static struct key_command read_comms[] = { /*阅读状态，键定义 */
     {'b', (READ_KEY_FUNC)SR_BMFunc,(void*)true},
     {'B', (READ_KEY_FUNC)prompt_newkey,(void*)"请使用 b 进入同主题操作"},
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
-    {'!', read_callfunc0,Goodbye},
+    {'!', (READ_KEY_FUNC)read_callfunc0,Goodbye},
     {Ctrl('Q'), (READ_KEY_FUNC)showinfo,NULL},
     {'^', (READ_KEY_FUNC)jumpReID,NULL},
     {'\0', NULL},

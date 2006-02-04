@@ -264,7 +264,6 @@ int mailall()
             in_mail = false;
         return 0;
     }
-    return -1;
 }
 
 int m_internet()

@@ -143,7 +143,7 @@ int prepf(int fp,struct pattern_image** ppatt_img,size_t* patt_image_len)
     num_pat = p - 1;
     patt_img->p_size = MAXPAT;
     for (i = 1; i <= num_pat; i++) {
-        p = strlen(patt_img->pat_spool+patt_img->patt[i]);
+        p = strlen((char *)(patt_img->pat_spool+patt_img->patt[i]));
         patt_img->pat_len[i] = p;
         if (p != 0 && p < patt_img->p_size)
             patt_img->p_size = p;
@@ -173,7 +173,7 @@ int mgrep_str(char *text, int num,struct pattern_image* patt_img, session_t* ses
     if (patt_img->SHORT)
         m_short((unsigned char *)text, 0, num-1, patt_img, session);
     else
-        monkey1(text, 0, num-1, patt_img, session);
+        monkey1((unsigned char *)text, 0, num-1, patt_img, session);
     return session->num_of_matched;
 }                               /* end mgrep */
 
@@ -218,7 +218,7 @@ int mgrep(int fd,struct pattern_image *patt_img, session_t* session)
         if (start < 0) {
             start = 1;
         }
-        strncpy(text + start, text + end, residue);
+        strncpy((char *)(text + start), (char *)(text + end), residue);
     }                           /* end of while(num_read = ... */
     text[MAXLINE] = '\n';
     text[start - 1] = '\n';

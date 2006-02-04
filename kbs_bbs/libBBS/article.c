@@ -2227,13 +2227,13 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
         if (*buf != 'Y' && *buf != 'y') {
             return -3;
         }
+        pos_read = pos_end;
+        id2 = totalcount;
 #else
         if (dirarg->needlock)
             flock(dirarg->fd, LOCK_UN);
         return -3;
 #endif
-        pos_read = pos_end;
-        id2 = totalcount;
     }
     savefhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
     readfhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
@@ -2749,7 +2749,7 @@ long ea_dump(int fd_src,int fd_dst,long offset){
     length=0;
     do{                                             //复制文件
         if((ret=read(fd_src,buf,2048*sizeof(char)))>0)
-            for(p=buf,len=ret;len>0&&ret!=-1;p+=ret,len-=ret)
+            for(p=buf,len=ret;len>0&&ret!=-1;p=(char *)p+ret,len-=ret)
                 length+=(ret=write(fd_dst,p,len));
     }while(ret>0);
     if(ret==-1)
@@ -2896,15 +2896,15 @@ static long ea_append_helper(int fd,struct ea_attach_info *ai,const char *fn,con
         +sizeof(unsigned int)+ai[count].size);
     lseek(fd_recv,0,SEEK_SET);ai[count].offset=lseek(fd,0,SEEK_END);
     ret=0;
-    for(p=ATTACHMENT_PAD,len=ATTACHMENT_SIZE*sizeof(char);len>0&&ret!=-1;p+=ret,len-=ret)
+    for(p=ATTACHMENT_PAD,len=ATTACHMENT_SIZE*sizeof(char);len>0&&ret!=-1;p=(char *)p+ret,len-=ret)
         ret=write(fd,p,len);                        //写入附件标识 ATTACHMENT_PAD
-    for(p=ai[count].name,len=(strlen(ai[count].name)+1)*sizeof(char);len>0&&ret!=-1;p+=ret,len-=ret)
+    for(p=ai[count].name,len=(strlen(ai[count].name)+1)*sizeof(char);len>0&&ret!=-1;p=(char *)p+ret,len-=ret)
         ret=write(fd,p,len);                        //写入附件文件名称
-    for(size=htonl(end),p=&size,len=sizeof(unsigned int);len>0&&ret!=-1;p+=ret,len-=ret)
+    for(size=htonl(end),p=&size,len=sizeof(unsigned int);len>0&&ret!=-1;p=(char *)p+ret,len-=ret)
         ret=write(fd,p,len);                        //写入附件文件大小(网络字节序)
     while(ret>0){                                   //写入附件文件内容
         if((ret=read(fd_recv,buf,2048*sizeof(char)))>0)
-            for(p=buf,len=ret;len>0&&ret!=-1;p+=ret,len-=ret)
+            for(p=buf,len=ret;len>0&&ret!=-1;p=(char *)p+ret,len-=ret)
                 ret=write(fd,p,len);
     }
     len=lseek(fd_recv,0,SEEK_CUR);
@@ -2945,7 +2945,7 @@ long ea_delete(int fd,struct ea_attach_info *ai,int pos){
         p=mmap(NULL,end,PROT_READ|PROT_WRITE,MAP_SHARED,fd,0);
         if(p==(void*)-1)
             return -1;
-        memmove(p+ai[pos-1].offset,p+ai[pos].offset,end-ai[pos].offset);
+        memmove((char *)p+ai[pos-1].offset,(char *)p+ai[pos].offset,end-ai[pos].offset);
         munmap(p,end);
         if(ftruncate(fd,end-ai[pos-1].length)==-1)
             return -2;
