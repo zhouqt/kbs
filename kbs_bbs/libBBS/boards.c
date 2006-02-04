@@ -755,7 +755,7 @@ void free_brc_cache(char *userid,session_t* session){
 
 	if( strcmp( userid ,"guest") ){
         if (session->brc_cache_entry)
-            munmap(session->brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+            munmap((void *)session->brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
     }
 }
 
@@ -765,7 +765,7 @@ void init_brc_cache(const char* userid,bool replace,session_t* session) {
         int brcfdr;
         struct stat st;
         if (session->brc_cache_entry)
-            munmap(session->brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
+            munmap((void *)session->brc_cache_entry,BRC_CACHE_NUM*sizeof(struct _brc_cache_entry));
         setcachehomefile(dirfile, userid, -1, NULL);
         mkdir(dirfile, 0700);
         setcachehomefile(dirfile, userid, -1, "entry");
@@ -778,7 +778,7 @@ void init_brc_cache(const char* userid,bool replace,session_t* session) {
         }
         brcfdr = open(dirfile, O_RDWR, 0600);
         if (brcfdr==-1) bbslog("3error","can't open %s errno %d",dirfile,errno);
-        session->brc_cache_entry = mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
+        session->brc_cache_entry = (struct _brc_cache_entry *) mmap(NULL, BRC_CACHE_NUM*sizeof(struct _brc_cache_entry), PROT_READ|PROT_WRITE, MAP_SHARED, brcfdr, 0);
         if (session->brc_cache_entry==MAP_FAILED) {
             bbslog("3error","can't mmap %s errno %d",dirfile,errno);
             session->brc_cache_entry = NULL; //added by atppp 20040724
