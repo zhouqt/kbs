@@ -99,7 +99,7 @@ int use_mmap = 1;
 #ifdef READCHECK
 char Myattn[] = { 0 };
 #else
-char Myattn[] = { 03, 0336, 0 };
+char Myattn[] = { 03, (char)(0336), 0 };
 #endif
 
 FILE *input_f;
@@ -457,12 +457,15 @@ static int wctxpn(struct zm_fileinfo *zi)
     if (zmodem_requested)
         free(name2);
         return zsendfile(zi, txbuf, 1 + strlen(p) + (p - txbuf));
+
+	/*
     if (wcputsec(txbuf, 0, 128) == ERROR) {
         free(name2);
         return ERROR;
     }
     free(name2);
     return OK;
+	*/
 }
 
 static int getnak(void)
