@@ -1262,7 +1262,7 @@ fsdfa
                         } while (ppx); //计算颜色字符，字节数放入lll
                         ppt += LLL + lll; //应该折行的地方
 
-                        if (ppt - pp > strlen(pp)) break; //断行位置超过了字符串长度
+                        if (ppt - pp > strlen((char *)pp)) break; //断行位置超过了字符串长度
                         if ((*ppt) > 127) {     /* 避免在汉字中间折行 ,KCN:看不懂faint*/
                             for (ppx = ppt - 1, ich = 0; ppx >= pp; ppx--)
                                 if ((*ppx) < 128)
@@ -1297,7 +1297,7 @@ fsdfa
                         fprintf(fp, ": ");
                     fprintf(fp, "%s", pp);
                     if (long_flag){	/* 如果当前串是系统自动截断的一个超长串 */
-                    	    LLL = LLL - strlen(pp); //将下一行的允许长度减短
+                    	    LLL = LLL - strlen((char *)pp); //将下一行的允许长度减短
 			}else{
 			    fprintf(fp,"\n");
 			}
@@ -1521,7 +1521,6 @@ int vedit_process_ESC(arg)
         return ask(CHOOSE_ERROR);
     }
 
-    return 0;
 }
 
 int mark_block()
@@ -2313,7 +2312,6 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
 
         ch = (newch != '\0') ? newch : igetkey();
     }
-    return 1;
 }
 
 int vedit(char *filename,int saveheader,long* eff_size,long *pattachpos,int add_loginfo)

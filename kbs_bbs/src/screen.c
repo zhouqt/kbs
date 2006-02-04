@@ -192,7 +192,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
         for(i=was_col;i<new_col;i++)
             p=p&&(bp[q].color[i]==tc_color)&&(bp[q].mode[i]==tc_mode);
         if(p) {
-            output(bp[q].data+was_col, new_col-was_col);
+            output((char *)(bp[q].data+was_col), new_col-was_col);
             return;
         }
     }
@@ -250,7 +250,7 @@ void rel_move(int was_col, int was_ln, int new_col, int new_ln)
                 tc_color = (tc_color&0xf0)+8;
             if (was_col != 0)
                 ochar('\r');
-            output(bp[q].data, new_col);
+            output((char *)bp[q].data, new_col);
             return;
         }
     }
@@ -1021,7 +1021,7 @@ void saveline(int line, int mode, char* buffer)	/* 0 : save, 1 : restore */
             bp[line].changed = true;
             break;
     }
-};
+}
 
 void do_naws(int ln, int col)
 {

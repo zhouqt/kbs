@@ -345,7 +345,7 @@ static struct _menupos *menupos = NULL;
 int exec_mbem(char *s)
 {
     void *hdll;   
-    int (*func)();   
+    void (*func)();   
     char *c;   
     char buf[1024];   
     int oldmode;

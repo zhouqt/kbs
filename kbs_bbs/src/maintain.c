@@ -3394,7 +3394,7 @@ int edit_board_delete_read_perm(void){
                 free(p);
                 continue;
             }
-            for(ret=0,ptr=p,off=((MAXBOARD>>3)+1)*sizeof(unsigned char);off>0&&ret!=-1;ptr+=ret,off-=ret)
+            for(ret=0,ptr=p,off=((MAXBOARD>>3)+1)*sizeof(unsigned char);off>0&&ret!=-1;ptr=(char *)ptr + ret,off-=ret)
                 ret=write(fd,ptr,off);
             lc.l_type=F_UNLCK;
             lc.l_whence=SEEK_SET;
