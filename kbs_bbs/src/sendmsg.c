@@ -229,8 +229,6 @@ int mode;
         return result;
         break;
     }
-    inremsg = false;
-    return 1;
 }
 
 

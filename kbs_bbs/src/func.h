@@ -556,6 +556,7 @@ void unlock_sem_check(int lockid);
     int check_sysconf(ARG_VOID);
 
 /* libmsg.c */
+	void msgmail(char *did, const char *buf) ;
     int get_unreadcount(char *uident);
     int get_unreadmsg(char *uident);
     int load_msghead(int id, char *uident, int index, struct msghead *head);
