@@ -88,9 +88,8 @@ PHP_FUNCTION(bbs_bmmanage)
 		WRONG_PARAM_COUNT;
 	}
 	
-    bid = getbnum(board);
+    bid = getbid(board, &bh);
     if (!bid) RETURN_LONG(-1);
-    bh = getboard(bid);
     strcpy(board,bh->filename);
     if (!is_BM(bh, getCurrentUser()))
         RETURN_LONG(-2);
