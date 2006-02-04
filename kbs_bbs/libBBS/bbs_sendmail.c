@@ -384,7 +384,7 @@ static char* encodestring(const char* string,char* encode)
     len = strlen(string);
 	encodestr=malloc((len+1)*2+8+strlen(encode)); //for gb2big5 +1,for base64 *2,for padding "=?GB2312?B?" "=?BIG5?B?" "?=" +12
 	sprintf(encodestr,"=?%s?B?",encode);
-	to64frombits(encodestr+5+strlen(encode),string,len);
+	to64frombits((unsigned char *)(encodestr+5+strlen(encode)),(const unsigned char *)string,len);
 	strcat(encodestr,"?=");
 	return encodestr;
 }
@@ -458,7 +458,7 @@ static int write_imail_file(FILE* fp2, char *oldfile, char *boundary, int isbig5
 
 						base64old = start;
 						for(i=0; i<attsize; i+=54, base64old += 54){
-							to64frombits (base64new, base64old, attsize-i>54?54:(attsize-i) );
+							to64frombits ((unsigned char *)base64new, (const unsigned char *)base64old, attsize-i>54?54:(attsize-i) );
 							base64new[72]=0;
 							fprintf(fp2,"%s\n",base64new);
 						}
