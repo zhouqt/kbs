@@ -902,8 +902,8 @@ PHP_FUNCTION(bbs_doforward)
 
 /**
  * 转贴文章
- * int bbs_docross(string board,int id,string target,int out_go);
- * return  0 :seccess
+ * int bbs_docross(string board,int id,string target,int out_go [,string filename, string title]);
+ * return  0 :success
  *         -1:源版面不存在
  *         -2:目标版面不存在
  *         -3:目标版面只读
@@ -935,7 +935,7 @@ PHP_FUNCTION(bbs_docross)
 		WRONG_PARAM_COUNT;
 	}
     }
-    else if (ac == 6) {
+    else if (ac == 6) {    /* cross mail by pig2532 */
         if (zend_parse_parameters(6 TSRMLS_CC, "slslss", &board, &board_len, &id, &target, &target_len, &out_go, &filename, &filename_len, &title, &title_len) == FAILURE) {
 		WRONG_PARAM_COUNT;
 	}
