@@ -192,13 +192,13 @@ PHP_FUNCTION(bbs_attachment_del)
     ret = ea_locate(fd, ai);
     if (ret>=0) {
         ret = ea_delete(fd, ai, pos);
-    } else {
-        add_edit_mark(dir, 0, f.title, getSession());
     }
     close(fd);
 
     if (ret<0 || dump_attachment_info(return_value, ai)) {
         RETURN_FALSE;
+    } else {
+        add_edit_mark(dir, 0, f.title, getSession());
     }
 }
 
