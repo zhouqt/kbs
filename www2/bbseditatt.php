@@ -1,24 +1,55 @@
 <?php
+/* TODO: 检查是否是附件版面 */
 	require("www2-funcs.php");
-	$sessionid = login_init(TRUE);
+	require("www2-board.php");
+	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_EDIT);
 	assert_login();
+	$sessionid = false;
+
+	if (isset($_GET["board"]))
+		$board = $_GET["board"];
+	else
+		html_error_quit("错误的讨论区");
+	// 检查用户能否阅读该版
+	$brdarr = array();
+	$brdnum = bbs_getboard($board, $brdarr);
+	if ($brdnum == 0)
+		html_error_quit("错误的讨论区");
+	bbs_set_onboard($brdnum,1);
+	$usernum = $currentuser["index"];
+	if (bbs_checkreadperm($usernum, $brdnum) == 0)
+		html_error_quit("错误的讨论区");
+	$board = $brdarr['NAME'];
+	if(bbs_checkpostperm($usernum, $brdnum) == 0) {
+		html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
+	}
+	if (bbs_is_readonly_board($brdarr))
+		html_error_quit("不能在只读讨论区发表文章");
+	$ftype = $dir_modes["NORMAL"];
+
+	bbs_board_nav_header($brdarr, "修改附件");
+	
+	if (isset($_GET['id']))
+		$id = intval($_GET['id']);
+	else
+		html_error_quit("错误的文编号");
+	$articles = array();
+	$num = bbs_get_records_from_id($brdarr["NAME"], $id, $ftype, $articles);
+	if ($num == 0)
+		html_error_quit("错误的文编号");
 	
 	@$action=$_GET["act"];
 	$msg = "";
+	$ret = false;
 	if ($action=="delete") {
-		@$act_attachname=$_GET["attachname"];
-		settype($act_attachname, "string");
-		$ret = bbs_upload_del_file($act_attachname);
-		switch($ret) {
-			case -2:
-				$msg = "没有这个文件";
-				break;
-			case 0:
-				$msg = "删除文件成功";
-				break;
-			default:
-				break;
+		@$act_attachnum=$_GET["attachnum"];
+		settype($act_attachnum, "integer");
+		$ret = bbs_attachment_del($board, $id, $act_attachnum);
+		if (!is_array($ret)) {
+			html_error_quit("错误:" . $ret);
 		}
+		$msg = "删除附件成功";
 	} else if ($action=="add") {
 		if (isset($_FILES['attachfile'])) {
 			@$errno=$_FILES['attachfile']['error'];
@@ -52,32 +83,11 @@
 					}
 				}
 			}
-			$ret = bbs_upload_add_file($ofile, $oname);
-			switch($ret) {
-				case 0:
-					$msg .= "文件上载成功！";
-					break;
-				case -1:
-					$msg = "系统错误";
-					break;
-				case -2:
-					$msg = "附件个数超过规定！";
-					break;
-				case -3:
-					$msg = "无效的文件名！";
-					break;
-				case -4:
-					$msg = "存在同名文件！";
-					break;
-				case -5:
-					$msg = "保存附件文件失败！";
-					break;
-				case -6:
-					$msg = "文件总量超过上限 " . sizestring(BBS_MAXATTACHMENTSIZE) . " 字节";
-					break;
-				default:
-					break;
+			$ret = bbs_attachment_add($board, $id, $ofile, $oname);
+			if (!is_array($ret)) {
+				html_error_quit("错误:" . $ret);
 			}
+			$msg .= "添加附件成功";
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
@@ -93,7 +103,11 @@
 			$msg = "未知错误";
 		}
 	}
-	$attachments = bbs_upload_read_fileinfo();
+	if (!is_array($ret)) {
+		$attachments = bbs_attachment_list($board, $id);
+	} else {
+		$attachments = $ret;
+	}
 	$filecount = count($attachments);
 	$allnames = array();$totalsize=0;
 	for($i=0;$i<$filecount;$i++) {
@@ -113,7 +127,7 @@ function addsubmit() {
 		alert('您还没选择上传的附件');
 		return false;
 	} else {
-		var e2="bbsupload.php?act=add";
+		var e2="bbseditatt.php?board=<?php echo $board; ?>&id=<?php echo $id; ?>&act=add";
 		getObj("winclose").style.display = "none";
 		document.forms[0].action=e2;
 		document.forms[0].paste.value='附件上载中，请稍候...';
@@ -124,7 +138,7 @@ function addsubmit() {
 }
 
 function deletesubmit(f) {
-	var e2="bbsupload.php?act=delete&attachname="+f;
+	var e2="bbseditatt.php?board=<?php echo $board; ?>&id=<?php echo $id; ?>&act=delete&attachnum="+f;
 	document.forms[1].action=e2;
 	document.forms[1].submit();
 }
@@ -136,7 +150,7 @@ function clickclose() {
 }
 
 if (opener) {
-	opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
+	//opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
 } else {
 	addBootFn(function() { getObj("winclose").style.display = "none"; });
 }
@@ -175,7 +189,7 @@ if (opener) {
 <?php
 	for($i=0;$i<$filecount;$i++) {
 		$f = $attachments[$i];
-		echo "<li>".$f["name"]." (".sizestring($f["size"])."字节) <a href=\"javascript:deletesubmit('".$f["name"]."');\">删除</a></li>";
+		echo "<li>".$f["name"]." (".sizestring($f["size"])."字节) <a href=\"javascript:deletesubmit('".($i+1)."');\">删除</a></li>";
 	}
 ?>
 </ol>
