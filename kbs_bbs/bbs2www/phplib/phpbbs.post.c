@@ -141,7 +141,20 @@ PHP_FUNCTION(bbs_attachment_add)
 
     ret = ea_locate(fd, ai);
     if (ret>=0) {
-        ret = ea_append(fd, ai, filename, ofilename);
+        int count, size=0;
+        struct stat st;
+        for(count=0; count<MAXATTACHMENTCOUNT&&ai[count].name[0]; count++) {
+            size += ai[count].size;
+        }
+        if(stat(filename,&st)||!S_ISREG(st.st_mode)){
+            unlink(filename);
+            ret = -5;
+        } else if((size+st.st_size)>MAXATTACHMENTSIZE && !HAS_PERM(getCurrentUser(), PERM_SYSOP)){
+            unlink(filename);
+            ret = -6;
+        } else {
+            ret = ea_append(fd, ai, filename, ofilename);
+        }
     }
     close(fd);
 
