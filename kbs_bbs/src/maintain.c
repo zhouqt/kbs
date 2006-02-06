@@ -355,8 +355,7 @@ int m_newbrd()
     
     if (add_board(&newboard) == -1) {
 		currboard = bcache;
-        move(t_lines - 1, 0);
-        outs("加入讨论区失败!\n");
+        prints("加入讨论区失败! 可能版面数已经到系统上限 %d\n", MAXBOARD);
         pressreturn();
         clear();
         return -1;
