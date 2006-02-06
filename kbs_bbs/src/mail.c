@@ -1567,12 +1567,12 @@ struct key_command mail_comms[] = {
     {'[', (READ_KEY_FUNC)thread_read,(void*)SR_PREV},
 
     {Ctrl('N'), (READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
-    {'\\', (READ_KEY_FUNC)thread_read,(void*)SR_LAST},
-    {'=', (READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
+//    {'\\', (READ_KEY_FUNC)thread_read,(void*)SR_LAST},
+//    {'=', (READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
     {'z', (READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
     
     {Ctrl('A'), (READ_KEY_FUNC)read_showauthor,NULL},
-    {'~', (READ_KEY_FUNC)read_showauthorinfo,NULL},     
+    {Ctrl('Q'), (READ_KEY_FUNC)read_showauthorinfo,NULL},     
     {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
     {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
 
@@ -1586,6 +1586,8 @@ struct key_command mail_comms[] = {
     
     {'h', (READ_KEY_FUNC)mailreadhelp,NULL},
     {Ctrl('J'), (READ_KEY_FUNC)mailreadhelp,NULL},
+
+    {',', (READ_KEY_FUNC)read_splitscreen,NULL},
     
     {'\0', NULL},
 };
