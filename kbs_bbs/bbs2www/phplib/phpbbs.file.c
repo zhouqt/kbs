@@ -1,6 +1,7 @@
 #include "php.h"
 #include "php_ini.h"
 #include "ext/standard/info.h"
+#include "SAPI.h"
 #include "php_kbs_bbs.h"  
 
 #include "bbs.h"
@@ -27,7 +28,7 @@ PHP_FUNCTION(bbs2_readfile)
     int output_buffer_len, output_buffer_size, j;
     char c;
     char *ptr, *cur_ptr;
-    long ptrlen;
+    off_t ptrlen;
     int fd;
     int in_chinese = false;
     int chunk_size = 51200;
@@ -162,7 +163,7 @@ PHP_FUNCTION(bbs2_readfile)
     }
     munmap(ptr, st.st_size);
 
-    RETVAL_STRINGL(output_buffer, output_buffer_len, 0);;
+    RETVAL_STRINGL(output_buffer, output_buffer_len, 0);
 }
 
 PHP_FUNCTION(bbs2_readfile_text)
@@ -175,7 +176,7 @@ PHP_FUNCTION(bbs2_readfile_text)
     int output_buffer_len, output_buffer_size, last_return = 0;
     char c;
     char *ptr, *cur_ptr;
-    long ptrlen;
+    off_t ptrlen;
     int in_escape = false, is_last_space = false;
     int fd, i;
     char escape_seq[4][16], escape_seq_len[4];
@@ -284,6 +285,142 @@ PHP_FUNCTION(bbs2_readfile_text)
     RETVAL_STRINGL(output_buffer, last_return, 0);
 }
 
+
+static char *get_mime_type(char *filename) {
+    char *dot = strrchr(filename, '.');
+	if (dot == NULL)
+		return "text/plain";
+	if (strcasecmp(dot, ".html") == 0 || strcasecmp(dot, ".htm") == 0)
+		return "text/html";
+	if (strcasecmp(dot, ".jpg") == 0 || strcasecmp(dot, ".jpeg") == 0)
+		return "image/jpeg";
+	if (strcasecmp(dot, ".gif") == 0)
+		return "image/gif";
+	if (strcasecmp(dot, ".png") == 0)
+		return "image/png";
+	if (strcasecmp(dot, ".pcx") == 0)
+		return "image/pcx";
+	if (strcasecmp(dot, ".css") == 0)
+		return "text/css";
+	if (strcasecmp(dot, ".au") == 0)
+		return "audio/basic";
+	if (strcasecmp(dot, ".wav") == 0)
+		return "audio/wav";
+	if (strcasecmp(dot, ".avi") == 0)
+		return "video/x-msvideo";
+	if (strcasecmp(dot, ".mov") == 0 || strcasecmp(dot, ".qt") == 0)
+		return "video/quicktime";
+	if (strcasecmp(dot, ".mpeg") == 0 || strcasecmp(dot, ".mpe") == 0)
+		return "video/mpeg";
+	if (strcasecmp(dot, ".vrml") == 0 || strcasecmp(dot, ".wrl") == 0)
+		return "model/vrml";
+	if (strcasecmp(dot, ".midi") == 0 || strcasecmp(dot, ".mid") == 0)
+		return "audio/midi";
+	if (strcasecmp(dot, ".mp3") == 0)
+		return "audio/mpeg";
+	if (strcasecmp(dot, ".pac") == 0)
+		return "application/x-ns-proxy-autoconfig";
+	if (strcasecmp(dot, ".txt") == 0)
+		return "text/plain";
+	if (strcasecmp(dot, ".xht") == 0 || strcasecmp(dot, ".xhtml") == 0)
+		return "application/xhtml+xml";
+	if (strcasecmp(dot, ".xml") == 0)
+		return "text/xml";
+	if (strcasecmp(dot, ".swf") == 0)
+		return "application/x-shockwave-flash";
+	if (strcasecmp(dot, ".pdf") == 0)
+		return "application/pdf";
+	return "application/octet-stream";
+}
+
+PHP_FUNCTION(bbs_file_output_attachment)
+{
+    char *filename;
+    int filename_len;
+    char *attachname = NULL;
+    int attachname_len = 0;
+    long attachpos;
+    int fd;
+    char *ptr;
+    char *sendptr = NULL;
+    int sendlen;
+    off_t ptrlen;
+    struct stat st;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl|s", &filename, &filename_len, &attachpos, &attachname, &attachname_len) == FAILURE) {
+        WRONG_PARAM_COUNT;
+    }
+    
+    if (attachpos == 0 && attachname == NULL) {
+        RETURN_LONG(-2);
+    }
+    fd = open(filename, O_RDONLY);
+    if (fd < 0)
+        RETURN_LONG(-2);
+    if (fstat(fd, &st) < 0) {
+        close(fd);
+        RETURN_LONG(-2);
+    }
+    if (!S_ISREG(st.st_mode)) {
+        close(fd);
+        RETURN_LONG(-2);
+    }
+    if (st.st_size <= 0) {
+        close(fd);
+        RETURN_LONG(-2);
+    }
+
+    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
+    ptrlen = st.st_size;
+    close(fd);
+    if (ptr == NULL)
+        RETURN_LONG(-1);
+
+    if (attachpos == 0) {
+        sendptr = ptr;
+        sendlen = ptrlen;
+    } else if (attachpos >= 0 && attachpos < ptrlen) {
+        char *p, *pend = ptr + ptrlen;
+        p = attachname = ptr + attachpos;
+        while(*p && p < pend) {
+            p++;
+        }
+        p++;
+        if (p <= pend - 4) {
+            memcpy(&sendlen, p, 4);
+            sendlen = ntohl(sendlen);
+            if (sendlen >= 0 && pend - 4 - p >= sendlen) {
+                sendptr = p + 4;
+            }
+        }
+    }
+
+    if (sendptr) {
+        sapi_header_line ctr = {0};
+        char buf[256];
+        ctr.line = buf;
+
+        snprintf(buf, 256, "Content-Type: %s", get_mime_type(attachname));
+        ctr.line_len = strlen(buf);
+        sapi_header_op(SAPI_HEADER_ADD, &ctr TSRMLS_CC);
+
+        snprintf(buf, 256, "Accept-Ranges: bytes");
+        ctr.line_len = strlen(buf);
+        sapi_header_op(SAPI_HEADER_ADD, &ctr TSRMLS_CC);
+
+        snprintf(buf, 256, "Content-Length: %d", sendlen);
+        ctr.line_len = strlen(buf);
+        sapi_header_op(SAPI_HEADER_ADD, &ctr TSRMLS_CC);
+
+        snprintf(buf, 256, "Content-Disposition: inline;filename=%s", attachname);
+        ctr.line_len = strlen(buf);
+        sapi_header_op(SAPI_HEADER_ADD, &ctr TSRMLS_CC);
+        
+        ZEND_WRITE(sendptr, sendlen);
+    }
+    munmap(ptr, st.st_size);
+    RETURN_LONG(0);
+}
 
 
 
