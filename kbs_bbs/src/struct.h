@@ -229,25 +229,39 @@ struct posttop {
     time_t date;                /* last post's date */
     int number;                 /* post number */
 };
+
 struct public_data {
     time_t nowtime;
     int sysconfimg_version;
     int www_guest_count;
     unsigned int max_user;
     unsigned int max_wwwguest;
-#ifdef FLOWBANNER
-        int bannercount;
-        char banners[MAXBANNER][BANNERSIZE];
-#else
-    char unused[1004];
-#endif
+	
+	char unused1[32];
+	unsigned int logincount;
+	unsigned int logoutcount;
+	u_int64_t staytime;
+	unsigned int wwwlogincount;
+	unsigned int wwwlogoutcount;
+	unsigned int wwwguestlogincount;
+	unsigned int wwwguestlogoutcount;
+	u_int64_t wwwstaytime;
+	u_int64_t wwwgueststaytime;
+    char unused[924];
 
+#ifdef FLOWBANNER
+	int bannercount;
+	char banners[MAXBANNER][BANNERSIZE];
+#endif
+	
 #ifdef FB2KENDLINE
 	time_t nextfreshdatetime;
 	char date[60];
 #endif
 
 };
+
+
 struct smenuitem {
     int line, col, level;
     char *name, *desc, *arg;

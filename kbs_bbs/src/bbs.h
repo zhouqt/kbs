@@ -100,6 +100,10 @@ typedef int64 POINTDIFF;
 typedef int32 POINTDIFF;
 #endif
 
+#ifndef u_int64_t
+typedef unsigned long long u_int64_t;
+#endif
+
 
 #ifndef _cplusplus
 
