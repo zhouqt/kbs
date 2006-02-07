@@ -16,12 +16,11 @@ preprocess();
 
 @$attachpos=$_GET["ap"];
 if ($attachpos!=0) {
-	require("inc/attachment.inc.php");
 	if (bbs_normalboard($boardName)) {
 		if (cache_header('public',filemtime($filename),300))
 			return;
 	}
-	output_attachment($filename, $attachpos);
+	bbs_file_output_attachment($filename, $attachpos);
 	exit;
 }
 

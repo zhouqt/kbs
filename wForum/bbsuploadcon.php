@@ -1,6 +1,5 @@
 <?php
 	require("inc/funcs.php");
-	require("inc/attachment.inc.php");
 	
 	@$attachnum = $_GET["ap"];
 	if ($attachnum == 0) {
@@ -37,7 +36,7 @@
 		}
 		$name = strstr($buf,' ');
 		$name = substr($name,1);
-		output_attachment($file, 0, $name);
+		bbs_file_output_attachment($file, 0, $name);
 		break;
 	}
 	fclose($fp);

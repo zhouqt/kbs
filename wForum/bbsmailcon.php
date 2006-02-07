@@ -2,7 +2,6 @@
 
 require("inc/funcs.php");
 require("inc/usermanage.inc.php");
-require("inc/attachment.inc.php");
 
 if ($loginok != 1) {
 	echo 1;
@@ -52,5 +51,5 @@ if ($attachpos==0) {
 	exit;
 }
 
-output_attachment($filename, $attachpos);
+bbs_file_output_attachment($filename, $attachpos);
 ?>

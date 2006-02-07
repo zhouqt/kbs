@@ -101,8 +101,7 @@
 				exit(0);
 			}
 		}
-		require("inc/attachment.inc.php");
-		output_attachment($filename, $attachpos);
+		bbs_file_output_attachment($filename, $attachpos);
 	}
 	
 function viewArticle($article, $boardID, $boardName) {

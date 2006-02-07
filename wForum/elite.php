@@ -17,12 +17,11 @@ preprocess();
 if ($file !== false) {
 	@$attachpos=$_GET["ap"];
 	if ($attachpos!=0) {
-		require("inc/attachment.inc.php");
 		if ($cacheit) {
 			if (cache_header('public',filemtime($file),300))
 				return;
 		}
-		output_attachment($file, $attachpos);
+		bbs_file_output_attachment($file, $attachpos);
 		exit;
 	}
 }
