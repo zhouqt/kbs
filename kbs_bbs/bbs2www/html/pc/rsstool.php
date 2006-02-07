@@ -30,7 +30,7 @@
 		<title><?php echo $rss[channel][title]; ?></title>
 		<link><?php echo $rss[channel][pcaddr]; ?></link>
 		<description><?php echo $rss[channel][desc]; ?></description>
-		<dc:language>gb2312</dc:language> 
+		<dc:language>zh-cn</dc:language> 
 <?php
 		if($rss[channel][publisher])
 		{
