@@ -50,8 +50,7 @@ function display_navigation_bar($brdarr, $num, $article)
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
-		require_once("attachment.php");
-		output_attachment($filename, $attachpos);
+		bbs_file_output_attachment($filename, $attachpos);
 		exit;
 	}
 	page_header("推荐文章阅读", "<a href='bbsrecommend.php'>推荐文章</a>");

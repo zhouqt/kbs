@@ -13,7 +13,7 @@ function compress_bmp(&$ofile, &$oname)
 				$read = fread($h, 1024);
 				pclose($h);
 				if (strncasecmp("BMP", $read, 3) == 0) {
-					$tp = $ofile."BMP2PNG";
+					$tp = $ofile.".BMP2PNG";
 					@exec("convert -quality 75 ".escapeshellarg($ofile)." png:".escapeshellarg($tp));
 					if (file_exists($tp)) {
 						unlink($ofile);
