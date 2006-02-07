@@ -84,8 +84,8 @@ function doLogon(){
 		$time=time()+31536000; //365*24*60*60 sec
 		break;
 	}
-	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],time()+3600,COOKIE_PATH,COOKIE_DOMAIN);
-	setcookie(COOKIE_PREFIX."UTMPNUM",$num,time()+3600,COOKIE_PATH,COOKIE_DOMAIN);
+	setcookie(COOKIE_PREFIX."UTMPKEY",$data["utmpkey"],0,COOKIE_PATH,COOKIE_DOMAIN);
+	setcookie(COOKIE_PREFIX."UTMPNUM",$num,0,COOKIE_PATH,COOKIE_DOMAIN);
 	setcookie(COOKIE_PREFIX."UTMPUSERID",$data["userid"],$time,COOKIE_PATH,COOKIE_DOMAIN);
 	setcookie(COOKIE_PREFIX."LOGINTIME",$data["logintime"],0,COOKIE_PATH,COOKIE_DOMAIN);
 	if ($time!=0) {
