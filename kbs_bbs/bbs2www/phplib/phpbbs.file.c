@@ -28,39 +28,18 @@ PHP_FUNCTION(bbs2_readfile)
     int output_buffer_len, output_buffer_size, j;
     char c;
     char *ptr, *cur_ptr;
-    off_t ptrlen;
-    int fd;
+    off_t ptrlen, mmap_ptrlen;
     int in_chinese = false;
     int chunk_size = 51200;
-    struct stat st;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s", &filename, &filename_len) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    
-    fd = open(filename, O_RDONLY);
-    if (fd < 0)
-        RETURN_LONG(2);
-    if (fstat(fd, &st) < 0) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-    if (!S_ISREG(st.st_mode)) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-    if (st.st_size <= 0) {
-        close(fd);
-        RETURN_LONG(2);
-    }
 
-    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    ptrlen = st.st_size;
-    close(fd);
-    if (ptr == NULL)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
-
-    j = ptrlen;
+    
+    j = ptrlen = mmap_ptrlen;
     if (j > chunk_size) j = chunk_size;
     output_buffer_size = 2 * j + 16;
     output_buffer = (char* )emalloc(output_buffer_size);
@@ -161,7 +140,7 @@ PHP_FUNCTION(bbs2_readfile)
             output_buffer_len += l;
         }
     }
-    munmap(ptr, st.st_size);
+    end_mmapfile(ptr, mmap_ptrlen, -1);
 
     RETVAL_STRINGL(output_buffer, output_buffer_len, 0);
 }
@@ -176,38 +155,20 @@ PHP_FUNCTION(bbs2_readfile_text)
     int output_buffer_len, output_buffer_size, last_return = 0;
     char c;
     char *ptr, *cur_ptr;
-    off_t ptrlen;
+    off_t ptrlen, mmap_ptrlen;
     int in_escape = false, is_last_space = false;
-    int fd, i;
+    int i;
     char escape_seq[4][16], escape_seq_len[4];
-    struct stat st;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sll", &filename, &filename_len, &maxchar, &escape_flag) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
-    
-    fd = open(filename, O_RDONLY);
-    if (fd < 0)
-        RETURN_LONG(2);
-    if (fstat(fd, &st) < 0) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-    if (!S_ISREG(st.st_mode)) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-    if (st.st_size <= 0) {
-        close(fd);
-        RETURN_LONG(2);
-    }
 
-    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    ptrlen = st.st_size;
-    close(fd);
-    if (ptr == NULL)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
 
+    ptrlen = mmap_ptrlen;
+    
     if (!maxchar) {
         maxchar = ptrlen;
     } else if (ptrlen > maxchar) {
@@ -280,7 +241,7 @@ PHP_FUNCTION(bbs2_readfile_text)
         ptrlen--; cur_ptr++;
     }
 
-    munmap(ptr, st.st_size);
+    end_mmapfile(ptr, mmap_ptrlen, -1);
 
     RETVAL_STRINGL(output_buffer, last_return, 0);
 }
@@ -340,12 +301,10 @@ PHP_FUNCTION(bbs_file_output_attachment)
     char *attachname = NULL;
     int attachname_len = 0;
     long attachpos;
-    int fd;
     char *ptr;
     char *sendptr = NULL;
     int sendlen;
-    off_t ptrlen;
-    struct stat st;
+    off_t ptrlen, mmap_ptrlen;
 
     if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "sl|s", &filename, &filename_len, &attachpos, &attachname, &attachname_len) == FAILURE) {
         WRONG_PARAM_COUNT;
@@ -354,27 +313,11 @@ PHP_FUNCTION(bbs_file_output_attachment)
     if (attachpos == 0 && attachname == NULL) {
         RETURN_LONG(-2);
     }
-    fd = open(filename, O_RDONLY);
-    if (fd < 0)
-        RETURN_LONG(-2);
-    if (fstat(fd, &st) < 0) {
-        close(fd);
-        RETURN_LONG(-2);
-    }
-    if (!S_ISREG(st.st_mode)) {
-        close(fd);
-        RETURN_LONG(-2);
-    }
-    if (st.st_size <= 0) {
-        close(fd);
-        RETURN_LONG(-2);
-    }
 
-    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    ptrlen = st.st_size;
-    close(fd);
-    if (ptr == NULL)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
+
+    ptrlen = mmap_ptrlen;
 
     if (attachpos == 0) {
         sendptr = ptr;
@@ -418,7 +361,7 @@ PHP_FUNCTION(bbs_file_output_attachment)
         
         ZEND_WRITE(sendptr, sendlen);
     }
-    munmap(ptr, st.st_size);
+    end_mmapfile(ptr, mmap_ptrlen, -1);
     RETURN_LONG(0);
 }
 
@@ -498,9 +441,7 @@ PHP_FUNCTION(bbs_printansifile)
     int filename_len;
     long linkmode,is_tex,is_preview;
     char *ptr;
-    long ptrlen;
-    int fd;
-    struct stat st;
+    off_t ptrlen, mmap_ptrlen;
     const int outbuf_len = 4096;
     buffered_output_t *out;
     char* attachlink;
@@ -531,27 +472,10 @@ PHP_FUNCTION(bbs_printansifile)
         }
     }
     if (!is_preview) {
-        fd = open(filename, O_RDONLY);
-        if (fd < 0)
-            RETURN_LONG(2);
-        if (fstat(fd, &st) < 0) {
-            close(fd);
-            RETURN_LONG(2);
-        }
-        if (!S_ISREG(st.st_mode)) {
-            close(fd);
-            RETURN_LONG(2);
-        }
-        if (st.st_size <= 0) {
-            close(fd);
-            RETURN_LONG(2);
-        }
-
-        ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-        ptrlen = st.st_size;
-        close(fd);
-        if (ptr == NULL)
+        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
             RETURN_LONG(-1);
+
+        ptrlen = mmap_ptrlen;
     } else {
         ptr = filename;
         ptrlen = filename_len;
@@ -559,7 +483,7 @@ PHP_FUNCTION(bbs_printansifile)
     }
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{
-		if (!is_preview) munmap(ptr, st.st_size);
+		if (!is_preview) end_mmapfile(ptr, mmap_ptrlen, -1);
         RETURN_LONG(2);
 	}
 /*
@@ -572,7 +496,7 @@ PHP_FUNCTION(bbs_printansifile)
 
 	output_ansi_html(ptr, ptrlen, out, attachlink, is_tex, is_preview ? attachdir : NULL);
 	free_output(out);
-    if (!is_preview) munmap(ptr, st.st_size);
+    if (!is_preview) end_mmapfile(ptr, mmap_ptrlen, -1);
 	RETURN_STRINGL(get_output_buffer(), get_output_buffer_len(),1);
 }
 
@@ -582,8 +506,7 @@ PHP_FUNCTION(bbs_print_article)
     int filename_len;
     long linkmode;
     char *ptr;
-    int fd;
-    struct stat st;
+    off_t mmap_ptrlen;
     const int outbuf_len = 4096;
     buffered_output_t *out;
     char* attachlink;
@@ -600,41 +523,24 @@ PHP_FUNCTION(bbs_print_article)
             WRONG_PARAM_COUNT;
         }
         attachlink=NULL;
-    } else 
+    } else {
         if (zend_parse_parameters(3 TSRMLS_CC, "sls", &filename, &filename_len, &linkmode,&attachlink,&attachlink_len) != SUCCESS) {
             WRONG_PARAM_COUNT;
         }
-    fd = open(filename, O_RDONLY);
-    if (fd < 0)
-        RETURN_LONG(2);
-    if (fstat(fd, &st) < 0) {
-        close(fd);
-        RETURN_LONG(2);
     }
-    if (!S_ISREG(st.st_mode)) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-    if (st.st_size <= 0) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-
-    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    close(fd);
-    if (ptr == NULL)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{
-		munmap(ptr, st.st_size);
+		end_mmapfile(ptr, mmap_ptrlen, -1);
         RETURN_LONG(2);
 	}
 
 	override_default_write(out, zend_write);
 
-	output_ansi_text(ptr, st.st_size, out, attachlink);
+	output_ansi_text(ptr, mmap_ptrlen, out, attachlink);
 	free_output(out);
-    munmap(ptr, st.st_size);
+    end_mmapfile(ptr, mmap_ptrlen, -1);
 }
 
 PHP_FUNCTION(bbs_print_article_js)
@@ -643,8 +549,7 @@ PHP_FUNCTION(bbs_print_article_js)
     int filename_len;
     long linkmode;
     char *ptr;
-    int fd;
-    struct stat st;
+    off_t mmap_ptrlen;
     const int outbuf_len = 4096;
     buffered_output_t *out;
     char* attachlink;
@@ -661,41 +566,24 @@ PHP_FUNCTION(bbs_print_article_js)
             WRONG_PARAM_COUNT;
         }
         attachlink=NULL;
-    } else 
+    } else {
         if (zend_parse_parameters(3 TSRMLS_CC, "sls", &filename, &filename_len, &linkmode,&attachlink,&attachlink_len) != SUCCESS) {
             WRONG_PARAM_COUNT;
         }
-    fd = open(filename, O_RDONLY);
-    if (fd < 0)
-        RETURN_LONG(2);
-    if (fstat(fd, &st) < 0) {
-        close(fd);
-        RETURN_LONG(2);
     }
-    if (!S_ISREG(st.st_mode)) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-    if (st.st_size <= 0) {
-        close(fd);
-        RETURN_LONG(2);
-    }
-
-    ptr = mmap(NULL, st.st_size, PROT_READ, MAP_SHARED, fd, 0);
-    close(fd);
-    if (ptr == NULL)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{
-		munmap(ptr, st.st_size);
+		end_mmapfile(ptr, mmap_ptrlen, -1);
         RETURN_LONG(2);
 	}
 
 	override_default_write(out, zend_write);
 
-	output_ansi_javascript(ptr, st.st_size, out, attachlink);
+	output_ansi_javascript(ptr, mmap_ptrlen, out, attachlink);
 	free_output(out);
-    munmap(ptr, st.st_size);
+    end_mmapfile(ptr, mmap_ptrlen, -1);
 }
 
 
