@@ -151,9 +151,7 @@
 	
 	function pc_rss2_etem($etem)
 	{
-		$etembody = $etem[etemdesc]."\n<br><hr size=1>\n".
-				"(<a href=\"".$etem[addr]."\">阅读全文</a>)\n".
-				"(<a href=\"".$etem[etemcomaddr]."\">发表评论</a>)";
+		$etembody = $etem[etemdesc];
 ?>
 		<item>
 			<title><?php echo $etem[etemtitle]; ?></title> 
