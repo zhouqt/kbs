@@ -10,16 +10,8 @@
 		@$act_attachname=$_GET["attachname"];
 		settype($act_attachname, "string");
 		$ret = bbs_upload_del_file($act_attachname);
-		switch($ret) {
-			case -2:
-				$msg = "没有这个文件";
-				break;
-			case 0:
-				$msg = "删除文件成功";
-				break;
-			default:
-				break;
-		}
+		if ($ret) $msg = bbs_error_get_desc($ret);
+		else $msg = "删除文件成功";
 	} else if ($action=="add") {
 		if (isset($_FILES['attachfile'])) {
 			@$errno=$_FILES['attachfile']['error'];
@@ -37,31 +29,8 @@
 				$msg = "过大 BMP 图片被自动转换成 PNG 格式。";
 			}
 			$ret = bbs_upload_add_file($ofile, $oname);
-			switch($ret) {
-				case 0:
-					$msg .= "文件上载成功！";
-					break;
-				case -1:
-					$msg = "系统错误";
-					break;
-				case -2:
-					$msg = "附件个数超过规定！";
-					break;
-				case -3:
-					$msg = "无效的文件名！";
-					break;
-				case -4:
-					$msg = "存在同名文件！";
-					break;
-				case -5:
-					$msg = "保存附件文件失败！";
-					break;
-				case -6:
-					$msg = "文件总量超过上限 " . sizestring(BBS_MAXATTACHMENTSIZE) . " 字节";
-					break;
-				default:
-					break;
-			}
+			if ($ret) $msg = bbs_error_get_desc($ret);
+			else $msg .= "文件上载成功！";
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
@@ -140,7 +109,7 @@ if (opener) {
 <?php
 	} else {
 ?>
-		附件个数已满！</td>
+		附件个数已满！
 		<input type="hidden" name="attachfile" />
 <?php
 	}

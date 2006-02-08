@@ -128,7 +128,13 @@
 	}
 ?>
 <form name="postform" method="post" action="<?php echo $_SERVER['PHP_SELF']; ?>?board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>&ftype=<?php echo $ftype; ?>&do" class="large">
-<fieldset><legend>修改文章</legend>
+<fieldset><legend>修改文章
+<?php
+	if (bbs_is_attach_board($brdarr) || ($currentuser["userlevel"]&BBS_PERM_SYSOP) || $articles[1]['ATTACHPOS']) {
+		echo ' (<a href="bbseditatt.php?board=' . $brd_encode . '&id=' . $id . '">修改附件</a>)';
+	}
+?>
+</legend>
 发信人: <?php echo $articles[1]['OWNER']; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
 标&nbsp;&nbsp;题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $articles[1]['TITLE']; ?>" />
 <textarea name="text" onkeydown='return textarea_okd(dosubmit, event);' wrap="physical" id="sfocus">
@@ -137,8 +143,8 @@
 ?>
 </textarea>
 <div class="oper">
-<input type="button" onclick="dosubmit();" name="post" value="修改" />
-<input type="reset" value="复原" />
+<input type="button" onclick="dosubmit();" name="post" value="修改" />&nbsp;&nbsp;&nbsp;&nbsp;
+<input type="reset" value="复原" />&nbsp;&nbsp;&nbsp;&nbsp;
 <input type="button" value="返回" onclick="history.go(-1)" />
 </div></fieldset>
 </form>

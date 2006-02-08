@@ -450,15 +450,7 @@ PHP_FUNCTION(bbs_error_get_desc)
 		WRONG_PARAM_COUNT;
 	}
     switch(no) {
-        case PHPBBS_ERROR_BOARD_NONEXIST:
-            desc = "错误的版面";
-            break;
-        case PHPBBS_ERROR_BOARD_NOSEEPERM:
-            desc = "错误的版面";
-            break;
-        case PHPBBS_ERROR_USER_NONEXIST:
-            desc = "用户不存在";
-            break;
+        ALL_PHPBBS_ERRORS
         default:
             desc = "未知错误";
             break;            

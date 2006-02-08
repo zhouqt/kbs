@@ -5,6 +5,7 @@
 
 #include "bbs.h"
 #include "bbslib.h"
+#include "phpbbs.errorno.h"
 
 
 int check_last_post_time(struct user_info *uinfo) {
@@ -76,27 +77,61 @@ PHP_FUNCTION(bbs_upload_read_fileinfo)
 PHP_FUNCTION(bbs_upload_del_file)
 {
     char *ofilename;
-    int oflen;
+    int oflen, ret;
     if (zend_parse_parameters(1 TSRMLS_CC, "s", &ofilename, &oflen) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
     if (!oflen) {
-        RETURN_LONG(-1);
+        RETURN_ERROR(GENERAL);
     }
-    RETURN_LONG(upload_del_file(ofilename, getSession()));
+    ret = upload_del_file(ofilename, getSession());
+    switch(ret) {
+        case -1:
+            RETURN_ERROR(GENERAL);
+            break;
+        case -2:
+            RETURN_ERROR(ATTACH_DELNONE);
+            break;
+        default:
+            RETURN_LONG(0);
+            break;
+    }
 }
 
 PHP_FUNCTION(bbs_upload_add_file)
 {
     char *filename, *ofilename;
-    int flen, oflen;
+    int flen, oflen, ret;
     if (zend_parse_parameters(2 TSRMLS_CC, "ss/", &filename, &flen, &ofilename, &oflen) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
     if (!flen || !oflen) {
-        RETURN_LONG(-1);
+        RETURN_ERROR(GENERAL);
     }
-    RETURN_LONG(upload_add_file(filename, ofilename, getSession()));
+    ret = upload_add_file(filename, ofilename, getSession());
+    switch(ret) {
+        case -1:
+            RETURN_ERROR(GENERAL);
+            break;
+        case -2:
+            RETURN_ERROR(ATTACH_CLIMIT);
+            break;
+        case -3:
+            RETURN_ERROR(ATTACH_INVALIDNAME);
+            break;
+        case -4:
+            RETURN_ERROR(ATTACH_DUPNAME);
+            break;
+        case -5:
+            RETURN_ERROR(GENERAL);
+            break;
+        case -6:
+            RETURN_ERROR(ATTACH_SLIMIT);
+            break;
+        default:
+            RETURN_LONG(0);
+            break;            
+    }
 }
 
 
@@ -122,22 +157,25 @@ PHP_FUNCTION(bbs_attachment_add)
 
 	brd = getbcache(board);
     if (!brd)
-        RETURN_LONG(-1);
+        RETURN_ERROR(BOARD_NONEXIST);
 
+    if (!(brd->flag & BOARD_ATTACH) && !HAS_PERM(getCurrentUser(), PERM_SYSOP)) {
+        RETURN_ERROR(ATTACH_ADDPERM);
+    }
     ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
     if (ent < 0)
     {
-        RETURN_LONG(-2);
+        RETURN_ERROR(POST_NONEXIST);
     }
     ret = deny_modify_article(brd, &f, DIR_MODE_NORMAL, getSession());
     if (ret) {
-        RETURN_LONG(-ret);
+        RETURN_ERROR(POST_MODPERM);
     }
 
     setbfile(dir, brd->filename, f.filename);
     fd = open(dir, O_RDWR);
     if (fd < 0)
-        RETURN_LONG(-4);
+        RETURN_ERROR(GENERAL);
 
     ret = ea_locate(fd, ai);
     if (ret>=0) {
@@ -148,18 +186,22 @@ PHP_FUNCTION(bbs_attachment_add)
         }
         if(stat(filename,&st)||!S_ISREG(st.st_mode)){
             unlink(filename);
-            ret = -5;
+            ret = PHPBBS_ERROR_GENERAL;
         } else if((size+st.st_size)>MAXATTACHMENTSIZE && !HAS_PERM(getCurrentUser(), PERM_SYSOP)){
             unlink(filename);
-            ret = -6;
+            ret = PHPBBS_ERROR_ATTACH_SLIMIT;
         } else {
             ret = ea_append(fd, ai, filename, ofilename);
+            if (ret < 0) ret = PHPBBS_ERROR_GENERAL;
         }
     }
     close(fd);
 
-    if (ret<0 || dump_attachment_info(return_value, ai)) {
-        RETURN_FALSE;
+    if (ret>=0)
+        ret = dump_attachment_info(return_value, ai);
+
+    if (ret < 0) {
+        RETURN_LONG(ret);
     } else {
         add_edit_mark(dir, 0, f.title, getSession());
     }
@@ -185,31 +227,35 @@ PHP_FUNCTION(bbs_attachment_del)
 
 	brd = getbcache(board);
     if (!brd)
-        RETURN_LONG(-1);
+        RETURN_ERROR(BOARD_NONEXIST);
 
     ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
     if (ent < 0)
     {
-        RETURN_LONG(-2);
+        RETURN_ERROR(POST_NONEXIST);
     }
     ret = deny_modify_article(brd, &f, DIR_MODE_NORMAL, getSession());
     if (ret) {
-        RETURN_LONG(-ret);
+        RETURN_ERROR(POST_MODPERM);
     }
 
     setbfile(dir, brd->filename, f.filename);
     fd = open(dir, O_RDWR);
     if (fd < 0)
-        RETURN_LONG(-4);
+        RETURN_ERROR(GENERAL);
 
     ret = ea_locate(fd, ai);
     if (ret>=0) {
         ret = ea_delete(fd, ai, pos);
+        if (ret < 0) ret = PHPBBS_ERROR_ATTACH_DELNONE;
     }
     close(fd);
 
-    if (ret<0 || dump_attachment_info(return_value, ai)) {
-        RETURN_FALSE;
+    if (ret>=0)
+        ret = dump_attachment_info(return_value, ai);
+
+    if (ret < 0) {
+        RETURN_LONG(ret);
     } else {
         add_edit_mark(dir, 0, f.title, getSession());
     }
@@ -235,23 +281,23 @@ PHP_FUNCTION(bbs_attachment_list)
 
 	brd = getbcache(board);
     if (!brd)
-        RETURN_LONG(-1);
+        RETURN_ERROR(BOARD_NONEXIST);
 
     ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
     if (ent < 0)
     {
-        RETURN_LONG(-2);
+        RETURN_ERROR(POST_NONEXIST);
     }
     setbfile(dir, brd->filename, f.filename);
     fd = open(dir, O_RDONLY);
     if (fd < 0)
-        RETURN_LONG(-4);
+        RETURN_ERROR(GENERAL);
 
     ret = ea_locate(fd, ai);
     close(fd);
 
     if (ret<0 || dump_attachment_info(return_value, ai)) {
-        RETURN_FALSE;
+        RETURN_ERROR(GENERAL);
     }
 }
 

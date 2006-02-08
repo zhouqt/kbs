@@ -22,6 +22,7 @@
 	if (bbs_checkreadperm($usernum, $brdnum) == 0)
 		html_error_quit("错误的讨论区");
 	$board = $brdarr['NAME'];
+	$brd_encode = urlencode($board);
 	if(bbs_checkpostperm($usernum, $brdnum) == 0) {
 		html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
 	}
@@ -47,10 +48,8 @@
 		@$act_attachnum=$_GET["attachnum"];
 		settype($act_attachnum, "integer");
 		$ret = bbs_attachment_del($board, $id, $act_attachnum);
-		if (!is_array($ret)) {
-			html_error_quit("错误:" . $ret);
-		}
-		$msg = "删除附件成功";
+		if (!is_array($ret)) $msg = "错误: " . bbs_error_get_desc($ret);
+		else $msg = "删除附件成功";
 	} else if ($action=="add") {
 		if (isset($_FILES['attachfile'])) {
 			@$errno=$_FILES['attachfile']['error'];
@@ -68,10 +67,8 @@
 				$msg = "过大 BMP 图片被自动转换成 PNG 格式。";
 			}
 			$ret = bbs_attachment_add($board, $id, $ofile, $oname);
-			if (!is_array($ret)) {
-				html_error_quit("错误:" . $ret);
-			}
-			$msg .= "添加附件成功";
+			if (!is_array($ret)) $msg = "错误:" . bbs_error_get_desc($ret);
+			else $msg .= "添加附件成功";
 			break;
 		case UPLOAD_ERR_INI_SIZE:
 		case UPLOAD_ERR_FORM_SIZE:
@@ -89,6 +86,9 @@
 	}
 	if (!is_array($ret)) {
 		$attachments = bbs_attachment_list($board, $id);
+		if (!is_array($attachments)) {
+			html_error_quit(bbs_error_get_desc($attachments));
+		}
 	} else {
 		$attachments = $ret;
 	}
@@ -143,18 +143,25 @@ if (opener) {
 <div style="width: 550px; margin: 1em auto;">
 <?php if ($msg) echo "<font color='red'> 提示：".$msg."</font>"; ?>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" class="left" action="">
+发信人: <?php echo $articles[1]['OWNER']; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
+标&nbsp;&nbsp;题: <?php echo $articles[1]['TITLE']; ?> <br/><br/>
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
-选择需要上传的文件后点粘贴：（如有多个附件文件要粘贴，请重复这个步骤）<br/>
+选择需要添加为附件的文件后点上传：<br/>
 <?php
-	if ($filecount<BBS_MAXATTACHMENTCOUNT) {
+	if (!bbs_is_attach_board($brdarr) && !($currentuser["userlevel"]&BBS_PERM_SYSOP)) {
+?>
+		本版不能上传附件！
+		<input type="hidden" name="attachfile" />	
+<?php
+	} else if ($filecount<BBS_MAXATTACHMENTCOUNT) {
 ?>
 		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo(BBS_MAXATTACHMENTSIZE);?>" />
 		<input type="file" name="attachfile" size="20" />
-		<input type="button" value="粘贴" name="paste" onclick="addsubmit();" />
+		<input type="button" value="上传" name="paste" onclick="addsubmit();" />
 <?php
 	} else {
 ?>
-		附件个数已满！</td>
+		附件个数已满！
 		<input type="hidden" name="attachfile" />
 <?php
 	}
@@ -168,7 +175,7 @@ if (opener) {
 
 <form name="deleteattach" ENCTYPE="multipart/form-data" method="post" class="left" action=""> 
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
-<ol style="padding-left: 2em; margin-left: 0em;">已经上传的附件列表: (最多能上传 <?php echo BBS_MAXATTACHMENTCOUNT; ?>
+<ol style="padding-left: 2em; margin-left: 0em;">帖子内的附件列表: (最多能上传 <?php echo BBS_MAXATTACHMENTCOUNT; ?>
  个, 还能上传 <font color="#FF0000"><b><?php echo (BBS_MAXATTACHMENTCOUNT-$filecount); ?></b></font> 个)
 <?php
 	for($i=0;$i<$filecount;$i++) {
