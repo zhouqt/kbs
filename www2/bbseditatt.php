@@ -93,9 +93,10 @@
 		$attachments = $ret;
 	}
 	$filecount = count($attachments);
-	$allnames = array();$totalsize=0;
+	$allnames = array();$totalsize=0;$allpos = array();
 	for($i=0;$i<$filecount;$i++) {
 		$allnames[] = $attachments[$i]["name"];
+		$allpos[] = $attachments[$i]["pos"];
 		$totalsize += $attachments[$i]["size"];
 	}
 	$allnames=implode(",",$allnames);
@@ -133,6 +134,15 @@ function clickclose() {
 	return false;
 }
 
+addBootFn(function() {
+	var conURL = getMirror() + "bbscon.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>&ap=";
+	var pos = [<?php echo implode(",",$allpos); ?>];
+	var i;
+	for(i=0; i<pos.length; i++) {
+		var o = getObj("att" + i);
+		if (o) o.href= conURL + pos[i];
+	}
+});
 if (opener) {
 	//opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
 } else {
@@ -144,7 +154,7 @@ if (opener) {
 <?php if ($msg) echo "<font color='red'> 提示：".$msg."</font>"; ?>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" class="left" action="">
 发信人: <?php echo $articles[1]['OWNER']; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
-标&nbsp;&nbsp;题: <?php echo $articles[1]['TITLE']; ?> <br/><br/>
+标&nbsp;&nbsp;题: <a href="bbscon.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>"><?php echo $articles[1]['TITLE']; ?> </a><br/><br/>
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
 选择需要添加为附件的文件后点上传：<br/>
 <?php
@@ -180,7 +190,7 @@ if (opener) {
 <?php
 	for($i=0;$i<$filecount;$i++) {
 		$f = $attachments[$i];
-		echo "<li>".$f["name"]." (".sizestring($f["size"])."字节) <a href=\"javascript:deletesubmit('".($i+1)."');\">删除</a></li>";
+		echo "<li><a target='_blank' href='#' id='att".$i."'>".$f["name"]."</a> (".sizestring($f["size"])."字节) <a href=\"javascript:deletesubmit('".($i+1)."');\">删除</a></li>";
 	}
 ?>
 </ol>

@@ -31,11 +31,13 @@ function htmlize(s) {
 
 var attachURL = null, strArticle = "", divArtCon = null, pubBoard = true;
 function getMirror() {
+	/*
 	if (pubBoard) {
 		if (window.location.hostname == "www.newsmth.net")
-			return "http://www.smth.cc/";
+			return "http://attach-squid.newsmth.net/";
 		return "";
-	} else return "";
+	} */
+	return "";
 }
 function prints(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
