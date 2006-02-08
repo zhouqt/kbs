@@ -60,6 +60,7 @@ static int dump_attachment_info(zval *ret, struct ea_attach_info *ai)
         array_init(element);
         add_assoc_string(element, "name", ai[count].name, 1);
         add_assoc_long(element, "size", ai[count].size);
+        add_assoc_long(element, "pos", ai[count].offset+ATTACHMENT_SIZE);
         zend_hash_index_update(Z_ARRVAL_P(ret), count, (void *) &element, sizeof(zval *), NULL);
     }
     return 0;
@@ -173,6 +174,8 @@ PHP_FUNCTION(bbs_attachment_add)
     }
 
     setbfile(dir, brd->filename, f.filename);
+    add_edit_mark(dir, 0, f.title, getSession());
+    
     fd = open(dir, O_RDWR);
     if (fd < 0)
         RETURN_ERROR(GENERAL);
@@ -202,8 +205,6 @@ PHP_FUNCTION(bbs_attachment_add)
 
     if (ret < 0) {
         RETURN_LONG(ret);
-    } else {
-        add_edit_mark(dir, 0, f.title, getSession());
     }
 }
 
@@ -240,6 +241,8 @@ PHP_FUNCTION(bbs_attachment_del)
     }
 
     setbfile(dir, brd->filename, f.filename);
+    add_edit_mark(dir, 0, f.title, getSession());
+    
     fd = open(dir, O_RDWR);
     if (fd < 0)
         RETURN_ERROR(GENERAL);
@@ -256,8 +259,6 @@ PHP_FUNCTION(bbs_attachment_del)
 
     if (ret < 0) {
         RETURN_LONG(ret);
-    } else {
-        add_edit_mark(dir, 0, f.title, getSession());
     }
 }
 
