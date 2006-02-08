@@ -136,6 +136,26 @@ PHP_FUNCTION(bbs_upload_add_file)
 }
 
 
+static int update_index_attpos(struct boardheader *bh, int ent, struct fileheader *fh, int attpos)
+{
+/* TODO: update .ORIGIN? */
+    struct write_dir_arg dirarg;
+    char dir[PATHLEN];
+    int ret;
+
+    setbdir(DIR_MODE_NORMAL, dir, bh->filename);
+    init_write_dir_arg(&dirarg);
+    dirarg.filename = dir;  
+    dirarg.ent = ent;
+    fh->attachment = attpos;
+    if(change_post_flag(&dirarg,DIR_MODE_NORMAL, bh, fh, FILE_ATTACHPOS_FLAG, fh, false,getSession())!=0)
+        ret = 1;
+    else
+        ret = 0;
+    free_write_dir_arg(&dirarg);
+    return(ret);
+}
+
 PHP_FUNCTION(bbs_attachment_add)
 {
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
@@ -205,6 +225,8 @@ PHP_FUNCTION(bbs_attachment_add)
 
     if (ret < 0) {
         RETURN_LONG(ret);
+    } else {
+        update_index_attpos(brd, ent, &f, ai[0].offset);
     }
 }
 
@@ -259,6 +281,8 @@ PHP_FUNCTION(bbs_attachment_del)
 
     if (ret < 0) {
         RETURN_LONG(ret);
+    } else {
+        update_index_attpos(brd, ent, &f, ai[0].offset);
     }
 }
 
