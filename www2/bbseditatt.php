@@ -3,10 +3,9 @@
 	require("www2-funcs.php");
 	require("www2-board.php");
 	require("www2-bmp.php");
-	login_init();
+	$sessionid = login_init(TRUE);
 	bbs_session_modify_user_mode(BBS_MODE_EDIT);
 	assert_login();
-	$sessionid = false;
 
 	if (isset($_GET["board"]))
 		$board = $_GET["board"];
