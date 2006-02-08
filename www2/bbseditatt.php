@@ -124,8 +124,10 @@ function addsubmit() {
 
 function deletesubmit(f) {
 	var e2="bbseditatt.php?board=<?php echo $board; ?>&id=<?php echo $id; ?>&act=delete&attachnum="+f;
-	document.forms[1].action=e2;
-	document.forms[1].submit();
+	if(confirm("确定删除这个附件？")) {
+		document.forms[1].action=e2;
+		document.forms[1].submit();
+	}
 }
 
 function clickclose() {
