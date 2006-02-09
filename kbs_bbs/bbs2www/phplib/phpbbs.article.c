@@ -9,9 +9,10 @@
 
 void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
 {
+    const struct boardheader *bh;
     add_assoc_string(array, "FILENAME", fh->filename, 1);
-	if (fh->o_bid > 0)
-    	add_assoc_string(array, "O_BOARD", (char*)(getboard(fh->o_bid)->filename), 1); /* for compitible */
+	if (fh->o_bid > 0 && ((bh = getboard(fh->o_bid)) != NULL))
+    	add_assoc_string(array, "O_BOARD", (char*)(bh->filename), 1); /* for compitible */
 	else
     	add_assoc_string(array, "O_BOARD", "", 1); /* for compitible */
     add_assoc_long(array, "O_BID", fh->o_bid);

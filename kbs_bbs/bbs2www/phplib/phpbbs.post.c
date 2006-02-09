@@ -622,15 +622,25 @@ PHP_FUNCTION(bbs_article_deny_modify)
 
 	brd = getbcache(board);
     if (!brd)
-        RETURN_LONG(-1);
+        RETURN_ERROR(BOARD_NONEXIST);
 
     ent = get_ent_from_id_ext(DIR_MODE_NORMAL, id, brd->filename, &f);
     if (ent < 0)
     {
-        RETURN_LONG(-2);
+        RETURN_ERROR(POST_NONEXIST);
     }
     ret = deny_modify_article(brd, &f, DIR_MODE_NORMAL, getSession());
-    RETURN_LONG(-ret);
+    if (!ret)
+        RETURN_LONG(0);
+    switch(ret) {
+        case -1: RETURN_ERROR(GENERAL); break;
+        case -2: RETURN_ERROR(BOARD_DENYPOST); break;
+        case -3: RETURN_ERROR(GENERAL); break;
+        case -4: RETURN_ERROR(GENERAL); break;
+        case -5: RETURN_ERROR(BOARD_READONLY); break;
+        case -6: RETURN_ERROR(BOARD_DENYMOD); break;
+        default: RETURN_ERROR(GENERAL); break;
+    }
 }
 
 PHP_FUNCTION(bbs_article_modify)
