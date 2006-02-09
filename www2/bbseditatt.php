@@ -136,6 +136,7 @@ function clickclose() {
 }
 
 addBootFn(function() {
+/* TODO: pubBoard variable, 内部版面是否传递 sid 给 bbscon.php ? */
 	var conURL = getMirror() + "bbscon.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>&ap=";
 	var pos = [<?php echo implode(",",$allpos); ?>];
 	var i;

@@ -42,31 +42,9 @@
 	$num = bbs_get_records_from_id($brdarr["NAME"], $id, $ftype, $articles);
 	if ($num == 0)
 		html_error_quit("错误的文编号");
-	/*$ret = bbs_caneditfile($board,$articles[1]['FILENAME']);
-	switch ($ret) {
-		case -1:
-			html_error_quit("讨论区名称错误");
-			break;
-		case -2:
-			html_error_quit("本版不能修改文章");
-			break;
-		case -3:
-			html_error_quit("本版已被设置只读");
-			break;
-		case -4:
-			html_error_quit("无法取得文件记录");
-			break;
-		case -5:
-			html_error_quit("不能修改他人文章!");
-			break;
-		case -6:
-			html_error_quit("同名ID不能修改老ID的文章");
-			break;
-		case -7:
-			html_error_quit("您的POST权被封");
-			break;
-		default:
-	}*/
+	
+	$ret = bbs_article_deny_modify($board, $id);
+	if ($ret) html_error_quit(bbs_error_get_desc($ret));
 
 	$brd_encode = urlencode($brdarr["NAME"]);
 	
