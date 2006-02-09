@@ -658,20 +658,7 @@ int bbs_sendmail(char *fname, char *title, char *receiver, int unused, int isbig
         server = "127.0.0.1:25";
     smtp_set_server(smtpsession, server);
 	smtp_set_hostname(smtpsession, email_domain());
-    snprintf(newbuf, STRLEN, "%s(%s)",session->currentuser->userid, session->currentuser->username);
-    newbuf[STRLEN-1]=0;
-    if (isbig5) {
-       len=strlen(newbuf);
-       encodestr=gb2big(newbuf,&len,1, getSession());
-       encodestr=encodestring(encodestr,"BIG5");
-    } else {
-       encodestr=encodestring(newbuf,"GB2312");
-    }
-	strncpy(newbuf,encodestr,sizeof(newbuf)-1);
-    newbuf[sizeof(newbuf)-1]=0;
-    snprintf(from, sizeof(from)-1, "\"%s\" <%s@%s>",newbuf, session->currentuser->userid, email_domain());
-    from[sizeof(from)-1]=0;
-	free(encodestr);
+    snprintf(from, sizeof(from)-1, "<%s@%s>", session->currentuser->userid, email_domain());
     sprintf(newbuf, "%s@%s", session->currentuser->userid, email_domain());
     smtp_set_reverse_path(message, newbuf);
     smtp_set_header(message, "Message-Id", NULL);
