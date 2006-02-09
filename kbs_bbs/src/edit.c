@@ -777,12 +777,10 @@ int valid_article(pmt, abort)
 void bbsmain_add_loginfo(FILE *fp, struct userec *user, char *currboard, int Anony)
 {                               /* POST 最后一行 添加 */
     int color, noidboard;
-    char fname[STRLEN];
 
     noidboard = (anonymousboard(currboard) && Anony);   /* etc/anonymous文件中 是匿名版版名 */
     color = (user->numlogins % 7) + 31; /* 颜色随机变化 */
-    sethomefile(fname, user->userid, "signatures");
-    if (!dashf(fname) ||        /* 判断是否已经 存在 签名档 */
+    if ((getSession()->currentmemo->ud.signum == 0) ||        /* 判断是否已经 存在 签名档 */
         user->signature == 0 || noidboard) {
         fputs("\n--\n", fp);
     } else {                    /*Bigman 2000.8.10修改,减少代码 */
