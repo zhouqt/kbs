@@ -12,7 +12,7 @@ if ($mainurl!="") $mainurl=urlencode($mainurl);
 if ($id=="") error_alert("用户名不能为空");
 
 if (($id!="guest")&&bbs_checkpasswd($id,$passwd)!=0) error_alert("用户密码错误，请重新登录！");
-$error=bbs_wwwlogin(($kick_multi!="") ? 1 : 0);
+$error=bbs_wwwlogin(($kick_multi!="") ? 1 : 0, $fromhost, $fullfromhost);
 switch($error) {
 	case 0:
 	case 2:
@@ -29,6 +29,8 @@ switch($error) {
 		error_alert("该 ID 不欢迎来自该 IP 的用户");
 	case 5:
 		error_alert("登录过于频繁");
+	case 1:
+		error_alert("对不起，系统忙碌，请稍候再尝试登录");
 	default:
 		error_alert("登录错误，错误号：" . $error);
 }
@@ -53,8 +55,8 @@ setcookie("UTMPKEY",$data["utmpkey"],0,"/");
 setcookie("UTMPNUM",$num,0,"/");
 setcookie("UTMPUSERID",$data["userid"],0,"/");
 
-if (!defined("STATIC_FRAME")) $target = "frames.php";
-else $target = "frames.html";
+$target = "frames.html";
+
 if ($mainurl!="") {
 	if (!strcmp($mainurl,"atomic.php"))
 		header("Location: atomic.php");

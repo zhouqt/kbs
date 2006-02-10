@@ -2,6 +2,7 @@
 	$XX = isset($_GET["x"]);
 	require("www2-funcs.php");
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_SELECT);
 	if ($XX) {
 		page_header("新分类讨论区");
 	} else {

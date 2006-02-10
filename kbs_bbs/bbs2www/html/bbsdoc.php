@@ -2,6 +2,7 @@
 require("www2-funcs.php");
 require("www2-board.php");
 login_init();
+bbs_session_modify_user_mode(BBS_MODE_READING);
 
 $bbsman_modes = array(
 	"DEL"   => 1,
@@ -9,7 +10,10 @@ $bbsman_modes = array(
 	"DIGEST"=> 3,
 	"NOREPLY" => 4,
 	"ZHIDING" => 5,
-	"UNDEL" => 6
+	"UNDEL" => 6,
+	"PERCENT" => 7,
+	"TODEL" => 8,
+	"SHARP" => 9
 );
 
 function do_manage_function($board) {
@@ -65,7 +69,7 @@ function do_manage_function($board) {
 
 function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$total,$showHot,$isnormalboard)
 {
-	global $brdnum, $usernum, $dir_modes;
+	global $brdnum, $usernum, $dir_modes, $show_none, $isclub;
 	$board = $brdarr["NAME"];
 	$ann_path = bbs_getannpath($board);
 	if ($ann_path != FALSE)	{
@@ -84,38 +88,20 @@ function display_articles($brdarr,$articles,$start,$ftype,$managemode,$page,$tot
 <script type="text/javascript"><!--
 var c = new docWriter('<?php echo addslashes($board); ?>',<?php echo $brdarr["BID"]; ?>,<?php echo $start;
 ?>,<?php echo $mancode; ?>,<?php echo $ftype; ?>,<?php echo $page; ?>,<?php echo $total;
-?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>);
+?>,'<?php echo addslashes($ann_path); ?>',<?php echo $showHot?"1":"0"; ?>,<?php echo $isnormalboard?"1":"0"; ?>);
 <?php
-	foreach ($articles as $article)
+	if($show_none)
+	{
+?>
+document.write('<tr><td align="center" colspan="<?php echo ($managemode?6:5); ?>">±¾ÇøÃ»ÓÐÎÄÕÂ¡£</td></tr>');
+<?php
+	}
+	else foreach ($articles as $article)
 	{
 ?>
 c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo $article["OWNER"]; ?>',<?php
 		$flags = $article["FLAGS"];
-		if (!strncmp($flags,"D",1)||!strncmp($flags,"d",1)) {
-			echo "false";
-		} else {
-			$str = "'";
-			if ($flags[1] == 'y') {
-				if ($flags[0] == ' ')
-					$str .= " ";
-				else
-					$str .= $flags[0];
-			} elseif ($flags[0] == 'N' || $flags[0] == '*'){
-				if ($flags[0] == ' ') 
-					$str .= " "; 
-				else if ($managemode)
-					$str .= $flags[0];
-				else
-					$str .= ""; //$flags[0];  //²»ÒªÎ´¶Á±ê¼Ç windinsn
-			} else{
-				if ($flags[0] == ' ')
-					$str .=  " "; 
-				else
-					$str .= $flags[0];
-			}
-			$str .= $flags[3] . "'";
-			echo $str;
-		}
+		echo "'" . $flags[0] . $flags[3] . "'";
 ?>,<?php echo $article["POSTTIME"]; ?>,'<?php echo addslashes($article["TITLE"]); ?> ',<?php echo $article["EFFSIZE"]; ?>);
 <?php
 	}
@@ -132,7 +118,7 @@ c.t();c.f('<?php echo addslashes(bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php
 		}
 	}
 	if ($s) echo "0";
-?>);
+?>,<?php echo $isclub; ?>);
 //-->
 </script>
 <?php
@@ -155,11 +141,10 @@ if (bbs_checkreadperm($usernum, $brdnum) == 0){
 	html_error_quit("´íÎóµÄÌÖÂÛÇø");
 }
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
-	for ($i=0;$i<sizeof($section_nums);$i++) {
-		if (!strcmp($section_nums[$i],$brdarr["SECNUM"])) {
-			 Header("Location: bbsboa.php?group=" . $i . "&group2=" . $brdnum);
-			 return;
-		}
+	$i = get_secname_index($brdarr["SECNUM"]);
+	if ($i >= 0) {
+		 Header("Location: bbsboa.php?group=" . $i . "&group2=" . $brdnum);
+		 return;
 	}
 	html_error_quit("´íÎóµÄÌÖÂÛÇø");
 }
@@ -207,6 +192,10 @@ if(($ftype == $dir_modes["DELETED"]) && !$managemode)  //·Ç¹ÜÀíÄ£Ê½²»ÈÃ¿´»ØÊÕÕ¾£
 }
 
 $isnormalboard = bbs_normalboard($board);
+if (bbs_club_flag($board) > 0)
+	$isclub = 1;
+else
+	$isclub = 0;
 
 bbs_set_onboard($brdnum,1);
 if ($ftype == $dir_modes["ORIGIN"]) {
@@ -224,64 +213,66 @@ if (isset($_POST['act'])) {
 	do_manage_function($board);
 }
 
+$show_none = 0;
 $total = bbs_countarticles($brdnum, $ftype);
 if ($total <= 0) {
-	if ($ftype) {
-		html_error_quit("±¾ÌÖÂÛÇø".$dir_name[$ftype]."Ä¿Ç°Ã»ÓÐÎÄÕÂ");
-	} else {
-		if (strcmp($currentuser["userid"], "guest") != 0){
-			html_error_quit("±¾ÌÖÂÛÇøÄ¿Ç°Ã»ÓÐÎÄÕÂ<br /><a href=\"bbspst.php?board=" . $board . "\">·¢±íÎÄÕÂ</a>");
-		} else{
-			html_error_quit("±¾ÌÖÂÛÇøÄ¿Ç°Ã»ÓÐÎÄÕÂ");
-		}
-	}
+	$show_none = 1;
 }
 
-if (isset($_GET["page"]))
-	$page = $_GET["page"];
-elseif (isset($_POST["page"]))
-	$page = $_POST["page"];
-else
+if(!$show_none)
 {
-	if (isset($_GET["start"]))
-	{ /* TODO: È¥µôÕâ¸ö²ÎÊý£¬µÝ½»Ö®Ç°ÓÃ javascript Ëã³ö page À´ */
-		$start = $_GET["start"];
-		settype($start, "integer");
+	if (isset($_GET["page"]))
+		$page = $_GET["page"];
+	elseif (isset($_POST["page"]))
+		$page = $_POST["page"];
+	else
+	{
+		if (isset($_GET["start"]))
+		{ /* TODO: È¥µôÕâ¸ö²ÎÊý£¬µÝ½»Ö®Ç°ÓÃ javascript Ëã³ö page À´ */
+			$start = $_GET["start"];
+			settype($start, "integer");
+			$page = ($start + ARTCNT - 1) / ARTCNT;
+		}
+		else
+			$page = 0;
+	}
+	settype($page, "integer");
+	if ($page > 0)
+		$start = ($page - 1) * ARTCNT + 1;
+	else
+		$start = 0;
+	/*
+	 * ÕâÀï´æÔÚÒ»¸öÊ±¼ä²îµÄÎÊÌâ£¬¿ÉÄÜ»áµ¼ÖÂÐòºÅ±äÂÒ¡£
+	 * Ô­ÒòÔÚÓÚÁ½´Îµ÷ÓÃ bbs_countarticles() ºÍ bbs_getarticles()¡£
+	 */
+	if ($start == 0 || $start > ($total - ARTCNT + 1))
+	{
+		if ($total <= ARTCNT)
+		{
+			$start = 1;
+			$page = 1;
+		}
+		else
+		{
+			$start = ($total - ARTCNT + 1);
+			$page = ($start + ARTCNT - 1) / ARTCNT + 1;
+		}
+	}
+	else
 		$page = ($start + ARTCNT - 1) / ARTCNT;
+	settype($page, "integer");
+	$articles = bbs_getarticles($brdarr["NAME"], $start, ARTCNT, $ftype);
+	if ($articles == FALSE){
+		html_error_quit("¶ÁÈ¡ÎÄÕÂÁÐ±íÊ§°Ü");
 	}
-	else
-		$page = 0;
 }
-settype($page, "integer");
-if ($page > 0)
-	$start = ($page - 1) * ARTCNT + 1;
 else
-	$start = 0;
-/*
- * ÕâÀï´æÔÚÒ»¸öÊ±¼ä²îµÄÎÊÌâ£¬¿ÉÄÜ»áµ¼ÖÂÐòºÅ±äÂÒ¡£
- * Ô­ÒòÔÚÓÚÁ½´Îµ÷ÓÃ bbs_countarticles() ºÍ bbs_getarticles()¡£
- */
-if ($start == 0 || $start > ($total - ARTCNT + 1))
 {
-	if ($total <= ARTCNT)
-	{
-		$start = 1;
-		$page = 1;
-	}
-	else
-	{
-		$start = ($total - ARTCNT + 1);
-		$page = ($start + ARTCNT - 1) / ARTCNT + 1;
-	}
+	$articles = 0;
+	$start = 1;
+	$page = 1;
 }
-else
-	$page = ($start + ARTCNT - 1) / ARTCNT;
-settype($page, "integer");
-$articles = bbs_getarticles($brdarr["NAME"], $start, ARTCNT, $ftype);
-if ($articles == FALSE){
-	html_error_quit("¶ÁÈ¡ÎÄÕÂÁÐ±íÊ§°Ü");
-}
-		
+
 bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard);
 display_articles($brdarr, $articles, $start, $ftype, $managemode, $page, $total,
 	(defined('BBS_NEWPOSTSTAT') && !$managemode && $isnormalboard && !$ftype), $isnormalboard );

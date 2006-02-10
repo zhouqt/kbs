@@ -1,6 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_SELECT);
 	require("www2-board.php");
 
 	if (isset($_GET["group"]))
@@ -8,41 +9,20 @@
 	else
 		$group = 0;
 	settype($group, "integer");
-	if (isset($_GET["yank"]))
-		$yank = $_GET["yank"];
-	else
-		$yank = 0;
-	settype($yank, "integer");
 	if (isset($_GET["group2"]))
 		$group2 = $_GET["group2"];
 	else
 		$group2 = 0;
-	settype($group, "integer");
-	if ($group < 0 || $group > sizeof($section_nums))
+	settype($group2, "integer");
+	if ($group < 0 || $group >= BBS_SECNUM)
 		html_error_quit("错误的参数");
-	$boards = bbs_getboards($section_nums[$group], $group2, $yank);
-	//print_r($boards);
+	$boards = bbs_getboards(constant("BBS_SECCODE".$group), $group2, 0);
 	if ($boards == FALSE)
 		html_error_quit("该目录尚未有版面");
 
-	page_header($section_names[$group][0]);
+	page_header(constant("BBS_SECNAME".$group."_0"));
 ?>
-<h1><?php echo $section_names[$group][0]; ?>分区</h1>
-<div class="right smaller">
-<?php
-	if( $group2 != -2 ){
-		if ($yank == 0) {
-?>
-<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?group=<?php echo $group; ?>&yank=1">本区所有看板</a> 
-<?php
-		} else {
-?>
-<a href="<?php echo $_SERVER["PHP_SELF"]; ?>?group=<?php echo $group; ?>">本区已订阅看板</a>
-<?php
-		}
-	}
-?>
-</div>
+<h1><?php echo constant("BBS_SECNAME".$group."_0"); ?>分区</h1>
 <table class="main wide adj">
 <col width="2%" class="center"/><col width="2%"/><col width="24%"/><col width="10%" class="center"/><col width="39%"/><col class="center" width="15%"/><col class="right" width="8%"/>
 <tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th></tr>
@@ -116,14 +96,6 @@
 		}
 ?>
 <td>
-<?php
-		if ($yank == 1) {
-			if ($brd_zapped[$i] == 1)
-				echo "*";
-			else
-				echo "&nbsp;";
-		}	
-?>
 <a href="<?php echo $brd_link; ?>"><?php echo $brd_name[$i]; ?></a></td>
 <?php
 		if ($brd_flag[$i]&BBS_BOARD_GROUP) {

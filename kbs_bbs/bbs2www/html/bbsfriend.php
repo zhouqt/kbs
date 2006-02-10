@@ -1,6 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_FRIEND);
 	assert_login();
 	page_header("在线好友列表");
 

@@ -1,59 +1,31 @@
 <?php
-	/**
-	 * This file Fill registry form.
-	 * by binxun 2003.5
-	 */
 	require("funcs.php");
 	login_init();
-	if (defined("HAVE_ACTIVATION")) {
-		require("reg.inc.php");
-	}
 	html_init("gb2312");
-
-	if ($loginok != 1)
-		html_nologin();
-	else
-	{
-		@$realname=$_POST["realname"];
-		@$dept=$_POST["dept"];
-		@$address=$_POST["address"];
-		@$year=$_POST["year"];
-		@$month=$_POST["month"];
-		@$day=$_POST["day"];
-		@$email=$_POST["email"];
-		@$phone=$_POST["phone"];
-		@$gender=$_POST["gender"];
-		@$mobile_phone=$_POST["mobile"];
-
 
 	if(!strcmp($currentuser["userid"],"guest"))
 		html_error_quit("请申请另外的帐号填写注册单!");
 
-	//检查激活码
-	if (defined("HAVE_ACTIVATION")) {
-		$ret = bbs_getactivation($currentuser["userid"],$activation);
-		if($ret==0) //需要激活
-		{
-			if(!bbs_reg_haveactivated($activation))
-				html_error_quit("对不起，请先激活您的帐号。激活链接在您的注册Email里。<a href=\"bbssendacode.php\">[我还没收到激活码]</a>");
-		
-			/*
-			if(strtolower($email) != strtolower(bbs_reg_getactivationemail($activation)))
-				html_error_quit("对不起，您的注册Email有变动，请<a href=\"bbssendacode.php?react=1\">重新激活</a>");
-			*/
-			$email = bbs_reg_getactivationemail($activation);
-		}
-		
-		//48小时后才让注册
-		if ( time() - $currentuser["firstlogin"] < MIN_REG_TIME * 3600 )
-			html_error_quit("请于第一次登录 ".MIN_REG_TIME."小时 后再填写注册单，先熟悉一下这里的环境吧。");
+	if (!isset($_POST["realname"])) {
+		show_fill_form();
+		exit;
 	}
-		
+
+	@$realname=$_POST["realname"];
+	@$dept=$_POST["dept"];
+	@$address=$_POST["address"];
+	@$year=$_POST["year"];
+	@$month=$_POST["month"];
+	@$day=$_POST["day"];
+	@$email=$_POST["email"];
+	@$phone=$_POST["phone"];
+	@$gender=$_POST["gender"];
+	@$mobile_phone=$_POST["mobile"];
+
 	//用户已经通过注册
 	//未满等待时间(先放到phplib里面做了)
 	if(!strcmp($gender,"男"))$gender=1;
-    else
-        $gender=2;
+    else $gender=2;
 	settype($year,"integer");
 	settype($month,"integer");
 	settype($day,"integer");
@@ -87,10 +59,76 @@
 		html_error_quit("未知的错误!");
 		break;
 	}
-}
 ?>
 <body>
 注册单已经提交,24小时内站务将会审核,如果通过,你就会获得合法用户权限！<br>
 <a href="javascript:history.go(-1)">快速返回</a>
 </body>
 </html>
+<?php
+
+function show_fill_form()
+{
+	$SITENAME = BBS_FULL_NAME;
+	echo <<<EOF
+<html>
+<meta HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=gb2312">
+<link rel=stylesheet type=text/css href='bbs.css'>
+<script type="text/javascript">
+function check_field(fieldId,fieldName,minLength) {
+	var fieldValue = document.regform.elements[fieldId].value; 
+	if (fieldValue == '') {
+		alert('请输入您的' + fieldName + '!');
+		return false;
+	}
+	if (minLength != 0) {
+		if (fieldValue.length < minLength) {
+			alert('请认真填写您的' + fieldName + '!');
+			return false;
+		}
+	}
+	return true;
+}
+	
+function check_reg_form() {
+	var fields = new Array();
+	fields = Array(0,1,2,7);
+	var fieldsMinLenths = new Array();
+	fieldsMinLenths = Array(2,4,4,7);
+	var fieldsNames = new Array();
+	fieldsNames = Array('真实姓名','系别或工作单位','详细住址','联系电话');
+	var fieldsNum = fields.length;
+	var i;
+	for ( i = 0 ; i < fieldsNum ; i ++ ) {
+		if (!check_field(fields[i],fieldsNames[i],fieldsMinLenths[i]))
+			return false;	
+	}
+	document.regform.submit();
+	return true;
+}
+</script>
+<nobr><center>$SITENAME -- 注册单填写<hr color=green>
+<font color=green>所填写的资料系统都会为您保密, 请如实填写, 注册单在本站站务手工认证通过以后，你就将成为本站合法用户。</font>
+<br /><br />
+<form method=post action="bbsfillform.php" name="regform" id="regform" />
+<table width=600>
+<tr><td align=right>*您的真实姓名:<td align=left><input name="realname" id="realname" size=20> (请用中文, 至少2个汉字)
+<tr><td align=right>*学校系级或工作单位:<td align=left><input name="dept" id="dept" size=40> (至少6个字符)
+<tr><td align=right>*您的详细住址:<td align=left><input name="address" id="address" size=40> (至少6个字符)
+<tr><td align=right>您的性别:<td align=left><select name=gender><option>男</option><option>女</option>
+<tr><td align=right>您的出生年月日:
+<td align=left><input name=year size=4 maxlength=4>年<input name=month size=2 maxlength=2>月<input name=day size=2 maxlength=2>日<br>
+<!--
+<tr><td align=right>*您的Email地址(<font color=red>请填写您激活本帐户所用的Email</font>):<td align=left><input name=email size=40>
+-->
+<tr><td align=right>*您的联络电话:<td align=left><input name="phone" id="phone" size=40> 
+<tr><td align=right>手机号码:<td align=left><input name=mobile size=40> 
+</table><br>
+<hr color=green>
+<input type="button" value="提交注册单" onclick="check_reg_form()">
+<input type=reset value=重新填写>
+</form></center>
+</html>
+EOF;
+}
+?>

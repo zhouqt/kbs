@@ -43,9 +43,12 @@ function fillf3(form) {
 	var f = top.f3;
 	if (f) {
 		var url = f.document.location.toString();
-		var pos, uri = url.substr(7);
-		if ((pos = uri.indexOf("/")) != -1) {
-			url = uri.substr(pos);
+		var pos = url.indexOf("://");
+		if (pos != -1) {
+			uri = url.substr(pos + 3);
+			if ((pos = uri.indexOf("/")) != -1) {
+				url = uri.substr(pos);
+			}
 		}
 		form.action += "?mainurl=" + escape(url);
 	}

@@ -6,7 +6,7 @@
 		roam_login_init();
 	} else
 		login_init();
-
+bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
 if (isset($_GET["p"])) {
 	$numpath = $_GET["p"];
 
@@ -140,8 +140,7 @@ if (isset($_GET["p"])) {
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
-		require_once("attachment.php");
-		output_attachment($filename, $attachpos);
+		bbs_file_output_attachment($filename, $attachpos);
 		exit;
 	}
 	

@@ -2,7 +2,7 @@
 	require("www2-funcs.php");
 	login_init();
 	
-	//bbs_session_modify_user_mode(BBS_MODE_QUERY);
+	bbs_session_modify_user_mode(BBS_MODE_QUERY);
 	if (isset($_GET["userid"])){
 		$userid = $_GET["userid"];
 

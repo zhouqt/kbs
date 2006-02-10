@@ -1,3 +1,13 @@
+/**
+ * Part of the KBS BBS Code
+ * Copyright (c) 2005-2006 KBS Development Team. (http://dev.kcn.cn/)
+ * Source file is subject to the pending KBS License.
+ *
+ * You may use and/or modify the source code only for pure personal study
+ * purpose (e.g. using it in a public website is not acceptable), unless
+ * you get explicit permission by the KBS Development Team.
+ */
+
 /* TODO: obfuscate this file... */
 var agt = navigator.userAgent.toLowerCase();
 var gIE = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
@@ -18,7 +28,17 @@ function htmlize(s) {
 	return s;
 }
 
-var attachURL = null, strArticle = "", divArtCon = null;
+
+var attachURL = null, strArticle = "", divArtCon = null, pubBoard = true;
+function getMirror() {
+	/*
+	if (pubBoard) {
+		if (window.location.hostname == "www.newsmth.net")
+			return "http://attach-squid.newsmth.net/";
+		return "";
+	} */
+	return "";
+}
 function prints(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
@@ -38,9 +58,9 @@ function attach(name, len, pos) {
 			 || ext == "ico" || ext == "png"  || ext == "pcx"
 			 || ext == "bmp");
 	}
-	var url = attachURL + '&amp;ap=' + pos;
+	var url = getMirror() + attachURL + '&amp;ap=' + pos;
 	if (bImg) {
-		s += '<br /><img src="images/files/img.gif"/>此主题相关图片如下：'
+		s += '<br /><img src="images/img.gif"/>此主题相关图片如下：'
 		  + name + '(' + len + ' 字节)<br /><a href="' + url + '" target="_blank">'
 		  + '<img src="' + url + '" title="按此在新窗口浏览图片" style="margin: 0.2em 0 0.5em 0;" onload="resizeImg(this)" /></a> ';
 	} else {
@@ -470,8 +490,7 @@ function hotTopic(board) { /* TODO: no table, use AJAX */
 
 
 
-function checkFrame(isPHP) {
-	if (arguments.length == 0) isPHP = 0;
+function checkFrame() {
 	var msg = '<div id="fontSizer"';
 	if (!(readParaCookie() & 8)) {
 		msg += ' style="display:none"';
@@ -487,7 +506,7 @@ function checkFrame(isPHP) {
 		if ((pos = uri.indexOf("/")) != -1) {
 			url = uri.substr(pos);
 		}
-		var ex = '(<a href="frames.' + (isPHP?"php":"html") + '?mainurl=' + escape(url) + '">展开完整界面</a>)';
+		var ex = '(<a href="frames.html?mainurl=' + escape(url) + '">展开完整界面</a>)';
 		var o = getObj("idExp");
 		if (o) o.innerHTML = ex;
 	}
@@ -647,7 +666,7 @@ function dir_name(ftype) {
 }
 
 /* man - 1: 普通管理模式，2: 回收站模式 */
-function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
+function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, normalB) {
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
 	this.bid = bid;
@@ -659,6 +678,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 	this.num = 0;
 	this.baseurl = "bbsdoc.php?board=" + this.board;
 	this.showHot = showHot;
+	this.normalB = normalB;
 	this.hotOpt = (readParaCookie() & 0x60) >> 5;
 	if (this.man) this.baseurl += "&manage=1";
 	if (this.ftype) this.baseurl += "&ftype=" + this.ftype;
@@ -683,8 +703,10 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 		links = mls[i];
 		if (links[0]) {
 			str += '<a href="' + links[2] + '" class="smaller">' + links[1] + '</a>';
-		} else {
+		} else if (ftype != dir_modes["FIND"]) {
 			str += '<b class="smaller">' + links[1] + '</b>';
+		} else {
+			str += '<b class="smaller clickable" onclick="javascript:location.href=\''+links[2]+'\';">' + links[1] + '</b>';
 		}
 	}
 	str += '</div>';
@@ -729,12 +751,14 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot) {
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
 	var cb_value = (this.man == 2) ? (this.start + this.num) : id; /* 回收站中以序号代替id */
-	if (flag === false) { /* 置顶 */
+	var bf = flag.charAt(0);
+	if (bf.toLowerCase() == 'd') { /* 置顶 */
 		str += '<td class="center red strong">提示</td><td class="center">' + putImageCode('istop.gif','alt="提示"') + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="ding' + this.num + '" value="' + cb_value + '" /></td>';
 		}
 	} else {
+		if (!this.man && this.normalB && (bf == 'N' || bf == '*')) flag = ' ' + flag.charAt(1);
 		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center">' + flag + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + cb_value + '" /></td>';
@@ -756,7 +780,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 			break;
 		case dir_modes["NORMAL"]:
 			str += '<a href="bbscon.php?board=' + this.board + '&id=' + id;
-			if (flag === false) str += "&ftype=" + dir_modes["ZHIDING"]
+			if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"]
 			str += '">' + title + '</a>';
 			if (size >= 1000) {
 				str += '<span class="red">(' + (Math.floor(size / 100) / 10.0) + 'k)</span>';
@@ -780,16 +804,19 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6};
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9};
 		ret += '<div class="oper">';
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])
-		{
+		{ /* TODO: 这段似乎可以简化一点... */
 			ret += '<input type="button" value="删除" onclick="mansubmit(' + bbsman_modes['DEL'] + ');"/>';
 			ret += '<input type="button" value="切换M" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
 			ret += '<input type="button" value="切换G" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
 			ret += '<input type="button" value="切换不可Re" onclick="mansubmit(' + bbsman_modes['NOREPLY'] + ');"/>';
-			ret += '<input type="button" value="切换置顶" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/>';
+			ret += '<input type="button" value="切换置顶" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/><br>';
+			ret += '<input type="button" value="切换%" onclick="mansubmit(' + bbsman_modes['PERCENT'] + ');"/>';
+			ret += '<input type="button" value="切换X" onclick="mansubmit(' + bbsman_modes["TODEL"] + ');"/>';
+			ret += '<input type="button" value="切换#" onclick="mansubmit(' + bbsman_modes["SHARP"] + ');"/>';
 		}
 		else
 		{
@@ -835,7 +862,7 @@ docWriter.prototype.t = function() {
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board);
 };
-docWriter.prototype.f = function(sfav,rss,related) {
+docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	var i,ret = '<div class="oper smaller">';
 	if (this.ftype != dir_modes["ORIGIN"]) {
 		ret += '[<a href="bbsdoc.php?board=' + this.board + '&ftype=' + dir_modes["ORIGIN"] + '">同主题模式</a>] ';
@@ -868,6 +895,9 @@ docWriter.prototype.f = function(sfav,rss,related) {
 			ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
 		}
 		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>]';
+		if (isclub) {
+			ret += ' [<a href="bbsclub.php?board=' + this.board + '">俱乐部成员</a>]';
+		}
 	}
 	ret += '</div>';
 	document.write(ret);
@@ -951,10 +981,10 @@ conWriter.prototype.t = function() {
 		if (!zd) ret += '[<a href="bbscommend.php' + qry + '">推荐</a>] ';
 		ret += '[' + this.favtxt + '] ';
 		ret += '[<a href="bbspstmail.php' + qry + '">回信</a>] ';
-		ret += '[<a href="bbsedit.php' + qry + '">修改</a>] ';
+		ret += '[<a href="bbsedit.php' + qry + '&ftype=' + this.ftype + '">修改</a>] ';
 		if (!zd) {
-			ret += '[<a href="bbsedittitle.php' + qry + '">修改标题</a>] ';
-			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&file=' + this.file + '">删除</a>] ';
+//			ret += '[<a href="bbsprop.php' + qry + '">属性</a>] ';
+			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&id=' + this.id + '">删除</a>] ';
 		}
 	}
 	ret += '</div>';
@@ -964,16 +994,28 @@ conWriter.prototype.t = function() {
 
 
 
-function tconWriter(board, gid, start, tpage, pno, serial) {
+function tconWriter(board, bid, gid, start, tpage, pno, serial, prevgid, nextgid) {
 	this.board = escape(board);
+	this.bid = bid;
 	this.gid = gid;
 	this.start = start;
 	this.serial = serial;
 	this.tpage = tpage;
 	this.pno = pno;
+	this.prevgid = (prevgid==0)?gid:prevgid;
+	this.nextgid = (nextgid==0)?gid:nextgid;
 }
 tconWriter.prototype.h = function() {
-	var ret = '<div class="tnav smaller">【分页： ';
+	var ret = '<div class="tnav smaller"><span style="float:right">';
+/*
+	if(isBM(this.bid))
+	{
+		ret += '[<a href="bbsthreads.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '">同主题操作</a>] ';
+	}
+*/
+	ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.prevgid + '">上一主题</a>] ';
+	ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.nextgid + '">下一主题</a>]';
+	ret += '</span>【分页： ';
 	var u = 'bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '&pno=';
 	for(var j = 1; j < this.tpage + 1; j ++ ) {
 		if (this.pno != j) {

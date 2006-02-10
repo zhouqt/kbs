@@ -456,11 +456,9 @@ function get_bbsfile($relative_name)
 
 function get_secname_index($secnum)
 {
-	global $section_nums;
-	$arrlen = sizeof($section_nums);
-	for ($i = 0; $i < $arrlen; $i++)
+	for ($i = 0; $i < BBS_SECNUM; $i++)
 	{
-		if (strcmp($section_nums[$i], $secnum) == 0)
+		if (strcmp(constant("BBS_SECCODE".$i), $secnum) == 0)
 			return $i;
 	}
 	return -1;

@@ -2,6 +2,7 @@
 require_once ('www2-funcs.php');
 require_once ('favorite.inc.php');
 login_init();
+bbs_session_modify_user_mode(BBS_MODE_MMENU);
 page_header($currentuser["userid"] . " µÄ°Ù±¦Ïä");
 assert_login();
 

@@ -17,9 +17,9 @@ else
 	$yank = intval($_GET["yank"]);
 	if ($yank) $yank = 1;
 	$subMenu = "submenu_brd_".$group."_".$group2;
-	if($group < 0 || $group > sizeof($section_nums) )
+	if($group < 0 || $group >= BBS_SECNUM )
 		exit();
-	$boards = bbs_getboards($section_nums[$group], $group2, $yank | 2);
+	$boards = bbs_getboards(constant("BBS_SECCODE".$group), $group2, $yank | 2);
 }
 $brd_name = $boards["NAME"]; // 英文名
 $brd_desc = $boards["DESC"]; // 中文描述
@@ -38,7 +38,7 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 				"<a href='javascript:submenu(0,0,".$group.",".$brd_bid[$j].",0)' target='_self'>".
 				"<img id='submenuimg_brd_".$group."_".$brd_bid[$j]."' src='images/close.gif' class='pm' alt='+'>".
 				"</a><a href='bbsboa.php?group=".$group."&group2=".$brd_bid[$j]."'>".
-				"<img src='images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
+				"\"+putImageCode('kfolder1.gif','class=\"s16x16\"')+\"".$brd_desc[$j]."</a></div>".
 				"<div id='submenu_brd_".$group."_".$brd_bid[$j]."' class='lineback'></div>";
 			continue;
 		}
@@ -49,7 +49,7 @@ for($j = 0 ; $j < $brd_num ; $j ++ )
 				"<a href='javascript:submenu(1,".$brd_bid[$j].",0,0,0)' target='_self'>".
 				"<img id='submenuimg_fav_".$brd_bid[$j]."' src='images/close.gif' class='pm' alt='+'>".
 				"</a><a href='bbsfav.php?select=".$brd_bid[$j]."&up=".$select."'>".
-				"<img src='images/kfolder1.gif' class='s16x16'>".$brd_desc[$j]."</a></div>".
+				"\"+putImageCode('kfolder1.gif','class=\"s16x16\"')+\"".$brd_desc[$j]."</a></div>".
 				"<div id='submenu_fav_".$brd_bid[$j]."' class='lineback'></div>";
 			continue;
 		} else {
@@ -70,6 +70,7 @@ cache_header("nocache");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
 </head>
+<script src="www2-main.js"></script>
 <script src="bbsleft.js"></script>
 <body>
 <script type="text/javascript"><!--

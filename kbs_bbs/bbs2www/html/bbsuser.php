@@ -5,6 +5,7 @@
 		exit ();
 
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_LUSERS);
 	page_header("在线用户列表");
 	
 	if( isset( $_GET["start"] ) ){
@@ -32,7 +33,7 @@
 			echo "<tr><td>" . ($i+$start) . "</td>";
 			echo "<td>" . ($users[$i]["isfriend"]?"√" : "  ") . "</td>";
 			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . $users[$i]["userid"] . "</a></td>";
-			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . htmlspecialchars($users[$i]["username"]) . "</a></td>";
+			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\"><script type=\"text/javascript\"><!--\nprints('" . str_replace("\033", "\\r", $users[$i]["username"]) . "');\n--></script></a></td>";
 			echo "<td>" . $users[$i]["userfrom"] . "</td>";
 			echo "<td>" . $mode . "</td>";
 			echo "<td>" . ($users[$i]["idle"]!=0?$users[$i]["idle"]:" ") . "</td></tr>\n";

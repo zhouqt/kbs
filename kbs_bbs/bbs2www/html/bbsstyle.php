@@ -38,17 +38,16 @@
 		alert('还没做这个功能呢... 需要吗？不需要吗？您去 sysop 版喊喊？');
 	}
 	var oldCssID = null, nowCssID = null;
-	function setStyleDiv(cssID, setImg) {
+	function setStyleDiv(cssID) {
 		for (var i=0; i<32; i++) {
 			var o = getObj("stylediv" + i);
 			if (o) {
 				o.style.borderColor = (i!=cssID) ? 'white' : 'blue';
-				if (setImg) getObj("stylethumb" + i).src = "images/" + i + "/thumb.jpg";
 			} else break;
 		}
 	}
 	function chkStyle(cssID) {
-		setStyleDiv(cssID, 0);
+		setStyleDiv(cssID);
 		nowCssID = cssID;
 	}
 	function applyStyle() {
@@ -60,7 +59,7 @@
 		ff = top.window["toogle"]; if (ff) ff.resetCss();
 		ff = top.window["f4"]; if (ff) ff.resetCss();
 	}
-	addBootFn(function() {
+	function bootFn() {
 		var c = readParaCookie();
 		for (var n in settings) {
 			var i = settings[n];
@@ -68,12 +67,12 @@
 			setInd(n, v);
 		}
 		oldCssID = nowCssID = getCssID();
-		setStyleDiv(nowCssID, 1);
+		setStyleDiv(nowCssID);
 		if (!isLogin()) {
 			getObj("cmdSave").disabled = true;
 			getObj("idpsave").style.visibility = "hidden";
 		}
-	});
+	}
 //-->
 </script>
 <style type="text/css">
@@ -133,7 +132,7 @@ div.stylesel img {
 	for($i=0;$i<$stylecount;$i++)
 	{
 		$ret .= "<div id='stylediv{$i}' class='stylesel clickable' onClick='chkStyle($i);'>";
-		$ret .= "<img id='stylethumb{$i}' alt='预览图' src='' /><br/>{$style_names[$i]}</div>";
+		$ret .= "<img id='stylethumb{$i}' alt='预览图' src='images/{$i}/thumb.jpg' /><br/>{$style_names[$i]}</div>";
 	}
 	print($ret);
 ?>
@@ -143,6 +142,9 @@ div.stylesel img {
 	<div class="oper"><input id="cmdSave" type="submit" value="保存设置"/> &nbsp; <input type="button" onclick="history.go(-1);" value="快速返回"/><br/>
 		<span id="idpsave">[ 点 保存设置 以保证每次登录都使用这个设置。]</span></div>
 </form>
+<script type="text/javascript">
+	bootFn();
+</script>
 <?php
 	page_footer();
 ?>

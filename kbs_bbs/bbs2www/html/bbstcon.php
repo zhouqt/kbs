@@ -50,6 +50,13 @@
 	if( $endnum > $num )
 		$endnum = $num;
 
+	bbs_checkorigin($board);
+	$origins = array();
+	$origin_num = bbs_get_records_from_id($board, $gid, $dir_modes["ORIGIN"], $origins);
+
+	if($origin_num == 0)
+		$origins[0]["ID"] = $origins[2]["ID"] = $gid;
+	
 	if ($isnormalboard) { /* cache 判断索引修改时间 - atppp */
 		$dotdirname = bbs_get_board_index($board, $dir_modes["NORMAL"]);
 		if (cache_header("public",@filemtime($dotdirname),300))
@@ -60,17 +67,15 @@
 <a name="top"></a>
 <h1 class="ttit">同主题阅读：<?php echo htmlspecialchars($articles[0]["TITLE"]); ?> </h1>
 <script type="text/javascript"><!--
-var o = new tconWriter('<?php echo addslashes($board); ?>',<?php echo $gid; ?>,<?php echo $start; ?>,<?php echo $totalpage; ?>,<?php echo $pno; ?>,<?php echo $startnum; ?>);
+var o = new tconWriter('<?php echo addslashes($board); ?>',<?php echo $bid; ?>,<?php echo $gid; ?>,<?php echo $start; ?>,<?php echo $totalpage; ?>,<?php echo $pno; ?>,<?php echo $startnum; ?>,<?php echo $origins[0]["ID"]; ?>,<?php echo $origins[2]["ID"]; ?>);
 o.h();
 <?php
 	$strs = array();
-	$addbrc = ($loginok==1&&($currentuser["userid"] != "guest"));
 	for( $i = $startnum ; $i < $endnum ; $i ++ )
 	{
 		$article = $articles[$i];
 		$strs[] = "[" . $article["ID"] . ",'" . $article["OWNER"] . "']";
-		if ($addbrc)
-			bbs_brcaddread($board , $article["ID"]);
+		bbs_brcaddread($board , $article["ID"]);
 	}
 	$arts = "[" . implode(",", $strs) . "]";
 ?>

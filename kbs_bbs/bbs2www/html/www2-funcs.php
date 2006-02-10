@@ -370,7 +370,7 @@ function page_footer($checkframe = TRUE) {
 
 	if ($checkframe) {
 ?>
-<script>checkFrame(<?php if (!defined("STATIC_FRAME")) echo "1"; ?>);</script>
+<script>checkFrame();</script>
 <?php
 	}
 ?>

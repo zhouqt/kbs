@@ -4,7 +4,6 @@
 
 	function display_navigation_bar($brdarr,$brdnum,$start,$total,$order)
 	{
-		global $section_names;
 		$brd_encode = urlencode($brdarr["NAME"]);
 ?>
 <form action="<?php echo $_SERVER["PHP_SELF"]; ?>" method="get">	

@@ -1,7 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
-
+	bbs_session_modify_user_mode(BBS_MODE_EDITUFILE);
 	toolbox_header("个人资料修改");
 	assert_login();
 	
@@ -55,6 +55,9 @@
 <label>居住地址:</label><input type="text" name="address" value="<?php echo $currentuser["address"];?>" size="40" maxlength="79"><br/>
 <label>帐号建立:</label><?php echo date("D M j H:i:s Y",$currentuser["firstlogin"]);?><br/>
 <label>最近光临:</label><?php echo date("D M j H:i:s Y",$currentuser["lastlogin"]);?><br/>
+<?php if (isset($currentuser["score_user"])) { ?>
+<label>用户积分:</label><?php echo $currentuser["score_user"];?><br/>
+<?php } ?>
 <label>来源地址:</label><?php echo $currentuser["lasthost"];?><br/>
 <label>电子邮件:</label><input type="text" name="email" value="<?php echo $currentuser["email"];?>" size="32" maxlength="79"><br/>
 </div></fieldset>

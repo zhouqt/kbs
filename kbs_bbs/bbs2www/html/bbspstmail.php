@@ -1,6 +1,7 @@
 <?php
 	require("funcs.php");
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_SMAIL);
 	if ($loginok != 1) {
 		html_nologin();
 		exit;

@@ -1,7 +1,6 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
-
 	$usernum = $currentuser["index"];
 	if (isset($_GET["board"]))
 		$board = $_GET["board"];

@@ -23,44 +23,14 @@ FONT.c34 {COLOR: #0000ff;}
 FONT.c35 {COLOR: #d000d0;}
 FONT.c36 {COLOR: #33a0a0;}
 FONT.c37 {COLOR: #000000;}
-.MenuLeftHead {
-	font-size: 12px;
-	color: #000000;
-	text-decoration: none;
-	text-align: left;
-	vertical-align: bottom;
-}
-a.MenuLeftHead:hover { font-size: 12px ; color: #339900 ; 	text-decoration: none;}
-a.MenuLeftHead:link {
-	font-size: 12px;
-	color: #000000;
+a {
 	text-decoration: none;
 }
-a.MenuLeftHead:visited { font-size: 12px ; color: #FFFFFF ; 	text-decoration: none;}
 
-.MainContentHeaderInfo {
-	font-size: 12px;
-	color: #009900;
-}
-
-.MainContentTitle {
-	font-size: 16px;
-	font-weight: bold;
-}
 .MainContentText {
 	font-size: 12px;
 	color: #333333;
 	padding-left: 5px;
-}
-.MainContentTJTitle {
-	font-size: 14px;
-	color: #666666;
-	font-weight: bold;
-
-}
-.MainContentTextTitle {
-	font-size: 12px;
-	color: #000000;
 }
 .unnamed2 {
 	background-color: #FFFFCC;
@@ -90,6 +60,48 @@ a.MenuLeftHead:visited { font-size: 12px ; color: #FFFFFF ; 	text-decoration: no
 }
 .mainright {
 	color: #6E9E54;
+}
+.HotTitle {
+	height: 20px;
+	padding-left: 15px;
+}
+.HotAuthor {
+	height: 20px;
+}
+.HotTable {
+	width: 97%;
+}
+.RecommendTitle {
+	height: 20px;
+	padding-left: 10px;
+}
+.RecommendLink {
+	height: 20px;
+	padding-right: 15px;
+}
+.RecommendTable {
+	width: 97%
+}
+.SectionTitle {
+	height: 20px;
+	padding-left: 10px;
+	padding-top: 5px;
+}
+.SectionItem {
+	height: 20px;
+	padding-left: 20px;
+}
+.SectionName {
+	font-weight: bold;
+	font-style: bold;
+}
+.SectionList {
+}
+.SecTable {
+	width: 97%;
+}
+.SecLine {
+	background-color: #CCCCCC;
 }
 td.header {
 	font-size: 12px;
@@ -125,13 +137,7 @@ input.text {
 	height: 19px;
 
 }
-td.recommend_title {
-	margin: 0px;
-	padding: 0px;
-	height: 16px;
-	font-size: 12px;
-	color: #FFFFFF;
-}
+
 table.recommend_title {
 	font-size: 12px;
 	color: #FFFFFF;
@@ -143,13 +149,10 @@ table.recommend_title {
     background-color: #DEF3FF;
     background-image: url('lan2.gif');
 }
-td.hot_title {
-	margin: 0px;
-	padding: 0px;
-	height: 16px;
-	font-size: 12px;
-	color: #FFFFFF;
+table.recommend_title td {
+	padding-left: 23px;
 }
+
 table.hot_title {
 	font-size: 12px;
 	color: #FFFFFF;
@@ -161,13 +164,10 @@ table.hot_title {
     background-color: #DEF3FF;
     background-image: url('lan1.gif');
 }
-td.type_title {
-	margin: 0px;
-	padding: 0px;
-	height: 16px;
-	font-size: 12px;
-	color: #FFFFFF;
+table.hot_title td {
+	padding-left: 23px;
 }
+
 table.type_title {
 	font-size: 12px;
 	color: #FFFFFF;
@@ -179,6 +179,10 @@ table.type_title {
     background-color: #DEF3FF;
     background-image: url('lan3.gif');
 }
+table.type_title td {
+	padding-left: 23px;
+}
+
 table.helper {
 	font-size: 12px;
 	color: #FFFFFF;
@@ -228,4 +232,7 @@ li.rec {
 	margin: 0px 0px 5px 5px;
 	padding: 0px;
 	vertical-align: top;
+}
+.vline {
+	background-color: #0066CC;
 }

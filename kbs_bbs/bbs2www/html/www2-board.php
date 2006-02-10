@@ -67,7 +67,7 @@ function bbs_rss_link($board, $ftype) {
 }
 
 function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
-	global $section_names, $dir_modes, $dir_name;
+	global $dir_modes, $dir_name;
 	$brd_encode = urlencode($brdarr["NAME"]);
 	
 	/* TODO: use javascript completely */
@@ -94,7 +94,7 @@ function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
 	$sec_index = get_secname_index($brdarr["SECNUM"]);
 	if ($sec_index >= 0) {
 ?>
-<a href="bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo $section_names[$sec_index][0]; ?></a> → 
+<a href="bbsboa.php?group=<?php echo $sec_index; ?>"><?php echo constant("BBS_SECNAME".$sec_index."_0"); ?></a> → 
 <?php
 	}
 ?>
@@ -141,6 +141,7 @@ function bbs_ann_header($board='') {
 }
 
 function bbs_ann_xsearch($board) {
+	if (!defined("SITE_NEWSMTH")) return;
 ?>
 <form action="bbsxsearch.php" class="right wide smaller">
 	<label><a href="bbsxsearch.php">令狐冲精华区搜索引擎</a></label>
@@ -173,7 +174,13 @@ function bbs_ann_foot($parent) {
 	}
 ?>
 [<a href="bbs0an.php">根目录</a>]
+<?php
+	if (defined("SITE_NEWSMTH")) {
+?>
 [<a href="bbsxsearch.php">令狐冲精华区搜索</a>]
+<?php
+	}
+?>
 [<a href="#listtop">返回顶部</a>]
 [<a href="javascript:location.reload()">刷新</a>] 
 [<a href="javascript:history.go(-1)">返回</a>] 

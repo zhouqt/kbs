@@ -1,6 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
+	bbs_session_modify_user_mode(BBS_MODE_RMAIL);
 	assert_login();
 	
 	if (isset($_GET["num"]))
@@ -45,8 +46,7 @@
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
-		require_once("attachment.php");
-		output_attachment($filename, $attachpos);
+		bbs_file_output_attachment($filename, $attachpos);
 		exit;
 	}
 	mailbox_header("信件阅读");
@@ -88,6 +88,16 @@
 		<input type="submit" value="转寄"/>
 	</div></fieldset>
 </form>
+<form action="bbsmailcross.php" method="post" class="medium">
+<input type="hidden" name="filename" value="<?php echo $articles[0]["FILENAME"];?>"/>
+<input type="hidden" name="title" value="<?php echo urlencode($articles[0]["TITLE"]);?> "/>
+	<fieldset><legend>转贴到版面</legend>
+		<div class="inputs">
+		<label>版面名称:</label><input type="text" name="target" size="20" maxlength="69" value=""/>
+		<input type="checkbox" name="outgo" checked />转信
+		<input type="submit" value="转贴"/>
+	</div></fieldset>
+</form><br /><br />
 <?php
 	bbs_setmailreaded($dir,$num);
 	page_footer();
