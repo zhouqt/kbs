@@ -109,7 +109,7 @@
 <fieldset><legend>修改文章
 <?php
 	if (bbs_is_attach_board($brdarr) || ($currentuser["userlevel"]&BBS_PERM_SYSOP) || $articles[1]['ATTACHPOS']) {
-		echo ' (<a href="bbseditatt.php?board=' . $brd_encode . '&id=' . $id . '">修改附件</a>)';
+		echo ' (<a href="bbseditatt.php?bid=' . $brdnum . '&id=' . $id . '">修改附件</a>)';
 	}
 ?>
 </legend>

@@ -7,15 +7,19 @@
 	bbs_session_modify_user_mode(BBS_MODE_EDIT);
 	assert_login();
 
-	if (isset($_GET["board"]))
-		$board = $_GET["board"];
-	else
+	$brdnum = @$_GET["bid"] ;
+	settype($brdnum,"integer");
+	if( $brdnum == 0 ){
+		html_error_quit("错误的讨论区!");
+	}
+	$board = bbs_getbname($brdnum);
+	if( !$board ){
 		html_error_quit("错误的讨论区");
-	// 检查用户能否阅读该版
+	}
 	$brdarr = array();
-	$brdnum = bbs_getboard($board, $brdarr);
-	if ($brdnum == 0)
+	if( $brdnum != bbs_getboard($board, $brdarr) ){
 		html_error_quit("错误的讨论区");
+	}
 	bbs_set_onboard($brdnum,1);
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $brdnum) == 0)
@@ -111,7 +115,7 @@ function addsubmit() {
 		alert('您还没选择上传的附件');
 		return false;
 	} else {
-		var e2="bbseditatt.php?board=<?php echo $board; ?>&id=<?php echo $id; ?>&act=add";
+		var e2="bbseditatt.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>&act=add";
 		getObj("winclose").style.display = "none";
 		document.forms[0].action=e2;
 		document.forms[0].paste.value='附件上载中，请稍候...';
@@ -122,7 +126,7 @@ function addsubmit() {
 }
 
 function deletesubmit(f) {
-	var e2="bbseditatt.php?board=<?php echo $board; ?>&id=<?php echo $id; ?>&act=delete&attachnum="+f;
+	var e2="bbseditatt.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>&act=delete&attachnum="+f;
 	if(confirm("确定删除这个附件？")) {
 		document.forms[1].action=e2;
 		document.forms[1].submit();
