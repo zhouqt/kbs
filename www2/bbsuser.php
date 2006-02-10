@@ -33,7 +33,7 @@
 			echo "<tr><td>" . ($i+$start) . "</td>";
 			echo "<td>" . ($users[$i]["isfriend"]?"¡Ì" : "  ") . "</td>";
 			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\">" . $users[$i]["userid"] . "</a></td>";
-			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\"><script type=\"text/javascript\">prints('" . str_replace("\033", "\\r", $users[$i]["username"]) . "');</script></a></td>";
+			echo "<td><a href=\"bbsqry.php?userid=" . $users[$i]["userid"] . "\"><script type=\"text/javascript\"><!--\nprints('" . str_replace("\033", "\\r", $users[$i]["username"]) . "');\n--></script></a></td>";
 			echo "<td>" . $users[$i]["userfrom"] . "</td>";
 			echo "<td>" . $mode . "</td>";
 			echo "<td>" . ($users[$i]["idle"]!=0?$users[$i]["idle"]:" ") . "</td></tr>\n";

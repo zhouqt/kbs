@@ -1,6 +1,6 @@
 <?php
-require("www2-board.php");
 require("www2-funcs.php");
+require("www2-board.php");
 
 if (!bbs_ext_initialized())
 	bbs_init_ext();
