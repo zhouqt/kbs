@@ -142,9 +142,9 @@ void load_myboard1(struct userec *user, struct favbrd_struct *brdlist, int * brd
 			for(i=0;i<k;i++){
 				if( favbrd_list_tmp[i].flag == -1 ){
 					favbrd_list_tmp[i].flag = 0 - *brdlist_t;
-					strncpy(brdlist[*brdlist_t].title, favbrd_list_tmp[i].buf, 80);
-					brdlist[*brdlist_t].title[80]=0;
-					*brdlist_t++;
+					strncpy(brdlist[*brdlist_t].title, favbrd_list_tmp[i].buf, 60);
+					brdlist[*brdlist_t].title[60]=0;
+					(*brdlist_t)++;
 				}
 			}
 			for(i=0;i<k;i++){
