@@ -152,7 +152,7 @@ make install-home，因为执行的话就会丢失 bbs 数据！
           --with-mysql[=DIR]      让 kbsbbs 支持 mysql，DIR 为 mysql 库文件
                                   所在目录，如果不指明则自动检测
           --without-mysql         不让 kbsbbs 支持 mysql
-          --with-libesmtp[=DIR]   让 kbsbbs 支持 libesmtp，DIR 为 libesmt 库
+          --with-libesmtp[=DIR]   让 kbsbbs 支持 libesmtp，DIR 为 libesmtp 库
                                   文件所在目录，如果不指明则自动检测
           --without-libesmtp      不让 kbsbbs 支持 libesmtp
           --with-www=DIR          设定 kbsbbs web 子系统的安装目录，要求 DIR

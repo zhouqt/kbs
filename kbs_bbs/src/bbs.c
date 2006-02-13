@@ -1014,10 +1014,10 @@ void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
     }
     if (attachpos!=-1)
         snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%ld%s",
-            get_my_webdomain(0),getbnum(currboard->filename),fh->id,attachpos, ftype);
+            get_my_webdomain(0),currboardent,fh->id,attachpos, ftype);
     else
         snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d%s",
-            get_my_webdomain(0),getbnum(currboard->filename),fh->id, ftype);
+            get_my_webdomain(0),currboardent,fh->id, ftype);
 }
 
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
@@ -1074,9 +1074,21 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     bool isbm;
     char unread_mark;
     if (fileinfo==NULL) return DONOTHING;
-    board_attach_link(slink,255,-1,fileinfo);
+
     clear();
+
+    if (!deny_modify_article(currboard, fileinfo, DIR_MODE_NORMAL, getSession())
+        && ((currboard->flag & BOARD_ATTACH) || HAS_PERM(getCurrentUser(), PERM_SYSOP) || fileinfo->attachment)) {
+        char ses[20];
+        move(0,0);
+        get_telnet_sessionid(ses, getSession()->utmpent);
+        snprintf(slink, sizeof(slink), "附件编辑地址: \n\033[4mhttp://%s/bbseditatt.php?bid=%d&id=%d&sid=%s\033[m\n",
+            get_my_webdomain(0), currboardent, fileinfo->id, ses);
+        prints("%s", slink);
+    }
+
     move(3,0);
+    board_attach_link(slink,255,-1,fileinfo);
     prints("全文链接：\n\033[4m%s\033[m\n",slink);
 
     isbm=chk_currBM(currboard->BM, getCurrentUser());
@@ -2432,7 +2444,7 @@ int process_upload(int nUpload, int maxShow, char *ans, struct ea_attach_info* a
     }
 
     get_telnet_sessionid(ses, getSession()->utmpent);
-    snprintf(buf, sizeof(buf), "附件上传地址: http://%s/bbsupload.php?sid=%s\n", get_my_webdomain(0), ses);
+    snprintf(buf, sizeof(buf), "附件上传地址: \033[4mhttp://%s/bbsupload.php?sid=%s\033[m\n", get_my_webdomain(0), ses);
     clear();
     prints(buf);
     nUpload = upload_read_fileinfo(ai, getSession());
