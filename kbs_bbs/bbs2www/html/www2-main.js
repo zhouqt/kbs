@@ -42,8 +42,8 @@ function getMirror() {
 function prints(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
-	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "<br/>&nbsp;");
-	s = s.replace(/\n(: .*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
+	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "\n&nbsp;");
+	s = s.replace(/\n(: [^\n]*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
 	if (divArtCon) strArticle += s;
 	else document.write(s);
 }
