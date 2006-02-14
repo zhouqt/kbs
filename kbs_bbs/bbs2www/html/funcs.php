@@ -458,7 +458,7 @@ function get_secname_index($secnum)
 {
 	for ($i = 0; $i < BBS_SECNUM; $i++)
 	{
-		if (strcmp(constant("BBS_SECCODE".$i), $secnum) == 0)
+		if (strstr(constant("BBS_SECCODE".$i), $secnum))
 			return $i;
 	}
 	return -1;
