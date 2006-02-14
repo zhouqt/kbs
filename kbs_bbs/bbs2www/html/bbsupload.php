@@ -54,7 +54,7 @@
 		$totalsize += $attachments[$i]["size"];
 	}
 	$allnames=implode(",",$allnames);
-	page_header("粘贴附件", FALSE);
+	page_header("上传附件", FALSE);
 ?>
 <body>
 <script type="text/javascript">
@@ -99,13 +99,13 @@ if (opener) {
 <?php if ($msg) echo "<font color='red'> 提示：".$msg."</font>"; ?>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" class="left" action="">
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
-选择需要上传的文件后点粘贴：（如有多个附件文件要粘贴，请重复这个步骤）<br/>
+选择需要上传的文件后点上传：（如有多个附件文件要上传，请重复这个步骤）<br/>
 <?php
 	if ($filecount<BBS_MAXATTACHMENTCOUNT) {
 ?>
 		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo(BBS_MAXATTACHMENTSIZE);?>" />
 		<input type="file" name="attachfile" size="20" />
-		<input type="button" value="粘贴" name="paste" onclick="addsubmit();" />
+		<input type="button" value="上传" name="paste" onclick="addsubmit();" />
 <?php
 	} else {
 ?>

@@ -175,7 +175,7 @@ for($i=0;$i<BBS_SECNUM;$i++) {
 <input type="checkbox" name="banony" <?php if( $nowbh["FLAG"] & BBS_BOARD_ANNONY) echo "checked";?>>匿名版面<br>
 <input type="checkbox" name="bjunk" <?php if( $nowbh["FLAG"] & BBS_BOARD_JUNK) echo "checked";?>>版面不计文章数<br>
 <input type="checkbox" name="bout" <?php if( $nowbh["FLAG"] & BBS_BOARD_OUTFLAG) echo "checked";?>>转信版面<br>
-<input type="checkbox" name="battach" <?php if( $nowbh["FLAG"] & BBS_BOARD_ATTACH) echo "checked";?>>可粘贴附件<br>
+<input type="checkbox" name="battach" <?php if( $nowbh["FLAG"] & BBS_BOARD_ATTACH) echo "checked";?>>可上传附件<br>
 <?php
 			if($bnum){
 ?>

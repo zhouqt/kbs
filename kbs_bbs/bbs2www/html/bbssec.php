@@ -10,7 +10,7 @@ var ta = new tabWriter(0,'main','分类讨论区',[['区号',0,'center'],['类别',0,0],[
 <?php
 		for($i = 0; $i < BBS_SECNUM; $i++) {
 ?>
-ta.r('<?php echo ($i+1); ?>','<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo constant("BBS_SECNAME".$i."_0"); ?></a>','<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo constant("BBS_SECNAME".$i."_1"); ?></a>');
+ta.r('<?php echo $i; ?>','<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo constant("BBS_SECNAME".$i."_0"); ?></a>','<a href="bbsboa.php?group=<?php echo $i; ?>"><?php echo constant("BBS_SECNAME".$i."_1"); ?></a>');
 <?php
 		}
 ?>

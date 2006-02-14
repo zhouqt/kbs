@@ -103,7 +103,7 @@
 		$totalsize += $attachments[$i]["size"];
 	}
 	$allnames=implode(",",$allnames);
-	page_header("粘贴附件", FALSE);
+	page_header("上传附件", FALSE);
 ?>
 <body>
 <script type="text/javascript">

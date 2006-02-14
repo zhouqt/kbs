@@ -71,7 +71,7 @@ if (isset($_GET['do'])) {
 			html_error_quit("不能将文章转载到本版");
 			break;
 		case -9:
-			html_error_quit($target." 讨论区不能粘贴附件");
+			html_error_quit($target." 讨论区不能上传附件");
 			break;
 		default:
 	}
