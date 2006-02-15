@@ -170,7 +170,7 @@ function get_secname_index($secnum)
 	$arrlen = sizeof($section_nums);
 	for ($i = 0; $i < $arrlen; $i++)
 	{
-		if (strstr($section_nums[$i], $secnum))
+		if (strstr($section_nums[$i], $secnum) !== false)
 			return $i;
 	}
 	return -1;
