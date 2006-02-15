@@ -748,7 +748,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	}
 	document.write(str);
 }
-docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
+docWriter.prototype.o = function(id, gid, author, flag, time, title, size, imported) {
 	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
 	var cb_value = (this.man == 2) ? (this.start + this.num) : id; /* 回收站中以序号代替id */
 	var bf = flag.charAt(0);
@@ -759,6 +759,8 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size) {
 		}
 	} else {
 		if (!this.man && this.normalB && (bf == 'N' || bf == '*')) flag = ' ' + flag.charAt(1);
+		if (this.man && (imported == 1))
+			flag += putImageCode('imported.gif', '');
 		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center">' + flag + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + cb_value + '" /></td>';
@@ -984,7 +986,7 @@ conWriter.prototype.t = function() {
 		ret += '[<a href="bbsedit.php' + qry + '&ftype=' + this.ftype + '">修改</a>] ';
 		if (!zd) {
 			ret += '[<a href="bbsprop.php' + qry + '">属性</a>] ';
-			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&id=' + this.id + '">删除</a>] ';
+			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&id=' + this.id + '&ftype=' + this.ftype + '">删除</a>] ';
 		}
 	}
 	ret += '</div>';
