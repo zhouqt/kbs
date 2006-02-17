@@ -253,10 +253,19 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     */
     int i;
 	char old_cwd[256], buf[256];
+    const char *c;
 	getcwd(old_cwd, sizeof(old_cwd));
 	chdir(BBSHOME);
     REGISTER_STRING_CONSTANT("BBS_HOME",BBSHOME,CONST_CS | CONST_PERSISTENT);
     REGISTER_STRING_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,CONST_CS | CONST_PERSISTENT);
+
+    c=sysconf_str("BBS_WEBDOMAIN");
+    if(c==NULL){
+        c=sysconf_str("BBSDOMAIN");
+        if (c==NULL) c = ""; //ft, should I say TODO here?
+	}
+    REGISTER_STRING_CONSTANT("BBS_WEBDOMAIN",c,CONST_CS | CONST_PERSISTENT);
+
 #ifdef SQUID_ACCL
     REGISTER_LONG_CONSTANT("SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);
 #else
