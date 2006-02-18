@@ -136,6 +136,9 @@
 	$filename = bbs_get_board_filename($board, $article["FILENAME"]);
 	if ($isnormalboard && ($ftype != $dir_modes["DELETED"])) {
 		if (cache_header("public",@filemtime($filename),300)) return;
+		$cacheable = true;
+	} else {
+		$cacheable = false;
 	}
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
@@ -149,11 +152,10 @@
 <h1><?php echo $brdarr["NAME"]; ?> °æ <?php echo $dir_name[$ftype]; ?></h1>
 <script type="text/javascript"><!--
 var o = new conWriter(<?php echo $ftype; ?>, '<?php echo addslashes($brdarr["NAME"]); ?>', <?php echo $brdnum; ?>, <?php
-echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php echo $article["FILENAME"];?>', '<?php
+echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php
 echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>);
 o.h(1);
-<?php if (!$isnormalboard) echo "pubBoard = false;" ?>
-attachURL = 'bbscon.php?<?php echo $_SERVER["QUERY_STRING"]; ?>';
+att = new attWriter(<?php echo $brdnum; ?>,<?php echo $id; ?>,<?php echo $ftype; ?>,<?php echo $num; ?>,<?php echo ($cacheable?"1":"0"); ?>);
 <?php $s = bbs2_readfile($filename); if (is_string($s)) echo $s; ?>
 o.h(0);o.t();
 //-->

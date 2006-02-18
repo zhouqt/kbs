@@ -18,17 +18,13 @@ else
 	exit ();
 
 $brdarr = array();
-$brdnum = bbs_getboard($board, $brdarr);
-if ($brdnum == 0)
-	exit ();
-	
+$normalboard = bbs_safe_getboard(0, $board, $brdarr);
+if (is_null($normalboard)) die;
+
 $board = $brdarr["NAME"];
-$usernum = $currentuser["index"];
-if (bbs_checkreadperm($usernum, $brdnum) == 0)
-	exit ();
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) 
 	exit ();
-if (bbs_normalboard($board)) {
+if ($normalboard) {
 	if (update_cache_header(30, 1200))
 		exit ();
 } else die;
