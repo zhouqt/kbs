@@ -4,6 +4,7 @@
 /* 版面读取和查询 */
 
 PHP_FUNCTION(bbs_getboard);
+PHP_FUNCTION(bbs_safe_getboard);
 PHP_FUNCTION(bbs_getboards);
 
 PHP_FUNCTION(bbs_checkorigin);
@@ -33,6 +34,7 @@ PHP_FUNCTION(bbs_del_favboarddir);
 
 #define PHP_BBS_BOARD_EXPORT_FUNCTIONS \
     PHP_FE(bbs_getboard, NULL) \
+    PHP_FE(bbs_safe_getboard, NULL) \
     PHP_FE(bbs_getboards, NULL) \
     PHP_FE(bbs_checkorigin, NULL) \
     PHP_FE(bbs_checkmark, NULL) \

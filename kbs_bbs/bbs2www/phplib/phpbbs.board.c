@@ -192,6 +192,61 @@ PHP_FUNCTION(bbs_getboard)
     RETURN_LONG(b_num);
 }
 
+/*
+ * return: null: 版面不存在或者当前用户没有阅读权限
+ *        false/true: 是不是 normalboard
+ */
+PHP_FUNCTION(bbs_safe_getboard)
+{
+    zval *array;
+    char *boardname;
+    int boardname_len;
+    long bid;
+    int nb;
+    const struct boardheader *bh;
+    const struct BoardStatus *bs;
+
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "lsa", &bid, &boardname, &boardname_len, &array) != SUCCESS)
+        WRONG_PARAM_COUNT;
+
+    if (bid) {
+        bh = getboard(bid);
+        if (bh == NULL) {
+            RETURN_NULL();
+        }
+    } else {
+        if (boardname_len == 0) {
+            RETURN_NULL();
+        }
+        if (boardname_len > BOARDNAMELEN) {
+            boardname[BOARDNAMELEN] = 0;
+        }
+        bid = getbnum(boardname);
+        if (bid == 0) {
+            RETURN_NULL();
+        }
+        bh = getboard(bid);
+    }
+    nb = normal_board(boardname);
+    if (!nb) {
+        if (getCurrentUser() == NULL) {
+            RETURN_NULL();
+        }
+        if (!check_read_perm(getCurrentUser(), bh)) {
+            RETURN_NULL();
+        }
+    }
+    bs = getbstatus(bid);
+    if (array_init(array) != SUCCESS) {
+        RETURN_NULL();
+    }
+    assign_board(array, bh, bs, bid);
+    if (nb) {
+        RETURN_TRUE;
+    } else {
+        RETURN_FALSE;
+    }
+}
 
 
 
