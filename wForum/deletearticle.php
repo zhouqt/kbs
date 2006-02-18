@@ -31,6 +31,7 @@ function preprocess(){
 	global $boardArr;
 	global $reID;
 	global $reArticles;
+	global $dir_modes;
 	if (!isset($_GET['board'])) {
 		foundErr("未指定版面。");
 	}
@@ -70,7 +71,7 @@ function preprocess(){
 }
 
 function doPostAritcles($boardID,$boardName,$boardArr,$reID,$reArticles){
-	$ret=bbs_delfile($boardName,$reArticles[1]['FILENAME']);
+	$ret=bbs_delpost($boardName,$reArticles[1]['ID']);
 	switch ($ret) {
 		case -1:
 			foundErr("您无权删除该文。");
