@@ -1199,32 +1199,38 @@ int deldeny(struct userec *user, char *board, char *uident, int notice_only,sess
         return del_from_file(fn, lookupuser ? lookupuser->userid : uident);
 }
 
-int normal_board(const char *bname)
-{
-    register int i;
-    struct boardheader bh;
-    int ret=1;
+/* etnlegend, 2005.10.03 */
+/*
 
-    if (strcmp(bname, DEFAULTBOARD) == 0)
-        return 1;
-    if ((i = getboardnum(bname,&bh)) == 0)
+    发信人: flyriver (江~~忙碌生活), 信区: ****
+    标  题: Re: 小bug吧 (转载)
+    发信站: 水木社区 (Mon Oct  3 11:10:18 2005), 站内
+
+
+    我认为改动 normal_board() 这类的函数要慎重，
+    如果测试不够充分就容易造成信息泄漏。
+
+    normal_board() 最初好像是为了避免内部版面也过滤关键字编写的，
+    现在的用途已经大大扩展，所以还是得小心。
+
+*/
+int public_board(const struct boardheader *bh){
+    //有身份限制或者有俱乐部读限制
+    if(bh->title_level||bh->flag&BOARD_CLUB_READ)
         return 0;
-
-    while (ret) {
-#ifdef NINE_BUILD
-    ret=!(bh.level&PERM_SYSOP)&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
-#else
-    ret=((bh.level == 0)||(bh.level&PERM_POSTMASK))&&!(bh.flag&BOARD_CLUB_HIDE)&&!(bh.flag&BOARD_CLUB_READ);
-#endif
-    if (bh.title_level) ret=0;
-    if (ret&&(bh.group)) {
-        memcpy(&bh,getboard(bh.group),sizeof(struct boardheader));
-        continue;
-    }
-    break;
-    }
-    return ret;
+    //无权限限制或者限制发表权限或者限制读取权限但 PERM_DEFAULT 可以访问
+    if(!(bh->level)||bh->level&(PERM_POSTMASK|PERM_DEFAULT))
+        return 1;
+    //其余情况
+    return 0;
 }
+int normal_board(const char *bname){
+    const struct boardheader *bh;
+    if(!(bh=getbcache(bname)))
+        return 0;
+    return public_board(bh);
+}
+
 
 int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,int sort,const char** input_namelist,session_t* session)
 {

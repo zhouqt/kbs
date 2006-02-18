@@ -503,6 +503,7 @@ PHP_FUNCTION(bbs_postarticle)
  *  	-2 -- wrong parameter
  *  @author binxun
  */
+/* atppp 20060218 这个函数已经没用了 */
 PHP_FUNCTION(bbs_delfile)
 {
 	FILE *fp;

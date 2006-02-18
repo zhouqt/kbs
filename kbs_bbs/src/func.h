@@ -275,6 +275,7 @@ void unlock_sem_check(int lockid);
     int get_boardcount(ARG_VOID);
     struct boardheader *getbcache(const char *bname);
     int getbid(const char *bname, struct boardheader **pbh);
+    int public_board(const struct boardheader *bh);
     int normal_board(const char *bname);
     int getboardnum(const char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
