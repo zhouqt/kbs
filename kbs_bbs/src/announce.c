@@ -1657,7 +1657,7 @@ void a_manager(MENU *pm,int ch)
         }
 }
 
-void ann_attach_link_num(char* buf,int buf_len,long attachpos,void* arg)
+void ann_attach_link_num(char* buf,int buf_len,char *ext, int len,long attachpos,void* arg)
 {
 	char board[STRLEN];
     MENU *m=(MENU *)arg;

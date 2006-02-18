@@ -737,7 +737,8 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
     char* ptr=l->curr;
     int len=l->currlen;
     int ty=l->currty;
-    if (ty == LINE_ATTACHMENT) {
+    if (ty == LINE_ATTACHMENT || ty == LINE_ATTACHLINK) {
+        char slink[256];
         char attachname[STRLEN], *p;
         unsigned int attlen; char attlenbuf[16];
         strncpy(attachname, ptr + ATTACHMENT_SIZE, STRLEN);
@@ -747,26 +748,26 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         snprintf(attlenbuf, 16, "%d %s",(attlen>8192)?attlen/1024:attlen,(attlen>8192)?"KB":"Bytes");
 
         p = strrchr(attachname, '.');
-        if (p != NULL && (!strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
-                          || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg")))
-            prints("\033[m附图: %s (%s) 链接:\n",attachname,attlenbuf);
-        else
-            prints("\033[m附件: %s (%s) 链接:\n",attachname,attlenbuf);
-	return;
-    } else if (ty == LINE_ATTACHLINK) {
-        char slink[256];
-
-        if (current_attach_link)
-            (*current_attach_link)(slink,255,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
-        else
-            strcpy(slink,"(用www方式阅读本文可以下载此附件)");
-	prints("\033[4m%s\033[m\n",slink);
+        if (p == NULL) p = "";
+        if (ty == LINE_ATTACHMENT) {
+            if (   !strcasecmp(p, ".bmp") || !strcasecmp(p, ".jpg")
+                || !strcasecmp(p, ".gif") || !strcasecmp(p, ".jpeg"))
+                prints("\033[m附图: %s (%s) 链接:\n",attachname,attlenbuf);
+            else
+                prints("\033[m附件: %s (%s) 链接:\n",attachname,attlenbuf);
+        } else {
+            if (current_attach_link)
+               (*current_attach_link)(slink,255,p,attlen,ptr-begin+ATTACHMENT_SIZE-1,current_attach_link_arg);
+            else
+                strcpy(slink,"(用www方式阅读本文可以下载此附件)");
+            prints("\033[4m%s\033[m\n",slink);
+        }
         return;
     } else if (ty==LINE_ATTACHALLLINK) {
         char slink[256];
 
         if (current_attach_link) {
-            (*current_attach_link)(slink,255,-1,current_attach_link_arg);
+            (*current_attach_link)(slink,255,NULL,-1,-1,current_attach_link_arg);
 	    prints("全文链接：\033[4m%s\033[m\n",slink);
         }
 	 return;

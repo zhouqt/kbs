@@ -84,7 +84,7 @@ void m_init();
 int countln(char *fname);
 void R_monitor(void *data);
 void printacbar();
-typedef void  (*generate_attach_link_t)(char* ,int,long ,void* );
+typedef void  (*generate_attach_link_t)(char* buf,int buf_len,char *ext, int len, long attachpos,void* arg);
 void register_attach_link(generate_attach_link_t fn,void* arg);
 int mmap_more(char *fn, int quit, char *keystr, char *title);
 
@@ -124,7 +124,6 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct);
 int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 extern int helpmode;
 int zsend_post(int ent, struct fileheader *fileinfo, char *direct);
-void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg);
 int get_a_boardname(char *bname, char *prompt); /* 输入一个版名 */
 int Read();
 void printutitle();             /* 屏幕显示 用户列表 title */

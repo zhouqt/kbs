@@ -1003,21 +1003,27 @@ char *get_my_webdomain(int force)
 
 }
 
-void  board_attach_link(char* buf,int buf_len,long attachpos,void* arg)
+static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long attachpos,void* arg)
 {
     struct fileheader* fh=(struct fileheader*)arg;
     char ftype[12];
-    if (POSTFILE_BASENAME(fh->filename)[0] == 'Z') {
-        sprintf(ftype, "&ftype=%d", DIR_MODE_ZHIDING);
+    int zd = (POSTFILE_BASENAME(fh->filename)[0] == 'Z');
+    ftype[0] = '\0';
+    if (attachpos!=-1) {
+        char ktype = 's';
+        if (!public_board(currboard)) ktype = 'n';
+        else if (len > 51200) ktype = 'p';
+
+        if (zd) sprintf(ftype, ".%d.0", DIR_MODE_ZHIDING);
+        
+        snprintf(buf,buf_len,"http://%s/att.php?%c.%d.%d%s.%ld%s",
+            get_my_webdomain(0),ktype,currboardent,fh->id,ftype,attachpos,ext);
     } else {
-        ftype[0] = '\0';
-    }
-    if (attachpos!=-1)
-        snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d&ap=%ld%s",
-            get_my_webdomain(0),currboardent,fh->id,attachpos, ftype);
-    else
+        if (zd) sprintf(ftype, "&ftype=%d", DIR_MODE_ZHIDING);
+        
         snprintf(buf,buf_len,"http://%s/bbscon.php?bid=%d&id=%d%s",
             get_my_webdomain(0),currboardent,fh->id, ftype);
+    }
 }
 
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
@@ -1088,7 +1094,7 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     }
 
     move(3,0);
-    board_attach_link(slink,255,-1,fileinfo);
+    board_attach_link(slink,255,NULL,-1,-1,fileinfo);
     prints("È«ÎÄÁ´½Ó£º\n\033[4m%s\033[m\n",slink);
 
     isbm=chk_currBM(currboard->BM, getCurrentUser());
