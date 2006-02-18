@@ -227,7 +227,7 @@ PHP_FUNCTION(bbs_safe_getboard)
         }
         bh = getboard(bid);
     }
-    nb = normal_board(boardname);
+    nb = normal_board(bh->filename);
     if (!nb) {
         if (getCurrentUser() == NULL) {
             RETURN_NULL();
