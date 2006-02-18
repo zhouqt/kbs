@@ -842,7 +842,6 @@ void output_ansi_text(char *buf, size_t buflen,
 	{
 		long attach_len;
 		char *attachptr, *attachfilename;
-		char *extension;
 		for (i = 0; i < buflen ; i++ )
 		{
 			if (attachmatched >= MAXATTACHMENTCOUNT)
@@ -851,7 +850,6 @@ void output_ansi_text(char *buf, size_t buflen,
 			if (((attachfilename = checkattach(buf + i, buflen - i, 
 									&attach_len, &attachptr)) != NULL))
 			{
-				extension = attachfilename + strlen(attachfilename);
 				i += (attachptr-buf-i) + attach_len - 1;
 				if (i > buflen)
 					continue;
@@ -860,29 +858,7 @@ void output_ansi_text(char *buf, size_t buflen,
 				attachFileName[attachmatched] = (char*)malloc(256);
 				strncpy(attachFileName[attachmatched], attachfilename, 255);
 				attachFileName[attachmatched][255] = '\0';
-				attachType[attachmatched] = ATTACH_OTHERS;
-				extension--;
-				while ((*extension != '.') && (*extension != '\0'))
-					extension--;
-				if (*extension == '.')
-				{
-					extension++;
-					if (!strcasecmp(extension, "jpg")
-						|| !strcasecmp(extension, "ico")
-						|| !strcasecmp(extension, "gif"))
-					{
-						attachType[attachmatched] = ATTACH_IMG;
-					}
-					else if (!strcasecmp(extension, "swf"))
-						attachType[attachmatched] = ATTACH_FLASH;
-					else if (!strcasecmp(extension, "jpeg")
-						|| !strcasecmp(extension, "png")
-						|| !strcasecmp(extension, "pcx")
-						|| !strcasecmp(extension, "bmp"))
-					{
-						attachType[attachmatched] = ATTACH_IMG;
-					}
-				}
+				attachType[attachmatched] = get_attachment_type(attachfilename);
 				attachmatched++;
 			}
 		}
@@ -961,7 +937,7 @@ void output_ansi_text(char *buf, size_t buflen,
 		if (!attachShowed[i]) { 
 			switch(attachType[i]) {
 			case ATTACH_IMG:
-		 		snprintf(outbuf, 511, "<br /><img src=\"/images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+		 		snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
 				break;
 			case ATTACH_FLASH:
 		        snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
@@ -1034,7 +1010,6 @@ void output_ansi_javascript(char *buf, size_t buflen,
 	{
 		long attach_len;
 		char *attachptr, *attachfilename;
-		char *extension;
 		for (i = 0; i < buflen ; i++ )
 		{
 			if (attachmatched >= MAXATTACHMENTCOUNT)
@@ -1043,7 +1018,6 @@ void output_ansi_javascript(char *buf, size_t buflen,
 			if (((attachfilename = checkattach(buf + i, buflen - i, 
 									&attach_len, &attachptr)) != NULL))
 			{
-				extension = attachfilename + strlen(attachfilename);
 				i += (attachptr-buf-i) + attach_len - 1;
 				if (i > buflen)
 					continue;
@@ -1052,29 +1026,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
 				attachFileName[attachmatched] = (char*)malloc(256);
 				strncpy(attachFileName[attachmatched], attachfilename, 255);
 				attachFileName[attachmatched][255] = '\0';
-				attachType[attachmatched] = ATTACH_OTHERS;
-				extension--;
-				while ((*extension != '.') && (*extension != '\0'))
-					extension--;
-				if (*extension == '.')
-				{
-					extension++;
-					if (!strcasecmp(extension, "jpg")
-						|| !strcasecmp(extension, "ico")
-						|| !strcasecmp(extension, "gif"))
-					{
-						attachType[attachmatched] = ATTACH_IMG;
-					}
-					else if (!strcasecmp(extension, "swf"))
-						attachType[attachmatched] = ATTACH_FLASH;
-					else if (!strcasecmp(extension, "jpeg")
-						|| !strcasecmp(extension, "png")
-						|| !strcasecmp(extension, "pcx")
-						|| !strcasecmp(extension, "bmp"))
-					{
-						attachType[attachmatched] = ATTACH_IMG;
-					}
-				}
+                attachType[attachmatched] = get_attachment_type(attachfilename);
 				attachmatched++;
 			}
 		}
@@ -1158,7 +1110,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
 		if (!attachShowed[i]) { 
 			switch(attachType[i]) {
 			case ATTACH_IMG:
-		 		snprintf(outbuf, 511, "<br /><img src=\"/images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+		 		snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
 				break;
 			case ATTACH_FLASH:
 		        snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);
@@ -1527,7 +1479,7 @@ atppp_never_use_goto:
         if (!attachShowed[i]) { 
             switch(attachType[i]) {
             case ATTACH_IMG:
-                snprintf(outbuf, 511, "<br /><img src=\"/images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
+                snprintf(outbuf, 511, "<br /><img src=\"images/img.gif\" border=\"0\" />此主题相关图片如下：%s (%ld 字节)<br /><a href=\"%s&amp;ap=%ld\" target=\"_blank\"><img src=\"%s&amp;ap=%ld\" border=\"0\" title=\"按此在新窗口浏览图片\" onload=\"javascript:resizeImg(this)\" /></a> ",attachFileName[i], attachLen[i], attachlink, attachPos[i],attachlink, attachPos[i]);
                 break;
             case ATTACH_FLASH:
                 snprintf(outbuf, 511, "<br />Flash动画: " "<a href=\"%s&amp;ap=%ld\">%s</a> (%ld 字节)<br />" "<object classid=\"clsid:D27CDB6E-AE6D-11cf-96B8-444553540000\" codebase=\"http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=5,0,0,0\" > <param name=\"MOVIE\" value=\"%s&amp;ap=%ld\" />" "<embed src=\"%s&amp;ap=%ld\"></embed></object><br />", attachlink, attachPos[i], attachFileName[i], attachLen[i], attachlink, attachPos[i], attachlink, attachPos[i]);

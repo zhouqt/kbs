@@ -503,7 +503,11 @@ void unlock_sem_check(int lockid);
     int attach_fgets(char* s,int size,FILE* stream);
     int skip_attach_fgets(char* s,int size,FILE* stream);
     int put_attach(FILE* in, FILE* out, int size);
-    int get_attachment_type(char *attachfilename);
+
+    const char *get_mime_type_from_ext(const char *ext);
+    const char *get_mime_type(const char *filename);
+    int get_attachment_type(const char *filename);
+    int get_attachment_type_from_ext(const char *ext);
 
     /* etnlegend - ¸½¼þÐÞ¸ÄºËÐÄ */
     long ea_dump(int fd_src,int fd_dst,long offset);

@@ -1831,34 +1831,74 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
     return 1;
 }
 
-/*
- * get attachment type. This function might be useful for innbbsd/ code. - atppp
- */
-int get_attachment_type(char *attachfilename) {
-    char *extension;
-    extension = strrchr(attachfilename, '.');
-    if (extension != NULL)
-    {
-        extension++;
-        if (!strcasecmp(extension, "jpg")
-            || !strcasecmp(extension, "ico")
-            || !strcasecmp(extension, "gif"))
-        {
-            return ATTACH_IMG;
-        }
-        else if (!strcasecmp(extension, "swf"))
-            return ATTACH_FLASH;
-        else if (!strcasecmp(extension, "jpeg")
-            || !strcasecmp(extension, "png")
-            || !strcasecmp(extension, "pcx")
-            || !strcasecmp(extension, "bmp"))
-        {
-            return ATTACH_IMG;
-        }
+const char *get_mime_type_from_ext(const char *ext) {
+	if (ext == NULL)
+		return "text/plain";
+	if (strcasecmp(ext, ".jpg") == 0 || strcasecmp(ext, ".jpeg") == 0)
+		return "image/jpeg";
+	if (strcasecmp(ext, ".gif") == 0)
+		return "image/gif";
+	if (strcasecmp(ext, ".png") == 0)
+		return "image/png";
+	if (strcasecmp(ext, ".pcx") == 0)
+		return "image/pcx";
+	if (strcasecmp(ext, ".au") == 0)
+		return "audio/basic";
+	if (strcasecmp(ext, ".wav") == 0)
+		return "audio/wav";
+	if (strcasecmp(ext, ".avi") == 0)
+		return "video/x-msvideo";
+	if (strcasecmp(ext, ".mov") == 0 || strcasecmp(ext, ".qt") == 0)
+		return "video/quicktime";
+	if (strcasecmp(ext, ".mpeg") == 0 || strcasecmp(ext, ".mpe") == 0)
+		return "video/mpeg";
+	if (strcasecmp(ext, ".vrml") == 0 || strcasecmp(ext, ".wrl") == 0)
+		return "model/vrml";
+	if (strcasecmp(ext, ".midi") == 0 || strcasecmp(ext, ".mid") == 0)
+		return "audio/midi";
+	if (strcasecmp(ext, ".mp3") == 0)
+		return "audio/mpeg";
+	if (strcasecmp(ext, ".txt") == 0)
+		return "text/plain";
+	if (strcasecmp(ext, ".xht") == 0 || strcasecmp(ext, ".xhtml") == 0)
+		return "application/xhtml+xml";
+	if (strcasecmp(ext, ".xml") == 0)
+		return "text/xml";
+	if (strcasecmp(ext, ".swf") == 0)
+		return "application/x-shockwave-flash";
+	if (strcasecmp(ext, ".pdf") == 0)
+		return "application/pdf";
+	if (strcasecmp(ext, ".html") == 0 || strcasecmp(ext, ".htm") == 0)
+		return "text/html";
+	if (strcasecmp(ext, ".css") == 0)
+		return "text/css";
+	return "application/octet-stream";
+}
+const char *get_mime_type(const char *filename) {
+    char *dot = strrchr(filename, '.');
+    return (get_mime_type_from_ext(dot));
+}
+int get_attachment_type(const char *filename) {
+    const char * mime_type = get_mime_type(filename);
+    if (strncmp(mime_type, "image/", strlen("image/")) == 0) {
+        return ATTACH_IMG;
+    }
+    if (strcmp(mime_type, "application/x-shockwave-flash") == 0) {
+        return ATTACH_FLASH;
     }
     return ATTACH_OTHERS;
-    
 }
+int get_attachment_type_from_ext(const char *ext) {
+    const char * mime_type = get_mime_type_from_ext(ext);
+    if (strncmp(mime_type, "image/", strlen("image/")) == 0) {
+        return ATTACH_IMG;
+    }
+    if (strcmp(mime_type, "application/x-shockwave-flash") == 0) {
+        return ATTACH_FLASH;
+    }
+    return ATTACH_OTHERS;
+}
+
 
 char *checkattach(char *buf, long size, long *len, char **attachptr)
 {
