@@ -390,6 +390,8 @@ char *ModeType(mode)
         return "个人文集";
     case QUERYBOARD:
         return "查询版面";
+    case BLOG:
+        return "BLOG浏览";
     default:
         return "去了那里!?";
     }

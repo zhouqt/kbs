@@ -1,5 +1,4 @@
 <?php
-/* TODO: 检查是否是附件版面 */
 	require("www2-funcs.php");
 	require("www2-board.php");
 	require("www2-bmp.php");
@@ -48,6 +47,8 @@
 		if (!is_array($ret)) $msg = "错误: " . bbs_error_get_desc($ret);
 		else $msg = "删除附件成功";
 	} else if ($action=="add") {
+		if (!bbs_is_attach_board($brdarr) && !($currentuser["userlevel"]&BBS_PERM_SYSOP))
+			html_error_quit("不能添加附件");
 		if (isset($_FILES['attachfile'])) {
 			@$errno=$_FILES['attachfile']['error'];
 		} else {

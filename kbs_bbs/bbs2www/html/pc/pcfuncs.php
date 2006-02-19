@@ -28,6 +28,7 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 	global $cachemode;
 	global $currentuser;
 	global $cssFile;
+	bbs_session_modify_user_mode(BBS_MODE_BLOG);
 	if ($cachemode=="") 
 	{
 		cache_header("nocache");
