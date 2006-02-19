@@ -109,6 +109,9 @@ domxml_open_file().....等警告。
      件，为了减少 IO 和站台的负荷，提倡使用静态的 mainpage.html 作为默认的首
      页导读页面，同时为了保证首页导读的实时性，应该用 wget 自动定时从
      mainpage.php 更新 mainpage.html。
+
+     如果选择 mainpage.php 作为默认首页，请同时将 frames.html 里面的 
+     mainpage.html 也修改为 mainpage.php。
      
 4.2 自动定时更新 mainpage.html
      
@@ -131,3 +134,4 @@ A：crontab 里面执行的程序有时候需要依赖超过一天的时间来生成，我自己的站台就是当
 问题，请耐心等待超过 24 小时。
 
     其他问题请到水木社区 (newsmth.net) BBSMan_Dev 版讨论。
+
