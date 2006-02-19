@@ -7,11 +7,13 @@ define('RSS_ENCODING', "gb18030");
 define('ARTICLE_PER_RSS', 20);
 define('DESC_CHAR_PER_RSS_ITEM', 1000);
 
-/* TODO: define SiteURL directly */
+/* TODO: consider path */
+/*
 $domain_name = explode(":",trim($_SERVER["HTTP_HOST"]));
 $thispath = dirname($_SERVER['PHP_SELF']);
 if (substr($thispath, -1) != "/") $thispath .= "/";
-define('SiteURL', "http://" . $domain_name[0] . $thispath);
+*/
+define('SiteURL', "http://" . BBS_WEBDOMAIN . "/");
 
 
 function generate_rss($channel, $items) {

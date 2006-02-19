@@ -213,7 +213,7 @@ $doc = domxml_open_file($newboard_file);
 
 $root = $doc->document_element();
 $boards = $root->child_nodes();
-	if (defined("SITE_NEWSMTH")) {
+	if (0) { //defined("SITE_NEWSMTH")) {
 ?>
       <table width="100%" height="18" border="0" cellpadding="0" cellspacing="0" class="helpert">
         <tr>

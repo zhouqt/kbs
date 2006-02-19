@@ -42,14 +42,7 @@ function submenu( isfav , favselect , group , group2 , yank )
 function fillf3(form) {
 	var f = top.f3;
 	if (f) {
-		var url = f.document.location.toString();
-		var pos = url.indexOf("://");
-		if (pos != -1) {
-			uri = url.substr(pos + 3);
-			if ((pos = uri.indexOf("/")) != -1) {
-				url = uri.substr(pos);
-			}
-		}
+		var url = getURLPath(f.document.location.toString());
 		form.action += "?mainurl=" + escape(url);
 	}
 	return true;

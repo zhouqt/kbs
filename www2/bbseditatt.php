@@ -9,22 +9,16 @@
 
 	$brdnum = @$_GET["bid"] ;
 	settype($brdnum,"integer");
-	if( $brdnum == 0 ){
-		html_error_quit("错误的讨论区!");
-	}
-	$board = bbs_getbname($brdnum);
-	if( !$board ){
-		html_error_quit("错误的讨论区");
-	}
 	$brdarr = array();
-	if( $brdnum != bbs_getboard($board, $brdarr) ){
+	$isnormalboard = bbs_safe_getboard($brdnum, "", $brdarr);
+	if (is_null($isnormalboard)) {
 		html_error_quit("错误的讨论区");
 	}
+	$board = $brdarr["NAME"];
+
 	bbs_set_onboard($brdnum,1);
 	$usernum = $currentuser["index"];
-	if (bbs_checkreadperm($usernum, $brdnum) == 0)
-		html_error_quit("错误的讨论区");
-	$board = $brdarr['NAME'];
+
 	$brd_encode = urlencode($board);
 	if(bbs_checkpostperm($usernum, $brdnum) == 0) {
 		html_error_quit("错误的讨论区或者您无权在此讨论区发表文章");
@@ -96,14 +90,16 @@
 		$attachments = $ret;
 	}
 	$filecount = count($attachments);
-	$allnames = array();$totalsize=0;$allpos = array();
+	$totalsize=0;
+	$allnames = array();$allnames_p = array();$allpos = array();$alllen=array();
 	for($i=0;$i<$filecount;$i++) {
 		$allnames[] = $attachments[$i]["name"];
+		$allnames_p[] = "'" . addslashes($attachments[$i]["name"]) . "'";
 		$allpos[] = $attachments[$i]["pos"];
+		$alllen[] = $attachments[$i]["size"];
 		$totalsize += $attachments[$i]["size"];
 	}
-	$allnames=implode(",",$allnames);
-	page_header("粘贴附件", FALSE);
+	page_header("上传附件", FALSE);
 ?>
 <body>
 <script type="text/javascript">
@@ -138,20 +134,18 @@ function clickclose() {
 	else if (confirm("您填写了文件名，但没有上载。是否确认关闭？")==true) return window.close();
 	return false;
 }
-
+att = new attWriter(<?php echo $brdnum; ?>,<?php echo $id; ?>,0,0,<?php echo ($isnormalboard?"1":"0"); ?>);
 addBootFn(function() {
-/* TODO: pubBoard variable, 内部版面是否传递 sid 给 bbscon.php ? */
-	var conURL = getMirror() + "bbscon.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>&ap=";
+	var name = [<?php echo implode(",",$allnames_p); ?>];
+	var len = [<?php echo implode(",",$alllen); ?>];
 	var pos = [<?php echo implode(",",$allpos); ?>];
 	var i;
 	for(i=0; i<pos.length; i++) {
 		var o = getObj("att" + i);
-		if (o) o.href= conURL + pos[i];
+		if (o) o.href = attachURL(name[i], len[i], pos[i]);
 	}
 });
-if (opener) {
-	//opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
-} else {
+if (!opener) {
 	addBootFn(function() { getObj("winclose").style.display = "none"; });
 }
 //-->

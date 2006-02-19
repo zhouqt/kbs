@@ -108,6 +108,7 @@
         $articles = array ();
         $num = bbs_get_records_from_id($brdarr["NAME"], $id, $ftype, $articles);
         if ($num <= 0) html_error_quit("错误的文章号,原文可能已经被删除<script>clearArticleDiv(".$id.");</script>");
+        if ($ftype == $dir_modes["ZHIDING"]) $num = 0; // for caching the same url
         $article = $articles[1];
     } else {
         $num = @intval($_GET["num"]);
@@ -136,6 +137,9 @@
 	$filename = bbs_get_board_filename($board, $article["FILENAME"]);
 	if ($isnormalboard && ($ftype != $dir_modes["DELETED"])) {
 		if (cache_header("public",@filemtime($filename),300)) return;
+		$cacheable = true;
+	} else {
+		$cacheable = false;
 	}
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
@@ -149,11 +153,10 @@
 <h1><?php echo $brdarr["NAME"]; ?> 版 <?php echo $dir_name[$ftype]; ?></h1>
 <script type="text/javascript"><!--
 var o = new conWriter(<?php echo $ftype; ?>, '<?php echo addslashes($brdarr["NAME"]); ?>', <?php echo $brdnum; ?>, <?php
-echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php echo $article["FILENAME"];?>', '<?php
+echo $article["ID"];?>, <?php echo $article["GROUPID"];?>, <?php echo $article["REID"];?>, '<?php
 echo addslashes(bbs_get_super_fav($article['TITLE'], "bbscon.php?bid=" . $brdnum . "&id=" . $article["ID"]));?>', <?php echo $num; ?>);
 o.h(1);
-<?php if (!$isnormalboard) echo "pubBoard = false;" ?>
-attachURL = 'bbscon.php?<?php echo $_SERVER["QUERY_STRING"]; ?>';
+att = new attWriter(<?php echo $brdnum; ?>,<?php echo $id; ?>,<?php echo $ftype; ?>,<?php echo $num; ?>,<?php echo ($cacheable?"1":"0"); ?>);
 <?php $s = bbs2_readfile($filename); if (is_string($s)) echo $s; ?>
 o.h(0);o.t();
 //-->

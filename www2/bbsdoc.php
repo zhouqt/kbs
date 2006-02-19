@@ -131,15 +131,12 @@ else{
 }
 // ¼ì²éÓÃ»§ÄÜ·ñÔÄ¶Á¸Ã°æ
 $brdarr = array();
-$brdnum = bbs_getboard($board, $brdarr);
-if ($brdnum == 0){
+$isnormalboard = bbs_safe_getboard(0, $board, $brdarr);
+if (is_null($isnormalboard)) {
 	html_error_quit("´íÎóµÄÌÖÂÛÇø");
 }
 $board = $brdarr["NAME"];
-$usernum = $currentuser["index"];
-if (bbs_checkreadperm($usernum, $brdnum) == 0){
-	html_error_quit("´íÎóµÄÌÖÂÛÇø");
-}
+$brdnum = $brdarr["BID"];
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
 	$i = get_secname_index($brdarr["SECNUM"]);
 	if ($i >= 0) {
@@ -148,8 +145,8 @@ if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
 	}
 	html_error_quit("´íÎóµÄÌÖÂÛÇø");
 }
-
-$isbm=bbs_is_bm($brdnum, $usernum);
+$usernum = $currentuser["index"];
+$isbm = bbs_is_bm($brdnum, $usernum);
 
 $managemode = isset($_GET["manage"]);
 if ($managemode) {
@@ -191,7 +188,6 @@ if(($ftype == $dir_modes["DELETED"]) && !$managemode)  //·Ç¹ÜÀíÄ£Ê½²»ÈÃ¿´»ØÊÕÕ¾£
 	html_error_quit("Äã²»ÄÜ¿´Õâ¸ö¶«Î÷Å¶¡£");
 }
 
-$isnormalboard = bbs_normalboard($board);
 if (bbs_club_flag($board) > 0)
 	$isclub = 1;
 else

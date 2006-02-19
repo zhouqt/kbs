@@ -17,7 +17,8 @@
 <div class="main smaller">
 <pre>
 <?php echo $lookupuser["userid"];?> (<?php echo htmlspecialchars($lookupuser["username"]);?>) 共上站 <?php echo $lookupuser["numlogins"];?> 次，发表过 <?php echo $lookupuser["numposts"];?> 篇文章
-上次在  [<?php echo date("D M j H:i:s Y",$lookupuser["lastlogin"]);?>] 从 [<?php echo $lookupuser["lasthost"];?>] 到本站一游。
+上次在  [<?php echo date("D M j H:i:s Y",$lookupuser["lastlogin"]);?>] 从 [<?php echo $lookupuser["lasthost"];?>] 到本站一游。<?php if (isset($lookupuser["score_user"])) echo "积分: [".$lookupuser["score_user"]."]"; ?>
+
 离线时间[<?php 
 if( $usermodestr!="" && $usermodestr{0}=="1" ){
 	echo date("D M j H:i:s Y", $lookupuser["lastlogin"]+60+( $lookupuser["numlogins"]+$lookupuser["numposts"] )%100 );
