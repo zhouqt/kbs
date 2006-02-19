@@ -33,7 +33,6 @@ function pc_html_init($charset,$title="",$otherheader="",$cssfile="",$bkimg="",$
 	{
 		cache_header("nocache");
     }
-    bbs_session_modify_user_mode(BBS_MODE_PC);
 ?>
 <?xml version="1.0" encoding="<?php echo $charset; ?>"?>
 <!DOCTYPE html
