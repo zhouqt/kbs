@@ -126,6 +126,9 @@ domxml_open_file().....等警告。
      生成各个 xml 文件的时间点，否则可能造成 mainpage.php 读取到空的正在更新
      的 xml 文件。
 
+     另外可以添加类似的命令从 bbsleft.php 和 bbsfoot.php 分别生成
+     bbsguestleft.html 和 bbsguestfoot.html 文件，每 10 分钟一次。
+
 5 FAQ
 
 Q: 我按照以上操作做过了，但是我的首页导读还是有好多内容没有出来。
