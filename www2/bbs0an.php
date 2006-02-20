@@ -62,7 +62,34 @@ if (defined ("USE_ROAM")) {
 else
 	login_init();
 bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
-if (isset($_GET['path']))
+
+if (isset($_GET["p"])) {
+	$numpath = $_GET["p"];
+
+	$brdarr = array();
+	$bid = $numpath;
+	settype($bid,"integer");
+	if( $bid == 0 ){
+		html_error_quit("错误的版面");
+	}
+
+	$board = bbs_getbname($bid);
+	if( !$board ){
+		html_error_quit("错误的讨论区");
+	}
+	if( $bid != bbs_getboard($board, $brdarr) ){
+		html_error_quit("错误的讨论区");
+	}
+
+	$board = $brdarr['NAME'];
+
+	$path = bbs_ann_num2path($numpath,$currentuser["userid"]);
+	if($path==false){
+		html_error_quit("错误的文章");
+	}
+	$path = substr($path, 10, strlen($path) - 9);
+}
+else if (isset($_GET['path']))
 	$path = trim($_GET['path']);
 else 
 	$path = "";
