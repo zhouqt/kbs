@@ -205,9 +205,6 @@ type - meaning
   13        整理精华
   14        相同主题
 */
-#ifdef NEWBMLOG
-	return newbmlog(id, boardname, type, value);
-#else
     int fd, data[DATALEN];
     struct flock ldata;
     struct stat buf;
@@ -222,6 +219,9 @@ type - meaning
     if (!chk_BM_instr(BM, id))
         return 0;
 
+#ifdef NEWBMLOG
+	return newbmlog(id, boardname, type, value);
+#else
     sprintf(direct, "boards/%s/.bm.%s", boardname, id);
     if ((fd = open(direct, O_RDWR | O_CREAT, 0644)) == -1)
         return 0;
