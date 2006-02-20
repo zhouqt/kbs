@@ -48,7 +48,7 @@ PHP_FUNCTION(bbs2_readfile)
     strcpy(output_buffer + output_buffer_len, "prints('");
     output_buffer_len += 8;
     while (1) {
-        for (; j >= 0 ; j--) {
+        for (; j > 0 ; j--) {
             c = *cur_ptr;
             if (c == '\0') { //assume ATTACHMENT_PAD[0] is '\0'
                 if (ptrlen >= ATTACHMENT_SIZE + sizeof(int) + 2) {
