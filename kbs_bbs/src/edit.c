@@ -1421,13 +1421,13 @@ int vedit_process_ESC(arg)
             int nUpload = 0;
             char ans[8];
             ans[0]='\0';
-            nUpload = process_upload(nUpload, 20, ans, ai);
+            nUpload = process_upload(nUpload, 15, ans, ai);
             while(1) {
                 getdata(t_lines - 1, 0, "«Î ‰»Î≤Ÿ◊˜£∫", ans, 4, DOECHO, NULL, true);
                 switch(ans[0]) {
                     case 'u':
                     case 'U':
-                        nUpload = process_upload(nUpload, 20, ans, ai);
+                        nUpload = process_upload(nUpload, 15, ans, ai);
                         continue;
                     default:
                         break;

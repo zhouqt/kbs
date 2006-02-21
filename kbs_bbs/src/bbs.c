@@ -1088,7 +1088,7 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         char ses[20];
         move(0,0);
         get_telnet_sessionid(ses, getSession()->utmpent);
-        snprintf(slink, sizeof(slink), "附件编辑地址: \n\033[4mhttp://%s/bbseditatt.php?bid=%d&id=%d&sid=%s\033[m\n",
+        snprintf(slink, sizeof(slink), "附件编辑地址: (请勿将此链接发送给别人)\n\033[4mhttp://%s/bbseditatt.php?bid=%d&id=%d&sid=%s\033[m\n",
             get_my_webdomain(0), currboardent, fileinfo->id, ses);
         prints("%s", slink);
     }
@@ -2450,7 +2450,7 @@ int process_upload(int nUpload, int maxShow, char *ans, struct ea_attach_info* a
     }
 
     get_telnet_sessionid(ses, getSession()->utmpent);
-    snprintf(buf, sizeof(buf), "附件上传地址: \033[4mhttp://%s/bbsupload.php?sid=%s\033[m\n", get_my_webdomain(0), ses);
+    snprintf(buf, sizeof(buf), "附件上传地址: (请勿将此链接发送给别人)\n\033[4mhttp://%s/bbsupload.php?sid=%s\033[m\n", get_my_webdomain(0), ses);
     clear();
     prints(buf);
     nUpload = upload_read_fileinfo(ai, getSession());
