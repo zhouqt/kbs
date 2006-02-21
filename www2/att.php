@@ -57,7 +57,7 @@
 
 	$filename = bbs_get_board_filename($board, $article["FILENAME"]);
 	if ($isnormalboard && ($ftype != $dir_modes["DELETED"])) {
-		if (cache_header("public",@filemtime($filename),300)) return;
+		if (cache_header("public",@filemtime($filename),3600)) return;
 	}
 
 	bbs_file_output_attachment($filename, $ap);
