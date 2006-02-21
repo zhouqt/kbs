@@ -108,6 +108,7 @@
         $articles = array ();
         $num = bbs_get_records_from_id($brdarr["NAME"], $id, $ftype, $articles);
         if ($num <= 0) html_error_quit("错误的文章号,原文可能已经被删除<script>clearArticleDiv(".$id.");</script>");
+        if ($ftype == $dir_modes["ZHIDING"]) $num = 0; // for caching the same url
         $article = $articles[1];
     } else {
         $num = @intval($_GET["num"]);

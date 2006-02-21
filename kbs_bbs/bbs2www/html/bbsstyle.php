@@ -3,10 +3,9 @@
 	login_init();
 	toolbox_header("½çÃæÐÞ¸Ä");
 
-	if (isset($_GET['do'])) {
-		$new_wwwparams = @$_COOKIE["WWWPARAMS"];
-		if (strcmp($currentuser["userid"], "guest") && $new_wwwparams) {
-			bbs_setwwwparameters($new_wwwparams); /* TODO: return value ? */
+	if (isset($_GET['do']) && isset($_COOKIE["WWWPARAMS"])) {
+		if (strcmp($currentuser["userid"], "guest")) {
+			bbs_setwwwparameters($_COOKIE["WWWPARAMS"]); /* TODO: return value ? */
 		}
 	}
 ?>

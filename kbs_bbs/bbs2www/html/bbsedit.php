@@ -114,7 +114,7 @@
 ?>
 </legend>
 发信人: <?php echo $articles[1]['OWNER']; ?>, 信区: <?php echo $brd_encode; ?> [<a href="bbsdoc.php?board=<?php echo $brd_encode; ?>">本讨论区</a>]<br/>
-标&nbsp;&nbsp;题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo $articles[1]['TITLE']; ?> " />
+标&nbsp;&nbsp;题: <input type="text" name="title" size="40" maxlength="100" value="<?php echo htmlspecialchars($articles[1]['TITLE'],ENT_QUOTES); ?> " />
 <textarea name="text" onkeydown='return textarea_okd(dosubmit, event);' wrap="physical" id="sfocus">
 <?php
 	bbs_printoriginfile($board,$articles[1]['FILENAME']);
