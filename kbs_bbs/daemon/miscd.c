@@ -119,7 +119,9 @@ int doaboard(struct boardheader *brd,void* arg)
 int dokillalldir()
 {
     resolve_boards();
+    newbbslog(BBSLOG_USIES, "Started kill junk\n");
     apply_boards(doaboard,NULL);
+    newbbslog(BBSLOG_USIES, "kill junk done\n");
     return 0;
 }
 static char tmpbuf[255];
@@ -222,12 +224,12 @@ int doupdategiveupuser()
     return 0;
 }
 
-int getnextday4am()
+time_t getnextday4am()
 {
     time_t now = time(0);
     struct tm *tm = localtime(&now);
 
-    if (tm->tm_hour >= 4) {
+    if (tm->tm_hour >= 3) {
         now += 86400;
         tm = localtime(&now);
     }
@@ -635,7 +637,7 @@ static int miscd_dodaemon(char *argv1, char *daemon)
     if (((daemon == NULL) || (!strcmp(daemon, "killd"))) && ((argv1 == NULL) || fork())) {
         strcpy(commandline, "killd");
         while (1) {
-            int ft;
+            time_t ft;
 
             if (argv1 == NULL) {
                 dokilluser();
@@ -665,10 +667,10 @@ static int miscd_dodaemon(char *argv1, char *daemon)
                 default:
                     break;
             }
-            ft = time(0);
+            ft = getnextday4am();
             do {
-                sleep(86400 - (time(0) - ft));  /* 1 day */
-            } while (ft + 86400 > time(0));
+                sleep(ft - time(0));
+            } while (ft > time(0));
         };
     }
     if (((daemon == NULL) || (!strcmp(daemon, "userd"))) && ((argv1 == NULL) || fork())) {
