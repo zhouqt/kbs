@@ -8,7 +8,7 @@
 #include "bbs.h"
 //#include "shm_rel.c"
 
-#define MAXUSRBM 8
+#define MAXUSRBM 16
 #define MAXCHECK MAXBOARD*3
 
 typedef int cmpfunc(const void *, const void *);
@@ -46,7 +46,7 @@ int BM2User(int nbrd, char *uname)
 {
     int i, j, uid;
 
-    if (!strcasecmp(uname, "SYSOP") || !isascii(*uname))
+    if (!strcasecmp(uname, "SYSOP") || id_invalid(uname))
         return 0;
     if (!isNormalBoard(&(bcache[nbrd])))
         return 0;
