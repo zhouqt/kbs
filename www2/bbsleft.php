@@ -20,7 +20,7 @@
 		}
 ?>
 <img src="images/open.gif" class="pm" alt="-"
-><a href="bbsnewbrd.php"><script type="text/javascript">putImage('kfolder1.gif','class="s16x16"');</script>新开讨论区</a>
+><a href="bbsxmlbrd.php?flag=2"><script type="text/javascript">putImage('kfolder1.gif','class="s16x16"');</script>新开讨论区</a>
 </div>
 <?php
 	}

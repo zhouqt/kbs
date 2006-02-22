@@ -266,7 +266,7 @@ $boards = $root->child_nodes();
 	if($j > 9)
 	{
 ?>
-<p align="right"><a href="bbsnewbrd.php">&gt;&gt;更多</a></p>
+<p align="right"><a href="bbsxmlbrd.php?flag=2">&gt;&gt;更多</a></p>
 <?php
 	}
 ?>
@@ -496,8 +496,8 @@ while($board = array_shift($boards))
     <td height="18" width="84" class="header" align="center"><a href="bbsdoc.php?board=Announce">系统公告</a></td>
     <td width="84" class="header" align="center"><a href="bbsrecommend.php">推荐文章</a></td>
     <td width="100" class="header" align="center"><a href="bbssec.php">分类讨论区</a></td>
-    <td width="80" class="header" align="center"><a href="bbsrecbrd.php">推荐版面</a></td>
-    <td width="81" class="header" align="center"><a href="bbsbrdran.php">人气排名</a></td>
+    <td width="80" class="header" align="center"><a href="bbsxmlbrd.php?flag=0">推荐版面</a></td>
+    <td width="81" class="header" align="center"><a href="bbsxmlbrd.php?flag=1">人气排名</a></td>
     <td width="79" class="header" align="center"><a href="#todaybless">本日祝福</a></td>
     <td width="79" class="header" align="center">
 <?php
