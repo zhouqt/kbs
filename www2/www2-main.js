@@ -692,6 +692,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	this.start = start;
 	this.page = page;
 	this.total = total;
+	this.apath = apath;
 	this.man = man;
 	this.ftype = ftype;
 	this.num = 0;
@@ -919,6 +920,7 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 		if (isclub) {
 			ret += ' [<a href="bbsclub.php?board=' + this.board + '">俱乐部成员</a>]';
 		}
+		ret += ' [<a href="bbs0anbm.php?path=' + escape(this.apath) + '">精华区管理</a>]';
 	}
 	ret += '</div>';
 	document.write(ret);

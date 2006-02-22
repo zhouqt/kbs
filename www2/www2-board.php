@@ -188,7 +188,22 @@ function bbs_ann_foot($parent) {
 <?php    
 }
 
-
+function bbs_ann_bm_foot($parent) {
+?>   
+<div class="oper smaller">
+<?php   
+	if ($parent){
+?>
+[<a href="bbs0anbm.php?path=<?php echo rawurlencode($parent); ?>">上级目录</a>]
+<?php
+	}
+?>
+[<a href="#listtop">返回顶部</a>]
+[<a href="javascript:location.reload()">刷新</a>] 
+[<a href="javascript:history.go(-1)">返回</a>] 
+</div>
+<?php    
+}
 
 
 
