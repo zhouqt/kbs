@@ -111,14 +111,19 @@ for( ; $i < 20; $i++)
 	}
 
 	$board = "Recommend";
+	$ftype = $dir_modes["DIGEST"];
 	$brdarr = array();
 	$order_articles = TRUE;
 	$brdnum = bbs_getboard($board, $brdarr);
 	if ($brdnum == 0)
 		html_error_quit("系统错误");
-	$total = bbs_countarticles($brdnum, $dir_modes["DIGEST"]);
+	$total = bbs_countarticles($brdnum, $ftype);
 	if ($total <= 0)
 		html_error_quit("目前没有文章");
+
+	$dotdirname = bbs_get_board_index($board, $ftype);
+	if (cache_header("public",@filemtime($dotdirname),300))
+		return;
 
 	if (isset($_GET["start"]))
 		$start = $_GET["start"];

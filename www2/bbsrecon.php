@@ -45,7 +45,7 @@ function display_navigation_bar($brdarr, $num, $article)
 		html_error_quit("╢МнС╣дндуб╨е...");
 	}
 
-	if (cache_header("public",filemtime($filename),300))
+	if (cache_header("public",@filemtime($filename),300))
 		return;
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD

@@ -3,6 +3,8 @@
 	require("www2-board.php");
 	login_init();
 	bbs_session_modify_user_mode(BBS_MODE_MMENU);
+	if (update_cache_header(30, 1200))
+		exit ();
 	page_header("分类讨论区");
 ?>
 <script type="text/javascript"><!--
