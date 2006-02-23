@@ -160,7 +160,7 @@
 <base target="f3" />
 </head>
 <body>
-<iframe id="hiddenframe" name="hiddenframe" width="0" height="0" src="" frameborder="0" scrolling="no"></iframe>
+<iframe id="hiddenframe" name="hiddenframe" width="0" height="0" src="images/img.gif" frameborder="0" scrolling="no"></iframe>
 
 <!--Õ¾µã±êÖ¾-->
 <?php if (defined("SITE_NEWSMTH")) { ?>
