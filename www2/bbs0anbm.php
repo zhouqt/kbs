@@ -9,7 +9,7 @@ var an = new annWriter('<?php echo rawurlencode($pathstr); ?>',<?php echo $has_p
 	if($show_none)
 	{
 ?>
-document.write('<tr><td align="center" colspan="5">该精华区目录没有文章。</td></tr>');
+document.write('<tr><td align="center" colspan="7">该精华区目录没有文章。</td></tr>');
 <?php
 	}
 	else foreach ($articles as $article) {
@@ -52,17 +52,6 @@ an.f();
 <?php
 	if ($isBoard) echo "</div>"; /* </div>: dirty way ... for closing <div class="doc"> */
 }
-
-require_once('www2-funcs.php');
-require_once('www2-board.php');
-/* ignore ROAM, pig2532, the same below
-if (defined ("USE_ROAM")) {
-	include_once ('roam_server.php');
-	roam_login_init();
-}
-else */
-	login_init();
-bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
 
 require('bbs0anbm_pre.php');
 	
