@@ -5,6 +5,7 @@
 ?>
 <body class="msgs">
 <?php
+	$frameheight = 0;
 	if (strcmp($currentuser["userid"], "guest")) {
 		$ret=bbs_getwebmsg($srcid,$msgbuf,$srcutmpnum,$sndtime);
 		if ($ret) {
@@ -17,23 +18,12 @@
 </div>
 <?php
 			$frameheight = 25;
-			$timeout = 0;
-		} else {
-			//no msg
-			$frameheight = 0;
-			$timeout = (isset($_GET["refresh"])) ? 60 : 0;
 		}
-	} else {
-		$frameheight = 0;
-		$timeout = 0;
 	}
 ?>
 <script>
 var ff = top.document.getElementById("viewfrm");
 if (ff) ff.rows = "<?php echo $frameheight; ?>,*,20";
-<?php if ($timeout > 0) { ?>
-setTimeout("location.reload()", <?php echo $timeout*1000 ?>);
-<?php } ?>
 </script>
 </body>
 </html>
