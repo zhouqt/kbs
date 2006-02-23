@@ -494,7 +494,7 @@ function hotTopic(board) { /* TODO: no table, use AJAX */
 		str += '<span id="hotTopics" onmouseover="hotMove=false;" onmouseout="hotMove=true;">‘ÿ»Î÷–...</span>';
 	}
 	str += '</td></tr></table>';
-	document.write(str + '<iframe width=0 height=0 src="" frameborder="0" scrolling="no" id="hiddenframe" name="hiddenframe"></iframe>');
+	document.write(str + '<iframe width=0 height=0 src="images/img.gif" frameborder="0" scrolling="no" id="hiddenframe" name="hiddenframe"></iframe>');
 	addBootFn(function() {
 		window.frames["hiddenframe"].document.location.href = "bbshot.php?board=" + board;
 	});
