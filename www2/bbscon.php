@@ -144,6 +144,7 @@
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
+		die; // atppp 20060223
 		bbs_file_output_attachment($filename, $attachpos);
 		exit;
 	}
