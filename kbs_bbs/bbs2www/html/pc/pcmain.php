@@ -381,7 +381,7 @@ pcmain_html_init();
 if (defined("SITE_SMTH")) {
 ?>
 <script type="text/javascript"><!--
-reg = new RegExp("^http://[^/]*smth\\.[^/]+/");
+reg = new RegExp("^https?://[^/]*smth\\.[^/]+/");
 if (top.location != self.location && !top.location.href.match(reg)) {
 	top.location = self.location;
 }
