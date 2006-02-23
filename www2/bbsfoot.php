@@ -19,6 +19,13 @@
 	var stayTime = <?php echo (time()-$currentuinfo["logintime"]); ?>;
 	var serverTime = <?php echo (time() + intval(date("Z"))); ?>;
 	var hasMail = <?php echo $unread ? "1" : "0"; ?>;
+<?php
+	if (isset($currentuser["userid"]) && $currentuser["userid"] != "guest" && bbs_checkwebmsg()) {
+?>
+alertmsg();
+<?php
+	}
+?>
 //-->
 </script>
 <body><div class="footer">时间[<span id="divTime"></span>] 在线[<?php echo bbs_getonlinenumber(); ?>]

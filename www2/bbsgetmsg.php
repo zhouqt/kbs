@@ -17,11 +17,11 @@
 </div>
 <?php
 			$frameheight = 25;
-			$timeout = 540;
+			$timeout = 0;
 		} else {
 			//no msg
 			$frameheight = 0;
-			$timeout = (isset($_GET["refresh"])) ? 60 : 540;
+			$timeout = (isset($_GET["refresh"])) ? 60 : 0;
 		}
 	} else {
 		$frameheight = 0;
