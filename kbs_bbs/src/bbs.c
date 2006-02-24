@@ -431,6 +431,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     char q_file[STRLEN];
     struct read_arg* arg=(struct read_arg*)conf->arg;
     int outgo_board = true, proceed = false;
+    struct boardheader* bh;
 
     if (fileinfo==NULL)
         return DONOTHING;
@@ -479,8 +480,9 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         return FULLUPDATE;
     }
 #endif
-    {                           /* Leeward 98.01.13 检查转贴者在其欲转到的版面是否被禁止了 POST 权 */
-        struct boardheader* bh;
+
+        /* Leeward 98.01.13 检查转贴者在其欲转到的版面是否被禁止了 POST 权 */
+
 
         if (normal_board(bname) && !normal_board(currboard->filename) && (uinfo.mode != RMAIL)) {
             char ans[4];
@@ -522,7 +524,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
             return FULLUPDATE;
         }
         outgo_board = (bh->flag & BOARD_OUTFLAG);
-    }
+
 
     move(0, 0);
     prints("转贴 ' %s ' 到 %s 版 ", quote_title, bname);
@@ -2971,6 +2973,7 @@ int edit_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             dirarg.ent = conf->pos;
             change_post_flag(&dirarg, arg->mode, currboard,  
                 fileinfo,changemark, fileinfo,dobmlog,getSession());
+            free_write_dir_arg(&dirarg);
         }
         if (ADD_EDITMARK)
             add_edit_mark(buf, 0, /*NULL*/ fileinfo->title,getSession());
@@ -3278,6 +3281,7 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
         dirarg.fd=arg->fd;
         dirarg.filename=arg->direct;
         result = delete_range(&dirarg, inum1, inum2, idel_mode,arg->mode,currboard,getSession());
+        free_write_dir_arg(&dirarg);
         /* todo 修正conf的pos
         if (inum1 != 0)
             fixkeep(arg->direct, inum1, inum2);

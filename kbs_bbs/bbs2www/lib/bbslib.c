@@ -632,12 +632,15 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
 {
     int stay = 0;
 
-    stay = abs(time(0) - puinfo->logintime);
+    stay = time(0) - puinfo->logintime;
+    if (stay < 0) stay = 0;
+#if 0 // atppp 20060221
     /*
      * 上站时间超过 2 小时按 2 小时计 
      */
     if (stay > 7200)
         stay = 7200;
+#endif
     user->stay += stay;
     user->exittime = time(0);
     if (strcmp(user->userid, "guest")) {

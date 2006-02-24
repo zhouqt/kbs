@@ -2351,6 +2351,7 @@ static int m_clean()
         init_write_dir_arg(&dirarg);
         dirarg.filename=buf;
         delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL,NULL,getSession());
+        free_write_dir_arg(&dirarg);
     }
     move(0, 0);
     setmailfile(buf, getCurrentUser()->userid, mail_sysbox[2]);
@@ -2360,6 +2361,7 @@ static int m_clean()
         init_write_dir_arg(&dirarg);
         dirarg.filename=buf;
         delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL,NULL,getSession());
+        free_write_dir_arg(&dirarg);
     }
 	/*
     if (getSession()->user_mail_list.mail_list_t) {
