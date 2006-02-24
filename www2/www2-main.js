@@ -42,6 +42,7 @@ function prints(s) {
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
 	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "\n&nbsp;");
 	s = s.replace(/\n(: [^\n]*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
+	s = s.replace(/((?:http|https|ftp|mms|rtsp):\/\/(&(?=amp;)|[A-Za-z0-9\.\/=\?%_~@#:;\+\-])+)/ig, "<a target=\"_blank\" href=\"$1\">$1</a>");
 	if (divArtCon) strArticle += s;
 	else document.write(s);
 }
