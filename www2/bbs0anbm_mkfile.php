@@ -6,9 +6,12 @@ if($has_perm_boards < 1)
 	html_error_quit("您没有权限操作该目录。");
 
 $text = "";
-if(isset($_POST["filename"]))
+if(isset($_POST["title"]))
 {
-	$newfname = $_POST["filename"];
+	if(BBS_ANN_AUTONAME == 0)
+		$newfname = $_POST["filename"];
+	else
+		$newfname = "";
 	$newtitle = $_POST["title"];
 	$newcontent = $_POST["content"];
 	$ret = bbs_ann_mkfile($filename, $newfname, $newtitle, $newcontent);
@@ -48,7 +51,14 @@ page_header("新建文件", "精华区操作");
 	<fieldset><legend>新建精华区文件</legend>
 		<div class="inputs">
 			<div style="color:#FF0000"><?php echo $text; ?></div>
+<?php
+if(BBS_ANN_AUTONAME == 0)
+{
+?>
 			<label>文件名：</label><input type="text" maxlength="38" size="15" name="filename" value="<?php echo htmlspecialchars($newfname); ?>"><br>
+<?php
+}
+?>
 			<label>标　题：</label><input type="text" maxlength="38" size="38" name="title" value="<?php echo htmlspecialchars($newtitle); ?>"><br>
 			<textarea name="content"><?php echo htmlspecialchars($newcontent); ?></textarea>
 		</div>

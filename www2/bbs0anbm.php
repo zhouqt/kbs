@@ -31,19 +31,19 @@ document.write('<tr><td align="center" colspan="7">该精华区目录没有文章。</td></
 				$alt = '文件';
 				$url = 'bbsanc.php?path='.rawurlencode($article['PATH']);
 		}
+		$title = htmlspecialchars(rtrim($article['TITLE']), ENT_QUOTES);
 		$col1 = 'putImageCode(\''.$img.'\',\'alt="'.$alt.'"\')';
 		if ($article['FLAG']==3)
 			$col2 = '<font color="red">@</font>';
 		else
 			$col2 = '&nbsp;';
 		if ($url)
-			$col2 .= '<a href="'.$url.'">'.htmlformat($article['TITLE']).' </a>';
+			$col2 .= '<a href="'.$url.'">'.$title.' </a>';
 		else
 			$col2 .= htmlformat($article['TITLE']).' ';
 		$col3 = trim($article['BM']);
 		$col4 = date('Y-m-d',$article['TIME']);
-		//echo "ta.r($col1,'$col2','$col3','$col4');\n";
-		echo 'an.i(' . $article['FLAG'] . ',\'' . htmlformat($article['TITLE']) . '\',\'' . trim($article['BM']) . '\',\'' . rawurlencode($article['FNAME']) . '\',\'' . date('Y-m-d',$article['TIME']) . '\');';
+		echo 'an.i(' . $article['FLAG'] . ',\'' . $title . '\',\'' . trim($article['BM']) . '\',\'' . rawurlencode($article['FNAME']) . '\',\'' . date('Y-m-d',$article['TIME']) . '\');';
 	}
 ?>
 //-->
