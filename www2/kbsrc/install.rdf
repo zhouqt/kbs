@@ -5,9 +5,9 @@
   <Description about="urn:mozilla:install-manifest">
   
     <em:id>kbsrc@newsmth.net</em:id>
-    <em:name>KBS Reading Record Extension (Firefox 1.5 edition)</em:name>
+    <em:name>KBS Reading Record (Firefox 1.5 edition)</em:name>
     <em:version>1.0</em:version>
-    <em:description>Process and View Reading Record at Client Side for KBS Web</em:description>
+    <em:description>Process and view reading record at client side for KBS web.</em:description>
     <em:creator>atppp</em:creator>
     <!-- optional items -->
     <em:contributor>KCN</em:contributor>

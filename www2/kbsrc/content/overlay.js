@@ -27,6 +27,7 @@ function addread(host, bid, id) {
 				lst[i] = lst[i-1];
 			}
 			lst[n] = id;
+			gKbsrcData[host].dirty[bid] = true;
 			return;
 		}
 	}
@@ -34,6 +35,7 @@ function addread(host, bid, id) {
 		lst[0] = id;
 		lst[1] = 1;
 		lst[2] = 0;
+		gKbsrcData[host].dirty[bid] = true;
 	}
 }
 
@@ -59,15 +61,20 @@ var kbsrcPageLoadedHandler = function(event) {
 				var td = tds[j];
 				if (td.id.substr(0, 5) != "kbsrc") continue;
 				var thisid = td.id.substr(5);
-				if (unread(host, bid, thisid)) td.style.backgroundColor = "green";
+				if (unread(host, bid, thisid)) td.innerHTML += "*";
 			}
 			break;
 		} else if (metas[i].name == "kbsrc.con") {
 			var ids = metas[i].content.split(",");
 			var bid = ids[0];
 			var thisid = ids[1];
-			addread(host, bid, thisid);
-			break;
+			if (ids[2]) {
+				if (ids[2] == 'f') { //clear all
+					
+				}
+			} else {
+				addread(host, bid, thisid);
+			}
 		}
 	}
 };
@@ -112,16 +119,21 @@ kbsrcHttpRequest.prototype = {
 	onStateChange : function() {
         if (this.req.readyState == 4 && this.req.status == 200) {
         	gKbsrcData[this.host].rc = new Array();
-        	var rc = this.req.responseText;
-        	var perBoard = (gBRCMaxItem+1)*8;
-        	if (rc.length % perBoard != 0) return; //TODO
-        	for(var i=0; i<rc.length/perBoard; i++) {
-        		var bid = parseInt(rc.substr(i*perBoard, 8) , 16);
-        		gKbsrcData[this.host].rc[bid] = new Array();
-        		for (var j=0; j<gBRCMaxItem; j++) {
-        			gKbsrcData[this.host].rc[bid][j] = parseInt(rc.substr(i*perBoard+8+j*8, 8) , 16);
+        	gKbsrcData[this.host].dirty = new Array();
+        	var i=0,j,rc = this.req.responseText;
+        	try {
+        		while(i<rc.length) {
+        			var bid = parseInt(rc.substr(i, 4), 16);
+        			var n = parseInt(rc.substr(i+4, 4), 16);
+        			gKbsrcData[this.host].rc[bid] = new Array();
+        			gKbsrcData[this.host].dirty[bid] = false;
+        			for (j=0; j<gBRCMaxItem; j++) gKbsrcData[this.host].rc[bid][j] = 0;
+        			for (j=0; j<n; j++) {
+        				gKbsrcData[this.host].rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
+        			}
+        			i += 8 + n * 8;
         		}
-        	}
+        	} catch(e) {}
         }
     }
 };
