@@ -1,4 +1,41 @@
 var gKbsrcData = false;
+var gBRCMaxItem = 50;
+
+function unread(host, bid, id) {
+	var lst = gKbsrcData[host].rc[bid];
+	for(var n=0; n<gBRCMaxItem; n++) {
+		if (lst[n] == 0) {
+			if (n == 0) return true;
+			return false;
+		}
+		if (id > lst[n]) {
+			return true;
+		} else if (id == lst[n]) {
+			return false;
+		}
+	}
+	return false;
+}
+function addread(host, bid, id) {
+	var lst = gKbsrcData[host].rc[bid];
+	var n;
+	for(n=0; n<gBRCMaxItem && lst[n]; n++) {
+		if (id == lst[n]) {
+			return;
+		} else if (id > lst[n]) {
+			for (var i=gBRCMaxItem-1; i>n; i--) {
+				lst[i] = lst[i-1];
+			}
+			lst[n] = id;
+			return;
+		}
+	}
+	if (n==0) {
+		lst[0] = id;
+		lst[1] = 1;
+		lst[2] = 0;
+	}
+}
 
 var kbsrcPageLoadedHandler = function(event) {
 	var doc = event.originalTarget;
@@ -10,15 +47,26 @@ var kbsrcPageLoadedHandler = function(event) {
 	const protocol = doc.location.protocol;
 	if(!/^(?:https|http)\:$/.test(protocol)) return;
 	
-	const domain = doc.location.domain;
-	
+	var host = doc.location.host;
+	if (!gKbsrcData[host]) return;
+
 	var metas = doc.getElementsByTagName("meta");
 	for(var i = 0; i < metas.length; i++) {
 		if (metas[i].name == "kbsrc.doc") {
-			//alert("DOC - " + metas[i].content);
+			var bid = metas[i].content;
+			var tds = doc.getElementsByTagName("td");
+			for (var j=0; j<tds.length; j++) {
+				var td = tds[j];
+				if (td.id.substr(0, 5) != "kbsrc") continue;
+				var thisid = td.id.substr(5);
+				if (unread(host, bid, thisid)) td.style.backgroundColor = "green";
+			}
 			break;
 		} else if (metas[i].name == "kbsrc.con") {
-			//alert("CON - " + metas[i].content);
+			var ids = metas[i].content.split(",");
+			var bid = ids[0];
+			var thisid = ids[1];
+			addread(host, bid, thisid);
 			break;
 		}
 	}
@@ -56,13 +104,24 @@ var kbsrcHttpRequest = function(host) {
 	this.req.onreadystatechange = function() {
 		self.onStateChange.call(self);
 	};
+	/* TODO: relative path */
 	this.req.open("GET", "http://" + host + "/kbsrc.php", true);
 	this.req.send(null);
 }
 kbsrcHttpRequest.prototype = {
 	onStateChange : function() {
         if (this.req.readyState == 4 && this.req.status == 200) {
-        	alert(this.req.responseText.length);
+        	gKbsrcData[this.host].rc = new Array();
+        	var rc = this.req.responseText;
+        	var perBoard = (gBRCMaxItem+1)*8;
+        	if (rc.length % perBoard != 0) return; //TODO
+        	for(var i=0; i<rc.length/perBoard; i++) {
+        		var bid = parseInt(rc.substr(i*perBoard, 8) , 16);
+        		gKbsrcData[this.host].rc[bid] = new Array();
+        		for (var j=0; j<gBRCMaxItem; j++) {
+        			gKbsrcData[this.host].rc[bid][j] = parseInt(rc.substr(i*perBoard+8+j*8, 8) , 16);
+        		}
+        	}
         }
     }
 };
