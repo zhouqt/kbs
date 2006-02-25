@@ -1285,11 +1285,19 @@ static int brcdump(struct boardheader *bh, int bid, void* arg)
     int n;
     int *pn;
     if (!public_board(bh)) return 0;
-    sprintf(*dumpstr, "%8.8x", bid);
-    *dumpstr += 8;
+    sprintf(*dumpstr, "%4.4x", bid);
+    *dumpstr += 4;
     brc_initial(getCurrentUser()->userid, bh->filename, getSession());
     pn = getSession()->brc_cache_entry[getSession()->brc_currcache].list;
     for (n = 0; n < BRC_MAXNUM; n++) {
+        if (*pn == 0) break;
+        pn++;
+    }
+    sprintf(*dumpstr, "%4.4x", n);
+    *dumpstr += 4;
+    pn = getSession()->brc_cache_entry[getSession()->brc_currcache].list;
+    for (n = 0; n < BRC_MAXNUM; n++) {
+        if (*pn == 0) break;
         sprintf(*dumpstr, "%8.8x", *pn);
         *dumpstr += 8;
         pn++;
@@ -1299,14 +1307,15 @@ static int brcdump(struct boardheader *bh, int bid, void* arg)
 
 PHP_FUNCTION(bbs2_brcdump)
 {
+#ifdef HAVE_BRC_CONTROL
     char dumpstr[MAXBOARD * (BRC_MAXNUM + 1) * 8 + 1];
     char *dumpptr = dumpstr;
+    *dumpptr = '\0';
 
     if (!strcmp(getCurrentUser()->userid, "guest")) {
         RETURN_NULL();
     }
-#ifdef HAVE_BRC_CONTROL
     apply_bids(brcdump, &dumpptr);
-#endif
     RETURN_STRING(dumpstr, 1);
+#endif
 }
