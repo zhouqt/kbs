@@ -83,9 +83,16 @@ function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
 			$bm_url = "['" . implode("','", $bms) . "']";
 		}
 	}
-	$rsslink = $isnormalboard ? bbs_rss_link($brd_encode, $ftype) : "";
-	page_header($brdarr["NAME"] . " 경" . $dir_name[$ftype], FALSE, $rsslink ? '<link title="경충 RSS'
-	. $dir_name[$ftype] . '" type="application/rss+xml" rel="alternate" href="' . $rsslink . '"/>' : false);
+	$adds = $isnormalboard ? bbs_rss_link($brd_encode, $ftype) : "";
+	if ($adds) {
+		$adds = '<link title="경충 RSS'	. $dir_name[$ftype] 
+		      . '" type="application/rss+xml" rel="alternate" href="' . $adds . '"/>';
+	}
+	if ($ftype == 0) {
+		$adds .= "<meta name='kbsrc.doc' content='".$brdarr["BID"]."'/>";
+	}
+	if (!$adds) $adds = false;
+	page_header($brdarr["NAME"] . " 경" . $dir_name[$ftype], FALSE, $adds);
 ?>
 <body><div class="nav smaller">
 <div class="fleft">

@@ -149,7 +149,10 @@
 		exit;
 	}
 
-	page_header("тд╤андуб".$dir_name[$ftype], "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>");
+	$page_title = "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>";
+	$metas = false;
+	$metas = "<meta name='kbsrc.con' content='$brdnum,$id'/>";
+	page_header("тд╤андуб".$dir_name[$ftype], $page_title, $metas);
 ?>
 <h1><?php echo $brdarr["NAME"]; ?> ╟Ф <?php echo $dir_name[$ftype]; ?></h1>
 <script type="text/javascript"><!--

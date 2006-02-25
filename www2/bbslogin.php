@@ -50,6 +50,7 @@ if ($data["userid"] != "guest") {
 	if ($mbids) {
 		setcookie("MANAGEBIDS", $mbids,0,"/");
 	}
+	header("Set-KBSRC: " . $data["userid"]);
 }
 setcookie("UTMPKEY",$data["utmpkey"],0,"/");
 setcookie("UTMPNUM",$num,0,"/");
