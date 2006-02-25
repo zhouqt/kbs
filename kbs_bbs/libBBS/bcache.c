@@ -249,6 +249,17 @@ int apply_boards(int (*func) (struct boardheader *, void* ),void* arg)
     return 0;
 }
 
+int apply_bids(int (*func) (struct boardheader* bh,int bid, void* arg),void* arg)
+{
+    register int i;
+
+    for (i = 0; i < brdshm->numboards; i++)
+            if (bcache[i].filename[0])
+                if ((*func) (&bcache[i],i+1,arg) == QUIT)
+                    return QUIT;
+    return 0;
+}
+
 int fill_super_board(struct userec* user,char *searchname, int result[], int max)
 {
 	register int i;

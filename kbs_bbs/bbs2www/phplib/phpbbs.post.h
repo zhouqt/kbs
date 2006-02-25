@@ -27,6 +27,7 @@ PHP_FUNCTION(bbs_docommend);
 
 PHP_FUNCTION(bbs_brcaddread);
 PHP_FUNCTION(bbs_brcclear);
+PHP_FUNCTION(bbs2_brcdump);
 
 
 
@@ -51,7 +52,9 @@ PHP_FUNCTION(bbs_brcclear);
     PHP_FE(bbs_docross,NULL) \
     PHP_FE(bbs_docommend,NULL) \
     PHP_FE(bbs_brcaddread, NULL) \
-    PHP_FE(bbs_brcclear, NULL)
+    PHP_FE(bbs_brcclear, NULL) \
+    PHP_FE(bbs2_brcdump, NULL) \
+
 
 #endif //PHP_BBS_POST_H
 

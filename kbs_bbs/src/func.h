@@ -284,6 +284,7 @@ void unlock_sem_check(int lockid);
     int add_board(struct boardheader *newboard);
     void build_board_structure(const char *board);
     int apply_boards(int (*func) (struct boardheader*,void*),void* arg);   /* 对所有版 应用 func函数 */
+    int apply_bids(int (*func) (struct boardheader* bh,int bid, void* arg),void* arg);
     int delete_board(char *boardname, session_t* session);     /* delete board entry */
     struct boardheader const *getboard(int num);
     int set_board(int bid, struct boardheader *board, struct boardheader *oldbh);

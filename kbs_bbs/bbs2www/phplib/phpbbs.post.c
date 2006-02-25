@@ -1277,3 +1277,36 @@ PHP_FUNCTION(bbs_brcclear)
 #endif
     RETURN_TRUE;
 }
+
+
+static int brcdump(struct boardheader *bh, int bid, void* arg)
+{
+    char **dumpstr = (char **)arg;
+    int n;
+    int *pn;
+    if (!public_board(bh)) return 0;
+    sprintf(*dumpstr, "%8.8x", bid);
+    *dumpstr += 8;
+    brc_initial(getCurrentUser()->userid, bh->filename, getSession());
+    pn = getSession()->brc_cache_entry[getSession()->brc_currcache].list;
+    for (n = 0; n < BRC_MAXNUM; n++) {
+        sprintf(*dumpstr, "%8.8x", *pn);
+        *dumpstr += 8;
+        pn++;
+    }
+    return 0;
+}
+
+PHP_FUNCTION(bbs2_brcdump)
+{
+    char dumpstr[MAXBOARD * (BRC_MAXNUM + 1) * 8 + 1];
+    char *dumpptr = dumpstr;
+
+    if (!strcmp(getCurrentUser()->userid, "guest")) {
+        RETURN_NULL();
+    }
+#ifdef HAVE_BRC_CONTROL
+    apply_bids(brcdump, &dumpptr);
+#endif
+    RETURN_STRING(dumpstr, 1);
+}

@@ -62,7 +62,7 @@ var kbsrcHttpRequest = function(host) {
 kbsrcHttpRequest.prototype = {
 	onStateChange : function() {
         if (this.req.readyState == 4 && this.req.status == 200) {
-        	alert(this.host);
+        	alert(this.req.responseText.length);
         }
     }
 };
@@ -72,22 +72,21 @@ var kbsrcInit = function() {
 	browser.addEventListener("DOMContentLoaded", kbsrcPageLoadedHandler, true);
 	
 	var hw = new kbsrcHTTPHeaderWatcher();
-    var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-    observerService.addObserver(hw, "http-on-examine-response", false);
+	var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+	observerService.addObserver(hw, "http-on-examine-response", false);
     
-    gKbsrcData = new Array();
+	gKbsrcData = new Array();
     
-    var self = this;
-    setInterval(function() {
-    	var host, o;
-    	for (host in gKbsrcData) {
-    		o = gKbsrcData[host];
-    		if (o.lastUserid != o.userid) {
-    			o.userid = o.lastUserid;
+	setInterval(function() {
+		var host, o;
+		for (host in gKbsrcData) {
+			o = gKbsrcData[host];
+			if (o.lastUserid != o.userid) {
+				o.userid = o.lastUserid;
 				new kbsrcHttpRequest(host);
-    		}    		
-    	}
-    }, 1000);
+			}    		
+		}
+	}, 1000);
 };
 
 window.addEventListener("load", kbsrcInit, false); 
