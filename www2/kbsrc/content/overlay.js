@@ -1,12 +1,16 @@
-/* TODO: 意外断线的情况：需要检查 cookie */
-function KBSRC() {}
-KBSRC.prototype = {
-	data: false,
-	BRCMaxItem: 50,
-	isUnread: function(host, bid, id) {
-		var lst = this.data[host].rc[bid];
+function kbsrcHost(host, userid) {
+	this.host = host;
+	this.lastSync = false;
+	this.rc = new Object();
+	this.dirty = new Object();
+	this.userid = userid;
+}
+kbsrcHost.prototype = {
+	/* TODO: 意外断线的情况：需要检查 cookie */
+	isUnread: function(bid, id) {
+		var lst = this.rc[bid];
 		if (!lst) return false;
-		for(var n=0; n<this.BRCMaxItem; n++) {
+		for(var n=0; n<kbsrc.BRCMaxItem; n++) {
 			if (lst[n] == 0) {
 				if (n == 0) return true;
 				return false;
@@ -19,19 +23,20 @@ KBSRC.prototype = {
 		}
 		return false;
 	},
-	addRead: function(host, bid, id) {
-		var lst = this.data[host].rc[bid];
+	addRead: function(bid, id) {
+		kbsrc.debugOut(bid + "," + id + " read.", this);
+		var lst = this.rc[bid];
 		var n;
 		if (!lst) return;
-		for(n=0; n<this.BRCMaxItem && lst[n]; n++) {
+		for(n=0; n<kbsrc.BRCMaxItem && lst[n]; n++) {
 			if (id == lst[n]) {
 				return;
 			} else if (id > lst[n]) {
-				for (var i=this.BRCMaxItem-1; i>n; i--) {
+				for (var i=kbsrc.BRCMaxItem-1; i>n; i--) {
 					lst[i] = lst[i-1];
 				}
 				lst[n] = id;
-				this.data[host].dirty[bid] = true;
+				this.dirty[bid] = true;
 				return;
 			}
 		}
@@ -39,22 +44,78 @@ KBSRC.prototype = {
 			lst[0] = id;
 			lst[1] = 1;
 			lst[2] = 0;
-			this.data[host].dirty[bid] = true;
+			this.dirty[bid] = true;
+		}
+	},	
+	getSyncString: function() {
+		var bid, j, str = "";
+		for(bid in this.dirty) {
+			if (this.dirty[bid]) {
+				var lst = this.rc[bid];
+				str += kbsrc.toHex(bid, 4);
+				for (j=0; j<kbsrc.BRCMaxItem; j++) if (lst[j] == 0) break;
+				str += kbsrc.toHex(j, 4);
+				for (j=0; j<kbsrc.BRCMaxItem; j++) {
+					if (lst[j] == 0) break;
+					str += kbsrc.toHex(lst[j], 8);
+				}
+			}
+		}
+		return str;
+	},
+	trySync: function() {
+		var str = this.getSyncString();
+		if (str) {
+			this.sync(function() {
+				//alert("RC Saved");
+			});
 		}
 	},
+	sync: function(callback) {
+		var req = new XMLHttpRequest();
+		req.oHost = this;
+		req.callback = callback;
+		req.onload = function(event) {
+			var self = event.target;
+	    	var i=0,j,rc = self.responseText;
+	    	if (rc.length == 0) return;
+	    	try {
+	    		while(i<rc.length) {
+	    			var bid = parseInt(rc.substr(i, 4), 16);
+	    			var n = parseInt(rc.substr(i+4, 4), 16);
+	    			self.oHost.rc[bid] = new Array();
+	    			self.oHost.dirty[bid] = false;
+	    			for (j=0; j<kbsrc.BRCMaxItem; j++) self.oHost.rc[bid][j] = 0;
+	    			for (j=0; j<n; j++) {
+	    				self.oHost.rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
+	    			}
+	    			i += 8 + n * 8;
+	    		}
+	    		kbsrc.debugOut("sync OK.", self.oHost);
+	    	} catch(e) {
+	    		kbsrc.debugOut("sync error.", self.oHost);
+	    	}
+	    	self.oHost.lastSync = (new Date()).getTime();
+	    	if (self.callback) self.callback();
+		};
+		/* TODO: use relative path */
+		req.open("POST", "http://" + this.host + "/kbsrc.php", callback ? false : true);
+		req.send(this.getSyncString());
+	}
+};
+
+function KBSRC() {}
+KBSRC.prototype = {
+	BRCMaxItem: 50,
+	hosts: false,
 	timer : function() {
-		var host, o, now = (new Date()).getTime();
-		for (host in this.data) {
-			o = this.data[host];
-			if (!o) continue;
-			if (o.lastUserid != o.userid) {
-				o.userid = o.lastUserid;
-				new kbsrcHttpRequest(host);
-			} else {
-				if (now - o.lastSync > 600000) {
-					o.lastSync = now;
-					new kbsrcHttpRequest(host);
-				}
+		var host, now = (new Date()).getTime();
+		for (host in this.hosts) {
+			var oHost = this.hosts[host];
+			if (!oHost) continue;
+			if (now - oHost.lastSync > 600000) {
+				oHost.lastSync = now;
+				oHost.sync();
 			}
 		}
 	},
@@ -66,12 +127,14 @@ KBSRC.prototype = {
 		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
 		observerService.addObserver(hw, "http-on-examine-response", false);
 	    
-		this.data = new Object();
+		this.hosts = new Object();
 	    
 	    var self = this;
 		setInterval(function() {
 			self.timer.call(self);
 		}, 1000);
+		
+		kbsrc.debugOut("Loaded OK.");
 	},
 	hexD: "0123456789ABCDEF",
 	toHex: function(num, digits) {
@@ -83,62 +146,13 @@ KBSRC.prototype = {
 		}
 		return ret;
 	},
-	getSyncString: function(host) {
-		var bid, j, str = "";
-		if (kbsrc.data[host]) {
-			for(bid in kbsrc.data[host].dirty) {
-				if (kbsrc.data[host].dirty[bid]) {
-					var lst = kbsrc.data[host].rc[bid];
-					str += kbsrc.toHex(bid, 4);
-					for (j=0; j<kbsrc.BRCMaxItem; j++) if (lst[j] == 0) break;
-					str += kbsrc.toHex(j, 4);
-					for (j=0; j<kbsrc.BRCMaxItem; j++) {
-						if (lst[j] == 0) break;
-						str += kbsrc.toHex(lst[j], 8);
-					}
-				}
-			}
-		}
-		return str;
-	},
-	trySync: function(host, doc) {
-		var str = this.getSyncString(host);
-		if (str) {
-			new kbsrcHttpRequest(host, function() {
-				//alert("RC Saved");
-			});
-		}
+	debugOut: function(str, oHost) {
+		var now = new Date();
+		var d = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+		var d1 = "";
+		if (oHost) d1 = oHost.host + "(" + oHost.userid + ") ";
+		dump("KBSRC: [" + d + "] " + d1 + str + "\n");
 	}
-};
-
-var kbsrcHttpRequest = function(host, callback) {
-	var req = new XMLHttpRequest();
-	var bid, n, j;
-	req.host = host;
-	req.callback = callback;
-	req.onload = function(event) {
-		var self = event.target;
-    	var i=0,rc = self.responseText;
-    	try {
-    		while(i<rc.length) {
-    			bid = parseInt(rc.substr(i, 4), 16);
-    			n = parseInt(rc.substr(i+4, 4), 16);
-    			kbsrc.data[self.host].rc[bid] = new Array();
-    			kbsrc.data[self.host].dirty[bid] = false;
-    			for (j=0; j<kbsrc.BRCMaxItem; j++) kbsrc.data[self.host].rc[bid][j] = 0;
-    			for (j=0; j<n; j++) {
-    				kbsrc.data[self.host].rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
-    			}
-    			i += 8 + n * 8;
-    		}
-    	} catch(e) {}
-    	kbsrc.data[self.host].lastSync = (new Date()).getTime();
-    	if (self.callback) self.callback();
-	};
-	var str = kbsrc.getSyncString(host);
-	/* TODO: use relative path */
-	req.open("POST", "http://" + host + "/kbsrc.php", callback ? false : true);
-	req.send(str);
 }
 	
 var kbsrcPageLoadedHandler = function(event) {
@@ -152,7 +166,8 @@ var kbsrcPageLoadedHandler = function(event) {
 	if(!/^(?:https|http)\:$/.test(protocol)) return;
 	
 	const host = doc.location.host;
-	if (!kbsrc.data[host]) return;
+	const oHost = kbsrc.hosts[host];
+	if (!oHost) return;
 
 	var metas = doc.getElementsByTagName("meta");
 	for(var i = 0; i < metas.length; i++) {
@@ -163,7 +178,7 @@ var kbsrcPageLoadedHandler = function(event) {
 				var td = tds[j];
 				if (td.id.substr(0, 5) != "kbsrc") continue;
 				var thisid = td.id.substr(5);
-				if (kbsrc.isUnread(host, bid, thisid)) td.innerHTML += "*";
+				if (oHost.isUnread(bid, thisid)) td.innerHTML += "*";
 			}
 			break;
 		} else if (metas[i].name == "kbsrc.con") {
@@ -175,11 +190,11 @@ var kbsrcPageLoadedHandler = function(event) {
 					
 				}
 			} else {
-				kbsrc.addRead(host, bid, thisid);
+				oHost.addRead(bid, thisid);
 			}
 		} else if (metas[i].name == "kbsrc.menu") {
 			var f = doc.getElementById("logoutlink");
-			if (f) f.addEventListener("click", function() { kbsrc.trySync(host, doc); }, false);
+			if (f) f.addEventListener("click", function() { oHost.trySync(); }, false);
 		}
 	}
 };
@@ -200,14 +215,9 @@ kbsrcHTTPHeaderWatcher.prototype = {
 		if (value) {
 			var host = oHttp.URI.host;
 			if (value == "/") {
-				kbsrc.data[host] = false;
+				kbsrc.hosts[host] = false;
 			} else {
-				kbsrc.data[host] = new Object();
-				kbsrc.data[host].lastUserid = false;
-				kbsrc.data[host].lastSync = false;
-	        	kbsrc.data[host].rc = new Object();
-	        	kbsrc.data[host].dirty = new Object();
-				kbsrc.data[host].userid = value;
+				kbsrc.hosts[host] = new kbsrcHost(host, value);
 			}
 		}
 	}
