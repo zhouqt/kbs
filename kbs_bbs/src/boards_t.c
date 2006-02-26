@@ -359,6 +359,7 @@ static int check_newpost(struct newpostdata *ptr)
         }
     }
 #endif
+    ptr->lastpost = bptr->lastpost;
     return 1;
 }
 

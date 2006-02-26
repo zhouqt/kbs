@@ -23,6 +23,7 @@ struct newpostdata {
     int total, tag;
     int currentusers;
     char unread, zap;
+    int lastpost;
     int (*fptr) ();
 };
 
