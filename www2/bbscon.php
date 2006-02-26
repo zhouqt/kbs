@@ -166,6 +166,6 @@ o.h(0);o.t();
 //-->
 </script>
 <?php
-	if ($ftype==0) bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
+	//if ($ftype==0) bbs_brcaddread($brdarr["NAME"], $articles[1]["ID"]);
 	page_footer();
 ?>

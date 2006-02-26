@@ -1,46 +1,134 @@
-var gKbsrcData = false;
-var gBRCMaxItem = 50;
-
-function unread(host, bid, id) {
-	var lst = gKbsrcData[host].rc[bid];
-	for(var n=0; n<gBRCMaxItem; n++) {
-		if (lst[n] == 0) {
-			if (n == 0) return true;
-			return false;
-		}
-		if (id > lst[n]) {
-			return true;
-		} else if (id == lst[n]) {
-			return false;
-		}
-	}
-	return false;
-}
-function addread(host, bid, id) {
-	var lst = gKbsrcData[host].rc[bid];
-	var n;
-	for(n=0; n<gBRCMaxItem && lst[n]; n++) {
-		if (id == lst[n]) {
-			return;
-		} else if (id > lst[n]) {
-			for (var i=gBRCMaxItem-1; i>n; i--) {
-				lst[i] = lst[i-1];
+/* TODO: 意外断线的情况：需要检查 cookie */
+function KBSRC() {}
+KBSRC.prototype = {
+	data: false,
+	BRCMaxItem: 50,
+	isUnread: function(host, bid, id) {
+		var lst = this.data[host].rc[bid];
+		if (!lst) return false;
+		for(var n=0; n<this.BRCMaxItem; n++) {
+			if (lst[n] == 0) {
+				if (n == 0) return true;
+				return false;
 			}
-			lst[n] = id;
-			gKbsrcData[host].dirty[bid] = true;
-			return;
+			if (id > lst[n]) {
+				return true;
+			} else if (id == lst[n]) {
+				return false;
+			}
+		}
+		return false;
+	},
+	addRead: function(host, bid, id) {
+		var lst = this.data[host].rc[bid];
+		var n;
+		if (!lst) return;
+		for(n=0; n<this.BRCMaxItem && lst[n]; n++) {
+			if (id == lst[n]) {
+				return;
+			} else if (id > lst[n]) {
+				for (var i=this.BRCMaxItem-1; i>n; i--) {
+					lst[i] = lst[i-1];
+				}
+				lst[n] = id;
+				this.data[host].dirty[bid] = true;
+				return;
+			}
+		}
+		if (n==0) {
+			lst[0] = id;
+			lst[1] = 1;
+			lst[2] = 0;
+			this.data[host].dirty[bid] = true;
+		}
+	},
+	timer : function() {
+		var host, o, now = (new Date()).getTime();
+		for (host in this.data) {
+			o = this.data[host];
+			if (!o) continue;
+			if (o.lastUserid != o.userid) {
+				o.userid = o.lastUserid;
+				new kbsrcHttpRequest(host);
+			} else {
+				if (now - o.lastSync > 10000) {
+					o.lastSync = now;
+					new kbsrcHttpRequest(host);
+				}
+			}
+		}
+	},
+	init : function() {
+		var browser = gBrowser;
+		browser.addEventListener("DOMContentLoaded", kbsrcPageLoadedHandler, true);
+		
+		var hw = new kbsrcHTTPHeaderWatcher();
+		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+		observerService.addObserver(hw, "http-on-examine-response", false);
+	    
+		this.data = new Object();
+	    
+	    var self = this;
+		setInterval(function() {
+			self.timer.call(self);
+		}, 1000);
+	},
+	hexD: "0123456789ABCDEF",
+	toHex: function(num, digits) {
+		var ret = "";
+		while(digits>0) {
+			ret = this.hexD.substr(num & 15, 1) + ret;
+			num >>= 4;
+			digits--;
+		}
+		return ret;
+	}
+};
+
+var kbsrcHttpRequest = function(host) {
+	var req = new XMLHttpRequest();
+	var bid, n, j;
+	req.host = host;
+	req.onload = function(event) {
+		var self = event.target;
+    	var i=0,rc = self.responseText;
+    	try {
+    		while(i<rc.length) {
+    			bid = parseInt(rc.substr(i, 4), 16);
+    			n = parseInt(rc.substr(i+4, 4), 16);
+    			kbsrc.data[self.host].rc[bid] = new Array();
+    			kbsrc.data[self.host].dirty[bid] = false;
+    			for (j=0; j<kbsrc.BRCMaxItem; j++) kbsrc.data[self.host].rc[bid][j] = 0;
+    			for (j=0; j<n; j++) {
+    				kbsrc.data[self.host].rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
+    			}
+    			i += 8 + n * 8;
+    		}
+    	} catch(e) {}
+    	kbsrc.data[self.host].lastSync = (new Date()).getTime();
+	};
+	var str = "";
+	if (kbsrc.data[host]) {
+		for(bid in kbsrc.data[host].dirty) {
+			if (kbsrc.data[host].dirty[bid]) {
+				var lst = kbsrc.data[host].rc[bid];
+				str += kbsrc.toHex(bid, 4);
+				for (j=0; j<kbsrc.BRCMaxItem; j++) if (lst[j] == 0) break;
+				str += kbsrc.toHex(j, 4);
+				for (j=0; j<kbsrc.BRCMaxItem; j++) {
+					if (lst[j] == 0) break;
+					str += kbsrc.toHex(lst[j], 8);
+				}
+			}
 		}
 	}
-	if (n==0) {
-		lst[0] = id;
-		lst[1] = 1;
-		lst[2] = 0;
-		gKbsrcData[host].dirty[bid] = true;
-	}
+	/* TODO: use relative path */
+	req.open("POST", "http://" + host + "/kbsrc.php", true);
+	req.send(str);
 }
-
+	
 var kbsrcPageLoadedHandler = function(event) {
-	var doc = event.originalTarget;
+	const doc = event.originalTarget;
 	if(!(doc instanceof HTMLDocument)) return;
 	
 	if(doc._kbsrc_haveChecked) return;
@@ -49,8 +137,8 @@ var kbsrcPageLoadedHandler = function(event) {
 	const protocol = doc.location.protocol;
 	if(!/^(?:https|http)\:$/.test(protocol)) return;
 	
-	var host = doc.location.host;
-	if (!gKbsrcData[host]) return;
+	const host = doc.location.host;
+	if (!kbsrc.data[host]) return;
 
 	var metas = doc.getElementsByTagName("meta");
 	for(var i = 0; i < metas.length; i++) {
@@ -61,7 +149,7 @@ var kbsrcPageLoadedHandler = function(event) {
 				var td = tds[j];
 				if (td.id.substr(0, 5) != "kbsrc") continue;
 				var thisid = td.id.substr(5);
-				if (unread(host, bid, thisid)) td.innerHTML += "*";
+				if (kbsrc.isUnread(host, bid, thisid)) td.innerHTML += "*";
 			}
 			break;
 		} else if (metas[i].name == "kbsrc.con") {
@@ -73,8 +161,11 @@ var kbsrcPageLoadedHandler = function(event) {
 					
 				}
 			} else {
-				addread(host, bid, thisid);
+				kbsrc.addRead(host, bid, thisid);
 			}
+		} else if (metas[i].name == "kbsrc.menu") {
+			var f = doc.getElementById("logoutlink");
+			if (f) doc.kbsrc = kbsrc;
 		}
 	}
 };
@@ -94,70 +185,19 @@ kbsrcHTTPHeaderWatcher.prototype = {
 		} catch(e) {}
 		if (value) {
 			var host = oHttp.URI.host;
-			if (!gKbsrcData[host]) {
-				gKbsrcData[host] = new Object();
-				gKbsrcData[host].lastUserid = false;
+			if (value == "/") {
+				kbsrc.data[host] = false;
+			} else {
+				kbsrc.data[host] = new Object();
+				kbsrc.data[host].lastUserid = false;
+				kbsrc.data[host].lastSync = false;
+	        	kbsrc.data[host].rc = new Object();
+	        	kbsrc.data[host].dirty = new Object();
+				kbsrc.data[host].userid = value;
 			}
-			gKbsrcData[host].userid = ((value == "/") ? false : value);
 		}
 	}
 };
 
-var kbsrcHttpRequest = function(host) {
-	this.host = host;
-	this.req = new XMLHttpRequest();
-	
-	var self = this;
-	this.req.onreadystatechange = function() {
-		self.onStateChange.call(self);
-	};
-	/* TODO: relative path */
-	this.req.open("GET", "http://" + host + "/kbsrc.php", true);
-	this.req.send(null);
-}
-kbsrcHttpRequest.prototype = {
-	onStateChange : function() {
-        if (this.req.readyState == 4 && this.req.status == 200) {
-        	gKbsrcData[this.host].rc = new Array();
-        	gKbsrcData[this.host].dirty = new Array();
-        	var i=0,j,rc = this.req.responseText;
-        	try {
-        		while(i<rc.length) {
-        			var bid = parseInt(rc.substr(i, 4), 16);
-        			var n = parseInt(rc.substr(i+4, 4), 16);
-        			gKbsrcData[this.host].rc[bid] = new Array();
-        			gKbsrcData[this.host].dirty[bid] = false;
-        			for (j=0; j<gBRCMaxItem; j++) gKbsrcData[this.host].rc[bid][j] = 0;
-        			for (j=0; j<n; j++) {
-        				gKbsrcData[this.host].rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
-        			}
-        			i += 8 + n * 8;
-        		}
-        	} catch(e) {}
-        }
-    }
-};
-
-var kbsrcInit = function() {
-	var browser = gBrowser;
-	browser.addEventListener("DOMContentLoaded", kbsrcPageLoadedHandler, true);
-	
-	var hw = new kbsrcHTTPHeaderWatcher();
-	var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-	observerService.addObserver(hw, "http-on-examine-response", false);
-    
-	gKbsrcData = new Array();
-    
-	setInterval(function() {
-		var host, o;
-		for (host in gKbsrcData) {
-			o = gKbsrcData[host];
-			if (o.lastUserid != o.userid) {
-				o.userid = o.lastUserid;
-				new kbsrcHttpRequest(host);
-			}    		
-		}
-	}, 1000);
-};
-
-window.addEventListener("load", kbsrcInit, false); 
+var kbsrc = new KBSRC();
+window.addEventListener("load", function() { kbsrc.init.call(kbsrc) }, false); 
