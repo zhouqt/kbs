@@ -23,6 +23,14 @@ kbsrcHost.prototype = {
 		}
 		return false;
 	},
+	clear: function(bid, lastpost) {
+		kbsrc.debugOut(bid + "," + lastpost + " clear.", this);
+		var lst = this.rc[bid];
+		if (!lst) return;
+		lst[0] = lastpost;
+		lst[1] = 0;
+		this.dirty[bid] = true;
+	},
 	addRead: function(bid, id) {
 		kbsrc.debugOut(bid + "," + id + " read.", this);
 		var lst = this.rc[bid];
@@ -46,7 +54,7 @@ kbsrcHost.prototype = {
 			lst[2] = 0;
 			this.dirty[bid] = true;
 		}
-	},	
+	},
 	getSyncString: function() {
 		var bid, j, str = "";
 		for(bid in this.dirty) {
@@ -200,7 +208,7 @@ var kbsrcPageLoadedHandler = function(event) {
 			var thisid = ids[1];
 			if (ids[2]) {
 				if (ids[2] == 'f') { //clear all
-					
+					oHost.clear(bid, thisid);
 				}
 			} else {
 				oHost.addRead(bid, thisid);

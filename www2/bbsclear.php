@@ -28,5 +28,11 @@ if ($brdarr["FLAG"]&BBS_BOARD_GROUP)
 	bbs_clear_donothing();
 
 bbs_brcclear($board);
-header('Location: bbsdoc.php?board='.urlencode($board));
+
+$id = $brdarr["LASTPOST"];
+$page_title = "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>";
+$metas =  "<meta http-equiv='refresh' content='0; url=bbsdoc.php?board=".urlencode($board)."'/>";
+$metas .= "<meta name='kbsrc.con' content='$bid,$id,f'/>";
+page_header("Çå³ýÎ´¶Á¼ÇÂ¼", $page_title, $metas);
+page_footer();
 ?>
