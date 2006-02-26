@@ -28,9 +28,7 @@ static void assign_board(zval * array, const struct boardheader *board, const st
 
 
 
-#define BOARD_COLUMNS 12
-
-char *brd_col_names[BOARD_COLUMNS] = {
+char *brd_col_names[] = {
     "NAME",
     "DESC",
     "CLASS",
@@ -41,25 +39,17 @@ char *brd_col_names[BOARD_COLUMNS] = {
     "BID",
     "POSITION",                  /* added by caltary */
     "FLAG" ,          /* is group ?*/
-	"NPOS" ,
-	"CURRENTUSERS"      /* added by atppp */
+    "NPOS" ,
+    "CURRENTUSERS",      /* added by atppp */
+    "LASTPOST"
 };
+#define BOARD_COLUMNS sizeof(brd_col_names)/sizeof(char *)
 
 /* added by caltary */
 #define favbrd_list_t (*(getSession()->favbrd_list_count))
 
-#if 0
-static void bbs_make_board_columns(zval ** columns)
-{
-    int i;
 
-    for (i = 0; i < BOARD_COLUMNS; i++) {
-        MAKE_STD_ZVAL(columns[i]);
-        ZVAL_STRING(columns[i], brd_col_names[i], 1);
-    }
-}
-#endif
-
+/* TODO: this is very stupid... need to speed it up */
 static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata *brd)
 {
     int len = strlen(col_name);
@@ -89,6 +79,8 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
         ZVAL_LONG(value, brd->pos);/*added end */
     } else if (strncmp(col_name, "CURRENTUSERS", len) == 0){
         ZVAL_LONG(value, brd->currentusers);
+    } else if (strncmp(col_name, "LASTPOST", len) == 0){
+        ZVAL_LONG(value, brd->lastpost);
     } else {
         ZVAL_EMPTY_STRING(value);
     }
@@ -135,6 +127,7 @@ static int check_newpost(struct newpostdata *ptr, bool no_brc)
         return 0;
     ptr->total = bptr->total;
     ptr->currentusers = bptr->currentusers;
+    ptr->lastpost = bptr->lastpost;
 
     if (!strcmp(getCurrentUser()->userid, "guest")) {
         ptr->unread = 1;
