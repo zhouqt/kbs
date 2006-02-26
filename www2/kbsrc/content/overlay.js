@@ -90,30 +90,30 @@ kbsrcHost.prototype = {
 		req.callback = callback;
 		req.onload = function(event) {
 			var self = event.target;
-	    	var i=0,j,rc = self.responseText;
-	    	self.oHost.setStatus(0);
-	    	if (rc.length == 0) {
-	    		kbsrc.debugOut("sync failed.", self.oHost);
-	    		return;
-	    	}
-	    	try {
-	    		while(i<rc.length) {
-	    			var bid = parseInt(rc.substr(i, 4), 16);
-	    			var n = parseInt(rc.substr(i+4, 4), 16);
-	    			self.oHost.rc[bid] = new Array();
-	    			self.oHost.dirty[bid] = false;
-	    			for (j=0; j<kbsrc.BRCMaxItem; j++) self.oHost.rc[bid][j] = 0;
-	    			for (j=0; j<n; j++) {
-	    				self.oHost.rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
-	    			}
-	    			i += 8 + n * 8;
-	    		}
-	    		kbsrc.debugOut("sync OK.", self.oHost);
-	    	} catch(e) {
-	    		kbsrc.debugOut("sync error.", self.oHost);
-	    	}
-	    	self.oHost.lastSync = (new Date()).getTime();
-	    	if (self.callback) self.callback();
+			var i=0,j,rc = self.responseText;
+			self.oHost.setStatus(0);
+			if (rc.length == 0) {
+				kbsrc.debugOut("sync failed.", self.oHost);
+				return;
+			}
+			try {
+				while(i<rc.length) {
+					var bid = parseInt(rc.substr(i, 4), 16);
+					var n = parseInt(rc.substr(i+4, 4), 16);
+					self.oHost.rc[bid] = new Array();
+					self.oHost.dirty[bid] = false;
+					for (j=0; j<kbsrc.BRCMaxItem; j++) self.oHost.rc[bid][j] = 0;
+					for (j=0; j<n; j++) {
+						self.oHost.rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
+					}
+					i += 8 + n * 8;
+				}
+				kbsrc.debugOut("sync OK.", self.oHost);
+			} catch(e) {
+				kbsrc.debugOut("sync error.", self.oHost);
+			}
+			self.oHost.lastSync = (new Date()).getTime();
+			if (self.callback) self.callback();
 		};
 		/* TODO: use relative path */
 		req.open("POST", "http://" + this.host + "/kbsrc.php", callback ? false : true);
@@ -181,10 +181,10 @@ KBSRC.prototype = {
 		var hw = new kbsrcHTTPHeaderWatcher();
 		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
 		observerService.addObserver(hw, "http-on-examine-response", false);
-	    
+		
 		this.hosts = new Object();
-	    
-	    var self = this;
+		
+		var self = this;
 		setInterval(function() {
 			self.timer.call(self);
 		}, 1000);
