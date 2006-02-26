@@ -48,7 +48,6 @@ else
 		$newbm = $_GET["bm"];
 	else
 		html_error_quit("²ÎÊı´íÎó¡£");
-	$p = strrpos($filename, "/");
 	$newfname = $oldfname;
 	
 }

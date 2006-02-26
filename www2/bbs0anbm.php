@@ -13,36 +13,7 @@ document.write('<tr><td align="center" colspan="7">该精华区目录没有文章。</td></
 <?php
 	}
 	else foreach ($articles as $article) {
-		switch($article['FLAG']) {
-			case 0:
-				$img = 'oldgroup.gif';
-				$alt = '错误';
-				$url = '';
-				break;
-			case 1:
-				$img = 'groupgroup.gif';
-				$alt = '目录';
-				$url = 'bbs0anbm.php?path='.rawurlencode($article['PATH']);
-				break;
-			case 2:
-			case 3:
-			default:
-				$img = 'newgroup.gif';
-				$alt = '文件';
-				$url = 'bbsanc.php?path='.rawurlencode($article['PATH']);
-		}
 		$title = htmlspecialchars(rtrim($article['TITLE']), ENT_QUOTES);
-		$col1 = 'putImageCode(\''.$img.'\',\'alt="'.$alt.'"\')';
-		if ($article['FLAG']==3)
-			$col2 = '<font color="red">@</font>';
-		else
-			$col2 = '&nbsp;';
-		if ($url)
-			$col2 .= '<a href="'.$url.'">'.$title.' </a>';
-		else
-			$col2 .= htmlformat($article['TITLE']).' ';
-		$col3 = trim($article['BM']);
-		$col4 = date('Y-m-d',$article['TIME']);
 		echo 'an.i(' . $article['FLAG'] . ',\'' . $title . '\',\'' . trim($article['BM']) . '\',\'' . rawurlencode($article['FNAME']) . '\',\'' . date('Y-m-d',$article['TIME']) . '\');';
 	}
 ?>
