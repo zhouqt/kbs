@@ -1278,7 +1278,7 @@ PHP_FUNCTION(bbs_brcclear)
     RETURN_TRUE;
 }
 
-
+#ifdef HAVE_BRC_CONTROL
 static int brcdump(struct boardheader *bh, int bid, void* arg)
 {
     char **dumpstr = (char **)arg;
@@ -1304,6 +1304,7 @@ static int brcdump(struct boardheader *bh, int bid, void* arg)
     }
     return 0;
 }
+#endif
 
 PHP_FUNCTION(bbs2_brcdump)
 {
@@ -1319,3 +1320,51 @@ PHP_FUNCTION(bbs2_brcdump)
     RETURN_STRING(dumpstr, 1);
 #endif
 }
+
+PHP_FUNCTION(bbs2_brcsync)
+{
+#ifdef HAVE_BRC_CONTROL
+    char *dumpstr;
+    char *enddump;
+    int dumpstr_len;
+    int bid, j, id, n;
+    const struct boardheader *bh;
+
+	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s/" , &dumpstr, &dumpstr_len) == FAILURE)
+		WRONG_PARAM_COUNT;
+
+    if (!strcmp(getCurrentUser()->userid, "guest")) {
+        RETURN_NULL();
+    }
+    enddump = dumpstr + dumpstr_len;
+
+#define READ_NEXT(var, len) \
+    do { \
+        char tmp; \
+        if (enddump - dumpstr < len) goto brcsync_faint; \
+        tmp = *(dumpstr + len); \
+        *(dumpstr + len) = 0; \
+        var = (int)strtol(dumpstr, NULL, 16); \
+        dumpstr += len; \
+        *dumpstr = tmp; \
+    } while(0)    
+
+    while(dumpstr < enddump) {
+        READ_NEXT(bid, 4);
+        READ_NEXT(n, 4);
+        if (n == 0) continue;
+        if (n < 0 || n > BRC_MAXNUM) goto brcsync_faint;
+        bh = getboard(bid);
+        if (bh == NULL) goto brcsync_faint;
+        if (!public_board(bh)) goto brcsync_faint;
+        brc_initial(getCurrentUser()->userid, bh->filename, getSession());
+        for (j=0; j<n; j++) {
+            READ_NEXT(id, 8);
+            brc_add_read(id, bid, getSession());
+        }
+    }
+brcsync_faint:
+    RETURN_NULL();
+#endif
+}
+
