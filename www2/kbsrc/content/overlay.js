@@ -180,7 +180,20 @@ var kbsrcPageLoadedHandler = function(event) {
 				var thisid = td.id.substr(5);
 				if (oHost.isUnread(bid, thisid)) td.innerHTML += "*";
 			}
-			break;
+		} else if (metas[i].name == "kbsrc.brd") {
+			var tds = doc.getElementsByTagName("td");
+			for (var j=0; j<tds.length; j++) {
+				var td = tds[j];
+				if (td.id.substr(0, 5) != "kbsrc") continue;
+				var as = td.id.substr(5).split("_");
+				var bid = parseInt(as[0]);
+				var lastpost = parseInt(as[1]);
+				var unread = oHost.isUnread(bid, lastpost);
+				var f = doc.getElementById("kbsrc"+bid+"u");
+				if (f) f.style.display = unread ? "block" : "none";
+				f = doc.getElementById("kbsrc"+bid+"r");
+				if (f) f.style.display = !unread ? "block" : "none";
+			}
 		} else if (metas[i].name == "kbsrc.con") {
 			var ids = metas[i].content.split(",");
 			var bid = ids[0];
@@ -195,7 +208,10 @@ var kbsrcPageLoadedHandler = function(event) {
 		} else if (metas[i].name == "kbsrc.menu") {
 			var f = doc.getElementById("logoutlink");
 			if (f) f.addEventListener("click", function() { oHost.trySync(); }, false);
+		} else {
+			continue;
 		}
+		break;
 	}
 };
 

@@ -20,7 +20,7 @@
 	if ($boards == FALSE)
 		html_error_quit("该目录尚未有版面");
 
-	page_header(constant("BBS_SECNAME".$group."_0"));
+	page_header(constant("BBS_SECNAME".$group."_0"), "", "<meta name='kbsrc.brd' content='' />");
 ?>
 <h1><?php echo constant("BBS_SECNAME".$group."_0"); ?>分区</h1>
 <table class="main wide adj">
@@ -36,6 +36,7 @@
 	$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
 	$brd_flag = $boards["FLAG"]; //flag
 	$brd_bid = $boards["BID"]; //flag
+	$brd_lastpost= $boards["LASTPOST"];
 	$rows = sizeof($brd_name);
 	if ($group2>0) {	
 ?>
@@ -85,13 +86,17 @@
 ?>
 <td> <script type="text/javascript">putImage('groupgroup.gif','alt="＋" title="版面组"');</script></td>
 <?php
-		} else if ($brd_unread[$i] == 1) {
-?>
-<td> <script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"');</script></td>
-<?php
 		} else {
+			$unread = ($brd_unread[$i] == 1);
+			$unread_tag = $unread ? "" : ' style="display: none"';
+			$read_tag = !$unread ? "" : ' style="display: none"';
+			$unread_tag .= ' id="kbsrc'.$brd_bid[$i].'u"';
+			$read_tag .= ' id="kbsrc'.$brd_bid[$i].'r"';
 ?>
-<td> <script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"');</script></td>
+<td id="kbsrc<?php echo $brd_bid[$i]; ?>_<?php echo $brd_lastpost[$i]; ?>">
+	<script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"<?php echo $unread_tag; ?>');</script>
+	<script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"<?php echo $read_tag; ?>');</script>
+</td>
 <?php
 		}
 ?>

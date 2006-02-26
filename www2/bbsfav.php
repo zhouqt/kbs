@@ -4,11 +4,12 @@
 	login_init();
 	bbs_session_modify_user_mode(BBS_MODE_SELECT);
 	if ($XX) {
-		page_header("新分类讨论区");
+		$page_title = "新分类讨论区";
 	} else {
 		assert_login();
-		page_header($currentuser["userid"] . " 的收藏夹");
+		$page_title = $currentuser["userid"] . " 的收藏夹";
 	}
+	page_header($page_title, "", "<meta name='kbsrc.brd' content='' />");
 
 	if (isset($_GET["select"]))
 		$select = $_GET["select"];
@@ -67,6 +68,7 @@
 	$brd_npos= $boards["NPOS"];//位置
 	$brd_flag= $boards["FLAG"];//目录标识
 	$brd_bid= $boards["BID"];//目录标识
+	$brd_lastpost= $boards["LASTPOST"];
 	$rows = sizeof($brd_name);
 	if($select != 0)
 	{
@@ -98,17 +100,18 @@
 <?php
 		continue;
 	}
-	if ($brd_unread[$i] == 1) {
+	$unread = ($brd_unread[$i] == 1);
+	$unread_tag = $unread ? "" : ' style="display: none"';
+	$read_tag = !$unread ? "" : ' style="display: none"';
+	$unread_tag .= ' id="kbsrc'.$brd_bid[$i].'u"';
+	$read_tag .= ' id="kbsrc'.$brd_bid[$i].'r"';
 ?>
-<td> <script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"');</script></td>
-<td>
-<?php                              
-	} else {
-?>
-<td> <script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"');</script></td>
+<td id="kbsrc<?php echo $brd_bid[$i]; ?>_<?php echo $brd_lastpost[$i]; ?>">
+	<script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"<?php echo $unread_tag; ?>');</script>
+	<script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"<?php echo $read_tag; ?>');</script>
+</td>
 <td>
 <?php
-	}
 		if ($brd_zapped[$i] == 1)
 				echo "*";
 		else
