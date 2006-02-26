@@ -143,6 +143,13 @@
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
+<?php
+if($currentuser["userid"]!="guest") {
+?>
+<meta name="kbsrc.menu" content="" />
+<?php
+}
+?>
 <script type="text/javascript" src="www2-main.js"></script>
 <script type="text/javascript"><!--
 	writeCssLeft();
@@ -383,7 +390,7 @@
 	if($currentuser["userid"]!="guest"){
 ?>
 	<img src="images/open.gif" class="pm" alt="-"
-	><a href="bbslogout.php" target="_top"><script type="text/javascript">putImage('i_exit.gif','class="sfolder"');</script>离开本站</a><br/>
+	><a href="bbslogout.php" id="logoutlink" target="_top"><script type="text/javascript">putImage('i_exit.gif','class="sfolder"');</script>离开本站</a><br/>
 <?php
 	}
 ?>

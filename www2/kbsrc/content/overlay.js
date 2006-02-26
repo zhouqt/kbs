@@ -51,7 +51,7 @@ KBSRC.prototype = {
 				o.userid = o.lastUserid;
 				new kbsrcHttpRequest(host);
 			} else {
-				if (now - o.lastSync > 10000) {
+				if (now - o.lastSync > 600000) {
 					o.lastSync = now;
 					new kbsrcHttpRequest(host);
 				}
@@ -82,13 +82,40 @@ KBSRC.prototype = {
 			digits--;
 		}
 		return ret;
+	},
+	getSyncString: function(host) {
+		var bid, j, str = "";
+		if (kbsrc.data[host]) {
+			for(bid in kbsrc.data[host].dirty) {
+				if (kbsrc.data[host].dirty[bid]) {
+					var lst = kbsrc.data[host].rc[bid];
+					str += kbsrc.toHex(bid, 4);
+					for (j=0; j<kbsrc.BRCMaxItem; j++) if (lst[j] == 0) break;
+					str += kbsrc.toHex(j, 4);
+					for (j=0; j<kbsrc.BRCMaxItem; j++) {
+						if (lst[j] == 0) break;
+						str += kbsrc.toHex(lst[j], 8);
+					}
+				}
+			}
+		}
+		return str;
+	},
+	trySync: function(host, doc) {
+		var str = this.getSyncString(host);
+		if (str) {
+			new kbsrcHttpRequest(host, function() {
+				//alert("RC Saved");
+			});
+		}
 	}
 };
 
-var kbsrcHttpRequest = function(host) {
+var kbsrcHttpRequest = function(host, callback) {
 	var req = new XMLHttpRequest();
 	var bid, n, j;
 	req.host = host;
+	req.callback = callback;
 	req.onload = function(event) {
 		var self = event.target;
     	var i=0,rc = self.responseText;
@@ -106,24 +133,11 @@ var kbsrcHttpRequest = function(host) {
     		}
     	} catch(e) {}
     	kbsrc.data[self.host].lastSync = (new Date()).getTime();
+    	if (self.callback) self.callback();
 	};
-	var str = "";
-	if (kbsrc.data[host]) {
-		for(bid in kbsrc.data[host].dirty) {
-			if (kbsrc.data[host].dirty[bid]) {
-				var lst = kbsrc.data[host].rc[bid];
-				str += kbsrc.toHex(bid, 4);
-				for (j=0; j<kbsrc.BRCMaxItem; j++) if (lst[j] == 0) break;
-				str += kbsrc.toHex(j, 4);
-				for (j=0; j<kbsrc.BRCMaxItem; j++) {
-					if (lst[j] == 0) break;
-					str += kbsrc.toHex(lst[j], 8);
-				}
-			}
-		}
-	}
+	var str = kbsrc.getSyncString(host);
 	/* TODO: use relative path */
-	req.open("POST", "http://" + host + "/kbsrc.php", true);
+	req.open("POST", "http://" + host + "/kbsrc.php", callback ? false : true);
 	req.send(str);
 }
 	
@@ -165,7 +179,7 @@ var kbsrcPageLoadedHandler = function(event) {
 			}
 		} else if (metas[i].name == "kbsrc.menu") {
 			var f = doc.getElementById("logoutlink");
-			if (f) doc.kbsrc = kbsrc;
+			if (f) f.addEventListener("click", function() { kbsrc.trySync(host, doc); }, false);
 		}
 	}
 };
