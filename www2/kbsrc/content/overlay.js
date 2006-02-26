@@ -178,18 +178,33 @@ KBSRC.prototype = {
 		browser.addEventListener("select", kbsrcTabSelectedHandler, false);
 		browser.addEventListener("pageshow", kbsrcPageShowHandler, false);
 
-		var hw = new kbsrcHTTPHeaderWatcher();
+		this.hWatcher = new kbsrcHTTPHeaderWatcher();
 		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
-		observerService.addObserver(hw, "http-on-examine-response", false);
+		observerService.addObserver(this.hWatcher, "http-on-examine-response", false);
 		
 		this.hosts = new Object();
 		
 		var self = this;
-		setInterval(function() {
+		this.hTimer = setInterval(function() {
 			self.timer.call(self);
 		}, 1000);
 		
 		kbsrc.debugOut("Loaded OK.");
+	},
+	deinit : function() {
+		var browser = gBrowser;
+		browser.removeEventListener("DOMContentLoaded", kbsrcPageLoadedHandler, true);
+		browser.removeEventListener("select", kbsrcTabSelectedHandler, false);
+		browser.removeEventListener("pageshow", kbsrcPageShowHandler, false);
+
+		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
+		observerService.removeObserver(this.hWatcher, "http-on-examine-response", false);
+
+		this.hosts = false;
+		
+		clearInterval(this.hTimer);
+		
+		kbsrc.debugOut("Unloaded OK.");
 	}
 }
 
@@ -300,3 +315,4 @@ kbsrcHTTPHeaderWatcher.prototype = {
 
 var kbsrc = new KBSRC();
 window.addEventListener("load", function() { kbsrc.init.call(kbsrc) }, false); 
+window.addEventListener("unload", function() { kbsrc.deinit.call(kbsrc) }, false); 
