@@ -780,9 +780,10 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 		}
 	} else {
 		if (!this.man && this.normalB && (bf == 'N' || bf == '*')) flag = ' ' + flag.charAt(1);
+		flag = '<span id="kbsrc' + id + '">' + flag + '</span>';
 		if (this.man && (imported == 1))
 			flag += putImageCode('imported.gif', '');
-		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center" id="kbsrc' + id + '">' + flag + '</td>';
+		str += '<td class="center">' + (this.num + this.start) + '</td><td class="center">' + flag + '</td>';
 		if (this.man) {
 			str += '<td class="center"><input type="checkbox" name="art' + this.num + '" value="' + cb_value + '" /></td>';
 		}

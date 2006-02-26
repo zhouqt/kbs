@@ -181,12 +181,19 @@ var kbsrcPageLoadedHandler = function(event) {
 	for(var i = 0; i < metas.length; i++) {
 		if (metas[i].name == "kbsrc.doc") {
 			var bid = metas[i].content;
-			var tds = doc.getElementsByTagName("td");
-			for (var j=0; j<tds.length; j++) {
-				var td = tds[j];
-				if (td.id.substr(0, 5) != "kbsrc") continue;
-				var thisid = td.id.substr(5);
-				if (oHost.isUnread(bid, thisid)) td.innerHTML += "*";
+			var spans = doc.getElementsByTagName("span");
+			for (var j=0; j<spans.length; j++) {
+				var span = spans[j];
+				if (span.id.substr(0, 5) != "kbsrc") continue;
+				var thisid = span.id.substr(5);
+				var html = span.innerHTML;
+				var unread = oHost.isUnread(bid, thisid);
+				var c = html.substr(0, 1);
+				var cl = c.toLowerCase();
+				if (c == ' ') c = unread ? '*' : ' ';
+				else if (cl == 'b' || cl == 'm' || cl == 'g') c = unread ? c.toUpperCase() : c.toLowerCase();
+				else c = (unread ? '*' : '') + c;
+				span.innerHTML = c + html.substr(1);
 			}
 		} else if (metas[i].name == "kbsrc.brd") {
 			var tds = doc.getElementsByTagName("td");
