@@ -1,9 +1,10 @@
 function kbsrcHost(host, userid) {
 	this.host = host;
-	this.lastSync = false;
+	this.lastSync = 0;
 	this.rc = new Object();
 	this.dirty = new Object();
 	this.userid = userid;
+	this.status = 0;
 }
 kbsrcHost.prototype = {
 	isUnread: function(bid, id) {
@@ -78,13 +79,19 @@ kbsrcHost.prototype = {
 			});
 		}
 	},
+	setStatus: function(s) {
+		this.status = s;
+		kbsrc.setStatus(this.host);
+	},
 	sync: function(callback) {
+		this.setStatus(1);
 		var req = new XMLHttpRequest();
 		req.oHost = this;
 		req.callback = callback;
 		req.onload = function(event) {
 			var self = event.target;
 	    	var i=0,j,rc = self.responseText;
+	    	self.oHost.setStatus(0);
 	    	if (rc.length == 0) {
 	    		kbsrc.debugOut("sync failed.", self.oHost);
 	    		return;
@@ -129,10 +136,48 @@ KBSRC.prototype = {
 			}
 		}
 	},
+	hexD: "0123456789ABCDEF",
+	toHex: function(num, digits) {
+		var ret = "";
+		while(digits>0) {
+			ret = this.hexD.substr(num & 15, 1) + ret;
+			num >>= 4;
+			digits--;
+		}
+		return ret;
+	},
+	setStatus: function(host) {
+		var active = host && kbsrc.hosts[host];
+		if (active) {
+			var txt, img;
+			const oHost = kbsrc.hosts[host];
+			if (oHost.status == 1) {
+				txt = "KBSRC Activated (synchronizing)"
+				img = "chrome://kbsrc/skin/kbsrcTransfer.gif";
+			} else {
+				var minutes = Math.floor(((new Date()).getTime() - oHost.lastSync) / 60000);
+				txt = "KBSRC Activated (last sync: " + minutes + " minutes before)";
+				img = "chrome://kbsrc/skin/kbsrcEnabled.gif";
+			}
+			document.getElementById('kbsrc-tooltip-value').setAttribute("value", txt);
+			document.getElementById('kbsrc-status-image').setAttribute("src", img);
+		}
+		document.getElementById('kbsrc-status').setAttribute("collapsed", !active);
+		//kbsrc.debugOut("status set: " + host);
+	},
+	debugOut: function(str, oHost) {
+		var now = new Date();
+		var d = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
+		var d1 = "";
+		if (oHost) d1 = oHost.host + "(" + oHost.userid + ") ";
+		dump("KBSRC: [" + d + "] " + d1 + str + "\n");
+	},
 	init : function() {
 		var browser = gBrowser;
 		browser.addEventListener("DOMContentLoaded", kbsrcPageLoadedHandler, true);
-		
+		browser.addEventListener("select", kbsrcTabSelectedHandler, false);
+		browser.addEventListener("pageshow", kbsrcPageShowHandler, false);
+
 		var hw = new kbsrcHTTPHeaderWatcher();
 		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
 		observerService.addObserver(hw, "http-on-examine-response", false);
@@ -145,27 +190,23 @@ KBSRC.prototype = {
 		}, 1000);
 		
 		kbsrc.debugOut("Loaded OK.");
-	},
-	hexD: "0123456789ABCDEF",
-	toHex: function(num, digits) {
-		var ret = "";
-		while(digits>0) {
-			ret = this.hexD.substr(num & 15, 1) + ret;
-			num >>= 4;
-			digits--;
-		}
-		return ret;
-	},
-	debugOut: function(str, oHost) {
-		var now = new Date();
-		var d = now.getHours() + ":" + now.getMinutes() + ":" + now.getSeconds();
-		var d1 = "";
-		if (oHost) d1 = oHost.host + "(" + oHost.userid + ") ";
-		dump("KBSRC: [" + d + "] " + d1 + str + "\n");
 	}
 }
-	
-var kbsrcPageLoadedHandler = function(event) {
+
+function kbsrcTabSelectedHandler(event) {
+	var n = event.originalTarget.localName;
+	if (n == "tabs") kbsrcPageRefresh();
+	else if (n == "tabpanels") kbsrc.setStatus(false);
+}
+function kbsrcPageShowHandler(event) {
+	const doc = event.originalTarget;
+	if(doc == gBrowser.contentDocument) kbsrcPageRefresh();
+}
+function kbsrcPageRefresh() {
+	var doc = content.document;
+	if(doc._kbsrc_haveChecked) kbsrc.setStatus(doc.location.host);
+}
+function kbsrcPageLoadedHandler(event) {
 	const doc = event.originalTarget;
 	if(!(doc instanceof HTMLDocument)) return;
 	
@@ -230,7 +271,7 @@ var kbsrcPageLoadedHandler = function(event) {
 		}
 		break;
 	}
-};
+}
 
 function kbsrcHTTPHeaderWatcher() {}
 kbsrcHTTPHeaderWatcher.prototype = {
@@ -252,6 +293,7 @@ kbsrcHTTPHeaderWatcher.prototype = {
 			} else {
 				kbsrc.hosts[host] = new kbsrcHost(host, value);
 			}
+			kbsrc.setStatus(host);
 		}
 	}
 };

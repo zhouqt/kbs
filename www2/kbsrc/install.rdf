@@ -10,7 +10,7 @@
     <em:description>Process and view reading record at client side for KBS web.</em:description>
     <em:creator>atppp</em:creator>
     <!-- optional items -->
-    <em:contributor>KCN</em:contributor>
+    <em:contributor>pig2532</em:contributor>
     <em:homepageURL>http://dev.kcn.cn/</em:homepageURL>
     <!--em:optionsURL>chrome://sampleext/content/settings.xul</em:optionsURL>
     <em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL>
