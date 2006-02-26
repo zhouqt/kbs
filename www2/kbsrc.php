@@ -1,7 +1,8 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
-	assert_login();
+
+	if(!strcmp($currentuser["userid"],"guest")) die;
 
 	$p = @$HTTP_RAW_POST_DATA;
 	if ($p) {

@@ -6,7 +6,6 @@ function kbsrcHost(host, userid) {
 	this.userid = userid;
 }
 kbsrcHost.prototype = {
-	/* TODO: 意外断线的情况：需要检查 cookie */
 	isUnread: function(bid, id) {
 		var lst = this.rc[bid];
 		if (!lst) return false;
@@ -86,7 +85,10 @@ kbsrcHost.prototype = {
 		req.onload = function(event) {
 			var self = event.target;
 	    	var i=0,j,rc = self.responseText;
-	    	if (rc.length == 0) return;
+	    	if (rc.length == 0) {
+	    		kbsrc.debugOut("sync failed.", self.oHost);
+	    		return;
+	    	}
 	    	try {
 	    		while(i<rc.length) {
 	    			var bid = parseInt(rc.substr(i, 4), 16);
