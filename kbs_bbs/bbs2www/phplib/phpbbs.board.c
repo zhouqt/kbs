@@ -22,6 +22,7 @@ static void assign_board(zval * array, const struct boardheader *board, const st
     add_assoc_stringl(array, "SECNUM", (char*)board->title, 1, 1);
     add_assoc_long(array, "LEVEL", board->level);
     add_assoc_long(array, "CURRENTUSERS", bstatus->currentusers);
+    add_assoc_long(array, "LASTPOST", bstatus->lastpost);
     add_assoc_long(array, "TOTAL", bstatus->total);
 }
 
