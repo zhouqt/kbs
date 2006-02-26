@@ -4,18 +4,18 @@
 
   <Description about="urn:mozilla:install-manifest">
   
-    <em:id>kbsrc@newsmth.net</em:id>
-    <em:name>KBS Reading Record (Firefox 1.5 edition)</em:name>
-    <em:version>1.0</em:version>
+    <em:id>{dd4e0497-21b0-4866-9b5f-77bfee85e79e}</em:id>
+    <em:name>KBS Reading Record</em:name>
+    <em:version>1.0 beta</em:version>
     <em:description>Process and view reading record at client side for KBS web.</em:description>
     <em:creator>atppp</em:creator>
     <!-- optional items -->
     <em:contributor>pig2532</em:contributor>
     <em:homepageURL>http://dev.kcn.cn/</em:homepageURL>
-    <!--em:optionsURL>chrome://sampleext/content/settings.xul</em:optionsURL>
-    <em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL>
-    <em:iconURL>chrome://sampleext/skin/mainicon.png</em:iconURL>
-    <em:updateURL>http://sampleextension.mozdev.org/update.rdf</em:updateURL-->
+    <em:optionsURL>chrome://kbsrc/content/options.xul</em:optionsURL>
+    <!--em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL-->
+    <em:iconURL>chrome://kbsrc/skin/logo.png</em:iconURL>
+    <!--em:updateURL>http://sampleextension.mozdev.org/update.rdf</em:updateURL-->
 
     <!-- Firefox -->
     <em:targetApplication>
