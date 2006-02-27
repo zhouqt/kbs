@@ -51,7 +51,7 @@
 
 	bbs_board_nav_header($brdArr, $reID ? "回复文章" : "发表文章");
 
-	$ret = bbs_postarticle($boardName, trim($_POST["title"]), 
+	$ret = bbs_postarticle($boardName, rtrim($_POST["title"]), 
 		($tmpl ? $contents :$_POST["text"]), intval(@$_POST["signature"]), $reID, 
 		$outgo, $anony, @intval($_POST["mailback"]), 0);
 	switch ($ret) {

@@ -50,7 +50,7 @@
 	
 	if (isset($_GET['do'])) {
 
-		$ret = bbs_edittitle($board, $id, trim($_POST["title"]), $ftype);
+		$ret = bbs_edittitle($board, $id, rtrim($_POST["title"]), $ftype);
 		if($ret != 0)
 		{
 			switch($ret)
@@ -117,7 +117,7 @@
 Бъ&nbsp;&nbsp;Ьт: <input type="text" name="title" size="40" maxlength="100" value="<?php echo htmlspecialchars($articles[1]['TITLE'],ENT_QUOTES); ?> " />
 <textarea name="text" onkeydown='return textarea_okd(dosubmit, event);' wrap="physical" id="sfocus">
 <?php
-	bbs_printoriginfile($board,$articles[1]['FILENAME']);
+	print(htmlspecialchars(bbs_originfile($board,$articles[1]['FILENAME'])));
 ?>
 </textarea>
 <div class="oper">
