@@ -86,6 +86,23 @@ static void bbs_make_board_zval(zval * value, char *col_name, struct newpostdata
     }
 }
 
+static void assign_board_zval(zval * array, struct newpostdata *brd)
+{
+    add_assoc_string(array, "NAME", (char *)brd->name, 1);
+    add_assoc_string(array, "DESC", (char *)brd->title + 13, 1);
+    add_assoc_stringl(array, "CLASS", (char *)brd->title + 1, 6, 1);
+    add_assoc_string(array, "BM", (char *)brd->BM, 1);
+    add_assoc_long(array, "ARTCNT", brd->total);
+    add_assoc_long(array, "UNREAD", brd->unread);
+    add_assoc_long(array, "ZAPPED", brd->zap);
+    add_assoc_long(array, "BID", brd->pos+1);
+    add_assoc_long(array, "POSITION", brd->pos);
+    add_assoc_long(array, "FLAG", brd->flag);
+    add_assoc_long(array, "NPOS", brd->pos);
+    add_assoc_long(array, "CURRENTUSERS", brd->currentusers);
+    add_assoc_long(array, "LASTPOST", brd->lastpost);
+}
+
 static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdata *brd)
 {
     int len = strlen(col_name);
@@ -110,7 +127,22 @@ static void bbs_make_favdir_zval(zval * value, char *col_name, struct newpostdat
     }
 }
 
-
+static void assign_favdir_zval(zval * array, struct newpostdata *brd)
+{
+    add_assoc_string(array, "NAME", (char *)brd->name, 1);
+    add_assoc_string(array, "DESC", (char *)brd->title, 1);
+    add_assoc_string(array, "CLASS", "", 1);
+    add_assoc_string(array, "BM", "", 1);
+    add_assoc_long(array, "ARTCNT", 0);
+    add_assoc_long(array, "UNREAD", 0);
+    add_assoc_long(array, "ZAPPED", 0);
+    add_assoc_long(array, "BID", brd->tag);
+    add_assoc_long(array, "POSITION", getSession()->favbrd_list[brd->tag].father);
+    add_assoc_long(array, "FLAG", (brd->flag == 0xffffffff) ? -1L : brd->flag);
+    add_assoc_long(array, "NPOS", brd->pos);
+    add_assoc_long(array, "CURRENTUSERS", 0);
+    add_assoc_long(array, "LASTPOST", 0);
+}
 
 
 
@@ -257,6 +289,7 @@ PHP_FUNCTION(bbs_safe_getboard)
  *           2      : all_boards 只在 group = 0 的时候有效，如果设置为 1，就返回
  *                    所有版面，包括目录版面内的版面。设置成 0 的时候，目录版面
  *                    内的版面是不返回的。
+ *           3      : 新的返回值模式
  *
  * @return array of loaded boards on success,
  *         FALSE on failure.
@@ -273,14 +306,14 @@ PHP_FUNCTION(bbs_getboards)
     char *prefix;
     int plen;
     long flag, group;
-    struct newpostdata newpost_buffer;
+    struct newpostdata *newpost_buffer;
     struct newpostdata *ptr;
     zval **columns;
     zval *element;
     int i;
     int j;
     int ac = ZEND_NUM_ARGS();
-    int brdnum, yank, no_brc, all_boards;
+    int brdnum, yank, no_brc, all_boards, new_return_mode;
     int total;   
 
     /*
@@ -296,28 +329,13 @@ PHP_FUNCTION(bbs_getboards)
     if (getCurrentUser() == NULL) {
         RETURN_FALSE;
     }
-    /*
-     * setup column names 
-     */
-    if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
-    }
-    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
-	if (columns==NULL) {
-		RETURN_FALSE;
-	}
-    for (i = 0; i < BOARD_COLUMNS; i++) {
-        MAKE_STD_ZVAL(element);
-        array_init(element);
-        columns[i] = element;
-        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
-    }
 
 	total=get_boardcount();
     
 	yank = flag & 1;
     no_brc = flag & 2;
     all_boards = (flag & 4) && (group == 0);
+    new_return_mode = (flag & 8);
 
 #if 0
     if  (getSession()->zapbuf==NULL)  {
@@ -388,8 +406,9 @@ PHP_FUNCTION(bbs_getboards)
 			   	brdnum++;
 		   	}
 	   	}
+        newpost_buffer = (struct newpostdata*)emalloc(sizeof(struct newpostdata) * brdnum);
 		for (i=0;i<brdnum;i++) {
-		  	ptr=&newpost_buffer;
+		  	ptr=&(newpost_buffer[i]);
 		   	bptr = getboard(indexlist[i]+1);
 		   	ptr->dir = bptr->flag&BOARD_GROUP?1:0;
 		   	ptr->name = (char*)bptr->filename;
@@ -402,17 +421,51 @@ PHP_FUNCTION(bbs_getboards)
 		   	} else ptr->total=-1;
 		   	ptr->zap = (getSession()->zapbuf[indexlist[i]] == 0);
    			check_newpost(ptr, no_brc);
-	        for (j = 0; j < BOARD_COLUMNS; j++) {
-       		    MAKE_STD_ZVAL(element);
-	            bbs_make_board_zval(element, brd_col_names[j], ptr);
-	            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
-	        }
 		}
+
+        if (new_return_mode) {
+            if (array_init(return_value) == FAILURE) {
+                RETURN_FALSE;
+            }
+            for(i=0;i<brdnum;i++) {
+                MAKE_STD_ZVAL(element);
+                array_init(element);
+                assign_board_zval(element, &(newpost_buffer[i]));
+                zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *)&element, sizeof(zval*), NULL);
+            }
+        } else {
+            /*
+             * setup column names 
+             */
+            if (array_init(return_value) == FAILURE) {
+                RETURN_FALSE;
+            }
+            columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
+        	if (columns==NULL) {
+        		RETURN_FALSE;
+        	}
+            for (i = 0; i < BOARD_COLUMNS; i++) {
+                MAKE_STD_ZVAL(element);
+                array_init(element);
+                columns[i] = element;
+                zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
+            }
+
+    		for (i=0;i<brdnum;i++) {
+                ptr=&(newpost_buffer[i]);
+    	        for (j = 0; j < BOARD_COLUMNS; j++) {
+           		    MAKE_STD_ZVAL(element);
+    	            bbs_make_board_zval(element, brd_col_names[j], ptr);
+    	            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
+    	        }
+    		}
+            efree(columns);
+        }
+        efree(newpost_buffer);
 		efree(namelist);
 	   	efree(indexlist);
     }
 
-    efree(columns);
 }
 
 
@@ -889,6 +942,7 @@ PHP_FUNCTION(bbs_fav_boards)
 {
     long select;
     long mode;
+    long flag = 0;
     int rows = 0;
     struct newpostdata newpost_buffer[FAVBOARDNUM];
     struct newpostdata *ptr;
@@ -896,14 +950,16 @@ PHP_FUNCTION(bbs_fav_boards)
     zval *element;
     int i;
     int j;
-    int ac = ZEND_NUM_ARGS();
     int brdnum;
+    int new_return_mode;
     /*
      * getting arguments 
      */
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ll", &select, &mode) == FAILURE) {
+    if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ll|l", &select, &mode, &flag) == FAILURE) {
         WRONG_PARAM_COUNT;
     }
+
+    new_return_mode = (flag & 1);
 
 
     /*
@@ -944,36 +1000,57 @@ PHP_FUNCTION(bbs_fav_boards)
      * setup column names 
      */
     rows=brdnum;
-    if (array_init(return_value) == FAILURE) {
-        RETURN_FALSE;
-    }
-    columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
-
-	if (columns==NULL){
-		RETURN_FALSE;
-	}
-    for (i = 0; i < BOARD_COLUMNS; i++) {
-        MAKE_STD_ZVAL(element);
-        array_init(element);
-        columns[i] = element;
-        zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
-    }
-   /*
-     * fill data for each column 
-     */
-   for (i = 0; i < rows; i++) {
+    for (i = 0; i < rows; i++) {
         ptr = &newpost_buffer[i];
         check_newpost(ptr, false);
-        for (j = 0; j < BOARD_COLUMNS; j++) {
-            MAKE_STD_ZVAL(element);
-			if (ptr->flag == 0xffffffff) /* the item is a directory */
-            	bbs_make_favdir_zval(element, brd_col_names[j], ptr);
-			else
-            	bbs_make_board_zval(element, brd_col_names[j], ptr);
-            zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
-        }       
     }
-        
-    efree(columns);
+
+
+    if (new_return_mode) {
+        if (array_init(return_value) == FAILURE) {
+            RETURN_FALSE;
+        }
+        for(i=0;i<brdnum;i++) {
+            MAKE_STD_ZVAL(element);
+            array_init(element);
+            ptr = &newpost_buffer[i];
+			if (ptr->flag == 0xffffffff) /* the item is a directory */
+            	assign_favdir_zval(element, &(newpost_buffer[i]));
+			else
+            	assign_board_zval(element, &(newpost_buffer[i]));
+            zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *)&element, sizeof(zval*), NULL);
+        }
+    } else {
+        if (array_init(return_value) == FAILURE) {
+            RETURN_FALSE;
+        }
+        columns = emalloc(BOARD_COLUMNS * sizeof(zval *));
+
+    	if (columns==NULL){
+    		RETURN_FALSE;
+    	}
+        for (i = 0; i < BOARD_COLUMNS; i++) {
+            MAKE_STD_ZVAL(element);
+            array_init(element);
+            columns[i] = element;
+            zend_hash_update(Z_ARRVAL_P(return_value), brd_col_names[i], strlen(brd_col_names[i]) + 1, (void *) &element, sizeof(zval *), NULL);
+        }
+       /*
+         * fill data for each column 
+         */
+       for (i = 0; i < rows; i++) {
+            ptr = &newpost_buffer[i];
+            for (j = 0; j < BOARD_COLUMNS; j++) {
+                MAKE_STD_ZVAL(element);
+    			if (ptr->flag == 0xffffffff) /* the item is a directory */
+                	bbs_make_favdir_zval(element, brd_col_names[j], ptr);
+    			else
+                	bbs_make_board_zval(element, brd_col_names[j], ptr);
+                zend_hash_index_update(Z_ARRVAL_P(columns[j]), i, (void *) &element, sizeof(zval *), NULL);
+            }       
+        }
+            
+        efree(columns);
+    }
     
 }
