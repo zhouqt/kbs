@@ -88,7 +88,7 @@ function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
 		$adds = '<link title="°æÃæ RSS'	. $dir_name[$ftype] 
 		      . '" type="application/rss+xml" rel="alternate" href="' . $adds . '"/>';
 	}
-	if ($ftype == 0 && !$managemode) {
+	if ($ftype >= 0 && !$managemode) {
 		$adds .= "<meta name='kbsrc.doc' content='".$brdarr["BID"]."'/>";
 	}
 	if (!$adds) $adds = false;
