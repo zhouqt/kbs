@@ -50,7 +50,7 @@
 	
 	if (isset($_GET['do'])) {
 
-		$ret = bbs_edittitle($board, $id, $_POST["title"], $ftype);
+		$ret = bbs_edittitle($board, $id, trim($_POST["title"]), $ftype);
 		if($ret != 0)
 		{
 			switch($ret)
