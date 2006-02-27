@@ -1,5 +1,3 @@
-
-
 function KBSRC() {}
 KBSRC.prototype = {
 	BRCMaxItem: 50,
@@ -36,16 +34,6 @@ KBSRC.prototype = {
 			}
 		}
 		kbsrc.debugOut(str);
-	},
-	hexD: "0123456789ABCDEF",
-	toHex: function(num, digits) {
-		var ret = "";
-		while(digits>0) {
-			ret = this.hexD.substr(num & 15, 1) + ret;
-			num >>= 4;
-			digits--;
-		}
-		return ret;
 	},
 	setStatus: function(host) {
 		var active = host && kbsrc.hosts[host];
@@ -135,60 +123,7 @@ function kbsrcPageLoadedHandler(event) {
 	const host = doc.location.host;
 	const oHost = kbsrc.hosts[host];
 	if (!oHost) return;
-
-	var metas = doc.getElementsByTagName("meta");
-	for(var i = 0; i < metas.length; i++) {
-		if (metas[i].name == "kbsrc.doc") {
-			var bid = metas[i].content;
-			var spans = doc.getElementsByTagName("span");
-			for (var j=0; j<spans.length; j++) {
-				var span = spans[j];
-				if (span.id.substr(0, 5) != "kbsrc") continue;
-				var thisid = parseInt(span.id.substr(5));
-				var html = span.innerHTML;
-				var unread = oHost.isUnread(bid, thisid);
-				if (unread === null) continue;
-				var c = html.substr(0, 1);
-				var cl = c.toLowerCase();
-				if (c == ' ') c = unread ? '*' : ' ';
-				else if (cl == 'b' || cl == 'm' || cl == 'g') c = unread ? c.toUpperCase() : c.toLowerCase();
-				else c = (unread ? '*' : '') + c;
-				span.innerHTML = c + html.substr(1);
-			}
-		} else if (metas[i].name == "kbsrc.brd") {
-			var tds = doc.getElementsByTagName("td");
-			for (var j=0; j<tds.length; j++) {
-				var td = tds[j];
-				if (td.id.substr(0, 5) != "kbsrc") continue;
-				var as = td.id.substr(5).split("_");
-				var bid = parseInt(as[0]);
-				var lastpost = parseInt(as[1]);
-				var unread = oHost.isUnread(bid, lastpost);
-				if (unread === null) continue;
-				var f = doc.getElementById("kbsrc"+bid+"u");
-				if (f) f.style.display = unread ? "block" : "none";
-				f = doc.getElementById("kbsrc"+bid+"r");
-				if (f) f.style.display = !unread ? "block" : "none";
-			}
-		} else if (metas[i].name == "kbsrc.con") {
-			var ids = metas[i].content.split(",");
-			var bid = parseInt(ids[0]);
-			var thisid = parseInt(ids[1]);
-			if (ids[2]) {
-				if (ids[2] == 'f') { //clear all
-					oHost.clear(bid, thisid);
-				}
-			} else {
-				oHost.addRead(bid, thisid);
-			}
-		} else if (metas[i].name == "kbsrc.menu") {
-			var f = doc.getElementById("logoutlink");
-			if (f) f.addEventListener("click", function() { oHost.trySync(); }, false);
-		} else {
-			continue;
-		}
-		break;
-	}
+	oHost.processDoc(doc);
 }
 
 function kbsrcHTTPHeaderWatcher() {}
@@ -200,17 +135,22 @@ kbsrcHTTPHeaderWatcher.prototype = {
 		}
 	},
 	onExamineResponse : function (oHttp) {
-		var value = false;
+		var userid = false, param = false;
 		try {
-			value = oHttp.getResponseHeader("Set-KBSRC");
+			userid = oHttp.getResponseHeader("Set-KBSRC");
+			param = oHttp.getResponseHeader("Set-Cookie");
 		} catch(e) {}
-		if (value) {
+		if (userid) {
 			var host = oHttp.URI.host;
-			if (value == "/") {
-				kbsrc.hosts[host] = false;
-			} else {
-				kbsrc.hosts[host] = new kbsrcHost(host, value);
+			var newHost = false;
+			if (userid != "/" && param) {
+				var pos = param.indexOf("WWWPARAMS=");
+				if (pos != -1) {
+					newHost = parseInt(param.substr(pos + 10));
+					newHost = newHost & 0x1000;
+				}
 			}
+			kbsrc.hosts[host] = newHost ? (new kbsrcHost(host, userid)) : false;
 			kbsrc.setStatus(host);
 		}
 	}

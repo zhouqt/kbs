@@ -10,7 +10,7 @@
 	}
 ?>
 <script type="text/javascript"><!--
-	var settings = {"sizer": 3, "pager": 4, "hot": 5}; /* faint IE5 */
+	var settings = {"sizer": 3, "pager": 4, "hot": 5, "unread": 12}; /* faint IE5 */
 	function setInd(n, v) {
 		var ff = getObj(n + 'F');
 		var tt = getObj(n + 'T');
@@ -117,6 +117,10 @@ div.stylesel img {
 				<span class="clickable" onclick="KCNymsw();">关闭</span>
 			<br/>
 <?php } ?>
+			<label>显示未读标记(need relogin):</label>
+				<span class="clickable" onclick="adjSet('unread', 0)" id="unreadF">隐藏</span>
+				<span class="clickable" onclick="adjSet('unread', 1)" id="unreadT">显示</span>
+			<br/>
 		</div>
 	</fieldset>
 </form>

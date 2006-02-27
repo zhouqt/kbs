@@ -47,7 +47,7 @@
 				$sssss=bbs_add_favboard($add_bname);
 		}
 	}
-	$boards = bbs_fav_boards($select, $XX ? 2 : 1);
+	$boards = bbs_fav_boards($select, $XX ? 2 : 1, 1);
 	$list_father = bbs_get_father($select);
 	if ($boards === FALSE)
 		html_error_quit("读取版列表失败");
@@ -57,19 +57,7 @@
 <col width="2%" class="center"/><col width="2%"/><col width="23%"/><col width="10%" class="center"/><col width="33%"/><col class="center" width="14%"/><col class="right" width="8%"/><col width="6%" class="center"/>
 <tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th><th> </th></tr>
 <?php
-	$brd_name = $boards["NAME"]; // 英文名
-	$brd_desc = $boards["DESC"]; // 中文描述
-	$brd_class = $boards["CLASS"]; // 版分类名
-	$brd_bm = $boards["BM"]; // 版主
-	$brd_artcnt = $boards["ARTCNT"]; // 文章数
-	$brd_unread = $boards["UNREAD"]; // 未读标记
-	$brd_zapped = $boards["ZAPPED"]; // 是否被 z 掉
-	$brd_position= $boards["POSITION"];//位置
-	$brd_npos= $boards["NPOS"];//位置
-	$brd_flag= $boards["FLAG"];//目录标识
-	$brd_bid= $boards["BID"];//目录标识
-	$brd_lastpost= $boards["LASTPOST"];
-	$rows = sizeof($brd_name);
+	$rows = sizeof($boards);
 	if($select != 0)
 	{
 ?>
@@ -82,49 +70,45 @@
 	}
 	for ($i = 0; $i < $rows; $i++)  
 	{
-	if( $brd_unread[$i] ==-1 && $brd_artcnt[$i] ==-1) continue;
-	if ($brd_bid[$i] == -1) continue;
+	if( $boards[$i]["UNREAD"] ==-1 && $boards[$i]["ARTCNT"] ==-1) continue;
+	if ($boards[$i]["BID"] == -1) continue;
 ?>
 <tr>
 <td><?php echo $i+1; ?></td>
 <?php
-	if ($brd_flag[$i] == -1 ) {
+	if ($boards[$i]["FLAG"] == -1 ) {
 ?>
 <td> <script type="text/javascript">putImage('groupgroup.gif','alt="＋" title="版面组"');</script></td>
-<td><a href="bbsfav.php?select=<?php echo $brd_bid[$i].$fix;?>"><?php echo $brd_desc[$i];?></a></td>
+<td><a href="bbsfav.php?select=<?php echo $boards[$i]["BID"].$fix;?>"><?php echo $boards[$i]["DESC"]; ?></a></td>
 <td>[目录]</td>
 <td colspan="3"> </td><td>
-<?php if (!$XX) { ?><a href="bbsfav.php?select=<?php echo $select;?>&deldir=<?php echo $brd_npos[$i];?>">删除</a><?php } ?>
+<?php if (!$XX) { ?><a href="bbsfav.php?select=<?php echo $select;?>&deldir=<?php echo $boards[$i]["NPOS"];?>">删除</a><?php } ?>
 </td>
 </tr>
 <?php
 		continue;
 	}
-	$unread = ($brd_unread[$i] == 1);
+	$unread = ($boards[$i]["UNREAD"] == 1);
 	$unread_tag = $unread ? "" : ' style="display: none"';
 	$read_tag = !$unread ? "" : ' style="display: none"';
-	$unread_tag .= ' id="kbsrc'.$brd_bid[$i].'u"';
-	$read_tag .= ' id="kbsrc'.$brd_bid[$i].'r"';
+	$unread_tag .= ' id="kbsrc'.$boards[$i]["BID"].'u"';
+	$read_tag .= ' id="kbsrc'.$boards[$i]["BID"].'r"';
 ?>
-<td id="kbsrc<?php echo $brd_bid[$i]; ?>_<?php echo $brd_lastpost[$i]; ?>">
+<td id="kbsrc<?php echo $boards[$i]["BID"]; ?>_<?php echo $boards[$i]["LASTPOST"]; ?>">
 	<script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"<?php echo $unread_tag; ?>');</script>
 	<script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"<?php echo $read_tag; ?>');</script>
 </td>
 <td>
 <?php
-		if ($brd_zapped[$i] == 1)
-				echo "*";
-		else
-				echo "&nbsp;";
-?><a href="bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_name[$i]; ?></a>
+?>&nbsp;<a href="bbsdoc.php?board=<?php echo urlencode($boards[$i]["NAME"]); ?>"><?php echo $boards[$i]["NAME"]; ?></a>
 </td>
-<td><?php echo $brd_class[$i]; ?></td>
+<td><?php echo $boards[$i]["CLASS"]; ?></td>
 <td>&nbsp;&nbsp;
-<a href="bbsdoc.php?board=<?php echo urlencode($brd_name[$i]); ?>"><?php echo $brd_desc[$i]; ?></a>
+<a href="bbsdoc.php?board=<?php echo urlencode($boards[$i]["NAME"]); ?>"><?php echo $boards[$i]["DESC"]; ?></a>
 </td>
 <td>
 <?php
-		$bms = explode(" ", trim($brd_bm[$i]));
+		$bms = explode(" ", trim($boards[$i]["BM"]));
 		if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
 				echo "诚征版主中";
 		else
@@ -140,8 +124,8 @@
 		}
 ?>
 </td>
-<td><?php echo $brd_artcnt[$i]; ?></td>
-<td><?php if (!$XX) { ?><a href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo ($brd_npos[$i]);?>">删除</a><?php } ?></td>
+<td><?php echo $boards[$i]["ARTCNT"]; ?></td>
+<td><?php if (!$XX) { ?><a href="bbsfav.php?select=<?php echo $select;?>&delete=<?php echo ($boards[$i]["NPOS"]);?>">删除</a><?php } ?></td>
 </tr>
 <?php
 	}

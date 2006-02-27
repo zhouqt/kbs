@@ -116,6 +116,9 @@ function saveParaCookie(v, mask) {
 function readParaCookie() {
 	return parseInt(getCookie('WWWPARAMS', 0));
 }
+function showUnread() {
+	return (readParaCookie() & 0x1000) ? true : false;
+}
 function isLogin() {
 	return (getCookie("UTMPUSERID", "guest") != "guest");
 }
