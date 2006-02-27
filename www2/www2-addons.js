@@ -50,7 +50,7 @@ annWriter.prototype.i = function(type, title, bm, filename, date) {
 	if (type == 1)
 		str += '<a href="bbs0anbm_editdir.php?path=' + itempath + '&title=' + title + '&bm=' + bm + '">ÐÞ¸Ä</a>';
 	else if (type >= 2)
-		str += '<a href="bbs0anbm_editfile.php?path=' + itempath + '">±à¼­</a>';
+		str += '<a href="bbs0anbm_editfile.php?path=' + itempath + '&title=' + title + '">±à¼­</a>';
 	str += ' <a href="#">µ÷Ðò</a>';
 	str += '</td></tr>';
 	document.write(str);
