@@ -136,6 +136,28 @@ KBSRC.prototype = {
 			}
 		}
 	},
+	dumpInfo: function() {
+		var str = "dirty BRC as follows:\n";
+		var bid, host;
+		for (host in this.hosts) {
+			var oHost = this.hosts[host];
+			if (!oHost) continue;
+			str += "\t" + oHost.host + ":\n";
+			for(bid in oHost.dirty) {
+				if (oHost.dirty[bid]) {
+					var lst = oHost.rc[bid];
+					str += "\t\t" + bid + ": ";
+					for (j=0; j<kbsrc.BRCMaxItem; j++) {
+						if (lst[j] == 0) break;
+						if (j!=0) str += ",";
+						str += lst[j];
+					}
+					str += "\n";
+				}
+			}
+		}
+		kbsrc.debugOut(str);
+	},
 	hexD: "0123456789ABCDEF",
 	toHex: function(num, digits) {
 		var ret = "";
@@ -243,7 +265,7 @@ function kbsrcPageLoadedHandler(event) {
 			for (var j=0; j<spans.length; j++) {
 				var span = spans[j];
 				if (span.id.substr(0, 5) != "kbsrc") continue;
-				var thisid = span.id.substr(5);
+				var thisid = parseInt(span.id.substr(5));
 				var html = span.innerHTML;
 				var unread = oHost.isUnread(bid, thisid);
 				var c = html.substr(0, 1);
@@ -269,8 +291,8 @@ function kbsrcPageLoadedHandler(event) {
 			}
 		} else if (metas[i].name == "kbsrc.con") {
 			var ids = metas[i].content.split(",");
-			var bid = ids[0];
-			var thisid = ids[1];
+			var bid = parseInt(ids[0]);
+			var thisid = parseInt(ids[1]);
 			if (ids[2]) {
 				if (ids[2] == 'f') { //clear all
 					oHost.clear(bid, thisid);
