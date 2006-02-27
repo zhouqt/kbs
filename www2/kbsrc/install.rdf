@@ -6,16 +6,16 @@
   
     <em:id>{dd4e0497-21b0-4866-9b5f-77bfee85e79e}</em:id>
     <em:name>KBS Reading Record</em:name>
-    <em:version>0.9.2</em:version>
+    <em:version>0.9.3.1</em:version>
     <em:description>Process and view reading record at client side for KBS web.</em:description>
     <em:creator>atppp</em:creator>
     <!-- optional items -->
     <em:contributor>pig2532</em:contributor>
-    <em:homepageURL>http://dev.kcn.cn/doc/kbsrc.index.html</em:homepageURL>
+    <em:homepageURL>http://www.newsmth.net/kbsrc/index.html</em:homepageURL>
     <em:optionsURL>chrome://kbsrc/content/options.xul</em:optionsURL>
     <!--em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL-->
     <em:iconURL>chrome://kbsrc/skin/logo.png</em:iconURL>
-    <em:updateURL>http://dev.kcn.cn/doc/kbsrc.update.rdf</em:updateURL>
+    <em:updateURL>http://www.newsmth.net/kbsrc/update.rdf</em:updateURL>
 
     <!-- Firefox -->
     <em:targetApplication>
