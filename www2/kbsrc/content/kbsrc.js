@@ -82,12 +82,12 @@ kbsrcHost.prototype = {
 		for(bid in this.dirty) {
 			if (!isSync || this.dirty[bid]) {
 				var lst = this.rc[bid];
-				this.toHex(str, bid, 4));
+				this.toHex(str, bid, 4);
 				for (j=0; j<this.BRCMaxItem; j++) if (lst[j] == 0) break;
-				this.toHex(str, j, 4));
+				this.toHex(str, j, 4);
 				for (j=0; j<this.BRCMaxItem; j++) {
 					if (lst[j] == 0) break;
-					this.toHex(str, lst[j], 8));
+					this.toHex(str, lst[j], 8);
 				}
 			}
 		}
@@ -99,7 +99,7 @@ kbsrcHost.prototype = {
 		var i = 0, bids = new kbsrcStringBuffer();
 		for(bid in this.dirty) {
 			i++;
-			bids.append(this.toHex(bid, 4));
+			bids.append(this.toHex(bid, 4);
 			bids.append(this.toHex(this.dirty[bid] ? 1 : 0, 4));
 		}
 		this.toHex(str, i, 4);
