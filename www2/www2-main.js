@@ -27,6 +27,13 @@ if (!Array.prototype.push) {
 	};
 }
 
+function StringBuffer() { this.buffer = []; }
+StringBuffer.prototype = {
+	append: function(string) { this.buffer.push(string); },
+	toString: function() { return this.buffer.join(""); }
+};
+
+
 var bootFn = Array();
 function addBootFn(fn) {
 	bootFn.push(fn);
