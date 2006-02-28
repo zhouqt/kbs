@@ -66,6 +66,8 @@ KBSRC.prototype = {
 		browser.addEventListener("DOMContentLoaded", kbsrcPageLoadedHandler, true);
 		browser.addEventListener("select", kbsrcTabSelectedHandler, false);
 		browser.addEventListener("pageshow", kbsrcPageShowHandler, false);
+		browser.addEventListener("unload", kbsrcPageClosedHandler, true);
+		browser.addEventListener("pagehide", kbsrcPageClosedHandler, false);
 
 		this.hWatcher = new kbsrcHTTPHeaderWatcher();
 		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
@@ -85,6 +87,8 @@ KBSRC.prototype = {
 		browser.removeEventListener("DOMContentLoaded", kbsrcPageLoadedHandler, true);
 		browser.removeEventListener("select", kbsrcTabSelectedHandler, false);
 		browser.removeEventListener("pageshow", kbsrcPageShowHandler, false);
+		browser.removeEventListener("unload", kbsrcPageClosedHandler, true);
+		browser.removeEventListener("pagehide", kbsrcPageClosedHandler, false);
 
 		var observerService = Components.classes["@mozilla.org/observer-service;1"].getService(Components.interfaces.nsIObserverService);
 		observerService.removeObserver(this.hWatcher, "http-on-examine-response", false);
@@ -105,6 +109,12 @@ function kbsrcTabSelectedHandler(event) {
 function kbsrcPageShowHandler(event) {
 	const doc = event.originalTarget;
 	if(doc == gBrowser.contentDocument) kbsrcPageRefresh();
+}
+function kbsrcPageClosedHandler(event) {
+	const doc = event.originalTarget;
+	if(!(doc instanceof Document)) doc = doc.ownerDocument;
+	if(doc != gBrowser.contentDocument) return;
+	kbsrc.setStatus(false);
 }
 function kbsrcPageRefresh() {
 	var host = false;
