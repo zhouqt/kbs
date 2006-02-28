@@ -120,6 +120,7 @@ function kbsrcPageLoadedHandler(event) {
 				const host = doc.location.host;
 				const oHost = kbsrc.hosts[host];
 				if (oHost) {
+					kbsrc.setStatus(host);
 					oHost.processDoc(doc);
 					return;
 				}
