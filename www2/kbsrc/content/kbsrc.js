@@ -31,9 +31,9 @@ kbsrcHost.prototype = {
 	BRCMaxItem: 50,
 	hexD: "0123456789ABCDEF",
 	toHex: function(buf, num, digits) {
-		var arr = new kbsrcStringBuffer();
+		var arr = new Array();
 		while(digits>0) {
-			arr.append(this.hexD.substr(num & 0xF , 1));
+			arr.push(this.hexD.substr(num & 0xF , 1));
 			num >>= 4;
 			digits--;
 		}
