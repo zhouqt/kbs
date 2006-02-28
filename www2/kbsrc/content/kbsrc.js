@@ -16,6 +16,7 @@ function kbsrcHost(host, userid, httpRequest) {
 	this.lastSync = 0;
 	this.rc = new Object();
 	this.dirty = new Object();
+	this.serial = new Object();
 	this.userid = userid;
 	this.status = 0;
 	this.XMLHttpRequest = httpRequest ? httpRequest : XMLHttpRequest;
@@ -30,8 +31,18 @@ kbsrcHost.prototype = {
 			digits -= 4;
 		}
 	},
-	isUnread: function(bid, id) {
+	getRcList: function(bid) {
 		var lst = this.rc[bid];
+		if (!lst) {
+			if (!this.serial[bid])
+				return null;
+			this.unserializeBoard(this.serial[bid], 0);
+			lst = this.rc[bid];
+		}
+		return lst;
+	},
+	isUnread: function(bid, id) {
+		var lst = this.getRcList(bid);
 		if (!lst) return null;
 		for(var n=0; n<this.BRCMaxItem; n++) {
 			if (lst[n] == 0) {
@@ -48,7 +59,7 @@ kbsrcHost.prototype = {
 	},
 	clear: function(bid, lastpost) {
 		kbsrc.debugOut(bid + "," + lastpost + " clear.", this);
-		var lst = this.rc[bid];
+		var lst = this.getRcList(bid);
 		if (!lst) return;
 		lst[0] = lastpost;
 		lst[1] = 0;
@@ -58,7 +69,7 @@ kbsrcHost.prototype = {
 		kbsrc.debugOut(bid + "," + id + " read.", this);
 		var lst = this.rc[bid];
 		var n;
-		if (!lst) return;
+		var lst = this.getRcList(bid);
 		for(n=0; n<this.BRCMaxItem && lst[n]; n++) {
 			if (id == lst[n]) {
 				return;
@@ -82,7 +93,7 @@ kbsrcHost.prototype = {
 		var bid, j;
 		var str = new kbsrcStringBuffer();
 		for(bid in this.dirty) {
-			if (!isSync || this.dirty[bid]) {
+			if (this.dirty[bid]) {
 				var lst = this.rc[bid];
 				this.toHex(str, bid, 4);
 				for (j=0; j<this.BRCMaxItem; j++) if (lst[j] == 0) break;
@@ -91,7 +102,10 @@ kbsrcHost.prototype = {
 					if (lst[j] == 0) break;
 					this.toHex(str, lst[j], 8);
 				}
+			} else if (!isSync) {
+				str.append(this.serial[bid]);
 			}
+			if (!isSync) str.append(",");
 		}
 		return str.toString();
 	},
@@ -105,7 +119,8 @@ kbsrcHost.prototype = {
 			this.toHex(bids, this.dirty[bid] ? 1 : 0, 4);
 		}
 		this.toHex(str, i, 4);
-		return str.toString() + bids.toString() + this.serialize(false);
+		var v = str.toString() + "," + bids.toString() + "," + this.serialize(false);
+		return v;
 	},
 	trySync: function() {
 		var str = this.serialize(true);
@@ -119,38 +134,49 @@ kbsrcHost.prototype = {
 		this.status = s;
 		kbsrc.setStatus(this.host);
 	},
+	unserializeBoard: function(rc, pos) {
+		try {
+			var bid = parseInt(rc.substr(pos, 4), 16);
+			var n = parseInt(rc.substr(pos + 4, 4), 16);
+			this.rc[bid] = new Array();
+			this.dirty[bid] = false;
+			for (j=0; j<this.BRCMaxItem; j++) this.rc[bid][j] = 0;
+			for (j=0; j<n; j++) {
+				this.rc[bid][j] = parseInt(rc.substr(pos+8+j*8, 8), 16);
+			}
+			this.serial[bid] = rc.substr(pos, 8 + n * 8);
+			return(pos + 8 + n * 8);
+		} catch(e) {}
+	},
 	unserialize: function(rc) {
 		var i=0,j;
 		try {
 			while(i<rc.length) {
-				var bid = parseInt(rc.substr(i, 4), 16);
-				var n = parseInt(rc.substr(i+4, 4), 16);
-				this.rc[bid] = new Array();
-				this.dirty[bid] = false;
-				for (j=0; j<this.BRCMaxItem; j++) this.rc[bid][j] = 0;
-				for (j=0; j<n; j++) {
-					this.rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
-				}
-				i += 8 + n * 8;
+				i = this.unserializeBoard(rc, i);
 			}
 			kbsrc.debugOut("sync OK.", this);
 		} catch(e) {
 			kbsrc.debugOut("sync error.", this);
 		}
-		
 	},
 	fullUnserialize: function(str) {
 		var i=0,j,n;
 		try {
-			this.lastSync = parseInt(str.substr(0, 8), 16) * 1000;
-			n = parseInt(str.substr(8, 4), 16);
-			i = 12;
+			var arr = str.split(",");
+			this.lastSync = parseInt(arr[0].substr(0, 8), 16) * 1000;
+			n = parseInt(arr[0].substr(8, 4), 16);
+			i = 0;
 			for(j = 0; j < n; j++) {
-				var bid = parseInt(str.substr(i, 4), 16);
-				this.dirty[bid] = parseInt(str.substr(i+4, 4), 16) ? true : false;
+				var bid = parseInt(arr[1].substr(i, 4), 16);
+				this.dirty[bid] = parseInt(arr[1].substr(i+4, 4), 16) ? true : false;
 				i += 8;
 			}
-			this.unserialize(str.substr(i));
+			for(j = 2; j < arr.length; j++) {
+				var bid = parseInt(arr[j].substr(0, 4), 16);
+				this.rc[bid] = false;
+				this.dirty[bid] = false;
+				this.serial[bid] = arr[j];
+			}
 		} catch(e) {}
 	},
 	sync: function(callback) {
