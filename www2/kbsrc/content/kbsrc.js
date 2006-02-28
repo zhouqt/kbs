@@ -1,3 +1,16 @@
+function kbsrcStringBuffer() {
+	this.buffer = [];
+}
+kbsrcStringBuffer.prototype = {
+	append: function(string) {
+		this.buffer.push(string);
+		return this;
+	},
+	toString: function() {
+		return this.buffer.join("");
+	}
+};
+
 function kbsrcHost(host, userid) {
 	this.host = host;
 	this.lastSync = 0;
@@ -67,29 +80,30 @@ kbsrcHost.prototype = {
 		}
 	},
 	serialize: function(isSync) {
-		var bid, j, str = "";
+		var bid, j, str = new kbsrcStringBuffer();
 		for(bid in this.dirty) {
 			if (!isSync || this.dirty[bid]) {
 				var lst = this.rc[bid];
-				str += this.toHex(bid, 4);
+				str.append(this.toHex(bid, 4));
 				for (j=0; j<this.BRCMaxItem; j++) if (lst[j] == 0) break;
-				str += this.toHex(j, 4);
+				str.append(this.toHex(j, 4));
 				for (j=0; j<this.BRCMaxItem; j++) {
 					if (lst[j] == 0) break;
-					str += this.toHex(lst[j], 8);
+					str.append(this.toHex(lst[j], 8));
 				}
 			}
 		}
-		return str;
+		return str.toString();
 	},
 	fullSerialize: function() {
 		var str = this.toHex(this.lastSync, 8);
-		var i = 0, bids = "";
+		var i = 0, bids = new kbsrcStringBuffer();
 		for(bid in this.dirty) {
 			i++;
-			bids += this.toHex(bid, 4) + this.toHex(this.dirty[bid] ? 1 : 0, 4);
+			bids.append(this.toHex(bid, 4));
+			bids.append(this.toHex(this.dirty[bid] ? 1 : 0, 4));
 		}
-		str += this.toHex(i, 4) + bids + this.serialize(false);
+		str += this.toHex(i, 4) + bids.toString() + this.serialize(false);
 		return str;
 	},
 	trySync: function() {

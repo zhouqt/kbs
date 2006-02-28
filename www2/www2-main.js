@@ -14,7 +14,7 @@ var gIE = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
 var gFx = (agt.indexOf("gecko") != -1);
 var gIE5 = false;
 if (gIE) {
-	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 5.5);
+	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 6);
 }
 var kbsrc; //namespace in this window
 
