@@ -109,6 +109,7 @@ function kbsrcPageShowHandler(event) {
 function kbsrcPageRefresh() {
 	var doc = content.document;
 	if(doc._kbsrc_haveChecked) kbsrc.setStatus(doc.location.host);
+	else kbsrc.setStatus(false);
 }
 function kbsrcPageLoadedHandler(event) {
 	const doc = event.originalTarget;
