@@ -14,7 +14,8 @@ function annWriter(path, perm_bm) {
 	this.num = 1;
 	var str;
 	str = '<form id="frmAnnounce" action="bbs0anbm.php?path=' + path + '" method="post">';
-	str += '<div class="smaller" style="float:right">精华区管理模式：您在当前目录<span style="color:#FF0000">';
+	str += '<input type="hidden" id="annAction" name="annAction" value="">';
+	str += '<div class="smaller" style="text-align:right">精华区管理模式：您在当前目录<span style="color:#FF0000">';
 	str += perm_bm ? '有' : '没有';
 	str += '</span>管理权限。</div>';
 	str += '<table class="main wide"><col width="5%" /><col width="8%" /><col width="4%" /><col width="38%" />';
@@ -64,14 +65,35 @@ annWriter.prototype.f = function() {
 		str += '<br><div class="center smaller">';
 		str += '[<a href="bbs0anbm_mkdir.php?path=' + this.path + '">创建目录</a>] ';
 		str += '[<a href="bbs0anbm_mkfile.php?path=' + this.path + '">创建文件</a>] ';
-		str += '[<a href="javascript:ann_cutcopy(0);">剪切</a>] ';
-		str += '[<a href="javascript:ann_cutcopy(1);">复制</a>] ';
+		str += '[<a href="javascript:ann_cut();">剪切</a>] ';
+		str += '[<a href="javascript:ann_copy();">复制</a>] ';
 		str += '[<a href="javascript:ann_paste();">粘贴</a>] ';
 		str += '[<a href="javascript:ann_delete();">删除</a>]';
+		str += '</div>';
 	}
+	str += '<input type="hidden" id="annCount" name="annCount" value="' + (this.num-1) + '">';
 	str += '</form>';
 	document.write(str);
 };
+
+function ann_delete()
+{
+	if(confirm('确定要删除这些文件或目录吗？'))
+	{
+		frmAnnounce.annAction.value = 'delete';
+		frmAnnounce.submit();
+	}
+}
+function ann_cut()
+{
+	frmAnnounce.annAction.value = 'cut';
+	frmAnnounce.submit();
+}
+function ann_copy()
+{
+	frmAnnounce.annAction.value = 'copy';
+	frmAnnounce.submit();
+}
 
 
 

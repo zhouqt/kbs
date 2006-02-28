@@ -206,7 +206,6 @@ function bbs_ann_bm_foot($parent) {
 	}
 ?>
 [<a href="#listtop">返回顶部</a>]
-[<a href="javascript:location.reload()">刷新</a>] 
 [<a href="javascript:history.go(-1)">返回</a>] 
 </div>
 <?php    

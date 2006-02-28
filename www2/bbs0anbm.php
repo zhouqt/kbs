@@ -1,4 +1,43 @@
 <?php
+
+require('bbs0anbm_pre.php');
+	
+// 执行各种精华区文件批量操作
+if(isset($_POST["annAction"]))
+{
+	$action = $_POST["annAction"];
+	$total = $_POST["annCount"];
+	if($action == "delete")
+	{
+		for($i=1; $i<=$total; $i++)
+		{
+			if(isset($_POST["ann{$i}"]))
+			{
+				$fname = $_POST["ann{$i}"];
+				bbs_ann_delete($filename, $fname);
+			}
+		}
+	}
+	else if(($action == "cut") || ($action == "copy"))
+	{
+		$fnames = "";
+		for($i=1; $i<=$total; $i++)
+		{
+			if(isset($_POST["ann{$i}"]))
+			{
+				$fnames .= $_POST["ann{$i}"] . ",";
+			}
+		}
+		$ret = bbs_ann_copy($filename, $fnames, ($action == "cut") ? 1 : 0);
+		switch($ret)
+		{
+			case -1:
+				html_error_quit("剪切失败，系统错误。");
+				break;
+		}
+	}		
+}
+
 function bbs_ann_bm_display_articles($articles, $isBoard) {
 	global $show_none, $has_perm_boards, $path;
 	$pathstr = substr($path, 9, strlen($path) - 9);
@@ -24,8 +63,6 @@ an.f();
 	if ($isBoard) echo "</div>"; /* </div>: dirty way ... for closing <div class="doc"> */
 }
 
-require('bbs0anbm_pre.php');
-	
 $board = '';
 $articles = array();
 $path_tmp = '';
