@@ -109,22 +109,24 @@ function kbsrcPageShowHandler(event) {
 function kbsrcPageRefresh() {
 	var doc = content.document;
 	if(doc._kbsrc_haveChecked) kbsrc.setStatus(doc.location.host);
-	else kbsrc.setStatus(false);
 }
 function kbsrcPageLoadedHandler(event) {
 	const doc = event.originalTarget;
-	if(!(doc instanceof HTMLDocument)) return;
-	
-	if(doc._kbsrc_haveChecked) return;
-	doc._kbsrc_haveChecked = true;
-	
-	const protocol = doc.location.protocol;
-	if(!/^(?:https|http)\:$/.test(protocol)) return;
-	
-	const host = doc.location.host;
-	const oHost = kbsrc.hosts[host];
-	if (!oHost) return;
-	oHost.processDoc(doc);
+	if(doc instanceof HTMLDocument) {
+		if(!doc._kbsrc_haveChecked) {
+			doc._kbsrc_haveChecked = true;
+			const protocol = doc.location.protocol;
+			if(/^(?:https|http)\:$/.test(protocol)) {
+				const host = doc.location.host;
+				const oHost = kbsrc.hosts[host];
+				if (oHost) {
+					oHost.processDoc(doc);
+					return;
+				}
+			}
+		}
+	}
+	kbsrc.setStatus(false);
 }
 
 function kbsrcHTTPHeaderWatcher() {}
