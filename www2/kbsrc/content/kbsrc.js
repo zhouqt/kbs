@@ -244,21 +244,21 @@ function kbsrcIEEntry() {
 		},
 		send: function(data) {
 			this.req = new ActiveXObject("Microsoft.XMLHTTP");
-            var self = this;
-            this.req.onreadystatechange = function() {
-                self.onStateChange.call(self);
-            };
-            this.req.open(this.method, this.url, this.sync);
-            this.req.send(this.data);
+			var self = this;
+			this.req.onreadystatechange = function() {
+				self.onStateChange.call(self);
+			};
+			this.req.open(this.method, this.url, this.sync);
+			this.req.send(this.data);
 		},
-    	onStateChange : function() {
-	        if (this.req.readyState == 4 && this.req.status == 200) {
-	        	this.responseText = this.req.responseText;
-	        	var ev = new Object();
-	        	ev.target = this;
-	        	this.onload(ev);
-            }
-        }
+		onStateChange : function() {
+			if (this.req.readyState == 4 && this.req.status == 200) {
+				this.responseText = this.req.responseText;
+				var ev = new Object();
+				ev.target = this;
+				this.onload(ev);
+			}
+		}
 	}
 
 	var kbsrcStore = document.createElement("div");

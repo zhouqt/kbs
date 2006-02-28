@@ -12,6 +12,10 @@
 var agt = navigator.userAgent.toLowerCase();
 var gIE = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
 var gFx = (agt.indexOf("gecko") != -1);
+var gIE5 = false;
+if (gIE) {
+	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 5.5);
+}
 var kbsrc; //namespace in this window
 
 if (!Array.prototype.push) {
@@ -25,7 +29,7 @@ if (!Array.prototype.push) {
 
 var bootFn = Array();
 function addBootFn(fn) {
-	bootFn[bootFn.length] = fn;
+	bootFn.push(fn);
 }
 
 
@@ -49,7 +53,10 @@ function prints(s) {
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
 	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "\n&nbsp;");
 	s = s.replace(/\n(: [^\n]*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
-	s = s.replace(/((?:http|https|ftp|mms|rtsp):\/\/(&(?=amp;)|[A-Za-z0-9\.\/=\?%_~@#:;\+\-])+)/ig, "<a target=\"_blank\" href=\"$1\">$1</a>");
+	if (!gIE5) {
+		var urlmatch = new RegExp("((?:http|https|ftp|mms|rtsp)://(&(?=amp;)|[A-Za-z0-9\./=\?%_~@#:;\+\-])+)", "ig");
+		s = s.replace(urlmatch, "<a target=\"_blank\" href=\"$1\">$1</a>");
+	}
 	if (divArtCon) strArticle += s;
 	else document.write(s);
 }
@@ -236,7 +243,7 @@ window.onload = function() {
 			f.focus(); f.select();
 		}
 	}
-	
+
 	/*
 	 * apply col class. this is a workaround for css2.1 - atppp
 	 * see also: http://ln.hixie.ch/?start=1070385285&count=1
@@ -268,7 +275,7 @@ window.onload = function() {
 			}
 		}
 	}
-	
+		
 	/* this is a workaround for some weird behavior... ask atppp if you are interested. BUGID 7629 */
 	if (gFx) {
 		var ll, links = document.getElementsByTagName("link");
@@ -280,7 +287,7 @@ window.onload = function() {
 			}
 		}
 	}
-	
+
 	for(i=0; i<bootFn.length; i++) {
 		var fn = bootFn[i]; fn();
 	}
@@ -582,7 +589,7 @@ function getCssFile(file) {
 
 function writeCssFile(file) {
 	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
-	if (gIE && showUnread()) {
+	if (gIE && !gIE5 && showUnread()) {
 		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
 		document.write("<style>.storeuserData {behavior:url(#default#userData);}</style>");
 		addBootFn(function() { kbsrcIEEntry(); } );
