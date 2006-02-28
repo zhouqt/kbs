@@ -1,6 +1,5 @@
 function KBSRC() {}
 KBSRC.prototype = {
-	BRCMaxItem: 50,
 	hosts: false,
 	timer : function() {
 		var host, now = (new Date()).getTime();
@@ -24,7 +23,7 @@ KBSRC.prototype = {
 				if (oHost.dirty[bid]) {
 					var lst = oHost.rc[bid];
 					str += "\t\t" + bid + ": ";
-					for (j=0; j<kbsrc.BRCMaxItem; j++) {
+					for (j=0; j<oHost.BRCMaxItem; j++) {
 						if (lst[j] == 0) break;
 						if (j!=0) str += ",";
 						str += lst[j];
@@ -174,5 +173,5 @@ kbsrcHTTPHeaderWatcher.prototype = {
 };
 
 var kbsrc = new KBSRC();
-window.addEventListener("load", function() { kbsrc.init.call(kbsrc) }, false); 
-window.addEventListener("unload", function() { kbsrc.deinit.call(kbsrc) }, false); 
+window.addEventListener("load", function() { kbsrc.init() }, false); 
+window.addEventListener("unload", function() { kbsrc.deinit() }, false); 

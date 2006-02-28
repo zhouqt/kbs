@@ -7,6 +7,7 @@ function kbsrcHost(host, userid) {
 	this.status = 0;
 }
 kbsrcHost.prototype = {
+	BRCMaxItem: 50,
 	hexD: "0123456789ABCDEF",
 	toHex: function(num, digits) {
 		var ret = "";
@@ -20,7 +21,7 @@ kbsrcHost.prototype = {
 	isUnread: function(bid, id) {
 		var lst = this.rc[bid];
 		if (!lst) return null;
-		for(var n=0; n<kbsrc.BRCMaxItem; n++) {
+		for(var n=0; n<this.BRCMaxItem; n++) {
 			if (lst[n] == 0) {
 				if (n == 0) return true;
 				return false;
@@ -46,11 +47,11 @@ kbsrcHost.prototype = {
 		var lst = this.rc[bid];
 		var n;
 		if (!lst) return;
-		for(n=0; n<kbsrc.BRCMaxItem && lst[n]; n++) {
+		for(n=0; n<this.BRCMaxItem && lst[n]; n++) {
 			if (id == lst[n]) {
 				return;
 			} else if (id > lst[n]) {
-				for (var i=kbsrc.BRCMaxItem-1; i>n; i--) {
+				for (var i=this.BRCMaxItem-1; i>n; i--) {
 					lst[i] = lst[i-1];
 				}
 				lst[n] = id;
@@ -65,15 +66,15 @@ kbsrcHost.prototype = {
 			this.dirty[bid] = true;
 		}
 	},
-	getSyncString: function() {
+	serialize: function(isSync) {
 		var bid, j, str = "";
 		for(bid in this.dirty) {
-			if (this.dirty[bid]) {
+			if (!isSync || this.dirty[bid]) {
 				var lst = this.rc[bid];
 				str += this.toHex(bid, 4);
-				for (j=0; j<kbsrc.BRCMaxItem; j++) if (lst[j] == 0) break;
+				for (j=0; j<this.BRCMaxItem; j++) if (lst[j] == 0) break;
 				str += this.toHex(j, 4);
-				for (j=0; j<kbsrc.BRCMaxItem; j++) {
+				for (j=0; j<this.BRCMaxItem; j++) {
 					if (lst[j] == 0) break;
 					str += this.toHex(lst[j], 8);
 				}
@@ -81,8 +82,18 @@ kbsrcHost.prototype = {
 		}
 		return str;
 	},
+	fullSerialize: function() {
+		var str = this.toHex(this.lastSync, 8);
+		var i = 0, bids = "";
+		for(bid in this.dirty) {
+			i++;
+			bids += this.toHex(bid, 4) + this.toHex(this.dirty[bid] ? 1 : 0, 4);
+		}
+		str += this.toHex(i, 4) + bids + this.serialize(false);
+		return str;
+	},
 	trySync: function() {
-		var str = this.getSyncString();
+		var str = this.serialize(true);
 		if (str) {
 			this.sync(function() {
 				//alert("RC Saved");
@@ -93,47 +104,72 @@ kbsrcHost.prototype = {
 		this.status = s;
 		kbsrc.setStatus(this.host);
 	},
+	unserialize: function(rc) {
+		var i=0,j;
+		try {
+			while(i<rc.length) {
+				var bid = parseInt(rc.substr(i, 4), 16);
+				var n = parseInt(rc.substr(i+4, 4), 16);
+				this.rc[bid] = new Array();
+				this.dirty[bid] = false;
+				for (j=0; j<this.BRCMaxItem; j++) this.rc[bid][j] = 0;
+				for (j=0; j<n; j++) {
+					this.rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
+				}
+				i += 8 + n * 8;
+			}
+			kbsrc.debugOut("sync OK.", this);
+		} catch(e) {
+			kbsrc.debugOut("sync error.", this);
+		}
+		
+	},
+	fullUnserialize: function(str) {
+		var i=0,j,n;
+		try {
+			this.lastSync = parseInt(str.substr(0, 8), 16);
+			n = parseInt(str.substr(8, 4), 16);
+			i = 12;
+			for(j = 0; j < n; j++) {
+				var bid = parseInt(str.substr(i, 4), 16);
+				this.dirty[bid] = parseInt(str.substr(i+4, 4), 16) ? true : false;
+				i += 8;
+			}
+			this.unserialize(str.substr(i));
+		} catch(e) {}
+	},
 	sync: function(callback) {
 		this.setStatus(1);
-		var req = new XMLHttpRequest();
+		var req;
+		try {
+			req = new XMLHttpRequest();
+		} catch(e) {
+			req = new kbsrc.XMLHttpRequest();
+		}
 		req.oHost = this;
 		req.callback = callback;
 		req.onload = function(event) {
 			var self = event.target;
-			var i=0,j,rc = self.responseText;
+			var rc = self.responseText;
 			self.oHost.setStatus(0);
 			if (rc.length == 0) {
 				kbsrc.debugOut("sync failed.", self.oHost);
 				return;
 			}
-			try {
-				while(i<rc.length) {
-					var bid = parseInt(rc.substr(i, 4), 16);
-					var n = parseInt(rc.substr(i+4, 4), 16);
-					self.oHost.rc[bid] = new Array();
-					self.oHost.dirty[bid] = false;
-					for (j=0; j<kbsrc.BRCMaxItem; j++) self.oHost.rc[bid][j] = 0;
-					for (j=0; j<n; j++) {
-						self.oHost.rc[bid][j] = parseInt(rc.substr(i+8+j*8, 8), 16);
-					}
-					i += 8 + n * 8;
-				}
-				kbsrc.debugOut("sync OK.", self.oHost);
-			} catch(e) {
-				kbsrc.debugOut("sync error.", self.oHost);
-			}
+			self.oHost.unserialize(rc);
 			self.oHost.lastSync = (new Date()).getTime();
 			if (self.callback) self.callback();
 		};
-		/* TODO: use relative path */
+		// TODO: use relative path
 		req.open("POST", "http://" + this.host + "/kbsrc.php", callback ? false : true);
-		req.send(this.getSyncString());
+		req.send(this.serialize(true));
 	},
-	processDoc: function(doc) {
+	processDoc: function(doc, detectOnly) {
 		try {
 			var metas = doc.getElementsByTagName("meta");
 			for(var i = 0; i < metas.length; i++) {
 				if (metas[i].name == "kbsrc.doc") {
+					if (detectOnly) return 1;
 					var bid = metas[i].content;
 					var spans = doc.getElementsByTagName("span");
 					for (var j=0; j<spans.length; j++) {
@@ -153,6 +189,7 @@ kbsrcHost.prototype = {
 					var f = doc.getElementById("kbsrc_clear");
 					if (f) f.style.display = "inline";
 				} else if (metas[i].name == "kbsrc.brd") {
+					if (detectOnly) return 1;
 					var tds = doc.getElementsByTagName("td");
 					for (var j=0; j<tds.length; j++) {
 						var td = tds[j];
@@ -168,6 +205,7 @@ kbsrcHost.prototype = {
 						if (f) f.style.display = !unread ? "block" : "none";
 					}
 				} else if (metas[i].name == "kbsrc.con") {
+					if (detectOnly) return 1;
 					var ids = metas[i].content.split(",");
 					var bid = parseInt(ids[0]);
 					var thisid = parseInt(ids[1]);
@@ -179,13 +217,67 @@ kbsrcHost.prototype = {
 						this.addRead(bid, thisid);
 					}
 				} else if (metas[i].name == "kbsrc.menu") {
+					if (detectOnly) return 2;
 					var f = doc.getElementById("kbsrc_logout");
-					if (f) f.addEventListener("click", function() { this.trySync(); }, false);
+					var self = this;
+					if (f) f.addEventListener("click", function() { self.trySync(); }, false);
 				} else {
 					continue;
 				}
 				break;
 			}
 		} catch(e) {}
+		return 0;
 	}
 };
+
+function kbsrcIEEntry() {
+	kbsrc = new Object();
+	kbsrc.debugOut = function() {};
+	kbsrc.setStatus = function() {};
+	kbsrc.XMLHttpRequest = function() {};
+	kbsrc.XMLHttpRequest.prototype = {
+		open: function(method, url, sync) {
+			this.method = method;
+			this.url = url;
+			this.sync = sync;
+		},
+		send: function(data) {
+			this.req = new ActiveXObject("Microsoft.XMLHTTP");
+            var self = this;
+            this.req.onreadystatechange = function() {
+                self.onStateChange.call(self);
+            };
+            this.req.open(this.method, this.url, this.sync);
+            this.req.send(this.data);
+		},
+    	onStateChange : function() {
+	        if (this.req.readyState == 4 && this.req.status == 200) {
+	        	this.responseText = this.req.responseText;
+	        	var ev = new Object();
+	        	ev.target = this;
+	        	this.onload(ev);
+            }
+        }
+	}
+
+	var kbsrcStore = document.createElement("div");
+	kbsrcStore.className = "storeuserData";
+	kbsrcStore.style.display = "none";
+	document.appendChild(kbsrcStore);
+	kbsrcStore.load("kbsrcData");
+	var data = kbsrcStore.getAttribute("sPersist");
+	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"));
+	if (data) {
+		oHost.fullUnserialize(data);
+		oHost.processDoc(document);
+		kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
+		kbsrcStore.save("kbsrcData");
+	} else {
+		var ret = oHost.processDoc(document, true);
+		if (ret == 2) oHost.sync(function() {
+			kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
+			kbsrcStore.save("kbsrcData");
+		});
+	}
+}

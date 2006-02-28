@@ -12,6 +12,7 @@
 var agt = navigator.userAgent.toLowerCase();
 var gIE = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
 var gFx = (agt.indexOf("gecko") != -1);
+var kbsrc; //namespace in this window
 
 if (!Array.prototype.push) {
 	Array.prototype.push = function() {
@@ -21,6 +22,12 @@ if (!Array.prototype.push) {
 		return this.length;
 	};
 }
+
+var bootFn = Array();
+function addBootFn(fn) {
+	bootFn[bootFn.length] = fn;
+}
+
 
 function htmlize(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -115,6 +122,9 @@ function saveParaCookie(v, mask) {
 }
 function readParaCookie() {
 	return parseInt(getCookie('WWWPARAMS', 0));
+}
+function showUnread() {
+	return (isLogin() && (readParaCookie() & 0x1000));
 }
 function isLogin() {
 	return (getCookie("UTMPUSERID", "guest") != "guest");
@@ -213,11 +223,6 @@ function alertmsg() {
 	if (top.fmsg && !top.fmsg.document.getElementById("msgs")) top.fmsg.location.reload();
 }
 
-
-var bootFn = Array();
-function addBootFn(fn) {
-	bootFn[bootFn.length] = fn;
-}
 
 window.onload = function() {
 	/* set focus */
@@ -577,6 +582,11 @@ function getCssFile(file) {
 
 function writeCssFile(file) {
 	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
+	if (gIE && showUnread()) {
+		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
+		document.write("<style>.storeuserData {behavior:url(#default#userData);}</style>");
+		addBootFn(function() { kbsrcIEEntry(); } );
+	}
 }
 
 function resetCss() {
