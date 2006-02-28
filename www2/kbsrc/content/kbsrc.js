@@ -11,13 +11,14 @@ kbsrcStringBuffer.prototype = {
 	}
 };
 
-function kbsrcHost(host, userid) {
+function kbsrcHost(host, userid, httpRequest) {
 	this.host = host;
 	this.lastSync = 0;
 	this.rc = new Object();
 	this.dirty = new Object();
 	this.userid = userid;
 	this.status = 0;
+	this.XMLHttpRequest = httpRequest ? httpRequest : XMLHttpRequest;
 }
 kbsrcHost.prototype = {
 	BRCMaxItem: 50,
@@ -154,12 +155,7 @@ kbsrcHost.prototype = {
 	},
 	sync: function(callback) {
 		this.setStatus(1);
-		var req;
-		try {
-			req = new XMLHttpRequest();
-		} catch(e) {
-			req = new kbsrc.XMLHttpRequest();
-		}
+		var req = new this.XMLHttpRequest();
 		req.oHost = this;
 		req.callback = callback;
 		req.onload = function(event) {
@@ -257,7 +253,11 @@ function kbsrcIEEntry() {
 			this.sync = sync;
 		},
 		send: function(data) {
-			this.req = new ActiveXObject("Microsoft.XMLHTTP");
+			try {
+				this.req = new XMLHttpRequest();
+			} catch(e) {
+				this.req = new ActiveXObject("Microsoft.XMLHTTP");
+			}
 			var self = this;
 			this.req.onreadystatechange = function() {
 				self.onStateChange.call(self);
@@ -275,7 +275,7 @@ function kbsrcIEEntry() {
 		}
 	}
 
-	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"));
+	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), kbsrc.XMLHttpRequest);
 	var ret = oHost.processDoc(document, true);
 	if (ret == 0) return;
 
