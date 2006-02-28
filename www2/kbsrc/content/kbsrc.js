@@ -92,7 +92,7 @@ kbsrcHost.prototype = {
 	serialize: function(isSync) {
 		var bid, j;
 		var str = new kbsrcStringBuffer();
-		for(bid in this.dirty) {
+		for(bid in this.rc) {
 			if (this.dirty[bid]) {
 				var lst = this.rc[bid];
 				this.toHex(str, bid, 4);
@@ -112,14 +112,17 @@ kbsrcHost.prototype = {
 	fullSerialize: function() {
 		var str = new kbsrcStringBuffer();
 		this.toHex(str, Math.floor(this.lastSync / 1000), 8);
-		var i = 0, bids = new kbsrcStringBuffer();
-		for(bid in this.dirty) {
+		var i = 0;
+		for(bid in this.rc) {
+			if (!this.dirty[bid]) continue;
 			i++;
-			this.toHex(bids, bid, 4);
-			this.toHex(bids, this.dirty[bid] ? 1 : 0, 4);
 		}
 		this.toHex(str, i, 4);
-		var v = str.toString() + "," + bids.toString() + "," + this.serialize(false);
+		for(bid in this.rc) {
+			if (!this.dirty[bid]) continue;
+			this.toHex(str, bid, 4);
+		}
+		var v = str.toString() + "," + this.serialize(false);
 		return v;
 	},
 	trySync: function() {
@@ -165,16 +168,15 @@ kbsrcHost.prototype = {
 			var arr = str.split(",");
 			this.lastSync = parseInt(arr[0].substr(0, 8), 16) * 1000;
 			n = parseInt(arr[0].substr(8, 4), 16);
-			i = 0;
+			i = 12;
 			for(j = 0; j < n; j++) {
-				var bid = parseInt(arr[1].substr(i, 4), 16);
-				this.dirty[bid] = parseInt(arr[1].substr(i+4, 4), 16) ? true : false;
-				i += 8;
+				var bid = parseInt(arr[0].substr(i, 4), 16);
+				this.dirty[bid] = true;
+				i += 4;
 			}
-			for(j = 2; j < arr.length; j++) {
+			for(j = 1; j < arr.length; j++) {
 				var bid = parseInt(arr[j].substr(0, 4), 16);
 				this.rc[bid] = false;
-				this.dirty[bid] = false;
 				this.serial[bid] = arr[j];
 			}
 		} catch(e) {}
