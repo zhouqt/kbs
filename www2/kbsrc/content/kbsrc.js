@@ -99,8 +99,8 @@ kbsrcHost.prototype = {
 		var i = 0, bids = new kbsrcStringBuffer();
 		for(bid in this.dirty) {
 			i++;
-			this.toHex(bids, bid, 4));
-			this.toHex(bids, this.dirty[bid] ? 1 : 0, 4));
+			this.toHex(bids, bid, 4);
+			this.toHex(bids, this.dirty[bid] ? 1 : 0, 4);
 		}
 		this.toHex(str, i, 4);
 		return str.toString() + bids.toString() + this.serialize(false);;
