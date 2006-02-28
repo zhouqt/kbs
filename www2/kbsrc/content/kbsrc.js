@@ -24,8 +24,7 @@ kbsrcHost.prototype = {
 	hexD: "0123456789ABCDEF",
 	toHex: function(buf, num, digits) {
 		while(digits>0) {
-			buf.append(this.hexD.substr(num & 15, 1));
-			num >>= 4;
+			buf.append(this.hexD.substr((num & (0xF << 4*(digits-1))) >> (4*(digits-1)) , 1));
 			digits--;
 		}
 	},
@@ -78,7 +77,8 @@ kbsrcHost.prototype = {
 		}
 	},
 	serialize: function(isSync) {
-		var bid, j, str = new kbsrcStringBuffer();
+		var bid, j;
+		var str = new kbsrcStringBuffer();
 		for(bid in this.dirty) {
 			if (!isSync || this.dirty[bid]) {
 				var lst = this.rc[bid];
@@ -95,7 +95,7 @@ kbsrcHost.prototype = {
 	},
 	fullSerialize: function() {
 		var str = new kbsrcStringBuffer();
-		this.toHex(str, this.lastSync, 8);
+		this.toHex(str, Math.floor(this.lastSync / 1000), 8);
 		var i = 0, bids = new kbsrcStringBuffer();
 		for(bid in this.dirty) {
 			i++;
@@ -103,7 +103,7 @@ kbsrcHost.prototype = {
 			this.toHex(bids, this.dirty[bid] ? 1 : 0, 4);
 		}
 		this.toHex(str, i, 4);
-		return str.toString() + bids.toString() + this.serialize(false);;
+		return str.toString() + bids.toString() + this.serialize(false);
 	},
 	trySync: function() {
 		var str = this.serialize(true);
@@ -140,7 +140,7 @@ kbsrcHost.prototype = {
 	fullUnserialize: function(str) {
 		var i=0,j,n;
 		try {
-			this.lastSync = parseInt(str.substr(0, 8), 16);
+			this.lastSync = parseInt(str.substr(0, 8), 16) * 1000;
 			n = parseInt(str.substr(8, 4), 16);
 			i = 12;
 			for(j = 0; j < n; j++) {
@@ -274,21 +274,25 @@ function kbsrcIEEntry() {
 		}
 	}
 
+	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"));
+	var ret = oHost.processDoc(document, true);
+	if (ret == 0) return;
+
 	var kbsrcStore = document.createElement("div");
 	kbsrcStore.className = "storeuserData";
 	kbsrcStore.style.display = "none";
 	document.appendChild(kbsrcStore);
-	kbsrcStore.load("kbsrcData");
-	var data = kbsrcStore.getAttribute("sPersist");
-	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"));
-	if (data) {
-		oHost.fullUnserialize(data);
-		oHost.processDoc(document);
-		kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
-		kbsrcStore.save("kbsrcData");
-	} else {
-		var ret = oHost.processDoc(document, true);
-		if (ret == 2) oHost.sync(function() {
+	if (ret == 1) {
+		kbsrcStore.load("kbsrcData");
+		var data = kbsrcStore.getAttribute("sPersist");
+		if (data) {
+			oHost.fullUnserialize(data);
+			oHost.processDoc(document);
+			kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
+			kbsrcStore.save("kbsrcData");
+		}
+	} else if (ret == 2) {
+		oHost.sync(function() {
 			kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
 			kbsrcStore.save("kbsrcData");
 		});
