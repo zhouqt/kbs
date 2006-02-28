@@ -24,7 +24,7 @@ kbsrcHost.prototype = {
 	hexD: "0123456789ABCDEF",
 	toHex: function(buf, num, digits) {
 		digits = digits * 4 - 4;
-		while(digits>0) {
+		while(digits >= 0) {
 			buf.append(this.hexD.substr((num & (0xF << digits)) >> digits, 1));
 			digits -= 4;
 		}
