@@ -390,7 +390,7 @@ if($currentuser["userid"]!="guest") {
 	if($currentuser["userid"]!="guest"){
 ?>
 	<img src="images/open.gif" class="pm" alt="-"
-	><a href="bbslogout.php" id="logoutlink" target="_top"><script type="text/javascript">putImage('i_exit.gif','class="sfolder"');</script>离开本站</a><br/>
+	><a href="bbslogout.php" id="kbsrc_logout" target="_top"><script type="text/javascript">putImage('i_exit.gif','class="sfolder"');</script>离开本站</a><br/>
 <?php
 	}
 ?>

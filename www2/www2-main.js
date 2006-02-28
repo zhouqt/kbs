@@ -900,6 +900,7 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	ret += '[<a href="bbsbfind.php?board=' + this.board + '" onclick="return showFindBox(\'' + this.board + '\')">版内查询</a>] ';
 	ret += '[<a href="bbsshowvote.php?board=' + this.board + '">版内投票</a>] ';
 	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
+	ret += '<span id="kbsrc_clear" style="display:none;">[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>]<span> ';
 	ret += '[' + sfav + '] ';
 	if (rss) {
 		ret += '<a href="' + rss + '" title="RSS"><img src="images/xml.gif"/></a>';

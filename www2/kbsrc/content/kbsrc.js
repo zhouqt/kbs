@@ -150,6 +150,8 @@ kbsrcHost.prototype = {
 						else c = (unread ? '*' : '') + c;
 						span.innerHTML = c + html.substr(1);
 					}
+					var f = doc.getElementById("kbsrc_clear");
+					if (f) f.style.display = "inline";
 				} else if (metas[i].name == "kbsrc.brd") {
 					var tds = doc.getElementsByTagName("td");
 					for (var j=0; j<tds.length; j++) {
@@ -177,7 +179,7 @@ kbsrcHost.prototype = {
 						this.addRead(bid, thisid);
 					}
 				} else if (metas[i].name == "kbsrc.menu") {
-					var f = doc.getElementById("logoutlink");
+					var f = doc.getElementById("kbsrc_logout");
 					if (f) f.addEventListener("click", function() { this.trySync(); }, false);
 				} else {
 					continue;
