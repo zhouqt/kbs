@@ -6,7 +6,7 @@
   
     <em:id>{dd4e0497-21b0-4866-9b5f-77bfee85e79e}</em:id>
     <em:name>KBS Reading Record</em:name>
-    <em:version>0.9.3.3</em:version>
+    <em:version>0.9.3.4</em:version>
     <em:description>Process and view reading record at client side for KBS web.</em:description>
     <em:creator>atppp</em:creator>
     <!-- optional items -->
@@ -17,11 +17,19 @@
     <em:iconURL>chrome://kbsrc/skin/logo.png</em:iconURL>
     <em:updateURL>http://www.newsmth.net/kbsrc/update.rdf</em:updateURL>
 
+        <em:file>
+            <Description about="urn:mozilla:extension:file:kbsrc.jar">
+                <em:package>content/</em:package>
+                <em:locale>locale/en-US/</em:locale>
+                <em:skin>skin/</em:skin>
+            </Description>
+        </em:file>
+
     <!-- Firefox -->
     <em:targetApplication>
       <Description>
         <em:id>{ec8030f7-c20a-464f-9b0e-13a3a9e97384}</em:id>
-        <em:minVersion>1.5</em:minVersion>
+        <em:minVersion>1.0</em:minVersion>
         <em:maxVersion>1.6</em:maxVersion>
       </Description>
     </em:targetApplication>

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<RDF:RDF xmlns:RDF="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+		 xmlns:chrome="http://www.mozilla.org/rdf/chrome#">
+	<RDF:Seq RDF:about="urn:mozilla:package:root">
+		<RDF:li RDF:resource="urn:mozilla:package:kbsrc"/>
+	</RDF:Seq>
+	<RDF:Seq RDF:about="urn:mozilla:overlays">
+		<RDF:li RDF:resource="chrome://browser/content/browser.xul"/>
+	</RDF:Seq>
+	<RDF:Seq RDF:about="chrome://browser/content/browser.xul">
+		<RDF:li>chrome://kbsrc/content/overlay.xul</RDF:li>
+	</RDF:Seq>
+
+	<!-- package information -->
+	<RDF:Description RDF:about="urn:mozilla:package:kbsrc"
+		chrome:displayName="KBS Reading Record"
+		chrome:author="atppp"
+		chrome:authorURL="http://www.newsmth.net/kbsrc/index.html"
+		chrome:extension="true"
+		chrome:description="Process and view reading record at client side for KBS web."
+		chrome:name="kbsrc">
+	</RDF:Description>
+</RDF:RDF>

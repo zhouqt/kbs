@@ -5,7 +5,7 @@
 APP_NAME=kbsrc
 CHROME_PROVIDERS="content locale skin"
 CLEAN_UP=1
-ROOT_FILES="readme.txt"
+ROOT_FILES="readme.txt install.js"
 ROOT_DIRS=
 BEFORE_BUILD=
 AFTER_BUILD=
