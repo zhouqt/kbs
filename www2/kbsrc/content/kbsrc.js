@@ -6,14 +6,6 @@ kbsrcStringBuffer.prototype = {
 		this.buffer.push(string);
 		return this;
 	},
-	reverseAppend: function(strs) {
-		var s;
-		while (1) {
-			s = strs.pop();
-			if (typeof s == "undefined") break;
-			this.append(s);
-		}
-	},
 	toString: function() {
 		return this.buffer.join("");
 	}
@@ -31,13 +23,11 @@ kbsrcHost.prototype = {
 	BRCMaxItem: 50,
 	hexD: "0123456789ABCDEF",
 	toHex: function(buf, num, digits) {
-		var arr = new Array();
+		digits = digits * 4 - 4;
 		while(digits>0) {
-			arr.push(this.hexD.substr(num & 0xF , 1));
-			num >>= 4;
-			digits--;
+			buf.append(this.hexD.substr((num & (0xF << digits)) >> digits, 1));
+			digits -= 4;
 		}
-		buf.reverseAppend(arr);
 	},
 	isUnread: function(bid, id) {
 		var lst = this.rc[bid];
