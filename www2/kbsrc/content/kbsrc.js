@@ -20,7 +20,7 @@ function kbsrcHost(host, userid, httpRequest, protocol) {
 	this.userid = userid;
 	this.status = 0;
 	this.XMLHttpRequest = httpRequest ? httpRequest : XMLHttpRequest;
-	this.protocol = protocol ? protocol : "http";
+	this.protocol = protocol ? protocol : "http:";
 }
 kbsrcHost.prototype = {
 	BRCMaxItem: 50,
@@ -200,7 +200,7 @@ kbsrcHost.prototype = {
 			if (self.callback) self.callback();
 		};
 		// TODO: use relative path
-		req.open("POST", this.protocol + "://" + this.host + "/kbsrc.php", callback ? false : true);
+		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php", callback ? false : true);
 		req.send(this.serialize(true));
 	},
 	processDoc: function(doc, detectOnly) {
