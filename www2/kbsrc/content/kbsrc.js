@@ -11,7 +11,7 @@ kbsrcStringBuffer.prototype = {
 	}
 };
 
-function kbsrcHost(host, userid, httpRequest, protocol) {
+function kbsrcHost(host, userid, utmpkey, httpRequest, protocol) {
 	this.host = host;
 	this.lastSync = 0;
 	this.rc = new Object();
@@ -19,6 +19,7 @@ function kbsrcHost(host, userid, httpRequest, protocol) {
 	this.serial = new Object();
 	this.userid = userid;
 	this.status = 0;
+	this.utmpkey = utmpkey ? utmpkey : 0;
 	this.XMLHttpRequest = httpRequest ? httpRequest : XMLHttpRequest;
 	this.protocol = protocol ? protocol : "http:";
 }
@@ -111,8 +112,9 @@ kbsrcHost.prototype = {
 		}
 		return str.toString();
 	},
-	fullSerialize: function() {
+	ieFullSerialize: function() {
 		var str = new kbsrcStringBuffer();
+		this.toHex(str, this.utmpkey, 8);
 		this.toHex(str, Math.floor(this.lastSync / 1000), 8);
 		var i = 0;
 		for(bid in this.rc) {
@@ -164,13 +166,14 @@ kbsrcHost.prototype = {
 			kbsrc.debugOut("sync error.", this);
 		}
 	},
-	fullUnserialize: function(str) {
+	ieFullUnserialize: function(str) {
 		var i=0,j,n;
 		try {
 			var arr = str.split(",");
-			this.lastSync = parseInt(arr[0].substr(0, 8), 16) * 1000;
-			n = parseInt(arr[0].substr(8, 4), 16);
-			i = 12;
+			this.utmpkey = parseInt(arr[0].substr(0, 8), 16);
+			this.lastSync = parseInt(arr[0].substr(8, 8), 16) * 1000;
+			n = parseInt(arr[0].substr(16, 4), 16);
+			i = 20;
 			for(j = 0; j < n; j++) {
 				var bid = parseInt(arr[0].substr(i, 4), 16);
 				this.dirty[bid] = true;
@@ -317,9 +320,9 @@ function kbsrcIEEntry() {
 		kbsrcStore.load("kbsrcData");
 		var data = kbsrcStore.getAttribute("sPersist");
 		if (data) {
-			oHost.fullUnserialize(data);
+			oHost.ieFullUnserialize(data);
 			oHost.processDoc(document);
-			kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
+			kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
 			kbsrcStore.save("kbsrcData");
 		}
 	} else if (ret == 2) {
@@ -327,13 +330,21 @@ function kbsrcIEEntry() {
 		if (f) f.onclick = function() {
 			kbsrcStore.load("kbsrcData");
 			var data = kbsrcStore.getAttribute("sPersist");
+			kbsrcStore.removeAttribute("sPersist");
+			kbsrcStore.save("kbsrcData");
 			if (data) {
-				oHost.fullUnserialize(data);
+				oHost.ieFullUnserialize(data);
 				oHost.logoutSync();
 			}
 		};
+		kbsrcStore.load("kbsrcData");
+		var data = kbsrcStore.getAttribute("sPersist");
+		if (data) {
+			oHost.ieFullUnserialize(data);
+			if (oHost.utmpkey == getCookie("UTMPKEY", "")) return;
+		}
 		oHost.sync(function() {
-			kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
+			kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
 			kbsrcStore.save("kbsrcData");
 		});
 	}
