@@ -24,7 +24,7 @@ $guest = (!strcmp($currentuser['userid'],'guest'));
 if ($isnormalboard && (isset($_GET["kbsrc"]))) {
 	// this could be cacheable... - atppp
 } else {
-	bbs_brcclear($board);
+	if (!$guest) bbs_brcclear($board);
 }
 
 $id = $brdarr["LASTPOST"];
