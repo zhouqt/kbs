@@ -132,9 +132,7 @@ kbsrcHost.prototype = {
 	logoutSync: function() {
 		var str = this.serialize(true);
 		if (str) {
-			this.sync(function() {
-				//alert("RC Saved");
-			}, true);
+			this.sync(null, true, true);
 		}
 	},
 	setStatus: function(s) {
@@ -186,9 +184,10 @@ kbsrcHost.prototype = {
 			}
 		} catch(e) {}
 	},
-	sync: function(callback, logout) {
+	sync: function(callback, logout, sync) {
 		this.setStatus(1);
 		var req = new this.XMLHttpRequest();
+		var isSync = sync ? true : false;
 		req.oHost = this;
 		req.callback = callback;
 		req.onload = function(event) {
@@ -204,7 +203,7 @@ kbsrcHost.prototype = {
 			if (self.callback) self.callback();
 		};
 		// TODO: use relative path
-		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php" + (logout?"?logout=1":""), callback ? false : true);
+		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php" + (logout?"?logout=1":""), isSync);
 		req.send(this.serialize(true));
 	},
 	processDoc: function(doc, detectOnly) {
@@ -308,7 +307,8 @@ function kbsrcIEEntry() {
 		}
 	}
 	
-	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), getCookie("UTMPKEY", ""), kbsrc.XMLHttpRequest, document.location.protocol);
+	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), 
+			getCookie("UTMPKEY", ""), kbsrc.XMLHttpRequest, document.location.protocol);
 	var ret = oHost.processDoc(document, true);
 	if (ret == 0) return;
 
@@ -316,36 +316,53 @@ function kbsrcIEEntry() {
 	kbsrcStore.addBehavior("#default#userData");
 	kbsrcStore.style.display = "none";
 	document.appendChild(kbsrcStore);
-	if (ret == 1) {
+	
+	var kbsrcIELoad = function() {
 		kbsrcStore.load("kbsrcData");
 		var data = kbsrcStore.getAttribute("sPersist");
 		if (data) {
 			oHost.ieFullUnserialize(data);
+			return true;
+		} else return false;
+	};
+	var kbsrcIESave = function() {
+		kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
+		kbsrcStore.save("kbsrcData");
+	};
+	
+	if (ret == 1) {
+		if (kbsrcIELoad()) {
 			oHost.processDoc(document);
-			kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
-			kbsrcStore.save("kbsrcData");
+			kbsrcIESave();
 		}
 	} else if (ret == 2) {
 		var f = document.getElementById("kbsrc_logout");
 		if (f) f.onclick = function() {
-			kbsrcStore.load("kbsrcData");
-			var data = kbsrcStore.getAttribute("sPersist");
-			kbsrcStore.removeAttribute("sPersist");
-			kbsrcStore.save("kbsrcData");
-			if (data) {
-				oHost.ieFullUnserialize(data);
+			if (kbsrcIELoad()) {
 				oHost.logoutSync();
 			}
-		};
-		kbsrcStore.load("kbsrcData");
-		var data = kbsrcStore.getAttribute("sPersist");
-		if (data) {
-			oHost.ieFullUnserialize(data);
-			if (oHost.utmpkey == getCookie("UTMPKEY", "")) return;
-		}
-		oHost.sync(function() {
-			kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
+			kbsrcStore.removeAttribute("sPersist");
 			kbsrcStore.save("kbsrcData");
-		});
+		};
+		var toLoad = true;
+		if (kbsrcIELoad()) {
+			if (oHost.utmpkey == getCookie("UTMPKEY", "")) toLoad = false;
+		}
+		if (toLoad) {
+			oHost.sync(function() {
+				kbsrcIESave();
+			}, false, true);
+		}
+		setInterval(function() {
+			if (!kbsrcIELoad()) return;
+			var now = (new Date()).getTime();
+			if (now - oHost.lastSync > 600000) {
+				oHost.lastSync = now;
+				kbsrcIESave();
+				oHost.sync(function() {
+					kbsrcIESave();
+				});
+			}
+		}, 310000);
 	}
 }
