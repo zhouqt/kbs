@@ -308,7 +308,7 @@ function kbsrcIEEntry() {
 		}
 	}
 	
-	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), kbsrc.XMLHttpRequest, document.location.protocol);
+	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), getCookie("UTMPKEY", ""), kbsrc.XMLHttpRequest, document.location.protocol);
 	var ret = oHost.processDoc(document, true);
 	if (ret == 0) return;
 
