@@ -127,12 +127,12 @@ kbsrcHost.prototype = {
 		var v = str.toString() + "," + this.serialize(false);
 		return v;
 	},
-	trySync: function() {
+	logoutSync: function() {
 		var str = this.serialize(true);
 		if (str) {
 			this.sync(function() {
 				//alert("RC Saved");
-			});
+			}, true);
 		}
 	},
 	setStatus: function(s) {
@@ -183,7 +183,7 @@ kbsrcHost.prototype = {
 			}
 		} catch(e) {}
 	},
-	sync: function(callback) {
+	sync: function(callback, logout) {
 		this.setStatus(1);
 		var req = new this.XMLHttpRequest();
 		req.oHost = this;
@@ -201,7 +201,7 @@ kbsrcHost.prototype = {
 			if (self.callback) self.callback();
 		};
 		// TODO: use relative path
-		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php", callback ? false : true);
+		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php" + (logout?"?logout=1":""), callback ? false : true);
 		req.send(this.serialize(true));
 	},
 	processDoc: function(doc, detectOnly) {
@@ -260,7 +260,7 @@ kbsrcHost.prototype = {
 					if (detectOnly) return 2;
 					var f = doc.getElementById("kbsrc_logout");
 					var self = this;
-					if (f) f.addEventListener("click", function() { self.trySync(); }, false);
+					if (f) f.addEventListener("click", function() { self.logoutSync(); }, false);
 				} else {
 					continue;
 				}
@@ -323,7 +323,15 @@ function kbsrcIEEntry() {
 			kbsrcStore.save("kbsrcData");
 		}
 	} else if (ret == 2) {
-		oHost.processDoc(document);
+		var f = document.getElementById("kbsrc_logout");
+		if (f) f.onclick = function() {
+			kbsrcStore.load("kbsrcData");
+			var data = kbsrcStore.getAttribute("sPersist");
+			if (data) {
+				oHost.fullUnserialize(data);
+				oHost.logoutSync();
+			}
+		};
 		oHost.sync(function() {
 			kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
 			kbsrcStore.save("kbsrcData");

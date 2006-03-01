@@ -8,6 +8,8 @@
 	if ($p) {
 		bbs2_brcsync($p);
 	}
-	ob_start("ob_gzhandler");
-	echo bbs2_brcdump();
+	if (!isset($_GET["logout"])) {
+		ob_start("ob_gzhandler");
+		echo bbs2_brcdump();
+	}
 ?>
