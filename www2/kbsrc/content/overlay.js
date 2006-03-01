@@ -19,11 +19,12 @@ KBSRC.prototype = {
 			var oHost = this.hosts[host];
 			if (!oHost) continue;
 			str += "\t" + oHost.host + ":\n";
-			for(bid in oHost.dirty) {
-				if (oHost.dirty[bid]) {
-					var lst = oHost.rc[bid];
+			for(bid in oHost.boards) {
+				var oBoard = oHost.boards[bid];
+				if (oBoard.dirty) {
+					var lst = oBoard.rc;
 					str += "\t\t" + bid + ": ";
-					for (j=0; j<oHost.BRCMaxItem; j++) {
+					for (j=0; j<oBoard.BRCMaxItem; j++) {
 						if (lst[j] == 0) break;
 						if (j!=0) str += ",";
 						str += lst[j];

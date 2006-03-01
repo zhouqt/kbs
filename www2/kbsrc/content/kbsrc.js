@@ -6,45 +6,44 @@ kbsrcStringBuffer.prototype = {
 		this.buffer.push(string);
 		return this;
 	},
+	hexD: "0123456789ABCDEF",
+	appendHex: function(num, digits) {
+		digits = digits * 4 - 4;
+		while(digits >= 0) {
+			this.append(this.hexD.substr((num & (0xF << digits)) >> digits, 1));
+			digits -= 4;
+		}
+	},
 	toString: function() {
 		return this.buffer.join("");
 	}
 };
 
-function kbsrcHost(host, userid, utmpkey, httpRequest, protocol) {
-	this.host = host;
-	this.lastSync = 0;
-	this.rc = new Object();
-	this.dirty = new Object();
-	this.serial = new Object();
-	this.userid = userid;
-	this.status = 0;
-	this.utmpkey = utmpkey ? utmpkey : 0;
-	this.XMLHttpRequest = httpRequest ? httpRequest : XMLHttpRequest;
-	this.protocol = protocol ? protocol : "http:";
+function kbsrcBoard(bid, oHost, createRC) {
+	this.bid = bid;
+	this.rc = createRC ? new Array() : false;
+	this.serial = false;
+	this.dirty = false;
+	this.oHost = oHost;
 }
-kbsrcHost.prototype = {
+kbsrcBoard.prototype = {
 	BRCMaxItem: 50,
-	hexD: "0123456789ABCDEF",
-	toHex: function(buf, num, digits) {
-		digits = digits * 4 - 4;
-		while(digits >= 0) {
-			buf.append(this.hexD.substr((num & (0xF << digits)) >> digits, 1));
-			digits -= 4;
-		}
-	},
-	getRcList: function(bid) {
-		var lst = this.rc[bid];
+	getRcList: function() {
+		var lst = this.rc;
 		if (!lst) {
-			if (!this.serial[bid])
+			if (!this.serial)
 				return null;
-			this.unserializeBoard(this.serial[bid], 0);
-			lst = this.rc[bid];
+			try {
+				this.oHost.unserializeBoard(this.serial, 0, this);
+			} catch(e) {
+				return null;
+			}
+			lst = this.rc;
 		}
 		return lst;
 	},
-	isUnread: function(bid, id) {
-		var lst = this.getRcList(bid);
+	isUnread: function(id) {
+		var lst = this.getRcList();
 		if (!lst) return null;
 		for(var n=0; n<this.BRCMaxItem; n++) {
 			if (lst[n] == 0) {
@@ -59,19 +58,18 @@ kbsrcHost.prototype = {
 		}
 		return false;
 	},
-	clear: function(bid, lastpost) {
-		kbsrc.debugOut(bid + "," + lastpost + " clear.", this);
-		var lst = this.getRcList(bid);
+	clear: function(lastpost) {
+		kbsrc.debugOut(this.bid + "," + lastpost + " clear.", this.oHost);
+		var lst = this.getRcList();
 		if (!lst) return;
 		lst[0] = lastpost;
 		lst[1] = 0;
-		this.dirty[bid] = true;
+		this.dirty = true;
 	},
-	addRead: function(bid, id) {
-		kbsrc.debugOut(bid + "," + id + " read.", this);
-		var lst = this.rc[bid];
+	addRead: function(id) {
+		kbsrc.debugOut(this.bid + "," + id + " read.", this.oHost);
 		var n;
-		var lst = this.getRcList(bid);
+		var lst = this.getRcList();
 		for(n=0; n<this.BRCMaxItem && lst[n]; n++) {
 			if (id == lst[n]) {
 				return;
@@ -80,7 +78,7 @@ kbsrcHost.prototype = {
 					lst[i] = lst[i-1];
 				}
 				lst[n] = id;
-				this.dirty[bid] = true;
+				this.dirty = true;
 				return;
 			}
 		}
@@ -88,25 +86,39 @@ kbsrcHost.prototype = {
 			lst[0] = id;
 			lst[1] = 1;
 			lst[2] = 0;
-			this.dirty[bid] = true;
+			this.dirty = true;
 		}
-	},
+	}
+};
+
+function kbsrcHost(host, userid, utmpkey, httpRequest, protocol) {
+	this.host = host;
+	this.lastSync = 0;
+	this.boards = new Object();
+	this.userid = userid;
+	this.status = 0;
+	this.utmpkey = utmpkey ? utmpkey : 0;
+	this.XMLHttpRequest = httpRequest ? httpRequest : XMLHttpRequest;
+	this.protocol = protocol ? protocol : "http:";
+}
+kbsrcHost.prototype = {
 	serialize: function(isSync) {
 		var bid, j;
 		var str = new kbsrcStringBuffer();
-		for(bid in this.rc) {
-			if (this.dirty[bid]) {
-				var lst = this.getRcList(bid);
+		for(bid in this.boards) {
+			var board = this.boards[bid];
+			if (board.dirty) {
+				var lst = board.getRcList();
 				if (!lst) continue;
-				this.toHex(str, bid, 4);
-				for (j=0; j<this.BRCMaxItem; j++) if (lst[j] == 0) break;
-				this.toHex(str, j, 4);
-				for (j=0; j<this.BRCMaxItem; j++) {
+				str.appendHex(bid, 4);
+				for (j=0; j<board.BRCMaxItem; j++) if (lst[j] == 0) break;
+				str.appendHex(j, 4);
+				for (j=0; j<board.BRCMaxItem; j++) {
 					if (lst[j] == 0) break;
-					this.toHex(str, lst[j], 8);
+					str.appendHex(lst[j], 8);
 				}
 			} else if (!isSync) {
-				str.append(this.serial[bid]);
+				str.append(board.serial);
 			}
 			if (!isSync) str.append(",");
 		}
@@ -114,17 +126,17 @@ kbsrcHost.prototype = {
 	},
 	ieFullSerialize: function() {
 		var str = new kbsrcStringBuffer();
-		this.toHex(str, this.utmpkey, 8);
-		this.toHex(str, Math.floor(this.lastSync / 1000), 8);
+		str.appendHex(this.utmpkey, 8);
+		str.appendHex(Math.floor(this.lastSync / 1000), 8);
 		var i = 0;
-		for(bid in this.rc) {
-			if (!this.dirty[bid]) continue;
+		for(bid in this.boards) {
+			if (!this.boards[bid].dirty) continue;
 			i++;
 		}
-		this.toHex(str, i, 4);
-		for(bid in this.rc) {
-			if (!this.dirty[bid]) continue;
-			this.toHex(str, bid, 4);
+		str.appendHex(i, 4);
+		for(bid in this.boards) {
+			if (!this.boards[bid].dirty) continue;
+			str.appendHex(bid, 4);
 		}
 		var v = str.toString() + "," + this.serialize(false);
 		return v;
@@ -132,29 +144,32 @@ kbsrcHost.prototype = {
 	logoutSync: function() {
 		var str = this.serialize(true);
 		if (str) {
-			this.sync(null, true, true);
+			this.sync(null, true);
 		}
 	},
 	setStatus: function(s) {
 		this.status = s;
 		kbsrc.setStatus(this.host);
 	},
-	unserializeBoard: function(rc, pos) {
-		try {
-			var bid = parseInt(rc.substr(pos, 4), 16);
-			var n = parseInt(rc.substr(pos + 4, 4), 16);
-			this.rc[bid] = new Array();
-			this.dirty[bid] = false;
-			for (j=0; j<this.BRCMaxItem; j++) this.rc[bid][j] = 0;
-			for (j=0; j<n; j++) {
-				this.rc[bid][j] = parseInt(rc.substr(pos+8+j*8, 8), 16);
-			}
-			this.serial[bid] = rc.substr(pos, 8 + n * 8);
-			return(pos + 8 + n * 8);
-		} catch(e) {}
+	unserializeBoard: function(rc, pos, oBoard) {
+		var bid = parseInt(rc.substr(pos, 4), 16);
+		var n = parseInt(rc.substr(pos + 4, 4), 16);
+		var j, oB = oBoard;
+		if (!oB) {
+			oB = this.boards[bid] = new kbsrcBoard(bid, this, true);
+			oB.serial = rc.substr(pos, 8 + n * 8);
+		} else {
+			oB.rc = new Array();
+		}
+		for (j=0; j<oB.BRCMaxItem; j++) oB.rc[j] = 0;
+		for (j=0; j<n; j++) {
+			oB.rc[j] = parseInt(rc.substr(pos+8+j*8, 8), 16);
+		}
+		return(pos + 8 + n * 8);
 	},
 	unserialize: function(rc) {
-		var i=0,j;
+		var i=0;
+		this.boards = new Object();
 		try {
 			while(i<rc.length) {
 				i = this.unserializeBoard(rc, i);
@@ -167,27 +182,29 @@ kbsrcHost.prototype = {
 	ieFullUnserialize: function(str) {
 		var i=0,j,n;
 		try {
+			this.boards = new Object();
 			var arr = str.split(",");
 			this.utmpkey = parseInt(arr[0].substr(0, 8), 16);
 			this.lastSync = parseInt(arr[0].substr(8, 8), 16) * 1000;
+
+			for(j = 1; j < arr.length; j++) {
+				var bid = parseInt(arr[j].substr(0, 4), 16);
+				this.boards[bid] = new kbsrcBoard(bid, this);
+				this.boards[bid].serial = arr[j];
+			}
+
 			n = parseInt(arr[0].substr(16, 4), 16);
 			i = 20;
 			for(j = 0; j < n; j++) {
 				var bid = parseInt(arr[0].substr(i, 4), 16);
-				this.dirty[bid] = true;
+				this.boards[bid].dirty = true;
 				i += 4;
-			}
-			for(j = 1; j < arr.length; j++) {
-				var bid = parseInt(arr[j].substr(0, 4), 16);
-				this.rc[bid] = false;
-				this.serial[bid] = arr[j];
 			}
 		} catch(e) {}
 	},
-	sync: function(callback, logout, sync) {
+	sync: function(callback, logout, nopost) {
 		this.setStatus(1);
 		var req = new this.XMLHttpRequest();
-		var isSync = sync ? true : false;
 		req.oHost = this;
 		req.callback = callback;
 		req.onload = function(event) {
@@ -195,7 +212,7 @@ kbsrcHost.prototype = {
 			var rc = self.responseText;
 			self.oHost.setStatus(0);
 			if (rc.length == 0) {
-				kbsrc.debugOut("sync failed.", self.oHost);
+				kbsrc.debugOut(logout?"logout sync done.":"sync failed.", self.oHost);
 				return;
 			}
 			self.oHost.unserialize(rc);
@@ -203,8 +220,21 @@ kbsrcHost.prototype = {
 			if (self.callback) self.callback();
 		};
 		// TODO: use relative path
-		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php" + (logout?"?logout=1":""), isSync);
-		req.send(this.serialize(true));
+		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php" + (logout?"?logout=1":""), !logout);
+		req.send(nopost ? "" : this.serialize(true));
+	},
+	isUnread: function(bid, id) {
+		var board = this.boards[bid];
+		if (!board) return null;
+		return (board.isUnread(id));
+	},
+	addRead: function(bid, id) {
+		var board = this.boards[bid];
+		if (board) board.addRead(id);
+	},
+	clear: function(bid, id) {
+		var board = this.boards[bid];
+		if (board) board.clear(id);
 	},
 	processDoc: function(doc, detectOnly) {
 		try {
@@ -218,6 +248,7 @@ kbsrcHost.prototype = {
 						var span = spans[j];
 						if (span.id.substr(0, 5) != "kbsrc") continue;
 						var thisid = parseInt(span.id.substr(5));
+						if (!thisid) continue;
 						var html = span.innerHTML;
 						var unread = this.isUnread(bid, thisid);
 						if (unread === null) continue;
@@ -279,10 +310,10 @@ function kbsrcIEEntry() {
 	kbsrc.setStatus = function() {};
 	kbsrc.XMLHttpRequest = function() {};
 	kbsrc.XMLHttpRequest.prototype = {
-		open: function(method, url, sync) {
+		open: function(method, url, async) {
 			this.method = method;
 			this.url = url;
-			this.sync = sync;
+			this.async = async;
 		},
 		send: function(data) {
 			try {
@@ -294,8 +325,8 @@ function kbsrcIEEntry() {
 			this.req.onreadystatechange = function() {
 				self.onStateChange.call(self);
 			};
-			this.req.open(this.method, this.url, this.sync);
-			this.req.send(this.data);
+			this.req.open(this.method, this.url, this.async);
+			this.req.send(data);
 		},
 		onStateChange : function() {
 			if (this.req.readyState == 4 && this.req.status == 200) {
@@ -325,8 +356,9 @@ function kbsrcIEEntry() {
 			return true;
 		} else return false;
 	};
-	var kbsrcIESave = function() {
-		kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
+	var kbsrcIESave = function(remove) {
+		if (remove) kbsrcStore.removeAttribute("sPersist");
+		else kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
 		kbsrcStore.save("kbsrcData" + userid);
 	};
 	
@@ -341,8 +373,7 @@ function kbsrcIEEntry() {
 			if (kbsrcIELoad()) {
 				oHost.logoutSync();
 			}
-			kbsrcStore.removeAttribute("sPersist");
-			kbsrcStore.save("kbsrcData");
+			kbsrcIESave(true);
 		};
 		var toLoad = true;
 		if (kbsrcIELoad()) {
