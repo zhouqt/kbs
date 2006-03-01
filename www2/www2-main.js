@@ -598,7 +598,6 @@ function writeCssFile(file) {
 	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
 	if (gIE && !gIE5 && showUnread()) {
 		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
-		document.write("<style>.storeuserData {behavior:url(#default#userData);}</style>");
 		addBootFn(function() { kbsrcIEEntry(); } );
 	}
 }

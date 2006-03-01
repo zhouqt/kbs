@@ -11,7 +11,7 @@ kbsrcStringBuffer.prototype = {
 	}
 };
 
-function kbsrcHost(host, userid, httpRequest) {
+function kbsrcHost(host, userid, httpRequest, protocol) {
 	this.host = host;
 	this.lastSync = 0;
 	this.rc = new Object();
@@ -20,6 +20,7 @@ function kbsrcHost(host, userid, httpRequest) {
 	this.userid = userid;
 	this.status = 0;
 	this.XMLHttpRequest = httpRequest ? httpRequest : XMLHttpRequest;
+	this.protocol = protocol ? protocol : "http";
 }
 kbsrcHost.prototype = {
 	BRCMaxItem: 50,
@@ -199,7 +200,7 @@ kbsrcHost.prototype = {
 			if (self.callback) self.callback();
 		};
 		// TODO: use relative path
-		req.open("POST", "http://" + this.host + "/kbsrc.php", callback ? false : true);
+		req.open("POST", this.protocol + "://" + this.host + "/kbsrc.php", callback ? false : true);
 		req.send(this.serialize(true));
 	},
 	processDoc: function(doc, detectOnly) {
@@ -302,13 +303,13 @@ function kbsrcIEEntry() {
 			}
 		}
 	}
-
-	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), kbsrc.XMLHttpRequest);
+	
+	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), kbsrc.XMLHttpRequest, document.location.protocol);
 	var ret = oHost.processDoc(document, true);
 	if (ret == 0) return;
 
 	var kbsrcStore = document.createElement("div");
-	kbsrcStore.className = "storeuserData";
+	kbsrcStore.addBehavior("#default#userData");
 	kbsrcStore.style.display = "none";
 	document.appendChild(kbsrcStore);
 	if (ret == 1) {
