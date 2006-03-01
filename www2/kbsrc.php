@@ -1,6 +1,7 @@
 <?php
 	require("www2-funcs.php");
 	login_init();
+	cache_header("nocache");
 
 	if(!strcmp($currentuser["userid"],"guest")) die;
 
