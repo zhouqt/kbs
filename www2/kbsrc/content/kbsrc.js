@@ -95,7 +95,8 @@ kbsrcHost.prototype = {
 		var str = new kbsrcStringBuffer();
 		for(bid in this.rc) {
 			if (this.dirty[bid]) {
-				var lst = this.rc[bid];
+				var lst = this.getRcList(bid);
+				if (!lst) continue;
 				this.toHex(str, bid, 4);
 				for (j=0; j<this.BRCMaxItem; j++) if (lst[j] == 0) break;
 				this.toHex(str, j, 4);
@@ -322,6 +323,7 @@ function kbsrcIEEntry() {
 			kbsrcStore.save("kbsrcData");
 		}
 	} else if (ret == 2) {
+		oHost.processDoc(document);
 		oHost.sync(function() {
 			kbsrcStore.setAttribute("sPersist", oHost.fullSerialize());
 			kbsrcStore.save("kbsrcData");
