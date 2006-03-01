@@ -307,8 +307,8 @@ function kbsrcIEEntry() {
 		}
 	}
 	
-	var oHost = new kbsrcHost(document.location.host, getCookie("UTMPUSERID", "guest"), 
-			getCookie("UTMPKEY", ""), kbsrc.XMLHttpRequest, document.location.protocol);
+	var userid = getCookie("UTMPUSERID", "guest");
+	var oHost = new kbsrcHost(document.location.host, userid, getCookie("UTMPKEY", ""), kbsrc.XMLHttpRequest, document.location.protocol);
 	var ret = oHost.processDoc(document, true);
 	if (ret == 0) return;
 
@@ -318,7 +318,7 @@ function kbsrcIEEntry() {
 	document.appendChild(kbsrcStore);
 	
 	var kbsrcIELoad = function() {
-		kbsrcStore.load("kbsrcData");
+		kbsrcStore.load("kbsrcData" + userid);
 		var data = kbsrcStore.getAttribute("sPersist");
 		if (data) {
 			oHost.ieFullUnserialize(data);
@@ -327,7 +327,7 @@ function kbsrcIEEntry() {
 	};
 	var kbsrcIESave = function() {
 		kbsrcStore.setAttribute("sPersist", oHost.ieFullSerialize());
-		kbsrcStore.save("kbsrcData");
+		kbsrcStore.save("kbsrcData" + userid);
 	};
 	
 	if (ret == 1) {
