@@ -238,66 +238,67 @@ kbsrcHost.prototype = {
 	},
 	processDoc: function(doc, detectOnly) {
 		try {
-			var metas = doc.getElementsByTagName("meta");
-			for(var i = 0; i < metas.length; i++) {
-				if (metas[i].name == "kbsrc.doc") {
-					if (detectOnly) return 1;
-					var bid = metas[i].content;
-					var spans = doc.getElementsByTagName("span");
-					for (var j=0; j<spans.length; j++) {
-						var span = spans[j];
-						if (span.id.substr(0, 5) != "kbsrc") continue;
-						var thisid = parseInt(span.id.substr(5));
-						if (!thisid) continue;
-						var html = span.innerHTML;
-						var unread = this.isUnread(bid, thisid);
-						if (unread === null) continue;
-						var c = html.substr(0, 1);
-						var cl = c.toLowerCase();
-						if (c == ' ') c = unread ? '*' : ' ';
-						else if (cl == 'b' || cl == 'm' || cl == 'g') c = unread ? c.toUpperCase() : c.toLowerCase();
-						else c = (unread ? '*' : '') + c;
-						span.innerHTML = c + html.substr(1);
-					}
-					var f = doc.getElementById("kbsrc_clear");
-					if (f) f.style.display = "inline";
-				} else if (metas[i].name == "kbsrc.brd") {
-					if (detectOnly) return 1;
-					var tds = doc.getElementsByTagName("td");
-					for (var j=0; j<tds.length; j++) {
-						var td = tds[j];
-						if (td.id.substr(0, 5) != "kbsrc") continue;
-						var as = td.id.substr(5).split("_");
-						var bid = parseInt(as[0]);
-						var lastpost = parseInt(as[1]);
-						var unread = this.isUnread(bid, lastpost);
-						if (unread === null) continue;
-						var f = doc.getElementById("kbsrc"+bid+"u");
-						if (f) f.style.display = unread ? "block" : "none";
-						f = doc.getElementById("kbsrc"+bid+"r");
-						if (f) f.style.display = !unread ? "block" : "none";
-					}
-				} else if (metas[i].name == "kbsrc.con") {
-					if (detectOnly) return 1;
-					var ids = metas[i].content.split(",");
-					var bid = parseInt(ids[0]);
-					var thisid = parseInt(ids[1]);
-					if (ids[2]) {
-						if (ids[2] == 'f') { //clear all
-							this.clear(bid, thisid);
-						}
-					} else {
-						this.addRead(bid, thisid);
-					}
-				} else if (metas[i].name == "kbsrc.menu") {
-					if (detectOnly) return 2;
-					var f = doc.getElementById("kbsrc_logout");
-					var self = this;
-					if (f) f.addEventListener("click", function() { self.logoutSync(); }, false);
-				} else {
-					continue;
+			var info = doc.getElementById('kbsrcInfo');
+			if (!info) return 0;
+			info = info.innerHTML.split(',');
+			if (info[0] == 'doc') {
+				if (detectOnly) return 1;
+				var bid = info[1];
+				for(var j=2; j<info.length; j++) {
+					var thisid = parseInt(info[j]);
+					var span = doc.getElementById('kbsrc' + thisid);
+					if (!span) continue;
+					var html = span.innerHTML;
+					var unread = this.isUnread(bid, thisid);
+					if (unread === null) continue;
+					var c = html.substr(0, 1);
+					var cl = c.toLowerCase();
+					if (c == ' ') c = unread ? '*' : ' ';
+					else if (cl == 'b' || cl == 'm' || cl == 'g') c = unread ? c.toUpperCase() : c.toLowerCase();
+					else c = (unread ? '*' : '') + c;
+					span.innerHTML = c + html.substr(1);
 				}
-				break;
+				var f = doc.getElementById("kbsrc_clear");
+				if (f) f.style.display = "inline";
+			} else if (info[0] == 'brd') {
+				if (detectOnly) return 1;
+				/*
+				var tds = doc.getElementsByTagName("td");
+				for (var j=0; j<tds.length; j++) {
+					var td = tds[j];
+					if (td.id.substr(0, 5) != "kbsrc") continue;
+					var as = td.id.substr(5).split("_");
+					var bid = parseInt(as[0]);
+					var lastpost = parseInt(as[1]);
+					var unread = this.isUnread(bid, lastpost);
+					if (unread === null) continue;
+					var f = doc.getElementById("kbsrc"+bid+"u");
+					if (f) f.style.display = unread ? "block" : "none";
+					f = doc.getElementById("kbsrc"+bid+"r");
+					if (f) f.style.display = !unread ? "block" : "none";
+				} */
+			} else if (info[0] == 'con') {
+				if (detectOnly) return 1;
+				var bid = parseInt(info[1]);
+				var thisid = parseInt(info[2]);
+				if (info[3]) {
+					if (info[3] == 'f') { //clear all
+						this.clear(bid, thisid);
+					}
+				} else {
+					this.addRead(bid, thisid);
+				}
+			} else if (info[0] == 'tcon') {
+				var bid = parseInt(info[1]);
+				for(var j=2; j<info.length; j++) {
+					var id = parseInt(info[j]);
+					this.addRead(bid, id);
+				}
+			} else if (info[0] == 'menu') {
+				if (detectOnly) return 2;
+				var f = doc.getElementById("kbsrc_logout");
+				var self = this;
+				if (f) f.addEventListener("click", function() { self.logoutSync(); }, false);
 			}
 		} catch(e) {}
 		return 0;

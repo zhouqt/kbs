@@ -487,3 +487,7 @@ body.wtoogle {
 		display: none;
 	}
 }
+
+#kbsrcInfo {
+	display: none;
+}

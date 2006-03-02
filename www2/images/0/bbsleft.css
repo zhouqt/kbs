@@ -170,3 +170,6 @@ div.pp {
 	background-color: #F4F8FF;
 	padding: 5px;
 }
+#kbsrcInfo {
+	display: none;
+}

@@ -173,3 +173,6 @@ div.pp {
 .logo {
 	padding: 5px;
 }
+#kbsrcInfo {
+	display: none;
+}

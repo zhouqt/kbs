@@ -150,9 +150,7 @@
 	}
 
 	$page_title = "<a href=\"bbsdoc.php?board=".$brdarr["NAME"]."\">".htmlspecialchars($brdarr["DESC"])."</a>";
-	$metas = false;
-	$metas = "<meta name='kbsrc.con' content='$brdnum,$id'/>";
-	page_header("ÔÄ¶ÁÎÄÕÂ".$dir_name[$ftype], $page_title, $metas);
+	page_header("ÔÄ¶ÁÎÄÕÂ".$dir_name[$ftype], $page_title);
 ?>
 <h1><?php echo $brdarr["NAME"]; ?> °æ <?php echo $dir_name[$ftype]; ?></h1>
 <script type="text/javascript"><!--

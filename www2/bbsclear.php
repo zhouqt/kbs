@@ -30,7 +30,7 @@ if ($isnormalboard && (isset($_GET["kbsrc"]))) {
 $id = $brdarr["LASTPOST"];
 $page_title = "<a href=\"bbsdoc.php?board=".$board."\">".htmlspecialchars($brdarr["DESC"])."</a>";
 $metas =  "<meta http-equiv='refresh' content='0; url=bbsdoc.php?board=".urlencode($board)."'/>";
-$metas .= "<meta name='kbsrc.con' content='$bid,$id,f'/>";
 page_header("Çå³ýÎ´¶Á¼ÇÂ¼", $page_title, $metas);
+echo "<div id='kbsrcInfo'>con,$bid,$id,f</div>";
 page_footer();
 ?>

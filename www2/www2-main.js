@@ -713,6 +713,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	this.monthStr = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 	this.board = escape(board);
 	this.bid = bid;
+	this.ids = new Array();
 	this.start = start;
 	this.page = page;
 	this.total = total;
@@ -803,6 +804,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 		}
 	} else {
 		if (!this.man && this.normalB && (bf == 'N' || bf == '*')) flag = ' ' + flag.charAt(1);
+		this.ids.push(id);
 		flag = '<span id="kbsrc' + id + '">' + flag + '</span>';
 		if (this.man && (imported == 1))
 			flag += putImageCode('imported.gif', '');
@@ -922,6 +924,7 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
 	if (this.normalB) {
 		ret += '<span id="kbsrc_clear" style="display:none;">[<a href="bbsclear.php?board=' + this.board + '&kbsrc=1">清除未读</a>]</span> ';
+		ret += '<div id="kbsrcInfo">doc,' + this.bid + ',' + this.ids.join(',') + '</div>';
 	} else {
 		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>] ';
 	}
@@ -977,6 +980,7 @@ function conWriter(ftype, board, bid, id, gid, reid, favtxt, num) {
 		addBootFn(writeArticle);
 		return;
 	}
+	document.write("<div id='kbsrcInfo'>con," + bid + "," + id + "</div>");
 
 	if (!isLogin() && this.ftype) {
 		this.headers = "";
@@ -1081,9 +1085,11 @@ tconWriter.prototype.h = function() {
 };
 tconWriter.prototype.o = function(arts) {
 	var ifs = "";
+	var ids = new Array();
 	for (var i = 0; i < arts.length; i++) {
 		var id = arts[i][0];
 		var owner = arts[i][1];
+		ids.push(id);
 		var url = 'bbscon.php?board=' + this.board + '&id=' + id;
 		var ret = '<br/>';
 		ret += '<div class="tconPager smaller left">';
@@ -1100,6 +1106,7 @@ tconWriter.prototype.o = function(arts) {
 		ifs += '<iframe width=0 height=0 frameborder="0" scrolling="no" src="' + url + '"></iframe>';
 		document.write(ret);
 	}
+	document.write('<div id="kbsrcInfo">tcon,' + this.bid + ',' + ids.join(',') + '</div>');
 	document.write(ifs);
 };
 
