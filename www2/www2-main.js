@@ -16,7 +16,7 @@ var gIE5 = false;
 if (gIE) {
 	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 6);
 }
-var kbsrc; //namespace in this window
+var kbsrc = null; //namespace in this window
 
 if (!Array.prototype.push) {
 	Array.prototype.push = function() {
@@ -598,7 +598,12 @@ function writeCssFile(file) {
 	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
 	if (gIE && !gIE5 && showUnread()) {
 		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
-		addBootFn(function() { kbsrcIEEntry(); } );
+		var fn = function() {
+			if (document.readyState == "interactive" || document.readyState == "complete")
+				kbsrcIEEntry();
+		};
+		document.onreadystatechange = fn;
+		addBootFn(fn);
 	}
 }
 

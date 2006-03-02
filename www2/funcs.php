@@ -299,6 +299,8 @@ function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 	}
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
+		if (($pos = strpos($oldmodified, ';')) !== false)
+			$oldmodified = substr($oldmodified, 0, $pos);
 		$oldtime = strtotime($oldmodified) + $forcecachetime;
 	} else $oldtime=0;
 	if ($oldtime >= $modifytime) {

@@ -307,6 +307,7 @@ kbsrcHost.prototype = {
 };
 
 function kbsrcIEEntry() {
+	if (kbsrc !== null) return;
 	kbsrc = new Object();
 	kbsrc.debugOut = function() {};
 	kbsrc.setStatus = function() {};
