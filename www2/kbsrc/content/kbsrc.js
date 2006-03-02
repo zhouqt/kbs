@@ -289,6 +289,7 @@ kbsrcHost.prototype = {
 					this.addRead(bid, thisid);
 				}
 			} else if (info[0] == 'tcon') {
+				if (detectOnly) return 1;
 				var bid = parseInt(info[1]);
 				for(var j=2; j<info.length; j++) {
 					var id = parseInt(info[j]);
