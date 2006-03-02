@@ -127,6 +127,7 @@ function delete_all_cookie() {
 	setcookie("UTMPUSERID","",time()-3600,"/");
 	setcookie("WWWPARAMS","",time()-3600,"/");
 	setcookie("MANAGEBIDS","",time()-3600,"/");
+	header("Set-KBSRC: /");
 }
 
 function set_fromhost()
@@ -218,6 +219,7 @@ function login_init($sid=FALSE)
 			setcookie("UTMPKEY",$data["utmpkey"],0,"/");
 			setcookie("UTMPNUM",$num,0,"/");
 			setcookie("UTMPUSERID",$data["userid"],0,"/");
+			header("Set-KBSRC: /");
 			@$utmpkey = $data["utmpkey"];
 			@$utmpnum = $num;
 			@$userid = $data["userid"];
@@ -287,6 +289,8 @@ function cache_process($scope, $forcecachetime, $modifytime, $expiretime) {
 	}
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
+		if (($pos = strpos($oldmodified, ';')) !== false)
+			$oldmodified = substr($oldmodified, 0, $pos);
 		$oldtime = strtotime($oldmodified) + $forcecachetime;
 	} else $oldtime=0;
 	if ($oldtime >= $modifytime && $modifytime > 0) {
