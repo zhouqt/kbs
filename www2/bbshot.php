@@ -63,8 +63,7 @@ function bbs_get_hot_threads($board,$num,&$threads,&$err)
 		$gid = $db->arrays[$i]['threadid'];
 
         $articles = array ();
-        $num = bbs_get_records_from_id($board, $gid, 0, $articles);
-        if ($num <= 0) continue;
+        if (bbs_get_records_from_id($board, $gid, 0, $articles) <= 0) continue;
 
 		if (substr($title,0,4)=='Re: ')
 			$title = substr($title,4);
