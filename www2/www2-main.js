@@ -833,7 +833,7 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9};
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 100};
 		ret += '<div class="oper">';
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])
@@ -846,6 +846,7 @@ docWriter.prototype.t = function() {
 			ret += '<input type="button" value="切换%" onclick="mansubmit(' + bbsman_modes['PERCENT'] + ');"/>';
 			ret += '<input type="button" value="切换X" onclick="mansubmit(' + bbsman_modes["TODEL"] + ');"/>';
 			ret += '<input type="button" value="切换#" onclick="mansubmit(' + bbsman_modes["SHARP"] + ');"/>';
+			ret += '<input type="button" value="收精华区" onclick="mansubmit(' + bbsman_modes["ANNOUNCE"] + ');"/>';
 		}
 		else
 		{

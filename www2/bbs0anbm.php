@@ -3,6 +3,7 @@
 require('bbs0anbm_pre.php');
 	
 // 执行各种精华区文件批量操作
+$text = "";
 if(isset($_POST["annAction"]))
 {
 	$action = $_POST["annAction"];
@@ -14,7 +15,11 @@ if(isset($_POST["annAction"]))
 			if(isset($_POST["ann{$i}"]))
 			{
 				$fname = $_POST["ann{$i}"];
-				bbs_ann_delete($filename, $fname);
+				if(bbs_ann_delete($filename, $fname) == -1)
+				{
+					$text = "错误：精华区目录不存在。";
+					exit;
+				}
 			}
 		}
 	}
@@ -32,18 +37,52 @@ if(isset($_POST["annAction"]))
 		switch($ret)
 		{
 			case -1:
-				html_error_quit("剪切失败，系统错误。");
+					$text = "系统错误：无法修改剪贴板。";
+				break;
+		}
+	}
+	else if($action == "paste")
+	{
+		$ret = bbs_ann_paste($filename);
+		switch($ret)
+		{
+			case -1:
+				$text = "错误：精华区目录不存在。";
+				break;
+			case -2:
+				$text = "错误：找不到要粘贴的文件。";
+				break;
+			case -5:
+				$text = "错误：粘贴失败，可能有其他版主正在整理同一目录。";
+				break;
+		}
+	}
+	else if($action == "move")
+	{
+		$oldnum = $_POST["oldnum"];
+		$newnum = $_POST["newnum"];
+		$ret = bbs_ann_move($filename, $oldnum, $newnum);
+		switch($ret)
+		{
+			case -1:
+				$text = "错误：精华区目录不存在。";
+				break;
+			case -2:
+				$text = "错误：找不到要移动的项目。";
+				break;
+			case -3:
+				$text = "错误：移动失败，可能有其他版主正在整理同一目录。";
 				break;
 		}
 	}		
 }
 
 function bbs_ann_bm_display_articles($articles, $isBoard) {
-	global $show_none, $has_perm_boards, $path;
+	global $show_none, $has_perm_boards, $path, $text;
 	$pathstr = substr($path, 9, strlen($path) - 9);
 ?>
 <script type="text/javascript"><!--
-var an = new annWriter('<?php echo rawurlencode($pathstr); ?>',<?php echo $has_perm_boards?"1":"0"; ?>);
+var an = new annWriter('<?php echo rawurlencode($pathstr); ?>',<?php echo $has_perm_boards?"1":"0"; ?>,'<?php echo $text; ?>');
 <?php
 	if($show_none)
 	{

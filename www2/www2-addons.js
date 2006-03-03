@@ -8,16 +8,23 @@
  * you get explicit permission by the KBS Development Team.
  */
 
-function annWriter(path, perm_bm) {
+function annWriter(path, perm_bm, text) {
 	this.path = path;
 	this.perm_bm = perm_bm;
 	this.num = 1;
 	var str;
 	str = '<form id="frmAnnounce" action="bbs0anbm.php?path=' + path + '" method="post">';
 	str += '<input type="hidden" id="annAction" name="annAction" value="">';
-	str += '<div class="smaller" style="text-align:right">精华区管理模式：您在当前目录<span style="color:#FF0000">';
-	str += perm_bm ? '有' : '没有';
-	str += '</span>管理权限。</div>';
+	str += '<div class="smaller" style="text-align:right">';
+	if(text == '')
+	{
+		str += '精华区管理模式：您在当前目录<span style="color:#FF0000">';
+		str += perm_bm ? '有' : '没有';
+		str += '</span>管理权限。';
+	}
+	else
+		str += '<span style="color:#FF0000">' + text + '</span>';
+	str += '</div>';
 	str += '<table class="main wide"><col width="5%" /><col width="8%" /><col width="4%" /><col width="38%" />';
 	str += '<col width="10%" /><col width="10%" /><col width="10%" /><tr><th>#</th><th>类型</th><th></th>';
 	str += '<th>标题</th><th>版主</th><th>' + (perm_bm?'文件名':'日期') + '</th><th>操作</th></tr><tbody>';
@@ -52,7 +59,8 @@ annWriter.prototype.i = function(type, title, bm, filename, date) {
 		str += '<a href="bbs0anbm_editdir.php?path=' + itempath + '&title=' + title + '&bm=' + bm + '">修改</a>';
 	else if (type >= 2)
 		str += '<a href="bbs0anbm_editfile.php?path=' + itempath + '&title=' + title + '">编辑</a>';
-	str += ' <a href="#">调序</a>';
+	str += ' <a href="javascript:ann_move(' + this.num + ');">调序</a>';
+	str += '<span id="divam' + this.num + '"></span>';
 	str += '</td></tr>';
 	document.write(str);
 	this.num++;
@@ -65,9 +73,9 @@ annWriter.prototype.f = function() {
 		str += '<br><div class="center smaller">';
 		str += '[<a href="bbs0anbm_mkdir.php?path=' + this.path + '">创建目录</a>] ';
 		str += '[<a href="bbs0anbm_mkfile.php?path=' + this.path + '">创建文件</a>] ';
-		str += '[<a href="javascript:ann_cut();">剪切</a>] ';
-		str += '[<a href="javascript:ann_copy();">复制</a>] ';
-		str += '[<a href="javascript:ann_paste();">粘贴</a>] ';
+		str += '[<a href="javascript:ann_clip(\'cut\');">剪切</a>] ';
+		str += '[<a href="javascript:ann_clip(\'copy\');">复制</a>] ';
+		str += '[<a href="javascript:ann_clip(\'paste\');">粘贴</a>] ';
 		str += '[<a href="javascript:ann_delete();">删除</a>]';
 		str += '</div>';
 	}
@@ -84,16 +92,31 @@ function ann_delete()
 		frmAnnounce.submit();
 	}
 }
-function ann_cut()
+function ann_clip(action)
 {
-	frmAnnounce.annAction.value = 'cut';
+	frmAnnounce.annAction.value = action;
 	frmAnnounce.submit();
 }
-function ann_copy()
+function ann_move(num)
 {
-	frmAnnounce.annAction.value = 'copy';
+	var str = '';
+	str += '<br>新序<input type="text" size="3" name="newnum">';
+	str += '<input type="hidden" name="oldnum" value="' + num + '">';
+	str += '<br><input type="button" value="移动" onclick="ann_move_do();">';
+	str += '<input type="button" value="取消" onclick="ann_move_cancel(' + num + ');">';
+	document.getElementById('divam' + num).innerHTML = str;
+}
+function ann_move_do()
+{
+	frmAnnounce.annAction.value = 'move';
 	frmAnnounce.submit();
 }
+function ann_move_cancel(num)
+{
+	var thediv = document.getElementById('divam' + num);
+	thediv.innerHTML = '';
+}
+	
 
 
 
