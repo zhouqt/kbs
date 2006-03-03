@@ -51,12 +51,13 @@ function bbs_get_hot_threads($board,$num,&$threads,&$err)
 	}
 	$board = $brdarr['NAME'];
 	$now = date('YmdHis');
-	$sql = 'SELECT threadid,userid,title,time AS created,MAX(time) AS changed,count(DISTINCT userid) AS count FROM postlog WHERE YEAR(time)=YEAR('.$now.') AND MONTH(time)=MONTH('.$now.') AND DAYOFMONTH(time)=DAYOFMONTH('.$now.') AND bname = \''.addslashes($board).'\' GROUP BY threadid ORDER BY count DESC , id DESC LIMIT 0 , '.intval($num).';';
+	$sql = 'SELECT threadid,userid,title,time AS created,MAX(time) AS changed,count(DISTINCT userid) AS count FROM postlog WHERE YEAR(time)=YEAR('.$now.') AND MONTH(time)=MONTH('.$now.') AND DAYOFMONTH(time)=DAYOFMONTH('.$now.') AND bname = \''.addslashes($board).'\' GROUP BY threadid ORDER BY count DESC , id DESC LIMIT 0 , '.(intval($num)*2).';';
 	if (!$db->query($sql,1)) {
 		$err = $db->err;
 		return false;    
 	}
 	$threads = array();
+	$n = 0;
 	for ($i = 0 ; $i < $db->nums ; $i ++ ) {
 		$title = $db->arrays[$i]['title'];
 		$gid = $db->arrays[$i]['threadid'];
@@ -74,7 +75,9 @@ function bbs_get_hot_threads($board,$num,&$threads,&$err)
 				'changed' => $db->arrays[$i]['changed'],
 				'count'  => $db->arrays[$i]['count'],
 				'title' => $title
-			);    
+			);
+		$n++;
+		if ($n == $num) break;
 	}
 	return true;
 }
