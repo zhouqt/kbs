@@ -23,21 +23,10 @@
 	page_header(constant("BBS_SECNAME".$group."_0"), "", "<meta name='kbsrc.brd' content='' />");
 ?>
 <h1><?php echo constant("BBS_SECNAME".$group."_0"); ?>分区</h1>
-<table class="main wide adj">
-<col width="2%" class="center"/><col width="2%"/><col width="24%"/><col width="10%" class="center"/><col width="39%"/><col class="center" width="15%"/><col class="right" width="8%"/>
-<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th></tr>
+<script type="text/javascript"><!--
+var o = new brdWriter(<?php echo $group; ?>, <?php echo $group2; ?>);
 <?php
 	$rows = sizeof($boards);
-	if ($group2>0) {	
-?>
-<tr>
-	<td> </td>
-	<td> <script type="text/javascript">putImage('groupgroup.gif','alt="up" title="回到上一级"');</script></td>
-	<td colspan="5"><a href="bbsboa.php?group=<?php echo $group; ?>">回到上一级</a></td>
-</tr>
-<?php
-	}
-	
 	$board_list = array();
 	$list_gnum = $rows;
 	$list_bnum = $rows;
@@ -63,70 +52,18 @@
 	}
 	for ($j = 0; $j< $rows; $j++)	
 	{
-		$i = $board_list[$j];
-		if ($boards[$i]["FLAG"]&BBS_BOARD_GROUP)
-		  $brd_link="bbsboa.php?group=" . $group . "&group2=" . $boards[$i]["BID"];
-		else
-		  $brd_link="bbsdoc.php?board=" . urlencode($boards[$i]["NAME"]);
+		$board = $boards[$board_list[$j]];		
+		$isGroup = ($board["FLAG"]&BBS_BOARD_GROUP) ? "true" : "false";
 ?>
-<tr>
-<td><?php echo $i+1; ?></td>
-<?php
-		if ($boards[$i]["FLAG"]&BBS_BOARD_GROUP) {
+o.o(<?php echo $isGroup; ?>, <?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>, <?php echo $board["BID"]; ?>, <?php echo $board["LASTPOST"]; 
+?>, '<?php echo $board["CLASS"]; ?>', '<?php echo addslashes($board["NAME"]); ?>', '<?php echo addslashes($board["DESC"]);
+?>', '<?php echo $board["BM"]; ?>', <?php echo $board["ARTCNT"]; ?>);
+<?php		
+	}
 ?>
-<td> <script type="text/javascript">putImage('groupgroup.gif','alt="＋" title="版面组"');</script></td>
-<?php
-		} else {
-			$unread = ($boards[$i]["UNREAD"] == 1);
-			$unread_tag = $unread ? "" : ' style="display: none"';
-			$read_tag = !$unread ? "" : ' style="display: none"';
-			$unread_tag .= ' id="kbsrc'.$boards[$i]["BID"].'u"';
-			$read_tag .= ' id="kbsrc'.$boards[$i]["BID"].'r"';
-?>
-<td id="kbsrc<?php echo $boards[$i]["BID"]; ?>_<?php echo $boards[$i]["LASTPOST"]; ?>">
-	<script type="text/javascript">putImage('newgroup.gif','alt="◆" title="未读标志"<?php echo $unread_tag; ?>');</script>
-	<script type="text/javascript">putImage('oldgroup.gif','alt="◇" title="已读标志"<?php echo $read_tag; ?>');</script>
-</td>
-<?php
-		}
-?>
-<td>
-<a href="<?php echo $brd_link; ?>"><?php echo $boards[$i]["NAME"]; ?></a></td>
-<?php
-		if ($boards[$i]["FLAG"]&BBS_BOARD_GROUP) {
-?>
-<td><?php echo $boards[$i]["CLASS"]; ?> </td>
-<td colspan="3"><a href="<?php echo $brd_link; ?>"><?php echo $boards[$i]["DESC"]; ?></a>[目录]</td>
-<?php
-		} else {
-?>
-<td><?php echo $boards[$i]["CLASS"];; ?></td>
-<td><a href="<?php echo $brd_link; ?>"><?php echo $boards[$i]["DESC"]; ?></a></td>
-<td>
-<?php
-			$bms = explode(" ", trim($boards[$i]["BM"]));
-			if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
-				echo "诚征版主中";
-			else {
-				if (!ctype_print($bms[0][0]))
-					echo $bms[0];
-				else {
-?>
-<a href="bbsqry.php?userid=<?php echo $bms[0]; ?>"><?php echo $bms[0]; ?></a>
-<?php
-				}
-			}
-?>
-</td>
-<td><?php echo $boards[$i]["ARTCNT"]; ?></td>
-<?php
-		}
-?>
-</tr>
-<?php
-	} //for
-?>
-</table>
+o.t();
+//-->
+</script>
 <?php
 	bbs_boards_navigation_bar();	
 	page_footer();

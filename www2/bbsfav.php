@@ -54,18 +54,18 @@
 	$fix = $XX ? "&x" : "";
 ?>
 <script type="text/javascript"><!--
-var o = new brdWriter(<?php echo $select; ?>, <?php echo $list_father; ?>, '<?php echo $fix; ?>');
+var o = new brdWriter(<?php echo $list_father; ?>, <?php echo $select; ?>, '<?php echo $fix; ?>');
 <?php
 	foreach($boards as $board) {
 		if( $board["UNREAD"] ==-1 && $board["ARTCNT"] ==-1) continue;
 		if ($board["BID"] == -1) continue;
 		if ($board["FLAG"] == -1 ) {
 ?>
-o.d(<?php echo $board["BID"];?>, '<?php echo addslashes($board["DESC"]); ?> ', <?php echo $board["NPOS"]; ?>);
+o.f(<?php echo $board["BID"];?>, '<?php echo addslashes($board["DESC"]); ?> ', <?php echo $board["NPOS"]; ?>);
 <?php
 		} else {
 ?>
-o.o(<?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>, <?php echo $board["BID"]; ?>, <?php echo $board["LASTPOST"]; 
+o.o(false, <?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>, <?php echo $board["BID"]; ?>, <?php echo $board["LASTPOST"]; 
 ?>, '<?php echo $board["CLASS"]; ?>', '<?php echo addslashes($board["NAME"]); ?>', '<?php echo addslashes($board["DESC"]);
 ?>', '<?php echo $board["BM"]; ?>', <?php echo $board["ARTCNT"]; ?>, <?php echo $board["NPOS"];?>);
 <?php

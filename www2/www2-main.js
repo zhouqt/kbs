@@ -1093,46 +1093,72 @@ tconWriter.prototype.o = function(arts) {
 	document.write(ifs);
 };
 
-function brdWriter(select, father, fix) {
-	var ret = '<table class="main wide adj">';
-	ret += '<col width="2%" class="center"/><col width="2%"/><col width="23%"/><col width="10%" class="center"/><col width="33%"/><col class="center" width="14%"/><col class="right" width="8%"/><col width="6%" class="center"/>';
-	ret += '<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th><th> </th></tr>';
-	if (select != 0) {
-		ret += '<tr><td> </td><td> ' + putImageCode('groupgroup.gif','alt="up" title="回到上一级"') + '</td>';
-		ret += '<td colspan="6"><a href="bbsfav.php?select=' + father + fix + '">回到上一级</a></td></tr>';
+
+
+
+function brdWriter(father, select, fix) {
+	var ret = '<table class="main wide">';
+	if (arguments.length == 2) { //bbsboa.php
+		fix = true;
+		ret += '<col width="2%"/><col width="2%"/><col width="24%"/><col width="10%"/><col width="39%"/><col width="15%"/><col width="8%"/>';
+		ret += '<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th></tr>';
+		if (select > 0) {
+			ret += '<tr><td> </td><td> ' + putImageCode('groupgroup.gif','alt="up" title="回到上一级"') + '</td>';
+			ret += '<td colspan="5"><a href="bbsboa.php?group=' + father + '">回到上一级</a></td></tr>';
+		}
+	} else {
+		ret += '<col width="2%"/><col width="2%"/><col width="23%"/><col width="10%"/><col width="33%"/><col width="14%"/><col width="8%"/><col width="6%"/>';
+		ret += '<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th>';
+		if (!fix) ret += '<th> </th>';
+		ret += '</tr>';
+		if (select != 0) {
+			ret += '<tr><td> </td><td> ' + putImageCode('groupgroup.gif','alt="up" title="回到上一级"') + '</td>';
+			ret += '<td colspan="6"><a href="bbsfav.php?select=' + father + fix + '">回到上一级</a></td></tr>';
+		}
 	}
 	document.write(ret);
+	this.father = father;
 	this.select = select;
 	this.fix = fix;
 	this.index = 0;
 	this.kbsrc = new Array();
 }
-brdWriter.prototype.d = function(select, desc, npos) {
+brdWriter.prototype.f = function(select, desc, npos) {
 	this.index++;
-	var ret = '<tr><td>' + this.index + '</td>';
+	var ret = '<tr class="' + (this.index%2?"even":"odd") + '"><td class="center">' + this.index + '</td>';
 	ret += '<td> ' + putImageCode('groupgroup.gif','alt="＋" title="版面组"') + '</td>';
 	ret += '<td><a href="bbsfav.php?select=' + select + this.fix + '">' + htmlize(desc) + '</a></td>';
-	ret += '<td>[目录]</td><td colspan="3"> </td><td>';
-	if (!this.fix) ret += '<a href="bbsfav.php?select=' + this.select + '&deldir=' + npos + '">删除</a>';
-	ret += '</td></tr>';
+	ret += '<td class="center">[目录]</td><td colspan="3"> </td>';
+	if (!this.fix) ret += '<td class="center"><a href="bbsfav.php?select=' + this.select + '&deldir=' + npos + '">删除</a></td>';
+	ret += '</tr>';
 	document.write(ret);
 };
-brdWriter.prototype.o = function(unread, bid, lastpost, cls, name, desc, bms, artcnt, npos) {
+brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, bms, artcnt, npos) {
 	this.index++;
-	this.kbsrc.push(bid); this.kbsrc.push(lastpost);
-	var ret = '<tr><td>' + this.index + '</td>';
-	var unread_tag = (unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'u"';
-	var read_tag = (!unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'r"';
-	ret += '<td>' + putImageCode('newgroup.gif','alt="◆" title="未读标志"' + unread_tag);
-	ret += putImageCode('oldgroup.gif','alt="◇" title="已读标志"' + read_tag) + '</td>';
-	var ename = escape(name);
-	ret += '<td>&nbsp;<a href="bbsdoc.php?board=' + ename + '">' + htmlize(name) + '</a></td>';
-	ret += '<td>' + htmlize(cls) + '</td>';
-	ret += '<td>&nbsp;&nbsp;<a href="bbsdoc.php?board=' + ename + '">' + htmlize(desc) + '</a></td>';
-	ret += '<td>' + writeBM_html(bms, true) + '</td>';
-	ret += '<td>' + artcnt + '</td><td>';
-	if (!this.fix) ret += '<a href="bbsfav.php?select=' + this.select + '&delete=' + npos + '">删除</a>';
-	ret += '</td></tr>';
+	var brdlink, ret = '<tr class="' + (this.index%2?"even":"odd") + '"><td class="center">' + this.index + '</td>';
+	if (group) {
+		ret += '<td>' + putImageCode('groupgroup.gif','alt="＋" title="版面组"') + '</td>';
+		brdlink = 'bbsboa.php?group=' + this.father + '&group2=' + bid;
+	} else {
+		var unread_tag = (unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'u"';
+		var read_tag = (!unread ? "" : ' style="display: none"') + ' id="kbsrc' + bid + 'r"';
+		ret += '<td>' + putImageCode('newgroup.gif','alt="◆" title="未读标志"' + unread_tag);
+		ret += putImageCode('oldgroup.gif','alt="◇" title="已读标志"' + read_tag) + '</td>';
+		this.kbsrc.push(bid);
+		this.kbsrc.push(lastpost); 
+		brdlink = 'bbsdoc.php?board=' + escape(name);
+	}
+	ret += '<td>&nbsp;<a href="' + brdlink + '">' + htmlize(name) + '</a></td>';
+	ret += '<td class="center">' + htmlize(cls) + '</td>';
+	if (group) {
+		ret += '<td colspan="3">&nbsp;&nbsp;<a href="' + brdlink + '">' + htmlize(desc) + '</a>[目录]</td>';
+	} else {
+		ret += '<td>&nbsp;&nbsp;<a href="' + brdlink + '">' + htmlize(desc) + '</a></td>';
+		ret += '<td class="center">' + writeBM_html(bms, true) + '</td>';
+		ret += '<td class="right">' + artcnt + '</td>';
+	}
+	if (!this.fix) ret += '<td class="center"><a href="bbsfav.php?select=' + this.select + '&delete=' + npos + '">删除</a></td>';
+	ret += '</tr>';
 	document.write(ret);
 };
 brdWriter.prototype.t = function() {
