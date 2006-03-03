@@ -70,6 +70,8 @@
 		if (!isLogin()) {
 			getObj("cmdSave").disabled = true;
 			getObj("idpsave").style.visibility = "hidden";
+		} else {
+			getObj("idUnread").style.display = "block";
 		}
 	}
 //-->
@@ -117,10 +119,6 @@ div.stylesel img {
 				<span class="clickable" onclick="KCNymsw();">关闭</span>
 			<br/>
 <?php } ?>
-			<label>显示未读标记(need relogin):</label>
-				<span class="clickable" onclick="adjSet('unread', 0)" id="unreadF">隐藏</span>
-				<span class="clickable" onclick="adjSet('unread', 1)" id="unreadT">显示</span>
-			<br/>
 		</div>
 	</fieldset>
 </form>
@@ -144,6 +142,26 @@ div.stylesel img {
 	</fieldset>
 	<div class="oper"><input id="cmdSave" type="submit" value="保存设置"/> &nbsp; <input type="button" onclick="history.go(-1);" value="快速返回"/><br/>
 		<span id="idpsave">[ 点 保存设置 以保证每次登录都使用这个设置。]</span></div>
+</form>
+<form action="?" class="medium align" method="get" style="display:none;" id="idUnread">
+<input type="hidden" name="do" value="1" />
+	<fieldset><legend>未读标记显示</legend>
+		未读标记的显示需要客户端相当的处理能力，如果您现在的机器较差，请勿开启此功能。
+		<ol>
+			<li>修改此功能请点上面的 保存设置 并重新登录才能生效。</li>
+			<li>IE6 或 IE7 浏览器可以直接使用。</li>
+			<li>Firefox 1.0 或 1.5 用户请安装 <a href="http://www.newsmth.net/kbsrc/index.html" target="_blank">KBSRC 插件</a>。</li>
+			<li>其余浏览器不支持。</li>
+			<li>浏览结束请注意点左边的“离开本站”注销登录并保存未读记录，程序也会每十分钟自动保存一次。</li>
+		</ol>
+		<hr/>
+		<div class="inputs">
+			<label>显示未读标记:</label>
+				<span class="clickable" onclick="adjSet('unread', 0)" id="unreadF">隐藏</span>
+				<span class="clickable" onclick="adjSet('unread', 1)" id="unreadT">显示</span>
+			<br/>
+		</div>
+	</fieldset>
 </form>
 <script type="text/javascript">
 	bootFn();

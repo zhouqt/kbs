@@ -11,6 +11,7 @@
     <em:creator>atppp</em:creator>
     <!-- optional items -->
     <em:contributor>pig2532</em:contributor>
+    <em:contributor>kxn</em:contributor>
     <em:homepageURL>http://www.newsmth.net/kbsrc/index.html</em:homepageURL>
     <em:optionsURL>chrome://kbsrc/content/options.xul</em:optionsURL>
     <!--em:aboutURL>chrome://sampleext/content/about.xul</em:aboutURL-->
