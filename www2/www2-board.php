@@ -70,19 +70,6 @@ function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
 	global $dir_modes, $dir_name;
 	$brd_encode = urlencode($brdarr["NAME"]);
 	
-	/* TODO: use javascript completely */
-	$bms = explode(" ", trim($brdarr["BM"]));
-	if (strlen($bms[0]) == 0 || $bms[0][0] <= chr(32))
-		$bm_url = "'诚征版主中'";
-	else
-	{
-		if (!ctype_alpha($bms[0][0]))
-			$bm_url = "'" . $bms[0] . "'";
-		else
-		{
-			$bm_url = "['" . implode("','", $bms) . "']";
-		}
-	}
 	$adds = $isnormalboard ? bbs_rss_link($brd_encode, $ftype) : "";
 	if ($adds) {
 		$adds = '<link title="版面 RSS'	. $dir_name[$ftype] 
@@ -105,7 +92,7 @@ function bbs_board_header($brdarr,$ftype,$managemode,$isnormalboard=FALSE) {
 <a href="bbsdoc.php?board=<?php echo $brdarr["NAME"]; ?>"><?php echo htmlspecialchars($brdarr["DESC"]); ?></a>
 (<a href="bbsfav.php?bname=<?php echo $brdarr["NAME"]; ?>&select=0">收藏</a>)</div>
 <div class="fright">
-版主:<script>writeBMs(<?php echo $bm_url; ?>);</script>, 在线 <?php echo $brdarr["CURRENTUSERS"]+1; ?> 人
+版主: <script>writeBMs('<?php echo $brdarr["BM"]; /* No addslashes! */ ?>');</script>, 在线 <?php echo $brdarr["CURRENTUSERS"]+1; ?> 人
 </div>
 </div>
 <h1 class="bt"><?php echo $brdarr["NAME"]."(".htmlspecialchars($brdarr["DESC"]).")"; ?> 版</h1>

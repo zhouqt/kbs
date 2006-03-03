@@ -78,7 +78,7 @@ KBSRC.prototype = {
 		var self = this;
 		this.hTimer = setInterval(function() {
 			self.timer.call(self);
-		}, 1000);
+		}, 61000);
 		
 		kbsrc.debugOut("Loaded OK.");
 	},
@@ -99,7 +99,7 @@ KBSRC.prototype = {
 		
 		kbsrc.debugOut("Unloaded OK.");
 	}
-}
+};
 
 function kbsrcTabSelectedHandler(event) {
 	var n = event.originalTarget.localName;
