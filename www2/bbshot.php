@@ -59,10 +59,16 @@ function bbs_get_hot_threads($board,$num,&$threads,&$err)
 	$threads = array();
 	for ($i = 0 ; $i < $db->nums ; $i ++ ) {
 		$title = $db->arrays[$i]['title'];
+		$gid = $db->arrays[$i]['threadid'];
+
+        $articles = array ();
+        $num = bbs_get_records_from_id($board, $gid, 0, $articles);
+        if ($num <= 0) continue;
+
 		if (substr($title,0,4)=='Re: ')
 			$title = substr($title,4);
 		$threads[] = array(
-				'gid' => $db->arrays[$i]['threadid'],
+				'gid' => $gid,
 				'userid' => $db->arrays[$i]['userid'],
 				'created' => $db->arrays[$i]['created'],
 				'changed' => $db->arrays[$i]['changed'],

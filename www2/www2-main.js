@@ -495,7 +495,7 @@ function setHots(h) {
 					ii += '<span class="clickable" onclick="hotFn(-1)" title="上一条">&lt;</span> '
 						+ '<span class="clickable" onclick="hotFn(1)" title="下一条">&gt;</span> ';
 				}
-				ii += (index+1) + ": " + hots[index];
+				ii += (index+1) + "/" + hots.length + ": " + hots[index];
 			}
 			getObj('hotTopics').innerHTML = ii;
 		};
