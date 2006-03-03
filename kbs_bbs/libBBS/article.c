@@ -2262,11 +2262,11 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
         if (dirarg->needlock)
             flock(dirarg->fd, LOCK_UN);
         getdata(6, 0, "文章编号大于文章总数，确认删除 (Y/N)? [N]: ", buf, 2, DOECHO, NULL, true);
-        if (dirarg->needlock)
-            flock(dirarg->fd, LOCK_EX);
         if (*buf != 'Y' && *buf != 'y') {
             return -3;
         }
+        if (dirarg->needlock)
+            flock(dirarg->fd, LOCK_EX);
         pos_read = pos_end;
         id2 = totalcount;
 #else
