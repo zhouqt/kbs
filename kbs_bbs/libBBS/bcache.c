@@ -430,6 +430,7 @@ int delete_board(char *boardname, session_t* session)
     memset(&bcache[bid], 0, sizeof(struct boardheader));
     strcpy(bcache[bid].title, buf);
     bcache[bid].level = PERM_SYSOP;
+    brdshm->bstatus[bid].toptitle = 0;
     bcache_unlock(fd);
     return 0;
 }
