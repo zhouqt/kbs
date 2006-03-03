@@ -1162,7 +1162,7 @@ brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, 
 	document.write(ret);
 };
 brdWriter.prototype.t = function() {
-	document.write('</table>');
+	document.write('<div id="kbsrcInfo">brd,' + this.kbsrc.join(',') + '</div></table>');
 };
 
 function tabWriter(num, tabC, caption, header) {

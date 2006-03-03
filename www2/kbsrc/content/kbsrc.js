@@ -262,21 +262,16 @@ kbsrcHost.prototype = {
 				if (f) f.style.display = "inline";
 			} else if (info[0] == 'brd') {
 				if (detectOnly) return 1;
-				/*
-				var tds = doc.getElementsByTagName("td");
-				for (var j=0; j<tds.length; j++) {
-					var td = tds[j];
-					if (td.id.substr(0, 5) != "kbsrc") continue;
-					var as = td.id.substr(5).split("_");
-					var bid = parseInt(as[0]);
-					var lastpost = parseInt(as[1]);
+				for (var j=1; j<info.length; j+=2) {
+					var bid = parseInt(info[j]);
+					var lastpost = parseInt(info[j+1]);
 					var unread = this.isUnread(bid, lastpost);
 					if (unread === null) continue;
 					var f = doc.getElementById("kbsrc"+bid+"u");
 					if (f) f.style.display = unread ? "block" : "none";
 					f = doc.getElementById("kbsrc"+bid+"r");
 					if (f) f.style.display = !unread ? "block" : "none";
-				} */
+				}
 			} else if (info[0] == 'con') {
 				if (detectOnly) return 1;
 				var bid = parseInt(info[1]);

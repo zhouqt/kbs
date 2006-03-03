@@ -78,7 +78,7 @@ KBSRC.prototype = {
 		var self = this;
 		this.hTimer = setInterval(function() {
 			self.timer.call(self);
-		}, 61000);
+		}, 1000);
 		
 		kbsrc.debugOut("Loaded OK.");
 	},
