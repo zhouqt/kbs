@@ -1,0 +1,4 @@
+content	kbsrc	content/
+overlay	chrome://browser/content/browser.xul	chrome://kbsrc/content/overlay.xul
+locale	kbsrc	en-US	locale/en-US/
+skin	kbsrc	classic/1.0	skin/
