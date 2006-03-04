@@ -834,7 +834,7 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 100};
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 10, "ANNOUNCEADD": 11};
 		ret += '<div class="oper">';
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])

@@ -13,12 +13,15 @@ $bbsman_modes = array(
 	"UNDEL" => 6,
 	"PERCENT" => 7,
 	"TODEL" => 8,
-	"SHARP" => 9
+	"SHARP" => 9,
+	"ANNOUNCE" => 10,
+	"ANNOUNCEADD" => 11
 );
 
 function do_manage_function($board) {
 	global $bbsman_modes;
     $mode = intval($_POST['act']);
+    $anncode = $bbsman_modes['ANNOUNCE'];
     if ($mode > 0 && $mode <= sizeof($bbsman_modes)) {
         for ($i = 0 ; $i < ARTCNT ; $i ++) {
             if (isset($_POST['art'.$i])) {
@@ -35,14 +38,26 @@ function do_manage_function($board) {
             }
             else
                 continue;
-                      
-            if ($zhiding && ($mode != 6)) {
+            
+            if (!$id)   continue;
+            
+            if ($mode == $bbsman_modes['ANNOUNCE'])
+            {
+            	$ret = bbs_bmmanage($board, $id, $anncode, $zhiding);
+            	if ($ret == -9)
+            	{
+            		html_error_quit('系统错误，无法修改精华区剪贴板。');
+            		exit;
+            	}
+            	$anncode = $bbsman_modes['ANNOUNCEADD'];
+            	continue;
+            }
+                          
+            if ($zhiding && ($mode != $bbsman_modes['UNDEL'])) {
                  if ($mode !=  $bbsman_modes['DEL'] && $mode != $bbsman_modes['ZHIDING'])
                     continue;   
                  $mode = $bbsman_modes['DEL'];
             }
-            
-            if (!$id)   continue;
             
             $ret = bbs_bmmanage($board,$id,$mode,$zhiding);
             switch ($ret) {
