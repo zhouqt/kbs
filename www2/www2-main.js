@@ -554,7 +554,7 @@ function checkFrame() {
 
 var bfsI, bfsD = 4;
 var bfsArr = [0,11,12,13,14,16,18,20];
-var bfsSma = [0,100,100,92,86,85,85,85];
+var bfsSma = [0,11,12,12,12,14,15,17];
 function sizer(flag) {
 	if (flag == 1) {
 		if (bfsI < 7) bfsI++;
@@ -574,7 +574,7 @@ function sizer(flag) {
 			else return;
 			for (i = 0; i < t.length; i++) {
 				if (t[i].selectorText == ".smaller") {
-					t[i].style.fontSize = bfsSma[bfsI] + '%';
+					t[i].style.fontSize = bfsSma[bfsI] + 'px';
 					break;
 				}
 			}
@@ -638,7 +638,7 @@ function writeCss() {
 	if (bfsI <= 0 || bfsI >= bfsArr.length) bfsI = bfsD;
 	var ret = '<style type="text/css" title="myStyle"><!--';
 	ret += 'body{font-size:' + bfsArr[bfsI] + 'px;}';
-	ret += '.smaller{font-size:' + bfsSma[bfsI] + '%;}';
+	ret += '.smaller{font-size:' + bfsSma[bfsI] + 'px;}';
 	ret += '--></style>';
 	document.write(ret);
 }
@@ -1003,7 +1003,7 @@ conWriter.prototype.t = function() {
 		if (this.ftype) url += "&ftype=" + this.ftype;
 	} else zd = true;
 	var ao = (!this.ftype || zd);
-	var ret = '<div class="oper smaller">';
+	var ret = '<div class="oper smaller" id="idConOper">';
 	if (ao) {
 		var qry = '?board=' + this.board + '&id=' + this.id;
 		ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '">同主题展开</a>] ';
@@ -1026,6 +1026,11 @@ conWriter.prototype.t = function() {
 		}
 	}
 	ret += '</div>';
+	if (gIE) addBootFn(function() {
+		var o = getObj("idConOper");
+		o.style.display = "none";
+		o.style.display = "block";
+	});
 	document.write(ret);
 };
 
