@@ -10,7 +10,8 @@
 
 /* TODO: obfuscate this file... */
 var agt = navigator.userAgent.toLowerCase();
-var gIE = ((agt.indexOf("msie") != -1) && (agt.indexOf("opera") == -1));
+var gOp = (agt.indexOf("opera") != -1);
+var gIE = ((agt.indexOf("msie") != -1) && !gOp);
 var gFx = (agt.indexOf("gecko") != -1);
 var gIE5 = false;
 if (gIE) {
@@ -553,7 +554,7 @@ function checkFrame() {
 
 var bfsI, bfsD = 4;
 var bfsArr = [0,11,12,13,14,16,18,20];
-var bfsSma = [0,100,100,92,85,85,85,85];
+var bfsSma = [0,100,100,92,86,85,85,85];
 function sizer(flag) {
 	if (flag == 1) {
 		if (bfsI < 7) bfsI++;
@@ -710,7 +711,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 
 	if (showHot && this.hotOpt == 1) hotTopic(this.board);
 
-	var str = '<div class="doc"><div class="docTab">';
+	var str = '<div class="doc"><div class="docTab smaller">';
 	if (!ftype && isLogin()) {
 		var url = 'bbspst.php?board=' + this.board;
 		str += '<div class="post"><a href="' + url + '">' + putImageCode('postnew.gif','alt="发表话题" class="flimg" onclick="location.href=\'' + url + '\';"') + '</a></div>';
@@ -727,11 +728,11 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	for (var i = mls.length - 1; i >= 0; i--) {
 		links = mls[i];
 		if (links[0]) {
-			str += '<a href="' + links[2] + '" class="smaller">' + links[1] + '</a>';
+			str += '<a href="' + links[2] + '">' + links[1] + '</a>';
 		} else if (ftype != dir_modes["FIND"]) {
-			str += '<b class="smaller">' + links[1] + '</b>';
+			str += '<b>' + links[1] + '</b>';
 		} else {
-			str += '<b class="smaller clickable" onclick="javascript:location.href=\''+links[2]+'\';">' + links[1] + '</b>';
+			str += '<b class="clickable" onclick="javascript:location.href=\''+links[2]+'\';">' + links[1] + '</b>';
 		}
 	}
 	str += '</div>';
