@@ -51,7 +51,9 @@ int main(int argc,char **argv){
                 fh.filename[0]='G';
             setbfile(fn,board,fptr[i].filename);
             setbfile(buf,board,fh.filename);
-            link(fn,buf);
+            unlink(buf);
+            if(link(fn,buf)==-1)
+                continue;
             data_write(fd,&fh,sizeof(struct fileheader));
             j++;
         }
