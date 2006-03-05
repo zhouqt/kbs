@@ -3168,6 +3168,8 @@ static int upload_add_file_helper(const char *filename, char *original_filename,
     int i, n, len;
     int totalsize=0;
     char *pos1, *pos2;
+    struct stat stat_buf;
+
     n = upload_read_fileinfo(ai, session);
     if (n >= MAXATTACHMENTCOUNT)
         return -2;
@@ -3192,7 +3194,6 @@ static int upload_add_file_helper(const char *filename, char *original_filename,
         if (strcmp(ai[i].name, original_filename) == 0) return -4;
         totalsize+=ai[i].size;
     }
-    struct stat stat_buf;
     if (stat(filename, &stat_buf) != -1 && S_ISREG(stat_buf.st_mode)) {
         totalsize += stat_buf.st_size;
     } else {
