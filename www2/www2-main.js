@@ -600,8 +600,11 @@ function writeCssFile(file) {
 	if (gIE && !gIE5 && showUnread()) {
 		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
 		var fn = function() {
-			if (document.readyState == "interactive" || document.readyState == "complete")
-				kbsrcIEEntry();
+			if (document.readyState == "interactive" || document.readyState == "complete") {
+				try {
+					kbsrcIEEntry();
+				} catch(e) { }
+			}
 		};
 		document.onreadystatechange = fn;
 		addBootFn(fn);
@@ -905,7 +908,7 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	ret += '[<a href="bbsshowvote.php?board=' + this.board + '">版内投票</a>] ';
 	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
 	if (this.normalB) {
-		ret += '<span id="kbsrc_clear" style="display:none;">[<a href="bbsclear.php?board=' + this.board + '&kbsrc=1">清除未读</a>]</span> ';
+		ret += '<span id="kbsrc_clear" style="display:none;">[<a href="bbsclear.php?board=' + this.board + '&kbsrc=1">清除未读</a>] </span>';
 		ret += '<div id="kbsrcInfo">doc,' + this.bid + ',' + this.ids.join(',') + '</div>';
 	} else {
 		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>] ';
