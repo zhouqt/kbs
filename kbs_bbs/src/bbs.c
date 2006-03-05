@@ -867,8 +867,8 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 	attachch[1]='\0';
 #endif
     if (! DEFINE(getCurrentUser(), DEF_SHOWSIZE)){
-		strnzhcpy(TITLE, ent->title, 38);
 		char sizebuf[30];
+		strnzhcpy(TITLE, ent->title, 38);
 		if(ent->eff_size < 1000)
 			sprintf(sizebuf,"(%d)", ent->eff_size);
 		else if(ent->eff_size < 1000000){
