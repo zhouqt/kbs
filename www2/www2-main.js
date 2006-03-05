@@ -139,7 +139,7 @@ function readParaCookie() {
 	return parseInt(getCookie('WWWPARAMS', 0));
 }
 function showUnread() {
-	return (isLogin() && (readParaCookie() & 0x1000));
+	return (isLogin() && gIE && !gIE5 && (readParaCookie() & 0x1000));
 }
 function isLogin() {
 	return (getCookie("UTMPUSERID", "guest") != "guest");
@@ -597,17 +597,14 @@ function getCssFile(file) {
 
 function writeCssFile(file) {
 	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
-	if (gIE && !gIE5 && showUnread()) {
+	if (showUnread()) {
 		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
-		var fn = function() {
-			if (document.readyState == "interactive" || document.readyState == "complete") {
-				try {
-					kbsrcIEEntry();
-				} catch(e) { }
-			}
-		};
-		document.onreadystatechange = fn;
-		addBootFn(fn);
+		//for now. readystatechanged event might trigger IE bugs
+		addBootFn(function() {
+			try {
+				kbsrcIEEntry();
+			} catch(e) { }
+		});
 	}
 }
 
