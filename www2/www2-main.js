@@ -599,7 +599,7 @@ function writeCssFile(file) {
 	document.write('<link rel="stylesheet" type="text/css" href="' + getCssFile(file) + '" />');
 	if (showUnread()) {
 		document.write('<script type="text/javascript" src="kbsrc/content/kbsrc.js"></script>');
-		//for now. readystatechanged event might trigger IE bugs
+		//for now. readystatechange event might trigger IE bug "operation aborted"
 		addBootFn(function() {
 			try {
 				kbsrcIEEntry();
@@ -904,7 +904,7 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	ret += '[<a href="bbsbfind.php?board=' + this.board + '" onclick="return showFindBox(\'' + this.board + '\')">版内查询</a>] ';
 	ret += '[<a href="bbsshowvote.php?board=' + this.board + '">版内投票</a>] ';
 	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
-	if (this.normalB) {
+	if (this.normalB && !this.man) {
 		ret += '<span id="kbsrc_clear" style="display:none;">[<a href="bbsclear.php?board=' + this.board + '&kbsrc=1">清除未读</a>] </span>';
 		ret += '<div id="kbsrcInfo">doc,' + this.bid + ',' + this.ids.join(',') + '</div>';
 	} else {
