@@ -76,7 +76,8 @@ annWriter.prototype.f = function() {
 		str += '[<a href="javascript:ann_clip(\'cut\');">剪切</a>] ';
 		str += '[<a href="javascript:ann_clip(\'copy\');">复制</a>] ';
 		str += '[<a href="javascript:ann_clip(\'paste\');">粘贴</a>] ';
-		str += '[<a href="javascript:ann_delete();">删除</a>]';
+		str += '[<a href="javascript:ann_delete();">删除</a>] ';
+		str += '[<a href="bbsipath.php?annpath=' + this.path + '">丝路</a>]';
 		str += '</div>';
 	}
 	str += '<input type="hidden" id="annCount" name="annCount" value="' + (this.num-1) + '">';
@@ -116,7 +117,40 @@ function ann_move_cancel(num)
 	var thediv = document.getElementById('divam' + num);
 	thediv.innerHTML = '';
 }
-	
+
+function ipathWriter(annPath) {
+	var str;
+	this.num = 1;
+	str = '<h1 class="bt">丝路</h1><div style="text-align:right">[<a href="bbs0anbm.php?path=' + annPath + '">精华区其它位置</a>]';
+	str += '<table class="main wide"><col width="5%" /><col width="60%" /><col width="35%" />';
+	str += '<tr><th>#</th><th>标题 / 路径</th><th>操作</th></tr><tbody>';
+	document.write(str);
+}
+ipathWriter.prototype.i = function(title, path) {
+	var str;
+	str = '<tr><td class="center">' + this.num + '</td>';
+	str += '<td>' + title + '<br><a href="bbs0anbm.php?path=' + path + '">' + path + '</a></td>';
+	str += '<td>';
+	if(path != '')
+		str += '<a href="javascript:ipathPaste(\'' + path + '\');">粘贴</a> ';
+	str += '</td></tr>';
+	this.num++;
+	document.write(str);
+}
+ipathWriter.prototype.f = function() {
+	var str;
+	str = '</tbody></table>';
+	str += '<form id="frmPaste" method="post"><input type="hidden" name="annAction" value="paste"><input type="hidden" name="annCount" value="0"></form>';
+	document.write(str);
+}
+
+function ipathPaste(path)
+{
+	path = path.substr(9, path.length - 9);
+	frmPaste.action = 'bbs0anbm.php?path=' + path;
+	frmPaste.submit();
+}
+
 
 
 

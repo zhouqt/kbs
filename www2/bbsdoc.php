@@ -77,6 +77,15 @@ function do_manage_function($board) {
             }
         }
     }
+    if($mode == $bbsman_modes["ANNOUNCE"])
+    {
+		$ann_path = bbs_getannpath($board);
+		if ($ann_path != FALSE)	{
+			if (!strncmp($ann_path,"0Announce/",10))
+				$ann_path = substr($ann_path,9);
+    		header("Location: bbsipath.php?annpath={$ann_path}");
+		}
+    }
 }
 
 
