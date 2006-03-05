@@ -931,7 +931,6 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 		if (this.man) {
 			ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
 		}
-		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>]';
 		if (isclub) {
 			ret += ' [<a href="bbsclub.php?board=' + this.board + '">俱乐部成员</a>]';
 		}
