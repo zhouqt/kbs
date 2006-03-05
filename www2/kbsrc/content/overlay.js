@@ -46,6 +46,12 @@ KBSRC.prototype = {
 		kbsrc.debugOut(str);
 	},
 	setStatus: function(host) {
+		try {
+			var curHost = gBrowser.currentURI.host;
+			if (curHost != host) return;
+		} catch(e) {
+			return;
+		}
 		var active = host && kbsrc.hosts[host];
 		if (active) {
 			var txt, img;

@@ -6,7 +6,7 @@
   
     <em:id>{dd4e0497-21b0-4866-9b5f-77bfee85e79e}</em:id>
     <em:name>KBS Reading Record</em:name>
-    <em:version>0.9.3.12</em:version>
+    <em:version>0.9.3.13</em:version>
     <em:description>Process and view reading record at client side for KBS web.</em:description>
     <em:creator>atppp</em:creator>
     <!-- optional items -->
