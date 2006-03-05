@@ -45,12 +45,14 @@ KBSRC.prototype = {
 		}
 		kbsrc.debugOut(str);
 	},
-	setStatus: function(host) {
-		try {
-			var curHost = gBrowser.currentURI.host;
-			if (curHost != host) return;
-		} catch(e) {
-			return;
+	setStatus: function(host, force) {
+		if (!force) {
+			try {
+				var curHost = gBrowser.currentURI.host;
+				if (curHost != host) return;
+			} catch(e) {
+				return;
+			}
 		}
 		var active = host && kbsrc.hosts[host];
 		if (active) {
@@ -119,12 +121,12 @@ KBSRC.prototype = {
 
 function kbsrcTabSelectedHandler(event) {
 	var n = event.originalTarget.localName;
-	if (n == "tabs") kbsrcPageRefresh();
-	else if (n == "tabpanels") kbsrc.setStatus(false);
+	if (n == "tabs") kbsrcPageRefresh(true);
+	else if (n == "tabpanels") kbsrc.setStatus(false, true);
 }
 function kbsrcPageShowHandler(event) {
 	const doc = event.originalTarget;
-	if(doc == gBrowser.contentDocument) kbsrcPageRefresh();
+	if(doc == gBrowser.contentDocument) kbsrcPageRefresh(false);
 }
 function kbsrcPageClosedHandler(event) {
 	const doc = event.originalTarget;
@@ -132,13 +134,13 @@ function kbsrcPageClosedHandler(event) {
 	if(doc != gBrowser.contentDocument) return;
 	kbsrc.setStatus(false);
 }
-function kbsrcPageRefresh() {
+function kbsrcPageRefresh(force) {
 	var host = false;
 	try {
 		var doc = content.document;
 		host = doc.location.host;
 	} catch(e) {}
-	kbsrc.setStatus(host);
+	kbsrc.setStatus(host, force);
 }
 function kbsrcPageLoadedHandler(event) {
 	kbsrcPageShowHandler(event);
