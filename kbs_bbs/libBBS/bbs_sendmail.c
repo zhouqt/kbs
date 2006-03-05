@@ -446,8 +446,9 @@ static int write_imail_file(FILE* fp2, char *oldfile, char *boundary, int isbig5
                         /* deal with attach */
                         if (isbig5) {
                             char attbuf[256];
+                            int len;
                             snprintf(attbuf, 256, "%s", attfilename);
-                            int len=strlen(attbuf);
+                            len=strlen(attbuf);
                             encodestr=gb2big(attbuf,&len,1, getSession());
                             encodestr=encodestring(encodestr,"BIG5");
                         } else {
