@@ -1,6 +1,6 @@
 <?php
 	require("www2-funcs.php");
-	login_init();
+	login_init(FALSE, TRUE);
 	$query = $_SERVER["QUERY_STRING"];
 	settype($query, "string");
 	$av = explode(".", $query);
@@ -32,9 +32,10 @@
 		die;
 	}
 
-	$usernum = $currentuser["index"];
-	if(($ftype == $dir_modes["DELETED"]) && (!bbs_is_bm($brdnum, $usernum))) {
-		die;
+	if($ftype == $dir_modes["DELETED"]) {
+		$usernum = $currentuser["index"];
+		if (!$usernum) die;
+		if (!bbs_is_bm($brdnum, $usernum)) die;
 	}
 	
 	$total = bbs_countarticles($brdnum, $ftype);

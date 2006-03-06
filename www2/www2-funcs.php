@@ -169,7 +169,8 @@ function decodesessionchar($ch)
 	return strpos(ENCODESTRING,$ch);
 }
 
-function login_init($sid=FALSE)
+/*如果 $no_auto_guest_login 设置为 TRUE，一定注意这之后的脚本及其调用的 C 函数可以处理 currentuser=NULL 的情况！*/
+function login_init($sid=FALSE,$no_auto_guest_login=FALSE)
 {
 	global $currentuinfo;
 	global $loginok;
@@ -200,7 +201,7 @@ function login_init($sid=FALSE)
 		@$userid = $_COOKIE["UTMPUSERID"];
 	}
 	
-	if ($utmpkey!="") {
+	if ($utmpkey) {
 		if (($ret=bbs_setonlineuser($userid,intval($utmpnum),intval($utmpkey),$currentuinfo_tmp,$compat_telnet))==0) {
 			$loginok=1;
 			$currentuinfo_num=bbs_getcurrentuinfo();
@@ -210,7 +211,7 @@ function login_init($sid=FALSE)
 	}
 	
 	// add by stiger, 如果登录失败就继续用guest登录
-	if (!$sid && $utmpkey == "") {
+	if (!$sid && !$utmpkey && !$no_auto_guest_login) {
 		set_fromhost();
 		$error = bbs_wwwlogin(0, $fromhost, $fullfromhost);
 		if($error == 2 || $error == 0){
@@ -238,7 +239,7 @@ function login_init($sid=FALSE)
 	$currentuinfo = $currentuinfo_tmp;
 	
 	settype($utmpnum,"integer");
-	if ($loginok!=1) {
+	if ($loginok!=1  && !$no_auto_guest_login) {
 		delete_all_cookie();
 		cache_header("nocache");
 ?>

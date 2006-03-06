@@ -64,8 +64,9 @@ var o = new brdWriter(<?php echo $list_father; ?>, <?php echo $select; ?>, '<?ph
 o.f(<?php echo $board["BID"];?>, '<?php echo addslashes($board["DESC"]); ?> ', <?php echo $board["NPOS"]; ?>);
 <?php
 		} else {
+			$isGroup = ($board["FLAG"]&BBS_BOARD_GROUP) ? "true" : "false";
 ?>
-o.o(false, <?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>, <?php echo $board["BID"]; ?>, <?php echo $board["LASTPOST"]; 
+o.o(<?php echo $isGroup; ?>, <?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>, <?php echo $board["BID"]; ?>, <?php echo $board["LASTPOST"]; 
 ?>, '<?php echo $board["CLASS"]; ?>', '<?php echo addslashes($board["NAME"]); ?>', '<?php echo addslashes($board["DESC"]);
 ?>', '<?php echo $board["BM"]; ?>', <?php echo $board["ARTCNT"]; ?>, <?php echo $board["NPOS"];?>);
 <?php
