@@ -118,6 +118,10 @@ function ann_move_cancel(num)
 	thediv.innerHTML = '';
 }
 
+function ipathMakeItem(title, path)
+{
+	return(title + '<br><a href="bbs0anbm.php?path=' + path + '">' + path + '</a>');
+}
 function ipathWriter(annPath) {
 	var str;
 	this.num = 1;
@@ -128,11 +132,16 @@ function ipathWriter(annPath) {
 }
 ipathWriter.prototype.i = function(title, path) {
 	var str;
+	ititle[this.num] = title;
+	ipath[this.num] = path;
 	str = '<tr><td class="center">' + this.num + '</td>';
-	str += '<td>' + title + '<br><a href="bbs0anbm.php?path=' + path + '">' + path + '</a></td>';
+	str += '<td id="ipathCon' + this.num + '">' + ipathMakeItem(title, path) + '</td>';
 	str += '<td>';
-	if(path != '')
+	if(title != '')
+	{
 		str += '<a href="javascript:ipathPaste(\'' + path + '\');">Õ³Ìù</a> ';
+		str += '<a href="javascript:ipathModify(' + this.num + ');">¸Ä±êÌâ</a> ';
+	}
 	str += '</td></tr>';
 	this.num++;
 	document.write(str);
@@ -150,7 +159,19 @@ function ipathPaste(path)
 	frmPaste.action = 'bbs0anbm.php?path=' + path;
 	frmPaste.submit();
 }
-
+function ipathModify(num)
+{
+	var str;
+	if(ipathEditing	!= 0)
+		document.getElementById('ipathCon' + ipathEditing).innerHTML = ipathMakeItem(ititle[ipathEditing], ipath[ipathEditing]);
+	if(num != ipathEditing)
+	{
+		ipathEditing = num;
+		document.getElementById('ipathCon' + num).innerHTML = '<input type="text" name="ipathTitle" size="40" maxlength="80" value="' + ititle[num] + '"><br>' + ipath[num];
+	}
+	else
+		ipathEditing = 0;
+}
 
 
 
