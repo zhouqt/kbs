@@ -98,7 +98,7 @@ PHP_FUNCTION(bbs_get_records_from_id)
 	{
 		RETURN_LONG(0);
 	}
-    is_bm = is_BM(bp, getCurrentUser());
+    is_bm = getCurrentUser() ? is_BM(bp, getCurrentUser()) : 0;
 	/*if (array_init(return_value) == FAILURE)
 	{
 		RETURN_LONG(0);
@@ -106,7 +106,7 @@ PHP_FUNCTION(bbs_get_records_from_id)
     setbdir(mode, dirpath, bp->filename);
     if(mode == DIR_MODE_ZHIDING){
         struct BoardStatus* bs=getbstatus(getboardnum(bp->filename,NULL));
-	num=0;
+        num=0;
         for (i=0;i<bs->toptitle;i++) {
             if (bs->topfh[i].id==id) {
                 memcpy(&articles[1],&bs->topfh[i],sizeof(struct fileheader));
@@ -114,29 +114,29 @@ PHP_FUNCTION(bbs_get_records_from_id)
                 break;
             }
         }
-	if(num == 0) RETURN_LONG(0);
-	memset(articles,0,sizeof(struct fileheader));
-	memset(articles+2,0,sizeof(struct fileheader));
+        if(num == 0) RETURN_LONG(0);
+        memset(articles,0,sizeof(struct fileheader));
+        memset(articles+2,0,sizeof(struct fileheader));
     }else{
 
-	if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
-	{
-		RETURN_LONG(0);
-	}
-	if ((retnum=get_records_from_id(fd, id, articles, record_cnt, &num)) == 0)
-	{
-		close(fd);
-		RETURN_LONG(0);
-	}
-	close(fd);
-  }
+        if ((fd = open(dirpath, O_RDWR, 0644)) < 0)
+        {
+            RETURN_LONG(0);
+        }
+        if ((retnum=get_records_from_id(fd, id, articles, record_cnt, &num)) == 0)
+        {
+            close(fd);
+            RETURN_LONG(0);
+        }
+        close(fd);
+    }
 	//MAKE_STD_ZVAL(articlearray);
-	if(array_init(articlearray) != SUCCESS)
-	{
-                RETURN_LONG(0);
-	}
-	for (i = 0; i < record_cnt; i++)
-	{
+    if(array_init(articlearray) != SUCCESS)
+    {
+        RETURN_LONG(0);
+    }
+    for (i = 0; i < record_cnt; i++)
+    {
 		MAKE_STD_ZVAL(element);
 		array_init(element);
         if(articles[i].id && getCurrentUser() ){
@@ -551,13 +551,10 @@ PHP_FUNCTION(bbs_getarticles)
     /*
      * checking arguments 
      */
-    if (getCurrentUser() == NULL) {
-        RETURN_FALSE;
-    }
     if ((bp = getbcache(board)) == NULL) {
         RETURN_FALSE;
     }
-    is_bm = is_BM(bp, getCurrentUser());
+    is_bm = getCurrentUser() ? is_BM(bp, getCurrentUser()) : 0;
 
     setbdir(mode, dirpath, bp->filename);
     total = get_num_records(dirpath, sizeof(struct fileheader));
@@ -593,7 +590,11 @@ PHP_FUNCTION(bbs_getarticles)
     for (i = 0; i < rows; i++) {
         MAKE_STD_ZVAL(element);
         array_init(element);
-        make_article_flag_array(flags, articles + i, getCurrentUser(), bp->filename, is_bm);
+        if ( getCurrentUser() ){
+            make_article_flag_array(flags, articles + i, getCurrentUser(), bp->filename, is_bm);
+        }else{
+            memset(flags, 0, sizeof(flags));
+        }
         bbs_make_article_array(element, articles + i, flags, sizeof(flags));
         zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void *) &element, sizeof(zval *), NULL);
     }

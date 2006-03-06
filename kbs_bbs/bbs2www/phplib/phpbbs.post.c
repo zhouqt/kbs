@@ -9,8 +9,9 @@
 
 
 int check_last_post_time(struct user_info *uinfo) {
-    int lastpost = uinfo->lastpost;
-    int now = time(0);
+    int lastpost, now;
+    lastpost = uinfo->lastpost;
+    now = time(0);
     uinfo->lastpost = now;
     if (abs(now - lastpost) < 6) {
         return 1;
