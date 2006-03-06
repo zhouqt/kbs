@@ -467,8 +467,8 @@ function setHots(h) {
 	var i,hots = new Array();
 	for(i=0; i<h.length; i++) {
 		if (h[i]) {
-			hots.push('<a href="bbscon.php?board=' + hotBoard + '&id=' + h[i][0] + '">' + h[i][1] + '</a>' +
-			'[<a href="bbstcon.php?bid=' + hotBid + '&gid=' + h[i][0] + '">同主题</a>](' + h[i][2] + ')');
+			hots.push('<a href="bbscon.php?bid=' + hotBid + '&id=' + h[i][0] + '">' + h[i][1] + '</a>' +
+			'[<a href="bbstcon.php?board=' + hotBoard + '&gid=' + h[i][0] + '">同主题</a>](' + h[i][2] + ')');
 		}
 	}
 	if (gIE) {

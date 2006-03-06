@@ -80,7 +80,7 @@ if (isset($_GET['do'])) {
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>?do&board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>" method="post" class="medium"/>
 	<fieldset>
-		<legend>转贴文章：<a href="bbscon.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
+		<legend>转贴文章：<a href="bbscon.php?bid=<?php echo $bid; ?>&id=<?php echo $id; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
 		<div class="inputs">
 			<label>请输入要转入的讨论区:</label>
 			<input type="text" name="target" size="18" maxlength="20" id="sfocus"/>
