@@ -178,8 +178,9 @@ function ipathModify(num)
 
 
 var gTreeArts = new Array();
-function treeWriter(board, gid, arts) {
+function treeWriter(board, bid, gid, arts) {
 	this.board = escape(board);
+	this.bid = bid;
 	this.gid = gid;
 	var i, tI = new Array();
 	for (i = 0; i < arts.length; i++) {
@@ -201,7 +202,7 @@ treeWriter.prototype.s = function(idx, flag) { /* flag: -1: root, 1: last */
 	gTreeArts[idx].showed = true;
 	var id = gTreeArts[idx].id;
 	var owner = gTreeArts[idx].owner;
-	var url = 'bbscon.php?board=' + this.board + '&id=' + id;
+	var url = 'bbscon.php?bid=' + this.bid + '&id=' + id;
 	var ret = '<br/>';
 	var c = "treeFold";
 	if (flag == -1) c = "treeFoldRoot";

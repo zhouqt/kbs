@@ -44,7 +44,7 @@ if (isset($_GET['do'])) {
 			html_success_quit("转贴成功！",
 			array("<a href='bbsdoc.php?board=" . $target . "'>进入 " . $target . " 讨论区</a>",
 			"<a href='bbsdoc.php?board=" . $brd_encode . "'>返回 " . $brdarr['DESC'] . "</a>",
-			"<a href='bbscon.php?board=" . $brd_encode . "&id=" . $id . "'>返回《" . htmlspecialchars($articles[1]["TITLE"]) . "》</a>"));
+			"<a href='bbscon.php?bid=" . $bid . "&id=" . $id . "'>返回《" . htmlspecialchars($articles[1]["TITLE"]) . "》</a>"));
 			break;
 		case -1:
 			html_error_quit("讨论区错误");
@@ -80,7 +80,7 @@ if (isset($_GET['do'])) {
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>?do&board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>" method="post" class="medium"/>
 	<fieldset>
-		<legend>转贴文章：<a href="bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>&ftype=<?php echo $ftype; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
+		<legend>转贴文章：<a href="bbscon.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
 		<div class="inputs">
 			<label>请输入要转入的讨论区:</label>
 			<input type="text" name="target" size="18" maxlength="20" id="sfocus"/>

@@ -346,7 +346,7 @@ function atomic_article() {
 	}
 	$html .= '<a href="?act=board&board='.$atomic_board.'&page='.intval(($num + ARTCNT - 1) / ARTCNT).
 	         ($atomic_ftype?"&ftype=".$atomic_ftype:"").'">回版面</a> ';
-	$ourl = 'bbscon.php?board=' . $atomic_board . '&id=' . $article["ID"];
+	$ourl = 'bbscon.php?bid=' . $atomic_brdnum . '&id=' . $article["ID"];
 	if ($atomic_ftype) $ourl .= "&ftype=".$atomic_ftype."&num=".$num;
 	$html .= '<a href="' . $ourl . '">原文</a> ';
 	$html .= '</p>';

@@ -16,22 +16,7 @@
 		if( $brdnum != bbs_getboard($board, $brdarr) ){
 			html_error_quit("错误的讨论区");
 		}
-	}
-	elseif (isset($_GET["board"])){
-		$board = $_GET["board"];
-		$brdnum = bbs_getboard($board, $brdarr);
-		if ($brdnum == 0) {
-			html_error_quit("错误的讨论区");
-		}
-	}
-	elseif (isset($_SERVER['argv'])){
-		$board = $_SERVER['argv'][1];
-		$brdnum = bbs_getboard($board, $brdarr);
-		if ($brdnum == 0) {
-			html_error_quit("错误的讨论区");
-		}
-	}
-	else {
+	} else {
 		html_error_quit("错误的讨论区");
 	}
 	$isnormalboard=bbs_normalboard($board);
@@ -44,8 +29,6 @@
 	}
 	if (isset($_GET["id"]))
 		$id = $_GET["id"];
-	elseif (isset($_SERVER['argv'][2]))
-		$id = $_SERVER['argv'][2];
 	else {
 		html_error_quit("错误的文章号");
 	}

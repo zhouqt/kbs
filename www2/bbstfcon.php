@@ -55,7 +55,7 @@
 	}
 	$arts = "[" . implode(",", $strs) . "]";
 ?>
-var o = new treeWriter('<?php echo addslashes($board); ?>',<?php echo $gid; ?>,<?php echo $arts; ?>);
+var o = new treeWriter('<?php echo addslashes($board); ?>',<?php echo $bid; ?>,<?php echo $gid; ?>,<?php echo $arts; ?>);
 o.o();
 //-->
 </script>

@@ -101,7 +101,7 @@ for( ; $i < 20; $i++)
 <td><a href="bbsrecon.php?id=<?php echo $article["ID"]; ?>"><?php echo htmlspecialchars($title); ?></a></td>
 <td><a href="bbsqry.php?userid=<?php echo $article["OWNER"]; ?>"><?php echo $article["OWNER"]; ?></a></td>
 <td><a href="bbsdoc.php?board=<?php echo $article["O_BOARD"];?>"><?php { $brddarr = array(); if(bbs_getboard($article["O_BOARD"], $brddarr)) echo $brddarr["DESC"]; }?></a></td>
-<td><a href="bbscon.php?board=<?php echo $article["O_BOARD"];?>&id=<?php echo $article["O_ID"];?>">阅读原文</a></td>
+<td><a href="bbscon.php?bid=<?php echo $article["O_BID"];?>&id=<?php echo $article["O_ID"];?>">阅读原文</a></td>
 </tr>
 <?php
 		}

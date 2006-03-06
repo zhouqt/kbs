@@ -8,7 +8,7 @@ function display_navigation_bar($brdarr, $num, $article)
 	$PAGE_SIZE = 20;
 ?>
 <a href="bbsdoc.php?board=<?php echo $article[1]["O_BOARD"];?>"><?php echo $article[1]["O_BOARD"];?>版</a> 
-<a href="bbscon.php?board=<?php echo $article[1]["O_BOARD"];?>&id=<?php echo $article[1]["O_ID"];?>">原始文章</a>
+<a href="bbscon.php?bid=<?php echo $article[1]["O_BID"];?>&id=<?php echo $article[1]["O_ID"];?>">原始文章</a>
 <?php
 }
 

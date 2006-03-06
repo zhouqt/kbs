@@ -146,7 +146,7 @@ var ta = new tabWriter(0,'main wide',0,[['±àºÅ','6%','center'],['±ê¼Ç','6%','cen
 		$col2 = $flags[0] . $flags[3];
 		$col3 = '<a href="bbsqry.php?userid=' . $article["OWNER"] . '">' . $article["OWNER"] . '</a>';
 		$col4 = strftime("%b&nbsp;%e", $article["POSTTIME"]);
-		$col5 = '<a href="bbscon.php?board=' . $brdarr["NAME"] . '&id=' . $article["ID"] . '">' . htmlspecialchars($article["TITLE"], ENT_QUOTES) . ' </a>';
+		$col5 = '<a href="bbscon.php?bid=' . $brdnum . '&id=' . $article["ID"] . '">' . htmlspecialchars($article["TITLE"], ENT_QUOTES) . ' </a>';
 		echo "ta.r('$col1','$col2','$col3','$col4','$col5');\n";
 	}
 	$i = count($articles);

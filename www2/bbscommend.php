@@ -39,7 +39,7 @@ $confirmed = isset($_GET['do']) ? 1 : 0;
 			if ($confirmed) {
 				html_success_quit("推荐成功！",
 				array("<a href='bbsdoc.php?board=" . $brd_encode . "'>返回 " . $brdarr['DESC'] . "</a>",
-				"<a href='bbscon.php?board=" . $brd_encode . "&id=" . $id . "'>返回《" . htmlspecialchars($articles[1]["TITLE"]) . "》</a>"));
+				"<a href='bbscon.php?bid=" . $bid . "&id=" . $id . "'>返回《" . htmlspecialchars($articles[1]["TITLE"]) . "》</a>"));
 			} else {
 				// show recommend form below
 			}
@@ -71,7 +71,7 @@ $confirmed = isset($_GET['do']) ? 1 : 0;
 ?>
 <form action="<?php echo $_SERVER['PHP_SELF']; ?>?do&board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>" method="post" class="medium"/>
 	<fieldset>
-		<legend>推荐文章：<?php echo $articles[1]["OWNER"]; ?> 的 <a href="bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>&ftype=<?php echo $ftype; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
+		<legend>推荐文章：<?php echo $articles[1]["OWNER"]; ?> 的 <a href="bbscon.php?bid=<?php echo $bid; ?>&id=<?php echo $id; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
 		<div class="oper">
 			<input type="submit" value="确认" />&nbsp;&nbsp;<input type="button" value="取消" onclick="history.go(-1)" />
 		</div>

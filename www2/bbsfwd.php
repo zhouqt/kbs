@@ -41,7 +41,7 @@
 <input type="hidden" name="board" value="<?php echo $brdarr["NAME"];?>"/>
 <input type="hidden" name="id" value="<?php echo $id;?>"/>
 	<fieldset>
-		<legend>转寄文章：<?php echo $articles[1]["OWNER"];?> 的 <a href="bbscon.php?board=<?php echo $brd_encode; ?>&id=<?php echo $id; ?>&ftype=<?php echo $ftype; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
+		<legend>转寄文章：<?php echo $articles[1]["OWNER"];?> 的 <a href="bbscon.php?bid=<?php echo $brdnum; ?>&id=<?php echo $id; ?>"><?php echo htmlspecialchars($articles[1]["TITLE"]); ?></a></legend>
 		<div class="inputs">
 			<label>把文章转寄给 (请输入对方的id或email地址):</label>
 			<input type="text" name="target" size="40" maxlength="69" id="sselect" value="<?php echo $currentuser["email"];?>"><br/>

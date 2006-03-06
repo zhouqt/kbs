@@ -462,13 +462,13 @@ function dosubmit() {
 }
 
 
-var hotBoard = '', hotMove = true, hotFn = null;
+var hotBoard = '', hotBid = 0, hotMove = true, hotFn = null;
 function setHots(h) {
 	var i,hots = new Array();
 	for(i=0; i<h.length; i++) {
 		if (h[i]) {
 			hots.push('<a href="bbscon.php?board=' + hotBoard + '&id=' + h[i][0] + '">' + h[i][1] + '</a>' +
-			'[<a href="bbstcon.php?board=' + hotBoard + '&gid=' + h[i][0] + '">同主题</a>](' + h[i][2] + ')');
+			'[<a href="bbstcon.php?bid=' + hotBid + '&gid=' + h[i][0] + '">同主题</a>](' + h[i][2] + ')');
 		}
 	}
 	if (gIE) {
@@ -505,7 +505,7 @@ function setHots(h) {
 	}
 }
 
-function hotTopic(board) { /* TODO: no table, use AJAX */
+function hotTopic(board, bid) { /* TODO: no table, use AJAX */
 	/* clear: both is for stupid Firefox */
 	var str = '<table cellspacing="0" cellpadding="5" border="0" width="100%" style="margin: 0.5em auto 0 auto;clear:both;"><tr>' +
 			  '<td width="100" align="center">[<span class="red">热门话题</span>]</td><td>';
@@ -520,6 +520,7 @@ function hotTopic(board) { /* TODO: no table, use AJAX */
 		window.frames["hiddenframe"].document.location.href = "bbshot.php?board=" + board;
 	});
 	hotBoard = escape(board);
+	hotBid = bid;
 }
 
 
@@ -709,7 +710,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	if (this.man) this.baseurl += "&manage=1";
 	if (this.ftype) this.baseurl += "&ftype=" + this.ftype;
 
-	if (showHot && this.hotOpt == 1) hotTopic(this.board);
+	if (showHot && this.hotOpt == 1) hotTopic(this.board, this.bid);
 
 	var str = '<div class="doc"><div class="docTab smaller">';
 	if (!ftype && isLogin()) {
@@ -809,7 +810,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 			str += '<a href="bbstcon.php?board=' + this.board + '&gid=' + gid + '">' + title + '</a>';
 			break;
 		case dir_modes["NORMAL"]:
-			str += '<a href="bbscon.php?board=' + this.board + '&id=' + id;
+			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id;
 			if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"]
 			str += '">' + title + '</a>';
 			if (size >= 1000) {
@@ -819,7 +820,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 			}
 			break;
 		default:
-			str += '<a href="bbscon.php?board=' + this.board + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '">' + title + '</a>';
+			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id + '&ftype=' + this.ftype + '&num=' + (this.start + this.num) + '">' + title + '</a>';
 			break;
 	}
 	str += '</b></td></tr>';
@@ -1006,9 +1007,9 @@ conWriter.prototype.t = function() {
 	if (ao) {
 		var qry = '?board=' + this.board + '&id=' + this.id;
 		ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '">同主题展开</a>] ';
-		ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.gid + '">同主题第一篇</a>] ';
+		ret += '[<a href="bbscon.php?bid=' + this.bid + '&id=' + this.gid + '">同主题第一篇</a>] ';
 		ret += '[<a href="bbstcon.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.id + '">从此处展开</a>] ';
-		ret += '[<a href="bbscon.php?board=' + this.board + '&id=' + this.reid + '" title="跳转到本文所回复的文章">溯源</a>] ';
+		ret += '[<a href="bbscon.php?bid=' + this.bid + '&id=' + this.reid + '" title="跳转到本文所回复的文章">溯源</a>] ';
 	}
 	ret += '[<a href="' + url + '">返回版面' + dir_name(this.ftype) + '</a>] ';
 	ret += '[<a href="javascript:history.go(-1)">快速返回</a>]<br/>';
@@ -1076,7 +1077,7 @@ tconWriter.prototype.o = function(arts) {
 		var id = arts[i][0];
 		var owner = arts[i][1];
 		ids.push(id);
-		var url = 'bbscon.php?board=' + this.board + '&id=' + id;
+		var url = 'bbscon.php?bid=' + this.bid + '&id=' + id;
 		var ret = '<br/>';
 		ret += '<div class="tconPager smaller left">';
 		ret += '[<a href="' + url + '">本篇全文</a>] ';
