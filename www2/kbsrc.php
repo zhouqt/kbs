@@ -7,6 +7,7 @@
 
 	$p = @$HTTP_RAW_POST_DATA;
 	if ($p) {
+		// check userid
 		bbs2_brcsync($p);
 	}
 	if (!isset($_GET["logout"])) {
