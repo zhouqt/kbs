@@ -516,11 +516,11 @@ function hotTopic(board, bid) { /* TODO: no table, use AJAX */
 	}
 	str += '</td></tr></table>';
 	document.write(str + '<iframe width=0 height=0 src="images/img.gif" frameborder="0" scrolling="no" id="hiddenframe" name="hiddenframe"></iframe>');
+	hotBoard = escape(board);
+	hotBid = bid;
 	addBootFn(function() {
 		window.frames["hiddenframe"].document.location.href = "bbshot.php?board=" + board;
 	});
-	hotBoard = escape(board);
-	hotBid = bid;
 }
 
 
@@ -892,7 +892,7 @@ docWriter.prototype.t = function() {
 	ret += '</div>'; //class="doc"
 	document.write(ret);
 	
-	if (this.showHot && this.hotOpt == 0) hotTopic(this.board);
+	if (this.showHot && this.hotOpt == 0) hotTopic(this.board, this.bid);
 };
 docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	var i,ret = '<div class="oper smaller">';
