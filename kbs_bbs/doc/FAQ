@@ -5,7 +5,7 @@ $Id$
 
 1. ChangeLog
 2004.5.29
-    flyriver 增加 FAQ 2.10 和 2.11
+    flyriver 增加 FAQ 2.9
 2004.4.1
     flyriver 增加 FAQ 2.7 和 2.8
              修改 FAQ 2.6
@@ -80,8 +80,8 @@ $Id$
   b) 检查 /etc/passwd 和 /etc/group 文件，看看 bbs 用户的 uid 和 gid 是否
      与代码中定义的 BBSUID 和 BBSGID 宏一致(在 site.h 文件中)。
 
-2.7. 我从 cvs 下载的代码，用 aclocal、autoheader、automake 和 autoconf 等
-    命令生成了 configure，但 make 时却出错，提示：
+2.7. 我从 cvs 下载的代码，用 autogen.sh 命令生成了 configure，但 make 时
+     却出错，提示：
     “./../depcomp: ./../depcomp: No such file or directory”
 [答复]
   请执行下面的命令，观察命令输出的版本信息。
@@ -100,29 +100,11 @@ $Id$
   相关的开发包 (一般会有 libxml2-devel 或 libxml2-dev 之类的名字)。自己编译
   安装的 libxml2 则不存在此问题。
 
-2.9. 登陆WWW的时候，报告找不到bbsguestleft.html，bbsguestfoot.html之类的页面
-[答复]
-  kbs的代码为了效率考虑，对于guest的页面采用生成静态页面的方式。bbsguestXX.html
-等都是用bbsXXX.php生成的。你可以用
-  wget http://www/bbsXXX.php -O tmp.html; mv -f tmp.html bbsguestXXX.html
-来生成。假如编译了php的cli版本，也可以用
-  php bbsXXX.php 2>/dev/null | awk 'NR>3 {print;}' > tmp.html; mv -f 
-tmp.html bbsguestXXX.html
-
-2.10. 为什么我编译的 phpbbslib 没有 .so 后缀？
-[答复]
-  这个问题常见于 Redhat Fedora 和 Debain Sarge 上，由某些 1.5.x 版本的 libtool
-  引起，解决办法是分别在 kbsbbs 的主目录、sshbbsd 子目录下分别执行：
-      libtoolize -c --force;autoheader;aclocal;automake -a;autoconf
-
-  然后重新 configure 和 make 一遍。
-
-2.11. 我在 php.ini 里面加上了 extension=libphpbbslib.so，但还是无法使用 web
+2.9. 我在 php.ini 里面加上了 extension=libphpbbslib.so，但还是无法使用 web
     界面，不知道该怎么办？
 [答复]
   a) 如果修改了 php.ini，需要重新启动 apache 才能生效(假设是 mod_php 的方式)。
-  b) 这个问题也可能是 libphpbbslib 没有 so 后缀引起的，参考 2.10 的答复。
-  c) 检查 php.ini 里面设定的 extension_dir 参数指向一个 apache 可以访问的目录，
+  b) 检查 php.ini 里面设定的 extension_dir 参数指向一个 apache 可以访问的目录，
      而且该目录中有 libphpbbslib.so 这个文件，如果没有可以建一个符号链接。
 
 3. 管理维护
@@ -132,25 +114,10 @@ tmp.html bbsguestXXX.html
   这个问题有个人问过我，处理如下
     killall miscd
     killall bbslogd
-  然后把共享内存区内存区清了，
+  然后把共享内存区内存区清了（可以尝试使用 contrib/scripts/clearipc 脚本），
   重新
     miscd daemon
     bbslogd就好了
   不知道为啥。
   另外一个可能的原因是防火墙拦掉了对 localhost 60001 端口的连接。将其打开。
-
-3.2. 刚安装完毕，建立新版的时候断线，怎么回事？
-[答复]
-  这个是1.0.1版以前的bug，解决办法：
-    a) 下载并安装最新的 kbsbbs snapshot，我们建议您这么做；
-    b) 如果您确实想用老的 kbsbbs 版本，那么可以参照以下步骤：
-将bcache.c里面的
-            ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
-这一行，移动到上面几行。
-            exit(-1);
-        }
-        /*加到这里*/
-        ftruncate(boardfd, MAXBOARD * sizeof(struct boardheader));
-        /* end */
-        close(boardfd);
 
