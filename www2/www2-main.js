@@ -897,15 +897,15 @@ docWriter.prototype.t = function() {
 	
 	if (this.showHot && this.hotOpt == 0) hotTopic(this.board, this.bid);
 };
-docWriter.prototype.f = function(sfav,rss,related,isclub) {
+docWriter.prototype.f = function(rss,related,isclub) {
 	var i,ret = '<div class="oper smaller">';
 	if (this.ftype != dir_modes["ORIGIN"]) {
-		ret += '[<a href="bbsdoc.php?board=' + this.board + '&ftype=' + dir_modes["ORIGIN"] + '">同主题模式</a>] ';
+		ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“同主题”链接\');">同主题模式</a>] ';
     } else if (this.ftype) {
-		ret += '[<a href="bbsdoc.php?board=' + this.board + '">普通模式</a>] ';
+		ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“普通模式”链接\');">普通模式</a>] ';
 	}
 	ret += '[<a href="bbsnot.php?board=' + this.board + '">进版画面</a>] ';
-	ret += '[<a href="bbsbfind.php?board=' + this.board + '" onclick="return showFindBox(\'' + this.board + '\')">版内查询</a>] ';
+	ret += '[<a style="color:gray;" title="请点右上方的链接" href="javascript:alert(\'请点右上方的“查询”链接\');">版内查询</a>] ';
 	ret += '[<a href="bbsshowvote.php?board=' + this.board + '">版内投票</a>] ';
 	ret += '[<a href="bbsshowtmpl.php?board=' + this.board + '">发文模板</a>] ';
 	if (this.normalB && !this.man) {
@@ -914,7 +914,6 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 	} else {
 		ret += '[<a href="bbsclear.php?board=' + this.board + '">清除未读</a>] ';
 	}
-	ret += '[' + sfav + '] ';
 	if (rss) {
 		ret += '<a href="' + rss + '" title="RSS"><img src="images/xml.gif"/></a>';
 	}

@@ -132,7 +132,7 @@ c.o(<?php echo $article["ID"]; ?>,<?php echo $article["GROUPID"]; ?>,'<?php echo
 <?php
 	}
 ?>
-c.t();c.f('<?php echo addslashes(bbs_add_super_fav ($brdarr['DESC'], 'bbsdoc.php?board='.$brdarr['NAME'])); ?>','<?php
+c.t();c.f('<?php
 	echo $isnormalboard ? bbs_rss_link(urlencode($board), $ftype) : "";
 ?>',<?php
 	$s = TRUE;
