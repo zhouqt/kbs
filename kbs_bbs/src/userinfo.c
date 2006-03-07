@@ -86,7 +86,10 @@ void disply_userinfo(struct userec *u, int real)
 #endif
         prints("上站总时数   : %d 小时 %d 分钟\n", u->stay / 3600, (u->stay / 60) % 60);
 #ifdef NEWSMTH
-    sprintf(genbuf,"%d -- RANKING %.1lf%%",u->score_user,100*us_ranking(u->score_user));
+    if(u->score_user>publicshm->us_sample[1])
+        sprintf(genbuf,"%d -- RANKING %.2lf%%",u->score_user,100*us_ranking(u->score_user));
+    else
+        sprintf(genbuf,"%d -- RANKING %.1lf%%",u->score_user,100*us_ranking(u->score_user));
     prints("积分         : %s\n",genbuf);
 #else
     prints("\n");

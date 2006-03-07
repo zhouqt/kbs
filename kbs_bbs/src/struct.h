@@ -236,8 +236,10 @@ struct public_data {
     int www_guest_count;
     unsigned int max_user;
     unsigned int max_wwwguest;
-	
-	char unused1[32];
+
+	/* etnlegend, 2006.03.06, userscore twice sampling for high score users ... */
+    unsigned int us_sample_high[8];
+
 	unsigned int logincount;
 	unsigned int logoutcount;
 	u_int64_t staytime;
