@@ -1,4 +1,5 @@
 <?php
+define("www2dev", true);
 define("ATTACHMAXSIZE",BBS_MAXATTACHMENTSIZE);        //附件总字节数的上限，单位 bytes
 define("ATTACHMAXCOUNT",BBS_MAXATTACHMENTCOUNT);      //附件数目的上限
 define("MAINPAGE_FILE","mainpage.php");              //首页导读的 URL

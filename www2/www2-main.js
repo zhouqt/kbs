@@ -848,7 +848,9 @@ docWriter.prototype.t = function() {
 			ret += '<input type="button" value="切换%" onclick="mansubmit(' + bbsman_modes['PERCENT'] + ');"/>';
 			ret += '<input type="button" value="切换X" onclick="mansubmit(' + bbsman_modes["TODEL"] + ');"/>';
 			ret += '<input type="button" value="切换#" onclick="mansubmit(' + bbsman_modes["SHARP"] + ');"/>';
-			ret += '<input type="button" value="收精华区" onclick="mansubmit(' + bbsman_modes["ANNOUNCE"] + ');"/>';
+			if (www2dev) {
+				ret += '<input type="button" value="收精华区" onclick="mansubmit(' + bbsman_modes["ANNOUNCE"] + ');"/>';
+			}
 		}
 		else
 		{
@@ -935,7 +937,9 @@ docWriter.prototype.f = function(sfav,rss,related,isclub) {
 		if (isclub) {
 			ret += ' [<a href="bbsclub.php?board=' + this.board + '">俱乐部成员</a>]';
 		}
-		ret += ' [<a href="bbs0anbm.php?path=' + escape(this.apath) + '">精华区管理</a>]';
+		if (www2dev) {
+			ret += ' [<a href="bbs0anbm.php?path=' + escape(this.apath) + '">精华区管理</a>]';
+		}
 	}
 	ret += '</div>';
 	document.write(ret);
@@ -1021,7 +1025,9 @@ conWriter.prototype.t = function() {
 		ret += '[<a href="bbspstmail.php' + qry + '">回信</a>] ';
 		ret += '[<a href="bbsedit.php' + qry + '&ftype=' + this.ftype + '">修改</a>] ';
 		if (!zd) {
-			ret += '[<a href="bbsprop.php' + qry + '">属性</a>] ';
+			if (www2dev) {
+				ret += '[<a href="bbsprop.php' + qry + '">属性</a>] ';
+			}
 			ret += '[<a onclick="return confirm(\'你真的要删除本文吗?\')" href="bbsdel.php?board=' + this.board + '&id=' + this.id + '">删除</a>] ';
 		}
 	}
@@ -1050,7 +1056,7 @@ function tconWriter(board, bid, gid, start, tpage, pno, serial, prevgid, nextgid
 }
 tconWriter.prototype.h = function() {
 	var ret = '<div class="tnav smaller"><span style="float:right">';
-	if(isBM(this.bid))
+	if(www2dev && isBM(this.bid))
 	{
 		ret += '[<a href="bbsthreads.php?board=' + this.board + '&gid=' + this.gid + '&start=' + this.start + '">同主题操作</a>] ';
 	}

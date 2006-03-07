@@ -349,6 +349,9 @@ function page_header($title, $flag = "", $otherheaders = false) {
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312"/>
 <title><?php echo $title; ?></title>
+<?php
+if (defined("www2dev")) echo "<script>var www2dev=true;</script>";
+?>
 <script src="www2-main.js" type="text/javascript"></script>
 <script>writeCss();</script>
 <?php if ($otherheaders) echo $otherheaders; ?>
