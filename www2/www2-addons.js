@@ -77,7 +77,7 @@ annWriter.prototype.f = function() {
 		str += '[<a href="javascript:ann_clip(\'copy\');">复制</a>] ';
 		str += '[<a href="javascript:ann_clip(\'paste\');">粘贴</a>] ';
 		str += '[<a href="javascript:ann_delete();">删除</a>] ';
-		str += '[<a href="bbsipath.php?annpath=' + this.path + '">丝路</a>]';
+		// str += '[<a href="bbsipath.php?inann=1&annpath=' + this.path + '">丝路</a>]';
 		str += '</div>';
 	}
 	str += '<input type="hidden" id="annCount" name="annCount" value="' + (this.num-1) + '">';
@@ -120,12 +120,17 @@ function ann_move_cancel(num)
 
 function ipathMakeItem(title, path)
 {
-	return(title + '<br><a href="bbs0anbm.php?path=' + path + '">' + path + '</a>');
+	return(title + '<br>' + path);
 }
-function ipathWriter(annPath) {
+function ipathWriter(inAnn) {
 	var str;
 	this.num = 1;
-	str = '<h1 class="bt">丝路</h1><div style="text-align:right">[<a href="bbs0anbm.php?path=' + annPath + '">精华区其它位置</a>]';
+	this.annPath = currAnnPath;
+	this.inAnn = inAnn;
+	str = '<form id="frmipath" method="post" action="bbsipath.php?inann=' + inAnn + '&annpath=' + currAnnPath + '">';
+	str += '<input type="hidden" id="ipathAction" name="ipathAction" value="">';
+	str += '<input type="hidden" id="num" name="num" value="0">';
+	str += '<h1 class="bt">丝路</h1><div style="text-align:right">[<a href="bbs0anbm.php?path=' + currAnnPath + '">精华区其它位置</a>]';
 	str += '<table class="main wide"><col width="5%" /><col width="60%" /><col width="35%" />';
 	str += '<tr><th>#</th><th>标题 / 路径</th><th>操作</th></tr><tbody>';
 	document.write(str);
@@ -142,13 +147,15 @@ ipathWriter.prototype.i = function(title, path) {
 		str += '<a href="javascript:ipathPaste(\'' + path + '\');">粘贴</a> ';
 		str += '<a href="javascript:ipathModify(' + this.num + ');">改标题</a> ';
 	}
+	if(this.inAnn)
+		str += '<a href="javascript:ipathSet(' + this.num + ');">设为当前目录</a>';
 	str += '</td></tr>';
 	this.num++;
 	document.write(str);
 }
 ipathWriter.prototype.f = function() {
 	var str;
-	str = '</tbody></table>';
+	str = '</tbody></table><div id="ipathSetDiv"></div></form>';
 	str += '<form id="frmPaste" method="post"><input type="hidden" name="annAction" value="paste"><input type="hidden" name="annCount" value="0"></form>';
 	document.write(str);
 }
@@ -167,11 +174,45 @@ function ipathModify(num)
 	if(num != ipathEditing)
 	{
 		ipathEditing = num;
-		document.getElementById('ipathCon' + num).innerHTML = '<input type="text" name="ipathTitle" size="40" maxlength="80" value="' + ititle[num] + '"><br>' + ipath[num];
+		if(num > 0)
+		{
+			str = '<input type="text" name="ipathTitle" size="40" maxlength="80" value="' + ititle[num] + '">';
+			str += '<input type="button" onclick="ipathDoModify();" value="修改"><br>' + ipath[num];
+			document.getElementById('ipathCon' + num).innerHTML = str;
+		}
 	}
 	else
 		ipathEditing = 0;
+		
 }
+function ipathDoModify()
+{
+	if(ipathEditing != 0)
+	{
+		frmipath.ipathAction.value = 'modify';
+		frmipath.num.value = ipathEditing;
+		frmipath.submit();
+	}
+}
+function ipathSet(num)
+{
+	var co = true;
+	var str;
+	ipathModify(0);
+	if(ititle[num] != "")
+		co = confirm('要覆盖这个丝路吗？');
+	if(co)
+	{
+		frmipath.ipathAction.value = 'set';
+		frmipath.num.value = num;
+		str = '<input type="hidden" name="ipathTitle" value="' + currAnnPath + '">';
+		str += '<input type="hidden" name="ipathPath" value="' + currAnnPath + '">';
+		document.getElementById('ipathSetDiv').innerHTML = str;
+		frmipath.submit();
+	}
+}
+		
+
 
 
 

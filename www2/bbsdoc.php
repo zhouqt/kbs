@@ -83,7 +83,9 @@ function do_manage_function($board) {
 		if ($ann_path != FALSE)	{
 			if (!strncmp($ann_path,"0Announce/",10))
 				$ann_path = substr($ann_path,9);
-    		header("Location: bbsipath.php?annpath={$ann_path}");
+    		// 丝路功能问题多多 先不要用
+			// header("Location: bbsipath.php?annpath={$ann_path}");
+			header("Location: bbs0anbm.php?path={$ann_path}");
 		}
     }
 }

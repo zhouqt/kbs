@@ -3,7 +3,26 @@
 	require_once("www2-funcs.php");
 	login_init();
 	bbs_session_modify_user_mode(BBS_MODE_CSIE_ANNOUNCE);
-		
+
+	if(isset($_POST["ipathAction"]))
+	{
+		$action = $_POST["ipathAction"];
+		if($action == "modify")
+		{
+			$num = $_POST["num"];
+			$title = $_POST["ipathTitle"];
+			bbs_ipath_modify($num, $title);
+		}
+		else if($action == "set")
+		{
+			$num = $_POST["num"];
+			$title = $_POST["ipathTitle"];
+			$path = $_POST["ipathPath"];
+			$path = "0Announce" . $path;
+			bbs_ipath_modify($num, $title, $path);
+		}
+	}
+	
 	$ipaths = array();
 	$ipaths = bbs_ipath_list();
 	if($ipaths === FALSE)
@@ -17,6 +36,10 @@
 		$annpath = $_GET["annpath"];
 	else
 		$annpath = "";
+	if(isset($_GET["inann"]))
+		$inann = $_GET["inann"];
+	else
+		$inann = 0;
 	$count = count($ipaths);
 ?>
 <script src="www2-addons.js" type="text/javascript"></script>
@@ -24,7 +47,8 @@
 var ipathEditing = 0;
 var ititle = new Array(<?php echo $count; ?>);
 var ipath = new Array(<?php echo $count; ?>);
-var p = new ipathWriter('<?php echo $annpath; ?>');
+var currAnnPath = '<?php echo $annpath; ?>';
+var p = new ipathWriter(<?php echo $inann; ?>);
 <?php
 	for($i=0; $i<$count; $i++)
 	{
