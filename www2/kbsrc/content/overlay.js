@@ -11,17 +11,6 @@
 function KBSRC() {}
 KBSRC.prototype = {
 	hosts: false,
-	timer : function() {
-		var host, now = (new Date()).getTime();
-		for (host in this.hosts) {
-			var oHost = this.hosts[host];
-			if (!oHost) continue;
-			if (now - oHost.lastSync > 600000) {
-				oHost.lastSync = now;
-				oHost.sync();
-			}
-		}
-	},
 	dumpInfo: function() {
 		var str = "dirty BRC as follows:\n";
 		var bid, host;
@@ -93,11 +82,6 @@ KBSRC.prototype = {
 		
 		this.hosts = new Object();
 		
-		var self = this;
-		this.hTimer = setInterval(function() {
-			self.timer.call(self);
-		}, 1000);
-		
 		kbsrc.debugOut("Loaded OK.");
 	},
 	deinit : function() {
@@ -112,8 +96,6 @@ KBSRC.prototype = {
 		observerService.removeObserver(this.hWatcher, "http-on-examine-response", false);
 
 		this.hosts = false;
-		
-		clearInterval(this.hTimer);
 		
 		kbsrc.debugOut("Unloaded OK.");
 	}
@@ -159,6 +141,12 @@ function kbsrcPageLoadedHandler(event) {
 	if (!oHost) return;
 	
 	oHost.processDoc(doc);
+
+	var now = new Date().getTime();
+	if (now - oHost.lastSync > 600000) {
+		oHost.lastSync = now;
+		oHost.sync();
+	}
 }
 
 function kbsrcHTTPHeaderWatcher() {}
