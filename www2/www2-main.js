@@ -18,6 +18,7 @@ if (gIE) {
 	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 6);
 }
 var kbsrc = null; //namespace in this window
+var www2dev = (typeof gwww2dev != "undefined");
 
 if (!Array.prototype.push) {
 	Array.prototype.push = function() {
