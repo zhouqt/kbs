@@ -447,14 +447,6 @@ function showFindBox(board) {
 	return false;
 }
 
-function goAttachWindow(){
-	var hWnd = window.open("bbsupload.php","_blank","width=600,height=300,scrollbars=yes");
-	if ((document.window != null) && (!hWnd.opener))
-	   hWnd.opener = document.window;
-	hWnd.focus();
-	return false;
-}
-
 function dosubmit() {
 	var p = document.postform;
 	p.post.value='∑¢±Ì÷–£¨«Î…‘∫Ú...';

@@ -81,7 +81,7 @@
 		{
 ?>
 附&nbsp;&nbsp;件: <input type="text" name="attachname" size="50" value="" disabled="disabled" />
-<a href="#" onclick="return goAttachWindow()" class="b2">操作附件</a><br/>
+<a href="bbsupload.php" target="_blank">操作附件</a>(新窗口打开)<br/>
 <?php
 		}
 ?>
@@ -187,15 +187,6 @@
 <input type="button" onclick="dosubmit();" tabindex="3" name="post" value="发表" />
 &nbsp;&nbsp;&nbsp;&nbsp;
 <input class="sb1" type="reset" value="返回" onclick="history.go(-1)" />
-<?php
-		if (bbs_is_attach_board($brdarr))
-		{
-?>
-&nbsp;&nbsp;&nbsp;&nbsp;
-<input class="sb1" type="button" name="attach22" value="附件" onclick="return goAttachWindow()" />
-<?php
-		}
-?>
 </div>
 </fieldset></form>
 <?php

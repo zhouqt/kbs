@@ -3,10 +3,20 @@ if (!defined('_BBS_WWW2_BMP_PHP_'))
 {
 define('_BBS_WWW2_BMP_PHP_', 1);
 
+/* F**K PHP5 STUPID PEOPLE! */
+function my_basename($filename) {
+	$pos1 = strrpos($filename, "/");
+	$pos2 = strrpos($filename, "\\");
+	if ($pos1 === false && $pos2 === false) return $filename;
+	if ($pos1 === false) $pos1 = $pos2;
+	else $pos1 = ($pos1 > $pos2) ? $pos1 : $pos2;
+	return substr($filename, $pos1 + 1);
+}
+
 function compress_bmp(&$ofile, &$oname)
 {
 	if (defined("AUTO_BMP2PNG_THRESHOLD")) {
-		$oname = basename($oname);
+		$oname = my_basename(addslashes($oname));
 		if (strcasecmp(".bmp", substr($oname, -4)) == 0 && (filesize($ofile) > AUTO_BMP2PNG_THRESHOLD)) {
 			$h = @popen("identify -format \"%m\" ".escapeshellarg($ofile), "r");
 			if ($h) {

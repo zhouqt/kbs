@@ -166,7 +166,7 @@ function set_fromhost()
 define("ENCODESTRING","0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ");
 function decodesessionchar($ch)
 {
-	return strpos(ENCODESTRING,$ch);
+	return @strpos(ENCODESTRING,$ch);
 }
 
 /*如果 $no_auto_guest_login 设置为 TRUE，一定注意这之后的脚本及其调用的 C 函数可以处理 currentuser=NULL 的情况！*/
@@ -189,8 +189,9 @@ function login_init($sid=FALSE,$no_auto_guest_login=FALSE)
 		@$sessionid = $_GET["sid"];
 		if (!$sessionid) @$sessionid = $_POST["sid"];
 		if (!$sessionid) @$sessionid = $_COOKIE["sid"];
+		settype($sessionid, "string");
 	}
-	if ($sid && $sessionid) {
+	if ($sid && $sessionid && strlen($sessionid)==9) {
 		$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
 		$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
 			+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;

@@ -9,41 +9,51 @@
 	if ($action=="delete") {
 		@$act_attachname=$_GET["attachname"];
 		settype($act_attachname, "string");
-		$ret = bbs_upload_del_file($act_attachname);
+		$filename = base64_decode($act_attachname);
+		$ret = bbs_upload_del_file($filename);
 		if ($ret) $msg = bbs_error_get_desc($ret);
-		else $msg = "删除文件成功";
+		else $msg = "删除 " . $filename . " 成功";
 	} else if ($action=="add") {
-		if (isset($_FILES['attachfile'])) {
-			@$errno=$_FILES['attachfile']['error'];
-		} else {
-			$errno = UPLOAD_ERR_PARTIAL;
-		}
-		switch ($errno) {
-		case UPLOAD_ERR_OK:
-			$ofile = $_FILES['attachfile']['tmp_name'];
-			$oname = $_FILES['attachfile']['name'];
-			if (!is_uploaded_file($ofile)) {
-				die;
+		$counter = @intval($_POST["counter"]);
+		for($i = 0; $i < $counter; $i++) {
+			if (!isset($_FILES['attachfile' . $i])) {
+				continue;
 			}
-			if (compress_bmp($ofile, $oname)) {
-				$msg = "过大 BMP 图片被自动转换成 PNG 格式。";
+			$attpost = $_FILES['attachfile' . $i];
+			@$errno = $attpost['error'];
+			switch ($errno) {
+			case UPLOAD_ERR_OK:
+				$ofile = $attpost['tmp_name'];
+				$oname = $attpost['name'];
+				$htmlname = htmlspecialchars(my_basename($oname));
+				if (!is_uploaded_file($ofile)) {
+					die;
+				}
+				if (compress_bmp($ofile, $oname)) {
+					$msg .= "过大 BMP 图片 " . $htmlname . " 被自动转换成 PNG 格式。";
+				}
+				$ret = bbs_upload_add_file($ofile, $oname);
+				if ($ret) $msg .= bbs_error_get_desc($ret);
+				else {
+					$msg .= $htmlname . "上载成功！<br/>";
+					continue 2;
+				}
+				break;
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				$msg .= "文件超过上限 " . sizestring(BBS_MAXATTACHMENTSIZE) . " 字节";
+				break;
+			case UPLOAD_ERR_PARTIAL:
+				$msg .= "文件传输出错！";
+				break;
+			case UPLOAD_ERR_NO_FILE:
+				continue 2;
+				$msg .= "没有文件上传！";
+				break;
+			default:
+				$msg .= "未知错误";
 			}
-			$ret = bbs_upload_add_file($ofile, $oname);
-			if ($ret) $msg = bbs_error_get_desc($ret);
-			else $msg .= "文件上载成功！";
 			break;
-		case UPLOAD_ERR_INI_SIZE:
-		case UPLOAD_ERR_FORM_SIZE:
-			$msg = "文件超过上限 " . sizestring(BBS_MAXATTACHMENTSIZE) . " 字节";
-			break;
-		case UPLOAD_ERR_PARTIAL:
-			$msg = "文件传输出错！";
-			break;
-		case UPLOAD_ERR_NO_FILE:
-			$msg = "没有文件上传！";
-			break;
-		default:
-			$msg = "未知错误";
 		}
 	}
 	$attachments = bbs_upload_read_fileinfo();
@@ -59,19 +69,28 @@
 <body>
 <script type="text/javascript">
 <!--
+function checkAnyFiles() {
+	var frm = document.forms[0];
+	var i;
+	for (i=0; i<fileCounter; i++) {
+		var o = frm.elements["attachfile"+i];
+		if (o.value) return true;
+	}
+	return false;
+}
 function addsubmit() {
-	var obj=document.forms[0].elements["attachfile"];
-	if (!obj) return true;
-	if (obj.value == ""){
+	var frm = document.forms[0];
+	if (!checkAnyFiles()){
 		alert('您还没选择上传的附件');
 		return false;
 	} else {
 		var e2="bbsupload.php?act=add";
 		getObj("winclose").style.display = "none";
-		document.forms[0].action=e2;
-		document.forms[0].paste.value='附件上载中，请稍候...';
-		document.forms[0].paste.disabled=true;
-		document.forms[0].submit();
+		frm.elements["counter"].value = fileCounter;
+		frm.action=e2;
+		frm.paste.value='附件上载中，请稍候...';
+		frm.paste.disabled=true;
+		frm.submit();
 		return true;
 	}
 }
@@ -83,29 +102,54 @@ function deletesubmit(f) {
 }
 
 function clickclose() {
-	if (document.forms[0].elements["attachfile"].value == "") return window.close();
+	if (!checkAnyFiles()) return window.close();
 	else if (confirm("您填写了文件名，但没有上载。是否确认关闭？")==true) return window.close();
 	return false;
 }
 
-if (opener) {
-	opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
-} else {
-	addBootFn(function() { getObj("winclose").style.display = "none"; });
+var fileCounter = 0, fileRemains = <?php echo (BBS_MAXATTACHMENTCOUNT - $filecount); ?>;
+function moreAttach() {
+	var ll = getObj("idAddAtt");
+	var n = document.createElement("br");
+	getObj("uploads").insertBefore(n, ll);
+	if (gIE) {
+		n = document.createElement("<input name='attachfile" + fileCounter + "'/>");
+	} else {
+		n = document.createElement("input");
+		n.name = 'attachfile' + fileCounter;
+	}
+	n.type = 'file'; n.size = 40;
+	getObj("uploads").insertBefore(n, ll);
+	fileCounter++;
+	if (fileCounter >= fileRemains) ll.style.display = "none";
 }
+
+addBootFn(function() {
+	if (opener) {
+		opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
+	} else {
+		getObj("winclose").style.display = "none";
+	}
+	if (fileRemains > 0) {
+		getObj("idAddAtt").style.display = "inline";
+		moreAttach();
+	}
+});
+
 //-->
 </script>
 <div style="width: 550px; margin: 1em auto;">
 <?php if ($msg) echo "<font color='red'> 提示：".$msg."</font>"; ?>
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" class="left" action="">
+<input type="hidden" name="counter" vaue="0" />
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
-选择需要上传的文件后点上传：（如有多个附件文件要上传，请重复这个步骤）<br/>
+选择需要上传的文件后点上传：
+<div id="uploads">
 <?php
 	if ($filecount<BBS_MAXATTACHMENTCOUNT) {
 ?>
 		<input type="hidden" name="MAX_FILE_SIZE" value="<?php echo(BBS_MAXATTACHMENTSIZE);?>" />
-		<input type="file" name="attachfile" size="20" />
-		<input type="button" value="上传" name="paste" onclick="addsubmit();" />
+		<a id="idAddAtt" style="margin-left: 1em; display:none;" href="javascript:void(0);" onclick="moreAttach();">增加一个附件</a>
 <?php
 	} else {
 ?>
@@ -114,6 +158,8 @@ if (opener) {
 <?php
 	}
 ?>
+</div>
+<input type="button" value="上传" name="paste" onclick="addsubmit();" />
 &nbsp;&nbsp;&nbsp;<input type="button" id="winclose" value="上传完成, 关闭窗口" onclick="return clickclose()" />
 <p>附件文件总量：<?php echo sizestring($totalsize); ?> 字节,
 上限：<?php echo sizestring(BBS_MAXATTACHMENTSIZE); ?> 字节,
@@ -128,7 +174,7 @@ if (opener) {
 <?php
 	for($i=0;$i<$filecount;$i++) {
 		$f = $attachments[$i];
-		echo "<li>".$f["name"]." (".sizestring($f["size"])."字节) <a href=\"javascript:deletesubmit('".$f["name"]."');\">删除</a></li>";
+		echo "<li>".$f["name"]." (".sizestring($f["size"])."字节) <a href=\"javascript:deletesubmit('".base64_encode($f["name"])."');\">删除</a></li>";
 	}
 ?>
 </ol>
