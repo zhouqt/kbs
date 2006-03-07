@@ -247,7 +247,11 @@ struct public_data {
 	unsigned int wwwguestlogoutcount;
 	u_int64_t wwwstaytime;
 	u_int64_t wwwgueststaytime;
-    char unused[924];
+
+    /* etnlegend, 2006.03.06, userscore sampling ... */
+    unsigned int us_sample[32];
+
+    char unused[796];
 
 #ifdef FLOWBANNER
 	int bannercount;
