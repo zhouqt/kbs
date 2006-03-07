@@ -188,6 +188,7 @@ function login_init($sid=FALSE,$no_auto_guest_login=FALSE)
 	if ($sid) {
 		@$sessionid = $_GET["sid"];
 		if (!$sessionid) @$sessionid = $_POST["sid"];
+		if (!$sessionid) @$sessionid = $_COOKIE["sid"];
 	}
 	if ($sid && $sessionid) {
 		$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;

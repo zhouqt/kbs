@@ -230,7 +230,7 @@ kbsrcHost.prototype = {
 			if (self.callback) self.callback();
 		};
 		// TODO: use relative path
-		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php" + (logout?"?logout=1":""), !logout);
+		req.open("POST", this.protocol + "//" + this.host + "/kbsrc.php?userid=" + this.userid + (logout?"&logout=1":""), !logout);
 		req.send(nopost ? "" : this.serialize(true));
 	},
 	isUnread: function(bid, id) {
