@@ -35,7 +35,7 @@
 				$ret = bbs_upload_add_file($ofile, $oname);
 				if ($ret) $msg .= bbs_error_get_desc($ret);
 				else {
-					$msg .= $htmlname . "上载成功！<br/>";
+					$msg .= $htmlname . "上传成功！<br/>";
 					continue 2;
 				}
 				break;
@@ -88,7 +88,7 @@ function addsubmit() {
 		getObj("winclose").style.display = "none";
 		frm.counter.value = fileCounter;
 		frm.action=e2;
-		frm.paste.value='附件上载中，请稍候...';
+		frm.paste.value='附件上传中，请稍候...';
 		frm.paste.disabled=true;
 		frm.submit();
 		return true;
@@ -103,7 +103,7 @@ function deletesubmit(f) {
 
 function clickclose() {
 	if (!checkAnyFiles()) return window.close();
-	else if (confirm("您填写了文件名，但没有上载。是否确认关闭？")==true) return window.close();
+	else if (confirm("您填写了文件名，但没有上传。是否确认关闭？")==true) return window.close();
 	return false;
 }
 
