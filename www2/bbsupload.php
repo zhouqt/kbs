@@ -118,7 +118,8 @@ function moreAttach() {
 		n = document.createElement("input");
 		n.setAttribute('name', 'attachfile' + fileCounter);
 	}
-	n.type = 'file'; n.size = 30;
+	n.setAttribute('type', 'file');
+	n.setAttribute('size', 30);
 	getObj("uploads").insertBefore(n, ll);
 	fileCounter++;
 	if (fileCounter >= fileRemains) ll.style.display = "none";
