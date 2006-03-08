@@ -80,7 +80,7 @@
 		if (bbs_is_attach_board($brdarr))
 		{
 ?>
-附&nbsp;&nbsp;件: <input type="text" name="attachname" size="50" value="" disabled="disabled" />
+附&nbsp;&nbsp;件: <input type="text" name="attachname" size="40" value="" disabled="disabled" />
 <a href="bbsupload.php" target="_blank">操作附件</a>(新窗口打开)<br/>
 <?php
 		}

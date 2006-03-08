@@ -79,14 +79,14 @@ function checkAnyFiles() {
 	return false;
 }
 function addsubmit() {
-	var frm = document.forms[0];
 	if (!checkAnyFiles()){
 		alert('您还没选择上传的附件');
 		return false;
 	} else {
+		var frm = document.forms[0];
 		var e2="bbsupload.php?act=add";
 		getObj("winclose").style.display = "none";
-		frm.elements["counter"].value = fileCounter;
+		frm.counter.value = fileCounter;
 		frm.action=e2;
 		frm.paste.value='附件上载中，请稍候...';
 		frm.paste.disabled=true;
@@ -116,12 +116,15 @@ function moreAttach() {
 		n = document.createElement("<input name='attachfile" + fileCounter + "'/>");
 	} else {
 		n = document.createElement("input");
-		n.name = 'attachfile' + fileCounter;
+		n.setAttribute('name', 'attachfile' + fileCounter);
 	}
-	n.type = 'file'; n.size = 40;
+	n.type = 'file'; n.size = 30;
 	getObj("uploads").insertBefore(n, ll);
 	fileCounter++;
 	if (fileCounter >= fileRemains) ll.style.display = "none";
+}
+function allAttach() {
+	while(fileCounter < fileRemains) moreAttach();
 }
 
 addBootFn(function() {
@@ -132,6 +135,7 @@ addBootFn(function() {
 	}
 	if (fileRemains > 0) {
 		getObj("idAddAtt").style.display = "inline";
+		getObj("idAllAtt").style.display = "inline";
 		moreAttach();
 	}
 });
@@ -143,7 +147,7 @@ addBootFn(function() {
 <form name="addattach" method="post" ENCTYPE="multipart/form-data" class="left" action="">
 <input type="hidden" name="counter" vaue="0" />
 <?php if ($sessionid) echo "<input type='hidden' name='sid' value='$sessionid' />"; ?>
-选择需要上传的文件后点上传：
+选择需要上传的文件后点上传：(<a id="idAllAtt" style="display:none;" href="javascript:void(0);" onclick="allAttach();">我要传好多附件</a>)
 <div id="uploads">
 <?php
 	if ($filecount<BBS_MAXATTACHMENTCOUNT) {
