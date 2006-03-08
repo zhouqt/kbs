@@ -1091,6 +1091,12 @@ int post_file(struct userec *user, char *fromboard, char *filename, char *nboard
  *                      = 正文长度    如果有附件   (这个时候仅正文部分过滤)
  * 调用一定保证 attachment 这个字段的正确，否则可能会漏过滤！！！
  * atppp 20051127
+ *
+ * 返回值：
+ * -1: 系统错误
+ * -2: 被过滤了
+ * >0: 新发出去文章的 ID 
+ *
  */
 int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat, session_t* session)
 {
@@ -1218,7 +1224,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         pressreturn();
         clear();
 #endif
-        return 1;
+        return -1;
     }
     updatelastpost(boardname);
 #ifdef FILTER
@@ -1311,10 +1317,10 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
         bmlog(user->userid, boardname, 2, 1);
 #ifdef FILTER
     if (filtered)
-        return 2;
+        return -2;
     else
 #endif
-        return 0;
+        return nowid;
 }
 
 int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)

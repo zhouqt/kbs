@@ -83,14 +83,14 @@
 			html_error_quit("系统内部错误, 请迅速通知站务人员, 谢谢!");
 			break;
 	}
-	if ($ret == 2) {
+	if ($ret == -10) {
 		$prompt = "发文成功！<br/><br/>但是很抱歉，本文可能含有不当内容，需经审核方可发表。<br/><br/>" .
                   "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
                   "站务人员的审核，不要多次尝试发表此文章。<br/><br/>" .
                   "如有疑问，请致信 SYSOP 咨询。";
 	} else {
 		$prompt = "发文成功！<br/>" . 
-                  "本页面将在3秒后自动返回版面文章列表<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=bbsdoc.php?board=" . $boardName . "'/>";
+                  "本页面将在3秒后自动返回版面文章列表<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=bbsdoc.php?board=" . $boardName . "'/><div id='kbsrcInfo'>con,$boardID,$ret</div>";
 	}
 	html_success_quit($prompt,
 	array("<a href='" . MAINPAGE_FILE . "'>返回首页</a>", 

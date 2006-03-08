@@ -874,7 +874,7 @@ char *pathname, *firstpath;
     linkflag = find_thread(&threadfh, board, header.title);
     header.eff_size = get_effsize(article);
     ret = after_post(NULL, &header, board, linkflag ? &threadfh : NULL, 0, getSession());
-    if ((ret != 0) && (ret != 2)) {
+    if ((ret < 0) && (ret != -2)) {
         innbbslog(":Err:after_post Unable to post.\n");
         chdir(old_path);
         return NULL;

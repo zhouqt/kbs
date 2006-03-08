@@ -468,7 +468,7 @@ function atomic_post() {
 		atomic_header();
 		$url = "?act=board&board=" . $atomic_board;
 		if (isset($attmsg)) echo $attmsg . "<br/>";
-		if ($ret == 2) {
+		if ($ret == -10) {
 			echo "<p>很抱歉，本文可能含有不当内容，需经审核方可发表。<br/><br/>" .
                   "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
                   "站务人员的审核，不要多次尝试发表此文章。<br/><br/>" .

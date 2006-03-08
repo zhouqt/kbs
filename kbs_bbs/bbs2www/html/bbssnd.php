@@ -51,7 +51,7 @@
 
 	bbs_board_nav_header($brdArr, $reID ? "回复文章" : "发表文章");
 
-	$ret = bbs_postarticle($boardName, trim($_POST["title"]), 
+	$ret = bbs_postarticle($boardName, rtrim($_POST["title"]), 
 		($tmpl ? $contents :$_POST["text"]), intval(@$_POST["signature"]), $reID, 
 		$outgo, $anony, @intval($_POST["mailback"]), 0);
 	switch ($ret) {
@@ -83,7 +83,7 @@
 			html_error_quit("系统内部错误, 请迅速通知站务人员, 谢谢!");
 			break;
 	}
-	if ($ret == 2) {
+	if ($ret == -10) {
 		$prompt = "发文成功！<br/><br/>但是很抱歉，本文可能含有不当内容，需经审核方可发表。<br/><br/>" .
                   "根据《帐号管理办法》，被系统过滤的文章视同公开发表。请耐心等待<br/>" .
                   "站务人员的审核，不要多次尝试发表此文章。<br/><br/>" .

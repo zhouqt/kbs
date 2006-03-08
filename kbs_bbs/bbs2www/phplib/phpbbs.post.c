@@ -482,7 +482,7 @@ PHP_FUNCTION(bbs_postarticle)
 #endif
 	retvalue = after_post(getCurrentUser(), &post_file, board, oldx, !anony, getSession());
 
-    if (retvalue == 0) {
+    if (retvalue > 0) {
 #ifdef WWW_GENERATE_STATIC
         generate_static(DIR_MODE_NORMAL,&post_file,board,oldx);
 #endif
@@ -490,7 +490,13 @@ PHP_FUNCTION(bbs_postarticle)
     if (!junkboard(board)) {
         getCurrentUser()->numposts++;
     }
-    RETURN_LONG(retvalue);
+    if (retvalue == -1) {
+        RETURN_LONG(-9);
+    } else if (retvalue == -2) {
+        RETURN_LONG(-10);
+    } else {
+        RETURN_LONG(retvalue);
+    }
 }
 
 

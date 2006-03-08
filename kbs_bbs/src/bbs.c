@@ -2875,7 +2875,7 @@ int post_article(struct _select_def* conf,char *q_file, struct fileheader *re_fi
         getCurrentUser()->numposts++;
     }
 #ifdef FILTER
-    if (returnvalue == 2) {
+    if (returnvalue == -2) {
         clear();
         move(3, 0);
         prints("\n\n        很抱歉，本文可能含有不当内容，需经审核方可发表。\n\n"
