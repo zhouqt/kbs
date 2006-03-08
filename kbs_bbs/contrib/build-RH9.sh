@@ -1,6 +1,8 @@
 #!/bin/sh
 # $Id$
-
+#
+# 快速编译脚本 for Fedora Core 3/4
+#
 # 修改这里的参数定制您的站点
 # BBSHOME 表示您的 BBS 所在的目录
 BBSHOME=/usr/local/bbs
@@ -19,7 +21,7 @@ fi
 
 if [ -d CVS ]; then
   cvs up -d
-  aclocal; libtoolize -c --force; autoheader; automake -a; autoconf
+  ./autogen.sh
 fi
 
 if [ -d bbs2www ]; then
@@ -31,7 +33,7 @@ fi
 if [ -d sshbbsd ]; then
   if [ -d CVS ]; then
     cd sshbbsd
-    aclocal; libtoolize -c --force; autoheader; automake -a; autoconf
+    ./autogen.sh
     cd ..
   fi
   SSHCONFIG=--enable-ssh
