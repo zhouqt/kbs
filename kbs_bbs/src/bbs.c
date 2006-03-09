@@ -3241,38 +3241,68 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     }
     
     clear();
-    prints("区域删除,请选择删除模式:\n");
+    prints("\033[1;32;44m                           区段删除选单");
+    clrtoeol();
+    prints("\033[m\n请选择要执行的操作：\n");
+    prints("   [0] 添加删除标记 \033[1;30m仅标记X而不删除\033[m\n");
+    prints("   [1] 普通删除 \033[1;30m不会删除标记有m或%%的帖子\033[m\n");
+    prints("   [2] 强制删除 \033[1;30m无论标记有什么都会删除\033[m\n");
+    prints("   [3] 取消删除标记 \033[1;30m即取消帖子前的X标记\033[m\n");
+    prints("   [4] 删除拟删文章 \033[1;30m只有标记有X的帖子才会被删除\033[m\n");
     /*
      * Haohmaru.99.4.20.增加可以强制删除被mark文章的功能 
      */
-    getdata(1, 0, "[0]标记删除 [1]普通删除 [2]强制删除 [3]取消删除标记 [4]删除标记文章 (0): ", del_mode, 10, DOECHO, NULL, true);
-    idel_mode = atoi(del_mode);
+    while(1) {
+        getdata(7, 0, "请输入序号(直接回车取消): ", del_mode, 10, DOECHO, NULL, true);
+        if(del_mode[0] == '\0')
+            return FULLUPDATE;
+        idel_mode = atoi(del_mode);
+        if((idel_mode >= 0) && (idel_mode <= 4))
+            break;
+        else
+            prints("错误的序号，请重新输入。");
+    }
+    move(idel_mode + 2, 1);
+    prints("\033[1;31m★\033[m");
     /*
      * if (idel_mode!=0 || idel_mode!=1)
      * {
      * return FULLUPDATE ;
      * } 
      */
-    getdata(2, 0, "首篇文章编号(输入0则仅清除标记为删除的文章): ", num1, 10, DOECHO, NULL, true);
-    inum1 = atoi(num1);
-    if (inum1 == 0) {
-        inum2 = -1;
-        goto THERE;
+    while(1) {
+        getdata(8, 0, (idel_mode == 4) ? "首篇文章编号(输入0则删除全版所有拟删文章,直接回车取消): " : "首篇文章编号(直接回车取消): ", num1, 10, DOECHO, NULL, true);
+        if(num1[0] == '\0')
+            return FULLUPDATE;
+        inum1 = atoi(num1);
+        if ((inum1 == 0) && (idel_mode == 4)) {
+            inum2 = -1;
+            goto THERE;
+        }
+        if (inum1 <= 0) {
+            prints("错误的编号，文章编号应从1开始，请重新输入。\n");
+        }
+        else if (inum1 > arg->filecount) {
+            prints("错误的编号，版上现在没有这么多文章，请重新输入。\n");
+        }
+        else {
+            break;
+        }
     }
-    if (inum1 <= 0) {
-        prints("错误编号\n");
-        pressreturn();
-        return FULLUPDATE;
-    }
-    getdata(3, 0, "末篇文章编号: ", num2, 10, DOECHO, NULL, true);
-    inum2 = atoi(num2);
-    if (inum2 <= inum1) {
-        prints("错误编号\n");
-        pressreturn();
-        return FULLUPDATE;
+    while(1) {
+        getdata(9, 0, "末篇文章编号(直接回车取消): ", num2, 10, DOECHO, NULL, true);
+        if(num2[0] == '\0')
+           return FULLUPDATE;
+        inum2 = atoi(num2);
+        if (inum2 <= inum1) {
+            prints("必须得大于首篇文章编号才行哦。\n");
+        }
+        else {
+            break;
+        }
     }
   THERE:
-    getdata(4, 0, "确定删除 (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
+    getdata(10, 0, "确定执行区段操作 (Y/N)? [N]: ", num1, 10, DOECHO, NULL, true);
     if (*num1 == 'Y' || *num1 == 'y') {
         struct write_dir_arg dirarg;
 	if (!mailmode)
@@ -3292,7 +3322,7 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             //bmlog(getCurrentUser()->userid, currboard->filename, 8, inum2-inum1);
             newbbslog(BBSLOG_USER, "del %d-%d on %s", inum1, inum2, currboard->filename);
         }
-        prints("删除%s\n", result ? "失败！" : "完成"); /* Leeward: 97.12.15 */
+        prints("区段操作%s\n", result ? "失败！" : "完成"); /* Leeward: 97.12.15 */
         pressreturn();
         return DIRCHANGED;
     }
