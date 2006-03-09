@@ -1557,6 +1557,20 @@ void a_manager(MENU *pm,int ch)
 	    if (item) {
             strncpy(changed_T, item->title, 39);
             changed_T[38] = 0;
+            uident[0] = '\0';
+            if(strlen(item->title) > 44)
+            {
+                char *ptr, *tempuid;
+                if ((ptr = strchr(item->title + 38, '(')) != NULL) {
+                    *ptr = '\0';
+                    tempuid = ptr + 1;
+                    if (strncmp(tempuid, "BM: ", 4) == 0)
+                        tempuid += 4;
+                    snprintf(uident, STRLEN, "%s", tempuid);
+                    if ((ptr = strchr(uident, ')')) != NULL)
+                        *ptr = '\0';
+                }
+            }
             {
                 char *p;
 
@@ -1588,7 +1602,7 @@ void a_manager(MENU *pm,int ch)
                         /*
                          * $$$$$$$$ Multi-BM Input, Modified By Excellent $$$$$$$ 
                          */
-                        getdata(1, 0, "°æÖ÷: ", uident, STRLEN - 1, DOECHO, NULL, true);
+                        getdata(1, 0, "°æÖ÷: ", uident, STRLEN - 1, DOECHO, NULL, false);
                         if (uident[0] != '\0')
                             sprintf(genbuf, "%-38.38s(BM: %s)", changed_T, uident);
                         else
