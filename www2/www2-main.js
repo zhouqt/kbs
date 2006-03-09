@@ -148,8 +148,11 @@ function readParaCookie() {
 function showUnread() {
 	return (isLogin() && gIE && !gIE5 && (readParaCookie() & 0x1000));
 }
+function getUserid() {
+	return getCookie("UTMPUSERID", "guest");
+}
 function isLogin() {
-	return (getCookie("UTMPUSERID", "guest") != "guest");
+	return (getUserid() != "guest");
 }
 
 function queryString(param, def) {
@@ -338,6 +341,7 @@ function footerStart() {
 		this.startTime = this.start - stayTime * 1000;
 		this.lastStay = this.lastClock = "";
 		this.refreshTime = 0;
+		this.userid = getUserid();
 	};
 	MyTimer.prototype.refresh = function() {
 		var now = (new Date()).getTime();
@@ -356,7 +360,11 @@ function footerStart() {
 			this.lastStay = str;
 			getObj("divStay").innerHTML = str;
 		}
-		if (this.refreshTime > 0 && now > this.refreshTime) {
+		var bF5 = (this.userid != getUserid());
+		if (bF5) {
+			if (top.menu) top.menu.location.href = isLogin() ? 'bbsleft.php' : 'bbsguestleft.html';
+		}
+		if ((this.refreshTime > 0 && now > this.refreshTime) || bF5) {
 			location.reload();
 		} else {
 			setTimeout("gTimer.refresh()", 1000);
