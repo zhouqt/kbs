@@ -746,7 +746,8 @@ void mem_printline(struct MemMoreLines *l, char *fn,char* begin)
         strncpy(attachname, ptr + ATTACHMENT_SIZE, STRLEN);
         attachname[STRLEN - 1] = '\0';
 
-        attlen = ntohl(*(int *) (ptr + ATTACHMENT_SIZE + strlen(attachname) + 1));
+        memcpy(&attlen, (ptr + ATTACHMENT_SIZE + strlen(attachname) + 1), sizeof(int));
+        attlen = ntohl(attlen);
 
         p = strrchr(attachname, '.');
         if (p == NULL) p = "";
