@@ -594,7 +594,71 @@ PHP_FUNCTION(bbs_printoriginfile)
             BUFFERED_OUTPUT(out, buf, len);
 		}
     }
+    fclose(fp);
 	BUFFERED_FLUSH(out);
 	free_output(out);
     RETURN_LONG(0);
+}
+
+
+/* function bbs_originfile(string board, string filename);
+ * 返回原文内容供编辑 modified from the function above by pig2532
+ 解决很猪的问题之二
+ */
+PHP_FUNCTION(bbs_originfile)
+{
+    char *board,*filename;
+    int boardLen,filenameLen;
+    FILE* fp;
+	char buf[512],path[512];
+    char *content, *ptr;
+    int chunk_size=51200, calen, clen, buflen;
+	int i;
+	int skip;
+	boardheader_t* bp;
+
+    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board,&boardLen, &filename,&filenameLen) != SUCCESS)) {
+		WRONG_PARAM_COUNT;
+    } 
+	if ( (bp=getbcache(board))==0) {
+		RETURN_LONG(-1);
+	}
+	setbfile(path, bp->filename, filename);
+    fp = fopen(path, "r");
+    if (fp == 0)
+        RETURN_LONG(-1); //文件无法读取
+	
+	i=0;    
+	skip=0;
+    calen = chunk_size;
+    content = (char *)emalloc(calen);
+    clen = 0;
+    ptr = content;
+    while (skip_attach_fgets(buf, sizeof(buf), fp) != 0) {
+		i++;
+        if (Origin2(buf))
+            break;
+		if ((i==1) && (strncmp(buf,"发信人",6)==0)) {
+			skip=1;
+		}
+		if ((skip) && (i<=4) ){
+			continue;
+		}
+        if (strstr(buf,"\033[36m※ 修改:·")==buf) {
+            continue;
+        }
+        buflen = strlen(buf);
+        if((clen + buflen) >= calen)
+        {
+            calen += chunk_size;
+            content = (char *)erealloc(content, calen);
+            ptr = content + clen;
+        }
+        memcpy(ptr, buf, buflen);
+        clen += buflen;
+        ptr += buflen;
+    }
+    fclose(fp);
+    content[clen] = '\0';
+    RETURN_STRINGL(content, clen, 0);
 }

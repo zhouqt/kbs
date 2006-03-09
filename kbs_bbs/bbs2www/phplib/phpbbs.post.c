@@ -759,7 +759,14 @@ PHP_FUNCTION(bbs_updatearticle)
 		}
         fprintf(fout, "%s", buf2);
     }
-    if (clen>0) fprintf(fout, "%s", content);
+    
+    /* 解决很猪的问题之一 by pig2532 */
+    if (clen>0) {
+        fprintf(fout, "%s", content);
+        if(content[clen-1] != '\n')
+	    fprintf(fout, "\n");
+    }
+    
     while ((asize = -attach_fgets(buf2, sizeof(buf2), fin)) != 0) {
         if (asize <= 0) {
             if (Origin2(buf2)) {

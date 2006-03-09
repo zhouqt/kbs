@@ -10,6 +10,7 @@ PHP_FUNCTION(bbs_printansifile);
 PHP_FUNCTION(bbs_print_article);
 PHP_FUNCTION(bbs_print_article_js);
 PHP_FUNCTION(bbs_printoriginfile);
+PHP_FUNCTION(bbs_originfile);
 
 
 #define PHP_BBS_FILE_EXPORT_FUNCTIONS \
@@ -19,7 +20,9 @@ PHP_FUNCTION(bbs_printoriginfile);
     PHP_FE(bbs_printansifile, NULL) \
     PHP_FE(bbs_print_article, NULL) \
     PHP_FE(bbs_print_article_js, NULL) \
-    PHP_FE(bbs_printoriginfile, NULL)
+    PHP_FE(bbs_printoriginfile, NULL) \
+    PHP_FE(bbs_originfile, NULL) \
+
 
 #endif //PHP_BBS_FILE_H
 
