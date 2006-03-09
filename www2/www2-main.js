@@ -13,6 +13,7 @@ var agt = navigator.userAgent.toLowerCase();
 var gOp = (agt.indexOf("opera") != -1);
 var gIE = ((agt.indexOf("msie") != -1) && !gOp);
 var gFx = (agt.indexOf("gecko") != -1);
+var gKon = (agt.indexOf("konqueror") != -1) && (agt.indexOf("safari") == -1);
 var gIE5 = false;
 if (gIE) {
 	gIE5 = (parseFloat( agt.substring( agt.indexOf('msie ') + 5 ) ) < 6);
@@ -61,7 +62,12 @@ function prints(s) {
 	s = s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
 	s = s.replace(/\r[\[\d;]+[a-z]/gi, "");
 	s = s.replace(/\x20\x20/g, " &nbsp;").replace(/\n /g, "\n&nbsp;");
-	s = s.replace(/\n(: [^\n]*)/g, "<br/><span class=\"f006\">$1</span>").replace(/\n/g, "<br/>");
+	s = s.replace(/\n(: [^\n]*)/g, "<br/><span class=\"f006\">$1</span>");
+	if (gKon && s.length > 0) {
+		s = s.split("\n").join("<br/>");
+	} else {
+		s = s.replace(/\n/g, "<br/>");
+	}
 	if (!gIE5) {
 		var urlmatch = new RegExp("((?:http|https|ftp|mms|rtsp)://(&(?=amp;)|[A-Za-z0-9\./=\?%_~@#:;\+\-])+)", "ig");
 		s = s.replace(urlmatch, "<a target=\"_blank\" href=\"$1\">$1</a>");
