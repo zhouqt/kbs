@@ -1909,6 +1909,7 @@ int get_attachment_type_from_ext(const char *ext) {
 char *checkattach(char *buf, long size, long *len, char **attachptr)
 {
     char *ptr;
+    int att_size;
     if (size < ATTACHMENT_SIZE + sizeof(int) + 2)
         return NULL;
     if (memcmp(buf, ATTACHMENT_PAD, ATTACHMENT_SIZE))
@@ -1924,7 +1925,8 @@ char *checkattach(char *buf, long size, long *len, char **attachptr)
     size--;
     if (size < sizeof(int))
         return NULL;
-    *len = ntohl(*(int *) buf);
+    memcpy(&att_size, buf, sizeof(int));
+    *len = ntohl(att_size);
     if (*len > size)
         *len = size;
     *attachptr = buf + sizeof(int);
