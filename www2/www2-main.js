@@ -102,12 +102,14 @@ function attach(name, len, pos) {
 			 || ext == "ico" || ext == "png"  || ext == "pcx"
 			 || ext == "bmp");
 	}
+	var sizes = len + ' 字节';
+	if (len > 8192) sizes = parseInt(len/1024) + 'KB';
 	if (bImg) {
 		s += '<br /><img src="images/img.gif"/>此主题相关图片如下：'
-		  + name + '(' + len + ' 字节)<br /><a href="' + url + '" target="_blank">'
+		  + name + ' (' + sizes + ')<br /><a href="' + url + '" target="_blank">'
 		  + '<img src="' + url + '" title="按此在新窗口浏览图片" style="margin: 0.2em 0 0.5em 0;" onload="resizeImg(this)" /></a> ';
 	} else {
-		s += '<br />附件: <a href="' + url + '">' + name + '</a> (' + len + ' 字节)<br />';
+		s += '<br />附件: <a href="' + url + '">' + name + '</a> (' + sizes + ')<br />';
 	}
 	if (divArtCon) strArticle += s;
 	else document.write(s);
