@@ -181,7 +181,7 @@ static int a_select_path_key(struct _select_def *conf, int key)
 
             strncpy(new_title, import_title[conf->pos - 1], STRLEN);
             new_title[STRLEN - 1]=0;
-            a_prompt2(-2, "新名称: ", new_title);
+	    getdata(t_lines - 2, 0, "新名称：", new_title, STRLEN - 1, DOECHO, NULL, false);
             if (new_title[0] != 0) {
                 free(import_title[conf->pos - 1]);
                 new_title[STRLEN - 1] = 0;
