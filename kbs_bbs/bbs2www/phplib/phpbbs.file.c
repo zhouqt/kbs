@@ -67,7 +67,9 @@ PHP_FUNCTION(bbs2_readfile)
                 do {
                     if (c == '\n') c = 'n';
                     else if (c == '\033') c = 'r';
-                    else if (c != '\\' && c != '\'' && c != '\"') {
+                    else if (c != '\\' && c != '\'' && c != '\"'
+                             && c != '/'    /* to prevent things like </script> */
+                             ) {
                         if (c >= 32) {
                             output_buffer[output_buffer_len++] = c;
                         }
