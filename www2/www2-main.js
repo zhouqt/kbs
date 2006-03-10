@@ -174,7 +174,7 @@ function getObj(n) {
 
 var bbsconImg = new Array();
 function resizeImg(obj) {
-	bbsconImg[bbsconImg.length] = obj;
+	bbsconImg.push(obj);
 	obj.o_width = obj.width;
 	var maxWidth = document.body.clientWidth - 40;
 	if (obj.width > maxWidth) obj.width = maxWidth;
@@ -182,8 +182,8 @@ function resizeImg(obj) {
 function adjustImg() {
 	var maxWidth = document.body.clientWidth - 40;
 	for (var i in bbsconImg) {
-		obj = bbsconImg[i];
-		o_width = obj.o_width;
+		var obj = bbsconImg[i];
+		var o_width = obj.o_width;
 		obj.width = (o_width > maxWidth) ? maxWidth : o_width;
 	}
 }
