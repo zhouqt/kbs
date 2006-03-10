@@ -55,9 +55,9 @@ var o = new brdWriter(<?php echo $group; ?>, <?php echo $group2; ?>);
 		$board = $boards[$board_list[$j]];		
 		$isGroup = ($board["FLAG"]&BBS_BOARD_GROUP) ? "true" : "false";
 ?>
-o.o(<?php echo $isGroup; ?>, <?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>, <?php echo $board["BID"]; ?>, <?php echo $board["LASTPOST"]; 
-?>, '<?php echo $board["CLASS"]; ?>', '<?php echo addslashes($board["NAME"]); ?>', '<?php echo addslashes($board["DESC"]);
-?>', '<?php echo $board["BM"]; ?>', <?php echo $board["ARTCNT"]; ?>);
+o.o(<?php echo $isGroup; ?>,<?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>,<?php echo $board["BID"]; ?>,<?php echo $board["LASTPOST"]; 
+?>,'<?php echo $board["CLASS"]; ?>','<?php echo addslashes($board["NAME"]); ?>','<?php echo addslashes($board["DESC"]);
+?>','<?php echo $board["BM"]; ?>',<?php echo $board["ARTCNT"]; ?>,0,<?php echo $board["CURRENTUSERS"];?>);
 <?php		
 	}
 ?>

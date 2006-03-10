@@ -1120,20 +1120,20 @@ function brdWriter(father, select, fix) {
 	var ret = '<table class="main wide">';
 	if (arguments.length == 2) { //bbsboa.php
 		fix = true;
-		ret += '<col width="2%"/><col width="2%"/><col width="24%"/><col width="10%"/><col width="39%"/><col width="15%"/><col width="8%"/>';
-		ret += '<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th></tr>';
+		ret += '<col width="2%"/><col width="2%"/><col width="24%"/><col width="10%"/><col width="31%"/><col width="15%"/><col width="8%"/><col width="8%"/>';
+		ret += '<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th><th>在线</th></tr>';
 		if (select > 0) {
 			ret += '<tr><td> </td><td> ' + putImageCode('groupgroup.gif','alt="up" title="回到上一级"') + '</td>';
-			ret += '<td colspan="5"><a href="bbsboa.php?group=' + father + '">回到上一级</a></td></tr>';
+			ret += '<td colspan="6"><a href="bbsboa.php?group=' + father + '">回到上一级</a></td></tr>';
 		}
 	} else {
-		ret += '<col width="2%"/><col width="2%"/><col width="23%"/><col width="10%"/><col width="33%"/><col width="14%"/><col width="8%"/><col width="6%"/>';
-		ret += '<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th>';
+		ret += '<col width="2%"/><col width="2%"/><col width="23%"/><col width="10%"/><col width="27%"/><col width="14%"/><col width="8%"/><col width="6%"/><col width="6%"/>';
+		ret += '<tr><th>#</th><th> </th><th>讨论区名称</th><th>类别</th><th>中文描述</th><th>版主</th><th>篇数</th><th>在线</th>';
 		if (!fix) ret += '<th> </th>';
 		ret += '</tr>';
 		if (select != 0) {
 			ret += '<tr><td> </td><td> ' + putImageCode('groupgroup.gif','alt="up" title="回到上一级"') + '</td>';
-			ret += '<td colspan="6"><a href="bbsfav.php?select=' + father + fix + '">回到上一级</a></td></tr>';
+			ret += '<td colspan="'+(fix?6:7)+'"><a href="bbsfav.php?select=' + father + fix + '">回到上一级</a></td></tr>';
 		}
 	}
 	document.write(ret);
@@ -1148,12 +1148,12 @@ brdWriter.prototype.f = function(select, desc, npos) {
 	var ret = '<tr class="' + (this.index%2?"even":"odd") + '"><td class="center">' + this.index + '</td>';
 	ret += '<td> ' + putImageCode('groupgroup.gif','alt="＋" title="版面组"') + '</td>';
 	ret += '<td><a href="bbsfav.php?select=' + select + this.fix + '">' + htmlize(desc) + '</a></td>';
-	ret += '<td class="center">[目录]</td><td colspan="3"> </td>';
+	ret += '<td class="center">[目录]</td><td colspan="4"> </td>';
 	if (!this.fix) ret += '<td class="center"><a href="bbsfav.php?select=' + this.select + '&deldir=' + npos + '">删除</a></td>';
 	ret += '</tr>';
 	document.write(ret);
 };
-brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, bms, artcnt, npos) {
+brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, bms, artcnt, npos, online) {
 	this.index++;
 	var brdlink, ret = '<tr class="' + (this.index%2?"even":"odd") + '"><td class="center">' + this.index + '</td>';
 	if (group) {
@@ -1176,6 +1176,7 @@ brdWriter.prototype.o = function(group, unread, bid, lastpost, cls, name, desc, 
 		ret += '<td class="center">' + writeBM_html(bms, true) + '</td>';
 		ret += '<td class="right">' + artcnt + '</td>';
 	}
+	ret += '<td class="right">' + online + '</td>';
 	if (!this.fix) ret += '<td class="center"><a href="bbsfav.php?select=' + this.select + '&delete=' + npos + '">删除</a></td>';
 	ret += '</tr>';
 	document.write(ret);

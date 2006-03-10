@@ -61,14 +61,14 @@ var o = new brdWriter(<?php echo $list_father; ?>, <?php echo $select; ?>, '<?ph
 		if ($board["BID"] == -1) continue;
 		if ($board["FLAG"] == -1 ) {
 ?>
-o.f(<?php echo $board["BID"];?>, '<?php echo addslashes($board["DESC"]); ?> ', <?php echo $board["NPOS"]; ?>);
+o.f(<?php echo $board["BID"];?>,'<?php echo addslashes($board["DESC"]); ?> ',<?php echo $board["NPOS"]; ?>);
 <?php
 		} else {
 			$isGroup = ($board["FLAG"]&BBS_BOARD_GROUP) ? "true" : "false";
 ?>
-o.o(<?php echo $isGroup; ?>, <?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>, <?php echo $board["BID"]; ?>, <?php echo $board["LASTPOST"]; 
-?>, '<?php echo $board["CLASS"]; ?>', '<?php echo addslashes($board["NAME"]); ?>', '<?php echo addslashes($board["DESC"]);
-?>', '<?php echo $board["BM"]; ?>', <?php echo $board["ARTCNT"]; ?>, <?php echo $board["NPOS"];?>);
+o.o(<?php echo $isGroup; ?>,<?php echo ($board["UNREAD"] == 1) ? "1" : "0"; ?>,<?php echo $board["BID"]; ?>,<?php echo $board["LASTPOST"]; 
+?>,'<?php echo $board["CLASS"]; ?>','<?php echo addslashes($board["NAME"]); ?>','<?php echo addslashes($board["DESC"]);
+?>','<?php echo $board["BM"]; ?>',<?php echo $board["ARTCNT"]; ?>,<?php echo $board["NPOS"];?>,<?php echo $board["CURRENTUSERS"];?>);
 <?php
 		}
 	}
