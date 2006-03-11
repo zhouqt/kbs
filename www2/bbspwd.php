@@ -21,13 +21,15 @@
 <script type="text/javascript">
 function DoPwd()
 {
-	if(document.getElementById('pwd2').value != document.getElementById('pwd3').value)
+	if(getObj('pwd2').value != getObj('pwd3').value) {
 		alert('两次输入的密码不相同');
-	else
-		frmPwd.submit();
+		getObj('pwd3').focus();
+		return false;
+	}
+	return true;
 }
 </script>
-<form action="bbspwd.php?do" method="post" class="small" id="frmPwd">
+<form action="bbspwd.php?do" method="post" class="small" onsubmit="return DoPwd();">
 	<fieldset><legend>修改密码</legend>
 		<div class="inputs">
 			<label>您的旧密码:</label><input maxlength="39" size="12" type="password" name="pw1" id="sfocus"/><br/>
@@ -35,7 +37,7 @@ function DoPwd()
 			<label>再输入一次:</label><input maxlength="39" size="12" type="password" name="pw3" id="pwd3"/>
 		</div>
 	</fieldset>
-	<div class="oper"><input type="button" value="确定修改" onclick="DoPwd();"></div>
+	<div class="oper"><input type="submit" value="确定修改"></div>
 </form>
 <?php
 	page_footer();
