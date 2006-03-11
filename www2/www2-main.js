@@ -811,7 +811,6 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 	str += ((dd < 10) ? ' ' : '') + dd + '</nobr></td>';
 	str += '<td><b>';
 
-	title = htmlize(title);
 	if (title.substr(0,4)!="Re: ") title = "¡ñ " + title;
 
 	switch (this.ftype) {
