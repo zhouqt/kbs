@@ -23,10 +23,16 @@
 		go_die();
 	}
 	if ($ap <= 0) go_die();
-	$bid = intval($av[1]);
 	$id = intval($av[2]);
+	if ($av[1] == 'r') {
+		$bid = 0;
+		$board = "Recommend";
+	} else {
+		$bid = intval($av[1]);
+		$board = "";
+	}
 	$brdarr = array();
-	$isnormalboard = bbs_safe_getboard($bid, "", $brdarr);
+	$isnormalboard = bbs_safe_getboard($bid, $board, $brdarr);
 	if (is_null($isnormalboard)) {
 		go_die();
 	}

@@ -50,6 +50,7 @@ function display_navigation_bar($brdarr, $num, $article)
 
 	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
 	if ($attachpos!=0) {
+		die;
 		bbs_file_output_attachment($filename, $attachpos);
 		exit;
 	}
@@ -63,10 +64,15 @@ function display_navigation_bar($brdarr, $num, $article)
 ?>
 </div>
 <div>
+<script type="text/javascript"><!--
+att = new attWriter('r',<?php echo $id; ?>,0,0,1);
 <?php
-	/* TODO: this article is put in an extra div because without it, IE6 will show no padding-left for the first line */
-	bbs_print_article($filename,1,$_SERVER['PHP_SELF'] . '?' . $_SERVER['QUERY_STRING']);
+/* TODO: this article is put in an extra div because without it, IE6 will show no padding-left for the first line */
+	$s = bbs2_readfile($filename);
+	if (is_string($s)) echo $s;
 ?>
+//-->
+</script>
 </div></div>
 <div class="oper">[
 <?php
