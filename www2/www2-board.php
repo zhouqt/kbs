@@ -159,9 +159,18 @@ function bbs_ann_foot($parent) {
 [<a href="<?php echo MAINPAGE_FILE; ?>">返回首页</a>]
 <?php   
 	if ($parent){
+		if(isset($_GET["annbm"]))
+		{
 ?>
-[<a href="bbs0an.php?path=<?php echo rawurlencode($parent); ?>">上级目录</a>]
+[<a href="bbs0anbm.php?path=<?php echo rawurlencode($parent); ?>">回到精华区目录</a>]
 <?php
+		}
+		else
+		{
+?>
+[<a href="bbs0an.php?path=<?php echo rawurlencode($parent); ?>">回到精华区目录</a>]
+<?php
+		}
 	}
 ?>
 [<a href="bbs0an.php">根目录</a>]

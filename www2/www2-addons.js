@@ -51,7 +51,7 @@ annWriter.prototype.i = function(type, title, bm, filename, date) {
 	if (type == 1)
 		str += '<a href="bbs0anbm.php?path=' + itempath + '">';
 	else if (type >= 2)
-		str += '<a href="bbsanc.php?path=' + itempath + '">';
+		str += '<a href="bbsanc.php?annbm=1&path=' + itempath + '">';
 	str += title + '</a></td><td>' + bm + '</td><td>';
 	str += this.perm_bm ? (filename + ((type == 1) ? '/' : '')) : date;
 	str += '</td><td>';
