@@ -240,7 +240,7 @@
 
 <?php
 	}
-	if (defined("HAVE_PC"))
+	if (defined("BBS_HAVE_BLOG"))
 	{
 ?>
 	<a href='javascript:changemn("pc");' target="_self"><img id="imgpc" src="images/close.gif" class="pm" alt="+"
@@ -280,7 +280,7 @@
 		<div class="lmi"><a href="pc/index.php?id=SYSOP">АяжњжїЬт</a></div>
 		</div>
 <?php
-	} // defined(HAVE_PC)
+	} // defined(BBS_HAVE_BLOG)
 
 	if($currentuser["userid"]!="guest"){
 ?>

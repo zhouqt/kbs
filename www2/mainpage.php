@@ -501,7 +501,7 @@ while($board = array_shift($boards))
     <td width="79" class="header" align="center"><a href="#todaybless">±¾ÈÕ×£¸£</a></td>
     <td width="79" class="header" align="center">
 <?php
-	if(defined("HAVE_PC"))
+	if(defined("BBS_HAVE_BLOG"))
 	{
 ?>
     <a href="/pc/pcmain.php">Ë®Ä¾BLOG</a>
