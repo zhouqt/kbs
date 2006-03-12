@@ -9,7 +9,6 @@ apache 和 apache2。
 
 1. 需要的软件
 httpd                  必须
-httpd-devel            必须
 php                    必须
 php-devel              必须
 php-gd                 必须
