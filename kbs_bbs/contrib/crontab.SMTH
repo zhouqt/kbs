@@ -8,7 +8,7 @@ BBSHOME=/home/bbs
 # 定时更新推荐文章
 8,18,28,38,48,58 * * * * /home/bbs/bin/genhot
 # 更新版主统计
-1 0 * * * /home/bbs/bin/statBM update
+1 0 * * * /home/bbs/bin/statBM any update
 # 每小时记录每版在线人数和在线人数
 2 * * * * /home/bbs/bin/bonlinelog
 2 * * * * /home/bbs/bin/uonlinelog
