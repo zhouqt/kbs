@@ -6,8 +6,8 @@
 
 	function pc_get_archfile($pc,$wrap=FALSE)
 	{
-		$startYear = (int)($pc["CREATED"] / 10000000000);
-		$startMonth = (int)(($pc["CREATED"]-$startYear*10000000000) / 100000000);	
+		$startYear = (int)(time_mysql($pc["CREATED"]) / 10000000000);
+		$startMonth = (int)((time_mysql($pc["CREATED"])-$startYear*10000000000) / 100000000);	
 		$thisYear = date("Y");
 		$thisMonth = date("m");
 		$i = 0;

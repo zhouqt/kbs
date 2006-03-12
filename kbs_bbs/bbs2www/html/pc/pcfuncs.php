@@ -146,26 +146,40 @@ function html_format($str,$multi=FALSE,$useHtmlTag = FALSE,$defaultfg = "#000000
 	return $str;	
 }
 
+function time_is_old($t)
+{
+	return ($t[4] != '-');
+}
+function time_mysql($t)
+{
+	if (time_is_old($t)) return $t;
+	else return $t[0].$t[1].$t[2].$t[3].$t[5].$t[6].$t[8].$t[9].$t[11].$t[12].$t[14].$t[15].$t[17].$t[18];
+}
+
 function time_format($t)
 {
+	$t=time_mysql($t);
 	$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]." ".$t[8].$t[9].":".$t[10].$t[11].":".$t[12].$t[13];
 	return $t;
 }
 
 function time_format_date($t)
 {
+	$t=time_mysql($t);
 	$t= "<font class='date'>".$t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]."</font>";
 	return $t;
 }
 
 function time_format_date1($t)
 {
+	$t=time_mysql($t);
 	$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7];
 	return $t;
 }
 
 function rss_time_format($t)
 {
+	$t=time_mysql($t);
 	$t= $t[0].$t[1].$t[2].$t[3]."-".$t[4].$t[5]."-".$t[6].$t[7]."T".$t[8].$t[9].":".$t[10].$t[11].":".$t[12].$t[13]."+08:00";
 	return $t;
 }
@@ -837,7 +851,9 @@ function pc_update_cache_header($updatetime = 10)
 	$cachemode=$scope;
 	@$oldmodified=$_SERVER["HTTP_IF_MODIFIED_SINCE"];
 	if ($oldmodified!="") {
-                $oldtime=strtotime($oldmodified);
+		if (($pos = strpos($oldmodified, ';')) !== false)
+			$oldmodified = substr($oldmodified, 0, $pos);
+        $oldtime=strtotime($oldmodified);
 	} else $oldtime=0;
 	if ($modifytime - $oldtime < 60 * $updatetime ) {
 		header("HTTP/1.1 304 Not Modified");
