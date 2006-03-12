@@ -75,7 +75,7 @@ PHP_FUNCTION(bbs_get_records_from_id)
 	int i;
 	zval *element,*articlearray;
 	int is_bm;
-	char flags[3]; /* flags[0]: flag character
+	char flags[4]; /* flags[0]: flag character
 					* flags[1]: imported flag
 					* flags[2]: no reply flag
 					*/
