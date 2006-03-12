@@ -99,13 +99,9 @@ doc/ 目录的文件及 水木社区 (http://newsmth.net/) BBSMan_Dev 版的文章。
       extension=libphpbbslib.so
 
     cd /etc/httpd/conf
-    编辑 httpd.conf 文件，修改
+    编辑 httpd.conf 文件，修改参数
       User bbs
       Group bbs
-    修改默认 Charset 头，在文件适当位置加入
-      AddLanguage zh-cn .cn
-      AddLanguage cn .cn
-      AddCharset gb2312         .Gb2312    .gb2312
       AddDefaultCharset gb2312
 
     最后使用 /etc/rc.d/init.d/httpd start 来启动 httpd 服务，如果原来已经
