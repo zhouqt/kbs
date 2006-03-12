@@ -112,7 +112,7 @@ int pc_conv_file_to_body( char **body, char *fname)
             	}
 				(*body)[bodylen]=0;
 				if( bodylen != size )
-					realloc( *body, bodylen+1 );
+					*body = realloc( *body, bodylen+1 );
 			}
 		}
 	}
