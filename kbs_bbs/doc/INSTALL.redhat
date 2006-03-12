@@ -13,7 +13,7 @@ httpd-devel            必须
 php                    必须
 php-devel              必须
 php-gd                 必须
-php-xml                必须
+php-xml或者php-domxml  必须
 zlib-devel             必须
 openssl-devel          必须
 gmp-devel              必须
