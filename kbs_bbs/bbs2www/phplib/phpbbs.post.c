@@ -1297,7 +1297,7 @@ static int brcdump(struct boardheader *bh, int bid, void* arg)
 {
     char **dumpstr = (char **)arg;
     int n;
-    int *pn;
+    unsigned int *pn;
     if (!public_board(bh)) return 0;
     sprintf(*dumpstr, "%4.4x", bid);
     *dumpstr += 4;
