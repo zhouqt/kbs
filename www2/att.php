@@ -2,7 +2,7 @@
 	require("www2-funcs.php");
 	
 	function go_die() {
-		header("Location: images/pig.jpg");
+		header("Location: images/pig.gif");
 		die;
 	}
 	
