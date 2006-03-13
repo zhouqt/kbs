@@ -96,6 +96,7 @@ doc/ 目录的文件及 水木社区 (http://newsmth.net/) BBSMan_Dev 版的文章。
       magic_quotes_gpc = off
     在 Dynamic Extension 之下添加
       extension=libphpbbslib.so
+    找到 session.save_path 这一行，将对应的目录设置成 bbs 用户可写。
 
     cd /etc/httpd/conf
     编辑 httpd.conf 文件，修改参数
