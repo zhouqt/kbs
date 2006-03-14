@@ -357,8 +357,12 @@
 		<div class="mi"><a href="bbscloak.php">隐身术</a></div>
 <?php
 		}
+		if (defined("SITE_NEWSMTH")) {
 ?>
 		<div class="mi"><a href="bbsal.php">通讯录</a></div>
+<?php
+		}
+?>
 		<div class="mi"><a href="bbsnick.php">临时改昵称</a></div>
 		<div class="lmi"><a href="bbsfall.php">设定好友</a></div>
 	</div>
