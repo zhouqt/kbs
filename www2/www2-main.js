@@ -785,7 +785,14 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	document.write(str);
 }
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size, imported) {
-	var str = '<tr class="' + (this.num%2?"even":"odd") + '">';
+	var tradd = "";
+	if (www2dev && top.hlInfo) {
+		var info = top.hlInfo.split(',');
+		if (this.bid == info[0] && gid == info[2]) {
+			tradd = ' style="background-color:' + ((id==info[1])?'gold':'yellow') + '"';
+		}
+	}
+	var str = '<tr class="' + (this.num%2?"even":"odd") + '"' + tradd + '>';
 	var cb_value = (this.man == 2) ? (this.start + this.num) : id; /* 回收站中以序号代替id */
 	var bf = flag.charAt(0);
 	if (bf.toLowerCase() == 'd') { /* 置顶 */
@@ -819,7 +826,7 @@ docWriter.prototype.o = function(id, gid, author, flag, time, title, size, impor
 			break;
 		case dir_modes["NORMAL"]:
 			str += '<a href="bbscon.php?bid=' + this.bid + '&id=' + id;
-			if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"]
+			if (bf.toLowerCase() == 'd') str += "&ftype=" + dir_modes["ZHIDING"];
 			str += '">' + title + '</a>';
 			if (size >= 1000) {
 				str += '<span class="red">(' + (Math.floor(size / 100) / 10.0) + 'k)</span>';
@@ -1044,6 +1051,7 @@ conWriter.prototype.t = function() {
 		o.style.display = "none";
 		o.style.display = "block";
 	});
+	top.hlInfo = this.bid + "," + this.id + "," + this.gid;
 	document.write(ret);
 };
 
