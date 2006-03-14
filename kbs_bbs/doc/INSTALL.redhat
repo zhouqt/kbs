@@ -120,7 +120,10 @@ doc/ 目录的文件及 水木社区 (http://newsmth.net/) BBSMan_Dev 版的文章。
 extension 没有起作用。
     注意查找  extension_dir 的配置路径，这个配置路径之下必须有一个
 libphpbbslib.so 文件符号连接到 /var/www/libexec/bbs/libphpbbslib.so。
-    另外 apache 的 error log 也可能有有用的信息：/var/log/httpd/error_log
+    另外 apache 的 error log 也可能有有用的信息：/var/log/httpd/error_log。
+
+    Fedore Core 默认将 httpd 服务加入 SELinux 保护，如果开启 SELinux 会导致
+libphpbbslib.so 加载失败（因为有依赖库在非标准路径）。
 
     最后要把 info.php 文件删除。
 
