@@ -6,7 +6,7 @@ define('_BBS_FUNCS_PHP_', 1);
 $Version="Powered by wForum Version 0.9";
 $Copyright=
 "<a href=\"http://www.aka.cn/\" target=\"_blank\">阿卡信息技术(北京)有限公司</a> &amp; "
-. "<a href=\"http://dev.kcn.cn/\" target=\"_blank\">KBS 开发组</a> 版权所有 2005 <br/>"
+. "<a href=\"http://dev.kcn.cn/\" target=\"_blank\">KBS 开发组</a> 版权所有 2005-2006 <br/>"
 . "<a href=\"http://wforum.zixia.net/\" target=\"_blank\">"
 . "<font face=\"Verdana, Arial, Helvetica, sans-serif\" size=\"1\" color=\"#6000CC\">"
 . "<b>wForum</b></font></a> "
