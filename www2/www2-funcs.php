@@ -311,8 +311,8 @@ function cache_header($scope,$modifytime=0,$expiretime=300) {
 	return cache_process($scope, 0, $modifytime, $expiretime);
 }
 
-function update_cache_header($updatetime = 10,$expiretime = 300) {
-	return cache_process("public", 60 * $updatetime, time(), $expiretime);
+function update_cache_header($updatetime = 10) {
+	return cache_process("public", 60 * $updatetime, time(), 60 * $updatetime);
 }
 
 

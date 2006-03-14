@@ -25,7 +25,7 @@ $board = $brdarr["NAME"];
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) 
 	exit ();
 if ($normalboard) {
-	if (update_cache_header(60, 1800))
+	if (update_cache_header(60))
 		exit ();
 } else die;
 
