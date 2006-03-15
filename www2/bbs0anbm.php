@@ -78,11 +78,11 @@ if(isset($_POST["annAction"]))
 }
 
 function bbs_ann_bm_display_articles($articles, $isBoard) {
-	global $show_none, $has_perm_boards, $path, $text;
+	global $show_none, $has_perm_boards, $path, $text, $title;
 	$pathstr = substr($path, 9, strlen($path) - 9);
 ?>
 <script type="text/javascript"><!--
-var an = new annWriter('<?php echo rawurlencode($pathstr); ?>',<?php echo $has_perm_boards?"1":"0"; ?>,'<?php echo $text; ?>');
+var an = new annWriter('<?php echo rawurlencode($pathstr); ?>',<?php echo $has_perm_boards?"1":"0"; ?>,'<?php echo $text; ?>','<?php echo $title; ?>');
 <?php
 	if($show_none)
 	{
@@ -127,6 +127,7 @@ switch ($ret) {
 $path = $path_tmp;
 $isBoard = false;
 $up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
+$title = bbs_ann_get_title($path);
 if ($board) {
 	$brdarr = array();
 	/*if (defined ('USE_ROAM')) {
@@ -158,17 +159,20 @@ if ($board) {
 			bbs_set_onboard($bid,1);
 		/*} */
 		bbs_board_header($brdarr,-1,0);
+		print("<h1 class=\"bt\">{$title}</h1>");
 		$isBoard = true;
 	}
 	else {
 		$board = '';
 		bbs_ann_header($board);
+		print("<h1 class=\"bt\">{$title}</h1>");
 	}
 	
 }
 else {
 	$bid = 0;
 	bbs_ann_header();
+	print("<h1 class=\"bt\">{$title}</h1>");
 }
 ?>
 <script src="www2-addons.js" type="text/javascript"></script>

@@ -122,6 +122,7 @@ switch ($ret) {
 $path = $path_tmp;
 $isBoard = false;
 $up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
+$title = bbs_ann_get_title($path);
 if ($board) {
 	$brdarr = array();
 	if (defined ('USE_ROAM')) {
@@ -157,31 +158,35 @@ if ($board) {
 					return;
 			}
 		}
-		bbs_board_header($brdarr,-1,0);
+		//bbs_board_header($brdarr,-1,0);
+		bbs_ann_header($board);
+		print("<h1 class=\"bt\">{$title}</h1>");
 		$isBoard = true;
 ?>
 <script>
 var c = new docWriter('<?php echo addslashes($brdarr["NAME"]); ?>',<?php echo $bid; ?>,0,0,-1,0,0,0,0);
 </script>
 <?php
-	}
-	else {
-		$board = '';
-		bbs_ann_header($board);
-	}
-	
 }
 else {
-	$dotnames = BBS_HOME . '/' . $path . '/.Names';
-	if (cache_header('public',filemtime($dotnames),300))
-		return;
-	$bid = 0;
-	bbs_ann_header();
+	$board = '';
+	bbs_ann_header($board);
+	print("<h1 class=\"bt\">{$title}</h1>");
+}		
+
+}
+else {
+$dotnames = BBS_HOME . '/' . $path . '/.Names';
+if (cache_header('public',filemtime($dotnames),300))
+	return;
+$bid = 0;
+bbs_ann_header();
+print("<h1 class=\"bt\">{$title}</h1>");
 }
 
 bbs_ann_display_articles($articles, $isBoard);
 bbs_ann_xsearch($board);
-	
+
 if ($up_cnt >= 2)
 	bbs_ann_foot($up_dirs[$up_cnt - 2]);
 else

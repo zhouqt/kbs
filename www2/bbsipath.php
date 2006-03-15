@@ -36,6 +36,10 @@
 		$annpath = $_GET["annpath"];
 	else
 		$annpath = "";
+	if(isset($_GET["title"]))
+		$anntitle = $_GET["title"];
+	else
+		$anntitle = $annpath;
 	if(isset($_GET["inann"]))
 		$inann = $_GET["inann"];
 	else
@@ -48,6 +52,7 @@ var ipathEditing = 0;
 var ititle = new Array(<?php echo $count; ?>);
 var ipath = new Array(<?php echo $count; ?>);
 var currAnnPath = '<?php echo $annpath; ?>';
+var currAnnTitle = '<?php echo $anntitle; ?>';
 var p = new ipathWriter(<?php echo $inann; ?>);
 <?php
 	for($i=0; $i<$count; $i++)
