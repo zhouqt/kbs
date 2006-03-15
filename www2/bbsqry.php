@@ -54,7 +54,9 @@ else
 [<a href="bbsfadd.php?userid=<?php echo $lookupuser["userid"];?>">加入好友</a>]
 [<?php bbs_add_super_fav ('[用户] '.$lookupuser['userid'], 'bbsqry.php?userid='.$lookupuser['userid']); ?>]
 [<a href="bbsfdel.php?userid=<?php echo $lookupuser["userid"];?>">删除好友</a>]
+<?php if ( $lookupuser["flag1"] & BBS_PCORP_FLAG ) { ?>
 [<a href="pc/index.php?id=<?php echo $lookupuser["userid"];?>">BLOG</a>]
+<?php } ?>
 </div>
 <?php
 	} else {
