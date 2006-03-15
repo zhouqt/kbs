@@ -157,21 +157,42 @@ kbsrcHTTPHeaderWatcher.prototype = {
 			this.onExamineResponse(aSubject);
 		}
 	},
+	getCookie: function(oHttp, name, def) {
+		var cname = name + "="; 
+		var dc = "";
+		try {
+			dc = oHttp.getResponseHeader("Set-Cookie");
+		} catch(e) {}
+		if (dc.length > 0) {
+			var begin = dc.indexOf(cname);
+			if (begin != -1) {
+				begin += cname.length;
+				var end = dc.indexOf(";", begin);
+				if (end == -1) end = dc.length;
+				return unescape(dc.substring(begin, end));
+			}
+		}
+		return def;
+	},
 	onExamineResponse : function (oHttp) {
-		var userid = false, param = false;
+		var userid = false;
 		try {
 			userid = oHttp.getResponseHeader("Set-KBSRC");
-			param = oHttp.getResponseHeader("Set-Cookie");
 		} catch(e) {}
 		if (userid) {
 			var host = oHttp.URI.host;
 			var newHost = false;
-			if (userid != "/" && param) {
-				var pos = param.indexOf("WWWPARAMS=");
-				if (pos != -1) {
-					newHost = parseInt(param.substr(pos + 10));
-					newHost = newHost & 0x1000;
-				}
+			var cookieID = this.getCookie(oHttp, "UTMPUSERID", null);
+			if (userid != "/") {
+				if (cookieID != userid) return;
+				newHost = parseInt(this.getCookie(oHttp, "WWWPARAMS", 0));
+				newHost = newHost & 0x1000;
+			} else {
+				/*
+				 * This check is necessary because squid will send "Set-KBSRC" header
+				 * even when the request is HIT.
+				 */
+				if (cookieID === null) return;
 			}
 			kbsrc.hosts[host] = newHost ? (new kbsrcHost(host, userid)) : false;
 			kbsrc.setStatus(host);
