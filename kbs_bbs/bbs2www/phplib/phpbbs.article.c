@@ -576,7 +576,7 @@ PHP_FUNCTION(bbs_getarticles)
         RETURN_FALSE;
     }
 #ifdef HAVE_BRC_CONTROL
-    brc_initial(getCurrentUser()->userid, bp->filename, getSession());
+    if (getCurrentUser()) brc_initial(getCurrentUser()->userid, bp->filename, getSession());
 #endif
     articles = emalloc(num * sizeof(struct fileheader));
 	if (articles==NULL) {
