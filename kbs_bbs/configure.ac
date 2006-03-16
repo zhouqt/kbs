@@ -11,12 +11,12 @@ case "${host}" in
         ;;      
   *-*-solaris*) 
         OSTYPE="SOLARIS"
-        CFLAGS="-D_POSIX_PTHREAD_SEMANTICS"
+        CFLAGS="-D_POSIX_PTHREAD_SEMANTICS $CFLAGS"
 	LIBS="$LIBS -lnsl -lsocket"
         ;;  
   *-*-sunos*)
         OSTYPE="SUNOS"
-        CFLAGS="-D_POSIX_PTHREAD_SEMANTICS"
+        CFLAGS="-D_POSIX_PTHREAD_SEMANTICS $CFLAGS"
 	LIBS="$LIBS -lnsl -lsocket"
         ;;  
   *-*-linux*)        
