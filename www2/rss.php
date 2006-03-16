@@ -1,7 +1,7 @@
 <?php
 require("www2-funcs.php");
 require("www2-rss.php");
-login_init();
+login_init(FALSE, TRUE);
 
 $query = $_SERVER["QUERY_STRING"];
 settype($query, "string");
@@ -11,15 +11,12 @@ $board = substr($query, 1);
 
 // 检查用户能否阅读该版
 $brdarr = array();
-$brdnum = bbs_getboard($board, $brdarr);
-if ($brdnum == 0){
-	die;
+$isnormalboard = bbs_safe_getboard(0, $board, $brdarr);
+if (is_null($isnormalboard)) {
+	go_die();
 }
 if (strcmp($board, $brdarr["NAME"])) die; //cache consideration
-$usernum = $currentuser["index"];
-if (bbs_checkreadperm($usernum, $brdnum) == 0){
-	die;
-}
+$brdnum = $brdarr["BID"];
 if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
 	die;
 }
@@ -31,7 +28,7 @@ if ($brdarr["FLAG"]&BBS_BOARD_GROUP) {
  * 3. 内部版面 rss 无法在 squid 前端缓存，可能造成潜在负荷问题
  * 4. 内部版面有啥好 rss 的？直接上站看不就完了！
  */
-if (!bbs_normalboard($board)) die;
+if (!$isnormalboard) die;
 
 
 if ($type == "g") {
