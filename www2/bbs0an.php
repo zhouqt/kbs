@@ -122,7 +122,7 @@ switch ($ret) {
 $path = $path_tmp;
 $isBoard = false;
 $up_cnt = bbs_ann_updirs($path,$board,$up_dirs);
-$title = bbs_ann_get_title($path);
+$title = defined("www2dev") ? bbs_ann_get_title($path) : "";
 if ($board) {
 	$brdarr = array();
 	if (defined ('USE_ROAM')) {
