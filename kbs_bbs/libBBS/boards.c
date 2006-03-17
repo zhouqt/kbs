@@ -636,7 +636,7 @@ void brc_update(const char *userid,session_t* session)
         errstr = gzerror(fd, &gzerrno);
         if (errno == Z_ERRNO)
             errstr = strerror(errno);
-//        bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
+        bbslog("3error", "can't %s open to read:%s", dirfile, errstr);
         f_rm(dirfile);
 //        return;
     } else {
@@ -659,8 +659,8 @@ void brc_update(const char *userid,session_t* session)
         errstr = gzerror(fd, &gzerrno);
         if (errno == Z_ERRNO)
             errstr = strerror(errno);
-//        bbslog("3error", "can't %s open to write:%s", dirfile, errstr);
-        f_rm(dirfile);
+        bbslog("3error", "can't %s open to write:%s", dirfile, errstr);
+        //f_rm(dirfile);
         return;
     }
 
