@@ -538,7 +538,7 @@ char *menu_name;
      * }
      */
 
-    if (check_sysconf()) {
+    if (0) { //if (check_sysconf()) { /* by atppp 20060317 */
        free(menupos);
        menupos=NULL;
     }
