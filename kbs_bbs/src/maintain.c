@@ -3160,7 +3160,11 @@ int edit_board_delete_read_perm(void){
         clear();
         return -1;
     }
-    if(!HAS_PERM(user,PERM_BOARDS)||!user->title){
+    if(!HAS_PERM(user,PERM_BOARDS)
+#ifdef HAVE_CUSTOM_USER_TITLE
+        ||!user->title
+#endif
+        ){
         prints("%s\033[0;33m<Enter>\033[m","所选择用户不具有访问特定版面回收站的权限和身份...");
         WAIT_RETURN;
         clear();
