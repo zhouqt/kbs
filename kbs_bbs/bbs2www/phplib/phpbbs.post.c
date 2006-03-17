@@ -1342,6 +1342,7 @@ PHP_FUNCTION(bbs2_brcsync)
     char *enddump;
     int dumpstr_len;
     int bid, j, id, n;
+    int total = 0;
     const struct boardheader *bh;
 
 	if (zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "s/" , &dumpstr, &dumpstr_len) == FAILURE)
@@ -1376,7 +1377,9 @@ PHP_FUNCTION(bbs2_brcsync)
             READ_NEXT(id, 8);
             brc_add_read(id, bid, getSession());
         }
+        total += n;
     }
+    RETURN_LONG(total);
 brcsync_faint:
     RETURN_NULL();
 #endif
