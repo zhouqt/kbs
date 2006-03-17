@@ -866,7 +866,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         attachch[0]=' ';
 	attachch[1]='\0';
 #endif
-    if (! DEFINE(getCurrentUser(), DEF_SHOWSIZE)){
+    if (! DEFINE(getCurrentUser(), DEF_SHOWSIZE) && arg->mode != DIR_MODE_DELETED && arg->mode != DIR_MODE_JUNK){
 		char sizebuf[30];
 		strnzhcpy(TITLE, ent->title, 38);
 		if(ent->eff_size < 1000)
@@ -3359,7 +3359,7 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 					ret = 0;
 				}else{
 					fprintf(fp,"%s :\n\n",tmpfh.owner);
-					fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\033[1;31m%s\033[m,%s决定取消您的全站post权限1天\n",currboard->filename,fileinfo->title,getCurrentUser()->userid);
+					fprintf(fp,"由于您在\033[1;31m%s\033[m版的匿名文章\033[1;31m%s\033[m,%s决定追加取消您的全站post权限1天\n",currboard->filename,fileinfo->title,getCurrentUser()->userid);
 					fprintf(fp,"\n匿名封禁对于您看来您将是被强制戒发文权限1天，请您放心，没有人知道被封禁的人具体是你，站长和斑竹也都不知道\n");
 					fclose(fp);
 
@@ -5895,6 +5895,9 @@ static int SR_BMFunc(struct _select_def* conf, struct fileheader* fh, void* extr
     free_write_dir_arg(&dirarg);
     arg->writearg=NULL;
     conf->pos=ent; /*恢复原来的ent*/
+	if(BMch == BM_DELETE){
+		/* set .ORIGIN */
+	}
     if(BM_TOTAL == BMch){ //作合集
         char title[STRLEN];
         //create new title

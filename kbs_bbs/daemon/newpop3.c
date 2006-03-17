@@ -654,6 +654,7 @@ int main(int argc, char **argv)
     chdir(BBSHOME);
 
     resolve_ucache();
+    resolve_utmp();
     while (1) {
 
         alen = sizeof(fsin);
@@ -934,6 +935,7 @@ void Retr()
     sprintf(genbuf, "mail/%c/%s/%s", toupper(*LowUserid), LowUserid, fcache[num].filename);
     outfile(genbuf, 99999);
 
+    setmailcheck(LowUserid);
 }
 
 

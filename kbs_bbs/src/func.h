@@ -215,7 +215,7 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
     unsigned int get_mailbox_prop(char *userid);
     unsigned int update_mailbox_prop(char *userid, unsigned int prop);
     int gen_title(const char *boardname );
-    off_t read_user_memo( char *userid, struct usermemo ** ppum );
+    int read_user_memo( char *userid, struct usermemo ** ppum );
 #if HAVE_MYSQL_SMTH == 1
 #ifdef BMSLOG
 	int bms_add(char *userid, char *boardname, time_t in, int out, char *memo );

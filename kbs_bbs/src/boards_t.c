@@ -1242,7 +1242,7 @@ static int fav_refresh(struct _select_def *conf)
         if (arg->yank_flag == BOARD_FAV){
 			if(arg->favmode == 2 || arg->favmode == 3){
             	docmdtitle("[讨论区列表]",
-                       "  \033[m主选单[\x1b[1;32m←\x1b[m,\x1b[1;32me\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 排序[\x1b[1;32mS\x1b[m] 求助[\x1b[1;32mh\x1b[m]");
+                       "  \033[m主选单[\x1b[1;32m←\x1b[m,\x1b[1;32me\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 添加到收藏夹[\x1b[1;32ma\x1b[m] 排序[\x1b[1;32mS\x1b[m] 求助[\x1b[1;32mh\x1b[m]");
 			}else{
             	docmdtitle("[个人定制区]",
                        "  \033[m主选单[\x1b[1;32m←\x1b[m,\x1b[1;32me\x1b[m] 阅读[\x1b[1;32m→\x1b[m,\x1b[1;32mr\x1b[m] 选择[\x1b[1;32m↑\x1b[m,\x1b[1;32m↓\x1b[m] 添加[\x1b[1;32ma\x1b[m,\x1b[1;32mA\x1b[m] 移动[\x1b[1;32mm\x1b[m] 删除[\x1b[1;32md\x1b[m] 排序[\x1b[1;32mS\x1b[m] 求助[\x1b[1;32mh\x1b[m]");
@@ -1253,7 +1253,7 @@ static int fav_refresh(struct _select_def *conf)
     } else {
         if (arg->yank_flag == BOARD_FAV){
 			if(arg->favmode == 2 || arg->favmode == 3){
-            	docmdtitle("[讨论区列表]", "  \033[m主选单[←,e] 阅读[→,r] 选择[↑,↓] 排序[S] 求助[h]");
+            	docmdtitle("[讨论区列表]", "  \033[m主选单[←,e] 阅读[→,r] 选择[↑,↓] 添加到收藏夹[a] 排序[S] 求助[h]");
 			}else{
             	docmdtitle("[个人定制区]", "  \033[m主选单[←,e] 阅读[→,r] 选择[↑,↓] 添加[a,A] 移动[m] 删除[d] 排序[S] 求助[h]");
 			}

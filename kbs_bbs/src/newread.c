@@ -529,6 +529,49 @@ static int read_prekey(struct _select_def *conf, int *command)
 {
     struct read_arg *arg = (struct read_arg *) conf->arg;
     switch (*command) {
+		case 'j':
+		{
+			struct fileheader * currfh;
+			int ent;
+			*command = KEY_DOWN;
+
+			if(arg->mode == DIR_MODE_DIGEST && HAS_PERM(getCurrentUser(),PERM_SYSOP)) {
+    			if (conf->pos<=0)
+					return SHOW_CONTINUE;
+		        currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
+				if (currfh->id <= 0)
+					return SHOW_CONTINUE;
+				ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board);
+				if(ent <= 0){
+                	del_post(conf,currfh,(void*)(ARG_NOPROMPT_FLAG)) ;
+				}
+			}
+			return SHOW_CONTINUE;
+		}
+		case 'q':
+		{
+			struct fileheader * currfh;
+			int ent;
+			*command = KEY_LEFT;
+			if(arg->mode == DIR_MODE_DIGEST ||
+			   arg->mode == DIR_MODE_THREAD ||
+			   arg->mode == DIR_MODE_MARK ||
+			   arg->mode == DIR_MODE_ORIGIN ||
+			   arg->mode == DIR_MODE_AUTHOR ||
+			   arg->mode == DIR_MODE_TITLE ||
+			   arg->mode == DIR_MODE_SUPERFITER){
+    			if (conf->pos<=0)
+					return SHOW_CONTINUE;
+		        currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
+				if (currfh->id <= 0)
+					return SHOW_CONTINUE;
+				ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board);
+				if(ent <= 0)
+					return SHOW_CONTINUE;
+                savePos(DIR_MODE_NORMAL,NULL,ent,arg->board);
+			}
+			return SHOW_CONTINUE;
+		}
         case KEY_END:
         case '$':
             conf->new_pos=arg->filecount;
@@ -603,10 +646,10 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
             {'\r','r'},
             {KEY_RIGHT,'r'},
             {'$',KEY_END},
-            {'q',KEY_LEFT},
+//            {'q',KEY_LEFT},
             {'e',KEY_LEFT},
             {'k',KEY_UP},
-            {'j',KEY_DOWN},
+//            {'j',KEY_DOWN},
             {-1,-1}
     };
 

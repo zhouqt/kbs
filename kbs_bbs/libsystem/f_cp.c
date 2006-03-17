@@ -6,9 +6,8 @@
  *    src: source file name
  *    dst: destination file name
  *    mode: destination file open mode, can be O_EXCL ...
- *  Return: 0 - success,other - faled
+ *  Return: 0 - success,other - failed
  **/
-#define READ_BUFFER_SIZE 10240
 
 int f_cp(const char* src, const char* dst, int mode)
 {

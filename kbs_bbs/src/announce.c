@@ -36,6 +36,7 @@
 
 int bmonly = 0;
 int a_fmode = 1;
+int a_fmode_show = 1;
 void a_menu();
 void a_report();                /*Haohmaru.99.12.06.版主精华区操作记录，作为考查工作的依据 */
 
@@ -362,9 +363,9 @@ MENU *pm;
     prints("\033[44m%s%s%s\033[m\n", buf, genbuf, buf);
     prints("            F 寄回自己的信箱┃↑↓ 移动┃→ <Enter> 读取┃←,q 离开\033[m\n");
 #ifdef ANN_COUNT
-    prints("\033[44m\033[37m 编号  %-20s\033[32m本目录已被浏览\033[33m%9d\033[32m次\033[37m 整  理           %8s \033[m", "[类别] 标    题", pm->count, a_fmode == 2 ? "档案名称" : "编辑日期");
+    prints("\033[44m\033[37m 编号  %-20s\033[32m本目录已被浏览\033[33m%9d\033[32m次\033[37m 整  理           %8s \033[m", "[类别] 标    题", pm->count, a_fmode_show == 2 ? "档案名称" : "编辑日期");
 #else
-    prints("\033[44m\033[37m 编号  %-45s 整  理           %8s \033[m", "[类别] 标    题", a_fmode == 2 ? "档案名称" : "编辑日期");
+    prints("\033[44m\033[37m 编号  %-45s 整  理           %8s \033[m", "[类别] 标    题", a_fmode_show == 2 ? "档案名称" : "编辑日期");
 #endif
     prints("\n");
     if (pm->num == 0)
@@ -373,7 +374,7 @@ MENU *pm;
         strncpy(title, pm->item[n]->title, STRLEN * 2 - 1);
         snprintf(fname, STRLEN, "%s", pm->item[n]->fname);
         snprintf(genbuf, MAXPATH, "%s/%s", pm->path, fname);
-        if (a_fmode == 2) {
+        if (a_fmode_show == 2) {
             ch = (dashf(genbuf) ? ' ' : (dashd(genbuf) ? '/' : ' '));
             fname[10] = '\0';
         } else {
@@ -1530,6 +1531,7 @@ void a_manager(MENU *pm,int ch)
         case 's':
             if (++a_fmode >= 3)
                 a_fmode = 1;
+			a_fmode_show = a_fmode;
             pm->page = 9999;
             break;
         case 'm':
@@ -1871,6 +1873,10 @@ MENU *father;
         }
         if (me.now < me.page || me.now >= me.page + A_PAGESIZE) {
             me.page = me.now - (me.now % A_PAGESIZE);
+
+			if( ! (me.level & PERM_BOARDS) )
+				a_fmode_show=1;
+
             a_showmenu(&me);
         }
         move(3 + me.now - me.page, 0);

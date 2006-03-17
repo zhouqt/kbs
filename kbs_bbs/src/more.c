@@ -23,11 +23,11 @@
 
 #include "bbs.h"
 #include "screen.h"             /* Leeward 98.06.05 */
+#define TELNET_WORD_WRAP 1
 
 time_t calltime = 0;
 char calltimememo[40];
 int stuffmode = 0;
-
 enum LINE_CODE {
     LINE_NORMAL,                   //normal line
     LINE_NORMAL_NOCF,        //没有 回车的行

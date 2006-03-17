@@ -193,6 +193,8 @@ static int www_new_guest_entry(struct in_addr *fromhostn, int * idx)
 			WWW_GUEST_HASHTAB(www_guest_calc_hashkey(& wwwguest_shm->guest_entry[i].fromip)) = 0;
             if (pub->www_guest_count > 0) {
                 pub->www_guest_count--;
+	        	pub->wwwguestlogoutcount++;
+	       		pub->wwwgueststaytime += now - wwwguest_shm->guest_entry[i].logintime;
                 /*
                  * Çå³ıÊı¾İ 
                  */
@@ -264,6 +266,7 @@ if( oldidx != 0 && fromhostn->s_addr == wwwguest_shm->guest_entry[oldidx].fromip
 		}
     	if (num != MAX_WWW_MAP_ITEM) {
         	pub->www_guest_count++;
+        	pub->wwwguestlogincount++;
         	if (get_utmp_number() + getwwwguestcount() > get_publicshm()->max_user) {
             	save_maxuser();
         	}
@@ -301,11 +304,15 @@ static int www_free_guest_entry(int idx)
     pub = get_publicshm();
     fd = www_guest_lock();
     if (wwwguest_shm->use_map[idx / 32] & (1 << (idx % 32))) {
+		time_t staytime = time(NULL)-wwwguest_shm->guest_entry[idx].logintime;
         wwwguest_shm->use_map[idx / 32] &= ~(1 << (idx % 32));
 		WWW_GUEST_HASHTAB(www_guest_calc_hashkey(&wwwguest_shm->guest_entry[idx].fromip))=0;
     	bzero(&wwwguest_shm->guest_entry[idx], sizeof(struct WWW_GUEST_S));
-        if (pub->www_guest_count > 0)
+        if (pub->www_guest_count > 0){
+	       	pub->wwwguestlogoutcount++;
+	       	pub->wwwgueststaytime += staytime;
             pub->www_guest_count--;
+		}
     }
     www_guest_unlock(fd);
     setpublicshmreadonly(1);

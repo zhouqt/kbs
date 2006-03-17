@@ -628,8 +628,26 @@ void login_query()
 #endif
     multi_user_check();
 
-	if( read_user_memo( getCurrentUser()->userid, & getSession()->currentmemo ) <= 0 ){
+	i = read_user_memo( getCurrentUser()->userid, & getSession()->currentmemo ) ;
+
+	if(i==0){
+		char ans[3];
+		move(1,0);
 		prints("由于程序更新，请先退出此帐号所有连接再重新登录\n");
+		getdata(3, 0, "确定要踢除其他登陆吗？(Y/n)[n]:\n", ans, 2, DOECHO, NULL, true);
+			if(ans[0]=='y' || ans[0]=='Y'){
+				int uid;
+    			struct userec *u;
+				if( (uid = getuser( getCurrentUser()->userid, &u) ) != 0){
+					kick_user_utmp(uid, NULL, 0);
+				}
+			}
+	 	oflush();
+		sleep(1);
+		igetkey();
+		exit(1);
+	}else if(i<0){
+		prints("初始化用户数据错误,错误号:%d\n", i);
 	 	oflush();
 		sleep(1);
 		igetkey();

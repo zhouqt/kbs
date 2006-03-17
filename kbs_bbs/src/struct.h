@@ -89,6 +89,8 @@ struct userdata
 	char smsend[41];
 	unsigned int smsdef;
 	int signum;
+	int this_field_is_reserved_by_atppp;
+	time_t lastinvite;
 };
 
 struct user_info {              /* Structure used in UTMP file */

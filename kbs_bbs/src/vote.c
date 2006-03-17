@@ -1185,11 +1185,17 @@ char *bname;
 int b_vote_maintain(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
 	int ret;
+	int oldmode;
 #ifdef NEW_HELP
 	int oldhelpmode = helpmode;
 	helpmode = HELP_VOTE;
 #endif
+
+    oldmode = uinfo.mode;
+	modify_user_mode(VOTING);
     ret =  vote_maintain(currboard->filename);
+    modify_user_mode(oldmode);
+
 #ifdef NEW_HELP
 	helpmode = oldhelpmode;
 #endif

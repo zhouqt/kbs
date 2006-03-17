@@ -779,6 +779,7 @@ void bbssettime(time_t now)
         if (iscreate) {
             FILE *fp;
 
+			memset(publicshm, 0, sizeof(struct public_data));
             if (NULL != (fp = fopen("etc/maxuser", "r"))) {
                 fscanf(fp, "%d %d", &publicshm->max_user,&publicshm->max_wwwguest);
                 fclose(fp);
@@ -1209,7 +1210,7 @@ int calc_numofsig(char *userid)
 	return sign;
 }
 
-off_t read_user_memo( char *userid, struct usermemo ** ppum )
+int read_user_memo( char *userid, struct usermemo ** ppum )
 {
 	struct usermemo um;
 	int logincount;
@@ -1227,7 +1228,7 @@ off_t read_user_memo( char *userid, struct usermemo ** ppum )
 		struct userdata ud;
 
 		if((fp=fopen(fn,"w"))==NULL)
-			return 0;
+			return -1;
 
     	read_userdata(userid, &ud);
 		memcpy(&(um.ud), & ud, sizeof(struct userdata));
@@ -1236,7 +1237,7 @@ off_t read_user_memo( char *userid, struct usermemo ** ppum )
 	}
 
     if ((fp = fopen(fn, "r+b")) == NULL) {
-		return 0;
+		return -2;
 	}
 
 	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (void **)ppum , & size) == 1) {
@@ -1245,11 +1246,11 @@ off_t read_user_memo( char *userid, struct usermemo ** ppum )
 		if(size < sizeof(struct usermemo) ){
 			return 0;
 		}
-		return size;
+		return (int)size;
 	}
 
 	fclose(fp);
-	return 0;
+	return -3;
 
 }
 

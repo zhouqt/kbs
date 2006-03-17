@@ -453,7 +453,6 @@ int uinfo_query(struct userec *u, int real, int unum)
                 }
             update_user(&newinfo, unum, 1);
 			memcpy(&(um->ud), &ud, sizeof(ud));
-			end_mmapfile(um, sizeof(struct usermemo), -1);
 			write_userdata(newinfo.userid, &ud);
             if (real)
                  {
@@ -470,6 +469,7 @@ int uinfo_query(struct userec *u, int real, int unum)
         }
 	} /* for(;;) */
     clear();
+	end_mmapfile(um, sizeof(struct usermemo), -1);
     return 0;
 }
 void x_info() 

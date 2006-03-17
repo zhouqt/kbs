@@ -286,6 +286,15 @@ int getnewutmpent(struct user_info *up)
         utmphead->hashhead[hashkey] = pos + 1;
 
         utmphead->number++;
+
+		setpublicshmreadonly(0);
+#ifdef BBSMAIN
+		get_publicshm()->logincount ++;
+#else
+		get_publicshm()->wwwlogincount ++;
+#endif
+        setpublicshmreadonly(1);
+
         if (get_utmp_number() + getwwwguestcount()>get_publicshm()->max_user) {
             setpublicshmreadonly(0);
             save_maxuser();
@@ -396,6 +405,13 @@ int getnewutmpent2(struct user_info *up)
         utmphead->hashhead[hashkey] = pos + 1;
 
         utmphead->number++;
+        setpublicshmreadonly(0);
+#ifdef BBSMAIN
+		get_publicshm()->logincount ++;
+#else
+		get_publicshm()->wwwlogincount ++;
+#endif
+        setpublicshmreadonly(1);
         ret=pos+1;
     }
     utmp_setreadonly(1);
@@ -645,8 +661,19 @@ void clear_utmp2(int uent)
     zeroinfo.sockaddr = 0;
     zeroinfo.destuid = 0;
 
-    if (utmpshm->uinfo[uent - 1].active != false)
+    if (utmpshm->uinfo[uent - 1].active != false){
         utmphead->number--;
+
+        setpublicshmreadonly(0);
+		if(utmpshm->uinfo[uent-1].pid != 1){
+			get_publicshm()->logoutcount ++;
+			get_publicshm()->staytime += time(NULL) - utmpshm->uinfo[uent-1].logintime;
+		}else{
+			get_publicshm()->wwwlogoutcount ++;
+			get_publicshm()->wwwstaytime += time(NULL) - utmpshm->uinfo[uent-1].logintime;
+		}
+        setpublicshmreadonly(1);
+	}
     utmpshm->uinfo[uent - 1] = zeroinfo;
 }
 
