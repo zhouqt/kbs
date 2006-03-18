@@ -1344,7 +1344,7 @@ fsdfa
         if (temp_numposts > 20)
             Net_Sleep((temp_numposts - 20) * 1 + 1);
     }
-    if(do_edit_attach){
+    if(do_edit_attach && askyn("\n\n文章列表状态按 Ctrl+Q 可以显示 web 方式编辑附件的地址，\n您确定想使用落后的 zmodem 方式编辑附件吗", 0)){
         long offset;
         offset=edit_attach(filename);
         if(!(offset<0)&&pattachpos)
