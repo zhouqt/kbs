@@ -51,10 +51,11 @@ case "$host" in
     # NIS+ is forced so that we don't have to recompile
     # if we move to NIS+. appro@fy.chalmers.se
     AC_DEFINE(NIS_PLUS, 1, [ ])
-	CFLAGS="$CFLAGS -DSOLARIS"
+	CFLAGS="$CFLAGS -DSOLARIS -D_POSIX_PTHREAD_SEMANTICS"
     ;;
   *-*-sunos*)
     os_sunos=yes
+    CFLAGS="$CFLAGS -D_POSIX_PTHREAD_SEMANTICS"
     ;;
   *-sgi-irix5*)
     # Irix stuff from snabb@niksula.hut.fi, tsurmacz@asic.ict.pwr.wroc.pl,
