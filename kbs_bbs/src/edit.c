@@ -1768,7 +1768,7 @@ void input_tools()
         {"¡î", "¡ï", "¡ó", "¡ô", "¡õ", "¡ö", "¡÷", "¡ø", "¡ð", "¡ñ"}
     };
 
-    char buf[128], tmp[5];
+    char buf[128], tmp[10];
     char *(*show)[10];
     int ch, i, page;
 
