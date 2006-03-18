@@ -659,6 +659,7 @@ int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, 
         if ((HAS_PERM(user, PERM_CHATCLOAK) || HAS_PERM(user, PERM_CLOAK)))
             setflags(user, CLOAK_FLAG, puinfo->invisible);
 #if defined(HAVE_BRC_CONTROL) && USE_TMPFS == 1
+        init_brc_cache(user->userid,false,getSession());
         brc_update(user->userid, getSession());
 #endif
 
