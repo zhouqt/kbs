@@ -3257,10 +3257,11 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
      * Haohmaru.99.4.20.增加可以强制删除被mark文章的功能 
      */
     while(1) {
-        getdata(7, 0, "请输入序号(直接回车取消): ", del_mode, 10, DOECHO, NULL, true);
+        getdata(7, 0, "请输入序号 [0]: ", del_mode, 10, DOECHO, NULL, true);
         if(del_mode[0] == '\0')
-            return FULLUPDATE;
-        idel_mode = atoi(del_mode);
+            idel_mode = 0;
+	else
+            idel_mode = atoi(del_mode);
         if((idel_mode >= 0) && (idel_mode <= 4))
             break;
         else
@@ -3275,11 +3276,17 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
      * } 
      */
     while(1) {
-        getdata(8, 0, (idel_mode == 4) ? "首篇文章编号(输入0则删除全版所有拟删文章,直接回车取消): " : "首篇文章编号(直接回车取消): ", num1, 10, DOECHO, NULL, true);
+        if(idel_mode == 2)
+            getdata(8, 0, "首篇文章编号(输入0则删除全版所有拟删文章,包括m文和%文) [0]: ", num1, 10, DOECHO, NULL, true);
+	else if(idel_mode == 4)
+            getdata(8, 0, "首篇文章编号(输入0则删除全版所有拟删文章) [0]: ", num1, 10, DOECHO, NULL, true);
+	else
+            getdata(8, 0, "首篇文章编号 [0]: ", num1, 10, DOECHO, NULL, true);
         if(num1[0] == '\0')
-            return FULLUPDATE;
-        inum1 = atoi(num1);
-        if ((inum1 == 0) && (idel_mode == 4)) {
+            inum1 = 0;
+	else
+            inum1 = atoi(num1);
+        if ((inum1 == 0)) {
             inum2 = -1;
             goto THERE;
         }
