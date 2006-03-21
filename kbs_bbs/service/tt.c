@@ -6,6 +6,10 @@ char *userid,*from;
 char tt_id[20][20], tt_ip[20][30];
 int tt_scr[20];
 
+#ifndef CLK_TCK
+#define CLK_TCK sysconf(_SC_CLK_TCK)
+#endif
+
 int tt_load_record() {
   int n;
   FILE *fp=fopen(RECORDFILE, "r");
