@@ -634,7 +634,7 @@ void login_query()
 		char ans[3];
 		move(1,0);
 		prints("由于程序更新，请先退出此帐号所有连接再重新登录\n");
-		getdata(3, 0, "确定要踢除其他登陆吗？(Y/n)[n]:\n", ans, 2, DOECHO, NULL, true);
+		getdata(3, 0, "确定要踢除其他登录吗？(Y/n)[n]: ", ans, 2, DOECHO, NULL, true);
 			if(ans[0]=='y' || ans[0]=='Y'){
 				int uid;
     			struct userec *u;

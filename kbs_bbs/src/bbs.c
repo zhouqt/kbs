@@ -3249,8 +3249,8 @@ int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
     clrtoeol();
     prints("\033[m\n请选择要执行的操作：\n");
     prints("   [0] 添加删除标记 \033[1;30m仅标记X而不删除\033[m\n");
-    prints("   [1] 普通删除 \033[1;30m不会删除标记有m或%%的帖子\033[m\n");
-    prints("   [2] 强制删除 \033[1;30m无论标记有什么都会删除\033[m\n");
+    prints("   [1] 普通删除     \033[1;30m不会删除标记有m或%%的帖子\033[m\n");
+    prints("   [2] 强制删除     \033[1;30m无论标记有什么都会删除\033[m\n");
     prints("   [3] 取消删除标记 \033[1;30m即取消帖子前的X标记\033[m\n");
     prints("   [4] 删除拟删文章 \033[1;30m只有标记有X的帖子才会被删除\033[m\n");
     /*
