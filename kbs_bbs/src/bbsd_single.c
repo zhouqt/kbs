@@ -200,6 +200,7 @@ static void start_daemon(inetd, port)
 #endif
     char buf[80];
     time_t val;
+	int val1;
     /*
      * More idiot speed-hacking --- the first time conversion makes the C
      * library open the files containing the locale definition and time zone.
@@ -268,8 +269,10 @@ static void start_daemon(inetd, port)
       n = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);
 #endif
 
-      val = 1;
-      setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val, sizeof(val));
+      val1 = 1;
+      if(setsockopt(n, SOL_SOCKET, SO_REUSEADDR, (char *) &val1, sizeof(val1))){
+		  exit(1);
+	  }
 
 #if 0
       setsockopt(n, SOL_SOCKET, SO_KEEPALIVE, (char *) &val, sizeof(val));
@@ -287,7 +290,10 @@ static void start_daemon(inetd, port)
 #else
       sin.sin_port = htons(port);
 #endif
-      if ((bind(n, (struct sockaddr *) &sin, sizeof(sin)) < 0) || (listen(n, QLEN) < 0)) {
+      if (bind(n, (struct sockaddr *) &sin, sizeof(sin)) < 0){
+        exit(1);
+      }
+	  if(listen(n, QLEN) < 0) {
         exit(1);
       }
 
