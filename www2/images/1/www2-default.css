@@ -234,6 +234,15 @@ table.main tr.odd {
 table.main tr.even {
     background-color: white;
 }
+table.main tr.rowReading {
+    background-color: #c0d0ff;
+}
+table.main tr.rowTopic {
+    background-color: #d0e0ff;
+}
+table.main tr.rowRe {
+    background-color: #e0f0ff;
+}
 table.main th {
 	text-align: center;
 	background-color: #A8D0FD;

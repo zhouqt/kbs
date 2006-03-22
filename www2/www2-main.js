@@ -785,14 +785,18 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 	document.write(str);
 }
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size, imported) {
-	var tradd = "";
+	var rowclass;	
 	if (www2dev && top.hlInfo) {
 		var info = top.hlInfo.split(',');
-		if (this.bid == info[0] && gid == info[2]) {
-			tradd = ' style="background-color:' + ((id==info[1])?'gold':'yellow') + '"';
-		}
+		if (this.bid == info[0] && gid == info[2])
+			rowclass = (id==info[1])?'rowReading':((id==gid)?'rowTopic':'rowRe');
+		else
+			rowclass = (this.num%2)?'even':'odd';
 	}
-	var str = '<tr class="' + (this.num%2?"even":"odd") + '"' + tradd + '>';
+	else
+		rowclass = (this.num%2)?'even':'odd';
+	var str = '<tr class="' + rowclass + '">';
+	
 	var cb_value = (this.man == 2) ? (this.start + this.num) : id; /* 回收站中以序号代替id */
 	var bf = flag.charAt(0);
 	if (bf.toLowerCase() == 'd') { /* 置顶 */
