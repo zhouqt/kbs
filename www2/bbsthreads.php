@@ -65,6 +65,8 @@
 			<input type="radio" name="operate" value="7">取消拟删标记<br>
 			<input type="radio" name="operate" value="8">设定不可回复<br>
 			<input type="radio" name="operate" value="9">取消不可回复<br>
+			<input type="radio" name="operate" value="10">做合集（保留引文）<br>
+			<input type="radio" name="operate" value="11">做合集（去掉引文）<br>
 		</blockquote>
 			<div align="center"><input type="submit" value="确定"><br></div>
 		</div>
