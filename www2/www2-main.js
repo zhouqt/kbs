@@ -786,7 +786,7 @@ function docWriter(board, bid, start, man, ftype, page, total, apath, showHot, n
 }
 docWriter.prototype.o = function(id, gid, author, flag, time, title, size, imported) {
 	var rowclass;	
-	if (www2dev && top.hlInfo) {
+	if (www2dev && top.hlInfo && !this.man) {
 		var info = top.hlInfo.split(',');
 		if (this.bid == info[0] && gid == info[2])
 			rowclass = (id==info[1])?'rowReading':((id==gid)?'rowTopic':'rowRe');
