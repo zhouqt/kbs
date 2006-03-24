@@ -854,21 +854,26 @@ docWriter.prototype.t = function() {
 	var ret = '';
 	ret += '</tbody></table>';
 	if (this.man) {
-		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 10, "ANNOUNCEADD": 11};
-		ret += '<div class="oper">';
+		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 10, "ANNOUNCEADD": 11, "IMPORT_I": 12, "IMPORT_J": 13};
+		ret += '<div style="text-align:left;width:500px">';
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])
 		{ /* TODO: 这段似乎可以简化一点... */
-			ret += '<input type="button" value="删除" onclick="mansubmit(' + bbsman_modes['DEL'] + ');"/>';
-			ret += '<input type="button" value="切换M" onclick="mansubmit(' + bbsman_modes['MARK'] + ');"/>';
-			ret += '<input type="button" value="切换G" onclick="mansubmit(' + bbsman_modes['DIGEST'] + ');"/>';
-			ret += '<input type="button" value="切换不可Re" onclick="mansubmit(' + bbsman_modes['NOREPLY'] + ');"/>';
-			ret += '<input type="button" value="切换置顶" onclick="mansubmit(' + bbsman_modes['ZHIDING'] + ');"/><br>';
-			ret += '<input type="button" value="切换%" onclick="mansubmit(' + bbsman_modes['PERCENT'] + ');"/>';
-			ret += '<input type="button" value="切换X" onclick="mansubmit(' + bbsman_modes["TODEL"] + ');"/>';
-			ret += '<input type="button" value="切换#" onclick="mansubmit(' + bbsman_modes["SHARP"] + ');"/>';
+			ret += '<br>基本标记： [<a href="javascript:mansubmit(' + bbsman_modes['MARK'] + ');">切换M</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['DIGEST'] + ');">切换G</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['PERCENT'] + ');">切换%</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['TODEL'] + ');">切换X</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['SHARP'] + ');">切换#</a>]<br>';
+			ret += '其他操作： [<a href="javascript:if(confirm(\'确定要删除吗？\')){mansubmit(' + bbsman_modes['DEL'] + ');}">删除</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['NOREPLY'] + ');">切换不可回复</a>]';
+			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['MARK'] + ');">置底</a>]';
 			if (www2dev) {
-				ret += '<input type="button" value="收精华区" onclick="mansubmit(' + bbsman_modes["ANNOUNCE"] + ');"/>';
+				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['ANNOUNCE'] + ');">收精华区</a>]<br>';
+				ret += '暂 存 档： [<a href="bbsimport.php">看暂存档</a>]';
+				ret += ' [<a href="bbsimport.php?act=clear">清空</a>]';
+				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_I'] + ');">保留头尾</a>]';
+				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_J'] + ');">去掉头尾</a>]';
+				
 			}
 		}
 		else

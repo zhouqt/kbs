@@ -15,7 +15,9 @@ $bbsman_modes = array(
 	"TODEL" => 8,
 	"SHARP" => 9,
 	"ANNOUNCE" => 10,
-	"ANNOUNCEADD" => 11
+	"ANNOUNCEADD" => 11,
+	"IMPORT_I" => 12,
+	"IMPORT_J" => 13
 );
 
 function do_manage_function($board) {
