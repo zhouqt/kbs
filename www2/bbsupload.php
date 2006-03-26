@@ -129,15 +129,17 @@ function allAttach() {
 }
 
 addBootFn(function() {
-	if (opener) {
-		opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
-	} else {
-		getObj("winclose").style.display = "none";
-	}
 	if (fileRemains > 0) {
 		getObj("idAddAtt").style.display = "inline";
 		getObj("idAllAtt").style.display = "inline";
 		moreAttach();
+	}
+	if (opener) {
+		try {
+			opener.document.forms["postform"].elements["attachname"].value = "<?php echo $allnames; ?>";
+		} catch(e) {}
+	} else {
+		getObj("winclose").style.display = "none";
 	}
 });
 
