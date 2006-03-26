@@ -208,7 +208,8 @@ int get_top(int type)
 	}
 
 	if(type==0 || type==4){
-		sprintf(cmptime,"YEAR(time)=YEAR(CURDATE()) AND MONTH(time)=MONTH(CURDATE()) AND DAYOFMONTH(time)=DAYOFMONTH(CURDATE())");
+		//sprintf(cmptime,"YEAR(time)=YEAR(CURDATE()) AND MONTH(time)=MONTH(CURDATE()) AND DAYOFMONTH(time)=DAYOFMONTH(CURDATE())");
+		sprintf(cmptime,"time>curdate()");
 	}else if(type==1){
 		sprintf(cmptime,"YEAR(date)=YEAR(CURDATE()) AND WEEK(date)=WEEK(CURDATE())");
 	}else if(type==2){
