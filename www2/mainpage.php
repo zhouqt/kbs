@@ -480,7 +480,7 @@ while($board = array_shift($boards))
 <head>
 <title></title>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
-<script src="www2-main.js"></script>
+<script src="static/www2-main.js"></script>
 <script type="text/javascript">writeCssMainpage();</script>
 </head>
 <body leftmargin="5" topmargin="0" marginwidth="0" marginheight="0">

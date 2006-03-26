@@ -70,8 +70,8 @@ cache_header("nocache");
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=gb2312">
 </head>
-<script src="www2-main.js"></script>
-<script src="bbsleft.js"></script>
+<script src="static/www2-main.js"></script>
+<script src="static/bbsleft.js"></script>
 <body>
 <script type="text/javascript"><!--
 parent.document.getElementById('<?php echo $subMenu; ?>').innerHTML = "<?php echo $innerHtml; ?>" ; 

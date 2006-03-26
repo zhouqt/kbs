@@ -46,7 +46,7 @@
 		$inann = 0;
 	$count = count($ipaths);
 ?>
-<script src="www2-addons.js" type="text/javascript"></script>
+<script src="static/www2-addons.js" type="text/javascript"></script>
 <script type="text/javascript">
 var ipathEditing = 0;
 var ititle = new Array(<?php echo $count; ?>);

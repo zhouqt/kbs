@@ -175,7 +175,7 @@ else {
 	print("<h1 class=\"bt\">{$title}</h1>");
 }
 ?>
-<script src="www2-addons.js" type="text/javascript"></script>
+<script src="static/www2-addons.js" type="text/javascript"></script>
 <?php
 bbs_ann_bm_display_articles($articles, $isBoard);
 	

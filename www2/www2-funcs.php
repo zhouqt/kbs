@@ -353,7 +353,7 @@ function page_header($title, $flag = "", $otherheaders = false) {
 <?php
 if (defined("www2dev")) echo "<script>var gwww2dev=true;</script>";
 ?>
-<script src="www2-main.js" type="text/javascript"></script>
+<script src="static/www2-main.js" type="text/javascript"></script>
 <script>writeCss();</script>
 <?php if ($otherheaders) echo $otherheaders; ?>
 </head>

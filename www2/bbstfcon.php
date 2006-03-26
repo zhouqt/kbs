@@ -43,8 +43,8 @@
 ?>
 <a name="top"></a>
 <h1 class="ttit">»Ø¸´Ê÷Ö÷ÌâÔÄ¶Á£º<?php echo htmlspecialchars($articles[0]["TITLE"]); ?> </h1>
-<link rel="stylesheet" type="text/css" href="www2-tree.css" />
-<script type="text/javascript" src="www2-addons.js"></script>
+<link rel="stylesheet" type="text/css" href="static/www2-tree.css" />
+<script type="text/javascript" src="static/www2-addons.js"></script>
 <script type="text/javascript"><!--
 <?php
 	$strs = array();
