@@ -138,8 +138,8 @@ if (isset($_GET["p"])) {
 	}
 }
 
-	@$attachpos=$_GET["ap"];//pointer to the size after ATTACHMENT PAD
-	if ($attachpos!=0) {
+	@$attachpos=intval($_GET["ap"]);//pointer to the size after ATTACHMENT PAD
+	if ($attachpos) {
 		bbs_file_output_attachment($filename, $attachpos);
 		exit;
 	}
