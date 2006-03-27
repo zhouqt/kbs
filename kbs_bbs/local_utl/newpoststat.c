@@ -318,7 +318,7 @@ int get_top(int type)
 				/***分区十大里一个版面也最多3个***/
 				if(secid!=-1){
                 	m = 0;
-                	for (n = 0; n < sectopnum[i]; n++) {
+                	for (n = 0; n < sectopnum[secid]; n++) {
                     	if (!strcmp(row[0], sectop[secid][n].board))
                         	m++;
                 	}
