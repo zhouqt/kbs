@@ -24,13 +24,17 @@
 			switch ($errno) {
 			case UPLOAD_ERR_OK:
 				$ofile = $attpost['tmp_name'];
+				if (!file_exists($ofile)) {
+					$msg .= "文件传输出错！";
+					break 2;
+				}
 				$oname = $attpost['name'];
 				$htmlname = htmlspecialchars(my_basename($oname));
 				if (!is_uploaded_file($ofile)) {
 					die;
 				}
 				if (compress_bmp($ofile, $oname)) {
-					$msg .= "过大 BMP 图片 " . $htmlname . " 被自动转换成 PNG 格式。";
+					$msg .= "过大 BMP 图片 " . $htmlname . " 被自动转换成 PNG 格式。<br/>";
 				}
 				$ret = bbs_upload_add_file($ofile, $oname);
 				if ($ret) $msg .= bbs_error_get_desc($ret);

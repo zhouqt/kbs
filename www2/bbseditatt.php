@@ -57,6 +57,10 @@
 		switch ($errno) {
 		case UPLOAD_ERR_OK:
 			$ofile = $_FILES['attachfile']['tmp_name'];
+			if (!file_exists($ofile)) {
+				$msg = "文件传输出错！";
+				break;
+			}
 			$oname = $_FILES['attachfile']['name'];
 			if (!is_uploaded_file($ofile)) {
 				die;
