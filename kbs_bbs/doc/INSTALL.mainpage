@@ -86,13 +86,14 @@ domxml_open_file().....等警告。
 3.3.3 手工生成 rcmdbrd.xml
   
     编辑，$(BBSHOME)/xml/rcmdbrd.xml，按照以下格式，感谢 windinsn 提供
-    <?xml version="1.0" encoding="GBK"?>
-    <RecommendBoards>
-    <Board><EnglishName>这里写版面的英文名</EnglishName></Board>
-    <Board><EnglishName>...</EnglishName></Board>
-    ...
-    <Board><EnglishName>...</EnglishName></Board>
-    </RecommendBoards>
+
+<?xml version="1.0" encoding="GBK"?>
+<RecommendBoards>
+<Board><EnglishName>这里写版面的英文名</EnglishName></Board>
+<Board><EnglishName>...</EnglishName></Board>
+...
+<Board><EnglishName>...</EnglishName></Board>
+</RecommendBoards>
 
  
     至此，所有的首页导读的元素都已经生成完毕，在浏览器打开
