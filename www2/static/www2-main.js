@@ -855,7 +855,6 @@ docWriter.prototype.t = function() {
 	ret += '</tbody></table>';
 	if (this.man) {
 		var bbsman_modes = {"DEL": 1, "MARK": 2, "DIGEST": 3, "NOREPLY": 4,	"ZHIDING": 5, "UNDEL": 6, "PERCENT": 7, "TODEL": 8, "SHARP": 9, "ANNOUNCE": 10, "ANNOUNCEADD": 11, "IMPORT_I": 12, "IMPORT_J": 13};
-		ret += '<div style="text-align:left;width:500px">';
 		ret += '<input type="hidden" name="act" value=""/>';
 		if (this.ftype != dir_modes["DELETED"])
 		{ /* TODO: 这段似乎可以简化一点... */
@@ -869,8 +868,8 @@ docWriter.prototype.t = function() {
 			ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['MARK'] + ');">置底</a>]';
 			if (www2dev) {
 				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['ANNOUNCE'] + ');">收精华区</a>]<br>';
-				ret += '暂 存 档： [<a href="bbsimport.php">看暂存档</a>]';
-				ret += ' [<a href="bbsimport.php?act=clear">清空</a>]';
+				ret += '暂 存 档： [<a href="bbsimport.php" target="_blank">看暂存档</a>]';
+				ret += ' [<a href="bbsimport.php?act=clear" target="_blank">清空</a>]';
 				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_I'] + ');">保留头尾</a>]';
 				ret += ' [<a href="javascript:mansubmit(' + bbsman_modes['IMPORT_J'] + ');">去掉头尾</a>]';
 				
@@ -880,7 +879,7 @@ docWriter.prototype.t = function() {
 		{
 			ret += '<input type="button" value="恢复到版面" onclick="mansubmit(' + bbsman_modes['UNDEL'] + ');"/>';
 		}
-		ret += '</div></form>';
+		ret += '<br></form>';
 	}
 	ret += '<form action="bbsdoc.php" method="get" class="docPager smaller">';
 	ret += '<input type="hidden" name="board" value="' + this.board + '"/>';
