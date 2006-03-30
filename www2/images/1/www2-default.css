@@ -465,6 +465,39 @@ table.error td {
 	text-decoration: none;
 }
 
+
+/* mail */
+div.mail {
+	margin: 1em auto;
+	padding: 1em;
+}
+div.mailH {
+}
+div.mailH a, div.mailH b {
+	border: 0.1em solid #A8D0FD;
+	padding: 0.5em 0.5em 0.3em 0.5em;
+	margin: 0 0.2em -0.1em 0;
+	float: left;
+	-moz-border-radius: 0.5em 0.5em 0 0;
+}
+div.mailH b {
+	background-color: #A8D0FD;
+	color: white;
+}
+div.mailH a:hover {
+	background-color: #A8D0FD;
+	color: white;
+	text-decoration: none;
+}
+div.mail .mailM {
+	border: 0.2em solid #A8D0FD;
+	padding: 0.5em;
+	-moz-border-radius: 0 0.5em 0.5em 0.5em;
+	clear: both;
+}
+
+
+
 body.wtoogle {
 	margin: 0px;
 	background-color: #EEEEEE;

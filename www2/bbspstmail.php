@@ -1,113 +1,81 @@
 <?php
-	require("funcs.php");
+	require("www2-funcs.php");
 	login_init();
 	bbs_session_modify_user_mode(BBS_MODE_SMAIL);
-	if ($loginok != 1) {
-		html_nologin();
-		exit;
+	assert_login();
+	
+	mailbox_header("写邮件");
+
+	if ( !bbs_can_send_mail(isset($_GET["file"]) ? 1 : 0) )
+		html_error_quit("您不能发送信件");
+	if (isset($_GET["board"]))
+		$board = $_GET["board"];
+
+	if (isset( $board )){
+		$brdarr = array();
+		$brdnum = bbs_getboard($board, $brdarr);
+		if ($brdnum == 0)
+			html_error_quit("错误的讨论区");
+		$usernum = $currentuser["index"];
+		if (bbs_checkreadperm($usernum, $brdnum) == 0)
+			html_error_quit("错误的讨论区");
+		$id = intval(@$_GET["id"]);
+		if ($id <= 0)
+			html_error_quit("错误的文章");
+		$articles = array ();
+		$num = bbs_get_records_from_id($brdarr["NAME"], $id,$dir_modes["NORMAL"],$articles);
+		if ($num <= 0) html_error_quit("错误的文章");
+		$article = $articles[1];
+		if(!strncmp($article["TITLE"],"Re: ",4)) $title = $article["TITLE"] . ' ';
+		else $title = "Re: " . $article["TITLE"] . ' ';
+		$destuserid = $article["OWNER"];
+		$file = $article["FILENAME"];
+	}else{
+		if (isset($_GET["file"]))
+			$file = $_GET["file"];
+		if (isset($file) && ( $file[0]!='M' || strstr($file,"..") ) )
+			html_error_quit("错误的文章..");
+		$title = isset($_GET["title"])?$_GET["title"].' ':'';
+		$destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
 	}
-		html_init("gb2312","","",1);
-		if ( !bbs_can_send_mail(isset($_GET["file"]) ? 1 : 0) )
-			html_error_quit("您不能发送信件");
-		if (isset($_GET["board"]))
-			$board = $_GET["board"];
+	
+	if(isset($_GET["userid"]))
+	{
+		$lookupuser = array();
+		if (!bbs_getuser($destuserid, $lookupuser))
+			html_error_quit("错误的收件人ID");
+	}
 
-		if (isset( $board )){
-			$brdarr = array();
-			$brdnum = bbs_getboard($board, $brdarr);
-			if ($brdnum == 0)
-				html_error_quit("错误的讨论区");
-			$usernum = $currentuser["index"];
-			if (bbs_checkreadperm($usernum, $brdnum) == 0)
-				html_error_quit("错误的讨论区");
-			$id = intval(@$_GET["id"]);
-			if ($id <= 0)
-				html_error_quit("错误的文章");
-			$articles = array ();
-			$num = bbs_get_records_from_id($brdarr["NAME"], $id,$dir_modes["NORMAL"],$articles);
-			if ($num <= 0) html_error_quit("错误的文章");
-			$article = $articles[1];
-			if(!strncmp($article["TITLE"],"Re: ",4)) $title = $article["TITLE"] . ' ';
-			else $title = "Re: " . $article["TITLE"] . ' ';
-			$destuserid = $article["OWNER"];
-			$file = $article["FILENAME"];
-		}else{
-			if (isset($_GET["file"]))
-				$file = $_GET["file"];
-			if (isset($file) && ( $file[0]!='M' || strstr($file,"..") ) )
-				html_error_quit("错误的文章..");
-			$title = isset($_GET["title"])?$_GET["title"].' ':'';
-			$destuserid = isset($_GET["userid"])?$_GET["userid"]:'';
-		}
-		
-		if(isset($_GET["userid"]))
-		{
-			$lookupuser = array();
-			if (!bbs_getuser($destuserid, $lookupuser))
-				html_error_quit("错误的收件人ID");
-		}
+	//system mailboxs
+	$mail_box = array(".DIR",".SENT",".DELETED");
+	$mail_boxtitle = array("收件箱","发件箱","垃圾箱");
 
-		//system mailboxs
-		$mail_box = array(".DIR",".SENT",".DELETED");
-		$mail_boxtitle = array("收件箱","发件箱","垃圾箱");
-
-		//custom mailboxs
-		$mail_cusbox = bbs_loadmaillist($currentuser["userid"]);
-		$i = 2;
-		if ($mail_cusbox != -1){
-			foreach ($mail_cusbox as $mailbox){
-				$i++;
-				$mail_box[$i] = $mailbox["pathname"];
-				$mail_boxtitle[$i] = $mailbox["boxname"];
-				//$mail_boxnums[$i] = bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],$mailbox["pathname"]));
-				//$totle_mails+= $mail_boxnums[$i];
-				}
+	//custom mailboxs
+	$mail_cusbox = bbs_loadmaillist($currentuser["userid"]);
+	$i = 2;
+	if ($mail_cusbox != -1){
+		foreach ($mail_cusbox as $mailbox){
+			$i++;
+			$mail_box[$i] = $mailbox["pathname"];
+			$mail_boxtitle[$i] = $mailbox["boxname"];
+			//$mail_boxnums[$i] = bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],$mailbox["pathname"]));
+			//$totle_mails+= $mail_boxnums[$i];
 			}
-		$mailboxnum = $i + 1;
+		}
+	$mailboxnum = $i + 1;
 ?>
-<script language=javascript>
-<!--
-function dosubmit() {
-	document.postform.submit();
-}
-//-->
-</script>
-<body topmargin="0">
-<p align="left" class="b2">
-<a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
--
-<a href="bbsmail.php">
-<?php echo $currentuser["userid"]; ?>的邮箱
-</a></p>
-<center>
-<table border="0" width="750" cellspacing="0" cellpadding="0">
-	<tr>
-	<td align="center" valign="middle" background="images/m2.gif" width="80" height="26" class="mb2">
-	写邮件
-	</td>
+<div class="mail">
+<div class="mailH">
+<b>写邮件</b>
 <?php
 	for($i=0;$i<$mailboxnum;$i++){
 ?>
-<td align="center" valign="middle" background="images/m1.gif" width="80" height="26">
-<a href="bbsmailbox.php?path=<?php echo $mail_box[$i];?>&title=<?php echo urlencode($mail_boxtitle[$i]);?>" class="mb1"><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></a>
-</td>
+<a href="bbsmailbox.php?path=<?php echo $mail_box[$i];?>&title=<?php echo urlencode($mail_boxtitle[$i]);?>"><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></a>
 <?php		
 	}
 ?>
-		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="images/empty.gif"></td>
-	</tr>
-	<tr>
-		<td background="images/m3.gif" style="background-repeat:repeat-y; background-color: #CEE3F8;"><img src="images/empty.gif"></td>
-		<td colspan="<?php echo $mailboxnum + 1;	?>" align="right" background="images/m10.gif"><img src="images/m12.gif" align="top"></td>
-	</tr>
-	<tr>
-		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">
-		<table width="100%" cellspacing="0" cellpadding="0">
-			<tr>
-				<td width="7" background="images/m3.gif"><img src="images/empty.gif"></td>
-				<td background="images/m6.gif" height="400" align="center" valign="top">
-
-<form name="postform" method="post" action="bbssendmail.php">
+</div>
+<form name="postform" method="post" action="bbssendmail.php" class="mailM">
 <table>
 <tr>
 <td class="b9">
@@ -157,7 +125,7 @@ function dosubmit() {
 	$bBackup = (bbs_is_save2sent() != 0);
 ?>
 <input type="checkbox" name="backup" value="1"<?php if ($bBackup) echo " checked=\"checked\""; ?>>保存到发件箱<br />
-<textarea class="sb1" name="text" onkeydown='return textarea_okd(dosubmit, event);' rows="20" cols="80" wrap="physical">
+<textarea class="sb1" name="text" onkeydown='return textarea_okd(document.postform.submit, event);' rows="20" cols="80" wrap="physical">
 <?php
 	if(isset($file)){
 		if(isset($board)){
@@ -211,25 +179,7 @@ function dosubmit() {
 &nbsp;&nbsp;&nbsp;&nbsp;
 <input class="bt1" type="button" value="返回" onclick="window.location.href='bbsmail.php'" />
 </div></table></form>
-
-				</td>
-				<td width="7" background="images/m4.gif"><img src="images/empty.gif"></td>
-			</tr>
-		
-		</table>
-		</td>
-	<tr>
-		
-		<td colspan="<?php echo $mailboxnum+2;	?>">
-		<table width="100%" cellspacing="0" cellpadding="0"><tr>
-			<td width="9" height="26"><img src="images/m7.gif"></td>
-			<td background="images/m5.gif" height="26"><img src="images/empty.gif"></td>
-			<td width="9" height="26"><img src="images/m8.gif"></td>
-		</tr></table>
-		</td>
-	</tr>
-</table><br>
-</center>
+</div>
 <?php
-	html_normal_quit();
+	page_footer();
 ?>

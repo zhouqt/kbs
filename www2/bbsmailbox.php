@@ -1,73 +1,69 @@
 <?php
-	/*this file display mailbox to user	windinsn nov 7,2003*/
-	require("funcs.php");
-login_init();
+	require("www2-funcs.php");
+	login_init();
 	bbs_session_modify_user_mode(BBS_MODE_MAIL);
+	assert_login();
 	
-	if ($loginok != 1)
-		html_nologin();
-	else
-	{
-		html_init("gb2312","","",1);
-		if(!strcmp($currentuser["userid"],"guest"))
-			html_error_quit("guest 没有自己的邮箱!");
+	mailbox_header("阅读信件");
 		
-		if (isset($_GET["path"])){
-			$mail_path = $_GET["path"];
-			$mail_title = $_GET["title"];
-		}
-		else {
-			$mail_path = ".DIR";    //default is .DIR
-			$mail_title = "收件箱";
-		}
-		if (isset($_GET["start"]))
-			$start = $_GET["start"];
-		else
-			$start = 999999;   //default*/
-                if (strstr($mail_path,'..'))
-			html_error_quit("读取邮件数据失败!");
-		$mail_fullpath = bbs_setmailfile($currentuser["userid"],$mail_path);
-		$mail_num = bbs_getmailnum2($mail_fullpath);
-		if($mail_num < 0 || $mail_num > 30000)
-			html_error_quit("Too many mails!");
-		$num = 19;
-		if ($start > $mail_num - 19)
-			$start = $mail_num - 19;
-       		 if ($start < 0)
-		{
-			$start = 0;
-			if ($num > $mail_num) $num = $mail_num;
-		}
-		$maildata = bbs_getmails($mail_fullpath,$start,$num);
-		if ($maildata == FALSE)
-			html_error_quit("读取邮件数据失败!");
+	if (isset($_GET["path"])){
+		$mail_path = $_GET["path"];
+		$mail_title = $_GET["title"];
+	}
+	else {
+		$mail_path = ".DIR";    //default is .DIR
+		$mail_title = "收件箱";
+	}
+	if (isset($_GET["start"]))
+		$start = $_GET["start"];
+	else
+		$start = 999999;   //default*/
 
-		//system mailboxs
-		$mail_box = array(".DIR",".SENT",".DELETED");
-		$mail_boxtitle = array("收件箱","发件箱","垃圾箱");
-		//$mail_boxnums = array(bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],".DIR")),bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],".SENT")),bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],".DELETED")));
-		//custom mailboxs
-		$mail_cusbox = bbs_loadmaillist($currentuser["userid"]);
-		//$totle_mails = $mail_boxnums[0]+$mail_boxnums[1]+$mail_boxnums[2];
-		$i = 2;
-		if ($mail_cusbox != -1){
-			foreach ($mail_cusbox as $mailbox){
-				$i++;
-				$mail_box[$i] = $mailbox["pathname"];
-				$mail_boxtitle[$i] = $mailbox["boxname"];
-				//$mail_boxnums[$i] = bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],$mailbox["pathname"]));
-				//$totle_mails+= $mail_boxnums[$i];
-				}
+	if (strstr($mail_path,'..'))
+		html_error_quit("读取邮件数据失败!");
+
+	$mail_fullpath = bbs_setmailfile($currentuser["userid"],$mail_path);
+	$mail_num = bbs_getmailnum2($mail_fullpath);
+	if($mail_num < 0 || $mail_num > 30000)
+		html_error_quit("Too many mails!");
+	$num = 19;
+	if ($start > $mail_num - 19)
+		$start = $mail_num - 19;
+		 if ($start < 0)
+	{
+		$start = 0;
+		if ($num > $mail_num) $num = $mail_num;
+	}
+	$maildata = bbs_getmails($mail_fullpath,$start,$num);
+	if ($maildata == FALSE)
+		html_error_quit("读取邮件数据失败!");
+
+	//system mailboxs
+	$mail_box = array(".DIR",".SENT",".DELETED");
+	$mail_boxtitle = array("收件箱","发件箱","垃圾箱");
+	//$mail_boxnums = array(bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],".DIR")),bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],".SENT")),bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],".DELETED")));
+	//custom mailboxs
+	$mail_cusbox = bbs_loadmaillist($currentuser["userid"]);
+	//$totle_mails = $mail_boxnums[0]+$mail_boxnums[1]+$mail_boxnums[2];
+	$i = 2;
+	if ($mail_cusbox != -1){
+		foreach ($mail_cusbox as $mailbox){
+			$i++;
+			$mail_box[$i] = $mailbox["pathname"];
+			$mail_boxtitle[$i] = $mailbox["boxname"];
+			//$mail_boxnums[$i] = bbs_getmailnum2(bbs_setmailfile($currentuser["userid"],$mailbox["pathname"]));
+			//$totle_mails+= $mail_boxnums[$i];
 			}
-		$mailboxnum = $i + 1;
-		$mail_title_encode = rawurlencode($mail_title);
+		}
+	$mailboxnum = $i + 1;
+	$mail_title_encode = rawurlencode($mail_title);
 ?>
 <script type="text/javascript">
 <!--
 function checkall(form)  {
   for (var i=0;i<form.elements.length;i++)    {
-    var e = form.elements[i];
-    if (e.name != 'chkall')       e.checked = form.chkall.checked; 
+	var e = form.elements[i];
+	if (e.name != 'chkall')       e.checked = form.chkall.checked; 
    }
   }
 function bbsconfirm(url,infor){
@@ -79,61 +75,32 @@ function bbsconfirm(url,infor){
 }
 -->
 </script>
-<body topmargin="0">
-<p align="left" class="b2">
-<a href="bbssec.php" class="b2"><?php echo BBS_FULL_NAME; ?></a>
--
-<a href="bbsmail.php">
-<?php echo $currentuser["userid"]; ?>的邮箱
-</a></p>
-<center>
-<table border="0" width="750" cellspacing="0" cellpadding="0">
-	<tr>
-	<td align="center" valign="middle" background="images/m1.gif" width="80" height="26">
-	<a href="bbspstmail.php" class="mb1">写邮件</a>
-	</td>
+<div class="mail">
+<div class="mailH">
+<a href="bbspstmail.php">写邮件</a>
 <?php
 	$current_i = 0;
 	for($i=0;$i<$mailboxnum;$i++){
 		if($mail_path==$mail_box[$i]&&$mail_title==$mail_boxtitle[$i]){
 			$current_i = $i;
 ?>
-<td align="center" valign="middle" background="images/m2.gif" width="80" height="26" class="mb2">
-<?php echo htmlspecialchars($mail_boxtitle[$i]); ?>
-</td>
+<b><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></b>
 <?php			
-			}
-		else{
+		} else{
 ?>
-<td align="center" valign="middle" background="images/m1.gif" width="80" height="26">
-<a href="bbsmailbox.php?path=<?php echo $mail_box[$i];?>&title=<?php echo urlencode($mail_boxtitle[$i]);?>" class="mb1"><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></a>
-</td>
+<a href="bbsmailbox.php?path=<?php echo $mail_box[$i];?>&title=<?php echo urlencode($mail_boxtitle[$i]);?>"><?php echo htmlspecialchars($mail_boxtitle[$i]); ?></a>
 <?php		
-			}
 		}
+	}
 ?>
-		<td width="<?php echo (int)(670-80*$mailboxnum);	?>"><img src="images/empty.gif"></td>
-	</tr>
-	<tr>
-		<td colspan="<?php echo $current_i + 1;	?>" align="left" background="images/m10.gif"><img src="images/m11.gif" align="top"></td>
-		<td background="images/m6.gif"><img src="images/empty.gif"></td>
-		<td colspan="<?php echo $mailboxnum - $current_i ;	?>" align="right" background="images/m10.gif"><img src="images/m12.gif" align="top"></td>
-	</tr>
-	<tr>
-		<td height=200 colspan="<?php echo $mailboxnum+2;	?>">
-		<table width="100%" cellspacing="0" cellpadding="0">
-			<tr>
-				<td width="7" background="images/m3.gif"><img src="images/empty.gif"></td>
-				<td background="images/m6.gif" height="400" align="center" valign="top">
-<?php				
-	/*mail list start*/					
-?>
+</div>
+<div class='mailM'>
 <p align="center" class="b9">
 您的 <font class="b3"><?php echo $mail_title; ?></font> 里共有 <font class="b3"><?php echo $mail_num; ?></font> 封邮件
 [<a href="bbsmail.php" class="b9">返回邮箱列表</a>]
 </p>
 <form action="bbsmailact.php?act=move&<?php echo "dir=".urlencode($mail_path)."&title=".$mail_title_encode; ?>" method="POST">
-<table width="95%" cellspacing="0" cellpadding="5" class="mt1">
+<table width="95%" cellspacing="0" cellpadding="5" border="1">
 	<tr>
 		<td class="mt2" width="30">已读</td>
 		<td class="mt2" width="30">选中</td>
@@ -176,10 +143,10 @@ function bbsconfirm(url,infor){
 if(strncmp($maildata[$i]["TITLE"],"Re: ",4))
 	echo "★" .  htmlspecialchars($maildata[$i]["TITLE"]);
 else
-    echo htmlspecialchars($maildata[$i]["TITLE"]);
+	echo htmlspecialchars($maildata[$i]["TITLE"]);
 ?> </a></td>
 	<td class="mt3"><?php echo strftime("%b&nbsp;%e&nbsp;%H&nbsp;:%M",$maildata[$i]["POSTTIME"]);?></td>
-      <td class="mt3" style="text-align:right;padding-right:10pt;"><?php echo sizestring($maildata[$i]['EFFSIZE']); ?></td>
+	  <td class="mt3" style="text-align:right;padding-right:10pt;"><?php echo sizestring($maildata[$i]['EFFSIZE']); ?></td>
 	<td class="mt4"><input type="button" name="del" value="删除" class="bt1" onclick="bbsconfirm('bbsmailact.php?act=del&<?php echo "dir=".urlencode($mail_path)."&file=".urlencode($maildata[$i]["FILENAME"])."&title=".$mail_title_encode; ?>','确认删除该邮件吗?')"></td>
 </tr>
 <?php
@@ -244,30 +211,8 @@ else
 <input type="submit" value="区段删除邮件" class="bt1"/>
 </td></tr>
 </form></table>
-<?php				
-				
-				
-	/*mail list end*/			
-?>				
-				</td>
-				<td width="7" background="images/m4.gif"><img src="images/empty.gif"></td>
-			</tr>
-		
-		</table>
-		</td>
-	<tr>
-		
-		<td colspan="<?php echo $mailboxnum+2;	?>">
-		<table width="100%" cellspacing="0" cellpadding="0"><tr>
-			<td width="9" height="26"><img src="images/m7.gif"></td>
-			<td background="images/m5.gif" height="26"><img src="images/empty.gif"></td>
-			<td width="9" height="26"><img src="images/m8.gif"></td>
-		</tr></table>
-		</td>
-	</tr>
-</table><br>
-</center>
+</div>
+</div>
 <?php
-	html_normal_quit();
-	}
+	page_footer();
 ?>
