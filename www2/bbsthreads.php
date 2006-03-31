@@ -61,6 +61,8 @@
 			<input type="radio" name="operate" value="3">取消M标记<br>
 			<input type="radio" name="operate" value="4">删除拟删文章<br>
 			<input type="radio" name="operate" value="5">收录精华区<br>
+			<input type="radio" name="operate" value="12">放入暂存档<br>
+			<input type="radio" name="operate" value="13">放入暂存档（去掉引文）<br>
 			<input type="radio" name="operate" value="6">设定拟删标记<br>
 			<input type="radio" name="operate" value="7">取消拟删标记<br>
 			<input type="radio" name="operate" value="8">设定不可回复<br>
