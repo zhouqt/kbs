@@ -1,7 +1,7 @@
 #!/bin/sh
 # $Id$
 #
-# 快速编译脚本 for Fedora Core 3/4
+# 快速编译脚本 for Fedora Core 3/4/5
 #
 # 修改这里的参数定制您的站点
 # BBSHOME 表示您的 BBS 所在的目录
