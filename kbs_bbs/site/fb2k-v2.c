@@ -55,7 +55,6 @@ const char * const groups[] = {
     "develop.faq",
     "os.faq",
     "comp.faq",
-    "univ.faq",
     NULL
 };
 const char secname[SECNUM][2][20] = {

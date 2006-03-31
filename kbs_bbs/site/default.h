@@ -205,8 +205,7 @@
 
 
 #ifndef SECNUM /* 分区个数*/
-/* for bbs2www, by flyriver, 2001.3.9 */
-#define SECNUM 13
+#error must define SECNUM in your site.h
 #endif
 
 #ifndef SQUID_ACCL /*www前端使用squid加速*/

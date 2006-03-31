@@ -12,7 +12,6 @@
 /** 使用缺省的FILEHeader结构*/
 #define HAVE_FILEHEADER_DEFINE
 /** 定义使用缺省的函数 */
-#define USE_DEFAULT_SECODE
 #define USE_DEFAULT_ALPHABET
 #define USE_DEFAULT_PERMSTRINGS
 #define USE_DEFAULT_DEFINESTR
@@ -31,6 +30,8 @@
 #define USE_DEFAULT_SEE_PERM
 #define REGISTER_TSINGHUA_WAIT_TIME (240*60)
 #define WWW_MAX_LOGIN 128
+
+#define SECNUM 13
 
 #define HAVE_WFORUM 1
 
