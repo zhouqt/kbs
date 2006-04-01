@@ -66,10 +66,6 @@
 #include <termios.h>
 #endif
 
-#ifndef HAVE_FLOCK
-#include "flock.h"
-#endif
-
 #ifndef __GNUC__
 #define __const__ const
 #endif

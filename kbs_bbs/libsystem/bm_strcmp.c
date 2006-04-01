@@ -9,13 +9,13 @@
 char *bm_strstr(const char *string, const char *pattern)
 {
     size_t shift[256];
-    bool init = false;
+    int init = 0;
 
     return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, &init);
 }
 
 /* 字符串多次匹配函数*/
-char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, bool * init)
+char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, int *init)
 {
     return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
@@ -24,13 +24,13 @@ char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, bool
 char *bm_strcasestr(const char *string, const char *pattern)
 {
     size_t shift[256];
-    bool init = false;
+    int init = 0;
 
     return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, &init);
 }
 
 /* 字符串多次大小写不敏感匹配函数*/
-char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, bool * init)
+char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, int *init)
 {
     return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
@@ -42,7 +42,7 @@ void *memfind(const void *in_block,     /* 数据块 */
               const void *in_pattern,   /* 需要查找的数据 */
               const size_t pattern_size,        /* 查找数据的长度 */
               size_t * shift,   /* 移位表，应该是256*size_t的数组 */
-              bool * init)
+              int *init)
 {                               /* 是否需要初始化移位表 */
     size_t byte_nbr,            /* Distance through block */
      match_size,                /* Size of matched part */
@@ -69,7 +69,7 @@ void *memfind(const void *in_block,     /* 数据块 */
             shift[(unsigned char) pattern[byte_nbr]] = pattern_size - byte_nbr;
 
         if (init)
-            *init = true;
+            *init = 1;
     }
 
 /*开始搜索数据块，每次前进移位表中的数量*/
@@ -98,7 +98,7 @@ void *txtfind(const void *in_block,     /* 数据块 */
               const void *in_pattern,   /* 需要查找的数据 */
               const size_t pattern_size,        /* 查找数据的长度 */
               size_t * shift,   /* 移位表，应该是256*size_t的数组 */
-              bool * init)
+              int *init)
 {                               /* 是否需要初始化移位表 */
     size_t byte_nbr,            /* Distance through block */
      match_size,                /* Size of matched part */
@@ -125,7 +125,7 @@ void *txtfind(const void *in_block,     /* 数据块 */
             shift[(unsigned char) tolower(pattern[byte_nbr])] = pattern_size - byte_nbr;
 
         if (init)
-            *init = true;
+            *init = 1;
     }
 
 /*开始搜索数据块，每次前进移位表中的数量*/
