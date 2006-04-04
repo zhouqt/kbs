@@ -8,6 +8,8 @@
 /* 字符串查找函数*/
 
 
+#ifndef HAVE_STRCASESTR
+
 /* 内存匹配函数memfind
 */
 void *memfind(const void *in_block,     /* 数据块 */
@@ -150,4 +152,9 @@ char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, 
     return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
 
+char *strcasestr(const char *haystack, const char *needle)
+{
+    return bm_strcasestr(haystack, needle);
+}
 
+#endif

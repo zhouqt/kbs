@@ -41,9 +41,9 @@ int f_touch(const char *file);
 void uuencode(const char* inbuf,int size,const char *filename,OUTC_FUNC fn);
 
 
-char* bm_strstr_rp(const char *string,const char *pattern,size_t *shift,int *init);        /* 字符串多次匹配函数*/
 #if 0 //atppp 20060404
 char* bm_strstr(const char *string,const char *pattern);                                    /* 字符串匹配函数*/
+char* bm_strstr_rp(const char *string,const char *pattern,size_t *shift,int *init);        /* 字符串多次匹配函数*/
 char* bm_strcasestr(const char *string,const char *pattern);                                /* 字符串大小写不敏感的匹配函数*/
 char* bm_strcasestr_rp(const char *string,const char *pattern,size_t *shift,int *init);    /* 字符串多次大小写不敏感匹配函数*/
 void *memfind(const void *in_block,         /* 数据块 */
