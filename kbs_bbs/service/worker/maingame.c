@@ -258,6 +258,7 @@ int main(int argc, char **argv)
                         break;
 	            case Ctrl('H'):
                     case '\177':
+                    case KEY_DEL:
                     	  if (num_step!=0) {
                     	  	num_step--;
                     	       regretmove(steplog[num_step]);
