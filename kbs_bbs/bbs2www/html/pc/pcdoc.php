@@ -953,14 +953,7 @@ Blog名
 	?>]
 	[<a href="index.php?id=<?php echo $pc["USER"]; ?>" class=f1><?php echo $pc["NAME"]; ?>首页</a>]
 	[<a href="pcmain.php" class=f1>Blog首页</a>]
-	[<a href="
-<?php
-	if(!strcmp($currentuser["userid"],"guest"))
-		echo "/guest-frames.html";
-	else
-		echo "/frames.html";
-?>	
-	" class=f1 target="_top"><?php echo $pcconfig["BBSNAME"]; ?>首页</a>]
+	[<a href="frames.html" class=f1 target="_top"><?php echo $pcconfig["BBSNAME"]; ?>首页</a>]
 	<a href="rss.php?userid=<?php echo $pc["USER"]; ?>"><img src="images/xml.gif" border="0" alt="XML" align="absmiddle"></a>
 	</td>
 </tr>
