@@ -70,8 +70,11 @@
 #define __const__ const
 #endif
 
+#ifndef HAVE_STRCASESTR
+char *strcasestr(const char *haystack, const char *needle);
+#else
 extern char *strcasestr (__const char *__haystack, __const char *__needle);
-
+#endif
 
 #ifndef HAVE_ISBLANK
 #define isblank(c) ((c) == (int)' ' || (c) == (int)'\t' || (c) == (int)'\v')
@@ -403,6 +406,11 @@ extern void Net_Sleep(int);
 #endif
 
 #define chartoupper(c)  ((c >= 'a' && c <= 'z') ? c+'A'-'a' : c)
+
+/*
+#define strncasecmp(x,y,n) ci_strncmp(x,y,n)
+#define strcasecmp(x,y) ci_strcmp(x,y)
+*/
 
 #ifdef NULL
 #undef NULL
