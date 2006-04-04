@@ -136,7 +136,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
     if (4 <= gnDebugLevel)
         fprintf(pLogFile, "%*sEntering directory %s ...\n", gnDirDepth * 2, psNullStr, dname);
 
-    sprintf(idxfile, "%s/%s", dname, DOTNAMES); /*      .Names  */
+    snprintf(idxfile, sizeof(idxfile), "%s/%s", dname, DOTNAMES); /*      .Names  */
     if (NULL == (idxfp = fopen(idxfile, "r+t"))) {
         if (1 <= gnDebugLevel)
             fprintf(pLogFile, "  Error opening index file %s\n", idxfile);
@@ -237,7 +237,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
             continue;
         if (strlen(psPath) <= 0)
             continue;           /* not to form loops */
-        snprintf(fname, sizeof(fname), "%s/%s", dname, psPath);
+        snprintf(fname, sizeof(fname), "%s%s", dname, psPath);
         if (0 != stat(fname, &lst_p)) {
             if (DEFDBGFLAG <= gnDebugLevel)
                 fprintf(pLogFile, "Error stating file %s !\n", fname);
