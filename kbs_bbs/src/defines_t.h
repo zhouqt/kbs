@@ -131,6 +131,7 @@ int check_readonly(char *checked);      /* Leeward 98.03.28 */
 void record_exit_time();        /* 记录离线时间  Luzi 1998/10/23 */
 int shownotepad();
 int check_stuffmode();
+int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int do_reply(struct _select_def* conf,struct fileheader *fileinfo);
 int do_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 void make_blist(int addfav);

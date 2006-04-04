@@ -1997,11 +1997,11 @@ int change_mode(struct _select_def* conf,struct fileheader *fileinfo,int newmode
     case DIR_MODE_MARK:
         return marked_mode(conf,fileinfo,0);
     case DIR_MODE_ORIGIN:
-        return search_mode(conf,fileinfo,6, buf);
+        return search_mode(conf,fileinfo, DIR_MODE_ORIGIN, buf);
     case DIR_MODE_AUTHOR:
-        return search_mode(conf,fileinfo,7, buf);
+        return search_mode(conf,fileinfo, DIR_MODE_AUTHOR, buf);
     case DIR_MODE_TITLE:
-        return search_mode(conf,fileinfo, 8, buf);
+        return search_mode(conf,fileinfo, DIR_MODE_TITLE, buf);
     case DIR_MODE_SUPERFITER:
         return super_filter(conf,fileinfo,0);
     case DIR_MODE_DELETED:

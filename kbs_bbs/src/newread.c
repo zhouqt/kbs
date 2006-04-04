@@ -541,7 +541,7 @@ static int read_prekey(struct _select_def *conf, int *command)
 		        currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
 				if (currfh->id <= 0)
 					return SHOW_CONTINUE;
-				ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board);
+				ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board->filename);
 				if(ent <= 0){
                 	del_post(conf,currfh,(void*)(ARG_NOPROMPT_FLAG)) ;
 				}
@@ -565,7 +565,7 @@ static int read_prekey(struct _select_def *conf, int *command)
 		        currfh=(struct fileheader*)(arg->data+(conf->pos - conf->page_pos) * arg->ssize);
 				if (currfh->id <= 0)
 					return SHOW_CONTINUE;
-				ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board);
+				ent = get_ent_from_id(DIR_MODE_NORMAL, currfh->id, arg->board->filename);
 				if(ent <= 0)
 					return SHOW_CONTINUE;
                 savePos(DIR_MODE_NORMAL,NULL,ent,arg->board);
@@ -754,6 +754,7 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
 }
 
 
+/* TODO: 这个太土了... - atppp */
 static int searchpattern(char *filename, char *query)
 {
     FILE *fp;
@@ -798,14 +799,11 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     char ptr[STRLEN];
     int now, match = 0;
     char upper_query[STRLEN];
-    bool init;
-    size_t bm_search[256];
 
 /*	int mmap_offset,mmap_length; */
     struct fileheader *pFh, *pFh1;
     off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
-    bool inited=false;
 
     get_upper_str(upper_query, query);
     if (*query == '\0') {
@@ -817,7 +815,6 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
      * clrtoeol();
      * prints("\033[44m\033[33m搜寻中，请稍候....                                                             \033[m");
      */
-    init=false;
     now = conf->pos;
 
 /*    refresh();*/
@@ -869,7 +866,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                         && (*(ptr + 3) == ' ')) {
                         ptr2 = ptr + 4;
                     }
-                    if (bm_strcasestr_rp(ptr2,query,bm_search,&inited)) {
+                    if (strcasestr(ptr2,query)) {
                         match = 1;
                         break;
                     }

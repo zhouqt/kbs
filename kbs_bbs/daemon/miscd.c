@@ -266,7 +266,7 @@ int getutmprequest(int m_socket)
     int totalread=0;
 
     len = sizeof(sin);
-    for (s = accept(m_socket, (struct sockaddr*)&sin, &len);; s = accept(m_socket, (struct sockaddr *)&sin, &len)) {
+    for (s = accept(m_socket, (struct sockaddr*)&sin, (socklen_t *) &len);; s = accept(m_socket, (struct sockaddr *)&sin, (socklen_t *) &len)) {
         if ((s <= 0) && errno != EINTR) {
             bbslog("3system", "utmpd:accept %s", strerror(errno));
             exit(-1);
@@ -301,7 +301,7 @@ int getrequest(int m_socket)
 
     len = sizeof(sin);
 
-    for (s = accept(m_socket, (struct sockaddr*)&sin, &len);; s = accept(m_socket, (struct sockaddr *)&sin, &len)) {
+    for (s = accept(m_socket, (struct sockaddr*)&sin, (socklen_t *) &len);; s = accept(m_socket, (struct sockaddr *)&sin, (socklen_t *) &len)) {
         if ((s <= 0) && errno != EINTR) {
             bbslog("3system", "userd:accept %s", strerror(errno));
             exit(-1);

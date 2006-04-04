@@ -606,8 +606,6 @@ int board_regenspecial(char *board, int mode, char *index)
     char newdirect[PATHLEN];
     char *ptr;
     struct stat buf;
-    bool init;
-    size_t bm_search[256];
 
     setbdir(DIR_MODE_NORMAL, olddirect, board);
     setbdir(mode,newdirect, board);
@@ -648,7 +646,6 @@ int board_regenspecial(char *board, int mode, char *index)
     fcntl(fd2, F_SETLKW, &ldata2);
     total = buf.st_size / size;
 
-    init = false;
     if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
@@ -665,7 +662,7 @@ int board_regenspecial(char *board, int mode, char *index)
         if (((mode == DIR_MODE_ORIGIN) && (ptr1->id == ptr1->groupid ))
             || ((mode == DIR_MODE_MARK) && (ptr1->accessed[0] & FILE_MARKED))
             || ((mode == DIR_MODE_AUTHOR) && !strcasecmp(ptr1->owner, index) )
-            || ((mode == DIR_MODE_TITLE)  && bm_strcasestr_rp(ptr1->title, index, bm_search, &init))) {
+            || ((mode == DIR_MODE_TITLE)  && strcasestr(ptr1->title, index))) {
             write(fd, ptr1, size);
             count++;
         }

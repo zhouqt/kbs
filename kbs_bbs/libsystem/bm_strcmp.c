@@ -6,34 +6,7 @@
 */
 #include "system.h"
 /* 字符串查找函数*/
-char *bm_strstr(const char *string, const char *pattern)
-{
-    size_t shift[256];
-    int init = 0;
 
-    return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, &init);
-}
-
-/* 字符串多次匹配函数*/
-char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, int *init)
-{
-    return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, init);
-}
-
-/* 字符串大小写不敏感的匹配函数*/
-char *bm_strcasestr(const char *string, const char *pattern)
-{
-    size_t shift[256];
-    int init = 0;
-
-    return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, &init);
-}
-
-/* 字符串多次大小写不敏感匹配函数*/
-char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, int *init)
-{
-    return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
-}
 
 /* 内存匹配函数memfind
 */
@@ -146,3 +119,35 @@ void *txtfind(const void *in_block,     /* 数据块 */
     }
     return NULL;
 }
+
+
+char *bm_strstr(const char *string, const char *pattern)
+{
+    size_t shift[256];
+    int init = 0;
+
+    return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, &init);
+}
+
+/* 字符串多次匹配函数*/
+char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, int *init)
+{
+    return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, init);
+}
+
+/* 字符串大小写不敏感的匹配函数*/
+char *bm_strcasestr(const char *string, const char *pattern)
+{
+    size_t shift[256];
+    int init = 0;
+
+    return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, &init);
+}
+
+/* 字符串多次大小写不敏感匹配函数*/
+char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, int *init)
+{
+    return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
+}
+
+

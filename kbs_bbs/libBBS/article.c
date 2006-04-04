@@ -1459,7 +1459,7 @@ int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index)
     return ret;
 }
 
-int get_ent_from_id_ext(int mode, int id, char *bname, fileheader_t *fh)
+int get_ent_from_id_ext(int mode, int id, const char *bname, fileheader_t *fh)
 {
     char dir[PATHLEN];
     int fd, index;
@@ -1487,7 +1487,7 @@ static int get_ent_id(int fd, fileheader_t * base, int ent, int total, bool matc
 		return 0;
 }
 
-int get_ent_from_id(int mode, int id, char *bname)
+int get_ent_from_id(int mode, int id, const char *bname)
 {
 	char direct[PATHLEN];
 	int fd;

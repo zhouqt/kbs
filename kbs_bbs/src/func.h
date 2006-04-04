@@ -436,7 +436,8 @@ void unlock_sem_check(int lockid);
  * @author flyriver
  */
     int get_records_from_id(int fd, int id, fileheader_t * buf, int num, int *index);
-    int get_ent_from_id_ext(int mode, int id, char *bname, fileheader_t *fh);
+    int get_ent_from_id(int mode, int id, const char *bname);
+    int get_ent_from_id_ext(int mode, int id, const char *bname, fileheader_t *fh);
 
 	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
 	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num, int start, int * haveprev);
