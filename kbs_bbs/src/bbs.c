@@ -4164,7 +4164,8 @@ int Goodbye()
         }
     } else {
         logouts = countlogouts("etc/logout");   /* logouts 为 离站画面 总数 */
-        user_display("etc/logout", rand() % logouts + 1, true);
+        if (logouts > 0)
+            user_display("etc/logout", rand() % logouts + 1, true);
     }
 
     //bbslog("user", "%s", "exit");
