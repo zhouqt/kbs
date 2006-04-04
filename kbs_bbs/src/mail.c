@@ -1540,6 +1540,59 @@ int mailreadhelp(struct _select_def* conf,void* data,void* extraarg)
     return FULLUPDATE;
 }
 
+int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
+#define MAIL_ADD_IGNORE_ITEMSZ ((IDLEN+1)*sizeof(char))
+#define MAIL_ADD_IGNORE_ECHO(s) do{prints("\033[1;32m%s\033[0;33m<ENTER>\033[m",s);WAIT_RETURN;}while(0)
+#define MAIL_ADD_IGNORE_RETURN do{saveline(t_lines-2,1,linebuf);move(y,x);return DONOTHING;}while(0)
+    struct stat st;
+    char linebuf[512],buf[64],ans[4];
+    int fd,y,x,ret;
+    void *map;
+    const void *p;
+    if(!fh||!getuser(fh->owner,NULL)||!strcmp(fh->owner,getCurrentUser()->userid))
+        return DONOTHING;
+    getyx(&y,&x);
+    saveline(t_lines-2,0,linebuf);
+    move(t_lines-2,0);clrtoeol();
+    sprintf(buf,"\033[1;32m添加用户 %s 到黑名单 [y/N]: \033[m",fh->owner);
+    getdata(t_lines-2,0,buf,ans,2,DOECHO,NULL,true);
+    if(!(ans[0]=='y'||ans[0]=='Y'))
+        MAIL_ADD_IGNORE_RETURN;
+    move(t_lines-2,0);clrtoeol();
+    sethomefile(buf,getCurrentUser()->userid,"ignores");
+    if(!stat(buf,&st)&&S_ISREG(st.st_mode)&&st.st_size){
+        if(!((ret=st.st_size/MAIL_ADD_IGNORE_ITEMSZ)<MAX_IGNORE)){
+            MAIL_ADD_IGNORE_ECHO("已达到黑名单上限...");
+            MAIL_ADD_IGNORE_RETURN;
+        }
+        if(st.st_size%MAIL_ADD_IGNORE_ITEMSZ)
+            truncate(buf,ret*MAIL_ADD_IGNORE_ITEMSZ);
+        if((fd=open(buf,O_RDONLY,0644))==-1)
+            MAIL_ADD_IGNORE_RETURN;
+        map=mmap(NULL,st.st_size,PROT_READ,MAP_SHARED,fd,0);
+        close(fd);
+        if(map==MAP_FAILED)
+            MAIL_ADD_IGNORE_RETURN;
+        for(p=map;ret>0;p+=MAIL_ADD_IGNORE_ITEMSZ,ret--)
+            if(!strcmp(p,fh->owner))
+                break;
+        munmap(map,st.st_size);
+        if(ret){
+            MAIL_ADD_IGNORE_ECHO("该用户已经在当前黑名单中...");
+            MAIL_ADD_IGNORE_RETURN;
+        }
+    }
+    if((fd=open(buf,O_WRONLY|O_CREAT|O_APPEND,0644))==-1)
+        MAIL_ADD_IGNORE_RETURN;
+    ret=write(fd,fh->owner,MAIL_ADD_IGNORE_ITEMSZ);
+    close(fd);
+    if(ret!=-1)
+        MAIL_ADD_IGNORE_ECHO("该用户已经被添加到黑名单!");
+    MAIL_ADD_IGNORE_RETURN;
+#undef MAIL_ADD_IGNORE_ITEMSZ
+#undef MAIL_ADD_IGNORE_ECHO
+#undef MAIL_ADD_IGNORE_RETURN
+}
 
 struct key_command mail_comms[] = {
     {'s', (READ_KEY_FUNC)mail_showsize,NULL},
@@ -1586,6 +1639,8 @@ struct key_command mail_comms[] = {
     
     {'h', (READ_KEY_FUNC)mailreadhelp,NULL},
     {Ctrl('J'), (READ_KEY_FUNC)mailreadhelp,NULL},
+
+    {Ctrl('D'),(READ_KEY_FUNC)mail_add_ignore,NULL},//etnlegend,2005.09.21,信件列表状态添加用户到黑名单
 
     {',', (READ_KEY_FUNC)read_splitscreen,NULL},
     
