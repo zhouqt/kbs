@@ -237,8 +237,7 @@ int PhaseDir(char *dname, /* char * prefix, */ char *brdtitle, char *bmstr)
             continue;
         if (strlen(psPath) <= 0)
             continue;           /* not to form loops */
-        strcpy(fname, dname);
-        strcat(fname, psPath);
+        snprintf(fname, sizeof(fname), "%s/%s", dname, psPath);
         if (0 != stat(fname, &lst_p)) {
             if (DEFDBGFLAG <= gnDebugLevel)
                 fprintf(pLogFile, "Error stating file %s !\n", fname);
