@@ -4003,7 +4003,6 @@ int Goodbye()
     char sysoplist[20][STRLEN], syswork[20][STRLEN], spbuf[STRLEN], buf[STRLEN], *tmp, *pbuf;
     int i, num_sysop, choose, logouts, mylogout = false;
     FILE *sysops;
-    long Time = 10;             /*Haohmaru */
     int left = (80 - 36) / 2;
     int top = (scr_lns - 11) / 2;
     struct _select_item level_conf[] = {
@@ -4131,29 +4130,6 @@ int Goodbye()
             if (choose == 1)    /*modified by Bigman : 2000.8.8 */
                 do_send(sysoplist[3], "【身份确认】使用者寄来的建议信", "");
             choose = -1;
-
-            /*
-             * for(i=0;i<=3;i++)
-             * prints("[\033[33m%1d\033[m] \033[1m%-12s %s\033[m\n",
-             * i,sysoplist[i+4],syswork[i+4]);
-             * prints("[\033[33m%1d\033[m] 还是走了罗！\n",4); 
- *//*
- * * * * * * * * * * * 最后一个选项 
- */
-            /*
-             * sprintf(spbuf,"你的选择是 [\033[32m%1d\033[m]：",4);
-             * getdata(num_sysop+6,0, spbuf,genbuf, 4, DOECHO, NULL ,true);
-             * choose=genbuf[0]-'0';
-             * if(choose==1)
-             * do_send(sysoplist[5], "使用者寄来的的建议信");
-             * else if(choose==2)
-             * do_send(sysoplist[6], "使用者寄来的的建议信");
-             * else if(choose==3)
-             * do_send(sysoplist[7], "使用者寄来的的建议信");
-             * else if(choose==0)
-             * do_send(sysoplist[4], "使用者寄来的的建议信");
-             * choose=-1; 
-             */
         }
     }
     if (choose == 2)            /*返回BBS */
@@ -4166,9 +4142,6 @@ int Goodbye()
 
     clear();
     prints("\n\n\n\n");
-    stay = time(NULL) - login_start_time;       /*本次线上时间 */
-
-    getCurrentUser()->stay += stay;
 
     if (DEFINE(getCurrentUser(), DEF_OUTNOTE /*退出时显示用户备忘录 */ )) {
         sethomefile(notename, getCurrentUser()->userid, "notes");
@@ -4194,57 +4167,12 @@ int Goodbye()
         user_display("etc/logout", rand() % logouts + 1, true);
     }
 
-    /*
-     * if(DEFINE(getCurrentUser(),DEF_LOGOUT\*使用自己的离站画面*\)) Leeward: disable the old code
-     * {
-     * sethomefile( fname,getCurrentUser()->userid, "logout" );
-     * if(!dashf(fname))
-     * strcpy(fname,"etc/logout");
-     * }else
-     * strcpy(fname,"etc/logout");
-     * if(dashf(fname))
-     * {
-     * logouts=countlogouts(fname);      \* logouts 为 离站画面 总数 *\
-     * if(logouts>=1)
-     * {
-     * user_display(fname,(logouts==1)?1:
-     * (getCurrentUser()->numlogins%(logouts))+1,true);
-     * }
-     * } 
-     */
-    bbslog("user", "%s", "exit");
+    //bbslog("user", "%s", "exit");
 
-    /*
-     * stay = time(NULL) - login_start_time;    本次线上时间 
-     */
-    /*
-     * Haohmaru.98.11.10.简单判断是否用上站机 
-     */
-    if ( /*strcmp(getCurrentUser()->username,"guest")&& */ stay <= Time) {
-/*        strcpy(lbuf, "自首-");
-        strftime(lbuf + 5, 30, "%Y-%m-%d%Y:%H:%M", localtime(&login_start_time));
-        sprintf(tmpfile, "tmp/.tmp%d", getpid());
-        fp = fopen(tmpfile, "w");
-        if (fp) {
-            fputs(lbuf, fp);
-            fclose(fp);
-            mail_file(getCurrentUser()->userid, tmpfile, "surr", "自首", BBSPOST_MOVE, NULL);
-        }*/
-    }
-    /*
-     * stephen on 2001.11.1: 上站不足5分钟不计算上站次数 
-     */
-    if (stay <= 300 && getCurrentUser()->numlogins > 5) {
-        getCurrentUser()->numlogins--;
-        if (getCurrentUser()->stay > stay)
-            getCurrentUser()->stay -= stay;
-    }
     if (started) {
         record_exit_time();     /* 记录用户的退出时间 Luzi 1998.10.23 */
+        stay=time(NULL)-uinfo.logintime;
         /*---	period	2000-10-19	4 debug	---*/
-        /*
-         * sprintf( genbuf, "Stay:%3ld (%s)", stay / 60, getCurrentUser()->username ); 
-         */
         newbbslog(BBSLOG_USIES, "EXIT: Stay:%3ld (%s)[%d %d]", stay / 60, getCurrentUser()->username, getSession()->utmpent, getSession()->currentuid);
         u_exit();
         started = 0;
@@ -4254,32 +4182,8 @@ int Goodbye()
         FILE *fp;
         char buf[STRLEN], *ptr;
 
-//        sethomefile(fname, getCurrentUser()->userid, "msgfile");
         if (DEFINE(getCurrentUser(), DEF_MAILMSG /*离站时寄回所有信息 */ ) && (get_msgcount(0, getCurrentUser()->userid))) {
                 mail_msg(getCurrentUser(),getSession());
-/*    #ifdef NINE_BUILD
-            time_t now, timeout;
-            char ans[3];
-
-            timeout = time(0) + 60;
-            do {
-                move(t_lines - 1, 0);
-                clrtoeol();
-                getdata(t_lines - 1, 0, "是否将此次所收到的所有讯息存档 (Y/N)? ", ans, 2, DOECHO, NULL, true);
-                if ((toupper(ans[0]) == 'Y') || (toupper(ans[0]) == 'N'))
-                    break;
-            } while (time(0) < timeout);
-            if (toupper(ans[0]) == 'Y') {
-#endif
-                char title[STRLEN];
-                time_t now;
-
-                now = time(0);
-                sprintf(title, "[%12.12s] 所有讯息备份", ctime(&now) + 4);
-                mail_file(getCurrentUser()->userid, fname, getCurrentUser()->userid, title, BBSPOST_MOVE);
-#ifdef NINE_BUILD
-            }
-#endif*/
         }
 #if !defined(FREE) && !defined(ZIXIA)
 		else

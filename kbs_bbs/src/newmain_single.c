@@ -198,6 +198,19 @@ void setflags(mask, value)
 
 /*---	moved to here from below	period	2000-11-19	---*/
 int started = 0;
+static void sync_stay(void){
+    time_t now,stay;
+    if((stay=(now=time(NULL))-uinfo.logintime)<3)
+        getCurrentUser()->numlogins--;
+    else{
+#ifdef DOTIMEOUT
+        if(!(now-uinfo.freshtime<IDLE_TIMEOUT))
+            stay-=IDLE_TIMEOUT;
+#endif
+        getCurrentUser()->stay+=stay;
+    }
+    return;
+}
 void u_exit()
 {
 /*---	According to ylsdd's article, deal with SUPER_CLOAK problem	---*
@@ -224,6 +237,9 @@ void u_exit()
 #ifdef HAVE_BRC_CONTROL
     brc_update(getCurrentUser()->userid, getSession());
 #endif
+
+    /* etnlegend, 2006.04.04, 计算在线时间 */
+    sync_stay();
 
     if (getSession()->utmpent > 0)
         clear_utmp(getSession()->utmpent, getSession()->currentuid, getpid());
@@ -258,28 +274,33 @@ void talk_request(int signo)
 
 extern int icurrchar, ibufsize;
 
-void abort_bbs(int signo)
-{
-    time_t stay;
+void abort_bbs(int signo){
     static bool in_abort_bbs=false;
-
-    if(in_abort_bbs) return;
+    time_t stay;
+    if(in_abort_bbs)
+        return;
     in_abort_bbs=true;
-
-    output("\x1b[m",3);
-    oflush();
-    if (uinfo.mode == POSTING || uinfo.mode == SMAIL || uinfo.mode == EDIT || uinfo.mode == EDITUFILE || uinfo.mode == EDITSFILE || uinfo.mode == EDITANN)
-        keep_fail_post();
-    if (started) {
+#ifndef SSHBBS
+    output("\x1b[m",3);oflush();
+#endif
+    switch(uinfo.mode){
+        case POSTING:
+        case SMAIL:
+        case EDIT:
+        case EDITUFILE:
+        case EDITSFILE:
+        case EDITANN:
+            keep_fail_post();
+    }
+    if(started){
         record_exit_time();
-        stay = time(0) - login_start_time;
+        stay=time(NULL)-uinfo.logintime;
 /*---	period	2000-10-20	4 debug	---*/
-        newbbslog(BBSLOG_USIES, "AXXED Stay: %3ld (%s)[%d %d]", stay / 60, getCurrentUser()->username, getSession()->utmpent, getSession()->currentuid);
+        newbbslog(BBSLOG_USIES,"AXXED Stay: %3ld (%s)[%d %d]",stay/60,getCurrentUser()->username,
+            getSession()->utmpent,getSession()->currentuid);
         u_exit();
     }
-    shutdown(0, 2);
-    close(0);
-    exit(0);
+    shutdown(0,2);close(0);exit(0);
 }
 
 struct aol {
@@ -390,15 +411,7 @@ void system_init()
     signal(SIGUSR2, r_msg_sig);
 }
 
-void system_abort()
-{
-    if (started) {
-        newbbslog(BBSLOG_USIES,"ABORT %s", getCurrentUser()->username);
-        u_exit();
-    }
-    clear();
-    prints("谢谢光临, 记得常来喔 !\n");
-    oflush();
+void system_abort(void){
     abort_bbs(0);
     return;
 }
