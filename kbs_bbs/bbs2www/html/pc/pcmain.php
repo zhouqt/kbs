@@ -358,7 +358,7 @@ function pcmain_section_top_view()
 <tr><td>
 <?php
 		foreach( $othersections as $section )
-			echo "[<a href=\"/pc/pcsec.php?sec=".$section."\"><font class=low2>".$pcconfig["SECTION"][$section]."</class></a>]\n";
+			echo "[<a href=\"/pc/pcsec.php?sec=".$section."\"><font class=low2>".$pcconfig["SECTION"][$section]."</font></a>]\n";
 ?>
 </td></tr>
 </table>
