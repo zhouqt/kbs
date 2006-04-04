@@ -136,20 +136,25 @@ function set_fromhost()
 	global $fullfromhost;
 	global $fromhost;
 	
-	@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
-	if ($fullfromhost=="") {
+	if (defined("CHECK_X_FORWARDED_FOR")) {
+		@$fullfromhost=$_SERVER["HTTP_X_FORWARDED_FOR"];
+		if ($fullfromhost=="") {
+			@$fullfromhost=$_SERVER["REMOTE_ADDR"];
+			$fromhost=$fullfromhost;
+		}
+		else {
+			$ips = explode(",", $fullfromhost);
+			$c = count($ips);
+			if ($c > 1) {
+				$fromhost = trim($ips[$c - 1]);
+				if (isset($proxyIPs) && in_array($fromhost, $proxyIPs)) {
+					$fromhost = $ips[$c - 2];
+				}
+			} else $fromhost = $fullfromhost;
+		}
+	} else {
 		@$fullfromhost=$_SERVER["REMOTE_ADDR"];
 		$fromhost=$fullfromhost;
-	}
-	else {
-		$ips = explode(",", $fullfromhost);
-		$c = count($ips);
-		if ($c > 1) {
-			$fromhost = trim($ips[$c - 1]);
-			if (isset($proxyIPs) && in_array($fromhost, $proxyIPs)) {
-				$fromhost = $ips[$c - 2];
-			}
-		} else $fromhost = $fullfromhost;
 	}
 	if ($fromhost=="")  {
 		$fromhost="127.0.0.1"; 
