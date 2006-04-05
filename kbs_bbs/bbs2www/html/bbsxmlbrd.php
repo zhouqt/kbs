@@ -41,7 +41,7 @@ var ta = new tabWriter(1,'main wide','<?php echo $xmltitle; ?>',
 			continue;
 		if ((++$i) > 100) break;
 		$brd_encode = urlencode($brdarr["NAME"]);
-		$col1 = '<img src="images/newgroup.gif" />';
+		$col1 = "putImageCode('newgroup.gif','')";
 		$col2 = '<a href="bbsdoc.php?board=' . $brd_encode . '">' . $brdarr["NAME"] . '</a>';
 		$col3 = $brdarr["CLASS"];
 		$col4 = '<a href="bbsdoc.php?board=' . $brd_encode . '">' . htmlspecialchars($brdarr["DESC"], ENT_QUOTES) . '</a>';
@@ -57,7 +57,7 @@ var ta = new tabWriter(1,'main wide','<?php echo $xmltitle; ?>',
 				$col5 = '<a href="bbsqry.php?userid=' . $bms[0] . '">' . $bms[0] . '</a>';
 			}
 		}
-		echo "ta.r('$col1','$col2','$col3','$col4','$col5');\n";
+		echo "ta.r($col1,'$col2','$col3','$col4','$col5');\n";
 	} //end while
 ?>
 ta.t();
