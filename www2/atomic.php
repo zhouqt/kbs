@@ -16,6 +16,7 @@ define('SSSS', $_SERVER["PHP_SELF"]);
 
 require("www2-funcs.php");
 require("www2-board.php");
+require("www2-bmp.php");
 login_init();
 
 if (is_null(UTF8SP)) {
@@ -348,7 +349,7 @@ function atomic_article() {
 	$html = '<p>';
 	if (!$atomic_ftype) {
 		$html .= '<a href="?act=post&board='.$atomic_board.'">发表</a> <a href="?act=post&board='.$atomic_board.'&reid='.$id.'">回复</a> ';
-	    if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&upload=1">带附件回复</a> ';
+	    if (bbs_is_attach_board($atomic_brdarr)) $html .= '<a href="?act=post&board='.$atomic_board.'&reid='.$id.'&upload=1">带附件回复</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=p">上篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=n">下篇</a> ';
 		$html .= '<a href="' . $url . $article["ID"] . '&p=tp">主题上篇</a> ';
@@ -393,60 +394,46 @@ function atomic_post() {
 		else $reID = 0;
 		$outgo = bbs_is_outgo_board($atomic_brdarr) ? 1 : 0;
 		$anony = 0;
-	if (bbs_is_attach_board($atomic_brdarr) && isset($_FILES['attachfile'])) {
-		@$errno=$_FILES['attachfile']['error'];
-		if ($_FILES['attachfile']['size']>ATTACHMAXSIZE) {
-			$errno=UPLOAD_ERR_FORM_SIZE;
-		}
-		switch ($errno) {
-		case UPLOAD_ERR_OK:
-			$buf=$_FILES['attachfile']['name'];
-			$tok = strtok($buf,"/\\");
-			$act_attachname="";
-			while ($tok) {
-				$act_attachname=$tok;
-					$tok = strtok("/\\");
-			}
-			$act_attachname=bbs_filteruploadfilename($act_attachname);
-			$act_attachname=substr($act_attachname,-60);
-			if ($act_attachname=="") {
-				$attmsg = "无效文件名";
-			} else {
-				$attachdir=bbs_getattachtmppath($currentuser["userid"] ,$utmpnum);
-				@mkdir($attachdir);
-				$tmpfilename=tempnam($attachdir,"att");
-				if (is_uploaded_file($_FILES['attachfile']['tmp_name'])) {
-					move_uploaded_file($_FILES['attachfile']['tmp_name'], 
-						$tmpfilename);
-					 /* 填写 .index*/
-					if (($fp=@fopen($attachdir . "/.index", "w"))==FALSE) {
-							unlink($attachdir . "/" . $act_attachname);
-					} else {
-						fputs($fp,$tmpfilename . " " . $act_attachname . "\n");
-						fclose($fp);
-						$attmsg = "文件上载成功！";
-						break;
-					}
+		$attmsg = "";
+		if (bbs_is_attach_board($atomic_brdarr) && isset($_FILES['attachfile'])) {
+			$attpost = $_FILES['attachfile'];
+			@$errno = $attpost['error'];
+			switch ($errno) {
+			case UPLOAD_ERR_OK:
+				$ofile = $attpost['tmp_name'];
+				if (!file_exists($ofile)) {
+					$attmsg = "文件传输出错！";
+					break;
 				}
-				$attmsg = "保存附件文件失败！";
+				$oname = $attpost['name'];
+				$htmlname = htmlspecialchars(my_basename($oname));
+				if (!is_uploaded_file($ofile)) {
+					die;
+				}
+				if (compress_bmp($ofile, $oname)) {
+					$attmsg .= "过大 BMP 图片 " . $htmlname . " 被自动转换成 PNG 格式。<br/>";
+				}
+				$ret = bbs_upload_add_file($ofile, $oname);
+				if ($ret) {
+					$attmsg .= bbs_error_get_desc($ret);
+				} else {
+					$attmsg .= $htmlname . "上传成功！<br/>";
+				}
+				break;
+			case UPLOAD_ERR_INI_SIZE:
+			case UPLOAD_ERR_FORM_SIZE:
+				$attmsg = "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
+				break;
+			case UPLOAD_ERR_PARTIAL:
+				$attmsg = "文件传输出错！";
+				break;
+			case UPLOAD_ERR_NO_FILE:
+				$attmsg = "没有文件上传！";
+				break;
+			default:
+				$attmsg = "未知错误";
 			}
-			break;
-		case UPLOAD_ERR_INI_SIZE:
-		case UPLOAD_ERR_FORM_SIZE:
-			$attmsg = "文件超过预定的大小" . sizestring(ATTACHMAXSIZE) . "字节";
-			break;
-		case UPLOAD_ERR_PARTIAL:
-			$attmsg = "文件传输出错！";
-			break;
-		case UPLOAD_ERR_NO_FILE:
-			$attmsg = "没有文件上传！";
-			break;
-		case 100:
-			$attmsg = "无效的文件名！";
-		default:
-			$attmsg = "未知错误";
 		}
-	}
 		$ret = bbs_postarticle($atomic_board, $title, $text, $currentuser["signature"], $reID, $outgo, $anony, 0, 0);
 		switch ($ret) {
 		case -1:
