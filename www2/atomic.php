@@ -4,13 +4,12 @@
  * Suppports UTF8. Absolutely NO javascript!
  * BUG: 没有完善处理版名含有特殊字符的情形
  */
-if (isset($_GET['utf8'])) {
-	define('UTF8', (bool)$_GET['utf8']);
-	setcookie("UTF8", (int)UTF8, 0, "/");
-} else if (isset($_COOKIE['UTF8'])){
-	define('UTF8', (bool)$_COOKIE["UTF8"]);
-} else
-define('UTF8', FALSE);
+
+/*
+ * UTF8SP - TRUE/FALSE  (use UTF8 or GB18030)
+ *        - NULL        (user can switch, default is GB18030)
+ */
+define('UTF8SP', NULL);
 define('ARTCNT', 20);
 define('MAXCHAR', 20000);
 define('SSSS', $_SERVER["PHP_SELF"]);
@@ -18,6 +17,19 @@ define('SSSS', $_SERVER["PHP_SELF"]);
 require("www2-funcs.php");
 require("www2-board.php");
 login_init();
+
+if (is_null(UTF8SP)) {
+	if (isset($_GET['utf8'])) {
+		define('UTF8', (bool)$_GET['utf8']);
+		setcookie("UTF8", (int)UTF8, 0, "/");
+	} else if (isset($_COOKIE['UTF8'])){
+		define('UTF8', (bool)$_COOKIE["UTF8"]);
+	} else {
+		define('UTF8', FALSE);
+	}
+} else {
+	define('UTF8', UTF8SP);
+}
 
 if (UTF8) {
 	iconv_set_encoding("internal_encoding", "gb18030");
@@ -804,10 +816,15 @@ function atomic_mainpage() {
 END;
 	}
 	atomic_show_boardjump();
-	$url = $_SERVER['REQUEST_URI'];
-	if (strstr($url, 'utf8=')) $url = substr($url, 0, strlen($url)-1);
-    else if (!strstr($url, '?')) $url.= '?utf8=';
-	echo "UTF8: <a href='" . $url . (UTF8 ? "0" : "1") . "'>" . (UTF8 ? "ON" : "OFF") . "</a>. 文章显示长度限制: " . MAXCHAR . ".";
+	if (is_null(UTF8SP)) {
+		$url = $_SERVER['REQUEST_URI'];
+		if (strstr($url, 'utf8=')) $url = substr($url, 0, strlen($url)-1);
+	    else if (!strstr($url, '?')) $url.= '?utf8=';
+		echo "UTF8: <a href='" . $url . (UTF8 ? "0" : "1") . "'>" . (UTF8 ? "ON" : "OFF") . "</a>. ";
+	} else {
+		echo "UTF8: " . (UTF8 ? "ON" : "OFF") . ". ";
+	}
+	echo "文章显示长度限制: " . MAXCHAR . ".";
 	atomic_footer();
 }
 
