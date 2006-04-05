@@ -341,7 +341,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 	<smthBlog:node>
 		<smthBlog:id><?php echo $nodes[$i][nid]; ?></smthBlog:id>
 		<smthBlog:emote><?php echo $nodes[$i][emote]; ?></smthBlog:emote>
-		<smthBlog:address><?php echo $nodes[$i][hostname]; ?></smthBlog:address>
+		<smthBlog:address><?php echo pc_hide_ip($nodes[$i][hostname]); ?></smthBlog:address>
 		<smthBlog:view><?php echo $nodes[$i][visitcount]; ?></smthBlog:view>
 		<smthBlog:reply><?php echo $nodes[$i][commentcount]; ?></smthBlog:reply>
 		<smthBlog:quote><?php echo $nodes[$i][trackbackcount]; ?></smthBlog:quote>

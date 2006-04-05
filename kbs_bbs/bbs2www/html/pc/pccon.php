@@ -191,7 +191,7 @@
 			{
 				echo "<tr>\n<td colspan='2' class=\"".$tdclass[2]."\"><font class='".$contentcss."'>".
 					html_format($rows[body],TRUE,$rows[htmltag])."</font></td>\n</tr>\n".
-					"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: ".$rows[hostname]."]".
+					"<tr>\n<td colspan='2' align='right' class=\"".$tdclass[0]."\">[FROM: ".pc_hide_ip($rows[hostname])."]".
 					"</td>\n</tr>\n";
 			}	
 		}
@@ -358,7 +358,7 @@
 			if($rows[trackback])
 				echo "引用：".$rows[trackbackcount]."次<br/>";
 		?>
-		地址：<?php echo $rows[hostname]; ?>
+		地址：<?php echo pc_hide_ip($rows[hostname]); ?>
 <?php
     if ($pc['USER'] != '_filter') {
 ?>

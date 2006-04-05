@@ -1684,4 +1684,11 @@ function pc_add_comment($link,$pc,$nid,$emote,$userid,$subject,$body,$htmltag,$f
     
 }
 
+function pc_hide_ip($ip)
+{
+	$dots = explode('.', $ip);
+	$dots[sizeof($dots) - 1] = '*';
+	return implode('.', $dots);
+}
+
 ?>

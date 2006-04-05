@@ -141,7 +141,7 @@
 <tr>
 	<td class="t5" align="right">
 	[FROM:
-	<?php echo $comment[hostname]; ?>
+	<?php echo pc_hide_ip($comment[hostname]); ?>
 	]
 	&nbsp;&nbsp;&nbsp;&nbsp;
 	</td>
