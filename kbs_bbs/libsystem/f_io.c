@@ -75,10 +75,10 @@ static int rm_dir(const char *path){
     DIR *dp;
     struct dirent *de;
     struct stat st;
-    char buf[512],*p,*q,*r;
+    char buf[512],*p,*q,*r,*s;
     if(!(dp=opendir(path)))
         return -1;
-    if(!(p=strdup(path))){
+    if(!(s=(p=strdup(path)))){
         closedir(dp);
         return -2;
     }
@@ -92,7 +92,7 @@ static int rm_dir(const char *path){
             *q++=*r++;
         *q++='/';
     }
-    free(p);
+    free(s);
     while(!!(de=readdir(dp))){
         if(!*(de->d_name))
             continue;
