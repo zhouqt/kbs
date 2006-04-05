@@ -328,8 +328,10 @@ reenter:
                 if(chk[0]) {
                     int fd, fd2;
                     char fname[STRLEN], fname2[STRLEN];
+                    size_t bm_search[256];
                     struct msghead head;
                     int i;
+                    int init=false;
                     sethomefile(fname, getCurrentUser()->userid, "msgindex");
                     sethomefile(fname2, getCurrentUser()->userid, "msgindex3");
                     fd = open(fname, O_RDONLY, 0644);
@@ -340,7 +342,7 @@ reenter:
                         read(fd, &head, sizeof(struct msghead));
                         if(toupper(ch)=='S') load_msgtext(getCurrentUser()->userid, &head, buf);
                         if((toupper(ch)=='I'&&!strncasecmp(chk, head.id, IDLEN))
-                          ||(toupper(ch)=='S'&&strcasestr(buf, chk) != NULL))
+                          ||(toupper(ch)=='S'&&bm_strcasestr_rp(buf, chk, bm_search, &init) != NULL))
                             write(fd2, &head, sizeof(struct msghead));
                     }
                     close(fd2);

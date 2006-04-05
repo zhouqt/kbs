@@ -8,11 +8,9 @@
 /* 字符串查找函数*/
 
 
-#ifndef HAVE_STRCASESTR
-
 /* 内存匹配函数memfind
 */
-void *memfind(const void *in_block,     /* 数据块 */
+static void *memfind(const void *in_block,     /* 数据块 */
               const size_t block_size,  /* 数据块长度 */
               const void *in_pattern,   /* 需要查找的数据 */
               const size_t pattern_size,        /* 查找数据的长度 */
@@ -68,7 +66,7 @@ void *memfind(const void *in_block,     /* 数据块 */
 
 /* 大小写不敏感的匹配函数txtfind
 */
-void *txtfind(const void *in_block,     /* 数据块 */
+static void *txtfind(const void *in_block,     /* 数据块 */
               const size_t block_size,  /* 数据块长度 */
               const void *in_pattern,   /* 需要查找的数据 */
               const size_t pattern_size,        /* 查找数据的长度 */
@@ -123,7 +121,7 @@ void *txtfind(const void *in_block,     /* 数据块 */
 }
 
 
-char *bm_strstr(const char *string, const char *pattern)
+static char *bm_strstr(const char *string, const char *pattern)
 {
     size_t shift[256];
     int init = 0;
@@ -132,13 +130,13 @@ char *bm_strstr(const char *string, const char *pattern)
 }
 
 /* 字符串多次匹配函数*/
-char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, int *init)
+static char *bm_strstr_rp(const char *string, const char *pattern, size_t * shift, int *init)
 {
     return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
 
 /* 字符串大小写不敏感的匹配函数*/
-char *bm_strcasestr(const char *string, const char *pattern)
+static char *bm_strcasestr(const char *string, const char *pattern)
 {
     size_t shift[256];
     int init = 0;
@@ -152,9 +150,10 @@ char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, 
     return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
 
+#ifndef HAVE_STRCASESTR
 char *strcasestr(const char *haystack, const char *needle)
 {
     return bm_strcasestr(haystack, needle);
 }
-
 #endif
+

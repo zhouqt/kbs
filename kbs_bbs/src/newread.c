@@ -799,6 +799,8 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     char ptr[STRLEN];
     int now, match = 0;
     char upper_query[STRLEN];
+    int init;
+    size_t bm_search[256];
 
 /*	int mmap_offset,mmap_length; */
     struct fileheader *pFh, *pFh1;
@@ -815,6 +817,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
      * clrtoeol();
      * prints("\033[44m\033[33mËÑÑ°ÖÐ£¬ÇëÉÔºò....                                                             \033[m");
      */
+    init=false;
     now = conf->pos;
 
 /*    refresh();*/
@@ -866,7 +869,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                         && (*(ptr + 3) == ' ')) {
                         ptr2 = ptr + 4;
                     }
-                    if (strcasestr(ptr2,query)) {
+                    if (bm_strcasestr_rp(ptr2,query,bm_search,&init)) {
                         match = 1;
                         break;
                     }
