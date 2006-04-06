@@ -11,7 +11,7 @@ bbsd_SOURCES=bbs.c record.c delete.c stuff.c mail.c register.c \
 	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c site.c\
 	   filter.c mgrep.c definekey.c default.c calltime.c super_filter.c libtmpl.c msg_manager.c\
 		addr_manage.c libpc.c personal_corp.c newread.c newhelp.c
-noinst_HEADERS = bbsconfig.h ann.h bbs.h chat.h defines_t.h edit.h func.h ioctl.h \
+noinst_HEADERS = ann.h bbs.h chat.h defines_t.h edit.h func.h ioctl.h \
            md5.h modes.h prototype.h screen.h struct.h system.h \
            systemexp.h uhashgen.h vars.h vote.h webmsg.h select.h default.h ansi.h output.h \
            calltime.h tmpl.h read.h service.h

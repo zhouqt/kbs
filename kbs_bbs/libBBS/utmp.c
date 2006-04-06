@@ -785,7 +785,7 @@ int getfriendstr(struct userec* user,struct user_info* puinfo,session_t * sessio
             nf--;
         }
     }
-    qsort(friendsdata, nf, sizeof(friendsdata[0]),(int (*) (__const__ void *, __const__ void *)) cmpfuid);      /*For Bi_Search */
+    qsort(friendsdata, nf, sizeof(friendsdata[0]), cmpfuid);      /*For Bi_Search */
     session->topfriend = (struct friends_info *) calloc(nf,sizeof(struct friends_info));
     for (i = 0; i < nf; i++) {
         puinfo->friends_uid[i] = searchuser(friendsdata[i].id);

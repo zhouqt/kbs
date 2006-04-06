@@ -837,4 +837,45 @@ attach define
 	(addr.s6_addr[5]==0)&&(addr.s6_addr[6]==0)&&(addr.s6_addr[7]==0)&& \
 	(addr.s6_addr[8]==0)&&(addr.s6_addr[9]==0)&& \
 	(addr.s6_addr[10]==0xff)&&(addr.s6_addr[11]==0xff))
+
+
+
+/* old bbsconfig.h */
+
+/* 
+   You get this many chances to give a valid userid/password combination
+   before the bbs squawks at you and closes the connection. 
+   Don't comment out. 
+*/
+#define LOGINATTEMPTS 3
+
+/* 
+   Turn this on to allow users to create their own accounts by typing 'new'
+   at the "Enter userid:" prompt. Comment out to restrict access to accounts
+   created by the Sysop (see important note in README.install). 
+*/
+#define LOGINASNEW 1 
+
+/* 
+   Define this if you want the Internet Post/Mail Forwarding features
+   enabled. You MUST have the sendmail(8) program on your system and
+   a cron job to run the bbs mail queue every so often. The bbs does not
+   invoke sendmail, it simply creates the queue and data files for it. 
+*/
+#define INTERNET_EMAIL 1
+
+
+#define MAXSIGLINES    6 /* max. # of lines appended for post signature */
+#define MAXQUERYLINES 16 /* max. # of lines shown by the Query function */
+
+/* Once you set this, do not change it unless you are restarting your
+   bbs from scratch! The PASSWDS file will not work if this is changed.
+   If commented out, no real name/address info can be kept in the passwd
+   file. Pretty useless to have this if LOGINASNEW is defined. */
+
+/*Define this for Use Notepad.*/
+#define USE_NOTEPAD 1
+
+/* end old bbsconfig.h */
+
 #endif

@@ -563,13 +563,7 @@ static int ent_chat(int chatnum)
             newmail = 1;
             printchatline(pthis, "\033[32m*** \033[31m当！你有新信来啦...\033[m");
         }
-#ifdef BIT8
         if (isprint2(ch))
-#else                           /* 
-                                 */
-        if (isprint(ch))
-#endif                          /* 
-                                 */
         {
             if (currchar < 126) {       /* 未满一行,print it */
                 modified = 1;

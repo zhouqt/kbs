@@ -26,8 +26,6 @@
 
 #include "kbs_config.h"
 
-#include "bbsconfig.h" //need to remove this
-
 /* Global includes, needed in most every source file... */
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
