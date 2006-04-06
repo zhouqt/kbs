@@ -1,7 +1,6 @@
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
-#include "config.h"
 
 FILE *fp;
 FILE *fp1;

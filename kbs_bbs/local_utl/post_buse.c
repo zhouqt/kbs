@@ -11,7 +11,6 @@ crontab:  2 0 * * * /home/bbs/bin/bonlinelog
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
-#include "config.h"
 
 main(int argc, char **argv)
 {

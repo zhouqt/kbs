@@ -10,7 +10,6 @@ crontab:  10 0 * * * /home/bbs/bin/post_brdlog
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
-#include "config.h"
 
 #ifdef HAVE_MYSQL_SMTH
 struct _brdlog

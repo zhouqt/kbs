@@ -25,7 +25,6 @@ crontab:  2 * * * * /home/bbs/bin/bonlinelog
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
-#include "config.h"
 
 #ifdef HAVE_MYSQL_SMTH
 MYSQL s;

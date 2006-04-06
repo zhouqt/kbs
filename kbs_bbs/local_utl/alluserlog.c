@@ -8,7 +8,6 @@ stiger: 增加今日平均在线到 BBSHOME/allonline 文件
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
-#include "config.h"
 
 int num=0;
 int t1=0;

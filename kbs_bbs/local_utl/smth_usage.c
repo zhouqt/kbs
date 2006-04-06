@@ -3,7 +3,6 @@
 #include <stdio.h>
 #include "bbs.h"
 #include "urlencode.c"
-#include "config.h"
 
 #define MAX_SEC_BOARD 100
 

@@ -12,7 +12,6 @@ lastcount文件可以用来snmp分析....
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
-#include "config.h"
 
 FILE *fp;
 FILE *fp_forcount;

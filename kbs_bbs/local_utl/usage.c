@@ -2,7 +2,6 @@
 #include <stdio.h>
 #include "bbs.h"
 #include "urlencode.c"
-#include "config.h"
 
 struct binfo {
     char boardname[15];
