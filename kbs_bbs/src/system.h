@@ -13,12 +13,7 @@
 #include <sys/stat.h>
 #include <sys/types.h>
 
-#ifndef KBS_CONFIG_H_INCLUDED
-#define KBS_CONFIG_H_INCLUDED
-
-#include "../kbs_config.h"
-
-#endif /* KBS_CONFIG_H_INCLUDED */
+#include "kbs_config.h"
 
 #ifndef HAVE_STRSEP
 char* strsep(char **strptr,const char *delim);

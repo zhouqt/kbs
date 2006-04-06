@@ -1,12 +1,5 @@
 /* etnlegend, 2006.04.05, solaris dependences */
-
-#ifndef KBS_CONFIG_H_INCLUDED
-#define KBS_CONFIG_H_INCLUDED
-
-#include "../kbs_config.h"
-
-#endif /* KBS_CONFIG_H_INCLUDED */
-
+#include "kbs_config.h"
 
 #ifndef HAVE_STRSEP
 

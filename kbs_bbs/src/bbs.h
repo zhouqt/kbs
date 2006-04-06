@@ -24,12 +24,7 @@
 #ifndef  _BBS_H_
 #define _BBS_H_
 
-#ifndef KBS_CONFIG_H_INCLUDED
-#define KBS_CONFIG_H_INCLUDED
-
-#include "../kbs_config.h"
-
-#endif /* KBS_CONFIG_H_INCLUDED */
+#include "kbs_config.h"
 
 #include "bbsconfig.h" //need to remove this
 
