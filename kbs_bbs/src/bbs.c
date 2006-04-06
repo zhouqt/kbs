@@ -203,6 +203,27 @@ int Select()
     return 0;
 }
 
+int ReadBoard(void){
+    int returnmode;
+    while(1){
+        returnmode=Read();
+        if((returnmode==-2)||(returnmode==CHANGEMODE)){ //is directory or select another board
+            if(currboard->flag&BOARD_GROUP){
+                choose_board(0,NULL,currboardent,0);
+                break;
+            }
+        }
+        else
+            break;
+    }
+    return 0;
+}
+
+/* etnlegend, 2006.04.07, 新选择阅读讨论区... */
+int NewSelect(void){
+    return (do_select(NULL,NULL,NULL)==CHANGEMODE?ReadBoard():0);
+}
+
 int Post()
 {                               /* 主菜单内的 在当前版 POST 文章 */
     if (!selboard) {
@@ -1596,29 +1617,41 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
          */
 {
     char bname[STRLEN], bpath[STRLEN];
-    struct stat st;
     int bid;
     struct read_arg* arg=NULL;
 	int addfav=0;
+    int ret;
     
     if (conf!=NULL) arg=conf->arg;
 	if( extraarg ) addfav = * ( (int *) extraarg ) ;
 
+    /*
     move(0, 0);
     prints("选择一个讨论区 (英文字母大小写皆可, 按\033[1;32m#\033[0m进入\033[1;31m关键字或版面名称\033[0m搜索)");
     clrtoeol();
     prints("\n输入讨论区名 (按空白键或Tab键自动补齐): ");
     clrtoeol();
+    */
+
+    /* etnlegend, 2006.04.07, 这地方改改... */
+    move(0,0);clrtoeol();
+    prints("%s","选择讨论区 [ \033[1;32m#\033[m - \033[1;31m版面名称/关键字搜索\033[m, "
+        "\033[1;32mSPACE/TAB\033[m - 自动补全, \033[1;32mESC\033[m - 退出 ]");
+    move(1,0);clrtoeol();
+    if(uinfo.mode!=MMENU)
+        prints("请输入讨论区名称: ");
+    else
+        prints("请输入讨论区名称 [\033[1;32m%s\033[m]: ",currboard->filename);
 
     make_blist(addfav);               /* 生成所有Board名 列表 */
 	in_do_sendmsg=true;
-    if ( namecomplete((char *) NULL, bname) == '#' ) { /* 提示输入 board 名 */
+    if((ret=namecomplete(NULL,bname))=='#'){ /* 提示输入 board 名 */
 		super_select_board(bname);
 	}
 	in_do_sendmsg=0;
 
-    if (*bname == '\0')
-    	return FULLUPDATE;
+    if(!*bname)
+        return ((uinfo.mode!=MMENU||ret==KEY_ESC)?FULLUPDATE:CHANGEMODE);
 
 	if(addfav){
 		bid = EnameInFav(bname,getSession());
@@ -1633,20 +1666,11 @@ int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 			*((int *)extraarg) = 0;
 	}
 
-    setbpath(bpath, bname);
-    if (stat(bpath, &st) == -1) { /* 判断board是否存在 */
-        move(2, 0);
-        prints("不正确的讨论区.");
-        clrtoeol();
-        pressreturn();
-        return FULLUPDATE;
-    }
-    bid = getbnum(bname);
-    if (!(st.st_mode & S_IFDIR) || (bid == 0)) {
-        move(2, 0);
-        prints("不正确的讨论区.");
-        clrtoeol();
-        pressreturn();
+    setbpath(bpath,bname);
+    if(!dashd(bpath)||!(bid=getbnum(bname))){
+        move(2,0);clrtoeol();
+        prints("\033[1;37m%s\033[0;33m<ENTER>\033[m","错误的讨论区名称...");
+        WAIT_RETURN;
         return FULLUPDATE;
     }
 
@@ -3859,22 +3883,6 @@ int b_note_edit_new(struct _select_def* conf,struct fileheader *fileinfo,void* e
 #endif
 
 	return FULLUPDATE;
-}
-
-int ReadBoard()
-{
-    int returnmode;
-    while (1) {
-        returnmode=Read();
-        
-        if ((returnmode==-2)||(returnmode==CHANGEMODE)) { //is directory or select another board
-            if (currboard->flag&BOARD_GROUP) {
-                choose_board(0,NULL,currboardent,0);
-                break;
-            }
-        } else break;
-    }
-    return 0;
 }
 
 /*Add by SmallPig*/

@@ -40,6 +40,10 @@ int New();
 int Post();
 int ReadBoard();
 int Select();
+
+/* etnlegend, 2004.04.07, 新选择阅读讨论区... */
+int NewSelect(void);
+
 int Users();
 int Welcome();
 #ifdef FB2KPC
@@ -159,6 +163,10 @@ static const struct scommandlist sysconf_cmdlist[] = {
      * {"ExecGopher",   t_gopher}, 
      */
     {"SelectBoard", Select},
+
+    /* etnlegend, 2006.04.07, 新选择阅读讨论区... */
+    {"NewSelect",NewSelect},
+
     {"ReadBoard", ReadBoard},
     {"PostArticle", Post},
     {"SetAlarm", set_clock},
