@@ -35,8 +35,8 @@ PHP_FUNCTION(bbs_sysconf_str)
          int ac = ZEND_NUM_ARGS();
         int char_len;
         char *char_conf;
-        char *char_result;
-		char *char_default="";
+        const char *char_result;
+		const char *char_default="";
 		int default_len;
         if(ac !=1 || zend_parse_parameters(1 TSRMLS_CC,"s",&char_conf,&char_len) ==FAILURE){
             if(ac !=2 || zend_parse_parameters(2 TSRMLS_CC,"ss",&char_conf,&char_len,&char_default,&default_len) ==FAILURE){
@@ -44,10 +44,8 @@ PHP_FUNCTION(bbs_sysconf_str)
 			}
         }
         char_result=sysconf_str(char_conf);//获取配制参数
-		if (char_result==NULL) {
-          RETURN_STRING(char_default,1);
-        }
-        RETURN_STRING(char_result,1);
+		if (char_result==NULL) char_result=char_default;
+        RETURN_STRING((char*)char_result,1);
 }
 
 

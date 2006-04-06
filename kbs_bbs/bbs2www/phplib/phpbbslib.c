@@ -231,31 +231,23 @@ PHP_FUNCTION(bbs_init_ext)
 
 PHP_MINIT_FUNCTION(kbs_bbs)
 {
-    /*
-    zval *bbs_home;
-    zval *bbs_full_name;
+// #define REGISTER_STRING_CONSTANT(name, str, flags)  zend_register_string_constant((name), sizeof(name), (str), (flags), module_number TSRMLS_CC)
+#define MY_REGISTER_STRING_CONSTANT(name, str, flags)  zend_register_string_constant((name), strlen(name)+1, (char*)(str), (flags), module_number TSRMLS_CC)
 
-    MAKE_STD_ZVAL(bbs_home);
-    ZVAL_STRING(bbs_home, BBSHOME, 1);
-    MAKE_STD_ZVAL(bbs_full_name);
-    ZVAL_STRING(bbs_full_name, BBS_FULL_NAME, 1);
-    PHP_SET_SYMBOL(&EG(symbol_table), "BBS_HOME", bbs_home);
-    PHP_SET_SYMBOL(&EG(symbol_table), "BBS_FULL_NAME", bbs_full_name);
-    */
     int i;
 	char old_cwd[256], buf[256];
     const char *c;
 	getcwd(old_cwd, sizeof(old_cwd));
 	chdir(BBSHOME);
-    REGISTER_STRING_CONSTANT("BBS_HOME",BBSHOME,CONST_CS | CONST_PERSISTENT);
-    REGISTER_STRING_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,CONST_CS | CONST_PERSISTENT);
+    MY_REGISTER_STRING_CONSTANT("BBS_HOME",BBSHOME,CONST_CS | CONST_PERSISTENT);
+    MY_REGISTER_STRING_CONSTANT("BBS_FULL_NAME",BBS_FULL_NAME,CONST_CS | CONST_PERSISTENT);
 
     c=sysconf_str("BBS_WEBDOMAIN");
     if(c==NULL){
         c=sysconf_str("BBSDOMAIN");
         if (c==NULL) c = ""; //ft, should I say TODO here?
 	}
-    REGISTER_STRING_CONSTANT("BBS_WEBDOMAIN",c,CONST_CS | CONST_PERSISTENT);
+    MY_REGISTER_STRING_CONSTANT("BBS_WEBDOMAIN",c,CONST_CS | CONST_PERSISTENT);
 
 #ifdef SQUID_ACCL
     REGISTER_LONG_CONSTANT("SQUID_ACCL", 1, CONST_CS | CONST_PERSISTENT);
@@ -303,8 +295,6 @@ PHP_MINIT_FUNCTION(kbs_bbs)
     REGISTER_LONG_CONSTANT("BBS_MAXATTACHMENTSIZE", MAXATTACHMENTSIZE, CONST_CS | CONST_PERSISTENT);
 
     REGISTER_LONG_CONSTANT("BBS_SECNUM", SECNUM, CONST_CS | CONST_PERSISTENT);
-// #define REGISTER_STRING_CONSTANT(name, str, flags)  zend_register_string_constant((name), sizeof(name), (str), (flags), module_number TSRMLS_CC)
-#define MY_REGISTER_STRING_CONSTANT(name, str, flags)  zend_register_string_constant((name), strlen(name)+1, (str), (flags), module_number TSRMLS_CC)
     for(i=0;i<SECNUM;i++) {
         sprintf(buf, "BBS_SECCODE%d", i);
         MY_REGISTER_STRING_CONSTANT(buf, seccode[i], CONST_CS | CONST_PERSISTENT);

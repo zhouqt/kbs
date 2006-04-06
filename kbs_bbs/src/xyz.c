@@ -995,38 +995,6 @@ int a_edits()
     return 0;
 }
 
-#ifdef CAN_EXEC
-
-#ifdef BBSDOORS
-
-void ent_bnet()
-{                               /* Bill Schwartz */
-    int save_pager = uinfo.pager;
-
-    uinfo.pager = -1;
-    bbslog("user","%s","BBSNet Enter");
-    modify_user_mode(BBSNET);
-    /*
-     * bbsnet.sh is a shell script that can be customized without 
-     */
-    /*
-     * having to recompile anything.  If you edit it while someone 
-     */
-    /*
-     * is in bbsnet they will be sent back to the xyz menu when they 
-     */
-    /*
-     * leave the system they are currently in. 
-     */
-
-    do_exec("bbsnet.sh", NULL);
-    uinfo.pager = save_pager;
-    bbslog("user","%s","BBSNet Exit");
-    clear();
-}
-
-#endif
-#endif
 static void escape_filename(char *fn)
 {
     static const char invalid[] = { '/', '\\', '!', '&', '|', '*', '?', '`', '\'', '\"', ';', '<', '>', ':' };

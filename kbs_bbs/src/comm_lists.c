@@ -62,9 +62,6 @@ int ProtectID();             /* set the protection of user password. Added by bi
 
 int search_ip();
 int kick_all_user();
-#ifdef CAN_EXEC
-int ent_bnet();
-#endif
 int a_edits();
 int x_edits();
 int x_date();
@@ -82,9 +79,6 @@ int t_users(), t_friends(), t_rusers(), t_list(), t_monitor();
 int wait_friend();
 int t_talk(), t_pager(), t_override(), x_cloak();
 
-#ifdef IRC
-int t_irc()
-#endif
 int x_deny();
 int set_BM();
 
@@ -199,9 +193,6 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"SetFriends", t_override},
     {"EnterChat", ent_chat1},
     {"EnterChat2", ent_chat2},
-#ifdef IRC
-    {"ExecIrc", t_irc},
-#endif
     {"ListLogins", t_list},
     {"Monitor", t_monitor},
     {"RealLogins", t_rusers},
@@ -214,9 +205,6 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"ShowDate", x_date},
     {"DoVote", x_vote},
     {"VoteResult", x_results},
-#ifdef CAN_EXEC
-    {"ExecBBSNet", ent_bnet},
-#endif
     {"ShowWelcome", Welcome},
     {"ReadWeather", ShowWeather},       /*Bigman 2001.6.12 */
     {"SpecialUser", Users},
