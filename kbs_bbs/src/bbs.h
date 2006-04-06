@@ -24,8 +24,14 @@
 #ifndef  _BBS_H_
 #define _BBS_H_
 
-#include "bbsconfig.h"          /* User-configurable stuff */
-#ifndef BBSIRC
+#ifndef KBS_CONFIG_H_INCLUDED
+#define KBS_CONFIG_H_INCLUDED
+
+#include "../kbs_config.h"
+
+#endif /* KBS_CONFIG_H_INCLUDED */
+
+#include "bbsconfig.h" //need to remove this
 
 /* Global includes, needed in most every source file... */
 #ifndef _GNU_SOURCE
@@ -174,8 +180,6 @@ char *bfile(ARG_VOID);
 extern FILE *ufp;               /* External variable declarations */
 extern long ti;
 
-#endif                          /* BBSIRC */
-
 #ifdef FRIEND_MULTI_GROUP
 #define MAXFRIENDS (500)
 #define MAXFRIENDSGROUP 20
@@ -223,7 +227,7 @@ extern long ti;
 #define USER_TITLE_LEN	18
 #define USER_TITLE_FILE "etc/title"
 
-#ifndef BBSIRC
+
 
 #define FLUSH    ".PASSFLUSH"   /* Stores date for user cache flushing */
 #define WWWFLUSH ".WWWPASSFLUSH"        /* user cache flushing for www regist */
@@ -309,7 +313,6 @@ O MaxMessageSize=32000
 #define TERMTYPESZ (10)
 /* END */
 
-#endif                          /* BBSIRC */
 
 #include "struct.h"
 #include "screen.h"
@@ -323,7 +326,6 @@ O MaxMessageSize=32000
 /* add by period , header for function prototypes */
 #include "prototype.h"
 
-/*#ifndef BBSIRC*/
 #include "modes.h"              /* The list of valid user modes */
 
 #define I_TIMEOUT   (-2)        /* Used for the getchar routine select call */
@@ -334,7 +336,6 @@ O MaxMessageSize=32000
 #define Min(a,b) ((a<b)?a:b)
 #define Max(a,b) ((a>b)?a:b)
 
-/*#endif*//* !BBSIRC */
 
 #ifndef EXTEND_KEY
 #define EXTEND_KEY

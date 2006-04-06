@@ -1,5 +1,5 @@
 #include "tcplib.h"
-#include "config.h"
+#include "bbs.h"
 
 void
 MsToTimeval(const int ms, struct timeval *tv)

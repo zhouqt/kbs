@@ -24,12 +24,6 @@
 #ifndef BBSCONFIG_H_INCLUDED
 #define BBSCONFIG_H_INCLUDED
 
-#ifndef CONFIG_H_INCLUDED
-#define CONFIG_H_INCLUDED
-
-#include "@top_builddir@config.h"
-
-#endif /* CONFIG_H_INCLUDED */
 
 /* Firebird BBS 2.0 CONFIGURATION VARIABLES */
 
@@ -96,10 +90,6 @@ these two options by hand. Instructions are in README.install.
 
 /*Define this for Use Notepad.*/
 #define USE_NOTEPAD 1
-
-#define BBSHOME "@prefix@"
-
-#define HAVE_WWW @CONFIG_HAVE_WWW@
 
 #endif /* BBSCONFIG_H_INCLUDED */
 
