@@ -1,12 +1,5 @@
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
-#include "SAPI.h"
 #include "php_kbs_bbs.h"  
-
-#include "bbs.h"
-#include "bbslib.h"
-
+#include "SAPI.h"
 
 /*
  * refer Ecma-262 

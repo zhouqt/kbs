@@ -1,12 +1,4 @@
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
 #include "php_kbs_bbs.h"  
-
-#include "bbs.h"
-#include "bbslib.h"
-
-#include "phpbbs.errorno.h"
 
 PHP_FUNCTION(bbs_get_explain)
 {

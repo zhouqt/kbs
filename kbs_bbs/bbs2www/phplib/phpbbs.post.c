@@ -1,12 +1,4 @@
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
 #include "php_kbs_bbs.h"  
-
-#include "bbs.h"
-#include "bbslib.h"
-#include "phpbbs.errorno.h"
-
 
 int check_last_post_time(struct user_info *uinfo) {
     int lastpost, now;

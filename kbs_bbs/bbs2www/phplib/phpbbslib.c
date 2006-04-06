@@ -1,14 +1,5 @@
-/*
-#ifdef HAVE_CONFIG_H
-#include "config.h"
-#endif
-*/
-    
-#include "php.h"
-#include "php_ini.h"
+#include "php_kbs_bbs.h"
 #include "ext/standard/info.h"
-#include "php_kbs_bbs.h"  
-
 
 #if PHP_MAJOR_VERSION == 5
 static

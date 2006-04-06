@@ -1,11 +1,4 @@
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
 #include "php_kbs_bbs.h"  
-
-#include "bbs.h"
-#include "bbslib.h"
-
 
 void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len)
 {

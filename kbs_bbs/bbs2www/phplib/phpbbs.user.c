@@ -1,10 +1,4 @@
-#include "php.h"
-#include "php_ini.h"
-#include "ext/standard/info.h"
 #include "php_kbs_bbs.h"  
-
-#include "bbs.h"
-#include "bbslib.h"
 
 //暂时放这里
 #define MANAGERSHIP(user) (getCurrentUser() && (HAS_PERM(getCurrentUser(), PERM_SYSOP) || !strcmp((user)->userid , getCurrentUser()->userid)))
