@@ -60,7 +60,8 @@ www按照blog网站设计，不仅支持按时间顺序的讨论区模式，还加入了目录模式和权限
     6) Blog用户搜索。
     
 3. 使用时的配置。
-    KBS.Blog的WWW部分要求进行配置，请按照需要更改 pcconf.php 文件：
+    KBS.Blog的WWW部分要求进行配置，请将 pcconf.sample.php 复制为 pcconf.php,
+    按照需要更改 pcconf.php 文件：
     $pcconfig["LIST"] :Blog首页上每页显示的用户数;
     $pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
     $pcconfig["BBSNAME"] :站点名称,默认为BBS_FULL_NAME;

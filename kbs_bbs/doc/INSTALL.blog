@@ -39,7 +39,8 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 	1.6 配置 web 部分。具体方法为在站点的web配置文件 site.php 中加入下面的定义：
 		define("HAVE_PC", 1);
 	1.7 升级： make ; make install ;
-	1.8 编辑 $WWWHOME/htdocs/pc/pcconf.php ,配置WWW下的BLOG参数。
+	1.8 将 $WWWHOME/htdocs/pc/pcconf.sample.php 复制为 $WWWHOME/htdocs/pc/pcconf.php,
+	    编辑 pcconf.php 配置WWW下的BLOG参数。
 	1.9 完成快速安装。
 
 2. 系统需求
@@ -69,7 +70,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 	MYSQLBLOGDATABASE = ""   //MySQL数据库名
 	MYSQLBLOGPORT       = ""    //MySQL数据库端口,默认为3306
     5) 编辑 $WWWHOME/htdocs/pc/pcconf.php ,配置WWW下的BLOG参数。
-         $pcconfig["LIST"] :Blog首页上每页显示的用户数;
+	$pcconfig["LIST"] :Blog首页上每页显示的用户数;
 	$pcconfig["HOME"] :BBS主目录,默认为BBS_HOME;
 	$pcconfig["BBSNAME"] :站点名称,默认为BBS_FULL_NAME;
 	$pcconfig["ETEMS"] :RSS输出的条目数;
