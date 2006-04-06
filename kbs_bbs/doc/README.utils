@@ -16,7 +16,7 @@ INSTALL只写了bbsd等主要程序的安装方法
    代码: local_utl/poststat.c
    系统:  $mkdir $BBSHOME/tmp/Xpost
    crontab: 
-		59 * * * * $BBSHOME/bin/poststat $BBSHOME
+		59 * * * * $BBSHOME/bin/poststat 
 		59 23 * * * rm -f $BBSHOME/tmp/Xpost/*
 		59 23 * * * rm -f $BBSHOME/.post.X
 	注意: 每天的第一小时只能运行一次，否则新的会覆盖老的

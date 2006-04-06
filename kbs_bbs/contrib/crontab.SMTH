@@ -24,7 +24,7 @@ BBSHOME=/home/bbs
 59 * * * * /home/bbs/bin/stat.day
 10 0 * * * /home/bbs/bin/stat.other
 # 每小时 43 分执行热门话题统计 -- 注意: 只能一小时一次, 不能再快
-43 * * * * /home/bbs/bin/poststat /home/bbs
+43 * * * * /home/bbs/bin/poststat 
 # 每小时 执行自动解封系统
 59 * * * * /home/bbs/bin/autoundeny
 # 每天 0:01-0:02, 23:59 保存当日十大新闻 -- 注意: 只能 0:01-0:02 cp; 23:59 mv
