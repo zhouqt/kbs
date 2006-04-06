@@ -173,7 +173,7 @@ extern int errno;
 #define NOECHO (0)
 
 #ifndef strdup
-char *strdup(__const__ char*);                 /* External function declarations */
+char *strdup(const char*);                 /* External function declarations */
 #endif
 char *bfile(ARG_VOID);
 

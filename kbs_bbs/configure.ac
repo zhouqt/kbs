@@ -32,10 +32,16 @@ case "${host}" in
 esac              
 CFLAGS="$CFLAGS -D$OSTYPE"
 
-AC_CONFIG_SRCDIR([config.h.in])
-AM_CONFIG_HEADER(config.h)
+AM_CONFIG_HEADER(kbs_config.h)
 
 AC_PREFIX_DEFAULT(/home/bbs)
+if test "x$prefix" = xNONE; then
+  BBSHOME="/home/bbs"
+else
+  BBSHOME=$prefix
+fi
+AC_DEFINE_UNQUOTED([BBSHOME], "$BBSHOME", [Path to BBS installation directory])
+
 
 m4_include(config.icc)
 
@@ -102,12 +108,10 @@ AC_ARG_ENABLE(www,
 		else
 			AC_MSG_ERROR([can't find bbs2www package,please get it first!])
 		fi
-		CONFIG_HAVE_WWW=1
-        else
-		CONFIG_HAVE_WWW=0
+		AC_DEFINE([HAVE_WWW], [1], [Define to enable www support.])
 	fi
 ])
-AC_SUBST(CONFIG_HAVE_WWW)
+
 AC_SUBST(BBSSUBDIRS)
 
 m4_include(bbs2www.in)
@@ -239,7 +243,6 @@ AC_CONFIG_FILES([Makefile
                  service/pip/Makefile
                  service/worker/Makefile
                  service/personaldns/Makefile
-                 src/bbsconfig.h
                  src/Makefile])
 AC_CONFIG_FILES(wrapper.sh, chmod +x wrapper.sh)
 AC_OUTPUT
