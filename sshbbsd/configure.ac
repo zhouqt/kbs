@@ -12,7 +12,16 @@
 
 AC_INIT(sshd.c)
 AM_INIT_AUTOMAKE(sshbbs, 1.0)
-AM_CONFIG_HEADER(config.h)
+
+AH_TOP([
+#ifndef KBS_SSH_CONFIG_H_INCLUDED
+#define KBS_SSH_CONFIG_H_INCLUDED
+])
+AH_BOTTOM([
+#endif /* KBS_SSH_CONFIG_H_INCLUDED */
+])
+AM_CONFIG_HEADER(kbs_ssh_config.h)
+
 AC_PREREQ(2.10)
 
 # So many systems seem to need this that it is better do it here automatically.

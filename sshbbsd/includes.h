@@ -16,6 +16,9 @@ This file includes most of the needed system headers.
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2006/04/06 11:31:47  etnlegend
+ * 这里也搞一下...
+ *
  * Revision 1.4  2004/02/01 05:18:04  flyriver
  * 简单粗暴法去除 Warning.
  *
@@ -129,7 +132,7 @@ This file includes most of the needed system headers.
 #define INCLUDES_H
 
 /* Note: autoconf documentation tells to use the <...> syntax and have -I. */
-#include "./config.h"
+#include "kbs_ssh_config.h"
 
 #undef PACKAGE
 #undef PACKAGE_BUGREPORT
