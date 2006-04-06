@@ -1,6 +1,15 @@
 /* etnlegend, 2006.04.05, solaris dependences */
 
-#if defined(SOLARIS) && !defined(strsep)
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
+
+#include "config.h"
+
+#endif /* CONFIG_H_INCLUDED */
+
+
+#ifndef HAVE_STRSEP
+
 #include <string.h>
 
 char* strsep(char **strptr,const char *delim){
@@ -17,5 +26,5 @@ char* strsep(char **strptr,const char *delim){
     return ptr;
 }
 
-#endif
+#endif /* HAVE_STRSEP */
 

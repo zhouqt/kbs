@@ -120,7 +120,7 @@ static void *txtfind(const void *in_block,     /* 数据块 */
     return NULL;
 }
 
-
+#if 0 /* etnlegend, 2006.04.06, 不用的先注释掉... */
 static char *bm_strstr(const char *string, const char *pattern)
 {
     size_t shift[256];
@@ -134,7 +134,9 @@ static char *bm_strstr_rp(const char *string, const char *pattern, size_t * shif
 {
     return (char *) memfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
+#endif
 
+#ifndef HAVE_STRCASESTR
 /* 字符串大小写不敏感的匹配函数*/
 static char *bm_strcasestr(const char *string, const char *pattern)
 {
@@ -143,17 +145,15 @@ static char *bm_strcasestr(const char *string, const char *pattern)
 
     return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, &init);
 }
+char *strcasestr(const char *haystack, const char *needle)
+{
+    return bm_strcasestr(haystack, needle);
+}
+#endif
 
 /* 字符串多次大小写不敏感匹配函数*/
 char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, int *init)
 {
     return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
 }
-
-#ifndef HAVE_STRCASESTR
-char *strcasestr(const char *haystack, const char *needle)
-{
-    return bm_strcasestr(haystack, needle);
-}
-#endif
 

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <ctype.h>
 #include <string.h>
 #include <fcntl.h>
 #include <dirent.h>
@@ -11,6 +12,17 @@
 #include <errno.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
+#ifndef CONFIG_H_INCLUDED
+#define CONFIG_H_INCLUDED
+
+#include "config.h"
+
+#endif /* CONFIG_H_INCLUDED */
+
+#ifndef HAVE_STRSEP
+char* strsep(char **strptr,const char *delim);
+#endif
 
 #define READ_BUFFER_SIZE 8192
 
