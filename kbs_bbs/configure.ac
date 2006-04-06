@@ -32,6 +32,14 @@ case "${host}" in
 esac              
 CFLAGS="$CFLAGS -D$OSTYPE"
 
+AH_TOP([
+#ifndef KBS_CONFIG_H_INCLUDED
+#define KBS_CONFIG_H_INCLUDED
+])
+AH_BOTTOM([
+#endif /* KBS_CONFIG_H_INCLUDED */
+])
+
 AM_CONFIG_HEADER(kbs_config.h)
 
 AC_PREFIX_DEFAULT(/home/bbs)
