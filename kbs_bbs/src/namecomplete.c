@@ -218,6 +218,12 @@ char *prompt, *data;
         	/* TODO: add KEY_REFRESH support */
         	if (ch>255&&ch<0)
         		continue;
+            if(ch==KEY_ESC){ /* etnlegend, 2006.04.07, ´¦Àí ESC ¼ü... */
+                *data=0;
+                ClearSubList(cwlist);
+                ingetdata=false;
+                return KEY_ESC;
+            }
             if (ch == '\n' || ch == '\r') {
                 *temp = '\0';
                 prints("\n");
