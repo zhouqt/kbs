@@ -110,13 +110,7 @@ int isfriend(char *id)
     }
 }
 
-int get_file_ent(char *board, char *file, struct fileheader *x)
-{
-    char dir[80];
 
-    sprintf(dir, "boards/%s/.DIR", board);
-    return search_record(dir, x, sizeof(struct fileheader), (RECORD_FUNC_ARG)cmpname, file);
-}
 
 /* 以下的代码是cgi和php都使用的*/
 static struct user_info www_guest_uinfo;

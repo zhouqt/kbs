@@ -14,11 +14,9 @@ PHP_FUNCTION(bbs_attachment_list);
 
 PHP_FUNCTION(bbs_postarticle);
 
-PHP_FUNCTION(bbs_delfile);
 PHP_FUNCTION(bbs_delpost);
 PHP_FUNCTION(bbs_article_deny_modify);
 PHP_FUNCTION(bbs_article_modify);
-PHP_FUNCTION(bbs_caneditfile);
 PHP_FUNCTION(bbs_updatearticle);
 PHP_FUNCTION(bbs_edittitle);
 PHP_FUNCTION(bbs_doforward);
@@ -41,11 +39,9 @@ PHP_FUNCTION(bbs2_brcsync);
     PHP_FE(bbs_attachment_del,NULL) \
     PHP_FE(bbs_attachment_list,NULL) \
     PHP_FE(bbs_postarticle,NULL) \
-    PHP_FE(bbs_delfile,NULL) \
     PHP_FE(bbs_delpost,NULL) \
     PHP_FE(bbs_article_deny_modify,NULL) \
     PHP_FE(bbs_article_modify,NULL) \
-    PHP_FE(bbs_caneditfile,NULL) \
     PHP_FE(bbs_updatearticle, NULL) \
     PHP_FE(bbs_edittitle, NULL) \
     PHP_FE(bbs_doforward, NULL) \

@@ -21,8 +21,6 @@ int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]
 
 int isfriend(char *id);
 
-int get_file_ent(char *board, char *file, struct fileheader *x);
-
 //board manage
 int del_post(int ent, struct fileheader *fileinfo, struct boardheader *bh);
 

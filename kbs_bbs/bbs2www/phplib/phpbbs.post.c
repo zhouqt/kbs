@@ -492,69 +492,6 @@ PHP_FUNCTION(bbs_postarticle)
 }
 
 
-/**
- * del board article
- * prototype:
- * int bbs_delfile(char* board, char* filename);
- *
- *  @return the result
- *  	0 -- success, -1 -- no perm
- *  	-2 -- wrong parameter
- *  @author binxun
- */
-/* atppp 20060218 这个函数已经没用了 */
-PHP_FUNCTION(bbs_delfile)
-{
-	FILE *fp;
-    boardheader_t *brd;
-    struct fileheader f;
-    struct userec *u = NULL;
-    char dir[80], path[80];
-	long result = 0;
-
-	char* board;
-	char* file;
-	int board_len,file_len;
-    int num = 0;
-
-	int ac = ZEND_NUM_ARGS();
-
-    if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &board_len,&file,&file_len) == FAILURE) {
-		WRONG_PARAM_COUNT;
-	}
-
-	u = getCurrentUser();
-	brd = getbcache(board);
-
-	if (VALID_FILENAME(file) < 0)
-        RETURN_LONG(-2);
-    if (brd == 0)
-        RETURN_LONG(-2);
-
-	setbdir(DIR_MODE_NORMAL, dir, brd->filename);
-	setbfile(path, brd->filename, file);
-	/*
-	 * TODO: Improve the following block of codes.
-	 */
-    fp = fopen(dir, "r");
-    if (fp == 0)
-        RETURN_LONG(-2);
-	while (1) {
-		if (fread(&f, sizeof(struct fileheader), 1, fp) <= 0)
-			break;
-		if (!strcmp(f.filename, file)) {
-            if(del_post(num + 1, &f, brd) != 0)
-				result = -1;
-			else
-				result = 0;
-			break;
-		}
-		num++;
-    }
-    fclose(fp);
-
-	RETURN_LONG(result);
-}
 
 
 /**
@@ -647,54 +584,6 @@ PHP_FUNCTION(bbs_article_modify)
 {
 }
 
-
-/* function bbs_caneditfile(string board, string filename);
- * 判断当前用户是否有权编辑某文件
- */
-PHP_FUNCTION(bbs_caneditfile)
-{
-    char *board,*filename;
-    int boardLen,filenameLen;
-    struct fileheader x;
-    boardheader_t *brd;
-    int ret;
-
-    if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board, &boardLen,&filename,&filenameLen) != SUCCESS)) {
-		WRONG_PARAM_COUNT;
-    } 
-    brd = getbcache(board);
-    if (brd == NULL) {
-        RETURN_LONG(-1); //讨论区名称错误
-    }
-	if (getCurrentUser()==NULL)
-		RETURN_FALSE;
-
-    if (get_file_ent(brd->filename, filename, &x) == 0) {
-        RETURN_LONG(-4); //无法取得文件记录
-    }
-
-    ret = deny_modify_article(brd, &x, DIR_MODE_NORMAL, getSession());
-    switch(ret) {
-        case -3:
-            RETURN_LONG(-2);  //本版不能修改文章
-            break;
-        case -5:
-            RETURN_LONG(-3); //本版已被设置只读
-            break;
-        case -6:
-            RETURN_LONG(-5); //不能修改他人文章!
-            break;
-        case -2:
-            RETURN_LONG(-7); //您的POST权被封
-            break;
-        default:
-            break;
-    }
-    if (ret) {
-        RETURN_LONG(-1);
-    }
-    RETURN_LONG(0);
-}
 
 
 /*  function bbs_updatearticle(string boardName, string filename ,string text)  
