@@ -754,23 +754,23 @@ int new_i_read(enum BBS_DIR_MODE cmdmode, char *direct, void (*dotitle) (struct 
 }
 
 
-/* TODO: 这个太土了... - atppp */
-static int searchpattern(char *filename, char *query)
+/* TODO: 滤掉附件... - atppp */
+static int searchpattern(char *filename, char *query, int qlen)
 {
-    FILE *fp;
-    char buf[256];
+    char *ptr;
+    off_t size;
+    int ret=0;
 
-    if ((fp = fopen(filename, "r")) == NULL)
-
-        return 0;
-    while (fgets(buf, 256, fp) != NULL) {
-        if (strstr(buf, query)) {
-            fclose(fp);
-            return true;
-        }
+    BBS_TRY {
+        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+            BBS_RETURN(0);
+        if (memmem(ptr, size, query, qlen)) ret=1;
     }
-    fclose(fp);
-    return false;
+    BBS_CATCH {
+    }
+    BBS_END end_mmapfile((void *) ptr, size, -1);
+
+    return ret;
 }
 
 static void get_upper_str(char *ptr2, char *ptr1)
@@ -801,6 +801,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     char upper_query[STRLEN];
     int init;
     size_t bm_search[256];
+    int qlen = strlen(query);
 
 /*	int mmap_offset,mmap_length; */
     struct fileheader *pFh, *pFh1;
@@ -851,7 +852,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
                         setbfile(p_name, currboard->filename, pFh1->filename);
                     else
                         setmailfile(p_name, getCurrentUser()->userid, pFh1->filename);
-                    if (searchpattern(p_name, query)) {
+                    if (searchpattern(p_name, query, qlen)) {
                         match = 1;
                         break;
                     } else

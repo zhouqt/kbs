@@ -28,6 +28,9 @@
 #ifndef BBSIRC
 
 /* Global includes, needed in most every source file... */
+#ifndef _GNU_SOURCE
+#define _GNU_SOURCE
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -64,16 +67,6 @@
 
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
-#endif
-
-#ifndef __GNUC__
-#define __const__ const
-#endif
-
-#ifndef HAVE_STRCASESTR
-char *strcasestr(const char *haystack, const char *needle);
-#else
-extern char *strcasestr (__const char *__haystack, __const char *__needle);
 #endif
 
 #ifndef HAVE_ISBLANK

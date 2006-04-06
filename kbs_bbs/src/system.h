@@ -24,6 +24,11 @@
 char* strsep(char **strptr,const char *delim);
 #endif
 
+#ifndef HAVE_STRCASESTR
+char *strcasestr(const char *haystack, const char *needle);
+#endif
+
+
 #define READ_BUFFER_SIZE 8192
 
 #ifndef HAVE_FLOCK
