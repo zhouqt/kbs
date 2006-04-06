@@ -67,23 +67,8 @@ function preprocess(){
 			foundErr("错误的文章文编号");
 		}
 	}
-	$ret=bbs_caneditfile($boardName,$articles[1]['FILENAME']);
-	switch ($ret) {
-	case -1:
-		foundErr("讨论区名称错误");
-	case -2:
-		foundErr("本版不能修改文章");
-	case -3:
-		foundErr("本版已被设置只读");
-	case -4:
-		foundErr("无法取得文件记录");
-	case -5:
-		foundErr("不能修改他人文章!");
-	case -6:
-		foundErr("同名ID不能修改老ID的文章");
-	case -7:
-		foundErr("您的POST权被封");
-	}
+	$ret = bbs_article_deny_modify($boardName, $reID);
+	if ($ret) foundErr(bbs_error_get_desc($ret));
 	$reArticles=$articles;
 	return true;
 }
