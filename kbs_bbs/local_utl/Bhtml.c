@@ -320,7 +320,7 @@ int main(int argc, char **argv)
     }
 
     fprintf(fpIndex,
-            "<HTML>\n  <TITLE>%s - %s</TITLE>\n\n<FRAMESET ROWS=25%,75%>\n  <FRAME SRC=\"%s\" FRAMEBORDER=1>\n  <FRAME SRC=\"null.htm\" NAME=\"%s\" FRAMEBORDER=0>\n</FRAMESET>\n\n</HTML>\n",
+            "<HTML>\n  <TITLE>%s - %s</TITLE>\n\n<FRAMESET ROWS=25%%,75%%>\n  <FRAME SRC=\"%s\" FRAMEBORDER=1>\n  <FRAME SRC=\"null.htm\" NAME=\"%s\" FRAMEBORDER=0>\n</FRAMESET>\n\n</HTML>\n",
             HEADER, szBoard, INDEXHTML, FRAMENAME);
 
     fclose(fpIndex);
