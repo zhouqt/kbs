@@ -38,7 +38,7 @@ int calc_mailsize(char *userid, char *dirname)
     ldata.l_start = 0;
     fcntl(fd, F_SETLKW, &ldata);
 
-    if ((i = safe_mmapfile_handle(fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+    if((i=safe_mmapfile_handle(fd,PROT_READ|PROT_WRITE,MAP_SHARED,(void**)(void*)(&ptr),&buf.st_size))!=1){
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         ldata.l_type = F_UNLCK;
