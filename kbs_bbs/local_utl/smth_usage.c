@@ -73,7 +73,7 @@ int record_data(board, sec)
         if (!strcmp(st[i].boardname, board)) {
             st[i].times++;
             st[i].sum += sec;
-            return;
+            return 1;
         }
     }
 	for (i = 0; i < 5;i++)
@@ -81,10 +81,10 @@ int record_data(board, sec)
             if (!strcmp(sec_board[i][j].boardname, board)) {
             sec_board[i][j].times++;
             sec_board[i][j].sum += sec;
-            return;
+            return 1;
 		}
 	}
-    return;
+    return 0;
 }
 
 int fillsecboard(struct boardheader* fptr,int i)
@@ -100,6 +100,7 @@ int fillsecboard(struct boardheader* fptr,int i)
 	    printf("分区内的版面太多,请调整 MAX_SEC_BOARD 参数!");
 		exit(0);
 	}
+    return 0;
 }
 
 int fillbcache(struct boardheader *fptr,void* arg)
@@ -107,7 +108,7 @@ int fillbcache(struct boardheader *fptr,void* arg)
     if (numboards >= MAXBOARD)
         return 0;
     if (check_see_perm(NULL, fptr)==0|| strlen(fptr->filename) == 0)
-        return;
+        return 0;
 
     switch(fptr->title[0])
 	{
@@ -146,7 +147,6 @@ int fillboard()
     int i = 0;
     resolve_boards();
     resolve_ucache();
-    /*apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);*/
     apply_boards(fillbcache,NULL);
     for(i = 0;i < 5; i++) 	{
     	if(0 == sec_board_num[i] ){
@@ -154,6 +154,7 @@ int fillboard()
     		exit(0);
     		}
     	}
+    return 0;
 }
 
 char *timetostr(i)
@@ -186,20 +187,17 @@ void save_useboard_xml(int brdcount, struct binfo *bi)
         fprintf(fp, "<Board>\n");
         fprintf(fp, "<EnglishName>%s</EnglishName>\n", encode_url(url_buf,bi[i].boardname,sizeof(url_buf)));
         fprintf(fp, "<ChineseName>%s</ChineseName>\n", encode_url(url_buf,bi[i].expname,sizeof(url_buf)));
-        fprintf(fp, "<VisitTimes>%ld</VisitTimes>\n", bi[i].times);
-        fprintf(fp, "<StayTime>%ld</StayTime>\n", bi[i].sum);
+        fprintf(fp, "<VisitTimes>%d</VisitTimes>\n", bi[i].times);
+        fprintf(fp, "<StayTime>%d</StayTime>\n", bi[i].sum);
         fprintf(fp, "</Board>\n");
     }
     fprintf(fp, "</BoardList>\n");
     fclose(fp);
 }
 
-main(argc, argv)
-    char *argv[];
-{
-    char *progmode;
+int main(int argc,char **argv){
     FILE *fp;
-    FILE *op, *op1, *op2;
+    FILE *op,*op1=NULL,*op2=NULL;
     char buf[256], buf1[256], buf2[256], *p, bname[20];
     char *q;                    //added by Czz 010614
     char date[80];
@@ -251,7 +249,7 @@ main(argc, argv)
      /**/ while (fgets(buf, 256, fp)) {
         if (strlen(buf) < 57)
             continue;
-        if (p = (char *) strstr(buf, "Stay: ")) {
+        if((p=strstr(buf,"Stay: "))!=NULL){
             q = p - 21;
             q = strtok(q, " ");
             strcpy(bname, q);
@@ -308,7 +306,7 @@ main(argc, argv)
 			if (max[0] < sec_board[i][j].times) max[0] = sec_board[i][j].times;
 			if (max[1] < sec_board[i][j].sum) max[1] = sec_board[i][j].sum;
 
-			if (max[2] < sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times) {
+			if (max[2] < ( sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times )) {
 				max[2] = (sec_board[i][j].times == 0 ? 0 : sec_board[i][j].sum / sec_board[i][j].times);
 			}
 		}
@@ -431,5 +429,6 @@ main(argc, argv)
 		}
         fclose(op2);
     }
+    return 0;
 }
 
