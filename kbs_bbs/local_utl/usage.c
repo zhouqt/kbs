@@ -47,44 +47,38 @@ int average_cmp(b, a)
     return a->sum - b->sum;
 }
 
-int record_data(board, sec)
-    char *board;
-    int sec;
-{
+int record_data(const char *board,int sec){
     int i;
 
     for (i = 0; i < numboards; i++) {
         if (!strcmp(st[i].boardname, board)) {
             st[i].times++;
             st[i].sum += sec;
-            return;
+            return 1;
         }
     }
-    return;
+    return 0;
 }
 
-int add_data( struct binfo *btmp)
-{
+int add_data(const struct binfo *btmp){
     int i;
 
     for (i = 0; i < numboards; i++) {
         if (!strcmp(st[i].boardname, btmp->boardname)) {
             st[i].times += btmp->times;
             st[i].sum += btmp->sum;
-            return;
+            return 1;
         }
     }
-    return;
+    return 0;
 }
 
-int fillbcache(struct boardheader *fptr,int idx,void* arg)
+int fillbcache(const struct boardheader *fptr,int idx,void* arg)
 {
-
-    struct userec normaluser;
     if (numboards >= MAXBOARD)
         return 0;
-    if (check_see_perm(NULL, fptr)==0|| strlen(fptr->filename) == 0)
-        return;
+    if(!check_see_perm(NULL,fptr)||!*(fptr->filename))
+        return 0;
     strcpy(st[numboards].boardname, fptr->filename);
     strcpy(st[numboards].expname, fptr->title + 13);
     st[numboards].times = 0;
@@ -93,9 +87,8 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     return 0;
 }
 
-int fillboard()
-{
-    apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
+int fillboard(void){
+    return apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
 char *timetostr(i)
@@ -151,9 +144,9 @@ void gen_board_rank_xml(int brdcount, struct binfo *bi)
 				encode_url(url_buf,encode_xml(xml_buf, bi[i].boardname, sizeof(xml_buf)),sizeof(url_buf)));
         fprintf(fp, "<ChineseName>%s</ChineseName>\n", 
 				encode_url(url_buf,encode_xml(xml_buf, bi[i].expname, sizeof(xml_buf)),sizeof(url_buf)));
-        fprintf(fp, "<VisitTimes>%ld</VisitTimes>\n", bi[i].times);
-        fprintf(fp, "<StayTime>%ld</StayTime>\n", bi[i].sum);
-        fprintf(fp, "<SecId>%ld</SecId>\n", sec_id);
+        fprintf(fp, "<VisitTimes>%d</VisitTimes>\n", bi[i].times);
+        fprintf(fp, "<StayTime>%d</StayTime>\n", bi[i].sum);
+        fprintf(fp, "<SecId>%d</SecId>\n", sec_id);
         fprintf(fp, "</Board>\n");
     }
     fprintf(fp, "</BoardList>\n");
@@ -262,10 +255,10 @@ int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
         fclose(op2);
 
 		numboards --;
+    return 0;
 }
 
-main()
-{
+int main(void){
 	char path[256];
 	FILE *fp;
 	char buf[256], buf1[256],buf2[256], buf3[256], buf4[256];
@@ -321,7 +314,7 @@ main()
     while (fgets(buf, 256, fp)) {
         if (strlen(buf) < 57)
             continue;
-        if (p = (char *) strstr(buf, "Stay: ")) {
+        if((p=strstr(buf,"Stay: "))!=NULL){
             q = p - 21;
             q = strtok(q, " ");
             strcpy(bname, q);
@@ -366,4 +359,5 @@ main()
 	sprintf(buf, "%s/%d/%d/%d_%d.boardusage.week.bak", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
 	if( t.tm_wday == 3 )
 		f_mv(weeklogfile, buf);
+    return 0;
 }
