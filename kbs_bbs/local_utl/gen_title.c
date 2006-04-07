@@ -18,7 +18,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
     char olddirect[PATHLEN];
     char *ptr, *t, *t2;
 #ifdef GEN_ORIGIN
-    FILE *fp;
+    FILE *fp=NULL;
     char opath[512];
 #endif
     struct fileheader * ptr1;
@@ -28,7 +28,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
         int thread_id;
         int id;
         int next;
-    } *index;
+    } *index=NULL;
     struct stat buf;
     int gen_threadid;
     struct BoardStatus* bs;
@@ -45,7 +45,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
     }
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &ptr, &buf.st_size) == 0) {
+        if(!safe_mmapfile_handle(fd2,PROT_READ|PROT_WRITE,MAP_SHARED,(void**)(void*)(&ptr),&buf.st_size)){
             close(fd2);
             return 0;
         }
@@ -105,7 +105,7 @@ int generate_board_title(struct boardheader *bh,void* arg)
     }
     BBS_CATCH {
     }
-    BBS_END free(index);
+    BBS_END if(index) free(index);
     end_mmapfile((void *) ptr, buf.st_size, -1);
     close(fd2);
 #ifdef GEN_ORIGIN
