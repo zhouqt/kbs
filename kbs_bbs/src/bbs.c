@@ -197,12 +197,6 @@ void make_blist(int addfav)
 	}
 }
 
-int Select()
-{
-    do_select(0, NULL, NULL);
-    return 0;
-}
-
 int ReadBoard(void){
     int returnmode;
     while(1){
@@ -220,7 +214,7 @@ int ReadBoard(void){
 }
 
 /* etnlegend, 2006.04.07, 新选择阅读讨论区... */
-int NewSelect(void){
+int Select(void){
     return (do_select(NULL,NULL,NULL)==CHANGEMODE?ReadBoard():0);
 }
 

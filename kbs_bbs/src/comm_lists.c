@@ -39,10 +39,9 @@ int Goodbye();
 int New();
 int Post();
 int ReadBoard();
-int Select();
 
 /* etnlegend, 2004.04.07, 新选择阅读讨论区... */
-int NewSelect(void);
+int Select(void);
 
 int Users();
 int Welcome();
@@ -158,14 +157,9 @@ static const struct scommandlist sysconf_cmdlist[] = {
     {"BoardsNew", New},
     {"LeaveBBS", Goodbye},
     {"Announce", Announce},
-    /*
-     * {"ExecTin",      t_tin},
-     * {"ExecGopher",   t_gopher}, 
-     */
-    {"SelectBoard", Select},
 
     /* etnlegend, 2006.04.07, 新选择阅读讨论区... */
-    {"NewSelect",NewSelect},
+    {"SelectBoard",Select},
 
     {"ReadBoard", ReadBoard},
     {"PostArticle", Post},
