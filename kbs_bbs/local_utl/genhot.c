@@ -6,13 +6,11 @@
 
 #define	MAX_COMMEND 5
 
-int gen_commend_xml()
-{
+int gen_commend_xml(void){
 	int dirfd;
 	FILE *fp;
 	FILE *fp1;
 	struct fileheader dirfh;
-	struct fileheader fh;
 	char dirpath[STRLEN];
 	char dirfile[STRLEN];
 	char xml_buf[1024]; //changed from 256 to 1024, for <brief> - atppp
@@ -56,7 +54,7 @@ int gen_commend_xml()
 			fprintf(fp, "<hotsubject>\n");
 			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, dirfh.title, sizeof(xml_buf)),sizeof(url_buf)));
 			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,dirfh.owner,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", get_posttime(&dirfh));
+			fprintf(fp, "<time>%ld</time>\n", get_posttime(&dirfh));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,COMMEND_ARTICLE,sizeof(url_buf)));
 			fprintf(fp, "<id>%d</id>\n", dirfh.id);
 			bh = (struct boardheader *) getboard(dirfh.o_bid);
@@ -92,21 +90,17 @@ int gen_commend_xml()
 
 	fprintf(fp, "</hotsubjects>\n");
     fclose(fp);
-}
-
-#endif
-int main(int argc, char **argv)
-{
-    time_t now;
-    struct tm ptime;
-    int i;
-
-    chdir(BBSHOME);
-
-#ifdef COMMEND_ARTICLE
-	resolve_boards();
-	gen_commend_xml();
-#endif
-
     return 0;
 }
+
+int main(int argc, char **argv){
+    chdir(BBSHOME);
+	resolve_boards();
+	gen_commend_xml();
+    return 0;
+}
+#else
+int main(void){
+    return 0;
+}
+#endif
