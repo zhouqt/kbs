@@ -78,6 +78,8 @@ int statit(struct userec *user, void *arg)
             return 1;
         }
         break;
+        default:
+            return 1;
     }
     for(i=0; i<total; i++)
     if(lib[i].data<d) {
@@ -91,13 +93,10 @@ int statit(struct userec *user, void *arg)
     return 1;
 }
 
-main(int argc, char ** argv)
-{
-    time_t t;
-    struct tm res;
+int main(int argc,char **argv){
     if (argc<=2) {
         printf("usage: statguy login|post|stay|all|birthday <total>\n");
-	return;
+	    return -1;
     }
     if (!strcmp(argv[1], "login")) flag = 0;
     if (!strcmp(argv[1], "post")) flag = 1;
@@ -116,7 +115,7 @@ main(int argc, char ** argv)
     total=atoi(argv[2]);
     if(!total) {
         printf("error: <total> must be an integer and greater than zero!\n");
-        return;
+        return -2;
     }
     chdir(BBSHOME);
     resolve_ucache();
@@ -132,8 +131,8 @@ main(int argc, char ** argv)
             printf(" ** %-15.15s (%s)\n", lib[i].id, lib[i].nick);
         }
       	printf("\n\n总共有 %d 位寿星。\n", cur);
-    } else {
-        
-show();
     }
+    else
+        show();
+    return 0;
 }
