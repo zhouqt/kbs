@@ -560,7 +560,7 @@ void gen_sec_hot_subjects_xml(int mytype, int secid)
 						sizeof(xml_buf)),sizeof(url_buf)));
 			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,sectop[secid][i].userid,sizeof(url_buf)));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,sectop[secid][i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", sectop[secid][i].date);
+			fprintf(fp, "<time>%ld</time>\n", sectop[secid][i].date);
 			fprintf(fp, "<number>%d</number>\n", sectop[secid][i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", sectop[secid][i].groupid);
 			fprintf(fp, "</hotsubject>\n");
@@ -601,7 +601,7 @@ void gen_blessing_list_xml()
 						sizeof(xml_buf)),sizeof(url_buf)));
 			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,top[i].userid,sizeof(url_buf)));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", top[i].date);
+			fprintf(fp, "<time>%ld</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
@@ -650,7 +650,7 @@ void gen_hot_subjects_xml(int mytype)
 						sizeof(xml_buf)),sizeof(url_buf)));
 			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,top[i].userid,sizeof(url_buf)));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", top[i].date);
+			fprintf(fp, "<time>%ld</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
@@ -679,7 +679,6 @@ int main(int argc, char **argv)
     time_t now;
     struct tm ptime;
     int i;
-    char buf[80], curfile[80] ;
 
 	if (init_all()) {
 		printf("init data fail\n");
