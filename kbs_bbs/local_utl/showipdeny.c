@@ -8,7 +8,8 @@ int main(int argc, char **argv)
     char fn[80],fn2[80];
     char id[IDLEN+2];
     char * p;
-    int i,j,ip[4],t,k,count=0;
+    int i,ip[4],t,count=0;
+    long j;
     time_t tt;
 
     if (init_all()) {
