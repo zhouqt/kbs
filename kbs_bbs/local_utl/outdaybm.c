@@ -19,7 +19,7 @@ typedef struct {
 } BMInfo;
 
 static BMInfo *pBMInfo;
-static nBMCount=0;
+static int nBMCount=0;
 
 int cmpBMLogin(BMInfo * fst, BMInfo * snd)
 {
@@ -39,11 +39,9 @@ void checkBMs(void)
 {
     char lbuf[256], tbuf[80], mdate[80];
 
-/*    char * fmt = " %14.14s%36.36s%24.24s%8.8s";*/
     char *fmt = " \033[%2d;%2dm%-14.14s%-32.32s%-24.24s%8.8s\033[m";
     char *timefmt = "%Y年%m月%d日 %T";
-    char *nulstr = "";
-    int i, j, uid, brd, dftime, warningBM = 0;
+    int i, dftime;
     int fgc = 37, bgc = 44;
     time_t now;
     BMInfo *pBM;
@@ -63,10 +61,8 @@ void checkBMs(void)
         pBM = &(pBMInfo[i]);
         dftime = (now - pBM->inday) / 86400;
             strftime(mdate, 30, timefmt, localtime(&(pBM->inday)));
-/*        else if(!(pBM->brd[1]) && bcache[brd-1].flag & ANONY_FLAG)*/
-/*            strcpy(mdate, "[匿名版所属帐号]");*/
         sprintf(tbuf, "%d", dftime);
-        sprintf(lbuf, fmt, fgc, bgc, pBM->uname, pBM->board, mdate, uid ? tbuf : nulstr);
+        sprintf(lbuf, fmt, fgc, bgc, pBM->uname, pBM->board, mdate, tbuf);
         fprintf(stdout, "%s\n", lbuf);
     }
     strftime(mdate, 30, timefmt, localtime(&now));
@@ -76,7 +72,6 @@ void checkBMs(void)
 int main(int argc, char **argv)
 {
     BMInfo bmusr[MAXCHECK];
-    int i;
     char buf[256];
 	FILE *fp;
 	char uname[IDLEN+2];
@@ -96,7 +91,7 @@ int main(int argc, char **argv)
 	}
 
 	while(fgets(buf, 256,fp)){
-		if( sscanf(buf,"%s %s %d %s",uname, board, &inday,renming) != 4)
+		if( sscanf(buf,"%s %s %lu %s",uname, board, &inday,renming) != 4)
 			continue;
     	if (!strcasecmp(uname, "SYSOP") || !isascii(*uname))
         	continue;
