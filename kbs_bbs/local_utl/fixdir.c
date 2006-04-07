@@ -65,8 +65,7 @@ notice:\n\
 }
 
 
-int addfile(char* filename)
-{
+int addfile(const char* filename){
     struct fileheader fh;
     FILE *art;
     if ((strcmp(filename, ".DIR"))
@@ -91,10 +90,9 @@ int addfile(char* filename)
             p = strchr(buf1 + 8, ' ');
             if (p)
                 *p = 0;
-            if (p = strchr(buf1 + 8, '('))
-                *p = 0;
-            if (p = strchr(buf1 + 8, '\n'))
-                *p = 0;
+            /* etnlegend, 2006.04.07, 这地方用 strpbrk 比较好... */
+            if((p=strpbrk(buf1+8,"(\n"))!=NULL)
+                *p=0;
             strncpy(fh.owner, buf1 + 8, OWNER_LEN);
             fh.owner[OWNER_LEN-1]=0;
             fgets(buf2, 256, art);
@@ -102,10 +100,9 @@ int addfile(char* filename)
 		fclose(art);
                 return 0;
             }
-            if (p = strchr(buf2 + 8, '\n'))
-                *p = 0;
-            if (p = strchr(buf2 + 8, '\r'))
-                *p = 0;
+            /* etnlegend, 2006.04.07, 这地方用 strpbrk 比较好... */
+            if((p=strpbrk(buf2+8,"\n\r"))!=NULL)
+                *p=0;
             strcpy(fh.filename, filename);
             strnzhcpy(fh.title, buf2 + 8, ARTICLE_TITLE_LEN);
             if (mailmode) {
@@ -125,6 +122,7 @@ int addfile(char* filename)
             fclose(art);
         }
     }
+    return 0;
 }
 
 int
@@ -141,11 +139,9 @@ ispostfilename(char *file)
 }
 
 
-getallpost(char *path, char prefix)
-{
+int getallpost(char *path,char prefix){
 	DIR *dirp;
 	struct dirent *direntp;
-	int h;
 	dirp = opendir(path);
 	if (dirp == NULL)
 		return -1;
@@ -175,14 +171,10 @@ getallpost(char *path, char prefix)
 	return 0;
 }
 
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv){
     DIR *pdir;
     char *name;
-    struct dirent *ent;
-    int i;
-    int file, file1;
-    int flag;                   /* test mode flag */
+    int i,file,flag=1;
     mode_t old_dir_mode;
     char cwd[255];
 
