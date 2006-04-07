@@ -69,6 +69,8 @@ struct postrec sectop[SECNUM][SECTOPCOUNT];
 int sectopnum[SECNUM];
 int sectopnumtotal=0;
 
+bool force_refresh;
+
 int topnum=0;
 #ifdef SMTH
 int topnum1=0;
@@ -685,15 +687,21 @@ int main(int argc, char **argv)
 	}
     time(&now);
     ptime = *localtime(&now);
+    force_refresh = false;    /* 增加强制重新统计十大功能 pig2532 2006.04.06 */
     if (argc == 2) {
-        i = atoi(argv[1]);
-        if (i != 0 || argv[1][0]=='0') {
-            poststat(i);
-            return 0;
+        if (strcmp(argv[1], "refresh") == 0) {
+            force_refresh = true;
+        }
+        else {
+            i = atoi(argv[1]);
+            if (i != 0 || argv[1][0]=='0') {
+                poststat(i);
+                return 0;
+            }
         }
     }
 
-    if (ptime.tm_hour == 0) {
+    if ((ptime.tm_hour == 0) || force_refresh) {
 		if (ptime.tm_yday == 1)
 			poststat(3);
         if (ptime.tm_mday == 1)

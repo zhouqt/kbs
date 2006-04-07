@@ -20,6 +20,11 @@ INSTALL只写了bbsd等主要程序的安装方法
 		59 23 * * * rm -f $BBSHOME/tmp/Xpost/*
 		59 23 * * * rm -f $BBSHOME/.post.X
 	注意: 每天的第一小时只能运行一次，否则新的会覆盖老的
+	
+	说明：如果0:00-0:59之内由于某些原因未能执行poststat，
+	      十大统计将会一直保留前一天的内容，此种情况下，
+	      请手动执行 $BBSHOME/bin/poststat refresh 以强制
+	      刷新十大。
 
   ii)使用MYSQL的十大热门话题统计 
    代码: local_utl/newpoststat.c
@@ -59,6 +64,8 @@ INSTALL只写了bbsd等主要程序的安装方法
 		 UNIQUE top (`date`,`topth`)
 		) TYPE=MyISAM COMMENT='toplog';
    注意: postlog表过大时可以清空以前的发文记录，不影响
+
+   说明：同样可以用 $BBSHOME/bin/newpoststat refresh 强制刷新十大。
 
  2.) MYSQL 斑竹任期记录
 

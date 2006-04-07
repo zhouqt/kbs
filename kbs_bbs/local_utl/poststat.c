@@ -71,6 +71,8 @@ struct postrec {
 /* 100 bytes */
 struct posttop top[TOPCOUNT], postlog;
 
+bool force_refresh;
+
 
 int hash(key)
 unsigned int key;
@@ -730,7 +732,7 @@ void poststat(int mytype, time_t now, struct tm *ptime)
     char buf[40], curfile[40] = "etc/posts/day.0";
     struct postrec *pp;
     struct postrec *qq;
-    FILE *fp;
+    FILE *fp=NULL;
     int i;
 
     for (i = 0; i < HASHSIZE; i++) {
@@ -755,17 +757,20 @@ void poststat(int mytype, time_t now, struct tm *ptime)
 
         remove(oldfile);
         rename(logfile, oldfile);
-        if ((fp = fopen(oldfile, "r")) == NULL)
-            return;
+        if (!force_refresh)
+            if ((fp = fopen(oldfile, "r")) == NULL)
+                return;
         mytype = 0;
         load_stat(curfile);
 #ifdef BLESS_BOARD
         load_stat("etc/posts/bless.0");
 #endif
 
-        while (fread(top, sizeof(struct posttop), 1, fp))
-            search(top);
-        fclose(fp);
+        if (fp != NULL) {
+      	    while (fread(top, sizeof(struct posttop), 1, fp))
+                search(top);
+            fclose(fp);
+        }
     } else {
         /*
          * ---------------------------------------------- 
@@ -849,15 +854,21 @@ int main(int argc, char **argv)
 	}
     time(&now);
     ptime = *localtime(&now);
+    force_refresh = false;    /* 增加强制重新统计十大功能 pig2532 2006.04.06 */
     if (argc == 2) {
-        i = atoi(argv[1]);
-        if (i != 0) {
-            poststat(i, now, &ptime);
-            return 0;
+        if (strcmp(argv[1], "refresh") == 0) {
+            force_refresh = true;
+        }
+        else {
+            i = atoi(argv[1]);
+            if (i != 0) {
+                poststat(i, now, &ptime);
+                return 0;
+            }
         }
     }
 
-    if (ptime.tm_hour == 0) {
+    if ((ptime.tm_hour == 0) || force_refresh) {
 		if (ptime.tm_yday == 1)
 			poststat(2, now, &ptime);
         if (ptime.tm_mday == 1)
