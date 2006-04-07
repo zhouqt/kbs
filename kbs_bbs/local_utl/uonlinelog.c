@@ -5,14 +5,8 @@
 FILE *fp;
 FILE *fp1;
 
-int do_userlist(struct user_info *uentp, char *arg, int t)
-{
-    int i;
-    int fd, len;
-    char user_info_str[256 /*STRLEN*2 */ ], pagec;
-    int override;
-	char modebuf[80],idlebuf[10];
-
+int do_userlist(struct user_info *uentp, char *arg, int t){
+    char user_info_str[256],modebuf[80],idlebuf[10],pagec;
     t++;
     if (!uentp->active || !uentp->pid) {
         printf(" %4d 啊,我刚走\n", t);
@@ -39,11 +33,10 @@ int show_wwwguest()
             continue;
 	    fprintf(fp1, "%s\n", inet_ntoa(wwwguest_shm->guest_entry[i].fromip));
     }
-
+    return 0;
 }
 #endif
-main()
-{
+int main(void){
 	char path[256];
 	struct stat st;
 	time_t now;
@@ -88,13 +81,13 @@ main()
 #if HAVE_WWW == 1
 	fprintf(fp1, "%d\n", getwwwguestcount());
 #endif
-    //fprintf(fp," 序号  用户ID       昵称             来源                 状态     发呆时间 进程号\n");
     apply_ulist_addr((APPLY_UTMP_FUNC)do_userlist, NULL);
 #if HAVE_WWW == 1
 	show_wwwguest();
 #endif
     fclose(fp);
     fclose(fp1);
+    return 0;
 }
 
 
