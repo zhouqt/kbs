@@ -12,14 +12,12 @@ crontab:  2 0 * * * /home/bbs/bin/bonlinelog
 #include <stdio.h>
 #include "bbs.h"
 
-main(int argc, char **argv)
-{
+int main(int argc, char **argv){
 	char path[256];
 	char title[256];
 	struct stat st;
 	time_t now;
 	struct tm t;
-	int i;
 	int before=0;
 
 chdir(BBSHOME);
@@ -48,5 +46,5 @@ if( stat( path, &st) >= 0){
     post_file(NULL, "", path, "SysTrace", title, 0, 1, getSession());
 }
 
-
+    return 0;
 }
