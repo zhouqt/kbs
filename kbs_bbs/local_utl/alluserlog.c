@@ -25,11 +25,9 @@ int tt5=0;
 int tt6=0;
 int tt7=0;
 
-main()
-{
+int main(void){
 	char path[256];
 	char buf[256];
-	struct stat st;
 	time_t now;
 	struct tm t;
 	float fb;
@@ -40,7 +38,7 @@ main()
 
     chdir(BBSHOME);
 
-	sprintf(path, "%s/%d/%d/%d_useronline", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(path, "%s/%d/%d/%d_useronline", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday);
 
 	if((fp=fopen(path, "r"))==NULL){
 		printf("cannot open log file\n");
@@ -67,5 +65,5 @@ main()
 
 	fprintf(fp, "%d_%d_%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", t.tm_year+1900, t.tm_mon+1, t.tm_mday, tt1/num, tt2/num, tt3/num, tt4/num, tt5/num, tt6/num, tt7/num);
     fclose(fp);
-
+    return 0;
 }
