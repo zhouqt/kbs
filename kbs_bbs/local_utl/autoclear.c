@@ -111,9 +111,7 @@ life *brd;
     updatelastpost(brd->bname);
 }
 
-main(argc, argv)
-char *argv[];
-{
+int main(int argc,char **argv){
     FILE *fin;
     int number;
     size_t count;
@@ -139,7 +137,7 @@ char *argv[];
     /* -------------- */
 
     count = 0;
-    if (fin = fopen(EXPIRE_CONF, "r")) {
+    if((fin=fopen(EXPIRE_CONF,"r"))!=NULL){
         while (fgets(buf, 256, fin)) {
             if (buf[0] == '#')
                 continue;
@@ -180,7 +178,7 @@ char *argv[];
         printf(":Err: unable to open %s\n", bpath);
         return -1;
     }
-    while (de = readdir(dirp)) {
+    while((de=readdir(dirp))!=NULL){
         ptr = de->d_name;
         if (ptr[0] > ' ' && ptr[0] != '.') {
             if (count)
@@ -195,4 +193,5 @@ char *argv[];
         }
     }
     closedir(dirp);
+    return 0;
 }
