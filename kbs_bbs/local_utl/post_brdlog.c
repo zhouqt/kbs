@@ -25,15 +25,14 @@ int n = 0;
 MYSQL s;
 struct tm t;
 
-int putout(char *path)
-{
+int putout(const char *path){
 	FILE *fp;
 	int i;
 	int totalonline = 0;
 	int totalid = 0;
 
 	if((fp=fopen(path,"w"))==NULL)
-		return;
+		return 0;
 
 	fprintf(fp,"    %-15.15s %-30.30s %4s %6s\n","英文版面名", "中文","平均在线","文章数");
 	for(i=0;i<n;i++){
@@ -59,21 +58,16 @@ int id_cmp(const void *b, const void *a)
 
 int fillbcache(struct boardheader *fptr,int idx,void* arg)
 {
-
-    struct boardheader bp;
-	int bnum;
-    struct BoardStatus * bs;
-    struct userec normaluser;
 	char sql[256];
 	FILE *fp;
     MYSQL_RES *res;
     MYSQL_ROW row;
 
 	if(fptr->filename[0]==0 || !normal_board(fptr->filename))
-		return;
+		return 0;
 
     if (fptr->flag & BOARD_GROUP)
-		return;
+		return 0;
 
 	strcpy(x[n].filename, fptr->filename);
 	strcpy(x[n].title, fptr->title+13);
@@ -105,7 +99,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 int fillboard()
 {
 	bzero(x, MAXBOARD * sizeof(struct _brdlog));
-    apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
+    return apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
 int main(int argc,char **argv)
@@ -162,8 +156,7 @@ int main(int argc,char **argv)
 	return 0;
 }
 #else
-int main()
-{
+int main(void){
 	fprintf(stderr, "MySQL support had been disabled.\n");
 	return -1;
 }
