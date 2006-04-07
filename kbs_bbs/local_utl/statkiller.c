@@ -27,7 +27,7 @@ int statt=0;
 
 int getid(char * s)
 {
-    int i,j;
+    int i;
     for(i=0;i<statt;i++)
         if(!strcmp(s, statlib[i].id)) return i;
     strcpy(statlib[statt].id, s);
@@ -46,7 +46,7 @@ int main()
     char buf[80];
     struct killer_record r;
     time_t now;
-    int i,j,k,bt,gt,bwt,gwt;
+    int i,j,bt,gt,bwt,gwt;
     struct statf temp;
     double rr;
     chdir(BBSHOME);
@@ -98,6 +98,8 @@ int main()
                     else
                         rr=(double)gt/bt/100;
                     break;
+                default:
+                    continue;
             }
             statlib[j].score+=rr;
         }
@@ -105,8 +107,8 @@ int main()
     fclose(fp);
     for(i=0;i<statt;i++)
         for(j=i+1;j<statt;j++)
-            if(statlib[i].btime==0||statlib[i].btime>0&&statlib[j].btime>0&&
-                (double)statlib[i].bwtime/statlib[i].btime<(double)statlib[j].bwtime/statlib[j].btime) {
+            if(statlib[i].btime==0||(statlib[i].btime>0&&statlib[j].btime>0&&
+                (double)statlib[i].bwtime/statlib[i].btime<(double)statlib[j].bwtime/statlib[j].btime)){
                 memcpy(&temp, statlib+i, sizeof(struct statf));
                 memcpy(statlib+i, statlib+j, sizeof(struct statf));
                 memcpy(statlib+j, &temp, sizeof(struct statf));
@@ -125,8 +127,8 @@ int main()
 
     for(i=0;i<statt;i++)
         for(j=i+1;j<statt;j++)
-            if(statlib[i].gtime==0||statlib[i].gtime>0&&statlib[j].gtime>0&&
-                (double)statlib[i].gwtime/statlib[i].gtime<(double)statlib[j].gwtime/statlib[j].gtime) {
+            if(statlib[i].gtime==0||(statlib[i].gtime>0&&statlib[j].gtime>0&&
+                (double)statlib[i].gwtime/statlib[i].gtime<(double)statlib[j].gwtime/statlib[j].gtime)){
                 memcpy(&temp, statlib+i, sizeof(struct statf));
                 memcpy(statlib+i, statlib+j, sizeof(struct statf));
                 memcpy(statlib+j, &temp, sizeof(struct statf));
@@ -217,6 +219,8 @@ int main()
                     else
                         rr=(double)gt/bt/100;
                     break;
+                default:
+                    continue;
             }
             statlib[j].score+=rr;
         }
@@ -225,8 +229,8 @@ int main()
 
     for(i=0;i<statt;i++)
         for(j=i+1;j<statt;j++)
-            if(statlib[i].btime==0||statlib[i].btime>0&&statlib[j].btime>0&&
-                (double)statlib[i].bwtime/statlib[i].btime<(double)statlib[j].bwtime/statlib[j].btime) {
+            if(statlib[i].btime==0||(statlib[i].btime>0&&statlib[j].btime>0&&
+                (double)statlib[i].bwtime/statlib[i].btime<(double)statlib[j].bwtime/statlib[j].btime)){
                 memcpy(&temp, statlib+i, sizeof(struct statf));
                 memcpy(statlib+i, statlib+j, sizeof(struct statf));
                 memcpy(statlib+j, &temp, sizeof(struct statf));
@@ -245,8 +249,8 @@ int main()
 
     for(i=0;i<statt;i++)
         for(j=i+1;j<statt;j++)
-            if(statlib[i].gtime==0||statlib[i].gtime>0&&statlib[j].gtime>0&&
-                (double)statlib[i].gwtime/statlib[i].gtime<(double)statlib[j].gwtime/statlib[j].gtime) {
+            if(statlib[i].gtime==0||(statlib[i].gtime>0&&statlib[j].gtime>0&&
+                (double)statlib[i].gwtime/statlib[i].gtime<(double)statlib[j].gwtime/statlib[j].gtime)){
                 memcpy(&temp, statlib+i, sizeof(struct statf));
                 memcpy(statlib+i, statlib+j, sizeof(struct statf));
                 memcpy(statlib+j, &temp, sizeof(struct statf));
@@ -287,5 +291,5 @@ int main()
         if(j>=MAXK) break;
     }
     fclose(fp);
-
+    return 0;
 }
