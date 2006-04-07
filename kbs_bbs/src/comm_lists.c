@@ -639,9 +639,11 @@ char *menu_name;
 				}
                 set_alarm(0, 0, NULL, NULL);
                 (*fptr) (sysconf_relocate(pm[now].arg));
+#if 0 //disabled by atppp 20060407
                 if (fptr == Select) {
                     now++;
                 }
+#endif
                 domenu_screen(pm, cmdprompt);
                 modify_user_mode(MMENU);
 #ifdef NEW_HELP
