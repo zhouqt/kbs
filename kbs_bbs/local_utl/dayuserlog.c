@@ -60,13 +60,11 @@ int show_wwwguest()
 	    if( is_school( inet_ntoa(wwwguest_shm->guest_entry[i].fromip)) )
 			wwwguestschool++;
     }
-
+    return 0;
 }
 #endif 
-main()
-{
+int main(void){
 	char path[256];
-	char path1[256];
 	struct stat st;
 	time_t now;
 	struct tm t;
@@ -90,7 +88,7 @@ main()
 			exit(0);
 	}
 
-	sprintf(path, "%s/%d/%d/%d_useronline", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(path,"%s/%d/%d/%d_useronline",BONLINE_LOGDIR,t.tm_year+1900,t.tm_mon+1,t.tm_mday);
 
 	if((fp=fopen(path, "a"))==NULL){
 		printf("cannot open log file\n");
@@ -126,4 +124,5 @@ main()
 	fprintf(fp_forcount, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n", totalonline, wwwguestonline, wwwnotguestonline, telnetonline, wwwguestschool, wwwnotguestschool, telnetschool);
     fclose(fp);
     fclose(fp_forcount);
+    return 0;
 }
