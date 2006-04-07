@@ -29,6 +29,7 @@ int fill_newboards (struct boardheader *bptr, void* arg)
         boarddata->boards[boarddata->nBoards] = bptr;
         boarddata->nBoards++;
     }
+    return 0;
 }
 
 int compare_createtime(const void *a, const void *b) {
