@@ -25,7 +25,7 @@ int tt5=0;
 int tt6=0;
 int tt7=0;
 
-int main(void){
+int main(int argc, char **argv){
 	char path[256];
 	char buf[256];
 	time_t now;
