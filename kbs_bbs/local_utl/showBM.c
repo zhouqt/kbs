@@ -19,12 +19,12 @@ int query_BM(struct userec *user, void *arg)
     curuserid = user->userid;
     apply_boards(check_BM,NULL);
     printf("\n");
+    return 0;
 }
 
-main()
-{
+int main(void){
     chdir(BBSHOME);
     resolve_ucache();
     resolve_boards();
-    apply_users(query_BM, NULL);
+    return apply_users(query_BM, NULL);
 }
