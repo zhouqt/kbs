@@ -28,8 +28,7 @@ struct a_template *tpl;
 int tpl_num;
 
 int
-hash(char *postname)
-{
+hash(const char *postname){
 	int i = atoi(postname + 2);
 	if( i<0 ) i=0-i;
 	return i % HASHSIZE;
@@ -58,14 +57,7 @@ isspcname(char *file)
 	return 0;
 }
 
-int
-countfile(struct fileheader *fhdr, int index, void *farg)
-{
-	return countfile_new( fhdr->filename) ;
-
-}
-
-int countfile_new( char *fname){
+int countfile_new(const char *fname){
 	
 	int i,h;
 
@@ -86,6 +78,11 @@ int countfile_new( char *fname){
 	}
 	return 0;
 }
+
+int countfile(const struct fileheader *fhdr,int index,void *farg){
+    return countfile_new(fhdr->filename);
+}
+
 
 int totalsize = 0;
 int
