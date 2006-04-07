@@ -209,7 +209,7 @@ int main(int argc, char **argv)
                 szBuf[2] = szBuf[3] = 161;
 
             for (j = 0; szBuf[j]; j++) {
-                if (ptr = strchr(szBuf + j, '@')) {
+                if((ptr=strchr(szBuf+j,'@'))!=NULL){
                     j = ptr - szBuf;
                     if (strchr(ptr, '.')) {
                         if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
