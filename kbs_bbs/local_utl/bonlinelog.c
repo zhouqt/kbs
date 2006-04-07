@@ -36,11 +36,10 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     struct boardheader bp;
 	int bnum;
     struct BoardStatus * bs;
-    struct userec normaluser;
 	char sql[500];
 
     if (check_see_perm(NULL, fptr)==0 || strlen(fptr->filename) == 0)
-        return;
+        return 0;
 
     bnum = getboardnum(fptr->filename,&bp);
     bs = getbstatus(bnum);
@@ -53,13 +52,11 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
     return 0;
 }
 
-int fillboard()
-{
-    apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
+int fillboard(void){
+    return apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
 
-int main()
-{
+int main(void){
 	time_t now;
 
     chdir(BBSHOME);
@@ -79,8 +76,7 @@ int main()
     return 0;
 }
 #else
-int main()
-{
+int main(void){
 	fprintf(stderr, "MySQL support had been disabled.\n");
 	return -1;
 }
