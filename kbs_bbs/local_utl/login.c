@@ -7,9 +7,8 @@
 
 int login(struct userec *user)
 {
-    FILE *fp;
     char buf[80];
-    int pid, tmp;
+    int tmp;
     struct user_info *u;
     struct user_info ui;
     int utmpent;
