@@ -200,7 +200,7 @@ void writestat(int mytype, struct postrec *dobucket[HASHSIZE])
      */
 	int fd;
     char dirfile[80];
-    int exist, real;
+    int real;
 	fileheader_t fh;
 
     /*
@@ -414,7 +414,6 @@ static int get_seccode_index(char prefix)
 
 void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], int secid, int j)
 {
-    struct postrec *pp;
     FILE *fp;
     int i;
     char *p, curfile[40];
@@ -424,7 +423,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
      */
 	int fd;
     char dirfile[80];
-    int exist, real;
+    int real;
 	fileheader_t fh;
 
     /*
@@ -443,21 +442,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
     /*
      * ---------------------------------------------- 
      */
-/*
-    memset(top, 0, sizeof(top));
-    for (i = j = 0; i < HASHSIZE; i++) {
-        for (pp = dobucket[i]; pp; pp = pp->next)
-            j = sort(pp, j);
-    }
-*/
     p = myfile[mytype];
-	/*
-    sprintf(curfile, "etc/posts/%s.0", p);
-    if ((fp = fopen(curfile, "w")) != NULL) {
-        fwrite(top, sizeof(struct posttop), j, fp);
-        fclose(fp);
-    }
-	*/
 
     sprintf(curfile, "xml/%s_sec%d.xml", p, secid);
     if ((fp = fopen(curfile, "w")) != NULL) 
@@ -505,7 +490,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
 						sizeof(xml_buf)),sizeof(url_buf)));
 			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", top[i].date);
+			fprintf(fp, "<time>%ld</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
@@ -544,7 +529,7 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
      */
 	int fd;
     char dirfile[80];
-    int exist, real;
+    int real;
 	fileheader_t fh;
 
     /*
@@ -618,7 +603,7 @@ void gen_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE])
 						sizeof(xml_buf)),sizeof(url_buf)));
 			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", top[i].date);
+			fprintf(fp, "<time>%ld</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
@@ -641,7 +626,7 @@ void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
      */
 	int fd;
     char dirfile[80];
-    int exist, real;
+    int real;
 	fileheader_t fh;
 
     /*
@@ -713,7 +698,7 @@ void gen_blessing_list_xml(struct postrec *dobucket[HASHSIZE])
 						sizeof(xml_buf)),sizeof(url_buf)));
 			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,fh.owner,sizeof(url_buf)));
 			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", top[i].date);
+			fprintf(fp, "<time>%ld</time>\n", top[i].date);
 			fprintf(fp, "<number>%d</number>\n", top[i].number);
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
