@@ -137,16 +137,15 @@ int query_BM(struct userec *user, void *arg)
     if (!(user->userlevel & PERM_BOARDS))
         return 0;
     curuserid = user->userid;
-    apply_boards(check_BM,NULL);
+    return apply_boards(check_BM,NULL);
 }
 
-main(int argc, char ** argv)
-{
+int main(int argc,char **argv){
 	time_t t;
 	struct tm res;
 	if (argc<=2) {
 		printf("usage: statBM group day|week|month|year|update|clear\n");
-		return;
+		return -2;
 	}
         if(argv[1][1]==0) groupid = argv[1][0];
 	if (!strcasecmp(argv[2],"clear")) type=0;
@@ -158,7 +157,7 @@ main(int argc, char ** argv)
 	if (argc>=4&&!strcasecmp(argv[3],"id")) sorttype=1;
 	if (type==-1) {
 		printf("usage: statBM group day|week|month|year|update|clear\n");
-		return;
+		return -1;
 	}
     chdir(BBSHOME);
     resolve_ucache();
@@ -226,11 +225,12 @@ main(int argc, char ** argv)
 		    apply_users(query_BM, NULL);
 		    break;
     }
+    return 0;
 }
 #else
 
 int main()
 {
-	return;
+	return 0;
 }
 #endif
