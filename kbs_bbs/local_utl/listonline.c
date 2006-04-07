@@ -2,10 +2,7 @@
 
 int do_userlist(struct user_info *uentp, char *arg, int t)
 {
-    int i;
-    int fd, len;
     char user_info_str[256 /*STRLEN*2 */ ], pagec;
-    int override;
 	char modebuf[80],idlebuf[10];
 
     t++;
