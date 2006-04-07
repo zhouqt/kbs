@@ -55,9 +55,6 @@ int DealParameters(int argc, char **argv)
 
     chmcontentFile = NULL;
     while (flag) {
-        int this_option_optind = optind ? optind : 1;
-        int option_index;
-
         c = getopt(argc, argv, "w:d:o:c:b:");
         if (c == -1)
             break;
@@ -168,8 +165,8 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
          * 处理一般的精华区文件 
          */
         FILE *psrcFile;
-        FILE *pBBSFile;
-        int i, j, k;
+        FILE *pBBSFile=NULL;
+        int j, k;
         int is_attach = 0;
 
         char srcLine[MAXLINELEN], dstLine[MAXLINELEN * 20];
@@ -224,10 +221,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
             printf("Unexpected error: Can not open file \"%s\"\n", filename);
 
         while (!feof(psrcFile)) {
-            off_t attach_len, size, left;
-            char *attach_ptr, *attach_filename, *p;
             char dirname[MAXLINELEN];
-            int asize;
             int ret;
 
             ret = attach_fgets(srcLine, MAXLINELEN - 1, psrcFile);
@@ -282,7 +276,7 @@ char *DealLink(char *directory, char *Link, int index, int *isDir, char *date, c
 
                 if (0) {        //disable it for core dump
                     for (j = 0; srcLine[j]; j++) {      //email detect
-                        if (ptr = strchr(srcLine + j, '@')) {
+                        if((ptr=strchr(srcLine+j,'@'))!=NULL){
                             j = ptr - srcLine;
                             if (strchr(ptr, '.')) {
                                 if (strchr(ptr, ' ') - strchr(ptr, '.') > 0) {
@@ -390,7 +384,7 @@ void DealDirectory(char *directory)
 {
     FILE *IndexHtmlFile;
     FILE *DotFile;
-    FILE *BBSDotFile;
+    FILE *BBSDotFile=NULL;
     char filename[MAX_PATH];
     int index;
 
@@ -449,7 +443,7 @@ void DealDirectory(char *directory)
                 if (fputs(Buf, BBSDotFile) == EOF)
                     perror("fputs bbs .Name:");
         Buf[strlen(Buf) - 1] = 0;
-        if (ptr = strstr(Buf, "Title=")) {
+        if((ptr=strstr(Buf,"Title="))!=NULL){
             fputs("<?xml version=\"1.0\" encoding=\"gb2312\"?>\n", IndexHtmlFile);
             fputs("<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Transitional//EN\" \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd\">\n", IndexHtmlFile);
             fputs("<html xmlns=\"http://www.w3.org/1999/xhtml\">\n<head>\n", IndexHtmlFile);
@@ -465,7 +459,8 @@ void DealDirectory(char *directory)
             fputs("<center>\n", IndexHtmlFile);
             fputs("<table>", IndexHtmlFile);
             fputs("<tr><th>编号<th>类别<th class=\"body\">标题<th class=\"body\">编辑日期</tr>", IndexHtmlFile);
-        } else if (ptr = strstr(Buf, "Name=")) {
+        }
+        else if((ptr=strstr(Buf,"Name="))!=NULL){
             char Name[256];
 
             if (strstr(Buf, "(BM: BMS)"))
@@ -483,7 +478,7 @@ void DealDirectory(char *directory)
                 } else {
                     if (genBBSPackage && BBSDotFile)
                         fputs(Buf, BBSDotFile);
-                    if (ptr = strstr(Buf, "Path=~/")) {
+                    if((ptr=strstr(Buf,"Path=~/"))!=NULL){
                         char *herfname;
                         char datestr[25];
                         int isDir;
