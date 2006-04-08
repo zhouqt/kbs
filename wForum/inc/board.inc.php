@@ -103,7 +103,8 @@ function showBoardStaticsTop($boardArr, $is_bm, $ftype=false){
 ?>
 <TABLE cellpadding=3 cellspacing=1 class=TableBorder1 align=center>
 <TR><Th height=25 width=100% align=left id=TableTitleLink style="font-weight:normal">
-本版当前共有<b><?php echo $boardArr['CURRENTUSERS']+1;?></b>人在线。今日帖子<?php echo bbs_get_today_article_num($boardArr['NAME'] ); ?>。
+本版当前共有<b><?php echo $boardArr['CURRENTUSERS']+1;?></b>人在线。今日帖子<?php 
+	$ff = bbs_get_today_article_num($boardArr['NAME'] ); echo ($ff < 0) ? 0 : $ff; ?>。
 [<a href="favboard.php?bname=<?php echo $boardArr["NAME"]; ?>" title="收藏本版面到收藏夹顶层目录">收藏本版</a>]
 <?php
 	if ($loginok && SHOW_POST_UNREAD) {

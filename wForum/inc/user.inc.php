@@ -116,6 +116,7 @@ function showSecsJS($secNum,$group,$isFold,$isFav,$isHide) {
 					$j_todayNum = $j_nArticles = 0;
 				} else {
 					$j_todayNum = bbs_get_today_article_num($brd_name[$i]);
+					if ($j_todayNum < 0) $j_todayNum = 0;
 					$j_nArticles = $brd_artcnt[$i];
 				}
 				if ($isFav) {
