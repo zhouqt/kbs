@@ -29,7 +29,7 @@ static int load_highrecord(int level,struct high_record* hr,int myrecord)
 
     bzero(hr,sizeof(*hr));
     if (level==-1) {
-    	hr->shortest==-1;
+    	hr->shortest=-1;
     	return 0;
     }
     if (myrecord!=-1) 
@@ -51,7 +51,6 @@ static int load_highrecord(int level,struct high_record* hr,int myrecord)
     ret=0;
     if (myrecord!=-1) {
     	if (hr->shortest>myrecord||hr->shortest<=0) {
-#ifdef ENABLE_DL
 		int i;
 		int count;
 		struct high_record allrecord[MAXDATA];
@@ -66,16 +65,11 @@ static int load_highrecord(int level,struct high_record* hr,int myrecord)
 			ret = count;
 		else {
     		strcpy(hr->userid,getCurrentUser()->userid);
-#else
-		{
-#endif
     		hr->shortest=myrecord;
     		lseek(fd,sizeof(*hr)*(level-1),SEEK_SET);
     		write(fd,hr,sizeof(*hr));
     		ret=1;
-#ifdef ENABLE_DL
 		}
-#endif
     	}
     }
     if (myrecord!=-1) 
@@ -134,7 +128,6 @@ int main(int argc, char **argv)
         num = 0;
         clear();
         ansimore2("game/worker/welcome", false, 0, 0);
-//        sprintf(genbuf, "搬运工游戏目前共有 %d 局, 请选择 : ", MAXDATA);
         while (num <= 0 || num > MAXDATA) {
 	    buf[0]=0;
             getdata(5, 61, "", buf, 5, 1, NULL, true);
@@ -161,7 +154,6 @@ int main(int argc, char **argv)
 #endif
         num_step=0;
         load_highrecord(num, &high, -1);
-//        initialize();
         if (TRUE == InitData(fname)) {
             if (TRUE == InitPad()) {
                 b_play = TRUE;
@@ -169,7 +161,6 @@ int main(int argc, char **argv)
                 update_endline1(&high,num_step);
                 inch = 0;
                 while (b_play) {
-/*				DrawPad();*/
                     if (inch) {
                         showdiff();
                         cleardiff();
@@ -242,13 +233,8 @@ int main(int argc, char **argv)
                         break;
                     case 12:   //      Ctrl-L
                     case 'R':   //      Ctrl-L
-#ifdef ENABLE_DL
                         clear();
                         DrawPad();
-#else
-                        clear();
-                        DrawPad();
-#endif
                         break;
                     case '\t':
                         b_play = InitPad();
@@ -270,7 +256,7 @@ int main(int argc, char **argv)
                     }
                     if (NullDir != dir) {
                     	    int ret;
-                         if (ret=workermove(dir)) {
+                         if ((ret=workermove(dir))!=0) {
                          	if (ret==2)
                                  steplog[num_step]=dir+8;
                          	else
@@ -284,7 +270,6 @@ int main(int argc, char **argv)
             DestroyPad();
         }
         DestroyData();
-//        finalize();
     }
     return 0;
 }

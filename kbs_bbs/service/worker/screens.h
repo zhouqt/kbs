@@ -11,5 +11,6 @@ void rectbox(int x, int y);
 void rectwall(int x, int y);
 void background(int x, int y);
 void FoolWorker(void);
+void rectboxtarget(int x, int y);
 
 #endif
