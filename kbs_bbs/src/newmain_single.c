@@ -1288,8 +1288,7 @@ void update_endline()
 
 
 /*ReWrite by SmallPig*/
-void showtitle( char *title, const char *mid)
-{
+void showtitle(const char *title, const char *mid){
     int spc1;
     int colour;
     char note[STRLEN];

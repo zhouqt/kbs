@@ -25,7 +25,7 @@ void load_board_banner(const char * board);
 /*screen.c*/
 void do_naws(int ln, int col);
 void auto_chinese();
-int num_noans_chr(char* str);
+int num_noans_chr(const char* str);
 void noscroll();
 void setfcolor(int i,int j);
 void setbcolor(int i);
@@ -35,7 +35,7 @@ void clear_whole_line(int i);
 void move(int y, int x);
 
 void clrtobot();
-void prints(char *fmt, ...);
+void prints(const char *fmt, ...);
 int pressreturn();
 void clear();
 void refresh();
@@ -104,7 +104,7 @@ void showsysinfo(char * fn);
 extern int talkrequest;
 int count_user();
 int dosearchuser(char *userid);
-void showtitle(char *title, const char *mid);
+void showtitle(const char *title, const char *mid);
 void abort_bbs(int);
 void update_endline();
 void docmdtitle(char *title, char *prompt);

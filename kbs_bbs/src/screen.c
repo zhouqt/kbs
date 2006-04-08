@@ -79,8 +79,7 @@ void clrnlines(int n)
 }
 /* added end */
 
-int num_noans_chr(char* str)
-{
+int num_noans_chr(const char* str){
 	int len, i, ansinum, ansi;
 
 	ansinum = 0;
@@ -752,7 +751,7 @@ int dec[] =
 	1
 };
 
-void prints(char *format, ...)
+void prints(const char *format, ...)
 {
 	va_list ap;
 	char *fmt;

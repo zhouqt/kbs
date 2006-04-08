@@ -19,7 +19,7 @@
 #define L_DELIM    10
 
 #ifdef BBSMAIN
-extern void prints(char *fmt, ...);
+//extern void prints(char *fmt, ...);
 #define printf prints
 #ifdef putchar
 #undef putchar
