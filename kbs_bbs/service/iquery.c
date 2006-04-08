@@ -75,7 +75,7 @@ int get_pos(char * s)
     struct stat st;
     FILE* fp;
     char buf[240],buf2[100],tt[100];
-    int i,j,k;
+    int i,j;
     if(stat(s, &st)==-1) return -1;
     strcpy(buf, s);
     i=strlen(buf)-1;
@@ -134,7 +134,7 @@ void do_query_all(int w, char * s)
     
     j=1;
     for(i=0;i<strlen(s);i++)
-        if(s[i]>='a'&&s[i]<='z'||s[i]>='A'&&s[i]<='Z'||s[i]>='0'&&s[i]<='9'||s[i]<0) {
+        if(isalnum(s[i])||s[i]<0) {
             j=0;
             break;
         }
@@ -255,7 +255,6 @@ static int choose_file_refresh(struct _select_def *conf)
 
 static int choose_file_show(struct _select_def *conf, int ii)
 {
-    struct room_struct * r;
     prints("  %3d  %-35s %s", ii+wh*MAX_KEEP, res_title[ii-1], res_path[ii-1]);
     clrtoeol();
     if(show_mode) {
@@ -275,7 +274,7 @@ static int choose_file_show(struct _select_def *conf, int ii)
         for(i=0;i<fsize;i++) {
             if(buf[i]==0x1b) {
                 j=i;
-                while(!(buf[j]>='a'&&buf[j]<='z'||buf[j]>='A'&&buf[j]<='Z')&&j<fsize) {
+                while(!isalpha(buf[j])&&j<fsize) {
                     buf[j] = 0;
                     j++;
                 }
@@ -289,21 +288,21 @@ static int choose_file_show(struct _select_def *conf, int ii)
             if(i>=strlen(qn)) i=0;
         }
         while(i<strlen(qn)) {
-            if(qn[i]>='a'&&qn[i]<='z'||qn[i]>='A'&&qn[i]<='Z') {
+            if(isalpha(qn[i])) {
                 j=i;
-                while(qn[j]>='a'&&qn[j]<='z'||qn[j]>='A'&&qn[j]<='Z'||qn[j]>='0'&&qn[j]<='9') j++;
+                while(isalnum(qn[j])) j++;
                 for(k=0;k<fsize-(j-i)+1;k++)
-                    if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='a'&&buf[k-1]<='z'||buf[k-1]>='A'&&buf[k-1]<='Z'))&&
-                        (k+j-i==fsize||!(buf[k+j-i]>='a'&&buf[k+j-i]<='z'||buf[k+j-i]>='A'&&buf[k+j-i]<='Z')))
+                    if(!strncasecmp(qn+i,buf+k,j-i)&&(k==0||!isalpha(buf[k-1]))&&
+                        (k+j-i==fsize||!isalpha(buf[k+j-i])))
                         for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
                 i=j-1;
             }
-            if(qn[i]>='0'&&qn[i]<='9') {
+            if(isdigit(qn[i])) {
                 j=i;
-                while(qn[j]>='0'&&qn[j]<='9') j++;
+                while(isdigit(qn[j])) j++;
                 for(k=0;k<fsize-(j-i)+1;k++)
-                    if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!(buf[k-1]>='0'&&buf[k-1]<='9'))&&
-                        (k+j-i==fsize||!(buf[k+j-i]>='0'&&buf[k+j-i]<='9')))
+                    if(!strncmp(qn+i,buf+k,j-i)&&(k==0||!isdigit(buf[k-1]))&&
+                        (k+j-i==fsize||!isdigit(buf[k+j-i])))
                         for(l=0;l<j-i;l++) if(!out[k+l]){out[k+l]=1;t++;}
                 i=j-1;
             }
@@ -341,7 +340,7 @@ static int choose_file_show(struct _select_def *conf, int ii)
             t=0;
             for(k=0;k<fsize;k++) 
             if(!out2[k]) {
-                if(out[k]||k>0&&out[k-1]||k<fsize-1&&out[k+1]) {
+                if(out[k]||(k>0&&out[k-1])||(k<fsize-1&&out[k+1])) {
                     if(out[k]==1)
                         out2[k]=1;
                     else {
@@ -557,11 +556,11 @@ int choose_file()
     grouplist_conf.get_data = choose_file_getdata;
     list_select_loop(&grouplist_conf);
     free(pts);
+    return 0;
 }
 
 int show_res(int o)
 {
-    int i;
     if(res_total<=0) {
         if(o) move(t_lines-1, 0);
         else move(4,0);
@@ -573,6 +572,7 @@ int show_res(int o)
     else {
         choose_file();
     }
+    return 0;
 }
 
 int iquery_board(char * board, char * w)
@@ -581,6 +581,7 @@ int iquery_board(char * board, char * w)
     wh = 0;
     do_query_all(wh, qn);
     show_res(1);
+    return 0;
 }
 
 int iquery_main()
@@ -591,4 +592,5 @@ int iquery_main()
         do_query_all(wh, qn);
         show_res(0);
     }
+    return 0;
 }

@@ -484,8 +484,8 @@ void tea_encipher(unsigned int* v, unsigned int* k)
     register unsigned int y=v[0],z=v[1], sum=0, delta=0x9e3779b9, n=32;
     while (n-->0) {                       
         sum += delta ;
-        y += (z<<4)+k[0] ^ z+sum ^ (z>>5)+k[1];
-        z += (y<<4)+k[2] ^ y+sum ^ (y>>5)+k[3];   
+        y += (((z<<4) + k[0]) ^ (z + sum) ^ ((z>>5) + k[1]));
+        z += (((y<<4) + k[2]) ^ (y + sum) ^ ((y>>5) + k[3]));
     } 
     v[0]=y; 
     v[1]=z; 
@@ -497,12 +497,12 @@ void tea_decipher(unsigned int* v,unsigned int* k)
     sum=delta<<5;
                        
     while (n-->0) {
-        z-= (y<<4)+k[2] ^ y+sum ^ (y>>5)+k[3]; 
-        y-= (z<<4)+k[0] ^ z+sum ^ (z>>5)+k[1];
-        sum-=delta;  
+        z -= (((y<<4) + k[2]) ^ (y + sum) ^ ((y>>5) + k[3]));
+        y -= (((z<<4) + k[0]) ^ (z + sum) ^ ((z>>5) + k[1]));
+        sum -= delta;
     }
-    v[0]=y; 
-    v[1]=z;  
+    v[0]=y;
+    v[1]=z;
 }
 
 void encipher(char* buf,size_t len,unsigned int *k)

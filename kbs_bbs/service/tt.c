@@ -1,3 +1,6 @@
+#define BBSMAIN
+
+#include <sys/times.h>
 #include "service.h"
 #include "bbs.h"
 
@@ -23,6 +26,7 @@ int tt_load_record() {
   for(n=0; n<20; n++)
     fscanf(fp, "%s %s %d", tt_id[n], tt_ip[n], &tt_scr[n]);
   fclose(fp);
+    return 0;
 }
 
 int tt_save_record() {
@@ -46,6 +50,7 @@ int tt_save_record() {
   for(n=0; n<20; n++)
     fprintf(fp, "%s %s %d\n", tt_id[n], tt_ip[n], tt_scr[n]);
   fclose(fp);
+    return 0;
 }
 
 int tt_check_record(int score) {
@@ -71,19 +76,8 @@ int tt_check_record(int score) {
   return 0;
 }
 
-int tt_main()
-{
-	chdir(BBSHOME);
-	userid = getCurrentUser()->userid;
-	from = getSession()->fromhost;
-	modify_user_mode(TETRIS);
-	
-	tt_game();
-	return 0;
-}
-
 int tt_game() {
-  char c[30], a, fbuf[10];
+  char c[30], fbuf[10];
   char chars[]="ＡＢＣＤＥＦＧＨＩＪＫＬＭＮＯＰＱＲＳＴＵＶＷＸＹＺ";
   int m, n, score, round;
   int t;
@@ -142,3 +136,15 @@ start:
   else if(tt_check_record(score)) prints("\033[1;33m祝贺！您刷新了自己的纪录！\033[m\n\n");
   goto start;
 }
+
+int tt_main()
+{
+    chdir(BBSHOME);
+    userid = getCurrentUser()->userid;
+    from = getSession()->fromhost;
+    modify_user_mode(TETRIS);
+
+    tt_game();
+    return 0;
+}
+

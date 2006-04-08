@@ -230,7 +230,7 @@ int quiz_test()
                 if(toupper(input[0])=='Y') {
                     set_alarm(0, 0, NULL, NULL);
                     kicked = 0;
-                    return;
+                    return 0;
                 }
             }
         }
@@ -266,6 +266,7 @@ int quiz_test()
         }
     }
     set_alarm(0, 0, NULL, NULL);
+    return 0;
 }
 
 int quiz_again()
@@ -286,8 +287,6 @@ int quiz_again()
 
 int quiz_main()
 {
-    int i;
-
     mysql_init(&s);
     if (!mysql_real_connect(&s, 
                             sysconf_str("MYSQLHOST"),
@@ -297,7 +296,7 @@ int quiz_main()
 			    sysconf_eval("MYSQLPORT",1521), sysconf_str("MYSQLSOCKET"), 0)) {
         prints("%s\n", mysql_error(&s));
         pressanykey();
-        return;
+        return 0;
     }
     if(init_quiz()) {
         do{
@@ -306,6 +305,7 @@ int quiz_main()
     }
 
     mysql_close(&s);
+    return 0;
 }
 #endif /* HAVE_MYSQL_SMTH == 1*/
 #endif

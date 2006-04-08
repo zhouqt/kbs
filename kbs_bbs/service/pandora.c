@@ -4,6 +4,10 @@
 // zixia bbsnet, Changed by zixia, zixia@zixia.net, 2002.12.25
 // zixia pandora, Changed by zixia, zixia@zixia.net, 2003.1.25
 // zixia pandora, Change by roy, roy@zixia.net 2003.6.08
+
+#define BBSMAIN
+
+#include "../rzsz/zglobal.h"
 #include "service.h"
 #include "bbs.h"
 #include "select.h"
@@ -32,17 +36,15 @@ SMTH_API int utmpent;
 
 struct _select_def bbsnet_conf;
 
-locate(int n)
+int locate(int n)
 {
     int x, y;
-    char buf[20];
-
     if (n >= bbsnet_conf.item_count)
-        return;
+        return -1;
     y = n % 19+1 ;
     x = n / 19 * 24 + 3;
-	
 	move(y, x);
+    return 0;
 }	
 
 // added by flyriver, 2001.3.2
@@ -55,7 +57,6 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 	struct fileheader fh;
 	char buf[1024];
 	char fname[256];
-	int fd;
 	time_t now;
 	FILE *fp;
 
@@ -261,7 +262,7 @@ int bbsnet(int n)
 
     char buf1[40], buf2[40], c, buf3[40];        //增加的变量
     int l;                      //判断是不是port
-    int j, m;
+    int j;
 
     if (strcmp(host2[n], "般若波羅密") == 0) {  //如果是自定义站点，等待输入ip或域名
 
@@ -327,8 +328,8 @@ int bbsnet(int n)
 		alarm(TIME_OUT);
 		pHost = gethostbyname(ip[n]);
 		alarm(0);
+        signal(SIGALRM, oldsig);
 	}
-	signal(SIGALRM, oldsig);
 	if (pHost == NULL)
 	{
 		prints("\033[1;31m查找主机名失败！\033[m\n");
@@ -409,7 +410,7 @@ int bbsnet(int n)
 		}
 		if (rv == 0)
 		{
-			ret -1;
+			ret = -1;
 			goto on_error;
 		}
 
@@ -422,17 +423,17 @@ int bbsnet(int n)
 			}
 			else if (rc == 0)
 				break;
-			else if (strchr(buf, 255))	/* 查找是否含有TELNET命令IAC */
-				telnetopt(sockfd, buf, rc);
+			else if (strchr((void*)buf, 255))	/* 查找是否含有TELNET命令IAC */
+				telnetopt(sockfd, (void*)buf, rc);
 			else
 			{
-				output(buf, rc);
+				output((void*)buf, rc);
 				oflush();
 			}
 		}
 		if (FD_ISSET(0, &readset))
 		{
-			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
+			if ((rc = bbsnet_read(0, (void*)buf, BUFSIZ)) < 0)
 			{
 				ret = -1;
 				goto on_error;
@@ -488,6 +489,33 @@ static int bbsnet_key(struct _select_def *conf, int command)
     return SHOW_CONTINUE;
 }
 
+int bbsnet_selchange(struct _select_def* conf,int new_pos)
+{
+    static int oldn = -1;
+
+    if (oldn >= 0) {
+        locate(oldn);
+        prints("\033[1;32m %c.\033[m%s", str[oldn], host2[oldn]);
+    }
+    if (new_pos < 1) new_pos = conf->item_count;
+    if (new_pos > conf->item_count) new_pos = 1;
+    oldn = new_pos-1;
+    if (strcmp(host2[new_pos-1], "般若波羅密") == 0) {  //判断自定义站点
+        move(21,2);
+        prints("\033[1;37m使用方法: 回车后输入ip[:port]。\033[1;33m\033[22;32H\033[1;37m 站名: \033[1;33m自定义站点              ");
+        move(22,2);
+        prints("\033[1;37m\033[23;3H连往: \033[1;33m__________________           \033[21;1H");
+    } else {
+        move(21,2);
+        prints("\033[1;37m单位: \033[1;33m%s                   \033[22;32H\033[1;37m 站名: \033[1;33m%s              ", host1[new_pos-1], host2[new_pos-1]);
+        move(22,2);
+        prints("\033[1;37m\033[23;3H连往: \033[1;33m%s                   \033[21;1H", ip[new_pos-1]);
+    }
+    locate(new_pos-1);
+    prints("[%c]\033[1;42m%s\033[m", str[new_pos-1], host2[new_pos-1]);
+    return SHOW_CONTINUE;
+}
+
 static int bbsnet_refresh(struct _select_def *conf)
 {
 
@@ -509,43 +537,13 @@ static int bbsnet_refresh(struct _select_def *conf)
 		prints("\033[1;32m %c.\033[m%s", str[n], host2[n]);
 	}
     bbsnet_selchange(conf,conf->pos);
-
+    return 0;
 }
 
-int bbsnet_selchange(struct _select_def* conf,int new_pos)
-{
-    static int oldn = -1;
-
-    if (oldn >= 0) {
-        locate(oldn);
-        prints("\033[1;32m %c.\033[m%s", str[oldn], host2[oldn]);
-    }
-    if (new_pos < 1) new_pos = conf->item_count;
-    if (new_pos > conf->item_count) new_pos = 1;
-    oldn = new_pos-1;
-    if (strcmp(host2[new_pos-1], "般若波羅密") == 0) {  //判断自定义站点
-		move(21,2);
-        prints("\033[1;37m使用方法: 回车后输入ip[:port]。\033[1;33m\033[22;32H\033[1;37m 站名: \033[1;33m自定义站点              ");
-		move(22,2);
-        prints("\033[1;37m\033[23;3H连往: \033[1;33m__________________           \033[21;1H");
-    } else {
-		move(21,2);
-        prints("\033[1;37m单位: \033[1;33m%s                   \033[22;32H\033[1;37m 站名: \033[1;33m%s              ", host1[new_pos-1], host2[new_pos-1]);
-		move(22,2);
-		prints("\033[1;37m\033[23;3H连往: \033[1;33m%s                   \033[21;1H", ip[new_pos-1]);
-    }
-    locate(new_pos-1);
-    prints("[%c]\033[1;42m%s\033[m", str[new_pos-1], host2[new_pos-1]);
-    return SHOW_CONTINUE;
-}
 int load_data(struct _select_def* conf,int pos,int len)
 {
     FILE *fp;
     char t[256], *t1, *t2, *t3, *t4;
-
-
-
-
 
     fp = fopen(DATAFILE, "r");
 	conf->item_count=0;
@@ -571,10 +569,8 @@ int load_data(struct _select_def* conf,int pos,int len)
   return SHOW_REFRESH;
 }
 
-
 void main_loop()
 {
-	char buf[STRLEN];
 	int i;
 	POINT pts[MAXSTATION];
 

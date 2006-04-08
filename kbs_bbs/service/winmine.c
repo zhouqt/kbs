@@ -1,3 +1,5 @@
+#define BBSMAIN
+
 #include "service.h"
 #include "bbs.h"
 
@@ -17,11 +19,25 @@ int marknum=0;
 int ganyingshi=0;
 char recfile[20];
 
+int winmine(void);
+int win_showrec(void);
+int winrefresh(void);
+int winloop(void);
+int windig(int,int);
+int winsh(int,int);
+int winhelp(void);
+int dig(int,int);
+int checkwin(void);
+int win_checkrec(int);
+int win_saverec(void);
+int win_sort(void);
+
 int winmine_main() {
 	strcpy(recfile,"mine.rec");
     strcpy(userid,getCurrentUser()->userid);
 	modify_user_mode(WINMINE);
     winmine();
+    return 0;
 }
 
 int winmineg_main() {
@@ -30,6 +46,7 @@ int winmineg_main() {
     strcpy(userid,getCurrentUser()->userid);
 	modify_user_mode(WINMINE);
     winmine();
+    return 0;
 }
 
 int show_mines() {
@@ -42,7 +59,7 @@ int show_mines() {
            prints("[1;31mÀ×[m");
       }
    }
- return;
+    return 0;
 }
 
 int winmine() {
@@ -70,6 +87,7 @@ int winmine() {
         if(winloop()==0) break;
         pressanykey();
     }
+    return 0;
 }
 
 int num_mine_beside(int x1, int y1) {
@@ -111,36 +129,39 @@ int wininit(int x1, int y1) {
     move(20,45);
     prints("¹²ÓĞÀ×:%d",totallei);
     refresh();
+    return 0;
 }
 
 /* Ë«¼ü */
 int dblclick(int x, int y) {
     int dx, dy;
-    if(x<1|| x>30|| y<1|| y>16) return;
-    if(!o[x][y]) return;
-    if(num_mine_beside(x, y)!=num_mark_beside(x, y)) return; 
+    if(x<1|| x>30|| y<1|| y>16) return 0;
+    if(!o[x][y]) return 0;
+    if(num_mine_beside(x, y)!=num_mark_beside(x, y)) return 0;
     for(dx=x-1;dx<=x+1;dx++)
     for(dy=y-1;dy<=y+1;dy++)
         windig(dx, dy);
+    return 0;
 }
 
 /* ×ó¼ü */
 int windig(int x, int y) {
     int dx, dy;
-    if(x< 1|| x> 30|| y< 1|| y> 16) return;
-    if(o[x][y]||m[x][y]) return;
+    if(x< 1|| x> 30|| y< 1|| y> 16) return 0;
+    if(o[x][y]||m[x][y]) return 0;
     o[x][y]=1;
     winsh(x, y);
     if(a[x][y]) {
 	show_mines();
          gameover=1;
-         return;
+         return 0;
     }
     if(num_mine_beside(x, y)==0) {
         for(dx=x-1;dx<=x+1;dx++)
         for(dy=y-1;dy<=y+1;dy++)
             windig(dx, dy);
     }
+    return 0;
 }
 
 /* Í¬ÉÏ, ¼Ó¿ìËÙ¶È */
@@ -153,21 +174,22 @@ int winsh0(int x, int y) {
     char buf[100];
     if (!o[x][y]&&!m[x][y]) {
         prints("¡ù");
-        return;
+        return 0;
     }
     if (m[x][y]) {
         prints("¡ñ");
-        return;
+        return 0;
     }
     if (a[x][y]) {
         prints("[1;31mÀ×[m"); 
-        return;  
+        return 0;
     } 
     c= num_mine_beside(x, y);
     d= 1;
     if(c==0) d=0; 
     sprintf(buf, "[%d;%dm%s[m", d, cc[c], word[c]); 
     prints(buf);  
+    return 0;
 }
 
 int winsh(int x,int y){
@@ -181,6 +203,7 @@ if(!f[x][y] && (o[x][y] || m[x][y])){
 }
         move(y-1,x*2-2);
         winsh0(x,y);
+    return 0;
 }
 /*add end*/
 
@@ -286,6 +309,7 @@ int dig(int x, int y) {
            windig(x, y);
     else 
            dblclick(x, y);
+    return 0;
 }
 
 int winrefresh() {
@@ -299,6 +323,7 @@ int winrefresh() {
             winsh0(x, y);
     }
     refresh();  
+    return 0;
 }
 
 int winhelp() {
@@ -315,6 +340,7 @@ int winhelp() {
         prints("ÊìÁ·ºó£¬ËÙ¶È»¹ÊÇºÜ¿ìµÄ£¬¼¸ºõ¿ÉÒÔ´ïµ½Êó±êÉ¨À×µÄËÙ¶È.\r\n");
         pressanykey();
         winrefresh();
+    return 0;
 }
 
 int win_loadrec() {
@@ -329,11 +355,12 @@ int win_loadrec() {
     fp=fopen(recfile, "r");
     if(fp==NULL) {
         win_saverec();
-        return;
+        return 0;
     }
     for(n=0; n<=19; n++)
-        fscanf(fp, "%s %d %s %lf\n", topID[n], &topT[n], &topFROM[n],&topS[n]);
+        fscanf(fp, "%s %d %s %lf\n", topID[n], &topT[n], topFROM[n],&topS[n]);
     fclose(fp);
+    return 0;
 }
 
 int win_saverec() {
@@ -344,6 +371,7 @@ int win_saverec() {
         fprintf(fp, "%s %d %s %lf\n", topID[n], topT[n], topFROM[n],topS[n]);
     }
     fclose(fp);
+    return 0;
 }
 
 int win_showrec() {
@@ -359,6 +387,7 @@ int win_showrec() {
     }
     prints("[41m                                                                               [m\r\n");
     pressanykey();
+    return 0;
 }
 
 int win_checkrec(int dt) {
@@ -372,7 +401,7 @@ int win_checkrec(int dt) {
 	refresh();
 	sleep(60);
 	pressanykey();
-	return;
+	return 0;
     }
     for(n=0;n<20;n++)
     if(!strcmp(topID[n], id)) {
@@ -386,7 +415,7 @@ int win_checkrec(int dt) {
             win_sort();
             win_saverec();
         }
-        return;
+        return 0;
     }
     if(dt<topT[19]) {
         strcpy(topID[19], id);
@@ -395,9 +424,9 @@ int win_checkrec(int dt) {
         strcpy(topFROM[19], fromhost);
         win_sort();
         win_saverec();
-        return;
+        return 0;
     }
-    
+    return 0;
 }
 
 int win_sort() {
@@ -423,4 +452,5 @@ int win_sort() {
         strcpy(topFROM[n], topFROM[n2]);
         strcpy(topFROM[n2], tmpID);
     }
+    return 0;
 }

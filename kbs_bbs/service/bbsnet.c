@@ -1,4 +1,9 @@
 // NJU tinybbsnet, Preview Version, zhch@dii.nju.edu.cn, 2000.3.23 //
+
+#define BBSMAIN
+
+#include "../rzsz/zglobal.h"
+
 #include "service.h"
 #include "bbs.h"
 #include "select.h"
@@ -38,7 +43,6 @@ int bbsnet_report(char *station, char *addr, long id, int mode)
 	struct fileheader fh;
 	char buf[1024];
 	char fname[256];
-	int fd;
 	time_t now;
 	FILE *fp;
 
@@ -314,8 +318,8 @@ int bbsnet(int n)
 		alarm(TIME_OUT);
 		pHost = gethostbyname(ip[n]);
 		alarm(0);
+        signal(SIGALRM, oldsig);
 	}
-	signal(SIGALRM, oldsig);
 	if (pHost == NULL)
 	{
 		prints("\033[1;31m查找主机名失败！\033[m\n");
@@ -396,7 +400,7 @@ int bbsnet(int n)
 		}
 		if (rv == 0)
 		{
-			ret -1;
+			ret = -1;
 			goto on_error;
 		}
 
@@ -409,17 +413,17 @@ int bbsnet(int n)
 			}
 			else if (rc == 0)
 				break;
-			else if (strchr(buf, 255))	/* 查找是否含有TELNET命令IAC */
-				telnetopt(sockfd, buf, rc);
+			else if (strchr((void*)buf, 255))	/* 查找是否含有TELNET命令IAC */
+				telnetopt(sockfd, (void*)buf, rc);
 			else
 			{
-				output(buf, rc);
+				output((void*)buf, rc);
 				oflush();
 			}
 		}
 		if (FD_ISSET(0, &readset))
 		{
-			if ((rc = bbsnet_read(0, buf, BUFSIZ)) < 0)
+			if ((rc = bbsnet_read(0, (void*)buf, BUFSIZ)) < 0)
 			{
 				ret = -1;
 				goto on_error;
@@ -516,9 +520,28 @@ static int bbsnet_key(struct _select_def *conf, int command)
     return SHOW_CONTINUE;
 }
 
+int bbsnet_selchange(struct _select_def* conf,int new_pos)
+{
+    move(20,0);
+    clrtoeol();
+    prints("║\x1b[1m单位:\x1b[1;33m%-18s\x1b[m  站名:\x1b[1;33m%s\x1b[m",
+        host2[new_pos-1],
+        host1[new_pos-1]);
+    move(20,78);
+    outs("║");
+    move(21,0);
+    clrtoeol();
+    prints("║\x1b[1m连往:\x1b[1;33m%-20s",ip[new_pos-1]);
+    if (port[new_pos-1]!=23)
+        prints("  %d",port[new_pos-1]);
+    outs("\x1b[m");
+    move(21,78);
+    outs("║");
+    return SHOW_CONTINUE;
+}
+
 static int bbsnet_refresh(struct _select_def *conf)
 {
-    int i;
     clear();
     move(0,0);
     prints("  ◎ %s ◎",sectiontitle[sectionindex-1]);
@@ -539,31 +562,11 @@ static int bbsnet_refresh(struct _select_def *conf)
     outs("╰══════════════════════════════════════╯");
     move(23,0);
     outs("\033[1;36m[\x1b[1;32m?\x1b[m]求助 [\x1b[1;32mCtrl+C\x1b[m]退出 [\x1b[1;32mCtrl+L\x1b[m]重绘萤幕 [\x1b[1;32m空格\x1b[m]切换目录 [\x1b[1;32m^\x1b[m]第一个 [\x1b[1;32m$\x1b[m]最后一个\033[0;37m\033[m");
-}
-
-int bbsnet_selchange(struct _select_def* conf,int new_pos)
-{
-    move(20,0);
-    clrtoeol();
-    prints("║\x1b[1m单位:\x1b[1;33m%-18s\x1b[m  站名:\x1b[1;33m%s\x1b[m",
-    	host2[new_pos-1],
-    	host1[new_pos-1]);
-    move(20,78);
-    outs("║");
-    move(21,0);
-    clrtoeol();
-    prints("║\x1b[1m连往:\x1b[1;33m%-20s",ip[new_pos-1]);
-    if (port[new_pos-1]!=23)
-    	prints("  %d",port[new_pos-1]);
-    outs("\x1b[m");
-    move(21,78);
-    outs("║");
-    return SHOW_CONTINUE;
+    return 0;
 }
 
 void main_loop()
 {
-	char buf[STRLEN];
 	int i;
 	POINT pts[MAXSTATION];
        struct _select_def bbsnet_conf;

@@ -255,7 +255,7 @@ void done()
 
 int usermenu()
 {
-    int i,j,tuid;
+    int i,tuid;
     char buf[IDLEN+2], direct[PATHLEN];
     struct stat st;
     clear();
@@ -522,7 +522,7 @@ void do_test()
     char direct[PATHLEN];
     struct stat st;
     int i, j, k, l;
-    char ans[3], buf[122], buf2[10];
+    char ans[3], buf[122];
     statinfo answer;
     time_t span;
 
@@ -679,8 +679,7 @@ void show_stat()
     char direct[PATHLEN];
     struct stat st;
     int i, j, k, l, m;
-    char ans[3], buf[122], buf2[10], answer[TOTALNUM];
-    time_t span;
+    char ans[3];
 
     do_test_reset();
     
@@ -742,8 +741,7 @@ void admin_stat()
     char direct[PATHLEN];
     struct stat st;
     int i, j, k, l, m;
-    char ans[3], buf[122], buf2[10], answer[TOTALNUM];
-    time_t span;
+    char ans[3], buf[122], buf2[10];
 
     sethome(direct, getCurrentUser()->userid);
     if(stat(direct, &st) == -1) {
@@ -993,8 +991,7 @@ void sys_reset()
 void sys_list()
 {
     char ans[3];
-    int i,j,k;
-    char direct[PATHLEN];
+    int i,k;
     sys_reset();
     load_users(FRIENDTOP);
     move(1,0);
@@ -1022,7 +1019,7 @@ int admin_menu()
     int i,j,k,tuid;
     char direct[PATHLEN], buf[IDLEN+2];
     
-    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return;
+    if (!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return -1;
     resetcolor();
     clear();
     move(0,0);
@@ -1040,7 +1037,7 @@ int admin_menu()
             move(7,0);
             clrtoeol();
             prints("错误的使用者id!");
-      	     return;
+      	     return -1;
         }
     }
     {
@@ -1191,6 +1188,7 @@ int admin_menu()
         }
     }
     pressreturn();
+    return 0;
 }
 
 int friend_main()
@@ -1203,11 +1201,11 @@ int friend_main()
         prints("\n你已经被封禁了该游戏权限\n");
         pressreturn();
         done();
-        return;
+        return -1;
     }
 
     modify_user_mode(FRIENDTEST);
-    while(i=usermenu()) {
+    while((i=usermenu())!=0) {
         switch(i){
             case 1:
                 new_friendtest();
@@ -1231,4 +1229,5 @@ int friend_main()
     }
 
     done();
+    return 0;
 }

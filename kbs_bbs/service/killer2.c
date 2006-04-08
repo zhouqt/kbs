@@ -776,7 +776,7 @@ int can_see(struct room_struct *r)
 {
 	if (r->style == -1)
 		return 0;
-	if (r->level & CURRENTUSER->userlevel != r->level)
+	if ((r->level & CURRENTUSER->userlevel) != r->level)
 		return 0;
 	if (r->style != 1)
 		return 0;
@@ -789,11 +789,11 @@ int can_enter(struct room_struct *r)
 {
 	if (r->style == -1)
 		return 0;
-	if (r->level & CURRENTUSER->userlevel != r->level)
+	if ((r->level & CURRENTUSER->userlevel) != r->level)
 		return 0;
 	if (r->style != 1)
 		return 0;
-	if (r->flag & ROOM_LOCKED && !K_HAS_PERM(CURRENTUSER, PERM_SYSOP))
+	if ((r->flag & ROOM_LOCKED) && !K_HAS_PERM(CURRENTUSER, PERM_SYSOP))
 		return 0;
 	return 1;
 }
@@ -909,8 +909,8 @@ void save_msgs(char *s)
 
 void refreshit()
 {
-	int i, j, me, msgst, k, i0,col;
-	char buf[30], buf3[30], * ss, disp[500];
+	int i, j, me, msgst,col;
+	char buf[30], buf3[30], *ss, disp[500];
 	static int inrefresh=0;
 	
 	if (inrefresh)
@@ -946,6 +946,9 @@ void refreshit()
 	case INROOM_DARK:
 		ss="昏";
 		break;
+    default:
+        ss="";
+        break;
 	}
 	move(0, 0);
 	prints("\x1b[44;33;1m 房间:\x1b[36m%-12s\x1b[33m话题:\x1b[36m%-40s\x1b[33m状态:\x1b[36m%2s \x1b[33mOP:\x1b[36m%2d",
@@ -1000,12 +1003,12 @@ void refreshit()
 			if (RINFO.status != INROOM_STOP)
 			{
 				if ((PINFO(j).flag & PEOPLE_KILLER)
-					&& (me<MAX_PLAYER && (PINFO(me).flag & PEOPLE_KILLER) // 我是玩家，并且也是杀手
-						|| me>=MAX_PLAYER && !(rooms[myroom].flag & ROOM_SPECBLIND) // 我是旁观者，不禁止旁观看见杀手警察
+					&& ((me<MAX_PLAYER && (PINFO(me).flag & PEOPLE_KILLER)) // 我是玩家，并且也是杀手
+						|| (me>=MAX_PLAYER && !(rooms[myroom].flag & ROOM_SPECBLIND)) // 我是旁观者，不禁止旁观看见杀手警察
 						|| !(PINFO(j).flag & PEOPLE_ALIVE))) // 死了的杀手
 				{
 					if (!(PINFO(j).flag & PEOPLE_HIDEKILLER)
-						|| me<MAX_PLAYER && (PINFO(me).flag & PEOPLE_KILLER))
+						|| (me<MAX_PLAYER && (PINFO(me).flag & PEOPLE_KILLER)))
 					{
 						k_setfcolor(RED, 1);
 						strcat(disp,SIGN_KILLER);
@@ -1013,8 +1016,8 @@ void refreshit()
 					}
 				}
 				if ((PINFO(j).flag & PEOPLE_POLICE)
-					&& (me<MAX_PLAYER && (PINFO(me).flag & PEOPLE_POLICE)  // 我是玩家，并且也是警察
-					|| me>=MAX_PLAYER && !(rooms[myroom].flag & ROOM_SPECBLIND))) // 我是旁观者，不禁止旁观看见杀手警察
+					&& ((me<MAX_PLAYER && (PINFO(me).flag & PEOPLE_POLICE))  // 我是玩家，并且也是警察
+					|| (me>=MAX_PLAYER && !(rooms[myroom].flag & ROOM_SPECBLIND)))) // 我是旁观者，不禁止旁观看见杀手警察
 				{
 					k_setfcolor(CYAN, 1);
 					strcat(disp,SIGN_POLICE);
@@ -1175,7 +1178,7 @@ void show_killerpolice()
 int check_win()
 {
 	int tc,tk,tp;
-	char buf[200],buf2[20];
+	char buf[200];
 	int i;
 	tc=0;
 	tk=0;
@@ -1364,7 +1367,7 @@ void goto_defence()
 {
 	char buf[200];
 	int k;
-	int i,j;
+	int i,j=0;
 	
 	RINFO.round++;
 
@@ -1530,9 +1533,6 @@ void start_game()
 	char buf[80];
 	time_t t;
 	struct tm * tt;
-	struct flock ldata;
-	int fd;
-	
 	me = mypos;
 	for (i = 0; i < MAX_PLAYER; i++)
 		if (PINFO(i).style != -1)
@@ -1575,7 +1575,7 @@ void start_game()
 	time(&t);
 	tt=localtime(&t);
 	sprintf(RINFO.gamename,"%s: %d-%d-%d, %04d/%02d/%02d %02d:%02d:%02d",rooms[myroom].name,totalk,totalc,total-totalk-totalc,
-		tt->tm_year+1900,tt->tm_mon+1,tt->tm_mday,tt->tm_hour,tt->tm_min);
+		tt->tm_year+1900,tt->tm_mon+1,tt->tm_mday,tt->tm_hour,tt->tm_min,tt->tm_sec);
 
 #ifdef AUTOPOST
 	unlink(ap_tmpname());
@@ -1816,11 +1816,11 @@ int do_com_menu()
 					return 0;
 				}
 				else
-				if (me>=MAX_PLAYER && 
+				if ((me>=MAX_PLAYER && 
 					(rooms[myroom].numplayer>=rooms[myroom].maxplayer
-					||rooms[myroom].numplayer>=MAX_PLAYER)
-					|| me<MAX_PLAYER
-					&& rooms[myroom].numspectator>=MAX_PEOPLE-MAX_PLAYER)
+					||rooms[myroom].numplayer>=MAX_PLAYER))
+					|| (me<MAX_PLAYER
+					&& rooms[myroom].numspectator>=MAX_PEOPLE-MAX_PLAYER))
 				{
 					send_msg(me, "人员已满");
 					kill_msg(me);
@@ -2268,7 +2268,6 @@ void vote_result()
 
 void player_drop(int d)
 {
-	int i;
 	char buf[200];
 	if (PINFO(d).style!=-1)
 	{
@@ -2382,7 +2381,7 @@ void player_drop(int d)
 void join_room(int w, int spec)
 {
 	char buf[200], buf2[220], buf3[200], msg[200], roomname[80];
-	int i, j, k, killer, me;
+	int i, j, k, me;
 	time_t ct;
 
 	clear();
@@ -2406,7 +2405,7 @@ void join_room(int w, int spec)
 	  i = 0;
 	while (PINFO(i).style != -1)
 		i++;
-	if (i>=MAX_PLAYER && !spec || i>=MAX_PEOPLE && spec)
+	if ((i>=MAX_PLAYER && !spec) || (i>=MAX_PEOPLE && spec))
 	{
 		end_change_inroom();
 		return;
@@ -2586,14 +2585,14 @@ void join_room(int w, int spec)
 						else
 							  sprintf (buf, "\x1b[32;1m%d %s\x1b[m 指证 %d %s\33[m",
 								mypos + 1, PINFO(mypos).nick,
-								  RINFO.voted[mypos]+1,PINFO(RINFO.voted[mypos]).nick);
+								  RINFO.voted[mypos]+1,PINFO((int)RINFO.voted[mypos]).nick);
 						send_msg(-1, buf);
 						sprintf(buf, "\x1b[32;1m%d %s\x1b[m: \33[31;1mOver.\33[m", mypos + 1, PINFO(mypos).nick);
 						send_msg(-1, buf);
 						
 						if (!check_win())
 						{
-							PINFO(RINFO.voted[mypos]).flag|=PEOPLE_VOTED;
+							PINFO((int)RINFO.voted[mypos]).flag|=PEOPLE_VOTED;
 							for(i=0;i<MAX_PLAYER;i++)
 								RINFO.voted[i]=-1;
 						
@@ -2682,7 +2681,7 @@ void join_room(int w, int spec)
 						&& PINFO(mypos).vote==-1 )
 					{
 						sprintf (buf, "\x1b[32;1m你投票给 %d %s\33[m", 
-							RINFO.voted[mypos]+1,PINFO(RINFO.voted[mypos]).nick);
+							RINFO.voted[mypos]+1,PINFO((int)RINFO.voted[mypos]).nick);
 						send_msg (mypos, buf);
 						PINFO(mypos).vote=RINFO.voted[mypos];
 						vote_result();
@@ -3171,9 +3170,9 @@ static int room_list_select(struct _select_def *conf)
 		sleep(1);
 		return SHOW_REFRESH;
 	}
-	if (!spec && r2->numplayer >= r2->maxplayer && !K_HAS_PERM(CURRENTUSER, PERM_SYSOP)
-	    ||!spec && r2->numplayer>=MAX_PLAYER
-		||spec && r2->numspectator >= MAX_PEOPLE-MAX_PLAYER)
+	if ((!spec && r2->numplayer >= r2->maxplayer && !K_HAS_PERM(CURRENTUSER, PERM_SYSOP))
+	    ||(!spec && r2->numplayer>=MAX_PLAYER)
+		||(spec && r2->numspectator >= MAX_PEOPLE-MAX_PLAYER))
 	{
 		move(0, 0);
 		clrtoeol();
@@ -3283,6 +3282,7 @@ static int room_list_key(struct _select_def *conf, int key)
 			sleep(1);
 			return SHOW_REFRESH;
 		}
+        r2 = rooms + i;
 		if (spec && r2->flag & ROOM_DENYSPEC && !K_HAS_PERM(CURRENTUSER, PERM_SYSOP)) 
 		{
 			move(0, 0);
@@ -3292,10 +3292,9 @@ static int room_list_key(struct _select_def *conf, int key)
 			sleep(1);
 			return SHOW_REFRESH;
 		}
-		r2 = rooms + i;
-		if (!spec && r2->numplayer >= r2->maxplayer && !K_HAS_PERM(CURRENTUSER, PERM_SYSOP)
-			||!spec && r2->numplayer>=MAX_PLAYER
-			||spec && r2->numspectator >= MAX_PEOPLE-MAX_PLAYER)
+		if ((!spec && r2->numplayer >= r2->maxplayer && !K_HAS_PERM(CURRENTUSER, PERM_SYSOP))
+			||(!spec && r2->numplayer>=MAX_PLAYER)
+			||(spec && r2->numspectator >= MAX_PEOPLE-MAX_PLAYER))
 		{
 			move(0, 0);
 			clrtoeol();
@@ -3393,6 +3392,7 @@ int choose_room()
 //	show_top_board();
 	list_select_loop(&grouplist_conf);
 	free(pts);
+    return 0;
 }
 
 int killer_main()
@@ -3425,5 +3425,6 @@ int killer_main()
 	modify_user_mode(oldmode);
 	shmdt(shm);
 	shmdt(shm2);
+    return 0;
 }
 

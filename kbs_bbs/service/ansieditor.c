@@ -9,6 +9,9 @@
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
  * GNU General Public License for more details.
  */
+
+#define BBSMAIN
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>
@@ -158,19 +161,19 @@ static struct termios save_tty;
 
 /* IO */
 int unget_flag; 
-char unget_buf;  /* providing capability to ungetch 1 char */
+int unget_buf;  /* providing capability to ungetch 1 char */
 
 struct user_info uinfo;
 
 /* EDITING */
 unsigned char code_first, code_second; /* input data */
-char chinese; /* if the input data is a chinese char */
-char cur_x, cur_y;  /* current cursor position */
-char save_x, save_y; /* save current cursor position temporarily*/
-char save_cur_x, save_cur_y; /* save current cursor position*/
+int chinese; /* if the input data is a chinese char */
+int cur_x, cur_y;  /* current cursor position */
+int save_x, save_y; /* save current cursor position temporarily*/
+int save_cur_x, save_cur_y; /* save current cursor position*/
 struct charinfo graph[NUM_ROWS][NUM_COLS]; /* 80x23 graph, one additonal row for prevention of memory fault*/
 struct charinfo save_graph[NUM_ROWS][NUM_COLS]; /* save graph */
-char copy_type; /* if the copy is a char or block */
+int copy_type; /* if the copy is a char or block */
 struct charinfo char_copy[2]; /* copy/paste a char */ 
 struct charinfo row_copy[NUM_COLS]; /* copy/paste a row */
 struct charinfo col_copy[NUM_ROWS-2][2]; /* copy/paste a col */
@@ -178,10 +181,10 @@ unsigned int anchor_dirt, dirt; /* used to test if the graph is modified and for
 struct ansiattr cur_attr; /* current ansi attributes */
 struct ansiattr save_attr; /* saved ansi attributes */
 struct charinfo pens[MAX_PENS][2];
-char num_pens; /* the number of available pens */
-char cur_pen; /* current pen */
-char drawing; /* drawing methods */
-char linemode; /* line mode */
+int num_pens; /* the number of available pens */
+int cur_pen; /* current pen */
+int drawing; /* drawing methods */
+int linemode; /* line mode */
 int prev_state; /* previous state */
 int state; /* current state */
 char message[300]; /* message showing on the status bar */
@@ -189,18 +192,18 @@ static char save_file[20]; /* file for saving progress*/
 static char export_file[20]; /* file for exporting graph */
 
 /* BLOCK EDITING */
-char blk_x1, blk_y1, blk_x2, blk_y2;
+int blk_x1, blk_y1, blk_x2, blk_y2;
 struct undoinfo *blk_undo_ptr;
 struct charinfo blk_swap_graph[NUM_ROWS][NUM_COLS]; /* for swap */
 struct charinfo blk_copy[NUM_ROWS][NUM_COLS]; /* block copy */
-char blk_cp_x1, blk_cp_y1, blk_cp_x2, blk_cp_y2; /* range of the block copy */
+int blk_cp_x1, blk_cp_y1, blk_cp_x2, blk_cp_y2; /* range of the block copy */
 
 /* MAILING */
 static char mail_addr[MAIL_ADDR_LEN]; /* mail address */
-static unsigned char mail_title[MAIL_TITLE_LEN]; /* mail title */
+static char mail_title[MAIL_TITLE_LEN]; /* mail title */
 enum {ML_ADDR, ML_TITLE} mail_step; /* steps of mailing */
-static unsigned char mail_str[40000]; /* mail content for the whole graph */
-char mail_sent;
+static char mail_str[40000]; /* mail content for the whole graph */
+int mail_sent;
 
 /* UNDO/REDO */
 static struct undoinfo undo_list; /* first node of undo list */
@@ -242,7 +245,7 @@ char apst_mode_str[2][5]={"ESC["," *[ "};
 /* HELP COMMAND */
 static int hcmd_total_pages; 
 static int hcmd_page;
-static unsigned char* cmd_help_str[MAX_HELP_PAGES][NUM_ROWS-1];
+static char* cmd_help_str[MAX_HELP_PAGES][NUM_ROWS-1];
 int prev_hcmd_state;
 
 /* ADJACENT REPLACEMENT*/
@@ -282,48 +285,17 @@ void tty_reset(int fd)
  ***************************************************************************/
 char getch() /* block call */
 {
-    char ch; 
-    fd_set rfds;
-
     if (unget_flag) {
 	    unget_flag = 0;
 	    return unget_buf;
     }
-/*
-    FD_ZERO(&rfds);
-    FD_SET(0, &rfds);
-    if(select(1, &rfds, NULL, NULL, NULL)) {
-    	if (read(0, &ch, 1) <=0 ) 
-		exit(1);
-        return ch;
-    }
-*/
-	
     return igetch(); 
 }
 char getch1() /* non-block call */
 {
-	/*
-    char ch; 
-    fd_set rfds;
-    struct timeval tm = {0,2000000}; // 2s 
-
-    if (unget_flag) {
-	    unget_flag = 0;
-	    return unget_buf;
-    }
-    FD_ZERO(&rfds);
-    FD_SET(0, &rfds);
-    if(select(1, &rfds, NULL, NULL, &tm)) {
-    	if (read(0, &ch, 1) <=0 ) 
-		exit(1);
-        return ch;
-    }
-    return 0; 
-	*/
 	return getch();
 }
-void ungetch(char ch)
+void ungetch(int ch)
 {
 	unget_flag = 1;
 	unget_buf = ch;
@@ -607,7 +579,7 @@ CMDAGAIN1:
 				code_second = getch();
 				return CMD_DATA;
 			}
-			if (ch >= 32 && ch <=126 || ch == ESC) {
+			if ((ch >= 32 && ch <=126) || ch == ESC) {
 				chinese = 0;
 				code_first = ch;
 				return CMD_DATA;
@@ -705,7 +677,7 @@ void clr2tail()
 	clrtoeol();
 }
 
-void gotoxy(char x, char y)
+void gotoxy(int x, int y)
 {
 	struct charinfo *ci;
 	if (x<0) {
@@ -738,7 +710,7 @@ void gotoxy(char x, char y)
 //	prints("\033[%d;%dH", cur_y+1, cur_x+1);
 	move(cur_y, cur_x);
 }
-void gotoxy2(char x, char y)
+void gotoxy2(int x, int y)
 {
 	x = (x<0? 0: x);
 	x = (x>scr_cols-1? scr_cols-1: x);
@@ -752,7 +724,7 @@ void gotoxy2(char x, char y)
 /***************************************************************************
  *                       undo/redo functions                               *
  ***************************************************************************/
-int redo(char* row1, char* row2) {
+int redo(int* row1, int* row2) {
 	int i;
 
 	assert(undo_ptr);
@@ -764,7 +736,7 @@ int redo(char* row1, char* row2) {
 	*row2 = undo_ptr->row2;
 	return 1;
 }
-int undo(char* row1, char* row2) {
+int undo(int* row1, int* row2) {
 	int i;
 
 	if (undo_ptr == &undo_list || undo_ptr == undo_limit) return 0;
@@ -804,7 +776,7 @@ void undo_free(struct undoinfo *from) {
 		undo_num--;
 	}
 }
-void chkpt_begin(char r1, char r2, char fds, ...)
+void chkpt_begin(int r1, int r2, int fds, ...)
 {
 	int i;
 	va_list args;
@@ -882,14 +854,10 @@ void str2hex(char* s, unsigned char* hi, unsigned char* lo)
 }
 void clrchr(struct charinfo *c, struct ansiattr* attr) /* clear ONLY 1 char */
 {
-	struct ansiattr a;
-
+    memset(c, 0, sizeof(struct charinfo));
+    c->code = SPACE;
 	if (attr)
-		a = *attr;
-	memset(c, 0, sizeof(struct charinfo));
-	c->code = SPACE;
-	if (attr)
-		c->attr = a;
+		c->attr = *attr;
 }
 void clrchr2(struct charinfo *c, struct ansiattr* attr) /* clear chinese char if possible */
 {
@@ -932,7 +900,7 @@ char* get_ansi_str(struct ansiattr *attr)
 	}
 	return s;
 }
-void set_cur_attr(char code)
+void set_cur_attr(int code)
 {
 	if (!code)
 		memset(&cur_attr, 0, sizeof(struct ansiattr));
@@ -959,7 +927,7 @@ void set_cur_char(struct ansiattr *attr)
 	ci = &graph[cur_y][cur_x];
 	ci->code = code_first;
 	ci->attr = a;
-	if (ci->chinese = chinese) {
+	if ((ci->chinese = chinese)!=0) {
 		if (cur_x == scr_cols-1) 
 			clrchr(ci, &ci->attr);
 		else {
@@ -977,7 +945,7 @@ void set_cur_char2(struct ansiattr *attr)
 	struct charinfo *ci;
 	set_cur_char(attr);
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	if (ci->chinese)
 		ci+=2;
 	else
@@ -1024,7 +992,7 @@ char* get_char_str(struct charinfo *ci, int withansi)
 {
 	static char s[200];
 	char ch[10];
-	char *str;
+	char *str=NULL;
 
 	if (withansi) {
 		str = get_ansi_str(&ci->attr);
@@ -1043,12 +1011,12 @@ char* get_char_str(struct charinfo *ci, int withansi)
 		strcat(s, "\033[0m");
 	return s;
 }
-char* get_row_str(char x, char y, int dup)
+char* get_row_str(int x, int y, int dup)
 {
 	static char s[1000];
 	char ch[10];
 	struct charinfo *ci;
-	char fc, bc, bl, br, ul, re;
+	int fc, bc, bl, br, ul, re;
 	int len;
 	int open;
 	int i;
@@ -1061,8 +1029,13 @@ char* get_row_str(char x, char y, int dup)
 	open = 1;
 	for (i=x; i<scr_cols; i++) {
 		ci = &graph[y][i];
-		assert(!ci->chinese || ci->chinese && !ci->half);
-		if (fc != ci->attr.fcolor && !ci->attr.fcolor || bc != ci->attr.bcolor && !ci->attr.bcolor || bl != ci->attr.blink && !ci->attr.blink || br != ci->attr.bright && !ci->attr.bright || ul != ci->attr.underline && !ci->attr.underline || re != ci->attr.reverse && !ci->attr.reverse) {
+		assert(!ci->chinese || (ci->chinese && !ci->half));
+		if ((fc != ci->attr.fcolor && !ci->attr.fcolor) || 
+            (bc != ci->attr.bcolor && !ci->attr.bcolor) ||
+            (bl != ci->attr.blink && !ci->attr.blink) ||
+            (br != ci->attr.bright && !ci->attr.bright) ||
+            (ul != ci->attr.underline && !ci->attr.underline) ||
+            (re != ci->attr.reverse && !ci->attr.reverse)) {
 			if (!dup)
 				strcat(s, "\033[0;");
 			else 
@@ -1107,55 +1080,30 @@ char* get_row_str(char x, char y, int dup)
 		s[len]='\0';
 		open = 0;
 	}
-	if (fc || bc || bl || br || ul || re)
+	if (fc || bc || bl || br || ul || re){
 		if (dup)
 			strcat(s, "\033\033[0m");
 		else
 			strcat(s, "\033[0m");
+    }
 	return s;
 }
 char* get_mail_str()
 {
-	int i,j;
-	
+	int i;
 	memcpy(save_graph, graph, sizeof(graph));
 	opt_graph();
-/*
-	strcpy(mail_str, "1. some terms, e.g. fterm, don't require duplicated ESC\n");
-	strcat(mail_str, "========================X cut below==========================\n");
-*/
 	for (i = 0; i<scr_lns-1; i++) {
 		strcat(mail_str, get_row_str(0, i, 0));
 		strcat(mail_str, "\n");
 	}
-/*
-	strcat(mail_str, "========================end of cut==========================\n\n\n");
-	strcat(mail_str, "2. some terms, e.g. netterm, require duplicated ESC\n");
-	strcat(mail_str, "========================X cut below==========================\n");
-	for (i = 0; i<scr_lns-1; i++) {
-		strcat(mail_str, get_row_str(0, i, 1));
-		strcat(mail_str, "\n");
-	}
-	strcat(mail_str, "========================end of cut==========================\n\n\n");
-	strcat(mail_str, "3. without ANSI attributes\n");
-	strcat(mail_str, "========================X cut below==========================\n");
-	for (i=0; i<scr_lns-1; i++) {
-		for (j=0; j<scr_cols; j++) {
-			int len = strlen(mail_str);
-			mail_str[len++] = graph[i][j].code;
-			mail_str[len]='\0';
-		}
-		strcat(mail_str, "\n");
-	}
-	strcat(mail_str, "========================end of cut==========================\n");
-*/
 	memcpy(graph, save_graph, sizeof(graph));
 	return mail_str;
 }
 void load_cmdhelp()
 {
 	FILE* fp;
-	unsigned char s[1024];
+	char s[1024];
 	int pages, lines;
 
 	hcmd_total_pages = 0;
@@ -1179,7 +1127,7 @@ void load_cmdhelp()
 		if (lines > scr_lns-2)
 			continue;
 		s[strlen(s)-1] = '\0'; /* get rid of \n */
-		cmd_help_str[pages][lines] = (unsigned char*)malloc(strlen(s)+1);
+		cmd_help_str[pages][lines] = (char*)malloc(strlen(s)+1);
 		strcpy(cmd_help_str[pages][lines], s);
 		lines++;
 	}
@@ -1207,7 +1155,6 @@ void load_cur() {
 void init()
 {
 	int i,j;
-	struct charinfo *ci;
 
 	unget_flag = 0;
 	cur_x = cur_y = 0;
@@ -1496,7 +1443,7 @@ void help_cmd(int page)
 	gotoxy2(scr_cols-1, scr_lns-1);
 	draw_sbar();
 }
-void clr_brokenchars(struct charinfo g[][NUM_COLS], char row1, char row2, char col, char which)
+void clr_brokenchars(struct charinfo g[][NUM_COLS], int row1, int row2, int col, int which)
 {
 	int i;
 	struct charinfo *ci;
@@ -1523,10 +1470,10 @@ void clr_brokenchars(struct charinfo g[][NUM_COLS], char row1, char row2, char c
 int clr_reverse()
 {
 	int i, j;
-
 	for (i=0; i<scr_lns-1; i++)
 		for (j=0; j<scr_cols; j++) 
 			graph[i][j].attr.reverse = 0;
+    return 0;
 }
 void set_blk_attr(int type, int value)
 {
@@ -1586,7 +1533,7 @@ void clr_blk()
 	ci = &graph[blk_y1][blk_x2];
 	ci1 = &graph[blk_y2][blk_x2];
 
-	if (ci->chinese && !ci->half || ci1->chinese && !ci1->half)
+	if ((ci->chinese && !ci->half) || (ci1->chinese && !ci1->half))
 		blk_x2++;
 	clr_brokenchars(graph, blk_y1, blk_y2, blk_x1, 1);
 	clr_brokenchars(graph, blk_y1, blk_y2, blk_x2, 0);
@@ -1606,9 +1553,9 @@ void global_replace(int type)
 	struct charinfo *ci;
 	struct charinfo c1, c2;
 	int i, j;
-
+    memset(&c2,0,sizeof(struct charinfo));
 	c1 = graph[cur_y][cur_x];
-	if (c1.chinese) 
+	if (c1.chinese)
 		c2 = graph[cur_y][cur_x+1];
 	for (i=blk_y1; i<=blk_y2; i++) {
 		for (j=blk_x1; j<=blk_x2; j++) {
@@ -1651,7 +1598,7 @@ void global_replace(int type)
 						ci->attr = cur_attr;
 					break;
 				case A_CHAR:
-					if (!c1.chinese && !ci->chinese && ci->code == c1.code || c1.chinese && ci->chinese && ci->code == c1.code && (ci+1)->code == c2.code) {
+					if ((!c1.chinese && !ci->chinese && ci->code == c1.code) || (c1.chinese && ci->chinese && ci->code == c1.code && (ci+1)->code == c2.code)) {
 						ci->attr = cur_attr;
 						if (ci->chinese) {
 							(ci+1)->attr = cur_attr;
@@ -1660,7 +1607,7 @@ void global_replace(int type)
 					}
 					break;
 				case A_ALL:
-					if ((!c1.chinese && !ci->chinese && ci->code == c1.code || c1.chinese && ci->chinese && ci->code == c1.code && (ci+1)->code == c2.code) && !memcmp(&ci->attr, &c1.attr, sizeof(struct ansiattr))) {
+                    if (((!c1.chinese && !ci->chinese && ci->code == c1.code) || (c1.chinese && ci->chinese && ci->code == c1.code && (ci+1)->code == c2.code)) && !memcmp(&ci->attr, &c1.attr, sizeof(struct ansiattr))) {
 						ci->attr = cur_attr;
 						if (ci->chinese) {
 							(ci+1)->attr = cur_attr;
@@ -1680,11 +1627,11 @@ void global_replace(int type)
 			(ci+1)->attr = ci->attr;
 	}
 }
-void adj_replace(int method, char x, char y, int type, struct ansiattr* attr)
+void adj_replace(int method, int x, int y, int type, struct ansiattr* attr)
 {
 	int i;
 	struct charinfo *ci;
-	char cx, cy;
+	int cx, cy;
 
 	if (adj_visited[y][x])
 		return;
@@ -1775,7 +1722,6 @@ void adjacent_replace(int method, int type)
 void _data()
 {
 	struct charinfo *ci, *ci1;
-	struct ansiattr a;
 	static struct charinfo s_row[NUM_COLS]; 
 	static struct charinfo s_col[NUM_ROWS-2][2];
 	int i;
@@ -1869,7 +1815,7 @@ void _curup()
 		chkpt_begin(cur_y, cur_y, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), &graph[cur_y][cur_x], sizeof(struct charinfo)*3);
 		ci = &pens[cur_pen][0];
 		code_first = ci->code;
-		if (chinese = ci->chinese)
+		if ((chinese = ci->chinese)!=0)
 			code_second = (ci+1)->code;
 		if (!cur_pen)
 			clrchr2(&graph[cur_y][cur_x], NULL);
@@ -1901,7 +1847,7 @@ void _curdn()
 		chkpt_begin(cur_y, cur_y, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), &graph[cur_y][cur_x], sizeof(struct charinfo)*3);
 		ci = &pens[cur_pen][0];
 		code_first = ci->code;
-		if (chinese = ci->chinese)
+		if ((chinese = ci->chinese)!=0)
 			code_second = (ci+1)->code;
 		if (!cur_pen)
 			clrchr2(&graph[cur_y][cur_x], NULL);
@@ -1934,7 +1880,7 @@ void _currt()
 		chkpt_begin(cur_y, cur_y, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), &graph[cur_y][cur_x], sizeof(struct charinfo)*3);
 		ci1 = &pens[cur_pen][0];
 		code_first = ci1->code;
-		if (chinese = ci1->chinese)
+		if ((chinese = ci1->chinese)!=0)
 			code_second = (ci1+1)->code;
 		if (!cur_pen)
 			clrchr2(&graph[cur_y][cur_x], NULL);
@@ -1942,7 +1888,7 @@ void _currt()
 			set_cur_char2(&cur_attr);
 		clr2tail();
 		prints(get_row_str(cur_x, cur_y, 0));
-		assert(!ci->chinese || ci->chinese && !ci->half);
+		assert(!ci->chinese || (ci->chinese && !ci->half));
 		if (ci->chinese)
 			gotoxy(cur_x+2, cur_y);
 		else
@@ -1955,7 +1901,7 @@ void _currt()
 		upd_cur_char(&cur_attr);
 		clr2tail();
 		prints(get_row_str(cur_x, cur_y, 0));
-		assert(!ci->chinese || ci->chinese && !ci->half);
+		assert(!ci->chinese || (ci->chinese && !ci->half));
 		if (ci->chinese)
 			gotoxy(cur_x+2, cur_y);
 		else
@@ -1964,7 +1910,7 @@ void _currt()
 		chkpt_commit();
 	}
 	else {
-		assert(!ci->chinese || ci->chinese && !ci->half);
+		assert(!ci->chinese || (ci->chinese && !ci->half));
 		if (ci->chinese)
 			gotoxy(cur_x+2, cur_y);
 		else
@@ -1981,7 +1927,7 @@ void _curlf()
 		chkpt_begin(cur_y, cur_y, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), &graph[cur_y][cur_x], sizeof(struct charinfo)*3);
 		ci1 = &pens[cur_pen][0];
 		code_first = ci1->code;
-		if (chinese = ci1->chinese)
+		if ((chinese = ci1->chinese)!=0)
 			code_second = (ci1+1)->code;
 		if (!cur_pen)
 			clrchr2(&graph[cur_y][cur_x], NULL);
@@ -1990,7 +1936,7 @@ void _curlf()
 		clr2tail();
 		prints(get_row_str(cur_x, cur_y, 0));
 
-		assert(!ci->chinese || ci->chinese && !ci->half);
+		assert(!ci->chinese || (ci->chinese && !ci->half));
 		if (ci->chinese)
 			gotoxy(cur_x-2, cur_y);
 		else
@@ -2003,7 +1949,7 @@ void _curlf()
 		upd_cur_char(&cur_attr);
 		clr2tail();
 		prints(get_row_str(cur_x, cur_y, 0));
-		assert(!ci->chinese || ci->chinese && !ci->half);
+		assert(!ci->chinese || (ci->chinese && !ci->half));
 		if (cur_x>0 && (ci-1)->chinese)
 			gotoxy(cur_x-2, cur_y);
 		else
@@ -2012,7 +1958,7 @@ void _curlf()
 		chkpt_commit();
 	}
 	else {
-		assert(!ci->chinese || ci->chinese && !ci->half);
+		assert(!ci->chinese || (ci->chinese && !ci->half));
 		if (cur_x>0 && (ci-1)->chinese)
 			gotoxy(cur_x-2, cur_y);
 		else
@@ -2061,7 +2007,7 @@ void _aplfc()
 
 	chkpt_begin(cur_y, cur_y, 1, &graph[cur_y][cur_x], sizeof(struct charinfo)*2);
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	ci->attr.fcolor = cur_attr.fcolor;
 	prints(get_char_str(ci,1));
 	dirt++;
@@ -2074,7 +2020,7 @@ void _aplbc()
 
 	chkpt_begin(cur_y, cur_y, 1, &graph[cur_y][cur_x], sizeof(struct charinfo)*2);
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	ci->attr.bcolor = cur_attr.bcolor;
 	prints(get_char_str(ci,1));
 	dirt++;
@@ -2088,7 +2034,7 @@ void _aplbl()
 
 	chkpt_begin(cur_y, cur_y, 1, &graph[cur_y][cur_x], sizeof(struct charinfo)*2);
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	ci->attr.blink = cur_attr.blink;
 	prints(get_char_str(ci,1));
 	dirt++;
@@ -2101,7 +2047,7 @@ void _aplbr()
 
 	chkpt_begin(cur_y, cur_y, 1, &graph[cur_y][cur_x], sizeof(struct charinfo)*2);
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	ci->attr.bright = cur_attr.bright;
 	prints(get_char_str(ci,1));
 	dirt++;
@@ -2114,7 +2060,7 @@ void _aplul()
 
 	chkpt_begin(cur_y, cur_y, 1, &graph[cur_y][cur_x], sizeof(struct charinfo)*2);
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	ci->attr.underline = cur_attr.underline;
 	prints(get_char_str(ci,1));
 	dirt++;
@@ -2127,7 +2073,7 @@ void _aplattr()
 
 	chkpt_begin(cur_y, cur_y, 1, &graph[cur_y][cur_x], sizeof(struct charinfo)*2);
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	ci->attr = cur_attr;
 	prints(get_char_str(ci,1));
 	dirt++;
@@ -2187,14 +2133,13 @@ void _setp0()
 }
 void _apen()
 {
-	int i;
 	struct charinfo *ci;
 	
 	if (num_pens == MAX_PENS)
 		sprintf(message, "\033[31m10支笔已满,无法再添加.\033[0m");
 	else {
 		ci = &graph[cur_y][cur_x];
-		assert(!ci->chinese || ci->chinese && !ci->half);
+		assert(!ci->chinese || (ci->chinese && !ci->half));
 		chkpt_begin(-1, -1, 3, &cur_pen, sizeof(char), &num_pens, sizeof(char), pens, sizeof(pens));
 		pens[num_pens][0] = *ci;
 		if (ci->chinese)
@@ -2377,7 +2322,7 @@ void _load()
 		ch = getch();
 		if (ch == ESC && getch1() == BRK && getch1()=='3' && getch1()=='~')
 			ch = DEL;
-		if (n < 15 && (ch>='0' && ch<='9' || ch>='a' && ch<='z' || ch>='A' && ch<='Z' || ch=='_'|| ch=='-' || ch=='.')) {
+		if (n < 15 && (isalnum(ch) || ch=='_' || ch=='-' || ch=='.')) {
 			save_file[n++]=ch;
 			save_file[n]='\0';
 		}
@@ -2420,7 +2365,7 @@ void _save()
 		ch = getch();
 		if (ch == ESC && getch1() == BRK && getch1()=='3' && getch1()=='~')
 			ch = DEL;
-		if (n < 15 && (ch>='0' && ch<='9' || ch>='a' && ch<='z' || ch>='A' && ch<='Z' || ch=='_'|| ch=='-' || ch=='.')) {
+		if (n < 15 && (isalnum(ch) || ch=='_' || ch=='-' || ch=='.')) {
 			save_file[n++]=ch;
 			save_file[n]='\0';
 		}
@@ -2458,7 +2403,7 @@ void _export()
 		ch = getch();
 		if (ch == ESC && getch1() == BRK && getch1()=='3' && getch1()=='~')
 			ch = DEL;
-		if (n < 15 && (ch>='0' && ch<='9' || ch>='a' && ch<='z' || ch>='A' && ch<='Z' || ch=='_'|| ch=='-' || ch=='.')) {
+		if (n < 15 && (isalnum(ch) || ch=='_' || ch=='-' || ch=='.')) {
 			export_file[n++]=ch;
 			export_file[n]='\0';
 		}
@@ -2485,7 +2430,7 @@ void _export()
 void _redo()
 {
 	int i;
-	char r1, r2;
+	int r1, r2;
 	if (!redo(&r1, &r2))
 		strcpy(message, "\033[31m无法进行REDO.\033[0m");
 	else {
@@ -2505,7 +2450,7 @@ void _redo()
 void _undo()
 {
 	int i;
-	char r1, r2;
+	int r1, r2;
 	if (!undo(&r1, &r2))
 		strcpy(message, "\033[31m无法进行UNDO.\033[0m");
 	else {
@@ -2529,7 +2474,7 @@ void _skey()
 
 	key = &sc_keys[n][0];
 	code_first = key->code;
-	if (chinese = key->chinese)
+	if ((chinese = key->chinese)!=0)
 		code_second = (key+1)->code;
 	_data();
 }
@@ -2616,7 +2561,6 @@ void _clrup()
 void _clrdn()
 {
 	int i, j;
-	struct charinfo *ci;
 
 	chkpt_begin(cur_y, scr_lns-2, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), &graph[cur_y][0], sizeof(struct charinfo)*scr_cols*(scr_lns-cur_y-1));
 	memset(&graph[cur_y][0], 0, sizeof(struct charinfo)*scr_cols*(scr_lns-cur_y-1));
@@ -2944,7 +2888,7 @@ void _copy()
 
 	copy_type = CP_CHAR;
 	ci = &graph[cur_y][cur_x];
-	assert(!ci->chinese || ci->chinese && !ci->half);
+	assert(!ci->chinese || (ci->chinese && !ci->half));
 	char_copy[0] = *ci;
 	if (ci->chinese)
 		char_copy[1] = *(ci+1);
@@ -2962,7 +2906,7 @@ void _pst()
 			chkpt_begin(cur_y, cur_y, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), &graph[cur_y][cur_x], sizeof(struct charinfo)*3);
 			ci = &char_copy[0];
 			code_first = ci->code;
-			if (chinese = ci->chinese)
+			if ((chinese = ci->chinese)!=0)
 				code_second = (ci+1)->code;
 			set_cur_char2(&ci->attr);
 			save_cur();
@@ -3008,7 +2952,6 @@ void _del()
 {
 	int i;
 	struct charinfo *ci, *ci1;
-	struct ansiattr a;
 	static struct charinfo s_row[NUM_COLS]; 
 	static struct charinfo s_col[NUM_ROWS-2][2];
 	int off;
@@ -3113,8 +3056,6 @@ void _rcopy()
 }
 void _rpst()
 {
-	struct charinfo *ci;
-
 	chkpt_begin(cur_y, cur_y, 3, &cur_x, sizeof(char), &cur_y, sizeof(char), &graph[cur_y][0], sizeof(struct charinfo)*scr_cols);
 	memcpy(&graph[cur_y][0], row_copy, sizeof(struct charinfo)*scr_cols);
 	save_cur();
@@ -3224,8 +3165,8 @@ void _igbk()
 	draw_sbar();
 	while (1) {
 		ch = getch();
-		if (ch>='0' && ch<='9' || ch>='a' && ch<='f' || ch>='A' && ch<='F') {
-			if (!n && ch>='8' || n) {
+		if ((ch>='0' && ch<='9') || (ch>='a' && ch<='f') || (ch>='A' && ch<='F')) {
+			if ((!n && ch>='8') || n) {
 				gbk[n++] = tolower(ch);
 				sprintf(message, "%s%s", str1, gbk);
 				draw_sbar();
@@ -3309,6 +3250,8 @@ void _adata()
 					return;
 				}
 				break;
+            default:
+                break;
 			}
 			set_cur_char2(&cur_attr);
 			clr2tail();
@@ -3365,6 +3308,8 @@ void _adata()
 			else 
 				apst_step = AP_DATA;
 			break;
+        default:
+            break;
 	}
 }
 void _apst()
@@ -3446,7 +3391,7 @@ void _mdel()
 
 	switch (mail_step) {
 		case ML_ADDR:
-			if (len=strlen(mail_addr)) {
+			if ((len=strlen(mail_addr))!=0) {
 				mail_addr[--len]='\0';
 				gotoxy2(cur_x-1, cur_y);
 				clr2tail();
@@ -3454,7 +3399,7 @@ void _mdel()
 			}
 			break;
 		case ML_TITLE:
-			if (len=strlen(mail_title)) {
+			if ((len=strlen(mail_title))!=0) {
 				mail_title[--len]='\0';
 				gotoxy2(cur_x-1, cur_y);
 				clr2tail();
@@ -3654,14 +3599,13 @@ void _bdel()
 }
 void _bcopy()
 {
-	int i, j;
 	struct charinfo *ci, *ci1;
 
 	copy_type = CP_BLOCK;
 	blk_cp_x1 = blk_x1; blk_cp_y1 = blk_y1; blk_cp_x2 = blk_x2; blk_cp_y2 = blk_y2;
 	ci = &graph[blk_cp_y1][blk_cp_x2];
 	ci1 = &graph[blk_cp_y2][blk_cp_x2];
-	if (ci->chinese && !ci->half || ci1->chinese && !ci1->half)
+	if ((ci->chinese && !ci->half) || (ci1->chinese && !ci1->half))
 		blk_cp_x2++;
 	memcpy(blk_copy, graph, sizeof(graph));
 	clr_brokenchars(blk_copy, blk_cp_y1, blk_cp_y2, blk_cp_x1, 1);

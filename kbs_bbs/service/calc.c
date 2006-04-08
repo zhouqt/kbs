@@ -418,7 +418,7 @@ int check_var_array(char * s, int l)
 
 void selmatrix(struct var_struct * s, struct var_struct * u, struct var_struct * v, struct var_struct * p)
 {
-    int i,j,k,i0,j0;
+    int i,j,i0,j0;
     makesure(1,0);
     if(!u->p) {
         makesize(u, 1, s->height);
@@ -547,18 +547,17 @@ void eval(struct var_struct * p, char * s, int l, int r)
 {
     int i,j,n;
     char op[9]=";, +-*/^E";
-    struct var_struct * t,q;
     char buf[1000];
     while(s[l]==' '&&l<=r) l++;
     while(s[r]==' '&&l<=r) r--;
     makesure(l<=r,11);
-    while(s[l]=='('&&s[r]==')'&&get_rl(s,r,l)==l||
-        s[l]=='['&&s[r]==']'&&get_rl3(s,r,l)==l) {
+    while((s[l]=='('&&s[r]==')'&&get_rl(s,r,l)==l)||
+        (s[l]=='['&&s[r]==']'&&get_rl3(s,r,l)==l)) {
         l++; r--;
         while(s[l]==' '&&l<=r) l++;
         while(s[r]==' '&&l<=r) r--;
     }
-    if(check_var_name(s+l, r-l+1)||s[l]=='%'&&check_var_name(s+l+1, r-l)) {
+    if(check_var_name(s+l, r-l+1)||(s[l]=='%'&&check_var_name(s+l+1, r-l))) {
         strncpy(buf, s+l, 1000);
         buf[r-l+1]=0;
         i=get_var(buf);
@@ -575,7 +574,6 @@ void eval(struct var_struct * p, char * s, int l, int r)
     }
     if(check_var_array(s+l, r-l+1)) {
         double f1,f2,f3;
-        double f;
         strncpy(buf, s+l, 1000);
         buf[r-l+1]=0;
         i=check_var_array(s+l,r-l+1);
@@ -606,7 +604,7 @@ void eval(struct var_struct * p, char * s, int l, int r)
             f1+=f3;
             i++;
             if(i>p->width) break;
-        }while(f1-MINIMUM<=f2&&f3>0||f1+MINIMUM>=f2&&f3<0);
+        }while((f1-MINIMUM<=f2&&f3>0)||(f1+MINIMUM>=f2&&f3<0));
         return;
     }
     i=l;
@@ -781,7 +779,7 @@ int calc_main()
 "单步值不能为0",
 "表达式出错",
 ""};
-    int y,x,res,i,j,ch,hi,oldmode;
+    int y,x,res,i,ch,hi,oldmode;
     oldmode=uinfo.mode;
     modify_user_mode(CALC);
     for(i=0;i<HIST;i++) history[i][0]=0;
@@ -858,4 +856,5 @@ checkcalcerr:
     for(i=0;i<vart;i++)
         del(vars+i);
     modify_user_mode(oldmode);
+    return 0;
 }

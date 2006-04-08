@@ -203,7 +203,6 @@ int dict_main()
             fprintf(fp, "\x1b[1;32;4m%s\x1b[m\n", row[1]);
             strcpy(word,row[1]);
            while (row != NULL) {
-            	char* p;
             	if (strcmp(word,row[1]))
                     fprintf(fp, "\x1b[1;32;4m%s\x1b[m\n", row[1]);
             	prinf_res(fp, row[2]);
@@ -224,6 +223,7 @@ exit_dict:
     for(i=0;i<t_lines;i++)
         saveline(i, 1, save_scr[i]);
     move(save_y, save_x);
+    return 0;
 }
 #else
 int dict_main() {

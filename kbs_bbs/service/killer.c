@@ -457,7 +457,7 @@ void clear_room()
 int can_see(struct room_struct * r)
 {
     if(r->style==-1) return 0;
-    if(r->level&getCurrentUser()->userlevel!=r->level) return 0;
+    if((r->level&getCurrentUser()->userlevel)!=r->level) return 0;
     if(r->style!=1) return 0;
     if(r->flag&ROOM_SECRET&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return 0;
     return 1;
@@ -466,7 +466,7 @@ int can_see(struct room_struct * r)
 int can_enter(struct room_struct * r)
 {
     if(r->style==-1) return 0;
-    if(r->level&getCurrentUser()->userlevel!=r->level) return 0;
+    if((r->level&getCurrentUser()->userlevel)!=r->level) return 0;
     if(r->style!=1) return 0;
     if(r->flag&ROOM_LOCKED&&!HAS_PERM(getCurrentUser(), PERM_SYSOP)) return 0;
     return 1;
@@ -588,8 +588,8 @@ void refreshit()
         j=getpeople(ipage+i-2);
         if(j==-1) continue;
         if(inrooms[myroom].status!=INROOM_STOP)
-        if(inrooms[myroom].peoples[j].flag&PEOPLE_KILLER && (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR&&rooms[myroom].flag&ROOM_SPECBLIND ||
+        if((inrooms[myroom].peoples[j].flag&PEOPLE_KILLER) && ((inrooms[myroom].peoples[me].flag&PEOPLE_KILLER) ||
+            ((inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR)&&(rooms[myroom].flag&ROOM_SPECBLIND)) ||
             !(inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE))) {
             resetcolor();
             move(i,2);
@@ -610,9 +610,9 @@ void refreshit()
             prints("O");
         }
         else if(inrooms[myroom].status == INROOM_DAY ||
-            inrooms[myroom].status == INROOM_NIGHT &&
-            (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR&&rooms[myroom].flag&ROOM_SPECBLIND))
+            (inrooms[myroom].status == INROOM_NIGHT &&
+            ((inrooms[myroom].peoples[me].flag&PEOPLE_KILLER) ||
+            ((inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR)&&(rooms[myroom].flag&ROOM_SPECBLIND)))))
             if((inrooms[myroom].peoples[j].flag&PEOPLE_ALIVE)&&
             (inrooms[myroom].peoples[j].vote != 0)) {
             resetcolor();
@@ -628,9 +628,9 @@ void refreshit()
         sprintf(buf, "%d %s", j+1, inrooms[myroom].peoples[j].nick);
         buf[12]=0;
         if(inrooms[myroom].status == INROOM_DAY ||
-            inrooms[myroom].status == INROOM_NIGHT &&
-            (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER ||
-            inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR)) {
+            (inrooms[myroom].status == INROOM_NIGHT &&
+            ((inrooms[myroom].peoples[me].flag&PEOPLE_KILLER) ||
+            (inrooms[myroom].peoples[me].flag&PEOPLE_SPECTATOR)))) {
             k=0;
             for(i0=0;i0<MAX_PEOPLE;i0++)
                 if(inrooms[myroom].peoples[i0].style!=-1 && inrooms[myroom].peoples[i0].vote==
@@ -1023,7 +1023,7 @@ int do_com_menu()
 void join_room(int w, int spec)
 {
     char buf[200],buf2[200],buf3[200],msg[200],roomname[80];
-    int i,j,k,killer,me;
+    int i,j,k,me;
     clear();
     myroom = w;
     start_change_inroom();
@@ -1122,8 +1122,8 @@ void join_room(int w, int spec)
                 me=mypos;
                 pid=inrooms[myroom].peoples[sel].pid;
                 if(inrooms[myroom].peoples[me].vote==0)
-                if(inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE&&
-                    (inrooms[myroom].peoples[me].flag&PEOPLE_KILLER&&inrooms[myroom].status==INROOM_NIGHT ||
+                if((inrooms[myroom].peoples[me].flag&PEOPLE_ALIVE)&&
+                    (((inrooms[myroom].peoples[me].flag&PEOPLE_KILLER)&&inrooms[myroom].status==INROOM_NIGHT) ||
                     inrooms[myroom].status==INROOM_DAY)) {
                     if(inrooms[myroom].peoples[sel].flag&PEOPLE_ALIVE && 
                         !(inrooms[myroom].peoples[sel].flag&PEOPLE_SPECTATOR) &&
@@ -1180,7 +1180,7 @@ checkvote:
                                 t3++;
                             }
                         if(j || t1-t2>t3) {
-                            int max=0, ok=0, maxi, maxpid;
+                            int max=0, ok=0, maxi=0, maxpid=0;
                             for(i=0;i<MAX_PEOPLE;i++)
                                 inrooms[myroom].peoples[i].vnum = 0;
                             for(i=0;i<MAX_PEOPLE;i++)
@@ -1687,6 +1687,7 @@ int choose_room()
     show_top_board();
     list_select_loop(&grouplist_conf);
     free(pts);
+    return 0;
 }
 
 int killer_main()
@@ -1714,5 +1715,6 @@ int killer_main()
     modify_user_mode(oldmode);
     shmdt(shm);
     shmdt(shm2);
+    return 0;
 }
 

@@ -1,41 +1,45 @@
+#define BBSMAIN
+
 #include "service.h"
 #include "bbs.h"
 #include <sys/times.h>
 
 static int on=-1;
 int a[21][12]={
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,0,0,0,0,0,0,0,0,0,0,8,
-8,8,8,8,8,8,8,8,8,8,8,8};
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,0,0,0,0,0,0,0,0,0,0,8},
+{8,8,8,8,8,8,8,8,8,8,8,8}
+};
 
 unsigned char userid[30]="unknown.";
 int dx[7][4][4], dy[7][4][4];
 int d[7][4][4]={
-0,1,4,5, 0,1,4,5, 0,1,4,5, 0,1,4,5,
-4,5,6,7, 1,5,9,13, 4,5,6,7, 1,5,9,13,
-0,1,5,6, 1,4,5,8, 0,1,5,6, 1,4,5,8,
-1,2,4,5, 0,4,5,9, 1,2,4,5, 0,4,5,9, 
-0,1,2,4, 0,1,5,9, 2,4,5,6, 0,4,8,9,
-0,1,2,6, 1,5,8,9, 0,4,5,6, 0,1,4,8,
-0,1,2,5, 1,4,5,9, 1,4,5,6, 0,4,5,8};
+{{0,1,4,5}, {0,1,4,5}, {0,1,4,5}, {0,1,4,5}},
+{{4,5,6,7}, {1,5,9,13}, {4,5,6,7}, {1,5,9,13}},
+{{0,1,5,6}, {1,4,5,8}, {0,1,5,6}, {1,4,5,8}},
+{{1,2,4,5}, {0,4,5,9}, {1,2,4,5}, {0,4,5,9}}, 
+{{0,1,2,4}, {0,1,5,9}, {2,4,5,6}, {0,4,8,9}},
+{{0,1,2,6}, {1,5,8,9}, {0,4,5,6}, {0,1,4,8}},
+{{0,1,2,5}, {1,4,5,9}, {1,4,5,6}, {0,4,5,8}}
+};
 
 int k,n,y,x,e;
 int newk=0;
@@ -45,6 +49,38 @@ char topID[20][20];
 int topT[20],topS[20];
  
 SMTH_API struct user_info uinfo;
+
+SMTH_API select_func x_select;
+SMTH_API read_func x_read;
+
+int sh(int,int,int,int,int);
+int intr(void);
+int start(void);
+int quit(void);
+int down(void);
+int win_showrec(void);
+int win_checkrec(int,int);
+int checklines(void);
+int count(void);
+int win_saverec(void);
+int win_sort(void);
+
+int getch0()
+{
+    char ch;
+    fd_set rfds;
+    struct timeval tv;
+    FD_ZERO(&rfds);
+    FD_SET(0, &rfds);
+    tv.tv_sec = 0;
+    tv.tv_usec = 50000;
+    if((*x_select)(1, &rfds, NULL, NULL, &tv)) {
+        if((*x_read)(0, &ch, 1)<=0) exit(-1);
+        return ch;
+    }
+    else
+        return 0;
+}
 
 int getch()
 {
@@ -81,6 +117,7 @@ int getch()
     	else if(e=='B') ret=KEY_DOWN;
     	else if(e=='C') ret=KEY_RIGHT;
     	else if(e=='D') ret=KEY_LEFT;
+        else ret=0;
 	}
 
     if(keymem_total) {
@@ -116,36 +153,17 @@ int getch()
     return ret;
 }
 
-SMTH_API select_func x_select;
-SMTH_API read_func x_read;
-
-int getch0()
-{
-    char ch; 
-    fd_set rfds;
-    struct timeval tv;
-    FD_ZERO(&rfds);
-    FD_SET(0, &rfds);
-    tv.tv_sec = 0;
-    tv.tv_usec = 50000;
-    if((*x_select)(1, &rfds, NULL, NULL, &tv)) {
-    	if((*x_read)(0, &ch, 1)<=0) exit(-1);
-        return ch;
-    }
-    else
-        return 0; 
-}
-
 int color(int c)
 {
-  static lastc=-1;
+  static int lastc=-1;
   char tmp[200];
 
-  if(c==lastc)return;
+  if(c==lastc) return -1;
   lastc=c;
   if(c==4) c=12;
   sprintf(tmp,"\033[%d;%dm",c/8,c%8+30);
   prints(tmp);
+    return 0;
 }
 
 int clear2()
@@ -172,22 +190,24 @@ int clear2()
    prints("                            └─┘\033[m     \n");
 
    prints("\033[1;33m祝你玩的愉快! \033[m按 '\033[1;32mCtrl+C\033[m'退出.");
+    return 0;
 }
 
 int sh2()
 { 
    static int oy=-1, ox=-1, ok=-1;
 
-   if(oy==y && ox==x && ok==k && on==n) return;
+   if(oy==y && ox==x && ok==k && on==n) return -1;
    sh(oy, ox, ok, on, 0);
    oy=y; ox=x; ok=k; on=n;
    sh(oy,ox,ok,on,ok+1);
    refresh();
+    return 0;
 }
 
 int sh(int y, int x, int k, int n, int c)
 {
-   if(n==-1) return;
+   if(n==-1) return -1;
    for(e=0;e<=3;e++)
    {
      move(y+dy[k][n][e],2*(x+dx[k][n][e]));
@@ -195,6 +215,7 @@ int sh(int y, int x, int k, int n, int c)
      if(c)prints("■");else prints("  ");
    }
    move(0,0);
+    return 0;
 }
 
 int show0()
@@ -213,23 +234,19 @@ int show0()
     }
   }
   refresh();
+    return 0;
 }
 
-int tetris_main()
-{
-  int oldmode;
-
-  strcpy(userid,getCurrentUser()->userid);
-
+int tetris_main(void){
+  strcpy((void*)userid,getCurrentUser()->userid);
   modify_user_mode(TETRIS);
   intr();
   start();
   quit();
-
   return 0;
 }
 
-quit()
+int quit(void)
 {
   color(7);
   prints("\033[H\033[J欢迎常来, 再见!\n");
@@ -237,7 +254,7 @@ quit()
   return 0;
 }
 
-init_data()
+int init_data(void)
 {
   for(k=0;k<=6;k++)
   for(n=0;n<=3;n++)
@@ -257,6 +274,7 @@ init_data()
   delay=200;
   lines=0;
   score=0;
+    return 0;
 }
 
 int crash2(int x, int y, int k, int n)
@@ -266,7 +284,7 @@ int crash2(int x, int y, int k, int n)
   return 0;
 }
 
-start()
+int start(void)
 {
   int c,t,first;
   struct tms faint;
@@ -320,17 +338,19 @@ start()
       }
     }
   }
+    return 0;
 }
 
-down()
+int down(void)
 {
    for(e=0;e<=3;e++)
    a[y+dy[k][n][e]][x+dx[k][n][e]]=k+1;
    checklines();
    on=-1;
+    return 0;
 }
 
-checklines()
+int checklines(void)
 {
    int y1,x1;
    int y2;
@@ -362,9 +382,10 @@ checklines()
 	  prints("\033[33mScore = \033[32m%5d",score);
       show0();
    }
+    return 0;
 }
 
-intr()
+int intr(void)
 {
   clear();
   prints("欢迎光临\033[1;32m%s!\033[1m \033[1;35m%s.\033[m 您是本游戏的第 \033[1;33m%d\033[m 位访问者。\r\n\r\n",BBS_FULL_NAME, userid, count());
@@ -379,6 +400,7 @@ intr()
   prints("\n\n\033[1;31m注意:不支持在ssh下进行游戏,只支持telnet\n");
   pressanykey();
   clear();
+    return 0;
 }
 
 int count()
@@ -406,10 +428,11 @@ int win_loadrec()
     topS[n]=0;
   }
   fp=fopen("tetris.rec","r");
-  if(fp==NULL){win_saverec();return;}
+  if(fp==NULL){win_saverec();return -1;}
   for(n=0;n<=19;n++)
     fscanf(fp,"%s %d %d\n",topID[n],&topT[n],&topS[n]);
   fclose(fp);
+    return 0;
 }
 
 int win_saverec()
@@ -422,6 +445,7 @@ int win_saverec()
       fprintf(fp,"%s %d %d\n",topID[n],topT[n],topS[n]);
     }
   fclose(fp);
+    return 0;
 }
 
 int win_showrec()
@@ -441,6 +465,7 @@ int win_showrec()
   }
   prints("\033[41m                                                                               \033[m\n\r");
   pressanykey();
+    return 0;
 }
 
 int win_checkrec(int ds,int dt)
@@ -448,7 +473,7 @@ int win_checkrec(int ds,int dt)
   char id[30];
   int n;
   win_loadrec();
-  strcpy(id,userid);
+  strcpy(id,(void*)userid);
   for(n=0;n<=19;n++)
     if(!strcmp(topID[n],id))
     {
@@ -460,7 +485,7 @@ int win_checkrec(int ds,int dt)
         win_saverec();
         win_showrec();
       }
-      return;
+      return 1;
     }
   if(ds>topS[19])
   {
@@ -470,8 +495,9 @@ int win_checkrec(int ds,int dt)
     win_sort();
     win_saverec();
     win_showrec();
-    return;
+    return 2;
   }
+    return 0;
 }
 
 int win_sort()
@@ -490,4 +516,6 @@ int win_sort()
       strcpy(tmpID,topID[n]);strcpy(topID[n],topID[n2]);
       strcpy(topID[n2],tmpID);
     }
+    return 0;
 }
+
