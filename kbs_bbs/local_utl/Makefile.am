@@ -4,7 +4,7 @@ bin_PROGRAMS = poststat static usage Xhtml Bhtml listonline \
 	showBM idx0Ann lazybm fixdir autoundeny statBM gen_title \
 	find_rm_lost statguy autoclear showipdeny \
 	scanIP scanMODE listMODE smth_usage \
-	mailall genhot bonlinelog uonlinelog dayuserlog alluserlog \
+	mails genhot bonlinelog uonlinelog dayuserlog alluserlog \
 	gennewboard outdaybm \
 	post_brdlog post_buse newpoststat genbplot sync_mailsize
 
