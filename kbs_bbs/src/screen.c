@@ -754,10 +754,10 @@ int dec[] =
 void prints(const char *format, ...)
 {
 	va_list ap;
-	char *fmt;
+	const char *fmt;
 	const char *bp;
 	int i, count, hd, indx;
-	char *begin;
+	const char *begin;
 
 	va_start(ap, format);
 	begin = fmt = format;

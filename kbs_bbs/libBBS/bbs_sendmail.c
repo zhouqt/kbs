@@ -144,8 +144,11 @@ int check_query_mail(char *qry_mail_dir, int *total_mail)
     unsigned char ch;
 
     offset = (int) ((char *) &(fh.accessed[0]) - (char *) &(fh));
-    if ((fd = open(qry_mail_dir, O_RDONLY)) < 0)
+    if ((fd = open(qry_mail_dir, O_RDONLY)) < 0) {
+        if (total_mail)
+            *total_mail = 0;
         return 0;
+    }
     fstat(fd, &st);
     numfiles = st.st_size;
     numfiles = numfiles / sizeof(fh);
