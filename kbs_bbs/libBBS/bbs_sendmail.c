@@ -330,9 +330,13 @@ int mail_file(char *fromid, char *tmpfile, char *userid, char *title, int unlink
     switch (unlinkmode) {
     case BBSPOST_LINK:
         unlink(filepath);
-        sprintf(buf,"%s/%s",BBSHOME,tmpfile);
-        if (symlink(buf,filepath)==-1)
-		bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror(errno));
+        /* etnlegend, 2006.04.08, 做符号链接的时候区分相对路径和绝对路径... */
+        if(*tmpfile!='/')
+            sprintf(buf,"%s/%s",BBSHOME,tmpfile);
+        else
+            sprintf(buf,"%s",tmpfile);
+        if(symlink(buf,filepath)==-1)
+            bbslog("3bbs","symlink %s to %s:%s",tmpfile,filepath,strerror(errno));
         break;
     case BBSPOST_MOVE:
         f_mv(tmpfile, filepath);

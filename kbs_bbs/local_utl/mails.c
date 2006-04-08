@@ -143,6 +143,8 @@ int main(int argc,char **argv){
     snprintf(title,MT_LEN,"%s",argv[optind++]);
     if(argv[optind][0]=='+')
         snprintf(path,MP_LEN,"%s/%s",BBSHOME,&argv[optind][1]);
+    else if(argv[optind][0]=='/')
+        snprintf(path,MP_LEN,"%s",argv[optind]);
     else
         snprintf(path,MP_LEN,"%s/%s",cwd,argv[optind]);
     if(stat(path,&st)||!(st.st_mode&(S_IFREG|S_IFLNK)))
