@@ -2,19 +2,10 @@
 /* 商店选单:食物 零食 大补丸 玩具 书本                                       */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
-#include "site.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-
-#ifndef MAPLE
-//extern char BBS_FULL_NAME[];
-#endif				// END MAPLE
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 /*---------------------------------------------------------------------------*/
 /* 商店选单:食物 零食 大补丸 玩具 书本                                       */
@@ -23,131 +14,95 @@ extern time_t lasttime;
 /*--------------------------------------------------------------------------*/
 /*  物品参数设定                                                            */
 /*--------------------------------------------------------------------------*/
-struct goodsofpip {
-	int num;		/*编号 */
-	char *name;		/*名字 */
-	char *msgbuy;		/*功用 */
-	char *msguse;		/*说明 */
-	int money;		/*金钱 */
-	int change;		/*改变量 */
-	int pic1;
-	int pic2;
-};
-typedef struct goodsofpip goodsofpip;
-
 const struct goodsofpip pipfoodlist[] = {
-	0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0,
-	1, "好吃的食物", "体力恢复50", "每吃一次食物会恢复体力50喔!", 50, 50, 1,
-	1,
-	2, "美味的零食", "体力恢复100", "除了恢复体力，小鸡也会更快乐", 120,
-	    100,
-	2, 3,
-	0, NULL, NULL, NULL, 0, 0, 0, 0
+	{ 0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0},
+	{ 1, "好吃的食物", "体力恢复50", "每吃一次食物会恢复体力50喔!", 50, 50, 1, 1},
+	{ 2, "美味的零食", "体力恢复100", "除了恢复体力，小鸡也会更快乐", 120,100,2, 3},
+	{ 0, NULL, NULL, NULL, 0, 0, 0, 0}
 };
 
 const struct goodsofpip pipmedicinelist[] = {
-	0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0,
-	1, "好用大补丸", "体力恢复600", "恢复大量流失体力的良方", 500, 600, 4,
-	    4,
-	2, "珍贵的灵芝", "法力恢复50", "每吃一次灵芝会恢复法力50喔!", 100, 50,
-	    7,
-	7,
-	3, "千年人参王", "法力恢复500", "恢复大量流失法力的良方", 800, 500, 7,
-	    7,
-	4, "天山雪莲", "法力体力最大", "这个  好贵......", 10000, 0, 7, 7,
-	0, NULL, NULL, NULL, 0, 0, 0, 0
+	{ 0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0},
+	{ 1, "好用大补丸", "体力恢复600", "恢复大量流失体力的良方", 500, 600, 4,4},
+	{ 2, "珍贵的灵芝", "法力恢复50", "每吃一次灵芝会恢复法力50喔!", 100, 50,7,7},
+	{ 3, "千年人参王", "法力恢复500", "恢复大量流失法力的良方", 800, 500, 7,7},
+	{ 4, "天山雪莲", "法力体力最大", "这个  好贵......", 10000, 0, 7, 7},
+	{ 0, NULL, NULL, NULL, 0, 0, 0, 0}
 };
 
 const struct goodsofpip pipotherlist[] = {
-	0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0,
-	1, "乐高玩具组", "快乐满意度", "玩具让小鸡更快乐啦...", 50, 0, 5, 5,
-	2, "百科全书", "知识的来源", "书本让小鸡更聪明更有气质啦...", 100, 0, 6,
-	6,
-	0, NULL, NULL, NULL, 0, 0, 0, 0
+	{ 0, "物品名", "说明buy", "说明feed", 0, 0, 0, 0},
+	{ 1, "乐高玩具组", "快乐满意度", "玩具让小鸡更快乐啦...", 50, 0, 5, 5},
+	{ 2, "百科全书", "知识的来源", "书本让小鸡更聪明更有气质啦...", 100, 0, 6,6},
+	{ 0, NULL, NULL, NULL, 0, 0, 0, 0}
 };
 
 /*--------------------------------------------------------------------------*/
 /*  武器参数设定                                                            */
 /*--------------------------------------------------------------------------*/
-struct weapon {
-	char *name;		/*名字 */
-	int needmaxhp;		/*需要hp */
-	int needmaxmp;		/*需要mp */
-	int needspeed;		/*需要的speed */
-	int attack;		/*攻击 */
-	int resist;		/*防护 */
-	int speed;		/*速度 */
-	int cost;		/*买价 */
-	int sell;		/*卖价 */
-	int special;		/*特别 */
-	int map;		/*图档 */
-
-};
-typedef struct weapon weapon;
-
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
 const struct weapon headlist[] = {
-	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	"塑胶帽子", 0, 0, 0, 0, 5, 0, 500, 300, 0, 0,
-	"牛皮小帽", 0, 0, 0, 0, 10, 0, 3500, 1000, 0, 0,
-	"  安全帽", 60, 0, 0, 0, 20, 0, 5000, 3500, 0, 0,
-	"钢铁头盔", 150, 50, 0, 0, 30, 0, 10000, 6000, 0, 0,
-	"魔法发箍", 100, 150, 0, 0, 25, 0, 50000, 10000, 0, 0,
-	"黄金圣盔", 300, 300, 300, 0, 100, 0, 300000, 100000, 0, 0,
-	NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+{    "不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+{    "塑胶帽子", 0, 0, 0, 0, 5, 0, 500, 300, 0, 0},
+{    "牛皮小帽", 0, 0, 0, 0, 10, 0, 3500, 1000, 0, 0},
+{    "  安全帽", 60, 0, 0, 0, 20, 0, 5000, 3500, 0, 0},
+{    "钢铁头盔", 150, 50, 0, 0, 30, 0, 10000, 6000, 0, 0},
+{    "魔法发箍", 100, 150, 0, 0, 25, 0, 50000, 10000, 0, 0},
+{    "黄金圣盔", 300, 300, 300, 0, 100, 0, 300000, 100000, 0, 0},
+{    NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
 const struct weapon rhandlist[] = {
-	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	"大木棒", 0, 0, 0, 5, 0, 0, 1000, 700, 0, 0,
-	"金属扳手", 0, 0, 0, 10, 0, 0, 2500, 1000, 0, 0,
-	"青铜剑", 50, 0, 0, 20, 0, 0, 6000, 4000, 0, 0,
-	"晴雷剑", 80, 0, 0, 30, 0, 0, 10000, 8000, 0, 0,
-	"蝉翼刀", 100, 20, 0, 40, 0, 0, 15000, 10000, 0, 0,
-	"忘情剑", 100, 40, 0, 35, 20, 0, 15000, 10000, 0, 0,
-	"狮头宝刀", 150, 0, 0, 60, 0, 0, 35000, 20000, 0, 0,
-	"屠龙刀", 200, 0, 0, 100, 0, 0, 50000, 25000, 0, 0,
-	"黄金圣杖", 300, 300, 300, 100, 20, 0, 150000, 100000, 0, 0,
-	NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+{    "不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+{    "大木棒", 0, 0, 0, 5, 0, 0, 1000, 700, 0, 0},
+{    "金属扳手", 0, 0, 0, 10, 0, 0, 2500, 1000, 0, 0},
+{    "青铜剑", 50, 0, 0, 20, 0, 0, 6000, 4000, 0, 0},
+{    "晴雷剑", 80, 0, 0, 30, 0, 0, 10000, 8000, 0, 0},
+{    "蝉翼刀", 100, 20, 0, 40, 0, 0, 15000, 10000, 0, 0},
+{    "忘情剑", 100, 40, 0, 35, 20, 0, 15000, 10000, 0, 0},
+{    "狮头宝刀", 150, 0, 0, 60, 0, 0, 35000, 20000, 0, 0},
+{    "屠龙刀", 200, 0, 0, 100, 0, 0, 50000, 25000, 0, 0},
+{    "黄金圣杖", 300, 300, 300, 100, 20, 0, 150000, 100000, 0, 0},
+{    NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
 const struct weapon lhandlist[] = {
-	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	"大木棒", 0, 0, 0, 5, 0, 0, 1000, 700, 0, 0,
-	"金属扳手", 0, 0, 0, 10, 0, 0, 1500, 1000, 0, 0,
-	"木盾", 0, 0, 0, 0, 10, 0, 2000, 1500, 0, 0,
-	"不锈钢盾", 60, 0, 0, 0, 25, 0, 5000, 3000, 0, 0,
-	"白金之盾", 80, 0, 0, 10, 40, 0, 15000, 10000, 0, 0,
-	"魔法盾", 80, 100, 0, 20, 60, 0, 80000, 50000, 0, 0,
-	"黄金圣盾", 300, 300, 300, 30, 100, 0, 150000, 100000, 0, 0,
-	NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+{    "不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+{    "大木棒", 0, 0, 0, 5, 0, 0, 1000, 700, 0, 0},
+{    "金属扳手", 0, 0, 0, 10, 0, 0, 1500, 1000, 0, 0},
+{    "木盾", 0, 0, 0, 0, 10, 0, 2000, 1500, 0, 0},
+{    "不锈钢盾", 60, 0, 0, 0, 25, 0, 5000, 3000, 0, 0},
+{    "白金之盾", 80, 0, 0, 10, 40, 0, 15000, 10000, 0, 0},
+{    "魔法盾", 80, 100, 0, 20, 60, 0, 80000, 50000, 0, 0},
+{    "黄金圣盾", 300, 300, 300, 30, 100, 0, 150000, 100000, 0, 0},
+{    NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
 const struct weapon bodylist[] = {
-	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	"塑胶胄甲", 40, 0, 0, 0, 5, 0, 1000, 700, 0, 0,
-	"特级皮甲", 50, 0, 0, 0, 10, 0, 2500, 1000, 0, 0,
-	"钢铁盔甲", 80, 0, 0, 0, 25, 0, 5000, 3500, 0, 0,
-	"魔法披风", 80, 40, 0, 0, 20, 20, 15500, 10000, 0, 0,
-	"白金盔甲", 100, 30, 0, 0, 40, 20, 30000, 20000, 0, 0,
-	"黄金圣衣", 300, 300, 300, 30, 100, 0, 150000, 100000, 0, 0,
-	NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+{    "不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+{    "塑胶胄甲", 40, 0, 0, 0, 5, 0, 1000, 700, 0, 0},
+{    "特级皮甲", 50, 0, 0, 0, 10, 0, 2500, 1000, 0, 0},
+{    "钢铁盔甲", 80, 0, 0, 0, 25, 0, 5000, 3500, 0, 0},
+{    "魔法披风", 80, 40, 0, 0, 20, 20, 15500, 10000, 0, 0},
+{    "白金盔甲", 100, 30, 0, 0, 40, 20, 30000, 20000, 0, 0},
+{    "黄金圣衣", 300, 300, 300, 30, 100, 0, 150000, 100000, 0, 0},
+{    NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 /*名字,需hp,需mp,需speed,攻击,防护,速度,买价,卖价,特别,图档*/
 const struct weapon footlist[] = {
-	"不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-	"塑胶拖鞋", 0, 0, 0, 0, 0, 10, 800, 500, 0, 0,
-	"东洋木屐", 0, 0, 0, 15, 0, 10, 1000, 700, 0, 0,
-	"特级雨鞋", 0, 0, 0, 0, 10, 10, 1500, 1000, 0, 0,
-	"NIKE运动鞋", 70, 0, 0, 0, 10, 40, 8000, 5000, 0, 0,
-	"鳄鱼皮靴", 80, 20, 0, 10, 25, 20, 12000, 8000, 0, 0,
-	"飞天魔靴", 100, 100, 0, 30, 50, 60, 25000, 10000, 0, 0,
-	"黄金圣靴", 300, 300, 300, 50, 100, 100, 150000, 100000, 0, 0,
-	NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+{    "不买装备", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
+{    "塑胶拖鞋", 0, 0, 0, 0, 0, 10, 800, 500, 0, 0},
+{    "东洋木屐", 0, 0, 0, 15, 0, 10, 1000, 700, 0, 0},
+{    "特级雨鞋", 0, 0, 0, 0, 10, 10, 1500, 1000, 0, 0},
+{    "NIKE运动鞋", 70, 0, 0, 0, 10, 40, 8000, 5000, 0, 0},
+{    "鳄鱼皮靴", 80, 20, 0, 10, 25, 20, 12000, 8000, 0, 0},
+{    "飞天魔靴", 100, 100, 0, 30, 50, 60, 25000, 10000, 0, 0},
+{    "黄金圣靴", 300, 300, 300, 50, 100, 100, 150000, 100000, 0, 0},
+{    NULL, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0}
 };
 
 /*---------------------------------------------------------------------------*/
@@ -236,12 +191,7 @@ pip_store_weapon_foot()
 	return 0;
 }
 
-int
-pip_buy_goods_new(mode, p, oldnum)
-int mode;
-int oldnum[];
-struct goodsofpip *p;
-{
+int pip_buy_goods_new(int mode,const struct goodsofpip *p,int *oldnum){
 	const static char *shopname[4] = { "店名", "便利商店", "星空药铺", "夜里书局" };
 	char inbuf[256];
 	char genbuf[20];
@@ -281,7 +231,7 @@ struct goodsofpip *p;
 #ifdef MAPLE
 			getdata(b_lines - 1, 1, inbuf, genbuf, 3, LCECHO, "0");
 #else
-			getdata(b_lines - 1, 1, inbuf, genbuf, 3, DOECHO, true);
+			getdata(b_lines-1,1,inbuf,genbuf,3,DOECHO,NULL,true);
 			if ((genbuf[0] >= 'A') && (genbuf[0] <= 'Z'))
 				genbuf[0] = genbuf[0] | 32;
 #endif				// END MAPLE
@@ -308,37 +258,30 @@ struct goodsofpip *p;
 					getdata(b_lines - 1, 1, inbuf, genbuf,
 						6, 1, 0);
 #else
-					getdata(b_lines - 1, 1, inbuf, genbuf,
-						6, DOECHO, true);
+					getdata(b_lines-1,1,inbuf,genbuf,6,DOECHO,NULL,true);
 #endif				// END MAPLE
 					smoney = atoi(genbuf);
 				}
 				if (smoney < 0) {
-					pressanykey("放弃买入...");
+					temppress("放弃买入...");
 				} else if (d.money < smoney * p[choice].money) {
-					pressanykey("你的钱没有那麽多喔..");
+					temppress("你的钱没有那麽多喔..");
 				} else {
-					sprintf(inbuf,
-						"确定买入物品 [%s] 数量 %d 个吗?(店家卖价 %d) [y/N]:",
-						p[choice].name, smoney,
-						smoney * p[choice].money);
+					sprintf(inbuf,"确定买入物品 [%s] 数量 %ld 个吗?(店家卖价 %ld) [y/N]:",p[choice].name,smoney,smoney*p[choice].money);
 #ifdef MAPLE
 					getdata(b_lines - 1, 1, inbuf, genbuf,
 						2, 1, 0);
 #else
-					getdata(b_lines - 1, 1, inbuf, genbuf,
-						2, DOECHO, true);
+					getdata(b_lines-1,1,inbuf,genbuf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 					if (genbuf[0] == 'y'
 					    || genbuf[0] == 'Y') {
 						oldnum[choice] += smoney;
 						d.money -=
 						    smoney * p[choice].money;
-						sprintf(inbuf,
-							"老板给了你%d个%s",
-							smoney, p[choice].name);
-						pressanykey(inbuf);
-						pressanykey(p[choice].msguse);
+						sprintf(inbuf,"老板给了你%ld个%s",smoney,p[choice].name);
+						temppress(inbuf);
+						temppress(p[choice].msguse);
 						if (mode == 3 && choice == 1) {
 							d.happy +=
 							    rand() % 10 +
@@ -364,19 +307,19 @@ struct goodsofpip *p;
 							     1) * smoney;
 						}
 					} else {
-						pressanykey("放弃买入...");
+						temppress("放弃买入...");
 					}
 				}
 			} else {
 				sprintf(inbuf, "放弃买入.....");
-				pressanykey(inbuf);
+				temppress(inbuf);
 			}
 			break;
 
 		case 'S':
 		case 's':
 			if (mode == 3) {
-				pressanykey("这些东西不能卖喔....");
+				temppress("这些东西不能卖喔....");
 				break;
 			}
 			move(b_lines - 1, 1);
@@ -386,7 +329,7 @@ struct goodsofpip *p;
 #ifdef MAPLE
 			getdata(b_lines - 1, 1, inbuf, genbuf, 3, LCECHO, "0");
 #else
-			getdata(b_lines - 1, 1, inbuf, genbuf, 3, DOECHO, true);
+			getdata(b_lines-1,1,inbuf,genbuf,3,DOECHO,NULL,true);
 			if ((genbuf[0] >= 'A') && (genbuf[0] <= 'Z'))
 				genbuf[0] = genbuf[0] | 32;
 #endif				// END MAPLE
@@ -407,29 +350,24 @@ struct goodsofpip *p;
 #ifdef MAPLE
 				getdata(b_lines - 1, 1, inbuf, genbuf, 6, 1, 0);
 #else
-				getdata(b_lines - 1, 1, inbuf, genbuf, 6,
-					DOECHO, true);
+				getdata(b_lines-1,1,inbuf,genbuf,6,DOECHO,NULL,true);
 #endif				// END MAPLE
 				smoney = atoi(genbuf);
 				if (smoney < 0) {
-					pressanykey("放弃卖出...");
+					temppress("放弃卖出...");
 				} else if (smoney > oldnum[choice]) {
 					sprintf(inbuf,
 						"你的 [%s] 没有那麽多个喔",
 						p[choice].name);
-					pressanykey(inbuf);
+					temppress(inbuf);
 				} else {
-					sprintf(inbuf,
-						"确定卖出物品 [%s] 数量 %d 个吗?(店家买价 %d) [y/N]:",
-						p[choice].name, smoney,
-						smoney * p[choice].money * 8 /
-						10);
+					sprintf(inbuf,"确定卖出物品 [%s] 数量 %ld 个吗?(店家买价 %ld) [y/N]:",
+                        p[choice].name,smoney,smoney*p[choice].money*8/10);
 #ifdef MAPLE
 					getdata(b_lines - 1, 1, inbuf, genbuf,
 						2, 1, 0);
 #else
-					getdata(b_lines - 1, 1, inbuf, genbuf,
-						2, DOECHO, true);
+					getdata(b_lines-1,1,inbuf,genbuf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 					if (genbuf[0] == 'y'
 					    || genbuf[0] == 'Y') {
@@ -437,24 +375,22 @@ struct goodsofpip *p;
 						d.money +=
 						    smoney * p[choice].money *
 						    8 / 10;
-						sprintf(inbuf,
-							"老板拿走了你的%d个%s",
-							smoney, p[choice].name);
-						pressanykey(inbuf);
+						sprintf(inbuf,"老板拿走了你的%ld个%s",smoney,p[choice].name);
+						temppress(inbuf);
 					} else {
-						pressanykey("放弃卖出...");
+						temppress("放弃卖出...");
 					}
 				}
 			} else {
 				sprintf(inbuf, "放弃卖出.....");
-				pressanykey(inbuf);
+				temppress(inbuf);
 			}
 			break;
 		case 'Q':
 		case 'q':
 			sprintf(inbuf, "金钱交易共 %d 元,离开 %s ",
 				d.money - oldmoney, shopname[mode]);
-			pressanykey(inbuf);
+			temppress(inbuf);
 			break;
 #ifdef MAPLE
 		case Ctrl('R'):
@@ -471,12 +407,7 @@ struct goodsofpip *p;
 	return 0;
 }
 
-int
-pip_weapon_doing_menu(variance, type, p)	/* 武器购买画面 */
-int variance;
-int type;
-struct weapon *p;
-{
+int pip_weapon_doing_menu(int variance,int type,const struct weapon *p){
 	time_t now;
 	register int n = 0;
 	register char *s;
@@ -509,7 +440,7 @@ struct weapon *p;
 		prints(buf);
 
 		n = 0;
-		while (s = p[n].name) {
+		while ((s = p[n].name)!=0) {
 			move(13 + n, 2);
 			if (variance != 0 && variance == (n)) {	/*本身有的 */
 				sprintf(buf,
@@ -565,8 +496,7 @@ struct weapon *p;
 			getdata(b_lines - 1, 1, shortbuf, choicekey, 4, LCECHO,
 				"0");
 #else
-			getdata(b_lines - 1, 1, shortbuf, choicekey, 4, DOECHO,
-				true);
+			getdata(b_lines-1,1,shortbuf,choicekey,4,DOECHO,NULL,true);
 			if ((choicekey[0] >= 'A') && (choicekey[0] <= 'Z'))
 				choicekey[0] = choicekey[0] | 32;
 #endif				// END MAPLE
@@ -577,20 +507,20 @@ struct weapon *p;
 				move(b_lines - 1, 1);
 				if (choice == 0) {	/*解除 */
 					sprintf(shortbuf, "放弃购买...");
-					pressanykey(shortbuf);
+					temppress(shortbuf);
 				}
 
 				else if (variance == choice) {	/*早已经有啦 */
 					sprintf(shortbuf, "你早已经有 %s 罗",
 						p[variance].name);
-					pressanykey(shortbuf);
+					temppress(shortbuf);
 				}
 
 				else if (p[choice].cost >= (d.money + p[variance].sell)) {	/*钱不够 */
 					sprintf(shortbuf,
 						"这个要 %d 元，你的钱不够啦!",
 						p[choice].cost);
-					pressanykey(shortbuf);
+					temppress(shortbuf);
 				}
 
 				else if (d.maxhp < p[choice].needmaxhp || d.maxmp < p[choice].needmaxmp || d.speed < p[choice].needspeed) {	/*能力不足 */
@@ -599,7 +529,7 @@ struct weapon *p;
 						p[choice].needmaxhp,
 						p[choice].needmaxmp,
 						p[choice].needspeed);
-					pressanykey(shortbuf);
+					temppress(shortbuf);
 				} else {	/*顺利购买 */
 
 					sprintf(shortbuf,
@@ -609,14 +539,13 @@ struct weapon *p;
 					getdata(b_lines - 1, 1, shortbuf, ans,
 						2, 1, 0);
 #else
-					getdata(b_lines - 1, 1, shortbuf, ans,
-						2, DOECHO, true);
+					getdata(b_lines-1,1,shortbuf,ans,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 					if (ans[0] == 'y' || ans[0] == 'Y') {
 						sprintf(shortbuf,
 							"小鸡已经装配上 %s 了",
 							p[choice].name);
-						pressanykey(shortbuf);
+						temppress(shortbuf);
 						d.attack +=
 						    (p[choice].attack -
 						     p[variance].attack);
@@ -633,7 +562,7 @@ struct weapon *p;
 					} else {
 						sprintf(shortbuf,
 							"放弃购买.....");
-						pressanykey(shortbuf);
+						temppress(shortbuf);
 					}
 				}
 			}
@@ -648,8 +577,7 @@ struct weapon *p;
 #ifdef MAPLE
 				getdata(b_lines - 1, 1, shortbuf, ans, 2, 1, 0);
 #else
-				getdata(b_lines - 1, 1, shortbuf, ans, 2,
-					DOECHO, true);
+				getdata(b_lines-1,1,shortbuf,ans,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 				if (ans[0] == 'y' || ans[0] == 'Y') {
 					sprintf(shortbuf, "装备 %s 卖了 %d",
@@ -659,16 +587,16 @@ struct weapon *p;
 					d.resist -= p[variance].resist;
 					d.speed -= p[variance].speed;
 					d.money += p[variance].sell;
-					pressanykey(shortbuf);
+					temppress(shortbuf);
 					variance = 0;
 				} else {
 					sprintf(shortbuf,
 						"ccc..我回心转意了...");
-					pressanykey(shortbuf);
+					temppress(shortbuf);
 				}
 			} else if (variance == 0) {
 				sprintf(shortbuf, "你本来就没有装备了...");
-				pressanykey(shortbuf);
+				temppress(shortbuf);
 				variance = 0;
 			}
 			break;

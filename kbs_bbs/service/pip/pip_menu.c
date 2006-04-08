@@ -1,20 +1,10 @@
 /*---------------------------------------------------------------------------*/
 /*主画面和选单                                                               */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
-#include "site.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
-
-#ifndef MAPLE
-//extern char BBS_FULL_NAME[];
-#endif				// END MAPLE
 
 const char *menuname[8][2] = {
 	{"             ",
@@ -46,25 +36,25 @@ const char *menuname[8][2] = {
 int pip_basic_menu(), pip_store_menu(), pip_practice_menu();
 int pip_play_menu(), pip_job_menu(), pip_special_menu(), pip_system_menu();
 const static struct pipcommands pipmainlist[] = {
-	pip_basic_menu, '1', '1',
-	pip_store_menu, '2', '2',
-	pip_practice_menu, '3', '3',
-	pip_play_menu, '4', '4',
-	pip_job_menu, '5', '5',
-	pip_special_menu, '6', '6',
-	pip_system_menu, '7', '7',
-	NULL, '\0', '\0'
+	{pip_basic_menu, '1', '1'},
+	{pip_store_menu, '2', '2'},
+	{pip_practice_menu, '3', '3'},
+	{pip_play_menu, '4', '4'},
+	{pip_job_menu, '5', '5'},
+	{pip_special_menu, '6', '6'},
+	{pip_system_menu, '7', '7'},
+	{NULL, '\0', '\0'}
 };
 
 /*基本选单*/
 int pip_basic_feed(), pip_basic_takeshower(), pip_basic_takerest(),
 pip_basic_kiss();
 const static struct pipcommands pipbasiclist[] = {
-	pip_basic_feed, '1', '1',
-	pip_basic_takeshower, '2', '2',
-	pip_basic_takerest, '3', '3',
-	pip_basic_kiss, '4', '4',
-	NULL, '\0', '\0'
+	{pip_basic_feed, '1', '1'},
+	{pip_basic_takeshower, '2', '2'},
+	{pip_basic_takerest, '3', '3'},
+	{pip_basic_kiss, '4', '4'},
+	{NULL, '\0', '\0'}
 };
 
 /*商店选单*/
@@ -72,15 +62,15 @@ int pip_store_food(), pip_store_medicine(), pip_store_other();
 int pip_store_weapon_head(), pip_store_weapon_rhand(), pip_store_weapon_lhand();
 int pip_store_weapon_body(), pip_store_weapon_foot();
 const static struct pipcommands pipstorelist[] = {
-	pip_store_food, '1', '1',
-	pip_store_medicine, '2', '2',
-	pip_store_other, '3', '3',
-	pip_store_weapon_head, 'a', 'A',
-	pip_store_weapon_rhand, 'b', 'B',
-	pip_store_weapon_lhand, 'c', 'C',
-	pip_store_weapon_body, 'd', 'D',
-	pip_store_weapon_foot, 'e', 'E',
-	NULL, '\0', '\0'
+	{pip_store_food, '1', '1'},
+	{pip_store_medicine, '2', '2'},
+	{pip_store_other, '3', '3'},
+	{pip_store_weapon_head, 'a', 'A'},
+	{pip_store_weapon_rhand, 'b', 'B'},
+	{pip_store_weapon_lhand, 'c', 'C'},
+	{pip_store_weapon_body, 'd', 'D'},
+	{pip_store_weapon_foot, 'e', 'E'},
+	{NULL, '\0', '\0'}
 };
 
 /*修行选单*/
@@ -89,31 +79,31 @@ int pip_practice_classD(), pip_practice_classE(), pip_practice_classF();
 int pip_practice_classG(), pip_practice_classH(), pip_practice_classI();
 int pip_practice_classJ();
 const static struct pipcommands pippracticelist[] = {
-	pip_practice_classA, 'a', 'A',
-	pip_practice_classB, 'b', 'B',
-	pip_practice_classC, 'c', 'C',
-	pip_practice_classD, 'd', 'D',
-	pip_practice_classE, 'e', 'E',
-	pip_practice_classF, 'f', 'F',
-	pip_practice_classG, 'g', 'G',
-	pip_practice_classH, 'h', 'H',
-	pip_practice_classI, 'i', 'I',
-	pip_practice_classJ, 'j', 'J',
-	NULL, '\0', '\0'
+	{pip_practice_classA, 'a', 'A'},
+	{pip_practice_classB, 'b', 'B'},
+	{pip_practice_classC, 'c', 'C'},
+	{pip_practice_classD, 'd', 'D'},
+	{pip_practice_classE, 'e', 'E'},
+	{pip_practice_classF, 'f', 'F'},
+	{pip_practice_classG, 'g', 'G'},
+	{pip_practice_classH, 'h', 'H'},
+	{pip_practice_classI, 'i', 'I'},
+	{pip_practice_classJ, 'j', 'J'},
+	{NULL, '\0', '\0'}
 };
 
 /*玩乐选单*/
 int pip_play_stroll(), pip_play_sport(), pip_play_date(), pip_play_guess();
 int pip_play_outing(), pip_play_kite(), pip_play_KTV();
 const static struct pipcommands pipplaylist[] = {
-	pip_play_stroll, '1', '1',
-	pip_play_sport, '2', '2',
-	pip_play_date, '3', '3',
-	pip_play_guess, '4', '4',
-	pip_play_outing, '5', '5',
-	pip_play_kite, '6', '6',
-	pip_play_KTV, '7', '7',
-	NULL, '\0', '\0'
+	{pip_play_stroll, '1', '1'},
+	{pip_play_sport, '2', '2'},
+	{pip_play_date, '3', '3'},
+	{pip_play_guess, '4', '4'},
+	{pip_play_outing, '5', '5'},
+	{pip_play_kite, '6', '6'},
+	{pip_play_KTV, '7', '7'},
+	{NULL, '\0', '\0'}
 };
 
 /*打工选单*/
@@ -122,35 +112,35 @@ int pip_job_workE(), pip_job_workF(), pip_job_workG(), pip_job_workH();
 int pip_job_workI(), pip_job_workJ(), pip_job_workK(), pip_job_workL();
 int pip_job_workM(), pip_job_workN(), pip_job_workO(), pip_job_workP();
 const static struct pipcommands pipjoblist[] = {
-	pip_job_workA, 'a', 'A',
-	pip_job_workB, 'b', 'B',
-	pip_job_workC, 'c', 'C',
-	pip_job_workD, 'd', 'D',
-	pip_job_workE, 'e', 'E',
-	pip_job_workF, 'f', 'F',
-	pip_job_workG, 'g', 'G',
-	pip_job_workH, 'h', 'H',
-	pip_job_workI, 'i', 'I',
-	pip_job_workJ, 'j', 'J',
-	pip_job_workK, 'k', 'K',
-	pip_job_workL, 'l', 'L',
-	pip_job_workM, 'm', 'M',
-	pip_job_workN, 'n', 'N',
-	pip_job_workO, 'o', 'O',
-	pip_job_workP, 'p', 'P',
-	NULL, '\0', '\0'
+	{pip_job_workA, 'a', 'A'},
+	{pip_job_workB, 'b', 'B'},
+	{pip_job_workC, 'c', 'C'},
+	{pip_job_workD, 'd', 'D'},
+	{pip_job_workE, 'e', 'E'},
+	{pip_job_workF, 'f', 'F'},
+	{pip_job_workG, 'g', 'G'},
+	{pip_job_workH, 'h', 'H'},
+	{pip_job_workI, 'i', 'I'},
+	{pip_job_workJ, 'j', 'J'},
+	{pip_job_workK, 'k', 'K'},
+	{pip_job_workL, 'l', 'L'},
+	{pip_job_workM, 'm', 'M'},
+	{pip_job_workN, 'n', 'N'},
+	{pip_job_workO, 'o', 'O'},
+	{pip_job_workP, 'p', 'P'},
+	{NULL, '\0', '\0'}
 };
 
 /*特殊选单*/
 int pip_see_doctor(), pip_change_weight(), pip_meet_vs_man(), pip_query(),
 pip_go_palace();
 const static struct pipcommands pipspeciallist[] = {
-	pip_see_doctor, '1', '1',
-	pip_change_weight, '2', '2',
-	pip_meet_vs_man, '3', '3',
-	pip_query, '4', '4',
-	pip_go_palace, '5', '5',
-	NULL, '\0', '\0'
+	{pip_see_doctor, '1', '1'},
+	{pip_change_weight, '2', '2'},
+	{pip_meet_vs_man, '3', '3'},
+	{pip_query, '4', '4'},
+	{pip_go_palace, '5', '5'},
+	{NULL, '\0', '\0'}
 };
 
 /*系统选单*/
@@ -158,14 +148,14 @@ int pip_data_list(), pip_system_freepip(), pip_system_service();
 int pip_write_backup(), pip_read_backup();
 int pip_divine(), pip_results_show();
 const static struct pipcommands pipsystemlist[] = {
-	pip_data_list, '1', '1',
-	pip_system_freepip, '2', '2',
-	pip_system_service, '3', '3',
-	pip_write_backup, '4', '4',
-	pip_read_backup, '5', '5',
-	pip_divine, 'o', 'O',
-	pip_results_show, 's', 'S',
-	NULL, '\0', '\0'
+	{pip_data_list, '1', '1'},
+	{pip_system_freepip, '2', '2'},
+	{pip_system_service, '3', '3'},
+	{pip_write_backup, '4', '4'},
+	{pip_read_backup, '5', '5'},
+	{pip_divine, 'o', 'O'},
+	{pip_results_show, 's', 'S'},
+	{NULL, '\0', '\0'}
 };
 
 /*类似menu.c的功能*/
@@ -285,7 +275,7 @@ regetkey:
 			break;
 
 		default:
-			for (cmd1; key1 = cmd1->key1; cmd1++)
+			for (/*cmd1*/; (key1 = cmd1->key1)!=0; cmd1++)
 				/*
 				 * if(key == tolower(pipkey))
 				 */
@@ -293,7 +283,7 @@ regetkey:
 					cmd1->fptr();
 					ok = 1;
 				}
-			for (cmd2; key2 = cmd2->key2; cmd2++)
+			for (/*cmd2*/; (key2 = cmd2->key2)!=0; cmd2++)
 				if (ok == 0 && key2 == pipkey) {
 					cmd2->fptr();
 				}
@@ -390,7 +380,7 @@ int
 pip_system_menu()
 {
 	pip_do_menu(7, 0, pipsystemlist);
-	return;
+	return 0;
 }
 
 int
@@ -403,7 +393,7 @@ int mode;
 	char buf[256],linebuf[256];
 	time_t now;
 
-	int tm, m, color, tm1, m1;
+	int tm, m, color, tm1;
 	int age;
 	int color1, color2, color3, color4;
 	int anynum;
@@ -417,7 +407,6 @@ int mode;
 	tm = (time(0) - start_time + d.bbtime) / 60 / 30;	/* 一岁 */
 	tm1 = (time(0) - start_time + d.bbtime) / 60;
 	m = d.bbtime / 60 / 30;
-	m1 == d.bbtime / 60;
 	/*
 	 * 长大一岁时的增加改变值
 	 */
@@ -446,7 +435,7 @@ int mode;
 		 */
 		now = time(0);
 		sprintf(genbuf, "\033[1;37m%s %-11s的小鸡 [%s] 满 %d 岁了 \033[0m\n",
-			Cdate(now), cuser->userid, d.name, m + 1);
+			Cdate(now), getCurrentUser()->userid, d.name, m + 1);
 		pip_log_record(genbuf);
 		/*
 		 * 记录终止
@@ -454,7 +443,7 @@ int mode;
 		clear();
 		showtitle("电子养小鸡", BBS_FULL_NAME);
 		show_basic_pic(20);	/*生日快乐 */
-		pressanykey("小鸡长大一岁了..");
+		temppress("小鸡长大一岁了..");
 		/*
 		 * 结局
 		 */
@@ -508,6 +497,8 @@ int mode;
 		age = 10;
 	else if (m > 100)	/*神仙 */
 		age = 11;
+    else
+        age=0;
 	clear();
 	/*
 	 * showtitle("电子养小鸡", BBS_FULL_NAME);
@@ -937,4 +928,5 @@ time_t cnow;
 		d.money = 0;
 	if (d.charm < 0)
 		d.charm = 0;
+    return 0;
 }

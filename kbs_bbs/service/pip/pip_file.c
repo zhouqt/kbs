@@ -2,121 +2,49 @@
 /*---------------------------------------------------------------------------*/
 /*小鸡档案的读写函式							     */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
-#include "site.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
 
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
-
-#ifndef MAPLE
-//extern char BBS_FULL_NAME[];
-#endif				// END MAPLE
-
 /*游戏写资料入档案*/
-pip_write_file()
-{
+void pip_write_file(void){
 	FILE *ff;
 	char buf[200];
 
 #ifdef MAPLE
-	sprintf(buf, "home/%s/new_chicken", cuser->userid);
+	sprintf(buf, "home/%s/new_chicken", getCurrentUser()->userid);
 #else
-	sprintf(buf, "home/%c/%s/new_chicken", toupper(cuser->userid[0]),
-		cuser->userid);
+	sprintf(buf, "home/%c/%s/new_chicken", toupper(getCurrentUser()->userid[0]),
+		getCurrentUser()->userid);
 #endif				// END MAPLE
 
-	if (ff = fopen(buf, "w")) {
+	if ((ff = fopen(buf, "w"))!=NULL) {
 		fwrite(&d, sizeof (d), 1, ff);
-/*
-  fprintf(ff, "%lu\n", d.bbtime);
-  fprintf(ff,
-  "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-  d.year,d.month,d.day,d.sex,d.death,d.nodone,d.relation,d.liveagain,d.dataB,d.dataC,d.dataD,d.dataE,
-  d.hp,d.maxhp,d.weight,d.tired,d.sick,d.shit,d.wrist,d.bodyA,d.bodyB,d.bodyC,d.bodyD,d.bodyE,
-  d.social,d.family,d.hexp,d.mexp,d.tmpA,d.tmpB,d.tmpC,d.tmpD,d.tmpE,
-  d.mp,d.maxmp,d.attack,d.resist,d.speed,d.hskill,d.mskill,d.mresist,d.magicmode,d.fightB,d.fightC,d.fightD,d.fightE,
-  d.weaponhead,d.weaponrhand,d.weaponlhand,d.weaponbody,d.weaponfoot,d.weaponA,d.weaponB,d.weaponC,d.weaponD,d.weaponE,
-  d.toman,d.character,d.love,d.wisdom,d.art,d.etchics,d.brave,d.homework,d.charm,d.manners,d.speech,d.cookskill,d.learnA,d.learnB,d.learnC,d.learnD,d.learnE,
-  d.happy,d.satisfy,d.fallinlove,d.belief,d.offense,d.affect,d.stateA,d.stateB,d.stateC,d.stateD,d.stateE,
-  d.food,d.medicine,d.bighp,d.cookie,d.ginseng,d.snowgrass,d.eatC,d.eatD,d.eatE,
-  d.book,d.playtool,d.money,d.thingA,d.thingB,d.thingC,d.thingD,d.thingE,
-  d.winn,d.losee,
-  d.royalA,d.royalB,d.royalC,d.royalD,d.royalE,d.royalF,d.royalG,d.royalH,d.royalI,d.royalJ,d.seeroyalJ,d.seeA,d.seeB,d.seeC,d.seeD,d.seeE,
-  d.wantend,d.lover,d.name,
-  d.classA,d.classB,d.classC,d.classD,d.classE,
-  d.classF,d.classG,d.classH,d.classI,d.classJ,
-  d.classK,d.classL,d.classM,d.classN,d.classO,
-  d.workA,d.workB,d.workC,d.workD,d.workE,
-  d.workF,d.workG,d.workH,d.workI,d.workJ,
-  d.workK,d.workL,d.workM,d.workN,d.workO,
-  d.workP,d.workQ,d.workR,d.workS,d.workT,
-  d.workU,d.workV,d.workW,d.workX,d.workY,d.workZ
-  );
-*/
 		fclose(ff);
 	}
 }
 
 /*游戏读资料出档案*/
-pip_read_file()
-{
+void pip_read_file(void){
 	FILE *fs;
 	char buf[200];
 
 #ifdef MAPLE
-	sprintf(buf, "home/%s/new_chicken", cuser->userid);
+	sprintf(buf, "home/%s/new_chicken", getCurrentUser()->userid);
 #else
-	sprintf(buf, "home/%c/%s/new_chicken", toupper(cuser->userid[0]),
-		cuser->userid);
+	sprintf(buf, "home/%c/%s/new_chicken", toupper(getCurrentUser()->userid[0]),
+		getCurrentUser()->userid);
 #endif				// END MAPLE
-	if (fs = fopen(buf, "r")) {
+	if ((fs = fopen(buf, "r"))!=NULL) {
 		fread(&d, sizeof (d), 1, fs);
-/*
-  fgets(buf, 80, fs);
-  d.bbtime = (time_t) atol(buf);
-
-  fscanf(fs,
-  "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-  &(d.year),&(d.month),&(d.day),&(d.sex),&(d.death),&(d.nodone),&(d.relation),&(d.liveagain),&(d.dataB),&(d.dataC),&(d.dataD),&(d.dataE),
-  &(d.hp),&(d.maxhp),&(d.weight),&(d.tired),&(d.sick),&(d.shit),&(d.wrist),&(d.bodyA),&(d.bodyB),&(d.bodyC),&(d.bodyD),&(d.bodyE),
-  &(d.social),&(d.family),&(d.hexp),&(d.mexp),&(d.tmpA),&(d.tmpB),&(d.tmpC),&(d.tmpD),&(d.tmpE),
-  &(d.mp),&(d.maxmp),&(d.attack),&(d.resist),&(d.speed),&(d.hskill),&(d.mskill),&(d.mresist),&(d.magicmode),&(d.fightB),&(d.fightC),&(d.fightD),&(d.fightE),
-  &(d.weaponhead),&(d.weaponrhand),&(d.weaponlhand),&(d.weaponbody),&(d.weaponfoot),&(d.weaponA),&(d.weaponB),&(d.weaponC),&(d.weaponD),&(d.weaponE),
-  &(d.toman),&(d.character),&(d.love),&(d.wisdom),&(d.art),&(d.etchics),&(d.brave),&(d.homework),&(d.charm),&(d.manners),&(d.speech),&(d.cookskill),&(d.learnA),&(d.learnB),&(d.learnC),&(d.learnD),&(d.learnE),
-  &(d.happy),&(d.satisfy),&(d.fallinlove),&(d.belief),&(d.offense),&(d.affect),&(d.stateA),&(d.stateB),&(d.stateC),&(d.stateD),&(d.stateE),
-  &(d.food),&(d.medicine),&(d.bighp),&(d.cookie),&(d.ginseng),&(d.snowgrass),&(d.eatC),&(d.eatD),&(d.eatE),
-  &(d.book),&(d.playtool),&(d.money),&(d.thingA),&(d.thingB),&(d.thingC),&(d.thingD),&(d.thingE),
-  &(d.winn),&(d.losee),
-  &(d.royalA),&(d.royalB),&(d.royalC),&(d.royalD),&(d.royalE),&(d.royalF),&(d.royalG),&(d.royalH),&(d.royalI),&(d.royalJ),&(d.seeroyalJ),&(d.seeA),&(d.seeB),&(d.seeC),&(d.seeD),&(d.seeE),
-  &(d.wantend),&(d.lover),d.name,
-  &(d.classA),&(d.classB),&(d.classC),&(d.classD),&(d.classE),
-  &(d.classF),&(d.classG),&(d.classH),&(d.classI),&(d.classJ),
-  &(d.classK),&(d.classL),&(d.classM),&(d.classN),&(d.classO),
-  &(d.workA),&(d.workB),&(d.workC),&(d.workD),&(d.workE),
-  &(d.workF),&(d.workG),&(d.workH),&(d.workI),&(d.workJ),
-  &(d.workK),&(d.workL),&(d.workM),&(d.workN),&(d.workO),
-  &(d.workP),&(d.workQ),&(d.workR),&(d.workS),&(d.workT),
-  &(d.workU),&(d.workV),&(d.workW),&(d.workX),&(d.workY),&(d.workZ)
-  );  
-
-*/
 		fclose(fs);
 	}
 }
 
 /*记录到pip.log档*/
-int
-pip_log_record(msg)
-char *msg;
-{
+void pip_log_record(char *msg){
 	FILE *fs;
-
-	//fs=fopen("log/pip.log","a+");
 	fs = fopen("game/pipgame/pip.log", "a+");
 	if (fs == NULL) return;
 	fprintf(fs, "%s", msg);
@@ -158,7 +86,7 @@ pip_write_backup()
 	while (pipkey != 'Q' && pipkey != 'q' && num != 1 && num != 2
 	       && num != 3);
 	if (pipkey == 'q' || pipkey == 'Q') {
-		pressanykey("放弃储存游戏进度");
+		temppress("放弃储存游戏进度");
 		return 0;
 	}
 	move(b_lines - 2, 1);
@@ -168,25 +96,25 @@ pip_write_backup()
 #ifdef MAPLE
 	getdata(b_lines - 1, 1, buf1, ans, 2, 1, 0);
 #else
-	getdata(b_lines - 1, 1, buf1, ans, 2, DOECHO, true);
+	getdata(b_lines-1,1,buf1,ans,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 	if (ans[0] != 'y' && ans[0] != 'Y') {
-		pressanykey("放弃储存档案");
+		temppress("放弃储存档案");
 		return 0;
 	}
 
 	move(b_lines - 1, 0);
 	clrtobot();
 	sprintf(buf1, "储存 [%s] 档案完成了", files[num]);
-	pressanykey(buf1);
+	temppress(buf1);
 #ifdef MAPLE
 	sprintf(buf, "/bin/cp home/%s/new_chicken home/%s/new_chicken.bak%d",
-		cuser->userid, cuser->userid, num);
+		getCurrentUser()->userid, getCurrentUser()->userid, num);
 #else
 	sprintf(buf,
 		"/bin/cp home/%c/%s/new_chicken home/%c/%s/new_chicken.bak%d",
-		toupper(cuser->userid[0]), cuser->userid,
-		toupper(cuser->userid[0]), cuser->userid, num);
+		toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid,
+		toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, num);
 #endif				// END MAPLE
 	system(buf);
 	return 0;
@@ -225,15 +153,15 @@ pip_read_backup()
 
 		if (num > 0) {
 #ifdef MAPLE
-			sprintf(buf, "home/%s/new_chicken.bak%d", cuser->userid,
+			sprintf(buf, "home/%s/new_chicken.bak%d", getCurrentUser()->userid,
 				num);
 #else
 			sprintf(buf, "home/%c/%s/new_chicken.bak%d",
-				toupper(cuser->userid[0]), cuser->userid, num);
+				toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, num);
 #endif				// END MAPLE
 			if ((fs = fopen(buf, "r")) == NULL) {
 				sprintf(buf, "档案 [%s] 不存在", files[num]);
-				pressanykey(buf);
+				temppress(buf);
 				ok = 0;
 			} else {
 
@@ -246,11 +174,10 @@ pip_read_backup()
 #ifdef MAPLE
 				getdata(b_lines - 1, 1, buf, ans, 2, 1, 0);
 #else
-				getdata(b_lines - 1, 1, buf, ans, 2, DOECHO,
-					true);
+				getdata(b_lines-1,1,buf,ans,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 				if (ans[0] != 'y' && ans[0] != 'Y') {
-					pressanykey("让我再决定一下...");
+					temppress("让我再决定一下...");
 				} else
 					ok = 1;
 			}
@@ -258,27 +185,27 @@ pip_read_backup()
 	}
 	while (pipkey != 'Q' && pipkey != 'q' && ok != 1);
 	if (pipkey == 'q' || pipkey == 'Q') {
-		pressanykey("还是玩原本的游戏");
+		temppress("还是玩原本的游戏");
 		return 0;
 	}
 
 	move(b_lines - 1, 0);
 	clrtobot();
 	sprintf(buf, "读取 [%s] 档案完成了", files[num]);
-	pressanykey(buf);
+	temppress(buf);
 
 #ifdef MAPLE
-	sprintf(buf1, "/bin/touch home/%s/new_chicken.bak%d", cuser->userid,
+	sprintf(buf1, "/bin/touch home/%s/new_chicken.bak%d", getCurrentUser()->userid,
 		num);
 	sprintf(buf2, "/bin/cp home/%s/new_chicken.bak%d home/%s/new_chicken",
-		cuser->userid, num, cuser->userid);
+		getCurrentUser()->userid, num, getCurrentUser()->userid);
 #else
 	sprintf(buf1, "/bin/touch home/%c/%s/new_chicken.bak%d",
-		toupper(cuser->userid[0]), cuser->userid, num);
+		toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, num);
 	sprintf(buf2,
 		"/bin/cp home/%c/%s/new_chicken.bak%d home/%c/%s/new_chicken",
-		toupper(cuser->userid[0]), cuser->userid, num,
-		toupper(cuser->userid[0]), cuser->userid);
+		toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid, num,
+		toupper(getCurrentUser()->userid[0]), getCurrentUser()->userid);
 #endif				// END MAPLE
 	system(buf1);
 	system(buf2);
@@ -300,7 +227,7 @@ pip_live_again()
 
 	now = time(0);
 	sprintf(genbuf, "\033[1;33m%s %-11s的小鸡 [%s二代] 复活了！\033[m\n",
-		Cdate(now), cuser->userid, d.name);
+		Cdate(now), getCurrentUser()->userid, d.name);
 	pip_log_record(genbuf);
 
 	/*
@@ -361,10 +288,10 @@ pip_live_again()
 
 	d.liveagain += 1;
 
-	pressanykey("小鸡器官重建中！");
-	pressanykey("小鸡体质恢复中！");
-	pressanykey("小鸡能力调整中！");
-	pressanykey("恭禧您，你的小鸡又复活罗！");
+	temppress("小鸡器官重建中！");
+	temppress("小鸡体质恢复中！");
+	temppress("小鸡能力调整中！");
+	temppress("恭禧您，你的小鸡又复活罗！");
 	pip_write_file();
 	return 0;
 }

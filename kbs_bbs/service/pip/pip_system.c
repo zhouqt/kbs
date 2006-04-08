@@ -2,15 +2,10 @@
 /* 系统选单:个人资料  小鸡放生  特别服务                                     */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 const char weaponhead[7][10] = {
 	"没有装备",
@@ -77,12 +72,12 @@ pip_system_freepip()
 #ifdef MAPLE
 	getdata(b_lines - 1, 1, "真的要放生吗？(y/N)", buf, 2, 1, 0);
 #else
-	getdata(b_lines - 1, 1, "真的要放生吗？(y/N)", buf, 2, DOECHO, true);
+	getdata(b_lines-1,1,"真的要放生吗？(y/N)",buf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 	if (buf[0] != 'y' && buf[0] != 'Y')
 		return 0;
-	sprintf(buf, "%s 被狠心的 %s 丢掉了~", d.name, cuser->userid);
-	pressanykey(buf);
+	sprintf(buf, "%s 被狠心的 %s 丢掉了~", d.name, getCurrentUser()->userid);
+	temppress(buf);
 	d.death = 2;
 	pipdie("\033[1;31m被狠心丢弃:~~\033[0m", 2);
 	return 0;
@@ -112,11 +107,10 @@ pip_system_service()
 		getdata(b_lines - 1, 1, "帮小鸡重新取个好名字：", buf, 11,
 			DOECHO, NULL);
 #else
-		getdata(b_lines - 1, 1, "帮小鸡重新取个好名字：", buf, 11,
-			DOECHO, true);
+		getdata(b_lines-1,1,"帮小鸡重新取个好名字：",buf,11,DOECHO,NULL,true);
 #endif				// END MAPLE
 		if (!buf[0]) {
-			pressanykey("等一下想好再来好了  :)");
+			temppress("等一下想好再来好了  :)");
 			break;
 		} else {
 			strcpy(oldname, d.name);
@@ -127,9 +121,9 @@ pip_system_service()
 			now = time(0);
 			sprintf(buf,
 				"\033[1;37m%s %-11s把小鸡 [%s] 改名成 [%s] \033[0m\n",
-				Cdate(now), cuser->userid, oldname, d.name);
+				Cdate(now), getCurrentUser()->userid, oldname, d.name);
 			pip_log_record(buf);
-			pressanykey("嗯嗯  换一个新的名字喔...");
+			temppress("嗯嗯  换一个新的名字喔...");
 		}
 		break;
 
@@ -162,13 +156,13 @@ pip_system_service()
 			if (d.sex == 1)
 				sprintf(buf,
 					"\033[1;37m%s %-11s把小鸡 [%s] 由♂变性成♀了\033[0m\n",
-					Cdate(now), cuser->userid, d.name);
+					Cdate(now), getCurrentUser()->userid, d.name);
 			else
 				sprintf(buf,
 					"\033[1;37m%s %-11s把小鸡 [%s] 由♀变性成♂了\033[0m\n",
-					Cdate(now), cuser->userid, d.name);
+					Cdate(now), getCurrentUser()->userid, d.name);
 			pip_log_record(buf);
-			pressanykey("变性手术完毕...");
+			temppress("变性手术完毕...");
 			d.sex = oldchoice;
 		}
 		break;
@@ -199,7 +193,7 @@ pip_system_service()
 		pipkey = igetkey();
 		if (pipkey == 'Y' || pipkey == 'y') {
 			d.wantend = oldchoice;
-			pressanykey(buf);
+			temppress(buf);
 		}
 		break;
 	}

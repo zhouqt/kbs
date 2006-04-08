@@ -4,28 +4,15 @@
 /* 图图 by tiball.bbs@bbs.nhctc.edu.tw */
 /* ----------------------------------- */
 
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
-//#define pressanykey(a) prints(a);pressanykey();
-
-#include "service.h"
-#include "bbs.h"
-#include <time.h>
 #include "pip.h"
-#include "site.h"
 struct chicken d;
 time_t start_time;
 time_t lasttime;
 
-#ifndef MAPLE
-//extern char BBS_FULL_NAME[];
-#endif				// END MAPLE
-void
-temppress(char *s)
-{
-	move(23, 0);
-	clrtoeol();
-	prints(s);
-	igetkey();
+void temppress(const char *s){
+	move(23,0);clrtoeol();
+	prints("%s",s);igetkey();
+    return;
 }
 
 /*游戏主程式*/
@@ -33,11 +20,7 @@ temppress(char *s)
 int
 mod_default()
 {
-	FILE *fs;
-	time_t now;
-	long smoney;
 	int pipkey;
-	int ok;
 	char genbuf[200];
 
 #ifdef MAPLE
@@ -48,23 +31,18 @@ mod_default()
 	refresh();
 	move(1, 0);
 	clrtobot();
-	//rawmore("game/pipgame/pip.welcome",true,0,0,MM_FILE); 
-//ansimore("game/pipgame/pip.welcome", false);
-//igetkey();
 #endif				// END MAPLE
 	showtitle("电子养小鸡", BBS_FULL_NAME);
 	srandom(time(0));
 #ifdef MAPLE
-	sprintf(genbuf, "home/%s/new_chicken", cuser->userid);
+	sprintf(genbuf, "home/%s/new_chicken", getCurrentUser()->userid);
 #else
-	sprintf(genbuf, "home/%c/%s/new_chicken", toupper(cuser->userid[0]),
-		cuser->userid);
+	sprintf(genbuf, "home/%c/%s/new_chicken", toupper(getCurrentUser()->userid[0]),
+		getCurrentUser()->userid);
 #endif				// END MAPLE
 
 	pip_read_file();
 	if (!dashf(genbuf)) {
-//   show_system_pic(11); /* 暂时用进游戏的画面来代替 */
-		//  move(b_lines,0);
 		ansimore("game/pipgame/pip.welcome", false);
 		pipkey = igetkey();
 		if (pipkey == 'Q' || pipkey == 'q')
@@ -74,8 +52,6 @@ mod_default()
 				return 0;
 		}
 	} else {
-//   show_system_pic(12);
-		//  move(b_lines,0);
 		ansimore("game/pipgame/pip.welcome", false);
 		pipkey = igetkey();
 		if (pipkey == 'R' || pipkey == 'r')
@@ -90,9 +66,6 @@ mod_default()
 
 	lasttime = time(0);
 	start_time = time(0);
-	/*
-	 * pip_do_menu(0,0,pipmainlist);
-	 */
 	pip_main_menu();
 	d.bbtime += time(0) - start_time;
 	pip_write_file();
@@ -137,8 +110,7 @@ pip_new_game()
 			getdata(10, 6, "你要我们让他重生吗? [y/N]:", buf, 2, 1,
 				0);
 #else
-			getdata(10, 6, "你要我们让他重生吗? [y/N]:", buf, 2,
-				DOECHO, true);
+			getdata(10,6,"你要我们让他重生吗? [y/N]:",buf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 			if (buf[0] == 'y' || buf[0] == 'Y') {
 				pip_live_again();
@@ -147,7 +119,7 @@ pip_new_game()
 			prints("可是你复活手术太多次了  小鸡身上都是开刀痕迹");
 			move(10, 6);
 			prints("我们找不到可以手术的地方了  所以....");
-			pressanykey("重新再来吧....唉....");
+			temppress("重新再来吧....唉....");
 		}
 	}
 	if (d.death != 0 || !d.name[0]) {
@@ -161,8 +133,7 @@ pip_new_game()
 		getdata(2, 3, "帮小鸡取个好听的名字吧(请不要有空格):", buf, 11,
 			1, 0);
 #else
-		getdata(2, 3, "帮小鸡取个好听的名字吧(请不要有空格):", buf, 11,
-			DOECHO, false);
+		getdata(2,3,"帮小鸡取个好听的名字吧(请不要有空格):",buf,11,DOECHO,NULL,false);
 #endif				// END MAPLE
 		if (!buf[0])
 			return 0;
@@ -174,8 +145,7 @@ pip_new_game()
 		getdata(4, 3, "[Boy]小公鸡♂ or [Girl]小母鸡♀ [b/G]", buf, 2,
 			1, 0);
 #else
-		getdata(4, 3, "[Boy]小公鸡♂ or [Girl]小母鸡♀ [b/G]", buf, 2,
-			DOECHO, true);
+		getdata(4,3,"[Boy]小公鸡♂ or [Girl]小母鸡♀ [b/G]",buf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 		if (buf[0] == 'b' || buf[0] == 'B') {
 			d.sex = 1;
@@ -195,8 +165,7 @@ pip_new_game()
 		getdata(9, 3, "你希望小鸡游戏是否要有20岁结局? [Y/n]", buf, 2,
 			1, 0);
 #else
-		getdata(9, 3, "你希望小鸡游戏是否要有20岁结局? [Y/n]", buf, 2,
-			DOECHO, true);
+		getdata(9,3,"你希望小鸡游戏是否要有20岁结局? [Y/n]",buf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 		if (buf[0] == 'n' || buf[0] == 'N') {
 			d.wantend = 1;
@@ -207,7 +176,7 @@ pip_new_game()
 		 * 开头画面
 		 */
 		show_basic_pic(0);
-		pressanykey("小鸡终於诞生了，请好好爱他....");
+		temppress("小鸡终於诞生了，请好好爱他....");
 
 		/*
 		 * 开头设定
@@ -320,7 +289,7 @@ pip_new_game()
 		 */
 		now = time(0);
 		sprintf(buf, "\033[1;36m%s %-11s养了一只叫 [%s] 的 %s 小鸡 \033[0m\n",
-			Cdate(now), cuser->userid, d.name, pipsex[d.sex]);
+			Cdate(now), getCurrentUser()->userid, d.name, pipsex[d.sex]);
 		pip_log_record(buf);
 	}
 	pip_write_file();
@@ -328,11 +297,7 @@ pip_new_game()
 }
 
 /*小鸡死亡函式*/
-pipdie(msg, mode)
-char *msg;
-int mode;
-{
-	char buf[100];
+int pipdie(const char *msg,int mode){
 	char genbuf[200];
 	time_t now;
 
@@ -340,26 +305,27 @@ int mode;
 	showtitle("电子养小鸡", BBS_FULL_NAME);
 	if (mode == 1) {
 		show_die_pic(1);
-		pressanykey("死神来带走小鸡了");
+		temppress("死神来带走小鸡了");
 		clear();
 		showtitle("电子养小鸡", BBS_FULL_NAME);
 		show_die_pic(2);
 		move(14, 20);
 		prints("可怜的小鸡\033[1;31m%s\033[m", msg);
-		pressanykey("星空哀悼中....");
+		temppress("星空哀悼中....");
 	} else if (mode == 2) {
 		show_die_pic(3);
-		pressanykey("呜呜呜..我被丢弃了.....");
+		temppress("呜呜呜..我被丢弃了.....");
 	} else if (mode == 3) {
 		show_die_pic(0);
-		pressanykey("游戏结束罗..");
+		temppress("游戏结束罗..");
 	}
 
 	now = time(0);
 	sprintf(genbuf, "\033[1;31m%s %-11s的小鸡 [%s] %s\033[m\n", Cdate(now),
-		cuser->userid, d.name, msg);
+		getCurrentUser()->userid, d.name, msg);
 	pip_log_record(genbuf);
 	pip_write_file();
+    return 0;
 }
 
 /*pro:机率 base:底数 mode:类型 mul:加权100=1 cal:加减*/
@@ -429,5 +395,5 @@ int cal;
 		}
 	}
 	tiredvary = 0;
-	return;
+	return 0;
 }

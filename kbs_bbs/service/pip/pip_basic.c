@@ -2,15 +2,11 @@
 /* 基本选单:饮食 清洁 亲亲 休息                                              */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
 
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 int
 pip_basic_takeshower()
 {				/*洗澡 */
@@ -24,13 +20,13 @@ pip_basic_takeshower()
 	lucky = rand() % 3;
 	if (lucky == 0) {
 		show_usual_pic(1);
-		pressanykey("我是干净的小鸡  cccc....");
+		temppress("我是干净的小鸡  cccc....");
 	} else if (lucky == 1) {
 		show_usual_pic(7);
-		pressanykey("马桶 嗯～～");
+		temppress("马桶 嗯～～");
 	} else {
 		show_usual_pic(2);
-		pressanykey("我爱洗澡 lalala....");
+		temppress("我爱洗澡 lalala....");
 	}
 	return 0;
 }
@@ -47,9 +43,9 @@ pip_basic_takerest()
 	d.shit += 1;
 	move(4, 0);
 	show_usual_pic(5);
-	pressanykey("再按一下我就起床罗....");
+	temppress("再按一下我就起床罗....");
 	show_usual_pic(6);
-	pressanykey("喂喂喂..该起床罗......");
+	temppress("喂喂喂..该起床罗......");
 	return 0;
 }
 
@@ -69,9 +65,9 @@ pip_basic_kiss()
 	move(4, 0);
 	show_usual_pic(3);
 	if (d.shit < 60) {
-		pressanykey("来嘛! 啵一个.....");
+		temppress("来嘛! 啵一个.....");
 	} else {
-		pressanykey("亲太多也是会脏死的喔....");
+		temppress("亲太多也是会脏死的喔....");
 	}
 	return 0;
 }
@@ -80,10 +76,7 @@ int
 pip_basic_feed()
 {				/* 饮食 */
 	time_t now;
-	char inbuf[80];
-	char genbuf[200];
 	char buf[256];
-	long smoney;
 	int pipkey;
 
 	d.nodone = 1;
@@ -112,7 +105,7 @@ pip_basic_feed()
 		case '1':
 			if (d.food <= 0) {
 				move(b_lines, 0);
-				pressanykey("没有食物罗..快去买吧！");
+				temppress("没有食物罗..快去买吧！");
 				break;
 			}
 			move(4, 0);
@@ -127,13 +120,13 @@ pip_basic_feed()
 				d.weight += rand() % 2;
 			}
 			d.nodone = 0;
-			pressanykey("每吃一次食物会恢复体力50喔!");
+			temppress("每吃一次食物会恢复体力50喔!");
 			break;
 
 		case '2':
 			if (d.cookie <= 0) {
 				move(b_lines, 0);
-				pressanykey("零食吃光罗..快去买吧！");
+				temppress("零食吃光罗..快去买吧！");
 				break;
 			}
 			move(4, 0);
@@ -152,13 +145,13 @@ pip_basic_feed()
 			d.happy += (rand() % 3 + 4);
 			d.satisfy += rand() % 3 + 2;
 			d.nodone = 0;
-			pressanykey("吃零食容易胖喔...");
+			temppress("吃零食容易胖喔...");
 			break;
 
 		case '3':
 			if (d.bighp <= 0) {
 				move(b_lines, 0);
-				pressanykey("没有大补丸了耶! 快买吧..");
+				temppress("没有大补丸了耶! 快买吧..");
 				break;
 			}
 			d.bighp--;
@@ -168,13 +161,13 @@ pip_basic_feed()
 			move(4, 0);
 			show_feed_pic(4);
 			d.nodone = 0;
-			pressanykey("补丸..超极棒的唷...");
+			temppress("补丸..超极棒的唷...");
 			break;
 
 		case '4':
 			if (d.medicine <= 0) {
 				move(b_lines, 0);
-				pressanykey("没有灵芝罗..快去买吧！");
+				temppress("没有灵芝罗..快去买吧！");
 				break;
 			}
 			move(4, 0);
@@ -185,13 +178,13 @@ pip_basic_feed()
 				d.mp = d.maxmp;
 			}
 			d.nodone = 0;
-			pressanykey("每吃一次灵芝会恢复法力50喔!");
+			temppress("每吃一次灵芝会恢复法力50喔!");
 			break;
 
 		case '5':
 			if (d.ginseng <= 0) {
 				move(b_lines, 0);
-				pressanykey("没有千年人参耶! 快买吧..");
+				temppress("没有千年人参耶! 快买吧..");
 				break;
 			}
 			d.ginseng--;
@@ -200,13 +193,13 @@ pip_basic_feed()
 			move(4, 0);
 			show_feed_pic(1);
 			d.nodone = 0;
-			pressanykey("千年人参..超极棒的唷...");
+			temppress("千年人参..超极棒的唷...");
 			break;
 
 		case '6':
 			if (d.snowgrass <= 0) {
 				move(b_lines, 0);
-				pressanykey("没有天山雪莲耶! 快买吧..");
+				temppress("没有天山雪莲耶! 快买吧..");
 				break;
 			}
 			d.snowgrass--;
@@ -217,7 +210,7 @@ pip_basic_feed()
 			move(4, 0);
 			show_feed_pic(1);
 			d.nodone = 0;
-			pressanykey("天山雪莲..超极棒的唷...");
+			temppress("天山雪莲..超极棒的唷...");
 			break;
 
 #ifdef MAPLE

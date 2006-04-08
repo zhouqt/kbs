@@ -2,15 +2,10 @@
 /* 玩乐选单:散步 旅游 运动 约会 猜拳                                         */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 int
 pip_play_stroll()
@@ -29,7 +24,7 @@ pip_play_stroll()
 			show_play_pic(1);
 		else
 			show_play_pic(2);
-		pressanykey("遇到朋友罗  真好.... ^_^");
+		temppress("遇到朋友罗  真好.... ^_^");
 	} else if (lucky == 3) {
 		d.money += 100;
 		d.happy += rand() % 3 + 6;
@@ -38,7 +33,7 @@ pip_play_stroll()
 		d.hp -= (rand() % 3 + 4);
 		move(4, 0);
 		show_play_pic(3);
-		pressanykey("捡到了100元了..耶耶耶....");
+		temppress("捡到了100元了..耶耶耶....");
 	}
 
 	else if (lucky == 4) {
@@ -49,11 +44,11 @@ pip_play_stroll()
 			show_play_pic(4);
 			if (d.money >= 50) {
 				d.money -= 50;
-				pressanykey("掉了50元了..呜呜呜....");
+				temppress("掉了50元了..呜呜呜....");
 			} else {
 				d.money = 0;
 				d.hp -= (rand() % 3 + 3);
-				pressanykey("钱掉光光了..呜呜呜....");
+				temppress("钱掉光光了..呜呜呜....");
 			}
 			d.shit += rand() % 3 + 2;
 		} else {
@@ -63,11 +58,11 @@ pip_play_stroll()
 			if (d.money >= 50) {
 				d.money -= 50;
 				d.hp -= (rand() % 3 + 3);
-				pressanykey("用了50元了..不可以骂我喔....");
+				temppress("用了50元了..不可以骂我喔....");
 			} else {
 				d.money = 0;
 				d.hp -= (rand() % 3 + 3);
-				pressanykey("钱被我偷用光光了..:p");
+				temppress("钱被我偷用光光了..:p");
 			}
 			d.shit += rand() % 3 + 2;
 		}
@@ -80,13 +75,13 @@ pip_play_stroll()
 			show_play_pic(6);
 		else
 			show_play_pic(7);
-		pressanykey("好棒喔捡到玩具了说.....");
+		temppress("好棒喔捡到玩具了说.....");
 	} else if (lucky == 6) {
 		d.happy -= (rand() % 3 + 10);
 		d.shit += (rand() % 3 + 20);
 		move(4, 0);
 		show_play_pic(9);
-		pressanykey("真是倒楣  可以去买爱国奖券");
+		temppress("真是倒楣  可以去买爱国奖券");
 	} else {
 		d.happy += rand() % 3 + 3;
 		d.satisfy += rand() % 2 + 1;
@@ -94,7 +89,7 @@ pip_play_stroll()
 		d.hp -= (rand() % 3 + 2);
 		move(4, 0);
 		show_play_pic(8);
-		pressanykey("没有特别的事发生啦.....");
+		temppress("没有特别的事发生啦.....");
 	}
 	return 0;
 }
@@ -113,7 +108,7 @@ pip_play_sport()
 	d.speed += (2 + rand() % 3);
 	move(4, 0);
 	show_play_pic(10);
-	pressanykey("运动好处多多啦...");
+	temppress("运动好处多多啦...");
 	return 0;
 }
 
@@ -121,7 +116,7 @@ int
 pip_play_date()
 {				/*约会 */
 	if (d.money < 150) {
-		pressanykey("你钱不够多啦! 约会总得花点钱钱");
+		temppress("你钱不够多啦! 约会总得花点钱钱");
 	} else {
 		count_tired(3, 6, "Y", 100, 1);
 		d.happy += rand() % 5 + 12;
@@ -132,7 +127,7 @@ pip_play_date()
 		d.money = d.money - 150;
 		move(4, 0);
 		show_play_pic(11);
-		pressanykey("约会去  呼呼");
+		temppress("约会去  呼呼");
 	}
 	return 0;
 }
@@ -144,7 +139,7 @@ pip_play_outing()
 	char buf[256];
 
 	if (d.money < 250) {
-		pressanykey("你钱不够多啦! 旅游总得花点钱钱");
+		temppress("你钱不够多啦! 旅游总得花点钱钱");
 	} else {
 		d.weight += rand() % 2 + 1;
 		d.money -= 250;
@@ -161,34 +156,34 @@ pip_play_outing()
 			d.art += rand() % 2;
 			show_play_pic(12);
 			if (rand() % 2 > 0)
-				pressanykey
+				temppress
 				    ("心中有一股淡淡的感觉  好舒服喔....");
 			else
-				pressanykey("云水 闲情 心情好多了.....");
+				temppress("云水 闲情 心情好多了.....");
 		} else if (lucky == 1) {
 			d.art += rand() % 3;
 			d.maxmp += rand() % 2;
 			show_play_pic(13);
 			if (rand() % 2 > 0)
-				pressanykey
+				temppress
 				    ("有山有水有落日  形成一幅美丽的画..");
 			else
-				pressanykey("看着看着  全身疲惫都不见罗..");
+				temppress("看着看着  全身疲惫都不见罗..");
 		} else if (lucky == 2) {
 			d.love += rand() % 3;
 			show_play_pic(14);
 			if (rand() % 2 > 0)
-				pressanykey("看  太阳快没入水中罗...");
+				temppress("看  太阳快没入水中罗...");
 			else
-				pressanykey("听说这是海边啦  你说呢?");
+				temppress("听说这是海边啦  你说呢?");
 		} else if (lucky == 3) {
 			d.maxhp += rand() % 3;
 			show_play_pic(15);
 			if (rand() % 2 > 0)
-				pressanykey
+				temppress
 				    ("让我们疯狂在夜里的海滩吧....呼呼..");
 			else
-				pressanykey
+				temppress
 				    ("凉爽的海风迎面袭来  最喜欢这种感觉了....");
 		}
 		if ((rand() % 301 + rand() % 200) % 100 == 12) {
@@ -252,7 +247,7 @@ pip_play_outing()
 				d.homework = d.homework * 110 / 100;
 			}
 
-			pressanykey("请继续加油喔...");
+			temppress("请继续加油喔...");
 		}
 	}
 	return 0;
@@ -272,7 +267,7 @@ pip_play_kite()
 	d.affect += rand() % 4 + 6;
 	move(4, 0);
 	show_play_pic(16);
-	pressanykey("放风筝真好玩啦...");
+	temppress("放风筝真好玩啦...");
 	return 0;
 }
 
@@ -281,7 +276,7 @@ pip_play_KTV()
     /*KTV*/
 {
 	if (d.money < 250) {
-		pressanykey("你钱不够多啦! 唱歌总得花点钱钱");
+		temppress("你钱不够多啦! 唱歌总得花点钱钱");
 	} else {
 		count_tired(10, 10, "Y", 100, 0);
 		d.satisfy += rand() % 2 + 20;
@@ -294,7 +289,7 @@ pip_play_KTV()
 		d.art += rand() % 4 + 3;
 		move(4, 0);
 		show_play_pic(17);
-		pressanykey("你说你  想要逃...");
+		temppress("你说你  想要逃...");
 	}
 	return 0;
 }
@@ -302,9 +297,8 @@ pip_play_KTV()
 int
 pip_play_guess()
 {				/* 猜拳程式 */
-	int ch, com;
+	int com;
 	int pipkey;
-	char inbuf[10];
 	struct tm *qtime;
 	time_t now;
 
@@ -394,7 +388,7 @@ pip_play_guess()
 	case 'q':
 		break;
 	}
-
+    return 0;
 }
 
 int
@@ -405,8 +399,8 @@ win()
 	move(4, 0);
 	show_guess_pic(2);
 	move(b_lines, 0);
-	pressanykey("小鸡输了....~>_<~");
-	return;
+	temppress("小鸡输了....~>_<~");
+	return 0;
 }
 
 int
@@ -417,8 +411,8 @@ tie()
 	move(4, 0);
 	show_guess_pic(3);
 	move(b_lines, 0);
-	pressanykey("平手........-_-");
-	return;
+	temppress("平手........-_-");
+	return 0;
 }
 
 int
@@ -430,8 +424,8 @@ lose()
 	move(4, 0);
 	show_guess_pic(1);
 	move(b_lines, 0);
-	pressanykey("小鸡赢罗....*^_^*");
-	return;
+	temppress("小鸡赢罗....*^_^*");
+	return 0;
 }
 
 int
@@ -445,10 +439,11 @@ situ()
 
 	if (d.winn >= d.losee) {
 		move(b_lines, 0);
-		pressanykey("哈..赢小鸡也没多光荣");
+		temppress("哈..赢小鸡也没多光荣");
 	} else {
 		move(b_lines, 0);
-		pressanykey("笨蛋..竟输给了鸡....ㄜ...");
+		temppress("笨蛋..竟输给了鸡....ㄜ...");
 	}
-	return;
+	return 0;
 }
+

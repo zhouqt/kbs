@@ -1,3 +1,8 @@
+#define BBSMAIN
+
+#include "service.h"
+#include "bbs.h"
+
 /*--------------------------------------------------------------------------*/
 /*  小鸡参数设定                      					    */
 /*--------------------------------------------------------------------------*/
@@ -276,12 +281,109 @@ struct royalset {
 };
 typedef struct royalset royalset;
 
-#ifndef  MAPLE
-#define  MSG_UID	"请输入使用者代号："
-#define  ERR_UID	"这里没有这个人啦！"
-#define  b_lines	t_lines-1
+struct goodsofpip {
+    int num;        /*编号 */
+    char *name;     /*名字 */
+    char *msgbuy;       /*功用 */
+    char *msguse;       /*说明 */
+    int money;      /*金钱 */
+    int change;     /*改变量 */
+    int pic1;
+    int pic2;
+};
+typedef struct goodsofpip goodsofpip;
+
+struct weapon {
+    char *name;     /*名字 */
+    int needmaxhp;      /*需要hp */
+    int needmaxmp;      /*需要mp */
+    int needspeed;      /*需要的speed */
+    int attack;     /*攻击 */
+    int resist;     /*防护 */
+    int speed;      /*速度 */
+    int cost;       /*买价 */
+    int sell;       /*卖价 */
+    int special;        /*特别 */
+    int map;        /*图档 */
+};
+typedef struct weapon weapon;
+
+struct newendingset {
+    char *girl;     /*女生结局的职业 */
+    char *boy;      /*男生结局的职业 */
+    int grade;      /*评分 */
+};
+typedef struct newendingset newendingset;
+
+#undef MAPLE /* etnlegend, 2006.04.08, 这个就算了吧... */
+
+#define MSG_UID "请输入使用者代号："
+#define ERR_UID "这里没有这个人啦！"
+#define b_lines t_lines-1
 SMTH_API int t_lines;
-#endif				// End MAPLE
-#define  cuser		getCurrentUser()
-#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
-#define pressanykey(a) temppress(a)
+
+int show_system_pic(int);
+void temppress(const char*);
+
+int clrchyiuan(int,int);
+int count_tired(int,int,char*,int,int);
+int lose();
+int pip_basic_feed();
+int pip_buy_goods_new(int,const struct goodsofpip*,int*);
+int pip_data_list();
+int pipdie(const char*,int);
+int pip_endingall_purpose(char*,int*,int*,int*,int);
+int pip_endingart(char*,int*,int*,int*);
+int pip_endingblack(char*,int*,int*,int*);
+int pip_endingcombat(char*,int*,int*,int*);
+int pip_ending_decide(char*,char*,char*,int*,int*);
+int pip_endingfamily(char*,int*,int*,int*);
+int pip_endingmagic(char*,int*,int*,int*);
+int pip_ending_screen();
+int pip_endingsocial(char*,int*,int*,int*);
+int pip_fight_bad(int);
+int pip_fight_main(int,const struct playrule*,int);
+int pip_future_decide(int*);
+int pip_game_over(int);
+int pip_go_palace_screen(const struct royalset*);
+int pip_live_again();
+void pip_log_record(char*);
+int pip_magic_doing_menu(const struct magicset*);
+int pip_magic_menu();
+int pip_mainmenu(int);
+int pip_main_menu();
+int pip_marriage_offer();
+int pip_marry_decide();
+int pip_max_worktime(int*);
+int pip_new_game();
+int pip_practice_function(int,int,int,int,int*,int*,int*,int*,int*);
+int pip_practice_gradeup(int,int,int);
+int pip_read(char*);
+int pip_read_backup();
+void pip_read_file();
+int pip_results_show_ending(int,int,int,int,int);
+int pip_time_change(time_t);
+int pip_vs_man(int,const struct playrule*,int);
+int pip_weapon_doing_menu(int,int,const struct weapon*);
+void pip_write_file();
+int show_badman_pic(int);
+int show_basic_pic(int);
+int show_buy_pic(int);
+int show_die_pic(int);
+int show_ending_pic(int);
+int show_feed_pic(int);
+int show_fight_pic(int);
+int show_file(char*,int,int,int);
+int show_guess_pic(int);
+int show_job_pic(int);
+int show_palace_pic(int);
+int show_play_pic(int);
+int show_practice_pic(int);
+int show_resultshow_pic(int);
+int show_special_pic(int);
+int show_usual_pic(int);
+int show_weapon_pic(int);
+int situ();
+int tie();
+int win();
+

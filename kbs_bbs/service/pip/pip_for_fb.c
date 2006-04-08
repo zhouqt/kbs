@@ -1,7 +1,5 @@
-#include "service.h"
-#include "bbs.h"
+#include "pip.h"
 
-//#define       cuser   currentuser
 void clrnlines(int n);
 
 enum { STRIP_ALL, ONLY_COLOR, NO_RELOAD };
@@ -11,6 +9,7 @@ clrchyiuan(int start, int end)
 {
 	move(start, 0);
 	clrnlines(end - start);
+    return 0;
 }
 
 int

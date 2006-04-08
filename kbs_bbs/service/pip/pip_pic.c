@@ -2,9 +2,7 @@
 /* Ð¡¼¦Í¼ÐÎÇø                                                                */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include "bbs.h"
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
+#include "pip.h"
 
 enum { STRIP_ALL, ONLY_COLOR, NO_RELOAD };
 
@@ -20,6 +18,7 @@ show_basic_pic(int i)
 	sprintf(buf, "game/pipgame/basic/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -34,6 +33,7 @@ show_feed_pic(int i)
 	sprintf(buf, "game/pipgame/feed/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -48,6 +48,7 @@ show_buy_pic(int i)
 	sprintf(buf, "game/pipgame/buy/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -62,7 +63,7 @@ show_usual_pic(int i)
 	sprintf(buf, "game/pipgame/usual/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
-
+    return 0;
 }
 
 int
@@ -77,7 +78,7 @@ show_special_pic(int i)
 	sprintf(buf, "game/pipgame/special/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
-
+    return 0;
 }
 
 int
@@ -92,6 +93,7 @@ show_practice_pic(int i)
 	sprintf(buf, "game/pipgame/practice/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -106,7 +108,7 @@ show_job_pic(int i)
 	sprintf(buf, "game/pipgame/job/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
-
+    return 0;
 }
 
 int
@@ -124,6 +126,7 @@ show_play_pic(int i)
 		show_file(buf, 2, 16, ONLY_COLOR);
 	else
 		show_file(buf, 6, 12, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -138,6 +141,7 @@ show_guess_pic(int i)
 	sprintf(buf, "game/pipgame/guess/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 12, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -152,6 +156,7 @@ show_weapon_pic(int i)
 	sprintf(buf, "game/pipgame/weapon/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 1, 10, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -166,7 +171,7 @@ show_palace_pic(int i)
 	sprintf(buf, "game/pipgame/palace/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 0, 11, ONLY_COLOR);
-
+    return 0;
 }
 
 int
@@ -181,6 +186,7 @@ show_badman_pic(int i)
 	sprintf(buf, "game/pipgame/badman/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 14, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -195,6 +201,7 @@ show_fight_pic(int i)
 	sprintf(buf, "game/pipgame/fight/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 6, 14, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -209,6 +216,7 @@ show_die_pic(int i)
 	sprintf(buf, "game/pipgame/die/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 0, 23, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -223,6 +231,7 @@ show_system_pic(int i)
 	sprintf(buf, "game/pipgame/system/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 4, 16, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -237,6 +246,7 @@ show_ending_pic(int i)
 	sprintf(buf, "game/pipgame/ending/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 4, 16, ONLY_COLOR);
+    return 0;
 }
 
 int
@@ -251,4 +261,5 @@ show_resultshow_pic(int i)
 	sprintf(buf, "game/pipgame/resultshow/pic%d", i);
 #endif				// END MAPLE
 	show_file(buf, 0, 24, ONLY_COLOR);
+    return 0;
 }

@@ -2,25 +2,19 @@
 /* 函式特区                                                                  */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
 
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
-
 /*名字        体力MAX法力MAX  攻击   防护     速度    财宝   特别   图档*/
 const struct playrule resultmanlist[] = {
-	"茱丽叶塔", 60, 0, 20, 0, 20, 20, 20, 150, "11101", 0, 0,
-	"菲欧利娜", 60, 0, 20, 0, 30, 30, 30, 200, "01111", 0, 0,
-	"阿妮斯", 80, 0, 40, 0, 50, 35, 60, 250, "11110", 0, 0,
-	"帕多雷西亚", 85, 0, 30, 0, 80, 90, 80, 500, "10111", 0, 0,
-	"卡美拉美", 90, 0, 50, 0, 75, 70, 60, 550, "11010", 0, 0,
-	"姗娜丽娃", 90, 0, 40, 0, 10, 30, 50, 880, "10100", 0, 0,
-//NULL,           0,0,   0,0,    0,      0,       0,      0,    NULL,   0,0
+	{"茱丽叶塔", 60, 0, 20, 0, 20, 20, 20, 150, "11101", 0, 0},
+	{"菲欧利娜", 60, 0, 20, 0, 30, 30, 30, 200, "01111", 0, 0},
+	{"阿妮斯", 80, 0, 40, 0, 50, 35, 60, 250, "11110", 0, 0},
+	{"帕多雷西亚", 85, 0, 30, 0, 80, 90, 80, 500, "10111", 0, 0},
+	{"卡美拉美", 90, 0, 50, 0, 75, 70, 60, 550, "11010", 0, 0},
+	{"姗娜丽娃", 90, 0, 40, 0, 10, 30, 50, 880, "10100", 0, 0}
 };
 
 /*求婚*/
@@ -50,7 +44,7 @@ pip_marriage_offer()
 #ifdef MAPLE
 	getdata(b_lines - 1, 1, buf, ans, 2, 1, 0);
 #else
-	getdata(b_lines - 1, 1, buf, ans, 2, DOECHO, true);
+	getdata(b_lines-1,1,buf,ans,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 	if (ans[0] == 'y' || ans[0] == 'Y') {
 		if (d.wantend != 1 && d.wantend != 4) {
@@ -59,11 +53,11 @@ pip_marriage_offer()
 #ifdef MAPLE
 			getdata(b_lines - 1, 1, buf, ans, 2, 1, 0);
 #else
-			getdata(b_lines - 1, 1, buf, ans, 2, DOECHO, true);
+			getdata(b_lines-1,1,buf,ans,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 			if (ans[0] != 'y' && ans[0] != 'Y') {
 				d.social += 10;
-				pressanykey("还是维持旧婚约好了..");
+				temppress("还是维持旧婚约好了..");
 				return 0;
 			}
 			d.social -= rand() % 50 + 100;
@@ -77,20 +71,20 @@ pip_marriage_offer()
 			d.wantend = 2;
 		else
 			d.wantend = 5;
-		pressanykey("我想对方是一个很好的伴侣..");
+		temppress("我想对方是一个很好的伴侣..");
 		now = time(0);
 		sprintf(buf,
 			"\033[1;37m%s %-11s的小鸡 [%s] 接受了 %s 的求婚\033[0m\n",
-			Cdate(now), cuser->userid, d.name,
+			Cdate(now), getCurrentUser()->userid, d.name,
 			name[who][d.sex - 1]);
 		pip_log_record(buf);
 	} else {
 		d.charm += rand() % 5 + 20;
 		d.relation += 20;
 		if (d.wantend == 1 || d.wantend == 4) {
-			pressanykey("我还年轻  心情还不定...");
+			temppress("我还年轻  心情还不定...");
 		} else {
-			pressanykey("我早已有婚约了..对不起...");
+			temppress("我早已有婚约了..对不起...");
 		}
 	}
 	d.money += money;
@@ -110,7 +104,7 @@ pip_results_show()
 	clear();
 	move(10, 14);
 	prints("\033[1;33m叮咚叮咚～ 辛苦的邮差帮我们送信来了喔...\033[0m");
-	pressanykey("嗯  把信打开看看吧...");
+	temppress("嗯  把信打开看看吧...");
 	clear();
 	show_resultshow_pic(0);
 	sprintf(buf, "[A]%s [B]%s [C]%s [D]%s [Q]放弃:", showname[1],
@@ -130,13 +124,13 @@ pip_results_show()
 	switch (pipkey) {
 	case 'A':
 	case 'a':
-		pressanykey("今年共有四人参赛～现在比赛开始");
+		temppress("今年共有四人参赛～现在比赛开始");
 		for (i = 0; i < 3; i++) {
 			a = 0;
 			b[i][1] = 0;
 			sprintf(buf, "你的第%d个对手是%s", i + 1,
 				resultmanlist[b[i][0]].name);
-			pressanykey(buf);
+			temppress(buf);
 			a = pip_vs_man(b[i][0], resultmanlist, 2);
 			if (a == 1)
 				b[i][1] = 1;	/*对方输了 */
@@ -163,6 +157,8 @@ pip_results_show()
 				c[1] = b[0][0];
 				c[2] = b[1][0];
 			}
+            else
+                break;
 			pip_results_show_ending(2, 1, c[0], c[1], c[2]);
 			d.hexp += rand() % 10 + 30;
 			break;
@@ -180,6 +176,8 @@ pip_results_show()
 				c[1] = b[0][0];
 				c[2] = b[2][0];
 			}
+            else
+                break;
 			pip_results_show_ending(1, 1, c[0], c[1], c[2]);
 			d.hexp += rand() % 10 + 10;
 			break;
@@ -192,9 +190,9 @@ pip_results_show()
 		break;
 	case 'B':
 	case 'b':
-		pressanykey("今年共有四人参赛～现在比赛开始");
+		temppress("今年共有四人参赛～现在比赛开始");
 		show_resultshow_pic(21);
-		pressanykey("比赛情形");
+		temppress("比赛情形");
 		if ((d.art * 2 + d.character) / 400 >= 5) {
 			winorlost = 3;
 		} else if ((d.art * 2 + d.character) / 400 >= 4) {
@@ -211,7 +209,7 @@ pip_results_show()
 		break;
 	case 'C':
 	case 'c':
-		pressanykey("今年共有四人参赛～现在比赛开始");
+		temppress("今年共有四人参赛～现在比赛开始");
 		if ((d.art * 2 + d.charm) / 400 >= 5) {
 			winorlost = 3;
 		} else if ((d.art * 2 + d.charm) / 400 >= 4) {
@@ -228,7 +226,7 @@ pip_results_show()
 		break;
 	case 'D':
 	case 'd':
-		pressanykey("今年共有四人参赛～现在比赛开始");
+		temppress("今年共有四人参赛～现在比赛开始");
 		if ((d.affect + d.cookskill * 2) / 200 >= 4) {
 			winorlost = 3;
 		} else if ((d.affect + d.cookskill * 2) / 200 >= 3) {
@@ -245,7 +243,7 @@ pip_results_show()
 		break;
 	case 'Q':
 	case 'q':
-		pressanykey("今年不参加啦.....:(");
+		temppress("今年不参加啦.....:(");
 		d.happy -= rand() % 10 + 10;
 		d.satisfy -= rand() % 10 + 10;
 		d.relation -= rand() % 10;
@@ -265,7 +263,6 @@ int
 pip_results_show_ending(winorlost, mode, a, b, c)
 int winorlost, mode, a, b, c;
 {
-	const static char *resultname[4] = { "最后一名", "季军", "亚军", "冠军" };
 	const static char *gamename[5] =
 	    { "  ", "武斗大会", "艺术大展", "皇家舞会", "烹饪大赛" };
 	int resultmoney[4] = { 0, 3000, 5000, 8000 };
@@ -310,6 +307,6 @@ int winorlost, mode, a, b, c;
 	prints("\033[1;41m 最后 \033[0;1m～ \033[1;33m%-10s\033[36m \033[0m", name4);
 	sprintf(buf, "今年的%s结束罗 后年再来吧..", gamename[mode]);
 	d.money += resultmoney[winorlost];
-	pressanykey(buf);
+	temppress(buf);
 	return 0;
 }

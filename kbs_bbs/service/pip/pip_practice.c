@@ -2,15 +2,10 @@
 /* 修行选单:念书 练武 修行                                                   */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 /*---------------------------------------------------------------------------*/
 /* 修行选单:念书 练武 修行                                                   */
@@ -80,7 +75,6 @@ pip_practice_classA()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = d.wisdom / 200 + 1;	/*科学 */
 	if (class > 5)
@@ -126,7 +120,6 @@ pip_practice_classB()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.affect * 2 + d.wisdom + d.art * 2 + d.character) / 400 + 1;	/*诗词 */
 	if (class > 5)
@@ -167,7 +160,6 @@ pip_practice_classC()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.belief * 2 + d.wisdom) / 400 + 1;	/*神学 */
 	if (class > 5)
@@ -205,7 +197,6 @@ pip_practice_classD()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.hskill * 2 + d.wisdom) / 400 + 1;
 	if (class > 5)
@@ -245,7 +236,6 @@ pip_practice_classE()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.hskill + d.attack) / 400 + 1;
 	if (class > 5)
@@ -284,7 +274,6 @@ pip_practice_classF()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.hskill + d.resist) / 400 + 1;
 	if (class > 5)
@@ -323,7 +312,6 @@ pip_practice_classG()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.mskill + d.maxmp) / 400 + 1;
 	if (class > 5)
@@ -362,7 +350,6 @@ pip_practice_classH()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.manners * 2 + d.character) / 400 + 1;
 	if (class > 5)
@@ -396,7 +383,6 @@ pip_practice_classI()
 /*  ├————┼——————————————————————┤*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.art * 2 + d.character) / 400 + 1;
 	if (class > 5)
@@ -429,7 +415,6 @@ pip_practice_classJ()
 /*  └————┴——————————————————————┘*/
 	int body, class;
 	int change1, change2, change3, change4, change5;
-	char inbuf[256];
 
 	class = (d.art * 2 + d.charm) / 400 + 1;
 	if (class > 5)
@@ -470,17 +455,17 @@ int *change1, *change2, *change3, *change4, *change5;
 	smoney = classgrade * classmoney[classnum][0] + classmoney[classnum][1];
 	move(b_lines - 2, 0);
 	clrtoeol();
-	sprintf(inbuf, "[%8s%4s课程]要花 $%d ,确定要吗??[y/N]",
+	sprintf(inbuf, "[%8s%4s课程]要花 $%ld ,确定要吗??[y/N]",
 		classword[classnum][0], classrank[classgrade], smoney);
 #ifdef MAPLE
 	getdata(b_lines - 2, 1, inbuf, ans, 2, 1, 0);
 #else
-	getdata(b_lines - 2, 1, inbuf, ans, 2, DOECHO, true);
+	getdata(b_lines-2,1,inbuf,ans,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 	if (ans[0] != 'y' && ans[0] != 'Y')
 		return 0;
 	if (d.money < smoney) {
-		pressanykey("很抱歉喔...你的钱不够喔");
+		temppress("很抱歉喔...你的钱不够喔");
 		return 0;
 	}
 	count_tired(4, 5, "Y", 100, 1);
@@ -509,7 +494,7 @@ int *change1, *change2, *change3, *change4, *change5;
 		show_practice_pic(pic1);
 	else if (pic2 > 0)
 		show_practice_pic(pic2);
-	pressanykey(classword[classnum][body + b]);
+	temppress(classword[classnum][body + b]);
 	return body;
 }
 
@@ -522,7 +507,7 @@ int classnum, classgrade, data;
 	if ((data == (classgrade + 1)) && classgrade < 5) {
 		sprintf(inbuf, "下次换上 [%8s%4s课程]",
 			classword[classnum][0], classrank[classgrade + 1]);
-		pressanykey(inbuf);
+		temppress(inbuf);
 	}
 	return 0;
 }

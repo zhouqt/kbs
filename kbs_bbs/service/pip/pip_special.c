@@ -2,15 +2,10 @@
 /* 特殊选单:看病 减肥 战斗 拜访 朝见                                         */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 const struct royalset royallist[] = {
 	{"T", "拜访对象", 0, 0, 0, 0, "", "" /*NULL,NULL */ },
@@ -48,15 +43,15 @@ pip_see_doctor()
 
 	savemoney = d.sick * 25;
 	if (d.sick <= 0) {
-		pressanykey("哇哩..没病来医院干嘛..被骂了..呜~~");
+		temppress("哇哩..没病来医院干嘛..被骂了..呜~~");
 		d.character -= (rand() % 3 + 1);
 		if (d.character < 0)
 			d.character = 0;
 		d.happy -= (rand() % 3 + 3);
 		d.satisfy -= rand() % 3 + 2;
 	} else if (d.money < savemoney) {
-		sprintf(buf, "你的病要花 %d 元喔....你不够钱啦...", savemoney);
-		pressanykey(buf);
+		sprintf(buf, "你的病要花 %ld 元喔....你不够钱啦...", savemoney);
+		temppress(buf);
 	} else if (d.sick > 0 && d.money >= savemoney) {
 		d.tired -= rand() % 10 + 20;
 		if (d.tired < 0)
@@ -65,7 +60,7 @@ pip_see_doctor()
 		d.money = d.money - savemoney;
 		move(4, 0);
 		show_special_pic(1);
-		pressanykey("药到病除..没有副作用!!");
+		temppress("药到病除..没有副作用!!");
 	}
 	return 0;
 }
@@ -84,14 +79,14 @@ pip_change_weight()
 #ifdef MAPLE
 	getdata(b_lines - 1, 1, "你的选择是? [Q]离开:", genbuf, 2, 1, 0);
 #else
-	getdata(b_lines - 1, 1, "你的选择是? [Q]离开:", genbuf, 2, DOECHO, true);
+	getdata(b_lines-1,1,"你的选择是? [Q]离开:",genbuf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 	if (genbuf[0] == '1' || genbuf[0] == '2' || genbuf[0] == '3'
 	    || genbuf[0] == '4') {
 		switch (genbuf[0]) {
 		case '1':
 			if (d.money < 80) {
-				pressanykey
+				temppress
 				    ("传统增胖要80元喔....你不够钱啦...");
 			} else {
 #ifdef MAPLE
@@ -99,9 +94,7 @@ pip_change_weight()
 					"需花费80元(3～5公斤)，你确定吗? [y/N]",
 					genbuf, 2, 1, 0);
 #else
-				getdata(b_lines - 1, 1,
-					"需花费80元(3～5公斤)，你确定吗? [y/N]",
-					genbuf, 2, DOECHO, true);
+				getdata(b_lines-1,1,"需花费80元(3～5公斤)，你确定吗? [y/N]",genbuf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 				if (genbuf[0] == 'Y' || genbuf[0] == 'y') {
 					weightmp = 3 + rand() % 3;
@@ -112,9 +105,9 @@ pip_change_weight()
 					show_special_pic(3);
 					sprintf(inbuf, "总共增加了%d公斤",
 						weightmp);
-					pressanykey(inbuf);
+					temppress(inbuf);
 				} else {
-					pressanykey("回心转意罗.....");
+					temppress("回心转意罗.....");
 				}
 			}
 			break;
@@ -125,13 +118,11 @@ pip_change_weight()
 				"增一公斤要30元，你要增多少公斤呢? [请填数字]:",
 				genbuf, 4, 1, 0);
 #else
-			getdata(b_lines - 1, 1,
-				"增一公斤要30元，你要增多少公斤呢? [请填数字]:",
-				genbuf, 4, DOECHO, true);
+			getdata(b_lines-1,1,"增一公斤要30元，你要增多少公斤呢? [请填数字]:",genbuf,4,DOECHO,NULL,true);
 #endif				// END MAPLE
 			weightmp = atoi(genbuf);
 			if (weightmp <= 0) {
-				pressanykey("输入有误..放弃罗...");
+				temppress("输入有误..放弃罗...");
 			} else if (d.money > (weightmp * 30)) {
 				sprintf(inbuf,
 					"增加%d公斤，总共需花费了%d元，确定吗? [y/N]",
@@ -139,8 +130,7 @@ pip_change_weight()
 #ifdef MAPLE
 				getdata(b_lines - 1, 1, inbuf, genbuf, 2, 1, 0);
 #else
-				getdata(b_lines - 1, 1, inbuf, genbuf, 2,
-					DOECHO, true);
+				getdata(b_lines-1,1,inbuf,genbuf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 				if (genbuf[0] == 'Y' || genbuf[0] == 'y') {
 					d.money -= weightmp * 30;
@@ -152,18 +142,18 @@ pip_change_weight()
 					show_special_pic(3);
 					sprintf(inbuf, "总共增加了%d公斤",
 						weightmp);
-					pressanykey(inbuf);
+					temppress(inbuf);
 				} else {
-					pressanykey("回心转意罗.....");
+					temppress("回心转意罗.....");
 				}
 			} else {
-				pressanykey("你钱没那麽多啦.......");
+				temppress("你钱没那麽多啦.......");
 			}
 			break;
 
 		case '3':
 			if (d.money < 80) {
-				pressanykey
+				temppress
 				    ("传统减肥要80元喔....你不够钱啦...");
 			} else {
 #ifdef MAPLE
@@ -171,9 +161,7 @@ pip_change_weight()
 					"需花费80元(3～5公斤)，你确定吗? [y/N]",
 					genbuf, 2, 1, 0);
 #else
-				getdata(b_lines - 1, 1,
-					"需花费80元(3～5公斤)，你确定吗? [y/N]",
-					genbuf, 2, DOECHO, true);
+				getdata(b_lines-1,1,"需花费80元(3～5公斤)，你确定吗? [y/N]",genbuf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 				if (genbuf[0] == 'Y' || genbuf[0] == 'y') {
 					weightmp = 3 + rand() % 3;
@@ -186,9 +174,9 @@ pip_change_weight()
 					show_special_pic(4);
 					sprintf(inbuf, "总共减少了%d公斤",
 						weightmp);
-					pressanykey(inbuf);
+					temppress(inbuf);
 				} else {
-					pressanykey("回心转意罗.....");
+					temppress("回心转意罗.....");
 				}
 			}
 			break;
@@ -198,15 +186,13 @@ pip_change_weight()
 				"减一公斤要30元，你要减多少公斤呢? [请填数字]:",
 				genbuf, 4, 1, 0);
 #else
-			getdata(b_lines - 1, 1,
-				"减一公斤要30元，你要减多少公斤呢? [请填数字]:",
-				genbuf, 4, DOECHO, true);
+			getdata(b_lines-1,1,"减一公斤要30元，你要减多少公斤呢? [请填数字]:",genbuf,4,DOECHO,NULL,true);
 #endif				// END MAPLE
 			weightmp = atoi(genbuf);
 			if (weightmp <= 0) {
-				pressanykey("输入有误..放弃罗...");
+				temppress("输入有误..放弃罗...");
 			} else if (d.weight <= weightmp) {
-				pressanykey("你没那麽重喔.....");
+				temppress("你没那麽重喔.....");
 			} else if (d.money > (weightmp * 30)) {
 				sprintf(inbuf,
 					"减少%d公斤，总共需花费了%d元，确定吗? [y/N]",
@@ -214,8 +200,7 @@ pip_change_weight()
 #ifdef MAPLE
 				getdata(b_lines - 1, 1, inbuf, genbuf, 2, 1, 0);
 #else
-				getdata(b_lines - 1, 1, inbuf, genbuf, 2,
-					DOECHO, true);
+				getdata(b_lines-1,1,inbuf,genbuf,2,DOECHO,NULL,true);
 #endif				// END MAPLE
 				if (genbuf[0] == 'Y' || genbuf[0] == 'y') {
 					d.money -= weightmp * 30;
@@ -227,12 +212,12 @@ pip_change_weight()
 					show_special_pic(4);
 					sprintf(inbuf, "总共减少了%d公斤",
 						weightmp);
-					pressanykey(inbuf);
+					temppress(inbuf);
 				} else {
-					pressanykey("回心转意罗.....");
+					temppress("回心转意罗.....");
 				}
 			} else {
-				pressanykey("你钱没那麽多啦.......");
+				temppress("你钱没那麽多啦.......");
 			}
 			break;
 		}
@@ -249,21 +234,16 @@ pip_go_palace()
 	return 0;
 }
 
-int
-pip_go_palace_screen(p)
-struct royalset *p;
-{
+int pip_go_palace_screen(const struct royalset *p){
 	int n;
 	int a;
 	int b;
 	int choice;
-	int prince;		/*王子会不会出现 */
 	int pipkey;
 	int change;
 	char buf[256];
 	char inbuf1[20];
 	char inbuf2[20];
-	char ans[5];
 	char *needmode[3] = { "      ", "礼仪表现＞", "谈吐技巧＞" };
 	int save[11] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -474,7 +454,7 @@ struct royalset *p;
 
 				}
 			}
-			pressanykey(buf);
+			temppress(buf);
 		}
 		d.royalA = save[1];
 		d.royalB = save[2];
@@ -489,7 +469,7 @@ struct royalset *p;
 	}
 	while ((pipkey != 'Q') && (pipkey != 'q') && (pipkey != KEY_LEFT));
 
-	pressanykey("离开星空总司令部.....");
+	temppress("离开星空总司令部.....");
 	return 0;
 }
 
@@ -513,9 +493,9 @@ pip_query()
 	usercomplete(msg_uid, genbuf);
 	if (genbuf[0]) {
 		move(2, 0);
-		if (id = getuser(genbuf, &lookupuser)) {
+		if ((id = getuser(genbuf, &lookupuser))!=0) {
 			pip_read(genbuf);
-			pressanykey("观摩一下别人的小鸡...:p");
+			temppress("观摩一下别人的小鸡...:p");
 		} else {
 			outs(err_uid);
 			clrtoeol();
@@ -531,49 +511,10 @@ char *genbuf;
 	FILE *fs;
 	struct chicken d1;
 	char buf[200];
-
-	/*
-	 * char yo[14][5]={"诞生","婴儿","幼儿","儿童","青年","少年","成年",
-	 * "壮年","壮年","壮年","更年","老年","老年","古稀"};
-	 */
 	const static char yo[12][5] = { "诞生", "婴儿", "幼儿", "儿童", "少年", "青年",
 		"成年", "壮年", "更年", "老年", "古稀", "神仙"
 	};
-	int pc1, age1, age = 0;
-
-	int year1, month1, day1, sex1, death1, nodone1, relation1, liveagain1,
-	    dataB1, dataC1, dataD1, dataE1;
-	int hp1, maxhp1, weight1, tired1, sick1, shit1, wrist1, bodyA1, bodyB1,
-	    bodyC1, bodyD1, bodyE1;
-	int social1, family1, hexp1, mexp1, tmpA1, tmpB1, tmpC1, tmpD1, tmpE1;
-	int mp1, maxmp1, attack1, resist1, speed1, hskill1, mskill1, mresist1,
-	    magicmode1, fightB1, fightC1, fightD1, fightE1;
-	int weaponhead1, weaponrhand1, weaponlhand1, weaponbody1, weaponfoot1,
-	    weaponA1, weaponB1, weaponC1, weaponD1, weaponE1;
-	int toman1, character1, love1, wisdom1, art1, etchics1, brave1,
-	    homework1, charm1, manners1, speech1, cookskill1, learnA1, learnB1,
-	    learnC1, learnD1, learnE1;
-	int happy1, satisfy1, fallinlove1, belief1, offense1, affect1, stateA1,
-	    stateB1, stateC1, stateD1, stateE1;
-	int food1, medicine1, bighp1, cookie1, ginseng1, snowgrass1, eatC1,
-	    eatD1, eatE1;
-	int book1, playtool1, money1, thingA1, thingB1, thingC1, thingD1,
-	    thingE1;
-	int winn1, losee1;
-	int royalA1, royalB1, royalC1, royalD1, royalE1, royalF1, royalG1,
-	    royalH1, royalI1, royalJ1, seeroyalJ1, seeA1, seeB1, seeC1, seeD1,
-	    seeE1;
-	int wantend1, lover1;
-	char name1[200];
-	int classA1, classB1, classC1, classD1, classE1;
-	int classF1, classG1, classH1, classI1, classJ1;
-	int classK1, classL1, classM1, classN1, classO1;
-	int workA1, workB1, workC1, workD1, workE1;
-	int workF1, workG1, workH1, workI1, workJ1;
-	int workK1, workL1, workM1, workN1, workO1;
-	int workP1, workQ1, workR1, workS1, workT1;
-	int workU1, workV1, workW1, workX1, workY1, workZ1;
-
+	int pc1, age1, age = 0, hp1=1;
 #ifdef MAPLE
 	sprintf(buf, "home/%s/new_chicken", genbuf);
 	currutmp->destuid = genbuf;
@@ -581,12 +522,9 @@ char *genbuf;
 	sprintf(buf, "home/%c/%s/new_chicken", toupper(genbuf[0]), genbuf);
 #endif				// END MAPLE
 
-	if (fs = fopen(buf, "r")) {
+	if ((fs = fopen(buf, "r"))!=NULL) {
 		fread(&d1, sizeof (d1), 1, fs);
-		//fgets(buf, 80, fs);
-		//age = ((time_t) atol(buf))/60/30;
 		age = d1.bbtime / 1800;
-
 		if (age == 0)	/*诞生 */
 			age1 = 0;
 		else if (age == 1)	/*婴儿 */
@@ -611,34 +549,9 @@ char *genbuf;
 			age1 = 10;
 		else if (age > 100)	/*神仙 */
 			age1 = 11;
-/*
-    fscanf(fs,
-    "%d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %s %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d %d",
-    &(year1),&(month1),&(day1),&(sex1),&(death1),&(nodone1),&(relation1),&(liveagain1),&(dataB1),&(dataC1),&(dataD1),&(dataE1),
-    &(hp1),&(maxhp1),&(weight1),&(tired1),&(sick1),&(shit1),&(wrist1),&(bodyA1),&(bodyB1),&(bodyC1),&(bodyD1),&(bodyE1),
-    &(social1),&(family1),&(hexp1),&(mexp1),&(tmpA1),&(tmpB1),&(tmpC1),&(tmpD1),&(tmpE1),
-    &(mp1),&(maxmp1),&(attack1),&(resist1),&(speed1),&(hskill1),&(mskill1),&(mresist1),&(magicmode1),&(fightB1),&(fightC1),&(fightD1),&(fightE1),
-    &(weaponhead1),&(weaponrhand1),&(weaponlhand1),&(weaponbody1),&(weaponfoot1),&(weaponA1),&(weaponB1),&(weaponC1),&(weaponD1),&(weaponE1),
-    &(toman1),&(character1),&(love1),&(wisdom1),&(art1),&(etchics1),&(brave1),&(homework1),&(charm1),&(manners1),&(speech1),&(cookskill1),&(learnA1),&(learnB1),&(learnC1),&(learnD1),&(learnE1),
-    &(happy1),&(satisfy1),&(fallinlove1),&(belief1),&(offense1),&(affect1),&(stateA1),&(stateB1),&(stateC1),&(stateD1),&(stateE1),
-    &(food1),&(medicine1),&(bighp1),&(cookie1),&(ginseng1),&(snowgrass1),&(eatC1),&(eatD1),&(eatE1),
-    &(book1),&(playtool1),&(money1),&(thingA1),&(thingB1),&(thingC1),&(thingD1),&(thingE1),
-    &(winn1),&(losee1),
-    &(royalA1),&(royalB1),&(royalC1),&(royalD1),&(royalE1),&(royalF1),&(royalG1),&(royalH1),&(royalI1),&(royalJ1),&(seeroyalJ1),&(seeA1),&(seeB1),&(seeC1),&(seeD1),&(seeE1),
-    &(wantend1),&(lover1),
-    name1,
-    &(classA1),&(classB1),&(classC1),&(classD1),&(classE1),
-    &(classF1),&(classG1),&(classH1),&(classI1),&(classJ1),
-    &(classK1),&(classL1),&(classM1),&(classN1),&(classO1),
-    &(workA1),&(workB1),&(workC1),&(workD1),&(workE1),
-    &(workF1),&(workG1),&(workH1),&(workI1),&(workJ1),
-    &(workK1),&(workL1),&(workM1),&(workN1),&(workO1),
-    &(workP1),&(workQ1),&(workR1),&(workS1),&(workT1),
-    &(workU1),&(workV1),&(workW1),&(workX1),&(workY1),&(workZ1)
-  );
-*/
+        else
+            age1=0;
 		fclose(fs);
-
 		move(1, 0);
 		clrtobot();
 #ifdef MAPLE
@@ -805,12 +718,13 @@ char *genbuf;
 			move(5, 0);
 			outs("游戏已经玩到结局罗....");
 		} else {
-			pressanykey("档案损毁了....");
+			temppress("档案损毁了....");
 		}
 	} /* 有养小鸡 */
 	else {
 		move(1, 0);
 		clrtobot();
-		pressanykey("这一家的人没有养小鸡......");
+		temppress("这一家的人没有养小鸡......");
 	}
+    return 0;
 }

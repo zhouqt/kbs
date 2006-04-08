@@ -2,15 +2,10 @@
 /* 打工选单:家事 苦工 家教 地摊                                              */
 /*                                                                           */
 /*---------------------------------------------------------------------------*/
-#include "service.h"
-#include <time.h>
-#include "bbs.h"
 #include "pip.h"
 extern struct chicken d;
 extern time_t start_time;
 extern time_t lasttime;
-
-//#define getdata(a, b, c , d, e, f, g) getdata(a,b,c,d,e,f,NULL,g)
 
 int
 pip_job_workA()
@@ -42,28 +37,28 @@ pip_job_workA()
 		d.family += rand() % 3 + 4;
 		d.relation += rand() % 3 + 4;
 		workmoney = 80 + (d.cookskill * 2 + d.homework + d.family) / 40;
-		pressanykey("家事很成功喔..多一点钱给你..");
+		temppress("家事很成功喔..多一点钱给你..");
 	} else if (class < 75 && class >= 50) {
 		d.cookskill += rand() % 2 + 5;
 		d.homework += rand() % 2 + 5;
 		d.family += rand() % 3 + 3;
 		d.relation += rand() % 3 + 3;
 		workmoney = 60 + (d.cookskill * 2 + d.homework + d.family) / 45;
-		pressanykey("家事还蛮顺利的唷..嗯嗯..");
+		temppress("家事还蛮顺利的唷..嗯嗯..");
 	} else if (class < 50 && class >= 25) {
 		d.cookskill += rand() % 3 + 3;
 		d.homework += rand() % 3 + 3;
 		d.family += rand() % 3 + 2;
 		d.relation += rand() % 3 + 2;
 		workmoney = 40 + (d.cookskill * 2 + d.homework + d.family) / 50;
-		pressanykey("家事普普通通啦..可以更好的..加油..");
+		temppress("家事普普通通啦..可以更好的..加油..");
 	} else if (class < 25) {
 		d.cookskill += rand() % 3 + 1;
 		d.homework += rand() % 3 + 1;
 		d.family += rand() % 3 + 1;
 		d.relation += rand() % 3 + 1;
 		workmoney = 20 + (d.cookskill * 2 + d.homework + d.family) / 60;
-		pressanykey("家事很糟糕喔..这样不行啦..");
+		temppress("家事很糟糕喔..这样不行啦..");
 	}
 	d.money += workmoney;
 	d.workA += 1;
@@ -99,22 +94,22 @@ pip_job_workB()
 		d.love += rand() % 2 + 7;
 		d.toman += rand() % 2 + 2;
 		workmoney = 150 + (d.love + d.toman) / 50;
-		pressanykey("当保姆很成功喔..下次再来喔..");
+		temppress("当保姆很成功喔..下次再来喔..");
 	} else if (class < 90 && class >= 75) {
 		d.love += rand() % 2 + 5;
 		d.toman += rand() % 2 + 2;
 		workmoney = 120 + (d.love + d.toman) / 50;
-		pressanykey("保姆还当的不错唷..嗯嗯..");
+		temppress("保姆还当的不错唷..嗯嗯..");
 	} else if (class < 75 && class >= 50) {
 		d.love += rand() % 2 + 3;
 		d.toman += rand() % 2 + 1;
 		workmoney = 100 + (d.love + d.toman) / 50;
-		pressanykey("小朋友很皮喔..加油..");
+		temppress("小朋友很皮喔..加油..");
 	} else if (class < 50) {
 		d.love += rand() % 2 + 1;
 		d.toman += rand() % 2 + 1;
 		workmoney = 80 + (d.love + d.toman) / 50;
-		pressanykey("很糟糕喔..你罩不住小朋友耶...");
+		temppress("很糟糕喔..你罩不住小朋友耶...");
 	}
 	d.money += workmoney;
 	d.workB += 1;
@@ -148,7 +143,7 @@ pip_job_workC()
 		if (d.hskill < 0)
 			d.hskill = 0;
 		workmoney = 250 + (d.cookskill * 2 + d.homework * 2) / 40;
-		pressanykey("旅馆事业蒸蒸日上..希望你再过来...");
+		temppress("旅馆事业蒸蒸日上..希望你再过来...");
 	} else if (class < 95 && class >= 80) {
 		d.homework += rand() % 2 + 5;
 		d.family += rand() % 2 + 3;
@@ -156,7 +151,7 @@ pip_job_workC()
 		if (d.hskill < 0)
 			d.hskill = 0;
 		workmoney = 200 + (d.cookskill * 2 + d.homework * 2) / 50;
-		pressanykey("旅馆还蛮顺利的唷..嗯嗯..");
+		temppress("旅馆还蛮顺利的唷..嗯嗯..");
 	} else if (class < 80 && class >= 60) {
 		d.homework += rand() % 2 + 3;
 		d.family += rand() % 2 + 3;
@@ -164,7 +159,7 @@ pip_job_workC()
 		if (d.hskill < 0)
 			d.hskill = 0;
 		workmoney = 150 + (d.cookskill * 2 + d.homework * 2) / 50;
-		pressanykey("普普通通啦..可以更好的..加油..");
+		temppress("普普通通啦..可以更好的..加油..");
 	} else if (class < 60) {
 		d.homework += rand() % 2 + 1;
 		d.family += rand() % 2 + 1;
@@ -172,7 +167,7 @@ pip_job_workC()
 		if (d.hskill < 0)
 			d.hskill = 0;
 		workmoney = 100 + (d.cookskill * 2 + d.homework * 2) / 50;
-		pressanykey("这个很糟糕喔..你这样不行啦..");
+		temppress("这个很糟糕喔..你这样不行啦..");
 	}
 	d.money += workmoney;
 	d.workC += 1;
@@ -205,16 +200,16 @@ pip_job_workD()
 	show_job_pic(41);
 	if (class >= 95) {
 		workmoney = 250 + (d.wrist * 2 + d.hp * 2) / 80;
-		pressanykey("牛羊长的好好喔..希望你再来帮忙...");
+		temppress("牛羊长的好好喔..希望你再来帮忙...");
 	} else if (class < 95 && class >= 80) {
 		workmoney = 210 + (d.wrist * 2 + d.hp * 2) / 80;
-		pressanykey("呵呵..还不错喔..:)");
+		temppress("呵呵..还不错喔..:)");
 	} else if (class < 80 && class >= 60) {
 		workmoney = 160 + (d.wrist * 2 + d.hp * 2) / 80;
-		pressanykey("普普通通啦..可以更好的..");
+		temppress("普普通通啦..可以更好的..");
 	} else if (class < 60) {
 		workmoney = 120 + (d.wrist * 2 + d.hp * 2) / 80;
-		pressanykey("你不太适合农场的工作  -_-...");
+		temppress("你不太适合农场的工作  -_-...");
 	}
 	d.money += workmoney;
 	d.workD += 1;
@@ -251,7 +246,7 @@ pip_job_workE()
 		workmoney =
 		    250 + (d.cookskill * 2 + d.homework * 2 +
 			   d.family * 2) / 80;
-		pressanykey("客人都说太好吃了..再来一盘吧...");
+		temppress("客人都说太好吃了..再来一盘吧...");
 	} else if (class < 80 && class >= 60) {
 		d.homework += rand() % 2 + 1;
 		d.family += rand() % 2 + 1;
@@ -262,7 +257,7 @@ pip_job_workE()
 		workmoney =
 		    200 + (d.cookskill * 2 + d.homework * 2 +
 			   d.family * 2) / 80;
-		pressanykey("煮的还不错吃唷..:)");
+		temppress("煮的还不错吃唷..:)");
 	} else if (class < 60 && class >= 30) {
 		d.homework += rand() % 2 + 1;
 		d.family += rand() % 2 + 1;
@@ -273,7 +268,7 @@ pip_job_workE()
 		workmoney =
 		    150 + (d.cookskill * 2 + d.homework * 2 +
 			   d.family * 2) / 80;
-		pressanykey("普普通通啦..可以更好的..");
+		temppress("普普通通啦..可以更好的..");
 	} else if (class < 30) {
 		d.homework += rand() % 2 + 1;
 		d.family += rand() % 2 + 1;
@@ -284,7 +279,7 @@ pip_job_workE()
 		workmoney =
 		    100 + (d.cookskill * 2 + d.homework * 2 +
 			   d.family * 2) / 80;
-		pressanykey("你的厨艺待加强喔...");
+		temppress("你的厨艺待加强喔...");
 	}
 	d.money += workmoney;
 	d.workE += 1;
@@ -314,16 +309,16 @@ pip_job_workF()
 	show_job_pic(61);
 	if (class >= 75) {
 		workmoney = 100 + (d.belief + d.etchics - d.offense) / 20;
-		pressanykey("钱很少 但看你这麽认真 给你多一点...");
+		temppress("钱很少 但看你这麽认真 给你多一点...");
 	} else if (class < 75 && class >= 50) {
 		workmoney = 75 + (d.belief + d.etchics - d.offense) / 20;
-		pressanykey("谢谢你的热心帮忙..:)");
+		temppress("谢谢你的热心帮忙..:)");
 	} else if (class < 50 && class >= 25) {
 		workmoney = 50 + (d.belief + d.etchics - d.offense) / 20;
-		pressanykey("你真的很有爱心啦..不过有点小累的样子...");
+		temppress("你真的很有爱心啦..不过有点小累的样子...");
 	} else if (class < 25) {
 		workmoney = 25 + (d.belief + d.etchics - d.offense) / 20;
-		pressanykey("来奉献不错..但也不能打混ㄚ....:(");
+		temppress("来奉献不错..但也不能打混ㄚ....:(");
 	}
 	d.money += workmoney;
 	d.workF += 1;
@@ -336,7 +331,6 @@ pip_job_workG()
 /* ├————┼——————————————————————┤*/
 /* │地摊    │体力 + 2 , 魅力 + 1 , 疲劳 + 3 ,谈吐 +1     │*/
 /* ├————┼——————————————————————┤*/
-	float class;
 	long workmoney;
 
 	workmoney = 0;
@@ -353,7 +347,7 @@ pip_job_workG()
 	d.toman += rand() % 2 + 3;
 	move(4, 0);
 	show_job_pic(71);
-	pressanykey("摆地摊要躲警察啦..:p");
+	temppress("摆地摊要躲警察啦..:p");
 	d.money += workmoney;
 	d.workG += 1;
 	return 0;
@@ -371,7 +365,7 @@ pip_job_workH()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 1) {	/*一岁才行 */
-		pressanykey("小鸡太小了,一岁以后再来吧...");
+		temppress("小鸡太小了,一岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -389,16 +383,16 @@ pip_job_workH()
 	show_job_pic(81);
 	if (class >= 70) {
 		workmoney = 350 + d.wrist / 20 + d.maxhp / 80;
-		pressanykey("你腕力很好唷..:)");
+		temppress("你腕力很好唷..:)");
 	} else if (class < 70 && class >= 50) {
 		workmoney = 300 + d.wrist / 20 + d.maxhp / 80;
-		pressanykey("砍了不少树喔.....:)");
+		temppress("砍了不少树喔.....:)");
 	} else if (class < 50 && class >= 20) {
 		workmoney = 250 + d.wrist / 20 + d.maxhp / 80;
-		pressanykey("普普通通啦..可以更好的..");
+		temppress("普普通通啦..可以更好的..");
 	} else if (class < 20) {
 		workmoney = 200 + d.wrist / 20 + d.maxhp / 80;
-		pressanykey("待加强喔..锻炼再来吧....");
+		temppress("待加强喔..锻炼再来吧....");
 	}
 	d.money += workmoney;
 	d.workH += 1;
@@ -417,7 +411,7 @@ pip_job_workI()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 1) {	/*一岁才行 */
-		pressanykey("小鸡太小了,一岁以后再来吧...");
+		temppress("小鸡太小了,一岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -437,16 +431,16 @@ pip_job_workI()
 	 */
 	if (class >= 80) {
 		workmoney = 400 + d.art / 10 + d.affect / 20;
-		pressanykey("客人都很喜欢让你做造型唷..:)");
+		temppress("客人都很喜欢让你做造型唷..:)");
 	} else if (class < 80 && class >= 60) {
 		workmoney = 360 + d.art / 10 + d.affect / 20;
-		pressanykey("做的不错喔..颇有天份...:)");
+		temppress("做的不错喔..颇有天份...:)");
 	} else if (class < 60 && class >= 40) {
 		workmoney = 320 + d.art / 10 + d.affect / 20;
-		pressanykey("马马虎虎啦..再加油一点..");
+		temppress("马马虎虎啦..再加油一点..");
 	} else if (class < 40) {
 		workmoney = 250 + d.art / 10 + d.affect / 20;
-		pressanykey("待加强喔..以后再来吧....");
+		temppress("待加强喔..以后再来吧....");
 	}
 	d.money += workmoney;
 	d.workI += 1;
@@ -471,7 +465,7 @@ pip_job_workJ()
 	 * 两岁以上才行
 	 */
 	if ((d.bbtime / 60 / 30) < 2) {
-		pressanykey("小鸡太小了,两岁以后再来吧...");
+		temppress("小鸡太小了,两岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -496,23 +490,23 @@ pip_job_workJ()
 	if (class >= 80 && class1 >= 80) {
 		d.hskill += rand() % 2 + 7;
 		workmoney = 300 + d.maxhp / 50 + d.hskill / 20;
-		pressanykey("你是完美的猎人..");
+		temppress("你是完美的猎人..");
 	} else if ((class < 75 && class >= 50) && class1 >= 60) {
 		d.hskill += rand() % 2 + 5;
 		workmoney = 270 + d.maxhp / 45 + d.hskill / 20;
-		pressanykey("收获还不错喔..可以饱餐一顿了..:)");
+		temppress("收获还不错喔..可以饱餐一顿了..:)");
 	} else if ((class < 50 && class >= 25) && class1 >= 40) {
 		d.hskill += rand() % 2 + 3;
 		workmoney = 240 + d.maxhp / 40 + d.hskill / 20;
-		pressanykey("技术差强人意  再加油喔..");
+		temppress("技术差强人意  再加油喔..");
 	} else if ((class < 25 && class >= 0) && class1 >= 20) {
 		d.hskill += rand() % 2 + 1;
 		workmoney = 210 + d.maxhp / 30 + d.hskill / 20;
-		pressanykey("狩猎是体力与智力的结合....");
+		temppress("狩猎是体力与智力的结合....");
 	} else if (class < 0) {
 		d.hskill += rand() % 2;
 		workmoney = 190 + d.hskill / 20;
-		pressanykey("要多多锻炼和增进智慧啦....");
+		temppress("要多多锻炼和增进智慧啦....");
 	}
 	d.money = d.money + workmoney;
 	d.workJ += 1;
@@ -532,7 +526,7 @@ pip_job_workK()
 	 * 两岁以上才行
 	 */
 	if ((d.bbtime / 60 / 30) < 2) {
-		pressanykey("小鸡太小了,两岁以后再来吧...");
+		temppress("小鸡太小了,两岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -552,19 +546,19 @@ pip_job_workK()
 	show_job_pic(111);
 	if (class >= 75) {
 		workmoney = 250 + d.maxhp / 50;
-		pressanykey("工程很完美  谢谢你了..");
+		temppress("工程很完美  谢谢你了..");
 	} else if (class < 75 && class >= 50) {
 		workmoney = 220 + d.maxhp / 45;
-		pressanykey("工程尚称顺利  辛苦你了..");
+		temppress("工程尚称顺利  辛苦你了..");
 	} else if (class < 50 && class >= 25) {
 		workmoney = 200 + d.maxhp / 40;
-		pressanykey("工程差强人意  再加油喔..");
+		temppress("工程差强人意  再加油喔..");
 	} else if (class < 25 && class >= 0) {
 		workmoney = 180 + d.maxhp / 30;
-		pressanykey("ㄜ  待加强待加强....");
+		temppress("ㄜ  待加强待加强....");
 	} else if (class < 0) {
 		workmoney = 160;
-		pressanykey("下次体力好一点..疲劳度低一点再来....");
+		temppress("下次体力好一点..疲劳度低一点再来....");
 	}
 
 	d.money = d.money + workmoney;
@@ -587,7 +581,7 @@ pip_job_workL()
 	 * 三岁才行
 	 */
 	if ((d.bbtime / 60 / 30) < 3) {
-		pressanykey("小鸡现在还太小了,三岁以后再来吧...");
+		temppress("小鸡现在还太小了,三岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -608,22 +602,22 @@ pip_job_workL()
 	if (class >= 75 && class1 >= 75) {
 		d.mresist += rand() % 2 + 7;
 		workmoney = 200 + (d.affect + d.brave) / 40;
-		pressanykey("守墓成功喔  给你多点钱");
+		temppress("守墓成功喔  给你多点钱");
 	} else if ((class < 75 && class >= 50) && class1 >= 50) {
 		d.mresist += rand() % 2 + 5;
 		workmoney = 150 + (d.affect + d.brave) / 50;
-		pressanykey("守墓还算成功喔..谢啦..");
+		temppress("守墓还算成功喔..谢啦..");
 	} else if ((class < 50 && class >= 25) && class1 >= 25) {
 		d.mresist += rand() % 2 + 3;
 		workmoney = 120 + (d.affect + d.brave) / 60;
-		pressanykey("守墓还算差强人意喔..加油..");
+		temppress("守墓还算差强人意喔..加油..");
 	} else {
 		d.mresist += rand() % 2 + 1;
 		workmoney = 80 + (d.affect + d.brave) / 70;
-		pressanykey("我也不方便说啥了..请再加油..");
+		temppress("我也不方便说啥了..请再加油..");
 	}
 	if (rand() % 10 == 5) {
-		pressanykey("真是倒楣  竟遇到死神魔..");
+		temppress("真是倒楣  竟遇到死神魔..");
 		pip_fight_bad(12);
 	}
 	d.money += workmoney;
@@ -641,7 +635,7 @@ pip_job_workM()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 4) {
-		pressanykey("小鸡太小了,四岁以后再来吧...");
+		temppress("小鸡太小了,四岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -657,9 +651,9 @@ pip_job_workM()
 	d.money = d.money + workmoney;
 	move(4, 0);
 	show_job_pic(131);
-	pressanykey("家教轻松 当然钱就少一点罗");
+	temppress("家教轻松 当然钱就少一点罗");
 	d.workM += 1;
-	return;
+	return 0;
 }
 
 int
@@ -677,7 +671,7 @@ pip_job_workN()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 5) {
-		pressanykey("小鸡太小了,五岁以后再来吧...");
+		temppress("小鸡太小了,五岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -699,22 +693,22 @@ pip_job_workN()
 		d.cookskill += rand() % 2 + 7;
 		d.speech += rand() % 2 + 5;
 		workmoney = 500 + (d.charm) / 5;
-		pressanykey("你很红唷  :)");
+		temppress("你很红唷  :)");
 	} else if ((class < 75 && class >= 50) && class1 >= 50) {
 		d.cookskill += rand() % 2 + 5;
 		d.speech += rand() % 2 + 5;
 		workmoney = 400 + (d.charm) / 5;
-		pressanykey("蛮受欢迎的耶....");
+		temppress("蛮受欢迎的耶....");
 	} else if ((class < 50 && class >= 25) && class1 >= 25) {
 		d.cookskill += rand() % 2 + 4;
 		d.speech += rand() % 2 + 3;
 		workmoney = 300 + (d.charm) / 5;
-		pressanykey("很平凡啦..但马马虎虎...");
+		temppress("很平凡啦..但马马虎虎...");
 	} else {
 		d.cookskill += rand() % 2 + 2;
 		d.speech += rand() % 2 + 2;
 		workmoney = 200 + (d.charm) / 5;
-		pressanykey("你的媚力不够啦..请加油....");
+		temppress("你的媚力不够啦..请加油....");
 	}
 	d.money += workmoney;
 	d.workN += 1;
@@ -734,7 +728,7 @@ pip_job_workO()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 4) {
-		pressanykey("小鸡太小了,四岁以后再来吧...");
+		temppress("小鸡太小了,四岁以后再来吧...");
 		return 0;
 	}
 	workmoney = 0;
@@ -761,22 +755,22 @@ pip_job_workO()
 		d.relation -= rand() % 5 + 12;
 		d.toman -= rand() % 5 + 12;
 		workmoney = 600 + (d.charm) / 5;
-		pressanykey("你是本店的红牌唷  :)");
+		temppress("你是本店的红牌唷  :)");
 	} else if (class < 75 && class >= 50) {
 		d.relation -= rand() % 5 + 8;
 		d.toman -= rand() % 5 + 8;
 		workmoney = 500 + (d.charm) / 5;
-		pressanykey("你蛮受欢迎的耶..:)");
+		temppress("你蛮受欢迎的耶..:)");
 	} else if (class < 50 && class >= 25) {
 		d.relation -= rand() % 5 + 5;
 		d.toman -= rand() % 5 + 5;
 		workmoney = 400 + (d.charm) / 5;
-		pressanykey("你很平凡..但马马虎虎啦...");
+		temppress("你很平凡..但马马虎虎啦...");
 	} else {
 		d.relation -= rand() % 5 + 1;
 		d.toman -= rand() % 5 + 1;
 		workmoney = 300 + (d.charm) / 5;
-		pressanykey("唉..你的媚力不够啦....");
+		temppress("唉..你的媚力不够啦....");
 	}
 	d.money += workmoney;
 	if (d.relation < 0)
@@ -802,8 +796,8 @@ pip_job_workP()
 	long workmoney;
 
 	if ((d.bbtime / 60 / 30) < 6) {
-		pressanykey("小鸡太小了,六岁以后再来吧...");
-		return;
+		temppress("小鸡太小了,六岁以后再来吧...");
+		return 0;
 	}
 	workmoney = 0;
 	class = d.charm - d.tired;
@@ -829,26 +823,26 @@ pip_job_workP()
 		d.speech += rand() % 5 + 12;
 		d.toman -= rand() % 5 + 12;
 		workmoney = 1000 + (d.charm) / 5;
-		pressanykey("你是夜总会最闪亮的星星唷  :)");
+		temppress("你是夜总会最闪亮的星星唷  :)");
 	} else if ((class < 75 && class >= 50) && class1 > 20) {
 		d.speech += rand() % 5 + 8;
 		d.toman -= rand() % 5 + 8;
 		workmoney = 800 + (d.charm) / 5;
-		pressanykey("嗯嗯..你蛮受欢迎的耶..:)");
+		temppress("嗯嗯..你蛮受欢迎的耶..:)");
 	} else if ((class < 50 && class >= 25) && class1 > 10) {
 		d.speech += rand() % 5 + 5;
 		d.toman -= rand() % 5 + 5;
 		workmoney = 600 + (d.charm) / 5;
-		pressanykey("你要加油了啦..但普普啦...");
+		temppress("你要加油了啦..但普普啦...");
 	} else {
 		d.speech += rand() % 5 + 1;
 		d.toman -= rand() % 5 + 1;
 		workmoney = 400 + (d.charm) / 5;
-		pressanykey("唉..你不行啦....");
+		temppress("唉..你不行啦....");
 	}
 	d.money += workmoney;
 	if (d.toman < 0)
 		d.toman = 0;
 	d.workP += 1;
-	return;
+	return 0;
 }
