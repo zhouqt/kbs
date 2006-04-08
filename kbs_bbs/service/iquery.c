@@ -490,7 +490,7 @@ static int choose_file_key(struct _select_def *conf, int key)
 	buf[i]=0;
 	strnzhcpy(fh.title, res_title[conf->pos-1], ARTICLE_TITLE_LEN);
 	strncpy(fh.filename, buf2, FILENAME_LEN);
-	if(!doforward(buf, &fh, 0)) prints("文章转寄成功");
+	if(!doforward(buf, &fh)) prints("文章转寄成功");
 	else prints("文章转寄失败");
 	pressanykey();
 	return SHOW_REFRESH;

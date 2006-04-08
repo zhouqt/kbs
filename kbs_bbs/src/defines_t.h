@@ -6,7 +6,6 @@
 
 #ifdef INTERNET_EMAIL
 int mail_forward(struct _select_def* conf,struct fileheader* data,void* extradata);
-int mail_uforward(struct _select_def* conf,struct fileheader* data,void* extradata);
 #endif
 
 #ifdef FLOWBANNER
@@ -162,7 +161,7 @@ int chkmail();
 int getmailnum(char recmaildir[STRLEN]);
 int get_mailnum();
 int invalidaddr(char *addr);
-int doforward(char *direct, struct fileheader *fh, int isuu);
+int doforward(char *direct, struct fileheader *fh);
 int set_mailbox_prop();
 int set_mailgroup_list();
 

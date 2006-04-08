@@ -1359,7 +1359,7 @@ void send_mail()
 		}
 
 	} else {
-		if (!bbs_sendmail(s, mail_title, mail_addr, 0, 0, 0, getSession())){
+		if (!bbs_sendmail(s, mail_title, mail_addr, 0, 0, getSession())){
 			mail_sent=1;
 		} else {
 			mail_sent=-1;

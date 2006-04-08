@@ -775,10 +775,7 @@ int level;
     return 1;
 }
 
-void a_forward(path, pitem, mode)
-char *path;
-ITEM *pitem;
-int mode;
+void a_forward(char *path, ITEM *pitem)
 {
     struct fileheader fhdr;
     char fname[PATHLEN], *mesg=NULL;
@@ -789,7 +786,7 @@ int mode;
         strnzhcpy(fhdr.title, pitem->title, ARTICLE_TITLE_LEN);
         strncpy(fhdr.filename, pitem->fname, FILENAME_LEN - 1);
 		fhdr.filename[FILENAME_LEN - 1] = '\0';
-        switch (doforward(path, &fhdr, mode)) {
+        switch (doforward(path, &fhdr)) {
         case 0:
             mesg = "文章转寄完成!\n";
             break;
@@ -2056,7 +2053,7 @@ MENU *father;
             break;
         case 'F':
             if (me.now < me.num && HAS_PERM(getCurrentUser(), PERM_BASIC) && HAS_PERM(getCurrentUser(), PERM_LOGINOK)) {
-                a_forward(path, me.item[me.now], 0);
+                a_forward(path, me.item[me.now]);
                 me.page = 9999;
             }
             break;

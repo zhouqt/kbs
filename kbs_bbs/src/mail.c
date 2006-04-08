@@ -582,10 +582,7 @@ int do_send(char *userid, char *title, char *q_file)
                     noansi = 1;
 
                 prints("请稍候, 信件传递中...\n");
-                /*
-                 * res = bbs_sendmail( tmp_fname, title, userid );  
-                 */
-                res = bbs_sendmail(tmp_fname, title, userid, 0, isbig5, noansi,getSession());
+                res = bbs_sendmail(tmp_fname, title, userid, isbig5, noansi,getSession());
 
                 newbbslog(BBSLOG_USER, "mailed %s %s", userid, title);
                 break;
@@ -1352,7 +1349,7 @@ int mail_to_tmp(struct _select_def* conf, struct fileheader *fileinfo,void* extr
 
 
 #ifdef INTERNET_EMAIL
-int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct,int isuu)
+int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct)
 {
     char buf[STRLEN];
     char *p;
@@ -1388,7 +1385,7 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct,int
     if ((p = strrchr(buf, '/')) != NULL)
         *p = '\0';
     clear();
-    switch (doforward(buf, fileinfo, isuu)) {
+    switch (doforward(buf, fileinfo)) {
     case 0:
         prints("文章转寄完成!\n");
         fileinfo->accessed[0] |= FILE_FORWARDED;        /*added by alex, 96.9.7 */
@@ -1413,24 +1410,9 @@ int mail_forward_internal(int ent, struct fileheader *fileinfo, char* direct,int
     return FULLUPDATE;
 }
 
-int mail_uforward_old(int ent, struct fileheader *fileinfo,void* extraarg)
-{
-	    return mail_forward_internal(ent,fileinfo,extraarg,1);
-}
-
-int mail_forward_old(int ent, struct fileheader *fileinfo,void* extraarg)
-{
-	    return mail_forward_internal(ent, fileinfo, extraarg,0);
-}
-
-int mail_uforward(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
-{
-    return mail_forward_internal(conf->pos,fileinfo,((struct read_arg*)conf->arg)->direct,1);
-}
-
 int mail_forward(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
-    return mail_forward_internal(conf->pos, fileinfo, ((struct read_arg*)conf->arg)->direct,0);
+    return mail_forward_internal(conf->pos, fileinfo, ((struct read_arg*)conf->arg)->direct);
 }
 
 #endif
@@ -2178,7 +2160,7 @@ int cnt;
     return 0;
 }
 
-int doforward(char *direct, struct fileheader *fh, int isuu)
+int doforward(char *direct, struct fileheader *fh)
 {
     static char address[STRLEN];
     char fname[STRLEN];
@@ -2355,11 +2337,7 @@ int doforward(char *direct, struct fileheader *fh, int isuu)
 
         prints("转寄信件给 %s, 请稍候....\n", receiver);
 
-        /*
-         * return_no = bbs_sendmail(fname, title, receiver); 
-         */
-
-        return_no = bbs_sendmail(fname, title, receiver, isuu, isbig5, noansi,getSession());
+        return_no = bbs_sendmail(fname, title, receiver, isbig5, noansi,getSession());
     }
     if (return_no==0)
         newbbslog(BBSLOG_USER, "forwarded file to %s", receiver);

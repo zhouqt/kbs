@@ -611,7 +611,7 @@ void print_recipient_status(smtp_recipient_t recipient, const char *mailbox, voi
 #endif
 }
 
-int bbs_sendmail(char *fname, char *title, char *receiver, int unused, int isbig5, int noansi,session_t *session)
+int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noansi,session_t *session)
 {                               /* Modified by ming, 96.10.9  KCN,99.12.16 */
     struct mail_option mo;
     FILE *fin;
@@ -774,7 +774,7 @@ void my_ansi_filter(char *source)
     strncpy(source, result, loc + 1);
 }
 
-int bbs_sendmail(char *fname, char *title, char *receiver, int unused, int isbig5, int noansi,session_t *session)
+int bbs_sendmail(char *fname, char *title, char *receiver, int isbig5, int noansi,session_t *session)
 {                               /* Modified by ming, 96.10.9  KCN,99.12.16 */
     FILE *fin;
     char newbuf[PATHLEN];

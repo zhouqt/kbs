@@ -830,7 +830,7 @@ PHP_FUNCTION(bbs_domailforward)
 	}else{
 		if( big5 == 1)
 			conv_init(getSession());
-		if( bbs_sendmail(fname, title, target, 0, big5, noansi, getSession()) == 0){
+		if( bbs_sendmail(fname, title, target, big5, noansi, getSession()) == 0){
 			RETURN_LONG(1);
 		}else
 			RETURN_LONG(-10);
