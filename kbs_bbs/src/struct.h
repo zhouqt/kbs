@@ -59,7 +59,7 @@ struct userdata
 #endif
     char reg_email[STRLEN]; /* registry email . added by binxun . 2003.6.6 */
 /*#ifdef SMS_SUPPORT*/
-    bool mobileregistered;
+    int mobileregistered;
     char mobilenumber[MOBILE_NUMBER_LEN];
 /*#endif*/
 /* add by roy 2003.07.23 for wbbs*/
@@ -187,9 +187,9 @@ struct UTMPFILE {
 struct BoardStatus {            /* use this to speed up board list */
     int total;
     int lastpost;
-    bool updatemark;
-    bool updatetitle;
-    bool updateorigin;
+    int updatemark;
+    int updatetitle;
+    int updateorigin;
     int currentusers;
     int nowid;
     int toptitle;
