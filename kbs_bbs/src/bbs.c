@@ -1040,7 +1040,6 @@ static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long atta
             char *ptr = info;
             uint32_t ii; uint16_t is;
             char md5ret[17];
-            ktype = 'n';
             get_telnet_sessionid(info, getSession()->utmpent);
             ptr = info + 9;
             is = (uint16_t)currboardent; memcpy(ptr, &is, 2), ptr += 2;
@@ -1055,19 +1054,20 @@ static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long atta
             memcpy(ptr, md5ret, 4);
             memcpy(base64_info, info, 9);
             to64frombits((unsigned char*)base64_info+9, (unsigned char*)info+9, 18);
-            snprintf(buf,buf_len,"http://%s/att.php?%c.%s%s",
-                get_my_webdomain(0),ktype,base64_info,ext);
+            snprintf(buf,buf_len,"http://%s/att.php?n.%s%s",
+                get_my_webdomain(0),base64_info,ext);
+            return;
 #else
-            snprintf(buf, buf_len, "WWW 登录可以看到附件");
+            ktype = 'n';
 #endif
         } else {
             if (len > 51200) ktype = 'p';
-
-            if (zd) sprintf(ftype, ".%d.0", DIR_MODE_ZHIDING);
-        
-            snprintf(buf,buf_len,"http://%s/att.php?%c.%d.%d%s.%ld%s",
-                get_my_webdomain(0),ktype,currboardent,fh->id,ftype,attachpos,ext);
         }
+
+        if (zd) sprintf(ftype, ".%d.0", DIR_MODE_ZHIDING);
+        
+        snprintf(buf,buf_len,"http://%s/att.php?%c.%d.%d%s.%ld%s",
+            get_my_webdomain(0),ktype,currboardent,fh->id,ftype,attachpos,ext);
     } else {
         if (zd) sprintf(ftype, "&ftype=%d", DIR_MODE_ZHIDING);
         
