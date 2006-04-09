@@ -79,6 +79,8 @@ int fillbcache(const struct boardheader *fptr,int idx,void* arg)
         return 0;
     if(!check_see_perm(NULL,fptr)||!*(fptr->filename))
         return 0;
+    if (fptr->flag & BOARD_GROUP)
+        return 0;
     strcpy(st[numboards].boardname, fptr->filename);
     strcpy(st[numboards].expname, fptr->title + 13);
     st[numboards].times = 0;
@@ -271,8 +273,8 @@ int main(void){
             q = strtok(q, " ");
             strcpy(bname, q);
             sec = atoi(p + 6);
+            record_data(bname, sec);
         }
-        record_data(bname, sec);
     }
     fclose(fp);
 
