@@ -88,12 +88,12 @@ void set_user_title(unsigned char titleidx,char* newtitle);
 */
     int bbslog(const char *from, const char *fmt, ...);
 #ifdef NEWPOSTLOG
-	void newpostlog(char *userid, char *boardname, char *title, int groupid);
+	void newpostlog(const char *userid, const char *boardname, const char *title, int groupid);
 #endif
 #ifdef NEWBMLOG
-int newbmlog(char *userid, char *boardname, int type, int value);
+int newbmlog(const char *userid, const char *boardname, int type, int value);
 #endif
-    int bmlog(char *id, char *boardname, int type, int value);
+    int bmlog(const char *id, const char *boardname, int type, int value);
     int init_bbslog(ARG_VOID);
     void newbbslog(int type, const char *fmt, ...);
 
@@ -364,7 +364,7 @@ void unlock_sem_check(int lockid);
     int is_outgo_board(const char *board);
     int poststatboard(const char *board);
     int is_emailpost_board(const char *board);
-	int board_regenspecial(char *board, int mode, char *index);
+	int board_regenspecial(const char *board, int mode, char *index);
 
     int set_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm);
     int del_user_club_perm(struct userec *user,const struct boardheader *board,int write_perm);
@@ -442,6 +442,8 @@ void unlock_sem_check(int lockid);
 	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
 	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num, int start, int * haveprev, int operate, struct userec *user);
 
+    int ann_article_import(char *bname, char *title, char *fname, char *userid);
+    
     int Origin2(char text[256]);
 /*加入edit mark*/
     int add_edit_mark(char *fname, int mode, char *title, session_t* session);
@@ -450,10 +452,10 @@ void unlock_sem_check(int lockid);
     int mail_file_sent(char *fromid, char *tmpfile, char *userid, char *title, int unlink, session_t* session);     /*peregrine */
     int update_user_usedspace(int delta, struct userec *user);
     int getmailnum(char *recmaildir);
-    int isowner(struct userec *user, struct fileheader *fileinfo);
-    int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int mode, session_t* session);
-    int deny_del_article(struct boardheader *bh, struct fileheader *fileinfo, session_t* session);
-    int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo, char *board,int currmode,int flag,session_t* session);
+    int isowner(const struct userec *user, const struct fileheader *fileinfo);
+    int deny_modify_article(const struct boardheader *bh, const struct fileheader *fileinfo, int mode, session_t* session);
+    int deny_del_article(const struct boardheader *bh, const struct fileheader *fileinfo, session_t* session);
+    int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo, const char *board,int currmode,int flag,session_t* session);
 	int do_undel_post(char* boardname, char *dirfname, int num, struct fileheader *fileinfo, char *title, session_t* session);
     int do_del_ding(char *boardname, int bid, int ent, struct fileheader *fh, session_t* session);
 
@@ -479,7 +481,7 @@ void unlock_sem_check(int lockid);
     int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session);   /* (自动生成文件名) 转贴或自动发信 */
 
     int dele_digest(char *dname, const char *boardname);
-    int change_post_flag(struct write_dir_arg* dirarg,int currmode, struct boardheader*board,
+    int change_post_flag(struct write_dir_arg* dirarg,int currmode, const struct boardheader*board,
         struct fileheader *fileinfo, int flag,struct fileheader * data,bool dobmlog, session_t* session);
 
 

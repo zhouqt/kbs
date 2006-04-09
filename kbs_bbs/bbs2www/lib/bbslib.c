@@ -1505,7 +1505,7 @@ atppp_never_use_goto:
 }
 
 /* ent ÊÇ 1-based µÄ*/
-int del_post(int ent, struct fileheader *fileinfo, struct boardheader *bh)
+int del_post(int ent, struct fileheader *fileinfo, const struct boardheader *bh)
 {
     struct write_dir_arg delarg;
     int ret;

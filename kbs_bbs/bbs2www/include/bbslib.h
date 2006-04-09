@@ -22,7 +22,7 @@ int send_msg(char *myuserid, int mypid, char *touserid, int topid, char msg[256]
 int isfriend(char *id);
 
 //board manage
-int del_post(int ent, struct fileheader *fileinfo, struct boardheader *bh);
+int del_post(int ent, struct fileheader *fileinfo, const struct boardheader *bh);
 
 int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromhost, char *fullfrom, struct user_info **ppuinfo, int *putmpent);
 int www_user_logoff(struct userec *user, int useridx, struct user_info *puinfo, int userinfoidx);

@@ -185,7 +185,7 @@ int bbslog(const char *from, const char *fmt, ...)
 
 #define DATALEN 100
 
-int bmlog(char *id, char *boardname, int type, int value)
+int bmlog(const char *id, const char *boardname, int type, int value)
 {
 /*
 type - meaning
@@ -298,7 +298,7 @@ void newbbslog(int type, const char *fmt, ...)
 }
 
 #ifdef NEWPOSTLOG
-void newpostlog(char *userid, char *boardname, char *title, int groupid)
+void newpostlog(const char *userid, const char *boardname, const char *title, int groupid)
 {
     char buf[512];
     struct bbs_msgbuf *msg = (struct bbs_msgbuf *) buf;
@@ -332,7 +332,7 @@ void newpostlog(char *userid, char *boardname, char *title, int groupid)
 #endif
 
 #ifdef NEWBMLOG
-int newbmlog(char *userid, char *boardname, int type, int value)
+int newbmlog(const char *userid, const char *boardname, int type, int value)
 {
 /*
 type - meaning

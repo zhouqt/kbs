@@ -597,7 +597,7 @@ void flush_bcache()
 }
 
 /* add by stiger, 2004,0322 */
-int board_regenspecial(char *board, int mode, char *index)
+int board_regenspecial(const char *board, int mode, char *index)
 {
     struct fileheader *ptr1;
     struct flock ldata, ldata2;

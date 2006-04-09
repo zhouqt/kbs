@@ -51,7 +51,7 @@ int get_postfilename(char *filename, char *direct, int use_subdir)
     return 0;
 }
 
-int isowner(struct userec *user, struct fileheader *fileinfo)
+int isowner(const struct userec *user, const struct fileheader *fileinfo)
 {
     time_t posttime;
 
@@ -215,7 +215,7 @@ int prepare_write_dir(struct write_dir_arg *filearg, struct fileheader *fileinfo
     return ret;
 }
 
-int del_origin(char *board, struct fileheader *fileinfo)
+int del_origin(const char *board, struct fileheader *fileinfo)
 {
     struct write_dir_arg dirarg;
     char olddirect[PATHLEN];
@@ -255,7 +255,7 @@ int del_origin(char *board, struct fileheader *fileinfo)
     return 0;
 }
 
-int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int mode, session_t* session)
+int deny_modify_article(const struct boardheader *bh, const struct fileheader *fileinfo, int mode, session_t* session)
 {
     if (fileinfo==NULL || session->currentuser==NULL) {
         return -1;
@@ -282,7 +282,7 @@ int deny_modify_article(struct boardheader *bh, struct fileheader *fileinfo, int
     return 0;
 }
 
-int deny_del_article(struct boardheader *bh, struct fileheader *fileinfo, session_t* session)
+int deny_del_article(const struct boardheader *bh, const struct fileheader *fileinfo, session_t* session)
 {
     if (session->currentuser==NULL) {
         return -1;
@@ -312,7 +312,7 @@ int deny_del_article(struct boardheader *bh, struct fileheader *fileinfo, sessio
 }
 
 int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct fileheader *fileinfo,
-    char *board,int currmode,int flag,session_t* session){
+    const char *board,int currmode,int flag,session_t* session){
     int owned;
     struct fileheader fh;
 
@@ -2561,7 +2561,7 @@ int dele_digest(char *dname, const char *boardname)
 }
 
 #ifdef FILTER
-int pass_filter(struct fileheader *fileinfo, struct boardheader *board, session_t* session)
+static int pass_filter(struct fileheader *fileinfo, const struct boardheader *board, session_t* session)
 {
 #ifdef SMTH
     if ((!strcmp(board->filename, FILTER_BOARD)) || (!strcmp(board->filename, "NewsClub")))
@@ -2637,7 +2637,7 @@ int pass_filter(struct fileheader *fileinfo, struct boardheader *board, session_
               4 文摘区(置顶区)满
               -1 文件打开错误
   */
-int change_post_flag(struct write_dir_arg *dirarg, int currmode, struct boardheader *board, struct fileheader *fileinfo, int flag, struct fileheader *data, bool dobmlog, session_t* session)
+int change_post_flag(struct write_dir_arg *dirarg, int currmode, const struct boardheader *board, struct fileheader *fileinfo, int flag, struct fileheader *data, bool dobmlog, session_t* session)
 {
     char buf[MAXPATH];
     struct fileheader *originFh;
