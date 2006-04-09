@@ -26,6 +26,7 @@
 #include "read.h"
 #include <time.h>
 #include <dlfcn.h>
+#include "md5.h"
 
 /*#include "../SMTH2000/cache/cache.h"*/
 
@@ -1032,13 +1033,41 @@ static void  board_attach_link(char* buf,int buf_len,char *ext,int len,long atta
     ftype[0] = '\0';
     if (attachpos!=-1) {
         char ktype = 's';
-        if (!public_board(currboard)) ktype = 'n';
-        else if (len > 51200) ktype = 'p';
+        if (!public_board(currboard)) {
+#ifdef ATPPP_YMSW_YTJH
+            MD5_CTX md5;
+            char info[9+19], base64_info[9+25];
+            char *ptr = info;
+            uint32_t ii; uint16_t is;
+            char md5ret[17];
+            ktype = 'n';
+            get_telnet_sessionid(info, getSession()->utmpent);
+            ptr = info + 9;
+            is = (uint16_t)currboardent; memcpy(ptr, &is, 2), ptr += 2;
+            ii = (fh->id);          memcpy(ptr, &ii, 4); ptr += 4;
+            ii = (attachpos);       memcpy(ptr, &ii, 4); ptr += 4;
+            ii = ((int)time(NULL)); memcpy(ptr, &ii, 4); ptr += 4;
+ 
+            MD5Init(&md5);
+            MD5Update(&md5, (unsigned char *) info, 23);
+            MD5Final((unsigned char*)md5ret, &md5);
 
-        if (zd) sprintf(ftype, ".%d.0", DIR_MODE_ZHIDING);
+            memcpy(ptr, md5ret, 4);
+            memcpy(base64_info, info, 9);
+            to64frombits((unsigned char*)base64_info+9, (unsigned char*)info+9, 18);
+            snprintf(buf,buf_len,"http://%s/att.php?%c.%s%s",
+                get_my_webdomain(0),ktype,base64_info,ext);
+#else
+            snprintf(buf, buf_len, "WWW 登录可以看到附件");
+#endif
+        } else {
+            if (len > 51200) ktype = 'p';
+
+            if (zd) sprintf(ftype, ".%d.0", DIR_MODE_ZHIDING);
         
-        snprintf(buf,buf_len,"http://%s/att.php?%c.%d.%d%s.%ld%s",
-            get_my_webdomain(0),ktype,currboardent,fh->id,ftype,attachpos,ext);
+            snprintf(buf,buf_len,"http://%s/att.php?%c.%d.%d%s.%ld%s",
+                get_my_webdomain(0),ktype,currboardent,fh->id,ftype,attachpos,ext);
+        }
     } else {
         if (zd) sprintf(ftype, "&ftype=%d", DIR_MODE_ZHIDING);
         
