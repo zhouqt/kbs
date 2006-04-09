@@ -1598,16 +1598,17 @@ struct key_command mail_comms[] = {
     {'A', (READ_KEY_FUNC)auth_search,(void*)true},
     {'/', (READ_KEY_FUNC)title_search,(void*)false},
     {'?', (READ_KEY_FUNC)title_search,(void*)true},
+#if 0
     {']', (READ_KEY_FUNC)thread_read,(void*)SR_NEXT},
     {'[', (READ_KEY_FUNC)thread_read,(void*)SR_PREV},
-
+    {'\\', (READ_KEY_FUNC)thread_read,(void*)SR_LAST},
+    {'=', (READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
+#endif
     {Ctrl('N'), (READ_KEY_FUNC)thread_read,(void*)SR_FIRSTNEW},
-//    {'\\', (READ_KEY_FUNC)thread_read,(void*)SR_LAST},
-//    {'=', (READ_KEY_FUNC)thread_read,(void*)SR_FIRST},
     {'z', (READ_KEY_FUNC)read_sendmsgtoauthor,NULL},
     
     {Ctrl('A'), (READ_KEY_FUNC)read_showauthor,NULL},
-    {Ctrl('Q'), (READ_KEY_FUNC)read_showauthorinfo,NULL},     
+    {'~', (READ_KEY_FUNC)read_showauthorinfo,NULL},     
     {Ctrl('W'), (READ_KEY_FUNC)read_showauthorBM,NULL}, 
     {Ctrl('O'), (READ_KEY_FUNC)read_addauthorfriend,NULL},
 
@@ -1620,7 +1621,6 @@ struct key_command mail_comms[] = {
     {Ctrl('C'), (READ_KEY_FUNC)do_cross,NULL}, 
     
     {'h', (READ_KEY_FUNC)mailreadhelp,NULL},
-    {Ctrl('J'), (READ_KEY_FUNC)mailreadhelp,NULL},
 
     {Ctrl('D'),(READ_KEY_FUNC)mail_add_ignore,NULL},//etnlegend,2005.09.21,信件列表状态添加用户到黑名单
 
