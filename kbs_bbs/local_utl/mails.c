@@ -19,7 +19,6 @@
 */
 
 #include "bbs.h"
-#include "limits.h"
 
 #define MT_LEN ARTICLE_TITLE_LEN                /* 信件标题长度 */
 #define MP_LEN _POSIX_PATH_MAX                  /* 信件路径长度 */
