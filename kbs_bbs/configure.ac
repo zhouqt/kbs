@@ -1,5 +1,5 @@
 # Process this file with autoconf to produce a configure script.
-#AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
+# AC_INIT(FULL-PACKAGE-NAME, VERSION, BUG-REPORT-ADDRESS)
 AC_INIT(kbsbbs, 2.0dev, dev@dev.kcn.cn)
 
 AC_CANONICAL_TARGET
@@ -141,10 +141,11 @@ AC_ARG_ENABLE(customizing,
 AC_HEADER_DIRENT
 AC_HEADER_STDC
 AC_HEADER_SYS_WAIT
-AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h netdb.h netinet/in.h sgtty.h stdlib.h string.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utime.h])
+AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h netdb.h netinet/in.h sgtty.h stddef.h stdint.h stdlib.h string.h strings.h sys/file.h sys/ioctl.h sys/param.h sys/socket.h sys/time.h termio.h termios.h unistd.h utime.h])
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STAT
+AC_HEADER_STDBOOL
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_MODE_T
@@ -187,9 +188,29 @@ AC_FUNC_STAT
 AC_FUNC_STRFTIME
 AC_FUNC_UTIME_NULL
 AC_FUNC_VPRINTF
-AC_CHECK_FUNCS([alarm atexit bzero dup2 ftruncate getcwd gethostbyaddr gethostbyname gethostname inet_ntoa isascii memchr memset mkdir munmap rmdir select socket strcasecmp strcasestr strchr strdup strerror strncasecmp strpbrk strrchr strsep strstr strtol utime memmem flock inet_aton inet_pton isblank])
-AC_CHECK_TYPES(bool)
+AC_CHECK_FUNCS([alarm atexit bcopy bzero dup2 flock ftruncate getcwd gethostbyaddr gethostbyname gethostname \
+                inet_aton inet_ntoa inet_pton isascii isblank memchr memmem memset mkdir munmap rmdir \
+                select socket strcasecmp strcasestr strchr strdup strerror strncasecmp strpbrk strrchr strsep \
+                strstr strtol usleep utime])
+AC_CHECK_TYPES(bool,,,[
+#ifdef HAVE_STDBOOL_H
+#include <stdbool.h>
+#endif /* HAVE_STDBOOL_H */
+])
+AC_CHECK_TYPES(byte)
 AC_CHECK_TYPES(sig_t,,,[#include <signal.h>])
+AC_CHECK_TYPES(socklen_t,,,[
+#include <unistd.h>
+#ifdef HAVE_SYS_SOCKET_H
+#include <sys/socket.h>
+#endif /* HAVE_SYS_SOCKET_H */
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif /* HAVE_ARPA_INET_H */
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif /* HAVE_NETINET_IN_H */
+])
 
 dnl Select Error language
 AC_ARG_ENABLE(site,
@@ -257,3 +278,4 @@ AC_CONFIG_FILES([Makefile
                  src/Makefile])
 AC_CONFIG_FILES(wrapper.sh, chmod +x wrapper.sh)
 AC_OUTPUT
+
