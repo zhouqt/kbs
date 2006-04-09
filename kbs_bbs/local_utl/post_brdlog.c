@@ -57,12 +57,13 @@ int id_cmp(const void *b, const void *a)
            - (((struct _brdlog *)b)->nowid - ((struct _brdlog *)b)->yesid) );
 }
 
-int fillbcache(struct boardheader *fptr,int idx,void* arg)
+int fillbcache(void *fptr1,int idx,void* arg)
 {
 	char sql[256];
 	FILE *fp;
     MYSQL_RES *res;
     MYSQL_ROW row;
+    struct boardheader *fptr = (struct boardheader *)fptr1;
 	if(fptr->filename[0]==0 || !normal_board(fptr->filename))
 		return 0;
 
@@ -75,8 +76,8 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 	else{
 	    res = mysql_store_result(&s);
 		if(res == NULL){
-	printf("%s\n",sql);
-			return;
+	        printf("%s\n",sql);
+			return 0;
 		}
 	    row = mysql_fetch_row(res);
 
@@ -85,7 +86,7 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 			x[n].nowid=atoi(row[1]);
 			x[n].online=atoi(row[2]);
 		}else
-			return;
+			return 0;
 		mysql_free_result(res);
 	}
 
@@ -105,10 +106,8 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 int fillboard()
 {
 	bzero(x, MAXBOARD * sizeof(struct _brdlog));
-    return apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
+    return apply_record(BOARDS, fillbcache, sizeof(struct boardheader), NULL, 0,false);
 }
-
-extern const char seccode[SECNUM][5];
 
 static int get_seccode_index(char prefix)
 {
@@ -147,9 +146,9 @@ void gen_board_rank_xml()
 				encode_url(url_buf,encode_xml(xml_buf, x[i].filename, sizeof(xml_buf)),sizeof(url_buf)));
         fprintf(fp, "<ChineseName>%s</ChineseName>\n", 
 				encode_url(url_buf,encode_xml(xml_buf, x[i].title, sizeof(xml_buf)),sizeof(url_buf)));
-        fprintf(fp, "<Online>%ld</Online>\n", x[i].online);
-        fprintf(fp, "<Articles>%ld</Articles>\n", x[i].nowid-x[i].yesid);
-        fprintf(fp, "<SecId>%ld</SecId>\n", sec_id);
+        fprintf(fp, "<Online>%d</Online>\n", x[i].online);
+        fprintf(fp, "<Articles>%d</Articles>\n", x[i].nowid-x[i].yesid);
+        fprintf(fp, "<SecId>%d</SecId>\n", sec_id);
         fprintf(fp, "</Board>\n");
     }
     fprintf(fp, "</BoardList>\n");

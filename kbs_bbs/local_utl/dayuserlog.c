@@ -106,7 +106,7 @@ int main(void){
 		exit(0);
 	}
 
-	sprintf(path, "%s/%d/%d/%d_login", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(path, "%s/%d/%d/%d_login", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday);
 
 	if((fp_login=fopen(path, "a"))==NULL){
 		printf("cannot open log file\n");
@@ -159,7 +159,7 @@ int main(void){
     setpublicshmreadonly(1);
 	/*格式: 时间 totalonline wwwguestonline wwwnotguestonline telnetonline wwwguestschool wwwnotguestschool telnetschool */
 	fprintf(fp, "%d.%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", t.tm_hour, t.tm_min/6, totalonline, wwwguestonline, wwwnotguestonline, telnetonline, wwwguestschool, wwwnotguestschool, telnetschool);
-	fprintf(fp_login, "%d.%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", t.tm_hour, t.tm_min/6, logincount, logoutcount, logoutcount?(staytime/logoutcount)/10:0, wwwlogincount, wwwlogoutcount, wwwguestlogincount, wwwguestlogoutcount, wwwlogoutcount?(wwwstaytime/wwwlogoutcount)/10:0 ,wwwguestlogoutcount?(wwwgueststaytime/wwwguestlogoutcount)/10:0);
+	fprintf(fp_login, "%d.%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", t.tm_hour, t.tm_min/6, logincount, logoutcount, (int)(logoutcount?(staytime/logoutcount)/10:0), wwwlogincount, wwwlogoutcount, wwwguestlogincount, wwwguestlogoutcount, (int)(wwwlogoutcount?(wwwstaytime/wwwlogoutcount)/10:0) , (int)(wwwguestlogoutcount?(wwwgueststaytime/wwwguestlogoutcount)/10:0));
 	fprintf(fp_forcount, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n", totalonline, wwwguestonline, wwwnotguestonline, telnetonline, wwwguestschool, wwwnotguestschool, telnetschool);
     fclose(fp);
     fclose(fp_login);

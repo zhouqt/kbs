@@ -56,7 +56,7 @@ int main(int argc, char **argv){
 	int wwwguestlogincount=0;
 	int a[10];
 	char title[100];
-	sprintf(path1, "%s/%d/%d/%d_login", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+	sprintf(path1, "%s/%d/%d/%d_login", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday);
 	if((fp=fopen(path1, "r"))==NULL){
 		printf("cannot open login1 file\n");
 		goto out1;
