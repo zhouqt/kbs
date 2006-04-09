@@ -10,10 +10,6 @@
 
 #ifdef NEWPOSTSTAT
 
-#define	DELETE
-
-#undef SMTH //by atppp 20051016
-
 char *myfile[] = { "day", "week", "month", "year", "bless" };
 int mytop[] = { 10, 50, 100, 100, 10 };
 char *mytitle[] = { "日十大热门话题",
@@ -72,9 +68,6 @@ int sectopnumtotal=0;
 bool force_refresh;
 
 int topnum=0;
-#ifdef SMTH
-int topnum1=0;
-#endif
 
 #define INTERVAL 200
 
@@ -196,9 +189,6 @@ int get_top(int type)
 #endif
 
 	topnum = 0;
-#ifdef SMTH
-	topnum1 = 0;
-#endif
 
 	if(type < 0 || type > 4)
 		return 0;
@@ -228,13 +218,8 @@ int get_top(int type)
 
 	while(1){
 		if(type==4){
-#ifdef SMTH
-			if(topnum>=5 && topnum1>=5)
-				break;
-#else
 			if(topnum>=mytop[type])
 				break;
-#endif
 		}else if(type==0){
 			if(topnum>=mytop[type] && sectopnumtotal>=SECNUM*SECTOPCOUNT)
 				break;
@@ -272,19 +257,11 @@ int get_top(int type)
 				continue;
 			}
 			if(type==0){
-				if ( ! strcasecmp(row[0], BLESS_BOARD) 
-#ifdef SMTH
-						|| bh->group==503 || bh->group==552
-#endif
-								){
+				if ( ! strcasecmp(row[0], BLESS_BOARD) ){
 					continue;
 				}
 			}else if(type==4){
-				if ( strcasecmp(row[0], BLESS_BOARD) 
-#ifdef SMTH
-						&& bh->group!=503 && bh->group!=552
-#endif
-								){
+				if ( strcasecmp(row[0], BLESS_BOARD) ){
 					continue;
 				}
 			}
@@ -307,7 +284,6 @@ int get_top(int type)
 				userid[IDLEN]=0;
 			}
 /**一个版面最多3个十大**/
-#ifndef NINE_BUILD
 			if(type==0){
                 m = 0;
                 for (n = 0; n < topnum; n++) {
@@ -327,41 +303,10 @@ int get_top(int type)
 					if(m>0)
 						continue;
 				}
-			}else if(type==4){
-#ifdef SMTH
-				if(strcasecmp(row[0], BLESS_BOARD)){
-                	m = 0;
-                	for (n = 0; n < topnum1; n++) {
-                    	if (!strcmp(row[0], top[5+n].board))
-                        	m++;
-                	}
-					if(m>1)
-						continue;
-				}
-#endif
 			}
-#endif
+
 
 			/***先记录正常十大的值***/
-#ifdef SMTH
-			if(type==4 && strcasecmp(row[0], BLESS_BOARD) ){
-				if(topnum1>=5)
-					continue;
-			strncpy(top[5+topnum1].board, row[0], BOARDNAMELEN);
-			top[5+topnum1].board[BOARDNAMELEN-1]='\0';
-			top[5+topnum1].groupid = threadid;
-			strncpy(top[5+topnum1].title, title, 80);
-			top[5+topnum1].title[80]='\0';
-			strncpy(top[5+topnum1].userid, userid, IDLEN);
-			top[5+topnum1].userid[IDLEN]='\0';
-			top[5+topnum1].date = atol(row[2]);
-			top[5+topnum1].number = atoi(row[3]);
-
-			topnum1++;
-			}else{
-				if(type==4 && topnum>=5)
-					continue;
-#endif
 			if(topnum < mytop[type]){
 
 			strncpy(top[topnum].board, row[0], BOARDNAMELEN);
@@ -377,9 +322,6 @@ int get_top(int type)
 			topnum++;
 
 			}
-#ifdef SMTH
-			}
-#endif
 
 			/***计算分区十大***/
 			if(type==0){
@@ -406,13 +348,8 @@ int get_top(int type)
 			}//type==0
 
 			if(type==4){
-#ifdef SMTH
-				if(topnum>=5 && topnum1>=5)
-					break;
-#else
 				if(topnum>=mytop[type])
 					break;
-#endif
 			}else if(type==0){
 				if(topnum >= mytop[type] && sectopnumtotal >= SECNUM*SECTOPCOUNT)
 					break;
@@ -452,56 +389,6 @@ void writestat(int mytype)
 
     sprintf(curfile, "etc/posts/%s", myfile[mytype]);
     if ((fp = fopen(curfile, "w")) != NULL) {
-#ifdef SMTH
-	if( mytype == 4) {
-        fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日五大衷心祝福  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m               %s\x1b[m\n", surfix_bless[0]);
-
-        for (i = 0; i < topnum; i++) {
-
-            strcpy(buf, ctime(&top[i].date));
-            buf[20] = NULL;
-            p = buf + 4;
-
-            fprintf(fp,
-                        "                                            \x1b[33m%s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
-                        "\x1b[1m第\x1b[31m%2d \x1b[37m名 \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
-                        p, top[i].number, surfix_bless[(i) * 2 + 1], i+1, (i) / 2 + 1, top[i].title, top[i].userid, surfix_bless[(i+1) * 2]);
-
-		}
-		for( ; i < 5; i++){
-            fprintf(fp,
-                        "                                                                         %s\x1b[m\n"
-                        "                                                                         %s\x1b[m\n",
-                        surfix_bless[i * 2 +1], surfix_bless[(i+1) * 2 ] );
-		}
-        fprintf(fp, "                                                                         %s\x1b[m\n", surfix_bless[11]);
-
-        fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日五大校内话题  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m               %s\x1b[m\n", surfix_bless[12]);
-
-        for (i = 0; i < topnum1; i++) {
-
-            strcpy(buf, ctime(&top[5+i].date));
-            buf[20] = NULL;
-            p = buf + 4;
-
-            fprintf(fp,
-                        "        \x1b[33m%-20.20s                %s \x1b[1;31m%4d\x1b[0;37m人      %s\x1b[m\n"
-                        "\x1b[1m第\x1b[31m%2d \x1b[37m名 \x1b[4%dm %-51.51s\x1b[m \x1b[1;33m%-12s%s\x1b[m\n",
-                        top[5+i].board, p, top[5+i].number, surfix_bless[(i + 6) * 2 + 1], i+1, (i) / 2 + 1, top[5+i].title, top[5+i].userid, surfix_bless[(i+7) * 2 ]);
-
-		}
-		for( ; i < 5; i++){
-            fprintf(fp,
-                        "                                                                         %s\x1b[m\n"
-                        "                                                                         %s\x1b[m\n",
-                        surfix_bless[(i+6) * 2 + 1], surfix_bless[(i+7) * 2 ] );
-		}
-
-		fclose(fp);
-		return;
-	}
-#endif
-
 #ifdef BLESS_BOARD
         if (mytype == 4)
             fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日十大衷心祝福  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m\n"
@@ -606,20 +493,6 @@ void gen_blessing_list_xml()
 			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
 			fprintf(fp, "</hotsubject>\n");
         }
-#ifdef SMTH
-        for (i = 5; i < topnum1+5; i++) 
-		{
-			fprintf(fp, "<hotsubject>\n");
-			fprintf(fp, "<title>%s</title>\n", encode_url(url_buf,encode_xml(xml_buf, top[i].title, 
-						sizeof(xml_buf)),sizeof(url_buf)));
-			fprintf(fp, "<author>%s</author>\n", encode_url(url_buf,top[i].userid,sizeof(url_buf)));
-			fprintf(fp, "<board>%s</board>\n", encode_url(url_buf,top[i].board,sizeof(url_buf)));
-			fprintf(fp, "<time>%d</time>\n", top[i].date);
-			fprintf(fp, "<number>%d</number>\n", top[i].number);
-			fprintf(fp, "<groupid>%d</groupid>\n", top[i].groupid);
-			fprintf(fp, "</hotsubject>\n");
-        }
-#endif
 		fprintf(fp, "</hotsubjects>\n");
 
         fclose(fp);
