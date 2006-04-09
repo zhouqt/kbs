@@ -664,3 +664,950 @@ PHP_FUNCTION(bbs_read_ann_dir)
     
     RETURN_LONG(-2);
 }
+
+/* get ann dir's title from parent .Names, pig2532 2006.3
+string bbs_ann_get_title(string path);
+*/
+PHP_FUNCTION(bbs_ann_get_title)
+{
+    int ac, path_len, i;
+    char *path, *fname, title[STRLEN], fpath[PATHLEN];
+    MENU me;
+    bool find=false;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    strncpy(fpath, path, PATHLEN);
+    fpath[PATHLEN - 1] = '\0';
+    if(strcmp(fpath, "0Announce") == 0)
+    {
+        RETURN_STRING("精华公布栏", 1);
+    }
+    if(!(dashd(fpath) || dashf(fpath)))
+    {
+        RETURN_STRING("精华区目录不存在", 1);
+    }
+    fname = strrchr(fpath, '/');
+    if(fname == NULL)
+    {
+        RETURN_STRING("找不到精华区目录", 1);
+    }
+    *fname = '\0';
+    fname++;
+
+    bzero(&me, sizeof(me));
+    me.path = fpath;
+    me.level = PERM_BOARDS;
+    a_loadnames(&me, getSession());
+    for(i=0; i<me.num; i++)
+    {
+        if(strcmp(fname, me.item[i]->fname) == 0)
+        {
+            find = true;
+            break;
+        }
+    }
+    if(!find)
+    {
+        a_freenames(&me);
+        RETURN_STRING("找不到精华区项目", 1);
+    }
+    strncpy(title, me.item[i]->title, STRLEN);
+    title[STRLEN - 1] = '\0';
+    a_freenames(&me);
+    RETURN_STRING(title, 1);
+}
+
+
+/* BM functions in announce below
+ * by pig2532@newsmth
+ * NOTICE: These functions do not check BM perm,
+ *         please use bbs_ann_traverse_check to check perm first in php.
+ */
+
+static void ann_write_bmlog(char *path)
+{
+    char *ptr, board[STRLEN];
+    if((ptr = strstr(path, "groups/")) != NULL)
+        ann_get_board(ptr, board, sizeof(board));
+    if(board[0] != '\0')
+        bmlog(getCurrentUser()->userid, board, 13, 1);
+}
+
+/* create directory
+bbs_ann_mkdir(string path, string fname, string title, string bm);
+return:
+     0: success
+    -1: path not found
+    -2: filename not valid
+    -3: file already exists
+    -4: a_savenames failed
+*/
+PHP_FUNCTION(bbs_ann_mkdir)
+{
+    int ac;
+    char *path, *sfname, *title, *bm, fname[80];
+    int path_len, fname_len, title_len, bm_len;
+    char fpath[PATHLEN], buf[STRLEN];
+    MENU me;
+    FILE *fp;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 4) || (zend_parse_parameters(4 TSRMLS_CC, "ssss", &path, &path_len, &sfname, &fname_len, &title, &title_len, &bm, &bm_len) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+    
+    if(!dashd(path))
+    {
+        RETURN_LONG(-1);
+    }
+#ifdef ANN_AUTONAME
+    sprintf(fname, "D%X", time(0) + rand());
+#else
+    strncpy(fname, sfname, 80);
+    fname[79] = '\0';
+    if(!valid_fname(fname))
+    {
+        RETURN_LONG(-2);
+    }
+#endif
+    sprintf(fpath, "%s/%s", path, fname);
+    if(dashf(fpath) || dashd(fpath))
+    {
+        RETURN_LONG(-3);
+    }
+
+    mkdir(fpath, 0755);
+    chmod(fpath, 0755);
+
+    bzero(&me, sizeof(me));
+    me.path = path;
+    me.level = PERM_BOARDS;
+    a_loadnames(&me, getSession());
+    if(bm[0] == '\0')
+        sprintf(buf, "%-38.38s", title);
+    else
+        sprintf(buf, "%-38.38s(BM: %s)", title, bm);
+    a_additem(&me, buf, fname, NULL, 0, 0);
+    if(a_savenames(&me) == 0)
+    {
+        sprintf(fpath, "%s/%s/.Names", path, fname);
+        if((fp = fopen(fpath, "w")) != NULL)
+        {
+            fprintf(fp, "#\n");
+            fprintf(fp, "# Title=%s", buf);
+            fprintf(fp, "#\n");
+            fclose(fp);
+        }
+    }
+    else
+    {
+        a_freenames(&me);
+        RETURN_LONG(-4);
+    }
+
+    a_freenames(&me);
+    ann_write_bmlog(path);
+    RETURN_LONG(0);
+}
+
+/* create file
+bbs_ann_mkfile(string path, string fname, string title, string content[, long import]);
+ notice: set import=1 to make file from import file.
+return:
+     0: success
+    -1: path not found
+    -2: fname not valid
+    -3: file already exists
+    -4: error to write file
+    -5: a_savenames failed
+*/
+PHP_FUNCTION(bbs_ann_mkfile)
+{
+    int ac;
+    char *path, *sfname, *title, *content, fname[80];
+    int path_len, fname_len, title_len, content_len;
+    FILE *fp;
+    MENU me;
+    long import=0;
+    char fpath[PATHLEN], buf[STRLEN];
+
+    ac = ZEND_NUM_ARGS();
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ssss/|l", &path, &path_len, &sfname, &fname_len, &title, &title_len, &content, &content_len, &import) != SUCCESS)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    if(!dashd(path))
+    {
+        RETURN_LONG(-1);
+    }
+#ifdef ANN_AUTONAME
+    sprintf(fname, "A%X", time(0) + rand());
+#else
+    strncpy(fname, sfname, 80);
+    fname[79] = '\0';
+    if(!valid_fname(fname))
+    {
+        RETURN_LONG(-2);
+    }
+#endif
+    sprintf(fpath, "%s/%s", path, fname);
+    if(dashf(fpath) || dashd(fpath))
+    {
+        RETURN_LONG(-3);
+    }
+
+    if(import)
+    {
+        char importpath[PATHLEN], attachpath[PATHLEN];
+        sprintf(importpath, "tmp/bm.%s", getCurrentUser()->userid);
+        if(!dashf(importpath))
+        {
+            RETURN_LONG(0);
+        }
+        sprintf(attachpath, "tmp/bm.%s.attach", getCurrentUser()->userid);
+        if(dashf(attachpath))
+        {
+            a_append_attachment(importpath, attachpath);
+            my_unlink(attachpath);
+        }
+        f_mv(importpath, fpath);
+        chmod(fpath, 0644);
+    }
+    else
+    {
+        if((fp = fopen(fpath, "w")) == NULL)
+        {
+            RETURN_LONG(-4);
+        }
+        fwrite(content, content_len, 1, fp);
+        fclose(fp);
+        chmod(fpath, 0644);
+    }
+
+    bzero(&me, sizeof(me));
+    me.path = path;
+    me.level = PERM_BOARDS;
+    a_loadnames(&me, getSession());
+    sprintf(buf, "%-38.38s %s ", title, getCurrentUser()->userid);
+    a_additem(&me, buf, fname, NULL, 0, 0);
+    if(a_savenames(&me) != 0)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-5);
+    }
+
+    a_freenames(&me);
+    ann_write_bmlog(path);
+    RETURN_LONG(0);
+
+}
+
+/* modify directory
+bbs_ann_editdir(string path, string fname, string newfname, string title, string bm);
+return:
+     0: success
+    -1: dir not found
+    -2: newfname not valid
+    -3: newfname already exists
+    -4: dir record not found in .Names
+    -5: a_savenames failed
+*/
+PHP_FUNCTION(bbs_ann_editdir)
+{
+    int ac, i;
+    char *path, *fname, *newfname, *title, *bm;
+    int path_len, fname_len, newfname_len, title_len, bm_len;
+    MENU me;
+    char fpath[PATHLEN], newfpath[PATHLEN];
+    bool find = false;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 5) || (zend_parse_parameters(5 TSRMLS_CC, "sssss", &path, &path_len, &fname, &fname_len, &newfname, &newfname_len, &title, &title_len, &bm, &bm_len) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    snprintf(fpath, PATHLEN, "%s/%s", path, fname);
+    if(!dashd(fpath))
+    {
+        RETURN_LONG(-1);
+    }
+    if(!valid_fname(newfname))
+    {
+        RETURN_LONG(-2);
+    }
+    if(strcmp(fname, newfname))
+    {
+        snprintf(newfpath, PATHLEN, "%s/%s", path, newfname);
+        if(dashf(newfpath) || dashd(newfpath))
+        {
+            RETURN_LONG(-3);
+        }
+        f_mv(fpath, newfpath);
+    }
+    bzero(&me, sizeof(me));
+    me.path = path;
+    me.level = PERM_BOARDS;
+    a_loadnames(&me, getSession());
+    for(i=0; i<me.num; i++)
+    {
+        if(strcmp(fname, me.item[i]->fname) == 0)
+        {
+            strncpy(me.item[i]->fname, newfname, 80);
+            me.item[i]->fname[79] = '\0';
+            if(bm[0] == '\0')
+                sprintf(me.item[i]->title, "%-38.38s", title);
+            else
+                sprintf(me.item[i]->title, "%-38.38s(BM: %s)", title, bm);
+            find = true;
+            break;
+        }
+    }
+    if(!find)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-4);
+    }
+    if(a_savenames(&me) != 0)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-5);
+    }
+
+    a_freenames(&me);
+    RETURN_LONG(0);
+
+}
+
+/* return file content for editing
+bbs_ann_originfile(string path);
+*/
+PHP_FUNCTION(bbs_ann_originfile)
+{
+    int ac, path_len;
+    char *path;
+    FILE* fp;
+	char buf[512];
+    char *content, *ptr;
+    int chunk_size=51200, calen, clen, buflen;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &path, &path_len) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+	if (!dashf(path))
+    {
+		RETURN_LONG(-1);
+	}
+    fp = fopen(path, "r");
+    if (fp == NULL)
+    {
+        RETURN_LONG(-1);
+    }
+	
+    calen = chunk_size;
+    content = (char *)emalloc(calen);
+    clen = 0;
+    ptr = content;
+    while (skip_attach_fgets(buf, sizeof(buf), fp) != 0) {
+        buflen = strlen(buf);
+        if((clen + buflen) >= (calen + 1))
+        {
+            calen += chunk_size;
+            content = (char *)erealloc(content, calen);
+            ptr = content + clen;
+        }
+        memcpy(ptr, buf, buflen);
+        clen += buflen;
+        ptr += buflen;
+    }
+    fclose(fp);
+    content[clen] = '\0';
+    RETURN_STRINGL(content, clen + 1, 0);
+}
+
+/* edit file
+bbs_ann_editfile(string path, string fname, string newfname, string title, string content);
+return:
+     0: success
+    -1: file not found
+    -2: newfname not valid
+    -3: newfname already exists
+    -4: failed to open file
+    -5: file not found in .Names
+    -6: a_savenames failed
+*/
+PHP_FUNCTION(bbs_ann_editfile)
+{
+    int ac, asize, i;
+    char *path, *fname, *newfname, *title, *content;
+    int path_len, fname_len, newfname_len, title_len, content_len;
+    char fpath[PATHLEN], newfpath[PATHLEN], tmpfpath[PATHLEN], buf[256];
+    FILE *fin, *fout;
+    bool find = false;
+    MENU me;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 5) || (zend_parse_parameters(5 TSRMLS_CC, "sssss/", &path, &path_len, &fname, &fname_len, &newfname, &newfname_len, &title, &title_len, &content, &content_len) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    snprintf(fpath, PATHLEN, "%s/%s", path, fname);
+    if(!dashf(fpath))
+    {
+        RETURN_LONG(-1);
+    }
+    if(!valid_fname(newfname))
+    {
+        RETURN_LONG(-2);
+    }
+
+    if((fin = fopen(fpath, "r")) == NULL)
+    {
+        RETURN_LONG(-4);
+    }
+    snprintf(tmpfpath, PATHLEN, "tmp/%s.%d.editpost", getCurrentUser()->userid, getpid());
+    if((fout = fopen(tmpfpath, "w")) == NULL)
+    {
+        RETURN_LONG(-4);
+    }
+    fwrite(content, content_len, 1, fout);
+    while((asize = -attach_fgets(buf, sizeof(buf), fin)) != 0)
+    {
+        if(asize > 0)
+        {
+            put_attach(fin, fout, asize);
+        }
+    }
+    fclose(fin);
+    fclose(fout);
+    f_cp(tmpfpath, fpath, O_TRUNC);
+    unlink(tmpfpath);
+
+    if(strcmp(fname, newfname))
+    {
+        snprintf(newfpath, PATHLEN, "%s/%s", path, newfname);
+        if(dashf(newfpath) || dashd(newfpath))
+        {
+            RETURN_LONG(-3);
+        }
+        f_mv(fpath, newfpath);
+    }
+
+    bzero(&me, sizeof(me));
+    me.path = path;
+    me.level = PERM_BOARDS;
+    a_loadnames(&me, getSession());
+    for(i=0; i<me.num; i++)
+    {
+        if(strcmp(fname, me.item[i]->fname) == 0)
+        {
+            strncpy(me.item[i]->fname, newfname, 80);
+            me.item[i]->fname[79] = '\0';
+            sprintf(me.item[i]->title, "%-38.38s %s ", title, getCurrentUser()->userid);
+            find = true;
+            break;
+        }
+    }
+    if(!find)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-5);
+    }
+    if(a_savenames(&me) != 0)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-6);
+    }
+
+    a_freenames(&me);
+    RETURN_LONG(0);
+
+}
+
+/* delete
+bbs_ann_delete(string path, string fname);
+return:
+     0: success
+    -1: path not found
+    -2: record not found in .Names
+    -3: a_savenames failed
+*/
+PHP_FUNCTION(bbs_ann_delete)
+{
+    int ac, i;
+    char *path, *fname, fpath[PATHLEN];
+    int path_len, fname_len;
+    MENU me;
+    bool find = false;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &path, &path_len, &fname, &fname_len) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    if(!dashd(path))
+    {
+        RETURN_LONG(-1);
+    }
+
+    snprintf(fpath, PATHLEN, "%s/%s", path, fname);
+    if(dashd(fpath))
+    {
+        my_f_rm(fpath);
+    }
+    else if(dashf(fpath))
+    {
+        my_unlink(fpath);
+    }
+
+    bzero(&me, sizeof(me));
+    me.path = path;
+    me.level = PERM_BOARDS;
+    a_loadnames(&me, getSession());
+    for(i=0; i<me.num; i++)
+    {
+        if(strcmp(fname, me.item[i]->fname) == 0)
+        {
+            find = true;
+            break;
+        }
+    }
+    if(!find)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-2);
+    }
+    free(me.item[i]);
+    me.num--;
+    for(;i<me.num;i++)
+        me.item[i] = me.item[i + 1];
+    if(a_savenames(&me) != 0)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-3);
+    }
+
+    a_freenames(&me);
+    ann_write_bmlog(path);
+    RETURN_LONG(0);
+}
+
+/* copy to clipboard
+bbs_ann_copy(string path, string fnames, long delsource);
+note: if fnames contains more than one filenames, use "," to seperate.
+      delsource=0 means to copy, else means to cut.
+return:
+     0: success
+    -1: cannot write clipboard file
+*/
+PHP_FUNCTION(bbs_ann_copy)
+{
+    int ac;
+    char *path, *fnames, clipfile[PATHLEN];
+    int path_len, fnames_len;
+    long delsource;
+    FILE *fp;
+    char *ptr;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 3) || (zend_parse_parameters(3 TSRMLS_CC, "ssl", &path, &path_len, &fnames, &fnames_len, &delsource) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    snprintf(clipfile, PATHLEN, "tmp/clip/%s.announce", getCurrentUser()->userid);
+    if((fp = fopen(clipfile, "w")) == NULL)
+    {
+        RETURN_LONG(-1);
+    }
+    fprintf(fp, "DelSource=%ld\n", delsource);
+    fprintf(fp, "Path=%s\n", path);
+    ptr = fnames;
+    while(*fnames != '\0')
+    {
+        ptr = strchr(fnames, ',');
+        if(ptr != NULL)
+        {
+            *ptr = '\0';
+            fprintf(fp, "Filename=%s\n", fnames);
+            fnames = ptr + 1;
+        }
+        else
+        {
+            break;
+        }
+    }
+    fclose(fp);
+    RETURN_LONG(0);
+}
+
+/* paste from clipboard
+bbs_ann_paste(string path);
+note: path is the destination dir
+return:
+     0: success
+    -1: path not found
+    -2: source path not found
+    -3: board not found
+    -4: no bm perm in source board
+    -5: error writing .Names
+*/
+PHP_FUNCTION(bbs_ann_paste)
+{
+    int ac, i;
+    char *dpath, clipfile[PATHLEN], buf[PATHLEN], spath[PATHLEN], sfpath[PATHLEN], dfpath[PATHLEN];
+    char fname[STRLEN], newfname[STRLEN], title[STRLEN], *ptr;
+    int dpath_len;
+    bool delsource = false, find, err = false;
+    bool inann = true;
+    FILE *fp;
+    MENU sme, dme;
+    char bname[STRLEN];
+    struct boardheader *bp;
+    struct fileheader fh;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &dpath, &dpath_len) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    if(!dashd(dpath))
+    {
+        RETURN_LONG(-1);
+    }
+
+    snprintf(clipfile, PATHLEN, "tmp/clip/%s.announce", getCurrentUser()->userid);
+    if((fp = fopen(clipfile, "r")) == NULL)
+    {
+        RETURN_LONG(0);
+    }
+    spath[0] = '\0';
+    bname[0] = '\0';
+    while(fgets(buf, sizeof(buf), fp) != NULL)
+    {
+        if((ptr = strchr(buf, '\n')) != NULL)
+            *ptr = '\0';
+        if(strncmp(buf, "DelSource=OnBoard", 17) == 0)
+        {
+            inann = false;    /* the files in clipboard is from a borad, not a announce dir */
+            continue;
+        }
+        else if(strncmp(buf, "DelSource=1", 11) == 0)
+        {
+            delsource = true;
+            continue;
+        }
+
+        if(inann)       /* clipboard contains files from another announce dir */
+        {
+            if(strncmp(buf, "Path=", 5) == 0)
+            {
+                strncpy(spath, buf + 5, PATHLEN);
+                if(dashd(spath))
+                {
+                    if(strcmp(spath, dpath) == 0)
+                    {
+                        fclose(fp);
+                        unlink(clipfile);
+                        RETURN_LONG(-1);
+                    }
+                }
+                else
+                {
+                    fclose(fp);
+                    unlink(clipfile);
+                    RETURN_LONG(-2);
+                }
+                bzero(&sme, sizeof(sme));
+                sme.path = spath;
+                sme.level = PERM_BOARDS;
+                a_loadnames(&sme, getSession());
+                bzero(&dme, sizeof(dme));
+                dme.path = dpath;
+                dme.level = PERM_BOARDS;
+                a_loadnames(&dme, getSession());
+            }
+            else if(spath[0] != '\0')
+            {
+                if(strncmp(buf, "Filename=", 9) == 0)
+                {
+                    strncpy(fname, buf + 9, STRLEN);
+                    snprintf(sfpath, PATHLEN, "%s/%s", spath, fname);
+                    if(!(dashf(sfpath)||dashd(sfpath)))
+                        continue;
+                    snprintf(dfpath, PATHLEN, "%s/%s", dpath, fname);
+                    if(dashf(dfpath)||dashd(dfpath))
+                        continue;
+                    if(delsource)
+                        f_mv(sfpath, dfpath);
+                    else
+                        f_cp(sfpath, dfpath, O_TRUNC);
+                    find = false;
+                    for(i=0; i<sme.num; i++)
+                    {
+                        if(strcmp(fname, sme.item[i]->fname) == 0)
+                        {
+                            find = true;
+                            break;
+                        }
+                    }
+                    if(find)
+                    {
+                        strncpy(title, sme.item[i]->title, STRLEN);
+                        if(delsource)
+                        {
+                            free(sme.item[i]);
+                            sme.num--;
+                            for(; i<sme.num; i++)
+                                sme.item[i] = sme.item[i + 1];
+                        }
+                    }
+                    a_additem(&dme, title, fname, NULL, 0, 0);
+                }
+            }
+        }
+        else       /* clipboard contains files from a board */
+        {
+            if(strncmp(buf, "Board=", 6) == 0)
+            {
+                strncpy(bname, buf + 6, STRLEN);
+                if((bp = getbcache(bname)) == NULL)
+                {
+                    fclose(fp);
+                    unlink(clipfile);
+                    RETURN_LONG(-3);
+                }
+                strcpy(bname, bp->filename);
+                if(!is_BM(bp, getCurrentUser()))
+                {
+                    fclose(fp);
+                    unlink(clipfile);
+                    RETURN_LONG(-4);
+                }
+                bzero(&dme, sizeof(dme));
+                dme.path = dpath;
+                dme.level = PERM_BOARDS;
+                a_loadnames(&dme, getSession());
+                strcpy(title, "没有名字？");
+            }
+            else if(bname[0] != '\0')
+            {
+                if(strncmp(buf, "Title=", 6) == 0)
+                {
+                    snprintf(title, STRLEN, "%-38.38s %s ", buf + 6, getCurrentUser()->userid);
+                }
+                else if(strncmp(buf, "Filename=", 9) == 0)
+                {
+                    strncpy(fname, buf + 9, STRLEN);
+                    setbfile(sfpath, bname, fname);
+                    if(!dashf(sfpath))
+                        continue;
+                    strcpy(fh.filename, fname);
+                    ann_get_postfilename(newfname, &fh, &dme);
+                    snprintf(dfpath, PATHLEN, "%s/%s", dpath, newfname);
+                    f_cp(sfpath, dfpath, O_TRUNC);
+                    a_additem(&dme, title, newfname, NULL, 0, 0);
+                }
+            }
+        }
+    }
+    fclose(fp);
+    if(delsource && inann)
+    {
+        if(a_savenames(&sme) != 0)
+            err = true;
+    }
+    if(a_savenames(&dme) != 0)
+        err = true;
+    if(inann)
+        a_freenames(&sme);
+    a_freenames(&dme);
+    unlink(clipfile);
+    if(err)
+    {
+        RETURN_LONG(-3);
+    }
+    else
+    {
+        ann_write_bmlog(dpath);
+        RETURN_LONG(0);
+    }
+}
+
+/* move item
+bbs_ann_move(string path, long oldnum, long newnum);
+return:
+     0: success
+    -1: path not found
+    -2: item not found
+    -3: a_savesnames failed
+*/
+PHP_FUNCTION(bbs_ann_move)
+{
+    int ac;
+    char *path;
+    int path_len, i;
+    long oldnum, newnum;
+    MENU me;
+    ITEM *tmp;
+
+    ac = ZEND_NUM_ARGS();
+    if((ac != 3) || (zend_parse_parameters(3 TSRMLS_CC, "sll", &path, &path_len, &oldnum, &newnum) != SUCCESS))
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    if(oldnum == newnum)
+    {
+        RETURN_LONG(0);
+    }
+    if(!dashd(path))
+    {
+        RETURN_LONG(-1);
+    }
+
+    bzero(&me, sizeof(me));
+    me.path = path;
+    me.level = PERM_BOARDS;
+    a_loadnames(&me, getSession());
+    if((oldnum > me.num) || (oldnum <= 0))
+    {
+        RETURN_LONG(-2);
+    }
+    if(newnum <= 0)
+        newnum = 1;
+    if(newnum > me.num)
+        newnum = me.num;
+    oldnum--;
+    newnum--;
+    tmp = me.item[oldnum];
+    if(oldnum > newnum)
+    {
+        for(i=oldnum; i>newnum; i--)
+            me.item[i] = me.item[i - 1];
+    }
+    else
+    {
+        for(i=oldnum; i<newnum; i++)
+            me.item[i] = me.item[i + 1];
+    }
+    me.item[newnum] = tmp;
+
+    if(a_savenames(&me) != 0)
+    {
+        a_freenames(&me);
+        RETURN_LONG(-3);
+    }
+    a_freenames(&me);
+    ann_write_bmlog(path);
+    RETURN_LONG(0);
+}
+
+/* BM functions of announce end here */
+
+
+/* Import path functions below
+ * by pig2532@newsmth
+ */
+
+/* read import path list
+array bbs_ipath_list();
+return:
+    array of import path list when success
+    false when failed
+*/
+PHP_FUNCTION(bbs_ipath_list)
+{
+    zval *item;
+    char *ipath[ANNPATH_NUM], *ititle[ANNPATH_NUM];
+    int ipath_select = 0, i;
+    time_t ipath_time = 0;
+
+    if(ZEND_NUM_ARGS() != 0)
+    {
+        WRONG_PARAM_COUNT;
+    }
+    if(!HAS_PERM(getCurrentUser(), PERM_BOARDS))
+    {
+        RETURN_FALSE;
+    }
+    load_import_path(ipath, ititle, &ipath_time, &ipath_select, getSession());
+    array_init(return_value);
+    for(i=0; i<ANNPATH_NUM; i++)
+    {
+        MAKE_STD_ZVAL(item);
+        array_init(item);
+        add_assoc_string(item, "PATH", ipath[i], 1);
+        add_assoc_string(item, "TITLE", ititle[i], 1);
+        zend_hash_index_update(Z_ARRVAL_P(return_value), i, (void*)&item, sizeof(zval*), NULL);
+    }
+    free_import_path(ipath, ititle, &ipath_time);
+}
+
+/* modify import path
+bbs_ipath_modify(long num, string title, string path);
+return:
+     0: success
+    -1: num not correct
+    -2: no bm perm in that path
+*/
+PHP_FUNCTION(bbs_ipath_modify)
+{
+    long num;
+    char *title, *path;
+    int title_len, path_len;
+    char *ipath[ANNPATH_NUM], *ititle[ANNPATH_NUM];
+    int ipath_select = 0;
+    time_t ipath_time = 0;
+
+    path = NULL;
+    if(zend_parse_parameters(ZEND_NUM_ARGS() TSRMLS_CC, "ls|s", &num, &title, &title_len, &path, &path_len) != SUCCESS)
+    {
+        WRONG_PARAM_COUNT;
+    }
+
+    if(!HAS_PERM(getCurrentUser(), PERM_BOARDS))
+    {
+        RETURN_LONG(-2);
+    }
+    if((num < 1) || (num > ANNPATH_NUM))
+    {
+        RETURN_LONG(-1);
+    }
+    if(path)
+        if(path[0] != '\0')
+            if(ann_traverse_check(path, getCurrentUser()) != 1)
+            {
+                RETURN_LONG(-2);
+            }
+    num--;
+    load_import_path(ipath, ititle, &ipath_time, &ipath_select, getSession());
+    free(ititle[num]);
+    ititle[num] = (char *)malloc(title_len + 1);
+    strcpy(ititle[num], title);
+    ititle[num][title_len] = '\0';
+    if(path)
+    {
+        free(ipath[num]);
+        ipath[num] = (char *)malloc(path_len + 1);
+        strcpy(ipath[num], path);
+        ipath[num][path_len] = '\0';
+    }
+    save_import_path(ipath, ititle, &ipath_time, getSession());
+    free_import_path(ipath, ititle, &ipath_time);
+    RETURN_LONG(0);
+}
+

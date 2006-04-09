@@ -440,7 +440,7 @@ void unlock_sem_check(int lockid);
     int get_ent_from_id_ext(int mode, int id, const char *bname, fileheader_t *fh);
 
 	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
-	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num, int start, int * haveprev);
+	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num, int start, int * haveprev, int operate, struct userec *user);
 
     int Origin2(char text[256]);
 /*¼ÓÈëedit mark*/
@@ -679,6 +679,11 @@ int pc_logs(struct pc_logs *pn);
     void free_import_path(char ** i_path,char ** i_title,time_t* i_path_time);
 	int linkto(char *path,const char *fname,const char *title, session_t* session);
     int edit_group(struct boardheader* oldbh,struct boardheader* newbh);
+
+    int a_SeSave(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid);
+    int a_Save(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent, char *userid);
+
+    long a_append_attachment(char *fpath, char *attachpath);
 
 /* check the user's access for the path
   return < 0 deny access

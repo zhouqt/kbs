@@ -416,7 +416,7 @@ PHP_FUNCTION(bbs_get_threads_from_gid)
 	{
         RETURN_LONG(0);
 	}
-	if ((retnum=get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM , start , &haveprev)) == 0)
+	if ((retnum=get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM , start , &haveprev, 0, getCurrentUser())) == 0)
 	{
 		efree(articles);
         RETURN_LONG(0);

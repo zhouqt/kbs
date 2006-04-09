@@ -3489,11 +3489,27 @@ int del_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 int Save_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     int ret;
+    char filepath[PATHLEN], ans[STRLEN], buf[STRLEN];
+    bool append;
+
     struct read_arg* arg=(struct read_arg*)conf->arg;
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
         if (!chk_currBM(currBM, getCurrentUser()))
             return DONOTHING;
-    ret=a_Save(NULL, currboard->filename, fileinfo, false, arg->direct, conf->pos);
+    sprintf(filepath, "tmp/bm.%s", getCurrentUser()->userid);
+    append = false;
+    if (dashf(filepath)) {
+        sprintf(buf, "要附加在旧暂存档之后吗?(Y/N/C) [Y]: ");
+        a_prompt(-1, buf, ans);
+        if ((ans[0] == 'N' || ans[0] == 'n')) {
+            append = false;
+        } else if (ans[0] == 'C' || ans[0] == 'c')
+            return DONOTHING;
+        else {
+            append = true;
+        }
+    }
+    ret=a_Save(NULL, currboard->filename, fileinfo, append, arg->direct, conf->pos, getCurrentUser()->userid);
     if (ret) {
         struct write_dir_arg dirarg;
         struct fileheader data;
@@ -3507,6 +3523,8 @@ int Save_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             fileinfo, 
             FILE_IMPORT_FLAG, &data, true,getSession());
         free_write_dir_arg(&dirarg);
+        sprintf(buf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
+        a_prompt(-1, buf, ans);
 	return DIRCHANGED;
     }
     return DONOTHING;
@@ -3516,11 +3534,26 @@ int Save_post(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
 int Semi_save(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     int ret;
+    char filepath[PATHLEN], ans[STRLEN], buf[STRLEN];
+    bool append;
     struct read_arg* arg=(struct read_arg*)conf->arg;
     if (!HAS_PERM(getCurrentUser(), PERM_SYSOP))
         if (!chk_currBM(currBM, getCurrentUser()))
             return DONOTHING;
-    ret=a_SeSave("0Announce", currboard->filename, fileinfo, false,arg->direct,conf->pos,1);
+    sprintf(filepath, "tmp/bm.%s", getCurrentUser()->userid);
+    append = false;
+    if (dashf(filepath)) {
+        sprintf(buf, "要附加在旧暂存档之后吗?(Y/N/C) [Y]: ");
+        a_prompt(-1, buf, ans);
+        if ((ans[0] == 'N' || ans[0] == 'n')) {
+            append = false;
+        } else if (ans[0] == 'C' || ans[0] == 'c')
+            return DONOTHING;
+        else {
+            append = true;
+        }
+    }
+    ret=a_SeSave("0Announce", currboard->filename, fileinfo, append,arg->direct,conf->pos,1, getCurrentUser()->userid);
     if (ret) {
         struct write_dir_arg dirarg;
         struct fileheader data;
@@ -3534,8 +3567,11 @@ int Semi_save(struct _select_def* conf,struct fileheader *fileinfo,void* extraar
             fileinfo, 
             FILE_IMPORT_FLAG, &data, true,getSession());
         free_write_dir_arg(&dirarg);
-    }
-    return ret;
+        sprintf(buf, " 已将该文章存入暂存档, 请按任何键以继续 << ");
+        a_prompt(-1, buf, ans);
+	return DIRCHANGED;
+   }
+    return DONOTHING;
 }
 
 /* Added by netty to handle post saving into (0)Announce */
@@ -5672,7 +5708,8 @@ static int BM_thread_func(struct _select_def* conf, struct fileheader* fh,int en
                 true,
                 arg->direct,
                 ent,
-                !func_arg->saveorigin);
+                !func_arg->saveorigin,
+                getCurrentUser()->userid);
             fh->accessed[0]|=FILE_IMPORTED;
             break;
     }

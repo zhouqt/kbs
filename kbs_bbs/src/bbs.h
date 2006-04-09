@@ -606,6 +606,8 @@ extern struct sms_shm_head* head;
 #define ARG_DELDECPOST_FLAG 2 /*删除操作要减文章数*/
 #define ARG_BMFUNC_FLAG 4 /*版主操作标志*/
 
+#define BLK_SIZ 10240
+
 #include "var.h"
 #ifdef BBSMAIN
 #include "vars.h"

@@ -1543,12 +1543,52 @@ int get_threads_from_id(const char *filename, int id, fileheader_t * buf, int nu
     return ret;
 }
 
+
+/* add article to announce clipboard. pig2532 2006-03-04
+create new clipboard file when bname is not empty
+return 0 when success, -1 when fail.
+*/
+int ann_article_import(char *bname, char *title, char *fname, char *userid)
+{
+    char clipfile[PATHLEN];
+    FILE *fp;
+    struct boardheader *bp;
+
+    sprintf(clipfile, "tmp/clip/%s.announce", userid);
+    if(bname)
+    {
+        if((bp = getbcache(bname)) == NULL)
+        {
+            return -1;
+        }
+        if((fp = fopen(clipfile, "w")) == NULL)
+            return -1;
+        fprintf(fp, "DelSource=OnBoard\n");
+        fprintf(fp, "Board=%s\n", bp->filename);
+    }
+    else
+    {
+        if((fp = fopen(clipfile, "a")) == NULL)
+            return -1;
+    }
+    if((title != NULL) && (fname != NULL))
+    {
+        fprintf(fp, "Title=%s\n", title);
+        fprintf(fp, "Filename=%s\n", fname);
+    }
+    fclose(fp);
+    return 0;
+}
+
+
 struct dir_gthread_set {
     fileheader_t *records;
     int num;
     int groupid;
     int start;
     int haveprev;
+    int operate;
+    char *userid;
 };
 
 static int get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, bool match, void *arg)
@@ -1559,6 +1599,7 @@ static int get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, boo
     int start = ent;
     int end = total;
     int passprev = 0;
+    struct fileheader *fh;
 
     for (i = start; i <= end; i++) {
         if (count == ts->num)
@@ -1568,8 +1609,43 @@ static int get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, boo
                 passprev = i;
                 continue;
             }
-            memcpy(ts->records + count, base + i - 1, sizeof(fileheader_t));
+            if(ts->records)
+                memcpy(ts->records + count, base + i - 1, sizeof(fileheader_t));
             count++;
+            
+            fh = base + i - 1;
+            switch(ts->operate)
+            {
+            case 2:    /* mark */
+                fh->accessed[0] |= FILE_MARKED;
+                break;
+            case 3:    /* unmark */
+                fh->accessed[0] &= ~FILE_MARKED;
+                break;
+            case 5:
+                ann_article_import(NULL, fh->title, fh->filename, ts->userid);
+                fh->accessed[0] |= FILE_IMPORTED;
+                break;
+            case 6:    /* X */
+                fh->accessed[1] |= FILE_DEL;
+                break;
+            case 7:    /* unX */
+                fh->accessed[1] &= ~FILE_DEL;
+                break;
+            case 8:    /* no reply */
+                fh->accessed[1] |= FILE_READ;
+                break;
+            case 9:    /* cancel no reply */
+                fh->accessed[1] &= ~FILE_READ;
+                break;
+            case 10:
+            case 11:
+            case 12:
+            case 13:
+                fh->accessed[0] |= FILE_IMPORTED;
+                break;
+            }
+            
         }
     }
 
@@ -1588,7 +1664,7 @@ static int get_dir_gthreads(int fd, fileheader_t * base, int ent, int total, boo
     return count;
 }
 
-int get_threads_from_gid(const char *filename, int gid, fileheader_t * buf, int num, int startid, int *haveprev)
+int get_threads_from_gid(const char *filename, int gid, fileheader_t * buf, int num, int startid, int *haveprev, int operate, struct userec *user)
 {
     struct dir_gthread_set ts;
     fileheader_t key;
@@ -1602,6 +1678,8 @@ int get_threads_from_gid(const char *filename, int gid, fileheader_t * buf, int 
     ts.groupid = gid;
     ts.start = startid;
     ts.haveprev = 0;
+    ts.operate = operate;
+    ts.userid = user->userid;
     bzero(&key, sizeof(key));
     key.id = gid;
     if ((fd = open(filename, O_RDWR, 0644)) < 0)

@@ -916,3 +916,205 @@ int edit_group(struct boardheader *oldbh,struct boardheader *newbh){
     return ret;
 }
 
+
+/* a_SeSave 用来删除存到暂存档时的文件头和尾 Life 1997.4.6 */
+/* mode-- 0 小b操作,保留引文, 1 大B操作,去掉引文 */
+/*    path: 要收录的文件路径，没用。
+      key: 版名。
+      fileinfo: 要收录的文件头。
+      append: 是否追加在原有的暂存档后面。
+      direct: 没用。
+      ent: 没用。
+      mode: 模式，上面有说明。
+      userid: 操作者的ID。
+ */
+int a_SeSave(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid)
+{
+
+    FILE *inf, *outf;
+    char qfile[STRLEN], filepath[STRLEN], genbuf[PATHLEN];
+    char buf[256];
+    bool findattach=false;
+    struct fileheader savefileheader;
+    char userinfo[STRLEN],posttime[STRLEN];
+    char* t;
+		
+    sprintf(qfile, "boards/%s/%s", key, fileinfo->filename);
+    sprintf(filepath, "tmp/se.%s", userid);
+    outf = fopen(filepath, "w");
+    if (*qfile != '\0' && (inf = fopen(qfile, "r")) != NULL) {
+        fgets(buf, 256, inf);
+	
+	t = strrchr(buf,')');
+	if (t) { 
+		*(t+1)='\0';
+	    memcpy(userinfo,buf+8,STRLEN);
+	} else strcpy(userinfo,"未知发信人");
+	fgets(buf, 256, inf);
+	fgets(buf, 256, inf);
+	t = strrchr(buf,')');
+	if (t) {
+		*(t+1)='\0';
+	    if (NULL!=(t = strchr(buf,'(')))
+			memcpy(posttime,t,STRLEN);
+		else
+			strcpy(posttime,"未知时间");
+	} else 
+			strcpy(posttime,"未知时间");
+										
+        fprintf(outf, "\033[0;1;32m☆─────────────────────────────────────☆\033[0;37m\n");
+        fprintf(outf, "  \033[0;1;32m %s \033[0;1;37m于 \033[0;1;36m %s \033[0;1;37m 提到:\033[m\n", userinfo,posttime);
+
+	fprintf(outf,"\n");	
+        while (fgets(buf, 256, inf) != NULL)
+            if (buf[0] == '\n')
+                break;
+
+        while (fgets(buf, 256, inf) != NULL) {
+            /*结束*/
+            if(!strcmp(buf,"--\n"))
+                break;
+            /*引文*/
+            if((mode==1)&&(strstr(buf,": ")==buf||(strstr(buf,"【 在")==buf&&strstr(buf,") 的大作中提到: 】"))))
+                continue;
+            /*来源和修改信息*/
+            if((strstr(buf,"\033[m\033")==buf&&strstr(buf,"※ 来源:·")==buf+10)
+                ||(strstr(buf,"\033[36m※ 修改:·")==buf))
+                continue;
+            if (fileinfo->attachment&&
+                !memcmp(buf,ATTACHMENT_PAD,ATTACHMENT_SIZE)) {
+                findattach=true;
+                break;
+            }
+            /* if (buf[250] != '\0')
+                strcpy(buf + 250, "\n"); - disabled by atppp */
+            fprintf(outf, "%s", buf);
+        }
+        fprintf(outf, "\n\n");
+        fclose(inf);
+    }
+
+    fclose(outf);
+    memcpy(&savefileheader,fileinfo,sizeof(savefileheader));
+    savefileheader.attachment=0;
+    if (fileinfo->attachment) {
+        int fsrc,fdst;
+        char *src = (char *) malloc(BLK_SIZ);
+        if ((fsrc = open(qfile, O_RDONLY)) >= 0) {
+            lseek(fsrc,fileinfo->attachment-1,SEEK_SET);
+            sprintf(genbuf,"tmp/bm.%s.attach",userid);
+            if ((fdst=open(genbuf,O_WRONLY | O_CREAT | O_APPEND, 0600)) >= 0) {
+                long ret;
+                do {
+                    ret = read(fsrc, src, BLK_SIZ);
+                    if (ret <= 0)
+                        break;
+                } while (write(fdst, src, ret) > 0);
+                close(fdst);
+            }
+            close(fsrc);
+        }
+        free(src);
+    }
+    if (append)/* 如果需要附加暂存档，调用a_Save去保存正文。*/
+        a_Save(filepath, key, &savefileheader, true,NULL,ent, userid);
+    else {
+        sprintf(qfile, "tmp/bm.%s", userid);
+        f_mv(filepath,qfile);
+    }
+    return 1;
+}
+
+
+/* added by netty to handle post saving into (0)Announce */
+int a_Save(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent, char *userid)
+{
+    char board[STRLEN], genbuf[PATHLEN];
+    char buf[256];
+    char* filepath;
+
+    int mode;
+    int fsrc,fdst1,fdst2;
+    if (append)
+        mode=O_APPEND;
+    else
+        mode=O_TRUNC;
+    if (path==NULL) {
+        sprintf(buf, "boards/%s/%s", key, fileinfo->filename);
+        filepath=buf;
+    } else filepath=path;
+    sprintf(board, "tmp/bm.%s", userid);
+    if ((fsrc = open(filepath, O_RDONLY)) >= 0) {
+        sprintf(genbuf,"tmp/bm.%s.attach",userid);
+        if ((fdst2=open(board,O_WRONLY | O_CREAT | mode, 0600)) >= 0) {
+            int ret=0;
+            char *src = (char *) malloc(BLK_SIZ);
+            long saved=0,needsave=0;
+            if ((fdst1=open(genbuf,O_WRONLY | O_CREAT | mode, 0600)) >= 0) {
+                do {
+                    /* read content and save (fileinfo->attachment) bytes */
+                    ret = read(fsrc, src, BLK_SIZ);
+                    if (ret <= 0)
+                        break;
+                    if (fileinfo->attachment) {
+                        if (saved+ret>fileinfo->attachment-1) {
+                            needsave=fileinfo->attachment-1-saved;
+                        } else needsave=ret;
+                    } else needsave=ret;
+                    saved+=needsave;
+                } while ((write(fdst2, src, needsave) > 0)&&(needsave==ret));
+                close(fdst2);
+            }
+            if ((needsave!=ret)&&(ret>0))
+                write(fdst1, src+needsave, ret-needsave);
+            if (fileinfo->attachment)
+                /* save attachment */
+                do {
+                    ret = read(fsrc, src, BLK_SIZ);
+                    if (ret <= 0)
+                        break;
+                } while (write(fdst1, src, ret) > 0);
+            free(src);
+            close(fdst1);
+        }
+        close(fsrc);
+    }
+    /*sprintf(buf, "将 boards/%s/%s 存入暂存档", key, fileinfo->filename);
+    a_report(buf);*/
+    return 1;
+}
+
+/* 将附件附加到文章后面 返回attachpos */
+long a_append_attachment(char *fpath, char *attachpath)
+{
+    struct stat st;
+    int fsrc,fdst;
+    long attachpos=0;
+
+    if ((fsrc = open(attachpath, O_RDONLY)) != NULL) {
+        fstat(fsrc,&st);
+        if (st.st_size>0)
+            if ((fdst = open(fpath, O_RDWR , 0600)) >= 0) {
+                char *src = (char *) malloc(BLK_SIZ);
+                long ret;
+                fstat(fdst,&st);
+                if (st.st_size>1) {
+                    lseek(fdst,st.st_size-1,SEEK_SET);
+                    read(fdst,src,1);
+                    if (src[0]!='\n')
+                        write(fdst, "\n", 1);
+                }
+                do {
+                    ret = read(fsrc, src, BLK_SIZ);
+                    if (ret <= 0)
+                        break;
+                } while (write(fdst, src, ret) > 0);
+                close(fdst);
+                attachpos=st.st_size;
+                free(src);
+            }
+            close(fsrc);
+    }
+    return attachpos;
+}
+
