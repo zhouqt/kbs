@@ -32,7 +32,7 @@ function getNewBlogs($link,$pno=1,$etemnum=0)
 			);
 	
 	$query = "SELECT users.visitcount,description,corpusname,username,created,subject,body,htmltag,nodes.uid,nid,tid,users.theme,nodescount ".
-	         "FROM nodes,users ".
+	         "FROM nodes force index(PRIMARY) ,users ".
 	         "WHERE `access` = 0 ".
 	         "   AND nodes.uid = users.uid ".
 	         "   AND pctype < 6 ".
@@ -280,7 +280,7 @@ function getHotUsersByPeriod($link,$period,$num=10)
 	             "FROM logs , users ".
 	             "WHERE ".//ACTION LIKE '%\'s Blog(www)' ".
 	             "       pri_id = users.username ".
-	             "      AND UNIX_TIMESTAMP(logtime) > ".$queryTime." ".
+	             "      AND logtime > FROM_UNIXTIME(".$queryTime.")".
 	             "      AND pctype < 2 ".
 		     "GROUP BY pri_id ".
 		     "ORDER BY 1 DESC ".
@@ -305,16 +305,20 @@ function getHotNodesByPeriod($link,$period,$num=10)
 		$queryTime = time () - 30*24*3600;
 	else
 		$queryTime = 0;
+
+	// kxn: 这里需要判断一下，如果是没有时间限制的，那么应该强制 nodes 使用 visitcount 做索引，
+	//      如果有时间限制的话，就不要去动他，用时间限制做主  key , 效果会好
+	$nodesindex = $queryTime == 0 ? " use index(visitcount) " : "";
 		
 	$query = "SELECT nodes.uid , nid , subject ".
-		 "FROM nodes,users ".
+		 "FROM nodes ".$nodesindex.",users ".
 		 "WHERE access = 0 ".
 		 "   AND nodes.uid = users.uid ".
 		 "   AND nodetype = 0 ".
 		 "   AND pctype < 4 ";
 	
 	if($queryTime)
-	$query.= " AND UNIX_TIMESTAMP(created) > ".$queryTime . " ";
+	$query.= " AND created > FROM_UNIXTIME(".$queryTime . ")";
 	//$query.= "GROUP BY uid ";
 	$query.= "ORDER BY nodes.visitcount DESC ".
 		 "LIMIT 0 , ".$num." ;";
@@ -344,7 +348,7 @@ function getHotTopicsByPeriod($link,$period,$num=10)
 		  "      AND nodetype = 0 ".
 		  "      AND pctype < 4 ";
 	if($queryTime)
-	$query.=  "      AND UNIX_TIMESTAMP(nodes.created) > ".$queryTime." ";
+	$query.=  "      AND nodes.created > FROM_UNIXTIME(".$queryTime.")";
 	$query.=  "GROUP BY nodes.tid ".
 		  "ORDER BY 1 DESC ".
 		  "LIMIT 0 , ".$num." ;";
@@ -360,7 +364,7 @@ function getPcAnnounce($link,$num=5)
 {
 	global $pcconfig;
 	$num = intval($num);
-	$query = "SELECT users.uid , subject , nid FROM nodes,users WHERE access = 0 AND nodes.uid = users.uid AND username = '".$pcconfig["ADMIN"]."' ORDER BY nid DESC LIMIT 0 , " . $num . ";";
+	$query = "SELECT users.uid , subject , nid FROM nodes ,users WHERE access = 0 AND nodes.uid = users.uid AND username = '".$pcconfig["ADMIN"]."' ORDER BY nid DESC LIMIT 0 , " . $num . ";";
 	$result = mysql_query($query,$link);
 	$anns = array();
 	while($rows = mysql_fetch_array($result))
@@ -375,11 +379,11 @@ function getHotNodes($link,$type,$timeLong=259200,$num=20)
 	$num = intval($num);
 	
 	if("comments" == $type)
-		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND UNIX_TIMESTAMP(created) > ".(time()-  $timeLong )." ORDER BY commentcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > FROM_UNIXTIME(".(time()-  $timeLong ).") ORDER BY commentcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	elseif("trackbacks" == $type)
-		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND UNIX_TIMESTAMP(created) > ".(time()-  $timeLong )." AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > FROM_UNIXTIME(".(time()-  $timeLong ).") AND trackbackcount != 0 ORDER BY trackbackcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	else
-		$query = "SELECT nid , subject , nodes.uid  FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND UNIX_TIMESTAMP(created) > ".(time()- $timeLong )." AND nodes.visitcount != 0 ORDER BY nodes.visitcount DESC , nid DESC LIMIT 0 , ".$num.";";
+		$query = "SELECT nid , subject , nodes.uid  FROM nodes,users WHERE nodes.uid = users.uid AND nodetype = 0 AND pctype < 4 AND access = 0 AND type = 0 AND recommend != 2 AND created > FROM_UNIXTIME(".(time()- $timeLong ).") AND nodes.visitcount != 0 ORDER BY nodes.visitcount DESC , nid DESC LIMIT 0 , ".$num.";";
 	
 	$result = mysql_query($query,$link);	
 	$nodes = array();
@@ -412,7 +416,7 @@ function getSectionHotNodes($link,$section,$timeLong,$num)
     if (!$section || !$pcconfig["SECTION"][$section])
         return false;    
     $query = "SELECT nodes.uid , nid , subject , username , corpusname  ".
-             " FROM nodes,users ".
+             " FROM nodes use index(created) ,users ".
              " WHERE nodes.uid = users.uid ".
              "   AND nodetype = 0 ".
              "   AND pctype <= 4 ".
@@ -420,7 +424,7 @@ function getSectionHotNodes($link,$section,$timeLong,$num)
              "   AND type = 0 ".
              "   AND recommend != 2 ".
              "   AND nodes.theme = '".addslashes($section)."'".
-             "   AND UNIX_TIMESTAMP(created) > ".(time()- $timeLong ).
+             "   AND created > FROM_UNIXTIME(".(time()- $timeLong ).")".
              "   AND nodes.visitcount != 0 ".
              " ORDER BY nodes.visitcount DESC , nid DESC ".
              " LIMIT 0 , ".intval($num).";";

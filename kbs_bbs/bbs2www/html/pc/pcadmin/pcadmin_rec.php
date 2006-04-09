@@ -71,7 +71,7 @@ switch($type)
 		break;
 	default:
 	$query = "SELECT nid , uid , emote , subject , created , visitcount , commentcount , trackbackcount , recommend , recuser , rectopic ".
-		"FROM nodes WHERE access = 0 AND recommend != 0 AND recommend != 4 ".
+		"FROM nodes WHERE access = 0 AND recommend > 0 AND recommend < 4 ".
 		"ORDER BY recommend ASC , nid DESC ".
 		"LIMIT ".$start ." , ".$pcconfig["LIST"]." ;";
 }
