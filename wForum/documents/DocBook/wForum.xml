@@ -26,7 +26,7 @@
 		<section id="install_kbsbbs">
 			<title>kbsbbs 安装</title>
 			<para>kbsbbs 安装请参考其安装文档；必须打开 WWW 支持。站点文件请参考 site/zixia.h 和 site/zixia.c。</para>
-			<para>原先安装了 kbsbbs 系统的站点需要升级 .PASSWDS 文件。请参考 <xref linkend="upgrade_kbsbbs" endterm="upgrade_kbsbbs_title"/>。</para>
+			<para>原先安装了 kbsbbs 系统的站点需要确认 site.h 里面定义了<programlisting>#define HAVE_WFORUM 1</programlisting>，如果没有定义，加上之后重新编译安装所有的程序并重新启动 web。</para>
 		</section>
 		<section id="install_wforum">
 			<title>安装 wForum</title>
@@ -123,18 +123,6 @@ short_open_tag = off</programlisting>
 				<listitem><para>如果 wForum 是从 2004 年 6 月以前的代码升级的，推荐升级之后删除 ~bbs/boards/ 目录下所有的 .WEBTHREAD 强制让系统重新生成索引。可以在 ~bbs/boards/ 下执行这样一个命令：
 				<programlisting>ls -d1 * | awk '{system(sprintf("rm %s/.WEBTHREAD", $1));}'</programlisting>
 				</para></listitem>
-			</orderedlist>
-		</section>
-		<section id="upgrade_kbsbbs">
-			<title id="upgrade_kbsbbs_title">KBS 系统升级安装 wForum 说明</title>
-			<orderedlist>
-				<listitem><para>原 kbsbbs 系统要新加入 wForum 支持，首先需要在 site.h 中定义 HAVE_WFORUM：
-					<programlisting>#define HAVE_WFORUM 1</programlisting>
-					如果您的系统原来就已经定义了这个，那么，恭喜你，你的系统已经支持 wForum 了，不需要进行下面的操作。
-				</para></listitem>
-				<listitem><para>这里的升级说明比较简略，因为假设读者已经相当熟悉 kbsbbs 系统。升级系统需要停掉所有的 BBS 服务（包括共享内存），重新编译安装所有的 BBS 程序。接下来，需要转换 ~bbs/.PASSWDS 文件：拷贝一份为 ~bbs/.PASSWDS.OLD，打开转换程序 contrib/smth2wforum/convpasswd.c 看老的 userec 结构是否正确，然后编译运行之（这个程序如果编译有困难可以覆盖掉 local_utl/ 下面某个无用程序来编译）。然后用 ~bbs/.PASSWDS.NEW 覆盖 .PASSWDS。这个转换程序除了可能的结构转换还会设置两个用户自定义选项的默认值，默认是允许显示详细用户数据，不允许显示真实用户数据。</para>
-					<para>全部转换工作就此完成。此时按正常方式启动系统。</para>
-				</listitem>
 			</orderedlist>
 		</section>
 		<section id="bbs2www">
