@@ -1119,34 +1119,12 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     setbfile(oldpath, boardname, fh->filename);
     filtered = 0;
     if (strcmp(fh->owner, DELIVER)) {
-        if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)
-#if 0
-            && strcmp(boardname, "NewsClub")
-#endif
-            ) {
-#ifdef SMTH
-#if 0
-            int isnews;
-
-            isnews = !strcmp(boardname, "News");
-            if (isnews || check_badword_str(fh->title, strlen(fh->title)) || check_badword(oldpath))
-#else
+        if (((bh && bh->level & PERM_POSTMASK) || normal_board(boardname)) && strcmp(boardname, FILTER_BOARD)) {
             if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, fh->attachment, session))
-#endif
-#else
-            if (check_badword_str(fh->title, strlen(fh->title), session) || check_badword(oldpath, fh->attachment, session))
-#endif
             {
                 /*
                  * FIXME: There is a potential bug here. 
                  */
-#ifdef SMTH
-#if  0
-                if (isnews)
-                    setbfile(newpath, "NewsClub", fh->filename);
-                else
-#endif
-#endif
                 setbfile(newpath, FILTER_BOARD, fh->filename);
                 f_mv(oldpath, newpath);
                 fh->o_bid = bid;
@@ -1166,14 +1144,6 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
                     snprintf(newtitle, ARTICLE_TITLE_LEN, "[ÇëµÈºòÉóºË]%s", fh->title);
                     mail_file(session->currentuser->userid, newpath, session->currentuser->userid, newtitle, 0, fh);
                 }
-#endif
-
-#ifdef SMTH
-#if  0
-                if (isnews)
-                    boardname = "NewsClub";
-                else
-#endif
 #endif
                     boardname = FILTER_BOARD;
                 filtered = 1;
