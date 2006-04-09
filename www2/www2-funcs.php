@@ -191,12 +191,16 @@ function login_init($sid=FALSE,$no_auto_guest_login=FALSE)
 	$compat_telnet=0;
 	$sessionid = "";
 	if ($sid) {
-		@$sessionid = $_GET["sid"];
-		if (!$sessionid) @$sessionid = $_POST["sid"];
-		if (!$sessionid) @$sessionid = $_COOKIE["sid"];
-		settype($sessionid, "string");
+		if (is_string($sid)) {
+			$sessionid = $sid;
+		} else {
+			@$sessionid = $_GET["sid"];
+			if (!$sessionid) @$sessionid = $_POST["sid"];
+			if (!$sessionid) @$sessionid = $_COOKIE["sid"];
+			settype($sessionid, "string");
+		}
 	}
-	if ($sid && $sessionid && strlen($sessionid)==9) {
+	if ($sessionid && strlen($sessionid)==9) {
 		$utmpnum=decodesessionchar($sessionid[0])+decodesessionchar($sessionid[1])*36+decodesessionchar($sessionid[2])*36*36;
 		$utmpkey=decodesessionchar($sessionid[3])+decodesessionchar($sessionid[4])*36+decodesessionchar($sessionid[5])*36*36
 			+decodesessionchar($sessionid[6])*36*36*36+decodesessionchar($sessionid[7])*36*36*36*36+decodesessionchar($sessionid[8])*36*36*36*36*36;
@@ -218,7 +222,7 @@ function login_init($sid=FALSE,$no_auto_guest_login=FALSE)
 	}
 	
 	// add by stiger, 如果登录失败就继续用guest登录
-	if (!$sid && !$utmpkey && !$no_auto_guest_login) {
+	if (!$sessionid && !$utmpkey && !$no_auto_guest_login) {
 		set_fromhost();
 		$error = bbs_wwwlogin(0, $fromhost, $fullfromhost);
 		if($error == 2 || $error == 0){

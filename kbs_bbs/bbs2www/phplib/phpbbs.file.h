@@ -11,6 +11,7 @@ PHP_FUNCTION(bbs_print_article);
 PHP_FUNCTION(bbs_print_article_js);
 PHP_FUNCTION(bbs_printoriginfile);
 PHP_FUNCTION(bbs_originfile);
+PHP_FUNCTION(bbs_decode_att_hash);
 
 
 #define PHP_BBS_FILE_EXPORT_FUNCTIONS \
@@ -22,7 +23,8 @@ PHP_FUNCTION(bbs_originfile);
     PHP_FE(bbs_print_article_js, NULL) \
     PHP_FE(bbs_printoriginfile, NULL) \
     PHP_FE(bbs_originfile, NULL) \
-
+    PHP_FE(bbs_decode_att_hash, NULL) \
+    
 
 #endif //PHP_BBS_FILE_H
 

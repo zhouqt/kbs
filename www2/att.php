@@ -6,31 +6,45 @@
 		die;
 	}
 	
-	login_init(FALSE, TRUE);
+	$sid = FALSE;
 	$query = $_SERVER["QUERY_STRING"];
 	settype($query, "string");
 	$av = explode(".", $query);
 	$ac = count($av);
-	if ($ac == 4 || $ac == 5) {
-		$ftype = 0;
-		$num = 0;
-		$ap = intval($av[3]);
-	} else if ($ac == 6 || $ac == 7) {
-		$ftype = intval($av[3]);
-		$num = intval($av[4]);
-		$ap = intval($av[5]);
+	if ($ac == 3) {
+		$info = $av[1];
+		$ret = bbs_decode_att_hash($info);
+		if (!$ret) die;
+		$bid = $ret['bid'];
+		$board= '';
+		$id = $ret['id'];
+		$ap = $ret['pos'];
+		$sid = $ret['sid'];
+		$ftype = $num = 0;
 	} else {
-		go_die();
+		if ($ac == 4 || $ac == 5) {
+			$ftype = 0;
+			$num = 0;
+			$ap = intval($av[3]);
+		} else if ($ac == 6 || $ac == 7) {
+			$ftype = intval($av[3]);
+			$num = intval($av[4]);
+			$ap = intval($av[5]);
+		} else {
+			go_die();
+		}
+		$id = intval($av[2]);
+		if ($av[1] == 'r') {
+			$bid = 0;
+			$board = "Recommend";
+		} else {
+			$bid = intval($av[1]);
+			$board = "";
+		}
 	}
 	if ($ap <= 0) go_die();
-	$id = intval($av[2]);
-	if ($av[1] == 'r') {
-		$bid = 0;
-		$board = "Recommend";
-	} else {
-		$bid = intval($av[1]);
-		$board = "";
-	}
+
+	login_init($sid, TRUE);
 	$brdarr = array();
 	$isnormalboard = bbs_safe_getboard($bid, $board, $brdarr);
 	if (is_null($isnormalboard)) {

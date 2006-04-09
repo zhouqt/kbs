@@ -1,5 +1,6 @@
 #include "php_kbs_bbs.h"  
 #include "SAPI.h"
+#include "md5.h"
 
 /*
  * refer Ecma-262 
@@ -656,4 +657,51 @@ PHP_FUNCTION(bbs_originfile)
     fclose(fp);
     content[clen] = '\0';
     RETURN_STRINGL(content, clen, 0);
+}
+
+
+PHP_FUNCTION(bbs_decode_att_hash)
+{
+    char *info;
+    int infolen;
+    char decoded[30];
+    char md5ret[17];
+    uint16_t is;
+    int tt, bid, id, pos;
+    MD5_CTX md5;
+    
+    if ((ZEND_NUM_ARGS() != 1) || (zend_parse_parameters(1 TSRMLS_CC, "s", &info, &infolen) != SUCCESS)) {
+		WRONG_PARAM_COUNT;
+    }
+
+    if (infolen != 33) {
+        RETURN_FALSE;
+    }
+    memcpy(decoded, info, 9);
+    from64tobits(decoded+9, info+9);
+
+    MD5Init(&md5);
+    MD5Update(&md5, (unsigned char *) decoded, 23);
+    MD5Final((unsigned char*)md5ret, &md5);
+
+    if (memcmp(md5ret, decoded+23, 4) != 0) {
+        RETURN_FALSE;
+    }
+    memcpy(&is, decoded+9, 2);
+    bid = (is);
+    memcpy(&id, decoded+11, 4);
+    memcpy(&pos, decoded+15, 4);
+    memcpy(&tt, decoded+19, 4);
+    if (time(NULL) < tt || (time(NULL) - tt >= 300)) {
+        RETURN_FALSE;
+    }
+
+    if (array_init(return_value) == FAILURE) {
+        RETURN_FALSE;
+    }
+
+    add_assoc_stringl(return_value, "sid", info, 9 , 1);
+    add_assoc_long(return_value, "bid", bid);
+    add_assoc_long(return_value, "id", id);
+    add_assoc_long(return_value, "pos", pos);
 }
