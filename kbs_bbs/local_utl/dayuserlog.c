@@ -14,6 +14,7 @@ lastcount文件可以用来snmp分析....
 #include "bbs.h"
 
 FILE *fp;
+FILE *fp_login;
 FILE *fp_forcount;
 int totalonline=0;
 int wwwguestonline=0;
@@ -23,9 +24,19 @@ int telnetschool=0;
 int wwwnotguestschool=0;
 int wwwguestschool=0;
 
+unsigned int logincount=0;
+unsigned int logoutcount=0;
+unsigned int wwwlogincount=0;
+unsigned int wwwlogoutcount=0;
+unsigned int wwwguestlogincount=0;
+unsigned int wwwguestlogoutcount=0;
+time_t staytime=0;
+time_t wwwstaytime=0;
+time_t wwwgueststaytime=0;
+
 static int is_school(char *ip)
 {
-	if(! strncmp(ip, "219.224", 7) )
+	if(! strncmp(ip, "59.66", 5) )
 		return 1;
 	if( !strncmp(ip, "166.111", 7))
 		return 1;
@@ -95,6 +106,12 @@ int main(void){
 		exit(0);
 	}
 
+	sprintf(path, "%s/%d/%d/%d_login", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);
+
+	if((fp_login=fopen(path, "a"))==NULL){
+		printf("cannot open log file\n");
+		exit(0);
+	}
 
     sprintf(path, "%s/lastcount", BONLINE_LOGDIR);
 
@@ -119,10 +136,33 @@ int main(void){
 	show_wwwguest();
 #endif
 
+	logincount = get_publicshm()->logincount;
+	logoutcount = get_publicshm()->logoutcount;
+	wwwlogincount = get_publicshm()->wwwlogincount;
+	wwwlogoutcount = get_publicshm()->wwwlogoutcount;
+	wwwguestlogincount = get_publicshm()->wwwguestlogincount;
+	wwwguestlogoutcount = get_publicshm()->wwwguestlogoutcount;
+	staytime = get_publicshm()->staytime;
+	wwwstaytime = get_publicshm()->wwwstaytime;
+	wwwgueststaytime = get_publicshm()->wwwgueststaytime;
+
+    setpublicshmreadonly(0);
+	get_publicshm()->logincount=0;
+	get_publicshm()->logoutcount=0;
+	get_publicshm()->wwwlogincount=0;
+	get_publicshm()->wwwlogoutcount=0;
+	get_publicshm()->wwwguestlogincount=0;
+	get_publicshm()->wwwguestlogoutcount=0;
+	get_publicshm()->staytime=0;
+	get_publicshm()->wwwstaytime=0;
+	get_publicshm()->wwwgueststaytime=0;
+    setpublicshmreadonly(1);
 	/*格式: 时间 totalonline wwwguestonline wwwnotguestonline telnetonline wwwguestschool wwwnotguestschool telnetschool */
 	fprintf(fp, "%d.%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", t.tm_hour, t.tm_min/6, totalonline, wwwguestonline, wwwnotguestonline, telnetonline, wwwguestschool, wwwnotguestschool, telnetschool);
+	fprintf(fp_login, "%d.%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\t%d\n", t.tm_hour, t.tm_min/6, logincount, logoutcount, logoutcount?(staytime/logoutcount)/10:0, wwwlogincount, wwwlogoutcount, wwwguestlogincount, wwwguestlogoutcount, wwwlogoutcount?(wwwstaytime/wwwlogoutcount)/10:0 ,wwwguestlogoutcount?(wwwgueststaytime/wwwguestlogoutcount)/10:0);
 	fprintf(fp_forcount, "%d\n%d\n%d\n%d\n%d\n%d\n%d\n", totalonline, wwwguestonline, wwwnotguestonline, telnetonline, wwwguestschool, wwwnotguestschool, telnetschool);
     fclose(fp);
+    fclose(fp_login);
     fclose(fp_forcount);
     return 0;
 }

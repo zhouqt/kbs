@@ -4,7 +4,7 @@
 #include "urlencode.c"
 
 struct binfo {
-    char boardname[15];
+    char boardname[20];
     char expname[50];
     int times;
     int sum;
@@ -103,54 +103,6 @@ char *timetostr(i)
     sec = i & 60;
     sprintf(str, "%2d:%2d:%2d", hour, minute, sec);
     return str;
-}
-
-extern const char seccode[SECNUM][5];
-
-static int get_seccode_index(char prefix)
-{
-    int i;
-
-    for (i = 0; i < SECNUM; i++) {
-        if (strchr(seccode[i], prefix) != NULL)
-            return i;
-    }
-    return -1;
-}
-
-void gen_board_rank_xml(int brdcount, struct binfo *bi)
-{
-    int i;
-    FILE *fp;
-    char xmlfile[STRLEN];
-	char xml_buf[256];
-	char url_buf[256];
-	struct boardheader *bp;
-	int sec_id;
-
-    snprintf(xmlfile, sizeof(xmlfile), BBSHOME "/xml/board.xml");
-    if ((fp = fopen(xmlfile, "w")) == NULL)
-        return;
-    fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
-    fprintf(fp, "<BoardList Desc=\"%s\">\n",encode_url(url_buf,"讨论区使用状况统计",sizeof(url_buf)));
-    for (i = 0; i < brdcount; i++) {
-		bp = getbcache(bi[i].boardname);
-		if (bp == NULL || (bp->flag & BOARD_GROUP))
-			continue;
-		if ((sec_id = get_seccode_index(bp->title[0])) < 0)
-			continue;
-        fprintf(fp, "<Board>\n");
-        fprintf(fp, "<EnglishName>%s</EnglishName>\n", 
-				encode_url(url_buf,encode_xml(xml_buf, bi[i].boardname, sizeof(xml_buf)),sizeof(url_buf)));
-        fprintf(fp, "<ChineseName>%s</ChineseName>\n", 
-				encode_url(url_buf,encode_xml(xml_buf, bi[i].expname, sizeof(xml_buf)),sizeof(url_buf)));
-        fprintf(fp, "<VisitTimes>%d</VisitTimes>\n", bi[i].times);
-        fprintf(fp, "<StayTime>%d</StayTime>\n", bi[i].sum);
-        fprintf(fp, "<SecId>%d</SecId>\n", sec_id);
-        fprintf(fp, "</Board>\n");
-    }
-    fprintf(fp, "</BoardList>\n");
-    fclose(fp);
 }
 
 int gen_usage(char *buf, char *buf1, char *buf2, char *buf3)
@@ -352,8 +304,6 @@ int main(void){
 	}
 
 	numboards++;
-    /* generate boards usage result in xml format */
-    gen_board_rank_xml(numboards, st);
 
 	/*每周四计算完后，清楚这周记录，并备份boardusage.week */
 	sprintf(buf, "%s/%d/%d/%d_%d.boardusage.week.bak", BONLINE_LOGDIR, t.tm_year+1900, t.tm_mon+1, t.tm_mday, t.tm_hour);

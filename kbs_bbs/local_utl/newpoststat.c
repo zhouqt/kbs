@@ -27,24 +27,24 @@ const char *surfix_bless[23] = {
 	" ",
     "  \x1b[1;34m◆  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[0;32m│\x1b[1m深\x1b[0;32m│",
-    "\x1b[0;32m│\x1b[1m情\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m本\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m日\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[0;32m│  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[0;32m│\x1b[1m祝\x1b[0;32m│",
-    "\x1b[0;32m│\x1b[1m福\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m十\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m大\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[1;34m◆  ",
     "  \x1b[1;34m◆  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[0;32m│\x1b[1m校\x1b[0;32m│",
-    "\x1b[0;32m│\x1b[1m内\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m深\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m情\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[32m│  ",
     "\x1b[1;32m┏\x1b[0;32m┴\x1b[1m┓",
-    "\x1b[0;32m│\x1b[1m热\x1b[0;32m│",
-    "\x1b[0;32m│\x1b[1m点\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m祝\x1b[0;32m│",
+    "\x1b[0;32m│\x1b[1m福\x1b[0;32m│",
     "\x1b[1;32m┗\x1b[0;32m┬\x1b[1m┛",
     "  \x1b[1;34m◆  "
 };
@@ -70,6 +70,28 @@ bool force_refresh;
 int topnum=0;
 
 #define INTERVAL 200
+
+static char * get_file_name(char *boardname, int threadid, char *fname)
+{
+
+	char dirfile[256];
+	int fd;
+	struct fileheader fh;
+
+	fname[0]='\0';
+            sprintf(dirfile, "boards/%s/.DIR", boardname);
+			if ((fd = open(dirfile, O_RDWR, 0644)) < 0)
+				return fname;
+
+    		if( get_records_from_id(fd, threadid, &fh, 1, NULL) == 0 ){
+				close(fd);
+				return fname;
+			}
+			close(fd);
+
+			strcpy(fname, fh.filename);
+			return fname;
+}
 
 static char * get_file_title(char *boardname, int threadid, char *title, char *userid)
 {
@@ -251,11 +273,13 @@ int get_top(int type)
 				break;
 
 			/***检查是否该计算十大***/
-#ifdef BLESS_BOARD
 			bh = getbcache(row[0]);
 			if(bh==NULL || bh->flag & BOARD_POSTSTAT){
 				continue;
 			}
+			if(!normal_board(bh->filename))
+				continue;
+#ifdef BLESS_BOARD
 			if(type==0){
 				if ( ! strcasecmp(row[0], BLESS_BOARD) ){
 					continue;
@@ -392,7 +416,7 @@ void writestat(int mytype)
 #ifdef BLESS_BOARD
         if (mytype == 4)
             fprintf(fp, "              \x1b[1;33m── \x1b[31m☆\x1b[33m☆\x1b[32m☆ \x1b[41;32m  \x1b[33m本日十大衷心祝福  \x1b[m\x1b[1;32m ☆\x1b[31m☆\x1b[33m☆ ──\x1b[m\n"
-                        "                                                                         %s\n", surfix_bless[1]);
+                        "                                                                         %s\x1b[m\n", surfix_bless[1]);
         else
 #endif
             fprintf(fp, "                \033[34m-----\033[37m=====\033[41m 本%s \033[m=====\033[34m-----\033[m\n\n", mytitle[mytype]);
@@ -423,6 +447,34 @@ void writestat(int mytype)
 #endif
         fclose(fp);
     }
+}
+
+int backup_top(){
+	int i;
+	char fname[256];
+	char dirname[256];
+	char aname[256];
+	struct tm t;
+	time_t tt;
+	FILE *fp;
+
+	printf("backup_top\n");
+	tt=time(0);
+	localtime_r(&tt, &t);
+	sprintf(dirname, "bonlinelog/top/%04d%02d%02d/",1900+t.tm_year, t.tm_mon+1, t.tm_mday);
+	sprintf(fname, "mkdir -p %s", dirname);
+	system(fname);
+	sprintf(fname, "%sindex.html", dirname);
+	if((fp=fopen(fname, "w"))==NULL) return -1;
+	printf("backup_t1op\n");
+	for(i=0;i<topnum;i++){
+		sprintf(fname,"boards/%s/%s",top[i].board, get_file_name(top[i].board, top[i].groupid, aname));
+		if(aname[0]=='\0') continue;
+		sprintf(aname, "cp -f %s %s/%d.txt", fname, dirname, i);
+		system(aname);
+		fprintf(fp,"<a href=%d.txt>%d:%s</a>\n",i,i+1,top[i].title);
+	}
+	fclose(fp);
 }
 
 void gen_sec_hot_subjects_xml(int mytype, int secid)
@@ -538,6 +590,8 @@ void poststat(int mytype)
 {
 	get_top(mytype);
 	writestat(mytype);
+	if(mytype==0)
+		backup_top();
 	gen_hot_subjects_xml(mytype);
 	if(mytype==0)
 		gen_secs_hot_subjects_xml(mytype);

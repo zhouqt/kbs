@@ -10,6 +10,7 @@ crontab:  10 0 * * * /home/bbs/bin/post_brdlog
 #include <time.h>
 #include <stdio.h>
 #include "bbs.h"
+#include "urlencode.c"
 
 #ifdef HAVE_MYSQL_SMTH
 struct _brdlog
@@ -62,37 +63,42 @@ int fillbcache(struct boardheader *fptr,int idx,void* arg)
 	FILE *fp;
     MYSQL_RES *res;
     MYSQL_ROW row;
-
 	if(fptr->filename[0]==0 || !normal_board(fptr->filename))
 		return 0;
 
     if (fptr->flag & BOARD_GROUP)
 		return 0;
 
-	strcpy(x[n].filename, fptr->filename);
-	strcpy(x[n].title, fptr->title+13);
-
 	sprintf(sql, "SELECT MIN(nowid),MAX(nowid),AVG(users) FROM bonline WHERE bdate=\"%d-%d-%d\" AND bname LIKE '%s' ;", t.tm_year+1900, t.tm_mon+1, t.tm_mday, fptr->filename);
     if( mysql_real_query( &s, sql, strlen(sql) ))
         printf("%s\n",mysql_error(&s));
 	else{
 	    res = mysql_store_result(&s);
+		if(res == NULL){
+	printf("%s\n",sql);
+			return;
+		}
 	    row = mysql_fetch_row(res);
 
 		if(row && row[0] && row[0][0]){
 			x[n].yesid=atoi(row[0]);
 			x[n].nowid=atoi(row[1]);
 			x[n].online=atoi(row[2]);
-		}
+		}else
+			return;
 		mysql_free_result(res);
 	}
+
+	strcpy(x[n].filename, fptr->filename);
+	strcpy(x[n].title, fptr->title+13);
+
 	n++;
 
 	sprintf(sql,"%s/boards/%s.all",BONLINE_LOGDIR, fptr->filename);
 	if((fp=fopen(sql,"a"))!=NULL){
-		fprintf(fp,"%d-%d-%d\t%d\n", t.tm_year+1900, t.tm_mon+1, t.tm_mday, x[n-1].online);
+		fprintf(fp,"%d-%d-%d\t%d\t%d\n", t.tm_year+1900, t.tm_mon+1, t.tm_mday, x[n-1].online, x[n-1].nowid-x[n-1].yesid);
 		fclose(fp);
-	}
+	}else printf("error open:%s\n", sql);
     return 0;
 }
 
@@ -100,6 +106,54 @@ int fillboard()
 {
 	bzero(x, MAXBOARD * sizeof(struct _brdlog));
     return apply_record(BOARDS, (APPLY_FUNC_ARG)fillbcache, sizeof(struct boardheader), NULL, 0,false);
+}
+
+extern const char seccode[SECNUM][5];
+
+static int get_seccode_index(char prefix)
+{
+    int i;
+
+    for (i = 0; i < SECNUM; i++) {
+        if (strchr(seccode[i], prefix) != NULL)
+            return i;
+    }
+    return -1;
+}
+
+void gen_board_rank_xml()
+{
+    int i;
+    FILE *fp;
+    char xmlfile[STRLEN];
+	char xml_buf[256];
+	char url_buf[256];
+	struct boardheader *bp;
+	int sec_id;
+
+    snprintf(xmlfile, sizeof(xmlfile), BBSHOME "/xml/board.xml");
+    if ((fp = fopen(xmlfile, "w")) == NULL)
+        return;
+    fprintf(fp, "<?xml version=\"1.0\" encoding=\"GBK\"?>\n");
+    fprintf(fp, "<BoardList Desc=\"%s\">\n",encode_url(url_buf,"讨论区使用状况统计",sizeof(url_buf)));
+    for (i = 0; i < n; i++) {
+		bp = getbcache(x[i].filename);
+		if (bp == NULL || (bp->flag & BOARD_GROUP))
+			continue;
+		if ((sec_id = get_seccode_index(bp->title[0])) < 0)
+			continue;
+        fprintf(fp, "<Board>\n");
+        fprintf(fp, "<EnglishName>%s</EnglishName>\n", 
+				encode_url(url_buf,encode_xml(xml_buf, x[i].filename, sizeof(xml_buf)),sizeof(url_buf)));
+        fprintf(fp, "<ChineseName>%s</ChineseName>\n", 
+				encode_url(url_buf,encode_xml(xml_buf, x[i].title, sizeof(xml_buf)),sizeof(url_buf)));
+        fprintf(fp, "<Online>%ld</Online>\n", x[i].online);
+        fprintf(fp, "<Articles>%ld</Articles>\n", x[i].nowid-x[i].yesid);
+        fprintf(fp, "<SecId>%ld</SecId>\n", sec_id);
+        fprintf(fp, "</Board>\n");
+    }
+    fprintf(fp, "</BoardList>\n");
+    fclose(fp);
 }
 
 int main(int argc,char **argv)
@@ -115,6 +169,7 @@ int main(int argc,char **argv)
 		before = 0;
 
 	chdir(BBSHOME);
+	bzero(&x[0], sizeof(x));
 
     if (init_all()) {
         printf("init data fail\n");
@@ -128,7 +183,7 @@ int main(int argc,char **argv)
         return 0;
     }
 
-	now=time(0) - 3600 - 86400*before;
+	now=time(0) - 86400 - 86400*before;
 	localtime_r( &now, &t);
 
     fillboard();
@@ -136,6 +191,8 @@ int main(int argc,char **argv)
 	mysql_close(&s);
 
     qsort(x, n, sizeof(x[0]), online_cmp);
+    /* generate boards usage result in xml format */
+    gen_board_rank_xml();
 
 	sprintf(path,"tmp/brdlog.%d.out",getpid());
 	putout(path);
