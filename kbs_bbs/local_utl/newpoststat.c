@@ -475,6 +475,7 @@ int backup_top(){
 		fprintf(fp,"<a href=%d.txt>%d:%s</a>\n",i,i+1,top[i].title);
 	}
 	fclose(fp);
+    return 0;
 }
 
 void gen_sec_hot_subjects_xml(int mytype, int secid)

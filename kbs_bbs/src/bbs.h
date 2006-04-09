@@ -27,54 +27,123 @@
 #include "kbs_config.h"
 
 /* Global includes, needed in most every source file... */
+
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
-#endif
+#endif /* _GNU_SOURCE */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
-#include <setjmp.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <string.h>
-#include <strings.h>
 #include <ctype.h>
-#include <errno.h>
-#include <time.h>
-#ifndef	DEBUG_MEMORY
-#ifndef FREEBSD
-#include <malloc.h>
-#endif
-#else
-#include "mpatrol.h"
-#endif
-#include <sys/time.h>
-#include <sys/types.h>
-#include <sys/stat.h>
-#include <sys/file.h>
+
+#ifdef HAVE_STRING_H
+#include <string.h>
+#endif /* HAVE_STRING_H */
+
+#ifdef HAVE_STRINGS_H
+#include <strings.h>
+#endif /* HAVE_STRINGS_H */
+
+#include <fcntl.h>
 #include <dirent.h>
-#include <unistd.h>
-#include <sys/mman.h>
-#include <sys/socket.h>
-#include <sys/shm.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <sys/wait.h>
+#include <time.h>
+#include <signal.h>
 #include <stdarg.h>
+
+#ifdef HAVE_STDDEF_H
+#include <stddef.h>
+#endif /* HAVE_STDDEF_H */
+
+#ifdef HAVE_STDINT_H
+#include <stdint.h>
+#endif /* HAVE_STDINT_H */
+
 #include <setjmp.h>
+#include <errno.h>
+
+#ifdef HAVE_LIMITS_H
+#include <limits.h>
+#endif /* HAVE_LIMITS_H */
+
+#include <sys/stat.h>
+#include <sys/mman.h>
+#include <sys/time.h>
+#include <sys/wait.h>
+#include <sys/types.h>
+#include <sys/file.h>
+#include <sys/shm.h>
+#include <sys/socket.h>
+
+#ifdef HAVE_NETINET_IN_H
+#include <netinet/in.h>
+#endif /* HAVE_NETINET_IN_H */
+
+#ifdef HAVE_ARPA_INET_H
+#include <arpa/inet.h>
+#endif /* HAVE_ARPA_INET_H */
+
+#ifdef HAVE_TERMIO_H
+#include <termio.h>
+#endif /* HAVE_TERMIO_H */
 
 #ifdef HAVE_TERMIOS_H
 #include <termios.h>
-#endif
+#endif /* HAVE_TERMIOS_H */
+
+#ifndef DEBUG_MEMORY
+#ifndef FREEBSD
+#ifdef HAVE_MALLOC_H
+#include <malloc.h>
+#endif /* HAVE_MALLOC_H */
+#endif /*FREEBSD*/
+#else /* DEBUG_MEMOTY */
+#include "mpatrol.h"
+#endif /* DEBUG_MEMORY */
+
+#ifdef HAVE_STDBOOL_H
+#include <stdbool.h>
+#endif /* HAVE_STDBOOL_H */
+
+#ifndef HAVE_BOOL
+typedef enum { false = 0, true = 1 } bool;
+#else /* HAVE_BOOL */
+
+#ifndef true
+#define true 1
+#endif /* true */
+
+#ifndef false
+#define false 0
+#endif /* false */
+
+#endif /* HAVE_BOOL */
+
+#ifndef TRUE
+#define TRUE true
+#endif /* TRUE */
+
+#ifndef FALSE
+#define FALSE false
+#endif /* FALSE */
+
+#ifndef _cplusplus
+#ifndef HAVE_BYTE
+typedef unsigned char byte;
+#endif /* HAVE_BYTE */
+#endif /* _cplusplus */
 
 #ifndef HAVE_ISBLANK
 #define isblank(c) ((c) == (int)' ' || (c) == (int)'\t' || (c) == (int)'\v')
-#endif
+#endif /* HAVE_ISBLANK */
 
 #ifndef HAVE_SIG_T
-typedef void (* sig_t)(int);
-#endif
+typedef void (*sig_t)(int);
+#endif /* HAVE_SIG_T */
+
+#ifndef HAVE_SOCKLEN_T
+typedef size_t socklen_t;
+#endif /* HAVE_SOCKLEN_T */
 
 #if SIZEOF_INT_P == SIZEOF_INT
 typedef int POINTDIFF;
@@ -90,38 +159,15 @@ typedef int32 POINTDIFF;
 
 #ifdef SOLARIS
 typedef u_longlong_t u_int64_t;
-#endif
+#endif /* SOLARIS */
 
-
-#ifndef _cplusplus
-
-#ifndef byte
-typedef unsigned char byte;
-#endif
-
-#ifndef HAVE_BOOL
-typedef enum { false = 0, true = 1 } bool;
-#else
-
-#ifndef true
-#define true 1
-#endif
-
-#ifndef false
-#define false 0
-#endif
-
-#endif
-#endif
-
-#define IDLEN    12             /* Length of userids */
-#define OLDPASSLEN  14          /* Length of encrypted passwd field */
-#define STRLEN   80             /* Length of most string data */
-#define NAMELEN  40             /* Length of username/realname */
-#define BOARDNAMELEN 30         /* max length of board */
-#define PASSLEN 39
-#define MD5PASSLEN 16
-
+#define IDLEN           12  /* Length of userids */
+#define OLDPASSLEN      14  /* Length of encrypted passwd field */
+#define STRLEN          80  /* Length of most string data */
+#define NAMELEN         40  /* Length of username/realname */
+#define BOARDNAMELEN    30  /* max length of board */
+#define PASSLEN         39
+#define MD5PASSLEN      16
 
 #include "site.h"
 #include "default.h"
@@ -129,30 +175,30 @@ typedef enum { false = 0, true = 1 } bool;
 #ifndef IPLEN
 #ifdef HAVE_IPV6_SMTH
 #define IPLEN   46
-#else
+#else /* HAVE_IPV6_SMTH */
 #define IPLEN   16
-#endif
-#endif
+#endif /* HAVE_IPV6_SMTH */
+#endif /* IPLEN */
 
 #ifdef HAVE_IPV6_SMTH
 #define IPBITS   128
 #define ip_cmp(x, y) memcmp(&(struct in6_addr)x, &(struct in6_addr)y, sizeof(struct in6_addr))
 #define ip_cpy(x, y) memcpy(&(struct in6_addr)x, &(struct in6_addr)y, sizeof(struct in6_addr))
-#else
+#else /* HAVE_IPV6_SMTH */
 #define IPBITS   32
 #define ip_cmp(x, y) ((uint32_t)x!=(uint32_t)y)
 #define ip_cpy(x, y) ((uint32_t)x=(uint32_t)y)
-#endif
+#endif /* HAVE_IPV6_SMTH */
 
 #define PUBLIC_SHMKEY	3700
 /*这个是唯一一个定义死的SHMKEY,因为sysconf_eval需要
 public shm,而attach shm又需要sysconf_eval,ft*/
 /* add by KCN ,disable perror */
+
 #ifdef BBSMAIN
 #define perror(x) prints(x)
-#endif
+#endif /* BBSMAIN */
 
-//check need (void)
 #define ARG_VOID void
 
 #define VERSION_ID "Firebird BBS 2.5GB"
@@ -160,15 +206,16 @@ public shm,而attach shm又需要sysconf_eval,ft*/
 
 #ifdef XINU
 extern int errno;
-#endif
+#endif /* XINU */
 
 #define DOECHO (1)              /* Flags to getdata input function */
 #define NOECHO (0)
 
-#ifndef strdup
-char *strdup(const char*);                 /* External function declarations */
-#endif
-char *bfile(ARG_VOID);
+#ifndef HAVE_STRDUP
+char *strdup(const char*);      /* External function declarations */
+#endif /* HAVE_STRDUP */
+
+char *bfile(void);
 
 extern FILE *ufp;               /* External variable declarations */
 extern long ti;
@@ -176,136 +223,113 @@ extern long ti;
 #ifdef FRIEND_MULTI_GROUP
 #define MAXFRIENDS (500)
 #define MAXFRIENDSGROUP 20
-#else
+#else /* FRIEND_MULTI_GROUP */
 #define MAXFRIENDS (400)
-#endif
+#endif /* FRIEND_MULTI_GROUP */
 
-/*#ifdef SMS_SUPPORT*/
-#define MOBILE_NUMBER_LEN 17
-/*#endif*/
-/*#define NUMPERMS (31)*/
+#define MOBILE_NUMBER_LEN   17
+#define MAX_SIGNATURES      20      /* 最大签名档个数 by flyriver, 2002.11.10 */
+#define MAX_MSG_SIZE        1024    /* 最大消息长度 by bad, 2003-2-14 */
+#define ANNPATH_NUM	        40
 
-#define MAX_SIGNATURES 20       /* 最大签名档个数 by flyriver, 2002.11.10 */
-
-#define MAX_MSG_SIZE 1024       /* 最大消息长度 by bad, 2003-2-14 */
-
-#define ANNPATH_NUM	40
-
-/*#define FILE_BUFSIZE      160    max. length of a file in SHM*/
-#define FILE_BUFSIZE      LENGTH_FILE_BUFFER    /* max. length of a file in SHM */
-#define FILE_MAXLINE      24    /* max. line of a file in SHM */
-#define MAX_GOODBYE       5     /* 离站画面数 */
-#define MAX_ISSUE         5     /* 最大进站数 */
-#define MAX_EXP           5     /* 离站画面数 */
-#define MAX_DIGEST        3000  /* 最大文摘数 */
-#define MAX_DING          10	/* 最大置顶数 */
+#define FILE_BUFSIZE    LENGTH_FILE_BUFFER  /* max. length of a file in SHM */
+#define FILE_MAXLINE    24                  /* max. line of a file in SHM */
+#define MAX_GOODBYE     5                   /* 离站画面数 */
+#define MAX_ISSUE       5                   /* 最大进站数 */
+#define MAX_EXP         5                   /* 离站画面数 */
+#define MAX_DIGEST      3000                /* 最大文摘数 */
+#define MAX_DING        10                  /* 最大置顶数 */
 
 /* added by bad 2002-08-2	FavBoardDir */
-#define FAVBOARDNUM     100     /*收藏夹最大条目*/
-#define MAXBOARDPERDIR	100		/*每个收藏夹目录最大版面数目*/
-#define MAILBOARDNUM	20      /*自定义邮箱最大数目*/
-
+#define FAVBOARDNUM     100                 /*收藏夹最大条目*/
+#define MAXBOARDPERDIR	100		            /*每个收藏夹目录最大版面数目*/
+#define MAILBOARDNUM	20                  /*自定义邮箱最大数目*/
 
 #define MORE_BUFSIZE    4096
-/*#define ACBOARD_BUFSIZE      300    max. length of each line for activity board  */
-/*#define ACBOARD_MAXLINE      80     max. lines of  activity board  */
-#define ACBOARD_BUFSIZE      LENGTH_ACBOARD_BUFFER      /* max. length of each line for activity board  */
-#define ACBOARD_MAXLINE      LENGTH_ACBOARD_LINE        /* max. lines of  activity board  */
+#define ACBOARD_BUFSIZE LENGTH_ACBOARD_BUFFER   /* max. length of each line for activity board  */
+#define ACBOARD_MAXLINE LENGTH_ACBOARD_LINE     /* max. lines of  activity board  */
 
-#define MAXGOPHERITEMS 9999     /*max of gopher items */
-#define PASSFILE   ".PASSWDS"   /* Name of file User records stored in */
-#define ULIST "UTMP"            /* Names of users currently on line */
-#define POSTLOGFILE ".post.X"   /* Name of file which log posting report */
+#define MAXGOPHERITEMS  9999                /* max of gopher items */
+#define PASSFILE        ".PASSWDS"          /* Name of file User records stored in */
+#define ULIST           "UTMP"              /* Names of users currently on line */
+#define POSTLOGFILE     ".post.X"           /* Name of file which log posting report */
 
 #define USER_TITLE_LEN	18
 #define USER_TITLE_FILE "etc/title"
-
-
-
-#define FLUSH    ".PASSFLUSH"   /* Stores date for user cache flushing */
-#define WWWFLUSH ".WWWPASSFLUSH"        /* user cache flushing for www regist */
-#define BOARDS   ".BOARDS"      /* File containing list of boards */
-#define DOT_DIR  ".DIR"         /* Name of Directory file info */
-#define THREAD_DIR ".THREAD"
-#define DIGEST_DIR  ".DIGEST"   /* Name of Directory file info */
-#define DING_DIR ".DINGDIR"	/* 置顶文章.DIR , stiger */
-#define NAMEFILE "BoardName"    /* File containing site name of bbs */
+#define FLUSH           ".PASSFLUSH"        /* Stores date for user cache flushing */
+#define WWWFLUSH        ".WWWPASSFLUSH"     /* user cache flushing for www regist */
+#define BOARDS          ".BOARDS"           /* File containing list of boards */
+#define DOT_DIR         ".DIR"              /* Name of Directory file info */
+#define THREAD_DIR      ".THREAD"
+#define DIGEST_DIR      ".DIGEST"           /* Name of Directory file info */
+#define DING_DIR        ".DINGDIR"	        /* 置顶文章.DIR , stiger */
+#define NAMEFILE        "BoardName"         /* File containing site name of bbs */
 #define BADLOGINFILE    "logins.bad"
-#define USERDATA ".userdata"
+#define USERDATA        ".userdata"
 
-#define QUIT 0x666              /* Return value to abort recursive functions */
-#define COUNT 0x2               /* count record */
+#define QUIT            0x666       /* Return value to abort recursive functions */
+#define COUNT           0x2         /* count record */
 
-#define FILE_SIGN 0x1           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
-#define FILE_OWND  0x2          /* accessed array */
-#define FILE_PERCENT 0x4	/*%标记*/
-#define FILE_MARKED 0x8
-#define FILE_DIGEST 0x10      /* Digest Mode*/  /*For SmallPig Digest Mode */
-#define FILE_REPLIED 0x20       /* in mail ,added by alex, 96.9.7 */
-#define FILE_FORWARDED 0x40     /* in mail ,added by alex, 96.9.7 */
-#define FILE_IMPORTED 0x80      /* Leeward 98.04.15 */
+#define FILE_SIGN       0x1         /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[0] */
+#define FILE_OWND       0x2         /* accessed array */
+#define FILE_PERCENT    0x4         /* %标记 */
+#define FILE_MARKED     0x8
+#define FILE_DIGEST     0x10        /* Digest Mode*/  /*For SmallPig Digest Mode */
+#define FILE_REPLIED    0x20        /* in mail ,added by alex, 96.9.7 */
+#define FILE_FORWARDED  0x40        /* in mail ,added by alex, 96.9.7 */
+#define FILE_IMPORTED   0x80        /* Leeward 98.04.15 */
 
+#define FILE_CENSOR     0x20        /* for accessed[1], flyriver, 2002.9.29 */
+#define FILE_READ       0x1         /* Ownership flags used in fileheader structure in accessed[1] */
+#define FILE_DEL        0x2         /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
+#define FILE_MAILBACK	0x4		    /* reply articles mail to owner's mailbox, accessed[1] */
+#define FILE_COMMEND    0x8		    /* 推荐文章,stiger , in accessed[1], */
+#define FILE_TEX        0x80        /* tex article, in accessed[1], added by atppp 20040729 */
 
-#define FILE_CENSOR 0x20        /* for accessed[1], flyriver, 2002.9.29 */
-#define BADWORD_IMG_FILE "etc/badwordv3.img"
-#define FILE_READ  0x1          /* Ownership flags used in fileheader structure in accessed[1] */
-#define FILE_DEL  0x2           /* In article mode, Sign , Bigman 2000.8.12 ,in accessed[1] */
-#define FILE_MAILBACK	0x4		/* reply articles mail to owner's mailbox, accessed[1] */
-#define FILE_COMMEND 0x8		/* 推荐文章,stiger , in accessed[1], */
-#define FILE_TEX 0x80       /* tex article, in accessed[1], added by atppp 20040729 */
+#define BADWORD_IMG_FILE    "etc/badwordv3.img"
+#define MAXMAILSIZE         (30000)
 
-/* Leeward 98.05.11:
-In /etc/sendmail.cf:
-# maximum message size
-# Changed by Netwolf(32K)
-O MaxMessageSize=32000
-*/
-#define MAXMAILSIZE (32000L - 2000)
-/* 2000 bytes for sendmail header */
+#define CHECK_MAIL          0x1	    /* 0 需要检查信笺  1 不需要重新检查 */
+#define CHECK_MSG           0x2	    /* 0 没有 msg 1 有 msg */
 
-#define CHECK_MAIL 0x1	/*0需要检查信笺  1不需要重新检查*/
-#define CHECK_MSG 0x2	/*0没有msg 1有msg*/
-
-#define BOARD_VOTEFLAG 0x1
-#define BOARD_NOZAPFLAG 0x2
-#define BOARD_READONLY 0x4
-#define BOARD_JUNK	0x8
-#define BOARD_ANNONY 0x10
-#define BOARD_OUTFLAG 0x20      /* for outgo boards */
-#define BOARD_CLUB_READ  0x40  /*限制读的俱乐部*/
-#define BOARD_CLUB_WRITE  0x80  /*限制写的俱乐部*/
-#define BOARD_CLUB_HIDE  0x100  /*隐藏俱乐部*/
-#define BOARD_ATTACH        0x200 /*可以使用附件的版面*/
-#define BOARD_GROUP 0x400   /*目录*/
-#define BOARD_EMAILPOST 0x800 /* Email 发文 */
-#define BOARD_POSTSTAT 0x1000 /* 不统计十大 */
-#define BOARD_NOREPLY 0x2000 /* 不可re文 */
-#define BOARD_RULES 0x4000 /* 治版方针ok */
+#define BOARD_VOTEFLAG      0x1
+#define BOARD_NOZAPFLAG     0x2
+#define BOARD_READONLY      0x4
+#define BOARD_JUNK	        0x8
+#define BOARD_ANNONY        0x10
+#define BOARD_OUTFLAG       0x20    /* for outgo boards */
+#define BOARD_CLUB_READ     0x40    /* 限制读的俱乐部 */
+#define BOARD_CLUB_WRITE    0x80    /* 限制写的俱乐部 */
+#define BOARD_CLUB_HIDE     0x100   /* 隐藏俱乐部 */
+#define BOARD_ATTACH        0x200   /* 可以使用附件的版面 */
+#define BOARD_GROUP         0x400   /* 目录 */
+#define BOARD_EMAILPOST     0x800   /* Email 发文 */
+#define BOARD_POSTSTAT      0x1000  /* 不统计十大 */
+#define BOARD_NOREPLY       0x2000  /* 不可 re 文 */
+#define BOARD_RULES         0x4000  /* 治版方针 ok */
 /* boardheader.flag 的最高八位留给用户自定义用途: 0xXX000000 */
 
-#define ZAPPED  0x1             /* For boards...tells if board is Zapped */
+#define ZAPPED              0x1     /* For boards...tells if board is Zapped */
 
 /* these are flags in userec.flags[0] */
-#define PAGER_FLAG   0x1        /* true if pager was OFF last session */
-#define CLOAK_FLAG   0x2        /* true if cloak was ON last session */
-#define BRDSORT_FLAG 0x20       /* true if the boards sorted alphabetical */
-#define USEREC_FLAGS_UNUSED_FLAG  0x80       /* ask atppp if you want to use this bit - 20051215 */
-#define GIVEUP_FLAG  0x4        /* true if the user is giving up  by bad 2002.7.6 */
-#define PCORP_FLAG	 0x40		/* true if have personalcorp */
-#define ACTIVATED_FLAG 0x8      /* true if email activated - atppp 20050405 */
-#define BRDSORT1_FLAG 0x10		/* true if sort by online */
+#define PAGER_FLAG          0x1     /* true if pager was OFF last session */
+#define CLOAK_FLAG          0x2     /* true if cloak was ON last session */
+#define BRDSORT_FLAG        0x20    /* true if the boards sorted alphabetical */
+#define GIVEUP_FLAG         0x4     /* true if the user is giving up  by bad 2002.7.6 */
+#define PCORP_FLAG	        0x40    /* true if have personalcorp */
+#define ACTIVATED_FLAG      0x8     /* true if email activated - atppp 20050405 */
+#define BRDSORT1_FLAG       0x10    /* true if sort by online */
+#define USEREC_FLAGS_UNUSED_FLAG  0x80  /* ask atppp if you want to use this bit - 20051215 */
 
 /* For All Kinds of Pagers */
 #define ALL_PAGER       0x1
 #define FRIEND_PAGER    0x2
 #define ALLMSG_PAGER    0x4
 #define FRIENDMSG_PAGER 0x8
-
-#define USERIDSIZE (16)
-#define USERNAMESZ (24)
-#define TERMTYPESZ (10)
+#define USERIDSIZE      16
+#define USERNAMESZ      24
+#define TERMTYPESZ      10
 /* END */
-
 
 #include "struct.h"
 #include "screen.h"
@@ -315,304 +339,296 @@ O MaxMessageSize=32000
 #include "output.h"
 #include "calltime.h"
 #include "tmpl.h"
-
-/* add by period , header for function prototypes */
-#include "prototype.h"
-
+#include "prototype.h"          /* add by period , header for function prototypes */
 #include "modes.h"              /* The list of valid user modes */
 
-#define I_TIMEOUT   (-2)        /* Used for the getchar routine select call */
-#define I_OTHERDATA (-333)      /* interface, (-3) will conflict with chinese */
+#define I_TIMEOUT   (-2)    /* Used for the getchar routine select call */
+#define I_OTHERDATA (-333)  /* interface, (-3) will conflict with chinese */
+#define SCREEN_SIZE (23)    /* Used by read menu  */
 
-#define SCREEN_SIZE (23)        /* Used by read menu  */
-
-#define Min(a,b) ((a<b)?a:b)
-#define Max(a,b) ((a>b)?a:b)
-
+#define Min(a,b)    (((a) < (b))? (a) : (b))
+#define Max(a,b)    (((a) > (b))? (a) : (b))
 
 #ifndef EXTEND_KEY
 #define EXTEND_KEY
-#define KEY_TAB         9
-#define KEY_ESC         27
-#define KEY_UP          0x0101
-#define KEY_DOWN        0x0102
-#define KEY_RIGHT       0x0103
-#define KEY_LEFT        0x0104
-#define KEY_HOME        0x0201
-#define KEY_INS         0x0202
-#define KEY_DEL         0x0203
-#define KEY_END         0x0204
-#define KEY_PGUP        0x0205
-#define KEY_PGDN        0x0206
-#define KEY_F1            0x0207
-#define KEY_F2            0x0208
-#define KEY_F3            0x0209
-#define KEY_F4            0x020a
-#define KEY_F5            0x020b
-#define KEY_F6            0x020c
-#define KEY_F7            0x020d
-#define KEY_F8            0x020e
-#define KEY_F9            0x020f
-#define KEY_F10            0x0210
-#endif
+#define KEY_TAB     0x0009
+#define KEY_ESC     0x001b
+#define KEY_UP      0x0101
+#define KEY_DOWN    0x0102
+#define KEY_RIGHT   0x0103
+#define KEY_LEFT    0x0104
+#define KEY_HOME    0x0201
+#define KEY_INS     0x0202
+#define KEY_DEL     0x0203
+#define KEY_END     0x0204
+#define KEY_PGUP    0x0205
+#define KEY_PGDN    0x0206
+#define KEY_F1      0x0207
+#define KEY_F2      0x0208
+#define KEY_F3      0x0209
+#define KEY_F4      0x020a
+#define KEY_F5      0x020b
+#define KEY_F6      0x020c
+#define KEY_F7      0x020d
+#define KEY_F8      0x020e
+#define KEY_F9      0x020f
+#define KEY_F10     0x0210
+#endif /* EXTEND_KEY */
 
-#define Ctrl(c)         ( c & 037 )
-#define isprint2(c)     ( ((c) & 0xe0) && ((c)!=127) )
+#define Ctrl(c)     ((c) & 0x1f)
+#define isprint2(c) (((c) & 0xe0) && ((c)!=0x7f))
 
-#ifdef  SYSV
-#define bzero(tgt, len)         memset( tgt, 0, len )
-#define bcopy(src, tgt, len)    memcpy( tgt, src, len)
+#ifndef HAVE_BZERO
+#define bzero(ptr,size)     memset((ptr),0,(size))
+#endif /* HAVE_BZERO */
 
-#define usleep(usec)            { struct timeval t;t.tv_sec = usec / 1000000; t.tv_usec = usec % 1000000;select( 0, NULL, NULL, NULL, &t);}
+#ifndef HAVE_BCOPY
+#define bcopy(src,dst,size) memcpy((dst),(src),(size))
+#endif /* HAVE_BCOPY */
 
-#endif                          /* SYSV */
+#ifndef HAVE_USLEEP
+#define usleep(usec)        do{struct timeval tv;tv.tv_sec=usec/1000000;tv.tv_usec=usec%1000000;select(0,NULL,NULL,NULL,&tv);}while(0)
+#endif /* HAVE_USLEEP */
 
 /* =============== ANSI EDIT ================== */
 #define   ANSI_RESET    "\033[37;40m\033[m"
 #define   ANSI_REVERSE  "\033[7m\033[4m"
-/*extern int editansi;*/
 extern int KEY_ESC_arg;
-
 /* ============================================ */
 
 #ifdef BBSMAIN
-#define Sleep Net_Sleep
 extern void Net_Sleep(int);
-#endif
+#define Sleep(n) Net_Sleep((n))
+#endif /* BBSMAIN */
 
-#define MAX_IGNORE      30      /* ignore-users' count */
-#define NUMBUFFER 80            /* number of records to preload. ylsdd */
+#define MAX_IGNORE      300     /* ignore-users' count */
+#define NUMBUFFER       80      /* number of records to preload. ylsdd */
 
 #ifdef SAFE_KILL
-#define kill(x,y) safe_kill(x,y)
-#endif
+#ifdef kill
+#undef kill
+#endif /* kill */
+#define kill(x,y)       safe_kill(x,y)
+#endif /* SAFE_KILL */
 
 #ifdef PROFILE
+#ifdef memcpy
 #undef memcpy
-#define memcpy(x,y,z) pr_memcpy(x,y,z)
-#endif
+#endif /* memcpy */
+#define memcpy(x,y,z)   pr_memcpy(x,y,z)
+#endif /* PROFILE */
 
-#define chartoupper(c)  ((c >= 'a' && c <= 'z') ? c+'A'-'a' : c)
+#define chartoupper(c)  (((c) >= 'a' && (c) <= 'z')? ((c) + 32) : (c))
 
 #ifdef NULL
 #undef NULL
-#endif
-
+#endif /* NULL */
 #define NULL 0
-#define UNUSED_ARG(a) {(a)=(a); /* null */ }
 
-#ifdef OS_LACK_SOCKLEN
-typedef size_t socklen_t;
-#endif
-
-#define BBS_PAGESIZE    (t_lines - 4)
+#define UNUSED_ARG(a) do{(a) = (a);}while(0)
+#define BBS_PAGESIZE  (t_lines - 4)
 
 /* added by bad 2002.8.1 */
-#define FILE_MARK_FLAG 1
-#define FILE_NOREPLY_FLAG 2
-#define FILE_SIGN_FLAG 4
-#define FILE_DELETE_FLAG 8
-#define FILE_DIGEST_FLAG 0x10
-#define FILE_TITLE_FLAG 0x20
-#define FILE_IMPORT_FLAG 0x40
+#define FILE_MARK_FLAG      0x1
+#define FILE_NOREPLY_FLAG   0x2
+#define FILE_SIGN_FLAG      0x4
+#define FILE_DELETE_FLAG    0x8
+#define FILE_DIGEST_FLAG    0x10
+#define FILE_TITLE_FLAG     0x20
+#define FILE_IMPORT_FLAG    0x40
+
 #ifdef FILTER
-#define FILE_CENSOR_FLAG 0x80
-#endif
+#define FILE_CENSOR_FLAG    0x80
+#endif /* FILTER */
+
 #define FILE_ATTACHPOS_FLAG 0x100
-#define FILE_DING_FLAG 0x200	/* stiger,置顶 */
-#define FILE_EFFSIZE_FLAG 0x400
-#define FILE_COMMEND_FLAG 0x800
-#define FILE_PERCENT_FLAG 0x1000
-/* 
-  0-1 locks used sem count
-  @author kxn
-*/
+#define FILE_DING_FLAG      0x200	/* stiger,置顶 */
+#define FILE_EFFSIZE_FLAG   0x400
+#define FILE_COMMEND_FLAG   0x800
+#define FILE_PERCENT_FLAG   0x1000
 
-#define SEMLOCK_COUNT 20
-#define UCACHE_SEMLOCK 0
-#define UTMP_SEMLOCK 1
-#define BCACHE_SEMLOCK 2
-#define BSTATUS_SEMLOCK 3
+/* 0-1 locks used sem count, @author kxn */
+#define SEMLOCK_COUNT       20
+#define UCACHE_SEMLOCK      0
+#define UTMP_SEMLOCK        1
+#define BCACHE_SEMLOCK      2
+#define BSTATUS_SEMLOCK     3
 
-/**
- * Enumeration values for the so-called board .DIR file.
- *
- * @author flyriver
- */
-enum BBS_DIR_MODE
-{
-    DIR_MODE_NORMAL  = 0, /** .DIR */
-    DIR_MODE_DIGEST  = 1, /** .DIGEST */
-    DIR_MODE_THREAD  = 2, /** .THREAD */
-    DIR_MODE_MARK    = 3, /** .MARK */
-    DIR_MODE_DELETED = 4, /** .DELETED */
-    DIR_MODE_JUNK    = 5, /** .JUNK */
-    DIR_MODE_ORIGIN  = 6, /** .ORIGIN */
-    DIR_MODE_AUTHOR  = 7, /** .AUTHOR.userid */
-    DIR_MODE_TITLE   = 8, /** .TITLE.userid */
-    DIR_MODE_SUPERFITER = 9, /** .FILTER */
-    DIR_MODE_WEB_THREAD = 10, /** .WEBTHREAD */
-    DIR_MODE_ZHIDING = 11,  /** .DINGDIR */
-    DIR_MODE_MAIL ,/* mail mode */
-    DIR_MODE_FRIEND, /*好友名单*/
+/* Enumeration values for the so-called board .DIR file, @author flyriver */
+enum BBS_DIR_MODE {
+    DIR_MODE_NORMAL     = 0,        /* .DIR */
+    DIR_MODE_DIGEST     = 1,        /* .DIGEST */
+    DIR_MODE_THREAD     = 2,        /* .THREAD */
+    DIR_MODE_MARK       = 3,        /* .MARK */
+    DIR_MODE_DELETED    = 4,        /* .DELETED */
+    DIR_MODE_JUNK       = 5,        /* .JUNK */
+    DIR_MODE_ORIGIN     = 6,        /* .ORIGIN */
+    DIR_MODE_AUTHOR     = 7,        /* .AUTHOR.userid */
+    DIR_MODE_TITLE      = 8,        /* .TITLE.userid */
+    DIR_MODE_SUPERFITER = 9,        /* .FILTER */
+    DIR_MODE_WEB_THREAD = 10,       /* .WEBTHREAD */
+    DIR_MODE_ZHIDING    = 11,       /* .DINGDIR */
+    DIR_MODE_MAIL ,                 /* mail mode */
+    DIR_MODE_FRIEND                 /* 好友名单 */
 };
 
-enum BBSLOG_TYPE
-{
-    BBSLOG_USIES =1,
-    BBSLOG_USER  =2,
-    BBSLOG_BOARDUSAGE =3,
-    BBSLOG_SMS =4,
-    BBSLOG_DEBUG = 5,
-	BBSLOG_POST = 6,
-	BBSLOG_BM = 7
+enum BBSLOG_TYPE {
+    BBSLOG_USIES        = 1,
+    BBSLOG_USER         = 2,
+    BBSLOG_BOARDUSAGE   = 3,
+    BBSLOG_SMS          = 4,
+    BBSLOG_DEBUG        = 5,
+	BBSLOG_POST         = 6,
+	BBSLOG_BM           = 7
 };
 
-enum BBSPOST_MODE
-{
-    BBSPOST_COPY=0,
-    BBSPOST_MOVE=1,
-    BBSPOST_LINK=2
+enum BBSPOST_MODE {
+    BBSPOST_COPY        = 0,
+    BBSPOST_MOVE        = 1,
+    BBSPOST_LINK        = 2
 };
 
-#define ATTACHMENT_PAD "\0\0\0\0\0\0\0\0"
-#define ATTACHMENT_SIZE 8
+#define ATTACHMENT_PAD      "\0\0\0\0\0\0\0\0"
+#define ATTACHMENT_SIZE     8
+
 #include "system.h"
-#define system my_system
+#define system              my_system
+
 #ifndef MAXPATH
 #define MAXPATH 255
-#endif
+#endif /* MAXPATH */
 
-#define BLACK 0
-#define RED 1
-#define GREEN 2
-#define YELLOW 3
-#define BLUE 4
-#define PINK 5
-#define CYAN 6
-#define WHITE 7
+#define BLACK           0
+#define RED             1
+#define GREEN           2
+#define YELLOW          3
+#define BLUE            4
+#define PINK            5
+#define CYAN            6
+#define WHITE           7
 
 #define BRC_MAXNUM      50
 #define BRC_ITEMSIZE    (BRC_MAXNUM * sizeof( unsigned int ))
-#define BRC_FILESIZE BRC_ITEMSIZE*MAXBOARD
+#define BRC_FILESIZE    BRC_ITEMSIZE*MAXBOARD
 
-#if USE_TMPFS==0
-#define BRC_CACHE_NUM 20        /* 未读标记cache 20个版 */
-#else
-#define BRC_CACHE_NUM 50        /* 未读标记被cache在tmpfs中了 */
-#endif
+#if USE_TMPFS == 0
+#define BRC_CACHE_NUM   20      /* 未读标记 cache 20 个版 */
+#else /* ! USE_TMPFS */
+#define BRC_CACHE_NUM   50      /* 未读标记被 cache 在 tmpfs 中了 */
+#endif /* ! USE_TMPFS */
 
-#define BRCFILE ".boardrc.gz"
+#define BRCFILE         ".boardrc.gz"
+
 struct _brc_cache_entry {
     int bid;
     unsigned int list[BRC_MAXNUM];
     int changed;
 };
 
-#define FRIENDSGROUP_LIST 01
-#define FRIENDSGROUP_MSG 02
-#define FRIENDSGROUP_PAGER 04
-#define FRIENDSGROUP_MAIL 08
-#define FRIENDSGROUP_SEEME 010
-#define FRIENDSGROUP_UNUSE 020
+#define FRIENDSGROUP_LIST   0x1
+#define FRIENDSGROUP_MSG    0x2
+#define FRIENDSGROUP_PAGER  0x4
+#define FRIENDSGROUP_MAIL   0x8
+#define FRIENDSGROUP_SEEME  0x10
+#define FRIENDSGROUP_UNUSE  0x20
 
 #ifdef SMS_SUPPORT
-
-#define SMS_SHM_SIZE 1024*50
+#define SMS_SHM_SIZE        1024*50
 
 struct header{
   char Type;
   byte SerialNo[4];
   byte pid[4];
-  byte BodyLength[4];   //总Packet长度
+  byte BodyLength[4];               //总Packet长度
 };
 
-#define CMD_LOGIN 1
-#define CMD_OK 101
-#define CMD_ERR 102
-#define CMD_ERR_HEAD_LENGTH 103
-#define CMD_ERR_DB 104
+#define CMD_LOGIN                   1
+#define CMD_OK                      101
+#define CMD_ERR                     102
+#define CMD_ERR_HEAD_LENGTH         103
+#define CMD_ERR_DB                  104
 #define CMD_ERR_SMS_VALIDATE_FAILED 105
-#define CMD_ERR_LENGTH 106
-#define CMD_ERR_NO_VALIDCODE 107
-#define CMD_ERR_NO_SUCHMOBILE 108
-#define CMD_ERR_REGISTERED 109
-#define CMD_EXCEEDMONEY_LIMIT   110
-#define CMD_LOGOUT 2
-#define CMD_REG 3
-#define CMD_CHECK 4
-#define CMD_UNREG 5
-#define CMD_REQUIRE 6
-#define CMD_REPLY 7
-#define CMD_BBSSEND 8
-#define CMD_GWSEND 9
-#define CMD_LINK 20
+#define CMD_ERR_LENGTH              106
+#define CMD_ERR_NO_VALIDCODE        107
+#define CMD_ERR_NO_SUCHMOBILE       108
+#define CMD_ERR_REGISTERED          109
+#define CMD_EXCEEDMONEY_LIMIT       110
+#define CMD_LOGOUT                  2
+#define CMD_REG                     3
+#define CMD_CHECK                   4
+#define CMD_UNREG                   5
+#define CMD_REQUIRE                 6
+#define CMD_REPLY                   7
+#define CMD_BBSSEND                 8
+#define CMD_GWSEND                  9
+#define CMD_LINK                    20
 
-#define USER_LEN 20
-#define PASS_LEN 50
+#define USER_LEN    20
+#define PASS_LEN    50
 
-struct LoginPacket { //Type=1
+struct LoginPacket {                /* Type = 1 */
     char user[USER_LEN];
     char pass[PASS_LEN];
 };
-struct RegMobileNoPacket { //Type=3
+struct RegMobileNoPacket {          /* Type = 3 */
     char MobileNo[MOBILE_NUMBER_LEN];
     char cUserID[IDLEN+2];
 };
-struct CheckMobileNoPacket { //Type=4
+struct CheckMobileNoPacket {        /* Type = 4 */
     char MobileNo[MOBILE_NUMBER_LEN];
     char cUserID[IDLEN+2];
     char ValidateNo[MOBILE_NUMBER_LEN];
 };
-struct UnRegPacket { //Type=5
+struct UnRegPacket {                /* Type = 5 */
     char MobileNo[MOBILE_NUMBER_LEN];
     char cUserID[IDLEN+2];
 };
-struct RequireBindPacket { //Type = 6
+struct RequireBindPacket {          /* Type = 6 */
     char cUserID[IDLEN+2];
     char MobileNo[MOBILE_NUMBER_LEN];
     byte Bind;
 };
-struct ReplyBindPacket { //Type=7
+struct ReplyBindPacket {            /* Type = 7 */
     char MobileNo[MOBILE_NUMBER_LEN];
     byte isSucceed;
 };
-struct BBSSendSMS { //Type=8
+struct BBSSendSMS {                 /* Type = 8 */
     byte UserID[4];
     char SrcMobileNo[MOBILE_NUMBER_LEN];
     char SrccUserID[IDLEN+2];
     char DstMobileNo[MOBILE_NUMBER_LEN];
     byte MsgTxtLen[4];
 };
-struct GWSendSMS { //Type=9
+struct GWSendSMS {                  /* Type = 9 */
     byte UserID[4];
     char SrcMobileNo[MOBILE_NUMBER_LEN];
     byte MsgTxtLen[4];
 };
-
 struct sms_shm_head {
     int sem;
     int total;
     int length;
 };
-extern struct sms_shm_head* head;
+extern struct sms_shm_head *head;
 
-#endif
+#endif /* SMS_SUPPORT */
 
-/* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
-#define GIVEUPINFO_PERM_COUNT 6
+#define GIVEUPINFO_PERM_COUNT   6       /* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
 
-#define ARG_NOPROMPT_FLAG 1 /*操作不提示*/
-#define ARG_DELDECPOST_FLAG 2 /*删除操作要减文章数*/
-#define ARG_BMFUNC_FLAG 4 /*版主操作标志*/
+#define ARG_NOPROMPT_FLAG       1       /* 操作不提示 */
+#define ARG_DELDECPOST_FLAG     2       /* 删除操作要减文章数 */
+#define ARG_BMFUNC_FLAG         4       /* 版主操作标志 */
 
-#define BLK_SIZ 10240
+#define BLK_SIZ                 10240
 
 #include "var.h"
+
 #ifdef BBSMAIN
 #include "vars.h"
 #include "defines_t.h"
-#endif
+#endif /* BBSMAIN */
+
 #include "func.h"
 
-#endif                          /* of _BBS_H_ */
+#endif /* _BBS_H_ */
+

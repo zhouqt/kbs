@@ -25,126 +25,63 @@
 
 #define BBSMAIN
 #include "bbs.h"
-#include <sys/types.h>
-
-#include <stdarg.h>
-/*#include <mpatrol.h>*/
-
-#include <setjmp.h>
 
 extern jmp_buf zmodemjmp;
-
-#include <time.h>
-
-#include <string.h>
-#include <sys/stat.h>
-
-#ifdef HAVE_LIMITS_H
-#include <limits.h>
-#endif
-
-/* we need to decide whether readcheck is possible */
-#if 0
-/* used to use #elif, but native braindead hpux 9.00 c compiler didn't 
- * understand it */
-#ifdef HAVE_TERMIOS_H
-/* get rid of warnings on SCO ODT 3.2 */
-struct termios;
-
-# include <termios.h>
-# define USE_TERMIOS
-#else
-# if defined(HAVE_SYS_TERMIOS_H)
-#  include <sys/termios.h>
-#  define USE_TERMIOS
-# else
-#  if defined(HAVE_TERMIO_H)
-#   include <termio.h>
-#   define USE_TERMIO
-#  else
-#   if defined(HAVE_SYS_TERMIO_H)
-#    include <sys/termio.h>
-#    define USE_TERMIO
-#   else
-#    if defined(HAVE_SGTTY_H)
-#     include <sgtty.h>
-#     define USE_SGTTY
-#     ifdef LLITOUT
-extern long Locmode;            /* Saved "local mode" for 4.x BSD "new driver" */
-extern long Locbit;             /* Bit SUPPOSED to disable output translations */
-#     endif
-#    else
-#     error neither termio.h nor sgtty.h found. Cannot continue.
-#    endif
-#   endif
-#  endif
-# endif
-#endif
-
-#ifdef USE_SGTTY
-#  ifdef TIOCSBRK
-#    define CANBREAK
-#  endif
-#endif
-#ifdef USE_TERMIO
-#  define CANBREAK
-#endif
-#endif
 extern int raw_read(int fd, char *buf, int len);
-extern int raw_write(int fd,const char *buf, int len);
+extern int raw_write(int fd, const char *buf, int len);
 extern void raw_ochar(char c);
 
-#include <unistd.h>
-
 #ifndef _POSIX_PATH_MAX
-# define _POSIX_PATH_MAX 255
+#define _POSIX_PATH_MAX 256
 #endif
 
 #if !defined(PATH_MAX) && defined(_PC_PATH_MAX)
-# define PATH_MAX (pathconf ("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))
+#define PATH_MAX (pathconf ("/", _PC_PATH_MAX) < 1 ? 1024 : pathconf ("/", _PC_PATH_MAX))
 #endif
 
 /* Don't include sys/param.h if it already has been.  */
 #if defined(HAVE_SYS_PARAM_H) && !defined(PATH_MAX) && !defined(MAXPATHLEN)
-# include <sys/param.h>
+#include <sys/param.h>
 #endif
 
 #if !defined(PATH_MAX) && defined(MAXPATHLEN)
-# define PATH_MAX MAXPATHLEN
+#define PATH_MAX MAXPATHLEN
 #endif
 
 #ifndef PATH_MAX
-# define PATH_MAX _POSIX_PATH_MAX
+#define PATH_MAX _POSIX_PATH_MAX
 #endif
 
+#define OK      0
+#define ERROR   (-1)
 
-#define OK 0
-#define FALSE 0
-#define TRUE 1
-#define ERROR (-1)
+#ifndef FALSE
+#define FALSE   0
+#endif /* FALSE */
+
+#ifndef TRUE
+#define TRUE    1
+#endif /* TRUE */
 
 /* Ward Christensen / CP/M parameters - Don't change these! */
-#define ENQ 005
-#define CAN ('X'&037)
-#define XOFF ('s'&037)
-#define XON ('q'&037)
-#define SOH 1
-#define STX 2
-#define EOT 4
-#define ACK 6
-#define NAK 025
-#define CPMEOF 032
-#define WANTCRC 0103            /* send C not NAK to get crc not checksum */
-#define WANTG 0107              /* Send G not NAK to get nonstop batch xmsn */
-#define TIMEOUT (-2)
-#define RCDO (-3)
-#define WCEOT (-10)
-
-#define RETRYMAX 10
-
-#define UNIXFILE 0xF000         /* The S_IFMT file mask bit for stat */
-
-#define DEFBYTL 2000000000L     /* default rx file size */
+#define ENQ         005
+#define CAN         ('X'&037)
+#define XOFF        ('s'&037)
+#define XON         ('q'&037)
+#define SOH         1
+#define STX         2
+#define EOT         4
+#define ACK         6
+#define NAK         025
+#define CPMEOF      032
+#define WANTCRC     0103            /* send C not NAK to get crc not checksum */
+#define WANTG       0107            /* Send G not NAK to get nonstop batch xmsn */
+#define TIMEOUT     (-2)
+#define RCDO        (-3)
+#define WCEOT       (-10)
+#define RETRYMAX    10
+#define UNIXFILE    0xF000          /* The S_IFMT file mask bit for stat */
+#define DEFBYTL     2000000000L     /* default rx file size */
 
 enum zm_type_enum {
     ZM_XMODEM,
@@ -159,27 +96,25 @@ struct zm_fileinfo {
     size_t bytes_total;
     size_t bytes_sent;
     size_t bytes_received;
-    size_t bytes_skipped;       /* crash recovery */
+    size_t bytes_skipped;           /* crash recovery */
     int eof_seen;
 };
 
-#define R_BYTESLEFT(x) ((x)->bytes_total-(x)->bytes_received)
+#define R_BYTESLEFT(x)  ((x)->bytes_total-(x)->bytes_received)
 
 extern enum zm_type_enum protocol;
-
-extern const char *program_name;        /* the name by which we were called */
+extern const char *program_name;    /* the name by which we were called */
 extern int errors;
 extern int no_timeout;
-extern int Zctlesc;             /* Encode control characters */
-
+extern int Zctlesc;                 /* Encode control characters */
 void bibi(int n);
 
-#define sendline(c) raw_ochar((c) & 0377)
-#define xsendline(c) raw_ochar(c)
+#define sendline(c)     raw_ochar((c) & 0377)
+#define xsendline(c)    raw_ochar(c)
 
 /* zreadline.c */
-extern char *readline_ptr;      /* pointer for removing chars from linbuf */
-extern int readline_left;       /* number of buffered chars left to read */
+extern char *readline_ptr;          /* pointer for removing chars from linbuf */
+extern int readline_left;           /* number of buffered chars left to read */
 
 #define READLINE_PF(timeout) \
     (--readline_left >= 0? (*readline_ptr++ & 0377) : readline_internal(timeout))
@@ -187,7 +122,6 @@ extern int readline_left;       /* number of buffered chars left to read */
 int readline_internal(unsigned int timeout);
 void readline_purge(void);
 void readline_setup(int fd, size_t readnum, size_t buffer_size);
-
 
 /* rbsb.c */
 extern int Twostop;
@@ -197,8 +131,6 @@ extern unsigned char checked;
 #endif
 extern int iofd;
 extern unsigned Baudrate;
-
-
 
 /* rbsb.c */
 int rdchk(int fd);
@@ -253,3 +185,4 @@ void stohdr(size_t pos);
 long rclhdr(char *hdr);
 void readline_clean(void);
 #endif
+
