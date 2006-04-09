@@ -145,7 +145,6 @@ AC_CHECK_HEADERS([arpa/inet.h fcntl.h limits.h malloc.h netdb.h netinet/in.h sgt
 
 # Checks for typedefs, structures, and compiler characteristics.
 AC_HEADER_STAT
-AC_HEADER_STDBOOL
 AC_C_CONST
 AC_C_INLINE
 AC_TYPE_MODE_T
@@ -192,11 +191,7 @@ AC_CHECK_FUNCS([alarm atexit bcopy bzero dup2 flock ftruncate getcwd gethostbyad
                 inet_aton inet_ntoa inet_pton isascii isblank memchr memmem memset mkdir munmap rmdir \
                 select socket strcasecmp strcasestr strchr strdup strerror strncasecmp strpbrk strrchr strsep \
                 strstr strtol usleep utime])
-AC_CHECK_TYPES(bool,,,[
-#ifdef HAVE_STDBOOL_H
-#include <stdbool.h>
-#endif /* HAVE_STDBOOL_H */
-])
+AC_CHECK_TYPES(bool)
 AC_CHECK_TYPES(byte)
 AC_CHECK_TYPES(sig_t,,,[#include <signal.h>])
 AC_CHECK_TYPES(socklen_t,,,[

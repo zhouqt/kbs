@@ -101,10 +101,6 @@
 #include "mpatrol.h"
 #endif /* DEBUG_MEMORY */
 
-#ifdef HAVE_STDBOOL_H
-#include <stdbool.h>
-#endif /* HAVE_STDBOOL_H */
-
 #ifndef HAVE_BOOL
 typedef enum { false = 0, true = 1 } bool;
 #else /* HAVE_BOOL */
