@@ -43,8 +43,6 @@ PHP_FUNCTION(bbs_is_bm)
     RETURN_LONG(is_BM(bp, up));
 }
 
-
-
 /**
  * int bbs_bmmanage(string board,int id,int mode,int zhiding)
  * which is used to switch article's flag
@@ -55,7 +53,12 @@ PHP_FUNCTION(bbs_is_bm)
  *         3: digest;
  *         4: noreplay;
  *         5: zhiding;
+ *       7-9: % X #
  *         6: undel		:: add by pig2532 on 2005.12.19 ::
+ *        10: add article to new announce clipboard     ::   add by pig2532   ::
+ *        11: add article to announce clipboard         ::    on 2006-03-04   ::
+ *        12: import
+ *        13: import without head and qmd
  * return 0 : success;
  *        -1: board is NOT exist
  *        -2: do NOT have permission
@@ -153,7 +156,7 @@ PHP_FUNCTION(bbs_bmmanage)
             ret = -1;
         }
     }
-    else if (zhiding) {
+    else if (zhiding && (mode == 1)) {
         ret = do_del_ding(board, bid, ent, &f, getSession());
          switch(ret)
          {
@@ -197,6 +200,23 @@ PHP_FUNCTION(bbs_bmmanage)
 	    flag = FILE_DELETE_FLAG;
 	else if (mode == 9)
 	    flag = FILE_SIGN_FLAG;
+    else if ((mode == 10) || (mode == 11))
+    {
+        ret = ann_article_import((mode == 10) ? board : NULL, f.title, f.filename, getCurrentUser()->userid);
+        if (ret < 0)
+        {
+            RETURN_LONG(-9);
+        }
+        flag = FILE_IMPORT_FLAG;
+    }
+    else if (mode == 12) {    /* import */
+        a_Save(NULL, bh->filename, &f, true, NULL, 0, getCurrentUser()->userid);
+        ret = 0;
+    }
+    else if (mode == 13) {    /* import without head and qmd */
+        a_SeSave(NULL, bh->filename, &f, true, NULL, 0, 0, getCurrentUser()->userid);
+        ret = 0;
+    }
 	else
             RETURN_LONG(-3);
         
@@ -777,3 +797,163 @@ PHP_FUNCTION(bbs_club_write)
     }
     RETURN_LONG(0);
 }
+
+/* club functions end */
+
+/* threads functions, by pig2532
+parameters:
+    bid: board id
+    gid: thread group id
+    start: start article id
+    operate:  0 - nothing
+              1 - delete
+              2 - mark
+              3 - unmark
+              4 - del X records
+              5 - put to announce
+              6 - set X flag
+              7 - unset X flag
+              8 - no reply
+              9 - cancel no reply
+              10 - make total
+              11 - make total without quote
+              12 - import
+              13 - import without head and qmd
+return:
+    >=0: [success] article numbers
+    -1: board not found
+    -2: permission denied
+    -3: system error
+    -10: unknown operate
+*/
+PHP_FUNCTION(bbs_threads_bmfunc)
+{
+#define MAX_THREADS_NUM 512
+    long bid, gid, start, operate;
+    struct boardheader *bp;
+    char dirpath[STRLEN];
+    int ret, haveprev=0, i, fd, ent, count;
+    struct fileheader *articles, fh;
+    
+    if (ZEND_NUM_ARGS() != 4 || zend_parse_parameters(4 TSRMLS_CC, "llll", &bid, &gid, &start, &operate) == FAILURE)
+    {
+        WRONG_PARAM_COUNT;
+    }
+    
+    if((operate < 1) || (operate > 13))
+    {
+    	RETURN_LONG(-10);
+    }
+    bp = getboard(bid);
+    if(bp == NULL)
+    {
+        RETURN_LONG(-1);
+    }
+    if(!is_BM(bp, getCurrentUser()))
+    {
+        RETURN_LONG(-2);
+    }
+    
+    articles = NULL;
+    setbdir(DIR_MODE_NORMAL, dirpath, bp->filename);
+    if((operate == 1) || (operate == 4) || ((operate >= 10) && (operate <= 13)))    /* delete or make total or import */
+    {
+        articles = (struct fileheader *)emalloc(MAX_THREADS_NUM * sizeof(struct fileheader));
+        ret = get_threads_from_gid(dirpath, gid, articles, MAX_THREADS_NUM, start, &haveprev, operate, getCurrentUser());
+    }
+    else
+    {
+        if(operate == 5)    /* initialize announce clipboard first */
+            ann_article_import(bp->filename, NULL, NULL, getCurrentUser()->userid);
+        ret = get_threads_from_gid(dirpath, gid, NULL, MAX_THREADS_NUM, start, &haveprev, operate, getCurrentUser());
+    }
+    
+    if(operate == 1)    /* del threads */
+    {
+        fd = open(dirpath, O_RDWR, 0644);
+        if (fd < 0)
+        {
+            efree(articles);
+            RETURN_LONG(-3);
+        }
+        count = 0;
+        for(i=0; i<ret; i++)
+        {
+            if( !(articles[i].accessed[0] & (FILE_MARKED | FILE_PERCENT)) )
+                if(get_records_from_id(fd, articles[i].id, &fh, 1, &ent))
+                {
+                    if(del_post(ent, &fh, bp) == 0)
+                        count++;
+                }
+        }
+        close(fd);
+        ret = count;
+    }
+    else if(operate == 4)    /* del X articles in threads */
+    {
+        fd = open(dirpath, O_RDWR, 0644);
+        if (fd < 0)
+        {
+            efree(articles);
+            RETURN_LONG(-3);
+        }
+        count = 0;
+        for(i=0; i<ret; i++)
+        {
+           if( (articles[i].accessed[1] & FILE_DEL) && ( !(articles[i].accessed[0] & (FILE_MARKED | FILE_PERCENT)) ) )
+                if(get_records_from_id(fd, articles[i].id, &fh, 1, &ent))
+                {
+                    if(del_post(ent, &fh, bp) == 0)
+                        count++;
+                }
+        }
+        close(fd);
+        ret = count;
+    }
+    else if((operate == 10) || (operate == 11))     /* make total */
+    {
+        char title[STRLEN], *ptr, tmpf[PATHLEN];
+        for(i=0; i<ret; i++)
+        {
+            a_SeSave(NULL, bp->filename, &articles[i], i>0, NULL, 0, operate==11, getCurrentUser()->userid);
+        }
+        if(ret > 0)
+        {
+            strcpy(title, "[ºÏ¼¯] ");
+            if(strncmp(articles[0].title, "Re: ", 4) == 0)
+                ptr = articles[0].title + 4;
+            else
+                ptr = articles[0].title;
+            strncpy(title + 7, ptr, STRLEN - 7);
+            title[STRLEN - 1] = '\0';
+            sprintf(tmpf, "tmp/bm.%s", getCurrentUser()->userid);
+            if(post_file(getCurrentUser(), "", tmpf, bp->filename, title, 0, 2, getSession()) < 0)
+            {
+                unlink(tmpf);
+                sprintf(tmpf, "tmp/se.%s", getCurrentUser()->userid);
+                unlink(tmpf);
+                efree(articles);
+                RETURN_LONG(-3);
+            }
+        }
+    }
+    else if((operate == 12) || (operate == 13))     /* import */
+    {
+        for(i=0; i<ret; i++)
+        {
+            a_SeSave(NULL, bp->filename, &articles[i], true, NULL, 0, operate==13, getCurrentUser()->userid);
+        }
+    }
+    
+    if(articles)
+        efree(articles);
+    if(ret >= 0)
+    {
+        RETURN_LONG(ret);
+    }
+    else
+    {
+        RETURN_LONG(-3);
+    }
+}
+

@@ -12,6 +12,7 @@ PHP_FUNCTION(bbs_bm_get_manageable_bids);
 PHP_FUNCTION(bbs_club_read);
 PHP_FUNCTION(bbs_club_flag);
 PHP_FUNCTION(bbs_club_write);
+PHP_FUNCTION(bbs_threads_bmfunc);
 
 
 #define PHP_BBS_BM_EXPORT_FUNCTIONS \
@@ -23,7 +24,8 @@ PHP_FUNCTION(bbs_club_write);
     PHP_FE(bbs_bm_get_manageable_bids,NULL) \
     PHP_FE(bbs_club_read,NULL) \
     PHP_FE(bbs_club_flag,NULL) \
-    PHP_FE(bbs_club_write,NULL)
+    PHP_FE(bbs_club_write,NULL) \
+    PHP_FE(bbs_threads_bmfunc,NULL)
 
 #endif //PHP_BBS_BM_H
 
