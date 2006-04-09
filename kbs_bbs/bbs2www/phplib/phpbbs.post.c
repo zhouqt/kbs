@@ -129,7 +129,7 @@ PHP_FUNCTION(bbs_upload_add_file)
 }
 
 
-static int update_index_attpos(struct boardheader *bh, int ent, struct fileheader *fh, int attpos)
+static int update_index_attpos(const struct boardheader *bh, int ent, struct fileheader *fh, int attpos)
 {
 /* TODO: update .ORIGIN? */
     struct write_dir_arg dirarg;
@@ -152,7 +152,7 @@ static int update_index_attpos(struct boardheader *bh, int ent, struct fileheade
 PHP_FUNCTION(bbs_attachment_add)
 {
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
-    boardheader_t *brd;
+    const boardheader_t *brd;
     struct fileheader f;
     char dir[PATHLEN];
 
@@ -226,7 +226,7 @@ PHP_FUNCTION(bbs_attachment_add)
 PHP_FUNCTION(bbs_attachment_del)
 {
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
-    boardheader_t *brd;
+    const boardheader_t *brd;
     struct fileheader f;
     char dir[PATHLEN];
 
@@ -282,7 +282,7 @@ PHP_FUNCTION(bbs_attachment_del)
 PHP_FUNCTION(bbs_attachment_list)
 {
     struct ea_attach_info ai[MAXATTACHMENTCOUNT];
-    boardheader_t *brd;
+    const boardheader_t *brd;
     struct fileheader f;
     char dir[PATHLEN];
 
@@ -328,7 +328,7 @@ PHP_FUNCTION(bbs_postarticle)
     long sig, mailback, is_tex;
 	long reid;
     struct fileheader *oldx = NULL;
-    boardheader_t *brd;
+    const boardheader_t *brd;
     long local_save, outgo, anony;
     struct fileheader post_file, oldxx;
     char filepath[MAXPATH];
@@ -507,7 +507,7 @@ PHP_FUNCTION(bbs_postarticle)
  */
 PHP_FUNCTION(bbs_delpost)
 {
-    boardheader_t *brd;
+    const boardheader_t *brd;
     struct fileheader f;
 
     char* board;
@@ -543,7 +543,7 @@ PHP_FUNCTION(bbs_delpost)
 
 PHP_FUNCTION(bbs_article_deny_modify)
 {
-    boardheader_t *brd;
+    const boardheader_t *brd;
     struct fileheader f;
 
     char* board;
@@ -599,7 +599,7 @@ PHP_FUNCTION(bbs_updatearticle)
     char infile[80], outfile[80];
     char buf2[256];
     int i;
-    boardheader_t *bp;
+    const boardheader_t *bp;
     int asize;
     /*int filtered = 0;*/
 
@@ -693,7 +693,7 @@ PHP_FUNCTION(bbs_edittitle)
     char dirpath[STRLEN];
     struct fileheader f;
     struct fileheader xfh;
-    struct boardheader *brd;
+    const struct boardheader *brd;
     int bid,ent,i=0;
     int fd,ret;
     bool find;
@@ -844,7 +844,7 @@ PHP_FUNCTION(bbs_doforward)
     boardheader_t bh;
 	char fname[STRLEN];
 	long big5,noansi;
-    struct boardheader *bp;
+    const struct boardheader *bp;
 	char title[512];
 	struct userec *u;
     int ret;
@@ -915,8 +915,8 @@ PHP_FUNCTION(bbs_docross)
     char *board,*target,*filename,*title;
     int  board_len,target_len,filename_len,title_len;
     long  id,out_go;
-    struct boardheader *src_bp;
-	struct boardheader *dst_bp;
+    const struct boardheader *src_bp;
+	const struct boardheader *dst_bp;
 	struct fileheader f;
     int  ent;
     int  fd;
@@ -1029,7 +1029,7 @@ PHP_FUNCTION(bbs_docommend)
     int  board_len;
     long  id,confirmed;
     struct userec *u;
-    struct boardheader *src_bp, *commend_bp;
+    const struct boardheader *src_bp, *commend_bp;
     struct fileheader fileinfo;
     int  ent;
     int  fd;
@@ -1118,7 +1118,7 @@ PHP_FUNCTION(bbs_brcaddread)
 	char *board;
 	int blen;
     long fid;
-	boardheader_t* bp;
+	const boardheader_t* bp;
     int bid;
 
     if (!strcmp(getCurrentUser()->userid, "guest")) {
@@ -1146,7 +1146,7 @@ PHP_FUNCTION(bbs_brcclear)
 {
     char *board;
     int  board_len;
-    struct boardheader *pbh;
+    const struct boardheader *pbh;
     struct userec *u;
     int bid;
         

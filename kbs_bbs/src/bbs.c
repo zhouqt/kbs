@@ -447,7 +447,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     char q_file[STRLEN];
     struct read_arg* arg=(struct read_arg*)conf->arg;
     int outgo_board = true, proceed = false;
-    struct boardheader* bh;
+    const struct boardheader* bh;
 
     if (fileinfo==NULL)
         return DONOTHING;

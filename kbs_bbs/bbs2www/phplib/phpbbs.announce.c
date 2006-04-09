@@ -101,7 +101,7 @@ PHP_FUNCTION(bbs_add_import_path)
 	char buf[MAXPATH];
 	char board[MAXPATH];
 	char *c;
-    struct boardheader *bp;
+    const struct boardheader *bp;
 
 	if(ac == 2){
     	if ( zend_parse_parameters(2 TSRMLS_CC, "sl", &path, &path_len, &num) == FAILURE) {
@@ -1275,7 +1275,7 @@ PHP_FUNCTION(bbs_ann_paste)
     FILE *fp;
     MENU sme, dme;
     char bname[STRLEN];
-    struct boardheader *bp;
+    const struct boardheader *bp;
     struct fileheader fh;
 
     ac = ZEND_NUM_ARGS();

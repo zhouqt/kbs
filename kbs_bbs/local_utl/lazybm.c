@@ -33,7 +33,7 @@ int cmpBMLogin(BMInfo * fst, BMInfo * snd)
     return (fst->lastlogin - snd->lastlogin);
 }
 
-int isNormalBoard(struct boardheader *brd)
+int isNormalBoard(const struct boardheader *brd)
 {
     if (brd->level & PERM_NOZAP)
         return 1;

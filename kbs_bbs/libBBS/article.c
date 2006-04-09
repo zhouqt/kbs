@@ -1108,7 +1108,7 @@ int after_post(struct userec *user, struct fileheader *fh, char *boardname, stru
     char oldpath[50], newpath[50];
     int filtered;
 #endif
-    struct boardheader *bh = NULL;
+    const struct boardheader *bh = NULL;
     int bid;
 
     if ((re == NULL) && (!strncmp(fh->title, "Re: ", 4))) {
@@ -1552,7 +1552,7 @@ int ann_article_import(char *bname, char *title, char *fname, char *userid)
 {
     char clipfile[PATHLEN];
     FILE *fp;
-    struct boardheader *bp;
+    const struct boardheader *bp;
 
     sprintf(clipfile, "tmp/clip/%s.announce", userid);
     if(bname)

@@ -26,7 +26,7 @@ int cmpBMLogin(BMInfo * fst, BMInfo * snd)
     return (fst->inday - snd->inday);
 }
 
-int isNormalBoard(struct boardheader *brd)
+int isNormalBoard(const struct boardheader *brd)
 {
     if (brd->level & PERM_NOZAP)
         return 1;
@@ -78,7 +78,7 @@ int main(int argc, char **argv)
 	char board[STRLEN];
 	time_t inday;
 	char renming[STRLEN];
-	struct boardheader *bp;
+	const struct boardheader *bp;
 
     pBMInfo = bmusr;
 

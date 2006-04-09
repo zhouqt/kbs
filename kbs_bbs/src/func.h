@@ -273,14 +273,14 @@ void unlock_sem_check(int lockid);
     int getbnum(const char *bname);
     void resolve_boards(ARG_VOID);
     int get_boardcount(ARG_VOID);
-    struct boardheader *getbcache(const char *bname);
-    int getbid(const char *bname, struct boardheader **pbh);
+    const struct boardheader *getbcache(const char *bname);
+    int getbid(const char *bname, const struct boardheader **pbh);
     int public_board(const struct boardheader *bh);
     int normal_board(const char *bname);
     int getboardnum(const char *bname, struct boardheader *bh);       /* board name --> board No. & not check level */
 
     int get_manageable_bids(struct userec *user, char *buf, int buflen);
-	int fill_super_board(struct userec* user,char *searchname, int result[], int max);
+	int fill_super_board(struct userec* user,const char *searchname, int result[], int max);
     int add_board(struct boardheader *newboard);
     void build_board_structure(const char *board);
     int apply_boards(int (*func) (struct boardheader*,void*),void* arg);   /* 对所有版 应用 func函数 */
@@ -294,13 +294,13 @@ void unlock_sem_check(int lockid);
     int setboardorigin(const char *board, int i);
     int setboardtitle(const char *board, int i);
     int board_setreadonly(const char *board, int readonly);   /* 设置版面只读属性 */
-    int get_nextid(char *boardname);    /*生成文章索引号并自动加一 */
+    int get_nextid(const char *boardname);    /*生成文章索引号并自动加一 */
 	int get_nextid_bid(int bid);
     void board_update_toptitle(int bid,bool needlock); /*改变置顶个数*/
 
-    int add_bm(struct userec *user,struct boardheader *bh,int pos,int bms_log);
-    int del_bm(struct userec *user,struct boardheader *bh,int pos,int concurrent);
-    void process_no_bm(struct boardheader *bh);
+    int add_bm(struct userec *user,const struct boardheader *bh,int pos,int bms_log);
+    int del_bm(struct userec *user,const struct boardheader *bh,int pos,int concurrent);
+    void process_no_bm(const struct boardheader *bh);
 
 #if HAVE_WWW==1
     int resolve_guest_table(ARG_VOID); /* www guest shm */
@@ -680,7 +680,7 @@ int pc_logs(struct pc_logs *pn);
     void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select, session_t* session);
     void free_import_path(char ** i_path,char ** i_title,time_t* i_path_time);
 	int linkto(char *path,const char *fname,const char *title, session_t* session);
-    int edit_group(struct boardheader* oldbh,struct boardheader* newbh);
+    int edit_group(const struct boardheader* oldbh, const struct boardheader* newbh);
 
     int a_SeSave(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid);
     int a_Save(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent, char *userid);

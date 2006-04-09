@@ -1001,7 +1001,7 @@ int poststatboard(const char *currboard)
 
 int junkboard(const char *currboard)
 {                               /* 判断当前版是否为 junkboards */
-    struct boardheader *bh = getbcache(currboard);
+    const struct boardheader *bh = getbcache(currboard);
 
     if (bh && (bh->flag & BOARD_JUNK))  /* Checking if DIR access mode is "555" */
         return true;
@@ -1012,7 +1012,7 @@ int junkboard(const char *currboard)
 
 int checkreadonly(const char *board)
 {                               /* 检查是否是只读版面 */
-    struct boardheader *bh = getbcache(board);
+    const struct boardheader *bh = getbcache(board);
 
     if (bh && (bh->flag & BOARD_READONLY))      /* Checking if DIR access mode is "555" */
         return true;
@@ -1022,7 +1022,7 @@ int checkreadonly(const char *board)
 
 int anonymousboard(const char *board)
 {                               /*检查版面是不是匿名版 */
-    struct boardheader *bh = getbcache(board);
+    const struct boardheader *bh = getbcache(board);
 
     if (bh && (bh->flag & BOARD_ANNONY))        /* Checking if DIR access mode is "555" */
         return true;
@@ -1032,7 +1032,7 @@ int anonymousboard(const char *board)
 
 int is_outgo_board(const char *board)
 {
-    struct boardheader *bh = getbcache(board);
+    const struct boardheader *bh = getbcache(board);
 
     if (bh && (bh->flag & BOARD_OUTFLAG))
         return true;
@@ -1042,7 +1042,7 @@ int is_outgo_board(const char *board)
 
 int is_emailpost_board(const char *board)
 {
-    struct boardheader *bh = getbcache(board);
+    const struct boardheader *bh = getbcache(board);
 
     if (bh && (bh->flag & BOARD_EMAILPOST))
         return true;

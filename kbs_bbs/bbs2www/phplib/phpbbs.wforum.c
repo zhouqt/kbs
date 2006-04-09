@@ -424,7 +424,7 @@ PHP_FUNCTION(bbs_searchtitle)
                                  * flags[2]: no reply flag
                                  * flags[3]: attach flag
                                  */
-    struct boardheader *bp;
+    const struct boardheader *bp;
     zval* columns[3];
     bool is_original_date=false;
     struct wwwthreadheader** resultList;
@@ -571,7 +571,7 @@ PHP_FUNCTION(bbs_getthreads)
     int blen;
     long start,num;
     int total;
-    struct boardheader *bp=NULL;
+    const struct boardheader *bp=NULL;
 	char dirpath[STRLEN];
     int i,j;
     zval *element;
@@ -703,7 +703,7 @@ PHP_FUNCTION(bbs_get_today_article_num)
     char *board;
     int blen;
     int total;
-    struct boardheader *bp;
+    const struct boardheader *bp;
 	char dirpath[STRLEN];
     int i;
     int ac = ZEND_NUM_ARGS();

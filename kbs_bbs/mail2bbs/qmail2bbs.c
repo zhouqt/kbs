@@ -140,7 +140,7 @@ int append_board(fin, sender1, sender, bname, title, received, encoding, boundar
 	FILE *fout;
 	struct fileheader newmessage;
 	char fname[512], buf[256], boardpath[256], conv_buf[256];
-	struct boardheader *brd;
+	const struct boardheader *brd;
 	char *user, *userptr;
 	char *lesssym, *nameptrleft, *nameptrright;
 	char author[STRLEN];

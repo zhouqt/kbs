@@ -319,7 +319,7 @@ void gen_sec_hot_subjects_xml(int mytype, struct postrec *dobucket[HASHSIZE], in
     char BoardName[100][13];
     char url_buf[256];
 	char xml_buf[256];
-	struct boardheader *bp;
+	const struct boardheader *bp;
 
 	/* ---------------------------------------------- */
     /*

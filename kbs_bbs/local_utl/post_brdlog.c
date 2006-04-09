@@ -127,7 +127,7 @@ void gen_board_rank_xml()
     char xmlfile[STRLEN];
 	char xml_buf[256];
 	char url_buf[256];
-	struct boardheader *bp;
+	const struct boardheader *bp;
 	int sec_id;
 
     snprintf(xmlfile, sizeof(xmlfile), BBSHOME "/xml/board.xml");

@@ -40,7 +40,7 @@ PHP_FUNCTION(bbs_get_votes)
 	int bname_len;
 	struct votebal vbal;
 	char controlfile[STRLEN];
-	struct boardheader *bp=NULL;
+	const struct boardheader *bp=NULL;
 	FILE *fp;
 	int vnum,i;
 	zval *element,*retarray;
@@ -132,7 +132,7 @@ PHP_FUNCTION(bbs_get_vote_from_num)
 	struct votebal vbal;
 	struct ballot uservote;
 	char controlfile[STRLEN];
-	struct boardheader *bp=NULL;
+	const struct boardheader *bp=NULL;
 	FILE *fp;
 	int vnum;
 	zval *element,*retarray,*uservotearray;
@@ -222,7 +222,7 @@ PHP_FUNCTION(bbs_vote_num)
 	struct ballot uservote;
 	struct ballot tmpball;
 	char controlfile[STRLEN];
-	struct boardheader *bp=NULL;
+	const struct boardheader *bp=NULL;
 	FILE *fp;
 	int vnum,pos;
 	char lmsg[3][STRLEN];
@@ -328,7 +328,7 @@ PHP_FUNCTION(bbs_start_vote)
 	long ball_totalitems;
 	int i,pos;
 	long numlogin,numpost,numstay,numday;
-	struct boardheader *bp;
+	const struct boardheader *bp;
 	struct boardheader fh;
 	struct votebal ball;
 	struct votelimit vlimit;
@@ -485,7 +485,7 @@ PHP_FUNCTION(bbs_get_tmpls)
 	char path[STRLEN];
 	struct a_template * ptemp = NULL;
 	int mode,tmpl_num,i;
-	struct boardheader *bp=NULL;
+	const struct boardheader *bp=NULL;
 	zval *element,*retarray;
 
     if (ac != 2 || zend_parse_parameters(2 TSRMLS_CC, "sa", &bname, &bname_len, &retarray) == FAILURE) {
@@ -547,7 +547,7 @@ PHP_FUNCTION(bbs_get_tmpl_from_num)
 	char *bname;
 	int bname_len;
 	char path[STRLEN];
-	struct boardheader *bp=NULL;
+	const struct boardheader *bp=NULL;
 	struct a_template * ptemp = NULL;
 	zval *element,*retarray;
 	long ent;
@@ -614,7 +614,7 @@ PHP_FUNCTION(bbs_make_tmpl_file)
 	int bname_len;
 	char tmpfname[STRLEN];
 	char path[STRLEN];
-	struct boardheader *bp=NULL;
+	const struct boardheader *bp=NULL;
 	struct a_template * ptemp = NULL;
 	FILE *fp,*fpsrc;
 	int write_ok=0;

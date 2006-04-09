@@ -64,7 +64,7 @@ PHP_FUNCTION(bbs_get_records_from_id)
 	char dirpath[STRLEN];
 #define record_cnt 3
 	fileheader_t articles[record_cnt];
-	struct boardheader *bp;
+	const struct boardheader *bp;
 	int i;
 	zval *element,*articlearray;
 	int is_bm;
@@ -228,7 +228,7 @@ PHP_FUNCTION(bbs_get_filename_from_num)
 	int blen;
 	long num;
 	long mode;
-	struct boardheader *bp;
+	const struct boardheader *bp;
 	char dirpath[STRLEN];
 	fileheader_t fh;
 	FILE *fp;
@@ -522,7 +522,7 @@ PHP_FUNCTION(bbs_getarticles)
     char dirpath1[STRLEN];	/* add by stiger */
     int total;
     struct fileheader *articles;
-    struct boardheader *bp;
+    const struct boardheader *bp;
     int rows;
     int i;
     zval *element;
@@ -618,7 +618,7 @@ PHP_FUNCTION(bbs_search_articles)
                                  * flags[2]: no reply flag
                                  * flags[3]: attach flag
                                  */
-    struct boardheader *bp;
+    const struct boardheader *bp;
 	int found;
 	int i1,i2;
 	time_t timeLimit;

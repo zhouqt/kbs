@@ -150,7 +150,7 @@ int get_nextid_bid(int bid)
     return ret;
 }
 
-int get_nextid(char* boardname)
+int get_nextid(const char* boardname)
 {
     int ret;
 
@@ -260,7 +260,7 @@ int apply_bids(int (*func) (struct boardheader* bh,int bid, void* arg),void* arg
     return 0;
 }
 
-int fill_super_board(struct userec* user,char *searchname, int result[], int max)
+int fill_super_board(struct userec* user,const char *searchname, int result[], int max)
 {
 	register int i;
 	int total=0;
@@ -333,7 +333,8 @@ int getboardnum(const char *bname, struct boardheader *bh)
         }
     return 0;
 }/*---	---*/
-struct boardheader *getbcache(const char *bname)
+
+const struct boardheader *getbcache(const char *bname)
 {
     int i;
 
@@ -343,7 +344,7 @@ struct boardheader *getbcache(const char *bname)
     return &bcache[i - 1];
 }
 
-int getbid(const char *bname, struct boardheader **pbh)
+int getbid(const char *bname, const struct boardheader **pbh)
 {
     register int i;
 
@@ -360,6 +361,7 @@ int get_boardcount()
 {
     return brdshm->numboards;
 }
+
 const struct boardheader *getboard(int num)
 {
     if (num > 0 && num <= MAXBOARD) {
@@ -455,7 +457,7 @@ int add_board(struct boardheader *newboard)
     return ret;
 }
 
-static int clearclubreadright(struct userec* user,struct boardheader* bh)
+static int clearclubreadright(struct userec* user, struct boardheader* bh)
 {
     user->club_read_rights[(bh->clubnum-1)>>5]&=~(1<<(bh->clubnum-1));
     return 0;
@@ -467,20 +469,20 @@ static int clearclubwriteright(struct userec* user, struct boardheader* bh)
     return 0;
 }
 
-int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
+int set_board(int bid,struct boardheader *board,struct boardheader *oldbh)
 {
     bcache_setreadonly(0);
     if (oldbh) {
     	char buf[100];
     	if ((board->flag&BOARD_CLUB_READ)^(oldbh->flag&BOARD_CLUB_READ)) {
     	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
-    	        apply_users((int (*)(struct userec*,void*))clearclubreadright,oldbh);
+    	        apply_users((int (*)(struct userec*,void*))clearclubreadright,(void*)oldbh);
 	    setbfile(buf, board->filename, "read_club_users");
 	    unlink(buf);
     	}
     	if ((board->flag&BOARD_CLUB_WRITE)^(oldbh->flag&BOARD_CLUB_WRITE)) {
     	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
-    	         apply_users((int (*)(struct userec*,void*))clearclubwriteright,oldbh);
+    	         apply_users((int (*)(struct userec*,void*))clearclubwriteright,(void*)oldbh);
 	    setbfile(buf, board->filename, "write_club_users");
 	    unlink(buf);
     	}
@@ -532,14 +534,17 @@ int set_board(int bid, struct boardheader *board,struct boardheader *oldbh)
     bcache_setreadonly(1);
     return 0;
 }
+
 int board_setreadonly(const char *board, int readonly)
 {
     int fd;
     struct boardheader *bh;
+    int bid;
 
-    bh = getbcache(board);
-    if (!bh)
+    bid = getbnum(board);
+    if (bid == 0)
         return 0;
+    bh = &bcache[bid - 1];
     fd = bcache_lock();
     if (readonly)
         bh->flag |= BOARD_READONLY;
@@ -689,7 +694,7 @@ int board_regenspecial(const char *board, int mode, char *index)
     return count;
 }
 
-void process_no_bm(struct boardheader *bh){
+void process_no_bm(const struct boardheader *bh){
 //stiger, 2005.09.05, 版面无版主时进行系统通知
 #ifdef SMTH
 #define NO_BM_FILE "etc/nobms"
@@ -708,7 +713,7 @@ void process_no_bm(struct boardheader *bh){
 }
 
 /* by etnlegend 20051002 */
-int add_bm(struct userec *user,struct boardheader *bh,int pos,int bms_log){
+int add_bm(struct userec *user,const struct boardheader *bh,int pos,int bms_log){
 /*
  *  pos 为版面的 bid, 指定 pos 为 0 或负值的时候将自动根据 bh 获取 pos 的值
  *  bms_log 为标志是否记录版主数据库的参数, 指定为 0 时不记录, 指定为正值时记录, 指定为负值时根据 bh 是否为公开版面判断是否记录(默认)
@@ -739,7 +744,7 @@ int add_bm(struct userec *user,struct boardheader *bh,int pos,int bms_log){
     return 0;
 #undef BM_FILE
 }
-int del_bm(struct userec *user,struct boardheader *bh,int pos,int concurrent){
+int del_bm(struct userec *user,const struct boardheader *bh,int pos,int concurrent){
 /*
  *  concurrent 为当前该用户兼任版主数量, 设置为负值时自动检测
  */
@@ -777,3 +782,4 @@ int del_bm(struct userec *user,struct boardheader *bh,int pos,int concurrent){
     set_board(pos,&newbh,NULL);
     return 0;
 }
+

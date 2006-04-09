@@ -71,7 +71,7 @@ PHP_FUNCTION(bbs_bmmanage)
     char *board;
     int  board_len;
     long  id,mode,zhiding;
-    struct boardheader* bh;
+    const struct boardheader* bh;
     int ret;
     char dir[STRLEN];
     int ent;

@@ -208,7 +208,7 @@ type - meaning
     int fd, data[DATALEN];
     struct flock ldata;
     struct stat buf;
-    struct boardheader *btemp;
+    const struct boardheader *btemp;
     char direct[PATHLEN], BM[PATHLEN];
 
     btemp = getbcache(boardname);

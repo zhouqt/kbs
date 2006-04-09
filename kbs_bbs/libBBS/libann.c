@@ -2,7 +2,7 @@
 
 static int ann_can_access(char *title, const char *board, struct userec *user)
 {
-    struct boardheader *bp;
+    const struct boardheader *bp;
     char BM[STRLEN];
 
     if (strstr(title, "(BM: BMS)")) {
@@ -200,7 +200,7 @@ int ann_get_board(char *path, char *board, size_t len)
 */
 int ann_get_path(char *board, char *path, size_t len)
 {
-    struct boardheader* bh;
+    const struct boardheader* bh;
     if ((bh=getbcache(board))!=NULL) {
         if (strlen(bh->ann_path)+strlen("/groups")>len)
             return -1;
@@ -746,14 +746,14 @@ int linkto(char *path, const char *fname, const char *title, session_t* session)
 
 
 /*etnlegend,2005.06.28,修改精华区*/
-int ann_show_board(struct boardheader *bh){
+int ann_show_board(const struct boardheader *bh){
     if(bh->title_level||bh->flag&(BOARD_CLUB_READ|BOARD_CLUB_HIDE))
         return 0;
     if(!(bh->level)||bh->level&PERM_POSTMASK||bh->level&PERM_DEFAULT)
         return 1;
     return 0;
 }
-int add_group(struct boardheader *bh){
+int add_group(const struct boardheader *bh){
     MENU m;
     FILE *fp;
     char gpath[256],bpath[256],*p;
@@ -821,7 +821,7 @@ int add_group(struct boardheader *bh){
     }
     return ret;
 }
-int del_group(struct boardheader *bh){
+int del_group(const struct boardheader *bh){
     MENU m;
     char path[256],*p;
     int ret,i;
@@ -846,7 +846,7 @@ int del_group(struct boardheader *bh){
     a_freenames(&m);
     return ret;
 }
-int edit_group(struct boardheader *oldbh,struct boardheader *newbh){
+int edit_group(const struct boardheader *oldbh,const struct boardheader *newbh){
     MENU m;
     char path[256],*p;
     char genbuf[1024];

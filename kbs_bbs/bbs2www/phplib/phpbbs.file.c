@@ -549,7 +549,7 @@ PHP_FUNCTION(bbs_printoriginfile)
     buffered_output_t *out;
 	int i;
 	int skip;
-	boardheader_t* bp;
+	const boardheader_t* bp;
 
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board,&boardLen, &filename,&filenameLen) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
@@ -611,7 +611,7 @@ PHP_FUNCTION(bbs_originfile)
     int chunk_size=51200, calen, clen, buflen;
 	int i;
 	int skip;
-	boardheader_t* bp;
+	const boardheader_t* bp;
 
     if ((ZEND_NUM_ARGS() != 2) || (zend_parse_parameters(2 TSRMLS_CC, "ss", &board,&boardLen, &filename,&filenameLen) != SUCCESS)) {
 		WRONG_PARAM_COUNT;
