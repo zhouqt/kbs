@@ -141,9 +141,7 @@ void new_register()
     if (convcode)
         SET_UNDEFINE(&newuser, DEF_USEGB);
 
-#ifdef HAVE_WFORUM
 	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
-#endif
 
     newuser.exittime = time(NULL) - 100;
     /*newuser.unuse2 = -1;*/
@@ -622,9 +620,8 @@ void ConveyID()
 		getCurrentUser()->stay = 0;
 		strncpy(getCurrentUser()->username,getCurrentUser()->userid,IDLEN);
 		SET_UNDEFINE(getCurrentUser(),DEF_NOTMSGFRIEND);
-#ifdef HAVE_WFORUM
 		SET_UNDEFINE(getCurrentUser(),DEF_SHOWREALUSERDATA);
-#endif
+
         if (convcode)
             SET_UNDEFINE(getCurrentUser(),DEF_USEGB);
 

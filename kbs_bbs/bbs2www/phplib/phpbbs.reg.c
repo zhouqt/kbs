@@ -584,9 +584,8 @@ PHP_FUNCTION(bbs_createnewid)
 	newuser.userdefine[0] = -1;
 	newuser.userdefine[1] = -1;
 	SET_UNDEFINE(&newuser,DEF_NOTMSGFRIEND);
-#ifdef HAVE_WFORUM
 	SET_UNDEFINE(&newuser, DEF_SHOWREALUSERDATA);
-#endif
+
 	newuser.exittime = time(NULL) - 100;
 	newuser.flags |= PAGER_FLAG;
 	newuser.title = 0;
