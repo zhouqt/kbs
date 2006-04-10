@@ -93,7 +93,10 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 @PcorpManage       0,0,   PERM_SYSOP,    "BlogManage", "T) Blog管理"
 @Pcorp             0,0,   PERM_BASIC,    "JPc",        "J) Blog"
 
-
 5. 其他
+
+    /pc/index.html 是 Blog 的首页导读，目前发布的 index.html 就是直接重定向到真正的首页
+导读页面 pcmain.php，但是由于 pcmain.php 运行速度极慢，强烈建议设置自动定时从 pcmain.php
+更新 index.html 文件，详情可以参考 INSTALL.mainpage 中自动更新 mainpage.html 的内容。
     最新版本的 kbsbbs 已将 KBS.Blog 作为正式的组成部分，安装时可参考相应的INSTALL文档。
 KBS.Blog目前仍在开发和完善中，敬请关注水木社区 (http://newsmth.net/) BBSMan_Dev 版。
