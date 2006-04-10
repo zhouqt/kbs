@@ -414,7 +414,7 @@ extern void Net_Sleep(int);
 #define memcpy(x,y,z)   pr_memcpy(x,y,z)
 #endif /* PROFILE */
 
-#define chartoupper(c)  (((c) >= 'a' && (c) <= 'z')? ((c) + 32) : (c))
+#define chartoupper(c)  (((c) >= 'a' && (c) <= 'z')? ((c) - 32) : (c))
 
 #ifdef NULL
 #undef NULL
