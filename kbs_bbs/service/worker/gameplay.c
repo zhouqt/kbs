@@ -94,7 +94,7 @@ int workermove(int dir)
 	return b_rtn;
 }
 
-void regretmove(dir)
+void regretmove(int dir)
 {
 	int x, y, xoff, yoff;
 	int bmovebox=0;
