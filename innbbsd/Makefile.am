@@ -25,4 +25,4 @@ dbzserver_CFLAGS = -DDBZSERVER $(AM_CFLAGS)
 LDADD=-L../libBBS -lBBS -L../libsystem -lsystem
 
 install-data-local:
-	sh linkinnd.sh
+	bash linkinnd.sh
