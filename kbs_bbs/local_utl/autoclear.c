@@ -167,7 +167,7 @@ int main(int argc,char **argv){
         fclose(fin);
     }
     if (count > 1) {
-        qsort(table, count, sizeof(life), (const void *) strcasecmp);
+        qsort(table, count, sizeof(life), (int(*)(const void *, const void *)) strcasecmp);
     }
     /* ---------------- */
     /* visit all boards */
@@ -182,7 +182,7 @@ int main(int argc,char **argv){
         ptr = de->d_name;
         if (ptr[0] > ' ' && ptr[0] != '.') {
             if (count)
-                key = (life *) bsearch(ptr, table, count, sizeof(life), (const void *) strcasecmp);
+                key = (life *) bsearch(ptr, table, count, sizeof(life), (int(*)(const void *, const void *)) strcasecmp);
             else
                 key = NULL;
             if (!key)

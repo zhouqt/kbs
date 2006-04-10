@@ -207,7 +207,7 @@ int get_top(int type)
 	char userid[IDLEN+1];
 	int m,n;
 #ifdef BLESS_BOARD
-	struct boardheader *bh;
+	const struct boardheader *bh;
 #endif
 
 	topnum = 0;
@@ -560,8 +560,10 @@ void gen_hot_subjects_xml(int mytype)
 	char url_buf[256];
 	int i;
 
-	if(mytype==4)
-		return gen_blessing_list_xml();
+	if(mytype==4) {
+		gen_blessing_list_xml();
+        return;
+	}
 
     sprintf(curfile, "xml/%s.xml", myfile[mytype]);
     if ((fp = fopen(curfile, "w")) != NULL) 

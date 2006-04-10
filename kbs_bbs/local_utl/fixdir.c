@@ -14,11 +14,13 @@ int len = 0;
 extern const char alphabet[];
 
 
-int cmpfile(f1, f2)
-struct fileheader *f1, *f2;
+int cmpfile(const void *f11, const void *f21)
 {
     time_t t1, t2;
-
+    struct fileheader *f1, *f2;
+    f1 = (struct fileheader*)f11;
+    f2 = (struct fileheader*)f21;
+    
     t1 = get_posttime(f1);
     t2 = get_posttime(f2);
     return t1 - t2;
