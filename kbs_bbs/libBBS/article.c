@@ -3,7 +3,7 @@
 #define DEBUG
 
 
-int outgo_post(struct fileheader *fh, char *board, char *title, session_t* session)
+int outgo_post(struct fileheader *fh, const char *board, const char *title, session_t* session)
 {
     FILE *foo;
 
@@ -690,7 +690,7 @@ void addsignature(FILE * fp, struct userec *user, int sig)
         fputs(tmpsig[i - 1], fp);
 }
 
-int write_posts(char *id, char *board, unsigned int groupid)
+int write_posts(char *id, const char *board, unsigned int groupid)
 {
     time_t now;
     struct posttop postlog, pl;
@@ -743,7 +743,7 @@ int write_posts(char *id, char *board, unsigned int groupid)
     return 0;
 }
 
-void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, session_t* session)
+void write_header(FILE * fp, struct userec *user, int in_mail, const char *board, const char *title, int Anony, int mode, session_t* session)
 {
     int noname;
     char uid[20];
@@ -811,7 +811,7 @@ void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char
 
 }
 
-void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, int local_article, char *sourceboard, session_t* session)
+void getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *board, const char *title, int Anony, int mode, int local_article, const char *sourceboard, session_t* session)
 {                               /* 把quote_file复制到filepath (转贴或自动发信) */
     FILE *inf, *of;
     char buf[256];
@@ -972,7 +972,7 @@ int post_commend(struct userec *user, char *fromboard, struct fileheader *filein
 #endif
 
 /* Add by SmallPig */
-int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session)
+int post_cross(struct userec *user, const char *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session)
 {                               /* (自动生成文件名) 转贴或自动发信 */
     struct fileheader postfile;
     char filepath[STRLEN];
@@ -1075,7 +1075,7 @@ int post_cross(struct userec *user, char *toboard, char *fromboard, char *title,
 }
 
 
-int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode, session_t* session)
+int post_file(struct userec *user, const char *fromboard, const char *filename, const char *nboard, const char *posttitle, int Anony, int mode, session_t* session)
 /* 将某文件 POST 在某版 */
 {
     if (getboardnum(nboard, NULL) <= 0) {       /* 搜索要POST的版 ,判断是否存在该版 */
@@ -1098,7 +1098,7 @@ int post_file(struct userec *user, char *fromboard, char *filename, char *nboard
  * >0: 新发出去文章的 ID 
  *
  */
-int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat, session_t* session)
+int after_post(struct userec *user, struct fileheader *fh, const char *boardname, struct fileheader *re, int poststat, session_t* session)
 {
     char buf[256];
     int fd, err = 0, nowid = 0;

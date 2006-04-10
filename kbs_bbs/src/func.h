@@ -468,17 +468,17 @@ void unlock_sem_check(int lockid);
     void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony, session_t* session);
 
 /* 把quote_file复制到filepath (转贴或自动发信)*/
-    void getcross(char *filepath, char *quote_file, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, int local_article, char *sourceboard, session_t* session);
+    void getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *board, const char *title, int Anony, int mode, int local_article, const char *sourceboard, session_t* session);
 
-    void write_header(FILE * fp, struct userec *user, int in_mail, char *board, char *title, int Anony, int mode, session_t* session);
+    void write_header(FILE * fp, struct userec *user, int in_mail, const char *board, const char *title, int Anony, int mode, session_t* session);
 
 /*写入.post文件供分析*/
-    int write_posts(char *id, char *board, unsigned int groupid);
+    int write_posts(char *id, const char *board, unsigned int groupid);
     void cancelpost(const char *board, const char *userid, struct fileheader *fh, int owned, int autoappend, session_t* session);
-    int outgo_post(struct fileheader *fh, char *board, char *title, session_t* session);
-    int after_post(struct userec *user, struct fileheader *fh, char *boardname, struct fileheader *re, int poststat, session_t* session);
-    int post_file(struct userec *user, char *fromboard, char *filename, char *nboard, char *posttitle, int Anony, int mode, session_t* session);
-    int post_cross(struct userec *user, char *toboard, char *fromboard, char *title, char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session);   /* (自动生成文件名) 转贴或自动发信 */
+    int outgo_post(struct fileheader *fh, const char *board, const char *title, session_t* session);
+    int after_post(struct userec *user, struct fileheader *fh, const char *boardname, struct fileheader *re, int poststat, session_t* session);
+    int post_file(struct userec *user, const char *fromboard, const char *filename, const char *nboard, const char *posttitle, int Anony, int mode, session_t* session);
+    int post_cross(struct userec *user, const char *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session);   /* (自动生成文件名) 转贴或自动发信 */
 
     int dele_digest(char *dname, const char *boardname);
     int change_post_flag(struct write_dir_arg* dirarg,int currmode, const struct boardheader*board,
