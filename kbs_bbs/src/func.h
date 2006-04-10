@@ -388,9 +388,9 @@ void unlock_sem_check(int lockid);
 
     
     /*加入置顶*/
-    int add_top(struct fileheader* fileinfo,char* boardname,int flag);
+    int add_top(struct fileheader* fileinfo,const char* boardname,int flag);
     /*推荐文章*/
-    int post_commend(struct userec *user, char *fromboard, struct fileheader *fileinfo);
+    int post_commend(struct userec *user, const char *fromboard, struct fileheader *fileinfo);
 
 	/* Search_Bin 
 	 * 功能：依据key, 对ptr传入的.DIR索引进行二分查找
@@ -480,7 +480,6 @@ void unlock_sem_check(int lockid);
     int post_file(struct userec *user, const char *fromboard, const char *filename, const char *nboard, const char *posttitle, int Anony, int mode, session_t* session);
     int post_cross(struct userec *user, const char *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session);   /* (自动生成文件名) 转贴或自动发信 */
 
-    int dele_digest(char *dname, const char *boardname);
     int change_post_flag(struct write_dir_arg* dirarg,int currmode, const struct boardheader*board,
         struct fileheader *fileinfo, int flag,struct fileheader * data,bool dobmlog, session_t* session);
 

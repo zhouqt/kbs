@@ -891,7 +891,7 @@ void getcross(const char *filepath, const char *quote_file, struct userec *user,
 }
 
 #ifdef COMMEND_ARTICLE
-int post_commend(struct userec *user, char *fromboard, struct fileheader *fileinfo)
+int post_commend(struct userec *user, const char *fromboard, struct fileheader *fileinfo)
 {                               /* 推荐 */
     struct fileheader postfile;
     char filepath[STRLEN];
@@ -2492,7 +2492,7 @@ int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, i
 }
 
 /* 增加置顶文章*/
-int add_top(struct fileheader *fileinfo, char *boardname, int flag)
+int add_top(struct fileheader *fileinfo, const char *boardname, int flag)
 {
     struct fileheader top;
     char path[MAXPATH], newpath[MAXPATH], dirpath[MAXPATH];
@@ -2515,7 +2515,7 @@ int add_top(struct fileheader *fileinfo, char *boardname, int flag)
 }
 
 /*增加文摘*/
-int add_digest(struct fileheader *fileinfo, char *boardname)
+static int add_digest(struct fileheader *fileinfo, const char *boardname)
 {
     struct fileheader digest;
     char path[MAXPATH], newpath[MAXPATH], dirpath[MAXPATH];
@@ -2537,7 +2537,7 @@ int add_digest(struct fileheader *fileinfo, char *boardname)
 }
 
 /*删除文摘*/
-int dele_digest(char *dname, const char *boardname)
+static int dele_digest(char *dname, const char *boardname)
 {                               /* 删除文摘内一篇POST, dname=post文件名,boardname版面名字 */
     char digest_name[STRLEN];
     char new_dir[STRLEN];
