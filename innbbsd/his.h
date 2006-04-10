@@ -5,6 +5,7 @@
 #include <ctype.h>
 #include <sys/stat.h>
 #include <sys/param.h>
+#include <string.h>
 #ifndef SEEK_SET
 #include <unistd.h>
 #endif

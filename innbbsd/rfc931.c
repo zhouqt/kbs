@@ -23,6 +23,7 @@ static char sccsid[] = "@(#) rfc931.c 1.4 93/03/07 22:47:52";
 #include <netinet/in.h>
 #include <setjmp.h>
 #include <signal.h>
+#include <string.h>
 
 /*#include "log_tcp.h"*/
 
@@ -31,9 +32,6 @@ static char sccsid[] = "@(#) rfc931.c 1.4 93/03/07 22:47:52";
 #ifndef RFC931_TIMEOUT
 #define	RFC931_TIMEOUT	30      /* wait for at most 30 seconds */
 #endif
-
-extern char *strchr();
-extern char *inet_ntoa();
 
 static jmp_buf timebuf;
 

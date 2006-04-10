@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <time.h>
+#include <string.h>
 
 #ifndef ARG
 # ifdef __STDC__

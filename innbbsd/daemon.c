@@ -145,7 +145,7 @@ char *line, ***argvp;
      * p=(char*) mymalloc(i+1); 
      */
     p = argifybuffer;
-    strncpy(p, line, sizeof argifybuffer);
+    strncpy(p, line, sizeof(argifybuffer));
     for (*argvp = argv, i = 0; *p && i < MAX_ARG;) {
         for (*argv++ = p; *p && !strchr("\t\r\n ", *p); p++);
         if (*p == '\0')

@@ -1,5 +1,6 @@
 #include <iconv.h>
 #include <errno.h>
+#include <string.h>
 
 /* ----------------------------------------------------- */
 /* QP code : "0123456789ABCDEF"                          */
