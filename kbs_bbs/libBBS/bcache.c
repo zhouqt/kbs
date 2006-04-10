@@ -473,22 +473,17 @@ int set_board(int bid,struct boardheader *board,struct boardheader *oldbh)
 {
     bcache_setreadonly(0);
     if (oldbh) {
-    	char buf[100];
     	if ((board->flag&BOARD_CLUB_READ)^(oldbh->flag&BOARD_CLUB_READ)) {
     	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
     	        apply_users((int (*)(struct userec*,void*))clearclubreadright,(void*)oldbh);
-	    setbfile(buf, board->filename, "read_club_users");
-	    unlink(buf);
     	}
     	if ((board->flag&BOARD_CLUB_WRITE)^(oldbh->flag&BOARD_CLUB_WRITE)) {
     	    if (oldbh->clubnum&&oldbh->clubnum<=MAXCLUB) /*如果是老的俱乐部*/
     	         apply_users((int (*)(struct userec*,void*))clearclubwriteright,(void*)oldbh);
-	    setbfile(buf, board->filename, "write_club_users");
-	    unlink(buf);
     	}
        if (!(board->flag&BOARD_CLUB_READ)&&!(board->flag&BOARD_CLUB_WRITE))
     	   board->clubnum=0;
-       else if ((board->clubnum<=0)||(board->clubnum>=MAXCLUB)) {
+       else if ((board->clubnum<=0)||(board->clubnum>MAXCLUB)) {
     	/* 需要计算clubnum*/
     	    int used[MAXCLUB];
     	    int i;

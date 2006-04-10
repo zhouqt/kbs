@@ -720,7 +720,7 @@ int check_read_perm(struct userec *user, const struct boardheader *board)
         if (board->flag & BOARD_CLUB_READ) {    /*¾ãÀÖ²¿ */
             if (HAS_PERM(user, PERM_OBOARDS) && HAS_PERM(user, PERM_SYSOP))
                 return 1;
-            if (board->clubnum <= 0 || board->clubnum >= MAXCLUB)
+            if (board->clubnum <= 0 || board->clubnum > MAXCLUB)
                 return 0;
             if (user->club_read_rights[(board->clubnum - 1) >> 5] & (1 << ((board->clubnum - 1) & 0x1f)))
                 return 1;

@@ -1095,7 +1095,7 @@ int haspostperm(const struct userec *user,const char *bname)
         if (bcache[i - 1].flag & BOARD_CLUB_WRITE) {    /*æ„¿÷≤ø */
             if (HAS_PERM(user,PERM_OBOARDS)&&HAS_PERM(user, PERM_SYSOP))
                 return 1;
-            if (bcache[i - 1].clubnum <= 0 || bcache[i - 1].clubnum >= MAXCLUB)
+            if (bcache[i - 1].clubnum <= 0 || bcache[i - 1].clubnum > MAXCLUB)
                 return 0;
             if (user->club_write_rights[(bcache[i - 1].clubnum - 1) >> 5] & (1 << ((bcache[i - 1].clubnum - 1) & 0x1f)))
                 return 1;

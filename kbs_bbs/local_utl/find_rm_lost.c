@@ -15,7 +15,7 @@ extern const char alphabet[];
 #endif
 
 char *(spcname[]) = {
-"deny_users", "read_club_users", "write_club_users", NULL};
+"deny_users", NULL};
 
 int nfile[HASHSIZE];
 char allpost[HASHSIZE][MAXFILE][20];
