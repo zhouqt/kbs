@@ -1650,54 +1650,6 @@ int m_read()
 }
 
 #ifdef INTERNET_EMAIL
-
-#include <netdb.h>
-#include <pwd.h>
-#include <time.h>
-#define BBSMAILDIR "/usr/spool/mqueue"
-
-void spacestozeros(s)
-char *s;
-{
-    while (*s) {
-        if (*s == ' ')
-            *s = '0';
-        s++;
-    }
-}
-
-int getqsuffix(s)
-char *s;
-{
-    struct stat stbuf;
-    char qbuf[STRLEN], dbuf[STRLEN];
-    char c1 = 'A', c2 = 'A';
-    int pos = strlen(BBSMAILDIR) + 3;
-
-    sprintf(dbuf, "%s/dfAA%5d", BBSMAILDIR, getpid());
-    sprintf(qbuf, "%s/qfAA%5d", BBSMAILDIR, getpid());
-    spacestozeros(dbuf);
-    spacestozeros(qbuf);
-    while (1) {
-        if (stat(dbuf, &stbuf) && stat(qbuf, &stbuf))
-            break;
-        if (c2 == 'Z') {
-            c2 = 'A';
-            if (c1 == 'Z')
-                return -1;
-            else
-                c1++;
-            dbuf[pos] = c1;
-            qbuf[pos] = c1;
-        } else
-            c2++;
-        dbuf[pos + 1] = c2;
-        qbuf[pos + 1] = c2;
-    }
-    strcpy(s, &(qbuf[pos]));
-    return 0;
-}
-
 int g_send()
 {
     char uident[13], tmp[3];
