@@ -89,7 +89,7 @@ ZEND_END_MODULE_GLOBALS(kbs_bbs)
 /* phpbbs.article.c */
 void reset_output_buffer();
 void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, size_t flags_len);
-void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, char *boardname, int is_bm);
+void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, const char *boardname, int is_bm);
 
 /* phpbbs.post.c */
 int check_last_post_time(struct user_info *uinfo);

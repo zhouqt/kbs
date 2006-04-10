@@ -928,7 +928,7 @@ int edit_group(const struct boardheader *oldbh,const struct boardheader *newbh){
       mode: 模式，上面有说明。
       userid: 操作者的ID。
  */
-int a_SeSave(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid)
+int a_SeSave(char *path, const char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid)
 {
 
     FILE *inf, *outf;
@@ -1027,7 +1027,7 @@ int a_SeSave(char *path, char *key, struct fileheader *fileinfo, bool append, ch
 
 
 /* added by netty to handle post saving into (0)Announce */
-int a_Save(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent, char *userid)
+int a_Save(char *path, const char *key, struct fileheader *fileinfo, bool append, char *direct, int ent, char *userid)
 {
     char board[STRLEN], genbuf[PATHLEN];
     char buf[256];

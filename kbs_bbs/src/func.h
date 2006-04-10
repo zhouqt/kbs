@@ -442,7 +442,7 @@ void unlock_sem_check(int lockid);
 	int get_threads_from_id(const char *filename, int id, fileheader_t *buf, int num);
 	int get_threads_from_gid(const char *filename, int gid, fileheader_t *buf, int num, int start, int * haveprev, int operate, struct userec *user);
 
-    int ann_article_import(char *bname, char *title, char *fname, char *userid);
+    int ann_article_import(const char *bname, const char *title, const char *fname, const char *userid);
     
     int Origin2(char text[256]);
 /*º”»Îedit mark*/
@@ -493,7 +493,7 @@ void unlock_sem_check(int lockid);
  * @return flag character of the article
  * @author flyriver
  */
-    char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm, session_t* session);
+    char get_article_flag(struct fileheader *ent, struct userec *user, const char *boardname, int is_bm, session_t* session);
     time_t get_posttime(const struct fileheader *fileinfo);
     void set_posttime(struct fileheader *fileinfo);
     char* checkattach(char *buf, long size,long *len,char** attachptr);
@@ -681,8 +681,8 @@ int pc_logs(struct pc_logs *pn);
 	int linkto(char *path,const char *fname,const char *title, session_t* session);
     int edit_group(const struct boardheader* oldbh, const struct boardheader* newbh);
 
-    int a_SeSave(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid);
-    int a_Save(char *path, char *key, struct fileheader *fileinfo, bool append, char *direct, int ent, char *userid);
+    int a_SeSave(char *path, const char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid);
+    int a_Save(char *path, const char *key, struct fileheader *fileinfo, bool append, char *direct, int ent, char *userid);
 
     long a_append_attachment(char *fpath, char *attachpath);
 

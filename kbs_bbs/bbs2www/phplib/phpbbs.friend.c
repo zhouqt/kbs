@@ -162,11 +162,13 @@ PHP_FUNCTION(bbs_add_friend)
 
 
 
-static int cmpuser(a, b)
-    uinfo_t *a, *b;
+static int cmpuser(const void *a1, const void *b1)
 {
     char id1[80], id2[80];
-
+    uinfo_t *a, *b;
+    a = (uinfo_t *)a1;
+    b = (uinfo_t *)b1;
+    
     sprintf(id1, "%d%s", !isfriend(a->userid), a->userid);
     sprintf(id2, "%d%s", !isfriend(b->userid), b->userid);
     return strcasecmp(id1, id2);

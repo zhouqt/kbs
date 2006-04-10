@@ -1548,7 +1548,7 @@ int get_threads_from_id(const char *filename, int id, fileheader_t * buf, int nu
 create new clipboard file when bname is not empty
 return 0 when success, -1 when fail.
 */
-int ann_article_import(char *bname, char *title, char *fname, char *userid)
+int ann_article_import(const char *bname, const char *title, const char *fname, const char *userid)
 {
     char clipfile[PATHLEN];
     FILE *fp;
@@ -1717,7 +1717,7 @@ int Search_Bin(struct fileheader *ptr, int key, int start, int end)
     return -(low + 1);
 }
 
-char get_article_flag(struct fileheader *ent, struct userec *user, char *boardname, int is_bm, session_t* session)
+char get_article_flag(struct fileheader *ent, struct userec *user, const char *boardname, int is_bm, session_t* session)
 {
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? UNREAD_SIGN : 'N');
     char type;

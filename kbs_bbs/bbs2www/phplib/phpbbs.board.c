@@ -523,7 +523,7 @@ PHP_FUNCTION(bbs_getbdes)
     if ((bp = getbcache(board)) == NULL) {
         RETURN_LONG(0);
     }
-	RETURN_STRING(bp->des,1);
+	RETURN_STRING((char *)(bp->des),1);
 }
 
 PHP_FUNCTION(bbs_getbname)
@@ -538,7 +538,7 @@ PHP_FUNCTION(bbs_getbname)
     if ((bp = getboard(brdnum)) == NULL) {
         RETURN_LONG(0);
     }
-	RETURN_STRING(bp->filename,1);
+	RETURN_STRING((char *)(bp->filename),1);
 }
 
 PHP_FUNCTION(bbs_checkreadperm)
