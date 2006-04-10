@@ -803,7 +803,7 @@ function pc_main_navigation_bar()
 	global $pcconfig;
 ?>
 <p align="center">
-[<a href="pcmain.php">Ê×Ò³</a>]
+[<a href="index.html">Ê×Ò³</a>]
 <?php
     if ($pcconfig["BLOGONBLOG"]) {
 ?>

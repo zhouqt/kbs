@@ -120,7 +120,7 @@ function pcmain_navigation_bar()
 {
 	global $pcconfig;
 ?>
-<a href="/pc/pcmain.php">Ê×Ò³</a>
+<a href="/pc/index.html">Ê×Ò³</a>
 |
 <a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">ÂÛÌ³</a>
 <?php

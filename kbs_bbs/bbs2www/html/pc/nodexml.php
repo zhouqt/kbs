@@ -103,7 +103,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"]."_".html_for
 <smthBlog:id><?php echo $node[nid]; ?></smthBlog:id>
 <items>
 	<rdf:Seq>
-		<rdf:li resource="pcmain.php"/>
+		<rdf:li resource="index.html"/>
 		<rdf:li resource="<?php echo pc_personal_domainname($pc["USER"]); ?>"/>
 		<rdf:li resource="nodexml.php?id=<?php echo $node[nid]; ?>"/>
 	</rdf:Seq>

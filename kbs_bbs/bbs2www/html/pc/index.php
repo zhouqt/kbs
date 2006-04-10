@@ -203,7 +203,7 @@ blogCalendarArray[<?php echo $dvlt; ?>] = <?php echo (int)($rows[nid]); ?>;
 			<td class=t11>
 			<a href="pcsearch2.php" class="f1">BlogËÑË÷</a>
 			</td><td class=t11>
-			<a href="pcmain.php" class="f1">BlogÊ×Ò³</a>
+			<a href="index.html" class="f1">BlogÊ×Ò³</a>
 			</td><td class=t11>
 			<a target="_top" href="/frames.html" class="f1"><?php echo $pcconfig["BBSNAME"]; ?></a>
 			</td>

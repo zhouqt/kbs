@@ -95,7 +95,7 @@ if($rows){
 <p align="center"><input type="submit" class="f1" value="修改文件"></center>
 </form>
 <p align="center">
-[<a href="pcmain.php">Blog首页</a>]
+[<a href="index.html">Blog首页</a>]
 [<a href="index.php?id=<?php echo $pc["USER"]; ?>">首页</a>]
 [<a href="pcdoc.php?userid=<?php echo $pc["USER"]; ?>&tag=7">参数设定</a>]
 </p>

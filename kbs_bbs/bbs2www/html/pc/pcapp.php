@@ -139,7 +139,7 @@ else
 您的BLOG申请已经提交成功，管理员会在两天内处理您的申请。<br/><br/>
 本页面将在3秒后自动切换自Blog论坛<meta HTTP-EQUIV=REFRESH CONTENT='3; URL=/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>' >，<b>您可以选择以下操作：</b><br><ul>
 <li><a href="/mainpage.php">返回首页</a></li>
-<li><a href="/pc/pcmain.php">返回Blog首页</a></li>
+<li><a href="/pc/index.html">返回Blog首页</a></li>
 <li><a href="/bbsdoc.php?board=<?php echo $pcconfig["BOARD"]; ?>">返回Blog论坛</a></li>
 <li><a href="/bbsdoc.php?board=<?php echo $pcconfig["APPBOARD"]; ?>">返回Blog申请版面</a></li>
 </ul></td></tr></table>

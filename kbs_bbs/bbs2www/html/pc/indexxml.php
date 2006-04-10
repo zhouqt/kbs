@@ -184,7 +184,7 @@ header("Content-Disposition: inline;filename=SMTHBlog_".$pc["USER"].".xml");
 <dc:creator><?php echo $pc["USER"]; ?></dc:creator>
 <items>
 	<rdf:Seq>
-		<rdf:li resource="pcmain.php"/>
+		<rdf:li resource="index.html"/>
 		<rdf:li resource="<?php echo pc_personal_domainname($pc["USER"]); ?>"/>
 	</rdf:Seq>
 </items>
