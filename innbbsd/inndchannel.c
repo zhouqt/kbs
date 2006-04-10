@@ -685,16 +685,21 @@ char **argv;
         return (1);
     }
 
+    if(!getuid()&&!inetdstart){
+        setuid((uid_t)BBSUID);
+        setgid((gid_t)BBSGID);
+    }
+
     /*
      * edwardc.000324 防呆 code .. 防止又有人用 root 跑 innbbsd 
      */
-#ifndef _IWANT_RUN_INNBBSD_WITH_OTHER_UID_      /* who will open this? he/she is mad .. :) */
+//#ifndef _IWANT_RUN_INNBBSD_WITH_OTHER_UID_      /* who will open this? he/she is mad .. :) */
     if ((getuid() != (uid_t) BBSUID && getgid() != (gid_t) BBSGID)
         && !inetdstart) {
         fprintf(stderr, "You should run INNBBSD as your bbs account (uid: %d) or group (gid: %d).\n", (uid_t) BBSUID, (gid_t) BBSGID);
         exit(6);
     }
-#endif
+//#endif
 
     standaloneinit(port);
 
