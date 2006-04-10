@@ -2,8 +2,6 @@
 	require("www2-funcs.php");
 	login_init();
 	
-	$blog_index = defined("SITE_NEWSMTH") ? "index.html" : "pcmain.php";
-
 	function display_board_list()
 	{
 ?>
@@ -244,14 +242,14 @@
 	{
 ?>
 	<a href='javascript:changemn("pc");' target="_self"><img id="imgpc" src="images/close.gif" class="pm" alt="+"
-	></a><a href='pc/<?php echo $blog_index; ?>'><script type="text/javascript">putImage('i_blog.gif','class="sfolder"');</script>水木Blog</a><br/>
+	></a><a href='pc/index.html'><script type="text/javascript">putImage('i_blog.gif','class="sfolder"');</script>水木Blog</a><br/>
 
 	<div class="pp" id="divpc">
 <?php
 		if($currentuser["userid"]!="guest")
 			display_blog_menu($currentuser["userid"],$currentuser["firstlogin"]);
 ?>
-		<div class="mi"><a href="pc/<?php echo $blog_index; ?>">Blog首页</a></div>
+		<div class="mi"><a href="pc/index.html">Blog首页</a></div>
 		<div class="mi"><a href="pc/pc.php">用户列表</a></div>
 		<div class="mi"><a href="pc/pcreco.php">推荐文章</a></div>
 		<div class="mi"><a href="pc/pclist.php">热门排行</a></div>
