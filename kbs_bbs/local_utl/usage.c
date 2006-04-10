@@ -12,27 +12,35 @@ struct binfo {
 
 int numboards = 0;
 
-int brd_cmp(b, a)
-    struct binfo *a, *b;
+int brd_cmp(const void* b1, const void* a1)
 {
+    struct binfo* a ,*b;
+    a = (struct binfo*)a1;
+    b = (struct binfo*)b1;
+
     if (a->times != b->times)
         return (a->times - b->times);
     return a->sum - b->sum;
 }
 
-int total_cmp(b, a)
-    struct binfo *a, *b;
+int total_cmp(const void* b1, const void* a1)
 {
+    struct binfo *a, *b;
+    
+    a = (struct binfo*)a1;
+    b = (struct binfo*)b1;
     if (a->sum != b->sum)
         return (a->sum - b->sum);
     return a->times - b->times;
 }
 
-int average_cmp(b, a)
-    struct binfo *a, *b;
+int average_cmp(const void* b1, const void* a1)
 {
+    struct binfo *a, *b;
     int a_ave, b_ave;
-
+    
+    a = (struct binfo*)a1;
+    b = (struct binfo*)b1;	 
     if (a->times)
         a_ave = a->sum / a->times;
     else

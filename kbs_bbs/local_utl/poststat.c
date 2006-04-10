@@ -130,8 +130,7 @@ void search(struct posttop *t)
 }
 
 
-int sort(pp, count)
-struct postrec *pp;
+int sort(struct postrec *pp, int count)
 {
     int i, j;
 
@@ -150,8 +149,7 @@ struct postrec *pp;
 }
 
 
-void load_stat(fname)
-char *fname;
+void load_stat(const char *fname)
 {
     FILE *fp;
 
