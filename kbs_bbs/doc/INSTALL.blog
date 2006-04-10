@@ -87,6 +87,13 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 	$pcconfig["MINREGTIME"] ;申请Blog的最短注册时间，单位是月
 	pc_personal_domainname($userid)函数 :用户Blog的域名;
 
-4. 其他
+4. telnet 下 blog 功能
+    menu.ini 合适的位置分别添加类似下面两条功能：
+
+@PcorpManage       0,0,   PERM_SYSOP,    "BlogManage", "T) Blog管理"
+@Pcorp             0,0,   PERM_BASIC,    "JPc",        "J) Blog"
+
+
+5. 其他
     最新版本的 kbsbbs 已将 KBS.Blog 作为正式的组成部分，安装时可参考相应的INSTALL文档。
 KBS.Blog目前仍在开发和完善中，敬请关注水木社区 (http://newsmth.net/) BBSMan_Dev 版。
