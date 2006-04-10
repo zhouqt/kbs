@@ -418,7 +418,7 @@ char *sethomefile(char *buf, const char *userid, const char *filename)
         sprintf(buf, "home/wrong/%s/%s", userid, filename);
     return buf;
 }
-char *sethomepath(char *buf, char *userid)
+char *sethomepath(char *buf, const char *userid)
 {                               /* 取 某用户 的home */
     if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "home/%c/%s", toupper(userid[0]), userid);
@@ -436,7 +436,7 @@ char *setmailfile(char *buf, const char *userid, const char *filename)
         sprintf(buf, "mail/wrong/%s/%s", userid, filename);
     return buf;
 }
-char *setmailpath(char *buf, char *userid)
+char *setmailpath(char *buf, const char *userid)
 {                               /* 取 某用户 的mail */
     if (isalpha(userid[0]))     /* 加入错误判断,提高容错性, alex 1997.1.6 */
         sprintf(buf, "mail/%c/%s", toupper(userid[0]), userid);
@@ -445,7 +445,7 @@ char *setmailpath(char *buf, char *userid)
         sprintf(buf, "mail/wrong/%s", userid);
     return buf;
 }
-char *setbpath(char *buf, char *boardname)
+char *setbpath(char *buf, const char *boardname)
 {                               /* 取某版 路径 */
     strcpy(buf, "boards/");
     strcat(buf, boardname);
@@ -456,16 +456,16 @@ char *setbfile(char *buf,const char *boardname,const char *filename)
     sprintf(buf, "boards/%s/%s", boardname, filename);
     return buf;
 }
-void RemoveMsgCountFile(char *userID)
+void RemoveMsgCountFile(const char *userID)
 {
     char fname[STRLEN];
 
     sethomefile(fname, userID, "msgcount");
     unlink(fname);
 }
-int id_invalid(char *userid)
+int id_invalid(const char *userid)
 {
-    char *s;
+    const char *s;
 
     if (!isalpha(userid[0]))
         return 1;
@@ -637,18 +637,19 @@ time_t bbstime(time_t * t)
     return publicshm->nowtime;
 }
 
-int bad_user_id(char *userid)
+int bad_user_id(const char *userid)
 {
     FILE *fp;
     char buf[STRLEN];
     char *ptr, ch;
     int i;
+    const char *p;
 
     i = 0;
-    ptr = userid;
+    p = userid;
     if (!strcasecmp(userid, DELIVER) || !strcasecmp(userid, "new"))
         return 1;
-    while ((ch = *ptr++) != '\0') {
+    while ((ch = *p++) != '\0') {
         i++;
         if (!isalnum(ch) && ch != '_')
             return 1;
@@ -694,7 +695,7 @@ int bad_user_id(char *userid)
     }
     return 0;
 }
-int valid_ident(char *ident)
+int valid_ident(const char *ident)
 {
     int i;
 
@@ -744,20 +745,20 @@ int cmpinames(const char *userid, const char *uv)
 {                               /* added by Luzi 1997.11.28 */
     return !strcasecmp(userid, uv);
 }
-int cmpfnames(char *userid, struct friends *uv)
+int cmpfnames(const char *userid, const struct friends *uv)
 {
     return !strcasecmp(userid, uv->id);
 }
-int cmpfileinfoname(char *filename, struct fileheader *fi)
+int cmpfileinfoname(const char *filename, const struct fileheader *fi)
 {
     return !strncmp(filename, fi->filename, FILENAME_LEN);
 }
-int cmpfileid(int *id, struct fileheader *fi)
+int cmpfileid(const int *id, const struct fileheader *fi)
 {
 	return (*id==fi->id);
 }
 
-int canIsend2(struct userec *src, char *userid)
+int canIsend2(struct userec *src, const char *userid)
 {                               /* Leeward 98.04.10 */
     char buf[IDLEN + 1];
     char path[256];
@@ -920,13 +921,13 @@ char filename[STRLEN], str[STRLEN];
     return (rc == EOF ? -1 : 1);
 }
 
-time_t get_exit_time(struct userec *lookupuser, char *exittime)
+time_t get_exit_time(const struct userec *lookupuser, char *exittime)
 {                               /* 获取离线时间，lookupuser:用户,
                                  * exittime:保存返回的时间，结束符为\n
                                  * 建议定义为 char exittime[40]
                                  * Luzi 1998/10/23 */
 
-    time_t now = 1;             /* if fopen failed return 1 -- Leeward */
+    //time_t now = 1;             /* if fopen failed return 1 -- Leeward */
 
     /*
      * Leeward 98.10.26 add return value: time_t 
@@ -948,11 +949,11 @@ time_t get_exit_time(struct userec *lookupuser, char *exittime)
     }
     else
 #endif
-    {
+//    {
         strcpy(exittime, ctime(&lookupuser->exittime));
-        now = lookupuser->exittime;
-    }
-    return now;
+        return (lookupuser->exittime);
+//    }
+//    return now;
 }
 
 int read_userdata(const char *userid, struct userdata *ud)

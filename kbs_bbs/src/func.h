@@ -156,7 +156,7 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
     void save_maxuser(ARG_VOID);
     void detach_publicshm(ARG_VOID);
     int multilogin_user(struct userec *user, int usernum, int mode);
-    time_t get_exit_time(struct userec *lookupuser, char *exittime);
+    time_t get_exit_time(const struct userec *lookupuser, char *exittime);
     int dashf(const char *fname);
     int dashd(const char *fname);
     int seek_in_file(const char* filename, const char* seekstr);
@@ -170,7 +170,7 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
     void *attach_shm1(char *shmstr, int defaultkey, int shmsize, int *iscreate, int readonly, void *shmaddr);
     void    remove_shm(char *shmstr, int defaultkey, int shmsize);
     void attach_err(int shmkey, char *name);
-    int id_invalid(char *userid);
+    int id_invalid(const char *userid);
     int addtofile(char filename[STRLEN], char str[STRLEN]);
     void bbssettime(time_t t);
     time_t bbstime(time_t * t);
@@ -179,24 +179,24 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
     int setpublicshmreadonly(int readonly);
     struct public_data *get_publicshm(ARG_VOID);        /*获得public shm指针 */
     char *sethomefile(char *buf, const char *userid, const char *filename);     /*取某用户文件 路径 */
-    char *sethomepath(char *buf, char *userid); /* 取 某用户 的home */
+    char *sethomepath(char *buf, const char *userid); /* 取 某用户 的home */
 
     char *setmailfile(char *buf, const char *userid, const char *filename);     /* 取某用户mail文件 路径 */
-    char *setmailpath(char *buf, char *userid); /* 取 某用户 的mail */
-    char *setbpath(char *buf, char *boardname); /* 取某版 路径 */
+    char *setmailpath(char *buf, const char *userid); /* 取 某用户 的mail */
+    char *setbpath(char *buf, const char *boardname); /* 取某版 路径 */
     char *setbfile(char *buf,const char *boardname,const char *filename); /* 取某版下文件 */
-    void RemoveMsgCountFile(char *userID);
-    int bad_user_id(char *userid);      /* 检查.badname是否允许注册的 */
-    int valid_ident(char *ident);       /* 检查合法的ident */
+    void RemoveMsgCountFile(const char *userID);
+    int bad_user_id(const char *userid);      /* 检查.badname是否允许注册的 */
+    int valid_ident(const char *ident);       /* 检查合法的ident */
     int getunifopid(ARG_VOID);
     struct user_info *t_search(const char *sid, int pid);
     int cmpinames(const char *userid, const char *uv);
-    int cmpfnames(char *userid, struct friends *uv);
-    int cmpfileinfoname(char *filename, struct fileheader *fi);
-	int cmpfileid(int *id, struct fileheader *fi);
+    int cmpfnames(const char *userid, const struct friends *uv);
+    int cmpfileinfoname(const char *filename, const struct fileheader *fi);
+	int cmpfileid(const int *id, const struct fileheader *fi);
     int dodaemon(char *daemonname, bool single, bool closefd);
 
-    int canIsend2(struct userec *src, char *userid);
+    int canIsend2(struct userec *src, const char *userid);
     void sigbus(int signo);
     void encodestr(register char *str);
     int Isspace(char ch);
