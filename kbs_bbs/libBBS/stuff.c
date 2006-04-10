@@ -140,14 +140,14 @@ char *modestring(char* modestr,int mode, int towho, int complete, char *chatid)
     return (modestr);
 }
 
-int dashf(char *fname)
+int dashf(const char *fname)
 {
     struct stat st;
 
     return (stat(fname, &st) == 0 && S_ISREG(st.st_mode));
 }
 
-int dashd(char *fname)
+int dashd(const char *fname)
 {
     struct stat st;
 
