@@ -21,6 +21,12 @@
 #define INPUT_ACTIVE 0
 #define INPUT_IDLE 1
 
+#ifdef SSHBBS
+extern int ssh_write(int,const void*,size_t);
+extern int ssh_read(int,void*,size_t);
+extern int ssh_select(int,fd_set*,fd_set*,fd_set*,struct timeval*);
+#endif /* SSHBBS */
+
 extern int temp_numposts;
 
 char outbuffer[OBUFSIZE + 1];

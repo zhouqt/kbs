@@ -9,7 +9,13 @@
 #define	PID_FILE	"reclog/bbs.pid"
 #define	BBSLOG_FILE	"reclog/bbs.log"
 
+#ifdef SSHBBS
+#include "packet.h"
+extern int ssh_write(int,const void*,size_t);
+#else /* SSHBBS */
 static int mport;
+#endif /* SSHBBS */
+
 int csock;                      /* socket for Master and Child */
 
 int max_load = 79;              /* ԭֵ39 , modified by KCN,1999.09.07 */
@@ -1033,7 +1039,7 @@ void ssh_exit()
     if (sshexiting)
         return;
     sshexiting=true;
-    system_abort();
+    abort_bbs(0);
     packet_disconnect("sshbbsd exit");
 }
 extern char **saved_argv;
