@@ -433,14 +433,16 @@ static int strallalpha(char *uid)
 
 void login_query()
 {
-    char uid[STRLEN], passbuf[40];
 	const char *ptr;
     int curr_login_num, i;
     int curr_http_num;          /* Leeward 99.03.06 */
-    int attempts;
     char fname[STRLEN], tmpstr[30], genbuf[PATHLEN];
     FILE *fn;
+#ifndef SSHBBS
+    char uid[STRLEN], passbuf[40];
+    int attempts;
     char buf[256];
+#endif /* !defined(SSHBBS) */
 
     curr_login_num = get_utmp_number();;
     if (curr_login_num >= MAXACTIVE) {

@@ -85,9 +85,12 @@ void ochar(char c)
 int raw_write(int fd,const char *buf, int len)
 {
     static int lastcounter = 0;
-    int nowcounter, i;
+    int nowcounter;
     static int bufcounter;
-    int retlen=0;
+#ifndef SSHBBS
+    int i, retlen=0;
+#endif
+
 #ifndef NINE_BUILD
 #ifdef ZMODEM_RATE
         nowcounter = time(0);
@@ -134,10 +137,10 @@ void raw_ochar(char c)
 
 int raw_read(int fd, char *buf, int len)
 {
-    int i,j,retlen=0;
 #ifdef SSHBBS
     return ssh_read(fd, buf, len);
 #else
+    int i,j,retlen=0;
     retlen = read(fd,buf,len);
     for(i=0;i<retlen;i++) {
         if(i>0&&((unsigned char)buf[i-1]==0xff)&&((unsigned char)buf[i]==0xff)) {

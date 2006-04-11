@@ -38,8 +38,10 @@ int proxy_getpeername(int csock,struct sockaddr* psaddr,socklen_t* plen)
 int heavy_load;
 int server_pid;
 
+#ifndef SSHBBS
 /* COMMAN: for debugging use */
 static int no_fork = 0;
+#endif
 
 char code[3];
 void cat(filename, msg)
@@ -145,6 +147,7 @@ void get_load(load)
 }
 #endif
 
+#ifndef SSHBBS
 static void telnet_init()
 {
     int n, len;
@@ -182,12 +185,13 @@ static void telnet_init()
          */
     }
 }
+#endif /* !defined(SSHBBS) */
 
 /* ----------------------------------------------------- */
 /* stand-alone daemon					 */
 /* ----------------------------------------------------- */
 
-
+#if !defined(SSHBBS)
 static void start_daemon(inetd, port)
     int inetd;
     int port;                   /* Thor.981206: 取 0 代表 *没有参数* */
@@ -301,7 +305,7 @@ static void start_daemon(inetd, port)
       setuid(BBSUID);
     }
 }
-
+#endif /* !defined(SSHBBS) */
 
 /* ----------------------------------------------------- */
 /* reaper - clean up zombie children			 */

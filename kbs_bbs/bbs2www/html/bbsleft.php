@@ -2,7 +2,8 @@
 	require("www2-funcs.php");
 	login_init();
 	
-	$blog_index = defined("SITE_NEWSMTH") ? "index.html" : "pcmain.php";
+	/* $blog_index = defined("SITE_NEWSMTH") ? "index.html" : "pcmain.php"; */
+	$blog_index = "index.html";
 
 	function display_board_list()
 	{

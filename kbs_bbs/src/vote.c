@@ -167,7 +167,8 @@ void load_board_banner(const char * board)
 {
     int i;
 	FILE *fp;
-    struct boardheader bh, *obh;
+    struct boardheader bh;
+	const struct boardheader *obh;
     char filename[STRLEN * 2];
 	char buf[512];
     sprintf(filename, "boards/%s/banner", board);
