@@ -31,7 +31,7 @@
 #define MCP_AND_FLAG 0x80000000                 /* 权限检测设定为逻辑与时的标签 */
 #define MFR_DELIM " \t\n\r,;:"                  /* 字符串分析间断符 */
 
-static const char const *perm_str=XPERMSTR;     /* 权限符号列表 */
+static const char* const perm_str=XPERMSTR;     /* 权限符号列表 */
 static char title[MT_LEN];                      /* 信件标题 */
 static char path[MP_LEN];                       /* 信件路径 */
 static unsigned int flag;                       /* 使用选项时的选项标签 */
