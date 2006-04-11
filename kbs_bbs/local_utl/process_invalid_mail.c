@@ -72,9 +72,9 @@ static int map_dir(int index){                  /* 处理 DIR 映像操作 */
     if(stat(path,&st)==-1||!S_ISREG(st.st_mode))
         return 2;
     if((fd=open(path,O_RDWR
-#ifdef __USE_GNU
+#ifdef O_NOATIME
         |O_NOATIME                              /* 可能会有点优化作用吧 */
-#endif /* __USE_GNU */
+#endif /* O_NOATIME */
         ,PIMF_MOD))==-1)
         return 3;
     if(fcntl(fd,F_SETLKW,&lck_set)==-1){
@@ -111,9 +111,9 @@ static int map_dir_dry(int index){
     if(stat(path,&st)==-1||!S_ISREG(st.st_mode))
         return 2;
     if((fd=open(path,O_RDONLY
-#ifdef __USE_GNU
+#ifdef O_NOATIME
         |O_NOATIME                              /* 可能会有点优化作用吧 */
-#endif /* __USE_GNU */
+#endif /* O_NOATIME */
         ,PIMF_MOD))==-1)
         return 3;
     if(fcntl(fd,F_SETLKW,&lck_set)==-1){
