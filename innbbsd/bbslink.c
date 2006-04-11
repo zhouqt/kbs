@@ -124,6 +124,8 @@ static int FD, FD_SIZE;
 static char *FD_BUF = NULL, *FD_BUF_FILTER = NULL;
 static char *FD_END;
 
+void close_link();
+
 void bbslink_un_lock(file)
 char *file;
 {
