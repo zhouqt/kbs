@@ -205,8 +205,11 @@ type - meaning
   13        整理精华
   14        相同主题
 */
+    int fd, data[DATALEN];
+    struct flock ldata;
+    struct stat buf;
     const struct boardheader *btemp;
-    char BM[PATHLEN];
+    char direct[PATHLEN], BM[PATHLEN];
 
     btemp = getbcache(boardname);
     if (btemp == NULL)
