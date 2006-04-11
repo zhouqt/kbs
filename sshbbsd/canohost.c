@@ -16,6 +16,9 @@ Functions for returning the canonical host name of the remote site.
 /*
  * $Id$
  * $Log$
+ * Revision 1.6  2006/04/11 13:50:53  etnlegend
+ * etn 你怎么就这么土!
+ *
  * Revision 1.5  2006/04/11 09:16:09  etnlegend
  * nowarning ... libBBS src sshbbsd
  *
@@ -79,7 +82,7 @@ char *get_remote_hostname(int socket)
 {
     struct sockaddr_in from;
     int i;
-    size_t fromlen;
+    socklen_t fromlen;
     struct hostent *hp;
     char name[255];
 
@@ -151,7 +154,7 @@ char *get_remote_hostname(int socket)
     {
         unsigned char options[200], *ucp;
         char text[1024], *cp;
-        size_t option_size;
+        socklen_t option_size;
         int ipproto;
         struct protoent *ip;
 
@@ -185,7 +188,7 @@ static char *canonical_host_ip = NULL;
 
 const char *get_canonical_hostname(void)
 {
-    size_t fromlen, tolen;
+    socklen_t fromlen, tolen;
     struct sockaddr_in from, to;
 
     /* Check if we have previously retrieved this same name. */
@@ -227,7 +230,7 @@ const char *get_canonical_hostname(void)
 const char *get_remote_ipaddr(void)
 {
     struct sockaddr_in from, to;
-    size_t fromlen,tolen;
+    socklen_t fromlen,tolen;
     int socket;
 
     /* Check if we have previously retrieved this same name. */
@@ -281,7 +284,7 @@ const char *get_remote_ipaddr(void)
 int get_peer_port(int sock)
 {
     struct sockaddr_in from;
-    size_t fromlen;
+    socklen_t fromlen;
 
     /* Get IP address of client. */
     fromlen = sizeof(from);
@@ -300,7 +303,7 @@ int get_peer_port(int sock)
 int get_remote_port(void)
 {
     int socket;
-    size_t fromlen,tolen;
+    socklen_t fromlen,tolen;
     struct sockaddr_in from, to;
 
     /* If two different descriptors, check if they are internet-domain, and

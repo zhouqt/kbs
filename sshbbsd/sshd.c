@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.16  2006/04/11 13:50:53  etnlegend
+ * etn 你怎么就这么土!
+ *
  * Revision 1.15  2006/04/11 09:16:10  etnlegend
  * nowarning ... libBBS src sshbbsd
  *
@@ -748,7 +751,7 @@ int main(int ac, char **av)
     extern char *optarg;
     extern int optind;
     int opt, sock_in, sock_out, newsock, i, pid = 0, on = 1;
-    size_t aux;
+    socklen_t aux;
     int remote_major, remote_minor;
     int perm_denied = 0;
     int ret;
