@@ -116,16 +116,6 @@ char LockFile[1024];
 
 nnrp_t BBSNNRP;
 
-void doterm(s)
-int s;
-{
-    printf("bbsnnrp terminated.  Signal %d\n", s);
-    writerc(&BBSNNRP);
-    if (isfile(LockFile))
-        unlink(LockFile);
-    exit(1);
-}
-
 extern char *optarg;
 extern int opterr, optind;
 
@@ -152,6 +142,23 @@ char DefaultOrganization[MAXBUFLEN];
 char DefaultModerator[MAXBUFLEN];
 char DefaultTrustfrom[MAXBUFLEN];
 char DefaultTrustFrom[MAXBUFLEN];
+
+void stdinreadnews(nnrp_t *bbsnnrp);
+void initrcfiles(nnrp_t *bbsnnrp);
+void initsockets(char *server, nnrp_t *bbsnnrp, char *type);
+void closesockets();
+void writerc(nnrp_t *bbsnnrp);
+void readnews(nnrp_t *bbsnnrp);
+
+void doterm(s)
+int s;
+{
+    printf("bbsnnrp terminated.  Signal %d\n", s);
+    writerc(&BBSNNRP);
+    if (isfile(LockFile))
+        unlink(LockFile);
+    exit(1);
+}
 
 void usage(char *arg)
 {
