@@ -14,7 +14,7 @@ SERVER_CONFIG_FILE = etc/sshd_config
 GMPLIBS         = -lgmp
 
 noinst_HEADERS = cipher.h getput.h compress.h idea.h \
-    randoms.h crc32.h includes.h \
+    randoms.h ssh_funcs.h includes.h \
     userfile.h blowfish.h des.h md5.h rsa.h version.h bufaux.h \
     mpaux.h servconf.h xmalloc.h buffer.h emulate.h packet.h ssh.h \
     deattack.h snprintf.h
