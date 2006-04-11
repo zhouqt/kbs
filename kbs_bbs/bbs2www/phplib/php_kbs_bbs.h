@@ -21,13 +21,8 @@
 #ifndef PHP_KBS_BBS_H
 #define PHP_KBS_BBS_H
 
-#include "bbs.h"
-#include "bbslib.h"
-
 #include "php.h"
 #include "php_ini.h"
-
-#include "phpbbs.errorno.h"
 
 extern zend_module_entry kbs_bbs_module_entry;
 #define phpext_kbs_bbs_ptr &kbs_bbs_module_entry
@@ -75,8 +70,6 @@ ZEND_END_MODULE_GLOBALS(kbs_bbs)
 #endif
 
 
-
-
 /* 简单粗暴法去掉重复定义 Warning */
 #undef PACKAGE_BUGREPORT
 #undef PACKAGE_NAME
@@ -84,6 +77,11 @@ ZEND_END_MODULE_GLOBALS(kbs_bbs)
 #undef PACKAGE_TARNAME
 #undef PACKAGE_VERSION
 #undef MYSQL_UNIX_ADDR
+
+#include "bbs.h"
+#include "bbslib.h"
+
+#include "phpbbs.errorno.h"
 
 
 /* phpbbs.article.c */
