@@ -1242,7 +1242,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,int sort,c
     int curcount;
     int* indexlist=NULL;
 	int *sort1list=NULL;
-	int thisonline;
+	int thisonline = 0;
     const char** namelist=NULL;
 
     brdnum = 0;
@@ -1315,7 +1315,7 @@ int fav_loaddata(struct newpostdata *nbrd, int favnow,int pos,int len,int sort,c
             	}
         } else {  /*如果是要排序，那么应该先排序缓存一下*/
             int i;
-            const char* title;
+            const char* title = NULL;
             int j;
 			if(sort&BRDSORT1_FLAG){
 				struct BoardStatus *tpr;
@@ -1424,7 +1424,7 @@ int load_boards(struct newpostdata *nbrd,const char *boardprefix,int group,int p
     const char** titlelist;
     int* indexlist;
     int* sortlist;
-    int thisonline;
+    int thisonline = 0;
 	struct BoardStatus *tpr;
 	time_t tnow;
 

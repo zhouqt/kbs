@@ -1304,7 +1304,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void**)(void*)&data, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
@@ -1348,7 +1348,7 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void**)(void*)&data, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
@@ -2092,7 +2092,7 @@ int get_effsize_attach(char *ffn, unsigned int *att)
     off_t fsize;
     int k, abssize = 0, entercount = 0, ignoreline = 0;
 
-    j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &p, &fsize, NULL);
+    j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&p, &fsize, NULL);
     op = p;
     if (att) *att = 0;
     if (j) {
@@ -3105,7 +3105,7 @@ int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *sessio
             fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fp);
             fwrite(name, strlen(name) + 1, 1, fp);
             BBS_TRY {
-                if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void **) &ptr, & size) == 0) {
+                if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void**)(void*)&ptr, & size) == 0) {
                     size = 0;
                     save_size = htonl(size);
                     fwrite(&save_size, sizeof(save_size), 1, fp);

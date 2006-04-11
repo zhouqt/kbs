@@ -705,7 +705,7 @@ int mmap_show(char *fn, int row, int numlines)
     int retv=0;
 
     BBS_TRY {
-        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0)
             BBS_RETURN(0);
         retv = mem_show(ptr, size, row, numlines, fn);
     }
@@ -723,7 +723,7 @@ int mmap_more(char *fn, int quit, char *keystr, char *title)
     int retv=0;
 
     BBS_TRY {
-        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0)
             BBS_RETURN(-1);
         retv = mem_more(ptr, size, quit, keystr, fn, title);
     }
@@ -1200,7 +1200,7 @@ int draw_content(char *fn, struct fileheader *fh)
     int retv=0;
 
     BBS_TRY {
-        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+        if (safe_mmapfile(fn, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0)
             BBS_RETURN(-1);
         retv = draw_content_more(ptr, size, fn, fh);
     }

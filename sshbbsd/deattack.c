@@ -5,6 +5,7 @@
  */
 
 #include "includes.h"
+#include "ssh_funcs.h"
 #include "deattack.h"
 #include "ssh.h"
 #include "getput.h"

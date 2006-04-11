@@ -408,7 +408,7 @@ static int write_imail_file(FILE* fp2, char *oldfile, char *boundary, int isbig5
 		goto endencode;
 
     BBS_TRY { 
-        if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void **) &ptr, (off_t *) & size) == 1) {
+        if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, (off_t *) & size) == 1) {
             char *start,*end;
             long not;
             

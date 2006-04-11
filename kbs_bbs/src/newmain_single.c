@@ -411,11 +411,6 @@ void system_init()
     signal(SIGUSR2, r_msg_sig);
 }
 
-void system_abort(void){
-    abort_bbs(0);
-    return;
-}
-
 #ifdef FREE
 static int strallalpha(char *uid)
 {
@@ -638,7 +633,7 @@ void login_query()
         prints("本端口仅供测试用，请连接本站的其他开放端口。\n");
         oflush();
         Net_Sleep(3);
-        system_abort();
+        abort_bbs(0);
     }
 #endif
     multi_user_check();
@@ -1070,7 +1065,7 @@ void main_bbs(int convit, char *argv)
 
     system_init();
     if (setjmp(byebye)) {
-        system_abort();
+        abort_bbs(0);
     }
     login_query();
     user_login();

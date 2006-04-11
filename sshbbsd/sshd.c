@@ -20,6 +20,9 @@ agent connections.
 /*
  * $Id$
  * $Log$
+ * Revision 1.15  2006/04/11 09:16:10  etnlegend
+ * nowarning ... libBBS src sshbbsd
+ *
  * Revision 1.14  2006/01/03 02:33:09  atppp
  * 更多 ipv6 patch 来自 FreeWizard
  *
@@ -498,6 +501,7 @@ agent connections.
  */
 #include "includes.h"
 #include "bbs.h"
+#include "ssh_funcs.h"
 #include <gmp.h>
 #include "xmalloc.h"
 #include "rsa.h"
@@ -743,7 +747,8 @@ int main(int ac, char **av)
 {
     extern char *optarg;
     extern int optind;
-    int opt, aux, sock_in, sock_out, newsock, i, pid, on = 1;
+    int opt, sock_in, sock_out, newsock, i, pid = 0, on = 1;
+    size_t aux;
     int remote_major, remote_minor;
     int perm_denied = 0;
     int ret;
@@ -1483,7 +1488,6 @@ void do_authentication(char *user, int privileged_port, int cipher_type)
     int authenticated = 0;
     int authentication_type = 0;
     char *password;
-    char *client_user;
     int row, col, xpixel, ypixel;
     int password_attempts = 0;
 
@@ -1618,12 +1622,9 @@ void do_authenticated(char *pw)
 {
     int type;
     int compression_level = 0, enable_compression_after_reply = 0;
-    int have_pty = 0, ptyfd = -1, ttyfd = -1;
-    int row, col, xpixel, ypixel, screen;
+    int row, col, xpixel, ypixel;
     unsigned long max_size;
-    char ttyname[64];
-    char *command, *term = NULL, *display = NULL, *proto = NULL, *data = NULL;
-    int i;
+    char *display = NULL, *proto = NULL, *data = NULL;
 
     /* Cancel the alarm we set to limit the time taken for authentication. */
     alarm(0);

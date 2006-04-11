@@ -302,8 +302,8 @@ char * ann_numtopath(char *path, char *numpath, struct userec *user)
 {
 	int bid=0;
 	char *c;
-	char *ptr;
-	const struct boardheader *bh;
+	char *ptr = NULL;
+	const struct boardheader *bh = NULL;
     char filename[256];
     FILE *fp;
     char buf[256];

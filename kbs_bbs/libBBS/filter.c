@@ -96,7 +96,7 @@ retry:
     default_setting(session);
     session->CurrentFileName = checkfile;
     BBS_TRY {
-        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0)
+        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0)
         {
             BBS_RETURN(0);
         }
@@ -164,7 +164,7 @@ int check_filter(char *patternfile, char *checkfile,int defaultval, session_t* s
     fp = open(patternfile, O_RDONLY);
     prepf(fp,&pattern_buf,&pattern_imagesize);
     BBS_TRY {
-        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0) {
+        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0) {
 	    close(fp);
             BBS_RETURN(0);
 	}

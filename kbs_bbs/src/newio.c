@@ -22,9 +22,7 @@
 #define INPUT_IDLE 1
 
 #ifdef SSHBBS
-extern int ssh_write(int,const void*,size_t);
-extern int ssh_read(int,void*,size_t);
-extern int ssh_select(int,fd_set*,fd_set*,fd_set*,struct timeval*);
+#include "ssh_funcs.h"
 #endif /* SSHBBS */
 
 extern int temp_numposts;

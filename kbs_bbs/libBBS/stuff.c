@@ -1775,7 +1775,7 @@ int gen_title(const char *boardname )
     hashtable = NULL;
     next = NULL;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &f_size) == 0) {
+        if (safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &f_size) == 0) {
             ldata2.l_type = F_UNLCK;
             fcntl(fd2, F_SETLKW, &ldata2);
             close(fd2);

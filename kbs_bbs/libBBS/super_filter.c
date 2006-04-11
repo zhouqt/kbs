@@ -826,7 +826,7 @@ int query_super_filter(int fd, struct super_filter_query_arg *q_arg) {
     fstat(fd2, &buf);
     total = buf.st_size / sizeof(struct fileheader);
 
-    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void **) &ptr, &buf.st_size)) != 1) {
+    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         if (fd == -1) {

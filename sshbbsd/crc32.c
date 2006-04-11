@@ -1,6 +1,9 @@
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2006/04/11 09:16:10  etnlegend
+ * nowarning ... libBBS src sshbbsd
+ *
  * Revision 1.4  2002/08/22 15:42:52  kcn
  * fix bug
  *
@@ -29,7 +32,7 @@
    borrowed the tables directly, and made some minor changes to the
    crc32-function (including changing the interface). //ylo */
 
-#include "crc32.h"
+#include "ssh_funcs.h"
 
   /* ============================================================= */
   /*  COPYRIGHT (C) 1986 Gary S. Brown.  You may use this program, or       */

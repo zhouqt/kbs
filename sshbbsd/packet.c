@@ -17,6 +17,9 @@ with the other side.  This same code is used both on client and server side.
 /*
  * $Id$
  * $Log$
+ * Revision 1.5  2006/04/11 09:16:10  etnlegend
+ * nowarning ... libBBS src sshbbsd
+ *
  * Revision 1.4  2002/08/22 15:42:52  kcn
  * fix bug
  *
@@ -99,13 +102,12 @@ with the other side.  This same code is used both on client and server side.
  */
 
 #include "includes.h"
+#include "ssh_funcs.h"
 #include "xmalloc.h"
 #include "randoms.h"
 #include "buffer.h"
-#include "packet.h"
 #include "bufaux.h"
 #include "ssh.h"
-#include "crc32.h"
 #include "cipher.h"
 #include "getput.h"
 #include "compress.h"
@@ -735,11 +737,12 @@ void packet_write_poll(void)
 
     if (len > 0) {
         len = write(connection_out, buffer_ptr(&output), len);
-        if (len <= 0)
+        if (len <= 0) {
             if (len != 0 && (errno == EAGAIN || errno == EWOULDBLOCK))
                 return;
             else
                 fatal_severity(SYSLOG_SEVERITY_INFO, "Write failed: %.100s", strerror(errno));
+        }
         buffer_consume(&output, len);
     }
 }

@@ -16,6 +16,9 @@ Server main loop for handling the interactive session.
 /*
  * $Id$
  * $Log$
+ * Revision 1.9  2006/04/11 09:16:10  etnlegend
+ * nowarning ... libBBS src sshbbsd
+ *
  * Revision 1.8  2004/05/19 02:53:56  yuhuan
  * ssh_select
  *
@@ -111,6 +114,8 @@ Server main loop for handling the interactive session.
  */
 
 #include "includes.h"
+#include "bbs.h"
+#include "ssh_funcs.h"
 #include "xmalloc.h"
 #include "ssh.h"
 #include "packet.h"
@@ -160,6 +165,7 @@ int ssh_select(int n, fd_set *readfds, fd_set *writefds, fd_set *exceptfds, stru
 int ssh_init(void)
 {
     buffer_init(&NetworkBuf);
+    return 0;
 }
 void ProcessOnePacket(int wait)
 {

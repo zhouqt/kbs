@@ -13,6 +13,9 @@ Created: Wed Jan 24 20:19:53 1996 ylo
 
 /*
  * $Log$
+ * Revision 1.4  2006/04/11 09:16:10  etnlegend
+ * nowarning ... libBBS src sshbbsd
+ *
  * Revision 1.3  2002/08/04 11:39:44  kcn
  * format c
  *
@@ -356,8 +359,6 @@ int userfile_close(UserFile uf)
 
 static int userfile_fill(UserFile uf)
 {
-    unsigned int len;
-    char *cp;
     int ret;
 
     if (uf->buf_first < uf->buf_last)
@@ -421,10 +422,6 @@ int userfile_read(UserFile uf, void *buf, unsigned int len)
 
 int userfile_write(UserFile uf, const void *buf, unsigned int len)
 {
-    unsigned int chunk_len, offset;
-    int ret;
-    const unsigned char *ucp;
-
     switch (uf->type) {
     case USERFILE_LOCAL:
         return write(uf->handle, buf, len);
@@ -493,12 +490,8 @@ int userfile_mkdir(uid_t uid, const char *path, mode_t mode)
 
 int userfile_stat(uid_t uid, const char *path, struct stat *st)
 {
-    int ret;
-
     /* Perform directly if with current effective uid. */
-    if (uid == geteuid())
-        return stat(path, st);
-    return -1;
+    return (uid==getuid()?stat(path,st):(-1));
 }
 
 /* Performs remove() using the given uid. */

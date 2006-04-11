@@ -10,8 +10,7 @@
 #define	BBSLOG_FILE	"reclog/bbs.log"
 
 #ifdef SSHBBS
-#include "packet.h"
-extern int ssh_write(int,const void*,size_t);
+#include "ssh_funcs.h"
 #else /* SSHBBS */
 static int mport;
 #endif /* SSHBBS */
