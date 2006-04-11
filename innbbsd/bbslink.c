@@ -124,7 +124,7 @@ static int FD, FD_SIZE;
 static char *FD_BUF = NULL, *FD_BUF_FILTER = NULL;
 static char *FD_END;
 
-bbslink_un_lock(file)
+void bbslink_un_lock(file)
 char *file;
 {
     char *lockfile = fileglue("%s.LOCK", file);
@@ -133,7 +133,7 @@ char *file;
         unlink(lockfile);
 }
 
-bbslink_get_lock(file)
+int bbslink_get_lock(file)
 char *file;
 {
     int lockfd;
@@ -164,7 +164,6 @@ char *file;
         return 0;
     } else {
         char buf[10];
-        int pid;
 
         sprintf(buf, "%-.8d\n", getpid());
         write(lockfd, buf, strlen(buf));
@@ -205,16 +204,14 @@ char *tcpmessage()
     return NNTPbuffer;
 }
 
-read_article(lover, filename, userid)
+int read_article(lover, filename, userid)
 linkoverview_t *lover;
 char *filename, *userid;
 {
-    FILE *fp;
     int fd;
     struct stat st;
-    time_t mtime;
     char *buffer;
-    char *artptr, *artend, *artback;
+    char *artend, *artback;
 
     if (stat(filename, &st) != 0)
         return 0;
@@ -238,8 +235,6 @@ char *filename, *userid;
         /*
          * while( fgets(buffer, sizeof buffer, fp) != NULL) { 
          */
-        char *m, *n;
-        char *ptr;
 
         if (artback != NULL)
             *artback = '\0';
@@ -286,13 +281,12 @@ char *filename, *userid;
     return 1;
 }
 
-save_outgoing(sover, filename, userid, poster, mtime)
+void save_outgoing(sover, filename, userid, poster, mtime)
 soverview_t *sover, *filename, *userid, *poster;
 time_t mtime;
 {
     newsfeeds_t *nf;
     char *group, *server, *serveraddr;
-    char *subject, *path;
     char *board;
     char *ptr1, *ptr2;
 
@@ -400,10 +394,10 @@ soverview_t *sover;
 #endif
 /* process_article() read_article() save_outgoing() save_article() */
 
-process_article(board, filename, userid, nickname, subject)
+void process_article(board, filename, userid, nickname, subject)
 char *board, *filename, *userid, *nickname, *subject;
 {
-    char *n, *filepath;
+    char *filepath;
     char poster[MAXBUFLEN];
     soverview_t sover;
 
@@ -449,9 +443,8 @@ char *board, *filename, *userid, *nickname, *subject;
 char *baseN(val, base, len)
 int val, base, len;
 {
-    int n, ans;
+    int n;
     static char str[MAXBUFLEN];
-    char *pstr = str;
     int index;
 
     for (index = len - 1; index >= 0; index--) {
@@ -493,12 +486,11 @@ char *str;
 
 /* process_cancel() save_outgoing() hash_value(); baseN(); ascii_date(); */
 
-read_outgoing(sover)
+int read_outgoing(sover)
 soverview_t *sover;
 {
     char *board, *filename, *group, *from, *subject, *outgoingtype, *msgid, *path;
     char *buffer, *bufferp;
-    FILE *ECHOMAIL, *FN;
     char *hash;
     char times[MAXBUFLEN];
     time_t mtime;
@@ -664,7 +656,6 @@ soverview_t *sover;
             } else
 #endif
             if (NEWSFEED == REMOTE) {
-                time_t datevalue;
 
                 if (strncmp(buffer, "Date:      ", 11) == 0) {
                     strcpy(DATE_BUF, buffer + 11);
@@ -753,7 +744,7 @@ soverview_t *sover;
 #ifdef TEST
 #endif
 
-openfeed(node)
+void openfeed(node)
 nodelist_t *node;
 {
     if (node->feedfp == NULL) {
@@ -761,7 +752,7 @@ nodelist_t *node;
     }
 }
 
-queuefeed(node, textline)
+void queuefeed(node, textline)
 nodelist_t *node;
 char *textline;
 {
@@ -774,7 +765,7 @@ char *textline;
     }
 }
 
-post_article(node, site, sover, textline)
+int post_article(node, site, sover, textline)
 nodelist_t *node;
 char *site;
 soverview_t *sover;
@@ -912,7 +903,7 @@ char *textline;
     return 1;
 }
 
-process_cancel(board, filename, userid, nickname, subject)
+void process_cancel(board, filename, userid, nickname, subject)
 char *board, *filename, *userid, *nickname, *subject;
 {
     time_t mtime;
@@ -937,7 +928,7 @@ char *board, *filename, *userid, *nickname, *subject;
     save_outgoing(&sover, filename, userid, userid, 0);
 }
 
-open_link(hostname, hostprot, hostport)
+int open_link(hostname, hostprot, hostport)
 char *hostname, *hostprot, *hostport;
 {
     USEIHAVE = 1;
@@ -1038,7 +1029,7 @@ char *hostname, *hostprot, *hostport;
     return 1;
 }
 
-send_outgoing(node, site, hostname, sover, textline)
+int send_outgoing(node, site, hostname, sover, textline)
 nodelist_t *node;
 soverview_t *sover;
 char *hostname, *site;
@@ -1110,7 +1101,7 @@ char *textline;
     return returnstatus;
 }
 
-save_nntplink(node, overview)
+int save_nntplink(node, overview)
 nodelist_t *node;
 char *overview;
 {
@@ -1154,10 +1145,10 @@ char *tmpfile;
 
 /* cancel moderating posts */
 
-cancel_outgoing(board, filename, from, subject)
+int cancel_outgoing(board, filename, from, subject)
 char *board, *filename, *from, *subject;
 {
-    char *base, filepath[MAXPATHLEN];
+    char filepath[MAXPATHLEN];
     FILE *FN;
     char *result;
     char TMPFILE[MAXPATHLEN];
@@ -1235,7 +1226,7 @@ char *board, *filename, *from, *subject;
  * send_nntplink open_link read_outgoing send_outgoing post_article
  * cancel_outgoing
  */
-send_nntplink(node, site, hostname, hostprot, hostport, overview, nlcount)
+int send_nntplink(node, site, hostname, hostprot, hostport, overview, nlcount)
 nodelist_t *node;
 char *site, *hostname, *hostprot, *hostport, *overview;
 int nlcount;
@@ -1243,8 +1234,6 @@ int nlcount;
     FILE *POSTS;
     char textline[4096];
     char baktextline[4096];
-    char *filepath;
-    int status;
 
     if (Verbose) {
         printf("<send nntplink> %s %s %s %s\n", site, hostname, hostprot, hostport);
@@ -1401,9 +1390,10 @@ int nlcount;
         printf("<Unlinking> %s\n", overview);
     if (!NoAction)
         unlink(overview);
+    return 0;
 }
 
-close_link()
+void close_link()
 {
     int status;
 
@@ -1427,8 +1417,7 @@ close_link()
  * 
  */
 
-saverename(file1, file2)
-char *file1, *file2;
+int saverename(char *file1, char *file2)
 {
     FILE *dest, *src;
     char buf[1024];
@@ -1457,9 +1446,9 @@ char *file1, *file2;
     }
 }
 
-send_article()
+void send_article()
 {
-    char *site, *addr, *protocol, *port, *op;
+    char *site, *op;
     char *nntphost;
     int nlcount;
 
@@ -1568,8 +1557,7 @@ send_article()
 
 /* bntplink() bbspost() process_article() process_cancel() send_article() */
 
-show_usage(argv)
-char *argv;
+void show_usage(char *argv)
 {
     fprintf(stderr, "%s initialization failed or improper options !!\n", argv);
     fprintf(stderr, "Usage: %s [options] bbs_home\n", argv);
@@ -1591,13 +1579,10 @@ char *argv;
     fprintf(stderr, "%s", bbslinkUsage4);
 }
 
-bntplink(argc, argv)
-int argc;
-char **argv;
+int bntplink(int argc, char **argv)
 {
     static char *OUTING = ".outing";
     nodelist_t *nl;
-    int linkport;
     char result[4096];
     char cancelfile[MAXPATHLEN], cancelpost[MAXPATHLEN];
     char bbslink_lockfile[MAXPATHLEN];
@@ -1742,7 +1727,7 @@ char **argv;
                  * chop( $_ ); 
                  */
                 char *board, *filename, *userid, *nickname, *subject;
-                char *ptr, **sptr;
+                char *ptr;
 
                 ptr = strchr(result, '\n');
                 if (ptr)
@@ -1838,8 +1823,7 @@ char **argv;
     return 0;
 }
 
-termbbslink(sig)
-int sig;
+void termbbslink(int sig)
 {
     innbbsdlog("kill signal received %d, terminated\n", sig);
     if (Verbose)
@@ -1853,9 +1837,7 @@ char *REMOTEHOSTNAME = "";
 extern char *optarg;
 extern int opterr, optind;
 
-main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
     int c, errflag = 0;
 
@@ -1919,8 +1901,3 @@ char **argv;
     return 0;
 }
 
-#ifdef USE_NCM_PATCH
-readNCMfile()
-{
-}
-#endif

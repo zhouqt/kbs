@@ -41,8 +41,64 @@ char *cmd;
     return NULL;
 }
 
-int daemon(dfd)
-int dfd;
+#define MAX_ARG 32
+#define MAX_ARG_SIZE 16384
+
+int argify(line, argvp)
+char *line, ***argvp;
+{
+    static char *argvbuffer[MAX_ARG + 2];
+    char **argv = argvbuffer;
+    int i;
+    static char argifybuffer[MAX_ARG_SIZE];
+    char *p;
+
+    while (strchr("\t\n\r ", *line))
+        line++;
+    i = strlen(line);
+    /*
+     * p=(char*) mymalloc(i+1); 
+     */
+    p = argifybuffer;
+    strncpy(p, line, sizeof(argifybuffer));
+    for (*argvp = argv, i = 0; *p && i < MAX_ARG;) {
+        for (*argv++ = p; *p && !strchr("\t\r\n ", *p); p++);
+        if (*p == '\0')
+            break;
+        for (*p++ = '\0'; strchr("\t\r\n ", *p) && *p; p++);
+    }
+    *argv = NULL;
+    return argv - *argvp;
+}
+
+void deargify(argv)
+char ***argv;
+{
+    return;
+    /*
+     * if (*argv != NULL) { if (*argv[0] != NULL){ free(*argv[0]);
+     * argv[0] = NULL; } free(*argv); argv = NULL; }
+     */
+}
+
+/*
+ * Disabled by flyriver, 2004.2.25
+ *
+int daemonprintf(format)
+char *format;
+{
+    fprintf(DOUT, format);
+    fflush(DOUT);
+}
+*/
+
+void daemonputs(char *output)
+{
+    fputs(output, DOUT);
+    fflush(DOUT);
+}
+
+int daemon(int dfd)
 {
     static char BUF[1024];
 
@@ -63,7 +119,6 @@ int dfd;
         fflush(DOUT);
     }
     while (fgets(BUF, 1024, DIN) != NULL) {
-        int i;
         int (*Main) ();
         daemoncmd_t *dp;
         argv_t Argv;
@@ -124,62 +179,5 @@ int dfd;
     /*
      * hash_reclaim(); 
      */
-}
-
-#define MAX_ARG 32
-#define MAX_ARG_SIZE 16384
-
-int argify(line, argvp)
-char *line, ***argvp;
-{
-    static char *argvbuffer[MAX_ARG + 2];
-    char **argv = argvbuffer;
-    int i;
-    static char argifybuffer[MAX_ARG_SIZE];
-    char *p;
-
-    while (strchr("\t\n\r ", *line))
-        line++;
-    i = strlen(line);
-    /*
-     * p=(char*) mymalloc(i+1); 
-     */
-    p = argifybuffer;
-    strncpy(p, line, sizeof(argifybuffer));
-    for (*argvp = argv, i = 0; *p && i < MAX_ARG;) {
-        for (*argv++ = p; *p && !strchr("\t\r\n ", *p); p++);
-        if (*p == '\0')
-            break;
-        for (*p++ = '\0'; strchr("\t\r\n ", *p) && *p; p++);
-    }
-    *argv = NULL;
-    return argv - *argvp;
-}
-
-void deargify(argv)
-char ***argv;
-{
-    return;
-    /*
-     * if (*argv != NULL) { if (*argv[0] != NULL){ free(*argv[0]);
-     * argv[0] = NULL; } free(*argv); argv = NULL; }
-     */
-}
-
-/*
- * Disabled by flyriver, 2004.2.25
- *
-int daemonprintf(format)
-char *format;
-{
-    fprintf(DOUT, format);
-    fflush(DOUT);
-}
-*/
-
-int daemonputs(output)
-char *output;
-{
-    fputs(output, DOUT);
-    fflush(DOUT);
+    return 0;
 }

@@ -153,8 +153,7 @@ char DefaultModerator[MAXBUFLEN];
 char DefaultTrustfrom[MAXBUFLEN];
 char DefaultTrustFrom[MAXBUFLEN];
 
-usage(arg)
-char *arg;
+void usage(char *arg)
 {
     fprintf(stderr, "Usage: %s [options] nntpserver activefile\n", arg);
     fprintf(stderr, "       -h|? (help) \n");
@@ -192,17 +191,12 @@ static char *NntpIhaveProtocol = "ihave";
 static char *NntpPostProtocol = "post";
 static char *DefaultNntpProtocol;
 
-main(argc, argv)
-int argc;
-char **argv;
+int main(int argc, char **argv)
 {
     char *ptr, *server, *active;
-    char buf[256];
     int c, errflag = 0;
-    int i = 0, flag = 0;
     int lockfd;
     char *inputtype;
-    time_t now;
 
     DefaultNntpProtocol = NntpIhaveProtocol;
     *DefaultNewsgroups = '\0';
@@ -356,7 +350,6 @@ char **argv;
             exit(1);
         } else {
             char buf[10];
-            int pid;
 
             sprintf(buf, "%-.8d\n", getpid());
             write(lockfd, buf, strlen(buf));
@@ -416,8 +409,7 @@ char **argv;
     return 0;
 }
 
-headbegin(buffer)
-char *buffer;
+int headbegin(char *buffer)
 {
     if (strncmp(buffer, "Path: ", 6) == 0) {
         if (strchr(buffer + 6, '!') != NULL)
@@ -430,12 +422,9 @@ char *buffer;
     return 0;
 }
 
-stdinreadnews(bbsnnrp)
-nnrp_t *bbsnnrp;
+void stdinreadnews(nnrp_t *bbsnnrp)
 {
-    int i;
     char buffer[4096];
-    ULONG low, high;
     char tmpfilename[MAXPATHLEN];
     FILE *tmpfp = NULL;
     char mid[1024];
@@ -634,15 +623,11 @@ nnrp_t *bbsnnrp;
     }
 }
 
-static char *ACT_BUF, *RC_BUF;
 int ACT_COUNT;
 
-initrcfiles(bbsnnrp)
-nnrp_t *bbsnnrp;
+void initrcfiles(nnrp_t *bbsnnrp)
 {
-    FILE *actfp, *rcfp;
-    char buff[1024];
-    int actfd, i, count, actcount = 0, rcount = 0, maxcount;
+    int actfd, i, count;
     struct stat st;
     char *actlistptr, *ptr;
 
@@ -758,10 +743,7 @@ nnrp_t *bbsnnrp;
     }
 }
 
-initsockets(server, bbsnnrp, type)
-char *server;
-nnrp_t *bbsnnrp;
-char *type;
+void initsockets(char *server, nnrp_t *bbsnnrp, char *type)
 {
     int nnrpfd;
     int innbbsfd;
@@ -820,7 +802,7 @@ char *type;
     }
 }
 
-closesockets()
+void closesockets()
 {
     fclose(BBSNNRP.nnrpin);
     fclose(BBSNNRP.nnrpout);
@@ -830,10 +812,7 @@ closesockets()
     close(BBSNNRP.innbbsfd);
 }
 
-updaterc(actptr, len, value)
-char *actptr;
-int len;
-ULONG value;
+void updaterc(char *actptr, int len, ULONG value)
 {
     for (actptr += len - 1; len-- > 0;) {
         *actptr-- = value % 10 + '0';
@@ -857,8 +836,7 @@ char *old, *new;
     return rename(old, new);
 }
 
-flushrc(bbsnnrp)
-nnrp_t *bbsnnrp;
+void flushrc(nnrp_t *bbsnnrp)
 {
     int backfd;
     char *bak1;
@@ -899,8 +877,7 @@ nnrp_t *bbsnnrp;
     bbsnnrp->actdirty = 0;
 }
 
-writerc(bbsnnrp)
-nnrp_t *bbsnnrp;
+void writerc(nnrp_t *bbsnnrp)
 {
     if (bbsnnrp->actpointer) {
         flushrc(bbsnnrp);
@@ -947,7 +924,7 @@ char **mid;
     int code;
 
     *mid = NULL;
-    fprintf(bbsnnrp->nnrpout, "STAT %d\r\n", artno);
+    fprintf(bbsnnrp->nnrpout, "STAT %ld\r\n", artno);
     fflush(bbsnnrp->nnrpout);
     verboselog("nnrpPut: STAT %d\n", artno);
     NNRPgets(NNRPbuffer, sizeof NNRPbuffer, bbsnnrp->nnrpin);
@@ -973,11 +950,10 @@ nnrp_t *bbsnnrp;
 int i;
 ULONG low, high;
 {
-    newsrc_t *rcptr = &bbsnnrp->newsrc[i];
-    int size, code;
+    int code;
 
     Xhdrfp = bbsnnrp->nnrpin;
-    fprintf(bbsnnrp->nnrpout, "XHDR %s %d-%d\r\n", pattern, low, high);
+    fprintf(bbsnnrp->nnrpout, "XHDR %s %ld-%ld\r\n", pattern, low, high);
 #ifdef BBSNNRPDEBUG
     printf("XHDR %s %d-%d\r\n", pattern, low, high);
 #endif
@@ -1026,9 +1002,6 @@ nnrp_t *bbsnnrp;
 int i;
 char *mid;
 {
-    newsrc_t *rcptr = &bbsnnrp->newsrc[i];
-    int size, code;
-
     fprintf(bbsnnrp->innbbsout, "STAT %s\r\n", mid);
     fflush(bbsnnrp->innbbsout);
     verboselog("innbbsPut: STAT %s\n", mid);
@@ -1037,12 +1010,9 @@ char *mid;
     return atol(INNBBSbuffer);
 }
 
-int INNBBSihave(bbsnnrp, artno, mid)
-nnrp_t *bbsnnrp;
-ULONG artno;
-char *mid;
+int INNBBSihave(nnrp_t *bbsnnrp, ULONG artno, char *mid)
 {
-    int size, code;
+    int code;
     int header = 1;
 
     if (DefaultNntpProtocol == NntpPostProtocol) {
@@ -1078,7 +1048,7 @@ char *mid;
         }
     }
     if (artno != -1) {
-        fprintf(bbsnnrp->nnrpout, "ARTICLE %d\r\n", artno);
+        fprintf(bbsnnrp->nnrpout, "ARTICLE %ld\r\n", artno);
         verboselog("nnrpPut: ARTICLE %d\n", artno);
 #ifdef BBSNNRPDEBUG
         printf("ARTICLE %d\r\n", artno);
@@ -1143,7 +1113,6 @@ nnrp_t *bbsnnrp;
 int i;
 ULONG *low, *high;
 {
-    char buf[256];
     newsrc_t *rcptr = &bbsnnrp->newsrc[i];
     int size, code;
     ULONG tmp;
@@ -1171,10 +1140,9 @@ ULONG *low, *high;
     return code;
 }
 
-readnews(bbsnnrp)
-nnrp_t *bbsnnrp;
+void readnews(nnrp_t *bbsnnrp)
 {
-    int i, j, fd;
+    int i;
     char buffer[4096];
     char buf[256] = "";
     ULONG low, high;
@@ -1228,7 +1196,6 @@ nnrp_t *bbsnnrp;
     for (i = 0; i < ACT_COUNT; i++) {
         int code = NNRPgroup(bbsnnrp, i, &low, &high);
         newsrc_t *rcptr = &bbsnnrp->newsrc[i];
-        int j, k = 0;
         ULONG artno;
         char *mid;
 
@@ -1294,8 +1261,8 @@ nnrp_t *bbsnnrp;
                             if (mid != NULL && !isCancelControl) {
 #endif
                                 if (!StatHistory || INNBBSstat(bbsnnrp, i, mid) != INNBBSstatOK) {
-                                    printf("** %d ** %d need it %s\n", artcount, artno, mid);
-                                    sprintf(buf, "** %d ** %d need it %s\n", artcount, artno, mid);
+                                    printf("** %d ** %ld need it %s\n", artcount, artno, mid);
+                                    sprintf(buf, "** %d ** %ld need it %s\n", artcount, artno, mid);
 #ifdef _ANTISPAM_DEBUG_
                                     antispamdebug(buf, 1);
 #endif
@@ -1319,8 +1286,8 @@ nnrp_t *bbsnnrp;
                             } else if (mid != NULL) {
 #endif
                                 if (INNBBSstat(bbsnnrp, i, mid) == INNBBSstatOK) {
-                                    printf("** %d ** %d need cancel %s\n", artcount, artno, mid);
-                                    sprintf(buf, "** %d ** %d need cancel %s\n", artcount, artno, mid);
+                                    printf("** %d ** %ld need cancel %s\n", artcount, artno, mid);
+                                    sprintf(buf, "** %d ** %ld need cancel %s\n", artcount, artno, mid);
 #ifdef _ANTISPAM_DEBUG_
                                     antispamdebug(buf, 1);
 #endif
@@ -1345,9 +1312,9 @@ nnrp_t *bbsnnrp;
                         if (NNRPstat(bbsnnrp, artno, &mid) == NNRPstatOK) {
                         }
                     }
-                    printf("** %d ** %d i have it %s\n", xcount, artno, mid);
+                    printf("** %d ** %ld i have it %s\n", xcount, artno, mid);
 #ifdef _ANTISPAM_DEBUG_
-                    sprintf(buf, "** %d ** %d i have it %s\n", xcount, artno, mid);
+                    sprintf(buf, "** %d ** %ld i have it %s\n", xcount, artno, mid);
                     antispamdebug(buf, 1);
 #endif
                     if (!ResetActive && mid != NULL)
@@ -1384,6 +1351,3 @@ nnrp_t *bbsnnrp;
 
 }
 
-INNBBSDhalt()
-{
-}

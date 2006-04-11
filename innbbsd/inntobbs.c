@@ -28,22 +28,22 @@ char *strstr ARG((char*,char*));
 */
 
 header_t headertable[] = {
-    "Subject", SUBJECT_H,
-    "From", FROM_H,
-    "Date", DATE_H,
-    "Message-ID", MID_H,
-    "Newsgroups", NEWSGROUPS_H,
-    "NNTP-Posting-Host", NNTPPOSTINGHOST_H,
-    "NNTP-Host", NNTPHOST_H,
-    "Control", CONTROL_H,
-    "Path", PATH_H,
-    "Organization", ORGANIZATION_H,
-    "X-Auth-From", X_Auth_From_H,
-    "Approved", APPROVED_H,
-    "Distribution", DISTRIBUTION_H,
-    "Keywords", KEYWORDS_H,
-    "Summary", SUMMARY_H,
-    "References", REFERENCES_H,
+    {"Subject", SUBJECT_H},
+    {"From", FROM_H},
+    {"Date", DATE_H},
+    {"Message-ID", MID_H},
+    {"Newsgroups", NEWSGROUPS_H},
+    {"NNTP-Posting-Host", NNTPPOSTINGHOST_H},
+    {"NNTP-Host", NNTPHOST_H},
+    {"Control", CONTROL_H},
+    {"Path", PATH_H},
+    {"Organization", ORGANIZATION_H},
+    {"X-Auth-From", X_Auth_From_H},
+    {"Approved", APPROVED_H},
+    {"Distribution", DISTRIBUTION_H},
+    {"Keywords", KEYWORDS_H},
+    {"Summary", SUMMARY_H},
+    {"References", REFERENCES_H}
 };
 
 char *HEADER[LASTHEADER];
@@ -87,12 +87,12 @@ nodelist_t *nl;
     return 0;
 }
 
-feedfplog(nf, filepath, type)
+void feedfplog(nf, filepath, type)
 newsfeeds_t *nf;
 char *filepath;
 int type;
 {
-    char *path1, *path2, *hostptr;
+    char *path1;
     nodelist_t *nl;
 
     if (nf == NULL)
@@ -157,9 +157,9 @@ int type;
 }
 
 static FILE *bbsfeedsfp = NULL;
-static bbsfeedson = -1;
+static int bbsfeedson = -1;
 
-init_bbsfeedsfp()
+void init_bbsfeedsfp()
 {
     if (bbsfeedsfp != NULL) {
         fclose(bbsfeedsfp);
@@ -168,9 +168,7 @@ init_bbsfeedsfp()
     bbsfeedson = -1;
 }
 
-bbsfeedslog(filepath, type)
-char *filepath;
-int type;
+void bbsfeedslog(char *filepath, int type)
 {
 
     char datebuf[40];
@@ -198,9 +196,9 @@ int type;
 }
 
 static FILE *echomailfp = NULL;
-static echomaillogon = -1;
+static int echomaillogon = -1;
 
-init_echomailfp()
+void init_echomailfp()
 {
     if (echomailfp != NULL) {
         fclose(echomailfp);
@@ -209,7 +207,7 @@ init_echomailfp()
     echomaillogon = -1;
 }
 
-echomaillog()
+void echomaillog()
 {
 
     if (echomaillogon == 0)
@@ -240,7 +238,6 @@ char *cmdfilter(indata, filterbuffer, cmd)
 char *indata, **filterbuffer;
 FuncPtr cmd;
 {
-    char *outdata;
     int len = strlen(indata);
 
     if (*filterbuffer != NULL)
@@ -258,13 +255,11 @@ FuncPtr cmd;
 char *externfilter(indata, filterbuffer, cmd)
 char *indata, **filterbuffer, *cmd;
 {
-    char *outdata;
     FILE *fp;
     int fd;
     char *tmpfile;
 
     int len = strlen(indata);
-    int size;
     struct stat st;
 
     fp = (FILE *) popen((char *)
@@ -330,7 +325,6 @@ char *indata, **filterbuffer;
 int direction;
 {
     char *front = indata, *ptr, *hptr;
-    int i;
     char *outdata = indata;
     int filterflag = 0;
 
@@ -407,11 +401,39 @@ header_t *a, *b;
     return strcasecmp(a->name, b->name);
 }
 
-int readlines(client)
-ClientType *client;
+void article_init()
 {
-    int fd = client->fd;
-    char *buffer = client->buffer;
+    int i;
+    static int article_inited = 0;
+
+    if (article_inited)
+        return;
+    article_inited = 1;
+
+    qsort(headertable, sizeof(headertable) / sizeof(header_t), sizeof(header_t), headercmp);
+    for (i = 0; i < LASTHEADER; i++)
+        HEADER[i] = NULL;
+}
+
+int headervalue(char *inputheader)
+{
+    header_t key, *findkey;
+    static int hasinit = 0;
+
+    if (hasinit == 0) {
+        article_init();
+        hasinit = 1;
+    }
+    key.name = inputheader;
+    findkey = (header_t *) bsearch((char *) &key, (char *) headertable, sizeof(headertable) / sizeof(header_t), sizeof(key), headercmp);
+    if (findkey != NULL)
+        return findkey->id;
+    return -1;
+}
+
+
+void readlines(ClientType *client)
+{
     buffer_t *in = &client->in;
     char *indata = in->data;
     char *front = in->data, *ptr, *hptr;
@@ -475,36 +497,7 @@ ClientType *client;
 #endif
 }
 
-int headervalue(inputheader)
-char *inputheader;
-{
-    header_t key, *findkey;
-    static int hasinit = 0;
 
-    if (hasinit == 0) {
-        article_init();
-        hasinit = 1;
-    }
-    key.name = inputheader;
-    findkey = (header_t *) bsearch((char *) &key, (char *) headertable, sizeof(headertable) / sizeof(header_t), sizeof(key), headercmp);
-    if (findkey != NULL)
-        return findkey->id;
-    return -1;
-}
-
-article_init()
-{
-    int i;
-    static int article_inited = 0;
-
-    if (article_inited)
-        return;
-    article_inited = 1;
-
-    qsort(headertable, sizeof(headertable) / sizeof(header_t), sizeof(header_t), headercmp);
-    for (i = 0; i < LASTHEADER; i++)
-        HEADER[i] = NULL;
-}
 
 #ifdef INNTOBBS_MAIN
 main()

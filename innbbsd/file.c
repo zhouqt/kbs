@@ -76,7 +76,6 @@ char *filename;
 int isfilev(char* fmt,...)
 {
     va_list ap;
-    struct stat st;
     char *p;
 
     va_start(ap,fmt);
@@ -107,7 +106,6 @@ char *filename;
 int isdirv(char *fmt,...)
 {
     va_list ap;
-    struct stat st;
     char *p;
 
     va_start(ap,fmt);
@@ -135,7 +133,6 @@ char *filename;
 unsigned long mtimev(char *fmt,...)
 {
     va_list ap;
-    struct stat st;
     char *p;
 
     va_start(ap,fmt);
@@ -163,7 +160,6 @@ char *filename;
 unsigned long atimev(char* fmt,...)
 {
     va_list ap;
-    struct stat st;
     char *p;
 
     va_start(ap,fmt);

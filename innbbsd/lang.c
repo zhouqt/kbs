@@ -111,7 +111,7 @@ TxtClass BoardTxtClass[] = {
     ,
 };
 
-isMsgTxt(txtclass, orgtxt)
+int isMsgTxt(txtclass, orgtxt)
 TxtClass *txtclass;
 char *orgtxt;
 {
@@ -125,19 +125,7 @@ char *orgtxt;
     return 0;
 }
 
-initial_lang()
-{
-    if (strcasecmp(LANG, "BIG5") == 0) {
-        lang_init(Big5Locale);
-    } else if (strcasecmp(LANG, "GB") == 0) {
-        lang_init(GBLocale);
-    } else if (strcasecmp(LANG, "ENGLISH") == 0) {
-        lang_init(EnglishLocale);
-    }
-}
-
-lang_init(type)
-int type;
+void lang_init(int type)
 {
     switch (type) {
     case Big5Locale:
@@ -179,5 +167,16 @@ int type;
         bbslinkUsage3 = EbbslinkUsage3;
         bbslinkUsage4 = EbbslinkUsage4;
         break;
+    }
+}
+
+void initial_lang()
+{
+    if (strcasecmp(LANG, "BIG5") == 0) {
+        lang_init(Big5Locale);
+    } else if (strcasecmp(LANG, "GB") == 0) {
+        lang_init(GBLocale);
+    } else if (strcasecmp(LANG, "ENGLISH") == 0) {
+        lang_init(EnglishLocale);
     }
 }

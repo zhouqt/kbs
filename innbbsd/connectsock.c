@@ -20,14 +20,13 @@ int s;
     kill(0, SIGKILL);
 }
 
-static INETDstart = 0;
-int startfrominetd(flag)
+static int INETDstart = 0;
+void startfrominetd(int flag)
 {
     INETDstart = flag;
 }
 
-int standalonesetup(fd)
-int fd;
+void standalonesetup(int fd)
 {
     int on = 1;
     struct linger foobar;
@@ -43,14 +42,12 @@ int fd;
 static char *UNIX_SERVER_PATH;
 static int (*halt) ();
 
-sethaltfunction(haltfunc)
-int (*haltfunc) ();
+void sethaltfunction(int (*haltfunc) ())
 {
     halt = haltfunc;
 }
 
-void docompletehalt(s)
-int s;
+void docompletehalt(int s)
 {
     /*
      * printf("try to remove %s\n", UNIX_SERVER_PATH);
@@ -62,8 +59,7 @@ int s;
      */
 }
 
-void doremove(s)
-int s;
+void doremove(int s)
 {
     if (halt != NULL)
         (*halt) (s);
@@ -71,9 +67,7 @@ int s;
         docompletehalt(s);
 }
 
-initunixserver(path, protocol)
-char *path;
-char *protocol;
+int initunixserver(char *path, char *protocol)
 {
     struct sockaddr_un s_un;
 
@@ -82,7 +76,6 @@ char *protocol;
      */
     struct protoent *pe;        /* protocol information entry */
     int s;
-    char *ptr;
 
     bzero((char *) &s_un, sizeof(s_un));
     s_un.sun_family = AF_UNIX;
@@ -126,12 +119,9 @@ char *protocol;
     return s;
 }
 
-initinetserver(service, protocol)
-char *service;
-char *protocol;
+int initinetserver(char *service, char *protocol)
 {
     struct servent *se;         /* service information entry */
-    struct hostent *he;         /* host information entry */
     struct protoent *pe;        /* protocol information entry */
     struct sockaddr_in sin;     /* Internet endpoint address */
     int port, s;
@@ -251,6 +241,23 @@ int (*initfunc) ARG((int));
     return s;
 }
 
+int tryaccept(int s)
+{
+    int ns;
+    socklen_t fromlen;
+    struct sockaddr sockaddr;   /* Internet endpoint address */
+    fromlen = sizeof(struct sockaddr_in);
+
+#ifdef DEBUGSERVER
+    fputs("Listening again\n", stdout);
+#endif
+    do {
+        ns = accept(s, &sockaddr, &fromlen);
+        errno = 0;
+    } while (ns < 0 && errno == EINTR);
+    return ns;
+}
+
 int inetsingleserver(service, protocol, serverfunc, initfunc)
 char *service;
 char *protocol;
@@ -291,29 +298,12 @@ int (*serverfunc) ARG((int));
     }
 }
 
-int tryaccept(s)
-int s;
-{
-    int ns, fromlen;
-    struct sockaddr sockaddr;   /* Internet endpoint address */
-    fromlen = sizeof(struct sockaddr_in);
-
-#ifdef DEBUGSERVER
-    fputs("Listening again\n", stdout);
-#endif
-    do {
-        ns = accept(s, &sockaddr, &fromlen);
-        errno = 0;
-    } while (ns < 0 && errno == EINTR);
-    return ns;
-}
-
 int inetserver(service, protocol, serverfunc)
 char *service;
 char *protocol;
 int (*serverfunc) ARG((int));
 {
-    int port, s;
+    int s;
 
     if (!INETDstart)
         s = initinetserver(service, protocol);

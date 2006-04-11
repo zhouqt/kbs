@@ -7,8 +7,7 @@
 #define INNBBSDPATH1  ".innbbsd1"
 #define INNBBSDPATH2  ".innbbsd2"
 
-pmain(port)
-char *port;
+int pmain(char *port)
 {
     if (port == NULL) {
         int rel;
@@ -32,8 +31,7 @@ char *port;
     }
 }
 
-p_unix_main(path)
-char *path;
+int p_unix_main(char *path)
 {
     if (path == NULL) {
         int rel;

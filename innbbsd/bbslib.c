@@ -39,14 +39,12 @@ int LOCALNODELIST = 0, NONENEWSFEEDS = 0;
 //char BBSHOME[] = _PATH_BBSHOME;
 static FILE *bbslogfp;
 
-static int
- verboseFlag = 0;
+static int verboseFlag = 0;
 
 static char *verboseFilename = NULL;
 static char verbosename[MAXPATHLEN];
 
-verboseon(filename)
-char *filename;
+void verboseon(char *filename)
 {
     verboseFlag = 1;
     if (filename != NULL) {
@@ -58,22 +56,22 @@ char *filename;
     verboseFilename = filename;
 }
 
-verboseoff()
+void verboseoff()
 {
     verboseFlag = 0;
 }
 
-setverboseon()
+void setverboseon()
 {
     verboseFlag = 1;
 }
 
-isverboselog()
+int isverboselog()
 {
     return verboseFlag;
 }
 
-setverboseoff()
+void setverboseoff()
 {
     verboseoff();
     if (bbslogfp != NULL) {
@@ -82,7 +80,7 @@ setverboseoff()
     }
 }
 
-verboselog(char* fmt,...)
+void verboselog(char* fmt,...)
 {
     va_list ap;
     char datebuf[40];
@@ -140,14 +138,8 @@ void innbbsdlog(char* fmt,...)
     va_end(ap);
 }
 
-initial_bbs(outgoing)
-char *outgoing;
+int initial_bbs(char *outgoing)
 {
-    FILE *FN;
-    struct stat st;
-    int fd, i;
-    char *bbsnameptr = NULL;
-
 /* reopen bbslog */
     if (bbslogfp != NULL) {
         fclose(bbslogfp);
@@ -313,16 +305,14 @@ nodelist_t **a, **b;
 }
 
 /* read in newsfeeds.bbs and nodelist.bbs */
-readnlfile(inndhome, outgoing)
-char *inndhome;
-char *outgoing;
+int readnlfile(char *inndhome, char *outgoing)
 {
     FILE *fp;
     char buff[1024];
     struct stat st;
-    int i, count, j;
+    int i, count;
     char *ptr, *nodelistptr;
-    static lastcount = 0;
+    static int lastcount = 0;
 
     sprintf(buff, "%s/nodelist.bbs", inndhome);
     fp = fopen(buff, "r");
@@ -364,7 +354,7 @@ char *outgoing;
     lastcount = count;
     NLCOUNT = 0;
     for (ptr = NODELIST_BUF; (nodelistptr = (char *) strchr(ptr, '\n')) != NULL; ptr = nodelistptr + 1, NLCOUNT++) {
-        char *nptr, *bptr, *pptr, *tptr;
+        char *nptr, *tptr;
 
         *nodelistptr = '\0';
         NODELIST[NLCOUNT].host = "";
@@ -528,8 +518,7 @@ char *group;
 }
 #endif
 
-readnffile(inndhome)
-char *inndhome;
+int readnffile(char *inndhome)
 {
     FILE *fp;
     char buff[1024];
@@ -573,7 +562,7 @@ char *inndhome;
     }
     NFCOUNT = 0;
     for (ptr = NEWSFEEDS_BUF; (newsfeedsptr = (char *) strchr(ptr, '\n')) != NULL; ptr = newsfeedsptr + 1, NFCOUNT++) {
-        char *nptr, *bptr, *pptr;
+        char *nptr;
 
         *newsfeedsptr = '\0';
         NEWSFEEDS[NFCOUNT].newsgroups = "";
@@ -646,6 +635,7 @@ char *inndhome;
 #endif
     qsort(NEWSFEEDS, NFCOUNT, sizeof(newsfeeds_t), nfcmp);
     qsort(NEWSFEEDS_BYBOARD, NFCOUNT, sizeof(newsfeeds_t *), nf_byboardcmp);
+    return 0;
 }
 
 newsfeeds_t *search_board(board)
@@ -792,8 +782,7 @@ int size;
     return ptr;
 }
 
-testandmkdir(dir)
-char *dir;
+void testandmkdir(char *dir)
 {
     if (!isdir(dir)) {
         char path[MAXPATHLEN + 12];

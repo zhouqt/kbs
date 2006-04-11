@@ -12,7 +12,7 @@
   * Bernstein (brnstnd@kramden.acf.nyu.edu).
   */
 
-#ifndef lint
+#if 0
 static char sccsid[] = "@(#) rfc931.c 1.4 93/03/07 22:47:52";
 #endif
 
@@ -24,6 +24,7 @@ static char sccsid[] = "@(#) rfc931.c 1.4 93/03/07 22:47:52";
 #include <setjmp.h>
 #include <signal.h>
 #include <string.h>
+#include <unistd.h>
 
 /*#include "log_tcp.h"*/
 
@@ -37,8 +38,7 @@ static jmp_buf timebuf;
 
 /* timeout - handle timeouts */
 
-static void timeout(sig)
-int sig;
+static void timeout(int sig)
 {
     longjmp(timebuf, sig);
 }
@@ -51,7 +51,7 @@ struct sockaddr_in *there;      /* remote link information */
 {
     struct sockaddr_in here;    /* local link information */
     struct sockaddr_in sin;     /* for talking to RFC931 daemon */
-    int length;
+    socklen_t length;
     int s;
     unsigned remote;
     unsigned local;
@@ -135,7 +135,7 @@ struct sockaddr_in *there;      /* remote link information */
          * Strip trailing carriage return. 
          */
 
-        if (cp = strchr(user, '\r'))
+        if ((cp = strchr(user, '\r')) != NULL)
             *cp = 0;
         result = user;
     }
@@ -143,3 +143,4 @@ struct sockaddr_in *there;      /* remote link information */
     fclose(fp);
     return (result);
 }
+

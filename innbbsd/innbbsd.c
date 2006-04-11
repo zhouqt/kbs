@@ -49,7 +49,6 @@ static int CMDgo ARG((ClientType *));
 
 #ifdef GETRUSAGE
 static int CMDgetrusage ARG((ClientType *));
-static int CMDmallocmap ARG((ClientType *));
 #endif
 
 char *DBfetch(char *key);
@@ -93,13 +92,13 @@ static daemoncmd_t cmds[] =
 {NULL, NULL, 0, 0, 99, 100, NULL}
 };
 
-installinnbbsd()
+void installinnbbsd()
 {
     installdaemon(cmds, 100, NULL);
 }
 
 #ifdef OLDLIBINBBSINND
-testandmkdir(dir)
+void testandmkdir(dir)
 char *dir;
 {
     if (!isdir(dir)) {
@@ -234,11 +233,11 @@ ClientType *client;
 {
     argv_t *argv = &client->Argv;
 
-    fprintf(argv->out, "%d %s\n", argv->dc->usage);
+    fprintf(argv->out, "%s\n", argv->dc->usage);
     return 0;
 }
 
-islocalconnect(client)
+int islocalconnect(client)
 ClientType *client;
 {
     if (strcmp(client->username, "localuser") != 0 || strcmp(client->hostname, "localhost") != 0)
@@ -246,9 +245,9 @@ ClientType *client;
     return 1;
 }
 
-static shutdownflag = 0;
+static int shutdownflag = 0;
 
-INNBBSDhalt()
+void INNBBSDhalt()
 {
     shutdownflag = 1;
 }
@@ -262,7 +261,6 @@ static int CMDshutdown(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (!islocalconnect(client)) {
@@ -286,7 +284,6 @@ ClientType *client;
      */
     argv_t *argv = &client->Argv;
     extern ClientType INNBBSD_STAT;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
     time_t uptime, now;
     int i, j;
@@ -357,7 +354,6 @@ ClientType *client;
 {
     int nlcount;
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (!islocalconnect(client)) {
@@ -383,7 +379,6 @@ static int CMDlistnewsfeeds(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
     int nfcount;
 
@@ -440,7 +435,6 @@ static int CMDgetrusage(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
     struct rusage ru;
 
@@ -478,7 +472,6 @@ static int CMDhismaint(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (!islocalconnect(client)) {
@@ -501,7 +494,6 @@ static int CMDgo(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (!islocalconnect(client)) {
@@ -527,7 +519,6 @@ static int CMDpause(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (!islocalconnect(client)) {
@@ -548,7 +539,6 @@ static int CMDreload(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (!islocalconnect(client)) {
@@ -568,7 +558,6 @@ static int CMDverboselog(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (!islocalconnect(client)) {
@@ -589,13 +578,13 @@ ClientType *client;
     fprintf(argv->out, "%d verboselog %s\r\n", p->normalcode, isverboselog()? "ON" : "OFF");
     fflush(argv->out);
     verboselog("%d verboselog %s\r\n", p->normalcode, isverboselog()? "ON" : "OFF");
+    return 0;
 }
 
 static int CMDmidcheck(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (client->mode == 0) {
@@ -610,13 +599,13 @@ ClientType *client;
     fprintf(argv->out, "%d mid check %s\r\n", p->normalcode, client->midcheck == 1 ? "ON" : "OFF");
     fflush(argv->out);
     verboselog("%d mid check %s\r\n", p->normalcode, client->midcheck == 1 ? "ON" : "OFF");
+    return 0;
 }
 
 static int CMDgrephist(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     if (client->mode == 0) {
@@ -647,7 +636,6 @@ static int CMDaddhist(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    buffer_t *in = &client->in;
     daemoncmd_t *p = argv->dc;
 
     /*
@@ -692,9 +680,7 @@ static int CMDstat(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    char *ptr, *frontptr;
-    buffer_t *in = &client->in;
-    daemoncmd_t *p;
+    char *ptr;
 
     if (client->mode == 0) {
         client->statcount++;
@@ -722,6 +708,7 @@ ClientType *client;
             }
         }
     }
+    return 0;
 }
 
 #ifndef DBZSERVER
@@ -729,9 +716,7 @@ static int CMDihave(client)
 ClientType *client;
 {
     argv_t *argv = &client->Argv;
-    char *ptr = NULL, *frontptr;
-    buffer_t *in = &client->in;
-    daemoncmd_t *p;
+    char *ptr = NULL;
 
     if (client->mode == 0) {
         client->ihavecount++;
@@ -803,7 +788,7 @@ ClientType *client;
                 client->fd = -1;
                 client->mode = 0;
                 client->ihavefail++;
-                return;
+                return 0;
             } else {
                 fprintf(argv->out, "235\r\n");
                 verboselog("Ihave Put: 235\n");
@@ -876,4 +861,6 @@ ClientType *client;
     /*
      * exit(0); 
      */
+    return 0;
 }
+

@@ -28,9 +28,7 @@ static filternode_t FILTERS[] = {
     {"\0", NULL, NULL},
 };
 
-filtermatch(result, target, pat)
-int result;
-char *target, *pat;
+int filtermatch(int result, char *target, char *pat)
 {
     char *filterp = pat, *ptr;
     char *arg;

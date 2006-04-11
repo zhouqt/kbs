@@ -22,15 +22,12 @@ STATIC char *LogName = "xindexchan";
 #define DEFAULT_HIST_SIZE 100000
 #endif
 
-hisincore(flag)
-int flag;
+void hisincore(int flag)
 {
     HISincore = flag;
 }
 
-makedbz(histpath, entry)
-char *histpath;
-long entry;
+void makedbz(char *histpath, long entry)
 {
     long size;
 
@@ -39,14 +36,15 @@ long entry;
     dbmclose();
 }
 
+void myHISsetup(char *histpath);
 void HISsetup();
 void HISclose();
+BOOL myHISwrite(datum *key, char *remain);
 
 void mkhistory(srchist)
 char *srchist;
 {
     FILE *hismaint;
-    time_t lasthist, now;
     char maintbuff[256];
     char *ptr;
 
@@ -91,7 +89,7 @@ char *srchist;
 time_t gethisinfo()
 {
     FILE *hismaint;
-    time_t lasthist, now;
+    time_t lasthist;
     char maintbuff[4096];
     char *ptr;
 
@@ -179,8 +177,7 @@ void HISsetup()
     myHISsetup(HISTORY);
 }
 
-int myHISsetup(histpath)
-char *histpath;
+void myHISsetup(char *histpath)
 {
     if (HISwritefp == NULL) {
         /*
@@ -326,7 +323,7 @@ datum *output;
     for (p = val.dptr, dest = (char *) &offset, i = sizeof offset; --i >= 0;)
         *dest++ = *p++;
     if (lseek(HISreadfd, offset, SEEK_SET) == -1) {
-        printf("fail here lseek %d\n", offset);
+        printf("fail here lseek %ld\n", offset);
         return NULL;
     }
     /*
@@ -379,6 +376,7 @@ char *MessageID;
 }
 #endif
 
+#if 0
 /*
 **  Turn a history filename entry from slashes to dots.  It's a pity
 **  we have to do this.
@@ -398,18 +396,15 @@ register char *p;
     if (last)
         *last = '/';
 }
+#endif
 
-IOError(error)
-char *error;
+void IOError(char *error)
 {
     fprintf(stderr, "%s\n", error);
 }
 
- /*BOOL*/ myHISwrite(key, remain)
-datum *key;
-char *remain;
+BOOL myHISwrite(datum *key, char *remain)
 {
-    static char NOPATHS[] = "";
     long offset;
     datum val;
     int i;
@@ -455,7 +450,6 @@ datum *key;
 char *paths;
 long date;
 {
-    static char NOPATHS[] = "";
     long offset;
     datum val;
     int i;
