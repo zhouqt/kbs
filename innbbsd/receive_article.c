@@ -35,14 +35,13 @@
    cacnel_article_front(mid) --> cancel_article() --> bbspost_write_cancel();
 */
 
-#ifndef PowerBBS
-
 #include "innbbsconf.h"
 #include "daemon.h"
 #include "bbslib.h"
 #include "inntobbs.h"
 #include "lang.h"
 #include "bbs.h"
+#include "inn_funcs.h"
 
 #define innbbslog(x) bbslog("3rror",x)
 extern int Junkhistory;
@@ -52,27 +51,8 @@ int cancel_article ARG((char *, char *, char *));
 
 #define FAILED goto failed
 
-report()
-{
-    /*
-     * Function called from record.o 
-     */
-    /*
-     * Please leave this function empty 
-     */
-}
-
-#if defined(PalmBBS)
-#ifndef PATH
-#define PATH XPATH
-#endif
-#ifndef HEADER
-#define HEADER XHEADER
-#endif
-#endif
-
 /* process post write */
-bbspost_write_post(fh, board, filename)
+int bbspost_write_post(fh, board, filename)
 int fh;
 char *board;
 char *filename;
@@ -245,9 +225,9 @@ char *board, *filename;
     fclose(fhfd);
     return -1;
 }
-#endif
+#endif /* KEEP_NETWORK_CANCEL */
 
-bbspost_write_control(fh, board, filename)
+int bbspost_write_control(fh, board, filename)
 int fh;
 char *board;
 char *filename;
@@ -313,10 +293,10 @@ char *filename;
 }
 
 /* process cancel write */
-receive_article()
+int receive_article()
 {
     char *user, *userptr;
-    char *ngptr, *nngptr, *pathptr;
+    char *ngptr, *pathptr;
     char **splitptr;
     static char userid[32];
     static char xdate[32];
@@ -515,7 +495,7 @@ receive_article()
     return 0;
 }
 
-receive_control()
+int receive_control()
 {
     char *boardhome, *fname;
     char firstpath[MAXPATHLEN], *firstpathbase;
@@ -553,8 +533,7 @@ receive_control()
     return 0;
 }
 
-cancel_article_front(msgid)
-char *msgid;
+int cancel_article_front(char *msgid)
 {
     char *ptr = (char *) DBfetch(msgid);
     char *filelist, filename[2048];
@@ -613,7 +592,7 @@ char *msgid;
 
             FILE *fp;
             char buffer[1024];
-            char *xfrom, *boardhome;
+            char *xfrom;
 
             fp = fopen(filename, "r");
             if (fp != NULL) {
@@ -741,9 +720,6 @@ char *msgid;
     return 0;
 }
 
-#if defined(FirebirdBBS)|| defined(PhoenixBBS) || defined(SecretBBS) || defined(PivotBBS) || defined(MapleBBS)
-/* for PhoenixBBS's post article and cancel article */
-
 #define NO_OSDEP_H              /* skip the os_dep.h, we have it already! */
 #include "bbs.h"
 #undef  OS_OSDEP_H
@@ -788,7 +764,6 @@ char *userid, *board;
 int (*writebody) ();
 char *pathname, *firstpath;
 {
-    struct userec record;
     struct fileheader header;
     struct fileheader threadfh;
 
@@ -796,11 +771,9 @@ char *pathname, *firstpath;
     char index[MAXPATHLEN];
     static char name[MAXPATHLEN];
     char article[MAXPATHLEN];
-    char buf[MAXPATHLEN], *ptr;
     FILE *fidx;
     int fh;
     int ret;
-    time_t now;
     int linkflag;
     char conv_buf[256];
     char old_path[255];
@@ -883,7 +856,7 @@ char *pathname, *firstpath;
     return name;
 }
 
-cancel_article(homepath, board, file)
+int cancel_article(homepath, board, file)
 char *homepath;
 char *board, *file;
 {
@@ -891,7 +864,7 @@ char *board, *file;
     struct stat state;
     char dirname[MAXPATHLEN];
     char buf[MAXPATHLEN];
-    long numents, size, time, now;
+    long size, time, now;
     int fd, lower, ent;
 
     if (file == NULL || file[0] != 'M' || file[1] != '.' || (time = atoi(file + 2)) <= 0)
@@ -938,118 +911,5 @@ char *board, *file;
     close(fd);
     return 0;
 }
-#elif defined(PalmBBS)
-#undef PATH XPATH
-#undef HEADER XHEADER
-#include "server.h"
 
-char *post_article(homepath, userid, board, writebody, pathname, firstpath)
-char *homepath;
-char *userid, *board;
-int (*writebody) ();
-char *pathname, *firstpath;
-{
-    PATH msgdir, msgfile;
-    static PATH name;
 
-    READINFO readinfo;
-    SHORT fileid;
-    char buf[MAXPATHLEN];
-    struct stat stbuf;
-    int fh;
-
-    strcpy(msgdir, homepath);
-    if (stat(msgdir, &stbuf) == -1 || !S_ISDIR(stbuf.st_mode)) {
-        /*
-         * A directory is missing! 
-         */
-        innbbsdlog(":Err: Unable to post in %s.\n", msgdir);
-        return NULL;
-    }
-    get_filelist_ids(msgdir, &readinfo);
-
-    for (fileid = 1; fileid <= BBS_MAX_FILES; fileid++) {
-        int oumask;
-
-        if (test_readbit(&readinfo, fileid))
-            continue;
-        fileid_to_fname(msgdir, fileid, msgfile);
-        sprintf(name, "%04x", fileid);
-#ifdef DEBUG
-        printf("post to %s\n", msgfile);
-#endif
-        if (firstpath && *firstpath) {
-#ifdef DEBUGLINK
-            innbbsdlog("try to link %s to %s", firstpath, msgfile);
-#endif
-            if (link(firstpath, msgfile) == 0)
-                break;
-        }
-        oumask = umask(0);
-        fh = open(msgfile, O_CREAT | O_EXCL | O_WRONLY, 0664);
-        umask(oumask);
-        if (writebody) {
-            if ((*writebody) (fh, board, pathname) < 0)
-                return NULL;
-        } else {
-            if (bbspost_write_post(fh, board, pathname) < 0)
-                return NULL;
-        }
-        close(fh);
-        break;
-    }
-#ifdef CACHED_OPENBOARD
-    {
-        char *bname;
-
-        bname = strrchr(msgdir, '/');
-        if (bname)
-            notify_new_post(++bname, 1, fileid, stbuf.st_mtime);
-    }
-#endif
-    return name;
-}
-
-cancel_article(homepath, board, file)
-char *homepath;
-char *board, *file;
-{
-    PATH fname;
-
-#ifdef  CACHED_OPENBOARD
-    PATH bdir;
-    struct stat stbuf;
-
-    sprintf(bdir, "%s/boards/%s", homepath, board);
-    stat(bdir, &stbuf);
-#endif
-    sprintf(fname, "%s/boards/%s/%s", homepath, board, file);
-    unlink(fname);
-    /*
-     * kill it now! the function is far small then original..  :) 
-     */
-    /*
-     * because it won't make system load heavy like before 
-     */
-#ifdef CACHED_OPENBOARD
-    notify_new_post(board, -1, hex2SHORT(file), stbuf.st_mtime);
-#endif
-}
-#else
-error("You should choose one of the systems: PhoenixBBS, PowerBBS, or PalmBBS")
-#endif
-#else
-
-receive_article()
-{
-}
-
-receive_control()
-{
-}
-
-cancel_article_front(msgid)
-char *msgid;
-{
-}
-#endif
