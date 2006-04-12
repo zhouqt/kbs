@@ -1967,17 +1967,6 @@ char *name;
     prints("%s记录 %s\n", name, buf);
 }
 
-int touchfile(filename)
-char *filename;
-{
-    int fd;
-
-    if ((fd = open(filename, O_RDWR | O_CREAT, 0600)) > 0) {
-        close(fd);
-    }
-    return fd;
-}
-
 int m_trace()
 {
     struct stat ostatb, cstatb;
@@ -2006,7 +1995,7 @@ int m_trace()
         switch (ans[0]) {
         case '1':
             if (otflag) {
-                touchfile("trace");
+                f_touch("trace");
                 msg = "一般记录 ON";
             } else {
                 f_mv("trace", "trace.old");
@@ -2015,7 +2004,7 @@ int m_trace()
             break;
         case '2':
             if (ctflag) {
-                touchfile("trace.chatd");
+                f_touch("trace.chatd");
                 msg = "聊天记录 ON";
             } else {
                 f_mv("trace.chatd", "trace.chatd.old");
