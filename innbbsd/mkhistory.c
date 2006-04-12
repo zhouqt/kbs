@@ -1,9 +1,9 @@
 #include "innbbsconf.h"
 #include "bbslib.h"
+#include "inn_funcs.h"
+#include "his.h"
 
-main(argc, argv)
-int argc;
-char *argv[];
+int main(int argc, char **argv)
 {
     if (argc < 2) {
         fprintf(stderr, "Usage: %s history-file\n", argv[0]);
@@ -11,4 +11,5 @@ char *argv[];
     }
     initial_bbs(NULL);
     mkhistory(argv[1]);
+    return 0;
 }

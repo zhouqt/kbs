@@ -41,8 +41,7 @@ void HISsetup();
 void HISclose();
 BOOL myHISwrite(datum *key, char *remain);
 
-void mkhistory(srchist)
-char *srchist;
+void mkhistory(char *srchist)
 {
     FILE *hismaint;
     char maintbuff[256];
