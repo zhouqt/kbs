@@ -25,6 +25,8 @@
  * 5. node.LOCK (with pid) 6. log articles sent
  */
 
+#include "inn_funcs.h"
+
 #ifndef MAXBUFLEN
 #define MAXBUFLEN 256
 #endif
@@ -283,10 +285,7 @@ char *filename, *userid;
     return 1;
 }
 
-void save_outgoing(sover, filename, userid, poster, mtime)
-soverview_t *sover, *filename, *userid, *poster;
-time_t mtime;
-{
+void save_outgoing(soverview_t *sover,const char *filename,const char *userid,const char *poster,time_t mtime){
     newsfeeds_t *nf;
     char *group, *server, *serveraddr;
     char *board;

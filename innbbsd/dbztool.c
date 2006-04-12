@@ -12,9 +12,7 @@ static char valueinput[100];
 enum {
     SUBJECT, FROM, NAME
 };
-char *DBfetch(key)
-char *key;
-{
+char *DBfetch(const char *key){
     int i;
     char *tail, *ptr;
 
@@ -31,10 +29,7 @@ char *key;
     return ptr;
 }
 
-DBstore(key, paths)
-char *key;
-char *paths;
-{
+int DBstore(const char *key,const char *paths){
     int i;
     char *tail;
     time_t now;
@@ -52,10 +47,7 @@ char *paths;
     }
 }
 
-int storeDB(mid, paths)
-char *mid;
-char *paths;
-{
+int storeDB(const char *mid,const char *paths){
     char *key, *ptr;
     int rel;
 

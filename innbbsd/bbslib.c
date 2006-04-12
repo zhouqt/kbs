@@ -5,6 +5,8 @@
 
 #include <netdb.h>
 
+#include "inn_funcs.h"
+
 char INNBBSCONF[MAXPATHLEN];
 char INNDHOME[MAXPATHLEN];
 char HISTORY[MAXPATHLEN];
@@ -41,33 +43,30 @@ static FILE *bbslogfp;
 
 static int verboseFlag = 0;
 
-static char *verboseFilename = NULL;
+static const char *verboseFilename = NULL;
 static char verbosename[MAXPATHLEN];
 
-void verboseon(char *filename)
-{
+void verboseon(const char *filename){
     verboseFlag = 1;
-    if (filename != NULL) {
-        if (strchr(filename, '/') == NULL) {
-            sprintf(verbosename, "%s/innd/%s", BBSHOME, filename);
-            filename = verbosename;
-        }
+    if(filename&&!strchr(filename,'/')){
+        sprintf(verbosename,"%s/innd/%s",BBSHOME,filename);
+        filename=verbosename;
     }
-    verboseFilename = filename;
+    verboseFilename=filename;
+    return;
 }
 
-void verboseoff()
-{
+void verboseoff(void){
     verboseFlag = 0;
+    return;
 }
 
-void setverboseon()
-{
+void setverboseon(void){
     verboseFlag = 1;
+    return;
 }
 
-int isverboselog()
-{
+int isverboselog(void){
     return verboseFlag;
 }
 
@@ -80,8 +79,7 @@ void setverboseoff()
     }
 }
 
-void verboselog(char* fmt,...)
-{
+void verboselog(const char *fmt,...){
     va_list ap;
     char datebuf[40];
     time_t now;
@@ -108,6 +106,7 @@ void verboselog(char* fmt,...)
     vfprintf(bbslogfp, fmt, ap);
     fflush(bbslogfp);
     va_end(ap);
+    return;
 }
 
 #ifdef PalmBBS

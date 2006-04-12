@@ -51,6 +51,8 @@
 #include "innbbsconf.h"
 #include <sys/mman.h>
 
+#include "inn_funcs.h"
+
 #ifndef AIX
 #  include <sys/fcntl.h>
 #endif
@@ -149,6 +151,7 @@ void initsockets(char *server, nnrp_t *bbsnnrp, char *type);
 void closesockets();
 void writerc(nnrp_t *bbsnnrp);
 void readnews(nnrp_t *bbsnnrp);
+int INNBBSihave(nnrp_t*,ULONG,const char*);
 
 void doterm(s)
 int s;
@@ -200,7 +203,7 @@ static char *DefaultNntpProtocol;
 
 int main(int argc, char **argv)
 {
-    char *ptr, *server, *active;
+    char *ptr, *server = NULL /* default server */ , *active;
     int c, errflag = 0;
     int lockfd;
     char *inputtype;
@@ -500,8 +503,8 @@ void stdinreadnews(nnrp_t *bbsnnrp)
                     verboselog("Discard: %s for %s", buffer, DefaultTrustFrom);
                 }
             } else if (strncmp(buffer, "Received: ", 10) == 0) {
-                char *rptr = buffer + 10, *rrptr;
-                int savech, len;
+                char *rptr = buffer + 10, *rrptr = NULL;
+                int savech = 0, len;
 
                 if (strncmp(buffer + 10, "from ", 5) == 0) {
                     rptr += 5;
@@ -553,8 +556,8 @@ void stdinreadnews(nnrp_t *bbsnnrp)
                         time_t now;
 
                         time(&now);
-                        fprintf(tmpfp, "Message-ID: <%d@%d.%d.%d>\r\n", now, getpid(), getuid(), seed);
-                        sprintf(mid, "<%d@%d.%d.%d>", now, getpid(), getuid(), seed);
+                        fprintf(tmpfp, "Message-ID: <%ld@%d.%d.%d>\r\n", now, getpid(), getuid(), seed);
+                        sprintf(mid, "<%ld@%d.%d.%d>", now, getpid(), getuid(), seed);
                         seed++;
                     }
                     if (!orgmet && *DefaultOrganization) {
@@ -1017,8 +1020,7 @@ char *mid;
     return atol(INNBBSbuffer);
 }
 
-int INNBBSihave(nnrp_t *bbsnnrp, ULONG artno, char *mid)
-{
+int INNBBSihave(nnrp_t *bbsnnrp,ULONG artno,const char *mid){
     int code;
     int header = 1;
 

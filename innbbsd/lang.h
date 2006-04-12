@@ -27,4 +27,6 @@ extern TxtClass BoardTxtClass[];
 extern TxtClass SubjectTxtClass[];
 extern TxtClass PathTxtClass[];
 
+int isMsgTxt(const TxtClass*,const char*);
+
 #endif

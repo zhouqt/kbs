@@ -38,6 +38,7 @@
 	  it with your own.
  ************************************************************************/
 #include <stdio.h>
+#include <unistd.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/un.h>
@@ -59,21 +60,13 @@ static char dbz_connect = FALSE;
 #endif
 #endif
 
+int close_dbz_channel(void);
+
 /*
 	add Message-ID to DBZ server
 */
-add_mid(mid, path)
-char *mid;                      /* Message-ID to be added */
-char *path;                     /* path of that Message */
-
-/*
-	return:
-		TRUE:	OK
-		FALSE:	Failed (maybe duplicate)
-*/
-{
+int add_mid(const char *mid,const char *path){
     if (dbz_connect) {
-        /*sprintf(line, "ADDHIST %s %s\r\n", mid, path);*/
         fprintf(innbbsout, "ADDHIST %s %s\r\n", mid, path);
         fflush(innbbsout);
         fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
@@ -91,16 +84,7 @@ char *path;                     /* path of that Message */
 /*
 	query Message-ID from DBZ server
 */
-query_mid(mid, path)
-char *mid;                      /* Message-ID to be searched */
-char *path;                     /* If MID found, path will be put here, NULL
-                                 * for just test mid */
-/*
-	return:
-		TRUE:	mid found
-		FALSE:	not found
-*/
-{
+int query_mid(const char *mid,char *path){
     char line[4096];
     char *l;
     int c;
@@ -152,15 +136,7 @@ char *path;                     /* If MID found, path will be put here, NULL
 /*
 	open UNIX DOMAIN socket
 */
-int unixclient(path)
-char *path;                     /* unix domin socket path */
-
-/*
-	return:
-		>0:	OK
-		<0:	failed
-*/
-{
+int dbzunixclient(const char *path){
     struct sockaddr_un s_un;    /* unix endpoint address */
     int s;
 
@@ -193,19 +169,10 @@ char *path;                     /* unix domin socket path */
 /*
 	init dbz unix domain socket
 */
-init_dbz_channel()
-/*
-	return:
-		TRUE:	OK
-		FALSE:  Failed
-*/
-{
-
+int init_dbz_channel(void){
     dbz_connect = FALSE;
-
 #ifdef DBZ_CHANNEL
-
-    innbbsfd = unixclient(DBZ_CHANNEL);
+    innbbsfd = dbzunixclient(DBZ_CHANNEL);
 
     if (innbbsfd < 0)
         return (FALSE);
@@ -224,9 +191,7 @@ init_dbz_channel()
         close_dbz_channel();
     }
 #endif
-
     return (dbz_connect);
-
 }
 
 /*end of initsocket*/
@@ -234,8 +199,7 @@ init_dbz_channel()
 /*
 	close dbz channel
 */
-close_dbz_channel()
-{
+int close_dbz_channel(void){
     if (dbz_connect) {
         if (innbbsin != NULL)
             fclose(innbbsin);
@@ -244,6 +208,7 @@ close_dbz_channel()
         if (innbbsfd >= 0)
             close(innbbsfd);
     }
+    return 0;
 }
 
 /*end of closesocket*/
@@ -251,10 +216,7 @@ close_dbz_channel()
 /***********************************************************************
 		Just a SAMPLE, replace main() with your own
  ***********************************************************************/
-main(argc, argv)
-int argc;
-char **argv;
-{
+int main(int argc,char **argv){
     char test[4096];
     int ret;
 
@@ -291,4 +253,6 @@ char **argv;
         printf("query no_such_item not found\n");
 
     close_dbz_channel();
+    return 0;
 }
+

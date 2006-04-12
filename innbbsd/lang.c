@@ -111,17 +111,11 @@ TxtClass BoardTxtClass[] = {
     ,
 };
 
-int isMsgTxt(txtclass, orgtxt)
-TxtClass *txtclass;
-char *orgtxt;
-{
-    TxtClass *ptr = txtclass;
-
-    while (ptr && ptr->msgtxt && ptr->size > 0) {
-        if (strncmp(ptr->msgtxt, orgtxt, ptr->size - 1) == 0)
+int isMsgTxt(const TxtClass *txtclass,const char *orgtxt){
+    const TxtClass *ptr;
+    for(ptr=txtclass;ptr&&ptr->msgtxt&&ptr->size>0;ptr++)
+        if(!strncmp(ptr->msgtxt,orgtxt,ptr->size-1))
             return 1;
-        ptr++;
-    }
     return 0;
 }
 

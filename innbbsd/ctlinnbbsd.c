@@ -1,12 +1,12 @@
 #include "innbbsconf.h"
 #include "bbslib.h"
 
+#include "inn_funcs.h"
+
 extern char *optarg;
 extern int opterr, optind;
 
-usage(name)
-char *name;
-{
+int usage(const char *name){
     fprintf(stderr, "Usage: %s [-p path] commands\n", name);
     fprintf(stderr, " where available commands:\n");
     fprintf(stderr, "  ctlinnbbsd reload   : reload datafiles for innbbsd\n");
@@ -26,6 +26,7 @@ char *name;
 #ifdef MALLOCMAP
     fprintf(stderr, "  ctlinnbbsd mallocmap: get malloc map\n");
 #endif
+    return 0;
 }
 
 char *DefaultPath = LOCALDAEMON;
@@ -34,10 +35,7 @@ char INNBBSbuffer[4096];
 FILE *innbbsin, *innbbsout;
 int innbbsfd;
 
-ctlinnbbsd(argc, argv)
-int argc;
-char **argv;
-{
+int ctlinnbbsd(int argc,char **argv){
     fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
     printf("%s", INNBBSbuffer);
     if (strcasecmp(argv[0], "shutdown") == 0 || strcasecmp(argv[0], "reload") == 0 || strcasecmp(argv[0], "hismaint") == 0 ||
@@ -91,10 +89,10 @@ char **argv;
         fflush(innbbsout);
         fgets(INNBBSbuffer, sizeof INNBBSbuffer, innbbsin);
     }
+    return 0;
 }
 
-initsocket()
-{
+int initsocket(void){
     innbbsfd = unixclient(DefaultPath, "tcp");
     if (innbbsfd < 0) {
         fprintf(stderr, "Connect to %s error. You may not run innbbsd\n", DefaultPath);
@@ -104,22 +102,20 @@ initsocket()
         fprintf(stderr, "fdopen error\n");
         exit(3);
     }
+    return 0;
 }
 
-closesocket()
-{
+int closesocket(void){
     if (innbbsin != NULL)
         fclose(innbbsin);
     if (innbbsout != NULL)
         fclose(innbbsout);
     if (innbbsfd >= 0)
         close(innbbsfd);
+    return 0;
 }
 
-main(argc, argv)
-int argc;
-char **argv;
-{
+int main(int argc,char **argv){
     int c, errflag = 0;
 
     while ((c = getopt(argc, argv, "p:h?")) != -1)
@@ -145,4 +141,5 @@ char **argv;
     initsocket();
     ctlinnbbsd(argc - optind, argv + optind);
     closesocket();
+    return 0;
 }

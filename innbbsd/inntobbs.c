@@ -10,6 +10,8 @@
 
 #include "bbs.h"
 
+#include "inn_funcs.h"
+
 typedef struct Header {
     char *name;
     int id;

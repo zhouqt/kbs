@@ -59,5 +59,7 @@ extern int daemon ARG((int));
 extern ClientType *Channel;
 
 daemoncmd_t *searchcmd(char *cmd);
-
+int channeldestroy(ClientType *client);
+int dbzchannelreader(ClientType *client);
+int dbzcommandparse(ClientType *client);
 #endif

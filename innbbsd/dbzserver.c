@@ -3,6 +3,8 @@
 #include "bbslib.h"
 #include "version.h"
 
+#include "inn_funcs.h"
+
 #define DEBUG
 #undef DEBUG
 
@@ -42,8 +44,7 @@ char *REMOTEUSERNAME, *REMOTEHOSTNAME;
 
 static fd_set rfd, wfd, efd, orfd, owfd, oefd;
 
-clearfdset(fd)
-int fd;
+int clearfdset(int fd)
 {
     FD_CLR(fd, &rfd);
 }
@@ -166,7 +167,7 @@ char *port, *path;
         static int maint = 0;
         struct tm *local;
 
-        if (INNBBSDshutdown()) {
+        if (dbzINNBBSDshutdown()) {
             HISclose();
             innbbsdlog(" Shutdown Complete \n");
             docompletehalt();
@@ -300,7 +301,7 @@ char *port, *path;
                     continue;
                 }
                 innbbsdlog("connected from (%s@%s).\n", client[i].username, client[i].hostname);
-                if (isPause()) {
+                if (dbzisPause()) {
                     fprintf(client[i].Argv.out, "400 Server Paused. (%s@%s)\r\n", client[i].username, client[i].hostname);
                     fflush(client[i].Argv.out);
                     fclose(client[i].Argv.in);
@@ -336,7 +337,7 @@ char *port, *path;
 #ifdef DEBUG
                 printf("before read i %d in.used %d in.left %d\n", i, client[i].in.used, client[i].in.left);
 #endif
-                nr = channelreader(client + i);
+                nr = dbzchannelreader(client + i);
 #ifdef DEBUG
                 printf("after read i %d in.used %d in.left %d\n", i, client[i].in.used, client[i].in.left);
 #endif
@@ -363,7 +364,7 @@ char *port, *path;
     }
 }
 
-int channelreader(client)
+int dbzchannelreader(client)
 ClientType *client;
 {
     int len, clientlen;
@@ -396,17 +397,15 @@ ClientType *client;
     if (client->mode == 0) {
         if ((ptr = (char *) strchr(in->data, '\n')) != NULL) {
             if (in->data[0] != '\r')
-                commandparse(client);
+                dbzcommandparse(client);
         }
     } else {
-        commandparse(client);
+        dbzcommandparse(client);
     }
     return len;
 }
 
-commandparse(client)
-ClientType *client;
-{
+int dbzcommandparse(ClientType *client){
     char *ptr, *lastend;
     argv_t *Argv = &client->Argv;
     int (*Main) ();
@@ -595,8 +594,7 @@ main()
 
 static time_t INNBBSDstartup;
 
-innbbsdstartup()
-{
+int dbzinnbbsdstartup(void){
     return INNBBSDstartup;
 }
 
@@ -694,7 +692,7 @@ char **argv;
 
     HISmaint();
     HISsetup();
-    installinnbbsd();
+    dbzinstallinnbbsd();
     sethaltfunction(INNBBSDhalt);
 
     signal(SIGPIPE, dopipesig);

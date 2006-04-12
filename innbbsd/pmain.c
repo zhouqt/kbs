@@ -1,13 +1,15 @@
 #include "innbbsconf.h"
 #include "daemon.h"
 
+#include "inn_funcs.h"
+
 /*char *AccessFile=ACCESSFILE;*/
 #define INNBBSDPORT1 "1904"
 #define INNBBSDPORT2 "1234"
 #define INNBBSDPATH1  ".innbbsd1"
 #define INNBBSDPATH2  ".innbbsd2"
 
-int pmain(char *port)
+int pmain(const char *port)
 {
     if (port == NULL) {
         int rel;
@@ -31,7 +33,7 @@ int pmain(char *port)
     }
 }
 
-int p_unix_main(char *path)
+int p_unix_main(const char *path)
 {
     if (path == NULL) {
         int rel;

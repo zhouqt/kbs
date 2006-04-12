@@ -41,10 +41,9 @@ char *REMOTEUSERNAME, *REMOTEHOSTNAME;
 
 static fd_set rfd, wfd, efd, orfd, owfd, oefd;
 
-clearfdset(fd)
-int fd;
-{
+int clearfdset(int fd){
     FD_CLR(fd, &rfd);
+    return 0;
 }
 
 static channelcreate(client)
@@ -74,9 +73,7 @@ ClientType *client;
     client->filter_buffer = NULL;
 }
 
-channeldestroy(client)
-ClientType *client;
-{
+int channeldestroy(ClientType *client){
     if (client->in.data != NULL) {
         free(client->in.data);
         client->in.data = NULL;
@@ -600,8 +597,7 @@ main()
 
 static time_t INNBBSDstartup;
 
-innbbsdstartup()
-{
+int innbbsdstartup(void){
     return INNBBSDstartup;
 }
 

@@ -39,24 +39,16 @@ void standalonesetup(int fd)
         syslog(LOG_ERR, "setsockopt (SO_LINGER): %m");
 }
 
-static char *UNIX_SERVER_PATH;
-static int (*halt) ();
+static const char *UNIX_SERVER_PATH;
+static int (*halt) (int);
 
-void sethaltfunction(int (*haltfunc) ())
+void sethaltfunction(int (*haltfunc) (int))
 {
     halt = haltfunc;
 }
 
-void docompletehalt(int s)
-{
-    /*
-     * printf("try to remove %s\n", UNIX_SERVER_PATH);
-     * unlink(UNIX_SERVER_PATH);
-     */
+void docompletehalt(void){
     exit(0);
-    /*
-     * dokill(); 
-     */
 }
 
 void doremove(int s)
@@ -64,10 +56,10 @@ void doremove(int s)
     if (halt != NULL)
         (*halt) (s);
     else
-        docompletehalt(s);
+        docompletehalt();
 }
 
-int initunixserver(char *path, char *protocol)
+int initunixserver(const char *path,const char *protocol)
 {
     struct sockaddr_un s_un;
 
@@ -119,7 +111,7 @@ int initunixserver(char *path, char *protocol)
     return s;
 }
 
-int initinetserver(char *service, char *protocol)
+int initinetserver(const char *service,const char *protocol)
 {
     struct servent *se;         /* service information entry */
     struct protoent *pe;        /* protocol information entry */
@@ -194,10 +186,7 @@ int initinetserver(char *service, char *protocol)
     return s;
 }
 
-int open_unix_listen(path, protocol, initfunc)
-char *path;
-char *protocol;
-int (*initfunc) ARG((int));
+int open_unix_listen(const char *path,const char *protocol,int (*initfunc)(int))
 {
     int s;
 
@@ -216,10 +205,7 @@ int (*initfunc) ARG((int));
     return s;
 }
 
-int open_listen(service, protocol, initfunc)
-char *service;
-char *protocol;
-int (*initfunc) ARG((int));
+int open_listen(const char *service,const char *protocol,int (*initfunc)(int))
 {
     int s;
 
@@ -258,11 +244,7 @@ int tryaccept(int s)
     return ns;
 }
 
-int inetsingleserver(service, protocol, serverfunc, initfunc)
-char *service;
-char *protocol;
-int (*initfunc) ARG((int));
-int (*serverfunc) ARG((int));
+int inetsingleserver(const char *service,const char *protocol,int (*serverfunc)(int),int (*initfunc)(int))
 {
     int s;
 
@@ -298,10 +280,7 @@ int (*serverfunc) ARG((int));
     }
 }
 
-int inetserver(service, protocol, serverfunc)
-char *service;
-char *protocol;
-int (*serverfunc) ARG((int));
+int inetserver(const char *service,const char *protocol,int (*serverfunc)(int))
 {
     int s;
 
@@ -342,11 +321,7 @@ int (*serverfunc) ARG((int));
     return 0;
 }
 
-int inetclient(server, service, protocol)
-char *server;
-char *protocol;
-char *service;
-{
+int inetclient(const char *server,const char *service,const char *protocol){
     struct servent *se;         /* service information entry */
     struct hostent *he;         /* host information entry */
     struct protoent *pe;        /* protocol information entry */
@@ -420,10 +395,7 @@ char *service;
     return s;
 }
 
-int unixclient(path, protocol)
-char *path;
-char *protocol;
-{
+int unixclient(const char *path,const char *protocol){
     struct protoent *pe;        /* protocol information entry */
     struct sockaddr_un s_un;    /* unix endpoint address */
     int s;

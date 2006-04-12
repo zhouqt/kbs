@@ -44,9 +44,7 @@ char *cmd;
 #define MAX_ARG 32
 #define MAX_ARG_SIZE 16384
 
-int argify(line, argvp)
-char *line, ***argvp;
-{
+int argify(const char *line,char ***argvp){
     static char *argvbuffer[MAX_ARG + 2];
     char **argv = argvbuffer;
     int i;
@@ -71,9 +69,7 @@ char *line, ***argvp;
     return argv - *argvp;
 }
 
-void deargify(argv)
-char ***argv;
-{
+void deargify(char ***argv){
     return;
     /*
      * if (*argv != NULL) { if (*argv[0] != NULL){ free(*argv[0]);

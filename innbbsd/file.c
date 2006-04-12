@@ -39,38 +39,19 @@ char *fileglue(char* fmt,...)
     return newstring;
 }
 
-long filesize(filename)
-char *filename;
-{
+size_t filesize(const char *filename){
     struct stat st;
-
-    if (stat(filename, &st))
-        return 0;
-    return st.st_size;
+    return (stat(filename,&st)==-1?0:st.st_size);
 }
 
-int iszerofile(filename)
-char *filename;
-{
+int iszerofile(const char *filename){
     struct stat st;
-
-    if (stat(filename, &st))
-        return 0;
-    if (st.st_size == 0)
-        return 1;
-    return 0;
+    return (!stat(filename,&st)&&!st.st_size);
 }
 
-int isfile(filename)
-char *filename;
-{
+int isfile(const char *filename){
     struct stat st;
-
-    if (stat(filename, &st))
-        return 0;
-    if (!S_ISREG(st.st_mode))
-        return 0;
-    return 1;
+    return !(stat(filename,&st)==-1||!S_ISREG(st.st_mode));
 }
 
 int isfilev(char* fmt,...)
@@ -91,16 +72,9 @@ int isfilev(char* fmt,...)
     return isfile(FILEBUF);
 }
 
-int isdir(filename)
-char *filename;
-{
+int isdir(const char *filename){
     struct stat st;
-
-    if (stat(filename, &st))
-        return 0;
-    if (!S_ISDIR(st.st_mode))
-        return 0;
-    return 1;
+    return !(stat(filename,&st)==-1||!S_ISDIR(st.st_mode));
 }
 
 int isdirv(char *fmt,...)
