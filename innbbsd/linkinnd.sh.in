@@ -1,6 +1,6 @@
 #!/bin/sh
 
-INNPROGS="innbbsd makedbz mkhistory dbzserver bbsnnrp ctlinnbbsd dbz_query_sample bbslink"
+INNPROGS="innbbsd makedbz mkhistory bbsnnrp ctlinnbbsd dbz_query_sample bbslink"
 LN_S="@LN_S@"
 
 if test ! -e @prefix@/innd ; then
