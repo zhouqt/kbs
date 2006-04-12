@@ -652,6 +652,7 @@ int toooooooooooooold_m_editbrd()
 
 /*etnlegend,2005.07.01,修改讨论区属性*/
 #define KEY_CANCEL '~'
+#define EB_BUF_LEN 256
 extern int in_do_sendmsg;
 static int lastkey=0;
 /*生成权限字符串*/
@@ -666,7 +667,7 @@ char* gen_permstr(unsigned int level,char* buf){
 }
 /*严格检查精华区路径的合法性*/
 unsigned int check_ann(struct boardheader* bh){
-    char buf[256],*ptr;
+    char buf[EB_BUF_LEN],*ptr;
     unsigned int ret,i;
     ret=0;
     sprintf(buf,"%s",bh->ann_path);
@@ -692,7 +693,7 @@ unsigned int check_ann(struct boardheader* bh){
 }
 /*构造list_select_loop所需结构*/
 struct _simple_select_arg{
-    const struct _select_item *items;
+    struct _select_item *items;
     int flag;
 };
 static int editbrd_on_select(struct _select_def *conf){
@@ -717,7 +718,8 @@ static int editbrd_key(struct _select_def *conf,int key){
     return SHOW_CONTINUE;
 }
 static int editbrd_refresh(struct _select_def *conf){
-    move(3,0);clrtobot();
+    struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
+    move(arg->items[0].y,0);clrtobot();
     return SHOW_CONTINUE;
 }
 /*选择讨论区分区或精华区分区*/
@@ -750,7 +752,6 @@ int select_group(int pos,int force){
     bzero(&conf,sizeof(struct _select_def));
     conf.item_count=SECNUM;
     conf.item_per_page=18;
-    conf.page_pos=1;
     conf.flag=LF_LOOP|LF_MULTIPAGE;
     conf.prompt="◆";
     conf.item_pos=pts;
@@ -775,9 +776,9 @@ int select_user_title(char *prefix){
     struct _select_item sel[257];
     struct _select_def conf;
     struct _simple_select_arg arg;
-    POINT pts[256];
-    char menustr[256][32],*user_title;
-    unsigned char title_buf[256];
+    POINT pts[EB_BUF_LEN];
+    char menustr[EB_BUF_LEN][32],*user_title;
+    unsigned char title_buf[EB_BUF_LEN];
     int i,pos;
     /*构造菜单显示*/
     pos=0;
@@ -808,7 +809,6 @@ int select_user_title(char *prefix){
     bzero(&conf,sizeof(struct _select_def));
     conf.item_count=pos;
     conf.item_per_page=36;
-    conf.page_pos=1;
     conf.flag=LF_LOOP|LF_MULTIPAGE;
     conf.prompt="◆";
     conf.item_pos=pts;
@@ -826,9 +826,312 @@ int select_user_title(char *prefix){
     move(2,4);prints("\033[1;33m请选择用户身份\033[m，按\033[1;32mESC\033[0m取消");
     return (list_select_loop(&conf)==SHOW_SELECT?title_buf[conf.pos-1]:-1);
 }
+static char* strip_first(char *str){
+    char *p,*s;
+    if(!(s=strdup(str)))
+        return NULL;
+    if(!(p=strtok(s," "))){
+        free(s);
+        return NULL;
+    }
+    sprintf(str,"%s",p);
+    free(s);
+    return str;
+}
+static char* restrict_bm(char *retBM){
+    char BM[BM_LEN],buf[EB_BUF_LEN],*p,*s,*tab[BM_LEN/2];
+    int index,n;
+    if(!*retBM)
+        return retBM;
+    snprintf(BM,BM_LEN,"%s",retBM);
+    for(buf[0]=0,index=0,s=buf,p=strtok(BM," ");p;p=strtok(NULL," ")){
+        for(n=(index-1);!(n<0);n--)
+            if(!strcmp(p,tab[n]))
+                break;
+        if(!(n<0))
+            continue;
+        for(*s++=' ',tab[index++]=p;*p;*s++=*p++)
+            continue;
+    }
+    *s++=0;
+    snprintf(retBM,BM_LEN,"%s",&buf[1]);
+    return retBM;
+}
+static int add_bm_to_BM_by_name(char *retBM,const char *name){
+    char buf[EB_BUF_LEN];
+    if(!*name)
+        return 1;
+    if(!*retBM){
+        if(!(strlen(name)<BM_LEN))
+            return 2;
+        snprintf(retBM,BM_LEN,"%s",name);
+        return 0;
+    }
+    snprintf(buf,EB_BUF_LEN,"%s %s",retBM,name);
+    if(!(strlen(buf)<BM_LEN))
+        return 3;
+    snprintf(retBM,BM_LEN,"%s",buf);
+    return 0;
+}
+static int del_bm_from_BM_by_index(char *retBM,int index){
+    char BM[BM_LEN],buf[EB_BUF_LEN],*p;
+    int n,l;
+    if(!(index>0))
+        return 1;
+    snprintf(BM,BM_LEN,"%s",retBM);
+    memcpy(buf,BM,BM_LEN*sizeof(char));
+    for(p=strtok(BM," "),n=1;p&&(n<index);p=strtok(NULL," "),n++)
+        continue;
+    if(!p)
+        return 2;
+    l=strlen(p);
+    p+=(buf-BM);
+    if(!*(p+l))
+        *(p-(p==buf?0:1))=0;
+    else
+        memmove(p,p+(l+1),(strlen(p)-l)*sizeof(char));
+    snprintf(retBM,BM_LEN,"%s",buf);
+    return 0;
+}
+static int del_bm_from_BM_by_name(char *retBM,const char *name){
+    char BM[BM_LEN],buf[EB_BUF_LEN],*p,*tab[BM_LEN/2];
+    int index,n,l;
+    if(!*name)
+        return 1;
+    snprintf(BM,BM_LEN,"%s",retBM);
+    memcpy(buf,BM,BM_LEN*sizeof(char));
+    for(index=0,p=strtok(BM," ");p;p=strtok(NULL," "))
+        if(!strcasecmp(p,name))
+            tab[index++]=p;
+    for(n=(index-1);!(n<0);n--){
+        l=strlen(tab[n]);
+        p=buf+(tab[n]-BM);
+        if(!*(p+l))
+            *(p-(p==buf?0:1))=0;
+        else
+            memmove(p,p+(l+1),(strlen(p)-l)*sizeof(char));
+    }
+    snprintf(retBM,BM_LEN,"%s",buf);
+    return 0;
+}
+static int spmo_on_select(struct _select_def *conf){
+    struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
+    char ans[4];
+    int i,new_index;
+    void *p;
+    move(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x);clrtoeol();
+    getdata(arg->items[conf->pos-1].y,arg->items[conf->pos-1].x,
+        "\033[1;37m请输入顺序号: \033[m",ans,3,DOECHO,NULL,true);
+    strip_first(ans);
+    if(!isdigit(ans[0]))
+        return SHOW_REFRESH;
+    if(!((new_index=atoi(ans))>0))
+        new_index=1;
+    if(new_index>conf->item_count)
+        new_index=conf->item_count;
+    if(new_index!=conf->pos){
+        p=arg->items[conf->pos-1].data;
+        if(new_index<conf->pos)
+            for(i=conf->pos;i>new_index;i--)
+                arg->items[i-1].data=arg->items[i-2].data;
+        else
+            for(p=arg->items[conf->pos-1].data,i=conf->pos;i<new_index;i++)
+                arg->items[i-1].data=arg->items[i].data;
+        arg->items[i-1].data=p;
+        conf->pos=new_index;
+        return SHOW_REFRESH;
+    }
+    return SHOW_REFRESH;
+}
+
+static int spmo_show(struct _select_def *conf,int i){
+    struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
+    char buf[EB_BUF_LEN];
+    sprintf(buf,"\033[1;37m[\033[1;36m%02d\033[1;37m] \033[1;32m%s\033[m",
+        i,(const char*)((arg->items[i-1]).data));
+    outs(buf);
+    return SHOW_CONTINUE;
+}
+static int spmo_key(struct _select_def *conf,int key){
+    struct _simple_select_arg *arg=(struct _simple_select_arg*)conf->arg;
+    int i;
+    void *p;
+    switch(key){
+        case KEY_ESC:
+        case KEY_CANCEL:
+            return SHOW_QUIT;
+        case '+':
+            if(conf->pos!=1){
+                p=arg->items[conf->pos-1].data;
+                arg->items[conf->pos-1].data=arg->items[conf->pos-2].data;
+                arg->items[conf->pos-2].data=p;
+                conf->pos--;
+                return SHOW_REFRESH;
+            }
+            break;
+        case '-':
+            if(conf->pos!=conf->item_count){
+                p=arg->items[conf->pos-1].data;
+                arg->items[conf->pos-1].data=arg->items[conf->pos].data;
+                arg->items[conf->pos].data=p;
+                conf->pos++;
+                return SHOW_REFRESH;
+            }
+            break;
+        case '*':
+            if(conf->pos!=1){
+                for(p=arg->items[conf->pos-1].data,i=conf->pos;i>1;i--)
+                    arg->items[i-1].data=arg->items[i-2].data;
+                arg->items[0].data=p;
+                conf->pos=1;
+                return SHOW_REFRESH;
+            }
+            break;
+        case '/':
+            if(conf->pos!=conf->item_count){
+                for(p=arg->items[conf->pos-1].data,i=conf->pos;i<conf->item_count;i++)
+                    arg->items[i-1].data=arg->items[i].data;
+                arg->items[conf->item_count-1].data=p;
+                conf->pos=conf->item_count;
+                return SHOW_REFRESH;
+            }
+            break;
+        default:
+            break;
+    }
+    return SHOW_CONTINUE;
+}
+int select_process_bm_order(char *retBM){
+    struct _select_item sel[BM_LEN/2+1];
+    struct _select_def conf;
+    struct _simple_select_arg arg;
+    POINT pts[BM_LEN/2];
+    char BM[BM_LEN],buf[EB_BUF_LEN],*p,*s,*id[BM_LEN/2];
+    int n,count;
+    snprintf(BM,BM_LEN,"%s",retBM);
+    for(count=0,p=strtok(BM," ");p;p=strtok(NULL," "))
+        id[count++]=p;
+    if(!count)
+        return 1;
+    for(n=0;n<count;n++){
+        sel[n].x=8;
+        sel[n].y=n%12+11;
+        sel[n].hotkey=-1;
+        sel[n].type=SIT_SELECT;
+        sel[n].data=id[n];
+        pts[n].x=sel[n].x;
+        pts[n].y=sel[n].y;
+    }
+    sel[n].x=-1;sel[n].y=-1;sel[n].hotkey=-1;sel[n].type=0;sel[n].data=NULL;
+    arg.items=sel;
+    arg.flag=SIF_SINGLE;
+    memset(&conf,0,sizeof(struct _select_def));
+    conf.item_count=count;
+    conf.item_per_page=12;
+    conf.flag=LF_LOOP|LF_MULTIPAGE;
+    conf.prompt="◇";
+    conf.item_pos=pts;
+    conf.arg=&arg;
+    conf.title_pos.x=-1;
+    conf.title_pos.y=-1;
+    conf.pos=1;
+    conf.on_select=spmo_on_select;
+    conf.show_data=spmo_show;
+    conf.key_command=spmo_key;
+    conf.show_title=editbrd_refresh;
+    list_select_loop(&conf);
+    for(n=0,p=buf;n<count;n++)
+        for(*p++=' ',s=sel[n].data;*s;*p++=*s++)
+            continue;
+    *p++=0;
+    snprintf(retBM,BM_LEN,"%s",&buf[1]);
+    return 0;
+}
+int select_process_bm_list(char *retBM){
+    struct _select_item sel[4];
+    struct _select_def conf;
+    struct _simple_select_arg arg;
+    POINT pts[3];
+    char BM[BM_LEN],ans[BM_LEN];
+    int no_save;
+    snprintf(BM,BM_LEN,"%s",retBM);
+    sel[0].x=4;sel[0].y=6;sel[0].hotkey='O';sel[0].type=SIT_SELECT;
+    sel[0].data="\033[1;37m[\033[1;36mO\033[1;37m] 修改讨论区管理人员列表顺序\033[m";
+    sel[1].x=4;sel[1].y=7;sel[1].hotkey='L';sel[1].type=SIT_SELECT;
+    sel[1].data="\033[1;37m[\033[1;36mL\033[1;37m] 修改讨论区管理人员列表内容\033[m";
+    sel[2].x=4;sel[2].y=8;sel[2].hotkey='R';sel[2].type=SIT_SELECT;
+    sel[2].data="\033[1;37m[\033[1;36mR\033[1;37m] 规整讨论区管理人员列表内容\033[m";
+    sel[3].x=-1;sel[3].y=-1;sel[3].hotkey=-1;sel[3].type=0;sel[3].data=NULL;
+    pts[0].x=sel[0].x;pts[0].y=sel[0].y;
+    pts[1].x=sel[1].x;pts[1].y=sel[1].y;
+    pts[2].x=sel[2].x;pts[2].y=sel[2].y;
+    arg.items=sel;
+    arg.flag=SIF_SINGLE;
+    memset(&conf,0,sizeof(struct _select_def));
+    conf.item_count=3;
+    conf.item_per_page=3;
+    conf.prompt="◇";
+    conf.item_pos=pts;
+    conf.arg=&arg;
+    conf.title_pos.x=-1;
+    conf.title_pos.y=-1;
+    conf.pos=1;
+    conf.on_select=editbrd_on_select;
+    conf.show_data=editbrd_show;
+    conf.key_command=editbrd_key;
+    conf.show_title=editbrd_refresh;
+    no_save=0;
+    while(1){
+        move(1,0);clrtobot();
+        move(2,4);outs("\033[1;33m请选择操作类型\033[1;37m [按 \033[1;32mESC\033[1;37m 键保存修改返回, "
+            "按 \033[1;32m~\033[1;37m 键撤销修改返回]\033[m");
+        move(4,4);prints("\033[1;37m当前列表: [\033[1;32m%s\033[1;37m]\033[m",BM);
+        conf.flag=LF_LOOP;
+        if(list_select_loop(&conf)==SHOW_QUIT){
+            no_save=(lastkey==KEY_CANCEL);
+            break;
+        }
+        if(conf.pos==1)
+            select_process_bm_order(BM);
+        else if(conf.pos==2){
+            move(sel[1].y,0);clrtoeol();
+            getdata(sel[1].y,4,"\033[1;33m输入列表: \033[m",ans,BM_LEN,DOECHO,NULL,true);
+            switch(ans[0]){
+                case 0:
+                    break;
+                case ' ':
+                    BM[0]=0;
+                    break;
+                case '+':
+                    strip_first(&ans[1]);
+                    add_bm_to_BM_by_name(BM,&ans[1]);
+                    break;
+                case '-':
+                    strip_first(&ans[1]);
+                    del_bm_from_BM_by_name(BM,&ans[1]);
+                    break;
+                case '/':
+                    strip_first(&ans[1]);
+                    if(isdigit(ans[1]))
+                        del_bm_from_BM_by_index(BM,atoi(&ans[1]));
+                    break;
+                default:
+                    snprintf(BM,BM_LEN,"%s",ans);
+                    break;
+            }
+        }
+        else if(conf.pos==3)
+            restrict_bm(BM);
+        else
+            break;
+    }
+    if(!no_save)
+        snprintf(retBM,BM_LEN,"%s",BM);
+    return 0;
+}
 /*修改讨论区属性维护主函数*/
 int m_editbrd(void){
-    char buf[256];
+    char buf[EB_BUF_LEN];
     int pos = 0, i;
     const struct boardheader *bhptr=NULL;
     
@@ -899,7 +1202,7 @@ int modify_board(int bid) {
     struct _simple_select_arg arg;
     POINT pts[23];
     struct boardheader bh,newbh;
-    char buf[256],src[256],dst[256],menustr[23][256],orig[23][256],*ptr;
+    char buf[EB_BUF_LEN],src[EB_BUF_LEN],dst[EB_BUF_LEN],menustr[23][EB_BUF_LEN],orig[23][EB_BUF_LEN],*ptr;
     int i,loop,section,currpos,ret;
     unsigned int annstat,change,error;
     const struct boardheader *bhptr=NULL;
@@ -1043,7 +1346,7 @@ int modify_board(int bid) {
     sprintf(menustr[22],"%-15s%s",menuldr[22],change?"\033[1;31m已修改\033[m":"未修改");
     sel[23].x=-1;sel[23].y=-1;sel[23].type=0;sel[23].hotkey=-1;sel[23].data=NULL;
     /*备份*/
-    memcpy(orig,menustr,23*256);
+    memcpy(orig,menustr,23*EB_BUF_LEN*sizeof(char));
     currpos=23;
     /*修改版面属性*/
     while(loop){
@@ -1146,7 +1449,7 @@ int modify_board(int bid) {
                     /*全部重置*/
                     case 22:
                         memcpy(&newbh,&bh,sizeof(struct boardheader));
-                        memcpy(menustr,orig,23*256);
+                        memcpy(menustr,orig,23*EB_BUF_LEN*sizeof(char));
                         section=(annstat&0x020000)?-1:(annstat&0xFFFF);
                         change=0;
                         break;
@@ -1214,14 +1517,8 @@ int modify_board(int bid) {
                 break;
             /*讨论区管理*/
             case 1:
-                move(3,0);clrtoeol();getdata(3,2,"请输入管理员列表: ",buf,BM_LEN,DOECHO,NULL,true);
-                /*取消修改*/
-                if(!*buf)
-                    break;
-                if(*buf==' ')
-                    newbh.BM[0]='\0';
-                else
-                    sprintf(newbh.BM,"%s",buf);
+                //snprintf(newbh.BM,BM_LEN,"%s",bh.BM);
+                select_process_bm_list(newbh.BM);
                 /*标记修改状态*/
                 if(strcmp(bh.BM,newbh.BM)){
                     sprintf(menustr[1],"%-15s\033[1;32m%s\033[m",menuldr[1],newbh.BM);
@@ -1768,6 +2065,8 @@ int modify_board(int bid) {
     WAIT_RETURN;clear();
     return 0;
 }
+#undef KEY_CANCEL
+#undef EB_BUF_LEN
 /*END - etnlegend,2005.07.01,修改讨论区属性*/
 
 //etnlegend,2005.09.18,查询系统记录分为发文查询和发信查询两个功能
