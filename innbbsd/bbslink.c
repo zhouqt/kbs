@@ -5,14 +5,6 @@
 
 #include <sys/mman.h>
 
-#ifndef AIX
-#  include <sys/fcntl.h>
-#endif
-
-#if defined(PalmBBS)
-#include <utime.h>
-#endif
-
 #include "daemon.h"
 #include "nntp.h"
 #include "externs.h"
@@ -75,13 +67,6 @@ extern char *DATE;
 
 char FROM_BUF[MAXBUFLEN];
 extern char *FROM;
-
-#ifndef FirebirdBBS
-#ifndef MapleBBS
-char POSTER_BUF[MAXBUFLEN];
-char *POSTER;
-#endif
-#endif
 
 char MYADDR[MAXBUFLEN];
 char MYSITE[MAXBUFLEN];
@@ -245,31 +230,6 @@ char *filename, *userid;
         if (*buffer == '\0')
             break;
 
-#ifndef FirebirdBBS
-#ifndef MapleBBS
-        if (strstr(buffer, userid) != NULL) {
-            m = strrchr(buffer, '(');
-            n = strrchr(buffer, ')');
-            if (m != NULL && n != NULL) {
-                strncpy(lover->nickname, m + 1, n - m - 1);
-                lover->nickname[n - m - 1] = '\0';
-            } else {
-                *lover->nickname = '\0';
-            }
-        } else if (strncmp(buffer, "Date:      ", 11) == 0) {
-            strcpy(lover->date, buffer + 11);
-#ifndef FILTER
-        } else if (strncmp(buffer, OrganizationTxt, 8) == 0) {
-#else
-        } else if (isMsgTxt(OrganizationTxtClass, buffer)) {
-#endif
-            m = strchr(buffer, '(');
-            n = strrchr(buffer, ')');
-            strncpy(lover->date, m + 1, n - m - 1);
-            lover->date[n - m - 1] = '\0';
-        }
-#endif
-#endif
         if (artback != NULL) {
             *artback = '\n';
             buffer = artback + 1;
@@ -348,53 +308,7 @@ void save_outgoing(soverview_t *sover,const char *filename,const char *userid,co
     }
 }
 
-#ifndef FirebirdBBS
-#ifndef MapleBBS
-save_article(board, filename, sover)
-char *board, *filename;
-soverview_t *sover;
-{
-    FILE *FN;
-
-    if (Verbose)
-        printf("<save_article> %s %s\n", board, filename);
-    FN = fopen(fileglue("%s/boards/%s/%s", BBSHOME, board, filename), "w");
-    if (FN == NULL) {
-        innbbsdlog("<save_article> err: %s %s\n", board, filename);
-        if (Verbose)
-            printf("<save_article> err: %s %s\n", board, filename);
-        return 0;
-    }
-    flock(fileno(FN), LOCK_EX);
-    fprintf(FN, "%s%s, %s%s\n", FromTxt, POSTER, BoardTxt, sover->board);
-    fprintf(FN, "%s%s\n", SubjectTxt, sover->subject);
-    fprintf(FN, "%s%s (%s)\n", OrganizationTxt, SITE_PTR, sover->date);
-    fprintf(FN, "%s%s\n", PathTxt, sover->path);
-/*  fprintf(FN, "发信人: %s, 信区: %s\n", POSTER, sover->board);
-  fprintf(FN, "标  题: %s\n", sover->subject);
-  fprintf(FN, "发信站: %s (%s)\n", MYSITE, sover->date);
-  fprintf(FN, "转信站: %s\n", sover->path);*/
-    fprintf(FN, "\n");
-    fputs(BODY, FN);
-    flock(fileno(FN), LOCK_UN);
-    fclose(FN);
-
-#if defined(PalmBBS)
-    {
-        struct utimbuf times;
-
-        times.actime = sover->mtime;
-        times.modtime = sover->mtime;
-        utime(fileglue("%s/boards/%s/%s", BBSHOME, board, filename), &times);
-        utime(fileglue("%s/.bcache/%s", BBSHOME, board), NULL);
-        chmod(fileglue("%s/boards/%s/%s", BBSHOME, board, filename), 0644);
-    }
-#endif
-}
-#endif
-#endif
 /* process_article() read_article() save_outgoing() save_article() */
-
 void process_article(board, filename, userid, nickname, subject)
 char *board, *filename, *userid, *nickname, *subject;
 {
@@ -412,12 +326,6 @@ char *board, *filename, *userid, *nickname, *subject;
         linkoverview_t lover;
 
         if (read_article(&lover, filepath, userid)) {
-#ifndef FirebirdBBS
-#ifndef MapleBBS
-            strncpy(POSTER_BUF, fileglue("%s@%s (%s)", userid, MYBBSID, nickname), sizeof POSTER_BUF);
-            POSTER = POSTER_BUF;
-#endif
-#endif
             //修改mail格式 modified by Czz 020419
             strncpy(FROM_BUF, fileglue("%s@%s-SPAM.no (%s)", userid, MAIL_BBSDOMAIN, nickname), sizeof FROM_BUF);
             //modified end
@@ -431,11 +339,6 @@ char *board, *filename, *userid, *nickname, *subject;
             sover.mtime = lover.mtime;
             if (!VisitOnly) {
                 save_outgoing(&sover, filename, userid, poster, lover.mtime);
-#ifndef FirebirdBBS
-#ifndef MapleBBS
-                save_article(board, filename, &sover);
-#endif
-#endif
             }
         }
     }
@@ -554,11 +457,6 @@ soverview_t *sover;
             SITE = SITE_PTR;
             PATH = MYBBSID;
             GROUPS = group;
-#ifndef FirebirdBBS
-#ifndef MapleBBS
-            echomaillog();
-#endif
-#endif
         }
         BODY = "";
         FD = open(fileglue("%s/boards/%s/%s", BBSHOME, board, filename), O_RDONLY);
@@ -661,12 +559,7 @@ soverview_t *sover;
                 if (strncmp(buffer, "Date:      ", 11) == 0) {
                     strcpy(DATE_BUF, buffer + 11);
                     DATE = DATE_BUF;
-#ifndef FILTER
-                } else if (strncmp(buffer, OrganizationTxt, 8)
-                           == 0) {
-#else
                 } else if (isMsgTxt(OrganizationTxtClass, buffer)) {
-#endif
                     char *m, *n;
 
                     m = strrchr(buffer, '(');
@@ -741,9 +634,6 @@ soverview_t *sover;
     }
     return 0;
 }
-
-#ifdef TEST
-#endif
 
 void openfeed(node)
 nodelist_t *node;
