@@ -1056,15 +1056,15 @@ int select_process_bm_list(char *retBM){
     int no_save;
     snprintf(BM,BM_LEN,"%s",retBM);
     sel[0].x=4;sel[0].y=6;sel[0].hotkey='O';sel[0].type=SIT_SELECT;
-    sel[0].data="\033[1;37m[\033[1;36mO\033[1;37m] 修改讨论区管理人员列表顺序 "
+    sel[0].data="\033[1;37m[\033[1;31mO\033[1;37m] 修改讨论区管理人员列表顺序 "
         " \033[0;33m<Enter> \033[1;37m[[\033[1;32m+\033[1;37m][\033[1;32m-\033[1;37m]"
         "[\033[1;32m*\033[1;37m][\033[1;32m/\033[1;37m][\033[1;32mEnter\033[1;37m]]\033[m";
-    sel[1].x=4;sel[1].y=7;sel[1].hotkey='L';sel[1].type=SIT_SELECT;
-    sel[1].data="\033[1;37m[\033[1;36mL\033[1;37m] 修改讨论区管理人员列表内容 "
+    sel[1].x=4;sel[1].y=7;sel[1].hotkey='R';sel[1].type=SIT_SELECT;
+    sel[1].data="\033[1;37m[\033[1;31mR\033[1;37m] 修改讨论区管理人员列表内容 "
         " \033[0;33m<Enter> \033[1;37m[[\033[1;32m+\033[1;37m][\033[1;32m-\033[1;37m]"
         "[\033[1;32m/\033[1;37m][\033[1;32m...\033[1;37m]]\033[m";
-    sel[2].x=4;sel[2].y=8;sel[2].hotkey='R';sel[2].type=SIT_SELECT;
-    sel[2].data="\033[1;37m[\033[1;36mR\033[1;37m] 规整讨论区管理人员列表内容  \033[0;33m<Enter>\033[1;37m []\033[m";
+    sel[2].x=4;sel[2].y=8;sel[2].hotkey='Z';sel[2].type=SIT_SELECT;
+    sel[2].data="\033[1;37m[\033[1;31mZ\033[1;37m] 规整讨论区管理人员列表内容  \033[0;33m<Enter>\033[1;37m []\033[m";
     sel[3].x=-1;sel[3].y=-1;sel[3].hotkey=-1;sel[3].type=0;sel[3].data=NULL;
     pts[0].x=sel[0].x;pts[0].y=sel[0].y;
     pts[1].x=sel[1].x;pts[1].y=sel[1].y;
