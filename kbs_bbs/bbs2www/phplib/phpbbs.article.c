@@ -25,9 +25,9 @@ void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, si
 }
 
 
-void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, const char *boardname, int is_bm)
+void make_article_flag_array(char flags[5], struct fileheader *ent, struct userec *user, const char *boardname, int is_bm)
 {
-    flags[0] = get_article_flag(ent, user, boardname, is_bm, NULL, getSession());
+    flags[0] = get_article_flag(ent, user, boardname, is_bm, &(flags[4]), getSession());
     if (is_bm && (ent->accessed[0] & FILE_IMPORTED))
         flags[1] = 'y';
     else
@@ -68,10 +68,7 @@ PHP_FUNCTION(bbs_get_records_from_id)
 	int i;
 	zval *element,*articlearray;
 	int is_bm;
-	char flags[4]; /* flags[0]: flag character
-					* flags[1]: imported flag
-					* flags[2]: no reply flag
-					*/
+	char flags[5];
     int ac = ZEND_NUM_ARGS();
     int retnum;
 
@@ -382,11 +379,7 @@ PHP_FUNCTION(bbs_get_threads_from_gid)
 	int retnum;
 	int haveprev;
 	zval *element;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
+    char flags[5];
     int ac = ZEND_NUM_ARGS();
 	if( start < 0 )
 		start = 0;
@@ -527,11 +520,7 @@ PHP_FUNCTION(bbs_getarticles)
     int i;
     zval *element;
     int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
+    char flags[5];
     int ac = ZEND_NUM_ARGS();
 
     /*
@@ -613,11 +602,7 @@ PHP_FUNCTION(bbs_search_articles)
 	int total,i;
 	zval * element;
 	int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
+    char flags[5];
     const struct boardheader *bp;
 	int found;
 	int i1,i2;

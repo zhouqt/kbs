@@ -419,11 +419,7 @@ PHP_FUNCTION(bbs_searchtitle)
     int total,i,j;
     zval * element;
     int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
+    char flags[5];
     const struct boardheader *bp;
     zval* columns[3];
     bool is_original_date=false;
@@ -576,11 +572,7 @@ PHP_FUNCTION(bbs_getthreads)
     int i,j;
     zval *element;
     int is_bm;
-    char flags[4];              /* flags[0]: flag character
-                                 * flags[1]: imported flag
-                                 * flags[2]: no reply flag
-                                 * flags[3]: attach flag
-                                 */
+    char flags[5];
 	int fd;
 	struct stat buf;
 	struct flock ldata;
