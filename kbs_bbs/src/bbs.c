@@ -829,7 +829,7 @@ char *readdoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
 
     manager = chk_currBM(currBM, getCurrentUser());
 
-    type = get_article_flag(ent, getCurrentUser(), currboard->filename, manager,getSession());
+    type = get_article_flag(ent, getCurrentUser(), currboard->filename, manager, NULL, getSession());
     if (manager && (ent->accessed[0] & FILE_IMPORTED)) {        /* 文件已经被收入精华区 */
         if (type == ' ') {
             strcpy(typeprefix ,"\x1b[42m");

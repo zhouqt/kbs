@@ -1717,10 +1717,11 @@ int Search_Bin(struct fileheader *ptr, int key, int start, int end)
     return -(low + 1);
 }
 
-char get_article_flag(struct fileheader *ent, struct userec *user, const char *boardname, int is_bm, session_t* session)
+/* *common_flag 返回普通用户可见的标记 */
+char get_article_flag(struct fileheader *ent, struct userec *user, const char *boardname, int is_bm, char *common_flag, session_t* session)
 {
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? UNREAD_SIGN : 'N');
-    char type;
+    char type, common_type = ' ';
 
 #ifdef HAVE_BRC_CONTROL
     if (strcmp(user->userid, "guest"))
@@ -1736,12 +1737,14 @@ char get_article_flag(struct fileheader *ent, struct userec *user, const char *b
             type = 'd';
         else
             type = 'D';
+        if (common_flag) *common_flag = 'd';
         return type;
     }
     /*
      * add end 
      */
     if ((ent->accessed[0] & FILE_DIGEST)) {
+        common_type = 'g';
         if (type == ' ')
             type = 'g';
         else
@@ -1750,16 +1753,18 @@ char get_article_flag(struct fileheader *ent, struct userec *user, const char *b
     if (ent->accessed[0] & FILE_MARKED) {
         switch (type) {
         case ' ':
-            type = 'm';
+            common_type = type = 'm';
             break;
         case UNREAD_SIGN:
         case 'N':
+            common_type = 'm';
             type = 'M';
             break;
         case 'g':
-            type = 'b';
+            common_type = type = 'b';
             break;
         case 'G':
+            common_type = 'b';
             type = 'B';
             break;
         }
@@ -1812,7 +1817,7 @@ char get_article_flag(struct fileheader *ent, struct userec *user, const char *b
     if (is_bm && (ent->accessed[1] & FILE_DEL)) {
         type = 'X';
     }
-
+    if (common_flag) *common_flag = common_type;
     return type;
 }
 

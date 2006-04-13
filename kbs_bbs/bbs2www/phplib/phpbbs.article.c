@@ -27,7 +27,7 @@ void bbs_make_article_array(zval * array, struct fileheader *fh, char *flags, si
 
 void make_article_flag_array(char flags[4], struct fileheader *ent, struct userec *user, const char *boardname, int is_bm)
 {
-    flags[0] = get_article_flag(ent, user, boardname, is_bm, getSession());
+    flags[0] = get_article_flag(ent, user, boardname, is_bm, NULL, getSession());
     if (is_bm && (ent->accessed[0] & FILE_IMPORTED))
         flags[1] = 'y';
     else
