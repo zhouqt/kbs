@@ -46,7 +46,7 @@ KBS.Blog 在类 Unix 操作系统(包括 Linux、FreeBSD、Solaris 8/9 for X86/SPARC
 2. 系统需求
     KBS.Blog 要求您的系统含有以下部分：
     kbsbbs 1.1.1 版本或更高(支持web)；
-    MySQL 3.x 或更高版本，建议使用 MySQL 4.x 版本；
+    MySQL 4.x 或更高版本；
     apache 1.3.x 或 apache 2.x；
     php 4.3.0 或更高版本；
 
