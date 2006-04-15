@@ -23,7 +23,6 @@
 #define OWNSENDMAIL "/usr/sbin/sendmail"
 #define HAPPY_BBS		0
 #define HAVE_COLOR_DATE		1
-#define HAVE_TEMPORARY_NICK	1
 #define HAVE_FRIENDS_NUM	0
 #define HAVE_REVERSE_DNS	0
 #define CHINESE_CHARACTER	1
@@ -32,7 +31,6 @@
 #define MAILOUT			0	/* 是否允许向站外主动发信 */
 #define MANUAL_DENY         0   /*是否允许手动解封*/
 #define BBS_SERVICE_DICT    1
-#define HAVE_TSINGHUA_INFO_REGISTER 0 /* 允许从清华信息系统注册 */
 
 #define BUILD_PHP_EXTENSION 1   /*将php lib编成php extension */
 
@@ -50,19 +48,8 @@
 #define ALLOW_PUBLIC_USERONBOARD 1
 
 #undef SITE_HIGHCOLOR
-/* 
- *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
- *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
- *          seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
- *             other modes. 
- */
-#define DOTIMEOUT 1
 
-/* 
- *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
- */
 #define IDLE_TIMEOUT    (60*20) 
-#define MONITOR_TIMEOUT (60*20) 
 
 #define BBSUID 			80//9999
 #define BBSGID 			80//99

@@ -10,7 +10,6 @@
 #define HAPPY_BBS		0
 #define FREE 1
 #define HAVE_COLOR_DATE		1
-#define HAVE_TEMPORARY_NICK	1
 #define HAVE_FRIENDS_NUM	1
 #define HAVE_REVERSE_DNS	0
 #define CHINESE_CHARACTER	1
@@ -19,7 +18,6 @@
 #define MAILOUT			0       /* 是否允许向站外主动发信 */
 #define MANUAL_DENY		0       /*是否允许手动解封 */
 #define BBS_SERVICE_DICT	0
-#define HAVE_TSINGHUA_INFO_REGISTER 0   /* 允许从清华信息系统注册 */
 #define HAVE_PERSONAL_DNS	0       /*个人域名服务 */
 #define HAVE_CUSTOM_USER_TITLE	1       /*定义用户特定的title */
 
@@ -29,19 +27,8 @@
 #undef RAW_ARTICLE
 #define SMTH			0
 #define FILTER			0
-/* 
- *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
- *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
- *          seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
- *             other modes. 
- *             */
-#define DOTIMEOUT 1
 
-/* 
- *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
- *    */
 #define IDLE_TIMEOUT    (60*20)
-#define MONITOR_TIMEOUT (60*20)
 
 #define BBSUID 			510
 #define BBSGID 			510

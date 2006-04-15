@@ -9,7 +9,6 @@
 #define NEW_COMERS		1	/* 注册后在 newcomers 版自动发文 */
 #define HAPPY_BBS		1
 #define HAVE_COLOR_DATE		1
-#define HAVE_TEMPORARY_NICK 	1	/* 允许临时改变昵称 */
 #define HAVE_FRIENDS_NUM 	1	/* 显示好友数目 */
 #define HAVE_REVERSE_DNS 	1	/* 反查域名 */
 #define FILTER			1
@@ -17,25 +16,12 @@
 #define CNBBS_TOPIC		1	/* 是否在进站过程中显示 cn.bbs.* 十大热门话题 */
 #define MAIL2BOARD		0	/* 是否允许直接 mail to any board */
 #define MAILOUT			1	/* 是否允许向站外主动发信 */
-#define HAVE_TSINGHUA_INFO_REGISTER 0
 
 #define BUILD_PHP_EXTENSION 1 /*将php lib编成php extension*/
 
 #define FLOWBANNER   			/* 底部浮动条 */
 
-/* 
- *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
- *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
- *          seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
- *             other modes. 
- *             */
-#define DOTIMEOUT 1
-
-/* 
- *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
- *    */
 #define IDLE_TIMEOUT    (60*20) 
-#define MONITOR_TIMEOUT (60*20) 
 
 #define BBSUID          30001
 #define BBSGID          504

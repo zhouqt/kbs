@@ -181,11 +181,6 @@ int invalid_realmail(userid, email, msize)
     const char *emailfile;
     char ans[4], fname[STRLEN];
     char genbuf[STRLEN];
-#ifdef HAVE_TSINGHUA_INFO_REGISTER
-    struct userec* uc;
-    time_t now;
-    int len = strlen(email);
-#endif
 
     if ((emailfile = sysconf_str("EMAILFILE")) == NULL)
         return 0;
@@ -219,27 +214,6 @@ int invalid_realmail(userid, email, msize)
             return 0;
         }
     }
-
-#if 0
-
-    if(len >= 3)
-    {
-    	strncpy(genbuf,email+strlen(email)-3,3);
-	if(!strncasecmp(genbuf,"#TH",3))
-	{
-		getuser(userid,&uc);
-		// > 3 days
-		now = time(NULL);
-		if(now - uc->firstlogin >= REGISTER_TSINGHUA_WAIT_TIME)
-		{
-	 		if(auto_register(userid,email,msize,getSession()) < 0) // 完成自动注册
-				return 1;
-			else
-				return 0;     //success
-		}
-	}
-    }
-#endif
     return 1;
 }
 

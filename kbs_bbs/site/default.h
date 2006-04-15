@@ -60,10 +60,6 @@
 #undef HAVE_COLOR_DATE
 #endif
 
-#if HAVE_TEMPORARY_NICK == 0
-#undef HAVE_TEMPORARY_NICK
-#endif
-
 #if HAVE_FRIENDS_NUM == 0
 #undef HAVE_FRIENDS_NUM
 #endif
@@ -161,34 +157,10 @@
 #endif
 #endif
 
-#if HAVE_TSINGHUA_INFO_REGISTER == 0 /* 从清华信息系统注册 */
-#undef HAVE_TSINGHUA_INFO_REGISTER
-#endif
-
-#ifndef DOTIMEOUT
-/* 
- *    Define DOTIMEOUT to set a timer to bbslog out users who sit idle on the system.
- *       Then decide how long to let them stay: MONITOR_TIMEOUT is the time in
- *          seconds a user can sit idle in Monitor mode; IDLE_TIMEOUT applies to all
- *             other modes. 
- *             */
-#define DOTIMEOUT 1
-#else
-#if DOTIMEOUT == 0
-#undef DOTIMEOUT
-#endif
-#endif
 
 
 #ifndef IDLE_TIMEOUT
-/* 
- *    These are moot if DOTIMEOUT is commented; leave them defined anyway. 
- *    */
 #define IDLE_TIMEOUT    (60*20) 
-#endif
-
-#ifndef MONITOR_TIMEOUT /*活动看板*/
-#define MONITOR_TIMEOUT (60*20) 
 #endif
 
 #ifndef MAX_WWW_GUEST_IDLE_TIME
@@ -208,7 +180,7 @@
 #error must define SECNUM in your site.h
 #endif
 
-#ifndef SQUID_ACCL /*www前端使用squid加速*/
+#ifndef SQUID_ACCL /*www前端使用squid加速*/ /*这个应该没用了，需要清查 php - atppp 20060415 */
 #undef SQUID_ACCL
 #endif
 

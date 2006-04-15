@@ -85,7 +85,6 @@ char *idle_str(char* hh_mm_ss,struct user_info *uent)
     if (diff == now)            /* @#$#!@$#@! */
         diff = 0;
 
-#ifdef DOTIMEOUT
     /*
      * the 60 * 60 * 24 * 5 is to prevent fault /dev mount from
      * kicking out all users 
@@ -93,7 +92,7 @@ char *idle_str(char* hh_mm_ss,struct user_info *uent)
     if ((diff > IDLE_TIMEOUT) && (diff < 60 * 60 * 24 * 5))
         kill(uent->pid, SIGHUP);
 
-#endif                          /*  */
+
     hh = diff / 3600;
     mm = (diff / 60) % 60;
     if (hh > 0)

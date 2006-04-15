@@ -201,10 +201,8 @@ static void sync_stay(void){
     if((stay=(now=time(NULL))-uinfo.logintime)<300)
         getCurrentUser()->numlogins--;
     else{
-#ifdef DOTIMEOUT
         if(!(now-uinfo.freshtime<IDLE_TIMEOUT))
             stay-=IDLE_TIMEOUT;
-#endif
         getCurrentUser()->stay+=stay;
     }
     return;
@@ -453,11 +451,7 @@ void login_query()
         ptr = "…–Œ¥√¸√˚≤‚ ‘’æ";
 /* add by KCN for input bbs */
 
-#ifdef DOTIMEOUT
     initalarm();
-#else
-    signal(SIGALRM, SIG_IGN);
-#endif
 
     ansimore("etc/issue", false);
 
@@ -493,11 +487,7 @@ void login_query()
             exit(1);
         }
 /*Haohmaru.98.11.3*/
-#ifdef DOTIMEOUT
         initalarm();
-#else
-        signal(SIGALRM, SIG_IGN);
-#endif
 
         getdata(0, 0, "\n" LOGIN_PROMPT ": ", uid, IDLEN + 2, DOECHO, NULL, true);
         uid[IDLEN + 2] = 0;

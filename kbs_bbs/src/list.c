@@ -410,7 +410,6 @@ int allnum, pagenum;
     int i, buflen;
 
     switch (ch) {
-#ifdef HAVE_TEMPORARY_NICK
     case UL_CHANGE_NICK_UPPER:
        if(!strcmp(getCurrentUser()->userid,"guest")) break;
        strncpy(buf,getCurrentUser()->username, NAMELEN);
@@ -437,7 +436,6 @@ int allnum, pagenum;
     case Ctrl('T'):
         showcolor = !showcolor;
         break;
-#endif
 #ifdef NINE_BUILD
 	case 'i' : SortBy = 1-SortBy;
 	           update_time = 0;
