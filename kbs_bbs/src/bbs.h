@@ -335,7 +335,6 @@ extern long ti;
 #include "output.h"
 #include "calltime.h"
 #include "tmpl.h"
-#include "prototype.h"          /* add by period , header for function prototypes */
 #include "modes.h"              /* The list of valid user modes */
 
 #define I_TIMEOUT   (-2)    /* Used for the getchar routine select call */

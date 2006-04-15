@@ -1190,8 +1190,7 @@ int value;
 /*
  - dbzwritethrough - write through the pag file in core
  */
-int /* old setting */ dbzwritethrough(value)
-int value;
+int dbzwritethrough(int value)
 {
     register int old = writethrough;
 

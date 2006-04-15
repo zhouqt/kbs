@@ -89,10 +89,7 @@ nodelist_t *nl;
     return 0;
 }
 
-void feedfplog(nf, filepath, type)
-newsfeeds_t *nf;
-char *filepath;
-int type;
+void feedfplog(newsfeeds_t *nf, char *filepath, int type)
 {
     char *path1;
     nodelist_t *nl;

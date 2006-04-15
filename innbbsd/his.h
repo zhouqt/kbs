@@ -79,6 +79,7 @@ typedef unsigned char BOOL;
 #endif
 
 char *HISfilesfor(datum *key, datum *output);
+BOOL HISwrite(datum *key, long date, const char *paths);
 void mkhistory(char *srchist);
 
 #endif

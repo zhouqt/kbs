@@ -25,14 +25,11 @@
 
 /*#include "tin.h"*/
 #include "innbbsconf.h"
+#include "inn_funcs.h"
+
 #include <stdio.h>
 #include <time.h>
-typedef struct _TIMEINFO 
-{
-     time_t      time;
-     long        usec;
-     long        tzone;
-} TIMEINFO;
+
 /*
 **  Get the number of elements in a fixed-size array, or a pointer just
 **  past the end of it.
@@ -680,8 +677,7 @@ LookupWord(buff, length)
 }
 
 
-int
-date_lex()
+int date_lex()
 {
     register char	c;
     register char	*p;

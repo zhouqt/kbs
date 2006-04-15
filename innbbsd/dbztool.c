@@ -1,20 +1,20 @@
+#include <time.h>
 #include <sys/file.h>
 #include "his.h"
+#include "inn_funcs.h"
 
 #define DEBUG 1
 #undef DEBUG
 
-static datum content, inputkey, inputvalue;
+static datum content, inputkey;
 static char dboutput[1025];
 static char dbinput[1025];
-static char valueinput[100];
 
 enum {
     SUBJECT, FROM, NAME
 };
 char *DBfetch(const char *key){
-    int i;
-    char *tail, *ptr;
+    char *ptr;
 
     if (key == NULL)
         return NULL;
@@ -30,8 +30,6 @@ char *DBfetch(const char *key){
 }
 
 int DBstore(const char *key,const char *paths){
-    int i;
-    char *tail;
     time_t now;
 
     time(&now);
@@ -48,8 +46,7 @@ int DBstore(const char *key,const char *paths){
 }
 
 int storeDB(const char *mid,const char *paths){
-    char *key, *ptr;
-    int rel;
+    char *ptr;
 
     ptr = DBfetch(mid);
     if (ptr != NULL) {
@@ -59,9 +56,7 @@ int storeDB(const char *mid,const char *paths){
     }
 }
 
-my_mkdir(idir, mode)
-char *idir;
-int mode;
+int my_mkdir(char *idir, int mode)
 {
     char buffer[LEN];
     char *ptr, *dir = buffer;

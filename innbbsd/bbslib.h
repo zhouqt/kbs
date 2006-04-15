@@ -88,6 +88,10 @@ char *filterdata(newsfeeds_t *arp, int direction, char *indata, char **filterdat
 char *parselocaltime(char *date_buf);
 
 char *my_rfc931_name(int herefd, struct sockaddr_in *there);
+void testandmkdir(const char *dir);
+int readfilterfile(char *inndhome);
+int readnffile(const char *inndhome);
+int readnlfile(char *inndhome, char *outgoing);
 
 #ifdef PalmBBS
 void xbbslog(char* fmt,...);

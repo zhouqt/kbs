@@ -1,6 +1,8 @@
 #ifndef INN_FUNCS_H
 #define INN_FUNCS_H
 
+#include "daemon.h"
+
 int isfile(const char*);
 int isdir(const char*);
 int iszerofile(const char*);
@@ -35,5 +37,23 @@ void startfrominetd(int);
 int dbzdebug(int);
 int installinnbbsd(void);
 void sethaltfunction(int (*)(int));
+void CloseOnExec(int fd, int flag);
+int cancel_article_front(char *msgid);
+int filtermatch(int result, char *target, char *pat);
+int wildmat(char *text, char *p);
+void str_decode(register unsigned char *dst, register unsigned char *src);
+int receive_control();
+int channelreader(ClientType *client);
+int isPause();
+int INNBBSDshutdown();
+
+typedef struct _TIMEINFO 
+{
+     time_t      time;
+     long        usec;
+     long        tzone;
+} TIMEINFO;
+int date_lex();
+time_t parsedate(char *p, TIMEINFO *now);
 
 #endif /* INN_FUNCS_H */

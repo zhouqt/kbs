@@ -2,6 +2,9 @@
 #include "bbslib.h"
 #include <stdarg.h>
 
+#include "inntobbs.h"
+#include "inn_funcs.h"
+
 char INNBBSCONF[MAXPATHLEN];
 char INNDHOME[MAXPATHLEN];
 char HISTORY[MAXPATHLEN];
@@ -38,10 +41,10 @@ static FILE *bbslogfp;
 
 static int verboseFlag = 0;
 
-static char *verboseFilename = NULL;
+static const char *verboseFilename = NULL;
 static char verbosename[MAXPATHLEN];
 
-void verboseon(char *filename)
+void verboseon(const char *filename)
 {
     verboseFlag = 1;
     if (filename != NULL) {
@@ -77,7 +80,7 @@ void setverboseoff()
     }
 }
 
-void verboselog(char* fmt,...)
+void verboselog(const char* fmt,...)
 {
     va_list ap;
     char datebuf[40];
@@ -515,7 +518,7 @@ char *group;
 }
 #endif
 
-int readnffile(char *inndhome)
+int readnffile(const char *inndhome)
 {
     FILE *fp;
     char buff[1024];
@@ -755,7 +758,7 @@ int size;
     return ptr;
 }
 
-void testandmkdir(char *dir)
+void testandmkdir(const char *dir)
 {
     if (!isdir(dir)) {
         char path[MAXPATHLEN + 12];

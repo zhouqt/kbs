@@ -42,6 +42,7 @@
 #include "lang.h"
 #include "bbs.h"
 #include "inn_funcs.h"
+#include "nocem.h"
 
 #define innbbslog(x) bbslog("3rror",x)
 extern int Junkhistory;

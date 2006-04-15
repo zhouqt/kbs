@@ -830,7 +830,6 @@ attach define
 
 
 #define MAXSIGLINES    6 /* max. # of lines appended for post signature */
-#define MAXQUERYLINES 16 /* max. # of lines shown by the Query function */
 
 /* Once you set this, do not change it unless you are restarting your
    bbs from scratch! The PASSWDS file will not work if this is changed.

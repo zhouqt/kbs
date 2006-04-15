@@ -5,6 +5,7 @@
 #include "innbbsconf.h"
 #include "bbslib.h"
 #include "his.h"
+#include "inn_funcs.h"
 
 #define STATIC static
 /*STATIC char	HIShistpath[] = _PATH_HISTORY;*/
@@ -444,10 +445,7 @@ BOOL myHISwrite(datum *key, char *remain)
 /*
 **  Write a history entry.
 */
-BOOL HISwrite(key, date, paths)
-datum *key;
-char *paths;
-long date;
+BOOL HISwrite(datum *key, long date, const char *paths)
 {
     long offset;
     datum val;

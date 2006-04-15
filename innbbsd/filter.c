@@ -1,6 +1,7 @@
 #include "innbbsconf.h"
 
 #include "bbslib.h"
+#include "inn_funcs.h"
 
 /*
 #  filter.conf

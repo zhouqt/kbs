@@ -23,10 +23,6 @@ typedef struct ncmperm_t {
     int perm;
 } ncmperm_t;
 
-ncmperm_t *NCMPERM = NULL, **NCMPERM_BYTYPE = NULL;
-static char *NCMPERM_BUF;
-int NCMCOUNT = 0;
-
 #define TEXT    0
 #define NCMHDR  1
 #define NCMBDY  2
@@ -71,5 +67,11 @@ extern char SPAMMID_NOW[];
 
 //extern char SPAMMID[][];
 extern char SPAMMID[MAXSPAMMID][STRLEN];
+
+extern ncmperm_t *NCMPERM, **NCMPERM_BYTYPE;
+extern int NCMCOUNT;
+
+ncmperm_t *search_issuer(char *issuer);
+int receive_nocem();
 
 #endif                          /* NOCEM_H */

@@ -147,7 +147,7 @@ char userid[IDLEN];
     } else {
         prints("\033[36m个人说明档如下：\033[m\n");//added by bad
         getyx(&minln, &i);
-        for (i = 1; i <= scr_lns-8/*MAXQUERYLINES*/; i++) {
+        for (i = 1; i <= scr_lns-8; i++) {
             if (fgets(pbuf, sizeof(pbuf), pf))
                 prints("%s", pbuf);
             else

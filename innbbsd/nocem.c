@@ -11,6 +11,12 @@ $Id$
 */
 
 #include "nocem.h"
+#include "inn_funcs.h"
+
+ncmperm_t *NCMPERM = NULL, **NCMPERM_BYTYPE = NULL;
+static char *NCMPERM_BUF;
+int NCMCOUNT = 0;
+
 #ifdef USE_NCM_PATCH            /* for FB3 */
 
 /*#define	PGP5*/
@@ -40,6 +46,7 @@ char errmsg[1024] = "nothing";
 /* NCM initial and maintain                                           */
 /* ------------------------------------------------------------------ */
 
+#if 0
 static int ncm_bytypecmp(a, b)
 ncmperm_t **a, **b;
 {
@@ -52,7 +59,6 @@ ncmperm_t *a, *b;
     return strcasecmp(a->issuer, b->issuer);
 }
 
-#if 0
 ncmperm_t *search_issuer(issuer)
 char *issuer;
 {
@@ -67,10 +73,9 @@ char *issuer;
     return find;
 }
 #else
-ncmperm_t *search_issuer(issuer)
-char *issuer;
+ncmperm_t *search_issuer(char *issuer)
 {
-    ncmperm_t ncmt, *find;
+    ncmperm_t *find;
     int i;
 
     for (i = 0; i < NCMCOUNT; i++) {
@@ -87,7 +92,7 @@ char *issuer;
 ncmperm_t *search_issuer_type(issuer, type)
 char *issuer, *type;
 {
-    ncmperm_t ncmt, *find;
+    ncmperm_t *find;
     int i;
     int length;                 //added by Czz 020419
 
@@ -202,7 +207,7 @@ char *inndhome;
     return 0;
 }
 
-NCMupdate(char *issuer, char *type)
+int NCMupdate(char *issuer, char *type)
 {
     FILE *fp;
     char buff[LINELEN];
@@ -234,6 +239,7 @@ NCMupdate(char *issuer, char *type)
     sleep(1);
     if (readNCMfile(INNDHOME) == -1)
         innbbsdlog("fail to readNCMfile\n");
+    return 0;
 }
 
 int tcpcommand(char *format, ...)
@@ -473,6 +479,7 @@ int readNCMbody(char *line)
 //      if (search_group(group))
     if (search_group(group) && strstr(group, "tw.bbs.") != NULL)
         strcpy(SPAMMID[num_spammid++], SPAMMID_NOW);
+    return 0;
 }
 
 int NCMparse()
@@ -571,7 +578,7 @@ int NCMcancel()
 /* NoCeM-innbbsd                                                      */
 /* ------------------------------------------------------------------ */
 
-initial_nocem()
+void initial_nocem()
 {
     bzero(SPAMMID[0], strlen(SPAMMID[0]) * num_spammid);
     num_spammid = 0;
@@ -583,7 +590,6 @@ initial_nocem()
 int receive_nocem()
 {
     int rel;
-    ncmperm_t *ncmt;
 
     if (ncmdebug)
         innbbsdlog("NCM: receive %s\n", MSGID);

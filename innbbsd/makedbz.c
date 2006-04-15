@@ -1,7 +1,7 @@
 #include "his.h"
 #include "bbslib.h"
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char **argv;
 {
@@ -19,4 +19,5 @@ char **argv;
      */
     dbzfresh(HISTORY, size, '\t', 0, 1);
     dbmclose();
+    return 0;
 }

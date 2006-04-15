@@ -3,6 +3,7 @@
 #include <sys/types.h>
 #include <stdarg.h>
 #include <string.h>
+#include "inn_funcs.h"
 
 #define MAXARGS     100
 

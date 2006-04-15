@@ -1,6 +1,7 @@
 #include <iconv.h>
 #include <errno.h>
 #include <string.h>
+#include <ctype.h>
 
 /* ----------------------------------------------------- */
 /* QP code : "0123456789ABCDEF"                          */
@@ -121,8 +122,7 @@ int dstlen;                     /* destination string length */
     return (dstlen_old - dstlen);
 }
 
-void str_decode(dst, src)
-register unsigned char *dst, *src;
+void str_decode(register unsigned char *dst, register unsigned char *src)
 {
     register int is_qp, is_base64, is_done;
     register int c1, c2, c3, c4;
@@ -141,7 +141,7 @@ register unsigned char *dst, *src;
     srctmp = src;
     pos = (long) src - (long) srctmp;
 
-    for (is_done = is_qp = is_base64 = 0; c1 = *src; src++) {
+    for (is_done = is_qp = is_base64 = 0; (c1 = *src) != 0; src++) {
         pos = (long) src - (long) srctmp;
         if (pos > 254) {
             memcpy(dsttmp, srcbuf, 256);

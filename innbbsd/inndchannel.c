@@ -4,6 +4,7 @@
 #include "bbs.h"
 #undef VERSION
 #include "version.h"
+#include "inn_funcs.h"
 
 #ifndef MAXCLIENT
 #define MAXCLIENT 10
@@ -39,14 +40,14 @@ int Junkhistory = 0;
 
 char *REMOTEUSERNAME, *REMOTEHOSTNAME;
 
-static fd_set rfd, wfd, efd, orfd, owfd, oefd;
+static fd_set rfd, wfd, efd, orfd;
 
 int clearfdset(int fd){
     FD_CLR(fd, &rfd);
     return 0;
 }
 
-static channelcreate(client)
+static void channelcreate(client)
 ClientType *client;
 {
     buffer_t *in, *out;
@@ -99,16 +100,15 @@ int channeldestroy(ClientType *client){
         INNBBSD_STAT.statfail += client->statfail;
     }
 #endif
+    return 0;
 }
 
-inndchannel(port, path)
-char *port, *path;
+int inndchannel(char *port, char *path)
 {
     time_t tvec;
     int i;
     int bbsinnd;
     int localbbsinnd;
-    char obuf[4096];
     struct timeval tout;
     ClientType *client = (ClientType *) mymalloc(sizeof(ClientType) * Maxclient);
     int localdaemonready = 0;
@@ -170,7 +170,7 @@ char *port, *path;
         }
         time(&now);
         local = localtime(&now);
-        if (local != NULL & local->tm_hour == His_Maint_Hour && local->tm_min >= His_Maint_Min) {
+        if (local != NULL && local->tm_hour == His_Maint_Hour && local->tm_min >= His_Maint_Min) {
             if (!maint) {
                 innbbsdlog(":Maint: start (%d:%d).\n", local->tm_hour, local->tm_min);
                 HISmaint();
@@ -196,8 +196,7 @@ char *port, *path;
             continue;
         }
         if (localdaemonready && FD_ISSET(localbbsinnd, &orfd)) {
-            int ns, length;
-            int cc;
+            int ns;
 
             ns = tryaccept(localbbsinnd);
             if (ns < 0)
@@ -241,11 +240,11 @@ char *port, *path;
             }
         }
         if (FD_ISSET(bbsinnd, &orfd)) {
-            int ns = tryaccept(bbsinnd), length;
+            int ns = tryaccept(bbsinnd);
+            socklen_t length;
             struct sockaddr_in there;
             char *name;
             struct hostent *hp;
-            int cc;
 
             if (ns < 0)
                 continue;
@@ -270,7 +269,6 @@ char *port, *path;
             length = sizeof(there);
             if (getpeername(ns, (struct sockaddr *) &there, &length)
                 >= 0) {
-                time_t now = time((time_t *) 0);
 
 #ifdef USE_IDENT
                 name = (char *) my_rfc931_name(ns, &there);
@@ -363,55 +361,12 @@ char *port, *path;
     }
 }
 
-int channelreader(client)
-ClientType *client;
-{
-    int len, clientlen;
-    char buffer1[8192], buffer2[4096];
-    char *ptr;
-    buffer_t *in = &client->in;
-
-    if (in->left < ReadSize + 3) {
-        int need = in->used + in->left + ReadSize + 3;
-
-        need += need / 5;
-        in->data = (char *) myrealloc(in->data, need);
-        in->left = need - in->used;
-        verboselog("channelreader realloc %d\n", need);
-    }
-    len = read(client->fd, in->data + in->used, ReadSize);
-
-    if (len <= 0)
-        return len;
-
-    in->data[len + in->used] = '\0';
-    in->lastread = len;
-#ifdef DEBUG
-    printf("after read lastread %d\n", in->lastread);
-    printf("len %d client %d\n", len, strlen(in->data + in->used));
-#endif
-
-    REMOTEHOSTNAME = client->hostname;
-    REMOTEUSERNAME = client->username;
-    if (client->mode == 0) {
-        if ((ptr = (char *) strchr(in->data, '\n')) != NULL) {
-            if (in->data[0] != '\r')
-                commandparse(client);
-        }
-    } else {
-        commandparse(client);
-    }
-    return len;
-}
-
-commandparse(client)
-ClientType *client;
+void commandparse(ClientType *client)
 {
     char *ptr, *lastend;
     argv_t *Argv = &client->Argv;
     int (*Main) ();
     char *buffer = client->in.data;
-    int fd = client->fd;
     buffer_t *in = &client->in;
     int dataused;
     int dataleft;
@@ -517,19 +472,52 @@ ClientType *client;
     }
 }
 
-do_command()
+int channelreader(ClientType *client)
 {
+    int len;
+    char *ptr;
+    buffer_t *in = &client->in;
+
+    if (in->left < ReadSize + 3) {
+        int need = in->used + in->left + ReadSize + 3;
+
+        need += need / 5;
+        in->data = (char *) myrealloc(in->data, need);
+        in->left = need - in->used;
+        verboselog("channelreader realloc %d\n", need);
+    }
+    len = read(client->fd, in->data + in->used, ReadSize);
+
+    if (len <= 0)
+        return len;
+
+    in->data[len + in->used] = '\0';
+    in->lastread = len;
+#ifdef DEBUG
+    printf("after read lastread %d\n", in->lastread);
+    printf("len %d client %d\n", len, strlen(in->data + in->used));
+#endif
+
+    REMOTEHOSTNAME = client->hostname;
+    REMOTEUSERNAME = client->username;
+    if (client->mode == 0) {
+        if ((ptr = (char *) strchr(in->data, '\n')) != NULL) {
+            if (in->data[0] != '\r')
+                commandparse(client);
+        }
+    } else {
+        commandparse(client);
+    }
+    return len;
 }
 
-void dopipesig(s)
-int s;
+void dopipesig(int s)
 {
     printf("catch sigpipe\n");
     signal(SIGPIPE, dopipesig);
 }
 
-int standaloneinit(port)
-char *port;
+void standaloneinit(char *port)
 {
     int ndescriptors;
     FILE *pf;
@@ -564,7 +552,7 @@ char *port;
 extern char *optarg;
 extern int opterr, optind;
 
-innbbsusage(name)
+void innbbsusage(name)
 char *name;
 {
     fprintf(stderr, "Usage: %s   [options] \n", name);
@@ -601,14 +589,14 @@ int innbbsdstartup(void){
     return INNBBSDstartup;
 }
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char **argv;
 {
 
     char *port, *path;
     int c, errflag = 0;
-    extern INNBBSDhalt();
+    extern int INNBBSDhalt();
 
 #if !defined(DBZSERVER)
     initial_lang();
@@ -641,7 +629,7 @@ char **argv;
             break;
         case 'i':{
                 struct sockaddr_in there;
-                int len = sizeof(there);
+                socklen_t len = sizeof(there);
                 int rel;
 
                 if ((rel = getsockname(0, (struct sockaddr *) &there, &len)) < 0) {
@@ -665,7 +653,7 @@ char **argv;
         case 'p':              /* yes, assign port number here .. */
             port = optarg;
             printf("p:%s\n", optarg);
-            exit;
+            exit(0);
             break;
         case 'l':              /* sure, assign socket path here too .. */
             path = optarg;
@@ -714,4 +702,5 @@ char **argv;
     signal(SIGPIPE, dopipesig);
     inndchannel(port, path);
     HISclose();
+    return 0;
 }

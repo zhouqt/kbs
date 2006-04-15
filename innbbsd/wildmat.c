@@ -133,9 +133,7 @@ register char *p;
 /*
 **  User-level routine.  Returns TRUE or FALSE.
 */
-int wildmat(text, p)
-char *text;
-char *p;
+int wildmat(char *text, char *p)
 {
 #ifdef	OPTIMIZE_JUST_STAR
     if (p[0] == '*' && p[1] == '\0')

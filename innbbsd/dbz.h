@@ -23,6 +23,7 @@ extern long dbzsize();
 extern int dbzincore();
 extern int dbzcancel();
 extern int dbzdebug();
+int dbzwritethrough(int value);
 
 /*
  * In principle we could handle unlimited-length keys by operating a chunk

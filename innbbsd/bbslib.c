@@ -432,8 +432,7 @@ int readnlfile(char *inndhome, char *outgoing)
 }
 
 #if  defined(FILTER) && defined(WITH_ECHOMAIL)
-readfilterfile(inndhome)
-char *inndhome;
+int readfilterfile(char *inndhome)
 {
 
     FILE *fp;
@@ -517,7 +516,7 @@ char *group;
 }
 #endif
 
-int readnffile(char *inndhome)
+int readnffile(const char *inndhome)
 {
     FILE *fp;
     char buff[1024];
@@ -781,7 +780,7 @@ int size;
     return ptr;
 }
 
-void testandmkdir(char *dir)
+void testandmkdir(const char *dir)
 {
     if (!isdir(dir)) {
         char path[MAXPATHLEN + 12];
