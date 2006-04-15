@@ -77,7 +77,7 @@ int pc_conv_file_to_body( char **body, char *fname)
 	*body = NULL;
 
 	BBS_TRY{
-		if(safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size) == 1){
+		if(safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &ptr, &size) == 1){
 			(*body) = (char *)malloc( size+1 );
 			if((*body) != NULL){
 				char* data;

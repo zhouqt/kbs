@@ -437,7 +437,7 @@ static void sff_content(struct super_filter_expression *exp) {
         char ffn[PATHLEN];
         struct fileheader * fh = sess->arg.ptr;
         setbfile(ffn, sess->arg.boardname, fh->filename);
-        sess->content.mmap = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &sess->content.ptr, &sess->content.fsize, NULL);
+        sess->content.mmap = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, &sess->content.ptr, &sess->content.fsize, NULL);
         if(sess->content.mmap) {
             if (fh->attachment) sess->content.searchsize = -1;
             else sess->content.searchsize = sess->content.fsize;
@@ -826,7 +826,7 @@ int query_super_filter(int fd, struct super_filter_query_arg *q_arg) {
     fstat(fd2, &buf);
     total = buf.st_size / sizeof(struct fileheader);
 
-    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &buf.st_size)) != 1) {
+    if ((i = safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, &ptr, &buf.st_size)) != 1) {
         if (i == 2)
             end_mmapfile((void *) ptr, buf.st_size, -1);
         if (fd == -1) {

@@ -38,8 +38,7 @@ register int x;
     return -1;
 }
 
-int ignorestr(str)
-char *str;
+int ignorestr(char *str)
 {
     char *s;
 
@@ -59,7 +58,7 @@ void str_decode(unsigned char *dst, unsigned char*src)
     register int is_qp, is_base64, is_done;
     register int c1, c2, c3, c4;
 
-    if (ignorestr(src)) {
+    if (ignorestr((char*)src)) {
         strcpy((char*)dst, (const char*)src);
         return;
     }

@@ -40,8 +40,7 @@ register int x;
     return -1;
 }
 
-int ignorestr(str)
-char *str;
+int ignorestr(char *str)
 {
     char *s;
 
@@ -132,7 +131,7 @@ void str_decode(unsigned char *dst, unsigned char *src)
     char srcbuf[256];
     long pos;
 
-    if (ignorestr(src)) {
+    if (ignorestr((char*)src)) {
         strcpy((char*)dst, (char*)src);
         return;
     }

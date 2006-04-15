@@ -20,7 +20,7 @@ int delete_all_mail(int dfd, char *touser, char *filename, int size, RECORD_FUNC
 
 	printf("Deleting mails of %s... \n", touser);
     BBS_TRY {
-        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &buf, &filesize, NULL) == 0)
+        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &buf, &filesize, NULL) == 0)
             BBS_RETURN(0);
         for (i = 0, buf1 = buf; i < filesize / size; i++, buf1 += size) {
             if ((*fptr) (buf1, farg)) {

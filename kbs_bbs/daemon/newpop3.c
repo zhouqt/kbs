@@ -291,7 +291,7 @@ void outfile(filename, linenum)
     if (linenum) {
         BBS_TRY {
             bool esc;
-            if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &size, NULL) == 0) {
+            if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0) {
                 outs(".");
                 BBS_RETURN_VOID;
             }

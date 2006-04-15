@@ -1077,7 +1077,7 @@ int zsend_attach(int ent, struct fileheader *fileinfo, char *direct)
         *t = '\0';
     snprintf(genbuf, 512, "%s/%s", buf1, fileinfo->filename);
     BBS_TRY {
-        if (safe_mmapfile(genbuf, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0) {
+        if (safe_mmapfile(genbuf, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0) {
             BBS_RETURN(-1);
         }
         for (p=ptr,left=size;left>0;p++,left--) {
@@ -1163,7 +1163,7 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (fileinfo->reid == fileinfo->id) return DONOTHING;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, (void**)(void*)&pFh, &size) == 0)
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, TO_CHARPP &pFh, &size) == 0)
             BBS_RETURN(0);
         now = arg->filecount = size/sizeof(struct fileheader);
         if (now >= conf->pos) now = conf->pos - 1;

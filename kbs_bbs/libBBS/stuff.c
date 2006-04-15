@@ -809,7 +809,7 @@ int canIsend2(struct userec *src, const char *userid)
     @param size mmap的大小
     @return 是否成功
   */
-int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, off_t * size)
+int safe_mmapfile_handle(int fd, int prot, int flag, char **ret_ptr, off_t * size)
 {
     struct stat st;
 
@@ -838,7 +838,7 @@ int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, off_t * siz
     *size = st.st_size;
     return 1;
 }
-int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, off_t * size, int *ret_fd)
+int safe_mmapfile(char *filename, int openflag, int prot, int flag, char **ret_ptr, off_t * size, int *ret_fd)
 {
     int fd;
     struct stat st;
@@ -1046,7 +1046,7 @@ int read_user_memo( char *userid, struct usermemo ** ppum )
 		return -2;
 	}
 
-	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (void **)ppum , & size) == 1) {
+	if (safe_mmapfile_handle(fileno(fp), PROT_READ | PROT_WRITE, MAP_SHARED, (char **)ppum , & size) == 1) {
 		fclose(fp);
 
 		if(size < sizeof(struct usermemo) ){
@@ -1774,7 +1774,7 @@ int gen_title(const char *boardname )
     hashtable = NULL;
     next = NULL;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &f_size) == 0) {
+        if (safe_mmapfile_handle(fd2, PROT_READ, MAP_SHARED, &ptr, &f_size) == 0) {
             ldata2.l_type = F_UNLCK;
             fcntl(fd2, F_SETLKW, &ldata2);
             close(fd2);

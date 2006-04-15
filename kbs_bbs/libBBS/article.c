@@ -110,11 +110,11 @@ int malloc_write_dir_arg(struct write_dir_arg *filearg)
 {
     if (filearg->fileptr == MAP_FAILED) {
         if (filearg->fd == -1) {
-            if (safe_mmapfile(filearg->filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &filearg->fileptr, &filearg->size, &filearg->fd) == 0)
+            if (safe_mmapfile(filearg->filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &filearg->fileptr, &filearg->size, &filearg->fd) == 0)
                 return -1;
             filearg->needclosefd = true;
         } else {                //用fd来打开
-            if (safe_mmapfile_handle(filearg->fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void **) &filearg->fileptr, &filearg->size) == 0)
+            if (safe_mmapfile_handle(filearg->fd, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &filearg->fileptr, &filearg->size) == 0)
                 return -1;
         }
     }
@@ -1304,7 +1304,7 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void**)(void*)&data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &data, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
@@ -1348,7 +1348,7 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, (void**)(void*)&data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &data, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
@@ -2097,7 +2097,7 @@ int get_effsize_attach(char *ffn, unsigned int *att)
     off_t fsize;
     int k, abssize = 0, entercount = 0, ignoreline = 0;
 
-    j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&p, &fsize, NULL);
+    j = safe_mmapfile(ffn, O_RDONLY, PROT_READ, MAP_SHARED, &p, &fsize, NULL);
     op = p;
     if (att) *att = 0;
     if (j) {
@@ -2143,117 +2143,6 @@ int get_effsize(char *ffn)
     return get_effsize_attach(ffn, NULL);
 }
 
-#if 0 /* atppp 20050310 */
-long calc_effsize(char *fname)
-{
-    FILE *fp;
-    int matched;
-    char *ptr;
-    off_t size;
-    long effsize = 0;
-    int insign = 0;
-    long signsize = 0;
-
-    if ((fp = fopen(fname, "r+b")) == NULL) {
-        return 0;
-    }
-
-    matched = 0;
-
-    BBS_TRY {
-        if (safe_mmapfile_handle(fileno(fp), PROT_READ, MAP_SHARED, (void **) &ptr, (off_t *) & size) == 1) {
-            char *data;
-            long not;
-
-            data = ptr;
-
-            not = 0;
-
-            if (!strncmp(data, "发信人:", 7)) {
-                for (; not < size; not++, data++) {
-                    if (*data == '\r' || *data == '\n') {
-                        not++;
-                        data++;
-                        if (*data == '\r' || *data == '\n') {
-                            not++;
-                            data++;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if (!strncmp(data, "标  题:", 7)) {
-                for (; not < size; not++, data++) {
-                    if (*data == '\r' || *data == '\n') {
-                        not++;
-                        data++;
-                        if (*data == '\r' || *data == '\n') {
-                            not++;
-                            data++;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            if (!strncmp(data, "发信站:", 7)) {
-                for (; not < size; not++, data++) {
-                    if (*data == '\r' || *data == '\n') {
-                        not++;
-                        data++;
-                        if (*data == '\r' || *data == '\n') {
-                            not++;
-                            data++;
-                        }
-                        break;
-                    }
-                }
-            }
-
-            for (; not < size; not++, data++) {
-                if (*data == 0) {
-                    matched++;
-                    if (matched == ATTACHMENT_SIZE) {
-                        int d, size;
-
-                        data++;
-                        not++;
-                        while (*data) {
-                            data++;
-                            not++;
-                        }
-                        data++;
-                        not++;
-                        memcpy(&d, data, 4);
-                        size = htonl(d);
-                        data += 4 + size - 1;
-                        not += 4 + size - 1;
-                        matched = 0;
-                        effsize += size;
-                    }
-                    continue;
-                } else {
-                    if (*data != '\r' && *data != '\n') {
-                        if (insign == 0)
-                            effsize++;
-                        else
-                            signsize++;
-                    }
-                }
-            }
-        } else {
-            BBS_RETURN(-1);
-        }
-    }
-    BBS_CATCH {
-    }
-    BBS_END end_mmapfile((void *) ptr, size, -1);
-
-    fclose(fp);
-    return effsize;
-}
-#endif
 /*
   dirarg，要操作的dir结构
   id1,id2, 起始编号
@@ -3110,7 +2999,7 @@ int upload_post_append(FILE *fp, struct fileheader *post_file, session_t *sessio
             fwrite(ATTACHMENT_PAD, ATTACHMENT_SIZE, 1, fp);
             fwrite(name, strlen(name) + 1, 1, fp);
             BBS_TRY {
-                if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, (void**)(void*)&ptr, & size) == 0) {
+                if (safe_mmapfile_handle(fd,  PROT_READ, MAP_SHARED, &ptr, & size) == 0) {
                     size = 0;
                     save_size = htonl(size);
                     fwrite(&save_size, sizeof(save_size), 1, fp);

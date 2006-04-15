@@ -254,8 +254,8 @@ typedef ssize_t (*read_func)(int fd, void *buf, size_t count);
 #define BBS_RETURN_VOID {popup_sigbus();return;}
 
 
-    int safe_mmapfile(char *filename, int openflag, int prot, int flag, void **ret_ptr, off_t * size, int *ret_fd);
-    int safe_mmapfile_handle(int fd, int prot, int flag, void **ret_ptr, off_t * size);
+    int safe_mmapfile(char *filename, int openflag, int prot, int flag, char **ret_ptr, off_t * size, int *ret_fd);
+    int safe_mmapfile_handle(int fd, int prot, int flag, char **ret_ptr, off_t * size);
     void end_mmapfile(void *ptr, off_t size, int fd);
     void set_proc_title(char *argv0, char *title);
 

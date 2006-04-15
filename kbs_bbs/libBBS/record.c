@@ -258,7 +258,7 @@ int apply_record(char *filename, APPLY_FUNC_ARG fptr, int size, void *arg, int a
     else
         buf2 = NULL;
     BBS_TRY {
-        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&buf, &file_size, NULL) == 0)
+        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &buf, &file_size, NULL) == 0)
             BBS_RETURN(0);
         count = file_size / size;
         if (reverse)
@@ -322,7 +322,7 @@ int search_record_back(int fd,  /* file handle */
     off_t filesize;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void**)(void*)&buf, &filesize) == 0)
+        if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &buf, &filesize) == 0)
             BBS_RETURN(0);
         if (start > filesize / size)
             start = filesize / size;
@@ -350,7 +350,7 @@ int search_record_back_lite(int fd, int size, int start, int num, RECORD_FUNC_AR
     off_t filesize;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, (void**)(void*)&buf, &filesize) == 0)
+        if (safe_mmapfile_handle(fd, PROT_READ, MAP_SHARED, &buf, &filesize) == 0)
             BBS_RETURN(0);
         if (start > filesize / size)
             start = filesize / size;
@@ -380,7 +380,7 @@ int search_record(char *filename, void *rptr, int size, RECORD_FUNC_ARG fptr, vo
     off_t filesize;
 
     BBS_TRY {
-        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&buf, &filesize, NULL) == 0)
+        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &buf, &filesize, NULL) == 0)
             BBS_RETURN(0);
         for (i = 0, buf1 = buf; i < filesize / size; i++, buf1 += size) {
             if ((*fptr) (farg, buf1)) {
@@ -608,7 +608,7 @@ int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, v
     if (id <= 0)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile(filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void**)(void*)&ptr, &filesize, &fdr) == 0)
+        if (safe_mmapfile(filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, &ptr, &filesize, &fdr) == 0)
             BBS_RETURN(-1);
         ret = 0;
         if (id * size > filesize) {
@@ -649,7 +649,7 @@ int move_record(char *filename, int size, int id, int toid, RECORD_FUNC_ARG file
     if (id <= 0 || toid <= 0 || toid == id )
         return 0;
     BBS_TRY {
-        if (safe_mmapfile(filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, (void**)(void*)&ptr, &filesize, &fdr) == 0)
+        if (safe_mmapfile(filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, &ptr, &filesize, &fdr) == 0)
             BBS_RETURN(-1);
         ret = 0;
         if (id * size > filesize || toid * size > filesize) {

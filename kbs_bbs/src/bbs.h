@@ -623,5 +623,7 @@ extern struct sms_shm_head *head;
 
 #include "func.h"
 
+#define TO_CHARPP (char**)(void*)
+
 #endif /* _BBS_H_ */
 

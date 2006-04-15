@@ -569,7 +569,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         /*
          * TODO:alloc guest table 
          */
-		int idx;
+		int idx = 0;
 		int exist;
 		struct in_addr fromhostn;
 
@@ -824,7 +824,7 @@ void output_ansi_text(char *buf, size_t buflen,
     unsigned int ansi_val[STRLEN];
     int ival = 0;
     size_t i;
-    char *ansi_begin;
+    char *ansi_begin = NULL;
     char *ansi_end;
     int attachmatched;
 	long attachPos[MAXATTACHMENTCOUNT];
@@ -992,7 +992,7 @@ void output_ansi_javascript(char *buf, size_t buflen,
     unsigned int ansi_val[STRLEN];
     int ival = 0;
     size_t i;
-    char *ansi_begin;
+    char *ansi_begin = NULL;
     char *ansi_end;
     int attachmatched;
 	long attachPos[MAXATTACHMENTCOUNT];

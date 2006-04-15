@@ -2064,7 +2064,7 @@ int main(argc, argv)
     struct sockaddr_in sin;
     register int i;
     int sr, newsock, nFlag = 0;
-    long sinsize;
+    socklen_t sinsize;
     fd_set readfds;
     struct timeval *tvptr = NULL;
 
@@ -2125,7 +2125,7 @@ int main(argc, argv)
     }
 
     sinsize = sizeof(sin);
-    if (getsockname(sock, (struct sockaddr *) &sin, (socklen_t *) & sinsize) == -1) {
+    if (getsockname(sock, (struct sockaddr *) &sin, &sinsize) == -1) {
         perror("getsockname");
         exit(1);
     }
@@ -2179,7 +2179,7 @@ int main(argc, argv)
 
         if (FD_ISSET(sock, &readfds)) {
             sinsize = sizeof sin;
-            newsock = accept(sock, (struct sockaddr *) &sin, (socklen_t *) & sinsize);
+            newsock = accept(sock, (struct sockaddr *) &sin, &sinsize);
             if (newsock == -1) {
                 continue;
             }

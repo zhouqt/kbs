@@ -4,7 +4,7 @@ static const char* to_b64 =
 
 int b64dec(const char* string, char* buff)
 {
-	int size;
+	int size = 0;
 
 	if (string)
 	{

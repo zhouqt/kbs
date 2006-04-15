@@ -180,7 +180,7 @@ PHP_FUNCTION(bbs_bmmanage)
     else {
         struct write_dir_arg dirarg;
         struct fileheader data;
-        int flag;
+        int flag = 0;
         data.accessed[0] = ~(f.accessed[0]);
         data.accessed[1] = ~(f.accessed[1]);
         init_write_dir_arg(&dirarg);

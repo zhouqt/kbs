@@ -6,7 +6,7 @@ extern int mgrep(int fp,void* patternbuf,session_t* session);
 extern int mgrep_str(char* data,int len,void* patternbuf,session_t* session);
 extern void releasepf(void* patternbuf);
 
-static void* badword_img=NULL;
+static char* badword_img=NULL;
 static time_t badimg_time;
 static off_t badword_img_size;
 int build_badwordimage()
@@ -58,7 +58,7 @@ static int check_badwordimg(int checkreload)
       if (!dashf("etc/badword"))
       	return -1;
       retry:
-      if (safe_mmapfile(BADWORD_IMG_FILE, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &badword_img, &badword_img_size, NULL) == 0)
+      if (safe_mmapfile(BADWORD_IMG_FILE, O_RDONLY, PROT_READ, MAP_SHARED, &badword_img, &badword_img_size, NULL) == 0)
       {
         if (!dashf(BADWORD_IMG_FILE)) {
         	if (build_badwordimage()==0)
@@ -96,7 +96,7 @@ retry:
     default_setting(session);
     session->CurrentFileName = checkfile;
     BBS_TRY {
-        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0)
+        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0)
         {
             BBS_RETURN(0);
         }
@@ -164,7 +164,7 @@ int check_filter(char *patternfile, char *checkfile,int defaultval, session_t* s
     fp = open(patternfile, O_RDONLY);
     prepf(fp,&pattern_buf,&pattern_imagesize);
     BBS_TRY {
-        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0) {
+        if (safe_mmapfile(checkfile, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0) {
 	    close(fp);
             BBS_RETURN(0);
 	}

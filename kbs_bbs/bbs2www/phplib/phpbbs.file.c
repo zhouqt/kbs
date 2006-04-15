@@ -30,7 +30,7 @@ PHP_FUNCTION(bbs2_readfile)
         WRONG_PARAM_COUNT;
     }
 
-    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
     
     j = ptrlen = mmap_ptrlen;
@@ -160,7 +160,7 @@ PHP_FUNCTION(bbs2_readfile_text)
         WRONG_PARAM_COUNT;
     }
 
-    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
 
     ptrlen = mmap_ptrlen;
@@ -263,7 +263,7 @@ PHP_FUNCTION(bbs_file_output_attachment)
         RETURN_LONG(-2);
     }
 
-    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
 
     ptrlen = mmap_ptrlen;
@@ -421,7 +421,7 @@ PHP_FUNCTION(bbs_printansifile)
         }
     }
     if (!is_preview) {
-        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
+        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
             RETURN_LONG(-1);
 
         ptrlen = mmap_ptrlen;
@@ -477,7 +477,7 @@ PHP_FUNCTION(bbs_print_article)
             WRONG_PARAM_COUNT;
         }
     }
-    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{
@@ -520,7 +520,7 @@ PHP_FUNCTION(bbs_print_article_js)
             WRONG_PARAM_COUNT;
         }
     }
-    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void **) &ptr, &mmap_ptrlen, NULL) == 0)
+    if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &mmap_ptrlen, NULL) == 0)
         RETURN_LONG(-1);
 	if ((out = alloc_output(outbuf_len)) == NULL)
 	{

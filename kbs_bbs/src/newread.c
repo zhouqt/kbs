@@ -103,7 +103,7 @@ int find_nextnew(struct _select_def* conf,int begin)
     if (begin<=0)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void**)(void*)&pFh, &size) ) {
+        if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, TO_CHARPP &pFh, &size) ) {
             nowFh=pFh+begin-1;
             found=false;
             for (i=begin-1;i<size/sizeof(struct fileheader);i++,nowFh++) {
@@ -762,7 +762,7 @@ static int searchpattern(char *filename, char *query, int qlen)
     int ret=0;
 
     BBS_TRY {
-        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, (void**)(void*)&ptr, &size, NULL) == 0)
+        if (safe_mmapfile(filename, O_RDONLY, PROT_READ, MAP_SHARED, &ptr, &size, NULL) == 0)
             BBS_RETURN(0);
         if (memmem(ptr, size, query, qlen)) ret=1;
     }
@@ -824,7 +824,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
 /*    refresh();*/
     match = 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, (void**)(void*)&pFh, &size) == 0)
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, TO_CHARPP &pFh, &size) == 0)
             BBS_RETURN(0);
 	arg->filecount=size/sizeof(struct fileheader);
         if(now > arg->filecount){
@@ -916,7 +916,7 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
     if (*query == '\0') return DONOTHING;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, (void**)(void*)&pFh, &size) == 0)
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, TO_CHARPP &pFh, &size) == 0)
             BBS_RETURN(0);
         arg->filecount = size/sizeof(struct fileheader);
         now = conf->pos;
@@ -1061,7 +1061,7 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
     count=0;
     now = conf->pos;
     BBS_TRY {
-        if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, (void**)(void*)&pFh, &size) ) {
+        if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, TO_CHARPP &pFh, &size) ) {
             bool needmove;
             recordcount=size/sizeof(struct fileheader);
             if (now>recordcount)
