@@ -69,7 +69,7 @@ char *filename;
     }
     if (strlen(SUBJECT) > 256)
         FAILED;
-    str_decode(conv_buf, SUBJECT);
+    str_decode((unsigned char*)conv_buf, (unsigned char*)SUBJECT);
     /* big 标题转码，original patch by dgwang @ 笔山书院 */
     if(strstr(SUBJECT,"=?big5?") || strstr(SUBJECT,"=?Big5?") ||
        strstr(SUBJECT,"=?BIG5?") ){
@@ -828,7 +828,7 @@ char *pathname, *firstpath;
     strncpy(header.owner, userid, OWNER_LEN);
     header.owner[OWNER_LEN - 1] = 0;
 
-    str_decode(conv_buf, SUBJECT);
+    str_decode((unsigned char*)conv_buf, (unsigned char*)SUBJECT);
     /* big 标题转码，original patch by dgwang @ 笔山书院 */
     if(strstr(SUBJECT,"=?big5?") || strstr(SUBJECT,"=?Big5?") ||
        strstr(SUBJECT,"=?BIG5?") ){

@@ -66,9 +66,9 @@ int str_iconv(fromcode, tocode, src, srclen, dst, dstlen)
 char *fromcode;                 /* charset of source string */
 char *tocode;                   /* charset of destination string */
 char *src;                      /* source string */
-int srclen;                     /* source string length */
+size_t srclen;                     /* source string length */
 char *dst;                      /* destination string */
-int dstlen;                     /* destination string length */
+size_t dstlen;                     /* destination string length */
 {
     iconv_t iconv_descriptor;
     int iconv_ret, dstlen_old;
@@ -122,7 +122,7 @@ int dstlen;                     /* destination string length */
     return (dstlen_old - dstlen);
 }
 
-void str_decode(register unsigned char *dst, register unsigned char *src)
+void str_decode(unsigned char *dst, unsigned char *src)
 {
     register int is_qp, is_base64, is_done;
     register int c1, c2, c3, c4;
@@ -133,12 +133,12 @@ void str_decode(register unsigned char *dst, register unsigned char *src)
     long pos;
 
     if (ignorestr(src)) {
-        strcpy(dst, src);
+        strcpy((char*)dst, (char*)src);
         return;
     }
     memcpy(srcbuf, src, 256);
-    dsttmp = dst;
-    srctmp = src;
+    dsttmp = (char *)dst;
+    srctmp = (char *)src;
     pos = (long) src - (long) srctmp;
 
     for (is_done = is_qp = is_base64 = 0; (c1 = *src) != 0; src++) {

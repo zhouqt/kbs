@@ -1,3 +1,6 @@
+#include <string.h>
+#include <ctype.h>
+
 /* ----------------------------------------------------- */
 /* QP code : "0123456789ABCDEF"                          */
 /* ----------------------------------------------------- */
@@ -51,17 +54,16 @@ char *str;
 /* judge & decode QP / BASE64                            */
 /* ----------------------------------------------------- */
 
-void str_decode(dst, src)
-register unsigned char *dst, *src;
+void str_decode(unsigned char *dst, unsigned char*src)
 {
     register int is_qp, is_base64, is_done;
     register int c1, c2, c3, c4;
 
     if (ignorestr(src)) {
-        strcpy(dst, src);
+        strcpy((char*)dst, (const char*)src);
         return;
     }
-    for (is_done = is_qp = is_base64 = 0; c1 = *src; src++) {
+    for (is_done = is_qp = is_base64 = 0; (c1 = *src) != 0; src++) {
         if (c1 == '?' && src[1] == '=') {
             src++;
             continue;

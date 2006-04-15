@@ -1,6 +1,8 @@
 #include "bbs.h"
 #define BLOCKFILE   "/bbs/.blockmail"
 
+extern void str_decode(unsigned char *dst, unsigned char *src);
+
 /* copy from flyriver qmail2bbs.c */
 void my_ansi_filter(char *source)
 {
@@ -216,7 +218,7 @@ char *bname, *sender1, *sender, *title, *received;
 }
 #endif
 
-append_mail(fin, sender1, sender, userid, title, received)
+int append_mail(fin, sender1, sender, userid, title, received)
 FILE *fin;
 char *userid, *sender1, *sender, *title, *received;
 {
@@ -245,7 +247,7 @@ char *userid, *sender1, *sender, *title, *received;
     }
     printf("Ok, dir is %s\n", maildir);
 
-    str_decode(conv_buf, title);
+    str_decode((unsigned char*)conv_buf, (unsigned char*)title);
 /* copy from flyriver qmail2bbs.c */
     my_ansi_filter(conv_buf);
     if (conv_buf[0] == '\0')
@@ -372,7 +374,7 @@ char *addr;
     return 0;
 }
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char *argv[];
 {
@@ -479,4 +481,5 @@ char *argv[];
 #ifdef MAIL2BOARD
     }
 #endif
+    return 0;
 }

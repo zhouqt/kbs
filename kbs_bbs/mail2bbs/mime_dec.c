@@ -66,7 +66,7 @@ int b64dec(const char* string, char* buff)
 				if (count > 0)
 				{
 					int i, qw = 0, tw = 0;
-					byte* data = buff;
+					byte* data = (byte*)buff;
 
 					length = strlen(tmp = string);
 
@@ -195,7 +195,7 @@ int qpdec(const char* string, char* buff)
 			//let's put the hex part into mid...
 			for (i = 0; i < 2; i++)
 			{
-				if (hexmap[s[i]] == SKIP)
+				if (hexmap[(int)s[i]] == SKIP)
 				{
 					//we have an error, or a linebreak, in the encoding...
 					ok = false;
@@ -219,9 +219,9 @@ int qpdec(const char* string, char* buff)
 			{
 				int m;
 				s += 2;
-				m = hexmap[mid[0]];
+				m = hexmap[(int)mid[0]];
 				m <<= 4;
-				m |= hexmap[mid[1]];
+				m |= hexmap[(int)mid[1]];
 				*(result++) = m;
 			}
 		}

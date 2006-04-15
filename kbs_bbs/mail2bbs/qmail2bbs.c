@@ -9,6 +9,8 @@
 
 #define BLOCKFILE ".blockmail"
 
+extern void str_decode(unsigned char *dst, unsigned char *src);
+
 void my_ansi_filter(char *source)
 {
         char result[500];
@@ -94,7 +96,6 @@ int my_after_post(struct fileheader *fh, char *boardname)
 {
 	char buf[256];
 	int fd, err = 0, nowid = 0;
-	char *p;
 
 	if (!strncmp(fh->title, "Re:", 3)) {
 		strncpy(fh->title, fh->title + 4, STRLEN);
@@ -154,7 +155,7 @@ int append_board(fin, sender1, sender, bname, title, received, encoding, boundar
 	setbpath(boardpath, bname);
 	printf("OK, board dir is %s\n", boardpath);
 
-	str_decode(conv_buf, title);
+	str_decode((unsigned char*)conv_buf, (unsigned char*)title);
 	/* copy from flyriver qmailpost.c */
 	my_ansi_filter(conv_buf);
 	if (conv_buf[0] == '\0')
@@ -279,11 +280,11 @@ int append_board(fin, sender1, sender, bname, title, received, encoding, boundar
 			FileName[0]=0;
 			do {
 				char* tag;
-				if (tag=strstr(buf, ": ")) {
+				if ((tag=strstr(buf, ": ")) != NULL) {
 					tag[0]=0; tag+=2;
 					if (!strcasecmp(buf, "Content-Type")) {
 						char* t;
-						if (t=strchr(tag, ';')) *t=0;
+						if ((t=strchr(tag, ';')) != NULL) *t=0;
 						if (!strcasecmp(tag, "text/plain")) ContentType = 1;
 						else if (!strcasecmp(tag, "text/html")) ContentType = 2;
 						else if (!strcasecmp(tag, "multipart/related")) ContentType = 3;
@@ -292,15 +293,15 @@ int append_board(fin, sender1, sender, bname, title, received, encoding, boundar
 						else if (strstr(tag, "quoted-printable")) ContentEncoding = 2;
 						else if (strstr(tag, "base64")) ContentEncoding = 3;
 					}
-				} else if (tag=strstr(buf, "filename=\"")) {
+				} else if ((tag=strstr(buf, "filename=\"")) != NULL) {
 					char* t;
 					tag+=10;
-					if (t=strchr(tag, '"')) *t=0;
+					if ((t=strchr(tag, '"')) != NULL) *t=0;
 					strcpy(FileName, tag);
-				} else if ((ContentType==3) && (tag=strstr(buf, "boundary=\""))) {
+				} else if ((ContentType==3) && NULL != (tag=strstr(buf, "boundary=\""))) {
 					char* t;
 					tag+=10;
-					if (t=strchr(tag, '\"')) *t=0;
+					if ((t=strchr(tag, '\"')) != NULL) *t=0;
 					while (tag[strlen(tag)-1]<27) tag[strlen(tag)-1]=0;
 					strcpy(Boundary, tag);
 				}
@@ -429,7 +430,7 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 			return -1;
 	}
 
-	str_decode(conv_buf, title);
+	str_decode((unsigned char*)conv_buf, (unsigned char*)title);
 	my_ansi_filter(conv_buf);
 	if (conv_buf[0] == '\0')
 		strcpy(conv_buf, "ÎÞ±êÌâ");
@@ -448,8 +449,8 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 	
 	strncpy(buf, sender, 255);
 	buf[255]='\0';
-	if (ptr=strrchr(buf, '<'))
-		if(ptr2=strrchr(ptr, '>'))
+	if ((ptr=strrchr(buf, '<')) != NULL)
+		if((ptr2=strrchr(ptr, '>')) != NULL)
 			if (ptr<ptr2-1) {
 				memmove(buf, ptr+1, ptr2-ptr-1);
 				buf[ptr2-ptr-1]='\0';
@@ -527,28 +528,28 @@ append_mail(fin, sender1, sender, userid, title, received, encoding, boundary)
 				FileName[0]=0;
 				do {
 					char* tag;
-					if (tag=strstr(buf, ": ")) {
+					if ((tag=strstr(buf, ": ")) != NULL) {
 						tag[0]=0; tag+=2;
 						if (!strcasecmp(buf, "Content-Type")) {
 							char* t;
-							if (t=strchr(tag, ';')) *t=0;
+							if ((t=strchr(tag, ';'))!=NULL) *t=0;
 							if (!strcasecmp(tag, "text/plain")) ContentType = 1;
 							else if (!strcasecmp(tag, "text/html")) ContentType = 2;
 							else if (!strcasecmp(tag, "multipart/related")) ContentType = 3;
 						} else if (!strcasecmp(buf, "Content-Transfer-Encoding")) {
-							if (strstr(tag, "8bit")) ContentEncoding = 1;
+							if ((strstr(tag, "8bit"))!=NULL) ContentEncoding = 1;
 							else if (strstr(tag, "quoted-printable")) ContentEncoding = 2;
 							else if (strstr(tag, "base64")) ContentEncoding = 3;
 						}
-					} else if (tag=strstr(buf, "filename=\"")) {
+					} else if ((tag=strstr(buf, "filename=\""))!=NULL) {
 						char* t;
 						tag+=10;
-						if (t=strchr(tag, '"')) *t=0;
+						if ((t=strchr(tag, '"'))!=NULL) *t=0;
 						strcpy(FileName, tag);
-					} else if ((ContentType==3) && (tag=strstr(buf, "boundary=\""))) {
+					} else if ((ContentType==3) && NULL!=(tag=strstr(buf, "boundary=\""))) {
 						char* t;
 						tag+=10;
-						if (t=strchr(tag, '\"')) *t=0;
+						if ((t=strchr(tag, '\"'))!=NULL) *t=0;
 						while (tag[strlen(tag)-1]<27) tag[strlen(tag)-1]=0;
 						strcpy(Boundary, tag);
 					}

@@ -84,7 +84,8 @@ struct sockaddr_in *there;      /* remote link information */
     sin = here;
     sin.sin_port = 0;
     if (bind(s, (struct sockaddr *) &sin, sizeof sin) < 0) {
-        syslog(LOG_ERR, "bind: %s: %m", inet_ntoa(here.sin_addr));
+        //syslog(LOG_ERR, "bind: %s: %m", inet_ntoa(here.sin_addr));
+        syslog(LOG_ERR, "bind: error"); // who cares! atppp 20060415
         return (result);
     }
     /*
