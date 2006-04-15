@@ -85,7 +85,7 @@ $DLLTOOL --dllname bbsd.exe --def bbsd.def --output-lib libbbsd.a
 $DLLTOOL --dllname bbsd.exe --output-exp bbsd.exp --def bbsd.def
 
 
-$CC -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME \
+$CC -DBBSMAIN \
 -DCYGWIN -I/usr/local/include -o bbsd.exe bbsd.exp \
 bbs.o record.o delete.o stuff.o mail.o register.o xyz.o talk.o \
 comm_lists.o namecomplete.o chat.o maintain.o edit.o more.o pass.o help.o \
@@ -125,7 +125,7 @@ $DLLTOOL --dllname sshbbsd.exe --def sshbbsd.def --output-lib libsshbbsd.a
 
 $DLLTOOL --dllname sshbbsd.exe --output-exp sshbbsd.exp --def sshbbsd.def
 
-$CC -DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -g \
+$CC -DBBSMAIN -g \
 -DCYGWIN -I/usr/local/include -o sshbbsd.exe sshbbsd.exp \
 sshd.o auth-passwd.o log-server.o canohost.o servconf.o tildexpand.o \
 serverloop.o rsa.o randoms.o buffer.o emulate.o packet.o compress.o \

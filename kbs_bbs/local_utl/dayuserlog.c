@@ -60,7 +60,7 @@ int do_userlist(struct user_info *uentp, char *arg, int t)
 
     return COUNT;
 }
-#if HAVE_WWW == 1
+
 int show_wwwguest()
 {
 	int i;
@@ -73,7 +73,7 @@ int show_wwwguest()
     }
     return 0;
 }
-#endif 
+
 int main(void){
 	char path[256];
 	struct stat st;
@@ -122,19 +122,15 @@ int main(void){
 
     resolve_utmp();
 	get_publicshm();
-#if HAVE_WWW == 1
+
 	resolve_guest_table();
 
 	wwwguestonline = getwwwguestcount();
 	totalonline =  get_utmp_number() + wwwguestonline;
-#else
-    totalonline =  get_utmp_number() ;
-    wwwguestonline = wwwnotguestonline = wwwguestschool = wwwnotguestschool = 0;
-#endif 
+
     apply_ulist_addr((APPLY_UTMP_FUNC)do_userlist, NULL);
-#if HAVE_WWW == 1
+
 	show_wwwguest();
-#endif
 
 	logincount = get_publicshm()->logincount;
 	logoutcount = get_publicshm()->logoutcount;

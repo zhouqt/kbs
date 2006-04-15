@@ -17,7 +17,7 @@ libtt_la_SOURCES = tt.c
 libtetris_la_SOURCES = tetris.c
 libwinmine_la_SOURCES = winmine.c
 libdir=${prefix}/service
-AM_CFLAGS = -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)/src -Wall
+AM_CFLAGS = -I$(top_builddir)/src -Wall
 CLEANFILES=@EXTRA_CLEAN@
 install-data-local:
 	cp -f definekey.* ansihelp.txt $(libdir)

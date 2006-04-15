@@ -23,7 +23,7 @@ int do_userlist(struct user_info *uentp, char *arg, int t){
     fprintf(fp, "%s", user_info_str);
     return COUNT;
 }
-#if HAVE_WWW ==1
+
 int show_wwwguest()
 {
 	int i;
@@ -35,7 +35,7 @@ int show_wwwguest()
     }
     return 0;
 }
-#endif
+
 int main(void){
 	char path[256];
 	struct stat st;
@@ -78,13 +78,13 @@ int main(void){
 	}
 
 	fprintf(fp, "%d\n", get_utmp_number());
-#if HAVE_WWW == 1
+
 	fprintf(fp1, "%d\n", getwwwguestcount());
-#endif
+
     apply_ulist_addr((APPLY_UTMP_FUNC)do_userlist, NULL);
-#if HAVE_WWW == 1
+
 	show_wwwguest();
-#endif
+
     fclose(fp);
     fclose(fp1);
     return 0;

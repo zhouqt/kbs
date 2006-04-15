@@ -950,7 +950,7 @@ static void query_user(chatcontext * pthis, const char *userid)
     }
     setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
-#ifdef _DETAIL_UINFO_
+
     sprintf(genbuf, "%s (%s):      %s", lookupuser->userid,
             lookupuser->username,
             (check_query_mail(qry_mail_dir, NULL)) ? "有新信" : "    ");
@@ -960,15 +960,7 @@ static void query_user(chatcontext * pthis, const char *userid)
             compute_user_value(lookupuser),
             (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : " ");
     printchatline(pthis, genbuf);
-#else                           /*
-                                 */
-    sprintf(genbuf, "%s (%s):   生命力[%d]%s   %s",
-            lookupuser->userid, lookupuser->username,
-            compute_user_value(lookupuser),
-            (lookupuser->userlevel & PERM_SUICIDE) ? " (自杀中)" : " ",
-            (check_query_mail(qry_mail_dir, NULL)) ? "有新信" : "    ");
-    printchatline(pthis, genbuf);
-#endif  /*_DETAIL_UINFO_*/
+
     strcpy(inbuf, ctime(&(lookupuser->lastlogin)));
     if ((newline = strchr(genbuf, '\n')) != NULL)
         *newline = '\0';

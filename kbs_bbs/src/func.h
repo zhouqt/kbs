@@ -302,11 +302,9 @@ void unlock_sem_check(int lockid);
     int del_bm(struct userec *user,const struct boardheader *bh,int pos,int concurrent);
     void process_no_bm(const struct boardheader *bh);
 
-#if HAVE_WWW==1
     int resolve_guest_table(ARG_VOID); /* www guest shm */
     int www_guest_lock(ARG_VOID);
     void www_guest_unlock(int fd);
-#endif
 
 /* define in boards.c */
 	int valid_brdname(char *brd);

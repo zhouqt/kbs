@@ -1115,7 +1115,6 @@ void set_user_title(unsigned char titleidx,char* newtitle)
 }
 #endif
 
-#if HAVE_WWW==1
 
 /* WWW GUEST这样做有个同步问题，就是当被清除一个
  * GUEST的时候如果正好这个guest刷新了，那么会重写数据结构
@@ -1183,7 +1182,8 @@ int resolve_guest_table()
     }
     return 0;
 }
-#endif //HAVE_WWW==1
+
+
 
 int lock_user(char* userid)
 {

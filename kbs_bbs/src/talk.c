@@ -354,13 +354,7 @@ int t_query(char* q_id)
     setmailfile(qry_mail_dir, lookupuser->userid, DOT_DIR);
     exp = countexp(lookupuser);
     perf = countperf(lookupuser);
-    /*---	modified by period	2000-11-02	hide posts/logins	---*/
-#ifndef _DETAIL_UINFO_
-    if ((!HAS_PERM(getCurrentUser(), PERM_ADMINMENU)) && strcmp(lookupuser->userid, getCurrentUser()->userid))
-        prints("%s (%s)", lookupuser->userid, lookupuser->username);
-    else
-#endif                          /* 
-                                 */
+
 #ifdef FREE
 	{
 		char horobuf[50];

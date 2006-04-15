@@ -164,9 +164,7 @@ void u_enter()
     }
     uinfo.uid = getSession()->currentuid;
     strncpy(uinfo.from, getSession()->fromhost, IPLEN);
-#ifdef SHOW_IDLE_TIME
     uinfo.freshtime = time(0);
-#endif
 	uinfo.logintime = time(0);
     strncpy(uinfo.userid, getCurrentUser()->userid, 20);
 

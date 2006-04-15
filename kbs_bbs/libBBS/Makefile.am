@@ -6,7 +6,7 @@ libBBS_la_SOURCES = record.c log.c ucache.c stuff.c md5.c crypt.c pass.c bcache.
 	xml.c super_filter.c
 noinst_HEADERS = var.h
 #libBBS_la_SOURCES = $(libBBS_a_SOURCES)
-AM_CFLAGS = -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -I$(top_builddir)/src  -Wall
+AM_CFLAGS = -I$(top_builddir)/src  -Wall
 CLEANFILES=@EXTRA_CLEAN@
 #BBSLIB=`cd $(top_builddir)/.libs; pwd`
 #all-local:

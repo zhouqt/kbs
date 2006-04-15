@@ -400,12 +400,10 @@ extern void Net_Sleep(int);
 #define MAX_IGNORE      300     /* ignore-users' count */
 #define NUMBUFFER       80      /* number of records to preload. ylsdd */
 
-#ifdef SAFE_KILL
 #ifdef kill
 #undef kill
 #endif /* kill */
 #define kill(x,y)       safe_kill(x,y)
-#endif /* SAFE_KILL */
 
 #ifdef PROFILE
 #ifdef memcpy

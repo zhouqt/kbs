@@ -36,9 +36,9 @@ extern struct UTMPHEAD *utmphead;
 extern int WORDBOUND, WHOLELINE, NOUPPER, INVERSE, FILENAMEONLY, SILENT, FNAME;
 extern int ONLYCOUNT;
 extern struct UCACHE *uidshm;
-#if HAVE_WWW ==1
+
 extern struct WWW_GUEST_TABLE *wwwguest_shm;
-#endif
+
 
 /* in log.c */
 extern int bdoatexit;

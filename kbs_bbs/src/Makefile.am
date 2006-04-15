@@ -17,5 +17,5 @@ noinst_HEADERS = ann.h bbs.h chat.h defines_t.h edit.h func.h ioctl.h \
            calltime.h tmpl.h read.h service.h
 LDADD=$(top_builddir)/libsystem/.libs/libsystem.a $(top_builddir)/rzsz/.libs/libzmodem.a
 bbsd_LDFLAGS=-export-dynamic
-AM_CFLAGS=-DBBSMAIN -DINVISIBLE -DSAFE_KILL -D_DETAIL_UINFO_ -DSHOW_IDLE_TIME -Wall
+AM_CFLAGS=-DBBSMAIN -Wall
 CLEANFILES=@EXTRA_CLEAN@

@@ -150,28 +150,15 @@ int shownotepad()
 void printutitle()
 {                               /* 屏幕显示 用户列表 title */
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
-#ifndef _DETAIL_UINFO_
-    int isadm;
-    const char *fmtadm = "#上站 #文章", *fmtcom = "           ";
-
-    isadm = HAS_PERM(getCurrentUser(), PERM_ADMINMENU);
-#endif
 
     move(2, 0);
     clrtoeol();
     prints(
-#ifdef _DETAIL_UINFO_
               "\033[44m 编 号  使用者代号     %-19s  #上站 #文章 %4s    最近光临日期   \033[m\n",
-#else
-              "\033[44m 编 号  使用者代号     %-19s  %11s %4s    最近光临日期   \033[m\n",
-#endif
 #if defined(ACTS_REALNAMES)
               "真实姓名",
 #else
               "使用者昵称",
-#endif
-#ifndef _DETAIL_UINFO_
-              isadm ? fmtadm : fmtcom,
 #endif
               "身份");
 }

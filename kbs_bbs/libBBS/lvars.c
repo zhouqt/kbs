@@ -71,8 +71,6 @@ int init_all(ARG_VOID)
 #ifndef THREADSAFE
     init_sessiondata(getSession());
 #endif
-#if HAVE_WWW == 1
 	resolve_guest_table();
-#endif
     return ret;
 }

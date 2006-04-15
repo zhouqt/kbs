@@ -481,7 +481,6 @@ struct pc_logs {
 
 #endif
 
-#if HAVE_WWW==1
 
 #define MAX_WWW_MAP_ITEM (MAX_WWW_GUEST>>5)
 
@@ -500,7 +499,6 @@ struct WWW_GUEST_TABLE {
     struct WWW_GUEST_S guest_entry[MAX_WWW_GUEST];
 };
 
-#endif
 
 #ifdef HAVE_PERSONAL_DNS
 struct dns_msgbuf {

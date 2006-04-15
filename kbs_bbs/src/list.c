@@ -79,13 +79,7 @@ int print_user_info_title()
             /*
              * (HAS_PERM(getCurrentUser(),PERM_SYSOP) ? 'C' : ' ') 
              */ 'M', "动态",
-#ifdef SHOW_IDLE_TIME
             "时:分");
-
-#else                           /*  */
-            "");
-
-#endif                          /*  */
     prints("%s", title_str);
     clrtoeol();
     prints("\n");
@@ -350,13 +344,7 @@ int do_userlist()
                 (uentp.invisible == true)? (uentp.pid==1?"\033[33m":"\033[34m") : (uentp.pid==1?"\033[1;36m":""), 
 				modestring(modebuf,uentp.mode, uentp.destuid, 0,        /* 1->0 不显示聊天对象等 modified by dong 1996.10.26 */
                                            (uentp.in_chat ? uentp.chatid : NULL)),            
-#ifdef SHOW_IDLE_TIME
                 idle_str(idlebuf,&uentp));
-
-#else                           /*  */
-                "");
-
-#endif                          /*  */
         prints("%s", user_info_str);
         resetcolor();
     }
@@ -746,13 +734,7 @@ int printuent(struct userec *uentp, void *arg)
     override = myfriend(searchuser(uentp->userid), fexp, getSession());
 
     /*---	modified by period	2000-11-02	hide posts/logins	---*/
-#ifdef _DETAIL_UINFO_
     prints(" %5d%2s%s%-14s%s %s%-19s%s  %5d %5d %4s   %-16s\n", i + 1,
-#else                           /*  */
-    if (HAS_PERM(getCurrentUser(), PERM_ADMINMENU))
-        sprintf(buf, "%5d %5d", uentp->numlogins, uentp->numposts);
-    prints(" %5d%2s%s%-14s%s %s%-19s%s  %11s %4s   %-16s\n", i + 1,
-#endif                          /*  */
            (override) ? "．" : "", (override) ? "\033[32m" : "", uentp->userid, (override) ? "\033[m" : "", (override && showexplain) ? "\033[31m" : "",
 #if defined(ACTS_REALNAMES)
            uentp->realname,
@@ -760,11 +742,7 @@ int printuent(struct userec *uentp, void *arg)
            (override && showexplain) ? fexp : uentp->username,
 #endif                          /*  */
            (override && showexplain) ? "\033[m" : "",
-#ifdef _DETAIL_UINFO_
            uentp->numlogins, uentp->numposts,
-#else                           /*  */
-           buf,
-#endif                          /*  */
            permstr, Ctime(uentp->lastlogin));
     i++;
     usercounter++;
