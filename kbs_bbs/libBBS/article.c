@@ -1717,7 +1717,7 @@ int Search_Bin(struct fileheader *ptr, int key, int start, int end)
     return -(low + 1);
 }
 
-/* *common_flag 返回普通用户可见的标记 */
+/* *common_flag 返回普通用户可见的标记(不带未读标记) */
 char get_article_flag(struct fileheader *ent, struct userec *user, const char *boardname, int is_bm, char *common_flag, session_t* session)
 {
     char unread_mark = (DEFINE(user, DEF_UNREADMARK) ? UNREAD_SIGN : 'N');

@@ -276,9 +276,6 @@ attach define
 
 #define CHECK_IP_LINK 1
 
-#define BOARD_SHOW_ONLINE 1
-
-
 #define COMMEND_ARTICLE "Recommend"
 
 #define NOT_USE_DEFAULT_SMS_FUNCTIONS

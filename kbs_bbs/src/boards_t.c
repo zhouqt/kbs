@@ -545,40 +545,36 @@ static int fav_show(struct _select_def *conf, int pos)
     if ((ptr->dir >= 1)&&arg->favmode)          /* added by bad 2002.8.3*/
         prints("%-50s", buf);
     else {
-          char flag[20];
-          char f;
-          char tmpBM[BM_LEN + 1];
+        char flag[20], onlines[20];
+        char f;
+        char tmpBM[BM_LEN + 1];
 
-          strncpy(tmpBM, ptr->BM, BM_LEN);
-          tmpBM[BM_LEN] = 0;
-  
-          if ((ptr->flag & BOARD_CLUB_READ) && (ptr->flag & BOARD_CLUB_WRITE))
-                 f='A';
-          else if (ptr->flag & BOARD_CLUB_READ)
-                f = 'c';
-          else if (ptr->flag & BOARD_CLUB_WRITE)
-                f = 'p';
-          else
-                f = ' ';
-          if (ptr->flag & BOARD_CLUB_HIDE) {
-	            sprintf(flag,"\x1b[1;31m%c\x1b[m",f);
-	       } else if (f!=' ') {
-	           sprintf(flag,"\x1b[1;33m%c\x1b[m",f);
-          } else sprintf(flag,"%c",f);
-#ifdef BOARD_SHOW_ONLINE
-          if (!isdir)
-          prints("%c%-16s%s%s%-32s %4d %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), 
+        strncpy(tmpBM, ptr->BM, BM_LEN);
+        tmpBM[BM_LEN] = 0;
+
+        if ((ptr->flag & BOARD_CLUB_READ) && (ptr->flag & BOARD_CLUB_WRITE))
+            f = 'A';
+        else if (ptr->flag & BOARD_CLUB_READ)
+            f = 'c';
+        else if (ptr->flag & BOARD_CLUB_WRITE)
+            f = 'p';
+        else
+            f = ' ';
+        if (ptr->flag & BOARD_CLUB_HIDE) {
+            sprintf(flag,"\x1b[1;31m%c\x1b[m",f);
+        } else if (f!=' ') {
+           sprintf(flag,"\x1b[1;33m%c\x1b[m",f);
+        } else {
+            sprintf(flag,"%c",f);
+        }
+        if (!isdir) {
+            sprintf(onlines, "%4d", ptr->currentusers>9999?9999:ptr->currentusers);
+        } else {
+            sprintf(onlines, "%s", "    ");
+        }
+        prints("%c%-16s%s%s%-32s %s %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), 
                 ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "\033[31;1mV\033[m" : " ", flag, buf, 
-                ptr->currentusers>9999?9999:ptr->currentusers,ptr->BM[0] <= ' ' ? "诚征版主中" : strtok(tmpBM, " "));
-          else 
-          prints("%c%-16s%s%s%-32s      %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), 
-                ptr->name, (ptr->flag & BOARD_VOTEFLAG) ? "\033[31;1mV\033[m" : " ", flag, buf, 
-                ptr->BM[0] <= ' ' ? "诚征版主中" : strtok(tmpBM, " ")); /*第一个版主 */
-#else
-          prints("%c%-16s %s%s%-36s %-12s", ((ptr->zap && !(ptr->flag & BOARD_NOZAPFLAG)) ? '*' : ' '), ptr->name,
-                (ptr->flag & BOARD_VOTEFLAG) ? "\033[31;1mV\033[m" : " ", flag, buf, 
-                 ptr->BM[0] <= ' ' ? "诚征版主中" : strtok(tmpBM, " ")); /*第一个版主 */
-#endif
+                onlines, ptr->BM[0] <= ' ' ? "诚征版主中" : strtok(tmpBM, " "));
     }
     prints("\n");
     return SHOW_CONTINUE;
@@ -1265,11 +1261,7 @@ static int fav_refresh(struct _select_def *conf)
     setbcolor(BLUE);
     clrtoeol();
 	sort = (getCurrentUser()->flags & BRDSORT_FLAG) ? ( (getCurrentUser()->flags&BRDSORT1_FLAG)+1):0;
-#ifdef BOARD_SHOW_ONLINE
     prints("  %s %s讨论区名称%s       V 类别 转信  %-20s %s在线%s 版  主     ", arg->newflag ? "全部 未读" : "编号 未读", (sort==1)?"\033[36m":"", (sort==1)?"\033[44;37m":"", "中  文  叙  述", (sort & BRDSORT1_FLAG)?"\033[36m":"", (sort & BRDSORT1_FLAG)?"\033[44;37m":"");
-#else
-    prints("  %s 讨论区名称        V 类别 转信  %-24s 版  主     ", arg->newflag ? "全部 未读" : "编号 未读", "中  文  叙  述");
-#endif
     resetcolor();
     if (!arg->loop_mode)
         update_endline();

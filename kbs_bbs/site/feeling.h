@@ -333,7 +333,6 @@ attach define
 
 #define QUOTED_LINES 3
 #define QUOTELEV 0
-#define BOARD_SHOW_ONLINE 1
 
 #define BIRTHFILENUM 12
 #define BIRTHFILEPATH "0Announce/groups/GROUP_0/sysop/birthfile"
