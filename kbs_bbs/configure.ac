@@ -237,6 +237,10 @@ AC_PROG_MAKE_SET
 AC_PROG_YACC
 m4_include(config.lib)
 
+if test "$GCC" = "yes"; then
+  CFLAGS="$CFLAGS -Wall"
+fi
+
 # Checks for libraries.
 AC_CONFIG_LINKS(libBBS/site.c:$SITEDIR/$BBSSITE.c
 		libBBS/site.h:$SITEDIR/$BBSSITE.h
