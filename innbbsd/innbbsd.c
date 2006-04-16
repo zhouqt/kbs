@@ -290,7 +290,7 @@ ClientType *client;
     extern ClientType INNBBSD_STAT;
     daemoncmd_t *p = argv->dc;
     time_t uptime, now;
-    int i, j;
+    int i, j = 0;
     time_t lasthist;
     ClientType *client1 = &INNBBSD_STAT;
 

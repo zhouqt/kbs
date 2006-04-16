@@ -539,7 +539,7 @@ int cancel_article_front(char *msgid)
     char *ptr = (char *) DBfetch(msgid);
     char *filelist, filename[2048];
     char histent[4096];
-    char firstpath[MAXPATHLEN], *firstpathbase;
+    char firstpath[MAXPATHLEN], *firstpathbase = NULL;
 
     if (ptr == NULL) {
         return 0;

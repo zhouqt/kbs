@@ -325,6 +325,8 @@ int run_pgp(char *cmd, FILE ** in, FILE ** out)
         /*
          * We're the child. 
          */
+        char *args[4]={"/bin/sh","-c",cmd,NULL};
+
         close(pin[1]);
         dup2(pin[0], 0);
         close(pin[0]);
@@ -333,7 +335,7 @@ int run_pgp(char *cmd, FILE ** in, FILE ** out)
         dup2(pout[1], 2);       //modified by Czz 020419
         close(pout[1]);
 
-        execl("/bin/sh", "sh", "-c", cmd, NULL);
+        execv("/bin/sh",args);
         _exit(127);
     }
     /*
