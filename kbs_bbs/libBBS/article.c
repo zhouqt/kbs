@@ -108,13 +108,19 @@ void init_write_dir_arg(struct write_dir_arg *filearg)
   */
 int malloc_write_dir_arg(struct write_dir_arg *filearg)
 {
+    int ret;
+    char *ret_ptr;
     if (filearg->fileptr == MAP_FAILED) {
         if (filearg->fd == -1) {
-            if (safe_mmapfile(filearg->filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &filearg->fileptr, &filearg->size, &filearg->fd) == 0)
+            ret = safe_mmapfile(filearg->filename, O_RDWR, PROT_READ | PROT_WRITE, MAP_SHARED, &ret_ptr, &filearg->size, &filearg->fd);
+            filearg->fileptr = (struct fileheader*)ret_ptr;
+            if (ret == 0)
                 return -1;
             filearg->needclosefd = true;
         } else {                //用fd来打开
-            if (safe_mmapfile_handle(filearg->fd, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &filearg->fileptr, &filearg->size) == 0)
+            ret = safe_mmapfile_handle(filearg->fd, PROT_READ | PROT_WRITE, MAP_SHARED, &ret_ptr, &filearg->size);
+            filearg->fileptr = (struct fileheader*)ret_ptr;
+            if (ret == 0)
                 return -1;
         }
     }
@@ -1295,7 +1301,8 @@ int after_post(struct userec *user, struct fileheader *fh, const char *boardname
 
 int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
 {
-    struct fileheader *data;
+    char *datac;
+    struct fileheader *dataf;
     off_t filesize;
     int total;
     int low, high;
@@ -1304,10 +1311,11 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &datac, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
+        dataf = (struct fileheader*)datac;
         total = filesize / sizeof(struct fileheader);
         low = 0;
         high = total - 1;
@@ -1315,10 +1323,10 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
             int mid, comp;
 
             mid = (high + low) / 2;
-            comp = (buf->id) - ((data + mid)->id);
+            comp = (buf->id) - ((dataf + mid)->id);
             if (comp == 0) {
-                ret = (*func) (fd, data, mid + 1, total, buf, true);
-                end_mmapfile((void *) data, filesize, -1);
+                ret = (*func) (fd, dataf, mid + 1, total, buf, true);
+                end_mmapfile(datac, filesize, -1);
                 flock(fd, LOCK_UN);
                 BBS_RETURN(ret);
             } else if (comp < 0)
@@ -1326,11 +1334,11 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
             else
                 low = mid + 1;
         }
-        ret = (*func) (fd, data, low + 1, total, buf, false);
+        ret = (*func) (fd, dataf, low + 1, total, buf, false);
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) data, filesize, -1);
+    BBS_END end_mmapfile((void *) datac, filesize, -1);
 
     flock(fd, LOCK_UN);
     return ret;
@@ -1338,7 +1346,8 @@ int mmap_search_apply(int fd, struct fileheader *buf, DIR_APPLY_FUNC func)
 
 int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, void *arg)
 {
-    struct fileheader *data;
+    char *datac;
+    struct fileheader *dataf;
     off_t filesize;
     int total;
     int low, high;
@@ -1348,19 +1357,20 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
     if (flock(fd, LOCK_EX) == -1)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, TO_CHARPP &data, &filesize) == 0) {
+        if (safe_mmapfile_handle(fd, PROT_READ | PROT_WRITE, MAP_SHARED, &datac, &filesize) == 0) {
             flock(fd, LOCK_UN);
             BBS_RETURN(0);
         }
+        dataf = (struct fileheader*)datac;
         total = filesize / sizeof(fileheader_t);
         low = 0;
         high = total - 1;
         while (low <= high) {
             mid = (high + low) / 2;
-            comp = (key->id) - ((data + mid)->id);
+            comp = (key->id) - ((dataf + mid)->id);
             if (comp == 0) {
-                ret = (*func) (fd, data, mid + 1, total, true, arg);
-                end_mmapfile((void *) data, filesize, -1);
+                ret = (*func) (fd, dataf, mid + 1, total, true, arg);
+                end_mmapfile(datac, filesize, -1);
                 flock(fd, LOCK_UN);
                 BBS_RETURN(ret);
             } else if (comp < 0)
@@ -1368,11 +1378,11 @@ int mmap_dir_search(int fd, const fileheader_t * key, search_handler_t func, voi
             else
                 low = mid + 1;
         }
-        ret = (*func) (fd, data, low + 1, total, false, arg);
+        ret = (*func) (fd, dataf, low + 1, total, false, arg);
     }
     BBS_CATCH {
     }
-    BBS_END end_mmapfile((void *) data, filesize, -1);
+    BBS_END end_mmapfile((void *) datac, filesize, -1);
 
     flock(fd, LOCK_UN);
 

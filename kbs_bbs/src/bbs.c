@@ -1155,6 +1155,7 @@ int showinfo(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
 {
     int now; // 1-based
+    char *data;
     struct fileheader *pFh, *pFh1;
     off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
@@ -1163,8 +1164,9 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
     if (fileinfo->reid == fileinfo->id) return DONOTHING;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, TO_CHARPP &pFh, &size) == 0)
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, &data, &size) == 0)
             BBS_RETURN(0);
+        pFh = (struct fileheader*)data;
         now = arg->filecount = size/sizeof(struct fileheader);
         if (now >= conf->pos) now = conf->pos - 1;
         for(;now>=1;now--) { /* Ë³ÐòÕÒÄØ£¬»¹ÊÇ yuhuan mm µÄ Search_Bin ÄØ... */
@@ -1180,7 +1182,7 @@ int jumpReID(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
         now = -1;
     }
     BBS_END
-    end_mmapfile((void *) pFh, size, -1);
+    end_mmapfile(data, size, -1);
     if(now > 0) {
         conf->new_pos = now;
         return SELCHANGE;

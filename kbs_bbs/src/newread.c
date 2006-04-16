@@ -96,6 +96,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
 int find_nextnew(struct _select_def* conf,int begin)
 {
     struct read_arg* arg=conf->arg;
+    char *data;
     struct fileheader *pFh,*nowFh;
     off_t size;
     bool found=false;
@@ -103,7 +104,8 @@ int find_nextnew(struct _select_def* conf,int begin)
     if (begin<=0)
         return 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, TO_CHARPP &pFh, &size) ) {
+        if (safe_mmapfile_handle(arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, &data, &size) ) {
+            pFh = (struct fileheader*)data;
             nowFh=pFh+begin-1;
             found=false;
             for (i=begin-1;i<size/sizeof(struct fileheader);i++,nowFh++) {
@@ -117,8 +119,8 @@ int find_nextnew(struct _select_def* conf,int begin)
     BBS_CATCH {
     }
     BBS_END;
-    if (pFh!=MAP_FAILED)
-        end_mmapfile((void *) pFh, size, -1);
+    if (data!=MAP_FAILED)
+        end_mmapfile(data, size, -1);
     if (found)
         return i+1;
     return 0;
@@ -803,7 +805,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
     size_t bm_search[256];
     int qlen = strlen(query);
 
-/*	int mmap_offset,mmap_length; */
+    char *data;
     struct fileheader *pFh, *pFh1;
     off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
@@ -824,9 +826,10 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
 /*    refresh();*/
     match = 0;
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, TO_CHARPP &pFh, &size) == 0)
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, &data, &size) == 0)
             BBS_RETURN(0);
-	arg->filecount=size/sizeof(struct fileheader);
+        pFh = (struct fileheader*)data;
+        arg->filecount=size/sizeof(struct fileheader);
         if(now > arg->filecount){
 	/*在置顶文章前搜索*/
             now = arg->filecount;
@@ -892,7 +895,7 @@ static int read_search_articles(struct _select_def* conf, char *query, bool up, 
         match = 0;
     }
     BBS_END
-    end_mmapfile((void *) pFh, size, -1);
+    end_mmapfile(data, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
     if(match) {
@@ -907,6 +910,7 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
     int now; // 1-based
     off_t size;
     struct read_arg *arg = (struct read_arg *) conf->arg;
+    char *data;
     struct fileheader *pFh;
     struct fileheader_num fhn;
     int count;
@@ -916,8 +920,9 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
     if (*query == '\0') return DONOTHING;
 
     BBS_TRY {
-        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, TO_CHARPP &pFh, &size) == 0)
+        if (safe_mmapfile_handle(arg->fd, PROT_READ, MAP_SHARED, &data, &size) == 0)
             BBS_RETURN(0);
+        pFh = (struct fileheader*)data;
         arg->filecount = size/sizeof(struct fileheader);
         now = conf->pos;
 
@@ -947,7 +952,7 @@ static int jumpSuperFilter(struct _select_def* conf,struct fileheader *fileinfo,
         now = -1;
     }
     BBS_END
-    end_mmapfile((void *) pFh, size, -1);
+    end_mmapfile(data, size, -1);
     move(t_lines - 1, 0);
     clrtoeol();
     if(now > 0) {
@@ -1050,6 +1055,7 @@ bool isThreadTitle(char* a,char* b)
 
 int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FUNC func,bool applycurrent, bool down,void* arg)
 {
+    char *data;
     struct fileheader *pFh,*nowFh;
     off_t size;
     int now; /*当前扫描到的位置*/
@@ -1061,7 +1067,8 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
     count=0;
     now = conf->pos;
     BBS_TRY {
-        if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, TO_CHARPP &pFh, &size) ) {
+        if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, &data, &size) ) {
+            pFh = (struct fileheader*)data;
             bool needmove;
             recordcount=size/sizeof(struct fileheader);
             if (now>recordcount)
@@ -1116,8 +1123,8 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
     BBS_CATCH {
     }
     BBS_END;
-    if (pFh!=MAP_FAILED)
-        end_mmapfile((void *) pFh, size, -1);
+    if (data!=MAP_FAILED)
+        end_mmapfile(data, size, -1);
     return count;
 }
 
