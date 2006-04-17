@@ -136,6 +136,13 @@ static char *bm_strstr_rp(const char *string, const char *pattern, size_t * shif
 }
 #endif
 
+/* 字符串多次大小写不敏感匹配函数*/
+char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, int *init)
+{
+    return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
+}
+
+
 #ifndef HAVE_STRCASESTR
 /* 字符串大小写不敏感的匹配函数*/
 static char *bm_strcasestr(const char *string, const char *pattern)
@@ -149,11 +156,34 @@ char *strcasestr(const char *haystack, const char *needle)
 {
     return bm_strcasestr(haystack, needle);
 }
-#endif
+#endif /* HAVE_STRCASESTR */
 
-/* 字符串多次大小写不敏感匹配函数*/
-char *bm_strcasestr_rp(const char *string, const char *pattern, size_t * shift, int *init)
+
+
+#ifndef HAVE_MEMMEM
+void *memmem(const void *s, size_t slen, const void *p, size_t plen)
 {
-    return (char *) txtfind(string, strlen(string), pattern, strlen(pattern), shift, init);
+    size_t shift[256];
+    int init = 0;
+    return memfind(s, slen, p, plen, shift, &init);
 }
+#endif /* HAVE_MEMMEM */
+
+
+
+#ifndef HAVE_STRSEP
+char* strsep(char **strptr,const char *delim){
+    char *ptr;
+    if(!(ptr=*strptr))
+        return NULL;
+    if(!*delim){
+        *strptr=NULL;
+        return ptr;
+    }
+    if(!(*strptr=(!*(delim+1)?strchr(*strptr,*delim):strpbrk(*strptr,delim))))
+        return ptr;
+    *((*strptr)++)=0;
+    return ptr;
+}
+#endif /* HAVE_STRSEP */
 

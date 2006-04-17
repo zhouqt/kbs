@@ -1,4 +1,4 @@
 lib_LTLIBRARIES = libsystem.la
-libsystem_la_SOURCES = f_io.c bm_strcmp.c uuencode.c memmem.c base64.c dep_solaris.c
+libsystem_la_SOURCES = f_io.c kbs_strcmp.c uuencode.c base64.c
 AM_CFLAGS=-I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@
