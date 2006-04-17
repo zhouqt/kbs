@@ -3182,3 +3182,173 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
     if (ret) unlink(filename);
     return(ret);
 }
+
+/* etnlegend, 2006.04.16, 区段删除核心 */
+#if 0
+
+#define DELETE_RANGE_BASE_MODE_TOKEN    0x01    /* 文章列表, 删除拟删文章 */
+#define DELETE_RANGE_BASE_MODE_RANGE    0x02    /* 文章列表和信件列表, 普通区段删除 */
+#define DELETE_RANGE_BASE_MODE_FORCE    0x04    /* 文章列表和信件列表, 强制区段删除 */
+#define DELETE_RANGE_BASE_MODE_MPDEL    0x08    /* 文章列表, 设置拟删标记 */
+#define DELETE_RANGE_BASE_MODE_CLEAR    0x10    /* 文章列表, 清除拟删标记 */
+#define DELETE_RANGE_BASE_MODE_MAIL     0x20    /* 信件列表模式 */
+#define DELETE_RANGE_BASE_MODE_CHECKS   0x40    /* 校验源 DIR 文件修改 */
+#define DELETE_RANGE_BASE_MODE_CHECKD   0x80    /* 校验目的 DIR 文件修改 */
+#define DELETE_RANGE_BASE_MODE_OPMASK   (0\
+    |DELETE_RANGE_BASE_MODE_TOKEN\
+    |DELETE_RANGE_BASE_MODE_RANGE\
+    |DELETE_RANGE_BASE_MODE_FORCE\
+    |DELETE_RANGE_BASE_MODE_MPDEL\
+    |DELETE_RANGE_BASE_MODE_CLEAR\
+)
+#define DELETE_RANGE_BASE_MODE_CHECK    (DELETE_RANGE_BASE_MODE_CHECKS|DELETE_RANGE_BASE_MODE_CHECKD)
+
+#ifdef FREE
+#define DELETE_RANGE_RESERVE_DIGEST
+#endif /* FREE */
+
+
+int delete_range_base(
+    const char *videntity,              /* 操作对象标识, 即版面名称或用户名称 */
+    const char *vdir_src,               /* 源 DIR 名称, 为 NULL 时默认为 DOT_DIR 宏设置的值 */
+    const char *vdir_dst,               /* 目的 DIR 名称, 为 NULL 时直接删除文件 */
+    int vid_from,                       /* 区段首文章或信件位置 */
+    int vid_to,                         /* 区段尾文章或信件位置 */
+    int vmode,                          /* 操作模式, DELETE_RANGE_BASE_MODE_ 系列宏的位或 */
+    int (*func)(),                      /* 对需要操作的文章执行的附加操作, 为 NULL 时执行默认操作 */
+    const struct stat *vst_src,         /* 用于校验文件修改的源 DIR 的文件状态描述, 为 NULL 时不进行校验 */
+    const struct stat *vst_dst          /* 用于校验文件修改的目的 DIR 的文件状态描述, 为 NULL 时不进行校验 */
+){
+#define DRBP_MODE       0644
+#define DRBP_LEN        _POSIX_PATH_MAX
+#define DRBP_CSRC       (vmode&DELETE_RANGE_BASE_MODE_CHECKS)
+#define DRBP_CDST       (vmode&DELETE_RANGE_BASE_MODE_CHECKD)
+#define DRBP_MAIL       (vmode&DELETE_RANGE_BASE_MODE_MAIL)
+#define DRBP_DST        (vdir_dst&&(*vdir_dst)&&!(vmode&(DELETE_RANGE_BASE_MODE_MPDEL|DELETE_RANGE_BASE_MODE_CLEAR)))
+#define DRBP_RSRC       do{munmap(pm_src,st_src.st_size);fcntl(fd_src,F_SETLKW,&lck_clr);close(fd_src);}while(0)
+#define DRBP_RDST       do{munmap(pm_dst,count*sizeof(struct fileheader));fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_dst);}while(0)
+#ifndef DELETE_RANGE_RESERVE_DIGEST
+#define DRBP_UNDEL(f)   (f->accessed[0]&(FILE_MARKED|FILE_PERCENT))
+#define DRBP_TOKEN(f)   ((f->accessed[1]&FILE_DEL)&&!DRBP_UNDEL(f))
+#else /* DELETE_RANGE_RESERVE_DIGEST */
+#define DRBP_UNDEL(f)   (f->accessed[0]&(FILE_MARKED|FILE_PERCENT|FILE_DIGEST))
+#define DRBP_TOKEN(f)   ((f->accessed[1]&FILE_DEL)&&!DRBP_UNDEL(f))
+#endif /* DELETE_RANGE_RESERVE_DIGEST */
+
+    static const struct flock lck_set={F_WRLCK,SEEK_SET,0,0,0};
+    static const struct flock lck_clr={F_UNLCK,SEEK_SET,0,0,0};
+    struct fileheader *src,*dst;
+    struct stat st_src,st_dst;
+    char path_src[DRBP_LEN],path_dst[DRBP_LEN];
+    int fd_src,fd_dst,count,total,reserved,id_from,id_to,i;
+    void *pm_src,*pm_dst;
+    if(!videntity||!*videntity)
+        return 0x10;
+    if(!vdir_src||!*vdir_src)
+        vdir_src=DOT_DIR;
+    if(!(vid_from>0))
+        return 0x11;
+    !DRBP_MAIL?setbfile(path_src,videntity,vdir_src):setmailfile(path_src,videntity,vdir_src);
+    if(stat(path_src,&st_src)==-1||!S_ISREG(st_src.st_mode))
+        return 0x20;
+    if(DRBP_CSRC&&(st_src.st_mtime>vst_src->st_mtime))
+        return 0x21;
+    if((fd_src=open(path_src,O_RDWR,DRBP_MODE))==-1)
+        return 0x22;
+    if(fcntl(fd_src,F_SETLKW,&lck_set)==-1){
+        close(fd_src);
+        return 0x23;
+    }
+    if((pm_src=mmap(NULL,st_src.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,fd_src,0))==MAP_FAILED){
+        fcntl(fd_src,F_SETLKW,&lck_clr);
+        close(fd_src);
+        return 0x24;
+    }
+    total=st_src.st_size/sizeof(struct fileheader);
+    id_from=(vid_from-1);
+    id_to=((!(vid_to>total)?vid_to:total)-1);
+    reserved=((total-count)-id_from);
+    if(!((count=((id_to-id_from)+1))>0)){
+        DRBP_RSRC;
+        return 0x30;
+    }
+    if(DRBP_DST){
+        !DRBP_MAIL?setbfile(path_dst,videntity,vdir_dst):setmailfile(path_dst,videntity,vdir_dst);
+        if(stat(path_dst,&st_dst)==-1||!S_ISREG(st_dst.st_mode)){
+            DRBP_RSRC;
+            return 0x40;
+        }
+        if(DRBP_CDST&&(st_dst.st_mtime>vst_dst->st_mtime)){
+            DRBP_RSRC;
+            return 0x41;
+        }
+        if((fd_dst=open(path_dst,O_WRONLY|O_CREAT|O_APPEND,DRBP_MODE))==-1){
+            DRBP_RSRC;
+            return 0x42;
+        }
+        if(fcntl(fd_dst,F_SETLKW,&lck_set)==-1){
+            DRBP_RSRC;
+            close(fd_dst);
+            return 0x43;
+        }
+        if((pm_dst=mmap(NULL,count*sizeof(struct fileheader),PROT_WRITE,MAP_SHARED,fd_dst,st_dst.st_size))==MAP_FAILED){
+            DRBP_RSRC;
+            fcntl(fd_dst,F_SETLKW,&lck_clr);
+            close(fd_dst);
+            return 0x44;
+        }
+    }
+    else{
+        fd_dst=-1;
+        pm_dst=NULL;
+    }
+    src=(struct fileheader*)pm_src;
+    src+=id_from;
+    dst=(struct fileheader*)pm_dst;
+    switch(vmode&DELETE_RANGE_BASE_MODE_OPMASK){
+        case DELETE_RANGE_BASE_MODE_TOKEN:
+            for(i=0;i<count;i++)
+                DRBP_TOKEN(&src[i])?DRBP_MSET(i):DRBP_MCLR(i);
+            break;
+        case DELETE_RANGE_BASE_MODE_RANGE:
+            for(i=0;i<count;i++)
+                !DRBP_UNDEL(&src[i])?DRBP_MSET(i):DRBP_MCLR(i);
+            break;
+        case DELETE_RANGE_BASE_MODE_FORCE:
+            memcpy(dst,src,count*sizeof(struct fileheader));
+            memmove(src,&src[count],reserved*sizeof(struct fileheader));
+            //ftruncate()
+            //cancelpost
+            break;
+        case DELETE_RANGE_BASE_MODE_MPDEL:
+            for(i=0;i<count;i++)
+                !DRBP_UNDEL(&src[i])?(src[i].accessed[1]|=FILE_DEL):(src[i].accessed[1]&=~FILE_DEL);
+            DRBP_RDST;
+            DRBP_RSRC;
+            return 0x00;
+        case DELETE_RANGE_BASE_MODE_CLEAR:
+            for(i=0;i<count;i++)
+                src[i].accessed[1]&=~FILE_DEL;
+            DRBP_RDST;
+            DRBP_RSRC;
+            return 0x00;
+        default:
+            free(tab);
+            DRBP_RDST;
+            DRBP_RSRC;
+            return 0x60;
+    }
+
+    return 0;
+/*
+#undef DRBP_MODE
+#undef DRBP_LEN
+#undef DRBP_MAIL
+#undef DRBP_DST
+#undef DRBP_RDST
+#undef DRBP_CSRC
+#undef DRBP_CDST
+*/
+}
+#endif /* 0 */
+
