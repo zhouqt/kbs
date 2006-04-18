@@ -1,4 +1,3 @@
-#define BBSMAIN
 #include "service.h"
 #include "bbs.h"
 #ifdef BBS_SERVICE_QUIZ

@@ -17,7 +17,7 @@ libtt_la_SOURCES = tt.c
 libtetris_la_SOURCES = tetris.c
 libwinmine_la_SOURCES = winmine.c
 libdir=${prefix}/service
-AM_CFLAGS = -I$(top_builddir)/src
+AM_CFLAGS = -DBBSMAIN -I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@
 install-data-local:
 	cp -f definekey.* ansihelp.txt $(libdir)

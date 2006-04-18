@@ -3,5 +3,5 @@ lib_LTLIBRARIES = libworker.la
 libworker_la_SOURCES = 	maingame.c screens.c gamedata.c gamedraw.c \
     gameinit.c gameplay.c gametty.c 
 libdir=${prefix}/game/so
-AM_CFLAGS = -DENABLE_DL -I$(top_builddir)/src
+AM_CFLAGS = -DENABLE_DL -DBBSMAIN -I$(top_builddir)/src
 CLEANFILES=@EXTRA_CLEAN@

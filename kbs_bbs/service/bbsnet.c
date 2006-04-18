@@ -1,7 +1,5 @@
 // NJU tinybbsnet, Preview Version, zhch@dii.nju.edu.cn, 2000.3.23 //
 
-#define BBSMAIN
-
 #include "../rzsz/zglobal.h"
 
 #include "service.h"

@@ -10,8 +10,6 @@
  * GNU General Public License for more details.
  */
 
-#define BBSMAIN
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <termios.h>

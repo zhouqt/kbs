@@ -5,8 +5,6 @@
 // zixia pandora, Changed by zixia, zixia@zixia.net, 2003.1.25
 // zixia pandora, Change by roy, roy@zixia.net 2003.6.08
 
-#define BBSMAIN
-
 #include "../rzsz/zglobal.h"
 #include "service.h"
 #include "bbs.h"

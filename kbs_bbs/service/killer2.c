@@ -27,7 +27,6 @@ Modified by znight@smth, 01/14/2004
 (5) 任何时刻，最后的杀手崩溃立即结束游戏；
 ******************************************************/
 
-#define BBSMAIN
 #include "service.h"
 #include "bbs.h"
 

@@ -1,4 +1,3 @@
-#define BBSMAIN
 #include "service.h"
 #include "bbs.h"
 #if defined(BBS_SERVICE_DICT) && HAVE_MYSQL_SMTH == 1

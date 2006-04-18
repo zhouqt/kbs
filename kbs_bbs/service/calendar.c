@@ -5,7 +5,6 @@
 本游戏是自由软件，请随意复制移植
 请在修改后的文件头部保留版权信息
 ******************************************************/
-#define BBSMAIN
 #include "service.h"
 #include "bbs.h"
 #include <time.h>

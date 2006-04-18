@@ -23,7 +23,6 @@
   02111-1307, USA.
 */
 
-#define BBSMAIN
 #include "bbs.h"
 
 extern jmp_buf zmodemjmp;

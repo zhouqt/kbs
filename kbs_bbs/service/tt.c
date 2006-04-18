@@ -1,5 +1,3 @@
-#define BBSMAIN
-
 #include <sys/times.h>
 #include "service.h"
 #include "bbs.h"
