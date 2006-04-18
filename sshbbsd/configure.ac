@@ -1115,7 +1115,6 @@ if test "x$socks" = "x"; then
 fi
 
 
-
 if test "x$socks" = "x4"; then
     AC_DEFINE(SOCKS, 1, [ ])
     AC_DEFINE(SOCKS4, 1, [ ])
