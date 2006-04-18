@@ -302,6 +302,9 @@ int load_key(char * fn);
 /* newhelp.c */
 int newhelp(int mode);
 
+/* tmpl.c */
+int choose_tmpl(char *title, char *fname);
+
 /* stuff.c */
 #ifdef HAVE_IPV6_SMTH
 void * ip_len2mask (int bitlen, void *vmask);

@@ -43,7 +43,7 @@ BBSD_SRCS = bbs.c record.c delete.c stuff.c mail.c register.c \
 	   newmain_single.c newio.c newterm.c convcode.c bbs_sendmail.c crypt.c \
 	   ucache.c utmp.c log.c md5.c libmsg.c article.c sysconf.c site.c\
 	   filter.c mgrep.c definekey.c default.c calltime.c super_filter.c \
-	   libtmpl.c msg_manager.c addr_manage.c libpc.c personal_corp.c \
+	   libtmpl.c tmpl.c msg_manager.c addr_manage.c libpc.c personal_corp.c \
 	   newread.c newhelp.c
 CLEANFILES=@EXTRA_CLEAN@
 bin_PROGRAMS = sshbbsd
