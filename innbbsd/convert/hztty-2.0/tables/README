@@ -1,8 +1,0 @@
-This directory is for those who want to use their own encoding tables.
-
-The current ../b2g_tables.c is generated from the HCu 3.0 program
-by R. Yeung & F. F. Lee.  ../g2u_tables.c and ../b2u_tables.c
-are generated from Ross Paterson's utf7 programs.
-
-If you prefer different conversion tables or want to use other
-conversion programs, edit the corresponding file gen_x2y.sh and run it.

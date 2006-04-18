@@ -1,6 +1,0 @@
-#/usr/bin/env python
-
-import mkunitab
-
-mkunitab.make('CP936.TXT', 'gb', [[0x81, 0xff], [0x40, 0xff]], 0x25a1, 0xa1f5)
-
