@@ -45,6 +45,10 @@ fi
 AC_PROG_CC
 AC_ISC_POSIX
 
+if test "$GCC" = "yes"; then
+  CFLAGS="$CFLAGS -Wall"
+fi
+
 AC_DEFINE_UNQUOTED(HOSTTYPE, "$host", [ ])
 
 case "$host" in
