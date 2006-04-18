@@ -42,14 +42,15 @@ int Junkhistory = 0;
 
 char *REMOTEUSERNAME, *REMOTEHOSTNAME;
 
-static fd_set rfd, wfd, efd, orfd, owfd, oefd;
+static fd_set rfd, wfd, efd, orfd;
 
 int clearfdset(int fd)
 {
     FD_CLR(fd, &rfd);
+    return 0;
 }
 
-static channelcreate(client)
+static void channelcreate(client)
 ClientType *client;
 {
     buffer_t *in, *out;
@@ -76,7 +77,7 @@ ClientType *client;
     client->filter_buffer = NULL;
 }
 
-channeldestroy(client)
+void channeldestroy(client)
 ClientType *client;
 {
     if (client->in.data != NULL) {
@@ -106,14 +107,13 @@ ClientType *client;
 #endif
 }
 
-inndchannel(port, path)
+int inndchannel(port, path)
 char *port, *path;
 {
     time_t tvec;
     int i;
     int bbsinnd;
     int localbbsinnd;
-    char obuf[4096];
     struct timeval tout;
     ClientType *client = (ClientType *) mymalloc(sizeof(ClientType) * Maxclient);
     int localdaemonready = 0;
@@ -175,7 +175,7 @@ char *port, *path;
         }
         time(&now);
         local = localtime(&now);
-        if (local != NULL & local->tm_hour == His_Maint_Hour && local->tm_min >= His_Maint_Min) {
+        if (local != NULL && local->tm_hour == His_Maint_Hour && local->tm_min >= His_Maint_Min) {
             if (!maint) {
                 innbbsdlog(":Maint: start (%d:%d).\n", local->tm_hour, local->tm_min);
                 HISmaint();
@@ -201,8 +201,7 @@ char *port, *path;
             continue;
         }
         if (localdaemonready && FD_ISSET(localbbsinnd, &orfd)) {
-            int ns, length;
-            int cc;
+            int ns;
 
             ns = tryaccept(localbbsinnd);
             if (ns < 0)
@@ -246,11 +245,11 @@ char *port, *path;
             }
         }
         if (FD_ISSET(bbsinnd, &orfd)) {
-            int ns = tryaccept(bbsinnd), length;
+            int ns = tryaccept(bbsinnd);
+            socklen_t length;
             struct sockaddr_in there;
             char *name;
             struct hostent *hp;
-            int cc;
 
             if (ns < 0)
                 continue;
@@ -275,7 +274,6 @@ char *port, *path;
             length = sizeof(there);
             if (getpeername(ns, (struct sockaddr *) &there, &length)
                 >= 0) {
-                time_t now = time((time_t *) 0);
 
                 name = (char *) my_rfc931_name(ns, &there);
                 strncpy(client[i].username, name, 20);
@@ -367,8 +365,7 @@ char *port, *path;
 int dbzchannelreader(client)
 ClientType *client;
 {
-    int len, clientlen;
-    char buffer1[8192], buffer2[4096];
+    int len;
     char *ptr;
     buffer_t *in = &client->in;
 
@@ -405,12 +402,11 @@ ClientType *client;
     return len;
 }
 
-int dbzcommandparse(ClientType *client){
+void dbzcommandparse(ClientType *client){
     char *ptr, *lastend;
     argv_t *Argv = &client->Argv;
     int (*Main) ();
     char *buffer = client->in.data;
-    int fd = client->fd;
     buffer_t *in = &client->in;
     int dataused;
     int dataleft;
@@ -516,10 +512,6 @@ int dbzcommandparse(ClientType *client){
     }
 }
 
-do_command()
-{
-}
-
 void dopipesig(s)
 int s;
 {
@@ -556,12 +548,13 @@ char *port;
         fprintf(pf, "%d\n", getpid());
         fclose(pf);
     }
+    return 0;
 }
 
 extern char *optarg;
 extern int opterr, optind;
 
-innbbsusage(name)
+void innbbsusage(name)
 char *name;
 {
     fprintf(stderr, "Usage: %s   [options] \n", name);
@@ -598,14 +591,14 @@ int dbzinnbbsdstartup(void){
     return INNBBSDstartup;
 }
 
-main(argc, argv)
+int main(argc, argv)
 int argc;
 char **argv;
 {
 
     char *port, *path;
     int c, errflag = 0;
-    extern INNBBSDhalt();
+    extern int INNBBSDhalt();
 
 #if !defined(DBZSERVER)
     initial_lang();
@@ -635,7 +628,7 @@ char **argv;
             break;
         case 'i':{
                 struct sockaddr_in there;
-                int len = sizeof(there);
+                socklen_t len = sizeof(there);
                 int rel;
 
                 if ((rel = getsockname(0, (struct sockaddr *) &there, &len)) < 0) {
@@ -659,8 +652,7 @@ char **argv;
         case 'p':              /* yes, assign port number here .. */
             port = optarg;
             printf("p:%s\n", optarg);
-            exit;
-            break;
+            return 0;
         case 'l':              /* sure, assign socket path here too .. */
             path = optarg;
             printf("path:%s\n", optarg);
@@ -698,4 +690,5 @@ char **argv;
     signal(SIGPIPE, dopipesig);
     inndchannel(port, path);
     HISclose();
+    return 0;
 }

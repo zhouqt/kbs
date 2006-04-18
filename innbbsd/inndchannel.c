@@ -74,7 +74,7 @@ ClientType *client;
     client->filter_buffer = NULL;
 }
 
-int channeldestroy(ClientType *client){
+void channeldestroy(ClientType *client){
     if (client->in.data != NULL) {
         free(client->in.data);
         client->in.data = NULL;
@@ -100,7 +100,6 @@ int channeldestroy(ClientType *client){
         INNBBSD_STAT.statfail += client->statfail;
     }
 #endif
-    return 0;
 }
 
 int inndchannel(char *port, char *path)
