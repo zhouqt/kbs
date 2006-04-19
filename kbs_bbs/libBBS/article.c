@@ -3295,7 +3295,8 @@ int delete_range_base(
 #define DRBP_MAIL       (vmode&DELETE_RANGE_BASE_MODE_MAIL)
 #define DRBP_DST        (vdir_dst&&(*vdir_dst)&&!(vmode&(DELETE_RANGE_BASE_MODE_MPDEL|DELETE_RANGE_BASE_MODE_CLEAR)))
 #define DRBP_RSRC       do{munmap(pm_src,st_src.st_size);fcntl(fd_src,F_SETLKW,&lck_clr);close(fd_src);}while(0)
-#define DRBP_RDST       do{munmap(pm_dst,count*sizeof(struct fileheader));fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_dst);}while(0)
+#define DRBP_RDST       do{munmap(pm_dst,(st_dst.st_size+count*sizeof(struct fileheader)));\
+                            fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_dst);}while(0)
 /* 用于减少循环内条件判断的位运算方法 ... Trust Me! */
 #define DRBP_T_R(i)     ((i)^(DELETE_RANGE_BASE_MODE_TOKEN|FILE_DEL))
 #define DRBP_T_G(i)     (DRBP_T_R(i)&(-DRBP_T_R(i)))
@@ -3349,6 +3350,8 @@ int delete_range_base(
         return 0x30;
     }
     reserved=((total-count)-id_from);
+    src=(struct fileheader*)pm_src;
+    src+=id_from;
     /* 处理目的 DIR 文件 */
     if(DRBP_DST){
         !DRBP_MAIL?setbfile(path_dst,videntity,vdir_dst):setmailfile(path_dst,videntity,vdir_dst);
@@ -3360,7 +3363,7 @@ int delete_range_base(
             DRBP_RSRC;
             return 0x41;
         }
-        if((fd_dst=open(path_dst,O_WRONLY|O_CREAT|O_APPEND,DRBP_MODE))==-1){
+        if((fd_dst=open(path_dst,O_RDWR|O_CREAT,DRBP_MODE))==-1){
             DRBP_RSRC;
             return 0x42;
         }
@@ -3369,21 +3372,21 @@ int delete_range_base(
             close(fd_dst);
             return 0x43;
         }
-        if((pm_dst=mmap(NULL,count*sizeof(struct fileheader),PROT_WRITE,MAP_SHARED,fd_dst,st_dst.st_size))==MAP_FAILED){
+        if((pm_dst=mmap(NULL,(st_dst.st_size+count*sizeof(struct fileheader)),PROT_WRITE,MAP_SHARED,fd_dst,0))==MAP_FAILED){
+            perror(NULL);
             DRBP_RSRC;
             fcntl(fd_dst,F_SETLKW,&lck_clr);
             close(fd_dst);
             return 0x44;
         }
+        dst=(struct fileheader*)pm_dst;
+        dst+=(st_dst.st_size/sizeof(struct fileheader));
     }
     else{
         fd_dst=-1;
         pm_dst=NULL;
+        dst=NULL;
     }
-    /* 处理映像头 */
-    src=(struct fileheader*)pm_src;
-    src+=id_from;
-    dst=(struct fileheader*)pm_dst;
     /* 处理区段操作 */
     switch(vmode&DELETE_RANGE_BASE_MODE_OPMASK){
         case DELETE_RANGE_BASE_MODE_TOKEN:                  /* 删除拟删文章 */
@@ -3441,6 +3444,10 @@ int delete_range_base(
                         j=0;
                     }
                 }
+                if(j){                                      /* 最后一块需要复制的数据 */
+                    memcpy(&dst[n_dst],&src[count-j],j*sizeof(struct fileheader));
+                    n_dst+=j;
+                }
                 /* 确定文件长度并同步映像数据 */
                 if(ftruncate(fd_dst,(st_dst.st_size+n_dst*sizeof(struct fileheader)))==-1){
                     ftruncate(fd_dst,st_dst.st_size);
@@ -3448,7 +3455,7 @@ int delete_range_base(
                     DRBP_RSRC;
                     return 0x60;
                 }
-                if(msync(pm_dst,n_dst*sizeof(struct fileheader),MS_SYNC)==-1){
+                if(msync(pm_dst,(st_dst.st_size+n_dst*sizeof(struct fileheader)),MS_SYNC)==-1){
                     ftruncate(fd_dst,st_dst.st_size);
                     DRBP_RDST;
                     DRBP_RSRC;
@@ -3470,6 +3477,8 @@ int delete_range_base(
                 n_src++;
                 src[i].accessed[1]&=~FILE_DEL;
             }
+            if(j)                                           /* 最后一块需要移动的数据 */
+                memmove(src,&src[j],n_src*sizeof(struct fileheader));
             memmove(&src[n_src],&src[count],reserved*sizeof(struct fileheader));
             /* 确定文件长度并同步映像数据 */
             if(ftruncate(fd_src,(st_src.st_size-(count-n_src)*sizeof(struct fileheader)))==-1){
@@ -3508,7 +3517,7 @@ int delete_range_base(
                     DRBP_RSRC;
                     return 0x70;
                 }
-                if(msync(pm_dst,count*sizeof(struct fileheader),MS_SYNC)==-1){
+                if(msync(pm_dst,(st_dst.st_size+count*sizeof(struct fileheader)),MS_SYNC)==-1){
                     ftruncate(fd_dst,st_dst.st_size);
                     DRBP_RDST;
                     DRBP_RSRC;
