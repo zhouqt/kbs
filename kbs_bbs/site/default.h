@@ -626,14 +626,13 @@ extern const char secname[SECNUM][2][20];
 typedef struct fileheader {     /* This structure is used to hold data in */
     char filename[FILENAME_LEN];        /* the DIR files */
     unsigned int id, groupid, reid;
-#if defined(FILTER) || defined(COMMEND_ARTICLE)
+
+    /* please kill these four fuckers */
     int o_bid;
     unsigned int o_id;
     unsigned int o_groupid;
     unsigned int o_reid;
-#else
-    char unused1[16];
-#endif
+
     char innflag[2];
     char owner[OWNER_LEN];
     unsigned int eff_size; /* 版面文章: 表示有效字节数，信件: 表示文件大小 - atppp */
