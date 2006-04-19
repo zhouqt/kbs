@@ -3373,7 +3373,6 @@ int delete_range_base(
             return 0x43;
         }
         if((pm_dst=mmap(NULL,(st_dst.st_size+count*sizeof(struct fileheader)),PROT_WRITE,MAP_SHARED,fd_dst,0))==MAP_FAILED){
-            perror(NULL);
             DRBP_RSRC;
             fcntl(fd_dst,F_SETLKW,&lck_clr);
             close(fd_dst);
