@@ -3184,7 +3184,6 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
 }
 
 /* etnlegend, 2006.04.16, 区段删除核心 */
-#if 0
 
 #define DELETE_RANGE_BASE_MODE_TOKEN    0x01    /* 文章列表, 删除拟删文章 */
 #define DELETE_RANGE_BASE_MODE_RANGE    0x02    /* 文章列表和信件列表, 普通区段删除 */
@@ -3201,12 +3200,81 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
     |DELETE_RANGE_BASE_MODE_MPDEL\
     |DELETE_RANGE_BASE_MODE_CLEAR\
 )
-#define DELETE_RANGE_BASE_MODE_CHECK    (DELETE_RANGE_BASE_MODE_CHECKS|DELETE_RANGE_BASE_MODE_CHECKD)
+
+/* NOTE: macro definations above should go to `bbs.h` */
 
 #ifdef FREE
 #define DELETE_RANGE_RESERVE_DIGEST
 #endif /* FREE */
 
+/* NOTE: macro condition and defination above should go to `default.h` and `site.h` */
+
+#define DRBP_MODE       0644
+#define DRBP_LEN        _POSIX_PATH_MAX
+
+static inline int delete_range_cancel_inn(const char *board,const struct fileheader *file){
+    FILE *fp,*fp_bntp;
+    char buf[DRBP_LEN],nick[DRBP_LEN],*p;
+    int len;
+    setbfile(buf,board,file->filename);
+    if(!(fp=fopen(buf,"r")))
+        return 1;
+    if(!(fp_bntp=fopen("innd/cancel.bntp","a"))){
+        fclose(fp);
+        return 2;
+    }
+    nick[0]=0;
+    while(skip_attach_fgets(buf,DRBP_LEN,fp)){
+        buf[len=(strlen(buf)-1)]=0;
+        if(len<8)
+            break;
+        if(!strncmp(buf,"发信人: ",8)){
+            if(!(p=strrchr(buf,')')))
+                break;
+            *p=0;
+            if(!(p=strchr(buf,'(')))
+                break;
+            snprintf(nick,DRBP_LEN,"%s",&p[1]);
+            break;
+        }
+    }
+    snprintf(buf,DRBP_LEN,"%s\t%s\t%s\t%s\t%s\n",board,file->filename,file->owner,nick,file->title);
+    fputs(buf,fp_bntp);
+    fclose(fp);
+    fclose(fp_bntp);
+    return 0;
+}
+
+static inline int delete_range_cancel_post_mv(const char *board,struct fileheader *file){
+    char obuf[DRBP_LEN],nbuf[DRBP_LEN];
+    time_t currtime;
+    setbfile(obuf,board,file->filename);
+    !(file->filename[1]=='/')?(file->filename[0]='D'):(file->filename[2]='D');
+    setbfile(nbuf,board,file->filename);
+    currtime=time(NULL);
+    if(file->innflag[0]=='S'&&file->innflag[1]=='S'&&(get_posttime(file)>(currtime-(14*86400))))
+        delete_range_cancel_inn(board,file);
+    file->accessed[sizeof(((const struct fileheader*)NULL)->accessed)-1]=((currtime/86400)%100);
+    if(getCurrentUser()){
+        snprintf(obuf,ARTICLE_TITLE_LEN,"%-32.32s - %s",file->title,getCurrentUser()->userid);
+        snprintf(file->title,ARTICLE_TITLE_LEN,"%s",obuf);
+    }
+    return f_mv(obuf,nbuf);
+}
+
+static inline int delete_range_cancel_post_del(const char *board,struct fileheader *file){
+    char buf[DRBP_LEN];
+    setbfile(buf,board,file->filename);
+    if(file->innflag[0]=='S'&&file->innflag[1]=='S'&&(get_posttime(file)>(time(NULL)-(14*86400))))
+        delete_range_cancel_inn(board,file);
+    return my_unlink(buf);
+}
+
+static inline int delete_range_cancel_mail(const char *user,struct fileheader *file){
+    char buf[DRBP_LEN];
+    setmailfile(buf,user,file->filename);
+    return my_unlink(buf);
+}
 
 int delete_range_base(
     const char *videntity,              /* 操作对象标识, 即版面名称或用户名称 */
@@ -3215,43 +3283,51 @@ int delete_range_base(
     int vid_from,                       /* 区段首文章或信件位置 */
     int vid_to,                         /* 区段尾文章或信件位置 */
     int vmode,                          /* 操作模式, DELETE_RANGE_BASE_MODE_ 系列宏的位或 */
-    int (*func)(),                      /* 对需要操作的文章执行的附加操作, 为 NULL 时执行默认操作 */
+    int (*func)(
+        const char*,
+        struct fileheader*
+    ),                                  /* 对需要操作的文章执行的附加操作, 为 NULL 时执行默认操作 */
     const struct stat *vst_src,         /* 用于校验文件修改的源 DIR 的文件状态描述, 为 NULL 时不进行校验 */
     const struct stat *vst_dst          /* 用于校验文件修改的目的 DIR 的文件状态描述, 为 NULL 时不进行校验 */
 ){
-#define DRBP_MODE       0644
-#define DRBP_LEN        _POSIX_PATH_MAX
 #define DRBP_CSRC       (vmode&DELETE_RANGE_BASE_MODE_CHECKS)
 #define DRBP_CDST       (vmode&DELETE_RANGE_BASE_MODE_CHECKD)
 #define DRBP_MAIL       (vmode&DELETE_RANGE_BASE_MODE_MAIL)
 #define DRBP_DST        (vdir_dst&&(*vdir_dst)&&!(vmode&(DELETE_RANGE_BASE_MODE_MPDEL|DELETE_RANGE_BASE_MODE_CLEAR)))
 #define DRBP_RSRC       do{munmap(pm_src,st_src.st_size);fcntl(fd_src,F_SETLKW,&lck_clr);close(fd_src);}while(0)
 #define DRBP_RDST       do{munmap(pm_dst,count*sizeof(struct fileheader));fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_dst);}while(0)
+/* 用于减少循环内条件判断的位运算方法 ... Trust Me! */
+#define DRBP_T_R(i)     ((i)^(DELETE_RANGE_BASE_MODE_TOKEN|FILE_DEL))
+#define DRBP_T_G(i)     (DRBP_T_R(i)&(-DRBP_T_R(i)))
+#define DRBP_T_S(i)     (DRBP_T_G(i)^(DELETE_RANGE_BASE_MODE_TOKEN&FILE_DEL))
+#define DRBP_TOKEN(f)   ((vmode&DELETE_RANGE_BASE_MODE_TOKEN)&DRBP_T_S((f)->accessed[1]&FILE_DEL))
 #ifndef DELETE_RANGE_RESERVE_DIGEST
-#define DRBP_UNDEL(f)   (f->accessed[0]&(FILE_MARKED|FILE_PERCENT))
-#define DRBP_TOKEN(f)   ((f->accessed[1]&FILE_DEL)&&!DRBP_UNDEL(f))
+#define DRBP_UNDEL(f)   (((f)->accessed[0]&(FILE_MARKED|FILE_PERCENT))|DRBP_TOKEN(f))
 #else /* DELETE_RANGE_RESERVE_DIGEST */
-#define DRBP_UNDEL(f)   (f->accessed[0]&(FILE_MARKED|FILE_PERCENT|FILE_DIGEST))
-#define DRBP_TOKEN(f)   ((f->accessed[1]&FILE_DEL)&&!DRBP_UNDEL(f))
+#define DRBP_UNDEL(f)   (((f)->accessed[0]&(FILE_MARKED|FILE_PERCENT|FILE_DIGEST))|DRBP_TOKEN(f))
 #endif /* DELETE_RANGE_RESERVE_DIGEST */
-
+#define DRBP_TSET(n)    do{tab[((n)>>3)]|=(1<<((n)&0x07));}while(0)
+#define DRBP_TGET(n)    (tab[((n)>>3)]&(1<<((n)&0x07)))
     static const struct flock lck_set={F_WRLCK,SEEK_SET,0,0,0};
     static const struct flock lck_clr={F_UNLCK,SEEK_SET,0,0,0};
     struct fileheader *src,*dst;
     struct stat st_src,st_dst;
     char path_src[DRBP_LEN],path_dst[DRBP_LEN];
-    int fd_src,fd_dst,count,total,reserved,id_from,id_to,i;
+    unsigned char *tab;
+    int fd_src,fd_dst,count,total,reserved,id_from,id_to,i,j,n_src,n_dst;
     void *pm_src,*pm_dst;
+    /* 合法性检测 */
     if(!videntity||!*videntity)
         return 0x10;
     if(!vdir_src||!*vdir_src)
         vdir_src=DOT_DIR;
     if(!(vid_from>0))
         return 0x11;
+    /* 处理源 DIR 文件 */
     !DRBP_MAIL?setbfile(path_src,videntity,vdir_src):setmailfile(path_src,videntity,vdir_src);
     if(stat(path_src,&st_src)==-1||!S_ISREG(st_src.st_mode))
         return 0x20;
-    if(DRBP_CSRC&&(st_src.st_mtime>vst_src->st_mtime))
+    if(DRBP_CSRC&&(st_src.st_mtime>vst_src->st_mtime))      /* 检测源 DIR 文件内容更新 */
         return 0x21;
     if((fd_src=open(path_src,O_RDWR,DRBP_MODE))==-1)
         return 0x22;
@@ -3264,21 +3340,23 @@ int delete_range_base(
         close(fd_src);
         return 0x24;
     }
+    /* 计算源参数 */
     total=st_src.st_size/sizeof(struct fileheader);
     id_from=(vid_from-1);
     id_to=((!(vid_to>total)?vid_to:total)-1);
-    reserved=((total-count)-id_from);
     if(!((count=((id_to-id_from)+1))>0)){
         DRBP_RSRC;
         return 0x30;
     }
+    reserved=((total-count)-id_from);
+    /* 处理目的 DIR 文件 */
     if(DRBP_DST){
         !DRBP_MAIL?setbfile(path_dst,videntity,vdir_dst):setmailfile(path_dst,videntity,vdir_dst);
         if(stat(path_dst,&st_dst)==-1||!S_ISREG(st_dst.st_mode)){
             DRBP_RSRC;
             return 0x40;
         }
-        if(DRBP_CDST&&(st_dst.st_mtime>vst_dst->st_mtime)){
+        if(DRBP_CDST&&(st_dst.st_mtime>vst_dst->st_mtime)){ /* 检测目的 DIR 文件内容更新 */
             DRBP_RSRC;
             return 0x41;
         }
@@ -3302,53 +3380,186 @@ int delete_range_base(
         fd_dst=-1;
         pm_dst=NULL;
     }
+    /* 处理映像头 */
     src=(struct fileheader*)pm_src;
     src+=id_from;
     dst=(struct fileheader*)pm_dst;
+    /* 处理区段操作 */
     switch(vmode&DELETE_RANGE_BASE_MODE_OPMASK){
-        case DELETE_RANGE_BASE_MODE_TOKEN:
-            for(i=0;i<count;i++)
-                DRBP_TOKEN(&src[i])?DRBP_MSET(i):DRBP_MCLR(i);
-            break;
-        case DELETE_RANGE_BASE_MODE_RANGE:
-            for(i=0;i<count;i++)
-                !DRBP_UNDEL(&src[i])?DRBP_MSET(i):DRBP_MCLR(i);
-            break;
-        case DELETE_RANGE_BASE_MODE_FORCE:
-            memcpy(dst,src,count*sizeof(struct fileheader));
+        case DELETE_RANGE_BASE_MODE_TOKEN:                  /* 删除拟删文章 */
+        case DELETE_RANGE_BASE_MODE_RANGE:                  /* 常规区段删除 */
+            /* 创建辅助表 */
+            if(!(tab=(unsigned char*)malloc(((count>>3)+1)*sizeof(unsigned char)))){
+                DRBP_RDST;
+                DRBP_RSRC;
+                return 0x80;
+            }
+            memset(tab,0,((count>>3)+1)*sizeof(unsigned char));
+            /* 依据条件进行标记 */
+            if(!func){
+                if(!DRBP_MAIL){
+                    if(DRBP_DST)
+                        for(i=0;i<count;i++){
+                            if(DRBP_UNDEL(&src[i]))
+                                continue;
+                            delete_range_cancel_post_mv(videntity,&src[i]);
+                            DRBP_TSET(i);
+                        }
+                    else
+                        for(i=0;i<count;i++){
+                            if(DRBP_UNDEL(&src[i]))
+                                continue;
+                            delete_range_cancel_post_del(videntity,&src[i]);
+                            DRBP_TSET(i);
+                        }
+                }
+                else
+                    for(i=0;i<count;i++){
+                        if(DRBP_UNDEL(&src[i]))
+                            continue;
+                        delete_range_cancel_mail(videntity,&src[i]);
+                        DRBP_TSET(i);
+                    }
+            }
+            else
+                for(i=0;i<count;i++){
+                    if(!func(videntity,&src[i]))
+                        continue;
+                    DRBP_TSET(i);
+                }
+            /* 处理目的 DIR 文件写入 */
+            if(DRBP_DST){
+                /* 优化复制次数的内容复制 */
+                for(n_dst=0,i=0,j=0;i<count;i++){
+                    if(DRBP_TGET(i)){
+                        j++;
+                        continue;
+                    }
+                    if(j){
+                        memcpy(&dst[n_dst],&src[i-j],j*sizeof(struct fileheader));
+                        n_dst+=j;
+                        j=0;
+                    }
+                }
+                /* 确定文件长度并同步映像数据 */
+                if(ftruncate(fd_dst,(st_dst.st_size+n_dst*sizeof(struct fileheader)))==-1){
+                    ftruncate(fd_dst,st_dst.st_size);
+                    DRBP_RDST;
+                    DRBP_RSRC;
+                    return 0x60;
+                }
+                if(msync(pm_dst,n_dst*sizeof(struct fileheader),MS_SYNC)==-1){
+                    ftruncate(fd_dst,st_dst.st_size);
+                    DRBP_RDST;
+                    DRBP_RSRC;
+                    return 0x61;
+                }
+            }
+            DRBP_RDST;
+            /* 处理源 DIR 文件写入 */
+            /* 优化移动次数和移动数据量的内容移动 */
+            for(n_src=0,i=count-1,j=0;!(i<0);i--){
+                if(DRBP_TGET(i)){
+                    j++;
+                    continue;
+                }
+                if(j){
+                    memmove(&src[i+1],&src[(i+1)+j],n_src*sizeof(struct fileheader));
+                    j=0;
+                }
+                n_src++;
+                src[i].accessed[1]&=~FILE_DEL;
+            }
+            memmove(&src[n_src],&src[count],reserved*sizeof(struct fileheader));
+            /* 确定文件长度并同步映像数据 */
+            if(ftruncate(fd_src,(st_src.st_size-(count-n_src)*sizeof(struct fileheader)))==-1){
+                DRBP_RSRC;
+                return 0x62;
+            }
+            if(msync(pm_src,(st_src.st_size-(count-n_src)*sizeof(struct fileheader)),MS_SYNC)==-1){
+                DRBP_RSRC;
+                return 0x63;
+            }
+            DRBP_RSRC;
+            free(tab);
+            return 0x00;
+        case DELETE_RANGE_BASE_MODE_FORCE:                  /* 强制区段删除 */
+            if(!func){
+                if(!DRBP_MAIL){
+                    if(DRBP_DST)
+                        for(i=0;i<count;i++)
+                            delete_range_cancel_post_mv(videntity,&src[i]);
+                    else
+                        for(i=0;i<count;i++)
+                            delete_range_cancel_post_del(videntity,&src[i]);
+                }
+                else
+                    for(i=0;i<count;i++)
+                        delete_range_cancel_mail(videntity,&src[i]);
+            }
+            else
+                for(i=0;i<count;i++)
+                    func(videntity,&src[i]);
+            if(DRBP_DST){
+                memcpy(dst,src,count*sizeof(struct fileheader));
+                if(ftruncate(fd_dst,(st_dst.st_size+count*sizeof(struct fileheader)))==-1){
+                    ftruncate(fd_dst,st_dst.st_size);
+                    DRBP_RDST;
+                    DRBP_RSRC;
+                    return 0x70;
+                }
+                if(msync(pm_dst,count*sizeof(struct fileheader),MS_SYNC)==-1){
+                    ftruncate(fd_dst,st_dst.st_size);
+                    DRBP_RDST;
+                    DRBP_RSRC;
+                    return 0x71;
+                }
+            }
+            DRBP_RDST;
             memmove(src,&src[count],reserved*sizeof(struct fileheader));
-            //ftruncate()
-            //cancelpost
-            break;
-        case DELETE_RANGE_BASE_MODE_MPDEL:
+            if(ftruncate(fd_src,(st_src.st_size-count*sizeof(struct fileheader)))==-1){
+                DRBP_RSRC;
+                return 0x72;
+            }
+            if(msync(pm_src,(st_src.st_size-count*sizeof(struct fileheader)),MS_SYNC)==-1){
+                DRBP_RSRC;
+                return 0x73;
+            }
+            DRBP_RSRC;
+            return 0x00;
+        case DELETE_RANGE_BASE_MODE_MPDEL:                  /* 区段标记拟删 */
             for(i=0;i<count;i++)
                 !DRBP_UNDEL(&src[i])?(src[i].accessed[1]|=FILE_DEL):(src[i].accessed[1]&=~FILE_DEL);
             DRBP_RDST;
             DRBP_RSRC;
             return 0x00;
-        case DELETE_RANGE_BASE_MODE_CLEAR:
+        case DELETE_RANGE_BASE_MODE_CLEAR:                  /* 区段清除拟删 */
             for(i=0;i<count;i++)
                 src[i].accessed[1]&=~FILE_DEL;
             DRBP_RDST;
             DRBP_RSRC;
             return 0x00;
         default:
-            free(tab);
             DRBP_RDST;
             DRBP_RSRC;
-            return 0x60;
+            return 0x81;
     }
-
-    return 0;
-/*
 #undef DRBP_MODE
 #undef DRBP_LEN
-#undef DRBP_MAIL
-#undef DRBP_DST
-#undef DRBP_RDST
 #undef DRBP_CSRC
 #undef DRBP_CDST
-*/
+#undef DRBP_MAIL
+#undef DRBP_DST
+#undef DRBP_RSRC
+#undef DRBP_RDST
+#undef DRBP_T_R
+#undef DRBP_T_G
+#undef DRBP_T_S
+#undef DRBP_TOKEN
+#undef DRBP_UNDEL
+#undef DRBP_TSET
+#undef DRBP_TGET
 }
-#endif /* 0 */
+
+/* --END--, etnlegend, 2006.04.19, 区段删除核心 */
 
