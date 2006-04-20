@@ -840,4 +840,13 @@ attach define
 
 /* end old bbsconfig.h */
 
-#endif
+#if !defined(DELETE_RANGE_RESERVE_DIGEST) && defined(FREE)
+#define DELETE_RANGE_RESERVE_DIGEST 1
+#endif /* !DELETE_RANGE_RESERVE_DIGEST && FREE */
+
+#if defined(DELETE_RANGE_RESERVE_DIGEST) && (DELETE_RANGE_RESERVE_DIGEST == 0)
+#undef DELETE_RANGE_RESERVE_DIGEST
+#endif /* DELETE_RANGE_RESERVE_DIGEST && DELETE_RANGE_RESERVE_DIGEST == 0 */
+
+#endif /* __SYS_DEFAULT_H_ */
+

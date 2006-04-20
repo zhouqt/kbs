@@ -3185,30 +3185,6 @@ int upload_add_file(const char *filename, char *original_filename, session_t *se
 
 /* etnlegend, 2006.04.16, 区段删除核心 */
 
-#define DELETE_RANGE_BASE_MODE_TOKEN    0x01    /* 文章列表, 删除拟删文章 */
-#define DELETE_RANGE_BASE_MODE_RANGE    0x02    /* 文章列表和信件列表, 普通区段删除 */
-#define DELETE_RANGE_BASE_MODE_FORCE    0x04    /* 文章列表和信件列表, 强制区段删除 */
-#define DELETE_RANGE_BASE_MODE_MPDEL    0x08    /* 文章列表, 设置拟删标记 */
-#define DELETE_RANGE_BASE_MODE_CLEAR    0x10    /* 文章列表, 清除拟删标记 */
-#define DELETE_RANGE_BASE_MODE_MAIL     0x20    /* 信件列表模式 */
-#define DELETE_RANGE_BASE_MODE_CHECKS   0x40    /* 校验源 DIR 文件修改 */
-#define DELETE_RANGE_BASE_MODE_CHECKD   0x80    /* 校验目的 DIR 文件修改 */
-#define DELETE_RANGE_BASE_MODE_OPMASK   (0\
-    |DELETE_RANGE_BASE_MODE_TOKEN\
-    |DELETE_RANGE_BASE_MODE_RANGE\
-    |DELETE_RANGE_BASE_MODE_FORCE\
-    |DELETE_RANGE_BASE_MODE_MPDEL\
-    |DELETE_RANGE_BASE_MODE_CLEAR\
-)
-
-/* NOTE: macro definations above should go to `bbs.h` */
-
-#ifdef FREE
-#define DELETE_RANGE_RESERVE_DIGEST
-#endif /* FREE */
-
-/* NOTE: macro condition and defination above should go to `default.h` and `site.h` */
-
 #define DRBP_MODE       0644
 #define DRBP_LEN        _POSIX_PATH_MAX
 

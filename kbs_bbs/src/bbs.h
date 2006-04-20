@@ -608,6 +608,24 @@ extern struct sms_shm_head *head;
 
 #define GIVEUPINFO_PERM_COUNT   6       /* etnlegend, 2005.11.26, 增加有时限封禁支持并修正戒网的一些问题 */
 
+/* etnlegend, 2006.04.20, 区段删除核心 */
+#define DELETE_RANGE_BASE_MODE_TOKEN    0x01        /* 文章列表, 删除拟删文章 */
+#define DELETE_RANGE_BASE_MODE_RANGE    0x02        /* 文章列表和信件列表, 普通区段删除 */
+#define DELETE_RANGE_BASE_MODE_FORCE    0x04        /* 文章列表和信件列表, 强制区段删除 */
+#define DELETE_RANGE_BASE_MODE_MPDEL    0x08        /* 文章列表, 设置拟删标记 */
+#define DELETE_RANGE_BASE_MODE_CLEAR    0x10        /* 文章列表, 清除拟删标记 */
+#define DELETE_RANGE_BASE_MODE_MAIL     0x20        /* 信件列表模式 */
+#define DELETE_RANGE_BASE_MODE_CHECKS   0x40        /* 校验源 DIR 文件修改 */
+#define DELETE_RANGE_BASE_MODE_CHECKD   0x80        /* 校验目的 DIR 文件修改 */
+#define DELETE_RANGE_BASE_MODE_OPMASK   (0\
+    |DELETE_RANGE_BASE_MODE_TOKEN\
+    |DELETE_RANGE_BASE_MODE_RANGE\
+    |DELETE_RANGE_BASE_MODE_FORCE\
+    |DELETE_RANGE_BASE_MODE_MPDEL\
+    |DELETE_RANGE_BASE_MODE_CLEAR\
+)                                                   /* 区段删除模式掩码 */
+/* --END--, etnlegend, 2006.04.20, 区段删除核心 */
+
 #define ARG_NOPROMPT_FLAG       1       /* 操作不提示 */
 #define ARG_DELDECPOST_FLAG     2       /* 删除操作要减文章数 */
 #define ARG_BMFUNC_FLAG         4       /* 版主操作标志 */
