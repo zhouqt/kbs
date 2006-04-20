@@ -767,7 +767,11 @@ int set_clock()
 	clock_data = (struct clock_struct *) malloc(sizeof(struct clock_struct) * MAX_CLOCK_DEF);
 	if(clock_data==NULL) return -1;
 
-	if(init_clock_data()==0) return -2;
+    if(init_clock_data()==0) {
+        free(clock_data);
+        clock_data = NULL;
+        return -2;
+    }
 
 	bzero(&group_conf,sizeof(struct _select_def));
 	group_conf.item_count = clock_total;
