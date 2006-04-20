@@ -3243,13 +3243,13 @@ static inline int delete_range_cancel_post_del(const char *board,struct filehead
     setbfile(buf,board,file->filename);
     if(file->innflag[0]=='S'&&file->innflag[1]=='S'&&(get_posttime(file)>(time(NULL)-(14*86400))))
         delete_range_cancel_inn(board,file);
-    return my_unlink(buf);
+    return unlink(buf);
 }
 
 static inline int delete_range_cancel_mail(const char *user,struct fileheader *file){
     char buf[DRBP_LEN];
     setmailfile(buf,user,file->filename);
-    return my_unlink(buf);
+    return unlink(buf);
 }
 
 int delete_range_base(

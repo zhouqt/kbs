@@ -371,6 +371,10 @@ void unlock_sem_check(int lockid);
 
 /* define in article.c */
 
+    /* etnlegend, 2006.04.20, 区段删除核心 */
+    int delete_range_base(const char *videntity,const char *vdir_src,const char *vdir_dst,int vid_from,int vid_to,int vmode,
+        int (*func)(const char*,struct fileheader*),const struct stat *vst_src,const struct stat *vst_dst);
+
     struct write_dir_arg {
       char* filename; /*.dir的文件名*/
       int fd;                 //文件句柄
