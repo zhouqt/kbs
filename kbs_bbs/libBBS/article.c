@@ -3294,14 +3294,17 @@ int delete_range_base(
 #define DRBP_CDST       (vmode&DELETE_RANGE_BASE_MODE_CHECKD)
 #define DRBP_MAIL       (vmode&DELETE_RANGE_BASE_MODE_MAIL)
 #define DRBP_DST        (vdir_dst&&(*vdir_dst)&&!(vmode&(DELETE_RANGE_BASE_MODE_MPDEL|DELETE_RANGE_BASE_MODE_CLEAR)))
-#define DRBP_RSRC       do{munmap(pm_src,st_src.st_size);fcntl(fd_src,F_SETLKW,&lck_clr);close(fd_src);}while(0)
-#define DRBP_RDST       do{munmap(pm_dst,(st_dst.st_size+count*sizeof(struct fileheader)));\
-                            fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_dst);}while(0)
+#define DRBP_RSRC       do{munmap(pm,st_src.st_size);fcntl(fd_src,F_SETLKW,&lck_clr);close(fd_src);}while(0)
+#define DRBP_RDST       do{fcntl(fd_dst,F_SETLKW,&lck_clr);close(fd_dst);}while(0)
 /* 用于减少循环内条件判断的位运算方法 ... Trust Me! */
-#define DRBP_T_R(i)     ((i)^(DELETE_RANGE_BASE_MODE_TOKEN|FILE_DEL))
-#define DRBP_T_G(i)     (DRBP_T_R(i)&(-DRBP_T_R(i)))
-#define DRBP_T_S(i)     (DRBP_T_G(i)^(DELETE_RANGE_BASE_MODE_TOKEN&FILE_DEL))
-#define DRBP_TOKEN(f)   ((vmode&DELETE_RANGE_BASE_MODE_TOKEN)&DRBP_T_S((f)->accessed[1]&FILE_DEL))
+#if ((DELETE_RANGE_BASE_MODE_TOKEN-1)&FILE_DEL) == FILE_DEL
+#define DRBP_T_R        (DELETE_RANGE_BASE_MODE_TOKEN/FILE_DEL)
+#define DRBP_T_G(f)     (((f)->accessed[1]&FILE_DEL)*DRBP_T_R)
+#else /* ((DELETE_RANGE_BASE_MODE_TOKEN-1)&FILE_DEL) == FILE_DEL */
+#define DRBP_T_R        (FILE_DEL/DELETE_RANGE_BASE_MODE_TOKEN)
+#define DRBP_T_G(f)     (((f)->accessed[1]&FILE_DEL)/DRBP_T_R)
+#endif /* ((DELETE_RANGE_BASE_MODE_TOKEN-1)&FILE_DEL) == FILE_DEL */
+#define DRBP_TOKEN(f)   (vmode&(DRBP_T_G(f)^DELETE_RANGE_BASE_MODE_TOKEN))
 #ifndef DELETE_RANGE_RESERVE_DIGEST
 #define DRBP_UNDEL(f)   (((f)->accessed[0]&(FILE_MARKED|FILE_PERCENT))|DRBP_TOKEN(f))
 #else /* DELETE_RANGE_RESERVE_DIGEST */
@@ -3315,8 +3318,8 @@ int delete_range_base(
     struct stat st_src,st_dst;
     char path_src[DRBP_LEN],path_dst[DRBP_LEN];
     unsigned char *tab;
-    int fd_src,fd_dst,count,total,reserved,id_from,id_to,i,j,n_src,n_dst;
-    void *pm_src,*pm_dst;
+    int fd_src,fd_dst,count,total,reserved,id_from,id_to,i,j,n_src,n_dst,ret,len;
+    void *pm,*p;
     /* 合法性检测 */
     if(!videntity||!*videntity)
         return 0x10;
@@ -3336,7 +3339,7 @@ int delete_range_base(
         close(fd_src);
         return 0x23;
     }
-    if((pm_src=mmap(NULL,st_src.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,fd_src,0))==MAP_FAILED){
+    if((pm=mmap(NULL,st_src.st_size,PROT_READ|PROT_WRITE,MAP_SHARED,fd_src,0))==MAP_FAILED){
         fcntl(fd_src,F_SETLKW,&lck_clr);
         close(fd_src);
         return 0x24;
@@ -3350,7 +3353,7 @@ int delete_range_base(
         return 0x30;
     }
     reserved=((total-count)-id_from);
-    src=(struct fileheader*)pm_src;
+    src=(struct fileheader*)pm;
     src+=id_from;
     /* 处理目的 DIR 文件 */
     if(DRBP_DST){
@@ -3363,7 +3366,7 @@ int delete_range_base(
             DRBP_RSRC;
             return 0x41;
         }
-        if((fd_dst=open(path_dst,O_RDWR|O_CREAT,DRBP_MODE))==-1){
+        if((fd_dst=open(path_dst,O_WRONLY|O_CREAT|O_APPEND,DRBP_MODE))==-1){
             DRBP_RSRC;
             return 0x42;
         }
@@ -3372,20 +3375,9 @@ int delete_range_base(
             close(fd_dst);
             return 0x43;
         }
-        if((pm_dst=mmap(NULL,(st_dst.st_size+count*sizeof(struct fileheader)),PROT_WRITE,MAP_SHARED,fd_dst,0))==MAP_FAILED){
-            DRBP_RSRC;
-            fcntl(fd_dst,F_SETLKW,&lck_clr);
-            close(fd_dst);
-            return 0x44;
-        }
-        dst=(struct fileheader*)pm_dst;
-        dst+=(st_dst.st_size/sizeof(struct fileheader));
     }
-    else{
+    else
         fd_dst=-1;
-        pm_dst=NULL;
-        dst=NULL;
-    }
     /* 处理区段操作 */
     switch(vmode&DELETE_RANGE_BASE_MODE_OPMASK){
         case DELETE_RANGE_BASE_MODE_TOKEN:                  /* 删除拟删文章 */
@@ -3397,6 +3389,17 @@ int delete_range_base(
                 return 0x80;
             }
             memset(tab,0,((count>>3)+1)*sizeof(unsigned char));
+            /* 创建目的 DIR 缓存 */
+            if(DRBP_DST){
+                if(!(dst=(struct fileheader*)malloc(count*sizeof(struct fileheader)))){
+                    DRBP_RDST;
+                    DRBP_RSRC;
+                    free(tab);
+                    return 0x81;
+                }
+            }
+            else
+                dst=NULL;
             /* 依据条件进行标记 */
             if(!func){
                 if(!DRBP_MAIL){
@@ -3447,18 +3450,16 @@ int delete_range_base(
                     memcpy(&dst[n_dst],&src[count-j],j*sizeof(struct fileheader));
                     n_dst+=j;
                 }
-                /* 确定文件长度并同步映像数据 */
-                if(ftruncate(fd_dst,(st_dst.st_size+n_dst*sizeof(struct fileheader)))==-1){
+                /* 写入数据 */
+                for(p=dst,len=n_dst*sizeof(struct fileheader),ret=0;len>0&&ret!=-1;p+=ret,len-=ret)
+                    ret=write(fd_dst,p,len);
+                if(ret==-1){
                     ftruncate(fd_dst,st_dst.st_size);
                     DRBP_RDST;
                     DRBP_RSRC;
+                    free(tab);
+                    free(dst);
                     return 0x60;
-                }
-                if(msync(pm_dst,(st_dst.st_size+n_dst*sizeof(struct fileheader)),MS_SYNC)==-1){
-                    ftruncate(fd_dst,st_dst.st_size);
-                    DRBP_RDST;
-                    DRBP_RSRC;
-                    return 0x61;
                 }
             }
             DRBP_RDST;
@@ -3482,14 +3483,19 @@ int delete_range_base(
             /* 确定文件长度并同步映像数据 */
             if(ftruncate(fd_src,(st_src.st_size-(count-n_src)*sizeof(struct fileheader)))==-1){
                 DRBP_RSRC;
-                return 0x62;
+                free(tab);
+                free(dst);
+                return 0x61;
             }
-            if(msync(pm_src,(st_src.st_size-(count-n_src)*sizeof(struct fileheader)),MS_SYNC)==-1){
+            if(msync(pm,(st_src.st_size-(count-n_src)*sizeof(struct fileheader)),MS_SYNC)==-1){
                 DRBP_RSRC;
-                return 0x63;
+                free(tab);
+                free(dst);
+                return 0x62;
             }
             DRBP_RSRC;
             free(tab);
+            free(dst);
             return 0x00;
         case DELETE_RANGE_BASE_MODE_FORCE:                  /* 强制区段删除 */
             if(!func){
@@ -3509,29 +3515,24 @@ int delete_range_base(
                 for(i=0;i<count;i++)
                     func(videntity,&src[i]);
             if(DRBP_DST){
-                memcpy(dst,src,count*sizeof(struct fileheader));
-                if(ftruncate(fd_dst,(st_dst.st_size+count*sizeof(struct fileheader)))==-1){
+                for(p=src,len=count*sizeof(struct fileheader),ret=0;len>0&&ret!=-1;p+=ret,len-=ret)
+                    ret=write(fd_dst,p,len);
+                if(ret==-1){
                     ftruncate(fd_dst,st_dst.st_size);
                     DRBP_RDST;
                     DRBP_RSRC;
                     return 0x70;
-                }
-                if(msync(pm_dst,(st_dst.st_size+count*sizeof(struct fileheader)),MS_SYNC)==-1){
-                    ftruncate(fd_dst,st_dst.st_size);
-                    DRBP_RDST;
-                    DRBP_RSRC;
-                    return 0x71;
                 }
             }
             DRBP_RDST;
             memmove(src,&src[count],reserved*sizeof(struct fileheader));
             if(ftruncate(fd_src,(st_src.st_size-count*sizeof(struct fileheader)))==-1){
                 DRBP_RSRC;
-                return 0x72;
+                return 0x71;
             }
-            if(msync(pm_src,(st_src.st_size-count*sizeof(struct fileheader)),MS_SYNC)==-1){
+            if(msync(pm,(st_src.st_size-count*sizeof(struct fileheader)),MS_SYNC)==-1){
                 DRBP_RSRC;
-                return 0x73;
+                return 0x72;
             }
             DRBP_RSRC;
             return 0x00;
@@ -3550,7 +3551,7 @@ int delete_range_base(
         default:
             DRBP_RDST;
             DRBP_RSRC;
-            return 0x81;
+            return 0x90;
     }
 #undef DRBP_MODE
 #undef DRBP_LEN
@@ -3562,7 +3563,6 @@ int delete_range_base(
 #undef DRBP_RDST
 #undef DRBP_T_R
 #undef DRBP_T_G
-#undef DRBP_T_S
 #undef DRBP_TOKEN
 #undef DRBP_UNDEL
 #undef DRBP_TSET
