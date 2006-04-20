@@ -617,11 +617,12 @@ int mail_all_diary() {
     fname = buf + strlen(buf);
     *fname++ = '/';
 
-    iFilenames = 0; nFilenames = 100;
-    szFilenames = malloc(sizeof(char *) * nFilenames);
     if (!(dirp = opendir(homedir))) {
         return -1;
     }
+
+    iFilenames = 0; nFilenames = 100;
+    szFilenames = malloc(sizeof(char *) * nFilenames);
 
     while ((de = readdir(dirp))!=NULL) {
         char* name;
@@ -642,12 +643,20 @@ int mail_all_diary() {
     }
     closedir(dirp);
 
-    if (iFilenames == 0) return 0;
+    if (iFilenames == 0) {
+        free(szFilenames);
+        return 0;
+    }
 
     qsort(szFilenames, iFilenames, sizeof(char *), cmpFilename);
 
     gettmpfilename(mailfile, "all_diary");
-    if (!(fp2 = fopen(mailfile, "wb"))) return -1;
+    if (!(fp2 = fopen(mailfile, "wb"))) {
+    	for (nFilenames = 0; nFilenames < iFilenames; nFilenames++) 
+        	free(szFilenames[nFilenames]);
+        free(szFilenames);
+        return -1;
+    }
     sprintf(title, "%s 所有日记回寄", getCurrentUser()->userid);
     write_header(fp2, getCurrentUser(), 1, NULL, title, 0, 0, getSession());
 
