@@ -615,8 +615,7 @@ extern struct sms_shm_head *head;
 #define DELETE_RANGE_BASE_MODE_MPDEL    0x08        /* 文章列表, 设置拟删标记 */
 #define DELETE_RANGE_BASE_MODE_CLEAR    0x10        /* 文章列表, 清除拟删标记 */
 #define DELETE_RANGE_BASE_MODE_MAIL     0x20        /* 信件列表模式 */
-#define DELETE_RANGE_BASE_MODE_CHECKS   0x40        /* 校验源 DIR 文件修改 */
-#define DELETE_RANGE_BASE_MODE_CHECKD   0x80        /* 校验目的 DIR 文件修改 */
+#define DELETE_RANGE_BASE_MODE_CHECK    0x40        /* 校验源 DIR 文件修改 */
 #define DELETE_RANGE_BASE_MODE_OPMASK   (0\
     |DELETE_RANGE_BASE_MODE_TOKEN\
     |DELETE_RANGE_BASE_MODE_RANGE\

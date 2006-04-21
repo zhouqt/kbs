@@ -117,7 +117,6 @@ int b_rules_edit();
 #endif
 
 int i_read_mail();
-int del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
 int add_attach(char* file1, char* file2, char* filename);
 int zsend_attach(int ent, struct fileheader *fileinfo, char *direct);
 int do_select(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
@@ -283,7 +282,7 @@ int choose_board(int newflag, const char *boardprefix,int group,int yank_flag);
 /* bm.c*/
 int deny_user(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg); /* 禁止POST用户名单 维护主函数 */
 int clubmember(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);
-
+int delete_range(struct _select_def*,struct fileheader*,void*);
 
 /* zmodem */
 int read_zsend(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg);

@@ -1417,17 +1417,6 @@ int mail_forward(struct _select_def* conf, struct fileheader *fileinfo,void* ext
 
 #endif
 
-int mail_del_range(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg)
-{
-    int ret;
-    struct read_arg* arg=conf->arg;
-
-    ret = del_range(conf, fileinfo, NULL);
-    if (!strstr(arg->direct, ".DELETED"))
-        get_mailusedspace(getCurrentUser(), 1);
-    return ret;
-}
-
 int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
     int ent=conf->pos;
@@ -1579,7 +1568,7 @@ int mail_add_ignore(struct _select_def *conf,struct fileheader *fh,void *arg){
 struct key_command mail_comms[] = {
     {'s', (READ_KEY_FUNC)mail_showsize,NULL},
     {'d', (READ_KEY_FUNC)mail_del,NULL},
-    {'D', (READ_KEY_FUNC)mail_del_range,NULL},
+    {'D',(READ_KEY_FUNC)delete_range,NULL},
 //added by bad 03-2-10
     {'E', (READ_KEY_FUNC)mail_edit,NULL},
 	{'T', (READ_KEY_FUNC)mail_edit_title,NULL},
@@ -2331,44 +2320,15 @@ static int m_clean()
     uinfo.mode = RMAIL;
     setmailfile(buf, getCurrentUser()->userid, mail_sysbox[1]);
     num = get_num_records(buf, sizeof(struct fileheader));
-    if (num && askyn("清除发件箱么?", 0)) {
-        struct write_dir_arg dirarg;
-        init_write_dir_arg(&dirarg);
-        dirarg.filename=buf;
-        delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL,NULL,getSession());
-        free_write_dir_arg(&dirarg);
-    }
+    if (num && askyn("清除发件箱么?", 0))
+        delete_range_base(getCurrentUser()->userid,mail_sysbox[1],mail_sysbox[2],1,num,
+            (DELETE_RANGE_BASE_MODE_MAIL|DELETE_RANGE_BASE_MODE_RANGE),NULL,NULL);
     move(0, 0);
     setmailfile(buf, getCurrentUser()->userid, mail_sysbox[2]);
     num = get_num_records(buf, sizeof(struct fileheader));
-    if (num && askyn("清除垃圾箱么?", 0)) {
-        struct write_dir_arg dirarg;
-        init_write_dir_arg(&dirarg);
-        dirarg.filename=buf;
-        delete_range(&dirarg, 1, num, 1, DIR_MODE_MAIL,NULL,getSession());
-        free_write_dir_arg(&dirarg);
-    }
-	/*
-    if (getSession()->user_mail_list.mail_list_t) {
-        int i;
-
-        for (i = 0; i < getSession()->user_mail_list.mail_list_t; i++) {
-            char filebuf[20];
-
-            move(0, 0);
-            sprintf(filebuf, ".%s", getSession()->user_mail_list.mail_list[i] + 30);
-            setmailfile(buf, getCurrentUser()->userid, filebuf);
-            num = get_num_records(buf, sizeof(struct fileheader));
-            if (num) {
-                char prompt[80];
-
-                sprintf(prompt, "清除自定义邮箱 %s 么?", getSession()->user_mail_list.mail_list[i]);
-                if (askyn(prompt, 0))
-                    delete_range(buf, 1, num, 2);
-            }
-        }
-    }
-	*/
+    if (num && askyn("清除垃圾箱么?", 0))
+        delete_range_base(getCurrentUser()->userid,mail_sysbox[2],NULL,1,num,
+            (DELETE_RANGE_BASE_MODE_MAIL|DELETE_RANGE_BASE_MODE_RANGE),NULL,NULL);
     uinfo.mode = savemode;
     return 0;
 }

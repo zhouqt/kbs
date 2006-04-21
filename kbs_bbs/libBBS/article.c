@@ -288,28 +288,22 @@ int deny_modify_article(const struct boardheader *bh, const struct fileheader *f
     return 0;
 }
 
-int deny_del_article(const struct boardheader *bh, const struct fileheader *fileinfo, session_t* session)
-{
-    if (session->currentuser==NULL) {
+int deny_del_article(const struct boardheader *bh,const struct fileheader *fileinfo,session_t* session){
+    if(!bh||!(bh->filename[0]))
         return -1;
-    }
-    if (!strcmp(bh->filename, "syssecurity"))
+    if(!strcmp(bh->filename,"syssecurity"))
         return -3;
-
-    if (HAS_PERM(session->currentuser, PERM_SYSOP) || chk_currBM(bh->BM, session->currentuser))
+    if(HAS_PERM(session->currentuser,PERM_SYSOP)||chk_currBM(bh->BM,session->currentuser))
         return 0;
-
-    if (fileinfo) {
-        int owned;
-        owned = isowner(session->currentuser, fileinfo);
-        if (!owned)
+    if(fileinfo){
+        if(!isowner(session->currentuser,fileinfo))
             return -6;
 #ifdef HAPPY_BBS
-        if (!strcmp(bh->filename, "newcomers"))
+        if(!strcmp(bh->filename,"newcomers"))
             return -6;
 #endif
 #ifdef COMMEND_ARTICLE
-        if (!strcmp(bh->filename, COMMEND_ARTICLE))
+        if(!strcmp(bh->filename,COMMEND_ARTICLE))
             return -6;
 #endif
         return 0;
@@ -2153,248 +2147,6 @@ int get_effsize(char *ffn)
     return get_effsize_attach(ffn, NULL);
 }
 
-/*
-  dirarg，要操作的dir结构
-  id1,id2, 起始编号
-  删除模式 [del_mode = 0]标记删除 [1]普通删除 [2]强制删除
-  TODO: use mmap
-*/
-int delete_range(struct write_dir_arg *dirarg, int id1, int id2, int del_mode, int curmode, const struct boardheader *board, session_t* session)
-{
-#define DEL_RANGE_BUF 2048
-    struct fileheader *savefhdr;
-    struct fileheader *readfhdr;
-    struct fileheader *delfhdr;
-    int count, totalcount, delcount, remaincount, keepcount;
-    int pos_read, pos_write, pos_end;
-    int i;
-    char genbuf[1024];
-
-#ifdef BBSMAIN
-    /*
-     * curmode=4, 5的情形或者允许区段删除,或者不允许,这可以在
-     * 调用函数中或者任何地方给定, 这里的代码是按照不允许删除写的,
-     * 但是为了修理任何缘故造成的临时文件故障(比如自动删除机), 还是
-     * 尝试了一下打开操作; tmpfile是否对每种模式独立, 这个还是值得
-     * 商榷的.  -- ylsdd 
-     */
-    if ((curmode != DIR_MODE_NORMAL) && (curmode != DIR_MODE_DIGEST) && (curmode != DIR_MODE_MAIL)) {   /* KCN:暂不允许 */
-        return 0;
-    }
-#endif                          /* 
-                                 */
-    prepare_write_dir(dirarg, NULL, curmode);
-    pos_end = lseek(dirarg->fd, 0, SEEK_END);
-    delcount = 0;
-    if (pos_end == -1) {
-        return -2;
-    }
-    totalcount = pos_end / sizeof(struct fileheader);
-    pos_end = totalcount * sizeof(struct fileheader);
-    if (id2 != -1) {
-        pos_read = sizeof(struct fileheader) * id2;
-    } else
-        pos_read = pos_end;
-    if (id2 == -1)
-        id2 = totalcount;
-    if (id1 != 0) {
-        pos_write = sizeof(struct fileheader) * (id1 - 1);
-        count = id1;
-        if (id1 > totalcount) {
-            if (dirarg->needlock)
-                flock(dirarg->fd, LOCK_UN);
-#ifdef BBSMAIN
-            prints("开始文章号大于文章总数");
-            pressanykey();
-#endif                          /* 
-                                 */
-            return 0;
-        }
-    } else {
-        pos_write = 0;
-        count = 1;
-        id2 = totalcount;
-    }
-    if (id2 > totalcount) {
-#ifdef BBSMAIN
-        char buf[3];
-
-        if (dirarg->needlock)
-            flock(dirarg->fd, LOCK_UN);
-        getdata(11, 0, "文章编号大于文章总数，确认删除 (Y/N)? [N]: ", buf, 2, DOECHO, NULL, true);
-        if (*buf != 'Y' && *buf != 'y') {
-            return -3;
-        }
-        if (dirarg->needlock)
-            flock(dirarg->fd, LOCK_EX);
-        pos_read = pos_end;
-        id2 = totalcount;
-#else
-        if (dirarg->needlock)
-            flock(dirarg->fd, LOCK_UN);
-        return -3;
-#endif
-    }
-    savefhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
-    readfhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
-    delfhdr = (struct fileheader *) malloc(DEL_RANGE_BUF * sizeof(struct fileheader));
-    if ((id1 != 0) && ((del_mode == 0) || (del_mode == 3))) {   /*rangle mark del */
-        while (count <= id2) {
-            int i;
-            int readcount;
-
-            lseek(dirarg->fd, pos_write, SEEK_SET);
-            readcount = read(dirarg->fd, savefhdr, DEL_RANGE_BUF * sizeof(struct fileheader)) / sizeof(struct fileheader);
-            for (i = 0; i < readcount; i++, count++) {
-                if (count > id2)
-                    break;      /*del end */
-                if (del_mode == 0) {
-                    if (!((savefhdr[i].accessed[0] & FILE_MARKED)||(savefhdr[i].accessed[0] & FILE_PERCENT)))
-                        savefhdr[i].accessed[1] |= FILE_DEL;
-                } else {
-                    savefhdr[i].accessed[1] &= ~FILE_DEL;
-                }
-            }
-            lseek(dirarg->fd, pos_write, SEEK_SET);
-            write(dirarg->fd, savefhdr, i * sizeof(struct fileheader));
-            pos_write += i * sizeof(struct fileheader);
-        }
-        if (dirarg->needlock)
-            flock(dirarg->fd, LOCK_UN);
-        free(savefhdr);
-        free(readfhdr);
-        free(delfhdr);
-        return 0;
-    }
-    remaincount = count - 1;
-    keepcount = 0;
-    lseek(dirarg->fd, pos_write, SEEK_SET);
-    while (count <= id2) {
-        int readcount;
-        lseek(dirarg->fd, (count - 1) * sizeof(struct fileheader), SEEK_SET);
-        readcount = read(dirarg->fd, savefhdr, DEL_RANGE_BUF * sizeof(struct fileheader)) / sizeof(struct fileheader);
-/*        if (readcount==0) break; */
-        for (i = 0; i < readcount; i++, count++) {
-            if (count > id2)
-                break;          /*del end */
-            if (((savefhdr[i].accessed[0] & FILE_MARKED
-#ifdef FREE
-                || savefhdr[i].accessed[0] & FILE_DIGEST
-#endif
-                || savefhdr[i].accessed[0] & FILE_PERCENT
-               ) && del_mode != 2)
-                || ((id1 == 0 || del_mode==4) && (!(savefhdr[i].accessed[1] & FILE_DEL)))) {
-                memcpy(&readfhdr[keepcount], &savefhdr[i], sizeof(struct fileheader));
-                readfhdr[keepcount].accessed[1] &= ~FILE_DEL;
-                keepcount++;
-                remaincount++;
-                if (keepcount >= DEL_RANGE_BUF) {
-                    lseek(dirarg->fd, pos_write, SEEK_SET);
-                    write(dirarg->fd, readfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
-                    pos_write += keepcount * sizeof(struct fileheader);
-                    keepcount = 0;
-                }
-            } else if (curmode == DIR_MODE_NORMAL) {
-                int j;
-                memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
-                delcount++;
-                if (delcount >= DEL_RANGE_BUF) {
-                    for (j = 0; j < DEL_RANGE_BUF; j++)
-                        cancelpost(board->filename, session->currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, session->currentuser->userid), 0, session);
-                    delcount = 0;
-                    setbdir(DIR_MODE_DELETED, genbuf, board->filename);
-                    append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
-                }
-                /*
-                 * need clear delcount 
-                 */
-            } else if (curmode == DIR_MODE_MAIL) {
-                if (!strstr(dirarg->filename, ".DELETED")) {    //add to 垃圾箱,todo:检查邮件标记
-                    memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
-                    delcount++;
-                    if (delcount >= DEL_RANGE_BUF) {
-                        delcount = 0;
-                        setmailfile(genbuf, session->currentuser->userid, ".DELETED");
-                        append_record(genbuf, (char *) delfhdr, DEL_RANGE_BUF * sizeof(struct fileheader));
-                    }
-                } else {
-                    int j;
-                    struct stat st;
-                    memcpy(&delfhdr[delcount], &savefhdr[i], sizeof(struct fileheader));
-                    delcount++;
-                    if (delcount >= DEL_RANGE_BUF) {
-                        delcount = 0;
-                        for (j = 0; j < DEL_RANGE_BUF; j++) {
-                            setmailfile(genbuf, session->currentuser->userid, delfhdr[j].filename);
-                            if (lstat(genbuf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
-                                if (session->currentuser->usedspace > st.st_size)
-                                    session->currentuser->usedspace -= st.st_size;
-                                else
-                                    session->currentuser->usedspace = 0;
-                            }
-                            unlink(genbuf);
-                        }
-                    }
-                }
-            }                   //in mail mode
-        }                       /*for readcount */
-    }
-    if (keepcount) {
-        lseek(dirarg->fd, pos_write, SEEK_SET);
-        write(dirarg->fd, readfhdr, keepcount * sizeof(struct fileheader));
-    }
-    while (1) {
-        int readcount;
-
-        lseek(dirarg->fd, pos_read, SEEK_SET);
-        readcount = read(dirarg->fd, savefhdr, DEL_RANGE_BUF * sizeof(struct fileheader)) / sizeof(struct fileheader);
-        if (readcount == 0)
-            break;
-        lseek(dirarg->fd, remaincount * sizeof(struct fileheader), SEEK_SET);
-        write(dirarg->fd, savefhdr, readcount * sizeof(struct fileheader));
-        pos_read += readcount * sizeof(struct fileheader);
-        remaincount += readcount;
-    }
-#ifdef DEBUG
-#ifdef BBSMAIN
-    newbbslog(BBSLOG_DEBUG, "%s range ftruncate %d", dirarg->filename ? dirarg->filename : board->filename, remaincount * sizeof(struct fileheader));
-#endif
-#endif
-    ftruncate(dirarg->fd, remaincount * sizeof(struct fileheader));
-    if ((curmode == DIR_MODE_NORMAL) && delcount) {
-        int j;
-
-        for (j = 0; j < delcount; j++)
-            cancelpost(board->filename, session->currentuser->userid, &delfhdr[j], !strcmp(delfhdr[j].owner, session->currentuser->userid), 0, session);
-        setbdir(DIR_MODE_DELETED, genbuf, board->filename);
-        append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
-        setboardorigin(board->filename, 1);
-    } else if (curmode == DIR_MODE_MAIL && !strstr(dirarg->filename, ".DELETED")) {
-        setmailfile(genbuf, session->currentuser->userid, ".DELETED");
-        append_record(genbuf, (char *) delfhdr, delcount * sizeof(struct fileheader));
-    } else if (curmode == DIR_MODE_MAIL) {
-        struct stat st;
-        int j;
-
-        for (j = 0; j < delcount; j++) {
-            setmailfile(genbuf, session->currentuser->userid, delfhdr[j].filename);
-            if (lstat(genbuf, &st) == 0 && S_ISREG(st.st_mode) && st.st_nlink == 1) {
-                if (session->currentuser->usedspace > st.st_size)
-                    session->currentuser->usedspace -= st.st_size;
-                else
-                    session->currentuser->usedspace = 0;
-            }
-            unlink(genbuf);
-        }
-    }
-    if (dirarg->needlock)
-        flock(dirarg->fd, LOCK_UN);
-    free(savefhdr);
-    free(readfhdr);
-    free(delfhdr);
-    return 0;
-}
-
 /* 增加置顶文章*/
 int add_top(struct fileheader *fileinfo, const char *boardname, int flag)
 {
@@ -3222,7 +2974,7 @@ static inline int delete_range_cancel_inn(const char *board,const struct filehea
 }
 
 static inline int delete_range_cancel_post_mv(const char *board,struct fileheader *file){
-    char obuf[DRBP_LEN],nbuf[DRBP_LEN];
+    char buf[DRBP_LEN],obuf[DRBP_LEN],nbuf[DRBP_LEN];
     time_t currtime;
     setbfile(obuf,board,file->filename);
     !(file->filename[1]=='/')?(file->filename[0]='D'):(file->filename[2]='D');
@@ -3232,8 +2984,8 @@ static inline int delete_range_cancel_post_mv(const char *board,struct fileheade
         delete_range_cancel_inn(board,file);
     file->accessed[sizeof(((const struct fileheader*)NULL)->accessed)-1]=((currtime/86400)%100);
     if(getCurrentUser()){
-        snprintf(obuf,ARTICLE_TITLE_LEN,"%-32.32s - %s",file->title,getCurrentUser()->userid);
-        snprintf(file->title,ARTICLE_TITLE_LEN,"%s",obuf);
+        snprintf(buf,ARTICLE_TITLE_LEN,"%-32.32s - %s",file->title,getCurrentUser()->userid);
+        snprintf(file->title,ARTICLE_TITLE_LEN,"%s",buf);
     }
     return f_mv(obuf,nbuf);
 }
@@ -3246,10 +2998,21 @@ static inline int delete_range_cancel_post_del(const char *board,struct filehead
     return unlink(buf);
 }
 
-static inline int delete_range_cancel_mail(const char *user,struct fileheader *file){
+static inline int delete_range_cancel_mail_mv(const char *user,struct fileheader *file){
+    return 0;
+}
+
+static inline int delete_range_cancel_mail_del(const char *user,struct fileheader *file){
+    struct stat st;
     char buf[DRBP_LEN];
+    int ret;
     setmailfile(buf,user,file->filename);
-    return unlink(buf);
+    if(lstat(buf,&st)==-1||!S_ISREG(st.st_mode)||st.st_nlink>1)
+        ret=0;
+    else
+        ret=(int)st.st_size;
+    unlink(buf);
+    return ret;
 }
 
 int delete_range_base(
@@ -3263,11 +3026,9 @@ int delete_range_base(
         const char*,
         struct fileheader*
     ),                                  /* 对需要操作的文章执行的附加操作, 为 NULL 时执行默认操作 */
-    const struct stat *vst_src,         /* 用于校验文件修改的源 DIR 的文件状态描述, 为 NULL 时不进行校验 */
-    const struct stat *vst_dst          /* 用于校验文件修改的目的 DIR 的文件状态描述, 为 NULL 时不进行校验 */
+    const struct stat *vst_src          /* 用于校验文件修改的源 DIR 的文件状态描述, 为 NULL 时不进行校验 */
 ){
-#define DRBP_CSRC       (vmode&DELETE_RANGE_BASE_MODE_CHECKS)
-#define DRBP_CDST       (vmode&DELETE_RANGE_BASE_MODE_CHECKD)
+#define DRBP_CSRC       ((vmode&DELETE_RANGE_BASE_MODE_CHECK)&&vst_src)
 #define DRBP_MAIL       (vmode&DELETE_RANGE_BASE_MODE_MAIL)
 #define DRBP_DST        (vdir_dst&&(*vdir_dst)&&!(vmode&(DELETE_RANGE_BASE_MODE_MPDEL|DELETE_RANGE_BASE_MODE_CLEAR)))
 #define DRBP_RSRC       do{munmap(pm,st_src.st_size);fcntl(fd_src,F_SETLKW,&lck_clr);close(fd_src);}while(0)
@@ -3290,6 +3051,7 @@ int delete_range_base(
 #define DRBP_TGET(n)    (tab[((n)>>3)]&(1<<((n)&0x07)))
     static const struct flock lck_set={F_WRLCK,SEEK_SET,0,0,0};
     static const struct flock lck_clr={F_UNLCK,SEEK_SET,0,0,0};
+    struct userec *user;
     struct fileheader *src,*dst;
     struct stat st_src,st_dst;
     char path_src[DRBP_LEN],path_dst[DRBP_LEN];
@@ -3334,13 +3096,19 @@ int delete_range_base(
     /* 处理目的 DIR 文件 */
     if(DRBP_DST){
         !DRBP_MAIL?setbfile(path_dst,videntity,vdir_dst):setmailfile(path_dst,videntity,vdir_dst);
-        if(stat(path_dst,&st_dst)==-1||!S_ISREG(st_dst.st_mode)){
-            DRBP_RSRC;
-            return 0x40;
+        if(stat(path_dst,&st_dst)==-1){
+            if(errno==ENOENT)
+                st_dst.st_size=0;
+            else{
+                DRBP_RSRC;
+                return 0x40;
+            }
         }
-        if(DRBP_CDST&&(st_dst.st_mtime>vst_dst->st_mtime)){ /* 检测目的 DIR 文件内容更新 */
-            DRBP_RSRC;
-            return 0x41;
+        else{
+            if(!S_ISREG(st_dst.st_mode)){
+                DRBP_RSRC;
+                return 0x41;
+            }
         }
         if((fd_dst=open(path_dst,O_WRONLY|O_CREAT|O_APPEND,DRBP_MODE))==-1){
             DRBP_RSRC;
@@ -3394,13 +3162,29 @@ int delete_range_base(
                             DRBP_TSET(i);
                         }
                 }
-                else
-                    for(i=0;i<count;i++){
-                        if(DRBP_UNDEL(&src[i]))
-                            continue;
-                        delete_range_cancel_mail(videntity,&src[i]);
-                        DRBP_TSET(i);
+                else{
+                    if(DRBP_DST)
+                        for(i=0;i<count;i++){
+                            if(DRBP_UNDEL(&src[i]))
+                                continue;
+                            delete_range_cancel_mail_mv(videntity,&src[i]);
+                            DRBP_TSET(i);
+                        }
+                    else{
+                        for(ret=0,i=0;i<count;i++){
+                            if(DRBP_UNDEL(&src[i]))
+                                continue;
+                            ret+=delete_range_cancel_mail_del(videntity,&src[i]);
+                            DRBP_TSET(i);
+                        }
+                        if(getuser(videntity,&user)){
+                            if(!(ret>user->usedspace))
+                                user->usedspace-=ret;
+                            else
+                                get_mailusedspace(user,1);
+                        }
                     }
+                }
             }
             else
                 for(i=0;i<count;i++){
@@ -3483,9 +3267,21 @@ int delete_range_base(
                         for(i=0;i<count;i++)
                             delete_range_cancel_post_del(videntity,&src[i]);
                 }
-                else
-                    for(i=0;i<count;i++)
-                        delete_range_cancel_mail(videntity,&src[i]);
+                else{
+                    if(DRBP_DST)
+                        for(i=0;i<count;i++)
+                            delete_range_cancel_mail_mv(videntity,&src[i]);
+                    else{
+                        for(ret=0,i=0;i<count;i++)
+                            ret+=delete_range_cancel_mail_del(videntity,&src[i]);
+                        if(getuser(videntity,&user)){
+                            if(!(ret>user->usedspace))
+                                user->usedspace-=ret;
+                            else
+                                get_mailusedspace(user,1);
+                        }
+                    }
+                }
             }
             else
                 for(i=0;i<count;i++)

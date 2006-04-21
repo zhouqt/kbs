@@ -373,7 +373,7 @@ void unlock_sem_check(int lockid);
 
     /* etnlegend, 2006.04.20, 区段删除核心 */
     int delete_range_base(const char *videntity,const char *vdir_src,const char *vdir_dst,int vid_from,int vid_to,int vmode,
-        int (*func)(const char*,struct fileheader*),const struct stat *vst_src,const struct stat *vst_dst);
+        int (*func)(const char*,struct fileheader*),const struct stat *vst_src);
 
     struct write_dir_arg {
       char* filename; /*.dir的文件名*/
@@ -398,7 +398,6 @@ void unlock_sem_check(int lockid);
 	 * 功能：依据key, 对ptr传入的.DIR索引进行二分查找
 	 */
 	int Search_Bin(struct fileheader*ptr, int key, int start, int end);
-    int delete_range(struct write_dir_arg* dirarg,int id1,int id2,int del_mode,int curmode,const struct boardheader* board, session_t* session);
 
     /*
      * mmap_search_dir_apply
