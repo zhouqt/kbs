@@ -1084,37 +1084,28 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
     return 0;
 }
 
-static inline int delete_range_interface_main_menu(int mail){
+static inline int delete_range_interface_main_menu(void){
     struct _select_item sel[6];
     struct _select_def conf;
     struct delete_range_arg arg;
     POINT pts[5];
     int ret;
-    if(!mail){
-        sel[0].x=4;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data="删除拟删文章";
-        sel[1].x=4;sel[1].y=3;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data="常规区段删除";
-        sel[2].x=4;sel[2].y=4;sel[2].hotkey='2';sel[2].type=SIT_SELECT;sel[2].data="强制区段删除";
-        sel[3].x=4;sel[3].y=5;sel[3].hotkey='3';sel[3].type=SIT_SELECT;sel[3].data="设置拟删标记";
-        sel[4].x=4;sel[4].y=6;sel[4].hotkey='4';sel[4].type=SIT_SELECT;sel[4].data="清除拟删标记";
-        sel[5].x=-1;sel[5].y=-1;sel[5].hotkey=-1;sel[5].type=0;sel[5].data=NULL;
-        pts[0].x=sel[0].x;pts[0].y=sel[0].y;
-        pts[1].x=sel[1].x;pts[1].y=sel[1].y;
-        pts[2].x=sel[2].x;pts[2].y=sel[2].y;
-        pts[3].x=sel[3].x;pts[3].y=sel[3].y;
-        pts[4].x=sel[4].x;pts[4].y=sel[4].y;
-    }
-    else{
-        sel[0].x=4;sel[0].y=2;sel[0].hotkey='1';sel[0].type=SIT_SELECT;sel[0].data="常规区段删除";
-        sel[1].x=4;sel[1].y=3;sel[1].hotkey='2';sel[1].type=SIT_SELECT;sel[1].data="强制区段删除";
-        sel[2].x=-1;sel[2].y=-1;sel[2].hotkey=-1;sel[2].type=0;sel[2].data=NULL;
-        pts[0].x=sel[0].x;pts[0].y=sel[0].y;
-        pts[1].x=sel[1].x;pts[1].y=sel[1].y;
-    }
+    sel[0].x=4;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data="删除拟删文章";
+    sel[1].x=4;sel[1].y=3;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data="常规区段删除";
+    sel[2].x=4;sel[2].y=4;sel[2].hotkey='2';sel[2].type=SIT_SELECT;sel[2].data="强制区段删除";
+    sel[3].x=4;sel[3].y=5;sel[3].hotkey='3';sel[3].type=SIT_SELECT;sel[3].data="设置拟删标记";
+    sel[4].x=4;sel[4].y=6;sel[4].hotkey='4';sel[4].type=SIT_SELECT;sel[4].data="清除拟删标记";
+    sel[5].x=-1;sel[5].y=-1;sel[5].hotkey=-1;sel[5].type=0;sel[5].data=NULL;
+    pts[0].x=sel[0].x;pts[0].y=sel[0].y;
+    pts[1].x=sel[1].x;pts[1].y=sel[1].y;
+    pts[2].x=sel[2].x;pts[2].y=sel[2].y;
+    pts[3].x=sel[3].x;pts[3].y=sel[3].y;
+    pts[4].x=sel[4].x;pts[4].y=sel[4].y;
     memset(&arg,0,sizeof(struct delete_range_arg));
     arg.items=sel;
     arg.type=menu_main;
     memset(&conf,0,sizeof(struct _select_def));
-    conf.item_count=(!mail?5:2);
+    conf.item_count=5;
     conf.item_per_page=conf.item_count;
     conf.flag=LF_LOOP;
     conf.prompt="◇";
@@ -1164,6 +1155,7 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
     rarg=(struct read_arg*)conf->arg;
     total=rarg->filecount;
     current=((conf->pos>total)?total:(conf->pos));
+    line=8;
     switch(rarg->mode){
         case DIR_MODE_NORMAL:
             mail=0;
@@ -1171,7 +1163,6 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
             src=".DIR";
             dst=".DELETED";
             mode=DELETE_RANGE_BASE_MODE_CHECK;
-            line=8;
             break;
         case DIR_MODE_DIGEST:
             mail=0;
@@ -1179,7 +1170,6 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
             src=".DIGEST";
             dst=NULL;
             mode=DELETE_RANGE_BASE_MODE_CHECK;
-            line=8;
             break;
         case DIR_MODE_MAIL:
             mail=1;
@@ -1188,7 +1178,6 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
                 return DONOTHING;
             dst=(!strcmp(src,".DELETED")?NULL:".DELETED");
             mode=DELETE_RANGE_BASE_MODE_MAIL;
-            line=7;
             break;
         default:
             return DONOTHING;
@@ -1204,7 +1193,7 @@ int delete_range(struct _select_def *conf,struct fileheader *file,void *varg){
     prints("\033[1;32m%s\033[m","[区段删除选单]");
     if(uinfo.mode==RMAIL)
         modify_user_mode(MAIL);
-    if((ret=delete_range_interface_main_menu(mail))==-1)
+    if((ret=delete_range_interface_main_menu())==-1)
         DELETE_RANGE_QUIT(line,"操作取消...");
     mode|=ret;
     switch(mode&DELETE_RANGE_BASE_MODE_OPMASK){

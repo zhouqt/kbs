@@ -961,6 +961,10 @@ char *maildoent(char *buf, int num, struct fileheader *ent,struct fileheader* re
         else
             status = 'N';
     }
+
+    if(ent->accessed[1]&FILE_DEL)
+        status='X';
+
     if (ent->accessed[0] & FILE_REPLIED) {
         if (ent->accessed[0] & FILE_FORWARDED)
             reply_status = 'A';
@@ -1431,6 +1435,14 @@ int mail_mark(struct _select_def* conf, struct fileheader *fileinfo,void* extraa
     return (PARTUPDATE);
 }
 
+int mail_token(struct _select_def *conf,struct fileheader *file,void *varg){
+    struct read_arg *arg=(struct read_arg*)conf->arg;
+    if(!file)
+        return DONOTHING;
+    file->accessed[1]^=FILE_DEL;
+    substitute_record(arg->direct,file,sizeof(struct fileheader),conf->pos);
+    return PARTUPDATE;
+}
 
 int mail_move(struct _select_def* conf, struct fileheader *fileinfo,void* extraarg)
 {
@@ -1575,6 +1587,7 @@ struct key_command mail_comms[] = {
     {'r', (READ_KEY_FUNC)mail_read,NULL},
     {'R', (READ_KEY_FUNC)do_mail_reply,NULL},
     {'m', (READ_KEY_FUNC)mail_mark,NULL},
+    {'t',(READ_KEY_FUNC)mail_token,NULL},
     {'M', (READ_KEY_FUNC)mail_move,NULL},
     {'i', (READ_KEY_FUNC)mail_to_tmp,NULL},
 #ifdef INTERNET_EMAIL
