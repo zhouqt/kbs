@@ -289,7 +289,7 @@ int deny_modify_article(const struct boardheader *bh, const struct fileheader *f
 }
 
 int deny_del_article(const struct boardheader *bh,const struct fileheader *fileinfo,session_t* session){
-    if(!bh||!(bh->filename[0]))
+    if(!session||!(session->currentuser)||!bh||!(bh->filename[0]))
         return -1;
     if(!strcmp(bh->filename,"syssecurity"))
         return -3;
