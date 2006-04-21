@@ -778,7 +778,7 @@ int del_mail(int ent, struct fileheader *fh, char *direct)
 int mrd;
 int delete_new_mail(struct fileheader *fptr, int idc, void *direct)
 {
-    if (fptr->accessed[1] & FILE_DEL) {
+    if (fptr->accessed[1] & FILE_COMMEND) {
         del_mail(idc, fptr, (char*)direct);
         return 1;
     }
@@ -848,7 +848,7 @@ int read_new_mail(struct fileheader *fptr, int idc, char *direct)
         prints("Delete Message '%s' ", fptr->title);
         getdata(1, 0, "(Yes, or No) [N]: ", genbuf, 3, DOECHO, NULL, true);
         if (genbuf[0] == 'Y' || genbuf[0] == 'y') {     /* if not yes quit */
-            fptr->accessed[1] |= FILE_DEL;
+            fptr->accessed[1] |= FILE_COMMEND;
         }
     }
     if (substitute_record(direct, fptr, sizeof(*fptr), idc))
