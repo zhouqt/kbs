@@ -1068,8 +1068,8 @@ int apply_thread(struct _select_def* conf, struct fileheader* fh,APPLY_THREAD_FU
     now = conf->pos;
     BBS_TRY {
         if (safe_mmapfile_handle(read_arg->fd, PROT_READ|PROT_WRITE, MAP_SHARED, &data, &size) ) {
-            pFh = (struct fileheader*)data;
             bool needmove;
+            pFh = (struct fileheader*)data;
             recordcount=size/sizeof(struct fileheader);
             if (now>recordcount)
                 /*ิฺึรถฅฮฤียวฐหัห๗*/
