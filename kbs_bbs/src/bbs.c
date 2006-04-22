@@ -559,7 +559,7 @@ int do_cross(struct _select_def* conf,struct fileheader *fileinfo,void* extraarg
 	    }
         } else conf->new_pos=conf->pos; */
         /*add old*/
-        if (post_cross(getCurrentUser(), bname, currboard->filename, 
+        if (post_cross(getCurrentUser(), bh, currboard->filename, 
             quote_title, q_file, Anony, 
             arg->mode==DIR_MODE_MAIL?1:0, 
             ispost[0], 0, getSession()) == -1) { /* ×ªÌù */

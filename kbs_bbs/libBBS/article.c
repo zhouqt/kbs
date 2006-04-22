@@ -811,7 +811,7 @@ void write_header(FILE * fp, struct userec *user, int in_mail, const char *board
 
 }
 
-void getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *board, const char *title, int Anony, int mode, int local_article, const char *sourceboard, session_t* session)
+static void getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *sourceboard, const char *title, int Anony, int mode, int local_article, const struct boardheader *toboard, session_t* session)
 {                               /* 把quote_file复制到filepath (转贴或自动发信) */
     FILE *inf, *of;
     char buf[256];
@@ -841,7 +841,7 @@ void getcross(const char *filepath, const char *quote_file, struct userec *user,
 
         normal_file = 1;
 
-        write_header(of, user, in_mail, sourceboard, title, Anony, (local_article ? 1 : 2 ), session /*不写入 .posts */ );
+        write_header(of, user, in_mail, toboard->filename, title, Anony, (local_article ? 1 : 2 ), session /*不写入 .posts */ );
         if (skip_attach_fgets(buf, 256, inf) != NULL) {
             for (count = 8; buf[count] != ' ' && count < 256; count++)
                 owner[count - 8] = buf[count];
@@ -851,7 +851,7 @@ void getcross(const char *filepath, const char *quote_file, struct userec *user,
         if (in_mail == true)
             fprintf(of, "\033[1;37m【 以下文字转载自 \033[32m%s \033[37m的信箱 】\033[m\n", user->userid);
         else
-            fprintf(of, "【 以下文字转载自 %s 讨论区 】\n", board);
+            fprintf(of, "【 以下文字转载自 %s 讨论区 】\n", sourceboard);
         if (id_invalid(owner))
             normal_file = 0;
         if (normal_file) {
@@ -868,12 +868,12 @@ void getcross(const char *filepath, const char *quote_file, struct userec *user,
             fseek(inf, 0, SEEK_SET);
 
     } else if (mode == 1 /*自动发信 */ ) {
-        fprintf(of, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", board);
+        fprintf(of, "发信人: "DELIVER" (自动发信系统), 信区: %s\n", sourceboard);
         fprintf(of, "标  题: %s\n", title);
         fprintf(of, "发信站: %s自动发信系统 (%24.24s)\n\n", BBS_FULL_NAME, ctime(&now));
         fprintf(of, "【此篇文章是由自动发信系统所张贴】\n\n");
     } else if (mode == 2) {
-        write_header(of, user, in_mail, sourceboard, title, Anony, 0 /*写入 .posts */ ,session);
+        write_header(of, user, in_mail, toboard->filename, title, Anony, 0 /*写入 .posts */ ,session);
     }
     while ((asize = -attach_fgets(buf, 256, inf)) != 0) {
         if ((strstr(buf, "【 以下文字转载自 ") && strstr(buf, "讨论区 】")) || (strstr(buf, "【 原文由") && strstr(buf, "所发表 】")))
@@ -972,7 +972,7 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
 #endif
 
 /* Add by SmallPig */
-int post_cross(struct userec *user, const char *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session)
+int post_cross(struct userec *user, const struct boardheader *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session)
 {                               /* (自动生成文件名) 转贴或自动发信 */
     struct fileheader postfile;
     char filepath[STRLEN];
@@ -983,10 +983,10 @@ int post_cross(struct userec *user, const char *toboard, const char *fromboard, 
     int oldmode;
 #endif
 
-    if (!mode && !haspostperm(user, toboard)) {
+    if (!mode && !haspostperm(user, toboard->filename)) {
 #ifdef BBSMAIN
         move(1, 0);
-        prints("您尚无权限在 %s 发表文章.\n", toboard);
+        prints("您尚无权限在 %s 发表文章.\n", toboard->filename);
         prints("如果您尚未注册，请在个人工具箱内详细注册身份\n");
         prints("未通过身份注册认证的用户，没有发表文章的权限。\n");
         prints("谢谢合作！ :-) \n");
@@ -1005,7 +1005,7 @@ int post_cross(struct userec *user, const char *toboard, const char *fromboard, 
         strcpy(buf4, title);
     strncpy(save_title, buf4, STRLEN);
 
-    setbfile(filepath, toboard, "");
+    setbfile(filepath, toboard->filename, "");
 
     if ((aborted = GET_POSTFILENAME(postfile.filename, filepath)) != 0) {
 #ifdef BBSMAIN
@@ -1025,11 +1025,11 @@ int post_cross(struct userec *user, const char *toboard, const char *fromboard, 
 
     strncpy(postfile.owner, whopost, OWNER_LEN);
     postfile.owner[OWNER_LEN - 1] = '\0';
-    setbfile(filepath, toboard, postfile.filename);
+    setbfile(filepath, toboard->filename, postfile.filename);
 
     local_article = 1;          /* default is local article */
     if (islocal != 'l' && islocal != 'L') {
-        if (is_outgo_board(toboard))
+        if (is_outgo_board(toboard->filename))
             local_article = 0;
     }
 #ifdef BBSMAIN
@@ -1048,9 +1048,9 @@ int post_cross(struct userec *user, const char *toboard, const char *fromboard, 
     } else {
         postfile.innflag[1] = 'S';
         postfile.innflag[0] = 'S';
-        outgo_post(&postfile, toboard, save_title, session);
+        outgo_post(&postfile, toboard->filename, save_title, session);
     }
-    if (!strcmp(toboard, "syssecurity")
+    if (!strcmp(toboard->filename, "syssecurity")
         && strstr(title, "修改 ")
         && strstr(title, " 的权限"))
         postfile.accessed[0] |= FILE_MARKED;    /* Leeward 98.03.29 */
@@ -1067,7 +1067,7 @@ int post_cross(struct userec *user, const char *toboard, const char *fromboard, 
         postfile.accessed[1] |= FILE_READ;
 #endif
     }
-    after_post(user, &postfile, toboard, NULL, !(Anony), session);
+    after_post(user, &postfile, toboard->filename, NULL, !(Anony), session);
 #ifdef BBSMAIN
     modify_user_mode(oldmode);
 #endif
@@ -1078,10 +1078,11 @@ int post_cross(struct userec *user, const char *toboard, const char *fromboard, 
 int post_file(struct userec *user, const char *fromboard, const char *filename, const char *nboard, const char *posttitle, int Anony, int mode, session_t* session)
 /* 将某文件 POST 在某版 */
 {
-    if (getboardnum(nboard, NULL) <= 0) {       /* 搜索要POST的版 ,判断是否存在该版 */
+    const struct boardheader *toboard;
+    if (getbid(nboard, &toboard) <= 0) {       /* 搜索要POST的版 ,判断是否存在该版 */
         return -1;
     }
-    post_cross(user, nboard, fromboard, posttitle, filename, Anony, false, 'l', mode, session);  /* post 文件 */
+    post_cross(user, toboard, fromboard, posttitle, filename, Anony, false, 'l', mode, session);  /* post 文件 */
     return 0;
 }
 

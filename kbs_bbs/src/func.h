@@ -468,9 +468,6 @@ void unlock_sem_check(int lockid);
 /*添加  POST 最后一行 的来源*/
     void add_loginfo(char *filepath, struct userec *user, char *currboard, int Anony, session_t* session);
 
-/* 把quote_file复制到filepath (转贴或自动发信)*/
-    void getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *board, const char *title, int Anony, int mode, int local_article, const char *sourceboard, session_t* session);
-
     void write_header(FILE * fp, struct userec *user, int in_mail, const char *board, const char *title, int Anony, int mode, session_t* session);
 
 /*写入.post文件供分析*/
@@ -479,7 +476,7 @@ void unlock_sem_check(int lockid);
     int outgo_post(struct fileheader *fh, const char *board, const char *title, session_t* session);
     int after_post(struct userec *user, struct fileheader *fh, const char *boardname, struct fileheader *re, int poststat, session_t* session);
     int post_file(struct userec *user, const char *fromboard, const char *filename, const char *nboard, const char *posttitle, int Anony, int mode, session_t* session);
-    int post_cross(struct userec *user, const char *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session);   /* (自动生成文件名) 转贴或自动发信 */
+    int post_cross(struct userec *user, const struct boardheader *toboard, const char *fromboard, const char *title, const char *filename, int Anony, int in_mail, char islocal, int mode, session_t* session);   /* (自动生成文件名) 转贴或自动发信 */
 
     int change_post_flag(struct write_dir_arg* dirarg,int currmode, const struct boardheader*board,
         struct fileheader *fileinfo, int flag,struct fileheader * data,bool dobmlog, session_t* session);

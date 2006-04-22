@@ -993,13 +993,13 @@ PHP_FUNCTION(bbs_docross)
         RETURN_LONG(-9);
 	
 	setbfile(path, board, f.filename);
-	if (post_cross(u, target, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
+	if (post_cross(u, dst_bp, board, f.title, path, 0, 0, ispost[0], 0, getSession()) == -1)
 	    RETURN_LONG(-10);	
     }
     else if (ac == 6)
     {
-	setmailfile(path, getCurrentUser()->userid, filename);
-        if (post_cross(u, target, target, title, path, 0, 1, ispost[0], 0, getSession()) == -1)
+        setmailfile(path, getCurrentUser()->userid, filename);
+        if (post_cross(u, dst_bp, target, title, path, 0, 1, ispost[0], 0, getSession()) == -1)
             RETURN_LONG(-10);
     }
     RETURN_LONG(0);
