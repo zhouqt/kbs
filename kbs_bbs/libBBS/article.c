@@ -1,7 +1,5 @@
 #include "bbs.h"
 #include <utime.h>
-#define DEBUG
-
 
 int outgo_post(struct fileheader *fh, const char *board, const char *title, session_t* session)
 {
@@ -325,10 +323,8 @@ int do_del_post(struct userec *user,struct write_dir_arg *dirarg,struct filehead
     BBS_TRY {
         fh = *(dirarg->fileptr + (dirarg->ent - 1));
         memmove(dirarg->fileptr + (dirarg->ent - 1), dirarg->fileptr + dirarg->ent, dirarg->size - sizeof(struct fileheader) * dirarg->ent);
-#ifdef DEBUG
-#ifdef BBSMAIN
+#if 0 //atppp 20060422
         newbbslog(BBSLOG_DEBUG, "%s ftruncate %d", dirarg->filename ? dirarg->filename : currboard->filename, dirarg->size);
-#endif
 #endif
 #ifdef CYGWIN
         old_needclosefd = dirarg->needclosefd;
@@ -811,7 +807,7 @@ void write_header(FILE * fp, struct userec *user, int in_mail, const char *board
 
 }
 
-static void getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *sourceboard, const char *title, int Anony, int mode, int local_article, const struct boardheader *toboard, session_t* session)
+static int getcross(const char *filepath, const char *quote_file, struct userec *user, int in_mail, const char *sourceboard, const char *title, int Anony, int mode, int local_article, const struct boardheader *toboard, session_t* session)
 {                               /* 把quote_file复制到filepath (转贴或自动发信) */
     FILE *inf, *of;
     char buf[256];
@@ -819,6 +815,7 @@ static void getcross(const char *filepath, const char *quote_file, struct userec
     int count;
     time_t now;
     int asize;
+    int attachok = (toboard->flag&BOARD_ATTACH);
 
     now = time(0);
     inf = fopen(quote_file, "rb");
@@ -830,10 +827,7 @@ static void getcross(const char *filepath, const char *quote_file, struct userec
         if (NULL != of)
             fclose(of);
         /*---	---*/
-#ifdef BBSMAIN
-        bbslog("user", "%s", "Cross Post error");
-#endif
-        return;
+        return -1;
     }
     if (mode == 0 /*转贴 */ ) {
         int normal_file;
@@ -880,14 +874,16 @@ static void getcross(const char *filepath, const char *quote_file, struct userec
             continue;           /* 避免引用重复 */
         if(asize<0)
             fprintf(of, "%s", buf);
-        put_attach(inf, of, asize);
+        else {
+            if (!attachok) {
+                return -1;
+            }
+            put_attach(inf, of, asize);
+        }
     }
     fclose(inf);
     fclose(of);
-    /*
-     * don't know why 
-     * *quote_file = '\0';
-     */
+    return 0;
 }
 
 #ifdef COMMEND_ARTICLE
@@ -905,13 +901,6 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
     setbfile(filepath, COMMEND_ARTICLE, "");
 
     if ((aborted = GET_POSTFILENAME(postfile.filename, filepath)) != 0) {
-#ifdef BBSMAIN
-        move(3, 0);
-        clrtobot();
-        prints("\n\n无法创建文件:%d...\n", aborted);
-        pressreturn();
-        clear();
-#endif
         return -1;
     }
 
@@ -956,10 +945,6 @@ int post_commend(struct userec *user, const char *fromboard, struct fileheader *
     if (err) {
         bbslog("3error", "Posting '%s' on '%s': append_record failed!", postfile.title, COMMEND_ARTICLE);
         my_unlink(filepath);
-#ifdef BBSMAIN
-        pressreturn();
-        clear();
-#endif
         return -1;
     }
     updatelastpost(COMMEND_ARTICLE);
@@ -978,10 +963,6 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
     char filepath[STRLEN];
     char buf4[STRLEN], whopost[IDLEN], save_title[STRLEN];
     int aborted, local_article;
-
-#ifdef BBSMAIN
-    int oldmode;
-#endif
 
     if (!mode && !haspostperm(user, toboard->filename)) {
 #ifdef BBSMAIN
@@ -1008,14 +989,7 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
     setbfile(filepath, toboard->filename, "");
 
     if ((aborted = GET_POSTFILENAME(postfile.filename, filepath)) != 0) {
-#ifdef BBSMAIN
-        move(3, 0);
-        clrtobot();
-        prints("\n\n无法创建文件:%d...\n", aborted);
-        pressreturn();
-        clear();
-#endif
-        return -2;
+        return -1;
     }
 
     if (mode == 1)
@@ -1032,11 +1006,10 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
         if (is_outgo_board(toboard->filename))
             local_article = 0;
     }
-#ifdef BBSMAIN
-    oldmode = uinfo.mode;
-    modify_user_mode(POSTING);
-#endif
-    getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, local_article, toboard, session); /*根据fname完成 文件复制 */
+
+    if (-1 == getcross(filepath, filename, user, in_mail, fromboard, title, Anony, mode, local_article, toboard, session)) {
+        return -1;
+    }
 
     postfile.eff_size = get_effsize_attach(filepath, &postfile.attachment);     /* FreeWizard: get effsize & attachment */
 
@@ -1055,22 +1028,9 @@ int post_cross(struct userec *user, const struct boardheader *toboard, const cha
         && strstr(title, " 的权限"))
         postfile.accessed[0] |= FILE_MARKED;    /* Leeward 98.03.29 */
     if (strstr(title, "发文权限") && mode == 2) {
-#ifndef NINE_BUILD
-        /*
-         * disable here to avoid Mark deny articles on the board Bigman.2002.11.17
-         */
-        /*
-         * postfile.accessed[0] |= FILE_MARKED;
-         *//*
-         * Haohmaru 99.11.10 
-         */
         postfile.accessed[1] |= FILE_READ;
-#endif
     }
     after_post(user, &postfile, toboard->filename, NULL, !(Anony), session);
-#ifdef BBSMAIN
-    modify_user_mode(oldmode);
-#endif
     return 1;
 }
 
