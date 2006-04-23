@@ -98,6 +98,7 @@
 	<fieldset><legend>Ä£°å·¢±í</legend><div class="input">
 <?php
 		if( $votearr[0]["TITLE_TMPL"]=="" || strstr($votearr[0]["TITLE_TMPL"], "[$0]") ){
+			$retitle = "";
 			if ($reid)
 			{
 		        if(!strncmp($articles[1]["TITLE"],"Re: ",4))
