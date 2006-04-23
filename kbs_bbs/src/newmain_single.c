@@ -171,7 +171,7 @@ void u_enter()
 //    strncpy(uinfo.realname, curruserdata.realname, 20);
     strncpy(uinfo.realname, getSession()->currentmemo->ud.realname, 20);
     strncpy(uinfo.username, getCurrentUser()->username, 40);
-    getSession()->utmpent = getnewutmpent(&uinfo);
+    getSession()->utmpent = getnewutmpent(&uinfo, 0);
     if (getSession()->utmpent == -1) {
         prints("人数已满,无法分配用户条目!\n");
         oflush();

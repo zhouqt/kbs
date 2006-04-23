@@ -208,7 +208,7 @@ int getnewutmpent(struct user_info *up)
     return sendutmpreq(&utmpreq);
 }
 #endif
-int getnewutmpent(struct user_info *up)
+int getnewutmpent(struct user_info *up, int is_www)
 {
     struct user_info *uentp;
     time_t now;
@@ -288,11 +288,11 @@ int getnewutmpent(struct user_info *up)
         utmphead->number++;
 
 		setpublicshmreadonly(0);
-#ifdef BBSMAIN
-		get_publicshm()->logincount ++;
-#else
-		get_publicshm()->wwwlogincount ++;
-#endif
+		if (!is_www) {
+			get_publicshm()->logincount ++;
+		} else {
+			get_publicshm()->wwwlogincount ++;
+		}
         setpublicshmreadonly(1);
 
         if (get_utmp_number() + getwwwguestcount()>get_publicshm()->max_user) {
@@ -330,7 +330,7 @@ int getnewutmpent(struct user_info *up)
 /* same as getnewutmpent() except no updating of utmpshm 
  * only called in www
  */
-int getnewutmpent2(struct user_info *up)
+int getnewutmpent2(struct user_info *up, int is_www)
 {
     int pos, i,ret;
     int utmpfd, hashkey;
@@ -406,11 +406,11 @@ int getnewutmpent2(struct user_info *up)
 
         utmphead->number++;
         setpublicshmreadonly(0);
-#ifdef BBSMAIN
-		get_publicshm()->logincount ++;
-#else
-		get_publicshm()->wwwlogincount ++;
-#endif
+		if (!is_www) {
+			get_publicshm()->logincount ++;
+		} else {
+			get_publicshm()->wwwlogincount ++;
+		}
         setpublicshmreadonly(1);
         ret=pos+1;
     }

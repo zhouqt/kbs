@@ -3,6 +3,7 @@
 #define __FUNC_H__
 #if HAVE_MYSQL_SMTH == 1
 #include <mysql.h>
+void mysql_report_error(MYSQL *s);
 #endif
 
 #ifdef __cplusplus
@@ -98,11 +99,11 @@ int newbmlog(const char *userid, const char *boardname, int type, int value);
     void newbbslog(int type, const char *fmt, ...);
 
 /* defined in utmp.c */
-    int getnewutmpent2(struct user_info *up);
+    int getnewutmpent2(struct user_info *up, int is_www);
     typedef int (*APPLY_UTMP_FUNC) (struct user_info *, void *, int pos);
     void resolve_utmp(ARG_VOID);
     void detach_utmp(ARG_VOID);
-    int getnewutmpent(struct user_info *up);
+    int getnewutmpent(struct user_info *up, int is_www);
     int real_getnewutmpent(struct user_info *up);
 #define CHECK_UENT(uident) ((getSession()->utmpent > 0 && getSession()->utmpent <= USHM_SIZE ) && \
 			(utmpshm->uinfo[ getSession()->utmpent - 1 ].uid==(uident)))

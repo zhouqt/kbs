@@ -48,7 +48,7 @@ int login(struct userec *user)
     	strncpy(ui.realname, ud.realname, 20);
 	}
     strncpy(ui.username, user->username, 40);
-    utmpent = getnewutmpent2(&ui);
+    utmpent = getnewutmpent2(&ui, 1);
     if (utmpent == -1)
 	{
         fprintf(stderr, "抱歉，目前在线用户数已达上限，无法登录。");

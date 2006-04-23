@@ -3,9 +3,7 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 #include <assert.h>
-#if HAVE_MYSQL_SMTH == 1
-#include <mysql.h>
-#endif
+
 #define MAXMESSAGE 5
 int getuinfopid(void);
 /*
@@ -227,14 +225,6 @@ MYSQL * my_connect_mysql_dict(MYSQL *s){
 			    sysconf_str("MYSQLDICTPASSWORD"),
 			    sysconf_str("MYSQLDICTDATABASE"),
 			    sysconf_eval("MYSQLDICTPORT",3306), sysconf_str("MYSQLDICTSOCKET"), 0);
-}
-
-static inline void mysql_report_error(MYSQL *s) {
-#if 0
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
 }
 
 int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed, session_t* session)

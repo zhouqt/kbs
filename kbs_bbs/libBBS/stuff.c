@@ -2087,6 +2087,16 @@ void unlock_sem_check(int lockid)
 }
 
 #if HAVE_MYSQL_SMTH == 1
+
+void mysql_report_error(MYSQL *s) {
+#if 0
+		clear();
+		prints("%s\n",mysql_error(s));
+		pressanykey();
+#endif
+    bbslog("3system", "mysql error: %s", mysql_error(s));
+}
+
 #ifdef BMSLOG
 
 int bms_add(char *userid, char *boardname, time_t in, int out, char *memo )
@@ -2101,11 +2111,7 @@ int bms_add(char *userid, char *boardname, time_t in, int out, char *memo )
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return 0;
 	}
 
@@ -2117,11 +2123,7 @@ int bms_add(char *userid, char *boardname, time_t in, int out, char *memo )
 	
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -2143,11 +2145,7 @@ int bms_update(char *userid, char *boardname, time_t in, int out, char *memo )
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return 0;
 	}
 
@@ -2157,11 +2155,7 @@ int bms_update(char *userid, char *boardname, time_t in, int out, char *memo )
 	sprintf(sql,"UPDATE bms SET in='%s', out='%d', memo='%s' WHERE userid='%s' AND board='%s' ;", tt2timestamp(in,newts), out , newmemo, userid, boardname);
 	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -2179,22 +2173,14 @@ int bms_del(char *userid, char *boardname)
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return 0;
 	}
 
 	sprintf(sql,"DELETE FROM bms WHERE userid='%s' AND board='%s' ;", userid, boardname);
 	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}

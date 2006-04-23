@@ -537,7 +537,7 @@ int www_user_login(struct userec *user, int useridx, int kick_multi, char *fromh
         strncpy(ui.userid, user->userid, 20);
         strncpy(ui.realname, ud.realname, 20);
         strncpy(ui.username, user->username, 40);
-        utmpent = getnewutmpent2(&ui);
+        utmpent = getnewutmpent2(&ui, 1);
         if (utmpent == -1)
             ret = 1;
         else {

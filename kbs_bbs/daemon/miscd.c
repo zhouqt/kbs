@@ -474,7 +474,7 @@ void utmpd()
         /* utmp */
         switch (utmpreq.command) {
         case 1:                // getnewutmp
-            id = getnewutmpent2(&utmpreq.u_info.utmp);
+            id = getnewutmpent2(&utmpreq.u_info.utmp, 0 /* TODO ! */);
             break;
         case 2:
             id = -1;
