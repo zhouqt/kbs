@@ -198,10 +198,9 @@ PHP_FUNCTION(bbs_getboard)
     }
     if (boardname_len > BOARDNAMELEN)
         boardname[BOARDNAMELEN] = 0;
-    b_num = getbnum(boardname);
+    b_num = getbid(boardname, &bh);
     if (b_num == 0)
         RETURN_LONG(0);
-    bh = getboard(b_num);
     bs = getbstatus(b_num);
     if (array) {
         if (array_init(array) != SUCCESS)
@@ -240,11 +239,10 @@ PHP_FUNCTION(bbs_safe_getboard)
         if (boardname_len > BOARDNAMELEN) {
             boardname[BOARDNAMELEN] = 0;
         }
-        bid = getbnum(boardname);
+        bid = getbid(boardname, &bh);
         if (bid == 0) {
             RETURN_NULL();
         }
-        bh = getboard(bid);
     }
     nb = public_board(bh);
     if (!nb) {
@@ -692,7 +690,7 @@ PHP_FUNCTION(bbs_useronboard)
 	}
 
     
-    bid = getbnum(board);
+    bid = getbid(board, NULL);
     if (bid == 0)
         RETURN_LONG(-1);
 #ifndef ALLOW_PUBLIC_USERONBOARD
@@ -912,7 +910,7 @@ PHP_FUNCTION(bbs_add_favboard)
         }
 				if(getSession()->nowfavmode != 1)
 					RETURN_LONG(-1);
-        i=getbnum(char_bname);
+        i=getbid(char_bname,NULL);
         if(i >0 && ! IsFavBoard(i - 1, getSession(), -1, -1))
         {
                 addFavBoard(i - 1, getSession(), -1, -1);

@@ -341,7 +341,7 @@ static int www_generateOriginIndex(const char* board)
 
 	size=sizeof(struct wwwthreadheader);
 
-    bid = getbnum(board);
+    bid = getbid(board,NULL);
     bs = getbstatus(bid);
     for (i=bs->toptitle-1;i>=0;i--) {
         if (bs->topfh[i].groupid!=bs->topfh[i].id) continue;

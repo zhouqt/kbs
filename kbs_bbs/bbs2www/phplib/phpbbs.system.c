@@ -257,9 +257,9 @@ PHP_FUNCTION(bbs_new_board)
 		if( getboard(oldbnum) == 0)
 			RETURN_LONG(-21);
 
-	if( (oldbnum==0 && getbnum(newboard.filename) > 0))
+	if( (oldbnum==0 && getbid(newboard.filename,NULL) > 0))
 		RETURN_LONG(-3);
-	if( oldbnum && getbnum(newboard.filename)!=oldbnum && getbnum(newboard.filename)>0 )
+	if( oldbnum && getbid(newboard.filename,NULL)!=oldbnum && getbid(newboard.filename,NULL)>0 )
 		RETURN_LONG(-23);
 
 	if( oldbnum ){	//更改版面属性
