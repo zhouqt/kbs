@@ -203,7 +203,7 @@ int f_cp(const char *src,const char *dst,int mode){
 int f_ln(const char *src,const char *dst){
     if(!link(src,dst))
         return 0;
-    return ((errno==EMLINK||errno==EXDEV)?f_cp(src,dst,O_EXCL):-16);
+    return ((errno==EMLINK||errno==EXDEV)?f_cp(src,dst,0):-16);
 }
 
 
@@ -285,7 +285,7 @@ int flock(int fd,int op){
 int f_mv(const char *src,const char *dst){
     if(!rename(src,dst))
         return 0;
-    if(!f_cp(src,dst,O_EXCL)){
+    if(!f_cp(src,dst,0)){
         unlink(src);
         return 0;
     }
