@@ -229,6 +229,13 @@ MYSQL * my_connect_mysql_dict(MYSQL *s){
 			    sysconf_eval("MYSQLDICTPORT",3306), sysconf_str("MYSQLDICTSOCKET"), 0);
 }
 
+static inline void mysql_report_error(MYSQL *s) {
+#if 0
+		clear();
+		prints("%s\n",mysql_error(&s));
+		pressanykey();
+#endif
+}
 
 int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed, session_t* session)
 {
@@ -238,11 +245,7 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed, se
 
 	mysql_init(&s);
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return -1;
 	}
 
@@ -254,11 +257,7 @@ int save_smsmsg(char *uident, struct msghead *head, char *msgbuf, int readed, se
 	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		free(newmsgbuf);
 		return -1;
@@ -283,11 +282,7 @@ int save_smsmsg_nomysqlconnect(MYSQL *s, char *uident, struct msghead *head, cha
 	sprintf(sql,"INSERT INTO smsmsg VALUES (NULL, '%s', '%s', NULL, %d, '%s', 0 , %d);",uident, head->id, head->sent, newmsgbuf, readed );
 
 	if( mysql_real_query( s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(s));
-		pressanykey();
-#endif
+        mysql_report_error(s);
 		free(newmsgbuf);
 		return -1;
 	}
@@ -1005,11 +1000,7 @@ int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_ti
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return -1;
 	}
 
@@ -1048,11 +1039,7 @@ int count_sql_smsmsg( char *userid, char *dest, time_t start_time, time_t end_ti
 	}
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-                prints("%s\n",mysql_error(&s));
-                pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -1085,11 +1072,7 @@ int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t sta
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return -1;
 	}
 
@@ -1131,11 +1114,7 @@ int get_sql_smsmsg( struct smsmsg * smdata, char *userid, char *dest, time_t sta
 	strcat(sql, qtmp);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -1253,11 +1232,7 @@ int count_sql_al( char *userid, char *dest, char *group, char *msgtxt)
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return -1;
 	}
 
@@ -1287,11 +1262,7 @@ int count_sql_al( char *userid, char *dest, char *group, char *msgtxt)
 	}
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -1329,11 +1300,7 @@ char * get_al_mobile( char *userid, char *mobile,session_t* session)
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return NULL;
 	}
 
@@ -1341,11 +1308,7 @@ char * get_al_mobile( char *userid, char *mobile,session_t* session)
 	sprintf(sql,"SELECT mobile FROM addr WHERE userid=\"%s\" AND name=\"%s\"", session->currentuser->userid, name1 );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return NULL;
 	}
@@ -1378,11 +1341,7 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 	mysql_init(&s);
 
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return -1;
 	}
 
@@ -1426,11 +1385,7 @@ int get_sql_al( struct addresslist * smdata, char *userid, char *dest, char *gro
 	strcat(sql, qtmp);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -1515,11 +1470,7 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 
 	mysql_init(&s);
 	if (! my_connect_mysql(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		return 0;
 	}
 
@@ -1546,11 +1497,7 @@ int add_sql_al(char *userid, struct addresslist *al, char *msgbuf)
 		sprintf(sql,"UPDATE addr SET userid='%s', name='%s', bbsid='%s', school='%s', zipcode='%s', homeaddr='%s', companyaddr='%s', tel_o='%s', tel_h='%s', mobile='%s', email='%s', qq='%s', birthday=\"%d-%d-%d\", memo='%s', groupname='%s' WHERE id=%d ;",userid, newname, newbbsid, newschool, newzipcode, newhomeaddr, newcompanyaddr, newtel_o, newtel_h,newmobile, newemail, newqq, al->birth_year, al->birth_month, al->birth_day, newmsgbuf, newgroup, al->id );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        mysql_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
