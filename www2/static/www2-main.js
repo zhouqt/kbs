@@ -1040,6 +1040,7 @@ conWriter.prototype.t = function() {
 	ret += '[<a href="' + url + '">返回版面' + dir_name(this.ftype) + '</a>] ';
 	ret += '[<a href="javascript:history.go(-1)">快速返回</a>]<br/>';
 	if (ao && isLogin()) {
+		ret += '[<a href="bbsshowtmpl.php' + qry + '">模板回复</a>] ';
 		ret += '[<a href="bbsfwd.php' + qry + '">转寄</a>] ';
 		ret += '[<a href="bbsccc.php' + qry + '">转贴</a>] ';
 		if (!zd) ret += '[<a href="bbscommend.php' + qry + '">推荐</a>] ';

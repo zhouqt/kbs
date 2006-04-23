@@ -500,5 +500,49 @@ function htmlformat($str,$multi=false) {
 	return $str;    
 }
 
+function bbs_get_quote($filename)
+{
+	$str = "";
+	if(file_exists($filename))
+	{
+	    $fp = fopen($filename, "r");
+        if ($fp) {
+		    $lines = 0;
+            $buf = fgets($fp,256);       /* 取出第一行中 被引用文章的 作者信息 */
+			$end = strrpos($buf,")");
+			$start = strpos($buf,":");
+			if($start != FALSE && $end != FALSE)
+			    $quser=substr($buf,$start+2,$end-$start-1);
+
+            $str .= "\n【 在 " . $quser . " 的大作中提到: 】\n";
+            for ($i = 0; $i < 3; $i++) {
+                if (($buf = fgets($fp,500)) == FALSE)
+                    break;
+            }
+            while (1) {
+                if (($buf = fgets($fp,500)) == FALSE)
+                    break;
+                if (strncmp($buf, "【", 2) == 0)
+                    continue;
+                if (strncmp($buf, ": ", 2) == 0)
+                    continue;
+                if (strncmp($buf, "--\n", 3) == 0)
+                    break;
+                if (strncmp($buf, "\n", 1) == 0)
+                    continue;
+                if (++$lines > QUOTED_LINES) {
+                    $str .= ": ...................\n";
+                    break;
+                }
+                //if (stristr($buf, "</textarea>") == FALSE)  //filter </textarea> tag in the text
+                    $str .= ": ". htmlspecialchars($buf);
+            }
+			$str .= "\n\n";
+            fclose($fp);
+        }
+    }
+    return $str;
+}
+
 } // !define ('_BBS_WWW2_FUNCS_PHP_')
 ?>

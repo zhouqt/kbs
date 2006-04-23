@@ -11,6 +11,7 @@
 	$brdArr=array();
 	$boardID= bbs_getboard($boardName,$brdArr);
 	if( $boardID == 0) html_error_quit("指定的版面不存在!");
+	$boardName = $brdArr["NAME"];
 	$usernum = $currentuser["index"];
 	if (bbs_checkreadperm($usernum, $boardID) == 0) html_error_quit("您无权阅读该版!");
 	if (bbs_is_readonly_board($brdArr)) html_error_quit("本版为只读讨论区!");
@@ -37,7 +38,6 @@
 	if (bbs_is_outgo_board($brdArr)) $outgo = intval(@$_POST["outgo"]);
 	else $outgo = 0;
 	
-	$boardName = $brdArr["NAME"];
 	settype($reID, "integer");
 			
 	$articles = array();
@@ -51,6 +51,10 @@
 
 	bbs_board_nav_header($brdArr, $reID ? "回复文章" : "发表文章");
 
+	if($tmpl & ($reID > 0)) {
+		$filename = "boards/" . $boardName . "/" . $articles[1]["FILENAME"];
+		$contents .= bbs_get_quote($filename);
+	}
 	$ret = bbs_postarticle($boardName, rtrim($_POST["title"]), 
 		($tmpl ? $contents :$_POST["text"]), intval(@$_POST["signature"]), $reID, 
 		$outgo, $anony, @intval($_POST["mailback"]), 0);

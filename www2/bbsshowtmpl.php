@@ -22,6 +22,12 @@
 
 	if( $retnum < 0 )
 		$retnum = 0;
+
+	if(isset($_GET["id"]))
+		$restr = "&reid=" . $_GET["id"];
+	else
+		$restr = "";
+		
 	
 	bbs_board_nav_header($brdarr, "模板列表");
 ?>
@@ -40,7 +46,7 @@
 </td><td>
 <?php echo $votearr[$i]["CONT_NUM"];?>
 </td><td>
-<a href="bbspsttmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1;?>">使用本模板发文</a>
+<a href="bbspsttmpl.php?board=<?php echo $board;?>&num=<?php echo $i+1; echo $restr;?>">使用本模板发文</a>
 </td></tr>
 <?php
 	}
