@@ -1191,7 +1191,7 @@ int pip_magic_doing_menu(const struct magicset *p){
 	register const char *s;
 	char buf[256];
 	char ans[5];
-	int pipkey;
+	int pipkey = 0;
 	int injure = 0;
 
 	d.nodone = 0;

@@ -64,7 +64,6 @@ static int mem_more(char *ptr, int size, int quit, char *keystr, char *fn, char 
 int NNread_init()
 {
     FILE *fffd;
-    char *ptr;
     char buf[ACBOARD_BUFSIZE];
     struct stat st;
     time_t ftime, now;
@@ -74,6 +73,8 @@ int NNread_init()
 	int fd;
 	char fname[PATHLEN];
 	int i;
+#else
+    char *ptr;
 #endif
 
     now = time(0);

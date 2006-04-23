@@ -344,7 +344,7 @@ int main(int argc, char **argv)
         strncpy(LockFile, (char *) fileglue("%s.lock", active), sizeof LockFile);
         if ((lockfd = open(LockFile, O_RDONLY)) >= 0) {
             char buf[10];
-            int pid;
+            int pid = 0;
 
             if (read(lockfd, buf, sizeof buf) > 0 && (pid = atoi(buf)) > 0 && kill(pid, 0) == 0) {
                 fprintf(stderr, "another process [%d] running\n", pid);
