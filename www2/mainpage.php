@@ -504,7 +504,7 @@ while($board = array_shift($boards))
 	if(defined("BBS_HAVE_BLOG"))
 	{
 ?>
-    <a href="/pc/pcmain.php">ˮľBLOG</a>
+    <a href="/pc/pcmain.php"><?php echo BBS_NICKNAME; ?>BLOG</a>
 <?php
 	}
 ?>

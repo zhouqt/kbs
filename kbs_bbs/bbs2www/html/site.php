@@ -11,4 +11,7 @@ $style_names = array(
 	"冬雪皑皑"
 );
 
+// 这个暂时这样.............
+define("BBS_NICKNAME", "水木");
+
 ?>

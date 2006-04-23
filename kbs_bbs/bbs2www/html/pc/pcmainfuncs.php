@@ -134,7 +134,7 @@ function pcmain_navigation_bar()
 |
 <a href="/pc/pc.php">用户列表</a>
 |
-<a href="/pc/pcreco.php">水木推荐</a>
+<a href="/pc/pcreco.php"><?php echo BBS_NICKNAME; ?>推荐</a>
 |
 <a href="/pc/pcnew.php">最新日志</a>
 |

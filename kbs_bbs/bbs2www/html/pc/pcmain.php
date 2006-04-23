@@ -73,7 +73,7 @@ function pcmain_annouce()
 	$anns = getPcAnnounce($link, _PCMAIN_ANNS_NUM_ );
 ?>
 <table width="100%" cellspacing="0" cellpadding="3" border="0" class="table">
-	<tr><td class="channelback"><font class="channel">水木动态</font></td></tr>
+	<tr><td class="channelback"><font class="channel"><?php echo BBS_NICKNAME; ?>动态</font></td></tr>
 	<tr><td align="left" valign="top" class="td"><ul>
 <?php
 	foreach($anns as $ann)
@@ -396,7 +396,7 @@ if (top.location != self.location && !top.location.href.match(reg)) {
           <tr>
             <td class="channelback"><table width="100%"  border="0" cellspacing="0" cellpadding="0">
                 <tr>
-                  <td width="73%" class="channel">水木统计</td>
+                  <td width="73%" class="channel"><?php echo BBS_NICKNAME; ?>统计</td>
                   <td width="27%" align="right" class="more">&nbsp;</td>
                 </tr>
             </table></td>
@@ -537,7 +537,7 @@ if (top.location != self.location && !top.location.href.match(reg)) {
           <tr>
             <td><table width="100%"  border="0" cellspacing="0" cellpadding="3">
               <tr>
-                <td class="topic">水木推荐</td>
+                <td class="topic"><?php echo BBS_NICKNAME; ?>推荐</td>
                 </tr>
               <tr>
                 <td bgcolor="#ECF5FF"><?php pcmain_blog_recommend_nodes(); ?></td>
