@@ -1296,6 +1296,7 @@ static int pc_dir_show(struct _select_def *conf, int i)
 
 static int pc_dir_key(struct _select_def *conf, int key)
 {
+    char ans[4];
     switch (key) {
     case 'a':
         if (!pc_is_owner(pc_u->username))
@@ -1372,7 +1373,14 @@ static int pc_dir_key(struct _select_def *conf, int key)
     case 'd':
         if (!pc_is_admin(pc_u->username))
             return SHOW_CONTINUE;
-        if (pc_dirmode == 5) {
+
+        move(2,0);
+        clrtoeol();
+        ans[0]=0;
+        getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
+        if (ans[0] != 'y' && ans[0]!='Y') {
+            // KCN 普度众生
+        } else if (pc_dirmode == 5) {
             if (del_pc_nodes(pc_n[conf->pos - conf->page_pos].nid, pc_n[conf->pos - conf->page_pos].access, pc_u->uid)) {
                 return SHOW_DIRCHANGE;
             }
@@ -1857,6 +1865,8 @@ static int pc_com_prekey(struct _select_def *conf, int *key)
 
 static int pc_com_key(struct _select_def *conf, int key)
 {
+    char ans[4];
+
     switch (key) {
     case 'a':
         if (!pc_can_com(pc_n[pc_now_node_ent].comment , pc_n[pc_now_node_ent].uid))
@@ -1868,7 +1878,14 @@ static int pc_com_key(struct _select_def *conf, int key)
     case 'd':
         if (!pc_is_admin(pc_u->username) && strcasecmp(getCurrentUser()->userid, pc_c[conf->pos - conf->page_pos].username))
             return SHOW_CONTINUE;
-        if (del_pc_comments(pc_n[pc_now_node_ent].nid, pc_c[conf->pos - conf->page_pos].cid)) {
+
+        move(2,0);
+		clrtoeol();
+		ans[0]=0;
+        getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
+		if(ans[0] != 'y' && ans[0]!='Y') {
+			
+        } else if (del_pc_comments(pc_n[pc_now_node_ent].nid, pc_c[conf->pos - conf->page_pos].cid)) {
             return SHOW_DIRCHANGE;
         }
         return SHOW_REFRESH;

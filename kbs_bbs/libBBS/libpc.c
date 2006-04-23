@@ -63,6 +63,14 @@ char * tt2timestamp( time_t tt, char *c)
 
 #ifdef PERSONAL_CORP
 
+static inline void pc_report_error(MYSQL *s) {
+#ifdef BBSMAIN
+	clear();
+	prints("%s\n",mysql_error(s));
+	pressanykey();
+#endif
+}
+
 int pc_conv_file_to_body( char **body, char *fname)
 {
 	char *ptr;
@@ -141,22 +149,14 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 	mysql_init (&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
 	sprintf(sql, "SELECT COUNT(*) FROM users WHERE pctype != 9 AND username LIKE \"%c%%\"", prefix);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -182,11 +182,7 @@ int pc_load_usr( struct _pc_selusr **ps, char prefix)
 	sprintf(sql, "SELECT username,corpusname,UNIX_TIMESTAMP(createtime) FROM users WHERE pctype != 9 AND username LIKE \"%c%%\" LIMIT %d", prefix,ret);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -227,22 +223,14 @@ int get_pc_users( struct pc_users * pu, char * userid )
 	mysql_init (&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
 	sprintf(sql, "SELECT `uid`,`username`,`corpusname`,`description`,`theme`,`nodelimit`,`dirlimit`,UNIX_TIMESTAMP(`createtime`) FROM users WHERE pctype != 9 AND username=\"%s\"", userid);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -287,22 +275,14 @@ int get_pc_a_node( struct pc_nodes * pn, unsigned long nid)
 	mysql_init(&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return -1;
 	}
 
 	sprintf(sql,"SELECT `nid`,`pid`,`type`,`source`,`hostname`,UNIX_TIMESTAMP(`changed`),UNIX_TIMESTAMP(`created`),`uid`,`comment`,`commentcount`,`subject`,`body`,`access`,`visitcount`,`tid`,`emote`,`htmltag` FROM nodes WHERE nid=%lu", nid );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -363,11 +343,7 @@ int count_pc_nodes( int uid, unsigned long pid, int type, int access )
 	mysql_init(&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return -1;
 	}
 
@@ -385,11 +361,7 @@ int count_pc_nodes( int uid, unsigned long pid, int type, int access )
 	strcat(sql, qtmp);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -420,11 +392,7 @@ int get_pc_nodes( struct pc_nodes * pn, int uid, unsigned long pid, int type, in
 	mysql_init(&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return -1;
 	}
 
@@ -445,11 +413,7 @@ int get_pc_nodes( struct pc_nodes * pn, int uid, unsigned long pid, int type, in
 	strcat(sql, qtmp);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -514,22 +478,14 @@ int get_pc_a_com( struct pc_comments * pn, unsigned long cid )
 	mysql_init(&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return -1;
 	}
 
 	sprintf(sql,"SELECT `cid`,`nid`,`uid`,`hostname`,`username`,`subject`,UNIX_TIMESTAMP(`created`),UNIX_TIMESTAMP(`changed`),`body` FROM comments WHERE cid=\"%lu\"", cid );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -575,22 +531,14 @@ int count_pc_comments( unsigned long nid)
 	mysql_init(&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return -1;
 	}
 
 	sprintf(sql,"SELECT COUNT(*) FROM comments WHERE nid=\"%lu\"", nid );
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -620,11 +568,7 @@ int get_pc_comments( struct pc_comments * pn, unsigned long nid, int start, int 
 	mysql_init(&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return -1;
 	}
 
@@ -634,11 +578,7 @@ int get_pc_comments( struct pc_comments * pn, unsigned long nid, int start, int 
 	strcat(sql, qtmp);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return -1;
 	}
@@ -694,11 +634,7 @@ int add_pc_users(struct pc_users *pn)
 
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
@@ -713,22 +649,14 @@ int add_pc_users(struct pc_users *pn)
 	
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
 	
 	sprintf(sql,"UPDATE newapply SET `apptime` = `apptime` , manager = '%s' , management = 0 WHERE username = '%s ' ;", getCurrentUser()->userid , pn->username);	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -771,11 +699,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		if(pn->body)
 			free(newbody);
 		free(ql);
@@ -803,11 +727,7 @@ int add_pc_nodes(struct pc_nodes *pn)
 	}
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		if(pn->body)
 			free(newbody);
@@ -836,22 +756,14 @@ int pc_in_blacklist(char * userid , unsigned long pcuid)
 	mysql_init (&s);
 
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
 	sprintf(sql, "SELECT * FROM blacklist WHERE userid=\"%s\" AND (uid=\"%lu\" OR uid=\"0\")", userid , pcuid);
 
 	if( mysql_real_query(&s, sql, strlen(sql)) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -902,11 +814,7 @@ int add_pc_comments(struct pc_comments *pn)
 
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		if(pn->body)
 			free(newbody);
 		free(sql);
@@ -924,11 +832,7 @@ int add_pc_comments(struct pc_comments *pn)
 		sprintf(sql,"UPDATE comments SET nid=%lu, uid=%d, hostname='%s', username='%s', subject='%s', created='%s', changed='%s', body='%s' WHERE cid=%lu ;",pn->nid, pn->uid, newhostname, pn->username, newsubject, tt2timestamp(pn->created,newts), tt2timestamp(pn->changed, newts1), pn->body?newbody:"", pn->cid );
 	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		if(pn->body)
 			free(newbody);
@@ -959,22 +863,14 @@ int del_pc_users(struct pc_users *pn)
 
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
 	sprintf(sql,"DELETE FROM users WHERE uid=%u AND username='%s' ;", pn->uid, pn->username );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -982,11 +878,7 @@ int del_pc_users(struct pc_users *pn)
 	sprintf(sql,"DELETE FROM nodes WHERE uid=%u ;", pn->uid );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -994,11 +886,7 @@ int del_pc_users(struct pc_users *pn)
 	sprintf(sql,"DELETE FROM comments WHERE uid=%u ;", pn->uid );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1006,11 +894,7 @@ int del_pc_users(struct pc_users *pn)
 	sprintf(sql,"DELETE FROM blacklist WHERE uid=%u ;", pn->uid );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1018,11 +902,7 @@ int del_pc_users(struct pc_users *pn)
 	sprintf(sql,"DELETE FROM recommend WHERE uid=%u ;", pn->uid );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1030,11 +910,7 @@ int del_pc_users(struct pc_users *pn)
 	sprintf(sql,"DELETE FROM topics WHERE uid=%u ;", pn->uid );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1042,11 +918,7 @@ int del_pc_users(struct pc_users *pn)
 	sprintf(sql,"DELETE FROM trackback WHERE uid=%u ;", pn->uid );
 
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1060,29 +932,13 @@ int del_pc_nodes( unsigned long nid , int access , int uid )
 {
 		char sql[100];
 		MYSQL s;
-#ifdef BBSMAIN
-    char ans[4];
-#endif
 
 		if(nid <= 0)
 			return 0;
 
-#ifdef BBSMAIN
-        move(2,0);
-		clrtoeol();
-		ans[0]=0;
-        getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
-		if(ans[0] != 'y' && ans[0]!='Y')
-			return 0;
-#endif
-
 		mysql_init(&s);
 		if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-			clear();
-			prints("%s\n",mysql_error(&s));
-			pressanykey();
-#endif
+			pc_report_error(&s);
 			return 0;
 		}
 		if( access == 0 )
@@ -1094,11 +950,7 @@ int del_pc_nodes( unsigned long nid , int access , int uid )
 		sprintf(sql,"DELETE FROM nodes WHERE nid=%lu;",nid);
 
 		if( mysql_real_query( &s, sql, strlen(sql) ) ){
-#ifdef BBSMAIN
-			clear();
-			prints("%s\n",mysql_error(&s));
-			pressanykey();
-#endif
+			pc_report_error(&s);
 			mysql_close(&s);
 			return 0;
 		}
@@ -1115,22 +967,14 @@ int pc_del_junk(int uid)
 
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
 	sprintf(ql,"DELETE FROM nodes WHERE uid=%d AND access=4",uid);
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1144,26 +988,10 @@ int del_pc_node_junk(unsigned int nid , int access , int uid )
 {
 	MYSQL s;
 	char ql[200];
-#ifdef BBSMAIN
-    char ans[4];
-#endif
-
-#ifdef BBSMAIN
-        move(2,0);
-		clrtoeol();
-		ans[0]=0;
-        getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
-		if(ans[0] != 'y' && ans[0]!='Y')
-			return 0;
-#endif
 
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 	
@@ -1175,11 +1003,7 @@ int del_pc_node_junk(unsigned int nid , int access , int uid )
 	sprintf(ql,"UPDATE nodes SET access=4,pid=0,type=0 WHERE nodetype = 0 AND nid=%u",nid);
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1193,51 +1017,27 @@ int del_pc_comments( unsigned long nid, unsigned long cid )
 {
 		char sql[100];
 		MYSQL s;
-#ifdef BBSMAIN
-    char ans[4];
-#endif
 
 		if(cid <= 0)
 			return 0;
 
-#ifdef BBSMAIN
-        move(2,0);
-		clrtoeol();
-		ans[0]=0;
-        getdata(2, 0, "删除这条记录(Y/N) [N]: ", ans, 3, DOECHO, NULL, true);
-		if(ans[0] != 'y' && ans[0]!='Y')
-			return 0;
-#endif
-
 		mysql_init(&s);
 		if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-			clear();
-			prints("%s\n",mysql_error(&s));
-			pressanykey();
-#endif
+            pc_report_error(&s);
 			return 0;
 		}
 
 		sprintf(sql,"DELETE FROM comments WHERE cid=%lu;",cid);
 
 		if( mysql_real_query( &s, sql, strlen(sql) ) ){
-#ifdef BBSMAIN
-			clear();
-			prints("%s\n",mysql_error(&s));
-			pressanykey();
-#endif
+            pc_report_error(&s);
 			mysql_close(&s);
 			return 0;
 		}
 
 		sprintf(sql,"UPDATE nodes SET changed=changed,commentcount=commentcount-1 WHERE nid=%lu",nid);
 		if( mysql_real_query( &s, sql, strlen(sql) ) ){
-#ifdef BBSMAIN
-			clear();
-			prints("%s\n",mysql_error(&s));
-			pressanykey();
-#endif
+            pc_report_error(&s);
 			mysql_close(&s);
 			return 0;
 		}
@@ -1281,22 +1081,14 @@ int pc_add_visitcount(unsigned long nid)
 
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
 	sprintf(ql,"UPDATE nodes SET changed=changed,visitcount=visitcount+1 WHERE nid=%lu",nid);
 	
 	if( mysql_real_query( &s, ql, strlen(ql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
@@ -1322,11 +1114,7 @@ int pc_logs(struct pc_logs *pn)
 	
 	mysql_init(&s);
 	if (! my_connect_mysql_blog(&s) ){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		return 0;
 	}
 
@@ -1337,11 +1125,7 @@ int pc_logs(struct pc_logs *pn)
 	sprintf(sql,"INSERT INTO logs VALUES (NULL, '%s', '%s', '%s', '%s' , '%s' , '%s', '%s' );",pn->username, newhostname,newaction, pn->pri_id, pn->sec_id, newcomment, tt2timestamp(pn->logtime,newts));
 	
 	if( mysql_real_query( &s, sql, strlen(sql) )){
-#ifdef BBSMAIN
-		clear();
-		prints("%s\n",mysql_error(&s));
-		pressanykey();
-#endif
+        pc_report_error(&s);
 		mysql_close(&s);
 		return 0;
 	}
