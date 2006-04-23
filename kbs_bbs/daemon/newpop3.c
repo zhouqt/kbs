@@ -591,10 +591,13 @@ int main(int argc, char **argv)
     open("/dev/null", O_RDONLY);
     dup2(0, 1);
     dup2(0, 2);
+#ifdef TIOCNOTTY
+    /* Certain platform (e.g. Interix) does not define TIOCNOTTY */
     if ((n = open("/dev/tty", O_RDWR)) > 0) {
         ioctl(n, TIOCNOTTY, 0);
         close(n);
     }
+#endif
 #else /* !CYGWIN */
     n = getdtablesize();
 	while (n > 3)

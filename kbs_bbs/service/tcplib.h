@@ -1,24 +1,7 @@
 #ifndef XXJH_TCPLIB_H
 #define XXJH_TCPLIB_H
 
-#include <sys/time.h>
-#include <sys/select.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#ifndef CYGWIN
-#include <sys/socketvar.h>
-#endif
-#include <errno.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <memory.h>
-#include <unistd.h>
-#include <fcntl.h>
-#include <strings.h>
-#include <stdlib.h>
-#include <stdio.h>
-#include <sys/mman.h>
-
+#include "bbs.h"
 
 /**
  * tcplib ÓÃµ½µÄ´íÎóºÅ.

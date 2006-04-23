@@ -3277,7 +3277,7 @@ int deny_anony(struct _select_def* conf,struct fileheader *fileinfo,void* extraa
 				char title[80];
 				char buff[256];
 				FILE *fp;
-				sprintf(buff,"tmp/%s.%d.ad", getCurrentUser()->userid, getpid());
+				sprintf(buff,"tmp/%s.%d.ad", getCurrentUser()->userid, (int)getpid());
 				if((fp=fopen(buff,"w"))==NULL){
 					ret = 0;
 				}else{

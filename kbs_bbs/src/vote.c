@@ -459,7 +459,7 @@ static int mk_result(int num)
     setcontrolfile();
     sprintf(fname, "vote/%s/flag.%lu", currboard->filename, currvote.opendate);
     count_result(NULL, NULL, 0);
-    sprintf(sugname, "vote/%s/tmp.%d", currboard->filename, getpid());
+    sprintf(sugname, "vote/%s/tmp.%d", currboard->filename, (int)getpid());
     if ((sug = fopen(sugname, "w")) == NULL) {
         bbslog("3error","%s","open vote tmp file error");
         prints("Error: 结束投票错误...\n");
@@ -552,7 +552,7 @@ int check_result(int num)
     setcontrolfile();
     sprintf(fname, "vote/%s/flag.%lu", currboard->filename, currvote.opendate);
     count_result(NULL, 0, 0);
-    sprintf(sugname, "vote/%s/tmp.%d", currboard->filename, getpid());
+    sprintf(sugname, "vote/%s/tmp.%d", currboard->filename, (int)getpid());
     if ((sug = fopen(sugname, "w")) == NULL) {
         bbslog("user","%s","open vote tmp file error");
         prints("Error: 检查投票错误...\n");

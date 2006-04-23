@@ -546,7 +546,7 @@ void msgmail(char *did, const char *buf)
 
 	if(!getCurrentUser() || getCurrentUser()->userid[0]=='\0' || !buf || !buf[0] ) return;
 
-	sprintf(tmpfname, "tmp/%s.mailmsg.%d", getCurrentUser()->userid, getpid());
+	sprintf(tmpfname, "tmp/%s.mailmsg.%d", getCurrentUser()->userid, (int)getpid());
 	if((tfp = fopen(tmpfname, "w"))!=NULL){
 		write_header(tfp, getCurrentUser(),1,NULL,"发送失败的信息",0,0,getSession());
 		fprintf(tfp, "\n你给%s的信息由于对方已经离线或者屏幕锁定无法送达,以下是信息内容:\n\n%s\n", did, buf);

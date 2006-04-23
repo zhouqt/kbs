@@ -393,7 +393,7 @@ int XCheckLevel(void){
         while(buf[0]&&!(buf[0]=='a'||buf[0]=='o'||buf[0]=='A'||buf[0]=='O'));
         arg.check_mode=(buf[0]=='o'||buf[0]=='O')?1:0;
     }
-    sprintf(buf,"tmp/check_level_%ld_%d",time(NULL),getpid());
+    sprintf(buf,"tmp/check_level_%ld_%d",time(NULL), (int)getpid());
     if(!(arg.log_file=fopen(buf,"w"))){
         move(2,0);clrtoeol();
         prints("创建临时文件错误,操作中断...");

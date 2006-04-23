@@ -1783,7 +1783,7 @@ int modify_board(int bid) {
     error|=edit_group(&bh,&newbh);
     set_board(bid,&newbh,&bh);
     /*生成安全审核和日志*/
-    sprintf(src,"tmp/edit_board_log_%ld_%d",time(NULL),getpid());
+    sprintf(src,"tmp/edit_board_log_%ld_%d",time(NULL), (int)getpid());
     if(!(fp=fopen(src,"w"))){
         sprintf(buf,"修改讨论区: <%4.4d,%#6.6x> %s%c-> %s",bid,change,bh.filename,(change&(1<<0))?32:0,newbh.filename);
         securityreport(buf,NULL,NULL);
@@ -1829,7 +1829,7 @@ int searchtrace(void){
         WAIT_RETURN;clear();
         return -1;
     }
-    sprintf(fn_buf,"tmp/searchtrace_%ld_%d",time(NULL),getpid());
+    sprintf(fn_buf,"tmp/searchtrace_%ld_%d",time(NULL), (int)getpid());
     sprintf(buf,"查询 %s 发文(P)/发信(M)记录 [P]: ",user->userid);
     move(2,0);clrtobot();
     getdata(2,0,buf,ans,2,DOECHO,NULL,true);
@@ -3217,7 +3217,7 @@ int edit_board_delete_read_perm(void){
             close(fd);
             if(p==MAP_FAILED)
                 continue;
-            sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),getpid());
+            sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),(int)getpid());
             if(!(fp=fopen(fn,"w"))){
                 munmap(p,st.st_size);
                 continue;
@@ -3247,7 +3247,7 @@ int edit_board_delete_read_perm(void){
             WAIT_RETURN;
         }
         else if(ans[0]=='e'||ans[0]=='E'){
-            sprintf(fn,"tmp/set_board_delete_read_perm_data_%ld_%d",time(NULL),getpid());
+            sprintf(fn,"tmp/set_board_delete_read_perm_data_%ld_%d",time(NULL),(int)getpid());
             if(stat(datafile,&st)||!S_ISREG(st.st_mode)||(fd=open(datafile,O_RDONLY,0644))==-1)
                 unlink(fn);
             else{
@@ -3343,7 +3343,7 @@ int edit_board_delete_read_perm(void){
             lc.l_pid=0;
             fcntl(fd,F_SETLKW,&lc);
             close(fd);
-            sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),getpid());
+            sprintf(fn,"tmp/set_board_delete_read_perm_log_%ld_%d",time(NULL),(int)getpid());
             if(!(fp=fopen(fn,"w"))){
                 free(p);
                 continue;

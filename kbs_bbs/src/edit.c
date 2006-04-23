@@ -815,7 +815,7 @@ static long edit_attach(char *fn){
         WAIT_RETURN;clear();
         return -2;
     }
-    sprintf(fn_tmp,"%s/edit_attach.%d",EA_TMP_DIR,getpid());
+    sprintf(fn_tmp,"%s/edit_attach.%d",EA_TMP_DIR,(int)getpid());
     if((fd=open(fn_tmp,O_RDWR|O_CREAT|O_TRUNC,0644))==-1){
         move(3,0);prints("\033[1;31m创建临时文件时发生错误...\033[1;37m<Enter>\033[m");
         WAIT_RETURN;clear();

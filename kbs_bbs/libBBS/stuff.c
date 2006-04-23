@@ -1088,7 +1088,7 @@ int del_from_file(char filename[STRLEN], char str[STRLEN])
     if ((fp = fopen(filename, "r")) == NULL)
         return -1;
     flock(fileno(fp), LOCK_EX);
-    sprintf(fnnew, "%s.%d", filename, getpid());
+    sprintf(fnnew, "%s.%d", filename, (int)getpid());
     if ((nfp = fopen(fnnew, "w")) == NULL) {
         flock(fileno(fp), LOCK_UN);
         fclose(fp);
@@ -1565,7 +1565,7 @@ int import_old_mailgroup(const char *userid, mailgroup_list_t * mgl)
     int fd;
 
     sethomefile(oldgroup, userid, "maillist");
-    sprintf(buf, "tmpgroup%d", getpid());
+    sprintf(buf, "tmpgroup%d", (int)getpid());
     sethomefile(tmpgroup, userid, buf);
     if ((fp = fopen(oldgroup, "r")) == NULL)
         return -1;
@@ -1612,7 +1612,7 @@ int import_friends_mailgroup(const char *userid, mailgroup_list_t * mgl)
     int fd;
 
     sethomefile(oldgroup, userid, "friends");
-    sprintf(buf, "tmpgroup%d", getpid());
+    sprintf(buf, "tmpgroup%d", (int)getpid());
     sethomefile(tmpgroup, userid, buf);
     if ((fd2 = open(oldgroup, O_RDONLY, 0600)) < 0)
         return -1;
@@ -1694,7 +1694,7 @@ int gettmpfilename(char *retchar, char *fmt, ...){
 	vsnprintf(fname, STRLEN-20, fmt, ap);
 	va_end(ap);
 
-	sprintf(retchar, "tmp/%d/", getpid());
+	sprintf(retchar, "tmp/%d/", (int)getpid());
     if (!dashd(retchar)) {
         mkdir(retchar, 0755);
         chmod(retchar, 0755);

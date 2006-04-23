@@ -1555,7 +1555,7 @@ int get_user_club_perm(const struct userec *user,const struct boardheader *board
 int club_maintain_send_mail(const char *userid,const char *comment,int type,int write_perm,struct boardheader *bh,session_t *session){
     FILE *fp;
     char fn[256],title[256];
-    sprintf(fn,"tmp/club_notify_%ld_%d",time(NULL),getpid());
+    sprintf(fn,"tmp/club_notify_%ld_%d",time(NULL),(int)getpid());
     if(!(fp=fopen(fn,"w")))
         return -1;
     if(!type)

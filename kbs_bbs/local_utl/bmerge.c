@@ -202,7 +202,7 @@ int main(int argc,char **argv){
     }
     /*创建目标目录,用pid进行标识区分*/
     sprintf(path,"boards/%s",argv[3]);
-    sprintf(buf,"boards/%s_%d",argv[3],getpid());
+    sprintf(buf,"boards/%s_%d",argv[3], (int)getpid());
     if(!stat(path,&st)&&S_ISDIR(st.st_mode))
         rename(path,buf);
     else

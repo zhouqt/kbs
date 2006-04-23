@@ -1808,7 +1808,7 @@ int add_edit_mark(char *fname, int mode, char *title, session_t* session)
 
     if ((fp = fopen(fname, "rb")) == NULL)
         return 0;
-    sprintf(outname, "tmp/%d.editpost", getpid());
+    sprintf(outname, "tmp/%d.editpost", (int)getpid());
     if ((out = fopen(outname, "w")) == NULL) {
         fclose(fp);
         return 0;

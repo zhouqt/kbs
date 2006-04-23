@@ -70,7 +70,7 @@ int main(int argc, char **argv){
 	}
 	fclose(fp);
 
-	sprintf(path1, "tmp/%d.logintmp", getpid());
+	sprintf(path1, "tmp/%d.logintmp", (int)getpid());
 	if((fp=fopen(path1, "w"))==NULL){
 		printf("cannot open login2 file\n");
 		goto out1;
