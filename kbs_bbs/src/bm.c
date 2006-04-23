@@ -26,7 +26,6 @@
 
 /* XXX: what are these bird words above? should it be cut after the rewrite of deny? - etnlegend */
 
-#include <math.h>
 #include "bbs.h"
 #include "read.h"
 
@@ -1024,7 +1023,7 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
     struct _select_item sel[5];
     struct _select_def conf;
     POINT pts[4];
-    char menustr[4][128];
+    char menustr[4][128],buf[16];
     int fw[2];
     sel[0].x=32;sel[0].y=2;sel[0].hotkey='0';sel[0].type=SIT_SELECT;sel[0].data=menustr[0];
     sel[1].x=32;sel[1].y=3;sel[1].hotkey='1';sel[1].type=SIT_SELECT;sel[1].data=menustr[1];
@@ -1035,8 +1034,10 @@ static inline int delete_range_interface_sub_menu(int current,int total,struct d
     pts[1].x=sel[1].x;pts[1].y=sel[1].y;
     pts[2].x=sel[2].x;pts[2].y=sel[2].y;
     pts[3].x=sel[3].x;pts[3].y=sel[3].y;
-    fw[0]=(1+(int)floor(log10(current)));
-    fw[1]=(1+(int)floor(log10(total)));
+    sprintf(buf,"%d",current);
+    fw[0]=strlen(buf);
+    sprintf(buf,"%d",total);
+    fw[1]=strlen(buf);
     sprintf(menustr[0],"\033[1;37m全部         [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m",
         fw[0],1,fw[1],total);
     sprintf(menustr[1],"\033[1;37m当前位置向前 [ \033[1;31m%*d \033[1;37m- \033[1;31m%*d \033[1;37m]\033[m",
