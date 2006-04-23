@@ -1,5 +1,4 @@
 /* ÁÄÌìÊÒ Server */
-#undef BBSMAIN
 #include "bbs.h"
 #include "chat.h"
 #include <sys/ioctl.h>

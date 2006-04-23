@@ -721,29 +721,6 @@ char *str;
     return 1;
 }
 
-int linkto(char *path, const char *fname, const char *title, session_t* session)
-{
-    MENU pm;
-
-    bzero(&pm,sizeof(pm));
-    pm.path = path;
-
-    strcpy(pm.mtitle, title);
-    a_loadnames(&pm, session);
-    a_additem(&pm, title, fname, NULL, 0, 0);
-    if (a_savenames(&pm) != 0) {
-#ifdef BBSMAIN
-        char buf[80], ans[40];
-
-        sprintf(buf, "整理精华区失败，可能有其他版主在处理同一目录，按 Enter 继续 ");
-        a_prompt(-1, buf, ans);
-#endif
-    }
-    a_freenames(&pm);
-    return 0;
-}
-
-
 
 /*etnlegend,2005.06.28,修改精华区*/
 int ann_show_board(const struct boardheader *bh){

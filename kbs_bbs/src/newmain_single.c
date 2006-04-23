@@ -76,6 +76,13 @@ static int i_domode = INPUT_ACTIVE;
 extern time_t calltime;
 extern char calltimememo[];
 
+int switch_code()
+{
+    convcode = !convcode;
+    redoscr();
+    return convcode;
+}
+
 int canbemsged(uin)             /*Haohmaru.99.5.29 */
     struct user_info *uin;
 {

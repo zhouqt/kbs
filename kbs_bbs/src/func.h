@@ -678,7 +678,6 @@ int pc_logs(struct pc_logs *pn);
     int save_import_path(char ** i_path,char ** i_title,time_t* i_path_time, session_t* session );
     void load_import_path(char ** i_path,char ** i_title, time_t* i_path_time,int * i_path_select, session_t* session);
     void free_import_path(char ** i_path,char ** i_title,time_t* i_path_time);
-	int linkto(char *path,const char *fname,const char *title, session_t* session);
     int edit_group(const struct boardheader* oldbh, const struct boardheader* newbh);
 
     int a_SeSave(char *path, const char *key, struct fileheader *fileinfo, bool append, char *direct, int ent,int mode, char *userid);

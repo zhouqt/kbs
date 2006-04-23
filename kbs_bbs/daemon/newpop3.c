@@ -29,7 +29,6 @@
   Last modified: 2002.07
 */
 
-#undef BBSMAIN
 #include <sys/ioctl.h>
 #include "bbs.h"
 

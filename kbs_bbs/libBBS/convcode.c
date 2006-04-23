@@ -6011,18 +6011,6 @@ static const unsigned char BtoG[] = {
 #define GtoB_count 23940
 #define BtoG_count 23940
 
-extern int convcode;
-extern void redoscr();
-
-#ifdef BBSMAIN
-int switch_code()
-{
-    convcode = !convcode;
-    redoscr();
-    return convcode;
-}
-#endif
-
 void conv_init(session_t* session)
 {
     session->gb2big_savec[0] = 0;

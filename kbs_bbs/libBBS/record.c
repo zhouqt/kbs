@@ -560,44 +560,8 @@ int size, id;
     return 0;
 }
 
-/*
-void
-tmpfilename( filename, tmpfile, deleted )
-char    *filename, *tmpfile, *deleted;
-{
-    char        *ptr, delfname[STRLEN], tmpfname[STRLEN];
-    strcpy( tmpfile, filename );
-#ifdef BBSMAIN
-    if (true == checkreadonly(currboard->filename))
-    {
-        sprintf(delfname,".%sdeleted",currboard->filename);
-        sprintf(tmpfname,".%stmpfile",currboard->filename);
-        if( (ptr = strchr( tmpfile, '/' )) != NULL ) {
-            strcpy( ptr+1, delfname );
-            strcpy( deleted, tmpfile );
-            strcpy( ptr+1, tmpfname );
-        } else {
-            strcpy( deleted, delfname );
-            strcpy( tmpfile, tmpfname );
-        }
-        return;
-    }
-    else
-#endif
-    {
-        sprintf(delfname , ".deleted%d",getpid());
-        sprintf(tmpfname , ".tmpfile%d",getpid());
-    }
-    if( (ptr = strrchr( tmpfile, '/' )) != NULL ) {
-        strcpy( ptr+1, delfname );
-        strcpy( deleted, tmpfile );
-        strcpy( ptr+1, tmpfname );
-    } else {
-        strcpy( deleted, delfname );
-        strcpy( tmpfile, tmpfname );
-    }
-}
-*/
+
+
 int delete_record(char *filename, int size, int id, RECORD_FUNC_ARG filecheck, void *arg)
 {
     int fdr;
