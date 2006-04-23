@@ -2246,12 +2246,13 @@ static int raw_vedit(char *filename,int saveheader,int headlines,long* eff_size,
     long attach_length;
     long ret;
 
-    if (pattachpos != NULL && *pattachpos!=0) {
+    if (pattachpos != NULL) {
         ret=read_file(filename,&attach_length);
-	*pattachpos=ret;
-    } else
+	    *pattachpos=ret;
+    } else {
         // TODO: add zmodem upload
         ret=read_file(filename,NULL);
+    }
     if (ret<0) return -1;
     top_of_win = firstline;
     if (headlines > 0) { /* 20050207 atppp */
